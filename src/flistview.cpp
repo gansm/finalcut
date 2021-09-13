@@ -930,6 +930,10 @@ void FListView::sort()
     return;
 
   SortType column_sort_type = getColumnSortType(sort_column);
+  assert ( column_sort_type == SortType::Name
+        || column_sort_type == SortType::Number
+        || column_sort_type == SortType::UserDefined
+        || column_sort_type == SortType::Unknown );
 
   switch ( column_sort_type )
   {
@@ -2718,12 +2722,13 @@ void FListView::scrollBy (int dx, int dy)
 //----------------------------------------------------------------------
 void FListView::cb_vbarChange (const FWidget*)
 {
-  const FScrollbar::ScrollType scrollType = vbar->getScrollType();
+  const FScrollbar::ScrollType scroll_type = vbar->getScrollType();
   static constexpr int wheel_distance = 4;
   int distance{1};
   first_line_position_before = first_visible_line.getPosition();
+  AssertScrollType(scroll_type);
 
-  switch ( scrollType )
+  switch ( scroll_type )
   {
     case FScrollbar::ScrollType::None:
       break;
@@ -2758,8 +2763,8 @@ void FListView::cb_vbarChange (const FWidget*)
   if ( isShown() )
     drawList();
 
-  if ( scrollType >= FScrollbar::ScrollType::StepBackward
-    && scrollType <= FScrollbar::ScrollType::PageForward )
+  if ( scroll_type >= FScrollbar::ScrollType::StepBackward
+    && scroll_type <= FScrollbar::ScrollType::PageForward )
   {
     vbar->setValue (first_visible_line.getPosition());
 
@@ -2773,12 +2778,13 @@ void FListView::cb_vbarChange (const FWidget*)
 //----------------------------------------------------------------------
 void FListView::cb_hbarChange (const FWidget*)
 {
-  const FScrollbar::ScrollType scrollType = hbar->getScrollType();
+  const FScrollbar::ScrollType scroll_type = hbar->getScrollType();
   static constexpr int wheel_distance = 4;
   int distance{1};
   const int xoffset_before = xoffset;
+  AssertScrollType(scroll_type);
 
-  switch ( scrollType )
+  switch ( scroll_type )
   {
     case FScrollbar::ScrollType::None:
       break;
@@ -2816,7 +2822,7 @@ void FListView::cb_hbarChange (const FWidget*)
     drawList();
   }
 
-  if ( scrollType >= FScrollbar::ScrollType::StepBackward )
+  if ( scroll_type >= FScrollbar::ScrollType::StepBackward )
   {
     hbar->setValue (xoffset);
 

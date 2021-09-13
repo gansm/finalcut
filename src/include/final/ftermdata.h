@@ -36,6 +36,8 @@
 #endif
 
 #include <atomic>
+#include <bitset>
+#include <memory>
 #include <mutex>
 #include <unordered_map>
 #include <string>
@@ -55,6 +57,12 @@ namespace finalcut
 class FTermData final
 {
   public:
+    struct kittyVersion
+    {
+      int primary;
+      int secondary;
+    };
+
     // Using-declaration
     using EncodingMap = std::unordered_map<std::string, Encoding>;
 
@@ -81,6 +89,8 @@ class FTermData final
     uInt               getBaudrate() const;
     const std::string& getTermType() const;
     const std::string& getTermFileName() const;
+    int                getGnomeTerminalID() const;
+    kittyVersion       getKittyVersion() const;
     const FString&     getXtermFont() const;
     const FString&     getXtermTitle() const;
     const FString&     getExitMessage() const;
@@ -103,6 +113,8 @@ class FTermData final
     bool               isVGAFont() const;
     bool               isMonochron() const;
     bool               hasTermResized();
+    bool               isTermType (FTermType) const;
+    bool               isTermType (FTermTypeValueType) const;
 
     // Mutators
     void               setTermEncoding (Encoding);
@@ -123,7 +135,11 @@ class FTermData final
     void               setMonochron (bool = true);
     void               setTermResized (bool = true);
     void               setTermType (const std::string&);
+    void               setTermType (FTermType);
+    void               unsetTermType (FTermType);
     void               setTermFileName (const std::string&);
+    void               setGnomeTerminalID (int);
+    void               setKittyVersion (const kittyVersion&);
     void               setXtermFont (const FString&);
     void               setXtermTitle (const FString&);
     void               setExitMessage (const FString&);
@@ -133,37 +149,46 @@ class FTermData final
 
   private:
     // Data members
-    EncodingMap        encoding_list{};
-    charSubstitution   char_substitution_map{};
-    FRect              term_geometry{};  // current terminal geometry
-    FString            xterm_font{};
-    FString            xterm_title{};
-    FString            exit_message{};
-    Encoding           term_encoding{Encoding::Unknown};
-    int                fd_tty{-1};  // Teletype (tty) file descriptor
-                                    // is still undefined
+    EncodingMap           encoding_list{};
+    charSubstitution      char_substitution_map{};
+    FRect                 term_geometry{};  // current terminal geometry
+    FString               xterm_font{};
+    FString               xterm_title{};
+    FString               exit_message{};
+    FTermTypeValueType    terminal_type{};
+    Encoding              term_encoding{Encoding::Unknown};
+
+    // Teletype (tty) file descriptor is still undefined (-1)
+    int                   fd_tty{-1};
+
+    // Gnome terminal id from SecDA
+    // Example: vte version 0.40.0 = 0 * 100 + 40 * 100 + 0 = 4000
+    //                      a.b.c  = a * 100 +  b * 100 + c
+    int                   gnome_terminal_id{0};
+    kittyVersion          kitty_version{0, 0};
+
 #if DEBUG
-    int                framebuffer_bpp{-1};
+    int                   framebuffer_bpp{-1};
 #endif
 
-    uInt               baudrate{0};
-    std::string        termtype{};
-    std::string        termfilename{};
-    std::mutex         resize_mutex{};
-    std::atomic<int>   resize_count{0};
-    bool               shadow_character{true};
-    bool               half_block_character{true};
-    bool               cursor_optimisation{true};
-    bool               hidden_cursor{false};  // Global cursor hidden state
-    bool               use_alternate_screen{true};
-    bool               alternate_screen{false};
-    bool               ascii_console{false};
-    bool               vt100_console{false};
-    bool               utf8_console{false};
-    bool               utf8_state{false};
-    bool               new_font{false};
-    bool               vga_font{false};
-    bool               monochron{false};
+    uInt                  baudrate{0};
+    std::string           termtype{};
+    std::string           termfilename{};
+    std::mutex            resize_mutex{};
+    std::atomic<int>      resize_count{0};
+    bool                  shadow_character{true};
+    bool                  half_block_character{true};
+    bool                  cursor_optimisation{true};
+    bool                  hidden_cursor{false};  // Global cursor hidden state
+    bool                  use_alternate_screen{true};
+    bool                  alternate_screen{false};
+    bool                  ascii_console{false};
+    bool                  vt100_console{false};
+    bool                  utf8_console{false};
+    bool                  utf8_state{false};
+    bool                  new_font{false};
+    bool                  vga_font{false};
+    bool                  monochron{false};
 };
 
 // FTermData inline functions
@@ -209,6 +234,14 @@ inline const std::string& FTermData::getTermType() const
 //----------------------------------------------------------------------
 inline const std::string& FTermData::getTermFileName() const
 { return termfilename; }
+
+//----------------------------------------------------------------------
+inline int FTermData::getGnomeTerminalID() const
+{ return gnome_terminal_id; }
+
+//----------------------------------------------------------------------
+inline FTermData::kittyVersion FTermData::getKittyVersion() const
+{ return kitty_version; }
 
 //----------------------------------------------------------------------
 inline const FString& FTermData::getXtermFont() const
@@ -286,6 +319,14 @@ inline bool FTermData::hasTermResized()
   std::lock_guard<std::mutex> resize_lock_guard(resize_mutex);
   return resize_count.load() > 0;
 }
+
+//----------------------------------------------------------------------
+inline bool FTermData::isTermType (FTermType type) const
+{ return terminal_type & static_cast<FTermTypeValueType>(type); }
+
+//----------------------------------------------------------------------
+inline bool FTermData::isTermType (FTermTypeValueType mask) const
+{ return terminal_type & mask; }
 
 //----------------------------------------------------------------------
 inline void FTermData::setTermEncoding (Encoding enc)
@@ -370,10 +411,29 @@ inline void FTermData::setTermType (const std::string& name)
 }
 
 //----------------------------------------------------------------------
+inline void FTermData::setTermType (FTermType type)
+{ terminal_type |= static_cast<FTermTypeValueType>(type); }
+
+//----------------------------------------------------------------------
+inline void FTermData::unsetTermType (FTermType type)
+{ terminal_type &= ~(static_cast<FTermTypeValueType>(type)); }
+
+//----------------------------------------------------------------------
 inline void FTermData::setTermFileName (const std::string& file_name)
 {
   if ( ! file_name.empty() )
     termfilename = file_name;
+}
+
+//----------------------------------------------------------------------
+inline void FTermData::setGnomeTerminalID (int id)
+{ gnome_terminal_id = id; }
+
+//----------------------------------------------------------------------
+inline void FTermData::setKittyVersion(const kittyVersion& version)
+{
+  kitty_version.primary = version.primary;
+  kitty_version.secondary = version.secondary;
 }
 
 //----------------------------------------------------------------------

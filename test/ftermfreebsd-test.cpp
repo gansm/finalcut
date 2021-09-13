@@ -611,7 +611,6 @@ void ftermfreebsdTest::classNameTest()
   CPPUNIT_ASSERT ( classname == "FTermFreeBSD" );
 }
 
-
 //----------------------------------------------------------------------
 void ftermfreebsdTest::freebsdConsoleTest()
 {
@@ -764,7 +763,7 @@ void ftermfreebsdTest::freebsdConsoleTest()
 #endif
 
     CPPUNIT_ASSERT ( isatty(0) == 1 );
-    CPPUNIT_ASSERT ( term_detection.isFreeBSDTerm() );
+    CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::netbsd_con) );
     CPPUNIT_ASSERT ( data.getTermGeometry().getWidth() == 80 );
     CPPUNIT_ASSERT ( data.getTermGeometry().getHeight() == 25 );
     CPPUNIT_ASSERT ( ! data.hasShadowCharacter() );

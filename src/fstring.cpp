@@ -60,7 +60,7 @@ FString::FString (std::size_t len, wchar_t c)
 
 //----------------------------------------------------------------------
 FString::FString (std::size_t len, const UniChar& c)
- : FString(len, wchar_t(c))
+  : FString(len, wchar_t(c))
 { }
 
 //----------------------------------------------------------------------

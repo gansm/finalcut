@@ -40,6 +40,12 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <memory>
+#include <queue>
+#include <string>
+#include <tuple>
+#include <utility>
+
 #include "final/foutput.h"
 #include "final/fterm.h"
 
@@ -48,6 +54,7 @@ namespace finalcut
 
 // class forward declaration
 class FStartOptions;
+class FTermData;
 
 //----------------------------------------------------------------------
 // class FTermOutput
@@ -62,7 +69,7 @@ class FTermOutput final : public FOutput
     explicit FTermOutput (const FVTerm&);
 
     // Destructor
-    ~FTermOutput() noexcept;
+    ~FTermOutput() noexcept override;
 
     // Accessors
     FString        getClassName() const override;
@@ -144,11 +151,11 @@ class FTermOutput final : public FOutput
     struct TermString
     {
       explicit TermString (const std::wstring& wstr)
-        : wstring{wstr}
+        : wstring{std::move(wstr)}
       { }
 
       explicit TermString (const std::string& str)
-        : string{str}
+        : string{std::move(str)}
       { }
 
       std::wstring wstring{};
@@ -171,7 +178,7 @@ class FTermOutput final : public FOutput
 
     // Methods
     FStartOptions& getStartOptions();
-    bool           isInputCursorInsideTerminal();
+    bool           isInputCursorInsideTerminal() const;
     bool           isDefaultPaletteTheme() override;
     void           redefineColorPalette() override;
     void           restoreColorPalette() override;
@@ -197,8 +204,8 @@ class FTermOutput final : public FOutput
     bool           updateTerminalCursor();
     void           flushTimeAdjustment();
     bool           isFlushTimeout() const;
-    void           markAsPrinted (uInt, uInt);
-    void           markAsPrinted (uInt, uInt, uInt);
+    void           markAsPrinted (uInt, uInt) const;
+    void           markAsPrinted (uInt, uInt, uInt) const;
     void           newFontChanges (FChar&) const;
     void           charsetChanges (FChar&) const;
     void           appendCharacter (FChar&);
@@ -214,6 +221,7 @@ class FTermOutput final : public FOutput
     // Data members
     FTerm                         fterm{};
     static FVTerm::FTermArea*     vterm;
+    static FTermData*             fterm_data;
     std::shared_ptr<OutputBuffer> output_buffer{};
     std::shared_ptr<FPoint>       term_pos{};  // terminal cursor position
     TimeValue                     time_last_flush{};

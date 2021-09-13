@@ -35,6 +35,8 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <memory>
+
 #include "final/fc.h"
 #include "final/fcolorpalette.h"
 #include "final/ftypes.h"

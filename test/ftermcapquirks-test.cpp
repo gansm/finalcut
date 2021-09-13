@@ -294,10 +294,9 @@ void FTermcapQuirksTest::xtermTest()
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
   auto& data = finalcut::FTermData::getInstance();
-  auto& detect = finalcut::FTermDetection::getInstance();
   finalcut::FTermcapQuirks quirks;
   finalcut::FTermcap::can_change_color_palette = false;
-  detect.setXTerminal (true);
+  data.setTermType (finalcut::FTermType::xterm);
   data.setTermType ("xterm");
   quirks.terminalFixup();
 
@@ -311,7 +310,7 @@ void FTermcapQuirksTest::xtermTest()
                          , CSI "?25l" );
   CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_cursor_normal)].string
                          , CSI "?12l" CSI "?25h" );
-  detect.setXTerminal (false);
+  data.unsetTermType (finalcut::FTermType::xterm);
 }
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
@@ -325,10 +324,9 @@ void FTermcapQuirksTest::freebsdTest()
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
   auto& data = finalcut::FTermData::getInstance();
-  auto& detect = finalcut::FTermDetection::getInstance();
   finalcut::FTermcap::attr_without_color = -1;
   finalcut::FTermcapQuirks quirks;
-  detect.setFreeBSDTerm (true);
+  data.setTermType (finalcut::FTermType::freebsd_con);
   data.setTermType ("xterm-16color");
   quirks.setFTermData(&data);
   quirks.setFTermDetection (&detect);
@@ -350,7 +348,7 @@ void FTermcapQuirksTest::freebsdTest()
                                "%?%p1%p3%|%t;7%;"
                                "%?%p4%t;5%;m"
                                "%?%p9%t\016%e\017%;" );
-  detect.setFreeBSDTerm (false);
+  data.unsetTermType (finalcut::FTermType::freebsd_con);
 }
 #endif
 
@@ -364,10 +362,9 @@ void FTermcapQuirksTest::cygwinTest()
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
   auto& data = finalcut::FTermData::getInstance();
-  auto& detect = finalcut::FTermDetection::getInstance();
   finalcut::FTermcap::background_color_erase = false;
   finalcut::FTermcapQuirks quirks;
-  detect.setCygwinTerminal (true);
+  data.setTermType (finalcut::FTermType::cygwin);
   data.setTermType ("cygwin");
   quirks.terminalFixup();
 
@@ -376,7 +373,7 @@ void FTermcapQuirksTest::cygwinTest()
                          , CSI "?25l" );
   CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_cursor_visible)].string
                          , CSI "?25h" );
-  detect.setCygwinTerminal (false);
+  data.unsetTermType (finalcut::FTermType::cygwin);
 }
 
 //----------------------------------------------------------------------
@@ -389,11 +386,10 @@ void FTermcapQuirksTest::linuxTest()
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
   auto& data = finalcut::FTermData::getInstance();
-  auto& detect = finalcut::FTermDetection::getInstance();
   finalcut::FTermcap::max_color = 8;
   finalcut::FTermcap::attr_without_color = -1;
   finalcut::FTermcapQuirks quirks;
-  detect.setLinuxTerm (true);
+  data.setTermType (finalcut::FTermType::linux_con);
   data.setTermType ("linux");
   quirks.terminalFixup();
 
@@ -448,7 +444,7 @@ void FTermcapQuirksTest::linuxTest()
                          , 0 );
   CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_underline_mode)].string
                          , 0 );
-  detect.setLinuxTerm (false);
+  data.unsetTermType (finalcut::FTermType::linux_con);
 }
 
 //----------------------------------------------------------------------
@@ -461,9 +457,8 @@ void FTermcapQuirksTest::rxvtTest()
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
   auto& data = finalcut::FTermData::getInstance();
-  auto& detect = finalcut::FTermDetection::getInstance();
   finalcut::FTermcapQuirks quirks;
-  detect.setRxvtTerminal (true);
+  data.setTermType (finalcut::FTermType::rxvt);
   data.setTermType ("rxvt");
   quirks.terminalFixup();
 
@@ -481,15 +476,15 @@ void FTermcapQuirksTest::rxvtTest()
                          , ESC "(B" );
 
   // urxvt
-  detect.setUrxvtTerminal (true);
+  data.setTermType (finalcut::FTermType::urxvt);
   quirks.terminalFixup();
   CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_foreground)].string
                          , CSI "%?%p1%{8}%<%t%p1%{30}%+%e%p1%'R'%+%;%dm" );
   CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_background)].string
                          , CSI "%?%p1%{8}%<%t%p1%'('%+%e%p1%{92}%+%;%dm" );
 
-  detect.setUrxvtTerminal (false);
-  detect.setRxvtTerminal (false);
+  data.unsetTermType (finalcut::FTermType::urxvt);
+  data.unsetTermType (finalcut::FTermType::rxvt);
 }
 
 //----------------------------------------------------------------------
@@ -502,10 +497,9 @@ void FTermcapQuirksTest::vteTest()
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
   auto& data = finalcut::FTermData::getInstance();
-  auto& detect = finalcut::FTermDetection::getInstance();
   finalcut::FTermcap::attr_without_color = -1;
   finalcut::FTermcapQuirks quirks;
-  detect.setGnomeTerminal (true);
+  data.setTermType (finalcut::FTermType::gnome_terminal);
   data.setTermType ("gnome-256color");
   quirks.terminalFixup();
 
@@ -513,7 +507,7 @@ void FTermcapQuirksTest::vteTest()
   CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_underline_mode)].string
                          , CSI "24m" );
 
-  detect.setGnomeTerminal (false);
+  data.unsetTermType (finalcut::FTermType::gnome_terminal);
 }
 
 //----------------------------------------------------------------------
@@ -528,9 +522,8 @@ void FTermcapQuirksTest::kittyTest()
   caps[int(finalcut::Termcap::t_enter_ca_mode)].string = CSI "?1049h";
   caps[int(finalcut::Termcap::t_exit_ca_mode)].string = CSI "?1049l";
   auto& data = finalcut::FTermData::getInstance();
-  auto& detect = finalcut::FTermDetection::getInstance();
   finalcut::FTermcapQuirks quirks;
-  detect.setKittyTerminal (true);
+  data.setTermType (finalcut::FTermType::kitty);
   data.setTermType ("xterm-kitty");
   quirks.terminalFixup();
 
@@ -539,7 +532,7 @@ void FTermcapQuirksTest::kittyTest()
   CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_ca_mode)].string
                          , CSI "?1049l" CSI "23;0;0t" );
 
-  detect.setKittyTerminal (false);
+  data.unsetTermType (finalcut::FTermType::kitty);
 }
 
 //----------------------------------------------------------------------
@@ -552,13 +545,12 @@ void FTermcapQuirksTest::puttyTest()
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
   auto& data = finalcut::FTermData::getInstance();
-  auto& detect = finalcut::FTermDetection::getInstance();
   finalcut::FTermcap::background_color_erase = false;
   finalcut::FTermcap::can_change_color_palette = false;
   finalcut::FTermcap::osc_support = false;
   finalcut::FTermcap::attr_without_color = -1;
   finalcut::FTermcapQuirks quirks;
-  detect.setPuttyTerminal (true);
+  data.setTermType (finalcut::FTermType::putty);
   data.setTermType ("putty");
   quirks.terminalFixup();
 
@@ -629,7 +621,7 @@ void FTermcapQuirksTest::puttyTest()
   CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_key_mouse)].string
                         , CSI "M" );
 
-  detect.setPuttyTerminal (false);
+  data.unsetTermType (finalcut::FTermType::putty);
 }
 
 //----------------------------------------------------------------------
@@ -642,10 +634,9 @@ void FTermcapQuirksTest::teratermTest()
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
   auto& data = finalcut::FTermData::getInstance();
-  auto& detect = finalcut::FTermDetection::getInstance();
   finalcut::FTermcap::eat_nl_glitch = false;
   finalcut::FTermcapQuirks quirks;
-  detect.setTeraTerm (true);
+  data.setTermType (finalcut::FTermType::tera_term);
   data.setTermType ("teraterm");
   quirks.terminalFixup();
 
@@ -659,7 +650,7 @@ void FTermcapQuirksTest::teratermTest()
   CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_orig_pair)].string
                          , CSI "39;49m" );
 
-  detect.setTeraTerm (false);
+  data.unsetTermType (finalcut::FTermType::tera_term);
 }
 
 //----------------------------------------------------------------------
@@ -672,10 +663,9 @@ void FTermcapQuirksTest::sunTest()
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
   auto& data = finalcut::FTermData::getInstance();
-  auto& detect = finalcut::FTermDetection::getInstance();
   finalcut::FTermcap::eat_nl_glitch = false;
   finalcut::FTermcapQuirks quirks;
-  detect.setSunTerminal (true);
+  data.setTermType (finalcut::FTermType::sun_con);
   data.setTermType ("sun-color");
   quirks.terminalFixup();
 
@@ -778,7 +768,7 @@ void FTermcapQuirksTest::sunTest()
                              , CSI "253z" );
   }
 
-  detect.setSunTerminal (false);
+  data.unsetTermType (finalcut::FTermType::sun_con);
 }
 
 //----------------------------------------------------------------------
@@ -791,10 +781,9 @@ void FTermcapQuirksTest::screenTest()
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
   auto& data = finalcut::FTermData::getInstance();
-  auto& detect = finalcut::FTermDetection::getInstance();
   finalcut::FTermcapQuirks quirks;
   finalcut::FTermcap::can_change_color_palette = false;
-  detect.setScreenTerm (true);
+  data.setTermType (finalcut::FTermType::screen);
   data.setTermType ("screen-256color");
   quirks.terminalFixup();
 
@@ -805,7 +794,9 @@ void FTermcapQuirksTest::screenTest()
                            "%p3%{255}%*%{1000}%/%2.2X/"
                            "%p4%{255}%*%{1000}%/%2.2X" BEL ESC "\\" );
 
-  detect.setTmuxTerm (true);
+
+  data.setTermType (finalcut::FTermType::tmux);
+
   caps[int(finalcut::Termcap::t_initialize_color)].string = 0;
   finalcut::FTermcap::can_change_color_palette = false;
   quirks.terminalFixup();
@@ -816,8 +807,9 @@ void FTermcapQuirksTest::screenTest()
                            "%p2%{255}%*%{1000}%/%2.2X/"
                            "%p3%{255}%*%{1000}%/%2.2X/"
                            "%p4%{255}%*%{1000}%/%2.2X" BEL ESC "\\" );
-  detect.setTmuxTerm (false);
-  detect.setScreenTerm (false);
+
+  data.unsetTermType (finalcut::FTermType::tmux);
+  data.unsetTermType (finalcut::FTermType::screen);
 }
 
 

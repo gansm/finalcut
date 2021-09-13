@@ -51,6 +51,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "final/fstring.h"
 #include "final/fstringstream.h"
 #include "final/fwidget.h"
 
@@ -58,7 +59,10 @@ namespace finalcut
 {
 
 // class forward declaration
-class FString;
+class FScrollbar;
+
+// Global using-declaration
+using FScrollbarPtr = std::shared_ptr<FScrollbar>;
 
 //----------------------------------------------------------------------
 // class FTextView

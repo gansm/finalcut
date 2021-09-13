@@ -856,11 +856,12 @@ void FScrollView::setViewportCursor()
 //----------------------------------------------------------------------
 void FScrollView::cb_vbarChange (const FWidget*)
 {
-  FScrollbar::ScrollType scrollType = vbar->getScrollType();
+  FScrollbar::ScrollType scroll_type = vbar->getScrollType();
   static constexpr int wheel_distance = 4;
   int distance{1};
+  AssertScrollType(scroll_type);
 
-  if ( scrollType >= FScrollbar::ScrollType::StepBackward )
+  if ( scroll_type >= FScrollbar::ScrollType::StepBackward )
   {
     update_scrollbar = true;
   }
@@ -869,7 +870,7 @@ void FScrollView::cb_vbarChange (const FWidget*)
     update_scrollbar = false;
   }
 
-  switch ( scrollType )
+  switch ( scroll_type )
   {
     case FScrollbar::ScrollType::None:
       break;
@@ -907,11 +908,12 @@ void FScrollView::cb_vbarChange (const FWidget*)
 //----------------------------------------------------------------------
 void FScrollView::cb_hbarChange (const FWidget*)
 {
-  FScrollbar::ScrollType scrollType = hbar->getScrollType();
+  FScrollbar::ScrollType scroll_type = hbar->getScrollType();
   static constexpr int wheel_distance = 4;
   int distance{1};
+  AssertScrollType(scroll_type);
 
-  if ( scrollType >= FScrollbar::ScrollType::StepBackward )
+  if ( scroll_type >= FScrollbar::ScrollType::StepBackward )
   {
     update_scrollbar = true;
   }
@@ -920,7 +922,7 @@ void FScrollView::cb_hbarChange (const FWidget*)
     update_scrollbar = false;
   }
 
-  switch ( scrollType )
+  switch ( scroll_type )
   {
     case FScrollbar::ScrollType::None:
       break;

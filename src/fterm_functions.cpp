@@ -36,6 +36,7 @@
 #include "final/fpoint.h"
 #include "final/fterm.h"
 #include "final/fterm_functions.h"
+#include "final/ftermdata.h"
 #include "final/ftermbuffer.h"
 #include "final/ftermios.h"
 
@@ -275,13 +276,15 @@ bool hasFullWidthSupports()
     if ( ! FTerm::isInitialized() )
       return true;  // Assume that it is a modern terminal with full-width support
 
-    if ( FTerm::isCygwinTerminal()
-      || FTerm::isTeraTerm()
-      || FTerm::isFreeBSDTerm()
-      || FTerm::isNetBSDTerm()
-      || FTerm::isOpenBSDTerm()
-      || FTerm::isSunTerminal()
-      || FTerm::isAnsiTerminal() )
+    auto& fterm_data = FTermData::getInstance();
+
+    if ( fterm_data.isTermType ( FTermType::cygwin
+                               | FTermType::tera_term
+                               | FTermType::freebsd_con
+                               | FTermType::netbsd_con
+                               | FTermType::openbsd_con
+                               | FTermType::sun_con
+                               | FTermType::ansi ) )
       has_fullwidth_support = FullWidthSupport::No;
     else
       has_fullwidth_support = FullWidthSupport::Yes;

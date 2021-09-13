@@ -234,6 +234,11 @@ FWidget* FWidget::getLastFocusableWidget (FObjectList list)
 //----------------------------------------------------------------------
 std::vector<bool>& FWidget::doubleFlatLine_ref (Side side)
 {
+  assert ( side == Side::Top
+        || side == Side::Right
+        || side == Side::Bottom
+        || side == Side::Left );
+
   switch ( side )
   {
     case Side::Top:
@@ -700,6 +705,11 @@ void FWidget::setPrintPos (const FPoint& pos)
 //----------------------------------------------------------------------
 void FWidget::setDoubleFlatLine (Side side, bool bit)
 {
+  assert ( side == Side::Top
+        || side == Side::Right
+        || side == Side::Bottom
+        || side == Side::Left );
+
   uLong length{};
 
   switch ( side )
@@ -729,6 +739,11 @@ void FWidget::setDoubleFlatLine (Side side, bool bit)
 //----------------------------------------------------------------------
 void FWidget::setDoubleFlatLine (Side side, int pos, bool bit)
 {
+  assert ( side == Side::Top
+        || side == Side::Right
+        || side == Side::Bottom
+        || side == Side::Left );
+
   assert ( pos >= 1 );
 
   uLong length{};

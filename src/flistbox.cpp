@@ -1692,13 +1692,14 @@ void FListBox::lazyConvert(FListBoxItems::iterator iter, std::size_t y)
 //----------------------------------------------------------------------
 void FListBox::cb_vbarChange (const FWidget*)
 {
-  const FScrollbar::ScrollType scrollType = vbar->getScrollType();
+  const FScrollbar::ScrollType scroll_type = vbar->getScrollType();
   static constexpr int wheel_distance = 4;
   const std::size_t current_before = current;
   int distance{1};
   const int yoffset_before = yoffset;
+  AssertScrollType(scroll_type);
 
-  switch ( scrollType )
+  switch ( scroll_type )
   {
     case FScrollbar::ScrollType::None:
       break;
@@ -1739,7 +1740,7 @@ void FListBox::cb_vbarChange (const FWidget*)
   if ( isShown() )
     drawList();
 
-  if ( scrollType >= FScrollbar::ScrollType::StepBackward )
+  if ( scroll_type >= FScrollbar::ScrollType::StepBackward )
   {
     vbar->setValue (yoffset);
 
@@ -1753,13 +1754,14 @@ void FListBox::cb_vbarChange (const FWidget*)
 //----------------------------------------------------------------------
 void FListBox::cb_hbarChange (const FWidget*)
 {
-  const FScrollbar::ScrollType scrollType = hbar->getScrollType();
+  const FScrollbar::ScrollType scroll_type = hbar->getScrollType();
   static constexpr int wheel_distance = 4;
   static constexpr int padding_space = 2;  // 1 leading space + 1 trailing space
   int distance{1};
   const int xoffset_before = xoffset;
+  AssertScrollType(scroll_type);
 
-  switch ( scrollType )
+  switch ( scroll_type )
   {
     case FScrollbar::ScrollType::None:
       break;
@@ -1798,7 +1800,7 @@ void FListBox::cb_hbarChange (const FWidget*)
     drawList();
 
 
-  if ( scrollType >= FScrollbar::ScrollType::StepBackward )
+  if ( scroll_type >= FScrollbar::ScrollType::StepBackward )
   {
     hbar->setValue (xoffset);
 

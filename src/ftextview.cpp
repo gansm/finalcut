@@ -739,16 +739,17 @@ void FTextView::changeOnResize() const
 //----------------------------------------------------------------------
 void FTextView::cb_vbarChange (const FWidget*)
 {
-  const FScrollbar::ScrollType scrollType = vbar->getScrollType();
+  const FScrollbar::ScrollType scroll_type = vbar->getScrollType();
   static constexpr int wheel_distance = 4;
   int distance{1};
+  AssertScrollType(scroll_type);
 
-  if ( scrollType >= FScrollbar::ScrollType::StepBackward )
+  if ( scroll_type >= FScrollbar::ScrollType::StepBackward )
     update_scrollbar = true;
   else
     update_scrollbar = false;
 
-  switch ( scrollType )
+  switch ( scroll_type )
   {
     case FScrollbar::ScrollType::None:
       break;
@@ -786,16 +787,17 @@ void FTextView::cb_vbarChange (const FWidget*)
 //----------------------------------------------------------------------
 void FTextView::cb_hbarChange (const FWidget*)
 {
-  const FScrollbar::ScrollType scrollType = hbar->getScrollType();
+  const FScrollbar::ScrollType scroll_type = hbar->getScrollType();
   static constexpr int wheel_distance = 4;
   int distance{1};
+  AssertScrollType(scroll_type);
 
-  if ( scrollType >= FScrollbar::ScrollType::StepBackward )
+  if ( scroll_type >= FScrollbar::ScrollType::StepBackward )
     update_scrollbar = true;
   else
     update_scrollbar = false;
 
-  switch ( scrollType )
+  switch ( scroll_type )
   {
     case FScrollbar::ScrollType::None:
       break;

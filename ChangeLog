@@ -1,3 +1,6 @@
+2021-09-12 Markus Gans  <guru.mail@muenster.de>
+	* The detected terminal type is now stored in FTermData
+
 2021-09-05 Markus Gans  <guru.mail@muenster.de>
 	* The methods for the physical terminal output of class FVTerm 
 	  were extracted and moved to the new class FVTermOutput. 

@@ -36,6 +36,7 @@
 #endif
 
 #include <functional>
+#include <memory>
 
 #include "final/fstring.h"
 

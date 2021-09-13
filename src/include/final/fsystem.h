@@ -36,6 +36,7 @@
 #endif
 
 #include <pwd.h>
+#include <memory>
 #include "final/ftypes.h"
 
 namespace finalcut

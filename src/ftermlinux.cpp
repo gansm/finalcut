@@ -30,7 +30,6 @@
 #include "final/fsystem.h"
 #include "final/fterm.h"
 #include "final/ftermcap.h"
-#include "final/ftermdetection.h"
 #include "final/ftermlinux.h"
 #include "final/ftypes.h"
 
@@ -92,7 +91,7 @@ bool FTermLinux::setCursorStyle (CursorStyle style)
 {
   // Set cursor style in linux console
 
-  if ( ! FTerm::isLinuxTerm() )
+  if ( ! isLinuxTerm() )
     return false;
 
   linux_console_cursor_style = style;
@@ -107,7 +106,7 @@ bool FTermLinux::setCursorStyle (CursorStyle style)
 //----------------------------------------------------------------------
 void FTermLinux::setUTF8 (bool enable) const
 {
-  if ( ! FTerm::isLinuxTerm() )
+  if ( ! isLinuxTerm() )
     return;
 
   if ( enable )
@@ -122,7 +121,7 @@ void FTermLinux::setUTF8 (bool enable) const
 #if defined(ISA_SYSCTL_SUPPORT)
 bool FTermLinux::setPalette (FColor index, int r, int g, int b)
 {
-  if ( ! FTerm::isLinuxTerm() )
+  if ( ! isLinuxTerm() )
     return false;
 
   return setVGAPalette (index, r, g, b);
@@ -170,10 +169,9 @@ void FTermLinux::init()
 
   if ( FTerm::openConsole() == 0 )
   {
-    FTermDetection::getInstance().setLinuxTerm(isLinuxConsole());
-
-    if ( FTerm::isLinuxTerm() )
+    if ( isLinuxConsole() )
     {
+      FTermData::getInstance().setTermType(FTermType::linux_con);
       getUnicodeMap();
       getScreenFont();
 
@@ -247,7 +245,7 @@ void FTermLinux::initCharMap() const
 //----------------------------------------------------------------------
 void FTermLinux::finish() const
 {
-  if ( FTerm::isLinuxTerm() )
+  if ( isLinuxTerm() )
   {
 #if defined(ISA_SYSCTL_SUPPORT)
     setBlinkAsIntensity (false);
@@ -390,7 +388,7 @@ bool FTermLinux::loadOldFont()
 //----------------------------------------------------------------------
 bool FTermLinux::saveColorMap()
 {
-  if ( ! FTerm::isLinuxTerm() )
+  if ( ! isLinuxTerm() )
     return false;
 
 #if defined(ISA_SYSCTL_SUPPORT)
@@ -403,7 +401,7 @@ bool FTermLinux::saveColorMap()
 //----------------------------------------------------------------------
 bool FTermLinux::resetColorMap()
 {
-  if ( ! FTerm::isLinuxTerm() )
+  if ( ! isLinuxTerm() )
     return false;
 
 #if defined(ISA_SYSCTL_SUPPORT)
@@ -416,7 +414,7 @@ bool FTermLinux::resetColorMap()
 //----------------------------------------------------------------------
 void FTermLinux::setBeep (int Hz, int ms) const
 {
-  if ( ! FTerm::isLinuxTerm() )
+  if ( ! isLinuxTerm() )
     return;
 
   // Range for frequency: 21-32766
@@ -436,7 +434,7 @@ void FTermLinux::setBeep (int Hz, int ms) const
 //----------------------------------------------------------------------
 void FTermLinux::resetBeep() const
 {
-  if ( ! FTerm::isLinuxTerm() )
+  if ( ! isLinuxTerm() )
     return;
 
   // Default frequency: 750 Hz
@@ -618,6 +616,13 @@ FTermLinux::ModifierKey& FTermLinux::getModifierKey()
   }
 
   return mod_key;
+}
+
+//----------------------------------------------------------------------
+bool FTermLinux::isLinuxTerm() const
+{
+  auto& fterm_data = FTermData::getInstance();
+  return fterm_data.isTermType(FTermType::linux_con);
 }
 
 //----------------------------------------------------------------------

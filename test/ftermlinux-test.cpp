@@ -2104,7 +2104,7 @@ void FTermLinuxTest::linuxConsoleTest()
 
   // setupterm is needed for tputs in ncurses >= 6.1
   setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
-  term_detection.setLinuxTerm(true);
+  data.setTermType (finalcut::FTermType::linux_con);
 
   pid_t pid = forkConEmu();
 
@@ -2128,7 +2128,7 @@ void FTermLinuxTest::linuxConsoleTest()
     linux.init();
 
     CPPUNIT_ASSERT ( isatty(3) == 0 );
-    CPPUNIT_ASSERT ( term_detection.isLinuxTerm() );
+    CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::linux_con) );
     CPPUNIT_ASSERT ( data.getTermGeometry().getWidth() == 96 );
     CPPUNIT_ASSERT ( data.getTermGeometry().getHeight() == 36 );
     CPPUNIT_ASSERT ( data.hasShadowCharacter() );
@@ -2229,7 +2229,7 @@ void FTermLinuxTest::linuxConsoleLat15Test()
 
   // setupterm is needed for tputs in ncurses >= 6.1
   setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
-  term_detection.setLinuxTerm(true);
+  data.setTermType (finalcut::FTermType::linux_con);
 
   pid_t pid = forkConEmu();
 
@@ -2253,7 +2253,7 @@ void FTermLinuxTest::linuxConsoleLat15Test()
 
     linux.init();
     linux.initCharMap();
-    CPPUNIT_ASSERT ( finalcut::FTerm::isLinuxTerm() );
+    CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::linux_con) );
     CPPUNIT_ASSERT ( ! data.hasShadowCharacter() );
     CPPUNIT_ASSERT ( ! data.hasHalfBlockCharacter() );
     auto& character_map = data.getCharSubstitutionMap();
@@ -2509,7 +2509,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
   setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
   auto& term_detection = finalcut::FTermDetection::getInstance();
   finalcut::FTermLinux linux;
-  term_detection.setLinuxTerm(true);
+  data.setTermType (finalcut::FTermType::linux_con);
 
   pid_t pid = forkConEmu();
 

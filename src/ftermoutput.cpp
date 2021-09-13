@@ -33,7 +33,6 @@
 #include "final/fstartoptions.h"
 #include "final/ftermcap.h"
 #include "final/ftermdata.h"
-#include "final/ftermdetection.h"
 #include "final/ftermfreebsd.h"
 #include "final/ftermoutput.h"
 #include "final/ftermxterminal.h"
@@ -44,6 +43,7 @@ namespace finalcut
 
 // static class attributes
 FVTerm::FTermArea* FTermOutput::vterm{nullptr};
+FTermData*         FTermOutput::fterm_data{nullptr};
 
 //----------------------------------------------------------------------
 // class FTermOutput
@@ -123,7 +123,7 @@ bool FTermOutput::hasTerminalResized() const
 //----------------------------------------------------------------------
 bool FTermOutput::allowsTerminalSizeManipulation() const
 {
-  return FTerm::isXTerminal();
+  return fterm_data->isTermType(FTermType::xterm);
 }
 
 //----------------------------------------------------------------------
@@ -147,7 +147,7 @@ bool FTermOutput::hasShadowCharacter() const
 //----------------------------------------------------------------------
 bool FTermOutput::areMetaAndArrowKeysSupported() const
 {
-  return ! FTerm::isLinuxTerm();
+  return ! fterm_data->isTermType(FTermType::linux_con);
 }
 
 //----------------------------------------------------------------------
@@ -261,9 +261,10 @@ void FTermOutput::initTerminal (FVTerm::FTermArea* virtual_terminal)
   // Redefine the color palette
   redefineColorPalette();
 
-  vterm         = virtual_terminal;
-  output_buffer = std::make_shared<OutputBuffer>();
-  term_pos      = std::make_shared<FPoint>(-1, -1);
+  vterm          = virtual_terminal;
+  fterm_data     = &FTermData::getInstance();
+  output_buffer  = std::make_shared<OutputBuffer>();
+  term_pos       = std::make_shared<FPoint>(-1, -1);
 
   // Hide the input cursor
   cursor_hideable = FTerm::isCursorHideable();
@@ -473,7 +474,7 @@ inline FStartOptions& FTermOutput::getStartOptions()
 }
 
 //----------------------------------------------------------------------
-inline bool FTermOutput::isInputCursorInsideTerminal()
+inline bool FTermOutput::isInputCursorInsideTerminal() const
 {
   if ( vterm && vterm->input_cursor_visible )
   {
@@ -588,18 +589,14 @@ void FTermOutput::init_combined_character()
     return;
 #endif
 
-  if ( FTerm::getEncoding() != Encoding::UTF8 )
+  if ( FTerm::getEncoding() != Encoding::UTF8
+    || fterm_data->isTermType(FTermType::cygwin) )
     return;
 
-  const auto& term_detection = FTermDetection::getInstance();
-
-  if ( term_detection.isCygwinTerminal() )
-    return;
-
-  if ( term_detection.isXTerminal()
-    || term_detection.isUrxvtTerminal()
-    || term_detection.isMinttyTerm()
-    || term_detection.isPuttyTerminal() )
+  if ( fterm_data->isTermType ( FTermType::xterm
+                              | FTermType::urxvt
+                              | FTermType::mintty
+                              | FTermType::putty ) )
   {
     combined_char_support = true;
   }
@@ -1260,7 +1257,7 @@ inline bool FTermOutput::isFlushTimeout() const
 }
 
 //----------------------------------------------------------------------
-inline void FTermOutput::markAsPrinted (uInt pos, uInt line)
+inline void FTermOutput::markAsPrinted (uInt pos, uInt line) const
 {
   // Marks a character as printed
 
@@ -1268,7 +1265,7 @@ inline void FTermOutput::markAsPrinted (uInt pos, uInt line)
 }
 
 //----------------------------------------------------------------------
-inline void FTermOutput::markAsPrinted (uInt from, uInt to, uInt line)
+inline void FTermOutput::markAsPrinted (uInt from, uInt to, uInt line) const
 {
   // Marks characters in the specified range [from .. to] as printed
 
@@ -1322,10 +1319,10 @@ inline void FTermOutput::charsetChanges (FChar& next_char) const
   {
     next_char.attr.bit.pc_charset = true;
 
-    if ( FTerm::isPuttyTerminal() )
+    if ( fterm_data->isTermType(FTermType::putty) )
       return;
 
-    if ( FTerm::isXTerminal() && ch_enc < 0x20 )  // Character 0x00..0x1f
+    if ( fterm_data->isTermType(FTermType::xterm) && ch_enc < 0x20 )  // Character 0x00..0x1f
     {
       if ( FTerm::hasUTF8() )
         next_char.encoded_char[0] = int(FTerm::charEncode(ch, Encoding::ASCII));
@@ -1459,7 +1456,8 @@ inline bool FTermOutput::isOutputBufferLimitReached() const
 //----------------------------------------------------------------------
 inline void FTermOutput::appendOutputBuffer (const FTermControl& ctrl)
 {
-  output_buffer->emplace(std::make_tuple(OutputType::Control, TermString(ctrl.string)));
+  output_buffer->emplace( std::make_tuple( OutputType::Control,
+                                           TermString(ctrl.string) ) );
 
   if ( isOutputBufferLimitReached() )
     flush();
@@ -1490,7 +1488,8 @@ void FTermOutput::appendOutputBuffer (const FTermString& str)
                    );
   }
   else
-    output_buffer->emplace(std::make_tuple(OutputType::String, TermString(str.string)));
+    output_buffer->emplace( std::make_tuple( OutputType::String,
+                                             TermString(str.string) ) );
 
   if ( isOutputBufferLimitReached() )
     flush();

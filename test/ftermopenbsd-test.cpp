@@ -409,8 +409,8 @@ void ftermopenbsdTest::netbsdConsoleTest()
 #endif
 
     CPPUNIT_ASSERT ( isatty(0) == 1 );
-    CPPUNIT_ASSERT ( ! term_detection.isOpenBSDTerm() );
-    CPPUNIT_ASSERT ( term_detection.isNetBSDTerm() );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::openbsd_con) );
+    CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::netbsd_con) );
     CPPUNIT_ASSERT ( data.getTermGeometry().getWidth() == 80 );
     CPPUNIT_ASSERT ( data.getTermGeometry().getHeight() == 25 );
     CPPUNIT_ASSERT ( ! data.hasShadowCharacter() );
@@ -422,8 +422,8 @@ void ftermopenbsdTest::netbsdConsoleTest()
     netbsd.init();
 
     CPPUNIT_ASSERT ( isatty(0) == 1 );
-    CPPUNIT_ASSERT ( ! term_detection.isOpenBSDTerm() );
-    CPPUNIT_ASSERT ( term_detection.isNetBSDTerm() );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::openbsd_con) );
+    CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::netbsd_con) );
     CPPUNIT_ASSERT ( data.getTermGeometry().getWidth() == 80 );
     CPPUNIT_ASSERT ( data.getTermGeometry().getHeight() == 25 );
     CPPUNIT_ASSERT ( ! data.hasShadowCharacter() );
@@ -518,8 +518,8 @@ void ftermopenbsdTest::openbsdConsoleTest()
 #endif
 
     CPPUNIT_ASSERT ( isatty(0) == 1 );
-    CPPUNIT_ASSERT ( term_detection.isOpenBSDTerm() );
-    CPPUNIT_ASSERT ( ! term_detection.isNetBSDTerm() );
+    CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::openbsd_con) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::netbsd_con) );
     CPPUNIT_ASSERT ( data.getTermGeometry().getWidth() == 80 );
     CPPUNIT_ASSERT ( data.getTermGeometry().getHeight() == 25 );
     CPPUNIT_ASSERT ( ! data.hasShadowCharacter() );
@@ -532,8 +532,8 @@ void ftermopenbsdTest::openbsdConsoleTest()
     openbsd.init();
 
     CPPUNIT_ASSERT ( isatty(0) == 1 );
-    CPPUNIT_ASSERT ( term_detection.isOpenBSDTerm() );
-    CPPUNIT_ASSERT ( ! term_detection.isNetBSDTerm() );
+    CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::openbsd_con) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::netbsd_con) );
     CPPUNIT_ASSERT ( data.getTermGeometry().getWidth() == 80 );
     CPPUNIT_ASSERT ( data.getTermGeometry().getHeight() == 25 );
     CPPUNIT_ASSERT ( ! data.hasShadowCharacter() );

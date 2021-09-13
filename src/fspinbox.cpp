@@ -280,6 +280,10 @@ void FSpinBox::onTimer (FTimerEvent*)
     addTimer(repeat_time);
   }
 
+  assert ( spining_state == SpiningState::None
+        || spining_state == SpiningState::Up
+        || spining_state == SpiningState::Down );
+
   switch ( spining_state )
   {
     case SpiningState::None:

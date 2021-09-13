@@ -169,8 +169,7 @@ class FScrollbar : public FWidget
     int                 max_color{FVTerm::getFOutput()->getMaxColor()};
 };
 
-
-// non-member function
+// non-member functions
 //----------------------------------------------------------------------
 template <typename Instance
         , typename Callback>
@@ -188,6 +187,19 @@ void initScrollbar ( FScrollbarPtr& bar
     "change-value",
     std::bind(cb_handler, cb_instance, bar.get())
   );
+}
+
+//----------------------------------------------------------------------
+inline void AssertScrollType (const FScrollbar::ScrollType scroll_type)
+{
+  assert ( scroll_type == FScrollbar::ScrollType::None
+        || scroll_type == FScrollbar::ScrollType::Jump
+        || scroll_type == FScrollbar::ScrollType::StepBackward
+        || scroll_type == FScrollbar::ScrollType::StepForward
+        || scroll_type == FScrollbar::ScrollType::PageBackward
+        || scroll_type == FScrollbar::ScrollType::PageForward
+        || scroll_type == FScrollbar::ScrollType::WheelUp
+        || scroll_type == FScrollbar::ScrollType::WheelDown );
 }
 
 

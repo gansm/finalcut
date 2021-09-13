@@ -235,69 +235,70 @@ bool FTermDetection::getTTYSFileEntry()
 //----------------------------------------------------------------------
 void FTermDetection::termtypeAnalysis()
 {
-  // Cygwin console
+  auto& fterm_data = FTermData::getInstance();
 
+  // Cygwin console
   if ( termtype.left(6) == "cygwin" )
-    terminal_type.cygwin = true;
+    fterm_data.setTermType (FTermType::cygwin);
 
   // rxvt terminal emulator (native MS Window System port) on cygwin
   if ( termtype == "rxvt-cygwin-native" )
-    terminal_type.rxvt = true;
+    fterm_data.setTermType (FTermType::rxvt);
 
-  // Ansi terminal
+  // ANSI X3.64 terminal
   if ( termtype.left(4) == "ansi" )
   {
     terminal_detection = false;
-    terminal_type.ansi = true;
+    fterm_data.setTermType (FTermType::ansi);
   }
 
   // Sun Microsystems workstation console
   if ( termtype.left(3) == "sun" )
   {
     terminal_detection = false;
-    terminal_type.sun_con = true;
+    fterm_data.setTermType (FTermType::sun_con);
   }
 
   // Kterm
   if ( termtype.left(5) == "kterm" )
   {
     terminal_detection = false;
-    terminal_type.kterm = true;
+    fterm_data.setTermType (FTermType::kterm);
   }
 
   // mlterm
   if ( termtype.left(6) == "mlterm" )
-    terminal_type.mlterm = true;
+    fterm_data.setTermType (FTermType::mlterm);
 
   // rxvt
   if ( termtype.left(4) == "rxvt" )
-    terminal_type.rxvt = true;
+    fterm_data.setTermType (FTermType::rxvt);
 
   // urxvt
   if ( termtype.left(12) == "rxvt-unicode" )
-    terminal_type.urxvt = true;
+    fterm_data.setTermType (FTermType::urxvt);
 
   // screen/tmux
   if ( termtype.left(6) == "screen" )
   {
-    terminal_type.screen = true;
+    fterm_data.setTermType (FTermType::screen);
     auto tmux = std::getenv("TMUX");
 
     if ( tmux && tmux[0] != '\0' )
-      terminal_type.tmux = true;
+      fterm_data.setTermType (FTermType::tmux);
   }
 
   // Linux console
   if ( termtype.left(5) == "linux" || termtype.left(3) == "con" )
-    terminal_type.linux_con = true;
+    fterm_data.setTermType (FTermType::linux_con);
 
   // NetBSD workstation console
   if ( termtype.left(6) == "wsvt25" )
-    terminal_type.netbsd_con = true;
+    fterm_data.setTermType (FTermType::netbsd_con);
 
   // kitty
   if ( termtype.left(11) == "xterm-kitty" )
-    terminal_type.kitty = true;
+    fterm_data.setTermType (FTermType::kitty);
 }
 
 //----------------------------------------------------------------------
@@ -332,18 +333,19 @@ void FTermDetection::detectTerminal()
   //
   // Additional termtype analysis
   //
+  auto& fterm_data = FTermData::getInstance();
 
   // Test if the terminal is a xterm
   if ( termtype.left(5) == "xterm" || termtype.left(5) == "Eterm" )
   {
-    terminal_type.xterm = true;
+    fterm_data.setTermType (FTermType::xterm);
 
     // Each xterm should be able to use at least 16 colors
     if ( ! new_termtype && termtype.getLength() == 5 )
       new_termtype = "xterm-16color";
   }
   else if ( termtype.left(4) == "ansi" )  // ANSI detection
-    terminal_type.ansi = true;
+    fterm_data.setTermType (FTermType::ansi);
 
   // set the new environment variable TERM
   if ( new_termtype )
@@ -353,7 +355,6 @@ void FTermDetection::detectTerminal()
   }
 
 #if defined(__CYGWIN__)
-  auto& fterm_data = FTermData::getInstance();
   const auto& termfilename = fterm_data.getTermFileName();
 
   // Fixes problem with mouse input
@@ -365,8 +366,6 @@ void FTermDetection::detectTerminal()
 //----------------------------------------------------------------------
 FString FTermDetection::init_256colorTerminal()
 {
-  FString new_termtype{};
-
   if ( get256colorEnvString() )
     color256 = true;
   else if ( termtype.includes("256color") )
@@ -374,7 +373,7 @@ FString FTermDetection::init_256colorTerminal()
   else
     color256 = false;
 
-  new_termtype = termtype_256color_quirks();
+  FString new_termtype = termtype_256color_quirks();
 
 #if DEBUG
   if ( ! new_termtype.isEmpty() )
@@ -414,15 +413,16 @@ bool FTermDetection::get256colorEnvString()
 FString FTermDetection::termtype_256color_quirks()
 {
   FString new_termtype{};
+  auto& fterm_data = FTermData::getInstance();
 
   if ( ! color_env.string2.isEmpty()
     || color_env.string1 == "gnome-terminal" )
   {
-    terminal_type.gnome_terminal = true;
+    fterm_data.setTermType (FTermType::gnome_terminal);
     // Each gnome-terminal should be able to use 256 colors
     color256 = true;
 
-    if ( ! isScreenTerm() )
+    if ( ! fterm_data.isTermType(FTermType::screen) )
     {
       new_termtype = "gnome-256color";
       return new_termtype;
@@ -448,13 +448,13 @@ FString FTermDetection::termtype_256color_quirks()
     && color_env.string1.left(8) == "rxvt-xpm" )
   {
     new_termtype = "rxvt-256color";
-    terminal_type.rxvt = true;
+    fterm_data.setTermType (FTermType::rxvt);
   }
 
   if ( color_env.string5.getLength() > 0
     || color_env.string6.getLength() > 0 )
   {
-    terminal_type.kde_konsole = true;
+    fterm_data.setTermType (FTermType::kde_konsole);
     new_termtype = "konsole-256color";
   }
 
@@ -470,21 +470,22 @@ FString FTermDetection::determineMaxColor (const FString& current_termtype)
   // Determine xterm maximum number of colors via OSC 4
 
   FString new_termtype{current_termtype};
+  auto& fterm_data = FTermData::getInstance();
   auto& keyboard = FKeyboard::getInstance();
   keyboard.setNonBlockingInput();
 
   if ( ! color256
-    && ! isCygwinTerminal()
-    && ! isTeraTerm()
-    && ! isLinuxTerm()
-    && ! isNetBSDTerm()
+    && ! fterm_data.isTermType ( FTermType::cygwin
+                               | FTermType::tera_term
+                               | FTermType::linux_con
+                               | FTermType::netbsd_con )
     && ! getXTermColorName(FColor(0)).isEmpty() )
   {
     if ( ! getXTermColorName(FColor(255)).isEmpty() )
     {
       color256 = true;
 
-      if ( isPuttyTerminal() )
+      if ( fterm_data.isTermType(FTermType::putty) )
         new_termtype = "putty-256color";
       else
         new_termtype = "xterm-256color";
@@ -571,7 +572,8 @@ FString FTermDetection::parseAnswerbackMsg (const FString& current_termtype)
 
   if ( answer_back == "PuTTY" )
   {
-    terminal_type.putty = true;
+    auto& fterm_data = FTermData::getInstance();
+    fterm_data.setTermType (FTermType::putty);
 
     if ( color256 )
       new_termtype = "putty-256color";
@@ -636,10 +638,13 @@ FString FTermDetection::getAnswerbackMsg() const
 FString FTermDetection::parseSecDA (const FString& current_termtype)
 {
   // The Linux console and older cygwin terminals knows no Sec_DA
-  if ( isLinuxTerm() || isCygwinTerminal() )
+
+  auto& fterm_data = FTermData::getInstance();
+
+  if ( fterm_data.isTermType(FTermType::linux_con | FTermType::cygwin) )
     return current_termtype;
 
-   // Secondary device attributes (SEC_DA) <- decTerminalID string
+  // Secondary device attributes (SEC_DA) <- decTerminalID string
   sec_da = getSecDA();
 
   if ( sec_da.getLength() < 6 )
@@ -825,13 +830,16 @@ FString FTermDetection::secDA_Analysis (const FString& current_termtype)
   }
 
   // Correct false assumptions
-  if ( isGnomeTerminal()
+  auto& fterm_data = FTermData::getInstance();
+
+  if ( fterm_data.isTermType(FTermType::gnome_terminal)
     && secondary_da.terminal_id_type != 1
     && secondary_da.terminal_id_type != 65 )
-    terminal_type.gnome_terminal = false;
+    fterm_data.unsetTermType (FTermType::gnome_terminal);
 
-  if ( isKdeTerminal() && secondary_da.terminal_id_type != 0 )
-    terminal_type.kde_konsole = false;
+  if ( fterm_data.isTermType(FTermType::kde_konsole)
+    && secondary_da.terminal_id_type != 0 )
+    fterm_data.unsetTermType (FTermType::kde_konsole);
 
   return new_termtype;
 }
@@ -842,18 +850,19 @@ inline FString FTermDetection::secDA_Analysis_0 (const FString& current_termtype
   // Terminal ID 0 - DEC VT100
 
   FString new_termtype{current_termtype};
+  auto& fterm_data = FTermData::getInstance();
 
   if ( secondary_da.terminal_id_version == 10
     && secondary_da.terminal_id_hardware == 1 )
-    terminal_type.win_terminal = true;  // Windows Terminal >= 1.2
+    fterm_data.setTermType (FTermType::win_terminal);  // Windows Terminal >= 1.2
   else if ( secondary_da.terminal_id_version == 115 )
-    terminal_type.kde_konsole = true;
+    fterm_data.setTermType (FTermType::kde_konsole);
   else if ( secondary_da.terminal_id_version == 136 )
-    terminal_type.putty = true;  // PuTTY
+    fterm_data.setTermType (FTermType::putty);  // PuTTY
 
 #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
   if ( FTermFreeBSD::isFreeBSDConsole() )
-    terminal_type.freebsd_con = true;
+    fterm_data.setTermType (FTermType::freebsd_con);
 #endif
 
   return new_termtype;
@@ -865,8 +874,9 @@ inline FString FTermDetection::secDA_Analysis_1 (const FString& current_termtype
   // Terminal ID 1 - DEC VT220
 
   FString new_termtype{current_termtype};
+  auto& fterm_data = FTermData::getInstance();
 
-  if ( isKittyTerminal() )
+  if ( fterm_data.isTermType(FTermType::kitty) )
     new_termtype = secDA_Analysis_kitty(new_termtype);
   else
     new_termtype = secDA_Analysis_vte(new_termtype);
@@ -887,11 +897,13 @@ inline FString FTermDetection::secDA_Analysis_24 (const FString& current_termtyp
      && FTermOpenBSD::isBSDConsole() )
   {
     // NetBSD/OpenBSD workstation console
+    auto& fterm_data = FTermData::getInstance();
+
     if ( termtype.left(6) == "wsvt25" )
-      terminal_type.netbsd_con = true;
+      fterm_data.setTermType (FTermType::netbsd_con);
     else if ( termtype.left(5) == "vt220" )
     {
-      terminal_type.openbsd_con = true;
+      fterm_data.setTermType (FTermType::openbsd_con);
       new_termtype = "pccon";
     }
   }
@@ -906,7 +918,8 @@ inline FString FTermDetection::secDA_Analysis_32()
 {
   // Terminal ID 32 - Tera Term
 
-  terminal_type.tera_term = true;
+  auto& fterm_data = FTermData::getInstance();
+  fterm_data.setTermType (FTermType::tera_term);
   return "teraterm";
 }
 
@@ -923,7 +936,8 @@ inline FString FTermDetection::secDA_Analysis_67()
 {
   // Terminal ID 67 - cygwin
 
-  terminal_type.cygwin = true;
+  auto& fterm_data = FTermData::getInstance();
+  fterm_data.setTermType (FTermType::cygwin);
   std::fflush(stdout);
   return "cygwin";
 }
@@ -933,7 +947,8 @@ inline FString FTermDetection::secDA_Analysis_77()
 {
   // Terminal ID 77 - mintty
 
-  terminal_type.mintty = true;
+  auto& fterm_data = FTermData::getInstance();
+  fterm_data.setTermType (FTermType::mintty);
   decscusr_support = true;
   std::fflush(stdout);
   return "xterm-256color";
@@ -944,15 +959,16 @@ inline FString FTermDetection::secDA_Analysis_82()
 {
   // Terminal ID 82 - rxvt
 
-  FString new_termtype{};
-  terminal_type.rxvt = true;
+  auto& fterm_data = FTermData::getInstance();
+  fterm_data.setTermType (FTermType::rxvt);
 
-  if ( termtype == "rxvt-cygwin-native" )
-    new_termtype = "rxvt-16color";
-  else
-    new_termtype = "rxvt";
-
-  return new_termtype;
+  return [this] ()
+  {
+    if ( termtype == "rxvt-cygwin-native" )
+      return  FString("rxvt-16color");
+    else
+      return  FString("rxvt");
+  }();
 }
 
 //----------------------------------------------------------------------
@@ -960,7 +976,8 @@ inline FString FTermDetection::secDA_Analysis_83 (const FString& current_termtyp
 {
   // Terminal ID 83 - screen
 
-  terminal_type.screen = true;
+  auto& fterm_data = FTermData::getInstance();
+  fterm_data.setTermType (FTermType::screen);
   return current_termtype;
 }
 
@@ -969,8 +986,9 @@ inline FString FTermDetection::secDA_Analysis_84 (const FString& current_termtyp
 {
   // Terminal ID 84 - tmux
 
-  terminal_type.screen = true;
-  terminal_type.tmux = true;
+  auto& fterm_data = FTermData::getInstance();
+  fterm_data.setTermType (FTermType::screen);
+  fterm_data.setTermType (FTermType::tmux);
   return current_termtype;
 }
 
@@ -979,21 +997,22 @@ inline FString FTermDetection::secDA_Analysis_85()
 {
   // Terminal ID 85 - rxvt-unicode
 
-  FString new_termtype{};
-  terminal_type.rxvt = true;
-  terminal_type.urxvt = true;
+  auto& fterm_data = FTermData::getInstance();
+  fterm_data.setTermType (FTermType::rxvt);
+  fterm_data.setTermType (FTermType::urxvt);
 
-  if ( termtype.left(5) == "rxvt-" )
+  return [this] ()
   {
-    if ( color256 )
-      new_termtype = "rxvt-256color";
+    if ( termtype.left(5) == "rxvt-" )
+    {
+      if ( color256 )
+        return FString("rxvt-256color");
+      else
+        return FString("rxvt");
+    }
     else
-      new_termtype = "rxvt";
-  }
-  else
-    new_termtype = termtype;
-
-  return new_termtype;
+      return termtype;
+  }();
 }
 
 //----------------------------------------------------------------------
@@ -1006,14 +1025,16 @@ inline FString FTermDetection::secDA_Analysis_vte (const FString& current_termty
 
   if ( secondary_da.terminal_id_version > 1000 )
   {
-    terminal_type.gnome_terminal = true;
+    auto& fterm_data = FTermData::getInstance();
+    fterm_data.setTermType (FTermType::gnome_terminal);
     // Each gnome-terminal should be able to use 256 colors
     color256 = true;
     new_termtype = "gnome-256color";
-    gnome_terminal_id = secondary_da.terminal_id_version;
+    auto id = secondary_da.terminal_id_version;
+    fterm_data.setGnomeTerminalID(id);
 
     // VTE 0.40.0 or higher and gnome-terminal 3.16 or higher
-    if ( gnome_terminal_id >= 4000 )
+    if ( id >= 4000 )
       decscusr_support = true;
   }
 
@@ -1032,8 +1053,10 @@ inline FString FTermDetection::secDA_Analysis_kitty (const FString& current_term
     // All kitty terminals can use 256 colors
     color256 = true;
     new_termtype = "xterm-kitty";
-    kitty_version.primary = secondary_da.terminal_id_version - 4000;
-    kitty_version.secondary = secondary_da.terminal_id_hardware;
+    int n1 = secondary_da.terminal_id_version - 4000;
+    int n2 = secondary_da.terminal_id_hardware;
+    FTermData::kittyVersion kitty_version { n1, n2 };
+    FTermData::getInstance().setKittyVersion(kitty_version);
   }
 
   return new_termtype;

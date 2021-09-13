@@ -29,7 +29,6 @@
 #include "final/ftermcap.h"
 #include "final/ftermcapquirks.h"
 #include "final/ftermdata.h"
-#include "final/ftermdetection.h"
 
 namespace finalcut
 {
@@ -42,53 +41,54 @@ namespace finalcut
 //----------------------------------------------------------------------
 void FTermcapQuirks::terminalFixup()
 {
-  const auto& td = FTermDetection::getInstance();
+  auto& fterm_data = FTermData::getInstance();
 
-  if ( td.isCygwinTerminal() )
+  if ( fterm_data.isTermType(FTermType::cygwin) )
   {
     cygwin();
   }
-  else if ( td.isLinuxTerm() )
+  else if ( fterm_data.isTermType(FTermType::linux_con) )
   {
     linux();
   }
-  else if ( td.isRxvtTerminal() )
+  else if ( fterm_data.isTermType(FTermType::rxvt) )
   {
     rxvt();
   }
-  else if ( td.isGnomeTerminal() )
+  else if ( fterm_data.isTermType(FTermType::gnome_terminal) )
   {
     vte();
   }
-  else if ( td.isKittyTerminal() )
+  else if ( fterm_data.isTermType(FTermType::kitty) )
   {
     kitty();
   }
-  else if ( td.isTeraTerm() )
+  else if ( fterm_data.isTermType(FTermType::tera_term) )
   {
     teraterm();
   }
-  else if ( td.isSunTerminal() )
+  else if ( fterm_data.isTermType(FTermType::sun_con) )
   {
     sunConsole();
   }
-  else if ( td.isPuttyTerminal() )
+  else if ( fterm_data.isTermType(FTermType::putty) )
   {
     putty();
   }
-  else if ( td.isScreenTerm() )
+  else if ( fterm_data.isTermType(FTermType::screen) )
   {
     screen();
   }
 #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-  else if ( td.isFreeBSDTerm() )
+  else if ( fterm_data.isTermType(FTermType::freebsd_con) )
   {
     freebsd();
   }
 #endif  // defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
 
   // xterm and compatible terminals
-  if ( td.isXTerminal() && ! td.isPuttyTerminal() )
+  if ( fterm_data.isTermType(FTermType::xterm)
+    && ! fterm_data.isTermType(FTermType::putty) )
     xterm();
 
   // Fixes general quirks
@@ -230,14 +230,14 @@ void FTermcapQuirks::rxvt()
   // Set enter/exit alternative charset mode for rxvt terminal
   const auto& termtype = FTermData::getInstance().getTermType();
 
-  if ( termtype.substr(0,12) == "rxvt-16color" )
+  if ( termtype.substr(0, 12) == "rxvt-16color" )
   {
     TCAP(t_enter_alt_charset_mode) = ESC "(0";
     TCAP(t_exit_alt_charset_mode)  = ESC "(B";
   }
 
   // Set ansi foreground and background color
-  if ( ! FTermDetection::getInstance().isUrxvtTerminal() )
+  if ( ! FTermData::getInstance().isTermType(FTermType::urxvt) )
   {
     TCAP(t_set_a_foreground) = \
         CSI "%?%p1%{8}%<%t%p1%{30}%+%e%p1%'R'%+%;%dm";
@@ -249,7 +249,7 @@ void FTermcapQuirks::rxvt()
 //----------------------------------------------------------------------
 void FTermcapQuirks::vte()
 {
-  const auto& term_detection = FTermDetection::getInstance();
+  auto& fterm_data = FTermData::getInstance();
 
   // gnome-terminal has NC=16 however, it can use the dim attribute
   FTermcap::attr_without_color = 0;
@@ -257,7 +257,7 @@ void FTermcapQuirks::vte()
   // set exit underline for gnome terminal
   TCAP(t_exit_underline_mode) = CSI "24m";
 
-  if ( term_detection.getGnomeTerminalID() >= 5300 )  // vte >= 0.53.0
+  if ( fterm_data.getGnomeTerminalID() >= 5300 )  // vte >= 0.53.0
     caModeExtension();
 }
 
@@ -449,7 +449,7 @@ void FTermcapQuirks::screen()
   {
     FTermcap::can_change_color_palette = true;
 
-    if ( FTermDetection::getInstance().isTmuxTerm() )
+    if ( FTermData::getInstance().isTermType(FTermType::tmux) )
     {
       TCAP(t_initialize_color) = \
           ESC "Ptmux;" ESC OSC "4;%p1%d;rgb:"

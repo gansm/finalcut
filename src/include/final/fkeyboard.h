@@ -41,6 +41,7 @@
 #include <functional>
 #include <memory>
 #include <queue>
+#include <string>
 
 #include "final/fkey_map.h"
 #include "final/fstring.h"

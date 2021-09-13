@@ -35,8 +35,6 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include "final/fc.h"
-
 #if defined(UNIT_TEST)
   #define CONS_CURSORTYPE 0x80046307
   #define GIO_KEYMAP      0x20006b06
@@ -64,6 +62,9 @@
   #include <sys/consio.h>
   #include <sys/kbio.h>
 #endif
+
+#include "final/fc.h"
+#include "final/fstring.h"
 
 namespace finalcut
 {

@@ -41,6 +41,7 @@
 #include <utility>
 #include <vector>
 
+#include "final/fstring.h"
 #include "final/ftypes.h"
 
 // FTermcap string macro

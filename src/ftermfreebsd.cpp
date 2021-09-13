@@ -93,7 +93,9 @@ bool FTermFreeBSD::isFreeBSDConsole()
 //----------------------------------------------------------------------
 void FTermFreeBSD::setBeep (int Hz, int ms)
 {
-  if ( ! FTerm::isFreeBSDTerm() )
+  auto& fterm_data = FTermData::getInstance();
+
+  if ( ! fterm_data.isTermType(FTermType::freebsd_con) )
     return;
 
   // Range for frequency: 21-32766
@@ -114,7 +116,9 @@ void FTermFreeBSD::setBeep (int Hz, int ms)
 //----------------------------------------------------------------------
 void FTermFreeBSD::resetBeep()
 {
-  if ( ! FTerm::isFreeBSDTerm() )
+  auto& fterm_data = FTermData::getInstance();
+
+  if ( ! fterm_data.isTermType(FTermType::freebsd_con) )
     return;
 
   // Default frequency: 1491 Hz

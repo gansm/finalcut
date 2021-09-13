@@ -36,7 +36,6 @@
 #include "final/fkey_map.h"
 #include "final/fobject.h"
 #include "final/fterm.h"
-#include "final/ftermdetection.h"
 #include "final/ftermios.h"
 
 #if defined(__linux__)
@@ -542,7 +541,7 @@ FKey FKeyboard::keyCorrection (const FKey& keycode) const
   FKey key_correction;
 
 #if defined(__linux__)
-  if ( FTerm::isLinuxTerm() )
+  if ( FTermData::getInstance().isTermType(FTermType::linux_con) )
   {
     auto& linux_console = FTermLinux::getInstance();
     key_correction = linux_console.modifierKeyCorrection(keycode);
