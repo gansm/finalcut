@@ -284,7 +284,7 @@ void FTermXTerminal::resetTitle()
 //----------------------------------------------------------------------
 void FTermXTerminal::captureFontAndTitle()
 {
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
 
   if ( fterm_data.isTermType(FTermType::xterm | FTermType::urxvt)
     && ! fterm_data.isTermType(FTermType::rxvt) )
@@ -321,8 +321,8 @@ void FTermXTerminal::setXTermCursorStyle()
     return;
 #endif
 
-  auto& fterm_data = FTermData::getInstance();
-  auto& term_detection = FTermDetection::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
+  const auto& term_detection = FTermDetection::getInstance();
 
   if ( fterm_data.isTermType(FTermType::gnome_terminal)
     && ! term_detection.hasSetCursorStyleSupport() )
@@ -346,7 +346,7 @@ void FTermXTerminal::setXTermCursorStyle()
 void FTermXTerminal::setXTermTitle()
 {
   // Set the xterm title
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
 
   if ( fterm_data.isTermType ( FTermType::xterm
                              | FTermType::screen
@@ -381,7 +381,7 @@ void FTermXTerminal::setXTermFont()
 {
   // Change the XTerm font (needs the allowFontOps resource)
 
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
 
   if ( fterm_data.isTermType ( FTermType::xterm
                              | FTermType::screen
@@ -399,7 +399,7 @@ void FTermXTerminal::setXTermForeground()
 {
   // Set the XTerm text foreground color
 
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
 
   if ( fterm_data.isTermType ( FTermType::xterm
                              | FTermType::screen
@@ -419,7 +419,7 @@ void FTermXTerminal::setXTermBackground()
 {
   // Set the XTerm text background color
 
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
 
   if ( fterm_data.isTermType ( FTermType::xterm
                              | FTermType::screen
@@ -439,7 +439,7 @@ void FTermXTerminal::setXTermCursorColor()
 {
   // Set the text cursor color
 
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
 
   if ( fterm_data.isTermType ( FTermType::xterm
                              | FTermType::screen
@@ -459,7 +459,7 @@ void FTermXTerminal::setXTermMouseForeground()
 {
   // Set the mouse foreground color
 
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
 
   if ( fterm_data.isTermType ( FTermType::xterm
                              | FTermType::screen
@@ -478,7 +478,7 @@ void FTermXTerminal::setXTermMouseBackground()
 {
   // Set the mouse background color
 
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
 
   if ( fterm_data.isTermType(FTermType::xterm | FTermType::screen)
     || FTermcap::osc_support )
@@ -495,7 +495,7 @@ void FTermXTerminal::setXTermHighlightBackground()
 {
   // Set the highlight background color
 
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
 
   if ( fterm_data.isTermType ( FTermType::xterm
                              | FTermType::screen
@@ -562,7 +562,7 @@ inline void FTermXTerminal::setXTermDefaultsMouseCursor()
 //----------------------------------------------------------------------
 inline bool FTermXTerminal::canSetXTermBackground() const
 {
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
 
   if ( xterm_default_colors
     && ! fterm_data.isTermType ( FTermType::mintty
@@ -679,7 +679,7 @@ void FTermXTerminal::resetXTermHighlightBackground() const
 //----------------------------------------------------------------------
 bool FTermXTerminal::canResetColor() const
 {
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
 
   if ( fterm_data.isTermType(FTermType::gnome_terminal)
     && fterm_data.getGnomeTerminalID() < 3502 )
@@ -698,7 +698,7 @@ bool FTermXTerminal::canResetColor() const
 //----------------------------------------------------------------------
 void FTermXTerminal::oscPrefix() const
 {
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
 
   if ( fterm_data.isTermType(FTermType::tmux) )
   {
@@ -715,7 +715,7 @@ void FTermXTerminal::oscPrefix() const
 //----------------------------------------------------------------------
 void FTermXTerminal::oscPostfix() const
 {
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
 
   if ( fterm_data.isTermType(FTermType::screen | FTermType::tmux) )
   {
@@ -727,7 +727,7 @@ void FTermXTerminal::oscPostfix() const
 //----------------------------------------------------------------------
 FString FTermXTerminal::captureXTermFont() const
 {
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
 
   if ( ! fterm_data.isTermType(FTermType::xterm | FTermType::screen)
     && ! FTermcap::osc_support )

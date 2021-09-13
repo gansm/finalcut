@@ -41,7 +41,7 @@ namespace finalcut
 //----------------------------------------------------------------------
 void FTermcapQuirks::terminalFixup()
 {
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
 
   if ( fterm_data.isTermType(FTermType::cygwin) )
   {
@@ -249,7 +249,7 @@ void FTermcapQuirks::rxvt()
 //----------------------------------------------------------------------
 void FTermcapQuirks::vte()
 {
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
 
   // gnome-terminal has NC=16 however, it can use the dim attribute
   FTermcap::attr_without_color = 0;

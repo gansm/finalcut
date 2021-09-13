@@ -948,7 +948,7 @@ void FTermOutput::printHalfCovertFullWidthCharacter ( uInt& x, uInt y
 
 //----------------------------------------------------------------------
 inline void FTermOutput::skipPaddingCharacter ( uInt& x, uInt y
-                                              , const FChar& print_char )
+                                              , const FChar& print_char ) const
 {
   if ( isFullWidthChar(print_char) )  // full-width character
   {

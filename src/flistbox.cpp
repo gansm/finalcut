@@ -1702,6 +1702,7 @@ void FListBox::cb_vbarChange (const FWidget*)
   switch ( scroll_type )
   {
     case FScrollbar::ScrollType::None:
+    default:
       break;
 
     case FScrollbar::ScrollType::PageBackward:
@@ -1764,6 +1765,7 @@ void FListBox::cb_hbarChange (const FWidget*)
   switch ( scroll_type )
   {
     case FScrollbar::ScrollType::None:
+    default:
       break;
 
     case FScrollbar::ScrollType::PageBackward:

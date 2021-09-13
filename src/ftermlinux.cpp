@@ -621,7 +621,7 @@ FTermLinux::ModifierKey& FTermLinux::getModifierKey()
 //----------------------------------------------------------------------
 bool FTermLinux::isLinuxTerm() const
 {
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
   return fterm_data.isTermType(FTermType::linux_con);
 }
 

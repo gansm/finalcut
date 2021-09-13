@@ -470,7 +470,7 @@ FString FTermDetection::determineMaxColor (const FString& current_termtype)
   // Determine xterm maximum number of colors via OSC 4
 
   FString new_termtype{current_termtype};
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
   auto& keyboard = FKeyboard::getInstance();
   keyboard.setNonBlockingInput();
 
@@ -639,7 +639,7 @@ FString FTermDetection::parseSecDA (const FString& current_termtype)
 {
   // The Linux console and older cygwin terminals knows no Sec_DA
 
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
 
   if ( fterm_data.isTermType(FTermType::linux_con | FTermType::cygwin) )
     return current_termtype;
@@ -845,7 +845,7 @@ FString FTermDetection::secDA_Analysis (const FString& current_termtype)
 }
 
 //----------------------------------------------------------------------
-inline FString FTermDetection::secDA_Analysis_0 (const FString& current_termtype)
+inline FString FTermDetection::secDA_Analysis_0 (const FString& current_termtype) const
 {
   // Terminal ID 0 - DEC VT100
 
@@ -874,7 +874,7 @@ inline FString FTermDetection::secDA_Analysis_1 (const FString& current_termtype
   // Terminal ID 1 - DEC VT220
 
   FString new_termtype{current_termtype};
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
 
   if ( fterm_data.isTermType(FTermType::kitty) )
     new_termtype = secDA_Analysis_kitty(new_termtype);
@@ -914,7 +914,7 @@ inline FString FTermDetection::secDA_Analysis_24 (const FString& current_termtyp
 }
 
 //----------------------------------------------------------------------
-inline FString FTermDetection::secDA_Analysis_32()
+inline FString FTermDetection::secDA_Analysis_32() const
 {
   // Terminal ID 32 - Tera Term
 
@@ -932,7 +932,7 @@ inline FString FTermDetection::secDA_Analysis_65 (const FString& current_termtyp
 }
 
 //----------------------------------------------------------------------
-inline FString FTermDetection::secDA_Analysis_67()
+inline FString FTermDetection::secDA_Analysis_67() const
 {
   // Terminal ID 67 - cygwin
 
@@ -955,7 +955,7 @@ inline FString FTermDetection::secDA_Analysis_77()
 }
 
 //----------------------------------------------------------------------
-inline FString FTermDetection::secDA_Analysis_82()
+inline FString FTermDetection::secDA_Analysis_82() const
 {
   // Terminal ID 82 - rxvt
 
@@ -972,7 +972,7 @@ inline FString FTermDetection::secDA_Analysis_82()
 }
 
 //----------------------------------------------------------------------
-inline FString FTermDetection::secDA_Analysis_83 (const FString& current_termtype)
+inline FString FTermDetection::secDA_Analysis_83 (const FString& current_termtype) const
 {
   // Terminal ID 83 - screen
 
@@ -982,7 +982,7 @@ inline FString FTermDetection::secDA_Analysis_83 (const FString& current_termtyp
 }
 
 //----------------------------------------------------------------------
-inline FString FTermDetection::secDA_Analysis_84 (const FString& current_termtype)
+inline FString FTermDetection::secDA_Analysis_84 (const FString& current_termtype) const
 {
   // Terminal ID 84 - tmux
 
@@ -993,7 +993,7 @@ inline FString FTermDetection::secDA_Analysis_84 (const FString& current_termtyp
 }
 
 //----------------------------------------------------------------------
-inline FString FTermDetection::secDA_Analysis_85()
+inline FString FTermDetection::secDA_Analysis_85() const
 {
   // Terminal ID 85 - rxvt-unicode
 

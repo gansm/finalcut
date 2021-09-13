@@ -276,7 +276,7 @@ bool hasFullWidthSupports()
     if ( ! FTerm::isInitialized() )
       return true;  // Assume that it is a modern terminal with full-width support
 
-    auto& fterm_data = FTermData::getInstance();
+    const auto& fterm_data = FTermData::getInstance();
 
     if ( fterm_data.isTermType ( FTermType::cygwin
                                | FTermType::tera_term

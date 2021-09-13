@@ -128,17 +128,17 @@ class FTermDetection final
     int                   str2int (const FString&) const;
     FString               getSecDA() const;
     FString               secDA_Analysis (const FString&);
-    FString               secDA_Analysis_0 (const FString&);
+    FString               secDA_Analysis_0 (const FString&) const;
     FString               secDA_Analysis_1 (const FString&);
     FString               secDA_Analysis_24 (const FString&);
-    FString               secDA_Analysis_32 ();
+    FString               secDA_Analysis_32 () const;
     FString               secDA_Analysis_65 (const FString&);
-    FString               secDA_Analysis_67 ();
+    FString               secDA_Analysis_67 () const;
     FString               secDA_Analysis_77 ();
-    FString               secDA_Analysis_82 ();
-    FString               secDA_Analysis_83 (const FString&);
-    FString               secDA_Analysis_84 (const FString&);
-    FString               secDA_Analysis_85 ();
+    FString               secDA_Analysis_82 () const;
+    FString               secDA_Analysis_83 (const FString&) const;
+    FString               secDA_Analysis_84 (const FString&) const;
+    FString               secDA_Analysis_85 () const;
     FString               secDA_Analysis_vte (const FString&);
     FString               secDA_Analysis_kitty (const FString&);
 

@@ -245,7 +245,7 @@ bool FTerm::hasAlternateScreen()
 //----------------------------------------------------------------------
 bool FTerm::canChangeColorPalette()
 {
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
 
   if ( fterm_data.isTermType ( FTermType::cygwin
                              | FTermType::kde_konsole
@@ -330,7 +330,7 @@ bool FTerm::setVGAFont()
   if ( hasNoFontSettingOption() )
     return false;
 
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
 
   if ( fterm_data.isTermType ( FTermType::xterm
                              | FTermType::screen
@@ -373,7 +373,7 @@ bool FTerm::setNewFont()
   if ( hasNoFontSettingOption() )
     return false;
 
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
 
   if ( fterm_data.isTermType ( FTermType::xterm
                              | FTermType::screen
@@ -415,7 +415,7 @@ bool FTerm::resetFont()
   data.setNewFont(false);
   data.setVGAFont(false);
 
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
 
   if ( fterm_data.isTermType ( FTermType::xterm
                              | FTermType::screen
@@ -750,7 +750,7 @@ void FTerm::setEncoding (Encoding enc)
         || enc == Encoding::NUM_OF_ENCODINGS );
 
   FTermData::getInstance().setTermEncoding (enc);
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
 
   // Set the new putchar() function pointer
   switch ( enc )
@@ -896,7 +896,7 @@ int FTerm::putchar_ASCII (int c)
 //----------------------------------------------------------------------
 int FTerm::putchar_UTF8 (int c)
 {
-  auto& fsystem = FSystem::getInstance();
+  const auto& fsystem = FSystem::getInstance();
   auto put = [&fsystem] (int ch) { fsystem->putchar(ch); };
 
   if ( c < 0x80 )
@@ -1002,7 +1002,7 @@ void FTerm::init_terminal_device_path()
 //----------------------------------------------------------------------
 void FTerm::oscPrefix()
 {
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
 
   if ( fterm_data.isTermType(FTermType::tmux) )
   {
@@ -1019,7 +1019,7 @@ void FTerm::oscPrefix()
 //----------------------------------------------------------------------
 void FTerm::oscPostfix()
 {
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
 
   if ( fterm_data.isTermType(FTermType::screen)
     || fterm_data.isTermType(FTermType::tmux) )
@@ -1075,7 +1075,7 @@ void FTerm::init_pc_charset()
 {
   bool reinit{false};
   auto& opti_attr = FOptiAttr::getInstance();
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
 
   // rxvt does not support pc charset
   if ( fterm_data.isTermType(FTermType::rxvt | FTermType::urxvt) )
@@ -1174,7 +1174,7 @@ void FTerm::init_fixed_max_color()
 {
   // Initialize maximum number of colors for known terminals
 
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
 
   if ( fterm_data.isTermType ( FTermType::cygwin
                              | FTermType::putty
@@ -1327,7 +1327,7 @@ void FTerm::init_locale()
   // Init current locale
 
   const auto& termtype = FTermData::getInstance().getTermType();
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
   const char* locale_name = std::setlocale (LC_ALL, "");
   std::setlocale (LC_NUMERIC, "");
 
@@ -1381,7 +1381,7 @@ void FTerm::init_encoding()
 
   bool force_vt100{false};  // VT100 line drawing (G1 character set)
   init_encoding_set();
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
 
   if ( fterm_data.isTermType(FTermType::rxvt)
     && ! fterm_data.isTermType(FTermType::urxvt) )
@@ -1457,7 +1457,7 @@ void FTerm::init_term_encoding()
 void FTerm::init_individual_term_encoding()
 {
   auto& data = FTermData::getInstance();
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
   const auto is_utf8 = data.isUTF8();
   const auto is_putty = fterm_data.isTermType(FTermType::putty);
   const auto is_teraterm = fterm_data.isTermType(FTermType::tera_term);
@@ -1542,7 +1542,7 @@ void FTerm::init_captureFontAndTitle()
 //----------------------------------------------------------------------
 inline bool FTerm::hasNoFontSettingOption()
 {
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
 
   if ( fterm_data.isTermType ( FTermType::gnome_terminal
                              | FTermType::kde_konsole
@@ -1969,7 +1969,7 @@ void FTerm::initOSspecifics() const
 //----------------------------------------------------------------------
 void FTerm::initTermspecifics() const
 {
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
 
   if ( fterm_data.isTermType(FTermType::kde_konsole) )
     setKDECursor(KdeKonsoleCursorShape::Underline);
@@ -2002,7 +2002,7 @@ void FTerm::finish() const
   // Set default signal handler
   resetSignalHandler();
 
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
 
   if ( fterm_data.isTermType(FTermType::xterm)
     && ! fterm_data.isTermType(FTermType::rxvt) )
@@ -2078,7 +2078,7 @@ void FTerm::finishOSspecifics() const
 void FTerm::finish_encoding() const
 {
 #if defined(__linux__)
-  auto& fterm_data = FTermData::getInstance();
+  const auto& fterm_data = FTermData::getInstance();
 
   if ( fterm_data.isTermType(FTermType::linux_con)
     && fterm_data.hasUTF8Console() )

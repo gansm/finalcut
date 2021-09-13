@@ -151,11 +151,19 @@ class FTermOutput final : public FOutput
     struct TermString
     {
       explicit TermString (const std::wstring& wstr)
-        : wstring{std::move(wstr)}
+        : wstring{wstr}
       { }
 
       explicit TermString (const std::string& str)
-        : string{std::move(str)}
+        : string{str}
+      { }
+
+      explicit TermString (std::wstring&& wstr)
+        : wstring{wstr}
+      { }
+
+      explicit TermString (std::string&& str)
+        : string{str}
       { }
 
       std::wstring wstring{};
@@ -194,7 +202,7 @@ class FTermOutput final : public FOutput
     void           printFullWidthCharacter (uInt&, uInt, FChar&);
     void           printFullWidthPaddingCharacter (uInt&, uInt, FChar&);
     void           printHalfCovertFullWidthCharacter (uInt&, uInt, FChar&);
-    void           skipPaddingCharacter (uInt&, uInt, const FChar&);
+    void           skipPaddingCharacter (uInt&, uInt, const FChar&) const;
     PrintState     eraseCharacters (uInt&, uInt, uInt, bool);
     PrintState     repeatCharacter (uInt&, uInt, uInt);
     bool           isFullWidthChar (const FChar&) const;
