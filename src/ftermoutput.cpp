@@ -53,7 +53,9 @@ FTermData*         FTermOutput::fterm_data{nullptr};
 //----------------------------------------------------------------------
 FTermOutput::FTermOutput (const FVTerm& t)  // constructor
   : FOutput{t}
-{ }
+{
+  fterm_data = &FTermData::getInstance();
+}
 
 //----------------------------------------------------------------------
 FTermOutput::~FTermOutput() noexcept = default;  // destructor
@@ -87,7 +89,7 @@ int FTermOutput::getMaxColor() const
 //----------------------------------------------------------------------
 Encoding FTermOutput::getEncoding() const
 {
-  return FTerm::getEncoding();
+  return fterm_data->getTermEncoding();
 }
 
 //----------------------------------------------------------------------
@@ -157,8 +159,9 @@ void FTermOutput::setCursor (FPoint p)
 
   auto x = p.getX();
   auto y = p.getY();
+  auto tpos = term_pos.get();
 
-  if ( term_pos->getX() == x && term_pos->getY() == y )
+  if ( tpos->getX() == x && tpos->getY() == y )
     return;
 
   const auto term_width = int(getColumnNumber());
@@ -170,20 +173,20 @@ void FTermOutput::setCursor (FPoint p)
     x %= term_width;
   }
 
-  if ( term_pos->getY() >= term_height )
-    term_pos->setY(term_height - 1);
+  if ( tpos->getY() >= term_height )
+    tpos->setY(term_height - 1);
 
   if ( y >= term_height )
     y = term_height - 1;
 
-  const auto term_x = term_pos->getX();
-  const auto term_y = term_pos->getY();
+  const auto term_x = tpos->getX();
+  const auto term_y = tpos->getY();
   const auto& move_str = FTerm::moveCursorString (term_x, term_y, x, y);
 
   if ( ! move_str.empty() )
     appendOutputBuffer(FTermControl{move_str});
 
-  term_pos->setPoint(x, y);
+  tpos->setPoint(x, y);
 }
 
 //----------------------------------------------------------------------
@@ -261,10 +264,9 @@ void FTermOutput::initTerminal (FVTerm::FTermArea* virtual_terminal)
   // Redefine the color palette
   redefineColorPalette();
 
-  vterm          = virtual_terminal;
-  fterm_data     = &FTermData::getInstance();
-  output_buffer  = std::make_shared<OutputBuffer>();
-  term_pos       = std::make_shared<FPoint>(-1, -1);
+  vterm         = virtual_terminal;
+  output_buffer = std::make_shared<OutputBuffer>();
+  term_pos      = std::make_shared<FPoint>(-1, -1);
 
   // Hide the input cursor
   cursor_hideable = FTerm::isCursorHideable();
@@ -299,7 +301,7 @@ void FTermOutput::finishTerminal()
   showCursor();
 
   // Clear the terminal
-  if ( FTermData::getInstance().isInAlternateScreen() )
+  if ( fterm_data->isInAlternateScreen() )
     clearTerm();
 }
 
@@ -454,7 +456,7 @@ void FTermOutput::flush()
   }
 
   std::fflush(stdout);
-  auto& mouse = FMouseControl::getInstance();
+  static auto& mouse = FMouseControl::getInstance();
   mouse.drawPointer();
   time_last_flush = FObject::getCurrentTime();
 }
@@ -589,7 +591,7 @@ void FTermOutput::init_combined_character()
     return;
 #endif
 
-  if ( FTerm::getEncoding() != Encoding::UTF8
+  if ( getEncoding() != Encoding::UTF8
     || fterm_data->isTermType(FTermType::cygwin) )
     return;
 
@@ -1292,14 +1294,14 @@ inline void FTermOutput::newFontChanges (FChar& next_char) const
 //----------------------------------------------------------------------
 inline void FTermOutput::charsetChanges (FChar& next_char) const
 {
-  const wchar_t& ch = next_char.ch[0];
   std::copy( next_char.ch.begin()
            , next_char.ch.end()
            , next_char.encoded_char.begin() );
 
-  if ( FTerm::getEncoding() == Encoding::UTF8 )
+  if ( getEncoding() == Encoding::UTF8 )
     return;
 
+  const wchar_t& ch = next_char.ch[0];
   const wchar_t ch_enc = FTerm::charEncode(ch);
 
   if ( ch_enc == ch )
@@ -1313,9 +1315,9 @@ inline void FTermOutput::charsetChanges (FChar& next_char) const
 
   next_char.encoded_char[0] = ch_enc;
 
-  if ( FTerm::getEncoding() == Encoding::VT100 )
+  if ( getEncoding() == Encoding::VT100 )
     next_char.attr.bit.alt_charset = true;
-  else if ( FTerm::getEncoding() == Encoding::PC )
+  else if ( getEncoding() == Encoding::PC )
   {
     next_char.attr.bit.pc_charset = true;
 
@@ -1452,7 +1454,7 @@ inline bool FTermOutput::isOutputBufferLimitReached() const
 {
   return output_buffer->size() >= TERMINAL_OUTPUT_BUFFER_LIMIT;
 }
-
+#include <term.h>
 //----------------------------------------------------------------------
 inline void FTermOutput::appendOutputBuffer (const FTermControl& ctrl)
 {

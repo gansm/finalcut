@@ -1701,10 +1701,6 @@ void FListBox::cb_vbarChange (const FWidget*)
 
   switch ( scroll_type )
   {
-    case FScrollbar::ScrollType::None:
-    default:
-      break;
-
     case FScrollbar::ScrollType::PageBackward:
       distance = int(getClientHeight());
       // fall through
@@ -1729,6 +1725,9 @@ void FListBox::cb_vbarChange (const FWidget*)
 
     case FScrollbar::ScrollType::WheelDown:
       wheelDown (wheel_distance);
+      break;
+
+    default:
       break;
   }
 
@@ -1764,10 +1763,6 @@ void FListBox::cb_hbarChange (const FWidget*)
 
   switch ( scroll_type )
   {
-    case FScrollbar::ScrollType::None:
-    default:
-      break;
-
     case FScrollbar::ScrollType::PageBackward:
       distance = int(getClientWidth()) - padding_space;
       // fall through
@@ -1792,6 +1787,9 @@ void FListBox::cb_hbarChange (const FWidget*)
 
     case FScrollbar::ScrollType::WheelDown:
       scrollRight (wheel_distance);
+      break;
+
+    default:
       break;
   }
 

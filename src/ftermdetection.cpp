@@ -159,7 +159,7 @@ bool FTermDetection::getTTYtype()
 
   std::FILE* fp{};
   std::array<char, BUFSIZ> str{};
-  const auto& fsystem = FSystem::getInstance();
+  static const auto& fsystem = FSystem::getInstance();
 
   if ( (fp = fsystem->fopen(ttytypename.c_str(), "r")) == nullptr )
     return false;
@@ -235,7 +235,7 @@ bool FTermDetection::getTTYSFileEntry()
 //----------------------------------------------------------------------
 void FTermDetection::termtypeAnalysis()
 {
-  auto& fterm_data = FTermData::getInstance();
+  static auto& fterm_data = FTermData::getInstance();
 
   // Cygwin console
   if ( termtype.left(6) == "cygwin" )
@@ -311,7 +311,7 @@ void FTermDetection::detectTerminal()
   if ( terminal_detection )
   {
     FTermios::setCaptureSendCharacters();
-    auto& keyboard = FKeyboard::getInstance();
+    static auto& keyboard = FKeyboard::getInstance();
     keyboard.setNonBlockingInput();
 
     // Initialize 256 colors terminals
@@ -333,7 +333,7 @@ void FTermDetection::detectTerminal()
   //
   // Additional termtype analysis
   //
-  auto& fterm_data = FTermData::getInstance();
+  static auto& fterm_data = FTermData::getInstance();
 
   // Test if the terminal is a xterm
   if ( termtype.left(5) == "xterm" || termtype.left(5) == "Eterm" )
@@ -413,7 +413,7 @@ bool FTermDetection::get256colorEnvString()
 FString FTermDetection::termtype_256color_quirks()
 {
   FString new_termtype{};
-  auto& fterm_data = FTermData::getInstance();
+  static auto& fterm_data = FTermData::getInstance();
 
   if ( ! color_env.string2.isEmpty()
     || color_env.string1 == "gnome-terminal" )
@@ -470,8 +470,8 @@ FString FTermDetection::determineMaxColor (const FString& current_termtype)
   // Determine xterm maximum number of colors via OSC 4
 
   FString new_termtype{current_termtype};
-  const auto& fterm_data = FTermData::getInstance();
-  auto& keyboard = FKeyboard::getInstance();
+  static const auto& fterm_data = FTermData::getInstance();
+  static auto& keyboard = FKeyboard::getInstance();
   keyboard.setNonBlockingInput();
 
   if ( ! color256
@@ -564,7 +564,7 @@ FString FTermDetection::getXTermColorName (FColor color) const
 FString FTermDetection::parseAnswerbackMsg (const FString& current_termtype)
 {
   FString new_termtype{current_termtype};
-  auto& keyboard = FKeyboard::getInstance();
+  static auto& keyboard = FKeyboard::getInstance();
   keyboard.setNonBlockingInput();
   // send ENQ and read the answerback message
   answer_back = getAnswerbackMsg();
@@ -572,7 +572,7 @@ FString FTermDetection::parseAnswerbackMsg (const FString& current_termtype)
 
   if ( answer_back == "PuTTY" )
   {
-    auto& fterm_data = FTermData::getInstance();
+    static auto& fterm_data = FTermData::getInstance();
     fterm_data.setTermType (FTermType::putty);
 
     if ( color256 )

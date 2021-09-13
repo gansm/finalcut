@@ -159,11 +159,11 @@ class FTermOutput final : public FOutput
       { }
 
       explicit TermString (std::wstring&& wstr)
-        : wstring{wstr}
+        : wstring{std::move(wstr)}
       { }
 
       explicit TermString (std::string&& str)
-        : string{str}
+        : string{std::move(str)}
       { }
 
       std::wstring wstring{};

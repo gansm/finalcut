@@ -759,19 +759,21 @@ void FWindow::adjustSize()
 //----------------------------------------------------------------------
 bool FWindow::event (FEvent* ev)
 {
-  if ( ev->getType() == Event::WindowActive )
+  auto event_type = ev->getType();
+
+  if ( event_type == Event::WindowActive )
   {
     onWindowActive (ev);
   }
-  else if ( ev->getType() == Event::WindowInactive )
+  else if ( event_type == Event::WindowInactive )
   {
     onWindowInactive (ev);
   }
-  else if ( ev->getType() == Event::WindowRaised )
+  else if ( event_type == Event::WindowRaised )
   {
     onWindowRaised (ev);
   }
-  else if ( ev->getType() == Event::WindowLowered )
+  else if ( event_type == Event::WindowLowered )
   {
     onWindowLowered (ev);
   }

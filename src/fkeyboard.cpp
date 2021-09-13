@@ -541,9 +541,11 @@ FKey FKeyboard::keyCorrection (const FKey& keycode) const
   FKey key_correction;
 
 #if defined(__linux__)
-  if ( FTermData::getInstance().isTermType(FTermType::linux_con) )
+  static const auto& fterm_data = FTermData::getInstance();
+
+  if ( fterm_data.isTermType(FTermType::linux_con) )
   {
-    auto& linux_console = FTermLinux::getInstance();
+    static auto& linux_console = FTermLinux::getInstance();
     key_correction = linux_console.modifierKeyCorrection(keycode);
   }
   else

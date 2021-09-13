@@ -276,7 +276,7 @@ bool hasFullWidthSupports()
     if ( ! FTerm::isInitialized() )
       return true;  // Assume that it is a modern terminal with full-width support
 
-    const auto& fterm_data = FTermData::getInstance();
+    static const auto& fterm_data = FTermData::getInstance();
 
     if ( fterm_data.isTermType ( FTermType::cygwin
                                | FTermType::tera_term
@@ -537,9 +537,10 @@ std::size_t getColumnWidth (const wchar_t wchar)
 #endif
 
   column_width = wcwidth(wchar);
+  static const auto& fterm_data = FTermData::getInstance();
 
   if ( (wchar >= UniChar::NF_rev_left_arrow2 && wchar <= UniChar::NF_check_mark)
-    || FVTerm::getFOutput()->getEncoding() != Encoding::UTF8 )
+    || fterm_data.getTermEncoding() != Encoding::UTF8 )
   {
     column_width = 1;
   }
@@ -576,9 +577,10 @@ std::size_t getColumnWidth (const FTermBuffer& tbuf)
 void addColumnWidth (FChar& term_char)
 {
   const std::size_t char_width = getColumnWidth(term_char.ch[0]);
+  static const auto& fterm_data = FTermData::getInstance();
 
   if ( char_width == 2
-    && FVTerm::getFOutput()->getEncoding() != Encoding::UTF8 )
+    && fterm_data.getTermEncoding() != Encoding::UTF8 )
   {
     term_char.ch[0] = '.';
     term_char.attr.bit.char_width = 1;

@@ -872,10 +872,6 @@ void FScrollView::cb_vbarChange (const FWidget*)
 
   switch ( scroll_type )
   {
-    case FScrollbar::ScrollType::None:
-    default:
-      break;
-
     case FScrollbar::ScrollType::PageBackward:
       distance = int(getViewportHeight());
       // fall through
@@ -901,6 +897,9 @@ void FScrollView::cb_vbarChange (const FWidget*)
     case FScrollbar::ScrollType::WheelDown:
       scrollBy (0, wheel_distance);
       break;
+
+    default:
+      break;
   }
 
   update_scrollbar = true;
@@ -925,10 +924,6 @@ void FScrollView::cb_hbarChange (const FWidget*)
 
   switch ( scroll_type )
   {
-    case FScrollbar::ScrollType::None:
-    default:
-      break;
-
     case FScrollbar::ScrollType::PageBackward:
       distance = int(getViewportWidth());
       // fall through
@@ -953,6 +948,9 @@ void FScrollView::cb_hbarChange (const FWidget*)
 
     case FScrollbar::ScrollType::WheelDown:
       scrollBy (wheel_distance, 0);
+      break;
+
+    default:
       break;
   }
 

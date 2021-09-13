@@ -133,9 +133,13 @@ class FVTerm
 
     template <typename typeT>
     FVTerm& operator << (const typeT&);
+    FVTerm& operator << (wchar_t);
     FVTerm& operator << (const UniChar&);
     FVTerm& operator << (const std::string&);
+    FVTerm& operator << (const std::wstring&);
+    FVTerm& operator << (const FString&);
     FVTerm& operator << (const FTermBuffer&);
+    FVTerm& operator << (FChar&);
     FVTerm& operator << (const std::vector<FChar>&);
     FVTerm& operator << (const FPoint&);
     FVTerm& operator << (const FStyle&);
@@ -479,6 +483,13 @@ inline FVTerm& FVTerm::operator << (const typeT& s)
 }
 
 //----------------------------------------------------------------------
+inline FVTerm& FVTerm::operator << (wchar_t c)
+{
+  print (c);
+  return *this;
+}
+
+//----------------------------------------------------------------------
 inline FVTerm& FVTerm::operator << (const UniChar& c)
 {
   print (static_cast<wchar_t>(c));  // Required under Solaris
@@ -489,6 +500,27 @@ inline FVTerm& FVTerm::operator << (const UniChar& c)
 inline FVTerm& FVTerm::operator << (const std::string& string)
 {
   print (string);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+inline FVTerm& FVTerm::operator << (const std::wstring& wide_string)
+{
+  print (wide_string);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+inline FVTerm& FVTerm::operator << (const FString& fstring)
+{
+  print (fstring);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+inline FVTerm& FVTerm::operator << (FChar& fchar)
+{
+  print (fchar);
   return *this;
 }
 

@@ -54,7 +54,7 @@ bool FTermOpenBSD::isBSDConsole()
   // Check if it's a NetBSD/OpenBSD workstation console
 
   static kbd_t kbdencoding{};
-  const auto& fsystem = FSystem::getInstance();
+  static const auto& fsystem = FSystem::getInstance();
 
   if ( fsystem->ioctl(0, WSKBDIO_GETENCODING, &kbdencoding) == 0 )
     return true;
@@ -109,7 +109,7 @@ bool FTermOpenBSD::setBeep (int Hz, int ms)
   bell.pitch  = uInt(Hz);
   bell.period = uInt(ms);
   bell.volume = 50;  // 50% volume
-  const auto& fsystem = FSystem::getInstance();
+  static const auto& fsystem = FSystem::getInstance();
 
   if ( fsystem->ioctl(0, WSKBDIO_SETBELL, &bell) < 0 )
     return false;
@@ -121,7 +121,7 @@ bool FTermOpenBSD::setBeep (int Hz, int ms)
 bool FTermOpenBSD::resetBeep()
 {
   wskbd_bell_data default_bell;
-  const auto& fsystem = FSystem::getInstance();
+  static const auto& fsystem = FSystem::getInstance();
 
   // Gets the default setting for the bell
   if ( fsystem->ioctl(0, WSKBDIO_GETDEFAULTBELL, &default_bell) < 0 )
@@ -154,7 +154,7 @@ bool FTermOpenBSD::saveBSDConsoleEncoding()
   static kbd_t k_encoding{};
   int ret{-1};
 
-  const auto& fsystem = FSystem::getInstance();
+  static const auto& fsystem = FSystem::getInstance();
   ret = fsystem->ioctl (0, WSKBDIO_GETENCODING, &k_encoding);
 
   if ( ret < 0 )
@@ -168,7 +168,7 @@ bool FTermOpenBSD::saveBSDConsoleEncoding()
 //----------------------------------------------------------------------
 bool FTermOpenBSD::setBSDConsoleEncoding (kbd_t k_encoding)
 {
-  const auto& fsystem = FSystem::getInstance();
+  static const auto& fsystem = FSystem::getInstance();
 
   if ( fsystem->ioctl(0, WSKBDIO_SETENCODING, &k_encoding) < 0 )
     return false;

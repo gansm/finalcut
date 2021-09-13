@@ -251,8 +251,8 @@ void FTermcap::termcap()
   static char term_buffer[BUF_SIZE]{};
   std::vector<std::string> terminals{};
   int status = uninitialized;
-  auto& fterm_data = FTermData::getInstance();
-  const auto& term_detection = FTermDetection::getInstance();
+  static auto& fterm_data = FTermData::getInstance();
+  static const auto& term_detection = FTermDetection::getInstance();
   const bool color256 = term_detection.canDisplay256Colors();
   baudrate = int(fterm_data.getBaudrate());
 
@@ -376,7 +376,7 @@ void FTermcap::termcapNumerics()
 {
   // Get termcap numerics
 
-  auto& fterm_data = FTermData::getInstance();
+  static auto& fterm_data = FTermData::getInstance();
 
   // Maximum number of colors on screen
   max_color = std::max(max_color, getNumber("Co"));

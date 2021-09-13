@@ -85,7 +85,7 @@ FWidget::FWidget (FWidget* parent)
   {
     if ( internal::var::root_widget )
     {
-      auto& fterm_data = FTermData::getInstance();
+      static auto& fterm_data = FTermData::getInstance();
       fterm_data.setExitMessage("FWidget: No parent defined! "
                                 "There should be only one root object");
       FApplication::exit(EXIT_FAILURE);
@@ -1533,77 +1533,79 @@ bool FWidget::focusPrevChild()
 //----------------------------------------------------------------------
 bool FWidget::event (FEvent* ev)
 {
-  if ( ev->getType() == Event::KeyPress )
+  auto event_type = ev->getType();
+
+  if ( event_type == Event::KeyPress )
   {
     KeyPressEvent (static_cast<FKeyEvent*>(ev));
   }
-  else if ( ev->getType() == Event::KeyUp )
+  else if ( event_type == Event::KeyUp )
   {
     onKeyUp (static_cast<FKeyEvent*>(ev));
   }
-  else if ( ev->getType() == Event::KeyDown )
+  else if ( event_type == Event::KeyDown )
   {
     KeyDownEvent (static_cast<FKeyEvent*>(ev));
   }
-  else if ( ev->getType() == Event::MouseDown )
+  else if ( event_type== Event::MouseDown )
   {
     emitCallback("mouse-press");
     onMouseDown (static_cast<FMouseEvent*>(ev));
   }
-  else if ( ev->getType() == Event::MouseUp )
+  else if ( event_type == Event::MouseUp )
   {
     emitCallback("mouse-release");
     onMouseUp (static_cast<FMouseEvent*>(ev));
   }
-  else if ( ev->getType() == Event::MouseDoubleClick )
+  else if ( event_type== Event::MouseDoubleClick )
   {
     onMouseDoubleClick (static_cast<FMouseEvent*>(ev));
   }
-  else if ( ev->getType() == Event::MouseWheel )
+  else if ( event_type == Event::MouseWheel )
   {
     emitWheelCallback(static_cast<FWheelEvent*>(ev));
     onWheel (static_cast<FWheelEvent*>(ev));
   }
-  else if ( ev->getType() == Event::MouseMove )
+  else if ( event_type == Event::MouseMove )
   {
     emitCallback("mouse-move");
     onMouseMove (static_cast<FMouseEvent*>(ev));
   }
-  else if ( ev->getType() == Event::FocusIn )
+  else if ( event_type == Event::FocusIn )
   {
     emitCallback("focus-in");
     onFocusIn (static_cast<FFocusEvent*>(ev));
   }
-  else if ( ev->getType() == Event::FocusOut )
+  else if ( event_type == Event::FocusOut )
   {
     emitCallback("focus-out");
     onFocusOut (static_cast<FFocusEvent*>(ev));
   }
-  else if ( ev->getType() == Event::ChildFocusIn )
+  else if ( event_type == Event::ChildFocusIn )
   {
     onChildFocusIn (static_cast<FFocusEvent*>(ev));
   }
-  else if ( ev->getType() == Event::ChildFocusOut )
+  else if ( event_type == Event::ChildFocusOut )
   {
     onChildFocusOut (static_cast<FFocusEvent*>(ev));
   }
-  else if ( ev->getType() == Event::Accelerator )
+  else if ( event_type == Event::Accelerator )
   {
     onAccel (static_cast<FAccelEvent*>(ev));
   }
-  else if ( ev->getType() == Event::Resize )
+  else if ( event_type == Event::Resize )
   {
     onResize (static_cast<FResizeEvent*>(ev));
   }
-  else if ( ev->getType() == Event::Show )
+  else if ( event_type == Event::Show )
   {
     onShow (static_cast<FShowEvent*>(ev));
   }
-  else if ( ev->getType() == Event::Hide )
+  else if ( event_type == Event::Hide )
   {
     onHide (static_cast<FHideEvent*>(ev));
   }
-  else if ( ev->getType() == Event::Close )
+  else if ( event_type == Event::Close )
   {
     onClose (static_cast<FCloseEvent*>(ev));
   }

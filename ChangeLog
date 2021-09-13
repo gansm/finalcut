@@ -1,3 +1,7 @@
+2021-09-14 Markus Gans  <guru.mail@muenster.de>
+	* More local static variables are used to prevent repeated 
+	  value assignments
+
 2021-09-12 Markus Gans  <guru.mail@muenster.de>
 	* The detected terminal type is now stored in FTermData
 

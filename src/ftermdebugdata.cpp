@@ -46,35 +46,35 @@ auto FTermDebugData::getInstance() -> FTermDebugData&
 //----------------------------------------------------------------------
 const FString& FTermDebugData::getAnswerbackString()
 {
-  auto& term_detection = FTermDetection::getInstance();
+  static auto& term_detection = FTermDetection::getInstance();
   return term_detection.getAnswerbackString();
 }
 
 //----------------------------------------------------------------------
 const FString& FTermDebugData::getSecDAString()
 {
-  auto& term_detection = FTermDetection::getInstance();
+  static auto& term_detection = FTermDetection::getInstance();
   return term_detection.getSecDAString();
 }
 
 //----------------------------------------------------------------------
 const FString& FTermDebugData::getTermType_256color()
 {
-  auto& term_detection = FTermDetection::getInstance();
+  static auto& term_detection = FTermDetection::getInstance();
   return term_detection.getTermType_256color();
 }
 
 //----------------------------------------------------------------------
 const FString& FTermDebugData::getTermType_Answerback()
 {
-  auto& term_detection = FTermDetection::getInstance();
+  static auto& term_detection = FTermDetection::getInstance();
   return term_detection.getTermType_Answerback();
 }
 
 //----------------------------------------------------------------------
 const FString& FTermDebugData::getTermType_SecDA()
 {
-  auto& term_detection = FTermDetection::getInstance();
+  static auto& term_detection = FTermDetection::getInstance();
   return term_detection.getTermType_SecDA();
 }
 
@@ -82,7 +82,7 @@ const FString& FTermDebugData::getTermType_SecDA()
 #if defined(__linux__)
 int FTermDebugData::getFramebufferBpp()
 {
-  auto& fterm_data = FTermData::getInstance();
+  static auto& fterm_data = FTermData::getInstance();
   return fterm_data.getFramebufferBpp();
 }
 #endif  // defined(__linux__)
