@@ -40,9 +40,6 @@ jobs:
           libcppunit-dev \
           autoconf-archive
 
-    - name: Download coveralls
-      run: pip install --user cpp-coveralls
-
     - name: Download codecov
       run: sudo pip install codecov
 
@@ -50,10 +47,12 @@ jobs:
       run: script -e -c "./build.sh coverage"
 
     - name: Codecov
-      run: bash <(curl -s https://codecov.io/bash)
+      run: |
+        ./.github/scripts/get_code_cov.sh
+        bash <(curl -s https://codecov.io/bash)
 
-    - name: Coveralls
-      run: coveralls --gcov-options '\-lp' -e debian -e doc -e icon -e logo -e m4 -e scripts -e examples
+    - name: Download coveralls
+      run: pip install --user cpp-coveralls
 
     - name: Publish to coveralls.io
       uses: coverallsapp/github-action@master
