@@ -63,8 +63,8 @@ INCLUDE_HEADERS = \
 	fterm_functions.h \
 	ftermdata.h \
 	ftermdebugdata.h \
-        foutput.h \
-        ftermoutput.h \
+	foutput.h \
+	ftermoutput.h \
 	ftermios.h \
 	ftermdetection.h \
 	ftermcapquirks.h \
@@ -142,8 +142,8 @@ OBJS = \
 	fterm.o \
 	fterm_functions.o \
 	ftermdebugdata.o \
-        foutput.o \
-        ftermoutput.o \
+	foutput.o \
+	ftermoutput.o \
 	ftermios.o \
 	ftermdetection.o \
 	ftermcapquirks.o \

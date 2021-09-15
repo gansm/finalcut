@@ -33,6 +33,7 @@ jobs:
         sudo apt-get update
         sudo apt-get -y install \
           ca-certificates \
+          lcov \
           gcc \
           g++ \
           gpm \
@@ -46,13 +47,15 @@ jobs:
     - name: Build with with gcov
       run: script -e -c "./build.sh coverage"
 
+    - name: Generate lcov.info
+      run: |
+        mkdir coverage
+        lcov --compat-libtool --directory . --capture --output-file ./coverage/lcov.info
+
     - name: Codecov
       run: |
         ./.github/scripts/get_code_cov.sh
         bash <(curl -s https://codecov.io/bash)
-
-    - name: Download coveralls
-      run: pip install --user cpp-coveralls
 
     - name: Publish to coveralls.io
       uses: coverallsapp/github-action@master
