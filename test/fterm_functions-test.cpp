@@ -325,20 +325,6 @@ void FTermFunctionsTest::cp437Test()
   CPPUNIT_ASSERT ( finalcut::unicode_to_cp437(L'⌡') == 0xf5 );
 }
 
-//----------------------
-void printLine (wchar_t wc)
-{
-  std::cerr << "  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'"
-            << finalcut::unicode_to_utf8(wc)
-            << "')\n"
-            << "                   == std::string({";
-
-  for (auto&& ch : finalcut::unicode_to_utf8(wc))
-    std::cerr << "char(0x" << std::hex << int(ch & 0xff) << "), ";
-
-  std::cerr << "\b\b}) );\n";
-}
-
 //----------------------------------------------------------------------
 void FTermFunctionsTest::utf8Test()
 {

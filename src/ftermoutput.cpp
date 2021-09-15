@@ -1460,7 +1460,7 @@ inline bool FTermOutput::isOutputBufferLimitReached() const
 inline void FTermOutput::appendOutputBuffer (const FTermControl& ctrl)
 {
   output_buffer->emplace( std::make_tuple( OutputType::Control,
-                                           TermString(std::move(ctrl.string)) ) );
+                                           TermString(ctrl.string) ) );
 
   if ( isOutputBufferLimitReached() )
     flush();
@@ -1487,7 +1487,7 @@ void FTermOutput::appendOutputBuffer (const FTermString& str)
   }
   else
     output_buffer->emplace( std::make_tuple( OutputType::String,
-                                             TermString(std::move(str.string)) ) );
+                                             TermString(str.string) ) );
 
   if ( isOutputBufferLimitReached() )
     flush();
