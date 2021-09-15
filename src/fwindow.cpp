@@ -816,11 +816,11 @@ void FWindow::onWindowLowered (FEvent*)
 //----------------------------------------------------------------------
 inline FRect FWindow::getVisibleTermGeometry (FWindow* win)
 {
-  auto&& term_geometry = win->getTermGeometry();
+  auto& term_geometry = win->getTermGeometry();
 
   if ( win->isMinimized() )
   {
-    FRect minimized_term_geometry(std::move(term_geometry));
+    FRect minimized_term_geometry(term_geometry);
     auto min_height = std::size_t(win->getVWin()->min_height);
     minimized_term_geometry.setHeight(min_height);
     return minimized_term_geometry;

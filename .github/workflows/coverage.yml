@@ -56,7 +56,7 @@ jobs:
       run: coveralls --gcov-options '\-lp' -e debian -e doc -e icon -e logo -e m4 -e scripts -e examples
 
     - name: Publish to coveralls.io
-        uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ github.token }}
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ github.token }}
 
