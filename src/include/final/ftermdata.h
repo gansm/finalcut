@@ -93,7 +93,6 @@ class FTermData final
     kittyVersion       getKittyVersion() const;
     const FString&     getXtermFont() const;
     const FString&     getXtermTitle() const;
-    const FString&     getExitMessage() const;
 #if DEBUG
     int                getFramebufferBpp() const;
 #endif
@@ -142,7 +141,6 @@ class FTermData final
     void               setKittyVersion (const kittyVersion&);
     void               setXtermFont (const FString&);
     void               setXtermTitle (const FString&);
-    void               setExitMessage (const FString&);
 #if DEBUG
     void               setFramebufferBpp (int);
 #endif
@@ -250,10 +248,6 @@ inline const FString& FTermData::getXtermFont() const
 //----------------------------------------------------------------------
 inline const FString& FTermData::getXtermTitle() const
 { return xterm_title; }
-
-//----------------------------------------------------------------------
-inline const FString& FTermData::getExitMessage() const
-{ return exit_message; }
 
 //----------------------------------------------------------------------
 #if DEBUG
@@ -443,10 +437,6 @@ inline void FTermData::setXtermFont (const FString& font)
 //----------------------------------------------------------------------
 inline void FTermData::setXtermTitle (const FString& title)
 { xterm_title = title; }
-
-//----------------------------------------------------------------------
-inline void FTermData::setExitMessage (const FString& message)
-{ exit_message = message; }
 
 //----------------------------------------------------------------------
 #if DEBUG && defined(__linux__)

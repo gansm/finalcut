@@ -894,11 +894,7 @@ int FTerm::putchar_ASCII (int c)
 {
   static const auto& fsys = FSystem::getInstance();
   auto put = [] (int ch) { return fsys->putchar(ch); };
-
-  if ( put(char(c)) == EOF )
-    return 0;
-  else
-    return 1;
+  return put(char(c));
 }
 
 //----------------------------------------------------------------------
@@ -934,7 +930,7 @@ int FTerm::putchar_UTF8 (int c)
     put (0xf0 | (c >> 18) );
     put (0x80 | ((c >> 12) & 0x3f) );
     put (0x80 | ((c >> 6) & 0x3f) );
-    put (0x80 | (c & 0x3f));
+    put (0x80 | (c & 0x3f) );
     return 4;
   }
   else
@@ -1315,17 +1311,15 @@ void FTerm::init_optiAttr()
 //----------------------------------------------------------------------
 bool FTerm::init_font()
 {
-  static auto& data = FTermData::getInstance();
-
   if ( getStartOptions().vgafont && ! setVGAFont() )
   {
-    data.setExitMessage("VGAfont is not supported by this terminal");
+    setExitMessage("VGAfont is not supported by this terminal");
     FApplication::exit(EXIT_FAILURE);
   }
 
   if ( getStartOptions().newfont && ! setNewFont() )
   {
-    data.setExitMessage("Newfont is not supported by this terminal");
+    setExitMessage("Newfont is not supported by this terminal");
     FApplication::exit(EXIT_FAILURE);
   }
 
@@ -1898,13 +1892,12 @@ bool FTerm::init_terminal() const
 {
   // Initialize termios
   FTermios::init();
-  static auto& data = FTermData::getInstance();
   static const auto& fsys = FSystem::getInstance();
 
   // Check if stdin is a tty
   if ( ! fsys->isTTY(FTermios::getStdIn()) )
   {
-    data.setExitMessage("FTerm: Standard input is not a TTY.");
+    setExitMessage("FTerm: Standard input is not a TTY.");
     FApplication::exit(EXIT_FAILURE);
     return false;
   }
@@ -1923,7 +1916,7 @@ bool FTerm::init_terminal() const
   catch (const std::system_error& ex)
   {
     FString msg = "FTerm: " + FString{ex.what()};
-    data.setExitMessage(msg);
+    setExitMessage(msg);
     FApplication::exit(EXIT_FAILURE);
     return false;
   }
@@ -2102,9 +2095,9 @@ void FTerm::finish_encoding() const
 void FTerm::printExitMessage()
 {
   // Print exit message
-  const auto& exit_message = FTermData::getInstance().getExitMessage();
+  const auto& exit_message = getExitMessage();
 
-  if ( ! exit_message.isEmpty() )
+  if ( ! exit_message.empty() )
     std::cerr << "Exit: " << exit_message << std::endl;
 }
 
@@ -2127,7 +2120,7 @@ void FTerm::processTermination (int signum)
   FStringStream msg{};
   msg << "Program stopped: signal " << signum
       << " (" << strsignal(signum) << ")";
-  FTermData::getInstance().setExitMessage(msg.str());
+  setExitMessage(msg.str());
   printExitMessage();
   std::terminate();
 }

@@ -1,3 +1,9 @@
+2021-09-15 Markus Gans  <guru.mail@muenster.de>
+	* setExitMessage is now a function without object dependencies, 
+	  so it can be called from anywhere
+	* New internal function unicode_to_utf8 which allows to convert 
+	  a wchar_t to a utf-8 string
+
 2021-09-14 Markus Gans  <guru.mail@muenster.de>
 	* More local static variables are used to prevent repeated 
 	  value assignments

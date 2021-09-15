@@ -52,6 +52,11 @@ jobs:
     - name: Coveralls
       run: coveralls --gcov-options '\-lp' -e debian -e doc -e icon -e logo -e m4 -e scripts -e examples
 
+    - name: Publish to coveralls.io
+        uses: coverallsapp/github-action@v1.1.2
+        with:
+          github-token: ${{ github.token }}
+
     - name: Codecov
       run: bash <(curl -s https://codecov.io/bash)
 

@@ -223,6 +223,19 @@ uInt env2uint (const std::string& env)
 }
 
 //----------------------------------------------------------------------
+std::string& getExitMessage()
+{
+  static const auto& exit_message = make_unique<std::string>();
+  return *exit_message;
+}
+
+//----------------------------------------------------------------------
+void setExitMessage (const FString& message)
+{
+  getExitMessage().assign(message.c_str());
+}
+
+//----------------------------------------------------------------------
 FColor rgb2ColorIndex (uInt8 r, uInt8 g, uInt8 b)
 {
   // Converts a 24-bit RGB color to a 256-color compatible approximation
@@ -331,6 +344,40 @@ uChar unicode_to_cp437 (wchar_t ucs)
     c = static_cast<uChar>((*found)[CP437]);
 
   return c;
+}
+
+//----------------------------------------------------------------------
+std::string unicode_to_utf8 (wchar_t ucs)
+{
+  if ( uInt32(ucs) < 0x80 )
+  {
+    // 1 Byte (7-bit): 0xxxxxxx
+    return { char(ucs) };
+  }
+  else if ( uInt32(ucs) < 0x800 )
+  {
+    // 2 byte (11-bit): 110xxxxx 10xxxxxx
+    return { char(0xc0 | char(ucs >> 6))
+           , char(0x80 | char(ucs & 0x3f)) };
+  }
+  else if ( uInt32(ucs) < 0x10000 )
+  {
+    // 3 byte (16-bit): 1110xxxx 10xxxxxx 10xxxxxx
+    return { char(0xe0 | char(ucs >> 12))
+           , char(0x80 | char((ucs >> 6) & 0x3f))
+           , char(0x80 | char(ucs & 0x3f)) };
+  }
+  else if ( uInt32(ucs) < 0x200000 )
+  {
+    // 4 byte (21-bit): 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+    return { char(0xf0 | char(ucs >> 18))
+           , char(0x80 | char((ucs >> 12) & 0x3f))
+           , char(0x80 | char((ucs >> 6) & 0x3f))
+           , char(0x80 | char(ucs & 0x3f)) };
+  }
+
+  // Invalid character
+  return unicode_to_utf8(L'�');
 }
 
 //----------------------------------------------------------------------

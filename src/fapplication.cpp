@@ -90,9 +90,8 @@ FApplication::FApplication (const int& arg_c, char* arg_v[])
 
   if ( internal::var::app_object )
   {
-    static auto& fterm_data = FTermData::getInstance();
-    fterm_data.setExitMessage("FApplication: There should be "
-                              "only one application object");
+    setExitMessage("FApplication: There should be "
+                   "only one application object");
     FApplication::exit(EXIT_FAILURE);
     return;
   }
@@ -343,9 +342,7 @@ void FApplication::setLogFile (const FString& filename)
   }
   else
   {
-    static auto& fterm_data = FTermData::getInstance();
-    fterm_data.setExitMessage ( "Could not open log file \""
-                              + filename + "\"" );
+    setExitMessage ("Could not open log file \"" + filename + "\"");
     exit(EXIT_FAILURE);
   }
 }
@@ -447,10 +444,9 @@ void FApplication::setTerminalEncoding (const FString& enc_str)
     showParameterUsage();
   else
   {
-    static auto& fterm_data = FTermData::getInstance();
-    fterm_data.setExitMessage ( "Unknown encoding \"" + enc_str
-                              + "\"\n(Valid encodings are utf8, "
-                              + "vt100, pc and ascii)" );
+    setExitMessage ( "Unknown encoding \"" + enc_str
+                   + "\"\n(Valid encodings are utf8, "
+                   + "vt100, pc and ascii)" );
     exit(EXIT_FAILURE);
   }
 }

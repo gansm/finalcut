@@ -446,8 +446,9 @@ void FTermOutput::flush()
       if ( ! FTermPutchar )
         return;
 
-      for (auto&& ch : str.wstring)
-        FTermPutchar(int(ch));
+      std::for_each ( str.wstring.begin()
+                    , str.wstring.end()
+                    , [] (wchar_t ch) { FTermPutchar(int(ch)); } );
     }
     else if ( type == OutputType::Control )
       FTerm::putstring (str.string);
@@ -1454,12 +1455,12 @@ inline bool FTermOutput::isOutputBufferLimitReached() const
 {
   return output_buffer->size() >= TERMINAL_OUTPUT_BUFFER_LIMIT;
 }
-#include <term.h>
+
 //----------------------------------------------------------------------
 inline void FTermOutput::appendOutputBuffer (const FTermControl& ctrl)
 {
   output_buffer->emplace( std::make_tuple( OutputType::Control,
-                                           TermString(ctrl.string) ) );
+                                           TermString(std::move(ctrl.string)) ) );
 
   if ( isOutputBufferLimitReached() )
     flush();
@@ -1475,23 +1476,18 @@ inline void FTermOutput::appendOutputBuffer (const FTermChar& c)
 //----------------------------------------------------------------------
 void FTermOutput::appendOutputBuffer (const FTermString& str)
 {
+  auto& last = output_buffer->back();
+
   if ( ! output_buffer->empty()
-    && std::get<0>(output_buffer->back()) == OutputType::String )
+    && std::get<0>(last) == OutputType::String )
   {
     // Append string data to the back element
-    auto& string_buf = std::get<1>(output_buffer->back());
-    std::transform ( str.string.begin()
-                   , str.string.end()
-                   , std::back_inserter(string_buf.wstring)
-                   , [] (wchar_t ch)
-                     {
-                       return ch;
-                     }
-                   );
+    auto& string_buf = std::get<1>(last);
+    string_buf.wstring.append(str.string);
   }
   else
     output_buffer->emplace( std::make_tuple( OutputType::String,
-                                             TermString(str.string) ) );
+                                             TermString(std::move(str.string)) ) );
 
   if ( isOutputBufferLimitReached() )
     flush();

@@ -102,7 +102,6 @@ void FTermDataTest::defaultDataTest()
   CPPUNIT_ASSERT ( data.getKittyVersion().secondary == 0 );
   CPPUNIT_ASSERT ( data.getXtermFont() == finalcut::FString() );
   CPPUNIT_ASSERT ( data.getXtermTitle() == finalcut::FString() );
-  CPPUNIT_ASSERT ( data.getExitMessage() == finalcut::FString() );
 
 #if DEBUG
   CPPUNIT_ASSERT ( data.getFramebufferBpp() == -1 );
@@ -205,10 +204,6 @@ void FTermDataTest::dataTest()
   CPPUNIT_ASSERT ( data.getXtermTitle() == finalcut::FString() );
   data.setXtermTitle("Terminal");
   CPPUNIT_ASSERT ( data.getXtermTitle() == finalcut::FString("Terminal") );
-
-  CPPUNIT_ASSERT ( data.getExitMessage() == finalcut::FString() );
-  data.setExitMessage("No tty found");
-  CPPUNIT_ASSERT ( data.getExitMessage() == finalcut::FString("No tty found") );
 
 #if DEBUG
   CPPUNIT_ASSERT ( data.getFramebufferBpp() == -1 );

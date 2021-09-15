@@ -584,7 +584,7 @@ std::string FOptiAttr::changeAttribute (FChar& term, FChar& next)
     changeAttributeSeparately (term, next);
   }
 
-  static auto& start_options = FStartOptions::getInstance();
+  static const auto& start_options = FStartOptions::getInstance();
 
   if ( start_options.sgr_optimizer )
     sgr_optimizer.optimize();

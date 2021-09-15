@@ -966,13 +966,13 @@ int FVTerm::getLayer (const FVTerm* obj)
 {
   // returns the layer from the FVTerm object
 
-  const auto& window_list = getWindowList();
+  const auto& win_list = getWindowList();
 
-  if ( ! window_list || window_list->empty() )
+  if ( ! win_list || win_list->empty() )
     return -1;
 
-  auto iter = window_list->begin();
-  const auto end = window_list->end();
+  auto iter = win_list->begin();
+  const auto end = win_list->end();
 
   while ( iter != end )
   {
@@ -982,7 +982,7 @@ int FVTerm::getLayer (const FVTerm* obj)
     ++iter;
   }
 
-  return int(std::distance(window_list->begin(), iter) + 1);
+  return int(std::distance(win_list->begin(), iter) + 1);
 }
 
 //----------------------------------------------------------------------
@@ -1244,13 +1244,13 @@ FVTerm::CoveredState FVTerm::isCovered ( const FPoint& pos
     return CoveredState::None;
 
   auto is_covered = CoveredState::None;
-  const auto& window_list = getWindowList();
+  const auto& win_list = getWindowList();
 
-  if ( window_list && ! window_list->empty() )
+  if ( win_list && ! win_list->empty() )
   {
     bool found{ area == vdesktop };
 
-    for (auto& win_obj : *window_list)
+    for (auto& win_obj : *win_list)
     {
       const auto& win = win_obj->getVWin();
 
@@ -1450,8 +1450,6 @@ void FVTerm::updateVTerm() const
     vdesktop->has_changes = false;
   }
 
-  const auto& window_list = getWindowList();
-
   if ( ! window_list || window_list->empty() )
     return;
 
@@ -1595,12 +1593,12 @@ FChar FVTerm::generateCharacter (const FPoint& pos)
   const int x = pos.getX();
   const int y = pos.getY();
   auto sc = &vdesktop->data[y * vdesktop->width + x];  // shown character
-  const auto& window_list = getWindowList();
+  const auto& win_list = getWindowList();
 
-  if ( ! window_list || window_list->empty() )
+  if ( ! win_list || win_list->empty() )
     return *sc;
 
-  for (auto& win_obj : *window_list)
+  for (auto& win_obj : *win_list)
   {
     const auto& win = win_obj->getVWin();
 
@@ -1673,9 +1671,9 @@ FChar FVTerm::getCharacter ( CharacterType char_type
     yy = vterm->height - 1;
 
   auto cc = &vdesktop->data[yy * vdesktop->width + xx];  // covered character
-  const auto& window_list = getWindowList();
+  const auto& win_list = getWindowList();
 
-  if ( ! area || ! window_list || window_list->empty() )
+  if ( ! area || ! win_list || win_list->empty() )
     return *cc;
 
   // Get the window layer of this widget object
@@ -1683,7 +1681,7 @@ FChar FVTerm::getCharacter ( CharacterType char_type
   const auto area_owner = area->getOwner<FVTerm*>();
   const int layer = has_an_owner ? getLayer(area_owner) : 0;
 
-  for (auto&& win_obj : *window_list)
+  for (auto&& win_obj : *win_list)
   {
     bool significant_char{false};
 
