@@ -51,7 +51,7 @@ jobs:
       run: |
         mkdir coverage
         lcov --compat-libtool --directory . --capture --output-file lcov.info
-        coveralls-lcov --repo-token=${{ github.token }} lcov.info
+        coveralls-lcov --verbose --branch=main lcov.info
 
     - name: Codecov
       run: |
