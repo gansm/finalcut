@@ -19,14 +19,6 @@ jobs:
     - name: Repository checkout
       uses: actions/checkout@v2
 
-    - name: Use Node.js 10.x
-      uses: actions/setup-node@v1
-      with:
-        node-version: 10.x
-
-    - name: npm install
-      run: npm install
-
     - name: Before_install
       run: |
         lsb_release -a
@@ -49,24 +41,20 @@ jobs:
           libcppunit-dev \
           autoconf-archive
 
-    - name: Download codecov
-      run: sudo pip install codecov
+    - name: Install coveralls-lcov
+      run: gem install coveralls-lcov
 
     - name: Build with with gcov
       run: script -e -c "./build.sh coverage"
 
-    - name: Generate lcov.info
+    - name: Generate lcov.info and publish to coveralls.io
       run: |
         mkdir coverage
-        lcov --compat-libtool --directory . --capture --output-file ./coverage/lcov.info
+        lcov --compat-libtool --directory . --capture --output-file lcov.info
+        coveralls-lcov --repo-token=${{ github.token }} lcov.info
 
     - name: Codecov
       run: |
         ./.github/scripts/get_code_cov.sh
         bash <(curl -s https://codecov.io/bash)
-
-    - name: Publish to coveralls.io
-      uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ github.token }}
 
