@@ -42,7 +42,7 @@ jobs:
           autoconf-archive
 
     - name: Install coveralls-lcov
-      run: gem install coveralls-lcov
+      run: sudo gem install coveralls-lcov
 
     - name: Build with with gcov
       run: script -e -c "./build.sh coverage"

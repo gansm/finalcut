@@ -106,8 +106,8 @@ class FBusyIndicator : public FToolTip
 
     // Data members
     std::wstring uni_pattern{L' ', L' ', L'·', L'·', L'•', L'•', L'●', L'●'};
-    std::string  pattern{L' ', L' ', L'.', L'.', L'+', L'+', L'#', L'#'};
-    bool    running{false};
+    std::string pattern{L' ', L' ', L'.', L'.', L'+', L'+', L'#', L'#'};
+    bool running{false};
 };
 
 
