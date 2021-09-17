@@ -135,7 +135,7 @@ constexpr std::reverse_iterator<Iter> make_reverse_iterator (Iter iter)
 }
 
 template <typename CharT>
-constexpr std::size_t stringLength (const CharT* s)
+constexpr inline std::size_t stringLength (const CharT* s)
 {
   return std::char_traits<CharT>::length(s);
 }

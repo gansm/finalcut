@@ -38,23 +38,6 @@
 #include <conemu.h>
 #include <final/final.h>
 
-#define CPPUNIT_ASSERT_CSTRING(expected, actual) \
-            check_c_string (expected, actual, CPPUNIT_SOURCELINE())
-
-//----------------------------------------------------------------------
-void check_c_string ( const char* s1
-                    , const char* s2
-                    , CppUnit::SourceLine sourceLine )
-{
-  if ( s1 == 0 && s2 == 0 )  // Strings are equal
-    return;
-
-  if ( s1 && s2 && std::strcmp (s1, s2) == 0 )  // Strings are equal
-      return;
-
-  ::CppUnit::Asserter::fail ("Strings are not equal", sourceLine);
-}
-
 
 namespace test
 {
@@ -80,6 +63,7 @@ class FSystemTest : public finalcut::FSystem
     int              open (const char*, int, ...) override;
     int              close (int) override;
     FILE*            fopen (const char*, const char*) override;
+    int              fputs (const char*, FILE*) override;
     int              fclose (FILE*) override;
     int              putchar (int) override;
     uid_t            getuid() override;
@@ -252,6 +236,12 @@ int FSystemTest::fclose (FILE* fp)
 {
   std::cerr << "Call: fclose (fp=" << fp << ")\n";
   return 0;
+}
+
+//----------------------------------------------------------------------
+int FSystemTest::fputs (const char* str, FILE* stream)
+{
+  return std::fputs(str, stream);
 }
 
 //----------------------------------------------------------------------

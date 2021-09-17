@@ -70,6 +70,7 @@ class FSystem
     virtual int   close (int) = 0;
     virtual FILE* fopen (const char*, const char*) = 0;
     virtual int   fclose (FILE*) = 0;
+    virtual int   fputs (const char*, FILE*) = 0;
     virtual int   putchar (int) = 0;
     virtual uid_t getuid() = 0;
     virtual uid_t geteuid() = 0;

@@ -74,12 +74,15 @@ auto FTermDetection::getInstance() -> FTermDetection&
 #if DEBUG
 const FString& FTermDetection::getAnswerbackString() const
 {
+  // Get the answerback message that was output after
+  // sending the enquiry character (ENQ)
   return answer_back;
 }
 
 //----------------------------------------------------------------------
 const FString& FTermDetection::getSecDAString() const
 {
+  // Get the secondary device attributes (SEC_DA)
   return sec_da;
 }
 #endif
@@ -96,6 +99,9 @@ void FTermDetection::setTtyTypeFileName (const FString& ttytype_filename)
 //----------------------------------------------------------------------
 void FTermDetection::detect()
 {
+  // Reset terminal_detection for the 2nd detectio run
+  terminal_detection = true;
+
   // Set the variable 'termtype' to the predefined type of the terminal
   getSystemTermType();
 
@@ -200,7 +206,7 @@ bool FTermDetection::getTTYtype()
 //----------------------------------------------------------------------
 bool FTermDetection::getTTYSFileEntry()
 {
-  // Analyse /etc/ttys and get the term name
+  // Analyse /etc/ttys and get the term name (used in BSD Unix)
 
   // get term basename
   const auto& termfilename = FTermData::getInstance().getTermFileName();
@@ -1019,7 +1025,7 @@ inline FString FTermDetection::secDA_Analysis_85() const
 inline FString FTermDetection::secDA_Analysis_vte (const FString& current_termtype)
 {
   // VTE terminal library
-  // (Since VTE ) the terminal ID has changed from 1 to 65)
+  // (Since VTE 0.53.0 the terminal ID has changed from 1 to 65)
 
   FString new_termtype{current_termtype};
 

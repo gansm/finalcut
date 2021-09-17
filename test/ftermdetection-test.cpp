@@ -172,6 +172,11 @@ void FTermDetectionTest::ansiTest()
     CPPUNIT_ASSERT ( ! detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
     CPPUNIT_ASSERT ( detect.getTermType() == "ansi" );
+    CPPUNIT_ASSERT ( detect.getTermType_256color() == "" );
+    CPPUNIT_ASSERT ( detect.getTermType_Answerback() == "" );
+    CPPUNIT_ASSERT ( detect.getAnswerbackString() == "" );
+    CPPUNIT_ASSERT ( detect.getTermType_SecDA() == "" );
+    CPPUNIT_ASSERT ( detect.getSecDAString() == "" );
 
     // Test fallback to vt100 without TERM environment variable
     unsetenv("TERM");
@@ -198,7 +203,9 @@ void FTermDetectionTest::ansiTest()
 void FTermDetectionTest::xtermTest()
 {
   auto& data = finalcut::FTermData::getInstance();
-  finalcut::FTermDetection detect;
+  auto& debug_data = finalcut::FTermDebugData::getInstance();
+  //finalcut::FTermDetection detect;
+  auto& detect = finalcut::FTermDetection::getInstance();
   data.setTermType("xterm");
   detect.setTerminalDetection(true);
 
@@ -244,6 +251,15 @@ void FTermDetectionTest::xtermTest()
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( detect.hasSetCursorStyleSupport() );
+    CPPUNIT_ASSERT ( detect.getTermType() == "xterm-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType_256color() == "xterm-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType_Answerback() == "xterm-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType_SecDA() == "xterm-256color" );
+    CPPUNIT_ASSERT ( debug_data.getTermType_256color() == "xterm-256color" );
+    CPPUNIT_ASSERT ( debug_data.getTermType_Answerback() == "xterm-256color" );
+    CPPUNIT_ASSERT ( debug_data.getTermType_SecDA() == "xterm-256color" );
+    CPPUNIT_ASSERT ( detect.getAnswerbackString() == "" );
+    CPPUNIT_ASSERT ( detect.getSecDAString() == "\033[>19;312;0c" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -310,6 +326,11 @@ void FTermDetectionTest::rxvtTest()
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
     CPPUNIT_ASSERT ( detect.getTermType() == "rxvt-16color" );
+    CPPUNIT_ASSERT ( detect.getTermType_256color() == "rxvt-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType_Answerback() == "rxvt-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType_SecDA() == "rxvt-16color" );
+    CPPUNIT_ASSERT ( detect.getAnswerbackString() == "" );
+    CPPUNIT_ASSERT ( detect.getSecDAString() == "\033[>82;20710;0c" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -375,6 +396,12 @@ void FTermDetectionTest::urxvtTest()
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
+    CPPUNIT_ASSERT ( detect.getTermType() == "rxvt-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType_256color() == "rxvt-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType_Answerback() == "rxvt-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType_SecDA() == "rxvt-256color" );
+    CPPUNIT_ASSERT ( detect.getAnswerbackString() == "" );
+    CPPUNIT_ASSERT ( detect.getSecDAString() == "\033[>85;95;0c" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -440,6 +467,12 @@ void FTermDetectionTest::kdeKonsoleTest()
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
+    CPPUNIT_ASSERT ( detect.getTermType() == "konsole-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType_256color() == "konsole-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType_Answerback() == "konsole-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType_SecDA() == "konsole-256color" );
+    CPPUNIT_ASSERT ( detect.getAnswerbackString() == "" );
+    CPPUNIT_ASSERT ( detect.getSecDAString() == "\033[>0;115;0c" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -505,6 +538,12 @@ void FTermDetectionTest::gnomeTerminalTest()
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( detect.hasSetCursorStyleSupport() );
+    CPPUNIT_ASSERT ( detect.getTermType() == "gnome-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType_256color() == "gnome-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType_Answerback() == "gnome-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType_SecDA() == "gnome-256color" );
+    CPPUNIT_ASSERT ( detect.getAnswerbackString() == "" );
+    CPPUNIT_ASSERT ( detect.getSecDAString() == "\033[>1;5202;0c" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -570,6 +609,12 @@ void FTermDetectionTest::newerVteTerminalTest()
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( detect.hasSetCursorStyleSupport() );
+    CPPUNIT_ASSERT ( detect.getTermType() == "gnome-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType_256color() == "gnome-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType_Answerback() == "gnome-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType_SecDA() == "gnome-256color" );
+    CPPUNIT_ASSERT ( detect.getAnswerbackString() == "" );
+    CPPUNIT_ASSERT ( detect.getSecDAString() == "\033[>65;5300;1c" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -635,6 +680,12 @@ void FTermDetectionTest::puttyTest()
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
+    CPPUNIT_ASSERT ( detect.getTermType() == "putty-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType_256color() == "" );
+    CPPUNIT_ASSERT ( detect.getTermType_Answerback() == "putty" );
+    CPPUNIT_ASSERT ( detect.getTermType_SecDA() == "putty" );
+    CPPUNIT_ASSERT ( detect.getAnswerbackString() == "PuTTY" );
+    CPPUNIT_ASSERT ( detect.getSecDAString() == "\033[>0;136;0c" );
 
     enableConEmuDebug(true);
     printConEmuDebug();
@@ -703,6 +754,12 @@ void FTermDetectionTest::windowsTerminalTest()
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
+    CPPUNIT_ASSERT ( detect.getTermType() == "xterm-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType_256color() == "xterm-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType_Answerback() == "xterm-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType_SecDA() == "xterm-256color" );
+    CPPUNIT_ASSERT ( detect.getAnswerbackString() == "" );
+    CPPUNIT_ASSERT ( detect.getSecDAString() == "\033[>0;10;1c" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -768,6 +825,12 @@ void FTermDetectionTest::teraTermTest()
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
+    CPPUNIT_ASSERT ( detect.getTermType() == "teraterm" );
+    CPPUNIT_ASSERT ( detect.getTermType_256color() == "" );
+    CPPUNIT_ASSERT ( detect.getTermType_Answerback() == "" );
+    CPPUNIT_ASSERT ( detect.getTermType_SecDA() == "teraterm" );
+    CPPUNIT_ASSERT ( detect.getAnswerbackString() == "" );
+    CPPUNIT_ASSERT ( detect.getSecDAString() == "\033[>32;278;0c" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -833,6 +896,20 @@ void FTermDetectionTest::cygwinTest()
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
+    CPPUNIT_ASSERT ( detect.getTermType() == "cygwin" );
+    CPPUNIT_ASSERT ( detect.getTermType_256color() == "" );
+    CPPUNIT_ASSERT ( detect.getTermType_Answerback() == "" );
+    CPPUNIT_ASSERT ( detect.getTermType_SecDA() == "" );
+    CPPUNIT_ASSERT ( detect.getAnswerbackString() == "" );
+    CPPUNIT_ASSERT ( detect.getSecDAString() == "" );
+
+    // Use Sec DA without TERM environment variable
+    unsetenv("TERM");
+    data.unsetTermType(finalcut::FTermType::cygwin);
+    detect.detect();
+    CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::cygwin) );
+    CPPUNIT_ASSERT ( detect.getTermType() == "cygwin" );
+    CPPUNIT_ASSERT ( detect.getSecDAString() == "\033[>67;200502;0c" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -898,6 +975,12 @@ void FTermDetectionTest::minttyTest()
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( detect.hasSetCursorStyleSupport() );
+    CPPUNIT_ASSERT ( detect.getTermType() == "xterm-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType_256color() == "xterm-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType_Answerback() == "xterm-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType_SecDA() == "xterm-256color" );
+    CPPUNIT_ASSERT ( detect.getAnswerbackString() == "" );
+    CPPUNIT_ASSERT ( detect.getSecDAString() == "\033[>77;20402;0c" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -963,6 +1046,12 @@ void FTermDetectionTest::linuxTest()
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
+    CPPUNIT_ASSERT ( detect.getTermType() == "linux" );
+    CPPUNIT_ASSERT ( detect.getTermType_256color() == "" );
+    CPPUNIT_ASSERT ( detect.getTermType_Answerback() == "" );
+    CPPUNIT_ASSERT ( detect.getTermType_SecDA() == "" );
+    CPPUNIT_ASSERT ( detect.getAnswerbackString() == "" );
+    CPPUNIT_ASSERT ( detect.getSecDAString() == "" );
 
     // Test fallback to vt100 without TERM environment variable
     unsetenv("TERM");
@@ -1036,6 +1125,12 @@ void FTermDetectionTest::freebsdTest()
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
+    CPPUNIT_ASSERT ( detect.getTermType() == "xterm-16color" );
+    CPPUNIT_ASSERT ( detect.getTermType_256color() == "" );
+    CPPUNIT_ASSERT ( detect.getTermType_Answerback() == "" );
+    CPPUNIT_ASSERT ( detect.getTermType_SecDA() == "" );
+    CPPUNIT_ASSERT ( detect.getAnswerbackString() == "" );
+    CPPUNIT_ASSERT ( detect.getSecDAString() == "\033[>0;10;0c" );
 
     // Test fallback to vt100 without TERM environment variable
     unsetenv("TERM");
@@ -1111,6 +1206,12 @@ void FTermDetectionTest::netbsdTest()
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
+    CPPUNIT_ASSERT ( detect.getTermType() == "wsvt25" );
+    CPPUNIT_ASSERT ( detect.getTermType_256color() == "" );
+    CPPUNIT_ASSERT ( detect.getTermType_Answerback() == "" );
+    CPPUNIT_ASSERT ( detect.getTermType_SecDA() == "" );
+    CPPUNIT_ASSERT ( detect.getAnswerbackString() == "" );
+    CPPUNIT_ASSERT ( detect.getSecDAString() == "\033[>24;20;0c" );
 
     // Test fallback to vt100 without TERM environment variable
     unsetenv("TERM");
@@ -1184,6 +1285,12 @@ void FTermDetectionTest::openbsdTest()
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
+    CPPUNIT_ASSERT ( detect.getTermType() == "vt220" );
+    CPPUNIT_ASSERT ( detect.getTermType_256color() == "" );
+    CPPUNIT_ASSERT ( detect.getTermType_Answerback() == "" );
+    CPPUNIT_ASSERT ( detect.getTermType_SecDA() == "" );
+    CPPUNIT_ASSERT ( detect.getAnswerbackString() == "" );
+    CPPUNIT_ASSERT ( detect.getSecDAString() == "\033[>24;20;0c" );
 
     // Test fallback to vt100 without TERM environment variable
     unsetenv("TERM");
@@ -1255,6 +1362,12 @@ void FTermDetectionTest::sunTest()
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( ! detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
+    CPPUNIT_ASSERT ( detect.getTermType() == "sun-color" );
+    CPPUNIT_ASSERT ( detect.getTermType_256color() == "" );
+    CPPUNIT_ASSERT ( detect.getTermType_Answerback() == "" );
+    CPPUNIT_ASSERT ( detect.getTermType_SecDA() == "" );
+    CPPUNIT_ASSERT ( detect.getAnswerbackString() == "" );
+    CPPUNIT_ASSERT ( detect.getSecDAString() == "" );
 
     // Test fallback to vt100 without TERM environment variable
     unsetenv("TERM");
@@ -1328,6 +1441,11 @@ void FTermDetectionTest::screenTest()
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
     CPPUNIT_ASSERT ( detect.getTermType() == "screen" );
+    CPPUNIT_ASSERT ( detect.getTermType_256color() == "" );
+    CPPUNIT_ASSERT ( detect.getTermType_Answerback() == "" );
+    CPPUNIT_ASSERT ( detect.getTermType_SecDA() == "" );
+    CPPUNIT_ASSERT ( detect.getAnswerbackString() == "" );
+    CPPUNIT_ASSERT ( detect.getSecDAString() == "\033[>83;40201;0c" );
 
     setenv ("XTERM_VERSION", "XTerm(312)", 1);
     detect.detect();
@@ -1400,6 +1518,11 @@ void FTermDetectionTest::tmuxTest()
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
     CPPUNIT_ASSERT ( detect.getTermType() == "screen" );
+    CPPUNIT_ASSERT ( detect.getTermType_256color() == "" );
+    CPPUNIT_ASSERT ( detect.getTermType_Answerback() == "" );
+    CPPUNIT_ASSERT ( detect.getTermType_SecDA() == "" );
+    CPPUNIT_ASSERT ( detect.getAnswerbackString() == "" );
+    CPPUNIT_ASSERT ( detect.getSecDAString() == "\033[>84;0;0c" );
 
     setenv ("VTE_VERSION", "3801", 1);
     detect.detect();
@@ -1470,13 +1593,22 @@ void FTermDetectionTest::ktermTest()
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( ! detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
+    CPPUNIT_ASSERT ( detect.getTermType() == "kterm" );
+    CPPUNIT_ASSERT ( detect.getTermType_256color() == "" );
+    CPPUNIT_ASSERT ( detect.getTermType_Answerback() == "" );
+    CPPUNIT_ASSERT ( detect.getTermType_SecDA() == "" );
+    CPPUNIT_ASSERT ( detect.getAnswerbackString() == "" );
+    CPPUNIT_ASSERT ( detect.getSecDAString() == "" );
 
     // Test fallback to vt100 without TERM environment variable
     unsetenv("TERM");
     data.unsetTermType(finalcut::FTermType::kterm);
     detect.detect();
+    CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::kterm) );
     CPPUNIT_ASSERT ( detect.getTermType() == "vt100" );
+    // kterm sends an incorrect secondary DA ("\033[?1;2c")
+    CPPUNIT_ASSERT ( detect.getSecDAString() == "" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -1544,6 +1676,11 @@ void FTermDetectionTest::mltermTest()
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
     CPPUNIT_ASSERT ( detect.getTermType() == "mlterm-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType_256color() == "mlterm-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType_Answerback() == "mlterm-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType_SecDA() == "mlterm-256color" );
+    CPPUNIT_ASSERT ( detect.getAnswerbackString() == "" );
+    CPPUNIT_ASSERT ( detect.getSecDAString() == "\033[>24;279;0c" );
 
     setenv ("TERM", "mlterm", 1);
     unsetenv("COLORFGBG");
@@ -1615,6 +1752,11 @@ void FTermDetectionTest::kittyTest()
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
     CPPUNIT_ASSERT ( detect.getTermType() == "xterm-kitty" );
+    CPPUNIT_ASSERT ( detect.getTermType_256color() == "xterm-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType_Answerback() == "xterm-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType_SecDA() == "xterm-kitty" );
+    CPPUNIT_ASSERT ( detect.getAnswerbackString() == "" );
+    CPPUNIT_ASSERT ( detect.getSecDAString() == "\033[>1;4000;13c" );
 
     auto kitty_version = data.getKittyVersion();
     CPPUNIT_ASSERT (  kitty_version.primary == 0 );

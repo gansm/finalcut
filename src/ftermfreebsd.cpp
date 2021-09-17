@@ -109,7 +109,7 @@ void FTermFreeBSD::setBeep (int Hz, int ms)
   constexpr int timer_frequency = 1193182;
   int period = timer_frequency / Hz;
   ms /= 10;
-  FTerm::putstringf (CSI "=%d;%dB", period, ms);
+  FTerm::paddingPrintf (CSI "=%d;%dB", period, ms);
   std::fflush(stdout);
 }
 
@@ -123,7 +123,7 @@ void FTermFreeBSD::resetBeep()
 
   // Default frequency: 1491 Hz
   // Default duration:  50 ms
-  FTerm::putstring (CSI "=800;5B");
+  FTerm::paddingPrint (CSI "=800;5B");
   std::fflush(stdout);
 }
 

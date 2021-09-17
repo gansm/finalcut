@@ -432,6 +432,7 @@ void FTermcap::termcapKeys()
       break;
 
     entry.string = getString(entry.tname);
+    entry.length = entry.string ? finalcut::stringLength(entry.string) : 0;
   }
 }
 

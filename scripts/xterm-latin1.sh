@@ -1,3 +1,3 @@
 #!/bin/sh
-luit -encoding C ../examples/ui $@
+XTERM_LOCALE=C luit -encoding C ../examples/ui $@
 

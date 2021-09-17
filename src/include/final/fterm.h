@@ -143,7 +143,6 @@ class FTerm final
 {
   public:
     // Using-declarations
-    using defaultPutChar = std::function<int(int)>;
     using FSetPalette = FColorPalette::FSetPalette;
 
     // Constructor
@@ -225,12 +224,11 @@ class FTerm final
     static bool              scrollTermForward();
     static bool              scrollTermReverse();
 
-    static defaultPutChar&   putchar();  // function pointer
     template <typename... Args>
-    static void              putstringf (const std::string&, Args&&...);
-    static void              putstring (const std::string&, int = 1);
-    static int               putchar_ASCII (int);
-    static int               putchar_UTF8  (int);
+    static void              paddingPrintf (const std::string&, Args&&...);
+    static void              paddingPrint (const std::string&, int = 1);
+    static int               putstring (const std::string&);
+    static int               putchar (int);
 
     void                     initTerminal();
     static void              initScreenSettings();
@@ -315,7 +313,7 @@ inline bool FTerm::unsetUTF8()
 
 //----------------------------------------------------------------------
 template <typename... Args>
-inline void FTerm::putstringf (const std::string& format, Args&&... args)
+inline void FTerm::paddingPrintf (const std::string& format, Args&&... args)
 {
   const int size = std::snprintf (nullptr, 0, format.data(), args...) + 1;
 
@@ -325,7 +323,7 @@ inline void FTerm::putstringf (const std::string& format, Args&&... args)
   const auto count = std::size_t(size);
   std::vector<char> buf(count);
   std::snprintf (&buf[0], count, format.data(), std::forward<Args>(args)...);
-  putstring (std::string(&buf[0]), 1);
+  paddingPrint (std::string(&buf[0]), 1);
 }
 
 //----------------------------------------------------------------------

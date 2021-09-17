@@ -42,15 +42,17 @@ class FKeyMap final
   public:
     struct KeyCapMap
     {
-      FKey  num;
+      FKey num;
       const char* string;
-      char  tname[4];
+      std::size_t length;
+      char tname[4];
     };
 
     struct KeyMap
     {
       FKey num;
       char string[8];
+      std::size_t length;
     };
 
     struct KeyName

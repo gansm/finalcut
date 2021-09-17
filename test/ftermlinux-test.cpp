@@ -119,6 +119,7 @@ class FSystemTest : public finalcut::FSystem
     int              close (int) override;
     FILE*            fopen (const char*, const char*) override;
     int              fclose (FILE*) override;
+    int              fputs (const char*, FILE*) override;
     int              putchar (int) override;
     uid_t            getuid() override;
     uid_t            geteuid() override;
@@ -1866,6 +1867,22 @@ int FSystemTest::fclose (FILE* fp)
 {
   std::cerr << "Call: fclose (fp=" << fp << ")\n";
   return 0;
+}
+
+//----------------------------------------------------------------------
+int FSystemTest::fputs (const char* str, FILE* stream)
+{
+  std::cerr << "Call: fputs (" << str << ", " << stream << ")\n";
+  std::string string = str;
+  int count = 0;
+
+  for (auto&& ch : string)
+  {
+    characters.push_back(ch);
+    count++;
+  }
+
+  return count;
 }
 
 //----------------------------------------------------------------------

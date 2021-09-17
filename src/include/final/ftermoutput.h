@@ -123,14 +123,14 @@ class FTermOutput final : public FOutput
       std::string string;
     };
 
-    struct FTermChar
+    struct FTermUniChar
     {
-      wchar_t ch;
+      UniChar ch;
     };
 
     struct FTermString
     {
-      std::wstring string;
+      std::string string;
     };
 
     // Enumerations
@@ -148,35 +148,16 @@ class FTermOutput final : public FOutput
       Control
     };
 
-    struct TermString
+    struct OutputData
     {
-      explicit TermString (const std::wstring& wstr)
-        : wstring{wstr}
-      { }
-
-      explicit TermString (const std::string& str)
-        : string{str}
-      { }
-
-      explicit TermString (std::wstring&& wstr)
-        : wstring{std::move(wstr)}
-      { }
-
-      explicit TermString (std::string&& str)
-        : string{std::move(str)}
-      { }
-
-      std::wstring wstring{};
-      std::string string{};
+      OutputType  type;
+      std::string data;
     };
 
     // Using-declaration
-    using OutputData = std::tuple<OutputType, TermString>;
     using OutputBuffer = std::queue<OutputData>;
 
     // Constants
-    //   Buffer limit for character output on the terminal
-    static constexpr std::size_t TERMINAL_OUTPUT_BUFFER_LIMIT = 1024;
     //   Upper and lower flush limit
     static constexpr uInt64 MIN_FLUSH_WAIT = 16667;   //   16.6 ms = 60 Hz
     static constexpr uInt64 MAX_FLUSH_WAIT = 200000;  //  200.0 ms = 5 Hz
@@ -221,9 +202,8 @@ class FTermOutput final : public FOutput
     void           appendAttributes (FChar&);
     void           appendLowerRight (FChar&);
     void           characterFilter (FChar&);
-    bool           isOutputBufferLimitReached() const;
     void           appendOutputBuffer (const FTermControl&);
-    void           appendOutputBuffer (const FTermChar&);
+    void           appendOutputBuffer (const FTermUniChar&);
     void           appendOutputBuffer (const FTermString&);
 
     // Data members

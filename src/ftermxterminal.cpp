@@ -337,7 +337,7 @@ void FTermXTerminal::setXTermCursorStyle()
                              | FTermType::mintty )
     || term_detection.hasSetCursorStyleSupport() )
   {
-    FTerm::putstringf (CSI "%d q", cursor_style);
+    FTerm::paddingPrintf (CSI "%d q", cursor_style);
     std::fflush(stdout);
   }
 }
@@ -357,7 +357,7 @@ void FTermXTerminal::setXTermTitle()
     || FTermcap::osc_support )
   {
     oscPrefix();
-    FTerm::putstringf (OSC "0;%s" BEL, xterm_title.c_str());
+    FTerm::paddingPrintf (OSC "0;%s" BEL, xterm_title.c_str());
     oscPostfix();
     std::fflush(stdout);
     title_was_changed = true;
@@ -372,9 +372,9 @@ void FTermXTerminal::setXTermSize() const
   if ( ! fterm_data.isTermType(FTermType::xterm) )
     return;
 
-  FTerm::putstringf ( CSI "8;%lu;%lut"
-                    , uLong(term_height)
-                    , uLong(term_width) );
+  FTerm::paddingPrintf ( CSI "8;%lu;%lut"
+                       , uLong(term_height)
+                       , uLong(term_width) );
   std::fflush(stdout);
 }
 
@@ -391,7 +391,7 @@ void FTermXTerminal::setXTermFont()
     || FTermcap::osc_support )
   {
     oscPrefix();
-    FTerm::putstringf (OSC "50;%s" BEL, xterm_font.c_str() );
+    FTerm::paddingPrintf (OSC "50;%s" BEL, xterm_font.c_str() );
     oscPostfix();
   }
 }
@@ -410,7 +410,7 @@ void FTermXTerminal::setXTermForeground()
     || FTermcap::osc_support )
   {
     oscPrefix();
-    FTerm::putstringf (OSC "10;%s" BEL, foreground_color.c_str());
+    FTerm::paddingPrintf (OSC "10;%s" BEL, foreground_color.c_str());
     oscPostfix();
     std::fflush(stdout);
   }
@@ -430,7 +430,7 @@ void FTermXTerminal::setXTermBackground()
     || FTermcap::osc_support )
   {
     oscPrefix();
-    FTerm::putstringf (OSC "11;%s" BEL, background_color.c_str());
+    FTerm::paddingPrintf (OSC "11;%s" BEL, background_color.c_str());
     oscPostfix();
     std::fflush(stdout);
   }
@@ -450,7 +450,7 @@ void FTermXTerminal::setXTermCursorColor()
     || FTermcap::osc_support )
   {
     oscPrefix();
-    FTerm::putstringf (OSC "12;%s" BEL, cursor_color.c_str());
+    FTerm::paddingPrintf (OSC "12;%s" BEL, cursor_color.c_str());
     oscPostfix();
     std::fflush(stdout);
   }
@@ -469,7 +469,7 @@ void FTermXTerminal::setXTermMouseForeground()
     || FTermcap::osc_support )
   {
     oscPrefix();
-    FTerm::putstringf (OSC "13;%s" BEL, mouse_foreground_color.c_str());
+    FTerm::paddingPrintf (OSC "13;%s" BEL, mouse_foreground_color.c_str());
     oscPostfix();
     std::fflush(stdout);
   }
@@ -486,7 +486,7 @@ void FTermXTerminal::setXTermMouseBackground()
     || FTermcap::osc_support )
   {
     oscPrefix();
-    FTerm::putstringf (OSC "14;%s" BEL, mouse_background_color.c_str());
+    FTerm::paddingPrintf (OSC "14;%s" BEL, mouse_background_color.c_str());
     oscPostfix();
     std::fflush(stdout);
   }
@@ -505,7 +505,7 @@ void FTermXTerminal::setXTermHighlightBackground()
     || FTermcap::osc_support )
   {
     oscPrefix();
-    FTerm::putstringf (OSC "17;%s" BEL, highlight_background_color.c_str());
+    FTerm::paddingPrintf (OSC "17;%s" BEL, highlight_background_color.c_str());
     oscPostfix();
     std::fflush(stdout);
   }
@@ -583,12 +583,12 @@ void FTermXTerminal::resetXTermColorMap() const
 
   if ( FTermData::getInstance().isTermType(FTermType::mintty) )
   {
-    FTerm::putstring (ESC "c");  // Full Reset (RIS)
+    FTerm::paddingPrint (ESC "c");  // Full Reset (RIS)
   }
   else if ( canResetColor() )
   {
     oscPrefix();
-    FTerm::putstring (OSC "104" BEL);
+    FTerm::paddingPrint (OSC "104" BEL);
     oscPostfix();
     std::fflush(stdout);
   }
@@ -602,7 +602,7 @@ void FTermXTerminal::resetXTermForeground() const
   if ( canResetColor() )
   {
     oscPrefix();
-    FTerm::putstring (OSC "110" BEL);
+    FTerm::paddingPrint (OSC "110" BEL);
     oscPostfix();
     std::fflush(stdout);
   }
@@ -616,7 +616,7 @@ void FTermXTerminal::resetXTermBackground() const
   if ( canResetColor() )
   {
     oscPrefix();
-    FTerm::putstring (OSC "111" BEL);
+    FTerm::paddingPrint (OSC "111" BEL);
     oscPostfix();
     std::fflush(stdout);
   }
@@ -630,7 +630,7 @@ void FTermXTerminal::resetXTermCursorColor() const
   if ( canResetColor() )
   {
     oscPrefix();
-    FTerm::putstring (OSC "112" BEL);
+    FTerm::paddingPrint (OSC "112" BEL);
     oscPostfix();
     std::fflush(stdout);
   }
@@ -644,7 +644,7 @@ void FTermXTerminal::resetXTermMouseForeground() const
   if ( canResetColor() )
   {
     oscPrefix();
-    FTerm::putstring (OSC "113" BEL);
+    FTerm::paddingPrint (OSC "113" BEL);
     oscPostfix();
     std::fflush(stdout);
   }
@@ -658,7 +658,7 @@ void FTermXTerminal::resetXTermMouseBackground() const
   if ( canResetColor() )
   {
     oscPrefix();
-    FTerm::putstring (OSC "114" BEL);
+    FTerm::paddingPrint (OSC "114" BEL);
     oscPostfix();
     std::fflush(stdout);
   }
@@ -672,7 +672,7 @@ void FTermXTerminal::resetXTermHighlightBackground() const
   if ( canResetColor() )
   {
     oscPrefix();
-    FTerm::putstring (OSC "117" BEL);
+    FTerm::paddingPrint (OSC "117" BEL);
     oscPostfix();
     std::fflush(stdout);
   }
@@ -705,12 +705,12 @@ void FTermXTerminal::oscPrefix() const
   if ( fterm_data.isTermType(FTermType::tmux) )
   {
     // tmux device control string
-    FTerm::putstring (ESC "Ptmux;" ESC);
+    FTerm::paddingPrint (ESC "Ptmux;" ESC);
   }
   else if ( fterm_data.isTermType(FTermType::screen) )
   {
     // GNU Screen device control string
-    FTerm::putstring (ESC "P");
+    FTerm::paddingPrint (ESC "P");
   }
 }
 
@@ -722,7 +722,7 @@ void FTermXTerminal::oscPostfix() const
   if ( fterm_data.isTermType(FTermType::screen | FTermType::tmux) )
   {
     // GNU Screen/tmux string terminator
-    FTerm::putstring (ESC "\\");
+    FTerm::paddingPrint (ESC "\\");
   }
 }
 
@@ -743,7 +743,7 @@ FString FTermXTerminal::captureXTermFont() const
 
   // Querying the terminal font
   oscPrefix();
-  FTerm::putstring (OSC "50;?" BEL);
+  FTerm::paddingPrint (OSC "50;?" BEL);
   oscPostfix();
   std::fflush(stdout);
   FD_ZERO(&ifds);
@@ -798,7 +798,7 @@ FString FTermXTerminal::captureXTermTitle() const
   const int stdin_no{FTermios::getStdIn()};
 
   // Report window title
-  FTerm::putstring (CSI "21t");
+  FTerm::paddingPrint (CSI "21t");
   std::fflush(stdout);
   FD_ZERO(&ifds);
   FD_SET(stdin_no, &ifds);
@@ -852,11 +852,11 @@ void FTermXTerminal::enableXTermMouse()
   if ( mouse_support )
     return;  // The mouse is already activated
 
-  FTerm::putstring (CSI "?1001s"    // save old highlight mouse tracking
-                    CSI "?1000;"    // enable x11 mouse tracking
-                         "1002;"    // enable cell motion mouse tracking
-                         "1015;"    // enable urxvt mouse mode
-                         "1006h");  // enable SGR mouse mode
+  FTerm::paddingPrint (CSI "?1001s"    // save old highlight mouse tracking
+                       CSI "?1000;"    // enable x11 mouse tracking
+                            "1002;"    // enable cell motion mouse tracking
+                            "1015;"    // enable urxvt mouse mode
+                            "1006h");  // enable SGR mouse mode
   std::fflush(stdout);
   mouse_support = true;
 }
@@ -869,11 +869,11 @@ void FTermXTerminal::disableXTermMouse()
   if ( ! mouse_support )
     return;  // The mouse was already deactivated
 
-  FTerm::putstring (CSI "?1006;"    // disable SGR mouse mode
-                         "1015;"    // disable urxvt mouse mode
-                         "1002;"    // disable cell motion mouse tracking
-                         "1000l"    // disable x11 mouse tracking
-                    CSI "?1001r");  // restore old highlight mouse tracking
+  FTerm::paddingPrint (CSI "?1006;"    // disable SGR mouse mode
+                            "1015;"    // disable urxvt mouse mode
+                            "1002;"    // disable cell motion mouse tracking
+                            "1000l"    // disable x11 mouse tracking
+                       CSI "?1001r");  // restore old highlight mouse tracking
   std::fflush(stdout);
   mouse_support = false;
 }
@@ -886,8 +886,8 @@ void FTermXTerminal::enableXTermMetaSendsESC()
   if ( meta_sends_esc )
     return;
 
-  FTerm::putstring (CSI "?1036s"    // save meta key sends escape
-                    CSI "?1036h");  // enable meta key sends escape
+  FTerm::paddingPrint (CSI "?1036s"    // save meta key sends escape
+                       CSI "?1036h");  // enable meta key sends escape
   std::fflush(stdout);
   meta_sends_esc = true;
 }
@@ -900,7 +900,7 @@ void FTermXTerminal::disableXTermMetaSendsESC()
   if ( ! meta_sends_esc )
     return;
 
-  FTerm::putstring (CSI "?1036r");  // restore meta key sends escape
+  FTerm::paddingPrint (CSI "?1036r");  // restore meta key sends escape
   std::fflush(stdout);
   meta_sends_esc = false;
 }

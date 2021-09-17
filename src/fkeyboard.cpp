@@ -288,9 +288,9 @@ inline FKey FKeyboard::getTermcapKey()
   for (auto&& entry : *key_map)
   {
     const char* kstr = entry.string;
-    const std::size_t len = kstr ? stringLength(kstr) : 0;
+    const std::size_t len = entry.length;
 
-    if ( kstr && std::strncmp(kstr, fifo_buf, len) == 0 )  // found
+    if ( len > 0 && std::strncmp(kstr, fifo_buf, len) == 0 )  // found
     {
       std::size_t n{};
 
@@ -318,7 +318,7 @@ inline FKey FKeyboard::getKnownKey()
   for (auto&& entry : FKeyMap::getKeyMap())
   {
     const char* kstr = entry.string;  // The string is never null
-    const std::size_t len = stringLength(kstr);
+    const std::size_t len = entry.length;
 
     if ( std::strncmp(kstr, fifo_buf, len) == 0 )  // found
     {

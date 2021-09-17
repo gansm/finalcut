@@ -148,6 +148,11 @@ class FSystemImpl : public FSystem
       return std::fclose (fp);
     }
 
+    int fputs (const char* str, FILE* stream) override
+    {
+      return std::fputs (str, stream);
+    }
+
     int putchar (int c) override
     {
 #if defined(__sun) && defined(__SVR4)

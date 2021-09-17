@@ -20,9 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-#if defined(__CYGWIN__)
-  #include <unistd.h>  // need for ttyname_r
-#endif
+#include <unistd.h>
 
 #include "final/fapplication.h"
 #include "final/fkeyboard.h"
@@ -34,6 +32,7 @@
 #include "final/ftermcap.h"
 #include "final/ftermdata.h"
 #include "final/ftermfreebsd.h"
+#include "final/ftermios.h"
 #include "final/ftermoutput.h"
 #include "final/ftermxterminal.h"
 
@@ -184,7 +183,7 @@ void FTermOutput::setCursor (FPoint p)
   const auto& move_str = FTerm::moveCursorString (term_x, term_y, x, y);
 
   if ( ! move_str.empty() )
-    appendOutputBuffer(FTermControl{move_str});
+    appendOutputBuffer (FTermControl{move_str});
 
   tpos->setPoint(x, y);
 }
@@ -213,7 +212,7 @@ void FTermOutput::hideCursor (bool enable)
   if ( visibility_str.empty() )  // Exit the function if the string is empty
     return;
 
-  appendOutputBuffer(FTermControl{visibility_str});
+  appendOutputBuffer (FTermControl{visibility_str});
   flush();
 }
 
@@ -436,22 +435,13 @@ void FTermOutput::flush()
   while ( ! output_buffer->empty() )
   {
     const auto& first = output_buffer->front();
-    const auto& type = std::get<0>(first);
-    const auto& str = std::get<1>(first);
+    const auto& type = first.type;
+    const auto& data = first.data;
 
     if ( type == OutputType::String )
-    {
-      static const FTerm::defaultPutChar& FTermPutchar = FTerm::putchar();
-
-      if ( ! FTermPutchar )
-        return;
-
-      std::for_each ( str.wstring.begin()
-                    , str.wstring.end()
-                    , [] (wchar_t ch) { FTermPutchar(int(ch)); } );
-    }
+      FTerm::putstring(data);
     else if ( type == OutputType::Control )
-      FTerm::putstring (str.string);
+      FTerm::paddingPrint(data);
 
     output_buffer->pop();
   }
@@ -854,7 +844,7 @@ void FTermOutput::printFullWidthCharacter ( uInt& x, uInt y
   {
     // Print ellipses for the 1st full-width character column
     appendAttributes (print_char);
-    appendOutputBuffer (FTermChar{wchar_t(UniChar::HorizontalEllipsis)});
+    appendOutputBuffer (FTermUniChar{UniChar::HorizontalEllipsis});
     term_pos->x_ref()++;
     markAsPrinted (x, y);
 
@@ -863,7 +853,7 @@ void FTermOutput::printFullWidthCharacter ( uInt& x, uInt y
       // Print ellipses for the 2nd full-width character column
       x++;
       appendAttributes (next_char);
-      appendOutputBuffer (FTermChar{wchar_t(UniChar::HorizontalEllipsis)});
+      appendOutputBuffer (FTermUniChar{UniChar::HorizontalEllipsis});
       term_pos->x_ref()++;
       markAsPrinted (x, y);
     }
@@ -908,7 +898,7 @@ void FTermOutput::printFullWidthPaddingCharacter ( uInt& x, uInt y
   {
     // Print ellipses for the 1st full-width character column
     appendAttributes (print_char);
-    appendOutputBuffer (FTermChar{wchar_t(UniChar::HorizontalEllipsis)});
+    appendOutputBuffer (FTermUniChar{UniChar::HorizontalEllipsis});
     term_pos->x_ref()++;
     markAsPrinted (x, y);
   }
@@ -937,7 +927,7 @@ void FTermOutput::printHalfCovertFullWidthCharacter ( uInt& x, uInt y
       x--;
       term_pos->x_ref()--;
       appendAttributes (prev_char);
-      appendOutputBuffer (FTermChar{wchar_t(UniChar::HorizontalEllipsis)});
+      appendOutputBuffer (FTermUniChar{UniChar::HorizontalEllipsis});
       term_pos->x_ref()++;
       markAsPrinted (x, y);
       x++;
@@ -1364,7 +1354,12 @@ inline void FTermOutput::appendChar (FChar& next_char)
   for (auto&& ch : next_char.encoded_char)
   {
     if ( ch != L'\0')
-      appendOutputBuffer (FTermChar{ch});
+    {
+      if ( getEncoding() == Encoding::UTF8 )
+        appendOutputBuffer (FTermString{unicode_to_utf8(ch)});
+      else
+        appendOutputBuffer (FTermString{std::string(1, ch)});
+    }
 
     if ( ! combined_char_support )
       return;
@@ -1451,26 +1446,15 @@ inline void FTermOutput::characterFilter (FChar& next_char)
 }
 
 //----------------------------------------------------------------------
-inline bool FTermOutput::isOutputBufferLimitReached() const
-{
-  return output_buffer->size() >= TERMINAL_OUTPUT_BUFFER_LIMIT;
-}
-
-//----------------------------------------------------------------------
 inline void FTermOutput::appendOutputBuffer (const FTermControl& ctrl)
 {
-  output_buffer->emplace( std::make_tuple( OutputType::Control,
-                                           TermString(ctrl.string) ) );
-
-  if ( isOutputBufferLimitReached() )
-    flush();
+  output_buffer->push( {OutputType::Control, ctrl.string} );
 }
 
 //----------------------------------------------------------------------
-inline void FTermOutput::appendOutputBuffer (const FTermChar& c)
+inline void FTermOutput::appendOutputBuffer (const FTermUniChar& c)
 {
-  if ( c.ch != L'\0' )
-    appendOutputBuffer(FTermString{std::wstring(1, c.ch)});
+  appendOutputBuffer(FTermString{unicode_to_utf8(wchar_t(c.ch))});
 }
 
 //----------------------------------------------------------------------
@@ -1478,19 +1462,14 @@ void FTermOutput::appendOutputBuffer (const FTermString& str)
 {
   auto& last = output_buffer->back();
 
-  if ( ! output_buffer->empty()
-    && std::get<0>(last) == OutputType::String )
+  if ( ! output_buffer->empty() && last.type == OutputType::String )
   {
     // Append string data to the back element
-    auto& string_buf = std::get<1>(last);
-    string_buf.wstring.append(str.string);
+    auto& string_buf = last.data;
+    string_buf.append(str.string);
   }
   else
-    output_buffer->emplace( std::make_tuple( OutputType::String,
-                                             TermString(str.string) ) );
-
-  if ( isOutputBufferLimitReached() )
-    flush();
+    output_buffer->push( {OutputType::String, str.string} );
 }
 
 }  // namespace finalcut

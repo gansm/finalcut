@@ -631,7 +631,7 @@ void FTerm::setKDECursor (KdeKonsoleCursorShape style)
     return;
 
   oscPrefix();
-  putstringf (OSC "50;CursorShape=%d" BEL, style);
+  paddingPrintf (OSC "50;CursorShape=%d" BEL, style);
   oscPostfix();
   std::fflush(stdout);
 }
@@ -651,7 +651,7 @@ void FTerm::resetColorMap()
   const auto& op = TCAP(t_orig_pair);
 
   if ( oc )
-    putstring (oc);
+    paddingPrint (oc);
 
 #if defined(__linux__)
   else
@@ -659,7 +659,7 @@ void FTerm::resetColorMap()
 #endif
 
   if ( op )
-    putstring (op);
+    paddingPrint (op);
 
   std::fflush(stdout);
 }
@@ -690,7 +690,7 @@ void FTerm::setPalette (FColor index, int r, int g, int b)
 
     if ( ! color_str.empty() )
     {
-      putstring (color_str);
+      paddingPrint (color_str);
       state = true;
     }
   }
@@ -747,7 +747,7 @@ void FTerm::beep()
 {
   if ( TCAP(t_bell) )
   {
-    putstring (TCAP(t_bell));
+    paddingPrint (TCAP(t_bell));
     std::fflush(stdout);
   }
 }
@@ -764,29 +764,6 @@ void FTerm::setEncoding (Encoding enc)
 
   static auto& data = FTermData::getInstance();
   data.setTermEncoding (enc);
-
-  // Set the new putchar() function pointer
-  switch ( enc )
-  {
-    case Encoding::UTF8:
-      putchar() = &FTerm::putchar_UTF8;
-      break;
-
-    case Encoding::VT100:
-    case Encoding::PC:
-      if ( data.isTermType(FTermType::xterm)
-        && data.hasUTF8Console() )
-        putchar() = &FTerm::putchar_UTF8;
-      else
-        putchar() = &FTerm::putchar_ASCII;
-      break;
-
-    case Encoding::ASCII:
-    case Encoding::Unknown:
-    case Encoding::NUM_OF_ENCODINGS:
-      putchar() = &FTerm::putchar_ASCII;
-      break;
-  }
 
   if ( data.isTermType(FTermType::linux_con) )
   {
@@ -850,7 +827,7 @@ bool FTerm::scrollTermForward()
 {
   if ( TCAP(t_scroll_forward) )
   {
-    putstring (TCAP(t_scroll_forward));
+    paddingPrint (TCAP(t_scroll_forward));
     std::fflush(stdout);
     return true;
   }
@@ -863,7 +840,7 @@ bool FTerm::scrollTermReverse()
 {
   if ( TCAP(t_scroll_reverse) )
   {
-    putstring (TCAP(t_scroll_reverse));
+    paddingPrint (TCAP(t_scroll_reverse));
     std::fflush(stdout);
     return true;
   }
@@ -872,16 +849,9 @@ bool FTerm::scrollTermReverse()
 }
 
 //----------------------------------------------------------------------
-FTerm::defaultPutChar& FTerm::putchar()
+void FTerm::paddingPrint (const std::string& str, int affcnt)
 {
-  static const auto& fputchar = make_unique<defaultPutChar>(&FTerm::putchar_ASCII);
-  return *fputchar.get();
-}
-
-//----------------------------------------------------------------------
-void FTerm::putstring (const std::string& str, int affcnt)
-{
-  auto status = FTermcap::paddingPrint (str, affcnt, FTerm::putchar_ASCII);
+  auto status = FTermcap::paddingPrint (str, affcnt, FTerm::putchar);
 
   if ( status == FTermcap::Status::Error )
   {
@@ -890,51 +860,22 @@ void FTerm::putstring (const std::string& str, int affcnt)
 }
 
 //----------------------------------------------------------------------
-int FTerm::putchar_ASCII (int c)
+int FTerm::putstring (const std::string& str)
+{
+  static const auto& fsys = FSystem::getInstance();
+  auto put = [] (const std::string& string)
+             {
+               return fsys->fputs(string.c_str(), stdout);
+             };
+  return put(str);
+}
+
+//----------------------------------------------------------------------
+int FTerm::putchar (int c)
 {
   static const auto& fsys = FSystem::getInstance();
   auto put = [] (int ch) { return fsys->putchar(ch); };
   return put(char(c));
-}
-
-//----------------------------------------------------------------------
-int FTerm::putchar_UTF8 (int c)
-{
-  static const auto& fsys = FSystem::getInstance();
-  auto put = [] (int ch) { fsys->putchar(ch); };
-
-  if ( c < 0x80 )
-  {
-    // 1 Byte (7-bit): 0xxxxxxx
-    put (c);
-    return 1;
-  }
-  else if ( c < 0x800 )
-  {
-    // 2 byte (11-bit): 110xxxxx 10xxxxxx
-    put (0xc0 | (c >> 6) );
-    put (0x80 | (c & 0x3f) );
-    return 2;
-  }
-  else if ( c < 0x10000 )
-  {
-    // 3 byte (16-bit): 1110xxxx 10xxxxxx 10xxxxxx
-    put (0xe0 | (c >> 12) );
-    put (0x80 | ((c >> 6) & 0x3f) );
-    put (0x80 | (c & 0x3f) );
-    return 3;
-  }
-  else if ( c < 0x200000 )
-  {
-    // 4 byte (21-bit): 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-    put (0xf0 | (c >> 18) );
-    put (0x80 | ((c >> 12) & 0x3f) );
-    put (0x80 | ((c >> 6) & 0x3f) );
-    put (0x80 | (c & 0x3f) );
-    return 4;
-  }
-  else
-    return EOF;
 }
 
 
@@ -1013,12 +954,12 @@ void FTerm::oscPrefix()
   if ( data.isTermType(FTermType::tmux) )
   {
     // tmux device control string
-    putstring (ESC "Ptmux;" ESC);
+    paddingPrint (ESC "Ptmux;" ESC);
   }
   else if ( data.isTermType(FTermType::screen) )
   {
     // GNU Screen device control string
-    putstring (ESC "P");
+    paddingPrint (ESC "P");
   }
 }
 
@@ -1031,7 +972,7 @@ void FTerm::oscPostfix()
     || data.isTermType(FTermType::tmux) )
   {
     // GNU Screen/tmux string terminator
-    putstring (ESC "\\");
+    paddingPrint (ESC "\\");
   }
 }
 
@@ -1382,7 +1323,7 @@ void FTerm::init_locale()
 //----------------------------------------------------------------------
 void FTerm::init_encoding()
 {
-  // detect encoding and set the putchar() function pointer
+  // detect encoding
 
   bool force_vt100{false};  // VT100 line drawing (G1 character set)
   init_encoding_set();
@@ -1436,7 +1377,6 @@ void FTerm::init_term_encoding()
   {
     data.setUTF8Console(true);
     data.setTermEncoding (Encoding::UTF8);
-    putchar() = &FTerm::putchar_UTF8;  // function pointer
     data.setUTF8(true);
     setUTF8(true);
     static auto& keyboard = FKeyboard::getInstance();
@@ -1448,13 +1388,11 @@ void FTerm::init_term_encoding()
   {
     data.setVT100Console (true);
     data.setTermEncoding (Encoding::VT100);
-    putchar() = &FTerm::putchar_ASCII;  // function pointer
   }
   else
   {
     data.setASCIIConsole (true);
     data.setTermEncoding (Encoding::ASCII);
-    putchar() = &FTerm::putchar_ASCII;  // function pointer
   }
 }
 
@@ -1471,12 +1409,6 @@ void FTerm::init_individual_term_encoding()
   if ( isNewFont() || is_non_utf8_putty || is_non_utf8_teraterm )
   {
     data.setTermEncoding (Encoding::PC);
-    putchar() = &FTerm::putchar_ASCII;  // function pointer
-
-    if ( hasUTF8()
-      && getStartOptions().encoding == Encoding::Unknown
-      && data.isTermType(FTermType::xterm) )
-      putchar() = &FTerm::putchar_UTF8;  // function pointer
   }
 }
 
@@ -1486,7 +1418,6 @@ void FTerm::init_force_vt100_encoding()
   static auto& data = FTermData::getInstance();
   data.setVT100Console(true);
   data.setTermEncoding (Encoding::VT100);
-  putchar() = &FTerm::putchar_ASCII;  // function pointer
 }
 
 //----------------------------------------------------------------------
@@ -1502,7 +1433,6 @@ void FTerm::init_utf8_without_alt_charset()
   {
     data.setASCIIConsole(true);
     data.setTermEncoding (Encoding::ASCII);
-    putchar() = &FTerm::putchar_ASCII;  // function pointer
   }
 }
 
@@ -1702,7 +1632,7 @@ inline void FTerm::enableKeypad()
 
   if ( TCAP(t_keypad_xmit) )
   {
-    putstring (TCAP(t_keypad_xmit));
+    paddingPrint (TCAP(t_keypad_xmit));
     std::fflush(stdout);
   }
 }
@@ -1714,7 +1644,7 @@ inline void FTerm::disableKeypad()
 
   if ( TCAP(t_keypad_local) )
   {
-    putstring (TCAP(t_keypad_local));
+    paddingPrint (TCAP(t_keypad_local));
     std::fflush(stdout);
   }
 }
@@ -1726,7 +1656,7 @@ inline void FTerm::enableAlternateCharset()
 
   if ( TCAP(t_enable_acs) )
   {
-    putstring (TCAP(t_enable_acs));
+    paddingPrint (TCAP(t_enable_acs));
     std::fflush(stdout);
   }
 }
@@ -1737,7 +1667,7 @@ inline void FTerm::enableApplicationEscKey()
   // switch to application escape key mode
 
   if ( FTermData::getInstance().isTermType(FTermType::mintty) )
-    FTerm::putstring (CSI "?7727h");
+    FTerm::paddingPrint (CSI "?7727h");
 }
 
 //----------------------------------------------------------------------
@@ -1746,7 +1676,7 @@ inline void FTerm::disableApplicationEscKey()
   // Switch to normal escape key mode
 
   if ( FTermData::getInstance().isTermType(FTermType::mintty) )
-    putstring (CSI "?7727l");
+    paddingPrint (CSI "?7727l");
 }
 
 //----------------------------------------------------------------------
@@ -1760,14 +1690,14 @@ void FTerm::useAlternateScreenBuffer()
   // Save current cursor position
   if ( TCAP(t_save_cursor) )
   {
-    putstring (TCAP(t_save_cursor));
+    paddingPrint (TCAP(t_save_cursor));
     std::fflush(stdout);
   }
 
   // Saves the screen and the cursor position
   if ( TCAP(t_enter_ca_mode) )
   {
-    putstring (TCAP(t_enter_ca_mode));
+    paddingPrint (TCAP(t_enter_ca_mode));
     std::fflush(stdout);
     FTermData::getInstance().setAlternateScreenInUse(true);
   }
@@ -1784,7 +1714,7 @@ void FTerm::useNormalScreenBuffer()
   // restores the screen and the cursor position
   if ( TCAP(t_exit_ca_mode) )
   {
-    putstring (TCAP(t_exit_ca_mode));
+    paddingPrint (TCAP(t_exit_ca_mode));
     std::fflush(stdout);
     FTermData::getInstance().setAlternateScreenInUse(false);
   }
@@ -1792,7 +1722,7 @@ void FTerm::useNormalScreenBuffer()
   // restore cursor to position of last save_cursor
   if ( TCAP(t_restore_cursor) )
   {
-    putstring (TCAP(t_restore_cursor));
+    paddingPrint (TCAP(t_restore_cursor));
     std::fflush(stdout);
   }
 }
@@ -2020,14 +1950,14 @@ void FTerm::finish() const
   // Turn off all attributes
   if ( TCAP(t_exit_attribute_mode) )
   {
-    putstring (TCAP(t_exit_attribute_mode));
+    paddingPrint (TCAP(t_exit_attribute_mode));
     std::fflush(stdout);
   }
 
   // Turn off pc charset mode
   if ( TCAP(t_exit_pc_charset_mode) )
   {
-    putstring (TCAP(t_exit_pc_charset_mode));
+    paddingPrint (TCAP(t_exit_pc_charset_mode));
     std::fflush(stdout);
   }
 

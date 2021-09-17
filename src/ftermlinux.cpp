@@ -111,9 +111,9 @@ void FTermLinux::setUTF8 (bool enable) const
     return;
 
   if ( enable )
-    FTerm::putstring (ESC "%G");
+    FTerm::paddingPrint (ESC "%G");
   else
-    FTerm::putstring (ESC "%@");
+    FTerm::paddingPrint (ESC "%@");
 
   std::fflush(stdout);
 }
@@ -426,9 +426,9 @@ void FTermLinux::setBeep (int Hz, int ms) const
   if ( ms < 0 || ms > 1999 )
     return;
 
-  FTerm::putstringf ( CSI "10;%d]"
-                      CSI "11;%d]"
-                    , Hz, ms );
+  FTerm::paddingPrintf ( CSI "10;%d]"
+                         CSI "11;%d]"
+                       , Hz, ms );
   std::fflush(stdout);
 }
 
@@ -440,8 +440,8 @@ void FTermLinux::resetBeep() const
 
   // Default frequency: 750 Hz
   // Default duration:  125 ms
-  FTerm::putstring ( CSI "10;750]"
-                     CSI "11;125]" );
+  FTerm::paddingPrint ( CSI "10;750]"
+                        CSI "11;125]" );
   std::fflush(stdout);
 }
 
@@ -731,7 +731,7 @@ int FTermLinux::setUnicodeMap (struct unimapdesc* unimap) const
 //----------------------------------------------------------------------
 void FTermLinux::setLinuxCursorStyle (CursorStyle style) const
 {
-  FTerm::putstringf (CSI "?%dc", style);
+  FTerm::paddingPrintf (CSI "?%dc", style);
 }
 
 #if defined(ISA_SYSCTL_SUPPORT)

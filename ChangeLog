@@ -1,3 +1,9 @@
+2021-09-17 Markus Gans  <guru.mail@muenster.de>
+	* Output optimization: Wide strings are now converted to 
+	  UTF-8 strings before they are inserted into the output buffer
+	* Key maps now store the length of the string to speed up 
+	  key string parsing
+
 2021-09-15 Markus Gans  <guru.mail@muenster.de>
 	* setExitMessage is now a function without object dependencies, 
 	  so it can be called from anywhere
