@@ -187,10 +187,10 @@ all: dep $(OBJS)
 $(LIB): all
 
 debug:
-	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -Wall -Wextra -Wpedantic -Weverything -Wno-padded -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-implicit-fallthrough -Wno-reserved-id-macro -Wno-format-nonliteral"
+	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -Wall -Wextra -Wpedantic -Weverything -Wno-padded -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-implicit-fallthrough -Wno-reserved-id-macro -Wno-format-nonliteral -Wno-switch-enum -Wno-covered-switch-default"
 
 unittest:
-	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -DUNIT_TEST -Wall -Wextra -Wpedantic -Weverything -Wno-padded -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-implicit-fallthrough -Wno-reserved-id-macro -Wno-format-nonliteral"
+	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -DUNIT_TEST -Wall -Wextra -Wpedantic -Weverything -Wno-padded -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-implicit-fallthrough -Wno-reserved-id-macro -Wno-format-nonliteral -Wno-switch-enum -Wno-covered-switch-default"
 
 profile:
 	$(MAKE) $(MAKEFILE) PROFILE="-pg"

@@ -189,19 +189,6 @@ void initScrollbar ( FScrollbarPtr& bar
   );
 }
 
-//----------------------------------------------------------------------
-inline void AssertScrollType (const FScrollbar::ScrollType scroll_type)
-{
-  assert ( scroll_type == FScrollbar::ScrollType::None
-        || scroll_type == FScrollbar::ScrollType::Jump
-        || scroll_type == FScrollbar::ScrollType::StepBackward
-        || scroll_type == FScrollbar::ScrollType::StepForward
-        || scroll_type == FScrollbar::ScrollType::PageBackward
-        || scroll_type == FScrollbar::ScrollType::PageForward
-        || scroll_type == FScrollbar::ScrollType::WheelUp
-        || scroll_type == FScrollbar::ScrollType::WheelDown );
-}
-
 
 // FScrollbar inline functions
 //----------------------------------------------------------------------

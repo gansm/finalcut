@@ -40,6 +40,7 @@
 #include "final/ftermbuffer.h"
 #include "final/fwidgetcolors.h"
 
+
 namespace finalcut
 {
 
@@ -930,10 +931,6 @@ void FListView::sort()
     return;
 
   SortType column_sort_type = getColumnSortType(sort_column);
-  assert ( column_sort_type == SortType::Name
-        || column_sort_type == SortType::Number
-        || column_sort_type == SortType::UserDefined
-        || column_sort_type == SortType::Unknown );
 
   switch ( column_sort_type )
   {
@@ -970,6 +967,9 @@ void FListView::sort()
         sort (user_defined_descending);
       }
       break;
+
+    default:
+      return;
   }
 
   current_iter = itemlist.begin();
@@ -1575,13 +1575,13 @@ void FListView::drawHeadlines()
     || max_line_width < 1 )
     return;
 
-  HeaderItems::const_iterator iter = header.begin();
+  auto iter = header.cbegin();
   headerline.clear();
 
   if ( hasCheckableItems() )
     drawHeaderBorder(4);  // Draw into FTermBuffer object
 
-  while ( iter != header.end() )
+  while ( iter != header.cend() )
   {
     if ( ! iter->name.isEmpty() )
       drawHeadlineLabel(iter);  // Draw into FTermBuffer object
@@ -1899,7 +1899,7 @@ void FListView::drawHeadlineLabel (const HeaderItems::const_iterator& iter)
   const auto width = std::size_t(iter->width);
   std::size_t column_width = getColumnWidth(txt);
   const std::size_t column_max = leading_space + width;
-  const HeaderItems::const_iterator first = header.begin();
+  const auto first = header.cbegin();
   const int column = int(std::distance(first, iter)) + 1;
   const bool has_sort_indicator( sort_column == column && ! hide_sort_indicator );
   const auto& wc = getColorTheme();
@@ -1948,9 +1948,7 @@ void FListView::drawBufferedHeadline()
   std::size_t offset{0};
   bool left_truncated_fullwidth{false};
   bool right_truncated_fullwidth{false};
-  std::vector<FChar>::const_iterator first{};
-  std::vector<FChar>::const_iterator last{};
-  last = headerline.end();
+  auto last = headerline.end();
 
   // Search for the start position
   for (auto&& tc : headerline)
@@ -1971,7 +1969,7 @@ void FListView::drawBufferedHeadline()
     }
   }
 
-  first = headerline.begin();
+  auto first = headerline.begin();
   std::advance(first, offset);
 
   // Search for the end position
@@ -2726,7 +2724,6 @@ void FListView::cb_vbarChange (const FWidget*)
   static constexpr int wheel_distance = 4;
   int distance{1};
   first_line_position_before = first_visible_line.getPosition();
-  AssertScrollType(scroll_type);
 
   switch ( scroll_type )
   {
@@ -2782,7 +2779,6 @@ void FListView::cb_hbarChange (const FWidget*)
   static constexpr int wheel_distance = 4;
   int distance{1};
   const int xoffset_before = xoffset;
-  AssertScrollType(scroll_type);
 
   switch ( scroll_type )
   {

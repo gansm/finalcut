@@ -981,98 +981,20 @@ FMenu* FMenu::superMenuAt (int x, int y)
 }
 
 //----------------------------------------------------------------------
-bool FMenu::selectNextItem()
+void FMenu::selectItem_PostProcessing (FMenuItem* sel_item)
 {
-  const auto& list = getItemList();
-  auto iter = list.begin();
+  setTerminalUpdates (FVTerm::TerminalUpdate::Stop);
+  unselectItem();
+  sel_item->setSelected();
+  sel_item->setFocus();
 
-  while ( iter != list.end() )
-  {
-    if ( (*iter)->isSelected() )
-    {
-      FMenuItem* next{};
-      auto next_element = iter;
+  if ( getStatusBar() )
+    getStatusBar()->drawMessage();
 
-      do
-      {
-        ++next_element;
-        if ( next_element == list.end() )
-          next_element = list.begin();
-        next = *next_element;
-      }
-      while ( ! next->isEnabled()
-           || ! next->acceptFocus()
-           || ! next->isShown()
-           || next->isSeparator() );
-
-      if ( next == *iter )
-        return false;
-
-      unselectItem();
-      next->setSelected();
-      setSelectedItem(next);
-      next->setFocus();
-
-      if ( getStatusBar() )
-        getStatusBar()->drawMessage();
-
-      redraw();
-      forceTerminalUpdate();
-      break;
-    }
-
-    ++iter;
-  }
-
-  return true;
-}
-
-//----------------------------------------------------------------------
-bool FMenu::selectPrevItem()
-{
-  const auto& list = getItemList();
-  auto iter = list.end();
-
-  do
-  {
-    --iter;
-
-    if ( (*iter)->isSelected() )
-    {
-      FMenuItem* prev;
-      auto prev_element = iter;
-
-      do
-      {
-        if ( prev_element == list.begin() )
-          prev_element = list.end();
-        --prev_element;
-        prev = *prev_element;
-      }
-      while ( ! prev->isEnabled()
-           || ! prev->acceptFocus()
-           || ! prev->isShown()
-           || prev->isSeparator() );
-
-      if ( prev == *iter )
-        return false;
-
-      unselectItem();
-      prev->setSelected();
-      setSelectedItem(prev);
-      prev->setFocus();
-
-      if ( getStatusBar() )
-        getStatusBar()->drawMessage();
-
-      redraw();
-      forceTerminalUpdate();
-      break;
-    }
-  }
-  while ( iter != list.begin() );
-
-  return true;
+  setSelectedItem(sel_item);
+  redraw();
+  setTerminalUpdates (FVTerm::TerminalUpdate::Start);
+  forceTerminalUpdate();
 }
 
 //----------------------------------------------------------------------

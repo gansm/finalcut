@@ -379,10 +379,10 @@ class FWidget : public FVTerm, public FObject
     virtual void             onClose (FCloseEvent*);
 
   private:
-    struct widget_size_hints
+    struct WidgetSizeHints
     {
-      widget_size_hints() = default;
-      ~widget_size_hints() = default;
+      WidgetSizeHints() = default;
+      ~WidgetSizeHints() = default;
 
       void setMinimum (const FSize& s)
       {
@@ -402,10 +402,10 @@ class FWidget : public FVTerm, public FObject
       std::size_t max_height{INT_MAX};
     };
 
-    struct dbl_line_mask
+    struct DoubleLineMask
     {
-      dbl_line_mask() = default;
-      ~dbl_line_mask() = default;
+      DoubleLineMask() = default;
+      ~DoubleLineMask() = default;
 
       std::vector<bool> top{};
       std::vector<bool> right{};
@@ -413,10 +413,10 @@ class FWidget : public FVTerm, public FObject
       std::vector<bool> left{};
     };
 
-    struct widget_padding
+    struct WidgetPadding
     {
-      widget_padding() = default;
-      ~widget_padding() = default;
+      WidgetPadding() = default;
+      ~WidgetPadding() = default;
 
       int top{0};
       int left{0};
@@ -447,9 +447,9 @@ class FWidget : public FVTerm, public FObject
     // Data members
     struct FWidgetFlags      flags{};
     FPoint                   widget_cursor_position{-1, -1};
-    widget_size_hints        size_hints{};
-    dbl_line_mask            double_flatline_mask{};
-    widget_padding           padding{};
+    WidgetSizeHints          size_hints{};
+    DoubleLineMask           double_flatline_mask{};
+    WidgetPadding            padding{};
     bool                     ignore_padding{false};
 
     // widget size

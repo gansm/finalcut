@@ -634,7 +634,7 @@ bool FWindow::minimizeWindow()
     zoomWindow();  // unzoom window
 
   const auto& virtual_win = getVWin();
-  virtual_win->minimized = ( isMinimized() ) ? false : true;
+  virtual_win->minimized = isMinimized();
   const auto& t_geometry = getTermGeometryWithShadow();
   restoreVTerm (t_geometry);
 
@@ -903,7 +903,7 @@ int FWindow::getWindowLayerImpl (FWidget* obj)
   else
     window = obj;
 
-  return FVTerm::getLayer(window);
+  return FVTerm::getLayer(*window);
 }
 
 // non-member functions

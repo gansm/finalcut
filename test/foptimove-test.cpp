@@ -50,6 +50,71 @@ void check_string ( const std::string& s1
   ::CppUnit::Asserter::fail ("Strings are not equal", sourceLine);
 }
 
+//----------------------------------------------------------------------
+class DirectLogger final : public finalcut::FLog
+{
+  public:
+    // Constructor
+    DirectLogger() = default;
+
+    // Destructor
+    ~DirectLogger() noexcept override;
+
+    void info (const std::string& entry) override
+    {
+      output << entry << "\r" << std::endl;
+    }
+
+    void warn (const std::string&) override
+    {
+      // An implementation is not required in this context
+    }
+
+    void error (const std::string&) override
+    {
+      // An implementation is not required in this context
+    }
+
+
+    void debug (const std::string&) override
+    {
+      // An implementation is not required in this context
+    }
+
+    void flush() override
+    {
+      output.flush();
+    }
+
+    void setOutputStream (const std::ostream& os) override
+    { output.rdbuf(os.rdbuf()); }
+
+    void setLineEnding (LineEnding) override
+    {
+      // An implementation is not required in this context
+    }
+
+
+    void enableTimestamp() override
+    {
+      // An implementation is not required in this context
+    }
+
+
+    void disableTimestamp() override
+    {
+      // An implementation is not required in this context
+    }
+
+
+  private:
+    // Data member
+    std::ostream output{std::cerr.rdbuf()};
+};
+
+//----------------------------------------------------------------------
+DirectLogger::~DirectLogger() noexcept = default;  // destructor
+
 
 //----------------------------------------------------------------------
 // class FOptiMoveTest
@@ -202,6 +267,7 @@ void FOptiMoveTest::ansiTest()
   om.set_tabular ("\t");
   om.set_back_tab (CSI "Z");
   om.set_cursor_home (CSI "H");
+  om.set_cursor_to_ll (0);
   om.set_carriage_return ("\r");
   om.set_cursor_up (CSI "A");
   om.set_cursor_down (CSI "B");
@@ -248,6 +314,10 @@ void FOptiMoveTest::ansiTest()
   // ynew is outside screen
   CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 53, 40), CSI "25d");
   CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3), CSI "1d");
+
+  finalcut::FApplication::setLog(std::make_shared<DirectLogger>());
+  std::clog << std::endl;
+  finalcut::printDurations(om);
 }
 
 //----------------------------------------------------------------------
@@ -259,13 +329,17 @@ void FOptiMoveTest::vt100Test()
   om.setTabStop (8);
   om.set_eat_newline_glitch (true);
   om.set_tabular ("\t");
+  om.set_back_tab (0);
   om.set_cursor_home (CSI "H");
+  om.set_cursor_to_ll (0);
   om.set_carriage_return ("\r");
   om.set_cursor_up (CSI "A$<2>");
   om.set_cursor_down ("\n");
   om.set_cursor_right (CSI "C$<2>");
   om.set_cursor_left ("\b");
   om.set_cursor_address (CSI "%i%p1%d;%p2%dH$<5>");
+  om.set_column_address (0);
+  om.set_row_address (0);
   om.set_parm_up_cursor (CSI "%p1%dA");
   om.set_parm_down_cursor (CSI "%p1%dB");
   om.set_parm_right_cursor (CSI "%p1%dC");
@@ -304,6 +378,10 @@ void FOptiMoveTest::vt100Test()
   // ynew is outside screen
   CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 53, 40), "\n");
   CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3), CSI "2A");
+
+  finalcut::FApplication::setLog(std::make_shared<DirectLogger>());
+  std::clog << std::endl;
+  finalcut::printDurations(om);
 }
 
 //----------------------------------------------------------------------
@@ -317,6 +395,7 @@ void FOptiMoveTest::xtermTest()
   om.set_tabular ("\t");
   om.set_back_tab (CSI "Z");
   om.set_cursor_home (CSI "H");
+  om.set_cursor_to_ll (0);
   om.set_carriage_return ("\r");
   om.set_cursor_up (CSI "A");
   om.set_cursor_down ("\n");
@@ -363,6 +442,10 @@ void FOptiMoveTest::xtermTest()
   // ynew is outside screen
   CPPUNIT_ASSERT_STRING (om.moveCursor (53, 23, 53, 40), "\n");
   CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3), CSI "1d");
+
+  finalcut::FApplication::setLog(std::make_shared<DirectLogger>());
+  std::clog << std::endl;
+  finalcut::printDurations(om);
 }
 
 //----------------------------------------------------------------------
@@ -374,7 +457,9 @@ void FOptiMoveTest::rxvtTest()
   om.setTabStop (8);
   om.set_eat_newline_glitch (true);
   om.set_tabular ("\t");
+  om.set_back_tab (0);
   om.set_cursor_home (CSI "H");
+  om.set_cursor_to_ll (0);
   om.set_carriage_return ("\r");
   om.set_cursor_up (CSI "A");
   om.set_cursor_down ("\n");
@@ -421,6 +506,10 @@ void FOptiMoveTest::rxvtTest()
   // ynew is outside screen
   CPPUNIT_ASSERT_STRING (om.moveCursor (53, 23, 53, 40), "\n");
   CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3), CSI "1d");
+
+  finalcut::FApplication::setLog(std::make_shared<DirectLogger>());
+  std::clog << std::endl;
+  finalcut::printDurations(om);
 }
 
 //----------------------------------------------------------------------
@@ -434,6 +523,7 @@ void FOptiMoveTest::linuxTest()
   om.set_tabular ("\t");
   om.set_back_tab (CSI "Z");
   om.set_cursor_home (CSI "H");
+  om.set_cursor_to_ll (0);
   om.set_carriage_return ("\r");
   om.set_cursor_up (CSI "A");
   om.set_cursor_down ("\n");
@@ -480,6 +570,10 @@ void FOptiMoveTest::linuxTest()
   // ynew is outside screen
   CPPUNIT_ASSERT_STRING (om.moveCursor (53, 23, 53, 40), "\n");
   CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3), CSI "1d");
+
+  finalcut::FApplication::setLog(std::make_shared<DirectLogger>());
+  std::clog << std::endl;
+  finalcut::printDurations(om);
 }
 
 //----------------------------------------------------------------------
@@ -492,6 +586,7 @@ void FOptiMoveTest::cygwinTest()
   om.set_tabular ("\t");
   om.set_back_tab (CSI "Z");
   om.set_cursor_home (CSI "H");
+  om.set_cursor_to_ll (0);
   om.set_carriage_return ("\r");
   om.set_cursor_up (CSI "A");
   om.set_cursor_down (CSI "B");
@@ -540,6 +635,10 @@ void FOptiMoveTest::cygwinTest()
   // ynew is outside screen
   CPPUNIT_ASSERT_STRING (om.moveCursor (53, 23, 53, 40), CSI "B");
   CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3), CSI "1d");
+
+  finalcut::FApplication::setLog(std::make_shared<DirectLogger>());
+  std::clog << std::endl;
+  finalcut::printDurations(om);
 }
 
 //----------------------------------------------------------------------
@@ -554,6 +653,7 @@ void FOptiMoveTest::puttyTest()
   om.set_tabular ("\t");
   om.set_back_tab (CSI "Z");
   om.set_cursor_home (CSI "H");
+  om.set_cursor_to_ll (0);
   om.set_carriage_return ("\r");
   om.set_cursor_up (ESC "M");
   om.set_cursor_down (ESC "D");
@@ -600,6 +700,10 @@ void FOptiMoveTest::puttyTest()
   // ynew is outside screen
   CPPUNIT_ASSERT_STRING (om.moveCursor (53, 23, 53, 40), ESC "D");
   CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3), ESC "M" ESC "M");
+
+  finalcut::FApplication::setLog(std::make_shared<DirectLogger>());
+  std::clog << std::endl;
+  finalcut::printDurations(om);
 }
 
 //----------------------------------------------------------------------
@@ -671,6 +775,10 @@ void FOptiMoveTest::teratermTest()
   // ynew is outside screen
   CPPUNIT_ASSERT_STRING (om.moveCursor (53, 23, 53, 40), "\n");
   CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3), CSI "1d");
+
+  finalcut::FApplication::setLog(std::make_shared<DirectLogger>());
+  std::clog << std::endl;
+  finalcut::printDurations(om);
 }
 
 
@@ -691,6 +799,12 @@ void FOptiMoveTest::wyse50Test()
   om.set_cursor_right ("\f");
   om.set_cursor_left ("\b");
   om.set_cursor_address (ESC "=%p1%' '%+%c%p2%' '%+%c");
+  om.set_column_address (0);
+  om.set_row_address (0);
+  om.set_parm_up_cursor (0);
+  om.set_parm_down_cursor (0);
+  om.set_parm_right_cursor (0);
+  om.set_parm_left_cursor (0);
 
   //std::cout << "\nSequence: "
   //          << printSequence(om.moveCursor (1, 2, 3, 4))
@@ -729,6 +843,10 @@ void FOptiMoveTest::wyse50Test()
   // ynew is outside screen
   CPPUNIT_ASSERT_STRING (om.moveCursor (53, 23, 53, 40), "\n");
   CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3), "\v\v");
+
+  finalcut::FApplication::setLog(std::make_shared<DirectLogger>());
+  std::clog << std::endl;
+  finalcut::printDurations(om);
 }
 
 //----------------------------------------------------------------------

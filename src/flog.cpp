@@ -41,11 +41,6 @@ FLog::~FLog()  // destructor
 //----------------------------------------------------------------------
 FLog& FLog::operator << (LogLevel log_level)
 {
-  assert ( log_level == LogLevel::Info
-        || log_level == LogLevel::Warn
-        || log_level == LogLevel::Error
-        || log_level == LogLevel::Debug );
-
   sync();
   std::lock_guard<std::mutex> lock_guard(current_log_mutex);
 
@@ -65,6 +60,9 @@ FLog& FLog::operator << (LogLevel log_level)
 
     case LogLevel::Debug:
       current_log = [this] (const std::string& s) { debug(s); };
+      break;
+
+    default:
       break;
   }
 

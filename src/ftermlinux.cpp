@@ -267,9 +267,7 @@ bool FTermLinux::loadVGAFont()
     {
       // Set the standard vga font 8x16
       const int ret = setScreenFont(fc::__8x16std, 256, 8, 16);
-
-      if ( ret != 0 )
-        vga_font = false;
+      vga_font = bool( ret == 0 );
 
       // Unicode character mapping
       struct unimapdesc unimap;
@@ -314,10 +312,8 @@ bool FTermLinux::loadNewFont()
         ret = setScreenFont(fc::__9x16graph, 256, 8, 16);  // set 9×16
       else
 #endif
-        ret = setScreenFont(fc::__8x16graph, 256, 8, 16);  // set 8×16
-
-      if ( ret != 0 )
-        new_font = false;
+      ret = setScreenFont(fc::__8x16graph, 256, 8, 16);  // set 8×16
+      new_font = bool( ret == 0 );
 
       // Unicode character mapping
       struct unimapdesc unimap;
@@ -360,11 +356,9 @@ bool FTermLinux::loadOldFont()
                                       , screen_font.width
                                       , screen_font.height
                                       , true );
+        retval = bool( ret == 0 );
         delete[] screen_font.data;
         screen_font.data = nullptr;
-
-        if ( ret == 0 )
-          retval = true;
       }
 
       if ( screen_unicode_map.entries )

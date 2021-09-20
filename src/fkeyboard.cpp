@@ -282,27 +282,35 @@ inline FKey FKeyboard::getTermcapKey()
 
   assert ( FIFO_BUF_SIZE > 0 );
 
-  if ( key_map.use_count() == 0 )
+  if ( key_cap_ptr.use_count() == 0 )
     return NOT_SET;
 
-  for (auto&& entry : *key_map)
-  {
-    const char* kstr = entry.string;
-    const std::size_t len = entry.length;
-
-    if ( len > 0 && std::strncmp(kstr, fifo_buf, len) == 0 )  // found
+  const auto& found_key = std::find_if
+  (
+    key_cap_ptr->cbegin(),
+    key_cap_ptr->cend(),
+    [this] (const FKeyMap::KeyCapMap& cap_key)
     {
-      std::size_t n{};
-
-      for (n = len; n < FIFO_BUF_SIZE; n++)  // Remove founded entry
-        fifo_buf[n - len] = fifo_buf[n];
-
-      for (n = n - len; n < FIFO_BUF_SIZE; n++)  // Fill rest with '\0'
-        fifo_buf[n] = '\0';
-
-      unprocessed_buffer_data = bool(fifo_buf[0] != '\0');
-      return entry.num;
+      const auto& kstr = cap_key.string;
+      const auto klen = cap_key.length;
+      const auto len = std::min(klen, std::size_t(fifo_offset) + 1);
+      return ( len > 0 && std::strncmp(kstr, fifo_buf, len) == 0 );
     }
+  );
+
+  if ( found_key != key_cap_ptr->cend() )  // found
+  {
+    const std::size_t len = found_key->length;
+    std::size_t n{};
+
+    for (n = len; n < FIFO_BUF_SIZE; n++)  // Remove founded entry
+      fifo_buf[n - len] = fifo_buf[n];
+
+    for (n = n - len; n < FIFO_BUF_SIZE; n++)  // Fill rest with '\0'
+      fifo_buf[n] = '\0';
+
+    unprocessed_buffer_data = bool(fifo_buf[0] != '\0');
+    return found_key->num;
   }
 
   return NOT_SET;
@@ -315,33 +323,42 @@ inline FKey FKeyboard::getKnownKey()
 
   assert ( FIFO_BUF_SIZE > 0 );
 
-  for (auto&& entry : FKeyMap::getKeyMap())
-  {
-    const char* kstr = entry.string;  // The string is never null
-    const std::size_t len = entry.length;
-
-    if ( std::strncmp(kstr, fifo_buf, len) == 0 )  // found
+  const auto& key_map = FKeyMap::getKeyMap();
+  const auto& found_key = std::find_if
+  (
+    key_map.cbegin(),
+    key_map.cend(),
+    [this] (const FKeyMap::KeyMap& known_key)
     {
-      std::size_t n{};
-
-      if ( len == 2
-        && ( fifo_buf[1] == 'O'
-          || fifo_buf[1] == '['
-          || fifo_buf[1] == ']' )
-        && ! isKeypressTimeout() )
-      {
-        return FKey::Incomplete;
-      }
-
-      for (n = len; n < FIFO_BUF_SIZE; n++)  // Remove founded entry
-        fifo_buf[n - len] = fifo_buf[n];
-
-      for (n = n - len; n < FIFO_BUF_SIZE; n++)  // Fill rest with '\0'
-        fifo_buf[n] = '\0';
-
-      unprocessed_buffer_data = bool(fifo_buf[0] != '\0');
-      return entry.num;
+      const auto& kstr = known_key.string;  // This string is never null
+      const auto klen = known_key.length;
+      const auto len = std::min(klen, std::size_t(fifo_offset) + 1);
+      return ( std::strncmp(kstr, fifo_buf, len) == 0 );
     }
+  );
+
+  if ( found_key != key_map.cend() )  // found
+  {
+    const std::size_t len = found_key->length;
+    std::size_t n{};
+
+    if ( len == 2
+      && ( fifo_buf[1] == 'O'
+        || fifo_buf[1] == '['
+        || fifo_buf[1] == ']' )
+      && ! isKeypressTimeout() )
+    {
+      return FKey::Incomplete;
+    }
+
+    for (n = len; n < FIFO_BUF_SIZE; n++)  // Remove founded entry
+      fifo_buf[n - len] = fifo_buf[n];
+
+    for (n = n - len; n < FIFO_BUF_SIZE; n++)  // Fill rest with '\0'
+      fifo_buf[n] = '\0';
+
+    unprocessed_buffer_data = bool(fifo_buf[0] != '\0');
+    return found_key->num;
   }
 
   return NOT_SET;
@@ -352,9 +369,9 @@ inline FKey FKeyboard::getSingleKey()
 {
   // Looking for single key code in the buffer
 
-  std::size_t n{};
   std::size_t len{1};
-  const auto firstchar = uChar(fifo_buf[0]);
+  std::size_t n{};
+  const auto& firstchar = uChar(fifo_buf[0]);
   FKey keycode{};
 
   // Look for a utf-8 character
@@ -509,7 +526,7 @@ void FKeyboard::parseKeyBuffer()
 //----------------------------------------------------------------------
 FKey FKeyboard::parseKeyString()
 {
-  const auto firstchar = uChar(fifo_buf[0]);
+  const auto& firstchar = uChar(fifo_buf[0]);
 
   if ( firstchar == ESC[0] )
   {

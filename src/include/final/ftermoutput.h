@@ -202,9 +202,9 @@ class FTermOutput final : public FOutput
     void           appendAttributes (FChar&);
     void           appendLowerRight (FChar&);
     void           characterFilter (FChar&);
-    void           appendOutputBuffer (const FTermControl&);
-    void           appendOutputBuffer (const FTermUniChar&);
-    void           appendOutputBuffer (const FTermString&);
+    void           appendOutputBuffer (const FTermControl&) const;
+    void           appendOutputBuffer (const FTermUniChar&) const;
+    void           appendOutputBuffer (const FTermString&) const;
 
     // Data members
     FTerm                         fterm{};

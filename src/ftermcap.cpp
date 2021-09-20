@@ -132,54 +132,6 @@ FTermcap::Status FTermcap::paddingPrint ( const std::string& string
                 || ( ! xon_xoff_flow_control && padding_baudrate
                   && (baudrate >= padding_baudrate) );
   auto iter = string.begin();
-  using iter_type = decltype(iter);
-
-  auto read_digits = [] (iter_type& it, int& number)
-  {
-    while ( std::isdigit(int(*it)) && number < 1000 )
-    {
-      number = number * 10 + (*it - '0');
-      ++it;
-    }
-
-    number *= 10;
-  };
-
-  auto decimal_point = [] (iter_type& it, int& number)
-  {
-    if ( *it == '.' )
-    {
-      ++it;
-
-      if ( std::isdigit(int(*it)) )
-      {
-        number += (*it - '0');  // Position after decimal point
-        ++it;
-      }
-
-      while ( std::isdigit(int(*it)) )
-        ++it;
-    }
-  };
-
-  auto asterisk_slash = [&affcnt, &has_delay] (iter_type& it, int& number)
-  {
-    while ( *it == '*' || *it == '/' )
-    {
-      if ( *it == '*' )
-      {
-        // Padding is proportional to the number of affected lines (suffix '*')
-        number *= affcnt;
-        ++it;
-      }
-      else
-      {
-        // Padding is mandatory (suffix '/')
-        has_delay = true;
-        ++it;
-      }
-    }
-  };
 
   while ( iter != string.end() )
   {
@@ -209,9 +161,9 @@ FTermcap::Status FTermcap::paddingPrint ( const std::string& string
         }
 
         int number = 0;
-        read_digits (iter, number);
-        decimal_point (iter, number);
-        asterisk_slash (iter, number);
+        readDigits (iter, number);
+        decimalPoint (iter, number);
+        asteriskSlash (iter, number, affcnt, has_delay);
 
         if ( *iter != '>' )
         {
@@ -222,7 +174,7 @@ FTermcap::Status FTermcap::paddingPrint ( const std::string& string
         }
         else if ( has_delay && number > 0 )
         {
-          delay_output(number / 10, outc);
+          delayOutput(number / 10, outc);
         }
       }  // end of else (*iter == '<')
     }  // end of else (*iter == '$')
@@ -444,6 +396,57 @@ std::string FTermcap::encodeParams ( const std::string& cap
                      , params[2], params[3], params[4], params[5]
                      , params[6], params[7], params[8] );
   return str ? str : std::string();
+}
+
+//----------------------------------------------------------------------
+inline void FTermcap::readDigits (string_iterator& iter, int& number)
+{
+  while ( std::isdigit(int(*iter)) && number < 1000 )
+  {
+    number = number * 10 + (*iter - '0');
+    ++iter;
+  }
+
+  number *= 10;
+}
+
+//----------------------------------------------------------------------
+inline void FTermcap::decimalPoint (string_iterator& iter, int& number)
+{
+  if ( *iter != '.' )
+    return;
+
+  ++iter;
+
+  if ( std::isdigit(int(*iter)) )
+  {
+    number += (*iter - '0');  // Position after decimal point
+    ++iter;
+  }
+
+  while ( std::isdigit(int(*iter)) )
+    ++iter;
+}
+
+//----------------------------------------------------------------------
+void FTermcap::asteriskSlash ( string_iterator& iter
+                            , int& number, int affcnt, bool& has_delay )
+{
+  while ( *iter == '*' || *iter == '/' )
+  {
+    if ( *iter == '*' )
+    {
+      // Padding is proportional to the number of affected lines (suffix '*')
+      number *= affcnt;
+      ++iter;
+    }
+    else
+    {
+      // Padding is mandatory (suffix '/')
+      has_delay = true;
+      ++iter;
+    }
+  }
 }
 
 

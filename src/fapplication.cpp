@@ -294,7 +294,7 @@ void FApplication::initTerminal()
 //----------------------------------------------------------------------
 void FApplication::setDefaultTheme()
 {
-  static auto foutput = FVTerm::getFOutput();
+  auto foutput = FVTerm::getFOutput();
 
   if ( foutput->getMaxColor() < 16 )  // for 8 color mode
   {
@@ -315,7 +315,7 @@ void FApplication::setDefaultTheme()
 //----------------------------------------------------------------------
 void FApplication::setDarkTheme()
 {
-  static auto foutput = FVTerm::getFOutput();
+  auto foutput = FVTerm::getFOutput();
 
   if ( getStartOptions().color_change )
     foutput->setColorPaletteTheme<default16DarkColorPalette>();
@@ -820,11 +820,11 @@ inline bool FApplication::hasDataInQueue() const
 {
   static const auto& keyboard = FKeyboard::getInstance();
   static const auto& mouse = FMouseControl::getInstance();
-  static auto foutput = FVTerm::getFOutput();
+  auto foutput_ptr = FVTerm::getFOutput();
 
   if ( keyboard.hasDataInQueue()
     || mouse.hasDataInQueue()
-    || foutput->hasTerminalResized() )
+    || foutput_ptr->hasTerminalResized() )
     return true;
 
   return false;
@@ -833,11 +833,11 @@ inline bool FApplication::hasDataInQueue() const
 //----------------------------------------------------------------------
 void FApplication::queuingKeyboardInput() const
 {
-  static auto foutput = FVTerm::getFOutput();
+  auto foutput_ptr = FVTerm::getFOutput();
 
   if ( quit_now
     || internal::var::exit_loop
-    || foutput->hasTerminalResized() )
+    || foutput_ptr->hasTerminalResized() )
     return;
 
   findKeyboardWidget();
@@ -853,12 +853,12 @@ void FApplication::queuingKeyboardInput() const
 void FApplication::queuingMouseInput() const
 {
   static auto& mouse = FMouseControl::getInstance();
-  static auto foutput = FVTerm::getFOutput();
+  auto foutput_ptr = FVTerm::getFOutput();
 
   if ( quit_now
     || internal::var::exit_loop
     || ! mouse.hasData()
-    || foutput->hasTerminalResized() )
+    || foutput_ptr->hasTerminalResized() )
     return;
 
   static auto& keyboard = FKeyboard::getInstance();
@@ -871,11 +871,11 @@ void FApplication::queuingMouseInput() const
 //----------------------------------------------------------------------
 void FApplication::processKeyboardEvent() const
 {
-  static auto foutput = FVTerm::getFOutput();
+  auto foutput_ptr = FVTerm::getFOutput();
 
   if ( quit_now
     || internal::var::exit_loop
-    || foutput->hasTerminalResized() )
+    || foutput_ptr->hasTerminalResized() )
     return;
 
   static auto& keyboard = FKeyboard::getInstance();
@@ -885,11 +885,11 @@ void FApplication::processKeyboardEvent() const
 //----------------------------------------------------------------------
 void FApplication::processMouseEvent() const
 {
-  static auto foutput = FVTerm::getFOutput();
+  auto foutput_ptr = FVTerm::getFOutput();
 
   if ( quit_now
     || internal::var::exit_loop
-    || foutput->hasTerminalResized() )
+    || foutput_ptr->hasTerminalResized() )
     return;
 
   static auto& mouse = FMouseControl::getInstance();
@@ -1261,12 +1261,12 @@ FWidget* FApplication::processParameters (const Args& args)
 //----------------------------------------------------------------------
 void FApplication::processResizeEvent() const
 {
-  static auto foutput = FVTerm::getFOutput();
+  auto foutput_ptr = FVTerm::getFOutput();
 
-  if ( ! foutput->hasTerminalResized() )  // A SIGWINCH signal was received
+  if ( ! foutput_ptr->hasTerminalResized() )  // A SIGWINCH signal was received
     return;
 
-  foutput->detectTerminalSize();  // Detect and save the current terminal size
+  foutput_ptr->detectTerminalSize();  // Detect and save the current terminal size
   static auto& mouse = FMouseControl::getInstance();
   mouse.setMaxWidth (uInt16(getDesktopWidth()));
   mouse.setMaxHeight (uInt16(getDesktopHeight()));
@@ -1274,7 +1274,7 @@ void FApplication::processResizeEvent() const
   sendEvent(internal::var::app_object, &r_ev);
 
   if ( r_ev.isAccepted() )
-    foutput->commitTerminalResize();
+    foutput_ptr->commitTerminalResize();
 }
 
 //----------------------------------------------------------------------

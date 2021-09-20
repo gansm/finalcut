@@ -33,6 +33,7 @@
 #include "final/ftextview.h"
 #include "final/fwidgetcolors.h"
 
+
 namespace finalcut
 {
 
@@ -225,6 +226,11 @@ void FTextView::insert (const FString& str, int pos)
   else
     s = FString{str}.rtrim().expandTabs(getFOutput()->getTabstop());
 
+  auto showHorizontallyScrollable = [this] ()
+  {
+    if ( isShown() && isHorizontallyScrollable() )
+      hbar->show();
+  };
   auto text_split = s.split("\n");
 
   for (auto&& line : text_split)  // Line loop
@@ -247,9 +253,7 @@ void FTextView::insert (const FString& str, int pos)
         hbar->setMaximum (hmax);
         hbar->setPageSize (int(max_line_width), int(getTextWidth()));
         hbar->calculateSliderValues();
-
-        if ( isShown() && isHorizontallyScrollable() )
-          hbar->show();
+        showHorizontallyScrollable();
       }
     }
   }
@@ -698,9 +702,7 @@ inline bool FTextView::isPrintable (wchar_t ch) const
 {
   // Check for printable characters
 
-  const bool utf8 = ( FVTerm::getFOutput()->getEncoding() == Encoding::UTF8 )
-                    ? true
-                    : false;
+  const bool utf8 = (FVTerm::getFOutput()->getEncoding() == Encoding::UTF8);
 
   if ( (utf8 && std::iswprint(std::wint_t(ch)))
     || (! utf8 && std::isprint(char(ch))) )
@@ -742,7 +744,6 @@ void FTextView::cb_vbarChange (const FWidget*)
   const FScrollbar::ScrollType scroll_type = vbar->getScrollType();
   static constexpr int wheel_distance = 4;
   int distance{1};
-  AssertScrollType(scroll_type);
 
   if ( scroll_type >= FScrollbar::ScrollType::StepBackward )
     update_scrollbar = true;
@@ -790,7 +791,6 @@ void FTextView::cb_hbarChange (const FWidget*)
   const FScrollbar::ScrollType scroll_type = hbar->getScrollType();
   static constexpr int wheel_distance = 4;
   int distance{1};
-  AssertScrollType(scroll_type);
 
   if ( scroll_type >= FScrollbar::ScrollType::StepBackward )
     update_scrollbar = true;

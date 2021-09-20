@@ -119,8 +119,7 @@ class FMenuBar : public FWindow, public FMenuList
     // Methods
     void          init();
     void          calculateDimensions() const;
-    bool          selectNextItem();
-    bool          selectPrevItem();
+    void          selectItem_PostProcessing (FMenuItem*) override;
     bool          hotkeyMenu (FKeyEvent*&);
     void          draw() override;
     void          drawItems();

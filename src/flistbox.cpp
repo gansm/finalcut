@@ -31,6 +31,7 @@
 #include "final/fstatusbar.h"
 #include "final/fwidgetcolors.h"
 
+
 namespace finalcut
 {
 
@@ -1697,7 +1698,6 @@ void FListBox::cb_vbarChange (const FWidget*)
   const std::size_t current_before = current;
   int distance{1};
   const int yoffset_before = yoffset;
-  AssertScrollType(scroll_type);
 
   switch ( scroll_type )
   {
@@ -1759,7 +1759,6 @@ void FListBox::cb_hbarChange (const FWidget*)
   static constexpr int padding_space = 2;  // 1 leading space + 1 trailing space
   int distance{1};
   const int xoffset_before = xoffset;
-  AssertScrollType(scroll_type);
 
   switch ( scroll_type )
   {

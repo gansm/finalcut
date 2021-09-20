@@ -962,7 +962,7 @@ void FVTerm::putArea (const FPoint& pos, const FTermArea* area)
 }
 
 //----------------------------------------------------------------------
-int FVTerm::getLayer (const FVTerm* obj)
+int FVTerm::getLayer (const FVTerm& obj)
 {
   // returns the layer from the FVTerm object
 
@@ -976,7 +976,7 @@ int FVTerm::getLayer (const FVTerm* obj)
 
   while ( iter != end )
   {
-    if ( *iter == obj )
+    if ( *iter == &obj )
       break;
 
     ++iter;
@@ -1580,9 +1580,7 @@ bool FVTerm::isTransparentInvisible (const FChar& fchar)
         || fchar.ch[0] == UniChar::LeftHalfBlock
         || fchar.ch[0] == UniChar::RightHalfBlock
         || fchar.ch[0] == UniChar::MediumShade
-        || fchar.ch[0] == UniChar::FullBlock )
-  ? true
-  : false;
+        || fchar.ch[0] == UniChar::FullBlock );
 }
 
 //----------------------------------------------------------------------
@@ -1678,7 +1676,7 @@ FChar FVTerm::getCharacter ( CharacterType char_type
 
   // Get the window layer of this widget object
   const auto has_an_owner = area->hasOwner();
-  const auto area_owner = area->getOwner<FVTerm*>();
+  const auto& area_owner = *area->getOwner<FVTerm*>();
   const int layer = has_an_owner ? getLayer(area_owner) : 0;
 
   for (auto&& win_obj : *win_list)
@@ -1688,11 +1686,11 @@ FChar FVTerm::getCharacter ( CharacterType char_type
     // char_type can be "overlapped_character"
     // or "covered_character"
     if ( char_type == CharacterType::Covered )
-      significant_char = bool(layer >= getLayer(win_obj));
+      significant_char = bool(layer >= getLayer(*win_obj));
     else
-      significant_char = bool(layer < getLayer(win_obj));
+      significant_char = bool(layer < getLayer(*win_obj));
 
-    if ( has_an_owner && area_owner != win_obj && significant_char )
+    if ( has_an_owner && win_obj != &area_owner && significant_char )
     {
       const auto& win = win_obj->getVWin();
 
@@ -1956,15 +1954,13 @@ inline bool FVTerm::changedToTransparency (const FChar& from, const FChar& to) c
 {
   return ( ( ! from.attr.bit.transparent && to.attr.bit.transparent )
         || ( ! from.attr.bit.color_overlay && to.attr.bit.color_overlay )
-        || ( ! from.attr.bit.inherit_background && to.attr.bit.inherit_background ) )
-    ? true
-    : false;
+        || ( ! from.attr.bit.inherit_background && to.attr.bit.inherit_background ) );
 }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::changedFromTransparency (const FChar& from, const FChar& to) const
 {
-  return changedToTransparency(to, from) ? true : false;
+  return changedToTransparency(to, from);
 }
 
 //----------------------------------------------------------------------
@@ -2052,7 +2048,7 @@ bool FVTerm::isInsideTerminal (const FPoint& pos) const
 //----------------------------------------------------------------------
 bool FVTerm::hasPendingUpdates (const FTermArea* area)
 {
-  return ( area && area->has_changes ) ? true : false;
+  return (area && area->has_changes);
 }
 
 }  // namespace finalcut

@@ -120,6 +120,9 @@ class FTermcap final
     static TCapMapType   strings;
 
   private:
+    // Using-declaration
+    using string_iterator = std::string::const_iterator;
+
     // Constant
     static constexpr std::size_t BUF_SIZE{2048};
 
@@ -134,8 +137,10 @@ class FTermcap final
     static std::string   encodeParams ( const std::string&
                                       , const std::array<int, 9>& );
     template<typename PutChar>
-    static void          delay_output (int, const PutChar&);
-
+    static void          delayOutput (int, const PutChar&);
+    static void          decimalPoint (string_iterator&, int&);
+    static void          readDigits (string_iterator&, int&);
+    static void          asteriskSlash (string_iterator&, int&, int, bool&);
     // Data member
     static bool          initialized;
     static int           baudrate;
@@ -171,7 +176,7 @@ inline void FTermcap::setBaudrate (int baud)
 
 //----------------------------------------------------------------------
 template<typename PutChar>
-inline void FTermcap::delay_output (int ms, const PutChar& outc)
+inline void FTermcap::delayOutput (int ms, const PutChar& outc)
 {
   if ( no_padding_char )
   {

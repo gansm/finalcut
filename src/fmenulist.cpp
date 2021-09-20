@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -41,8 +41,7 @@ FMenuList::~FMenuList()  // destructor
   if ( item_list.empty() )
     return;
 
-  std::vector<FMenuItem*>::iterator iter;
-  iter = item_list.begin();
+  auto iter = item_list.begin();
 
   while ( iter != item_list.end() )
   {
@@ -62,12 +61,10 @@ void FMenuList::insert (FMenuItem* i)
 //----------------------------------------------------------------------
 void FMenuList::remove (FMenuItem* i)
 {
-  std::vector<FMenuItem*>::iterator iter;
-
   if ( item_list.empty() )
     return;
 
-  iter = item_list.begin();
+  auto iter = item_list.begin();
 
   while ( iter != item_list.end() )
   {
@@ -99,12 +96,40 @@ void FMenuList::clear()
 }
 
 //----------------------------------------------------------------------
+auto FMenuList::findFirstSelectedItem() const
+    -> FMenuList::FMenuItemList::const_iterator
+{
+  return std::find_if
+  (
+    item_list.cbegin(),
+    item_list.cend(),
+    [] (const FMenuItem* item)
+    {
+      return item->isSelected();
+    }
+  );
+}
+
+//----------------------------------------------------------------------
+auto FMenuList::findLastSelectedItem() const
+    -> FMenuList::FMenuItemList::const_reverse_iterator
+{
+  return std::find_if
+  (
+    item_list.crbegin(),
+    item_list.crend(),
+    [] (const FMenuItem* item)
+    {
+      return item->isSelected();
+    }
+  );
+}
+
+//----------------------------------------------------------------------
 void FMenuList::selectFirstItem()
 {
-  std::vector<FMenuItem*>::const_iterator iter;
-  std::vector<FMenuItem*>::const_iterator end;
-  iter = item_list.begin();
-  end = item_list.end();
+  auto iter = item_list.cbegin();
+  auto end = item_list.cend();
 
   if ( item_list.empty() )
     return;
@@ -133,6 +158,74 @@ void FMenuList::unselectItem()
     getSelectedItem()->unsetSelected();
 
   setSelectedItem(nullptr);
+}
+
+//----------------------------------------------------------------------
+bool FMenuList::selectNextItem()
+{
+  const auto& list = getItemList();
+  auto iter = findFirstSelectedItem();
+
+  if ( iter == list.cend() )  // not found
+    return false;
+
+  FMenuItem* next{};
+  auto next_element = iter;
+
+  do
+  {
+    ++next_element;
+
+    if ( next_element == list.cend() )
+      next_element = list.cbegin();
+
+    next = *next_element;
+  }
+  while ( ! next->isEnabled()
+       || ! next->acceptFocus()
+       || ! next->isShown()
+       || next->isSeparator() );
+
+  if ( next == *iter )
+    return false;
+
+  // The code for post-processing is implemented in the inherited class
+  selectItem_PostProcessing(next);
+  return true;
+}
+
+//----------------------------------------------------------------------
+bool FMenuList::selectPrevItem()
+{
+  const auto& list = getItemList();
+  auto iter = findLastSelectedItem();
+
+  if ( iter == list.crend() )  // not found
+    return false;
+
+  FMenuItem* prev;
+  auto prev_element = iter;
+
+  do
+  {
+    prev_element++;
+
+    if ( prev_element == list.crend() )
+      prev_element = list.crbegin();
+
+    prev = *prev_element;
+  }
+  while ( ! prev->isEnabled()
+       || ! prev->acceptFocus()
+       || ! prev->isShown()
+       || prev->isSeparator() );
+
+  if ( prev == *iter )
+    return false;
+
+  // The code for post-processing is implemented in the inherited class
+  selectItem_PostProcessing(prev);
+  return true;
 }
 
 }  // namespace finalcut

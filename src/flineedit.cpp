@@ -653,9 +653,6 @@ void FLineEdit::drawInputField()
 
   const std::size_t text_offset_column = [this] ()
   {
-    assert ( input_type == InputType::Textfield
-          || input_type == InputType::Password );
-
     switch ( input_type )
     {
       case InputType::Textfield:
@@ -663,6 +660,9 @@ void FLineEdit::drawInputField()
 
       case InputType::Password:
         return printPassword();
+
+      default:
+        break;
     }
 
     return std::size_t(0);

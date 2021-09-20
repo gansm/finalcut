@@ -303,7 +303,7 @@ bool hasFullWidthSupports()
       has_fullwidth_support = FullWidthSupport::Yes;
   }
 
-  return ( has_fullwidth_support == FullWidthSupport::Yes ) ? true : false;
+  return has_fullwidth_support == FullWidthSupport::Yes;
 }
 
 //----------------------------------------------------------------------

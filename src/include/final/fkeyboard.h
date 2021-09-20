@@ -186,7 +186,7 @@ class FKeyboard final
     static uInt64         read_blocking_time_short;
     static uInt64         key_timeout;
     static bool           non_blocking_input_support;
-    FKeyMapPtr            key_map{};
+    FKeyMapPtr            key_cap_ptr{};
     std::queue<FKey>      fkey_queue{};
     FKey                  fkey{FKey::None};
     FKey                  key{FKey::None};
@@ -230,13 +230,13 @@ inline uInt64 FKeyboard::getReadBlockingTime()
 //----------------------------------------------------------------------
 template <typename T>
 inline void FKeyboard::setTermcapMap (const T& keymap)
-{ key_map = std::make_shared<T>(keymap); }
+{ key_cap_ptr = std::make_shared<T>(keymap); }
 
 //----------------------------------------------------------------------
 inline void FKeyboard::setTermcapMap ()
 {
   using type = FKeyMap::KeyCapMapType;
-  key_map = std::make_shared<type>(FKeyMap::getKeyCapMap());
+  key_cap_ptr = std::make_shared<type>(FKeyMap::getKeyCapMap());
 }
 
 //----------------------------------------------------------------------

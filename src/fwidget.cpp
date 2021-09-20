@@ -233,27 +233,27 @@ FWidget* FWidget::getLastFocusableWidget (FObjectList list)
 //----------------------------------------------------------------------
 std::vector<bool>& FWidget::doubleFlatLine_ref (Side side)
 {
-  assert ( side == Side::Top
-        || side == Side::Right
-        || side == Side::Bottom
-        || side == Side::Left );
+  auto& mask = double_flatline_mask;
 
   switch ( side )
   {
     case Side::Top:
-      return double_flatline_mask.top;
+      return mask.top;
 
     case Side::Right:
-      return double_flatline_mask.right;
+      return mask.right;
 
     case Side::Bottom:
-      return double_flatline_mask.bottom;
+      return mask.bottom;
 
     case Side::Left:
-      return double_flatline_mask.left;
+      return mask.left;
+
+    default:
+      break;
   }
 
-  return double_flatline_mask.top;
+  return mask.top;
 }
 
 //----------------------------------------------------------------------
@@ -704,33 +704,27 @@ void FWidget::setPrintPos (const FPoint& pos)
 //----------------------------------------------------------------------
 void FWidget::setDoubleFlatLine (Side side, bool bit)
 {
-  assert ( side == Side::Top
-        || side == Side::Right
-        || side == Side::Bottom
-        || side == Side::Left );
-
-  uLong length{};
+  auto& mask = double_flatline_mask;
 
   switch ( side )
   {
     case Side::Top:
-      length = double_flatline_mask.top.size();
-      double_flatline_mask.top.assign(length, bit);
+      mask.top.assign(mask.top.size(), bit);
       break;
 
     case Side::Right:
-      length = double_flatline_mask.right.size();
-      double_flatline_mask.right.assign(length, bit);
+      mask.right.assign(mask.right.size(), bit);
       break;
 
     case Side::Bottom:
-      length = double_flatline_mask.bottom.size();
-      double_flatline_mask.bottom.assign(length, bit);
+      mask.bottom.assign(mask.bottom.size(), bit);
       break;
 
     case Side::Left:
-      length = double_flatline_mask.left.size();
-      double_flatline_mask.left.assign(length, bit);
+      mask.left.assign(mask.left.size(), bit);
+      break;
+
+    default:
       break;
   }
 }
@@ -738,48 +732,34 @@ void FWidget::setDoubleFlatLine (Side side, bool bit)
 //----------------------------------------------------------------------
 void FWidget::setDoubleFlatLine (Side side, int pos, bool bit)
 {
-  assert ( side == Side::Top
-        || side == Side::Right
-        || side == Side::Bottom
-        || side == Side::Left );
-
   assert ( pos >= 1 );
 
-  uLong length{};
   const auto index = uLong(pos - 1);
+  auto& mask = double_flatline_mask;
 
   switch ( side )
   {
     case Side::Top:
-      length = double_flatline_mask.top.size();
-
-      if ( index < length )
-        double_flatline_mask.top[index] = bit;
-
+      if ( index < mask.top.size() )
+        mask.top[index] = bit;
       break;
 
     case Side::Right:
-      length = double_flatline_mask.right.size();
-
-      if ( index < length )
-        double_flatline_mask.right[index] = bit;
-
+      if ( index < mask.right.size() )
+        mask.right[index] = bit;
       break;
 
     case Side::Bottom:
-      length = double_flatline_mask.bottom.size();
-
-      if ( index < length )
-        double_flatline_mask.bottom[index] = bit;
-
+      if ( index < mask.bottom.size() )
+        mask.bottom[index] = bit;
       break;
 
     case Side::Left:
-      length = double_flatline_mask.left.size();
+      if ( index < mask.left.size() )
+        mask.left[index] = bit;
+      break;
 
-      if ( index < length )
-        double_flatline_mask.left[index] = bit;
-
+    default:
       break;
   }
 }

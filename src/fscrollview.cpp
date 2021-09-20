@@ -28,6 +28,7 @@
 #include "final/fwindow.h"
 #include "final/fwidgetcolors.h"
 
+
 namespace finalcut
 {
 
@@ -859,7 +860,6 @@ void FScrollView::cb_vbarChange (const FWidget*)
   FScrollbar::ScrollType scroll_type = vbar->getScrollType();
   static constexpr int wheel_distance = 4;
   int distance{1};
-  AssertScrollType(scroll_type);
 
   if ( scroll_type >= FScrollbar::ScrollType::StepBackward )
   {
@@ -911,7 +911,6 @@ void FScrollView::cb_hbarChange (const FWidget*)
   FScrollbar::ScrollType scroll_type = hbar->getScrollType();
   static constexpr int wheel_distance = 4;
   int distance{1};
-  AssertScrollType(scroll_type);
 
   if ( scroll_type >= FScrollbar::ScrollType::StepBackward )
   {

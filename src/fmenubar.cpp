@@ -265,130 +265,33 @@ void FMenuBar::calculateDimensions() const
 }
 
 //----------------------------------------------------------------------
-bool FMenuBar::selectNextItem()
+void FMenuBar::selectItem_PostProcessing (FMenuItem* sel_item)
 {
-  auto list = getItemList();
-  auto iter = list.begin();
+  setTerminalUpdates (FVTerm::TerminalUpdate::Stop);
+  unselectItem();
+  sel_item->setSelected();
+  sel_item->setFocus();
 
-  while ( iter != list.end() )
+  if ( drop_down && sel_item->hasMenu() )
   {
-    if ( (*iter)->isSelected() )
-    {
-      FMenuItem* next;
-      auto next_element = iter;
+    auto menu = sel_item->getMenu();
+    sel_item->openMenu();
+    menu->selectFirstItem();
+    auto first_item = menu->getSelectedItem();
 
-      do
-      {
-        ++next_element;
+    if ( first_item )
+      first_item->setFocus();
 
-        if ( next_element == list.end() )
-          next_element = list.begin();
-
-        next = *next_element;
-      } while ( ! next->isEnabled()
-             || ! next->acceptFocus()
-             || ! next->isShown()
-             || next->isSeparator() );
-
-      if ( next == *iter )
-        return false;
-
-      setTerminalUpdates (FVTerm::TerminalUpdate::Stop);
-      unselectItem();
-      next->setSelected();
-      setSelectedItem(next);
-      next->setFocus();
-
-      if ( drop_down && next->hasMenu() )
-      {
-        auto menu = next->getMenu();
-        next->openMenu();
-        menu->selectFirstItem();
-        auto first_item = menu->getSelectedItem();
-
-        if ( first_item )
-          first_item->setFocus();
-
-        menu->redraw();
-      }
-
-      if ( getStatusBar() )
-        getStatusBar()->drawMessage();
-
-      redraw();
-      setTerminalUpdates (FVTerm::TerminalUpdate::Start);
-      forceTerminalUpdate();
-      break;
-    }
-
-    ++iter;
+    menu->redraw();
   }
 
-  return true;
-}
+  if ( getStatusBar() )
+    getStatusBar()->drawMessage();
 
-//----------------------------------------------------------------------
-bool FMenuBar::selectPrevItem()
-{
-  auto list = getItemList();
-  auto iter = list.end();
-
-  do
-  {
-    --iter;
-
-    if ( (*iter)->isSelected() )
-    {
-      FMenuItem* prev;
-      auto prev_element = iter;
-
-      do
-      {
-        if ( prev_element == list.begin() )
-          prev_element = list.end();
-
-        --prev_element;
-        prev = *prev_element;
-      }
-      while ( ! prev->isEnabled()
-           || ! prev->acceptFocus()
-           || ! prev->isShown()
-           || prev->isSeparator() );
-
-      if ( prev == *iter )
-        return false;
-
-      setTerminalUpdates (FVTerm::TerminalUpdate::Stop);
-      unselectItem();
-      prev->setSelected();
-      prev->setFocus();
-
-      if ( drop_down && prev->hasMenu() )
-      {
-        auto menu = prev->getMenu();
-        prev->openMenu();
-        menu->selectFirstItem();
-        auto first_item = menu->getSelectedItem();
-
-        if ( first_item )
-          first_item->setFocus();
-
-        menu->redraw();
-      }
-
-      if ( getStatusBar() )
-        getStatusBar()->drawMessage();
-
-      setSelectedItem(prev);
-      redraw();
-      setTerminalUpdates (FVTerm::TerminalUpdate::Start);
-      forceTerminalUpdate();
-      break;
-    }
-  }
-  while ( iter != list.begin() );
-
-  return true;
+  setSelectedItem(sel_item);
+  redraw();
+  setTerminalUpdates (FVTerm::TerminalUpdate::Start);
+  forceTerminalUpdate();
 }
 
 //----------------------------------------------------------------------
@@ -415,6 +318,7 @@ bool FMenuBar::hotkeyMenu (FKeyEvent*& ev)
 
         if ( item->hasMenu() )
         {
+          setTerminalUpdates (FVTerm::TerminalUpdate::Stop);
           auto menu = item->getMenu();
           item->setSelected();
           setSelectedItem(item);
@@ -433,6 +337,7 @@ bool FMenuBar::hotkeyMenu (FKeyEvent*& ev)
 
           redraw();
           drop_down = true;
+          setTerminalUpdates (FVTerm::TerminalUpdate::Start);
         }
         else
         {

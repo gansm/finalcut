@@ -1358,7 +1358,7 @@ inline void FTermOutput::appendChar (FChar& next_char)
       if ( getEncoding() == Encoding::UTF8 )
         appendOutputBuffer (FTermString{unicode_to_utf8(ch)});
       else
-        appendOutputBuffer (FTermString{std::string(1, ch)});
+        appendOutputBuffer (FTermString{std::string(1, char(ch & 0xff))});
     }
 
     if ( ! combined_char_support )
@@ -1446,19 +1446,19 @@ inline void FTermOutput::characterFilter (FChar& next_char)
 }
 
 //----------------------------------------------------------------------
-inline void FTermOutput::appendOutputBuffer (const FTermControl& ctrl)
+inline void FTermOutput::appendOutputBuffer (const FTermControl& ctrl) const
 {
   output_buffer->push( {OutputType::Control, ctrl.string} );
 }
 
 //----------------------------------------------------------------------
-inline void FTermOutput::appendOutputBuffer (const FTermUniChar& c)
+inline void FTermOutput::appendOutputBuffer (const FTermUniChar& c) const
 {
   appendOutputBuffer(FTermString{unicode_to_utf8(wchar_t(c.ch))});
 }
 
 //----------------------------------------------------------------------
-void FTermOutput::appendOutputBuffer (const FTermString& str)
+void FTermOutput::appendOutputBuffer (const FTermString& str) const
 {
   auto& last = output_buffer->back();
 
