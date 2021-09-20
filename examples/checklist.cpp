@@ -133,7 +133,7 @@ void CheckList::populate()
 void CheckList::initLayout()
 {
   FDialog::setText (L"Shopping list");
-  const std::size_t nf_offset = ( finalcut::FTerm::isNewFont() ) ? 1 : 0;
+  const std::size_t nf_offset = ( finalcut::FVTerm::getFOutput()->isNewFont() ) ? 1 : 0;
   FDialog::setSize (FSize{28 + nf_offset, 13} );
   listview.setGeometry ( FPoint{1 + int(nf_offset), 2}
                        , FSize{getWidth() - nf_offset, getHeight() - 1} );

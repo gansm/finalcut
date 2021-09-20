@@ -30,7 +30,6 @@
 #include "final/fsystem.h"
 #include "final/fterm.h"
 #include "final/ftermcap.h"
-#include "final/ftermdetection.h"
 #include "final/ftermlinux.h"
 #include "final/ftypes.h"
 
@@ -92,12 +91,13 @@ bool FTermLinux::setCursorStyle (CursorStyle style)
 {
   // Set cursor style in linux console
 
-  if ( ! FTerm::isLinuxTerm() )
+  if ( ! isLinuxTerm() )
     return false;
 
   linux_console_cursor_style = style;
+  static const auto& fterm_data = FTermData::getInstance();
 
-  if ( FTermData::getInstance().isCursorHidden() )
+  if ( fterm_data.isCursorHidden() )
     return false;
 
   setLinuxCursorStyle(style);
@@ -107,13 +107,13 @@ bool FTermLinux::setCursorStyle (CursorStyle style)
 //----------------------------------------------------------------------
 void FTermLinux::setUTF8 (bool enable) const
 {
-  if ( ! FTerm::isLinuxTerm() )
+  if ( ! isLinuxTerm() )
     return;
 
   if ( enable )
-    FTerm::putstring (ESC "%G");
+    FTerm::paddingPrint (ESC "%G");
   else
-    FTerm::putstring (ESC "%@");
+    FTerm::paddingPrint (ESC "%@");
 
   std::fflush(stdout);
 }
@@ -122,7 +122,7 @@ void FTermLinux::setUTF8 (bool enable) const
 #if defined(ISA_SYSCTL_SUPPORT)
 bool FTermLinux::setPalette (FColor index, int r, int g, int b)
 {
-  if ( ! FTerm::isLinuxTerm() )
+  if ( ! isLinuxTerm() )
     return false;
 
   return setVGAPalette (index, r, g, b);
@@ -141,7 +141,7 @@ bool FTermLinux::isLinuxConsole()
 
   char arg{0};
   int fd_tty = FTerm::getTTYFileDescriptor();
-  const auto& fsystem = FSystem::getInstance();
+  static const auto& fsystem = FSystem::getInstance();
 
   if ( fd_tty < 0 )  // Undefined tty file descriptor
     fd_tty = 0;
@@ -157,7 +157,7 @@ void FTermLinux::init()
 {
   // Initialize Linux console
 
-  auto& fterm_data = FTermData::getInstance();
+  static auto& fterm_data = FTermData::getInstance();
   screen_unicode_map.entries = nullptr;
   screen_font.data = nullptr;
   fterm_data.supportShadowCharacter (true);
@@ -170,10 +170,9 @@ void FTermLinux::init()
 
   if ( FTerm::openConsole() == 0 )
   {
-    FTermDetection::getInstance().setLinuxTerm(isLinuxConsole());
-
-    if ( FTerm::isLinuxTerm() )
+    if ( isLinuxConsole() )
     {
+      fterm_data.setTermType(FTermType::linux_con);
       getUnicodeMap();
       getScreenFont();
 
@@ -247,7 +246,7 @@ void FTermLinux::initCharMap() const
 //----------------------------------------------------------------------
 void FTermLinux::finish() const
 {
-  if ( FTerm::isLinuxTerm() )
+  if ( isLinuxTerm() )
   {
 #if defined(ISA_SYSCTL_SUPPORT)
     setBlinkAsIntensity (false);
@@ -268,9 +267,7 @@ bool FTermLinux::loadVGAFont()
     {
       // Set the standard vga font 8x16
       const int ret = setScreenFont(fc::__8x16std, 256, 8, 16);
-
-      if ( ret != 0 )
-        vga_font = false;
+      vga_font = bool( ret == 0 );
 
       // Unicode character mapping
       struct unimapdesc unimap;
@@ -289,7 +286,7 @@ bool FTermLinux::loadVGAFont()
 
   if ( vga_font )
   {
-    auto& fterm_data = FTermData::getInstance();
+    static auto& fterm_data = FTermData::getInstance();
     fterm_data.supportShadowCharacter (true);
     fterm_data.supportHalfBlockCharacter (true);
   }
@@ -317,8 +314,7 @@ bool FTermLinux::loadNewFont()
 #endif
         ret = setScreenFont(fc::__8x16graph, 256, 8, 16);  // set 8×16
 
-      if ( ret != 0 )
-        new_font = false;
+      new_font = bool( ret == 0 );
 
       // Unicode character mapping
       struct unimapdesc unimap;
@@ -337,7 +333,7 @@ bool FTermLinux::loadNewFont()
 
   if ( new_font )
   {
-    auto& fterm_data = FTermData::getInstance();
+    static auto& fterm_data = FTermData::getInstance();
     fterm_data.supportShadowCharacter (true);
     fterm_data.supportHalfBlockCharacter (true);
   }
@@ -361,11 +357,9 @@ bool FTermLinux::loadOldFont()
                                       , screen_font.width
                                       , screen_font.height
                                       , true );
+        retval = bool( ret == 0 );
         delete[] screen_font.data;
         screen_font.data = nullptr;
-
-        if ( ret == 0 )
-          retval = true;
       }
 
       if ( screen_unicode_map.entries )
@@ -390,7 +384,7 @@ bool FTermLinux::loadOldFont()
 //----------------------------------------------------------------------
 bool FTermLinux::saveColorMap()
 {
-  if ( ! FTerm::isLinuxTerm() )
+  if ( ! isLinuxTerm() )
     return false;
 
 #if defined(ISA_SYSCTL_SUPPORT)
@@ -403,7 +397,7 @@ bool FTermLinux::saveColorMap()
 //----------------------------------------------------------------------
 bool FTermLinux::resetColorMap()
 {
-  if ( ! FTerm::isLinuxTerm() )
+  if ( ! isLinuxTerm() )
     return false;
 
 #if defined(ISA_SYSCTL_SUPPORT)
@@ -416,7 +410,7 @@ bool FTermLinux::resetColorMap()
 //----------------------------------------------------------------------
 void FTermLinux::setBeep (int Hz, int ms) const
 {
-  if ( ! FTerm::isLinuxTerm() )
+  if ( ! isLinuxTerm() )
     return;
 
   // Range for frequency: 21-32766
@@ -427,22 +421,22 @@ void FTermLinux::setBeep (int Hz, int ms) const
   if ( ms < 0 || ms > 1999 )
     return;
 
-  FTerm::putstringf ( CSI "10;%d]"
-                      CSI "11;%d]"
-                    , Hz, ms );
+  FTerm::paddingPrintf ( CSI "10;%d]"
+                         CSI "11;%d]"
+                       , Hz, ms );
   std::fflush(stdout);
 }
 
 //----------------------------------------------------------------------
 void FTermLinux::resetBeep() const
 {
-  if ( ! FTerm::isLinuxTerm() )
+  if ( ! isLinuxTerm() )
     return;
 
   // Default frequency: 750 Hz
   // Default duration:  125 ms
-  FTerm::putstring ( CSI "10;750]"
-                     CSI "11;125]" );
+  FTerm::paddingPrint ( CSI "10;750]"
+                        CSI "11;125]" );
   std::fflush(stdout);
 }
 
@@ -469,7 +463,7 @@ int FTermLinux::getFramebuffer_bpp() const
   const char* fb = "/dev/fb/0";
   struct fb_var_screeninfo fb_var{};
   struct fb_fix_screeninfo fb_fix{};
-  const auto& fsystem = FSystem::getInstance();
+  static const auto& fsystem = FSystem::getInstance();
 
   if ( (fd = fsystem->open(fb, O_RDWR)) < 0 )
   {
@@ -528,7 +522,7 @@ bool FTermLinux::getScreenFont()
   }
 
   // Font operation
-  const auto& fsystem = FSystem::getInstance();
+  static const auto& fsystem = FSystem::getInstance();
   ret = fsystem->ioctl (fd_tty, KDFONTOP, &font);
 
   if ( ret != 0 )
@@ -559,7 +553,7 @@ bool FTermLinux::getUnicodeMap()
   screen_unicode_map.entries = nullptr;
 
   // Get count
-  const auto& fsystem = FSystem::getInstance();
+  static const auto& fsystem = FSystem::getInstance();
   ret = fsystem->ioctl (fd_tty, GIO_UNIMAP, &screen_unicode_map);
 
   if ( ret != 0 )
@@ -599,7 +593,7 @@ FTermLinux::ModifierKey& FTermLinux::getModifierKey()
   // Fill bit field with 0
   std::memset (&mod_key, 0x00, sizeof(mod_key));
 
-  const auto& fsystem = FSystem::getInstance();
+  static const auto& fsystem = FSystem::getInstance();
 
   // TIOCLINUX, subcode = 6 (TIOCL_GETSHIFTSTATE)
   if ( fsystem->ioctl(0, TIOCLINUX, &subcode) >= 0 )
@@ -618,6 +612,13 @@ FTermLinux::ModifierKey& FTermLinux::getModifierKey()
   }
 
   return mod_key;
+}
+
+//----------------------------------------------------------------------
+bool FTermLinux::isLinuxTerm() const
+{
+  static const auto& fterm_data = FTermData::getInstance();
+  return fterm_data.isTermType(FTermType::linux_con);
 }
 
 //----------------------------------------------------------------------
@@ -665,7 +666,7 @@ int FTermLinux::setScreenFont ( const uChar fontdata[], uInt count
   }
 
   // Font operation
-  const auto& fsystem = FSystem::getInstance();
+  static const auto& fsystem = FSystem::getInstance();
   ret = fsystem->ioctl (fd_tty, KDFONTOP, &font);
 
   if ( ret != 0 && errno != ENOSYS && errno != EINVAL )
@@ -702,7 +703,7 @@ int FTermLinux::setUnicodeMap (struct unimapdesc* unimap) const
   do
   {
     // Clear the unicode-to-font table
-    const auto& fsystem = FSystem::getInstance();
+    static const auto& fsystem = FSystem::getInstance();
     ret = fsystem->ioctl (fd_tty, PIO_UNIMAPCLR, &advice);
 
     if ( ret != 0 )
@@ -725,7 +726,7 @@ int FTermLinux::setUnicodeMap (struct unimapdesc* unimap) const
 //----------------------------------------------------------------------
 void FTermLinux::setLinuxCursorStyle (CursorStyle style) const
 {
-  FTerm::putstringf (CSI "?%dc", style);
+  FTerm::paddingPrintf (CSI "?%dc", style);
 }
 
 #if defined(ISA_SYSCTL_SUPPORT)
@@ -734,7 +735,7 @@ inline uInt16 FTermLinux::getInputStatusRegisterOne() const
 {
   // Gets the VGA input-status-register-1
 
-  const auto& fsystem = FSystem::getInstance();
+  static const auto& fsystem = FSystem::getInstance();
 
   // Miscellaneous output (read port)
   static constexpr uInt16 misc_read = 0x3cc;
@@ -750,7 +751,7 @@ uChar FTermLinux::readAttributeController (uChar index) const
 {
   // Reads a byte from the attribute controller from a given index
 
-  const auto& fsystem = FSystem::getInstance();
+  static const auto& fsystem = FSystem::getInstance();
 
   // Attribute controller (write port)
   static constexpr uInt16 attrib_cntlr_write = 0x3c0;
@@ -776,7 +777,7 @@ void FTermLinux::writeAttributeController (uChar index, uChar data) const
 {
   // Writes a byte from the attribute controller from a given index
 
-  const auto& fsystem = FSystem::getInstance();
+  static const auto& fsystem = FSystem::getInstance();
 
   // Attribute controller (write port)
   static constexpr uInt16 attrib_cntlr_write = 0x3c0;
@@ -815,7 +816,7 @@ int FTermLinux::setBlinkAsIntensity (bool enable) const
   // Uses blink-bit as background intensity.
   // That permits 16 colors for background
 
-  const auto& fsystem = FSystem::getInstance();
+  static const auto& fsystem = FSystem::getInstance();
 
   const int fd_tty = FTerm::getTTYFileDescriptor();
 
@@ -854,7 +855,7 @@ bool FTermLinux::has9BitCharacters() const
   //  0xc0...0xdf - copying the eighth pixel into the ninth pixel
   //     The rest - the ninth pixel has the background color
 
-  const auto& fsystem = FSystem::getInstance();
+  static const auto& fsystem = FSystem::getInstance();
   const int fd_tty = FTerm::getTTYFileDescriptor();
 
   if ( fsystem->getuid() != 0 )  // Direct hardware access requires root privileges
@@ -879,7 +880,7 @@ bool FTermLinux::has9BitCharacters() const
 //----------------------------------------------------------------------
 void FTermLinux::getVGAPalette()
 {
-  const auto& fsystem = FSystem::getInstance();
+  static const auto& fsystem = FSystem::getInstance();
 
   if ( fsystem->ioctl(0, GIO_CMAP, cmap.color.data()) != 0 )
     setVGADefaultPalette();  // Fallback, if GIO_CMAP does not work
@@ -924,7 +925,7 @@ bool FTermLinux::setVGAPalette (FColor index, int r, int g, int b)
     cmap.color[uInt16(index)].blue  = uChar(b);
   }
 
-  const auto& fsystem = FSystem::getInstance();
+  static const auto& fsystem = FSystem::getInstance();
 
   if ( fsystem->ioctl(0, PIO_CMAP, cmap.color.data()) == 0 )
     return true;
@@ -937,7 +938,7 @@ bool FTermLinux::saveVGAPalette()
 {
   // Save the current vga color map
 
-  const auto& fsystem = FSystem::getInstance();
+  static const auto& fsystem = FSystem::getInstance();
 
   if ( fsystem->ioctl(0, GIO_CMAP, saved_color_map.color.data()) == 0 )
     has_saved_palette = true;
@@ -952,7 +953,7 @@ bool FTermLinux::resetVGAPalette()
 {
   // Reset the vga color map
 
-  const auto& fsystem = FSystem::getInstance();
+  static const auto& fsystem = FSystem::getInstance();
 
   if ( has_saved_palette )
   {
@@ -1135,7 +1136,7 @@ inline void FTermLinux::shiftCtrlAltKeyCorrection()
 //----------------------------------------------------------------------
 inline void FTermLinux::initSpecialCharacter() const
 {
-  auto& fterm_data = FTermData::getInstance();
+  static auto& fterm_data = FTermData::getInstance();
   const auto c1 = wchar_t(UniChar::UpperHalfBlock);  // ▀
   const auto c2 = wchar_t(UniChar::LowerHalfBlock);  // ▄
   const auto c3 = wchar_t(UniChar::FullBlock);  // █
@@ -1176,7 +1177,7 @@ void FTermLinux::characterFallback ( wchar_t ucs
                                    , const std::vector<wchar_t>& fallback ) const
 {
   constexpr sInt16 NOT_FOUND = -1;
-  auto& fterm_data = FTermData::getInstance();
+  static auto& fterm_data = FTermData::getInstance();
   charSubstitution& sub_map = fterm_data.getCharSubstitutionMap();
 
   if ( fallback.size() < 2 || ucs != fallback[0] )

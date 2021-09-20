@@ -138,7 +138,7 @@ void RotoZoomer::draw()
 }
 
 //----------------------------------------------------------------------
-void RotoZoomer::rotozoomer (double cx, double cy, double r, double a)
+inline void RotoZoomer::rotozoomer (double cx, double cy, double r, double a)
 {
   const auto Cols = int(getClientWidth());
   const auto Lines = int(getClientHeight());

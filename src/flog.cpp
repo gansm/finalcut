@@ -39,12 +39,12 @@ FLog::~FLog()  // destructor
 
 // public methods of FLog
 //----------------------------------------------------------------------
-FLog& FLog::operator << (LogLevel l)
+FLog& FLog::operator << (LogLevel log_level)
 {
   sync();
   std::lock_guard<std::mutex> lock_guard(current_log_mutex);
 
-  switch ( l )
+  switch ( log_level )
   {
     case LogLevel::Info:
       current_log = [this] (const std::string& s) { info(s); };
@@ -60,6 +60,9 @@ FLog& FLog::operator << (LogLevel l)
 
     case LogLevel::Debug:
       current_log = [this] (const std::string& s) { debug(s); };
+      break;
+
+    default:
       break;
   }
 

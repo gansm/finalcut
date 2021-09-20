@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020 Markus Gans                                           *
+* Copyright 2020-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -84,6 +84,11 @@ class myLogger : public finalcut::FLog
       // An implementation is not required in this context
     }
 
+    finalcut::FString getBaseClassName() const
+    {
+      return getClassName();
+    }
+
   private:
     // Data member
     std::ostream output{std::cerr.rdbuf()};
@@ -129,6 +134,9 @@ void FLoggerTest::classNameTest()
   finalcut::FLogger log;
   const finalcut::FString& classname = log.getClassName();
   CPPUNIT_ASSERT ( classname == "FLogger" );
+
+  myLogger my_logger;
+  CPPUNIT_ASSERT ( my_logger.getBaseClassName() == "FLog" );
 }
 
 //----------------------------------------------------------------------

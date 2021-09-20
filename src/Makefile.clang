@@ -60,8 +60,11 @@ INCLUDE_HEADERS = \
 	fstartoptions.h \
 	ftermcap.h \
 	fterm.h \
+	fterm_functions.h \
 	ftermdata.h \
 	ftermdebugdata.h \
+	foutput.h \
+	ftermoutput.h \
 	ftermios.h \
 	ftermdetection.h \
 	ftermcapquirks.h \
@@ -73,6 +76,7 @@ INCLUDE_HEADERS = \
 	ftextview.h \
 	fcolorpalette.h \
 	fwidgetcolors.h \
+	fwidget_functions.h \
 	fwidget.h \
 	fevent.h \
 	fobject.h \
@@ -138,6 +142,8 @@ OBJS = \
 	fterm.o \
 	fterm_functions.o \
 	ftermdebugdata.o \
+	foutput.o \
+	ftermoutput.o \
 	ftermios.o \
 	ftermdetection.o \
 	ftermcapquirks.o \
@@ -181,10 +187,10 @@ all: dep $(OBJS)
 $(LIB): all
 
 debug:
-	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -Wall -Wextra -Wpedantic -Weverything -Wno-padded -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-implicit-fallthrough -Wno-reserved-id-macro -Wno-format-nonliteral"
+	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -Wall -Wextra -Wpedantic -Weverything -Wno-padded -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-implicit-fallthrough -Wno-reserved-id-macro -Wno-format-nonliteral -Wno-switch-enum -Wno-covered-switch-default"
 
 unittest:
-	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -DUNIT_TEST -Wall -Wextra -Wpedantic -Weverything -Wno-padded -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-implicit-fallthrough -Wno-reserved-id-macro -Wno-format-nonliteral"
+	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -DUNIT_TEST -Wall -Wextra -Wpedantic -Weverything -Wno-padded -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-implicit-fallthrough -Wno-reserved-id-macro -Wno-format-nonliteral -Wno-switch-enum -Wno-covered-switch-default"
 
 profile:
 	$(MAKE) $(MAKEFILE) PROFILE="-pg"

@@ -36,6 +36,7 @@
 #endif
 
 #include <pwd.h>
+#include <memory>
 #include "final/ftypes.h"
 
 namespace finalcut
@@ -52,7 +53,7 @@ class FSystem
     using fn_putc = int (*)(int);
 
     // Constructor
-    FSystem () = default;
+    FSystem() = default;
 
     // Destructor
     virtual ~FSystem() noexcept;
@@ -69,6 +70,7 @@ class FSystem
     virtual int   close (int) = 0;
     virtual FILE* fopen (const char*, const char*) = 0;
     virtual int   fclose (FILE*) = 0;
+    virtual int   fputs (const char*, FILE*) = 0;
     virtual int   putchar (int) = 0;
     virtual uid_t getuid() = 0;
     virtual uid_t geteuid() = 0;

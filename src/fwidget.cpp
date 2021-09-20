@@ -85,9 +85,8 @@ FWidget::FWidget (FWidget* parent)
   {
     if ( internal::var::root_widget )
     {
-      auto& fterm_data = FTermData::getInstance();
-      fterm_data.setExitMessage("FWidget: No parent defined! "
-                                "There should be only one root object");
+      setExitMessage("FWidget: No parent defined! "
+                     "There should be only one root object");
       FApplication::exit(EXIT_FAILURE);
       return;
     }
@@ -234,27 +233,27 @@ FWidget* FWidget::getLastFocusableWidget (FObjectList list)
 //----------------------------------------------------------------------
 std::vector<bool>& FWidget::doubleFlatLine_ref (Side side)
 {
-  assert ( side == Side::Top
-        || side == Side::Right
-        || side == Side::Bottom
-        || side == Side::Left );
+  auto& mask = double_flatline_mask;
 
   switch ( side )
   {
     case Side::Top:
-      return double_flatline_mask.top;
+      return mask.top;
 
     case Side::Right:
-      return double_flatline_mask.right;
+      return mask.right;
 
     case Side::Bottom:
-      return double_flatline_mask.bottom;
+      return mask.bottom;
 
     case Side::Left:
-      return double_flatline_mask.left;
+      return mask.left;
+
+    default:
+      break;
   }
 
-  return double_flatline_mask.top;
+  return mask.top;
 }
 
 //----------------------------------------------------------------------
@@ -595,16 +594,16 @@ void FWidget::setRightPadding (int right, bool adjust)
 }
 
 //----------------------------------------------------------------------
-void FWidget::setTermSize (const FSize& size) const
+void FWidget::setTerminalSize (const FSize& size) const
 {
-  // Set xterm size to width x height
+  // Set terminal size to width x height
 
-  if ( FTerm::isXTerminal() )
+  if ( FVTerm::getFOutput()->allowsTerminalSizeManipulation() )
   {
     internal::var::root_widget->wsize.setRect(FPoint{1, 1}, size);
     internal::var::root_widget->adjust_wsize = internal::var::root_widget->wsize;
-    FTerm::setTermSize(size);  // width = columns / height = lines
-    detectTermSize();
+    FVTerm::getFOutput()->setTerminalSize(size);
+    detectTerminalSize();
   }
 }
 
@@ -699,39 +698,33 @@ void FWidget::setPrintPos (const FPoint& pos)
 {
   const FPoint p{ woffset.getX1() + getX() + pos.getX() - 1,
                   woffset.getY1() + getY() + pos.getY() - 1 };
-  setPrintCursor(p);
+  setCursor(p);
 }
 
 //----------------------------------------------------------------------
 void FWidget::setDoubleFlatLine (Side side, bool bit)
 {
-  uLong length{};
-
-  assert ( side == Side::Top
-        || side == Side::Right
-        || side == Side::Bottom
-        || side == Side::Left );
+  auto& mask = double_flatline_mask;
 
   switch ( side )
   {
     case Side::Top:
-      length = double_flatline_mask.top.size();
-      double_flatline_mask.top.assign(length, bit);
+      mask.top.assign(mask.top.size(), bit);
       break;
 
     case Side::Right:
-      length = double_flatline_mask.right.size();
-      double_flatline_mask.right.assign(length, bit);
+      mask.right.assign(mask.right.size(), bit);
       break;
 
     case Side::Bottom:
-      length = double_flatline_mask.bottom.size();
-      double_flatline_mask.bottom.assign(length, bit);
+      mask.bottom.assign(mask.bottom.size(), bit);
       break;
 
     case Side::Left:
-      length = double_flatline_mask.left.size();
-      double_flatline_mask.left.assign(length, bit);
+      mask.left.assign(mask.left.size(), bit);
+      break;
+
+    default:
       break;
   }
 }
@@ -739,48 +732,34 @@ void FWidget::setDoubleFlatLine (Side side, bool bit)
 //----------------------------------------------------------------------
 void FWidget::setDoubleFlatLine (Side side, int pos, bool bit)
 {
-  assert ( side == Side::Top
-        || side == Side::Right
-        || side == Side::Bottom
-        || side == Side::Left );
-
   assert ( pos >= 1 );
 
-  uLong length{};
   const auto index = uLong(pos - 1);
+  auto& mask = double_flatline_mask;
 
   switch ( side )
   {
     case Side::Top:
-      length = double_flatline_mask.top.size();
-
-      if ( index < length )
-        double_flatline_mask.top[index] = bit;
-
+      if ( index < mask.top.size() )
+        mask.top[index] = bit;
       break;
 
     case Side::Right:
-      length = double_flatline_mask.right.size();
-
-      if ( index < length )
-        double_flatline_mask.right[index] = bit;
-
+      if ( index < mask.right.size() )
+        mask.right[index] = bit;
       break;
 
     case Side::Bottom:
-      length = double_flatline_mask.bottom.size();
-
-      if ( index < length )
-        double_flatline_mask.bottom[index] = bit;
-
+      if ( index < mask.bottom.size() )
+        mask.bottom[index] = bit;
       break;
 
     case Side::Left:
-      length = double_flatline_mask.left.size();
+      if ( index < mask.left.size() )
+        mask.left[index] = bit;
+      break;
 
-      if ( index < length )
-        double_flatline_mask.left[index] = bit;
-
+    default:
       break;
   }
 }
@@ -1283,7 +1262,7 @@ void FWidget::initDesktop()
     initTerminal();
 
   // Sets the initial screen settings
-  FTerm::initScreenSettings();
+  FVTerm::getFOutput()->initScreenSettings();
 
   // Initializing vdesktop
   const auto& r = getRootWidget();
@@ -1533,77 +1512,79 @@ bool FWidget::focusPrevChild()
 //----------------------------------------------------------------------
 bool FWidget::event (FEvent* ev)
 {
-  if ( ev->getType() == Event::KeyPress )
+  auto event_type = ev->getType();
+
+  if ( event_type == Event::KeyPress )
   {
     KeyPressEvent (static_cast<FKeyEvent*>(ev));
   }
-  else if ( ev->getType() == Event::KeyUp )
+  else if ( event_type == Event::KeyUp )
   {
     onKeyUp (static_cast<FKeyEvent*>(ev));
   }
-  else if ( ev->getType() == Event::KeyDown )
+  else if ( event_type == Event::KeyDown )
   {
     KeyDownEvent (static_cast<FKeyEvent*>(ev));
   }
-  else if ( ev->getType() == Event::MouseDown )
+  else if ( event_type== Event::MouseDown )
   {
     emitCallback("mouse-press");
     onMouseDown (static_cast<FMouseEvent*>(ev));
   }
-  else if ( ev->getType() == Event::MouseUp )
+  else if ( event_type == Event::MouseUp )
   {
     emitCallback("mouse-release");
     onMouseUp (static_cast<FMouseEvent*>(ev));
   }
-  else if ( ev->getType() == Event::MouseDoubleClick )
+  else if ( event_type== Event::MouseDoubleClick )
   {
     onMouseDoubleClick (static_cast<FMouseEvent*>(ev));
   }
-  else if ( ev->getType() == Event::MouseWheel )
+  else if ( event_type == Event::MouseWheel )
   {
     emitWheelCallback(static_cast<FWheelEvent*>(ev));
     onWheel (static_cast<FWheelEvent*>(ev));
   }
-  else if ( ev->getType() == Event::MouseMove )
+  else if ( event_type == Event::MouseMove )
   {
     emitCallback("mouse-move");
     onMouseMove (static_cast<FMouseEvent*>(ev));
   }
-  else if ( ev->getType() == Event::FocusIn )
+  else if ( event_type == Event::FocusIn )
   {
     emitCallback("focus-in");
     onFocusIn (static_cast<FFocusEvent*>(ev));
   }
-  else if ( ev->getType() == Event::FocusOut )
+  else if ( event_type == Event::FocusOut )
   {
     emitCallback("focus-out");
     onFocusOut (static_cast<FFocusEvent*>(ev));
   }
-  else if ( ev->getType() == Event::ChildFocusIn )
+  else if ( event_type == Event::ChildFocusIn )
   {
     onChildFocusIn (static_cast<FFocusEvent*>(ev));
   }
-  else if ( ev->getType() == Event::ChildFocusOut )
+  else if ( event_type == Event::ChildFocusOut )
   {
     onChildFocusOut (static_cast<FFocusEvent*>(ev));
   }
-  else if ( ev->getType() == Event::Accelerator )
+  else if ( event_type == Event::Accelerator )
   {
     onAccel (static_cast<FAccelEvent*>(ev));
   }
-  else if ( ev->getType() == Event::Resize )
+  else if ( event_type == Event::Resize )
   {
     onResize (static_cast<FResizeEvent*>(ev));
   }
-  else if ( ev->getType() == Event::Show )
+  else if ( event_type == Event::Show )
   {
     onShow (static_cast<FShowEvent*>(ev));
   }
-  else if ( ev->getType() == Event::Hide )
+  else if ( event_type == Event::Hide )
   {
     onHide (static_cast<FHideEvent*>(ev));
   }
-  else if ( ev->getType() == Event::Close )
+  else if ( event_type == Event::Close )
   {
     onClose (static_cast<FCloseEvent*>(ev));
   }
@@ -1744,7 +1725,7 @@ void FWidget::determineDesktopSize()
 {
   // Determine width and height of the terminal
 
-  detectTermSize();
+  detectTerminalSize();
   auto width = getDesktopWidth();
   auto height = getDesktopHeight();
   wsize.setRect(1, 1, width, height);
@@ -2084,14 +2065,14 @@ void FWidget::initColorTheme()
 
   if ( FStartOptions::getInstance().dark_theme )
   {
-    if ( FTerm::getMaxColor() < 16 )  // for 8 color mode
+    if ( FVTerm::getFOutput()->getMaxColor() < 16 )  // for 8 color mode
       setColorTheme<default8ColorDarkTheme>();
     else
       setColorTheme<default16ColorDarkTheme>();
   }
   else  // Default theme
   {
-    if ( FTerm::getMaxColor() < 16 )  // for 8 color mode
+    if ( FVTerm::getFOutput()->getMaxColor() < 16 )  // for 8 color mode
       setColorTheme<default8ColorTheme>();
     else
       setColorTheme<default16ColorTheme>();
@@ -2130,10 +2111,10 @@ void FWidget::setStatusbarText (bool enable) const
 
 // non-member functions
 //----------------------------------------------------------------------
-void detectTermSize()
+void detectTerminalSize()
 {
   const auto& r = internal::var::root_widget;
-  FTerm::detectTermSize();
+  FVTerm::getFOutput()->detectTerminalSize();
   r->adjust_wsize.setRect (1, 1, r->getDesktopWidth(), r->getDesktopHeight());
   r->woffset.setRect (0, 0, r->getDesktopWidth(), r->getDesktopHeight());
   r->wclient_offset.setCoordinates

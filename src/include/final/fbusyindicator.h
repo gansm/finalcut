@@ -105,9 +105,9 @@ class FBusyIndicator : public FToolTip
     // Callback methods
 
     // Data members
-    wchar_t uni_pattern[8]{L' ', L' ', L'·', L'·', L'•', L'•', L'●', L'●'};
-    char    pattern[8]{L' ', L' ', L'.', L'.', L'+', L'+', L'#', L'#'};
-    bool    running{false};
+    std::wstring uni_pattern{L' ', L' ', L'·', L'·', L'•', L'•', L'●', L'●'};
+    std::string pattern{L' ', L' ', L'.', L'.', L'+', L'+', L'#', L'#'};
+    bool running{false};
 };
 
 

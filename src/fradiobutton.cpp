@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2020 Markus Gans                                      *
+* Copyright 2014-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -75,7 +75,7 @@ void FRadioButton::drawRadioButton()
   print() << FPoint{1, 1};
   setColor();
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
   {
     if ( hasFocus() )
       setReverse(false);
@@ -88,14 +88,14 @@ void FRadioButton::drawRadioButton()
   else
     drawUnchecked();
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
 }
 
 //----------------------------------------------------------------------
 inline void FRadioButton::drawChecked()
 {
-  if ( FTerm::isNewFont() )
+  if ( FVTerm::getFOutput()->isNewFont() )
     print (CHECKED_RADIO_BUTTON);
   else
   {
@@ -108,7 +108,7 @@ inline void FRadioButton::drawChecked()
 //----------------------------------------------------------------------
 inline void FRadioButton::drawUnchecked()
 {
-  if ( FTerm::isNewFont() )
+  if ( FVTerm::getFOutput()->isNewFont() )
     print (RADIO_BUTTON);
   else
   {

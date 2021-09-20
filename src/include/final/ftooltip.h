@@ -85,6 +85,8 @@ class FToolTip : public FWindow
 
     // Mutators
     void                setText (const FString&);
+    void                enableAutoTrim();
+    void                disableAutoTrim();
     void                resetColors() override;
     bool                setBorder (bool = true);
     bool                unsetBorder();
@@ -109,6 +111,7 @@ class FToolTip : public FWindow
     // Data members
     FString       text{};
     FStringList   text_components{};
+    bool          text_auto_trim{true};
     std::size_t   max_line_width{0};
     std::size_t   text_num_lines{0};
 };
@@ -122,6 +125,14 @@ inline FString FToolTip::getClassName() const
 //----------------------------------------------------------------------
 inline FString FToolTip::getText() const
 { return text; }
+
+//----------------------------------------------------------------------
+inline void FToolTip::enableAutoTrim()
+{ text_auto_trim = true; }
+
+//----------------------------------------------------------------------
+inline void FToolTip::disableAutoTrim()
+{ text_auto_trim = false; }
 
 //----------------------------------------------------------------------
 inline bool FToolTip::unsetBorder()

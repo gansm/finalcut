@@ -3,6 +3,10 @@ Title bar actions on mouse clicks
 
 The FINAL CUT title bar of dialog windows has different behaviors on mouse clicks.
 
+<br />
+
+![](FDialog.svg)
+
 
 Clicking on the title bar
 -------------------------
@@ -18,6 +22,7 @@ Clicking the title bar buttons
 
 * Single-clicking on the title bar menu button opens the title bar menu.
 * Double-clicking on the title bar menu button closes the dialog.
+* Single-clicking on the minimize button minimizes the window.
 * Single-clicking on the zoom button maximizes the window size.
 * Single-clicking on the unzoom button restores the window size.
 

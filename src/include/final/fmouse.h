@@ -240,7 +240,7 @@ class FMouse : public FMouseData
 
 //----------------------------------------------------------------------
 template <typename ClassT>
-inline auto FMouse::createMouseObject() -> std::unique_ptr<ClassT> 
+inline auto FMouse::createMouseObject() -> std::unique_ptr<ClassT>
 {
   return make_unique<ClassT>();
 }
@@ -319,6 +319,9 @@ inline bool FMouseGPM::isGpmMouseEnabled() const
 class FMouseX11 final : public FMouse
 {
   public:
+    // Constructor
+    FMouseX11();
+
     // Accessors
     FString              getClassName() const override;
 
@@ -372,6 +375,9 @@ class FMouseX11 final : public FMouse
 class FMouseSGR final : public FMouse
 {
   public:
+    // Constructor
+    FMouseSGR();
+
     // Accessors
     FString       getClassName() const override;
 
@@ -425,6 +431,9 @@ class FMouseSGR final : public FMouse
 class FMouseUrxvt final : public FMouse
 {
   public:
+    // Constructor
+    FMouseUrxvt();
+
     // Accessors
     FString       getClassName() const override;
 
@@ -479,7 +488,7 @@ class FMouseCommand final
 {
   public:
     // Constructors
-    FMouseCommand () = default;
+    FMouseCommand() = default;
     explicit FMouseCommand (const std::function<void(const FMouseData&)>& fn)
       : handler(fn)
     { }

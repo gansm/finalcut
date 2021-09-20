@@ -20,17 +20,19 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-#if defined(__CYGWIN__)
-  #undef __STRICT_ANSI__  // need for strdup
-  #include <strings.h>    // need for strcasecmp
-#endif
-
 #include <array>
 #include <vector>
+
+#if defined(__CYGWIN__)
+  #undef __STRICT_ANSI__  // need for strdup
+  #define _BSD_SOURCE
+  #include <strings.h>    // need for strcasecmp
+#endif
 
 #include "final/fevent.h"
 #include "final/fsystem.h"
 #include "final/ffiledialog.h"
+
 
 namespace finalcut
 {

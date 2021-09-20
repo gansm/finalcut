@@ -249,7 +249,7 @@ void FLabel::draw()
   if ( text.isEmpty() )
     return;
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
   {
     setReverse(true);
 
@@ -268,7 +268,7 @@ void FLabel::draw()
   else
     drawSingleLine();
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
   {
     setReverse(false);
 
@@ -353,7 +353,7 @@ void FLabel::printLine (FString& line)
   for (std::size_t z{0}; z < to_char; z++)
   {
     if ( ! std::iswprint(std::wint_t(line[z]))
-      && ! FTerm::isNewFont()
+      && ! FVTerm::getFOutput()->isNewFont()
       && ( line[z] < UniChar::NF_rev_left_arrow2
         || line[z] > UniChar::NF_check_mark ) )
     {

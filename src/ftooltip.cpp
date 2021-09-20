@@ -69,7 +69,7 @@ FToolTip::~FToolTip()  // destructor
 //----------------------------------------------------------------------
 void FToolTip::setText (const FString& txt)
 {
-  text.setString(txt.trim());
+  text.setString(text_auto_trim ? txt.trim() : txt);
   calculateDimensions();
 }
 

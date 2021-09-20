@@ -27,7 +27,7 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include <final/ftypes.h>
+#include "final/ftypes.h"
 
 // Typecast to c-string
 #define C_STR const_cast<char*>
@@ -1314,6 +1314,50 @@ enum class MouseWheel
   Down = 0x02
 };
 
+// Terminal type
+enum class FTermType : uInt32
+{
+  ansi           = 1 << 0,   // ANSI X3.64 terminal
+  xterm          = 1 << 1,   // Xterm
+  rxvt           = 1 << 2,   // Rxvt
+  urxvt          = 1 << 3,   // Rxvt-unicode
+  kde_konsole    = 1 << 4,   // KDE Konsole
+  gnome_terminal = 1 << 5,   // Gnome Terminal
+  putty          = 1 << 6,   // PuTTY
+  win_terminal   = 1 << 7,   // Windows Terminal
+  tera_term      = 1 << 8,   // Tera Term
+  cygwin         = 1 << 9,   // Cygwin
+  mintty         = 1 << 10,  // Mintty
+  linux_con      = 1 << 11,  // Linux Console
+  freebsd_con    = 1 << 12,  // FreeBSD workstation Console
+  netbsd_con     = 1 << 13,  // NetBSD workstation console
+  openbsd_con    = 1 << 14,  // OpenBSD workstation Console
+  sun_con        = 1 << 15,  // Sun Microsystems workstation console
+  screen         = 1 << 16,  // GNU Screen
+  tmux           = 1 << 17,  // TMux (terminal multiplexer)
+  kterm          = 1 << 18,  // Kterm (multi-lingual terminal emulator)
+  mlterm         = 1 << 19,  // MLterm (multi-lingual terminal emulator)
+  kitty          = 1 << 20   // kitty (GPU based terminal emulator)
+};
+
+using FTermTypeValueType = typename std::underlying_type<FTermType>::type;
+
+constexpr FTermTypeValueType operator | (const FTermType& t1, const FTermType& t2) noexcept
+{
+  return FTermTypeValueType(t1) | FTermTypeValueType(t2);
+}
+
+constexpr FTermTypeValueType operator | (FTermTypeValueType t1, const FTermType& t2) noexcept
+{
+  return t1 | FTermTypeValueType(t2);
+}
+
+constexpr FTermTypeValueType operator | (const FTermType& t1, FTermTypeValueType t2) noexcept
+{
+  return FTermTypeValueType(t1) | t2;
+}
+
+
 // Type of focus
 enum class FocusTypes
 {
@@ -1342,6 +1386,13 @@ enum class ScrollBarMode
   Auto   = 0,  // Shows a scroll bar when area is larger than viewport
   Hidden = 1,  // Never shows a scroll bar
   Scroll = 2   // Always shows a scroll bar
+};
+
+// Cursor mode
+enum class CursorMode
+{
+  Insert,
+  Overwrite
 };
 
 // Xterm cursor style

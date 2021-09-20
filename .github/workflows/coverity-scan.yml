@@ -53,7 +53,7 @@ jobs:
           gpm \
           libgpm-dev \
           libcppunit-dev \
-          autoconf-archive 
+          autoconf-archive
 
     - name: Build with cov-build
       run: |

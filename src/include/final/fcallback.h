@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020 Markus Gans                                           *
+* Copyright 2020-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -66,7 +66,7 @@ struct FCallbackData
   { }
 
   FCallbackData (const FCallbackData&) = default;
-  FCallbackData (FCallbackData&&) = default;
+  FCallbackData (FCallbackData&&) noexcept = default;
 
   FCallbackData& operator = (const FCallbackData&) = default;
   FCallbackData& operator = (FCallbackData&&) noexcept = default;

@@ -345,13 +345,13 @@ void FButtonGroup::setHotkeyAccelerator()
 //----------------------------------------------------------------------
 void FButtonGroup::draw()
 {
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
   useParentWidgetColor();
   clearArea();
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
 
   FScrollView::draw();
@@ -413,7 +413,7 @@ void FButtonGroup::drawText ( const FString& label_text
     ellipsis = true;
   }
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
   if ( isEnabled() )
@@ -444,7 +444,7 @@ void FButtonGroup::drawText ( const FString& label_text
   if ( ellipsis )  // Print ellipsis
     print() << FColorPair {wc->label_ellipsis_fg, wc->label_bg} << "..";
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 }
 

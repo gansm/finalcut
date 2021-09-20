@@ -63,7 +63,7 @@ FLineEdit::FLineEdit (const FString& txt, FWidget* parent)
 FLineEdit::~FLineEdit()  // destructor
 {
   if ( ! insert_mode )
-    FTerm::setInsertCursor();
+    FVTerm::getFOutput()->setCursor(CursorMode::Insert);
 }
 
 // FLineEdit operators
@@ -116,20 +116,7 @@ bool FLineEdit::setFocus (bool enable)
 //----------------------------------------------------------------------
 bool FLineEdit::setShadow (bool enable)
 {
-  if ( enable
-    && FTerm::getEncoding() != Encoding::VT100
-    && FTerm::getEncoding() != Encoding::ASCII )
-  {
-    setFlags().shadow = true;
-    setShadowSize(FSize{1, 1});
-  }
-  else
-  {
-    setFlags().shadow = false;
-    setShadowSize(FSize{0, 0});
-  }
-
-  return getFlags().shadow;
+  return setWidgetShadow(this, enable);
 }
 
 //----------------------------------------------------------------------
@@ -304,7 +291,8 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
     entry();
     ev->accept();
   }
-  else if ( key == FKey::Tab )
+  else if ( key == FKey::Tab || key == FKey::Back_tab
+         || key == FKey::Up || key == FKey::Down )
   {
     ev->ignore();
   }
@@ -457,13 +445,15 @@ void FLineEdit::onTimer (FTimerEvent*)
   }
   else if ( drag_scroll == DragScrollMode::Rightward )
   {
-    if ( text_offset == endPosToOffset(len).first )
+    const auto& offset = endPosToOffset(len).first;
+
+    if ( text_offset == offset )
     {
       drag_scroll = DragScrollMode::None;
       return;
     }
 
-    if ( text_offset < endPosToOffset(len).first )
+    if ( text_offset < offset )
       text_offset++;
 
     if ( cursor_pos < len )
@@ -489,7 +479,7 @@ void FLineEdit::onAccel (FAccelEvent* ev)
 void FLineEdit::onHide (FHideEvent*)
 {
   if ( ! insert_mode && ! isReadOnly() )
-    FTerm::setInsertCursor();
+    FVTerm::getFOutput()->setCursor(CursorMode::Insert);
 }
 
 //----------------------------------------------------------------------
@@ -498,9 +488,9 @@ void FLineEdit::onFocusIn (FFocusEvent*)
   if ( ! isReadOnly() )
   {
     if ( insert_mode )
-      FTerm::setInsertCursor();
+      FVTerm::getFOutput()->setCursor(CursorMode::Insert);
     else
-      FTerm::unsetInsertCursor();
+      FVTerm::getFOutput()->setCursor(CursorMode::Overwrite);
   }
 
   if ( getStatusBar() )
@@ -517,7 +507,7 @@ void FLineEdit::onFocusOut (FFocusEvent*)
   }
 
   if ( ! insert_mode && ! isReadOnly() )
-    FTerm::setInsertCursor();
+    FVTerm::getFOutput()->setCursor(CursorMode::Insert);
 }
 
 
@@ -629,7 +619,7 @@ void FLineEdit::drawInputField()
   const bool isActiveFocus = getFlags().active && getFlags().focus;
   print() << FPoint{1, 1};
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
   {
     setReverse(true);
     print (' ');
@@ -645,14 +635,11 @@ void FLineEdit::drawInputField()
     print (' ');
   }
 
-  if ( isActiveFocus && FTerm::getMaxColor() < 16 )
+  if ( isActiveFocus && FVTerm::getFOutput()->getMaxColor() < 16 )
     setBold();
 
   const std::size_t text_offset_column = [this] ()
   {
-    assert ( input_type == InputType::Textfield
-          || input_type == InputType::Password );
-
     switch ( input_type )
     {
       case InputType::Textfield:
@@ -660,6 +647,9 @@ void FLineEdit::drawInputField()
 
       case InputType::Password:
         return printPassword();
+
+      default:
+        break;
     }
 
     return std::size_t(0);
@@ -671,10 +661,10 @@ void FLineEdit::drawInputField()
     x_pos++;
   }
 
-  if ( isActiveFocus && FTerm::getMaxColor() < 16 )
+  if ( isActiveFocus && FVTerm::getFOutput()->getMaxColor() < 16 )
     unsetBold();
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
   {
     setReverse(false);
     setUnderline(false);
@@ -888,7 +878,7 @@ void FLineEdit::adjustTextOffset()
   // Right cursor overflow
   if ( cursor_pos_column + 1 > text_offset_column + input_width )
   {
-    const offsetPair offset_pair = endPosToOffset(cursor_pos);
+    const auto& offset_pair = endPosToOffset(cursor_pos);
     text_offset = offset_pair.first;
     char_width_offset = offset_pair.second;
     text_offset_column = getColumnWidth (print_text, text_offset);
@@ -1023,9 +1013,9 @@ inline void FLineEdit::switchInsertMode()
   insert_mode = ! insert_mode;
 
   if ( insert_mode )
-    FTerm::setInsertCursor();    // Insert mode
+    FVTerm::getFOutput()->setCursor(CursorMode::Insert);     // Insert mode
   else
-    FTerm::unsetInsertCursor();  // Overtype mode
+    FVTerm::getFOutput()->setCursor(CursorMode::Overwrite);  // Overtype mode
 }
 
 //----------------------------------------------------------------------
@@ -1039,7 +1029,7 @@ inline bool FLineEdit::keyInput (FKey key)
 {
   if ( text.getLength() >= max_length )
   {
-    FTerm::beep();
+    FVTerm::getFOutput()->beep();
     return true;
   }
 

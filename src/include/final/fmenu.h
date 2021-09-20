@@ -180,6 +180,7 @@ class FMenu : public FWindow, public FMenuList
     void         closeOpenedSubMenu();
     void         hideSubMenus();
     void         hideSuperMenus() const;
+    bool         isMouseOverItem (const FPoint&, FMenuItem*);
     bool         mouseDownOverList (const FPoint&);
     void         mouseDownSubmenu (const FMenuItem*);
     void         mouseDownSelection (FMenuItem*, bool&);
@@ -196,8 +197,7 @@ class FMenu : public FWindow, public FMenuList
     bool         containsMenuStructure (int, int);
     FMenu*       superMenuAt (const FPoint&);
     FMenu*       superMenuAt (int, int);
-    bool         selectNextItem();
-    bool         selectPrevItem();
+    void         selectItem_PostProcessing (FMenuItem*) override;
     void         keypressMenuBar (FKeyEvent*) const;
     bool         hotkeyFound (FKey, const FKeyEvent&) const;
     bool         hotkeyMenu (FKeyEvent*);

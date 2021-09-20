@@ -63,6 +63,7 @@
 #include <utility>
 #include <vector>
 
+#include "final/fstring.h"
 #include "final/ftermdata.h"
 
 namespace finalcut
@@ -118,7 +119,6 @@ class FTermLinux final
     bool                 resetColorMap();
     void                 setBeep (int, int) const;
     void                 resetBeep() const;
-
     FKey                 modifierKeyCorrection (const FKey&);
 
   private:
@@ -189,6 +189,9 @@ class FTermLinux final
     bool                 getScreenFont();
     bool                 getUnicodeMap ();
     ModifierKey&         getModifierKey();
+
+    // Inquiries
+    bool                 isLinuxTerm() const;
 
     // Mutators
     int                  setScreenFont ( const uChar[], uInt, uInt, uInt

@@ -135,10 +135,10 @@ void AttribDlg::onClose (finalcut::FCloseEvent* ev)
 //----------------------------------------------------------------------
 void AttribDlg::cb_next()
 {
-  if ( finalcut::FTerm::isMonochron() )
+  if ( finalcut::FVTerm::getFOutput()->isMonochron() )
     return;
 
-  if ( bgcolor == FColor(finalcut::FTerm::getMaxColor() - 1) )
+  if ( bgcolor == FColor(finalcut::FVTerm::getFOutput()->getMaxColor() - 1) )
     bgcolor = FColor::Default;
   else if ( bgcolor == FColor::Default )
     bgcolor = FColor::Black;
@@ -151,13 +151,13 @@ void AttribDlg::cb_next()
 //----------------------------------------------------------------------
 void AttribDlg::cb_back()
 {
-  if ( finalcut::FTerm::isMonochron() )
+  if ( finalcut::FVTerm::getFOutput()->isMonochron() )
     return;
 
   if ( bgcolor == 0 )
     bgcolor = FColor::Default;
   else if ( bgcolor == FColor::Default )
-    bgcolor = FColor(finalcut::FTerm::getMaxColor() - 1);
+    bgcolor = FColor(finalcut::FVTerm::getFOutput()->getMaxColor() - 1);
   else
     --bgcolor;
 
@@ -200,7 +200,7 @@ void AttribDlg::draw()
   if ( bgcolor == FColor::Undefined )
   {
     // Get the color after initializing the color theme in show()
-    if ( finalcut::FTerm::isMonochron() )
+    if ( finalcut::FVTerm::getFOutput()->isMonochron() )
       bgcolor = FColor::Default;
     else
       bgcolor = getColorTheme()->label_bg;
@@ -284,7 +284,7 @@ void AttribDemo::printAltCharset()
   const auto& wc = getColorTheme();
   const auto& parent = static_cast<AttribDlg*>(getParent());
 
-  if ( ! finalcut::FTerm::isMonochron() )
+  if ( ! finalcut::FVTerm::getFOutput()->isMonochron() )
     setColor (wc->label_fg, wc->label_bg);
 
   print() << FPoint{1, 1} << "Alternate charset: ";
@@ -432,9 +432,9 @@ void AttribDemo::printProtected()
 void AttribDemo::draw()
 {
   const auto& wc = getColorTheme();
-  last_color = FColor(finalcut::FTerm::getMaxColor());
+  last_color = FColor(finalcut::FVTerm::getFOutput()->getMaxColor());
 
-  if ( finalcut::FTerm::isMonochron() )
+  if ( finalcut::FVTerm::getFOutput()->isMonochron() )
     last_color = FColor(1);
   else if ( last_color > 16 )
     last_color = FColor(16);
@@ -462,14 +462,14 @@ void AttribDemo::draw()
   {
     print() << FPoint{1, 2 + int(y)};
 
-    if ( ! finalcut::FTerm::isMonochron() )
+    if ( ! finalcut::FVTerm::getFOutput()->isMonochron() )
       setColor (wc->label_fg, wc->label_bg);
 
     if ( y < effect.size() )
       effect[y]();
   }
 
-  if ( ! finalcut::FTerm::isMonochron() )
+  if ( ! finalcut::FVTerm::getFOutput()->isMonochron() )
     setColor(wc->label_fg, wc->label_bg);
 
   print() << FPoint{1, 15};

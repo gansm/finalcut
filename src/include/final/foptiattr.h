@@ -37,6 +37,7 @@
 
 #include <assert.h>
 #include <algorithm>  // need for std::swap
+#include <string>
 
 #include "final/fstring.h"
 #include "final/ftypes.h"

@@ -87,22 +87,22 @@ void FLogger::printLogLine (const std::string& msg)
     switch ( getLevel() )
     {
       case LogLevel::Info:
-        return "INFO";
+        return std::string("INFO");
 
       case LogLevel::Warn:
-        return "WARNING";
+        return std::string("WARNING");
 
       case LogLevel::Error:
-        return "ERROR";
+        return std::string("ERROR");
 
       case LogLevel::Debug:
-        return "DEBUG";
+        return std::string("DEBUG");
     }
 
-    return "";
+    return std::string("");
   }();
 
-  const std::string prefix = [this, &log_level] ()
+  const std::string& prefix = [this, &log_level] ()
   {
     if ( timestamp )
       return getTimeString() + " [" + log_level + "] ";

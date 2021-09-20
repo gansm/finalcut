@@ -73,6 +73,9 @@ class FTermBufferTest : public CPPUNIT_NS::TestFixture
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
+
+    // Data member
+    finalcut::FVTerm fvterm{};  // Needed for FVTerm::getFOutput()
 };
 
 
@@ -121,8 +124,8 @@ void FTermBufferTest::writeTest()
   CPPUNIT_ASSERT ( term_buf.front().encoded_char[2] == L'\0' );
   CPPUNIT_ASSERT ( term_buf.front().encoded_char[3] == L'\0' );
   CPPUNIT_ASSERT ( term_buf.front().encoded_char[4] == L'\0' );
-  CPPUNIT_ASSERT ( term_buf.front().fg_color == 0 );
-  CPPUNIT_ASSERT ( term_buf.front().bg_color == 0 );
+  CPPUNIT_ASSERT ( term_buf.front().fg_color == finalcut::FColor::Default );
+  CPPUNIT_ASSERT ( term_buf.front().bg_color == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( term_buf.front().attr.byte[0] == 0 );
   CPPUNIT_ASSERT ( term_buf.front().attr.byte[1] == 0 );
   CPPUNIT_ASSERT ( term_buf.front().attr.byte[2] != 0 );
@@ -157,8 +160,8 @@ void FTermBufferTest::writeTest()
   CPPUNIT_ASSERT ( term_buf.front().encoded_char[2] == L'\0' );
   CPPUNIT_ASSERT ( term_buf.front().encoded_char[3] == L'\0' );
   CPPUNIT_ASSERT ( term_buf.front().encoded_char[4] == L'\0' );
-  CPPUNIT_ASSERT ( term_buf.front().fg_color == 0 );
-  CPPUNIT_ASSERT ( term_buf.front().bg_color == 0 );
+  CPPUNIT_ASSERT ( term_buf.front().fg_color == finalcut::FColor::Default );
+  CPPUNIT_ASSERT ( term_buf.front().bg_color == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( term_buf.front().attr.byte[0] == 0 );
   CPPUNIT_ASSERT ( term_buf.front().attr.byte[1] == 0 );
   CPPUNIT_ASSERT ( term_buf.front().attr.byte[2] != 0 );
@@ -203,8 +206,8 @@ void FTermBufferTest::writeTest()
     CPPUNIT_ASSERT ( term_buf.getBuffer()[i].encoded_char[2] == L'\0' );
     CPPUNIT_ASSERT ( term_buf.getBuffer()[i].encoded_char[3] == L'\0' );
     CPPUNIT_ASSERT ( term_buf.getBuffer()[i].encoded_char[4] == L'\0' );
-    CPPUNIT_ASSERT ( term_buf.getBuffer()[i].fg_color == 0 );
-    CPPUNIT_ASSERT ( term_buf.getBuffer()[i].bg_color == 0 );
+    CPPUNIT_ASSERT ( term_buf.getBuffer()[i].fg_color == finalcut::FColor::Default );
+    CPPUNIT_ASSERT ( term_buf.getBuffer()[i].bg_color == finalcut::FColor::Default );
     CPPUNIT_ASSERT ( term_buf.getBuffer()[i].attr.byte[0] == 0 );
     CPPUNIT_ASSERT ( term_buf.getBuffer()[i].attr.byte[1] == 0 );
     CPPUNIT_ASSERT ( term_buf.getBuffer()[i].attr.byte[2] != 0 );
@@ -212,6 +215,7 @@ void FTermBufferTest::writeTest()
   }
 
   // Write formatted output
+  std::setlocale(LC_NUMERIC, "C");
   term_buf.clear();
   term_buf.writef ("%'.2f%C", 0.25 * 7.0, L'£');
   CPPUNIT_ASSERT ( ! term_buf.isEmpty() );
@@ -236,8 +240,8 @@ void FTermBufferTest::writeTest()
     CPPUNIT_ASSERT ( term_buf.getBuffer()[i].encoded_char[2] == L'\0' );
     CPPUNIT_ASSERT ( term_buf.getBuffer()[i].encoded_char[3] == L'\0' );
     CPPUNIT_ASSERT ( term_buf.getBuffer()[i].encoded_char[4] == L'\0' );
-    CPPUNIT_ASSERT ( term_buf.getBuffer()[i].fg_color == 0 );
-    CPPUNIT_ASSERT ( term_buf.getBuffer()[i].bg_color == 0 );
+    CPPUNIT_ASSERT ( term_buf.getBuffer()[i].fg_color == finalcut::FColor::Default );
+    CPPUNIT_ASSERT ( term_buf.getBuffer()[i].bg_color == finalcut::FColor::Default );
     CPPUNIT_ASSERT ( term_buf.getBuffer()[i].attr.byte[0] == 0 );
     CPPUNIT_ASSERT ( term_buf.getBuffer()[i].attr.byte[1] == 0 );
     CPPUNIT_ASSERT ( term_buf.getBuffer()[i].attr.byte[2] != 0 );

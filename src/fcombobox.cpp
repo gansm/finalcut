@@ -73,7 +73,7 @@ void FDropDownListBox::setGeometry ( const FPoint& pos, const FSize& size
 {
   FWindow::setGeometry (pos, size, adjust);
 
-  if ( FTerm::isNewFont() )
+  if ( FVTerm::getFOutput()->isNewFont() )
   {
     FSize new_size{size};
     new_size.scaleBy(-1, 0);
@@ -129,13 +129,13 @@ void FDropDownListBox::draw()
   setBackgroundColor (wc->list_bg);
   setColor();
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
   clearArea();
   drawShadow();
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
 }
 
@@ -218,20 +218,7 @@ bool FComboBox::setFocus (bool enable)
 //----------------------------------------------------------------------
 bool FComboBox::setShadow (bool enable)
 {
-  if ( enable
-    && FTerm::getEncoding() != Encoding::VT100
-    && FTerm::getEncoding() != Encoding::ASCII )
-  {
-    setFlags().shadow = true;
-    setShadowSize(FSize{1, 1});
-  }
-  else
-  {
-    setFlags().shadow = false;
-    setShadowSize(FSize{0, 0});
-  }
-
-  return getFlags().shadow;
+  return setWidgetShadow(this, enable);
 }
 
 //----------------------------------------------------------------------
@@ -470,7 +457,7 @@ void FComboBox::init()
   adjustSize();
   initCallbacks();
 
-  if ( FTerm::isNewFont() )
+  if ( FVTerm::getFOutput()->isNewFont() )
     nf = 1;
 }
 
@@ -523,7 +510,7 @@ void FComboBox::draw()
   print() << FPoint{int(getWidth()) - nf, 1}
           << button_color;
 
-  if ( FTerm::isNewFont() )
+  if ( FVTerm::getFOutput()->isNewFont() )
     print() << NF_button_arrow_down;
   else
     print() << UniChar::BlackDownPointingTriangle;  // ▼

@@ -35,9 +35,10 @@
 #include "final/flog.h"
 #include "final/fpoint.h"
 #include "final/fterm.h"
+#include "final/fterm_functions.h"
+#include "final/ftermdata.h"
 #include "final/ftermbuffer.h"
 #include "final/ftermios.h"
-
 
 namespace finalcut
 {
@@ -222,6 +223,30 @@ uInt env2uint (const std::string& env)
 }
 
 //----------------------------------------------------------------------
+std::string& getExitMessage()
+{
+  static const auto& exit_message = make_unique<std::string>();
+  return *exit_message;
+}
+
+//----------------------------------------------------------------------
+void setExitMessage (const FString& message)
+{
+  getExitMessage().assign(message.c_str());
+}
+
+//----------------------------------------------------------------------
+FColor rgb2ColorIndex (uInt8 r, uInt8 g, uInt8 b)
+{
+  // Converts a 24-bit RGB color to a 256-color compatible approximation
+
+  const uInt16 ri = (((r * 5) + 127) / 255) * 36;
+  const uInt16 gi = (((g * 5) + 127) / 255) * 6;
+  const uInt16 bi = (((b * 5) + 127) / 255);
+  return FColor(16 + ri + gi + bi);
+}
+
+//----------------------------------------------------------------------
 inline bool hasAmbiguousWidth (wchar_t wchar)
 {
   const auto& begin = std::begin(ambiguous_width_list);
@@ -264,19 +289,21 @@ bool hasFullWidthSupports()
     if ( ! FTerm::isInitialized() )
       return true;  // Assume that it is a modern terminal with full-width support
 
-    if ( FTerm::isCygwinTerminal()
-      || FTerm::isTeraTerm()
-      || FTerm::isFreeBSDTerm()
-      || FTerm::isNetBSDTerm()
-      || FTerm::isOpenBSDTerm()
-      || FTerm::isSunTerminal()
-      || FTerm::isAnsiTerminal() )
+    static const auto& fterm_data = FTermData::getInstance();
+
+    if ( fterm_data.isTermType ( FTermType::cygwin
+                               | FTermType::tera_term
+                               | FTermType::freebsd_con
+                               | FTermType::netbsd_con
+                               | FTermType::openbsd_con
+                               | FTermType::sun_con
+                               | FTermType::ansi ) )
       has_fullwidth_support = FullWidthSupport::No;
     else
       has_fullwidth_support = FullWidthSupport::Yes;
   }
 
-  return ( has_fullwidth_support == FullWidthSupport::Yes ) ? true : false;
+  return has_fullwidth_support == FullWidthSupport::Yes;
 }
 
 //----------------------------------------------------------------------
@@ -317,6 +344,40 @@ uChar unicode_to_cp437 (wchar_t ucs)
     c = static_cast<uChar>((*found)[CP437]);
 
   return c;
+}
+
+//----------------------------------------------------------------------
+std::string unicode_to_utf8 (wchar_t ucs)
+{
+  if ( uInt32(ucs) < 0x80 )
+  {
+    // 1 Byte (7-bit): 0xxxxxxx
+    return { char(ucs) };
+  }
+  else if ( uInt32(ucs) < 0x800 )
+  {
+    // 2 byte (11-bit): 110xxxxx 10xxxxxx
+    return { char(0xc0 | char(ucs >> 6))
+           , char(0x80 | char(ucs & 0x3f)) };
+  }
+  else if ( uInt32(ucs) < 0x10000 )
+  {
+    // 3 byte (16-bit): 1110xxxx 10xxxxxx 10xxxxxx
+    return { char(0xe0 | char(ucs >> 12))
+           , char(0x80 | char((ucs >> 6) & 0x3f))
+           , char(0x80 | char(ucs & 0x3f)) };
+  }
+  else if ( uInt32(ucs) < 0x200000 )
+  {
+    // 4 byte (21-bit): 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+    return { char(0xf0 | char(ucs >> 18))
+           , char(0x80 | char((ucs >> 12) & 0x3f))
+           , char(0x80 | char((ucs >> 6) & 0x3f))
+           , char(0x80 | char(ucs & 0x3f)) };
+  }
+
+  // Invalid character
+  return unicode_to_utf8(L'�');
 }
 
 //----------------------------------------------------------------------
@@ -523,9 +584,10 @@ std::size_t getColumnWidth (const wchar_t wchar)
 #endif
 
   column_width = wcwidth(wchar);
+  static const auto& fterm_data = FTermData::getInstance();
 
   if ( (wchar >= UniChar::NF_rev_left_arrow2 && wchar <= UniChar::NF_check_mark)
-     || FTerm::getEncoding() != Encoding::UTF8 )
+    || fterm_data.getTermEncoding() != Encoding::UTF8 )
   {
     column_width = 1;
   }
@@ -562,8 +624,10 @@ std::size_t getColumnWidth (const FTermBuffer& tbuf)
 void addColumnWidth (FChar& term_char)
 {
   const std::size_t char_width = getColumnWidth(term_char.ch[0]);
+  static const auto& fterm_data = FTermData::getInstance();
 
-  if ( char_width == 2 && FTerm::getEncoding() != Encoding::UTF8 )
+  if ( char_width == 2
+    && fterm_data.getTermEncoding() != Encoding::UTF8 )
   {
     term_char.ch[0] = '.';
     term_char.attr.bit.char_width = 1;

@@ -360,8 +360,8 @@ uInt FObject::processTimerEvent()
   {
     if ( ! timer.id
       || ! timer.object
-      || currentTime < timer.timeout )  // no timer expired
-      break;
+      || currentTime < timer.timeout )  // Timer not expired
+      continue;
 
     timer.timeout += timer.interval;
 
@@ -371,8 +371,13 @@ uInt FObject::processTimerEvent()
     if ( timer.interval > microseconds(0) )
       activated++;
 
-    FTimerEvent t_ev(Event::Timer, timer.id);
-    performTimerAction (timer.object, &t_ev);
+    auto id = timer.id;
+    auto object = timer.object;
+
+    unique_lock.unlock();
+    FTimerEvent t_ev(Event::Timer, id);
+    performTimerAction (object, &t_ev);
+    unique_lock.lock();
   }
 
   return activated;

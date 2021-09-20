@@ -12,7 +12,7 @@ noinst_PROGRAMS = \
 	fdata_test \
 	fmouse_test \
 	fkeyboard_test \
-        fterm_functions_test \
+	fterm_functions_test \
 	ftermcap_test \
 	ftermdata_test \
 	ftermbuffer_test \

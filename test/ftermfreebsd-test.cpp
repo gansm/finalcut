@@ -63,6 +63,7 @@ class FSystemTest : public finalcut::FSystem
     int              close (int) override;
     FILE*            fopen (const char*, const char*) override;
     int              fclose (FILE*) override;
+    int              fputs (const char*, FILE*) override;
     int              putchar (int) override;
     uid_t            getuid() override;
     uid_t            geteuid() override;
@@ -518,6 +519,22 @@ int FSystemTest::fclose (FILE* fp)
 }
 
 //----------------------------------------------------------------------
+int FSystemTest::fputs (const char* str, FILE* stream)
+{
+  std::cerr << "Call: fputs (" << str << ", " << stream << ")\n";
+  std::string string = str;
+  int count = 0;
+
+  for (auto&& ch : string)
+  {
+    characters.push_back(ch);
+    count++;
+  }
+
+  return count;
+}
+
+//----------------------------------------------------------------------
 int FSystemTest::putchar (int c)
 {
   std::cerr << "Call: putchar (" << c << ")\n";
@@ -610,7 +627,6 @@ void ftermfreebsdTest::classNameTest()
   const finalcut::FString& classname = p.getClassName();
   CPPUNIT_ASSERT ( classname == "FTermFreeBSD" );
 }
-
 
 //----------------------------------------------------------------------
 void ftermfreebsdTest::freebsdConsoleTest()
@@ -764,7 +780,7 @@ void ftermfreebsdTest::freebsdConsoleTest()
 #endif
 
     CPPUNIT_ASSERT ( isatty(0) == 1 );
-    CPPUNIT_ASSERT ( term_detection.isFreeBSDTerm() );
+    CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::netbsd_con) );
     CPPUNIT_ASSERT ( data.getTermGeometry().getWidth() == 80 );
     CPPUNIT_ASSERT ( data.getTermGeometry().getHeight() == 25 );
     CPPUNIT_ASSERT ( ! data.hasShadowCharacter() );

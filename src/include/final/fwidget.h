@@ -101,11 +101,13 @@
 
 #include "final/fcallback.h"
 #include "final/fobject.h"
+#include "final/foutput.h"
 #include "final/fpoint.h"
 #include "final/frect.h"
 #include "final/fsize.h"
 #include "final/ftypes.h"
 #include "final/fvterm.h"
+#include "final/fwidget_functions.h"
 
 namespace finalcut
 {
@@ -149,6 +151,7 @@ class FWidget : public FVTerm, public FObject
       uInt32 focusable      : 1;
       uInt32 scrollable     : 1;
       uInt32 resizeable     : 1;
+      uInt32 minimizable    : 1;
       uInt32 modal          : 1;
       uInt32 visible_cursor : 1;
       uInt32 window_widget  : 1;
@@ -158,7 +161,7 @@ class FWidget : public FVTerm, public FObject
       uInt32 flat           : 1;
       uInt32 no_border      : 1;
       uInt32 no_underline   : 1;
-      uInt32                : 13;  // padding bits
+      uInt32                : 12;  // padding bits
     };
 
     // Constructor
@@ -264,7 +267,7 @@ class FWidget : public FVTerm, public FObject
     void                     setLeftPadding (int, bool = true);
     void                     setBottomPadding (int, bool = true);
     void                     setRightPadding (int, bool = true);
-    void                     setTermSize (const FSize&) const;
+    void                     setTerminalSize (const FSize&) const;
     virtual void             setGeometry (const FRect&, bool = true);
     virtual void             setGeometry (const FPoint&, const FSize&, bool = true);
     virtual void             setShadowSize (const FSize&);
@@ -376,10 +379,10 @@ class FWidget : public FVTerm, public FObject
     virtual void             onClose (FCloseEvent*);
 
   private:
-    struct widget_size_hints
+    struct WidgetSizeHints
     {
-      widget_size_hints() = default;
-      ~widget_size_hints() = default;
+      WidgetSizeHints() = default;
+      ~WidgetSizeHints() = default;
 
       void setMinimum (const FSize& s)
       {
@@ -399,10 +402,10 @@ class FWidget : public FVTerm, public FObject
       std::size_t max_height{INT_MAX};
     };
 
-    struct dbl_line_mask
+    struct DoubleLineMask
     {
-      dbl_line_mask() = default;
-      ~dbl_line_mask() = default;
+      DoubleLineMask() = default;
+      ~DoubleLineMask() = default;
 
       std::vector<bool> top{};
       std::vector<bool> right{};
@@ -410,10 +413,10 @@ class FWidget : public FVTerm, public FObject
       std::vector<bool> left{};
     };
 
-    struct widget_padding
+    struct WidgetPadding
     {
-      widget_padding() = default;
-      ~widget_padding() = default;
+      WidgetPadding() = default;
+      ~WidgetPadding() = default;
 
       int top{0};
       int left{0};
@@ -444,9 +447,9 @@ class FWidget : public FVTerm, public FObject
     // Data members
     struct FWidgetFlags      flags{};
     FPoint                   widget_cursor_position{-1, -1};
-    widget_size_hints        size_hints{};
-    dbl_line_mask            double_flatline_mask{};
-    widget_padding           padding{};
+    WidgetSizeHints          size_hints{};
+    DoubleLineMask           double_flatline_mask{};
+    WidgetPadding            padding{};
     bool                     ignore_padding{false};
 
     // widget size
@@ -491,7 +494,7 @@ class FWidget : public FVTerm, public FObject
     friend class FScrollView;
 
     // Friend functions
-    friend void detectTermSize();
+    friend void detectTerminalSize();
     friend void drawShadow (FWidget*);
     friend void drawTransparentShadow (FWidget*);
     friend void drawBlockShadow (FWidget*);
@@ -499,31 +502,6 @@ class FWidget : public FVTerm, public FObject
     friend void drawFlatBorder (FWidget*);
     friend void clearFlatBorder (FWidget*);
 };
-
-
-// non-member function forward declarations
-// implemented in fwidget_functions.cpp
-//----------------------------------------------------------------------
-void          detectTermSize();
-bool          isFocusNextKey (const FKey);
-bool          isFocusPrevKey (const FKey);
-bool          isInFWidgetList (const FWidget::FWidgetList*, const FWidget*);
-FKey          getHotkey (const FString&);
-std::size_t   getHotkeyPos (const FString& src, FString& dest);
-void          setHotkeyViaString (FWidget*, const FString&);
-void          setWidgetFocus (FWidget*);
-void          drawShadow (FWidget*);
-void          drawTransparentShadow (FWidget*);
-void          drawBlockShadow (FWidget*);
-void          clearShadow (FWidget*);
-void          drawFlatBorder (FWidget*);
-void          clearFlatBorder (FWidget*);
-void          checkBorder (const FWidget*, FRect&);
-void          drawBorder (FWidget*, const FRect&);
-void          drawListBorder (FWidget*, const FRect&);
-void          drawBox (FWidget*, const FRect&);
-void          drawNewFontBox (FWidget*, const FRect&);
-void          drawNewFontListBox (FWidget*, const FRect&);
 
 
 // FWidget inline functions
@@ -716,11 +694,11 @@ inline const FRect& FWidget::getTermGeometryWithShadow()
 
 //----------------------------------------------------------------------
 inline std::size_t FWidget::getDesktopWidth() const
-{ return FTerm::getColumnNumber(); }
+{ return FVTerm::getFOutput()->getColumnNumber(); }
 
 //----------------------------------------------------------------------
 inline std::size_t FWidget::getDesktopHeight() const
-{ return FTerm::getLineNumber(); }
+{ return FVTerm::getFOutput()->getLineNumber(); }
 
 //----------------------------------------------------------------------
 inline const FWidget::FWidgetFlags& FWidget::getFlags() const

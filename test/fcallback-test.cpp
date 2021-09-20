@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020 Markus Gans                                           *
+* Copyright 2020-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -210,8 +210,11 @@ void FCallbackTest::memberFunctionPointerCallbackTest()
   cb.emitCallback ("activate");
   CPPUNIT_ASSERT ( i == 70 );
 
-
   cb.delCallback ("activate");
+  CPPUNIT_ASSERT ( cb.getCallbackCount() == 0 );
+
+  // Is still empty -> nothing to delete
+  cb.delCallback ("clicked");
   CPPUNIT_ASSERT ( cb.getCallbackCount() == 0 );
 
   cb.emitCallback ("activate");

@@ -614,7 +614,7 @@ inline bool FListBox::isVerticallyScrollable() const
 inline FListBox::FListBoxItems::iterator \
     FListBox::index2iterator (std::size_t index)
 {
-  FListBoxItems::iterator iter = itemlist.begin();
+  auto iter = itemlist.begin();
   std::advance (iter, index);
   return iter;
 }
@@ -623,7 +623,7 @@ inline FListBox::FListBoxItems::iterator \
 inline FListBox::FListBoxItems::const_iterator \
     FListBox::index2iterator (std::size_t index) const
 {
-  FListBoxItems::const_iterator iter = itemlist.begin();
+  auto iter = itemlist.begin();
   std::advance (iter, index);
   return iter;
 }

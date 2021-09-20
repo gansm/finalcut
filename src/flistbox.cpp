@@ -31,6 +31,7 @@
 #include "final/fstatusbar.h"
 #include "final/fwidgetcolors.h"
 
+
 namespace finalcut
 {
 
@@ -623,7 +624,7 @@ void FListBox::init()
   initScrollbar (vbar, Orientation::Vertical, this, &FListBox::cb_vbarChange);
   initScrollbar (hbar, Orientation::Horizontal, this, &FListBox::cb_hbarChange);
   setGeometry (FPoint{1, 1}, FSize{5, 4}, false);  // initialize geometry values
-  nf_offset = FTerm::isNewFont() ? 1 : 0;
+  nf_offset = FVTerm::getFOutput()->isNewFont() ? 1 : 0;
   setTopPadding(1);
   setLeftPadding(1);
   setBottomPadding(1);
@@ -687,12 +688,12 @@ void FListBox::draw()
 
   useParentWidgetColor();
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
   drawBorder();
 
-  if ( FTerm::isNewFont() && ! vbar->isShown() )
+  if ( FVTerm::getFOutput()->isNewFont() && ! vbar->isShown() )
   {
     setColor();
 
@@ -705,7 +706,7 @@ void FListBox::draw()
 
   drawHeadline();
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
 
   drawScrollbars();
@@ -840,7 +841,7 @@ inline void FListBox::drawListLine ( int y
   const FString element(getColumnSubString (getString(iter), first, max_width));
   std::size_t column_width = getColumnWidth(element);
 
-  if ( FTerm::isMonochron() && isCurrentLine && getFlags().focus )
+  if ( FVTerm::getFOutput()->isMonochron() && isCurrentLine && getFlags().focus )
     print (UniChar::BlackRightPointingPointer);  // ►
   else
     print (' ');
@@ -858,7 +859,7 @@ inline void FListBox::drawListLine ( int y
     print (element[i]);
   }
 
-  if ( FTerm::isMonochron() && isCurrentLine  && getFlags().focus )
+  if ( FVTerm::getFOutput()->isMonochron() && isCurrentLine  && getFlags().focus )
   {
     print (UniChar::BlackLeftPointingPointer);  // ◄
     column_width++;
@@ -891,7 +892,7 @@ inline void FListBox::drawListBracketsLine ( int y
   const std::size_t inc_len = inc_search.getLength();
   const bool isCurrentLine( y + yoffset + 1 == int(current) );
 
-  if ( FTerm::isMonochron() && isCurrentLine && getFlags().focus )
+  if ( FVTerm::getFOutput()->isMonochron() && isCurrentLine && getFlags().focus )
     print (UniChar::BlackRightPointingPointer);  // ►
   else
     print (' ');
@@ -934,7 +935,7 @@ inline void FListBox::drawListBracketsLine ( int y
     column_width++;
   }
 
-  if ( FTerm::isMonochron() && isCurrentLine && getFlags().focus )
+  if ( FVTerm::getFOutput()->isMonochron() && isCurrentLine && getFlags().focus )
   {
     print (UniChar::BlackLeftPointingPointer);   // ◄
     column_width++;
@@ -958,14 +959,14 @@ inline void FListBox::setLineAttributes ( int y
 
   if ( isLineSelected )
   {
-    if ( FTerm::isMonochron() )
+    if ( FVTerm::getFOutput()->isMonochron() )
       setBold();
     else
       setColor (wc->selected_list_fg, wc->selected_list_bg);
   }
   else
   {
-    if ( FTerm::isMonochron() )
+    if ( FVTerm::getFOutput()->isMonochron() )
       unsetBold();
     else
       setColor (wc->list_fg, wc->list_bg);
@@ -973,12 +974,12 @@ inline void FListBox::setLineAttributes ( int y
 
   if ( isCurrentLine )
   {
-    if ( getFlags().focus && FTerm::getMaxColor() < 16 )
+    if ( getFlags().focus && FVTerm::getFOutput()->getMaxColor() < 16 )
       setBold();
 
     if ( isLineSelected )
     {
-      if ( FTerm::isMonochron() )
+      if ( FVTerm::getFOutput()->isMonochron() )
         setBold();
       else if ( getFlags().focus )
         setColor ( wc->selected_current_element_focus_fg
@@ -991,7 +992,7 @@ inline void FListBox::setLineAttributes ( int y
     }
     else
     {
-      if ( FTerm::isMonochron() )
+      if ( FVTerm::getFOutput()->isMonochron() )
         unsetBold();
 
       if ( getFlags().focus )
@@ -1014,14 +1015,14 @@ inline void FListBox::setLineAttributes ( int y
                  , wc->current_element_bg );
     }
 
-    if ( FTerm::isMonochron() )
+    if ( FVTerm::getFOutput()->isMonochron() )
       setReverse(false);
   }
   else
   {
-    if ( FTerm::isMonochron() )
+    if ( FVTerm::getFOutput()->isMonochron() )
       setReverse(true);
-    else if ( getFlags().focus && FTerm::getMaxColor() < 16 )
+    else if ( getFlags().focus && FVTerm::getFOutput()->getMaxColor() < 16 )
       unsetBold();
   }
 }
@@ -1029,7 +1030,7 @@ inline void FListBox::setLineAttributes ( int y
 //----------------------------------------------------------------------
 inline void FListBox::unsetAttributes() const
 {
-  if ( FTerm::isMonochron() )  // unset for the last element
+  if ( FVTerm::getFOutput()->isMonochron() )  // unset for the last element
     setReverse(false);
 
   unsetBold();
@@ -1663,7 +1664,7 @@ void FListBox::processChanged() const
 //----------------------------------------------------------------------
 void FListBox::changeOnResize() const
 {
-  if ( FTerm::isNewFont() )
+  if ( FVTerm::getFOutput()->isNewFont() )
   {
     vbar->setGeometry (FPoint{int(getWidth()), 2}, FSize{2, getHeight() - 2});
     hbar->setGeometry (FPoint{1, int(getHeight())}, FSize{getWidth() - 2, 1});
@@ -1692,25 +1693,14 @@ void FListBox::lazyConvert(FListBoxItems::iterator iter, std::size_t y)
 //----------------------------------------------------------------------
 void FListBox::cb_vbarChange (const FWidget*)
 {
-  const FScrollbar::ScrollType scrollType = vbar->getScrollType();
+  const FScrollbar::ScrollType scroll_type = vbar->getScrollType();
   static constexpr int wheel_distance = 4;
   const std::size_t current_before = current;
   int distance{1};
   const int yoffset_before = yoffset;
-  assert ( scrollType == FScrollbar::ScrollType::None
-        || scrollType == FScrollbar::ScrollType::Jump
-        || scrollType == FScrollbar::ScrollType::StepBackward
-        || scrollType == FScrollbar::ScrollType::StepForward
-        || scrollType == FScrollbar::ScrollType::PageBackward
-        || scrollType == FScrollbar::ScrollType::PageForward
-        || scrollType == FScrollbar::ScrollType::WheelUp
-        || scrollType == FScrollbar::ScrollType::WheelDown );
 
-  switch ( scrollType )
+  switch ( scroll_type )
   {
-    case FScrollbar::ScrollType::None:
-      break;
-
     case FScrollbar::ScrollType::PageBackward:
       distance = int(getClientHeight());
       // fall through
@@ -1736,6 +1726,9 @@ void FListBox::cb_vbarChange (const FWidget*)
     case FScrollbar::ScrollType::WheelDown:
       wheelDown (wheel_distance);
       break;
+
+    default:
+      break;
   }
 
   if ( current_before != current )
@@ -1747,7 +1740,7 @@ void FListBox::cb_vbarChange (const FWidget*)
   if ( isShown() )
     drawList();
 
-  if ( scrollType >= FScrollbar::ScrollType::StepBackward )
+  if ( scroll_type >= FScrollbar::ScrollType::StepBackward )
   {
     vbar->setValue (yoffset);
 
@@ -1761,26 +1754,14 @@ void FListBox::cb_vbarChange (const FWidget*)
 //----------------------------------------------------------------------
 void FListBox::cb_hbarChange (const FWidget*)
 {
-  const FScrollbar::ScrollType scrollType = hbar->getScrollType();
+  const FScrollbar::ScrollType scroll_type = hbar->getScrollType();
   static constexpr int wheel_distance = 4;
   static constexpr int padding_space = 2;  // 1 leading space + 1 trailing space
   int distance{1};
   const int xoffset_before = xoffset;
 
-  assert ( scrollType == FScrollbar::ScrollType::None
-        || scrollType == FScrollbar::ScrollType::Jump
-        || scrollType == FScrollbar::ScrollType::StepBackward
-        || scrollType == FScrollbar::ScrollType::StepForward
-        || scrollType == FScrollbar::ScrollType::PageBackward
-        || scrollType == FScrollbar::ScrollType::PageForward
-        || scrollType == FScrollbar::ScrollType::WheelUp
-        || scrollType == FScrollbar::ScrollType::WheelDown );
-
-  switch ( scrollType )
+  switch ( scroll_type )
   {
-    case FScrollbar::ScrollType::None:
-      break;
-
     case FScrollbar::ScrollType::PageBackward:
       distance = int(getClientWidth()) - padding_space;
       // fall through
@@ -1806,6 +1787,9 @@ void FListBox::cb_hbarChange (const FWidget*)
     case FScrollbar::ScrollType::WheelDown:
       scrollRight (wheel_distance);
       break;
+
+    default:
+      break;
   }
 
   if ( xoffset_before != xoffset )
@@ -1815,7 +1799,7 @@ void FListBox::cb_hbarChange (const FWidget*)
     drawList();
 
 
-  if ( scrollType >= FScrollbar::ScrollType::StepBackward )
+  if ( scroll_type >= FScrollbar::ScrollType::StepBackward )
   {
     hbar->setValue (xoffset);
 

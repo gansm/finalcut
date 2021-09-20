@@ -128,7 +128,7 @@ void Scrollview::setScrollSize (const FSize& size)
 //----------------------------------------------------------------------
 void Scrollview::draw()
 {
-  if ( finalcut::FTerm::isMonochron() )
+  if ( finalcut::FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
   const auto& wc = getColorTheme();
@@ -143,7 +143,7 @@ void Scrollview::draw()
       print (32 + ((x + y) % 0x5f));
   }
 
-  if ( finalcut::FTerm::isMonochron() )
+  if ( finalcut::FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
 
   FScrollView::draw();

@@ -121,6 +121,7 @@
 #include "final/fcolorpalette.h"
 #include "final/fstring.h"
 #include "final/fsystem.h"
+#include "final/fterm_functions.h"
 
 namespace finalcut
 {
@@ -142,7 +143,6 @@ class FTerm final
 {
   public:
     // Using-declarations
-    using defaultPutChar = std::function<int(int)>;
     using FSetPalette = FColorPalette::FSetPalette;
 
     // Constructor
@@ -176,30 +176,10 @@ class FTerm final
     static bool              hasVT100();
     static bool              hasASCII();
     static bool              isMonochron();
-    static bool              isAnsiTerminal();
-    static bool              isXTerminal();
-    static bool              isRxvtTerminal();
-    static bool              isUrxvtTerminal();
-    static bool              isKdeTerminal();
-    static bool              isGnomeTerminal();
-    static bool              isPuttyTerminal();
-    static bool              isWindowsTerminal();
-    static bool              isTeraTerm();
-    static bool              isCygwinTerminal();
-    static bool              isMinttyTerm();
-    static bool              isLinuxTerm();
-    static bool              isFreeBSDTerm();
-    static bool              isNetBSDTerm();
-    static bool              isOpenBSDTerm();
-    static bool              isSunTerminal();
-    static bool              isScreenTerm();
-    static bool              isTmuxTerm();
-    static bool              isKtermTerminal();
-    static bool              isMltermTerminal();
-    static bool              isKittyTerminal();
     static bool              isNewFont();
     static bool              isInitialized();
     static bool              isCursorHideable();
+    static bool              isEncodable (wchar_t);
     static bool              hasChangedTermSize();
     static bool              hasShadowCharacter();
     static bool              hasHalfBlockCharacter();
@@ -232,28 +212,23 @@ class FTerm final
     static void              saveColorMap();
     static void              resetColorMap();
     static void              setPalette (FColor, int, int, int);
-    template <typename ClassT>
-    static void              setColorPaletteTheme (const FSetPalette& = &FTerm::setPalette);
     static void              setBeep (int, int);
     static void              resetBeep();
     static void              beep();
 
     static void              setEncoding (Encoding);
-    static Encoding          getEncoding();
     static std::string       getEncodingString();
-    static bool              charEncodable (wchar_t);
     static wchar_t           charEncode (wchar_t);
     static wchar_t           charEncode (wchar_t, Encoding);
 
     static bool              scrollTermForward();
     static bool              scrollTermReverse();
 
-    static defaultPutChar&   putchar();  // function pointer
     template <typename... Args>
-    static void              putstringf (const std::string&, Args&&...);
-    static void              putstring (const std::string&, int = 1);
-    static int               putchar_ASCII (int);
-    static int               putchar_UTF8  (int);
+    static void              paddingPrintf (const std::string&, Args&&...);
+    static void              paddingPrint (const std::string&, int = 1);
+    static int               putstring (const std::string&);
+    static int               putchar (int);
 
     void                     initTerminal();
     static void              initScreenSettings();
@@ -287,9 +262,6 @@ class FTerm final
     static void              init_tab_quirks();
     static void              init_captureFontAndTitle();
     static bool              hasNoFontSettingOption();
-    static bool              isDefaultPaletteTheme();
-    static void              redefineColorPalette();
-    static void              restoreColorPalette();
     static void              setInsertCursorStyle();
     static void              setOverwriteCursorStyle();
     static std::string       enableCursorString();
@@ -320,38 +292,6 @@ class FTerm final
 };
 
 
-// non-member function forward declarations
-// implemented in fterm_functions.cpp
-//----------------------------------------------------------------------
-uInt env2uint (const std::string&);
-bool isReverseNewFontchar (wchar_t);
-bool hasFullWidthSupports();
-wchar_t cp437_to_unicode (uChar);
-uChar unicode_to_cp437 (wchar_t);
-FString getFullWidth (const FString&);
-FString getHalfWidth (const FString&);
-FString getColumnSubString (const FString&, std::size_t, std::size_t);
-std::size_t getLengthFromColumnWidth (const FString&, std::size_t);
-std::size_t getColumnWidth (const FString&, std::size_t);
-std::size_t getColumnWidth (const FString&);
-std::size_t getColumnWidth (const wchar_t);
-std::size_t getColumnWidth (const FChar&);
-std::size_t getColumnWidth (const FTermBuffer&);
-void addColumnWidth (FChar&);
-int getCharLength (const FString&, std::size_t);
-int getPrevCharLength (const FString&, std::size_t);
-std::size_t searchLeftCharBegin (const FString&, std::size_t);
-std::size_t searchRightCharBegin (const FString&, std::size_t);
-FPoint readCursorPos();
-
-// Check for 7-bit ASCII
-template<typename CharT>
-inline bool is7bit (CharT ch)
-{
-  using char_type = typename std::make_unsigned<CharT>::type;
-  return static_cast<char_type>(ch) < 128;
-}
-
 // FTerm inline functions
 //----------------------------------------------------------------------
 inline FString FTerm::getClassName()
@@ -372,16 +312,8 @@ inline bool FTerm::unsetUTF8()
 { return setUTF8(false); }
 
 //----------------------------------------------------------------------
-template <typename ClassT>
-inline void FTerm::setColorPaletteTheme (const FSetPalette& f)
-{
-  FColorPalette::getInstance() = std::make_shared<ClassT>(f);  // Set instance
-  FColorPalette::getInstance()->setColorPalette();             // Set palette
-}
-
-//----------------------------------------------------------------------
 template <typename... Args>
-inline void FTerm::putstringf (const std::string& format, Args&&... args)
+inline void FTerm::paddingPrintf (const std::string& format, Args&&... args)
 {
   const int size = std::snprintf (nullptr, 0, format.data(), args...) + 1;
 
@@ -391,7 +323,7 @@ inline void FTerm::putstringf (const std::string& format, Args&&... args)
   const auto count = std::size_t(size);
   std::vector<char> buf(count);
   std::snprintf (&buf[0], count, format.data(), std::forward<Args>(args)...);
-  putstring (std::string(&buf[0]), 1);
+  paddingPrint (std::string(&buf[0]), 1);
 }
 
 //----------------------------------------------------------------------

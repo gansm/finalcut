@@ -52,7 +52,7 @@ void doubleToItem ( FListBoxItem& item
 {
   using DblList = std::list<double>;
   DblList& dbl_list = flistboxhelper::getContainer<DblList>(container);
-  std::list<double>::iterator iter = dbl_list.begin();
+  auto iter = dbl_list.begin();
   std::advance (iter, index);
   item.setText (FString() << *iter);
   item.setData (*iter);

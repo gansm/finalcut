@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -58,6 +58,9 @@ namespace finalcut
 class FMenuList
 {
   public:
+    // Using-declarations
+    using FMenuItemList = std::vector<FMenuItem*>;
+
     // Constructor
     FMenuList() = default;
 
@@ -75,7 +78,7 @@ class FMenuList
     std::size_t              getCount() const;
     FMenuItem*               getItem (int) const;
     FMenuItem*               getSelectedItem() const;
-    std::vector<FMenuItem*>  getItemList() const;
+    const FMenuItemList&     getItemList() const;
 
     // Mutators
     void                     enableItem (int);
@@ -92,13 +95,22 @@ class FMenuList
     virtual void             remove (FMenuItem*);
     void                     remove (int);
     void                     clear();
+    auto                     findFirstSelectedItem() const
+                                 -> FMenuItemList::const_iterator;
+    auto                     findLastSelectedItem () const
+                                 -> FMenuItemList::const_reverse_iterator;
     void                     selectFirstItem();
     void                     unselectItem();
+
+  protected:
+    bool                     selectNextItem();
+    bool                     selectPrevItem();
+    virtual void             selectItem_PostProcessing (FMenuItem*) = 0;
 
   private:
     // Data members
     FMenuItem*               selected_item{};
-    std::vector<FMenuItem*>  item_list{};
+    FMenuItemList            item_list{};
 };
 
 
@@ -120,7 +132,7 @@ inline FMenuItem* FMenuList::getSelectedItem() const
 { return selected_item; }
 
 //----------------------------------------------------------------------
-inline std::vector<FMenuItem*> FMenuList::getItemList() const
+inline const FMenuList::FMenuItemList& FMenuList::getItemList() const
 { return item_list; }
 
 //----------------------------------------------------------------------

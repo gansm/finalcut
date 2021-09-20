@@ -29,7 +29,7 @@ jobs:
         brew install automake
         brew install autoconf-archive
 
-    - name: Build 
+    - name: Build
       run: |
         autoreconf -v --install --force
         ./configure --prefix=/usr

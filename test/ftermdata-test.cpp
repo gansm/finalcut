@@ -61,6 +61,7 @@ class FTermDataTest : public CPPUNIT_NS::TestFixture
   protected:
     void classNameTest();
     void defaultDataTest();
+    void TermTypeTest();
     void dataTest();
 
   private:
@@ -70,6 +71,7 @@ class FTermDataTest : public CPPUNIT_NS::TestFixture
     // Add a methods to the test suite
     CPPUNIT_TEST (classNameTest);
     CPPUNIT_TEST (defaultDataTest);
+    CPPUNIT_TEST (TermTypeTest);
     CPPUNIT_TEST (dataTest);
 
     // End of test suite definition
@@ -95,9 +97,11 @@ void FTermDataTest::defaultDataTest()
   CPPUNIT_ASSERT ( data.getBaudrate() == 0 );
   CPPUNIT_ASSERT_CSTRING ( data.getTermType().data(), "" );
   CPPUNIT_ASSERT_CSTRING ( data.getTermFileName().data(), "" );
+  CPPUNIT_ASSERT ( data.getGnomeTerminalID() == 0 );
+  CPPUNIT_ASSERT ( data.getKittyVersion().primary == 0 );
+  CPPUNIT_ASSERT ( data.getKittyVersion().secondary == 0 );
   CPPUNIT_ASSERT ( data.getXtermFont() == finalcut::FString() );
   CPPUNIT_ASSERT ( data.getXtermTitle() == finalcut::FString() );
-  CPPUNIT_ASSERT ( data.getExitMessage() == finalcut::FString() );
 
 #if DEBUG
   CPPUNIT_ASSERT ( data.getFramebufferBpp() == -1 );
@@ -186,6 +190,13 @@ void FTermDataTest::dataTest()
   data.setTermFileName("/dev/pts/2");
   CPPUNIT_ASSERT ( data.getTermFileName() == "/dev/pts/2" );
 
+  data.setGnomeTerminalID(5402);
+  CPPUNIT_ASSERT ( data.getGnomeTerminalID() == 5402 );
+
+  data.setKittyVersion( {0, 13} );
+  CPPUNIT_ASSERT ( data.getKittyVersion().primary == 0 );
+  CPPUNIT_ASSERT ( data.getKittyVersion().secondary == 13 );
+
   CPPUNIT_ASSERT ( data.getXtermFont() == finalcut::FString() );
   data.setXtermFont("terminus-20");
   CPPUNIT_ASSERT ( data.getXtermFont() == finalcut::FString("terminus-20") );
@@ -193,10 +204,6 @@ void FTermDataTest::dataTest()
   CPPUNIT_ASSERT ( data.getXtermTitle() == finalcut::FString() );
   data.setXtermTitle("Terminal");
   CPPUNIT_ASSERT ( data.getXtermTitle() == finalcut::FString("Terminal") );
-
-  CPPUNIT_ASSERT ( data.getExitMessage() == finalcut::FString() );
-  data.setExitMessage("No tty found");
-  CPPUNIT_ASSERT ( data.getExitMessage() == finalcut::FString("No tty found") );
 
 #if DEBUG
   CPPUNIT_ASSERT ( data.getFramebufferBpp() == -1 );
@@ -268,6 +275,187 @@ void FTermDataTest::dataTest()
   CPPUNIT_ASSERT ( data.hasTermResized() == false );
 }
 
+//----------------------------------------------------------------------
+void FTermDataTest::TermTypeTest()
+{
+  finalcut::FTermData data;
+
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::xterm) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::ansi) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::rxvt) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::urxvt) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::kde_konsole) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::gnome_terminal) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::putty) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::win_terminal) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::tera_term) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::cygwin) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::mintty) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::linux_con) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::freebsd_con) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::netbsd_con) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::openbsd_con) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::sun_con) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::screen) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::tmux) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::kterm) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::mlterm) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::kitty) );
+
+  CPPUNIT_ASSERT ( ! data.isTermType( finalcut::FTermType::xterm
+                                    | finalcut::FTermType::ansi
+                                    | finalcut::FTermType::rxvt
+                                    | finalcut::FTermType::urxvt
+                                    | finalcut::FTermType::kde_konsole
+                                    | finalcut::FTermType::gnome_terminal
+                                    | finalcut::FTermType::putty
+                                    | finalcut::FTermType::win_terminal
+                                    | finalcut::FTermType::tera_term
+                                    | finalcut::FTermType::cygwin
+                                    | finalcut::FTermType::mintty
+                                    | finalcut::FTermType::linux_con
+                                    | finalcut::FTermType::freebsd_con
+                                    | finalcut::FTermType::netbsd_con
+                                    | finalcut::FTermType::openbsd_con
+                                    | finalcut::FTermType::sun_con
+                                    | finalcut::FTermType::screen
+                                    | finalcut::FTermType::tmux
+                                    | finalcut::FTermType::kterm
+                                    | finalcut::FTermType::mlterm
+                                    | finalcut::FTermType::kitty) );
+
+  data.setTermType (finalcut::FTermType::ansi);
+
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::xterm) );
+  CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::ansi) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::rxvt) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::urxvt) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::kde_konsole) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::gnome_terminal) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::putty) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::win_terminal) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::tera_term) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::cygwin) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::mintty) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::linux_con) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::freebsd_con) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::netbsd_con) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::openbsd_con) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::sun_con) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::screen) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::tmux) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::kterm) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::mlterm) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::kitty) );
+
+  CPPUNIT_ASSERT ( data.isTermType( finalcut::FTermType::xterm
+                                  | finalcut::FTermType::ansi
+                                  | finalcut::FTermType::rxvt
+                                  | finalcut::FTermType::urxvt
+                                  | finalcut::FTermType::kde_konsole
+                                  | finalcut::FTermType::gnome_terminal
+                                  | finalcut::FTermType::putty
+                                  | finalcut::FTermType::win_terminal
+                                  | finalcut::FTermType::tera_term
+                                  | finalcut::FTermType::cygwin
+                                  | finalcut::FTermType::mintty
+                                  | finalcut::FTermType::linux_con
+                                  | finalcut::FTermType::freebsd_con
+                                  | finalcut::FTermType::netbsd_con
+                                  | finalcut::FTermType::openbsd_con
+                                  | finalcut::FTermType::sun_con
+                                  | finalcut::FTermType::screen
+                                  | finalcut::FTermType::tmux
+                                  | finalcut::FTermType::kterm
+                                  | finalcut::FTermType::mlterm
+                                  | finalcut::FTermType::kitty) );
+
+  data.unsetTermType (finalcut::FTermType::ansi);
+  data.setTermType (finalcut::FTermType::xterm);
+  data.setTermType (finalcut::FTermType::putty);
+
+  CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::xterm) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::ansi) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::rxvt) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::urxvt) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::kde_konsole) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::gnome_terminal) );
+  CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::putty) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::win_terminal) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::tera_term) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::cygwin) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::mintty) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::linux_con) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::freebsd_con) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::netbsd_con) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::openbsd_con) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::sun_con) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::screen) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::tmux) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::kterm) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::mlterm) );
+  CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::kitty) );
+
+  CPPUNIT_ASSERT ( data.isTermType( finalcut::FTermType::xterm
+                                  | finalcut::FTermType::ansi
+                                  | finalcut::FTermType::rxvt
+                                  | finalcut::FTermType::urxvt
+                                  | finalcut::FTermType::kde_konsole
+                                  | finalcut::FTermType::gnome_terminal
+                                  | finalcut::FTermType::putty
+                                  | finalcut::FTermType::win_terminal
+                                  | finalcut::FTermType::tera_term
+                                  | finalcut::FTermType::cygwin
+                                  | finalcut::FTermType::mintty
+                                  | finalcut::FTermType::linux_con
+                                  | finalcut::FTermType::freebsd_con
+                                  | finalcut::FTermType::netbsd_con
+                                  | finalcut::FTermType::openbsd_con
+                                  | finalcut::FTermType::sun_con
+                                  | finalcut::FTermType::screen
+                                  | finalcut::FTermType::tmux
+                                  | finalcut::FTermType::kterm
+                                  | finalcut::FTermType::mlterm
+                                  | finalcut::FTermType::kitty) );
+
+  const auto v1_enum = finalcut::FTermType::xterm;
+  const auto v1_value = finalcut::FTermTypeValueType(finalcut::FTermType::xterm);
+  const auto v2_enum = finalcut::FTermType::putty;
+  const auto v2_value = finalcut::FTermTypeValueType(finalcut::FTermType::putty);
+
+  CPPUNIT_ASSERT ( ( v1_enum |  v2_enum) == (v1_value | v2_value) );
+  CPPUNIT_ASSERT ( ( v1_enum | v2_value) == (v1_value | v2_value) );
+  CPPUNIT_ASSERT ( (v1_value |  v2_enum) == (v1_value | v2_value) );
+  CPPUNIT_ASSERT ( (v1_value | v2_value) == (v1_value | v2_value) );
+
+  CPPUNIT_ASSERT ( ( v1_enum |  v2_enum) == (v1_value |  v2_enum) );
+  CPPUNIT_ASSERT ( ( v1_enum | v2_value) == (v1_value |  v2_enum) );
+  CPPUNIT_ASSERT ( (v1_value |  v2_enum) == (v1_value |  v2_enum) );
+  CPPUNIT_ASSERT ( (v1_value | v2_value) == (v1_value |  v2_enum) );
+
+  CPPUNIT_ASSERT ( ( v1_enum |  v2_enum) == ( v1_enum | v2_value) );
+  CPPUNIT_ASSERT ( ( v1_enum | v2_value) == ( v1_enum | v2_value) );
+  CPPUNIT_ASSERT ( (v1_value |  v2_enum) == ( v1_enum | v2_value) );
+  CPPUNIT_ASSERT ( (v1_value | v2_value) == ( v1_enum | v2_value) );
+
+  CPPUNIT_ASSERT ( ( v1_enum |  v2_enum) == ( v1_enum |  v2_enum) );
+  CPPUNIT_ASSERT ( ( v1_enum | v2_value) == ( v1_enum |  v2_enum) );
+  CPPUNIT_ASSERT ( (v1_value |  v2_enum) == ( v1_enum |  v2_enum) );
+  CPPUNIT_ASSERT ( (v1_value | v2_value) == ( v1_enum |  v2_enum) );
+
+  auto mask = finalcut::FTermTypeValueType(0);
+  CPPUNIT_ASSERT ( ! data.isTermType(mask) );
+  mask = finalcut::FTermType::xterm | finalcut::FTermType::putty;
+  CPPUNIT_ASSERT ( data.isTermType(mask) );
+  mask = mask | finalcut::FTermType::rxvt;
+  mask = finalcut::FTermType::mintty | mask;
+  data.unsetTermType (finalcut::FTermType::xterm);
+  CPPUNIT_ASSERT ( data.isTermType(mask) );
+  data.unsetTermType (finalcut::FTermType::putty);
+  CPPUNIT_ASSERT ( ! data.isTermType(mask) );
+  mask = 0;
+  CPPUNIT_ASSERT ( ! data.isTermType(mask) );
+}
 
 // Put the test suite in the registry
 CPPUNIT_TEST_SUITE_REGISTRATION (FTermDataTest);

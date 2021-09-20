@@ -233,11 +233,11 @@ class myColorPalette final : public finalcut::FColorPalette
 };
 ```
 To set the colors of a palette theme, you should use the method 
-`FTerm::setColorPaletteTheme()`. This method creates a new instance and 
-saves it in the `FTerm` object.
+`FOutput::setColorPaletteTheme()`. This method creates a new instance and 
+saves it in the `FOutput` object.
 
 ```cpp
-finalcut::FTerm::setColorPaletteTheme<myColorPalette>();
+finalcut::FVTerm::getFOutput()->setColorPaletteTheme<myColorPalette>();
 ```
 The standard VGA palette is part of the `FColorPalette` class. To set it, 
 use the method `setVGAdefaultPalette()`. You can use it to reset the color 
@@ -430,7 +430,7 @@ int main (int argc, char* argv[])
   app.setColorTheme<BeeColorTheme>();
 
   // Set the color palette theme
-  FTerm::setColorPaletteTheme<BeeColorPalette>();
+  FVTerm::getFOutput()->setColorPaletteTheme<BeeColorPalette>();
 
   dialogWidget dialog(&app);
   FWidget::setMainWidget(&dialog);

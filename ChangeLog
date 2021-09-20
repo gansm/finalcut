@@ -1,3 +1,35 @@
+2021-09-17 Markus Gans  <guru.mail@muenster.de>
+	* Output optimization: Wide strings are now converted to 
+	  UTF-8 strings before they are inserted into the output buffer
+	* Key maps now store the length of the string to speed up 
+	  key string parsing
+
+2021-09-15 Markus Gans  <guru.mail@muenster.de>
+	* setExitMessage is now a function without object dependencies, 
+	  so it can be called from anywhere
+	* New internal function unicode_to_utf8 which allows to convert 
+	  a wchar_t to a utf-8 string
+
+2021-09-14 Markus Gans  <guru.mail@muenster.de>
+	* More local static variables are used to prevent repeated 
+	  value assignments
+
+2021-09-12 Markus Gans  <guru.mail@muenster.de>
+	* The detected terminal type is now stored in FTermData
+
+2021-09-05 Markus Gans  <guru.mail@muenster.de>
+	* The methods for the physical terminal output of class FVTerm 
+	  were extracted and moved to the new class FVTermOutput. 
+	  The class FVTermOutput is the implementation of the abstract 
+	  class FOutput. This abstraction layer can be the basis for 
+	  an alternative implementation.
+
+2021-08-01 Markus Gans  <guru.mail@muenster.de>
+	* Fixed mutex deadlock in FObject
+
+2021-07-25 Markus Gans  <guru.mail@muenster.de>
+	* Function setMinimizable() to minimize FDialog windows added
+
 2021-07-18 Markus Gans  <guru.mail@muenster.de>
 	* Improved the GNU autoconf-archive check
 
