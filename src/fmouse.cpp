@@ -603,7 +603,7 @@ void FMouseX11::processEvent (const TimeValue& time)
   if ( mouse_position == getNewPos()
     && ! isWheelUp()
     && ! isWheelDown()
-    && uChar(btn) == x11_button_state )
+    && x11_button_state == uChar(btn) )
   {
     clearEvent();
     x11_mouse[0] = '\0';  // Delete already interpreted data

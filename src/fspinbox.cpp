@@ -90,20 +90,7 @@ bool FSpinBox::setFocus (bool enable)
 //----------------------------------------------------------------------
 bool FSpinBox::setShadow (bool enable)
 {
-  if ( enable
-    && FVTerm::getFOutput()->getEncoding() != Encoding::VT100
-    && FVTerm::getFOutput()->getEncoding() != Encoding::ASCII )
-  {
-    setFlags().shadow = true;
-    setShadowSize(FSize{1, 1});
-  }
-  else
-  {
-    setFlags().shadow = false;
-    setShadowSize(FSize{0, 0});
-  }
-
-  return getFlags().shadow;
+  return setWidgetShadow(this, enable);
 }
 
 //----------------------------------------------------------------------
@@ -280,10 +267,6 @@ void FSpinBox::onTimer (FTimerEvent*)
     addTimer(repeat_time);
   }
 
-  assert ( spining_state == SpiningState::None
-        || spining_state == SpiningState::Up
-        || spining_state == SpiningState::Down );
-
   switch ( spining_state )
   {
     case SpiningState::None:
@@ -297,6 +280,9 @@ void FSpinBox::onTimer (FTimerEvent*)
     case SpiningState::Down:
       decreaseValue();
       updateInputField();
+      break;
+
+    default:
       break;
   }
 }

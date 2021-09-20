@@ -312,7 +312,8 @@ bool FTermLinux::loadNewFont()
         ret = setScreenFont(fc::__9x16graph, 256, 8, 16);  // set 9×16
       else
 #endif
-      ret = setScreenFont(fc::__8x16graph, 256, 8, 16);  // set 8×16
+        ret = setScreenFont(fc::__8x16graph, 256, 8, 16);  // set 8×16
+
       new_font = bool( ret == 0 );
 
       // Unicode character mapping

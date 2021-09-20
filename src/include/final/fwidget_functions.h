@@ -52,6 +52,7 @@ FKey          getHotkey (const FString&);
 std::size_t   getHotkeyPos (const FString& src, FString& dest);
 void          setHotkeyViaString (FWidget*, const FString&);
 void          setWidgetFocus (FWidget*);
+bool          setWidgetShadow (FWidget*, bool);
 void          drawShadow (FWidget*);
 void          drawTransparentShadow (FWidget*);
 void          drawBlockShadow (FWidget*);

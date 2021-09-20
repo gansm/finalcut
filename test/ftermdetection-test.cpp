@@ -204,7 +204,6 @@ void FTermDetectionTest::xtermTest()
 {
   auto& data = finalcut::FTermData::getInstance();
   auto& debug_data = finalcut::FTermDebugData::getInstance();
-  //finalcut::FTermDetection detect;
   auto& detect = finalcut::FTermDetection::getInstance();
   data.setTermType("xterm");
   detect.setTerminalDetection(true);

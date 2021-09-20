@@ -526,17 +526,7 @@ void FDialog::onKeyPress (FKeyEvent* ev)
 void FDialog::onMouseDown (FMouseEvent* ev)
 {
   const auto width = int(getWidth());
-
-  const MouseStates ms =
-  {
-    ev->getX(),
-    ev->getY(),
-    ev->getTermPos(),
-    getMinimizeButtonWidth(),
-    getZoomButtonWidth(),
-    false  // mouse_over_menu
-  };
-
+  const MouseStates ms = initMouseStates(*ev, false);
   deactivateMinimizeButton();
   deactivateZoomButton();
 
@@ -585,15 +575,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FDialog::onMouseUp (FMouseEvent* ev)
 {
-  const MouseStates ms =
-  {
-    ev->getX(),
-    ev->getY(),
-    ev->getTermPos(),
-    getMinimizeButtonWidth(),
-    getZoomButtonWidth(),
-    false  // mouse_over_menu
-  };
+  const MouseStates ms = initMouseStates(*ev, false);
 
   if ( ev->getButton() == MouseButton::Left )
   {
@@ -637,15 +619,8 @@ void FDialog::onMouseUp (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FDialog::onMouseMove (FMouseEvent* ev)
 {
-  const MouseStates ms =
-  {
-    ev->getX(),
-    ev->getY(),
-    ev->getTermPos(),
-    getZoomButtonWidth(),
-    getMinimizeButtonWidth(),
-    isMouseOverMenu(ev->getTermPos())
-  };
+  auto mouse_over_menu = isMouseOverMenu(ev->getTermPos());
+  const MouseStates ms = initMouseStates(*ev, mouse_over_menu);
 
   if ( ev->getButton() != MouseButton::Left )
     return;
@@ -669,15 +644,7 @@ void FDialog::onMouseMove (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FDialog::onMouseDoubleClick (FMouseEvent* ev)
 {
-  const MouseStates ms =
-  {
-    ev->getX(),
-    ev->getY(),
-    ev->getTermPos(),
-    getMinimizeButtonWidth(),
-    getZoomButtonWidth(),
-    false  // mouse_over_menu
-  };
+  const MouseStates ms = initMouseStates(*ev, false);
 
   if ( ev->getButton() != MouseButton::Left )
     return;
@@ -1010,6 +977,20 @@ void FDialog::initCloseMenuItem (FMenu* menu)
     this,
     &FDialog::cb_close
   );
+}
+
+//----------------------------------------------------------------------
+inline FDialog::MouseStates FDialog::initMouseStates ( const FMouseEvent& ev
+                                                     , bool mouse_over_menu )
+{
+  return {
+           ev.getX(),
+           ev.getY(),
+           ev.getTermPos(),
+           getZoomButtonWidth(),
+           getMinimizeButtonWidth(),
+           mouse_over_menu
+         };
 }
 
 //----------------------------------------------------------------------

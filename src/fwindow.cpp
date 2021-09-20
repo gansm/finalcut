@@ -634,7 +634,7 @@ bool FWindow::minimizeWindow()
     zoomWindow();  // unzoom window
 
   const auto& virtual_win = getVWin();
-  virtual_win->minimized = isMinimized();
+  virtual_win->minimized = bool( ! isMinimized() );
   const auto& t_geometry = getTermGeometryWithShadow();
   restoreVTerm (t_geometry);
 

@@ -429,8 +429,8 @@ inline void FTermcap::decimalPoint (string_iterator& iter, int& number)
 }
 
 //----------------------------------------------------------------------
-void FTermcap::asteriskSlash ( string_iterator& iter
-                            , int& number, int affcnt, bool& has_delay )
+inline void FTermcap::asteriskSlash ( string_iterator& iter
+                                    , int& number, int affcnt, bool& has_delay )
 {
   while ( *iter == '*' || *iter == '/' )
   {

@@ -176,6 +176,25 @@ void setWidgetFocus (FWidget* widget)
 }
 
 //----------------------------------------------------------------------
+bool setWidgetShadow (FWidget* w, bool enable)
+{
+  if ( enable
+    && FVTerm::getFOutput()->getEncoding() != Encoding::VT100
+    && FVTerm::getFOutput()->getEncoding() != Encoding::ASCII )
+  {
+    w->setFlags().shadow = true;
+    w->setShadowSize(FSize{1, 1});
+  }
+  else
+  {
+    w->setFlags().shadow = false;
+    w->setShadowSize(FSize{0, 0});
+  }
+
+  return w->getFlags().shadow;
+}
+
+//----------------------------------------------------------------------
 void drawShadow (FWidget* w)
 {
   if ( FVTerm::getFOutput()->isMonochron() && ! w->flags.trans_shadow )

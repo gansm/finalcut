@@ -274,15 +274,7 @@ void FMenuBar::selectItem_PostProcessing (FMenuItem* sel_item)
 
   if ( drop_down && sel_item->hasMenu() )
   {
-    auto menu = sel_item->getMenu();
-    sel_item->openMenu();
-    menu->selectFirstItem();
-    auto first_item = menu->getSelectedItem();
-
-    if ( first_item )
-      first_item->setFocus();
-
-    menu->redraw();
+    openMenu(sel_item);
   }
 
   if ( getStatusBar() )
@@ -319,24 +311,10 @@ bool FMenuBar::hotkeyMenu (FKeyEvent*& ev)
         if ( item->hasMenu() )
         {
           setTerminalUpdates (FVTerm::TerminalUpdate::Stop);
-          auto menu = item->getMenu();
           item->setSelected();
           setSelectedItem(item);
           item->setFocus();
-          item->openMenu();
-          menu->selectFirstItem();
-          auto first_item = menu->getSelectedItem();
-
-          if ( first_item )
-            first_item->setFocus();
-
-          menu->redraw();
-
-          if ( getStatusBar() )
-            getStatusBar()->drawMessage();
-
-          redraw();
-          drop_down = true;
+          openMenu(item);
           setTerminalUpdates (FVTerm::TerminalUpdate::Start);
         }
         else

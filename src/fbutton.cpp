@@ -178,20 +178,7 @@ bool FButton::setFlat (bool enable)
 //----------------------------------------------------------------------
 bool FButton::setShadow (bool enable)
 {
-  if ( enable
-    && FVTerm::getFOutput()->getEncoding() != Encoding::VT100
-    && FVTerm::getFOutput()->getEncoding() != Encoding::ASCII )
-  {
-    setFlags().shadow = true;
-    setShadowSize(FSize{1, 1});
-  }
-  else
-  {
-    setFlags().shadow = false;
-    setShadowSize(FSize{0, 0});
-  }
-
-  return getFlags().shadow;
+  return setWidgetShadow(this, enable);
 }
 
 //----------------------------------------------------------------------

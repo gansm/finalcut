@@ -181,6 +181,7 @@ class FDialog : public FWindow
     void                  initZoomMenuItem (FMenu*);
     void                  initMinimizeMenuItem (FMenu*);
     void                  initCloseMenuItem (FMenu*);
+    MouseStates           initMouseStates(const FMouseEvent&, bool);
     void                  mapKeyFunctions();
     void                  drawBorder() override;
     void                  drawTitleBar();

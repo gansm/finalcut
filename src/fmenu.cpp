@@ -650,23 +650,24 @@ void FMenu::hideSuperMenus() const
 }
 
 //----------------------------------------------------------------------
+bool FMenu::isMouseOverItem (const FPoint& mouse_pos, FMenuItem* item)
+{
+  const int x1 = item->getX();
+  const int x2 = item->getX() + int(item->getWidth());
+  const int y  = item->getY();
+  const int mouse_x = mouse_pos.getX() - getRightPadding();
+  const int mouse_y = mouse_pos.getY() - getTopPadding();
+  return ( mouse_x >= x1 && mouse_x < x2 && mouse_y == y );
+}
+
+//----------------------------------------------------------------------
 bool FMenu::mouseDownOverList (const FPoint& mouse_pos)
 {
   bool focus_changed{false};
-  FPoint pos{mouse_pos};
-  pos -= FPoint{getRightPadding(), getTopPadding()};
 
   for (auto&& item : getItemList())
   {
-    const int x1 = item->getX();
-    const int x2 = item->getX() + int(item->getWidth());
-    const int y  = item->getY();
-    const int mouse_x = pos.getX();
-    const int mouse_y = pos.getY();
-
-    if ( mouse_x >= x1
-      && mouse_x < x2
-      && mouse_y == y )
+    if ( isMouseOverItem(mouse_pos, item) )
     {
       // Mouse pointer over item
       mouseDownSubmenu (item);
@@ -736,21 +737,9 @@ void FMenu::mouseDownSelection (FMenuItem* m_item, bool& focus_changed)
 //----------------------------------------------------------------------
 bool FMenu::mouseUpOverList (const FPoint& mouse_pos)
 {
-  FPoint pos{mouse_pos};
-  pos -= FPoint{getRightPadding(), getTopPadding()};
-
   for (auto&& item : getItemList())
   {
-    const int x1 = item->getX();
-    const int x2 = item->getX() + int(item->getWidth());
-    const int y  = item->getY();
-    const int mouse_x = pos.getX();
-    const int mouse_y = pos.getY();
-
-    if ( item->isSelected()
-      && mouse_x >= x1
-      && mouse_x < x2
-      && mouse_y == y )
+    if ( item->isSelected() && isMouseOverItem(mouse_pos, item) )
     {
       // Mouse pointer over item
       if ( item->hasMenu() )
@@ -789,18 +778,9 @@ bool FMenu::mouseUpOverList (const FPoint& mouse_pos)
 //----------------------------------------------------------------------
 void FMenu::mouseMoveOverList (const FPoint& mouse_pos, MouseStates& ms)
 {
-  FPoint pos{mouse_pos};
-  pos -= FPoint{getRightPadding(), getTopPadding()};
-
   for (auto&& item : getItemList())
   {
-    const int x1 = item->getX();
-    const int x2 = item->getX() + int(item->getWidth());
-    const int y  = item->getY();
-    const int mouse_x = pos.getX();
-    const int mouse_y = pos.getY();
-
-    if ( mouse_x >= x1 && mouse_x < x2 && mouse_y == y )
+    if ( isMouseOverItem(mouse_pos, item) )
       mouseMoveSelection (item, ms);
     else
       mouseMoveDeselection (item, ms);
