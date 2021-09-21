@@ -135,7 +135,6 @@ class FOutput : public std::enable_shared_from_this<FOutput>
 
 // FOutput inline functions
 //----------------------------------------------------------------------
-//----------------------------------------------------------------------
 inline FString FOutput::getClassName() const
 { return "FOutput"; }
 

@@ -323,8 +323,8 @@ ftermopenbsdTest::ftermopenbsdTest()
 //----------------------------------------------------------------------
 void ftermopenbsdTest::classNameTest()
 {
-  const finalcut::FTermOpenBSD p{};
-  const finalcut::FString& classname = p.getClassName();
+  const auto& openbsd = finalcut::FTermOpenBSD::getInstance();
+  const finalcut::FString& classname = openbsd.getClassName();
   CPPUNIT_ASSERT ( classname == "FTermOpenBSD" );
 }
 

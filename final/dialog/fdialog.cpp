@@ -980,8 +980,8 @@ void FDialog::initCloseMenuItem (FMenu* menu)
 }
 
 //----------------------------------------------------------------------
-inline FDialog::MouseStates FDialog::initMouseStates ( const FMouseEvent& ev
-                                                     , bool mouse_over_menu )
+inline FDialog::MouseStates
+    FDialog::initMouseStates (const FMouseEvent& ev, bool mouse_over_menu) const
 {
   return {
            ev.getX(),

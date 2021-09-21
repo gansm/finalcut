@@ -26,7 +26,6 @@
 #include <vector>
 
 #include "final/fc.h"
-#include "final/fcharmap.h"
 #include "final/fcolorpair.h"
 #include "final/flog.h"
 #include "final/fpoint.h"

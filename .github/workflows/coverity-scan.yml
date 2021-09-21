@@ -10,9 +10,7 @@ on:
 
 jobs:
   analyze:
-    # Ubuntu 16.04 LTS will be removed on September 20, 2021
-    runs-on: ubuntu-16.04
-    #runs-on: ubuntu-18.04
+    runs-on: ubuntu-18.04
 
     env:
       COVERITY_SCAN_BRANCH_PATTERN:     "${{ github.ref}}"

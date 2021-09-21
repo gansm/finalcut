@@ -623,8 +623,8 @@ ftermfreebsdTest::ftermfreebsdTest()
 //----------------------------------------------------------------------
 void ftermfreebsdTest::classNameTest()
 {
-  const finalcut::FTermFreeBSD p{};
-  const finalcut::FString& classname = p.getClassName();
+  const auto& freebsd = finalcut::FTermFreeBSD::getInstance();
+  const finalcut::FString& classname = freebsd.getClassName();
   CPPUNIT_ASSERT ( classname == "FTermFreeBSD" );
 }
 
@@ -780,7 +780,7 @@ void ftermfreebsdTest::freebsdConsoleTest()
 #endif
 
     CPPUNIT_ASSERT ( isatty(0) == 1 );
-    CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::netbsd_con) );
+    CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::freebsd_con) );
     CPPUNIT_ASSERT ( data.getTermGeometry().getWidth() == 80 );
     CPPUNIT_ASSERT ( data.getTermGeometry().getHeight() == 25 );
     CPPUNIT_ASSERT ( ! data.hasShadowCharacter() );

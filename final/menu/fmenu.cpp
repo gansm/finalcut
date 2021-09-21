@@ -650,7 +650,7 @@ void FMenu::hideSuperMenus() const
 }
 
 //----------------------------------------------------------------------
-bool FMenu::isMouseOverItem (const FPoint& mouse_pos, FMenuItem* item)
+bool FMenu::isMouseOverItem (const FPoint& mouse_pos, const FMenuItem* item) const
 {
   const int x1 = item->getX();
   const int x2 = item->getX() + int(item->getWidth());
