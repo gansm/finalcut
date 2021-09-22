@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -23,8 +23,8 @@
 #include <utility>
 
 #include "final/fc.h"
-#include "final/fradiomenuitem.h"
-#include "final/fmenu.h"
+#include "final/menu/fmenu.h"
+#include "final/menu/fradiomenuitem.h"
 
 namespace finalcut
 {

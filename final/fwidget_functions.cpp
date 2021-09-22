@@ -23,13 +23,12 @@
 #include <algorithm>
 
 #include "final/fapplication.h"
-#include "final/fcolorpair.h"
-#include "final/fstatusbar.h"
-#include "final/fstyle.h"
-#include "final/fwidget.h"
-#include "final/fwidget_functions.h"
 #include "final/fwidgetcolors.h"
-
+#include "final/fwidget_functions.h"
+#include "final/fwidget.h"
+#include "final/vterm/fcolorpair.h"
+#include "final/vterm/fstyle.h"
+#include "final/widget/fstatusbar.h"
 
 namespace finalcut
 {

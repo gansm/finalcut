@@ -23,8 +23,8 @@
 #include <vector>
 
 #include "final/fc.h"
-#include "final/fmenulist.h"
-#include "final/fmenuitem.h"
+#include "final/menu/fmenuitem.h"
+#include "final/menu/fmenulist.h"
 
 namespace finalcut
 {

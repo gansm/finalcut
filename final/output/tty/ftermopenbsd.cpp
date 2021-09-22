@@ -21,10 +21,10 @@
 ***********************************************************************/
 
 #include "final/fapplication.h"
-#include "final/flog.h"
-#include "final/fsystem.h"
-#include "final/fterm.h"
-#include "final/ftermopenbsd.h"
+#include "final/output/tty/fterm.h"
+#include "final/output/tty/ftermopenbsd.h"
+#include "final/util/flog.h"
+#include "final/util/fsystem.h"
 
 #if defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
 

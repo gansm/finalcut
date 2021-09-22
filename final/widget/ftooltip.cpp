@@ -21,8 +21,8 @@
 ***********************************************************************/
 
 #include "final/fapplication.h"
-#include "final/ftooltip.h"
 #include "final/fwidgetcolors.h"
+#include "final/widget/ftooltip.h"
 
 namespace finalcut
 {

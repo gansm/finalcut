@@ -38,7 +38,7 @@
 #include <functional>
 #include <memory>
 
-#include "final/fstring.h"
+#include "final/util/fstring.h"
 
 namespace finalcut
 {

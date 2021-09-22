@@ -64,7 +64,7 @@
 #endif
 
 #include "final/fc.h"
-#include "final/fstring.h"
+#include "final/util/fstring.h"
 
 namespace finalcut
 {

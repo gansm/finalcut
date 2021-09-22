@@ -58,9 +58,9 @@
 #include <vector>
 
 #include "final/fc.h"
-#include "final/fdata.h"
-#include "final/fstringstream.h"
-#include "final/fterm_functions.h"
+#include "final/output/tty/fterm_functions.h"
+#include "final/util/fdata.h"
+#include "final/util/fstringstream.h"
 
 #define F_PREPROC_HANDLER(i,h) \
     reinterpret_cast<FVTerm*>((i)), \
@@ -77,9 +77,8 @@ class FPoint;
 class FRect;
 class FSize;
 class FString;
-class FTermBuffer;
 class FStyle;
-
+class FTermBuffer;
 
 //----------------------------------------------------------------------
 // class FVTerm

@@ -20,7 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-#include "final/flog.h"
+#include "final/util/flog.h"
 
 namespace finalcut
 {

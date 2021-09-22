@@ -21,7 +21,7 @@
 ***********************************************************************/
 
 #include "final/fapplication.h"
-#include "final/fradiobutton.h"
+#include "final/widget/fradiobutton.h"
 
 namespace finalcut
 {

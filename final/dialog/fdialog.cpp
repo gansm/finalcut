@@ -22,16 +22,16 @@
 
 #include <memory>
 
+#include "final/dialog/fdialog.h"
 #include "final/fapplication.h"
-#include "final/fcombobox.h"
-#include "final/fdialog.h"
 #include "final/fevent.h"
-#include "final/fkeyboard.h"
-#include "final/fmenubar.h"
-#include "final/fmenuitem.h"
-#include "final/fstatusbar.h"
-#include "final/ftooltip.h"
 #include "final/fwidgetcolors.h"
+#include "final/input/fkeyboard.h"
+#include "final/menu/fmenubar.h"
+#include "final/menu/fmenuitem.h"
+#include "final/widget/fcombobox.h"
+#include "final/widget/fstatusbar.h"
+#include "final/widget/ftooltip.h"
 
 namespace finalcut
 {

@@ -72,8 +72,8 @@
 #include <queue>
 #include <utility>
 
-#include "final/fkeyboard.h"
-#include "final/fpoint.h"
+#include "final/input/fkeyboard.h"
+#include "final/util/fpoint.h"
 
 #if defined(__linux__)
   #include <linux/keyboard.h>  // need for gpm keyboard modifiers

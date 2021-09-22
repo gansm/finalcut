@@ -53,10 +53,9 @@
 #include <utility>
 #include <vector>
 
-#include "final/fdata.h"
-#include "final/fscrollbar.h"
 #include "final/fwidget.h"
-
+#include "final/util/fdata.h"
+#include "final/widget/fscrollbar.h"
 
 namespace finalcut
 {

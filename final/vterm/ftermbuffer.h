@@ -40,7 +40,7 @@
 #include <utility>
 #include <vector>
 
-#include "final/fstringstream.h"
+#include "final/util/fstringstream.h"
 
 namespace finalcut
 {

@@ -40,11 +40,11 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include <istream>
 #include <iostream>
+#include <istream>
 #include <sstream>
 
-#include "final/fstring.h"
+#include "final/util/fstring.h"
 
 namespace finalcut
 {

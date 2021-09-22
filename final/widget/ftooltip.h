@@ -54,7 +54,7 @@
 
 #include <vector>
 
-#include "final/fwindow.h"
+#include "final/widget/fwindow.h"
 
 namespace finalcut
 {

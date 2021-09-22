@@ -21,7 +21,8 @@
 ***********************************************************************/
 
 #include <array>
-#include "final/fbusyindicator.h"
+
+#include "final/widget/fbusyindicator.h"
 
 namespace finalcut
 {

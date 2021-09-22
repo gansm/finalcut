@@ -110,18 +110,19 @@
 #include <clocale>
 #include <cmath>
 #include <csignal>
+
 #include <functional>
 #include <memory>
 #include <queue>
-#include <utility>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "final/fc.h"
-#include "final/fcolorpalette.h"
-#include "final/fstring.h"
-#include "final/fsystem.h"
-#include "final/fterm_functions.h"
+#include "final/output/fcolorpalette.h"
+#include "final/output/tty/fterm_functions.h"
+#include "final/util/fstring.h"
+#include "final/util/fsystem.h"
 
 namespace finalcut
 {

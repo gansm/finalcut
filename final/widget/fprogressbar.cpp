@@ -21,10 +21,10 @@
 ***********************************************************************/
 
 #include "final/fevent.h"
-#include "final/fcolorpair.h"
-#include "final/fprogressbar.h"
-#include "final/fstring.h"
 #include "final/fwidgetcolors.h"
+#include "final/util/fstring.h"
+#include "final/vterm/fcolorpair.h"
+#include "final/widget/fprogressbar.h"
 
 namespace finalcut
 {

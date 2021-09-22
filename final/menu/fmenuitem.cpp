@@ -23,15 +23,15 @@
 #include <memory>
 #include <utility>
 
+#include "final/dialog/fdialog.h"
 #include "final/fapplication.h"
-#include "final/fdialog.h"
 #include "final/fevent.h"
-#include "final/flog.h"
-#include "final/fmenu.h"
-#include "final/fmenubar.h"
-#include "final/fmenulist.h"
-#include "final/fmenuitem.h"
-#include "final/fstatusbar.h"
+#include "final/menu/fmenubar.h"
+#include "final/menu/fmenu.h"
+#include "final/menu/fmenuitem.h"
+#include "final/menu/fmenulist.h"
+#include "final/util/flog.h"
+#include "final/widget/fstatusbar.h"
 
 namespace finalcut
 {

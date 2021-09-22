@@ -99,15 +99,15 @@
 #include <utility>
 #include <vector>
 
-#include "final/fcallback.h"
 #include "final/fobject.h"
-#include "final/foutput.h"
-#include "final/fpoint.h"
-#include "final/frect.h"
-#include "final/fsize.h"
 #include "final/ftypes.h"
-#include "final/fvterm.h"
 #include "final/fwidget_functions.h"
+#include "final/output/foutput.h"
+#include "final/util/fcallback.h"
+#include "final/util/fpoint.h"
+#include "final/util/frect.h"
+#include "final/util/fsize.h"
+#include "final/vterm/fvterm.h"
 
 namespace finalcut
 {

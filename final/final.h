@@ -26,85 +26,85 @@
 
 #define USE_FINAL_H
 
-#include <final/emptyfstring.h>
-#include <final/sgr_optimizer.h>
-#include <final/fkey_map.h>
 #include <final/fapplication.h>
-#include <final/fbuttongroup.h>
-#include <final/fbutton.h>
-#include <final/fbusyindicator.h>
 #include <final/fc.h>
-#include <final/fdata.h>
-#include <final/fobject.h>
-#include <final/fcolorpalette.h>
-#include <final/fcolorpair.h>
-#include <final/fcombobox.h>
-#include <final/fcharmap.h>
-#include <final/fcheckbox.h>
-#include <final/fcheckmenuitem.h>
-#include <final/fdialog.h>
-#include <final/fdialoglistmenu.h>
 #include <final/fevent.h>
-#include <final/ffiledialog.h>
-#include <final/fkeyboard.h>
-#include <final/flabel.h>
-#include <final/flineedit.h>
-#include <final/flistbox.h>
-#include <final/flistview.h>
-#include <final/flog.h>
-#include <final/flogger.h>
-#include <final/fmenubar.h>
-#include <final/fmenu.h>
-#include <final/fmenuitem.h>
-#include <final/fmessagebox.h>
-#include <final/fmouse.h>
-#include <final/foptiattr.h>
-#include <final/foptimove.h>
-#include <final/foutput.h>
-#include <final/fpoint.h>
-#include <final/fprogressbar.h>
-#include <final/fradiobutton.h>
-#include <final/fradiomenuitem.h>
-#include <final/frect.h>
-#include <final/fscrollbar.h>
-#include <final/fscrollview.h>
-#include <final/fsize.h>
-#include <final/fspinbox.h>
+#include <final/fobject.h>
 #include <final/fstartoptions.h>
-#include <final/fstatusbar.h>
-#include <final/fstring.h>
-#include <final/fstyle.h>
-#include <final/fswitch.h>
-#include <final/fsystem.h>
-#include <final/fterm.h>
-#include <final/ftermbuffer.h>
-#include <final/ftermcap.h>
-#include <final/ftermcapquirks.h>
-#include <final/ftermdata.h>
-#include <final/ftermdebugdata.h>
-#include <final/ftermdetection.h>
-#include <final/ftermios.h>
-#include <final/ftermoutput.h>
-#include <final/ftermxterminal.h>
-#include <final/ftextview.h>
-#include <final/ftogglebutton.h>
-#include <final/ftooltip.h>
 #include <final/ftypes.h>
-#include <final/fvterm.h>
 #include <final/fwidgetcolors.h>
 #include <final/fwidget.h>
-#include <final/fwindow.h>
+#include <final/dialog/fdialog.h>
+#include <final/dialog/ffiledialog.h>
+#include <final/dialog/fmessagebox.h>
+#include <final/input/fkeyboard.h>
+#include <final/input/fkey_map.h>
+#include <final/input/fmouse.h>
+#include <final/menu/fcheckmenuitem.h>
+#include <final/menu/fdialoglistmenu.h>
+#include <final/menu/fmenubar.h>
+#include <final/menu/fmenu.h>
+#include <final/menu/fmenuitem.h>
+#include <final/menu/fradiomenuitem.h>
+#include <final/output/fcolorpalette.h>
+#include <final/output/foutput.h>
+#include <final/output/tty/fcharmap.h>
+#include <final/output/tty/foptiattr.h>
+#include <final/output/tty/foptimove.h>
+#include <final/output/tty/ftermcap.h>
+#include <final/output/tty/ftermcapquirks.h>
+#include <final/output/tty/ftermdata.h>
+#include <final/output/tty/ftermdebugdata.h>
+#include <final/output/tty/ftermdetection.h>
+#include <final/output/tty/fterm.h>
+#include <final/output/tty/ftermios.h>
+#include <final/output/tty/ftermoutput.h>
+#include <final/output/tty/ftermxterminal.h>
+#include <final/output/tty/sgr_optimizer.h>
+#include <final/util/emptyfstring.h>
+#include <final/util/fdata.h>
+#include <final/util/flogger.h>
+#include <final/util/flog.h>
+#include <final/util/fpoint.h>
+#include <final/util/frect.h>
+#include <final/util/fsize.h>
+#include <final/util/fstring.h>
+#include <final/util/fsystem.h>
+#include <final/vterm/fcolorpair.h>
+#include <final/vterm/fstyle.h>
+#include <final/vterm/ftermbuffer.h>
+#include <final/vterm/fvterm.h>
+#include <final/widget/fbusyindicator.h>
+#include <final/widget/fbuttongroup.h>
+#include <final/widget/fbutton.h>
+#include <final/widget/fcheckbox.h>
+#include <final/widget/fcombobox.h>
+#include <final/widget/flabel.h>
+#include <final/widget/flineedit.h>
+#include <final/widget/flistbox.h>
+#include <final/widget/flistview.h>
+#include <final/widget/fprogressbar.h>
+#include <final/widget/fradiobutton.h>
+#include <final/widget/fscrollbar.h>
+#include <final/widget/fscrollview.h>
+#include <final/widget/fspinbox.h>
+#include <final/widget/fstatusbar.h>
+#include <final/widget/fswitch.h>
+#include <final/widget/ftextview.h>
+#include <final/widget/ftogglebutton.h>
+#include <final/widget/ftooltip.h>
+#include <final/widget/fwindow.h>
 
 #if defined(UNIT_TEST)
-  #include <final/ftermlinux.h>
-  #include <final/ftermfreebsd.h>
-  #include <final/ftermopenbsd.h>
+  #include <final/output/tty/ftermlinux.h>
+  #include <final/output/tty/ftermfreebsd.h>
+  #include <final/output/tty/ftermopenbsd.h>
 #elif defined(__linux__)
-  #include <final/ftermlinux.h>
+  #include <final/output/tty/ftermlinux.h>
 #elif defined(__FreeBSD__) || defined(__DragonFly__)
-  #include <final/ftermfreebsd.h>
+  #include <final/output/tty/ftermfreebsd.h>
 #elif defined(__NetBSD__) || defined(__OpenBSD__)
-  #include <final/ftermopenbsd.h>
+  #include <final/output/tty/ftermopenbsd.h>
 #endif
 
 #undef USE_FINAL_H

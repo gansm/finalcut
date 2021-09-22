@@ -25,13 +25,13 @@
 
 #include "final/fapplication.h"
 #include "final/fevent.h"
-#include "final/flabel.h"
-#include "final/flineedit.h"
-#include "final/flog.h"
-#include "final/fpoint.h"
-#include "final/fsize.h"
-#include "final/fstatusbar.h"
 #include "final/fwidgetcolors.h"
+#include "final/util/flog.h"
+#include "final/util/fpoint.h"
+#include "final/util/fsize.h"
+#include "final/widget/flabel.h"
+#include "final/widget/flineedit.h"
+#include "final/widget/fstatusbar.h"
 
 namespace finalcut
 {

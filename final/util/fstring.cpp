@@ -26,8 +26,8 @@
 #include <vector>
 
 #include "final/fapplication.h"
-#include "final/flog.h"
-#include "final/fstring.h"
+#include "final/util/flog.h"
+#include "final/util/fstring.h"
 
 namespace finalcut
 {

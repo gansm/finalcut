@@ -84,9 +84,9 @@
 #include <utility>
 
 #include "final/fc.h"
-#include "final/fdata.h"
-#include "final/fpoint.h"
 #include "final/ftypes.h"
+#include "final/util/fdata.h"
+#include "final/util/fpoint.h"
 
 namespace finalcut
 {

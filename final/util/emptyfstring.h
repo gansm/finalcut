@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -38,8 +38,8 @@
 #include <iostream>
 #include <memory>
 
-#include "final/flog.h"
-#include "final/fstring.h"
+#include "final/util/flog.h"
+#include "final/util/fstring.h"
 
 namespace finalcut
 {

@@ -32,14 +32,14 @@
 #include <string>
 
 #include "final/fapplication.h"
-#include "final/fkeyboard.h"
-#include "final/fkey_map.h"
 #include "final/fobject.h"
-#include "final/fterm.h"
-#include "final/ftermios.h"
+#include "final/input/fkeyboard.h"
+#include "final/input/fkey_map.h"
+#include "final/output/tty/fterm.h"
+#include "final/output/tty/ftermios.h"
 
 #if defined(__linux__)
-  #include "final/ftermlinux.h"
+  #include "final/output/tty/ftermlinux.h"
 #endif
 
 namespace finalcut

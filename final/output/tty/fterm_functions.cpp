@@ -31,14 +31,14 @@
 #include <utility>
 
 #include "final/fapplication.h"
-#include "final/fcharmap.h"
-#include "final/flog.h"
-#include "final/fpoint.h"
-#include "final/fterm.h"
-#include "final/fterm_functions.h"
-#include "final/ftermdata.h"
-#include "final/ftermbuffer.h"
-#include "final/ftermios.h"
+#include "final/output/tty/fcharmap.h"
+#include "final/output/tty/ftermdata.h"
+#include "final/output/tty/fterm_functions.h"
+#include "final/output/tty/fterm.h"
+#include "final/output/tty/ftermios.h"
+#include "final/util/flog.h"
+#include "final/util/fpoint.h"
+#include "final/vterm/ftermbuffer.h"
 
 namespace finalcut
 {

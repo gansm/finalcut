@@ -49,12 +49,11 @@
 
 #include <utility>
 
-#include "final/fdata.h"
-#include "final/flineedit.h"
-#include "final/flistbox.h"
 #include "final/fwidget.h"
-#include "final/fwindow.h"
-
+#include "final/util/fdata.h"
+#include "final/widget/flineedit.h"
+#include "final/widget/flistbox.h"
+#include "final/widget/fwindow.h"
 
 namespace finalcut
 {

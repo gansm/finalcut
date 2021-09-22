@@ -20,7 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-#include "final/foutput.h"
+#include "final/output/foutput.h"
 
 namespace finalcut
 {

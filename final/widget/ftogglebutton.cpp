@@ -23,12 +23,12 @@
 #include <utility>
 
 #include "final/fapplication.h"
-#include "final/fbuttongroup.h"
 #include "final/fevent.h"
-#include "final/fpoint.h"
-#include "final/fstatusbar.h"
-#include "final/ftogglebutton.h"
 #include "final/fwidget.h"
+#include "final/util/fpoint.h"
+#include "final/widget/fbuttongroup.h"
+#include "final/widget/fstatusbar.h"
+#include "final/widget/ftogglebutton.h"
 
 namespace finalcut
 {

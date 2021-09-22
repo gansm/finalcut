@@ -62,9 +62,9 @@
 #include <array>
 #include <memory>
 
-#include "final/fbutton.h"
-#include "final/fdialog.h"
+#include "final/dialog/fdialog.h"
 #include "final/fwidgetcolors.h"
+#include "final/widget/fbutton.h"
 
 namespace finalcut
 {

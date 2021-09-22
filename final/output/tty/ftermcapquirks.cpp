@@ -24,11 +24,11 @@
 #include <string>
 
 #include "final/fc.h"
-#include "final/fkey_map.h"
-#include "final/fterm.h"
-#include "final/ftermcap.h"
-#include "final/ftermcapquirks.h"
-#include "final/ftermdata.h"
+#include "final/input/fkey_map.h"
+#include "final/output/tty/ftermcap.h"
+#include "final/output/tty/ftermcapquirks.h"
+#include "final/output/tty/ftermdata.h"
+#include "final/output/tty/fterm.h"
 
 namespace finalcut
 {

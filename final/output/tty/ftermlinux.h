@@ -63,8 +63,8 @@
 #include <utility>
 #include <vector>
 
-#include "final/fstring.h"
-#include "final/ftermdata.h"
+#include "final/output/tty/ftermdata.h"
+#include "final/util/fstring.h"
 
 namespace finalcut
 {

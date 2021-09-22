@@ -24,7 +24,7 @@
 
 #include "final/fc.h"
 #include "final/ftypes.h"
-#include "final/fcharmap.h"
+#include "final/output/tty/fcharmap.h"
 
 namespace finalcut
 {

@@ -20,13 +20,13 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-#include <array>
 #include <cstring>
+#include <array>
 
 #include "final/fapplication.h"
 #include "final/fc.h"
-#include "final/foptimove.h"
-#include "final/ftermcap.h"
+#include "final/output/tty/foptimove.h"
+#include "final/output/tty/ftermcap.h"
 
 namespace finalcut
 {

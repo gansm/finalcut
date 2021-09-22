@@ -51,9 +51,9 @@
 #include <unordered_map>
 #include <vector>
 
-#include "final/fstring.h"
-#include "final/fstringstream.h"
 #include "final/fwidget.h"
+#include "final/util/fstring.h"
+#include "final/util/fstringstream.h"
 
 namespace finalcut
 {

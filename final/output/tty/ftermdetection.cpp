@@ -26,25 +26,26 @@
 
 #include <array>
 
-#include "final/emptyfstring.h"
 #include "final/fapplication.h"
 #include "final/fc.h"
-#include "final/flog.h"
-#include "final/fkeyboard.h"
-#include "final/fsystem.h"
-#include "final/fterm.h"
-#include "final/ftermcap.h"
-#include "final/ftermdata.h"
-#include "final/ftermdetection.h"
-#include "final/ftermios.h"
+#include "final/fconfig.h"
 #include "final/ftypes.h"
+#include "final/input/fkeyboard.h"
+#include "final/output/tty/ftermcap.h"
+#include "final/output/tty/ftermdata.h"
+#include "final/output/tty/ftermdetection.h"
+#include "final/output/tty/fterm.h"
+#include "final/output/tty/ftermios.h"
+#include "final/util/emptyfstring.h"
+#include "final/util/flog.h"
+#include "final/util/fsystem.h"
 
 #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-  #include "final/ftermfreebsd.h"
+  #include "final/output/tty/ftermfreebsd.h"
 #endif
 
 #if defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
-  #include "final/ftermopenbsd.h"
+  #include "final/output/tty/ftermopenbsd.h"
 #endif
 
 namespace finalcut

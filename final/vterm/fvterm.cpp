@@ -26,17 +26,17 @@
 #include <vector>
 
 #include "final/fc.h"
-#include "final/fcolorpair.h"
-#include "final/flog.h"
-#include "final/fpoint.h"
-#include "final/frect.h"
-#include "final/fsize.h"
-#include "final/fstyle.h"
-#include "final/fsystem.h"
-#include "final/ftermbuffer.h"
-#include "final/ftermoutput.h"
 #include "final/ftypes.h"
-#include "final/fvterm.h"
+#include "final/output/tty/ftermoutput.h"
+#include "final/util/flog.h"
+#include "final/util/fpoint.h"
+#include "final/util/frect.h"
+#include "final/util/fsize.h"
+#include "final/util/fsystem.h"
+#include "final/vterm/fcolorpair.h"
+#include "final/vterm/fstyle.h"
+#include "final/vterm/ftermbuffer.h"
+#include "final/vterm/fvterm.h"
 
 namespace finalcut
 {

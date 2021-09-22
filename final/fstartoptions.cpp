@@ -21,8 +21,8 @@
 ***********************************************************************/
 
 #include "final/fapplication.h"
-#include "final/flog.h"
 #include "final/fstartoptions.h"
+#include "final/util/flog.h"
 
 namespace finalcut
 {

@@ -24,7 +24,7 @@
 #include <vector>
 
 #include "final/fc.h"
-#include "final/sgr_optimizer.h"
+#include "final/output/tty/sgr_optimizer.h"
 
 namespace finalcut
 {

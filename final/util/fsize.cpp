@@ -23,8 +23,8 @@
 #include <limits>
 #include <utility>
 
-#include "final/fpoint.h"
-#include "final/fsize.h"
+#include "final/util/fpoint.h"
+#include "final/util/fsize.h"
 
 namespace finalcut
 {

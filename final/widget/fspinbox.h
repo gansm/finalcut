@@ -49,8 +49,8 @@
 
 #include <limits>
 
-#include "final/flineedit.h"
 #include "final/fwidget.h"
+#include "final/widget/flineedit.h"
 
 namespace finalcut
 {

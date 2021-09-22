@@ -35,13 +35,13 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include <assert.h>
 #include <algorithm>  // need for std::swap
+#include <assert.h>
 #include <string>
 
-#include "final/fstring.h"
 #include "final/ftypes.h"
-#include "final/sgr_optimizer.h"
+#include "final/output/tty/sgr_optimizer.h"
+#include "final/util/fstring.h"
 
 namespace finalcut
 {

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -35,8 +35,8 @@
 #include <system_error>
 #include <unordered_map>
 
-#include "final/ftermios.h"
-#include "final/fterm.h"
+#include "final/output/tty/fterm.h"
+#include "final/output/tty/ftermios.h"
 
 namespace finalcut
 {

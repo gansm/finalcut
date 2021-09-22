@@ -12,7 +12,7 @@ OBJS = $(SRCS:%.cpp=%)
 CCXFLAGS = $(OPTIMIZE) $(PROFILE) $(DEBUG) -std=c++11
 MAKEFILE = -f Makefile.gcc
 LDFLAGS = -L../src -lfinal $(TERMCAP) -lcppunit -ldl
-INCLUDES = -I. -I../src/include -I/usr/include/final
+INCLUDES = -I. -I.. -I/usr/include
 RM = rm -f
 
 TERMCAP := $(shell test -n "$$(ldd {/usr,}/lib64/libncursesw.so.5 2>/dev/null | grep libtinfo)" && echo "-ltinfo" || echo "-lncurses")

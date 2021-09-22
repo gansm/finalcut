@@ -31,5 +31,5 @@ font_DATA = \
 	fonts.dir
 
 uninstall-hook:
-	if test -d ${fontdir}; then rmdir ${fontdir}; fi
+	if test -d ${fontdir}; then rm -f ${fontdir}/.* 2>/dev/null ; rmdir ${fontdir}; fi
 

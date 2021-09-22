@@ -21,10 +21,10 @@
 ***********************************************************************/
 
 #include "final/fc.h"
-#include "final/foutput.h"
-#include "final/fterm.h"
-#include "final/fvterm.h"
 #include "final/fwidgetcolors.h"
+#include "final/output/foutput.h"
+#include "final/output/tty/fterm.h"
+#include "final/vterm/fvterm.h"
 
 namespace finalcut
 {

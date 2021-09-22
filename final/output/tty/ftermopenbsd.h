@@ -61,7 +61,7 @@
   #include <dev/wscons/wsconsio.h>
 #endif
 
-#include "final/fstring.h"
+#include "final/util/fstring.h"
 
 namespace finalcut
 {

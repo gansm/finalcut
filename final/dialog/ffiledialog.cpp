@@ -29,10 +29,9 @@
   #include <strings.h>    // need for strcasecmp
 #endif
 
+#include "final/dialog/ffiledialog.h"
 #include "final/fevent.h"
-#include "final/fsystem.h"
-#include "final/ffiledialog.h"
-
+#include "final/util/fsystem.h"
 
 namespace finalcut
 {

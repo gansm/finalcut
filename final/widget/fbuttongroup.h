@@ -48,8 +48,8 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include "final/fscrollview.h"
 #include "final/fwidgetcolors.h"
+#include "final/widget/fscrollview.h"
 
 namespace finalcut
 {

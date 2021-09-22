@@ -30,13 +30,13 @@
 
 #include "final/fapplication.h"
 #include "final/fconfig.h"
-#include "final/fkeyboard.h"
-#include "final/fmouse.h"
 #include "final/fobject.h"
-#include "final/fterm.h"
-#include "final/ftermlinux.h"
-#include "final/ftermxterminal.h"
 #include "final/ftypes.h"
+#include "final/input/fkeyboard.h"
+#include "final/input/fmouse.h"
+#include "final/output/tty/fterm.h"
+#include "final/output/tty/ftermlinux.h"
+#include "final/output/tty/ftermxterminal.h"
 
 namespace finalcut
 {

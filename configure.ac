@@ -6,8 +6,8 @@
 
 AC_INIT([finalcut], [0.7.2])
 AC_CONFIG_HEADER([config.h])
-AX_PREFIX_CONFIG_H([src/include/final/fconfig.h], [F])
-AC_CONFIG_SRCDIR([src/fobject.cpp])
+AX_PREFIX_CONFIG_H([final/fconfig.h], [F])
+AC_CONFIG_SRCDIR([final/fobject.cpp])
 AC_USE_SYSTEM_EXTENSIONS
 AM_INIT_AUTOMAKE
 AC_PROG_CC
@@ -68,8 +68,8 @@ AC_SUBST([LIBTOOL_DEPS])
 AC_CONFIG_MACRO_DIR([m4])
 
 AC_CONFIG_FILES([Makefile
-                 src/Makefile
-                 fonts/Makefile
+                 final/Makefile
+                 final/font/Makefile
                  doc/Makefile
                  examples/Makefile
                  test/Makefile

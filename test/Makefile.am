@@ -3,8 +3,8 @@
 #----------------------------------------------------------------------
 
 if CPPUNIT_TEST
-AM_LDFLAGS = -L$(top_builddir)/src/.libs -lfinal $(CPPUNIT_LIBS)
-AM_CPPFLAGS = -I$(top_srcdir)/src/include -Wall -Werror -std=c++11
+AM_LDFLAGS = -L$(top_builddir)/final/.libs -lfinal $(CPPUNIT_LIBS)
+AM_CPPFLAGS = -I$(top_srcdir)/final -Wall -Werror -std=c++11
 
 noinst_PROGRAMS = \
 	fobject_test \
@@ -89,3 +89,4 @@ endif
 
 clean-local:
 	-find . \( -name "*.gcda" -o -name "*.gcno" -o -name "*.gcov" \) -delete
+	-rm -rf .deps

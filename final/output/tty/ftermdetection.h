@@ -36,11 +36,11 @@
 #endif
 
 #include <cctype>
-#include <cstdlib>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 
-#include "final/fstring.h"
+#include "final/util/fstring.h"
 
 namespace finalcut
 {

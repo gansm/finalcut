@@ -20,8 +20,8 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-#include "final/fsystem.h"
-#include "final/fsystemimpl.h"
+#include "final/util/fsystem.h"
+#include "final/util/fsystemimpl.h"
 
 namespace finalcut
 {

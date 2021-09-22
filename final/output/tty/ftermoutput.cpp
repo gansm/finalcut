@@ -23,19 +23,18 @@
 #include <unistd.h>
 
 #include "final/fapplication.h"
-#include "final/fkeyboard.h"
-#include "final/fmouse.h"
 #include "final/fobject.h"
-#include "final/foptiattr.h"
-#include "final/foptimove.h"
 #include "final/fstartoptions.h"
-#include "final/ftermcap.h"
-#include "final/ftermdata.h"
-#include "final/ftermfreebsd.h"
-#include "final/ftermios.h"
-#include "final/ftermoutput.h"
-#include "final/ftermxterminal.h"
-
+#include "final/input/fkeyboard.h"
+#include "final/input/fmouse.h"
+#include "final/output/tty/foptiattr.h"
+#include "final/output/tty/foptimove.h"
+#include "final/output/tty/ftermcap.h"
+#include "final/output/tty/ftermdata.h"
+#include "final/output/tty/ftermfreebsd.h"
+#include "final/output/tty/ftermios.h"
+#include "final/output/tty/ftermoutput.h"
+#include "final/output/tty/ftermxterminal.h"
 
 namespace finalcut
 {

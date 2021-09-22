@@ -53,8 +53,8 @@
 
 #include <unordered_map>
 
-#include "final/fmenu.h"
-#include "final/fwindow.h"
+#include "final/menu/fmenu.h"
+#include "final/widget/fwindow.h"
 
 namespace finalcut
 {

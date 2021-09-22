@@ -35,8 +35,9 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include <pwd.h>
 #include <memory>
+#include <pwd.h>
+
 #include "final/ftypes.h"
 
 namespace finalcut

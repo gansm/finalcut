@@ -23,10 +23,10 @@
 #include <algorithm>
 #include <array>
 
+#include "final/dialog/fmessagebox.h"
 #include "final/fapplication.h"
-#include "final/fbutton.h"
-#include "final/flog.h"
-#include "final/fmessagebox.h"
+#include "final/util/flog.h"
+#include "final/widget/fbutton.h"
 
 namespace finalcut
 {

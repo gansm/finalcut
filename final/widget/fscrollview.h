@@ -50,8 +50,8 @@
 
 #include <unordered_map>
 
-#include "final/fscrollbar.h"
 #include "final/fwidget.h"
+#include "final/widget/fscrollbar.h"
 
 namespace finalcut
 {

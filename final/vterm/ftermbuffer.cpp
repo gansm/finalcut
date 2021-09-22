@@ -25,14 +25,14 @@
 #include <vector>
 
 #include "final/fc.h"
-#include "final/fcolorpair.h"
-#include "final/fstring.h"
-#include "final/fstyle.h"
-#include "final/ftermbuffer.h"
-#include "final/ftermdata.h"
-#include "final/foutput.h"
-#include "final/fvterm.h"
 #include "final/ftypes.h"
+#include "final/output/foutput.h"
+#include "final/output/tty/ftermdata.h"
+#include "final/util/fstring.h"
+#include "final/vterm/fcolorpair.h"
+#include "final/vterm/fstyle.h"
+#include "final/vterm/ftermbuffer.h"
+#include "final/vterm/fvterm.h"
 
 namespace finalcut
 {

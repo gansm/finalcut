@@ -21,13 +21,13 @@
 ***********************************************************************/
 
 #include "final/fapplication.h"
-#include "final/fcharmap.h"
-#include "final/flog.h"
-#include "final/fsystem.h"
-#include "final/fterm.h"
-#include "final/ftermdata.h"
-#include "final/ftermfreebsd.h"
 #include "final/ftypes.h"
+#include "final/output/tty/fcharmap.h"
+#include "final/output/tty/ftermdata.h"
+#include "final/output/tty/ftermfreebsd.h"
+#include "final/output/tty/fterm.h"
+#include "final/util/flog.h"
+#include "final/util/fsystem.h"
 
 #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
 

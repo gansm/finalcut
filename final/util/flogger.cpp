@@ -23,7 +23,7 @@
 #include <array>
 #include <string>
 
-#include "final/flogger.h"
+#include "final/util/flogger.h"
 
 namespace finalcut
 {

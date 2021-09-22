@@ -17,7 +17,7 @@ run_gcov ()
 }
 
 find "./test/" \
-     "./src/" \
+     "./final/" \
      -type f \
      -name "*.cpp" \
      -print \

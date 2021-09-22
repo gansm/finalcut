@@ -45,15 +45,14 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <chrono>
 #include <functional>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <string>
 
-#include <chrono>
-#include <iomanip>
-
-#include "final/flog.h"
+#include "final/util/flog.h"
 
 namespace finalcut
 {

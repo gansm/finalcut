@@ -23,12 +23,12 @@
 #include <utility>
 
 #include "final/fapplication.h"
-#include "final/fcombobox.h"
 #include "final/fevent.h"
-#include "final/fmenu.h"
-#include "final/fmenubar.h"
-#include "final/fstatusbar.h"
-#include "final/fwindow.h"
+#include "final/menu/fmenubar.h"
+#include "final/menu/fmenu.h"
+#include "final/widget/fcombobox.h"
+#include "final/widget/fstatusbar.h"
+#include "final/widget/fwindow.h"
 
 namespace finalcut
 {

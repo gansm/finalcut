@@ -38,9 +38,9 @@
 #include <memory>
 
 #include "final/fc.h"
-#include "final/fcolorpalette.h"
 #include "final/ftypes.h"
-#include "final/fvterm.h"
+#include "final/output/fcolorpalette.h"
+#include "final/vterm/fvterm.h"
 
 // Fixes problem with -Weffc++, because the base class
 // std::enable_shared_from_this has a non-virtual destructor

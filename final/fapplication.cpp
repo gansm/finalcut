@@ -28,20 +28,20 @@
 #include <string>
 #include <thread>
 
+#include "final/dialog/fmessagebox.h"
 #include "final/fapplication.h"
 #include "final/fevent.h"
-#include "final/flog.h"
-#include "final/flogger.h"
-#include "final/fmenu.h"
-#include "final/fmenubar.h"
-#include "final/fmessagebox.h"
-#include "final/fmouse.h"
 #include "final/fstartoptions.h"
-#include "final/fstatusbar.h"
-#include "final/ftermdata.h"
-#include "final/ftermios.h"
 #include "final/fwidgetcolors.h"
-#include "final/fwindow.h"
+#include "final/input/fmouse.h"
+#include "final/menu/fmenubar.h"
+#include "final/menu/fmenu.h"
+#include "final/output/tty/ftermdata.h"
+#include "final/output/tty/ftermios.h"
+#include "final/util/flogger.h"
+#include "final/util/flog.h"
+#include "final/widget/fstatusbar.h"
+#include "final/widget/fwindow.h"
 
 namespace finalcut
 {

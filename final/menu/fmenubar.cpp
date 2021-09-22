@@ -25,12 +25,12 @@
 
 #include "final/fapplication.h"
 #include "final/fevent.h"
-#include "final/flog.h"
-#include "final/fmenu.h"
-#include "final/fmenubar.h"
-#include "final/fmenuitem.h"
-#include "final/fstatusbar.h"
 #include "final/fwidgetcolors.h"
+#include "final/menu/fmenubar.h"
+#include "final/menu/fmenu.h"
+#include "final/menu/fmenuitem.h"
+#include "final/util/flog.h"
+#include "final/widget/fstatusbar.h"
 
 namespace finalcut
 {

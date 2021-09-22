@@ -21,10 +21,10 @@
 ***********************************************************************/
 
 #include "final/fapplication.h"
-#include "final/fcolorpair.h"
 #include "final/fevent.h"
-#include "final/fbutton.h"
-#include "final/fstatusbar.h"
+#include "final/vterm/fcolorpair.h"
+#include "final/widget/fbutton.h"
+#include "final/widget/fstatusbar.h"
 
 namespace finalcut
 {

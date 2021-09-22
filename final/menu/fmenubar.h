@@ -54,8 +54,8 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include "final/fmenulist.h"
-#include "final/fwindow.h"
+#include "final/menu/fmenulist.h"
+#include "final/widget/fwindow.h"
 
 namespace finalcut
 {

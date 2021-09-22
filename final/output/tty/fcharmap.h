@@ -30,9 +30,8 @@
 #include <array>
 
 #include "final/fc.h"
-#include "final/fstring.h"
 #include "final/ftypes.h"
-
+#include "final/util/fstring.h"
 
 namespace finalcut
 {

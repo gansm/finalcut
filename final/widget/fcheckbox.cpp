@@ -21,7 +21,7 @@
 ***********************************************************************/
 
 #include "final/fc.h"
-#include "final/fcheckbox.h"
+#include "final/widget/fcheckbox.h"
 
 namespace finalcut
 {

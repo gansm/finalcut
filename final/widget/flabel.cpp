@@ -24,11 +24,11 @@
 #include <utility>
 
 #include "final/fapplication.h"
-#include "final/fcolorpair.h"
 #include "final/fevent.h"
-#include "final/flabel.h"
-#include "final/flog.h"
-#include "final/fstatusbar.h"
+#include "final/util/flog.h"
+#include "final/vterm/fcolorpair.h"
+#include "final/widget/flabel.h"
+#include "final/widget/fstatusbar.h"
 
 namespace finalcut
 {

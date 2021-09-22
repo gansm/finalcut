@@ -25,21 +25,20 @@
 
 #include "final/fapplication.h"
 #include "final/fc.h"
-#include "final/fcharmap.h"
-#include "final/flog.h"
-#include "final/fsystem.h"
-#include "final/fterm.h"
-#include "final/ftermcap.h"
-#include "final/ftermlinux.h"
 #include "final/ftypes.h"
+#include "final/output/tty/fcharmap.h"
+#include "final/output/tty/ftermcap.h"
+#include "final/output/tty/fterm.h"
+#include "final/output/tty/ftermlinux.h"
+#include "final/util/flog.h"
+#include "final/util/fsystem.h"
 
 #if defined(__linux__)
 
 #include <linux/keyboard.h>  // need keyboard modifiers
-#include "../fonts/newfont.h"
-#include "../fonts/unicodemap.h"
-#include "../fonts/vgafont.h"
-
+#include "final/font/newfont.h"
+#include "final/font/unicodemap.h"
+#include "final/font/vgafont.h"
 
 namespace finalcut
 {

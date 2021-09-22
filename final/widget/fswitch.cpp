@@ -20,10 +20,10 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-#include "final/fcolorpair.h"
 #include "final/fevent.h"
-#include "final/fswitch.h"
 #include "final/fwidgetcolors.h"
+#include "final/vterm/fcolorpair.h"
+#include "final/widget/fswitch.h"
 
 namespace finalcut
 {

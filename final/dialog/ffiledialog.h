@@ -68,14 +68,14 @@
 #include <string>
 #include <vector>
 
-#include "final/fbutton.h"
-#include "final/fcheckbox.h"
-#include "final/fdialog.h"
-#include "final/flineedit.h"
-#include "final/flistbox.h"
-#include "final/fmessagebox.h"
-#include "final/fstatusbar.h"
-#include "final/fterm.h"
+#include "final/dialog/fdialog.h"
+#include "final/dialog/fmessagebox.h"
+#include "final/output/tty/fterm.h"
+#include "final/widget/fbutton.h"
+#include "final/widget/fcheckbox.h"
+#include "final/widget/flineedit.h"
+#include "final/widget/flistbox.h"
+#include "final/widget/fstatusbar.h"
 
 namespace finalcut
 {

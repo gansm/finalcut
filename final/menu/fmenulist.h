@@ -45,8 +45,8 @@
 
 #include <vector>
 
-#include "final/fmenuitem.h"
 #include "final/fwidget.h"
+#include "final/menu/fmenuitem.h"
 
 namespace finalcut
 {

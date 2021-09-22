@@ -56,8 +56,8 @@
 
 #include <tuple>
 
-#include "final/fwindow.h"
-#include "final/fmenulist.h"
+#include "final/menu/fmenulist.h"
+#include "final/widget/fwindow.h"
 
 namespace finalcut
 {

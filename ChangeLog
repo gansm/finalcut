@@ -1,3 +1,7 @@
+2021-09-22 Markus Gans  <guru.mail@muenster.de>
+	* The individual FINAL CUT components have been moved to directories 
+	  to provide a better code overview
+
 2021-09-17 Markus Gans  <guru.mail@muenster.de>
 	* Output optimization: Wide strings are now converted to 
 	  UTF-8 strings before they are inserted into the output buffer

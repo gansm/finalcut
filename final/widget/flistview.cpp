@@ -30,16 +30,15 @@
 #include <utility>
 #include <vector>
 
-#include "final/emptyfstring.h"
 #include "final/fapplication.h"
-#include "final/fcolorpair.h"
 #include "final/fevent.h"
-#include "final/flistview.h"
-#include "final/fstatusbar.h"
-#include "final/fstring.h"
-#include "final/ftermbuffer.h"
 #include "final/fwidgetcolors.h"
-
+#include "final/util/emptyfstring.h"
+#include "final/util/fstring.h"
+#include "final/vterm/fcolorpair.h"
+#include "final/vterm/ftermbuffer.h"
+#include "final/widget/flistview.h"
+#include "final/widget/fstatusbar.h"
 
 namespace finalcut
 {

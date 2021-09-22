@@ -21,10 +21,10 @@
 ***********************************************************************/
 
 #include "final/fc.h"
-#include "final/fterm.h"
-#include "final/ftermdata.h"
-#include "final/ftermdetection.h"
-#include "final/ftermdebugdata.h"
+#include "final/output/tty/ftermdata.h"
+#include "final/output/tty/ftermdebugdata.h"
+#include "final/output/tty/ftermdetection.h"
+#include "final/output/tty/fterm.h"
 
 #if DEBUG
 

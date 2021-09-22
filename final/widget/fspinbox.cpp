@@ -22,15 +22,15 @@
 
 #include <regex>
 
-#include "final/fcolorpair.h"
 #include "final/fevent.h"
-#include "final/flabel.h"
-#include "final/flineedit.h"
-#include "final/fpoint.h"
-#include "final/fsize.h"
-#include "final/fspinbox.h"
-#include "final/fstatusbar.h"
 #include "final/fwidgetcolors.h"
+#include "final/util/fpoint.h"
+#include "final/util/fsize.h"
+#include "final/vterm/fcolorpair.h"
+#include "final/widget/flabel.h"
+#include "final/widget/flineedit.h"
+#include "final/widget/fspinbox.h"
+#include "final/widget/fstatusbar.h"
 
 namespace finalcut
 {

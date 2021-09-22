@@ -44,15 +44,15 @@
 #include <string>
 #include <vector>
 
-#include "final/emptyfstring.h"
 #include "final/fc.h"
-#include "final/fkey_map.h"
-#include "final/flog.h"
-#include "final/fsystem.h"
-#include "final/fterm.h"
-#include "final/ftermdata.h"
-#include "final/ftermcap.h"
-#include "final/ftermdetection.h"
+#include "final/input/fkey_map.h"
+#include "final/output/tty/ftermcap.h"
+#include "final/output/tty/ftermdata.h"
+#include "final/output/tty/ftermdetection.h"
+#include "final/output/tty/fterm.h"
+#include "final/util/emptyfstring.h"
+#include "final/util/flog.h"
+#include "final/util/fsystem.h"
 
 namespace finalcut
 {

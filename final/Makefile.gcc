@@ -6,78 +6,78 @@
 VERSION = "0.7.2"
 MAJOR := $(shell echo ${VERSION} | cut -d. -f1)
 LIBDIR = /usr/local/lib
-INCLUDEDIR1 = include/final
+INCLUDEDIR1 = .
 INCLUDEDIR2 = /usr/local/include/final
 INCLUDE_HEADERS = \
 	fapplication.h \
-	fbuttongroup.h \
-	fbutton.h \
-	fcallback.h \
-	fdata.h \
-	fcolorpair.h \
-	fstyle.h \
-	ftogglebutton.h \
-	fcheckbox.h \
-	fswitch.h \
-	fdialog.h \
-	fwindow.h \
-	ffiledialog.h \
+	widget/fbuttongroup.h \
+	widget/fbutton.h \
+	util/fcallback.h \
+	util/fdata.h \
+	vterm/fcolorpair.h \
+	vterm/fstyle.h \
+	widget/ftogglebutton.h \
+	widget/fcheckbox.h \
+	widget/fswitch.h \
+	dialog/fdialog.h \
+	widget/fwindow.h \
+	dialog/ffiledialog.h \
 	final.h \
-	flabel.h \
-	flineedit.h \
-	flistbox.h \
-	flistview.h \
-	flog.h \
-	flogger.h \
-	fmenu.h \
-	fdialoglistmenu.h \
-	fmenubar.h \
-	fradiomenuitem.h \
-	fcheckmenuitem.h \
-	fmessagebox.h \
-	ftooltip.h \
-	fbusyindicator.h \
-	sgr_optimizer.h \
-	foptiattr.h \
-	foptimove.h \
-	ftermbuffer.h \
-	fpoint.h \
-	fsize.h \
-	fprogressbar.h \
-	fradiobutton.h \
-	frect.h \
-	fsystem.h \
-	fsystemimpl.h \
-	fscrollbar.h \
-	fscrollview.h \
-	fspinbox.h \
-	fcombobox.h \
-	fstatusbar.h \
-	fstring.h \
-	fstringstream.h \
-	fmouse.h \
-	fkeyboard.h \
+	widget/flabel.h \
+	widget/flineedit.h \
+	widget/flistbox.h \
+	widget/flistview.h \
+	util/flog.h \
+	util/flogger.h \
+	menu/fmenu.h \
+	menu/fdialoglistmenu.h \
+	menu/fmenubar.h \
+	menu/fradiomenuitem.h \
+	menu/fcheckmenuitem.h \
+	dialog/fmessagebox.h \
+	widget/ftooltip.h \
+	widget/fbusyindicator.h \
+	output/tty/sgr_optimizer.h \
+	output/tty/foptiattr.h \
+	output/tty/foptimove.h \
+	vterm/ftermbuffer.h \
+	util/fpoint.h \
+	util/fsize.h \
+	widget/fprogressbar.h \
+	widget/fradiobutton.h \
+	util/frect.h \
+	util/fsystem.h \
+	util/fsystemimpl.h \
+	widget/fscrollbar.h \
+	widget/fscrollview.h \
+	widget/fspinbox.h \
+	widget/fcombobox.h \
+	widget/fstatusbar.h \
+	util/fstring.h \
+	util/fstringstream.h \
+	input/fmouse.h \
+	input/fkeyboard.h \
 	fstartoptions.h \
-	ftermcap.h \
-	fterm.h \
-	fterm_functions.h \
-	ftermdata.h \
-	ftermdebugdata.h \
-	foutput.h \
-	ftermoutput.h \
-	ftermios.h \
-	ftermdetection.h \
-	ftermcapquirks.h \
-	ftermxterminal.h \
-	ftermfreebsd.h \
-	ftermopenbsd.h \
-	ftermlinux.h \
-	fvterm.h \
-	ftextview.h \
-	fcolorpalette.h \
+	output/tty/ftermcap.h \
+	output/tty/fterm.h \
+	output/tty/fterm_functions.h \
+	output/tty/ftermdata.h \
+	output/tty/ftermdebugdata.h \
+	output/foutput.h \
+	output/tty/ftermoutput.h \
+	output/tty/ftermios.h \
+	output/tty/ftermdetection.h \
+	output/tty/ftermcapquirks.h \
+	output/tty/ftermxterminal.h \
+	output/tty/ftermfreebsd.h \
+	output/tty/ftermopenbsd.h \
+	output/tty/ftermlinux.h \
+	vterm/fvterm.h \
+	widget/ftextview.h \
+	output/fcolorpalette.h \
 	fwidgetcolors.h \
-	fwidget.h \
 	fwidget_functions.h \
+	fwidget.h \
 	fevent.h \
 	fobject.h
 
@@ -86,78 +86,78 @@ CXX = g++
 CCXFLAGS = $(OPTIMIZE) $(PROFILE) -DCOMPILE_FINAL_CUT $(DEBUG) $(VER) $(GPM) -fexceptions -std=c++11
 MAKEFILE = -f Makefile.gcc
 LDFLAGS = $(TERMCAP) -lgpm
-INCLUDES = -Iinclude
+INCLUDES = -I..
 GPM = -D F_HAVE_LIBGPM
 VER = -D F_VERSION=$(VERSION)
 RM = rm -f
 LIB = libfinal.so
 OBJS = \
-	fstring.o \
-	fstringstream.o \
-	fpoint.o \
-	fsize.o \
-	frect.o \
-	fcallback.o \
-	fdata.o \
-	fscrollbar.o \
-	fprogressbar.o \
-	flineedit.o \
-	fbutton.o \
-	fbuttongroup.o \
-	ftogglebutton.o \
-	fradiobutton.o \
-	fcheckbox.o \
-	fswitch.o \
-	flabel.o \
-	flistbox.o \
-	flistview.o \
-	flog.o \
-	flogger.o \
-	fmenu.o \
-	fdialoglistmenu.o \
-	fmenubar.o \
-	fmenuitem.o \
-	fradiomenuitem.o \
-	fcheckmenuitem.o \
-	fmenulist.o \
-	fdialog.o \
-	fwindow.o \
-	fscrollview.o \
-	fspinbox.o \
-	fcombobox.o \
-	fmessagebox.o \
-	ftooltip.o \
-	fbusyindicator.o \
-	ffiledialog.o \
-	fkey_map.o \
-	fcharmap.o \
-	ftextview.o \
-	fstatusbar.o \
-	fmouse.o \
-	fsystem.o \
-	fsystemimpl.o \
-	fkeyboard.o \
+	dialog/fdialog.o \
+	dialog/fmessagebox.o \
+	dialog/ffiledialog.o \
+	input/fmouse.o \
+	input/fkeyboard.o \
+	input/fkey_map.o \
+	menu/fmenu.o \
+	menu/fdialoglistmenu.o \
+	menu/fmenubar.o \
+	menu/fmenuitem.o \
+	menu/fradiomenuitem.o \
+	menu/fcheckmenuitem.o \
+	menu/fmenulist.o \
+	util/fstring.o \
+	util/fstringstream.o \
+	util/fpoint.o \
+	util/fsize.o \
+	util/frect.o \
+	util/fcallback.o \
+	util/fdata.o \
+	util/flog.o \
+	util/flogger.o \
+	util/fsystem.o \
+	util/fsystemimpl.o \
+	widget/fscrollbar.o \
+	widget/fprogressbar.o \
+	widget/flineedit.o \
+	widget/fbutton.o \
+	widget/fbuttongroup.o \
+	widget/ftogglebutton.o \
+	widget/fradiobutton.o \
+	widget/fcheckbox.o \
+	widget/fswitch.o \
+	widget/flabel.o \
+	widget/flistbox.o \
+	widget/flistview.o \
+	widget/fwindow.o \
+	widget/fscrollview.o \
+	widget/fspinbox.o \
+	widget/fcombobox.o \
+	widget/ftooltip.o \
+	widget/fbusyindicator.o \
+	widget/ftextview.o \
+	widget/fstatusbar.o \
+	vterm/fvterm.o \
+	vterm/ftermbuffer.o \
+	output/tty/fcharmap.o \
+	output/tty/ftermcap.o \
+	output/tty/fterm.o \
+	output/tty/fterm_functions.o \
+	output/tty/ftermdebugdata.o \
+	output/foutput.o \
+	output/tty/ftermoutput.o \
+	output/tty/ftermios.o \
+	output/tty/ftermdetection.o \
+	output/tty/ftermcapquirks.o \
+	output/tty/ftermxterminal.o \
+	output/tty/ftermfreebsd.o \
+	output/tty/ftermopenbsd.o \
+	output/tty/ftermlinux.o \
+	output/fcolorpalette.o \
+	output/tty/sgr_optimizer.o \
+	output/tty/foptiattr.o \
+	output/tty/foptimove.o \
 	fstartoptions.o \
-	ftermcap.o \
-	fterm.o \
-	fterm_functions.o \
-	ftermdebugdata.o \
-	foutput.o \
-	ftermoutput.o \
-	ftermios.o \
-	ftermdetection.o \
-	ftermcapquirks.o \
-	ftermxterminal.o \
-	ftermfreebsd.o \
-	ftermopenbsd.o \
-	ftermlinux.o \
-	fvterm.o \
-	sgr_optimizer.o \
-	foptiattr.o \
-	foptimove.o \
-	ftermbuffer.o \
 	fapplication.o \
-	fcolorpalette.o \
 	fwidgetcolors.o \
 	fwidget.o \
 	fwidget_functions.o \
@@ -202,6 +202,10 @@ install: $(LIB)
 	ln -s -f $(LIB).$(MAJOR) $(LIBDIR)/libfinal.so
 	ldconfig
 	mkdir -p $(INCLUDEDIR2)
+	for d in dialog input menu output output/tty util vterm widget; \
+        do \
+	  mkdir -p $(INCLUDEDIR2)/$$d; \
+	done
 	@list='$(INCLUDE_HEADERS)'; for h in $$list; \
 	do \
 	  install -m 644 $(INCLUDEDIR1)/$$h $(INCLUDEDIR2)/$$h; \
@@ -212,6 +216,10 @@ uninstall: $(OBJS)
 	@list='$(INCLUDE_HEADERS)'; for h in $$list; \
 	do \
 	  $(RM) $(INCLUDEDIR2)/$$h; \
+	done
+	for d in widget vterm util output/tty output menu input dialog; \
+        do \
+	  rmdir $(INCLUDEDIR2)/$$d; \
 	done
 	rmdir $(INCLUDEDIR2)
 

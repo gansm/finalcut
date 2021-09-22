@@ -47,7 +47,7 @@
 #include <sstream>
 #include <string>
 
-#include <final/fstring.h>
+#include <final/util/fstring.h>
 
 namespace finalcut
 {

@@ -51,8 +51,8 @@
 #include <memory>
 
 #include "final/fapplication.h"
-#include "final/flog.h"
 #include "final/fwidget.h"
+#include "final/util/flog.h"
 
 namespace finalcut
 {

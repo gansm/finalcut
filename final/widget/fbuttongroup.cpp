@@ -22,12 +22,12 @@
 ***********************************************************************/
 
 #include "final/fapplication.h"
-#include "final/fbuttongroup.h"
-#include "final/fcolorpair.h"
 #include "final/fevent.h"
-#include "final/fsize.h"
-#include "final/fstatusbar.h"
-#include "final/ftogglebutton.h"
+#include "final/util/fsize.h"
+#include "final/vterm/fcolorpair.h"
+#include "final/widget/fbuttongroup.h"
+#include "final/widget/fstatusbar.h"
+#include "final/widget/ftogglebutton.h"
 
 namespace finalcut
 {

@@ -46,8 +46,8 @@
 #include <tuple>
 #include <utility>
 
-#include "final/foutput.h"
-#include "final/fterm.h"
+#include "final/output/foutput.h"
+#include "final/output/tty/fterm.h"
 
 namespace finalcut
 {

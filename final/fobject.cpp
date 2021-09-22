@@ -23,8 +23,8 @@
 #include <memory>
 #include <mutex>
 
-#include "final/fevent.h"
 #include "final/fc.h"
+#include "final/fevent.h"
 #include "final/fobject.h"
 
 namespace finalcut

@@ -23,7 +23,7 @@
 #include <array>
 
 #include "final/fc.h"
-#include "final/fkey_map.h"
+#include "final/input/fkey_map.h"
 
 namespace finalcut
 {

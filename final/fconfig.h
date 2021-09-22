@@ -1,7 +1,7 @@
-#ifndef SRC_INCLUDE_FINAL_FCONFIG_H
-#define SRC_INCLUDE_FINAL_FCONFIG_H 1
+#ifndef FINAL_FCONFIG_H
+#define FINAL_FCONFIG_H 1
 
-/* src/include/final/fconfig.h. Generated automatically at end of configure. */
+/* final/fconfig.h. Generated automatically at end of configure. */
 /* config.h.  Generated from config.h.in by configure.  */
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
@@ -248,5 +248,5 @@
 /* Define to 1 if you need to in order for `stat' and other things to work. */
 /* #undef _POSIX_SOURCE */
 
-/* once: SRC_INCLUDE_FINAL_FCONFIG_H */
+/* once: FINAL_FCONFIG_H */
 #endif

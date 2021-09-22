@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2020 Markus Gans                                      *
+* Copyright 2014-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -35,12 +35,12 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include <limits>
 #include <iostream>
+#include <limits>
 #include <utility>
 
-#include "final/fstring.h"
 #include "final/ftypes.h"
+#include "final/util/fstring.h"
 
 namespace finalcut
 {

@@ -47,19 +47,19 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include <list>
 #include <iterator>
+#include <list>
 #include <memory>
 #include <stack>
 #include <unordered_map>
 #include <utility>
 #include <vector>
 
-#include "final/fdata.h"
-#include "final/fscrollbar.h"
-#include "final/ftermbuffer.h"
 #include "final/ftypes.h"
 #include "final/fwidget.h"
+#include "final/util/fdata.h"
+#include "final/vterm/ftermbuffer.h"
+#include "final/widget/fscrollbar.h"
 
 namespace finalcut
 {

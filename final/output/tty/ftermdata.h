@@ -39,13 +39,13 @@
 #include <bitset>
 #include <memory>
 #include <mutex>
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
 
 #include "final/fc.h"
-#include "final/frect.h"
-#include "final/fstring.h"
 #include "final/ftypes.h"
+#include "final/util/frect.h"
+#include "final/util/fstring.h"
 
 namespace finalcut
 {

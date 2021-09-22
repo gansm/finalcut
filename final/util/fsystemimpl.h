@@ -66,7 +66,7 @@
 #include <unistd.h>
 
 #include "final/fc.h"
-#include "final/fsystem.h"
+#include "final/util/fsystem.h"
 
 namespace finalcut
 {
