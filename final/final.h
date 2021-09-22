@@ -72,7 +72,7 @@
 #include <final/util/fsystem.h>
 #include <final/vterm/fcolorpair.h>
 #include <final/vterm/fstyle.h>
-#include <final/vterm/ftermbuffer.h>
+#include <final/vterm/fvtermbuffer.h>
 #include <final/vterm/fvterm.h>
 #include <final/widget/fbusyindicator.h>
 #include <final/widget/fbuttongroup.h>

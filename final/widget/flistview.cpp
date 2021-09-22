@@ -36,7 +36,7 @@
 #include "final/util/emptyfstring.h"
 #include "final/util/fstring.h"
 #include "final/vterm/fcolorpair.h"
-#include "final/vterm/ftermbuffer.h"
+#include "final/vterm/fvtermbuffer.h"
 #include "final/widget/flistview.h"
 #include "final/widget/fstatusbar.h"
 
@@ -1578,17 +1578,17 @@ void FListView::drawHeadlines()
   headerline.clear();
 
   if ( hasCheckableItems() )
-    drawHeaderBorder(4);  // Draw into FTermBuffer object
+    drawHeaderBorder(4);  // Draw into FVTermBuffer object
 
   while ( iter != header.cend() )
   {
     if ( ! iter->name.isEmpty() )
-      drawHeadlineLabel(iter);  // Draw into FTermBuffer object
+      drawHeadlineLabel(iter);  // Draw into FVTermBuffer object
 
     ++iter;
   }
 
-  // Print the FTermBuffer object
+  // Print the FVTermBuffer object
   drawBufferedHeadline();
 }
 
@@ -1937,7 +1937,7 @@ void FListView::drawHeadlineLabel (const HeaderItems::const_iterator& iter)
 //----------------------------------------------------------------------
 void FListView::drawBufferedHeadline()
 {
-  // Print the FTermBuffer object
+  // Print the FVTermBuffer object
 
   if ( headerline.isEmpty() )
     return;
@@ -1979,7 +1979,7 @@ void FListView::drawBufferedHeadline()
     if ( left_truncated_fullwidth )
       column_width++;
 
-    for (auto&& tc : FTermBuffer(first, last))
+    for (auto&& tc : FVTermBuffer(first, last))
     {
       const uInt8 char_width = tc.attr.bit.char_width;
 
@@ -2009,7 +2009,7 @@ void FListView::drawBufferedHeadline()
   if ( left_truncated_fullwidth )
     print (UniChar::SingleLeftAngleQuotationMark);  // ‹
 
-  print() << FTermBuffer(first, last);
+  print() << FVTermBuffer(first, last);
 
   if ( right_truncated_fullwidth )
     print (UniChar::SingleRightAngleQuotationMark);  // ›

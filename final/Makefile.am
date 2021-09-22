@@ -53,7 +53,7 @@ libfinal_la_SOURCES = \
 	util/fsystemimpl.cpp \
 	util/fsystem.cpp \
 	vterm/fvterm.cpp \
-	vterm/ftermbuffer.cpp \
+	vterm/fvtermbuffer.cpp \
 	widget/fscrollbar.cpp \
 	widget/fprogressbar.cpp \
 	widget/flineedit.cpp \
@@ -153,7 +153,7 @@ finalcututilinclude_HEADERS = \
 finalcutvterminclude_HEADERS = \
 	vterm/fcolorpair.h \
 	vterm/fstyle.h \
-	vterm/ftermbuffer.h \
+	vterm/fvtermbuffer.h \
 	vterm/fvterm.h
 
 finalcutwidgetinclude_HEADERS = \

@@ -133,7 +133,7 @@ class FPoint;
 class FStartOptions;
 class FSize;
 class FString;
-class FTermBuffer;
+class FVTermBuffer;
 
 
 //----------------------------------------------------------------------

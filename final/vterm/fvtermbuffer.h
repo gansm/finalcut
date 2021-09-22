@@ -1,5 +1,5 @@
 /***********************************************************************
-* ftermbuffer.h - Buffer for virtual terminal strings                  *
+* fvtermbuffer.h - Buffer for virtual terminal strings                 *
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
@@ -23,13 +23,13 @@
 /*  Standalone class
  *  ════════════════
  *
- * ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▏
- * ▕ FTermBuffer ▏
- * ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ * ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ * ▕ FVTermBuffer ▏
+ * ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
  */
 
-#ifndef FTERMBUFFER_H
-#define FTERMBUFFER_H
+#ifndef FVTERMBUFFER_H
+#define FVTERMBUFFER_H
 
 #if !defined (USE_FINAL_H) && !defined (COMPILE_FINAL_CUT)
   #error "Only <final/final.h> can be included directly."
@@ -50,10 +50,10 @@ class FStyle;
 class FColorPair;
 
 //----------------------------------------------------------------------
-// class FTermBuffer
+// class FVTermBuffer
 //----------------------------------------------------------------------
 
-class FTermBuffer
+class FVTermBuffer
 {
   public:
     // Using-declarations
@@ -64,22 +64,22 @@ class FTermBuffer
     using const_reference = FCharVector::const_reference;
 
     // Constructor
-    FTermBuffer() = default;
+    FVTermBuffer() = default;
     template <typename Iterator>
-    FTermBuffer (Iterator, Iterator);
+    FVTermBuffer (Iterator, Iterator);
 
     // Destructor
-    virtual ~FTermBuffer() noexcept;
+    virtual ~FVTermBuffer() noexcept;
 
     // Overloaded operators
     template <typename typeT>
-    FTermBuffer& operator << (const typeT&);
-    FTermBuffer& operator << (const UniChar&);
-    FTermBuffer& operator << (const FCharVector&);
-    FTermBuffer& operator << (const std::string&);
-    FTermBuffer& operator << (const std::wstring&);
-    FTermBuffer& operator << (const FStyle&);
-    FTermBuffer& operator << (const FColorPair&);
+    FVTermBuffer& operator << (const typeT&);
+    FVTermBuffer& operator << (const UniChar&);
+    FVTermBuffer& operator << (const FCharVector&);
+    FVTermBuffer& operator << (const std::string&);
+    FVTermBuffer& operator << (const std::wstring&);
+    FVTermBuffer& operator << (const FStyle&);
+    FVTermBuffer& operator << (const FColorPair&);
 
     // Accessors
     virtual FString        getClassName() const;
@@ -106,7 +106,7 @@ class FTermBuffer
     int                    write (wchar_t);
     void                   write (const FStyle&) const;
     void                   write (const FColorPair&) const;
-    FTermBuffer&           write ();
+    FVTermBuffer&          write ();
 
   private:
     FCharVector            data{};
@@ -116,21 +116,21 @@ class FTermBuffer
 
     // Non-member operators
     friend FCharVector& operator << ( FCharVector&
-                                    , const FTermBuffer& );
+                                    , const FVTermBuffer& );
 };
 
 
-// FTermBuffer inline functions
+// FVTermBuffer inline functions
 //----------------------------------------------------------------------
 template <typename Iterator>
-inline FTermBuffer::FTermBuffer(Iterator first, Iterator last)
+inline FVTermBuffer::FVTermBuffer(Iterator first, Iterator last)
 {
   data.assign(first, last);
 }
 
 //----------------------------------------------------------------------
 template <typename typeT>
-inline FTermBuffer& FTermBuffer::operator << (const typeT& s)
+inline FVTermBuffer& FVTermBuffer::operator << (const typeT& s)
 {
   FStringStream outstream{std::ios_base::out};
   outstream << s;
@@ -142,97 +142,97 @@ inline FTermBuffer& FTermBuffer::operator << (const typeT& s)
 }
 
 //----------------------------------------------------------------------
-inline FTermBuffer& FTermBuffer::operator << (const UniChar& c)
+inline FVTermBuffer& FVTermBuffer::operator << (const UniChar& c)
 {
   write (static_cast<wchar_t>(c));
   return *this;
 }
 
 //----------------------------------------------------------------------
-inline FTermBuffer& FTermBuffer::operator << (const FCharVector& vec)
+inline FVTermBuffer& FVTermBuffer::operator << (const FCharVector& vec)
 {
   std::copy(vec.begin(), vec.end(), std::back_inserter(data));
   return *this;
 }
 
 //----------------------------------------------------------------------
-inline FTermBuffer& FTermBuffer::operator << (const std::string& string)
+inline FVTermBuffer& FVTermBuffer::operator << (const std::string& string)
 {
   write (string);
   return *this;
 }
 
 //----------------------------------------------------------------------
-inline FTermBuffer& FTermBuffer::operator << (const std::wstring& wstring)
+inline FVTermBuffer& FVTermBuffer::operator << (const std::wstring& wstring)
 {
   write (wstring);
   return *this;
 }
 
 //----------------------------------------------------------------------
-inline FTermBuffer& FTermBuffer::operator << (const FStyle& style)
+inline FVTermBuffer& FVTermBuffer::operator << (const FStyle& style)
 {
   write (style);
   return *this;
 }
 
 //----------------------------------------------------------------------
-inline FTermBuffer& FTermBuffer::operator << (const FColorPair& pair)
+inline FVTermBuffer& FVTermBuffer::operator << (const FColorPair& pair)
 {
   write (pair);
   return *this;
 }
 
 //----------------------------------------------------------------------
-inline FString FTermBuffer::getClassName() const
-{ return "FTermBuffer"; }
+inline FString FVTermBuffer::getClassName() const
+{ return "FVTermBuffer"; }
 
 //----------------------------------------------------------------------
-inline std::size_t FTermBuffer::getLength() const
+inline std::size_t FVTermBuffer::getLength() const
 { return data.size(); }
 
 //----------------------------------------------------------------------
-inline const FTermBuffer::FCharVector& FTermBuffer::getBuffer() const
+inline const FVTermBuffer::FCharVector& FVTermBuffer::getBuffer() const
 { return data; }
 
 //----------------------------------------------------------------------
-inline bool FTermBuffer::isEmpty() const
+inline bool FVTermBuffer::isEmpty() const
 { return data.empty(); }
 
 //----------------------------------------------------------------------
-inline FTermBuffer::iterator FTermBuffer::begin()
+inline FVTermBuffer::iterator FVTermBuffer::begin()
 { return data.begin(); }
 
 //----------------------------------------------------------------------
-inline FTermBuffer::iterator FTermBuffer::end()
+inline FVTermBuffer::iterator FVTermBuffer::end()
 { return data.end(); }
 
 //----------------------------------------------------------------------
-inline FTermBuffer::const_iterator FTermBuffer::begin() const
+inline FVTermBuffer::const_iterator FVTermBuffer::begin() const
 { return data.begin(); }
 
 //----------------------------------------------------------------------
-inline FTermBuffer::const_iterator FTermBuffer::end() const
+inline FVTermBuffer::const_iterator FVTermBuffer::end() const
 { return data.end(); }
 
 //----------------------------------------------------------------------
-inline FTermBuffer::reference FTermBuffer::front()
+inline FVTermBuffer::reference FVTermBuffer::front()
 { return data.front(); }
 
 //----------------------------------------------------------------------
-inline FTermBuffer::reference FTermBuffer::back()
+inline FVTermBuffer::reference FVTermBuffer::back()
 { return data.back(); }
 
 //----------------------------------------------------------------------
-inline FTermBuffer::const_reference FTermBuffer::front() const
+inline FVTermBuffer::const_reference FVTermBuffer::front() const
 { return data.front(); }
 
 //----------------------------------------------------------------------
-inline FTermBuffer::const_reference FTermBuffer::back() const
+inline FVTermBuffer::const_reference FVTermBuffer::back() const
 { return data.back(); }
 
 //----------------------------------------------------------------------
-inline void FTermBuffer::clear()
+inline void FVTermBuffer::clear()
 {
   data.clear();
   data.shrink_to_fit();
@@ -240,7 +240,7 @@ inline void FTermBuffer::clear()
 
 //----------------------------------------------------------------------
 template <typename... Args>
-inline int FTermBuffer::writef (const FString& format, Args&&... args)
+inline int FVTermBuffer::writef (const FString& format, Args&&... args)
 {
   FString str{};
   str.sprintf (format, std::forward<Args>(args)...);
@@ -248,9 +248,9 @@ inline int FTermBuffer::writef (const FString& format, Args&&... args)
 }
 
 //----------------------------------------------------------------------
-inline FTermBuffer& FTermBuffer::write()
+inline FVTermBuffer& FVTermBuffer::write()
 { return *this; }
 
 }  // namespace finalcut
 
-#endif  // FTERMBUFFER_H
+#endif  // FVTERMBUFFER_H

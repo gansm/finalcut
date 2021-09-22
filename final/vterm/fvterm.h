@@ -78,7 +78,7 @@ class FRect;
 class FSize;
 class FString;
 class FStyle;
-class FTermBuffer;
+class FVTermBuffer;
 
 //----------------------------------------------------------------------
 // class FVTerm
@@ -137,7 +137,7 @@ class FVTerm
     FVTerm& operator << (const std::string&);
     FVTerm& operator << (const std::wstring&);
     FVTerm& operator << (const FString&);
-    FVTerm& operator << (const FTermBuffer&);
+    FVTerm& operator << (const FVTermBuffer&);
     FVTerm& operator << (FChar&);
     FVTerm& operator << (const std::vector<FChar>&);
     FVTerm& operator << (const FPoint&);
@@ -232,8 +232,8 @@ class FVTerm
     int                   print (FTermArea*, const FString&);
     int                   print (const std::vector<FChar>&);
     int                   print (FTermArea*, const std::vector<FChar>&);
-    int                   print (const FTermBuffer&);
-    int                   print (FTermArea*, const FTermBuffer&);
+    int                   print (const FVTermBuffer&);
+    int                   print (FTermArea*, const FVTermBuffer&);
     int                   print (wchar_t);
     int                   print (FTermArea*, wchar_t);
     int                   print (FChar&);

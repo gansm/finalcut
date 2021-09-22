@@ -46,7 +46,7 @@
 #include "final/util/flog.h"
 #include "final/util/fstring.h"
 #include "final/util/fsystemimpl.h"
-#include "final/vterm/ftermbuffer.h"
+#include "final/vterm/fvtermbuffer.h"
 
 #if defined(UNIT_TEST)
   #include "final/output/tty/ftermlinux.h"

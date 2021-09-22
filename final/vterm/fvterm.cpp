@@ -35,7 +35,7 @@
 #include "final/util/fsystem.h"
 #include "final/vterm/fcolorpair.h"
 #include "final/vterm/fstyle.h"
-#include "final/vterm/ftermbuffer.h"
+#include "final/vterm/fvtermbuffer.h"
 #include "final/vterm/fvterm.h"
 
 namespace finalcut
@@ -109,9 +109,9 @@ FVTerm& FVTerm::operator = (FVTerm&& fvterm) noexcept  // move assignment operat
 }
 
 //----------------------------------------------------------------------
-FVTerm& FVTerm::operator << (const FTermBuffer& term_buffer)
+FVTerm& FVTerm::operator << (const FVTermBuffer& vterm_buffer)
 {
-  print (term_buffer);
+  print (vterm_buffer);
   return *this;
 }
 
@@ -253,9 +253,9 @@ int FVTerm::print (const FString& string)
   if ( string.isEmpty() )
     return 0;
 
-  FTermBuffer term_buffer{};
-  term_buffer.write(string);
-  return print (term_buffer);
+  FVTermBuffer vterm_buffer{};
+  vterm_buffer.write(string);
+  return print (vterm_buffer);
 }
 
 //----------------------------------------------------------------------
@@ -264,9 +264,9 @@ int FVTerm::print (FTermArea* area, const FString& string)
   if ( ! area || string.isEmpty() )
     return -1;
 
-  FTermBuffer term_buffer{};
-  term_buffer.write(string);
-  return print (area, term_buffer);
+  FVTermBuffer vterm_buffer{};
+  vterm_buffer.write(string);
+  return print (area, vterm_buffer);
 }
 
 //----------------------------------------------------------------------
@@ -275,8 +275,8 @@ int FVTerm::print (const std::vector<FChar>& term_string)
   if ( term_string.empty() )
     return -1;
 
-  FTermBuffer term_buffer{term_string.begin(), term_string.end()};
-  return print (term_buffer);
+  FVTermBuffer vterm_buffer{term_string.begin(), term_string.end()};
+  return print (vterm_buffer);
 }
 
 //----------------------------------------------------------------------
@@ -285,14 +285,14 @@ int FVTerm::print (FTermArea* area, const std::vector<FChar>& term_string)
   if ( ! area || term_string.empty() )
     return -1;
 
-  FTermBuffer term_buffer{term_string.begin(), term_string.end()};
-  return print (area, term_buffer);
+  FVTermBuffer vterm_buffer{term_string.begin(), term_string.end()};
+  return print (area, vterm_buffer);
 }
 
 //----------------------------------------------------------------------
-int FVTerm::print (const FTermBuffer& term_buffer)
+int FVTerm::print (const FVTermBuffer& vterm_buffer)
 {
-  if ( term_buffer.isEmpty() )
+  if ( vterm_buffer.isEmpty() )
     return -1;
 
   auto area = getPrintArea();
@@ -300,19 +300,19 @@ int FVTerm::print (const FTermBuffer& term_buffer)
   if ( ! area )
     return -1;
 
-  return print (area, term_buffer);
+  return print (area, vterm_buffer);
 }
 
 //----------------------------------------------------------------------
-int FVTerm::print (FTermArea* area, const FTermBuffer& term_buffer)
+int FVTerm::print (FTermArea* area, const FVTermBuffer& vterm_buffer)
 {
   int len{0};
   const auto tabstop = uInt(foutput->getTabstop());
 
-  if ( ! area || term_buffer.isEmpty() )
+  if ( ! area || vterm_buffer.isEmpty() )
     return -1;
 
-  for (auto&& fchar : term_buffer)
+  for (auto&& fchar : vterm_buffer)
   {
     bool printable_character{false};
 

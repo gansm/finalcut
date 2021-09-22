@@ -1,5 +1,5 @@
 /***********************************************************************
-* ftermbuffer.cpp - Buffer for virtual terminal strings                *
+* fvtermbuffer.cpp - Buffer for virtual terminal strings               *
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
@@ -31,21 +31,21 @@
 #include "final/util/fstring.h"
 #include "final/vterm/fcolorpair.h"
 #include "final/vterm/fstyle.h"
-#include "final/vterm/ftermbuffer.h"
+#include "final/vterm/fvtermbuffer.h"
 #include "final/vterm/fvterm.h"
 
 namespace finalcut
 {
 
 //----------------------------------------------------------------------
-// class FTermBuffer
+// class FVTermBuffer
 //----------------------------------------------------------------------
-FTermBuffer::~FTermBuffer() noexcept = default;  // destructor
+FVTermBuffer::~FVTermBuffer() noexcept = default;  // destructor
 
 
-// public methods of FTermBuffer
+// public methods of FVTermBuffer
 //----------------------------------------------------------------------
-FString FTermBuffer::toString() const
+FString FVTermBuffer::toString() const
 {
   std::wstring wide_string{};
   wide_string.reserve(data.size());
@@ -66,7 +66,7 @@ FString FTermBuffer::toString() const
 }
 
 //----------------------------------------------------------------------
-int FTermBuffer::write (const FString& string)
+int FVTermBuffer::write (const FString& string)
 {
   data.reserve(data.size() + string.getLength());
   const auto last = string.end();
@@ -106,7 +106,7 @@ int FTermBuffer::write (const FString& string)
 }
 
 //----------------------------------------------------------------------
-int FTermBuffer::write (wchar_t ch)
+int FVTermBuffer::write (wchar_t ch)
 {
   FChar nc{FVTerm::getAttribute()};  // next character
   nc.ch[0] = ch;
@@ -118,7 +118,7 @@ int FTermBuffer::write (wchar_t ch)
 }
 
 //----------------------------------------------------------------------
-void FTermBuffer::write (const FStyle& style) const
+void FVTermBuffer::write (const FStyle& style) const
 {
   Style attr = style.getStyle();
 
@@ -144,17 +144,17 @@ void FTermBuffer::write (const FStyle& style) const
 }
 
 //----------------------------------------------------------------------
-void FTermBuffer::write (const FColorPair& pair) const
+void FVTermBuffer::write (const FColorPair& pair) const
 {
   FVTerm::setColor(pair.getForegroundColor(), pair.getBackgroundColor());
 }
 
 
-// private methods of FTermBuffer
+// private methods of FVTermBuffer
 //----------------------------------------------------------------------
-void FTermBuffer::add ( FString::const_iterator& begin
-                      , const FString::const_iterator& end
-                      , int& char_width )
+void FVTermBuffer::add ( FString::const_iterator& begin
+                       , const FString::const_iterator& end
+                       , int& char_width )
 {
   static const auto& fterm_data = FTermData::getInstance();
 
@@ -182,10 +182,10 @@ void FTermBuffer::add ( FString::const_iterator& begin
 }
 
 
-// FTermBuffer non-member operators
+// FVTermBuffer non-member operators
 //----------------------------------------------------------------------
-FTermBuffer::FCharVector& operator << ( FTermBuffer::FCharVector& term_string
-                                      , const FTermBuffer& buf )
+FVTermBuffer::FCharVector& operator << ( FVTermBuffer::FCharVector& term_string
+                                       , const FVTermBuffer& buf )
 {
   if ( ! buf.data.empty() )
     term_string.assign(buf.data.begin(), buf.data.end());

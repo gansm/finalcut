@@ -28,7 +28,7 @@
 #include "final/fevent.h"
 #include "final/fwidgetcolors.h"
 #include "final/util/fstring.h"
-#include "final/vterm/ftermbuffer.h"
+#include "final/vterm/fvtermbuffer.h"
 #include "final/widget/fscrollbar.h"
 #include "final/widget/fstatusbar.h"
 #include "final/widget/ftextview.h"
@@ -656,7 +656,7 @@ void FTextView::drawText()
     const FString line(getColumnSubString(data[n], pos, text_width));
     std::size_t trailing_whitespace{0};
     print() << FPoint{2, 2 - nf_offset + int(y)};
-    FTermBuffer line_buffer{};
+    FVTermBuffer line_buffer{};
     line_buffer.write(line);
 
     for (auto&& fchar : line_buffer)  // Column loop

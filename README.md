@@ -48,7 +48,7 @@ The structure of the Qt framework was originally the inspiration for the C++ cla
 
 ## First steps
 
-See the [first steps](doc/first-steps.md#first-steps-with-the-final-cut-widget-toolkit) documentation for information on how to use the library.
+See the [first steps documentation](doc/first-steps.md#first-steps-with-the-final-cut-widget-toolkit) for information on how to use the library.
 
 ## Some screenshots
 
@@ -70,7 +70,7 @@ The Mandelbrot set example:
 
 ## newfont
 
-A [graphical text font](fonts/) for X11 and the Linux console.
+A [graphical text font](final/font/) for X11 and the Linux console.
 
 ![ui example in newfont mode](doc/newfont1.png)
 
@@ -226,9 +226,9 @@ printf(...)
                                     │    ┌───────────┐1    1┌──────────────────┐
                                     ├────┤ FComboBox ├------┤ FDropDownListBox │
                                     │    └───────────┘      └──────────────────┘
- ┌─────────────┐1                   │    ┌──────────┐1     *┌──────────────┐1
- │ FTermBuffer ├--------------------├────┤ FListBox ├-------┤ FListBoxItem ├--┐
- └─────────────┘                    │    └──────────┘       └──────────────┘  :
+ ┌──────────────┐1                  │    ┌──────────┐1     *┌──────────────┐1
+ │ FVTermBuffer ├-------------------├────┤ FListBox ├-------┤ FListBoxItem ├--┐
+ └──────────────┘                   │    └──────────┘       └──────────────┘  :
                                     │   1┌───────────┐1    *┌───────────────┐ :
                                     ├────┤ FListView ├------┤ FListViewItem │ :
                                     │    └───────────┘      └────────┬──────┘ :

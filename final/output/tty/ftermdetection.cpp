@@ -28,7 +28,6 @@
 
 #include "final/fapplication.h"
 #include "final/fc.h"
-#include "final/fconfig.h"
 #include "final/ftypes.h"
 #include "final/input/fkeyboard.h"
 #include "final/output/tty/ftermcap.h"

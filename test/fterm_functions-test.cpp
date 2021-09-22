@@ -1245,43 +1245,43 @@ void FTermFunctionsTest::FullWidthHalfWidthTest()
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 0 );
   fchar.attr.bit.char_width = 0x00 & 0x03;
 
-  // Column width (FTermBuffer)
-  finalcut::FTermBuffer term_buf{};
-  term_buf << L"\v\t 100";
-  CPPUNIT_ASSERT ( finalcut::getColumnWidth(term_buf) == 4 );
-  term_buf.clear();
-  term_buf << L"0123456789";
-  CPPUNIT_ASSERT ( finalcut::getColumnWidth(term_buf) == 10 );
-  term_buf.clear();
-  term_buf << L"０１２３４５６７８９";
-  CPPUNIT_ASSERT ( finalcut::getColumnWidth(term_buf) == 20 );  // UTF-8
-  term_buf.clear();
+  // Column width (FVTermBuffer)
+  finalcut::FVTermBuffer vterm_buf{};
+  vterm_buf << L"\v\t 100";
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(vterm_buf) == 4 );
+  vterm_buf.clear();
+  vterm_buf << L"0123456789";
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(vterm_buf) == 10 );
+  vterm_buf.clear();
+  vterm_buf << L"０１２３４５６７８９";
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(vterm_buf) == 20 );  // UTF-8
+  vterm_buf.clear();
   fterm_data.setTermEncoding (finalcut::Encoding::PC);
-  term_buf << L"０１２３４５６７８９";
-  CPPUNIT_ASSERT ( finalcut::getColumnWidth(term_buf) == 10 );  // CP-437
-  term_buf.clear();
+  vterm_buf << L"０１２３４５６７８９";
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(vterm_buf) == 10 );  // CP-437
+  vterm_buf.clear();
   fterm_data.setTermEncoding (finalcut::Encoding::UTF8);
-  CPPUNIT_ASSERT ( finalcut::getColumnWidth(term_buf) == 0 );  // after clear
-  term_buf << L"abc";
-  CPPUNIT_ASSERT ( finalcut::getColumnWidth(term_buf) == 3 );
-  term_buf.clear();
-  term_buf << L"ａbｃ";
-  CPPUNIT_ASSERT ( finalcut::getColumnWidth(term_buf) == 5 );
-  term_buf.clear();
-  term_buf << L"你好";
-  CPPUNIT_ASSERT ( finalcut::getColumnWidth(term_buf) == 4 );
-  term_buf.clear();
-  term_buf << L"你好 one ＣＵＴ more";
-  CPPUNIT_ASSERT ( finalcut::getColumnWidth(term_buf) == 20 );
-  term_buf.clear();
-  term_buf << L"1234567 one ＣＵＴ more";
-  CPPUNIT_ASSERT ( finalcut::getColumnWidth(term_buf) == 23 );
-  term_buf.clear();
-  term_buf << L"o\U0000031b\U00000323=\U00001ee3";
-  CPPUNIT_ASSERT ( finalcut::getColumnWidth(term_buf) == 3 );
-  term_buf.clear();
-  term_buf << L"STARGΛ̊TE";
-  CPPUNIT_ASSERT ( finalcut::getColumnWidth(term_buf) == 8 );
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(vterm_buf) == 0 );  // after clear
+  vterm_buf << L"abc";
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(vterm_buf) == 3 );
+  vterm_buf.clear();
+  vterm_buf << L"ａbｃ";
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(vterm_buf) == 5 );
+  vterm_buf.clear();
+  vterm_buf << L"你好";
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(vterm_buf) == 4 );
+  vterm_buf.clear();
+  vterm_buf << L"你好 one ＣＵＴ more";
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(vterm_buf) == 20 );
+  vterm_buf.clear();
+  vterm_buf << L"1234567 one ＣＵＴ more";
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(vterm_buf) == 23 );
+  vterm_buf.clear();
+  vterm_buf << L"o\U0000031b\U00000323=\U00001ee3";
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(vterm_buf) == 3 );
+  vterm_buf.clear();
+  vterm_buf << L"STARGΛ̊TE";
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(vterm_buf) == 8 );
 
   // Extracts a substring that starts at a specified column position
   // and has a specified number of columns

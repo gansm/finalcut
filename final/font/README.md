@@ -14,7 +14,7 @@ the terminal emulators
 or 
 [urxvt](http://software.schmorp.de/pkg/rxvt-unicode.html),
 because only these terminal emulators can change the font by
-using an escape sequence.  For an xterm, the "[Allow Font Ops](../doc/xterm.txt)"
+using an escape sequence.  For an xterm, the "[Allow Font Ops](../../doc/xterm.txt)"
 option must be set.
 
 #### Install the gzip compressed X11 pcf bitmap font 8x16graph.pcf.gz on your xserver:

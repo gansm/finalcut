@@ -38,7 +38,7 @@
 #include "final/output/tty/ftermios.h"
 #include "final/util/flog.h"
 #include "final/util/fpoint.h"
-#include "final/vterm/ftermbuffer.h"
+#include "final/vterm/fvtermbuffer.h"
 
 namespace finalcut
 {
@@ -606,13 +606,13 @@ std::size_t getColumnWidth (const FChar& term_char)
 }
 
 //----------------------------------------------------------------------
-std::size_t getColumnWidth (const FTermBuffer& tbuf)
+std::size_t getColumnWidth (const FVTermBuffer& vtbuf)
 {
-  return ( tbuf.isEmpty() )
+  return ( vtbuf.isEmpty() )
          ? 0
-         : std::accumulate ( std::next(tbuf.begin())
-                           , tbuf.end()
-                           , tbuf.front().attr.bit.char_width
+         : std::accumulate ( std::next(vtbuf.begin())
+                           , vtbuf.end()
+                           , vtbuf.front().attr.bit.char_width
                            , [] (std::size_t s, const FChar& c)
                              {
                                return s + c.attr.bit.char_width;

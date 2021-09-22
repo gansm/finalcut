@@ -40,7 +40,7 @@ INCLUDE_HEADERS = \
 	output/tty/sgr_optimizer.h \
 	output/tty/foptiattr.h \
 	output/tty/foptimove.h \
-	vterm/ftermbuffer.h \
+	vterm/fvtermbuffer.h \
 	util/fpoint.h \
 	util/fsize.h \
 	widget/fprogressbar.h \
@@ -137,7 +137,7 @@ OBJS = \
 	widget/ftextview.o \
 	widget/fstatusbar.o \
 	vterm/fvterm.o \
-	vterm/ftermbuffer.o \
+	vterm/fvtermbuffer.o \
 	output/tty/fcharmap.o \
 	output/tty/ftermcap.o \
 	output/tty/fterm.o \

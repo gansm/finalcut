@@ -40,6 +40,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "final/fconfig.h"  // Supplies F_HAVE_GETTTYNAM if available
 #include "final/util/fstring.h"
 
 namespace finalcut

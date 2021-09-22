@@ -58,7 +58,7 @@
 #include "final/ftypes.h"
 #include "final/fwidget.h"
 #include "final/util/fdata.h"
-#include "final/vterm/ftermbuffer.h"
+#include "final/vterm/fvtermbuffer.h"
 #include "final/widget/fscrollbar.h"
 
 namespace finalcut
@@ -501,7 +501,7 @@ class FListView : public FWidget
     FListViewIterator     first_visible_line{};
     FListViewIterator     last_visible_line{};
     HeaderItems           header{};
-    FTermBuffer           headerline{};
+    FVTermBuffer          headerline{};
     FScrollbarPtr         vbar{nullptr};
     FScrollbarPtr         hbar{nullptr};
     SortTypes             sort_type{};

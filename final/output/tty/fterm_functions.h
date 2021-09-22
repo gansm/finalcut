@@ -38,7 +38,7 @@ namespace finalcut
 class FPoint;
 class FSize;
 class FString;
-class FTermBuffer;
+class FVTermBuffer;
 
 // non-member function forward declarations
 uInt          env2uint (const std::string&);
@@ -58,7 +58,7 @@ std::size_t   getColumnWidth (const FString&, std::size_t);
 std::size_t   getColumnWidth (const FString&);
 std::size_t   getColumnWidth (const wchar_t);
 std::size_t   getColumnWidth (const FChar&);
-std::size_t   getColumnWidth (const FTermBuffer&);
+std::size_t   getColumnWidth (const FVTermBuffer&);
 void          addColumnWidth (FChar&);
 int           getCharLength (const FString&, std::size_t);
 int           getPrevCharLength (const FString&, std::size_t);

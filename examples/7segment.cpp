@@ -185,8 +185,8 @@ void SegmentView::get7Segment (const wchar_t c)
 //----------------------------------------------------------------------
 void SegmentView::draw()
 {
-  std::vector<finalcut::FTermBuffer> tbuffer(3);
-  finalcut::FTermBuffer left_space{};
+  std::vector<finalcut::FVTermBuffer> vtbuffer(3);
+  finalcut::FVTermBuffer left_space{};
 
   FDialog::draw();
   setColor(FColor::LightGray, FColor::Black);
@@ -198,17 +198,17 @@ void SegmentView::draw()
     get7Segment(ch);
 
     for (std::size_t i{0}; i < 3; i++)
-      tbuffer[i] << color << line[i] << " ";
+      vtbuffer[i] << color << line[i] << " ";
   }
 
-  const std::size_t length = tbuffer[0].getLength();
+  const std::size_t length = vtbuffer[0].getLength();
 
   if ( length < 36 )
     left_space << finalcut::FString(36 - length, ' ');
 
-  print() << FPoint {4, 7} << left_space << tbuffer[0]
-          << FPoint {4, 8} << left_space << tbuffer[1]
-          << FPoint {4, 9} << left_space << tbuffer[2]
+  print() << FPoint {4, 7} << left_space << vtbuffer[0]
+          << FPoint {4, 8} << left_space << vtbuffer[1]
+          << FPoint {4, 9} << left_space << vtbuffer[2]
           << FPoint {4, 10} << finalcut::FString{36, ' '};
 }
 
