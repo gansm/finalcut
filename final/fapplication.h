@@ -195,6 +195,7 @@ class FApplication : public FWidget
     void                  queuingMouseInput() const;
     void                  processKeyboardEvent() const;
     void                  processMouseEvent() const;
+    void                  processInput() const;
     bool                  processDialogSwitchAccelerator() const;
     bool                  processAccelerator (const FWidget&) const;
     void                  determineClickedWidget (const FMouseData&);
@@ -222,11 +223,12 @@ class FApplication : public FWidget
                                          , const FPoint&
                                          , const FPoint& ) const;
     static FWidget*       processParameters (const Args&);
-    void                  processResizeEvent() const;
+    void                  processResizeEvent();
     void                  processCloseWidget();
     void                  processLogger() const;
     bool                  processNextEvent();
     void                  performTimerAction (FObject*, FEvent*) override;
+    bool                  hasTerminalResized();
     static bool           isEventProcessable (FObject*, const FEvent*);
     static bool           isNextEventTimeout();
 
@@ -237,6 +239,8 @@ class FApplication : public FWidget
     std::streambuf*       default_clog_rdbuf{std::clog.rdbuf()};
     FWidget*              clicked_widget{};
     FEventQueue           event_queue{};
+    bool                  has_terminal_resized{false};
+    bool                  is_next_event_timeout{false};
     static uInt64         next_event_wait;
     static TimeValue      time_last_event;
     static int            loop_level;

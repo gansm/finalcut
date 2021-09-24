@@ -133,7 +133,7 @@ void ColorChooser::draw()
 
     if ( c == bg_color )
     {
-      print() << L' ' << wchar_t(finalcut::UniChar::Times) << L' ';
+      print() << L' ' << finalcut::UniChar::Times << L' ';
     }
     else
       print ("   ");

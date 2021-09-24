@@ -5,6 +5,7 @@
 *.la
 *.a
 *.lib
+*.gch
 *.gcov
 *.gcno
 *.gcda

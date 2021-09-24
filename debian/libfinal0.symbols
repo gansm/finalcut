@@ -1,11 +1,34 @@
 libfinal.so.0 libfinal0 #MINVER#
+ _ZGVZN8finalcut12FApplication15getStartOptionsEvE13start_options@Base 0.7.2
+ _ZGVZN8finalcut12FApplication21performKeyboardActionEvE8keyboard@Base 0.7.2
+ _ZGVZN8finalcut2fc12emptyFString3getEvE12empty_string@Base 0.7.2
+ _ZGVZN8finalcut5FTerm12disableMouseEvE8keyboard@Base 0.7.2
+ _ZGVZN8finalcut5FTerm15getStartOptionsEvE13start_options@Base 0.7.2
+ _ZGVZN8finalcut5FTerm17init_encoding_setEvE4data@Base 0.7.2
+ _ZGVZN8finalcut5FTerm22hasNoFontSettingOptionEvE4data@Base 0.7.2
  _ZGVZN8finalcut7FWidget13getColorThemeEvE11color_theme@Base 0.7.2
+ _ZGVZN8finalcut9FTermData11getInstanceEvE4data@Base 0.7.2
+ _ZGVZNK8finalcut10FTermLinux20initSpecialCharacterEvE10fterm_data@Base 0.7.2
+ _ZGVZNK8finalcut10FTermLinux25getInputStatusRegisterOneEvE7fsystem@Base 0.7.2
+ _ZGVZNK8finalcut11FTermOutput17getFSetPaletteRefEvE1f@Base 0.7.2
+ _ZGVZNK8finalcut12FApplication12isKeyPressedEvE5mouse@Base 0.7.2
+ _ZGVZNK8finalcut12FApplication12isKeyPressedEvE8keyboard@Base 0.7.2
+ _ZGVZNK8finalcut12FApplication14hasDataInQueueEvE5mouse@Base 0.7.2
+ _ZGVZNK8finalcut12FApplication14hasDataInQueueEvE8keyboard@Base 0.7.2
+ _ZGVZNK8finalcut12FApplication14sendKeyUpEventEPNS_7FWidgetEE8keyboard@Base 0.7.2
+ _ZGVZNK8finalcut12FApplication16sendKeyDownEventEPNS_7FWidgetEE8keyboard@Base 0.7.2
+ _ZGVZNK8finalcut12FApplication17sendKeyPressEventEPNS_7FWidgetEE8keyboard@Base 0.7.2
+ _ZGVZNK8finalcut12FApplication18performMouseActionEvE5mouse@Base 0.7.2
+ _ZGVZNK8finalcut12FApplication18performMouseActionEvE8keyboard@Base 0.7.2
+ _ZGVZNK8finalcut14FTermXTerminal21canSetXTermBackgroundEvE10fterm_data@Base 0.7.2
  _ZGVZNKSt8__detail11_AnyMatcherINSt7__cxx1112regex_traitsIwEELb0ELb0ELb0EEclEwE5__nul@Base 0.7.2
  _ZGVZNKSt8__detail11_AnyMatcherINSt7__cxx1112regex_traitsIwEELb0ELb0ELb1EEclEwE5__nul@Base 0.7.2
  _ZGVZNKSt8__detail11_AnyMatcherINSt7__cxx1112regex_traitsIwEELb0ELb1ELb0EEclEwE5__nul@Base 0.7.2
  _ZGVZNKSt8__detail11_AnyMatcherINSt7__cxx1112regex_traitsIwEELb0ELb1ELb1EEclEwE5__nul@Base 0.7.2
  _ZN8finalcut10FHideEventC1ENS_2fc6eventsE@Base 0.7.2
+ _ZN8finalcut10FHideEventC1ENS_5EventE@Base 0.7.2
  _ZN8finalcut10FHideEventC2ENS_2fc6eventsE@Base 0.7.2
+ _ZN8finalcut10FHideEventC2ENS_5EventE@Base 0.7.2
  _ZN8finalcut10FHideEventD1Ev@Base 0.7.2
  _ZN8finalcut10FHideEventD2Ev@Base 0.7.2
  _ZN8finalcut10FMouseData16clearButtonStateEv@Base 0.7.2
@@ -26,6 +49,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut10FScrollbar14changeOnResizeEv@Base 0.7.2
  _ZN8finalcut10FScrollbar14jumpToClickPosEi@Base 0.7.2
  _ZN8finalcut10FScrollbar14jumpToClickPosEii@Base 0.7.2
+ _ZN8finalcut10FScrollbar14setOrientationENS_11OrientationE@Base 0.7.2
  _ZN8finalcut10FScrollbar14setOrientationENS_2fc11orientationE@Base 0.7.2
  _ZN8finalcut10FScrollbar15drawVerticalBarEv@Base 0.7.2
  _ZN8finalcut10FScrollbar17drawHorizontalBarEv@Base 0.7.2
@@ -43,15 +67,19 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut10FScrollbar8setStepsEd@Base 0.7.2
  _ZN8finalcut10FScrollbar8setValueEi@Base 0.7.2
  _ZN8finalcut10FScrollbar9onMouseUpEPNS_11FMouseEventE@Base 0.7.2
+ _ZN8finalcut10FScrollbarC1ENS_11OrientationEPNS_7FWidgetE@Base 0.7.2
  _ZN8finalcut10FScrollbarC1ENS_2fc11orientationEPNS_7FWidgetE@Base 0.7.2
  _ZN8finalcut10FScrollbarC1EPNS_7FWidgetE@Base 0.7.2
+ _ZN8finalcut10FScrollbarC2ENS_11OrientationEPNS_7FWidgetE@Base 0.7.2
  _ZN8finalcut10FScrollbarC2ENS_2fc11orientationEPNS_7FWidgetE@Base 0.7.2
  _ZN8finalcut10FScrollbarC2EPNS_7FWidgetE@Base 0.7.2
  _ZN8finalcut10FScrollbarD0Ev@Base 0.7.2
  _ZN8finalcut10FScrollbarD1Ev@Base 0.7.2
  _ZN8finalcut10FScrollbarD2Ev@Base 0.7.2
  _ZN8finalcut10FShowEventC1ENS_2fc6eventsE@Base 0.7.2
+ _ZN8finalcut10FShowEventC1ENS_5EventE@Base 0.7.2
  _ZN8finalcut10FShowEventC2ENS_2fc6eventsE@Base 0.7.2
+ _ZN8finalcut10FShowEventC2ENS_5EventE@Base 0.7.2
  _ZN8finalcut10FShowEventD1Ev@Base 0.7.2
  _ZN8finalcut10FShowEventD2Ev@Base 0.7.2
  _ZN8finalcut10FStatusBar10adjustSizeEv@Base 0.7.2
@@ -81,14 +109,19 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut10FStatusKey4initEv@Base 0.7.2
  _ZN8finalcut10FStatusKey7onAccelEPNS_11FAccelEventE@Base 0.7.2
  _ZN8finalcut10FStatusKey9setActiveEv@Base 0.7.2
+ _ZN8finalcut10FStatusKeyC1ENS_4FKeyERKNS_7FStringEPNS_7FWidgetE@Base 0.7.2
  _ZN8finalcut10FStatusKeyC1EPNS_7FWidgetE@Base 0.7.2
  _ZN8finalcut10FStatusKeyC1EjRKNS_7FStringEPNS_7FWidgetE@Base 0.7.2
+ _ZN8finalcut10FStatusKeyC2ENS_4FKeyERKNS_7FStringEPNS_7FWidgetE@Base 0.7.2
  _ZN8finalcut10FStatusKeyC2EPNS_7FWidgetE@Base 0.7.2
  _ZN8finalcut10FStatusKeyC2EjRKNS_7FStringEPNS_7FWidgetE@Base 0.7.2
  _ZN8finalcut10FStatusKeyD0Ev@Base 0.7.2
  _ZN8finalcut10FStatusKeyD1Ev@Base 0.7.2
  _ZN8finalcut10FStatusKeyD2Ev@Base 0.7.2
+ _ZN8finalcut10FTermLinux10initKeyMapEv@Base 0.7.2
+ _ZN8finalcut10FTermLinux10setPaletteENS_6FColorEiii@Base 0.7.2
  _ZN8finalcut10FTermLinux10setPaletteEtiii@Base 0.7.2
+ _ZN8finalcut10FTermLinux11getInstanceEv@Base 0.7.2
  _ZN8finalcut10FTermLinux11initCharMapEv@Base 0.7.2
  _ZN8finalcut10FTermLinux11loadNewFontEv@Base 0.7.2
  _ZN8finalcut10FTermLinux11loadOldFontEv@Base 0.7.2
@@ -100,10 +133,12 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut10FTermLinux13resetColorMapEv@Base 0.7.2
  _ZN8finalcut10FTermLinux13setScreenFontEPKhjjjb@Base 0.7.2
  _ZN8finalcut10FTermLinux13setUnicodeMapEP10unimapdesc@Base 0.7.2
+ _ZN8finalcut10FTermLinux13setVGAPaletteENS_6FColorEiii@Base 0.7.2
  _ZN8finalcut10FTermLinux13setVGAPaletteEtiii@Base 0.7.2
  _ZN8finalcut10FTermLinux14getModifierKeyEv@Base 0.7.2
  _ZN8finalcut10FTermLinux14isLinuxConsoleEv@Base 0.7.2
  _ZN8finalcut10FTermLinux14saveVGAPaletteEv@Base 0.7.2
+ _ZN8finalcut10FTermLinux14setCursorStyleENS_23LinuxConsoleCursorStyleE@Base 0.7.2
  _ZN8finalcut10FTermLinux14setCursorStyleENS_2fc23linuxConsoleCursorStyleE@Base 0.7.2
  _ZN8finalcut10FTermLinux15resetVGAPaletteEv@Base 0.7.2
  _ZN8finalcut10FTermLinux17characterFallbackEwSt6vectorIwSaIwEE@Base 0.7.2
@@ -112,6 +147,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut10FTermLinux19setBlinkAsIntensityEb@Base 0.7.2
  _ZN8finalcut10FTermLinux20getCursorStyleStringEv@Base 0.7.2
  _ZN8finalcut10FTermLinux20setVGADefaultPaletteEv@Base 0.7.2
+ _ZN8finalcut10FTermLinux21modifierKeyCorrectionERKNS_4FKeyE@Base 0.7.2
  _ZN8finalcut10FTermLinux21modifierKeyCorrectionERKj@Base 0.7.2
  _ZN8finalcut10FTermLinux23readAttributeControllerEh@Base 0.7.2
  _ZN8finalcut10FTermLinux24writeAttributeControllerEhh@Base 0.7.2
@@ -120,7 +156,9 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut10FTermLinuxD1Ev@Base 0.7.2
  _ZN8finalcut10FTermLinuxD2Ev@Base 0.7.2
  _ZN8finalcut10FUserEventC1ENS_2fc6eventsEi@Base 0.7.2
+ _ZN8finalcut10FUserEventC1ENS_5EventEi@Base 0.7.2
  _ZN8finalcut10FUserEventC2ENS_2fc6eventsEi@Base 0.7.2
+ _ZN8finalcut10FUserEventC2ENS_5EventEi@Base 0.7.2
  _ZN8finalcut10FUserEventD1Ev@Base 0.7.2
  _ZN8finalcut10FUserEventD2Ev@Base 0.7.2
  _ZN8finalcut10drawBorderEPNS_7FWidgetERKNS_5FRectE@Base 0.7.2
@@ -129,13 +167,17 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut11FAccelEvent6acceptEv@Base 0.7.2
  _ZN8finalcut11FAccelEvent6ignoreEv@Base 0.7.2
  _ZN8finalcut11FAccelEventC1ENS_2fc6eventsEPNS_7FWidgetE@Base 0.7.2
+ _ZN8finalcut11FAccelEventC1ENS_5EventEPNS_7FWidgetE@Base 0.7.2
  _ZN8finalcut11FAccelEventC2ENS_2fc6eventsEPNS_7FWidgetE@Base 0.7.2
+ _ZN8finalcut11FAccelEventC2ENS_5EventEPNS_7FWidgetE@Base 0.7.2
  _ZN8finalcut11FAccelEventD1Ev@Base 0.7.2
  _ZN8finalcut11FAccelEventD2Ev@Base 0.7.2
  _ZN8finalcut11FCloseEvent6acceptEv@Base 0.7.2
  _ZN8finalcut11FCloseEvent6ignoreEv@Base 0.7.2
  _ZN8finalcut11FCloseEventC1ENS_2fc6eventsE@Base 0.7.2
+ _ZN8finalcut11FCloseEventC1ENS_5EventE@Base 0.7.2
  _ZN8finalcut11FCloseEventC2ENS_2fc6eventsE@Base 0.7.2
+ _ZN8finalcut11FCloseEventC2ENS_5EventE@Base 0.7.2
  _ZN8finalcut11FCloseEventD1Ev@Base 0.7.2
  _ZN8finalcut11FCloseEventD2Ev@Base 0.7.2
  _ZN8finalcut11FDataAccessC1Ev@Base 0.7.2
@@ -179,21 +221,30 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut11FFileDialogD1Ev@Base 0.7.2
  _ZN8finalcut11FFileDialogD2Ev@Base 0.7.2
  _ZN8finalcut11FFileDialogaSERKS0_@Base 0.7.2
+ _ZN8finalcut11FFocusEvent12setFocusTypeENS_10FocusTypesE@Base 0.7.2
  _ZN8finalcut11FFocusEvent12setFocusTypeENS_2fc10FocusTypesE@Base 0.7.2
  _ZN8finalcut11FFocusEvent6acceptEv@Base 0.7.2
  _ZN8finalcut11FFocusEvent6ignoreEv@Base 0.7.2
  _ZN8finalcut11FFocusEventC1ENS_2fc6eventsE@Base 0.7.2
+ _ZN8finalcut11FFocusEventC1ENS_5EventE@Base 0.7.2
  _ZN8finalcut11FFocusEventC2ENS_2fc6eventsE@Base 0.7.2
+ _ZN8finalcut11FFocusEventC2ENS_5EventE@Base 0.7.2
  _ZN8finalcut11FFocusEventD1Ev@Base 0.7.2
  _ZN8finalcut11FFocusEventD2Ev@Base 0.7.2
  _ZN8finalcut11FMessageBox10adjustSizeEv@Base 0.7.2
+ _ZN8finalcut11FMessageBox10initLayoutEv@Base 0.7.2
  _ZN8finalcut11FMessageBox11setHeadlineERKNS_7FStringE@Base 0.7.2
  _ZN8finalcut11FMessageBox13adjustButtonsEv@Base 0.7.2
+ _ZN8finalcut11FMessageBox13initCallbacksEv@Base 0.7.2
  _ZN8finalcut11FMessageBox15cb_processClickENS0_10ButtonTypeE@Base 0.7.2
  _ZN8finalcut11FMessageBox19calculateDimensionsEv@Base 0.7.2
+ _ZN8finalcut11FMessageBox4doneENS0_10ButtonTypeE@Base 0.7.2
  _ZN8finalcut11FMessageBox4drawEv@Base 0.7.2
+ _ZN8finalcut11FMessageBox4execEv@Base 0.7.2
+ _ZN8finalcut11FMessageBox4infoIA41_cEENS0_10ButtonTypeEPNS_7FWidgetERKNS_7FStringERKT_S3_S3_S3_@Base 0.7.2
  _ZN8finalcut11FMessageBox4infoIA41_cEEiPNS_7FWidgetERKNS_7FStringERKT_NS0_10ButtonTypeESB_SB_@Base 0.7.2
  _ZN8finalcut11FMessageBox4initEv@Base 0.7.2
+ _ZN8finalcut11FMessageBox5errorINS_7FStringEEENS0_10ButtonTypeEPNS_7FWidgetERKT_S3_S3_S3_@Base 0.7.2
  _ZN8finalcut11FMessageBox5errorINS_7FStringEEEiPNS_7FWidgetERKT_NS0_10ButtonTypeES8_S8_@Base 0.7.2
  _ZN8finalcut11FMessageBox7setTextERKNS_7FStringE@Base 0.7.2
  _ZN8finalcut11FMessageBoxC1EPNS_7FWidgetE@Base 0.7.2
@@ -208,16 +259,24 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut11FMessageBoxaSERKS0_@Base 0.7.2
  _ZN8finalcut11FMouseEventC1ENS_2fc6eventsERKNS_6FPointES5_i@Base 0.7.2
  _ZN8finalcut11FMouseEventC1ENS_2fc6eventsERKNS_6FPointEi@Base 0.7.2
+ _ZN8finalcut11FMouseEventC1ENS_5EventERKNS_6FPointENS_11MouseButtonE@Base 0.7.2
+ _ZN8finalcut11FMouseEventC1ENS_5EventERKNS_6FPointES4_NS_11MouseButtonE@Base 0.7.2
  _ZN8finalcut11FMouseEventC2ENS_2fc6eventsERKNS_6FPointES5_i@Base 0.7.2
  _ZN8finalcut11FMouseEventC2ENS_2fc6eventsERKNS_6FPointEi@Base 0.7.2
+ _ZN8finalcut11FMouseEventC2ENS_5EventERKNS_6FPointENS_11MouseButtonE@Base 0.7.2
+ _ZN8finalcut11FMouseEventC2ENS_5EventERKNS_6FPointES4_NS_11MouseButtonE@Base 0.7.2
  _ZN8finalcut11FMouseEventD1Ev@Base 0.7.2
  _ZN8finalcut11FMouseEventD2Ev@Base 0.7.2
  _ZN8finalcut11FMouseUrxvt10setRawDataERA512_c@Base 0.7.2
  _ZN8finalcut11FMouseUrxvt11setKeyStateEi@Base 0.7.2
  _ZN8finalcut11FMouseUrxvt12processEventEP7timeval@Base 0.7.2
+ _ZN8finalcut11FMouseUrxvt12processEventERKNSt6chrono10time_pointINS1_3_V212system_clockENS1_8durationIlSt5ratioILl1ELl1000000000EEEEEE@Base 0.7.2
  _ZN8finalcut11FMouseUrxvt12setMoveStateERKNS_6FPointEi@Base 0.7.2
  _ZN8finalcut11FMouseUrxvt14setButtonStateEiPK7timeval@Base 0.7.2
+ _ZN8finalcut11FMouseUrxvt14setButtonStateEiRKNSt6chrono10time_pointINS1_3_V212system_clockENS1_8durationIlSt5ratioILl1ELl1000000000EEEEEE@Base 0.7.2
  _ZN8finalcut11FMouseUrxvt7hasDataEv@Base 0.7.2
+ _ZN8finalcut11FMouseUrxvtC1Ev@Base 0.7.2
+ _ZN8finalcut11FMouseUrxvtC2Ev@Base 0.7.2
  _ZN8finalcut11FMouseUrxvtD0Ev@Base 0.7.2
  _ZN8finalcut11FMouseUrxvtD1Ev@Base 0.7.2
  _ZN8finalcut11FMouseUrxvtD2Ev@Base 0.7.2
@@ -238,7 +297,9 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut11FScrollView15setScrollHeightEm@Base 0.7.2
  _ZN8finalcut11FScrollView16setViewportPrintEb@Base 0.7.2
  _ZN8finalcut11FScrollView17setViewportCursorEv@Base 0.7.2
+ _ZN8finalcut11FScrollView24setVerticalScrollBarModeENS_13ScrollBarModeE@Base 0.7.2
  _ZN8finalcut11FScrollView24setVerticalScrollBarModeENS_2fc13scrollBarModeE@Base 0.7.2
+ _ZN8finalcut11FScrollView26setHorizontalScrollBarModeENS_13ScrollBarModeE@Base 0.7.2
  _ZN8finalcut11FScrollView26setHorizontalScrollBarModeENS_2fc13scrollBarModeE@Base 0.7.2
  _ZN8finalcut11FScrollView4drawEv@Base 0.7.2
  _ZN8finalcut11FScrollView4initEv@Base 0.7.2
@@ -252,6 +313,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut11FScrollView8scrollToEii@Base 0.7.2
  _ZN8finalcut11FScrollView8setWidthEmb@Base 0.7.2
  _ZN8finalcut11FScrollView9clearAreaEi@Base 0.7.2
+ _ZN8finalcut11FScrollView9clearAreaEw@Base 0.7.2
  _ZN8finalcut11FScrollView9copy2areaEv@Base 0.7.2
  _ZN8finalcut11FScrollView9onFocusInEPNS_11FFocusEventE@Base 0.7.2
  _ZN8finalcut11FScrollView9scrollToXEi@Base 0.7.2
@@ -269,6 +331,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut11FSystemImpl4openEPKciz@Base 0.7.2
  _ZN8finalcut11FSystemImpl5closeEi@Base 0.7.2
  _ZN8finalcut11FSystemImpl5fopenEPKcS2_@Base 0.7.2
+ _ZN8finalcut11FSystemImpl5fputsEPKcP8_IO_FILE@Base 0.7.2
  _ZN8finalcut11FSystemImpl5ioctlEimz@Base 0.7.2
  _ZN8finalcut11FSystemImpl5tputsEPKciPFiiE@Base 0.7.2
  _ZN8finalcut11FSystemImpl6fcloseEP8_IO_FILE@Base 0.7.2
@@ -290,18 +353,69 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut11FTermBufferlsINS_2fc16SpecialCharacterEEERS0_RKT_@Base 0.7.2
  _ZN8finalcut11FTermBufferlsINS_7FStringEEERS0_RKT_@Base 0.7.2
  _ZN8finalcut11FTermBufferlsIcEERS0_RKT_@Base 0.7.2
+ _ZN8finalcut11FTermOutput10fterm_dataE@Base 0.7.2
+ _ZN8finalcut11FTermOutput10hideCursorEb@Base 0.7.2
+ _ZN8finalcut11FTermOutput10printRangeEjjjb@Base 0.7.2
+ _ZN8finalcut11FTermOutput10setNewFontEv@Base 0.7.2
+ _ZN8finalcut11FTermOutput10setVGAFontEv@Base 0.7.2
+ _ZN8finalcut11FTermOutput10showCursorEv@Base 0.7.2
+ _ZN8finalcut11FTermOutput12initTerminalEPNS_6FVTerm9FTermAreaE@Base 0.7.2
+ _ZN8finalcut11FTermOutput14finishTerminalEv@Base 0.7.2
+ _ZN8finalcut11FTermOutput14printCharacterERjjbRNS_5FCharE@Base 0.7.2
+ _ZN8finalcut11FTermOutput14updateTerminalEv@Base 0.7.2
+ _ZN8finalcut11FTermOutput15eraseCharactersERjjjb@Base 0.7.2
+ _ZN8finalcut11FTermOutput15repeatCharacterERjjj@Base 0.7.2
+ _ZN8finalcut11FTermOutput15setTerminalSizeENS_5FSizeE@Base 0.7.2
+ _ZN8finalcut11FTermOutput16appendLowerRightERNS_5FCharE@Base 0.7.2
+ _ZN8finalcut11FTermOutput18detectTerminalSizeEv@Base 0.7.2
+ _ZN8finalcut11FTermOutput18initScreenSettingsEv@Base 0.7.2
+ _ZN8finalcut11FTermOutput18setNonBlockingReadEb@Base 0.7.2
+ _ZN8finalcut11FTermOutput18updateTerminalLineEj@Base 0.7.2
+ _ZN8finalcut11FTermOutput19restoreColorPaletteEv@Base 0.7.2
+ _ZN8finalcut11FTermOutput20commitTerminalResizeEv@Base 0.7.2
+ _ZN8finalcut11FTermOutput20redefineColorPaletteEv@Base 0.7.2
+ _ZN8finalcut11FTermOutput20updateTerminalCursorEv@Base 0.7.2
+ _ZN8finalcut11FTermOutput21init_characterLengthsEv@Base 0.7.2
+ _ZN8finalcut11FTermOutput21isDefaultPaletteThemeEv@Base 0.7.2
+ _ZN8finalcut11FTermOutput21scrollTerminalForwardEv@Base 0.7.2
+ _ZN8finalcut11FTermOutput21scrollTerminalReverseEv@Base 0.7.2
+ _ZN8finalcut11FTermOutput23init_combined_characterEv@Base 0.7.2
+ _ZN8finalcut11FTermOutput23printFullWidthCharacterERjjRNS_5FCharE@Base 0.7.2
+ _ZN8finalcut11FTermOutput23skipUnchangedCharactersERjjj@Base 0.7.2
+ _ZN8finalcut11FTermOutput30printFullWidthPaddingCharacterERjjRNS_5FCharE@Base 0.7.2
+ _ZN8finalcut11FTermOutput33printHalfCovertFullWidthCharacterERjjRNS_5FCharE@Base 0.7.2
+ _ZN8finalcut11FTermOutput5flushEv@Base 0.7.2
+ _ZN8finalcut11FTermOutput5vtermE@Base 0.7.2
+ _ZN8finalcut11FTermOutput9clearTermEw@Base 0.7.2
+ _ZN8finalcut11FTermOutput9setCursorENS_10CursorModeE@Base 0.7.2
+ _ZN8finalcut11FTermOutput9setCursorENS_6FPointE@Base 0.7.2
+ _ZN8finalcut11FTermOutputC1ERKNS_6FVTermE@Base 0.7.2
+ _ZN8finalcut11FTermOutputC2ERKNS_6FVTermE@Base 0.7.2
+ _ZN8finalcut11FTermOutputD0Ev@Base 0.7.2
+ _ZN8finalcut11FTermOutputD1Ev@Base 0.7.2
+ _ZN8finalcut11FTermOutputD2Ev@Base 0.7.2
  _ZN8finalcut11FTimerEventC1ENS_2fc6eventsEi@Base 0.7.2
+ _ZN8finalcut11FTimerEventC1ENS_5EventEi@Base 0.7.2
  _ZN8finalcut11FTimerEventC2ENS_2fc6eventsEi@Base 0.7.2
+ _ZN8finalcut11FTimerEventC2ENS_5EventEi@Base 0.7.2
  _ZN8finalcut11FTimerEventD1Ev@Base 0.7.2
  _ZN8finalcut11FTimerEventD2Ev@Base 0.7.2
  _ZN8finalcut11FWheelEventC1ENS_2fc6eventsERKNS_6FPointES5_i@Base 0.7.2
  _ZN8finalcut11FWheelEventC1ENS_2fc6eventsERKNS_6FPointEi@Base 0.7.2
+ _ZN8finalcut11FWheelEventC1ENS_5EventERKNS_6FPointENS_10MouseWheelE@Base 0.7.2
+ _ZN8finalcut11FWheelEventC1ENS_5EventERKNS_6FPointES4_NS_10MouseWheelE@Base 0.7.2
  _ZN8finalcut11FWheelEventC2ENS_2fc6eventsERKNS_6FPointES5_i@Base 0.7.2
  _ZN8finalcut11FWheelEventC2ENS_2fc6eventsERKNS_6FPointEi@Base 0.7.2
+ _ZN8finalcut11FWheelEventC2ENS_5EventERKNS_6FPointENS_10MouseWheelE@Base 0.7.2
+ _ZN8finalcut11FWheelEventC2ENS_5EventERKNS_6FPointES4_NS_10MouseWheelE@Base 0.7.2
  _ZN8finalcut11FWheelEventD1Ev@Base 0.7.2
  _ZN8finalcut11FWheelEventD2Ev@Base 0.7.2
  _ZN8finalcut11clearShadowEPNS_7FWidgetE@Base 0.7.2
  _ZN8finalcut11fileChooserEPNS_7FWidgetERKNS_7FStringES4_NS_11FFileDialog10DialogTypeE@Base 0.7.2
+ _ZN8finalcut11make_uniqueINS_10FTermLinuxEJEEESt10unique_ptrIT_St14default_deleteIS3_EEDpOT0_@Base 0.7.2
+ _ZN8finalcut11make_uniqueINS_7FStringEJRA1_KcEEESt10unique_ptrIT_St14default_deleteIS6_EEDpOT0_@Base 0.7.2
+ _ZN8finalcut11make_uniqueINS_9FTermDataEJEEESt10unique_ptrIT_St14default_deleteIS3_EEDpOT0_@Base 0.7.2
+ _ZN8finalcut12FApplication10cmdOptionsERKSt6vectorINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaIS7_EE@Base 0.7.2
  _ZN8finalcut12FApplication10cmdOptionsERKiPPc@Base 0.7.2
  _ZN8finalcut12FApplication10keyPressedEv@Base 0.7.2
  _ZN8finalcut12FApplication10loop_levelE@Base 0.7.2
@@ -319,6 +433,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut12FApplication16processNextEventEv@Base 0.7.2
  _ZN8finalcut12FApplication16sendQueuedEventsEv@Base 0.7.2
  _ZN8finalcut12FApplication17getKeyboardWidgetEv@Base 0.7.2
+ _ZN8finalcut12FApplication17processParametersERKSt6vectorINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaIS7_EE@Base 0.7.2
  _ZN8finalcut12FApplication17processParametersERKiPPc@Base 0.7.2
  _ZN8finalcut12FApplication17removeQueuedEventEPKNS_7FObjectE@Base 0.7.2
  _ZN8finalcut12FApplication17setKeyboardWidgetEPNS_7FWidgetE@Base 0.7.2
@@ -417,15 +532,27 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut12FResizeEvent6acceptEv@Base 0.7.2
  _ZN8finalcut12FResizeEvent6ignoreEv@Base 0.7.2
  _ZN8finalcut12FResizeEventC1ENS_2fc6eventsE@Base 0.7.2
+ _ZN8finalcut12FResizeEventC1ENS_5EventE@Base 0.7.2
  _ZN8finalcut12FResizeEventC2ENS_2fc6eventsE@Base 0.7.2
+ _ZN8finalcut12FResizeEventC2ENS_5EventE@Base 0.7.2
  _ZN8finalcut12FResizeEventD1Ev@Base 0.7.2
  _ZN8finalcut12FResizeEventD2Ev@Base 0.7.2
  _ZN8finalcut12FTermOpenBSDD1Ev@Base 0.7.2
  _ZN8finalcut12FTermOpenBSDD2Ev@Base 0.7.2
+ _ZN8finalcut12FVTermBuffer3addERN9__gnu_cxx17__normal_iteratorIPKwNSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEEEEERKSB_Ri@Base 0.7.2
+ _ZN8finalcut12FVTermBuffer5writeERKNS_7FStringE@Base 0.7.2
+ _ZN8finalcut12FVTermBuffer5writeEw@Base 0.7.2
+ _ZN8finalcut12FVTermBufferD0Ev@Base 0.7.2
+ _ZN8finalcut12FVTermBufferD1Ev@Base 0.7.2
+ _ZN8finalcut12FVTermBufferD2Ev@Base 0.7.2
+ _ZN8finalcut12FVTermBufferlsINS_7FStringEEERS0_RKT_@Base 0.7.2
+ _ZN8finalcut12FVTermBufferlsIcEERS0_RKT_@Base 0.7.2
  _ZN8finalcut12SGRoptimizer13findParameterEv@Base 0.7.2
  _ZN8finalcut12SGRoptimizer16combineParameterEv@Base 0.7.2
  _ZN8finalcut12SGRoptimizer8optimizeEv@Base 0.7.2
+ _ZN8finalcut12SGRoptimizerC1ERNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE@Base 0.7.2
  _ZN8finalcut12SGRoptimizerC1ERSt5arrayIcLm8192EE@Base 0.7.2
+ _ZN8finalcut12SGRoptimizerC2ERNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE@Base 0.7.2
  _ZN8finalcut12SGRoptimizerC2ERSt5arrayIcLm8192EE@Base 0.7.2
  _ZN8finalcut12SGRoptimizerD1Ev@Base 0.7.2
  _ZN8finalcut12SGRoptimizerD2Ev@Base 0.7.2
@@ -433,7 +560,10 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut12getHalfWidthERKNS_7FStringE@Base 0.7.2
  _ZN8finalcut12getHotkeyPosERKNS_7FStringERS0_@Base 0.7.2
  _ZN8finalcut12sortDirFirstERKNS_11FFileDialog9FDirEntryES3_@Base 0.7.2
+ _ZN8finalcut13FColorPalette11getInstanceEv@Base 0.7.2
+ _ZN8finalcut13FColorPaletteC1ERKSt8functionIFvNS_6FColorEiiiEE@Base 0.7.2
  _ZN8finalcut13FColorPaletteC1ERKSt8functionIFvtiiiEE@Base 0.7.2
+ _ZN8finalcut13FColorPaletteC2ERKSt8functionIFvNS_6FColorEiiiEE@Base 0.7.2
  _ZN8finalcut13FColorPaletteC2ERKSt8functionIFvtiiiEE@Base 0.7.2
  _ZN8finalcut13FColorPaletteD0Ev@Base 0.7.2
  _ZN8finalcut13FColorPaletteD1Ev@Base 0.7.2
@@ -456,11 +586,15 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut13FListViewItemD2Ev@Base 0.7.2
  _ZN8finalcut13FMouseControl10clearEventEv@Base 0.7.2
  _ZN8finalcut13FMouseControl10setRawDataENS_6FMouse10mouse_typeERA512_c@Base 0.7.2
+ _ZN8finalcut13FMouseControl10setRawDataENS_6FMouse9MouseTypeERA512_c@Base 0.7.2
  _ZN8finalcut13FMouseControl10setStdinNoEi@Base 0.7.2
+ _ZN8finalcut13FMouseControl11drawPointerEv@Base 0.7.2
+ _ZN8finalcut13FMouseControl11getInstanceEv@Base 0.7.2
  _ZN8finalcut13FMouseControl11isWheelDownEv@Base 0.7.2
  _ZN8finalcut13FMouseControl11setMaxWidthEt@Base 0.7.2
  _ZN8finalcut13FMouseControl11useGpmMouseEb@Base 0.7.2
  _ZN8finalcut13FMouseControl12processEventEP7timeval@Base 0.7.2
+ _ZN8finalcut13FMouseControl12processEventERKNSt6chrono10time_pointINS1_3_V212system_clockENS1_8durationIlSt5ratioILl1ELl1000000000EEEEEE@Base 0.7.2
  _ZN8finalcut13FMouseControl12setMaxHeightEt@Base 0.7.2
  _ZN8finalcut13FMouseControl13useXtermMouseEb@Base 0.7.2
  _ZN8finalcut13FMouseControl14drawGpmPointerEv@Base 0.7.2
@@ -494,6 +628,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut13FMouseControlD1Ev@Base 0.7.2
  _ZN8finalcut13FMouseControlD2Ev@Base 0.7.2
  _ZN8finalcut13FStartOptions10setDefaultEv@Base 0.7.2
+ _ZN8finalcut13FStartOptions11getInstanceEv@Base 0.7.2
  _ZN8finalcut13FStartOptions13destroyObjectEv@Base 0.7.2
  _ZN8finalcut13FStartOptions13start_optionsE@Base 0.7.2
  _ZN8finalcut13FStartOptions16getFStartOptionsEv@Base 0.7.2
@@ -553,9 +688,14 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut13FWidgetColorsD2Ev@Base 0.7.2
  _ZN8finalcut13closeComboBoxEPNS_16FDropDownListBoxERKNS_6FPointE@Base 0.7.2
  _ZN8finalcut13closeDropDownEPKNS_7FWidgetERKNS_6FPointE@Base 0.7.2
+ _ZN8finalcut13getCharLengthERKNS_7FStringEm@Base 0.7.2
+ _ZN8finalcut13initScrollbarIPNS_11FScrollViewEMS1_FvPKNS_7FWidgetEEEEvRSt10shared_ptrINS_10FScrollbarEENS_11OrientationET_RKT0_@Base 0.7.2
  _ZN8finalcut13initScrollbarIPNS_11FScrollViewEMS1_FvPKNS_7FWidgetEEEEvRSt10shared_ptrINS_10FScrollbarEENS_2fc11orientationET_RKT0_@Base 0.7.2
+ _ZN8finalcut13initScrollbarIPNS_8FListBoxEMS1_FvPKNS_7FWidgetEEEEvRSt10shared_ptrINS_10FScrollbarEENS_11OrientationET_RKT0_@Base 0.7.2
  _ZN8finalcut13initScrollbarIPNS_8FListBoxEMS1_FvPKNS_7FWidgetEEEEvRSt10shared_ptrINS_10FScrollbarEENS_2fc11orientationET_RKT0_@Base 0.7.2
+ _ZN8finalcut13initScrollbarIPNS_9FListViewEMS1_FvPKNS_7FWidgetEEEEvRSt10shared_ptrINS_10FScrollbarEENS_11OrientationET_RKT0_@Base 0.7.2
  _ZN8finalcut13initScrollbarIPNS_9FListViewEMS1_FvPKNS_7FWidgetEEEEvRSt10shared_ptrINS_10FScrollbarEENS_2fc11orientationET_RKT0_@Base 0.7.2
+ _ZN8finalcut13initScrollbarIPNS_9FTextViewEMS1_FvPKNS_7FWidgetEEEEvRSt10shared_ptrINS_10FScrollbarEENS_11OrientationET_RKT0_@Base 0.7.2
  _ZN8finalcut13initScrollbarIPNS_9FTextViewEMS1_FvPKNS_7FWidgetEEEEvRSt10shared_ptrINS_10FScrollbarEENS_2fc11orientationET_RKT0_@Base 0.7.2
  _ZN8finalcut13readCursorPosEv@Base 0.7.2
  _ZN8finalcut14FBusyIndicator19createIndicatorTextEv@Base 0.7.2
@@ -589,23 +729,29 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut14FTermDetection10fterm_dataE@Base 0.7.2
  _ZN8finalcut14FTermDetection10getTTYtypeEv@Base 0.7.2
  _ZN8finalcut14FTermDetection10parseSecDAEPKc@Base 0.7.2
+ _ZN8finalcut14FTermDetection10parseSecDAERKNS_7FStringE@Base 0.7.2
  _ZN8finalcut14FTermDetection11answer_backE@Base 0.7.2
+ _ZN8finalcut14FTermDetection11getInstanceEv@Base 0.7.2
  _ZN8finalcut14FTermDetection11ttytypenameE@Base 0.7.2
  _ZN8finalcut14FTermDetection12deallocationEv@Base 0.7.2
  _ZN8finalcut14FTermDetection12secondary_daE@Base 0.7.2
  _ZN8finalcut14FTermDetection13terminal_typeE@Base 0.7.2
  _ZN8finalcut14FTermDetection14detectTerminalEv@Base 0.7.2
  _ZN8finalcut14FTermDetection14secDA_AnalysisEPKc@Base 0.7.2
+ _ZN8finalcut14FTermDetection14secDA_AnalysisERKNS_7FStringE@Base 0.7.2
  _ZN8finalcut14FTermDetection16decscusr_supportE@Base 0.7.2
  _ZN8finalcut14FTermDetection16getAnswerbackMsgEv@Base 0.7.2
  _ZN8finalcut14FTermDetection16getTTYSFileEntryEv@Base 0.7.2
  _ZN8finalcut14FTermDetection16termtypeAnalysisEv@Base 0.7.2
  _ZN8finalcut14FTermDetection17determineMaxColorEPKc@Base 0.7.2
+ _ZN8finalcut14FTermDetection17determineMaxColorERKNS_7FStringE@Base 0.7.2
  _ZN8finalcut14FTermDetection17getSystemTermTypeEv@Base 0.7.2
  _ZN8finalcut14FTermDetection17getXTermColorNameEt@Base 0.7.2
  _ZN8finalcut14FTermDetection17gnome_terminal_idE@Base 0.7.2
  _ZN8finalcut14FTermDetection18parseAnswerbackMsgEPKc@Base 0.7.2
+ _ZN8finalcut14FTermDetection18parseAnswerbackMsgERKNS_7FStringE@Base 0.7.2
  _ZN8finalcut14FTermDetection18setTtyTypeFileNameEPKc@Base 0.7.2
+ _ZN8finalcut14FTermDetection18setTtyTypeFileNameERKNS_7FStringE@Base 0.7.2
  _ZN8finalcut14FTermDetection18terminal_detectionE@Base 0.7.2
  _ZN8finalcut14FTermDetection20get256colorEnvStringEv@Base 0.7.2
  _ZN8finalcut14FTermDetection21init_256colorTerminalEv@Base 0.7.2
@@ -624,6 +770,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut14FTermDetectionD1Ev@Base 0.7.2
  _ZN8finalcut14FTermDetectionD2Ev@Base 0.7.2
  _ZN8finalcut14FTermXTerminal10resetTitleEv@Base 0.7.2
+ _ZN8finalcut14FTermXTerminal11getInstanceEv@Base 0.7.2
  _ZN8finalcut14FTermXTerminal11setDefaultsEv@Base 0.7.2
  _ZN8finalcut14FTermXTerminal11setTermSizeERKNS_5FSizeE@Base 0.7.2
  _ZN8finalcut14FTermXTerminal12metaSendsESCEb@Base 0.7.2
@@ -634,6 +781,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut14FTermXTerminal13setForegroundERKNS_7FStringE@Base 0.7.2
  _ZN8finalcut14FTermXTerminal13setXTermTitleEv@Base 0.7.2
  _ZN8finalcut14FTermXTerminal14setCursorColorERKNS_7FStringE@Base 0.7.2
+ _ZN8finalcut14FTermXTerminal14setCursorStyleENS_16XTermCursorStyleE@Base 0.7.2
  _ZN8finalcut14FTermXTerminal14setCursorStyleENS_2fc16xtermCursorStyleE@Base 0.7.2
  _ZN8finalcut14FTermXTerminal15resetBackgroundEv@Base 0.7.2
  _ZN8finalcut14FTermXTerminal15resetForegroundEv@Base 0.7.2
@@ -674,6 +822,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut14FTermcapQuirks14term_detectionE@Base 0.7.2
  _ZN8finalcut14FTermcapQuirks3vteEv@Base 0.7.2
  _ZN8finalcut14FTermcapQuirks4rxvtEv@Base 0.7.2
+ _ZN8finalcut14FTermcapQuirks5kittyEv@Base 0.7.2
  _ZN8finalcut14FTermcapQuirks5linuxEv@Base 0.7.2
  _ZN8finalcut14FTermcapQuirks5puttyEv@Base 0.7.2
  _ZN8finalcut14FTermcapQuirks5xtermEv@Base 0.7.2
@@ -686,18 +835,27 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut14FTermcapQuirksC2Ev@Base 0.7.2
  _ZN8finalcut14FTermcapQuirksD1Ev@Base 0.7.2
  _ZN8finalcut14FTermcapQuirksD2Ev@Base 0.7.2
+ _ZN8finalcut14addColumnWidthERNS_5FCharE@Base 0.7.2
  _ZN8finalcut14closeOpenMenusEPNS_5FMenuERKNS_6FPointE@Base 0.7.2
  _ZN8finalcut14detectTermSizeEv@Base 0.7.2
  _ZN8finalcut14drawFlatBorderEPNS_7FWidgetE@Base 0.7.2
  _ZN8finalcut14drawListBorderEPNS_7FWidgetERKNS_5FRectE@Base 0.7.2
  _ZN8finalcut14getColumnWidthERKNS_11FTermBufferE@Base 0.7.2
+ _ZN8finalcut14getColumnWidthERKNS_12FVTermBufferE@Base 0.7.2
+ _ZN8finalcut14getColumnWidthERKNS_5FCharE@Base 0.7.2
  _ZN8finalcut14getColumnWidthERKNS_7FStringE@Base 0.7.2
  _ZN8finalcut14getColumnWidthERKNS_7FStringEm@Base 0.7.2
  _ZN8finalcut14getColumnWidthERNS_5FCharE@Base 0.7.2
  _ZN8finalcut14getColumnWidthEw@Base 0.7.2
+ _ZN8finalcut14getExitMessageB5cxx11Ev@Base 0.7.2
+ _ZN8finalcut14isFocusNextKeyENS_4FKeyE@Base 0.7.2
  _ZN8finalcut14isFocusNextKeyEj@Base 0.7.2
+ _ZN8finalcut14isFocusPrevKeyENS_4FKeyE@Base 0.7.2
  _ZN8finalcut14isFocusPrevKeyEj@Base 0.7.2
  _ZN8finalcut14printDurationsERKNS_9FOptiMoveE@Base 0.7.2
+ _ZN8finalcut14rgb2ColorIndexEhhh@Base 0.7.2
+ _ZN8finalcut14setExitMessageERKNS_7FStringE@Base 0.7.2
+ _ZN8finalcut14setWidgetFocusEPNS_7FWidgetE@Base 0.7.2
  _ZN8finalcut15FDialogListMenu4initEv@Base 0.7.2
  _ZN8finalcut15FDialogListMenuC1EPNS_7FWidgetE@Base 0.7.2
  _ZN8finalcut15FDialogListMenuC1ERKNS_7FStringEPNS_7FWidgetE@Base 0.7.2
@@ -709,6 +867,9 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut15clearFlatBorderEPNS_7FWidgetE@Base 0.7.2
  _ZN8finalcut15drawBlockShadowEPNS_7FWidgetE@Base 0.7.2
  _ZN8finalcut15getFApplicationEv@Base 0.7.2
+ _ZN8finalcut15isInFWidgetListEPKSt6vectorIPNS_7FWidgetESaIS2_EEPKS1_@Base 0.7.2
+ _ZN8finalcut15setWidgetShadowEPNS_7FWidgetEb@Base 0.7.2
+ _ZN8finalcut15unicode_to_utf8B5cxx11Ew@Base 0.7.2
  _ZN8finalcut16FDropDownListBox10drawShadowEv@Base 0.7.2
  _ZN8finalcut16FDropDownListBox11setGeometryERKNS_6FPointERKNS_5FSizeEb@Base 0.7.2
  _ZN8finalcut16FDropDownListBox14containsWidgetERKNS_6FPointE@Base 0.7.2
@@ -745,12 +906,14 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut17FListViewIteratorppEi@Base 0.7.2
  _ZN8finalcut17FListViewIteratorppEv@Base 0.7.2
  _ZN8finalcut17closeOpenComboBoxEv@Base 0.7.2
+ _ZN8finalcut17getPrevCharLengthERKNS_7FStringEm@Base 0.7.2
  _ZN8finalcut18default8ColorTheme13setColorThemeEv@Base 0.7.2
  _ZN8finalcut18default8ColorThemeC1Ev@Base 0.7.2
  _ZN8finalcut18default8ColorThemeC2Ev@Base 0.7.2
  _ZN8finalcut18default8ColorThemeD0Ev@Base 0.7.2
  _ZN8finalcut18default8ColorThemeD1Ev@Base 0.7.2
  _ZN8finalcut18default8ColorThemeD2Ev@Base 0.7.2
+ _ZN8finalcut18detectTerminalSizeEv@Base 0.7.2
  _ZN8finalcut18getColumnSubStringERKNS_7FStringEmm@Base 0.7.2
  _ZN8finalcut18setHotkeyViaStringEPNS_7FWidgetERKNS_7FStringE@Base 0.7.2
  _ZN8finalcut19default16ColorTheme13setColorThemeEv@Base 0.7.2
@@ -759,20 +922,26 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut19default16ColorThemeD0Ev@Base 0.7.2
  _ZN8finalcut19default16ColorThemeD1Ev@Base 0.7.2
  _ZN8finalcut19default16ColorThemeD2Ev@Base 0.7.2
+ _ZN8finalcut19searchLeftCharBeginERKNS_7FStringEm@Base 0.7.2
  _ZN8finalcut19sortAscendingByNameEPKNS_7FObjectES2_@Base 0.7.2
  _ZN8finalcut20default8ColorPalette15setColorPaletteEv@Base 0.7.2
  _ZN8finalcut20default8ColorPalette17resetColorPaletteEv@Base 0.7.2
+ _ZN8finalcut20default8ColorPaletteC1ERKSt8functionIFvNS_6FColorEiiiEE@Base 0.7.2
  _ZN8finalcut20default8ColorPaletteC1ERKSt8functionIFvtiiiEE@Base 0.7.2
+ _ZN8finalcut20default8ColorPaletteC2ERKSt8functionIFvNS_6FColorEiiiEE@Base 0.7.2
  _ZN8finalcut20default8ColorPaletteC2ERKSt8functionIFvtiiiEE@Base 0.7.2
  _ZN8finalcut20default8ColorPaletteD0Ev@Base 0.7.2
  _ZN8finalcut20default8ColorPaletteD1Ev@Base 0.7.2
  _ZN8finalcut20default8ColorPaletteD2Ev@Base 0.7.2
  _ZN8finalcut20hasFullWidthSupportsEv@Base 0.7.2
  _ZN8finalcut20isReverseNewFontcharEw@Base 0.7.2
+ _ZN8finalcut20searchRightCharBeginERKNS_7FStringEm@Base 0.7.2
  _ZN8finalcut20sortDescendingByNameEPKNS_7FObjectES2_@Base 0.7.2
  _ZN8finalcut21default16ColorPalette15setColorPaletteEv@Base 0.7.2
  _ZN8finalcut21default16ColorPalette17resetColorPaletteEv@Base 0.7.2
+ _ZN8finalcut21default16ColorPaletteC1ERKSt8functionIFvNS_6FColorEiiiEE@Base 0.7.2
  _ZN8finalcut21default16ColorPaletteC1ERKSt8functionIFvtiiiEE@Base 0.7.2
+ _ZN8finalcut21default16ColorPaletteC2ERKSt8functionIFvNS_6FColorEiiiEE@Base 0.7.2
  _ZN8finalcut21default16ColorPaletteC2ERKSt8functionIFvtiiiEE@Base 0.7.2
  _ZN8finalcut21default16ColorPaletteD0Ev@Base 0.7.2
  _ZN8finalcut21default16ColorPaletteD1Ev@Base 0.7.2
@@ -796,7 +965,9 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut24getLengthFromColumnWidthERKNS_7FStringEm@Base 0.7.2
  _ZN8finalcut25default16DarkColorPalette15setColorPaletteEv@Base 0.7.2
  _ZN8finalcut25default16DarkColorPalette17resetColorPaletteEv@Base 0.7.2
+ _ZN8finalcut25default16DarkColorPaletteC1ERKSt8functionIFvNS_6FColorEiiiEE@Base 0.7.2
  _ZN8finalcut25default16DarkColorPaletteC1ERKSt8functionIFvtiiiEE@Base 0.7.2
+ _ZN8finalcut25default16DarkColorPaletteC2ERKSt8functionIFvNS_6FColorEiiiEE@Base 0.7.2
  _ZN8finalcut25default16DarkColorPaletteC2ERKSt8functionIFvtiiiEE@Base 0.7.2
  _ZN8finalcut25default16DarkColorPaletteD0Ev@Base 0.7.2
  _ZN8finalcut25default16DarkColorPaletteD1Ev@Base 0.7.2
@@ -819,6 +990,9 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut5FDataIDnED0Ev@Base 0.7.2
  _ZN8finalcut5FDataIDnED1Ev@Base 0.7.2
  _ZN8finalcut5FDataIDnED2Ev@Base 0.7.2
+ _ZN8finalcut5FDataIPNS_6FVTermEED0Ev@Base 0.7.2
+ _ZN8finalcut5FDataIPNS_6FVTermEED1Ev@Base 0.7.2
+ _ZN8finalcut5FDataIPNS_6FVTermEED2Ev@Base 0.7.2
  _ZN8finalcut5FMenu10hotkeyMenuEPNS_9FKeyEventE@Base 0.7.2
  _ZN8finalcut5FMenu10onKeyPressEPNS_9FKeyEventE@Base 0.7.2
  _ZN8finalcut5FMenu10setDisableEv@Base 0.7.2
@@ -828,7 +1002,9 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut5FMenu11resetColorsEv@Base 0.7.2
  _ZN8finalcut5FMenu11superMenuAtEii@Base 0.7.2
  _ZN8finalcut5FMenu11unsetEnableEv@Base 0.7.2
+ _ZN8finalcut5FMenu12drawMenuLineEPNS_9FMenuItemEi@Base 0.7.2
  _ZN8finalcut5FMenu12hideSubMenusEv@Base 0.7.2
+ _ZN8finalcut5FMenu13drawSeparatorEi@Base 0.7.2
  _ZN8finalcut5FMenu13initCallbacksEv@Base 0.7.2
  _ZN8finalcut5FMenu13setMenuWidgetEb@Base 0.7.2
  _ZN8finalcut5FMenu14selectNextItemEv@Base 0.7.2
@@ -845,13 +1021,16 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut5FMenu18mouseDownSelectionEPNS_9FMenuItemERb@Base 0.7.2
  _ZN8finalcut5FMenu18mouseMoveSelectionEPNS_9FMenuItemERNS0_11MouseStatesE@Base 0.7.2
  _ZN8finalcut5FMenu18passEventToSubMenuEOKNS_11FMouseEventE@Base 0.7.2
+ _ZN8finalcut5FMenu18passEventToSubMenuERKNS_11FMouseEventE@Base 0.7.2
  _ZN8finalcut5FMenu19calculateDimensionsEv@Base 0.7.2
  _ZN8finalcut5FMenu19cb_menuitemDisabledEv@Base 0.7.2
  _ZN8finalcut5FMenu19setStatusbarMessageERKNS_7FStringE@Base 0.7.2
  _ZN8finalcut5FMenu20isMouseOverSuperMenuERKNS_6FPointE@Base 0.7.2
  _ZN8finalcut5FMenu20mouseMoveDeselectionEPNS_9FMenuItemERNS0_11MouseStatesE@Base 0.7.2
  _ZN8finalcut5FMenu20passEventToSuperMenuEOKNS_11FMouseEventE@Base 0.7.2
+ _ZN8finalcut5FMenu20passEventToSuperMenuERKNS_11FMouseEventE@Base 0.7.2
  _ZN8finalcut5FMenu21containsMenuStructureEii@Base 0.7.2
+ _ZN8finalcut5FMenu25selectItem_PostProcessingEPNS_9FMenuItemE@Base 0.7.2
  _ZN8finalcut5FMenu4drawEv@Base 0.7.2
  _ZN8finalcut5FMenu4hideEv@Base 0.7.2
  _ZN8finalcut5FMenu4initEv@Base 0.7.2
@@ -915,28 +1094,35 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut5FSizepLERKS0_@Base 0.7.2
  _ZN8finalcut5FTerm10charEncodeEw@Base 0.7.2
  _ZN8finalcut5FTerm10charEncodeEwNS_2fc8encodingE@Base 0.7.2
+ _ZN8finalcut5FTerm10charEncodeEwNS_8EncodingE@Base 0.7.2
  _ZN8finalcut5FTerm10getFSystemEv@Base 0.7.2
+ _ZN8finalcut5FTerm10getKeyNameENS_4FKeyE@Base 0.7.2
  _ZN8finalcut5FTerm10getKeyNameEj@Base 0.7.2
  _ZN8finalcut5FTerm10getTabstopEv@Base 0.7.2
  _ZN8finalcut5FTerm10isTeraTermEv@Base 0.7.2
  _ZN8finalcut5FTerm10isTmuxTermEv@Base 0.7.2
  _ZN8finalcut5FTerm10oscPostfixEv@Base 0.7.2
  _ZN8finalcut5FTerm10setNewFontEv@Base 0.7.2
+ _ZN8finalcut5FTerm10setPaletteENS_6FColorEiii@Base 0.7.2
  _ZN8finalcut5FTerm10setPaletteEtiii@Base 0.7.2
  _ZN8finalcut5FTerm10setVGAFontEv@Base 0.7.2
  _ZN8finalcut5FTerm11enableMouseEv@Base 0.7.2
  _ZN8finalcut5FTerm11getEncodingEv@Base 0.7.2
  _ZN8finalcut5FTerm11getMaxColorEv@Base 0.7.2
+ _ZN8finalcut5FTerm11getTermTypeB5cxx11Ev@Base 0.7.2
  _ZN8finalcut5FTerm11getTermTypeEv@Base 0.7.2
  _ZN8finalcut5FTerm11init_localeEv@Base 0.7.2
  _ZN8finalcut5FTerm11init_quirksEv@Base 0.7.2
+ _ZN8finalcut5FTerm11isEncodableEw@Base 0.7.2
  _ZN8finalcut5FTerm11isLinuxTermEv@Base 0.7.2
  _ZN8finalcut5FTerm11isMonochronEv@Base 0.7.2
  _ZN8finalcut5FTerm11isXTerminalEv@Base 0.7.2
  _ZN8finalcut5FTerm11openConsoleEv@Base 0.7.2
  _ZN8finalcut5FTerm11setEncodingENS_2fc8encodingE@Base 0.7.2
+ _ZN8finalcut5FTerm11setEncodingENS_8EncodingE@Base 0.7.2
  _ZN8finalcut5FTerm11setTermSizeERKNS_5FSizeE@Base 0.7.2
  _ZN8finalcut5FTerm11setTermTypeEPKc@Base 0.7.2
+ _ZN8finalcut5FTerm11setTermTypeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE@Base 0.7.2
  _ZN8finalcut5FTerm12closeConsoleEv@Base 0.7.2
  _ZN8finalcut5FTerm12getFKeyboardEv@Base 0.7.2
  _ZN8finalcut5FTerm12getFOptiAttrEv@Base 0.7.2
@@ -946,8 +1132,10 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut5FTerm12isMinttyTermEv@Base 0.7.2
  _ZN8finalcut5FTerm12isNetBSDTermEv@Base 0.7.2
  _ZN8finalcut5FTerm12isScreenTermEv@Base 0.7.2
+ _ZN8finalcut5FTerm12paddingPrintERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEi@Base 0.7.2
  _ZN8finalcut5FTerm12putchar_UTF8Ei@Base 0.7.2
  _ZN8finalcut5FTerm12saveColorMapEv@Base 0.7.2
+ _ZN8finalcut5FTerm12setKDECursorENS_21KdeKonsoleCursorShapeE@Base 0.7.2
  _ZN8finalcut5FTerm12setKDECursorENS_2fc21kdeKonsoleCursorShapeE@Base 0.7.2
  _ZN8finalcut5FTerm12setTermTitleERKNS_7FStringE@Base 0.7.2
  _ZN8finalcut5FTerm13charEncodableEw@Base 0.7.2
@@ -969,8 +1157,10 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut5FTerm14isRxvtTerminalEv@Base 0.7.2
  _ZN8finalcut5FTerm14signal_handlerEi@Base 0.7.2
  _ZN8finalcut5FTerm14term_detectionE@Base 0.7.2
+ _ZN8finalcut5FTerm15changeAttributeB5cxx11ERNS_5FCharES2_@Base 0.7.2
  _ZN8finalcut5FTerm15changeAttributeERNS_5FCharES2_@Base 0.7.2
  _ZN8finalcut5FTerm15getColumnNumberEv@Base 0.7.2
+ _ZN8finalcut5FTerm15getTermFileNameB5cxx11Ev@Base 0.7.2
  _ZN8finalcut5FTerm15getTermFileNameEv@Base 0.7.2
  _ZN8finalcut5FTerm15init_pc_charsetEv@Base 0.7.2
  _ZN8finalcut5FTerm15init_tab_quirksEv@Base 0.7.2
@@ -984,6 +1174,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut5FTerm16isCursorHideableEv@Base 0.7.2
  _ZN8finalcut5FTerm16isCygwinTerminalEv@Base 0.7.2
  _ZN8finalcut5FTerm16isMltermTerminalEv@Base 0.7.2
+ _ZN8finalcut5FTerm16moveCursorStringB5cxx11Eiiii@Base 0.7.2
  _ZN8finalcut5FTerm16moveCursorStringEiiii@Base 0.7.2
  _ZN8finalcut5FTerm16printExitMessageEv@Base 0.7.2
  _ZN8finalcut5FTerm16setSignalHandlerEv@Base 0.7.2
@@ -994,6 +1185,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut5FTerm17scrollTermForwardEv@Base 0.7.2
  _ZN8finalcut5FTerm17scrollTermReverseEv@Base 0.7.2
  _ZN8finalcut5FTerm18deallocationValuesEv@Base 0.7.2
+ _ZN8finalcut5FTerm18enableCursorStringB5cxx11Ev@Base 0.7.2
  _ZN8finalcut5FTerm18enableCursorStringEv@Base 0.7.2
  _ZN8finalcut5FTerm18hasAlternateScreenEv@Base 0.7.2
  _ZN8finalcut5FTerm18hasChangedTermSizeEv@Base 0.7.2
@@ -1005,6 +1197,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut5FTerm18resetSignalHandlerEv@Base 0.7.2
  _ZN8finalcut5FTerm18terminalSizeChangeEv@Base 0.7.2
  _ZN8finalcut5FTerm18useAlternateScreenEb@Base 0.7.2
+ _ZN8finalcut5FTerm19disableCursorStringB5cxx11Ev@Base 0.7.2
  _ZN8finalcut5FTerm19disableCursorStringEv@Base 0.7.2
  _ZN8finalcut5FTerm19init_cygwin_charmapEv@Base 0.7.2
  _ZN8finalcut5FTerm19restoreColorPaletteEv@Base 0.7.2
@@ -1021,6 +1214,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut5FTerm21useNormalScreenBufferEv@Base 0.7.2
  _ZN8finalcut5FTerm22changeTermSizeFinishedEv@Base 0.7.2
  _ZN8finalcut5FTerm22getCharSubstitutionMapEv@Base 0.7.2
+ _ZN8finalcut5FTerm23cursorsVisibilityStringB5cxx11Eb@Base 0.7.2
  _ZN8finalcut5FTerm23cursorsVisibilityStringEb@Base 0.7.2
  _ZN8finalcut5FTerm23setOverwriteCursorStyleEv@Base 0.7.2
  _ZN8finalcut5FTerm24destroyColorPaletteThemeEv@Base 0.7.2
@@ -1038,6 +1232,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut5FTerm5mouseE@Base 0.7.2
  _ZN8finalcut5FTerm5xtermE@Base 0.7.2
  _ZN8finalcut5FTerm7hasUTF8Ev@Base 0.7.2
+ _ZN8finalcut5FTerm7putcharEi@Base 0.7.2
  _ZN8finalcut5FTerm7putcharEv@Base 0.7.2
  _ZN8finalcut5FTerm7setBeepEii@Base 0.7.2
  _ZN8finalcut5FTerm7setUTF8Eb@Base 0.7.2
@@ -1049,6 +1244,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut5FTerm9opti_moveE@Base 0.7.2
  _ZN8finalcut5FTerm9oscPrefixEv@Base 0.7.2
  _ZN8finalcut5FTerm9putstringEPKci@Base 0.7.2
+ _ZN8finalcut5FTerm9putstringERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE@Base 0.7.2
  _ZN8finalcut5FTerm9resetBeepEv@Base 0.7.2
  _ZN8finalcut5FTerm9resetFontEv@Base 0.7.2
  _ZN8finalcut5FTermC1Ev@Base 0.7.2
@@ -1056,10 +1252,13 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut5FTermD1Ev@Base 0.7.2
  _ZN8finalcut5FTermD2Ev@Base 0.7.2
  _ZN8finalcut6FEventC1ENS_2fc6eventsE@Base 0.7.2
+ _ZN8finalcut6FEventC1ENS_5EventE@Base 0.7.2
  _ZN8finalcut6FEventC2ENS_2fc6eventsE@Base 0.7.2
+ _ZN8finalcut6FEventC2ENS_5EventE@Base 0.7.2
  _ZN8finalcut6FLabel11onMouseDownEPNS_11FMouseEventE@Base 0.7.2
  _ZN8finalcut6FLabel11resetColorsEv@Base 0.7.2
  _ZN8finalcut6FLabel12setAlignmentENS_2fc14text_alignmentE@Base 0.7.2
+ _ZN8finalcut6FLabel12setAlignmentENS_5AlignE@Base 0.7.2
  _ZN8finalcut6FLabel13drawMultiLineEv@Base 0.7.2
  _ZN8finalcut6FLabel14drawSingleLineEv@Base 0.7.2
  _ZN8finalcut6FLabel14setAccelWidgetEPNS_7FWidgetE@Base 0.7.2
@@ -1081,10 +1280,16 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut6FLabelD2Ev@Base 0.7.2
  _ZN8finalcut6FLabelaSERKNS_7FStringE@Base 0.7.2
  _ZN8finalcut6FLabellsENS_2fc16SpecialCharacterE@Base 0.7.2
+ _ZN8finalcut6FLabellsENS_7UniCharE@Base 0.7.2
  _ZN8finalcut6FLabellsEw@Base 0.7.2
+ _ZN8finalcut6FMouse10clearEventEv@Base 0.7.2
  _ZN8finalcut6FMouse10setPendingEb@Base 0.7.2
+ _ZN8finalcut6FMouse11setMaxWidthEt@Base 0.7.2
+ _ZN8finalcut6FMouse12setMaxHeightEt@Base 0.7.2
  _ZN8finalcut6FMouse19getMousePressedTimeEv@Base 0.7.2
+ _ZN8finalcut6FMouse19setDblclickIntervalEm@Base 0.7.2
  _ZN8finalcut6FMouse19setMousePressedTimeEPK7timeval@Base 0.7.2
+ _ZN8finalcut6FMouse19setMousePressedTimeERKNSt6chrono10time_pointINS1_3_V212system_clockENS1_8durationIlSt5ratioILl1ELl1000000000EEEEEE@Base 0.7.2
  _ZN8finalcut6FMouse21resetMousePressedTimeEv@Base 0.7.2
  _ZN8finalcut6FMouse8setEventEv@Base 0.7.2
  _ZN8finalcut6FMouse9setNewPosEii@Base 0.7.2
@@ -1108,11 +1313,13 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut6FPointpLERKS0_@Base 0.7.2
  _ZN8finalcut6FVTerm10createAreaERKNS_5FRectERKNS_5FSizeERPNS0_9FTermAreaE@Base 0.7.2
  _ZN8finalcut6FVTerm10cursorWrapEv@Base 0.7.2
+ _ZN8finalcut6FVTerm10getFOutputEv@Base 0.7.2
  _ZN8finalcut6FVTerm10removeAreaERPNS0_9FTermAreaE@Base 0.7.2
  _ZN8finalcut6FVTerm11active_areaE@Base 0.7.2
  _ZN8finalcut6FVTerm11createVTermERKNS_5FSizeE@Base 0.7.2
  _ZN8finalcut6FVTerm11init_objectE@Base 0.7.2
  _ZN8finalcut6FVTerm11putAreaLineERKNS_5FCharERS1_m@Base 0.7.2
+ _ZN8finalcut6FVTerm12getCharacterENS0_13CharacterTypeERKNS_6FPointEPKNS0_9FTermAreaE@Base 0.7.2
  _ZN8finalcut6FVTerm12getCharacterENS0_14character_typeERKNS_6FPointEPKNS0_9FTermAreaE@Base 0.7.2
  _ZN8finalcut6FVTerm12getPrintAreaEv@Base 0.7.2
  _ZN8finalcut6FVTerm12initTerminalEv@Base 0.7.2
@@ -1136,6 +1343,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut6FVTerm17canClearLeadingWSERjj@Base 0.7.2
  _ZN8finalcut6FVTerm17erase_char_lengthE@Base 0.7.2
  _ZN8finalcut6FVTerm17generateCharacterERKNS_6FPointE@Base 0.7.2
+ _ZN8finalcut6FVTerm17hasPendingUpdatesEPKNS0_9FTermAreaE@Base 0.7.2
  _ZN8finalcut6FVTerm18appendOutputBufferEi@Base 0.7.2
  _ZN8finalcut6FVTerm18canClearTrailingWSERjj@Base 0.7.2
  _ZN8finalcut6FVTerm18repeat_char_lengthE@Base 0.7.2
@@ -1148,6 +1356,8 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut6FVTerm21force_terminal_updateE@Base 0.7.2
  _ZN8finalcut6FVTerm21init_characterLengthsEPKNS_9FOptiMoveE@Base 0.7.2
  _ZN8finalcut6FVTerm21printPaddingCharacterEPNS0_9FTermAreaERKNS_5FCharE@Base 0.7.2
+ _ZN8finalcut6FVTerm22isTransparentInvisibleERKNS_5FCharE@Base 0.7.2
+ _ZN8finalcut6FVTerm23addPreprocessingHandlerEPKS0_OSt8functionIFvvEE@Base 0.7.2
  _ZN8finalcut6FVTerm23addPreprocessingHandlerEPKS0_RKSt8functionIFvvEE@Base 0.7.2
  _ZN8finalcut6FVTerm23delPreprocessingHandlerEPKS0_@Base 0.7.2
  _ZN8finalcut6FVTerm23skipped_terminal_updateE@Base 0.7.2
@@ -1159,6 +1369,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut6FVTerm5flushEv@Base 0.7.2
  _ZN8finalcut6FVTerm5ftermE@Base 0.7.2
  _ZN8finalcut6FVTerm5printEPNS0_9FTermAreaERKNS_11FTermBufferE@Base 0.7.2
+ _ZN8finalcut6FVTerm5printEPNS0_9FTermAreaERKNS_12FVTermBufferE@Base 0.7.2
  _ZN8finalcut6FVTerm5printEPNS0_9FTermAreaERKNS_5FCharE@Base 0.7.2
  _ZN8finalcut6FVTerm5printEPNS0_9FTermAreaERKNS_7FStringE@Base 0.7.2
  _ZN8finalcut6FVTerm5printEPNS0_9FTermAreaERKSt6vectorINS_5FCharESaIS4_EE@Base 0.7.2
@@ -1166,6 +1377,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut6FVTerm5printEPNS0_9FTermAreaEw@Base 0.7.2
  _ZN8finalcut6FVTerm5printERKNS_10FColorPairE@Base 0.7.2
  _ZN8finalcut6FVTerm5printERKNS_11FTermBufferE@Base 0.7.2
+ _ZN8finalcut6FVTerm5printERKNS_12FVTermBufferE@Base 0.7.2
  _ZN8finalcut6FVTerm5printERKNS_6FPointE@Base 0.7.2
  _ZN8finalcut6FVTerm5printERKNS_6FStyleE@Base 0.7.2
  _ZN8finalcut6FVTerm5printERKNS_7FStringE@Base 0.7.2
@@ -1179,19 +1391,30 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut6FVTerm7getAreaERKNS_5FRectEPKNS0_9FTermAreaE@Base 0.7.2
  _ZN8finalcut6FVTerm7getAreaERKNS_6FPointEPKNS0_9FTermAreaE@Base 0.7.2
  _ZN8finalcut6FVTerm7putAreaERKNS_6FPointEPKNS0_9FTermAreaE@Base 0.7.2
+ _ZN8finalcut6FVTerm8getLayerERKS0_@Base 0.7.2
  _ZN8finalcut6FVTerm8keyboardE@Base 0.7.2
  _ZN8finalcut6FVTerm8term_posE@Base 0.7.2
  _ZN8finalcut6FVTerm8vdesktopE@Base 0.7.2
  _ZN8finalcut6FVTerm9clearAreaEi@Base 0.7.2
+ _ZN8finalcut6FVTerm9clearAreaEw@Base 0.7.2
  _ZN8finalcut6FVTerm9isCoveredERKNS_6FPointEPKNS0_9FTermAreaE@Base 0.7.2
+ _ZN8finalcut6FVTerm9setCursorERKNS_6FPointE@Base 0.7.2
+ _ZN8finalcut6FVTermC1EOS0_@Base 0.7.2
+ _ZN8finalcut6FVTermC1ERKS0_@Base 0.7.2
  _ZN8finalcut6FVTermC1Ev@Base 0.7.2
+ _ZN8finalcut6FVTermC2EOS0_@Base 0.7.2
+ _ZN8finalcut6FVTermC2ERKS0_@Base 0.7.2
  _ZN8finalcut6FVTermC2Ev@Base 0.7.2
  _ZN8finalcut6FVTermD0Ev@Base 0.7.2
  _ZN8finalcut6FVTermD1Ev@Base 0.7.2
  _ZN8finalcut6FVTermD2Ev@Base 0.7.2
+ _ZN8finalcut6FVTermaSEOS0_@Base 0.7.2
+ _ZN8finalcut6FVTermaSERKS0_@Base 0.7.2
  _ZN8finalcut6FVTermlsERKNS_11FTermBufferE@Base 0.7.2
+ _ZN8finalcut6FVTermlsERKNS_12FVTermBufferE@Base 0.7.2
  _ZN8finalcut6FVTermlsIA3_cEERS0_RKT_@Base 0.7.2
  _ZN8finalcut6FVTermlsIA3_wEERS0_RKT_@Base 0.7.2
+ _ZN8finalcut6FVTermlsIA7_cEERS0_RKT_@Base 0.7.2
  _ZN8finalcut6FVTermlsINS_7FStringEEERS0_RKT_@Base 0.7.2
  _ZN8finalcut6FVTermlsIcEERS0_RKT_@Base 0.7.2
  _ZN8finalcut7FButton10onFocusOutEPNS_11FFocusEventE@Base 0.7.2
@@ -1205,19 +1428,27 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut7FButton14setNoUnderlineEb@Base 0.7.2
  _ZN8finalcut7FButton17updateButtonColorEv@Base 0.7.2
  _ZN8finalcut7FButton18drawButtonTextLineERKNS_7FStringE@Base 0.7.2
+ _ZN8finalcut7FButton18setBackgroundColorENS_6FColorE@Base 0.7.2
  _ZN8finalcut7FButton18setBackgroundColorEt@Base 0.7.2
+ _ZN8finalcut7FButton18setForegroundColorENS_6FColorE@Base 0.7.2
  _ZN8finalcut7FButton18setForegroundColorEt@Base 0.7.2
  _ZN8finalcut7FButton20setHotkeyAcceleratorEv@Base 0.7.2
+ _ZN8finalcut7FButton23setFocusBackgroundColorENS_6FColorE@Base 0.7.2
  _ZN8finalcut7FButton23setFocusBackgroundColorEt@Base 0.7.2
+ _ZN8finalcut7FButton23setFocusForegroundColorENS_6FColorE@Base 0.7.2
  _ZN8finalcut7FButton23setFocusForegroundColorEt@Base 0.7.2
+ _ZN8finalcut7FButton24setHotkeyForegroundColorENS_6FColorE@Base 0.7.2
  _ZN8finalcut7FButton24setHotkeyForegroundColorEt@Base 0.7.2
+ _ZN8finalcut7FButton26setInactiveBackgroundColorENS_6FColorE@Base 0.7.2
  _ZN8finalcut7FButton26setInactiveBackgroundColorEt@Base 0.7.2
+ _ZN8finalcut7FButton26setInactiveForegroundColorENS_6FColorE@Base 0.7.2
  _ZN8finalcut7FButton26setInactiveForegroundColorEt@Base 0.7.2
  _ZN8finalcut7FButton4drawEv@Base 0.7.2
  _ZN8finalcut7FButton4hideEv@Base 0.7.2
  _ZN8finalcut7FButton4initEv@Base 0.7.2
  _ZN8finalcut7FButton7onAccelEPNS_11FAccelEventE@Base 0.7.2
  _ZN8finalcut7FButton7onTimerEPNS_11FTimerEventE@Base 0.7.2
+ _ZN8finalcut7FButton7onWheelEPNS_11FWheelEventE@Base 0.7.2
  _ZN8finalcut7FButton7setDownEb@Base 0.7.2
  _ZN8finalcut7FButton7setFlatEb@Base 0.7.2
  _ZN8finalcut7FButton7setTextERKNS_7FStringE@Base 0.7.2
@@ -1238,6 +1469,8 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut7FButtonaSERKNS_7FStringE@Base 0.7.2
  _ZN8finalcut7FDialog10drawBorderEv@Base 0.7.2
  _ZN8finalcut7FDialog10onKeyPressEPNS_9FKeyEventE@Base 0.7.2
+ _ZN8finalcut7FDialog10zoomWindowEv@Base 0.7.2
+ _ZN8finalcut7FDialog11cb_minimizeEv@Base 0.7.2
  _ZN8finalcut7FDialog11drawTextBarEv@Base 0.7.2
  _ZN8finalcut7FDialog11expandWidthEi@Base 0.7.2
  _ZN8finalcut7FDialog11onMouseDownEPNS_11FMouseEventE@Base 0.7.2
@@ -1254,23 +1487,31 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut7FDialog14activateDialogEv@Base 0.7.2
  _ZN8finalcut7FDialog14drawZoomButtonEv@Base 0.7.2
  _ZN8finalcut7FDialog14initDialogMenuEv@Base 0.7.2
+ _ZN8finalcut7FDialog14minimizeWindowEv@Base 0.7.2
  _ZN8finalcut7FDialog14onWindowActiveEPNS_6FEventE@Base 0.7.2
  _ZN8finalcut7FDialog14onWindowRaisedEPNS_6FEventE@Base 0.7.2
+ _ZN8finalcut7FDialog14setMinimizableEb@Base 0.7.2
+ _ZN8finalcut7FDialog15mapKeyFunctionsEv@Base 0.7.2
  _ZN8finalcut7FDialog15onWindowLoweredEPNS_6FEventE@Base 0.7.2
  _ZN8finalcut7FDialog15pressZoomButtonERKNS0_11MouseStatesE@Base 0.7.2
  _ZN8finalcut7FDialog15resizeMouseDownERKNS0_11MouseStatesE@Base 0.7.2
  _ZN8finalcut7FDialog15setDialogWidgetEb@Base 0.7.2
+ _ZN8finalcut7FDialog15setMinimizeItemEv@Base 0.7.2
  _ZN8finalcut7FDialog16drawDialogShadowEv@Base 0.7.2
  _ZN8finalcut7FDialog16initZoomMenuItemEPNS_5FMenuE@Base 0.7.2
  _ZN8finalcut7FDialog16onWindowInactiveEPNS_6FEventE@Base 0.7.2
  _ZN8finalcut7FDialog17cancelMouseResizeEv@Base 0.7.2
  _ZN8finalcut7FDialog17initCloseMenuItemEPNS_5FMenuE@Base 0.7.2
  _ZN8finalcut7FDialog17resizeMouseUpMoveERKNS0_11MouseStatesEb@Base 0.7.2
+ _ZN8finalcut7FDialog18drawMinimizeButtonEv@Base 0.7.2
  _ZN8finalcut7FDialog18onMouseDoubleClickEPNS_11FMouseEventE@Base 0.7.2
+ _ZN8finalcut7FDialog19pressMinimizeButtonERKNS0_11MouseStatesE@Base 0.7.2
  _ZN8finalcut7FDialog19selectFirstMenuItemEv@Base 0.7.2
+ _ZN8finalcut7FDialog20initMinimizeMenuItemEPNS_5FMenuE@Base 0.7.2
  _ZN8finalcut7FDialog20initMoveSizeMenuItemEPNS_5FMenuE@Base 0.7.2
  _ZN8finalcut7FDialog22restoreOverlaidWindowsEv@Base 0.7.2
  _ZN8finalcut7FDialog22setCursorToFocusWidgetEv@Base 0.7.2
+ _ZN8finalcut7FDialog4doneENS0_10ResultCodeE@Base 0.7.2
  _ZN8finalcut7FDialog4doneEi@Base 0.7.2
  _ZN8finalcut7FDialog4drawEv@Base 0.7.2
  _ZN8finalcut7FDialog4execEv@Base 0.7.2
@@ -1300,6 +1541,13 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut7FDialogD0Ev@Base 0.7.2
  _ZN8finalcut7FDialogD1Ev@Base 0.7.2
  _ZN8finalcut7FDialogD2Ev@Base 0.7.2
+ _ZN8finalcut7FKeyMap10fkey_tableE@Base 0.7.2
+ _ZN8finalcut7FKeyMap10getKeyNameEv@Base 0.7.2
+ _ZN8finalcut7FKeyMap11getInstanceEv@Base 0.7.2
+ _ZN8finalcut7FKeyMap12getKeyCapMapEv@Base 0.7.2
+ _ZN8finalcut7FKeyMap14fkey_cap_tableE@Base 0.7.2
+ _ZN8finalcut7FKeyMap8fkeynameE@Base 0.7.2
+ _ZN8finalcut7FKeyMap9getKeyMapEv@Base 0.7.2
  _ZN8finalcut7FLogger12printLogLineERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE@Base 0.7.2
  _ZN8finalcut7FLogger13setLineEndingENS_4FLog10LineEndingE@Base 0.7.2
  _ZN8finalcut7FLogger15enableTimestampEv@Base 0.7.2
@@ -1320,6 +1568,8 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut7FObject11onUserEventEPNS_10FUserEventE@Base 0.7.2
  _ZN8finalcut7FObject12removeParentEv@Base 0.7.2
  _ZN8finalcut7FObject14getCurrentTimeEP7timeval@Base 0.7.2
+ _ZN8finalcut7FObject14getCurrentTimeEv@Base 0.7.2
+ _ZN8finalcut7FObject15globalTimerListEv@Base 0.7.2
  _ZN8finalcut7FObject17processTimerEventEv@Base 0.7.2
  _ZN8finalcut7FObject17timer_modify_lockE@Base 0.7.2
  _ZN8finalcut7FObject18performTimerActionEPS0_PNS_6FEventE@Base 0.7.2
@@ -1329,12 +1579,17 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut7FObject8addTimerEi@Base 0.7.2
  _ZN8finalcut7FObject8delChildEPS0_@Base 0.7.2
  _ZN8finalcut7FObject9isTimeoutEPK7timevalm@Base 0.7.2
+ _ZN8finalcut7FObject9isTimeoutERKNSt6chrono10time_pointINS1_3_V212system_clockENS1_8durationIlSt5ratioILl1ELl1000000000EEEEEEm@Base 0.7.2
  _ZN8finalcut7FObject9setParentEPS0_@Base 0.7.2
  _ZN8finalcut7FObjectC1EPS0_@Base 0.7.2
  _ZN8finalcut7FObjectC2EPS0_@Base 0.7.2
  _ZN8finalcut7FObjectD0Ev@Base 0.7.2
  _ZN8finalcut7FObjectD1Ev@Base 0.7.2
  _ZN8finalcut7FObjectD2Ev@Base 0.7.2
+ _ZN8finalcut7FOutput11getInstanceEv@Base 0.7.2
+ _ZN8finalcut7FOutputD0Ev@Base 0.7.2
+ _ZN8finalcut7FOutputD1Ev@Base 0.7.2
+ _ZN8finalcut7FOutputD2Ev@Base 0.7.2
  _ZN8finalcut7FString15const_null_charE@Base 0.7.2
  _ZN8finalcut7FString17setFormatedNumberElc@Base 0.7.2
  _ZN8finalcut7FString17setFormatedNumberEmc@Base 0.7.2
@@ -1362,24 +1617,28 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut7FStringC1EOS0_@Base 0.7.2
  _ZN8finalcut7FStringC1EPKc@Base 0.7.2
  _ZN8finalcut7FStringC1EPKw@Base 0.7.2
+ _ZN8finalcut7FStringC1ERKNS_7UniCharE@Base 0.7.2
  _ZN8finalcut7FStringC1ERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE@Base 0.7.2
  _ZN8finalcut7FStringC1ERKNSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEEE@Base 0.7.2
  _ZN8finalcut7FStringC1ERKS0_@Base 0.7.2
  _ZN8finalcut7FStringC1Ec@Base 0.7.2
  _ZN8finalcut7FStringC1Ei@Base 0.7.2
  _ZN8finalcut7FStringC1Em@Base 0.7.2
+ _ZN8finalcut7FStringC1EmRKNS_7UniCharE@Base 0.7.2
  _ZN8finalcut7FStringC1Emw@Base 0.7.2
  _ZN8finalcut7FStringC1Ew@Base 0.7.2
  _ZN8finalcut7FStringC2ENS_2fc16SpecialCharacterE@Base 0.7.2
  _ZN8finalcut7FStringC2EOS0_@Base 0.7.2
  _ZN8finalcut7FStringC2EPKc@Base 0.7.2
  _ZN8finalcut7FStringC2EPKw@Base 0.7.2
+ _ZN8finalcut7FStringC2ERKNS_7UniCharE@Base 0.7.2
  _ZN8finalcut7FStringC2ERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE@Base 0.7.2
  _ZN8finalcut7FStringC2ERKNSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEEE@Base 0.7.2
  _ZN8finalcut7FStringC2ERKS0_@Base 0.7.2
  _ZN8finalcut7FStringC2Ec@Base 0.7.2
  _ZN8finalcut7FStringC2Ei@Base 0.7.2
  _ZN8finalcut7FStringC2Em@Base 0.7.2
+ _ZN8finalcut7FStringC2EmRKNS_7UniCharE@Base 0.7.2
  _ZN8finalcut7FStringC2Emw@Base 0.7.2
  _ZN8finalcut7FStringC2Ew@Base 0.7.2
  _ZN8finalcut7FStringD0Ev@Base 0.7.2
@@ -1388,6 +1647,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut7FStringaSEOS0_@Base 0.7.2
  _ZN8finalcut7FStringaSERKS0_@Base 0.7.2
  _ZN8finalcut7FStringlsENS_2fc16SpecialCharacterE@Base 0.7.2
+ _ZN8finalcut7FStringlsERKNS_7UniCharE@Base 0.7.2
  _ZN8finalcut7FStringlsERKS0_@Base 0.7.2
  _ZN8finalcut7FStringlsEc@Base 0.7.2
  _ZN8finalcut7FStringlsEw@Base 0.7.2
@@ -1395,6 +1655,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut7FSwitch10onKeyPressEPNS_9FKeyEventE@Base 0.7.2
  _ZN8finalcut7FSwitch11drawCheckedEv@Base 0.7.2
  _ZN8finalcut7FSwitch11onMouseDownEPNS_11FMouseEventE@Base 0.7.2
+ _ZN8finalcut7FSwitch13drawUncheckedEv@Base 0.7.2
  _ZN8finalcut7FSwitch15drawCheckButtonEv@Base 0.7.2
  _ZN8finalcut7FSwitch4drawEv@Base 0.7.2
  _ZN8finalcut7FSwitch7setTextERKNS_7FStringE@Base 0.7.2
@@ -1406,6 +1667,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut7FSwitchD0Ev@Base 0.7.2
  _ZN8finalcut7FSwitchD1Ev@Base 0.7.2
  _ZN8finalcut7FSwitchD2Ev@Base 0.7.2
+ _ZN8finalcut7FSystem11getInstanceEv@Base 0.7.2
  _ZN8finalcut7FSystemC1Ev@Base 0.7.2
  _ZN8finalcut7FSystemC2Ev@Base 0.7.2
  _ZN8finalcut7FSystemD0Ev@Base 0.7.2
@@ -1413,12 +1675,14 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut7FSystemD2Ev@Base 0.7.2
  _ZN8finalcut7FWidget10adjustSizeEv@Base 0.7.2
  _ZN8finalcut7FWidget10drawBorderEv@Base 0.7.2
+ _ZN8finalcut7FWidget10initLayoutEv@Base 0.7.2
  _ZN8finalcut7FWidget10onFocusOutEPNS_11FFocusEventE@Base 0.7.2
  _ZN8finalcut7FWidget10onKeyPressEPNS_9FKeyEventE@Base 0.7.2
  _ZN8finalcut7FWidget10setDisableEv@Base 0.7.2
  _ZN8finalcut7FWidget10setMenuBarEPNS_8FMenuBarE@Base 0.7.2
  _ZN8finalcut7FWidget10setVisibleEb@Base 0.7.2
  _ZN8finalcut7FWidget10unsetFocusEv@Base 0.7.2
+ _ZN8finalcut7FWidget11changeFocusEPS0_S1_NS_10FocusTypesE@Base 0.7.2
  _ZN8finalcut7FWidget11changeFocusEPS0_S1_NS_2fc10FocusTypesE@Base 0.7.2
  _ZN8finalcut7FWidget11dialog_listE@Base 0.7.2
  _ZN8finalcut7FWidget11getPrintPosEv@Base 0.7.2
@@ -1446,12 +1710,16 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut7FWidget13childWidgetAtERKNS_6FPointE@Base 0.7.2
  _ZN8finalcut7FWidget13dbl_line_maskD1Ev@Base 0.7.2
  _ZN8finalcut7FWidget13dbl_line_maskD2Ev@Base 0.7.2
+ _ZN8finalcut7FWidget13getColorThemeEv@Base 0.7.2
  _ZN8finalcut7FWidget13getRootWidgetEv@Base 0.7.2
  _ZN8finalcut7FWidget13init_terminalE@Base 0.7.2
  _ZN8finalcut7FWidget13setMainWidgetEPS0_@Base 0.7.2
  _ZN8finalcut7FWidget13setShadowSizeERKNS_5FSizeE@Base 0.7.2
  _ZN8finalcut7FWidget13setTermOffsetEv@Base 0.7.2
  _ZN8finalcut7FWidget13setTopPaddingEib@Base 0.7.2
+ _ZN8finalcut7FWidget14DoubleLineMaskD1Ev@Base 0.7.2
+ _ZN8finalcut7FWidget14DoubleLineMaskD2Ev@Base 0.7.2
+ _ZN8finalcut7FWidget14addAcceleratorENS_4FKeyEPS0_@Base 0.7.2
  _ZN8finalcut7FWidget14addAcceleratorEjPS0_@Base 0.7.2
  _ZN8finalcut7FWidget14clicked_widgetE@Base 0.7.2
  _ZN8finalcut7FWidget14delAcceleratorEPS0_@Base 0.7.2
@@ -1460,6 +1728,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut7FWidget14focusPrevChildEv@Base 0.7.2
  _ZN8finalcut7FWidget14initColorThemeEv@Base 0.7.2
  _ZN8finalcut7FWidget14initRootWidgetEv@Base 0.7.2
+ _ZN8finalcut7FWidget14isDefaultThemeEv@Base 0.7.2
  _ZN8finalcut7FWidget14onChildFocusInEPNS_11FFocusEventE@Base 0.7.2
  _ZN8finalcut7FWidget14setLeftPaddingEib@Base 0.7.2
  _ZN8finalcut7FWidget14setWindowFocusEb@Base 0.7.2
@@ -1468,6 +1737,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut7FWidget15setParentOffsetEv@Base 0.7.2
  _ZN8finalcut7FWidget15setRightPaddingEib@Base 0.7.2
  _ZN8finalcut7FWidget16adjustSizeGlobalEv@Base 0.7.2
+ _ZN8finalcut7FWidget16initWidgetLayoutEv@Base 0.7.2
  _ZN8finalcut7FWidget16move_size_widgetE@Base 0.7.2
  _ZN8finalcut7FWidget16setBottomPaddingEib@Base 0.7.2
  _ZN8finalcut7FWidget16setVisibleCursorEb@Base 0.7.2
@@ -1476,11 +1746,16 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut7FWidget17destroyColorThemeEv@Base 0.7.2
  _ZN8finalcut7FWidget17setDoubleFlatLineENS_2fc5sidesEb@Base 0.7.2
  _ZN8finalcut7FWidget17setDoubleFlatLineENS_2fc5sidesEib@Base 0.7.2
+ _ZN8finalcut7FWidget17setDoubleFlatLineENS_4SideEb@Base 0.7.2
+ _ZN8finalcut7FWidget17setDoubleFlatLineENS_4SideEib@Base 0.7.2
  _ZN8finalcut7FWidget18always_on_top_listE@Base 0.7.2
  _ZN8finalcut7FWidget18doubleFlatLine_refENS_2fc5sidesE@Base 0.7.2
+ _ZN8finalcut7FWidget18doubleFlatLine_refENS_4SideE@Base 0.7.2
  _ZN8finalcut7FWidget18onMouseDoubleClickEPNS_11FMouseEventE@Base 0.7.2
  _ZN8finalcut7FWidget18redraw_root_widgetE@Base 0.7.2
+ _ZN8finalcut7FWidget18setBackgroundColorENS_6FColorE@Base 0.7.2
  _ZN8finalcut7FWidget18setBackgroundColorEt@Base 0.7.2
+ _ZN8finalcut7FWidget18setForegroundColorENS_6FColorE@Base 0.7.2
  _ZN8finalcut7FWidget18setForegroundColorEt@Base 0.7.2
  _ZN8finalcut7FWidget18unsetVisibleCursorEv@Base 0.7.2
  _ZN8finalcut7FWidget19setStatusbarMessageERKNS_7FStringE@Base 0.7.2
@@ -1489,6 +1764,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut7FWidget20useParentWidgetColorEv@Base 0.7.2
  _ZN8finalcut7FWidget22getLastFocusableWidgetENSt7__cxx114listIPNS_7FObjectESaIS4_EEE@Base 0.7.2
  _ZN8finalcut7FWidget22numOfFocusableChildrenEv@Base 0.7.2
+ _ZN8finalcut7FWidget23addPreprocessingHandlerEPKNS_6FVTermEOSt8functionIFvvEE@Base 0.7.2
  _ZN8finalcut7FWidget23addPreprocessingHandlerEPKNS_6FVTermERKSt8functionIFvvEE@Base 0.7.2
  _ZN8finalcut7FWidget23delPreprocessingHandlerEPKNS_6FVTermE@Base 0.7.2
  _ZN8finalcut7FWidget23getFirstFocusableWidgetENSt7__cxx114listIPNS_7FObjectESaIS4_EEE@Base 0.7.2
@@ -1545,9 +1821,11 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut7FWindow13setShadowSizeERKNS_5FSizeE@Base 0.7.2
  _ZN8finalcut7FWindow14activateWindowEb@Base 0.7.2
  _ZN8finalcut7FWindow14getWindowLayerEPNS_7FWidgetE@Base 0.7.2
+ _ZN8finalcut7FWindow14minimizeWindowEv@Base 0.7.2
  _ZN8finalcut7FWindow14onWindowActiveEPNS_6FEventE@Base 0.7.2
  _ZN8finalcut7FWindow14onWindowRaisedEPNS_6FEventE@Base 0.7.2
  _ZN8finalcut7FWindow14setAlwaysOnTopEb@Base 0.7.2
+ _ZN8finalcut7FWindow14setMinimizableEb@Base 0.7.2
  _ZN8finalcut7FWindow15getWindowWidgetEPNS_7FWidgetE@Base 0.7.2
  _ZN8finalcut7FWindow15onWindowLoweredEPNS_6FEventE@Base 0.7.2
  _ZN8finalcut7FWindow15previous_windowE@Base 0.7.2
@@ -1556,8 +1834,10 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut7FWindow16onWindowInactiveEPNS_6FEventE@Base 0.7.2
  _ZN8finalcut7FWindow17getWindowWidgetAtEii@Base 0.7.2
  _ZN8finalcut7FWindow18activatePrevWindowEv@Base 0.7.2
+ _ZN8finalcut7FWindow18getWindowLayerImplEPNS_7FWidgetE@Base 0.7.2
  _ZN8finalcut7FWindow18processAlwaysOnTopEv@Base 0.7.2
  _ZN8finalcut7FWindow18switchToPrevWindowEPKNS_7FWidgetE@Base 0.7.2
+ _ZN8finalcut7FWindow19getWindowWidgetImplEPNS_7FWidgetE@Base 0.7.2
  _ZN8finalcut7FWindow20setTransparentShadowEb@Base 0.7.2
  _ZN8finalcut7FWindow20setWindowFocusWidgetEPNS_7FWidgetE@Base 0.7.2
  _ZN8finalcut7FWindow25deleteFromAlwaysOnTopListEPKNS_7FWidgetE@Base 0.7.2
@@ -1579,6 +1859,16 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut7FWindowD0Ev@Base 0.7.2
  _ZN8finalcut7FWindowD1Ev@Base 0.7.2
  _ZN8finalcut7FWindowD2Ev@Base 0.7.2
+ _ZN8finalcut8FCharMap11getInstanceEv@Base 0.7.2
+ _ZN8finalcut8FCharMap12getCharacterERNS0_13CharEncodeMapERKNS_8EncodingE@Base 0.7.2
+ _ZN8finalcut8FCharMap14getCP437UCSMapEv@Base 0.7.2
+ _ZN8finalcut8FCharMap16getCharEncodeMapEv@Base 0.7.2
+ _ZN8finalcut8FCharMap19getHalfFullWidthMapEv@Base 0.7.2
+ _ZN8finalcut8FCharMap19halfwidth_fullwidthE@Base 0.7.2
+ _ZN8finalcut8FCharMap20dec_special_graphicsE@Base 0.7.2
+ _ZN8finalcut8FCharMap21getDECSpecialGraphicsEv@Base 0.7.2
+ _ZN8finalcut8FCharMap9characterE@Base 0.7.2
+ _ZN8finalcut8FCharMap9cp437_ucsE@Base 0.7.2
  _ZN8finalcut8FListBox10adjustSizeEv@Base 0.7.2
  _ZN8finalcut8FListBox10drawBorderEv@Base 0.7.2
  _ZN8finalcut8FListBox10onFocusOutEPNS_11FFocusEventE@Base 0.7.2
@@ -1596,6 +1886,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut8FListBox11setGeometryERKNS_6FPointERKNS_5FSizeEb@Base 0.7.2
  _ZN8finalcut8FListBox12dragScrollUpEv@Base 0.7.2
  _ZN8finalcut8FListBox12drawHeadlineEv@Base 0.7.2
+ _ZN8finalcut8FListBox12drawListLineEiN9__gnu_cxx17__normal_iteratorIPNS_12FListBoxItemESt6vectorIS3_SaIS3_EEEEb@Base 0.7.2
  _ZN8finalcut8FListBox12nextListItemEi@Base 0.7.2
  _ZN8finalcut8FListBox12prevListItemEi@Base 0.7.2
  _ZN8finalcut8FListBox13adjustYOffsetEm@Base 0.7.2
@@ -1607,11 +1898,15 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut8FListBox14setCurrentItemEm@Base 0.7.2
  _ZN8finalcut8FListBox14stopDragScrollEv@Base 0.7.2
  _ZN8finalcut8FListBox15acceptSelectionEv@Base 0.7.2
+ _ZN8finalcut8FListBox15mapKeyFunctionsEv@Base 0.7.2
  _ZN8finalcut8FListBox16processKeyActionEPNS_9FKeyEventE@Base 0.7.2
+ _ZN8finalcut8FListBox17keyIncSearchInputENS_4FKeyE@Base 0.7.2
  _ZN8finalcut8FListBox18multiSelectionUpToEm@Base 0.7.2
  _ZN8finalcut8FListBox18onMouseDoubleClickEPNS_11FMouseEventE@Base 0.7.2
+ _ZN8finalcut8FListBox18showInsideBracketsEmNS_11BracketTypeE@Base 0.7.2
  _ZN8finalcut8FListBox18showInsideBracketsEmNS_2fc13brackets_typeE@Base 0.7.2
  _ZN8finalcut8FListBox18spacebarProcessingEv@Base 0.7.2
+ _ZN8finalcut8FListBox20drawListBracketsLineEiN9__gnu_cxx17__normal_iteratorIPNS_12FListBoxItemESt6vectorIS3_SaIS3_EEEEb@Base 0.7.2
  _ZN8finalcut8FListBox21skipIncrementalSearchEv@Base 0.7.2
  _ZN8finalcut8FListBox23deletePreviousCharacterEv@Base 0.7.2
  _ZN8finalcut8FListBox24recalculateHorizontalBarEmb@Base 0.7.2
@@ -1620,8 +1915,10 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut8FListBox4hideEv@Base 0.7.2
  _ZN8finalcut8FListBox4initEv@Base 0.7.2
  _ZN8finalcut8FListBox5clearEv@Base 0.7.2
+ _ZN8finalcut8FListBox6dragUpENS_11MouseButtonE@Base 0.7.2
  _ZN8finalcut8FListBox6dragUpEi@Base 0.7.2
  _ZN8finalcut8FListBox6insertERKNS_12FListBoxItemE@Base 0.7.2
+ _ZN8finalcut8FListBox6insertINS_7FStringEDnEEvRKT_NS_11BracketTypeEbOT0_@Base 0.7.2
  _ZN8finalcut8FListBox6insertINS_7FStringEDnEEvRKT_NS_2fc13brackets_typeEbOT0_@Base 0.7.2
  _ZN8finalcut8FListBox6removeEm@Base 0.7.2
  _ZN8finalcut8FListBox7lastPosEv@Base 0.7.2
@@ -1630,6 +1927,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut8FListBox7setSizeERKNS_5FSizeEb@Base 0.7.2
  _ZN8finalcut8FListBox7setTextERKNS_7FStringE@Base 0.7.2
  _ZN8finalcut8FListBox7wheelUpEi@Base 0.7.2
+ _ZN8finalcut8FListBox8dragDownENS_11MouseButtonE@Base 0.7.2
  _ZN8finalcut8FListBox8dragDownEi@Base 0.7.2
  _ZN8finalcut8FListBox8drawListEv@Base 0.7.2
  _ZN8finalcut8FListBox8firstPosEv@Base 0.7.2
@@ -1660,11 +1958,14 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut8FMenuBar16unselectMenuItemEPNS_9FMenuItemE@Base 0.7.2
  _ZN8finalcut8FMenuBar17mouseDownOverListEPKNS_11FMouseEventE@Base 0.7.2
  _ZN8finalcut8FMenuBar17mouseMoveOverListEOKNS_11FMouseEventE@Base 0.7.2
+ _ZN8finalcut8FMenuBar17mouseMoveOverListERKNS_11FMouseEventE@Base 0.7.2
+ _ZN8finalcut8FMenuBar25selectItem_PostProcessingEPNS_9FMenuItemE@Base 0.7.2
  _ZN8finalcut8FMenuBar4drawEv@Base 0.7.2
  _ZN8finalcut8FMenuBar4hideEv@Base 0.7.2
  _ZN8finalcut8FMenuBar4initEv@Base 0.7.2
  _ZN8finalcut8FMenuBar7onAccelEPNS_11FAccelEventE@Base 0.7.2
  _ZN8finalcut8FMenuBar8drawItemEPNS_9FMenuItemERm@Base 0.7.2
+ _ZN8finalcut8FMenuBar8openMenuEPKNS_9FMenuItemE@Base 0.7.2
  _ZN8finalcut8FMenuBar9clickItemEPNS_9FMenuItemE@Base 0.7.2
  _ZN8finalcut8FMenuBar9drawItemsEv@Base 0.7.2
  _ZN8finalcut8FMenuBar9onMouseUpEPNS_11FMouseEventE@Base 0.7.2
@@ -1708,29 +2009,41 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut8FSpinBoxD2Ev@Base 0.7.2
  _ZN8finalcut8FTermcap10fterm_dataE@Base 0.7.2
  _ZN8finalcut8FTermcap10string_bufE@Base 0.7.2
+ _ZN8finalcut8FTermcap11initializedE@Base 0.7.2
  _ZN8finalcut8FTermcap11osc_supportE@Base 0.7.2
  _ZN8finalcut8FTermcap11termcapKeysEv@Base 0.7.2
+ _ZN8finalcut8FTermcap12encodeParamsERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERKSt5arrayIiLm9EE@Base 0.7.2
+ _ZN8finalcut8FTermcap12paddingPrintERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEiRKSt8functionIFiiEE@Base 0.7.2
  _ZN8finalcut8FTermcap12termcapErrorEi@Base 0.7.2
  _ZN8finalcut8FTermcap13eat_nl_glitchE@Base 0.7.2
  _ZN8finalcut8FTermcap14term_detectionE@Base 0.7.2
  _ZN8finalcut8FTermcap14termcapBoleansEv@Base 0.7.2
  _ZN8finalcut8FTermcap14termcapStringsEv@Base 0.7.2
+ _ZN8finalcut8FTermcap15no_padding_charE@Base 0.7.2
  _ZN8finalcut8FTermcap15termcapNumericsEv@Base 0.7.2
+ _ZN8finalcut8FTermcap16padding_baudrateE@Base 0.7.2
  _ZN8finalcut8FTermcap16termcapVariablesEv@Base 0.7.2
  _ZN8finalcut8FTermcap17no_utf8_acs_charsE@Base 0.7.2
  _ZN8finalcut8FTermcap18ansi_default_colorE@Base 0.7.2
  _ZN8finalcut8FTermcap18attr_without_colorE@Base 0.7.2
  _ZN8finalcut8FTermcap21automatic_left_marginE@Base 0.7.2
+ _ZN8finalcut8FTermcap21encodeMotionParameterERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEii@Base 0.7.2
+ _ZN8finalcut8FTermcap21xon_xoff_flow_controlE@Base 0.7.2
  _ZN8finalcut8FTermcap22automatic_right_marginE@Base 0.7.2
  _ZN8finalcut8FTermcap22background_color_eraseE@Base 0.7.2
  _ZN8finalcut8FTermcap24can_change_color_paletteE@Base 0.7.2
  _ZN8finalcut8FTermcap25has_ansi_escape_sequencesE@Base 0.7.2
+ _ZN8finalcut8FTermcap2PCE@Base 0.7.2
  _ZN8finalcut8FTermcap4initEv@Base 0.7.2
  _ZN8finalcut8FTermcap6_tputsEPKciPFiiE@Base 0.7.2
  _ZN8finalcut8FTermcap7fsystemE@Base 0.7.2
+ _ZN8finalcut8FTermcap7getFlagERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE@Base 0.7.2
  _ZN8finalcut8FTermcap7stringsE@Base 0.7.2
  _ZN8finalcut8FTermcap7tabstopE@Base 0.7.2
  _ZN8finalcut8FTermcap7termcapEv@Base 0.7.2
+ _ZN8finalcut8FTermcap8baudrateE@Base 0.7.2
+ _ZN8finalcut8FTermcap9getNumberERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE@Base 0.7.2
+ _ZN8finalcut8FTermcap9getStringERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE@Base 0.7.2
  _ZN8finalcut8FTermcap9max_colorE@Base 0.7.2
  _ZN8finalcut8FTermios10setRawModeEb@Base 0.7.2
  _ZN8finalcut8FTermios11getBaudRateEv@Base 0.7.2
@@ -1753,6 +2066,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut8FTermiosD1Ev@Base 0.7.2
  _ZN8finalcut8FTermiosD2Ev@Base 0.7.2
  _ZN8finalcut8FToolTip10adjustSizeEv@Base 0.7.2
+ _ZN8finalcut8FToolTip10initLayoutEv@Base 0.7.2
  _ZN8finalcut8FToolTip11onMouseDownEPNS_11FMouseEventE@Base 0.7.2
  _ZN8finalcut8FToolTip11resetColorsEv@Base 0.7.2
  _ZN8finalcut8FToolTip19calculateDimensionsEv@Base 0.7.2
@@ -1769,8 +2083,10 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut8FToolTipD1Ev@Base 0.7.2
  _ZN8finalcut8FToolTipD2Ev@Base 0.7.2
  _ZN8finalcut8env2uintEPKc@Base 0.7.2
+ _ZN8finalcut8env2uintERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE@Base 0.7.2
  _ZN8finalcut8internal3var10app_objectE@Base 0.7.2
  _ZN8finalcut8internal3var11root_widgetE@Base 0.7.2
+ _ZN8finalcut8internal3var11timer_mutexE@Base 0.7.2
  _ZN8finalcut8internal3var14object_counterE@Base 0.7.2
  _ZN8finalcut8internal3var16init_term_objectE@Base 0.7.2
  _ZN8finalcut8internal3var16term_initializedE@Base 0.7.2
@@ -1833,9 +2149,12 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut9FKeyEvent6acceptEv@Base 0.7.2
  _ZN8finalcut9FKeyEvent6ignoreEv@Base 0.7.2
  _ZN8finalcut9FKeyEventC1ENS_2fc6eventsEj@Base 0.7.2
+ _ZN8finalcut9FKeyEventC1ENS_5EventENS_4FKeyE@Base 0.7.2
  _ZN8finalcut9FKeyEventC2ENS_2fc6eventsEj@Base 0.7.2
+ _ZN8finalcut9FKeyEventC2ENS_5EventENS_4FKeyE@Base 0.7.2
  _ZN8finalcut9FKeyEventD1Ev@Base 0.7.2
  _ZN8finalcut9FKeyEventD2Ev@Base 0.7.2
+ _ZN8finalcut9FKeyboard11getInstanceEv@Base 0.7.2
  _ZN8finalcut9FKeyboard11key_timeoutE@Base 0.7.2
  _ZN8finalcut9FKeyboard12fetchKeyCodeEv@Base 0.7.2
  _ZN8finalcut9FKeyboard12isKeyPressedEm@Base 0.7.2
@@ -1878,6 +2197,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut9FLineEdit16adjustTextOffsetEv@Base 0.7.2
  _ZN8finalcut9FLineEdit17setCursorPositionEm@Base 0.7.2
  _ZN8finalcut9FLineEdit19clickPosToCursorPosEm@Base 0.7.2
+ _ZN8finalcut9FLineEdit19setLabelOrientationENS0_16LabelOrientationE@Base 0.7.2
  _ZN8finalcut9FLineEdit19setLabelOrientationENS0_7label_oE@Base 0.7.2
  _ZN8finalcut9FLineEdit4drawEv@Base 0.7.2
  _ZN8finalcut9FLineEdit4hideEv@Base 0.7.2
@@ -1889,6 +2209,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut9FLineEdit7onWheelEPNS_11FWheelEventE@Base 0.7.2
  _ZN8finalcut9FLineEdit7setSizeERKNS_5FSizeEb@Base 0.7.2
  _ZN8finalcut9FLineEdit7setTextERKNS_7FStringE@Base 0.7.2
+ _ZN8finalcut9FLineEdit8keyInputENS_4FKeyE@Base 0.7.2
  _ZN8finalcut9FLineEdit8keyInputEj@Base 0.7.2
  _ZN8finalcut9FLineEdit8setFocusEb@Base 0.7.2
  _ZN8finalcut9FLineEdit8setFocusEv@Base 0.7.2
@@ -1906,7 +2227,9 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut9FLineEditD2Ev@Base 0.7.2
  _ZN8finalcut9FLineEditaSERKNS_7FStringE@Base 0.7.2
  _ZN8finalcut9FLineEditlsENS_2fc16SpecialCharacterE@Base 0.7.2
+ _ZN8finalcut9FLineEditlsENS_7UniCharE@Base 0.7.2
  _ZN8finalcut9FLineEditlsEw@Base 0.7.2
+ _ZN8finalcut9FLineEditlsIlEERS0_RKT_@Base 0.7.2
  _ZN8finalcut9FListView10adjustSizeEv@Base 0.7.2
  _ZN8finalcut9FListView10appendItemEPNS_13FListViewItemE@Base 0.7.2
  _ZN8finalcut9FListView10drawBorderEv@Base 0.7.2
@@ -1927,6 +2250,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut9FListView13drawHeadlinesEv@Base 0.7.2
  _ZN8finalcut9FListView13expandSubtreeEv@Base 0.7.2
  _ZN8finalcut9FListView13setColumnSortEiNS_2fc13sorting_orderE@Base 0.7.2
+ _ZN8finalcut9FListView13setColumnSortEiNS_9SortOrderE@Base 0.7.2
  _ZN8finalcut9FListView13setColumnTextEiRKNS_7FStringE@Base 0.7.2
  _ZN8finalcut9FListView13updateDrawingEbb@Base 0.7.2
  _ZN8finalcut9FListView14adjustViewportEi@Base 0.7.2
@@ -1940,11 +2264,13 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut9FListView16processKeyActionEPNS_9FKeyEventE@Base 0.7.2
  _ZN8finalcut9FListView17drawHeadlineLabelERKN9__gnu_cxx17__normal_iteratorIPKNS0_6HeaderESt6vectorIS3_SaIS3_EEEE@Base 0.7.2
  _ZN8finalcut9FListView17setColumnSortTypeEiNS_2fc12sorting_typeE@Base 0.7.2
+ _ZN8finalcut9FListView17setColumnSortTypeEiNS_8SortTypeE@Base 0.7.2
  _ZN8finalcut9FListView18determineLineWidthEPNS_13FListViewItemE@Base 0.7.2
  _ZN8finalcut9FListView18drawColumnEllipsisERKN9__gnu_cxx17__normal_iteratorIPKNS0_6HeaderESt6vectorIS3_SaIS3_EEEERKNS_7FStringE@Base 0.7.2
  _ZN8finalcut9FListView18mouseHeaderClickedEv@Base 0.7.2
  _ZN8finalcut9FListView18onMouseDoubleClickEPNS_11FMouseEventE@Base 0.7.2
  _ZN8finalcut9FListView18setColumnAlignmentEiNS_2fc14text_alignmentE@Base 0.7.2
+ _ZN8finalcut9FListView18setColumnAlignmentEiNS_5AlignE@Base 0.7.2
  _ZN8finalcut9FListView19setRelativePositionEi@Base 0.7.2
  _ZN8finalcut9FListView20drawBufferedHeadlineEv@Base 0.7.2
  _ZN8finalcut9FListView20expandAndScrollRightEv@Base 0.7.2
@@ -1956,6 +2282,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut9FListView4sortEv@Base 0.7.2
  _ZN8finalcut9FListView4sortIPFbPKNS_7FObjectES4_EEEvT_@Base 0.7.2
  _ZN8finalcut9FListView5clearEv@Base 0.7.2
+ _ZN8finalcut9FListView6dragUpENS_11MouseButtonE@Base 0.7.2
  _ZN8finalcut9FListView6dragUpEi@Base 0.7.2
  _ZN8finalcut9FListView6insertEPNS_13FListViewItemESt14_List_iteratorIPNS_7FObjectEE@Base 0.7.2
  _ZN8finalcut9FListView6removeEPNS_13FListViewItemE@Base 0.7.2
@@ -1964,6 +2291,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut9FListView7onWheelEPNS_11FWheelEventE@Base 0.7.2
  _ZN8finalcut9FListView7setSizeERKNS_5FSizeEb@Base 0.7.2
  _ZN8finalcut9FListView7wheelUpEi@Base 0.7.2
+ _ZN8finalcut9FListView8dragDownENS_11MouseButtonE@Base 0.7.2
  _ZN8finalcut9FListView8dragDownEi@Base 0.7.2
  _ZN8finalcut9FListView8drawListEv@Base 0.7.2
  _ZN8finalcut9FListView8firstPosEv@Base 0.7.2
@@ -1981,6 +2309,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut9FListViewD0Ev@Base 0.7.2
  _ZN8finalcut9FListViewD1Ev@Base 0.7.2
  _ZN8finalcut9FListViewD2Ev@Base 0.7.2
+ _ZN8finalcut9FMenuItem10initLayoutEv@Base 0.7.2
  _ZN8finalcut9FMenuItem10onFocusOutEPNS_11FFocusEventE@Base 0.7.2
  _ZN8finalcut9FMenuItem10onKeyPressEPNS_9FKeyEventE@Base 0.7.2
  _ZN8finalcut9FMenuItem10unsetFocusEv@Base 0.7.2
@@ -1989,11 +2318,13 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut9FMenuItem11setSelectedEv@Base 0.7.2
  _ZN8finalcut9FMenuItem12getFMenuListERNS_7FWidgetE@Base 0.7.2
  _ZN8finalcut9FMenuItem13unsetSelectedEv@Base 0.7.2
+ _ZN8finalcut9FMenuItem14addAcceleratorENS_4FKeyEPNS_7FWidgetE@Base 0.7.2
  _ZN8finalcut9FMenuItem14addAcceleratorEjPNS_7FWidgetE@Base 0.7.2
  _ZN8finalcut9FMenuItem14delAcceleratorEPNS_7FWidgetE@Base 0.7.2
  _ZN8finalcut9FMenuItem14processClickedEv@Base 0.7.2
  _ZN8finalcut9FMenuItem16cb_destroyDialogEPNS_7FDialogE@Base 0.7.2
  _ZN8finalcut9FMenuItem18onMouseDoubleClickEPNS_11FMouseEventE@Base 0.7.2
+ _ZN8finalcut9FMenuItem23calculateTextDimensionsEv@Base 0.7.2
  _ZN8finalcut9FMenuItem25updateSuperMenuDimensionsEv@Base 0.7.2
  _ZN8finalcut9FMenuItem4initEv@Base 0.7.2
  _ZN8finalcut9FMenuItem7onAccelEPNS_11FAccelEventE@Base 0.7.2
@@ -2003,9 +2334,11 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut9FMenuItem9onFocusInEPNS_11FFocusEventE@Base 0.7.2
  _ZN8finalcut9FMenuItem9onMouseUpEPNS_11FMouseEventE@Base 0.7.2
  _ZN8finalcut9FMenuItem9setEnableEb@Base 0.7.2
+ _ZN8finalcut9FMenuItemC1ENS_4FKeyERKNS_7FStringEPNS_7FWidgetE@Base 0.7.2
  _ZN8finalcut9FMenuItemC1EPNS_7FWidgetE@Base 0.7.2
  _ZN8finalcut9FMenuItemC1ERKNS_7FStringEPNS_7FWidgetE@Base 0.7.2
  _ZN8finalcut9FMenuItemC1EjRKNS_7FStringEPNS_7FWidgetE@Base 0.7.2
+ _ZN8finalcut9FMenuItemC2ENS_4FKeyERKNS_7FStringEPNS_7FWidgetE@Base 0.7.2
  _ZN8finalcut9FMenuItemC2EPNS_7FWidgetE@Base 0.7.2
  _ZN8finalcut9FMenuItemC2ERKNS_7FStringEPNS_7FWidgetE@Base 0.7.2
  _ZN8finalcut9FMenuItemC2EjRKNS_7FStringEPNS_7FWidgetE@Base 0.7.2
@@ -2013,6 +2346,8 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut9FMenuItemD1Ev@Base 0.7.2
  _ZN8finalcut9FMenuItemD2Ev@Base 0.7.2
  _ZN8finalcut9FMenuList12unselectItemEv@Base 0.7.2
+ _ZN8finalcut9FMenuList14selectNextItemEv@Base 0.7.2
+ _ZN8finalcut9FMenuList14selectPrevItemEv@Base 0.7.2
  _ZN8finalcut9FMenuList15selectFirstItemEv@Base 0.7.2
  _ZN8finalcut9FMenuList5clearEv@Base 0.7.2
  _ZN8finalcut9FMenuList6insertEPNS_9FMenuItemE@Base 0.7.2
@@ -2024,6 +2359,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut9FMouseGPM10setRawDataERA512_c@Base 0.7.2
  _ZN8finalcut9FMouseGPM10setStdinNoEi@Base 0.7.2
  _ZN8finalcut9FMouseGPM12processEventEP7timeval@Base 0.7.2
+ _ZN8finalcut9FMouseGPM12processEventERKNSt6chrono10time_pointINS1_3_V212system_clockENS1_8durationIlSt5ratioILl1ELl1000000000EEEEEE@Base 0.7.2
  _ZN8finalcut9FMouseGPM14interpretKeyUpEv@Base 0.7.2
  _ZN8finalcut9FMouseGPM16getGpmKeyPressedEb@Base 0.7.2
  _ZN8finalcut9FMouseGPM16interpretKeyDownEv@Base 0.7.2
@@ -2037,30 +2373,41 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut9FMouseSGR10setRawDataERA512_c@Base 0.7.2
  _ZN8finalcut9FMouseSGR11setKeyStateEi@Base 0.7.2
  _ZN8finalcut9FMouseSGR12processEventEP7timeval@Base 0.7.2
+ _ZN8finalcut9FMouseSGR12processEventERKNSt6chrono10time_pointINS1_3_V212system_clockENS1_8durationIlSt5ratioILl1ELl1000000000EEEEEE@Base 0.7.2
  _ZN8finalcut9FMouseSGR12setMoveStateERKNS_6FPointEi@Base 0.7.2
  _ZN8finalcut9FMouseSGR21setPressedButtonStateEiPK7timeval@Base 0.7.2
+ _ZN8finalcut9FMouseSGR21setPressedButtonStateEiRKNSt6chrono10time_pointINS1_3_V212system_clockENS1_8durationIlSt5ratioILl1ELl1000000000EEEEEE@Base 0.7.2
  _ZN8finalcut9FMouseSGR22setReleasedButtonStateEi@Base 0.7.2
  _ZN8finalcut9FMouseSGR7hasDataEv@Base 0.7.2
+ _ZN8finalcut9FMouseSGRC1Ev@Base 0.7.2
+ _ZN8finalcut9FMouseSGRC2Ev@Base 0.7.2
  _ZN8finalcut9FMouseSGRD0Ev@Base 0.7.2
  _ZN8finalcut9FMouseSGRD1Ev@Base 0.7.2
  _ZN8finalcut9FMouseSGRD2Ev@Base 0.7.2
  _ZN8finalcut9FMouseX1110setRawDataERA512_c@Base 0.7.2
  _ZN8finalcut9FMouseX1111setKeyStateEi@Base 0.7.2
  _ZN8finalcut9FMouseX1112processEventEP7timeval@Base 0.7.2
+ _ZN8finalcut9FMouseX1112processEventERKNSt6chrono10time_pointINS1_3_V212system_clockENS1_8durationIlSt5ratioILl1ELl1000000000EEEEEE@Base 0.7.2
  _ZN8finalcut9FMouseX1112setMoveStateERKNS_6FPointEi@Base 0.7.2
  _ZN8finalcut9FMouseX1114setButtonStateEiPK7timeval@Base 0.7.2
+ _ZN8finalcut9FMouseX1114setButtonStateEiRKNSt6chrono10time_pointINS1_3_V212system_clockENS1_8durationIlSt5ratioILl1ELl1000000000EEEEEE@Base 0.7.2
  _ZN8finalcut9FMouseX117hasDataEv@Base 0.7.2
+ _ZN8finalcut9FMouseX11C1Ev@Base 0.7.2
+ _ZN8finalcut9FMouseX11C2Ev@Base 0.7.2
  _ZN8finalcut9FMouseX11D0Ev@Base 0.7.2
  _ZN8finalcut9FMouseX11D1Ev@Base 0.7.2
  _ZN8finalcut9FMouseX11D2Ev@Base 0.7.2
  _ZN8finalcut9FOptiAttr10initializeEv@Base 0.7.2
+ _ZN8finalcut9FOptiAttr11getInstanceEv@Base 0.7.2
  _ZN8finalcut9FOptiAttr12change_colorERNS_5FCharES2_@Base 0.7.2
  _ZN8finalcut9FOptiAttr12hasAttributeERKNS_5FCharE@Base 0.7.2
  _ZN8finalcut9FOptiAttr13set_orig_pairEPKc@Base 0.7.2
  _ZN8finalcut9FOptiAttr14hasNoAttributeERKNS_5FCharE@Base 0.7.2
+ _ZN8finalcut9FOptiAttr15changeAttributeB5cxx11ERNS_5FCharES2_@Base 0.7.2
  _ZN8finalcut9FOptiAttr15changeAttributeERNS_5FCharES2_@Base 0.7.2
  _ZN8finalcut9FOptiAttr15setAttributesOnERNS_5FCharE@Base 0.7.2
  _ZN8finalcut9FOptiAttr16setAttributesOffERNS_5FCharE@Base 0.7.2
+ _ZN8finalcut9FOptiAttr17setTermAttributesERNS_5FCharERKNS_14TCapAttributesE@Base 0.7.2
  _ZN8finalcut9FOptiAttr17setTermAttributesERNS_5FCharEbbbbbbbbb@Base 0.7.2
  _ZN8finalcut9FOptiAttr17set_exit_dim_modeEPKc@Base 0.7.2
  _ZN8finalcut9FOptiAttr18setTermEnvironmentERKNS0_7TermEnvE@Base 0.7.2
@@ -2071,6 +2418,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut9FOptiAttr19set_enter_bold_modeEPKc@Base 0.7.2
  _ZN8finalcut9FOptiAttr19set_exit_blink_modeEPKc@Base 0.7.2
  _ZN8finalcut9FOptiAttr19set_term_color_pairEPKc@Base 0.7.2
+ _ZN8finalcut9FOptiAttr20change_current_colorERKNS_5FCharENS_6FColorES4_@Base 0.7.2
  _ZN8finalcut9FOptiAttr20set_background_colorEPKc@Base 0.7.2
  _ZN8finalcut9FOptiAttr20set_enter_blink_modeEPKc@Base 0.7.2
  _ZN8finalcut9FOptiAttr20set_exit_secure_modeEPKc@Base 0.7.2
@@ -2100,13 +2448,16 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut9FOptiAttr28set_enter_dbl_underline_modeEPKc@Base 0.7.2
  _ZN8finalcut9FOptiAttr8hasColorERKNS_5FCharE@Base 0.7.2
  _ZN8finalcut9FOptiAttr8isNormalERKNS_5FCharE@Base 0.7.2
+ _ZN8finalcut9FOptiAttr8vga2ansiENS_6FColorE@Base 0.7.2
  _ZN8finalcut9FOptiAttr8vga2ansiEt@Base 0.7.2
  _ZN8finalcut9FOptiAttrC1Ev@Base 0.7.2
  _ZN8finalcut9FOptiAttrC2Ev@Base 0.7.2
  _ZN8finalcut9FOptiAttrD1Ev@Base 0.7.2
  _ZN8finalcut9FOptiAttrD2Ev@Base 0.7.2
+ _ZN8finalcut9FOptiMove10moveCursorB5cxx11Eiiii@Base 0.7.2
  _ZN8finalcut9FOptiMove10moveCursorEiiii@Base 0.7.2
  _ZN8finalcut9FOptiMove10setTabStopEi@Base 0.7.2
+ _ZN8finalcut9FOptiMove11getInstanceEv@Base 0.7.2
  _ZN8finalcut9FOptiMove11setBaudRateEi@Base 0.7.2
  _ZN8finalcut9FOptiMove11setTermSizeEmm@Base 0.7.2
  _ZN8finalcut9FOptiMove11set_clr_bolEPKc@Base 0.7.2
@@ -2138,8 +2489,10 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcut9FOptiMoveD2Ev@Base 0.7.2
  _ZN8finalcut9FTextView10adjustSizeEv@Base 0.7.2
  _ZN8finalcut9FTextView10drawBorderEv@Base 0.7.2
+ _ZN8finalcut9FTextView10initLayoutEv@Base 0.7.2
  _ZN8finalcut9FTextView10onFocusOutEPNS_11FFocusEventE@Base 0.7.2
  _ZN8finalcut9FTextView10onKeyPressEPNS_9FKeyEventE@Base 0.7.2
+ _ZN8finalcut9FTextView11deleteRangeEii@Base 0.7.2
  _ZN8finalcut9FTextView11onMouseDownEPNS_11FMouseEventE@Base 0.7.2
  _ZN8finalcut9FTextView11onMouseMoveEPNS_11FMouseEventE@Base 0.7.2
  _ZN8finalcut9FTextView11resetColorsEv@Base 0.7.2
@@ -2179,6 +2532,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZN8finalcutlsERSoRKNS_7FStringE@Base 0.7.2
  _ZN8finalcutlsERSt13basic_ostreamIwSt11char_traitsIwEERKNS_7FStringE@Base 0.7.2
  _ZN8finalcutlsERSt6vectorINS_5FCharESaIS1_EERKNS_11FTermBufferE@Base 0.7.2
+ _ZN8finalcutlsERSt6vectorINS_5FCharESaIS1_EERKNS_12FVTermBufferE@Base 0.7.2
  _ZN8finalcutmiERKNS_5FRectERKNS_5FSizeE@Base 0.7.2
  _ZN8finalcutneERKNS_5FRectES2_@Base 0.7.2
  _ZN8finalcutplERKNS_5FRectERKNS_5FSizeE@Base 0.7.2
@@ -2217,15 +2571,26 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNK8finalcut10FStatusKey6getKeyEv@Base 0.7.2
  _ZNK8finalcut10FStatusKey7getTextEv@Base 0.7.2
  _ZNK8finalcut10FTermLinux10getFontPosEw@Base 0.7.2
+ _ZNK8finalcut10FTermLinux11initCharMapEv@Base 0.7.2
+ _ZNK8finalcut10FTermLinux11isLinuxTermEv@Base 0.7.2
+ _ZNK8finalcut10FTermLinux13setUnicodeMapEP10unimapdesc@Base 0.7.2
  _ZNK8finalcut10FTermLinux14getCursorStyleEv@Base 0.7.2
  _ZNK8finalcut10FTermLinux16altKeyCorrectionERKj@Base 0.7.2
+ _ZNK8finalcut10FTermLinux17characterFallbackEwRKSt6vectorIwSaIwEE@Base 0.7.2
  _ZNK8finalcut10FTermLinux17ctrlKeyCorrectionERKj@Base 0.7.2
+ _ZNK8finalcut10FTermLinux17has9BitCharactersEv@Base 0.7.2
+ _ZNK8finalcut10FTermLinux18getFramebuffer_bppEv@Base 0.7.2
  _ZNK8finalcut10FTermLinux18shiftKeyCorrectionERKj@Base 0.7.2
+ _ZNK8finalcut10FTermLinux19setBlinkAsIntensityEb@Base 0.7.2
+ _ZNK8finalcut10FTermLinux19setLinuxCursorStyleENS_23LinuxConsoleCursorStyleE@Base 0.7.2
  _ZNK8finalcut10FTermLinux19setLinuxCursorStyleENS_2fc23linuxConsoleCursorStyleE@Base 0.7.2
  _ZNK8finalcut10FTermLinux20ctrlAltKeyCorrectionERKj@Base 0.7.2
  _ZNK8finalcut10FTermLinux21shiftAltKeyCorrectionERKj@Base 0.7.2
  _ZNK8finalcut10FTermLinux22shiftCtrlKeyCorrectionERKj@Base 0.7.2
+ _ZNK8finalcut10FTermLinux23readAttributeControllerEh@Base 0.7.2
+ _ZNK8finalcut10FTermLinux24writeAttributeControllerEhh@Base 0.7.2
  _ZNK8finalcut10FTermLinux25shiftCtrlAltKeyCorrectionERKj@Base 0.7.2
+ _ZNK8finalcut10FTermLinux6finishEv@Base 0.7.2
  _ZNK8finalcut10FTermLinux7setBeepEii@Base 0.7.2
  _ZNK8finalcut10FTermLinux7setUTF8Eb@Base 0.7.2
  _ZNK8finalcut10FTermLinux9resetBeepEv@Base 0.7.2
@@ -2261,6 +2626,30 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNK8finalcut11FTermBuffer5writeERKNS_10FColorPairE@Base 0.7.2
  _ZNK8finalcut11FTermBuffer5writeERKNS_6FStyleE@Base 0.7.2
  _ZNK8finalcut11FTermBuffer8toStringEv@Base 0.7.2
+ _ZNK8finalcut11FTermOutput10cursorWrapEv@Base 0.7.2
+ _ZNK8finalcut11FTermOutput10getKeyNameENS_4FKeyE@Base 0.7.2
+ _ZNK8finalcut11FTermOutput10getTabstopEv@Base 0.7.2
+ _ZNK8finalcut11FTermOutput11getEncodingEv@Base 0.7.2
+ _ZNK8finalcut11FTermOutput11getMaxColorEv@Base 0.7.2
+ _ZNK8finalcut11FTermOutput11isEncodableEw@Base 0.7.2
+ _ZNK8finalcut11FTermOutput11isMonochronEv@Base 0.7.2
+ _ZNK8finalcut11FTermOutput12getClassNameEv@Base 0.7.2
+ _ZNK8finalcut11FTermOutput13canClearToEOLEjj@Base 0.7.2
+ _ZNK8finalcut11FTermOutput13getLineNumberEv@Base 0.7.2
+ _ZNK8finalcut11FTermOutput15getColumnNumberEv@Base 0.7.2
+ _ZNK8finalcut11FTermOutput16isCursorHideableEv@Base 0.7.2
+ _ZNK8finalcut11FTermOutput17canClearLeadingWSERjj@Base 0.7.2
+ _ZNK8finalcut11FTermOutput17getFSetPaletteRefEv@Base 0.7.2
+ _ZNK8finalcut11FTermOutput18appendOutputBufferERKNS0_11FTermStringE@Base 0.7.2
+ _ZNK8finalcut11FTermOutput18canClearTrailingWSERjj@Base 0.7.2
+ _ZNK8finalcut11FTermOutput18hasShadowCharacterEv@Base 0.7.2
+ _ZNK8finalcut11FTermOutput18hasTerminalResizedEv@Base 0.7.2
+ _ZNK8finalcut11FTermOutput21canChangeColorPaletteEv@Base 0.7.2
+ _ZNK8finalcut11FTermOutput21hasHalfBlockCharacterEv@Base 0.7.2
+ _ZNK8finalcut11FTermOutput28areMetaAndArrowKeysSupportedEv@Base 0.7.2
+ _ZNK8finalcut11FTermOutput30allowsTerminalSizeManipulationEv@Base 0.7.2
+ _ZNK8finalcut11FTermOutput4beepEv@Base 0.7.2
+ _ZNK8finalcut11FTermOutput9isNewFontEv@Base 0.7.2
  _ZNK8finalcut11FTimerEvent10getTimerIdEv@Base 0.7.2
  _ZNK8finalcut11FWheelEvent10getTermPosEv@Base 0.7.2
  _ZNK8finalcut11FWheelEvent4getXEv@Base 0.7.2
@@ -2283,12 +2672,16 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNK8finalcut12FApplication17unsetMoveSizeModeEv@Base 0.7.2
  _ZNK8finalcut12FApplication18processAcceleratorERKNS_7FWidgetE@Base 0.7.2
  _ZNK8finalcut12FApplication18processResizeEventEv@Base 0.7.2
+ _ZNK8finalcut12FApplication18sendMouseMoveEventERKNS_10FMouseDataERKNS_6FPointES6_NS_11MouseButtonE@Base 0.7.2
  _ZNK8finalcut12FApplication18sendMouseMoveEventERKNS_10FMouseDataERKNS_6FPointES6_i@Base 0.7.2
  _ZNK8finalcut12FApplication20processKeyboardEventEv@Base 0.7.2
  _ZNK8finalcut12FApplication20queuingKeyboardInputEv@Base 0.7.2
  _ZNK8finalcut12FApplication20unselectMenubarItemsERKNS_10FMouseDataE@Base 0.7.2
+ _ZNK8finalcut12FApplication23sendMouseLeftClickEventERKNS_10FMouseDataERKNS_6FPointES6_NS_11MouseButtonE@Base 0.7.2
  _ZNK8finalcut12FApplication23sendMouseLeftClickEventERKNS_10FMouseDataERKNS_6FPointES6_i@Base 0.7.2
+ _ZNK8finalcut12FApplication24sendMouseRightClickEventERKNS_10FMouseDataERKNS_6FPointES6_NS_11MouseButtonE@Base 0.7.2
  _ZNK8finalcut12FApplication24sendMouseRightClickEventERKNS_10FMouseDataERKNS_6FPointES6_i@Base 0.7.2
+ _ZNK8finalcut12FApplication25sendMouseMiddleClickEventERKNS_10FMouseDataERKNS_6FPointES6_NS_11MouseButtonE@Base 0.7.2
  _ZNK8finalcut12FApplication25sendMouseMiddleClickEventERKNS_10FMouseDataERKNS_6FPointES6_i@Base 0.7.2
  _ZNK8finalcut12FApplication30processDialogSwitchAcceleratorEv@Base 0.7.2
  _ZNK8finalcut12FApplication4quitEv@Base 0.7.2
@@ -2307,6 +2700,11 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNK8finalcut12FProgressbar12getClassNameEv@Base 0.7.2
  _ZNK8finalcut12FRadioButton12getClassNameEv@Base 0.7.2
  _ZNK8finalcut12FResizeEvent10isAcceptedEv@Base 0.7.2
+ _ZNK8finalcut12FVTermBuffer12getClassNameEv@Base 0.7.2
+ _ZNK8finalcut12FVTermBuffer5writeERKNS_10FColorPairE@Base 0.7.2
+ _ZNK8finalcut12FVTermBuffer5writeERKNS_6FStyleE@Base 0.7.2
+ _ZNK8finalcut12FVTermBuffer8toStringEv@Base 0.7.2
+ _ZNK8finalcut13FColorPalette10setPaletteENS_6FColorEiii@Base 0.7.2
  _ZNK8finalcut13FColorPalette10setPaletteEtiii@Base 0.7.2
  _ZNK8finalcut13FColorPalette12getClassNameEv@Base 0.7.2
  _ZNK8finalcut13FColorPalette20setVGAdefaultPaletteEv@Base 0.7.2
@@ -2318,6 +2716,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNK8finalcut13FListViewItem8getDepthEv@Base 0.7.2
  _ZNK8finalcut13FMouseControl10xtermMouseEb@Base 0.7.2
  _ZNK8finalcut13FMouseControl12getClassNameEv@Base 0.7.2
+ _ZNK8finalcut13FMouseControl19setDblclickIntervalEm@Base 0.7.2
  _ZNK8finalcut13FStringStream12getClassNameEv@Base 0.7.2
  _ZNK8finalcut13FStringStream3strEv@Base 0.7.2
  _ZNK8finalcut13FToggleButton11correctSizeERNS_5FSizeE@Base 0.7.2
@@ -2332,6 +2731,10 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNK8finalcut14FCheckMenuItem13processToggleEv@Base 0.7.2
  _ZNK8finalcut14FRadioMenuItem12getClassNameEv@Base 0.7.2
  _ZNK8finalcut14FRadioMenuItem13processToggleEv@Base 0.7.2
+ _ZNK8finalcut14FTermDetection16getAnswerbackMsgEv@Base 0.7.2
+ _ZNK8finalcut14FTermDetection17getXTermColorNameENS_6FColorE@Base 0.7.2
+ _ZNK8finalcut14FTermDetection7str2intERKNS_7FStringE@Base 0.7.2
+ _ZNK8finalcut14FTermDetection8getSecDAEv@Base 0.7.2
  _ZNK8finalcut14FTermXTerminal10oscPostfixEv@Base 0.7.2
  _ZNK8finalcut14FTermXTerminal12setXTermSizeEv@Base 0.7.2
  _ZNK8finalcut14FTermXTerminal13canResetColorEv@Base 0.7.2
@@ -2358,16 +2761,19 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNK8finalcut25default16DarkColorPalette12getClassNameEv@Base 0.7.2
  _ZNK8finalcut4FLog12getClassNameEv@Base 0.7.2
  _ZNK8finalcut5FDataIDnE12getClassNameEv@Base 0.7.2
+ _ZNK8finalcut5FDataIPNS_6FVTermEE12getClassNameEv@Base 0.7.2
  _ZNK8finalcut5FMenu11adjustItemsEv@Base 0.7.2
  _ZNK8finalcut5FMenu12getClassNameEv@Base 0.7.2
  _ZNK8finalcut5FMenu12isDialogMenuEv@Base 0.7.2
  _ZNK8finalcut5FMenu14hideSuperMenusEv@Base 0.7.2
+ _ZNK8finalcut5FMenu15isMouseOverItemERKNS_6FPointEPKNS_9FMenuItemE@Base 0.7.2
  _ZNK8finalcut5FMenu15isRadioMenuItemEPKNS_7FWidgetE@Base 0.7.2
  _ZNK8finalcut5FMenu15keypressMenuBarEPNS_9FKeyEventE@Base 0.7.2
  _ZNK8finalcut5FMenu15processActivateEv@Base 0.7.2
  _ZNK8finalcut5FMenu18cb_menuitemToggledEPKNS_9FMenuItemE@Base 0.7.2
  _ZNK8finalcut5FMenu18isMouseOverMenuBarERKNS_6FPointE@Base 0.7.2
  _ZNK8finalcut5FMenu18passEventToMenuBarEOKNS_11FMouseEventE@Base 0.7.2
+ _ZNK8finalcut5FMenu18passEventToMenuBarERKNS_11FMouseEventE@Base 0.7.2
  _ZNK8finalcut5FMenu19mouseMoveOverBorderERNS0_11MouseStatesE@Base 0.7.2
  _ZNK8finalcut5FMenu6isMenuEPKNS_7FWidgetE@Base 0.7.2
  _ZNK8finalcut5FMenu7adjustXEi@Base 0.7.2
@@ -2405,7 +2811,12 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNK8finalcut6FMouse12getClassNameEv@Base 0.7.2
  _ZNK8finalcut6FMouse12getMaxHeightEv@Base 0.7.2
  _ZNK8finalcut6FMouse17isDblclickTimeoutEPK7timeval@Base 0.7.2
+ _ZNK8finalcut6FMouse17isDblclickTimeoutERKNSt6chrono10time_pointINS1_3_V212system_clockENS1_8durationIlSt5ratioILl1ELl1000000000EEEEEE@Base 0.7.2
  _ZNK8finalcut6FMouse19getDblclickIntervalEv@Base 0.7.2
+ _ZNK8finalcut6FMouse19getMousePressedTimeEv@Base 0.7.2
+ _ZNK8finalcut6FMouse19hasUnprocessedInputEv@Base 0.7.2
+ _ZNK8finalcut6FMouse8hasEventEv@Base 0.7.2
+ _ZNK8finalcut6FMouse9getNewPosEv@Base 0.7.2
  _ZNK8finalcut6FPoint8isOriginEv@Base 0.7.2
  _ZNK8finalcut6FVTerm10hideCursorEb@Base 0.7.2
  _ZNK8finalcut6FVTerm10printRangeEjjjb@Base 0.7.2
@@ -2420,10 +2831,12 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNK8finalcut6FVTerm15eraseCharactersERjjjb@Base 0.7.2
  _ZNK8finalcut6FVTerm15repeatCharacterERjjj@Base 0.7.2
  _ZNK8finalcut6FVTerm16appendLowerRightERNS_5FCharE@Base 0.7.2
+ _ZNK8finalcut6FVTerm16isCursorHideableEv@Base 0.7.2
  _ZNK8finalcut6FVTerm16isInsideTerminalERKNS_6FPointE@Base 0.7.2
  _ZNK8finalcut6FVTerm17scrollAreaForwardEPNS0_9FTermAreaE@Base 0.7.2
  _ZNK8finalcut6FVTerm17scrollAreaReverseEPNS0_9FTermAreaE@Base 0.7.2
  _ZNK8finalcut6FVTerm17updateVTermCursorEPKNS0_9FTermAreaE@Base 0.7.2
+ _ZNK8finalcut6FVTerm18setTerminalUpdatesENS0_14TerminalUpdateE@Base 0.7.2
  _ZNK8finalcut6FVTerm18setTerminalUpdatesENS0_15terminal_updateE@Base 0.7.2
  _ZNK8finalcut6FVTerm18updateTerminalLineEj@Base 0.7.2
  _ZNK8finalcut6FVTerm19forceTerminalUpdateEv@Base 0.7.2
@@ -2435,9 +2848,12 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNK8finalcut6FVTerm23skipUnchangedCharactersERjjj@Base 0.7.2
  _ZNK8finalcut6FVTerm30printFullWidthPaddingCharacterERjjRNS_5FCharE@Base 0.7.2
  _ZNK8finalcut6FVTerm33printHalfCovertFullWidthCharacterERjjRNS_5FCharE@Base 0.7.2
+ _ZNK8finalcut6FVTerm5flushEv@Base 0.7.2
+ _ZNK8finalcut6FVTerm6finishEv@Base 0.7.2
  _ZNK8finalcut6FVTerm7putAreaEPKNS0_9FTermAreaE@Base 0.7.2
  _ZNK8finalcut6FVTerm8putVTermEv@Base 0.7.2
  _ZNK8finalcut6FVTerm9clearAreaEPNS0_9FTermAreaEi@Base 0.7.2
+ _ZNK8finalcut6FVTerm9clearAreaEPNS0_9FTermAreaEw@Base 0.7.2
  _ZNK8finalcut6FVTerm9clearTermEi@Base 0.7.2
  _ZNK8finalcut6FVTerm9printWrapEPNS0_9FTermAreaE@Base 0.7.2
  _ZNK8finalcut6FVTerm9setTermXYEii@Base 0.7.2
@@ -2453,12 +2869,15 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNK8finalcut7FLogger12getClassNameEv@Base 0.7.2
  _ZNK8finalcut7FLogger13getTimeStringB5cxx11Ev@Base 0.7.2
  _ZNK8finalcut7FLogger14newlineReplaceERNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERKS6_@Base 0.7.2
+ _ZNK8finalcut7FLogger6getEOLB5cxx11Ev@Base 0.7.2
  _ZNK8finalcut7FObject12delAllTimersEv@Base 0.7.2
  _ZNK8finalcut7FObject12delOwnTimersEv@Base 0.7.2
  _ZNK8finalcut7FObject12getClassNameEv@Base 0.7.2
+ _ZNK8finalcut7FObject12isInstanceOfERKNS_7FStringE@Base 0.7.2
  _ZNK8finalcut7FObject7isChildEPKS0_@Base 0.7.2
  _ZNK8finalcut7FObject8delTimerEi@Base 0.7.2
  _ZNK8finalcut7FObject8getChildEi@Base 0.7.2
+ _ZNK8finalcut7FOutput12getClassNameEv@Base 0.7.2
  _ZNK8finalcut7FString10expandTabsEi@Base 0.7.2
  _ZNK8finalcut7FString12getClassNameEv@Base 0.7.2
  _ZNK8finalcut7FString13getUTF8lengthEv@Base 0.7.2
@@ -2513,11 +2932,13 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNK8finalcut7FWidget11setTermSizeERKNS_5FSizeE@Base 0.7.2
  _ZNK8finalcut7FWidget12getClassNameEv@Base 0.7.2
  _ZNK8finalcut7FWidget15getParentWidgetEv@Base 0.7.2
+ _ZNK8finalcut7FWidget15setTerminalSizeERKNS_5FSizeE@Base 0.7.2
  _ZNK8finalcut7FWidget16isChildPrintAreaEv@Base 0.7.2
  _ZNK8finalcut7FWidget16setStatusbarTextEb@Base 0.7.2
  _ZNK8finalcut7FWidget17emitWheelCallbackEPKNS_11FWheelEventE@Base 0.7.2
  _ZNK8finalcut7FWidget17removeQueuedEventEv@Base 0.7.2
  _ZNK8finalcut7FWidget8setColorEv@Base 0.7.2
+ _ZNK8finalcut7FWindow11isMinimizedEv@Base 0.7.2
  _ZNK8finalcut7FWindow12getClassNameEv@Base 0.7.2
  _ZNK8finalcut7FWindow14isWindowHiddenEv@Base 0.7.2
  _ZNK8finalcut7FWindow17unsetActiveWindowEv@Base 0.7.2
@@ -2532,6 +2953,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNK8finalcut8FMenuBar11adjustItemsEv@Base 0.7.2
  _ZNK8finalcut8FMenuBar12getClassNameEv@Base 0.7.2
  _ZNK8finalcut8FMenuBar15passEventToMenuEOKNS_11FMouseEventE@Base 0.7.2
+ _ZNK8finalcut8FMenuBar15passEventToMenuERKNS_11FMouseEventE@Base 0.7.2
  _ZNK8finalcut8FMenuBar18cb_itemDeactivatedEPKNS_9FMenuItemE@Base 0.7.2
  _ZNK8finalcut8FMenuBar19calculateDimensionsEv@Base 0.7.2
  _ZNK8finalcut8FSpinBox12getClassNameEv@Base 0.7.2
@@ -2547,9 +2969,12 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNK8finalcut9FKeyEvent10isAcceptedEv@Base 0.7.2
  _ZNK8finalcut9FKeyEvent3keyEv@Base 0.7.2
  _ZNK8finalcut9FKeyboard10UTF8decodeEPKc@Base 0.7.2
+ _ZNK8finalcut9FKeyboard10UTF8decodeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE@Base 0.7.2
+ _ZNK8finalcut9FKeyboard10getKeyNameENS_4FKeyE@Base 0.7.2
  _ZNK8finalcut9FKeyboard10getKeyNameEj@Base 0.7.2
  _ZNK8finalcut9FKeyboard10keyPressedEv@Base 0.7.2
  _ZNK8finalcut9FKeyboard11keyReleasedEv@Base 0.7.2
+ _ZNK8finalcut9FKeyboard13keyCorrectionERKNS_4FKeyE@Base 0.7.2
  _ZNK8finalcut9FKeyboard13keyCorrectionERKj@Base 0.7.2
  _ZNK8finalcut9FKeyboard13mouseTrackingEv@Base 0.7.2
  _ZNK8finalcut9FKeyboard16escapeKeyPressedEv@Base 0.7.2
@@ -2563,6 +2988,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNK8finalcut9FListView14changeOnResizeEv@Base 0.7.2
  _ZNK8finalcut9FListView14drawScrollbarsEv@Base 0.7.2
  _ZNK8finalcut9FListView14getAlignOffsetENS_2fc14text_alignmentEmm@Base 0.7.2
+ _ZNK8finalcut9FListView14getAlignOffsetENS_5AlignEmm@Base 0.7.2
  _ZNK8finalcut9FListView14processChangedEv@Base 0.7.2
  _ZNK8finalcut9FListView16adjustScrollbarsEm@Base 0.7.2
  _ZNK8finalcut9FListView17getColumnSortTypeEi@Base 0.7.2
@@ -2572,18 +2998,25 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNK8finalcut9FMenuItem12getClassNameEv@Base 0.7.2
  _ZNK8finalcut9FMenuItem13processEnableEv@Base 0.7.2
  _ZNK8finalcut9FMenuItem14passMouseEventIPNS_5FMenuEEEvT_PKNS_11FMouseEventENS_2fc6eventsE@Base 0.7.2
+ _ZNK8finalcut9FMenuItem14passMouseEventIPNS_5FMenuEEEvT_PKNS_11FMouseEventENS_5EventE@Base 0.7.2
  _ZNK8finalcut9FMenuItem14passMouseEventIPNS_7FDialogEEEvT_PKNS_11FMouseEventENS_2fc6eventsE@Base 0.7.2
+ _ZNK8finalcut9FMenuItem14passMouseEventIPNS_7FDialogEEEvT_PKNS_11FMouseEventENS_5EventE@Base 0.7.2
  _ZNK8finalcut9FMenuItem14passMouseEventIPNS_8FMenuBarEEEvT_PKNS_11FMouseEventENS_2fc6eventsE@Base 0.7.2
+ _ZNK8finalcut9FMenuItem14passMouseEventIPNS_8FMenuBarEEEvT_PKNS_11FMouseEventENS_5EventE@Base 0.7.2
  _ZNK8finalcut9FMenuItem14processDisableEv@Base 0.7.2
  _ZNK8finalcut9FMenuItem15processActivateEv@Base 0.7.2
  _ZNK8finalcut9FMenuItem16createDialogListEPNS_5FMenuE@Base 0.7.2
  _ZNK8finalcut9FMenuItem17cb_switchToDialogEPNS_7FDialogE@Base 0.7.2
  _ZNK8finalcut9FMenuItem17processDeactivateEv@Base 0.7.2
+ _ZNK8finalcut9FMenuItem23updateMenubarDimensionsEv@Base 0.7.2
  _ZNK8finalcut9FMenuItem6isMenuEPKNS_7FWidgetE@Base 0.7.2
  _ZNK8finalcut9FMenuItem8isDialogEPKNS_7FWidgetE@Base 0.7.2
  _ZNK8finalcut9FMenuItem8openMenuEv@Base 0.7.2
  _ZNK8finalcut9FMenuItem9isMenuBarEPKNS_7FWidgetE@Base 0.7.2
  _ZNK8finalcut9FMenuList12getClassNameEv@Base 0.7.2
+ _ZNK8finalcut9FMenuList20findLastSelectedItemEv@Base 0.7.2
+ _ZNK8finalcut9FMenuList21findFirstSelectedItemEv@Base 0.7.2
+ _ZNK8finalcut9FMouseGPM11drawPointerEv@Base 0.7.2
  _ZNK8finalcut9FMouseGPM12getClassNameEv@Base 0.7.2
  _ZNK8finalcut9FMouseGPM14drawGpmPointerEv@Base 0.7.2
  _ZNK8finalcut9FMouseGPM20hasSignificantEventsEv@Base 0.7.2
@@ -2593,7 +3026,9 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNK8finalcut9FOptiAttr23caused_reset_attributesEPKch@Base 0.7.2
  _ZNK8finalcut9FOptiMove11capDurationEPKci@Base 0.7.2
  _ZNK8finalcut9FOptiMove12relativeMoveEPciiii@Base 0.7.2
+ _ZNK8finalcut9FOptiMove12relativeMoveERNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEiiii@Base 0.7.2
  _ZNK8finalcut9FOptiMove14repeatedAppendERKNS0_10CapabilityEiPc@Base 0.7.2
+ _ZNK8finalcut9FOptiMove14repeatedAppendERNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERKNS0_10CapabilityEi@Base 0.7.2
  _ZNK8finalcut9FOptiMove16check_boundariesERiS1_S1_S1_@Base 0.7.2
  _ZNK8finalcut9FOptiMove19capDurationToLengthEi@Base 0.7.2
  _ZNK8finalcut9FTextView12getClassNameEv@Base 0.7.2
@@ -2603,6 +3038,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNK8finalcut9FTextView14drawScrollbarsEv@Base 0.7.2
  _ZNK8finalcut9FTextView14processChangedEv@Base 0.7.2
  _ZNK8finalcut9FTextView7getTextEv@Base 0.7.2
+ _ZNKSt10_HashtableIN8finalcut10FTermLinux4PairESt4pairIKS2_NS0_4FKeyEESaIS6_ENSt8__detail10_Select1stENS1_9PairEqualENS1_8PairHashENS8_18_Mod_range_hashingENS8_20_Default_ranged_hashENS8_20_Prime_rehash_policyENS8_17_Hashtable_traitsILb1ELb0ELb1EEEE19_M_find_before_nodeEmRS4_m@Base 0.7.2
  _ZNKSt5ctypeIcE8do_widenEc@Base 0.7.2
  _ZNKSt7__cxx1112regex_traitsIwE16lookup_classnameIPKwEENS1_10_RegexMaskET_S6_b@Base 0.7.2
  _ZNKSt7__cxx1112regex_traitsIwE17transform_primaryIPKwEENS_12basic_stringIwSt11char_traitsIwESaIwEEET_SA_@Base 0.7.2
@@ -2613,8 +3049,20 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNKSt8__detail9_ExecutorIN9__gnu_cxx17__normal_iteratorIPKwNSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEEEEESaINS5_9sub_matchISB_EEENS5_12regex_traitsIwEELb1EE16_M_word_boundaryEv@Base 0.7.2
  _ZNKSt8__detail9_ExecutorIPKwSaINSt7__cxx119sub_matchIS2_EEENS3_12regex_traitsIwEELb0EE16_M_word_boundaryEv@Base 0.7.2
  _ZNKSt8__detail9_ExecutorIPKwSaINSt7__cxx119sub_matchIS2_EEENS3_12regex_traitsIwEELb1EE16_M_word_boundaryEv@Base 0.7.2
+ _ZNSt10_HashtableIN8finalcut10FTermLinux4PairESt4pairIKS2_NS0_4FKeyEESaIS6_ENSt8__detail10_Select1stENS1_9PairEqualENS1_8PairHashENS8_18_Mod_range_hashingENS8_20_Default_ranged_hashENS8_20_Prime_rehash_policyENS8_17_Hashtable_traitsILb1ELb0ELb1EEEE21_M_insert_unique_nodeEmmPNS8_10_Hash_nodeIS6_Lb1EEEm@Base 0.7.2
+ _ZNSt10_HashtableIN8finalcut10FTermLinux4PairESt4pairIKS2_NS0_4FKeyEESaIS6_ENSt8__detail10_Select1stENS1_9PairEqualENS1_8PairHashENS8_18_Mod_range_hashingENS8_20_Default_ranged_hashENS8_20_Prime_rehash_policyENS8_17_Hashtable_traitsILb1ELb0ELb1EEEE9_M_rehashEmRKm@Base 0.7.2
+ _ZNSt10_HashtableIN8finalcut4FKeyESt4pairIKS1_St8functionIFbvEEESaIS7_ENSt8__detail10_Select1stESt8equal_toIS1_ENS0_8FKeyHashENS9_18_Mod_range_hashingENS9_20_Default_ranged_hashENS9_20_Prime_rehash_policyENS9_17_Hashtable_traitsILb0ELb0ELb1EEEE21_M_insert_unique_nodeEmmPNS9_10_Hash_nodeIS7_Lb0EEEm@Base 0.7.2
+ _ZNSt10_HashtableIN8finalcut4FKeyESt4pairIKS1_St8functionIFbvEEESaIS7_ENSt8__detail10_Select1stESt8equal_toIS1_ENS0_8FKeyHashENS9_18_Mod_range_hashingENS9_20_Default_ranged_hashENS9_20_Prime_rehash_policyENS9_17_Hashtable_traitsILb0ELb0ELb1EEEE9_M_rehashEmRKm@Base 0.7.2
+ _ZNSt10_HashtableIN8finalcut4FKeyESt4pairIKS1_St8functionIFbvEEESaIS7_ENSt8__detail10_Select1stESt8equal_toIS1_ENS0_8FKeyHashENS9_18_Mod_range_hashingENS9_20_Default_ranged_hashENS9_20_Prime_rehash_policyENS9_17_Hashtable_traitsILb0ELb0ELb1EEEED1Ev@Base 0.7.2
+ _ZNSt10_HashtableIN8finalcut4FKeyESt4pairIKS1_St8functionIFbvEEESaIS7_ENSt8__detail10_Select1stESt8equal_toIS1_ENS0_8FKeyHashENS9_18_Mod_range_hashingENS9_20_Default_ranged_hashENS9_20_Prime_rehash_policyENS9_17_Hashtable_traitsILb0ELb0ELb1EEEED2Ev@Base 0.7.2
+ _ZNSt10_HashtableIN8finalcut4FKeyESt4pairIKS1_St8functionIFvvEEESaIS7_ENSt8__detail10_Select1stESt8equal_toIS1_ENS0_8FKeyHashENS9_18_Mod_range_hashingENS9_20_Default_ranged_hashENS9_20_Prime_rehash_policyENS9_17_Hashtable_traitsILb0ELb0ELb1EEEE21_M_insert_unique_nodeEmmPNS9_10_Hash_nodeIS7_Lb0EEEm@Base 0.7.2
+ _ZNSt10_HashtableIN8finalcut4FKeyESt4pairIKS1_St8functionIFvvEEESaIS7_ENSt8__detail10_Select1stESt8equal_toIS1_ENS0_8FKeyHashENS9_18_Mod_range_hashingENS9_20_Default_ranged_hashENS9_20_Prime_rehash_policyENS9_17_Hashtable_traitsILb0ELb0ELb1EEEE9_M_rehashEmRKm@Base 0.7.2
+ _ZNSt10_HashtableIN8finalcut4FKeyESt4pairIKS1_St8functionIFvvEEESaIS7_ENSt8__detail10_Select1stESt8equal_toIS1_ENS0_8FKeyHashENS9_18_Mod_range_hashingENS9_20_Default_ranged_hashENS9_20_Prime_rehash_policyENS9_17_Hashtable_traitsILb0ELb0ELb1EEEED1Ev@Base 0.7.2
+ _ZNSt10_HashtableIN8finalcut4FKeyESt4pairIKS1_St8functionIFvvEEESaIS7_ENSt8__detail10_Select1stESt8equal_toIS1_ENS0_8FKeyHashENS9_18_Mod_range_hashingENS9_20_Default_ranged_hashENS9_20_Prime_rehash_policyENS9_17_Hashtable_traitsILb0ELb0ELb1EEEED2Ev@Base 0.7.2
  _ZNSt10_HashtableINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESt4pairIKS5_N8finalcut2fc8encodingEESaISB_ENSt8__detail10_Select1stESt8equal_toIS5_ESt4hashIS5_ENSD_18_Mod_range_hashingENSD_20_Default_ranged_hashENSD_20_Prime_rehash_policyENSD_17_Hashtable_traitsILb1ELb0ELb1EEEE21_M_insert_unique_nodeEmmPNSD_10_Hash_nodeISB_Lb1EEEm@Base 0.7.2
  _ZNSt10_HashtableINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESt4pairIKS5_N8finalcut2fc8encodingEESaISB_ENSt8__detail10_Select1stESt8equal_toIS5_ESt4hashIS5_ENSD_18_Mod_range_hashingENSD_20_Default_ranged_hashENSD_20_Prime_rehash_policyENSD_17_Hashtable_traitsILb1ELb0ELb1EEEE9_M_rehashEmRKm@Base 0.7.2
+ _ZNSt10_HashtableINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESt4pairIKS5_N8finalcut8EncodingEESaISA_ENSt8__detail10_Select1stESt8equal_toIS5_ESt4hashIS5_ENSC_18_Mod_range_hashingENSC_20_Default_ranged_hashENSC_20_Prime_rehash_policyENSC_17_Hashtable_traitsILb1ELb0ELb1EEEE21_M_insert_unique_nodeEmmPNSC_10_Hash_nodeISA_Lb1EEEm@Base 0.7.2
+ _ZNSt10_HashtableINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESt4pairIKS5_N8finalcut8EncodingEESaISA_ENSt8__detail10_Select1stESt8equal_toIS5_ESt4hashIS5_ENSC_18_Mod_range_hashingENSC_20_Default_ranged_hashENSC_20_Prime_rehash_policyENSC_17_Hashtable_traitsILb1ELb0ELb1EEEE9_M_rehashEmRKm@Base 0.7.2
  _ZNSt10_HashtableIhSt4pairIKhhESaIS2_ENSt8__detail10_Select1stESt8equal_toIhESt4hashIhENS4_18_Mod_range_hashingENS4_20_Default_ranged_hashENS4_20_Prime_rehash_policyENS4_17_Hashtable_traitsILb0ELb0ELb1EEEE21_M_insert_unique_nodeEmmPNS4_10_Hash_nodeIS2_Lb0EEEm@Base 0.7.2
  _ZNSt10_HashtableIhSt4pairIKhhESaIS2_ENSt8__detail10_Select1stESt8equal_toIhESt4hashIhENS4_18_Mod_range_hashingENS4_20_Default_ranged_hashENS4_20_Prime_rehash_policyENS4_17_Hashtable_traitsILb0ELb0ELb1EEEE9_M_rehashEmRKm@Base 0.7.2
  _ZNSt10_HashtableIhSt4pairIKhhESaIS2_ENSt8__detail10_Select1stESt8equal_toIhESt4hashIhENS4_18_Mod_range_hashingENS4_20_Default_ranged_hashENS4_20_Prime_rehash_policyENS4_17_Hashtable_traitsILb0ELb0ELb1EEEED1Ev@Base 0.7.2
@@ -2636,9 +3084,47 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNSt10_HashtableIjSt4pairIKjjESaIS2_ENSt8__detail10_Select1stESt8equal_toIjESt4hashIjENS4_18_Mod_range_hashingENS4_20_Default_ranged_hashENS4_20_Prime_rehash_policyENS4_17_Hashtable_traitsILb0ELb0ELb1EEEED2Ev@Base 0.7.2
  _ZNSt10_HashtableIwSt4pairIKwwESaIS2_ENSt8__detail10_Select1stESt8equal_toIwESt4hashIwENS4_18_Mod_range_hashingENS4_20_Default_ranged_hashENS4_20_Prime_rehash_policyENS4_17_Hashtable_traitsILb0ELb0ELb1EEEE21_M_insert_unique_nodeEmmPNS4_10_Hash_nodeIS2_Lb0EEEm@Base 0.7.2
  _ZNSt10_HashtableIwSt4pairIKwwESaIS2_ENSt8__detail10_Select1stESt8equal_toIwESt4hashIwENS4_18_Mod_range_hashingENS4_20_Default_ranged_hashENS4_20_Prime_rehash_policyENS4_17_Hashtable_traitsILb0ELb0ELb1EEEE9_M_rehashEmRKm@Base 0.7.2
+ _ZNSt10unique_ptrIN8finalcut10FTermLinuxESt14default_deleteIS1_EED1Ev@Base 0.7.2
+ _ZNSt10unique_ptrIN8finalcut10FTermLinuxESt14default_deleteIS1_EED2Ev@Base 0.7.2
+ _ZNSt10unique_ptrIN8finalcut13FMouseControlESt14default_deleteIS1_EED1Ev@Base 0.7.2
+ _ZNSt10unique_ptrIN8finalcut13FMouseControlESt14default_deleteIS1_EED2Ev@Base 0.7.2
+ _ZNSt10unique_ptrIN8finalcut13FStartOptionsESt14default_deleteIS1_EED1Ev@Base 0.7.2
+ _ZNSt10unique_ptrIN8finalcut13FStartOptionsESt14default_deleteIS1_EED2Ev@Base 0.7.2
+ _ZNSt10unique_ptrIN8finalcut14FTermDetectionESt14default_deleteIS1_EED1Ev@Base 0.7.2
+ _ZNSt10unique_ptrIN8finalcut14FTermDetectionESt14default_deleteIS1_EED2Ev@Base 0.7.2
+ _ZNSt10unique_ptrIN8finalcut14FTermXTerminalESt14default_deleteIS1_EED1Ev@Base 0.7.2
+ _ZNSt10unique_ptrIN8finalcut14FTermXTerminalESt14default_deleteIS1_EED2Ev@Base 0.7.2
+ _ZNSt10unique_ptrIN8finalcut7FKeyMapESt14default_deleteIS1_EED1Ev@Base 0.7.2
+ _ZNSt10unique_ptrIN8finalcut7FKeyMapESt14default_deleteIS1_EED2Ev@Base 0.7.2
+ _ZNSt10unique_ptrIN8finalcut7FStringESt14default_deleteIS1_EED1Ev@Base 0.7.2
+ _ZNSt10unique_ptrIN8finalcut7FStringESt14default_deleteIS1_EED2Ev@Base 0.7.2
+ _ZNSt10unique_ptrIN8finalcut8FCharMapESt14default_deleteIS1_EED1Ev@Base 0.7.2
+ _ZNSt10unique_ptrIN8finalcut8FCharMapESt14default_deleteIS1_EED2Ev@Base 0.7.2
+ _ZNSt10unique_ptrIN8finalcut9FKeyboardESt14default_deleteIS1_EED1Ev@Base 0.7.2
+ _ZNSt10unique_ptrIN8finalcut9FKeyboardESt14default_deleteIS1_EED2Ev@Base 0.7.2
+ _ZNSt10unique_ptrIN8finalcut9FOptiAttrESt14default_deleteIS1_EED1Ev@Base 0.7.2
+ _ZNSt10unique_ptrIN8finalcut9FOptiAttrESt14default_deleteIS1_EED2Ev@Base 0.7.2
+ _ZNSt10unique_ptrIN8finalcut9FOptiMoveESt14default_deleteIS1_EED1Ev@Base 0.7.2
+ _ZNSt10unique_ptrIN8finalcut9FOptiMoveESt14default_deleteIS1_EED2Ev@Base 0.7.2
+ _ZNSt10unique_ptrIN8finalcut9FTermDataESt14default_deleteIS1_EED1Ev@Base 0.7.2
+ _ZNSt10unique_ptrIN8finalcut9FTermDataESt14default_deleteIS1_EED2Ev@Base 0.7.2
+ _ZNSt10unique_ptrINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESt14default_deleteIS5_EED1Ev@Base 0.7.2
+ _ZNSt10unique_ptrINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESt14default_deleteIS5_EED2Ev@Base 0.7.2
+ _ZNSt10unique_ptrIS_IN8finalcut7FSystemESt14default_deleteIS1_EES2_IS4_EED1Ev@Base 0.7.2
+ _ZNSt10unique_ptrIS_IN8finalcut7FSystemESt14default_deleteIS1_EES2_IS4_EED2Ev@Base 0.7.2
+ _ZNSt10unique_ptrISt10shared_ptrIN8finalcut13FColorPaletteEESt14default_deleteIS3_EED1Ev@Base 0.7.2
+ _ZNSt10unique_ptrISt10shared_ptrIN8finalcut13FColorPaletteEESt14default_deleteIS3_EED2Ev@Base 0.7.2
+ _ZNSt10unique_ptrISt10shared_ptrIN8finalcut13FWidgetColorsEESt14default_deleteIS3_EED1Ev@Base 0.7.2
+ _ZNSt10unique_ptrISt10shared_ptrIN8finalcut13FWidgetColorsEESt14default_deleteIS3_EED2Ev@Base 0.7.2
+ _ZNSt10unique_ptrISt6vectorIN8finalcut7FObject10FTimerDataESaIS3_EESt14default_deleteIS5_EED1Ev@Base 0.7.2
+ _ZNSt10unique_ptrISt6vectorIN8finalcut7FObject10FTimerDataESaIS3_EESt14default_deleteIS5_EED2Ev@Base 0.7.2
+ _ZNSt11_Deque_baseIN8finalcut4FKeyESaIS1_EED1Ev@Base 0.7.2
+ _ZNSt11_Deque_baseIN8finalcut4FKeyESaIS1_EED2Ev@Base 0.7.2
  _ZNSt11_Deque_baseINSt8__detail9_StateSeqINSt7__cxx1112regex_traitsIwEEEESaIS5_EED1Ev@Base 0.7.2
  _ZNSt11_Deque_baseINSt8__detail9_StateSeqINSt7__cxx1112regex_traitsIwEEEESaIS5_EED2Ev@Base 0.7.2
  _ZNSt11_Deque_baseISt14_List_iteratorIPN8finalcut7FObjectEESaIS4_EE17_M_initialize_mapEm@Base 0.7.2
+ _ZNSt11_Deque_baseISt14_List_iteratorIPN8finalcut7FObjectEESaIS4_EED1Ev@Base 0.7.2
+ _ZNSt11_Deque_baseISt14_List_iteratorIPN8finalcut7FObjectEESaIS4_EED2Ev@Base 0.7.2
  _ZNSt11_Deque_baseISt4pairIPN8finalcut7FObjectEPNS1_6FEventEESaIS6_EED1Ev@Base 0.7.2
  _ZNSt11_Deque_baseISt4pairIPN8finalcut7FObjectEPNS1_6FEventEESaIS6_EED2Ev@Base 0.7.2
  _ZNSt11_Deque_baseIjSaIjEED1Ev@Base 0.7.2
@@ -2646,6 +3132,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNSt11_Deque_baseIlSaIlEE17_M_initialize_mapEm@Base 0.7.2
  _ZNSt11_Deque_baseIlSaIlEED1Ev@Base 0.7.2
  _ZNSt11_Deque_baseIlSaIlEED2Ev@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIN8finalcut4FLog11current_logMUlRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEE_EE10_M_managerERSt9_Any_dataRKSD_St18_Manager_operation@Base 0.7.2
  _ZNSt14_Function_base13_Base_managerINSt8__detail11_AnyMatcherINSt7__cxx1112regex_traitsIwEELb0ELb0ELb0EEEE10_M_managerERSt9_Any_dataRKS8_St18_Manager_operation@Base 0.7.2
  _ZNSt14_Function_base13_Base_managerINSt8__detail11_AnyMatcherINSt7__cxx1112regex_traitsIwEELb0ELb0ELb1EEEE10_M_managerERSt9_Any_dataRKS8_St18_Manager_operation@Base 0.7.2
  _ZNSt14_Function_base13_Base_managerINSt8__detail11_AnyMatcherINSt7__cxx1112regex_traitsIwEELb0ELb1ELb0EEEE10_M_managerERSt9_Any_dataRKS8_St18_Manager_operation@Base 0.7.2
@@ -2663,6 +3150,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNSt14_Function_base13_Base_managerINSt8__detail15_BracketMatcherINSt7__cxx1112regex_traitsIwEELb1ELb0EEEE10_M_managerERSt9_Any_dataRKS8_St18_Manager_operation@Base 0.7.2
  _ZNSt14_Function_base13_Base_managerINSt8__detail15_BracketMatcherINSt7__cxx1112regex_traitsIwEELb1ELb1EEEE10_M_managerERSt9_Any_dataRKS8_St18_Manager_operation@Base 0.7.2
  _ZNSt14_Function_base13_Base_managerIPFiiEE10_M_managerERSt9_Any_dataRKS4_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIPFvN8finalcut6FColorEiiiEE10_M_managerERSt9_Any_dataRKS6_St18_Manager_operation@Base 0.7.2
  _ZNSt14_Function_base13_Base_managerIPFvtiiiEE10_M_managerERSt9_Any_dataRKS4_St18_Manager_operation@Base 0.7.2
  _ZNSt14_Function_base13_Base_managerISt5_BindIFMN8finalcut10FStatusBarEFvPKNS2_10FStatusKeyEEPS3_PS4_EEE10_M_managerERSt9_Any_dataRKSE_St18_Manager_operation@Base 0.7.2
  _ZNSt14_Function_base13_Base_managerISt5_BindIFMN8finalcut11FFileDialogEFvvEPS3_EEE10_M_managerERSt9_Any_dataRKSA_St18_Manager_operation@Base 0.7.2
@@ -2701,6 +3189,8 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNSt14_Function_base13_Base_managerIZN8finalcut11FScrollView15mapKeyFunctionsEvEUlvE6_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
  _ZNSt14_Function_base13_Base_managerIZN8finalcut11FScrollView15mapKeyFunctionsEvEUlvE_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
  _ZNSt14_Function_base13_Base_managerIZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIFvPcEESt4hashIiESt8equal_toIiESaISt4pairIKiS7_EEEEUlPKcE0_E10_M_managerERSt9_Any_dataRKSM_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIFvPcEESt4hashIiESt8equal_toIiESaISt4pairIKiS7_EEEEUlPKcE10_E10_M_managerERSt9_Any_dataRKSM_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIFvPcEESt4hashIiESt8equal_toIiESaISt4pairIKiS7_EEEEUlPKcE11_E10_M_managerERSt9_Any_dataRKSM_St18_Manager_operation@Base 0.7.2
  _ZNSt14_Function_base13_Base_managerIZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIFvPcEESt4hashIiESt8equal_toIiESaISt4pairIKiS7_EEEEUlPKcE1_E10_M_managerERSt9_Any_dataRKSM_St18_Manager_operation@Base 0.7.2
  _ZNSt14_Function_base13_Base_managerIZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIFvPcEESt4hashIiESt8equal_toIiESaISt4pairIKiS7_EEEEUlPKcE2_E10_M_managerERSt9_Any_dataRKSM_St18_Manager_operation@Base 0.7.2
  _ZNSt14_Function_base13_Base_managerIZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIFvPcEESt4hashIiESt8equal_toIiESaISt4pairIKiS7_EEEEUlPKcE3_E10_M_managerERSt9_Any_dataRKSM_St18_Manager_operation@Base 0.7.2
@@ -2711,9 +3201,60 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNSt14_Function_base13_Base_managerIZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIFvPcEESt4hashIiESt8equal_toIiESaISt4pairIKiS7_EEEEUlPKcE8_E10_M_managerERSt9_Any_dataRKSM_St18_Manager_operation@Base 0.7.2
  _ZNSt14_Function_base13_Base_managerIZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIFvPcEESt4hashIiESt8equal_toIiESaISt4pairIKiS7_EEEEUlPKcE9_E10_M_managerERSt9_Any_dataRKSM_St18_Manager_operation@Base 0.7.2
  _ZNSt14_Function_base13_Base_managerIZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIFvPcEESt4hashIiESt8equal_toIiESaISt4pairIKiS7_EEEEUlPKcE_E10_M_managerERSt9_Any_dataRKSM_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE0_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE10_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE11_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE12_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE13_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE14_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE1_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE2_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE3_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE4_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE5_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE6_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE7_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE8_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE9_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE0_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE10_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE11_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE12_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE13_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE14_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE1_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE2_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE3_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE4_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE5_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE6_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE7_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE8_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE9_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE0_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE1_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE2_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE3_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE4_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE5_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE6_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE7_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE8_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
  _ZNSt14_Function_base13_Base_managerIZN8finalcut9FListView15mapKeyFunctionsEvEUlvE0_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut9FListView15mapKeyFunctionsEvEUlvE10_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut9FListView15mapKeyFunctionsEvEUlvE11_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
  _ZNSt14_Function_base13_Base_managerIZN8finalcut9FListView15mapKeyFunctionsEvEUlvE1_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
  _ZNSt14_Function_base13_Base_managerIZN8finalcut9FListView15mapKeyFunctionsEvEUlvE2_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut9FListView15mapKeyFunctionsEvEUlvE3_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut9FListView15mapKeyFunctionsEvEUlvE4_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut9FListView15mapKeyFunctionsEvEUlvE5_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut9FListView15mapKeyFunctionsEvEUlvE6_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut9FListView15mapKeyFunctionsEvEUlvE7_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut9FListView15mapKeyFunctionsEvEUlvE8_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt14_Function_base13_Base_managerIZN8finalcut9FListView15mapKeyFunctionsEvEUlvE9_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
  _ZNSt14_Function_base13_Base_managerIZN8finalcut9FListView15mapKeyFunctionsEvEUlvE_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
  _ZNSt14_Function_base13_Base_managerIZN8finalcut9FTextView15mapKeyFunctionsEvEUlvE0_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
  _ZNSt14_Function_base13_Base_managerIZN8finalcut9FTextView15mapKeyFunctionsEvEUlvE1_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
@@ -2723,6 +3264,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNSt14_Function_base13_Base_managerIZN8finalcut9FTextView15mapKeyFunctionsEvEUlvE5_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
  _ZNSt14_Function_base13_Base_managerIZN8finalcut9FTextView15mapKeyFunctionsEvEUlvE6_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
  _ZNSt14_Function_base13_Base_managerIZN8finalcut9FTextView15mapKeyFunctionsEvEUlvE_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation@Base 0.7.2
+ _ZNSt15_Deque_iteratorISt14_List_iteratorIPN8finalcut7FObjectEERKS4_PS5_EpLEl@Base 0.7.2
  _ZNSt15_Sp_counted_ptrIDnLN9__gnu_cxx12_Lock_policyE2EE10_M_disposeEv@Base 0.7.2
  _ZNSt15_Sp_counted_ptrIPN8finalcut5FDataIDnEELN9__gnu_cxx12_Lock_policyE2EE10_M_destroyEv@Base 0.7.2
  _ZNSt15_Sp_counted_ptrIPN8finalcut5FDataIDnEELN9__gnu_cxx12_Lock_policyE2EE10_M_disposeEv@Base 0.7.2
@@ -2730,10 +3272,24 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNSt15_Sp_counted_ptrIPN8finalcut5FDataIDnEELN9__gnu_cxx12_Lock_policyE2EED0Ev@Base 0.7.2
  _ZNSt15_Sp_counted_ptrIPN8finalcut5FDataIDnEELN9__gnu_cxx12_Lock_policyE2EED1Ev@Base 0.7.2
  _ZNSt15_Sp_counted_ptrIPN8finalcut5FDataIDnEELN9__gnu_cxx12_Lock_policyE2EED2Ev@Base 0.7.2
+ _ZNSt15_Sp_counted_ptrIPN8finalcut5FDataIPNS0_6FVTermEEELN9__gnu_cxx12_Lock_policyE2EE10_M_destroyEv@Base 0.7.2
+ _ZNSt15_Sp_counted_ptrIPN8finalcut5FDataIPNS0_6FVTermEEELN9__gnu_cxx12_Lock_policyE2EE10_M_disposeEv@Base 0.7.2
+ _ZNSt15_Sp_counted_ptrIPN8finalcut5FDataIPNS0_6FVTermEEELN9__gnu_cxx12_Lock_policyE2EE14_M_get_deleterERKSt9type_info@Base 0.7.2
+ _ZNSt15_Sp_counted_ptrIPN8finalcut5FDataIPNS0_6FVTermEEELN9__gnu_cxx12_Lock_policyE2EED0Ev@Base 0.7.2
+ _ZNSt15_Sp_counted_ptrIPN8finalcut5FDataIPNS0_6FVTermEEELN9__gnu_cxx12_Lock_policyE2EED1Ev@Base 0.7.2
+ _ZNSt15_Sp_counted_ptrIPN8finalcut5FDataIPNS0_6FVTermEEELN9__gnu_cxx12_Lock_policyE2EED2Ev@Base 0.7.2
  _ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE10_M_destroyEv@Base 0.7.2
  _ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE10_M_releaseEv@Base 0.7.2
  _ZNSt17_Function_handlerIFbvESt5_BindIFMN8finalcut8FListBoxEFbvEPS3_EEE9_M_invokeERKSt9_Any_data@Base 0.7.2
  _ZNSt17_Function_handlerIFbvESt5_BindIFMN8finalcut9FListViewEFbvEPS3_EEE9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFbvEZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE10_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFbvEZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE11_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFbvEZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE12_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFbvEZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE13_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFbvEZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE14_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFbvEZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE9_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFbvEZN8finalcut9FListView15mapKeyFunctionsEvEUlvE10_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFbvEZN8finalcut9FListView15mapKeyFunctionsEvEUlvE11_E9_M_invokeERKSt9_Any_data@Base 0.7.2
  _ZNSt17_Function_handlerIFbwENSt8__detail11_AnyMatcherINSt7__cxx1112regex_traitsIwEELb0ELb0ELb0EEEE9_M_invokeERKSt9_Any_dataOw@Base 0.7.2
  _ZNSt17_Function_handlerIFbwENSt8__detail11_AnyMatcherINSt7__cxx1112regex_traitsIwEELb0ELb0ELb1EEEE9_M_invokeERKSt9_Any_dataOw@Base 0.7.2
  _ZNSt17_Function_handlerIFbwENSt8__detail11_AnyMatcherINSt7__cxx1112regex_traitsIwEELb0ELb1ELb0EEEE9_M_invokeERKSt9_Any_dataOw@Base 0.7.2
@@ -2751,7 +3307,10 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNSt17_Function_handlerIFbwENSt8__detail15_BracketMatcherINSt7__cxx1112regex_traitsIwEELb1ELb0EEEE9_M_invokeERKSt9_Any_dataOw@Base 0.7.2
  _ZNSt17_Function_handlerIFbwENSt8__detail15_BracketMatcherINSt7__cxx1112regex_traitsIwEELb1ELb1EEEE9_M_invokeERKSt9_Any_dataOw@Base 0.7.2
  _ZNSt17_Function_handlerIFiiEPS0_E9_M_invokeERKSt9_Any_dataOi@Base 0.7.2
+ _ZNSt17_Function_handlerIFvN8finalcut6FColorEiiiEPS2_E9_M_invokeERKSt9_Any_dataOS1_OiS9_S9_@Base 0.7.2
  _ZNSt17_Function_handlerIFvPcEZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIS1_ESt4hashIiESt8equal_toIiESaISt4pairIKiS6_EEEEUlPKcE0_E9_M_invokeERKSt9_Any_dataOS0_@Base 0.7.2
+ _ZNSt17_Function_handlerIFvPcEZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIS1_ESt4hashIiESt8equal_toIiESaISt4pairIKiS6_EEEEUlPKcE10_E9_M_invokeERKSt9_Any_dataOS0_@Base 0.7.2
+ _ZNSt17_Function_handlerIFvPcEZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIS1_ESt4hashIiESt8equal_toIiESaISt4pairIKiS6_EEEEUlPKcE11_E9_M_invokeERKSt9_Any_dataOS0_@Base 0.7.2
  _ZNSt17_Function_handlerIFvPcEZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIS1_ESt4hashIiESt8equal_toIiESaISt4pairIKiS6_EEEEUlPKcE1_E9_M_invokeERKSt9_Any_dataOS0_@Base 0.7.2
  _ZNSt17_Function_handlerIFvPcEZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIS1_ESt4hashIiESt8equal_toIiESaISt4pairIKiS6_EEEEUlPKcE2_E9_M_invokeERKSt9_Any_dataOS0_@Base 0.7.2
  _ZNSt17_Function_handlerIFvPcEZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIS1_ESt4hashIiESt8equal_toIiESaISt4pairIKiS6_EEEEUlPKcE3_E9_M_invokeERKSt9_Any_dataOS0_@Base 0.7.2
@@ -2763,6 +3322,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNSt17_Function_handlerIFvPcEZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIS1_ESt4hashIiESt8equal_toIiESaISt4pairIKiS6_EEEEUlPKcE9_E9_M_invokeERKSt9_Any_dataOS0_@Base 0.7.2
  _ZNSt17_Function_handlerIFvPcEZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIS1_ESt4hashIiESt8equal_toIiESaISt4pairIKiS6_EEEEUlPKcE_E9_M_invokeERKSt9_Any_dataOS0_@Base 0.7.2
  _ZNSt17_Function_handlerIFvRKN8finalcut10FMouseDataEESt5_BindIFMNS0_12FApplicationEFvS3_EPS6_St12_PlaceholderILi1EEEEE9_M_invokeERKSt9_Any_dataS3_@Base 0.7.2
+ _ZNSt17_Function_handlerIFvRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEEN8finalcut4FLog11current_logMUlS7_E_EE9_M_invokeERKSt9_Any_dataS7_@Base 0.7.2
  _ZNSt17_Function_handlerIFvRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEESt5_BindIFMN8finalcut4FLogEFvS7_EPSB_St12_PlaceholderILi1EEEEE9_M_invokeERKSt9_Any_dataS7_@Base 0.7.2
  _ZNSt17_Function_handlerIFvtiiiEPS0_E9_M_invokeERKSt9_Any_dataOtOiS7_S7_@Base 0.7.2
  _ZNSt17_Function_handlerIFvvESt5_BindIFMN8finalcut10FStatusBarEFvPKNS2_10FStatusKeyEEPS3_PS4_EEE9_M_invokeERKSt9_Any_data@Base 0.7.2
@@ -2797,9 +3357,52 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNSt17_Function_handlerIFvvEZN8finalcut11FScrollView15mapKeyFunctionsEvEUlvE5_E9_M_invokeERKSt9_Any_data@Base 0.7.2
  _ZNSt17_Function_handlerIFvvEZN8finalcut11FScrollView15mapKeyFunctionsEvEUlvE6_E9_M_invokeERKSt9_Any_data@Base 0.7.2
  _ZNSt17_Function_handlerIFvvEZN8finalcut11FScrollView15mapKeyFunctionsEvEUlvE_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE0_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE10_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE11_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE12_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE13_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE14_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE1_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE2_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE3_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE4_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE5_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE6_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE7_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE8_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE9_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE0_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE1_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE2_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE3_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE4_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE5_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE6_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE7_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE8_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE0_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE1_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE2_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE3_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE4_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE5_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE6_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE7_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE8_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE_E9_M_invokeERKSt9_Any_data@Base 0.7.2
  _ZNSt17_Function_handlerIFvvEZN8finalcut9FListView15mapKeyFunctionsEvEUlvE0_E9_M_invokeERKSt9_Any_data@Base 0.7.2
  _ZNSt17_Function_handlerIFvvEZN8finalcut9FListView15mapKeyFunctionsEvEUlvE1_E9_M_invokeERKSt9_Any_data@Base 0.7.2
  _ZNSt17_Function_handlerIFvvEZN8finalcut9FListView15mapKeyFunctionsEvEUlvE2_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut9FListView15mapKeyFunctionsEvEUlvE3_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut9FListView15mapKeyFunctionsEvEUlvE4_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut9FListView15mapKeyFunctionsEvEUlvE5_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut9FListView15mapKeyFunctionsEvEUlvE6_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut9FListView15mapKeyFunctionsEvEUlvE7_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut9FListView15mapKeyFunctionsEvEUlvE8_E9_M_invokeERKSt9_Any_data@Base 0.7.2
+ _ZNSt17_Function_handlerIFvvEZN8finalcut9FListView15mapKeyFunctionsEvEUlvE9_E9_M_invokeERKSt9_Any_data@Base 0.7.2
  _ZNSt17_Function_handlerIFvvEZN8finalcut9FListView15mapKeyFunctionsEvEUlvE_E9_M_invokeERKSt9_Any_data@Base 0.7.2
  _ZNSt17_Function_handlerIFvvEZN8finalcut9FTextView15mapKeyFunctionsEvEUlvE0_E9_M_invokeERKSt9_Any_data@Base 0.7.2
  _ZNSt17_Function_handlerIFvvEZN8finalcut9FTextView15mapKeyFunctionsEvEUlvE1_E9_M_invokeERKSt9_Any_data@Base 0.7.2
@@ -2821,6 +3424,12 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNSt23_Sp_counted_ptr_inplaceIN8finalcut11FMouseEventESaIS1_ELN9__gnu_cxx12_Lock_policyE2EED0Ev@Base 0.7.2
  _ZNSt23_Sp_counted_ptr_inplaceIN8finalcut11FMouseEventESaIS1_ELN9__gnu_cxx12_Lock_policyE2EED1Ev@Base 0.7.2
  _ZNSt23_Sp_counted_ptr_inplaceIN8finalcut11FMouseEventESaIS1_ELN9__gnu_cxx12_Lock_policyE2EED2Ev@Base 0.7.2
+ _ZNSt23_Sp_counted_ptr_inplaceIN8finalcut11FTermOutputESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE10_M_destroyEv@Base 0.7.2
+ _ZNSt23_Sp_counted_ptr_inplaceIN8finalcut11FTermOutputESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE10_M_disposeEv@Base 0.7.2
+ _ZNSt23_Sp_counted_ptr_inplaceIN8finalcut11FTermOutputESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE14_M_get_deleterERKSt9type_info@Base 0.7.2
+ _ZNSt23_Sp_counted_ptr_inplaceIN8finalcut11FTermOutputESaIS1_ELN9__gnu_cxx12_Lock_policyE2EED0Ev@Base 0.7.2
+ _ZNSt23_Sp_counted_ptr_inplaceIN8finalcut11FTermOutputESaIS1_ELN9__gnu_cxx12_Lock_policyE2EED1Ev@Base 0.7.2
+ _ZNSt23_Sp_counted_ptr_inplaceIN8finalcut11FTermOutputESaIS1_ELN9__gnu_cxx12_Lock_policyE2EED2Ev@Base 0.7.2
  _ZNSt23_Sp_counted_ptr_inplaceIN8finalcut18default8ColorThemeESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE10_M_destroyEv@Base 0.7.2
  _ZNSt23_Sp_counted_ptr_inplaceIN8finalcut18default8ColorThemeESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE10_M_disposeEv@Base 0.7.2
  _ZNSt23_Sp_counted_ptr_inplaceIN8finalcut18default8ColorThemeESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE14_M_get_deleterERKSt9type_info@Base 0.7.2
@@ -2863,6 +3472,12 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNSt23_Sp_counted_ptr_inplaceIN8finalcut25default16DarkColorPaletteESaIS1_ELN9__gnu_cxx12_Lock_policyE2EED0Ev@Base 0.7.2
  _ZNSt23_Sp_counted_ptr_inplaceIN8finalcut25default16DarkColorPaletteESaIS1_ELN9__gnu_cxx12_Lock_policyE2EED1Ev@Base 0.7.2
  _ZNSt23_Sp_counted_ptr_inplaceIN8finalcut25default16DarkColorPaletteESaIS1_ELN9__gnu_cxx12_Lock_policyE2EED2Ev@Base 0.7.2
+ _ZNSt23_Sp_counted_ptr_inplaceIN8finalcut6FPointESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE10_M_destroyEv@Base 0.7.2
+ _ZNSt23_Sp_counted_ptr_inplaceIN8finalcut6FPointESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE10_M_disposeEv@Base 0.7.2
+ _ZNSt23_Sp_counted_ptr_inplaceIN8finalcut6FPointESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE14_M_get_deleterERKSt9type_info@Base 0.7.2
+ _ZNSt23_Sp_counted_ptr_inplaceIN8finalcut6FPointESaIS1_ELN9__gnu_cxx12_Lock_policyE2EED0Ev@Base 0.7.2
+ _ZNSt23_Sp_counted_ptr_inplaceIN8finalcut6FPointESaIS1_ELN9__gnu_cxx12_Lock_policyE2EED1Ev@Base 0.7.2
+ _ZNSt23_Sp_counted_ptr_inplaceIN8finalcut6FPointESaIS1_ELN9__gnu_cxx12_Lock_policyE2EED2Ev@Base 0.7.2
  _ZNSt23_Sp_counted_ptr_inplaceIN8finalcut7FLoggerESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE10_M_destroyEv@Base 0.7.2
  _ZNSt23_Sp_counted_ptr_inplaceIN8finalcut7FLoggerESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE10_M_disposeEv@Base 0.7.2
  _ZNSt23_Sp_counted_ptr_inplaceIN8finalcut7FLoggerESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE14_M_get_deleterERKSt9type_info@Base 0.7.2
@@ -2881,8 +3496,28 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNSt23_Sp_counted_ptr_inplaceISt5arrayIN8finalcut2fc7FKeyMapELm188EESaIS4_ELN9__gnu_cxx12_Lock_policyE2EED0Ev@Base 0.7.2
  _ZNSt23_Sp_counted_ptr_inplaceISt5arrayIN8finalcut2fc7FKeyMapELm188EESaIS4_ELN9__gnu_cxx12_Lock_policyE2EED1Ev@Base 0.7.2
  _ZNSt23_Sp_counted_ptr_inplaceISt5arrayIN8finalcut2fc7FKeyMapELm188EESaIS4_ELN9__gnu_cxx12_Lock_policyE2EED2Ev@Base 0.7.2
+ _ZNSt23_Sp_counted_ptr_inplaceISt5arrayIN8finalcut7FKeyMap9KeyCapMapELm188EESaIS4_ELN9__gnu_cxx12_Lock_policyE2EE10_M_destroyEv@Base 0.7.2
+ _ZNSt23_Sp_counted_ptr_inplaceISt5arrayIN8finalcut7FKeyMap9KeyCapMapELm188EESaIS4_ELN9__gnu_cxx12_Lock_policyE2EE10_M_disposeEv@Base 0.7.2
+ _ZNSt23_Sp_counted_ptr_inplaceISt5arrayIN8finalcut7FKeyMap9KeyCapMapELm188EESaIS4_ELN9__gnu_cxx12_Lock_policyE2EE14_M_get_deleterERKSt9type_info@Base 0.7.2
+ _ZNSt23_Sp_counted_ptr_inplaceISt5arrayIN8finalcut7FKeyMap9KeyCapMapELm188EESaIS4_ELN9__gnu_cxx12_Lock_policyE2EED0Ev@Base 0.7.2
+ _ZNSt23_Sp_counted_ptr_inplaceISt5arrayIN8finalcut7FKeyMap9KeyCapMapELm188EESaIS4_ELN9__gnu_cxx12_Lock_policyE2EED1Ev@Base 0.7.2
+ _ZNSt23_Sp_counted_ptr_inplaceISt5arrayIN8finalcut7FKeyMap9KeyCapMapELm188EESaIS4_ELN9__gnu_cxx12_Lock_policyE2EED2Ev@Base 0.7.2
+ _ZNSt23_Sp_counted_ptr_inplaceISt5queueIN8finalcut11FTermOutput10OutputDataESt5dequeIS3_SaIS3_EEESaIS7_ELN9__gnu_cxx12_Lock_policyE2EE10_M_destroyEv@Base 0.7.2
+ _ZNSt23_Sp_counted_ptr_inplaceISt5queueIN8finalcut11FTermOutput10OutputDataESt5dequeIS3_SaIS3_EEESaIS7_ELN9__gnu_cxx12_Lock_policyE2EE10_M_disposeEv@Base 0.7.2
+ _ZNSt23_Sp_counted_ptr_inplaceISt5queueIN8finalcut11FTermOutput10OutputDataESt5dequeIS3_SaIS3_EEESaIS7_ELN9__gnu_cxx12_Lock_policyE2EE14_M_get_deleterERKSt9type_info@Base 0.7.2
+ _ZNSt23_Sp_counted_ptr_inplaceISt5queueIN8finalcut11FTermOutput10OutputDataESt5dequeIS3_SaIS3_EEESaIS7_ELN9__gnu_cxx12_Lock_policyE2EED0Ev@Base 0.7.2
+ _ZNSt23_Sp_counted_ptr_inplaceISt5queueIN8finalcut11FTermOutput10OutputDataESt5dequeIS3_SaIS3_EEESaIS7_ELN9__gnu_cxx12_Lock_policyE2EED1Ev@Base 0.7.2
+ _ZNSt23_Sp_counted_ptr_inplaceISt5queueIN8finalcut11FTermOutput10OutputDataESt5dequeIS3_SaIS3_EEESaIS7_ELN9__gnu_cxx12_Lock_policyE2EED2Ev@Base 0.7.2
+ _ZNSt23_Sp_counted_ptr_inplaceISt6vectorIPN8finalcut6FVTermESaIS3_EESaIS5_ELN9__gnu_cxx12_Lock_policyE2EE10_M_destroyEv@Base 0.7.2
+ _ZNSt23_Sp_counted_ptr_inplaceISt6vectorIPN8finalcut6FVTermESaIS3_EESaIS5_ELN9__gnu_cxx12_Lock_policyE2EE10_M_disposeEv@Base 0.7.2
+ _ZNSt23_Sp_counted_ptr_inplaceISt6vectorIPN8finalcut6FVTermESaIS3_EESaIS5_ELN9__gnu_cxx12_Lock_policyE2EE14_M_get_deleterERKSt9type_info@Base 0.7.2
+ _ZNSt23_Sp_counted_ptr_inplaceISt6vectorIPN8finalcut6FVTermESaIS3_EESaIS5_ELN9__gnu_cxx12_Lock_policyE2EED0Ev@Base 0.7.2
+ _ZNSt23_Sp_counted_ptr_inplaceISt6vectorIPN8finalcut6FVTermESaIS3_EESaIS5_ELN9__gnu_cxx12_Lock_policyE2EED1Ev@Base 0.7.2
+ _ZNSt23_Sp_counted_ptr_inplaceISt6vectorIPN8finalcut6FVTermESaIS3_EESaIS5_ELN9__gnu_cxx12_Lock_policyE2EED2Ev@Base 0.7.2
  _ZNSt4pairINSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEEES5_ED1Ev@Base 0.7.2
  _ZNSt4pairINSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEEES5_ED2Ev@Base 0.7.2
+ _ZNSt5dequeIN8finalcut11FTermOutput10OutputDataESaIS2_EE12emplace_backIJS2_EEEvDpOT_@Base 0.7.2
+ _ZNSt5dequeIN8finalcut4FKeyESaIS1_EE16_M_push_back_auxIJRKS1_EEEvDpOT_@Base 0.7.2
  _ZNSt5dequeINSt8__detail9_StateSeqINSt7__cxx1112regex_traitsIwEEEESaIS5_EE12emplace_backIJS5_EEEvDpOT_@Base 0.7.2
  _ZNSt5dequeINSt8__detail9_StateSeqINSt7__cxx1112regex_traitsIwEEEESaIS5_EE16_M_push_back_auxIJRKS5_EEEvDpOT_@Base 0.7.2
  _ZNSt5dequeINSt8__detail9_StateSeqINSt7__cxx1112regex_traitsIwEEEESaIS5_EE17_M_reallocate_mapEmb@Base 0.7.2
@@ -2907,23 +3542,36 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNSt6vectorIN8finalcut13FCallbackDataESaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_@Base 0.7.2
  _ZNSt6vectorIN8finalcut13FCallbackDataESaIS1_EE8_M_eraseEN9__gnu_cxx17__normal_iteratorIPS1_S3_EE@Base 0.7.2
  _ZNSt6vectorIN8finalcut2fc12sorting_typeESaIS2_EE17_M_default_appendEm@Base 0.7.2
+ _ZNSt6vectorIN8finalcut5FCharESaIS1_EE12emplace_backIJRS1_EEEvDpOT_@Base 0.7.2
  _ZNSt6vectorIN8finalcut5FCharESaIS1_EE13_M_assign_auxIN9__gnu_cxx17__normal_iteratorIPKS1_S3_EEEEvT_SA_St20forward_iterator_tag@Base 0.7.2
+ _ZNSt6vectorIN8finalcut5FCharESaIS1_EE13_M_assign_auxIN9__gnu_cxx17__normal_iteratorIPS1_S3_EEEEvT_S9_St20forward_iterator_tag@Base 0.7.2
  _ZNSt6vectorIN8finalcut5FCharESaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_@Base 0.7.2
+ _ZNSt6vectorIN8finalcut5FCharESaIS1_EE17_M_realloc_insertIJRS1_EEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_@Base 0.7.2
  _ZNSt6vectorIN8finalcut5FCharESaIS1_EE17_M_realloc_insertIJS1_EEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_@Base 0.7.2
  _ZNSt6vectorIN8finalcut6FVTerm19FVTermPreprocessingESaIS2_EE17_M_realloc_insertIJRKS2_EEEvN9__gnu_cxx17__normal_iteratorIPS2_S4_EEDpOT_@Base 0.7.2
  _ZNSt6vectorIN8finalcut6FVTerm19FVTermPreprocessingESaIS2_EE8_M_eraseEN9__gnu_cxx17__normal_iteratorIPS2_S4_EE@Base 0.7.2
  _ZNSt6vectorIN8finalcut7FObject10FTimerDataESaIS2_EE17_M_realloc_insertIJRKS2_EEEvN9__gnu_cxx17__normal_iteratorIPS2_S4_EEDpOT_@Base 0.7.2
  _ZNSt6vectorIN8finalcut7FObject10FTimerDataESaIS2_EE6insertEN9__gnu_cxx17__normal_iteratorIPKS2_S4_EERS7_@Base 0.7.2
  _ZNSt6vectorIN8finalcut7FObject10FTimerDataESaIS2_EE8_M_eraseEN9__gnu_cxx17__normal_iteratorIPS2_S4_EE@Base 0.7.2
+ _ZNSt6vectorIN8finalcut7FStringESaIS1_EE12emplace_backIJNSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEEEEEEvDpOT_@Base 0.7.2
  _ZNSt6vectorIN8finalcut7FStringESaIS1_EE15_M_range_insertIN9__gnu_cxx17__normal_iteratorIPS1_S3_EEEEvS8_T_S9_St20forward_iterator_tag@Base 0.7.2
+ _ZNSt6vectorIN8finalcut7FStringESaIS1_EE17_M_realloc_insertIJNSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEEEEEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_@Base 0.7.2
  _ZNSt6vectorIN8finalcut7FStringESaIS1_EE17_M_realloc_insertIJS1_EEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_@Base 0.7.2
  _ZNSt6vectorIN8finalcut7FStringESaIS1_EED1Ev@Base 0.7.2
  _ZNSt6vectorIN8finalcut7FStringESaIS1_EED2Ev@Base 0.7.2
  _ZNSt6vectorIN8finalcut7FStringESaIS1_EEaSERKS3_@Base 0.7.2
  _ZNSt6vectorIN8finalcut7FWidget12FAcceleratorESaIS2_EE17_M_realloc_insertIJRKS2_EEEvN9__gnu_cxx17__normal_iteratorIPS2_S4_EEDpOT_@Base 0.7.2
+ _ZNSt6vectorIN8finalcut8SortTypeESaIS1_EE17_M_default_appendEm@Base 0.7.2
  _ZNSt6vectorIN8finalcut9FListView6HeaderESaIS2_EE17_M_realloc_insertIJRKS2_EEEvN9__gnu_cxx17__normal_iteratorIPS2_S4_EEDpOT_@Base 0.7.2
+ _ZNSt6vectorINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaIS5_EE12emplace_backIJRA6_KcEEEvDpOT_@Base 0.7.2
  _ZNSt6vectorINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaIS5_EE12emplace_backIJS5_EEEvDpOT_@Base 0.7.2
+ _ZNSt6vectorINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaIS5_EE17_M_realloc_insertIJRA15_KcEEEvN9__gnu_cxx17__normal_iteratorIPS5_S7_EEDpOT_@Base 0.7.2
+ _ZNSt6vectorINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaIS5_EE17_M_realloc_insertIJRA5_KcEEEvN9__gnu_cxx17__normal_iteratorIPS5_S7_EEDpOT_@Base 0.7.2
+ _ZNSt6vectorINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaIS5_EE17_M_realloc_insertIJRA6_KcEEEvN9__gnu_cxx17__normal_iteratorIPS5_S7_EEDpOT_@Base 0.7.2
+ _ZNSt6vectorINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaIS5_EE17_M_realloc_insertIJRKS5_EEEvN9__gnu_cxx17__normal_iteratorIPS5_S7_EEDpOT_@Base 0.7.2
  _ZNSt6vectorINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaIS5_EE17_M_realloc_insertIJS5_EEEvN9__gnu_cxx17__normal_iteratorIPS5_S7_EEDpOT_@Base 0.7.2
+ _ZNSt6vectorINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaIS5_EED1Ev@Base 0.7.2
+ _ZNSt6vectorINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaIS5_EED2Ev@Base 0.7.2
  _ZNSt6vectorINSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEEESaIS5_EE17_M_realloc_insertIJRKS5_EEEvN9__gnu_cxx17__normal_iteratorIPS5_S7_EEDpOT_@Base 0.7.2
  _ZNSt6vectorINSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEEESaIS5_EE9push_backERKS5_@Base 0.7.2
  _ZNSt6vectorINSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEEESaIS5_EEC1ERKS7_@Base 0.7.2
@@ -2939,11 +3587,15 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNSt6vectorINSt8__detail6_StateIwEESaIS2_EE17_M_realloc_insertIJS2_EEEvN9__gnu_cxx17__normal_iteratorIPS2_S4_EEDpOT_@Base 0.7.2
  _ZNSt6vectorIPN8finalcut10FStatusKeyESaIS2_EE17_M_realloc_insertIJRKS2_EEEvN9__gnu_cxx17__normal_iteratorIPS2_S4_EEDpOT_@Base 0.7.2
  _ZNSt6vectorIPN8finalcut10FStatusKeyESaIS2_EE8_M_eraseEN9__gnu_cxx17__normal_iteratorIPS2_S4_EE@Base 0.7.2
+ _ZNSt6vectorIPN8finalcut6FVTermESaIS2_EE12emplace_backIJS2_EEEvDpOT_@Base 0.7.2
+ _ZNSt6vectorIPN8finalcut6FVTermESaIS2_EE17_M_realloc_insertIJS2_EEEvN9__gnu_cxx17__normal_iteratorIPS2_S4_EEDpOT_@Base 0.7.2
+ _ZNSt6vectorIPN8finalcut6FVTermESaIS2_EE8_M_eraseEN9__gnu_cxx17__normal_iteratorIPS2_S4_EE@Base 0.7.2
  _ZNSt6vectorIPN8finalcut7FWidgetESaIS2_EE17_M_realloc_insertIJRKS2_EEEvN9__gnu_cxx17__normal_iteratorIPS2_S4_EEDpOT_@Base 0.7.2
  _ZNSt6vectorIPN8finalcut7FWidgetESaIS2_EE17_M_realloc_insertIJS2_EEEvN9__gnu_cxx17__normal_iteratorIPS2_S4_EEDpOT_@Base 0.7.2
  _ZNSt6vectorIPN8finalcut7FWidgetESaIS2_EE8_M_eraseEN9__gnu_cxx17__normal_iteratorIPS2_S4_EE@Base 0.7.2
  _ZNSt6vectorIPN8finalcut9FMenuItemESaIS2_EE17_M_realloc_insertIJRKS2_EEEvN9__gnu_cxx17__normal_iteratorIPS2_S4_EEDpOT_@Base 0.7.2
  _ZNSt6vectorIPN8finalcut9FMenuItemESaIS2_EE8_M_eraseEN9__gnu_cxx17__normal_iteratorIPS2_S4_EE@Base 0.7.2
+ _ZNSt6vectorISt10unique_ptrIN8finalcut6FVTerm19FVTermPreprocessingESt14default_deleteIS3_EESaIS6_EE17_M_realloc_insertIJS6_EEEvN9__gnu_cxx17__normal_iteratorIPS6_S8_EEDpOT_@Base 0.7.2
  _ZNSt6vectorISt4pairINSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEEES6_ESaIS7_EE12emplace_backIJS7_EEEvDpOT_@Base 0.7.2
  _ZNSt6vectorISt4pairINSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEEES6_ESaIS7_EE17_M_realloc_insertIJS7_EEEvN9__gnu_cxx17__normal_iteratorIPS7_S9_EEDpOT_@Base 0.7.2
  _ZNSt6vectorISt4pairINSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEEES6_ESaIS7_EED1Ev@Base 0.7.2
@@ -2968,6 +3620,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNSt7__cxx1111basic_regexIwNS_12regex_traitsIwEEED2Ev@Base 0.7.2
  _ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag@Base 0.7.2
  _ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPcEEvT_S7_St20forward_iterator_tag@Base 0.7.2
+ _ZNSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEE12_M_constructIN9__gnu_cxx17__normal_iteratorIPKwS4_EEEEvT_SB_St20forward_iterator_tag@Base 0.7.2
  _ZNSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEE12_M_constructIN9__gnu_cxx17__normal_iteratorIPwS4_EEEEvT_SA_St20forward_iterator_tag@Base 0.7.2
  _ZNSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEE12_M_constructIPKwEEvT_S8_St20forward_iterator_tag@Base 0.7.2
  _ZNSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEE12_M_constructIPwEEvT_S7_St20forward_iterator_tag@Base 0.7.2
@@ -2981,6 +3634,12 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNSt8_Rb_treeIN8finalcut6FMouse10mouse_typeESt4pairIKS2_PS1_ESt10_Select1stIS6_ESt4lessIS2_ESaIS6_EE24_M_get_insert_unique_posERS4_@Base 0.7.2
  _ZNSt8_Rb_treeIN8finalcut6FMouse10mouse_typeESt4pairIKS2_PS1_ESt10_Select1stIS6_ESt4lessIS2_ESaIS6_EE29_M_get_insert_hint_unique_posESt23_Rb_tree_const_iteratorIS6_ERS4_@Base 0.7.2
  _ZNSt8_Rb_treeIN8finalcut6FMouse10mouse_typeESt4pairIKS2_PS1_ESt10_Select1stIS6_ESt4lessIS2_ESaIS6_EE8_M_eraseEPSt13_Rb_tree_nodeIS6_E@Base 0.7.2
+ _ZNSt8_Rb_treeIN8finalcut6FMouse9MouseTypeESt4pairIKS2_St10unique_ptrIS1_St14default_deleteIS1_EEESt10_Select1stIS9_ESt4lessIS2_ESaIS9_EE14_M_insert_nodeEPSt18_Rb_tree_node_baseSH_PSt13_Rb_tree_nodeIS9_E@Base 0.7.2
+ _ZNSt8_Rb_treeIN8finalcut6FMouse9MouseTypeESt4pairIKS2_St10unique_ptrIS1_St14default_deleteIS1_EEESt10_Select1stIS9_ESt4lessIS2_ESaIS9_EE22_M_emplace_hint_uniqueIJRKSt21piecewise_construct_tSt5tupleIJOS2_EESK_IJEEEEESt17_Rb_tree_iteratorIS9_ESt23_Rb_tree_const_iteratorIS9_EDpOT_@Base 0.7.2
+ _ZNSt8_Rb_treeIN8finalcut6FMouse9MouseTypeESt4pairIKS2_St10unique_ptrIS1_St14default_deleteIS1_EEESt10_Select1stIS9_ESt4lessIS2_ESaIS9_EE22_M_emplace_hint_uniqueIJRKSt21piecewise_construct_tSt5tupleIJRS4_EESK_IJEEEEESt17_Rb_tree_iteratorIS9_ESt23_Rb_tree_const_iteratorIS9_EDpOT_@Base 0.7.2
+ _ZNSt8_Rb_treeIN8finalcut6FMouse9MouseTypeESt4pairIKS2_St10unique_ptrIS1_St14default_deleteIS1_EEESt10_Select1stIS9_ESt4lessIS2_ESaIS9_EE24_M_get_insert_unique_posERS4_@Base 0.7.2
+ _ZNSt8_Rb_treeIN8finalcut6FMouse9MouseTypeESt4pairIKS2_St10unique_ptrIS1_St14default_deleteIS1_EEESt10_Select1stIS9_ESt4lessIS2_ESaIS9_EE29_M_get_insert_hint_unique_posESt23_Rb_tree_const_iteratorIS9_ERS4_@Base 0.7.2
+ _ZNSt8_Rb_treeIN8finalcut6FMouse9MouseTypeESt4pairIKS2_St10unique_ptrIS1_St14default_deleteIS1_EEESt10_Select1stIS9_ESt4lessIS2_ESaIS9_EE8_M_eraseEPSt13_Rb_tree_nodeIS9_E@Base 0.7.2
  _ZNSt8_Rb_treeIlSt4pairIKllESt10_Select1stIS2_ESt4lessIlESaIS2_EE22_M_emplace_hint_uniqueIJRKSt21piecewise_construct_tSt5tupleIJRS1_EESD_IJEEEEESt17_Rb_tree_iteratorIS2_ESt23_Rb_tree_const_iteratorIS2_EDpOT_@Base 0.7.2
  _ZNSt8_Rb_treeIlSt4pairIKllESt10_Select1stIS2_ESt4lessIlESaIS2_EE24_M_get_insert_unique_posERS1_@Base 0.7.2
  _ZNSt8_Rb_treeIlSt4pairIKllESt10_Select1stIS2_ESt4lessIlESaIS2_EE29_M_get_insert_hint_unique_posESt23_Rb_tree_const_iteratorIS2_ERS1_@Base 0.7.2
@@ -3001,6 +3660,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNSt8__detail15_BracketMatcherINSt7__cxx1112regex_traitsIwEELb1ELb1EE22_M_add_character_classERKNS1_12basic_stringIwSt11char_traitsIwESaIwEEEb@Base 0.7.2
  _ZNSt8__detail15_BracketMatcherINSt7__cxx1112regex_traitsIwEELb1ELb1EED1Ev@Base 0.7.2
  _ZNSt8__detail15_BracketMatcherINSt7__cxx1112regex_traitsIwEELb1ELb1EED2Ev@Base 0.7.2
+ _ZNSt8__detail16_Backref_matcherIN9__gnu_cxx17__normal_iteratorIPKwNSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEEEEENS5_12regex_traitsIwEEE8_M_applyESB_SB_SB_SB_@Base 0.7.2
  _ZNSt8__detail17__regex_algo_implIN9__gnu_cxx17__normal_iteratorIPKwNSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEEEEESaINS5_9sub_matchISB_EEEwNS5_12regex_traitsIwEELNS_20_RegexExecutorPolicyE0ELb0EEEbT_SI_RNS5_13match_resultsISI_T0_EERKNS5_11basic_regexIT1_T2_EENSt15regex_constants15match_flag_typeE@Base 0.7.2
  _ZNSt8__detail17__regex_algo_implIPKwSaINSt7__cxx119sub_matchIS2_EEEwNS3_12regex_traitsIwEELNS_20_RegexExecutorPolicyE0ELb1EEEbT_SA_RNS3_13match_resultsISA_T0_EERKNS3_11basic_regexIT1_T2_EENSt15regex_constants15match_flag_typeE@Base 0.7.2
  _ZNSt8__detail4_NFAINSt7__cxx1112regex_traitsIwEEE15_M_insert_dummyEv@Base 0.7.2
@@ -3080,7 +3740,12 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNSt8__detail9_ExecutorIPKwSaINSt7__cxx119sub_matchIS2_EEENS3_12regex_traitsIwEELb1EE6_M_dfsENS9_11_Match_modeEl@Base 0.7.2
  _ZNSt8__detail9_ExecutorIPKwSaINSt7__cxx119sub_matchIS2_EEENS3_12regex_traitsIwEELb1EED1Ev@Base 0.7.2
  _ZNSt8__detail9_ExecutorIPKwSaINSt7__cxx119sub_matchIS2_EEENS3_12regex_traitsIwEELb1EED2Ev@Base 0.7.2
+ _ZNSt8__detail9_Map_baseIN8finalcut10FTermLinux4PairESt4pairIKS3_NS1_4FKeyEESaIS7_ENS_10_Select1stENS2_9PairEqualENS2_8PairHashENS_18_Mod_range_hashingENS_20_Default_ranged_hashENS_20_Prime_rehash_policyENS_17_Hashtable_traitsILb1ELb0ELb1EEELb1EEixEOS3_@Base 0.7.2
+ _ZNSt8__detail9_Map_baseIN8finalcut10FTermLinux4PairESt4pairIKS3_NS1_4FKeyEESaIS7_ENS_10_Select1stENS2_9PairEqualENS2_8PairHashENS_18_Mod_range_hashingENS_20_Default_ranged_hashENS_20_Prime_rehash_policyENS_17_Hashtable_traitsILb1ELb0ELb1EEELb1EEixERS5_@Base 0.7.2
+ _ZNSt8__detail9_Map_baseIN8finalcut4FKeyESt4pairIKS2_St8functionIFbvEEESaIS8_ENS_10_Select1stESt8equal_toIS2_ENS1_8FKeyHashENS_18_Mod_range_hashingENS_20_Default_ranged_hashENS_20_Prime_rehash_policyENS_17_Hashtable_traitsILb0ELb0ELb1EEELb1EEixEOS2_@Base 0.7.2
+ _ZNSt8__detail9_Map_baseIN8finalcut4FKeyESt4pairIKS2_St8functionIFvvEEESaIS8_ENS_10_Select1stESt8equal_toIS2_ENS1_8FKeyHashENS_18_Mod_range_hashingENS_20_Default_ranged_hashENS_20_Prime_rehash_policyENS_17_Hashtable_traitsILb0ELb0ELb1EEELb1EEixEOS2_@Base 0.7.2
  _ZNSt8__detail9_Map_baseINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESt4pairIKS6_N8finalcut2fc8encodingEESaISC_ENS_10_Select1stESt8equal_toIS6_ESt4hashIS6_ENS_18_Mod_range_hashingENS_20_Default_ranged_hashENS_20_Prime_rehash_policyENS_17_Hashtable_traitsILb1ELb0ELb1EEELb1EEixEOS6_@Base 0.7.2
+ _ZNSt8__detail9_Map_baseINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESt4pairIKS6_N8finalcut8EncodingEESaISB_ENS_10_Select1stESt8equal_toIS6_ESt4hashIS6_ENS_18_Mod_range_hashingENS_20_Default_ranged_hashENS_20_Prime_rehash_policyENS_17_Hashtable_traitsILb1ELb0ELb1EEELb1EEixEOS6_@Base 0.7.2
  _ZNSt8__detail9_Map_baseIhSt4pairIKhhESaIS3_ENS_10_Select1stESt8equal_toIhESt4hashIhENS_18_Mod_range_hashingENS_20_Default_ranged_hashENS_20_Prime_rehash_policyENS_17_Hashtable_traitsILb0ELb0ELb1EEELb1EEixERS2_@Base 0.7.2
  _ZNSt8__detail9_Map_baseIiSt4pairIKiSt8functionIFbvEEESaIS6_ENS_10_Select1stESt8equal_toIiESt4hashIiENS_18_Mod_range_hashingENS_20_Default_ranged_hashENS_20_Prime_rehash_policyENS_17_Hashtable_traitsILb0ELb0ELb1EEELb1EEixEOi@Base 0.7.2
  _ZNSt8__detail9_Map_baseIiSt4pairIKiSt8functionIFvPcEEESaIS7_ENS_10_Select1stESt8equal_toIiESt4hashIiENS_18_Mod_range_hashingENS_20_Default_ranged_hashENS_20_Prime_rehash_policyENS_17_Hashtable_traitsILb0ELb0ELb1EEELb1EEixEOi@Base 0.7.2
@@ -3098,6 +3763,8 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZNSt8functionIFbwEEC2INSt8__detail15_BracketMatcherINSt7__cxx1112regex_traitsIwEELb0ELb1EEEvvEET_@Base 0.7.2
  _ZNSt8functionIFbwEEC2INSt8__detail15_BracketMatcherINSt7__cxx1112regex_traitsIwEELb1ELb0EEEvvEET_@Base 0.7.2
  _ZNSt8functionIFbwEEC2INSt8__detail15_BracketMatcherINSt7__cxx1112regex_traitsIwEELb1ELb1EEEvvEET_@Base 0.7.2
+ _ZNSt8functionIFvN8finalcut6FColorEiiiEED1Ev@Base 0.7.2
+ _ZNSt8functionIFvN8finalcut6FColorEiiiEED2Ev@Base 0.7.2
  _ZNSt8functionIFvRKN8finalcut10FMouseDataEEEC1ERKS5_@Base 0.7.2
  _ZNSt8functionIFvRKN8finalcut10FMouseDataEEEC2ERKS5_@Base 0.7.2
  _ZNSt8functionIFvRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEEEC1ISt5_BindIFMN8finalcut4FLogEFvS7_EPSD_St12_PlaceholderILi1EEEEvvEET_@Base 0.7.2
@@ -3117,6 +3784,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIPN8finalcut11FFileDialog9FDirEntryESt6vectorIS4_SaIS4_EEEElNS0_5__ops15_Iter_comp_iterIPFbRKS4_SD_EEEEvT_SH_T0_T1_@Base 0.7.2
  _ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIPwSt6vectorIwSaIwEEEElNS0_5__ops15_Iter_less_iterEEvT_S9_T0_T1_@Base 0.7.2
  _ZSt19__throw_regex_errorNSt15regex_constants10error_typeEPKc@Base 0.7.2
+ _ZSt20__throw_bad_weak_ptrv@Base 0.7.2
  _ZSt22__final_insertion_sortIN9__gnu_cxx17__normal_iteratorIPN8finalcut11FFileDialog9FDirEntryESt6vectorIS4_SaIS4_EEEENS0_5__ops15_Iter_comp_iterIPFbRKS4_SD_EEEEvT_SH_T0_@Base 0.7.2
  _ZSt22__final_insertion_sortIN9__gnu_cxx17__normal_iteratorIPwSt6vectorIwSaIwEEEENS0_5__ops15_Iter_less_iterEEvT_S9_T0_@Base 0.7.2
  _ZSt25__unguarded_linear_insertIN9__gnu_cxx17__normal_iteratorIPN8finalcut11FFileDialog9FDirEntryESt6vectorIS4_SaIS4_EEEENS0_5__ops14_Val_comp_iterIPFbRKS4_SD_EEEEvT_T0_@Base 0.7.2
@@ -3124,7 +3792,10 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZSt8__uniqueIN9__gnu_cxx17__normal_iteratorIPwSt6vectorIwSaIwEEEENS0_5__ops19_Iter_equal_to_iterEET_S9_S9_T0_@Base 0.7.2
  _ZSt9__find_ifIN9__gnu_cxx17__normal_iteratorIPKNSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEEESt6vectorIS7_SaIS7_EEEENS0_5__ops16_Iter_equals_valIS8_EEET_SH_SH_T0_St26random_access_iterator_tag@Base 0.7.2
  _ZSt9__find_ifIN9__gnu_cxx17__normal_iteratorIPN8finalcut7FStringESt6vectorIS3_SaIS3_EEEENS0_5__ops16_Iter_equals_valIKS3_EEET_SD_SD_T0_St26random_access_iterator_tag@Base 0.7.2
+ _ZSt9__find_ifIPKN8finalcut7FKeyMap6KeyMapEN9__gnu_cxx5__ops10_Iter_predIZNS0_9FKeyboard11getKnownKeyEvEUlRS3_E_EEET_SC_SC_T0_St26random_access_iterator_tag@Base 0.7.2
+ _ZSt9__find_ifIPKN8finalcut7FKeyMap9KeyCapMapEN9__gnu_cxx5__ops10_Iter_predIZNS0_9FKeyboard13getTermcapKeyEvEUlRS3_E_EEET_SC_SC_T0_St26random_access_iterator_tag@Base 0.7.2
  _ZTIFiiE@Base 0.7.2
+ _ZTIFvN8finalcut6FColorEiiiE@Base 0.7.2
  _ZTIFvtiiiE@Base 0.7.2
  _ZTIN8finalcut10FMouseDataE@Base 0.7.2
  _ZTIN8finalcut10FScrollbarE@Base 0.7.2
@@ -3137,11 +3808,13 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZTIN8finalcut11FScrollViewE@Base 0.7.2
  _ZTIN8finalcut11FSystemImplE@Base 0.7.2
  _ZTIN8finalcut11FTermBufferE@Base 0.7.2
+ _ZTIN8finalcut11FTermOutputE@Base 0.7.2
  _ZTIN8finalcut12FApplicationE@Base 0.7.2
  _ZTIN8finalcut12FButtonGroupE@Base 0.7.2
  _ZTIN8finalcut12FListBoxItemE@Base 0.7.2
  _ZTIN8finalcut12FProgressbarE@Base 0.7.2
  _ZTIN8finalcut12FRadioButtonE@Base 0.7.2
+ _ZTIN8finalcut12FVTermBufferE@Base 0.7.2
  _ZTIN8finalcut13FColorPaletteE@Base 0.7.2
  _ZTIN8finalcut13FListViewItemE@Base 0.7.2
  _ZTIN8finalcut13FMouseControlE@Base 0.7.2
@@ -3160,8 +3833,10 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZTIN8finalcut22default8ColorDarkThemeE@Base 0.7.2
  _ZTIN8finalcut23default16ColorDarkThemeE@Base 0.7.2
  _ZTIN8finalcut25default16DarkColorPaletteE@Base 0.7.2
+ _ZTIN8finalcut4FLog11current_logMUlRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEE_E@Base 0.7.2
  _ZTIN8finalcut4FLogE@Base 0.7.2
  _ZTIN8finalcut5FDataIDnEE@Base 0.7.2
+ _ZTIN8finalcut5FDataIPNS_6FVTermEEE@Base 0.7.2
  _ZTIN8finalcut5FMenuE@Base 0.7.2
  _ZTIN8finalcut5FRectE@Base 0.7.2
  _ZTIN8finalcut5FSizeE@Base 0.7.2
@@ -3173,6 +3848,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZTIN8finalcut7FDialogE@Base 0.7.2
  _ZTIN8finalcut7FLoggerE@Base 0.7.2
  _ZTIN8finalcut7FObjectE@Base 0.7.2
+ _ZTIN8finalcut7FOutputE@Base 0.7.2
  _ZTIN8finalcut7FStringE@Base 0.7.2
  _ZTIN8finalcut7FSwitchE@Base 0.7.2
  _ZTIN8finalcut7FSystemE@Base 0.7.2
@@ -3210,9 +3886,11 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZTINSt8__detail15_BracketMatcherINSt7__cxx1112regex_traitsIwEELb1ELb0EEE@Base 0.7.2
  _ZTINSt8__detail15_BracketMatcherINSt7__cxx1112regex_traitsIwEELb1ELb1EEE@Base 0.7.2
  _ZTIPFiiE@Base 0.7.2
+ _ZTIPFvN8finalcut6FColorEiiiE@Base 0.7.2
  _ZTIPFvtiiiE@Base 0.7.2
  _ZTISt11_Mutex_baseILN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTISt15_Sp_counted_ptrIPN8finalcut5FDataIDnEELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
+ _ZTISt15_Sp_counted_ptrIPN8finalcut5FDataIPNS0_6FVTermEEELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTISt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTISt17_Weak_result_typeIMN8finalcut10FStatusBarEFvPKNS0_10FStatusKeyEEE@Base 0.7.2
  _ZTISt17_Weak_result_typeIMN8finalcut11FFileDialogEFvvEE@Base 0.7.2
@@ -3252,6 +3930,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZTISt22_Weak_result_type_implISt5_BindIFMN8finalcut9FTextViewEFvPKNS1_7FWidgetEEPS2_PNS1_10FScrollbarEEEE@Base 0.7.2
  _ZTISt23_Sp_counted_ptr_inplaceIN8finalcut10FScrollbarESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTISt23_Sp_counted_ptr_inplaceIN8finalcut11FMouseEventESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
+ _ZTISt23_Sp_counted_ptr_inplaceIN8finalcut11FTermOutputESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTISt23_Sp_counted_ptr_inplaceIN8finalcut18default8ColorThemeESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTISt23_Sp_counted_ptr_inplaceIN8finalcut19default16ColorThemeESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTISt23_Sp_counted_ptr_inplaceIN8finalcut20default8ColorPaletteESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
@@ -3259,9 +3938,14 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZTISt23_Sp_counted_ptr_inplaceIN8finalcut22default8ColorDarkThemeESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTISt23_Sp_counted_ptr_inplaceIN8finalcut23default16ColorDarkThemeESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTISt23_Sp_counted_ptr_inplaceIN8finalcut25default16DarkColorPaletteESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
+ _ZTISt23_Sp_counted_ptr_inplaceIN8finalcut6FPointESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTISt23_Sp_counted_ptr_inplaceIN8finalcut7FLoggerESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTISt23_Sp_counted_ptr_inplaceINSt8__detail4_NFAINSt7__cxx1112regex_traitsIwEEEESaIS5_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTISt23_Sp_counted_ptr_inplaceISt5arrayIN8finalcut2fc7FKeyMapELm188EESaIS4_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
+ _ZTISt23_Sp_counted_ptr_inplaceISt5arrayIN8finalcut7FKeyMap9KeyCapMapELm188EESaIS4_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
+ _ZTISt23_Sp_counted_ptr_inplaceISt5queueIN8finalcut11FTermOutput10OutputDataESt5dequeIS3_SaIS3_EEESaIS7_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
+ _ZTISt23_Sp_counted_ptr_inplaceISt6vectorIPN8finalcut6FVTermESaIS3_EESaIS5_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
+ _ZTISt23enable_shared_from_thisIN8finalcut7FOutputEE@Base 0.7.2
  _ZTISt24_Weak_result_type_memfunIMN8finalcut10FStatusBarEFvPKNS0_10FStatusKeyEELb1EE@Base 0.7.2
  _ZTISt24_Weak_result_type_memfunIMN8finalcut11FFileDialogEFvvELb1EE@Base 0.7.2
  _ZTISt24_Weak_result_type_memfunIMN8finalcut11FMessageBoxEFvNS1_10ButtonTypeEELb1EE@Base 0.7.2
@@ -3327,6 +4011,8 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZTIZN8finalcut11FScrollView15mapKeyFunctionsEvEUlvE6_@Base 0.7.2
  _ZTIZN8finalcut11FScrollView15mapKeyFunctionsEvEUlvE_@Base 0.7.2
  _ZTIZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIFvPcEESt4hashIiESt8equal_toIiESaISt4pairIKiS5_EEEEUlPKcE0_@Base 0.7.2
+ _ZTIZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIFvPcEESt4hashIiESt8equal_toIiESaISt4pairIKiS5_EEEEUlPKcE10_@Base 0.7.2
+ _ZTIZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIFvPcEESt4hashIiESt8equal_toIiESaISt4pairIKiS5_EEEEUlPKcE11_@Base 0.7.2
  _ZTIZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIFvPcEESt4hashIiESt8equal_toIiESaISt4pairIKiS5_EEEEUlPKcE1_@Base 0.7.2
  _ZTIZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIFvPcEESt4hashIiESt8equal_toIiESaISt4pairIKiS5_EEEEUlPKcE2_@Base 0.7.2
  _ZTIZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIFvPcEESt4hashIiESt8equal_toIiESaISt4pairIKiS5_EEEEUlPKcE3_@Base 0.7.2
@@ -3337,9 +4023,60 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZTIZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIFvPcEESt4hashIiESt8equal_toIiESaISt4pairIKiS5_EEEEUlPKcE8_@Base 0.7.2
  _ZTIZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIFvPcEESt4hashIiESt8equal_toIiESaISt4pairIKiS5_EEEEUlPKcE9_@Base 0.7.2
  _ZTIZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIFvPcEESt4hashIiESt8equal_toIiESaISt4pairIKiS5_EEEEUlPKcE_@Base 0.7.2
+ _ZTIZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE0_@Base 0.7.2
+ _ZTIZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE10_@Base 0.7.2
+ _ZTIZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE11_@Base 0.7.2
+ _ZTIZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE12_@Base 0.7.2
+ _ZTIZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE13_@Base 0.7.2
+ _ZTIZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE14_@Base 0.7.2
+ _ZTIZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE1_@Base 0.7.2
+ _ZTIZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE2_@Base 0.7.2
+ _ZTIZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE3_@Base 0.7.2
+ _ZTIZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE4_@Base 0.7.2
+ _ZTIZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE5_@Base 0.7.2
+ _ZTIZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE6_@Base 0.7.2
+ _ZTIZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE7_@Base 0.7.2
+ _ZTIZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE8_@Base 0.7.2
+ _ZTIZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE9_@Base 0.7.2
+ _ZTIZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE_@Base 0.7.2
+ _ZTIZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE0_@Base 0.7.2
+ _ZTIZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE10_@Base 0.7.2
+ _ZTIZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE11_@Base 0.7.2
+ _ZTIZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE12_@Base 0.7.2
+ _ZTIZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE13_@Base 0.7.2
+ _ZTIZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE14_@Base 0.7.2
+ _ZTIZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE1_@Base 0.7.2
+ _ZTIZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE2_@Base 0.7.2
+ _ZTIZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE3_@Base 0.7.2
+ _ZTIZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE4_@Base 0.7.2
+ _ZTIZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE5_@Base 0.7.2
+ _ZTIZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE6_@Base 0.7.2
+ _ZTIZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE7_@Base 0.7.2
+ _ZTIZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE8_@Base 0.7.2
+ _ZTIZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE9_@Base 0.7.2
+ _ZTIZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE_@Base 0.7.2
+ _ZTIZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE0_@Base 0.7.2
+ _ZTIZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE1_@Base 0.7.2
+ _ZTIZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE2_@Base 0.7.2
+ _ZTIZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE3_@Base 0.7.2
+ _ZTIZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE4_@Base 0.7.2
+ _ZTIZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE5_@Base 0.7.2
+ _ZTIZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE6_@Base 0.7.2
+ _ZTIZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE7_@Base 0.7.2
+ _ZTIZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE8_@Base 0.7.2
+ _ZTIZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE_@Base 0.7.2
  _ZTIZN8finalcut9FListView15mapKeyFunctionsEvEUlvE0_@Base 0.7.2
+ _ZTIZN8finalcut9FListView15mapKeyFunctionsEvEUlvE10_@Base 0.7.2
+ _ZTIZN8finalcut9FListView15mapKeyFunctionsEvEUlvE11_@Base 0.7.2
  _ZTIZN8finalcut9FListView15mapKeyFunctionsEvEUlvE1_@Base 0.7.2
  _ZTIZN8finalcut9FListView15mapKeyFunctionsEvEUlvE2_@Base 0.7.2
+ _ZTIZN8finalcut9FListView15mapKeyFunctionsEvEUlvE3_@Base 0.7.2
+ _ZTIZN8finalcut9FListView15mapKeyFunctionsEvEUlvE4_@Base 0.7.2
+ _ZTIZN8finalcut9FListView15mapKeyFunctionsEvEUlvE5_@Base 0.7.2
+ _ZTIZN8finalcut9FListView15mapKeyFunctionsEvEUlvE6_@Base 0.7.2
+ _ZTIZN8finalcut9FListView15mapKeyFunctionsEvEUlvE7_@Base 0.7.2
+ _ZTIZN8finalcut9FListView15mapKeyFunctionsEvEUlvE8_@Base 0.7.2
+ _ZTIZN8finalcut9FListView15mapKeyFunctionsEvEUlvE9_@Base 0.7.2
  _ZTIZN8finalcut9FListView15mapKeyFunctionsEvEUlvE_@Base 0.7.2
  _ZTIZN8finalcut9FTextView15mapKeyFunctionsEvEUlvE0_@Base 0.7.2
  _ZTIZN8finalcut9FTextView15mapKeyFunctionsEvEUlvE1_@Base 0.7.2
@@ -3350,6 +4087,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZTIZN8finalcut9FTextView15mapKeyFunctionsEvEUlvE6_@Base 0.7.2
  _ZTIZN8finalcut9FTextView15mapKeyFunctionsEvEUlvE_@Base 0.7.2
  _ZTSFiiE@Base 0.7.2
+ _ZTSFvN8finalcut6FColorEiiiE@Base 0.7.2
  _ZTSFvtiiiE@Base 0.7.2
  _ZTSN8finalcut10FMouseDataE@Base 0.7.2
  _ZTSN8finalcut10FScrollbarE@Base 0.7.2
@@ -3362,11 +4100,13 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZTSN8finalcut11FScrollViewE@Base 0.7.2
  _ZTSN8finalcut11FSystemImplE@Base 0.7.2
  _ZTSN8finalcut11FTermBufferE@Base 0.7.2
+ _ZTSN8finalcut11FTermOutputE@Base 0.7.2
  _ZTSN8finalcut12FApplicationE@Base 0.7.2
  _ZTSN8finalcut12FButtonGroupE@Base 0.7.2
  _ZTSN8finalcut12FListBoxItemE@Base 0.7.2
  _ZTSN8finalcut12FProgressbarE@Base 0.7.2
  _ZTSN8finalcut12FRadioButtonE@Base 0.7.2
+ _ZTSN8finalcut12FVTermBufferE@Base 0.7.2
  _ZTSN8finalcut13FColorPaletteE@Base 0.7.2
  _ZTSN8finalcut13FListViewItemE@Base 0.7.2
  _ZTSN8finalcut13FMouseControlE@Base 0.7.2
@@ -3385,8 +4125,10 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZTSN8finalcut22default8ColorDarkThemeE@Base 0.7.2
  _ZTSN8finalcut23default16ColorDarkThemeE@Base 0.7.2
  _ZTSN8finalcut25default16DarkColorPaletteE@Base 0.7.2
+ _ZTSN8finalcut4FLog11current_logMUlRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEE_E@Base 0.7.2
  _ZTSN8finalcut4FLogE@Base 0.7.2
  _ZTSN8finalcut5FDataIDnEE@Base 0.7.2
+ _ZTSN8finalcut5FDataIPNS_6FVTermEEE@Base 0.7.2
  _ZTSN8finalcut5FMenuE@Base 0.7.2
  _ZTSN8finalcut5FRectE@Base 0.7.2
  _ZTSN8finalcut5FSizeE@Base 0.7.2
@@ -3398,6 +4140,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZTSN8finalcut7FDialogE@Base 0.7.2
  _ZTSN8finalcut7FLoggerE@Base 0.7.2
  _ZTSN8finalcut7FObjectE@Base 0.7.2
+ _ZTSN8finalcut7FOutputE@Base 0.7.2
  _ZTSN8finalcut7FStringE@Base 0.7.2
  _ZTSN8finalcut7FSwitchE@Base 0.7.2
  _ZTSN8finalcut7FSystemE@Base 0.7.2
@@ -3435,9 +4178,11 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZTSNSt8__detail15_BracketMatcherINSt7__cxx1112regex_traitsIwEELb1ELb0EEE@Base 0.7.2
  _ZTSNSt8__detail15_BracketMatcherINSt7__cxx1112regex_traitsIwEELb1ELb1EEE@Base 0.7.2
  _ZTSPFiiE@Base 0.7.2
+ _ZTSPFvN8finalcut6FColorEiiiE@Base 0.7.2
  _ZTSPFvtiiiE@Base 0.7.2
  _ZTSSt11_Mutex_baseILN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTSSt15_Sp_counted_ptrIPN8finalcut5FDataIDnEELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
+ _ZTSSt15_Sp_counted_ptrIPN8finalcut5FDataIPNS0_6FVTermEEELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTSSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTSSt17_Weak_result_typeIMN8finalcut10FStatusBarEFvPKNS0_10FStatusKeyEEE@Base 0.7.2
  _ZTSSt17_Weak_result_typeIMN8finalcut11FFileDialogEFvvEE@Base 0.7.2
@@ -3478,6 +4223,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZTSSt22_Weak_result_type_implISt5_BindIFMN8finalcut9FTextViewEFvPKNS1_7FWidgetEEPS2_PNS1_10FScrollbarEEEE@Base 0.7.2
  _ZTSSt23_Sp_counted_ptr_inplaceIN8finalcut10FScrollbarESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTSSt23_Sp_counted_ptr_inplaceIN8finalcut11FMouseEventESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
+ _ZTSSt23_Sp_counted_ptr_inplaceIN8finalcut11FTermOutputESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTSSt23_Sp_counted_ptr_inplaceIN8finalcut18default8ColorThemeESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTSSt23_Sp_counted_ptr_inplaceIN8finalcut19default16ColorThemeESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTSSt23_Sp_counted_ptr_inplaceIN8finalcut20default8ColorPaletteESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
@@ -3485,9 +4231,14 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZTSSt23_Sp_counted_ptr_inplaceIN8finalcut22default8ColorDarkThemeESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTSSt23_Sp_counted_ptr_inplaceIN8finalcut23default16ColorDarkThemeESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTSSt23_Sp_counted_ptr_inplaceIN8finalcut25default16DarkColorPaletteESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
+ _ZTSSt23_Sp_counted_ptr_inplaceIN8finalcut6FPointESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTSSt23_Sp_counted_ptr_inplaceIN8finalcut7FLoggerESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTSSt23_Sp_counted_ptr_inplaceINSt8__detail4_NFAINSt7__cxx1112regex_traitsIwEEEESaIS5_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTSSt23_Sp_counted_ptr_inplaceISt5arrayIN8finalcut2fc7FKeyMapELm188EESaIS4_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
+ _ZTSSt23_Sp_counted_ptr_inplaceISt5arrayIN8finalcut7FKeyMap9KeyCapMapELm188EESaIS4_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
+ _ZTSSt23_Sp_counted_ptr_inplaceISt5queueIN8finalcut11FTermOutput10OutputDataESt5dequeIS3_SaIS3_EEESaIS7_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
+ _ZTSSt23_Sp_counted_ptr_inplaceISt6vectorIPN8finalcut6FVTermESaIS3_EESaIS5_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
+ _ZTSSt23enable_shared_from_thisIN8finalcut7FOutputEE@Base 0.7.2
  _ZTSSt24_Weak_result_type_memfunIMN8finalcut10FStatusBarEFvPKNS0_10FStatusKeyEELb1EE@Base 0.7.2
  _ZTSSt24_Weak_result_type_memfunIMN8finalcut11FFileDialogEFvvELb1EE@Base 0.7.2
  _ZTSSt24_Weak_result_type_memfunIMN8finalcut11FMessageBoxEFvNS1_10ButtonTypeEELb1EE@Base 0.7.2
@@ -3553,6 +4304,8 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZTSZN8finalcut11FScrollView15mapKeyFunctionsEvEUlvE6_@Base 0.7.2
  _ZTSZN8finalcut11FScrollView15mapKeyFunctionsEvEUlvE_@Base 0.7.2
  _ZTSZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIFvPcEESt4hashIiESt8equal_toIiESaISt4pairIKiS5_EEEEUlPKcE0_@Base 0.7.2
+ _ZTSZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIFvPcEESt4hashIiESt8equal_toIiESaISt4pairIKiS5_EEEEUlPKcE10_@Base 0.7.2
+ _ZTSZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIFvPcEESt4hashIiESt8equal_toIiESaISt4pairIKiS5_EEEEUlPKcE11_@Base 0.7.2
  _ZTSZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIFvPcEESt4hashIiESt8equal_toIiESaISt4pairIKiS5_EEEEUlPKcE1_@Base 0.7.2
  _ZTSZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIFvPcEESt4hashIiESt8equal_toIiESaISt4pairIKiS5_EEEEUlPKcE2_@Base 0.7.2
  _ZTSZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIFvPcEESt4hashIiESt8equal_toIiESaISt4pairIKiS5_EEEEUlPKcE3_@Base 0.7.2
@@ -3563,9 +4316,60 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZTSZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIFvPcEESt4hashIiESt8equal_toIiESaISt4pairIKiS5_EEEEUlPKcE8_@Base 0.7.2
  _ZTSZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIFvPcEESt4hashIiESt8equal_toIiESaISt4pairIKiS5_EEEEUlPKcE9_@Base 0.7.2
  _ZTSZN8finalcut12FApplication16setCmdOptionsMapERSt13unordered_mapIiSt8functionIFvPcEESt4hashIiESt8equal_toIiESaISt4pairIKiS5_EEEEUlPKcE_@Base 0.7.2
+ _ZTSZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE0_@Base 0.7.2
+ _ZTSZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE10_@Base 0.7.2
+ _ZTSZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE11_@Base 0.7.2
+ _ZTSZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE12_@Base 0.7.2
+ _ZTSZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE13_@Base 0.7.2
+ _ZTSZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE14_@Base 0.7.2
+ _ZTSZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE1_@Base 0.7.2
+ _ZTSZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE2_@Base 0.7.2
+ _ZTSZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE3_@Base 0.7.2
+ _ZTSZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE4_@Base 0.7.2
+ _ZTSZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE5_@Base 0.7.2
+ _ZTSZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE6_@Base 0.7.2
+ _ZTSZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE7_@Base 0.7.2
+ _ZTSZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE8_@Base 0.7.2
+ _ZTSZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE9_@Base 0.7.2
+ _ZTSZN8finalcut7FDialog15mapKeyFunctionsEvEUlvE_@Base 0.7.2
+ _ZTSZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE0_@Base 0.7.2
+ _ZTSZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE10_@Base 0.7.2
+ _ZTSZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE11_@Base 0.7.2
+ _ZTSZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE12_@Base 0.7.2
+ _ZTSZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE13_@Base 0.7.2
+ _ZTSZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE14_@Base 0.7.2
+ _ZTSZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE1_@Base 0.7.2
+ _ZTSZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE2_@Base 0.7.2
+ _ZTSZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE3_@Base 0.7.2
+ _ZTSZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE4_@Base 0.7.2
+ _ZTSZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE5_@Base 0.7.2
+ _ZTSZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE6_@Base 0.7.2
+ _ZTSZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE7_@Base 0.7.2
+ _ZTSZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE8_@Base 0.7.2
+ _ZTSZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE9_@Base 0.7.2
+ _ZTSZN8finalcut8FListBox15mapKeyFunctionsEvEUlvE_@Base 0.7.2
+ _ZTSZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE0_@Base 0.7.2
+ _ZTSZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE1_@Base 0.7.2
+ _ZTSZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE2_@Base 0.7.2
+ _ZTSZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE3_@Base 0.7.2
+ _ZTSZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE4_@Base 0.7.2
+ _ZTSZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE5_@Base 0.7.2
+ _ZTSZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE6_@Base 0.7.2
+ _ZTSZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE7_@Base 0.7.2
+ _ZTSZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE8_@Base 0.7.2
+ _ZTSZN8finalcut9FLineEdit15mapKeyFunctionsEvEUlvE_@Base 0.7.2
  _ZTSZN8finalcut9FListView15mapKeyFunctionsEvEUlvE0_@Base 0.7.2
+ _ZTSZN8finalcut9FListView15mapKeyFunctionsEvEUlvE10_@Base 0.7.2
+ _ZTSZN8finalcut9FListView15mapKeyFunctionsEvEUlvE11_@Base 0.7.2
  _ZTSZN8finalcut9FListView15mapKeyFunctionsEvEUlvE1_@Base 0.7.2
  _ZTSZN8finalcut9FListView15mapKeyFunctionsEvEUlvE2_@Base 0.7.2
+ _ZTSZN8finalcut9FListView15mapKeyFunctionsEvEUlvE3_@Base 0.7.2
+ _ZTSZN8finalcut9FListView15mapKeyFunctionsEvEUlvE4_@Base 0.7.2
+ _ZTSZN8finalcut9FListView15mapKeyFunctionsEvEUlvE5_@Base 0.7.2
+ _ZTSZN8finalcut9FListView15mapKeyFunctionsEvEUlvE6_@Base 0.7.2
+ _ZTSZN8finalcut9FListView15mapKeyFunctionsEvEUlvE7_@Base 0.7.2
+ _ZTSZN8finalcut9FListView15mapKeyFunctionsEvEUlvE8_@Base 0.7.2
+ _ZTSZN8finalcut9FListView15mapKeyFunctionsEvEUlvE9_@Base 0.7.2
  _ZTSZN8finalcut9FListView15mapKeyFunctionsEvEUlvE_@Base 0.7.2
  _ZTSZN8finalcut9FTextView15mapKeyFunctionsEvEUlvE0_@Base 0.7.2
  _ZTSZN8finalcut9FTextView15mapKeyFunctionsEvEUlvE1_@Base 0.7.2
@@ -3587,11 +4391,13 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZTVN8finalcut11FScrollViewE@Base 0.7.2
  _ZTVN8finalcut11FSystemImplE@Base 0.7.2
  _ZTVN8finalcut11FTermBufferE@Base 0.7.2
+ _ZTVN8finalcut11FTermOutputE@Base 0.7.2
  _ZTVN8finalcut12FApplicationE@Base 0.7.2
  _ZTVN8finalcut12FButtonGroupE@Base 0.7.2
  _ZTVN8finalcut12FListBoxItemE@Base 0.7.2
  _ZTVN8finalcut12FProgressbarE@Base 0.7.2
  _ZTVN8finalcut12FRadioButtonE@Base 0.7.2
+ _ZTVN8finalcut12FVTermBufferE@Base 0.7.2
  _ZTVN8finalcut13FColorPaletteE@Base 0.7.2
  _ZTVN8finalcut13FListViewItemE@Base 0.7.2
  _ZTVN8finalcut13FMouseControlE@Base 0.7.2
@@ -3612,6 +4418,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZTVN8finalcut25default16DarkColorPaletteE@Base 0.7.2
  _ZTVN8finalcut4FLogE@Base 0.7.2
  _ZTVN8finalcut5FDataIDnEE@Base 0.7.2
+ _ZTVN8finalcut5FDataIPNS_6FVTermEEE@Base 0.7.2
  _ZTVN8finalcut5FMenuE@Base 0.7.2
  _ZTVN8finalcut5FRectE@Base 0.7.2
  _ZTVN8finalcut5FSizeE@Base 0.7.2
@@ -3623,6 +4430,7 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZTVN8finalcut7FDialogE@Base 0.7.2
  _ZTVN8finalcut7FLoggerE@Base 0.7.2
  _ZTVN8finalcut7FObjectE@Base 0.7.2
+ _ZTVN8finalcut7FOutputE@Base 0.7.2
  _ZTVN8finalcut7FStringE@Base 0.7.2
  _ZTVN8finalcut7FSwitchE@Base 0.7.2
  _ZTVN8finalcut7FSystemE@Base 0.7.2
@@ -3643,8 +4451,10 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZTVN8finalcut9FMouseX11E@Base 0.7.2
  _ZTVN8finalcut9FTextViewE@Base 0.7.2
  _ZTVSt15_Sp_counted_ptrIPN8finalcut5FDataIDnEELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
+ _ZTVSt15_Sp_counted_ptrIPN8finalcut5FDataIPNS0_6FVTermEEELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTVSt23_Sp_counted_ptr_inplaceIN8finalcut10FScrollbarESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTVSt23_Sp_counted_ptr_inplaceIN8finalcut11FMouseEventESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
+ _ZTVSt23_Sp_counted_ptr_inplaceIN8finalcut11FTermOutputESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTVSt23_Sp_counted_ptr_inplaceIN8finalcut18default8ColorThemeESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTVSt23_Sp_counted_ptr_inplaceIN8finalcut19default16ColorThemeESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTVSt23_Sp_counted_ptr_inplaceIN8finalcut20default8ColorPaletteESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
@@ -3652,9 +4462,13 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZTVSt23_Sp_counted_ptr_inplaceIN8finalcut22default8ColorDarkThemeESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTVSt23_Sp_counted_ptr_inplaceIN8finalcut23default16ColorDarkThemeESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTVSt23_Sp_counted_ptr_inplaceIN8finalcut25default16DarkColorPaletteESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
+ _ZTVSt23_Sp_counted_ptr_inplaceIN8finalcut6FPointESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTVSt23_Sp_counted_ptr_inplaceIN8finalcut7FLoggerESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTVSt23_Sp_counted_ptr_inplaceINSt8__detail4_NFAINSt7__cxx1112regex_traitsIwEEEESaIS5_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZTVSt23_Sp_counted_ptr_inplaceISt5arrayIN8finalcut2fc7FKeyMapELm188EESaIS4_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
+ _ZTVSt23_Sp_counted_ptr_inplaceISt5arrayIN8finalcut7FKeyMap9KeyCapMapELm188EESaIS4_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
+ _ZTVSt23_Sp_counted_ptr_inplaceISt5queueIN8finalcut11FTermOutput10OutputDataESt5dequeIS3_SaIS3_EEESaIS7_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
+ _ZTVSt23_Sp_counted_ptr_inplaceISt6vectorIPN8finalcut6FVTermESaIS3_EESaIS5_ELN9__gnu_cxx12_Lock_policyE2EE@Base 0.7.2
  _ZThn16_N8finalcut13FStringStreamD0Ev@Base 0.7.2
  _ZThn16_N8finalcut13FStringStreamD1Ev@Base 0.7.2
  _ZThn32_N8finalcut10FScrollbar7onTimerEPNS_11FTimerEventE@Base 0.7.2
@@ -3766,6 +4580,17 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZThn32_NK8finalcut9FListView12getClassNameEv@Base 0.7.2
  _ZThn32_NK8finalcut9FMenuItem12getClassNameEv@Base 0.7.2
  _ZThn32_NK8finalcut9FTextView12getClassNameEv@Base 0.7.2
+ _ZThn632_N8finalcut15FDialogListMenuD0Ev@Base 0.7.2
+ _ZThn632_N8finalcut15FDialogListMenuD1Ev@Base 0.7.2
+ _ZThn632_N8finalcut5FMenu25selectItem_PostProcessingEPNS_9FMenuItemE@Base 0.7.2
+ _ZThn632_N8finalcut5FMenuD0Ev@Base 0.7.2
+ _ZThn632_N8finalcut5FMenuD1Ev@Base 0.7.2
+ _ZThn632_N8finalcut8FMenuBar25selectItem_PostProcessingEPNS_9FMenuItemE@Base 0.7.2
+ _ZThn632_N8finalcut8FMenuBarD0Ev@Base 0.7.2
+ _ZThn632_N8finalcut8FMenuBarD1Ev@Base 0.7.2
+ _ZThn632_NK8finalcut15FDialogListMenu12getClassNameEv@Base 0.7.2
+ _ZThn632_NK8finalcut5FMenu12getClassNameEv@Base 0.7.2
+ _ZThn632_NK8finalcut8FMenuBar12getClassNameEv@Base 0.7.2
  _ZThn648_N8finalcut15FDialogListMenuD0Ev@Base 0.7.2
  _ZThn648_N8finalcut15FDialogListMenuD1Ev@Base 0.7.2
  _ZThn648_N8finalcut5FMenuD0Ev@Base 0.7.2
@@ -3775,9 +4600,139 @@ libfinal.so.0 libfinal0 #MINVER#
  _ZThn648_NK8finalcut15FDialogListMenu12getClassNameEv@Base 0.7.2
  _ZThn648_NK8finalcut5FMenu12getClassNameEv@Base 0.7.2
  _ZThn648_NK8finalcut8FMenuBar12getClassNameEv@Base 0.7.2
+ _ZThn64_N8finalcut10FScrollbar7onTimerEPNS_11FTimerEventE@Base 0.7.2
+ _ZThn64_N8finalcut10FScrollbarD0Ev@Base 0.7.2
+ _ZThn64_N8finalcut10FScrollbarD1Ev@Base 0.7.2
+ _ZThn64_N8finalcut10FStatusBarD0Ev@Base 0.7.2
+ _ZThn64_N8finalcut10FStatusBarD1Ev@Base 0.7.2
+ _ZThn64_N8finalcut10FStatusKeyD0Ev@Base 0.7.2
+ _ZThn64_N8finalcut10FStatusKeyD1Ev@Base 0.7.2
+ _ZThn64_N8finalcut11FFileDialogD0Ev@Base 0.7.2
+ _ZThn64_N8finalcut11FFileDialogD1Ev@Base 0.7.2
+ _ZThn64_N8finalcut11FMessageBoxD0Ev@Base 0.7.2
+ _ZThn64_N8finalcut11FMessageBoxD1Ev@Base 0.7.2
+ _ZThn64_N8finalcut11FScrollViewD0Ev@Base 0.7.2
+ _ZThn64_N8finalcut11FScrollViewD1Ev@Base 0.7.2
+ _ZThn64_N8finalcut12FApplication18performTimerActionEPNS_7FObjectEPNS_6FEventE@Base 0.7.2
+ _ZThn64_N8finalcut12FApplicationD0Ev@Base 0.7.2
+ _ZThn64_N8finalcut12FApplicationD1Ev@Base 0.7.2
+ _ZThn64_N8finalcut12FButtonGroupD0Ev@Base 0.7.2
+ _ZThn64_N8finalcut12FButtonGroupD1Ev@Base 0.7.2
+ _ZThn64_N8finalcut12FProgressbarD0Ev@Base 0.7.2
+ _ZThn64_N8finalcut12FProgressbarD1Ev@Base 0.7.2
+ _ZThn64_N8finalcut12FRadioButtonD0Ev@Base 0.7.2
+ _ZThn64_N8finalcut12FRadioButtonD1Ev@Base 0.7.2
+ _ZThn64_N8finalcut13FToggleButtonD0Ev@Base 0.7.2
+ _ZThn64_N8finalcut13FToggleButtonD1Ev@Base 0.7.2
+ _ZThn64_N8finalcut14FBusyIndicator7onTimerEPNS_11FTimerEventE@Base 0.7.2
+ _ZThn64_N8finalcut14FBusyIndicatorD0Ev@Base 0.7.2
+ _ZThn64_N8finalcut14FBusyIndicatorD1Ev@Base 0.7.2
+ _ZThn64_N8finalcut14FCheckMenuItemD0Ev@Base 0.7.2
+ _ZThn64_N8finalcut14FCheckMenuItemD1Ev@Base 0.7.2
+ _ZThn64_N8finalcut14FRadioMenuItemD0Ev@Base 0.7.2
+ _ZThn64_N8finalcut14FRadioMenuItemD1Ev@Base 0.7.2
+ _ZThn64_N8finalcut15FDialogListMenuD0Ev@Base 0.7.2
+ _ZThn64_N8finalcut15FDialogListMenuD1Ev@Base 0.7.2
+ _ZThn64_N8finalcut16FDropDownListBoxD0Ev@Base 0.7.2
+ _ZThn64_N8finalcut16FDropDownListBoxD1Ev@Base 0.7.2
+ _ZThn64_N8finalcut5FMenuD0Ev@Base 0.7.2
+ _ZThn64_N8finalcut5FMenuD1Ev@Base 0.7.2
+ _ZThn64_N8finalcut6FLabelD0Ev@Base 0.7.2
+ _ZThn64_N8finalcut6FLabelD1Ev@Base 0.7.2
+ _ZThn64_N8finalcut7FButton7onTimerEPNS_11FTimerEventE@Base 0.7.2
+ _ZThn64_N8finalcut7FButtonD0Ev@Base 0.7.2
+ _ZThn64_N8finalcut7FButtonD1Ev@Base 0.7.2
+ _ZThn64_N8finalcut7FDialogD0Ev@Base 0.7.2
+ _ZThn64_N8finalcut7FDialogD1Ev@Base 0.7.2
+ _ZThn64_N8finalcut7FSwitchD0Ev@Base 0.7.2
+ _ZThn64_N8finalcut7FSwitchD1Ev@Base 0.7.2
+ _ZThn64_N8finalcut7FWidget5eventEPNS_6FEventE@Base 0.7.2
+ _ZThn64_N8finalcut7FWidgetD0Ev@Base 0.7.2
+ _ZThn64_N8finalcut7FWidgetD1Ev@Base 0.7.2
+ _ZThn64_N8finalcut7FWindow5eventEPNS_6FEventE@Base 0.7.2
+ _ZThn64_N8finalcut7FWindowD0Ev@Base 0.7.2
+ _ZThn64_N8finalcut7FWindowD1Ev@Base 0.7.2
+ _ZThn64_N8finalcut8FListBox7onTimerEPNS_11FTimerEventE@Base 0.7.2
+ _ZThn64_N8finalcut8FListBoxD0Ev@Base 0.7.2
+ _ZThn64_N8finalcut8FListBoxD1Ev@Base 0.7.2
+ _ZThn64_N8finalcut8FMenuBarD0Ev@Base 0.7.2
+ _ZThn64_N8finalcut8FMenuBarD1Ev@Base 0.7.2
+ _ZThn64_N8finalcut8FSpinBox7onTimerEPNS_11FTimerEventE@Base 0.7.2
+ _ZThn64_N8finalcut8FSpinBoxD0Ev@Base 0.7.2
+ _ZThn64_N8finalcut8FSpinBoxD1Ev@Base 0.7.2
+ _ZThn64_N8finalcut8FToolTipD0Ev@Base 0.7.2
+ _ZThn64_N8finalcut8FToolTipD1Ev@Base 0.7.2
+ _ZThn64_N8finalcut9FCheckBoxD0Ev@Base 0.7.2
+ _ZThn64_N8finalcut9FCheckBoxD1Ev@Base 0.7.2
+ _ZThn64_N8finalcut9FComboBoxD0Ev@Base 0.7.2
+ _ZThn64_N8finalcut9FComboBoxD1Ev@Base 0.7.2
+ _ZThn64_N8finalcut9FLineEdit7onTimerEPNS_11FTimerEventE@Base 0.7.2
+ _ZThn64_N8finalcut9FLineEditD0Ev@Base 0.7.2
+ _ZThn64_N8finalcut9FLineEditD1Ev@Base 0.7.2
+ _ZThn64_N8finalcut9FListView7onTimerEPNS_11FTimerEventE@Base 0.7.2
+ _ZThn64_N8finalcut9FListViewD0Ev@Base 0.7.2
+ _ZThn64_N8finalcut9FListViewD1Ev@Base 0.7.2
+ _ZThn64_N8finalcut9FMenuItemD0Ev@Base 0.7.2
+ _ZThn64_N8finalcut9FMenuItemD1Ev@Base 0.7.2
+ _ZThn64_N8finalcut9FTextViewD0Ev@Base 0.7.2
+ _ZThn64_N8finalcut9FTextViewD1Ev@Base 0.7.2
+ _ZThn64_NK8finalcut10FScrollbar12getClassNameEv@Base 0.7.2
+ _ZThn64_NK8finalcut10FStatusBar12getClassNameEv@Base 0.7.2
+ _ZThn64_NK8finalcut10FStatusKey12getClassNameEv@Base 0.7.2
+ _ZThn64_NK8finalcut11FFileDialog12getClassNameEv@Base 0.7.2
+ _ZThn64_NK8finalcut11FMessageBox12getClassNameEv@Base 0.7.2
+ _ZThn64_NK8finalcut11FScrollView12getClassNameEv@Base 0.7.2
+ _ZThn64_NK8finalcut12FApplication12getClassNameEv@Base 0.7.2
+ _ZThn64_NK8finalcut12FButtonGroup12getClassNameEv@Base 0.7.2
+ _ZThn64_NK8finalcut12FProgressbar12getClassNameEv@Base 0.7.2
+ _ZThn64_NK8finalcut12FRadioButton12getClassNameEv@Base 0.7.2
+ _ZThn64_NK8finalcut13FToggleButton12getClassNameEv@Base 0.7.2
+ _ZThn64_NK8finalcut14FBusyIndicator12getClassNameEv@Base 0.7.2
+ _ZThn64_NK8finalcut14FCheckMenuItem12getClassNameEv@Base 0.7.2
+ _ZThn64_NK8finalcut14FRadioMenuItem12getClassNameEv@Base 0.7.2
+ _ZThn64_NK8finalcut15FDialogListMenu12getClassNameEv@Base 0.7.2
+ _ZThn64_NK8finalcut16FDropDownListBox12getClassNameEv@Base 0.7.2
+ _ZThn64_NK8finalcut5FMenu12getClassNameEv@Base 0.7.2
+ _ZThn64_NK8finalcut6FLabel12getClassNameEv@Base 0.7.2
+ _ZThn64_NK8finalcut7FButton12getClassNameEv@Base 0.7.2
+ _ZThn64_NK8finalcut7FDialog12getClassNameEv@Base 0.7.2
+ _ZThn64_NK8finalcut7FSwitch12getClassNameEv@Base 0.7.2
+ _ZThn64_NK8finalcut7FWidget12getClassNameEv@Base 0.7.2
+ _ZThn64_NK8finalcut7FWindow12getClassNameEv@Base 0.7.2
+ _ZThn64_NK8finalcut8FListBox12getClassNameEv@Base 0.7.2
+ _ZThn64_NK8finalcut8FMenuBar12getClassNameEv@Base 0.7.2
+ _ZThn64_NK8finalcut8FSpinBox12getClassNameEv@Base 0.7.2
+ _ZThn64_NK8finalcut8FToolTip12getClassNameEv@Base 0.7.2
+ _ZThn64_NK8finalcut9FCheckBox12getClassNameEv@Base 0.7.2
+ _ZThn64_NK8finalcut9FComboBox12getClassNameEv@Base 0.7.2
+ _ZThn64_NK8finalcut9FLineEdit12getClassNameEv@Base 0.7.2
+ _ZThn64_NK8finalcut9FListView12getClassNameEv@Base 0.7.2
+ _ZThn64_NK8finalcut9FMenuItem12getClassNameEv@Base 0.7.2
+ _ZThn64_NK8finalcut9FTextView12getClassNameEv@Base 0.7.2
  _ZTv0_n24_N8finalcut13FStringStreamD0Ev@Base 0.7.2
  _ZTv0_n24_N8finalcut13FStringStreamD1Ev@Base 0.7.2
+ _ZZN8finalcut12FApplication15getStartOptionsEvE13start_options@Base 0.7.2
+ _ZZN8finalcut12FApplication21performKeyboardActionEvE8keyboard@Base 0.7.2
+ _ZZN8finalcut2fc12emptyFString3getEvE12empty_string@Base 0.7.2
+ _ZZN8finalcut5FTerm12disableMouseEvE8keyboard@Base 0.7.2
+ _ZZN8finalcut5FTerm15getStartOptionsEvE13start_options@Base 0.7.2
+ _ZZN8finalcut5FTerm17init_encoding_setEvE4data@Base 0.7.2
+ _ZZN8finalcut5FTerm22hasNoFontSettingOptionEvE4data@Base 0.7.2
  _ZZN8finalcut7FWidget13getColorThemeEvE11color_theme@Base 0.7.2
+ _ZZN8finalcut9FTermData11getInstanceEvE4data@Base 0.7.2
+ _ZZNK8finalcut10FTermLinux20initSpecialCharacterEvE10fterm_data@Base 0.7.2
+ _ZZNK8finalcut10FTermLinux25getInputStatusRegisterOneEvE7fsystem@Base 0.7.2
+ _ZZNK8finalcut11FTermOutput17getFSetPaletteRefEvE1f@Base 0.7.2
+ _ZZNK8finalcut12FApplication12isKeyPressedEvE5mouse@Base 0.7.2
+ _ZZNK8finalcut12FApplication12isKeyPressedEvE8keyboard@Base 0.7.2
+ _ZZNK8finalcut12FApplication14hasDataInQueueEvE5mouse@Base 0.7.2
+ _ZZNK8finalcut12FApplication14hasDataInQueueEvE8keyboard@Base 0.7.2
+ _ZZNK8finalcut12FApplication14sendKeyUpEventEPNS_7FWidgetEE8keyboard@Base 0.7.2
+ _ZZNK8finalcut12FApplication16sendKeyDownEventEPNS_7FWidgetEE8keyboard@Base 0.7.2
+ _ZZNK8finalcut12FApplication17sendKeyPressEventEPNS_7FWidgetEE8keyboard@Base 0.7.2
+ _ZZNK8finalcut12FApplication18performMouseActionEvE5mouse@Base 0.7.2
+ _ZZNK8finalcut12FApplication18performMouseActionEvE8keyboard@Base 0.7.2
+ _ZZNK8finalcut14FTermXTerminal21canSetXTermBackgroundEvE10fterm_data@Base 0.7.2
  _ZZNKSt7__cxx1112regex_traitsIwE16lookup_classnameIPKwEENS1_10_RegexMaskET_S6_bE12__classnames@Base 0.7.2
  _ZZNKSt7__cxx1112regex_traitsIwE18lookup_collatenameIPKwEENS_12basic_stringIwSt11char_traitsIwESaIwEEET_SA_E14__collatenames@Base 0.7.2
  _ZZNKSt8__detail11_AnyMatcherINSt7__cxx1112regex_traitsIwEELb0ELb0ELb0EEclEwE5__nul@Base 0.7.2

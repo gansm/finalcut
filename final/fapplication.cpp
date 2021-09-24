@@ -820,11 +820,8 @@ inline bool FApplication::hasDataInQueue() const
 {
   static const auto& keyboard = FKeyboard::getInstance();
   static const auto& mouse = FMouseControl::getInstance();
-  auto foutput_ptr = FVTerm::getFOutput();
 
-  if ( keyboard.hasDataInQueue()
-    || mouse.hasDataInQueue()
-    || foutput_ptr->hasTerminalResized() )
+  if ( keyboard.hasDataInQueue() || mouse.hasDataInQueue() )
     return true;
 
   return false;
@@ -833,13 +830,6 @@ inline bool FApplication::hasDataInQueue() const
 //----------------------------------------------------------------------
 void FApplication::queuingKeyboardInput() const
 {
-  auto foutput_ptr = FVTerm::getFOutput();
-
-  if ( quit_now
-    || internal::var::exit_loop
-    || foutput_ptr->hasTerminalResized() )
-    return;
-
   findKeyboardWidget();
   static auto& keyboard = FKeyboard::getInstance();
   keyboard.escapeKeyHandling();  // special case: Esc key
@@ -853,12 +843,8 @@ void FApplication::queuingKeyboardInput() const
 void FApplication::queuingMouseInput() const
 {
   static auto& mouse = FMouseControl::getInstance();
-  auto foutput_ptr = FVTerm::getFOutput();
 
-  if ( quit_now
-    || internal::var::exit_loop
-    || ! mouse.hasData()
-    || foutput_ptr->hasTerminalResized() )
+  if ( ! mouse.hasData() )
     return;
 
   static auto& keyboard = FKeyboard::getInstance();
@@ -871,13 +857,6 @@ void FApplication::queuingMouseInput() const
 //----------------------------------------------------------------------
 void FApplication::processKeyboardEvent() const
 {
-  auto foutput_ptr = FVTerm::getFOutput();
-
-  if ( quit_now
-    || internal::var::exit_loop
-    || foutput_ptr->hasTerminalResized() )
-    return;
-
   static auto& keyboard = FKeyboard::getInstance();
   keyboard.processQueuedInput();
 }
@@ -885,15 +864,20 @@ void FApplication::processKeyboardEvent() const
 //----------------------------------------------------------------------
 void FApplication::processMouseEvent() const
 {
-  auto foutput_ptr = FVTerm::getFOutput();
-
-  if ( quit_now
-    || internal::var::exit_loop
-    || foutput_ptr->hasTerminalResized() )
-    return;
-
   static auto& mouse = FMouseControl::getInstance();
   mouse.processQueuedInput();
+}
+
+//----------------------------------------------------------------------
+inline void FApplication::processInput() const
+{
+  if ( quit_now || internal::var::exit_loop || has_terminal_resized )
+    return;
+
+  queuingKeyboardInput();
+  queuingMouseInput();
+  processKeyboardEvent();
+  processMouseEvent();
 }
 
 //----------------------------------------------------------------------
@@ -1259,11 +1243,11 @@ FWidget* FApplication::processParameters (const Args& args)
 }
 
 //----------------------------------------------------------------------
-void FApplication::processResizeEvent() const
+void FApplication::processResizeEvent()
 {
   auto foutput_ptr = FVTerm::getFOutput();
 
-  if ( ! foutput_ptr->hasTerminalResized() )  // A SIGWINCH signal was received
+  if ( ! has_terminal_resized )  // A SIGWINCH signal was received
     return;
 
   foutput_ptr->detectTerminalSize();  // Detect and save the current terminal size
@@ -1272,6 +1256,7 @@ void FApplication::processResizeEvent() const
   mouse.setMaxHeight (uInt16(getDesktopHeight()));
   FResizeEvent r_ev(Event::Resize);
   sendEvent(internal::var::app_object, &r_ev);
+  has_terminal_resized = false;
 
   if ( r_ev.isAccepted() )
     foutput_ptr->commitTerminalResize();
@@ -1313,15 +1298,11 @@ void FApplication::processLogger() const
 bool FApplication::processNextEvent()
 {
   uInt num_events{0};
-  bool is_timeout = isNextEventTimeout();
 
-  if ( is_timeout || hasDataInQueue() )
+  if ( hasTerminalResized() || hasDataInQueue() || isNextEventTimeout() )
   {
     time_last_event = FObject::getCurrentTime();
-    queuingKeyboardInput();
-    queuingMouseInput();
-    processKeyboardEvent();
-    processMouseEvent();
+    processInput();
     processResizeEvent();
     processCloseWidget();
     processTerminalUpdate();  // after terminal changes
@@ -1331,12 +1312,13 @@ bool FApplication::processNextEvent()
 
   processExternalUserEvent();
 
-  if ( is_timeout )
+  if ( is_next_event_timeout || isNextEventTimeout() )
   {
     sendQueuedEvents();
     num_events += processTimerEvent();
   }
 
+  is_next_event_timeout = false;
   return ( num_events > 0 );
 }
 
@@ -1344,6 +1326,14 @@ bool FApplication::processNextEvent()
 void FApplication::performTimerAction (FObject* receiver, FEvent* event)
 {
   sendEvent (receiver, event);
+}
+
+//----------------------------------------------------------------------
+inline bool FApplication::hasTerminalResized()
+{
+  auto foutput_ptr = FVTerm::getFOutput();
+  has_terminal_resized = foutput_ptr->hasTerminalResized();
+  return has_terminal_resized;
 }
 
 //----------------------------------------------------------------------

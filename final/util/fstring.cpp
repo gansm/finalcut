@@ -105,7 +105,7 @@ FString::FString (const std::string& s)
 {
   if ( ! s.empty() )
   {
-    auto wide_string = _toWideString(s.c_str());
+    auto wide_string = _toWideString(s);
     _assign(wide_string);
   }
 }
@@ -373,7 +373,7 @@ char* FString::c_str()
 //----------------------------------------------------------------------
 std::string FString::toString() const
 {
-  return c_str();
+  return _toCharString(string);
 }
 
 //----------------------------------------------------------------------
@@ -1152,7 +1152,7 @@ std::ostream& operator << (std::ostream& outstr, const FString& s)
 
   if ( s.string.length() > 0 )
   {
-    outstr << s._toCharString(s.string).c_str();
+    outstr << s._toCharString(s.string);
   }
   else if ( width > 0 )
   {

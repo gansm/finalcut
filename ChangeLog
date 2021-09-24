@@ -1,4 +1,8 @@
 2021-09-22 Markus Gans  <guru.mail@muenster.de>
+	* The request for a terminal size change now occurs only once per 
+	  event loop cycle
+
+2021-09-22 Markus Gans  <guru.mail@muenster.de>
 	* The individual FINAL CUT components have been moved to directories 
 	  to provide a better code overview
 	* Renaming the class FTermBuffer to FVTermBuffer, because only 

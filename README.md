@@ -46,11 +46,15 @@ The structure of the Qt framework was originally the inspiration for the C++ cla
 * Cygwin
 * Solaris
 
-## First steps
+## Documentation
 
 See the [first steps documentation](doc/first-steps.md#first-steps-with-the-final-cut-widget-toolkit) for information on how to use the library.
 
-## Some screenshots
+## Frequently Asked Questions
+
+For general questions about FINAL CUT, likely the answer is already included in the [FAQ](doc/faq.md#frequently-asked-questions).
+
+## Screenshots
 
 The FFileDialog widget with incremental file name search:
 
@@ -68,7 +72,7 @@ The Mandelbrot set example:
 
 ![Mandelbrot set](doc/Mandelbrot.png)
 
-## newfont
+## FINAL CUT newfont
 
 A [graphical text font](final/font/) for X11 and the Linux console.
 
@@ -266,10 +270,6 @@ printf(...)
                                                 └──┤ FRadioMenuItem ├---┘
                                                    └────────────────┘
 </pre>
-
-## Frequently Asked Questions
-
-For general questions about FINAL CUT, likely the answer is already included in the [FAQ](doc/faq.md#frequently-asked-questions).
 
 ## Please send bug reports to
 
