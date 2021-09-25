@@ -213,11 +213,7 @@ bool FTerm::isInitialized()
 bool FTerm::isCursorHideable()
 {
   const auto& cursor_off_str = disableCursorString();
-
-  if ( ! cursor_off_str.empty() )
-    return true;
-
-  return false;
+  return ! cursor_off_str.empty();
 }
 
 //----------------------------------------------------------------------
@@ -1478,16 +1474,12 @@ void FTerm::init_captureFontAndTitle()
 inline bool FTerm::hasNoFontSettingOption()
 {
   static const auto& data = FTermData::getInstance();
-
-  if ( data.isTermType ( FTermType::gnome_terminal
-                       | FTermType::kde_konsole
-                       | FTermType::putty
-                       | FTermType::tera_term
-                       | FTermType::cygwin
-                       | FTermType::mintty ) )
-    return true;
-
-  return false;
+  return ( data.isTermType ( FTermType::gnome_terminal
+                           | FTermType::kde_konsole
+                           | FTermType::putty
+                           | FTermType::tera_term
+                           | FTermType::cygwin
+                           | FTermType::mintty ) );
 }
 
 //----------------------------------------------------------------------
@@ -1857,7 +1849,8 @@ bool FTerm::init_terminal() const
   // Terminal detection
   static auto& term_detection = FTermDetection::getInstance();
   term_detection.detect();
-  setTermType (term_detection.getTermType().c_str());
+  const auto& termtype = term_detection.getTermType();
+  setTermType(termtype.toString());
   return true;
 }
 

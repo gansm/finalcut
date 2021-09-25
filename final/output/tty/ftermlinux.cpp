@@ -925,11 +925,7 @@ bool FTermLinux::setVGAPalette (FColor index, int r, int g, int b)
   }
 
   static const auto& fsystem = FSystem::getInstance();
-
-  if ( fsystem->ioctl(0, PIO_CMAP, cmap.color.data()) == 0 )
-    return true;
-  else
-    return false;
+  return fsystem->ioctl(0, PIO_CMAP, cmap.color.data()) == 0;
 }
 
 //----------------------------------------------------------------------

@@ -257,7 +257,7 @@ class FOptiAttr final
     void          detectSwitchOff (const FChar&, const FChar&);
     bool          switchOn() const;
     bool          switchOff() const;
-    bool          append_sequence (const char[]);
+    bool          append_sequence (const std::string&);
 
     // Data members
     Capability      F_enter_bold_mode{};

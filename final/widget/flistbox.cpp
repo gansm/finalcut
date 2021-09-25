@@ -1632,11 +1632,7 @@ inline bool FListBox::keyIncSearchInput (FKey key)
   if ( ! inc_found )
   {
     inc_search.remove(inc_len - 1, 1);
-
-    if ( inc_len == 1 )
-      return false;
-    else
-      return true;
+    return inc_len != 1;
   }
 
   return true;

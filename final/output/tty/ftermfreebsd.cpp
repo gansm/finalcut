@@ -83,11 +83,7 @@ bool FTermFreeBSD::isFreeBSDConsole()
 
   keymap_t keymap{};
   static const auto& fsystem = FSystem::getInstance();
-
-  if ( fsystem->ioctl(0, GIO_KEYMAP, &keymap) == 0 )
-    return true;
-  else
-    return false;
+  return fsystem->ioctl(0, GIO_KEYMAP, &keymap) == 0;
 }
 
 //----------------------------------------------------------------------
@@ -225,12 +221,9 @@ bool FTermFreeBSD::setFreeBSDAltKey (uInt key)
 
   // Mapping "key" on the left alt key
   keymap.key[left_alt].map[0] = int(key);
-
-  if ( (keymap.n_keys > 0)
-    && (fsystem->ioctl(0, PIO_KEYMAP, &keymap) < 0) )
-    return false;
-  else
-    return true;
+  return ( keymap.n_keys > 0 )
+         ? fsystem->ioctl(0, PIO_KEYMAP, &keymap) >= 0
+         : false;
 }
 
 //----------------------------------------------------------------------
@@ -253,11 +246,7 @@ bool FTermFreeBSD::resetFreeBSDAlt2Meta()
 bool FTermFreeBSD::setFreeBSDCursorStyle (CursorStyle style)
 {
   static const auto& fsystem = FSystem::getInstance();
-
-  if ( fsystem->ioctl(0, CONS_CURSORTYPE, &style) == 0 )
-    return true;
-  else
-    return false;
+  return fsystem->ioctl(0, CONS_CURSORTYPE, &style) == 0;
 }
 
 }  // namespace finalcut

@@ -190,7 +190,8 @@ class FFileDialog : public FDialog
     void                 init();
     void                 widgetSettings (const FPoint&);
     void                 initCallbacks();
-    bool                 patternMatch (const char* const, const char[]) const;
+    bool                 patternMatch ( const std::string&
+                                      , const std::string& ) const;
     void                 clear();
     sInt64               numOfDirs();
     void                 sortDir();
@@ -198,7 +199,7 @@ class FFileDialog : public FDialog
     void                 getEntry (const char* const, const struct dirent*);
     void                 followSymLink (const char* const, FDirEntry&) const;
     void                 dirEntriesToList();
-    void                 selectDirectoryEntry (const char* const);
+    void                 selectDirectoryEntry (const std::string&);
     int                  changeDir (const FString&);
     void                 printPath (const FString&);
     static FString       getHomeDir();

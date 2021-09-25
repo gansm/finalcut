@@ -23,12 +23,6 @@
 #include <array>
 #include <vector>
 
-#if defined(__CYGWIN__)
-  #undef __STRICT_ANSI__  // need for strdup
-  #define _BSD_SOURCE
-  #include <strings.h>    // need for strcasecmp
-#endif
-
 #include "final/dialog/ffiledialog.h"
 #include "final/fevent.h"
 #include "final/util/fsystem.h"
@@ -42,7 +36,7 @@ bool sortByName ( const FFileDialog::FDirEntry& lhs
                 , const FFileDialog::FDirEntry& rhs )
 {
   // lhs < rhs
-  return strcasecmp(lhs.name.c_str(), rhs.name.c_str()) < 0;
+  return FStringCaseCompare(lhs.name, rhs.name) < 0;
 }
 
 //----------------------------------------------------------------------
@@ -50,10 +44,7 @@ bool sortDirFirst ( const FFileDialog::FDirEntry& lhs
                   , const FFileDialog::FDirEntry& rhs )
 {
   // sort directories first
-  if ( lhs.directory && ! rhs.directory )
-    return true;
-  else
-    return false;
+  return ( lhs.directory && ! rhs.directory );
 }
 
 //----------------------------------------------------------------------
@@ -370,8 +361,8 @@ void FFileDialog::initCallbacks()
 }
 
 //----------------------------------------------------------------------
-inline bool FFileDialog::patternMatch ( const char* const pattern
-                                      , const char fname[] ) const
+inline bool FFileDialog::patternMatch ( const std::string& pattern
+                                      , const std::string& fname ) const
 {
   std::string search{};
   search.reserve(128);
@@ -384,10 +375,7 @@ inline bool FFileDialog::patternMatch ( const char* const pattern
   else
     search = pattern;
 
-  if ( fnmatch (search.data(), fname, FNM_PERIOD) == 0 )
-    return true;
-  else
-    return false;
+  return ( fnmatch(search.data(), fname.data(), FNM_PERIOD) == 0 );
 }
 
 //----------------------------------------------------------------------
@@ -411,7 +399,7 @@ sInt64 FFileDialog::numOfDirs()
                                  , [] (const FDirEntry& entry)
                                    {
                                      return entry.directory
-                                         && std::strcmp(entry.name.c_str(), ".") != 0;
+                                         && entry.name != ".";
                                    }
                                  );
   return n;
@@ -422,7 +410,7 @@ void FFileDialog::sortDir()
 {
   sInt64 start{0};
 
-  if ( std::strcmp((*dir_entries.begin()).name.c_str(), "..") == 0 )
+  if ( dir_entries.begin()->name == ".." )
     start = 1;
 
   const sInt64 dir_num = numOfDirs();
@@ -505,7 +493,7 @@ int FFileDialog::readDir()
 //----------------------------------------------------------------------
 void FFileDialog::getEntry (const char* const dir, const struct dirent* d_entry)
 {
-  const auto& filter = filter_pattern.c_str();
+  const auto& filter = filter_pattern.toString();
   FDirEntry entry{};
 
   entry.name = d_entry->d_name;
@@ -534,7 +522,7 @@ void FFileDialog::getEntry (const char* const dir, const struct dirent* d_entry)
 
   if ( entry.directory )
     dir_entries.push_back (entry);
-  else if ( patternMatch(filter, entry.name.c_str()) )
+  else if ( patternMatch(filter, entry.name) )
     dir_entries.push_back (entry);
   else
     entry.name.clear();
@@ -583,7 +571,7 @@ void FFileDialog::dirEntriesToList()
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::selectDirectoryEntry (const char* const name)
+void FFileDialog::selectDirectoryEntry (const std::string& name)
 {
   if ( dir_entries.empty() )
     return;
@@ -592,10 +580,10 @@ void FFileDialog::selectDirectoryEntry (const char* const name)
 
   for (auto&& entry : dir_entries)
   {
-    if ( std::strcmp(entry.name.c_str(), name) == 0 )
+    if ( entry.name == name )
     {
       filebrowser.setCurrentItem(i);
-      filename.setText(FString{name} + '/');
+      filename.setText(name + '/');
       break;
     }
 
@@ -635,7 +623,7 @@ int FFileDialog::changeDir (const FString& dirname)
           filename.setText('/');
         else
         {
-          auto baseName = basename(lastdir.c_str());
+          auto baseName = std::string(basename(lastdir.c_str()));
           selectDirectoryEntry (baseName);
         }
       }
@@ -728,7 +716,7 @@ void FFileDialog::cb_processActivate()
                               return ! entry.name.empty()
                                   && input
                                   && ! input.isEmpty()
-                                  && std::strcmp(entry.name.c_str(), input.c_str()) == 0
+                                  && entry.name == input.toString()
                                   && entry.directory;
                             }
                           );

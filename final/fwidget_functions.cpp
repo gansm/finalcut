@@ -37,23 +37,17 @@ namespace finalcut
 //----------------------------------------------------------------------
 bool isFocusNextKey (const FKey key)
 {
-  if ( key == FKey::Tab
-    || key == FKey::Right
-    || key == FKey::Down )
-    return true;
-
-  return false;
+  return ( key == FKey::Tab
+        || key == FKey::Right
+        || key == FKey::Down );
 }
 
 //----------------------------------------------------------------------
 bool isFocusPrevKey (const FKey key)
 {
-  if ( key == FKey::Back_tab
-    || key == FKey::Left
-    || key == FKey::Up )
-    return true;
-
-  return false;
+  return ( key == FKey::Back_tab
+        || key == FKey::Left
+        || key == FKey::Up );
 }
 
 //----------------------------------------------------------------------

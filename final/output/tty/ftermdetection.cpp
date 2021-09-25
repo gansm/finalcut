@@ -401,18 +401,14 @@ bool FTermDetection::get256colorEnvString()
   color_env.string6 = std::getenv("KONSOLE_DCOP");
   color_env.string7 = std::getenv("COLORFGBG");
   color_env.string8 = std::getenv("KITTY_WINDOW_ID");
-
-  if ( ! color_env.string1.isEmpty()
-    || ! color_env.string2.isEmpty()
-    || ! color_env.string3.isEmpty()
-    || ! color_env.string4.isEmpty()
-    || ! color_env.string5.isEmpty()
-    || ! color_env.string6.isEmpty()
-    || ! color_env.string7.isEmpty()
-    || ! color_env.string8.isEmpty() )
-    return true;
-
-  return false;
+  return ( ! color_env.string1.isEmpty()
+        || ! color_env.string2.isEmpty()
+        || ! color_env.string3.isEmpty()
+        || ! color_env.string4.isEmpty()
+        || ! color_env.string5.isEmpty()
+        || ! color_env.string6.isEmpty()
+        || ! color_env.string7.isEmpty()
+        || ! color_env.string8.isEmpty() );
 }
 
 //----------------------------------------------------------------------

@@ -371,6 +371,12 @@ char* FString::c_str()
 }
 
 //----------------------------------------------------------------------
+std::wstring FString::toWString() const
+{
+  return string;
+}
+
+//----------------------------------------------------------------------
 std::string FString::toString() const
 {
   return _toCharString(string);
@@ -1205,5 +1211,35 @@ std::wistream& operator >> (std::wistream& instr, FString& s)
   s._assign (str);
   return instr;
 }
+
+//----------------------------------------------------------------------
+int FStringCaseCompare (const FString& s1, const FString& s2)
+{
+  if ( &s1 == &s2 )
+    return 0;
+
+  auto iter1 = s1.cbegin();
+  auto iter2 = s2.cbegin();
+
+  while ( iter1 != s1.cend() )
+  {
+    if ( iter2 != s2.cend() )
+    {
+      int cmp = int(std::tolower(*iter1)) - int(std::tolower(*iter2));
+
+      if ( cmp != 0 )
+        return cmp;
+
+      ++iter2;
+    }
+    else
+      return int(std::tolower(*iter1));
+
+    ++iter1;
+  }
+
+  return -int(std::tolower(*iter2));
+}
+
 
 }  // namespace finalcut

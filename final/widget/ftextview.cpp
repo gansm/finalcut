@@ -702,12 +702,8 @@ inline bool FTextView::isPrintable (wchar_t ch) const
   // Check for printable characters
 
   const bool utf8 = (FVTerm::getFOutput()->getEncoding() == Encoding::UTF8);
-
-  if ( (utf8 && std::iswprint(std::wint_t(ch)))
-    || (! utf8 && std::isprint(char(ch))) )
-    return true;
-
-  return false;
+  return ( (utf8 && std::iswprint(std::wint_t(ch)))
+        || (! utf8 && std::isprint(char(ch))) );
 }
 
 //----------------------------------------------------------------------

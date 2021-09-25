@@ -122,6 +122,7 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     void removeTest();
     void includesTest();
     void controlCodesTest();
+    void caseCompareTest();
 
   private:
     finalcut::FString* s{0};
@@ -162,6 +163,7 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (removeTest);
     CPPUNIT_TEST (includesTest);
     CPPUNIT_TEST (controlCodesTest);
+    CPPUNIT_TEST (caseCompareTest);
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
@@ -1198,6 +1200,19 @@ void FStringTest::iteratorTest()
   }
 
   CPPUNIT_ASSERT ( str2 == L"abcdef" );
+
+  finalcut::FString str3(L"~~~~~");
+  CPPUNIT_ASSERT ( str3.front() == L'~' );
+  CPPUNIT_ASSERT ( str3.back() == L'~' );
+  CPPUNIT_ASSERT ( str3.front() == str3.back() );
+  CPPUNIT_ASSERT ( &str3.front() != &str3.back() );
+  auto iter3 = str3.cbegin();
+
+  while ( iter3 != str3.cend() )
+    ++iter3;
+
+  CPPUNIT_ASSERT ( iter3 == str3.cend() );
+  CPPUNIT_ASSERT ( std::distance(str3.cbegin(), iter3) == 5 );
 }
 
 //----------------------------------------------------------------------
@@ -2271,6 +2286,46 @@ void FStringTest::controlCodesTest()
     c1[i] = i + 0x80;
 
   CPPUNIT_ASSERT ( c1.replaceControlCodes() == finalcut::FString(32, L' ') );
+}
+
+//----------------------------------------------------------------------
+void FStringTest::caseCompareTest()
+{
+  auto s1 = finalcut::FString(L"Appel");
+  auto s2 = finalcut::FString(L"apartment");
+  auto s3 = finalcut::FString(L"ball");
+
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(s1, s1) == 0 );  // same object
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"ApP", s1) < 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(s1, L"App") > 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(s1, s2) > 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(s1, s3) < 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(s2, s1) < 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(s3, s1) > 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare("HOUSE", "house") == 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare("hOuSe", "HoUsE") == 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare("house", "houseparty") < 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare("houseparty", "house") > 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare("small", "large") > 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare("large", "small") < 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare("paragraph", "Paragraph") == 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare("paragrapH", "parAgRaph") == 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare("paragraph", "paraLyzed") < 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare("paraLyzed", "paragraph") > 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare("para", "paragraph") < 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare("paragraph", "para") > 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"\311mile", L"\351mile") < 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"\351mile", L"\311mile") > 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"\303\266zg\303\274r", L"\303\226ZG\303\234R") > 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"\303\226ZG\303\234R", L"\303\266zg\303\274r") < 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"turkish", L"TURK\304\260SH") < 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"TURK\304\260SH", L"turkish") > 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"ONE 🃏", L"one 🃏") == 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"ONE 🃏🃏", L"one 🃏") > 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"ONE 🃏", L"one 🃏🃏") < 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"🔥 Fire", L"🔥 fire") == 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"🔥🔥 Fire", L"🔥 fire") > 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"🔥 Fire", L"🔥🔥 fire") < 0 );
 }
 
 // Put the test suite in the registry

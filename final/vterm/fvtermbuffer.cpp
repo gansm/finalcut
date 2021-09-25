@@ -120,7 +120,7 @@ int FVTermBuffer::write (wchar_t ch)
 //----------------------------------------------------------------------
 void FVTermBuffer::write (const FStyle& style) const
 {
-  Style attr = style.getStyle();
+  auto attr = style.getStyle();
 
   if ( attr == Style::None )
     FVTerm::setNormal();

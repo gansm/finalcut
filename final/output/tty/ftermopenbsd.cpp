@@ -55,11 +55,7 @@ bool FTermOpenBSD::isBSDConsole()
 
   static kbd_t kbdencoding{};
   static const auto& fsystem = FSystem::getInstance();
-
-  if ( fsystem->ioctl(0, WSKBDIO_GETENCODING, &kbdencoding) == 0 )
-    return true;
-  else
-    return false;
+  return fsystem->ioctl(0, WSKBDIO_GETENCODING, &kbdencoding) == 0;
 }
 
 //----------------------------------------------------------------------
@@ -110,11 +106,7 @@ bool FTermOpenBSD::setBeep (int Hz, int ms)
   bell.period = uInt(ms);
   bell.volume = 50;  // 50% volume
   static const auto& fsystem = FSystem::getInstance();
-
-  if ( fsystem->ioctl(0, WSKBDIO_SETBELL, &bell) < 0 )
-    return false;
-  else
-    return true;
+  return fsystem->ioctl(0, WSKBDIO_SETBELL, &bell) >= 0;
 }
 
 //----------------------------------------------------------------------
@@ -130,10 +122,7 @@ bool FTermOpenBSD::resetBeep()
   default_bell.which = WSKBD_BELL_DOALL;
 
   // Sets the bell settings
-  if ( fsystem->ioctl(0, WSKBDIO_SETBELL, &default_bell) < 0 )
-    return false;
-  else
-    return true;
+  return fsystem->ioctl(0, WSKBDIO_SETBELL, &default_bell) >= 0;
 }
 
 
@@ -169,18 +158,13 @@ bool FTermOpenBSD::saveBSDConsoleEncoding()
 bool FTermOpenBSD::setBSDConsoleEncoding (kbd_t k_encoding)
 {
   static const auto& fsystem = FSystem::getInstance();
-
-  if ( fsystem->ioctl(0, WSKBDIO_SETENCODING, &k_encoding) < 0 )
-    return false;
-  else
-    return true;
+  return fsystem->ioctl(0, WSKBDIO_SETENCODING, &k_encoding) >= 0;
 }
 
 //----------------------------------------------------------------------
 bool FTermOpenBSD::setBSDConsoleMetaEsc()
 {
   static constexpr kbd_t meta_esc = 0x20;  // Generate ESC prefix on ALT-key
-
   return setBSDConsoleEncoding (bsd_keyboard_encoding | meta_esc);
 }
 

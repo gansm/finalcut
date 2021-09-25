@@ -254,8 +254,8 @@ bool FApplication::eventInQueue() const
 {
   if ( internal::var::app_object )
     return ( ! event_queue.empty() );
-  else
-    return false;
+
+  return false;
 }
 
 //----------------------------------------------------------------------
@@ -330,7 +330,7 @@ void FApplication::setDarkTheme()
 void FApplication::setLogFile (const FString& filename)
 {
   auto& log_stream = getStartOptions().logfile_stream;
-  log_stream.open(filename.c_str(), std::ofstream::out);
+  log_stream.open(filename.toString(), std::ofstream::out);
 
   if ( log_stream.is_open() )
   {
@@ -820,11 +820,7 @@ inline bool FApplication::hasDataInQueue() const
 {
   static const auto& keyboard = FKeyboard::getInstance();
   static const auto& mouse = FMouseControl::getInstance();
-
-  if ( keyboard.hasDataInQueue() || mouse.hasDataInQueue() )
-    return true;
-
-  return false;
+  return ( keyboard.hasDataInQueue() || mouse.hasDataInQueue() );
 }
 
 //----------------------------------------------------------------------
@@ -1389,12 +1385,9 @@ bool FApplication::isEventProcessable ( FObject* receiver
   }
 
   // Throw away mouse events for disabled widgets
-  if ( event->getType() >= Event::MouseDown
-    && event->getType() <= Event::MouseMove
-    && ! widget->isEnabled() )
-    return false;
-
-  return true;
+  return ( event->getType() < Event::MouseDown
+        || event->getType() > Event::MouseMove
+        || widget->isEnabled() );
 }
 
 //----------------------------------------------------------------------

@@ -232,7 +232,7 @@ std::string& getExitMessage()
 //----------------------------------------------------------------------
 void setExitMessage (const FString& message)
 {
-  getExitMessage().assign(message.c_str());
+  getExitMessage().assign(message.toString());
 }
 
 //----------------------------------------------------------------------
@@ -251,14 +251,8 @@ inline bool hasAmbiguousWidth (wchar_t wchar)
 {
   const auto& begin = std::begin(ambiguous_width_list);
   const auto& end = std::end(ambiguous_width_list);
-
-  if ( std::any_of(begin, end, [&wchar] (const wchar_t c)
-                               { return c == wchar; }) )
-  {
-    return true;
-  }
-
-  return false;
+  return ( std::any_of(begin, end, [&wchar] (const wchar_t c)
+                                   { return c == wchar; }) );
 }
 
 //----------------------------------------------------------------------
@@ -266,14 +260,8 @@ bool isReverseNewFontchar (wchar_t wchar)
 {
   const auto& begin = std::begin(reverse_newfont_list);
   const auto& end = std::end(reverse_newfont_list);
-
-  if ( std::any_of(begin, end, [&wchar] (const UniChar& c)
-                               { return wchar_t(c) == wchar; }) )
-  {
-    return true;
-  }
-
-  return false;
+  return ( std::any_of(begin, end, [&wchar] (const UniChar& c)
+                                   { return wchar_t(c) == wchar; }) );
 }
 
 //----------------------------------------------------------------------

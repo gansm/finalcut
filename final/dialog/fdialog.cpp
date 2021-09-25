@@ -1542,52 +1542,38 @@ inline bool FDialog::isMouseOverMenu (const FPoint& termpos) const
 {
   auto menu_geometry = dialog_menu->getTermGeometry();
 
-  if ( dialog_menu->getCount() > 0 && menu_geometry.contains(termpos) )
-    return true;
-
-  return false;
+  return ( dialog_menu->getCount() > 0
+        && menu_geometry.contains(termpos) );
 }
 
 //----------------------------------------------------------------------
 inline bool FDialog::isMouseOverMenuButton (const MouseStates& ms) const
 {
-  if ( ms.mouse_x < 4 && ms.mouse_y == 1 )
-    return true;
-  else
-    return false;
+  return ( ms.mouse_x < 4 && ms.mouse_y == 1 );
 }
 
 //----------------------------------------------------------------------
 inline bool FDialog::isMouseOverZoomButton (const MouseStates& ms) const
 {
-  if ( ms.mouse_x > int(getWidth() - ms.zoom_btn)
-    && ms.mouse_x <= int(getWidth())
-    && ms.mouse_y == 1 )
-    return true;
-  else
-    return false;
+  return ( ms.mouse_x > int(getWidth() - ms.zoom_btn)
+        && ms.mouse_x <= int(getWidth())
+        && ms.mouse_y == 1 );
 }
 
 //----------------------------------------------------------------------
 inline bool FDialog::isMouseOverMinimizeButton (const MouseStates& ms)  const
 {
-  if ( ms.mouse_x > int(getWidth() - ms.minimize_btn - ms.zoom_btn)
-    && ms.mouse_x <= int(getWidth() - ms.zoom_btn)
-    && ms.mouse_y == 1 )
-    return true;
-  else
-    return false;
+  return ( ms.mouse_x > int(getWidth() - ms.minimize_btn - ms.zoom_btn)
+        && ms.mouse_x <= int(getWidth() - ms.zoom_btn)
+        && ms.mouse_y == 1 );
 }
 
 //----------------------------------------------------------------------
 inline bool FDialog::isMouseOverTitlebar (const MouseStates& ms) const
 {
-  if ( ms.mouse_x >= 4
-    && ms.mouse_x <= int(getWidth() - ms.minimize_btn - ms.zoom_btn)
-    && ms.mouse_y == 1 )
-    return true;
-  else
-    return false;
+  return ( ms.mouse_x >= 4
+        && ms.mouse_x <= int(getWidth() - ms.minimize_btn - ms.zoom_btn)
+        && ms.mouse_y == 1 );
 }
 
 //----------------------------------------------------------------------
@@ -1642,31 +1628,22 @@ inline void FDialog::lowerActivateDialog()
 //----------------------------------------------------------------------
 bool FDialog::isOutsideTerminal (const FPoint& pos) const
 {
-  if ( pos.getX() + int(getWidth()) <= 1
-    || pos.getX() > int(getMaxWidth())
-    || pos.getY() < 1
-    || pos.getY() > int(getMaxHeight()) )
-    return true;
-
-  return false;
+  return ( pos.getX() + int(getWidth()) <= 1
+        || pos.getX() > int(getMaxWidth())
+        || pos.getY() < 1
+        || pos.getY() > int(getMaxHeight()) );
 }
 
 //----------------------------------------------------------------------
 bool FDialog::isLeftOutside() const
 {
-  if ( getX() > int(getMaxWidth()) )
-    return true;
-
-  return false;
+  return getX() > int(getMaxWidth());
 }
 
 //----------------------------------------------------------------------
 bool FDialog::isBottomOutside() const
 {
-  if ( getY() > int(getMaxHeight()) )
-    return true;
-
-  return false;
+  return getY() > int(getMaxHeight());
 }
 
 //----------------------------------------------------------------------
@@ -1676,16 +1653,9 @@ bool FDialog::isLowerRightResizeCorner (const MouseStates& ms) const
   //                                         x
   //                                   -----xx
 
-  if ( (ms.mouse_x == int(getWidth()) && ms.mouse_y == int(getHeight()) - 1)
-    || ( ( ms.mouse_x == int(getWidth()) - 1
-        || ms.mouse_x == int(getWidth()) ) && ms.mouse_y == int(getHeight()) ) )
-  {
-    return true;
-  }
-  else
-  {
-    return false;
-  }
+  return ( (ms.mouse_x == int(getWidth()) && ms.mouse_y == int(getHeight()) - 1)
+        || ( ( ms.mouse_x == int(getWidth()) - 1
+            || ms.mouse_x == int(getWidth()) ) && ms.mouse_y == int(getHeight()) ) );
 }
 
 //----------------------------------------------------------------------

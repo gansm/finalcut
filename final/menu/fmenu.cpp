@@ -363,10 +363,7 @@ bool FMenu::isSubMenu() const
 {
   const auto& super = getSuperMenu();
 
-  if ( super && isMenu(super) )
-    return true;
-  else
-    return false;
+  return ( super && isMenu(super) );
 }
 
 //----------------------------------------------------------------------
@@ -379,10 +376,7 @@ bool FMenu::isDialogMenu() const
 //----------------------------------------------------------------------
 bool FMenu::isMouseOverMenu (const FPoint& termpos)
 {
-  if ( getTermGeometry().contains(termpos) )
-    return true;
-
-  return false;
+  return getTermGeometry().contains(termpos);
 }
 
 //----------------------------------------------------------------------
@@ -402,25 +396,16 @@ bool FMenu::isMouseOverSubMenu (const FPoint& termpos)
 //----------------------------------------------------------------------
 bool FMenu::isMouseOverSuperMenu (const FPoint& termpos)
 {
-  const auto& smenu = superMenuAt (termpos);
-
-  if ( smenu )
-    return true;
-
-  return false;
+  const auto& smenu = superMenuAt(termpos);
+  return smenu;
 }
 
 //----------------------------------------------------------------------
 bool FMenu::isMouseOverMenuBar (const FPoint& termpos) const
 {
-  if ( getMenuBar()
-    && isMenuBar(getMenuBar())
-    && getMenuBar()->getTermGeometry().contains(termpos) )
-  {
-    return true;
-  }
-
-  return false;
+  return ( getMenuBar()
+        && isMenuBar(getMenuBar())
+        && getMenuBar()->getTermGeometry().contains(termpos) );
 }
 
 //----------------------------------------------------------------------

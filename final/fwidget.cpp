@@ -1169,13 +1169,9 @@ void FWidget::delPreprocessingHandler (const FVTerm* instance)
 bool FWidget::isChildPrintArea() const
 {
   const auto& p_obj = static_cast<FWidget*>(getParent());
-
-  if ( p_obj
-    && p_obj->getChildPrintArea()
-    && p_obj->getChildPrintArea() == getCurrentPrintArea() )
-    return true;
-  else
-    return false;
+  return ( p_obj
+        && p_obj->getChildPrintArea()
+        && p_obj->getChildPrintArea() == getCurrentPrintArea() );
 }
 
 //----------------------------------------------------------------------
@@ -1436,13 +1432,8 @@ bool FWidget::focusNextChild()
            || ! next->isShown()
            || next->isWindowWidget() );
 
-    bool accpt = changeFocus (next, parent, FocusTypes::NextWidget);
-
-    if ( ! accpt )
-      return false;
-
-    break;  // The focus has been changed
-  }
+    return changeFocus (next, parent, FocusTypes::NextWidget);
+  }  // The focus has been changed
 
   return true;
 }
@@ -1497,13 +1488,8 @@ bool FWidget::focusPrevChild()
            || ! prev->isShown()
            || prev->isWindowWidget() );
 
-    const bool accpt = changeFocus (prev, parent, FocusTypes::PreviousWidget);
-
-    if ( ! accpt )
-      return false;
-
-    break;  // The focus has been changed
-  }
+    return changeFocus (prev, parent, FocusTypes::PreviousWidget);
+  }  // The focus has been changed
   while ( iter != first );
 
   return true;
@@ -2048,11 +2034,7 @@ inline bool FWidget::isDefaultTheme()
   auto iter = std::find ( default_themes.begin()
                         , default_themes.end()
                         , getColorTheme()->getClassName() );
-
-  if ( iter == default_themes.end() )  // No default theme
-    return false;
-
-  return true;
+  return iter != default_themes.end();  // Default theme found
 }
 
 //----------------------------------------------------------------------

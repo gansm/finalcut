@@ -20,10 +20,6 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-#if defined(__CYGWIN__)
-  #include <strings.h>  // need for strcasecmp
-#endif
-
 #include <limits>
 #include <memory>
 #include <unordered_map>
@@ -122,7 +118,7 @@ bool sortAscendingByName (const FObject* lhs, const FObject* rhs)
   const auto& r_string = r_item->getText(column);
 
   // lhs < rhs
-  return strcasecmp(l_string.c_str(), r_string.c_str()) < 0;
+  return FStringCaseCompare(l_string, r_string) < 0;
 }
 
 //----------------------------------------------------------------------
@@ -135,7 +131,7 @@ bool sortDescendingByName (const FObject* lhs, const FObject* rhs)
   const auto& r_string = r_item->getText(column);
 
   // lhs > rhs
-  return strcasecmp(l_string.c_str(), r_string.c_str()) > 0;
+  return FStringCaseCompare(l_string, r_string) > 0;
 }
 
 //----------------------------------------------------------------------

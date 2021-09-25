@@ -1320,165 +1320,131 @@ bool FMouseControl::hasData()
 {
   auto mtype = getMouseWithData();
   const auto& mouse_object = mouse_protocol[mtype].get();
-
-  if ( mouse_object )  // with data
-    return true;
-
-  return false;
+  return bool(mouse_object);  // with data
 }
 
 //----------------------------------------------------------------------
 bool FMouseControl::hasEvent()
 {
   auto mtype = getMouseWithEvent();
-
-  if ( mouse_protocol[mtype] )  // with event
-    return true;
-
-  return false;
+  return bool(mouse_protocol[mtype]);  // with event
 }
 
 //----------------------------------------------------------------------
 bool FMouseControl::isLeftButtonPressed()
 {
   auto mtype = getMouseWithEvent();
-
-  if ( mouse_protocol[mtype] )
-    return mouse_protocol[mtype]->isLeftButtonPressed();
-
-  return false;
+  return ( mouse_protocol[mtype] )
+         ? mouse_protocol[mtype]->isLeftButtonPressed()
+         : false;
 }
 
 //----------------------------------------------------------------------
 bool FMouseControl::isLeftButtonReleased()
 {
   auto mtype = getMouseWithEvent();
-
-  if ( mouse_protocol[mtype] )
-    return mouse_protocol[mtype]->isLeftButtonReleased();
-
-  return false;
+  return ( mouse_protocol[mtype] )
+         ? mouse_protocol[mtype]->isLeftButtonReleased()
+         : false;
 }
 
 //----------------------------------------------------------------------
 bool FMouseControl::isLeftButtonDoubleClick()
 {
   auto mtype = getMouseWithEvent();
-
-  if ( mouse_protocol[mtype] )
-    return mouse_protocol[mtype]->isLeftButtonDoubleClick();
-
-  return false;
+  return ( mouse_protocol[mtype] )
+         ? mouse_protocol[mtype]->isLeftButtonDoubleClick()
+         : false;
 }
 
 //----------------------------------------------------------------------
 bool FMouseControl::isRightButtonPressed()
 {
   auto mtype = getMouseWithEvent();
-
-  if ( mouse_protocol[mtype] )
-    return mouse_protocol[mtype]->isRightButtonPressed();
-
-  return false;
+  return ( mouse_protocol[mtype] )
+         ? mouse_protocol[mtype]->isRightButtonPressed()
+         : false;
 }
 
 //----------------------------------------------------------------------
 bool FMouseControl::isRightButtonReleased()
 {
   auto mtype = getMouseWithEvent();
-
-  if ( mouse_protocol[mtype] )
-    return mouse_protocol[mtype]->isRightButtonReleased();
-
-  return false;
+  return ( mouse_protocol[mtype] )
+         ? mouse_protocol[mtype]->isRightButtonReleased()
+         : false;
 }
 
 //----------------------------------------------------------------------
 bool FMouseControl::isMiddleButtonPressed()
 {
   auto mtype = getMouseWithEvent();
-
-  if ( mouse_protocol[mtype] )
-    return mouse_protocol[mtype]->isMiddleButtonPressed();
-
-  return false;
+  return ( mouse_protocol[mtype] )
+         ? mouse_protocol[mtype]->isMiddleButtonPressed()
+         : false;
 }
 
 //----------------------------------------------------------------------
 bool FMouseControl::isMiddleButtonReleased()
 {
   auto mtype = getMouseWithEvent();
-
-  if ( mouse_protocol[mtype] )
-    return mouse_protocol[mtype]->isMiddleButtonReleased();
-
-  return false;
+  return ( mouse_protocol[mtype] )
+         ? mouse_protocol[mtype]->isMiddleButtonReleased()
+         : false;
 }
 
 //----------------------------------------------------------------------
 bool FMouseControl::isShiftKeyPressed()
 {
   auto mtype = getMouseWithEvent();
-
-  if ( mouse_protocol[mtype] )
-    return mouse_protocol[mtype]->isShiftKeyPressed();
-
-  return false;
+  return ( mouse_protocol[mtype] )
+         ? mouse_protocol[mtype]->isShiftKeyPressed()
+         : false;
 }
 
 //----------------------------------------------------------------------
 bool FMouseControl::isControlKeyPressed()
 {
   auto mtype = getMouseWithEvent();
-
-  if ( mouse_protocol[mtype] )
-    return mouse_protocol[mtype]->isControlKeyPressed();
-
-  return false;
+  return ( mouse_protocol[mtype] )
+         ? mouse_protocol[mtype]->isControlKeyPressed()
+         : false;
 }
 
 //----------------------------------------------------------------------
 bool FMouseControl::isMetaKeyPressed()
 {
   auto mtype = getMouseWithEvent();
-
-  if ( mouse_protocol[mtype] )
-    return mouse_protocol[mtype]->isMetaKeyPressed();
-
-  return false;
+  return ( mouse_protocol[mtype] )
+         ? mouse_protocol[mtype]->isMetaKeyPressed()
+         : false;
 }
 
 //----------------------------------------------------------------------
 bool FMouseControl::isWheelUp()
 {
   auto mtype = getMouseWithEvent();
-
-  if ( mouse_protocol[mtype] )
-    return mouse_protocol[mtype]->isWheelUp();
-
-  return false;
+  return ( mouse_protocol[mtype] )
+         ? mouse_protocol[mtype]->isWheelUp()
+         : false;
 }
 
 //----------------------------------------------------------------------
 bool FMouseControl::isWheelDown()
 {
   auto mtype = getMouseWithEvent();
-
-  if ( mouse_protocol[mtype] )
-    return mouse_protocol[mtype]->isWheelDown();
-
-  return false;
+  return ( mouse_protocol[mtype] )
+         ? mouse_protocol[mtype]->isWheelDown()
+         : false;
 }
 
 //----------------------------------------------------------------------
 bool FMouseControl::isMoved()
 {
   auto mtype = getMouseWithEvent();
-
-  if ( mouse_protocol[mtype] )
-    return mouse_protocol[mtype]->isMoved();
-
-  return false;
+  return ( mouse_protocol[mtype] )
+         ? mouse_protocol[mtype]->isMoved()
+         : false;
 }
 
 //----------------------------------------------------------------------
@@ -1503,11 +1469,7 @@ bool FMouseControl::isGpmMouseEnabled()
 
   const auto& mouse = mouse_protocol[FMouse::MouseType::Gpm].get();
   const auto& gpm_mouse = static_cast<FMouseGPM*>(mouse);
-
-  if ( gpm_mouse )
-    return gpm_mouse->isGpmMouseEnabled();
-
-  return false;
+  return ( gpm_mouse && gpm_mouse->isGpmMouseEnabled() );
 }
 #else  // F_HAVE_LIBGPM
 bool FMouseControl::isGpmMouseEnabled()
@@ -1607,11 +1569,7 @@ bool FMouseControl::getGpmKeyPressed (bool pending)
 
   auto mouse = mouse_protocol[FMouse::MouseType::Gpm].get();
   auto gpm_mouse = static_cast<FMouseGPM*>(mouse);
-
-  if ( gpm_mouse )
-    return gpm_mouse->getGpmKeyPressed(pending);
-
-  return false;
+  return ( gpm_mouse && gpm_mouse->getGpmKeyPressed(pending) );
 }
 #else  // F_HAVE_LIBGPM
 bool FMouseControl::getGpmKeyPressed (bool)

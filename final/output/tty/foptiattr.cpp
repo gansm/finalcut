@@ -599,11 +599,7 @@ std::string FOptiAttr::changeAttribute (FChar& term, FChar& next)
 inline bool FOptiAttr::setTermBold (FChar& term)
 {
   term.attr.bit.bold = true;
-
-  if ( append_sequence(F_enter_bold_mode.cap) )
-    return true;
-  else
-    return false;
+  return append_sequence(F_enter_bold_mode.cap);
 }
 
 //----------------------------------------------------------------------
@@ -619,21 +615,14 @@ inline bool FOptiAttr::unsetTermBold (FChar& term)
     term.attr.bit.dim = false;
   }
 
-  if ( append_sequence(F_exit_bold_mode.cap) )
-    return true;
-  else
-    return false;
+  return append_sequence(F_exit_bold_mode.cap);
 }
 
 //----------------------------------------------------------------------
 inline bool FOptiAttr::setTermDim (FChar& term)
 {
   term.attr.bit.dim = true;
-
-  if ( append_sequence(F_enter_dim_mode.cap) )
-    return true;
-  else
-    return false;
+  return append_sequence(F_enter_dim_mode.cap);
 }
 
 //----------------------------------------------------------------------
@@ -649,21 +638,14 @@ inline bool FOptiAttr::unsetTermDim (FChar& term)
     term.attr.bit.dim = false;
   }
 
-  if ( append_sequence(F_exit_dim_mode.cap) )
-    return true;
-  else
-    return false;
+  return append_sequence(F_exit_dim_mode.cap);
 }
 
 //----------------------------------------------------------------------
 inline bool FOptiAttr::setTermItalic (FChar& term)
 {
   term.attr.bit.italic = true;
-
-  if ( append_sequence(F_enter_italics_mode.cap) )
-    return true;
-  else
-    return false;
+  return append_sequence(F_enter_italics_mode.cap);
 }
 
 //----------------------------------------------------------------------
@@ -674,21 +656,14 @@ inline bool FOptiAttr::unsetTermItalic (FChar& term)
   else
     term.attr.bit.italic = false;
 
-  if ( append_sequence(F_exit_italics_mode.cap) )
-    return true;
-  else
-    return false;
+  return append_sequence(F_exit_italics_mode.cap);
 }
 
 //----------------------------------------------------------------------
 inline bool FOptiAttr::setTermUnderline (FChar& term)
 {
   term.attr.bit.underline = true;
-
-  if ( append_sequence(F_enter_underline_mode.cap) )
-    return true;
-  else
-    return false;
+  return append_sequence(F_enter_underline_mode.cap);
 }
 
 //----------------------------------------------------------------------
@@ -704,21 +679,14 @@ inline bool FOptiAttr::unsetTermUnderline (FChar& term)
     term.attr.bit.dbl_underline = false;
   }
 
-  if ( append_sequence(F_exit_underline_mode.cap) )
-    return true;
-  else
-    return false;
+  return append_sequence(F_exit_underline_mode.cap);
 }
 
 //----------------------------------------------------------------------
 inline bool FOptiAttr::setTermBlink (FChar& term)
 {
   term.attr.bit.blink = true;
-
-  if ( append_sequence(F_enter_blink_mode.cap) )
-    return true;
-  else
-    return false;
+  return append_sequence(F_enter_blink_mode.cap);
 }
 
 //----------------------------------------------------------------------
@@ -729,21 +697,14 @@ inline bool FOptiAttr::unsetTermBlink (FChar& term)
   else
     term.attr.bit.blink = false;
 
-  if ( append_sequence(F_exit_blink_mode.cap) )
-    return true;
-  else
-    return false;
+  return append_sequence(F_exit_blink_mode.cap);
 }
 
 //----------------------------------------------------------------------
 inline bool FOptiAttr::setTermReverse (FChar& term)
 {
   term.attr.bit.reverse = true;
-
-  if ( ! fake_reverse && append_sequence(F_enter_reverse_mode.cap) )
-    return true;
-  else
-    return false;
+  return ( ! fake_reverse && append_sequence(F_enter_reverse_mode.cap) );
 }
 
 //----------------------------------------------------------------------
@@ -754,10 +715,7 @@ inline bool FOptiAttr::unsetTermReverse (FChar& term)
   else
     term.attr.bit.reverse = false;
 
-  if ( ! fake_reverse && append_sequence(F_exit_reverse_mode.cap) )
-    return true;
-  else
-    return false;
+  return ( ! fake_reverse && append_sequence(F_exit_reverse_mode.cap) );
 }
 
 //----------------------------------------------------------------------
@@ -765,10 +723,7 @@ inline bool FOptiAttr::setTermStandout (FChar& term)
 {
   term.attr.bit.standout = true;
 
-  if ( ! fake_reverse && append_sequence(F_enter_standout_mode.cap) )
-    return true;
-  else
-    return false;
+  return ( ! fake_reverse && append_sequence(F_enter_standout_mode.cap) );
 }
 
 //----------------------------------------------------------------------
@@ -779,21 +734,14 @@ inline bool FOptiAttr::unsetTermStandout (FChar& term)
   else
     term.attr.bit.standout = false;
 
-  if ( ! fake_reverse && append_sequence(F_exit_standout_mode.cap) )
-    return true;
-  else
-    return false;
+  return ( ! fake_reverse && append_sequence(F_exit_standout_mode.cap) );
 }
 
 //----------------------------------------------------------------------
 inline bool FOptiAttr::setTermInvisible (FChar& term)
 {
   term.attr.bit.invisible = true;
-
-  if ( append_sequence(F_enter_secure_mode.cap) )
-    return true;
-  else
-    return false;
+  return append_sequence(F_enter_secure_mode.cap);
 }
 
 //----------------------------------------------------------------------
@@ -804,21 +752,14 @@ inline bool FOptiAttr::unsetTermInvisible (FChar& term)
   else
     term.attr.bit.invisible = false;
 
-  if ( append_sequence(F_exit_secure_mode.cap) )
-    return true;
-  else
-    return false;
+  return append_sequence(F_exit_secure_mode.cap);
 }
 
 //----------------------------------------------------------------------
 inline bool FOptiAttr::setTermProtected (FChar& term)
 {
   term.attr.bit.protect = true;
-
-  if ( append_sequence(F_enter_protected_mode.cap) )
-    return true;
-  else
-    return false;
+  return append_sequence(F_enter_protected_mode.cap);
 }
 
 //----------------------------------------------------------------------
@@ -829,21 +770,14 @@ inline bool FOptiAttr::unsetTermProtected (FChar& term)
   else
     term.attr.bit.protect = false;
 
-  if ( append_sequence(F_exit_protected_mode.cap) )
-    return true;
-  else
-    return false;
+  return append_sequence(F_exit_protected_mode.cap);
 }
 
 //----------------------------------------------------------------------
 inline bool FOptiAttr::setTermCrossedOut (FChar& term)
 {
   term.attr.bit.crossed_out = true;
-
-  if ( append_sequence(F_enter_crossed_out_mode.cap) )
-    return true;
-  else
-    return false;
+  return append_sequence(F_enter_crossed_out_mode.cap);
 }
 
 //----------------------------------------------------------------------
@@ -854,21 +788,14 @@ inline bool FOptiAttr::unsetTermCrossedOut (FChar& term)
   else
     term.attr.bit.crossed_out = false;
 
-  if ( append_sequence(F_exit_crossed_out_mode.cap) )
-    return true;
-  else
-    return false;
+  return append_sequence(F_exit_crossed_out_mode.cap);
 }
 
 //----------------------------------------------------------------------
 inline bool FOptiAttr::setTermDoubleUnderline (FChar& term)
 {
   term.attr.bit.dbl_underline = true;
-
-  if ( append_sequence(F_enter_dbl_underline_mode.cap) )
-    return true;
-  else
-    return false;
+  return append_sequence(F_enter_dbl_underline_mode.cap);
 }
 
 //----------------------------------------------------------------------
@@ -884,10 +811,7 @@ inline bool FOptiAttr::unsetTermDoubleUnderline (FChar& term)
     term.attr.bit.dbl_underline = false;
   }
 
-  if ( append_sequence(F_exit_dbl_underline_mode.cap) )
-    return true;
-  else
-    return false;
+  return append_sequence(F_exit_dbl_underline_mode.cap);
 }
 
 //----------------------------------------------------------------------
@@ -905,7 +829,7 @@ bool FOptiAttr::setTermAttributes (FChar& term, const TCapAttributes& attr)
                                                , attr.p7
                                                , attr.p8
                                                , attr.p9 );
-    append_sequence (sgr.data());
+    append_sequence (sgr);
     resetColor(term);
     term.attr.bit.standout      = attr.p1;
     term.attr.bit.underline     = attr.p2;
@@ -920,22 +844,17 @@ bool FOptiAttr::setTermAttributes (FChar& term, const TCapAttributes& attr)
     term.attr.bit.italic        = false;
     term.attr.bit.crossed_out   = false;
     term.attr.bit.dbl_underline = false;
-
     return true;
   }
-  else
-    return false;
+
+  return false;
 }
 
 //----------------------------------------------------------------------
 inline bool FOptiAttr::unsetTermAttributes (FChar& term)
 {
   reset(term);
-
-  if ( append_sequence(F_exit_attribute_mode.cap) )
-    return true;
-  else
-    return false;
+  return append_sequence(F_exit_attribute_mode.cap);
 }
 
 //----------------------------------------------------------------------
@@ -946,10 +865,7 @@ inline bool FOptiAttr::setTermAltCharset (FChar& term)
   if ( alt_equal_pc_charset && term.attr.bit.pc_charset )
     return false;
 
-  if ( append_sequence(F_enter_alt_charset_mode.cap) )
-    return true;
-  else
-    return false;
+  return append_sequence(F_enter_alt_charset_mode.cap);
 }
 
 //----------------------------------------------------------------------
@@ -960,10 +876,7 @@ inline bool FOptiAttr::unsetTermAltCharset (FChar& term)
   if ( alt_equal_pc_charset && term.attr.bit.pc_charset )
     return false;
 
-  if ( append_sequence(F_exit_alt_charset_mode.cap) )
-    return true;
-  else
-    return false;
+  return append_sequence(F_exit_alt_charset_mode.cap);
 }
 
 //----------------------------------------------------------------------
@@ -974,10 +887,7 @@ inline bool FOptiAttr::setTermPCcharset (FChar& term)
   if ( alt_equal_pc_charset && term.attr.bit.alt_charset )
     return false;
 
-  if ( append_sequence(F_enter_pc_charset_mode.cap) )
-    return true;
-  else
-    return false;
+  return append_sequence(F_enter_pc_charset_mode.cap);
 }
 
 //----------------------------------------------------------------------
@@ -988,10 +898,7 @@ inline bool FOptiAttr::unsetTermPCcharset (FChar& term)
   if ( alt_equal_pc_charset && term.attr.bit.alt_charset )
     return false;
 
-  if ( append_sequence(F_exit_pc_charset_mode.cap) )
-    return true;
-  else
-    return false;
+  return append_sequence(F_exit_pc_charset_mode.cap);
 }
 
 //----------------------------------------------------------------------
@@ -1007,7 +914,7 @@ bool FOptiAttr::setTermDefaultColor (FChar& term)
   else if ( ansi_default_color )
   {
     std::string sgr_39_49{CSI "39;49m"};
-    append_sequence (sgr_39_49.c_str());
+    append_sequence (sgr_39_49);
     return true;
   }
   else
@@ -1103,11 +1010,8 @@ void FOptiAttr::setAttributesOff (FChar& term)
 //----------------------------------------------------------------------
 bool FOptiAttr::hasColor (const FChar& attr)
 {
-  if ( attr.fg_color == FColor::Default
-    && attr.bg_color == FColor::Default )
-    return false;
-  else
-    return true;
+  return ( attr.fg_color != FColor::Default
+        || attr.bg_color != FColor::Default );
 }
 
 //----------------------------------------------------------------------
@@ -1348,7 +1252,7 @@ inline void FOptiAttr::change_to_default_color ( FChar& term, FChar& next
     else if ( fg == FColor::Default && term.fg_color != FColor::Default )
     {
       std::string sgr_39{CSI "39m"};
-      append_sequence (sgr_39.c_str());
+      append_sequence (sgr_39);
       term.fg_color = FColor::Default;
     }
     else if ( bg == FColor::Default && term.bg_color != FColor::Default )
@@ -1395,13 +1299,13 @@ inline void FOptiAttr::change_current_color ( const FChar& term
     if ( term.fg_color != fg || frev )
     {
       const auto& color_str = FTermcap::encodeParameter(AF, uInt16(ansi_fg));
-      append_sequence (color_str.data());
+      append_sequence (color_str);
     }
 
     if ( term.bg_color != bg || frev )
     {
       const auto& color_str = FTermcap::encodeParameter(AB, uInt16(ansi_bg));
-      append_sequence (color_str.data());
+      append_sequence (color_str);
     }
   }
   else if ( Sf && Sb )
@@ -1409,13 +1313,13 @@ inline void FOptiAttr::change_current_color ( const FChar& term
     if ( term.fg_color != fg || frev )
     {
       const auto& color_str = FTermcap::encodeParameter(Sf, uInt16(fg));
-      append_sequence (color_str.data());
+      append_sequence (color_str);
     }
 
     if ( term.bg_color != bg || frev )
     {
       const auto& color_str = FTermcap::encodeParameter(Sb, uInt16(bg));
-      append_sequence (color_str.data());
+      append_sequence (color_str);
     }
   }
   else if ( sp )
@@ -1423,7 +1327,7 @@ inline void FOptiAttr::change_current_color ( const FChar& term
     fg = vga2ansi(fg);
     bg = vga2ansi(bg);
     const auto& color_str = FTermcap::encodeParameter(sp, uInt16(fg), uInt16(bg));
-    append_sequence (color_str.data());
+    append_sequence (color_str);
   }
 }
 
@@ -1541,9 +1445,9 @@ inline bool FOptiAttr::switchOff() const
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::append_sequence (const char seq[])
+inline bool FOptiAttr::append_sequence (const std::string& seq)
 {
-  if ( ! seq )
+  if ( seq.empty() )
     return false;
 
   attr_buf.append(seq);

@@ -1561,14 +1561,10 @@ bool FVTerm::isInsideArea (const FPoint& pos, const FTermArea* area)
 {
   // Check whether the coordinates are within the area
 
-  const auto aw = std::size_t(area->width);
-  const auto ah = std::size_t(area->height);
-  FRect area_geometry{0, 0, aw, ah};
-
-  if ( area_geometry.contains(pos) )
-    return true;
-  else
-    return false;
+  const int x = pos.getX();
+  const int y = pos.getY();
+  return x >= 0 && x < area->width
+      && y >= 0 && y < area->height;
 }
 
 //----------------------------------------------------------------------
@@ -2036,12 +2032,10 @@ bool FVTerm::isInsideTerminal (const FPoint& pos) const
 {
   // Check whether the coordinates are within the virtual terminal
 
-  const FRect term_geometry {0, 0, foutput->getColumnNumber(), foutput->getLineNumber()};
-
-  if ( term_geometry.contains(pos) )
-    return true;
-  else
-    return false;
+  const auto x = pos.getX();
+  const auto y = pos.getY();
+  return x >= 0 && x < int(foutput->getColumnNumber())
+      && y >= 0 && y < int(foutput->getLineNumber());
 }
 
 //----------------------------------------------------------------------

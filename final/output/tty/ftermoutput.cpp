@@ -468,19 +468,13 @@ inline FStartOptions& FTermOutput::getStartOptions()
 //----------------------------------------------------------------------
 inline bool FTermOutput::isInputCursorInsideTerminal() const
 {
-  if ( vterm && vterm->input_cursor_visible )
-  {
-    const int x = vterm->input_cursor_x;
-    const int y = vterm->input_cursor_y;
+  if ( ! vterm || ! vterm->input_cursor_visible )
+    return false;
 
-    if ( x >= 0 && x < int(getColumnNumber())
-      && y >= 0 && y < int(getLineNumber()) )
-    {
-      return true;
-    }
-  }
-
-  return false;
+  const int x = vterm->input_cursor_x;
+  const int y = vterm->input_cursor_y;
+  return ( x >= 0 && x < int(getColumnNumber())
+        && y >= 0 && y < int(getLineNumber()) );
 }
 
 //----------------------------------------------------------------------
@@ -496,11 +490,8 @@ inline bool FTermOutput::isDefaultPaletteTheme()
   auto iter = std::find ( default_themes.begin()
                         , default_themes.end()
                         , FColorPalette::getInstance()->getClassName() );
+  return iter != default_themes.end();  // Default theme found
 
-  if ( iter == default_themes.end() )  // No default theme
-    return false;
-
-  return true;
 }
 
 //----------------------------------------------------------------------
@@ -619,10 +610,9 @@ bool FTermOutput::canClearToEOL (uInt xmin, uInt y) const
         break;
     }
 
-    if ( beginning_whitespace == uInt(vterm->width) - xmin
-      && (ut || normal)
-      && clr_eol_length < beginning_whitespace )
-      return true;
+    return ( beginning_whitespace == uInt(vterm->width) - xmin
+          && (ut || normal)
+          && clr_eol_length < beginning_whitespace );
   }
 
   return false;

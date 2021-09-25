@@ -565,15 +565,11 @@ inline void FTermXTerminal::setXTermDefaultsMouseCursor()
 inline bool FTermXTerminal::canSetXTermBackground() const
 {
   static const auto& fterm_data = FTermData::getInstance();
-
-  if ( xterm_default_colors
-    && ! fterm_data.isTermType ( FTermType::mintty
-                               | FTermType::mlterm
-                               | FTermType::rxvt
-                               | FTermType::screen ) )
-    return true;
-  else
-    return false;
+  return ( xterm_default_colors
+        && ! fterm_data.isTermType ( FTermType::mintty
+                                   | FTermType::mlterm
+                                   | FTermType::rxvt
+                                   | FTermType::screen ) );
 }
 
 //----------------------------------------------------------------------
@@ -690,11 +686,8 @@ bool FTermXTerminal::canResetColor() const
   if ( fterm_data.isTermType(FTermType::putty | FTermType::mlterm) )
     return false;
 
-  if ( fterm_data.isTermType(FTermType::xterm | FTermType::screen)
-    || FTermcap::osc_support )
-    return true;
-
-  return false;
+  return ( fterm_data.isTermType(FTermType::xterm | FTermType::screen)
+        || FTermcap::osc_support );
 }
 
 //----------------------------------------------------------------------

@@ -434,10 +434,8 @@ bool FComboBox::isMouseOverListWindow (const FPoint& termpos)
 {
   if ( list_window.isShown() )
   {
-    auto list_geometry = list_window.getTermGeometry();
-
-    if ( list_geometry.contains(termpos) )
-      return true;
+    const auto& list_geometry = list_window.getTermGeometry();
+    return list_geometry.contains(termpos);
   }
 
   return false;

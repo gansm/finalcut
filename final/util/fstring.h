@@ -177,8 +177,10 @@ class FString
 
     iterator begin() noexcept;
     iterator end() noexcept;
-    const_iterator begin() const noexcept;
-    const_iterator end() const noexcept;
+    const_iterator begin() const;
+    const_iterator end() const;
+    const_iterator cbegin() const noexcept;
+    const_iterator cend() const noexcept;
     reference front();
     reference back();
     const_reference front() const;
@@ -192,6 +194,7 @@ class FString
     wchar_t* wc_str();
     const char* c_str() const;
     char* c_str();
+    std::wstring toWString() const;
     std::string toString() const;
 
     FString toLower()  const;
@@ -268,6 +271,9 @@ class FString
     friend std::wistream& operator >> (std::wistream&, FString&);
 };
 
+// non-member function forward declarations
+//----------------------------------------------------------------------
+int FStringCaseCompare (const FString&, const FString&);
 
 // FString inline functions
 //----------------------------------------------------------------------
@@ -388,12 +394,20 @@ inline FString::iterator FString::end() noexcept
 { return string.end(); }
 
 //----------------------------------------------------------------------
-inline FString::const_iterator FString::begin() const noexcept
-{ return string.cbegin(); }
+inline FString::const_iterator FString::begin() const
+{ return this->string.begin(); }
 
 //----------------------------------------------------------------------
-inline FString::const_iterator FString::end() const noexcept
-{ return string.cend(); }
+inline FString::const_iterator FString::end() const
+{ return this->string.end(); }
+
+//----------------------------------------------------------------------
+inline FString::const_iterator FString::cbegin() const noexcept
+{ return this->string.cbegin(); }
+
+//----------------------------------------------------------------------
+inline FString::const_iterator FString::cend() const noexcept
+{ return this->string.cend(); }
 
 //----------------------------------------------------------------------
 inline FString::reference FString::front()
