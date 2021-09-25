@@ -360,7 +360,7 @@ inline bool FOptiAttr::append_sequence (CharT seq)
   // for char* and const char*
   return seq == nullptr
        ? false
-       : append_sequence(std::string(std::forward<CharT>(seq)));
+       : append_sequence(std::string(seq));
 }
 
 }  // namespace finalcut

@@ -125,7 +125,7 @@ class FVTerm : public FVTermAttribute
     FVTerm (FVTerm&&) noexcept;  // move constructor
 
     // Destructor
-    virtual ~FVTerm();
+    ~FVTerm() override;
 
     // Overloaded operators
     FVTerm& operator = (const FVTerm&);      // copy assignment operator (=)
@@ -146,7 +146,7 @@ class FVTerm : public FVTermAttribute
     FVTerm& operator << (const FColorPair&);
 
     // Accessors
-    virtual FString       getClassName() const;
+    FString               getClassName() const override;
     static auto           getFOutput() -> std::shared_ptr<FOutput>;
     FTermArea*&           getVWin();
     const FTermArea*      getVWin() const;
