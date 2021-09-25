@@ -491,7 +491,6 @@ inline bool FTermOutput::isDefaultPaletteTheme()
                         , default_themes.end()
                         , FColorPalette::getInstance()->getClassName() );
   return iter != default_themes.end();  // Default theme found
-
 }
 
 //----------------------------------------------------------------------

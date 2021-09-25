@@ -255,7 +255,7 @@ inline FLineEdit::LabelOrientation FLineEdit::getLabelOrientation() const
 
 //----------------------------------------------------------------------
 inline void FLineEdit::setInputFilter (const FString& regex_string)
-{ input_filter = std::move(regex_string.toWString()); }
+{ input_filter = regex_string.toWString(); }
 
 //----------------------------------------------------------------------
 inline void FLineEdit::clearInputFilter()

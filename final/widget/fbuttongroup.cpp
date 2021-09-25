@@ -146,7 +146,9 @@ bool FButtonGroup::hasFocusedButton() const
   for (auto&& item : buttonlist)
   {
     const auto& toggle_button = static_cast<FToggleButton*>(item);
-    return toggle_button->hasFocus();
+
+    if ( toggle_button->hasFocus() )
+      return true;
   }
 
   return false;
@@ -161,7 +163,9 @@ bool FButtonGroup::hasCheckedButton() const
   for (auto&& item : buttonlist)
   {
     const auto& toggle_button = static_cast<FToggleButton*>(item);
-    return toggle_button->isChecked();
+
+    if ( toggle_button->isChecked() )
+      return true;
   }
 
   return false;

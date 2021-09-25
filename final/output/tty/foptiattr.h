@@ -258,6 +258,22 @@ class FOptiAttr final
     bool          switchOn() const;
     bool          switchOff() const;
     bool          append_sequence (const std::string&);
+    template <typename T
+             , typename std::enable_if< std::is_pointer<T>::value
+                                     && std::is_same<char, typename std::remove_pointer<T>::type>::value
+                                     , std::nullptr_t>::type = nullptr >
+    bool append_sequence (T seq)  // for char*
+    {
+      return ( seq == nullptr ) ? false : append_sequence(std::string(seq));
+    }
+    template <typename T
+             , typename std::enable_if< std::is_pointer<T>::value
+                                     && std::is_same<const char, typename std::remove_pointer<T>::type>::value
+                                     , std::nullptr_t>::type = nullptr >
+    bool append_sequence (T seq)  // for const char*
+    {
+      return ( seq == nullptr ) ? false : append_sequence(std::string(seq));
+    }
 
     // Data members
     Capability      F_enter_bold_mode{};
