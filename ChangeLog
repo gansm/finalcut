@@ -1,6 +1,7 @@
 2021-09-25 Markus Gans  <guru.mail@muenster.de>
 	* New FString auxiliary function FStringCaseCompare as strcasecmp 
 	  replacement
+	* Move attribute handling from FVTerm to FVTermAttribute
 
 2021-09-22 Markus Gans  <guru.mail@muenster.de>
 	* The request for a terminal size change now occurs only once per 

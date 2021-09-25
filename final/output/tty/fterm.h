@@ -143,7 +143,7 @@ class FVTermBuffer;
 class FTerm final
 {
   public:
-    // Using-declarations
+    // Using-declaration
     using FSetPalette = FColorPalette::FSetPalette;
 
     // Constructor

@@ -124,6 +124,10 @@ void FTermFunctionsTest::exitMessageTest()
   finalcut::setExitMessage(fstring);
   CPPUNIT_ASSERT ( finalcut::getExitMessage() == "Encoding not found" );
   CPPUNIT_ASSERT ( finalcut::getExitMessage().length() == 18 );
+
+  finalcut::setExitMessage("");  // Reset the exit message
+  CPPUNIT_ASSERT ( finalcut::getExitMessage() == "" );
+  CPPUNIT_ASSERT ( finalcut::getExitMessage().length() == 0 );
 }
 
 //----------------------------------------------------------------------
@@ -691,7 +695,7 @@ void FTermFunctionsTest::utf8Test()
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(wchar_t(0x200000))
                    == finalcut::unicode_to_utf8(L'�') );
 
-  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(wchar_t(0xffffffff))  // 32-bit full set
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(wchar_t(INT_MAX))  // maximum 32-bit value
                    == finalcut::unicode_to_utf8(L'�') );
 }
 

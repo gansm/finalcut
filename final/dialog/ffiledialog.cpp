@@ -23,6 +23,10 @@
 #include <array>
 #include <vector>
 
+#if defined(__CYGWIN__)
+  #define _BSD_SOURCE  // for D_TYPE in readdir
+#endif
+
 #include "final/dialog/ffiledialog.h"
 #include "final/fevent.h"
 #include "final/util/fsystem.h"

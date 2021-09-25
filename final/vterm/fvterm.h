@@ -61,6 +61,7 @@
 #include "final/output/tty/fterm_functions.h"
 #include "final/util/fdata.h"
 #include "final/util/fstringstream.h"
+#include "final/vterm/fvtermattribute.h"
 
 #define F_PREPROC_HANDLER(i,h) \
     reinterpret_cast<FVTerm*>((i)), \
@@ -84,7 +85,7 @@ class FVTermBuffer;
 // class FVTerm
 //----------------------------------------------------------------------
 
-class FVTerm
+class FVTerm : public FVTermAttribute
 {
   public:
     struct FTermArea;             // forward declaration
@@ -146,72 +147,19 @@ class FVTerm
 
     // Accessors
     virtual FString       getClassName() const;
-    static FColor         getTermForegroundColor();
-    static FColor         getTermBackgroundColor();
     static auto           getFOutput() -> std::shared_ptr<FOutput>;
     FTermArea*&           getVWin();
     const FTermArea*      getVWin() const;
     FPoint                getPrintCursor();
-    static FChar&         getAttribute();
     static FVTermList*    getWindowList();
 
     // Mutators
     void                  setTerminalUpdates (TerminalUpdate) const;
     void                  setCursor (const FPoint&);
-    static void           setColor (FColor, FColor);
-    static void           setNormal();
-    static bool           setBold (bool = true);
-    static bool           unsetBold();
-    static bool           setDim (bool = true);
-    static bool           unsetDim();
-    static bool           setItalic (bool = true);
-    static bool           unsetItalic();
-    static bool           setUnderline (bool = true);
-    static bool           unsetUnderline();
-    static bool           setBlink (bool = true);
-    static bool           unsetBlink();
-    static bool           setReverse (bool = true);
-    static bool           unsetReverse();
-    static bool           setStandout (bool = true);
-    static bool           unsetStandout();
-    static bool           setInvisible (bool = true);
-    static bool           unsetInvisible();
-    static bool           setProtected (bool = true);
-    static bool           unsetProtected();
-    static bool           setCrossedOut (bool = true);
-    static bool           unsetCrossedOut();
-    static bool           setDoubleUnderline (bool = true);
-    static bool           unsetDoubleUnderline();
-    static bool           setAltCharset (bool = true);
-    static bool           unsetAltCharset();
-    static bool           setPCcharset (bool = true);
-    static bool           unsetPCcharset();
-    static bool           setTransparent (bool = true);
-    static bool           unsetTransparent();
-    static bool           setColorOverlay (bool = true);
-    static bool           unsetColorOverlay();
-    static bool           setInheritBackground (bool = true);
-    static bool           unsetInheritBackground();
     static void           setNonBlockingRead (bool = true);
     static void           unsetNonBlockingRead();
 
     // Inquiries
-    static bool           isBold();
-    static bool           isDim();
-    static bool           isItalic();
-    static bool           isUnderline();
-    static bool           isBlink();
-    static bool           isReverse();
-    static bool           isStandout();
-    static bool           isInvisible();
-    static bool           isProtected();
-    static bool           isCrossedOut();
-    static bool           isDoubleUnderline();
-    static bool           isAltCharset();
-    static bool           isPCcharset();
-    static bool           isTransparent();
-    static bool           isTransShadow();
-    static bool           isInheritBackground();
     static bool           isDrawingFinished();
     static bool           isTerminalUpdateForced();
     static bool           areTerminalUpdatesPaused();
@@ -366,7 +314,6 @@ class FVTerm
     static FTermArea*             vterm;          // virtual terminal
     static FTermArea*             vdesktop;       // virtual desktop
     static FTermArea*             active_area;    // active area
-    static FChar                  next_attribute;
     static FChar                  s_ch;  // shadow character
     static FChar                  i_ch;  // inherit background character
     static bool                   draw_completed;
@@ -557,24 +504,12 @@ inline FString FVTerm::getClassName() const
 { return "FVTerm"; }
 
 //----------------------------------------------------------------------
-inline FColor FVTerm::getTermForegroundColor()
-{ return next_attribute.fg_color; }
-
-//----------------------------------------------------------------------
-inline FColor FVTerm::getTermBackgroundColor()
-{ return next_attribute.bg_color; }
-
-//----------------------------------------------------------------------
 inline FVTerm::FTermArea*& FVTerm::getVWin()
 { return vwin; }
 
 //----------------------------------------------------------------------
 inline const FVTerm::FTermArea* FVTerm::getVWin() const
 { return vwin; }
-
-//----------------------------------------------------------------------
-inline FChar& FVTerm::getAttribute()
-{ return next_attribute; }
 
 //----------------------------------------------------------------------
 inline FVTerm::FVTermList* FVTerm::getWindowList()
@@ -585,219 +520,8 @@ inline FVTerm::FVTermList* FVTerm::getWindowList()
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::setColor (FColor fg, FColor bg)
-{
-  // Changes colors
-  next_attribute.fg_color = fg;
-  next_attribute.bg_color = bg;
-}
-
-//----------------------------------------------------------------------
-inline void FVTerm::setNormal()
-{
-  // Reset all character attributes
-  next_attribute.attr.byte[0] = 0;
-  next_attribute.attr.byte[1] = 0;
-  next_attribute.attr.bit.no_changes = false;
-  next_attribute.fg_color = FColor::Default;
-  next_attribute.bg_color = FColor::Default;
-}
-
-//----------------------------------------------------------------------
-inline bool FVTerm::setBold (bool enable)
-{ return (next_attribute.attr.bit.bold = enable); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::unsetBold()
-{ return setBold(false); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::setDim (bool enable)
-{ return (next_attribute.attr.bit.dim = enable); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::unsetDim()
-{ return setDim(false); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::setItalic (bool enable)
-{ return (next_attribute.attr.bit.italic = enable); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::unsetItalic()
-{ return setItalic(false); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::setUnderline (bool enable)
-{ return (next_attribute.attr.bit.underline = enable); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::unsetUnderline()
-{ return setUnderline(false); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::setBlink (bool enable)
-{ return (next_attribute.attr.bit.blink = enable); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::unsetBlink()
-{ return setBlink(false); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::setReverse (bool enable)
-{ return (next_attribute.attr.bit.reverse = enable); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::unsetReverse()
-{ return setReverse(false); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::setStandout (bool enable)
-{ return (next_attribute.attr.bit.standout = enable); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::unsetStandout()
-{ return setStandout(false); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::setInvisible (bool enable)
-{ return (next_attribute.attr.bit.invisible = enable); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::unsetInvisible()
-{ return setInvisible(false); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::setProtected (bool enable)
-{ return (next_attribute.attr.bit.protect = enable); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::unsetProtected()
-{ return setProtected(false); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::setCrossedOut (bool enable)
-{ return (next_attribute.attr.bit.crossed_out = enable); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::unsetCrossedOut()
-{ return setCrossedOut(false); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::setDoubleUnderline (bool enable)
-{ return (next_attribute.attr.bit.dbl_underline = enable); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::unsetDoubleUnderline()
-{ return setDoubleUnderline(false); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::setAltCharset (bool enable)
-{ return (next_attribute.attr.bit.alt_charset = enable); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::unsetAltCharset()
-{ return setAltCharset(false); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::setPCcharset (bool enable)
-{ return (next_attribute.attr.bit.pc_charset = enable); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::unsetPCcharset()
-{ return setPCcharset(false); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::setTransparent (bool enable)
-{ return (next_attribute.attr.bit.transparent = enable); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::unsetTransparent()
-{ return setTransparent(false); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::setColorOverlay (bool enable)
-{ return (next_attribute.attr.bit.color_overlay = enable); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::unsetColorOverlay()
-{ return setColorOverlay(false); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::setInheritBackground (bool enable)
-{ return (next_attribute.attr.bit.inherit_background = enable); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::unsetInheritBackground()
-{ return setInheritBackground(false); }
-
-//----------------------------------------------------------------------
 inline void FVTerm::unsetNonBlockingRead()
 { setNonBlockingRead(false); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isBold()
-{ return next_attribute.attr.bit.bold; }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isDim()
-{ return next_attribute.attr.bit.dim; }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isItalic()
-{ return next_attribute.attr.bit.italic; }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isUnderline()
-{ return next_attribute.attr.bit.underline; }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isBlink()
-{ return next_attribute.attr.bit.blink; }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isReverse()
-{ return next_attribute.attr.bit.reverse; }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isStandout()
-{ return next_attribute.attr.bit.standout; }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isInvisible()
-{ return next_attribute.attr.bit.invisible; }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isProtected()
-{ return next_attribute.attr.bit.protect; }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isCrossedOut()
-{ return next_attribute.attr.bit.crossed_out; }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isDoubleUnderline()
-{ return next_attribute.attr.bit.dbl_underline; }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isAltCharset()
-{ return next_attribute.attr.bit.alt_charset; }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isPCcharset()
-{ return next_attribute.attr.bit.pc_charset; }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isTransparent()
-{ return next_attribute.attr.bit.transparent; }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isTransShadow()
-{ return next_attribute.attr.bit.color_overlay; }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isInheritBackground()
-{ return next_attribute.attr.bit.inherit_background; }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isDrawingFinished()
@@ -875,7 +599,6 @@ inline bool FVTerm::isVirtualWindow() const
 //----------------------------------------------------------------------
 inline void FVTerm::hideVTermCursor() const
 { vterm->input_cursor_visible = false; }
-
 
 }  // namespace finalcut
 

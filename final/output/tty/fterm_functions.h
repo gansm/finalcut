@@ -49,7 +49,13 @@ bool          isReverseNewFontchar (wchar_t);
 bool          hasFullWidthSupports();
 wchar_t       cp437_to_unicode (uChar);
 uChar         unicode_to_cp437 (wchar_t);
-std::string   unicode_to_utf8 (wchar_t ucs);
+
+#if defined(__CYGWIN__)
+  std::string unicode_to_utf8 (wchar_t ucs);
+#else
+  std::string unicode_to_utf8 (wchar_t ucs);
+#endif
+
 FString       getFullWidth (const FString&);
 FString       getHalfWidth (const FString&);
 FString       getColumnSubString (const FString&, std::size_t, std::size_t);

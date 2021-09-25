@@ -1239,20 +1239,20 @@ inline FColor operator -- (FColor& c, int) noexcept  // postfix
 enum class Style : uInt16
 {
   None              = 0,
-  Bold              = 1,
-  Dim               = 2,
-  Italic            = 4,
-  Underline         = 8,
-  Blink             = 16,
-  Reverse           = 32,
-  Standout          = 64,
-  Invisible         = 128,
-  Protected         = 256,
-  CrossedOut        = 512,
-  DoubleUnderline   = 1024,
-  Transparent       = 2048,
-  ColorOverlay      = 4096,
-  InheritBackground = 8192
+  Bold              = 1 << 0,
+  Dim               = 1 << 1,
+  Italic            = 1 << 2,
+  Underline         = 1 << 3,
+  Blink             = 1 << 4,
+  Reverse           = 1 << 5,
+  Standout          = 1 << 6,
+  Invisible         = 1 << 7,
+  Protected         = 1 << 8,
+  CrossedOut        = 1 << 9,
+  DoubleUnderline   = 1 << 10,
+  Transparent       = 1 << 11,
+  ColorOverlay      = 1 << 12,
+  InheritBackground = 1 << 13
 };
 
 constexpr Style operator + (const Style& a1, const Style& a2) noexcept

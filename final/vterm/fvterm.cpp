@@ -49,7 +49,6 @@ const FVTerm*        FVTerm::init_object{nullptr};
 FVTerm::FTermArea*   FVTerm::vterm{nullptr};
 FVTerm::FTermArea*   FVTerm::vdesktop{nullptr};
 FVTerm::FTermArea*   FVTerm::active_area{nullptr};
-FChar                FVTerm::next_attribute{};
 FChar                FVTerm::s_ch{};
 FChar                FVTerm::i_ch{};
 
@@ -61,6 +60,7 @@ FChar                FVTerm::i_ch{};
 // constructors and destructor
 //----------------------------------------------------------------------
 FVTerm::FVTerm()
+  : FVTermAttribute{}
 {
   if ( ! init_object )
     init();
@@ -73,13 +73,15 @@ FVTerm::FVTerm()
 
 //----------------------------------------------------------------------
 FVTerm::FVTerm (const FVTerm& fvterm)  // copy constructor
-  : foutput{std::shared_ptr<FOutput>(fvterm.foutput)}
+  : FVTermAttribute{}
+  , foutput{std::shared_ptr<FOutput>(fvterm.foutput)}
   , window_list{std::shared_ptr<FVTermList>(fvterm.window_list)}
 { }
 
 //----------------------------------------------------------------------
 FVTerm::FVTerm (FVTerm&& fvterm) noexcept  // move constructor
-  : foutput{std::shared_ptr<FOutput>(fvterm.foutput)}
+  : FVTermAttribute{}
+  , foutput{std::shared_ptr<FOutput>(fvterm.foutput)}
   , window_list{std::shared_ptr<FVTermList>(fvterm.window_list)}
 { }
 
@@ -1066,11 +1068,8 @@ void FVTerm::clearArea (FTermArea* area, wchar_t fillchar) const
 {
   // Clear the area with the current attributes
 
-  FChar nc{};  // next character
-
-  // Current attributes with a space character
-  std::memcpy (&nc, &next_attribute, sizeof(nc));
-  nc.ch[0] = fillchar;
+  FChar nc{FVTerm::getAttribute()};  // next character
+  nc.ch[0] = fillchar;  // Current attributes with the fill character
 
   if ( ! (area && area->data) )
   {
@@ -1744,14 +1743,8 @@ void FVTerm::init()
   // The final setting is made later in FTerm::init_locale().
   std::setlocale (LC_ALL, "");
 
-  // next_attribute contains the state of the next printed character
-  next_attribute.ch           = {{ L'\0' }};
-  next_attribute.fg_color     = FColor::Default;
-  next_attribute.bg_color     = FColor::Default;
-  next_attribute.attr.byte[0] = 0;
-  next_attribute.attr.byte[1] = 0;
-  next_attribute.attr.byte[2] = 0;
-  next_attribute.attr.byte[3] = 0;
+  // Initialize the printing attribute
+  FVTermAttribute::initAttribute();
 
   // Create virtual terminal
   FRect term_geometry {0, 0, foutput->getColumnNumber(), foutput->getLineNumber()};
