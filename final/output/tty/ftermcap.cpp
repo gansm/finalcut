@@ -101,8 +101,7 @@ bool FTermcap::getFlag (const std::string& cap)
 //----------------------------------------------------------------------
 int FTermcap::getNumber (const std::string& cap)
 {
-  auto num = ::tgetnum(C_STR(cap.data()));
-  return num > 0 ? num : 0;
+  return ::tgetnum(C_STR(cap.data()));
 }
 
 //----------------------------------------------------------------------

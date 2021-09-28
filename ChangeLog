@@ -1,5 +1,9 @@
 2021-09-28 Markus Gans  <guru.mail@muenster.de>
 	* Optimization of attribute comparisons
+	* Reset the rdbuf of clog after deleting the logger object to prevent 
+	  an invalid pointer in the rdbuf
+	* FTermcap::getNumber now returns -1 if there is no value in the termcap 
+	  database
 
 2021-09-25 Markus Gans  <guru.mail@muenster.de>
 	* New FString auxiliary function FStringCaseCompare as strcasecmp 

@@ -620,12 +620,12 @@ void FApplication::showParameterUsage()
 //----------------------------------------------------------------------
 inline void FApplication::destroyLog()
 {
-  // Reset the rdbuf of clog
-  std::clog.rdbuf(default_clog_rdbuf);
-
   // Delete the logger
   const FLogPtr* logger = &(getLog());
   delete logger;
+
+  // Reset the rdbuf of clog
+  std::clog.rdbuf(default_clog_rdbuf);
 }
 
 //----------------------------------------------------------------------

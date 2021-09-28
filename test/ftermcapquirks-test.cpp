@@ -664,12 +664,14 @@ void FTermcapQuirksTest::sunTest()
 
   auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermcap::eat_nl_glitch = false;
+  finalcut::FTermcap::tabstop = -1;
   finalcut::FTermcapQuirks quirks;
   data.setTermType (finalcut::FTermType::sun_con);
   data.setTermType ("sun-color");
   quirks.terminalFixup();
 
   CPPUNIT_ASSERT ( finalcut::FTermcap::eat_nl_glitch == true );
+  CPPUNIT_ASSERT ( finalcut::FTermcap::tabstop == 8 );
   CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_parm_up_cursor)].string
                          , CSI "%p1%dA" );
   CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_parm_down_cursor)].string
