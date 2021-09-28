@@ -269,6 +269,10 @@ class FOptiAttr final
     void          reset (FChar&) const;
     bool          caused_reset_attributes (const char[], uChar = all_tests) const;
     bool          hasCharsetEquivalence() const;
+    static uInt8  getByte0ReverseMask();
+    static uInt8  getByte1Mask();
+    static uInt8  getByte1ResetMask();
+    static uInt8  getByte2ResetMask();
     void          detectSwitchOn (const FChar&, const FChar&);
     void          detectSwitchOff (const FChar&, const FChar&);
     bool          switchOn() const;
@@ -317,11 +321,13 @@ class FOptiAttr final
 
     FChar           on{};
     FChar           off{};
-    FChar           reset_byte_mask{};
+    static uInt8    b0_reverse_mask;
+    static uInt8    b1_mask;
+    static uInt8    b1_reset_mask;
+    static uInt8    b2_reset_mask;
 
     std::string     attr_buf{};
     SGRoptimizer    sgr_optimizer{attr_buf};
-
     int             max_color{1};
     int             attr_without_color{0};
     bool            ansi_default_color{false};

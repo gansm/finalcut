@@ -419,9 +419,9 @@ void FTermDataTest::TermTypeTest()
                                   | finalcut::FTermType::kitty) );
 
   const auto v1_enum = finalcut::FTermType::xterm;
-  const auto v1_value = finalcut::FTermTypeValueType(finalcut::FTermType::xterm);
+  const auto v1_value = finalcut::FTermTypeT(finalcut::FTermType::xterm);
   const auto v2_enum = finalcut::FTermType::putty;
-  const auto v2_value = finalcut::FTermTypeValueType(finalcut::FTermType::putty);
+  const auto v2_value = finalcut::FTermTypeT(finalcut::FTermType::putty);
 
   CPPUNIT_ASSERT ( ( v1_enum |  v2_enum) == (v1_value | v2_value) );
   CPPUNIT_ASSERT ( ( v1_enum | v2_value) == (v1_value | v2_value) );
@@ -443,7 +443,7 @@ void FTermDataTest::TermTypeTest()
   CPPUNIT_ASSERT ( (v1_value |  v2_enum) == ( v1_enum |  v2_enum) );
   CPPUNIT_ASSERT ( (v1_value | v2_value) == ( v1_enum |  v2_enum) );
 
-  auto mask = finalcut::FTermTypeValueType(0);
+  auto mask = finalcut::FTermTypeT(0);
   CPPUNIT_ASSERT ( ! data.isTermType(mask) );
   mask = finalcut::FTermType::xterm | finalcut::FTermType::putty;
   CPPUNIT_ASSERT ( data.isTermType(mask) );

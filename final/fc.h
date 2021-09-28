@@ -1340,21 +1340,21 @@ enum class FTermType : uInt32
   kitty          = 1 << 20   // kitty (GPU based terminal emulator)
 };
 
-using FTermTypeValueType = typename std::underlying_type<FTermType>::type;
+using FTermTypeT = typename std::underlying_type<FTermType>::type;
 
-constexpr FTermTypeValueType operator | (const FTermType& t1, const FTermType& t2) noexcept
+constexpr FTermTypeT operator | (const FTermType& t1, const FTermType& t2) noexcept
 {
-  return FTermTypeValueType(t1) | FTermTypeValueType(t2);
+  return FTermTypeT(t1) | FTermTypeT(t2);
 }
 
-constexpr FTermTypeValueType operator | (FTermTypeValueType t1, const FTermType& t2) noexcept
+constexpr FTermTypeT operator | (FTermTypeT t1, const FTermType& t2) noexcept
 {
-  return t1 | FTermTypeValueType(t2);
+  return t1 | FTermTypeT(t2);
 }
 
-constexpr FTermTypeValueType operator | (const FTermType& t1, FTermTypeValueType t2) noexcept
+constexpr FTermTypeT operator | (const FTermType& t1, FTermTypeT t2) noexcept
 {
-  return FTermTypeValueType(t1) | t2;
+  return FTermTypeT(t1) | t2;
 }
 
 

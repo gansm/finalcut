@@ -186,7 +186,7 @@ struct FCharAttribute
   uInt8                    : 8;  // padding byte
 };
 
-union attribute
+union FAttribute
 {
   FCharAttribute bit;
   uInt8 byte[4];
@@ -200,11 +200,11 @@ enum class FColor : uInt16;   // forward declaration
 
 struct FChar
 {
-  FUnicode  ch{};            // Character code
-  FUnicode  encoded_char{};  // Encoded output character
-  FColor    fg_color{};      // Foreground color
-  FColor    bg_color{};      // Background color
-  attribute attr{};          // Attributes
+  FUnicode   ch{};            // Character code
+  FUnicode   encoded_char{};  // Encoded output character
+  FColor     fg_color{};      // Foreground color
+  FColor     bg_color{};      // Background color
+  FAttribute attr{};          // Attributes
 };
 
 // FChar operator functions

@@ -113,7 +113,7 @@ class FTermData final
     bool               isMonochron() const;
     bool               hasTermResized();
     bool               isTermType (FTermType) const;
-    bool               isTermType (FTermTypeValueType) const;
+    bool               isTermType (FTermTypeT) const;
 
     // Mutators
     void               setTermEncoding (Encoding);
@@ -153,7 +153,7 @@ class FTermData final
     FString               xterm_font{};
     FString               xterm_title{};
     FString               exit_message{};
-    FTermTypeValueType    terminal_type{};
+    FTermTypeT            terminal_type{};
     Encoding              term_encoding{Encoding::Unknown};
 
     // Teletype (tty) file descriptor is still undefined (-1)
@@ -316,10 +316,10 @@ inline bool FTermData::hasTermResized()
 
 //----------------------------------------------------------------------
 inline bool FTermData::isTermType (FTermType type) const
-{ return terminal_type & static_cast<FTermTypeValueType>(type); }
+{ return terminal_type & static_cast<FTermTypeT>(type); }
 
 //----------------------------------------------------------------------
-inline bool FTermData::isTermType (FTermTypeValueType mask) const
+inline bool FTermData::isTermType (FTermTypeT mask) const
 { return terminal_type & mask; }
 
 //----------------------------------------------------------------------
@@ -406,11 +406,11 @@ inline void FTermData::setTermType (const std::string& name)
 
 //----------------------------------------------------------------------
 inline void FTermData::setTermType (FTermType type)
-{ terminal_type |= static_cast<FTermTypeValueType>(type); }
+{ terminal_type |= static_cast<FTermTypeT>(type); }
 
 //----------------------------------------------------------------------
 inline void FTermData::unsetTermType (FTermType type)
-{ terminal_type &= ~(static_cast<FTermTypeValueType>(type)); }
+{ terminal_type &= ~(static_cast<FTermTypeT>(type)); }
 
 //----------------------------------------------------------------------
 inline void FTermData::setTermFileName (const std::string& file_name)

@@ -32,6 +32,12 @@
 namespace finalcut
 {
 
+// static class attributes
+uInt8 FOptiAttr::b0_reverse_mask{FOptiAttr::getByte0ReverseMask()};
+uInt8 FOptiAttr::b1_mask{FOptiAttr::getByte1Mask()};
+uInt8 FOptiAttr::b1_reset_mask{FOptiAttr::getByte1ResetMask()};
+uInt8 FOptiAttr::b2_reset_mask{FOptiAttr::getByte2ResetMask()};
+
 //----------------------------------------------------------------------
 // class FOptiAttr
 //----------------------------------------------------------------------
@@ -41,13 +47,6 @@ namespace finalcut
 FOptiAttr::FOptiAttr()
 {
   attr_buf.reserve(SGRoptimizer::ATTR_BUF_SIZE);
-
-  // Set bits that must not be reset
-  reset_byte_mask.attr.bit.transparent = true;
-  reset_byte_mask.attr.bit.color_overlay = true;
-  reset_byte_mask.attr.bit.inherit_background = true;
-  reset_byte_mask.attr.bit.no_changes = true;
-  reset_byte_mask.attr.bit.printed = true;
 }
 
 
@@ -1017,19 +1016,8 @@ bool FOptiAttr::hasColor (const FChar& attr)
 //----------------------------------------------------------------------
 bool FOptiAttr::hasAttribute (const FChar& attr)
 {
-  return attr.attr.bit.bold
-      || attr.attr.bit.dim
-      || attr.attr.bit.italic
-      || attr.attr.bit.underline
-      || attr.attr.bit.blink
-      || attr.attr.bit.reverse
-      || attr.attr.bit.standout
-      || attr.attr.bit.invisible
-      || attr.attr.bit.protect
-      || attr.attr.bit.crossed_out
-      || attr.attr.bit.dbl_underline
-      || attr.attr.bit.alt_charset
-      || attr.attr.bit.pc_charset;
+  return attr.attr.byte[0]
+      || (attr.attr.byte[1] & b1_mask);
 }
 
 //----------------------------------------------------------------------
@@ -1286,10 +1274,8 @@ inline void FOptiAttr::change_current_color ( const FChar& term
   const auto& Sf = F_set_foreground.cap;
   const auto& Sb = F_set_background.cap;
   const auto& sp = F_set_color_pair.cap;
-  const bool frev ( ( off.attr.bit.reverse
-                   || off.attr.bit.standout
-                   || term.attr.bit.reverse
-                   || term.attr.bit.standout ) && fake_reverse );
+  const bool frev ( ( (off.attr.byte[0] & b0_reverse_mask)
+                   || (term.attr.byte[0] & b0_reverse_mask) ) && fake_reverse );
 
   if ( AF && AB )
   {
@@ -1335,7 +1321,8 @@ inline void FOptiAttr::change_current_color ( const FChar& term
 inline void FOptiAttr::resetAttribute (FChar& attr) const
 {
   attr.attr.byte[0]  = 0;
-  attr.attr.byte[1] &= reset_byte_mask.attr.byte[1];
+  attr.attr.byte[1] &= b1_reset_mask;
+  attr.attr.byte[2] &= b2_reset_mask;
 }
 
 //----------------------------------------------------------------------
@@ -1397,39 +1384,67 @@ inline bool FOptiAttr::hasCharsetEquivalence() const
 }
 
 //----------------------------------------------------------------------
+uInt8 FOptiAttr::getByte0ReverseMask()
+{
+  FAttribute mask{};
+  mask.bit.reverse = true;
+  mask.bit.standout = true;
+  return mask.byte[0];
+}
+
+//----------------------------------------------------------------------
+uInt8 FOptiAttr::getByte1Mask()
+{
+  FAttribute mask{};
+  mask.bit.protect = true;
+  mask.bit.crossed_out = true;
+  mask.bit.dbl_underline = true;
+  mask.bit.alt_charset = true;
+  mask.bit.pc_charset = true;
+  return mask.byte[1];
+}
+
+//----------------------------------------------------------------------
+uInt8 FOptiAttr::getByte1ResetMask()
+{
+  // Set bits that must not be reset
+  FAttribute mask{};
+  mask.bit.transparent = true;
+  mask.bit.color_overlay = true;
+  mask.bit.inherit_background = true;
+  mask.bit.no_changes = true;
+  mask.bit.printed = true;
+  return mask.byte[1];
+}
+
+//----------------------------------------------------------------------
+uInt8 FOptiAttr::getByte2ResetMask()
+{
+  // Set bits that must not be reset
+  FAttribute mask{};
+  mask.bit.no_changes = true;
+  mask.bit.printed = true;
+  return mask.byte[2];
+}
+
+//----------------------------------------------------------------------
 inline void FOptiAttr::detectSwitchOn (const FChar& term, const FChar& next)
 {
-  on.attr.bit.bold          = ! term.attr.bit.bold          && next.attr.bit.bold;
-  on.attr.bit.dim           = ! term.attr.bit.dim           && next.attr.bit.dim;
-  on.attr.bit.italic        = ! term.attr.bit.italic        && next.attr.bit.italic;
-  on.attr.bit.underline     = ! term.attr.bit.underline     && next.attr.bit.underline;
-  on.attr.bit.blink         = ! term.attr.bit.blink         && next.attr.bit.blink;
-  on.attr.bit.reverse       = ! term.attr.bit.reverse       && next.attr.bit.reverse;
-  on.attr.bit.standout      = ! term.attr.bit.standout      && next.attr.bit.standout;
-  on.attr.bit.invisible     = ! term.attr.bit.invisible     && next.attr.bit.invisible;
-  on.attr.bit.protect       = ! term.attr.bit.protect       && next.attr.bit.protect;
-  on.attr.bit.crossed_out   = ! term.attr.bit.crossed_out   && next.attr.bit.crossed_out;
-  on.attr.bit.dbl_underline = ! term.attr.bit.dbl_underline && next.attr.bit.dbl_underline;
-  on.attr.bit.alt_charset   = ! term.attr.bit.alt_charset   && next.attr.bit.alt_charset;
-  on.attr.bit.pc_charset    = ! term.attr.bit.pc_charset    && next.attr.bit.pc_charset;
+  // Detect switched on attributes on transition from "term" to "next"
+  // and store the result in "on"
+
+  on.attr.byte[0] = ~(term.attr.byte[0])           & next.attr.byte[0];
+  on.attr.byte[1] = ~(term.attr.byte[1]) & b1_mask & next.attr.byte[1] & b1_mask;
 }
 
 //----------------------------------------------------------------------
 inline void FOptiAttr::detectSwitchOff (const FChar& term, const FChar& next)
 {
-  off.attr.bit.bold          = term.attr.bit.bold          && ! next.attr.bit.bold;
-  off.attr.bit.dim           = term.attr.bit.dim           && ! next.attr.bit.dim;
-  off.attr.bit.italic        = term.attr.bit.italic        && ! next.attr.bit.italic;
-  off.attr.bit.underline     = term.attr.bit.underline     && ! next.attr.bit.underline;
-  off.attr.bit.blink         = term.attr.bit.blink         && ! next.attr.bit.blink;
-  off.attr.bit.reverse       = term.attr.bit.reverse       && ! next.attr.bit.reverse;
-  off.attr.bit.standout      = term.attr.bit.standout      && ! next.attr.bit.standout;
-  off.attr.bit.invisible     = term.attr.bit.invisible     && ! next.attr.bit.invisible;
-  off.attr.bit.protect       = term.attr.bit.protect       && ! next.attr.bit.protect;
-  off.attr.bit.crossed_out   = term.attr.bit.crossed_out   && ! next.attr.bit.crossed_out;
-  off.attr.bit.dbl_underline = term.attr.bit.dbl_underline && ! next.attr.bit.dbl_underline;
-  off.attr.bit.alt_charset   = term.attr.bit.alt_charset   && ! next.attr.bit.alt_charset;
-  off.attr.bit.pc_charset    = term.attr.bit.pc_charset    && ! next.attr.bit.pc_charset;
+  // Detect switched off attributes on transition from "term" to "next"
+  // and store the result in "on"
+
+  off.attr.byte[0] = term.attr.byte[0]            & ~(next.attr.byte[0]);
+  off.attr.byte[1] = term.attr.byte[1] & b1_mask  & ~(next.attr.byte[1]) & b1_mask;
 }
 
 //----------------------------------------------------------------------
