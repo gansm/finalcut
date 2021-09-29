@@ -171,6 +171,7 @@ void FTermcapTest::getFlagTest()
 //----------------------------------------------------------------------
 void FTermcapTest::getNumberTest()
 {
+  static constexpr int na = -1;  // not_available
   auto& fterm_data = finalcut::FTermData::getInstance();
   fterm_data.setTermType("xterm");
   finalcut::FTermcap tcap;
@@ -180,7 +181,7 @@ void FTermcapTest::getNumberTest()
 
   CPPUNIT_ASSERT ( tcap.getNumber("Co") == 8 );   // Colors
   CPPUNIT_ASSERT ( tcap.getNumber("it") == 8 );   // Tab stop
-  CPPUNIT_ASSERT ( tcap.getNumber("NC") == 0 );   // Attr. without color
+  CPPUNIT_ASSERT ( tcap.getNumber("NC") == na );  // Attr. without color
   CPPUNIT_ASSERT ( tcap.getNumber("co") == 80 );  // Columns
   CPPUNIT_ASSERT ( tcap.getNumber("li") == 24 );  // Lines
 }

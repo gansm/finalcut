@@ -318,7 +318,7 @@ inline void FTerm::paddingPrintf (const std::string& format, Args&&... args)
 {
   const int size = std::snprintf (nullptr, 0, format.data(), args...) + 1;
 
-  if ( size == -1 )
+  if ( size <= 0 )
     return;
 
   const auto count = std::size_t(size);

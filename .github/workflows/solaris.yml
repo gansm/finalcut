@@ -20,9 +20,9 @@ jobs:
       uses: vmactions/solaris-vm@v0.0.3
       with:
         prepare: |
-          pkg install gcc-7 automake autoconf libtool
-          pkgutil -y -i autoconf_archive pkgconfig libcppunit1_12_1 libcppunit_dev
-        run: |
+          pkg install gcc-7
+          pkgutil -y -i automake autoconf autoconf_archive libtool pkgconfig libcppunit1_12_1 libcppunit_dev gsed ggrep
+        ron: |
           uname -a
           whoami
           pwd
@@ -31,5 +31,5 @@ jobs:
           export PATH
           autoreconf -v --install --force
           ./configure --prefix=/usr
-          make
+          gmake V=1 -j$(nproc)
 

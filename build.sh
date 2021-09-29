@@ -21,6 +21,7 @@ print_systeminfo ()
   echo "      Platform: $PLATFORM"
   echo "  Architecture: $ARCH"
   echo "      Compiler: $CXX $CXX_VERSION"
+  echo "         Build: $1"
   echo "Number of jobs: $JOBS"
   echo "-------------------------"
 }
@@ -142,10 +143,10 @@ fi
 
 if $MAKE
 then
-  print_systeminfo
+  print_systeminfo "$1"
   printf '%bSuccessful compiled%b\n' "${GREEN}" "${NORMAL}"
 else
-  print_systeminfo
+  print_systeminfo "$1"
   printf '%bError on compile!%b\n' "${RED}" "${NORMAL}" 1>&2
   exit 1
 fi
