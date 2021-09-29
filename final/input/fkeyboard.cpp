@@ -293,8 +293,12 @@ inline FKey FKeyboard::getTermcapKey()
     {
       const auto& kstr = cap_key.string;
       const auto klen = cap_key.length;
-      const auto len = std::min(klen, std::size_t(fifo_offset) + 1);
-      return ( len > 0 && std::strncmp(kstr, fifo_buf, len) == 0 );
+      const auto fifo_length = std::size_t(fifo_offset) + 1;
+
+      if ( klen == 0 || klen > fifo_length )
+        return false;
+
+      return ( std::strncmp(kstr, fifo_buf, klen) == 0 );
     }
   );
 
@@ -332,8 +336,12 @@ inline FKey FKeyboard::getKnownKey()
     {
       const auto& kstr = known_key.string;  // This string is never null
       const auto klen = known_key.length;
-      const auto len = std::min(klen, std::size_t(fifo_offset) + 1);
-      return ( std::strncmp(kstr, fifo_buf, len) == 0 );
+      const auto fifo_length = std::size_t(fifo_offset) + 1;
+
+      if ( klen > fifo_length )
+        return false;
+
+      return ( std::strncmp(kstr, fifo_buf, klen) == 0 );
     }
   );
 

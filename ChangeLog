@@ -1,3 +1,7 @@
+2021-09-29 Markus Gans  <guru.mail@muenster.de>
+	* Faster FUnicode comparisons
+	* Less string comparison in FKeyboard
+
 2021-09-28 Markus Gans  <guru.mail@muenster.de>
 	* Optimization of attribute comparisons
 	* Reset the rdbuf of clog after deleting the logger object to prevent 

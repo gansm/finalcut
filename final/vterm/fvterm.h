@@ -294,6 +294,7 @@ class FVTerm : public FVTermAttribute
     bool                  clearFullArea (const FTermArea*, FChar&) const;
     static void           clearAreaWithShadow (const FTermArea*, const FChar&);
     bool                  printWrap (FTermArea*) const;
+    static uInt8          getByte1TransMask();
     bool                  changedToTransparency (const FChar&, const FChar&) const;
     bool                  changedFromTransparency (const FChar&, const FChar&) const;
     void                  printCharacterOnCoordinate ( FTermArea*
@@ -316,6 +317,7 @@ class FVTerm : public FVTermAttribute
     static FTermArea*             active_area;    // active area
     static FChar                  s_ch;  // shadow character
     static FChar                  i_ch;  // inherit background character
+    static uInt8                  b1_trans_mask;  // Transparency mask
     static bool                   draw_completed;
     static bool                   no_terminal_updates;
     static bool                   force_terminal_update;

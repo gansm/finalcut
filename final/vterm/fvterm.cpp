@@ -51,6 +51,7 @@ FVTerm::FTermArea*   FVTerm::vdesktop{nullptr};
 FVTerm::FTermArea*   FVTerm::active_area{nullptr};
 FChar                FVTerm::s_ch{};
 FChar                FVTerm::i_ch{};
+uInt8                FVTerm::b1_trans_mask{FVTerm::getByte1TransMask()};
 
 
 //----------------------------------------------------------------------
@@ -1485,8 +1486,9 @@ inline void FVTerm::scrollTerminalForward() const
   // avoid update lines from 0 to (y_max - 1)
   for (auto y{0}; y < y_max; y++)
   {
-    vdesktop->changes[y].xmin = uInt(vdesktop->width - 1);
-    vdesktop->changes[y].xmax = 0;
+    auto& changes = vdesktop->changes[y];
+    changes.xmin = uInt(vdesktop->width - 1);
+    changes.xmax = 0;
   }
 }
 
@@ -1502,10 +1504,11 @@ inline void FVTerm::scrollTerminalReverse() const
   const int y_max = vdesktop->height - 1;
 
   // avoid update lines from 1 to y_max
-  for (auto y{1}; y <= y_max; y++)
+  for (auto y{0}; y < y_max; y++)
   {
-    vdesktop->changes[y].xmin = uInt(vdesktop->width - 1);
-    vdesktop->changes[y].xmax = 0;
+    auto& changes = vdesktop->changes[y + 1];
+    changes.xmin = uInt(vdesktop->width - 1);
+    changes.xmax = 0;
   }
 }
 
@@ -1787,7 +1790,7 @@ void FVTerm::putAreaCharacter ( const FPoint& pos, const FTermArea* area
   if ( area_char.attr.bit.transparent )  // Transparent
   {
     // Restore one character on vterm
-    FChar ch = getCoveredCharacter (pos, area);
+    const FChar& ch = getCoveredCharacter (pos, area);
     std::memcpy (&vterm_char, &ch, sizeof(vterm_char));
   }
   else  // Mot transparent
@@ -1938,11 +1941,23 @@ bool FVTerm::printWrap (FTermArea* area) const
 }
 
 //----------------------------------------------------------------------
+uInt8 FVTerm::getByte1TransMask()
+{
+  // Set bits that must not be reset
+  FAttribute mask{};
+  mask.bit.transparent = true;
+  mask.bit.color_overlay = true;
+  mask.bit.inherit_background = true;
+  mask.bit.no_changes = true;
+  mask.bit.printed = true;
+  return mask.byte[1];
+}
+
+//----------------------------------------------------------------------
 inline bool FVTerm::changedToTransparency (const FChar& from, const FChar& to) const
 {
-  return ( ( ! from.attr.bit.transparent && to.attr.bit.transparent )
-        || ( ! from.attr.bit.color_overlay && to.attr.bit.color_overlay )
-        || ( ! from.attr.bit.inherit_background && to.attr.bit.inherit_background ) );
+  return ( (~ from.attr.byte[1] & b1_trans_mask)
+         & (    to.attr.byte[1] & b1_trans_mask) ) != 0;
 }
 
 //----------------------------------------------------------------------

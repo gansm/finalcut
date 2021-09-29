@@ -130,9 +130,9 @@ FTermcap::Status FTermcap::paddingPrint ( const std::string& string
                 || (TCAP(t_flash_screen) && string == std::string(TCAP(t_flash_screen)))
                 || ( ! xon_xoff_flow_control && padding_baudrate
                   && (baudrate >= padding_baudrate) );
-  auto iter = string.begin();
+  auto iter = string.cbegin();
 
-  while ( iter != string.end() )
+  while ( iter != string.cend() )
   {
     if ( *iter != '$' )
       outc(int(*iter));
@@ -144,7 +144,7 @@ FTermcap::Status FTermcap::paddingPrint ( const std::string& string
       {
         outc(int('$'));
 
-        if ( iter != string.end() )
+        if ( iter != string.cend() )
           outc(int(*iter));
       }
       else
@@ -152,7 +152,7 @@ FTermcap::Status FTermcap::paddingPrint ( const std::string& string
         ++iter;
         const auto first_digit = iter;
 
-        if ( ! std::isdigit(int(*iter)) && *iter != '.' )
+        if ( ! std::isdigit(uChar(*iter)) && *iter != '.' )
         {
           outc(int('$'));
           outc(int('<'));
@@ -178,7 +178,7 @@ FTermcap::Status FTermcap::paddingPrint ( const std::string& string
       }  // end of else (*iter == '<')
     }  // end of else (*iter == '$')
 
-    if ( iter == string.end() )
+    if ( iter == string.cend() )
       break;
 
     ++iter;
@@ -400,13 +400,15 @@ std::string FTermcap::encodeParams ( const std::string& cap
 //----------------------------------------------------------------------
 inline void FTermcap::readDigits (string_iterator& iter, int& number)
 {
-  while ( std::isdigit(int(*iter)) && number < 1000 )
+  int digit{};
+
+  while ( (digit = uChar(*iter - '0')) < 10 && number < 1000 )
   {
-    number = number * 10 + (*iter - '0');
+    number = number * 10 + digit;
     ++iter;
   }
 
-  number *= 10;
+  number *= 10;  // Centisecond
 }
 
 //----------------------------------------------------------------------
@@ -417,13 +419,13 @@ inline void FTermcap::decimalPoint (string_iterator& iter, int& number)
 
   ++iter;
 
-  if ( std::isdigit(int(*iter)) )
+  if ( std::isdigit(uChar(*iter)) )
   {
     number += (*iter - '0');  // Position after decimal point
     ++iter;
   }
 
-  while ( std::isdigit(int(*iter)) )
+  while ( std::isdigit(uChar(*iter)) )
     ++iter;
 }
 

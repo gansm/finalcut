@@ -31,5 +31,5 @@ jobs:
           export PATH
           autoreconf -v --install --force
           ./configure --prefix=/usr
-          gmake V=1 -j$(nproc)
+          gmake
 

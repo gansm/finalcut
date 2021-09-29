@@ -1412,8 +1412,6 @@ uInt8 FOptiAttr::getByte1ResetMask()
   mask.bit.transparent = true;
   mask.bit.color_overlay = true;
   mask.bit.inherit_background = true;
-  mask.bit.no_changes = true;
-  mask.bit.printed = true;
   return mask.byte[1];
 }
 

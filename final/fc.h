@@ -274,6 +274,7 @@ constexpr bool operator > (const wchar_t c1, const UniChar& c2) noexcept
 {
   return c1 > wchar_t(c2);
 }
+
 constexpr bool operator <= (const UniChar& c1, const wchar_t c2) noexcept
 {
   return wchar_t(c1) <= c2;

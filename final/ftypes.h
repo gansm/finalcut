@@ -209,9 +209,33 @@ struct FChar
 
 // FChar operator functions
 //----------------------------------------------------------------------
+inline bool isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexcept
+{
+  auto l_iter = lhs.cbegin();
+  auto r_iter = rhs.cbegin();
+  const auto& l_last = lhs.cend();
+
+  while ( l_iter != l_last )
+  {
+    if ( *l_iter == *r_iter )
+    {
+      if ( *l_iter == L'\0' )
+        return true;
+
+      ++l_iter;
+      ++r_iter;
+    }
+    else
+      return false;
+  }
+
+  return true;
+}
+
+//----------------------------------------------------------------------
 inline bool operator == (const FChar& lhs, const FChar& rhs)
 {
-  return operator == (lhs.ch, rhs.ch)  // Compare FUnicode
+  return isFUnicodeEqual(lhs.ch, rhs.ch)
       && lhs.fg_color     == rhs.fg_color
       && lhs.bg_color     == rhs.bg_color
       && lhs.attr.byte[0] == rhs.attr.byte[0]
