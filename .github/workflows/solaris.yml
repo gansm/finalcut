@@ -22,7 +22,7 @@ jobs:
         prepare: |
           pkg install gcc-7
           pkgutil -y -i automake autoconf autoconf_archive libtool pkgconfig libcppunit1_12_1 libcppunit_dev gsed ggrep
-        ron: |
+        run: |
           uname -a
           whoami
           pwd
@@ -31,5 +31,5 @@ jobs:
           export PATH
           autoreconf -v --install --force
           ./configure --prefix=/usr
-          gmake
+          gmake V=1 -j$(nproc)
 
