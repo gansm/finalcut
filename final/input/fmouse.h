@@ -67,9 +67,9 @@
 
 #include <cstddef>
 #include <functional>
-#include <map>
 #include <memory>
 #include <queue>
+#include <unordered_map>
 #include <utility>
 
 #include "final/input/fkeyboard.h"
@@ -568,7 +568,7 @@ class FMouseControl
     // Using-declaration
     using FMousePtr = std::unique_ptr<FMouse>;
     using FMouseDataPtr = std::unique_ptr<FMouseData>;
-    using FMouseProtocol = std::map<FMouse::MouseType, FMousePtr>;
+    using FMouseProtocol = std::unordered_map<FMouse::MouseType, FMousePtr>;
 
     // Accessor
     FMouse::MouseType         getMouseWithData();

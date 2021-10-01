@@ -321,10 +321,6 @@ class FOptiAttr final
 
     FChar           on{};
     FChar           off{};
-    static uInt8    b0_reverse_mask;
-    static uInt8    b1_mask;
-    static uInt8    b1_reset_mask;
-    static uInt8    b2_reset_mask;
 
     std::string     attr_buf{};
     SGRoptimizer    sgr_optimizer{attr_buf};

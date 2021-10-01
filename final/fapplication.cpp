@@ -61,18 +61,19 @@ bool           var::exit_loop  {false};
 }  // namespace internal
 
 // Static attributes
-FWidget*       FWidget::main_widget          {nullptr};  // main application widget
-FWidget*       FWidget::active_window        {nullptr};  // the active window
-FWidget*       FWidget::focus_widget         {nullptr};  // has keyboard input focus
-FWidget*       FWidget::clicked_widget       {nullptr};  // is focused by click
-FWidget*       FWidget::open_menu            {nullptr};  // currently open menu
-FWidget*       FWidget::move_size_widget     {nullptr};  // move/size by keyboard
-FWidget*       FApplication::keyboard_widget {nullptr};  // has the keyboard focus
-int            FApplication::loop_level      {0};        // event loop level
-int            FApplication::quit_code       {EXIT_SUCCESS};
-bool           FApplication::quit_now        {false};
-uInt64         FApplication::next_event_wait {5000};     // 5 ms (200 Hz)
-TimeValue      FApplication::time_last_event {};
+FWidget*  FWidget::main_widget          {nullptr};  // main application widget
+FWidget*  FWidget::active_window        {nullptr};  // the active window
+FWidget*  FWidget::focus_widget         {nullptr};  // has keyboard input focus
+FWidget*  FWidget::clicked_widget       {nullptr};  // is focused by click
+FWidget*  FWidget::open_menu            {nullptr};  // currently open menu
+FWidget*  FWidget::move_size_widget     {nullptr};  // move/size by keyboard
+FWidget*  FApplication::keyboard_widget {nullptr};  // has the keyboard focus
+int       FApplication::loop_level      {0};        // event loop level
+int       FApplication::quit_code       {EXIT_SUCCESS};
+bool      FApplication::quit_now        {false};
+bool      FApplication::is_next_event_timeout{false};
+uInt64    FApplication::next_event_wait {5000};     // 5 ms (200 Hz)
+TimeValue FApplication::time_last_event {};
 
 
 //----------------------------------------------------------------------
@@ -1393,7 +1394,9 @@ bool FApplication::isEventProcessable ( FObject* receiver
 //----------------------------------------------------------------------
 bool FApplication::isNextEventTimeout()
 {
-  return FObject::isTimeout (time_last_event, next_event_wait);
+  is_next_event_timeout = FObject::isTimeout( time_last_event
+                                            , next_event_wait );
+  return is_next_event_timeout;
 }
 
 

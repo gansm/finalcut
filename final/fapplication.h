@@ -240,12 +240,12 @@ class FApplication : public FWidget
     FWidget*              clicked_widget{};
     FEventQueue           event_queue{};
     bool                  has_terminal_resized{false};
-    bool                  is_next_event_timeout{false};
     static uInt64         next_event_wait;
     static TimeValue      time_last_event;
     static int            loop_level;
     static int            quit_code;
     static bool           quit_now;
+    static bool           is_next_event_timeout;
     static FWidget*       keyboard_widget;
 };
 

@@ -51,7 +51,7 @@ FVTerm::FTermArea*   FVTerm::vdesktop{nullptr};
 FVTerm::FTermArea*   FVTerm::active_area{nullptr};
 FChar                FVTerm::s_ch{};
 FChar                FVTerm::i_ch{};
-uInt8                FVTerm::b1_trans_mask{FVTerm::getByte1TransMask()};
+uInt8                FVTerm::b1_trans_mask{};
 
 
 //----------------------------------------------------------------------
@@ -1477,10 +1477,11 @@ inline void FVTerm::scrollTerminalForward() const
 {
   // Scrolls the terminal up one line
 
+  forceTerminalUpdate();  // Empty buffer before scrolling
+
   if ( ! foutput->scrollTerminalForward() )
     return;
 
-  FVTerm::putArea (FPoint{1, 1}, vdesktop);
   const int y_max = vdesktop->height - 1;
 
   // avoid update lines from 0 to (y_max - 1)
@@ -1490,6 +1491,8 @@ inline void FVTerm::scrollTerminalForward() const
     changes.xmin = uInt(vdesktop->width - 1);
     changes.xmax = 0;
   }
+
+  FVTerm::putArea (FPoint{1, 1}, vdesktop);
 }
 
 //----------------------------------------------------------------------
@@ -1497,10 +1500,11 @@ inline void FVTerm::scrollTerminalReverse() const
 {
   // Scrolls the terminal down one line
 
+  forceTerminalUpdate();  // Empty buffer before scrolling
+
   if ( ! foutput->scrollTerminalReverse() )
     return;
 
-  FVTerm::putArea (FPoint{1, 1}, vdesktop);
   const int y_max = vdesktop->height - 1;
 
   // avoid update lines from 1 to y_max
@@ -1510,6 +1514,8 @@ inline void FVTerm::scrollTerminalReverse() const
     changes.xmin = uInt(vdesktop->width - 1);
     changes.xmax = 0;
   }
+
+  FVTerm::putArea (FPoint{1, 1}, vdesktop);
 }
 
 //----------------------------------------------------------------------
@@ -1727,9 +1733,10 @@ inline FChar FVTerm::getOverlappedCharacter (const FPoint& pos, const FTermArea*
 //----------------------------------------------------------------------
 void FVTerm::init()
 {
-  init_object = this;
-  vterm       = nullptr;
-  vdesktop    = nullptr;
+  init_object   = this;
+  vterm         = nullptr;
+  vdesktop      = nullptr;
+  b1_trans_mask = getByte1TransMask();
 
   try
   {

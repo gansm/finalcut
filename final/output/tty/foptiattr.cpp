@@ -32,11 +32,24 @@
 namespace finalcut
 {
 
-// static class attributes
-uInt8 FOptiAttr::b0_reverse_mask{FOptiAttr::getByte0ReverseMask()};
-uInt8 FOptiAttr::b1_mask{FOptiAttr::getByte1Mask()};
-uInt8 FOptiAttr::b1_reset_mask{FOptiAttr::getByte1ResetMask()};
-uInt8 FOptiAttr::b2_reset_mask{FOptiAttr::getByte2ResetMask()};
+namespace internal
+{
+
+struct var
+{
+  static uInt8 b0_reverse_mask;
+  static uInt8 b1_mask;
+  static uInt8 b1_reset_mask;
+  static uInt8 b2_reset_mask;
+};
+
+uInt8 var::b0_reverse_mask{};
+uInt8 var::b1_mask{};
+uInt8 var::b1_reset_mask{};
+uInt8 var::b2_reset_mask{};
+
+}  // namespace internal
+
 
 //----------------------------------------------------------------------
 // class FOptiAttr
@@ -47,6 +60,10 @@ uInt8 FOptiAttr::b2_reset_mask{FOptiAttr::getByte2ResetMask()};
 FOptiAttr::FOptiAttr()
 {
   attr_buf.reserve(SGRoptimizer::ATTR_BUF_SIZE);
+  internal::var::b0_reverse_mask = getByte0ReverseMask();
+  internal::var::b1_mask = getByte1Mask();
+  internal::var::b1_reset_mask = getByte1ResetMask();
+  internal::var::b2_reset_mask = getByte2ResetMask();
 }
 
 
@@ -1017,7 +1034,7 @@ bool FOptiAttr::hasColor (const FChar& attr)
 bool FOptiAttr::hasAttribute (const FChar& attr)
 {
   return attr.attr.byte[0]
-      || (attr.attr.byte[1] & b1_mask);
+      || (attr.attr.byte[1] & internal::var::b1_mask);
 }
 
 //----------------------------------------------------------------------
@@ -1274,6 +1291,7 @@ inline void FOptiAttr::change_current_color ( const FChar& term
   const auto& Sf = F_set_foreground.cap;
   const auto& Sb = F_set_background.cap;
   const auto& sp = F_set_color_pair.cap;
+  const auto& b0_reverse_mask = internal::var::b0_reverse_mask;
   const bool frev ( ( (off.attr.byte[0] & b0_reverse_mask)
                    || (term.attr.byte[0] & b0_reverse_mask) ) && fake_reverse );
 
@@ -1321,8 +1339,8 @@ inline void FOptiAttr::change_current_color ( const FChar& term
 inline void FOptiAttr::resetAttribute (FChar& attr) const
 {
   attr.attr.byte[0]  = 0;
-  attr.attr.byte[1] &= b1_reset_mask;
-  attr.attr.byte[2] &= b2_reset_mask;
+  attr.attr.byte[1] &= internal::var::b1_reset_mask;
+  attr.attr.byte[2] &= internal::var::b2_reset_mask;
 }
 
 //----------------------------------------------------------------------
@@ -1431,6 +1449,7 @@ inline void FOptiAttr::detectSwitchOn (const FChar& term, const FChar& next)
   // Detect switched on attributes on transition from "term" to "next"
   // and store the result in "on"
 
+  const auto& b1_mask = internal::var::b1_mask;
   on.attr.byte[0] = ~(term.attr.byte[0])           & next.attr.byte[0];
   on.attr.byte[1] = ~(term.attr.byte[1]) & b1_mask & next.attr.byte[1] & b1_mask;
 }
@@ -1441,6 +1460,7 @@ inline void FOptiAttr::detectSwitchOff (const FChar& term, const FChar& next)
   // Detect switched off attributes on transition from "term" to "next"
   // and store the result in "on"
 
+  const auto& b1_mask = internal::var::b1_mask;
   off.attr.byte[0] = term.attr.byte[0]            & ~(next.attr.byte[0]);
   off.attr.byte[1] = term.attr.byte[1] & b1_mask  & ~(next.attr.byte[1]) & b1_mask;
 }
