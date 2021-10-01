@@ -78,7 +78,7 @@ libfinal_la_SOURCES = \
 	fapplication.cpp \
 	fevent.cpp \
 	fobject.cpp \
-  fstartoptions.cpp \
+	fstartoptions.cpp \
 	fwidgetcolors.cpp \
 	fwidget.cpp \
 	fwidget_functions.cpp

@@ -36,6 +36,10 @@
   #include <term.h>  // termcap
 #endif  // defined(__sun) && defined(__SVR4)
 
+#ifdef OK
+  #undef OK  // Need on NetBSD
+#endif
+
 #ifdef F_HAVE_LIBGPM
   #undef buttons  // from term.h
 #endif

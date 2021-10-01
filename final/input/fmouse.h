@@ -186,6 +186,15 @@ class FMouse : public FMouseData
       Urxvt = 4
     };
 
+    struct FMouseTypeHash
+    {
+      std::size_t operator () (const MouseType& mt) const noexcept
+      {
+        using MouseTypeT = typename std::underlying_type<MouseType>::type;
+        return std::hash<MouseTypeT>()(MouseTypeT(mt));
+      }
+    };
+
     // Constructor
     FMouse();
 
@@ -568,7 +577,9 @@ class FMouseControl
     // Using-declaration
     using FMousePtr = std::unique_ptr<FMouse>;
     using FMouseDataPtr = std::unique_ptr<FMouseData>;
-    using FMouseProtocol = std::unordered_map<FMouse::MouseType, FMousePtr>;
+    using FMouseProtocol = std::unordered_map< FMouse::MouseType
+                                             , FMousePtr
+                                             , FMouse::FMouseTypeHash >;
 
     // Accessor
     FMouse::MouseType         getMouseWithData();

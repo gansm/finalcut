@@ -1341,7 +1341,7 @@ bool FMouseControl::isLeftButtonPressed()
 {
   auto mtype = getMouseWithEvent();
   const auto& mouse_object = mouse_protocol[mtype].get();
-  return ( mouse_object ) ? mouse_object->isLeftButtonPressed() : false;
+  return mouse_object ? mouse_object->isLeftButtonPressed() : false;
 }
 
 //----------------------------------------------------------------------
@@ -1349,7 +1349,7 @@ bool FMouseControl::isLeftButtonReleased()
 {
   auto mtype = getMouseWithEvent();
   const auto& mouse_object = mouse_protocol[mtype].get();
-  return ( mouse_object ) ? mouse_object->isLeftButtonReleased() : false;
+  return mouse_object ? mouse_object->isLeftButtonReleased() : false;
 }
 
 //----------------------------------------------------------------------
@@ -1357,7 +1357,7 @@ bool FMouseControl::isLeftButtonDoubleClick()
 {
   auto mtype = getMouseWithEvent();
   const auto& mouse_object = mouse_protocol[mtype].get();
-  return ( mouse_object ) ? mouse_object->isLeftButtonDoubleClick() : false;
+  return mouse_object ? mouse_object->isLeftButtonDoubleClick() : false;
 }
 
 //----------------------------------------------------------------------
@@ -1365,7 +1365,7 @@ bool FMouseControl::isRightButtonPressed()
 {
   auto mtype = getMouseWithEvent();
   const auto& mouse_object = mouse_protocol[mtype].get();
-  return ( mouse_object ) ? mouse_object->isRightButtonPressed() : false;
+  return mouse_object ? mouse_object->isRightButtonPressed() : false;
 }
 
 //----------------------------------------------------------------------
@@ -1373,7 +1373,7 @@ bool FMouseControl::isRightButtonReleased()
 {
   auto mtype = getMouseWithEvent();
   const auto& mouse_object = mouse_protocol[mtype].get();
-  return ( mouse_object ) ? mouse_object->isRightButtonReleased() : false;
+  return mouse_object ? mouse_object->isRightButtonReleased() : false;
 }
 
 //----------------------------------------------------------------------
@@ -1381,7 +1381,7 @@ bool FMouseControl::isMiddleButtonPressed()
 {
   auto mtype = getMouseWithEvent();
   const auto& mouse_object = mouse_protocol[mtype].get();
-  return ( mouse_object ) ? mouse_object->isMiddleButtonPressed() : false;
+  return mouse_object ? mouse_object->isMiddleButtonPressed() : false;
 }
 
 //----------------------------------------------------------------------
@@ -1389,7 +1389,7 @@ bool FMouseControl::isMiddleButtonReleased()
 {
   auto mtype = getMouseWithEvent();
   const auto& mouse_object = mouse_protocol[mtype].get();
-  return ( mouse_object ) ? mouse_object->isMiddleButtonReleased() : false;
+  return mouse_object ? mouse_object->isMiddleButtonReleased() : false;
 }
 
 //----------------------------------------------------------------------
@@ -1397,7 +1397,7 @@ bool FMouseControl::isShiftKeyPressed()
 {
   auto mtype = getMouseWithEvent();
   const auto& mouse_object = mouse_protocol[mtype].get();
-  return ( mouse_object ) ? mouse_object->isShiftKeyPressed() : false;
+  return mouse_object ? mouse_object->isShiftKeyPressed() : false;
 }
 
 //----------------------------------------------------------------------
@@ -1405,7 +1405,7 @@ bool FMouseControl::isControlKeyPressed()
 {
   auto mtype = getMouseWithEvent();
   const auto& mouse_object = mouse_protocol[mtype].get();
-  return ( mouse_object ) ? mouse_object->isControlKeyPressed() : false;
+  return mouse_object ? mouse_object->isControlKeyPressed() : false;
 }
 
 //----------------------------------------------------------------------
@@ -1413,7 +1413,7 @@ bool FMouseControl::isMetaKeyPressed()
 {
   auto mtype = getMouseWithEvent();
   const auto& mouse_object = mouse_protocol[mtype].get();
-  return ( mouse_object ) ? mouse_object->isMetaKeyPressed() : false;
+  return mouse_object ? mouse_object->isMetaKeyPressed() : false;
 }
 
 //----------------------------------------------------------------------
@@ -1421,7 +1421,7 @@ bool FMouseControl::isWheelUp()
 {
   auto mtype = getMouseWithEvent();
   const auto& mouse_object = mouse_protocol[mtype].get();
-  return ( mouse_object ) ? mouse_object->isWheelUp() : false;
+  return mouse_object ? mouse_object->isWheelUp() : false;
 }
 
 //----------------------------------------------------------------------
@@ -1429,7 +1429,7 @@ bool FMouseControl::isWheelDown()
 {
   auto mtype = getMouseWithEvent();
   const auto& mouse_object = mouse_protocol[mtype].get();
-  return ( mouse_object ) ? mouse_object->isWheelDown() : false;
+  return mouse_object ? mouse_object->isWheelDown() : false;
 }
 
 //----------------------------------------------------------------------
@@ -1437,7 +1437,7 @@ bool FMouseControl::isMoved()
 {
   auto mtype = getMouseWithEvent();
   const auto& mouse_object = mouse_protocol[mtype].get();
-  return ( mouse_object ) ? mouse_object->isMoved() : false;
+  return mouse_object ? mouse_object->isMoved() : false;
 }
 
 //----------------------------------------------------------------------
