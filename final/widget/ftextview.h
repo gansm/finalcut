@@ -98,7 +98,7 @@ class FTextView : public FWidget
     std::size_t         getColumns() const;
     std::size_t         getRows() const;
     FString             getText() const;
-    const FStringList&  getLines() const;
+    const FStringList&  getLines() const &;
 
     // Mutators
     void                setSize (const FSize&, bool = true) override;
@@ -229,7 +229,7 @@ inline std::size_t FTextView::getRows() const
 { return std::size_t(data.size()); }
 
 //----------------------------------------------------------------------
-inline const FStringList& FTextView::getLines() const
+inline const FStringList& FTextView::getLines() const &
 { return data; }
 
 //----------------------------------------------------------------------

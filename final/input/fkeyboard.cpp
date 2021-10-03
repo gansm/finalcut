@@ -135,7 +135,7 @@ bool FKeyboard::setNonBlockingInput (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool& FKeyboard::hasUnprocessedInput()
+bool& FKeyboard::hasUnprocessedInput() &
 {
   return unprocessed_buffer_data;
 }

@@ -120,6 +120,7 @@
 
 #include "final/fc.h"
 #include "final/output/fcolorpalette.h"
+#include "final/output/tty/ftermdata.h"
 #include "final/output/tty/fterm_functions.h"
 #include "final/util/fstring.h"
 #include "final/util/fsystem.h"
@@ -163,7 +164,7 @@ class FTerm final
     static std::size_t       getLineNumber();
     static std::size_t       getColumnNumber();
     static FString           getKeyName (FKey);
-    charSubstitution&        getCharSubstitutionMap();
+    charSubstitution&        getCharSubstitutionMap() &;
     static int               getTTYFileDescriptor();
     static std::string       getTermType();
     static std::string       getTermFileName();
@@ -336,7 +337,12 @@ inline void FTerm::initTerminal()
 //----------------------------------------------------------------------
 inline std::ostream& operator << (std::ostream& os, finalcut::UniChar c)
 {
-  return os << static_cast<char>(c);
+  static auto& data = finalcut::FTermData::getInstance();
+
+  if ( data.getTermEncoding() == finalcut::Encoding::UTF8 )
+    return os << finalcut::unicode_to_utf8(wchar_t(c));
+  else
+    return os << static_cast<char>(uChar(c));
 }
 
 //----------------------------------------------------------------------

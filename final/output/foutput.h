@@ -72,7 +72,7 @@ class FOutput : public std::enable_shared_from_this<FOutput>
     // Accessors
     virtual FString     getClassName() const;
     auto                getInstance() -> std::shared_ptr<FOutput>;
-    const FVTerm&       getFVTerm() const;
+    const FVTerm&       getFVTerm() const &;
     virtual std::size_t getColumnNumber() const = 0;
     virtual std::size_t getLineNumber() const = 0;
     virtual int         getTabstop() const = 0;
@@ -122,7 +122,7 @@ class FOutput : public std::enable_shared_from_this<FOutput>
   private:
     // Accessors
     virtual const FSetPalette&
-                        getFSetPaletteRef() const = 0;
+                        getFSetPaletteRef() const & = 0;
 
     // Methods
     virtual bool        isDefaultPaletteTheme() = 0;
@@ -139,7 +139,7 @@ inline FString FOutput::getClassName() const
 { return "FOutput"; }
 
 //----------------------------------------------------------------------
-inline const FVTerm& FOutput::getFVTerm() const
+inline const FVTerm& FOutput::getFVTerm() const &
 { return fvterm; }
 
 //----------------------------------------------------------------------

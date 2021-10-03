@@ -190,7 +190,7 @@ class FVTerm : public FVTermAttribute
     virtual void          print (const FPoint&);
     virtual void          print (const FStyle&);
     virtual void          print (const FColorPair&);
-    virtual FVTerm&       print();
+    virtual FVTerm&       print() &;
     void                  flush() const;
 
   protected:
@@ -551,7 +551,7 @@ inline int FVTerm::printf (const FString& format, Args&&... args)
 }
 
 //----------------------------------------------------------------------
-inline FVTerm& FVTerm::print()
+inline FVTerm& FVTerm::print() &
 { return *this; }
 
 //----------------------------------------------------------------------

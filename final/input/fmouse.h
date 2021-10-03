@@ -112,7 +112,7 @@ class FMouseData
 
     // Accessors
     virtual FString       getClassName() const;
-    const FPoint&         getPos() const;
+    const FPoint&         getPos() const &;
 
     // Inquiries
     bool                  isLeftButtonPressed() const;
@@ -156,8 +156,8 @@ class FMouseData
     };
 
     // Accessors
-    FMouseButton&       getButtonState();
-    const FMouseButton& getButtonState() const;
+    FMouseButton&       getButtonState() &;
+    const FMouseButton& getButtonState() const &;
 
     // Mutator
     void                setPos (const FPoint&);
@@ -220,7 +220,7 @@ class FMouse : public FMouseData
 
   protected:
     // Accessors
-    const FPoint&         getNewPos() const;
+    const FPoint&         getNewPos() const &;
     uInt16                getMaxWidth() const;
     uInt16                getMaxHeight() const;
     uInt64                getDblclickInterval() const;
@@ -531,7 +531,7 @@ class FMouseControl
     // Accessors
     virtual FString           getClassName() const;
     static auto               getInstance() -> FMouseControl&;
-    const FPoint&             getPos();
+    const FPoint&             getPos() &;
     void                      clearEvent();
 
     // Mutators

@@ -104,10 +104,10 @@ class FRect
     bool                  isEmpty() const;
 
     // Coordinate references
-    int&                  x1_ref();
-    int&                  y1_ref();
-    int&                  x2_ref();
-    int&                  y2_ref();
+    int&                  x1_ref() &;
+    int&                  y1_ref() &;
+    int&                  x2_ref() &;
+    int&                  y2_ref() &;
 
     // Methods
     void                  move (int, int);
@@ -189,19 +189,19 @@ inline std::size_t FRect::getHeight() const
 }
 
 //----------------------------------------------------------------------
-inline int& FRect::x1_ref()
+inline int& FRect::x1_ref() &
 { return X1; }
 
 //----------------------------------------------------------------------
-inline int& FRect::y1_ref()
+inline int& FRect::y1_ref() &
 { return Y1; }
 
 //----------------------------------------------------------------------
-inline int& FRect::x2_ref()
+inline int& FRect::x2_ref() &
 { return X2; }
 
 //----------------------------------------------------------------------
-inline int& FRect::y2_ref()
+inline int& FRect::y2_ref() &
 { return Y2; }
 
 }  // namespace finalcut

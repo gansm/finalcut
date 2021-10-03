@@ -73,7 +73,7 @@ class FTermOutput final : public FOutput
 
     // Accessors
     FString        getClassName() const override;
-    FTerm&         getFTerm();
+    FTerm&         getFTerm() &;
     std::size_t    getColumnNumber() const override;
     std::size_t    getLineNumber() const override;
     int            getTabstop() const override;
@@ -163,10 +163,10 @@ class FTermOutput final : public FOutput
     static constexpr uInt64 MAX_FLUSH_WAIT = 200000;  //  200.0 ms = 5 Hz
 
     // Accessors
-    const FSetPalette& getFSetPaletteRef() const override;
+    const FSetPalette& getFSetPaletteRef() const & override;
 
     // Methods
-    FStartOptions& getStartOptions();
+    FStartOptions& getStartOptions() &;
     bool           isInputCursorInsideTerminal() const;
     bool           isDefaultPaletteTheme() override;
     void           redefineColorPalette() override;
@@ -232,7 +232,7 @@ inline FString FTermOutput::getClassName() const
 { return "FTermOutput"; }
 
 //----------------------------------------------------------------------
-inline FTerm& FTermOutput::getFTerm()
+inline FTerm& FTermOutput::getFTerm() &
 { return fterm; }
 
 //----------------------------------------------------------------------
@@ -244,7 +244,7 @@ inline bool FTermOutput::isCursorHideable() const
 { return cursor_hideable; }
 
 //----------------------------------------------------------------------
-inline const FTermOutput::FSetPalette& FTermOutput::getFSetPaletteRef() const
+inline const FTermOutput::FSetPalette& FTermOutput::getFSetPaletteRef() const &
 {
   static const FSetPalette& f = &FTerm::setPalette;
   return f;

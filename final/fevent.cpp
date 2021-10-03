@@ -95,11 +95,11 @@ FMouseEvent::FMouseEvent ( Event ev_type  // constructor
 { }
 
 //----------------------------------------------------------------------
-const FPoint& FMouseEvent::getPos() const
+const FPoint& FMouseEvent::getPos() const &
 { return p; }
 
 //----------------------------------------------------------------------
-const FPoint& FMouseEvent::getTermPos() const
+const FPoint& FMouseEvent::getTermPos() const &
 { return tp; }
 
 //----------------------------------------------------------------------
@@ -145,11 +145,11 @@ FWheelEvent::FWheelEvent ( Event ev_type  // constructor
 { }
 
 //----------------------------------------------------------------------
-const FPoint& FWheelEvent::getPos() const
+const FPoint& FWheelEvent::getPos() const &
 { return p; }
 
 //----------------------------------------------------------------------
-const FPoint& FWheelEvent::getTermPos() const
+const FPoint& FWheelEvent::getTermPos() const &
 { return tp; }
 
 //----------------------------------------------------------------------

@@ -37,7 +37,6 @@
 #include "final/output/tty/foptimove.h"
 #include "final/output/tty/ftermcap.h"
 #include "final/output/tty/ftermcapquirks.h"
-#include "final/output/tty/ftermdata.h"
 #include "final/output/tty/ftermdebugdata.h"
 #include "final/output/tty/ftermdetection.h"
 #include "final/output/tty/fterm.h"
@@ -137,7 +136,7 @@ FString FTerm::getKeyName (FKey keynum)
 }
 
 //----------------------------------------------------------------------
-charSubstitution& FTerm::getCharSubstitutionMap()
+charSubstitution& FTerm::getCharSubstitutionMap() &
 {
   static auto& fterm_data = FTermData::getInstance();
   return fterm_data.getCharSubstitutionMap();

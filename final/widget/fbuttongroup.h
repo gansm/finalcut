@@ -83,7 +83,7 @@ class FButtonGroup : public FScrollView
     FToggleButton*      getLastButton();
     FToggleButton*      getButton (int) const;
     std::size_t         getCount() const;
-    FString&            getText();
+    FString&            getText() &;
 
     // Mutator
     bool                setEnable (bool = true) override;
@@ -158,7 +158,7 @@ inline std::size_t FButtonGroup::getCount() const
 { return buttonlist.size(); }
 
 //----------------------------------------------------------------------
-inline FString& FButtonGroup::getText()
+inline FString& FButtonGroup::getText() &
 { return text; }
 
 }  // namespace finalcut

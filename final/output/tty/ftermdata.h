@@ -81,18 +81,18 @@ class FTermData final
     // Accessors
     FString            getClassName() const;
     static auto        getInstance() -> FTermData&;
-    EncodingMap&       getEncodingList();
-    charSubstitution&  getCharSubstitutionMap();
+    EncodingMap&       getEncodingList() &;
+    charSubstitution&  getCharSubstitutionMap() &;
     Encoding           getTermEncoding() const;
-    FRect&             getTermGeometry();
+    FRect&             getTermGeometry() &;
     int                getTTYFileDescriptor() const;
     uInt               getBaudrate() const;
-    const std::string& getTermType() const;
-    const std::string& getTermFileName() const;
+    const std::string& getTermType() const & ;
+    const std::string& getTermFileName() const &;
     int                getGnomeTerminalID() const;
     kittyVersion       getKittyVersion() const;
-    const FString&     getXtermFont() const;
-    const FString&     getXtermTitle() const;
+    const FString&     getXtermFont() const &;
+    const FString&     getXtermTitle() const &;
 #if DEBUG
     int                getFramebufferBpp() const;
 #endif
@@ -202,11 +202,11 @@ inline auto FTermData::getInstance() -> FTermData&
 }
 
 //----------------------------------------------------------------------
-inline FTermData::EncodingMap& FTermData::getEncodingList()
+inline FTermData::EncodingMap& FTermData::getEncodingList() &
 { return encoding_list; }
 
 //----------------------------------------------------------------------
-inline charSubstitution& FTermData::getCharSubstitutionMap()
+inline charSubstitution& FTermData::getCharSubstitutionMap() &
 { return char_substitution_map; }
 
 //----------------------------------------------------------------------
@@ -214,7 +214,7 @@ inline Encoding FTermData::getTermEncoding() const
 { return term_encoding; }
 
 //----------------------------------------------------------------------
-inline FRect& FTermData::getTermGeometry()
+inline FRect& FTermData::getTermGeometry() &
 { return term_geometry; }
 
 //----------------------------------------------------------------------
@@ -226,11 +226,11 @@ inline uInt FTermData::getBaudrate() const
 { return baudrate; }
 
 //----------------------------------------------------------------------
-inline const std::string& FTermData::getTermType() const
+inline const std::string& FTermData::getTermType() const &
 { return termtype; }
 
 //----------------------------------------------------------------------
-inline const std::string& FTermData::getTermFileName() const
+inline const std::string& FTermData::getTermFileName() const &
 { return termfilename; }
 
 //----------------------------------------------------------------------
@@ -242,11 +242,11 @@ inline FTermData::kittyVersion FTermData::getKittyVersion() const
 { return kitty_version; }
 
 //----------------------------------------------------------------------
-inline const FString& FTermData::getXtermFont() const
+inline const FString& FTermData::getXtermFont() const &
 { return xterm_font; }
 
 //----------------------------------------------------------------------
-inline const FString& FTermData::getXtermTitle() const
+inline const FString& FTermData::getXtermTitle() const &
 { return xterm_title; }
 
 //----------------------------------------------------------------------

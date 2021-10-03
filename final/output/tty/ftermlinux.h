@@ -188,7 +188,7 @@ class FTermLinux final
     int                  getFramebuffer_bpp() const;
     bool                 getScreenFont();
     bool                 getUnicodeMap ();
-    ModifierKey&         getModifierKey();
+    ModifierKey&         getModifierKey() &;
 
     // Inquiries
     bool                 isLinuxTerm() const;

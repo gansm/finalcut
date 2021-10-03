@@ -460,7 +460,7 @@ void FTermOutput::beep() const
 
 // private methods of FTermOutput
 //----------------------------------------------------------------------
-inline FStartOptions& FTermOutput::getStartOptions()
+inline FStartOptions& FTermOutput::getStartOptions() &
 {
   return FStartOptions::getInstance();
 }

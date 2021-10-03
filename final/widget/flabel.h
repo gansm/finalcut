@@ -90,7 +90,7 @@ class FLabel : public FWidget
     FString             getClassName() const override;
     FWidget*            getAccelWidget();
     Align               getAlignment() const;
-    FString&            getText();
+    FString&            getText() &;
 
     // Mutators
     void                setAccelWidget (FWidget* = nullptr);
@@ -175,7 +175,7 @@ inline Align FLabel::getAlignment() const
 { return alignment; }
 
 //----------------------------------------------------------------------
-inline FString& FLabel::getText()
+inline FString& FLabel::getText() &
 { return text; }
 
 //----------------------------------------------------------------------

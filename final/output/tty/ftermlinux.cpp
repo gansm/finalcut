@@ -583,7 +583,7 @@ bool FTermLinux::getUnicodeMap()
 }
 
 //----------------------------------------------------------------------
-FTermLinux::ModifierKey& FTermLinux::getModifierKey()
+FTermLinux::ModifierKey& FTermLinux::getModifierKey() &
 {
   // Get Linux console shift state
 

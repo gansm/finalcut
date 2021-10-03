@@ -189,9 +189,9 @@ class FWidget : public FVTerm, public FObject
     static FMenuBar*         getMenuBar();
     static FStatusBar*       getStatusBar();
     static auto              getColorTheme() -> std::shared_ptr<FWidgetColors>&;
-    virtual FWidget*         getFirstFocusableWidget (FObjectList);
-    virtual FWidget*         getLastFocusableWidget (FObjectList);
-    const FAcceleratorList&  getAcceleratorList() const;
+    virtual FWidget*         getFirstFocusableWidget (FObjectList) &;
+    virtual FWidget*         getLastFocusableWidget (FObjectList) &;
+    const FAcceleratorList&  getAcceleratorList() const &;
     FString                  getStatusbarMessage() const;
     FColor                   getForegroundColor() const;  // get the primary
     FColor                   getBackgroundColor() const;  // widget colors
@@ -215,14 +215,14 @@ class FWidget : public FVTerm, public FObject
     FSize                    getClientSize() const;
     std::size_t              getMaxWidth() const;
     std::size_t              getMaxHeight() const;
-    const FSize&             getShadow() const;
-    const FRect&             getGeometry() const;
-    const FRect&             getGeometryWithShadow();
-    const FRect&             getTermGeometry();
-    const FRect&             getTermGeometryWithShadow();
+    const FSize&             getShadow() const &;
+    const FRect&             getGeometry() const &;
+    const FRect&             getGeometryWithShadow() &;
+    const FRect&             getTermGeometry() &;
+    const FRect&             getTermGeometryWithShadow() &;
     std::size_t              getDesktopWidth() const;
     std::size_t              getDesktopHeight() const;
-    const FWidgetFlags&      getFlags() const;
+    const FWidgetFlags&      getFlags() const &;
     FPoint                   getCursorPos() const;
     FPoint                   getPrintPos();
 
@@ -235,7 +235,7 @@ class FWidget : public FVTerm, public FObject
     static void              setOpenMenu (FWidget*);
     template <typename ClassT>
     static void              setColorTheme();
-    FAcceleratorList&        setAcceleratorList();
+    FAcceleratorList&        setAcceleratorList() &;
     virtual void             setStatusbarMessage (const FString&);
     bool                     setVisible (bool = true);
     bool                     unsetVisible();
@@ -255,7 +255,7 @@ class FWidget : public FVTerm, public FObject
     virtual void             resetColors();
     void                     useParentWidgetColor();
     void                     setColor() const;
-    FWidgetFlags&            setFlags();
+    FWidgetFlags&            setFlags() &;
     // Positioning and sizes mutators...
     virtual void             setX (int, bool = true);
     virtual void             setY (int, bool = true);
@@ -301,25 +301,25 @@ class FWidget : public FVTerm, public FObject
     bool                     isPaddingIgnored() const;
 
     // Methods
-    FWidget*                 childWidgetAt (const FPoint&);
-    int                      numOfFocusableChildren();
+    FWidget*                 childWidgetAt (const FPoint&) &;
+    int                      numOfFocusableChildren() &;
     virtual bool             close();
     void                     clearStatusbarMessage();
     template <typename... Args>
-    void                     addCallback (const FString&, Args&&...) noexcept;
+    void                     addCallback (const FString&, Args&&...) & noexcept;
     template <typename... Args>
-    void                     delCallback (Args&&...) noexcept;
-    void                     emitCallback (const FString&) const;
-    void                     addAccelerator (FKey);
-    virtual void             addAccelerator (FKey, FWidget*);
-    void                     delAccelerator ();
-    virtual void             delAccelerator (FWidget*);
+    void                     delCallback (Args&&...) & noexcept;
+    void                     emitCallback (const FString&) const &;
+    void                     addAccelerator (FKey) &;
+    virtual void             addAccelerator (FKey, FWidget*) &;
+    void                     delAccelerator () &;
+    virtual void             delAccelerator (FWidget*) &;
     virtual void             redraw();
     virtual void             resize();
     virtual void             show();
     virtual void             hide();
-    virtual bool             focusFirstChild();  // widget focusing
-    virtual bool             focusLastChild();
+    virtual bool             focusFirstChild() &;  // widget focusing
+    virtual bool             focusLastChild() &;
     FPoint                   termToWidgetPos (const FPoint&) const;
     void                     print (const FPoint&) override;
     virtual void             move (const FPoint&);
@@ -542,11 +542,11 @@ inline FStatusBar* FWidget::getStatusBar()
 { return statusbar; }
 
 //----------------------------------------------------------------------
-inline const FWidget::FAcceleratorList& FWidget::getAcceleratorList() const
+inline const FWidget::FAcceleratorList& FWidget::getAcceleratorList() const &
 { return accelerator_list; }
 
 //----------------------------------------------------------------------
-inline FWidget::FAcceleratorList& FWidget::setAcceleratorList()
+inline FWidget::FAcceleratorList& FWidget::setAcceleratorList() &
 { return accelerator_list; }
 
 //----------------------------------------------------------------------
@@ -643,15 +643,15 @@ inline std::size_t FWidget::getMaxHeight() const
 { return woffset.getHeight(); }
 
 //----------------------------------------------------------------------
-inline const FSize& FWidget::getShadow() const
+inline const FSize& FWidget::getShadow() const &
 { return wshadow; }
 
 //----------------------------------------------------------------------
-inline const FRect& FWidget::getGeometry() const
+inline const FRect& FWidget::getGeometry() const &
 { return adjust_wsize; }
 
 //----------------------------------------------------------------------
-inline const FRect& FWidget::getGeometryWithShadow()
+inline const FRect& FWidget::getGeometryWithShadow() &
 {
   adjust_wsize_shadow.setCoordinates
   (
@@ -665,7 +665,7 @@ inline const FRect& FWidget::getGeometryWithShadow()
 }
 
 //----------------------------------------------------------------------
-inline const FRect& FWidget::getTermGeometry()
+inline const FRect& FWidget::getTermGeometry() &
 {
   adjust_wsize_term.setCoordinates
   (
@@ -679,7 +679,7 @@ inline const FRect& FWidget::getTermGeometry()
 }
 
 //----------------------------------------------------------------------
-inline const FRect& FWidget::getTermGeometryWithShadow()
+inline const FRect& FWidget::getTermGeometryWithShadow() &
 {
   adjust_wsize_term_shadow.setCoordinates
   (
@@ -701,7 +701,7 @@ inline std::size_t FWidget::getDesktopHeight() const
 { return FVTerm::getFOutput()->getLineNumber(); }
 
 //----------------------------------------------------------------------
-inline const FWidget::FWidgetFlags& FWidget::getFlags() const
+inline const FWidget::FWidgetFlags& FWidget::getFlags() const &
 { return flags; }
 
 //----------------------------------------------------------------------
@@ -796,7 +796,7 @@ inline void FWidget::setBackgroundColor (FColor color)
 }
 
 //----------------------------------------------------------------------
-inline FWidget::FWidgetFlags& FWidget::setFlags()
+inline FWidget::FWidgetFlags& FWidget::setFlags() &
 {
   // Gives direct access to the widget flags
   return flags;
@@ -920,30 +920,30 @@ inline void FWidget::clearStatusbarMessage()
 
 //----------------------------------------------------------------------
 template <typename... Args>
-inline void FWidget::addCallback (const FString& cb_signal, Args&&... args) noexcept
+inline void FWidget::addCallback (const FString& cb_signal, Args&&... args) & noexcept
 {
   callback_impl.addCallback (cb_signal, std::forward<Args>(args)...);
 }
 
 //----------------------------------------------------------------------
 template <typename... Args>
-inline void FWidget::delCallback (Args&&... args) noexcept
+inline void FWidget::delCallback (Args&&... args) & noexcept
 {
   callback_impl.delCallback(std::forward<Args>(args)...);
 }
 
 //----------------------------------------------------------------------
-inline void FWidget::emitCallback (const FString& emit_signal) const
+inline void FWidget::emitCallback (const FString& emit_signal) const &
 {
   callback_impl.emitCallback(emit_signal);
 }
 
 //----------------------------------------------------------------------
-inline void FWidget::addAccelerator (FKey key)
+inline void FWidget::addAccelerator (FKey key) &
 { addAccelerator (key, this); }
 
 //----------------------------------------------------------------------
-inline void FWidget::delAccelerator()
+inline void FWidget::delAccelerator() &
 { delAccelerator(this); }
 
 //----------------------------------------------------------------------

@@ -182,7 +182,7 @@ auto FWidget::getColorTheme() -> std::shared_ptr<FWidgetColors>&
 }
 
 //----------------------------------------------------------------------
-FWidget* FWidget::getFirstFocusableWidget (FObjectList list)
+FWidget* FWidget::getFirstFocusableWidget (FObjectList list) &
 {
   if ( list.empty() )
     return nullptr;
@@ -206,7 +206,7 @@ FWidget* FWidget::getFirstFocusableWidget (FObjectList list)
 }
 
 //----------------------------------------------------------------------
-FWidget* FWidget::getLastFocusableWidget (FObjectList list)
+FWidget* FWidget::getLastFocusableWidget (FObjectList list) &
 {
   if ( list.empty() )
     return nullptr;
@@ -765,7 +765,7 @@ void FWidget::setDoubleFlatLine (Side side, int pos, bool bit)
 }
 
 //----------------------------------------------------------------------
-FWidget* FWidget::childWidgetAt (const FPoint& pos)
+FWidget* FWidget::childWidgetAt (const FPoint& pos) &
 {
   if ( ! hasChildren() )
     return nullptr;
@@ -791,7 +791,7 @@ FWidget* FWidget::childWidgetAt (const FPoint& pos)
 }
 
 //----------------------------------------------------------------------
-int FWidget::numOfFocusableChildren()
+int FWidget::numOfFocusableChildren() &
 {
   if ( ! hasChildren() )
     return 0;
@@ -841,7 +841,7 @@ bool FWidget::close()
 }
 
 //----------------------------------------------------------------------
-void FWidget::addAccelerator (FKey key, FWidget* obj)
+void FWidget::addAccelerator (FKey key, FWidget* obj) &
 {
   // Adding a keyboard accelerator for the given widget
 
@@ -856,7 +856,7 @@ void FWidget::addAccelerator (FKey key, FWidget* obj)
 }
 
 //----------------------------------------------------------------------
-void FWidget::delAccelerator (FWidget* obj)
+void FWidget::delAccelerator (FWidget* obj) &
 {
   // Deletes all accelerators of the given widget
 
@@ -1020,7 +1020,7 @@ void FWidget::hide()
 }
 
 //----------------------------------------------------------------------
-bool FWidget::focusFirstChild()
+bool FWidget::focusFirstChild() &
 {
   if ( ! hasChildren() )
     return false;
@@ -1062,7 +1062,7 @@ bool FWidget::focusFirstChild()
 }
 
 //----------------------------------------------------------------------
-bool FWidget::focusLastChild()
+bool FWidget::focusLastChild() &
 {
   if ( ! hasChildren() )
     return false;

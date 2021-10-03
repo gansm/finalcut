@@ -99,6 +99,7 @@ int main (int argc, char* argv[])
 {
   // Create the application object
   finalcut::FApplication app{argc, argv};
+  finalcut::FVTerm::setNonBlockingRead();
 
   // Force terminal initialization without calling show()
   app.initTerminal();

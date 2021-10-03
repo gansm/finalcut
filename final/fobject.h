@@ -106,12 +106,12 @@ class FObject
 
     // Accessors
     virtual FString       getClassName() const;
-    FObject*              getParent() const;
-    FObject*              getChild (int) const;
-    FObjectList&          getChildren();
-    const FObjectList&    getChildren() const;
-    std::size_t           getMaxChildren() const;
-    std::size_t           numOfChildren() const;
+    FObject*              getParent() const &;
+    FObject*              getChild (int) const &;
+    FObjectList&          getChildren() &;
+    const FObjectList&    getChildren() const &;
+    std::size_t           getMaxChildren() const &;
+    std::size_t           numOfChildren() const &;
     iterator              begin();
     iterator              end();
     const_iterator        begin() const;
@@ -125,18 +125,18 @@ class FObject
     void                  setMaxChildren (std::size_t);
 
     // Inquiries
-    bool                  hasParent() const;
-    bool                  hasChildren() const;
-    bool                  isChild (const FObject*) const;
-    bool                  isDirectChild (const FObject*) const;
+    bool                  hasParent() const & ;
+    bool                  hasChildren() const &;
+    bool                  isChild (const FObject*) const &;
+    bool                  isDirectChild (const FObject*) const &;
     bool                  isWidget() const;
     bool                  isInstanceOf (const FString&) const;
 
     // Methods
-    void                  removeParent();
-    void                  addChild (FObject*);
-    void                  delChild (FObject*);
-    void                  setParent (FObject*);
+    void                  removeParent() &;
+    void                  addChild (FObject*) &;
+    void                  delChild (FObject*) &;
+    void                  setParent (FObject*) &;
 
     // Event handler
     virtual bool          event (FEvent*);
@@ -144,10 +144,10 @@ class FObject
     // Timer methods
     static TimeValue      getCurrentTime();
     static bool           isTimeout (const TimeValue&, uInt64);
-    int                   addTimer (int);
-    bool                  delTimer (int) const;
-    bool                  delOwnTimers() const;
-    bool                  delAllTimers() const;
+    int                   addTimer (int) &;
+    bool                  delTimer (int) const &;
+    bool                  delOwnTimers() const &;
+    bool                  delAllTimers() const &;
 
   protected:
     struct FTimerData
@@ -194,23 +194,23 @@ inline FString FObject::getClassName() const
 { return "FObject"; }
 
 //----------------------------------------------------------------------
-inline FObject* FObject::getParent() const
+inline FObject* FObject::getParent() const &
 { return parent_obj; }
 
 //----------------------------------------------------------------------
-inline FObject::FObjectList& FObject::getChildren()
+inline FObject::FObjectList& FObject::getChildren() &
 { return children_list; }
 
 //----------------------------------------------------------------------
-inline const FObject::FObjectList& FObject::getChildren() const
+inline const FObject::FObjectList& FObject::getChildren() const &
 { return children_list; }
 
 //----------------------------------------------------------------------
-inline std::size_t FObject::getMaxChildren() const
+inline std::size_t FObject::getMaxChildren() const &
 { return max_children; }
 
 //----------------------------------------------------------------------
-inline std::size_t FObject::numOfChildren() const
+inline std::size_t FObject::numOfChildren() const &
 { return children_list.size(); }
 
 //----------------------------------------------------------------------
@@ -250,15 +250,15 @@ inline void FObject::setMaxChildren (std::size_t max)
 { max_children = max; }
 
 //----------------------------------------------------------------------
-inline bool FObject::hasParent() const
+inline bool FObject::hasParent() const &
 { return has_parent; }
 
 //----------------------------------------------------------------------
-inline bool FObject::hasChildren() const
+inline bool FObject::hasChildren() const &
 { return ! children_list.empty(); }
 
 //----------------------------------------------------------------------
-inline bool FObject::isDirectChild (const FObject* obj) const
+inline bool FObject::isDirectChild (const FObject* obj) const &
 { return obj->getParent() == this; }
 
 //----------------------------------------------------------------------

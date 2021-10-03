@@ -379,8 +379,8 @@ class FListView : public FWidget
                                  , iterator );
     void                  remove (FListViewItem*);
     void                  clear();
-    FListViewItems&       getData();
-    const FListViewItems& getData() const;
+    FListViewItems&       getData() &;
+    const FListViewItems& getData() const &;
 
     virtual void          sort();
 
@@ -709,11 +709,11 @@ FObject::iterator
 }
 
 //----------------------------------------------------------------------
-inline FListView::FListViewItems& FListView::getData()
+inline FListView::FListViewItems& FListView::getData() &
 { return reinterpret_cast<FListViewItems&>(itemlist); }
 
 //----------------------------------------------------------------------
-inline const FListView::FListViewItems& FListView::getData() const
+inline const FListView::FListViewItems& FListView::getData() const &
 { return reinterpret_cast<const FListViewItems&>(itemlist); }
 
 //----------------------------------------------------------------------

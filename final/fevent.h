@@ -147,8 +147,8 @@ class FMouseEvent : public FEvent  // mouse event
     FMouseEvent (Event, const FPoint&, const FPoint&, MouseButton);
     FMouseEvent (Event, const FPoint&, MouseButton);
 
-    const FPoint& getPos() const;
-    const FPoint& getTermPos() const;
+    const FPoint& getPos() const &;
+    const FPoint& getTermPos() const &;
     int           getX() const;
     int           getY() const;
     int           getTermX() const;
@@ -172,8 +172,8 @@ class FWheelEvent : public FEvent  // wheel event
     FWheelEvent (Event, const FPoint&, MouseWheel);
     FWheelEvent (Event, const FPoint&, const FPoint&, MouseWheel);
 
-    const FPoint& getPos() const;
-    const FPoint& getTermPos() const;
+    const FPoint& getPos() const &;
+    const FPoint& getTermPos() const &;
     int           getX() const;
     int           getY() const;
     int           getTermX() const;

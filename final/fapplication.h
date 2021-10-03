@@ -245,7 +245,6 @@ class FApplication : public FWidget
     static int            loop_level;
     static int            quit_code;
     static bool           quit_now;
-    static bool           is_next_event_timeout;
     static FWidget*       keyboard_widget;
 };
 

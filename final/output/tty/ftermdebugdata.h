@@ -64,11 +64,11 @@ class FTermDebugData final
     // Accessors
     static FString getClassName();
     static auto    getInstance() -> FTermDebugData&;
-    const FString& getAnswerbackString();
-    const FString& getSecDAString();
-    const FString& getTermType_256color();
-    const FString& getTermType_Answerback();
-    const FString& getTermType_SecDA();
+    const FString& getAnswerbackString() &;
+    const FString& getSecDAString() &;
+    const FString& getTermType_256color() &;
+    const FString& getTermType_Answerback() &;
+    const FString& getTermType_SecDA() &;
 #if defined(__linux__)
     int            getFramebufferBpp();
 #endif

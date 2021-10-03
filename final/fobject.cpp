@@ -78,7 +78,7 @@ FObject::~FObject()  // destructor
 
 // public methods of FObject
 //----------------------------------------------------------------------
-FObject* FObject::getChild (int index) const
+FObject* FObject::getChild (int index) const &
 {
   // returns the child for the index number
 
@@ -94,7 +94,7 @@ FObject* FObject::getChild (int index) const
 }
 
 //----------------------------------------------------------------------
-bool FObject::isChild (const FObject* obj) const
+bool FObject::isChild (const FObject* obj) const &
 {
   // Find out if obj is a child object of mine
 
@@ -110,7 +110,7 @@ bool FObject::isChild (const FObject* obj) const
 }
 
 //----------------------------------------------------------------------
-void FObject::removeParent()
+void FObject::removeParent() &
 {
   if ( ! hasParent() )
     return;
@@ -119,7 +119,7 @@ void FObject::removeParent()
 }
 
 //----------------------------------------------------------------------
-void FObject::addChild (FObject* obj)
+void FObject::addChild (FObject* obj) &
 {
   // Adds an object obj to the children list
 
@@ -138,7 +138,7 @@ void FObject::addChild (FObject* obj)
 }
 
 //----------------------------------------------------------------------
-void FObject::delChild (FObject* obj)
+void FObject::delChild (FObject* obj) &
 {
   // Deletes the child object obj from children list
 
@@ -154,7 +154,7 @@ void FObject::delChild (FObject* obj)
 }
 
 //----------------------------------------------------------------------
-void FObject::setParent (FObject* parent)
+void FObject::setParent (FObject* parent) &
 {
   // Sets a new parent object
 
@@ -208,7 +208,7 @@ bool FObject::isTimeout (const TimeValue& time, uInt64 timeout)
 }
 
 //----------------------------------------------------------------------
-int FObject::addTimer (int interval)
+int FObject::addTimer (int interval) &
 {
   // Create a timer and returns the timer identifier number
   // (interval in ms)
@@ -254,7 +254,7 @@ int FObject::addTimer (int interval)
 }
 
 //----------------------------------------------------------------------
-bool FObject::delTimer (int id) const
+bool FObject::delTimer (int id) const &
 {
   // Deletes a timer by using the timer identifier number
 
@@ -279,7 +279,7 @@ bool FObject::delTimer (int id) const
 }
 
 //----------------------------------------------------------------------
-bool FObject::delOwnTimers() const
+bool FObject::delOwnTimers() const &
 {
   // Deletes all timers of this object
 
@@ -306,7 +306,7 @@ bool FObject::delOwnTimers() const
 }
 
 //----------------------------------------------------------------------
-bool FObject::delAllTimers() const
+bool FObject::delAllTimers() const &
 {
   // Deletes all timers of all objects
 

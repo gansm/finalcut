@@ -109,7 +109,7 @@ class FKeyboard final
     static auto           getInstance() -> FKeyboard&;
     FKey                  getKey() const;
     FString               getKeyName (const FKey) const;
-    keybuffer&            getKeyBuffer();
+    keybuffer&            getKeyBuffer() &;
     TimeValue             getKeyPressedTime() const;
     static uInt64         getKeypressTimeout();
     static uInt64         getReadBlockingTime();
@@ -137,7 +137,7 @@ class FKeyboard final
     bool                  hasDataInQueue() const;
 
     // Methods
-    bool&                 hasUnprocessedInput();
+    bool&                 hasUnprocessedInput() &;
     bool                  isKeyPressed (uInt64 = read_blocking_time);
     void                  clearKeyBuffer();
     void                  clearKeyBufferOnTimeout();
@@ -212,7 +212,7 @@ inline FKey FKeyboard::getKey() const
 { return key; }
 
 //----------------------------------------------------------------------
-inline FKeyboard::keybuffer& FKeyboard::getKeyBuffer()
+inline FKeyboard::keybuffer& FKeyboard::getKeyBuffer() &
 { return fifo_buf; }
 
 //----------------------------------------------------------------------

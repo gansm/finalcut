@@ -44,35 +44,35 @@ auto FTermDebugData::getInstance() -> FTermDebugData&
 }
 
 //----------------------------------------------------------------------
-const FString& FTermDebugData::getAnswerbackString()
+const FString& FTermDebugData::getAnswerbackString() &
 {
   static auto& term_detection = FTermDetection::getInstance();
   return term_detection.getAnswerbackString();
 }
 
 //----------------------------------------------------------------------
-const FString& FTermDebugData::getSecDAString()
+const FString& FTermDebugData::getSecDAString() &
 {
   static auto& term_detection = FTermDetection::getInstance();
   return term_detection.getSecDAString();
 }
 
 //----------------------------------------------------------------------
-const FString& FTermDebugData::getTermType_256color()
+const FString& FTermDebugData::getTermType_256color() &
 {
   static auto& term_detection = FTermDetection::getInstance();
   return term_detection.getTermType_256color();
 }
 
 //----------------------------------------------------------------------
-const FString& FTermDebugData::getTermType_Answerback()
+const FString& FTermDebugData::getTermType_Answerback() &
 {
   static auto& term_detection = FTermDetection::getInstance();
   return term_detection.getTermType_Answerback();
 }
 
 //----------------------------------------------------------------------
-const FString& FTermDebugData::getTermType_SecDA()
+const FString& FTermDebugData::getTermType_SecDA() &
 {
   static auto& term_detection = FTermDetection::getInstance();
   return term_detection.getTermType_SecDA();

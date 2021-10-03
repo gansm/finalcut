@@ -175,7 +175,7 @@ void FMenuItem::setText (const FString& txt)
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::addAccelerator (FKey key, FWidget* obj)
+void FMenuItem::addAccelerator (FKey key, FWidget* obj) &
 {
   const auto& root = getRootWidget();
   FAccelerator accel = { key, obj };
@@ -190,7 +190,7 @@ void FMenuItem::addAccelerator (FKey key, FWidget* obj)
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::delAccelerator (FWidget* obj)
+void FMenuItem::delAccelerator (FWidget* obj) &
 {
   auto root = getRootWidget();
 

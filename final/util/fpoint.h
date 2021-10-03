@@ -71,8 +71,8 @@ class FPoint
     bool                  isOrigin() const;
 
     // Point references
-    int&                  x_ref();
-    int&                  y_ref();
+    int&                  x_ref() &;
+    int&                  y_ref() &;
 
     // Methods
     void                  move (int, int);
@@ -118,11 +118,11 @@ inline void FPoint::setPoint (const FPoint& p)
 { setPoint(p.xpos, p.ypos); }
 
 //----------------------------------------------------------------------
-inline int& FPoint::x_ref()
+inline int& FPoint::x_ref() &
 { return xpos; }
 
 //----------------------------------------------------------------------
-inline int& FPoint::y_ref()
+inline int& FPoint::y_ref() &
 { return ypos; }
 
 

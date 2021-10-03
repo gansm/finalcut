@@ -58,7 +58,7 @@ FString FMouseData::getClassName() const
 }
 
 //----------------------------------------------------------------------
-const FPoint& FMouseData::getPos() const
+const FPoint& FMouseData::getPos() const &
 {
   return mouse;
 }
@@ -157,13 +157,13 @@ void FMouseData::clearButtonState()
 
 // protected methods of FMouseData
 //----------------------------------------------------------------------
-inline FMouseData::FMouseButton& FMouseData::getButtonState()
+inline FMouseData::FMouseButton& FMouseData::getButtonState() &
 {
   return b_state;
 }
 
 //----------------------------------------------------------------------
-inline const FMouseData::FMouseButton& FMouseData::getButtonState() const
+inline const FMouseData::FMouseButton& FMouseData::getButtonState() const &
 {
   return b_state;
 }
@@ -234,7 +234,7 @@ bool FMouse::hasUnprocessedInput() const
 
 // protected methods of FMouse
 //----------------------------------------------------------------------
-const FPoint& FMouse::getNewPos() const
+const FPoint& FMouse::getNewPos() const &
 {
   return new_mouse_position;
 }
@@ -1242,7 +1242,7 @@ auto FMouseControl::getInstance() -> FMouseControl&
 }
 
 //----------------------------------------------------------------------
-const FPoint& FMouseControl::getPos()
+const FPoint& FMouseControl::getPos() &
 {
   const auto& mtype = getMouseWithEvent();
   const auto& mouse_object = mouse_protocol[mtype].get();

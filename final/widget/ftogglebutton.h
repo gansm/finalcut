@@ -80,7 +80,7 @@ class FToggleButton : public FWidget
 
     // Accessors
     FString             getClassName() const override;
-    FString&            getText();
+    FString&            getText() &;
 
     // Mutators
     void                setSize (const FSize&, bool = true) override;
@@ -165,7 +165,7 @@ inline FString FToggleButton::getClassName() const
 { return "FToggleButton"; }
 
 //----------------------------------------------------------------------
-inline FString& FToggleButton::getText()
+inline FString& FToggleButton::getText() &
 { return text; }
 
 //----------------------------------------------------------------------

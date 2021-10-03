@@ -77,8 +77,8 @@ class FSize
     bool                  isEmpty() const;
 
     // Side references
-    std::size_t&          width_ref();
-    std::size_t&          height_ref();
+    std::size_t&          width_ref() &;
+    std::size_t&          height_ref() &;
 
     // Methods
     void                  scaleBy (int, int);
@@ -127,11 +127,11 @@ inline std::size_t FSize::getArea() const
 { return width * height; }
 
 //----------------------------------------------------------------------
-inline std::size_t& FSize::width_ref()
+inline std::size_t& FSize::width_ref() &
 { return width; }
 
 //----------------------------------------------------------------------
-inline std::size_t& FSize::height_ref()
+inline std::size_t& FSize::height_ref() &
 { return height; }
 
 

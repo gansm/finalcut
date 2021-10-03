@@ -72,7 +72,7 @@ auto FTermDetection::getInstance() -> FTermDetection&
 
 //----------------------------------------------------------------------
 #if DEBUG
-const FString& FTermDetection::getAnswerbackString() const
+const FString& FTermDetection::getAnswerbackString() const &
 {
   // Get the answerback message that was output after
   // sending the enquiry character (ENQ)
@@ -80,7 +80,7 @@ const FString& FTermDetection::getAnswerbackString() const
 }
 
 //----------------------------------------------------------------------
-const FString& FTermDetection::getSecDAString() const
+const FString& FTermDetection::getSecDAString() const &
 {
   // Get the secondary device attributes (SEC_DA)
   return sec_da;

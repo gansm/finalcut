@@ -68,14 +68,14 @@ class FTermDetection final
     // Accessors
     FString               getClassName() const;
     static auto           getInstance() -> FTermDetection&;
-    const FString&        getTermType() const;
+    const FString&        getTermType() const &;
 
 #if DEBUG
-    const FString&        getAnswerbackString() const;
-    const FString&        getSecDAString() const;
-    const FString&        getTermType_256color() const;
-    const FString&        getTermType_Answerback() const;
-    const FString&        getTermType_SecDA() const;
+    const FString&        getAnswerbackString() const &;
+    const FString&        getSecDAString() const &;
+    const FString&        getTermType_256color() const &;
+    const FString&        getTermType_Answerback() const &;
+    const FString&        getTermType_SecDA() const &;
 #endif
 
     // Inquiries
@@ -167,20 +167,20 @@ inline FString FTermDetection::getClassName() const
 { return "FTermDetection"; }
 
 //----------------------------------------------------------------------
-inline const FString& FTermDetection::getTermType() const
+inline const FString& FTermDetection::getTermType() const &
 { return termtype; }
 
 #if DEBUG
 //----------------------------------------------------------------------
-inline const FString& FTermDetection::getTermType_256color() const
+inline const FString& FTermDetection::getTermType_256color() const &
 { return termtype_256color; }
 
 //----------------------------------------------------------------------
-inline const FString& FTermDetection::getTermType_Answerback() const
+inline const FString& FTermDetection::getTermType_Answerback() const &
 { return termtype_Answerback; }
 
 //----------------------------------------------------------------------
-inline const FString& FTermDetection::getTermType_SecDA() const
+inline const FString& FTermDetection::getTermType_SecDA() const &
 { return termtype_SecDA; }
 #endif
 

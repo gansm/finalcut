@@ -191,14 +191,14 @@ class FListBox : public FWidget
     // Accessors
     FString              getClassName() const override;
     std::size_t          getCount() const;
-    FListBoxItem&        getItem (std::size_t);
-    const FListBoxItem&  getItem (std::size_t) const;
-    FListBoxItem&        getItem (FListBoxItems::iterator);
-    const FListBoxItem&  getItem (FListBoxItems::const_iterator) const;
+    FListBoxItem&        getItem (std::size_t) &;
+    const FListBoxItem&  getItem (std::size_t) const &;
+    FListBoxItem&        getItem (FListBoxItems::iterator) &;
+    const FListBoxItem&  getItem (FListBoxItems::const_iterator) const &;
     std::size_t          currentItem() const;
-    FListBoxItems&       getData();
-    const FListBoxItems& getData() const;
-    FString&             getText();
+    FListBoxItems&       getData() &;
+    const FListBoxItems& getData() const &;
+    FString&             getText() &;
 
     // Mutators
     void                 setCurrentItem (std::size_t);
@@ -433,25 +433,25 @@ inline std::size_t FListBox::getCount() const
 { return itemlist.size(); }
 
 //----------------------------------------------------------------------
-inline FListBoxItem& FListBox::getItem (std::size_t index)
+inline FListBoxItem& FListBox::getItem (std::size_t index) &
 {
   FListBoxItems::iterator iter = index2iterator(index - 1);
   return *iter;
 }
 
 //----------------------------------------------------------------------
-inline const FListBoxItem& FListBox::getItem (std::size_t index) const
+inline const FListBoxItem& FListBox::getItem (std::size_t index) const &
 {
   FListBoxItems::const_iterator iter = index2iterator(index - 1);
   return *iter;
 }
 
 //----------------------------------------------------------------------
-inline FListBoxItem& FListBox::getItem (FListBoxItems::iterator iter)
+inline FListBoxItem& FListBox::getItem (FListBoxItems::iterator iter) &
 { return *iter; }
 
 //----------------------------------------------------------------------
-inline const FListBoxItem& FListBox::getItem (FListBoxItems::const_iterator iter) const
+inline const FListBoxItem& FListBox::getItem (FListBoxItems::const_iterator iter) const &
 { return *iter; }
 
 //----------------------------------------------------------------------
@@ -459,15 +459,15 @@ inline std::size_t FListBox::currentItem() const
 { return current; }
 
 //----------------------------------------------------------------------
-inline FListBox::FListBoxItems& FListBox::getData()
+inline FListBox::FListBoxItems& FListBox::getData() &
 { return itemlist; }
 
 //----------------------------------------------------------------------
-inline const FListBox::FListBoxItems& FListBox::getData() const
+inline const FListBox::FListBoxItems& FListBox::getData() const &
 { return itemlist; }
 
 //----------------------------------------------------------------------
-inline FString& FListBox::getText()
+inline FString& FListBox::getText() &
 { return text; }
 
 //----------------------------------------------------------------------
