@@ -275,7 +275,7 @@ void FScrollView::setGeometry ( const FPoint& pos, const FSize& size
   if ( getScrollWidth() < getViewportWidth()
     || getScrollHeight() < getViewportHeight() )
   {
-    setScrollSize (getViewportSize());
+    FScrollView::setScrollSize (getViewportSize());
   }
   else if ( ! adjust && viewport )
   {
@@ -317,6 +317,13 @@ void FScrollView::resetColors()
 bool FScrollView::setBorder (bool enable)
 {
   return (setFlags().no_border = ! enable);
+}
+
+//----------------------------------------------------------------------
+bool FScrollView::setFocus (bool)
+{
+  // This container widget cannot have its own focus
+  return false;
 }
 
 //----------------------------------------------------------------------
@@ -723,8 +730,8 @@ void FScrollView::init()
   initScrollbar (vbar, Orientation::Vertical, &FScrollView::cb_vbarChange);
   initScrollbar (hbar, Orientation::Horizontal, &FScrollView::cb_hbarChange);
   mapKeyFunctions();
-  resetColors();
-  setGeometry (FPoint{1, 1}, FSize{4, 4});
+  FScrollView::resetColors();
+  FScrollView::setGeometry (FPoint{1, 1}, FSize{4, 4});
   setMinimumSize (FSize{4, 4});
   const auto xoffset_end = int(getScrollWidth() - getViewportWidth());
   const auto yoffset_end = int(getScrollHeight() - getViewportHeight());

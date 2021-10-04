@@ -18,7 +18,7 @@ RM = rm -f
 ifdef DEBUG
   OPTIMIZE = -O0
 else
-  OPTIMIZE = -O2
+  OPTIMIZE = -O3
 endif
 
 # $@ = name of the targets

@@ -115,6 +115,13 @@ bool FButtonGroup::setEnable (bool enable)
 }
 
 //----------------------------------------------------------------------
+bool FButtonGroup::setFocus (bool)
+{
+  // This container widget cannot have its own focus
+  return false;
+}
+
+//----------------------------------------------------------------------
 void FButtonGroup::setText (const FString& txt)
 {
   text.setString(txt);

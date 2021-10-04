@@ -2839,7 +2839,7 @@ void FTermLinuxTest::linuxFontTest()
 
     // Full block character test
     for (std::size_t i = 0; i < 16 ; i++)
-      CPPUNIT_ASSERT ( font.data[219 * 32 + i] == 0xff );
+      CPPUNIT_ASSERT ( font.data && font.data[219 * 32 + i] == 0xff );
 
     linux.loadNewFont();
     CPPUNIT_ASSERT ( ! linux.isVGAFontUsed() );

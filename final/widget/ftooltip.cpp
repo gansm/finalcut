@@ -116,7 +116,7 @@ void FToolTip::init()
   // initialize geometry values
   setGeometry (FPoint{1, 1}, FSize{3, 3}, false);
   setMinimumSize (FSize{3, 3});
-  resetColors();
+  FToolTip::resetColors();
   calculateDimensions();
 }
 

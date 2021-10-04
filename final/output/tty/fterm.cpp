@@ -67,14 +67,14 @@ namespace internal
 
 struct var
 {
-  static FTerm* init_term_object;  // Global FTerm object
-  static bool   term_initialized;  // Global init state
-  static uInt   object_counter;    // Counts the number of object instances
+  static FTerm*      init_term_object;  // Global FTerm object
+  static bool        term_initialized;  // Global init state
+  static std::size_t object_counter;    // Counts the number of object instances
 };
 
-FTerm* var::init_term_object{nullptr};
-bool   var::term_initialized{false};
-uInt   var::object_counter{0};
+FTerm*      var::init_term_object{nullptr};
+bool        var::term_initialized{false};
+std::size_t var::object_counter{0};
 
 }  // namespace internal
 

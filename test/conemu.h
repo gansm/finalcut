@@ -579,6 +579,9 @@ inline pid_t ConEmu::forkConEmu()
 //----------------------------------------------------------------------
 inline void ConEmu::startConEmuTerminal (console con)
 {
+  if ( fd_master < 0 )
+    return;
+
   closeSlavePTY();
 
   while ( 1 )

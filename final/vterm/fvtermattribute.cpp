@@ -1,9 +1,9 @@
 /***********************************************************************
-* fvtermattribute.cpp - [brief description]                                 *
+* fvtermattribute.cpp - Manipulation of FChar colors and attributes    *
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright [year] [Maintainer]                                        *
+* Copyright 2021 Markus Gans                                           *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -34,10 +34,29 @@ FChar FVTermAttribute::next_attribute{};
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FVTermAttribute::FVTermAttribute() = default;  // constructor
+// constructor
+FVTermAttribute::FVTermAttribute() = default;
 
 //----------------------------------------------------------------------
-FVTermAttribute::~FVTermAttribute() noexcept = default;  // destructor
+// copy constructor
+FVTermAttribute::FVTermAttribute (const FVTermAttribute&) = default;
+
+//----------------------------------------------------------------------
+// move constructor
+FVTermAttribute::FVTermAttribute (FVTermAttribute&&) noexcept = default;
+
+//----------------------------------------------------------------------
+// destructor
+FVTermAttribute::~FVTermAttribute() noexcept = default;
+
+// Overloaded operators
+//----------------------------------------------------------------------
+// copy assignment operator (=)
+FVTermAttribute& FVTermAttribute::operator = (const FVTermAttribute&) = default;
+
+//----------------------------------------------------------------------
+// move assignment operator (=)
+FVTermAttribute& FVTermAttribute::operator = (FVTermAttribute&&) noexcept = default;
 
 
 // public methods of FVTermAttribute

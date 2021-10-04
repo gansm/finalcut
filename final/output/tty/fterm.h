@@ -337,7 +337,7 @@ inline void FTerm::initTerminal()
 //----------------------------------------------------------------------
 inline std::ostream& operator << (std::ostream& os, finalcut::UniChar c)
 {
-  static auto& data = finalcut::FTermData::getInstance();
+  static const auto& data = finalcut::FTermData::getInstance();
 
   if ( data.getTermEncoding() == finalcut::Encoding::UTF8 )
     return os << finalcut::unicode_to_utf8(wchar_t(c));

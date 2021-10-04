@@ -418,8 +418,8 @@ void FMenu::init()
   setGeometry (FPoint{1, 1}, FSize{10, 2}, false);  // initialize geometry values
   setTransparentShadow();
   setMenuWidget();
-  hide();
-  resetColors();
+  FMenu::hide();
+  FMenu::resetColors();
   menuitem.setMenu(this);
   FWidget* parent = getParentWidget();
 

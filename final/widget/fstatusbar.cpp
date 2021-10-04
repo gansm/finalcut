@@ -526,7 +526,7 @@ void FStatusBar::init()
   if ( getRootWidget() )
     getRootWidget()->setBottomPadding(1, true);
 
-  resetColors();
+  FStatusBar::resetColors();
   unsetFocusable();
 }
 

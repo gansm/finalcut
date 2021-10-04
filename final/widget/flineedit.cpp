@@ -556,7 +556,7 @@ void FLineEdit::init()
 {
   label->setAccelWidget(this);
   setShadow();
-  resetColors();
+  FLineEdit::resetColors();
   mapKeyFunctions();
 
   if ( isReadOnly() )

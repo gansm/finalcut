@@ -38,6 +38,8 @@
 #include <sys/ioctl.h>
 
 #if defined(UNIT_TEST)
+  #include <cstdint>
+
   #define WSKBDIO_GETENCODING uInt32(0x4004570F)
   #define WSKBDIO_SETENCODING uInt32(0x80045710)
   #define WSKBDIO_GETDEFAULTBELL uInt32(0x40105706)
@@ -47,14 +49,14 @@
   #define WSKBD_BELL_DOVOLUME 0x4  // get/set volume
   #define WSKBD_BELL_DOALL    0x7  // all of the above
 
-  using kbd_t = uInt32;
+  using kbd_t = std::uint32_t;
 
   struct wskbd_bell_data
   {
-    uInt which;   // values to get/set
-    uInt pitch;   // pitch, in Hz
-    uInt period;  // period, in milliseconds
-    uInt volume;  // percentage of max volume
+    unsigned int which;   // values to get/set
+    unsigned int pitch;   // pitch, in Hz
+    unsigned int period;  // period, in milliseconds
+    unsigned int volume;  // percentage of max volume
   };
 #elif defined(__NetBSD__) || defined(__OpenBSD__)
   #include <sys/time.h>

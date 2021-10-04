@@ -622,7 +622,7 @@ void FListBox::init()
 {
   initScrollbar (vbar, Orientation::Vertical, this, &FListBox::cb_vbarChange);
   initScrollbar (hbar, Orientation::Horizontal, this, &FListBox::cb_hbarChange);
-  setGeometry (FPoint{1, 1}, FSize{5, 4}, false);  // initialize geometry values
+  FListBox::setGeometry (FPoint{1, 1}, FSize{5, 4}, false);  // initialize geometry values
   nf_offset = FVTerm::getFOutput()->isNewFont() ? 1 : 0;
   setTopPadding(1);
   setLeftPadding(1);

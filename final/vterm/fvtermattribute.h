@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright [year] [Maintainer]                                        *
+* Copyright 2021 Markus Gans                                           *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -50,15 +50,15 @@ class FVTermAttribute
   public:
     // Constructors
     FVTermAttribute();
-
-    // Disable copy constructor
-    FVTermAttribute (const FVTermAttribute&) = delete;
+    FVTermAttribute (const FVTermAttribute&);      // copy constructor
+    FVTermAttribute (FVTermAttribute&&) noexcept;  // move constructor
 
     // Destructor
     virtual ~FVTermAttribute() noexcept;
 
-    // Disable copy assignment operator (=)
-    FVTermAttribute& operator = (const FVTermAttribute&) = delete;
+    // Overloaded operators
+    FVTermAttribute& operator = (const FVTermAttribute&);      // copy assignment operator (=)
+    FVTermAttribute& operator = (FVTermAttribute&&) noexcept;  // move assignment operator (=)
 
     // Accessors
     virtual FString       getClassName() const;

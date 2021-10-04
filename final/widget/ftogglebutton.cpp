@@ -462,8 +462,8 @@ void FToggleButton::setGroup (FButtonGroup* btngroup)
 //----------------------------------------------------------------------
 void FToggleButton::init()
 {
-  setGeometry (FPoint{1, 1}, FSize{4, 1}, false);  // initialize geometry values
-  resetColors();
+  FToggleButton::setGeometry (FPoint{1, 1}, FSize{4, 1}, false);  // initialize geometry values
+  FToggleButton::resetColors();
 }
 
 //----------------------------------------------------------------------

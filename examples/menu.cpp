@@ -258,7 +258,7 @@ void Menu::configureBorderMenuItems()
 //----------------------------------------------------------------------
 void Menu::defaultCallback (const finalcut::FMenuList* mb)
 {
-  for (uInt i{1}; i <= mb->getCount(); i++)
+  for (std::size_t i{1}; i <= mb->getCount(); i++)
   {
     auto item = mb->getItem(int(i));
 

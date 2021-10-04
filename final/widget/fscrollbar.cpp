@@ -443,7 +443,7 @@ void FScrollbar::init()
 {
   unsetFocusable();
   ignorePadding();
-  setGeometry(FPoint{1, 1}, FSize{getWidth(), getHeight()});
+  FScrollbar::setGeometry(FPoint{1, 1}, FSize{getWidth(), getHeight()});
 }
 
 //----------------------------------------------------------------------

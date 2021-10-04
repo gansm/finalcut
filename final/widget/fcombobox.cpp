@@ -113,9 +113,9 @@ void FDropDownListBox::init()
   ignorePadding();
   setShadow();
   // initialize geometry values
-  setGeometry (FPoint{1, 1}, FSize{3, 3}, false);
+  FDropDownListBox::setGeometry (FPoint{1, 1}, FSize{3, 3}, false);
   setMinimumSize (FSize{3, 3});
-  hide();
+  FDropDownListBox::hide();
   list.setGeometry (FPoint{1, 1}, FSize{3, 3}, false);
 }
 

@@ -1395,7 +1395,7 @@ void FListView::init()
   selflist.push_back(this);
   root = selflist.begin();
   getNullIterator() = selflist.end();
-  setGeometry (FPoint{1, 1}, FSize{5, 4}, false);  // initialize geometry values
+  FListView::setGeometry (FPoint{1, 1}, FSize{5, 4}, false);  // initialize geometry values
   nf_offset = FVTerm::getFOutput()->isNewFont() ? 1 : 0;
   setTopPadding(1);
   setLeftPadding(1);
@@ -1594,8 +1594,8 @@ void FListView::drawList()
   if ( itemlist.empty() || getHeight() <= 2 || getWidth() <= 4 )
     return;
 
-  uInt y{0};
-  const uInt page_height = uInt(getHeight()) - 2;
+  int y{0};
+  const auto page_height = int(getHeight()) - 2;
   const auto& itemlist_end = itemlist.end();
   auto path_end = itemlist_end;
   auto iter = first_visible_line;
@@ -1607,7 +1607,7 @@ void FListView::drawList()
     const int tree_offset = tree_view ? int(item->getDepth() << 1) + 1 : 0;
     const int checkbox_offset = item->isCheckable() ? 1 : 0;
     path_end = getListEnd(item);
-    print() << FPoint{2, 2 + int(y)};
+    print() << FPoint{2, 2 + y};
 
     // Draw one FListViewItem
     drawListLine (item, getFlags().focus, is_current_line);
@@ -1620,7 +1620,7 @@ void FListView::drawList()
         xpos = -9999;  // by moving it outside the visible area
 
       setVisibleCursor (item->isCheckable());
-      setCursorPos ({xpos, 2 + int(y)});  // first character
+      setCursorPos ({xpos, 2 + y});  // first character
     }
 
     last_visible_line = iter;
@@ -1635,9 +1635,9 @@ void FListView::drawList()
     setReverse(true);
 
   // Clean empty space after last element
-  while ( y < uInt(getClientHeight()) )
+  while ( y < int(getClientHeight()) )
   {
-    print() << FPoint{2, 2 + int(y)}
+    print() << FPoint{2, 2 + y}
             << FString{std::size_t(getClientWidth()), ' '};
     y++;
   }

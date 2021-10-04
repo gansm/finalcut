@@ -557,7 +557,7 @@ void FTextView::init()
 {
   initScrollbar (vbar, Orientation::Vertical, this, &FTextView::cb_vbarChange);
   initScrollbar (hbar, Orientation::Horizontal, this, &FTextView::cb_hbarChange);
-  resetColors();
+  FTextView::resetColors();
   nf_offset = FVTerm::getFOutput()->isNewFont() ? 1 : 0;
   setTopPadding(1);
   setLeftPadding(1);

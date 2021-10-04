@@ -844,7 +844,7 @@ void FDialog::init()
   addDialog(this);
   setActiveWindow(this);
   setTransparentShadow();
-  resetColors();
+  FDialog::resetColors();
   auto old_focus = FWidget::getFocusWidget();
 
   if ( old_focus )

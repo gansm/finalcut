@@ -216,7 +216,7 @@ void FLabel::cb_accelWidgetDestroyed()
 void FLabel::init()
 {
   unsetFocusable();
-  resetColors();
+  FLabel::resetColors();
 }
 
 //----------------------------------------------------------------------

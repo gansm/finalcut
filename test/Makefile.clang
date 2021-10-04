@@ -20,7 +20,7 @@ TERMCAP := $(shell test -n "$$(ldd {/usr,}/lib64/libncursesw.so.5 2>/dev/null | 
 ifdef DEBUG
   OPTIMIZE = -O0 -fsanitize=undefined
 else
-  OPTIMIZE = -O2
+  OPTIMIZE = -O3
 endif
 
 # $@ = name of the targets

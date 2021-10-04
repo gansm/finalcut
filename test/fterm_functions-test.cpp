@@ -49,7 +49,8 @@ class FTermFunctionsTest : public CPPUNIT_NS::TestFixture, test::ConEmu
       if ( ! ret )
         ret = std::setlocale (LC_CTYPE, "C.UTF-8");
 
-      fwide(stdout, 1);  // Makes stream wide-character oriented
+      if ( ret )
+        fwide(stdout, 1);  // Makes stream wide-character oriented
     }
 
   protected:
@@ -970,6 +971,9 @@ void FTermFunctionsTest::FullWidthHalfWidthTest()
 
   if ( ! ret )
     ret = std::setlocale (LC_CTYPE, "C.UTF-8");
+
+  if ( ! ret )
+    return;
 
   fterm_data.setTermEncoding (finalcut::Encoding::UTF8);
 

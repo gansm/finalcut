@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2020 Markus Gans                                      *
+* Copyright 2017-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -122,7 +122,7 @@ int main (int argc, char* argv[])
     // Set the radio button geometry
     // => checkButtonGroup.setScrollSize(...) is not required
     //    because a FButtonGroup is self-adjusting
-    for (uInt i{0}; i < os.size(); i++)
+    for (std::size_t i{0}; i < os.size(); i++)
       os[i]->setGeometry(FPoint{1, int(1 + i)}, FSize{12, 1});
 
     preset(os);

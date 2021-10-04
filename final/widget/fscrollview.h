@@ -110,6 +110,7 @@ class FScrollView : public FWidget
     void                resetColors() override;
     bool                setBorder (bool = true);
     bool                unsetBorder();
+    bool                setFocus (bool = true) override;
     void                setHorizontalScrollBarMode (ScrollBarMode);
     void                setVerticalScrollBarMode (ScrollBarMode);
 

@@ -89,6 +89,7 @@ class FButtonGroup : public FScrollView
     bool                setEnable (bool = true) override;
     bool                unsetEnable() override;
     bool                setDisable() override;
+    bool                setFocus (bool = true) override;
     void                setText (const FString&);
 
     // Inquiries

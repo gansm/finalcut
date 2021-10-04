@@ -1,3 +1,6 @@
+2021-10-04 Markus Gans  <guru.mail@muenster.de>
+	* Preventing the focus of a container widget
+
 2021-10-01 Markus Gans  <guru.mail@muenster.de>
 	* The output buffer is now flushed before the terminal is scrolled
 

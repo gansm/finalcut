@@ -73,18 +73,12 @@ FVTerm::FVTerm()
 }
 
 //----------------------------------------------------------------------
-FVTerm::FVTerm (const FVTerm& fvterm)  // copy constructor
-  : FVTermAttribute{}
-  , foutput{std::shared_ptr<FOutput>(fvterm.foutput)}
-  , window_list{std::shared_ptr<FVTermList>(fvterm.window_list)}
-{ }
+// copy constructor
+FVTerm::FVTerm (const FVTerm&) = default;
 
 //----------------------------------------------------------------------
-FVTerm::FVTerm (FVTerm&& fvterm) noexcept  // move constructor
-  : FVTermAttribute{}
-  , foutput{std::shared_ptr<FOutput>(fvterm.foutput)}
-  , window_list{std::shared_ptr<FVTermList>(fvterm.window_list)}
-{ }
+// move constructor
+FVTerm::FVTerm (FVTerm&&) noexcept = default;
 
 //----------------------------------------------------------------------
 FVTerm::~FVTerm()  // destructor
@@ -96,20 +90,12 @@ FVTerm::~FVTerm()  // destructor
 
 // Overloaded operators
 //----------------------------------------------------------------------
-FVTerm& FVTerm::operator = (const FVTerm& fvterm)  // copy assignment operator (=)
-{
-  foutput = std::shared_ptr<FOutput>(fvterm.foutput);
-  window_list = std::shared_ptr<FVTermList>(fvterm.window_list);
-  return *this;
-}
+// copy assignment operator (=)
+FVTerm& FVTerm::operator = (const FVTerm&) = default;
 
 //----------------------------------------------------------------------
-FVTerm& FVTerm::operator = (FVTerm&& fvterm) noexcept  // move assignment operator (=)
-{
-  foutput = std::shared_ptr<FOutput>(fvterm.foutput);
-  window_list = std::shared_ptr<FVTermList>(fvterm.window_list);
-  return *this;
-}
+// move assignment operator (=)
+FVTerm& FVTerm::operator = (FVTerm&&) noexcept = default;
 
 //----------------------------------------------------------------------
 FVTerm& FVTerm::operator << (const FVTermBuffer& vterm_buffer)
@@ -117,6 +103,7 @@ FVTerm& FVTerm::operator << (const FVTermBuffer& vterm_buffer)
   print (vterm_buffer);
   return *this;
 }
+
 
 // public methods of FVTerm
 //----------------------------------------------------------------------
