@@ -95,18 +95,12 @@ class FMessageBox : public FDialog
     // Constructors
     explicit FMessageBox (FWidget* = nullptr);
 
-    // Disable copy constructor
-    FMessageBox (const FMessageBox&) = delete;
-
     FMessageBox ( const FString&, const FString&
                 , ButtonType, ButtonType, ButtonType
                 , FWidget* = nullptr );
 
     // Destructor
     ~FMessageBox() noexcept override;
-
-    // Disable copy assignment operator (=)
-    FMessageBox& operator = (const FMessageBox&) = delete;
 
     // Accessor
     FString             getClassName() const override;

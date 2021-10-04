@@ -64,14 +64,8 @@ class FButton : public FWidget
     explicit FButton (FWidget* = nullptr);
     explicit FButton (const FString&, FWidget* = nullptr);
 
-    // Disable copy constructor
-    FButton (const FButton&) = delete;
-
     // Destructor
     ~FButton() override;
-
-    // Disable copy assignment operator (=)
-    FButton& operator = (const FButton&) = delete;
 
     // Overloaded operator
     FButton& operator = (const FString&);

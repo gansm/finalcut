@@ -114,10 +114,7 @@ FFileDialog::FFileDialog ( const FString& dirname
 }
 
 //----------------------------------------------------------------------
-FFileDialog::~FFileDialog()  // destructor
-{
-  clear();
-}
+FFileDialog::~FFileDialog() noexcept = default;  // destructor
 
 
 // public methods of FFileDialog
@@ -436,7 +433,7 @@ void FFileDialog::sortDir()
 int FFileDialog::readDir()
 {
   const auto& dir = directory.c_str();
-  directory_stream = opendir(dir);
+  auto directory_stream = opendir(dir);
 
   if ( ! directory_stream )
   {

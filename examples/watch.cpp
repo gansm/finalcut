@@ -37,15 +37,6 @@ class Watch final : public finalcut::FDialog
     // Constructor
     explicit Watch (finalcut::FWidget* = nullptr);
 
-    // Disable copy constructor
-    Watch (const Watch&) = delete;
-
-    // Destructor
-    ~Watch() override = default;
-
-    // Disable copy assignment operator (=)
-    Watch& operator = (const Watch&) = delete;
-
     // Method
     void printTime();
 

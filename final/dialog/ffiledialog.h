@@ -102,14 +102,8 @@ class FFileDialog : public FDialog
                 , DialogType = DialogType::Open
                 , FWidget* = nullptr );
 
-    // Disable copy constructor
-    FFileDialog (const FFileDialog&) = delete;
-
     // Destructor
-    ~FFileDialog() override;
-
-    // Disable copy assignment operator (=)
-    FFileDialog& operator = (const FFileDialog&) = delete;
+    ~FFileDialog() noexcept override;
 
     // Accessors
     FString              getClassName() const override;
@@ -153,24 +147,6 @@ class FFileDialog : public FDialog
         , socket{false}
       { }
 
-      // Copy constructor
-      FDirEntry (const FDirEntry& entry)
-        : name{entry.name}
-        , fifo{entry.fifo}
-        , character_device{entry.character_device}
-        , directory{entry.directory}
-        , block_device{entry.block_device}
-        , regular_file{entry.regular_file}
-        , symbolic_link{entry.symbolic_link}
-        , socket{entry.socket}
-      { }
-
-      // Destructor
-      ~FDirEntry() = default;
-
-      // Copy assignment operator (=)
-      FDirEntry& operator = (const FDirEntry&) = default;
-
       // Data members
       std::string  name{};
       // Type of file
@@ -213,7 +189,6 @@ class FFileDialog : public FDialog
     void                 cb_processShowHidden();
 
     // Data members
-    DIR*             directory_stream{nullptr};
     DirEntries       dir_entries{};
     FString          directory{};
     FString          filter_pattern{};

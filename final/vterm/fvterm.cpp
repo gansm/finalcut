@@ -73,29 +73,11 @@ FVTerm::FVTerm()
 }
 
 //----------------------------------------------------------------------
-// copy constructor
-FVTerm::FVTerm (const FVTerm&) = default;
-
-//----------------------------------------------------------------------
-// move constructor
-FVTerm::FVTerm (FVTerm&&) noexcept = default;
-
-//----------------------------------------------------------------------
 FVTerm::~FVTerm()  // destructor
 {
   if ( init_object == this )
     finish();
 }
-
-
-// Overloaded operators
-//----------------------------------------------------------------------
-// copy assignment operator (=)
-FVTerm& FVTerm::operator = (const FVTerm&) = default;
-
-//----------------------------------------------------------------------
-// move assignment operator (=)
-FVTerm& FVTerm::operator = (FVTerm&&) noexcept = default;
 
 //----------------------------------------------------------------------
 FVTerm& FVTerm::operator << (const FVTermBuffer& vterm_buffer)

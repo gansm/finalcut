@@ -83,15 +83,6 @@ class Listbox final : public FDialog
     // Constructor
     explicit Listbox (FWidget* = nullptr);
 
-    // Disable copy constructor
-    Listbox (const Listbox&) = delete;
-
-    // Destructor
-    ~Listbox() override = default;
-
-    // Disable copy assignment operator (=)
-    Listbox& operator = (const Listbox&) = delete;
-
   private:
     // Method
     void initLayout() override;

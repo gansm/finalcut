@@ -77,14 +77,8 @@ class FTextView : public FWidget
     // Constructor
     explicit FTextView (FWidget* = nullptr);
 
-    // Disable copy constructor
-    FTextView (const FTextView&) = delete;
-
     // Destructor
     ~FTextView() noexcept override;
-
-    // Disable copy assignment operator (=)
-    FTextView& operator = (const FTextView&) = delete;
 
     // Overloaded operators
     FTextView& operator = (const FString&);

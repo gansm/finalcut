@@ -89,11 +89,17 @@ class FLineEdit : public FWidget
     // Disable copy constructor
     FLineEdit (const FLineEdit&) = delete;
 
+    // Disable move constructor
+    FLineEdit (FLineEdit&&) noexcept = delete;
+
     // Destructor
     ~FLineEdit() override;
 
     // Disable copy assignment operator (=)
     FLineEdit& operator = (const FLineEdit&) = delete;
+
+    // Disable move assignment operator (=)
+    FLineEdit& operator = (FLineEdit&&) noexcept = delete;
 
     // Overloaded operators
     FLineEdit& operator = (const FString&);

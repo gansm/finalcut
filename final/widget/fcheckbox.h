@@ -68,14 +68,8 @@ class FCheckBox : public FToggleButton
     explicit FCheckBox (FWidget* = nullptr);
     explicit FCheckBox (const FString&, FWidget* = nullptr);
 
-    // Disable copy constructor
-    FCheckBox (const FCheckBox&) = delete;
-
     // Destructor
     ~FCheckBox() noexcept override;
-
-    // Disable copy assignment operator (=)
-    FCheckBox& operator = (const FCheckBox&) = delete;
 
     // Accessor
     FString       getClassName() const override;

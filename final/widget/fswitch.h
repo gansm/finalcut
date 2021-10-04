@@ -68,14 +68,8 @@ class FSwitch : public FToggleButton
     explicit FSwitch (FWidget* = nullptr);
     explicit FSwitch (const FString&, FWidget* = nullptr);
 
-    // Disable copy constructor
-    FSwitch (const FSwitch&) = delete;
-
     // Destructor
     ~FSwitch() noexcept override;
-
-    // Disable copy assignment operator (=)
-    FSwitch& operator = (const FSwitch&) = delete;
 
     // Accessor
     FString             getClassName() const override;

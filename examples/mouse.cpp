@@ -39,15 +39,6 @@ class ColorChooser final : public finalcut::FWidget
     // Constructor
     explicit ColorChooser (finalcut::FWidget* = nullptr);
 
-    // Disable copy constructor
-    ColorChooser (const ColorChooser&) = delete;
-
-    // Destructor
-    ~ColorChooser() override = default;
-
-    // Disable copy assignment operator (=)
-    ColorChooser& operator = (const ColorChooser&) = delete;
-
     // Accessors
     FColor getForeground() const;
     FColor getBackground() const;
@@ -184,15 +175,6 @@ class Brushes final : public finalcut::FWidget
   public:
     // Constructor
     explicit Brushes (finalcut::FWidget* = nullptr);
-
-    // Disable copy constructor
-    Brushes (const Brushes&) = delete;
-
-    // Destructor
-    ~Brushes() override = default;
-
-    // Disable copy assignment operator (=)
-    Brushes& operator = (const Brushes&) = delete;
 
     // Accessor
     wchar_t getBrush() const;
@@ -333,11 +315,17 @@ class MouseDraw final : public finalcut::FDialog
     // Disable copy constructor
     MouseDraw (const MouseDraw&) = delete;
 
+    // Disable move constructor
+    MouseDraw (MouseDraw&&) noexcept = delete;
+
     // Destructor
-    ~MouseDraw() override = default;
+    ~MouseDraw() noexcept override;
 
     // Disable copy assignment operator (=)
     MouseDraw& operator = (const MouseDraw&) = delete;
+
+    // Disable move assignment operator (=)
+    MouseDraw& operator = (MouseDraw&&) noexcept = delete;
 
     // Methods
     void setGeometry (const FPoint&, const FSize&, bool = true) override;
@@ -381,6 +369,9 @@ MouseDraw::MouseDraw (finalcut::FWidget* parent)
     this, &MouseDraw::cb_colorChanged
   );
 }
+
+//----------------------------------------------------------------------
+MouseDraw::~MouseDraw() noexcept = default;  // destructor
 
 //----------------------------------------------------------------------
 void MouseDraw::setGeometry ( const FPoint& p, const FSize& s, bool adjust)

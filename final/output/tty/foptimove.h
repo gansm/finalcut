@@ -88,9 +88,6 @@ class FOptiMove final
     // Constructor
     explicit FOptiMove (int = 0);
 
-    // Destructor
-    ~FOptiMove() noexcept = default;
-
     // Accessors
     FString       getClassName() const;
     static auto   getInstance() -> FOptiMove&;

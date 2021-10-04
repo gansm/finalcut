@@ -76,11 +76,17 @@ class FWindow : public FWidget
     // Disable copy constructor
     FWindow (const FWindow&) = delete;
 
+    // Disable move constructor
+    FWindow (FWindow&&) noexcept = delete;
+
     // Destructor
     ~FWindow () override;
 
     // Disable copy assignment operator (=)
     FWindow& operator = (const FWindow&) = delete;
+
+    // Disable move assignment operator (=)
+    FWindow& operator = (FWindow&&) noexcept = delete;
 
     // Accessors
     FString             getClassName() const override;

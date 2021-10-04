@@ -73,12 +73,17 @@ class FScrollView : public FWidget
     // Disable copy constructor
     FScrollView (const FScrollView&) = delete;
 
+    // Disable move constructor
+    FScrollView (FScrollView&&) noexcept = delete;
+
     // Destructor
     ~FScrollView() override;
 
     // Disable copy assignment operator (=)
     FScrollView& operator = (const FScrollView&) = delete;
 
+    // Disable move assignment operator (=)
+    FScrollView& operator = (FScrollView&&) noexcept = delete;
     // Accessors
     FString             getClassName() const override;
     std::size_t         getViewportWidth() const;

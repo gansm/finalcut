@@ -50,9 +50,6 @@ class FTermcapQuirks final
     // Constructors
     FTermcapQuirks() = default;
 
-    // Destructor
-    ~FTermcapQuirks() noexcept = default;
-
     // Accessor
     FString getClassName() const;
 

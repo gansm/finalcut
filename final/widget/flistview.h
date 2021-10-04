@@ -77,10 +77,12 @@ class FListViewItem : public FObject
 {
   public:
     // Constructor
-    FListViewItem (const FListViewItem&);  // copy constructor
     explicit FListViewItem (iterator);
     template <typename DT>
     FListViewItem (const FStringList&, DT&&, iterator);
+
+    // copy constructor
+    FListViewItem (const FListViewItem&);
 
     // Destructor
     ~FListViewItem() override;
@@ -301,17 +303,23 @@ class FListView : public FWidget
     using FWidget::setGeometry;
     using FListViewItems = std::list<FListViewItem*>;
 
-    // Constructor
-    explicit FListView (FWidget* = nullptr);
-
     // Disable copy constructor
     FListView (const FListView&) = delete;
+
+    // Disable move constructor
+    FListView (FListView&&) noexcept = delete;
+
+    // Constructor
+    explicit FListView (FWidget* = nullptr);
 
     // Destructor
     ~FListView() override;
 
     // Disable copy assignment operator (=)
     FListView& operator = (const FListView&) = delete;
+
+    // Disable move assignment operator (=)
+    FListView& operator = (FListView&&) noexcept = delete;
 
     // Accessors
     FString               getClassName() const override;

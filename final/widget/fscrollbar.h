@@ -90,14 +90,8 @@ class FScrollbar : public FWidget
     explicit FScrollbar (FWidget* = nullptr);
     explicit FScrollbar (Orientation = Orientation::Vertical, FWidget* = nullptr);
 
-    // Disable copy constructor
-    FScrollbar (const FScrollbar&) = delete;
-
     // Destructor
     ~FScrollbar() override;
-
-    // Disable copy assignment operator (=)
-    FScrollbar& operator = (const FScrollbar&) = delete;
 
     // Accessors
     FString             getClassName() const override;

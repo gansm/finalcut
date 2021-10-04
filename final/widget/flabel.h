@@ -72,11 +72,17 @@ class FLabel : public FWidget
     // Disable copy constructor
     FLabel (const FLabel&) = delete;
 
+    // Disable move constructor
+    FLabel (FLabel&&) noexcept = delete;
+
     // Destructor
     ~FLabel() override;
 
     // Disable copy assignment operator (=)
     FLabel& operator = (const FLabel&) = delete;
+
+    // Disable move assignment operator (=)
+    FLabel& operator = (FLabel&&) noexcept = delete;
 
     // Overloaded operators
     FLabel& operator = (const FString&);

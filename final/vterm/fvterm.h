@@ -119,17 +119,23 @@ class FVTerm : public FVTermAttribute
       Start      // Allowing terminal refresh
     };
 
+    // Disable copy constructor
+    FVTerm (const FVTerm&) = delete;
+
+    // Disable move constructor
+    FVTerm (FVTerm&&) noexcept = delete;
+
     // Constructor
     FVTerm();
-    FVTerm (const FVTerm&);      // copy constructor
-    FVTerm (FVTerm&&) noexcept;  // move constructor
+
+    // Disable copy assignment operator (=)
+    FVTerm& operator = (const FVTerm&) = delete;
+
+    // Disable move assignment operator (=)
+    FVTerm& operator = (FVTerm&&) noexcept = delete;
 
     // Destructor
     ~FVTerm() override;
-
-    // Overloaded operators
-    FVTerm& operator = (const FVTerm&);      // copy assignment operator (=)
-    FVTerm& operator = (FVTerm&&) noexcept;  // move assignment operator (=)
 
     template <typename typeT>
     FVTerm& operator << (const typeT&);

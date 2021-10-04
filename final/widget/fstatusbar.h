@@ -80,11 +80,17 @@ class FStatusKey : public FWidget
     // Disable copy constructor
     FStatusKey (const FStatusKey&) = delete;
 
+    // Disable move constructor
+    FStatusKey (FStatusKey&&) noexcept = delete;
+
     // Destructor
     ~FStatusKey() override;
 
     // Disable copy assignment operator (=)
     FStatusKey& operator = (const FStatusKey&) = delete;
+
+    // Disable move assignment operator (=)
+    FStatusKey& operator = (FStatusKey&&) noexcept = delete;
 
     // Accessors
     FString             getClassName() const override;
@@ -181,14 +187,8 @@ class FStatusBar : public FWindow
     // Constructor
     explicit FStatusBar (FWidget* = nullptr);
 
-    // Disable copy constructor
-    FStatusBar (const FStatusBar&) = delete;
-
     // Destructor
     ~FStatusBar() override;
-
-    // Disable copy assignment operator (=)
-    FStatusBar& operator = (const FStatusBar&) = delete;
 
     // Accessors
     FString             getClassName() const override;

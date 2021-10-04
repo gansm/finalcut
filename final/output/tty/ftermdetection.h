@@ -54,16 +54,7 @@ class FTermDetection final
 {
   public:
     // Constructors
-    FTermDetection();
-
-    // Disable copy constructor
-    FTermDetection (const FTermDetection&) = delete;
-
-    // Destructor
-    ~FTermDetection();
-
-    // Disable copy assignment operator (=)
-    FTermDetection& operator = (const FTermDetection&) = delete;
+    FTermDetection() = default;
 
     // Accessors
     FString               getClassName() const;

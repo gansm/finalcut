@@ -68,14 +68,8 @@ class FRadioMenuItem : public FMenuItem
     explicit FRadioMenuItem (FWidget* = nullptr);
     explicit FRadioMenuItem (const FString&, FWidget* = nullptr);
 
-    // Disable copy constructor
-    FRadioMenuItem (const FRadioMenuItem&) = delete;
-
     // Destructor
     ~FRadioMenuItem() noexcept override;
-
-    // Disable copy assignment operator (=)
-    FRadioMenuItem& operator = (const FRadioMenuItem&) = delete;
 
     // Accessor
     FString       getClassName() const override;

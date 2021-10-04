@@ -50,15 +50,21 @@ class FVTermAttribute
   public:
     // Constructors
     FVTermAttribute();
-    FVTermAttribute (const FVTermAttribute&);      // copy constructor
-    FVTermAttribute (FVTermAttribute&&) noexcept;  // move constructor
+
+    // Disable copy constructor
+    FVTermAttribute (const FVTermAttribute&) = delete;
+
+    // Disable move constructor
+    FVTermAttribute (FVTermAttribute&&) noexcept = delete;
 
     // Destructor
     virtual ~FVTermAttribute() noexcept;
 
-    // Overloaded operators
-    FVTermAttribute& operator = (const FVTermAttribute&);      // copy assignment operator (=)
-    FVTermAttribute& operator = (FVTermAttribute&&) noexcept;  // move assignment operator (=)
+    // Disable copy assignment operator (=)
+    FVTermAttribute& operator = (const FVTermAttribute&) = delete;
+
+    // Disable move assignment operator (=)
+    FVTermAttribute& operator = (FVTermAttribute&&) noexcept = delete;
 
     // Accessors
     virtual FString       getClassName() const;

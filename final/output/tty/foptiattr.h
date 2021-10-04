@@ -98,15 +98,6 @@ class FOptiAttr final
     // Constructor
     FOptiAttr();
 
-    // Disable copy constructor
-    FOptiAttr (const FOptiAttr&) = delete;
-
-    // Destructor
-    ~FOptiAttr() noexcept = default;
-
-    // Disable copy assignment operator (=)
-    FOptiAttr& operator = (const FOptiAttr&) = delete;
-
     // Accessors
     FString       getClassName() const;
     static auto   getInstance() -> FOptiAttr&;

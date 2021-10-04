@@ -72,12 +72,17 @@ class FToggleButton : public FWidget
     // Disable copy constructor
     FToggleButton (const FToggleButton&) = delete;
 
+    // Disable move constructor
+    FToggleButton (FToggleButton&&) noexcept = delete;
+
     // Destructor
     ~FToggleButton() override;
 
     // Disable copy assignment operator (=)
     FToggleButton& operator = (const FToggleButton&) = delete;
 
+    // Disable move assignment operator (=)
+    FToggleButton& operator = (FToggleButton&&) noexcept = delete;
     // Accessors
     FString             getClassName() const override;
     FString&            getText() &;

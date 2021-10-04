@@ -87,11 +87,17 @@ class FDialog : public FWindow
     // Disable copy constructor
     FDialog (const FDialog&) = delete;
 
+    // Disable move constructor
+    FDialog (FDialog&&) noexcept = delete;
+
     // Destructor
     ~FDialog() override;
 
     // Disable copy assignment operator (=)
     FDialog& operator = (const FDialog&) = delete;
+
+    // Disable move assignment operator (=)
+    FDialog& operator = (FDialog&&) noexcept = delete;
 
     // Accessors
     FString               getClassName() const override;

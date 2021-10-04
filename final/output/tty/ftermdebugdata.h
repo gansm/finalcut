@@ -52,15 +52,6 @@ class FTermDebugData final
     // Constructors
     FTermDebugData() = default;
 
-    // Disable copy constructor
-    FTermDebugData (const FTermDebugData&) = delete;
-
-    // Destructor
-    ~FTermDebugData() = default;
-
-    // Disable copy assignment operator (=)
-    FTermDebugData& operator = (const FTermDebugData&) = delete;
-
     // Accessors
     static FString getClassName();
     static auto    getInstance() -> FTermDebugData&;

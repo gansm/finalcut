@@ -69,15 +69,6 @@ class FTermData final
     // Constructors
     FTermData () = default;
 
-    // Disable copy constructor
-    FTermData (const FTermData&) = delete;
-
-    // Destructor
-    ~FTermData() noexcept = default;
-
-    // Disable copy assignment operator (=)
-    FTermData& operator = (const FTermData&) = delete;
-
     // Accessors
     FString            getClassName() const;
     static auto        getInstance() -> FTermData&;

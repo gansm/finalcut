@@ -73,15 +73,23 @@ class FListBoxItem
   public:
     // Constructors
     FListBoxItem() = default;
-    FListBoxItem (const FListBoxItem&);  // copy constructor
     template <typename DT = std::nullptr_t>
     explicit FListBoxItem (const FString&, DT&& = DT() );
+
+    // Disable copy constructor
+    FListBoxItem (const FListBoxItem&) = default;
+
+    // Disable move constructor
+    FListBoxItem (FListBoxItem&&) noexcept = default;
 
     // Destructor
     virtual ~FListBoxItem() noexcept;
 
-    // copy copy assignment operator (=)
-    FListBoxItem& operator = (const FListBoxItem&);
+    // Disable copy assignment operator (=)
+    FListBoxItem& operator = (const FListBoxItem&) = default;
+
+    // Disable move assignment operator (=)
+    FListBoxItem& operator = (FListBoxItem&&) noexcept = default;
 
     // Accessors
     virtual FString       getClassName() const;
@@ -182,11 +190,17 @@ class FListBox : public FWidget
     // Disable copy constructor
     FListBox (const FListBox&) = delete;
 
+    // Disable move constructor
+    FListBox (FListBox&&) noexcept = delete;
+
     // Destructor
     ~FListBox() override;
 
     // Disable copy assignment operator (=)
     FListBox& operator = (const FListBox&) = delete;
+
+    // Disable move assignment operator (=)
+    FListBox& operator = (FListBox&&) noexcept = delete;
 
     // Accessors
     FString              getClassName() const override;

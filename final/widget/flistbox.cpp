@@ -40,34 +40,7 @@ namespace finalcut
 
 // constructor and destructor
 //----------------------------------------------------------------------
-FListBoxItem::FListBoxItem (const FListBoxItem& item)
-  : text{item.text}
-  , data_pointer{item.data_pointer}
-  , brackets{item.brackets}
-  , selected{item.selected}
-{ }
-
-//----------------------------------------------------------------------
 FListBoxItem::~FListBoxItem() noexcept = default;  // destructor
-
-
-// public methods of FListBoxItem
-//----------------------------------------------------------------------
-FListBoxItem& FListBoxItem::operator = (const FListBoxItem& item)
-{
-  if ( &item == this )
-  {
-    return *this;
-  }
-  else
-  {
-    text         = item.text;
-    data_pointer = item.data_pointer;
-    brackets     = item.brackets;
-    selected     = item.selected;
-    return *this;
-  }
-}
 
 
 //----------------------------------------------------------------------

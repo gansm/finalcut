@@ -68,9 +68,6 @@ class FVTermBuffer
     template <typename Iterator>
     FVTermBuffer (Iterator, Iterator);
 
-    // Destructor
-    virtual ~FVTermBuffer() noexcept;
-
     // Overloaded operators
     template <typename typeT>
     FVTermBuffer& operator << (const typeT&);
@@ -82,7 +79,7 @@ class FVTermBuffer
     FVTermBuffer& operator << (const FColorPair&);
 
     // Accessors
-    virtual FString        getClassName() const;
+    FString                getClassName() const;
     std::size_t            getLength() const;
     const FCharVector&     getBuffer() const;
 

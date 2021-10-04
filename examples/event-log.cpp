@@ -44,15 +44,6 @@ class EventDialog final : public finalcut::FDialog
     // Constructor
     explicit EventDialog (finalcut::FWidget* = nullptr);
 
-    // Disable copy constructor
-    EventDialog (const EventDialog&) = delete;
-
-    // Destructor
-    ~EventDialog() noexcept override;
-
-    // Disable copy assignment operator (=)
-    EventDialog& operator = (const EventDialog&) = delete;
-
   private:
     // Methods
     void initLayout() override;
@@ -89,9 +80,6 @@ EventDialog::EventDialog (finalcut::FWidget* parent)
   label.setAlignment(finalcut::Align::Center);
   addTimer(60000);  // Starts the timer every minute
 }
-
-//----------------------------------------------------------------------
-EventDialog::~EventDialog() noexcept = default; // destructor
 
 //----------------------------------------------------------------------
 void EventDialog::initLayout()
@@ -247,11 +235,17 @@ class EventLog final : public finalcut::FDialog, public std::ostringstream
     // Disable copy constructor
     EventLog (const EventLog&) = delete;
 
+    // Disable move constructor
+    EventLog (EventLog&&) noexcept = delete;
+
     // Destructor
     ~EventLog() noexcept override;
 
     // Disable copy assignment operator (=)
     EventLog& operator = (const EventLog&) = delete;
+
+    // Disable move assignment operator (=)
+    EventLog& operator = (EventLog&&) noexcept = delete;
 
     // Event handlers
     void onTimer (finalcut::FTimerEvent*) override;

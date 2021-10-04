@@ -38,25 +38,8 @@ FChar FVTermAttribute::next_attribute{};
 FVTermAttribute::FVTermAttribute() = default;
 
 //----------------------------------------------------------------------
-// copy constructor
-FVTermAttribute::FVTermAttribute (const FVTermAttribute&) = default;
-
-//----------------------------------------------------------------------
-// move constructor
-FVTermAttribute::FVTermAttribute (FVTermAttribute&&) noexcept = default;
-
-//----------------------------------------------------------------------
 // destructor
 FVTermAttribute::~FVTermAttribute() noexcept = default;
-
-// Overloaded operators
-//----------------------------------------------------------------------
-// copy assignment operator (=)
-FVTermAttribute& FVTermAttribute::operator = (const FVTermAttribute&) = default;
-
-//----------------------------------------------------------------------
-// move assignment operator (=)
-FVTermAttribute& FVTermAttribute::operator = (FVTermAttribute&&) noexcept = default;
 
 
 // public methods of FVTermAttribute

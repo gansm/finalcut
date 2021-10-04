@@ -314,12 +314,7 @@ class FTimerEvent : public FEvent  // timer event
 class FUserEvent : public FEvent  // user event
 {
   public:
-    // Disable copy constructor
-    FUserEvent (const FUserEvent&) = delete;
     FUserEvent (Event, int);
-
-    // Disable copy assignment operator (=)
-    FUserEvent& operator = (const FUserEvent&) = delete;
 
     int               getUserId() const;
     template <typename T>

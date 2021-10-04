@@ -45,15 +45,6 @@ class Background final : public finalcut::FDialog
     // Constructor
     explicit Background (finalcut::FWidget* = nullptr);
 
-    // Disable copy constructor
-    Background (const Background&) = delete;
-
-    // Destructor
-    ~Background() noexcept override;
-
-    // Disable copy assignment operator (=)
-    Background& operator = (const Background&) = delete;
-
   private:
     // Methods
     void initLayout() override;
@@ -158,9 +149,6 @@ Background::Background (finalcut::FWidget* parent)
     );
   }
 }
-
-//----------------------------------------------------------------------
-Background::~Background() noexcept = default;  // destructor
 
 //----------------------------------------------------------------------
 void Background::initLayout()

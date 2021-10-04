@@ -81,12 +81,17 @@ class FMenuItem : public FWidget
     // Disable copy constructor
     FMenuItem (const FMenuItem&) = delete;
 
+    // Disable move constructor
+    FMenuItem (FMenuItem&&) noexcept = delete;
+
     // Destructor
     ~FMenuItem() override;
 
     // Disable copy assignment operator (=)
     FMenuItem& operator = (const FMenuItem&) = delete;
 
+    // Disable move assignment operator (=)
+    FMenuItem& operator = (FMenuItem&&) noexcept = delete;
     // Accessors
     FString             getClassName() const override;
     FKey                getHotkey() const;

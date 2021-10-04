@@ -153,11 +153,17 @@ class FTerm final
     // Disable copy constructor
     FTerm (const FTerm&) = delete;
 
+    // Disable move constructor
+    FTerm (FTerm&&) noexcept = delete;
+
     // Destructor
     ~FTerm();
 
     // Disable copy assignment operator (=)
     FTerm& operator = (const FTerm&) = delete;
+
+    // Disable move assignment operator (=)
+    FTerm& operator = (FTerm&&) noexcept = delete;
 
     // Accessors
     static FString           getClassName();

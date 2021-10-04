@@ -67,11 +67,17 @@ class FMenuList
     // Disable copy constructor
     FMenuList (const FMenuList&) = delete;
 
+    // Disable move constructor
+    FMenuList (FMenuList&&) noexcept = delete;
+
     // Destructor
     virtual ~FMenuList();
 
     // Disable copy assignment operator (=)
     FMenuList& operator = (const FMenuList&) = delete;
+
+    // Disable move assignment operator (=)
+    FMenuList& operator = (FMenuList&&) noexcept = delete;
 
     // Accessors
     virtual FString          getClassName() const;

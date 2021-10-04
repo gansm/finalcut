@@ -54,14 +54,6 @@ namespace finalcut
 // class FTermDetection
 //----------------------------------------------------------------------
 
-// constructors and destructor
-//----------------------------------------------------------------------
-FTermDetection::FTermDetection() = default;
-
-//----------------------------------------------------------------------
-FTermDetection::~FTermDetection() = default;  // destructor
-
-
 // public methods of FTermDetection
 //----------------------------------------------------------------------
 auto FTermDetection::getInstance() -> FTermDetection&

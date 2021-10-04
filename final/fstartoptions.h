@@ -55,15 +55,6 @@ class FStartOptions final
     // Constructors
     FStartOptions();
 
-    // Disable copy constructor
-    FStartOptions (const FStartOptions&) = delete;
-
-    // Destructor
-    ~FStartOptions() = default;
-
-    // Disable copy assignment operator (=)
-    FStartOptions& operator = (const FStartOptions&) = delete;
-
     // Accessors
     static FString getClassName();
     static auto getInstance() -> FStartOptions&;

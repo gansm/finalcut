@@ -68,14 +68,8 @@ class FButtonGroup : public FScrollView
     explicit FButtonGroup (FWidget* = nullptr);
     explicit FButtonGroup (const FString&, FWidget* = nullptr);
 
-    // Disable copy constructor
-    FButtonGroup (const FButtonGroup&) = delete;
-
     // Destructor
     ~FButtonGroup() override;
-
-    // Disable copy assignment operator (=)
-    FButtonGroup& operator = (const FButtonGroup&) = delete;
 
     // Accessor
     FString             getClassName() const override;

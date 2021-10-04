@@ -45,14 +45,8 @@ class ProgressDialog final : public finalcut::FDialog
     // Constructor
     explicit ProgressDialog (finalcut::FWidget* = nullptr);
 
-    // Disable copy constructor
-    ProgressDialog (const ProgressDialog&) = delete;
-
     // Destructor
     ~ProgressDialog() override;
-
-    // Disable copy assignment operator (=)
-    ProgressDialog& operator = (const ProgressDialog&) = delete;
 
   private:
     // Method
@@ -194,15 +188,6 @@ class TextWindow final : public finalcut::FDialog
     // Constructor
     explicit TextWindow (finalcut::FWidget* = nullptr);
 
-    // Disable copy constructor
-    TextWindow (const TextWindow&) = delete;
-
-    // Destructor
-    ~TextWindow() override = default;
-
-    // Disable copy assignment operator (=)
-    TextWindow& operator = (const TextWindow&) = delete;
-
     // Method
     void append (const finalcut::FString&);
 
@@ -262,15 +247,6 @@ class MyDialog final : public finalcut::FDialog
   public:
     // Constructor
     explicit MyDialog (finalcut::FWidget* = nullptr);
-
-    // Disable copy constructor
-    MyDialog (const MyDialog&) = delete;
-
-    // Destructor
-    ~MyDialog() override = default;
-
-    // Disable copy assignment operator (=)
-    MyDialog& operator = (const MyDialog&) = delete;
 
   private:
     // Methods

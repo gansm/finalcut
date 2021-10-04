@@ -55,15 +55,6 @@ class SGRoptimizer final
     // Constructors
     explicit SGRoptimizer (std::string&);
 
-    // Disable copy constructor
-    SGRoptimizer (const SGRoptimizer&) = delete;
-
-    // Destructor
-    ~SGRoptimizer() noexcept = default;
-
-    // Disable copy assignment operator (=)
-    SGRoptimizer& operator = (const SGRoptimizer&) = delete;
-
     // Method
     void optimize();
 

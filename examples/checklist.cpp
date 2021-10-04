@@ -42,15 +42,6 @@ class CheckList final : public finalcut::FDialog
     // Constructor
     explicit CheckList (finalcut::FWidget* = nullptr);
 
-    // Disable copy constructor
-    CheckList (const CheckList&) = delete;
-
-    // Destructor
-    ~CheckList() override = default;
-
-    // Disable copy assignment operator (=)
-    CheckList& operator = (const CheckList&) = delete;
-
   private:
     // Method
     void populate();

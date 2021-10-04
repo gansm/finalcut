@@ -167,14 +167,8 @@ class FWidget : public FVTerm, public FObject
     // Constructor
     explicit FWidget (FWidget* = nullptr);
 
-    // Disable copy constructor
-    FWidget (const FWidget&) = delete;
-
     // Destructor
     ~FWidget() override;
-
-    // Disable copy assignment operator (=)
-    FWidget& operator = (const FWidget&) = delete;
 
     // Accessors
     FString                  getClassName() const override;

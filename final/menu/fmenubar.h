@@ -73,14 +73,8 @@ class FMenuBar : public FWindow, public FMenuList
     // Constructor
     explicit FMenuBar (FWidget* = nullptr);
 
-    // Disable copy constructor
-    FMenuBar (const FMenuBar&) = delete;
-
     // Destructor
     ~FMenuBar() override;
-
-    // Disable copy assignment operator (=)
-    FMenuBar& operator = (const FMenuBar&) = delete;
 
     // Accessors
     FString       getClassName() const override;

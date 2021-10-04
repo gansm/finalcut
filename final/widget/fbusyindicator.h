@@ -72,14 +72,8 @@ class FBusyIndicator : public FToolTip
     // Constructor
     explicit FBusyIndicator (FWidget* = nullptr);
 
-    // Disable copy constructor
-    FBusyIndicator (const FBusyIndicator&) = delete;
-
     // Destructor
     ~FBusyIndicator() noexcept override;
-
-    // Disable copy assignment operator (=)
-    FBusyIndicator& operator = (const FBusyIndicator&) = delete;
 
     // Accessors
     FString             getClassName() const override;

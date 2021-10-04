@@ -85,11 +85,17 @@ class FTermLinux final
     // Disable copy constructor
     FTermLinux (const FTermLinux&) = delete;
 
+    // Disable move constructor
+    FTermLinux (FTermLinux&&) noexcept = delete;
+
     // Destructor
     ~FTermLinux();
 
     // Disable copy assignment operator (=)
     FTermLinux& operator = (const FTermLinux&) = delete;
+
+    // Disable move assignment operator (=)
+    FTermLinux& operator = (FTermLinux&&) noexcept = delete;
 
     // Accessors
     FString              getClassName() const;

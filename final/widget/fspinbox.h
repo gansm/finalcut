@@ -72,14 +72,8 @@ class FSpinBox : public FWidget
     // Constructors
     explicit FSpinBox (FWidget* = nullptr);
 
-    // Disable copy constructor
-    FSpinBox (const FSpinBox&) = delete;
-
     // Destructor
     ~FSpinBox() noexcept override;
-
-    // Disable copy assignment operator (=)
-    FSpinBox& operator = (const FSpinBox&) = delete;
 
     // Accessors
     FString             getClassName() const override;

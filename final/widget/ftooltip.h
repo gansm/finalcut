@@ -70,14 +70,8 @@ class FToolTip : public FWindow
     explicit FToolTip (FWidget* = nullptr);
     explicit FToolTip (const FString&, FWidget* = nullptr);
 
-    // Disable copy constructor
-    FToolTip (const FToolTip&) = delete;
-
     // Destructor
     ~FToolTip () override;
-
-    // Disable copy assignment operator (=)
-    FToolTip& operator = (const FToolTip&) = delete;
 
     // Accessors
     FString             getClassName() const override;

@@ -77,9 +77,6 @@ class FTermcap final
     // Constructors
     FTermcap() = default;
 
-    // Destructor
-    ~FTermcap() = default;
-
     // Accessors
     FString              getClassName() const;
     static bool          getFlag (const std::string&);

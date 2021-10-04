@@ -40,8 +40,6 @@ namespace finalcut
 //----------------------------------------------------------------------
 // class FVTermBuffer
 //----------------------------------------------------------------------
-FVTermBuffer::~FVTermBuffer() noexcept = default;  // destructor
-
 
 // public methods of FVTermBuffer
 //----------------------------------------------------------------------

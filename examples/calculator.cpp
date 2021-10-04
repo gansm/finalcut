@@ -115,9 +115,6 @@ class Calc final : public finalcut::FDialog
     // Constructor
     explicit Calc (finalcut::FWidget* parent = nullptr);
 
-    // Destructor
-    ~Calc() override = default;
-
   private:
     // Typedef and Enumeration
     using keyFunction = std::function<void(lDouble&)>;  // Member function

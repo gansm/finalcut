@@ -95,15 +95,6 @@ class FKeyboard final
     // Constructor
     FKeyboard();
 
-    // Disable copy constructor
-    FKeyboard (const FKeyboard&) = delete;
-
-    // Destructor
-    ~FKeyboard() = default;
-
-    // Disable copy assignment operator (=)
-    FKeyboard& operator = (const FKeyboard&) = delete;
-
     // Accessors
     FString               getClassName() const;
     static auto           getInstance() -> FKeyboard&;

@@ -55,13 +55,7 @@ class emptyFString final
 {
   public:
     // Constructors
-    emptyFString() = delete;
-
-    // Disable copy constructor
-    emptyFString (const emptyFString&) = delete;
-
-    // Disable copy assignment operator (=)
-    emptyFString& operator = (const emptyFString&) = delete;
+    emptyFString() = default;
 
     static FString getClassName()
     {

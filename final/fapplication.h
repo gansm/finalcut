@@ -106,11 +106,17 @@ class FApplication : public FWidget
     // Disable copy constructor
     FApplication (const FApplication&) = delete;
 
+    // Disable move constructor
+    FApplication (FApplication&&) noexcept = delete;
+
     // Destructor
     ~FApplication() override;
 
     // Disable copy assignment operator (=)
     FApplication& operator = (const FApplication&) = delete;
+
+    // Disable move assignment operator (=)
+    FApplication& operator = (FApplication&&) noexcept = delete;
 
     // Accessors
     FString               getClassName() const override;

@@ -75,14 +75,8 @@ class FDropDownListBox : public FWindow
     // Constructor
     explicit FDropDownListBox (FWidget* = nullptr);
 
-    // Disable copy constructor
-    FDropDownListBox (const FDropDownListBox&) = delete;
-
     // Destructor
     ~FDropDownListBox () override;
-
-    // Disable copy assignment operator (=)
-    FDropDownListBox& operator = (const FDropDownListBox&) = delete;
 
     // Accessors
     FString             getClassName() const override;
@@ -138,16 +132,8 @@ class FComboBox : public FWidget
     // Constructors
     explicit FComboBox (FWidget* = nullptr);
 
-    // Disable copy constructor
-    FComboBox (const FComboBox&) = delete;
-
     // Destructor
     ~FComboBox() noexcept override;
-
-    // Disable copy assignment operator (=)
-    FComboBox& operator = (const FComboBox&) = delete;
-
-    // Overloaded operators
 
     // Accessors
     FString             getClassName() const override;

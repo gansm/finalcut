@@ -42,15 +42,6 @@ class Listview final : public finalcut::FDialog
     // Constructor
     explicit Listview (finalcut::FWidget* = nullptr);
 
-    // Disable copy constructor
-    Listview (const Listview&) = delete;
-
-    // Destructor
-    ~Listview() override = default;
-
-    // Disable copy assignment operator (=)
-    Listview& operator = (const Listview&) = delete;
-
   private:
     // Method
     void populate();

@@ -98,11 +98,17 @@ class FObject
     // Disable copy constructor
     FObject (const FObject&) = delete;
 
+    // Disable move constructor
+    FObject (FObject&&) noexcept = delete;
+
     // Destructor
     virtual ~FObject();
 
     // Disable copy assignment operator (=)
     FObject& operator = (const FObject&) = delete;
+
+    // Disable move assignment operator (=)
+    FObject& operator = (FObject&&) noexcept = delete;
 
     // Accessors
     virtual FString       getClassName() const;

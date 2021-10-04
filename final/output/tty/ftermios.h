@@ -54,9 +54,6 @@ class FTermios final
     // Constructors
     FTermios();
 
-    // Destructor
-    ~FTermios() noexcept = default;
-
     // Accessors
     FString         getClassName() const;
     static termios  getTTY();
