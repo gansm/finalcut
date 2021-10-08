@@ -110,12 +110,6 @@ bool FDialog::setModal (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FDialog::setScrollable (bool enable)
-{
-  return ( setFlags().scrollable = enable );
-}
-
-//----------------------------------------------------------------------
 bool FDialog::setBorder (bool enable)
 {
   if ( enable )
@@ -133,7 +127,7 @@ bool FDialog::setBorder (bool enable)
     setRightPadding(0);
   }
 
-  return ( setFlags().no_border = ! enable );
+  return ( setFlags().no_border = (! enable) );
 }
 
 //----------------------------------------------------------------------
@@ -1057,10 +1051,25 @@ void FDialog::drawBorder()
 //----------------------------------------------------------------------
 void FDialog::drawTitleBar()
 {
-  drawBarButton();       // Draw the title button
-  drawTextBar();         // Print the text bar
-  drawMinimizeButton();  // Draw the minimize button
-  drawZoomButton();      // Draw the zoom/unzoom button
+  print() << FPoint{1, 1};
+
+  if ( FVTerm::getFOutput()->isMonochron() )
+  {
+    if ( isWindowActive() )
+      setReverse(false);
+    else
+      setReverse(true);
+  }
+
+  if ( titlebar_buttons )
+  {
+    drawBarButton();       // Draw the title button
+    drawTextBar();         // Print the text bar
+    drawMinimizeButton();  // Draw the minimize button
+    drawZoomButton();      // Draw the zoom/unzoom button
+  }
+  else
+    drawTextBar();         // Print the text bar
 
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
@@ -1079,21 +1088,12 @@ void FDialog::drawTitleBar()
 void FDialog::drawBarButton()
 {
   // Print the title button
-  print() << FPoint{1, 1};
   const auto& wc = getColorTheme();
 
   if ( dialog_menu && dialog_menu->isShown() )
     setColor (wc->titlebar_button_focus_fg, wc->titlebar_button_focus_bg);
   else
     setColor (wc->titlebar_button_fg, wc->titlebar_button_bg);
-
-  if ( FVTerm::getFOutput()->isMonochron() )
-  {
-    if ( isWindowActive() )
-      setReverse(false);
-    else
-      setReverse(true);
-  }
 
   if ( FVTerm::getFOutput()->isNewFont() )
   {
@@ -1238,12 +1238,11 @@ inline void FDialog::printMinimizeButton()
 void FDialog::drawTextBar()
 {
   // Fill with spaces (left of the title)
-  std::size_t center_offset{0};
-  std::size_t x{1};
-  const auto& wc = getColorTheme();
 
   if ( FVTerm::getFOutput()->getMaxColor() < 16 )
     setBold();
+
+  const auto& wc = getColorTheme();
 
   if ( isWindowActive() || (dialog_menu && dialog_menu->isShown()) )
     setColor (wc->titlebar_active_fg, wc->titlebar_active_bg);
@@ -1251,21 +1250,23 @@ void FDialog::drawTextBar()
     setColor (wc->titlebar_inactive_fg, wc->titlebar_inactive_bg);
 
   const auto width = getWidth();
+  const auto menu_btn = getMenuButtonWidth();
   const auto zoom_btn = getZoomButtonWidth();
   const auto minimize_btn = getMinimizeButtonWidth();
-  const auto tb_width = width - MENU_BTN - minimize_btn - zoom_btn;
-  const auto length = getColumnWidth(tb_text);
+  const auto tb_width = width - menu_btn - minimize_btn - zoom_btn;
+  const auto text_width = getColumnWidth(tb_text);
+  std::size_t leading_space{0};
 
-  if ( width > length + MENU_BTN + minimize_btn + zoom_btn )
-    center_offset = (tb_width - length) / 2;
+  if ( width > text_width + menu_btn + minimize_btn + zoom_btn )
+    leading_space = (tb_width - text_width) / 2;
 
-  for ( ; x <= center_offset; x++)
-    print (' ');
+  // Print leading whitespace
+  print (FString(leading_space, L' '));
 
   // Print title bar text
   if ( ! tb_text.isEmpty() )
   {
-    if ( length <= tb_width )
+    if ( text_width <= tb_width )
       print (tb_text);
     else
     {
@@ -1276,9 +1277,10 @@ void FDialog::drawTextBar()
     }
   }
 
-  // Fill the rest of the bar
-  for ( ; x + 1 + length < width - minimize_btn - zoom_btn - 1; x++)
-    print (' ');
+  // Print trailing whitespace
+  std::size_t trailing_space = width - leading_space - text_width
+                             - menu_btn - minimize_btn - zoom_btn;
+  print (FString(trailing_space, L' '));
 
   if ( FVTerm::getFOutput()->getMaxColor() < 16 )
     unsetBold();
@@ -1416,25 +1418,27 @@ void FDialog::setZoomItem()
 }
 
 //----------------------------------------------------------------------
+inline std::size_t FDialog::getMenuButtonWidth() const
+{
+  return titlebar_buttons ? 3 : 0;
+}
+
+//----------------------------------------------------------------------
 inline std::size_t FDialog::getZoomButtonWidth() const
 {
-  if ( ! isResizeable() )
-    return 0;
-  else if ( FVTerm::getFOutput()->isNewFont() )
-    return 2;
+  if ( titlebar_buttons && isResizeable() )
+    return FVTerm::getFOutput()->isNewFont() ? 2 : 3;
   else
-    return 3;
+    return 0;
 }
 
 //----------------------------------------------------------------------
 inline std::size_t FDialog::getMinimizeButtonWidth() const
 {
-  if ( ! isMinimizable() )
-    return 0;
-  else if ( FVTerm::getFOutput()->isNewFont() )
-    return 2;
+  if ( titlebar_buttons && isMinimizable() )
+    return FVTerm::getFOutput()->isNewFont() ? 2 : 3;
   else
-    return 3;
+    return 0;
 }
 
 //----------------------------------------------------------------------

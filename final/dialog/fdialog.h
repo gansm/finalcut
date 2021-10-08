@@ -110,8 +110,8 @@ class FDialog : public FWindow
     bool                  unsetModal();
     bool                  setResizeable (bool = true) override;
     bool                  setMinimizable (bool = true) override;
-    bool                  setScrollable (bool = true);
-    bool                  unsetScrollable();
+    bool                  setTitlebarButtonVisibility (bool = true);
+    bool                  unsetTitlebarButtonVisibility();
     bool                  setBorder (bool = true);
     bool                  unsetBorder();
     void                  resetColors() override;
@@ -119,7 +119,6 @@ class FDialog : public FWindow
 
     // Inquiries
     bool                  isModal() const;
-    bool                  isScrollable() const;
     bool                  hasBorder() const;
 
     // Methods
@@ -177,7 +176,6 @@ class FDialog : public FWindow
     using KeyMap = std::unordered_map<FKey, std::function<void()>, FKeyHash>;
 
     // Constant
-    static constexpr std::size_t MENU_BTN = 3;
     static constexpr bool PRINT_WIN_NUMBER = false;  // Only for debug
 
     // Methods
@@ -205,6 +203,7 @@ class FDialog : public FWindow
     void                  selectFirstMenuItem();
     void                  setMinimizeItem();
     void                  setZoomItem();
+    std::size_t           getMenuButtonWidth() const;
     std::size_t           getZoomButtonWidth() const;
     std::size_t           getMinimizeButtonWidth() const;
     void                  activateMinimizeButton (const MouseStates&);
@@ -246,6 +245,7 @@ class FDialog : public FWindow
     // Data members
     FString               tb_text{};  // title bar text
     ResultCode            result_code{ResultCode::Reject};
+    bool                  titlebar_buttons{true};
     bool                  zoom_button_pressed{false};
     bool                  zoom_button_active{false};
     bool                  minimize_button_pressed{false};
@@ -286,8 +286,12 @@ inline bool FDialog::unsetModal()
 { return setModal(false); }
 
 //----------------------------------------------------------------------
-inline bool FDialog::unsetScrollable()
-{ return setScrollable(false); }
+inline bool FDialog::setTitlebarButtonVisibility (bool enable)
+{  return (titlebar_buttons = enable); }
+
+//----------------------------------------------------------------------
+inline bool FDialog::unsetTitlebarButtonVisibility()
+{ return setTitlebarButtonVisibility(false); }
 
 //----------------------------------------------------------------------
 inline bool FDialog::unsetBorder()
@@ -300,10 +304,6 @@ inline void FDialog::setText (const FString& txt)
 //----------------------------------------------------------------------
 inline bool FDialog::isModal() const
 { return getFlags().modal; }
-
-//----------------------------------------------------------------------
-inline bool FDialog::isScrollable() const
-{ return getFlags().scrollable; }
 
 //----------------------------------------------------------------------
 inline bool FDialog::hasBorder() const

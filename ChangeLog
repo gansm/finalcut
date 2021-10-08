@@ -1,3 +1,6 @@
+2021-10-08 Markus Gans  <guru.mail@muenster.de>
+	* The visibility of the FDialog title bar buttons can now be disabled
+
 2021-10-04 Markus Gans  <guru.mail@muenster.de>
 	* Preventing the focus of a container widget
 
