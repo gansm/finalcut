@@ -187,8 +187,8 @@ class FWidget : public FVTerm, public FObject
     virtual FWidget*         getLastFocusableWidget (FObjectList) &;
     const FAcceleratorList&  getAcceleratorList() const &;
     FString                  getStatusbarMessage() const;
-    FColor                   getForegroundColor() const;  // get the primary
-    FColor                   getBackgroundColor() const;  // widget colors
+    FColor                   getForegroundColor() const noexcept;  // get the primary
+    FColor                   getBackgroundColor() const noexcept;  // widget colors
     std::vector<bool>&       doubleFlatLine_ref (Side);
     // Positioning and sizes accessors...
     int                      getX() const;
@@ -200,10 +200,10 @@ class FWidget : public FVTerm, public FObject
     std::size_t              getWidth() const;
     std::size_t              getHeight() const;
     FSize                    getSize() const;
-    int                      getTopPadding() const;
-    int                      getLeftPadding() const;
-    int                      getBottomPadding() const;
-    int                      getRightPadding() const;
+    int                      getTopPadding() const noexcept;
+    int                      getLeftPadding() const noexcept;
+    int                      getBottomPadding() const noexcept;
+    int                      getRightPadding() const noexcept;
     std::size_t              getClientWidth() const;
     std::size_t              getClientHeight() const;
     FSize                    getClientSize() const;
@@ -548,11 +548,11 @@ inline FString FWidget::getStatusbarMessage() const
 { return statusbar_message; }
 
 //----------------------------------------------------------------------
-inline FColor FWidget::getForegroundColor() const
+inline FColor FWidget::getForegroundColor() const noexcept
 { return foreground_color; }
 
 //----------------------------------------------------------------------
-inline FColor FWidget::getBackgroundColor() const
+inline FColor FWidget::getBackgroundColor() const noexcept
 { return background_color; }
 
 //----------------------------------------------------------------------
@@ -598,19 +598,19 @@ inline FSize FWidget::getSize() const
 }
 
 //----------------------------------------------------------------------
-inline int FWidget::getTopPadding() const
+inline int FWidget::getTopPadding() const noexcept
 { return padding.top; }
 
 //----------------------------------------------------------------------
-inline int FWidget::getLeftPadding() const
+inline int FWidget::getLeftPadding() const noexcept
 { return padding.left; }
 
 //----------------------------------------------------------------------
-inline int FWidget::getBottomPadding() const
+inline int FWidget::getBottomPadding() const noexcept
 { return padding.bottom; }
 
 //----------------------------------------------------------------------
-inline int FWidget::getRightPadding() const
+inline int FWidget::getRightPadding() const noexcept
 { return padding.right; }
 
 //----------------------------------------------------------------------

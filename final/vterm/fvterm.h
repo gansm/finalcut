@@ -99,6 +99,8 @@ class FVTerm : public FVTermAttribute
     };
 
     // Using-declarations
+    using FVTermAttribute::print;
+    using FCharVector = std::vector<FChar>;
     using FPreprocessingHandler = void (FVTerm::*)();
     using FPreprocessingFunction = std::function<void()>;
     using FPreprocessing = std::vector<std::unique_ptr<FVTermPreprocessing>>;
@@ -137,16 +139,25 @@ class FVTerm : public FVTermAttribute
     // Destructor
     ~FVTerm() override;
 
-    template <typename typeT>
-    FVTerm& operator << (const typeT&);
+    // Overloaded operators
+    template <typename NumT
+            , typename is_arithmetic_without_char<NumT>::type = nullptr>
+    FVTerm& operator << (const NumT&);
+
+    template <typename CharT
+            , typename CString<CharT>::type = nullptr>
+    FVTerm& operator << (const CharT&);
+
+    FVTerm& operator << (char);
     FVTerm& operator << (wchar_t);
+    FVTerm& operator << (const wchar_t*);
     FVTerm& operator << (const UniChar&);
     FVTerm& operator << (const std::string&);
     FVTerm& operator << (const std::wstring&);
     FVTerm& operator << (const FString&);
     FVTerm& operator << (const FVTermBuffer&);
     FVTerm& operator << (FChar&);
-    FVTerm& operator << (const std::vector<FChar>&);
+    FVTerm& operator << (const FCharVector&);
     FVTerm& operator << (const FPoint&);
     FVTerm& operator << (const FStyle&);
     FVTerm& operator << (const FColorPair&);
@@ -166,9 +177,9 @@ class FVTerm : public FVTermAttribute
     static void           unsetNonBlockingRead();
 
     // Inquiries
-    static bool           isDrawingFinished();
-    static bool           isTerminalUpdateForced();
-    static bool           areTerminalUpdatesPaused();
+    static bool           isDrawingFinished() noexcept;
+    static bool           isTerminalUpdateForced() noexcept;
+    static bool           areTerminalUpdatesPaused() noexcept;
     static bool           hasPendingTerminalUpdates();
 
     // Methods
@@ -194,9 +205,7 @@ class FVTerm : public FVTermAttribute
     int                   print (FTermArea*, const FChar&);
     int                   print (FTermArea*, FChar&);
     virtual void          print (const FPoint&);
-    virtual void          print (const FStyle&);
-    virtual void          print (const FColorPair&);
-    virtual FVTerm&       print() &;
+    FVTerm&               print() &;
     void                  flush() const;
 
   protected:
@@ -424,15 +433,27 @@ struct FVTerm::FVTermPreprocessing
 
 // FVTerm inline functions
 //----------------------------------------------------------------------
-template <typename typeT>
-inline FVTerm& FVTerm::operator << (const typeT& s)
+template <typename NumT
+        , typename is_arithmetic_without_char<NumT>::type>
+inline FVTerm& FVTerm::operator << (const NumT& n)
 {
-  FStringStream outstream{std::ios_base::out};
-  outstream << s;
+  print (FString(std::to_string(n)));
+  return *this;
+}
 
-  if ( ! outstream.str().isEmpty() )
-    print (outstream.str());
+//----------------------------------------------------------------------
+template <typename CharT
+        , typename CString<CharT>::type>
+inline FVTerm& FVTerm::operator << (const CharT& s)
+{
+  print (FString(s));
+  return *this;
+}
 
+//----------------------------------------------------------------------
+inline FVTerm& FVTerm::operator << (char c)
+{
+  print (wchar_t(uChar(c)));
   return *this;
 }
 
@@ -440,6 +461,13 @@ inline FVTerm& FVTerm::operator << (const typeT& s)
 inline FVTerm& FVTerm::operator << (wchar_t c)
 {
   print (c);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+inline FVTerm& FVTerm::operator << (const wchar_t* wide_string)
+{
+  print (FString(wide_string));
   return *this;
 }
 
@@ -453,14 +481,14 @@ inline FVTerm& FVTerm::operator << (const UniChar& c)
 //----------------------------------------------------------------------
 inline FVTerm& FVTerm::operator << (const std::string& string)
 {
-  print (string);
+  print (FString(string));
   return *this;
 }
 
 //----------------------------------------------------------------------
 inline FVTerm& FVTerm::operator << (const std::wstring& wide_string)
 {
-  print (wide_string);
+  print (FString(wide_string));
   return *this;
 }
 
@@ -479,8 +507,7 @@ inline FVTerm& FVTerm::operator << (FChar& fchar)
 }
 
 //----------------------------------------------------------------------
-inline FVTerm& FVTerm::operator << \
-    (const std::vector<FChar>& term_string)
+inline FVTerm& FVTerm::operator << (const FCharVector& term_string)
 {
   print (term_string);
   return *this;
@@ -532,15 +559,15 @@ inline void FVTerm::unsetNonBlockingRead()
 { setNonBlockingRead(false); }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::isDrawingFinished()
+inline bool FVTerm::isDrawingFinished() noexcept
 { return draw_completed; }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::isTerminalUpdateForced()
+inline bool FVTerm::isTerminalUpdateForced() noexcept
 { return force_terminal_update; }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::areTerminalUpdatesPaused()
+inline bool FVTerm::areTerminalUpdatesPaused() noexcept
 { return no_terminal_updates; }
 
 //----------------------------------------------------------------------

@@ -52,13 +52,13 @@ FSize& FSize::operator -= (const FSize& s)
 }
 
 //----------------------------------------------------------------------
-void FSize::setWidth (std::size_t w)
+void FSize::setWidth (std::size_t w) noexcept
 {
   width = w;
 }
 
 //----------------------------------------------------------------------
-void FSize::setHeight (std::size_t h)
+void FSize::setHeight (std::size_t h) noexcept
 {
   height = h;
 }
@@ -71,20 +71,20 @@ void FSize::setSize (const FSize& s)
 }
 
 //----------------------------------------------------------------------
-void FSize::setSize (std::size_t w, std::size_t h)
+void FSize::setSize (std::size_t w, std::size_t h) noexcept
 {
   width = w;
   height = h;
 }
 
 //----------------------------------------------------------------------
-bool FSize::isEmpty() const
+bool FSize::isEmpty() const noexcept
 {
   return width == 0 && height == 0;
 }
 
 //----------------------------------------------------------------------
-void FSize::scaleBy (int dx, int dy)
+void FSize::scaleBy (int dx, int dy) noexcept
 {
   if ( dx < 0 )
   {

@@ -94,10 +94,10 @@ class FMenuItem : public FWidget
     FMenuItem& operator = (FMenuItem&&) noexcept = delete;
     // Accessors
     FString             getClassName() const override;
-    FKey                getHotkey() const;
+    FKey                getHotkey() const noexcept;
     FMenu*              getMenu() const;
-    std::size_t         getTextLength() const;
-    std::size_t         getTextWidth() const;
+    std::size_t         getTextLength() const noexcept;
+    std::size_t         getTextWidth() const noexcept;
     FString             getText() const;
 
     // Mutators
@@ -108,12 +108,12 @@ class FMenuItem : public FWidget
     void                unsetSelected();
     void                setSeparator();
     void                unsetSeparator();
-    void                setCheckable();
-    void                unsetCheckable();
-    void                setChecked();
-    void                unsetChecked();
-    void                setRadioButton();
-    void                unsetRadioButton();
+    void                setCheckable() noexcept;
+    void                unsetCheckable() noexcept;
+    void                setChecked() noexcept;
+    void                unsetChecked() noexcept;
+    void                setRadioButton() noexcept;
+    void                unsetRadioButton() noexcept;
     void                setMenu (FMenu*);
     void                setText (const FString&);
 
@@ -209,7 +209,7 @@ inline FString FMenuItem::getClassName() const
 { return "FMenuItem"; }
 
 //----------------------------------------------------------------------
-inline FKey FMenuItem::getHotkey() const
+inline FKey FMenuItem::getHotkey() const noexcept
 { return hotkey; }
 
 //----------------------------------------------------------------------
@@ -217,11 +217,11 @@ inline FMenu* FMenuItem::getMenu() const
 { return menu; }
 
 //----------------------------------------------------------------------
-inline std::size_t FMenuItem::getTextLength() const
+inline std::size_t FMenuItem::getTextLength() const noexcept
 { return text_length; }
 
 //----------------------------------------------------------------------
-inline std::size_t FMenuItem::getTextWidth() const
+inline std::size_t FMenuItem::getTextWidth() const noexcept
 { return text_width; }
 
 //----------------------------------------------------------------------
@@ -247,27 +247,27 @@ inline void FMenuItem::unsetSeparator()
 }
 
 //----------------------------------------------------------------------
-inline void FMenuItem::setCheckable()
+inline void FMenuItem::setCheckable() noexcept
 { checkable = true; }
 
 //----------------------------------------------------------------------
-inline void FMenuItem::unsetCheckable()
+inline void FMenuItem::unsetCheckable() noexcept
 { checkable = false; }
 
 //----------------------------------------------------------------------
-inline void FMenuItem::setChecked()
+inline void FMenuItem::setChecked() noexcept
 { checked = true; }
 
 //----------------------------------------------------------------------
-inline void FMenuItem::unsetChecked()
+inline void FMenuItem::unsetChecked() noexcept
 { checked = false; }
 
 //----------------------------------------------------------------------
-inline void FMenuItem::setRadioButton()
+inline void FMenuItem::setRadioButton() noexcept
 { radio_button = true; }
 
 //----------------------------------------------------------------------
-inline void FMenuItem::unsetRadioButton()
+inline void FMenuItem::unsetRadioButton() noexcept
 { radio_button = false; }
 
 //----------------------------------------------------------------------

@@ -95,7 +95,7 @@ class FScrollbar : public FWidget
 
     // Accessors
     FString             getClassName() const override;
-    int                 getValue() const;
+    int                 getValue() const noexcept;
     ScrollType          getScrollType() const;
 
     // Mutators
@@ -190,7 +190,7 @@ inline FString FScrollbar::getClassName() const
 { return "FScrollbar"; }
 
 //----------------------------------------------------------------------
-inline int FScrollbar::getValue() const
+inline int FScrollbar::getValue() const noexcept
 { return val; }
 
 //----------------------------------------------------------------------

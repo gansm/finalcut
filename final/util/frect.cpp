@@ -96,31 +96,31 @@ FSize FRect::getSize() const
 }
 
 //----------------------------------------------------------------------
-void FRect::setX1 (int n)
+void FRect::setX1 (int n) noexcept
 {
   X1 = n;
 }
 
 //----------------------------------------------------------------------
-void FRect::setY1 (int n)
+void FRect::setY1 (int n) noexcept
 {
   Y1 = n;
 }
 
 //----------------------------------------------------------------------
-void FRect::setX2 (int n)
+void FRect::setX2 (int n) noexcept
 {
   X2 = n;
 }
 
 //----------------------------------------------------------------------
-void FRect::setY2 (int n)
+void FRect::setY2 (int n) noexcept
 {
   Y2 = n;
 }
 
 //----------------------------------------------------------------------
-void FRect::setX (int n)
+void FRect::setX (int n) noexcept
 {
   const int dX = X2 - X1;
   X1 = n;
@@ -128,7 +128,7 @@ void FRect::setX (int n)
 }
 
 //----------------------------------------------------------------------
-void FRect::setY (int n)
+void FRect::setY (int n) noexcept
 {
   const int dY = Y2 - Y1;
   Y1 = n;
@@ -136,7 +136,7 @@ void FRect::setY (int n)
 }
 
 //----------------------------------------------------------------------
-void FRect::setPos (int x, int y)
+void FRect::setPos (int x, int y) noexcept
 {
   const int dX = X2 - X1;
   const int dY = Y2 - Y1;
@@ -158,19 +158,19 @@ void FRect::setPos (const FPoint& p)
 }
 
 //----------------------------------------------------------------------
-void FRect::setWidth (std::size_t w)
+void FRect::setWidth (std::size_t w) noexcept
 {
   X2 = X1 + int(w) - 1;
 }
 
 //----------------------------------------------------------------------
-void FRect::setHeight (std::size_t h)
+void FRect::setHeight (std::size_t h) noexcept
 {
   Y2 = Y1 + int(h) - 1;
 }
 
 //----------------------------------------------------------------------
-void FRect::setSize (std::size_t width, std::size_t height)
+void FRect::setSize (std::size_t width, std::size_t height) noexcept
 {
   X2 = X1 + int(width) - 1;
   Y2 = Y1 + int(height) - 1;
@@ -202,7 +202,7 @@ void FRect::setRect (const FPoint& p, const FSize& s)
 }
 
 //----------------------------------------------------------------------
-void FRect::setRect (int x, int y, std::size_t width, std::size_t height)
+void FRect::setRect (int x, int y, std::size_t width, std::size_t height) noexcept
 {
   X1 = x;
   Y1 = y;
@@ -217,7 +217,7 @@ void FRect::setCoordinates (const FPoint& p1, const FPoint& p2)
 }
 
 //----------------------------------------------------------------------
-void FRect::setCoordinates (int x1, int y1, int x2, int y2)
+void FRect::setCoordinates (int x1, int y1, int x2, int y2) noexcept
 {
   X1 = x1;
   Y1 = y1;
@@ -226,7 +226,7 @@ void FRect::setCoordinates (int x1, int y1, int x2, int y2)
 }
 
 //----------------------------------------------------------------------
-void FRect::move (int dx, int dy)
+void FRect::move (int dx, int dy) noexcept
 {
   X1 += dx;
   Y1 += dy;
@@ -244,7 +244,7 @@ void FRect::move (const FPoint& d)
 }
 
 //----------------------------------------------------------------------
-void FRect::scaleBy (int dx, int dy)
+void FRect::scaleBy (int dx, int dy) noexcept
 {
   X2 += dx;
   Y2 += dy;
@@ -258,7 +258,7 @@ void FRect::scaleBy (const FPoint& d)
 }
 
 //----------------------------------------------------------------------
-bool FRect::contains (int x, int y) const
+bool FRect::contains (int x, int y) const noexcept
 {
   return x >= X1 && x <= X2
       && y >= Y1 && y <= Y2;

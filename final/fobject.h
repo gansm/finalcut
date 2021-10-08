@@ -116,7 +116,7 @@ class FObject
     FObject*              getChild (int) const &;
     FObjectList&          getChildren() &;
     const FObjectList&    getChildren() const &;
-    std::size_t           getMaxChildren() const &;
+    std::size_t           getMaxChildren() const & noexcept;
     std::size_t           numOfChildren() const &;
     iterator              begin();
     iterator              end();
@@ -128,14 +128,14 @@ class FObject
     const_reference       back() const;
 
     // Mutator
-    void                  setMaxChildren (std::size_t);
+    void                  setMaxChildren (std::size_t) noexcept;
 
     // Inquiries
-    bool                  hasParent() const & ;
+    bool                  hasParent() const & noexcept;
     bool                  hasChildren() const &;
     bool                  isChild (const FObject*) const &;
     bool                  isDirectChild (const FObject*) const &;
-    bool                  isWidget() const;
+    bool                  isWidget() const noexcept;
     bool                  isInstanceOf (const FString&) const;
 
     // Methods
@@ -212,7 +212,7 @@ inline const FObject::FObjectList& FObject::getChildren() const &
 { return children_list; }
 
 //----------------------------------------------------------------------
-inline std::size_t FObject::getMaxChildren() const &
+inline std::size_t FObject::getMaxChildren() const & noexcept
 { return max_children; }
 
 //----------------------------------------------------------------------
@@ -252,11 +252,11 @@ inline FObject::const_reference FObject::back() const
 { return children_list.back(); }
 
 //----------------------------------------------------------------------
-inline void FObject::setMaxChildren (std::size_t max)
+inline void FObject::setMaxChildren (std::size_t max) noexcept
 { max_children = max; }
 
 //----------------------------------------------------------------------
-inline bool FObject::hasParent() const &
+inline bool FObject::hasParent() const & noexcept
 { return has_parent; }
 
 //----------------------------------------------------------------------
@@ -268,7 +268,7 @@ inline bool FObject::isDirectChild (const FObject* obj) const &
 { return obj->getParent() == this; }
 
 //----------------------------------------------------------------------
-inline bool FObject::isWidget() const
+inline bool FObject::isWidget() const noexcept
 { return widget_object; }
 
 //----------------------------------------------------------------------

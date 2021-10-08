@@ -102,9 +102,9 @@ class FButton : public FWidget
 
     // Inquiries
     bool                isFlat() const;
-    bool                isDown() const;
+    bool                isDown() const noexcept;
     bool                hasShadow() const;
-    bool                hasClickAnimation() const;
+    bool                hasClickAnimation() const noexcept;
 
     // Methods
     void                hide() override;
@@ -210,7 +210,7 @@ inline bool FButton::isFlat() const
 { return getFlags().flat; }
 
 //----------------------------------------------------------------------
-inline bool FButton::isDown() const
+inline bool FButton::isDown() const noexcept
 { return button_down; }
 
 //----------------------------------------------------------------------
@@ -218,7 +218,7 @@ inline bool FButton::hasShadow() const
 { return getFlags().shadow; }
 
 //----------------------------------------------------------------------
-inline bool FButton::hasClickAnimation() const
+inline bool FButton::hasClickAnimation() const noexcept
 { return click_animation; }
 
 }  // namespace finalcut

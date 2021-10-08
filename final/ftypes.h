@@ -140,6 +140,47 @@ constexpr std::size_t stringLength (const CharT* s)
   return std::char_traits<CharT>::length(s);
 }
 
+template <typename CharT>
+using remove_ptr_t = typename std::remove_pointer<CharT>::type;
+
+template <typename CharT>
+using remove_ptr_cv_t = typename std::remove_cv<remove_ptr_t<CharT>>::type;
+
+template <typename CharT>
+using is_char_based_ptr = typename std::is_same<char, remove_ptr_cv_t<CharT>>;
+
+template <typename CharT>
+using remove_ref_t = typename std::remove_reference<CharT>::type;
+
+template <typename CharT>
+using remove_ref_extent_t = typename std::remove_extent<remove_ref_t<CharT>>::type;
+
+template <typename CharT>
+using remove_ref_extent_cv_t = typename std::remove_cv<remove_ref_extent_t<CharT>>::type;
+
+template <typename CharT>
+using is_char_based_array = typename std::is_same<char, remove_ref_extent_cv_t<CharT>>;
+
+template <typename CharT>
+using CString =
+    typename std::enable_if<
+               (std::is_pointer<CharT>::value && is_char_based_ptr<CharT>::value)
+            || (std::is_array<remove_ref_t<CharT>>::value && is_char_based_array<CharT>::value)
+              , std::nullptr_t>;
+
+template <typename CharT>
+struct isCString
+  : std::integral_constant<bool
+    , (std::is_pointer<CharT>::value && is_char_based_ptr<CharT>::value)
+   || (std::is_array<remove_ref_t<CharT>>::value && is_char_based_array<CharT>::value)>
+{ };
+
+template <typename NumT>
+using is_arithmetic_without_char =
+  typename std::enable_if< std::is_arithmetic<NumT>::value
+                        && ! std::is_same<char, NumT>::value
+                        , std::nullptr_t>;
+
 using charSubstitution = std::unordered_map<wchar_t, wchar_t>;
 
 struct TCapAttributes

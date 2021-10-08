@@ -53,8 +53,8 @@ Keyboard::Keyboard (finalcut::FWidget* parent)
 //----------------------------------------------------------------------
 void Keyboard::onKeyPress (finalcut::FKeyEvent* ev)
 {
-  const finalcut::FKey key_id = ev->key();
-  finalcut::FString key_name = finalcut::FVTerm::getFOutput()->getKeyName(key_id);
+  const auto key_id = ev->key();
+  auto key_name = finalcut::FVTerm::getFOutput()->getKeyName(key_id);
   bool is_last_line{false};
 
   if ( key_name.isEmpty() )

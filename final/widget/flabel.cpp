@@ -105,7 +105,7 @@ void FLabel::setAccelWidget (FWidget* widget)
 }
 
 //----------------------------------------------------------------------
-void FLabel::setAlignment (Align align)
+void FLabel::setAlignment (Align align) noexcept
 {
   if ( align != Align::Left
     && align != Align::Center

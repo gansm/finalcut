@@ -593,28 +593,26 @@ bool FTermOutput::canClearToEOL (uInt xmin, uInt y) const
   const auto& ce = TCAP(t_clr_eol);
   const auto& min_char = vterm->data[y * uInt(vterm->width) + xmin];
 
-  if ( ce && min_char.ch[0] == L' ' )
+  if ( ! ce || min_char.ch[0] != L' ' )
+    return false;
+
+  uInt beginning_whitespace = 1;
+  const bool normal = FTerm::isNormal(min_char);
+  const bool& ut = FTermcap::background_color_erase;
+
+  for (uInt x = xmin + 1; x < uInt(vterm->width); x++)
   {
-    uInt beginning_whitespace = 1;
-    const bool normal = FTerm::isNormal(min_char);
-    const bool& ut = FTermcap::background_color_erase;
+    const auto& ch = vterm->data[y * uInt(vterm->width) + x];
 
-    for (uInt x = xmin + 1; x < uInt(vterm->width); x++)
-    {
-      const auto& ch = vterm->data[y * uInt(vterm->width) + x];
-
-      if ( min_char == ch )
-        beginning_whitespace++;
-      else
-        break;
-    }
-
-    return ( beginning_whitespace == uInt(vterm->width) - xmin
-          && (ut || normal)
-          && clr_eol_length < beginning_whitespace );
+    if ( min_char == ch )
+      beginning_whitespace++;
+    else
+      break;
   }
 
-  return false;
+  return ( beginning_whitespace == uInt(vterm->width) - xmin
+        && (ut || normal)
+        && clr_eol_length < beginning_whitespace );
 }
 
 //----------------------------------------------------------------------
@@ -626,29 +624,28 @@ bool FTermOutput::canClearLeadingWS (uInt& xmin, uInt y) const
   const auto& cb = TCAP(t_clr_bol);
   const auto& first_char = vterm->data[y * uInt(vterm->width)];
 
-  if ( cb && first_char.ch[0] == L' ' )
+  if ( ! cb || first_char.ch[0] != L' ' )
+    return false;
+
+  uInt leading_whitespace = 1;
+  const bool normal = FTerm::isNormal(first_char);
+  const bool& ut = FTermcap::background_color_erase;
+
+  for (uInt x{1}; x < uInt(vterm->width); x++)
   {
-    uInt leading_whitespace = 1;
-    const bool normal = FTerm::isNormal(first_char);
-    const bool& ut = FTermcap::background_color_erase;
+    const auto& ch = vterm->data[y * uInt(vterm->width) + x];
 
-    for (uInt x{1}; x < uInt(vterm->width); x++)
-    {
-      const auto& ch = vterm->data[y * uInt(vterm->width) + x];
+    if ( first_char == ch )
+      leading_whitespace++;
+    else
+      break;
+  }
 
-      if ( first_char == ch )
-        leading_whitespace++;
-      else
-        break;
-    }
-
-    if ( leading_whitespace > xmin
-      && (ut || normal)
-      && clr_bol_length < leading_whitespace )
-    {
-      xmin = leading_whitespace - 1;
-      return true;
-    }
+  if ( leading_whitespace > xmin && (ut || normal)
+    && clr_bol_length < leading_whitespace )
+  {
+    xmin = leading_whitespace - 1;
+    return true;
   }
 
   return false;
@@ -663,29 +660,28 @@ bool FTermOutput::canClearTrailingWS (uInt& xmax, uInt y) const
   const auto& ce = TCAP(t_clr_eol);
   const auto& last_char = vterm->data[(y + 1) * uInt(vterm->width) - 1];
 
-  if ( ce && last_char.ch[0] == L' ' )
+  if ( ! ce || last_char.ch[0] != L' ' )
+    return false;
+
+  uInt trailing_whitespace = 1;
+  const bool normal = FTerm::isNormal(last_char);
+  const bool& ut = FTermcap::background_color_erase;
+
+  for (uInt x = uInt(vterm->width) - 1; x >  0 ; x--)
   {
-    uInt trailing_whitespace = 1;
-    const bool normal = FTerm::isNormal(last_char);
-    const bool& ut = FTermcap::background_color_erase;
+    const auto& ch = vterm->data[y * uInt(vterm->width) + x];
 
-    for (uInt x = uInt(vterm->width) - 1; x >  0 ; x--)
-    {
-      const auto& ch = vterm->data[y * uInt(vterm->width) + x];
+    if ( last_char == ch )
+      trailing_whitespace++;
+    else
+      break;
+  }
 
-      if ( last_char == ch )
-        trailing_whitespace++;
-      else
-        break;
-    }
-
-    if ( trailing_whitespace > uInt(vterm->width) - xmax
-      && (ut || normal)
-      && clr_bol_length < trailing_whitespace )
-    {
-      xmax = uInt(vterm->width) - trailing_whitespace;
-      return true;
-    }
+  if ( trailing_whitespace > uInt(vterm->width) - xmax && (ut || normal)
+    && clr_bol_length < trailing_whitespace )
+  {
+    xmax = uInt(vterm->width) - trailing_whitespace;
+    return true;
   }
 
   return false;
@@ -699,26 +695,26 @@ bool FTermOutput::skipUnchangedCharacters (uInt& x, uInt xmax, uInt y)
   auto& print_char = vterm->data[y * uInt(vterm->width) + x];
   print_char.attr.bit.printed = true;
 
-  if ( print_char.attr.bit.no_changes )
+  if ( ! print_char.attr.bit.no_changes )
+    return false;
+
+  uInt count{1};
+
+  for (uInt i = x + 1; i <= xmax; i++)
   {
-    uInt count{1};
+    const auto& ch = vterm->data[y * uInt(vterm->width) + i];
 
-    for (uInt i = x + 1; i <= xmax; i++)
-    {
-      const auto& ch = vterm->data[y * uInt(vterm->width) + i];
+    if ( ch.attr.bit.no_changes )
+      count++;
+    else
+      break;
+  }
 
-      if ( ch.attr.bit.no_changes )
-        count++;
-      else
-        break;
-    }
-
-    if ( count > cursor_address_length )
-    {
-      setCursor (FPoint{int(x + count), int(y)});
-      x = x + count - 1;
-      return true;
-    }
+  if ( count > cursor_address_length )
+  {
+    setCursor (FPoint{int(x + count), int(y)});
+    x = x + count - 1;
+    return true;
   }
 
   return false;
@@ -1107,8 +1103,9 @@ bool FTermOutput::updateTerminalLine (uInt y)
   // Updates pending changes from line y to the terminal
 
   bool ret{false};
-  uInt& xmin = vterm->changes[y].xmin;
-  uInt& xmax = vterm->changes[y].xmax;
+  auto& vterm_changes = vterm->changes[y];
+  uInt& xmin = vterm_changes.xmin;
+  uInt& xmax = vterm_changes.xmax;
 
   if ( xmin <= xmax )  // Line has changes
   {
@@ -1286,13 +1283,15 @@ inline void FTermOutput::charsetChanges (FChar& next_char) const
   if ( ch_enc == ch )
     return;
 
+  auto& first_enc_char = next_char.encoded_char[0];
+
   if ( ch_enc == 0 )
   {
-    next_char.encoded_char[0] = wchar_t(FTerm::charEncode(ch, Encoding::ASCII));
+    first_enc_char = wchar_t(FTerm::charEncode(ch, Encoding::ASCII));
     return;
   }
 
-  next_char.encoded_char[0] = ch_enc;
+  first_enc_char = ch_enc;
 
   if ( getEncoding() == Encoding::VT100 )
     next_char.attr.bit.alt_charset = true;
@@ -1306,10 +1305,10 @@ inline void FTermOutput::charsetChanges (FChar& next_char) const
     if ( fterm_data->isTermType(FTermType::xterm) && ch_enc < 0x20 )  // Character 0x00..0x1f
     {
       if ( FTerm::hasUTF8() )
-        next_char.encoded_char[0] = int(FTerm::charEncode(ch, Encoding::ASCII));
+        first_enc_char = int(FTerm::charEncode(ch, Encoding::ASCII));
       else
       {
-        next_char.encoded_char[0] += 0x5f;
+        first_enc_char += 0x5f;
         next_char.attr.bit.alt_charset = true;
       }
     }
@@ -1346,7 +1345,7 @@ inline void FTermOutput::appendChar (FChar& next_char)
       if ( getEncoding() == Encoding::UTF8 )
         appendOutputBuffer (FTermString{unicode_to_utf8(ch)});
       else
-        appendOutputBuffer (FTermString{std::string(1, char(ch & 0xff))});
+        appendOutputBuffer (FTermString{std::string(1, char(uChar(ch)))});
     }
 
     if ( ! combined_char_support )
@@ -1426,11 +1425,16 @@ void FTermOutput::appendLowerRight (FChar& last_char)
 //----------------------------------------------------------------------
 inline void FTermOutput::characterFilter (FChar& next_char)
 {
-  auto& sub_map = getFTerm().getCharSubstitutionMap();
-  const auto& entry = sub_map[next_char.encoded_char[0]];
+  static auto& sub_map = getFTerm().getCharSubstitutionMap();
+
+  if ( sub_map.empty() )
+    return;
+
+  auto& first_enc_char = next_char.encoded_char[0];
+  const auto& entry = sub_map[first_enc_char];
 
   if ( entry )
-    next_char.encoded_char[0] = entry;
+    first_enc_char = entry;
 }
 
 //----------------------------------------------------------------------

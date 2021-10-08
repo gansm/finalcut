@@ -95,17 +95,17 @@ class FLabel : public FWidget
     // Accessors
     FString             getClassName() const override;
     FWidget*            getAccelWidget();
-    Align               getAlignment() const;
+    Align               getAlignment() const noexcept;
     FString&            getText() &;
 
     // Mutators
     void                setAccelWidget (FWidget* = nullptr);
-    void                setAlignment (Align);
-    bool                setEmphasis (bool = true);
-    bool                unsetEmphasis();
+    void                setAlignment (Align) noexcept;
+    bool                setEmphasis (bool = true) noexcept;
+    bool                unsetEmphasis() noexcept;
     void                resetColors() override;
-    bool                setReverseMode (bool = true);
-    bool                unsetReverseMode();
+    bool                setReverseMode (bool = true) noexcept;
+    bool                unsetReverseMode() noexcept;
     bool                setEnable (bool = true) override;
     void                setNumber (uLong);
     void                setNumber (long);
@@ -115,8 +115,8 @@ class FLabel : public FWidget
     void                setText (const FString&);
 
     // Inquiries
-    bool                hasEmphasis() const;
-    bool                hasReverseMode() const;
+    bool                hasEmphasis() const noexcept;
+    bool                hasReverseMode() const noexcept;
 
     // Methods
     void                hide() override;
@@ -177,7 +177,7 @@ inline FWidget* FLabel::getAccelWidget ()
 { return accel_widget; }
 
 //----------------------------------------------------------------------
-inline Align FLabel::getAlignment() const
+inline Align FLabel::getAlignment() const noexcept
 { return alignment; }
 
 //----------------------------------------------------------------------
@@ -185,19 +185,19 @@ inline FString& FLabel::getText() &
 { return text; }
 
 //----------------------------------------------------------------------
-inline bool FLabel::setEmphasis (bool enable)
+inline bool FLabel::setEmphasis (bool enable) noexcept
 { return (emphasis = enable); }
 
 //----------------------------------------------------------------------
-inline bool FLabel::unsetEmphasis()
+inline bool FLabel::unsetEmphasis() noexcept
 { return setEmphasis(false); }
 
 //----------------------------------------------------------------------
-inline bool FLabel::setReverseMode (bool enable)
+inline bool FLabel::setReverseMode (bool enable) noexcept
 { return (reverse_mode = enable); }
 
 //----------------------------------------------------------------------
-inline bool FLabel::unsetReverseMode()
+inline bool FLabel::unsetReverseMode() noexcept
 { return setReverseMode(false); }
 
 //----------------------------------------------------------------------
@@ -221,11 +221,11 @@ inline void FLabel::setNumber (lDouble num, int precision)
 { setText(FString().setNumber(num, precision)); }
 
 //----------------------------------------------------------------------
-inline bool FLabel::hasEmphasis() const
+inline bool FLabel::hasEmphasis() const noexcept
 { return emphasis; }
 
 //----------------------------------------------------------------------
-inline bool FLabel::hasReverseMode() const
+inline bool FLabel::hasReverseMode() const noexcept
 { return reverse_mode; }
 
 //----------------------------------------------------------------------

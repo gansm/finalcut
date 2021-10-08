@@ -110,7 +110,7 @@ class FFileDialog : public FDialog
     FString              getPath() const;
     FString              getFilter() const;
     FString              getSelectedFile() const;
-    bool                 getShowHiddenFiles() const;
+    bool                 getShowHiddenFiles() const noexcept;
 
     // Mutators
     void                 setPath (const FString&);
@@ -229,7 +229,7 @@ inline bool FFileDialog::unsetShowHiddenFiles()
 { return setShowHiddenFiles(false); }
 
 //----------------------------------------------------------------------
-inline bool FFileDialog::getShowHiddenFiles() const
+inline bool FFileDialog::getShowHiddenFiles() const noexcept
 { return show_hidden; }
 
 }  // namespace finalcut

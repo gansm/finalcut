@@ -60,22 +60,22 @@ class FPoint
 
     // Accessors
     FString               getClassName() const;
-    int                   getX() const;
-    int                   getY() const;
-    void                  setX (int);
-    void                  setY (int);
+    int                   getX() const noexcept;
+    int                   getY() const noexcept;
+    void                  setX (int) noexcept;
+    void                  setY (int) noexcept;
     void                  setPoint (const FPoint&);
-    void                  setPoint (int, int);
+    void                  setPoint (int, int) noexcept;
 
     // Inquiry
-    bool                  isOrigin() const;
+    bool                  isOrigin() const noexcept;
 
     // Point references
-    int&                  x_ref() &;
-    int&                  y_ref() &;
+    int&                  x_ref() & noexcept;
+    int&                  y_ref() & noexcept;
 
     // Methods
-    void                  move (int, int);
+    void                  move (int, int) noexcept;
     void                  move (const FPoint&);
 
   private:
@@ -86,9 +86,9 @@ class FPoint
     // Friend operator functions
     friend bool operator == (const FPoint&, const FPoint&);
     friend bool operator != (const FPoint&, const FPoint&);
-    friend FPoint operator +  (const FPoint&, const FPoint&);
-    friend FPoint operator -  (const FPoint&, const FPoint&);
-    friend FPoint operator -  (const FPoint&);
+    friend FPoint operator + (const FPoint&, const FPoint&);
+    friend FPoint operator - (const FPoint&, const FPoint&);
+    friend FPoint operator - (const FPoint&);
     friend std::ostream& operator << (std::ostream&, const FPoint&);
     friend std::istream& operator >> (std::istream&, FPoint&);
 };
@@ -106,11 +106,11 @@ inline FString FPoint::getClassName() const
 { return "FPoint"; }
 
 //----------------------------------------------------------------------
-inline int FPoint::getX() const
+inline int FPoint::getX() const noexcept
 { return xpos; }
 
 //----------------------------------------------------------------------
-inline int FPoint::getY() const
+inline int FPoint::getY() const noexcept
 { return ypos; }
 
 //----------------------------------------------------------------------
@@ -118,11 +118,11 @@ inline void FPoint::setPoint (const FPoint& p)
 { setPoint(p.xpos, p.ypos); }
 
 //----------------------------------------------------------------------
-inline int& FPoint::x_ref() &
+inline int& FPoint::x_ref() & noexcept
 { return xpos; }
 
 //----------------------------------------------------------------------
-inline int& FPoint::y_ref() &
+inline int& FPoint::y_ref() & noexcept
 { return ypos; }
 
 

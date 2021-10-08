@@ -142,7 +142,7 @@ FString::FString (const char c)
 {
   if ( c )
   {
-    std::wstring str{ wchar_t(c & 0xff) };
+    std::wstring str{ wchar_t(uChar(c)) };
     _assign (str);
   }
 }
@@ -245,7 +245,7 @@ const FString& FString::operator >> (wchar_t& c) const
 //----------------------------------------------------------------------
 const FString& FString::operator >> (char& c) const
 {
-  c = ( ! isEmpty() ) ? char(string[0] & 0xff) : '\0';
+  c = ( ! isEmpty() ) ? char(uChar(string[0])) : '\0';
   return *this;
 }
 

@@ -65,23 +65,23 @@ class FSize
 
     // Accessors
     FString               getClassName() const;
-    std::size_t           getWidth() const;
-    std::size_t           getHeight() const;
-    std::size_t           getArea() const;
-    void                  setWidth (std::size_t);
-    void                  setHeight (std::size_t);
+    std::size_t           getWidth() const noexcept;
+    std::size_t           getHeight() const noexcept;
+    std::size_t           getArea() const noexcept;
+    void                  setWidth (std::size_t) noexcept;
+    void                  setHeight (std::size_t) noexcept;
     void                  setSize (const FSize&);
-    void                  setSize (std::size_t, std::size_t);
+    void                  setSize (std::size_t, std::size_t) noexcept;
 
     // Inquiry
-    bool                  isEmpty() const;
+    bool                  isEmpty() const noexcept;
 
     // Side references
-    std::size_t&          width_ref() &;
-    std::size_t&          height_ref() &;
+    std::size_t&          width_ref() & noexcept;
+    std::size_t&          height_ref() & noexcept;
 
     // Methods
-    void                  scaleBy (int, int);
+    void                  scaleBy (int, int) noexcept;
     void                  scaleBy (const FPoint&);
 
   private:
@@ -115,23 +115,23 @@ inline FString FSize::getClassName() const
 { return "FSize"; }
 
 //----------------------------------------------------------------------
-inline std::size_t FSize::getWidth() const
+inline std::size_t FSize::getWidth() const noexcept
 { return width; }
 
 //----------------------------------------------------------------------
-inline std::size_t FSize::getHeight() const
+inline std::size_t FSize::getHeight() const noexcept
 { return height; }
 
 //----------------------------------------------------------------------
-inline std::size_t FSize::getArea() const
+inline std::size_t FSize::getArea() const noexcept
 { return width * height; }
 
 //----------------------------------------------------------------------
-inline std::size_t& FSize::width_ref() &
+inline std::size_t& FSize::width_ref() & noexcept
 { return width; }
 
 //----------------------------------------------------------------------
-inline std::size_t& FSize::height_ref() &
+inline std::size_t& FSize::height_ref() & noexcept
 { return height; }
 
 

@@ -57,12 +57,12 @@ class FTermios final
     // Accessors
     FString         getClassName() const;
     static termios  getTTY();
-    static int      getStdIn();
-    static int      getStdOut();
-    static int      getStdErr();
+    static int      getStdIn() noexcept;
+    static int      getStdOut() noexcept;
+    static int      getStdErr() noexcept;
 
     // Inquiries
-    static bool     isRaw();
+    static bool     isRaw() noexcept;
 
     // Methods
     static void     init();
@@ -94,19 +94,19 @@ inline FString FTermios::getClassName() const
 { return "FTermios"; }
 
 //----------------------------------------------------------------------
-inline int FTermios::getStdIn()
+inline int FTermios::getStdIn() noexcept
 { return stdin_no; }
 
 //----------------------------------------------------------------------
-inline int FTermios::getStdOut()
+inline int FTermios::getStdOut() noexcept
 { return stdout_no; }
 
 //----------------------------------------------------------------------
-inline int FTermios::getStdErr()
+inline int FTermios::getStdErr() noexcept
 { return stderr_no; }
 
 //----------------------------------------------------------------------
-inline bool FTermios::isRaw()
+inline bool FTermios::isRaw() noexcept
 { return raw_mode; }
 
 //----------------------------------------------------------------------

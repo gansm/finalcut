@@ -116,9 +116,9 @@ class FWindow : public FWidget
     bool                unsetAlwaysOnTop();
 
     // Inquiries
-    bool                isZoomed() const;
+    bool                isZoomed() const noexcept;
     bool                isMinimized() const;
-    bool                isWindowActive() const;
+    bool                isWindowActive() const noexcept;
     bool                isWindowHidden() const;
     bool                isResizeable() const;
     bool                isMinimizable() const;
@@ -238,11 +238,11 @@ inline bool FWindow::unsetAlwaysOnTop()
 { return setAlwaysOnTop(false); }
 
 //----------------------------------------------------------------------
-inline bool FWindow::isZoomed() const
+inline bool FWindow::isZoomed() const noexcept
 { return zoomed; }
 
 //----------------------------------------------------------------------
-inline bool FWindow::isWindowActive() const
+inline bool FWindow::isWindowActive() const noexcept
 { return window_active; }
 
 //----------------------------------------------------------------------

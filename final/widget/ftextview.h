@@ -89,7 +89,7 @@ class FTextView : public FWidget
 
     // Accessors
     FString             getClassName() const override;
-    std::size_t         getColumns() const;
+    std::size_t         getColumns() const noexcept;
     std::size_t         getRows() const;
     FString             getText() const;
     const FStringList&  getLines() const &;
@@ -215,7 +215,7 @@ inline FString FTextView::getClassName() const
 { return "FTextView"; }
 
 //----------------------------------------------------------------------
-inline std::size_t FTextView::getColumns() const
+inline std::size_t FTextView::getColumns() const noexcept
 { return max_line_width; }
 
 //----------------------------------------------------------------------

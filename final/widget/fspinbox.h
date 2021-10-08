@@ -77,7 +77,7 @@ class FSpinBox : public FWidget
 
     // Accessors
     FString             getClassName() const override;
-    sInt64              getValue() const;
+    sInt64              getValue() const noexcept;
     FString             getPrefix() const;
     FString             getSuffix() const;
     LabelOrientation    getLabelOrientation() const;
@@ -158,7 +158,7 @@ inline FString FSpinBox::getClassName() const
 { return "FSpinBox"; }
 
 //----------------------------------------------------------------------
-inline sInt64 FSpinBox::getValue() const
+inline sInt64 FSpinBox::getValue() const noexcept
 { return value; }
 
 //----------------------------------------------------------------------

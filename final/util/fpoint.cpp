@@ -49,32 +49,32 @@ FPoint& FPoint::operator -= (const FPoint& p)
 }
 
 //----------------------------------------------------------------------
-void FPoint::setX (int x)
+void FPoint::setX (int x) noexcept
 {
   xpos = x;
 }
 
 //----------------------------------------------------------------------
-void FPoint::setY (int y)
+void FPoint::setY (int y) noexcept
 {
   ypos = y;
 }
 
 //----------------------------------------------------------------------
-void FPoint::setPoint (int x, int y)
+void FPoint::setPoint (int x, int y) noexcept
 {
   xpos = x;
   ypos = y;
 }
 
 //----------------------------------------------------------------------
-bool FPoint::isOrigin() const
+bool FPoint::isOrigin() const noexcept
 {
   return xpos == 0 && ypos == 0;
 }
 
 //----------------------------------------------------------------------
-void FPoint::move (int dx, int dy)
+void FPoint::move (int dx, int dy) noexcept
 {
   xpos += dx;
   ypos += dy;

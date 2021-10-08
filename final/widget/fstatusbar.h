@@ -94,20 +94,20 @@ class FStatusKey : public FWidget
 
     // Accessors
     FString             getClassName() const override;
-    virtual FKey        getKey() const;
+    virtual FKey        getKey() const noexcept;
     virtual FString     getText() const;
 
     // Mutators
-    void                setKey (FKey);
+    void                setKey (FKey) noexcept;
     void                setText (const FString&);
     void                setActive();
-    void                unsetActive();
+    void                unsetActive() noexcept;
     bool                setMouseFocus (bool = true);
     bool                unsetMouseFocus();
 
     // Inquiry
-    bool                isActivated() const;
-    bool                hasMouseFocus() const;
+    bool                isActivated() const noexcept;
+    bool                hasMouseFocus() const noexcept;
 
     // Event handler
     void                onAccel (FAccelEvent*) override;
@@ -137,7 +137,7 @@ inline FString FStatusKey::getClassName() const
 { return "FStatusKey"; }
 
 //----------------------------------------------------------------------
-inline FKey FStatusKey::getKey() const
+inline FKey FStatusKey::getKey() const noexcept
 { return key; }
 
 //----------------------------------------------------------------------
@@ -145,7 +145,7 @@ inline FString FStatusKey::getText() const
 { return text; }
 
 //----------------------------------------------------------------------
-inline void FStatusKey::setKey (FKey k)
+inline void FStatusKey::setKey (FKey k) noexcept
 { key = k; }
 
 //----------------------------------------------------------------------
@@ -153,7 +153,7 @@ inline void FStatusKey::setText (const FString& txt)
 { text.setString(txt); }
 
 //----------------------------------------------------------------------
-inline void FStatusKey::unsetActive()
+inline void FStatusKey::unsetActive() noexcept
 { active = false; }
 
 //----------------------------------------------------------------------
@@ -161,11 +161,11 @@ inline bool FStatusKey::unsetMouseFocus()
 { return setMouseFocus(false); }
 
 //----------------------------------------------------------------------
-inline bool FStatusKey::isActivated() const
+inline bool FStatusKey::isActivated() const noexcept
 { return active; }
 
 //----------------------------------------------------------------------
-inline bool FStatusKey::hasMouseFocus() const
+inline bool FStatusKey::hasMouseFocus() const noexcept
 { return mouse_focus; }
 
 //----------------------------------------------------------------------

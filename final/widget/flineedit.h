@@ -112,8 +112,8 @@ class FLineEdit : public FWidget
     // Accessors
     FString             getClassName() const override;
     FString             getText() const;
-    std::size_t         getMaxLength() const;
-    std::size_t         getCursorPosition() const;
+    std::size_t         getMaxLength() const noexcept;
+    std::size_t         getCursorPosition() const noexcept;
     FLabel*             getLabelObject() const;
     LabelOrientation    getLabelOrientation() const;
 
@@ -143,7 +143,7 @@ class FLineEdit : public FWidget
 
     // Inquiry
     bool                hasShadow() const;
-    bool                isReadOnly() const;
+    bool                isReadOnly() const noexcept;
 
     // Methods
     void                hide() override;
@@ -244,11 +244,11 @@ inline FString FLineEdit::getText() const
 { return text; }
 
 //----------------------------------------------------------------------
-inline std::size_t FLineEdit::getMaxLength() const
+inline std::size_t FLineEdit::getMaxLength() const noexcept
 { return max_length; }
 
 //----------------------------------------------------------------------
-inline std::size_t FLineEdit::getCursorPosition() const
+inline std::size_t FLineEdit::getCursorPosition() const noexcept
 { return cursor_pos; }
 
 //----------------------------------------------------------------------
@@ -300,7 +300,7 @@ inline bool FLineEdit::hasShadow() const
 { return getFlags().shadow; }
 
 //----------------------------------------------------------------------
-inline bool FLineEdit::isReadOnly() const
+inline bool FLineEdit::isReadOnly() const noexcept
 { return read_only; }
 
 }  // namespace finalcut

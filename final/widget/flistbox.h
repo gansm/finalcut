@@ -209,7 +209,7 @@ class FListBox : public FWidget
     const FListBoxItem&  getItem (std::size_t) const &;
     FListBoxItem&        getItem (FListBoxItems::iterator) &;
     const FListBoxItem&  getItem (FListBoxItems::const_iterator) const &;
-    std::size_t          currentItem() const;
+    std::size_t          currentItem() const noexcept;
     FListBoxItems&       getData() &;
     const FListBoxItems& getData() const &;
     FString&             getText() &;
@@ -469,7 +469,7 @@ inline const FListBoxItem& FListBox::getItem (FListBoxItems::const_iterator iter
 { return *iter; }
 
 //----------------------------------------------------------------------
-inline std::size_t FListBox::currentItem() const
+inline std::size_t FListBox::currentItem() const noexcept
 { return current; }
 
 //----------------------------------------------------------------------

@@ -399,12 +399,12 @@ inline FKey FKeyboard::getSingleKey()
       return FKey::Incomplete;
 
     for (std::size_t i{0}; i < len ; i++)
-      utf8char[i] = char(fifo_buf[i] & 0xff);
+      utf8char[i] = char(uChar(fifo_buf[i]));
 
     keycode = UTF8decode(utf8char.data());
   }
   else
-    keycode = FKey(fifo_buf[0] & 0xff);
+    keycode = FKey(uChar(fifo_buf[0]));
 
   for (n = len; n < FIFO_BUF_SIZE; n++)  // Remove the key from the buffer front
     fifo_buf[n - len] = fifo_buf[n];
@@ -448,7 +448,7 @@ FKey FKeyboard::UTF8decode (const std::string& utf8) const
     else if ( ch < 128 )
     {
       // byte 1 = 0xxxxxxx (1 byte mapping)
-      ucs = FKey(ch & 0xff);
+      ucs = FKey(uChar(ch));
     }
     else if ( (ch & 0xe0) == 0xc0 )
     {

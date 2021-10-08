@@ -113,10 +113,10 @@ class ConEmu
 
   protected:
     // Mutators
-    void        enableConEmuDebug (bool);
+    void        enableConEmuDebug (bool) noexcept;
 
     // Inquiries
-    bool        isConEmuChildProcess (pid_t);
+    bool        isConEmuChildProcess (pid_t) const noexcept;
 
     // Methods
     void        printConEmuDebug();
@@ -424,13 +424,13 @@ const char* ConEmu::colorname[] =
 
 // protected methods of ConEmu
 //----------------------------------------------------------------------
-inline void ConEmu::enableConEmuDebug (bool enable)
+inline void ConEmu::enableConEmuDebug (bool enable) noexcept
 {
   debug = enable;
 }
 
 //----------------------------------------------------------------------
-inline bool ConEmu::isConEmuChildProcess (pid_t pid)
+inline bool ConEmu::isConEmuChildProcess (pid_t pid) const noexcept
 {
   return bool( pid == 0 );
 }

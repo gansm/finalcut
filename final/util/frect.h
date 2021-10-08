@@ -66,55 +66,55 @@ class FRect
 
     // Accessors
     FString               getClassName() const;
-    int                   getX1() const;
-    int                   getY1() const;
-    int                   getX2() const;
-    int                   getY2() const;
-    int                   getX() const;
-    int                   getY() const;
+    int                   getX1() const noexcept;
+    int                   getY1() const noexcept;
+    int                   getX2() const noexcept;
+    int                   getY2() const noexcept;
+    int                   getX() const noexcept;
+    int                   getY() const noexcept;
     FPoint                getPos() const;
     FPoint                getUpperLeftPos() const;
     FPoint                getUpperRightPos() const;
     FPoint                getLowerLeftPos() const;
     FPoint                getLowerRightPos() const;
-    std::size_t           getWidth() const;
-    std::size_t           getHeight() const;
+    std::size_t           getWidth() const noexcept;
+    std::size_t           getHeight() const noexcept;
     FSize                 getSize() const;
 
     // Mutators
-    void                  setX1 (int);
-    void                  setY1 (int);
-    void                  setX2 (int);
-    void                  setY2 (int);
-    void                  setX (int);
-    void                  setY (int);
-    void                  setPos (int, int);
+    void                  setX1 (int) noexcept;
+    void                  setY1 (int) noexcept;
+    void                  setX2 (int) noexcept;
+    void                  setY2 (int) noexcept;
+    void                  setX (int) noexcept;
+    void                  setY (int) noexcept;
+    void                  setPos (int, int) noexcept;
     void                  setPos (const FPoint&);
-    void                  setWidth (std::size_t);
-    void                  setHeight (std::size_t);
-    void                  setSize (std::size_t, std::size_t);
+    void                  setWidth (std::size_t) noexcept;
+    void                  setHeight (std::size_t) noexcept;
+    void                  setSize (std::size_t, std::size_t) noexcept;
     void                  setSize (const FSize&);
     void                  setRect (const FRect&);
     void                  setRect (const FPoint&, const FSize&);
-    void                  setRect (int, int, std::size_t, std::size_t);
+    void                  setRect (int, int, std::size_t, std::size_t) noexcept;
     void                  setCoordinates (const FPoint&, const FPoint&);
-    void                  setCoordinates (int, int, int, int);
+    void                  setCoordinates (int, int, int, int) noexcept;
 
     // Inquiry
     bool                  isEmpty() const;
 
     // Coordinate references
-    int&                  x1_ref() &;
-    int&                  y1_ref() &;
-    int&                  x2_ref() &;
-    int&                  y2_ref() &;
+    int&                  x1_ref() & noexcept;
+    int&                  y1_ref() & noexcept;
+    int&                  x2_ref() & noexcept;
+    int&                  y2_ref() & noexcept;
 
     // Methods
-    void                  move (int, int);
+    void                  move (int, int) noexcept;
     void                  move (const FPoint&);
-    void                  scaleBy (int, int);
+    void                  scaleBy (int, int) noexcept;
     void                  scaleBy (const FPoint&);
-    bool                  contains (int, int) const;
+    bool                  contains (int, int) const noexcept;
     bool                  contains (const FPoint&) const;
     bool                  contains (const FRect&) const;
     bool                  overlap  (const FRect&) const;
@@ -151,57 +151,57 @@ inline FString FRect::getClassName() const
 { return "FRect"; }
 
 //----------------------------------------------------------------------
-inline int FRect::getX1() const
+inline int FRect::getX1() const noexcept
 { return X1; }
 
 //----------------------------------------------------------------------
-inline int FRect::getY1() const
+inline int FRect::getY1() const noexcept
 { return Y1; }
 
 //----------------------------------------------------------------------
-inline int FRect::getX2() const
+inline int FRect::getX2() const noexcept
 { return X2; }
 
 //----------------------------------------------------------------------
-inline int FRect::getY2() const
+inline int FRect::getY2() const noexcept
 { return Y2; }
 
 //----------------------------------------------------------------------
-inline int FRect::getX() const
+inline int FRect::getX() const noexcept
 { return X1; }
 
 //----------------------------------------------------------------------
-inline int FRect::getY() const
+inline int FRect::getY() const noexcept
 { return Y1; }
 
 //----------------------------------------------------------------------
-inline std::size_t FRect::getWidth() const
+inline std::size_t FRect::getWidth() const noexcept
 {
   const int w = X2 - (X1 - 1);  // overflow save
   return ( w < 0 ) ? 0 : std::size_t(w);
 }
 
 //----------------------------------------------------------------------
-inline std::size_t FRect::getHeight() const
+inline std::size_t FRect::getHeight() const noexcept
 {
   const int h = Y2 - (Y1 - 1);  // overflow save
   return ( h < 0 ) ? 0 : std::size_t(h);
 }
 
 //----------------------------------------------------------------------
-inline int& FRect::x1_ref() &
+inline int& FRect::x1_ref() & noexcept
 { return X1; }
 
 //----------------------------------------------------------------------
-inline int& FRect::y1_ref() &
+inline int& FRect::y1_ref() & noexcept
 { return Y1; }
 
 //----------------------------------------------------------------------
-inline int& FRect::x2_ref() &
+inline int& FRect::x2_ref() & noexcept
 { return X2; }
 
 //----------------------------------------------------------------------
-inline int& FRect::y2_ref() &
+inline int& FRect::y2_ref() & noexcept
 { return Y2; }
 
 }  // namespace finalcut

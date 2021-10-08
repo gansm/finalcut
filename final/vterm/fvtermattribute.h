@@ -41,6 +41,10 @@
 namespace finalcut
 {
 
+// class forward declaration
+class FColorPair;
+class FStyle;
+
 //----------------------------------------------------------------------
 // class FVTermAttribute
 //----------------------------------------------------------------------
@@ -128,6 +132,8 @@ class FVTermAttribute
 
     // Methods
     static void           initAttribute();
+    static void           print (const FStyle&);
+    static void           print (const FColorPair&);
 
   private:
 

@@ -20,6 +20,8 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include "final/vterm/fcolorpair.h"
+#include "final/vterm/fstyle.h"
 #include "final/vterm/fvtermattribute.h"
 
 namespace finalcut
@@ -54,6 +56,38 @@ void FVTermAttribute::initAttribute()
   next_attribute.attr.byte[1] = 0;
   next_attribute.attr.byte[2] = 0;
   next_attribute.attr.byte[3] = 0;
+}
+
+//----------------------------------------------------------------------
+void FVTermAttribute::print (const FStyle& style)
+{
+  Style attr = style.getStyle();
+
+  if ( attr == Style::None )
+    setNormal();
+  else
+  {
+    if ( (attr & Style::Bold) != Style::None ) setBold();
+    if ( (attr & Style::Dim) != Style::None ) setDim();
+    if ( (attr & Style::Italic) != Style::None ) setItalic();
+    if ( (attr & Style::Underline) != Style::None ) setUnderline();
+    if ( (attr & Style::Blink) != Style::None ) setBlink();
+    if ( (attr & Style::Reverse) != Style::None ) setReverse();
+    if ( (attr & Style::Standout) != Style::None ) setStandout();
+    if ( (attr & Style::Invisible) != Style::None ) setInvisible();
+    if ( (attr & Style::Protected) != Style::None ) setProtected();
+    if ( (attr & Style::CrossedOut) != Style::None ) setCrossedOut();
+    if ( (attr & Style::DoubleUnderline) != Style::None ) setDoubleUnderline();
+    if ( (attr & Style::Transparent) != Style::None ) setTransparent();
+    if ( (attr & Style::ColorOverlay) != Style::None ) setColorOverlay();
+    if ( (attr & Style::InheritBackground) != Style::None ) setInheritBackground();
+  }
+}
+
+//----------------------------------------------------------------------
+void FVTermAttribute::print (const FColorPair& pair)
+{
+  setColor (pair.getForegroundColor(), pair.getBackgroundColor());
 }
 
 }  // namespace finalcut

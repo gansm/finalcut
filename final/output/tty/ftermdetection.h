@@ -70,12 +70,12 @@ class FTermDetection final
 #endif
 
     // Inquiries
-    bool                  canDisplay256Colors() const;
-    bool                  hasTerminalDetection() const;
-    bool                  hasSetCursorStyleSupport() const;
+    bool                  canDisplay256Colors() const noexcept;
+    bool                  hasTerminalDetection() const noexcept;
+    bool                  hasSetCursorStyleSupport() const noexcept;
 
     // Mutators
-    void                  setTerminalDetection (bool = true);
+    void                  setTerminalDetection (bool = true) noexcept;
     void                  setTtyTypeFileName (const FString&);
 
     // Methods
@@ -176,19 +176,19 @@ inline const FString& FTermDetection::getTermType_SecDA() const &
 #endif
 
 //----------------------------------------------------------------------
-inline bool FTermDetection::canDisplay256Colors() const
+inline bool FTermDetection::canDisplay256Colors() const noexcept
 { return color256; }
 
 //----------------------------------------------------------------------
-inline bool FTermDetection::hasSetCursorStyleSupport() const
+inline bool FTermDetection::hasSetCursorStyleSupport() const noexcept
 { return decscusr_support; }
 
 //----------------------------------------------------------------------
-inline bool FTermDetection::hasTerminalDetection() const
+inline bool FTermDetection::hasTerminalDetection() const noexcept
 { return terminal_detection; }
 
 //----------------------------------------------------------------------
-inline void FTermDetection::setTerminalDetection (bool enable)
+inline void FTermDetection::setTerminalDetection (bool enable) noexcept
 { terminal_detection = enable; }
 
 }  // namespace finalcut

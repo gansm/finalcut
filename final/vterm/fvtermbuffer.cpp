@@ -64,11 +64,11 @@ FString FVTermBuffer::toString() const
 }
 
 //----------------------------------------------------------------------
-int FVTermBuffer::write (const FString& string)
+int FVTermBuffer::print (const FString& string)
 {
   data.reserve(data.size() + string.getLength());
-  const auto last = string.end();
-  auto begin = string.begin();
+  const auto last = string.cend();
+  auto begin = string.cbegin();
   auto iter = begin;
   int char_width{0};
 
@@ -104,9 +104,9 @@ int FVTermBuffer::write (const FString& string)
 }
 
 //----------------------------------------------------------------------
-int FVTermBuffer::write (wchar_t ch)
+int FVTermBuffer::print (wchar_t ch)
 {
-  FChar nc{FVTerm::getAttribute()};  // next character
+  FChar nc{FVTermAttribute::getAttribute()};  // next character
   nc.ch[0] = ch;
   addColumnWidth(nc);  // add column width
   nc.attr.bit.no_changes = false;
@@ -116,35 +116,15 @@ int FVTermBuffer::write (wchar_t ch)
 }
 
 //----------------------------------------------------------------------
-void FVTermBuffer::write (const FStyle& style) const
+void FVTermBuffer::print (const FStyle& style) const
 {
-  auto attr = style.getStyle();
-
-  if ( attr == Style::None )
-    FVTerm::setNormal();
-  else
-  {
-    if ( (attr & Style::Bold) != Style::None ) FVTerm::setBold();
-    if ( (attr & Style::Dim) != Style::None ) FVTerm::setDim();
-    if ( (attr & Style::Italic) != Style::None ) FVTerm::setItalic();
-    if ( (attr & Style::Underline) != Style::None ) FVTerm::setUnderline();
-    if ( (attr & Style::Blink) != Style::None ) FVTerm::setBlink();
-    if ( (attr & Style::Reverse) != Style::None ) FVTerm::setReverse();
-    if ( (attr & Style::Standout) != Style::None ) FVTerm::setStandout();
-    if ( (attr & Style::Invisible) != Style::None ) FVTerm::setInvisible();
-    if ( (attr & Style::Protected) != Style::None ) FVTerm::setProtected();
-    if ( (attr & Style::CrossedOut) != Style::None ) FVTerm::setCrossedOut();
-    if ( (attr & Style::DoubleUnderline) != Style::None ) FVTerm::setDoubleUnderline();
-    if ( (attr & Style::Transparent) != Style::None ) FVTerm::setTransparent();
-    if ( (attr & Style::ColorOverlay) != Style::None ) FVTerm::setColorOverlay();
-    if ( (attr & Style::InheritBackground) != Style::None ) FVTerm::setInheritBackground();
-  }
+  FVTermAttribute::print(style);
 }
 
 //----------------------------------------------------------------------
-void FVTermBuffer::write (const FColorPair& pair) const
+void FVTermBuffer::print (const FColorPair& pair) const
 {
-  FVTerm::setColor(pair.getForegroundColor(), pair.getBackgroundColor());
+  FVTermAttribute::setColor(pair.getForegroundColor(), pair.getBackgroundColor());
 }
 
 
@@ -159,7 +139,7 @@ void FVTermBuffer::add ( FString::const_iterator& begin
   if ( begin == end )
     return;
 
-  FChar nc{FVTerm::getAttribute()};  // next character
+  FChar nc{FVTermAttribute::getAttribute()};  // next character
   nc.attr.byte[2] = 0;
   nc.attr.byte[3] = 0;
 
@@ -186,7 +166,7 @@ FVTermBuffer::FCharVector& operator << ( FVTermBuffer::FCharVector& term_string
                                        , const FVTermBuffer& buf )
 {
   if ( ! buf.data.empty() )
-    term_string.assign(buf.data.begin(), buf.data.end());
+    term_string.assign(buf.data.cbegin(), buf.data.cend());
 
   return term_string;
 }

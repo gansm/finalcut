@@ -83,8 +83,8 @@ class FTermOpenBSD final
     static bool        isBSDConsole();
 
     // Mutators
-    static void        disableMetaSendsEscape();
-    static void        enableMetaSendsEscape();
+    static void        disableMetaSendsEscape() noexcept;
+    static void        enableMetaSendsEscape() noexcept;
 
     // Methods
     static void        init();
@@ -115,11 +115,11 @@ inline FString FTermOpenBSD::getClassName() const
 
 //----------------------------------------------------------------------
 #if defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
-inline void FTermOpenBSD::enableMetaSendsEscape()
+inline void FTermOpenBSD::enableMetaSendsEscape() noexcept
 { meta_sends_escape = true; }
 
 //----------------------------------------------------------------------
-inline void FTermOpenBSD::disableMetaSendsEscape()
+inline void FTermOpenBSD::disableMetaSendsEscape() noexcept
 { meta_sends_escape = false; }
 
 #endif  // defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)

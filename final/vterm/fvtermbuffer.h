@@ -69,12 +69,22 @@ class FVTermBuffer
     FVTermBuffer (Iterator, Iterator);
 
     // Overloaded operators
-    template <typename typeT>
-    FVTermBuffer& operator << (const typeT&);
+    template <typename NumT
+            , typename is_arithmetic_without_char<NumT>::type = nullptr>
+    FVTermBuffer& operator << (const NumT&);
+
+    template <typename CharT
+            , typename CString<CharT>::type = nullptr>
+    FVTermBuffer& operator << (const CharT&);
+    FVTermBuffer& operator << (char);
+    FVTermBuffer& operator << (wchar_t);
+    FVTermBuffer& operator << (const wchar_t*);
     FVTermBuffer& operator << (const UniChar&);
-    FVTermBuffer& operator << (const FCharVector&);
     FVTermBuffer& operator << (const std::string&);
     FVTermBuffer& operator << (const std::wstring&);
+    FVTermBuffer& operator << (const FString&);
+    FVTermBuffer& operator << (FChar&);
+    FVTermBuffer& operator << (const FCharVector&);
     FVTermBuffer& operator << (const FStyle&);
     FVTermBuffer& operator << (const FColorPair&);
 
@@ -98,12 +108,12 @@ class FVTermBuffer
     FString                toString() const;
     void                   clear();
     template <typename... Args>
-    int                    writef (const FString&, Args&&...);
-    int                    write (const FString&);
-    int                    write (wchar_t);
-    void                   write (const FStyle&) const;
-    void                   write (const FColorPair&) const;
-    FVTermBuffer&          write ();
+    int                    printf (const FString&, Args&&...);
+    int                    print (const FString&);
+    int                    print (wchar_t);
+    void                   print (const FStyle&) const;
+    void                   print (const FColorPair&) const;
+    FVTermBuffer&          print ();
 
   private:
     FCharVector            data{};
@@ -126,57 +136,99 @@ inline FVTermBuffer::FVTermBuffer(Iterator first, Iterator last)
 }
 
 //----------------------------------------------------------------------
-template <typename typeT>
-inline FVTermBuffer& FVTermBuffer::operator << (const typeT& s)
+template <typename NumT
+        , typename is_arithmetic_without_char<NumT>::type>
+inline FVTermBuffer& FVTermBuffer::operator << (const NumT& n)
 {
-  FStringStream outstream{std::ios_base::out};
-  outstream << s;
+  print (FString(std::to_string(n)));
+  return *this;
+}
 
-  if ( ! outstream.str().isEmpty() )
-    write (outstream.str());
+//----------------------------------------------------------------------
+template <typename CharT
+        , typename CString<CharT>::type>
+inline FVTermBuffer& FVTermBuffer::operator << (const CharT& s)
+{
+  print (FString(s));
+  return *this;
+}
 
+//----------------------------------------------------------------------
+inline FVTermBuffer& FVTermBuffer::operator << (char c)
+{
+  print (wchar_t(uChar(c)));
+  return *this;
+}
+
+//----------------------------------------------------------------------
+inline FVTermBuffer& FVTermBuffer::operator << (wchar_t c)
+{
+  print (c);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+inline FVTermBuffer& FVTermBuffer::operator << (const wchar_t* wide_string)
+{
+  print (FString(wide_string));
   return *this;
 }
 
 //----------------------------------------------------------------------
 inline FVTermBuffer& FVTermBuffer::operator << (const UniChar& c)
 {
-  write (static_cast<wchar_t>(c));
-  return *this;
-}
-
-//----------------------------------------------------------------------
-inline FVTermBuffer& FVTermBuffer::operator << (const FCharVector& vec)
-{
-  std::copy(vec.begin(), vec.end(), std::back_inserter(data));
+  print (static_cast<wchar_t>(c));
   return *this;
 }
 
 //----------------------------------------------------------------------
 inline FVTermBuffer& FVTermBuffer::operator << (const std::string& string)
 {
-  write (string);
+  print (FString(string));
   return *this;
 }
 
 //----------------------------------------------------------------------
 inline FVTermBuffer& FVTermBuffer::operator << (const std::wstring& wstring)
 {
-  write (wstring);
+  print (FString(wstring));
   return *this;
 }
 
 //----------------------------------------------------------------------
+inline FVTermBuffer& FVTermBuffer::operator << (const FString& fstring)
+{
+  print (fstring);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+inline FVTermBuffer& FVTermBuffer::operator << (FChar& fchar)
+{
+  data.emplace_back(fchar);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+inline FVTermBuffer& FVTermBuffer::operator << (const FCharVector& vec)
+{
+  std::copy(vec.cbegin(), vec.cend(), std::back_inserter(data));
+  return *this;
+}
+
+
+
+//----------------------------------------------------------------------
 inline FVTermBuffer& FVTermBuffer::operator << (const FStyle& style)
 {
-  write (style);
+  print (style);
   return *this;
 }
 
 //----------------------------------------------------------------------
 inline FVTermBuffer& FVTermBuffer::operator << (const FColorPair& pair)
 {
-  write (pair);
+  print (pair);
   return *this;
 }
 
@@ -237,15 +289,15 @@ inline void FVTermBuffer::clear()
 
 //----------------------------------------------------------------------
 template <typename... Args>
-inline int FVTermBuffer::writef (const FString& format, Args&&... args)
+inline int FVTermBuffer::printf (const FString& format, Args&&... args)
 {
   FString str{};
   str.sprintf (format, std::forward<Args>(args)...);
-  return write(str);
+  return print(str);
 }
 
 //----------------------------------------------------------------------
-inline FVTermBuffer& FVTermBuffer::write()
+inline FVTermBuffer& FVTermBuffer::print()
 { return *this; }
 
 }  // namespace finalcut

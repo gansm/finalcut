@@ -92,10 +92,10 @@ class FTermFreeBSD final
 
     // Mutators
     static bool        setCursorStyle (CursorStyle);
-    static void        enableChangeCursorStyle();
-    static void        disableChangeCursorStyle();
-    static void        enableMetaSendsEscape();
-    static void        disableMetaSendsEscape();
+    static void        enableChangeCursorStyle() noexcept;
+    static void        disableChangeCursorStyle() noexcept;
+    static void        enableMetaSendsEscape() noexcept;
+    static void        disableMetaSendsEscape() noexcept;
     static void        setBeep (int, int);
     static void        resetBeep();
 
@@ -128,19 +128,19 @@ inline FString FTermFreeBSD::getClassName() const
 
 //----------------------------------------------------------------------
 #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-inline void FTermFreeBSD::enableChangeCursorStyle()
+inline void FTermFreeBSD::enableChangeCursorStyle() noexcept
 { change_cursorstyle = true; }
 
 //----------------------------------------------------------------------
-inline void FTermFreeBSD::disableChangeCursorStyle()
+inline void FTermFreeBSD::disableChangeCursorStyle() noexcept
 { change_cursorstyle = false; }
 
 //----------------------------------------------------------------------
-inline void FTermFreeBSD::enableMetaSendsEscape()
+inline void FTermFreeBSD::enableMetaSendsEscape() noexcept
 { meta_sends_escape = true; }
 
 //----------------------------------------------------------------------
-inline void FTermFreeBSD::disableMetaSendsEscape()
+inline void FTermFreeBSD::disableMetaSendsEscape() noexcept
 { meta_sends_escape = false; }
 
 #endif  // defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)

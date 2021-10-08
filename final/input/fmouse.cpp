@@ -1455,7 +1455,7 @@ bool FMouseControl::hasUnprocessedInput()
 
 //----------------------------------------------------------------------
 #ifdef F_HAVE_LIBGPM
-bool FMouseControl::isGpmMouseEnabled()
+bool FMouseControl::isGpmMouseEnabled() noexcept
 {
   if ( ! use_gpm_mouse || mouse_protocol.empty() )
     return false;
@@ -1465,7 +1465,7 @@ bool FMouseControl::isGpmMouseEnabled()
   return ( gpm_mouse && gpm_mouse->isGpmMouseEnabled() );
 }
 #else  // F_HAVE_LIBGPM
-bool FMouseControl::isGpmMouseEnabled()
+bool FMouseControl::isGpmMouseEnabled() noexcept
 {
   return false;
 }

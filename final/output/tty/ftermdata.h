@@ -76,64 +76,64 @@ class FTermData final
     charSubstitution&  getCharSubstitutionMap() &;
     Encoding           getTermEncoding() const;
     FRect&             getTermGeometry() &;
-    int                getTTYFileDescriptor() const;
-    uInt               getBaudrate() const;
+    int                getTTYFileDescriptor() const noexcept;
+    uInt               getBaudrate() const noexcept;
     const std::string& getTermType() const & ;
     const std::string& getTermFileName() const &;
-    int                getGnomeTerminalID() const;
-    kittyVersion       getKittyVersion() const;
+    int                getGnomeTerminalID() const noexcept;
+    kittyVersion       getKittyVersion() const noexcept;
     const FString&     getXtermFont() const &;
     const FString&     getXtermTitle() const &;
 #if DEBUG
-    int                getFramebufferBpp() const;
+    int                getFramebufferBpp() const noexcept;
 #endif
 
     // Inquiries
-    bool               hasShadowCharacter() const;
-    bool               hasHalfBlockCharacter() const;
-    bool               hasCursorOptimisation() const;
-    bool               isCursorHidden() const;
-    bool               hasAlternateScreen() const;
-    bool               isInAlternateScreen() const;
-    bool               hasASCIIConsole() const;
-    bool               hasVT100Console() const;
-    bool               hasUTF8Console() const;
-    bool               isUTF8() const;
-    bool               isNewFont() const;
-    bool               isVGAFont() const;
-    bool               isMonochron() const;
+    bool               hasShadowCharacter() const noexcept;
+    bool               hasHalfBlockCharacter() const noexcept;
+    bool               hasCursorOptimisation() const noexcept;
+    bool               isCursorHidden() const noexcept;
+    bool               hasAlternateScreen() const noexcept;
+    bool               isInAlternateScreen() const noexcept;
+    bool               hasASCIIConsole() const noexcept;
+    bool               hasVT100Console() const noexcept;
+    bool               hasUTF8Console() const noexcept;
+    bool               isUTF8() const noexcept;
+    bool               isNewFont() const noexcept;
+    bool               isVGAFont() const noexcept;
+    bool               isMonochron() const noexcept;
     bool               hasTermResized();
     bool               isTermType (FTermType) const;
     bool               isTermType (FTermTypeT) const;
 
     // Mutators
-    void               setTermEncoding (Encoding);
-    void               setTTYFileDescriptor (int);
-    void               setBaudrate (uInt);
-    void               supportShadowCharacter (bool = true);
-    void               supportHalfBlockCharacter (bool = true);
-    void               supportCursorOptimisation (bool = true);
-    void               setCursorHidden (bool = true);
-    void               useAlternateScreen (bool = true);
-    void               setAlternateScreenInUse (bool = true);
-    void               setASCIIConsole (bool = true);
-    void               setVT100Console (bool = true);
-    void               setUTF8Console (bool = true);
-    void               setUTF8 (bool = true);
-    void               setNewFont (bool = true);
-    void               setVGAFont (bool = true);
-    void               setMonochron (bool = true);
+    void               setTermEncoding (Encoding) noexcept;
+    void               setTTYFileDescriptor (int) noexcept;
+    void               setBaudrate (uInt) noexcept;
+    void               supportShadowCharacter (bool = true) noexcept;
+    void               supportHalfBlockCharacter (bool = true) noexcept;
+    void               supportCursorOptimisation (bool = true) noexcept;
+    void               setCursorHidden (bool = true) noexcept;
+    void               useAlternateScreen (bool = true) noexcept;
+    void               setAlternateScreenInUse (bool = true) noexcept;
+    void               setASCIIConsole (bool = true) noexcept;
+    void               setVT100Console (bool = true) noexcept;
+    void               setUTF8Console (bool = true) noexcept;
+    void               setUTF8 (bool = true) noexcept;
+    void               setNewFont (bool = true) noexcept;
+    void               setVGAFont (bool = true) noexcept;
+    void               setMonochron (bool = true) noexcept;
     void               setTermResized (bool = true);
     void               setTermType (const std::string&);
     void               setTermType (FTermType);
     void               unsetTermType (FTermType);
     void               setTermFileName (const std::string&);
-    void               setGnomeTerminalID (int);
+    void               setGnomeTerminalID (int) noexcept;
     void               setKittyVersion (const kittyVersion&);
     void               setXtermFont (const FString&);
     void               setXtermTitle (const FString&);
 #if DEBUG
-    void               setFramebufferBpp (int);
+    void               setFramebufferBpp (int) noexcept;
 #endif
 
   private:
@@ -209,11 +209,11 @@ inline FRect& FTermData::getTermGeometry() &
 { return term_geometry; }
 
 //----------------------------------------------------------------------
-inline int FTermData::getTTYFileDescriptor() const
+inline int FTermData::getTTYFileDescriptor() const noexcept
 { return fd_tty; }
 
 //----------------------------------------------------------------------
-inline uInt FTermData::getBaudrate() const
+inline uInt FTermData::getBaudrate() const noexcept
 { return baudrate; }
 
 //----------------------------------------------------------------------
@@ -225,11 +225,11 @@ inline const std::string& FTermData::getTermFileName() const &
 { return termfilename; }
 
 //----------------------------------------------------------------------
-inline int FTermData::getGnomeTerminalID() const
+inline int FTermData::getGnomeTerminalID() const noexcept
 { return gnome_terminal_id; }
 
 //----------------------------------------------------------------------
-inline FTermData::kittyVersion FTermData::getKittyVersion() const
+inline FTermData::kittyVersion FTermData::getKittyVersion() const noexcept
 { return kitty_version; }
 
 //----------------------------------------------------------------------
@@ -242,60 +242,60 @@ inline const FString& FTermData::getXtermTitle() const &
 
 //----------------------------------------------------------------------
 #if DEBUG
-inline int FTermData::getFramebufferBpp() const
+inline int FTermData::getFramebufferBpp() const noexcept
 { return framebuffer_bpp; }
 #endif
 
 //----------------------------------------------------------------------
-inline bool FTermData::hasShadowCharacter() const
+inline bool FTermData::hasShadowCharacter() const noexcept
 { return shadow_character; }
 
 //----------------------------------------------------------------------
-inline bool FTermData::hasHalfBlockCharacter() const
+inline bool FTermData::hasHalfBlockCharacter() const noexcept
 { return half_block_character; }
 
 //----------------------------------------------------------------------
-inline bool FTermData::hasCursorOptimisation() const
+inline bool FTermData::hasCursorOptimisation() const noexcept
 { return cursor_optimisation; }
 
 //----------------------------------------------------------------------
-inline bool FTermData::isCursorHidden() const
+inline bool FTermData::isCursorHidden() const noexcept
 { return hidden_cursor; }
 
 //----------------------------------------------------------------------
-inline bool FTermData::hasAlternateScreen() const
+inline bool FTermData::hasAlternateScreen() const noexcept
 { return use_alternate_screen; }
 
 //----------------------------------------------------------------------
-inline bool FTermData::isInAlternateScreen() const
+inline bool FTermData::isInAlternateScreen() const noexcept
 { return alternate_screen; }
 
 //----------------------------------------------------------------------
-inline bool FTermData::hasASCIIConsole() const
+inline bool FTermData::hasASCIIConsole() const noexcept
 { return ascii_console; }
 
 //----------------------------------------------------------------------
-inline bool FTermData::hasVT100Console() const
+inline bool FTermData::hasVT100Console() const noexcept
 { return vt100_console; }
 
 //----------------------------------------------------------------------
-inline bool FTermData::hasUTF8Console() const
+inline bool FTermData::hasUTF8Console() const noexcept
 { return utf8_console; }
 
 //----------------------------------------------------------------------
-inline bool FTermData::isUTF8() const
+inline bool FTermData::isUTF8() const noexcept
 { return utf8_state; }
 
 //----------------------------------------------------------------------
-inline bool FTermData::isNewFont() const
+inline bool FTermData::isNewFont() const noexcept
 { return new_font; }
 
 //----------------------------------------------------------------------
-inline bool FTermData::isVGAFont() const
+inline bool FTermData::isVGAFont() const noexcept
 { return vga_font; }
 
 //----------------------------------------------------------------------
-inline bool FTermData::isMonochron() const
+inline bool FTermData::isMonochron() const noexcept
 { return monochron; }
 
 //----------------------------------------------------------------------
@@ -314,67 +314,67 @@ inline bool FTermData::isTermType (FTermTypeT mask) const
 { return terminal_type & mask; }
 
 //----------------------------------------------------------------------
-inline void FTermData::setTermEncoding (Encoding enc)
+inline void FTermData::setTermEncoding (Encoding enc) noexcept
 { term_encoding = enc; }
 
 //----------------------------------------------------------------------
-inline void FTermData::setTTYFileDescriptor (int fd)
+inline void FTermData::setTTYFileDescriptor (int fd) noexcept
 { fd_tty = fd; }
 
 //----------------------------------------------------------------------
-inline void FTermData::setBaudrate (uInt baud)
+inline void FTermData::setBaudrate (uInt baud) noexcept
 { baudrate = baud; }
 
 //----------------------------------------------------------------------
-inline void FTermData::supportShadowCharacter (bool available)
+inline void FTermData::supportShadowCharacter (bool available) noexcept
 { shadow_character = available; }
 
 //----------------------------------------------------------------------
-inline void FTermData::supportHalfBlockCharacter (bool available)
+inline void FTermData::supportHalfBlockCharacter (bool available) noexcept
 { half_block_character = available; }
 
 //----------------------------------------------------------------------
-inline void FTermData::supportCursorOptimisation (bool available)
+inline void FTermData::supportCursorOptimisation (bool available) noexcept
 { cursor_optimisation = available; }
 
 //----------------------------------------------------------------------
-inline void FTermData::setCursorHidden (bool hidden_state)
+inline void FTermData::setCursorHidden (bool hidden_state) noexcept
 { hidden_cursor = hidden_state; }
 
 //----------------------------------------------------------------------
-inline void FTermData::useAlternateScreen (bool use)
+inline void FTermData::useAlternateScreen (bool use) noexcept
 { use_alternate_screen = use; }
 
 //----------------------------------------------------------------------
-inline void FTermData::setAlternateScreenInUse (bool in_use)
+inline void FTermData::setAlternateScreenInUse (bool in_use) noexcept
 { alternate_screen = in_use; }
 
 //----------------------------------------------------------------------
-inline void FTermData::setASCIIConsole (bool ascii)
+inline void FTermData::setASCIIConsole (bool ascii) noexcept
 { ascii_console = ascii; }
 
 //----------------------------------------------------------------------
-inline void FTermData::setVT100Console (bool vt100)
+inline void FTermData::setVT100Console (bool vt100) noexcept
 { vt100_console = vt100; }
 
 //----------------------------------------------------------------------
-inline void FTermData::setUTF8Console (bool utf8)
+inline void FTermData::setUTF8Console (bool utf8) noexcept
 { utf8_console = utf8; }
 
 //----------------------------------------------------------------------
-inline void FTermData::setUTF8 (bool utf8)
+inline void FTermData::setUTF8 (bool utf8) noexcept
 { utf8_state = utf8; }
 
 //----------------------------------------------------------------------
-inline void FTermData::setNewFont (bool nfont)
+inline void FTermData::setNewFont (bool nfont) noexcept
 { new_font = nfont; }
 
 //----------------------------------------------------------------------
-inline void FTermData::setVGAFont (bool vga)
+inline void FTermData::setVGAFont (bool vga) noexcept
 { vga_font = vga; }
 
 //----------------------------------------------------------------------
-inline void FTermData::setMonochron (bool mono)
+inline void FTermData::setMonochron (bool mono) noexcept
 { monochron = mono; }
 
 //----------------------------------------------------------------------
@@ -411,7 +411,7 @@ inline void FTermData::setTermFileName (const std::string& file_name)
 }
 
 //----------------------------------------------------------------------
-inline void FTermData::setGnomeTerminalID (int id)
+inline void FTermData::setGnomeTerminalID (int id) noexcept
 { gnome_terminal_id = id; }
 
 //----------------------------------------------------------------------
@@ -431,7 +431,7 @@ inline void FTermData::setXtermTitle (const FString& title)
 
 //----------------------------------------------------------------------
 #if DEBUG && defined(__linux__)
-inline void FTermData::setFramebufferBpp (int bpp)
+inline void FTermData::setFramebufferBpp (int bpp) noexcept
 { framebuffer_bpp = bpp; }
 #endif
 

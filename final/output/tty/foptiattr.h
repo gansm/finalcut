@@ -104,10 +104,10 @@ class FOptiAttr final
 
     // Mutators
     void          setTermEnvironment (const TermEnv&);
-    void          setMaxColor (const int&);
-    void          setNoColorVideo (int);
-    void          setDefaultColorSupport();
-    void          unsetDefaultColorSupport();
+    void          setMaxColor (const int&) noexcept;
+    void          setNoColorVideo (int) noexcept;
+    void          setDefaultColorSupport() noexcept;
+    void          unsetDefaultColorSupport() noexcept;
     void          set_enter_bold_mode (const char[]);
     void          set_exit_bold_mode (const char[]);
     void          set_enter_dim_mode (const char[]);
@@ -153,22 +153,6 @@ class FOptiAttr final
     std::string   changeAttribute (FChar&, FChar&);
 
   private:
-    // Using-declarations
-    template <typename CharT>
-    using remove_ptr_t = typename std::remove_pointer<CharT>::type;
-
-    template <typename CharT>
-    using remove_ptr_cv_t = typename std::remove_cv<remove_ptr_t<CharT>>::type;
-
-    template <typename CharT>
-    using is_char_based = typename std::is_same<char, remove_ptr_cv_t<CharT>>;
-
-    template <typename CharT>
-    using CString =
-        typename std::enable_if< std::is_pointer<CharT>::value
-                              && is_char_based<CharT>::value
-                              , std::nullptr_t >;
-
     struct Capability
     {
       const char* cap;
@@ -330,24 +314,24 @@ inline FString FOptiAttr::getClassName() const
 { return "FOptiAttr"; }
 
 //----------------------------------------------------------------------
-inline void FOptiAttr::setMaxColor (const int& c)
+inline void FOptiAttr::setMaxColor (const int& c) noexcept
 { max_color = c; }
 
 //----------------------------------------------------------------------
-inline void FOptiAttr::setNoColorVideo (int attr)
+inline void FOptiAttr::setNoColorVideo (int attr) noexcept
 { attr_without_color = attr; }
 
 //----------------------------------------------------------------------
-inline void FOptiAttr::setDefaultColorSupport()
+inline void FOptiAttr::setDefaultColorSupport() noexcept
 { ansi_default_color = true; }
 
 //----------------------------------------------------------------------
-inline void FOptiAttr::unsetDefaultColorSupport()
+inline void FOptiAttr::unsetDefaultColorSupport() noexcept
 { ansi_default_color = false; }
 
 //----------------------------------------------------------------------
 template <typename CharT
-        , typename FOptiAttr::CString<CharT>::type>
+        , typename CString<CharT>::type>
 inline bool FOptiAttr::append_sequence (CharT seq)
 {
   // for char* and const char*

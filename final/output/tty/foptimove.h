@@ -137,8 +137,8 @@ class FOptiMove final
     void          set_repeat_char (const char[]);
     void          set_clr_bol (const char[]);
     void          set_clr_eol (const char[]);
-    void          set_auto_left_margin (bool = true);
-    void          set_eat_newline_glitch (bool = true);
+    void          set_auto_left_margin (bool = true) noexcept;
+    void          set_eat_newline_glitch (bool = true) noexcept;
 
     // Methods
     void          check_boundaries (int&, int&, int&, int&) const;
@@ -305,11 +305,11 @@ inline uInt FOptiMove::getClrEolLength() const
 { return static_cast<uInt>(F_clr_eol.length); }
 
 //----------------------------------------------------------------------
-inline void FOptiMove::set_auto_left_margin (bool bcap)
+inline void FOptiMove::set_auto_left_margin (bool bcap) noexcept
 { automatic_left_margin = bcap; }
 
 //----------------------------------------------------------------------
-inline void FOptiMove::set_eat_newline_glitch (bool bcap)
+inline void FOptiMove::set_eat_newline_glitch (bool bcap) noexcept
 { eat_nl_glitch = bcap; }
 
 

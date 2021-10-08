@@ -274,7 +274,7 @@ class FMouseGPM final : public FMouse
 
     // Inquiry
     bool                 hasData() override;
-    bool                 isGpmMouseEnabled() const;
+    bool                 isGpmMouseEnabled() const noexcept;
 
     // Methods
     void                 setRawData (FKeyboard::keybuffer&) override;
@@ -316,7 +316,7 @@ inline bool FMouseGPM::disableGpmMouse()
 { return gpmMouse(false); }
 
 //----------------------------------------------------------------------
-inline bool FMouseGPM::isGpmMouseEnabled() const
+inline bool FMouseGPM::isGpmMouseEnabled() const noexcept
 { return gpm_mouse_enabled; }
 #endif  // F_HAVE_LIBGPM
 
@@ -561,7 +561,7 @@ class FMouseControl
     bool                      isMoved();
     bool                      hasUnprocessedInput();
     bool                      hasDataInQueue() const;
-    bool                      isGpmMouseEnabled();
+    bool                      isGpmMouseEnabled() noexcept;
 
     // Methods
     void                      enable();

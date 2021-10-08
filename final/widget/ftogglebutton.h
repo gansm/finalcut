@@ -104,7 +104,7 @@ class FToggleButton : public FWidget
     virtual void        setText (const FString&);
 
     // Inquiries
-    bool                isChecked() const;
+    bool                isChecked() const noexcept;
 
     // Method
     void                hide() override;
@@ -123,8 +123,8 @@ class FToggleButton : public FWidget
 
     // Mutator
     void                setHotkeyAccelerator();
-    void                setButtonWidth (std::size_t);
-    void                setLabelOffsetPos (std::size_t);
+    void                setButtonWidth (std::size_t) noexcept;
+    void                setLabelOffsetPos (std::size_t) noexcept;
 
     // Inquiries
     bool                isRadioButton() const;
@@ -193,7 +193,7 @@ inline bool FToggleButton::unsetChecked()
 { return setChecked(false); }
 
 //----------------------------------------------------------------------
-inline bool FToggleButton::isChecked() const
+inline bool FToggleButton::isChecked() const noexcept
 { return checked; }
 
 //----------------------------------------------------------------------
@@ -201,11 +201,11 @@ inline FButtonGroup* FToggleButton::getGroup() const
 { return button_group; }
 
 //----------------------------------------------------------------------
-inline void FToggleButton::setButtonWidth (std::size_t width)
+inline void FToggleButton::setButtonWidth (std::size_t width) noexcept
 { button_width = width; }
 
 //----------------------------------------------------------------------
-inline void FToggleButton::setLabelOffsetPos (std::size_t offset)
+inline void FToggleButton::setLabelOffsetPos (std::size_t offset) noexcept
 { label_offset_pos = offset; }
 
 //----------------------------------------------------------------------

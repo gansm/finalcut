@@ -98,12 +98,12 @@ class FKeyboard final
     // Accessors
     FString               getClassName() const;
     static auto           getInstance() -> FKeyboard&;
-    FKey                  getKey() const;
+    FKey                  getKey() const noexcept;
     FString               getKeyName (const FKey) const;
     keybuffer&            getKeyBuffer() &;
     TimeValue             getKeyPressedTime() const;
-    static uInt64         getKeypressTimeout();
-    static uInt64         getReadBlockingTime();
+    static uInt64         getKeypressTimeout() noexcept;
+    static uInt64         getReadBlockingTime() noexcept;
 
     // Mutators
     template <typename T>
@@ -114,17 +114,17 @@ class FKeyboard final
     static void           setNonBlockingInputSupport (bool = true);
     bool                  setNonBlockingInput (bool = true);
     bool                  unsetNonBlockingInput();
-    void                  enableUTF8();
-    void                  disableUTF8();
-    void                  enableMouseSequences();
-    void                  disableMouseSequences();
+    void                  enableUTF8() noexcept;
+    void                  disableUTF8() noexcept;
+    void                  enableMouseSequences() noexcept;
+    void                  disableMouseSequences() noexcept;
     void                  setPressCommand (const FKeyboardCommand&);
     void                  setReleaseCommand (const FKeyboardCommand&);
     void                  setEscPressedCommand (const FKeyboardCommand&);
     void                  setMouseTrackingCommand (const FKeyboardCommand&);
 
     // Inquiry
-    bool                  hasPendingInput() const;
+    bool                  hasPendingInput() const noexcept;
     bool                  hasDataInQueue() const;
 
     // Methods
@@ -199,7 +199,7 @@ inline FString FKeyboard::getClassName() const
 { return "FKeyboard"; }
 
 //----------------------------------------------------------------------
-inline FKey FKeyboard::getKey() const
+inline FKey FKeyboard::getKey() const noexcept
 { return key; }
 
 //----------------------------------------------------------------------
@@ -211,11 +211,11 @@ inline TimeValue FKeyboard::getKeyPressedTime() const
 { return time_keypressed; }
 
 //----------------------------------------------------------------------
-inline uInt64 FKeyboard::getKeypressTimeout()
+inline uInt64 FKeyboard::getKeypressTimeout() noexcept
 { return key_timeout; }
 
 //----------------------------------------------------------------------
-inline uInt64 FKeyboard::getReadBlockingTime()
+inline uInt64 FKeyboard::getReadBlockingTime() noexcept
 { return read_blocking_time; }
 
 //----------------------------------------------------------------------
@@ -247,7 +247,7 @@ inline bool FKeyboard::unsetNonBlockingInput()
 { return setNonBlockingInput(false); }
 
 //----------------------------------------------------------------------
-inline bool FKeyboard::hasPendingInput() const
+inline bool FKeyboard::hasPendingInput() const noexcept
 { return has_pending_input; }
 
 //----------------------------------------------------------------------
@@ -255,19 +255,19 @@ inline bool FKeyboard::hasDataInQueue() const
 { return ! fkey_queue.empty(); }
 
 //----------------------------------------------------------------------
-inline void FKeyboard::enableUTF8()
+inline void FKeyboard::enableUTF8() noexcept
 { utf8_input = true; }
 
 //----------------------------------------------------------------------
-inline void FKeyboard::disableUTF8()
+inline void FKeyboard::disableUTF8() noexcept
 { utf8_input = false; }
 
 //----------------------------------------------------------------------
-inline void FKeyboard::enableMouseSequences()
+inline void FKeyboard::enableMouseSequences() noexcept
 { mouse_support = true; }
 
 //----------------------------------------------------------------------
-inline void FKeyboard::disableMouseSequences()
+inline void FKeyboard::disableMouseSequences() noexcept
 { mouse_support = false; }
 
 //----------------------------------------------------------------------

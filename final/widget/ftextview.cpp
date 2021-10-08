@@ -657,7 +657,7 @@ void FTextView::drawText()
     std::size_t trailing_whitespace{0};
     print() << FPoint{2, 2 - nf_offset + int(y)};
     FVTermBuffer line_buffer{};
-    line_buffer.write(line);
+    line_buffer.print(line);
 
     for (auto&& fchar : line_buffer)  // Column loop
       if ( ! isPrintable(fchar.ch[0]) )

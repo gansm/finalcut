@@ -109,7 +109,7 @@ void FVTermBufferTest::writeTest()
 
   // Write wchar_t
   const wchar_t wch{L'\U0000263a'};  // ☺
-  vterm_buf.write(wch);
+  vterm_buf.print(wch);
   CPPUNIT_ASSERT ( ! vterm_buf.isEmpty() );
   CPPUNIT_ASSERT ( vterm_buf.getLength() == 1 );
   CPPUNIT_ASSERT ( vterm_buf.getBuffer().size() == 1 );
@@ -145,7 +145,7 @@ void FVTermBufferTest::writeTest()
 
   // Write char
   const char ch{'@'};
-  vterm_buf.write(ch);
+  vterm_buf.print(ch);
   CPPUNIT_ASSERT ( ! vterm_buf.isEmpty() );
   CPPUNIT_ASSERT ( vterm_buf.getLength() == 1 );
   CPPUNIT_ASSERT ( vterm_buf.getBuffer().size() == 1 );
@@ -174,7 +174,7 @@ void FVTermBufferTest::writeTest()
   // Write FString
   const finalcut::FString str = "abc…ｘｙｚ";
   vterm_buf.clear();
-  vterm_buf.write(str);
+  vterm_buf.print(str);
   CPPUNIT_ASSERT ( ! vterm_buf.isEmpty() );
   CPPUNIT_ASSERT ( vterm_buf.getLength() == 7 );
   CPPUNIT_ASSERT ( vterm_buf.getBuffer().size() == 7 );
@@ -217,7 +217,7 @@ void FVTermBufferTest::writeTest()
   // Write formatted output
   std::setlocale(LC_NUMERIC, "C");
   vterm_buf.clear();
-  vterm_buf.writef ("%'.2f%C", 0.25 * 7.0, L'£');
+  vterm_buf.printf ("%'.2f%C", 0.25 * 7.0, L'£');
   CPPUNIT_ASSERT ( ! vterm_buf.isEmpty() );
   CPPUNIT_ASSERT ( vterm_buf.getLength() == 5 );
   CPPUNIT_ASSERT ( vterm_buf.getBuffer().size() == 5 );
@@ -252,15 +252,15 @@ void FVTermBufferTest::writeTest()
   // Write with color
   vterm_buf.clear();
   finalcut::FVTerm::setColor(finalcut::FColor::Default, finalcut::FColor::Default);
-  vterm_buf.write (L'♥');
+  vterm_buf.print (L'♥');
   auto color_pair = finalcut::FColorPair(finalcut::FColor::DarkRed, finalcut::FColor::Yellow4);
-  vterm_buf.write (color_pair);
-  vterm_buf.write (L'☺');
+  vterm_buf.print (color_pair);
+  vterm_buf.print (L'☺');
   finalcut::FVTerm::setNormal();
-  vterm_buf.write ("♪");
+  vterm_buf.print ("♪");
   color_pair = finalcut::FColorPair(finalcut::FColor::Black, finalcut::FColor::White);
-  vterm_buf.write (color_pair);
-  vterm_buf.write ("↑");
+  vterm_buf.print (color_pair);
+  vterm_buf.print ("↑");
   CPPUNIT_ASSERT ( ! vterm_buf.isEmpty() );
   CPPUNIT_ASSERT ( vterm_buf.getLength() == 4 );
   CPPUNIT_ASSERT ( vterm_buf.getBuffer().size() == 4 );
@@ -301,17 +301,17 @@ void FVTermBufferTest::writeTest()
   auto multi_color_emojis = bool( wcswidth(L"☕⛄🧸🦡", 4) == 8 );
   vterm_buf.clear();
   auto style = finalcut::FStyle(finalcut::Style::Italic | finalcut::Style::Reverse);
-  vterm_buf.write (style);
+  vterm_buf.print (style);
   CPPUNIT_ASSERT ( uInt(style.getStyle()) == uInt(finalcut::FVTerm::getAttribute().attr.byte[0]) );
-  vterm_buf.write (L'☕');
-  vterm_buf.write ( finalcut::FStyle(finalcut::Style::None) );  // Reset style
+  vterm_buf.print (L'☕');
+  vterm_buf.print ( finalcut::FStyle(finalcut::Style::None) );  // Reset style
   style = finalcut::FStyle(finalcut::Style::Bold | finalcut::Style::Underline);
-  vterm_buf.write (style);
-  vterm_buf.write (L'⛄');
-  vterm_buf.write ( finalcut::FStyle(finalcut::Style::Transparent) );
-  vterm_buf.write (L'🧸');
-  vterm_buf.write ( finalcut::FStyle(finalcut::Style::None) );  // Reset style
-  vterm_buf.write (L'🦡');
+  vterm_buf.print (style);
+  vterm_buf.print (L'⛄');
+  vterm_buf.print ( finalcut::FStyle(finalcut::Style::Transparent) );
+  vterm_buf.print (L'🧸');
+  vterm_buf.print ( finalcut::FStyle(finalcut::Style::None) );  // Reset style
+  vterm_buf.print (L'🦡');
   CPPUNIT_ASSERT ( ! vterm_buf.isEmpty() );
   CPPUNIT_ASSERT ( vterm_buf.getLength() == 4 );
   CPPUNIT_ASSERT ( vterm_buf.getBuffer().size() == 4 );
@@ -374,7 +374,7 @@ void FVTermBufferTest::streamTest()
   fchar_vec.front().bg_color = finalcut::FColor::Cyan;
   finalcut::addColumnWidth(fchar_vec.front());
   finalcut::FVTermBuffer vterm_buf{};
-  vterm_buf.write() << L'a'
+  vterm_buf.print() << L'a'
                    << finalcut::FColorPair{finalcut::FColor::Yellow, finalcut::FColor::Blue}
                    << 1
                    << finalcut::FColorPair{finalcut::FColor::Cyan, finalcut::FColor::White}
@@ -508,7 +508,7 @@ void FVTermBufferTest::combiningCharacterTest()
   finalcut::FVTermBuffer vterm_buf{};
   // Skip leading zero-width characters
   std::wstring combining = L"\U00000323\U00000300\U0000ff2f\n";  // [] [] Ｏ [NL]
-  vterm_buf.write(combining);
+  vterm_buf.print(combining);
   CPPUNIT_ASSERT ( ! vterm_buf.isEmpty() );
   CPPUNIT_ASSERT ( combining.length() == 4 );
   CPPUNIT_ASSERT ( wcwidth(combining[0]) == 0 );
@@ -536,7 +536,7 @@ void FVTermBufferTest::combiningCharacterTest()
   // Characters with separate and with combined diacritical marks
   combining = L"u\U00000300=\U000000f9";  // u ` = ù
   vterm_buf.clear();
-  vterm_buf.write(combining);
+  vterm_buf.print(combining);
   CPPUNIT_ASSERT ( ! vterm_buf.isEmpty() );
   CPPUNIT_ASSERT ( combining.length() == 4 );
   CPPUNIT_ASSERT ( wcwidth(combining[0]) == 1 );
@@ -566,7 +566,7 @@ void FVTermBufferTest::combiningCharacterTest()
 
   combining = L"o\U0000031b\U00000323=\U00001ee3";  // o ‍̛   ‍̣ = ợ
   vterm_buf.clear();
-  vterm_buf.write(combining);
+  vterm_buf.print(combining);
   CPPUNIT_ASSERT ( combining.length() == 5 );
   CPPUNIT_ASSERT ( wcwidth(combining[0]) == 1 );
   CPPUNIT_ASSERT ( wcwidth(combining[1]) == 0 );
@@ -636,7 +636,7 @@ void FVTermBufferTest::combiningCharacterTest()
   // Ignore trailing uncombined zero-width characters
   combining = L"a\t\U00000300\U00000323";  // a [Tab] [] []
   vterm_buf.clear();
-  vterm_buf.write(combining);
+  vterm_buf.print(combining);
   CPPUNIT_ASSERT ( combining.length() == 4 );
   CPPUNIT_ASSERT ( wcwidth(combining[0]) == 1 );
   CPPUNIT_ASSERT ( wcwidth(combining[1]) == -1 );
@@ -661,7 +661,7 @@ void FVTermBufferTest::combiningCharacterTest()
   // Thai (ISO 10646-1 - UCS implementation level 2)
   combining = L"๏ แผ่นดินฮั่นเสื่อมโทรมแสนสังเวช";
   vterm_buf.clear();
-  vterm_buf.write(combining);
+  vterm_buf.print(combining);
   CPPUNIT_ASSERT ( combining.length() == 32 );
   CPPUNIT_ASSERT ( wcwidth(combining[0]) == 1 );
   CPPUNIT_ASSERT ( wcwidth(combining[1]) == 1 );
@@ -790,7 +790,7 @@ void FVTermBufferTest::combiningCharacterTest()
   // Devanagari script (ISO 10646-1 - UCS implementation level 2)
   combining = L"पन्ह पन्ह त्र र्च कृकृ ड्ड न्ह";
   vterm_buf.clear();
-  vterm_buf.write(combining);
+  vterm_buf.print(combining);
   CPPUNIT_ASSERT ( combining.length() == 30 );
   CPPUNIT_ASSERT ( wcwidth(combining[0]) == 1 );
   CPPUNIT_ASSERT ( wcwidth(combining[1]) == 1 );
