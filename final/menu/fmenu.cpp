@@ -160,9 +160,9 @@ void FMenu::onKeyPress (FKeyEvent* ev)
     selectPrevMenu(ev);
   else if ( key == FKey::Right )
     selectNextMenu(ev);
-  else if ( key == FKey::Return || key == FKey::Enter )
+  else if ( isEnterKey(key) )
     acceptSelection();
-  else if ( key == FKey::Escape || key == FKey::Escape_mintty )
+  else if ( isEscapeKey(key) )
     closeMenu();
 
   // always accept key event -> no forwarding to the parent widget

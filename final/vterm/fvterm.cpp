@@ -919,18 +919,10 @@ int FVTerm::getLayer (const FVTerm& obj)
   if ( ! win_list || win_list->empty() )
     return -1;
 
-  auto iter = win_list->begin();
-  const auto end = win_list->end();
-
-  while ( iter != end )
-  {
-    if ( *iter == &obj )
-      break;
-
-    ++iter;
-  }
-
-  return int(std::distance(win_list->begin(), iter) + 1);
+  const auto& begin = win_list->cbegin();
+  const auto& end = win_list->cend();
+  auto iter = std::find (begin, end, &obj);
+  return int(std::distance(begin, iter) + 1);
 }
 
 //----------------------------------------------------------------------

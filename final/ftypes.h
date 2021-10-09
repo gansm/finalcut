@@ -122,6 +122,16 @@ struct getPrecision
   }
 };
 
+template <typename T>
+struct EnumHash
+{
+  std::size_t operator () (const T& mt) const noexcept
+  {
+    using underlying_type = typename std::underlying_type<T>::type;
+    return std::hash<underlying_type>()(underlying_type(mt));
+  }
+};
+
 template <typename T, typename... Args>
 inline std::unique_ptr<T> make_unique (Args&&... args)
 {
@@ -180,8 +190,6 @@ using is_arithmetic_without_char =
   typename std::enable_if< std::is_arithmetic<NumT>::value
                         && ! std::is_same<char, NumT>::value
                         , std::nullptr_t>;
-
-using charSubstitution = std::unordered_map<wchar_t, wchar_t>;
 
 struct TCapAttributes
 {

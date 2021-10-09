@@ -287,8 +287,8 @@ class FListBox : public FWidget
 
   private:
     // Using-declaration
-    using KeyMap = std::unordered_map<FKey, std::function<void()>, FKeyHash>;
-    using KeyMapResult = std::unordered_map<FKey, std::function<bool()>, FKeyHash>;
+    using KeyMap = std::unordered_map<FKey, std::function<void()>, EnumHash<FKey>>;
+    using KeyMapResult = std::unordered_map<FKey, std::function<bool()>, EnumHash<FKey>>;
     using LazyInsert = std::function<void(FListBoxItem&, FDataAccess*, std::size_t)>;
 
     // Enumeration

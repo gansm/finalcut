@@ -173,7 +173,7 @@ class FDialog : public FWindow
     };
 
     // Using-declaration
-    using KeyMap = std::unordered_map<FKey, std::function<void()>, FKeyHash>;
+    using KeyMap = std::unordered_map<FKey, std::function<void()>, EnumHash<FKey>>;
 
     // Constant
     static constexpr bool PRINT_WIN_NUMBER = false;  // Only for debug

@@ -146,6 +146,7 @@ class FTerm final
   public:
     // Using-declaration
     using FSetPalette = FColorPalette::FSetPalette;
+    using charSubstitution = FTermData::charSubstitution;
 
     // Constructor
     FTerm();

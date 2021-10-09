@@ -137,7 +137,7 @@ class FTextView : public FWidget
 
   private:
     // Using-declaration
-    using KeyMap = std::unordered_map<FKey, std::function<void()>, FKeyHash>;
+    using KeyMap = std::unordered_map<FKey, std::function<void()>, EnumHash<FKey>>;
 
     // Accessors
     std::size_t         getTextHeight() const;

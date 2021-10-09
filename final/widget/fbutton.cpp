@@ -243,9 +243,7 @@ void FButton::onKeyPress (FKeyEvent* ev)
 
   const FKey key = ev->key();
 
-  if ( key == FKey::Return
-    || key == FKey::Enter
-    || key == FKey::Space )
+  if ( isEnterKey(key) || key == FKey::Space )
   {
     if ( click_animation )
     {

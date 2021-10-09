@@ -800,14 +800,6 @@ enum class FKey : uInt32
   Incomplete                 = UINT32_MAX
 };
 
-struct FKeyHash
-{
-  std::size_t operator () (const FKey& k) const noexcept
-  {
-    return std::hash<uInt32>()(uInt32(k));
-  }
-};
-
 constexpr FKey operator >> (const FKey& k, const uInt32 n) noexcept
 {
   return FKey(uInt32(k) >> n);

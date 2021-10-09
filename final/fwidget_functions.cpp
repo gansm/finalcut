@@ -51,6 +51,28 @@ bool isFocusPrevKey (const FKey key)
 }
 
 //----------------------------------------------------------------------
+bool isMenuKey (const FKey key)
+{
+  return ( key == FKey::Ctrl_caret     // Ctrl+^ (Ctrl+6)
+        || key == FKey::F22            // Shift+F10
+        || key == FKey::Shift_menu );  // Shift+Menu
+}
+
+//----------------------------------------------------------------------
+bool isEnterKey (const FKey key)
+{
+  return ( key == FKey::Return
+        || key == FKey::Enter );
+}
+
+//----------------------------------------------------------------------
+bool isEscapeKey (const FKey key)
+{
+  return ( key == FKey::Escape
+        || key == FKey::Escape_mintty );
+}
+
+//----------------------------------------------------------------------
 bool isInFWidgetList (const FWidget::FWidgetList* list, const FWidget* obj)
 {
   if ( ! list || ! obj )

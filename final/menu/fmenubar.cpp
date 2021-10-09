@@ -94,8 +94,7 @@ void FMenuBar::onKeyPress (FKeyEvent* ev)
 {
   const auto key = ev->key();
 
-  if ( key == FKey::Return
-    || key == FKey::Enter
+  if ( isEnterKey(key)
     || key == FKey::Up
     || key == FKey::Down )
   {
@@ -127,7 +126,7 @@ void FMenuBar::onKeyPress (FKeyEvent* ev)
     selectNextItem();
     ev->accept();
   }
-  else if ( key == FKey::Escape || key == FKey::Escape_mintty )
+  else if ( isEscapeKey(key) )
   {
     leaveMenuBar();
     ev->accept();

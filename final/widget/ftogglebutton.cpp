@@ -413,9 +413,7 @@ void FToggleButton::onKeyPress (FKeyEvent* ev)
 
   const auto key = ev->key();
 
-  if ( key == FKey::Return
-    || key == FKey::Enter
-    || key == FKey::Space )
+  if ( isEnterKey(key) || key == FKey::Space )
   {
     if ( isRadioButton() )
     {

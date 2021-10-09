@@ -154,7 +154,7 @@ class FScrollView : public FWidget
 
   private:
     // Using-declaration
-    using KeyMap = std::unordered_map<FKey, std::function<void()>, FKeyHash>;
+    using KeyMap = std::unordered_map<FKey, std::function<void()>, EnumHash<FKey>>;
 
     // Constants
     static constexpr std::size_t vertical_border_spacing = 2;

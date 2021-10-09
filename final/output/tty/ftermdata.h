@@ -65,6 +65,7 @@ class FTermData final
 
     // Using-declaration
     using EncodingMap = std::unordered_map<std::string, Encoding>;
+    using charSubstitution = std::unordered_map<wchar_t, wchar_t>;
 
     // Constructors
     FTermData () = default;
@@ -197,7 +198,7 @@ inline FTermData::EncodingMap& FTermData::getEncodingList() &
 { return encoding_list; }
 
 //----------------------------------------------------------------------
-inline charSubstitution& FTermData::getCharSubstitutionMap() &
+inline FTermData::charSubstitution& FTermData::getCharSubstitutionMap() &
 { return char_substitution_map; }
 
 //----------------------------------------------------------------------

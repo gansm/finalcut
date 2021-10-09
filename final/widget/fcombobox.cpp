@@ -362,8 +362,7 @@ void FComboBox::onKeyPress (FKeyEvent* ev)
   }
   else if ( key == FKey::Meta_up
          || key == FKey::Ctrl_up
-         || key == FKey::Escape
-         || key == FKey::Escape_mintty )
+         || isEscapeKey(key) )
   {
     hideDropDown();
     ev->accept();

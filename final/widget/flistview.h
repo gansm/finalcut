@@ -413,8 +413,8 @@ class FListView : public FWidget
     struct Header;  // forward declaration
 
     // Using-declaration
-    using KeyMap = std::unordered_map<FKey, std::function<void()>, FKeyHash>;
-    using KeyMapResult = std::unordered_map<FKey, std::function<bool()>, FKeyHash>;
+    using KeyMap = std::unordered_map<FKey, std::function<void()>, EnumHash<FKey>>;
+    using KeyMapResult = std::unordered_map<FKey, std::function<bool()>, EnumHash<FKey>>;
     using HeaderItems = std::vector<Header>;
     using SortTypes = std::vector<SortType>;
 

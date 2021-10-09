@@ -168,7 +168,7 @@ class FLineEdit : public FWidget
   private:
     // Using-declaration
     using offsetPair = std::pair<std::size_t, std::size_t>;
-    using KeyMap = std::unordered_map<FKey, std::function<void()>, FKeyHash>;
+    using KeyMap = std::unordered_map<FKey, std::function<void()>, EnumHash<FKey>>;
 
     // Constants
     static constexpr auto NOT_SET = static_cast<std::size_t>(-1);

@@ -301,9 +301,7 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
     ev->accept();
   }
 
-  if ( ev->isAccepted()
-    && key != FKey::Return
-    && key != FKey::Enter )
+  if ( ev->isAccepted() && isEnterKey(key) )
   {
     drawInputField();
     forceTerminalUpdate();

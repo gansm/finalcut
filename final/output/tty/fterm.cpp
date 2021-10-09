@@ -136,7 +136,7 @@ FString FTerm::getKeyName (FKey keynum)
 }
 
 //----------------------------------------------------------------------
-charSubstitution& FTerm::getCharSubstitutionMap() &
+FTermData::charSubstitution& FTerm::getCharSubstitutionMap() &
 {
   static auto& fterm_data = FTermData::getInstance();
   return fterm_data.getCharSubstitutionMap();

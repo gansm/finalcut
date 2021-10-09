@@ -484,10 +484,9 @@ void FDialog::onKeyPress (FKeyEvent* ev)
     return;
 
   cancelMouseResize();
+  const auto key = ev->key();
 
-  if ( ev->key() == FKey::Ctrl_caret    // Ctrl+^ (Ctrl+6)
-    || ev->key() == FKey::F22           // Shift+F10
-    || ev->key() == FKey::Shift_menu )  // Shift+Menu
+  if ( titlebar_buttons && isMenuKey(key) )
   {
     ev->accept();
     // open the titlebar menu
@@ -503,9 +502,7 @@ void FDialog::onKeyPress (FKeyEvent* ev)
   if ( this == getMainWidget() )
     return;
 
-  if ( ! ev->isAccepted()
-    && ( ev->key() == FKey::Escape
-      || ev->key() == FKey::Escape_mintty) )
+  if ( ! ev->isAccepted() && isEscapeKey(key) )
   {
     ev->accept();
 

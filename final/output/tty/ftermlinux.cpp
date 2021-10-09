@@ -1157,14 +1157,17 @@ inline void FTermLinux::initSpecialCharacter() const
 sInt16 FTermLinux::getFontPos (wchar_t ucs) const
 {
   constexpr sInt16 NOT_FOUND = -1;
-
-  for (std::size_t n{0}; n < screen_unicode_map.entry_ct; n++)
-  {
-    if ( screen_unicode_map.entries[n].unicode == ucs )
-      return static_cast<sInt16>(screen_unicode_map.entries[n].fontpos);
-  }
-
-  return NOT_FOUND;
+  auto& count = screen_unicode_map.entry_ct;
+  const auto& begin = &screen_unicode_map.entries[0];
+  const auto& end = &screen_unicode_map.entries[count];
+  const auto iter = std::find_if ( begin, end,
+                                   [&ucs] (struct unipair entry)
+                                   {
+                                     return ucs == wchar_t(entry.unicode);
+                                   } );
+  return ( iter != end )
+       ? static_cast<sInt16>(iter->fontpos)
+       : NOT_FOUND;
 }
 
 //----------------------------------------------------------------------
@@ -1173,7 +1176,7 @@ void FTermLinux::characterFallback ( wchar_t ucs
 {
   constexpr sInt16 NOT_FOUND = -1;
   static auto& fterm_data = FTermData::getInstance();
-  charSubstitution& sub_map = fterm_data.getCharSubstitutionMap();
+  auto& sub_map = fterm_data.getCharSubstitutionMap();
 
   if ( fallback.size() < 2 || ucs != fallback[0] )
     return;

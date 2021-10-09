@@ -171,7 +171,7 @@ class FTermLinux final
       {
         size_t seed = 0;
         const auto hash1 = ModifierKeyHash()(pair.modifier);
-        const auto hash2 = FKeyHash()(pair.key);
+        const auto hash2 = EnumHash<FKey>()(pair.key);
         seed ^= hash1 + 0x9e3779b9 + (seed << 6) + (seed >> 2);
         seed ^= hash2 + 0x9e3779b9 + (seed << 6) + (seed >> 2);
         return seed;
