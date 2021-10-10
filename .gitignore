@@ -26,7 +26,6 @@ Makefile.in
 /compile
 /depcomp
 /finalcut.pc
-/finalcut.spec
 /install-sh
 /libtool
 /ltmain.sh
