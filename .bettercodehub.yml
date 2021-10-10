@@ -3,8 +3,7 @@ exclude:
   - /doc/.*
   - /examples/.*
   - /final/font/.*
-  - /icon/.*
-  - /logo/.*
+  - /misc/.*
   - /m4/.*
   - /scripts/.*
   - /build.sh

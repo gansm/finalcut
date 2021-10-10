@@ -476,6 +476,7 @@ class FListView : public FWidget
     void                  stopDragScroll();
     iterator              appendItem (FListViewItem*);
     void                  processClick() const;
+    void                  processRowChanged() const;
     void                  processChanged() const;
     void                  changeOnResize() const;
     void                  toggleCheckbox();

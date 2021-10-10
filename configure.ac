@@ -73,7 +73,6 @@ AC_CONFIG_FILES([Makefile
                  doc/Makefile
                  examples/Makefile
                  test/Makefile
-                 finalcut.spec
                  finalcut.pc])
 
 # Check for C++11 support

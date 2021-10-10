@@ -200,7 +200,7 @@ class FComboBox : public FWidget
     void                onePosDown();
     void                passEventToListWindow (const FMouseEvent&);
     void                processClick() const;
-    void                processChanged() const;
+    void                processRowChanged() const;
 
     // Callback methods
     void                cb_setInputField();

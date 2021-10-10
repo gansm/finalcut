@@ -1,5 +1,0 @@
-doc/readme.txt usr/lib/libfinal/examples
-examples/.libs/* usr/lib/libfinal/examples
-examples/*.cpp usr/lib/libfinal/examples
-examples/Makefile.clang usr/lib/libfinal/examples
-examples/Makefile.gcc usr/lib/libfinal/examples

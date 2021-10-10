@@ -355,6 +355,7 @@ class FListBox : public FWidget
     bool                 keyIncSearchInput (FKey);
     void                 processClick() const;
     void                 processSelect() const;
+    void                 processRowChanged() const;
     void                 processChanged() const;
     void                 changeOnResize() const;
     void                 lazyConvert (FListBoxItems::iterator, std::size_t);

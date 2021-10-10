@@ -1,4 +1,4 @@
-![FINAL CUT](logo/svg/finalcut-logo.svg)
+![FINAL CUT](misc/logo/svg/finalcut-logo.svg)
 
 # Library for creating terminal applications with text-based widgets
 

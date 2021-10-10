@@ -250,7 +250,7 @@ void FComboBox::setCurrentItem (std::size_t index)
   list_window.list.setCurrentItem(index);
   input_field = list_window.list.getItem(index).getText();
   input_field.redraw();
-  processChanged();
+  processRowChanged();
 }
 
 //----------------------------------------------------------------------
@@ -529,7 +529,7 @@ void FComboBox::onePosUp()
   list_window.list.setCurrentItem(index);
   input_field = list_window.list.getItem(index).getText();
   input_field.redraw();
-  processChanged();
+  processRowChanged();
 }
 
 //----------------------------------------------------------------------
@@ -545,7 +545,7 @@ void FComboBox::onePosDown()
   list_window.list.setCurrentItem(index);
   input_field = list_window.list.getItem(index).getText();
   input_field.redraw();
-  processChanged();
+  processRowChanged();
 }
 
 //----------------------------------------------------------------------
@@ -570,7 +570,7 @@ void FComboBox::processClick() const
 }
 
 //----------------------------------------------------------------------
-void FComboBox::processChanged() const
+void FComboBox::processRowChanged() const
 {
   emitCallback("row-changed");
 }
@@ -582,7 +582,7 @@ void FComboBox::cb_setInputField()
   const std::size_t index = list.currentItem();
   input_field = list.getItem(index).getText();
   input_field.redraw();
-  processChanged();
+  processRowChanged();
 }
 
 //----------------------------------------------------------------------

@@ -8,8 +8,7 @@ engines:
 exclude_paths:
   - 'debian/**'
   - 'doc/**'
-  - 'icon/**'
-  - 'logo/**'
+  - 'misc/**'
   - 'm4/**'
   - 'scripts/**'
 

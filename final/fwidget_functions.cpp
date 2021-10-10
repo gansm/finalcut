@@ -487,6 +487,9 @@ void drawBorder (FWidget* w, const FRect& r)
   FRect rect = r;
   checkBorder (w, rect);
 
+  if ( r.getWidth() < 3 )
+    return;
+
   if ( FVTerm::getFOutput()->isNewFont() )
     drawNewFontBox (w, rect);
   else
@@ -498,6 +501,9 @@ void drawListBorder (FWidget* w, const FRect& r)
 {
   FRect rect = r;
   checkBorder (w, rect);
+
+  if ( r.getWidth() < 3 )
+    return;
 
   if ( FVTerm::getFOutput()->isNewFont() )
     drawNewFontListBox (w, rect);

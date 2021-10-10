@@ -899,6 +899,8 @@ void FListView::remove (FListViewItem* item)
     drawHeadlines();
     drawScrollbars();
   }
+
+  processChanged();
 }
 
 //----------------------------------------------------------------------
@@ -915,6 +917,7 @@ void FListView::clear()
   vbar->setValue(0);
   vbar->hide();
   clearList();
+  processChanged();
 }
 
 //----------------------------------------------------------------------
@@ -969,6 +972,7 @@ void FListView::sort()
 
   current_iter = itemlist.begin();
   first_visible_line = itemlist.begin();
+  processChanged();
 }
 
 //----------------------------------------------------------------------
@@ -981,7 +985,7 @@ void FListView::onKeyPress (FKeyEvent* ev)
   processKeyAction(ev);  // Process the keystrokes
 
   if ( position_before != current_iter.getPosition() )
-    processChanged();
+    processRowChanged();
 
   if ( ev->isAccepted() )
   {
@@ -1119,7 +1123,7 @@ void FListView::onMouseUp (FMouseEvent* ev)
           }
         }
 
-        processChanged();
+        processRowChanged();
       }
     }
   }
@@ -1255,7 +1259,7 @@ void FListView::onWheel (FWheelEvent* ev)
     wheelDown (wheel_distance);
 
   if ( position_before != current_iter.getPosition() )
-    processChanged();
+    processRowChanged();
 
   if ( isShown() )
     drawList();
@@ -2114,6 +2118,7 @@ inline void FListView::afterInsertion()
 
   const std::size_t element_count = getCount();
   recalculateVerticalBar (element_count);
+  processChanged();
 }
 
 //----------------------------------------------------------------------
@@ -2363,9 +2368,15 @@ void FListView::processClick() const
 }
 
 //----------------------------------------------------------------------
-void FListView::processChanged() const
+void FListView::processRowChanged() const
 {
   emitCallback("row-changed");
+}
+
+//----------------------------------------------------------------------
+void FListView::processChanged() const
+{
+  emitCallback("changed");
 }
 
 //----------------------------------------------------------------------

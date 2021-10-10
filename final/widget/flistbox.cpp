@@ -168,6 +168,7 @@ void FListBox::insert (const FListBoxItem& listItem)
 
   std::size_t element_count = getCount();
   recalculateVerticalBar (element_count);
+  processChanged();
 }
 
 //----------------------------------------------------------------------
@@ -217,6 +218,8 @@ void FListBox::remove (std::size_t item)
 
   if ( yoffset < 0 )
     yoffset = 0;
+
+  processChanged();
 }
 
 //----------------------------------------------------------------------
@@ -253,6 +256,8 @@ void FListBox::clear()
   {
     print() << FPoint{2, 2 + y} << FString{size, L' '};
   }
+
+  processChanged();
 }
 
 //----------------------------------------------------------------------
@@ -264,7 +269,7 @@ void FListBox::onKeyPress (FKeyEvent* ev)
   processKeyAction(ev);  // Process the keystrokes
 
   if ( current_before != current )
-    processChanged();
+    processRowChanged();
 
   if ( ev->isAccepted() )
   {
@@ -309,7 +314,7 @@ void FListBox::onMouseDown (FMouseEvent* ev)
 
     if ( current_before != current )
     {
-      processChanged();
+      processRowChanged();
     }
 
     if ( isShown() )
@@ -378,11 +383,11 @@ void FListBox::onMouseMove (FMouseEvent* ev)
       // Handle multiple selections + changes
       if ( ev->getButton() == MouseButton::Right )
       {
-        processChanged();
+        processRowChanged();
         multiSelectionUpTo(current);
       }
       else if ( ev->getButton() == MouseButton::Left )
-        processChanged();
+        processRowChanged();
     }
 
     if ( isShown() )
@@ -446,7 +451,7 @@ void FListBox::onTimer (FTimerEvent*)
   if ( current_before != current )
   {
     inc_search.clear();
-    processChanged();
+    processRowChanged();
 
     // Handle multiple selections
     if ( drag_scroll == DragScrollMode::SelectUpward
@@ -484,7 +489,7 @@ void FListBox::onWheel (FWheelEvent* ev)
   if ( current_before != current )
   {
     inc_search.clear();
-    processChanged();
+    processRowChanged();
   }
 
   if ( isShown() )
@@ -1624,9 +1629,15 @@ void FListBox::processSelect() const
 }
 
 //----------------------------------------------------------------------
-void FListBox::processChanged() const
+void FListBox::processRowChanged() const
 {
   emitCallback("row-changed");
+}
+
+//----------------------------------------------------------------------
+void FListBox::processChanged() const
+{
+  emitCallback("changed");
 }
 
 //----------------------------------------------------------------------
@@ -1702,7 +1713,7 @@ void FListBox::cb_vbarChange (const FWidget*)
   if ( current_before != current )
   {
     inc_search.clear();
-    processChanged();
+    processRowChanged();
   }
 
   if ( isShown() )

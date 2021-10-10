@@ -726,10 +726,10 @@ void delCallback()
   <dd>"activate"<br />"changed"</dd>
 
   <dt>FListBox</dt>
-  <dd>"clicked"<br />"row-changed"<br />"row-selected"</dd>
+  <dd>"changed"<br />"clicked"<br />"row-changed"<br />"row-selected"</dd>
 
   <dt>FListView</dt>
-  <dd>"clicked"<br />"row-changed"</dd>
+  <dd>"changed"<br />"clicked"<br />"row-changed"</dd>
 
   <dt>FMenu</dt>
   <dd>"activate"</dd>
