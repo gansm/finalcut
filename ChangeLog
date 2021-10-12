@@ -1,3 +1,6 @@
+2021-12-08 Markus Gans  <guru.mail@muenster.de>
+	* Now, FINAL CUT also runs under GNU Hurd
+
 2021-10-08 Markus Gans  <guru.mail@muenster.de>
 	* The visibility of the FDialog title bar buttons can now be disabled
 

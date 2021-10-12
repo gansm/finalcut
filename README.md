@@ -44,6 +44,7 @@ The structure of the Qt framework was originally the inspiration for the C++ cla
 * OpenBSD
 * macOS
 * Cygwin
+* GNU Hurd
 * Solaris
 
 ## Documentation

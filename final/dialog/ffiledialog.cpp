@@ -27,6 +27,10 @@
   #define _BSD_SOURCE  // for D_TYPE in readdir
 #endif
 
+#if !defined MAXPATHLEN
+  #define MAXPATHLEN 4096  // Need on GNU Hurd
+#endif
+
 #include "final/dialog/ffiledialog.h"
 #include "final/fevent.h"
 #include "final/util/fsystem.h"

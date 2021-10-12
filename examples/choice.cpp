@@ -56,6 +56,7 @@ void populateChoice ( std::vector<FRadioButtonPtr>& os
   os[6] = std::make_shared<finalcut::FRadioButton>("NetBSD", &group);
   os[7] = std::make_shared<finalcut::FRadioButton>("OpenBSD", &group);
   os[8] = std::make_shared<finalcut::FRadioButton>("Solaris", &group);
+  os[9] = std::make_shared<finalcut::FRadioButton>("GNU Hurd", &group);
 }
 
 //----------------------------------------------------------------------
@@ -88,6 +89,9 @@ void preset (std::vector<FRadioButtonPtr>& os)
 #elif defined(__sun) && defined(__SVR4)
   os[8]->setChecked();
   os[8]->setFocus();
+#elif defined(__GNU__)
+  os[9]->setChecked();
+  os[9]->setFocus();
 #endif
 }
 
@@ -116,7 +120,7 @@ int main (int argc, char* argv[])
     checkButtonGroup.setGeometry (FPoint{2, 1}, FSize{16, 7});
 
     // Create radio buttons
-    std::vector<FRadioButtonPtr> os(9);
+    std::vector<FRadioButtonPtr> os(10);
     populateChoice (os, checkButtonGroup);
 
     // Set the radio button geometry
