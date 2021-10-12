@@ -444,6 +444,9 @@ FKey FTermLinux::modifierKeyCorrection (const FKey& key_id)
 {
   // Get the current modifier key state
 
+  if ( key_map.empty() )
+    return key_id;
+
   const Pair pair{getModifierKey(), key_id};
   const auto& key = key_map[pair];
 
@@ -1174,12 +1177,12 @@ sInt16 FTermLinux::getFontPos (wchar_t ucs) const
 void FTermLinux::characterFallback ( wchar_t ucs
                                    , const std::vector<wchar_t>& fallback ) const
 {
+  if ( fallback.size() < 2 || ucs != fallback[0] )
+    return;
+
   constexpr sInt16 NOT_FOUND = -1;
   static auto& fterm_data = FTermData::getInstance();
   auto& sub_map = fterm_data.getCharSubstitutionMap();
-
-  if ( fallback.size() < 2 || ucs != fallback[0] )
-    return;
 
   for (auto iter = fallback.begin() + 1; iter != fallback.end(); iter++)
   {
@@ -1187,7 +1190,7 @@ void FTermLinux::characterFallback ( wchar_t ucs
 
     if ( pos != NOT_FOUND )
     {
-      sub_map[ucs] = *iter;
+      sub_map.setCharMapping({ucs, *iter});
       return;
     }
   }

@@ -136,7 +136,7 @@ FString FTerm::getKeyName (FKey keynum)
 }
 
 //----------------------------------------------------------------------
-FTermData::charSubstitution& FTerm::getCharSubstitutionMap() &
+FCharSubstitution& FTerm::getCharSubstitutionMap() &
 {
   static auto& fterm_data = FTermData::getInstance();
   return fterm_data.getCharSubstitutionMap();
@@ -1102,14 +1102,14 @@ void FTerm::init_cygwin_charmap()
 
   // General encoding changes
   auto& sub_map = data.getCharSubstitutionMap();
-  sub_map[L'•'] = L'*';
-  sub_map[L'●'] = L'*';
-  sub_map[L'◘'] = L'*';
-  sub_map[L'○'] = L'*';
-  sub_map[L'◙'] = L'*';
-  sub_map[L'♪'] = L'♫';
-  sub_map[L'√'] = L'x';
-  sub_map[L'ˣ'] = L'`';
+  sub_map.setCharMapping({L'•', L'*'});
+  sub_map.setCharMapping({L'●', L'*'});
+  sub_map.setCharMapping({L'◘', L'*'});
+  sub_map.setCharMapping({L'○', L'*'});
+  sub_map.setCharMapping({L'◙', L'*'});
+  sub_map.setCharMapping({L'♪', L'♫'});
+  sub_map.setCharMapping({L'√', L'x'});
+  sub_map.setCharMapping({L'ˣ', L'`'});
 }
 
 //----------------------------------------------------------------------

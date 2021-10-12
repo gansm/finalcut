@@ -1427,11 +1427,11 @@ inline void FTermOutput::characterFilter (FChar& next_char)
 {
   static auto& sub_map = getFTerm().getCharSubstitutionMap();
 
-  if ( sub_map.empty() )
+  if ( sub_map.isEmpty() )
     return;
 
   auto& first_enc_char = next_char.encoded_char[0];
-  const auto& entry = sub_map[first_enc_char];
+  const auto& entry = sub_map.getMappedChar(first_enc_char);
 
   if ( entry )
     first_enc_char = entry;

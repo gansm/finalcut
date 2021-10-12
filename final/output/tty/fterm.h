@@ -146,7 +146,6 @@ class FTerm final
   public:
     // Using-declaration
     using FSetPalette = FColorPalette::FSetPalette;
-    using charSubstitution = FTermData::charSubstitution;
 
     // Constructor
     FTerm();
@@ -171,7 +170,7 @@ class FTerm final
     static std::size_t       getLineNumber();
     static std::size_t       getColumnNumber();
     static FString           getKeyName (FKey);
-    charSubstitution&        getCharSubstitutionMap() &;
+    FCharSubstitution&       getCharSubstitutionMap() &;
     static int               getTTYFileDescriptor();
     static std::string       getTermType();
     static std::string       getTermFileName();

@@ -486,7 +486,7 @@ void FDialog::onKeyPress (FKeyEvent* ev)
   cancelMouseResize();
   const auto key = ev->key();
 
-  if ( titlebar_buttons && isMenuKey(key) )
+  if ( titlebar_buttons && isDialogMenuKey(key) )
   {
     ev->accept();
     // open the titlebar menu

@@ -1,4 +1,6 @@
 2021-12-08 Markus Gans  <guru.mail@muenster.de>
+	* The predefined escape sequences for keyboard keys are now 
+	  functional again
 	* Now, FINAL CUT also runs under GNU Hurd
 
 2021-10-08 Markus Gans  <guru.mail@muenster.de>

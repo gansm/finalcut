@@ -2181,10 +2181,10 @@ void FTermLinuxTest::linuxConsoleTest()
 
     linux.initCharMap();
     auto& character_map = data.getCharSubstitutionMap();
-    CPPUNIT_ASSERT ( character_map.size() == 3 );
-    CPPUNIT_ASSERT ( character_map[wchar_t(finalcut::UniChar::BlackCircle)] == L'*' );
-    CPPUNIT_ASSERT ( character_map[wchar_t(finalcut::UniChar::Times)] == L'x' );
-    CPPUNIT_ASSERT ( character_map[L'ˣ'] == L'ⁿ' );
+    CPPUNIT_ASSERT ( ! character_map.isEmpty() );
+    CPPUNIT_ASSERT ( character_map.getMappedChar(wchar_t(finalcut::UniChar::BlackCircle)) == L'*' );
+    CPPUNIT_ASSERT ( character_map.getMappedChar(wchar_t(finalcut::UniChar::Times)) == L'x' );
+    CPPUNIT_ASSERT ( character_map.getMappedChar(L'ˣ') == L'ⁿ' );
     linux.finish();
 
     closeConEmuStdStreams();
@@ -2274,11 +2274,11 @@ void FTermLinuxTest::linuxConsoleLat15Test()
     CPPUNIT_ASSERT ( ! data.hasShadowCharacter() );
     CPPUNIT_ASSERT ( ! data.hasHalfBlockCharacter() );
     auto& character_map = data.getCharSubstitutionMap();
-    CPPUNIT_ASSERT ( character_map.size() == 4 );
-    CPPUNIT_ASSERT ( character_map[wchar_t(finalcut::UniChar::SquareRoot)] == L'x' );
-    CPPUNIT_ASSERT ( character_map[wchar_t(finalcut::UniChar::BlackLeftPointingPointer)] == L'◀' );
-    CPPUNIT_ASSERT ( character_map[wchar_t(finalcut::UniChar::BlackRightPointingPointer)] == L'▶' );
-    CPPUNIT_ASSERT ( character_map[L'ˣ'] == L'ⁿ' );
+    CPPUNIT_ASSERT ( ! character_map.isEmpty() );
+    CPPUNIT_ASSERT ( character_map.getMappedChar(wchar_t(finalcut::UniChar::SquareRoot)) == L'x' );
+    CPPUNIT_ASSERT ( character_map.getMappedChar(wchar_t(finalcut::UniChar::BlackLeftPointingPointer)) == L'◀' );
+    CPPUNIT_ASSERT ( character_map.getMappedChar(wchar_t(finalcut::UniChar::BlackRightPointingPointer)) == L'▶' );
+    CPPUNIT_ASSERT ( character_map.getMappedChar(L'ˣ') == L'ⁿ' );
     linux.finish();
 
     closeConEmuStdStreams();

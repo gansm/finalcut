@@ -207,48 +207,48 @@ FKeyMap::KeyCapMapType FKeyMap::fkey_cap_table
   { FKey::F63             , nullptr,   0, "Fr" },  // F63 function key
   // Some terminals (e.g. PuTTY) send vt100 key codes
   // when the arrow and function keys are pressed
-  { FKey::F1              , ESC "OP",  0, "k1x"},  // PF1 (application mode)
-  { FKey::F2              , ESC "OQ",  0, "k2x"},  // PF2 (application mode)
-  { FKey::F3              , ESC "OR",  0, "k3x"},  // PF3 (application mode)
-  { FKey::F4              , ESC "OS",  0, "k4x"},  // PF4 (application mode)
-  { FKey::Left            , CSI "D",   0, "klx"},  // Left-arrow key (standard mode)
-  { FKey::Left            , ESC "OD",  0, "klX"},  // Left-arrow key (application mode)
-  { FKey::Right           , CSI "C",   0, "krx"},  // Right-arrow key (standard mode)
-  { FKey::Right           , ESC "OC",  0, "krX"},  // Right-arrow key (application mode)
-  { FKey::Up              , CSI "A",   0, "kux"},  // Up-arrow key (standard mode)
-  { FKey::Up              , ESC "OA",  0, "kuX"},  // Up-arrow key (application mode)
-  { FKey::Down            , CSI "B",   0, "kdx"},  // Down-arrow key (standard mode)
-  { FKey::Down            , ESC "OB",  0, "kdX"},  // Down-arrow key (application mode)
-  { FKey::Scroll_forward  , CSI "a",   0, "kFx"},  // Scroll-forward key (shift-up)
-  { FKey::Scroll_backward , CSI "b",   0, "kRx"},  // Scroll-backward key (shift-down)
+  { FKey::F1              , ESC "OP",  3, "k1x"},  // PF1 (application mode)
+  { FKey::F2              , ESC "OQ",  3, "k2x"},  // PF2 (application mode)
+  { FKey::F3              , ESC "OR",  3, "k3x"},  // PF3 (application mode)
+  { FKey::F4              , ESC "OS",  3, "k4x"},  // PF4 (application mode)
+  { FKey::Left            , CSI "D",   3, "klx"},  // Left-arrow key (standard mode)
+  { FKey::Left            , ESC "OD",  3, "klX"},  // Left-arrow key (application mode)
+  { FKey::Right           , CSI "C",   3, "krx"},  // Right-arrow key (standard mode)
+  { FKey::Right           , ESC "OC",  3, "krX"},  // Right-arrow key (application mode)
+  { FKey::Up              , CSI "A",   3, "kux"},  // Up-arrow key (standard mode)
+  { FKey::Up              , ESC "OA",  3, "kuX"},  // Up-arrow key (application mode)
+  { FKey::Down            , CSI "B",   3, "kdx"},  // Down-arrow key (standard mode)
+  { FKey::Down            , ESC "OB",  3, "kdX"},  // Down-arrow key (application mode)
+  { FKey::Scroll_forward  , CSI "a",   3, "kFx"},  // Scroll-forward key (shift-up)
+  { FKey::Scroll_backward , CSI "b",   3, "kRx"},  // Scroll-backward key (shift-down)
   // Fallback for rxvt with TERM=xterm
-  { FKey::Home            , CSI "7~",  0, "khx"},  // Home key
-  { FKey::End             , CSI "8~",  0, "@7x"},  // End key
-  { FKey::F1              , CSI "11~", 0, "k1X"},  // F1 function key
-  { FKey::F2              , CSI "12~", 0, "k2X"},  // F2 function key
-  { FKey::F3              , CSI "13~", 0, "k3X"},  // F3 function key
-  { FKey::F4              , CSI "14~", 0, "k4X"},  // F4 function key
+  { FKey::Home            , CSI "7~",  4, "khx"},  // Home key
+  { FKey::End             , CSI "8~",  4, "@7x"},  // End key
+  { FKey::F1              , CSI "11~", 5, "k1X"},  // F1 function key
+  { FKey::F2              , CSI "12~", 5, "k2X"},  // F2 function key
+  { FKey::F3              , CSI "13~", 5, "k3X"},  // F3 function key
+  { FKey::F4              , CSI "14~", 5, "k4X"},  // F4 function key
   // Fallback for TERM=ansi
-  { FKey::Home            , CSI "H",   0, "khX"},  // Home key
-  { FKey::End             , CSI "F",   0, "@7X"},  // End key
-  { FKey::End             , CSI "K",   0, "@7y"},  // End key (Microsoft HyperTerminal)
+  { FKey::Home            , CSI "H",   3, "khX"},  // Home key
+  { FKey::End             , CSI "F",   3, "@7X"},  // End key
+  { FKey::End             , CSI "K",   3, "@7y"},  // End key (Microsoft HyperTerminal)
   // Keypad keys
-  { FKey::Enter           , ESC "OM",  0, "@8x"},  // Enter key
-  { FKey::Slash           , ESC "Oo",  0, "KP1"},  // Keypad Slash
-  { FKey::Asterisk        , ESC "Oj",  0, "KP2"},  // Keypad Asterisk
-  { FKey::Minus_sign      , ESC "Om",  0, "KP3"},  // Keypad Minus sign
-  { FKey::Plus_sign       , ESC "Ok",  0, "KP4"},  // Keypad Plus sign
-  { FKey::Insert          , ESC "Op",  0, "kIx"},  // Keypad Insert
-  { FKey::Del_char        , ESC "On",  0, "kDx"},  // Keypad Delete
-  { FKey::Left            , ESC "Ot",  0, "kly"},  // Keypad Left-arrow
-  { FKey::Right           , ESC "Ov",  0, "kry"},  // Keypad Right-arrow
-  { FKey::Up              , ESC "Ox",  0, "kuy"},  // Keypad Up-arrow
-  { FKey::Down            , ESC "Or",  0, "kdy"},  // Keypad Down-arrow
-  { FKey::Upper_left      , ESC "Ow",  0, "K1x"},  // Keypad Upper left
-  { FKey::Upper_right     , ESC "Oy",  0, "K3x"},  // Keypad Upper right
-  { FKey::Center          , ESC "Ou",  0, "K2x"},  // Keypad Center
-  { FKey::Lower_left      , ESC "Oq",  0, "K4x"},  // Keypad Lower left
-  { FKey::Lower_right     , ESC "Os",  0, "K5x"}   // Keypad Lower right
+  { FKey::Enter           , ESC "OM",  3, "@8x"},  // Enter key
+  { FKey::Slash           , ESC "Oo",  3, "KP1"},  // Keypad Slash
+  { FKey::Asterisk        , ESC "Oj",  3, "KP2"},  // Keypad Asterisk
+  { FKey::Minus_sign      , ESC "Om",  3, "KP3"},  // Keypad Minus sign
+  { FKey::Plus_sign       , ESC "Ok",  3, "KP4"},  // Keypad Plus sign
+  { FKey::Insert          , ESC "Op",  3, "kIx"},  // Keypad Insert
+  { FKey::Del_char        , ESC "On",  3, "kDx"},  // Keypad Delete
+  { FKey::Left            , ESC "Ot",  3, "kly"},  // Keypad Left-arrow
+  { FKey::Right           , ESC "Ov",  3, "kry"},  // Keypad Right-arrow
+  { FKey::Up              , ESC "Ox",  3, "kuy"},  // Keypad Up-arrow
+  { FKey::Down            , ESC "Or",  3, "kdy"},  // Keypad Down-arrow
+  { FKey::Upper_left      , ESC "Ow",  3, "K1x"},  // Keypad Upper left
+  { FKey::Upper_right     , ESC "Oy",  3, "K3x"},  // Keypad Upper right
+  { FKey::Center          , ESC "Ou",  3, "K2x"},  // Keypad Center
+  { FKey::Lower_left      , ESC "Oq",  3, "K4x"},  // Keypad Lower left
+  { FKey::Lower_right     , ESC "Os",  3, "K5x"}   // Keypad Lower right
 }};
 
 //----------------------------------------------------------------------

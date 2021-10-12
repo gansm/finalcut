@@ -51,6 +51,67 @@ namespace finalcut
 {
 
 //----------------------------------------------------------------------
+// class FCharSubstitution
+//----------------------------------------------------------------------
+
+class FCharSubstitution
+{
+  public:
+    struct Map
+    {
+      wchar_t from;
+      wchar_t to;
+    };
+
+    wchar_t getMappedChar (wchar_t);
+    void setCharMapping (const Map&);
+    bool isEmpty();
+
+  private:
+    std::vector<Map> sub_map{};
+};
+
+// FTermData inline functions
+//----------------------------------------------------------------------
+inline wchar_t FCharSubstitution::getMappedChar (wchar_t c)
+{
+  const auto& end = sub_map.end();
+  auto iter = std::find_if ( sub_map.begin(), end,
+                             [&c] (const Map& map)
+                             {
+                               return map.from == c;
+                             } );
+
+  if ( iter == end )
+    return L'\0';
+  else
+    return iter->to;
+}
+
+//----------------------------------------------------------------------
+inline void FCharSubstitution::setCharMapping (const Map& m)
+{
+  const auto& end = sub_map.end();
+  auto iter = std::find_if ( sub_map.begin(), end,
+                             [&m] (const Map& map)
+                             {
+                               return map.from == m.from;
+                             } );
+
+  if ( iter == end )
+    sub_map.push_back(m);
+  else
+    iter->to = m.to;
+}
+
+//----------------------------------------------------------------------
+inline bool FCharSubstitution::isEmpty()
+{
+  return sub_map.empty();
+}
+
+
+//----------------------------------------------------------------------
 // class FTermData
 //----------------------------------------------------------------------
 
@@ -65,7 +126,6 @@ class FTermData final
 
     // Using-declaration
     using EncodingMap = std::unordered_map<std::string, Encoding>;
-    using charSubstitution = std::unordered_map<wchar_t, wchar_t>;
 
     // Constructors
     FTermData () = default;
@@ -74,7 +134,7 @@ class FTermData final
     FString            getClassName() const;
     static auto        getInstance() -> FTermData&;
     EncodingMap&       getEncodingList() &;
-    charSubstitution&  getCharSubstitutionMap() &;
+    FCharSubstitution& getCharSubstitutionMap() &;
     Encoding           getTermEncoding() const;
     FRect&             getTermGeometry() &;
     int                getTTYFileDescriptor() const noexcept;
@@ -140,7 +200,7 @@ class FTermData final
   private:
     // Data members
     EncodingMap           encoding_list{};
-    charSubstitution      char_substitution_map{};
+    FCharSubstitution     char_substitution_map{};
     FRect                 term_geometry{};  // current terminal geometry
     FString               xterm_font{};
     FString               xterm_title{};
@@ -198,7 +258,7 @@ inline FTermData::EncodingMap& FTermData::getEncodingList() &
 { return encoding_list; }
 
 //----------------------------------------------------------------------
-inline FTermData::charSubstitution& FTermData::getCharSubstitutionMap() &
+inline FCharSubstitution& FTermData::getCharSubstitutionMap() &
 { return char_substitution_map; }
 
 //----------------------------------------------------------------------

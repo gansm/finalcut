@@ -106,7 +106,7 @@ void FMenuBar::onKeyPress (FKeyEvent* ev)
       {
         openMenu (sel_item);
       }
-      else if ( key == FKey::Return || key == FKey::Enter )
+      else if ( isEnterKey(key) )
       {
         unselectItem();
         redraw();

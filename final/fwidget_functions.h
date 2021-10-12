@@ -47,7 +47,7 @@ using FWidgetList = std::vector<FWidget*>;
 void          detectTerminalSize();
 bool          isFocusNextKey (const FKey);
 bool          isFocusPrevKey (const FKey);
-bool          isMenuKey (const FKey);
+bool          isDialogMenuKey (const FKey);
 bool          isEnterKey (const FKey);
 bool          isEscapeKey (const FKey);
 bool          isInFWidgetList (const FWidgetList*, const FWidget*);

@@ -155,18 +155,18 @@ void FTermDataTest::dataTest()
   data.setTermEncoding(finalcut::Encoding::Unknown);
   CPPUNIT_ASSERT ( data.getTermEncoding() == finalcut::Encoding::Unknown );
 
-  CPPUNIT_ASSERT ( data.getCharSubstitutionMap().size() == 0 );
+  CPPUNIT_ASSERT ( data.getCharSubstitutionMap().isEmpty() );
   auto& character_map = data.getCharSubstitutionMap();
-  character_map[L'€'] = 'E';
-  character_map[L'µ'] = L'u';
-  character_map[wchar_t(finalcut::UniChar::Bullet)] = '*';
-  character_map[wchar_t(finalcut::UniChar::FullBlock)] = wchar_t(finalcut::UniChar::MediumShade);
+  character_map.setCharMapping({L'€', 'E'});
+  character_map.setCharMapping({L'µ', L'u'});
+  character_map.setCharMapping({wchar_t(finalcut::UniChar::Bullet), '*'});
+  character_map.setCharMapping({wchar_t(finalcut::UniChar::FullBlock), wchar_t(finalcut::UniChar::MediumShade)});
   auto& char_map = data.getCharSubstitutionMap();
-  CPPUNIT_ASSERT ( char_map.size() == 4 );
-  CPPUNIT_ASSERT ( char_map[L'€'] == 'E' );
-  CPPUNIT_ASSERT ( char_map[L'µ'] == L'u' );
-  CPPUNIT_ASSERT ( char_map[wchar_t(finalcut::UniChar::Bullet)] == '*' );
-  CPPUNIT_ASSERT ( char_map[wchar_t(finalcut::UniChar::FullBlock)]
+  CPPUNIT_ASSERT ( ! char_map.isEmpty() );
+  CPPUNIT_ASSERT ( char_map.getMappedChar(L'€') == 'E' );
+  CPPUNIT_ASSERT ( char_map.getMappedChar(L'µ') == L'u' );
+  CPPUNIT_ASSERT ( char_map.getMappedChar(wchar_t(finalcut::UniChar::Bullet)) == '*' );
+  CPPUNIT_ASSERT ( char_map.getMappedChar(wchar_t(finalcut::UniChar::FullBlock))
                    == wchar_t(finalcut::UniChar::MediumShade) );
 
   CPPUNIT_ASSERT ( data.getTermGeometry() == finalcut::FRect() );

@@ -51,7 +51,7 @@ bool isFocusPrevKey (const FKey key)
 }
 
 //----------------------------------------------------------------------
-bool isMenuKey (const FKey key)
+bool isDialogMenuKey (const FKey key)
 {
   return ( key == FKey::Ctrl_caret     // Ctrl+^ (Ctrl+6)
         || key == FKey::F22            // Shift+F10

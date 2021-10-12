@@ -232,49 +232,49 @@ test_type fkey =
   { finalcut::FKey::F61             , ESC "O1;4P", 6, "Fp" },  // F61 function key
   { finalcut::FKey::F62             , ESC "O1;4Q", 6, "Fq" },  // F62 function key
   { finalcut::FKey::F63             , ESC "O1;4R", 6, "Fr" },  // F63 function key
-  // vt100 key codes for arrow and function keys
-  { finalcut::FKey::F1              , ESC "OP"   , 3, "k1x"},  // PF1 (application mode)
-  { finalcut::FKey::F2              , ESC "OQ"   , 3, "k2x"},  // PF2 (application mode)
-  { finalcut::FKey::F3              , ESC "OR"   , 3, "k3x"},  // PF3 (application mode)
-  { finalcut::FKey::F4              , ESC "OS"   , 3, "k4x"},  // PF4 (application mode)
-  { finalcut::FKey::Left            , CSI "D"    , 3, "klx"},  // left-arrow key (standard mode)
-  { finalcut::FKey::Left            , ESC "OD"   , 3, "klX"},  // left-arrow key (application mode)
-  { finalcut::FKey::Right           , CSI "C"    , 3, "krx"},  // right-arrow key (standard mode)
-  { finalcut::FKey::Right           , ESC "OC"   , 3, "krX"},  // right-arrow key (application mode)
-  { finalcut::FKey::Up              , CSI "A"    , 3, "kux"},  // up-arrow key (standard mode)
-  { finalcut::FKey::Up              , ESC "OA"   , 3, "kuX"},  // up-arrow key (application mode)
-  { finalcut::FKey::Down            , CSI "B"    , 3, "kdx"},  // down-arrow key (standard mode)
-  { finalcut::FKey::Down            , ESC "OB"   , 3, "kdX"},  // down-arrow key (application mode)
-  { finalcut::FKey::Scroll_forward  , CSI "a"    , 3, "kFx"},  // scroll-forward key (shift-up)
-  { finalcut::FKey::Scroll_backward , CSI "b"    , 3, "kRx"},  // scroll-backward key (shift-down)
+  // vt100 key codes for arrow and function keys (array pos[150])
+  { finalcut::FKey::F1              , 0          , 0, "k1x"},  // PF1 (application mode)
+  { finalcut::FKey::F2              , 0          , 0, "k2x"},  // PF2 (application mode)
+  { finalcut::FKey::F3              , 0          , 0, "k3x"},  // PF3 (application mode)
+  { finalcut::FKey::F4              , 0          , 0, "k4x"},  // PF4 (application mode)
+  { finalcut::FKey::Left            , 0          , 0, "klx"},  // left-arrow key (standard mode)
+  { finalcut::FKey::Left            , 0          , 0, "klX"},  // left-arrow key (application mode)
+  { finalcut::FKey::Right           , 0          , 0, "krx"},  // right-arrow key (standard mode)
+  { finalcut::FKey::Right           , 0          , 0, "krX"},  // right-arrow key (application mode)
+  { finalcut::FKey::Up              , 0          , 0, "kux"},  // up-arrow key (standard mode)
+  { finalcut::FKey::Up              , 0          , 0, "kuX"},  // up-arrow key (application mode)
+  { finalcut::FKey::Down            , 0          , 0, "kdx"},  // down-arrow key (standard mode)
+  { finalcut::FKey::Down            , 0          , 0, "kdX"},  // down-arrow key (application mode)
+  { finalcut::FKey::Scroll_forward  , 0          , 0, "kFx"},  // scroll-forward key (shift-up)
+  { finalcut::FKey::Scroll_backward , 0          , 0, "kRx"},  // scroll-backward key (shift-down)
   // Fallback for rxvt with TERM=xterm
-  { finalcut::FKey::Home            , CSI "7~"   , 4, "khx"},  // home key
-  { finalcut::FKey::End             , CSI "8~"   , 4, "@7x"},  // end key
-  { finalcut::FKey::F1              , CSI "11~"  , 5, "k1X"},  // F1 function key
-  { finalcut::FKey::F2              , CSI "12~"  , 5, "k2X"},  // F2 function key
-  { finalcut::FKey::F3              , CSI "13~"  , 5, "k3X"},  // F3 function key
-  { finalcut::FKey::F4              , CSI "14~"  , 5, "k4X"},  // F4 function key
+  { finalcut::FKey::Home            , 0          , 0, "khx"},  // home key
+  { finalcut::FKey::End             , 0          , 0, "@7x"},  // end key
+  { finalcut::FKey::F1              , 0          , 0, "k1X"},  // F1 function key
+  { finalcut::FKey::F2              , 0          , 0, "k2X"},  // F2 function key
+  { finalcut::FKey::F3              , 0          , 0, "k3X"},  // F3 function key
+  { finalcut::FKey::F4              , 0          , 0, "k4X"},  // F4 function key
   // Fallback for TERM=ansi
-  { finalcut::FKey::Home            , CSI "H"    , 3, "khX"},  // home key
-  { finalcut::FKey::End             , CSI "F"    , 3, "@7X"},  // end key
-  { finalcut::FKey::End             , CSI "K"    , 3, "@7y"},  // end key (Microsoft HyperTerminal)
+  { finalcut::FKey::Home            , 0          , 0, "khX"},  // home key
+  { finalcut::FKey::End             , 0          , 0, "@7X"},  // end key
+  { finalcut::FKey::End             , 0          , 0, "@7y"},  // end key (Microsoft HyperTerminal)
   // Keypad keys
-  { finalcut::FKey::Enter           , ESC "OM"   , 3, "@8x"},  // enter key
-  { finalcut::FKey::Slash           , ESC "Oo"   , 3, "KP1"},  // keypad slash
-  { finalcut::FKey::Asterisk        , ESC "Oj"   , 3, "KP2"},  // keypad asterisk
-  { finalcut::FKey::Minus_sign      , ESC "Om"   , 3, "KP3"},  // keypad minus sign
-  { finalcut::FKey::Plus_sign       , ESC "Ok"   , 3, "KP4"},  // keypad plus sign
-  { finalcut::FKey::Insert          , ESC "Op"   , 3, "kIx"},  // keypad insert
-  { finalcut::FKey::Del_char        , ESC "On"   , 3, "kDx"},  // keypad delete
-  { finalcut::FKey::Left            , ESC "Ot"   , 3, "kly"},  // keypad left-arrow
-  { finalcut::FKey::Right           , ESC "Ov"   , 3, "kry"},  // keypad right-arrow
-  { finalcut::FKey::Up              , ESC "Ox"   , 3, "kuy"},  // keypad up-arrow
-  { finalcut::FKey::Down            , ESC "Or"   , 3, "kdy"},  // keypad down-arrow
-  { finalcut::FKey::Upper_left      , ESC "Ow"   , 3, "K1x"},  // keypad upper left
-  { finalcut::FKey::Upper_right     , ESC "Oy"   , 3, "K3x"},  // keypad upper right
-  { finalcut::FKey::Center          , ESC "Ou"   , 3, "K2x"},  // keypad center
-  { finalcut::FKey::Lower_left      , ESC "Oq"   , 3, "K4x"},  // keypad lower left
-  { finalcut::FKey::Lower_right     , ESC "Os"   , 3, "K5x"}   // keypad lower right
+  { finalcut::FKey::Enter           , 0          , 0, "@8x"},  // enter key
+  { finalcut::FKey::Slash           , 0          , 0, "KP1"},  // keypad slash
+  { finalcut::FKey::Asterisk        , 0          , 0, "KP2"},  // keypad asterisk
+  { finalcut::FKey::Minus_sign      , 0          , 0, "KP3"},  // keypad minus sign
+  { finalcut::FKey::Plus_sign       , 0          , 0, "KP4"},  // keypad plus sign
+  { finalcut::FKey::Insert          , 0          , 0, "kIx"},  // keypad insert
+  { finalcut::FKey::Del_char        , 0          , 0, "kDx"},  // keypad delete
+  { finalcut::FKey::Left            , 0          , 0, "kly"},  // keypad left-arrow
+  { finalcut::FKey::Right           , 0          , 0, "kry"},  // keypad right-arrow
+  { finalcut::FKey::Up              , 0          , 0, "kuy"},  // keypad up-arrow
+  { finalcut::FKey::Down            , 0          , 0, "kdy"},  // keypad down-arrow
+  { finalcut::FKey::Upper_left      , 0          , 0, "K1x"},  // keypad upper left
+  { finalcut::FKey::Upper_right     , 0          , 0, "K3x"},  // keypad upper right
+  { finalcut::FKey::Center          , 0          , 0, "K2x"},  // keypad center
+  { finalcut::FKey::Lower_left      , 0          , 0, "K4x"},  // keypad lower left
+  { finalcut::FKey::Lower_right     , 0          , 0, "K5x"}   // keypad lower right
 }};
 
 }  // namespace test
@@ -3021,6 +3021,11 @@ void FKeyboardTest::init()
   keyboard->enableUTF8();
   keyboard->enableMouseSequences();
 
+  // Copy the section with the fixed escape sequences
+  auto& fkey_cap_table = finalcut::FKeyMap::getInstance().getKeyCapMap();
+  std::copy ( &fkey_cap_table[150].num, &fkey_cap_table[188].num, &test::fkey[150].num);
+
+  // Use test::fkey as new termcap map
   auto ptr = &test::fkey;
   const auto& ref = *reinterpret_cast<test::original_type*>(ptr);
   keyboard->setTermcapMap (ref);
