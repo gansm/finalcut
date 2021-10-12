@@ -173,19 +173,24 @@ void FMouseTest::noArgumentTest()
   CPPUNIT_ASSERT ( ! mouse.isWheelDown() );
   CPPUNIT_ASSERT ( ! mouse.isMoved() );
   CPPUNIT_ASSERT ( ! mouse.hasUnprocessedInput() );
+  CPPUNIT_ASSERT ( mouse.getMouseTypeID() == finalcut::FMouse::MouseType::None );
 
 #ifdef F_HAVE_LIBGPM
   finalcut::FMouseGPM gpm_mouse;
+  CPPUNIT_ASSERT ( gpm_mouse.getMouseTypeID() == finalcut::FMouse::MouseType::Gpm );
   CPPUNIT_ASSERT ( ! gpm_mouse.hasData() );
 #endif
 
   finalcut::FMouseX11 x11_mouse;
+  CPPUNIT_ASSERT ( x11_mouse.getMouseTypeID() == finalcut::FMouse::MouseType::X11 );
   CPPUNIT_ASSERT ( ! x11_mouse.hasData() );
-
+  
   finalcut::FMouseSGR sgr_mouse;
+  CPPUNIT_ASSERT ( sgr_mouse.getMouseTypeID() == finalcut::FMouse::MouseType::Sgr );
   CPPUNIT_ASSERT ( ! sgr_mouse.hasData() );
 
   finalcut::FMouseUrxvt urxvt_mouse;
+  CPPUNIT_ASSERT ( urxvt_mouse.getMouseTypeID() == finalcut::FMouse::MouseType::Urxvt );
   CPPUNIT_ASSERT ( ! urxvt_mouse.hasData() );
 
   finalcut::FMouseControl mouse_control;
@@ -238,6 +243,7 @@ void FMouseTest::gpmMouseTest()
 {
   finalcut::FMouseGPM gpm_mouse;
   gpm_mouse.setStdinNo(fileno(stdin));
+  CPPUNIT_ASSERT ( gpm_mouse.getMouseTypeID() == finalcut::FMouse::MouseType::Gpm );
   CPPUNIT_ASSERT ( ! gpm_mouse.isGpmMouseEnabled() );
 
   if ( gpm_mouse.enableGpmMouse() )
@@ -257,6 +263,7 @@ void FMouseTest::gpmMouseTest()
 void FMouseTest::x11MouseTest()
 {
   finalcut::FMouseX11 x11_mouse;
+  CPPUNIT_ASSERT ( x11_mouse.getMouseTypeID() == finalcut::FMouse::MouseType::X11 );
   CPPUNIT_ASSERT ( ! x11_mouse.hasData() );
 
   finalcut::FKeyboard::keybuffer rawdata1 = \
@@ -569,6 +576,7 @@ void FMouseTest::x11MouseTest()
 void FMouseTest::sgrMouseTest()
 {
   finalcut::FMouseSGR sgr_mouse;
+  CPPUNIT_ASSERT ( sgr_mouse.getMouseTypeID() == finalcut::FMouse::MouseType::Sgr );
   CPPUNIT_ASSERT ( ! sgr_mouse.hasData() );
 
   // Left mouse button pressed
@@ -882,6 +890,7 @@ void FMouseTest::sgrMouseTest()
 void FMouseTest::urxvtMouseTest()
 {
   finalcut::FMouseUrxvt urxvt_mouse;
+  CPPUNIT_ASSERT ( urxvt_mouse.getMouseTypeID() == finalcut::FMouse::MouseType::Urxvt );
   CPPUNIT_ASSERT ( ! urxvt_mouse.hasData() );
 
   // Left mouse button pressed

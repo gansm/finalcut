@@ -69,8 +69,8 @@
 #include <functional>
 #include <memory>
 #include <queue>
-#include <unordered_map>
 #include <utility>
+#include <vector>
 
 #include "final/input/fkeyboard.h"
 #include "final/util/fpoint.h"
@@ -156,16 +156,16 @@ class FMouseData
     };
 
     // Accessors
-    FMouseButton&       getButtonState() &;
-    const FMouseButton& getButtonState() const &;
+    FMouseButton&         getButtonState() &;
+    const FMouseButton&   getButtonState() const &;
 
     // Mutator
-    void                setPos (const FPoint&);
+    void                  setPos (const FPoint&);
 
   private:
     // Data members
-    FMouseButton        b_state{};
-    FPoint              mouse{0, 0};  // mouse click position
+    FMouseButton          b_state{};
+    FPoint                mouse{0, 0};  // mouse click position
 };
 
 
@@ -191,6 +191,7 @@ class FMouse : public FMouseData
 
     // Accessors
     FString               getClassName() const override;
+    MouseType             getMouseTypeID() const;
     void                  clearEvent();
 
     // Mutators
@@ -218,24 +219,26 @@ class FMouse : public FMouseData
     TimeValue             getMousePressedTime() const;
 
     // Mutator
-    void                   setNewPos (int, int);
-    void                   setPending (bool = true);
-    void                   setEvent();
-    void                   setMousePressedTime (const TimeValue&);
-    void                   resetMousePressedTime();
+    void                  setMouseTypeID (MouseType);
+    void                  setNewPos (int, int);
+    void                  setPending (bool = true);
+    void                  setEvent();
+    void                  setMousePressedTime (const TimeValue&);
+    void                  resetMousePressedTime();
 
     // Inquiry
-    bool                   isDblclickTimeout (const TimeValue&) const;
+    bool                  isDblclickTimeout (const TimeValue&) const;
 
   private:
     // Data members
-    bool                   mouse_event_occurred{false};
-    bool                   unprocessed_buffer_data{false};
-    uInt16                 max_width{80};
-    uInt16                 max_height{25};
-    uInt64                 dblclick_interval{500000};  // 500 ms
-    TimeValue              time_mousepressed{};
-    FPoint                 new_mouse_position{};
+    bool                  mouse_event_occurred{false};
+    bool                  unprocessed_buffer_data{false};
+    MouseType             MouseType_id{MouseType::None};
+    uInt16                max_width{80};
+    uInt16                max_height{25};
+    uInt64                dblclick_interval{500000};  // 500 ms
+    TimeValue             time_mousepressed{};
+    FPoint                new_mouse_position{};
 };
 
 //----------------------------------------------------------------------
@@ -557,7 +560,7 @@ class FMouseControl
     // Methods
     void                      enable();
     void                      disable();
-    virtual void              setRawData ( FMouse::MouseType
+    virtual void              setRawData ( const FMouse::MouseType&
                                          , FKeyboard::keybuffer& );
     virtual void              processEvent (const TimeValue&);
     void                      processQueuedInput();
@@ -568,13 +571,12 @@ class FMouseControl
     // Using-declaration
     using FMousePtr = std::unique_ptr<FMouse>;
     using FMouseDataPtr = std::unique_ptr<FMouseData>;
-    using FMouseProtocol = std::unordered_map< FMouse::MouseType
-                                             , FMousePtr
-                                             , EnumHash<FMouse::MouseType> >;
+    using FMouseProtocol = std::vector<FMousePtr>;
 
     // Accessor
-    FMouse::MouseType         getMouseWithData();
-    FMouse::MouseType         getMouseWithEvent();
+    auto                      findMouseWithType (const FMouse::MouseType&) -> FMouseProtocol::const_iterator;
+    auto                      findMouseWithData() -> FMouseProtocol::const_iterator;
+    auto                      findMouseWithEvent() -> FMouseProtocol::const_iterator;
     void                      xtermMouse (bool = true) const;
     void                      enableXTermMouse() const;
     void                      disableXTermMouse() const;

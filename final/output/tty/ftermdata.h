@@ -65,7 +65,7 @@ class FCharSubstitution
 
     wchar_t getMappedChar (wchar_t);
     void setCharMapping (const Map&);
-    bool isEmpty();
+    bool isEmpty() const;
 
   private:
     std::vector<Map> sub_map{};
@@ -105,7 +105,7 @@ inline void FCharSubstitution::setCharMapping (const Map& m)
 }
 
 //----------------------------------------------------------------------
-inline bool FCharSubstitution::isEmpty()
+inline bool FCharSubstitution::isEmpty() const
 {
   return sub_map.empty();
 }

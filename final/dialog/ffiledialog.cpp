@@ -28,7 +28,7 @@
 #endif
 
 #if !defined MAXPATHLEN
-  #define MAXPATHLEN 4096  // Need on GNU Hurd
+  constexpr std::size_t MAXPATHLEN = 4096;  // Necessity at GNU Hurd
 #endif
 
 #include "final/dialog/ffiledialog.h"
