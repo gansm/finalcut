@@ -27,13 +27,13 @@
   #define _BSD_SOURCE  // for D_TYPE in readdir
 #endif
 
-#if !defined MAXPATHLEN
-  constexpr std::size_t MAXPATHLEN = 4096;  // Necessity at GNU Hurd
-#endif
-
 #include "final/dialog/ffiledialog.h"
 #include "final/fevent.h"
 #include "final/util/fsystem.h"
+
+#if defined(__GNU__)
+  #define MAXPATHLEN 4096  // Necessity at GNU Hurd
+#endif
 
 namespace finalcut
 {
