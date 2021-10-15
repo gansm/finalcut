@@ -2,6 +2,7 @@
 # Makefile.am  -  FINAL CUT library
 #----------------------------------------------------------------------
 
+LIBS=@LIBFINAL_LIBS@
 AM_CPPFLAGS = -I$(top_srcdir)/final -Wall -Werror -DCOMPILE_FINAL_CUT -std=c++11
 AUTOMAKE_OPTIONS = subdir-objects
 

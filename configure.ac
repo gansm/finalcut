@@ -11,6 +11,11 @@ AC_CONFIG_SRCDIR([final/fobject.cpp])
 AC_USE_SYSTEM_EXTENSIONS
 AM_INIT_AUTOMAKE
 AC_PROG_CC
+
+if test -z $CXXFLAGS; then
+  CXXFLAGS="-O3"
+fi
+
 AC_PROG_CXX
 
 # Checks for header files.
@@ -45,10 +50,15 @@ AC_CHECK_FUNCS( \
 		strstr \
 		vsnprintf )
 
+
 # Checks for 'tgetent'
 AC_SEARCH_LIBS([tgetent], [terminfo mytinfo termlib termcap tinfo ncurses curses])
 # Checks for 'tparm'
 AC_SEARCH_LIBS([tparm], [terminfo mytinfo termlib termcap tinfo ncurses curses])
+
+AC_SUBST([LIBFINAL_LIBS])
+LIBFINAL_LIBS="$LIBS"
+LIBS=""
 
 # Checks for libtool
 AC_ENABLE_SHARED
@@ -90,7 +100,7 @@ then
   AC_CHECK_LIB([gpm],
                [Gpm_Open],
                [AC_DEFINE([HAVE_LIBGPM], 1, [Define to 1 if GPM mouse is enabled])
-                LIBS="$LIBS -lgpm"])
+                LIBFINAL_LIBS="$LIBFINAL_LIBS -lgpm"])
 fi
 
 # profiling
@@ -102,7 +112,7 @@ if test "x$with_profiler" != "xno"
 then
   AC_CHECK_LIB([profiler],
                [ProfilerFlush],
-               [LIBS="$LIBS -lprofiler"])
+               [LIBFINAL_LIBS="$LIBFINAL_LIBS -lprofiler"])
 fi
 
 # unit test
@@ -129,7 +139,7 @@ if test "x$with_gcov" != "xno"
 then
   AC_CHECK_LIB([gcov],
                [main],
-               [LIBS="$LIBS -lgcov"])
+               [LIBFINAL_LIBS="$LIBFINAL_LIBS -lgcov"])
   AM_CXXFLAGS="-fprofile-arcs -ftest-coverage $AM_CXXFLAGS"
   AC_SUBST([AM_CXXFLAGS])
 fi

@@ -4,6 +4,7 @@
 
 if ! CPPUNIT_TEST
 
+LIBS=""
 AM_LDFLAGS = -L$(top_builddir)/final/.libs -lfinal
 AM_CPPFLAGS = -I$(top_srcdir)/final -Wall -Werror -std=c++11
 
