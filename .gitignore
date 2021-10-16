@@ -13,6 +13,7 @@
 *.trs
 Makefile
 Makefile.in
+/ar-lib
 /_configs.sed
 /aclocal.m4
 /autom4te.cache

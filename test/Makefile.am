@@ -2,10 +2,11 @@
 # Makefile.am  -  FINAL CUT unit tests programs
 #----------------------------------------------------------------------
 
+LIBS = -lfinal $(CPPUNIT_LIBS)
+
 if CPPUNIT_TEST
 
-LIBS=""
-AM_LDFLAGS = -L$(top_builddir)/final/.libs -lfinal $(CPPUNIT_LIBS)
+AM_LDFLAGS = -L$(top_builddir)/final/.libs
 AM_CPPFLAGS = -I$(top_srcdir)/final -Wall -Werror -std=c++11
 
 noinst_PROGRAMS = \
@@ -54,12 +55,12 @@ ftermcap_test_SOURCES = ftermcap-test.cpp
 ftermdata_test_SOURCES = ftermdata-test.cpp
 ftermdetection_test_SOURCES = ftermdetection-test.cpp
 ftermfreebsd_test_SOURCES = ftermfreebsd-test.cpp
-ftermfreebsd_test_LDADD = -ltermcap
+ftermfreebsd_test_LDADD = @TERMCAP_LIB@
 fterm_functions_test_SOURCES = fterm_functions-test.cpp
 ftermlinux_test_SOURCES = ftermlinux-test.cpp
-ftermlinux_test_LDADD = -ltermcap
+ftermlinux_test_LDADD = @TERMCAP_LIB@
 ftermopenbsd_test_SOURCES = ftermopenbsd-test.cpp
-ftermopenbsd_test_LDADD = -ltermcap
+ftermopenbsd_test_LDADD = @TERMCAP_LIB@
 fvtermbuffer_test_SOURCES = fvtermbuffer-test.cpp
 
 TESTS = \
