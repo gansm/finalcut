@@ -593,8 +593,8 @@ FString FString::ltrim() const
   if ( isEmpty() )
     return *this;
 
-  auto iter = string.begin();
-  const auto last = string.end();
+  auto iter = string.cbegin();
+  const auto last = string.cend();
 
   while ( iter != last && std::iswspace(std::wint_t(*iter)) )
     ++iter;
@@ -612,8 +612,8 @@ FString FString::rtrim() const
   if ( isEmpty() )
     return *this;
 
-  const auto r_end = string.rend();
-  auto r_iter = string.rbegin();
+  const auto r_end = string.crend();
+  auto r_iter = string.crbegin();
 
   while ( r_iter != r_end && std::iswspace(std::wint_t(*r_iter)) )
     ++r_iter;
@@ -674,7 +674,7 @@ FString FString::mid (std::size_t pos, std::size_t len) const
   if ( pos > length || pos + len - 1 > length || len == 0 )
     return {};
 
-  auto first = string.begin() + static_cast<difference_type>(pos) - 1;
+  auto first = string.cbegin() + static_cast<difference_type>(pos) - 1;
   auto last = first + static_cast<difference_type>(len);
   return std::wstring(first, last);
 }
@@ -958,10 +958,10 @@ FString FString::expandTabs (int tabstop) const
 
   FString outstr{};
   const auto tab_split = split(L"\t");
-  const auto last = tab_split.end() - 1;
-  auto iter = tab_split.begin();
+  const auto last = tab_split.cend() - 1;
+  auto iter = tab_split.cbegin();
 
-  while ( iter != tab_split.end() )
+  while ( iter != tab_split.cend() )
   {
     if ( iter != last )
     {

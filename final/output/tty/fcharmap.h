@@ -67,12 +67,16 @@ class FCharMap final
     // Accessors
     FString                         getClassName() const;
     static auto                     getInstance() -> FCharMap&;
-    static wchar_t&                 getCharacter ( CharEncodeMap& char_enc
+    static const wchar_t&           getCharacter ( const CharEncodeMap& char_enc
                                                  , const Encoding& enc );
     static CharEncodeType&          getCharEncodeMap();
     static const DECGraphicsType&   getDECSpecialGraphics();
     static const Cp437UcsType&      getCP437UCSMap();
     static const HalfFullWidthType& getHalfFullWidthMap();
+
+    // Mutators
+    static wchar_t&                 setCharacter ( CharEncodeMap& char_enc
+                                                 , const Encoding& enc );
 
   private:
     // Data members

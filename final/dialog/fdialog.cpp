@@ -1792,9 +1792,9 @@ void FDialog::delDialog (const FWidget* obj)
   if ( ! getDialogList() || getDialogList()->empty() )
     return;
 
-  auto iter = getDialogList()->begin();
+  auto iter = getDialogList()->cbegin();
 
-  while ( iter != getDialogList()->end() )
+  while ( iter != getDialogList()->cend() )
   {
     if ( (*iter) == obj )
     {

@@ -47,8 +47,8 @@ FString FVTermBuffer::toString() const
 {
   std::wstring wide_string{};
   wide_string.reserve(data.size());
-  std::for_each ( data.begin()
-                , data.end()
+  std::for_each ( data.cbegin()
+                , data.cend()
                 , [&wide_string] (const FChar& fchar)
                   {
                     for (auto&& ch : fchar.ch)
@@ -68,8 +68,8 @@ int FVTermBuffer::print (const FString& string)
 {
   data.reserve(data.size() + string.getLength());
   const auto last = string.cend();
-  auto begin = string.cbegin();
-  auto iter = begin;
+  auto cbegin = string.cbegin();
+  auto iter = cbegin;
   int char_width{0};
 
   for (auto&& ch : string)
@@ -79,26 +79,26 @@ int FVTermBuffer::print (const FString& string)
 
     if ( width == 0 && ! wspace )  // zero-width character
     {
-      if ( iter == begin)
-        ++begin;
+      if ( iter == cbegin)
+        ++cbegin;
 
       ++iter;
     }
-    else if ( iter != begin )
-      add(begin, iter, char_width);
+    else if ( iter != cbegin )
+      add(cbegin, iter, char_width);
 
-    if ( iter == begin && (width > 0 || is7bit(ch)) )  // 1st char
+    if ( iter == cbegin && (width > 0 || is7bit(ch)) )  // 1st char
       ++iter;
 
     if ( width > 0 )
       char_width += width;
 
     if ( wspace )
-      add(begin, iter, char_width);
+      add(cbegin, iter, char_width);
   }
 
   if ( iter == last )
-    add(begin, iter, char_width);
+    add(cbegin, iter, char_width);
 
   return int(string.getLength());
 }
@@ -130,13 +130,13 @@ void FVTermBuffer::print (const FColorPair& pair) const
 
 // private methods of FVTermBuffer
 //----------------------------------------------------------------------
-void FVTermBuffer::add ( FString::const_iterator& begin
-                       , const FString::const_iterator& end
+void FVTermBuffer::add ( FString::const_iterator& cbegin
+                       , const FString::const_iterator& cend
                        , int& char_width )
 {
   static const auto& fterm_data = FTermData::getInstance();
 
-  if ( begin == end )
+  if ( cbegin == cend )
     return;
 
   FChar nc{FVTermAttribute::getAttribute()};  // next character
@@ -145,7 +145,7 @@ void FVTermBuffer::add ( FString::const_iterator& begin
 
 
   if ( char_width == 2
-    && fterm_data.getTermEncoding() != Encoding::UTF8 )
+    && fterm_data.getTerminalEncoding() != Encoding::UTF8 )
   {
     nc.ch[0] = '.';
     nc.attr.bit.char_width = 1;
@@ -153,9 +153,9 @@ void FVTermBuffer::add ( FString::const_iterator& begin
   else
     nc.attr.bit.char_width = char_width & 0x03;
 
-  std::copy(begin, std::min(end, begin + UNICODE_MAX), nc.ch.begin());
+  std::copy(cbegin, std::min(cend, cbegin + UNICODE_MAX), nc.ch.begin());
   data.emplace_back(nc);
-  begin = end;
+  cbegin = cend;
   char_width = 0;
 }
 

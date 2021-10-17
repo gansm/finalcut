@@ -338,9 +338,9 @@ inline void FCallback::delCallback (Object&& cb_instance) noexcept
   if ( callback_objects.empty() )
     return;
 
-  auto iter = callback_objects.begin();
+  auto iter = callback_objects.cbegin();
 
-  while ( iter != callback_objects.end() )
+  while ( iter != callback_objects.cend() )
   {
     if ( iter->cb_instance == cb_instance )
       iter = callback_objects.erase(iter);
@@ -361,9 +361,9 @@ inline void FCallback::delCallback ( const FString& cb_signal
   if ( callback_objects.empty() )
     return;
 
-  auto iter = callback_objects.begin();
+  auto iter = callback_objects.cbegin();
 
-  while ( iter != callback_objects.end() )
+  while ( iter != callback_objects.cend() )
   {
     if ( iter->cb_signal == cb_signal
       && iter->cb_instance == cb_instance )
@@ -385,9 +385,9 @@ inline void FCallback::delCallback (FunctionPtr&& cb_func_ptr) noexcept
     return;
 
   auto ptr = reinterpret_cast<void*>(cb_func_ptr);
-  auto iter = callback_objects.begin();
+  auto iter = callback_objects.cbegin();
 
-  while ( iter != callback_objects.end() )
+  while ( iter != callback_objects.cend() )
   {
     if ( iter->cb_function_ptr == ptr )
       iter = callback_objects.erase(iter);
@@ -408,9 +408,9 @@ inline void FCallback::delCallback (const Function& cb_function)
     return;
 
   auto ptr = reinterpret_cast<void*>(&cb_function);
-  auto iter = callback_objects.begin();
+  auto iter = callback_objects.cbegin();
 
-  while ( iter != callback_objects.end() )
+  while ( iter != callback_objects.cend() )
   {
     if ( iter->cb_function_ptr == ptr )
       iter = callback_objects.erase(iter);

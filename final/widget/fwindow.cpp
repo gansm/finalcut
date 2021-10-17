@@ -450,8 +450,8 @@ FWindow* FWindow::getWindowWidgetAt (int x, int y)
   if ( ! getWindowList() || getWindowList()->empty() )
     return nullptr;
 
-  auto iter = getWindowList()->end();
-  const auto begin = getWindowList()->begin();
+  auto iter = getWindowList()->cend();
+  const auto begin = getWindowList()->cbegin();
 
   do
   {
@@ -486,9 +486,9 @@ void FWindow::delWindow (const FWidget* obj)
   if ( ! getWindowList() || getWindowList()->empty() )
     return;
 
-  auto iter = getWindowList()->begin();
+  auto iter = getWindowList()->cbegin();
 
-  while ( iter != getWindowList()->end() )
+  while ( iter != getWindowList()->cend() )
   {
     if ( (*iter) == obj )
     {
@@ -511,8 +511,8 @@ void FWindow::swapWindow (const FWidget* obj1, const FWidget* obj2)
     || obj2->getFlags().modal )
     return;
 
-  auto iter = getWindowList()->begin();
-  const auto end = getWindowList()->end();
+  auto iter = getWindowList()->cbegin();
+  const auto end = getWindowList()->cend();
   auto iter1 = end;
   auto iter2 = end;
 
@@ -545,9 +545,9 @@ bool FWindow::raiseWindow (FWidget* obj)
   if ( last == obj || (last->getFlags().modal && ! obj->isMenuWidget()) )
     return false;
 
-  auto iter = getWindowList()->begin();
+  auto iter = getWindowList()->cbegin();
 
-  while ( iter != getWindowList()->end() )
+  while ( iter != getWindowList()->cend() )
   {
     if ( static_cast<FWidget*>(*iter) == obj )
     {
@@ -577,14 +577,14 @@ bool FWindow::lowerWindow (FWidget* obj)
     || obj->getFlags().modal )
     return false;
 
-  auto iter = getWindowList()->begin();
+  auto iter = getWindowList()->cbegin();
 
-  while ( iter != getWindowList()->end() )
+  while ( iter != getWindowList()->cend() )
   {
     if ( *iter == obj )
     {
       getWindowList()->erase (iter);
-      getWindowList()->insert (getWindowList()->begin(), obj);
+      getWindowList()->insert (getWindowList()->cbegin(), obj);
       FEvent ev(Event::WindowLowered);
       FApplication::sendEvent(obj, &ev);
       return true;
@@ -657,8 +657,8 @@ void FWindow::switchToPrevWindow (const FWidget* widget)
   if ( ! is_activated && getWindowList() && getWindowList()->size() > 1 )
   {
     // no previous window -> looking for another window
-    auto iter = getWindowList()->end();
-    const auto begin = getWindowList()->begin();
+    auto iter = getWindowList()->cend();
+    const auto begin = getWindowList()->cbegin();
 
     do
     {
@@ -836,9 +836,9 @@ void FWindow::deleteFromAlwaysOnTopList (const FWidget* obj)
   if ( ! getAlwaysOnTopList() || getAlwaysOnTopList()->empty() )
     return;
 
-  auto iter = getAlwaysOnTopList()->begin();
+  auto iter = getAlwaysOnTopList()->cbegin();
 
-  while ( iter != getAlwaysOnTopList()->end() )
+  while ( iter != getAlwaysOnTopList()->cend() )
   {
     if ( *iter == obj )
     {
@@ -857,9 +857,9 @@ void FWindow::processAlwaysOnTop()
   if ( ! getAlwaysOnTopList() || getAlwaysOnTopList()->empty() )
     return;
 
-  auto iter = getAlwaysOnTopList()->begin();
+  auto iter = getAlwaysOnTopList()->cbegin();
 
-  while ( iter != getAlwaysOnTopList()->end() )
+  while ( iter != getAlwaysOnTopList()->cend() )
   {
     delWindow (*iter);
 

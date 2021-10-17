@@ -50,13 +50,13 @@ bool sortDescendingByNumber (const FObject*, const FObject*);
 //----------------------------------------------------------------------
 uInt64 firstNumberFromString (const FString& str)
 {
-  auto iter = str.begin();
+  auto iter = str.cbegin();
 
-  while ( iter != str.end() )
+  while ( iter != str.cend() )
   {
     if ( wchar_t(*iter) >= L'0' && wchar_t(*iter) <= L'9' )
     {
-      if ( iter != str.begin() && wchar_t(*(iter - 1)) == L'-' )
+      if ( iter != str.cbegin() && wchar_t(*(iter - 1)) == L'-' )
         --iter;
 
       break;
@@ -67,10 +67,10 @@ uInt64 firstNumberFromString (const FString& str)
 
   auto first_pos = iter;
 
-  if ( first_pos == str.end() )
+  if ( first_pos == str.cend() )
     return 0;
 
-  while ( iter != str.end() )
+  while ( iter != str.cend() )
   {
     if ( wchar_t(*iter) < L'0' || wchar_t(*iter) > L'9' )
       break;
@@ -80,11 +80,11 @@ uInt64 firstNumberFromString (const FString& str)
 
   auto last_pos = iter;
 
-  if ( last_pos == str.end() )
+  if ( last_pos == str.cend() )
     return 0;
 
   uInt64 number;
-  const auto pos = std::size_t(std::distance(str.begin(), first_pos)) + 1;
+  const auto pos = std::size_t(std::distance(str.cbegin(), first_pos)) + 1;
   const auto length = std::size_t(std::distance(first_pos, last_pos));
   const auto& num_str = str.mid(pos, length);
 
@@ -428,9 +428,9 @@ std::size_t FListViewItem::getVisibleLines()
   if ( ! isExpand() || ! hasChildren() )
     return visible_lines;
 
-  auto iter = FObject::begin();
+  auto iter = FObject::cbegin();
 
-  while ( iter != FObject::end() )
+  while ( iter != FObject::cend() )
   {
     const auto& child = static_cast<FListViewItem*>(*iter);
     visible_lines += child->getVisibleLines();
@@ -553,7 +553,7 @@ void FListViewIterator::nextElement (Iterator& iter)
       {
         const auto& parent_iter = iter_path.top();
 
-        if ( iter == (*parent_iter)->end() )
+        if ( iter == (*parent_iter)->cend() )
         {
           iter = parent_iter;
           iter_path.pop();
@@ -574,7 +574,7 @@ void FListViewIterator::prevElement (Iterator& iter)
   {
     const auto& parent_iter = iter_path.top();
 
-    if ( start_iter == (*parent_iter)->begin() )  // First sub-item
+    if ( start_iter == (*parent_iter)->cbegin() )  // First sub-item
     {
       iter = parent_iter;
       position--;
@@ -781,7 +781,7 @@ int FListView::addColumn (const FString& label, int width)
     new_column.fixed_width = true;
 
   header.push_back (new_column);
-  return int(std::distance(header.begin(), header.end()));
+  return int(std::distance(header.cbegin(), header.cend()));
 }
 
 //----------------------------------------------------------------------
@@ -2036,7 +2036,7 @@ void FListView::drawColumnEllipsis ( const HeaderItems::const_iterator& iter
              << FColorPair {wc->label_ellipsis_fg, wc->label_bg}
              << "..";
 
-  if ( iter == header.end() - 1 )  // Last element
+  if ( iter == header.cend() - 1 )  // Last element
     headerline << ' ';
 }
 

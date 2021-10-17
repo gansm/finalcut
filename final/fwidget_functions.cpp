@@ -78,7 +78,7 @@ bool isInFWidgetList (const FWidget::FWidgetList* list, const FWidget* obj)
   if ( ! list || ! obj )
     return false;
 
-  return std::any_of ( list->begin(), list->end()
+  return std::any_of ( list->cbegin(), list->cend()
                      , [&obj] (const FWidget* w) { return w == obj; } );
 }
 

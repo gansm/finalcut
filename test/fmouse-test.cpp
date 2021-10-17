@@ -40,31 +40,31 @@ namespace test
 class FMouse_protected : public finalcut::FMouse
 {
   public:
-    bool hasData() override
+    bool hasData() noexcept override
     { return true; }
 
-    void setRawData (finalcut::FKeyboard::keybuffer&) override
+    void setRawData (finalcut::FKeyboard::keybuffer&) noexcept override
     { }
 
     void processEvent (const TimeValue&) override
     { }
 
-    uInt16 getMaxWidth()
+    uInt16 getMaxWidth() noexcept
     {
       return finalcut::FMouse::getMaxWidth();
     }
 
-    uInt16 getMaxHeight()
+    uInt16 getMaxHeight() noexcept
     {
       return finalcut::FMouse::getMaxHeight();
     }
 
-    const finalcut::FPoint& getNewMousePosition() const
+    const finalcut::FPoint& getNewMousePosition() const noexcept
     {
       return finalcut::FMouse::getNewPos();
     }
 
-    uInt64 getDblclickInterval()
+    uInt64 getDblclickInterval() noexcept
     {
       return finalcut::FMouse::getDblclickInterval();
     }
@@ -184,7 +184,7 @@ void FMouseTest::noArgumentTest()
   finalcut::FMouseX11 x11_mouse;
   CPPUNIT_ASSERT ( x11_mouse.getMouseTypeID() == finalcut::FMouse::MouseType::X11 );
   CPPUNIT_ASSERT ( ! x11_mouse.hasData() );
-  
+
   finalcut::FMouseSGR sgr_mouse;
   CPPUNIT_ASSERT ( sgr_mouse.getMouseTypeID() == finalcut::FMouse::MouseType::Sgr );
   CPPUNIT_ASSERT ( ! sgr_mouse.hasData() );
@@ -1262,6 +1262,7 @@ void FMouseTest::mouseControlTest()
   CPPUNIT_ASSERT ( ! mouse_control.isWheelDown() );
   CPPUNIT_ASSERT ( ! mouse_control.isMoved() );
   CPPUNIT_ASSERT ( ! mouse_control.hasUnprocessedInput() );
+  CPPUNIT_ASSERT ( ! mouse_control.hasDataInQueue() );
 
   if ( mouse_control.isGpmMouseEnabled() )
   {
@@ -1296,6 +1297,7 @@ void FMouseTest::mouseControlTest()
   CPPUNIT_ASSERT ( ! mouse_control.isWheelDown() );
   CPPUNIT_ASSERT ( ! mouse_control.isMoved() );
   CPPUNIT_ASSERT ( mouse_control.hasUnprocessedInput() );
+  CPPUNIT_ASSERT ( mouse_control.hasDataInQueue() );
 
   mouse_control.setRawData (finalcut::FMouse::MouseType::X11, rawdata1);
   mouse_control.processEvent (tv);
@@ -1329,6 +1331,7 @@ void FMouseTest::mouseControlTest()
   CPPUNIT_ASSERT ( ! mouse_control.isWheelUp() );
   CPPUNIT_ASSERT ( ! mouse_control.isWheelDown() );
   CPPUNIT_ASSERT ( ! mouse_control.isMoved() );
+  CPPUNIT_ASSERT ( mouse_control.hasDataInQueue() );
 
   mouse_control.setRawData (finalcut::FMouse::MouseType::Sgr, rawdata2);
   mouse_control.processEvent (tv);
@@ -1360,6 +1363,7 @@ void FMouseTest::mouseControlTest()
   CPPUNIT_ASSERT ( ! mouse_control.isWheelUp() );
   CPPUNIT_ASSERT ( ! mouse_control.isWheelDown() );
   CPPUNIT_ASSERT ( ! mouse_control.isMoved() );
+  CPPUNIT_ASSERT ( mouse_control.hasDataInQueue() );
 
   mouse_control.setRawData (finalcut::FMouse::MouseType::Urxvt, rawdata3);
   mouse_control.processEvent (tv);
@@ -1393,6 +1397,7 @@ void FMouseTest::mouseControlTest()
   CPPUNIT_ASSERT ( mouse_control.isWheelUp() );
   CPPUNIT_ASSERT ( ! mouse_control.isWheelDown() );
   CPPUNIT_ASSERT ( ! mouse_control.isMoved() );
+  CPPUNIT_ASSERT ( mouse_control.hasDataInQueue() );
 
   mouse_control.setRawData (finalcut::FMouse::MouseType::X11, rawdata4);
   mouse_control.processEvent (tv);
@@ -1425,6 +1430,7 @@ void FMouseTest::mouseControlTest()
   CPPUNIT_ASSERT ( ! mouse_control.isWheelUp() );
   CPPUNIT_ASSERT ( ! mouse_control.isWheelDown() );
   CPPUNIT_ASSERT ( ! mouse_control.isMoved() );
+  CPPUNIT_ASSERT ( mouse_control.hasDataInQueue() );
 
   mouse_control.setRawData (finalcut::FMouse::MouseType::Sgr, rawdata5);
   mouse_control.processEvent (tv);

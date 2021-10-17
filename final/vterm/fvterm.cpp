@@ -209,9 +209,9 @@ void FVTerm::delPreprocessingHandler (const FVTerm* instance)
   if ( ! print_area || print_area->preproc_list.empty() )
     return;
 
-  auto iter = print_area->preproc_list.begin();
+  auto iter = print_area->preproc_list.cbegin();
 
-  while ( iter != print_area->preproc_list.end() )
+  while ( iter != print_area->preproc_list.cend() )
   {
     if ( iter->get()->instance.get() == instance )
       iter = print_area->preproc_list.erase(iter);
@@ -248,7 +248,7 @@ int FVTerm::print (const std::vector<FChar>& term_string)
   if ( term_string.empty() )
     return -1;
 
-  FVTermBuffer vterm_buffer{term_string.begin(), term_string.end()};
+  FVTermBuffer vterm_buffer{term_string.cbegin(), term_string.cend()};
   return print (vterm_buffer);
 }
 
@@ -258,7 +258,7 @@ int FVTerm::print (FTermArea* area, const std::vector<FChar>& term_string)
   if ( ! area || term_string.empty() )
     return -1;
 
-  FVTermBuffer vterm_buffer{term_string.begin(), term_string.end()};
+  FVTermBuffer vterm_buffer{term_string.cbegin(), term_string.cend()};
   return print (area, vterm_buffer);
 }
 
@@ -1484,8 +1484,8 @@ bool FVTerm::hasChildAreaChanges (FTermArea* area) const
   if ( ! area || area->preproc_list.empty() )
     return false;
 
-  return std::any_of ( area->preproc_list.begin()
-                     , area->preproc_list.end()
+  return std::any_of ( area->preproc_list.cbegin()
+                     , area->preproc_list.cend()
                      , [] (const std::unique_ptr<FVTermPreprocessing>& pcall)
                        {
                          return pcall->instance

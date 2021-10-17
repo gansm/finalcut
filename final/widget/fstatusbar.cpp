@@ -138,9 +138,9 @@ FStatusBar::~FStatusBar()  // destructor
   // delete all keys
   if ( ! key_list.empty() )
   {
-    auto iter = key_list.begin();
+    auto iter = key_list.cbegin();
 
-    while ( iter != key_list.end() )
+    while ( iter != key_list.cend() )
     {
       (*iter)->setConnectedStatusbar(nullptr);
       FWidget::delAccelerator (*iter);
@@ -209,7 +209,7 @@ void FStatusBar::drawMessage()
 
   if ( hasKeys )
   {
-    const auto& iter = key_list.end();
+    const auto& iter = key_list.cend();
     isLastActiveFocus = bool ( (*(iter - 1))->isActivated()
                             || (*(iter - 1))->hasMouseFocus() );
   }
@@ -286,9 +286,9 @@ void FStatusBar::remove (FStatusKey* skey)
   if ( key_list.empty() )
     return;
 
-  auto iter = key_list.begin();
+  auto iter = key_list.cbegin();
 
-  while ( iter != key_list.end() )
+  while ( iter != key_list.cend() )
   {
     if ( (*iter) == skey )
     {
@@ -307,7 +307,7 @@ void FStatusBar::remove (int pos)
   if ( int(getCount()) < pos )
     return;
 
-  key_list.erase (key_list.begin() + pos - 1);
+  key_list.erase (key_list.cbegin() + pos - 1);
 }
 
 //----------------------------------------------------------------------
@@ -337,8 +337,8 @@ void FStatusBar::onMouseDown (FMouseEvent* ev)
 
     if ( ! key_list.empty() )
     {
-      auto iter = key_list.begin();
-      const auto& last = key_list.end();
+      auto iter = key_list.cbegin();
+      const auto& last = key_list.cend();
 
       while ( iter != last )
       {
@@ -359,8 +359,8 @@ void FStatusBar::onMouseDown (FMouseEvent* ev)
   if ( ! key_list.empty() )
   {
     int X{1};
-    auto iter = key_list.begin();
-    const auto& last = key_list.end();
+    auto iter = key_list.cbegin();
+    const auto& last = key_list.cend();
 
     while ( iter != last )
     {
@@ -402,8 +402,8 @@ void FStatusBar::onMouseUp (FMouseEvent* ev)
     if ( ! key_list.empty() )
     {
       int X{1};
-      auto iter = key_list.begin();
-      const auto& last = key_list.end();
+      auto iter = key_list.cbegin();
+      const auto& last = key_list.cend();
 
       while ( iter != last )
       {
@@ -446,8 +446,8 @@ void FStatusBar::onMouseMove (FMouseEvent* ev)
   {
     bool focus_changed{false};
     int X{1};
-    auto iter = key_list.begin();
-    const auto& last = key_list.end();
+    auto iter = key_list.cbegin();
+    const auto& last = key_list.cend();
 
     while ( iter != last )
     {
@@ -494,8 +494,8 @@ void FStatusBar::cb_statuskey_activated (const FStatusKey* statuskey)
 
   if ( ! key_list.empty() )
   {
-    auto iter = key_list.begin();
-    const auto& last = key_list.end();
+    auto iter = key_list.cbegin();
+    const auto& last = key_list.cend();
 
     while ( iter != last )
     {
@@ -568,9 +568,9 @@ void FStatusBar::drawKeys()
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
-  auto iter = key_list.begin();
+  auto iter = key_list.cbegin();
 
-  while ( iter != key_list.end() )
+  while ( iter != key_list.cend() )
   {
     const auto& item = *iter;
     keyname_len = getKeyNameWidth(item);
@@ -628,7 +628,7 @@ void FStatusBar::drawKey (FKeyList::const_iterator iter)
             << "..";
   }
 
-  if ( iter + 1 != key_list.end()
+  if ( iter + 1 != key_list.cend()
     && ( (*(iter + 1))->isActivated() || (*(iter + 1))->hasMouseFocus() )
     && x + getKeyNameWidth(*(iter + 1)) + 3 < int(screenWidth) )
   {
@@ -649,7 +649,7 @@ void FStatusBar::drawKey (FKeyList::const_iterator iter)
     if ( FVTerm::getFOutput()->isMonochron() )
       setReverse(true);
   }
-  else if ( iter + 1 != key_list.end() && x < int(screenWidth) )
+  else if ( iter + 1 != key_list.cend() && x < int(screenWidth) )
   {
     // Not the last element
     setColor (wc->statusbar_separator_fg, wc->statusbar_bg);

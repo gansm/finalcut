@@ -146,6 +146,7 @@ void FLoggerTest::defaultObjectTest()
   std::ostringstream buf{};
   log.setOutputStream(buf);
   log << "Hello, World!" << std::flush;  // Default level is "Info"
+  log.flush();
   CPPUNIT_ASSERT ( buf.str() == "[INFO] Hello, World!\r\n" );
   buf.str("");  // Clear buffer
 

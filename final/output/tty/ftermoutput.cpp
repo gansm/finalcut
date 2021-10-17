@@ -87,7 +87,7 @@ int FTermOutput::getMaxColor() const
 //----------------------------------------------------------------------
 Encoding FTermOutput::getEncoding() const
 {
-  return fterm_data->getTermEncoding();
+  return fterm_data->getTerminalEncoding();
 }
 
 //----------------------------------------------------------------------
@@ -487,10 +487,10 @@ inline bool FTermOutput::isDefaultPaletteTheme()
     "default16DarkColorPalette"
   };
 
-  auto iter = std::find ( default_themes.begin()
-                        , default_themes.end()
+  auto iter = std::find ( default_themes.cbegin()
+                        , default_themes.cend()
                         , FColorPalette::getInstance()->getClassName() );
-  return iter != default_themes.end();  // Default theme found
+  return iter != default_themes.cend();  // Default theme found
 }
 
 //----------------------------------------------------------------------
@@ -1270,9 +1270,10 @@ inline void FTermOutput::newFontChanges (FChar& next_char) const
 //----------------------------------------------------------------------
 inline void FTermOutput::charsetChanges (FChar& next_char) const
 {
-  std::copy( next_char.ch.begin()
-           , next_char.ch.end()
-           , next_char.encoded_char.begin() );
+  std::copy_if ( next_char.ch.cbegin()
+               , next_char.ch.cend()
+               , next_char.encoded_char.begin()
+               , [] (const wchar_t& ch) { return ch != L'\0'; } );
 
   if ( getEncoding() == Encoding::UTF8 )
     return;

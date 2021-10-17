@@ -108,7 +108,7 @@ FTerm::~FTerm()  // destructor
 std::size_t FTerm::getLineNumber()
 {
   static auto& fterm_data = FTermData::getInstance();
-  const auto& term_geometry = fterm_data.getTermGeometry();
+  const auto& term_geometry = fterm_data.getTerminalGeometry();
 
   if ( term_geometry.getHeight() == 0 )
     detectTermSize();
@@ -120,7 +120,7 @@ std::size_t FTerm::getLineNumber()
 std::size_t FTerm::getColumnNumber()
 {
   static auto& fterm_data = FTermData::getInstance();
-  const auto& term_geometry = fterm_data.getTermGeometry();
+  const auto& term_geometry = fterm_data.getTerminalGeometry();
 
   if ( term_geometry.getWidth() == 0 )
     detectTermSize();
@@ -568,7 +568,7 @@ void FTerm::detectTermSize()
 
   struct winsize win_size{};
   static auto& data = FTermData::getInstance();
-  auto& term_geometry = data.getTermGeometry();
+  auto& term_geometry = data.getTerminalGeometry();
   int ret{};
   errno = 0;
 
@@ -778,38 +778,39 @@ void FTerm::setEncoding (Encoding enc)
 std::string FTerm::getEncodingString()
 {
   static auto& data = FTermData::getInstance();
-  const auto& term_encoding = data.getTermEncoding();
+  const auto& term_encoding = data.getTerminalEncoding();
   const auto& encoding_list = data.getEncodingList();
-  const auto& end = encoding_list.end();
-
-  for (auto it = encoding_list.begin(); it != end; ++it )
-    if ( it->second == term_encoding )
-      return it->first;
-
-  return "";
+  auto found = std::find_if ( encoding_list.cbegin()
+                            , encoding_list.cend()
+                            , [&term_encoding] (const std::pair<std::string, Encoding>& entry)
+                              {
+                                return entry.second == term_encoding;
+                              } );
+  return ( found != encoding_list.cend() ) ? found->first : "";
 }
 
 //----------------------------------------------------------------------
 wchar_t FTerm::charEncode (wchar_t c)
 {
   static const auto& data = FTermData::getInstance();
-  return charEncode (c, data.getTermEncoding());
+  return charEncode (c, data.getTerminalEncoding());
 }
 
 //----------------------------------------------------------------------
 wchar_t FTerm::charEncode (wchar_t c, Encoding enc)
 {
-  wchar_t ch_enc = c;
   auto& character = FCharMap::getCharEncodeMap();
-  auto found = std::find_if ( character.begin()
-                            , character.end()
+  const auto& cend = character.cend();
+  auto found = std::find_if ( character.cbegin(), cend
                             , [&c] (const FCharMap::CharEncodeMap& entry)
                               {
                                 return entry.unicode == c;
                               } );
 
-  if ( found != character.end() )
-    ch_enc = FCharMap::getCharacter(*found, enc);
+  if ( found == cend )
+    return c;
+
+  wchar_t ch_enc = FCharMap::getCharacter(*found, enc);
 
   if ( enc == Encoding::PC && ch_enc == c )
     ch_enc = finalcut::unicode_to_cp437(c);
@@ -996,18 +997,18 @@ void FTerm::init_alt_charset()
     const auto keyChar = uChar(pair.key);
     const auto altChar = wchar_t(vt100_alt_char[keyChar]);
     const auto utf8char = wchar_t(pair.unicode);
-    const auto p = std::find_if ( character.begin()
-                                , character.end()
+    const auto p = std::find_if ( character.cbegin()
+                                , character.cend()
                                 , [&utf8char] (FCharMap::CharEncodeMap entry)
                                   { return entry.unicode == utf8char; } );
-    if ( p != character.end() )  // found in character
+    if ( p != character.cend() )  // found in character
     {
-      const auto item = std::size_t(std::distance(character.begin(), p));
+      const auto item = std::size_t(std::distance(character.cbegin(), p));
 
       if ( altChar )                 // update alternate character set
-        FCharMap::getCharacter(character[item], Encoding::VT100) = altChar;
+        FCharMap::setCharacter(character[item], Encoding::VT100) = altChar;
       else                           // delete VT100 char in character
-        FCharMap::getCharacter(character[item], Encoding::VT100) = L'\0';
+        FCharMap::setCharacter(character[item], Encoding::VT100) = L'\0';
     }
   }
 }
@@ -1424,7 +1425,7 @@ void FTerm::init_utf8_without_alt_charset()
   static auto& data = FTermData::getInstance();
 
   if ( FTermcap::no_utf8_acs_chars && data.isUTF8()
-    && data.getTermEncoding() == Encoding::VT100 )
+    && data.getTerminalEncoding() == Encoding::VT100 )
   {
     data.setASCIIConsole(true);
     data.setTermEncoding (Encoding::ASCII);
@@ -1438,7 +1439,7 @@ void FTerm::init_tab_quirks()
   // on the terminal and does not move the cursor to the next tab stop
   // position
 
-  const auto& enc = FTermData::getInstance().getTermEncoding();
+  const auto& enc = FTermData::getInstance().getTerminalEncoding();
 
   if ( enc == Encoding::VT100 || enc == Encoding::PC )
   {

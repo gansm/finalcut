@@ -127,7 +127,7 @@ Listbox::Listbox (FWidget* parent)
   //
   // Direct insert of the complete list
   //
-  //list2.insert (double_list.begin(), double_list.end(), doubleToString);
+  //list2.insert (double_list.cbegin(), double_list.cend(), doubleToString);
 
   // listbox 3
   //----------
@@ -138,7 +138,7 @@ Listbox::Listbox (FWidget* parent)
   TLD["edu"] = "Education";
   TLD["gov"] = "Government";
 
-  list3.insert (TLD.begin(), TLD.end(), mapToString);
+  list3.insert (TLD.cbegin(), TLD.cend(), mapToString);
   list3.setText ("key: value");
 
   // Quit button

@@ -122,6 +122,8 @@ class FObject
     iterator              end();
     const_iterator        begin() const;
     const_iterator        end() const;
+    const_iterator        cbegin() const noexcept;
+    const_iterator        cend() const noexcept;
     reference             front();
     reference             back();
     const_reference       front() const;
@@ -234,6 +236,14 @@ inline FObject::const_iterator FObject::begin() const
 //----------------------------------------------------------------------
 inline FObject::const_iterator FObject::end() const
 { return children_list.end(); }
+
+//----------------------------------------------------------------------
+inline FObject::const_iterator FObject::cbegin() const noexcept
+{ return children_list.cbegin(); }
+
+//----------------------------------------------------------------------
+inline FObject::const_iterator FObject::cend() const noexcept
+{ return children_list.cend(); }
 
 //----------------------------------------------------------------------
 inline FObject::reference FObject::front()

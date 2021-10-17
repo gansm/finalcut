@@ -301,14 +301,14 @@ wchar_t cp437_to_unicode (uChar c)
   constexpr std::size_t UNICODE = 1;
   const auto& cp437_ucs = FCharMap::getCP437UCSMap();
   wchar_t ucs = c;
-  auto found = std::find_if ( cp437_ucs.begin()
-                            , cp437_ucs.end()
+  auto found = std::find_if ( cp437_ucs.cbegin()
+                            , cp437_ucs.cend()
                             , [&c] (const std::array<wchar_t, 2>& entry)
                               {
                                 return entry[CP437] == c;
                               } );
 
-  if ( found != cp437_ucs.end() )
+  if ( found != cp437_ucs.cend() )
     ucs = (*found)[UNICODE];
 
   return ucs;
@@ -321,14 +321,14 @@ uChar unicode_to_cp437 (wchar_t ucs)
   constexpr std::size_t UNICODE = 1;
   const auto& cp437_ucs = FCharMap::getCP437UCSMap();
   uChar c{'?'};
-  auto found = std::find_if ( cp437_ucs.begin()
-                            , cp437_ucs.end()
+  auto found = std::find_if ( cp437_ucs.cbegin()
+                            , cp437_ucs.cend()
                             , [&ucs] (const std::array<wchar_t, 2>& entry)
                               {
                                 return entry[UNICODE] == ucs;
                               } );
 
-  if ( found != cp437_ucs.end() )
+  if ( found != cp437_ucs.cend() )
     c = static_cast<uChar>((*found)[CP437]);
 
   return c;
@@ -402,14 +402,14 @@ FString getFullWidth (const FString& str)
     const auto& halfwidth_fullwidth = FCharMap::getHalfFullWidthMap();
     constexpr std::size_t HALF = 0;
     constexpr std::size_t FULL = 1;
-    auto found = std::find_if ( halfwidth_fullwidth.begin()
-                              , halfwidth_fullwidth.end()
+    auto found = std::find_if ( halfwidth_fullwidth.cbegin()
+                              , halfwidth_fullwidth.cend()
                               , [&c] (const std::array<wchar_t, 2>& entry)
                                 {
                                   return entry[HALF] == c;
                                 } );
 
-    if ( found != halfwidth_fullwidth.end() )
+    if ( found != halfwidth_fullwidth.cend() )
       c = (*found)[FULL];
   };
 
@@ -435,14 +435,14 @@ FString getHalfWidth (const FString& str)
     const auto& halfwidth_fullwidth = FCharMap::getHalfFullWidthMap();
     constexpr std::size_t HALF = 0;
     constexpr std::size_t FULL = 1;
-    auto found = std::find_if ( halfwidth_fullwidth.begin()
-                              , halfwidth_fullwidth.end()
+    auto found = std::find_if ( halfwidth_fullwidth.cbegin()
+                              , halfwidth_fullwidth.cend()
                               , [&c] (const std::array<wchar_t, 2>& entry)
                                 {
                                   return entry[FULL] == c;
                                 } );
 
-    if ( found != halfwidth_fullwidth.end() )
+    if ( found != halfwidth_fullwidth.cend() )
       c = (*found)[HALF];
   };
 
@@ -598,7 +598,7 @@ std::size_t getColumnWidth (const wchar_t wchar)
   static const auto& fterm_data = FTermData::getInstance();
 
   if ( (wchar >= UniChar::NF_rev_left_arrow2 && wchar <= UniChar::NF_check_mark)
-    || fterm_data.getTermEncoding() != Encoding::UTF8 )
+    || fterm_data.getTerminalEncoding() != Encoding::UTF8 )
   {
     column_width = 1;
   }
@@ -638,7 +638,7 @@ void addColumnWidth (FChar& term_char)
   static const auto& fterm_data = FTermData::getInstance();
 
   if ( char_width == 2
-    && fterm_data.getTermEncoding() != Encoding::UTF8 )
+    && fterm_data.getTerminalEncoding() != Encoding::UTF8 )
   {
     term_char.ch[0] = '.';
     term_char.attr.bit.char_width = 1;

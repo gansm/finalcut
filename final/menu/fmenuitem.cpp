@@ -197,9 +197,9 @@ void FMenuItem::delAccelerator (FWidget* obj) &
   if ( root && ! root->setAcceleratorList().empty() )
   {
     auto list = root->setAcceleratorList();
-    auto iter = list.begin();
+    auto iter = list.cbegin();
 
-    while ( iter != list.end() )
+    while ( iter != list.cend() )
     {
       if ( iter->object == obj )
       {
@@ -622,10 +622,10 @@ void FMenuItem::createDialogList (FMenu* winmenu) const
 
   if ( getDialogList() && ! getDialogList()->empty() )
   {
-    const auto& first = getDialogList()->begin();
+    const auto& first = getDialogList()->cbegin();
     auto iter = first;
 
-    while ( iter != getDialogList()->end() && *iter )
+    while ( iter != getDialogList()->cend() && *iter )
     {
       auto win = static_cast<FDialog*>(*iter);
       FMenuItem* win_item{};

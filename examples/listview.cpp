@@ -161,7 +161,7 @@ void Listview::populate()
 
   for (const auto& place : weather)
   {
-    const finalcut::FStringList line (place.begin(), place.end());
+    const finalcut::FStringList line (place.cbegin(), place.cend());
     listview.insert (line);
   }
 }

@@ -2146,8 +2146,8 @@ void FTermLinuxTest::linuxConsoleTest()
 
     CPPUNIT_ASSERT ( isatty(3) == 0 );
     CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::linux_con) );
-    CPPUNIT_ASSERT ( data.getTermGeometry().getWidth() == 96 );
-    CPPUNIT_ASSERT ( data.getTermGeometry().getHeight() == 36 );
+    CPPUNIT_ASSERT ( data.getTerminalGeometry().getWidth() == 96 );
+    CPPUNIT_ASSERT ( data.getTerminalGeometry().getHeight() == 36 );
     CPPUNIT_ASSERT ( data.hasShadowCharacter() );
     CPPUNIT_ASSERT ( data.hasHalfBlockCharacter() );
     CPPUNIT_ASSERT ( linux.getFramebufferBpp() == 32 );

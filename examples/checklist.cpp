@@ -113,7 +113,7 @@ void CheckList::populate()
 
   for (const auto& line : list)
   {
-    const finalcut::FStringList string_line (line.begin(), line.end());
+    const finalcut::FStringList string_line (line.cbegin(), line.cend());
     auto iter = listview.insert (string_line);
     auto item = static_cast<finalcut::FListViewItem*>(*iter);
     item->setCheckable(true);

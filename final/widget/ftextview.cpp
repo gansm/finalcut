@@ -257,8 +257,8 @@ void FTextView::insert (const FString& str, int pos)
     }
   }
 
-  auto iter = data.begin();
-  data.insert (iter + pos, text_split.begin(), text_split.end());
+  auto iter = data.cbegin();
+  data.insert (iter + pos, text_split.cbegin(), text_split.cend());
   const int vmax = ( getRows() > getTextHeight() )
                    ? int(getRows()) - int(getTextHeight())
                    : 0;
@@ -296,7 +296,7 @@ void FTextView::deleteRange (int from, int to)
   if ( from > to || from >= int(getRows()) || to >= int(getRows()) )
     throw std::out_of_range("");  // Invalid range
 
-  auto iter = data.begin();
+  auto iter = data.cbegin();
   data.erase (iter + from, iter + to + 1);
 }
 

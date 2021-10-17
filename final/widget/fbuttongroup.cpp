@@ -59,9 +59,9 @@ FButtonGroup::~FButtonGroup()  // destructor
   if ( buttonlist.empty() )
     return;
 
-  auto iter = buttonlist.begin();
+  auto iter = buttonlist.cbegin();
 
-  while ( iter != buttonlist.end() )
+  while ( iter != buttonlist.cend() )
   {
     auto toggle_button = static_cast<FToggleButton*>(*iter);
     toggle_button->setGroup(nullptr);
@@ -80,7 +80,7 @@ FToggleButton* FButtonGroup::getButton (int index) const
   if ( index <= 0 || index > int(getCount()) )
     return nullptr;
 
-  auto iter = buttonlist.begin();
+  auto iter = buttonlist.cbegin();
   std::advance (iter, index - 1);
   return static_cast<FToggleButton*>(*iter);
 }
@@ -235,7 +235,7 @@ void FButtonGroup::insert (FToggleButton* button)
   // setChecked the first FRadioButton
   if ( buttonlist.size() == 1 )
   {
-    auto first_button = static_cast<FToggleButton*>(*buttonlist.begin());
+    auto first_button = static_cast<FToggleButton*>(*buttonlist.cbegin());
 
     if ( isRadioButton(first_button) )
       first_button->setChecked();
@@ -257,9 +257,9 @@ void FButtonGroup::remove (FToggleButton* button)
   if ( ! button || buttonlist.empty() )
     return;
 
-  auto iter = buttonlist.begin();
+  auto iter = buttonlist.cbegin();
 
-  while ( iter != buttonlist.end() )
+  while ( iter != buttonlist.cend() )
   {
     const auto& toggle_button = static_cast<FToggleButton*>(*iter);
 

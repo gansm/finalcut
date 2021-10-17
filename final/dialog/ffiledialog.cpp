@@ -415,7 +415,7 @@ void FFileDialog::sortDir()
 {
   sInt64 start{0};
 
-  if ( dir_entries.begin()->name == ".." )
+  if ( dir_entries.cbegin()->name == ".." )
     start = 1;
 
   const sInt64 dir_num = numOfDirs();

@@ -177,7 +177,7 @@ void FListBox::remove (std::size_t item)
   if ( item > getCount() )
     return;
 
-  itemlist.erase (itemlist.begin() + int(item) - 1);
+  itemlist.erase (itemlist.cbegin() + int(item) - 1);
   const std::size_t element_count = getCount();
   max_line_width = 0;
 

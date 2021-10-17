@@ -279,8 +279,8 @@ void FObjectTest::childObjectTest()
   CPPUNIT_ASSERT ( c1->numOfChildren() == 1 );
   CPPUNIT_ASSERT ( c2->numOfChildren() == 0 );
   const auto& children_list2 = c1->getChildren();
-  CPPUNIT_ASSERT ( children_list2.begin() == c1->begin() );
-  CPPUNIT_ASSERT ( children_list2.begin() != c1->end() );
+  CPPUNIT_ASSERT ( children_list2.cbegin() == c1->cbegin() );
+  CPPUNIT_ASSERT ( children_list2.cbegin() != c1->cend() );
   CPPUNIT_ASSERT ( children_list2.end() != c1->begin() );
   CPPUNIT_ASSERT ( children_list2.end() == c1->end() );
   CPPUNIT_ASSERT ( ! c1->isDirectChild(c7) );

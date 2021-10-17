@@ -221,9 +221,9 @@ void FTermcap::termcap()
   terminals.emplace_back("xterm");          // 2nd fallback if not found
   terminals.emplace_back("ansi");           // 3rd fallback if not found
   terminals.emplace_back("vt100");          // 4th fallback if not found
-  auto iter = terminals.begin();
+  auto iter = terminals.cbegin();
 
-  while ( iter != terminals.end() )
+  while ( iter != terminals.cend() )
   {
     fterm_data.setTermType(*iter);
 

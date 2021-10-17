@@ -75,14 +75,14 @@ class FCharSubstitution
 //----------------------------------------------------------------------
 inline wchar_t FCharSubstitution::getMappedChar (wchar_t c)
 {
-  const auto& end = sub_map.end();
-  auto iter = std::find_if ( sub_map.begin(), end,
+  const auto& cend = sub_map.cend();
+  auto iter = std::find_if ( sub_map.cbegin(), cend,
                              [&c] (const Map& map)
                              {
                                return map.from == c;
                              } );
 
-  if ( iter == end )
+  if ( iter == cend )
     return L'\0';
   else
     return iter->to;
@@ -135,8 +135,9 @@ class FTermData final
     static auto        getInstance() -> FTermData&;
     EncodingMap&       getEncodingList() &;
     FCharSubstitution& getCharSubstitutionMap() &;
-    Encoding           getTermEncoding() const;
-    FRect&             getTermGeometry() &;
+    Encoding           getTerminalEncoding() const;
+    FRect&             getTerminalGeometry() &;
+    const FRect&       getTerminalGeometry() const &;
     int                getTTYFileDescriptor() const noexcept;
     uInt               getBaudrate() const noexcept;
     const std::string& getTermType() const & ;
@@ -201,7 +202,7 @@ class FTermData final
     // Data members
     EncodingMap           encoding_list{};
     FCharSubstitution     char_substitution_map{};
-    FRect                 term_geometry{};  // current terminal geometry
+    FRect                 terminal_geometry{};  // current terminal geometry
     FString               xterm_font{};
     FString               xterm_title{};
     FString               exit_message{};
@@ -262,12 +263,16 @@ inline FCharSubstitution& FTermData::getCharSubstitutionMap() &
 { return char_substitution_map; }
 
 //----------------------------------------------------------------------
-inline Encoding FTermData::getTermEncoding() const
+inline Encoding FTermData::getTerminalEncoding() const
 { return term_encoding; }
 
 //----------------------------------------------------------------------
-inline FRect& FTermData::getTermGeometry() &
-{ return term_geometry; }
+inline FRect& FTermData::getTerminalGeometry() &
+{ return terminal_geometry; }
+
+//----------------------------------------------------------------------
+inline const FRect& FTermData::getTerminalGeometry() const &
+{ return terminal_geometry; }
 
 //----------------------------------------------------------------------
 inline int FTermData::getTTYFileDescriptor() const noexcept

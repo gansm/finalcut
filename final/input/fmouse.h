@@ -112,25 +112,25 @@ class FMouseData
 
     // Accessors
     virtual FString       getClassName() const;
-    const FPoint&         getPos() const &;
+    const FPoint&         getPos() const & noexcept;
 
     // Inquiries
-    bool                  isLeftButtonPressed() const;
-    bool                  isLeftButtonReleased() const;
-    bool                  isLeftButtonDoubleClick() const;
-    bool                  isRightButtonPressed() const;
-    bool                  isRightButtonReleased() const;
-    bool                  isMiddleButtonPressed() const;
-    bool                  isMiddleButtonReleased() const;
-    bool                  isShiftKeyPressed() const;
-    bool                  isControlKeyPressed() const;
-    bool                  isMetaKeyPressed() const;
-    bool                  isWheelUp() const;
-    bool                  isWheelDown() const;
-    bool                  isMoved() const;
+    bool                  isLeftButtonPressed() const noexcept;
+    bool                  isLeftButtonReleased() const noexcept;
+    bool                  isLeftButtonDoubleClick() const noexcept;
+    bool                  isRightButtonPressed() const noexcept;
+    bool                  isRightButtonReleased() const noexcept;
+    bool                  isMiddleButtonPressed() const noexcept;
+    bool                  isMiddleButtonReleased() const noexcept;
+    bool                  isShiftKeyPressed() const noexcept;
+    bool                  isControlKeyPressed() const noexcept;
+    bool                  isMetaKeyPressed() const noexcept;
+    bool                  isWheelUp() const noexcept;
+    bool                  isWheelDown() const noexcept;
+    bool                  isMoved() const noexcept;
 
     // Methods
-    void                  clearButtonState();
+    void                  clearButtonState() noexcept;
 
   protected:
     // Enumerations
@@ -156,11 +156,11 @@ class FMouseData
     };
 
     // Accessors
-    FMouseButton&         getButtonState() &;
-    const FMouseButton&   getButtonState() const &;
+    FMouseButton&         getButtonState() & noexcept;
+    const FMouseButton&   getButtonState() const & noexcept;
 
     // Mutator
-    void                  setPos (const FPoint&);
+    void                  setPos (const FPoint&) noexcept;
 
   private:
     // Data members
@@ -191,18 +191,18 @@ class FMouse : public FMouseData
 
     // Accessors
     FString               getClassName() const override;
-    MouseType             getMouseTypeID() const;
-    void                  clearEvent();
+    MouseType             getMouseTypeID() const noexcept;
+    void                  clearEvent() noexcept;
 
     // Mutators
-    void                  setMaxWidth (uInt16);
-    void                  setMaxHeight (uInt16);
-    void                  setDblclickInterval (const uInt64);
+    void                  setMaxWidth (uInt16) noexcept;
+    void                  setMaxHeight (uInt16) noexcept;
+    void                  setDblclickInterval (const uInt64) noexcept;
 
     // Inquiries
     virtual bool          hasData() = 0;
-    bool                  hasEvent() const;
-    bool                  hasUnprocessedInput() const;
+    bool                  hasEvent() const noexcept;
+    bool                  hasUnprocessedInput() const noexcept;
 
     // Methods
     template <typename ClassT>
@@ -212,19 +212,19 @@ class FMouse : public FMouseData
 
   protected:
     // Accessors
-    const FPoint&         getNewPos() const &;
-    uInt16                getMaxWidth() const;
-    uInt16                getMaxHeight() const;
-    uInt64                getDblclickInterval() const;
-    TimeValue             getMousePressedTime() const;
+    const FPoint&         getNewPos() const & noexcept;
+    uInt16                getMaxWidth() const noexcept;
+    uInt16                getMaxHeight() const noexcept;
+    uInt64                getDblclickInterval() const noexcept;
+    TimeValue             getMousePressedTime() const noexcept;
 
     // Mutator
-    void                  setMouseTypeID (MouseType);
-    void                  setNewPos (int, int);
-    void                  setPending (bool = true);
-    void                  setEvent();
-    void                  setMousePressedTime (const TimeValue&);
-    void                  resetMousePressedTime();
+    void                  setMouseTypeID (MouseType) noexcept;
+    void                  setNewPos (int, int) noexcept;
+    void                  setPending (bool = true) noexcept;
+    void                  setEvent() noexcept;
+    void                  setMousePressedTime (const TimeValue&) noexcept;
+    void                  resetMousePressedTime() noexcept;
 
     // Inquiry
     bool                  isDblclickTimeout (const TimeValue&) const;
@@ -264,21 +264,21 @@ class FMouseGPM final : public FMouse
     FString              getClassName() const override;
 
     // Mutators
-    void                 setStdinNo(int);
+    void                 setStdinNo(int) noexcept;
 
     // Inquiry
-    bool                 hasData() override;
+    bool                 hasData() noexcept override;
     bool                 isGpmMouseEnabled() const noexcept;
 
     // Methods
-    void                 setRawData (FKeyboard::keybuffer&) override;
+    void                 setRawData (FKeyboard::keybuffer&) noexcept override;
     void                 processEvent (const TimeValue&) override;
     bool                 gpmMouse (bool = true);
     bool                 enableGpmMouse();
     bool                 disableGpmMouse();
-    bool                 hasSignificantEvents() const;
-    void                 interpretKeyDown();
-    void                 interpretKeyUp();
+    bool                 hasSignificantEvents() const noexcept;
+    void                 interpretKeyDown() noexcept;
+    void                 interpretKeyUp() noexcept;
     bool                 getGpmKeyPressed (bool = true);
     void                 drawPointer() const;
 
@@ -329,10 +329,10 @@ class FMouseX11 final : public FMouse
     FString              getClassName() const override;
 
     // Inquiry
-    bool                 hasData() override;
+    bool                 hasData() noexcept override;
 
     // Methods
-    void                 setRawData (FKeyboard::keybuffer&) override;
+    void                 setRawData (FKeyboard::keybuffer&) noexcept override;
     void                 processEvent (const TimeValue&) override;
 
   private:
@@ -361,9 +361,9 @@ class FMouseX11 final : public FMouse
     static constexpr std::size_t MOUSE_BUF_SIZE = 4;
 
     // Methods
-    void         setKeyState (int);
-    void         setMoveState (const FPoint&, int);
-    void         setButtonState (const int, const TimeValue&);
+    void         setKeyState (int) noexcept;
+    void         setMoveState (const FPoint&, int) noexcept;
+    void         setButtonState (const int, const TimeValue&) noexcept;
 
     // Data member
     char  x11_mouse[MOUSE_BUF_SIZE]{'\0'};
@@ -385,10 +385,10 @@ class FMouseSGR final : public FMouse
     FString       getClassName() const override;
 
     // Inquiry
-    bool          hasData() override;
+    bool          hasData() noexcept override;
 
     // Methods
-    void          setRawData (FKeyboard::keybuffer&) override;
+    void          setRawData (FKeyboard::keybuffer&) noexcept override;
     void          processEvent (const TimeValue&) override;
 
   private:
@@ -416,10 +416,10 @@ class FMouseSGR final : public FMouse
     static constexpr std::size_t MOUSE_BUF_SIZE = 13;
 
     // Methods
-    void          setKeyState (int);
-    void          setMoveState (const FPoint&, int);
-    void          setPressedButtonState (const int, const TimeValue&);
-    void          setReleasedButtonState (const int);
+    void          setKeyState (int) noexcept;
+    void          setMoveState (const FPoint&, int) noexcept;
+    void          setPressedButtonState (const int, const TimeValue&) noexcept;
+    void          setReleasedButtonState (const int) noexcept;
 
     // Data members
     char  sgr_mouse[MOUSE_BUF_SIZE]{'\0'};
@@ -441,10 +441,10 @@ class FMouseUrxvt final : public FMouse
     FString       getClassName() const override;
 
     // Inquiry
-    bool          hasData() override;
+    bool          hasData() noexcept override;
 
     // Methods
-    void          setRawData (FKeyboard::keybuffer&) override;
+    void          setRawData (FKeyboard::keybuffer&) noexcept override;
     void          processEvent (const TimeValue&) override;
 
   private:
@@ -473,9 +473,9 @@ class FMouseUrxvt final : public FMouse
     static constexpr std::size_t MOUSE_BUF_SIZE = 13;
 
     // Methods
-    void          setKeyState (int);
-    void          setMoveState (const FPoint&, int);
-    void          setButtonState (const int, const TimeValue&);
+    void          setKeyState (int) noexcept;
+    void          setMoveState (const FPoint&, int) noexcept;
+    void          setButtonState (const int, const TimeValue&) noexcept;
 
     // Data members
     char  urxvt_mouse[MOUSE_BUF_SIZE]{'\0'};

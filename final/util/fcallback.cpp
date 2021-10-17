@@ -38,9 +38,9 @@ void FCallback::delCallback (const FString& cb_signal)
   if ( callback_objects.empty() )
     return;
 
-  auto iter = callback_objects.begin();
+  auto iter = callback_objects.cbegin();
 
-  while ( iter != callback_objects.end() )
+  while ( iter != callback_objects.cend() )
   {
     if ( iter->cb_signal == cb_signal )
       iter = callback_objects.erase(iter);

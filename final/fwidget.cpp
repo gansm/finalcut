@@ -187,9 +187,9 @@ FWidget* FWidget::getFirstFocusableWidget (FObjectList list) &
   if ( list.empty() )
     return nullptr;
 
-  auto iter = list.begin();
+  auto iter = list.cbegin();
 
-  while ( iter != list.end() )
+  while ( iter != list.cend() )
   {
     if ( (*iter)->isWidget() )
     {
@@ -211,7 +211,7 @@ FWidget* FWidget::getLastFocusableWidget (FObjectList list) &
   if ( list.empty() )
     return nullptr;
 
-  auto iter  = list.end();
+  auto iter  = list.cend();
 
   do
   {
@@ -225,7 +225,7 @@ FWidget* FWidget::getLastFocusableWidget (FObjectList list) &
     if ( child->isEnabled() && child->acceptFocus() )
       return child;
   }
-  while ( iter != list.begin() );
+  while ( iter != list.cbegin() );
 
   return nullptr;
 }
@@ -868,9 +868,9 @@ void FWidget::delAccelerator (FWidget* obj) &
   if ( widget
     && ! widget->accelerator_list.empty() )
   {
-    auto iter = widget->accelerator_list.begin();
+    auto iter = widget->accelerator_list.cbegin();
 
-    while ( iter != widget->accelerator_list.end() )
+    while ( iter != widget->accelerator_list.cend() )
     {
       if ( iter->object == obj )
         iter = widget->accelerator_list.erase(iter);
@@ -1025,8 +1025,8 @@ bool FWidget::focusFirstChild() &
   if ( ! hasChildren() )
     return false;
 
-  auto iter = FObject::begin();
-  const auto last = FObject::end();
+  auto iter = FObject::cbegin();
+  const auto last = FObject::cend();
 
   while ( iter != last )
   {
@@ -1067,8 +1067,8 @@ bool FWidget::focusLastChild() &
   if ( ! hasChildren() )
     return false;
 
-  auto iter  = FObject::end();
-  const auto first = FObject::begin();
+  auto iter  = FObject::cend();
+  const auto first = FObject::cbegin();
 
   do
   {
@@ -1393,8 +1393,8 @@ bool FWidget::focusNextChild()
     || parent->numOfFocusableChildren() <= 1 )
     return false;
 
-  auto iter = parent->begin();
-  const auto last = parent->end();
+  auto iter = parent->cbegin();
+  const auto last = parent->cend();
 
   while ( iter != last )
   {
@@ -1419,8 +1419,8 @@ bool FWidget::focusNextChild()
     {
       ++next_element;
 
-      if ( next_element == parent->end() )
-        next_element = parent->begin();
+      if ( next_element == parent->cend() )
+        next_element = parent->cbegin();
 
       if ( ! (*next_element)->isWidget() )
         continue;
@@ -1451,8 +1451,8 @@ bool FWidget::focusPrevChild()
     || parent->numOfFocusableChildren() <= 1 )
     return false;
 
-  auto iter = parent->end();
-  const auto first = parent->begin();
+  auto iter = parent->cend();
+  const auto first = parent->cbegin();
 
   do
   {
@@ -1477,8 +1477,8 @@ bool FWidget::focusPrevChild()
         continue;
       }
 
-      if ( prev_element == parent->begin() )
-        prev_element = parent->end();
+      if ( prev_element == parent->cbegin() )
+        prev_element = parent->cend();
 
       --prev_element;
       prev = static_cast<FWidget*>(*prev_element);
@@ -2031,10 +2031,10 @@ inline bool FWidget::isDefaultTheme()
     "default16ColorDarkTheme"
   };
 
-  auto iter = std::find ( default_themes.begin()
-                        , default_themes.end()
+  auto iter = std::find ( default_themes.cbegin()
+                        , default_themes.cend()
                         , getColorTheme()->getClassName() );
-  return iter != default_themes.end();  // Default theme found
+  return iter != default_themes.cend();  // Default theme found
 }
 
 //----------------------------------------------------------------------

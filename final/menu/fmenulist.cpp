@@ -41,9 +41,9 @@ FMenuList::~FMenuList()  // destructor
   if ( item_list.empty() )
     return;
 
-  auto iter = item_list.begin();
+  auto iter = item_list.cbegin();
 
-  while ( iter != item_list.end() )
+  while ( iter != item_list.cend() )
   {
     (*iter)->setSuperMenu(nullptr);
     iter = item_list.erase(iter);
@@ -64,9 +64,9 @@ void FMenuList::remove (FMenuItem* i)
   if ( item_list.empty() )
     return;
 
-  auto iter = item_list.begin();
+  auto iter = item_list.cbegin();
 
-  while ( iter != item_list.end() )
+  while ( iter != item_list.cend() )
   {
     if ( (*iter) == i )
     {
@@ -85,7 +85,7 @@ void FMenuList::remove (int pos)
   if ( int(getCount()) < pos )
     return;
 
-  item_list.erase (item_list.begin() + pos - 1);
+  item_list.erase (item_list.cbegin() + pos - 1);
 }
 
 //----------------------------------------------------------------------

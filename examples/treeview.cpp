@@ -184,10 +184,10 @@ struct Treeview::TreeItem
 {
   using const_iterator = const char* const*;
 
-  const_iterator begin() const noexcept
+  const_iterator cbegin() const noexcept
   { return &name; }
 
-  const_iterator end() const noexcept
+  const_iterator cend() const noexcept
   { return std::next(&density); }
 
   // Data members
@@ -236,14 +236,14 @@ Treeview::Treeview (finalcut::FWidget* parent)
 
   for (const auto& continent : continent_list)
   {
-    finalcut::FStringList continent_line ( continent.begin()
-                                         , continent.end() );
+    finalcut::FStringList continent_line ( continent.cbegin()
+                                         , continent.cend() );
     auto iter = listview.insert (continent_line);
 
     for (const auto& country : continent.child_element)
     {
-      finalcut::FStringList country_line ( country.begin()
-                                         , country.end() );
+      finalcut::FStringList country_line ( country.cbegin()
+                                         , country.cend() );
       listview.insert (country_line, iter);
     }
   }

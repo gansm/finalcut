@@ -268,9 +268,9 @@ bool FApplication::removeQueuedEvent (const FObject* receiver)
     return false;
 
   bool retval{false};
-  auto iter = event_queue.begin();
+  auto iter = event_queue.cbegin();
 
-  while ( iter != event_queue.end() )
+  while ( iter != event_queue.cend() )
   {
     if ( iter->first == receiver )
     {
@@ -528,8 +528,8 @@ void FApplication::cmdOptions (const Args& args)
   setCmdOptionsMap(cmd_map);
   auto argc = args.size();
   std::vector<const char*> argv(argc);
-  std::transform ( args.begin()
-                 , args.end()
+  std::transform ( args.cbegin()
+                 , args.cend()
                  , argv.begin()
                  , [] (const std::string& str)
                    {
@@ -1265,9 +1265,9 @@ void FApplication::processCloseWidget()
     return;
 
   setTerminalUpdates (FVTerm::TerminalUpdate::Stop);
-  auto iter = getWidgetCloseList()->begin();
+  auto iter = getWidgetCloseList()->cbegin();
 
-  while ( iter != getWidgetCloseList()->end() && *iter )
+  while ( iter != getWidgetCloseList()->cend() && *iter )
   {
     delete *iter;
     ++iter;
@@ -1295,7 +1295,7 @@ bool FApplication::processNextEvent()
 {
   uInt num_events{0};
 
-  if ( hasTerminalResized() || hasDataInQueue() || isNextEventTimeout() )
+  if ( hasDataInQueue() || hasTerminalResized() || isNextEventTimeout() )
   {
     time_last_event = FObject::getCurrentTime();
     num_events += processTimerEvent();

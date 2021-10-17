@@ -903,8 +903,8 @@ void FTermLinux::setVGADefaultPalette()
     {0x55, 0xff, 0xff}, {0xff, 0xff, 0xff}
   }};
 
-  std::transform ( defaultColor.begin()
-                 , defaultColor.end()
+  std::transform ( defaultColor.cbegin()
+                 , defaultColor.cend()
                  , cmap.color.begin()
                  , [] (const RGB& rgb)
                    {
@@ -1184,7 +1184,7 @@ void FTermLinux::characterFallback ( wchar_t ucs
   static auto& fterm_data = FTermData::getInstance();
   auto& sub_map = fterm_data.getCharSubstitutionMap();
 
-  for (auto iter = fallback.begin() + 1; iter != fallback.end(); iter++)
+  for (auto iter = fallback.cbegin() + 1; iter != fallback.cend(); iter++)
   {
     sInt16 pos = getFontPos(*iter);
 

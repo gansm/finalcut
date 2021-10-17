@@ -91,8 +91,8 @@ void FTermDataTest::defaultDataTest()
 {
   finalcut::FTermData data;
   CPPUNIT_ASSERT ( data.getEncodingList().size() == 0 );
-  CPPUNIT_ASSERT ( data.getTermEncoding() == finalcut::Encoding::Unknown );
-  CPPUNIT_ASSERT ( data.getTermGeometry() == finalcut::FRect() );
+  CPPUNIT_ASSERT ( data.getTerminalEncoding() == finalcut::Encoding::Unknown );
+  CPPUNIT_ASSERT ( data.getTerminalGeometry() == finalcut::FRect() );
   CPPUNIT_ASSERT ( data.getTTYFileDescriptor() ==  -1 );
   CPPUNIT_ASSERT ( data.getBaudrate() == 0 );
   CPPUNIT_ASSERT_CSTRING ( data.getTermType().data(), "" );
@@ -143,17 +143,17 @@ void FTermDataTest::dataTest()
   CPPUNIT_ASSERT ( enc_list["PC"] == finalcut::Encoding::PC );
   CPPUNIT_ASSERT ( enc_list["ASCII"] == finalcut::Encoding::ASCII );
 
-  CPPUNIT_ASSERT ( data.getTermEncoding() == finalcut::Encoding::Unknown );
+  CPPUNIT_ASSERT ( data.getTerminalEncoding() == finalcut::Encoding::Unknown );
   data.setTermEncoding(finalcut::Encoding::UTF8);
-  CPPUNIT_ASSERT ( data.getTermEncoding() == finalcut::Encoding::UTF8 );
+  CPPUNIT_ASSERT ( data.getTerminalEncoding() == finalcut::Encoding::UTF8 );
   data.setTermEncoding(finalcut::Encoding::VT100);
-  CPPUNIT_ASSERT ( data.getTermEncoding() == finalcut::Encoding::VT100 );
+  CPPUNIT_ASSERT ( data.getTerminalEncoding() == finalcut::Encoding::VT100 );
   data.setTermEncoding(finalcut::Encoding::PC);
-  CPPUNIT_ASSERT ( data.getTermEncoding() == finalcut::Encoding::PC );
+  CPPUNIT_ASSERT ( data.getTerminalEncoding() == finalcut::Encoding::PC );
   data.setTermEncoding(finalcut::Encoding::ASCII);
-  CPPUNIT_ASSERT ( data.getTermEncoding() == finalcut::Encoding::ASCII );
+  CPPUNIT_ASSERT ( data.getTerminalEncoding() == finalcut::Encoding::ASCII );
   data.setTermEncoding(finalcut::Encoding::Unknown);
-  CPPUNIT_ASSERT ( data.getTermEncoding() == finalcut::Encoding::Unknown );
+  CPPUNIT_ASSERT ( data.getTerminalEncoding() == finalcut::Encoding::Unknown );
 
   CPPUNIT_ASSERT ( data.getCharSubstitutionMap().isEmpty() );
   auto& character_map = data.getCharSubstitutionMap();
@@ -169,10 +169,10 @@ void FTermDataTest::dataTest()
   CPPUNIT_ASSERT ( char_map.getMappedChar(wchar_t(finalcut::UniChar::FullBlock))
                    == wchar_t(finalcut::UniChar::MediumShade) );
 
-  CPPUNIT_ASSERT ( data.getTermGeometry() == finalcut::FRect() );
-  data.getTermGeometry().setSize(10, 10);
-  data.getTermGeometry().setPos(3, 5);
-  CPPUNIT_ASSERT ( data.getTermGeometry() == finalcut::FRect(3, 5, 10, 10) );
+  CPPUNIT_ASSERT ( data.getTerminalGeometry() == finalcut::FRect() );
+  data.getTerminalGeometry().setSize(10, 10);
+  data.getTerminalGeometry().setPos(3, 5);
+  CPPUNIT_ASSERT ( data.getTerminalGeometry() == finalcut::FRect(3, 5, 10, 10) );
 
   CPPUNIT_ASSERT ( data.getTTYFileDescriptor() ==  -1 );
   data.setTTYFileDescriptor (1);

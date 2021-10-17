@@ -88,7 +88,7 @@ FObject* FObject::getChild (int index) const &
   if ( index <= 0 || index > int(numOfChildren()) )
     return nullptr;
 
-  auto iter = begin();
+  auto iter = children_list.cbegin();
   std::advance (iter, index - 1);
   return *iter;
 }
@@ -197,13 +197,13 @@ bool FObject::isTimeout (const TimeValue& time, uInt64 timeout)
 {
   // Checks whether the specified time span (timeout in µs) has elapsed
 
-  const auto now = getCurrentTime();
+  const auto& now = getCurrentTime();
 
   if ( now < time )
     return false;
 
   const auto diff = now - time;
-  const auto diff_usec = uInt64(duration_cast<microseconds>(diff).count());
+  const auto& diff_usec = uInt64(duration_cast<microseconds>(diff).count());
   return diff_usec > timeout;
 }
 
@@ -220,14 +220,14 @@ int FObject::addTimer (int interval) &
   // find an unused timer id
   if ( ! timer_list->empty() )
   {
-    auto iter = timer_list->begin();
-    const auto& last = timer_list->end();
+    auto iter = timer_list->cbegin();
+    const auto& last = timer_list->cend();
 
     while ( iter != last )
     {
       if ( iter->id == id )
       {
-        iter = timer_list->begin();
+        iter = timer_list->cbegin();
         id++;
         continue;
       }
@@ -243,8 +243,8 @@ int FObject::addTimer (int interval) &
   FTimerData t{ id, time_interval, timeout, this };
 
   // insert in list sorted by timeout
-  auto iter = timer_list->begin();
-  const auto& last = timer_list->end();
+  auto iter = timer_list->cbegin();
+  const auto& last = timer_list->cend();
 
   while ( iter != last && iter->timeout < t.timeout )
     ++iter;
@@ -263,8 +263,8 @@ bool FObject::delTimer (int id) const &
 
   std::lock_guard<std::mutex> lock_guard(internal::var::timer_mutex);
   auto& timer_list = globalTimerList();
-  auto iter = timer_list->begin();
-  const auto& last = timer_list->end();
+  auto iter = timer_list->cbegin();
+  const auto& last = timer_list->cend();
 
   while ( iter != last && iter->id != id )
     ++iter;
@@ -292,9 +292,9 @@ bool FObject::delOwnTimers() const &
   if ( timer_list->empty() )
     return false;
 
-  auto iter = timer_list->begin();
+  auto iter = timer_list->cbegin();
 
-  while ( iter != timer_list->end() )
+  while ( iter != timer_list->cend() )
   {
     if ( iter->object == this )
       iter = timer_list->erase(iter);

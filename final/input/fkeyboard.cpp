@@ -135,7 +135,7 @@ bool FKeyboard::setNonBlockingInput (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool& FKeyboard::hasUnprocessedInput() &
+bool& FKeyboard::hasUnprocessedInput() & noexcept
 {
   return unprocessed_buffer_data;
 }
@@ -178,7 +178,7 @@ bool FKeyboard::isKeyPressed (uInt64 blocking_time)
 }
 
 //----------------------------------------------------------------------
-void FKeyboard::clearKeyBuffer()
+void FKeyboard::clearKeyBuffer() noexcept
 {
   // Empty the buffer
 
@@ -433,10 +433,10 @@ FKey FKeyboard::UTF8decode (const std::string& utf8) const
   FKey ucs{FKey::None};  // Universal coded character
   constexpr std::size_t max = 4;
   const auto len = utf8.length();
-  auto end = utf8.begin()
+  auto end = utf8.cbegin()
            + static_cast<distance_type>(std::min(len, max));
 
-  for (auto iter{utf8.begin()}; iter < end; ++iter)
+  for (auto iter{utf8.cbegin()}; iter < end; ++iter)
   {
     const auto ch = uChar(*iter);
 
