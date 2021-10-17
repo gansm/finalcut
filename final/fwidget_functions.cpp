@@ -73,6 +73,55 @@ bool isEscapeKey (const FKey key)
 }
 
 //----------------------------------------------------------------------
+FWidget* getFirstFocusableWidget (const FObject::FObjectList& list)
+{
+  if ( list.empty() )
+    return nullptr;
+
+  auto iter = list.cbegin();
+
+  while ( iter != list.cend() )
+  {
+    if ( (*iter)->isWidget() )
+    {
+      auto child = static_cast<FWidget*>(*iter);
+
+      if ( child->isEnabled() && child->acceptFocus() )
+        return child;
+    }
+
+    ++iter;
+  }
+
+  return nullptr;
+}
+
+//----------------------------------------------------------------------
+FWidget* getLastFocusableWidget (const FObject::FObjectList& list)
+{
+  if ( list.empty() )
+    return nullptr;
+
+  auto iter  = list.cend();
+
+  do
+  {
+    --iter;
+
+    if ( ! (*iter)->isWidget() )
+      continue;
+
+    auto child = static_cast<FWidget*>(*iter);
+
+    if ( child->isEnabled() && child->acceptFocus() )
+      return child;
+  }
+  while ( iter != list.cbegin() );
+
+  return nullptr;
+}
+
+//----------------------------------------------------------------------
 bool isInFWidgetList (const FWidget::FWidgetList* list, const FWidget* obj)
 {
   if ( ! list || ! obj )

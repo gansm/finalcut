@@ -88,7 +88,7 @@ FToggleButton* FButtonGroup::getButton (int index) const
 //----------------------------------------------------------------------
 FToggleButton* FButtonGroup::getFirstButton()
 {
-  auto widget = FWidget::getFirstFocusableWidget(buttonlist);
+  auto widget = getFirstFocusableWidget(buttonlist);
   auto toggle_button = static_cast<FToggleButton*>(widget);
   return toggle_button;
 }
@@ -96,7 +96,7 @@ FToggleButton* FButtonGroup::getFirstButton()
 //----------------------------------------------------------------------
 FToggleButton* FButtonGroup::getLastButton()
 {
-  auto widget = FWidget::getLastFocusableWidget(buttonlist);
+  auto widget = getLastFocusableWidget(buttonlist);
   auto toggle_button = static_cast<FToggleButton*>(widget);
   return toggle_button;
 }

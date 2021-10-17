@@ -183,8 +183,6 @@ class FWidget : public FVTerm, public FObject
     static FMenuBar*         getMenuBar();
     static FStatusBar*       getStatusBar();
     static auto              getColorTheme() -> std::shared_ptr<FWidgetColors>&;
-    virtual FWidget*         getFirstFocusableWidget (FObjectList) &;
-    virtual FWidget*         getLastFocusableWidget (FObjectList) &;
     const FAcceleratorList&  getAcceleratorList() const &;
     FString                  getStatusbarMessage() const;
     FColor                   getForegroundColor() const noexcept;  // get the primary

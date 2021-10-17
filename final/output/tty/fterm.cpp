@@ -799,7 +799,7 @@ wchar_t FTerm::charEncode (wchar_t c)
 //----------------------------------------------------------------------
 wchar_t FTerm::charEncode (wchar_t c, Encoding enc)
 {
-  auto& character = FCharMap::getCharEncodeMap();
+  const auto& character = FCharMap::getCharEncodeMap();
   const auto& cend = character.cend();
   auto found = std::find_if ( character.cbegin(), cend
                             , [&c] (const FCharMap::CharEncodeMap& entry)

@@ -289,7 +289,7 @@ class FVTerm : public FVTermAttribute
     void                  scrollTerminalForward() const;
     void                  scrollTerminalReverse() const;
     static void           callPreprocessingHandler (const FTermArea*);
-    bool                  hasChildAreaChanges (FTermArea*) const;
+    bool                  hasChildAreaChanges (const FTermArea*) const;
     void                  clearChildAreaChanges (const FTermArea*) const;
     static bool           isInsideArea (const FPoint&, const FTermArea*);
     static bool           isTransparentInvisible (const FChar&);

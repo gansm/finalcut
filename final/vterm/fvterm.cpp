@@ -1479,7 +1479,7 @@ void FVTerm::callPreprocessingHandler (const FTermArea* area)
 }
 
 //----------------------------------------------------------------------
-bool FVTerm::hasChildAreaChanges (FTermArea* area) const
+bool FVTerm::hasChildAreaChanges (const FTermArea* area) const
 {
   if ( ! area || area->preproc_list.empty() )
     return false;

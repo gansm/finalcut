@@ -63,7 +63,7 @@ class FCharSubstitution
       wchar_t to;
     };
 
-    wchar_t getMappedChar (wchar_t);
+    wchar_t getMappedChar (wchar_t) const;
     void setCharMapping (const Map&);
     bool isEmpty() const;
 
@@ -73,7 +73,7 @@ class FCharSubstitution
 
 // FTermData inline functions
 //----------------------------------------------------------------------
-inline wchar_t FCharSubstitution::getMappedChar (wchar_t c)
+inline wchar_t FCharSubstitution::getMappedChar (wchar_t c) const
 {
   const auto& cend = sub_map.cend();
   auto iter = std::find_if ( sub_map.cbegin(), cend,

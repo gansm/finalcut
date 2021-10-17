@@ -50,6 +50,8 @@ bool          isFocusPrevKey (const FKey);
 bool          isDialogMenuKey (const FKey);
 bool          isEnterKey (const FKey);
 bool          isEscapeKey (const FKey);
+FWidget*      getFirstFocusableWidget (const FObject::FObjectList&);
+FWidget*      getLastFocusableWidget (const FObject::FObjectList&);
 bool          isInFWidgetList (const FWidgetList*, const FWidget*);
 FKey          getHotkey (const FString&);
 std::size_t   getHotkeyPos (const FString& src, FString& dest);

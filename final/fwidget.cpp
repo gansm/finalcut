@@ -182,55 +182,6 @@ auto FWidget::getColorTheme() -> std::shared_ptr<FWidgetColors>&
 }
 
 //----------------------------------------------------------------------
-FWidget* FWidget::getFirstFocusableWidget (FObjectList list) &
-{
-  if ( list.empty() )
-    return nullptr;
-
-  auto iter = list.cbegin();
-
-  while ( iter != list.cend() )
-  {
-    if ( (*iter)->isWidget() )
-    {
-      auto child = static_cast<FWidget*>(*iter);
-
-      if ( child->isEnabled() && child->acceptFocus() )
-        return child;
-    }
-
-    ++iter;
-  }
-
-  return nullptr;
-}
-
-//----------------------------------------------------------------------
-FWidget* FWidget::getLastFocusableWidget (FObjectList list) &
-{
-  if ( list.empty() )
-    return nullptr;
-
-  auto iter  = list.cend();
-
-  do
-  {
-    --iter;
-
-    if ( ! (*iter)->isWidget() )
-      continue;
-
-    auto child = static_cast<FWidget*>(*iter);
-
-    if ( child->isEnabled() && child->acceptFocus() )
-      return child;
-  }
-  while ( iter != list.cbegin() );
-
-  return nullptr;
-}
-
-//----------------------------------------------------------------------
 std::vector<bool>& FWidget::doubleFlatLine_ref (Side side)
 {
   auto& mask = double_flatline_mask;
