@@ -72,7 +72,7 @@ class FTermcap final
 
     // Using-declaration
     using TCapMapType = std::array<TCapMap, 85>;
-    using defaultPutChar = std::function<int(int)>;
+    using PutCharFunc = int (*)(int);
 
     // Constructors
     FTermcap() = default;
@@ -85,14 +85,15 @@ class FTermcap final
     static std::string   encodeMotionParameter (const std::string&, int, int);
     template <typename... Args>
     static std::string   encodeParameter (const std::string&, Args&&...);
-    static Status        paddingPrint ( const std::string&
-                                      , int
-                                      , const defaultPutChar&);
+    static Status        paddingPrint (const std::string&, int);
 
     // Inquiry
     static bool          isInitialized();
 
     // Mutator
+    template<typename PutChar>
+    static void          setPutCharFunction (const PutChar&);
+    static void          setDefaultPutcharFunction();
     static void          setBaudrate (int);
 
     // Methods
@@ -133,8 +134,7 @@ class FTermcap final
     static void          termcapKeys();
     static std::string   encodeParams ( const std::string&
                                       , const std::array<int, 9>& );
-    template<typename PutChar>
-    static void          delayOutput (int, const PutChar&);
+    static void          delayOutput (int);
     static void          decimalPoint (string_iterator&, int&);
     static void          readDigits (string_iterator&, int&);
     static void          asteriskSlash (string_iterator&, int&, int, bool&);
@@ -143,6 +143,7 @@ class FTermcap final
     static int           baudrate;
     static char          PC;
     static char          string_buf[BUF_SIZE];
+    static PutCharFunc   outc;
 };
 
 // FTermcap inline functions
@@ -162,8 +163,13 @@ std::string FTermcap::encodeParameter (const std::string& cap, Args&&... args)
 //----------------------------------------------------------------------
 inline bool FTermcap::isInitialized()
 {
-  return initialized;
+  return initialized && outc;
 }
+
+//----------------------------------------------------------------------
+template<typename PutChar>
+inline void FTermcap::setPutCharFunction (const PutChar& put_char)
+{ outc = put_char; }
 
 //----------------------------------------------------------------------
 inline void FTermcap::setBaudrate (int baud)
@@ -172,8 +178,7 @@ inline void FTermcap::setBaudrate (int baud)
 }
 
 //----------------------------------------------------------------------
-template<typename PutChar>
-inline void FTermcap::delayOutput (int ms, const PutChar& outc)
+inline void FTermcap::delayOutput (int ms)
 {
   if ( no_padding_char )
   {

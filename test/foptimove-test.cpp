@@ -169,6 +169,7 @@ class FOptiMoveTest : public CPPUNIT_NS::TestFixture
 FOptiMoveTest::FOptiMoveTest()
 {
   finalcut::FTermcap::init();
+  finalcut::FTermcap::setPutCharFunction (::putchar);
 }
 
 //----------------------------------------------------------------------

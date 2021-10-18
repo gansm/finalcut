@@ -847,7 +847,7 @@ bool FTerm::scrollTermReverse()
 //----------------------------------------------------------------------
 void FTerm::paddingPrint (const std::string& str, int affcnt)
 {
-  auto status = FTermcap::paddingPrint (str, affcnt, FTerm::putchar);
+  auto status = FTermcap::paddingPrint (str, affcnt);
 
   if ( status == FTermcap::Status::Error )
   {
@@ -856,7 +856,7 @@ void FTerm::paddingPrint (const std::string& str, int affcnt)
 }
 
 //----------------------------------------------------------------------
-int FTerm::putstring (const std::string& str)
+int FTerm::stringPrint (const std::string& str)
 {
   static const auto& fsys = FSystem::getInstance();
   auto put = [] (const std::string& string)
@@ -864,14 +864,6 @@ int FTerm::putstring (const std::string& str)
                return fsys->fputs(string.c_str(), stdout);
              };
   return put(str);
-}
-
-//----------------------------------------------------------------------
-int FTerm::putchar (int c)
-{
-  static const auto& fsys = FSystem::getInstance();
-  auto put = [] (int ch) { return fsys->putchar(ch); };
-  return put(char(c));
 }
 
 

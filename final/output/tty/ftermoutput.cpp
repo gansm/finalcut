@@ -53,6 +53,7 @@ FTermOutput::FTermOutput (const FVTerm& t)  // constructor
   : FOutput{t}
 {
   fterm_data = &FTermData::getInstance();
+  FTermcap::setDefaultPutcharFunction();
 }
 
 //----------------------------------------------------------------------
@@ -438,9 +439,9 @@ void FTermOutput::flush()
     const auto& data = first.data;
 
     if ( type == OutputType::String )
-      FTerm::putstring(data);
+      FTerm::stringPrint (data);
     else if ( type == OutputType::Control )
-      FTerm::paddingPrint(data);
+      FTerm::paddingPrint (data);
 
     output_buffer->pop();
   }
@@ -1426,7 +1427,7 @@ void FTermOutput::appendLowerRight (FChar& last_char)
 //----------------------------------------------------------------------
 inline void FTermOutput::characterFilter (FChar& next_char)
 {
-  static auto& sub_map = getFTerm().getCharSubstitutionMap();
+  static const auto& sub_map = getFTerm().getCharSubstitutionMap();
 
   if ( sub_map.isEmpty() )
     return;

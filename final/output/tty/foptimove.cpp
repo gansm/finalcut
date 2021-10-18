@@ -41,7 +41,6 @@ FOptiMove::FOptiMove (int baud)
   : baudrate{baud}
 {
   assert ( baud >= 0 );
-
   move_buf.reserve(BUF_SIZE);
   calculateCharDuration();
 

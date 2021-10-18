@@ -1,4 +1,8 @@
-2021-12-08 Markus Gans  <guru.mail@muenster.de>
+2021-10-18 Markus Gans  <guru.mail@muenster.de>
+	* Speed up FTermcap::paddingPrint() by assigning the putchar function 
+	  only once
+
+2021-10-12 Markus Gans  <guru.mail@muenster.de>
 	* Speed up access to mouse objects in FMouseControl 
 	* The predefined escape sequences for keyboard keys are now 
 	  functional again

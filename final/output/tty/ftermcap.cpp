@@ -62,25 +62,27 @@ namespace finalcut
 {
 
 // static class attributes
-bool             FTermcap::initialized              {false};
-bool             FTermcap::background_color_erase   {false};
-bool             FTermcap::can_change_color_palette {false};
-bool             FTermcap::automatic_left_margin    {false};
-bool             FTermcap::automatic_right_margin   {false};
-bool             FTermcap::eat_nl_glitch            {false};
-bool             FTermcap::has_ansi_escape_sequences{false};
-bool             FTermcap::ansi_default_color       {false};
-bool             FTermcap::osc_support              {false};
-bool             FTermcap::no_utf8_acs_chars        {false};
-bool             FTermcap::no_padding_char          {false};
-bool             FTermcap::xon_xoff_flow_control    {false};
-int              FTermcap::max_color                {1};
-int              FTermcap::tabstop                  {8};
-int              FTermcap::padding_baudrate         {0};
-int              FTermcap::attr_without_color       {0};
-int              FTermcap::baudrate                 {9600};
-char             FTermcap::PC                       {'\0'};
-char             FTermcap::string_buf[2048]         {};
+bool                  FTermcap::initialized              {false};
+bool                  FTermcap::background_color_erase   {false};
+bool                  FTermcap::can_change_color_palette {false};
+bool                  FTermcap::automatic_left_margin    {false};
+bool                  FTermcap::automatic_right_margin   {false};
+bool                  FTermcap::eat_nl_glitch            {false};
+bool                  FTermcap::has_ansi_escape_sequences{false};
+bool                  FTermcap::ansi_default_color       {false};
+bool                  FTermcap::osc_support              {false};
+bool                  FTermcap::no_utf8_acs_chars        {false};
+bool                  FTermcap::no_padding_char          {false};
+bool                  FTermcap::xon_xoff_flow_control    {false};
+int                   FTermcap::max_color                {1};
+int                   FTermcap::tabstop                  {8};
+int                   FTermcap::padding_baudrate         {0};
+int                   FTermcap::attr_without_color       {0};
+int                   FTermcap::baudrate                 {9600};
+char                  FTermcap::PC                       {'\0'};
+char                  FTermcap::string_buf[2048]         {};
+FTermcap::PutCharFunc FTermcap::outc                     {};
+
 
 //----------------------------------------------------------------------
 // class FTermcap
@@ -124,10 +126,9 @@ std::string FTermcap::encodeMotionParameter (const std::string& cap, int col, in
 
 //----------------------------------------------------------------------
 FTermcap::Status FTermcap::paddingPrint ( const std::string& string
-                                        , int affcnt
-                                        , const defaultPutChar& outc )
+                                        , int affcnt )
 {
-  if ( string.empty() )
+  if ( string.empty() || ! outc )
     return Status::Error;
 
   bool has_delay = (TCAP(t_bell) && string == std::string(TCAP(t_bell)))
@@ -177,7 +178,7 @@ FTermcap::Status FTermcap::paddingPrint ( const std::string& string
         }
         else if ( has_delay && number > 0 )
         {
-          delayOutput(number / 10, outc);
+          delayOutput(number / 10);
         }
       }  // end of else (*iter == '<')
     }  // end of else (*iter == '$')
@@ -196,6 +197,15 @@ void FTermcap::init()
 {
   termcap();
 }
+
+//----------------------------------------------------------------------
+void FTermcap::setDefaultPutcharFunction()
+{
+  static const auto& fsys = FSystem::getInstance();
+  auto put_char = [] (int ch) { return fsys->putchar(ch); };
+  outc = put_char;
+}
+
 
 // private methods of FTermcap
 //----------------------------------------------------------------------

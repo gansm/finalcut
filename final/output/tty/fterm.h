@@ -235,8 +235,7 @@ class FTerm final
     template <typename... Args>
     static void              paddingPrintf (const std::string&, Args&&...);
     static void              paddingPrint (const std::string&, int = 1);
-    static int               putstring (const std::string&);
-    static int               putchar (int);
+    static int               stringPrint (const std::string&);
 
     void                     initTerminal();
     static void              initScreenSettings();
