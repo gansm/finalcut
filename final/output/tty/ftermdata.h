@@ -63,9 +63,9 @@ class FCharSubstitution
       wchar_t to;
     };
 
-    wchar_t getMappedChar (wchar_t) const;
-    void setCharMapping (const Map&);
-    bool isEmpty() const;
+    wchar_t  getMappedChar (wchar_t) const;
+    void     setCharMapping (const Map&);
+    bool     isEmpty() const;
 
   private:
     std::vector<Map> sub_map{};

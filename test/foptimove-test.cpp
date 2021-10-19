@@ -170,6 +170,8 @@ FOptiMoveTest::FOptiMoveTest()
 {
   finalcut::FTermcap::init();
   finalcut::FTermcap::setPutCharFunction (::putchar);
+  auto putstr = [] (const std::string& s){ return ::fputs(s.c_str(), stdout); };
+  finalcut::FTermcap::setPutStringFunction (putstr);
 }
 
 //----------------------------------------------------------------------

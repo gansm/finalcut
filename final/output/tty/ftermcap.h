@@ -73,6 +73,7 @@ class FTermcap final
     // Using-declaration
     using TCapMapType = std::array<TCapMap, 85>;
     using PutCharFunc = int (*)(int);
+    using PutStringFunc = int (*)(const std::string&);
 
     // Constructors
     FTermcap() = default;
@@ -86,6 +87,7 @@ class FTermcap final
     template <typename... Args>
     static std::string   encodeParameter (const std::string&, Args&&...);
     static Status        paddingPrint (const std::string&, int);
+    static Status        stringPrint (const std::string&);
 
     // Inquiry
     static bool          isInitialized();
@@ -93,7 +95,10 @@ class FTermcap final
     // Mutator
     template<typename PutChar>
     static void          setPutCharFunction (const PutChar&);
-    static void          setDefaultPutcharFunction();
+    static void          setDefaultPutCharFunction();
+    template<typename PutString>
+    static void          setPutStringFunction (const PutString&);
+    static void          setDefaultPutStringFunction();
     static void          setBaudrate (int);
 
     // Methods
@@ -144,6 +149,7 @@ class FTermcap final
     static char          PC;
     static char          string_buf[BUF_SIZE];
     static PutCharFunc   outc;
+    static PutStringFunc outs;
 };
 
 // FTermcap inline functions
@@ -163,13 +169,20 @@ std::string FTermcap::encodeParameter (const std::string& cap, Args&&... args)
 //----------------------------------------------------------------------
 inline bool FTermcap::isInitialized()
 {
-  return initialized && outc;
+  // FTermcap is fully initialized when the termcap database has been
+  // read and the function pointers outc and outs are set
+  return initialized && outc && outs;
 }
 
 //----------------------------------------------------------------------
 template<typename PutChar>
 inline void FTermcap::setPutCharFunction (const PutChar& put_char)
 { outc = put_char; }
+
+//----------------------------------------------------------------------
+template<typename PutString>
+inline void FTermcap::setPutStringFunction (const PutString& put_string)
+{ outs = put_string; }
 
 //----------------------------------------------------------------------
 inline void FTermcap::setBaudrate (int baud)

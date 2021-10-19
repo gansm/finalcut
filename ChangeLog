@@ -1,3 +1,6 @@
+2021-10-20 Markus Gans  <guru.mail@muenster.de>
+	* Implementation of the stringPrint() method in FTermcap
+
 2021-10-18 Markus Gans  <guru.mail@muenster.de>
 	* Speed up FTermcap::paddingPrint() by assigning the putchar function 
 	  only once

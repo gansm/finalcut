@@ -81,9 +81,11 @@ class FTermcapTest : public CPPUNIT_NS::TestFixture
     void encodeMotionParameterTest();
     void encodeParameterTest();
     void paddingPrintTest();
+    void stringPrintTest();
 
   private:
-    static int putchar_test(int);
+    static int putchar_test (int);
+    static int putstring_test (const std::string&);
     static void clear();
 
     // Adds code needed to register the test suite
@@ -98,6 +100,7 @@ class FTermcapTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (encodeMotionParameterTest);
     CPPUNIT_TEST (encodeParameterTest);
     CPPUNIT_TEST (paddingPrintTest);
+    CPPUNIT_TEST (stringPrintTest);
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
@@ -127,8 +130,13 @@ void FTermcapTest::initTest()
   finalcut::FTermcap tcap;
   CPPUNIT_ASSERT ( ! tcap.isInitialized() );
   tcap.init();
+  CPPUNIT_ASSERT ( tcap.isInitialized() );
+  tcap.setPutCharFunction (nullptr);
+  tcap.setPutStringFunction (nullptr);
   CPPUNIT_ASSERT ( ! tcap.isInitialized() );
   tcap.setPutCharFunction (FTermcapTest::putchar_test);
+  CPPUNIT_ASSERT ( ! tcap.isInitialized() );
+  tcap.setPutStringFunction (FTermcapTest::putstring_test);
   CPPUNIT_ASSERT ( tcap.isInitialized() );
   CPPUNIT_ASSERT ( ! fterm_data.getTermType().empty() );
   CPPUNIT_ASSERT ( fterm_data.getTermType() == "xterm" );
@@ -163,6 +171,7 @@ void FTermcapTest::getFlagTest()
   finalcut::FTermcap tcap;
   tcap.init();
   tcap.setPutCharFunction (FTermcapTest::putchar_test);
+  tcap.setPutStringFunction (FTermcapTest::putstring_test);
   CPPUNIT_ASSERT ( tcap.isInitialized() );
   CPPUNIT_ASSERT ( fterm_data.getTermType() == "ansi" );
 
@@ -180,6 +189,7 @@ void FTermcapTest::getNumberTest()
   finalcut::FTermcap tcap;
   tcap.init();
   tcap.setPutCharFunction (FTermcapTest::putchar_test);
+  tcap.setPutStringFunction (FTermcapTest::putstring_test);
   CPPUNIT_ASSERT ( tcap.isInitialized() );
   CPPUNIT_ASSERT ( fterm_data.getTermType() == "xterm" );
 
@@ -198,6 +208,7 @@ void FTermcapTest::getStringTest()
   finalcut::FTermcap tcap;
   tcap.init();
   tcap.setPutCharFunction (FTermcapTest::putchar_test);
+  tcap.setPutStringFunction (FTermcapTest::putstring_test);
   CPPUNIT_ASSERT ( tcap.isInitialized() );
   CPPUNIT_ASSERT ( fterm_data.getTermType() == "ansi" );
 
@@ -217,6 +228,7 @@ void FTermcapTest::encodeMotionParameterTest()
   finalcut::FTermcap tcap;
   tcap.init();
   tcap.setPutCharFunction (FTermcapTest::putchar_test);
+  tcap.setPutStringFunction (FTermcapTest::putstring_test);
   CPPUNIT_ASSERT ( tcap.isInitialized() );
   CPPUNIT_ASSERT ( fterm_data.getTermType() == "ansi" );
   const auto& cursor_address = tcap.getString("cm");
@@ -234,6 +246,7 @@ void FTermcapTest::encodeParameterTest()
   finalcut::FTermcap tcap;
   tcap.init();
   tcap.setPutCharFunction (FTermcapTest::putchar_test);
+  tcap.setPutStringFunction (FTermcapTest::putstring_test);
   CPPUNIT_ASSERT ( tcap.isInitialized() );
   CPPUNIT_ASSERT ( fterm_data.getTermType() == "ansi" );
   const auto& parm_insert_line = tcap.getString("AL");
@@ -261,6 +274,7 @@ void FTermcapTest::paddingPrintTest()
   CPPUNIT_ASSERT ( ! tcap.xon_xoff_flow_control );
   tcap.init();
   tcap.setPutCharFunction (FTermcapTest::putchar_test);
+  tcap.setPutStringFunction (FTermcapTest::putstring_test);
   CPPUNIT_ASSERT ( tcap.isInitialized() );
   CPPUNIT_ASSERT ( tcap.no_padding_char );
 
@@ -358,6 +372,8 @@ void FTermcapTest::paddingPrintTest()
   setenv ("TERM", "ansi", 1);  // ansi terminals used for delay padding character
   fterm_data.setTermType("ansi");
   tcap.init();
+  tcap.setPutCharFunction (FTermcapTest::putchar_test);
+  tcap.setPutStringFunction (FTermcapTest::putstring_test);
   CPPUNIT_ASSERT ( ! tcap.no_padding_char );
   CPPUNIT_ASSERT ( ! tcap.xon_xoff_flow_control );
   output.clear();
@@ -526,6 +542,58 @@ void FTermcapTest::paddingPrintTest()
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   CPPUNIT_ASSERT ( output.length() == 10 );
   CPPUNIT_ASSERT ( output == target_output );
+  output.clear();
+}
+
+//----------------------------------------------------------------------
+void FTermcapTest::stringPrintTest()
+{
+  finalcut::FTermcap tcap;
+  tcap.init();
+  tcap.setPutStringFunction (nullptr);
+  CPPUNIT_ASSERT ( ! tcap.isInitialized() );
+  auto status = tcap.stringPrint ("Hello, World!");
+  CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::Error );
+  tcap.setPutCharFunction (FTermcapTest::putchar_test);
+  tcap.setPutStringFunction (FTermcapTest::putstring_test);
+  CPPUNIT_ASSERT ( tcap.isInitialized() );
+
+  // With an empty string
+  CPPUNIT_ASSERT ( output.empty() );
+  status = tcap.stringPrint ({});
+  CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::Error );
+  CPPUNIT_ASSERT ( output.empty() );
+  CPPUNIT_ASSERT ( output == "" );
+  status = tcap.stringPrint ("");
+  CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::Error );
+  CPPUNIT_ASSERT ( output.empty() );
+  CPPUNIT_ASSERT ( output == "" );
+  status = tcap.stringPrint (std::string());
+  CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::Error );
+  CPPUNIT_ASSERT ( output.empty() );
+  CPPUNIT_ASSERT ( output == "" );
+  status = tcap.stringPrint (std::string(""));
+  CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::Error );
+  CPPUNIT_ASSERT ( output.empty() );
+  CPPUNIT_ASSERT ( output == "" );
+
+  // With string data
+  status = tcap.stringPrint ("Hello");
+  CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
+  CPPUNIT_ASSERT ( ! output.empty() );
+  CPPUNIT_ASSERT ( output == "Hello" );
+  status = tcap.stringPrint (", World!");
+  CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
+  CPPUNIT_ASSERT ( output == "Hello, World!" );
+  output.clear();
+  status = tcap.stringPrint ("A open book 📖");
+  CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
+  CPPUNIT_ASSERT ( ! output.empty() );
+  CPPUNIT_ASSERT ( output == "A open book 📖" );
+  // Add with paddingPrint
+  status = tcap.paddingPrint (std::string(1, '!'), 1);
+  CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
+  CPPUNIT_ASSERT ( output == "A open book 📖!" );
 }
 
 //----------------------------------------------------------------------
@@ -534,6 +602,14 @@ int FTermcapTest::putchar_test (int ch)
   //std::cout << std::hex << "0x" << ch << "," << std::flush;
   output.push_back(char(ch));
   return ch;
+}
+
+//----------------------------------------------------------------------
+int FTermcapTest::putstring_test (const std::string& str)
+{
+  //std::cout << '"' << str << '"' << std::flush;
+  output.append(str);
+  return str.length();
 }
 
 //----------------------------------------------------------------------

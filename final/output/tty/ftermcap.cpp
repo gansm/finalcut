@@ -62,27 +62,27 @@ namespace finalcut
 {
 
 // static class attributes
-bool                  FTermcap::initialized              {false};
-bool                  FTermcap::background_color_erase   {false};
-bool                  FTermcap::can_change_color_palette {false};
-bool                  FTermcap::automatic_left_margin    {false};
-bool                  FTermcap::automatic_right_margin   {false};
-bool                  FTermcap::eat_nl_glitch            {false};
-bool                  FTermcap::has_ansi_escape_sequences{false};
-bool                  FTermcap::ansi_default_color       {false};
-bool                  FTermcap::osc_support              {false};
-bool                  FTermcap::no_utf8_acs_chars        {false};
-bool                  FTermcap::no_padding_char          {false};
-bool                  FTermcap::xon_xoff_flow_control    {false};
-int                   FTermcap::max_color                {1};
-int                   FTermcap::tabstop                  {8};
-int                   FTermcap::padding_baudrate         {0};
-int                   FTermcap::attr_without_color       {0};
-int                   FTermcap::baudrate                 {9600};
-char                  FTermcap::PC                       {'\0'};
-char                  FTermcap::string_buf[2048]         {};
-FTermcap::PutCharFunc FTermcap::outc                     {};
-
+bool                    FTermcap::initialized              {false};
+bool                    FTermcap::background_color_erase   {false};
+bool                    FTermcap::can_change_color_palette {false};
+bool                    FTermcap::automatic_left_margin    {false};
+bool                    FTermcap::automatic_right_margin   {false};
+bool                    FTermcap::eat_nl_glitch            {false};
+bool                    FTermcap::has_ansi_escape_sequences{false};
+bool                    FTermcap::ansi_default_color       {false};
+bool                    FTermcap::osc_support              {false};
+bool                    FTermcap::no_utf8_acs_chars        {false};
+bool                    FTermcap::no_padding_char          {false};
+bool                    FTermcap::xon_xoff_flow_control    {false};
+int                     FTermcap::max_color                {1};
+int                     FTermcap::tabstop                  {8};
+int                     FTermcap::padding_baudrate         {0};
+int                     FTermcap::attr_without_color       {0};
+int                     FTermcap::baudrate                 {9600};
+char                    FTermcap::PC                       {'\0'};
+char                    FTermcap::string_buf[2048]         {};
+FTermcap::PutCharFunc   FTermcap::outc                     {};
+FTermcap::PutStringFunc FTermcap::outs                     {};
 
 //----------------------------------------------------------------------
 // class FTermcap
@@ -193,17 +193,39 @@ FTermcap::Status FTermcap::paddingPrint ( const std::string& string
 }
 
 //----------------------------------------------------------------------
-void FTermcap::init()
+FTermcap::Status FTermcap::stringPrint (const std::string& string)
 {
-  termcap();
+  if ( string.empty() || ! outs )
+    return Status::Error;
+
+  return outs(string) >= 0 ? Status::OK : Status::Error;
 }
 
 //----------------------------------------------------------------------
-void FTermcap::setDefaultPutcharFunction()
+void FTermcap::init()
+{
+  termcap();
+  setDefaultPutCharFunction();
+  setDefaultPutStringFunction();
+}
+
+//----------------------------------------------------------------------
+void FTermcap::setDefaultPutCharFunction()
 {
   static const auto& fsys = FSystem::getInstance();
   auto put_char = [] (int ch) { return fsys->putchar(ch); };
   outc = put_char;
+}
+
+//----------------------------------------------------------------------
+void FTermcap::setDefaultPutStringFunction()
+{
+  static const auto& fsys = FSystem::getInstance();
+  auto put_string = [] (const std::string& string)
+                    {
+                      return fsys->fputs(string.c_str(), stdout);
+                    };
+  outs = put_string;
 }
 
 

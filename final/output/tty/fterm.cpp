@@ -856,14 +856,14 @@ void FTerm::paddingPrint (const std::string& str, int affcnt)
 }
 
 //----------------------------------------------------------------------
-int FTerm::stringPrint (const std::string& str)
+void FTerm::stringPrint (const std::string& str)
 {
-  static const auto& fsys = FSystem::getInstance();
-  auto put = [] (const std::string& string)
-             {
-               return fsys->fputs(string.c_str(), stdout);
-             };
-  return put(str);
+  auto status = FTermcap::stringPrint (str);
+
+  if ( status == FTermcap::Status::Error )
+  {
+    // Possible error handling
+  }
 }
 
 

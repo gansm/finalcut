@@ -53,7 +53,8 @@ FTermOutput::FTermOutput (const FVTerm& t)  // constructor
   : FOutput{t}
 {
   fterm_data = &FTermData::getInstance();
-  FTermcap::setDefaultPutcharFunction();
+  FTermcap::setDefaultPutCharFunction();
+  FTermcap::setDefaultPutStringFunction();
 }
 
 //----------------------------------------------------------------------
