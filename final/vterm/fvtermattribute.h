@@ -136,7 +136,6 @@ class FVTermAttribute
     static void           print (const FColorPair&);
 
   private:
-
     // Data members
     static FChar          next_attribute;
 };

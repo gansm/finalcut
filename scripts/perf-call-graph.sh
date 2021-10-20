@@ -43,7 +43,7 @@ fi
 
 perf report -g 'graph,0.5,caller'
 rm -f perf.data perf.data.old 2>/dev/null
-cd ..
+cd .. || exit
 make distclean
 cd "$SAVE_DIR"
 

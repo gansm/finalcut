@@ -255,7 +255,7 @@ inline FKey FKeyboard::getMouseProtocolKey() const
   if ( ! mouse_support )
     return NOT_SET;
 
-  const std::size_t buf_len = stringLength(fifo_buf);
+  const auto buf_len = std::size_t(fifo_offset);
 
   // x11 mouse tracking
   if ( buf_len >= 6 && fifo_buf[1] == '[' && fifo_buf[2] == 'M' )
@@ -285,17 +285,17 @@ inline FKey FKeyboard::getTermcapKey()
   if ( key_cap_ptr.use_count() == 0 )
     return NOT_SET;
 
+  const auto buf_len = std::size_t(fifo_offset);
   const auto& found_key = std::find_if
   (
     key_cap_ptr->cbegin(),
     key_cap_ptr->cend(),
-    [this] (const FKeyMap::KeyCapMap& cap_key)
+    [this, &buf_len] (const FKeyMap::KeyCapMap& cap_key)
     {
       const auto& kstr = cap_key.string;
       const auto klen = cap_key.length;
-      const auto fifo_length = std::size_t(fifo_offset) + 1;
 
-      if ( klen == 0 || klen > fifo_length )
+      if ( klen == 0 || klen != buf_len )
         return false;
 
       return ( std::strncmp(kstr, fifo_buf, klen) == 0 );
@@ -327,18 +327,18 @@ inline FKey FKeyboard::getKnownKey()
 
   assert ( FIFO_BUF_SIZE > 0 );
 
+  const auto buf_len = std::size_t(fifo_offset);
   const auto& key_map = FKeyMap::getKeyMap();
   const auto& found_key = std::find_if
   (
     key_map.cbegin(),
     key_map.cend(),
-    [this] (const FKeyMap::KeyMap& known_key)
+    [this, &buf_len] (const FKeyMap::KeyMap& known_key)
     {
       const auto& kstr = known_key.string;  // This string is never null
       const auto klen = known_key.length;
-      const auto fifo_length = std::size_t(fifo_offset) + 1;
 
-      if ( klen > fifo_length )
+      if ( klen != buf_len )
         return false;
 
       return ( std::strncmp(kstr, fifo_buf, klen) == 0 );
