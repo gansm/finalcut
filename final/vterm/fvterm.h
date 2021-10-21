@@ -191,6 +191,7 @@ class FVTerm : public FVTermAttribute
     virtual void          addPreprocessingHandler ( const FVTerm*
                                                   , FPreprocessingFunction&& );
     virtual void          delPreprocessingHandler (const FVTerm*);
+    bool                  interpretControlCodes (FTermArea*, const FChar&);
     template <typename... Args>
     int                   printf (const FString&, Args&&...);
     int                   print (const FString&);
@@ -333,6 +334,7 @@ class FVTerm : public FVTermAttribute
     static FChar                  s_ch;  // shadow character
     static FChar                  i_ch;  // inherit background character
     static uInt8                  b1_trans_mask;  // Transparency mask
+    static int                    tabstop;
     static bool                   draw_completed;
     static bool                   no_terminal_updates;
     static bool                   force_terminal_update;

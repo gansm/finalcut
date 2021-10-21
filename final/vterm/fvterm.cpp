@@ -52,8 +52,9 @@ FVTerm::FTermArea*   FVTerm::active_area{nullptr};
 FChar                FVTerm::s_ch{};
 FChar                FVTerm::i_ch{};
 uInt8                FVTerm::b1_trans_mask{};
+int                  FVTerm::tabstop{8};
 
-
+q
 //----------------------------------------------------------------------
 // class FVTerm
 //----------------------------------------------------------------------
@@ -221,6 +222,38 @@ void FVTerm::delPreprocessingHandler (const FVTerm* instance)
 }
 
 //----------------------------------------------------------------------
+inline bool FVTerm::interpretControlCodes ( FTermArea* area
+                                          , const FChar& term_char )
+{
+  switch ( term_char.ch[0] )
+  {
+    case L'\n':
+      area->cursor_y++;
+      // fall through
+    case L'\r':
+      area->cursor_x = 1;
+      break;
+
+    case L'\t':
+      area->cursor_x += tabstop - ((area->cursor_x - 1) % tabstop);
+      break;
+
+    case L'\b':
+      area->cursor_x--;
+      break;
+
+    case L'\a':
+      foutput->beep();
+      break;
+
+    default:
+      return false;
+  }
+
+  return true;
+}
+
+//----------------------------------------------------------------------
 int FVTerm::print (const FString& string)
 {
   if ( string.isEmpty() )
@@ -280,47 +313,14 @@ int FVTerm::print (const FVTermBuffer& vterm_buffer)
 int FVTerm::print (FTermArea* area, const FVTermBuffer& vterm_buffer)
 {
   int len{0};
-  const auto tabstop = uInt(foutput->getTabstop());
 
   if ( ! area || vterm_buffer.isEmpty() )
     return -1;
 
   for (auto&& fchar : vterm_buffer)
   {
-    bool printable_character{false};
-
-    switch ( fchar.ch[0] )
-    {
-      case '\n':
-        area->cursor_y++;
-        // fall through
-      case '\r':
-        area->cursor_x = 1;
-        break;
-
-      case '\t':
-        area->cursor_x = int ( uInt(area->cursor_x)
-                             + tabstop
-                             - uInt(area->cursor_x)
-                             + 1
-                             % tabstop );
-        break;
-
-      case '\b':
-        area->cursor_x--;
-        break;
-
-      case '\a':
-        foutput->beep();
-        break;
-
-      default:
-        print (area, fchar);  // print next character
-        printable_character = true;
-    }
-
-    if ( ! printable_character && printWrap(area) )
-      break;  // end of area reached
+    if ( print(area, fchar) == -1 )  // Print next character
+      break;  // No area or end of area reached
 
     len++;
   }
@@ -331,11 +331,12 @@ int FVTerm::print (FTermArea* area, const FVTermBuffer& vterm_buffer)
 //----------------------------------------------------------------------
 int FVTerm::print (wchar_t c)
 {
-  FChar nc{getAttribute()};  // next character
-  nc.ch[0] = c;
-  nc.attr.byte[2] = 0;
-  nc.attr.byte[3] = 0;
-  return print (nc);
+  auto area = getPrintArea();
+
+  if ( ! area )
+    return -1;
+
+  return print (area, c);
 }
 
 //----------------------------------------------------------------------
@@ -373,13 +374,16 @@ int FVTerm::print (FTermArea* area, const FChar& term_char)
 int FVTerm::print (FTermArea* area, FChar& term_char)
 {
   if ( ! area )
-    return -1;
+    return -1;  // No area
+
+  if ( interpretControlCodes(area, term_char) && printWrap(area) )
+    return -1;  // End of area reached
 
   const int ax = area->cursor_x - 1;
   const int ay = area->cursor_y - 1;
 
   if ( term_char.attr.bit.char_width == 0 )
-    addColumnWidth(term_char);  // add column width
+    addColumnWidth(term_char);  // Add column width
 
   auto char_width = term_char.attr.bit.char_width;
 
@@ -1100,6 +1104,7 @@ void FVTerm::finishDrawing()
 void FVTerm::initTerminal()
 {
   foutput->initTerminal(vterm);
+  tabstop = foutput->getTabstop();
 }
 
 

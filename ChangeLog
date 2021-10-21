@@ -1,3 +1,6 @@
+2021-10-21 Markus Gans  <guru.mail@muenster.de>
+	* The tab stop printing was corrected
+
 2021-10-20 Markus Gans  <guru.mail@muenster.de>
 	* Implementation of the stringPrint() method in FTermcap
 
