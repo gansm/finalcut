@@ -45,7 +45,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <chrono>
-#include <list>
 #include <memory>
 #include <vector>
 
@@ -83,7 +82,7 @@ class FObject
 {
   public:
     // Using-declarations
-    using FObjectList     = std::list<FObject*>;
+    using FObjectList     = std::vector<FObject*>;
     using iterator        = FObjectList::iterator;
     using const_iterator  = FObjectList::const_iterator;
     using reference       = FObjectList::reference;

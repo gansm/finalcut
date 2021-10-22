@@ -386,7 +386,7 @@ void FListViewItem::sort (Compare cmp)
   FObject::FObjectList& children = getChildren();
 
   if ( ! children.empty() )
-    children.sort(cmp);
+    std::sort(children.begin(), children.end(), cmp);
 
   // Sort the sublevels
   for (auto&& item : children)
@@ -863,7 +863,8 @@ void FListView::remove (FListViewItem* item)
   {
     if ( this == parent )
     {
-      itemlist.remove(item);
+      auto last = std::remove (itemlist.begin(), itemlist.end(), item);
+      itemlist.erase(last, itemlist.end());
       delChild(item);
       current_iter.getPosition()--;
     }
@@ -1458,7 +1459,7 @@ template <typename Compare>
 void FListView::sort (Compare cmp)
 {
   // Sort the top level
-  itemlist.sort(cmp);
+  std::sort(itemlist.begin(), itemlist.end(), cmp);
 
   // Sort the sublevels
   for (auto&& item : itemlist)

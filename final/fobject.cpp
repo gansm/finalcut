@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <algorithm>
 #include <memory>
 #include <mutex>
 
@@ -149,7 +150,9 @@ void FObject::delChild (FObject* obj) &
   {
     obj->parent_obj = nullptr;
     obj->has_parent = false;
-    children_list.remove(obj);
+    auto end = children_list.end();
+    auto last = std::remove (children_list.begin(), end, obj);
+    children_list.erase(last, end);
   }
 }
 

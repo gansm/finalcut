@@ -191,7 +191,7 @@ class FVTerm : public FVTermAttribute
     virtual void          addPreprocessingHandler ( const FVTerm*
                                                   , FPreprocessingFunction&& );
     virtual void          delPreprocessingHandler (const FVTerm*);
-    bool                  interpretControlCodes (FTermArea*, const FChar&);
+    bool                  interpretControlCodes (FTermArea*, const FChar&) const;
     template <typename... Args>
     int                   printf (const FString&, Args&&...);
     int                   print (const FString&);

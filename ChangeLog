@@ -1,3 +1,6 @@
+2021-10-22 Markus Gans  <guru.mail@muenster.de>
+	* Change FObjectList from std::list to std::vector
+
 2021-10-21 Markus Gans  <guru.mail@muenster.de>
 	* The tab stop printing was corrected
 

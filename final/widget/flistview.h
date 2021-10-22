@@ -48,7 +48,6 @@
 #endif
 
 #include <iterator>
-#include <list>
 #include <memory>
 #include <stack>
 #include <unordered_map>
@@ -218,7 +217,7 @@ class FListViewIterator
 {
   public:
     // Using-declarations
-    using FObjectList   = std::list<FObject*>;
+    using FObjectList   = std::vector<FObject*>;
     using Iterator      = FObjectList::iterator;
     using IteratorStack = std::stack<Iterator>;
 
@@ -301,7 +300,7 @@ class FListView : public FWidget
   public:
     // Using-declaration
     using FWidget::setGeometry;
-    using FListViewItems = std::list<FListViewItem*>;
+    using FListViewItems = std::vector<FListViewItem*>;
 
     // Disable copy constructor
     FListView (const FListView&) = delete;

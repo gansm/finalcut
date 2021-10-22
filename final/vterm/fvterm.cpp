@@ -223,7 +223,7 @@ void FVTerm::delPreprocessingHandler (const FVTerm* instance)
 
 //----------------------------------------------------------------------
 inline bool FVTerm::interpretControlCodes ( FTermArea* area
-                                          , const FChar& term_char )
+                                          , const FChar& term_char ) const
 {
   switch ( term_char.ch[0] )
   {
