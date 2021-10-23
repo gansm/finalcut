@@ -493,6 +493,7 @@ void FWindow::delWindow (const FWidget* obj)
     if ( (*iter) == obj )
     {
       getWindowList()->erase(iter);
+      determineWindowLayers();
       return;
     }
 
@@ -527,7 +528,10 @@ void FWindow::swapWindow (const FWidget* obj1, const FWidget* obj2)
   }
 
   if ( iter1 != end && iter2 != end )
+  {
     std::swap (iter1, iter2);
+    determineWindowLayers();
+  }
 }
 
 //----------------------------------------------------------------------
@@ -553,9 +557,9 @@ bool FWindow::raiseWindow (FWidget* obj)
     {
       getWindowList()->erase (iter);
       getWindowList()->push_back (obj);
+      processAlwaysOnTop();
       FEvent ev(Event::WindowRaised);
       FApplication::sendEvent(obj, &ev);
-      processAlwaysOnTop();
       return true;
     }
 
@@ -585,6 +589,7 @@ bool FWindow::lowerWindow (FWidget* obj)
     {
       getWindowList()->erase (iter);
       getWindowList()->insert (getWindowList()->cbegin(), obj);
+      determineWindowLayers();
       FEvent ev(Event::WindowLowered);
       FApplication::sendEvent(obj, &ev);
       return true;
@@ -868,6 +873,8 @@ void FWindow::processAlwaysOnTop()
 
     ++iter;
   }
+
+  determineWindowLayers();
 }
 
 //----------------------------------------------------------------------
@@ -893,7 +900,7 @@ int FWindow::getWindowLayerImpl (FWidget* obj)
 {
   // returns the window layer from the widget obj
 
-  const FWidget* window;
+  FWidget* window;
 
   if ( ! obj->isWindowWidget() )
   {

@@ -293,7 +293,7 @@ inline FKey FKeyboard::getTermcapKey()
     [this, &buf_len] (const FKeyMap::KeyCapMap& cap_key)
     {
       const auto& kstr = cap_key.string;
-      const auto klen = cap_key.length;
+      const auto& klen = cap_key.length;
 
       if ( klen == 0 || klen != buf_len )
         return false;
@@ -336,7 +336,7 @@ inline FKey FKeyboard::getKnownKey()
     [this, &buf_len] (const FKeyMap::KeyMap& known_key)
     {
       const auto& kstr = known_key.string;  // This string is never null
-      const auto klen = known_key.length;
+      const auto& klen = known_key.length;
 
       if ( klen != buf_len )
         return false;

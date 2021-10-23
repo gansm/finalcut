@@ -914,19 +914,33 @@ void FVTerm::putArea (const FPoint& pos, const FTermArea* area)
 }
 
 //----------------------------------------------------------------------
-int FVTerm::getLayer (const FVTerm& obj)
+int FVTerm::getLayer (FVTerm& obj)
 {
   // returns the layer from the FVTerm object
+
+  const auto& area = obj.FVTerm::getPrintArea();
+  return area->layer;
+}
+
+//----------------------------------------------------------------------
+void FVTerm::determineWindowLayers()
+{
+  // Determination of the window layer for all virtual windows
 
   const auto& win_list = getWindowList();
 
   if ( ! win_list || win_list->empty() )
-    return -1;
+    return;
 
   const auto& begin = win_list->cbegin();
   const auto& end = win_list->cend();
-  auto iter = std::find (begin, end, &obj);
-  return int(std::distance(begin, iter) + 1);
+  auto iter = begin;
+
+  while ( iter != end )
+  {
+    (*iter)->getPrintArea()->layer = int(std::distance(begin, iter) + 1);
+    ++iter;
+  }
 }
 
 //----------------------------------------------------------------------
@@ -1629,7 +1643,7 @@ FChar FVTerm::getCharacter ( CharacterType char_type
 
   // Get the window layer of this widget object
   const auto has_an_owner = area->hasOwner();
-  const auto& area_owner = *area->getOwner<FVTerm*>();
+  auto& area_owner = *area->getOwner<FVTerm*>();
   const int layer = has_an_owner ? getLayer(area_owner) : 0;
 
   for (auto&& win_obj : *win_list)

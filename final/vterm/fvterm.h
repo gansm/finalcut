@@ -246,7 +246,8 @@ class FVTerm : public FVTermAttribute
     static void           getArea (const FRect&, const FTermArea*);
     void                  putArea (const FTermArea*) const;
     static void           putArea (const FPoint&, const FTermArea*);
-    static int            getLayer (const FVTerm&);
+    static int            getLayer (FVTerm&);
+    static void           determineWindowLayers();
     void                  scrollAreaForward (FTermArea*) const;
     void                  scrollAreaReverse (FTermArea*) const;
     void                  clearArea (FTermArea*, wchar_t = L' ') const;
@@ -392,6 +393,7 @@ struct FVTerm::FTermArea  // define virtual terminal character properties
   int            cursor_y{0};         // Y-position for the next write operation
   int            input_cursor_x{-1};  // X-position input cursor
   int            input_cursor_y{-1};  // Y-position input cursor
+  int            layer{-1};
   bool           input_cursor_visible{false};
   bool           has_changes{false};
   bool           visible{false};
