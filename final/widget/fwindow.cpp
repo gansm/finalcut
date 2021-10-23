@@ -860,7 +860,10 @@ void FWindow::processAlwaysOnTop()
 {
   // Raise all always-on-top windows
   if ( ! getAlwaysOnTopList() || getAlwaysOnTopList()->empty() )
+  {
+    determineWindowLayers();
     return;
+  }
 
   auto iter = getAlwaysOnTopList()->cbegin();
 

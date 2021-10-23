@@ -918,8 +918,7 @@ int FVTerm::getLayer (FVTerm& obj)
 {
   // returns the layer from the FVTerm object
 
-  const auto& area = obj.FVTerm::getPrintArea();
-  return area->layer;
+  return obj.FVTerm::getPrintArea()->layer;
 }
 
 //----------------------------------------------------------------------

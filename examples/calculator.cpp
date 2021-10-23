@@ -98,7 +98,7 @@ void Button::onKeyPress (finalcut::FKeyEvent* ev)
   const FKey key = ev->key();
 
   // catch the enter key
-  if ( key == FKey::Return || key == FKey::Enter )
+  if ( isEnterKey(key) )
     return;
 
   finalcut::FButton::onKeyPress(ev);
@@ -320,7 +320,7 @@ void Calc::onKeyPress (finalcut::FKeyEvent* ev)
 
     ev->accept();
   }
-  else if ( key == FKey::Escape || key == FKey::Escape_mintty )
+  else if ( isEscapeKey(key) )
   {
     sendOnButtonAccelerator();
     ev->accept();

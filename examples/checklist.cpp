@@ -144,9 +144,7 @@ void CheckList::onKeyPress (finalcut::FKeyEvent* ev)
   if ( ! ev )
     return;
 
-  if ( ev->key() == finalcut::FKey('q')
-    || ev->key() == finalcut::FKey::Escape
-    || ev->key() == finalcut::FKey::Escape_mintty )
+  if ( ev->key() == finalcut::FKey('q') || isEscapeKey(ev->key()) )
   {
     close();
     ev->accept();

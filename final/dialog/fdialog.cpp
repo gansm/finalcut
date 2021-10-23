@@ -552,14 +552,16 @@ void FDialog::onMouseDown (FMouseEvent* ev)
     cancelMouseResize();  // Cancel resize
   }
 
+  const auto first = int(getMenuButtonWidth() + 1);
+
   // Click on titlebar: just activate
   if ( ev->getButton() == MouseButton::Right
-    && ms.mouse_x >= 4 && ms.mouse_x <= width && ms.mouse_y == 1 )
+    && ms.mouse_x >= first && ms.mouse_x <= width && ms.mouse_y == 1 )
       activateDialog();
 
   // Click on titlebar: lower + activate
   if ( ev->getButton() == MouseButton::Middle
-    && ms.mouse_x >= 4 && ms.mouse_x <= width && ms.mouse_y == 1 )
+    && ms.mouse_x >= first && ms.mouse_x <= width && ms.mouse_y == 1 )
       lowerActivateDialog();
 }
 
@@ -584,7 +586,7 @@ void FDialog::onMouseUp (FMouseEvent* ev)
     }
 
     // Click on titlebar menu button
-    if ( isMouseOverMenuButton(ms)
+    if ( titlebar_buttons && isMouseOverMenuButton(ms)
       && dialog_menu->isShown()
       && ! dialog_menu->hasSelectedItem() )
     {
@@ -645,7 +647,7 @@ void FDialog::onMouseDoubleClick (FMouseEvent* ev)
   const FRect title_button{x, y, 3, 1};
   const FPoint tPos{ms.termPos};
 
-  if ( title_button.contains(tPos) )
+  if ( isMouseOverMenuButton(ms) )
   {
     // Double click on title button
     dialog_menu->unselectItem();
@@ -689,7 +691,6 @@ void FDialog::onAccel (FAccelEvent*)
   }
 
   const bool has_raised = raiseWindow();
-
   activateDialog();
 
   if ( has_raised )
@@ -890,7 +891,6 @@ void FDialog::initMoveSizeMenuItem (FMenu* menu)
 
   move_size_item->setText ("&Move/Size");
   move_size_item->setStatusbarMessage ("Move or change the size of the window");
-
   move_size_item->addCallback
   (
     "clicked",
@@ -978,6 +978,7 @@ inline FDialog::MouseStates
            ev.getX(),
            ev.getY(),
            ev.getTermPos(),
+           getMenuButtonWidth(),
            getZoomButtonWidth(),
            getMinimizeButtonWidth(),
            mouse_over_menu
@@ -1550,7 +1551,7 @@ inline bool FDialog::isMouseOverMenu (const FPoint& termpos) const
 //----------------------------------------------------------------------
 inline bool FDialog::isMouseOverMenuButton (const MouseStates& ms) const
 {
-  return ( ms.mouse_x < 4 && ms.mouse_y == 1 );
+  return ( ms.mouse_x <= int(ms.menu_btn) && ms.mouse_y == 1 );
 }
 
 //----------------------------------------------------------------------
@@ -1572,7 +1573,7 @@ inline bool FDialog::isMouseOverMinimizeButton (const MouseStates& ms)  const
 //----------------------------------------------------------------------
 inline bool FDialog::isMouseOverTitlebar (const MouseStates& ms) const
 {
-  return ( ms.mouse_x >= 4
+  return ( ms.mouse_x > int(ms.menu_btn)
         && ms.mouse_x <= int(getWidth() - ms.minimize_btn - ms.zoom_btn)
         && ms.mouse_y == 1 );
 }

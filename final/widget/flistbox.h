@@ -112,6 +112,9 @@ class FListBoxItem
     // Using-declaration
     using FDataAccessPtr = std::shared_ptr<FDataAccess>;
 
+    // Methods
+    FString               stringFilter(const FString&);
+
     // Data members
     FString               text{};
     FDataAccessPtr        data_pointer{};
@@ -127,7 +130,7 @@ class FListBoxItem
 //----------------------------------------------------------------------
 template <typename DT>
 inline FListBoxItem::FListBoxItem (const FString& txt, DT&& data)
-  : text{txt}
+  : text{stringFilter(txt)}
   , data_pointer{makeFData(std::forward<DT>(data))}
 { }
 
@@ -148,7 +151,9 @@ inline clean_fdata_t<DT>& FListBoxItem::getData() const
 
 //----------------------------------------------------------------------
 inline void FListBoxItem::setText (const FString& txt)
-{ text.setString(txt); }
+{
+  text.setString(stringFilter(txt));
+}
 
 //----------------------------------------------------------------------
 template <typename DT>
@@ -165,6 +170,16 @@ inline bool FListBoxItem::isSelected() const
 //----------------------------------------------------------------------
 inline void FListBoxItem::clear()
 { text.clear(); }
+
+//----------------------------------------------------------------------
+inline FString FListBoxItem::stringFilter (const FString& txt)
+{
+  return txt.rtrim()
+            .expandTabs(FVTerm::getFOutput()->getTabstop())
+            .removeBackspaces()
+            .removeDel()
+            .replaceControlCodes();
+}
 
 
 //----------------------------------------------------------------------

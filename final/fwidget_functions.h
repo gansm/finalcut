@@ -36,11 +36,13 @@ namespace finalcut
 {
 
 // class forward declaration
+class FObject;
 class FRect;
 class FString;
 class FWidget;
 
 // Using-declarations
+using FObjectList = std::vector<FObject*>;
 using FWidgetList = std::vector<FWidget*>;
 
 // non-member function forward declarations
@@ -50,8 +52,8 @@ bool          isFocusPrevKey (const FKey);
 bool          isDialogMenuKey (const FKey);
 bool          isEnterKey (const FKey);
 bool          isEscapeKey (const FKey);
-FWidget*      getFirstFocusableWidget (const FObject::FObjectList&);
-FWidget*      getLastFocusableWidget (const FObject::FObjectList&);
+FWidget*      getFirstFocusableWidget (const FObjectList&);
+FWidget*      getLastFocusableWidget (const FObjectList&);
 bool          isInFWidgetList (const FWidgetList*, const FWidget*);
 FKey          getHotkey (const FString&);
 std::size_t   getHotkeyPos (const FString& src, FString& dest);

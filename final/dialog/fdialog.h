@@ -167,6 +167,7 @@ class FDialog : public FWindow
       int         mouse_x;
       int         mouse_y;
       FPoint      termPos;
+      std::size_t menu_btn;
       std::size_t minimize_btn;
       std::size_t zoom_btn;
       bool        mouse_over_menu;
@@ -185,7 +186,7 @@ class FDialog : public FWindow
     void                  initZoomMenuItem (FMenu*);
     void                  initMinimizeMenuItem (FMenu*);
     void                  initCloseMenuItem (FMenu*);
-    MouseStates           initMouseStates(const FMouseEvent&, bool) const;
+    MouseStates           initMouseStates (const FMouseEvent&, bool) const;
     void                  mapKeyFunctions();
     void                  drawBorder() override;
     void                  drawTitleBar();

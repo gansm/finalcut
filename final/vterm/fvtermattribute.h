@@ -127,7 +127,7 @@ class FVTermAttribute
     static bool           isAltCharset();
     static bool           isPCcharset();
     static bool           isTransparent();
-    static bool           isTransShadow();
+    static bool           isColorOverlay();
     static bool           isInheritBackground();
 
     // Methods
@@ -362,7 +362,7 @@ inline bool FVTermAttribute::isTransparent()
 { return next_attribute.attr.bit.transparent; }
 
 //----------------------------------------------------------------------
-inline bool FVTermAttribute::isTransShadow()
+inline bool FVTermAttribute::isColorOverlay()
 { return next_attribute.attr.bit.color_overlay; }
 
 //----------------------------------------------------------------------
