@@ -645,7 +645,6 @@ void FDialog::onMouseDoubleClick (FMouseEvent* ev)
   const int x = getTermX();
   const int y = getTermY();
   const FRect title_button{x, y, 3, 1};
-  const FPoint tPos{ms.termPos};
 
   if ( isMouseOverMenuButton(ms) )
   {

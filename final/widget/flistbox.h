@@ -113,7 +113,7 @@ class FListBoxItem
     using FDataAccessPtr = std::shared_ptr<FDataAccess>;
 
     // Methods
-    FString               stringFilter(const FString&);
+    FString               stringFilter(const FString&) const;
 
     // Data members
     FString               text{};
@@ -172,7 +172,7 @@ inline void FListBoxItem::clear()
 { text.clear(); }
 
 //----------------------------------------------------------------------
-inline FString FListBoxItem::stringFilter (const FString& txt)
+inline FString FListBoxItem::stringFilter (const FString& txt) const
 {
   return txt.rtrim()
             .expandTabs(FVTerm::getFOutput()->getTabstop())
