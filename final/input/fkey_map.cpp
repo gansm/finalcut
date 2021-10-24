@@ -42,7 +42,7 @@ FKeyMap::KeyCapMapType& FKeyMap::getKeyCapMap()
 }
 
 //----------------------------------------------------------------------
-const FKeyMap::KeyMapType& FKeyMap::getKeyMap()
+FKeyMap::KeyMapType& FKeyMap::getKeyMap()
 {
   return fkey_table;
 }
@@ -252,7 +252,7 @@ FKeyMap::KeyCapMapType FKeyMap::fkey_cap_table
 }};
 
 //----------------------------------------------------------------------
-constexpr FKeyMap::KeyMapType FKeyMap::fkey_table =
+FKeyMap::KeyMapType FKeyMap::fkey_table =
 {{
   { FKey::Meta_insert               , "\033[2;3~"   , 6},  // M-Insert
   { FKey::Meta_insert               , "\033\033[2~" , 5},  // M-Insert

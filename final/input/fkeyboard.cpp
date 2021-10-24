@@ -51,6 +51,7 @@ uInt64 FKeyboard::read_blocking_time{100000};      // 100 ms  (10 Hz)
 uInt64 FKeyboard::read_blocking_time_short{5000};  //   5 ms (200 Hz)
 bool   FKeyboard::non_blocking_input_support{true};
 TimeValue FKeyboard::time_keypressed{};
+FKeyboard::KeyMapEnd FKeyboard::key_cap_end{};
 
 
 //----------------------------------------------------------------------
@@ -69,6 +70,15 @@ FKeyboard::FKeyboard()
 
   if ( stdin_status_flags == -1 )
     std::abort();
+
+  // Sort the known key map by string length
+  auto& key_map = FKeyMap::getKeyMap();
+  std::sort ( key_map.begin(), key_map.end()
+            , [] (FKeyMap::KeyMap& lhs, FKeyMap::KeyMap& rhs)
+              {
+                return lhs.length < rhs.length;
+              }
+            );
 }
 
 
@@ -289,7 +299,7 @@ inline FKey FKeyboard::getTermcapKey()
   const auto& found_key = std::find_if
   (
     key_cap_ptr->cbegin(),
-    key_cap_ptr->cend(),
+    key_cap_end,
     [this, &buf_len] (const FKeyMap::KeyCapMap& cap_key)
     {
       const auto& kstr = cap_key.string;
@@ -302,7 +312,7 @@ inline FKey FKeyboard::getTermcapKey()
     }
   );
 
-  if ( found_key != key_cap_ptr->cend() )  // found
+  if ( found_key != key_cap_end )  // found
   {
     const std::size_t len = found_key->length;
     std::size_t n{};

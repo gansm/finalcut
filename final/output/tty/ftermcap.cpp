@@ -412,8 +412,10 @@ void FTermcap::termcapKeys()
 {
   // Get termcap keys
 
+  auto& cap_map = FKeyMap::getKeyCapMap();
+
   // Read termcap key sequences up to the self-defined values
-  for (auto&& entry : FKeyMap::getKeyCapMap())
+  for (auto&& entry : cap_map)
   {
     if ( entry.string != nullptr )  // String is already set
       break;
@@ -421,6 +423,16 @@ void FTermcap::termcapKeys()
     entry.string = getString(entry.tname);
     entry.length = entry.string ? finalcut::stringLength(entry.string) : 0;
   }
+
+  // Sort key map list by string length (string length 0 at end)
+  std::sort ( cap_map.begin(), cap_map.end()
+            , [] (FKeyMap::KeyCapMap& lhs, FKeyMap::KeyCapMap& rhs)
+              {
+                if ( lhs.length == 0 && rhs.length > 0 ) return false;
+                if ( lhs.length > 0 && rhs.length == 0 ) return true;
+                return lhs.length < rhs.length;
+              }
+            );
 }
 
 //----------------------------------------------------------------------

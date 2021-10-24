@@ -239,6 +239,7 @@ void FTermLinux::initCharMap() const
     }
   }
 
+  FTermData::getInstance().getCharSubstitutionMap().sort();
   initSpecialCharacter();
 }
 

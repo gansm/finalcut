@@ -1103,6 +1103,7 @@ void FTerm::init_cygwin_charmap()
   sub_map.setCharMapping({L'♪', L'♫'});
   sub_map.setCharMapping({L'√', L'x'});
   sub_map.setCharMapping({L'ˣ', L'`'});
+  sub_map.sort();
 }
 
 //----------------------------------------------------------------------

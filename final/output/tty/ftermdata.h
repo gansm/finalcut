@@ -66,6 +66,7 @@ class FCharSubstitution
     wchar_t  getMappedChar (wchar_t) const;
     void     setCharMapping (const Map&);
     bool     isEmpty() const;
+    void     sort();
 
   private:
     std::vector<Map> sub_map{};
@@ -108,6 +109,17 @@ inline void FCharSubstitution::setCharMapping (const Map& m)
 inline bool FCharSubstitution::isEmpty() const
 {
   return sub_map.empty();
+}
+
+//----------------------------------------------------------------------
+inline void FCharSubstitution::sort()
+{
+  std::sort ( sub_map.begin(), sub_map.end()
+            , [] (Map& lhs, Map& rhs)
+              {
+                return lhs.from < rhs.from;
+              }
+            );
 }
 
 

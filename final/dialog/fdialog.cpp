@@ -576,9 +576,9 @@ void FDialog::onMouseUp (FMouseEvent* ev)
     const int titlebar_y = titlebar_click_pos.getY();
 
     if ( ! titlebar_click_pos.isOrigin()
-      && titlebar_x > int(getTermX()) + 3
+      && titlebar_x > getTermX() + int(ms.menu_btn)
       && titlebar_x < getTermX() + int(getWidth())
-      && titlebar_y == int(getTermY()) )
+      && titlebar_y == getTermY() )
     {
       const FPoint deltaPos{ms.termPos - titlebar_click_pos};
       move (deltaPos);
@@ -807,7 +807,10 @@ void FDialog::drawDialogShadow()
   if ( FVTerm::getFOutput()->isMonochron() && ! getFlags().trans_shadow )
     return;
 
-  drawShadow(this);
+  if ( isMinimized() )
+    clearShadow(this);
+  else
+    drawShadow(this);
 }
 
 //----------------------------------------------------------------------
@@ -978,8 +981,8 @@ inline FDialog::MouseStates
            ev.getY(),
            ev.getTermPos(),
            getMenuButtonWidth(),
-           getZoomButtonWidth(),
            getMinimizeButtonWidth(),
+           getZoomButtonWidth(),
            mouse_over_menu
          };
 }
@@ -1144,7 +1147,7 @@ void FDialog::drawZoomButton()
 //----------------------------------------------------------------------
 void FDialog::drawMinimizeButton()
 {
-  // Draw the zoom/unzoom button
+  // Draw the minimize/unminimize button
 
   if ( ! isMinimizable() )
     return;
@@ -1395,6 +1398,9 @@ void FDialog::setMinimizeItem()
     minimize_item->setText ("&Minimize");
     minimize_item->setStatusbarMessage ("Minimizes the window");
   }
+
+  if ( getFlags().shadow )
+    drawDialogShadow();
 }
 
 //----------------------------------------------------------------------
@@ -1484,7 +1490,7 @@ void FDialog::pressMinimizeButton (const MouseStates& ms)
 
   // Zoom to maximum or restore the window size
   minimizeWindow();
-  setZoomItem();
+  setMinimizeItem();
   minimize_button_active = false;
 }
 
@@ -1534,7 +1540,7 @@ void FDialog::pressZoomButton (const MouseStates& ms)
 
   // Zoom to maximum or restore the window size
   zoomWindow();
-  setMinimizeItem();
+  setZoomItem();
   zoom_button_active = false;
 }
 
@@ -1556,7 +1562,8 @@ inline bool FDialog::isMouseOverMenuButton (const MouseStates& ms) const
 //----------------------------------------------------------------------
 inline bool FDialog::isMouseOverZoomButton (const MouseStates& ms) const
 {
-  return ( ms.mouse_x > int(getWidth() - ms.zoom_btn)
+  return ( isResizeable()
+        && ms.mouse_x > int(getWidth() - ms.zoom_btn)
         && ms.mouse_x <= int(getWidth())
         && ms.mouse_y == 1 );
 }
@@ -1564,7 +1571,8 @@ inline bool FDialog::isMouseOverZoomButton (const MouseStates& ms) const
 //----------------------------------------------------------------------
 inline bool FDialog::isMouseOverMinimizeButton (const MouseStates& ms)  const
 {
-  return ( ms.mouse_x > int(getWidth() - ms.minimize_btn - ms.zoom_btn)
+  return ( isMinimizable()
+        && ms.mouse_x > int(getWidth() - ms.minimize_btn - ms.zoom_btn)
         && ms.mouse_x <= int(getWidth() - ms.zoom_btn)
         && ms.mouse_y == 1 );
 }

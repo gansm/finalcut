@@ -1,3 +1,6 @@
+2021-10-24 Markus Gans  <guru.mail@muenster.de>
+	* Faster search for key strings through sorted arrays
+
 2021-10-23 Markus Gans  <guru.mail@muenster.de>
 	* Virtual windows now know their own window level
 	* String filter for FListBoxItem

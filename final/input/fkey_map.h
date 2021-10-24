@@ -73,13 +73,13 @@ class FKeyMap final
     FString                   getClassName() const;
     static auto               getInstance() -> FKeyMap&;
     static KeyCapMapType&     getKeyCapMap();
-    static const KeyMapType&  getKeyMap();
+    static KeyMapType&        getKeyMap();
     static const KeyNameType& getKeyName();
 
   private:
     // Data members
     static KeyCapMapType     fkey_cap_table;
-    static const KeyMapType  fkey_table;
+    static KeyMapType        fkey_table;
     static const KeyNameType fkeyname;
 };
 

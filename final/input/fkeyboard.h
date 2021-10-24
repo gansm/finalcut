@@ -139,6 +139,7 @@ class FKeyboard final
   private:
     // Using-declaration
     using FKeyMapPtr = std::shared_ptr<FKeyMap::KeyCapMapType>;
+    using KeyMapEnd = FKeyMap::KeyCapMapType::const_iterator;
 
     // Constants
     static constexpr FKey NOT_SET = static_cast<FKey>(-1);
@@ -178,6 +179,7 @@ class FKeyboard final
     static uInt64         key_timeout;
     static bool           non_blocking_input_support;
     FKeyMapPtr            key_cap_ptr{};
+    static KeyMapEnd      key_cap_end;
     std::queue<FKey>      fkey_queue{};
     FKey                  fkey{FKey::None};
     FKey                  key{FKey::None};
@@ -221,13 +223,22 @@ inline uInt64 FKeyboard::getReadBlockingTime() noexcept
 //----------------------------------------------------------------------
 template <typename T>
 inline void FKeyboard::setTermcapMap (const T& keymap)
-{ key_cap_ptr = std::make_shared<T>(keymap); }
+{
+  key_cap_ptr = std::make_shared<T>(keymap);
+  key_cap_end = key_cap_ptr->cend();
+}
 
 //----------------------------------------------------------------------
 inline void FKeyboard::setTermcapMap ()
 {
   using type = FKeyMap::KeyCapMapType;
   key_cap_ptr = std::make_shared<type>(FKeyMap::getKeyCapMap());
+  // Search for the first entry with a string length of 0 at the end
+  key_cap_end = std::find_if ( key_cap_ptr->cbegin()
+                             , key_cap_ptr->cend()
+                             , [] (const FKeyMap::KeyCapMap& entry)
+                               { return entry.length == 0; }
+                             );
 }
 
 //----------------------------------------------------------------------
