@@ -509,8 +509,8 @@ int FTerm::closeConsole()
 
   if ( ret == 0 )
     return 0;
-  else
-    return -1;
+
+  return -1;
 }
 
 //----------------------------------------------------------------------
@@ -525,11 +525,9 @@ std::string FTerm::moveCursorString (int xold, int yold, int xnew, int ynew)
     static auto& opti_move = FOptiMove::getInstance();
     return opti_move.moveCursor (xold, yold, xnew, ynew);
   }
-  else
-  {
-    const auto& cursor_addr = FTermcap::encodeMotionParameter(TCAP(t_cursor_address), xnew, ynew);
-    return cursor_addr;
-  }
+
+  const auto& cursor_addr = FTermcap::encodeMotionParameter(TCAP(t_cursor_address), xnew, ynew);
+  return cursor_addr;
 }
 
 //----------------------------------------------------------------------

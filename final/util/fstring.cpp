@@ -75,7 +75,7 @@ FString::FString (const FString& s)  // copy constructor
 
 //----------------------------------------------------------------------
 FString::FString (FString&& s) noexcept  // move constructor
-  : string{s.string}
+  : string{std::move(s.string)}
 {
   s.string.clear();
 }
@@ -347,13 +347,11 @@ const char* FString::c_str() const
 {
   // Returns a constant c-string
 
-  if ( ! isEmpty() )
-  {
-    char_string = _toCharString(string);
-    return char_string.c_str();
-  }
-  else
+  if ( isEmpty() )
     return "";
+
+  char_string = _toCharString(string);
+  return char_string.c_str();
 }
 
 //----------------------------------------------------------------------
@@ -361,13 +359,11 @@ char* FString::c_str()
 {
   // Returns a c-string
 
-  if ( ! isEmpty() )
-  {
-    char_string = _toCharString(string);
-    return const_cast<char*>(char_string.c_str());
-  }
-  else
+  if ( isEmpty() )
     return const_cast<char*>("");
+
+  char_string = _toCharString(string);
+  return const_cast<char*>(char_string.c_str());
 }
 
 //----------------------------------------------------------------------
@@ -490,8 +486,8 @@ long FString::toLong() const
     {
       if ( neg )
         throw std::underflow_error ("underflow");
-      else
-        throw std::overflow_error ("overflow");
+
+      throw std::overflow_error ("overflow");
     }
 
     num = (num << 3) + (num << 1) + d;  // (10 * num) + d
@@ -520,13 +516,10 @@ uLong FString::toULong() const
     throw std::invalid_argument ("empty value");
 
   if ( *p == L'-' )
-  {
     throw std::underflow_error ("underflow");
-  }
-  else if ( *p == L'+' )
-  {
+
+  if ( *p == L'+' )
     p++;
-  }
 
   while ( std::iswdigit(std::wint_t(*p)) )
   {
@@ -601,8 +594,8 @@ FString FString::ltrim() const
 
   if ( iter != last )
     return std::wstring(iter, last);
-  else
-    return {};
+
+  return {};
 }
 
 //----------------------------------------------------------------------
@@ -621,8 +614,8 @@ FString FString::rtrim() const
   if ( r_iter != r_end )
     return std::wstring( make_reverse_iterator(r_end)
                        , make_reverse_iterator(r_iter) );
-  else
-    return {};
+
+  return {};
 }
 
 //----------------------------------------------------------------------
@@ -1127,10 +1120,8 @@ inline std::wstring FString::_toWideString (const std::string& s) const
   {
     if ( src != s.c_str() )
       return dest.data();
-    else
-    {
-      return {};
-    }
+
+    return {};
   }
 
   if ( wide_length == size )
@@ -1138,8 +1129,8 @@ inline std::wstring FString::_toWideString (const std::string& s) const
 
   if ( wide_length != 0 )
     return dest.data();
-  else
-    return {};
+
+  return {};
 }
 
 

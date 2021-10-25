@@ -944,8 +944,8 @@ bool Calc::isDataEntryKey (const ButtonName& key) const
 
   if ( iter != key_list.end() )
     return true;
-  else
-    return false;
+
+  return false;
 }
 
 //----------------------------------------------------------------------
@@ -966,8 +966,8 @@ bool Calc::isOperatorKey(const ButtonName& key) const
 
   if ( iter != operators.end() )
     return true;
-  else
-    return false;
+
+  return false;
 }
 
 //----------------------------------------------------------------------
@@ -975,8 +975,8 @@ lDouble& Calc::getValue()
 {
   if ( infix_operator )
     return b;
-  else
-    return a;
+
+  return a;
 }
 
 //----------------------------------------------------------------------

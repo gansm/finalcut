@@ -1431,8 +1431,8 @@ inline std::size_t FDialog::getZoomButtonWidth() const
 {
   if ( titlebar_buttons && isResizeable() )
     return FVTerm::getFOutput()->isNewFont() ? 2 : 3;
-  else
-    return 0;
+
+  return 0;
 }
 
 //----------------------------------------------------------------------
@@ -1440,8 +1440,8 @@ inline std::size_t FDialog::getMinimizeButtonWidth() const
 {
   if ( titlebar_buttons && isMinimizable() )
     return FVTerm::getFOutput()->isNewFont() ? 2 : 3;
-  else
-    return 0;
+
+  return 0;
 }
 
 //----------------------------------------------------------------------

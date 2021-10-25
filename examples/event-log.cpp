@@ -29,7 +29,6 @@
 #include <final/final.h>
 
 using finalcut::FPoint;
-using finalcut::FRect;
 using finalcut::FSize;
 
 class EventLog;  // class forward declaration
@@ -106,9 +105,11 @@ finalcut::FString EventDialog::getMouseButtonName (const finalcut::MouseButton& 
 
   if  ( l )
     return prefix + "left";
-  else if ( r )
+
+  if ( r )
     return prefix + "right";
-  else if ( m )
+
+  if ( m )
     return prefix + "middle";
 
   return "unknown";

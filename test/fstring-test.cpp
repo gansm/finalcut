@@ -49,7 +49,7 @@
 //----------------------------------------------------------------------
 void check_c_string ( const char* s1
                     , const char* s2
-                    , CppUnit::SourceLine sourceLine )
+                    , const CppUnit::SourceLine& sourceLine )
 {
   if ( s1 == nullptr && s2 == nullptr )  // Strings are equal
     return;
@@ -63,7 +63,7 @@ void check_c_string ( const char* s1
 //----------------------------------------------------------------------
 void check_c_wstring ( const wchar_t* s1
                      , const wchar_t* s2
-                     , CppUnit::SourceLine sourceLine )
+                     , const CppUnit::SourceLine& sourceLine )
 {
   if ( s1 == nullptr && s2 == nullptr )  // Strings are equal
     return;
@@ -321,8 +321,9 @@ void FStringTest::initLengthTest()
 //----------------------------------------------------------------------
 void FStringTest::copyConstructorTest()
 {
-  const finalcut::FString s1("abc");
+  finalcut::FString s1("abc");
   const finalcut::FString s2(s1);
+  s1.clear();
   CPPUNIT_ASSERT ( s2 == L"abc" );
   CPPUNIT_ASSERT_CSTRING ( s2.c_str(), "abc" );
   CPPUNIT_ASSERT_WCSTRING ( s2.wc_str(), L"abc" );

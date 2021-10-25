@@ -157,10 +157,11 @@ bool FDropDownListBox::containsWidget (const FPoint& p)
 
   if ( getTermGeometry().contains(p) )
     return true;
-  else if ( parent && parent->isInstanceOf("FComboBox") )
+
+  if ( parent && parent->isInstanceOf("FComboBox") )
     return static_cast<FComboBox*>(parent)->getTermGeometry().contains(p);
-  else
-    return false;
+
+  return false;
 }
 
 
@@ -499,9 +500,9 @@ void FComboBox::draw()
     if ( list_window.isEmpty() )
       return FColorPair { wc->scrollbar_button_inactive_fg
                         , wc->scrollbar_button_inactive_bg };
-    else
-      return FColorPair { wc->scrollbar_button_fg
-                        , wc->scrollbar_button_bg };
+
+    return FColorPair { wc->scrollbar_button_fg
+                      , wc->scrollbar_button_bg };
   }();
 
   print() << FPoint{int(getWidth()) - nf, 1}

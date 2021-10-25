@@ -747,13 +747,11 @@ bool FMenu::mouseUpOverList (const FPoint& mouse_pos)
 
         return true;
       }
-      else
-      {
-        unselectItem();
-        hide();
-        hideSuperMenus();
-        item->processClicked();
-      }
+
+      unselectItem();
+      hide();
+      hideSuperMenus();
+      item->processClicked();
     }
   }
 
@@ -911,12 +909,14 @@ bool FMenu::containsMenuStructure (int x, int y)
 
   if ( getTermGeometry().contains(x, y) )
     return true;
-  else if ( si && si->hasMenu() && opened_sub_menu )
+
+  if ( si && si->hasMenu() && opened_sub_menu )
     return si->getMenu()->containsMenuStructure(x, y);
-  else if ( menuitem.getTermGeometry().contains(x, y) )
+
+  if ( menuitem.getTermGeometry().contains(x, y) )
     return true;
-  else
-    return false;
+
+  return false;
 }
 
 //----------------------------------------------------------------------
@@ -933,13 +933,11 @@ FMenu* FMenu::superMenuAt (int x, int y)
   {
     if ( super->getTermGeometry().contains(x, y) )
       return static_cast<FMenu*>(super);
-    else
-    {
-      const auto& smenu = static_cast<FMenu*>(getSuperMenu());
 
-      if ( smenu )
-        return smenu->superMenuAt(x, y);
-    }
+    const auto& smenu = static_cast<FMenu*>(getSuperMenu());
+
+    if ( smenu )
+      return smenu->superMenuAt(x, y);
   }
 
   return nullptr;

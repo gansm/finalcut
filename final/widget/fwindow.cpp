@@ -240,8 +240,8 @@ bool FWindow::isMinimized() const
 
   if ( isVirtualWindow() )
     return getVWin()->minimized;
-  else
-    return false;
+
+  return false;
 }
 
 //----------------------------------------------------------------------
@@ -251,8 +251,8 @@ bool FWindow::isWindowHidden() const
 
   if ( isVirtualWindow() )
     return ! getVWin()->visible;
-  else
-    return false;
+
+  return false;
 }
 
 //----------------------------------------------------------------------
@@ -830,8 +830,8 @@ inline FRect FWindow::getVisibleTermGeometry (FWindow* win)
     minimized_term_geometry.setHeight(min_height);
     return minimized_term_geometry;
   }
-  else
-    return term_geometry;
+
+  return term_geometry;
 }
 
 //----------------------------------------------------------------------
@@ -894,8 +894,8 @@ FWindow* FWindow::getWindowWidgetImpl (FWidget* obj)
 
   if ( obj->isWindowWidget() )
     return static_cast<FWindow*>(obj);
-  else
-    return nullptr;
+
+  return nullptr;
 }
 
 //----------------------------------------------------------------------

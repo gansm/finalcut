@@ -306,7 +306,8 @@ FObject::iterator FListViewItem::insert ( FListViewItem* child
       auto parent = static_cast<FListView*>(*parent_iter);
       return parent->insert (child);
     }
-    else if ( (*parent_iter)->isInstanceOf("FListViewItem") )
+
+    if ( (*parent_iter)->isInstanceOf("FListViewItem") )
     {
       // Add FListViewItem to a FListViewItem parent
       auto parent = static_cast<FListViewItem*>(*parent_iter);
@@ -588,8 +589,8 @@ void FListViewIterator::prevElement (Iterator& iter)
 
   if ( iter == start_iter )  // No changes
     return;
-  else
-    position--;
+
+  position--;
 
   while ( item->isExpandable() && item->isExpand() )
   {
@@ -1226,9 +1227,10 @@ void FListView::onTimer (FTimerEvent*)
   {
     return;
   }
-  else if ( ( drag_scroll == DragScrollMode::Downward
-           || drag_scroll == DragScrollMode::SelectDownward )
-           && ! dragScrollDown(position_before) )
+
+  if ( ( drag_scroll == DragScrollMode::Downward
+      || drag_scroll == DragScrollMode::SelectDownward )
+      && ! dragScrollDown(position_before) )
   {
     return;
   }
@@ -1494,10 +1496,11 @@ FObject::iterator FListView::getListEnd (const FListViewItem* item)
 
   if ( this == parent )
     return itemlist.end();
-  else if ( parent->isInstanceOf("FListViewItem") )
+
+  if ( parent->isInstanceOf("FListViewItem") )
     return static_cast<FListViewItem*>(parent)->end();
-  else
-    return getNullIterator();
+
+  return getNullIterator();
 }
 
 //----------------------------------------------------------------------

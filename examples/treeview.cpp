@@ -102,13 +102,10 @@ bool sortAscending ( const finalcut::FObject* lhs
   const auto& r_str = r_item->getText(column);
 
   if ( column == 2 )
-  {
     return isGreaterThanInteger(l_str, r_str);
-  }
-  else if ( column == 3 )
-  {
+
+  if ( column == 3 )
     return isGreaterThanDouble(l_str, r_str);
-  }
 
   return false;
 }
@@ -124,13 +121,10 @@ bool sortDescending ( const finalcut::FObject* lhs
   const auto& r_str = r_item->getText(column);
 
   if ( column == 2 )
-  {
     return isLessThanInteger(l_str, r_str);
-  }
-  else if ( column == 3 )
-  {
+
+  if ( column == 3 )
     return isLessThanDouble(l_str, r_str);
-  }
 
   return false;
 }

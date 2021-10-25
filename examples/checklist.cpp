@@ -28,7 +28,6 @@
 #include <final/final.h>
 
 using finalcut::FPoint;
-using finalcut::FRect;
 using finalcut::FSize;
 
 

@@ -44,7 +44,7 @@ FColorPalette::~FColorPalette() noexcept = default;  // destructor
 auto FColorPalette::getInstance() -> std::shared_ptr<FColorPalette>&
 {
   static const auto& color_theme = make_unique<std::shared_ptr<FColorPalette>>();
-  return *color_theme.get();
+  return *color_theme;
 }
 
 

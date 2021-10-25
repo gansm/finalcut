@@ -48,7 +48,7 @@
 //----------------------------------------------------------------------
 void check_c_string ( const char* s1
                     , const char* s2
-                    , CppUnit::SourceLine sourceLine )
+                    , const CppUnit::SourceLine& sourceLine )
 {
   if ( s1 == nullptr && s2 == nullptr )  // Strings are equal
     return;
@@ -1923,8 +1923,8 @@ FSystemTest::RGB& FSystemTest::getRGB (finalcut::FColor c)
 
   if ( i < 16 )
     return terminal_color[i];
-  else
-    return terminal_color[0];
+
+  return terminal_color[0];
 }
 
 //----------------------------------------------------------------------

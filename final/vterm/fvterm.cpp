@@ -62,7 +62,6 @@ int                  FVTerm::tabstop{8};
 // constructors and destructor
 //----------------------------------------------------------------------
 FVTerm::FVTerm()
-  : FVTermAttribute{}
 {
   if ( ! init_object )
     init();
@@ -435,18 +434,17 @@ FVTerm::FTermArea* FVTerm::getPrintArea()
 
   if ( print_area )
     return print_area;
-  else
+
+  if ( vwin )
   {
-    if ( vwin )
-    {
-      print_area = vwin;
-      return print_area;
-    }
-    else if ( child_print_area )
-    {
-      print_area = child_print_area;
-      return print_area;
-    }
+    print_area = vwin;
+    return print_area;
+  }
+
+  if ( child_print_area )
+  {
+    print_area = child_print_area;
+    return print_area;
   }
 
   return vdesktop;

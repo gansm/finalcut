@@ -50,7 +50,7 @@ using std::chrono::high_resolution_clock;
 //----------------------------------------------------------------------
 void check_c_string ( const char* s1
                     , const char* s2
-                    , CppUnit::SourceLine sourceLine )
+                    , const CppUnit::SourceLine& sourceLine )
 {
   if ( s1 == nullptr && s2 == nullptr )  // Strings are equal
     return;

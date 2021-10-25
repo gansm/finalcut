@@ -61,7 +61,6 @@ FStringStream::~FStringStream() noexcept = default;
 //----------------------------------------------------------------------
 FStringStream& FStringStream::operator = (FStringStream&& sstream) noexcept
 {
-  std::wiostream::operator = (std::move(sstream));
   buffer = std::move(sstream.buffer);
   return *this;
 }

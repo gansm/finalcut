@@ -36,6 +36,8 @@
 
 #include <final/final.h>
 
+using finalcut::C_STR;
+
 namespace test
 {
 
@@ -619,7 +621,8 @@ inline void ConEmu::startConEmuTerminal (console con)
 
       if ( len == -1 || std::size_t(len) >= sizeof(buffer) )
         break;
-      else if ( len > 0 )
+
+      if ( len > 0 )
       {
         buffer[len] = '\0';
         parseTerminalBuffer (len, con);

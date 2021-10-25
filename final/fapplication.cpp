@@ -133,7 +133,7 @@ FApplication::FLogPtr& FApplication::getLog()
   // Global logger object
   static auto logger_ptr = new FLogPtr();
 
-  if ( logger_ptr && logger_ptr->get() == nullptr )
+  if ( logger_ptr && *logger_ptr == nullptr )
   {
     *logger_ptr = std::make_shared<FLogger>();
 

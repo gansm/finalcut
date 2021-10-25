@@ -31,7 +31,6 @@
 using FKey = finalcut::FKey;
 using finalcut::FColor;
 using finalcut::FPoint;
-using finalcut::FRect;
 using finalcut::FSize;
 
 
@@ -1000,7 +999,7 @@ void MyDialog::cb_view (const finalcut::FMenuItem* item)
                     , FSize{60, getRootWidget()->getHeight() * 3 / 4} );
   view->setMinimizable();
   view->setResizeable();
-  std::string line{""};
+  std::string line{};
   std::ifstream infile;
   infile.open(file.c_str());
 

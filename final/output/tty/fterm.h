@@ -346,8 +346,8 @@ inline std::ostream& operator << (std::ostream& os, finalcut::UniChar c)
 
   if ( data.getTerminalEncoding() == finalcut::Encoding::UTF8 )
     return os << finalcut::unicode_to_utf8(wchar_t(c));
-  else
-    return os << static_cast<char>(uChar(c));
+
+  return os << static_cast<char>(uChar(c));
 }
 
 //----------------------------------------------------------------------

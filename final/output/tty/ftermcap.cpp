@@ -176,10 +176,9 @@ FTermcap::Status FTermcap::paddingPrint ( const std::string& string
           iter = first_digit;
           continue;
         }
-        else if ( has_delay && number > 0 )
-        {
+
+        if ( has_delay && number > 0 )
           delayOutput(number / 10);
-        }
       }  // end of else (*iter == '<')
     }  // end of else (*iter == '$')
 

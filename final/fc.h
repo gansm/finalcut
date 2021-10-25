@@ -29,9 +29,6 @@
 
 #include "final/ftypes.h"
 
-// Typecast to c-string
-#define C_STR const_cast<char*>
-
 // ASCII sequences
 #define ESC      "\033"     // Escape
 #define CSI      ESC "["    // Control sequence introducer (7-bit)
@@ -1201,7 +1198,7 @@ inline FColor& operator ++ (FColor& c) noexcept  // prefix
 
 inline FColor operator ++ (FColor& c, int) noexcept  // postfix
 {
-  FColor tmp = c;
+  const FColor tmp = c;
   ++c;
   return tmp;
 }
@@ -1212,17 +1209,18 @@ inline FColor& operator -- (FColor& c) noexcept  // prefix
   {
     if ( uInt16(c) > 0 )
       return FColor(uInt16(c) - 1);
-    else if ( c == FColor::Black )  // value 0
-      return FColor::Default;       // value uInt16(-1)
 
-    return FColor(255);             // --(-1) = 255
+    if ( c == FColor::Black )  // value 0
+      return FColor::Default;  // value uInt16(-1)
+
+    return FColor(255);        // --(-1) = 255
   }();
   return c;
 }
 
 inline FColor operator -- (FColor& c, int) noexcept  // postfix
 {
-  FColor tmp = c;
+  const FColor tmp = c;
   --c;
   return tmp;
 }
@@ -1231,21 +1229,21 @@ inline FColor operator -- (FColor& c, int) noexcept  // postfix
 // Terminal attribute style names
 enum class Style : uInt16
 {
-  None              = 0,
-  Bold              = 1 << 0,
-  Dim               = 1 << 1,
-  Italic            = 1 << 2,
-  Underline         = 1 << 3,
-  Blink             = 1 << 4,
-  Reverse           = 1 << 5,
-  Standout          = 1 << 6,
-  Invisible         = 1 << 7,
-  Protected         = 1 << 8,
-  CrossedOut        = 1 << 9,
-  DoubleUnderline   = 1 << 10,
-  Transparent       = 1 << 11,
-  ColorOverlay      = 1 << 12,
-  InheritBackground = 1 << 13
+  None              = 0U,
+  Bold              = 1U << 0U,
+  Dim               = 1U << 1U,
+  Italic            = 1U << 2U,
+  Underline         = 1U << 3U,
+  Blink             = 1U << 4U,
+  Reverse           = 1U << 5U,
+  Standout          = 1U << 6U,
+  Invisible         = 1U << 7U,
+  Protected         = 1U << 8U,
+  CrossedOut        = 1U << 9U,
+  DoubleUnderline   = 1U << 10U,
+  Transparent       = 1U << 11U,
+  ColorOverlay      = 1U << 12U,
+  InheritBackground = 1U << 13U
 };
 
 constexpr Style operator + (const Style& a1, const Style& a2) noexcept
@@ -1310,27 +1308,27 @@ enum class MouseWheel
 // Terminal type
 enum class FTermType : uInt32
 {
-  ansi           = 1 << 0,   // ANSI X3.64 terminal
-  xterm          = 1 << 1,   // Xterm
-  rxvt           = 1 << 2,   // Rxvt
-  urxvt          = 1 << 3,   // Rxvt-unicode
-  kde_konsole    = 1 << 4,   // KDE Konsole
-  gnome_terminal = 1 << 5,   // Gnome Terminal
-  putty          = 1 << 6,   // PuTTY
-  win_terminal   = 1 << 7,   // Windows Terminal
-  tera_term      = 1 << 8,   // Tera Term
-  cygwin         = 1 << 9,   // Cygwin
-  mintty         = 1 << 10,  // Mintty
-  linux_con      = 1 << 11,  // Linux Console
-  freebsd_con    = 1 << 12,  // FreeBSD workstation Console
-  netbsd_con     = 1 << 13,  // NetBSD workstation console
-  openbsd_con    = 1 << 14,  // OpenBSD workstation Console
-  sun_con        = 1 << 15,  // Sun Microsystems workstation console
-  screen         = 1 << 16,  // GNU Screen
-  tmux           = 1 << 17,  // TMux (terminal multiplexer)
-  kterm          = 1 << 18,  // Kterm (multi-lingual terminal emulator)
-  mlterm         = 1 << 19,  // MLterm (multi-lingual terminal emulator)
-  kitty          = 1 << 20   // kitty (GPU based terminal emulator)
+  ansi           = 1U << 0U,   // ANSI X3.64 terminal
+  xterm          = 1U << 1U,   // Xterm
+  rxvt           = 1U << 2U,   // Rxvt
+  urxvt          = 1U << 3U,   // Rxvt-unicode
+  kde_konsole    = 1U << 4U,   // KDE Konsole
+  gnome_terminal = 1U << 5U,   // Gnome Terminal
+  putty          = 1U << 6U,   // PuTTY
+  win_terminal   = 1U << 7U,   // Windows Terminal
+  tera_term      = 1U << 8U,   // Tera Term
+  cygwin         = 1U << 9U,   // Cygwin
+  mintty         = 1U << 10U,  // Mintty
+  linux_con      = 1U << 11U,  // Linux Console
+  freebsd_con    = 1U << 12U,  // FreeBSD workstation Console
+  netbsd_con     = 1U << 13U,  // NetBSD workstation console
+  openbsd_con    = 1U << 14U,  // OpenBSD workstation Console
+  sun_con        = 1U << 15U,  // Sun Microsystems workstation console
+  screen         = 1U << 16U,  // GNU Screen
+  tmux           = 1U << 17U,  // TMux (terminal multiplexer)
+  kterm          = 1U << 18U,  // Kterm (multi-lingual terminal emulator)
+  mlterm         = 1U << 19U,  // MLterm (multi-lingual terminal emulator)
+  kitty          = 1U << 20U   // kitty (GPU based terminal emulator)
 };
 
 using FTermTypeT = typename std::underlying_type<FTermType>::type;

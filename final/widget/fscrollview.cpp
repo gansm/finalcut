@@ -609,8 +609,8 @@ FVTerm::FTermArea* FScrollView::getPrintArea()
     setChildPrintArea (viewport);
     return area;
   }
-  else
-    return viewport;
+
+  return viewport;
 }
 
 //----------------------------------------------------------------------
@@ -715,8 +715,8 @@ inline FPoint FScrollView::getViewportCursorPos()
                 - viewport_geometry.getY();
     return { x, y };
   }
-  else
-    return { -1, -1 };
+
+  return { -1, -1 };
 }
 
 //----------------------------------------------------------------------

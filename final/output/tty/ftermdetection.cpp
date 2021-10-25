@@ -119,7 +119,8 @@ void FTermDetection::getSystemTermType()
     termtype = term_env;
     return;
   }
-  else if ( ! termfilename.empty() )  // 1st fallback: use the teminal file name
+
+  if ( ! termfilename.empty() )  // 1st fallback: use the teminal file name
   {
     if ( getTTYtype() )  // Look into /etc/ttytype
       return;
@@ -960,8 +961,8 @@ inline FString FTermDetection::secDA_Analysis_82() const
   {
     if ( termtype == "rxvt-cygwin-native" )
       return  FString("rxvt-16color");
-    else
-      return  FString("rxvt");
+
+    return  FString("rxvt");
   }();
 }
 
@@ -1001,11 +1002,11 @@ inline FString FTermDetection::secDA_Analysis_85() const
     {
       if ( color256 )
         return FString("rxvt-256color");
-      else
-        return FString("rxvt");
+
+      return FString("rxvt");
     }
-    else
-      return termtype;
+
+    return termtype;
   }();
 }
 

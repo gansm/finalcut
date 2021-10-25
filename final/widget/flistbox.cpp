@@ -441,9 +441,10 @@ void FListBox::onTimer (FTimerEvent*)
   {
     return;
   }
-  else if ( ( drag_scroll == DragScrollMode::Downward
-           || drag_scroll == DragScrollMode::SelectDownward )
-           && ! dragScrollDown() )
+
+  if ( ( drag_scroll == DragScrollMode::Downward
+      || drag_scroll == DragScrollMode::SelectDownward )
+      && ! dragScrollDown() )
   {
     return;
   }

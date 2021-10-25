@@ -129,8 +129,8 @@ FString FFileDialog::getSelectedFile() const
 
   if ( dir_entries[n].directory )
     return {""};
-  else
-    return {dir_entries[n].name};
+
+  return {dir_entries[n].name};
 }
 
 //----------------------------------------------------------------------
@@ -681,8 +681,8 @@ FString FFileDialog::getHomeDir()
 
   if ( fsystem->getpwuid_r(euid, &pwd, buf.data(), buf.size(), &pwd_ptr) )
     return {""};
-  else
-    return {pwd.pw_dir};
+
+  return {pwd.pw_dir};
 }
 
 //----------------------------------------------------------------------

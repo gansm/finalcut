@@ -619,34 +619,25 @@ void FScrollbar::drawButtons()
 FScrollbar::ScrollType FScrollbar::getClickedScrollType (int x, int y) const
 {
   if ( bar_orientation == Orientation::Vertical )
-  {
     return getVerticalClickedScrollType(y);
-  }
-  else  // horizontal
-  {
-    return getHorizontalClickedScrollType(x);
-  }
+
+  return getHorizontalClickedScrollType(x);  // horizontal
 }
 
 //----------------------------------------------------------------------
 FScrollbar::ScrollType FScrollbar::getVerticalClickedScrollType (int y) const
 {
   if ( y == 1 )
-  {
     return ScrollType::StepBackward;  // decrement button
-  }
-  else if ( y > 1 && y <= slider_pos + 1 )
-  {
+
+  if ( y > 1 && y <= slider_pos + 1 )
     return ScrollType::PageBackward;  // before slider
-  }
-  else if ( y > slider_pos + int(slider_length) + 1 && y < int(getHeight()) )
-  {
+
+  if ( y > slider_pos + int(slider_length) + 1 && y < int(getHeight()) )
     return ScrollType::PageForward;  // after slider
-  }
-  else if ( y == int(getHeight()) )
-  {
+
+  if ( y == int(getHeight()) )
     return ScrollType::StepForward;  // increment button
-  }
 
   return ScrollType::None;
 }
@@ -657,45 +648,33 @@ FScrollbar::ScrollType FScrollbar::getHorizontalClickedScrollType (int x) const
   if ( FVTerm::getFOutput()->isNewFont() )
   {
     if ( x == 1 || x == 2 )
-    {
       return ScrollType::StepBackward;  // decrement button
-    }
-    else if ( x > 2 && x <= slider_pos + 2 )
-    {
+
+    if ( x > 2 && x <= slider_pos + 2 )
       return ScrollType::PageBackward;  // before slider
-    }
-    else if ( x > slider_pos + int(slider_length) + 2 && x < int(getWidth()) - 1 )
-    {
+
+    if ( x > slider_pos + int(slider_length) + 2 && x < int(getWidth()) - 1 )
       return ScrollType::PageForward;  // after slider
-    }
-    else if ( x == int(getWidth()) - 1 || x == int(getWidth()) )
-    {
+
+    if ( x == int(getWidth()) - 1 || x == int(getWidth()) )
       return ScrollType::StepForward;  // increment button
-    }
 
     return ScrollType::None;
   }
-  else
-  {
-    if ( x == 1 )
-    {
-      return ScrollType::StepBackward;  // decrement button
-    }
-    else if ( x > 1 && x <= slider_pos + 1 )
-    {
-      return ScrollType::PageBackward;  // before slider
-    }
-    else if ( x > slider_pos + int(slider_length) + 1 && x < int(getWidth()) )
-    {
-      return ScrollType::PageForward;  // after slider
-    }
-    else if ( x == int(getWidth()) )
-    {
-      return ScrollType::StepForward;  // increment button
-    }
 
-    return ScrollType::None;
-  }
+  if ( x == 1 )
+    return ScrollType::StepBackward;  // decrement button
+
+  if ( x > 1 && x <= slider_pos + 1 )
+    return ScrollType::PageBackward;  // before slider
+
+  if ( x > slider_pos + int(slider_length) + 1 && x < int(getWidth()) )
+    return ScrollType::PageForward;  // after slider
+
+  if ( x == int(getWidth()) )
+    return ScrollType::StepForward;  // increment button
+
+  return ScrollType::None;
 }
 
 //----------------------------------------------------------------------
@@ -737,7 +716,7 @@ void FScrollbar::jumpToClickPos (int x, int y)
   {
     if ( y > 1 && y < int(getHeight()) )
     {
-      new_val = int( round ( double(max - min) * (y - 2.0 - double(slider_length/2))
+      new_val = int( round ( double(max - min) * (y - 2.0 - (double(slider_length) / 2))
                            / double(bar_length - slider_length) ) );
     }
     else
@@ -749,7 +728,7 @@ void FScrollbar::jumpToClickPos (int x, int y)
 
     if ( x > 1 + nf && x < int(getWidth()) - nf )
     {
-      new_val = int( round ( double(max - min) * (x - 2.0 - nf - double(slider_length/2))
+      new_val = int( round ( double(max - min) * (x - 2.0 - nf - (double(slider_length) / 2))
                            / double(bar_length - slider_length) ) );
     }
     else

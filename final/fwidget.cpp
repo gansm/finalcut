@@ -69,8 +69,7 @@ uInt                  FWidget::modal_dialog_counter{};
 // constructors and destructor
 //----------------------------------------------------------------------
 FWidget::FWidget (FWidget* parent)
-  : FVTerm{}
-  , FObject{parent}
+  : FObject{parent}
 {
   // init bit field with 0
   memset (&flags, 0, sizeof(flags));
@@ -170,8 +169,8 @@ FWidget* FWidget::getParentWidget() const
 
   if ( p_obj && p_obj->isWidget() )
     return static_cast<FWidget*>(p_obj);
-  else
-    return nullptr;
+
+  return nullptr;
 }
 
 //----------------------------------------------------------------------
@@ -787,8 +786,8 @@ bool FWidget::close()
 
     return true;
   }
-  else
-    return false;
+
+  return false;
 }
 
 //----------------------------------------------------------------------
@@ -1070,28 +1069,27 @@ FVTerm::FTermArea* FWidget::getPrintArea()
 
   if ( getCurrentPrintArea() )
     return getCurrentPrintArea();
-  else
+
+  FWidget* obj{};
+  FWidget* p_obj = this;
+
+  do
   {
-    FWidget* obj{};
-    FWidget* p_obj = this;
+    obj = p_obj;
+    p_obj = static_cast<FWidget*>(obj->getParent());
+  }
+  while ( ! obj->getVWin() && ! obj->getChildPrintArea() && p_obj );
 
-    do
-    {
-      obj = p_obj;
-      p_obj = static_cast<FWidget*>(obj->getParent());
-    }
-    while ( ! obj->getVWin() && ! obj->getChildPrintArea() && p_obj );
+  if ( obj->getVWin() )
+  {
+    setPrintArea (obj->getVWin());
+    return getCurrentPrintArea();
+  }
 
-    if ( obj->getVWin() )
-    {
-      setPrintArea (obj->getVWin());
-      return getCurrentPrintArea();
-    }
-    else if ( obj->getChildPrintArea() )
-    {
-      setPrintArea (obj->getChildPrintArea());
-      return getCurrentPrintArea();
-    }
+  if ( obj->getChildPrintArea() )
+  {
+    setPrintArea (obj->getChildPrintArea());
+    return getCurrentPrintArea();
   }
 
   return getVirtualDesktop();
@@ -1801,7 +1799,8 @@ void FWidget::KeyPressEvent (FKeyEvent* kev)
   {
     if ( isFocusNextKey(key) )
       return focusNextChild();
-    else if ( isFocusPrevKey(key) )
+
+    if ( isFocusPrevKey(key) )
       return focusPrevChild();
 
     return false;

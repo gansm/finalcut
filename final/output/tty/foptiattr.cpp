@@ -923,18 +923,18 @@ bool FOptiAttr::setTermDefaultColor (FChar& term)
   term.fg_color = FColor::Default;
   term.bg_color = FColor::Default;
 
-  if ( append_sequence(F_orig_pair.cap) )
+  if ( append_sequence(F_orig_pair.cap)
+    || append_sequence(F_orig_colors.cap) )
     return true;
-  else if ( append_sequence(F_orig_colors.cap) )
-    return true;
-  else if ( ansi_default_color )
+
+  if ( ansi_default_color )
   {
     std::string sgr_39_49{CSI "39;49m"};
     append_sequence (sgr_39_49);
     return true;
   }
-  else
-    return false;
+
+  return false;
 }
 
 //----------------------------------------------------------------------

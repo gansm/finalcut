@@ -372,7 +372,7 @@ uInt FObject::processTimerEvent()
       timer.timeout = currentTime + timer.interval;
 
     if ( timer.interval > microseconds(0) )
-      activated++;
+      ++activated;
 
     auto id = timer.id;
     auto object = timer.object;

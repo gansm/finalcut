@@ -77,7 +77,8 @@ void SGRoptimizer::findParameter()
 
       if ( (seq[i] >= '0' && seq[i] <= '9') || seq[i] == ';' )
         continue;
-      else if ( seq[i] == 'm')
+
+      if ( seq[i] == 'm')
       {
         csi_parameter.push_back({start, i});
       }

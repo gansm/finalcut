@@ -324,9 +324,9 @@ void FSpinBox::draw()
     if ( value == max )
       return FColorPair { wc->scrollbar_button_inactive_fg
                         , wc->scrollbar_button_inactive_bg };
-    else
-      return FColorPair { wc->scrollbar_button_fg
-                        , wc->scrollbar_button_bg };
+
+    return FColorPair { wc->scrollbar_button_fg
+                      , wc->scrollbar_button_bg };
   }();
 
   const FColorPair dec_button_color = [this, &wc] ()
@@ -334,9 +334,9 @@ void FSpinBox::draw()
     if ( value == min )
       return FColorPair { wc->scrollbar_button_inactive_fg
                         , wc->scrollbar_button_inactive_bg };
-    else
-      return FColorPair { wc->scrollbar_button_fg
-                        , wc->scrollbar_button_bg };
+
+    return FColorPair { wc->scrollbar_button_fg
+                      , wc->scrollbar_button_bg };
   }();
 
   print() << FPoint{int(getWidth()) - 1, 1}

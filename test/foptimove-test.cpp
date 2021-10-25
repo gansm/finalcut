@@ -42,7 +42,7 @@
 //----------------------------------------------------------------------
 void check_string ( const std::string& s1
                   , const std::string& s2
-                  , CppUnit::SourceLine sourceLine )
+                  , const CppUnit::SourceLine& sourceLine )
 {
   if ( s1 == s2 )  // Strings are equal
     return;
@@ -603,7 +603,7 @@ void FOptiMoveTest::cygwinTest()
   om.set_parm_right_cursor (CSI "%p1%dC");
   om.set_parm_left_cursor (CSI "%p1%dD");
 
-  CPPUNIT_ASSERT_STRING ( printSequence(om.moveCursor (1, 2, 3, 4)).c_str()
+  CPPUNIT_ASSERT_STRING ( printSequence(om.moveCursor (1, 2, 3, 4))
                          , "Esc [ 5 ; 4 H " );
   CPPUNIT_ASSERT_STRING (om.moveCursor (0, 0, 5, 5), CSI "6;6H");
   CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 0, 0), CSI "H");

@@ -55,8 +55,8 @@ FString FVTermBuffer::toString() const
                     {
                       if ( ch == L'\0' )
                         return;
-                      else
-                        wide_string.push_back(ch);
+
+                      wide_string.push_back(ch);
                     }
                   }
                 );

@@ -85,8 +85,8 @@ inline wchar_t FCharSubstitution::getMappedChar (wchar_t c) const
 
   if ( iter == cend )
     return L'\0';
-  else
-    return iter->to;
+
+  return iter->to;
 }
 
 //----------------------------------------------------------------------

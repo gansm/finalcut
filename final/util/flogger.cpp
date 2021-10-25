@@ -45,7 +45,7 @@ void FLogger::newlineReplace ( std::string& str
   std::size_t pos{0};
   std::size_t npos{std::string::npos};
 
-  while ( (pos = str.find("\n", pos)) != npos
+  while ( (pos = str.find('\n', pos)) != npos
        && pos + 1 < str.length() )
   {
     str.replace(pos, 1, replace_str);
@@ -71,9 +71,11 @@ std::string FLogger::getEOL() const
 {
   if ( getEnding() == LineEnding::LF )
     return "\n";
-  else if ( getEnding() == LineEnding::CR )
+
+  if ( getEnding() == LineEnding::CR )
     return "\r";
-  else if ( getEnding() == LineEnding::CRLF )
+
+  if ( getEnding() == LineEnding::CRLF )
     return "\r\n";
 
   return "";
@@ -106,8 +108,8 @@ void FLogger::printLogLine (const std::string& msg)
   {
     if ( timestamp )
       return getTimeString() + " [" + log_level + "] ";
-    else
-      return "[" + log_level + "] ";
+
+    return "[" + log_level + "] ";
   }();
 
   std::string message{msg};

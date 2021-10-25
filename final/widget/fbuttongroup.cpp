@@ -270,8 +270,8 @@ void FButtonGroup::remove (FToggleButton* button)
       button->delCallback(this);
       break;
     }
-    else
-      ++iter;
+
+    ++iter;
   }
 }
 

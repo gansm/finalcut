@@ -711,13 +711,10 @@ inline std::size_t FLineEdit::printPassword()
 inline std::size_t FLineEdit::getCursorColumnPos() const
 {
   if ( input_type == InputType::Textfield )
-  {
     return getColumnWidth (print_text, cursor_pos);
-  }
-  else if ( input_type == InputType::Password )
-  {
+
+  if ( input_type == InputType::Password )
     return cursor_pos;
-  }
 
   return 0;
 }
@@ -1038,7 +1035,8 @@ inline bool FLineEdit::keyInput (FKey key)
 
     if ( ch == L'\0' )
       return false;
-    else if ( cursor_pos == len )
+
+    if ( cursor_pos == len )
       text += ch;
     else if ( len > 0 )
     {
@@ -1056,8 +1054,8 @@ inline bool FLineEdit::keyInput (FKey key)
     processChanged();
     return true;
   }
-  else
-    return false;
+
+  return false;
 }
 
 //----------------------------------------------------------------------
@@ -1070,8 +1068,8 @@ inline wchar_t FLineEdit::characterFilter (const wchar_t c) const
 
   if ( regex_match(character.data(), std::wregex(input_filter)) )
     return c;
-  else
-    return L'\0';
+
+  return L'\0';
 }
 
 //----------------------------------------------------------------------

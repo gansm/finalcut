@@ -248,10 +248,11 @@ void FDataTest::moveConstructorTest()
   auto data1 = finalcut::FData<int>(-5);
   CPPUNIT_ASSERT ( data1.isInitializedCopy() );
   CPPUNIT_ASSERT ( data1.get() == -5 );
+  auto data1_copy = data1;
   auto data2 = finalcut::FData<int>(std::move(data1));
   CPPUNIT_ASSERT ( data2.isInitializedCopy() );
-  data1.get() += 10;
-  CPPUNIT_ASSERT ( data1.get() == 5 );
+  data1_copy.get() += 10;
+  CPPUNIT_ASSERT ( data1_copy.get() == 5 );
   CPPUNIT_ASSERT ( data2.get() == -5 );
 
   // reference copy
@@ -259,10 +260,11 @@ void FDataTest::moveConstructorTest()
   auto data3 = finalcut::FData<long int>(n);
   CPPUNIT_ASSERT ( data3.isInitializedReference() );
   CPPUNIT_ASSERT ( data3.get() == 0xfffffff );
+  auto data3_copy = data3;
   auto data4 = finalcut::FData<long int>(std::move(data3));
   CPPUNIT_ASSERT ( data4.isInitializedReference() );
-  data3.get()++;
-  CPPUNIT_ASSERT ( data3.get() == 0x10000000 );
+  data3_copy.get()++;
+  CPPUNIT_ASSERT ( data3_copy.get() == 0x10000000 );
   CPPUNIT_ASSERT ( data4.get() == 0x10000000 );
 }
 
@@ -302,10 +304,11 @@ void FDataTest::moveAssignmentTest()
   CPPUNIT_ASSERT ( data1.isInitializedCopy() );
   CPPUNIT_ASSERT ( data1.get() == 9.81F );
   finalcut::FData<float> data2{0};
+  auto data1_copy = data1;
   data2 = std::move(data1);
   CPPUNIT_ASSERT ( data2.isInitializedCopy() );
-  data1.get() -= 0.81;
-  CPPUNIT_ASSERT ( data1.get() == 9.0F );
+  data1_copy.get() -= 0.81;
+  CPPUNIT_ASSERT ( data1_copy.get() == 9.0F );
   CPPUNIT_ASSERT ( data2.get() == 9.81F );
 
   // reference copy
@@ -314,10 +317,11 @@ void FDataTest::moveAssignmentTest()
   CPPUNIT_ASSERT ( data3.isInitializedReference() );
   CPPUNIT_ASSERT ( data3.get() == 149597870700LL );
   finalcut::FData<long long int> data4{0};
+  auto data3_copy = data3;
   data4 = std::move(data3);
   CPPUNIT_ASSERT ( data4.isInitializedReference() );
   data4.get() /= 2LL;
-  CPPUNIT_ASSERT ( data3.get() == 74798935350LL );
+  CPPUNIT_ASSERT ( data3_copy.get() == 74798935350LL );
   CPPUNIT_ASSERT ( data4.get() == 74798935350LL );
 }
 
@@ -329,7 +333,7 @@ void FDataTest::makeFDataTest()
   // Array
   using ThreeInts = int[3];
   ThreeInts int_array{2, 1, 4};
-  data_pointer = finalcut::makeFData(std::move(int_array));
+  data_pointer = finalcut::makeFData(int_array);
   const auto& ints = static_cast<finalcut::FData<finalcut::clean_fdata_t<ThreeInts>>&>(*data_pointer).get();
   CPPUNIT_ASSERT ( ints[0] == 2 );
   CPPUNIT_ASSERT ( ints[1] == 1 );

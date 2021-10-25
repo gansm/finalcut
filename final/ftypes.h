@@ -105,6 +105,14 @@ inline bool is7bit (CharT ch)
   return static_cast<char_type>(ch) < 128;
 }
 
+
+// Typecast to c-string
+template <typename StringT>
+auto C_STR (StringT&& string) -> char*
+{
+  return const_cast<char*>(std::forward<StringT>(string));
+}
+
 template <typename T>
 constexpr bool isNegative (const T& x)
 {

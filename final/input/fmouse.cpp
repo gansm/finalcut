@@ -404,9 +404,8 @@ void FMouseGPM::processEvent (const TimeValue&)
     setEvent();
     return;
   }
-  else
-    gpm_fd = -1;
 
+  gpm_fd = -1;
   has_gpm_mouse_data = false;
   clearEvent();
 }
@@ -545,8 +544,8 @@ FMouseGPM::gpmEventType FMouseGPM::gpmEvent (bool clear) const
 
   if ( result > 0 )
     return gpmEventType::Mouse;
-  else
-    return gpmEventType::None;
+
+  return gpmEventType::None;
 }
 #endif  // F_HAVE_LIBGPM
 
@@ -1563,7 +1562,7 @@ void FMouseControl::processEvent (const TimeValue& time)
   if ( iter != mouse_protocol.end() )
   {
     (*iter)->processEvent(time);
-    auto& md = static_cast<FMouseData&>(*iter->get());
+    auto& md = static_cast<FMouseData&>(**iter);
     fmousedata_queue.emplace(make_unique<FMouseData>(std::move(md)));
   }
 }

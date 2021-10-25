@@ -296,8 +296,8 @@ void FStatusBar::remove (FStatusKey* skey)
       skey->setConnectedStatusbar(nullptr);
       break;
     }
-    else
-      ++iter;
+
+    ++iter;
   }
 }
 

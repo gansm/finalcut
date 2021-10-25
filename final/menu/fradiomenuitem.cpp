@@ -65,13 +65,12 @@ void FRadioMenuItem::init()
 
   if ( isMenu(parent) )  // Parent is menu
   {
-    auto menu_ptr = static_cast<FMenu*>(parent);
-    menu_ptr->has_checkable_items = true;
-
+    auto& menu_widget = *static_cast<FMenu*>(parent);
+    menu_widget.has_checkable_items = true;
     addCallback  // for this element
     (
       "toggled",
-      std::move(menu_ptr), &FMenu::cb_menuitemToggled,
+      &menu_widget, &FMenu::cb_menuitemToggled,
       this
     );
   }

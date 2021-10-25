@@ -338,17 +338,14 @@ uChar unicode_to_cp437 (wchar_t ucs)
 #if defined(__CYGWIN__)
 std::string unicode_to_utf8 (wchar_t ucs)
 {
+  // 1 Byte (7-bit): 0xxxxxxx
   if ( ucs < 0x80 )
-  {
-    // 1 Byte (7-bit): 0xxxxxxx
     return { char(ucs) };
-  }
-  else if ( ucs < 0x800 )
-  {
-    // 2 byte (11-bit): 110xxxxx 10xxxxxx
+
+  // 2 byte (11-bit): 110xxxxx 10xxxxxx
+  if ( ucs < 0x800 )
     return { char(0xc0 | char(ucs >> 6))
            , char(0x80 | char(ucs & 0x3f)) };
-  }
 
   // 3 byte (16-bit): 1110xxxx 10xxxxxx 10xxxxxx
   return { char(0xe0 | char(ucs >> 12))
@@ -359,35 +356,29 @@ std::string unicode_to_utf8 (wchar_t ucs)
 #else
 std::string unicode_to_utf8 (wchar_t ucs)
 {
+  // 1 Byte (7-bit): 0xxxxxxx
   if ( ucs < 0x80 )
-  {
-    // 1 Byte (7-bit): 0xxxxxxx
     return { char(ucs) };
-  }
-  else if ( ucs < 0x800 )
-  {
-    // 2 byte (11-bit): 110xxxxx 10xxxxxx
+
+  // 2 byte (11-bit): 110xxxxx 10xxxxxx
+  if ( ucs < 0x800 )
     return { char(0xc0 | char(ucs >> 6))
            , char(0x80 | char(ucs & 0x3f)) };
-  }
-  else if ( ucs < 0x10000 )
-  {
-    // 3 byte (16-bit): 1110xxxx 10xxxxxx 10xxxxxx
+
+  // 3 byte (16-bit): 1110xxxx 10xxxxxx 10xxxxxx
+  if ( ucs < 0x10000 )
     return { char(0xe0 | char(ucs >> 12))
            , char(0x80 | char((ucs >> 6) & 0x3f))
            , char(0x80 | char(ucs & 0x3f)) };
-  }
-  else if ( ucs < 0x200000 )
-  {
-    // 4 byte (21-bit): 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+
+  // 4 byte (21-bit): 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+  if ( ucs < 0x200000 )
     return { char(0xf0 | char(ucs >> 18))
            , char(0x80 | char((ucs >> 12) & 0x3f))
            , char(0x80 | char((ucs >> 6) & 0x3f))
            , char(0x80 | char(ucs & 0x3f)) };
-  }
 
-  // Invalid character
-  return unicode_to_utf8(L'�');
+  return unicode_to_utf8(L'�'); // Invalid character
 }
 #endif
 

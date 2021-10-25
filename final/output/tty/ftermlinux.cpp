@@ -453,8 +453,8 @@ FKey FTermLinux::modifierKeyCorrection (const FKey& key_id)
 
   if ( key == FKey(0) )    // Not found
     return key_id;
-  else                     // Found
-    return key_map[pair];
+
+  return key_map[pair];    // Found
 }
 
 
@@ -485,11 +485,8 @@ int FTermLinux::getFramebuffer_bpp() const
     fsystem->close(fd);
     return static_cast<int>(fb_var.bits_per_pixel);
   }
-  else
-  {
-    fsystem->close(fd);
-  }
 
+  fsystem->close(fd);
   return -1;
 }
 
@@ -685,8 +682,8 @@ int FTermLinux::setScreenFont ( const uChar fontdata[], uInt count
 
   if ( ret == 0 )
     return 0;
-  else
-    return -1;
+
+  return -1;
 }
 
 //----------------------------------------------------------------------
@@ -722,8 +719,8 @@ int FTermLinux::setUnicodeMap (struct unimapdesc* unimap) const
 
   if ( ret == 0 )
     return 0;
-  else
-    return -1;
+
+  return -1;
 }
 
 //----------------------------------------------------------------------

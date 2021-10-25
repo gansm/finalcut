@@ -1179,9 +1179,8 @@ bool FTermOutput::updateTerminalCursor()
     showCursor();
     return true;
   }
-  else
-    hideCursor();
 
+  hideCursor();
   return false;
 }
 

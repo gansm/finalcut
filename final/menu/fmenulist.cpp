@@ -74,8 +74,8 @@ void FMenuList::remove (FMenuItem* i)
       i->setSuperMenu(nullptr);
       break;
     }
-    else
-      ++iter;
+
+    ++iter;
   }
 }
 

@@ -529,8 +529,8 @@ std::string FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
 
   if ( move_time < LONG_DURATION )
     return move_buf;
-  else
-    return {};
+
+  return {};
 }
 
 
@@ -605,8 +605,8 @@ int FOptiMove::capDurationToLength (int duration) const
 {
   if ( duration != LONG_DURATION )
     return (duration + char_duration - 1) / char_duration;
-  else
-    return LONG_DURATION;
+
+  return LONG_DURATION;
 }
 
 //----------------------------------------------------------------------

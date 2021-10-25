@@ -531,17 +531,17 @@ void FMenuItem::init()
 
   if ( isMenuBar(parent) )  // Parent is menubar
   {
-    auto menubar_ptr = static_cast<FMenuBar*>(parent);
-    menubar_ptr->calculateDimensions();
+    auto& menubar_widget = *static_cast<FMenuBar*>(parent);
+    menubar_widget.calculateDimensions();
 
     if ( hotkey != FKey::None )  // Meta + hotkey
-      menubar_ptr->addAccelerator ( FKey::Meta_offset + FKey(std::tolower(int(hotkey)))
-                                  , this );
+      menubar_widget.addAccelerator ( FKey::Meta_offset + FKey(std::tolower(int(hotkey)))
+                                    , this );
 
     addCallback  // for this element
     (
       "deactivate",
-      std::move(menubar_ptr), &FMenuBar::cb_itemDeactivated,
+      &menubar_widget, &FMenuBar::cb_itemDeactivated,
       this
     );
   }
@@ -724,7 +724,7 @@ void FMenuItem::cb_destroyDialog (FDialog* win)
   if ( win && fapp )
   {
     delAccelerator(win);
-    delCallback(std::move(win));
+    delCallback(&(*win));
     associated_window = nullptr;
   }
 }
