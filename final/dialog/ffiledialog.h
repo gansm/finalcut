@@ -98,7 +98,7 @@ class FFileDialog : public FDialog
     explicit FFileDialog (FWidget* = nullptr);
 
     FFileDialog ( const FString&
-                , const FString&
+                , FString&&
                 , DialogType = DialogType::Open
                 , FWidget* = nullptr );
 

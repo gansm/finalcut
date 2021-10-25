@@ -37,6 +37,7 @@
 
 #include <sys/time.h>
 
+#include <algorithm>
 #include <array>
 #include <functional>
 #include <memory>
@@ -63,8 +64,8 @@ class FKeyboardCommand final
   public:
     // Constructors
     FKeyboardCommand () = default;
-    explicit FKeyboardCommand (const std::function<void()>& fn)
-      : handler(fn)
+    explicit FKeyboardCommand (std::function<void()>&& fn)
+      : handler(std::move(fn))
     { }
 
     // Method

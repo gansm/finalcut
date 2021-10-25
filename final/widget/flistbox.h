@@ -465,14 +465,14 @@ inline std::size_t FListBox::getCount() const
 //----------------------------------------------------------------------
 inline FListBoxItem& FListBox::getItem (std::size_t index) &
 {
-  FListBoxItems::iterator iter = index2iterator(index - 1);
+  auto iter = index2iterator(index - 1);
   return *iter;
 }
 
 //----------------------------------------------------------------------
 inline const FListBoxItem& FListBox::getItem (std::size_t index) const &
 {
-  FListBoxItems::const_iterator iter = index2iterator(index - 1);
+  auto iter = index2iterator(index - 1);
   return *iter;
 }
 

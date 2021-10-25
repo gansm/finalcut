@@ -816,13 +816,13 @@ void MyDialog::cb_terminfo()
   finalcut::FMessageBox info1 \
   (
     "Environment"
-    , finalcut::FString{}
+    , std::move(finalcut::FString()
       << "  Type: " << finalcut::FTerm::getTermType() << "\n"
       << "  Name: " << finalcut::FTerm::getTermFileName() << "\n"
       << "  Mode: " << finalcut::FTerm::getEncodingString() << "\n"
       << "  Size: " << x << finalcut::UniChar::Times
                     << y << "\n"
-      << "Colors: " << finalcut::FVTerm::getFOutput()->getMaxColor()
+      << "Colors: " << finalcut::FVTerm::getFOutput()->getMaxColor())
     , finalcut::FMessageBox::ButtonType::Ok
     , finalcut::FMessageBox::ButtonType::Reject
     , finalcut::FMessageBox::ButtonType::Reject

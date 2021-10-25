@@ -42,9 +42,9 @@ FStatusKey::FStatusKey(FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FStatusKey::FStatusKey (FKey k, const FString& txt, FWidget* parent)
+FStatusKey::FStatusKey (FKey k, FString&& txt, FWidget* parent)
   : FWidget{parent}
-  , text{txt}
+  , text{std::move(txt)}
   , key{k}
 {
   init();

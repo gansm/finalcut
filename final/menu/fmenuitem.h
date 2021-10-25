@@ -75,8 +75,8 @@ class FMenuItem : public FWidget
 
     // Constructor
     explicit FMenuItem (FWidget* = nullptr);
-    explicit FMenuItem (const FString&, FWidget* = nullptr);
-    FMenuItem (FKey, const FString&, FWidget* = nullptr);
+    explicit FMenuItem (FString&&, FWidget* = nullptr);
+    FMenuItem (FKey, FString&&, FWidget* = nullptr);
 
     // Disable copy constructor
     FMenuItem (const FMenuItem&) = delete;

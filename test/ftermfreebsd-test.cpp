@@ -49,10 +49,7 @@ class FSystemTest : public finalcut::FSystem
 {
   public:
     // Constructor
-    FSystemTest();
-
-    // Destructor
-    virtual ~FSystemTest();
+    FSystemTest() = default;
 
     // Methods
     uChar            inPortByte (uShort) override;
@@ -370,17 +367,6 @@ keymap_t FSystemTest::keymap =
 //----------------------------------------------------------------------
 keymap_t FSystemTest::terminal_keymap{};
 
-// constructors and destructor
-//----------------------------------------------------------------------
-FSystemTest::FSystemTest()  // constructor
-{
-}
-
-//----------------------------------------------------------------------
-FSystemTest::~FSystemTest()  // destructor
-{
-}
-
 
 // public methods of FSystemTest
 //----------------------------------------------------------------------
@@ -439,7 +425,7 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
     case GIO_KEYMAP:
     {
       req_string = "GIO_KEYMAP";
-      keymap_t* kmap = static_cast<keymap_t*>(argp);
+      auto kmap = static_cast<keymap_t*>(argp);
 
       // Sets the default keymap of the terminal on the first call
       if ( terminal_keymap.n_keys == 0 )
@@ -457,7 +443,7 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
     case PIO_KEYMAP:
     {
       req_string = "PIO_KEYMAP";
-      keymap_t* kmap = static_cast<keymap_t*>(argp);
+      auto kmap = static_cast<keymap_t*>(argp);
       std::memcpy (terminal_keymap.key, kmap->key, sizeof(keymap.key));
       ret_val = 0;
       break;
@@ -465,7 +451,7 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
 
     case TIOCGWINSZ:
       req_string = "TIOCGWINSZ";
-      struct winsize* win_size = static_cast<winsize*>(argp);
+      auto win_size = static_cast<winsize*>(argp);
       win_size->ws_col = 80;
       win_size->ws_row = 25;
       ret_val = 0;
@@ -486,7 +472,7 @@ int FSystemTest::open (const char* pathname, int flags, ...)
 {
   va_list args{};
   va_start (args, flags);
-  mode_t mode = static_cast<mode_t>(va_arg (args, int));
+  auto mode = static_cast<mode_t>(va_arg (args, int));
   va_end (args);
 
   std::cerr << "Call: open (pathname=\"" << pathname
@@ -508,7 +494,7 @@ FILE* FSystemTest::fopen (const char* path, const char* mode)
 {
   std::cerr << "Call: fopen (path=" << path
             << ", mode=" << mode << ")\n";
-  return 0;
+  return nullptr;
 }
 
 //----------------------------------------------------------------------
@@ -595,7 +581,7 @@ struct keymap_t& FSystemTest::getTerminalKeymap()
 class ftermfreebsdTest : public CPPUNIT_NS::TestFixture, test::ConEmu
 {
   public:
-    ftermfreebsdTest();
+    ftermfreebsdTest() = default;
 
   protected:
     void classNameTest();
@@ -615,10 +601,6 @@ class ftermfreebsdTest : public CPPUNIT_NS::TestFixture, test::ConEmu
     wchar_t charEncode (finalcut::UniChar);
     wchar_t charEncode (wchar_t);
 };
-
-//----------------------------------------------------------------------
-ftermfreebsdTest::ftermfreebsdTest()
-{ }
 
 //----------------------------------------------------------------------
 void ftermfreebsdTest::classNameTest()
@@ -666,7 +648,7 @@ void ftermfreebsdTest::freebsdConsoleTest()
   data.setMonochron (false);
   data.setTermResized (false);
   // setupterm is needed for tputs in ncurses >= 6.1
-  setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
+  setupterm (static_cast<char*>(nullptr), 1, static_cast<int*>(nullptr));
   auto& term_detection = finalcut::FTermDetection::getInstance();
   term_detection.setTerminalDetection(true);
   pid_t pid = forkConEmu();
@@ -828,7 +810,7 @@ void ftermfreebsdTest::freebsdConsoleTest()
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::freebsd_con);
 
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
+    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }

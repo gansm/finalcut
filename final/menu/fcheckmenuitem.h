@@ -66,7 +66,7 @@ class FCheckMenuItem : public FMenuItem
   public:
     // Constructors
     explicit FCheckMenuItem (FWidget* = nullptr);
-    explicit FCheckMenuItem (const FString&, FWidget* = nullptr);
+    explicit FCheckMenuItem (FString&&, FWidget* = nullptr);
 
     // Destructor
     ~FCheckMenuItem() noexcept override;

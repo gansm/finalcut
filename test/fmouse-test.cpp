@@ -85,8 +85,7 @@ class FMouse_protected : public finalcut::FMouse
 class FMouseTest : public CPPUNIT_NS::TestFixture
 {
   public:
-    FMouseTest()
-    { }
+    FMouseTest() = default;
 
   protected:
     void classNameTest();

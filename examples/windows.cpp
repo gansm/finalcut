@@ -233,7 +233,7 @@ class Window final : public finalcut::FDialog
     finalcut::FString         drop_down_symbol{finalcut::UniChar::BlackDownPointingTriangle};
     finalcut::FMenuBar        Menubar{this};
     finalcut::FMenu           File{"&File", &Menubar};
-    finalcut::FDialogListMenu DglList{drop_down_symbol, &Menubar};
+    finalcut::FDialogListMenu DglList{std::move(drop_down_symbol), &Menubar};
     finalcut::FStatusBar      Statusbar{this};
     finalcut::FMenuItem       New{"&New", &File};
     finalcut::FMenuItem       Close{"&Close", &File};

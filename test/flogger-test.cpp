@@ -101,8 +101,7 @@ class myLogger : public finalcut::FLog
 class FLoggerTest : public CPPUNIT_NS::TestFixture
 {
   public:
-    FLoggerTest()
-    { }
+    FLoggerTest() = default;
 
   protected:
     void classNameTest();

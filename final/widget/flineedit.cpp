@@ -793,7 +793,7 @@ inline FLineEdit::offsetPair FLineEdit::endPosToOffset (std::size_t pos)
     pos--;
   }
 
-  return offsetPair(pos, fullwidth_char_offset);
+  return {pos, fullwidth_char_offset};
 }
 
 //----------------------------------------------------------------------

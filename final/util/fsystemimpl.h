@@ -61,8 +61,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#include <cstdarg>
 #include <fcntl.h>
-#include <stdarg.h>
 #include <unistd.h>
 
 #include "final/fc.h"

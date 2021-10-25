@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020 Markus Gans                                           *
+* Copyright 2020-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -60,8 +60,7 @@ long int my_function3 (long int i)
 class FDataTest : public CPPUNIT_NS::TestFixture
 {
   public:
-    FDataTest()
-    { }
+    FDataTest() = default;
 
   protected:
     void classNameTest();

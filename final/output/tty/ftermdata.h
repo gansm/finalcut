@@ -115,7 +115,7 @@ inline bool FCharSubstitution::isEmpty() const
 inline void FCharSubstitution::sort()
 {
   std::sort ( sub_map.begin(), sub_map.end()
-            , [] (Map& lhs, Map& rhs)
+            , [] (const Map& lhs, const Map& rhs)
               {
                 return lhs.from < rhs.from;
               }

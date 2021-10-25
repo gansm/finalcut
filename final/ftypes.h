@@ -27,10 +27,9 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include <stdint.h>
 #include <sys/types.h>
-
 #include <cstddef>
+#include <cstdint>
 #include <cstring>
 
 #include <array>

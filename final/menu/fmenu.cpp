@@ -51,9 +51,9 @@ FMenu::FMenu(FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FMenu::FMenu (const FString& txt, FWidget* parent)
+FMenu::FMenu (FString&& txt, FWidget* parent)
   : FWindow{parent}
-  , menuitem{txt, parent}
+  , menuitem{std::move(txt), parent}
 {
   init();
 }

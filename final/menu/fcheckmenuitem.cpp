@@ -40,8 +40,8 @@ FCheckMenuItem::FCheckMenuItem (FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FCheckMenuItem::FCheckMenuItem (const FString& txt, FWidget* parent)
-  : FMenuItem{txt, parent}
+FCheckMenuItem::FCheckMenuItem (FString&& txt, FWidget* parent)
+  : FMenuItem{std::move(txt), parent}
 {
   init();
 }

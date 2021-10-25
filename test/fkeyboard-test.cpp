@@ -40,7 +40,7 @@ void check_c_string ( const char* s1
                     , const char* s2
                     , CppUnit::SourceLine sourceLine )
 {
-  if ( s1 == 0 && s2 == 0 )  // Strings are equal
+  if ( s1 == nullptr && s2 == nullptr )  // Strings are equal
     return;
 
   if ( s1 && s2 && std::strcmp (s1, s2) == 0 )  // Strings are equal
@@ -84,16 +84,16 @@ using test_type = std::array<FKeyCapMap, 188>;
 test_type fkey =
 {{
   { finalcut::FKey::Backspace       , "\177"     , 1, "kb" },  // backspace key
-  { finalcut::FKey::Clear_all_tabs  , 0          , 0, "ka" },  // clear-all-tabs key
-  { finalcut::FKey::Clear           , 0          , 0, "kC" },  // clear-screen or erase key
+  { finalcut::FKey::Clear_all_tabs  , nullptr    , 0, "ka" },  // clear-all-tabs key
+  { finalcut::FKey::Clear           , nullptr    , 0, "kC" },  // clear-screen or erase key
   { finalcut::FKey::Clear_tab       , CSI "3~"   , 4, "kt" },  // clear-tab key
-  { finalcut::FKey::Del_char        , 0          , 0, "kD" },  // delete-character key
-  { finalcut::FKey::Del_line        , 0          , 0, "kL" },  // delete-line key
+  { finalcut::FKey::Del_char        , nullptr    , 0, "kD" },  // delete-character key
+  { finalcut::FKey::Del_line        , nullptr    , 0, "kL" },  // delete-line key
   { finalcut::FKey::Down            , ESC "OB"   , 3, "kd" },  // down-arrow key
-  { finalcut::FKey::Exit_insert     , 0          , 0, "kM" },  // sent by rmir or smir in insert mode
-  { finalcut::FKey::Clear_eol       , 0          , 0, "kE" },  // clear-to-end-of-line key
-  { finalcut::FKey::Clear_eos       , 0          , 0, "kS" },  // clear-to-end-of-screen key
-  { finalcut::FKey::F0              , 0          , 0, "k0" },  // F0 function key
+  { finalcut::FKey::Exit_insert     , nullptr    , 0, "kM" },  // sent by rmir or smir in insert mode
+  { finalcut::FKey::Clear_eol       , nullptr    , 0, "kE" },  // clear-to-end-of-line key
+  { finalcut::FKey::Clear_eos       , nullptr    , 0, "kS" },  // clear-to-end-of-screen key
+  { finalcut::FKey::F0              , nullptr    , 0, "k0" },  // F0 function key
   { finalcut::FKey::F1              , ESC "OP"   , 3, "k1" },  // F1 function key
   { finalcut::FKey::F2              , ESC "OQ"   , 3, "k2" },  // F2 function key
   { finalcut::FKey::F3              , ESC "OR"   , 3, "k3" },  // F3 function key
@@ -106,79 +106,79 @@ test_type fkey =
   { finalcut::FKey::F10             , CSI "21~"  , 5, "k;" },  // F10 function key
   { finalcut::FKey::Home            , ESC "OH"   , 3, "kh" },  // home key
   { finalcut::FKey::Insert          , CSI "2~"   , 4, "kI" },  // insert-character key
-  { finalcut::FKey::Insert_line     , 0          , 0, "kA" },  // insert-line key
+  { finalcut::FKey::Insert_line     , nullptr    , 0, "kA" },  // insert-line key
   { finalcut::FKey::Left            , ESC "OD"   , 3, "kl" },  // left-arrow key
-  { finalcut::FKey::Home_down       , 0          , 0, "kH" },  // last-line key
+  { finalcut::FKey::Home_down       , nullptr    , 0, "kH" },  // last-line key
   { finalcut::FKey::Page_down       , CSI "6~"   , 4, "kN" },  // next-page key
   { finalcut::FKey::Page_up         , CSI "5~"   , 4, "kP" },  // prev-page key
   { finalcut::FKey::Right           , ESC "OC"   , 3, "kr" },  // right-arrow key
   { finalcut::FKey::Scroll_forward  , CSI "1;2B" , 6, "kF" },  // scroll-forward key (shift-up)
   { finalcut::FKey::Scroll_backward , CSI "1;2A" , 6, "kR" },  // scroll-backward key (shift-down)
-  { finalcut::FKey::Set_tab         , 0          , 0, "kT" },  // set-tab key
+  { finalcut::FKey::Set_tab         , nullptr    , 0, "kT" },  // set-tab key
   { finalcut::FKey::Up              , ESC "OA"   , 3, "ku" },  // up-arrow key
-  { finalcut::FKey::Upper_left      , 0          , 0, "K1" },  // upper left of keypad
-  { finalcut::FKey::Upper_right     , 0          , 0, "K3" },  // upper right of keypad
+  { finalcut::FKey::Upper_left      , nullptr    , 0, "K1" },  // upper left of keypad
+  { finalcut::FKey::Upper_right     , nullptr    , 0, "K3" },  // upper right of keypad
   { finalcut::FKey::Center          , CSI "E"    , 3, "K2" },  // center of keypad
-  { finalcut::FKey::Lower_left      , 0          , 0, "K4" },  // lower left of keypad
-  { finalcut::FKey::Lower_right     , 0          , 0, "K5" },  // lower right of keypad
+  { finalcut::FKey::Lower_left      , nullptr    , 0, "K4" },  // lower left of keypad
+  { finalcut::FKey::Lower_right     , nullptr    , 0, "K5" },  // lower right of keypad
   { finalcut::FKey::Back_tab        , CSI "Z"    , 3, "kB" },  // back-tab key
-  { finalcut::FKey::Begin           , 0          , 0, "@1" },  // begin key
-  { finalcut::FKey::Cancel          , 0          , 0, "@2" },  // cancel key
-  { finalcut::FKey::Close           , 0          , 0, "@3" },  // close key
-  { finalcut::FKey::Command         , 0          , 0, "@4" },  // command key
-  { finalcut::FKey::Copy            , 0          , 0, "@5" },  // copy key
-  { finalcut::FKey::Create          , 0          , 0, "@6" },  // create key
+  { finalcut::FKey::Begin           , nullptr    , 0, "@1" },  // begin key
+  { finalcut::FKey::Cancel          , nullptr    , 0, "@2" },  // cancel key
+  { finalcut::FKey::Close           , nullptr    , 0, "@3" },  // close key
+  { finalcut::FKey::Command         , nullptr    , 0, "@4" },  // command key
+  { finalcut::FKey::Copy            , nullptr    , 0, "@5" },  // copy key
+  { finalcut::FKey::Create          , nullptr    , 0, "@6" },  // create key
   { finalcut::FKey::End             , ESC "OF"   , 3, "@7" },  // end key
-  { finalcut::FKey::Enter           , 0          , 0, "@8" },  // enter/send key
-  { finalcut::FKey::Exit            , 0          , 0, "@9" },  // exit key
+  { finalcut::FKey::Enter           , nullptr    , 0, "@8" },  // enter/send key
+  { finalcut::FKey::Exit            , nullptr    , 0, "@9" },  // exit key
   { finalcut::FKey::Find            , CSI "1~"   , 4, "@0" },  // find key
-  { finalcut::FKey::Help            , 0          , 0, "%1" },  // help key
-  { finalcut::FKey::Mark            , 0          , 0, "%2" },  // mark key
-  { finalcut::FKey::Message         , 0          , 0, "%3" },  // message key
-  { finalcut::FKey::Move            , 0          , 0, "%4" },  // move key
-  { finalcut::FKey::Next            , 0          , 0, "%5" },  // next key
-  { finalcut::FKey::Open            , 0          , 0, "%6" },  // open key
-  { finalcut::FKey::Options         , 0          , 0, "%7" },  // options key
-  { finalcut::FKey::Previous        , 0          , 0, "%8" },  // previous key
-  { finalcut::FKey::Print           , 0          , 0, "%9" },  // print key
-  { finalcut::FKey::Redo            , 0          , 0, "%0" },  // redo key
-  { finalcut::FKey::Reference       , 0          , 0, "&1" },  // reference key
-  { finalcut::FKey::Refresh         , 0          , 0, "&2" },  // refresh key
-  { finalcut::FKey::Replace         , 0          , 0, "&3" },  // replace key
-  { finalcut::FKey::Restart         , 0          , 0, "&4" },  // restart key
-  { finalcut::FKey::Resume          , 0          , 0, "&5" },  // resume key
-  { finalcut::FKey::Save            , 0          , 0, "&6" },  // save key
-  { finalcut::FKey::Suspend         , 0          , 0, "&7" },  // suspend key
-  { finalcut::FKey::Undo            , 0          , 0, "&8" },  // undo key
-  { finalcut::FKey::Shift_begin     , 0          , 0, "&9" },  // shifted begin key
-  { finalcut::FKey::Shift_cancel    , 0          , 0, "&0" },  // shifted cancel key
-  { finalcut::FKey::Shift_command   , 0          , 0, "*1" },  // shifted command key
-  { finalcut::FKey::Shift_copy      , 0          , 0, "*2" },  // shifted copy key
-  { finalcut::FKey::Shift_create    , 0          , 0, "*3" },  // shifted create key
+  { finalcut::FKey::Help            , nullptr    , 0, "%1" },  // help key
+  { finalcut::FKey::Mark            , nullptr    , 0, "%2" },  // mark key
+  { finalcut::FKey::Message         , nullptr    , 0, "%3" },  // message key
+  { finalcut::FKey::Move            , nullptr    , 0, "%4" },  // move key
+  { finalcut::FKey::Next            , nullptr    , 0, "%5" },  // next key
+  { finalcut::FKey::Open            , nullptr    , 0, "%6" },  // open key
+  { finalcut::FKey::Options         , nullptr    , 0, "%7" },  // options key
+  { finalcut::FKey::Previous        , nullptr    , 0, "%8" },  // previous key
+  { finalcut::FKey::Print           , nullptr    , 0, "%9" },  // print key
+  { finalcut::FKey::Redo            , nullptr    , 0, "%0" },  // redo key
+  { finalcut::FKey::Reference       , nullptr    , 0, "&1" },  // reference key
+  { finalcut::FKey::Refresh         , nullptr    , 0, "&2" },  // refresh key
+  { finalcut::FKey::Replace         , nullptr    , 0, "&3" },  // replace key
+  { finalcut::FKey::Restart         , nullptr    , 0, "&4" },  // restart key
+  { finalcut::FKey::Resume          , nullptr    , 0, "&5" },  // resume key
+  { finalcut::FKey::Save            , nullptr    , 0, "&6" },  // save key
+  { finalcut::FKey::Suspend         , nullptr    , 0, "&7" },  // suspend key
+  { finalcut::FKey::Undo            , nullptr    , 0, "&8" },  // undo key
+  { finalcut::FKey::Shift_begin     , nullptr    , 0, "&9" },  // shifted begin key
+  { finalcut::FKey::Shift_cancel    , nullptr    , 0, "&0" },  // shifted cancel key
+  { finalcut::FKey::Shift_command   , nullptr    , 0, "*1" },  // shifted command key
+  { finalcut::FKey::Shift_copy      , nullptr    , 0, "*2" },  // shifted copy key
+  { finalcut::FKey::Shift_create    , nullptr    , 0, "*3" },  // shifted create key
   { finalcut::FKey::Shift_del_char  , CSI "3;2~" , 6, "*4" },  // shifted delete-character key
-  { finalcut::FKey::Shift_dl        , 0          , 0, "*5" },  // shifted delete-line key
+  { finalcut::FKey::Shift_dl        , nullptr    , 0, "*5" },  // shifted delete-line key
   { finalcut::FKey::Select          , CSI "4~"   , 4, "*6" },  // select key
   { finalcut::FKey::Shift_end       , CSI "1;2F" , 6, "*7" },  // shifted end key
-  { finalcut::FKey::Shift_clear_eol , 0          , 0, "*8" },  // shifted clear-to-end-of-line key
-  { finalcut::FKey::Shift_exit      , 0          , 0, "*9" },  // shifted exit key
-  { finalcut::FKey::Shift_find      , 0          , 0, "*0" },  // shifted find key
-  { finalcut::FKey::Shift_help      , 0          , 0, "#1" },  // shifted help key
+  { finalcut::FKey::Shift_clear_eol , nullptr    , 0, "*8" },  // shifted clear-to-end-of-line key
+  { finalcut::FKey::Shift_exit      , nullptr    , 0, "*9" },  // shifted exit key
+  { finalcut::FKey::Shift_find      , nullptr    , 0, "*0" },  // shifted find key
+  { finalcut::FKey::Shift_help      , nullptr    , 0, "#1" },  // shifted help key
   { finalcut::FKey::Shift_home      , CSI "1;2H" , 6, "#2" },  // shifted home key
   { finalcut::FKey::Shift_insert    , CSI "2;2~" , 6, "#3" },  // shifted insert-character key
   { finalcut::FKey::Shift_left      , CSI "1;2D" , 6, "#4" },  // shifted left-arrow key
-  { finalcut::FKey::Shift_message   , 0          , 0, "%a" },  // shifted message key
-  { finalcut::FKey::Shift_move      , 0          , 0, "%b" },  // shifted move key
+  { finalcut::FKey::Shift_message   , nullptr    , 0, "%a" },  // shifted message key
+  { finalcut::FKey::Shift_move      , nullptr    , 0, "%b" },  // shifted move key
   { finalcut::FKey::Shift_page_down , CSI "6;2~" , 6, "%c" },  // shifted next key
-  { finalcut::FKey::Shift_options   , 0          , 0, "%d" },  // shifted options key
+  { finalcut::FKey::Shift_options   , nullptr    , 0, "%d" },  // shifted options key
   { finalcut::FKey::Shift_page_up   , CSI "5;2~" , 6, "%e" },  // shifted previous key
-  { finalcut::FKey::Shift_print     , 0          , 0, "%f" },  // shifted print key
-  { finalcut::FKey::Shift_redo      , 0          , 0, "%g" },  // shifted redo key
-  { finalcut::FKey::Shift_replace   , 0          , 0, "%h" },  // shifted replace key
+  { finalcut::FKey::Shift_print     , nullptr    , 0, "%f" },  // shifted print key
+  { finalcut::FKey::Shift_redo      , nullptr    , 0, "%g" },  // shifted redo key
+  { finalcut::FKey::Shift_replace   , nullptr    , 0, "%h" },  // shifted replace key
   { finalcut::FKey::Shift_right     , CSI "1;2C" , 6, "%i" },  // shifted right-arrow key
-  { finalcut::FKey::Shift_rsume     , 0          , 0, "%j" },  // shifted resume key
-  { finalcut::FKey::Shift_save      , 0          , 0, "!1" },  // shifted save key
-  { finalcut::FKey::Shift_suspend   , 0          , 0, "!2" },  // shifted suspend key
-  { finalcut::FKey::Shift_undo      , 0          , 0, "!3" },  // shifted undo key
+  { finalcut::FKey::Shift_rsume     , nullptr    , 0, "%j" },  // shifted resume key
+  { finalcut::FKey::Shift_save      , nullptr    , 0, "!1" },  // shifted save key
+  { finalcut::FKey::Shift_suspend   , nullptr    , 0, "!2" },  // shifted suspend key
+  { finalcut::FKey::Shift_undo      , nullptr    , 0, "!3" },  // shifted undo key
   { finalcut::FKey::F11             , CSI "23~"  , 5, "F1" },  // F11 function key
   { finalcut::FKey::F12             , CSI "24~"  , 5, "F2" },  // F12 function key
   { finalcut::FKey::F13             , ESC "O1;2P", 6, "F3" },  // F13 function key
@@ -233,48 +233,48 @@ test_type fkey =
   { finalcut::FKey::F62             , ESC "O1;4Q", 6, "Fq" },  // F62 function key
   { finalcut::FKey::F63             , ESC "O1;4R", 6, "Fr" },  // F63 function key
   // vt100 key codes for arrow and function keys (array pos[150])
-  { finalcut::FKey::F1              , 0          , 0, "k1x"},  // PF1 (application mode)
-  { finalcut::FKey::F2              , 0          , 0, "k2x"},  // PF2 (application mode)
-  { finalcut::FKey::F3              , 0          , 0, "k3x"},  // PF3 (application mode)
-  { finalcut::FKey::F4              , 0          , 0, "k4x"},  // PF4 (application mode)
-  { finalcut::FKey::Left            , 0          , 0, "klx"},  // left-arrow key (standard mode)
-  { finalcut::FKey::Left            , 0          , 0, "klX"},  // left-arrow key (application mode)
-  { finalcut::FKey::Right           , 0          , 0, "krx"},  // right-arrow key (standard mode)
-  { finalcut::FKey::Right           , 0          , 0, "krX"},  // right-arrow key (application mode)
-  { finalcut::FKey::Up              , 0          , 0, "kux"},  // up-arrow key (standard mode)
-  { finalcut::FKey::Up              , 0          , 0, "kuX"},  // up-arrow key (application mode)
-  { finalcut::FKey::Down            , 0          , 0, "kdx"},  // down-arrow key (standard mode)
-  { finalcut::FKey::Down            , 0          , 0, "kdX"},  // down-arrow key (application mode)
-  { finalcut::FKey::Scroll_forward  , 0          , 0, "kFx"},  // scroll-forward key (shift-up)
-  { finalcut::FKey::Scroll_backward , 0          , 0, "kRx"},  // scroll-backward key (shift-down)
+  { finalcut::FKey::F1              , nullptr    , 0, "k1x"},  // PF1 (application mode)
+  { finalcut::FKey::F2              , nullptr    , 0, "k2x"},  // PF2 (application mode)
+  { finalcut::FKey::F3              , nullptr    , 0, "k3x"},  // PF3 (application mode)
+  { finalcut::FKey::F4              , nullptr    , 0, "k4x"},  // PF4 (application mode)
+  { finalcut::FKey::Left            , nullptr    , 0, "klx"},  // left-arrow key (standard mode)
+  { finalcut::FKey::Left            , nullptr    , 0, "klX"},  // left-arrow key (application mode)
+  { finalcut::FKey::Right           , nullptr    , 0, "krx"},  // right-arrow key (standard mode)
+  { finalcut::FKey::Right           , nullptr    , 0, "krX"},  // right-arrow key (application mode)
+  { finalcut::FKey::Up              , nullptr    , 0, "kux"},  // up-arrow key (standard mode)
+  { finalcut::FKey::Up              , nullptr    , 0, "kuX"},  // up-arrow key (application mode)
+  { finalcut::FKey::Down            , nullptr    , 0, "kdx"},  // down-arrow key (standard mode)
+  { finalcut::FKey::Down            , nullptr    , 0, "kdX"},  // down-arrow key (application mode)
+  { finalcut::FKey::Scroll_forward  , nullptr    , 0, "kFx"},  // scroll-forward key (shift-up)
+  { finalcut::FKey::Scroll_backward , nullptr    , 0, "kRx"},  // scroll-backward key (shift-down)
   // Fallback for rxvt with TERM=xterm
-  { finalcut::FKey::Home            , 0          , 0, "khx"},  // home key
-  { finalcut::FKey::End             , 0          , 0, "@7x"},  // end key
-  { finalcut::FKey::F1              , 0          , 0, "k1X"},  // F1 function key
-  { finalcut::FKey::F2              , 0          , 0, "k2X"},  // F2 function key
-  { finalcut::FKey::F3              , 0          , 0, "k3X"},  // F3 function key
-  { finalcut::FKey::F4              , 0          , 0, "k4X"},  // F4 function key
+  { finalcut::FKey::Home            , nullptr    , 0, "khx"},  // home key
+  { finalcut::FKey::End             , nullptr    , 0, "@7x"},  // end key
+  { finalcut::FKey::F1              , nullptr    , 0, "k1X"},  // F1 function key
+  { finalcut::FKey::F2              , nullptr    , 0, "k2X"},  // F2 function key
+  { finalcut::FKey::F3              , nullptr    , 0, "k3X"},  // F3 function key
+  { finalcut::FKey::F4              , nullptr    , 0, "k4X"},  // F4 function key
   // Fallback for TERM=ansi
-  { finalcut::FKey::Home            , 0          , 0, "khX"},  // home key
-  { finalcut::FKey::End             , 0          , 0, "@7X"},  // end key
-  { finalcut::FKey::End             , 0          , 0, "@7y"},  // end key (Microsoft HyperTerminal)
+  { finalcut::FKey::Home            , nullptr    , 0, "khX"},  // home key
+  { finalcut::FKey::End             , nullptr    , 0, "@7X"},  // end key
+  { finalcut::FKey::End             , nullptr    , 0, "@7y"},  // end key (Microsoft HyperTerminal)
   // Keypad keys
-  { finalcut::FKey::Enter           , 0          , 0, "@8x"},  // enter key
-  { finalcut::FKey::Slash           , 0          , 0, "KP1"},  // keypad slash
-  { finalcut::FKey::Asterisk        , 0          , 0, "KP2"},  // keypad asterisk
-  { finalcut::FKey::Minus_sign      , 0          , 0, "KP3"},  // keypad minus sign
-  { finalcut::FKey::Plus_sign       , 0          , 0, "KP4"},  // keypad plus sign
-  { finalcut::FKey::Insert          , 0          , 0, "kIx"},  // keypad insert
-  { finalcut::FKey::Del_char        , 0          , 0, "kDx"},  // keypad delete
-  { finalcut::FKey::Left            , 0          , 0, "kly"},  // keypad left-arrow
-  { finalcut::FKey::Right           , 0          , 0, "kry"},  // keypad right-arrow
-  { finalcut::FKey::Up              , 0          , 0, "kuy"},  // keypad up-arrow
-  { finalcut::FKey::Down            , 0          , 0, "kdy"},  // keypad down-arrow
-  { finalcut::FKey::Upper_left      , 0          , 0, "K1x"},  // keypad upper left
-  { finalcut::FKey::Upper_right     , 0          , 0, "K3x"},  // keypad upper right
-  { finalcut::FKey::Center          , 0          , 0, "K2x"},  // keypad center
-  { finalcut::FKey::Lower_left      , 0          , 0, "K4x"},  // keypad lower left
-  { finalcut::FKey::Lower_right     , 0          , 0, "K5x"}   // keypad lower right
+  { finalcut::FKey::Enter           , nullptr    , 0, "@8x"},  // enter key
+  { finalcut::FKey::Slash           , nullptr    , 0, "KP1"},  // keypad slash
+  { finalcut::FKey::Asterisk        , nullptr    , 0, "KP2"},  // keypad asterisk
+  { finalcut::FKey::Minus_sign      , nullptr    , 0, "KP3"},  // keypad minus sign
+  { finalcut::FKey::Plus_sign       , nullptr    , 0, "KP4"},  // keypad plus sign
+  { finalcut::FKey::Insert          , nullptr    , 0, "kIx"},  // keypad insert
+  { finalcut::FKey::Del_char        , nullptr    , 0, "kDx"},  // keypad delete
+  { finalcut::FKey::Left            , nullptr    , 0, "kly"},  // keypad left-arrow
+  { finalcut::FKey::Right           , nullptr    , 0, "kry"},  // keypad right-arrow
+  { finalcut::FKey::Up              , nullptr    , 0, "kuy"},  // keypad up-arrow
+  { finalcut::FKey::Down            , nullptr    , 0, "kdy"},  // keypad down-arrow
+  { finalcut::FKey::Upper_left      , nullptr    , 0, "K1x"},  // keypad upper left
+  { finalcut::FKey::Upper_right     , nullptr    , 0, "K3x"},  // keypad upper right
+  { finalcut::FKey::Center          , nullptr    , 0, "K2x"},  // keypad center
+  { finalcut::FKey::Lower_left      , nullptr    , 0, "K4x"},  // keypad lower left
+  { finalcut::FKey::Lower_right     , nullptr    , 0, "K5x"}   // keypad lower right
 }};
 
 }  // namespace test
@@ -288,7 +288,7 @@ class FKeyboardTest : public CPPUNIT_NS::TestFixture
 {
   public:
     FKeyboardTest();
-    ~FKeyboardTest();
+    ~FKeyboardTest() override;
 
   protected:
     void classNameTest();
@@ -462,7 +462,7 @@ void FKeyboardTest::escapeKeyTest()
   processInput();
   // Wait 100 ms (= 100,000,000 ns)
   const struct timespec ms[]{{0, 100000000L}};
-  nanosleep (ms, NULL);
+  nanosleep (ms, nullptr);
   keyboard->escapeKeyHandling();
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
   CPPUNIT_ASSERT ( key_pressed == finalcut::FKey::Escape );
@@ -2193,7 +2193,7 @@ void FKeyboardTest::metaKeyTest()
   processInput();
   // Wait 100 ms - Substring keys needs a timeout
   const struct timespec ms[]{{0, 100000000L}};
-  nanosleep (ms, NULL);
+  nanosleep (ms, nullptr);
   keyboard->escapeKeyHandling();
   keyboard->processQueuedInput();
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
@@ -2281,7 +2281,7 @@ void FKeyboardTest::metaKeyTest()
   input("\033[");
   processInput();
   // Wait 100 ms - Substring keys needs a timeout
-  nanosleep (ms, NULL);
+  nanosleep (ms, nullptr);
   keyboard->escapeKeyHandling();
   keyboard->processQueuedInput();
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
@@ -2299,7 +2299,7 @@ void FKeyboardTest::metaKeyTest()
   input("\033]");
   processInput();
   // Wait 100 ms - Substring keys needs a timeout
-  nanosleep (ms, NULL);
+  nanosleep (ms, nullptr);
   keyboard->escapeKeyHandling();
   keyboard->processQueuedInput();
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
@@ -3067,7 +3067,7 @@ void FKeyboardTest::processInput()
   keyboard->processQueuedInput();
   // Keyboard interval timeout 75 ms (= 75,000,000 ns)
   const struct timespec ms[]{{0, 75000000L}};
-  nanosleep (ms, NULL);
+  nanosleep (ms, nullptr);
 }
 
 //----------------------------------------------------------------------

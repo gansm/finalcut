@@ -72,7 +72,7 @@ class FDialogListMenu : public FMenu
   public:
     // Constructors
     explicit FDialogListMenu (FWidget* = nullptr);
-    explicit FDialogListMenu (const FString&, FWidget* = nullptr);
+    explicit FDialogListMenu (FString&&, FWidget* = nullptr);
 
     // Destructor
     ~FDialogListMenu() noexcept override;

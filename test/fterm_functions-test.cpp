@@ -19,8 +19,7 @@
 * License along with this program.  If not, see                        *
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
-#include <wchar.h>
-
+#include <cwchar>
 #include <limits>
 #include <memory>
 
@@ -3021,7 +3020,7 @@ void FTermFunctionsTest::readCursorPosTest()
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::xterm);
 
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
+    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }

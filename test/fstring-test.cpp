@@ -23,8 +23,7 @@
 #include <langinfo.h>
 #include <unistd.h>
 #define __STDC_LIMIT_MACROS
-#include <stdint.h>
-
+#include <cstdint>
 #include <clocale>
 #include <iomanip>
 #include <string>
@@ -52,7 +51,7 @@ void check_c_string ( const char* s1
                     , const char* s2
                     , CppUnit::SourceLine sourceLine )
 {
-  if ( s1 == 0 && s2 == 0 )  // Strings are equal
+  if ( s1 == nullptr && s2 == nullptr )  // Strings are equal
     return;
 
   if ( s1 && s2 && std::strcmp (s1, s2) == 0 )  // Strings are equal
@@ -66,7 +65,7 @@ void check_c_wstring ( const wchar_t* s1
                      , const wchar_t* s2
                      , CppUnit::SourceLine sourceLine )
 {
-  if ( s1 == 0 && s2 == 0 )  // Strings are equal
+  if ( s1 == nullptr && s2 == nullptr )  // Strings are equal
     return;
 
   if ( s1 && s2 && std::wcscmp (s1, s2) == 0 )  // Strings are equal
@@ -83,11 +82,10 @@ void check_c_wstring ( const wchar_t* s1
 class FStringTest : public CPPUNIT_NS::TestFixture
 {
   public:
-    FStringTest()
-    { }
+    FStringTest() = default;
 
-    void setUp();
-    void tearDown();
+    void setUp() override;
+    void tearDown() override;
 
   protected:
     void classNameTest();
@@ -125,7 +123,7 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     void caseCompareTest();
 
   private:
-    finalcut::FString* s{0};
+    finalcut::FString* s{nullptr};
 
     // Adds code needed to register the test suite
     CPPUNIT_TEST_SUITE (FStringTest);
@@ -220,11 +218,11 @@ void FStringTest::noArgumentTest()
   CPPUNIT_ASSERT ( fstr.isEmpty() );
   CPPUNIT_ASSERT ( fstr.capacity() < std::wstring().max_size() );
 
-  cstr = 0;
+  cstr = nullptr;
   CPPUNIT_ASSERT ( empty == cstr );
   CPPUNIT_ASSERT ( finalcut::FString(std::string()).isEmpty() );
   CPPUNIT_ASSERT ( finalcut::FString(char(0)).isEmpty() );
-  wcstr = 0;
+  wcstr = nullptr;
   CPPUNIT_ASSERT ( empty == wcstr );
   CPPUNIT_ASSERT ( finalcut::FString(std::wstring()).isEmpty() );
   CPPUNIT_ASSERT ( finalcut::FString(wchar_t(0)).isEmpty() );
@@ -363,11 +361,11 @@ void FStringTest::assignmentTest()
   CPPUNIT_ASSERT ( ! s1 );
   CPPUNIT_ASSERT ( s1.isEmpty() );
 
-  s1 = static_cast<wchar_t*>(0);
+  s1 = static_cast<wchar_t*>(nullptr);
   CPPUNIT_ASSERT ( ! s1 );
   CPPUNIT_ASSERT ( s1.isEmpty() );
 
-  s1 = static_cast<char*>(0);
+  s1 = static_cast<char*>(nullptr);
   CPPUNIT_ASSERT ( ! s1 );
   CPPUNIT_ASSERT ( s1.isEmpty() );
 
@@ -467,12 +465,12 @@ void FStringTest::assignmentTest()
   s1.setString(L"");
   CPPUNIT_ASSERT ( s1.isEmpty() );
 
-  constexpr wchar_t* wc = 0;
+  constexpr wchar_t* wc = nullptr;
   s1.setString(wc);
   CPPUNIT_ASSERT ( s1.isEmpty() );
   CPPUNIT_ASSERT ( ! s1 );
 
-  constexpr char* c = 0;
+  constexpr char* c = nullptr;
   s1.setString(c);
   CPPUNIT_ASSERT ( s1.isEmpty() );
   CPPUNIT_ASSERT ( ! s1 );
@@ -1252,11 +1250,11 @@ void FStringTest::formatTest()
   str2.sprintf (null_fstring, 0);
   CPPUNIT_ASSERT ( str2.isEmpty() );
 
-  constexpr wchar_t* null_wstring = 0;
+  constexpr wchar_t* null_wstring = nullptr;
   str2.sprintf (null_wstring, 0);
   CPPUNIT_ASSERT ( str2.isEmpty() );
 
-  constexpr char* null_string = 0;
+  constexpr char* null_string = nullptr;
   str2.sprintf (null_string, 0);
   CPPUNIT_ASSERT ( str2.isEmpty() );
 
@@ -2115,8 +2113,8 @@ void FStringTest::includesTest()
 {
   const finalcut::FString str = "Look behind you, a three-headed monkey!";
   const finalcut::FString empty1{};
-  constexpr wchar_t*      empty2    = 0;
-  constexpr char*         empty3    = 0;
+  constexpr wchar_t*      empty2    = nullptr;
+  constexpr char*         empty3    = nullptr;
   const finalcut::FString search1   = "you";
   const finalcut::FString search2   = "me";
   constexpr wchar_t       search3[] = L"you";
@@ -2134,13 +2132,13 @@ void FStringTest::includesTest()
   CPPUNIT_ASSERT ( ! str.includes(search2) );
   CPPUNIT_ASSERT ( ! empty1.includes(search1) );
 
-  CPPUNIT_ASSERT ( ! str.includes(static_cast<wchar_t*>(0)) );
+  CPPUNIT_ASSERT ( ! str.includes(static_cast<wchar_t*>(nullptr)) );
   CPPUNIT_ASSERT ( ! str.includes(empty2) );
   CPPUNIT_ASSERT ( str.includes(search3) );
   CPPUNIT_ASSERT ( ! str.includes(search4) );
   CPPUNIT_ASSERT ( ! empty1.includes(search3) );
 
-  CPPUNIT_ASSERT ( ! str.includes(static_cast<char*>(0)) );
+  CPPUNIT_ASSERT ( ! str.includes(static_cast<char*>(nullptr)) );
   CPPUNIT_ASSERT ( ! str.includes(empty3) );
   CPPUNIT_ASSERT ( str.includes(search5) );
   CPPUNIT_ASSERT ( ! str.includes(search6) );

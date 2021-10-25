@@ -42,9 +42,9 @@ FButton::FButton(FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FButton::FButton (const FString& txt, FWidget* parent)
+FButton::FButton (FString&& txt, FWidget* parent)
   : FWidget{parent}
-  , text{txt}
+  , text{std::move(txt)}
 {
   init();
 }

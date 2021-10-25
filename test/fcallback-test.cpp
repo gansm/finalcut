@@ -40,9 +40,9 @@ class Widget
 {
   public:
     template <typename... Args>
-    void addCallback (const finalcut::FString& cb_signal, Args&&... args)
+    void addCallback (finalcut::FString&& cb_signal, Args&&... args)
     {
-      cb.addCallback (cb_signal, std::forward<Args>(args)...);
+      cb.addCallback (std::move(cb_signal), std::forward<Args>(args)...);
     }
 
     template <typename... Args>
@@ -118,8 +118,7 @@ void cb_function_ref (int& value)
 class FCallbackTest : public CPPUNIT_NS::TestFixture
 {
   public:
-    FCallbackTest()
-    { }
+    FCallbackTest() = default;
 
   protected:
     void classNameTest();

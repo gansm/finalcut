@@ -57,11 +57,11 @@ struct FCallbackData
   FCallbackData() = default;
 
   template <typename FuncPtr>
-  FCallbackData (const FString& s, FWidget* i, FuncPtr m, const FCall& c)
-    : cb_signal(s)
+  FCallbackData (FString&& s, FWidget* i, FuncPtr m, FCall&& c)
+    : cb_signal(std::move(s))
     , cb_instance(i)
     , cb_function_ptr(m)
-    , cb_function(c)
+    , cb_function(std::move(c))
   { }
 
   FCallbackData (const FCallbackData&) = default;
@@ -154,7 +154,7 @@ class FCallback
             , typename ObjectPointer<Object>::type = nullptr
             , typename MemberFunctionPointer<Function>::type = nullptr
             , typename... Args>
-    void addCallback ( const FString& cb_signal
+    void addCallback ( FString&& cb_signal
                      , Object&&       cb_instance
                      , Function&&     cb_member
                      , Args&&...      args) noexcept;
@@ -163,32 +163,32 @@ class FCallback
              , typename ObjectPointer<Object>::type = nullptr
              , typename ClassObject<Function>::type = nullptr
              , typename... Args>
-    void addCallback ( const FString& cb_signal
+    void addCallback ( FString&& cb_signal
                      , Object&&       cb_instance
                      , Function&&     cb_function
                      , Args&&...      args) noexcept;
     template < typename Function
              , typename ClassObject<Function>::type = nullptr
              , typename... Args>
-    void addCallback ( const FString& cb_signal
+    void addCallback ( FString&& cb_signal
                      , Function&&     cb_function
                      , Args&&...      args) noexcept;
     template <typename Function
             , typename ClassObject<Function>::type = nullptr
             , typename... Args>
-    void addCallback ( const FString& cb_signal
+    void addCallback ( FString&& cb_signal
                      , Function&      cb_function
                      , Args&&...      args) noexcept;
     template <typename Function
             , typename FunctionReference<Function>::type = nullptr
             , typename... Args>
-    void addCallback ( const FString& cb_signal
+    void addCallback ( FString&& cb_signal
                      , Function&      cb_function
                      , Args&&...      args) noexcept;
     template <typename Function
             , typename FunctionPointer<Function>::type = nullptr
             , typename... Args>
-    void addCallback ( const FString& cb_signal
+    void addCallback ( FString&& cb_signal
                      , Function&&     cb_function
                      , Args&&...      args) noexcept;
     template <typename Object
@@ -231,10 +231,10 @@ template <typename Object
         , typename FCallback::ObjectPointer<Object>::type
         , typename FCallback::MemberFunctionPointer<Function>::type
         , typename... Args>
-inline void FCallback::addCallback ( const FString& cb_signal
-                                   , Object&&       cb_instance
-                                   , Function&&     cb_member
-                                   , Args&&...      args) noexcept
+inline void FCallback::addCallback ( FString&&  cb_signal
+                                   , Object&&   cb_instance
+                                   , Function&& cb_member
+                                   , Args&&...  args) noexcept
 {
   // Add a member function pointer as callback
 
@@ -242,7 +242,7 @@ inline void FCallback::addCallback ( const FString& cb_signal
   auto fn = std::bind ( std::forward<Function>(cb_member)
                       , std::forward<Object>(cb_instance)
                       , std::forward<Args>(args)... );
-  FCallbackData obj{ cb_signal, instance, nullptr, fn };
+  FCallbackData obj{ std::move(cb_signal), instance, nullptr, fn };
   callback_objects.push_back(obj);
 }
 
@@ -252,15 +252,15 @@ template <typename Object
          , typename FCallback::ObjectPointer<Object>::type
          , typename FCallback::ClassObject<Function>::type
          , typename... Args>
-inline void FCallback::addCallback ( const FString& cb_signal
-                                   , Object&&       cb_instance
-                                   , Function&&     cb_function
-                                   , Args&&...      args) noexcept
+inline void FCallback::addCallback ( FString&&  cb_signal
+                                   , Object&&   cb_instance
+                                   , Function&& cb_function
+                                   , Args&&...  args) noexcept
 {
   // Add a function object to an instance as callback
 
   auto fn = std::bind (std::forward<Function>(cb_function), std::forward<Args>(args)...);
-  FCallbackData obj{ cb_signal, cb_instance, nullptr, fn };
+  FCallbackData obj{ std::move(cb_signal), cb_instance, nullptr, fn };
   callback_objects.push_back(obj);
 }
 
@@ -268,15 +268,15 @@ inline void FCallback::addCallback ( const FString& cb_signal
 template <typename Function
         , typename FCallback::ClassObject<Function>::type
         , typename... Args>
-inline void FCallback::addCallback ( const FString& cb_signal
-                                   , Function&&     cb_function
-                                   , Args&&...      args) noexcept
+inline void FCallback::addCallback ( FString&&  cb_signal
+                                   , Function&& cb_function
+                                   , Args&&...  args) noexcept
 {
   // Add a function object as callback
 
   auto fn = std::bind ( std::forward<Function>(cb_function)
                       , std::forward<Args>(args)... );
-  FCallbackData obj{ cb_signal, nullptr, nullptr, fn };
+  FCallbackData obj{ std::move(cb_signal), nullptr, nullptr, fn };
   callback_objects.push_back(obj);
 }
 
@@ -284,14 +284,14 @@ inline void FCallback::addCallback ( const FString& cb_signal
 template <typename Function
         , typename FCallback::ClassObject<Function>::type
         , typename... Args>
-inline void FCallback::addCallback ( const FString& cb_signal
-                                   , Function&      cb_function
-                                   , Args&&...      args) noexcept
+inline void FCallback::addCallback ( FString&& cb_signal
+                                   , Function& cb_function
+                                   , Args&&... args) noexcept
 {
   // Add a function object reference as callback
 
   auto fn = std::bind (cb_function, std::forward<Args>(args)...);
-  FCallbackData obj{ cb_signal, nullptr, nullptr, fn };
+  FCallbackData obj{ std::move(cb_signal), nullptr, nullptr, fn };
   callback_objects.push_back(obj);
 }
 
@@ -299,15 +299,15 @@ inline void FCallback::addCallback ( const FString& cb_signal
 template <typename Function
         , typename FCallback::FunctionReference<Function>::type
         , typename... Args>
-inline void FCallback::addCallback ( const FString& cb_signal
-                                   , Function&      cb_function
-                                   , Args&&...      args) noexcept
+inline void FCallback::addCallback ( FString&& cb_signal
+                                   , Function& cb_function
+                                   , Args&&... args) noexcept
 {
   // Add a function reference as callback
 
   auto ptr = reinterpret_cast<void*>(&cb_function);
   auto fn = std::bind (cb_function, std::forward<Args>(args)...);
-  FCallbackData obj{ cb_signal, nullptr, ptr, fn };
+  FCallbackData obj{ std::move(cb_signal), nullptr, ptr, fn };
   callback_objects.push_back(obj);
 }
 
@@ -315,16 +315,16 @@ inline void FCallback::addCallback ( const FString& cb_signal
 template <typename Function
         , typename FCallback::FunctionPointer<Function>::type
         , typename... Args>
-inline void FCallback::addCallback ( const FString& cb_signal
-                                   , Function&&     cb_function
-                                   , Args&&...      args) noexcept
+inline void FCallback::addCallback ( FString&&  cb_signal
+                                   , Function&& cb_function
+                                   , Args&&...  args) noexcept
 {
   // Add a function pointer as callback
 
   auto ptr = reinterpret_cast<void*>(cb_function);
   auto fn = std::bind ( std::forward<Function>(cb_function)
                       , std::forward<Args>(args)... );
-  FCallbackData obj{ cb_signal, nullptr, ptr, fn };
+  FCallbackData obj{ std::move(cb_signal), nullptr, ptr, fn };
   callback_objects.push_back(obj);
 }
 

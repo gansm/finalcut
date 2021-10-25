@@ -58,8 +58,7 @@ void check_string ( const std::string& s1
 class FOptiAttrTest : public CPPUNIT_NS::TestFixture
 {
   public:
-    FOptiAttrTest()
-    { }
+    FOptiAttrTest() = default;
 
   protected:
     void classNameTest();
@@ -145,17 +144,17 @@ void FOptiAttrTest::sgrOptimizerTest()
   oa.set_exit_dim_mode (CSI "22m");
   oa.set_enter_italics_mode (CSI "3m");
   oa.set_exit_italics_mode (CSI "23m");
-  oa.set_enter_underline_mode  (0);
-  oa.set_exit_underline_mode  (0);
+  oa.set_enter_underline_mode  (nullptr);
+  oa.set_exit_underline_mode  (nullptr);
   oa.set_enter_blink_mode (CSI "5m");
   oa.set_exit_blink_mode (CSI "25m");
   oa.set_enter_reverse_mode (CSI "7m");
   oa.set_exit_reverse_mode (CSI "27m");
-  oa.set_enter_standout_mode  (0);
-  oa.set_exit_standout_mode  (0);
+  oa.set_enter_standout_mode  (nullptr);
+  oa.set_exit_standout_mode  (nullptr);
   oa.set_enter_secure_mode (CSI "8m");
   oa.set_exit_secure_mode (CSI "28m");
-  oa.set_enter_protected_mode (0);
+  oa.set_enter_protected_mode (nullptr);
   oa.set_exit_protected_mode (CSI "0m");
   oa.set_enter_crossed_out_mode (CSI "9m");
   oa.set_exit_crossed_out_mode (CSI "29m");
@@ -175,11 +174,11 @@ void FOptiAttrTest::sgrOptimizerTest()
   oa.set_exit_pc_charset_mode (CSI "10m");
   oa.set_a_foreground_color (CSI "3%p1%dm");
   oa.set_a_background_color (CSI "4%p1%dm");
-  oa.set_foreground_color (0);
-  oa.set_background_color (0);
-  oa.set_term_color_pair (0);
+  oa.set_foreground_color (nullptr);
+  oa.set_background_color (nullptr);
+  oa.set_term_color_pair (nullptr);
   oa.set_orig_pair (CSI "39;49m");
-  oa.set_orig_orig_colors (0);
+  oa.set_orig_orig_colors (nullptr);
   oa.initialize();
 
   finalcut::FChar from{};
@@ -354,41 +353,41 @@ void FOptiAttrTest::fakeReverseTest()
   oa.setDefaultColorSupport();  // ANSI default color
   oa.setMaxColor (8);
   oa.setNoColorVideo (4);       // Avoid reverse (4)
-  oa.set_enter_bold_mode (0);
-  oa.set_exit_bold_mode (0);
-  oa.set_enter_dim_mode (0);
-  oa.set_exit_dim_mode (0);
-  oa.set_enter_italics_mode (0);
-  oa.set_exit_italics_mode (0);
-  oa.set_enter_underline_mode (0);
-  oa.set_exit_underline_mode (0);
-  oa.set_enter_blink_mode (0);
-  oa.set_exit_blink_mode (0);
-  oa.set_enter_reverse_mode (0);
-  oa.set_exit_reverse_mode (0);
-  oa.set_enter_standout_mode (0);
-  oa.set_exit_standout_mode (0);
-  oa.set_enter_secure_mode (0);
-  oa.set_exit_secure_mode (0);
-  oa.set_enter_protected_mode (0);
-  oa.set_exit_protected_mode (0);
-  oa.set_enter_crossed_out_mode (0);
-  oa.set_exit_crossed_out_mode (0);
-  oa.set_enter_dbl_underline_mode (0);
-  oa.set_exit_dbl_underline_mode (0);
-  oa.set_set_attributes (0);
-  oa.set_exit_attribute_mode (0);
-  oa.set_enter_alt_charset_mode (0);
-  oa.set_exit_alt_charset_mode (0);
-  oa.set_enter_pc_charset_mode (0);
-  oa.set_exit_pc_charset_mode (0);
+  oa.set_enter_bold_mode (nullptr);
+  oa.set_exit_bold_mode (nullptr);
+  oa.set_enter_dim_mode (nullptr);
+  oa.set_exit_dim_mode (nullptr);
+  oa.set_enter_italics_mode (nullptr);
+  oa.set_exit_italics_mode (nullptr);
+  oa.set_enter_underline_mode (nullptr);
+  oa.set_exit_underline_mode (nullptr);
+  oa.set_enter_blink_mode (nullptr);
+  oa.set_exit_blink_mode (nullptr);
+  oa.set_enter_reverse_mode (nullptr);
+  oa.set_exit_reverse_mode (nullptr);
+  oa.set_enter_standout_mode (nullptr);
+  oa.set_exit_standout_mode (nullptr);
+  oa.set_enter_secure_mode (nullptr);
+  oa.set_exit_secure_mode (nullptr);
+  oa.set_enter_protected_mode (nullptr);
+  oa.set_exit_protected_mode (nullptr);
+  oa.set_enter_crossed_out_mode (nullptr);
+  oa.set_exit_crossed_out_mode (nullptr);
+  oa.set_enter_dbl_underline_mode (nullptr);
+  oa.set_exit_dbl_underline_mode (nullptr);
+  oa.set_set_attributes (nullptr);
+  oa.set_exit_attribute_mode (nullptr);
+  oa.set_enter_alt_charset_mode (nullptr);
+  oa.set_exit_alt_charset_mode (nullptr);
+  oa.set_enter_pc_charset_mode (nullptr);
+  oa.set_exit_pc_charset_mode (nullptr);
   oa.set_a_foreground_color (CSI "3%p1%dm");
   oa.set_a_background_color (CSI "4%p1%dm");
-  oa.set_foreground_color (0);
-  oa.set_background_color (0);
-  oa.set_term_color_pair (0);
-  oa.set_orig_pair (0);
-  oa.set_orig_orig_colors (0);
+  oa.set_foreground_color (nullptr);
+  oa.set_background_color (nullptr);
+  oa.set_term_color_pair (nullptr);
+  oa.set_orig_pair (nullptr);
+  oa.set_orig_orig_colors (nullptr);
   oa.initialize();
 
   finalcut::FChar from{};
@@ -442,10 +441,10 @@ void FOptiAttrTest::ansiTest()
   oa.setNoColorVideo (3);       // Avoid standout (1) + underline mode (2)
   oa.set_enter_bold_mode (CSI "1m");
   oa.set_exit_bold_mode (CSI "0m");
-  oa.set_enter_dim_mode (0);
+  oa.set_enter_dim_mode (nullptr);
   oa.set_exit_dim_mode (CSI "0m");
-  oa.set_enter_italics_mode (0);
-  oa.set_exit_italics_mode (0);
+  oa.set_enter_italics_mode (nullptr);
+  oa.set_exit_italics_mode (nullptr);
   oa.set_enter_underline_mode (CSI "4m");
   oa.set_exit_underline_mode (CSI "1m");
   oa.set_enter_blink_mode (CSI "5m");
@@ -456,12 +455,12 @@ void FOptiAttrTest::ansiTest()
   oa.set_exit_standout_mode (CSI "m");
   oa.set_enter_secure_mode (CSI "8m");
   oa.set_exit_secure_mode (CSI "0m");
-  oa.set_enter_protected_mode (0);
+  oa.set_enter_protected_mode (nullptr);
   oa.set_exit_protected_mode (CSI "0m");
-  oa.set_enter_crossed_out_mode (0);
+  oa.set_enter_crossed_out_mode (nullptr);
   oa.set_exit_crossed_out_mode (CSI "0m");
-  oa.set_enter_dbl_underline_mode (0);
-  oa.set_exit_dbl_underline_mode (0);
+  oa.set_enter_dbl_underline_mode (nullptr);
+  oa.set_exit_dbl_underline_mode (nullptr);
   oa.set_set_attributes (CSI "0;10"
                          "%?%p1%t;7%;"
                          "%?%p2%t;4%;"
@@ -477,11 +476,11 @@ void FOptiAttrTest::ansiTest()
   oa.set_exit_pc_charset_mode (CSI "10m");
   oa.set_a_foreground_color (CSI "3%p1%dm");
   oa.set_a_background_color (CSI "4%p1%dm");
-  oa.set_foreground_color (0);
-  oa.set_background_color (0);
-  oa.set_term_color_pair (0);
+  oa.set_foreground_color (nullptr);
+  oa.set_background_color (nullptr);
+  oa.set_term_color_pair (nullptr);
   oa.set_orig_pair (CSI "39;49m");
-  oa.set_orig_orig_colors (0);
+  oa.set_orig_orig_colors (nullptr);
   oa.initialize();
 
   finalcut::FChar from{};
@@ -907,10 +906,10 @@ void FOptiAttrTest::vt100Test()
   oa.setNoColorVideo (0);
   oa.set_enter_bold_mode (CSI "1m$<2>");
   oa.set_exit_bold_mode (CSI "0m$<2>");
-  oa.set_enter_dim_mode (0);
+  oa.set_enter_dim_mode (nullptr);
   oa.set_exit_dim_mode (CSI "0m$<2>");
-  oa.set_enter_italics_mode (0);
-  oa.set_exit_italics_mode (0);
+  oa.set_enter_italics_mode (nullptr);
+  oa.set_exit_italics_mode (nullptr);
   oa.set_enter_underline_mode (CSI "4m$<2>");
   oa.set_exit_underline_mode (CSI "m$<2>");
   oa.set_enter_blink_mode (CSI "5m$<2>");
@@ -919,14 +918,14 @@ void FOptiAttrTest::vt100Test()
   oa.set_exit_reverse_mode (CSI "0m$<2>");
   oa.set_enter_standout_mode (CSI "7m$<2>");
   oa.set_exit_standout_mode (CSI "m$<2>");
-  oa.set_enter_secure_mode (0);
+  oa.set_enter_secure_mode (nullptr);
   oa.set_exit_secure_mode (CSI "0m$<2>");
-  oa.set_enter_protected_mode (0);
+  oa.set_enter_protected_mode (nullptr);
   oa.set_exit_protected_mode (CSI "0m$<2>");
-  oa.set_enter_crossed_out_mode (0);
+  oa.set_enter_crossed_out_mode (nullptr);
   oa.set_exit_crossed_out_mode (CSI "0m$<2>");
-  oa.set_enter_dbl_underline_mode (0);
-  oa.set_exit_dbl_underline_mode (0);
+  oa.set_enter_dbl_underline_mode (nullptr);
+  oa.set_exit_dbl_underline_mode (nullptr);
   oa.set_set_attributes (CSI "0"
                          "%?%p1%p6%|%t;1%;"
                          "%?%p2%t;4%;"
@@ -936,15 +935,15 @@ void FOptiAttrTest::vt100Test()
   oa.set_exit_attribute_mode (CSI "0m$<2>");
   oa.set_enter_alt_charset_mode ("\016");
   oa.set_exit_alt_charset_mode ("\017");
-  oa.set_enter_pc_charset_mode (0);
-  oa.set_exit_pc_charset_mode (0);
+  oa.set_enter_pc_charset_mode (nullptr);
+  oa.set_exit_pc_charset_mode (nullptr);
   oa.set_a_foreground_color (CSI "3%p1%dm");
   oa.set_a_background_color (CSI "4%p1%dm");
-  oa.set_foreground_color (0);
-  oa.set_background_color (0);
-  oa.set_term_color_pair (0);
-  oa.set_orig_pair (0);
-  oa.set_orig_orig_colors (0);
+  oa.set_foreground_color (nullptr);
+  oa.set_background_color (nullptr);
+  oa.set_term_color_pair (nullptr);
+  oa.set_orig_pair (nullptr);
+  oa.set_orig_orig_colors (nullptr);
   oa.initialize();
 
   finalcut::FChar from{};
@@ -1379,7 +1378,7 @@ void FOptiAttrTest::xtermTest()
   oa.set_exit_standout_mode (CSI "27m");
   oa.set_enter_secure_mode (CSI "8m");
   oa.set_exit_secure_mode (CSI "28m");
-  oa.set_enter_protected_mode (0);
+  oa.set_enter_protected_mode (nullptr);
   oa.set_exit_protected_mode (CSI "0m");
   oa.set_enter_crossed_out_mode (CSI "9m");
   oa.set_exit_crossed_out_mode (CSI "29m");
@@ -1396,8 +1395,8 @@ void FOptiAttrTest::xtermTest()
   oa.set_exit_attribute_mode (CSI "0m");
   oa.set_enter_alt_charset_mode (ESC "(0");
   oa.set_exit_alt_charset_mode (ESC "(B");
-  oa.set_enter_pc_charset_mode (0);
-  oa.set_exit_pc_charset_mode (0);
+  oa.set_enter_pc_charset_mode (nullptr);
+  oa.set_exit_pc_charset_mode (nullptr);
   oa.set_a_foreground_color (CSI "%?%p1%{8}%<"
                                  "%t3%p1%d"
                                  "%e%p1%{16}%<"
@@ -1408,11 +1407,11 @@ void FOptiAttrTest::xtermTest()
                                  "%e%p1%{16}%<"
                                  "%t10%p1%{8}%-%d"
                                  "%e48;5;%p1%d%;m");
-  oa.set_foreground_color (0);
-  oa.set_background_color (0);
-  oa.set_term_color_pair (0);
+  oa.set_foreground_color (nullptr);
+  oa.set_background_color (nullptr);
+  oa.set_term_color_pair (nullptr);
   oa.set_orig_pair (CSI "39;49m");
-  oa.set_orig_orig_colors (0);
+  oa.set_orig_orig_colors (nullptr);
   oa.initialize();
 
   finalcut::FChar from{};
@@ -1844,10 +1843,10 @@ void FOptiAttrTest::rxvtTest()
   oa.setNoColorVideo (0);
   oa.set_enter_bold_mode (CSI "1m");
   oa.set_exit_bold_mode (CSI "22m");
-  oa.set_enter_dim_mode (0);
+  oa.set_enter_dim_mode (nullptr);
   oa.set_exit_dim_mode (CSI "22m");
-  oa.set_enter_italics_mode (0);
-  oa.set_exit_italics_mode (0);
+  oa.set_enter_italics_mode (nullptr);
+  oa.set_exit_italics_mode (nullptr);
   oa.set_enter_underline_mode (CSI "4m");
   oa.set_exit_underline_mode (CSI "24m");
   oa.set_enter_blink_mode (CSI "5m");
@@ -1856,9 +1855,9 @@ void FOptiAttrTest::rxvtTest()
   oa.set_exit_reverse_mode (CSI "27m");
   oa.set_enter_standout_mode (CSI "7m");
   oa.set_exit_standout_mode (CSI "27m");
-  oa.set_enter_secure_mode (0);
+  oa.set_enter_secure_mode (nullptr);
   oa.set_exit_secure_mode (CSI "28m");
-  oa.set_enter_protected_mode (0);
+  oa.set_enter_protected_mode (nullptr);
   oa.set_exit_protected_mode (CSI "0m");
   oa.set_enter_crossed_out_mode (CSI "9m");
   oa.set_exit_crossed_out_mode (CSI "29m");
@@ -1873,15 +1872,15 @@ void FOptiAttrTest::rxvtTest()
   oa.set_exit_attribute_mode (CSI "0m");
   oa.set_enter_alt_charset_mode ("\016");
   oa.set_exit_alt_charset_mode ("\017");
-  oa.set_enter_pc_charset_mode (0);
-  oa.set_exit_pc_charset_mode (0);
+  oa.set_enter_pc_charset_mode (nullptr);
+  oa.set_exit_pc_charset_mode (nullptr);
   oa.set_a_foreground_color (CSI "3%p1%dm");
   oa.set_a_background_color (CSI "4%p1%dm");
-  oa.set_foreground_color (0);
-  oa.set_background_color (0);
-  oa.set_term_color_pair (0);
+  oa.set_foreground_color (nullptr);
+  oa.set_background_color (nullptr);
+  oa.set_term_color_pair (nullptr);
   oa.set_orig_pair (CSI "39;49m");
-  oa.set_orig_orig_colors (0);
+  oa.set_orig_orig_colors (nullptr);
   oa.initialize();
 
   finalcut::FChar from{};
@@ -2313,26 +2312,26 @@ void FOptiAttrTest::linuxTest()
   oa.setNoColorVideo (18);
   oa.set_enter_bold_mode (CSI "1m");
   oa.set_exit_bold_mode (CSI "22m");
-  oa.set_enter_dim_mode (0);
-  oa.set_exit_dim_mode (0);
-  oa.set_enter_italics_mode (0);
-  oa.set_exit_italics_mode (0);
-  oa.set_enter_underline_mode (0);
-  oa.set_exit_underline_mode (0);
+  oa.set_enter_dim_mode (nullptr);
+  oa.set_exit_dim_mode (nullptr);
+  oa.set_enter_italics_mode (nullptr);
+  oa.set_exit_italics_mode (nullptr);
+  oa.set_enter_underline_mode (nullptr);
+  oa.set_exit_underline_mode (nullptr);
   oa.set_enter_blink_mode (CSI "5m");
   oa.set_exit_blink_mode (CSI "25m");
   oa.set_enter_reverse_mode (CSI "7m");
   oa.set_exit_reverse_mode (CSI "27m");
   oa.set_enter_standout_mode (CSI "7m");
   oa.set_exit_standout_mode (CSI "27m");
-  oa.set_enter_secure_mode (0);
-  oa.set_exit_secure_mode (0);
-  oa.set_enter_protected_mode (0);
-  oa.set_exit_protected_mode (0);
-  oa.set_enter_crossed_out_mode (0);
-  oa.set_exit_crossed_out_mode (0);
-  oa.set_enter_dbl_underline_mode (0);
-  oa.set_exit_dbl_underline_mode (0);
+  oa.set_enter_secure_mode (nullptr);
+  oa.set_exit_secure_mode (nullptr);
+  oa.set_enter_protected_mode (nullptr);
+  oa.set_exit_protected_mode (nullptr);
+  oa.set_enter_crossed_out_mode (nullptr);
+  oa.set_exit_crossed_out_mode (nullptr);
+  oa.set_enter_dbl_underline_mode (nullptr);
+  oa.set_exit_dbl_underline_mode (nullptr);
   oa.set_set_attributes (CSI "0"
                          "%?%p6%|%t;1%;"
                          "%?%p1%p3%|%t;7%;"
@@ -2347,9 +2346,9 @@ void FOptiAttrTest::linuxTest()
                              "%?%p1%{7}%>%t;1%e;22%;m");
   oa.set_a_background_color (CSI "4%p1%{8}%m%d"
                              "%?%p1%{7}%>%t;5%e;25%;m");
-  oa.set_foreground_color (0);
-  oa.set_background_color (0);
-  oa.set_term_color_pair (0);
+  oa.set_foreground_color (nullptr);
+  oa.set_background_color (nullptr);
+  oa.set_term_color_pair (nullptr);
   oa.set_orig_pair (CSI "39;49;25m");
   oa.set_orig_orig_colors (OSC "R");
   oa.initialize();
@@ -2787,8 +2786,8 @@ void FOptiAttrTest::puttyTest()
   oa.set_exit_bold_mode (CSI "22m");
   oa.set_enter_dim_mode (CSI "2m");
   oa.set_exit_dim_mode (CSI "22m");
-  oa.set_enter_italics_mode (0);
-  oa.set_exit_italics_mode (0);
+  oa.set_enter_italics_mode (nullptr);
+  oa.set_exit_italics_mode (nullptr);
   oa.set_enter_underline_mode (CSI "4m");
   oa.set_exit_underline_mode (CSI "24m");
   oa.set_enter_blink_mode (CSI "5m");
@@ -2797,9 +2796,9 @@ void FOptiAttrTest::puttyTest()
   oa.set_exit_reverse_mode (CSI "27m");
   oa.set_enter_standout_mode (CSI "7m");
   oa.set_exit_standout_mode (CSI "27m");
-  oa.set_enter_secure_mode (0);
+  oa.set_enter_secure_mode (nullptr);
   oa.set_exit_secure_mode (CSI "28m");
-  oa.set_enter_protected_mode (0);
+  oa.set_enter_protected_mode (nullptr);
   oa.set_exit_protected_mode (CSI "0m");
   oa.set_enter_crossed_out_mode (CSI "9m");
   oa.set_exit_crossed_out_mode (CSI "29m");
@@ -2827,9 +2826,9 @@ void FOptiAttrTest::puttyTest()
                                  "%e%p1%{16}%<"
                                  "%t10%p1%{8}%-%d"
                                  "%e48;5;%p1%d%;m");
-  oa.set_foreground_color (0);
-  oa.set_background_color (0);
-  oa.set_term_color_pair (0);
+  oa.set_foreground_color (nullptr);
+  oa.set_background_color (nullptr);
+  oa.set_term_color_pair (nullptr);
   oa.set_orig_pair (CSI "39;49m");
   oa.set_orig_orig_colors (OSC "R");
   oa.initialize();
@@ -3264,10 +3263,10 @@ void FOptiAttrTest::teratermTest()
   oa.setNoColorVideo (41);  // Avoid standout (1) + blink (8) + bold (32)
   oa.set_enter_bold_mode (CSI "1m");
   oa.set_exit_bold_mode (CSI "22m");
-  oa.set_enter_dim_mode (0);
+  oa.set_enter_dim_mode (nullptr);
   oa.set_exit_dim_mode (CSI "22m");
-  oa.set_enter_italics_mode (0);
-  oa.set_exit_italics_mode (0);
+  oa.set_enter_italics_mode (nullptr);
+  oa.set_exit_italics_mode (nullptr);
   oa.set_enter_underline_mode (CSI "4m");
   oa.set_exit_underline_mode (CSI "24m");
   oa.set_enter_blink_mode (CSI "5m");
@@ -3276,9 +3275,9 @@ void FOptiAttrTest::teratermTest()
   oa.set_exit_reverse_mode (CSI "27m");
   oa.set_enter_standout_mode (CSI "7m");
   oa.set_exit_standout_mode (CSI "27m");
-  oa.set_enter_secure_mode (0);
+  oa.set_enter_secure_mode (nullptr);
   oa.set_exit_secure_mode (CSI "28m");
-  oa.set_enter_protected_mode (0);
+  oa.set_enter_protected_mode (nullptr);
   oa.set_exit_protected_mode (CSI "0m$<2>");
   oa.set_enter_crossed_out_mode (CSI "9m");
   oa.set_exit_crossed_out_mode (CSI "29m");
@@ -3293,15 +3292,15 @@ void FOptiAttrTest::teratermTest()
   oa.set_exit_attribute_mode (CSI "0m$<2>");
   oa.set_enter_alt_charset_mode ("\016");
   oa.set_exit_alt_charset_mode ("\017");
-  oa.set_enter_pc_charset_mode (0);
-  oa.set_exit_pc_charset_mode (0);
+  oa.set_enter_pc_charset_mode (nullptr);
+  oa.set_exit_pc_charset_mode (nullptr);
   oa.set_a_foreground_color (CSI "38;5;%p1%dm");
   oa.set_a_background_color (CSI "48;5;%p1%dm");
-  oa.set_foreground_color (0);
-  oa.set_background_color (0);
-  oa.set_term_color_pair (0);
+  oa.set_foreground_color (nullptr);
+  oa.set_background_color (nullptr);
+  oa.set_term_color_pair (nullptr);
   oa.set_orig_pair (CSI "39;49m");
-  oa.set_orig_orig_colors (0);
+  oa.set_orig_orig_colors (nullptr);
   oa.initialize();
 
 
@@ -3724,36 +3723,36 @@ void FOptiAttrTest::ibmColorTest()
   oa.unsetDefaultColorSupport();  // No ANSI default color
   oa.setMaxColor (8);
   oa.setNoColorVideo (3);  // Avoid standout (1) + underline mode (2)
-  oa.set_enter_bold_mode (0);
-  oa.set_exit_bold_mode (0);
-  oa.set_enter_dim_mode (0);
-  oa.set_exit_dim_mode (0);
-  oa.set_enter_italics_mode (0);
-  oa.set_exit_italics_mode (0);
-  oa.set_enter_underline_mode (0);
-  oa.set_exit_underline_mode (0);
-  oa.set_enter_blink_mode (0);
-  oa.set_exit_blink_mode (0);
-  oa.set_enter_reverse_mode (0);
-  oa.set_exit_reverse_mode (0);
-  oa.set_enter_standout_mode (0);
-  oa.set_exit_standout_mode (0);
-  oa.set_enter_secure_mode (0);
-  oa.set_exit_secure_mode (0);
-  oa.set_enter_protected_mode (0);
-  oa.set_exit_protected_mode (0);
-  oa.set_enter_crossed_out_mode (0);
-  oa.set_exit_crossed_out_mode (0);
-  oa.set_enter_dbl_underline_mode (0);
-  oa.set_exit_dbl_underline_mode (0);
-  oa.set_set_attributes (0);
-  oa.set_exit_attribute_mode (0);
-  oa.set_enter_alt_charset_mode (0);
-  oa.set_exit_alt_charset_mode (0);
-  oa.set_enter_pc_charset_mode (0);
-  oa.set_exit_pc_charset_mode (0);
-  oa.set_a_foreground_color (0);
-  oa.set_a_background_color (0);
+  oa.set_enter_bold_mode (nullptr);
+  oa.set_exit_bold_mode (nullptr);
+  oa.set_enter_dim_mode (nullptr);
+  oa.set_exit_dim_mode (nullptr);
+  oa.set_enter_italics_mode (nullptr);
+  oa.set_exit_italics_mode (nullptr);
+  oa.set_enter_underline_mode (nullptr);
+  oa.set_exit_underline_mode (nullptr);
+  oa.set_enter_blink_mode (nullptr);
+  oa.set_exit_blink_mode (nullptr);
+  oa.set_enter_reverse_mode (nullptr);
+  oa.set_exit_reverse_mode (nullptr);
+  oa.set_enter_standout_mode (nullptr);
+  oa.set_exit_standout_mode (nullptr);
+  oa.set_enter_secure_mode (nullptr);
+  oa.set_exit_secure_mode (nullptr);
+  oa.set_enter_protected_mode (nullptr);
+  oa.set_exit_protected_mode (nullptr);
+  oa.set_enter_crossed_out_mode (nullptr);
+  oa.set_exit_crossed_out_mode (nullptr);
+  oa.set_enter_dbl_underline_mode (nullptr);
+  oa.set_exit_dbl_underline_mode (nullptr);
+  oa.set_set_attributes (nullptr);
+  oa.set_exit_attribute_mode (nullptr);
+  oa.set_enter_alt_charset_mode (nullptr);
+  oa.set_exit_alt_charset_mode (nullptr);
+  oa.set_enter_pc_charset_mode (nullptr);
+  oa.set_exit_pc_charset_mode (nullptr);
+  oa.set_a_foreground_color (nullptr);
+  oa.set_a_background_color (nullptr);
   oa.set_foreground_color (CSI "%?%p1%{0}%=%t30m"
                                "%e%p1%{1}%=%t31m"
                                "%e%p1%{2}%=%t32m"
@@ -3770,9 +3769,9 @@ void FOptiAttrTest::ibmColorTest()
                                "%e%p1%{5}%=%t45m"
                                "%e%p1%{6}%=%t46m"
                                "%e%p1%{7}%=%t107m%;");
-  oa.set_term_color_pair (0);
+  oa.set_term_color_pair (nullptr);
   oa.set_orig_pair (CSI "32;40m");
-  oa.set_orig_orig_colors (0);
+  oa.set_orig_orig_colors (nullptr);
   oa.initialize();
 
 
@@ -4159,14 +4158,14 @@ void FOptiAttrTest::wyse50Test()
   finalcut::FOptiAttr oa;
   finalcut::FOptiAttr::TermEnv optiattr_env =
   {
-    0,                           // Enter bold
+    nullptr,                     // Enter bold
     ESC "("  ESC "H\003"
     ESC "G0" ESC "cD",           // Exit bold
     ESC "Gp",                    // Enter dim
     ESC "("  ESC "H\003"
     ESC "G0" ESC "cD",           // Exit dim
-    0,                           // Enter italics
-    0,                           // Exit italics
+    nullptr,                     // Enter italics
+    nullptr,                     // Exit italics
     ESC "G8",                    // Enter underline
     ESC "G0",                    // Exit underline
     ESC "G2",                    // Enter blink
@@ -4183,11 +4182,11 @@ void FOptiAttrTest::wyse50Test()
     ESC ")",                     // Enter protected
     ESC "("  ESC "H\003"
     ESC "G0" ESC "cD",           // Exit protected
-    0,                           // Enter crossed out
+    nullptr,                     // Enter crossed out
     ESC "("  ESC "H\003"
     ESC "G0" ESC "cD",           // Exit crossed out
-    0,                           // Enter double underline
-    0,                           // Exit double underline
+    nullptr,                     // Enter double underline
+    nullptr,                     // Exit double underline
     "%?%p8%t\033)%e\033(%;"
     "%?%p9%t\033cE%e\033cD%;\033G%'0'"
     "%?%p2%t%{8}%|%;"
@@ -4199,15 +4198,15 @@ void FOptiAttrTest::wyse50Test()
     ESC "G0" ESC "cD",           // Exit attribute
     ESC "cE",                    // Enter alt charset
     ESC "cD",                    // Exit alt charset
-    0,                           // Enter pc charset
-    0,                           // Exit pc charset
-    0,                           // Ansi foreground color
-    0,                           // Ansi background color
-    0,                           // Foreground color
-    0,                           // Background color
-    0,                           // Term color pair
-    0,                           // Orig pair
-    0,                           // Orig orig colors
+    nullptr,                     // Enter pc charset
+    nullptr,                     // Exit pc charset
+    nullptr,                     // Ansi foreground color
+    nullptr,                     // Ansi background color
+    nullptr,                     // Foreground color
+    nullptr,                     // Background color
+    nullptr,                     // Term color pair
+    nullptr,                     // Orig pair
+    nullptr,                     // Orig orig colors
     1,                           // Max color
     0,                           // No color video
     false                        // No ANSI default color
@@ -4512,7 +4511,6 @@ void FOptiAttrTest::wyse50Test()
   // Bold off
   to.attr.bit.bold = false;
   CPPUNIT_ASSERT ( from != to );
-
   CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "H\003" ESC "G0" ESC "cD"
                            ESC "cE" ESC "Gp" ESC "G8" ESC "G2"
@@ -4648,10 +4646,8 @@ std::string FOptiAttrTest::printSequence (const std::string& s)
     "Space"
   };
 
-  for (std::string::size_type i = 0; i < s.length(); ++i)
+  for (char ch : s)
   {
-    char ch = s[i];
-
     if ( ch < 0x21 )
       sequence += ctrl_character[uInt(ch)];
     else

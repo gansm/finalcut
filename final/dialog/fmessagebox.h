@@ -95,7 +95,7 @@ class FMessageBox : public FDialog
     // Constructors
     explicit FMessageBox (FWidget* = nullptr);
 
-    FMessageBox ( const FString&, const FString&
+    FMessageBox ( const FString&, FString&&
                 , ButtonType, ButtonType, ButtonType
                 , FWidget* = nullptr );
 
@@ -214,7 +214,7 @@ FMessageBox::ButtonType FMessageBox::info ( FWidget* parent
                                           , ButtonType button2 )
 {
   FMessageBox mbox ( caption
-                   , FString() << message
+                   , std::move(FString() << message)
                    , button0, button1, button2
                    , parent );
   const ButtonType reply = mbox.exec();
@@ -232,7 +232,7 @@ FMessageBox::ButtonType FMessageBox::error ( FWidget* parent
   const FString caption{"Error message"};
 
   FMessageBox mbox ( caption
-                   , FString() << message
+                   , std::move(FString() << message)
                    , button0, button1, button2
                    , parent );
   FVTerm::getFOutput()->beep();

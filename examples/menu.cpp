@@ -97,7 +97,7 @@ class Menu final : public finalcut::FDialog
     finalcut::FMenu          BStyle{"&Style", &Border};
     finalcut::FRadioMenuItem BColor1{"Red", &BColor};
     finalcut::FRadioMenuItem BColor2{"Blue", &BColor};
-    finalcut::FRadioMenuItem BStyle1{line, &BStyle};
+    finalcut::FRadioMenuItem BStyle1{std::move(line), &BStyle};
     finalcut::FRadioMenuItem BStyle2{"-------------", &BStyle};
     finalcut::FRadioMenuItem BStyle3{"- - - - - - -", &BStyle};
     finalcut::FRadioMenuItem BStyle4{"-  -  -  -  -", &BStyle};

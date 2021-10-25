@@ -49,17 +49,17 @@ FMenuItem::FMenuItem (FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FMenuItem::FMenuItem (const FString& txt, FWidget* parent)
+FMenuItem::FMenuItem (FString&& txt, FWidget* parent)
   : FWidget{parent}
-  , text{txt}
+  , text{std::move(txt)}
 {
   init();
 }
 
 //----------------------------------------------------------------------
-FMenuItem::FMenuItem (FKey k, const FString& txt, FWidget* parent)
+FMenuItem::FMenuItem (FKey k, FString&& txt, FWidget* parent)
   : FWidget{parent}
-  , text{txt}
+  , text{std::move(txt)}
   , accel_key{k}
 {
   init();

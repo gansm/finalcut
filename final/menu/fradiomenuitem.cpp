@@ -42,8 +42,8 @@ FRadioMenuItem::FRadioMenuItem (FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FRadioMenuItem::FRadioMenuItem (const FString& txt, FWidget* parent)
-  : FMenuItem{txt, parent}
+FRadioMenuItem::FRadioMenuItem (FString&& txt, FWidget* parent)
+  : FMenuItem{std::move(txt), parent}
 {
   init();
 }

@@ -77,7 +77,7 @@ FString fileChooser ( FWidget* parent
     file_filter.setString("*");
 
   FFileDialog fileopen ( path
-                       , file_filter
+                       , std::move(file_filter)
                        , type
                        , parent );
 
@@ -104,11 +104,11 @@ FFileDialog::FFileDialog (FWidget* parent)
 
 //----------------------------------------------------------------------
 FFileDialog::FFileDialog ( const FString& dirname
-                         , const FString& filter
+                         , FString&& filter
                          , DialogType type
                          , FWidget* parent )
   : FDialog{parent}
-  , filter_pattern{filter}
+  , filter_pattern{std::move(filter)}
   , dlg_type{type}
 {
   if ( ! dirname.isEmpty() )

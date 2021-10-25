@@ -52,9 +52,6 @@ class FSystemTest : public finalcut::FSystem
     // Constructor
     FSystemTest();
 
-    // Destructor
-    virtual ~FSystemTest();
-
     // Methods
     uChar            inPortByte (uShort) override;
     void             outPortByte (uChar, uShort) override;
@@ -88,11 +85,6 @@ FSystemTest::FSystemTest()  // constructor
   system_bell.pitch  = 1500;
   system_bell.period = 100;
   system_bell.volume = 50;
-}
-
-//----------------------------------------------------------------------
-FSystemTest::~FSystemTest()  // destructor
-{
 }
 
 
@@ -131,7 +123,7 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
     case WSKBDIO_GETENCODING:
     {
       req_string = "WSKBDIO_GETENCODING";
-      kbd_t* kbd_enc = static_cast<kbd_t*>(argp);
+      auto kbd_enc = static_cast<kbd_t*>(argp);
       *kbd_enc = kbdencoding;
       ret_val = 0;
       break;
@@ -140,7 +132,7 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
     case WSKBDIO_SETENCODING:
     {
       req_string = "WSKBDIO_SETENCODING";
-      kbd_t* kbd_enc = static_cast<kbd_t*>(argp);
+      auto kbd_enc = static_cast<kbd_t*>(argp);
       kbdencoding = *kbd_enc;
       ret_val = 0;
       break;
@@ -149,7 +141,7 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
     case WSKBDIO_GETDEFAULTBELL:
     {
       req_string = "WSKBDIO_GETDEFAULTBELL";
-      wskbd_bell_data* spk = static_cast<wskbd_bell_data*>(argp);
+      auto spk = static_cast<wskbd_bell_data*>(argp);
       spk->which = 0;
       spk->pitch = 1500;
       spk->period = 100;
@@ -161,7 +153,7 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
     case WSKBDIO_SETBELL:
     {
       req_string = "WSKBDIO_SETBELL";
-      wskbd_bell_data* spk = static_cast<wskbd_bell_data*>(argp);
+      auto spk = static_cast<wskbd_bell_data*>(argp);
 
       if ( spk->which & WSKBD_BELL_DOPITCH )
         system_bell.pitch = spk->pitch;
@@ -185,7 +177,7 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
 
     case TIOCGWINSZ:
       req_string = "TIOCGWINSZ";
-      struct winsize* win_size = static_cast<winsize*>(argp);
+      auto win_size = static_cast<winsize*>(argp);
       win_size->ws_col = 80;
       win_size->ws_row = 25;
       ret_val = 0;
@@ -206,7 +198,7 @@ int FSystemTest::open (const char* pathname, int flags, ...)
 {
   va_list args{};
   va_start (args, flags);
-  mode_t mode = static_cast<mode_t>(va_arg (args, int));
+  auto mode = static_cast<mode_t>(va_arg (args, int));
   va_end (args);
 
   std::cerr << "Call: open (pathname=\"" << pathname
@@ -228,7 +220,7 @@ FILE* FSystemTest::fopen (const char* path, const char* mode)
 {
   std::cerr << "Call: fopen (path=" << path
             << ", mode=" << mode << ")\n";
-  return 0;
+  return nullptr;
 }
 
 //----------------------------------------------------------------------
@@ -295,7 +287,7 @@ wskbd_bell_data& FSystemTest::getBell()
 class ftermopenbsdTest : public CPPUNIT_NS::TestFixture, test::ConEmu
 {
   public:
-    ftermopenbsdTest();
+    ftermopenbsdTest() = default;
 
   protected:
     void classNameTest();
@@ -314,11 +306,6 @@ class ftermopenbsdTest : public CPPUNIT_NS::TestFixture, test::ConEmu
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
 };
-
-
-//----------------------------------------------------------------------
-ftermopenbsdTest::ftermopenbsdTest()
-{ }
 
 //----------------------------------------------------------------------
 void ftermopenbsdTest::classNameTest()
@@ -364,7 +351,7 @@ void ftermopenbsdTest::netbsdConsoleTest()
   setenv ("TERM", "wsvt25", 1);
 
   // setupterm is needed for tputs in ncurses >= 6.1
-  setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
+  setupterm (static_cast<char*>(nullptr), 1, static_cast<int*>(nullptr));
   auto& term_detection = finalcut::FTermDetection::getInstance();
   term_detection.setTerminalDetection(true);
   pid_t pid = forkConEmu();
@@ -429,7 +416,7 @@ void ftermopenbsdTest::netbsdConsoleTest()
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::netbsd_con);
 
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
+    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -470,7 +457,7 @@ void ftermopenbsdTest::openbsdConsoleTest()
   setenv ("TERM", "vt220", 1);
 
   // setupterm is needed for tputs in ncurses >= 6.1
-  setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
+  setupterm (static_cast<char*>(nullptr), 1, static_cast<int*>(nullptr));
   auto& term_detection = finalcut::FTermDetection::getInstance();
   term_detection.setTerminalDetection(true);
   pid_t pid = forkConEmu();
@@ -567,7 +554,7 @@ void ftermopenbsdTest::openbsdConsoleTest()
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::openbsd_con);
 
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
+    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }

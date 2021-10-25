@@ -66,7 +66,7 @@ class FRadioMenuItem : public FMenuItem
   public:
     // Constructors
     explicit FRadioMenuItem (FWidget* = nullptr);
-    explicit FRadioMenuItem (const FString&, FWidget* = nullptr);
+    explicit FRadioMenuItem (FString&&, FWidget* = nullptr);
 
     // Destructor
     ~FRadioMenuItem() noexcept override;

@@ -39,8 +39,8 @@ FDialogListMenu::FDialogListMenu(FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FDialogListMenu::FDialogListMenu (const FString& txt, FWidget* parent)
-  : FMenu{txt, parent}
+FDialogListMenu::FDialogListMenu (FString&& txt, FWidget* parent)
+  : FMenu{std::move(txt), parent}
 {
   init();
 }

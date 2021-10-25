@@ -52,7 +52,7 @@ void check_c_string ( const char* s1
                     , const char* s2
                     , CppUnit::SourceLine sourceLine )
 {
-  if ( s1 == 0 && s2 == 0 )  // Strings are equal
+  if ( s1 == nullptr && s2 == nullptr )  // Strings are equal
     return;
 
   if ( s1 && s2 && std::strcmp (s1, s2) == 0 )  // Strings are equal
@@ -69,8 +69,7 @@ void check_c_string ( const char* s1
 class FTermcapTest : public CPPUNIT_NS::TestFixture
 {
   public:
-    FTermcapTest()
-    { }
+    FTermcapTest() = default;
 
   protected:
     void classNameTest();

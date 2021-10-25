@@ -38,7 +38,7 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include <assert.h>
+#include <cassert>
 #include <cctype>
 #include <climits>
 #include <cstdlib>

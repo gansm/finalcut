@@ -74,7 +74,7 @@ FKeyboard::FKeyboard()
   // Sort the known key map by string length
   auto& key_map = FKeyMap::getKeyMap();
   std::sort ( key_map.begin(), key_map.end()
-            , [] (FKeyMap::KeyMap& lhs, FKeyMap::KeyMap& rhs)
+            , [] (const FKeyMap::KeyMap& lhs, const FKeyMap::KeyMap& rhs)
               {
                 return lhs.length < rhs.length;
               }

@@ -40,7 +40,7 @@ void check_c_string ( const char* s1
                     , const char* s2
                     , CppUnit::SourceLine sourceLine )
 {
-  if ( s1 == 0 && s2 == 0 )  // Strings are equal
+  if ( s1 == nullptr && s2 == nullptr )  // Strings are equal
     return;
 
   if ( s1 && s2 && std::strcmp (s1, s2) == 0 )  // Strings are equal
@@ -53,99 +53,98 @@ void check_c_string ( const char* s1
 namespace test
 {
 
-typedef struct
+struct tcap_map
 {
   const char* string;
   char  tname[alignof(char*)];
-}
-tcap_map;
+};
 
 static tcap_map tcap[] =
 {
-  { 0, "bl" },  // bell
-  { 0, "ec" },  // erase_chars
-  { 0, "cl" },  // clear_screen
-  { 0, "cd" },  // clr_eos
-  { 0, "ce" },  // clr_eol
-  { 0, "cb" },  // clr_bol
-  { 0, "ho" },  // cursor_home
-  { 0, "ll" },  // cursor_to_ll
-  { 0, "cr" },  // carriage_return
-  { 0, "ta" },  // tab
-  { 0, "bt" },  // back_tab
-  { 0, "ip" },  // insert_padding
-  { 0, "ic" },  // insert_character
-  { 0, "IC" },  // parm_ich
-  { 0, "rp" },  // repeat_char
-  { 0, "Ic" },  // initialize_color
-  { 0, "Ip" },  // initialize_pair
-  { 0, "AF" },  // set_a_foreground
-  { 0, "AB" },  // set_a_background
-  { 0, "Sf" },  // set_foreground
-  { 0, "Sb" },  // set_background
-  { 0, "sp" },  // set_color_pair
-  { 0, "op" },  // orig_pair
-  { 0, "oc" },  // orig_colors
-  { 0, "NC" },  // no_color_video
-  { 0, "cm" },  // cursor_address
-  { 0, "ch" },  // column_address
-  { 0, "cv" },  // row_address
-  { 0, "vs" },  // cursor_visible
-  { 0, "vi" },  // cursor_invisible
-  { 0, "ve" },  // cursor_normal
-  { 0, "up" },  // cursor_up
-  { 0, "do" },  // cursor_down
-  { 0, "le" },  // cursor_left
-  { 0, "nd" },  // cursor_right
-  { 0, "UP" },  // parm_up_cursor
-  { 0, "DO" },  // parm_down_cursor
-  { 0, "LE" },  // parm_left_cursor
-  { 0, "RI" },  // parm_right_cursor
-  { 0, "sc" },  // save_cursor
-  { 0, "rc" },  // restore_cursor
-  { 0, "Ss" },  // set cursor style
-  { 0, "sf" },  // scroll_forward
-  { 0, "sr" },  // scroll_reverse
-  { 0, "ti" },  // enter_ca_mode
-  { 0, "te" },  // exit_ca_mode
-  { 0, "eA" },  // enable_acs
-  { 0, "md" },  // enter_bold_mode
-  { 0, "me" },  // exit_bold_mode
-  { 0, "mh" },  // enter_dim_mode
-  { 0, "me" },  // exit_dim_mode
-  { 0, "ZH" },  // enter_italics_mode
-  { 0, "ZR" },  // exit_italics_mode
-  { 0, "us" },  // enter_underline_mode
-  { 0, "ue" },  // exit_underline_mode
-  { 0, "mb" },  // enter_blink_mode
-  { 0, "me" },  // exit_blink_mode
-  { 0, "mr" },  // enter_reverse_mode
-  { 0, "me" },  // exit_reverse_mode
-  { 0, "so" },  // enter_standout_mode
-  { 0, "se" },  // exit_standout_mode
-  { 0, "mk" },  // enter_secure_mode
-  { 0, "me" },  // exit_secure_mode
-  { 0, "mp" },  // enter_protected_mode
-  { 0, "me" },  // exit_protected_mode
-  { 0, "XX" },  // enter_crossed_out_mode
-  { 0, "me" },  // exit_crossed_out_mode
-  { 0, "Us" },  // enter_dbl_underline_mode
-  { 0, "Ue" },  // exit_dbl_underline_mode
-  { 0, "sa" },  // set_attributes
-  { 0, "me" },  // exit_attribute_mode
-  { 0, "as" },  // enter_alt_charset_mode
-  { 0, "ae" },  // exit_alt_charset_mode
-  { 0, "S2" },  // enter_pc_charset_mode
-  { 0, "S3" },  // exit_pc_charset_mode
-  { 0, "im" },  // enter_insert_mode
-  { 0, "ei" },  // exit_insert_mode
-  { 0, "SA" },  // enter_am_mode
-  { 0, "RA" },  // exit_am_mode
-  { 0, "ac" },  // acs_chars
-  { 0, "ks" },  // keypad_xmit
-  { 0, "ke" },  // keypad_local
-  { 0, "Km" },  // key_mouse
-  { 0, "\0" }
+  { nullptr, "bl" },  // bell
+  { nullptr, "ec" },  // erase_chars
+  { nullptr, "cl" },  // clear_screen
+  { nullptr, "cd" },  // clr_eos
+  { nullptr, "ce" },  // clr_eol
+  { nullptr, "cb" },  // clr_bol
+  { nullptr, "ho" },  // cursor_home
+  { nullptr, "ll" },  // cursor_to_ll
+  { nullptr, "cr" },  // carriage_return
+  { nullptr, "ta" },  // tab
+  { nullptr, "bt" },  // back_tab
+  { nullptr, "ip" },  // insert_padding
+  { nullptr, "ic" },  // insert_character
+  { nullptr, "IC" },  // parm_ich
+  { nullptr, "rp" },  // repeat_char
+  { nullptr, "Ic" },  // initialize_color
+  { nullptr, "Ip" },  // initialize_pair
+  { nullptr, "AF" },  // set_a_foreground
+  { nullptr, "AB" },  // set_a_background
+  { nullptr, "Sf" },  // set_foreground
+  { nullptr, "Sb" },  // set_background
+  { nullptr, "sp" },  // set_color_pair
+  { nullptr, "op" },  // orig_pair
+  { nullptr, "oc" },  // orig_colors
+  { nullptr, "NC" },  // no_color_video
+  { nullptr, "cm" },  // cursor_address
+  { nullptr, "ch" },  // column_address
+  { nullptr, "cv" },  // row_address
+  { nullptr, "vs" },  // cursor_visible
+  { nullptr, "vi" },  // cursor_invisible
+  { nullptr, "ve" },  // cursor_normal
+  { nullptr, "up" },  // cursor_up
+  { nullptr, "do" },  // cursor_down
+  { nullptr, "le" },  // cursor_left
+  { nullptr, "nd" },  // cursor_right
+  { nullptr, "UP" },  // parm_up_cursor
+  { nullptr, "DO" },  // parm_down_cursor
+  { nullptr, "LE" },  // parm_left_cursor
+  { nullptr, "RI" },  // parm_right_cursor
+  { nullptr, "sc" },  // save_cursor
+  { nullptr, "rc" },  // restore_cursor
+  { nullptr, "Ss" },  // set cursor style
+  { nullptr, "sf" },  // scroll_forward
+  { nullptr, "sr" },  // scroll_reverse
+  { nullptr, "ti" },  // enter_ca_mode
+  { nullptr, "te" },  // exit_ca_mode
+  { nullptr, "eA" },  // enable_acs
+  { nullptr, "md" },  // enter_bold_mode
+  { nullptr, "me" },  // exit_bold_mode
+  { nullptr, "mh" },  // enter_dim_mode
+  { nullptr, "me" },  // exit_dim_mode
+  { nullptr, "ZH" },  // enter_italics_mode
+  { nullptr, "ZR" },  // exit_italics_mode
+  { nullptr, "us" },  // enter_underline_mode
+  { nullptr, "ue" },  // exit_underline_mode
+  { nullptr, "mb" },  // enter_blink_mode
+  { nullptr, "me" },  // exit_blink_mode
+  { nullptr, "mr" },  // enter_reverse_mode
+  { nullptr, "me" },  // exit_reverse_mode
+  { nullptr, "so" },  // enter_standout_mode
+  { nullptr, "se" },  // exit_standout_mode
+  { nullptr, "mk" },  // enter_secure_mode
+  { nullptr, "me" },  // exit_secure_mode
+  { nullptr, "mp" },  // enter_protected_mode
+  { nullptr, "me" },  // exit_protected_mode
+  { nullptr, "XX" },  // enter_crossed_out_mode
+  { nullptr, "me" },  // exit_crossed_out_mode
+  { nullptr, "Us" },  // enter_dbl_underline_mode
+  { nullptr, "Ue" },  // exit_dbl_underline_mode
+  { nullptr, "sa" },  // set_attributes
+  { nullptr, "me" },  // exit_attribute_mode
+  { nullptr, "as" },  // enter_alt_charset_mode
+  { nullptr, "ae" },  // exit_alt_charset_mode
+  { nullptr, "S2" },  // enter_pc_charset_mode
+  { nullptr, "S3" },  // exit_pc_charset_mode
+  { nullptr, "im" },  // enter_insert_mode
+  { nullptr, "ei" },  // exit_insert_mode
+  { nullptr, "SA" },  // enter_am_mode
+  { nullptr, "RA" },  // exit_am_mode
+  { nullptr, "ac" },  // acs_chars
+  { nullptr, "ks" },  // keypad_xmit
+  { nullptr, "ke" },  // keypad_local
+  { nullptr, "Km" },  // key_mouse
+  { nullptr, "\0" }
 };
 
 }  // namespace test
@@ -158,8 +157,7 @@ static tcap_map tcap[] =
 class FTermcapQuirksTest : public CPPUNIT_NS::TestFixture
 {
   public:
-    FTermcapQuirksTest();
-    ~FTermcapQuirksTest();
+    FTermcapQuirksTest() = default;
 
   protected:
     void classNameTest();
@@ -206,14 +204,6 @@ class FTermcapQuirksTest : public CPPUNIT_NS::TestFixture
 };
 
 //----------------------------------------------------------------------
-FTermcapQuirksTest::FTermcapQuirksTest()
-{ }
-
-//----------------------------------------------------------------------
-FTermcapQuirksTest::~FTermcapQuirksTest()
-{ }
-
-//----------------------------------------------------------------------
 void FTermcapQuirksTest::classNameTest()
 {
   finalcut::FTermcapQuirks q;
@@ -256,7 +246,7 @@ void FTermcapQuirksTest::generalTest()
                          , CSI "%i%p1%d;%p2%dH" );
   // Non standard ECMA-48 (ANSI X3.64) terminal
   CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_dbl_underline_mode)].string
-                         , 0 );
+                         , nullptr );
   caps[int(finalcut::Termcap::t_exit_underline_mode)].string = CSI "24m";
   quirks.terminalFixup();
   // Standard ECMA-48 (ANSI X3.64) terminal
@@ -429,21 +419,21 @@ void FTermcapQuirksTest::linuxTest()
   CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_reverse_mode)].string
                          , CSI "27m" );
   CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_secure_mode)].string
-                         , 0 );
+                         , nullptr );
   CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_protected_mode)].string
-                         , 0 );
+                         , nullptr );
   CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_crossed_out_mode)].string
-                         , 0 );
+                         , nullptr );
   CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_orig_pair)].string
                          , CSI "39;49;25m" );
   CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_dim_mode)].string
-                         , 0 );
+                         , nullptr );
   CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_dim_mode)].string
-                         , 0 );
+                         , nullptr );
   CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_underline_mode)].string
-                         , 0 );
+                         , nullptr );
   CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_underline_mode)].string
-                         , 0 );
+                         , nullptr );
   data.unsetTermType (finalcut::FTermType::linux_con);
 }
 
@@ -464,9 +454,9 @@ void FTermcapQuirksTest::rxvtTest()
 
   // rxvt
   CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_alt_charset_mode)].string
-                         , 0 );
+                         , nullptr );
   CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_alt_charset_mode)].string
-                         , 0 );
+                         , nullptr );
   // rxvt-16color
   data.setTermType ("rxvt-16color");
   quirks.terminalFixup();
@@ -799,7 +789,7 @@ void FTermcapQuirksTest::screenTest()
 
   data.setTermType (finalcut::FTermType::tmux);
 
-  caps[int(finalcut::Termcap::t_initialize_color)].string = 0;
+  caps[int(finalcut::Termcap::t_initialize_color)].string = nullptr;
   finalcut::FTermcap::can_change_color_palette = false;
   quirks.terminalFixup();
 
@@ -829,10 +819,8 @@ std::string FTermcapQuirksTest::printSequence (const std::string& s)
     "Space"
   };
 
-  for (std::string::size_type i = 0; i < s.length(); ++i)
+  for (char ch : s)
   {
-    char ch = s[i];
-
     if ( ch < 0x21 )
       sequence += ctrl_character[uInt(ch)];
     else

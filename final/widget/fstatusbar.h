@@ -75,7 +75,7 @@ class FStatusKey : public FWidget
   public:
     // Constructors
     explicit FStatusKey (FWidget* = nullptr);
-    FStatusKey (FKey, const FString&, FWidget* = nullptr);
+    FStatusKey (FKey, FString&&, FWidget* = nullptr);
 
     // Disable copy constructor
     FStatusKey (const FStatusKey&) = delete;

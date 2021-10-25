@@ -20,10 +20,10 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-#include <stdio.h>
+#include <cstdio>
+#include <cstring>
 #include <unistd.h>
 
-#include <cstring>
 #include <algorithm>
 #include <iostream>
 #include <new>

@@ -41,8 +41,7 @@
 class FStringStreamTest : public CPPUNIT_NS::TestFixture
 {
   public:
-    FStringStreamTest()
-    { }
+    FStringStreamTest() = default;
 
   protected:
     void classNameTest();
@@ -121,7 +120,7 @@ void FStringStreamTest::defaultObjectTest()
      << 20 << " " << std::showbase << std::hex
      << 20 << " " << std::noshowbase << std::oct
      << 20 << " " << std::boolalpha
-     << bool(20) << " " << std::dec
+     << bool(20 > 0) << " " << std::dec
      << 20;
   CPPUNIT_ASSERT ( ss.str() == "20 0x14 24 true 20" );
   ss.clear();

@@ -36,7 +36,6 @@
 #endif
 
 #include <langinfo.h>
-#include <stdint.h>
 
 #include <cassert>
 #include <cerrno>   // for read errno
@@ -44,6 +43,7 @@
 #include <climits>
 #include <cmath>
 #include <cstdarg>  // need for va_list, va_start and va_end
+#include <cstdint>
 #include <cstdio>   // need for vsprintf
 #include <cstring>
 #include <cwchar>

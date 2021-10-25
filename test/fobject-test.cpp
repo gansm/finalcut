@@ -40,11 +40,9 @@ namespace test
 class FObject_protected : public finalcut::FObject
 {
   public:
-    FObject_protected()
-      : count(0)
-    { }
+    FObject_protected() = default;
 
-    bool event (finalcut::FEvent* ev)
+    bool event (finalcut::FEvent* ev) override
     {
       return finalcut::FObject::event(ev);
     }
@@ -69,7 +67,7 @@ class FObject_protected : public finalcut::FObject
       return finalcut::FObject::isWidget();
     }
 
-    virtual void performTimerAction (FObject*, finalcut::FEvent*)
+    void performTimerAction (FObject*, finalcut::FEvent*) override
     {
       std::cout << ".";
       fflush(stdout);
@@ -77,7 +75,7 @@ class FObject_protected : public finalcut::FObject
     }
 
     // Data member
-    uInt count;
+    uInt count{0};
 };
 
 //----------------------------------------------------------------------
@@ -85,8 +83,7 @@ class FObject_protected : public finalcut::FObject
 class FObject_timer : public finalcut::FObject
 {
   public:
-    FObject_timer()
-    { }
+    FObject_timer() = default;
 
     int getValue() const
     {
@@ -94,7 +91,7 @@ class FObject_timer : public finalcut::FObject
     }
 
   protected:
-    virtual void onTimer (finalcut::FTimerEvent* ev)
+    void onTimer (finalcut::FTimerEvent* ev) override
     {
       if ( ev->getTimerId() == 1 )
         value++;
@@ -110,8 +107,7 @@ class FObject_timer : public finalcut::FObject
 class FObject_userEvent : public finalcut::FObject
 {
   public:
-    FObject_userEvent()
-    { }
+    FObject_userEvent() = default;
 
     int getValue() const
     {
@@ -119,7 +115,7 @@ class FObject_userEvent : public finalcut::FObject
     }
 
   protected:
-    virtual void onUserEvent (finalcut::FUserEvent* ev)
+    void onUserEvent (finalcut::FUserEvent* ev) override
     {
       if ( ev->getUserId() == 42 )
       {
@@ -145,8 +141,7 @@ class FObject_userEvent : public finalcut::FObject
 class FObjectTest : public CPPUNIT_NS::TestFixture
 {
   public:
-    FObjectTest()
-    { }
+    FObjectTest() = default;
 
   protected:
     void classNameTest();
@@ -202,10 +197,10 @@ void FObjectTest::noArgumentTest()
   finalcut::FObject o1;
   finalcut::FObject o2;
   CPPUNIT_ASSERT ( ! o1.hasParent() );
-  CPPUNIT_ASSERT ( o1.getParent() == 0 );
+  CPPUNIT_ASSERT ( o1.getParent() == nullptr );
   CPPUNIT_ASSERT ( ! o1.hasChildren() );
-  CPPUNIT_ASSERT ( o1.getChild(0) == 0 );
-  CPPUNIT_ASSERT ( o1.getChild(1) == 0 );
+  CPPUNIT_ASSERT ( o1.getChild(0) == nullptr );
+  CPPUNIT_ASSERT ( o1.getChild(1) == nullptr );
   CPPUNIT_ASSERT ( o1.numOfChildren() == 0 );
   auto& children_list = o1.getChildren();
   CPPUNIT_ASSERT ( children_list.begin() == o1.begin() );
@@ -248,8 +243,8 @@ void FObjectTest::childObjectTest()
   auto c7 = new finalcut::FObject();
 
   CPPUNIT_ASSERT ( obj.hasChildren() );
-  CPPUNIT_ASSERT ( obj.getChild(0) == 0 );
-  CPPUNIT_ASSERT ( obj.getChild(1) != 0 );
+  CPPUNIT_ASSERT ( obj.getChild(0) == nullptr );
+  CPPUNIT_ASSERT ( obj.getChild(1) != nullptr );
   CPPUNIT_ASSERT ( obj.numOfChildren() == 4 );
 
   CPPUNIT_ASSERT ( obj.isChild(c1) );
@@ -273,9 +268,9 @@ void FObjectTest::childObjectTest()
   CPPUNIT_ASSERT ( c1->getParent() == &obj );
   CPPUNIT_ASSERT ( c1->hasChildren() );
   CPPUNIT_ASSERT ( ! c2->hasChildren() );
-  CPPUNIT_ASSERT ( c1->getChild(0) == 0 );
-  CPPUNIT_ASSERT ( c1->getChild(1) != 0 );
-  CPPUNIT_ASSERT ( c2->getChild(1) == 0 );
+  CPPUNIT_ASSERT ( c1->getChild(0) == nullptr );
+  CPPUNIT_ASSERT ( c1->getChild(1) != nullptr );
+  CPPUNIT_ASSERT ( c2->getChild(1) == nullptr );
   CPPUNIT_ASSERT ( c1->numOfChildren() == 1 );
   CPPUNIT_ASSERT ( c2->numOfChildren() == 0 );
   const auto& children_list2 = c1->getChildren();
@@ -699,7 +694,7 @@ void FObjectTest::performTimerActionTest()
     num_events += t1.processEvent();
     // Wait 100 ms
     const struct timespec ms[]{{0, 100000000L}};
-    nanosleep (ms, NULL);
+    nanosleep (ms, nullptr);
     loop++;
   }
 

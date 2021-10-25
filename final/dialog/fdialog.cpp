@@ -49,9 +49,9 @@ FDialog::FDialog (FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FDialog::FDialog (const FString& txt, FWidget* parent)
+FDialog::FDialog (FString&& txt, FWidget* parent)
   : FWindow{parent}
-  , tb_text{txt}
+  , tb_text{std::move(txt)}
 {
   init();
 }

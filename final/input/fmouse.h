@@ -492,8 +492,8 @@ class FMouseCommand final
   public:
     // Constructors
     FMouseCommand() = default;
-    explicit FMouseCommand (const std::function<void(const FMouseData&)>& fn)
-      : handler(fn)
+    explicit FMouseCommand (std::function<void(const FMouseData&)>&& fn)
+      : handler(std::move(fn))
     { }
 
     // Method

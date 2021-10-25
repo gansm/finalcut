@@ -35,8 +35,8 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <cassert>
 #include <algorithm>  // need for std::swap
-#include <assert.h>
 #include <string>
 
 #include "final/ftypes.h"

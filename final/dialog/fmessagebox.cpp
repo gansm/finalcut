@@ -59,13 +59,13 @@ FMessageBox::FMessageBox (FWidget* parent)
 
 //----------------------------------------------------------------------
 FMessageBox::FMessageBox ( const FString& caption
-                         , const FString& message
+                         , FString&& message
                          , ButtonType button0
                          , ButtonType button1
                          , ButtonType button2
                          , FWidget* parent )
   : FDialog{parent}
-  , text{message}
+  , text{std::move(message)}
   , button_digit{{button0, button1, button2}}
 {
   setTitlebarText(caption);

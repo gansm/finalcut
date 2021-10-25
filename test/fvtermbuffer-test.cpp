@@ -19,8 +19,7 @@
 * License along with this program.  If not, see                        *
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
-#include <wchar.h>
-
+#include <cwchar>
 #include <limits>
 
 #include <cppunit/BriefTestProgressListener.h>
