@@ -63,12 +63,17 @@ void Keyboard::onKeyPress (finalcut::FKeyEvent* ev)
   if ( getPrintPos().getY() == int(getDesktopHeight()) )
     is_last_line = true;
 
-  print() << "Key " << key_name << " (id " << uInt32(key_id) << ")\n";
-
   if ( is_last_line )
+  {
     scrollAreaForward (getVirtualDesktop());
+    print() << '\r';
+  }
+  else
+    print() << '\n';
 
-  setAreaCursor ({1, getPrintPos().getY()}, true, getVirtualDesktop());
+  print() << "Key " << key_name << " (id " << uInt32(key_id) << ")";
+  setAreaCursor (getPrintPos(), true, getVirtualDesktop());
+  forceTerminalUpdate();
 }
 
 //----------------------------------------------------------------------
@@ -84,7 +89,7 @@ void Keyboard::draw()
   print() << finalcut::FPoint{1, 1}
           << "---------------\n"
           << "Press Q to quit\n"
-          << "---------------\n";
+          << "---------------";
   setAreaCursor ({1, 4}, true, getVirtualDesktop());
 }
 

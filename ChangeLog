@@ -1,3 +1,6 @@
+2021-10-28 Markus Gans  <guru.mail@muenster.de>
+	* The keyboard and timer examples now have flicker-free scrolling
+
 2021-10-24 Markus Gans  <guru.mail@muenster.de>
 	* Faster search for key strings through sorted arrays
 

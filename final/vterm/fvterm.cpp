@@ -757,7 +757,7 @@ void FVTerm::getArea (const FRect& box, const FTermArea* area)
 //----------------------------------------------------------------------
 void FVTerm::putArea (const FTermArea* area) const
 {
-  // Add area changes to the virtual terminal
+  // Transmit changes in the area to the virtual terminal
 
   if ( ! area || ! area->visible )
     return;

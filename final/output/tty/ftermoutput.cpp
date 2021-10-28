@@ -358,7 +358,6 @@ bool FTermOutput::scrollTerminalForward()
   if ( ! TCAP(t_scroll_forward) )
     return false;
 
-  setCursor (FPoint{0, int(getLineNumber())});
   FTerm::scrollTermForward();
   return true;
 }
@@ -369,7 +368,6 @@ bool FTermOutput::scrollTerminalReverse()
   if ( ! TCAP(t_scroll_reverse) )
     return false;
 
-  setCursor (FPoint{0, 0});
   FTerm::scrollTermReverse();
   return true;
 }

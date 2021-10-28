@@ -147,7 +147,6 @@ class FVTerm : public FVTermAttribute
     template <typename CharT
             , typename CString<CharT>::type = nullptr>
     FVTerm& operator << (const CharT&);
-
     FVTerm& operator << (char);
     FVTerm& operator << (wchar_t);
     FVTerm& operator << (const wchar_t*);

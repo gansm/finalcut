@@ -721,12 +721,12 @@ void FMenuItem::cb_destroyDialog (FDialog* win)
 {
   const auto& fapp = FApplication::getApplicationObject();
 
-  if ( win && fapp )
-  {
-    delAccelerator(win);
-    delCallback(&(*win));
-    associated_window = nullptr;
-  }
+  if ( ! win || ! fapp )
+    return;
+
+  delAccelerator(win);
+  delCallback(std::move(win));
+  associated_window = nullptr;
 }
 
 //----------------------------------------------------------------------
