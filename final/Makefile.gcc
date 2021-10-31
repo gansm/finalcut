@@ -3,7 +3,7 @@
 #-----------------------------------------------------------------------------
 
 # This is where make install will install the library
-VERSION = "0.7.2"
+VERSION = "0.8.0"
 MAJOR := $(shell echo ${VERSION} | cut -d. -f1)
 LIBDIR = /usr/local/lib
 INCLUDEDIR1 = .
@@ -205,7 +205,7 @@ install: $(LIB)
 	ldconfig
 	mkdir -p $(INCLUDEDIR2)
 	for d in dialog input menu output output/tty util vterm widget; \
-        do \
+	do \
 	  mkdir -p $(INCLUDEDIR2)/$$d; \
 	done
 	@list='$(INCLUDE_HEADERS)'; for h in $$list; \
@@ -220,7 +220,7 @@ uninstall: $(OBJS)
 	  $(RM) $(INCLUDEDIR2)/$$h; \
 	done
 	for d in widget vterm util output/tty output menu input dialog; \
-        do \
+	do \
 	  rmdir $(INCLUDEDIR2)/$$d; \
 	done
 	rmdir $(INCLUDEDIR2)
