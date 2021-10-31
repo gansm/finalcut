@@ -1546,7 +1546,7 @@ void FMouseControl::processQueuedInput()
     FMouseDataPtr md(std::move(fmousedata_queue.front()));
     fmousedata_queue.pop();
 
-    if ( md )
+    if ( md.get() )
     {
       current_mouse_event = md.get();
       event_cmd.execute(*md);
