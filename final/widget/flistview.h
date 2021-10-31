@@ -404,6 +404,7 @@ class FListView : public FWidget
 
   protected:
     // Methods
+    void                  initLayout() override;
     void                  adjustViewport (const int);
     void                  adjustScrollbars (const std::size_t) const;
     void                  adjustSize() override;

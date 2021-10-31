@@ -529,6 +529,16 @@ void FListBox::onFocusOut (FFocusEvent*)
 
 // protected methods of FListBox
 //----------------------------------------------------------------------
+void FListBox::initLayout()
+{
+  nf_offset = FVTerm::getFOutput()->isNewFont() ? 1 : 0;
+  setTopPadding(1);
+  setLeftPadding(1);
+  setBottomPadding(1);
+  setRightPadding(1);
+}
+
+//----------------------------------------------------------------------
 void FListBox::adjustYOffset (std::size_t element_count)
 {
   const std::size_t height = getClientHeight();
@@ -602,11 +612,6 @@ void FListBox::init()
   initScrollbar (vbar, Orientation::Vertical, this, &FListBox::cb_vbarChange);
   initScrollbar (hbar, Orientation::Horizontal, this, &FListBox::cb_hbarChange);
   FListBox::setGeometry (FPoint{1, 1}, FSize{5, 4}, false);  // initialize geometry values
-  nf_offset = FVTerm::getFOutput()->isNewFont() ? 1 : 0;
-  setTopPadding(1);
-  setLeftPadding(1);
-  setBottomPadding(1);
-  setRightPadding(1);
   mapKeyFunctions();
 }
 

@@ -1234,7 +1234,29 @@ void FMouseTest::urxvtMouseTest()
 //----------------------------------------------------------------------
 void FMouseTest::mouseControlTest()
 {
+  char* pram_0 = finalcut::C_STR("./a.out");
+  char** parms = &pram_0;
+  finalcut::FApplication app(1, parms);
+  CPPUNIT_ASSERT ( ! finalcut::FApplication::isQuit() );  // Need in processQueuedInput()
+
   finalcut::FMouseControl mouse_control;
+  bool left_pressed{false};
+  bool middle_pressed{false};
+  bool right_pressed{false};
+  bool has_current_mouse_event{false};
+  auto cmd = [ &left_pressed
+             , &middle_pressed
+             , &right_pressed
+             , &has_current_mouse_event
+             , &mouse_control ] (const finalcut::FMouseData& md)
+             {
+               left_pressed = md.isLeftButtonPressed();
+               middle_pressed = md.isMiddleButtonPressed();
+               right_pressed = md.isRightButtonPressed();
+               has_current_mouse_event = mouse_control.getCurrentMouseEvent() != nullptr;
+             };
+  finalcut::FMouseCommand mouse_cmd (cmd);
+  mouse_control.setEventCommand (mouse_cmd);
   mouse_control.setStdinNo(fileno(stdin));
   mouse_control.setMaxWidth(100);
   mouse_control.setMaxHeight(40);
@@ -1246,6 +1268,7 @@ void FMouseTest::mouseControlTest()
 
   CPPUNIT_ASSERT ( ! mouse_control.hasData() );
   CPPUNIT_ASSERT ( mouse_control.getPos() == finalcut::FPoint(0, 0) );
+  CPPUNIT_ASSERT ( ! mouse_control.getCurrentMouseEvent() );
   CPPUNIT_ASSERT ( ! mouse_control.hasEvent() );
   CPPUNIT_ASSERT ( ! mouse_control.isLeftButtonPressed() );
   CPPUNIT_ASSERT ( ! mouse_control.isLeftButtonReleased() );
@@ -1281,6 +1304,7 @@ void FMouseTest::mouseControlTest()
   mouse_control.processEvent (tv);
   CPPUNIT_ASSERT ( ! mouse_control.hasData() );
   CPPUNIT_ASSERT ( mouse_control.getPos() == finalcut::FPoint(5, 8) );
+  CPPUNIT_ASSERT ( ! mouse_control.getCurrentMouseEvent() );
   CPPUNIT_ASSERT ( mouse_control.hasEvent() );
   CPPUNIT_ASSERT ( mouse_control.isLeftButtonPressed() );
   CPPUNIT_ASSERT ( ! mouse_control.isLeftButtonReleased() );
@@ -1297,6 +1321,14 @@ void FMouseTest::mouseControlTest()
   CPPUNIT_ASSERT ( ! mouse_control.isMoved() );
   CPPUNIT_ASSERT ( mouse_control.hasUnprocessedInput() );
   CPPUNIT_ASSERT ( mouse_control.hasDataInQueue() );
+
+  mouse_control.processQueuedInput();
+  CPPUNIT_ASSERT ( left_pressed );
+  CPPUNIT_ASSERT ( ! middle_pressed );
+  CPPUNIT_ASSERT ( ! right_pressed );
+  CPPUNIT_ASSERT ( has_current_mouse_event );
+  CPPUNIT_ASSERT ( ! mouse_control.getCurrentMouseEvent() );
+  CPPUNIT_ASSERT ( ! mouse_control.hasDataInQueue() );
 
   mouse_control.setRawData (finalcut::FMouse::MouseType::X11, rawdata1);
   mouse_control.processEvent (tv);
@@ -1316,6 +1348,7 @@ void FMouseTest::mouseControlTest()
   mouse_control.processEvent (tv);
   CPPUNIT_ASSERT ( ! mouse_control.hasData() );
   CPPUNIT_ASSERT ( mouse_control.getPos() == finalcut::FPoint(1, 1) );
+  CPPUNIT_ASSERT ( ! mouse_control.getCurrentMouseEvent() );
   CPPUNIT_ASSERT ( mouse_control.hasEvent() );
   CPPUNIT_ASSERT ( ! mouse_control.isLeftButtonPressed() );
   CPPUNIT_ASSERT ( ! mouse_control.isLeftButtonReleased() );
@@ -1331,6 +1364,14 @@ void FMouseTest::mouseControlTest()
   CPPUNIT_ASSERT ( ! mouse_control.isWheelDown() );
   CPPUNIT_ASSERT ( ! mouse_control.isMoved() );
   CPPUNIT_ASSERT ( mouse_control.hasDataInQueue() );
+
+  mouse_control.processQueuedInput();
+  CPPUNIT_ASSERT ( ! left_pressed );
+  CPPUNIT_ASSERT ( middle_pressed );
+  CPPUNIT_ASSERT ( ! right_pressed );
+  CPPUNIT_ASSERT ( has_current_mouse_event );
+  CPPUNIT_ASSERT ( ! mouse_control.getCurrentMouseEvent() );
+  CPPUNIT_ASSERT ( ! mouse_control.hasDataInQueue() );
 
   mouse_control.setRawData (finalcut::FMouse::MouseType::Sgr, rawdata2);
   mouse_control.processEvent (tv);
@@ -1348,6 +1389,7 @@ void FMouseTest::mouseControlTest()
   mouse_control.processEvent (tv);
   CPPUNIT_ASSERT ( ! mouse_control.hasData() );
   CPPUNIT_ASSERT ( mouse_control.getPos() == finalcut::FPoint(3, 3) );
+  CPPUNIT_ASSERT ( ! mouse_control.getCurrentMouseEvent() );
   CPPUNIT_ASSERT ( mouse_control.hasEvent() );
   CPPUNIT_ASSERT ( ! mouse_control.isLeftButtonPressed() );
   CPPUNIT_ASSERT ( ! mouse_control.isLeftButtonReleased() );
@@ -1364,9 +1406,18 @@ void FMouseTest::mouseControlTest()
   CPPUNIT_ASSERT ( ! mouse_control.isMoved() );
   CPPUNIT_ASSERT ( mouse_control.hasDataInQueue() );
 
+  mouse_control.processQueuedInput();
+  CPPUNIT_ASSERT ( ! left_pressed );
+  CPPUNIT_ASSERT ( ! middle_pressed );
+  CPPUNIT_ASSERT ( right_pressed );
+  CPPUNIT_ASSERT ( has_current_mouse_event );
+  CPPUNIT_ASSERT ( ! mouse_control.getCurrentMouseEvent() );
+  CPPUNIT_ASSERT ( ! mouse_control.hasDataInQueue() );
+
   mouse_control.setRawData (finalcut::FMouse::MouseType::Urxvt, rawdata3);
   mouse_control.processEvent (tv);
   CPPUNIT_ASSERT ( mouse_control.getPos() == finalcut::FPoint(3, 4) );
+  CPPUNIT_ASSERT ( ! mouse_control.getCurrentMouseEvent() );
   CPPUNIT_ASSERT ( ! mouse_control.hasUnprocessedInput() );
   CPPUNIT_ASSERT ( ! mouse_control.isRightButtonPressed() );
   CPPUNIT_ASSERT ( mouse_control.isRightButtonReleased() );
@@ -1382,6 +1433,7 @@ void FMouseTest::mouseControlTest()
   mouse_control.processEvent (tv);
   CPPUNIT_ASSERT ( ! mouse_control.hasData() );
   CPPUNIT_ASSERT ( mouse_control.getPos() == finalcut::FPoint(80, 25) );
+  CPPUNIT_ASSERT ( ! mouse_control.getCurrentMouseEvent() );
   CPPUNIT_ASSERT ( mouse_control.hasEvent() );
   CPPUNIT_ASSERT ( ! mouse_control.isLeftButtonPressed() );
   CPPUNIT_ASSERT ( ! mouse_control.isLeftButtonReleased() );
@@ -1397,6 +1449,14 @@ void FMouseTest::mouseControlTest()
   CPPUNIT_ASSERT ( ! mouse_control.isWheelDown() );
   CPPUNIT_ASSERT ( ! mouse_control.isMoved() );
   CPPUNIT_ASSERT ( mouse_control.hasDataInQueue() );
+
+  mouse_control.processQueuedInput();
+  CPPUNIT_ASSERT ( ! left_pressed );
+  CPPUNIT_ASSERT ( ! middle_pressed );
+  CPPUNIT_ASSERT ( ! right_pressed );
+  CPPUNIT_ASSERT ( has_current_mouse_event );
+  CPPUNIT_ASSERT ( ! mouse_control.getCurrentMouseEvent() );
+  CPPUNIT_ASSERT ( ! mouse_control.hasDataInQueue() );
 
   mouse_control.setRawData (finalcut::FMouse::MouseType::X11, rawdata4);
   mouse_control.processEvent (tv);
@@ -1415,6 +1475,7 @@ void FMouseTest::mouseControlTest()
   mouse_control.processEvent (tv);
   CPPUNIT_ASSERT ( ! mouse_control.hasData() );
   CPPUNIT_ASSERT ( mouse_control.getPos() == finalcut::FPoint(1, 2) );
+  CPPUNIT_ASSERT ( ! mouse_control.getCurrentMouseEvent() );
   CPPUNIT_ASSERT ( mouse_control.hasEvent() );
   CPPUNIT_ASSERT ( mouse_control.isLeftButtonPressed() );
   CPPUNIT_ASSERT ( ! mouse_control.isLeftButtonReleased() );
@@ -1431,14 +1492,24 @@ void FMouseTest::mouseControlTest()
   CPPUNIT_ASSERT ( ! mouse_control.isMoved() );
   CPPUNIT_ASSERT ( mouse_control.hasDataInQueue() );
 
+  mouse_control.processQueuedInput();
+  CPPUNIT_ASSERT ( left_pressed );
+  CPPUNIT_ASSERT ( ! middle_pressed );
+  CPPUNIT_ASSERT ( ! right_pressed );
+  CPPUNIT_ASSERT ( has_current_mouse_event );
+  CPPUNIT_ASSERT ( ! mouse_control.getCurrentMouseEvent() );
+  CPPUNIT_ASSERT ( ! mouse_control.hasDataInQueue() );
+
   mouse_control.setRawData (finalcut::FMouse::MouseType::Sgr, rawdata5);
   mouse_control.processEvent (tv);
   CPPUNIT_ASSERT ( mouse_control.getPos() == finalcut::FPoint(2, 3) );
+  CPPUNIT_ASSERT ( ! mouse_control.getCurrentMouseEvent() );
   CPPUNIT_ASSERT ( mouse_control.isMoved() );
 
   mouse_control.setRawData (finalcut::FMouse::MouseType::Sgr, rawdata5);
   mouse_control.processEvent (tv);
   CPPUNIT_ASSERT ( mouse_control.getPos() == finalcut::FPoint(3, 4) );
+  CPPUNIT_ASSERT ( ! mouse_control.getCurrentMouseEvent() );
   CPPUNIT_ASSERT ( ! mouse_control.isMoved() );
 
   mouse_control.disable();

@@ -597,8 +597,9 @@ void FComboBox::cb_closeComboBox()
 void FComboBox::cb_inputFieldSwitch()
 {
   auto& mouse = FMouseControl::getInstance();
+  auto mouse_event = mouse.getCurrentMouseEvent();
 
-  if ( ! mouse.isLeftButtonPressed() )
+  if ( ! mouse_event || ! mouse_event->isLeftButtonPressed() )
     return;
 
   if ( list_window.isShown() )

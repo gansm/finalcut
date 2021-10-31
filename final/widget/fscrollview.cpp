@@ -614,6 +614,19 @@ FVTerm::FTermArea* FScrollView::getPrintArea()
 }
 
 //----------------------------------------------------------------------
+void FScrollView::initLayout()
+{
+  nf_offset = FVTerm::getFOutput()->isNewFont() ? 1 : 0;
+  const auto xoffset_end = int(getScrollWidth() - getViewportWidth());
+  const auto yoffset_end = int(getScrollHeight() - getViewportHeight());
+  setTopPadding (1 - getScrollY());
+  setLeftPadding (1 - getScrollX());
+  setBottomPadding (1 - (yoffset_end - getScrollY()));
+  setRightPadding (1 - (xoffset_end - getScrollX()) + nf_offset);
+  calculateScrollbarPos();
+}
+
+//----------------------------------------------------------------------
 void FScrollView::adjustSize()
 {
   FWidget::adjustSize();
@@ -621,7 +634,6 @@ void FScrollView::adjustSize()
   const std::size_t height = getHeight();
   const int xoffset = viewport_geometry.getX();
   const int yoffset = viewport_geometry.getY();
-
   scroll_geometry.setPos ( getTermX() + getLeftPadding() - 1
                          , getTermY() + getTopPadding() - 1 );
 
@@ -631,13 +643,6 @@ void FScrollView::adjustSize()
     viewport->offset_top = scroll_geometry.getY();
   }
 
-  hbar->setMaximum (int(getScrollWidth() - getViewportWidth()));
-  hbar->setPageSize (int(getScrollWidth()), int(getViewportWidth()));
-  hbar->setY (int(height));
-  hbar->setWidth (width - 2, false);
-  hbar->setValue (xoffset);
-  hbar->resize();
-
   vbar->setMaximum (int(getScrollHeight() - getViewportHeight()));
   vbar->setPageSize (int(getScrollHeight()), int(getViewportHeight()));
   vbar->setX (int(width));
@@ -645,8 +650,15 @@ void FScrollView::adjustSize()
   vbar->setValue (yoffset);
   vbar->resize();
 
-  setHorizontalScrollBarVisibility();
+  hbar->setMaximum (int(getScrollWidth() - getViewportWidth()));
+  hbar->setPageSize (int(getScrollWidth()), int(getViewportWidth()));
+  hbar->setY (int(height));
+  hbar->setWidth (width - 2, false);
+  hbar->setValue (xoffset);
+  hbar->resize();
+
   setVerticalScrollBarVisibility();
+  setHorizontalScrollBarVisibility();
 }
 
 //----------------------------------------------------------------------
@@ -733,13 +745,6 @@ void FScrollView::init()
   FScrollView::resetColors();
   FScrollView::setGeometry (FPoint{1, 1}, FSize{4, 4});
   setMinimumSize (FSize{4, 4});
-  const auto xoffset_end = int(getScrollWidth() - getViewportWidth());
-  const auto yoffset_end = int(getScrollHeight() - getViewportHeight());
-  nf_offset = FVTerm::getFOutput()->isNewFont() ? 1 : 0;
-  setTopPadding (1 - getScrollY());
-  setLeftPadding (1 - getScrollX());
-  setBottomPadding (1 - (yoffset_end - getScrollY()));
-  setRightPadding (1 - (xoffset_end - getScrollX()) + nf_offset);
   const FSize no_shadow{0, 0};
   std::size_t w = getViewportWidth();
   std::size_t h = getViewportHeight();
@@ -785,7 +790,7 @@ void FScrollView::calculateScrollbarPos() const
   const std::size_t width  = getWidth();
   const std::size_t height = getHeight();
 
-  if ( FVTerm::getFOutput()->isNewFont() )
+  if ( nf_offset )
   {
     vbar->setGeometry (FPoint{int(width), 2}, FSize{2, height - 2});
     hbar->setGeometry (FPoint{1, int(height)}, FSize{width - 2, 1});

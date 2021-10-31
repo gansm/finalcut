@@ -41,6 +41,9 @@
 namespace finalcut
 {
 
+// static class attributes
+FMouseData* FMouseControl::current_mouse_event{nullptr};
+
 //----------------------------------------------------------------------
 // class FMouseData
 //----------------------------------------------------------------------
@@ -1543,8 +1546,12 @@ void FMouseControl::processQueuedInput()
     FMouseDataPtr md(std::move(fmousedata_queue.front()));
     fmousedata_queue.pop();
 
-    if ( md.get() )
+    if ( md )
+    {
+      current_mouse_event = md.get();
       event_cmd.execute(*md);
+      current_mouse_event = nullptr;
+    }
 
     if ( FApplication::isQuit() )
       return;

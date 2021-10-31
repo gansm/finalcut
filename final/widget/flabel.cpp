@@ -46,9 +46,8 @@ FLabel::FLabel(FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FLabel::FLabel (FString&& txt, FWidget* parent)
+FLabel::FLabel (const FString& txt, FWidget* parent)
   : FWidget{parent}
-  , text{std::move(txt)}
 {
   init();
   setText(txt);

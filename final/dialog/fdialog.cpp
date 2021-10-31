@@ -1254,7 +1254,7 @@ void FDialog::drawTextBar()
   const auto zoom_btn = getZoomButtonWidth();
   const auto minimize_btn = getMinimizeButtonWidth();
   const auto tb_width = width - menu_btn - minimize_btn - zoom_btn;
-  const auto text_width = getColumnWidth(tb_text);
+  auto text_width = getColumnWidth(tb_text);
   std::size_t leading_space{0};
 
   if ( width > text_width + menu_btn + minimize_btn + zoom_btn )
@@ -1274,6 +1274,7 @@ void FDialog::drawTextBar()
       const auto len = getLengthFromColumnWidth (tb_text, tb_width - 2);
       print (tb_text.left(len));
       print ("..");
+      text_width = len + 2;
     }
   }
 

@@ -297,6 +297,7 @@ class FListBox : public FWidget
 
   protected:
     // Methods
+    void                 initLayout() override;
     void                 adjustYOffset (std::size_t);
     void                 adjustSize() override;
 

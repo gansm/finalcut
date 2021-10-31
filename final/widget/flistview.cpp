@@ -1297,6 +1297,16 @@ void FListView::onFocusOut (FFocusEvent*)
 
 // protected methods of FListView
 //----------------------------------------------------------------------
+void FListView::initLayout()
+{
+  nf_offset = FVTerm::getFOutput()->isNewFont() ? 1 : 0;
+  setTopPadding(1);
+  setLeftPadding(1);
+  setBottomPadding(1);
+  setRightPadding(1);
+}
+
+//----------------------------------------------------------------------
 void FListView::adjustViewport (const int element_count)
 {
   const auto height = int(getClientHeight());
@@ -1403,11 +1413,6 @@ void FListView::init()
   root = selflist.begin();
   getNullIterator() = selflist.end();
   FListView::setGeometry (FPoint{1, 1}, FSize{5, 4}, false);  // initialize geometry values
-  nf_offset = FVTerm::getFOutput()->isNewFont() ? 1 : 0;
-  setTopPadding(1);
-  setLeftPadding(1);
-  setBottomPadding(1);
-  setRightPadding(1);
   mapKeyFunctions();
 }
 

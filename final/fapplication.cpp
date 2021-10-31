@@ -740,13 +740,13 @@ void FApplication::mouseEvent (const FMouseData& md)
 {
   determineClickedWidget (md);
 
-  if ( FWidget::getClickedWidget() )
-  {
-    unsetMoveSizeMode();
-    closeDropDown (md);
-    unselectMenubarItems (md);
-    sendMouseEvent (md);
-  }
+  if ( ! FWidget::getClickedWidget() )
+    return;
+
+  unsetMoveSizeMode();
+  closeDropDown (md);
+  unselectMenubarItems (md);
+  sendMouseEvent (md);
 }
 
 //----------------------------------------------------------------------

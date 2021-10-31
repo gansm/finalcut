@@ -67,7 +67,7 @@ class FLabel : public FWidget
 
     // Constructor
     explicit FLabel (FWidget* = nullptr);
-    explicit FLabel (FString&&, FWidget* = nullptr);
+    explicit FLabel (const FString&, FWidget* = nullptr);
 
     // Disable copy constructor
     FLabel (const FLabel&) = delete;

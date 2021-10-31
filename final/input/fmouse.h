@@ -526,6 +526,7 @@ class FMouseControl
     virtual FString           getClassName() const;
     static auto               getInstance() -> FMouseControl&;
     const FPoint&             getPos() &;
+    FMouseData*               getCurrentMouseEvent() const;
     void                      clearEvent();
 
     // Mutators
@@ -584,6 +585,7 @@ class FMouseControl
     // Data member
     FMouseProtocol            mouse_protocol{};
     FMouseCommand             event_cmd{};
+    static FMouseData*        current_mouse_event;
     std::queue<FMouseDataPtr> fmousedata_queue{};
     FPoint                    zero_point{0, 0};
     bool                      use_gpm_mouse{false};
@@ -594,6 +596,10 @@ class FMouseControl
 //----------------------------------------------------------------------
 inline FString FMouseControl::getClassName() const
 { return "FMouseControl"; }
+
+//----------------------------------------------------------------------
+inline FMouseData* FMouseControl::getCurrentMouseEvent() const
+{ return current_mouse_event; }
 
 //----------------------------------------------------------------------
 inline void FMouseControl::setEventCommand (const FMouseCommand& cmd)

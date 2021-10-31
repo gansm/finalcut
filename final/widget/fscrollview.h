@@ -149,6 +149,7 @@ class FScrollView : public FWidget
     FTermArea*          getPrintArea() override;
 
     // Methods
+    void                initLayout() override;
     void                adjustSize() override;
     void                copy2area();
 
@@ -200,7 +201,11 @@ inline FString FScrollView::getClassName() const
 
 //----------------------------------------------------------------------
 inline std::size_t FScrollView::getViewportWidth() const
-{ return getWidth() - vertical_border_spacing - std::size_t(nf_offset); }
+{
+  return ( getScrollHeight() > getViewportHeight() )
+       ? getWidth() - vertical_border_spacing - std::size_t(nf_offset)
+       : getWidth() - vertical_border_spacing;
+}
 
 //----------------------------------------------------------------------
 inline std::size_t FScrollView::getViewportHeight() const
