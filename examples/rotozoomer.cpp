@@ -52,9 +52,6 @@ class RotoZoomer final : public finalcut::FDialog
     // Constructor
     explicit RotoZoomer (finalcut::FWidget* = nullptr, bool = false, int = 314);
 
-    // Destructor
-    ~RotoZoomer() override = default;
-
     // Accessors
     finalcut::FString getReport() const;
 

@@ -98,7 +98,7 @@ void Button::onKeyPress (finalcut::FKeyEvent* ev)
   const FKey key = ev->key();
 
   // catch the enter key
-  if ( key == FKey::Return || key == FKey::Enter )
+  if ( isEnterKey(key) )
     return;
 
   finalcut::FButton::onKeyPress(ev);
@@ -114,9 +114,6 @@ class Calc final : public finalcut::FDialog
   public:
     // Constructor
     explicit Calc (finalcut::FWidget* parent = nullptr);
-
-    // Destructor
-    ~Calc() override = default;
 
   private:
     // Typedef and Enumeration
@@ -323,7 +320,7 @@ void Calc::onKeyPress (finalcut::FKeyEvent* ev)
 
     ev->accept();
   }
-  else if ( key == FKey::Escape || key == FKey::Escape_mintty )
+  else if ( isEscapeKey(key) )
   {
     sendOnButtonAccelerator();
     ev->accept();
@@ -947,8 +944,8 @@ bool Calc::isDataEntryKey (const ButtonName& key) const
 
   if ( iter != key_list.end() )
     return true;
-  else
-    return false;
+
+  return false;
 }
 
 //----------------------------------------------------------------------
@@ -969,8 +966,8 @@ bool Calc::isOperatorKey(const ButtonName& key) const
 
   if ( iter != operators.end() )
     return true;
-  else
-    return false;
+
+  return false;
 }
 
 //----------------------------------------------------------------------
@@ -978,8 +975,8 @@ lDouble& Calc::getValue()
 {
   if ( infix_operator )
     return b;
-  else
-    return a;
+
+  return a;
 }
 
 //----------------------------------------------------------------------

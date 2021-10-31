@@ -1,0 +1,239 @@
+#-----------------------------------------------------------------------------
+# Makefile for FINAL CUT
+#-----------------------------------------------------------------------------
+
+# This is where make install will install the library
+VERSION = "0.8.0"
+MAJOR := $(shell echo ${VERSION} | cut -d. -f1)
+LIBDIR = /usr/local/lib
+INCLUDEDIR1 = .
+INCLUDEDIR2 = /usr/local/include/final
+INCLUDE_HEADERS = \
+	dialog/fdialog.h \
+	dialog/ffiledialog.h \
+	dialog/fmessagebox.h \
+	input/fkeyboard.h \
+	input/fmouse.h \
+	menu/fcheckmenuitem.h \
+	menu/fdialoglistmenu.h \
+	menu/fmenubar.h \
+	menu/fmenu.h \
+	menu/fradiomenuitem.h \
+	output/fcolorpalette.h \
+	output/foutput.h \
+	output/tty/foptiattr.h \
+	output/tty/foptimove.h \
+	output/tty/ftermcap.h \
+	output/tty/ftermcapquirks.h \
+	output/tty/ftermdata.h \
+	output/tty/ftermdebugdata.h \
+	output/tty/ftermdetection.h \
+	output/tty/ftermfreebsd.h \
+	output/tty/fterm_functions.h \
+	output/tty/fterm.h \
+	output/tty/ftermios.h \
+	output/tty/ftermlinux.h \
+	output/tty/ftermopenbsd.h \
+	output/tty/ftermoutput.h \
+	output/tty/ftermxterminal.h \
+	output/tty/sgr_optimizer.h \
+	util/fcallback.h \
+	util/fdata.h \
+	util/flogger.h \
+	util/flog.h \
+	util/fpoint.h \
+	util/frect.h \
+	util/fsize.h \
+	util/fstring.h \
+	util/fstringstream.h \
+	util/fsystem.h \
+	util/fsystemimpl.h \
+	vterm/fcolorpair.h \
+	vterm/fstyle.h \
+	vterm/fvtermattribute.h \
+	vterm/fvtermbuffer.h \
+	vterm/fvterm.h \
+	widget/fbusyindicator.h \
+	widget/fbuttongroup.h \
+	widget/fbutton.h \
+	widget/fcheckbox.h \
+	widget/fcombobox.h \
+	widget/flabel.h \
+	widget/flineedit.h \
+	widget/flistbox.h \
+	widget/flistview.h \
+	widget/fprogressbar.h \
+	widget/fradiobutton.h \
+	widget/fscrollbar.h \
+	widget/fscrollview.h \
+	widget/fspinbox.h \
+	widget/fstatusbar.h \
+	widget/fswitch.h \
+	widget/ftextview.h \
+	widget/ftogglebutton.h \
+	widget/ftooltip.h \
+	widget/fwindow.h \
+	fapplication.h \
+	fevent.h \
+	final.h \
+	fobject.h \
+	fstartoptions.h \
+	fwidgetcolors.h \
+	fwidget_functions.h \
+	fwidget.h
+
+# compiler parameter
+CXX = g++
+CCXFLAGS = $(OPTIMIZE) $(PROFILE) -DCOMPILE_FINAL_CUT $(DEBUG) $(VER) $(GPM) -fexceptions -std=c++11
+MAKEFILE = -f Makefile.gcc
+LDFLAGS = $(TERMCAP) -lgpm
+INCLUDES = -I..
+GPM = -D F_HAVE_LIBGPM
+VER = -D F_VERSION=$(VERSION)
+RM = rm -f
+LIB = libfinal.so
+OBJS = \
+	dialog/fdialog.o \
+	dialog/ffiledialog.o \
+	dialog/fmessagebox.o \
+	input/fkeyboard.o \
+	input/fkey_map.o \
+	input/fmouse.o \
+	menu/fcheckmenuitem.o \
+	menu/fdialoglistmenu.o \
+	menu/fmenubar.o \
+	menu/fmenuitem.o \
+	menu/fmenulist.o \
+	menu/fmenu.o \
+	menu/fradiomenuitem.o \
+	output/fcolorpalette.o \
+	output/foutput.o \
+	output/tty/fcharmap.o \
+	output/tty/foptiattr.o \
+	output/tty/foptimove.o \
+	output/tty/ftermcap.o \
+	output/tty/ftermcapquirks.o \
+	output/tty/ftermdebugdata.o \
+	output/tty/ftermdetection.o \
+	output/tty/ftermfreebsd.o \
+	output/tty/fterm_functions.o \
+	output/tty/ftermios.o \
+	output/tty/ftermlinux.o \
+	output/tty/fterm.o \
+	output/tty/ftermopenbsd.o \
+	output/tty/ftermoutput.o \
+	output/tty/ftermxterminal.o \
+	output/tty/sgr_optimizer.o \
+	util/fcallback.o \
+	util/fdata.o \
+	util/flogger.o \
+	util/flog.o \
+	util/fpoint.o \
+	util/frect.o \
+	util/fsize.o \
+	util/fstring.o \
+	util/fstringstream.o \
+	util/fsystemimpl.o \
+	util/fsystem.o \
+	vterm/fvtermattribute.o \
+	vterm/fvtermbuffer.o \
+	vterm/fvterm.o \
+	widget/fbusyindicator.o \
+	widget/fbuttongroup.o \
+	widget/fbutton.o \
+	widget/fcheckbox.o \
+	widget/fcombobox.o \
+	widget/flabel.o \
+	widget/flineedit.o \
+	widget/flistbox.o \
+	widget/flistview.o \
+	widget/fprogressbar.o \
+	widget/fradiobutton.o \
+	widget/fscrollbar.o \
+	widget/fscrollview.o \
+	widget/fspinbox.o \
+	widget/fstatusbar.o \
+	widget/fswitch.o \
+	widget/ftextview.o \
+	widget/ftogglebutton.o \
+	widget/ftooltip.o \
+	widget/fwindow.o \
+	fapplication.o \
+	fevent.o \
+	fobject.o \
+	fstartoptions.o \
+	fwidgetcolors.o \
+	fwidget_functions.o \
+	fwidget.o \
+
+TERMCAP := $(shell test -n "$$(ldd {/usr,}/lib64/libncursesw.so.5 2>/dev/null | grep libtinfo)" && echo "-ltinfo" || echo "-lncurses")
+
+ifdef DEBUG
+  OPTIMIZE = -O0
+else
+  OPTIMIZE = -O3
+endif
+
+.SUFFIXES: .cpp
+
+# $@ = name of the targets
+# $< = the first dependency
+.cpp.o:
+	$(CXX) -c $(CCXFLAGS) $(INCLUDES) -fpic -o $@ $<
+
+all: dep $(OBJS)
+	$(CXX) $(OBJS) -o $(LIB).$(VERSION) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -shared -Wl,-soname,$(LIB).$(MAJOR)
+	ln -s -f $(LIB).$(VERSION) libfinal.so.$(MAJOR)
+	ln -s -f $(LIB).$(MAJOR) libfinal.so
+
+$(LIB): all
+
+debug:
+	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -Wall -Wextra -Wpedantic"
+
+unittest:
+	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -DUNIT_TEST -Wall -Wextra -Wpedantic"
+
+profile:
+	$(MAKE) $(MAKEFILE) PROFILE="-pg"
+
+install: $(LIB)
+	mkdir -p $(LIBDIR)
+	install -c $(LIB).$(VERSION) $(LIBDIR)/$(LIB).$(VERSION)
+	ln -s -f $(LIB).$(VERSION) $(LIBDIR)/libfinal.so.$(MAJOR)
+	ln -s -f $(LIB).$(MAJOR) $(LIBDIR)/libfinal.so
+	ldconfig
+	mkdir -p $(INCLUDEDIR2)
+	for d in dialog input menu output output/tty util vterm widget; \
+	do \
+	  mkdir -p $(INCLUDEDIR2)/$$d; \
+	done
+	@list='$(INCLUDE_HEADERS)'; for h in $$list; \
+	do \
+	  install -m 644 $(INCLUDEDIR1)/$$h $(INCLUDEDIR2)/$$h; \
+	done
+
+uninstall: $(OBJS)
+	$(RM) $(LIBDIR)/$(LIB).$(VERSION) $(LIBDIR)/libfinal.so.$(MAJOR) $(LIBDIR)/libfinal.so
+	@list='$(INCLUDE_HEADERS)'; for h in $$list; \
+	do \
+	  $(RM) $(INCLUDEDIR2)/$$h; \
+	done
+	for d in widget vterm util output/tty output menu input dialog; \
+	do \
+	  rmdir $(INCLUDEDIR2)/$$d; \
+	done
+	rmdir $(INCLUDEDIR2)
+
+.PHONY: clean dep
+clean:
+	$(RM) $(LIB)* $(OBJS) .depend *.gcno *.gcda *.prof *~
+
+dep:
+	$(CXX) $(INCLUDES) -std=c++11 -MM -DCOMPILE_FINAL_CUT *.cpp >.depend
+
+#
+# include .depend if it exists
+#
+
+-include .depend

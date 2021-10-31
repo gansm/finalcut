@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2020 Markus Gans                                      *
+* Copyright 2012-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -711,22 +711,22 @@ void substringIncludeExample()
   finalcut::FString include_std{"string"};
 
   if ( include_std.includes("ring") )
-    std::cout << " includes: \""
-              << include_std << "\" includes \"ring\" "
+    std::cout << R"( includes: ")"
+              << include_std << R"(" includes "ring" )"
               << std::endl;
   else
-    std::cout << " includes: \""
-              << include_std << "\" includes no \"ring\" "
+    std::cout << R"( includes: ")"
+              << include_std << R"(" includes no "ring" )"
               << std::endl;
 
   // Test: includes a substring (negativ test)
   if ( include_std.includes("data") )
-    std::cout << " includes: \""
-              << include_std << "\" includes \"data\" "
+    std::cout << R"( includes: ")"
+              << include_std << R"(" includes "data" )"
               << std::endl;
   else
-    std::cout << " includes: \""
-              << include_std << "\" includes no \"data\" "
+    std::cout << R"( includes: ")"
+              << include_std << R"(" includes no "data" )"
               << std::endl;
 }
 

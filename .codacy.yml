@@ -3,13 +3,12 @@ engines:
   duplication:
     enabled: true
     exclude_paths:
-      - 'fonts/**'
+      - 'final/font/**'
       - 'test/**'
 exclude_paths:
   - 'debian/**'
   - 'doc/**'
-  - 'icon/**'
-  - 'logo/**'
+  - 'misc/**'
   - 'm4/**'
   - 'scripts/**'
 

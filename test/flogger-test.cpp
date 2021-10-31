@@ -101,8 +101,7 @@ class myLogger : public finalcut::FLog
 class FLoggerTest : public CPPUNIT_NS::TestFixture
 {
   public:
-    FLoggerTest()
-    { }
+    FLoggerTest() = default;
 
   protected:
     void classNameTest();
@@ -146,6 +145,7 @@ void FLoggerTest::defaultObjectTest()
   std::ostringstream buf{};
   log.setOutputStream(buf);
   log << "Hello, World!" << std::flush;  // Default level is "Info"
+  log.flush();
   CPPUNIT_ASSERT ( buf.str() == "[INFO] Hello, World!\r\n" );
   buf.str("");  // Clear buffer
 

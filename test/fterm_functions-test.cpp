@@ -19,8 +19,7 @@
 * License along with this program.  If not, see                        *
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
-#include <wchar.h>
-
+#include <cwchar>
 #include <limits>
 #include <memory>
 
@@ -49,7 +48,8 @@ class FTermFunctionsTest : public CPPUNIT_NS::TestFixture, test::ConEmu
       if ( ! ret )
         ret = std::setlocale (LC_CTYPE, "C.UTF-8");
 
-      fwide(stdout, 1);  // Makes stream wide-character oriented
+      if ( ret )
+        fwide(stdout, 1);  // Makes stream wide-character oriented
     }
 
   protected:
@@ -124,6 +124,10 @@ void FTermFunctionsTest::exitMessageTest()
   finalcut::setExitMessage(fstring);
   CPPUNIT_ASSERT ( finalcut::getExitMessage() == "Encoding not found" );
   CPPUNIT_ASSERT ( finalcut::getExitMessage().length() == 18 );
+
+  finalcut::setExitMessage("");  // Reset the exit message
+  CPPUNIT_ASSERT ( finalcut::getExitMessage() == "" );
+  CPPUNIT_ASSERT ( finalcut::getExitMessage().length() == 0 );
 }
 
 //----------------------------------------------------------------------
@@ -691,7 +695,7 @@ void FTermFunctionsTest::utf8Test()
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(wchar_t(0x200000))
                    == finalcut::unicode_to_utf8(L'�') );
 
-  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(wchar_t(0xffffffff))  // 32-bit full set
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(wchar_t(INT_MAX))  // maximum 32-bit value
                    == finalcut::unicode_to_utf8(L'�') );
 }
 
@@ -966,6 +970,9 @@ void FTermFunctionsTest::FullWidthHalfWidthTest()
 
   if ( ! ret )
     ret = std::setlocale (LC_CTYPE, "C.UTF-8");
+
+  if ( ! ret )
+    return;
 
   fterm_data.setTermEncoding (finalcut::Encoding::UTF8);
 
@@ -1245,43 +1252,43 @@ void FTermFunctionsTest::FullWidthHalfWidthTest()
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 0 );
   fchar.attr.bit.char_width = 0x00 & 0x03;
 
-  // Column width (FTermBuffer)
-  finalcut::FTermBuffer term_buf{};
-  term_buf << L"\v\t 100";
-  CPPUNIT_ASSERT ( finalcut::getColumnWidth(term_buf) == 4 );
-  term_buf.clear();
-  term_buf << L"0123456789";
-  CPPUNIT_ASSERT ( finalcut::getColumnWidth(term_buf) == 10 );
-  term_buf.clear();
-  term_buf << L"０１２３４５６７８９";
-  CPPUNIT_ASSERT ( finalcut::getColumnWidth(term_buf) == 20 );  // UTF-8
-  term_buf.clear();
+  // Column width (FVTermBuffer)
+  finalcut::FVTermBuffer vterm_buf{};
+  vterm_buf << L"\v\t 100";
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(vterm_buf) == 4 );
+  vterm_buf.clear();
+  vterm_buf << L"0123456789";
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(vterm_buf) == 10 );
+  vterm_buf.clear();
+  vterm_buf << L"０１２３４５６７８９";
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(vterm_buf) == 20 );  // UTF-8
+  vterm_buf.clear();
   fterm_data.setTermEncoding (finalcut::Encoding::PC);
-  term_buf << L"０１２３４５６７８９";
-  CPPUNIT_ASSERT ( finalcut::getColumnWidth(term_buf) == 10 );  // CP-437
-  term_buf.clear();
+  vterm_buf << L"０１２３４５６７８９";
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(vterm_buf) == 10 );  // CP-437
+  vterm_buf.clear();
   fterm_data.setTermEncoding (finalcut::Encoding::UTF8);
-  CPPUNIT_ASSERT ( finalcut::getColumnWidth(term_buf) == 0 );  // after clear
-  term_buf << L"abc";
-  CPPUNIT_ASSERT ( finalcut::getColumnWidth(term_buf) == 3 );
-  term_buf.clear();
-  term_buf << L"ａbｃ";
-  CPPUNIT_ASSERT ( finalcut::getColumnWidth(term_buf) == 5 );
-  term_buf.clear();
-  term_buf << L"你好";
-  CPPUNIT_ASSERT ( finalcut::getColumnWidth(term_buf) == 4 );
-  term_buf.clear();
-  term_buf << L"你好 one ＣＵＴ more";
-  CPPUNIT_ASSERT ( finalcut::getColumnWidth(term_buf) == 20 );
-  term_buf.clear();
-  term_buf << L"1234567 one ＣＵＴ more";
-  CPPUNIT_ASSERT ( finalcut::getColumnWidth(term_buf) == 23 );
-  term_buf.clear();
-  term_buf << L"o\U0000031b\U00000323=\U00001ee3";
-  CPPUNIT_ASSERT ( finalcut::getColumnWidth(term_buf) == 3 );
-  term_buf.clear();
-  term_buf << L"STARGΛ̊TE";
-  CPPUNIT_ASSERT ( finalcut::getColumnWidth(term_buf) == 8 );
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(vterm_buf) == 0 );  // after clear
+  vterm_buf << L"abc";
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(vterm_buf) == 3 );
+  vterm_buf.clear();
+  vterm_buf << L"ａbｃ";
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(vterm_buf) == 5 );
+  vterm_buf.clear();
+  vterm_buf << L"你好";
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(vterm_buf) == 4 );
+  vterm_buf.clear();
+  vterm_buf << L"你好 one ＣＵＴ more";
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(vterm_buf) == 20 );
+  vterm_buf.clear();
+  vterm_buf << L"1234567 one ＣＵＴ more";
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(vterm_buf) == 23 );
+  vterm_buf.clear();
+  vterm_buf << L"o\U0000031b\U00000323=\U00001ee3";
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(vterm_buf) == 3 );
+  vterm_buf.clear();
+  vterm_buf << L"STARGΛ̊TE";
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(vterm_buf) == 8 );
 
   // Extracts a substring that starts at a specified column position
   // and has a specified number of columns
@@ -3013,7 +3020,7 @@ void FTermFunctionsTest::readCursorPosTest()
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::xterm);
 
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
+    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }

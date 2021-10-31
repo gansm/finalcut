@@ -37,15 +37,6 @@ class Menu final : public finalcut::FDialog
     // Constructor
     explicit Menu (finalcut::FWidget* = nullptr);
 
-    // Disable copy constructor
-    Menu (const Menu&) = delete;
-
-    // Destructor
-    ~Menu() override = default;
-
-    // Disable copy assignment operator (=)
-    Menu& operator = (const Menu&) = delete;
-
   private:
     // Methods
     void configureFileMenuItems();
@@ -106,7 +97,7 @@ class Menu final : public finalcut::FDialog
     finalcut::FMenu          BStyle{"&Style", &Border};
     finalcut::FRadioMenuItem BColor1{"Red", &BColor};
     finalcut::FRadioMenuItem BColor2{"Blue", &BColor};
-    finalcut::FRadioMenuItem BStyle1{line, &BStyle};
+    finalcut::FRadioMenuItem BStyle1{std::move(line), &BStyle};
     finalcut::FRadioMenuItem BStyle2{"-------------", &BStyle};
     finalcut::FRadioMenuItem BStyle3{"- - - - - - -", &BStyle};
     finalcut::FRadioMenuItem BStyle4{"-  -  -  -  -", &BStyle};
@@ -258,7 +249,7 @@ void Menu::configureBorderMenuItems()
 //----------------------------------------------------------------------
 void Menu::defaultCallback (const finalcut::FMenuList* mb)
 {
-  for (uInt i{1}; i <= mb->getCount(); i++)
+  for (std::size_t i{1}; i <= mb->getCount(); i++)
   {
     auto item = mb->getItem(int(i));
 

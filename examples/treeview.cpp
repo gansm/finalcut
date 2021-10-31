@@ -102,13 +102,10 @@ bool sortAscending ( const finalcut::FObject* lhs
   const auto& r_str = r_item->getText(column);
 
   if ( column == 2 )
-  {
     return isGreaterThanInteger(l_str, r_str);
-  }
-  else if ( column == 3 )
-  {
+
+  if ( column == 3 )
     return isGreaterThanDouble(l_str, r_str);
-  }
 
   return false;
 }
@@ -124,13 +121,10 @@ bool sortDescending ( const finalcut::FObject* lhs
   const auto& r_str = r_item->getText(column);
 
   if ( column == 2 )
-  {
     return isLessThanInteger(l_str, r_str);
-  }
-  else if ( column == 3 )
-  {
+
+  if ( column == 3 )
     return isLessThanDouble(l_str, r_str);
-  }
 
   return false;
 }
@@ -145,15 +139,6 @@ class Treeview final : public finalcut::FDialog
   public:
     // Constructor
     explicit Treeview (finalcut::FWidget* = nullptr);
-
-    // Disable copy constructor
-    Treeview (const Treeview&) = delete;
-
-    // Destructor
-    ~Treeview() override = default;
-
-    // Disable copy assignment operator (=)
-    Treeview& operator = (const Treeview&) = delete;
 
   private:
     // Typedefs
@@ -193,10 +178,10 @@ struct Treeview::TreeItem
 {
   using const_iterator = const char* const*;
 
-  const_iterator begin() const noexcept
+  const_iterator cbegin() const noexcept
   { return &name; }
 
-  const_iterator end() const noexcept
+  const_iterator cend() const noexcept
   { return std::next(&density); }
 
   // Data members
@@ -245,14 +230,14 @@ Treeview::Treeview (finalcut::FWidget* parent)
 
   for (const auto& continent : continent_list)
   {
-    finalcut::FStringList continent_line ( continent.begin()
-                                         , continent.end() );
+    finalcut::FStringList continent_line ( continent.cbegin()
+                                         , continent.cend() );
     auto iter = listview.insert (continent_line);
 
     for (const auto& country : continent.child_element)
     {
-      finalcut::FStringList country_line ( country.begin()
-                                         , country.end() );
+      finalcut::FStringList country_line ( country.cbegin()
+                                         , country.cend() );
       listview.insert (country_line, iter);
     }
   }

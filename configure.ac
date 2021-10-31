@@ -4,13 +4,20 @@
 
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT([finalcut], [0.7.2])
+AC_INIT([finalcut], [0.8.0])
 AC_CONFIG_HEADER([config.h])
-AX_PREFIX_CONFIG_H([src/include/final/fconfig.h], [F])
-AC_CONFIG_SRCDIR([src/fobject.cpp])
+AX_PREFIX_CONFIG_H([final/fconfig.h], [F])
+AC_CONFIG_SRCDIR([final/fobject.cpp])
 AC_USE_SYSTEM_EXTENSIONS
 AM_INIT_AUTOMAKE
+m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 AC_PROG_CC
+
+if test -z $CXXFLAGS
+then
+  CXXFLAGS="-O3"
+fi
+
 AC_PROG_CXX
 
 # Checks for header files.
@@ -45,10 +52,17 @@ AC_CHECK_FUNCS( \
 		strstr \
 		vsnprintf )
 
+
 # Checks for 'tgetent'
 AC_SEARCH_LIBS([tgetent], [terminfo mytinfo termlib termcap tinfo ncurses curses])
 # Checks for 'tparm'
 AC_SEARCH_LIBS([tparm], [terminfo mytinfo termlib termcap tinfo ncurses curses])
+
+AC_SUBST([FINAL_LIBS])
+AC_SUBST([TERMCAP_LIB])
+TERMCAP_LIB="$LIBS"
+FINAL_LIBS="$LIBS"
+LIBS=""
 
 # Checks for libtool
 AC_ENABLE_SHARED
@@ -61,19 +75,18 @@ LT_OUTPUT
 ### This defines the version number of the installed .so files
 ### Update this value for every release!  (A:B:C will map to foo.so.(A-C).C.B)
 ### using libtool's versioning system.
-AC_SUBST(SO_VERSION, ["7:2:7"])
+AC_SUBST(SO_VERSION, ["8:0:8"])
 
 AC_SUBST([LIBTOOL_DEPS])
 
 AC_CONFIG_MACRO_DIR([m4])
 
 AC_CONFIG_FILES([Makefile
-                 src/Makefile
-                 fonts/Makefile
+                 final/Makefile
+                 final/font/Makefile
                  doc/Makefile
                  examples/Makefile
                  test/Makefile
-                 finalcut.spec
                  finalcut.pc])
 
 # Check for C++11 support
@@ -91,7 +104,7 @@ then
   AC_CHECK_LIB([gpm],
                [Gpm_Open],
                [AC_DEFINE([HAVE_LIBGPM], 1, [Define to 1 if GPM mouse is enabled])
-                LIBS="$LIBS -lgpm"])
+                FINAL_LIBS="$FINAL_LIBS -lgpm"])
 fi
 
 # profiling
@@ -103,7 +116,7 @@ if test "x$with_profiler" != "xno"
 then
   AC_CHECK_LIB([profiler],
                [ProfilerFlush],
-               [LIBS="$LIBS -lprofiler"])
+               [FINAL_LIBS="$FINAL_LIBS -lprofiler"])
 fi
 
 # unit test
@@ -130,7 +143,7 @@ if test "x$with_gcov" != "xno"
 then
   AC_CHECK_LIB([gcov],
                [main],
-               [LIBS="$LIBS -lgcov"])
+               [FINAL_LIBS="$FINAL_LIBS -lgcov"])
   AM_CXXFLAGS="-fprofile-arcs -ftest-coverage $AM_CXXFLAGS"
   AC_SUBST([AM_CXXFLAGS])
 fi

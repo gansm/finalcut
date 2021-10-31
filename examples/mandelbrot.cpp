@@ -37,9 +37,6 @@ class Mandelbrot final : public finalcut::FDialog
     // Constructor
     explicit Mandelbrot (finalcut::FWidget* = nullptr);
 
-    // Destructor
-    ~Mandelbrot() override = default;
-
     // Event handlers
     void onKeyPress (finalcut::FKeyEvent*) override;
     void onClose (finalcut::FCloseEvent*) override;

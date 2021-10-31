@@ -42,8 +42,7 @@
 class FTermDetectionTest : public CPPUNIT_NS::TestFixture, test::ConEmu
 {
   public:
-    FTermDetectionTest();
-    ~FTermDetectionTest();
+    FTermDetectionTest() = default;
 
   protected:
     void classNameTest();
@@ -104,14 +103,6 @@ class FTermDetectionTest : public CPPUNIT_NS::TestFixture, test::ConEmu
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
 };
-
-//----------------------------------------------------------------------
-FTermDetectionTest::FTermDetectionTest()
-{ }
-
-//----------------------------------------------------------------------
-FTermDetectionTest::~FTermDetectionTest()
-{ }
 
 //----------------------------------------------------------------------
 void FTermDetectionTest::classNameTest()
@@ -194,7 +185,7 @@ void FTermDetectionTest::ansiTest()
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::ansi);
 
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
+    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -269,7 +260,7 @@ void FTermDetectionTest::xtermTest()
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::xterm);
 
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
+    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -340,7 +331,7 @@ void FTermDetectionTest::rxvtTest()
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::rxvt);
 
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
+    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -411,7 +402,7 @@ void FTermDetectionTest::urxvtTest()
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::urxvt);
 
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
+    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -482,7 +473,7 @@ void FTermDetectionTest::kdeKonsoleTest()
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::kde_konsole);
 
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
+    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -553,7 +544,7 @@ void FTermDetectionTest::gnomeTerminalTest()
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::gnome_terminal);
 
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
+    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -624,7 +615,7 @@ void FTermDetectionTest::newerVteTerminalTest()
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::newer_vte_terminal);
 
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
+    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -696,7 +687,7 @@ void FTermDetectionTest::puttyTest()
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::putty);
 
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
+    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -769,7 +760,7 @@ void FTermDetectionTest::windowsTerminalTest()
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::win_terminal);
 
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
+    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -840,7 +831,7 @@ void FTermDetectionTest::teraTermTest()
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::tera_term);
 
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
+    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -919,7 +910,7 @@ void FTermDetectionTest::cygwinTest()
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::cygwin);
 
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
+    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -990,7 +981,7 @@ void FTermDetectionTest::minttyTest()
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::mintty);
 
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
+    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -1068,7 +1059,7 @@ void FTermDetectionTest::linuxTest()
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::linux_con);
 
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
+    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -1149,7 +1140,7 @@ void FTermDetectionTest::freebsdTest()
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::freebsd_con);
 
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
+    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -1228,7 +1219,7 @@ void FTermDetectionTest::netbsdTest()
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::netbsd_con);
 
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
+    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -1307,7 +1298,7 @@ void FTermDetectionTest::openbsdTest()
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::openbsd_con);
 
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
+    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -1384,7 +1375,7 @@ void FTermDetectionTest::sunTest()
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::sun_con);
 
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
+    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -1460,7 +1451,7 @@ void FTermDetectionTest::screenTest()
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::screen);
 
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
+    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -1537,7 +1528,7 @@ void FTermDetectionTest::tmuxTest()
     // Start the terminal simulation
     startConEmuTerminal (ConEmu::console::tmux);
 
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
+    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -1618,7 +1609,7 @@ void FTermDetectionTest::ktermTest()
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::kterm);
 
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
+    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -1696,7 +1687,7 @@ void FTermDetectionTest::mltermTest()
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::mlterm);
 
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
+    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -1770,7 +1761,7 @@ void FTermDetectionTest::kittyTest()
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::kitty);
 
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
+    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -1859,7 +1850,7 @@ void FTermDetectionTest::ttytypeTest()
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::ansi);
 
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
+    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 

@@ -36,6 +36,8 @@
 
 #include <final/final.h>
 
+using finalcut::C_STR;
+
 namespace test
 {
 
@@ -77,7 +79,7 @@ class ConEmu
     ConEmu()
     {
       // Map shared memory
-      void* ptr = mmap ( NULL
+      void* ptr = mmap ( nullptr
                        , sizeof(*shared_state)
                        , PROT_READ | PROT_WRITE
                        , MAP_SHARED | MAP_ANONYMOUS, -1
@@ -113,10 +115,10 @@ class ConEmu
 
   protected:
     // Mutators
-    void        enableConEmuDebug (bool);
+    void        enableConEmuDebug (bool) noexcept;
 
     // Inquiries
-    bool        isConEmuChildProcess (pid_t);
+    bool        isConEmuChildProcess (pid_t) const noexcept;
 
     // Methods
     void        printConEmuDebug();
@@ -416,7 +418,7 @@ const char* ConEmu::colorname[] =
   C_STR("dada/dada/dada"),  // 253
   C_STR("e4e4/e4e4/e4e4"),  // 254
   C_STR("eeee/eeee/eeee"),  // 255
-  0
+  nullptr
 };
 
 
@@ -424,13 +426,13 @@ const char* ConEmu::colorname[] =
 
 // protected methods of ConEmu
 //----------------------------------------------------------------------
-inline void ConEmu::enableConEmuDebug (bool enable)
+inline void ConEmu::enableConEmuDebug (bool enable) noexcept
 {
   debug = enable;
 }
 
 //----------------------------------------------------------------------
-inline bool ConEmu::isConEmuChildProcess (pid_t pid)
+inline bool ConEmu::isConEmuChildProcess (pid_t pid) const noexcept
 {
   return bool( pid == 0 );
 }
@@ -564,7 +566,7 @@ inline pid_t ConEmu::forkConEmu()
     {
       // Wait 10 ms (= 10,000,000 ns)
       const struct timespec ms[]{{0, 10000000L}};
-      nanosleep (ms, NULL);
+      nanosleep (ms, nullptr);
       i++;
     }
 
@@ -579,9 +581,12 @@ inline pid_t ConEmu::forkConEmu()
 //----------------------------------------------------------------------
 inline void ConEmu::startConEmuTerminal (console con)
 {
+  if ( fd_master < 0 )
+    return;
+
   closeSlavePTY();
 
-  while ( 1 )
+  while ( true )
   {
     fd_set ifds;
     struct timeval tv;
@@ -594,7 +599,7 @@ inline void ConEmu::startConEmuTerminal (console con)
     tv.tv_usec = 750000;  // 750 ms
 
     // Wait for data from stdin or the master side of PTY
-    if ( select(fd_master + 1, &ifds, 0, 0, &tv) < 0 )
+    if ( select(fd_master + 1, &ifds, nullptr, nullptr, &tv) < 0 )
       break;
 
     // Data on standard input
@@ -616,7 +621,8 @@ inline void ConEmu::startConEmuTerminal (console con)
 
       if ( len == -1 || std::size_t(len) >= sizeof(buffer) )
         break;
-      else if ( len > 0 )
+
+      if ( len > 0 )
       {
         buffer[len] = '\0';
         parseTerminalBuffer (len, con);
@@ -632,28 +638,28 @@ inline const char* ConEmu::getAnswerback (console con)
 {
   static const char* Answerback[] =
   {
-    0,               // Ansi,
-    0,               // XTerm
-    0,               // Rxvt
-    0,               // Urxvt
-    0,               // KDE Konsole
-    0,               // GNOME Terminal
-    0,               // VTE Terminal >= 0.53.0
+    nullptr,         // Ansi,
+    nullptr,         // XTerm
+    nullptr,         // Rxvt
+    nullptr,         // Urxvt
+    nullptr,         // KDE Konsole
+    nullptr,         // GNOME Terminal
+    nullptr,         // VTE Terminal >= 0.53.0
     C_STR("PuTTY"),  // PuTTY
-    0,               // Windows Terminal
-    0,               // Tera Term
-    0,               // Cygwin
-    0,               // Mintty
-    0,               // Linux console
-    0,               // FreeBSD console
-    0,               // NetBSD console
-    0,               // OpenBSD console
-    0,               // Sun console
-    0,               // screen
-    0,               // tmux
-    0,               // kterm,
-    0,               // mlterm - Multi Lingual TERMinal
-    0                // kitty
+    nullptr,         // Windows Terminal
+    nullptr,         // Tera Term
+    nullptr,         // Cygwin
+    nullptr,         // Mintty
+    nullptr,         // Linux console
+    nullptr,         // FreeBSD console
+    nullptr,         // NetBSD console
+    nullptr,         // OpenBSD console
+    nullptr,         // Sun console
+    nullptr,         // screen
+    nullptr,         // tmux
+    nullptr,         // kterm,
+    nullptr,         // mlterm - Multi Lingual TERMinal
+    nullptr          // kitty
   };
 
   return Answerback[static_cast<std::size_t>(con)];
@@ -664,7 +670,7 @@ inline const char* ConEmu::getDSR (console con)
 {
   static const char* DSR[] =
   {
-    0,                 // Ansi,
+    nullptr,           // Ansi,
     C_STR("\033[0n"),  // XTerm
     C_STR("\033[0n"),  // Rxvt
     C_STR("\033[0n"),  // Urxvt
@@ -674,13 +680,13 @@ inline const char* ConEmu::getDSR (console con)
     C_STR("\033[0n"),  // PuTTY
     C_STR("\033[0n"),  // Windows Terminal >= 1.2
     C_STR("\033[0n"),  // Tera Term
-    0,                 // Cygwin
+    nullptr,           // Cygwin
     C_STR("\033[0n"),  // Mintty
     C_STR("\033[0n"),  // Linux console
     C_STR("\033[0n"),  // FreeBSD console
     C_STR("\033[0n"),  // NetBSD console
     C_STR("\033[0n"),  // OpenBSD console
-    0,                 // Sun console
+    nullptr,           // Sun console
     C_STR("\033[0n"),  // screen
     C_STR("\033[0n"),  // tmux
     C_STR("\033[0n"),  // kterm
@@ -696,7 +702,7 @@ inline const char* ConEmu::getDECID (console con)
 {
   static const char* DECID[] =
   {
-    0,                                     // Ansi,
+    nullptr,                               // Ansi,
     C_STR("\033[?63;1;2;6;4;6;9;15;22c"),  // XTerm
     C_STR("\033[?1;2c"),                   // Rxvt
     C_STR("\033[?1;2c"),                   // Urxvt
@@ -704,20 +710,20 @@ inline const char* ConEmu::getDECID (console con)
     C_STR("\033[?62;c"),                   // GNOME Terminal
     C_STR("\033[?65;1;9c"),                // VTE Terminal >= 0.53.0
     C_STR("\033[?6c"),                     // PuTTY
-    0,                                     // Windows Terminal
+    nullptr,                               // Windows Terminal
     C_STR("\033[?1;2c"),                   // Tera Term
-    0,                                     // Cygwin
+    nullptr,                               // Cygwin
     C_STR("\033[?1;2;6;22c"),              // Mintty
     C_STR("\033[?6c"),                     // Linux console
-    0,                                     // FreeBSD console
-    0,                                     // NetBSD console
-    0,                                     // OpenBSD console
-    0,                                     // Sun console
+    nullptr,                               // FreeBSD console
+    nullptr,                               // NetBSD console
+    nullptr,                               // OpenBSD console
+    nullptr,                               // Sun console
     C_STR("\033[?1;2c"),                   // screen
-    0,                                     // tmux
+    nullptr,                               // tmux
     C_STR("\033[?1;2c"),                   // kterm
     C_STR("\033[?63;1;2;3;4;7;29c"),       // mlterm - Multi Lingual TERMinal
-    0                                      // kitty
+    nullptr                                // kitty
   };
 
   return DECID[static_cast<std::size_t>(con)];
@@ -728,7 +734,7 @@ inline const char* ConEmu::getDA (console con)
 {
   static const char* DA[] =
   {
-    0,                                     // Ansi,
+    nullptr,                               // Ansi,
     C_STR("\033[?63;1;2;6;4;6;9;15;22c"),  // XTerm
     C_STR("\033[?1;2c"),                   // Rxvt
     C_STR("\033[?1;2c"),                   // Urxvt
@@ -744,7 +750,7 @@ inline const char* ConEmu::getDA (console con)
     C_STR("\033[?1;2c"),                   // FreeBSD console
     C_STR("\033[?62;6c"),                  // NetBSD console
     C_STR("\033[?62;6c"),                  // OpenBSD console
-    0,                                     // Sun console
+    nullptr,                               // Sun console
     C_STR("\033[?1;2c"),                   // screen
     C_STR("\033[?1;2c"),                   // tmux
     C_STR("\033[?1;2c"),                   // kterm
@@ -760,28 +766,28 @@ inline const char* ConEmu::getDA1 (console con)
 {
   static const char* DA1[] =
   {
-    0,                                // Ansi,
-    0,                                // XTerm
+    nullptr,                          // Ansi,
+    nullptr,                          // XTerm
     C_STR("\033[?1;2c"),              // Rxvt
     C_STR("\033[?1;2c"),              // Urxvt
     C_STR("\033[?1;2c"),              // KDE Konsole
     C_STR("\033[?62;c"),              // GNOME Terminal
     C_STR("\033[?65;1;9c"),           // VTE Terminal >= 0.53.0
     C_STR("\033[?6c"),                // PuTTY
-    0,                                // Windows Terminal
+    nullptr,                          // Windows Terminal
     C_STR("\033[?1;2c"),              // Tera Term
     C_STR("\033[?6c"),                // Cygwin
     C_STR("\033[?1;2;6;22c"),         // Mintty
-    0,                                // Linux console
-    0,                                // FreeBSD console
-    0,                                // NetBSD console
-    0,                                // OpenBSD console
-    0,                                // Sun console
-    0,                                // screen
-    0,                                // tmux
-    0,                                // kterm
+    nullptr,                          // Linux console
+    nullptr,                          // FreeBSD console
+    nullptr,                          // NetBSD console
+    nullptr,                          // OpenBSD console
+    nullptr,                          // Sun console
+    nullptr,                          // screen
+    nullptr,                          // tmux
+    nullptr,                          // kterm
     C_STR("\033[?63;1;2;3;4;7;29c"),  // mlterm - Multi Lingual TERMinal
-    0                                 // kitty
+    nullptr                           // kitty
   };
 
   return DA1[static_cast<std::size_t>(con)];
@@ -792,7 +798,7 @@ inline const char* ConEmu::getSEC_DA (console con)
 {
   static const char* SEC_DA[] =
   {
-    0,                            // Ansi,
+    nullptr,                      // Ansi,
     C_STR("\033[>19;312;0c"),     // XTerm
     C_STR("\033[>82;20710;0c"),   // Rxvt
     C_STR("\033[>85;95;0c"),      // Urxvt
@@ -804,11 +810,11 @@ inline const char* ConEmu::getSEC_DA (console con)
     C_STR("\033[>32;278;0c"),     // Tera Term
     C_STR("\033[>67;200502;0c"),  // Cygwin
     C_STR("\033[>77;20402;0c"),   // Mintty
-    0,                            // Linux console
+    nullptr,                      // Linux console
     C_STR("\033[>0;10;0c"),       // FreeBSD console
     C_STR("\033[>24;20;0c"),      // NetBSD console
     C_STR("\033[>24;20;0c"),      // OpenBSD console
-    0,                            // Sun console
+    nullptr,                      // Sun console
     C_STR("\033[>83;40201;0c"),   // screen
     C_STR("\033[>84;0;0c"),       // tmux
     C_STR("\033[?1;2c"),          // kterm
@@ -853,7 +859,7 @@ inline bool ConEmu::openSlavePTY()
   // Get PTY filename
   const char* pty_name = ptsname(fd_master);
 
-  if ( pty_name == 0 )
+  if ( pty_name == nullptr )
     return false;
 
   // Open the slave PTY

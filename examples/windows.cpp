@@ -39,15 +39,6 @@ class SmallWindow final : public finalcut::FDialog
     // Constructor
     explicit SmallWindow (finalcut::FWidget* = nullptr);
 
-    // Disable copy constructor
-    SmallWindow (const SmallWindow&) = delete;
-
-    // Destructor
-    ~SmallWindow() override = default;
-
-    // Disable copy assignment operator (=)
-    SmallWindow& operator = (const SmallWindow&) = delete;
-
   private:
     // Method
     void initLayout() override;
@@ -183,14 +174,8 @@ class Window final : public finalcut::FDialog
     // Constructor
     explicit Window (finalcut::FWidget* = nullptr);
 
-    // Disable copy constructor
-    Window (const Window&) = delete;
-
     // Destructor
     ~Window() override;
-
-    // Disable copy assignment operator (=)
-    Window& operator = (const Window&) = delete;
 
   private:
     struct WinData
@@ -248,7 +233,7 @@ class Window final : public finalcut::FDialog
     finalcut::FString         drop_down_symbol{finalcut::UniChar::BlackDownPointingTriangle};
     finalcut::FMenuBar        Menubar{this};
     finalcut::FMenu           File{"&File", &Menubar};
-    finalcut::FDialogListMenu DglList{drop_down_symbol, &Menubar};
+    finalcut::FDialogListMenu DglList{std::move(drop_down_symbol), &Menubar};
     finalcut::FStatusBar      Statusbar{this};
     finalcut::FMenuItem       New{"&New", &File};
     finalcut::FMenuItem       Close{"&Close", &File};

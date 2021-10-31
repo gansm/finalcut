@@ -50,9 +50,9 @@ using std::chrono::high_resolution_clock;
 //----------------------------------------------------------------------
 void check_c_string ( const char* s1
                     , const char* s2
-                    , CppUnit::SourceLine sourceLine )
+                    , const CppUnit::SourceLine& sourceLine )
 {
-  if ( s1 == 0 && s2 == 0 )  // Strings are equal
+  if ( s1 == nullptr && s2 == nullptr )  // Strings are equal
     return;
 
   if ( s1 && s2 && std::strcmp (s1, s2) == 0 )  // Strings are equal
@@ -69,8 +69,7 @@ void check_c_string ( const char* s1
 class FTermcapTest : public CPPUNIT_NS::TestFixture
 {
   public:
-    FTermcapTest()
-    { }
+    FTermcapTest() = default;
 
   protected:
     void classNameTest();
@@ -81,9 +80,11 @@ class FTermcapTest : public CPPUNIT_NS::TestFixture
     void encodeMotionParameterTest();
     void encodeParameterTest();
     void paddingPrintTest();
+    void stringPrintTest();
 
   private:
-    static int putchar_test(int);
+    static int putchar_test (int);
+    static int putstring_test (const std::string&);
     static void clear();
 
     // Adds code needed to register the test suite
@@ -98,6 +99,7 @@ class FTermcapTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (encodeMotionParameterTest);
     CPPUNIT_TEST (encodeParameterTest);
     CPPUNIT_TEST (paddingPrintTest);
+    CPPUNIT_TEST (stringPrintTest);
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
@@ -127,6 +129,13 @@ void FTermcapTest::initTest()
   finalcut::FTermcap tcap;
   CPPUNIT_ASSERT ( ! tcap.isInitialized() );
   tcap.init();
+  CPPUNIT_ASSERT ( tcap.isInitialized() );
+  tcap.setPutCharFunction (nullptr);
+  tcap.setPutStringFunction (nullptr);
+  CPPUNIT_ASSERT ( ! tcap.isInitialized() );
+  tcap.setPutCharFunction (FTermcapTest::putchar_test);
+  CPPUNIT_ASSERT ( ! tcap.isInitialized() );
+  tcap.setPutStringFunction (FTermcapTest::putstring_test);
   CPPUNIT_ASSERT ( tcap.isInitialized() );
   CPPUNIT_ASSERT ( ! fterm_data.getTermType().empty() );
   CPPUNIT_ASSERT ( fterm_data.getTermType() == "xterm" );
@@ -160,6 +169,8 @@ void FTermcapTest::getFlagTest()
   fterm_data.setTermType("ansi");
   finalcut::FTermcap tcap;
   tcap.init();
+  tcap.setPutCharFunction (FTermcapTest::putchar_test);
+  tcap.setPutStringFunction (FTermcapTest::putstring_test);
   CPPUNIT_ASSERT ( tcap.isInitialized() );
   CPPUNIT_ASSERT ( fterm_data.getTermType() == "ansi" );
 
@@ -171,16 +182,19 @@ void FTermcapTest::getFlagTest()
 //----------------------------------------------------------------------
 void FTermcapTest::getNumberTest()
 {
+  static constexpr int NA = -1;  // not_available
   auto& fterm_data = finalcut::FTermData::getInstance();
   fterm_data.setTermType("xterm");
   finalcut::FTermcap tcap;
   tcap.init();
+  tcap.setPutCharFunction (FTermcapTest::putchar_test);
+  tcap.setPutStringFunction (FTermcapTest::putstring_test);
   CPPUNIT_ASSERT ( tcap.isInitialized() );
   CPPUNIT_ASSERT ( fterm_data.getTermType() == "xterm" );
 
   CPPUNIT_ASSERT ( tcap.getNumber("Co") == 8 );   // Colors
   CPPUNIT_ASSERT ( tcap.getNumber("it") == 8 );   // Tab stop
-  CPPUNIT_ASSERT ( tcap.getNumber("NC") == 0 );   // Attr. without color
+  CPPUNIT_ASSERT ( tcap.getNumber("NC") == NA );  // Attr. without color
   CPPUNIT_ASSERT ( tcap.getNumber("co") == 80 );  // Columns
   CPPUNIT_ASSERT ( tcap.getNumber("li") == 24 );  // Lines
 }
@@ -192,6 +206,8 @@ void FTermcapTest::getStringTest()
   fterm_data.setTermType("ansi");
   finalcut::FTermcap tcap;
   tcap.init();
+  tcap.setPutCharFunction (FTermcapTest::putchar_test);
+  tcap.setPutStringFunction (FTermcapTest::putstring_test);
   CPPUNIT_ASSERT ( tcap.isInitialized() );
   CPPUNIT_ASSERT ( fterm_data.getTermType() == "ansi" );
 
@@ -210,6 +226,8 @@ void FTermcapTest::encodeMotionParameterTest()
   fterm_data.setTermType("ansi");
   finalcut::FTermcap tcap;
   tcap.init();
+  tcap.setPutCharFunction (FTermcapTest::putchar_test);
+  tcap.setPutStringFunction (FTermcapTest::putstring_test);
   CPPUNIT_ASSERT ( tcap.isInitialized() );
   CPPUNIT_ASSERT ( fterm_data.getTermType() == "ansi" );
   const auto& cursor_address = tcap.getString("cm");
@@ -226,6 +244,8 @@ void FTermcapTest::encodeParameterTest()
   fterm_data.setTermType("ansi");
   finalcut::FTermcap tcap;
   tcap.init();
+  tcap.setPutCharFunction (FTermcapTest::putchar_test);
+  tcap.setPutStringFunction (FTermcapTest::putstring_test);
   CPPUNIT_ASSERT ( tcap.isInitialized() );
   CPPUNIT_ASSERT ( fterm_data.getTermType() == "ansi" );
   const auto& parm_insert_line = tcap.getString("AL");
@@ -252,33 +272,35 @@ void FTermcapTest::paddingPrintTest()
   fterm_data.setTermType("xterm");
   CPPUNIT_ASSERT ( ! tcap.xon_xoff_flow_control );
   tcap.init();
+  tcap.setPutCharFunction (FTermcapTest::putchar_test);
+  tcap.setPutStringFunction (FTermcapTest::putstring_test);
   CPPUNIT_ASSERT ( tcap.isInitialized() );
   CPPUNIT_ASSERT ( tcap.no_padding_char );
 
   // With an empty string
   CPPUNIT_ASSERT ( output.empty() );
-  auto status = tcap.paddingPrint ({}, 1, FTermcapTest::putchar_test);
+  auto status = tcap.paddingPrint ({}, 1);
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::Error );
   CPPUNIT_ASSERT ( output.empty() );
   CPPUNIT_ASSERT ( output == "" );
 
   // '$' without '<'
   CPPUNIT_ASSERT ( output.empty() );
-  status = tcap.paddingPrint ("12$34567", 1, FTermcapTest::putchar_test);
+  status = tcap.paddingPrint ("12$34567", 1);
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   CPPUNIT_ASSERT ( ! output.empty() );
   CPPUNIT_ASSERT ( output == "12$34567" );
 
   // No closing '>'
   output.clear();
-  status = tcap.paddingPrint ("12$3$<4567", 1, FTermcapTest::putchar_test);
+  status = tcap.paddingPrint ("12$3$<4567", 1);
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   CPPUNIT_ASSERT ( ! output.empty() );
   CPPUNIT_ASSERT ( output == "12$3$<4567" );
 
   // Without a digit
   output.clear();
-  status = tcap.paddingPrint ("12$3$<x>4567", 1, FTermcapTest::putchar_test);
+  status = tcap.paddingPrint ("12$3$<x>4567", 1);
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   CPPUNIT_ASSERT ( ! output.empty() );
   CPPUNIT_ASSERT ( output == "12$3$<x>4567" );
@@ -286,7 +308,7 @@ void FTermcapTest::paddingPrintTest()
   // With 2 ms print delay
   output.clear();
   auto start = high_resolution_clock::now();
-  status = tcap.paddingPrint ("1234$<2/>567", 1, FTermcapTest::putchar_test);
+  status = tcap.paddingPrint ("1234$<2/>567", 1);
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   auto end = high_resolution_clock::now();
   auto duration_ms = int(duration_cast<milliseconds>(end - start).count());
@@ -297,7 +319,7 @@ void FTermcapTest::paddingPrintTest()
   // With 20 ms print delay
   output.clear();
   start = high_resolution_clock::now();
-  status = tcap.paddingPrint ("12$3$<45$<20/>67", 1, FTermcapTest::putchar_test);
+  status = tcap.paddingPrint ("12$3$<45$<20/>67", 1);
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   end = high_resolution_clock::now();
   duration_ms = int(duration_cast<milliseconds>(end - start).count());
@@ -308,7 +330,7 @@ void FTermcapTest::paddingPrintTest()
   // With a high a delay (9.999 seconds)
   output.clear();
   start = high_resolution_clock::now();
-  status = tcap.paddingPrint ("1234$<9999/>567", 1, FTermcapTest::putchar_test);
+  status = tcap.paddingPrint ("1234$<9999/>567", 1);
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   end = high_resolution_clock::now();
   duration_ms = int(duration_cast<milliseconds>(end - start).count());
@@ -319,7 +341,7 @@ void FTermcapTest::paddingPrintTest()
   // With too high a delay (delay > 9999 ms = 9.999 sec)
   output.clear();
   start = high_resolution_clock::now();
-  status = tcap.paddingPrint ("1234$<10000>567", 1, FTermcapTest::putchar_test);
+  status = tcap.paddingPrint ("1234$<10000>567", 1);
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   end = high_resolution_clock::now();
   duration_ms = int(duration_cast<milliseconds>(end - start).count());
@@ -329,7 +351,7 @@ void FTermcapTest::paddingPrintTest()
 
   // Beep has delayed output and flush
   output.clear();
-  status = tcap.paddingPrint (TCAP(t_bell), 1, FTermcapTest::putchar_test);
+  status = tcap.paddingPrint (TCAP(t_bell), 1);
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   CPPUNIT_ASSERT ( ! output.empty() );
   CPPUNIT_ASSERT ( output == std::string(TCAP(t_bell)) );
@@ -337,7 +359,7 @@ void FTermcapTest::paddingPrintTest()
   // Flash screen has delayed output and flush
   output.clear();
   start = high_resolution_clock::now();
-  status = tcap.paddingPrint ("\033[?5h$<100/>\033[?5l", 1, FTermcapTest::putchar_test);
+  status = tcap.paddingPrint ("\033[?5h$<100/>\033[?5l", 1);
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   end = high_resolution_clock::now();
   duration_ms = int(duration_cast<milliseconds>(end - start).count());
@@ -349,11 +371,13 @@ void FTermcapTest::paddingPrintTest()
   setenv ("TERM", "ansi", 1);  // ansi terminals used for delay padding character
   fterm_data.setTermType("ansi");
   tcap.init();
+  tcap.setPutCharFunction (FTermcapTest::putchar_test);
+  tcap.setPutStringFunction (FTermcapTest::putstring_test);
   CPPUNIT_ASSERT ( ! tcap.no_padding_char );
   CPPUNIT_ASSERT ( ! tcap.xon_xoff_flow_control );
   output.clear();
   tcap.setBaudrate (38400);
-  status = tcap.paddingPrint ("1234$<5*/>567", 1, FTermcapTest::putchar_test);
+  status = tcap.paddingPrint ("1234$<5*/>567", 1);
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   const auto& str1_with_0 = "1234" "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0" "567";
   std::string target_output(std::begin(str1_with_0), std::end(str1_with_0) - 1);
@@ -365,46 +389,46 @@ void FTermcapTest::paddingPrintTest()
   output.clear();
   tcap.setBaudrate (9600);
   tcap.padding_baudrate = 0;  // no padding baudrate
-  status = tcap.paddingPrint ("abc$<2*>def", 1, FTermcapTest::putchar_test);
+  status = tcap.paddingPrint ("abc$<2*>def", 1);
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   CPPUNIT_ASSERT ( output.length() == 6 );
   CPPUNIT_ASSERT ( output == "abcdef" );
   output.clear();
-  status = tcap.paddingPrint ("abc$<2*/>def", 1, FTermcapTest::putchar_test);  // with "*/"
+  status = tcap.paddingPrint ("abc$<2*/>def", 1);  // with "*/"
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   const auto& str2_with_0 = "abc" "\0\0" "def";
   target_output = std::string(std::begin(str2_with_0), std::end(str2_with_0) - 1);
   CPPUNIT_ASSERT ( output.length() == 8 );
   CPPUNIT_ASSERT ( output == target_output );
   output.clear();
-  status = tcap.paddingPrint ("abc$<2/*>def", 1, FTermcapTest::putchar_test);  // with "/*"
+  status = tcap.paddingPrint ("abc$<2/*>def", 1);  // with "/*"
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   CPPUNIT_ASSERT ( output.length() == 8 );
   CPPUNIT_ASSERT ( output == target_output );
   output.clear();
-  status = tcap.paddingPrint ("abc$<2/x*>def", 1, FTermcapTest::putchar_test);  // defekt
+  status = tcap.paddingPrint ("abc$<2/x*>def", 1);  // defekt
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   CPPUNIT_ASSERT ( output.length() == 13 );
   CPPUNIT_ASSERT ( output == "abc$<2/x*>def" );
   output.clear();
-  status = tcap.paddingPrint ("abc$<2/*x>def", 1, FTermcapTest::putchar_test);  // defekt
+  status = tcap.paddingPrint ("abc$<2/*x>def", 1);  // defekt
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   CPPUNIT_ASSERT ( output.length() == 13 );
   CPPUNIT_ASSERT ( output == "abc$<2/*x>def" );
   output.clear();
   tcap.padding_baudrate = 19200;  // baudrate < padding baudrate
-  status = tcap.paddingPrint ("abc$<2*>def", 1, FTermcapTest::putchar_test);
+  status = tcap.paddingPrint ("abc$<2*>def", 1);
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   CPPUNIT_ASSERT ( output.length() == 6 );
   CPPUNIT_ASSERT ( output == "abcdef" );
   output.clear();
-  status = tcap.paddingPrint ("abc$<2*/>def", 1, FTermcapTest::putchar_test);  // with "*/"
+  status = tcap.paddingPrint ("abc$<2*/>def", 1);  // with "*/"
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   CPPUNIT_ASSERT ( output.length() == 8 );
   CPPUNIT_ASSERT ( output == target_output );
   output.clear();
   tcap.padding_baudrate = 9600;  // baudrate >= padding baudrate
-  status = tcap.paddingPrint ("abc$<2*>def", 1, FTermcapTest::putchar_test);
+  status = tcap.paddingPrint ("abc$<2*>def", 1);
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   CPPUNIT_ASSERT ( output.length() == 8 );
   CPPUNIT_ASSERT ( output == target_output );
@@ -412,41 +436,41 @@ void FTermcapTest::paddingPrintTest()
   // Wait 2 ms with padding characters and with 2 affected line
   output.clear();
   tcap.padding_baudrate = 0;  // no padding baudrate
-  status = tcap.paddingPrint ("abc$<2*>>def", 2, FTermcapTest::putchar_test);  // double >>
+  status = tcap.paddingPrint ("abc$<2*>>def", 2);  // double >>
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   CPPUNIT_ASSERT ( output.length() == 7 );
   CPPUNIT_ASSERT ( output == "abc>def" );
   output.clear();
-  status = tcap.paddingPrint ("abc$<2*/>def", 2, FTermcapTest::putchar_test);  // with "*/"
+  status = tcap.paddingPrint ("abc$<2*/>def", 2);  // with "*/"
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   const auto& str3_with_0 = "abc" "\0\0\0\0" "def";
   target_output = std::string(std::begin(str3_with_0), std::end(str3_with_0) - 1);
   CPPUNIT_ASSERT ( output.length() == 10 );
   CPPUNIT_ASSERT ( output == target_output );
   output.clear();
-  status = tcap.paddingPrint ("abc$<2/*>def", 2, FTermcapTest::putchar_test);  // with "/*"
+  status = tcap.paddingPrint ("abc$<2/*>def", 2);  // with "/*"
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   CPPUNIT_ASSERT ( output.length() == 10 );
   CPPUNIT_ASSERT ( output == target_output );
   output.clear();
   tcap.padding_baudrate = 19200;  // baudrate < padding baudrate
-  status = tcap.paddingPrint ("abc$<2*>def", 2, FTermcapTest::putchar_test);
+  status = tcap.paddingPrint ("abc$<2*>def", 2);
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   CPPUNIT_ASSERT ( output.length() == 6 );
   CPPUNIT_ASSERT ( output == "abcdef" );
   output.clear();
-  status = tcap.paddingPrint ("abc$<2*/>def", 2, FTermcapTest::putchar_test);  // with "*/"
+  status = tcap.paddingPrint ("abc$<2*/>def", 2);  // with "*/"
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   CPPUNIT_ASSERT ( output.length() == 10 );
   CPPUNIT_ASSERT ( output == target_output );
   output.clear();
-  status = tcap.paddingPrint ("abc$<2/*>def", 2, FTermcapTest::putchar_test);  // with "/*"
+  status = tcap.paddingPrint ("abc$<2/*>def", 2);  // with "/*"
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   CPPUNIT_ASSERT ( output.length() == 10 );
   CPPUNIT_ASSERT ( output == target_output );
   output.clear();
   tcap.padding_baudrate = 9600;  // baudrate >= padding baudrate
-  status = tcap.paddingPrint ("abc$<2*>def", 2, FTermcapTest::putchar_test);
+  status = tcap.paddingPrint ("abc$<2*>def", 2);
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   CPPUNIT_ASSERT ( output.length() == 10 );
   CPPUNIT_ASSERT ( output == target_output );
@@ -454,40 +478,40 @@ void FTermcapTest::paddingPrintTest()
   // Wait 2 ms with padding characters and with 3 affected line
   output.clear();
   tcap.padding_baudrate = 0;  // no padding baudrate
-  status = tcap.paddingPrint ("abc$<2*>def", 3, FTermcapTest::putchar_test);
+  status = tcap.paddingPrint ("abc$<2*>def", 3);
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   CPPUNIT_ASSERT ( output == "abcdef" );
   output.clear();
-  status = tcap.paddingPrint ("abc$<2*/>def", 3, FTermcapTest::putchar_test);  // with "*/"
+  status = tcap.paddingPrint ("abc$<2*/>def", 3);  // with "*/"
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   const auto& str4_with_0 = "abc" "\0\0\0\0\0\0" "def";
   target_output = std::string(std::begin(str4_with_0), std::end(str4_with_0) - 1);
   CPPUNIT_ASSERT ( output.length() == 12 );
   CPPUNIT_ASSERT ( output == target_output );
   output.clear();
-  status = tcap.paddingPrint ("abc$<2/*>def", 3, FTermcapTest::putchar_test);  // with "/*"
+  status = tcap.paddingPrint ("abc$<2/*>def", 3);  // with "/*"
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   CPPUNIT_ASSERT ( output.length() == 12 );
   CPPUNIT_ASSERT ( output == target_output );
   output.clear();
   tcap.padding_baudrate = 19200;  // baudrate < padding baudrate
-  status = tcap.paddingPrint ("abc$<2*>def", 3, FTermcapTest::putchar_test);
+  status = tcap.paddingPrint ("abc$<2*>def", 3);
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   CPPUNIT_ASSERT ( output.length() == 6 );
   CPPUNIT_ASSERT ( output == "abcdef" );
   output.clear();
-  status = tcap.paddingPrint ("abc$<2*/>def", 3, FTermcapTest::putchar_test);  // with "*/"
+  status = tcap.paddingPrint ("abc$<2*/>def", 3);  // with "*/"
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   CPPUNIT_ASSERT ( output.length() == 12 );
   CPPUNIT_ASSERT ( output == target_output );
   output.clear();
-  status = tcap.paddingPrint ("abc$<2/*>def", 3, FTermcapTest::putchar_test);  // with "/*"
+  status = tcap.paddingPrint ("abc$<2/*>def", 3);  // with "/*"
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   CPPUNIT_ASSERT ( output.length() == 12 );
   CPPUNIT_ASSERT ( output == target_output );
   output.clear();
   tcap.padding_baudrate = 9600;  // baudrate >= padding baudrate
-  status = tcap.paddingPrint ("abc$<2*>def", 3, FTermcapTest::putchar_test);
+  status = tcap.paddingPrint ("abc$<2*>def", 3);
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   CPPUNIT_ASSERT ( output.length() == 12 );
   CPPUNIT_ASSERT ( output == target_output );
@@ -496,27 +520,79 @@ void FTermcapTest::paddingPrintTest()
   output.clear();
   tcap.setBaudrate(19200);
   tcap.padding_baudrate = 19200;  // baudrate == padding baudrate
-  status = tcap.paddingPrint ("abc$<2.>def", 1, FTermcapTest::putchar_test);  // 2.
+  status = tcap.paddingPrint ("abc$<2.>def", 1);  // 2.
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   const auto& str5_with_0 = "abc" "\0\0\0\0" "def";
   target_output = std::string(std::begin(str5_with_0), std::end(str5_with_0) - 1);
   CPPUNIT_ASSERT ( output.length() == 10 );
   CPPUNIT_ASSERT ( output == target_output );
   output.clear();
-  status = tcap.paddingPrint ("abc$<2.0>def", 1, FTermcapTest::putchar_test);  // 2.0
+  status = tcap.paddingPrint ("abc$<2.0>def", 1);  // 2.0
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   CPPUNIT_ASSERT ( output.length() == 10 );
   CPPUNIT_ASSERT ( output == target_output );
   output.clear();
-  status = tcap.paddingPrint ("abc$<2.7>def", 1, FTermcapTest::putchar_test);  // 2.7
+  status = tcap.paddingPrint ("abc$<2.7>def", 1);  // 2.7
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   CPPUNIT_ASSERT ( output.length() == 10 );
   CPPUNIT_ASSERT ( output == target_output );
   output.clear();
-  status = tcap.paddingPrint ("abc$<2.77>def", 1, FTermcapTest::putchar_test);  // 2.77
+  status = tcap.paddingPrint ("abc$<2.77>def", 1);  // 2.77
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   CPPUNIT_ASSERT ( output.length() == 10 );
   CPPUNIT_ASSERT ( output == target_output );
+  output.clear();
+}
+
+//----------------------------------------------------------------------
+void FTermcapTest::stringPrintTest()
+{
+  finalcut::FTermcap tcap;
+  tcap.init();
+  tcap.setPutStringFunction (nullptr);
+  CPPUNIT_ASSERT ( ! tcap.isInitialized() );
+  auto status = tcap.stringPrint ("Hello, World!");
+  CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::Error );
+  tcap.setPutCharFunction (FTermcapTest::putchar_test);
+  tcap.setPutStringFunction (FTermcapTest::putstring_test);
+  CPPUNIT_ASSERT ( tcap.isInitialized() );
+
+  // With an empty string
+  CPPUNIT_ASSERT ( output.empty() );
+  status = tcap.stringPrint ({});
+  CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::Error );
+  CPPUNIT_ASSERT ( output.empty() );
+  CPPUNIT_ASSERT ( output == "" );
+  status = tcap.stringPrint ("");
+  CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::Error );
+  CPPUNIT_ASSERT ( output.empty() );
+  CPPUNIT_ASSERT ( output == "" );
+  status = tcap.stringPrint (std::string());
+  CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::Error );
+  CPPUNIT_ASSERT ( output.empty() );
+  CPPUNIT_ASSERT ( output == "" );
+  status = tcap.stringPrint (std::string(""));
+  CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::Error );
+  CPPUNIT_ASSERT ( output.empty() );
+  CPPUNIT_ASSERT ( output == "" );
+
+  // With string data
+  status = tcap.stringPrint ("Hello");
+  CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
+  CPPUNIT_ASSERT ( ! output.empty() );
+  CPPUNIT_ASSERT ( output == "Hello" );
+  status = tcap.stringPrint (", World!");
+  CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
+  CPPUNIT_ASSERT ( output == "Hello, World!" );
+  output.clear();
+  status = tcap.stringPrint ("A open book 📖");
+  CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
+  CPPUNIT_ASSERT ( ! output.empty() );
+  CPPUNIT_ASSERT ( output == "A open book 📖" );
+  // Add with paddingPrint
+  status = tcap.paddingPrint (std::string(1, '!'), 1);
+  CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
+  CPPUNIT_ASSERT ( output == "A open book 📖!" );
 }
 
 //----------------------------------------------------------------------
@@ -525,6 +601,14 @@ int FTermcapTest::putchar_test (int ch)
   //std::cout << std::hex << "0x" << ch << "," << std::flush;
   output.push_back(char(ch));
   return ch;
+}
+
+//----------------------------------------------------------------------
+int FTermcapTest::putstring_test (const std::string& str)
+{
+  //std::cout << '"' << str << '"' << std::flush;
+  output.append(str);
+  return str.length();
 }
 
 //----------------------------------------------------------------------

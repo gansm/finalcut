@@ -28,7 +28,6 @@
 #include <final/final.h>
 
 using finalcut::FPoint;
-using finalcut::FRect;
 using finalcut::FSize;
 
 
@@ -41,15 +40,6 @@ class CheckList final : public finalcut::FDialog
   public:
     // Constructor
     explicit CheckList (finalcut::FWidget* = nullptr);
-
-    // Disable copy constructor
-    CheckList (const CheckList&) = delete;
-
-    // Destructor
-    ~CheckList() override = default;
-
-    // Disable copy assignment operator (=)
-    CheckList& operator = (const CheckList&) = delete;
 
   private:
     // Method
@@ -122,7 +112,7 @@ void CheckList::populate()
 
   for (const auto& line : list)
   {
-    const finalcut::FStringList string_line (line.begin(), line.end());
+    const finalcut::FStringList string_line (line.cbegin(), line.cend());
     auto iter = listview.insert (string_line);
     auto item = static_cast<finalcut::FListViewItem*>(*iter);
     item->setCheckable(true);
@@ -153,9 +143,7 @@ void CheckList::onKeyPress (finalcut::FKeyEvent* ev)
   if ( ! ev )
     return;
 
-  if ( ev->key() == finalcut::FKey('q')
-    || ev->key() == finalcut::FKey::Escape
-    || ev->key() == finalcut::FKey::Escape_mintty )
+  if ( ev->key() == finalcut::FKey('q') || isEscapeKey(ev->key()) )
   {
     close();
     ev->accept();

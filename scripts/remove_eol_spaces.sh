@@ -1,7 +1,14 @@
 #!/bin/sh
 
-find ../src/ \
-     ../src/include/final/ \
+find ../final/ \
+     ../final/util/ \
+     ../final/menu/ \
+     ../final/widget/ \
+     ../final/dialog/ \
+     ../final/input/ \
+     ../final/vterm/ \
+     ../final/output/ \
+     ../final/output/tty/ \
      ../examples/ \
      ../test/ \
      -regextype posix-egrep \

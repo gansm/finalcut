@@ -42,7 +42,7 @@
 //----------------------------------------------------------------------
 void check_string ( const std::string& s1
                   , const std::string& s2
-                  , CppUnit::SourceLine sourceLine )
+                  , const CppUnit::SourceLine& sourceLine )
 {
   if ( s1 == s2 )  // Strings are equal
     return;
@@ -169,6 +169,9 @@ class FOptiMoveTest : public CPPUNIT_NS::TestFixture
 FOptiMoveTest::FOptiMoveTest()
 {
   finalcut::FTermcap::init();
+  finalcut::FTermcap::setPutCharFunction (::putchar);
+  auto putstr = [] (const std::string& s){ return ::fputs(s.c_str(), stdout); };
+  finalcut::FTermcap::setPutStringFunction (putstr);
 }
 
 //----------------------------------------------------------------------
@@ -187,22 +190,22 @@ void FOptiMoveTest::noArgumentTest()
   CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 9, 9), CSI "10;10H");
 
   // Delete all presets
-  om.set_tabular (0);
-  om.set_back_tab (0);
-  om.set_cursor_home (0);
-  om.set_cursor_to_ll (0);
-  om.set_carriage_return (0);
-  om.set_cursor_up (0);
-  om.set_cursor_down (0);
-  om.set_cursor_right (0);
-  om.set_cursor_left (0);
-  om.set_cursor_address (0);
-  om.set_column_address (0);
-  om.set_row_address (0);
-  om.set_parm_up_cursor (0);
-  om.set_parm_down_cursor (0);
-  om.set_parm_right_cursor (0);
-  om.set_parm_left_cursor (0);
+  om.set_tabular (nullptr);
+  om.set_back_tab (nullptr);
+  om.set_cursor_home (nullptr);
+  om.set_cursor_to_ll (nullptr);
+  om.set_carriage_return (nullptr);
+  om.set_cursor_up (nullptr);
+  om.set_cursor_down (nullptr);
+  om.set_cursor_right (nullptr);
+  om.set_cursor_left (nullptr);
+  om.set_cursor_address (nullptr);
+  om.set_column_address (nullptr);
+  om.set_row_address (nullptr);
+  om.set_parm_up_cursor (nullptr);
+  om.set_parm_down_cursor (nullptr);
+  om.set_parm_right_cursor (nullptr);
+  om.set_parm_left_cursor (nullptr);
 
   CPPUNIT_ASSERT (om.moveCursor (1, 1, 5, 5).empty());
 }
@@ -267,7 +270,7 @@ void FOptiMoveTest::ansiTest()
   om.set_tabular ("\t");
   om.set_back_tab (CSI "Z");
   om.set_cursor_home (CSI "H");
-  om.set_cursor_to_ll (0);
+  om.set_cursor_to_ll (nullptr);
   om.set_carriage_return ("\r");
   om.set_cursor_up (CSI "A");
   om.set_cursor_down (CSI "B");
@@ -329,17 +332,17 @@ void FOptiMoveTest::vt100Test()
   om.setTabStop (8);
   om.set_eat_newline_glitch (true);
   om.set_tabular ("\t");
-  om.set_back_tab (0);
+  om.set_back_tab (nullptr);
   om.set_cursor_home (CSI "H");
-  om.set_cursor_to_ll (0);
+  om.set_cursor_to_ll (nullptr);
   om.set_carriage_return ("\r");
   om.set_cursor_up (CSI "A$<2>");
   om.set_cursor_down ("\n");
   om.set_cursor_right (CSI "C$<2>");
   om.set_cursor_left ("\b");
   om.set_cursor_address (CSI "%i%p1%d;%p2%dH$<5>");
-  om.set_column_address (0);
-  om.set_row_address (0);
+  om.set_column_address (nullptr);
+  om.set_row_address (nullptr);
   om.set_parm_up_cursor (CSI "%p1%dA");
   om.set_parm_down_cursor (CSI "%p1%dB");
   om.set_parm_right_cursor (CSI "%p1%dC");
@@ -395,7 +398,7 @@ void FOptiMoveTest::xtermTest()
   om.set_tabular ("\t");
   om.set_back_tab (CSI "Z");
   om.set_cursor_home (CSI "H");
-  om.set_cursor_to_ll (0);
+  om.set_cursor_to_ll (nullptr);
   om.set_carriage_return ("\r");
   om.set_cursor_up (CSI "A");
   om.set_cursor_down ("\n");
@@ -457,9 +460,9 @@ void FOptiMoveTest::rxvtTest()
   om.setTabStop (8);
   om.set_eat_newline_glitch (true);
   om.set_tabular ("\t");
-  om.set_back_tab (0);
+  om.set_back_tab (nullptr);
   om.set_cursor_home (CSI "H");
-  om.set_cursor_to_ll (0);
+  om.set_cursor_to_ll (nullptr);
   om.set_carriage_return ("\r");
   om.set_cursor_up (CSI "A");
   om.set_cursor_down ("\n");
@@ -523,7 +526,7 @@ void FOptiMoveTest::linuxTest()
   om.set_tabular ("\t");
   om.set_back_tab (CSI "Z");
   om.set_cursor_home (CSI "H");
-  om.set_cursor_to_ll (0);
+  om.set_cursor_to_ll (nullptr);
   om.set_carriage_return ("\r");
   om.set_cursor_up (CSI "A");
   om.set_cursor_down ("\n");
@@ -586,7 +589,7 @@ void FOptiMoveTest::cygwinTest()
   om.set_tabular ("\t");
   om.set_back_tab (CSI "Z");
   om.set_cursor_home (CSI "H");
-  om.set_cursor_to_ll (0);
+  om.set_cursor_to_ll (nullptr);
   om.set_carriage_return ("\r");
   om.set_cursor_up (CSI "A");
   om.set_cursor_down (CSI "B");
@@ -600,7 +603,7 @@ void FOptiMoveTest::cygwinTest()
   om.set_parm_right_cursor (CSI "%p1%dC");
   om.set_parm_left_cursor (CSI "%p1%dD");
 
-  CPPUNIT_ASSERT_STRING ( printSequence(om.moveCursor (1, 2, 3, 4)).c_str()
+  CPPUNIT_ASSERT_STRING ( printSequence(om.moveCursor (1, 2, 3, 4))
                          , "Esc [ 5 ; 4 H " );
   CPPUNIT_ASSERT_STRING (om.moveCursor (0, 0, 5, 5), CSI "6;6H");
   CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 0, 0), CSI "H");
@@ -653,7 +656,7 @@ void FOptiMoveTest::puttyTest()
   om.set_tabular ("\t");
   om.set_back_tab (CSI "Z");
   om.set_cursor_home (CSI "H");
-  om.set_cursor_to_ll (0);
+  om.set_cursor_to_ll (nullptr);
   om.set_carriage_return ("\r");
   om.set_cursor_up (ESC "M");
   om.set_cursor_down (ESC "D");
@@ -717,9 +720,9 @@ void FOptiMoveTest::teratermTest()
   {
     CSI "H",               // Cursor home
     "\r",                  // Carriage return
-    0,                            // Cursor to ll
+    nullptr,               // Cursor to ll
     "\t",                  // Tabular
-    0,                            // Back tabular
+    nullptr,               // Back tabular
     CSI "A",               // Cursor up
     "\n",                  // Cursor down
     "\b",                  // Cursor left
@@ -732,12 +735,12 @@ void FOptiMoveTest::teratermTest()
     CSI "%p1%dD",          // Parm left cursor
     CSI "%p1%dC",          // Parm right cursor
     CSI "%p1%dX",          // Erase characters
-    0,                            // Repeat character
+    nullptr,               // Repeat character
     CSI "1K",              // Clear to beginning of line
     CSI "K",               // Clear to end of line
-    8,                            // Tab stop
-    false,                        // Automatic left margin
-    true                          // Eat newline glitch
+    8,                     // Tab stop
+    false,                 // Automatic left margin
+    true                   // Eat newline glitch
   };
 
   om.setTermEnvironment(optimove_env);
@@ -799,12 +802,12 @@ void FOptiMoveTest::wyse50Test()
   om.set_cursor_right ("\f");
   om.set_cursor_left ("\b");
   om.set_cursor_address (ESC "=%p1%' '%+%c%p2%' '%+%c");
-  om.set_column_address (0);
-  om.set_row_address (0);
-  om.set_parm_up_cursor (0);
-  om.set_parm_down_cursor (0);
-  om.set_parm_right_cursor (0);
-  om.set_parm_left_cursor (0);
+  om.set_column_address (nullptr);
+  om.set_row_address (nullptr);
+  om.set_parm_up_cursor (nullptr);
+  om.set_parm_down_cursor (nullptr);
+  om.set_parm_right_cursor (nullptr);
+  om.set_parm_left_cursor (nullptr);
 
   //std::cout << "\nSequence: "
   //          << printSequence(om.moveCursor (1, 2, 3, 4))
@@ -862,10 +865,8 @@ std::string FOptiMoveTest::printSequence (const std::string& s)
     "Space"
   };
 
-  for (std::string::size_type i = 0; i < s.length(); ++i)
+  for (char ch : s)
   {
-    char ch = s[i];
-
     if ( ch < 0x21 )
       sequence += ctrl_character[uInt(ch)];
     else

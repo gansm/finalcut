@@ -11,14 +11,14 @@ SRCS = $(wildcard *.cpp)
 OBJS = $(SRCS:%.cpp=%)
 CCXFLAGS = $(OPTIMIZE) $(PROFILE) $(DEBUG) -std=c++11
 MAKEFILE = -f Makefile.clang
-LDFLAGS = -L../src -lfinal
-INCLUDES = -I../src/include -I/usr/include/final
+LDFLAGS = -L../final -lfinal
+INCLUDES = -I.. -I/usr/include
 RM = rm -f
 
 ifdef DEBUG
   OPTIMIZE = -O0 -fsanitize=undefined
 else
-  OPTIMIZE = -O2
+  OPTIMIZE = -O3
 endif
 
 # $@ = name of the targets

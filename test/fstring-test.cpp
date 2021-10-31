@@ -23,8 +23,7 @@
 #include <langinfo.h>
 #include <unistd.h>
 #define __STDC_LIMIT_MACROS
-#include <stdint.h>
-
+#include <cstdint>
 #include <clocale>
 #include <iomanip>
 #include <string>
@@ -50,9 +49,9 @@
 //----------------------------------------------------------------------
 void check_c_string ( const char* s1
                     , const char* s2
-                    , CppUnit::SourceLine sourceLine )
+                    , const CppUnit::SourceLine& sourceLine )
 {
-  if ( s1 == 0 && s2 == 0 )  // Strings are equal
+  if ( s1 == nullptr && s2 == nullptr )  // Strings are equal
     return;
 
   if ( s1 && s2 && std::strcmp (s1, s2) == 0 )  // Strings are equal
@@ -64,9 +63,9 @@ void check_c_string ( const char* s1
 //----------------------------------------------------------------------
 void check_c_wstring ( const wchar_t* s1
                      , const wchar_t* s2
-                     , CppUnit::SourceLine sourceLine )
+                     , const CppUnit::SourceLine& sourceLine )
 {
-  if ( s1 == 0 && s2 == 0 )  // Strings are equal
+  if ( s1 == nullptr && s2 == nullptr )  // Strings are equal
     return;
 
   if ( s1 && s2 && std::wcscmp (s1, s2) == 0 )  // Strings are equal
@@ -83,11 +82,10 @@ void check_c_wstring ( const wchar_t* s1
 class FStringTest : public CPPUNIT_NS::TestFixture
 {
   public:
-    FStringTest()
-    { }
+    FStringTest() = default;
 
-    void setUp();
-    void tearDown();
+    void setUp() override;
+    void tearDown() override;
 
   protected:
     void classNameTest();
@@ -122,9 +120,10 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     void removeTest();
     void includesTest();
     void controlCodesTest();
+    void caseCompareTest();
 
   private:
-    finalcut::FString* s{0};
+    finalcut::FString* s{nullptr};
 
     // Adds code needed to register the test suite
     CPPUNIT_TEST_SUITE (FStringTest);
@@ -162,6 +161,7 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (removeTest);
     CPPUNIT_TEST (includesTest);
     CPPUNIT_TEST (controlCodesTest);
+    CPPUNIT_TEST (caseCompareTest);
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
@@ -218,11 +218,11 @@ void FStringTest::noArgumentTest()
   CPPUNIT_ASSERT ( fstr.isEmpty() );
   CPPUNIT_ASSERT ( fstr.capacity() < std::wstring().max_size() );
 
-  cstr = 0;
+  cstr = nullptr;
   CPPUNIT_ASSERT ( empty == cstr );
   CPPUNIT_ASSERT ( finalcut::FString(std::string()).isEmpty() );
   CPPUNIT_ASSERT ( finalcut::FString(char(0)).isEmpty() );
-  wcstr = 0;
+  wcstr = nullptr;
   CPPUNIT_ASSERT ( empty == wcstr );
   CPPUNIT_ASSERT ( finalcut::FString(std::wstring()).isEmpty() );
   CPPUNIT_ASSERT ( finalcut::FString(wchar_t(0)).isEmpty() );
@@ -321,8 +321,9 @@ void FStringTest::initLengthTest()
 //----------------------------------------------------------------------
 void FStringTest::copyConstructorTest()
 {
-  const finalcut::FString s1("abc");
+  finalcut::FString s1("abc");
   const finalcut::FString s2(s1);
+  s1.clear();
   CPPUNIT_ASSERT ( s2 == L"abc" );
   CPPUNIT_ASSERT_CSTRING ( s2.c_str(), "abc" );
   CPPUNIT_ASSERT_WCSTRING ( s2.wc_str(), L"abc" );
@@ -361,11 +362,11 @@ void FStringTest::assignmentTest()
   CPPUNIT_ASSERT ( ! s1 );
   CPPUNIT_ASSERT ( s1.isEmpty() );
 
-  s1 = static_cast<wchar_t*>(0);
+  s1 = static_cast<wchar_t*>(nullptr);
   CPPUNIT_ASSERT ( ! s1 );
   CPPUNIT_ASSERT ( s1.isEmpty() );
 
-  s1 = static_cast<char*>(0);
+  s1 = static_cast<char*>(nullptr);
   CPPUNIT_ASSERT ( ! s1 );
   CPPUNIT_ASSERT ( s1.isEmpty() );
 
@@ -465,12 +466,12 @@ void FStringTest::assignmentTest()
   s1.setString(L"");
   CPPUNIT_ASSERT ( s1.isEmpty() );
 
-  constexpr wchar_t* wc = 0;
+  constexpr wchar_t* wc = nullptr;
   s1.setString(wc);
   CPPUNIT_ASSERT ( s1.isEmpty() );
   CPPUNIT_ASSERT ( ! s1 );
 
-  constexpr char* c = 0;
+  constexpr char* c = nullptr;
   s1.setString(c);
   CPPUNIT_ASSERT ( s1.isEmpty() );
   CPPUNIT_ASSERT ( ! s1 );
@@ -1198,6 +1199,19 @@ void FStringTest::iteratorTest()
   }
 
   CPPUNIT_ASSERT ( str2 == L"abcdef" );
+
+  finalcut::FString str3(L"~~~~~");
+  CPPUNIT_ASSERT ( str3.front() == L'~' );
+  CPPUNIT_ASSERT ( str3.back() == L'~' );
+  CPPUNIT_ASSERT ( str3.front() == str3.back() );
+  CPPUNIT_ASSERT ( &str3.front() != &str3.back() );
+  auto iter3 = str3.cbegin();
+
+  while ( iter3 != str3.cend() )
+    ++iter3;
+
+  CPPUNIT_ASSERT ( iter3 == str3.cend() );
+  CPPUNIT_ASSERT ( std::distance(str3.cbegin(), iter3) == 5 );
 }
 
 //----------------------------------------------------------------------
@@ -1237,11 +1251,11 @@ void FStringTest::formatTest()
   str2.sprintf (null_fstring, 0);
   CPPUNIT_ASSERT ( str2.isEmpty() );
 
-  constexpr wchar_t* null_wstring = 0;
+  constexpr wchar_t* null_wstring = nullptr;
   str2.sprintf (null_wstring, 0);
   CPPUNIT_ASSERT ( str2.isEmpty() );
 
-  constexpr char* null_string = 0;
+  constexpr char* null_string = nullptr;
   str2.sprintf (null_string, 0);
   CPPUNIT_ASSERT ( str2.isEmpty() );
 
@@ -2100,8 +2114,8 @@ void FStringTest::includesTest()
 {
   const finalcut::FString str = "Look behind you, a three-headed monkey!";
   const finalcut::FString empty1{};
-  constexpr wchar_t*      empty2    = 0;
-  constexpr char*         empty3    = 0;
+  constexpr wchar_t*      empty2    = nullptr;
+  constexpr char*         empty3    = nullptr;
   const finalcut::FString search1   = "you";
   const finalcut::FString search2   = "me";
   constexpr wchar_t       search3[] = L"you";
@@ -2119,13 +2133,13 @@ void FStringTest::includesTest()
   CPPUNIT_ASSERT ( ! str.includes(search2) );
   CPPUNIT_ASSERT ( ! empty1.includes(search1) );
 
-  CPPUNIT_ASSERT ( ! str.includes(static_cast<wchar_t*>(0)) );
+  CPPUNIT_ASSERT ( ! str.includes(static_cast<wchar_t*>(nullptr)) );
   CPPUNIT_ASSERT ( ! str.includes(empty2) );
   CPPUNIT_ASSERT ( str.includes(search3) );
   CPPUNIT_ASSERT ( ! str.includes(search4) );
   CPPUNIT_ASSERT ( ! empty1.includes(search3) );
 
-  CPPUNIT_ASSERT ( ! str.includes(static_cast<char*>(0)) );
+  CPPUNIT_ASSERT ( ! str.includes(static_cast<char*>(nullptr)) );
   CPPUNIT_ASSERT ( ! str.includes(empty3) );
   CPPUNIT_ASSERT ( str.includes(search5) );
   CPPUNIT_ASSERT ( ! str.includes(search6) );
@@ -2271,6 +2285,46 @@ void FStringTest::controlCodesTest()
     c1[i] = i + 0x80;
 
   CPPUNIT_ASSERT ( c1.replaceControlCodes() == finalcut::FString(32, L' ') );
+}
+
+//----------------------------------------------------------------------
+void FStringTest::caseCompareTest()
+{
+  auto s1 = finalcut::FString(L"Appel");
+  auto s2 = finalcut::FString(L"apartment");
+  auto s3 = finalcut::FString(L"ball");
+
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(s1, s1) == 0 );  // same object
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"ApP", s1) < 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(s1, L"App") > 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(s1, s2) > 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(s1, s3) < 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(s2, s1) < 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(s3, s1) > 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare("HOUSE", "house") == 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare("hOuSe", "HoUsE") == 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare("house", "houseparty") < 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare("houseparty", "house") > 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare("small", "large") > 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare("large", "small") < 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare("paragraph", "Paragraph") == 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare("paragrapH", "parAgRaph") == 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare("paragraph", "paraLyzed") < 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare("paraLyzed", "paragraph") > 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare("para", "paragraph") < 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare("paragraph", "para") > 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"\311mile", L"\351mile") < 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"\351mile", L"\311mile") > 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"\303\266zg\303\274r", L"\303\226ZG\303\234R") > 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"\303\226ZG\303\234R", L"\303\266zg\303\274r") < 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"turkish", L"TURK\304\260SH") < 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"TURK\304\260SH", L"turkish") > 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"ONE 🃏", L"one 🃏") == 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"ONE 🃏🃏", L"one 🃏") > 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"ONE 🃏", L"one 🃏🃏") < 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"🔥 Fire", L"🔥 fire") == 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"🔥🔥 Fire", L"🔥 fire") > 0 );
+  CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"🔥 Fire", L"🔥🔥 fire") < 0 );
 }
 
 // Put the test suite in the registry

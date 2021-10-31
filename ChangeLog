@@ -1,3 +1,70 @@
+2020-10-31  Markus Gans  <guru.mail@muenster.de>
+	* Version 0.8.0
+
+2021-10-28 Markus Gans  <guru.mail@muenster.de>
+	* The keyboard and timer examples now have flicker-free scrolling
+
+2021-10-24 Markus Gans  <guru.mail@muenster.de>
+	* Faster search for key strings through sorted arrays
+
+2021-10-23 Markus Gans  <guru.mail@muenster.de>
+	* Virtual windows now know their own window level
+	* String filter for FListBoxItem
+
+2021-10-22 Markus Gans  <guru.mail@muenster.de>
+	* Change FObjectList from std::list to std::vector
+
+2021-10-21 Markus Gans  <guru.mail@muenster.de>
+	* The tab stop printing was corrected
+
+2021-10-20 Markus Gans  <guru.mail@muenster.de>
+	* Implementation of the stringPrint() method in FTermcap
+
+2021-10-18 Markus Gans  <guru.mail@muenster.de>
+	* Speed up FTermcap::paddingPrint() by assigning the putchar function 
+	  only once
+
+2021-10-12 Markus Gans  <guru.mail@muenster.de>
+	* Speed up access to mouse objects in FMouseControl 
+	* The predefined escape sequences for keyboard keys are now 
+	  functional again
+	* Now, FINAL CUT also runs under GNU Hurd
+
+2021-10-08 Markus Gans  <guru.mail@muenster.de>
+	* The visibility of the FDialog title bar buttons can now be disabled
+
+2021-10-04 Markus Gans  <guru.mail@muenster.de>
+	* Preventing the focus of a container widget
+
+2021-10-01 Markus Gans  <guru.mail@muenster.de>
+	* The output buffer is now flushed before the terminal is scrolled
+
+2021-09-29 Markus Gans  <guru.mail@muenster.de>
+	* Faster FUnicode comparisons
+	* Less string comparison in FKeyboard
+
+2021-09-28 Markus Gans  <guru.mail@muenster.de>
+	* Optimization of attribute comparisons
+	* Reset the rdbuf of clog after deleting the logger object to prevent 
+	  an invalid pointer in the rdbuf
+	* FTermcap::getNumber now returns -1 if there is no value in the termcap 
+	  database
+
+2021-09-25 Markus Gans  <guru.mail@muenster.de>
+	* New FString auxiliary function FStringCaseCompare as strcasecmp 
+	  replacement
+	* Move attribute handling from FVTerm to FVTermAttribute
+
+2021-09-22 Markus Gans  <guru.mail@muenster.de>
+	* The request for a terminal size change now occurs only once per 
+	  event loop cycle
+
+2021-09-22 Markus Gans  <guru.mail@muenster.de>
+	* The individual FINAL CUT components have been moved to directories 
+	  to provide a better code overview
+	* Renaming the class FTermBuffer to FVTermBuffer, because only 
+	  virtual terminal data is buffered here
+
 2021-09-17 Markus Gans  <guru.mail@muenster.de>
 	* Output optimization: Wide strings are now converted to 
 	  UTF-8 strings before they are inserted into the output buffer

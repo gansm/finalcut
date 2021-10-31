@@ -48,9 +48,9 @@
 //----------------------------------------------------------------------
 void check_c_string ( const char* s1
                     , const char* s2
-                    , CppUnit::SourceLine sourceLine )
+                    , const CppUnit::SourceLine& sourceLine )
 {
-  if ( s1 == 0 && s2 == 0 )  // Strings are equal
+  if ( s1 == nullptr && s2 == nullptr )  // Strings are equal
     return;
 
   if ( s1 && s2 && std::strcmp (s1, s2) == 0 )  // Strings are equal
@@ -108,7 +108,7 @@ class FSystemTest : public finalcut::FSystem
     FSystemTest();
 
     // Destructor
-    virtual ~FSystemTest();
+    ~FSystemTest() override;
 
     // Methods
     uChar            inPortByte (uShort) override;
@@ -1574,8 +1574,8 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
     case TIOCLINUX:
     {
       req_string = "TIOCLINUX";
-      char* subcode = static_cast<char*>(argp);
-      uChar* state = reinterpret_cast<uChar*>(&shift_state);
+      auto subcode = static_cast<char*>(argp);
+      auto state = reinterpret_cast<uChar*>(&shift_state);
 
       if ( *subcode == 6 )
         *subcode = static_cast<char>(*state);
@@ -1588,7 +1588,7 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
     {
       req_string = "KDFONTOP";
       constexpr std::size_t font_data_size = 4 * 32 * 512;
-      struct console_font_op* fn = static_cast<console_font_op*>(argp);
+      auto fn = static_cast<console_font_op*>(argp);
 
       if ( fn->op == KD_FONT_OP_GET )
       {
@@ -1656,7 +1656,7 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
     case GIO_CMAP:
     {
       req_string = "GIO_CMAP";
-      ColorMap* cmap = static_cast<ColorMap*>(argp);
+      auto cmap = static_cast<ColorMap*>(argp);
       // Set Default
       if ( terminal_color[15].red   == 0
         && terminal_color[15].green == 0
@@ -1684,7 +1684,7 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
     case PIO_CMAP:
     {
       req_string = "PIO_CMAP";
-      ColorMap* cmap = static_cast<ColorMap*>(argp);
+      auto cmap = static_cast<ColorMap*>(argp);
 
       for (std::size_t index = 0; index < 16; index++)
       {
@@ -1700,7 +1700,7 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
     case GIO_UNIMAP:
     {
       req_string = "GIO_UNIMAP";
-      unimapdesc* umap = static_cast<unimapdesc*>(argp);
+      auto umap = static_cast<unimapdesc*>(argp);
       std::size_t unipair_size = sizeof(unipair);
       std::size_t pairs = ( codeset == Codeset::cp437 )
                         ? sizeof(unicode_cp437_pairs) / unipair_size
@@ -1739,7 +1739,7 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
     case PIO_UNIMAP:
     {
       req_string = "PIO_UNIMAP";
-      unimapdesc* umap = static_cast<unimapdesc*>(argp);
+      auto umap = static_cast<unimapdesc*>(argp);
       std::size_t pairs = umap->entry_ct;
       std::size_t pairs_size = pairs * sizeof(unipair);
       terminal_unicode_map.entry_ct = umap->entry_ct;
@@ -1775,8 +1775,7 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
     case FBIOGET_VSCREENINFO:
     {
       req_string = "FBIOGET_VSCREENINFO";
-      struct fb_var_screeninfo* fb_var \
-          = static_cast<fb_var_screeninfo*>(argp);
+      auto fb_var = static_cast<fb_var_screeninfo*>(argp);
       std::memcpy (fb_var, &fb_terminal_info, sizeof(fb_terminal_info));
       ret_val = 0;
       break;
@@ -1785,8 +1784,7 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
     case FBIOGET_FSCREENINFO:
     {
       req_string = "FBIOGET_FSCREENINFO";
-      struct fb_fix_screeninfo* fb_fix
-          = static_cast<fb_fix_screeninfo*>(argp);
+      auto fb_fix = static_cast<fb_fix_screeninfo*>(argp);
       std::memcpy (fb_fix, &fb_terminal_fix_info, sizeof(fb_terminal_fix_info));
       ret_val = 0;
       break;
@@ -1811,7 +1809,7 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
     case TIOCGWINSZ:
     {
       req_string = "TIOCGWINSZ";
-      struct winsize* win_size = static_cast<winsize*>(argp);
+      auto win_size = static_cast<winsize*>(argp);
       win_size->ws_col = 96;
       win_size->ws_row = 36;
       ret_val = 0;
@@ -1833,7 +1831,7 @@ int FSystemTest::open (const char* pathname, int flags, ...)
 {
   va_list args{};
   va_start (args, flags);
-  mode_t mode = static_cast<mode_t>(va_arg (args, int));
+  auto mode = static_cast<mode_t>(va_arg (args, int));
   va_end (args);
 
   std::cerr << "Call: open (pathname=\"" << pathname
@@ -1859,7 +1857,7 @@ FILE* FSystemTest::fopen (const char* path, const char* mode)
 {
   std::cerr << "Call: fopen (path=" << path
             << ", mode=" << mode << ")\n";
-  return 0;
+  return nullptr;
 }
 
 //----------------------------------------------------------------------
@@ -1925,8 +1923,8 @@ FSystemTest::RGB& FSystemTest::getRGB (finalcut::FColor c)
 
   if ( i < 16 )
     return terminal_color[i];
-  else
-    return terminal_color[0];
+
+  return terminal_color[0];
 }
 
 //----------------------------------------------------------------------
@@ -2036,7 +2034,7 @@ void FSystemTest::initFScreenInfo()
 class FTermLinuxTest : public CPPUNIT_NS::TestFixture, test::ConEmu
 {
   public:
-    FTermLinuxTest();
+    FTermLinuxTest() = default;
 
   protected:
     void classNameTest();
@@ -2063,11 +2061,6 @@ class FTermLinuxTest : public CPPUNIT_NS::TestFixture, test::ConEmu
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
 };
-
-
-//----------------------------------------------------------------------
-FTermLinuxTest::FTermLinuxTest()
-{ }
 
 //----------------------------------------------------------------------
 void FTermLinuxTest::classNameTest()
@@ -2120,7 +2113,7 @@ void FTermLinuxTest::linuxConsoleTest()
   finalcut::FTermLinux linux;
 
   // setupterm is needed for tputs in ncurses >= 6.1
-  setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
+  setupterm (static_cast<char*>(nullptr), 1, static_cast<int*>(nullptr));
   data.setTermType (finalcut::FTermType::linux_con);
 
   pid_t pid = forkConEmu();
@@ -2146,8 +2139,8 @@ void FTermLinuxTest::linuxConsoleTest()
 
     CPPUNIT_ASSERT ( isatty(3) == 0 );
     CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::linux_con) );
-    CPPUNIT_ASSERT ( data.getTermGeometry().getWidth() == 96 );
-    CPPUNIT_ASSERT ( data.getTermGeometry().getHeight() == 36 );
+    CPPUNIT_ASSERT ( data.getTerminalGeometry().getWidth() == 96 );
+    CPPUNIT_ASSERT ( data.getTerminalGeometry().getHeight() == 36 );
     CPPUNIT_ASSERT ( data.hasShadowCharacter() );
     CPPUNIT_ASSERT ( data.hasHalfBlockCharacter() );
     CPPUNIT_ASSERT ( linux.getFramebufferBpp() == 32 );
@@ -2181,10 +2174,10 @@ void FTermLinuxTest::linuxConsoleTest()
 
     linux.initCharMap();
     auto& character_map = data.getCharSubstitutionMap();
-    CPPUNIT_ASSERT ( character_map.size() == 3 );
-    CPPUNIT_ASSERT ( character_map[wchar_t(finalcut::UniChar::BlackCircle)] == L'*' );
-    CPPUNIT_ASSERT ( character_map[wchar_t(finalcut::UniChar::Times)] == L'x' );
-    CPPUNIT_ASSERT ( character_map[L'ˣ'] == L'ⁿ' );
+    CPPUNIT_ASSERT ( ! character_map.isEmpty() );
+    CPPUNIT_ASSERT ( character_map.getMappedChar(wchar_t(finalcut::UniChar::BlackCircle)) == L'*' );
+    CPPUNIT_ASSERT ( character_map.getMappedChar(wchar_t(finalcut::UniChar::Times)) == L'x' );
+    CPPUNIT_ASSERT ( character_map.getMappedChar(L'ˣ') == L'ⁿ' );
     linux.finish();
 
     closeConEmuStdStreams();
@@ -2195,7 +2188,7 @@ void FTermLinuxTest::linuxConsoleTest()
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::linux_con);
 
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
+    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -2245,7 +2238,7 @@ void FTermLinuxTest::linuxConsoleLat15Test()
   finalcut::FTermLinux linux;
 
   // setupterm is needed for tputs in ncurses >= 6.1
-  setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
+  setupterm (static_cast<char*>(nullptr), 1, static_cast<int*>(nullptr));
   data.setTermType (finalcut::FTermType::linux_con);
 
   pid_t pid = forkConEmu();
@@ -2274,11 +2267,11 @@ void FTermLinuxTest::linuxConsoleLat15Test()
     CPPUNIT_ASSERT ( ! data.hasShadowCharacter() );
     CPPUNIT_ASSERT ( ! data.hasHalfBlockCharacter() );
     auto& character_map = data.getCharSubstitutionMap();
-    CPPUNIT_ASSERT ( character_map.size() == 4 );
-    CPPUNIT_ASSERT ( character_map[wchar_t(finalcut::UniChar::SquareRoot)] == L'x' );
-    CPPUNIT_ASSERT ( character_map[wchar_t(finalcut::UniChar::BlackLeftPointingPointer)] == L'◀' );
-    CPPUNIT_ASSERT ( character_map[wchar_t(finalcut::UniChar::BlackRightPointingPointer)] == L'▶' );
-    CPPUNIT_ASSERT ( character_map[L'ˣ'] == L'ⁿ' );
+    CPPUNIT_ASSERT ( ! character_map.isEmpty() );
+    CPPUNIT_ASSERT ( character_map.getMappedChar(wchar_t(finalcut::UniChar::SquareRoot)) == L'x' );
+    CPPUNIT_ASSERT ( character_map.getMappedChar(wchar_t(finalcut::UniChar::BlackLeftPointingPointer)) == L'◀' );
+    CPPUNIT_ASSERT ( character_map.getMappedChar(wchar_t(finalcut::UniChar::BlackRightPointingPointer)) == L'▶' );
+    CPPUNIT_ASSERT ( character_map.getMappedChar(L'ˣ') == L'ⁿ' );
     linux.finish();
 
     closeConEmuStdStreams();
@@ -2289,7 +2282,7 @@ void FTermLinuxTest::linuxConsoleLat15Test()
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::linux_con);
 
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
+    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -2333,7 +2326,7 @@ void FTermLinuxTest::linuxCursorStyleTest()
   data.setTermResized (false);
 
   // setupterm is needed for tputs in ncurses >= 6.1
-  setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
+  setupterm (static_cast<char*>(nullptr), 1, static_cast<int*>(nullptr));
   auto& term_detection = finalcut::FTermDetection::getInstance();
   finalcut::FTermLinux linux;
 
@@ -2479,7 +2472,7 @@ void FTermLinuxTest::linuxCursorStyleTest()
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::linux_con);
 
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
+    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -2523,7 +2516,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
   data.setTermResized (false);
 
   // setupterm is needed for tputs in ncurses >= 6.1
-  setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
+  setupterm (static_cast<char*>(nullptr), 1, static_cast<int*>(nullptr));
   auto& term_detection = finalcut::FTermDetection::getInstance();
   finalcut::FTermLinux linux;
   data.setTermType (finalcut::FTermType::linux_con);
@@ -2755,7 +2748,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::linux_con);
 
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
+    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -2799,7 +2792,7 @@ void FTermLinuxTest::linuxFontTest()
   data.setTermResized (false);
 
   // setupterm is needed for tputs in ncurses >= 6.1
-  setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
+  setupterm (static_cast<char*>(nullptr), 1, static_cast<int*>(nullptr));
   auto& term_detection = finalcut::FTermDetection::getInstance();
   finalcut::FTermLinux linux;
 
@@ -2839,7 +2832,7 @@ void FTermLinuxTest::linuxFontTest()
 
     // Full block character test
     for (std::size_t i = 0; i < 16 ; i++)
-      CPPUNIT_ASSERT ( font.data[219 * 32 + i] == 0xff );
+      CPPUNIT_ASSERT ( font.data && font.data[219 * 32 + i] == 0xff );
 
     linux.loadNewFont();
     CPPUNIT_ASSERT ( ! linux.isVGAFontUsed() );
@@ -2899,7 +2892,7 @@ void FTermLinuxTest::linuxFontTest()
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::linux_con);
 
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
+    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }

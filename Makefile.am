@@ -13,12 +13,15 @@ pkgconfig_DATA = finalcut.pc
 
 CLEANFILES = finalcut.pc
 
-SUBDIRS = src fonts doc examples test
+SUBDIRS = final doc examples test
 
 docdir = ${datadir}/doc/${PACKAGE}
 doc_DATA = AUTHORS COPYING COPYING.LESSER ChangeLog
 
 test: check
+
+clean-local:
+	-rm -f *~
 
 uninstall-hook:
 	if test -d ${docdir}; then rmdir ${docdir}; fi

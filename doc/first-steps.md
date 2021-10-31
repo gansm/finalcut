@@ -726,10 +726,10 @@ void delCallback()
   <dd>"activate"<br />"changed"</dd>
 
   <dt>FListBox</dt>
-  <dd>"clicked"<br />"row-changed"<br />"row-selected"</dd>
+  <dd>"changed"<br />"clicked"<br />"row-changed"<br />"row-selected"</dd>
 
   <dt>FListView</dt>
-  <dd>"clicked"<br />"row-changed"</dd>
+  <dd>"changed"<br />"clicked"<br />"row-changed"</dd>
 
   <dt>FMenu</dt>
   <dd>"activate"</dd>
@@ -1043,7 +1043,7 @@ class dialogWidget : public FDialog
     }
 
     int t = 20;
-    FLabel label{FString() << t << "°C", this};
+    FLabel label{std::move(FString() << t << "°C"), this};
     FButton plus {"&+", this};
     FButton minus {"&-", this};
 };
@@ -1422,7 +1422,7 @@ class dialogWidget : public FDialog
                            << std::get<3>(b) << std::get<0>(b);
         auto edit = new FLineEdit("direction " + std::get<0>(b), &scrollview);
         edit->setGeometry(std::get<2>(b) + FPoint{1, 1}, FSize{17, 1});
-        auto btn = new FButton(std::get<0>(b), this);
+        auto btn = new FButton(std::move(std::get<0>(b)), this);
         btn->setGeometry(std::get<1>(b), FSize{4, 1});
         btn->unsetShadow();
         btn->addCallback

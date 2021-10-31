@@ -15,6 +15,7 @@ list boxes, status bars and so on.
 
 Installation
 ------------
+
 > git clone git://github.com/gansm/finalcut.git
 > cd finalcut
 > autoreconf --install --force
@@ -25,29 +26,35 @@ Installation
 
 Supported platforms
 -------------------
+
 * Linux
 * FreeBSD
 * NetBSD
 * OpenBSD
 * macOS
 * Cygwin
+* GNU Hurd
 * Solaris
 
 
-First steps
------------
+Documentation
+-------------
+
 See the first-steps.md documentation for information on how to use
 the library.
 
 
-License
--------
-GNU Lesser General Public License Version 3
-
-
 Frequently Asked Questions
 --------------------------
-For general questions about FINAL CUT, likely the answer is already included in the faq.md.
+
+For general questions about FINAL CUT, likely the answer is already 
+included in the faq.md.
+
+
+License
+-------
+
+GNU Lesser General Public License Version 3
 
 
 Download
@@ -57,5 +64,6 @@ You can find the latest version at https://github.com/gansm/finalcut
 
 Please send bug reports to
 --------------------------
+
 https://github.com/gansm/finalcut/issues
 

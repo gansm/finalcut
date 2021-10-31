@@ -49,15 +49,22 @@ jobs:
 
     - name: Generate lcov.info and publish to coveralls.io
       run: |
-        mkdir coverage
         lcov --compat-libtool --directory . --capture --output-file lcov-all.info
         lcov --remove lcov-all.info '/usr/include/*' './include/*' --output-file lcov.info
         lcov --list lcov.info
         rm -f lcov-all.info
-        coveralls-lcov --branch=main --repo-token "${{ secrets.COVERALLS_REPO_TOKEN }}" lcov.info
+        coveralls-lcov --branch=${GITHUB_REF##*/} --repo-token "${{ secrets.COVERALLS_REPO_TOKEN }}" lcov.info
 
     - name: Codecov
       run: |
         ./.github/scripts/get_code_cov.sh
-        bash <(curl -s https://codecov.io/bash)
+        curl https://keybase.io/codecovsecurity/pgp_keys.asc \
+        | gpg --no-default-keyring --keyring trustedkeys.gpg --import # One-time step
+        curl -Os https://uploader.codecov.io/latest/linux/codecov
+        curl -Os https://uploader.codecov.io/latest/linux/codecov.SHA256SUM
+        curl -Os https://uploader.codecov.io/latest/linux/codecov.SHA256SUM.sig
+        gpgv codecov.SHA256SUM.sig codecov.SHA256SUM
+        shasum -a 256 -c codecov.SHA256SUM
+        chmod +x codecov
+        ./codecov
 

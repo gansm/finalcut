@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2020 Markus Gans                                      *
+* Copyright 2017-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -56,6 +56,7 @@ void populateChoice ( std::vector<FRadioButtonPtr>& os
   os[6] = std::make_shared<finalcut::FRadioButton>("NetBSD", &group);
   os[7] = std::make_shared<finalcut::FRadioButton>("OpenBSD", &group);
   os[8] = std::make_shared<finalcut::FRadioButton>("Solaris", &group);
+  os[9] = std::make_shared<finalcut::FRadioButton>("GNU Hurd", &group);
 }
 
 //----------------------------------------------------------------------
@@ -88,6 +89,9 @@ void preset (std::vector<FRadioButtonPtr>& os)
 #elif defined(__sun) && defined(__SVR4)
   os[8]->setChecked();
   os[8]->setFocus();
+#elif defined(__GNU__)
+  os[9]->setChecked();
+  os[9]->setFocus();
 #endif
 }
 
@@ -116,13 +120,13 @@ int main (int argc, char* argv[])
     checkButtonGroup.setGeometry (FPoint{2, 1}, FSize{16, 7});
 
     // Create radio buttons
-    std::vector<FRadioButtonPtr> os(9);
+    std::vector<FRadioButtonPtr> os(10);
     populateChoice (os, checkButtonGroup);
 
     // Set the radio button geometry
     // => checkButtonGroup.setScrollSize(...) is not required
     //    because a FButtonGroup is self-adjusting
-    for (uInt i{0}; i < os.size(); i++)
+    for (std::size_t i{0}; i < os.size(); i++)
       os[i]->setGeometry(FPoint{1, int(1 + i)}, FSize{12, 1});
 
     preset(os);

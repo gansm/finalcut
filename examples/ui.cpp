@@ -31,7 +31,6 @@
 using FKey = finalcut::FKey;
 using finalcut::FColor;
 using finalcut::FPoint;
-using finalcut::FRect;
 using finalcut::FSize;
 
 
@@ -45,14 +44,8 @@ class ProgressDialog final : public finalcut::FDialog
     // Constructor
     explicit ProgressDialog (finalcut::FWidget* = nullptr);
 
-    // Disable copy constructor
-    ProgressDialog (const ProgressDialog&) = delete;
-
     // Destructor
     ~ProgressDialog() override;
-
-    // Disable copy assignment operator (=)
-    ProgressDialog& operator = (const ProgressDialog&) = delete;
 
   private:
     // Method
@@ -194,15 +187,6 @@ class TextWindow final : public finalcut::FDialog
     // Constructor
     explicit TextWindow (finalcut::FWidget* = nullptr);
 
-    // Disable copy constructor
-    TextWindow (const TextWindow&) = delete;
-
-    // Destructor
-    ~TextWindow() override = default;
-
-    // Disable copy assignment operator (=)
-    TextWindow& operator = (const TextWindow&) = delete;
-
     // Method
     void append (const finalcut::FString&);
 
@@ -262,15 +246,6 @@ class MyDialog final : public finalcut::FDialog
   public:
     // Constructor
     explicit MyDialog (finalcut::FWidget* = nullptr);
-
-    // Disable copy constructor
-    MyDialog (const MyDialog&) = delete;
-
-    // Destructor
-    ~MyDialog() override = default;
-
-    // Disable copy assignment operator (=)
-    MyDialog& operator = (const MyDialog&) = delete;
 
   private:
     // Methods
@@ -840,13 +815,13 @@ void MyDialog::cb_terminfo()
   finalcut::FMessageBox info1 \
   (
     "Environment"
-    , finalcut::FString{}
+    , std::move(finalcut::FString()
       << "  Type: " << finalcut::FTerm::getTermType() << "\n"
       << "  Name: " << finalcut::FTerm::getTermFileName() << "\n"
       << "  Mode: " << finalcut::FTerm::getEncodingString() << "\n"
       << "  Size: " << x << finalcut::UniChar::Times
                     << y << "\n"
-      << "Colors: " << finalcut::FVTerm::getFOutput()->getMaxColor()
+      << "Colors: " << finalcut::FVTerm::getFOutput()->getMaxColor())
     , finalcut::FMessageBox::ButtonType::Ok
     , finalcut::FMessageBox::ButtonType::Reject
     , finalcut::FMessageBox::ButtonType::Reject
@@ -1024,7 +999,7 @@ void MyDialog::cb_view (const finalcut::FMenuItem* item)
                     , FSize{60, getRootWidget()->getHeight() * 3 / 4} );
   view->setMinimizable();
   view->setResizeable();
-  std::string line{""};
+  std::string line{};
   std::ifstream infile;
   infile.open(file.c_str());
 

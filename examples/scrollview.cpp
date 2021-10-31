@@ -36,15 +36,6 @@ class Scrollview final : public finalcut::FScrollView
     // Constructor
     explicit Scrollview (finalcut::FWidget* = nullptr);
 
-    // Disable copy constructor
-    Scrollview (const Scrollview&) = delete;
-
-    // Destructor
-    ~Scrollview() override = default;
-
-    // Disable copy assignment operator (=)
-    Scrollview& operator = (const Scrollview&) = delete;
-
     // Mutator
     void setScrollSize (const FSize&) override;
 
@@ -195,9 +186,6 @@ class Scrollviewdemo final : public finalcut::FDialog
   public:
     // Constructor
     explicit Scrollviewdemo (finalcut::FWidget* = nullptr);
-
-    // Destructor
-    ~Scrollviewdemo() override = default;
 
   private:
     // Method

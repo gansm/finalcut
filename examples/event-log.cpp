@@ -29,7 +29,6 @@
 #include <final/final.h>
 
 using finalcut::FPoint;
-using finalcut::FRect;
 using finalcut::FSize;
 
 class EventLog;  // class forward declaration
@@ -43,15 +42,6 @@ class EventDialog final : public finalcut::FDialog
   public:
     // Constructor
     explicit EventDialog (finalcut::FWidget* = nullptr);
-
-    // Disable copy constructor
-    EventDialog (const EventDialog&) = delete;
-
-    // Destructor
-    ~EventDialog() noexcept override;
-
-    // Disable copy assignment operator (=)
-    EventDialog& operator = (const EventDialog&) = delete;
 
   private:
     // Methods
@@ -91,9 +81,6 @@ EventDialog::EventDialog (finalcut::FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-EventDialog::~EventDialog() noexcept = default; // destructor
-
-//----------------------------------------------------------------------
 void EventDialog::initLayout()
 {
   FDialog::setText ("Event dialog");
@@ -118,9 +105,11 @@ finalcut::FString EventDialog::getMouseButtonName (const finalcut::MouseButton& 
 
   if  ( l )
     return prefix + "left";
-  else if ( r )
+
+  if ( r )
     return prefix + "right";
-  else if ( m )
+
+  if ( m )
     return prefix + "middle";
 
   return "unknown";
@@ -247,11 +236,17 @@ class EventLog final : public finalcut::FDialog, public std::ostringstream
     // Disable copy constructor
     EventLog (const EventLog&) = delete;
 
+    // Disable move constructor
+    EventLog (EventLog&&) noexcept = delete;
+
     // Destructor
     ~EventLog() noexcept override;
 
     // Disable copy assignment operator (=)
     EventLog& operator = (const EventLog&) = delete;
+
+    // Disable move assignment operator (=)
+    EventLog& operator = (EventLog&&) noexcept = delete;
 
     // Event handlers
     void onTimer (finalcut::FTimerEvent*) override;

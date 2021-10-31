@@ -48,15 +48,6 @@ class Transparent final : public finalcut::FDialog
     explicit Transparent ( finalcut::FWidget* = nullptr
                          , Type = Type::Transparent );
 
-    // Disable copy constructor
-    Transparent (const Transparent&) = delete;
-
-    // Destructor
-    ~Transparent() override = default;
-
-    // Disable copy assignment operator (=)
-    Transparent& operator = (const Transparent&) = delete;
-
   private:
     // Methods
     void initLayout() override;
@@ -153,11 +144,17 @@ class MainWindow final : public finalcut::FDialog
     // Disable copy constructor
     MainWindow (const MainWindow&) = delete;
 
+    // Disable move constructor
+    MainWindow (MainWindow&&) noexcept = delete;
+
     // Destructor
-    ~MainWindow() override = default;
+    ~MainWindow() noexcept override;
 
     // Disable copy assignment operator (=)
     MainWindow& operator = (const MainWindow&) = delete;
+
+    // Disable move assignment operator (=)
+    MainWindow& operator = (MainWindow&&) noexcept = delete;
 
   private:
     // Method
@@ -220,6 +217,9 @@ MainWindow::MainWindow (finalcut::FWidget* parent)
   unsetTransparentShadow();
   activateDialog();
 }
+
+//----------------------------------------------------------------------
+MainWindow::~MainWindow() noexcept = default;  // destructor
 
 //----------------------------------------------------------------------
 void MainWindow::draw()
