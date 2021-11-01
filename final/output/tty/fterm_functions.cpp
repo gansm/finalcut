@@ -642,7 +642,7 @@ void addColumnWidth (FChar& term_char)
 }
 
 //----------------------------------------------------------------------
-constexpr int isWhitespace (const wchar_t ch) noexcept
+inline int isWhitespace (const wchar_t ch) noexcept
 {
   return std::iswspace(static_cast<wint_t>(ch));
 }

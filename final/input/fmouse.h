@@ -554,7 +554,7 @@ class FMouseControl
     bool                      isWheelUp();
     bool                      isWheelDown();
     bool                      isMoved();
-    bool                      hasUnprocessedInput();
+    bool                      hasUnprocessedInput() const;
     bool                      hasDataInQueue() const;
     bool                      isGpmMouseEnabled() noexcept;
 
@@ -575,9 +575,9 @@ class FMouseControl
     using FMouseProtocol = std::vector<FMousePtr>;
 
     // Accessor
-    auto                      findMouseWithType (const FMouse::MouseType&) -> FMouseProtocol::const_iterator;
-    auto                      findMouseWithData() -> FMouseProtocol::const_iterator;
-    auto                      findMouseWithEvent() -> FMouseProtocol::const_iterator;
+    auto                      findMouseWithType (const FMouse::MouseType&) -> FMouseProtocol::const_iterator const;
+    auto                      findMouseWithData() -> FMouseProtocol::const_iterator const;
+    auto                      findMouseWithEvent() -> FMouseProtocol::const_iterator const;
     void                      xtermMouse (bool = true) const;
     void                      enableXTermMouse() const;
     void                      disableXTermMouse() const;

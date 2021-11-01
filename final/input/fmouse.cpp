@@ -1460,7 +1460,7 @@ bool FMouseControl::isMoved()
 }
 
 //----------------------------------------------------------------------
-bool FMouseControl::hasUnprocessedInput()
+bool FMouseControl::hasUnprocessedInput() const
 {
   return std::any_of ( std::cbegin(mouse_protocol)
                      , std::cend(mouse_protocol)
@@ -1613,7 +1613,7 @@ void FMouseControl::drawPointer()
 
 // private methods of FMouseControl
 //----------------------------------------------------------------------
-auto FMouseControl::findMouseWithType (const FMouse::MouseType& mt) -> FMouseProtocol::const_iterator
+auto FMouseControl::findMouseWithType (const FMouse::MouseType& mt) -> FMouseProtocol::const_iterator const
 {
   return std::find_if ( std::cbegin(mouse_protocol)
                       , std::cend(mouse_protocol)
@@ -1625,7 +1625,7 @@ auto FMouseControl::findMouseWithType (const FMouse::MouseType& mt) -> FMousePro
 }
 
 //----------------------------------------------------------------------
-auto FMouseControl::findMouseWithData() -> FMouseProtocol::const_iterator
+auto FMouseControl::findMouseWithData() -> FMouseProtocol::const_iterator const
 {
   return std::find_if ( std::cbegin(mouse_protocol)
                       , std::cend(mouse_protocol)
@@ -1637,7 +1637,7 @@ auto FMouseControl::findMouseWithData() -> FMouseProtocol::const_iterator
 }
 
 //----------------------------------------------------------------------
-auto FMouseControl::findMouseWithEvent() -> FMouseProtocol::const_iterator
+auto FMouseControl::findMouseWithEvent() -> FMouseProtocol::const_iterator const
 {
   return std::find_if ( std::cbegin(mouse_protocol)
                       , std::cend(mouse_protocol)
