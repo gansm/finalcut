@@ -86,7 +86,7 @@ FKeyboard::FKeyboard()
 //----------------------------------------------------------------------
 auto FKeyboard::getInstance() -> FKeyboard&
 {
-  static const auto& keyboard = make_unique<FKeyboard>();
+  static const auto& keyboard = std::make_unique<FKeyboard>();
   return *keyboard;
 }
 

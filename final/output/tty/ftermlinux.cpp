@@ -62,7 +62,7 @@ FTermLinux::~FTermLinux()  // destructor
 //----------------------------------------------------------------------
 auto FTermLinux::getInstance() -> FTermLinux&
 {
-  static const auto& linux_console = make_unique<FTermLinux>();
+  static const auto& linux_console = std::make_unique<FTermLinux>();
   return *linux_console;
 }
 

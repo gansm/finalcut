@@ -7,7 +7,7 @@ LIBS = -lfinal
 if ! CPPUNIT_TEST
 
 AM_LDFLAGS = -L$(top_builddir)/final/.libs
-AM_CPPFLAGS = -I$(top_srcdir)/final -Wall -Werror -std=c++11
+AM_CPPFLAGS = -I$(top_srcdir)/final -Wall -Werror -std=c++14
 
 noinst_PROGRAMS = \
 	7segment \

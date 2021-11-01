@@ -31,7 +31,7 @@ namespace finalcut
 //----------------------------------------------------------------------
 auto FKeyMap::getInstance() -> FKeyMap&
 {
-  static const auto& key_map = make_unique<FKeyMap>();
+  static const auto& key_map = std::make_unique<FKeyMap>();
   return *key_map;
 }
 

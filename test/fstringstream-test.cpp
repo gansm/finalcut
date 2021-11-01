@@ -136,8 +136,8 @@ void FStringStreamTest::moveConstructorTest()
   const finalcut::FStringStream ss2{std::move(ss1)};
   CPPUNIT_ASSERT ( ss2.str() == L"abc" );
   CPPUNIT_ASSERT ( ss2.str().getLength() == 3 );
-  CPPUNIT_ASSERT ( ss1.str().isEmpty() );
-  CPPUNIT_ASSERT ( ss1.str().getLength() == 0 );
+  CPPUNIT_ASSERT ( ss1.str().isEmpty() );         // ss1 is used after move
+  CPPUNIT_ASSERT ( ss1.str().getLength() == 0 );  // ss1 is used after move
 }
 
 //----------------------------------------------------------------------
@@ -148,8 +148,8 @@ void FStringStreamTest::assignmentTest()
   ss2 = std::move(ss1);
   CPPUNIT_ASSERT ( ss2.str() == L"xyz" );
   CPPUNIT_ASSERT ( ss2.str().getLength() == 3 );
-  CPPUNIT_ASSERT ( ss1.str().isEmpty() );
-  CPPUNIT_ASSERT ( ss1.str().getLength() == 0 );
+  CPPUNIT_ASSERT ( ss1.str().isEmpty() );         // ss1 is used after move
+  CPPUNIT_ASSERT ( ss1.str().getLength() == 0 );  // ss1 is used after move
 }
 
 //----------------------------------------------------------------------

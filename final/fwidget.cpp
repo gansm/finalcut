@@ -176,7 +176,7 @@ FWidget* FWidget::getParentWidget() const
 //----------------------------------------------------------------------
 auto FWidget::getColorTheme() -> std::shared_ptr<FWidgetColors>&
 {
-  static const auto& color_theme = make_unique<std::shared_ptr<FWidgetColors>>();
+  static const auto& color_theme = std::make_unique<std::shared_ptr<FWidgetColors>>();
   return *color_theme;
 }
 

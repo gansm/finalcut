@@ -56,7 +56,7 @@ FStartOptions::FStartOptions()
 //----------------------------------------------------------------------
 auto FStartOptions::getInstance() -> FStartOptions&
 {
-  static const auto& start_options = make_unique<FStartOptions>();
+  static const auto& start_options = std::make_unique<FStartOptions>();
   return *start_options;
 }
 

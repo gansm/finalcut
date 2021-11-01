@@ -203,7 +203,7 @@ inline void FMessageBox::allocation()
 {
   try
   {
-    button[0].reset(new FButton (this));
+    button[0] = std::make_unique<FButton>(this);
     button[0]->setText(button_text[std::size_t(button_digit[0])]);
     button[0]->setPos(FPoint{3, int(getHeight()) - 4}, false);
     button[0]->setWidth(1, false);
@@ -212,7 +212,7 @@ inline void FMessageBox::allocation()
 
     if ( button_digit[1] > ButtonType::Reject )
     {
-      button[1].reset(new FButton(this));
+      button[1] = std::make_unique<FButton>(this);
       button[1]->setText(button_text[std::size_t(button_digit[1])]);
       button[1]->setPos(FPoint{17, int(getHeight()) - 4}, false);
       button[1]->setWidth(0, false);
@@ -221,7 +221,7 @@ inline void FMessageBox::allocation()
 
     if ( button_digit[2] > ButtonType::Reject )
     {
-      button[2].reset(new FButton(this));
+      button[2] = std::make_unique<FButton>(this);
       button[2]->setText(button_text[std::size_t(button_digit[2])]);
       button[2]->setPos(FPoint{32, int(getHeight()) - 4}, false);
       button[2]->setWidth(0, false);

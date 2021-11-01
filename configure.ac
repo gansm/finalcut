@@ -89,10 +89,10 @@ AC_CONFIG_FILES([Makefile
                  test/Makefile
                  finalcut.pc])
 
-# Check for C++11 support
-m4_ifdef([AX_CXX_COMPILE_STDCXX_11],
-         [AX_CXX_COMPILE_STDCXX_11([noext],[mandatory])],
-         [AC_MSG_ERROR([Macro AX_CXX_COMPILE_STDCXX_11 not found. Please install GNU autoconf-archive])])
+# Check for C++14 support
+m4_ifdef([AX_CXX_COMPILE_STDCXX_14],
+         [AX_CXX_COMPILE_STDCXX_14([noext],[mandatory])],
+         [AC_MSG_ERROR([Macro AX_CXX_COMPILE_STDCXX_14 not found. Please install GNU autoconf-archive])])
 
 # use GPM (General Purpose Mouse)
 AC_ARG_WITH([gpm],

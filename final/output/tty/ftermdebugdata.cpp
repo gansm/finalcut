@@ -39,7 +39,7 @@ namespace finalcut
 //----------------------------------------------------------------------
 auto FTermDebugData::getInstance() -> FTermDebugData&
 {
-  static const auto& debug_data = make_unique<FTermDebugData>();
+  static const auto& debug_data = std::make_unique<FTermDebugData>();
   return *debug_data;
 }
 

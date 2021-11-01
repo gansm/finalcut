@@ -225,7 +225,7 @@ uInt env2uint (const std::string& env)
 //----------------------------------------------------------------------
 std::string& getExitMessage()
 {
-  static const auto& exit_message = make_unique<std::string>();
+  static const auto& exit_message = std::make_unique<std::string>();
   return *exit_message;
 }
 

@@ -49,7 +49,7 @@ bool                      FTermFreeBSD::meta_sends_escape{true};
 //----------------------------------------------------------------------
 auto FTermFreeBSD::getInstance() -> FTermFreeBSD&
 {
-  static const auto& freebsd_console = make_unique<FTermFreeBSD>();
+  static const auto& freebsd_console = std::make_unique<FTermFreeBSD>();
   return *freebsd_console;
 }
 

@@ -14,9 +14,9 @@
 /* Define to 1 if you have the <cstdlib> header file. */
 /* #undef HAVE_CSTDLIB */
 
-/* define if the compiler supports basic C++11 syntax */
-#ifndef F_HAVE_CXX11
-#define F_HAVE_CXX11 1
+/* define if the compiler supports basic C++14 syntax */
+#ifndef F_HAVE_CXX14
+#define F_HAVE_CXX14 1
 #endif
 
 /* Define to 1 if you have the <dlfcn.h> header file. */

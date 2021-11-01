@@ -1,3 +1,6 @@
+2020-11-01  Markus Gans  <guru.mail@muenster.de>
+	* Switched to the language standard C++14
+
 2020-10-31  Markus Gans  <guru.mail@muenster.de>
 	* Version 0.8.0
 

@@ -262,7 +262,7 @@ inline FString FTermData::getClassName() const
 //----------------------------------------------------------------------
 inline auto FTermData::getInstance() -> FTermData&
 {
-  static const auto& data = make_unique<FTermData>();
+  static const auto& data = std::make_unique<FTermData>();
   return *data;
 }
 

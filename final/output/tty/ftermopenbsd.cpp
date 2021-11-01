@@ -44,7 +44,7 @@ bool     FTermOpenBSD::meta_sends_escape{true};
 //----------------------------------------------------------------------
 auto FTermOpenBSD::getInstance() -> FTermOpenBSD&
 {
-  static const auto& openbsd_console = make_unique<FTermOpenBSD>();
+  static const auto& openbsd_console = std::make_unique<FTermOpenBSD>();
   return *openbsd_console;
 }
 

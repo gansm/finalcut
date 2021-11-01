@@ -59,7 +59,7 @@ FTermXTerminal::FTermXTerminal() = default;
 //----------------------------------------------------------------------
 auto FTermXTerminal::getInstance() -> FTermXTerminal&
 {
-  static const auto& xterm = make_unique<FTermXTerminal>();
+  static const auto& xterm = std::make_unique<FTermXTerminal>();
   return *xterm;
 }
 

@@ -341,9 +341,9 @@ void FStringTest::moveConstructorTest()
   CPPUNIT_ASSERT_WCSTRING ( s2.wc_str(), L"abc" );
   CPPUNIT_ASSERT ( s2.getLength() == 3 );
   CPPUNIT_ASSERT ( s2.capacity() >= 3 );
-  CPPUNIT_ASSERT ( s1.isEmpty() );
-  CPPUNIT_ASSERT ( s1.getLength() == 0 );
-  CPPUNIT_ASSERT ( s1.capacity() < std::wstring().max_size() );
+  CPPUNIT_ASSERT ( s1.isEmpty() );                               // s1 is used after move
+  CPPUNIT_ASSERT ( s1.getLength() == 0 );                        // s1 is used after move
+  CPPUNIT_ASSERT ( s1.capacity() < std::wstring().max_size() );  // s1 is used after move
 }
 
 //----------------------------------------------------------------------
@@ -488,9 +488,9 @@ void FStringTest::assignmentTest()
   CPPUNIT_ASSERT ( s11 == L"abc" );
   CPPUNIT_ASSERT ( s11.getLength() == 3 );
   CPPUNIT_ASSERT ( s11.capacity() >= 3 );
-  CPPUNIT_ASSERT ( s10.isEmpty() );
-  CPPUNIT_ASSERT ( s10.getLength() == 0 );
-  CPPUNIT_ASSERT ( s10.capacity() < std::wstring().max_size() );
+  CPPUNIT_ASSERT ( s10.isEmpty() );                               // s10 is used after move
+  CPPUNIT_ASSERT ( s10.getLength() == 0 );                        // s10 is used after move
+  CPPUNIT_ASSERT ( s10.capacity() < std::wstring().max_size() );  // s10 is used after move
 }
 
 //----------------------------------------------------------------------

@@ -1259,7 +1259,7 @@ FMouseControl::~FMouseControl() = default;  // destructor
 //----------------------------------------------------------------------
 auto FMouseControl::getInstance() -> FMouseControl&
 {
-  static const auto& mouse = make_unique<FMouseControl>();
+  static const auto& mouse = std::make_unique<FMouseControl>();
   return *mouse;
 }
 
@@ -1570,7 +1570,7 @@ void FMouseControl::processEvent (const TimeValue& time)
   {
     (*iter)->processEvent(time);
     auto& md = static_cast<FMouseData&>(**iter);
-    fmousedata_queue.emplace(make_unique<FMouseData>(std::move(md)));
+    fmousedata_queue.emplace(std::make_unique<FMouseData>(std::move(md)));
   }
 }
 

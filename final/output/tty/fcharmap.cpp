@@ -32,7 +32,7 @@ namespace finalcut
 //----------------------------------------------------------------------
 auto FCharMap::getInstance() -> FCharMap&
 {
-  static const auto& char_map = make_unique<FCharMap>();
+  static const auto& char_map = std::make_unique<FCharMap>();
   return *char_map;
 }
 

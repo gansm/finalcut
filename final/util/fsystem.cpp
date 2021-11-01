@@ -39,7 +39,7 @@ FSystem::~FSystem() noexcept = default;  // destructor
 //----------------------------------------------------------------------
 auto FSystem::getInstance() -> std::unique_ptr<FSystem>&
 {
-  static const auto& fsys = make_unique<std::unique_ptr<FSystem>>(make_unique<FSystemImpl>());
+  static const auto& fsys = std::make_unique<std::unique_ptr<FSystem>>(std::make_unique<FSystemImpl>());
   return *fsys;
 }
 

@@ -138,18 +138,6 @@ struct EnumHash
   }
 };
 
-template <typename T, typename... Args>
-inline std::unique_ptr<T> make_unique (Args&&... args)
-{
-  return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
-}
-
-template <typename Iter>
-constexpr std::reverse_iterator<Iter> make_reverse_iterator (Iter iter)
-{
-  return std::reverse_iterator<Iter>(iter);
-}
-
 template <typename CharT>
 constexpr std::size_t stringLength (const CharT* s)
 {

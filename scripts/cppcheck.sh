@@ -2,8 +2,8 @@
 
 if [ $# -gt 0 ]
 then
-  eval cppcheck --force --language=c++ --std=c++11 --enable=all -I../ "$@"
+  eval cppcheck --force --language=c++ --std=c++14 --enable=all -I../ "$@"
 else
-  eval cppcheck --force --language=c++ --std=c++11 --enable=all -I../ ../final/ ../examples/
+  eval cppcheck --force --language=c++ --std=c++14 --enable=all -I../ ../final/ ../examples/
 fi
 

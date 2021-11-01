@@ -71,7 +71,7 @@ FOptiAttr::FOptiAttr()
 //----------------------------------------------------------------------
 auto FOptiAttr::getInstance() -> FOptiAttr&
 {
-  static const auto& opti_attr = make_unique<FOptiAttr>();
+  static const auto& opti_attr = std::make_unique<FOptiAttr>();
   return *opti_attr;
 }
 

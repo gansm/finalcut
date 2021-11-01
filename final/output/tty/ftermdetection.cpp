@@ -58,7 +58,7 @@ namespace finalcut
 //----------------------------------------------------------------------
 auto FTermDetection::getInstance() -> FTermDetection&
 {
-  static const auto& term_detection = make_unique<FTermDetection>();
+  static const auto& term_detection = std::make_unique<FTermDetection>();
   return *term_detection;
 }
 

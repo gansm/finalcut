@@ -194,7 +194,7 @@ void FVTerm::addPreprocessingHandler ( const FVTerm* instance
   if ( print_area )
   {
     delPreprocessingHandler (instance);
-    auto obj = make_unique<FVTermPreprocessing> \
+    auto obj = std::make_unique<FVTermPreprocessing> \
         (instance, std::move(function));
     print_area->preproc_list.emplace_back(std::move(obj));
   }

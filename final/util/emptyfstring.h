@@ -64,7 +64,7 @@ class emptyFString final
 
     static const FString& get()
     {
-      static const auto& empty_string = make_unique<FString>("");
+      static const auto& empty_string = std::make_unique<FString>("");
       return *empty_string;
     }
 };

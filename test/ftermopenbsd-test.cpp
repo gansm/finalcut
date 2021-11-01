@@ -318,7 +318,7 @@ void ftermopenbsdTest::classNameTest()
 //----------------------------------------------------------------------
 void ftermopenbsdTest::netbsdConsoleTest()
 {
-  std::unique_ptr<finalcut::FSystem> fsys = finalcut::make_unique<test::FSystemTest>();
+  std::unique_ptr<finalcut::FSystem> fsys = std::make_unique<test::FSystemTest>();
   finalcut::FTerm::setFSystem(fsys);
   std::cout << "\n";
   auto& data = finalcut::FTermData::getInstance();
@@ -424,7 +424,7 @@ void ftermopenbsdTest::netbsdConsoleTest()
 //----------------------------------------------------------------------
 void ftermopenbsdTest::openbsdConsoleTest()
 {
-  std::unique_ptr<finalcut::FSystem> fsys = finalcut::make_unique<test::FSystemTest>();
+  std::unique_ptr<finalcut::FSystem> fsys = std::make_unique<test::FSystemTest>();
   finalcut::FTerm::setFSystem(fsys);
   std::cout << "\n";
   auto& data = finalcut::FTermData::getInstance();

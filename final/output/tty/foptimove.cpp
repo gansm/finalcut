@@ -57,7 +57,7 @@ FOptiMove::FOptiMove (int baud)
 //----------------------------------------------------------------------
 auto FOptiMove::getInstance() -> FOptiMove&
 {
-  static const auto& opti_move = make_unique<FOptiMove>();
+  static const auto& opti_move = std::make_unique<FOptiMove>();
   return *opti_move;
 }
 

@@ -133,11 +133,11 @@ void FRectTest::moveConstructorTest()
 {
   finalcut::FRect r1(3, 3, 15, 7);
   const finalcut::FRect r2 (std::move(r1));
-  CPPUNIT_ASSERT ( r1.getX() == 3 );
-  CPPUNIT_ASSERT ( r1.getY() == 3 );
-  CPPUNIT_ASSERT ( ! r1.isEmpty() );
-  CPPUNIT_ASSERT ( r1.getWidth() == 15 );
-  CPPUNIT_ASSERT ( r1.getHeight() == 7 );
+  CPPUNIT_ASSERT ( r1.getX() == 3 );       // r1 is used after move
+  CPPUNIT_ASSERT ( r1.getY() == 3 );       // r1 is used after move
+  CPPUNIT_ASSERT ( ! r1.isEmpty() );       // r1 is used after move
+  CPPUNIT_ASSERT ( r1.getWidth() == 15 );  // r1 is used after move
+  CPPUNIT_ASSERT ( r1.getHeight() == 7 );  // r1 is used after move
   CPPUNIT_ASSERT ( r2.getX() == 3 );
   CPPUNIT_ASSERT ( r2.getY() == 3 );
   CPPUNIT_ASSERT ( ! r2.isEmpty() );
@@ -358,15 +358,15 @@ void FRectTest::assignmentTest()
 
   finalcut::FRect r6;
   r6 = std::move(r5);  // Move assignment operator
-  CPPUNIT_ASSERT ( r5.getX1() == 2 );
-  CPPUNIT_ASSERT ( r5.getY1() == 9 );
-  CPPUNIT_ASSERT ( r5.getX2() == 11 );
-  CPPUNIT_ASSERT ( r5.getY2() == 18 );
-  CPPUNIT_ASSERT ( ! r5.isEmpty() );
-  CPPUNIT_ASSERT ( r5.getWidth() == 10 );
-  CPPUNIT_ASSERT ( r5.getHeight() == 10 );
-  CPPUNIT_ASSERT ( r5.getSize() == finalcut::FSize(10, 10) );
-  CPPUNIT_ASSERT ( r5.getPos() == finalcut::FPoint(2, 9) );
+  CPPUNIT_ASSERT ( r5.getX1() == 2 );                          // r5 is used after move
+  CPPUNIT_ASSERT ( r5.getY1() == 9 );                          // r5 is used after move
+  CPPUNIT_ASSERT ( r5.getX2() == 11 );                         // r5 is used after move
+  CPPUNIT_ASSERT ( r5.getY2() == 18 );                         // r5 is used after move
+  CPPUNIT_ASSERT ( ! r5.isEmpty() );                           // r5 is used after move
+  CPPUNIT_ASSERT ( r5.getWidth() == 10 );                      // r5 is used after move
+  CPPUNIT_ASSERT ( r5.getHeight() == 10 );                     // r5 is used after move
+  CPPUNIT_ASSERT ( r5.getSize() == finalcut::FSize(10, 10) );  // r5 is used after move
+  CPPUNIT_ASSERT ( r5.getPos() == finalcut::FPoint(2, 9) );    // r5 is used after move
   CPPUNIT_ASSERT ( r6.getX1() == 2 );
   CPPUNIT_ASSERT ( r6.getY1() == 9 );
   CPPUNIT_ASSERT ( r6.getX2() == 11 );

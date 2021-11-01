@@ -396,7 +396,7 @@ void FObject::performTimerAction (FObject*, FEvent*)
 //----------------------------------------------------------------------
 auto FObject::globalTimerList() -> const FTimerListUniquePtr&
 {
-  static const auto& timer_list = make_unique<FTimerList>();
+  static const auto& timer_list = std::make_unique<FTimerList>();
   return timer_list;
 }
 

@@ -612,8 +612,8 @@ FString FString::rtrim() const
     ++r_iter;
 
   if ( r_iter != r_end )
-    return std::wstring( make_reverse_iterator(r_end)
-                       , make_reverse_iterator(r_iter) );
+    return std::wstring( std::make_reverse_iterator(r_end)
+                       , std::make_reverse_iterator(r_iter) );
 
   return {};
 }
