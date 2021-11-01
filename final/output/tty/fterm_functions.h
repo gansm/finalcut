@@ -44,7 +44,7 @@ class FVTermBuffer;
 uInt             env2uint (const std::string&);
 std::string&     getExitMessage();
 void             setExitMessage (const FString&);
-constexpr FColor rgb2ColorIndex (uInt8, uInt8, uInt8);
+FColor           rgb2ColorIndex (uInt8, uInt8, uInt8);
 bool             isReverseNewFontchar (wchar_t);
 bool             hasFullWidthSupports();
 wchar_t          cp437_to_unicode (uChar);

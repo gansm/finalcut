@@ -43,6 +43,9 @@
 namespace finalcut
 {
 
+// Using-declaration
+using char_map = std::array<wchar_t, 2>;
+
 // Enumeration
 enum class FullWidthSupport
 {
@@ -236,7 +239,7 @@ void setExitMessage (const FString& message)
 }
 
 //----------------------------------------------------------------------
-constexpr FColor rgb2ColorIndex (uInt8 r, uInt8 g, uInt8 b)
+FColor rgb2ColorIndex (uInt8 r, uInt8 g, uInt8 b)
 {
   // Converts a 24-bit RGB color to a 256-color compatible approximation
 
@@ -303,7 +306,7 @@ wchar_t cp437_to_unicode (uChar c)
   wchar_t ucs = c;
   auto found = std::find_if ( cp437_ucs.cbegin()
                             , cp437_ucs.cend()
-                            , [&c] (const std::array<wchar_t, 2>& entry)
+                            , [&c] (const char_map& entry)
                               {
                                 return entry[CP437] == c;
                               } );
@@ -323,7 +326,7 @@ uChar unicode_to_cp437 (wchar_t ucs)
   uChar c{'?'};
   auto found = std::find_if ( cp437_ucs.cbegin()
                             , cp437_ucs.cend()
-                            , [&ucs] (const std::array<wchar_t, 2>& entry)
+                            , [&ucs] (const char_map& entry)
                               {
                                 return entry[UNICODE] == ucs;
                               } );
@@ -395,7 +398,7 @@ FString getFullWidth (const FString& str)
     constexpr std::size_t FULL = 1;
     auto found = std::find_if ( halfwidth_fullwidth.cbegin()
                               , halfwidth_fullwidth.cend()
-                              , [&c] (const std::array<wchar_t, 2>& entry)
+                              , [&c] (const char_map& entry)
                                 {
                                   return entry[HALF] == c;
                                 } );
@@ -428,7 +431,7 @@ FString getHalfWidth (const FString& str)
     constexpr std::size_t FULL = 1;
     auto found = std::find_if ( halfwidth_fullwidth.cbegin()
                               , halfwidth_fullwidth.cend()
-                              , [&c] (const std::array<wchar_t, 2>& entry)
+                              , [&c] (const char_map& entry)
                                 {
                                   return entry[FULL] == c;
                                 } );
