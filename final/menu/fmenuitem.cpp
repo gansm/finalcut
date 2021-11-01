@@ -650,7 +650,7 @@ void FMenuItem::createDialogList (FMenu* winmenu) const
       win_item->addCallback
       (
         "clicked",
-        static_cast<std::remove_reference<decltype(win_item)>::type>(win_item),
+        static_cast<std::remove_reference_t<decltype(win_item)>>(win_item),
         &FMenuItem::cb_switchToDialog,
         win
       );
@@ -658,7 +658,7 @@ void FMenuItem::createDialogList (FMenu* winmenu) const
       win->addCallback
       (
         "destroy",
-        static_cast<std::remove_reference<decltype(win_item)>::type>(win_item),
+        static_cast<std::remove_reference_t<decltype(win_item)>>(win_item),
         &FMenuItem::cb_destroyDialog,
         win
       );

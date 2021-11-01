@@ -141,11 +141,11 @@ class FVTerm : public FVTermAttribute
 
     // Overloaded operators
     template <typename NumT
-            , typename is_arithmetic_without_char<NumT>::type = nullptr>
+            , enable_if_arithmetic_without_char_t<NumT> = nullptr>
     FVTerm& operator << (const NumT&);
 
     template <typename CharT
-            , typename CString<CharT>::type = nullptr>
+            , enable_if_CString_t<CharT> = nullptr>
     FVTerm& operator << (const CharT&);
     FVTerm& operator << (char);
     FVTerm& operator << (wchar_t);
@@ -437,7 +437,7 @@ struct FVTerm::FVTermPreprocessing
 // FVTerm inline functions
 //----------------------------------------------------------------------
 template <typename NumT
-        , typename is_arithmetic_without_char<NumT>::type>
+        , enable_if_arithmetic_without_char_t<NumT>>
 inline FVTerm& FVTerm::operator << (const NumT& n)
 {
   print (FString(std::to_string(n)));
@@ -446,7 +446,7 @@ inline FVTerm& FVTerm::operator << (const NumT& n)
 
 //----------------------------------------------------------------------
 template <typename CharT
-        , typename CString<CharT>::type>
+        , enable_if_CString_t<CharT>>
 inline FVTerm& FVTerm::operator << (const CharT& s)
 {
   print (FString(s));

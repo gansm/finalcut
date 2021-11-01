@@ -73,7 +73,7 @@ template <typename T>
 struct cleanCondition<T, true, false>
 {
   // Array to pointer
-  using type = typename std::remove_extent<T>::type*;
+  using type = std::remove_extent_t<T>*;
 };
 
 //----------------------------------------------------------------------
@@ -81,8 +81,12 @@ template <typename T>
 struct cleanCondition<T, false, true>
 {
   // Add pointer to function
-  using type = typename std::add_pointer<T>::type;
+  using type = std::add_pointer_t<T>;
 };
+
+//----------------------------------------------------------------------
+template<typename T>
+using cleanCondition_t = typename cleanCondition<T>::type;
 
 }  // namespace internal
 
@@ -91,11 +95,11 @@ template <typename T>
 class cleanFData
 {
   private:
-    using remove_ref = typename std::remove_reference<T>::type;
+    using remove_ref = std::remove_reference_t<T>;
 
   public:
     // Similar to std::decay, but keeps const and volatile
-    using type = typename internal::cleanCondition<remove_ref>::type;
+    using type = internal::cleanCondition_t<remove_ref>;
 };
 
 //----------------------------------------------------------------------
@@ -153,7 +157,7 @@ template <typename T>
 class FData : public FDataAccess
 {
   public:
-    using T_nocv = typename std::remove_cv<T>::type;
+    using T_nocv = std::remove_cv_t<T>;
 
     // Constructors
     explicit FData (T& v)  // constructor

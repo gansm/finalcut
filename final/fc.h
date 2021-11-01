@@ -1331,7 +1331,7 @@ enum class FTermType : uInt32
   kitty          = 1U << 20U   // kitty (GPU based terminal emulator)
 };
 
-using FTermTypeT = typename std::underlying_type<FTermType>::type;
+using FTermTypeT = std::underlying_type_t<FTermType>;
 
 constexpr FTermTypeT operator | (const FTermType& t1, const FTermType& t2) noexcept
 {

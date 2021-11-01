@@ -70,11 +70,11 @@ class FVTermBuffer
 
     // Overloaded operators
     template <typename NumT
-            , typename is_arithmetic_without_char<NumT>::type = nullptr>
+            , enable_if_arithmetic_without_char_t<NumT> = nullptr>
     FVTermBuffer& operator << (const NumT&);
 
     template <typename CharT
-            , typename CString<CharT>::type = nullptr>
+            , enable_if_CString_t<CharT> = nullptr>
     FVTermBuffer& operator << (const CharT&);
     FVTermBuffer& operator << (char);
     FVTermBuffer& operator << (wchar_t);
@@ -137,7 +137,7 @@ inline FVTermBuffer::FVTermBuffer(Iterator first, Iterator last)
 
 //----------------------------------------------------------------------
 template <typename NumT
-        , typename is_arithmetic_without_char<NumT>::type>
+        , enable_if_arithmetic_without_char_t<NumT>>
 inline FVTermBuffer& FVTermBuffer::operator << (const NumT& n)
 {
   print (FString(std::to_string(n)));
@@ -146,7 +146,7 @@ inline FVTermBuffer& FVTermBuffer::operator << (const NumT& n)
 
 //----------------------------------------------------------------------
 template <typename CharT
-        , typename CString<CharT>::type>
+        , enable_if_CString_t<CharT>>
 inline FVTermBuffer& FVTermBuffer::operator << (const CharT& s)
 {
   print (FString(s));

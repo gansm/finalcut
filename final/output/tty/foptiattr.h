@@ -253,7 +253,7 @@ class FOptiAttr final
     bool          switchOn() const;
     bool          switchOff() const;
     template <typename CharT
-            , typename CString<CharT>::type = nullptr>
+            , enable_if_CString_t<CharT> = nullptr>
     bool          append_sequence (CharT);
     bool          append_sequence (const std::string&);
 
@@ -331,7 +331,7 @@ inline void FOptiAttr::unsetDefaultColorSupport() noexcept
 
 //----------------------------------------------------------------------
 template <typename CharT
-        , typename CString<CharT>::type>
+        , enable_if_CString_t<CharT>>
 inline bool FOptiAttr::append_sequence (CharT seq)
 {
   // for char* and const char*

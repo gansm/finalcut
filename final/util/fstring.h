@@ -116,12 +116,12 @@ class FString
     FString& operator << (const wchar_t);
     FString& operator << (const char);
     template <typename NumT
-            , typename std::enable_if< ( std::is_integral<NumT>::value
-                                    && ! std::is_same<NumT, bool>::value
-                                    && ! std::is_pointer<NumT>::value )
-                                    || ( std::is_floating_point<NumT>::value
-                                    && ! std::is_pointer<NumT>::value )
-                                     , int>::type = 0 >
+            , std::enable_if_t< ( std::is_integral<NumT>::value
+                             && ! std::is_same<NumT, bool>::value
+                             && ! std::is_pointer<NumT>::value )
+                             || ( std::is_floating_point<NumT>::value
+                             && ! std::is_pointer<NumT>::value )
+                              , int> = 0 >
     FString& operator << (const NumT);
 
     const FString& operator >> (FString&) const;
@@ -278,12 +278,12 @@ int FStringCaseCompare (const FString&, const FString&);
 // FString inline functions
 //----------------------------------------------------------------------
 template <typename NumT
-        , typename std::enable_if< ( std::is_integral<NumT>::value
-                                && ! std::is_same<NumT, bool>::value
-                                && ! std::is_pointer<NumT>::value )
-                                || ( std::is_floating_point<NumT>::value
-                                && ! std::is_pointer<NumT>::value )
-                                 , int>::type >
+        , std::enable_if_t< ( std::is_integral<NumT>::value
+                         && ! std::is_same<NumT, bool>::value
+                         && ! std::is_pointer<NumT>::value )
+                         || ( std::is_floating_point<NumT>::value
+                         && ! std::is_pointer<NumT>::value )
+                          , int> >
 inline FString& FString::operator << (const NumT val)
 {
   const FString numstr(FString().setNumber(val));

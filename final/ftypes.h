@@ -101,7 +101,7 @@ struct is_negative<T, false>
 template<typename CharT>
 inline bool is7bit (CharT ch)
 {
-  using char_type = typename std::make_unsigned<CharT>::type;
+  using char_type = std::make_unsigned_t<CharT>;
   return static_cast<char_type>(ch) < 128;
 }
 
@@ -133,7 +133,7 @@ struct EnumHash
 {
   std::size_t operator () (const T& mt) const noexcept
   {
-    using underlying_type = typename std::underlying_type<T>::type;
+    using underlying_type = std::underlying_type_t<T>;
     return std::hash<underlying_type>()(underlying_type(mt));
   }
 };
@@ -145,32 +145,32 @@ constexpr std::size_t stringLength (const CharT* s)
 }
 
 template <typename CharT>
-using remove_ptr_t = typename std::remove_pointer<CharT>::type;
+using remove_ptr_t = std::remove_pointer_t<CharT>;
 
 template <typename CharT>
-using remove_ptr_cv_t = typename std::remove_cv<remove_ptr_t<CharT>>::type;
+using remove_ptr_cv_t = std::remove_cv_t<remove_ptr_t<CharT>>;
 
 template <typename CharT>
-using is_char_based_ptr = typename std::is_same<char, remove_ptr_cv_t<CharT>>;
+using is_char_based_ptr = std::is_same<char, remove_ptr_cv_t<CharT>>;
 
 template <typename CharT>
-using remove_ref_t = typename std::remove_reference<CharT>::type;
+using remove_ref_t = std::remove_reference_t<CharT>;
 
 template <typename CharT>
-using remove_ref_extent_t = typename std::remove_extent<remove_ref_t<CharT>>::type;
+using remove_ref_extent_t = std::remove_extent_t<remove_ref_t<CharT>>;
 
 template <typename CharT>
-using remove_ref_extent_cv_t = typename std::remove_cv<remove_ref_extent_t<CharT>>::type;
+using remove_ref_extent_cv_t = std::remove_cv_t<remove_ref_extent_t<CharT>>;
 
 template <typename CharT>
 using is_char_based_array = typename std::is_same<char, remove_ref_extent_cv_t<CharT>>;
 
 template <typename CharT>
-using CString =
-    typename std::enable_if<
-               (std::is_pointer<CharT>::value && is_char_based_ptr<CharT>::value)
-            || (std::is_array<remove_ref_t<CharT>>::value && is_char_based_array<CharT>::value)
-              , std::nullptr_t>;
+using enable_if_CString_t =
+    std::enable_if_t<
+       (std::is_pointer<CharT>::value && is_char_based_ptr<CharT>::value)
+    || (std::is_array<remove_ref_t<CharT>>::value && is_char_based_array<CharT>::value)
+      , std::nullptr_t>;
 
 template <typename CharT>
 struct isCString
@@ -180,10 +180,10 @@ struct isCString
 { };
 
 template <typename NumT>
-using is_arithmetic_without_char =
-  typename std::enable_if< std::is_arithmetic<NumT>::value
-                        && ! std::is_same<char, NumT>::value
-                        , std::nullptr_t>;
+using enable_if_arithmetic_without_char_t =
+  std::enable_if_t< std::is_arithmetic<NumT>::value
+                 && ! std::is_same<char, NumT>::value
+                 , std::nullptr_t>;
 
 struct TCapAttributes
 {
