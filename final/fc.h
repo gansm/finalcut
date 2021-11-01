@@ -857,13 +857,13 @@ constexpr FKey operator - (const FKey& k1, const FKey& k2) noexcept
   return k1 - uInt32(k2);
 }
 
-inline FKey& operator += (FKey& k1, uInt32 k2) noexcept
+constexpr FKey& operator += (FKey& k1, uInt32 k2) noexcept
 {
   k1 = ( k1 < UINT32_MAX - k2 ) ? FKey(uInt32(k1) + k2) : FKey::None;
   return k1;
 }
 
-inline FKey& operator -= (FKey& k1, uInt32 k2) noexcept
+constexpr FKey& operator -= (FKey& k1, uInt32 k2) noexcept
 {
   k1 = ( k1 > k2 ) ? FKey(uInt32(k1) - k2) : FKey::None;
   return k1;
@@ -1184,19 +1184,19 @@ constexpr FColor operator % (const FColor& c, const uInt16 n) noexcept
   return FColor(uInt16(c) % n);
 }
 
-inline FColor& operator %= (FColor& c, uInt16 n) noexcept
+constexpr FColor& operator %= (FColor& c, uInt16 n) noexcept
 {
   c =  FColor(uInt16(c) % n);
   return c;
 }
 
-inline FColor& operator ++ (FColor& c) noexcept  // prefix
+constexpr FColor& operator ++ (FColor& c) noexcept  // prefix
 {
   c = ( uInt16(c) < 255 ) ? FColor(uInt16(c) + 1) : FColor::Default;
   return c;
 }
 
-inline FColor operator ++ (FColor& c, int) noexcept  // postfix
+constexpr FColor operator ++ (FColor& c, int) noexcept  // postfix
 {
   const FColor tmp = c;
   ++c;
@@ -1279,7 +1279,7 @@ constexpr MouseButton operator | (const MouseButton& b1, const MouseButton& b2) 
   return MouseButton(int(b1) | int(b2));
 }
 
-inline MouseButton& operator |= (MouseButton& b1, const MouseButton& b2) noexcept
+constexpr MouseButton& operator |= (MouseButton& b1, const MouseButton& b2) noexcept
 {
   b1 = b1 | b2;
   return b1;
@@ -1290,7 +1290,7 @@ constexpr MouseButton operator & (const MouseButton& b1, const MouseButton& b2) 
   return MouseButton(int(b1) & int(b2));
 }
 
-inline MouseButton& operator &= (MouseButton& b1, const MouseButton& b2) noexcept
+constexpr MouseButton& operator &= (MouseButton& b1, const MouseButton& b2) noexcept
 {
   b1 = b1 & b2;
   return b1;

@@ -1462,9 +1462,9 @@ bool FMouseControl::isMoved()
 //----------------------------------------------------------------------
 bool FMouseControl::hasUnprocessedInput()
 {
-  return std::any_of ( std::begin(mouse_protocol)
-                     , std::end(mouse_protocol)
-                     , [] (FMouseProtocol::const_reference mouse)
+  return std::any_of ( std::cbegin(mouse_protocol)
+                     , std::cend(mouse_protocol)
+                     , [] (const auto& mouse)
                        {
                          return mouse->hasUnprocessedInput();
                        }
@@ -1615,9 +1615,9 @@ void FMouseControl::drawPointer()
 //----------------------------------------------------------------------
 auto FMouseControl::findMouseWithType (const FMouse::MouseType& mt) -> FMouseProtocol::const_iterator
 {
-  return std::find_if ( std::begin(mouse_protocol)
-                      , std::end(mouse_protocol)
-                      , [&mt] (FMouseProtocol::const_reference mouse)
+  return std::find_if ( std::cbegin(mouse_protocol)
+                      , std::cend(mouse_protocol)
+                      , [&mt] (const auto& mouse)
                         {
                           return mouse->getMouseTypeID() == mt;
                         }
@@ -1627,9 +1627,9 @@ auto FMouseControl::findMouseWithType (const FMouse::MouseType& mt) -> FMousePro
 //----------------------------------------------------------------------
 auto FMouseControl::findMouseWithData() -> FMouseProtocol::const_iterator
 {
-  return std::find_if ( std::begin(mouse_protocol)
-                      , std::end(mouse_protocol)
-                      , [] (FMouseProtocol::const_reference mouse)
+  return std::find_if ( std::cbegin(mouse_protocol)
+                      , std::cend(mouse_protocol)
+                      , [] (const auto& mouse)
                         {
                           return mouse->hasData();
                         }
@@ -1639,9 +1639,9 @@ auto FMouseControl::findMouseWithData() -> FMouseProtocol::const_iterator
 //----------------------------------------------------------------------
 auto FMouseControl::findMouseWithEvent() -> FMouseProtocol::const_iterator
 {
-  return std::find_if ( std::begin(mouse_protocol)
-                      , std::end(mouse_protocol)
-                      , [] (FMouseProtocol::const_reference mouse)
+  return std::find_if ( std::cbegin(mouse_protocol)
+                      , std::cend(mouse_protocol)
+                      , [] (const auto& mouse)
                         {
                           return mouse->hasEvent();
                         }

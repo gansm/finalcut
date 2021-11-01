@@ -105,13 +105,13 @@ int main (int argc, char* argv[])
 
   // Callback lambda expressions
   auto cb_exit = \
-      [] (const finalcut::FApplication& a)
+      [] (const auto& a)
       {
         a.quit();
       };
 
   auto cb_tooltip = \
-      [] (finalcut::FDialog* a)
+      [] (const auto& a)
       {
         finalcut::FToolTip tooltip(a);
         tooltip.setText (full("A tooltip with\ncharacters\n"

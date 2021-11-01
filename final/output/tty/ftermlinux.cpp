@@ -904,7 +904,7 @@ void FTermLinux::setVGADefaultPalette()
   std::transform ( defaultColor.cbegin()
                  , defaultColor.cend()
                  , cmap.color.begin()
-                 , [] (const RGB& rgb)
+                 , [] (const auto& rgb)
                    {
                      return rgb;
                    }
@@ -1162,7 +1162,7 @@ sInt16 FTermLinux::getFontPos (wchar_t ucs) const
   const auto& begin = &screen_unicode_map.entries[0];
   const auto& end = &screen_unicode_map.entries[count];
   const auto iter = std::find_if ( begin, end,
-                                   [&ucs] (struct unipair entry)
+                                   [&ucs] (const auto& entry)
                                    {
                                      return ucs == wchar_t(entry.unicode);
                                    } );

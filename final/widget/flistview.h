@@ -668,7 +668,7 @@ FObject::iterator
   std::transform ( std::begin(list)
                  , std::end(list)
                  , std::back_inserter(str_cols)
-                 , [] (const T& col)
+                 , [] (const auto& col)
                    {
                      const FString s(FString() << col);
                      return s;
@@ -706,7 +706,7 @@ FObject::iterator
   std::transform ( std::begin(cols)
                  , std::end(cols)
                  , std::back_inserter(str_cols)
-                 , [] (const ColT& col)
+                 , [] (const auto& col)
                    {
                      const FString s(FString() << col);
                      return s;

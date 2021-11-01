@@ -74,7 +74,7 @@ FKeyboard::FKeyboard()
   // Sort the known key map by string length
   auto& key_map = FKeyMap::getKeyMap();
   std::sort ( key_map.begin(), key_map.end()
-            , [] (const FKeyMap::KeyMap& lhs, const FKeyMap::KeyMap& rhs)
+            , [] (const auto& lhs, const auto& rhs)
               {
                 return lhs.length < rhs.length;
               }
@@ -105,7 +105,7 @@ FString FKeyboard::getKeyName (const FKey keynum) const
   (
     fkeyname.cbegin(),
     fkeyname.cend(),
-    [&keynum] (const FKeyMap::KeyName& kn)
+    [&keynum] (const auto& kn)
     {
       return ( kn.num != FKey::None && kn.num == keynum );
     }
@@ -300,7 +300,7 @@ inline FKey FKeyboard::getTermcapKey()
   (
     key_cap_ptr->cbegin(),
     key_cap_end,
-    [this, &buf_len] (const FKeyMap::KeyCapMap& cap_key)
+    [this, &buf_len] (const auto& cap_key)
     {
       const auto& kstr = cap_key.string;
       const auto& klen = cap_key.length;
@@ -343,7 +343,7 @@ inline FKey FKeyboard::getKnownKey()
   (
     key_map.cbegin(),
     key_map.cend(),
-    [this, &buf_len] (const FKeyMap::KeyMap& known_key)
+    [this, &buf_len] (const auto& known_key)
     {
       const auto& kstr = known_key.string;  // This string is never null
       const auto& klen = known_key.length;

@@ -425,7 +425,7 @@ void FTermcap::termcapKeys()
 
   // Sort key map list by string length (string length 0 at end)
   std::sort ( cap_map.begin(), cap_map.end()
-            , [] (const FKeyMap::KeyCapMap& lhs, const FKeyMap::KeyCapMap& rhs)
+            , [] (const auto& lhs, const auto& rhs)
               {
                 if ( lhs.length == 0 && rhs.length > 0 ) return false;
                 if ( lhs.length > 0 && rhs.length == 0 ) return true;

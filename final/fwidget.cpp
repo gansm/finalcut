@@ -1795,7 +1795,7 @@ inline void FWidget::insufficientSpaceAdjust()
 //----------------------------------------------------------------------
 void FWidget::KeyPressEvent (FKeyEvent* kev)
 {
-  auto change_focus = [this] (const FKey key)
+  auto change_focus = [this] (const auto& key)
   {
     if ( isFocusNextKey(key) )
       return focusNextChild();

@@ -86,7 +86,7 @@ SegmentView::SegmentView (finalcut::FWidget* parent)
   input.addCallback
   (
     "changed",
-    [] (SegmentView& dialog)
+    [] (auto& dialog)
     {
       dialog.redraw();
     },

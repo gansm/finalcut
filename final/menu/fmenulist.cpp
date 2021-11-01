@@ -103,7 +103,7 @@ auto FMenuList::findFirstSelectedItem() const
   (
     item_list.cbegin(),
     item_list.cend(),
-    [] (const FMenuItem* item)
+    [] (const auto& item)
     {
       return item->isSelected();
     }
@@ -118,7 +118,7 @@ auto FMenuList::findLastSelectedItem() const
   (
     item_list.crbegin(),
     item_list.crend(),
-    [] (const FMenuItem* item)
+    [] (const auto& item)
     {
       return item->isSelected();
     }

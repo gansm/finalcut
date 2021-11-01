@@ -99,7 +99,7 @@ struct is_negative<T, false>
 
 // Check for 7-bit ASCII
 template<typename CharT>
-inline bool is7bit (CharT ch)
+constexpr bool is7bit (CharT ch)
 {
   using char_type = std::make_unsigned_t<CharT>;
   return static_cast<char_type>(ch) < 128;
@@ -108,7 +108,7 @@ inline bool is7bit (CharT ch)
 
 // Typecast to c-string
 template <typename StringT>
-auto C_STR (StringT&& string) -> char*
+constexpr auto C_STR (StringT&& string)
 {
   return const_cast<char*>(std::forward<StringT>(string));
 }
@@ -131,7 +131,7 @@ struct getPrecision
 template <typename T>
 struct EnumHash
 {
-  std::size_t operator () (const T& mt) const noexcept
+  constexpr std::size_t operator () (const T& mt) const noexcept
   {
     using underlying_type = std::underlying_type_t<T>;
     return std::hash<underlying_type>()(underlying_type(mt));

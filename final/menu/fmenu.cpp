@@ -147,9 +147,9 @@ void FMenu::onKeyPress (FKeyEvent* ev)
     FKey::Meta_7, FKey::Meta_8, FKey::Meta_9
   }};
 
-  if ( std::any_of( std::begin(ignore_list)
-                  , std::end(ignore_list)
-                  , [&key] (FKey k) { return key == k; } ) )
+  if ( std::any_of( std::cbegin(ignore_list)
+                  , std::cend(ignore_list)
+                  , [&key] (const auto& k) { return key == k; } ) )
     return;
 
   if ( key == FKey::Up )
@@ -993,7 +993,7 @@ inline bool FMenu::hotkeyFound (FKey hotkey, const FKeyEvent& ev) const
 //----------------------------------------------------------------------
 bool FMenu::hotkeyMenu (FKeyEvent* ev)
 {
-  auto try_to_open_submenu = [this] (FMenu* sub_menu)
+  auto try_to_open_submenu = [this] (const auto& sub_menu)
   {
     if ( ! sub_menu->isShown() )
       openSubMenu (sub_menu, SELECT_ITEM);

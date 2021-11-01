@@ -49,7 +49,7 @@ FString FVTermBuffer::toString() const
   wide_string.reserve(data.size());
   std::for_each ( data.cbegin()
                 , data.cend()
-                , [&wide_string] (const FChar& fchar)
+                , [&wide_string] (const auto& fchar)
                   {
                     for (auto&& ch : fchar.ch)
                     {

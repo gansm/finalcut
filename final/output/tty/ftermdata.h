@@ -78,7 +78,7 @@ inline wchar_t FCharSubstitution::getMappedChar (wchar_t c) const
 {
   const auto& cend = sub_map.cend();
   auto iter = std::find_if ( sub_map.cbegin(), cend,
-                             [&c] (const Map& map)
+                             [&c] (const auto& map)
                              {
                                return map.from == c;
                              } );
@@ -94,7 +94,7 @@ inline void FCharSubstitution::setCharMapping (const Map& m)
 {
   const auto& end = sub_map.end();
   auto iter = std::find_if ( sub_map.begin(), end,
-                             [&m] (const Map& map)
+                             [&m] (const auto& map)
                              {
                                return map.from == m.from;
                              } );
@@ -115,7 +115,7 @@ inline bool FCharSubstitution::isEmpty() const
 inline void FCharSubstitution::sort()
 {
   std::sort ( sub_map.begin(), sub_map.end()
-            , [] (const Map& lhs, const Map& rhs)
+            , [] (const auto& lhs, const auto& rhs)
               {
                 return lhs.from < rhs.from;
               }

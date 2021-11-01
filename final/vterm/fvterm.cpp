@@ -1502,7 +1502,7 @@ bool FVTerm::hasChildAreaChanges (const FTermArea* area) const
 
   return std::any_of ( area->preproc_list.cbegin()
                      , area->preproc_list.cend()
-                     , [] (const std::unique_ptr<FVTermPreprocessing>& pcall)
+                     , [] (const auto& pcall)
                        {
                          return pcall->instance
                              && pcall->instance->child_print_area

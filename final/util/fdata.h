@@ -134,7 +134,7 @@ class FDataAccess
     }
 
     template<typename T>
-    clean_fdata_t<T>& get()
+    constexpr clean_fdata_t<T>& get()
     {
       return static_cast<FData<clean_fdata_t<T>>&>(*this).get();
     }
@@ -142,7 +142,7 @@ class FDataAccess
     // Mutator
     template <typename T
             , typename V>
-    void set (V&& data)
+    constexpr void set (V&& data)
     {
       static_cast<FData<T>&>(*this).set(std::forward<V>(data));
     }
@@ -212,17 +212,17 @@ class FData : public FDataAccess
       return *this;
     }
 
-    T operator () () const
+    constexpr T operator () () const
     {
       return value_ref;
     }
 
-    explicit operator T () const
+    constexpr explicit operator T () const
     {
       return value_ref;
     }
 
-    FData& operator << (const T& v)
+    constexpr FData& operator << (const T& v)
     {
       value_ref.get() = v;
       return *this;
@@ -234,32 +234,32 @@ class FData : public FDataAccess
       return "FData";
     }
 
-    T& get() const
+    constexpr T& get() const
     {
       return value_ref;
     }
 
     // Mutator
-    void set (const T& v)
+    constexpr void set (const T& v)
     {
       value_ref.get() = v;
     }
 
     // Inquiries
-    bool isInitializedCopy() const
+    constexpr bool isInitializedCopy() const
     {
       const auto& v = reinterpret_cast<void*>(const_cast<T_nocv*>(&value));
       const auto& r = reinterpret_cast<void*>(const_cast<T_nocv*>(&value_ref.get()));
       return v == r;
     }
 
-    bool isInitializedReference() const
+    constexpr bool isInitializedReference() const
     {
       return ! isInitializedCopy();
     }
 
     // Friend Non-member operator functions
-    friend std::ostream& operator << (std::ostream &os, const FData& data)
+    constexpr friend std::ostream& operator << (std::ostream &os, const FData& data)
     {
       os << data.value_ref.get();
       return os;

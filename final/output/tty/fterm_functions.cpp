@@ -236,7 +236,7 @@ void setExitMessage (const FString& message)
 }
 
 //----------------------------------------------------------------------
-FColor rgb2ColorIndex (uInt8 r, uInt8 g, uInt8 b)
+constexpr FColor rgb2ColorIndex (uInt8 r, uInt8 g, uInt8 b)
 {
   // Converts a 24-bit RGB color to a 256-color compatible approximation
 
@@ -247,21 +247,21 @@ FColor rgb2ColorIndex (uInt8 r, uInt8 g, uInt8 b)
 }
 
 //----------------------------------------------------------------------
-inline bool hasAmbiguousWidth (wchar_t wchar)
+bool isReverseNewFontchar (wchar_t wchar)
 {
-  const auto& begin = std::begin(ambiguous_width_list);
-  const auto& end = std::end(ambiguous_width_list);
-  return ( std::any_of(begin, end, [&wchar] (const wchar_t c)
-                                   { return c == wchar; }) );
+  const auto& cbegin = std::cbegin(reverse_newfont_list);
+  const auto& cend = std::cend(reverse_newfont_list);
+  return ( std::any_of(cbegin, cend, [&wchar] (const auto& c)
+                                     { return wchar_t(c) == wchar; }) );
 }
 
 //----------------------------------------------------------------------
-bool isReverseNewFontchar (wchar_t wchar)
+inline bool hasAmbiguousWidth (wchar_t wchar)
 {
-  const auto& begin = std::begin(reverse_newfont_list);
-  const auto& end = std::end(reverse_newfont_list);
-  return ( std::any_of(begin, end, [&wchar] (const UniChar& c)
-                                   { return wchar_t(c) == wchar; }) );
+  const auto& cbegin = std::cbegin(ambiguous_width_list);
+  const auto& cend = std::cend(ambiguous_width_list);
+  return ( std::any_of(cbegin, cend, [&wchar] (const auto& c)
+                                     { return c == wchar; }) );
 }
 
 //----------------------------------------------------------------------
@@ -639,7 +639,7 @@ void addColumnWidth (FChar& term_char)
 }
 
 //----------------------------------------------------------------------
-inline int isWhitespace (const wchar_t ch) noexcept
+constexpr int isWhitespace (const wchar_t ch) noexcept
 {
   return std::iswspace(static_cast<wint_t>(ch));
 }

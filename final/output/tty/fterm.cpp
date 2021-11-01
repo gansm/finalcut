@@ -784,7 +784,7 @@ std::string FTerm::getEncodingString()
   const auto& encoding_list = data.getEncodingList();
   auto found = std::find_if ( encoding_list.cbegin()
                             , encoding_list.cend()
-                            , [&term_encoding] (const std::pair<std::string, Encoding>& entry)
+                            , [&term_encoding] (const auto& entry)
                               {
                                 return entry.second == term_encoding;
                               } );
@@ -804,7 +804,7 @@ wchar_t FTerm::charEncode (wchar_t c, Encoding enc)
   const auto& character = FCharMap::getCharEncodeMap();
   const auto& cend = character.cend();
   auto found = std::find_if ( character.cbegin(), cend
-                            , [&c] (const FCharMap::CharEncodeMap& entry)
+                            , [&c] (const auto& entry)
                               {
                                 return entry.unicode == c;
                               } );
@@ -993,7 +993,7 @@ void FTerm::init_alt_charset()
     const auto utf8char = wchar_t(pair.unicode);
     const auto p = std::find_if ( character.cbegin()
                                 , character.cend()
-                                , [&utf8char] (FCharMap::CharEncodeMap entry)
+                                , [&utf8char] (const auto& entry)
                                   { return entry.unicode == utf8char; } );
     if ( p != character.cend() )  // found in character
     {

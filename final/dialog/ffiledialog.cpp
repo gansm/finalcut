@@ -401,7 +401,7 @@ sInt64 FFileDialog::numOfDirs()
 
   const sInt64 n = std::count_if ( std::begin(dir_entries)
                                  , std::end(dir_entries)
-                                 , [] (const FDirEntry& entry)
+                                 , [] (const auto& entry)
                                    {
                                      return entry.directory
                                          && entry.name != ".";
@@ -716,7 +716,7 @@ void FFileDialog::cb_processActivate()
     {
       found = std::any_of ( std::begin(dir_entries)
                           , std::end(dir_entries)
-                          , [&input] (const FDirEntry& entry)
+                          , [&input] (const auto& entry)
                             {
                               return ! entry.name.empty()
                                   && input
