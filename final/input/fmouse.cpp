@@ -1613,7 +1613,7 @@ void FMouseControl::drawPointer()
 
 // private methods of FMouseControl
 //----------------------------------------------------------------------
-const auto FMouseControl::findMouseWithType (const FMouse::MouseType& mt) -> FMouseProtocol::const_iterator const
+auto FMouseControl::findMouseWithType (const FMouse::MouseType& mt) const -> FMouseProtocol::const_iterator
 {
   return std::find_if ( std::cbegin(mouse_protocol)
                       , std::cend(mouse_protocol)
@@ -1625,7 +1625,7 @@ const auto FMouseControl::findMouseWithType (const FMouse::MouseType& mt) -> FMo
 }
 
 //----------------------------------------------------------------------
-const auto FMouseControl::findMouseWithData() -> FMouseProtocol::const_iterator const
+auto FMouseControl::findMouseWithData() const -> FMouseProtocol::const_iterator
 {
   return std::find_if ( std::cbegin(mouse_protocol)
                       , std::cend(mouse_protocol)
@@ -1637,7 +1637,7 @@ const auto FMouseControl::findMouseWithData() -> FMouseProtocol::const_iterator 
 }
 
 //----------------------------------------------------------------------
-const auto FMouseControl::findMouseWithEvent() -> FMouseProtocol::const_iterator const
+auto FMouseControl::findMouseWithEvent() const -> FMouseProtocol::const_iterator
 {
   return std::find_if ( std::cbegin(mouse_protocol)
                       , std::cend(mouse_protocol)
