@@ -575,9 +575,9 @@ class FMouseControl
     using FMouseProtocol = std::vector<FMousePtr>;
 
     // Accessor
-    auto                      findMouseWithType (const FMouse::MouseType&) -> FMouseProtocol::const_iterator const;
-    auto                      findMouseWithData() -> FMouseProtocol::const_iterator const;
-    auto                      findMouseWithEvent() -> FMouseProtocol::const_iterator const;
+    const auto                findMouseWithType (const FMouse::MouseType&) -> FMouseProtocol::const_iterator const;
+    const auto                findMouseWithData() -> FMouseProtocol::const_iterator const;
+    const auto                findMouseWithEvent() -> FMouseProtocol::const_iterator const;
     void                      xtermMouse (bool = true) const;
     void                      enableXTermMouse() const;
     void                      disableXTermMouse() const;
