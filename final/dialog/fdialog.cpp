@@ -517,7 +517,7 @@ void FDialog::onKeyPress (FKeyEvent* ev)
 void FDialog::onMouseDown (FMouseEvent* ev)
 {
   const auto width = int(getWidth());
-  const MouseStates ms = initMouseStates(*ev, false);
+  const auto& ms = initMouseStates(*ev, false);
   deactivateMinimizeButton();
   deactivateZoomButton();
 
@@ -568,7 +568,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FDialog::onMouseUp (FMouseEvent* ev)
 {
-  const MouseStates ms = initMouseStates(*ev, false);
+  const auto& ms = initMouseStates(*ev, false);
 
   if ( ev->getButton() == MouseButton::Left )
   {
@@ -613,7 +613,7 @@ void FDialog::onMouseUp (FMouseEvent* ev)
 void FDialog::onMouseMove (FMouseEvent* ev)
 {
   auto mouse_over_menu = isMouseOverMenu(ev->getTermPos());
-  const MouseStates ms = initMouseStates(*ev, mouse_over_menu);
+  const auto& ms = initMouseStates(*ev, mouse_over_menu);
 
   if ( ev->getButton() != MouseButton::Left )
     return;
@@ -637,7 +637,7 @@ void FDialog::onMouseMove (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FDialog::onMouseDoubleClick (FMouseEvent* ev)
 {
-  const MouseStates ms = initMouseStates(*ev, false);
+  const auto& ms = initMouseStates(*ev, false);
 
   if ( ev->getButton() != MouseButton::Left )
     return;

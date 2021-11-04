@@ -80,7 +80,7 @@ template <typename T
         , bool is_signed>
 struct is_negative
 {
-  inline bool operator () (const T& x) const
+  constexpr bool operator () (const T& x) const
   {
     return x < 0;
   }
@@ -89,7 +89,7 @@ struct is_negative
 template <typename T>
 struct is_negative<T, false>
 {
-  inline bool operator () (const T&) const
+  constexpr bool operator () (const T&) const
   {
     return false;
   }
@@ -252,11 +252,11 @@ struct FChar
 
 // FChar operator functions
 //----------------------------------------------------------------------
-inline bool isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexcept
+constexpr bool isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexcept
 {
-  auto l_iter = lhs.cbegin();
-  auto r_iter = rhs.cbegin();
-  const auto& l_last = lhs.cend();
+  auto l_iter = std::cbegin(lhs);
+  auto r_iter = std::cbegin(rhs);
+  const auto& l_last = std::cend(lhs);
 
   while ( l_iter != l_last )
   {
@@ -276,7 +276,7 @@ inline bool isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexcept
 }
 
 //----------------------------------------------------------------------
-inline bool operator == (const FChar& lhs, const FChar& rhs)
+constexpr bool operator == (const FChar& lhs, const FChar& rhs)
 {
   return isFUnicodeEqual(lhs.ch, rhs.ch)
       && lhs.fg_color     == rhs.fg_color
@@ -288,7 +288,7 @@ inline bool operator == (const FChar& lhs, const FChar& rhs)
 }
 
 //----------------------------------------------------------------------
-inline bool operator != (const FChar& lhs, const FChar& rhs)
+constexpr bool operator != (const FChar& lhs, const FChar& rhs)
 {
   return ! ( lhs == rhs );
 }

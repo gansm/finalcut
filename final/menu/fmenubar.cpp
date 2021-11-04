@@ -75,8 +75,8 @@ void FMenuBar::resetMenu()
 void FMenuBar::hide()
 {
   const auto& wc = getColorTheme();
-  FColor fg = wc->term_fg;
-  FColor bg = wc->term_bg;
+  const auto& fg = wc->term_fg;
+  const auto& bg = wc->term_bg;
   setColor (fg, bg);
   print() << FPoint{1, 1} << FString{getDesktopWidth(), L' '};
   FWindow::hide();
@@ -92,7 +92,7 @@ void FMenuBar::adjustSize()
 //----------------------------------------------------------------------
 void FMenuBar::onKeyPress (FKeyEvent* ev)
 {
-  const auto key = ev->key();
+  const auto& key = ev->key();
 
   if ( isEnterKey(key)
     || key == FKey::Up
@@ -292,15 +292,15 @@ bool FMenuBar::hotkeyMenu (FKeyEvent*& ev)
   {
     if ( item->isEnabled() )
     {
-      FKey hotkey = item->getHotkey();
-      FKey key = ev->key();
+      auto hotkey = item->getHotkey();
+      const auto key = ev->key();
 
       if ( hotkey > 0xff00 && hotkey < 0xff5f )  // full-width character
         hotkey -= 0xfee0;
 
       if ( FKey::Meta_offset + FKey(std::tolower(int(hotkey))) == key )
       {
-        auto sel_item = getSelectedItem();
+        const auto& sel_item = getSelectedItem();
 
         if ( sel_item && sel_item->hasMenu() )
           sel_item->getMenu()->unselectItem();
@@ -342,7 +342,7 @@ void FMenuBar::draw()
 //----------------------------------------------------------------------
 void FMenuBar::drawItems()
 {
-  auto list = getItemList();
+  const auto& list = getItemList();
 
   if ( list.empty() )
     return;
@@ -678,7 +678,7 @@ void FMenuBar::unselectMenuItem (FMenuItem* item)
 //----------------------------------------------------------------------
 void FMenuBar::mouseDownOverList (const FMouseEvent* ev)
 {
-  auto list = getItemList();
+  const auto& list = getItemList();
 
   if ( list.empty() )
     return;
@@ -716,7 +716,7 @@ void FMenuBar::mouseDownOverList (const FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FMenuBar::mouseUpOverList (const FMouseEvent* ev)
 {
-  auto list = getItemList();
+  const auto& list = getItemList();
 
   if ( list.empty() )
     return;
@@ -753,7 +753,7 @@ void FMenuBar::mouseUpOverList (const FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FMenuBar::mouseMoveOverList (const FMouseEvent& ev)
 {
-  auto list = getItemList();
+  const auto& list = getItemList();
 
   if ( list.empty() )
     return;

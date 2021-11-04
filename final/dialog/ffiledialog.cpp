@@ -201,7 +201,7 @@ void FFileDialog::onKeyPress (FKeyEvent* ev)
   if ( ! filebrowser.hasFocus() )
     return;
 
-  const FKey key = ev->key();
+  const auto& key = ev->key();
 
   if ( key == FKey::Erase || key == FKey::Backspace )
   {
@@ -656,7 +656,7 @@ void FFileDialog::printPath (const FString& txt)
 {
   const auto& path = txt;
   const std::size_t max_width = filebrowser.getWidth() - 4;
-  const std::size_t column_width = getColumnWidth(path);
+  const auto column_width = getColumnWidth(path);
 
   if ( column_width > max_width )
   {

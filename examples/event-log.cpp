@@ -77,7 +77,7 @@ EventDialog::EventDialog (finalcut::FWidget* parent)
   label.setText("\n\nUse the keyboard or mouse\n"
                 "in this dialog to create events");
   label.setAlignment(finalcut::Align::Center);
-  addTimer(60000);  // Starts the timer every minute
+  addTimer(60'000);  // Starts the timer every minute
 }
 
 //----------------------------------------------------------------------

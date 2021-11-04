@@ -215,7 +215,7 @@ bool FTermDetection::getTTYSFileEntry()
 
   if ( ttys_entryt )
   {
-    const char* type = ttys_entryt->ty_type;
+    const auto& type = ttys_entryt->ty_type;
 
     if ( type != nullptr )
     {
@@ -506,7 +506,7 @@ FString FTermDetection::getXTermColorName (FColor color) const
   std::array<char, 30> buf{};
   fd_set ifds{};
   struct timeval tv{};
-  const int stdin_no = FTermios::getStdIn();
+  const auto& stdin_no = FTermios::getStdIn();
 
   // get color
   auto index = uInt16(color);
@@ -515,7 +515,7 @@ FString FTermDetection::getXTermColorName (FColor color) const
   FD_ZERO(&ifds);
   FD_SET(stdin_no, &ifds);
   tv.tv_sec  = 0;
-  tv.tv_usec = 150000;  // 150 ms
+  tv.tv_usec = 150'000;  // 150 ms
 
   // read the terminal answer
   if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) < 1 )
@@ -595,14 +595,14 @@ FString FTermDetection::getAnswerbackMsg() const
   FString answerback{""};
   fd_set ifds{};
   struct timeval tv{};
-  const int stdin_no = FTermios::getStdIn();
+  const auto& stdin_no = FTermios::getStdIn();
   // Send enquiry character
   std::putchar (ENQ[0]);
   std::fflush(stdout);
   FD_ZERO(&ifds);
   FD_SET(stdin_no, &ifds);
   tv.tv_sec  = 0;
-  tv.tv_usec = 150000;  // 150 ms
+  tv.tv_usec = 150'000;  // 150 ms
 
   // Read the answerback message
   if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) < 1 )
@@ -624,7 +624,7 @@ FString FTermDetection::getAnswerbackMsg() const
   while ( pos < temp.size() );
 
   if ( pos > 0 )
-    answerback = temp.data();
+    return temp.data();
 
   return answerback;
 }
@@ -650,8 +650,8 @@ FString FTermDetection::parseSecDA (const FString& current_termtype)
   // remove the last byte ("c")
   temp.remove(temp.getLength() - 1, 1);
   // split into components
-  const auto sec_da_components = temp.split(';');
-  const auto num_components = sec_da_components.size();
+  const auto& sec_da_components = temp.split(';');
+  const auto& num_components = sec_da_components.size();
 
   // The second device attribute (SEC_DA) always has 3 parameters,
   // otherwise it usually has a copy of the device attribute (primary DA)
@@ -670,7 +670,7 @@ FString FTermDetection::parseSecDA (const FString& current_termtype)
   // Read the terminal hardware option
   secondary_da.terminal_id_hardware = str2int(sec_da_components[2]);
 
-  FString new_termtype = secDA_Analysis(current_termtype);
+  const auto& new_termtype = secDA_Analysis(current_termtype);
 
 #if DEBUG
   if ( ! new_termtype.isEmpty() )
@@ -718,8 +718,8 @@ FString FTermDetection::getSecDA() const
   int a{0};
   int b{0};
   int c{0};
-  const int stdin_no{FTermios::getStdIn()};
-  const int stdout_no{FTermios::getStdOut()};
+  const auto& stdin_no{FTermios::getStdIn()};
+  const auto& stdout_no{FTermios::getStdOut()};
   fd_set ifds{};
   struct timeval tv{};
   const std::string SECDA{ESC "[>c"};
@@ -732,7 +732,7 @@ FString FTermDetection::getSecDA() const
   FD_ZERO(&ifds);
   FD_SET(stdin_no, &ifds);
   tv.tv_sec  = 0;
-  tv.tv_usec = 600000;  // 600 ms
+  tv.tv_usec = 600'000;  // 600 ms
 
   // Read the answer
   if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) < 1 )
@@ -1025,7 +1025,7 @@ inline FString FTermDetection::secDA_Analysis_vte (const FString& current_termty
     // Each gnome-terminal should be able to use 256 colors
     color256 = true;
     new_termtype = "gnome-256color";
-    auto id = secondary_da.terminal_id_version;
+    const auto& id = secondary_da.terminal_id_version;
     fterm_data.setGnomeTerminalID(id);
 
     // VTE 0.40.0 or higher and gnome-terminal 3.16 or higher
@@ -1048,8 +1048,8 @@ inline FString FTermDetection::secDA_Analysis_kitty (const FString& current_term
     // All kitty terminals can use 256 colors
     color256 = true;
     new_termtype = "xterm-kitty";
-    int n1 = secondary_da.terminal_id_version - 4000;
-    int n2 = secondary_da.terminal_id_hardware;
+    const auto& n1 = secondary_da.terminal_id_version - 4000;
+    const auto& n2 = secondary_da.terminal_id_hardware;
     FTermData::kittyVersion kitty_version { n1, n2 };
     FTermData::getInstance().setKittyVersion(kitty_version);
   }

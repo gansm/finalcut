@@ -38,7 +38,7 @@ using finalcut::FPoint;
 using finalcut::FRect;
 using finalcut::FSize;
 
-constexpr lDouble pi_value{3.141592653589793238L};
+constexpr lDouble pi_value{3.141'592'653'589'793'238L};
 
 
 //----------------------------------------------------------------------

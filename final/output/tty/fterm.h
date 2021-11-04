@@ -187,7 +187,7 @@ class FTerm final
     static bool              isNewFont();
     static bool              isInitialized();
     static bool              isCursorHideable();
-    static bool              isEncodable (wchar_t);
+    static bool              isEncodable (const wchar_t&);
     static bool              hasChangedTermSize();
     static bool              hasShadowCharacter();
     static bool              hasHalfBlockCharacter();
@@ -226,8 +226,8 @@ class FTerm final
 
     static void              setEncoding (Encoding);
     static std::string       getEncodingString();
-    static wchar_t           charEncode (wchar_t);
-    static wchar_t           charEncode (wchar_t, Encoding);
+    static wchar_t           charEncode (const wchar_t&);
+    static wchar_t           charEncode (const wchar_t&, const Encoding&);
 
     static bool              scrollTermForward();
     static bool              scrollTermReverse();

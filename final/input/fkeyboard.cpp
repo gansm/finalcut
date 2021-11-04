@@ -46,9 +46,9 @@ namespace finalcut
 {
 
 // static class attributes
-uInt64 FKeyboard::key_timeout{100000};             // 100 ms  (10 Hz)
-uInt64 FKeyboard::read_blocking_time{100000};      // 100 ms  (10 Hz)
-uInt64 FKeyboard::read_blocking_time_short{5000};  //   5 ms (200 Hz)
+uInt64 FKeyboard::key_timeout{100'000};             // 100 ms  (10 Hz)
+uInt64 FKeyboard::read_blocking_time{100'000};      // 100 ms  (10 Hz)
+uInt64 FKeyboard::read_blocking_time_short{5'000};  //   5 ms (200 Hz)
 bool   FKeyboard::non_blocking_input_support{true};
 TimeValue FKeyboard::time_keypressed{};
 FKeyboard::KeyMapEnd FKeyboard::key_cap_end{};

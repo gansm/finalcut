@@ -1203,22 +1203,18 @@ constexpr FColor operator ++ (FColor& c, int) noexcept  // postfix
   return tmp;
 }
 
-inline FColor& operator -- (FColor& c) noexcept  // prefix
+constexpr FColor& operator -- (FColor& c) noexcept  // prefix
 {
-  c = [&c] ()
-  {
-    if ( uInt16(c) > 0 )
-      return FColor(uInt16(c) - 1);
+  if ( uInt16(c) > 0 )
+    return (c = FColor(uInt16(c) - 1));
 
-    if ( c == FColor::Black )  // value 0
-      return FColor::Default;  // value uInt16(-1)
+  if ( c == FColor::Black )        // value 0
+    return (c = FColor::Default);  // value uInt16(-1)
 
-    return FColor(255);        // --(-1) = 255
-  }();
-  return c;
+  return (c = FColor(255));        // --(-1) = 255
 }
 
-inline FColor operator -- (FColor& c, int) noexcept  // postfix
+constexpr FColor operator -- (FColor& c, int) noexcept  // postfix
 {
   const FColor tmp = c;
   --c;

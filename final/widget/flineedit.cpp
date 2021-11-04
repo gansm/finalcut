@@ -261,7 +261,7 @@ void FLineEdit::hide()
     label->hide();
 
   FWidget::hide();
-  const FSize shadow = hasShadow() ? FSize{1, 1} : FSize{0, 0};
+  const auto& shadow = hasShadow() ? FSize{1, 1} : FSize{0, 0};
   hideArea (getSize() + shadow);
 }
 
@@ -828,11 +828,11 @@ std::size_t FLineEdit::clickPosToCursorPos (std::size_t pos)
 //----------------------------------------------------------------------
 void FLineEdit::adjustTextOffset()
 {
-  const std::size_t input_width = getWidth() - 2;
-  const std::size_t len = print_text.getLength();
-  const std::size_t len_column = getColumnWidth (print_text);
-  std::size_t text_offset_column = getColumnWidth (print_text, text_offset);
-  const std::size_t cursor_pos_column = getColumnWidth (print_text, cursor_pos);
+  const auto input_width = getWidth() - 2;
+  const auto len = print_text.getLength();
+  const auto len_column = getColumnWidth (print_text);
+  auto text_offset_column = getColumnWidth (print_text, text_offset);
+  const auto cursor_pos_column = getColumnWidth (print_text, cursor_pos);
   std::size_t first_char_width{0};
   std::size_t cursor_char_width{1};
   char_width_offset = 0;

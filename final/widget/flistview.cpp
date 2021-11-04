@@ -384,7 +384,7 @@ void FListViewItem::sort (Compare cmp)
     return;
 
   // Sort the top level
-  FObject::FObjectList& children = getChildren();
+  auto& children = getChildren();
 
   if ( ! children.empty() )
     std::sort(children.begin(), children.end(), cmp);
@@ -1680,7 +1680,7 @@ void FListView::drawListLine ( const FListViewItem* item
       // Increment the value of col for the column position
       // and the next iteration
       col++;
-      const Align align = getColumnAlignment(int(col));
+      const auto align = getColumnAlignment(int(col));
       const std::size_t align_offset = getAlignOffset (align, column_width, width);
 
       if ( tree_view && col == 1 )
@@ -1908,7 +1908,7 @@ void FListView::drawHeadlineLabel (const HeaderItems::const_iterator& iter)
   std::size_t column_width = getColumnWidth(txt);
   const std::size_t column_max = leading_space + width;
   const auto first = header.cbegin();
-  const int column = int(std::distance(first, iter)) + 1;
+  const auto column = int(std::distance(first, iter)) + 1;
   const bool has_sort_indicator( sort_column == column && ! hide_sort_indicator );
   const auto& wc = getColorTheme();
 

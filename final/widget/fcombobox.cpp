@@ -153,7 +153,7 @@ bool FDropDownListBox::containsWidget (const FPoint& p)
 {
   // Check mouse click position for item, menu and all sub menus
 
-  FWidget* parent = getParentWidget();
+  const auto& parent = getParentWidget();
 
   if ( getTermGeometry().contains(p) )
     return true;
@@ -446,7 +446,7 @@ void FComboBox::init()
 {
   setShadow();
   const auto& parent_widget = getParentWidget();
-  FLabel* label = input_field.getLabelObject();
+  auto label = input_field.getLabelObject();
   label->setParent(getParent());
   label->setForegroundColor (parent_widget->getForegroundColor());
   label->setBackgroundColor (parent_widget->getBackgroundColor());

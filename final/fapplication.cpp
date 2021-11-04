@@ -221,7 +221,7 @@ bool FApplication::sendEvent (FObject* receiver, FEvent* event )
     return false;
 
   // Sends the event event directly to receiver
-  bool ret = receiver->event(event);
+  const auto& ret = receiver->event(event);
   event->send = true;
   return ret;
 }
@@ -242,7 +242,7 @@ void FApplication::sendQueuedEvents()
 {
   while ( eventInQueue() )
   {
-    const EventPair& event_pair = event_queue.front();
+    const auto& event_pair = event_queue.front();
     event_pair.second->queued = false;
     sendEvent(event_pair.first, event_pair.second);
     event_queue.pop_front();
@@ -335,7 +335,7 @@ void FApplication::setLogFile (const FString& filename)
   if ( log_stream.is_open() )
   {
     // Get the global logger object
-    FLog& log = *FApplication::getLog();
+    auto& log = *FApplication::getLog();
     log.setOutputStream(log_stream);
     log.enableTimestamp();
     log.setLineEnding (FLog::LineEnding::LF);
@@ -357,7 +357,7 @@ void FApplication::setKeyboardWidget (FWidget* widget)
 void FApplication::closeConfirmationDialog (FWidget* w, FCloseEvent* ev)
 {
   internal::var::app_object->unsetMoveSizeMode();
-  const FMessageBox::ButtonType ret = \
+  const auto& ret = \
       FMessageBox::info ( w, "Quit"
                         , "Do you really want\n"
                           "to quit the program ?"
@@ -430,7 +430,7 @@ void FApplication::init()
 //----------------------------------------------------------------------
 void FApplication::setTerminalEncoding (const FString& enc_str)
 {
-  const FString& enc = enc_str.toLower();
+  const auto& enc = enc_str.toLower();
 
   if ( enc.includes("utf8") )
     getStartOptions().encoding = Encoding::UTF8;

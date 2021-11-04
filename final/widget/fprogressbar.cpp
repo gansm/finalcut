@@ -94,7 +94,7 @@ bool FProgressbar::setShadow (bool enable)
 void FProgressbar::hide()
 {
   FWidget::hide();
-  const FSize shadow = hasShadow() ? FSize(1, 1) : FSize(0, 0);
+  const auto& shadow = hasShadow() ? FSize(1, 1) : FSize(0, 0);
   hideArea (getSize() + shadow);
   print() << FPoint{int(getWidth()) - 4, 0}
           << "      ";  // hide percentage

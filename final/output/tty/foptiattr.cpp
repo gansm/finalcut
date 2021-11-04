@@ -1296,8 +1296,8 @@ inline void FOptiAttr::change_current_color ( const FChar& term
 
   if ( AF && AB )
   {
-    const auto ansi_fg = vga2ansi(fg);
-    const auto ansi_bg = vga2ansi(bg);
+    const auto& ansi_fg = vga2ansi(fg);
+    const auto& ansi_bg = vga2ansi(bg);
 
     if ( term.fg_color != fg || frev )
     {

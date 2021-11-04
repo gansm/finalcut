@@ -220,9 +220,9 @@ bool FTerm::isCursorHideable()
 }
 
 //----------------------------------------------------------------------
-bool FTerm::isEncodable (wchar_t c)
+bool FTerm::isEncodable (const wchar_t& c)
 {
-  const wchar_t ch = charEncode(c);
+  const auto& ch = charEncode(c);
   return ch > 0 && ch != c;
 }
 
@@ -585,10 +585,10 @@ void FTerm::detectTermSize()
   {
     term_geometry.setPos (1, 1);
     // Use COLUMNS or fallback to the xterm default width of 80 characters
-    uInt Columns = env2uint ("COLUMNS");
+    const auto& Columns = env2uint ("COLUMNS");
     term_geometry.setWidth( ( Columns == 0) ? 80 : Columns);
     // Use LINES or fallback to the xterm default height of 24 characters
-    uInt Lines = env2uint ("LINES");
+    const auto& Lines = env2uint ("LINES");
     term_geometry.setHeight( ( Lines == 0 ) ? 24 : Lines);
   }
   else
@@ -674,16 +674,18 @@ void FTerm::setPalette (FColor index, int r, int g, int b)
 
   if ( Ic || Ip )
   {
-    std::string color_str{};
-
     const int rr = (r * 1001) / 256;
     const int gg = (g * 1001) / 256;
     const int bb = (b * 1001) / 256;
+    const std::string& color_str = [&index, &rr, &gg, &bb, &Ic, &Ip] ()
+    {
+      if ( Ic )
+        return FTermcap::encodeParameter(Ic, uInt16(index), rr, gg, bb);
+      else if ( Ip )
+        return FTermcap::encodeParameter(Ip, uInt16(index), 0, 0, 0, rr, gg, bb);
 
-    if ( Ic )
-      color_str = FTermcap::encodeParameter(Ic, uInt16(index), rr, gg, bb);
-    else if ( Ip )
-      color_str = FTermcap::encodeParameter(Ip, uInt16(index), 0, 0, 0, rr, gg, bb);
+      return std::string{};
+    }();
 
     if ( ! color_str.empty() )
     {
@@ -782,40 +784,40 @@ std::string FTerm::getEncodingString()
   static auto& data = FTermData::getInstance();
   const auto& term_encoding = data.getTerminalEncoding();
   const auto& encoding_list = data.getEncodingList();
-  auto found = std::find_if ( encoding_list.cbegin()
-                            , encoding_list.cend()
-                            , [&term_encoding] (const auto& entry)
-                              {
-                                return entry.second == term_encoding;
-                              } );
+  const auto& found = std::find_if ( encoding_list.cbegin()
+                                   , encoding_list.cend()
+                                   , [&term_encoding] (const auto& entry)
+                                     {
+                                       return entry.second == term_encoding;
+                                     } );
   return ( found != encoding_list.cend() ) ? found->first : "";
 }
 
 //----------------------------------------------------------------------
-wchar_t FTerm::charEncode (wchar_t c)
+wchar_t FTerm::charEncode (const wchar_t& c)
 {
   static const auto& data = FTermData::getInstance();
   return charEncode (c, data.getTerminalEncoding());
 }
 
 //----------------------------------------------------------------------
-wchar_t FTerm::charEncode (wchar_t c, Encoding enc)
+wchar_t FTerm::charEncode (const wchar_t& c, const Encoding& enc)
 {
   const auto& character = FCharMap::getCharEncodeMap();
   const auto& cend = character.cend();
-  auto found = std::find_if ( character.cbegin(), cend
-                            , [&c] (const auto& entry)
-                              {
-                                return entry.unicode == c;
-                              } );
+  const auto& found = std::find_if ( character.cbegin(), cend
+                                   , [&c] (const auto& entry)
+                                     {
+                                       return entry.unicode == c;
+                                     } );
 
   if ( found == cend )
     return c;
 
-  wchar_t ch_enc = FCharMap::getCharacter(*found, enc);
+  const auto& ch_enc = FCharMap::getCharacter(*found, enc);
 
   if ( enc == Encoding::PC && ch_enc == c )
-    ch_enc = finalcut::unicode_to_cp437(c);
+    return finalcut::unicode_to_cp437(c);
 
   return ch_enc;
 }
@@ -928,7 +930,7 @@ void FTerm::init_global_values()
 void FTerm::init_terminal_device_path()
 {
   std::array<char, 256> termfilename{};
-  const int stdout_no = FTermios::getStdOut();
+  const auto& stdout_no = FTermios::getStdOut();
 
   if ( ttyname_r(stdout_no, termfilename.data(), termfilename.size()) )
     termfilename[0] = '\0';
@@ -979,8 +981,8 @@ void FTerm::init_alt_charset()
     for (std::size_t n{0}; TCAP(t_acs_chars)[n]; n += 2)
     {
       // insert the VT100 key/value pairs into a map
-      const auto p1 = uChar(TCAP(t_acs_chars)[n]);
-      const auto p2 = uChar(TCAP(t_acs_chars)[n + 1]);
+      const auto& p1 = uChar(TCAP(t_acs_chars)[n]);
+      const auto& p2 = uChar(TCAP(t_acs_chars)[n + 1]);
       vt100_alt_char[p1] = p2;
     }
   }
@@ -988,13 +990,13 @@ void FTerm::init_alt_charset()
   // Update array 'character' with discovered VT100 pairs
   for (auto&& pair : FCharMap::getDECSpecialGraphics())
   {
-    const auto keyChar = uChar(pair.key);
-    const auto altChar = wchar_t(vt100_alt_char[keyChar]);
-    const auto utf8char = wchar_t(pair.unicode);
-    const auto p = std::find_if ( character.cbegin()
-                                , character.cend()
-                                , [&utf8char] (const auto& entry)
-                                  { return entry.unicode == utf8char; } );
+    const auto& keyChar = uChar(pair.key);
+    const auto& altChar = wchar_t(vt100_alt_char[keyChar]);
+    const auto& utf8char = wchar_t(pair.unicode);
+    const auto& p = std::find_if ( character.cbegin()
+                                 , character.cend()
+                                 , [&utf8char] (const auto& entry)
+                                   { return entry.unicode == utf8char; } );
     if ( p != character.cend() )  // found in character
     {
       const auto item = std::size_t(std::distance(character.cbegin(), p));
@@ -1158,7 +1160,7 @@ void FTerm::init_optiMove()
 {
   // Duration precalculation of the cursor movement strings
 
-  FOptiMove::TermEnv optimove_env =
+  const FOptiMove::TermEnv optimove_env =
   {
     TCAP(t_cursor_home),
     TCAP(t_carriage_return),
@@ -1194,7 +1196,7 @@ void FTerm::init_optiAttr()
 {
   // Setting video attribute optimization
 
-  FOptiAttr::TermEnv optiattr_env =
+  const FOptiAttr::TermEnv optiattr_env =
   {
     TCAP(t_enter_bold_mode),
     TCAP(t_exit_bold_mode),
@@ -1358,7 +1360,7 @@ inline void FTerm::init_encoding_set()
 //----------------------------------------------------------------------
 void FTerm::init_term_encoding()
 {
-  const int stdout_no = FTermios::getStdOut();
+  const auto& stdout_no = FTermios::getStdOut();
   static auto& data = FTermData::getInstance();
   const auto& termtype = data.getTermType();
   static const auto& fsys = FSystem::getInstance();
@@ -1534,7 +1536,7 @@ std::string FTerm::enableCursorString()
   {
     // Restore the last used Linux console cursor style
     static auto& linux_console = FTermLinux::getInstance();
-    const char* cstyle = linux_console.getCursorStyleString();
+    const auto& cstyle = linux_console.getCursorStyleString();
     enable_str.append(cstyle);
   }
 #endif  // defined(__linux__)
@@ -1907,8 +1909,8 @@ void FTerm::initTermspecifics() const
 //----------------------------------------------------------------------
 void FTerm::initBaudRate() const
 {
-  const int stdout_no = FTermios::getStdOut();
-  const uInt baud = FTermios::getBaudRate();
+  const auto& stdout_no = FTermios::getStdOut();
+  const auto& baud = FTermios::getBaudRate();
   FTermData::getInstance().setBaudrate(baud);
   static const auto& fsys = FSystem::getInstance();
 

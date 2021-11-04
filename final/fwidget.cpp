@@ -1843,7 +1843,7 @@ void FWidget::KeyDownEvent (FKeyEvent* kev)
 //----------------------------------------------------------------------
 void FWidget::emitWheelCallback (const FWheelEvent* ev) const
 {
-  const MouseWheel wheel = ev->getWheel();
+  const auto& wheel = ev->getWheel();
 
   if ( wheel == MouseWheel::Up )
     emitCallback("mouse-wheel-up");

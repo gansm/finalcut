@@ -38,7 +38,7 @@ auto FCharMap::getInstance() -> FCharMap&
 
 //----------------------------------------------------------------------
 const wchar_t& FCharMap::getCharacter ( const CharEncodeMap& char_enc
-                                , const Encoding& enc )
+                                      , const Encoding& enc )
 {
   const auto array = reinterpret_cast<const wchar_t*>(&char_enc);
   return array[std::size_t(enc)];

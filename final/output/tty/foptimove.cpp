@@ -614,8 +614,8 @@ int FOptiMove::repeatedAppend ( std::string& dst
                               , const Capability& o
                               , int count ) const
 {
-  const std::size_t src_len = stringLength(o.cap);
-  const std::size_t dst_len = dst.length();
+  const auto& src_len = stringLength(o.cap);
+  const auto& dst_len = dst.length();
   int total{0};
 
   if ( (dst_len + uInt(count) * src_len) < BUF_SIZE - 1 )

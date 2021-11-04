@@ -316,7 +316,7 @@ void FMenu::cb_menuitemToggled (const FMenuItem* m_item) const
   if ( ! (has_checkable_items && m_item && m_item->isChecked()) )
     return;
 
-  auto list = getItemList();
+  const auto& list = getItemList();
 
   if ( list.empty() )
     return;
@@ -421,7 +421,7 @@ void FMenu::init()
   FMenu::hide();
   FMenu::resetColors();
   menuitem.setMenu(this);
-  FWidget* parent = getParentWidget();
+  const auto& parent = getParentWidget();
 
   if ( parent )
   {
@@ -468,7 +468,7 @@ void FMenu::calculateDimensions()
   for (auto&& item : getItemList())
   {
     std::size_t item_width = item->getTextWidth() + 2;
-    const FKey accel_key = item->accel_key;
+    const auto& accel_key = item->accel_key;
     const bool has_menu = item->hasMenu();
 
     if ( has_menu )
@@ -521,7 +521,7 @@ void FMenu::adjustItems() const
   {
     if ( item->hasMenu() )
     {
-      auto menu = item->getMenu();
+      const auto& menu = item->getMenu();
       int menu_X = getTermX() + int(max_item_width) + 1;
       menu_X = menu->adjustX(menu_X);
       const int menu_Y = item->getTermY() - 2;
@@ -669,7 +669,7 @@ void FMenu::mouseDownSubmenu (const FMenuItem* m_item)
   if ( ! hasSelectedItem() )
     return;
 
-  auto sel_item = getSelectedItem();
+  const auto& sel_item = getSelectedItem();
 
   if ( ! sel_item
     || ! sel_item->hasMenu()
@@ -973,7 +973,7 @@ void FMenu::keypressMenuBar (FKeyEvent* ev) const
 inline bool FMenu::hotkeyFound (FKey hotkey, const FKeyEvent& ev) const
 {
   bool found{false};
-  const FKey key = ev.key();
+  const auto& key = ev.key();
 
   if ( hotkey > 0xff00 && hotkey < 0xff5f )  // full-width character
     hotkey -= 0xfee0;

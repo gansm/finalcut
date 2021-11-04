@@ -304,12 +304,12 @@ wchar_t cp437_to_unicode (uChar c)
   constexpr std::size_t UNICODE = 1;
   const auto& cp437_ucs = FCharMap::getCP437UCSMap();
   wchar_t ucs = c;
-  auto found = std::find_if ( cp437_ucs.cbegin()
-                            , cp437_ucs.cend()
-                            , [&c] (const char_map& entry)
-                              {
-                                return entry[CP437] == c;
-                              } );
+  const auto& found = std::find_if ( cp437_ucs.cbegin()
+                                   , cp437_ucs.cend()
+                                   , [&c] (const char_map& entry)
+                                     {
+                                       return entry[CP437] == c;
+                                     } );
 
   if ( found != cp437_ucs.cend() )
     ucs = (*found)[UNICODE];
@@ -324,12 +324,12 @@ uChar unicode_to_cp437 (wchar_t ucs)
   constexpr std::size_t UNICODE = 1;
   const auto& cp437_ucs = FCharMap::getCP437UCSMap();
   uChar c{'?'};
-  auto found = std::find_if ( cp437_ucs.cbegin()
-                            , cp437_ucs.cend()
-                            , [&ucs] (const char_map& entry)
-                              {
-                                return entry[UNICODE] == ucs;
-                              } );
+  const auto& found = std::find_if ( cp437_ucs.cbegin()
+                                   , cp437_ucs.cend()
+                                   , [&ucs] (const char_map& entry)
+                                     {
+                                       return entry[UNICODE] == ucs;
+                                     } );
 
   if ( found != cp437_ucs.cend() )
     c = static_cast<uChar>((*found)[CP437]);
@@ -396,12 +396,12 @@ FString getFullWidth (const FString& str)
     const auto& halfwidth_fullwidth = FCharMap::getHalfFullWidthMap();
     constexpr std::size_t HALF = 0;
     constexpr std::size_t FULL = 1;
-    auto found = std::find_if ( halfwidth_fullwidth.cbegin()
-                              , halfwidth_fullwidth.cend()
-                              , [&c] (const char_map& entry)
-                                {
-                                  return entry[HALF] == c;
-                                } );
+    const auto& found = std::find_if ( halfwidth_fullwidth.cbegin()
+                                     , halfwidth_fullwidth.cend()
+                                     , [&c] (const char_map& entry)
+                                       {
+                                         return entry[HALF] == c;
+                                       } );
 
     if ( found != halfwidth_fullwidth.cend() )
       c = (*found)[FULL];
@@ -429,12 +429,12 @@ FString getHalfWidth (const FString& str)
     const auto& halfwidth_fullwidth = FCharMap::getHalfFullWidthMap();
     constexpr std::size_t HALF = 0;
     constexpr std::size_t FULL = 1;
-    auto found = std::find_if ( halfwidth_fullwidth.cbegin()
-                              , halfwidth_fullwidth.cend()
-                              , [&c] (const char_map& entry)
-                                {
-                                  return entry[FULL] == c;
-                                } );
+    const auto& found = std::find_if ( halfwidth_fullwidth.cbegin()
+                                     , halfwidth_fullwidth.cend()
+                                     , [&c] (const char_map& entry)
+                                       {
+                                         return entry[FULL] == c;
+                                       } );
 
     if ( found != halfwidth_fullwidth.cend() )
       c = (*found)[HALF];
@@ -470,7 +470,7 @@ FString getColumnSubString ( const FString& str
 
   for (auto&& ch : s)
   {
-    std::size_t width = getColumnWidth(ch);
+    const auto& width = getColumnWidth(ch);
 
     if ( col_first < col_pos )
     {
@@ -521,7 +521,7 @@ std::size_t getLengthFromColumnWidth ( const FString& str
   std::size_t column_width{0};
   std::size_t length{0};
 
-  for (auto&& ch : str)
+  for (const auto& ch : str)
   {
     if ( column_width < col_len )
     {
@@ -540,7 +540,7 @@ std::size_t getColumnWidth (const FString& s, std::size_t end_pos)
     return 0;
 
   std::size_t column_width{0};
-  const auto length = s.getLength();
+  const auto& length = s.getLength();
 
   if ( end_pos > length )
     end_pos = length;
@@ -653,7 +653,7 @@ int getCharLength (const FString& string, std::size_t pos)
   // Gets the number of characters of the combined character
   // at string position pos
 
-  const std::size_t len = string.getLength();
+  const auto& len = string.getLength();
   std::size_t n = pos;
   const auto& ch = string[n];
   std::size_t char_width = getColumnWidth(ch);
@@ -680,7 +680,7 @@ int getPrevCharLength (const FString& string, std::size_t pos)
   // Gets the number of characters of the previous combined character
   // at string position pos
 
-  const std::size_t len = string.getLength();
+  const auto& len = string.getLength();
   std::size_t n = pos;
   const auto& ch = string[n];
   std::size_t char_width = getColumnWidth(ch);
@@ -731,7 +731,7 @@ std::size_t searchRightCharBegin (const FString& string, std::size_t pos)
 {
   // Search for the next character position to the right of string position pos
 
-  const std::size_t len = string.getLength();
+  const auto& len = string.getLength();
   std::size_t n = pos;
 
   if ( n >= len )
@@ -771,7 +771,7 @@ FPoint readCursorPos()
   FD_ZERO(&ifds);
   FD_SET(stdin_no, &ifds);
   tv.tv_sec  = 0;
-  tv.tv_usec = 100000;  // 100 ms
+  tv.tv_usec = 100'000;  // 100 ms
   std::array<char, 20> temp{};
   std::size_t pos{0};
 

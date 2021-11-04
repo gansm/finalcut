@@ -111,7 +111,7 @@ bool FTermOutput::isNewFont() const
 }
 
 //----------------------------------------------------------------------
-bool FTermOutput::isEncodable (wchar_t wide_char) const
+bool FTermOutput::isEncodable (const wchar_t& wide_char) const
 {
   return FTerm::isEncodable(wide_char);
 }
@@ -252,7 +252,7 @@ void FTermOutput::setNonBlockingRead (bool enable)
   }
 #endif
 
-  uInt64 blocking_time = enable ? 5000 : 100000;  // 5 or 100 ms
+  uInt64 blocking_time = enable ? 5000 : 100'000;  // 5 or 100 ms
   FKeyboard::setReadBlockingTime (blocking_time);
 }
 
@@ -330,7 +330,7 @@ bool FTermOutput::updateTerminal()
   vterm->has_changes = false;
 
   // sets the new input cursor position
-  bool cursor_update = updateTerminalCursor();
+  const auto& cursor_update = updateTerminalCursor();
   return cursor_update || changedlines > 0;
 }
 
@@ -382,7 +382,7 @@ bool FTermOutput::clearTerm (wchar_t fillchar)
   const auto& cb = TCAP(t_clr_eol);
   const bool ut = FTermcap::background_color_erase;
   auto& next_attribute = FVTerm::getAttribute();
-  const bool normal = FTerm::isNormal (next_attribute);
+  const auto& normal = FTerm::isNormal(next_attribute);
   appendAttributes (next_attribute);
 
   if ( ! ( (cl || cd || cb) && (normal || ut) )
@@ -487,9 +487,9 @@ inline bool FTermOutput::isDefaultPaletteTheme()
     "default16DarkColorPalette"
   };
 
-  auto iter = std::find ( default_themes.cbegin()
-                        , default_themes.cend()
-                        , FColorPalette::getInstance()->getClassName() );
+  const auto& iter = std::find ( default_themes.cbegin()
+                               , default_themes.cend()
+                               , FColorPalette::getInstance()->getClassName() );
   return iter != default_themes.cend();  // Default theme found
 }
 
@@ -597,8 +597,8 @@ bool FTermOutput::canClearToEOL (uInt xmin, uInt y) const
     return false;
 
   uInt beginning_whitespace = 1;
-  const bool normal = FTerm::isNormal(min_char);
-  const bool& ut = FTermcap::background_color_erase;
+  const auto& normal = FTerm::isNormal(min_char);
+  const auto& ut = FTermcap::background_color_erase;
 
   for (uInt x = xmin + 1; x < uInt(vterm->width); x++)
   {
@@ -628,8 +628,8 @@ bool FTermOutput::canClearLeadingWS (uInt& xmin, uInt y) const
     return false;
 
   uInt leading_whitespace = 1;
-  const bool normal = FTerm::isNormal(first_char);
-  const bool& ut = FTermcap::background_color_erase;
+  const auto& normal = FTerm::isNormal(first_char);
+  const auto& ut = FTermcap::background_color_erase;
 
   for (uInt x{1}; x < uInt(vterm->width); x++)
   {
@@ -664,8 +664,8 @@ bool FTermOutput::canClearTrailingWS (uInt& xmax, uInt y) const
     return false;
 
   uInt trailing_whitespace = 1;
-  const bool normal = FTerm::isNormal(last_char);
-  const bool& ut = FTermcap::background_color_erase;
+  const auto& normal = FTerm::isNormal(last_char);
+  const auto& ut = FTermcap::background_color_erase;
 
   for (uInt x = uInt(vterm->width) - 1; x >  0 ; x--)
   {
@@ -724,25 +724,28 @@ bool FTermOutput::skipUnchangedCharacters (uInt& x, uInt xmax, uInt y)
 void FTermOutput::printRange ( uInt xmin, uInt xmax, uInt y
                              , bool draw_trailing_ws )
 {
-  for (uInt x = xmin; x <= xmax; x++)
+  const auto& ec = TCAP(t_erase_chars);
+  const auto& rp = TCAP(t_repeat_char);
+  uInt x = xmin;
+
+  while ( x <= xmax )
   {
-    const auto& ec = TCAP(t_erase_chars);
-    const auto& rp = TCAP(t_repeat_char);
     auto& print_char = vterm->data[y * uInt(vterm->width) + x];
     print_char.attr.bit.printed = true;
     replaceNonPrintableFullwidth (x, print_char);
 
     // skip character with no changes
     if ( skipUnchangedCharacters(x, xmax, y) )
+    {
+      x++;
       continue;
+    }
 
     // Erase character
     if ( ec && print_char.ch[0] == L' ' )
     {
-      PrintState erase_state = \
-          eraseCharacters(x, xmax, y, draw_trailing_ws);
-
-      if ( erase_state == PrintState::LineCompletelyPrinted )
+      if ( eraseCharacters(x, xmax, y, draw_trailing_ws) \
+           == PrintState::LineCompletelyPrinted )
         break;
     }
     else if ( rp )  // Repeat one character n-fold
@@ -754,6 +757,8 @@ void FTermOutput::printRange ( uInt xmin, uInt xmax, uInt y
       bool min_and_not_max( x == xmin && xmin != xmax );
       printCharacter (x, y, min_and_not_max, print_char);
     }
+
+    x++;
   }
 }
 
@@ -967,8 +972,8 @@ FTermOutput::PrintState FTermOutput::eraseCharacters ( uInt& x, uInt xmax, uInt 
   else
   {
     const uInt start_pos = x;
-    const bool& ut = FTermcap::background_color_erase;
-    const bool normal = FTerm::isNormal(print_char);
+    const auto& normal = FTerm::isNormal(print_char);
+    const auto& ut = FTermcap::background_color_erase;
 
     if ( whitespace > erase_char_length + cursor_address_length
       && (ut || normal) )
@@ -1277,8 +1282,8 @@ inline void FTermOutput::charsetChanges (FChar& next_char) const
   if ( getEncoding() == Encoding::UTF8 )
     return;
 
-  const wchar_t& ch = next_char.ch[0];
-  const wchar_t ch_enc = FTerm::charEncode(ch);
+  const auto& ch = next_char.ch[0];
+  const auto& ch_enc = FTerm::charEncode(ch);
 
   if ( ch_enc == ch )
     return;

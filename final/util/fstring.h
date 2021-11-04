@@ -139,36 +139,36 @@ class FString
     const FString& operator >> (float&) const;
 
     template <typename IndexT>
-    reference       operator [] (const IndexT);
+    constexpr reference operator [] (const IndexT);
     template <typename IndexT>
-    const_reference operator [] (const IndexT) const;
-    explicit        operator bool () const;
-    const FString&  operator () () const;
+    constexpr const_reference operator [] (const IndexT) const;
+    explicit operator bool () const;
+    const FString& operator () () const;
 
     bool operator <  (const FString&) const;
     template <typename CharT>
-    bool operator <  (const CharT&) const;
+    constexpr bool operator <  (const CharT&) const;
     bool operator <= (const FString&) const;
     template <typename CharT>
-    bool operator <= (const CharT&) const;
+    constexpr bool operator <= (const CharT&) const;
     bool operator == (const FString&) const;
     template <typename CharT>
-    bool operator == (const CharT&) const;
+    constexpr bool operator == (const CharT&) const;
     bool operator != (const FString&) const;
     template <typename CharT>
-    bool operator != (const CharT&) const;
+    constexpr bool operator != (const CharT&) const;
     bool operator >= (const FString&) const;
     template <typename CharT>
-    bool operator >= (const CharT&) const;
+    constexpr bool operator >= (const CharT&) const;
     bool operator >  (const FString&) const;
     template <typename CharT>
-    bool operator >  (const CharT&) const;
+    constexpr bool operator >  (const CharT&) const;
 
     // Accessor
     virtual FString getClassName() const;
 
     // inquiries
-    bool isNull() const noexcept;  // deprecated
+    [[deprecated]] bool isNull() const noexcept;
     bool isEmpty() const noexcept;
 
     // Methods
@@ -293,7 +293,7 @@ inline FString& FString::operator << (const NumT val)
 
 //----------------------------------------------------------------------
 template <typename IndexT>
-inline FString::reference FString::operator [] (const IndexT pos)
+constexpr FString::reference FString::operator [] (const IndexT pos)
 {
   if ( isNegative(pos) || pos > IndexT(string.length()) )
     throw std::out_of_range("");  // Invalid index position
@@ -306,7 +306,7 @@ inline FString::reference FString::operator [] (const IndexT pos)
 
 //----------------------------------------------------------------------
 template <typename IndexT>
-inline FString::const_reference FString::operator [] (const IndexT pos) const
+constexpr FString::const_reference FString::operator [] (const IndexT pos) const
 {
   if ( isNegative(pos) || pos > IndexT(string.length()) )
     throw std::out_of_range("");  // Invalid index position
@@ -319,7 +319,7 @@ inline FString::const_reference FString::operator [] (const IndexT pos) const
 
 //----------------------------------------------------------------------
 template <typename CharT>
-inline bool FString::operator < (const CharT& s) const
+constexpr bool FString::operator < (const CharT& s) const
 {
   const FString tmp(s);
   return *this < tmp;
@@ -327,7 +327,7 @@ inline bool FString::operator < (const CharT& s) const
 
 //----------------------------------------------------------------------
 template <typename CharT>
-inline bool FString::operator <= (const CharT& s) const
+constexpr bool FString::operator <= (const CharT& s) const
 {
   const FString tmp(s);
   return *this <= tmp;
@@ -335,7 +335,7 @@ inline bool FString::operator <= (const CharT& s) const
 
 //----------------------------------------------------------------------
 template <typename CharT>
-inline bool FString::operator == (const CharT& s) const
+constexpr bool FString::operator == (const CharT& s) const
 {
   const FString tmp(s);
   return *this == tmp;
@@ -343,7 +343,7 @@ inline bool FString::operator == (const CharT& s) const
 
 //----------------------------------------------------------------------
 template <typename CharT>
-inline bool FString::operator != (const CharT& s) const
+constexpr bool FString::operator != (const CharT& s) const
 {
   const FString tmp(s);
   return *this != tmp;
@@ -351,7 +351,7 @@ inline bool FString::operator != (const CharT& s) const
 
 //----------------------------------------------------------------------
 template <typename CharT>
-inline bool FString::operator >= (const CharT& s) const
+constexpr bool FString::operator >= (const CharT& s) const
 {
   const FString tmp(s);
   return *this >= tmp;
@@ -359,7 +359,7 @@ inline bool FString::operator >= (const CharT& s) const
 
 //----------------------------------------------------------------------
 template <typename CharT>
-inline bool FString::operator > (const CharT& s) const
+constexpr bool FString::operator > (const CharT& s) const
 {
   const FString tmp(s);
   return *this > tmp;

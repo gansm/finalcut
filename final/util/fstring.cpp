@@ -479,7 +479,7 @@ long FString::toLong() const
 
   while ( std::iswdigit(std::wint_t(*p)) )
   {
-    auto d = uChar(*p - L'0');
+    const auto d = uChar(*p - L'0');
 
     if ( num > tenth_limit
       || (num == tenth_limit && d > tenth_limit_digit) )
@@ -659,7 +659,7 @@ FString FString::mid (std::size_t pos, std::size_t len) const
   if ( pos == 0 )
     pos = 1;
 
-  auto length = string.length();
+  const auto& length = string.length();
 
   if ( pos <= length && pos + len > length )
     len = length - pos + 1;
@@ -680,7 +680,7 @@ FStringList FString::split (const FString& delimiter) const
 
   const FString s{*this};
   FStringList string_list{};
-  auto delimiter_length = delimiter.getLength();
+  const auto& delimiter_length = delimiter.getLength();
   std::wstring::size_type first = 0;
   std::wstring::size_type last;
 
@@ -950,16 +950,16 @@ FString FString::expandTabs (int tabstop) const
     return *this;
 
   FString outstr{};
-  const auto tab_split = split(L"\t");
-  const auto last = tab_split.cend() - 1;
+  const auto& tab_split = split(L"\t");
+  const auto& last = tab_split.cend() - 1;
   auto iter = tab_split.cbegin();
 
   while ( iter != tab_split.cend() )
   {
     if ( iter != last )
     {
-      const auto len = iter->getLength();
-      const auto tab_len = std::size_t(tabstop);
+      const auto& len = iter->getLength();
+      const auto& tab_len = std::size_t(tabstop);
       outstr += *iter + std::wstring(tab_len - (len % tab_len), L' ');
     }
     else
@@ -1045,7 +1045,7 @@ const FString& FString::overwrite (const FString& s, std::size_t pos)
 //----------------------------------------------------------------------
 const FString& FString::remove (std::size_t pos, std::size_t len)
 {
-  auto length = string.length();
+  const auto& length = string.length();
 
   if ( pos > length )
     return *this;
@@ -1085,7 +1085,7 @@ inline std::string FString::_toCharString (const std::wstring& s) const
 
   const wchar_t* src = s.c_str();
   auto state = std::mbstate_t();
-  auto size = std::wcsrtombs(nullptr, &src, 0, &state) + 1;
+  const auto& size = std::wcsrtombs(nullptr, &src, 0, &state) + 1;
 
   std::vector<char> dest(size);
 
@@ -1107,14 +1107,14 @@ inline std::wstring FString::_toWideString (const std::string& s) const
 
   const char* src = s.c_str();
   auto state = std::mbstate_t();
-  auto size = std::mbsrtowcs(nullptr, &src, 0, &state) + 1;
+  const auto& size = std::mbsrtowcs(nullptr, &src, 0, &state) + 1;
 
   if ( size == 0 )  // ...malformed UTF-8 string
     return {};
 
   std::vector<wchar_t> dest(size);
 
-  const auto wide_length = std::mbsrtowcs (dest.data(), &src, size, &state);
+  const auto& wide_length = std::mbsrtowcs (dest.data(), &src, size, &state);
 
   if ( wide_length == static_cast<std::size_t>(-1) )
   {
@@ -1138,14 +1138,14 @@ inline std::wstring FString::_toWideString (const std::string& s) const
 //----------------------------------------------------------------------
 FString operator + (const FString& s1, const FString& s2)
 {
-  auto tmp = s1.string + s2.string;
+  const auto& tmp = s1.string + s2.string;
   return tmp;
 }
 
 //----------------------------------------------------------------------
 std::ostream& operator << (std::ostream& outstr, const FString& s)
 {
-  const auto width = std::size_t(outstr.width());
+  const auto& width = std::size_t(outstr.width());
 
   if ( s.string.length() > 0 )
   {
@@ -1178,7 +1178,7 @@ std::istream& operator >> (std::istream& instr, FString& s)
 //----------------------------------------------------------------------
 std::wostream& operator << (std::wostream& outstr, const FString& s)
 {
-  const auto width = std::size_t(outstr.width());
+  const auto& width = std::size_t(outstr.width());
 
   if ( s.string.length() > 0 )
   {

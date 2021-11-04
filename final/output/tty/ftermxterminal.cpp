@@ -742,7 +742,7 @@ FString FTermXTerminal::captureXTermFont() const
   FD_ZERO(&ifds);
   FD_SET(stdin_no, &ifds);
   tv.tv_sec  = 0;
-  tv.tv_usec = 150000;  // 150 ms
+  tv.tv_usec = 150'000;  // 150 ms
 
   // Read the terminal answer
   if ( select(stdin_no + 1, &ifds, nullptr, nullptr, &tv) < 1 )
@@ -796,7 +796,7 @@ FString FTermXTerminal::captureXTermTitle() const
   FD_ZERO(&ifds);
   FD_SET(stdin_no, &ifds);
   tv.tv_sec  = 0;
-  tv.tv_usec = 150000;  // 150 ms
+  tv.tv_usec = 150'000;  // 150 ms
 
   // read the terminal answer
   if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) < 1 )

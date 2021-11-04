@@ -185,8 +185,8 @@ bool FStatusBar::hasActivatedKey() const
 void FStatusBar::hide()
 {
   const auto& wc = getColorTheme();
-  const FColor fg = wc->term_fg;
-  const FColor bg = wc->term_bg;
+  const auto& fg = wc->term_fg;
+  const auto& bg = wc->term_bg;
   setColor (fg, bg);
   print() << FPoint{1, 1} << FString{getDesktopWidth(), L' '};
   FWindow::hide();

@@ -734,7 +734,7 @@ inline FPoint FScrollView::getViewportCursorPos()
 //----------------------------------------------------------------------
 void FScrollView::init()
 {
-  const FWidget* parent = getParentWidget();
+  const auto& parent = getParentWidget();
 
   assert ( parent != nullptr );
   assert ( ! parent->isInstanceOf("FScrollView") );
@@ -868,7 +868,7 @@ void FScrollView::setViewportCursor()
 //----------------------------------------------------------------------
 void FScrollView::cb_vbarChange (const FWidget*)
 {
-  FScrollbar::ScrollType scroll_type = vbar->getScrollType();
+  auto scroll_type = vbar->getScrollType();
   static constexpr int wheel_distance = 4;
   int distance{1};
 
@@ -919,7 +919,7 @@ void FScrollView::cb_vbarChange (const FWidget*)
 //----------------------------------------------------------------------
 void FScrollView::cb_hbarChange (const FWidget*)
 {
-  FScrollbar::ScrollType scroll_type = hbar->getScrollType();
+  auto scroll_type = hbar->getScrollType();
   static constexpr int wheel_distance = 4;
   int distance{1};
 

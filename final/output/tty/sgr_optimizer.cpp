@@ -57,7 +57,7 @@ void SGRoptimizer::findParameter()
 {
   // Find ANSI X3.64 terminal SGR (Select Graphic Rendition) strings
 
-  const std::size_t len = seq.length();
+  const auto& len = seq.length();
   csi_parameter.clear();
 
   if ( len < 6 )
@@ -108,7 +108,7 @@ void SGRoptimizer::combineParameter()
     return;
 
   const auto& first = csi_parameter.front();
-  const std::size_t len = seq.length();
+  const auto& len = seq.length();
   std::size_t count = 1;
   std::size_t read_pos{};
   std::size_t write_pos = first.end;

@@ -205,7 +205,7 @@ void FButton::hide()
 {
   FColor fg{};
   FColor bg{};
-  auto parent_widget = getParentWidget();
+  const auto& parent_widget = getParentWidget();
   FWidget::hide();
 
   if ( parent_widget )

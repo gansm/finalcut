@@ -149,7 +149,7 @@ void FSpinBox::hide()
 {
   input_field.hide();
   FWidget::hide();
-  const FSize shadow = hasShadow() ? FSize{1, 1} : FSize{0, 0};
+  const auto& shadow = hasShadow() ? FSize{1, 1} : FSize{0, 0};
   hideArea (getSize() + shadow);
 }
 
@@ -239,7 +239,7 @@ void FSpinBox::onMouseUp (FMouseEvent*)
 //----------------------------------------------------------------------
 void FSpinBox::onWheel (FWheelEvent* ev)
 {
-  const MouseWheel wheel = ev->getWheel();
+  const auto& wheel = ev->getWheel();
 
   delOwnTimers();
   forceFocus();
@@ -293,7 +293,7 @@ void FSpinBox::init()
 {
   setShadow();
   auto parent_widget = getParentWidget();
-  FLabel* label = input_field.getLabelObject();
+  auto label = input_field.getLabelObject();
   label->setParent(getParent());
   label->setForegroundColor (parent_widget->getForegroundColor());
   label->setBackgroundColor (parent_widget->getBackgroundColor());

@@ -98,7 +98,7 @@ class FOutput : public std::enable_shared_from_this<FOutput>
     virtual bool        isCursorHideable() const = 0;
     virtual bool        isMonochron() const = 0;
     virtual bool        isNewFont() const = 0;
-    virtual bool        isEncodable (wchar_t) const = 0;
+    virtual bool        isEncodable (const wchar_t&) const = 0;
     virtual bool        hasTerminalResized() const = 0;
     virtual bool        allowsTerminalSizeManipulation() const = 0;
     virtual bool        canChangeColorPalette() const = 0;

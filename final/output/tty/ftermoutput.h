@@ -95,7 +95,7 @@ class FTermOutput final : public FOutput
     bool           isCursorHideable() const override;
     bool           isMonochron() const override;
     bool           isNewFont() const override;
-    bool           isEncodable (wchar_t) const override;
+    bool           isEncodable (const wchar_t&) const override;
     bool           hasTerminalResized() const override;
     bool           allowsTerminalSizeManipulation() const override;
     bool           canChangeColorPalette() const override;
@@ -159,8 +159,8 @@ class FTermOutput final : public FOutput
 
     // Constants
     //   Upper and lower flush limit
-    static constexpr uInt64 MIN_FLUSH_WAIT = 16667;   //   16.6 ms = 60 Hz
-    static constexpr uInt64 MAX_FLUSH_WAIT = 200000;  //  200.0 ms = 5 Hz
+    static constexpr uInt64 MIN_FLUSH_WAIT = 16'667;   //   16.6 ms = 60 Hz
+    static constexpr uInt64 MAX_FLUSH_WAIT = 200'000;  //  200.0 ms = 5 Hz
 
     // Accessors
     const FSetPalette& getFSetPaletteRef() const & override;

@@ -433,7 +433,7 @@ void FTextView::onMouseMove (FMouseEvent* ev)
 void FTextView::onWheel (FWheelEvent* ev)
 {
   static constexpr int distance = 4;
-  const MouseWheel wheel = ev->getWheel();
+  const auto& wheel = ev->getWheel();
 
   if ( wheel == MouseWheel::Up )
     scrollBy (0, -distance);
@@ -737,7 +737,7 @@ void FTextView::changeOnResize() const
 //----------------------------------------------------------------------
 void FTextView::cb_vbarChange (const FWidget*)
 {
-  const FScrollbar::ScrollType scroll_type = vbar->getScrollType();
+  const auto scroll_type = vbar->getScrollType();
   static constexpr int wheel_distance = 4;
   int distance{1};
 
@@ -784,7 +784,7 @@ void FTextView::cb_vbarChange (const FWidget*)
 //----------------------------------------------------------------------
 void FTextView::cb_hbarChange (const FWidget*)
 {
-  const FScrollbar::ScrollType scroll_type = hbar->getScrollType();
+  const auto scroll_type = hbar->getScrollType();
   static constexpr int wheel_distance = 4;
   int distance{1};
 

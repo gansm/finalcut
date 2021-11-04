@@ -331,7 +331,7 @@ void FMessageBox::draw()
 
   for (auto&& line : text_components)
   {
-    const std::size_t line_width = getColumnWidth(line);
+    const auto& line_width = getColumnWidth(line);
 
     if ( center_text )  // center one line
       center_x = int((max_line_width - line_width) / 2);

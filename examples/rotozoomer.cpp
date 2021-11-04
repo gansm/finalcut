@@ -137,8 +137,8 @@ void RotoZoomer::draw()
 //----------------------------------------------------------------------
 inline void RotoZoomer::rotozoomer (double cx, double cy, double r, double a)
 {
-  const auto Cols = int(getClientWidth());
-  const auto Lines = int(getClientHeight());
+  const auto& Cols = int(getClientWidth());
+  const auto& Lines = int(getClientHeight());
   auto Ax   = int(4096.0 * (cx + r * std::cos(a)));
   auto Ay   = int(4096.0 * (cy + r * std::sin(a)));
   auto Bx   = int(4096.0 * (cx + r * std::cos(a + 2.02358)));
@@ -158,7 +158,7 @@ inline void RotoZoomer::rotozoomer (double cx, double cy, double r, double a)
 
     for (auto x = 0; x < Cols; x++)
     {
-      auto ch = data[((Cy >> 14) & 0xf) + ((Cx >> 10) & 0xf0)];
+      const auto& ch = data[((Cy >> 14) & 0xf) + ((Cx >> 10) & 0xf0)];
 
       if ( ch == '+' )
         print() << finalcut::FColorPair{FColor::Black, FColor::Red};
@@ -187,7 +187,7 @@ void RotoZoomer::generateReport()
   finalcut::FStringStream rep;
   dimension_str << getDesktopWidth()
                 << "x" << getDesktopHeight();
-  auto elapsed_ms = int(duration_cast<milliseconds>(end - start).count());
+  const auto elapsed_ms = int(duration_cast<milliseconds>(end - start).count());
   time_str << double(elapsed_ms) / 1000 << "s";
   fps_str << double(loops) * 1000.0 / double(elapsed_ms);
 

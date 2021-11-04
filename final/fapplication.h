@@ -240,8 +240,8 @@ class FApplication : public FWidget
 
     // Data members
     Args                  app_args{};
-    uInt64                key_timeout{100000};        // 100 ms
-    uInt64                dblclick_interval{500000};  // 500 ms
+    uInt64                key_timeout{100'000};        // 100 ms
+    uInt64                dblclick_interval{500'000};  // 500 ms
     std::streambuf*       default_clog_rdbuf{std::clog.rdbuf()};
     FWidget*              clicked_widget{};
     FEventQueue           event_queue{};

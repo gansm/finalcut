@@ -178,7 +178,7 @@ void FMenuItem::setText (const FString& txt)
 void FMenuItem::addAccelerator (FKey key, FWidget* obj) &
 {
   const auto& root = getRootWidget();
-  FAccelerator accel = { key, obj };
+  const FAccelerator accel{ key, obj };
 
   if ( root )
   {
@@ -196,7 +196,7 @@ void FMenuItem::delAccelerator (FWidget* obj) &
 
   if ( root && ! root->setAcceleratorList().empty() )
   {
-    auto list = root->setAcceleratorList();
+    auto& list = root->setAcceleratorList();
     auto iter = list.cbegin();
 
     while ( iter != list.cend() )
@@ -514,7 +514,7 @@ void FMenuItem::init()
   }
 
   setGeometry (FPoint{1, 1}, FSize{text_width + 2, 1}, false);
-  FWidget* parent = getParentWidget();
+  const auto& parent = getParentWidget();
 
   if ( ! parent )
     return;
@@ -582,7 +582,7 @@ void FMenuItem::updateSuperMenuDimensions()
 //----------------------------------------------------------------------
 void FMenuItem::updateMenubarDimensions() const
 {
-  FWidget* parent = getParentWidget();
+  const auto& parent = getParentWidget();
 
   if ( ! parent || ! isMenuBar(parent) )
     return;

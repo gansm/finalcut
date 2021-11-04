@@ -84,7 +84,7 @@ std::string FLogger::getEOL() const
 //----------------------------------------------------------------------
 void FLogger::printLogLine (const std::string& msg)
 {
-  const std::string& log_level = [this] ()
+  const auto& log_level = [this] ()
   {
     switch ( getLevel() )
     {
@@ -104,7 +104,7 @@ void FLogger::printLogLine (const std::string& msg)
     return std::string("");
   }();
 
-  const std::string& prefix = [this, &log_level] ()
+  const auto& prefix = [this, &log_level] ()
   {
     if ( timestamp )
       return getTimeString() + " [" + log_level + "] ";
@@ -113,8 +113,8 @@ void FLogger::printLogLine (const std::string& msg)
   }();
 
   std::string message{msg};
-  const std::string& eol = getEOL();
-  const std::string replace_str = eol + prefix;
+  const auto& eol = getEOL();
+  const auto replace_str = eol + prefix;
   newlineReplace (message, replace_str);
   std::lock_guard<std::mutex> lock_guard(output_mutex);
   output << prefix << message << eol;

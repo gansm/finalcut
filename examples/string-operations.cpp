@@ -151,27 +151,27 @@ void streamingIntoFStringExample()
 
   // ...from interger
   finalcut::FString streamer8;
-  streamer8 << int(-12345);
+  streamer8 << int(-12'345);
   std::cout << " stream in: " << streamer8 << std::endl;
 
   // ...from unsigned interger
   finalcut::FString streamer9;
-  streamer9 << uInt(54321);
+  streamer9 << uInt(54'321);
   std::cout << " stream in: " << streamer9 << std::endl;
 
   // ...from long double
   finalcut::FString streamer10;
-  streamer10 << lDouble(0.333333333333333333L);
+  streamer10 << lDouble(0.333'333'333'333'333'333L);
   std::cout << " stream in: " << streamer10 << std::endl;
 
   // ...from double
   finalcut::FString streamer11;
-  streamer11 << double(0.11111111111);
+  streamer11 << double(0.111'111'111'11);
   std::cout << " stream in: " << streamer11 << std::endl;
 
   // ...from float
   finalcut::FString streamer12;
-  streamer12 << float(0.22222222);
+  streamer12 << float(0.222'222'22);
   std::cout << " stream in: " << streamer12 << std::endl;
 }
 
@@ -534,7 +534,7 @@ void convertToNumberExample()
   try
   {
     const double double_num = \
-        finalcut::FString("2.7182818284590452353").toDouble();
+        finalcut::FString("2.718'281'828'459'045'235'3").toDouble();
     std::ios_base::fmtflags save_flags = std::cout.flags();
     std::cout << "  toDouble:  " << std::setprecision(11)
                                  << double_num << std::endl;
@@ -563,7 +563,7 @@ void convertNumberToStringExample()
   finalcut::FString num3{};
   num1.setNumber(137U);
   num2.setNumber(-512);
-  num3.setNumber(3.141592653589793238L, 12);
+  num3.setNumber(3.141'592'653'589'793'238L, 12);
   std::cout << " setNumber:  "
             << num1 << " (unsigned)"    << std::endl;
   std::cout << " setNumber: "

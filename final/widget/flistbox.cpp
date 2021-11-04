@@ -157,7 +157,7 @@ void FListBox::hide()
 //----------------------------------------------------------------------
 void FListBox::insert (const FListBoxItem& listItem)
 {
-  const std::size_t column_width = getColumnWidth(listItem.text);
+  const auto column_width = getColumnWidth(listItem.text);
   const bool has_brackets(listItem.brackets != BracketType::None);
   recalculateHorizontalBar (column_width, has_brackets);
 
@@ -166,7 +166,7 @@ void FListBox::insert (const FListBoxItem& listItem)
   if ( current == 0 )
     current = 1;
 
-  std::size_t element_count = getCount();
+  auto element_count = getCount();
   recalculateVerticalBar (element_count);
   processChanged();
 }
@@ -477,7 +477,7 @@ void FListBox::onWheel (FWheelEvent* ev)
   const std::size_t current_before = current;
   const int yoffset_before = yoffset;
   static constexpr int wheel_distance = 4;
-  const MouseWheel wheel = ev->getWheel();
+  const auto& wheel = ev->getWheel();
 
   if ( drag_scroll != DragScrollMode::None )
     stopDragScroll();
@@ -822,7 +822,7 @@ inline void FListBox::drawListLine ( int y
   const std::size_t first = std::size_t(xoffset) + 1;
   const std::size_t max_width = getWidth() - nf_offset - 4;
   const FString element(getColumnSubString (getString(iter), first, max_width));
-  std::size_t column_width = getColumnWidth(element);
+  auto column_width = getColumnWidth(element);
 
   if ( FVTerm::getFOutput()->isMonochron() && isCurrentLine && getFlags().focus )
     print (UniChar::BlackRightPointingPointer);  // ►
@@ -889,7 +889,7 @@ inline void FListBox::drawListBracketsLine ( int y
   const auto first = std::size_t(xoffset);
   const std::size_t max_width = getWidth() - nf_offset - 4 - b;
   const FString element(getColumnSubString (getString(iter), first, max_width));
-  std::size_t column_width = getColumnWidth(element);
+  auto column_width = getColumnWidth(element);
   const std::size_t text_width = getColumnWidth(getString(iter));
   std::size_t i{0};
   const auto& wc = getColorTheme();
@@ -1168,7 +1168,7 @@ void FListBox::wheelUp (int pagesize)
 //----------------------------------------------------------------------
 void FListBox::wheelDown (int pagesize)
 {
-  const std::size_t element_count = getCount();
+  const auto& element_count = getCount();
   auto yoffset_end = int(element_count - getClientHeight());
 
   if ( yoffset_end < 0 )
@@ -1207,7 +1207,7 @@ bool FListBox::dragScrollUp()
 //----------------------------------------------------------------------
 bool FListBox::dragScrollDown()
 {
-  const std::size_t element_count = getCount();
+  const auto& element_count = getCount();
 
   if ( current == element_count )
   {
@@ -1301,7 +1301,7 @@ void FListBox::prevListItem (int distance)
 //----------------------------------------------------------------------
 void FListBox::nextListItem (int distance)
 {
-  const std::size_t element_count = getCount();
+  const auto& element_count = getCount();
   const auto yoffset_end = int(element_count - getClientHeight());
 
   if ( current == element_count )
@@ -1451,7 +1451,7 @@ inline void FListBox::firstPos()
 //----------------------------------------------------------------------
 inline void FListBox::lastPos()
 {
-  const std::size_t element_count = getCount();
+  const auto& element_count = getCount();
   const auto yoffset_end = int(element_count - getClientHeight());
   current = element_count;
 
@@ -1483,7 +1483,7 @@ inline void FListBox::acceptSelection()
 //----------------------------------------------------------------------
 inline bool FListBox::spacebarProcessing()
 {
-  const std::size_t inc_len = inc_search.getLength();
+  const auto& inc_len = inc_search.getLength();
 
   if ( inc_len > 0 )  // Enter a spacebar for incremental search
   {
@@ -1530,7 +1530,7 @@ inline bool FListBox::changeSelectionAndPosition()
 {
   if ( isMultiSelection() )
   {
-    std::size_t element_count = getCount();
+    const auto& element_count = getCount();
 
     if ( isSelected(current) )
       unselectItem(current);
@@ -1556,7 +1556,7 @@ inline bool FListBox::changeSelectionAndPosition()
 //----------------------------------------------------------------------
 inline bool FListBox::deletePreviousCharacter()
 {
-  const std::size_t inc_len = inc_search.getLength();
+  const auto& inc_len = inc_search.getLength();
 
   if ( inc_len == 0 )
     return false;
@@ -1595,7 +1595,7 @@ inline bool FListBox::keyIncSearchInput (FKey key)
   else
     inc_search += wchar_t(key);
 
-  std::size_t inc_len = inc_search.getLength();
+  const auto& inc_len = inc_search.getLength();
   bool inc_found{false};
   auto iter = itemlist.begin();
 
@@ -1678,7 +1678,7 @@ void FListBox::lazyConvert(FListBoxItems::iterator iter, std::size_t y)
 //----------------------------------------------------------------------
 void FListBox::cb_vbarChange (const FWidget*)
 {
-  const FScrollbar::ScrollType scroll_type = vbar->getScrollType();
+  const auto scroll_type = vbar->getScrollType();
   static constexpr int wheel_distance = 4;
   const std::size_t current_before = current;
   int distance{1};
@@ -1739,7 +1739,7 @@ void FListBox::cb_vbarChange (const FWidget*)
 //----------------------------------------------------------------------
 void FListBox::cb_hbarChange (const FWidget*)
 {
-  const FScrollbar::ScrollType scroll_type = hbar->getScrollType();
+  const auto scroll_type = hbar->getScrollType();
   static constexpr int wheel_distance = 4;
   static constexpr int padding_space = 2;  // 1 leading space + 1 trailing space
   int distance{1};

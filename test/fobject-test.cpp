@@ -221,7 +221,6 @@ void FObjectTest::noArgumentTest()
   CPPUNIT_ASSERT ( t.event(ev) );
   delete ev;
 
-  CPPUNIT_ASSERT ( ! finalcut::fc::emptyFString::get().isNull() );
   CPPUNIT_ASSERT ( finalcut::fc::emptyFString::get().isEmpty() );
 }
 
