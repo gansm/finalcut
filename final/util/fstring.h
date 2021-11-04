@@ -147,22 +147,22 @@ class FString
 
     bool operator <  (const FString&) const;
     template <typename CharT>
-    constexpr bool operator <  (const CharT&) const;
+    bool operator <  (const CharT&) const;
     bool operator <= (const FString&) const;
     template <typename CharT>
-    constexpr bool operator <= (const CharT&) const;
+    bool operator <= (const CharT&) const;
     bool operator == (const FString&) const;
     template <typename CharT>
-    constexpr bool operator == (const CharT&) const;
+    bool operator == (const CharT&) const;
     bool operator != (const FString&) const;
     template <typename CharT>
-    constexpr bool operator != (const CharT&) const;
+    bool operator != (const CharT&) const;
     bool operator >= (const FString&) const;
     template <typename CharT>
-    constexpr bool operator >= (const CharT&) const;
+    bool operator >= (const CharT&) const;
     bool operator >  (const FString&) const;
     template <typename CharT>
-    constexpr bool operator >  (const CharT&) const;
+    bool operator >  (const CharT&) const;
 
     // Accessor
     virtual FString getClassName() const;
@@ -319,7 +319,7 @@ constexpr FString::const_reference FString::operator [] (const IndexT pos) const
 
 //----------------------------------------------------------------------
 template <typename CharT>
-constexpr bool FString::operator < (const CharT& s) const
+inline bool FString::operator < (const CharT& s) const
 {
   const FString tmp(s);
   return *this < tmp;
@@ -327,7 +327,7 @@ constexpr bool FString::operator < (const CharT& s) const
 
 //----------------------------------------------------------------------
 template <typename CharT>
-constexpr bool FString::operator <= (const CharT& s) const
+inline bool FString::operator <= (const CharT& s) const
 {
   const FString tmp(s);
   return *this <= tmp;
@@ -335,7 +335,7 @@ constexpr bool FString::operator <= (const CharT& s) const
 
 //----------------------------------------------------------------------
 template <typename CharT>
-constexpr bool FString::operator == (const CharT& s) const
+inline bool FString::operator == (const CharT& s) const
 {
   const FString tmp(s);
   return *this == tmp;
@@ -343,7 +343,7 @@ constexpr bool FString::operator == (const CharT& s) const
 
 //----------------------------------------------------------------------
 template <typename CharT>
-constexpr bool FString::operator != (const CharT& s) const
+inline bool FString::operator != (const CharT& s) const
 {
   const FString tmp(s);
   return *this != tmp;
@@ -351,7 +351,7 @@ constexpr bool FString::operator != (const CharT& s) const
 
 //----------------------------------------------------------------------
 template <typename CharT>
-constexpr bool FString::operator >= (const CharT& s) const
+inline bool FString::operator >= (const CharT& s) const
 {
   const FString tmp(s);
   return *this >= tmp;
@@ -359,7 +359,7 @@ constexpr bool FString::operator >= (const CharT& s) const
 
 //----------------------------------------------------------------------
 template <typename CharT>
-constexpr bool FString::operator > (const CharT& s) const
+inline bool FString::operator > (const CharT& s) const
 {
   const FString tmp(s);
   return *this > tmp;
