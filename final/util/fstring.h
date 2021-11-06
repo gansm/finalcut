@@ -168,7 +168,7 @@ class FString
     virtual FString getClassName() const;
 
     // inquiries
-    [[deprecated]] bool isNull() const noexcept;
+    [[deprecated("No longer needed")]] bool isNull() const noexcept;
     bool isEmpty() const noexcept;
 
     // Methods

@@ -315,13 +315,15 @@ inline FKey FKeyboard::getTermcapKey()
   if ( found_key != key_cap_end )  // found
   {
     const std::size_t len = found_key->length;
-    std::size_t n{};
-
-    for (n = len; n < FIFO_BUF_SIZE; n++)  // Remove founded entry
-      fifo_buf[n - len] = fifo_buf[n];
-
-    for (n = n - len; n < FIFO_BUF_SIZE; n++)  // Fill rest with '\0'
-      fifo_buf[n] = '\0';
+    // Remove founded entry
+    std::copy_if ( std::begin(fifo_buf) + len,
+                   std::end(fifo_buf),
+                   std::begin(fifo_buf)
+                 , [] (const char& ch) { return ch != ' '; });
+    // Fill rest with '\0'
+    std::fill ( std::end(fifo_buf) - len
+              , std::end(fifo_buf)
+              , '\0');
 
     unprocessed_buffer_data = bool(fifo_buf[0] != '\0');
     return found_key->num;
@@ -358,7 +360,6 @@ inline FKey FKeyboard::getKnownKey()
   if ( found_key != key_map.cend() )  // found
   {
     const std::size_t len = found_key->length;
-    std::size_t n{};
 
     if ( len == 2
       && ( fifo_buf[1] == 'O'
@@ -369,11 +370,15 @@ inline FKey FKeyboard::getKnownKey()
       return FKey::Incomplete;
     }
 
-    for (n = len; n < FIFO_BUF_SIZE; n++)  // Remove founded entry
-      fifo_buf[n - len] = fifo_buf[n];
-
-    for (n = n - len; n < FIFO_BUF_SIZE; n++)  // Fill rest with '\0'
-      fifo_buf[n] = '\0';
+    // Remove founded entry
+    std::copy_if ( std::begin(fifo_buf) + len,
+                   std::end(fifo_buf),
+                   std::begin(fifo_buf)
+                 , [] (const char& ch) { return ch != ' '; });
+    // Fill rest with '\0'
+    std::fill ( std::end(fifo_buf) - len
+              , std::end(fifo_buf)
+              , '\0');
 
     unprocessed_buffer_data = bool(fifo_buf[0] != '\0');
     return found_key->num;
@@ -388,7 +393,6 @@ inline FKey FKeyboard::getSingleKey()
   // Looking for single key code in the buffer
 
   std::size_t len{1};
-  std::size_t n{};
   const auto& firstchar = uChar(fifo_buf[0]);
   FKey keycode{};
 
@@ -416,11 +420,15 @@ inline FKey FKeyboard::getSingleKey()
   else
     keycode = FKey(uChar(fifo_buf[0]));
 
-  for (n = len; n < FIFO_BUF_SIZE; n++)  // Remove the key from the buffer front
-    fifo_buf[n - len] = fifo_buf[n];
-
-  for (n = n - len; n < FIFO_BUF_SIZE; n++)  // Fill the rest with '\0' bytes
-    fifo_buf[n] = '\0';
+  // Remove founded entry
+  std::copy_if ( std::begin(fifo_buf) + len,
+                  std::end(fifo_buf),
+                  std::begin(fifo_buf)
+                , [] (const char& ch) { return ch != ' '; });
+  // Fill rest with '\0'
+  std::fill ( std::end(fifo_buf) - len
+            , std::end(fifo_buf)
+            , '\0');
 
   unprocessed_buffer_data = bool(fifo_buf[0] != '\0');
 

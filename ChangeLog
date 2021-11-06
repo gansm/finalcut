@@ -1,3 +1,6 @@
+2020-11-06  Markus Gans  <guru.mail@muenster.de>
+	* Using the STL algorithms for the input fifo_buf
+
 2020-11-01  Markus Gans  <guru.mail@muenster.de>
 	* Switched to the language standard C++14
 

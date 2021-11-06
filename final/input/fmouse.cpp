@@ -583,22 +583,20 @@ void FMouseX11::setRawData (FKeyboard::keybuffer& fifo_buf) noexcept
   // Import the X11 xterm mouse protocol (SGR-Mode) raw mouse data
 
   static constexpr std::size_t len = 6;
-  const std::size_t fifo_buf_size{sizeof(fifo_buf)};
-  std::size_t n{};
   x11_mouse[0] = fifo_buf[3];
   x11_mouse[1] = fifo_buf[4];
   x11_mouse[2] = fifo_buf[5];
   x11_mouse[3] = '\0';
 
   // Remove founded entry
-  for (n = len; n < fifo_buf_size; n++)
-    fifo_buf[n - len] = fifo_buf[n];
-
-  n = fifo_buf_size - len;
-
+  std::copy_if ( std::begin(fifo_buf) + len,
+                 std::end(fifo_buf),
+                 std::begin(fifo_buf)
+               , [] (const char& ch) { return ch != ' '; });
   // Fill rest with '\0'
-  for (; n < fifo_buf_size; n++)
-    fifo_buf[n] = '\0';
+  std::fill ( std::end(fifo_buf) - len
+            , std::end(fifo_buf)
+            , '\0');
 
   setPending(bool(fifo_buf[0] != '\0'));
 }
@@ -767,7 +765,6 @@ void FMouseSGR::setRawData (FKeyboard::keybuffer& fifo_buf) noexcept
 {
   // Import the X11 xterm mouse protocol (SGR-Mode) raw mouse data
 
-  const std::size_t fifo_buf_size = sizeof(fifo_buf);
   std::size_t len = stringLength(fifo_buf);
   std::size_t n{3};
 
@@ -782,13 +779,15 @@ void FMouseSGR::setRawData (FKeyboard::keybuffer& fifo_buf) noexcept
 
   sgr_mouse[n - 3] = '\0';
 
-  for (n = len; n < fifo_buf_size; n++)  // Remove founded entry
-    fifo_buf[n - len] = fifo_buf[n];
-
-  n = fifo_buf_size - len;
-
-  for (; n < fifo_buf_size; n++)       // Fill rest with '\0'
-    fifo_buf[n] = '\0';
+  // Remove founded entry
+  std::copy_if ( std::begin(fifo_buf) + len,
+                 std::end(fifo_buf),
+                 std::begin(fifo_buf)
+               , [] (const char& ch) { return ch != ' '; });
+  // Fill rest with '\0'
+  std::fill ( std::end(fifo_buf) - len
+            , std::end(fifo_buf)
+            , '\0');
 
   setPending(bool(fifo_buf[0] != '\0'));
 }
@@ -1004,7 +1003,6 @@ void FMouseUrxvt::setRawData (FKeyboard::keybuffer& fifo_buf) noexcept
 {
   // Import the X11 xterm mouse protocol (Urxvt-Mode) raw mouse data
 
-  const std::size_t fifo_buf_size = sizeof(fifo_buf);
   std::size_t len = stringLength(fifo_buf);
   std::size_t n{2};
 
@@ -1019,13 +1017,15 @@ void FMouseUrxvt::setRawData (FKeyboard::keybuffer& fifo_buf) noexcept
 
   urxvt_mouse[n - 2] = '\0';
 
-  for (n = len; n < fifo_buf_size; n++)  // Remove founded entry
-    fifo_buf[n - len] = fifo_buf[n];
-
-  n = fifo_buf_size - len;
-
-  for (; n < fifo_buf_size; n++)       // Fill rest with '\0'
-    fifo_buf[n] = '\0';
+  // Remove founded entry
+  std::copy_if ( std::begin(fifo_buf) + len,
+                 std::end(fifo_buf),
+                 std::begin(fifo_buf)
+               , [] (const char& ch) { return ch != ' '; });
+  // Fill rest with '\0'
+  std::fill ( std::end(fifo_buf) - len
+            , std::end(fifo_buf)
+            , '\0');
 
   setPending(bool(fifo_buf[0] != '\0'));
 }

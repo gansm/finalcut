@@ -5,7 +5,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_INIT([finalcut], [0.8.0])
-AC_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 AX_PREFIX_CONFIG_H([final/fconfig.h], [F])
 AC_CONFIG_SRCDIR([final/fobject.cpp])
 AC_USE_SYSTEM_EXTENSIONS
@@ -21,7 +21,6 @@ fi
 AC_PROG_CXX
 
 # Checks for header files.
-AC_HEADER_STDC
 AC_CHECK_HEADERS( \
 		 linux/fb.h \
 		 sys/io.h \
