@@ -244,10 +244,10 @@ class FOptiAttr final
     void             reset (FChar&) const;
     bool             caused_reset_attributes (const char[], uChar = all_tests) const;
     bool             hasCharsetEquivalence() const;
-    uInt8            getByte0ReverseMask();
-    uInt8            getByte1Mask();
-    uInt8            getByte1ResetMask();
-    uInt8            getByte2ResetMask();
+    static uInt8     getByte0ReverseMask();
+    static uInt8     getByte1Mask();
+    static uInt8     getByte1ResetMask();
+    static uInt8     getByte2ResetMask();
     void             detectSwitchOn (const FChar&, const FChar&);
     void             detectSwitchOff (const FChar&, const FChar&);
     bool             switchOn() const;

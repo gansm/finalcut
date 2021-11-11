@@ -1379,9 +1379,9 @@ void FStringTest::convertFromNumberTest()
   constexpr double      n16 =  1234.5678;
   constexpr lDouble     n17 =  12345.67890L;
 
-  CPPUNIT_ASSERT ( finalcut::getPrecision<float>() == FLT_DIG );
-  CPPUNIT_ASSERT ( finalcut::getPrecision<double>() == DBL_DIG );
-  CPPUNIT_ASSERT ( finalcut::getPrecision<lDouble>() == LDBL_DIG );
+  CPPUNIT_ASSERT ( int(finalcut::getPrecision<float>()) == FLT_DIG );
+  CPPUNIT_ASSERT ( int(finalcut::getPrecision<double>()) == DBL_DIG );
+  CPPUNIT_ASSERT ( int(finalcut::getPrecision<lDouble>()) == LDBL_DIG );
 
   CPPUNIT_ASSERT ( finalcut::FString().setNumber(n1) == "-12" );
   CPPUNIT_ASSERT ( finalcut::FString().setNumber(n2) == "12" );
