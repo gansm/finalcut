@@ -221,10 +221,10 @@ class FString
     FString& setString (const FString&);
 
     template <typename NumT>
-    FString& setNumber (NumT, int = getPrecision<NumT>());
+    FString& setNumber (NumT, int = int(getPrecision<NumT>()));
     FString& setNumber (sInt64);
     FString& setNumber (uInt64);
-    FString& setNumber (lDouble, int = getPrecision<lDouble>());
+    FString& setNumber (lDouble, int = int(getPrecision<lDouble>()));
 
     template <typename NumT>
     FString& setFormatedNumber (NumT, char = nl_langinfo(THOUSEP)[0]);

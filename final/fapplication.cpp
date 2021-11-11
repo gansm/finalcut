@@ -560,7 +560,7 @@ void FApplication::cmdOptions (const Args& args)
 }
 
 //----------------------------------------------------------------------
-inline FStartOptions& FApplication::getStartOptions()
+inline auto FApplication::getStartOptions() -> FStartOptions&
 {
   static auto& start_options = FStartOptions::getInstance();
   return start_options;

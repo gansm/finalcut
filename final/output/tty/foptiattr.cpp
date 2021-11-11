@@ -1401,7 +1401,7 @@ inline bool FOptiAttr::hasCharsetEquivalence() const
 }
 
 //----------------------------------------------------------------------
-uInt8 FOptiAttr::getByte0ReverseMask()
+constexpr uInt8 FOptiAttr::getByte0ReverseMask()
 {
   FAttribute mask{};
   mask.bit.reverse = true;
@@ -1410,7 +1410,7 @@ uInt8 FOptiAttr::getByte0ReverseMask()
 }
 
 //----------------------------------------------------------------------
-uInt8 FOptiAttr::getByte1Mask()
+constexpr uInt8 FOptiAttr::getByte1Mask()
 {
   FAttribute mask{};
   mask.bit.protect = true;
@@ -1422,7 +1422,7 @@ uInt8 FOptiAttr::getByte1Mask()
 }
 
 //----------------------------------------------------------------------
-uInt8 FOptiAttr::getByte1ResetMask()
+constexpr uInt8 FOptiAttr::getByte1ResetMask()
 {
   // Set bits that must not be reset
   FAttribute mask{};
@@ -1433,7 +1433,7 @@ uInt8 FOptiAttr::getByte1ResetMask()
 }
 
 //----------------------------------------------------------------------
-uInt8 FOptiAttr::getByte2ResetMask()
+constexpr uInt8 FOptiAttr::getByte2ResetMask()
 {
   // Set bits that must not be reset
   FAttribute mask{};
@@ -1443,23 +1443,23 @@ uInt8 FOptiAttr::getByte2ResetMask()
 }
 
 //----------------------------------------------------------------------
-inline void FOptiAttr::detectSwitchOn (const FChar& term, const FChar& next)
+constexpr void FOptiAttr::detectSwitchOn (const FChar& term, const FChar& next)
 {
   // Detect switched on attributes on transition from "term" to "next"
   // and store the result in "on"
 
-  const auto& b1_mask = internal::var::b1_mask;
+  constexpr auto& b1_mask = internal::var::b1_mask;
   on.attr.byte[0] = ~(term.attr.byte[0])           & next.attr.byte[0];
   on.attr.byte[1] = ~(term.attr.byte[1]) & b1_mask & next.attr.byte[1] & b1_mask;
 }
 
 //----------------------------------------------------------------------
-inline void FOptiAttr::detectSwitchOff (const FChar& term, const FChar& next)
+constexpr void FOptiAttr::detectSwitchOff (const FChar& term, const FChar& next)
 {
   // Detect switched off attributes on transition from "term" to "next"
   // and store the result in "on"
 
-  const auto& b1_mask = internal::var::b1_mask;
+  constexpr auto& b1_mask = internal::var::b1_mask;
   off.attr.byte[0] = term.attr.byte[0]            & ~(next.attr.byte[0]);
   off.attr.byte[1] = term.attr.byte[1] & b1_mask  & ~(next.attr.byte[1]) & b1_mask;
 }

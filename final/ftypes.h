@@ -80,7 +80,7 @@ template <typename T
         , bool is_signed>
 struct is_negative
 {
-  constexpr bool operator () (const T& x) const
+  constexpr bool operator () (const T& x) const noexcept
   {
     return x < 0;
   }
@@ -89,7 +89,7 @@ struct is_negative
 template <typename T>
 struct is_negative<T, false>
 {
-  constexpr bool operator () (const T&) const
+  constexpr bool operator () (const T&) const noexcept
   {
     return false;
   }
@@ -99,7 +99,7 @@ struct is_negative<T, false>
 
 // Check for 7-bit ASCII
 template<typename CharT>
-constexpr bool is7bit (CharT ch)
+constexpr bool is7bit (CharT ch) noexcept
 {
   using char_type = std::make_unsigned_t<CharT>;
   return static_cast<char_type>(ch) < 128;
@@ -108,13 +108,13 @@ constexpr bool is7bit (CharT ch)
 
 // Typecast to c-string
 template <typename StringT>
-constexpr auto C_STR (StringT&& string)
+constexpr auto C_STR (StringT&& string) noexcept
 {
   return const_cast<char*>(std::forward<StringT>(string));
 }
 
 template <typename T>
-constexpr bool isNegative (const T& x)
+constexpr bool isNegative (const T& x) noexcept
 {
   return internal::is_negative<T, std::numeric_limits<T>::is_signed>()(x);
 }
@@ -122,7 +122,7 @@ constexpr bool isNegative (const T& x)
 template <typename T>
 struct getPrecision
 {
-  constexpr operator int () const
+  constexpr explicit operator int () const noexcept
   {
     return std::numeric_limits<T>::digits10;
   }
@@ -139,7 +139,7 @@ struct EnumHash
 };
 
 template <typename CharT>
-constexpr std::size_t stringLength (const CharT* s)
+constexpr std::size_t stringLength (const CharT* s) noexcept
 {
   return std::char_traits<CharT>::length(s);
 }
@@ -276,7 +276,7 @@ constexpr bool isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexce
 }
 
 //----------------------------------------------------------------------
-constexpr bool operator == (const FChar& lhs, const FChar& rhs)
+constexpr bool operator == (const FChar& lhs, const FChar& rhs) noexcept
 {
   return isFUnicodeEqual(lhs.ch, rhs.ch)
       && lhs.fg_color     == rhs.fg_color
@@ -288,7 +288,7 @@ constexpr bool operator == (const FChar& lhs, const FChar& rhs)
 }
 
 //----------------------------------------------------------------------
-constexpr bool operator != (const FChar& lhs, const FChar& rhs)
+constexpr bool operator != (const FChar& lhs, const FChar& rhs) noexcept
 {
   return ! ( lhs == rhs );
 }

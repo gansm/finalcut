@@ -81,6 +81,12 @@ class FString;
 class FStyle;
 class FVTermBuffer;
 
+template <typename FOutputType>
+struct outputClass
+{
+  using type = std::remove_cv_t<FOutputType>;
+};
+
 //----------------------------------------------------------------------
 // class FVTerm
 //----------------------------------------------------------------------
@@ -129,6 +135,9 @@ class FVTerm : public FVTermAttribute
 
     // Constructor
     FVTerm();
+
+    template <typename FOutputType>
+    explicit FVTerm(outputClass<FOutputType>);
 
     // Disable copy assignment operator (=)
     FVTerm& operator = (const FVTerm&) = delete;
@@ -300,7 +309,9 @@ class FVTerm : public FVTermAttribute
                                        , const FTermArea* );
     static FChar          getCoveredCharacter (const FPoint&, const FTermArea*);
     static FChar          getOverlappedCharacter (const FPoint&, const FTermArea*);
+    template <typename FOutputType>
     void                  init();
+    void                  initSettings();
     void                  finish() const;
     static void           putAreaLine (const FChar&, FChar&, std::size_t);
     static void           putAreaCharacter ( const FPoint&, const FTermArea*
@@ -310,7 +321,7 @@ class FVTerm : public FVTermAttribute
     bool                  clearFullArea (const FTermArea*, FChar&) const;
     static void           clearAreaWithShadow (const FTermArea*, const FChar&);
     bool                  printWrap (FTermArea*) const;
-    static uInt8          getByte1TransMask();
+    constexpr uInt8       getByte1TransMask();
     bool                  changedToTransparency (const FChar&, const FChar&) const;
     bool                  changedFromTransparency (const FChar&, const FChar&) const;
     void                  printCharacterOnCoordinate ( FTermArea*
@@ -325,15 +336,15 @@ class FVTerm : public FVTermAttribute
     FTermArea*                    print_area{nullptr};        // print area for this object
     FTermArea*                    child_print_area{nullptr};  // print area for children
     FTermArea*                    vwin{nullptr};              // virtual window
-    std::shared_ptr<FOutput>      foutput{};
-    std::shared_ptr<FVTermList>   window_list{};  // List of all window owner
-    static const FVTerm*          init_object;    // Global FVTerm object
-    static FTermArea*             vterm;          // virtual terminal
-    static FTermArea*             vdesktop;       // virtual desktop
-    static FTermArea*             active_area;    // active area
-    static FChar                  s_ch;  // shadow character
-    static FChar                  i_ch;  // inherit background character
-    static uInt8                  b1_trans_mask;  // Transparency mask
+    std::shared_ptr<FOutput>      foutput{};                  // Terminal output class
+    std::shared_ptr<FVTermList>   window_list{};              // List of all window owner
+    static const FVTerm*          init_object;                // Global FVTerm object
+    static FTermArea*             vterm;                      // virtual terminal
+    static FTermArea*             vdesktop;                   // virtual desktop
+    static FTermArea*             active_area;                // active area
+    static FChar                  s_ch;                       // shadow character
+    static FChar                  i_ch;                       // inherit background character
+    static uInt8                  b1_trans_mask;              // Transparency mask
     static int                    tabstop;
     static bool                   draw_completed;
     static bool                   no_terminal_updates;
@@ -435,6 +446,13 @@ struct FVTerm::FVTermPreprocessing
 
 
 // FVTerm inline functions
+//----------------------------------------------------------------------
+template <typename FOutputType>
+FVTerm::FVTerm(outputClass<FOutputType>)
+{
+  init<outputClass<FOutputType>::type>();
+}
+
 //----------------------------------------------------------------------
 template <typename NumT
         , enable_if_arithmetic_without_char_t<NumT>>
@@ -637,6 +655,19 @@ inline bool FVTerm::isVirtualWindow() const
 //----------------------------------------------------------------------
 inline void FVTerm::hideVTermCursor() const
 { vterm->input_cursor_visible = false; }
+
+//----------------------------------------------------------------------
+template <typename FOutputType>
+inline void FVTerm::init()
+{
+  init_object   = this;
+  vterm         = nullptr;
+  vdesktop      = nullptr;
+  b1_trans_mask = getByte1TransMask();
+  foutput       = std::make_shared<FOutputType>(*this);
+  window_list   = std::make_shared<FVTermList>();
+  initSettings();
+}
 
 }  // namespace finalcut
 

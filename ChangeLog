@@ -1,3 +1,8 @@
+2020-11-11  Markus Gans  <guru.mail@muenster.de>
+	* You can now use the constructor of the FVTerm class to specify 
+	  an alternative terminal output class that must be derived from 
+	  FOutput
+
 2020-11-06  Markus Gans  <guru.mail@muenster.de>
 	* Using the STL algorithms for the input fifo_buf
 

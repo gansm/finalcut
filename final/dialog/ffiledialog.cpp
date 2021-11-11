@@ -566,13 +566,16 @@ void FFileDialog::dirEntriesToList()
   if ( dir_entries.empty() )
     return;
 
-  for (auto&& entry : dir_entries)
-  {
-    if ( entry.directory )
-      filebrowser.insert(FString{entry.name}, BracketType::Brackets);
-    else
-      filebrowser.insert(FString{entry.name});
-  }
+  std::for_each ( dir_entries.cbegin()
+                , dir_entries.cend()
+                , [this] (const auto& entry)
+                  {
+                    if ( entry.directory )
+                      filebrowser.insert(FString{entry.name}, BracketType::Brackets);
+                    else
+                      filebrowser.insert(FString{entry.name});
+                  }
+                );
 }
 
 //----------------------------------------------------------------------

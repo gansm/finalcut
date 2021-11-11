@@ -82,10 +82,14 @@ void FMessageBox::setHeadline (const FString& headline)
 {
   headline_text.setString(headline);
   setHeight(getHeight() + 2, true);
-
-  for (std::size_t n{0}; n < num_buttons && n < MAX_BUTTONS; n++)
-    if ( button[n] )
-      button[n]->setY (int(getHeight()) - 4, false);
+  std::for_each ( button.cbegin()
+                , button.cend()
+                , [this] (const auto& btn)
+                  {
+                    if ( btn )
+                      btn->setY (int(getHeight()) - 4, false);
+                  }
+                );
 
   const std::size_t column_width = getColumnWidth(headline_text);
 
@@ -284,13 +288,16 @@ void FMessageBox::calculateDimensions()
   if ( ! headline_text.isEmpty() )
     headline_height = 2;
 
-  for (auto&& line : text_components)
-  {
-    const std::size_t column_width = getColumnWidth(line);
+  std::for_each ( text_components.cbegin()
+                , text_components.cend()
+                , [this] (const auto& line)
+                  {
+                    const std::size_t column_width = getColumnWidth(line);
 
-    if ( column_width > max_line_width )
-      max_line_width = column_width;
-  }
+                    if ( column_width > max_line_width )
+                      max_line_width = column_width;
+                  }
+                );
 
   size.setHeight (text_num_lines + 8 + headline_height);
   size.setWidth (max_line_width + 4);

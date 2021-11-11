@@ -64,7 +64,7 @@ int                  FVTerm::tabstop{8};
 FVTerm::FVTerm()
 {
   if ( ! init_object )
-    init();
+    init<FTermOutput>();
   else
   {
     foutput = std::shared_ptr<FOutput>(init_object->foutput);
@@ -1692,24 +1692,8 @@ inline FChar FVTerm::getOverlappedCharacter (const FPoint& pos, const FTermArea*
 }
 
 //----------------------------------------------------------------------
-void FVTerm::init()
+void FVTerm::initSettings()
 {
-  init_object   = this;
-  vterm         = nullptr;
-  vdesktop      = nullptr;
-  b1_trans_mask = getByte1TransMask();
-
-  try
-  {
-    foutput     = std::make_shared<FTermOutput>(*this);
-    window_list = std::make_shared<FVTermList>();
-  }
-  catch (const std::bad_alloc&)
-  {
-    badAllocOutput ("FTermOutput, or FVTermList");
-    return;
-  }
-
   // Presetting of the current locale for full-width character support.
   // The final setting is made later in FTerm::init_locale().
   std::setlocale (LC_ALL, "");
@@ -1910,7 +1894,7 @@ bool FVTerm::printWrap (FTermArea* area) const
 }
 
 //----------------------------------------------------------------------
-uInt8 FVTerm::getByte1TransMask()
+constexpr uInt8 FVTerm::getByte1TransMask()
 {
   // Set bits that must not be reset
   FAttribute mask{};

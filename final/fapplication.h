@@ -179,7 +179,7 @@ class FApplication : public FWidget
     static void           setLongOptions(std::vector<CmdOption>&);
     static void           setCmdOptionsMap (CmdMap&);
     static void           cmdOptions (const Args&);
-    static FStartOptions& getStartOptions();
+    static auto           getStartOptions() -> FStartOptions&;
     static void           showParameterUsage();
     void                  destroyLog();
     void                  findKeyboardWidget() const;
