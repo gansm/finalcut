@@ -17,7 +17,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Test on NetBSD 9.2
-      uses: cross-platform-actions/action@v0.0.1
+      uses: cross-platform-actions/action@v0.2.0
       with:
         operating_system: netbsd
         version: 6.9
