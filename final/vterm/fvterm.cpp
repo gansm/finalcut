@@ -1894,7 +1894,7 @@ bool FVTerm::printWrap (FTermArea* area) const
 }
 
 //----------------------------------------------------------------------
-constexpr uInt8 FVTerm::getByte1TransMask()
+uInt8 FVTerm::getByte1TransMask()
 {
   // Set bits that must not be reset
   FAttribute mask{};

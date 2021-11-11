@@ -321,7 +321,7 @@ class FVTerm : public FVTermAttribute
     bool                  clearFullArea (const FTermArea*, FChar&) const;
     static void           clearAreaWithShadow (const FTermArea*, const FChar&);
     bool                  printWrap (FTermArea*) const;
-    constexpr uInt8       getByte1TransMask();
+    uInt8                 getByte1TransMask();
     bool                  changedToTransparency (const FChar&, const FChar&) const;
     bool                  changedFromTransparency (const FChar&, const FChar&) const;
     void                  printCharacterOnCoordinate ( FTermArea*
