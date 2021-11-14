@@ -20,7 +20,7 @@ jobs:
       uses: cross-platform-actions/action@v0.3.0
       with:
         operating_system: netbsd
-        version: 6.9
+        version: 9.2
         shell: bash
         run: |
           uname -a
