@@ -27,10 +27,9 @@ jobs:
           whoami
           pwd
           # https://ftp.netbsd.org/pub/pkgsrc/current/pkgsrc/index-all.html
-          sudo pkgin -y install gcc10 automake-1.16.3 autoconf-2.71 autoconf-archive libtool pkgconf cppunit
-          export AUTOCONF_VERSION=2.71
-          export AUTOMAKE_VERSION=1.16
-          g++ --version
+          sudo pkgin -y install gcc10 automake autoconf autoconf-archive libtool pkgconf cppunit
+          export CXX=/usr/pkg/gcc10/bin/g++
+          $CXX --version
           autoreconf -v --install --force
           ./configure --prefix=/usr
           make -j10
