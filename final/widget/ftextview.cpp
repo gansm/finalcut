@@ -230,11 +230,11 @@ void FTextView::insert (const FString& str, int pos)
     {
       FStringList list{};
       list.emplace_back(FString{});
-      return std::move(list);
+      return list;
     }
 
     const auto& string = str.rtrim().expandTabs(getFOutput()->getTabstop());
-    return std::move(string.split("\n"));
+    return string.split("\n");
 
   }();
 
