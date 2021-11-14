@@ -215,22 +215,28 @@ void FTextView::append (const FString& str)
 //----------------------------------------------------------------------
 void FTextView::insert (const FString& str, int pos)
 {
-  FString s{};
-
   if ( pos < 0 || pos >= int(getRows()) )
     pos = int(getRows());
-
-  if ( str.isEmpty() )
-    s = "\n";
-  else
-    s = FString{str}.rtrim().expandTabs(getFOutput()->getTabstop());
 
   auto showHorizontallyScrollable = [this] ()
   {
     if ( isShown() && isHorizontallyScrollable() )
       hbar->show();
   };
-  auto text_split = s.split("\n");
+
+  auto&& text_split = [&str] ()
+  {
+    if ( str.isEmpty() )
+    {
+      FStringList list{};
+      list.emplace_back(FString{});
+      return std::move(list);
+    }
+
+    const auto& string = str.rtrim().expandTabs(getFOutput()->getTabstop());
+    return std::move(string.split("\n"));
+
+  }();
 
   for (auto&& line : text_split)  // Line loop
   {
@@ -255,10 +261,11 @@ void FTextView::insert (const FString& str, int pos)
         showHorizontallyScrollable();
       }
     }
+
+    data.emplace (data.cbegin() + pos, std::move(line));
+    pos++;
   }
 
-  auto iter = data.cbegin();
-  data.insert (iter + pos, text_split.cbegin(), text_split.cend());
   const int vmax = ( getRows() > getTextHeight() )
                    ? int(getRows()) - int(getTextHeight())
                    : 0;
@@ -319,7 +326,6 @@ void FTextView::clear()
 
   // clear list from screen
   setColor();
-
 
   if ( useFDialogBorder() )
   {

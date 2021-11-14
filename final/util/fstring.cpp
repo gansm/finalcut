@@ -91,6 +91,16 @@ FString::FString (const std::wstring& s)
 }
 
 //----------------------------------------------------------------------
+FString::FString (std::wstring&& s)
+{
+  if ( ! s.empty() )
+  {
+    std::wstring str(std::move(s));
+    _assign (str);
+  }
+}
+
+//----------------------------------------------------------------------
 FString::FString (const wchar_t s[])
 {
   if ( s )
@@ -1113,13 +1123,12 @@ inline std::wstring FString::_toWideString (const std::string& s) const
     return {};
 
   std::vector<wchar_t> dest(size);
-
   const auto& wide_length = std::mbsrtowcs (dest.data(), &src, size, &state);
 
   if ( wide_length == static_cast<std::size_t>(-1) )
   {
     if ( src != s.c_str() )
-      return dest.data();
+      return {std::move(dest.data()), wide_length};
 
     return {};
   }
@@ -1128,7 +1137,7 @@ inline std::wstring FString::_toWideString (const std::string& s) const
     dest[size - 1] = '\0';
 
   if ( wide_length != 0 )
-    return dest.data();
+    return {std::move(dest.data()), wide_length};
 
   return {};
 }

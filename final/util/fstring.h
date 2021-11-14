@@ -95,6 +95,7 @@ class FString
     FString (const FString&);        // copy constructor
     FString (FString&&) noexcept;    // move constructor
     FString (const std::wstring&);   // implicit conversion constructor
+    FString (std::wstring&&);        // implicit conversion constructor
     FString (const wchar_t[]);       // implicit conversion constructor
     FString (const std::string&);    // implicit conversion constructor
     FString (const char[]);          // implicit conversion constructor

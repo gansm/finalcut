@@ -523,11 +523,11 @@ inline void checkBorder (const FWidget* w, FRect& r)
   if ( r.y1_ref() < 1 )
     r.y1_ref() = 1;
 
-  if ( r.x2_ref() > int(w->getWidth()) )
-    r.x2_ref() = int(w->getWidth());
+  if ( r.x2_ref() > r.x1_ref() + int(w->getWidth()) - 1 )
+    r.x2_ref() = r.x1_ref() + int(w->getWidth()) - 1;
 
-  if ( r.y2_ref() > int(w->getHeight()) )
-    r.y2_ref() = int(w->getHeight());
+  if ( r.y2_ref() > r.y1_ref() + int(w->getHeight()) - 1 )
+    r.y2_ref() = r.y1_ref() + int(w->getHeight()) - 1;
 }
 
 //----------------------------------------------------------------------
@@ -565,7 +565,7 @@ inline void drawBox (FWidget* w, const FRect& r)
 {
   // Use box-drawing characters to draw a border
 
-  if ( ! w )
+  if ( ! w || r.getWidth() < 3 )
     return;
 
   w->print() << r.getUpperLeftPos()

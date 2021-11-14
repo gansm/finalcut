@@ -1025,7 +1025,7 @@ void FDialog::drawBorder()
 
   if ( FVTerm::getFOutput()->isNewFont() )  // Draw a newfont U-shaped frame
   {
-    const FRect r{FPoint{1, 1}, getSize()};
+    const FRect r{{1, 1}, getSize()};
 
     for (auto y = r.getY1() + 1; y < r.getY2(); y++)
     {

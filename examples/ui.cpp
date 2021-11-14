@@ -981,12 +981,13 @@ void MyDialog::cb_activateButton ( const finalcut::FRadioButton& rb
 //----------------------------------------------------------------------
 void MyDialog::cb_view (const finalcut::FMenuItem* item)
 {
-  finalcut::FString file{};
-
-  if ( item && ! item->getText().isEmpty() )
-    file = item->getText();
-  else
-    file = finalcut::FFileDialog::fileOpenChooser (this);
+  finalcut::FString file = [&item, this] ()
+  {
+    if ( item && ! item->getText().isEmpty() )
+      return item->getText();
+    else
+      return finalcut::FFileDialog::fileOpenChooser (this);
+  }();
 
   if ( file.isEmpty() )
     return;
@@ -994,8 +995,8 @@ void MyDialog::cb_view (const finalcut::FMenuItem* item)
   const auto& view = new TextWindow(this);
   finalcut::FString filename(basename(const_cast<char*>(file.c_str())));
   view->setText ("Viewer: " + filename);
-  view->setGeometry ( FPoint { 1 + int((getRootWidget()->getWidth() - 60) / 2),
-                               int(getRootWidget()->getHeight() / 6) }
+  view->setGeometry ( FPoint { 1 + int((getRootWidget()->getWidth() - 60) / 2)
+                             , int(getRootWidget()->getHeight() / 6) }
                     , FSize{60, getRootWidget()->getHeight() * 3 / 4} );
   view->setMinimizable();
   view->setResizeable();
