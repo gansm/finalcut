@@ -94,6 +94,7 @@ examples/listview
 examples/checklist
 examples/treeview
 examples/mandelbrot
+examples/parallax-scrolling
 examples/rotozoomer
 examples/keyboard
 examples/mouse

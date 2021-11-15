@@ -229,7 +229,7 @@ void FTextView::insert (const FString& str, int pos)
     if ( str.isEmpty() )
     {
       FStringList list{};
-      list.emplace_back(FString{});
+      list.emplace_back("");
       return list;
     }
 

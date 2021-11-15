@@ -28,6 +28,7 @@ noinst_PROGRAMS = \
 	menu \
 	mouse \
 	opti-move \
+	parallax-scrolling \
 	rotozoomer \
 	scrollview \
 	string-operations \
@@ -58,6 +59,7 @@ mandelbrot_SOURCES = mandelbrot.cpp
 menu_SOURCES = menu.cpp
 mouse_SOURCES = mouse.cpp
 opti_move_SOURCES = opti-move.cpp
+parallax_scrolling_SOURCES = parallax-scrolling.cpp
 rotozoomer_SOURCES = rotozoomer.cpp
 scrollview_SOURCES = scrollview.cpp
 string_operations_SOURCES = string-operations.cpp

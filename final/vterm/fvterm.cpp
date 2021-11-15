@@ -1199,51 +1199,46 @@ FVTerm::CoveredState FVTerm::isCovered ( const FPoint& pos
 {
   // Determines the covered state for the given position
 
-  if ( ! area )
+  const auto& win_list = getWindowList();
+  auto is_covered = CoveredState::None;
+  bool found{ area == vdesktop };
+
+  if ( ! area || ! win_list || win_list->empty() )
     return CoveredState::None;
 
-  auto is_covered = CoveredState::None;
-  const auto& win_list = getWindowList();
-
-  if ( win_list && ! win_list->empty() )
+  for (auto& win_obj : *win_list)
   {
-    bool found{ area == vdesktop };
+    const auto& win = win_obj->getVWin();
 
-    for (auto& win_obj : *win_list)
+    if ( ! (win && win->visible) )
+      continue;
+
+    const int& win_x = win->offset_left;
+    const int& win_y = win->offset_top;
+    const int width  = getFullAreaWidth(win);
+    const int height = win->minimized ? win->min_height : getFullAreaHeight(win);
+    const FRect geometry { win_x, win_y
+                         , std::size_t(width)
+                         , std::size_t(height) };
+
+    if ( found && geometry.contains(pos) )  // is covered
     {
-      const auto& win = win_obj->getVWin();
+      const int& x = pos.getX();
+      const int& y = pos.getY();
+      const auto& tmp = &win->data[(y - win_y) * width + (x - win_x)];
 
-      if ( ! (win && win->visible) )
-        continue;
-
-      const int& win_x = win->offset_left;
-      const int& win_y = win->offset_top;
-      const int height = win->minimized ? win->min_height : getFullAreaHeight(win);
-      const FRect geometry { win_x, win_y
-                           , std::size_t(getFullAreaWidth(win))
-                           , std::size_t(height) };
-
-      if ( found && geometry.contains(pos) )
+      if ( tmp->attr.bit.color_overlay )
       {
-        const int width = getFullAreaWidth(win);
-        const int& x = pos.getX();
-        const int& y = pos.getY();
-        const auto& tmp = &win->data[(y - win_y) * width + (x - win_x)];
-
-        if ( tmp->attr.bit.color_overlay )
-        {
-          is_covered = CoveredState::Half;
-        }
-        else if ( ! tmp->attr.bit.transparent )
-        {
-          is_covered = CoveredState::Full;
-          break;
-        }
+        is_covered = CoveredState::Half;
       }
-
-      if ( area == win )
-        found = true;
+      else if ( ! tmp->attr.bit.transparent )
+      {
+        return CoveredState::Full;
+      }
     }
+
+    if ( area == win )
+      found = true;
   }
 
   return is_covered;
@@ -1377,7 +1372,7 @@ bool FVTerm::updateVTermCharacter ( const FTermArea* area
   }
   else  // Not transparent
   {
-    if ( ac.attr.bit.color_overlay )  // Transparent shadow
+    if ( ac.attr.bit.color_overlay )  // Color overlay (transparent shadow)
     {
       // Covered character
       auto cc = getCoveredCharacter (terminal_pos, area);
@@ -1728,7 +1723,7 @@ void FVTerm::finish() const
 }
 
 //----------------------------------------------------------------------
-void FVTerm::putAreaLine (const FChar& area_char, FChar& vterm_char, std::size_t length)
+inline void FVTerm::putAreaLine (const FChar& area_char, FChar& vterm_char, std::size_t length)
 {
   // copy "length" characters from area to terminal
 

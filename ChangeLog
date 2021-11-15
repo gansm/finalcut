@@ -1,3 +1,7 @@
+2020-11-16  Markus Gans  <guru.mail@muenster.de>
+	* A new example demonstrates parallax scrolling with multi-layered 
+	  stars
+
 2020-11-11  Markus Gans  <guru.mail@muenster.de>
 	* You can now use the constructor of the FVTerm class to specify 
 	  an alternative terminal output class that must be derived from 
