@@ -139,10 +139,6 @@ class SpaceWindow final : public fc::FWindow
     {
       std::size_t operator () (const fc::FPoint& p) const noexcept;
     };
-
-    // Data members
-    std::random_device rd{"/dev/random"};
-    std::mt19937       gen{rd()};
 };
 
 //----------------------------------------------------------------------
@@ -178,6 +174,8 @@ void SpaceWindow::drawNightSky()
   auto height = int(getDesktopHeight());
   auto loops = std::size_t(width * height / 50);
 
+  std::random_device seed{"/dev/random"};
+  std::mt19937 gen{seed()};
   std::uniform_int_distribution<> distrib_width(1, width);
   std::uniform_int_distribution<> distrib_height(1, height);
   std::unordered_set<fc::FPoint, FPointHash> generated{};
@@ -230,7 +228,7 @@ class ParallaxScrolling final : public fc::FWidget
     void draw() override;
     void initLayout() override;
     void adjustSize() override;
-    void scrollLeft (SpaceWindow&, SpaceWindow&);
+    void scrollLeft (SpaceWindow&, SpaceWindow&) const;
 
     // Event handlers
     void onTimer (fc::FTimerEvent*) override;
@@ -293,7 +291,7 @@ void ParallaxScrolling::adjustSize()
 }
 
 //----------------------------------------------------------------------
-void ParallaxScrolling::scrollLeft (SpaceWindow& lhs, SpaceWindow& rhs)
+void ParallaxScrolling::scrollLeft (SpaceWindow& lhs, SpaceWindow& rhs) const
 {
   if ( rhs.getPos().getX() == 1 )
     lhs.setPos ({int(getDesktopWidth() + 1), 1});
