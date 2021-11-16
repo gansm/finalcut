@@ -174,8 +174,7 @@ void SpaceWindow::drawNightSky()
   auto height = int(getDesktopHeight());
   auto loops = std::size_t(width * height / 50);
 
-  std::random_device seed{"/dev/random"};
-  std::mt19937 gen{seed()};
+  auto gen = std::default_random_engine{std::random_device{}()};
   std::uniform_int_distribution<> distrib_width(1, width);
   std::uniform_int_distribution<> distrib_height(1, height);
   std::unordered_set<fc::FPoint, FPointHash> generated{};
