@@ -51,6 +51,10 @@
   #endif  // defined(__x86_64__) || defined(__i386) || defined(ARM_ISA_SYSCTL)
 
   #include <sys/kd.h>
+#else
+  // struct forward declaration
+  struct console_font_op;
+  struct unimapdesc;
 #endif  // defined(__linux__)
 
 #include <sys/ioctl.h>
