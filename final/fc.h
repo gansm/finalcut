@@ -1259,7 +1259,7 @@ constexpr Style operator & (const Style& a1, const Style& a2) noexcept
 
 
 // Mouse/keyboard state values
-enum class MouseButton : int
+enum class MouseButton : uInt
 {
   None    = 0x00,
   Left    = 0x01,
@@ -1272,7 +1272,7 @@ enum class MouseButton : int
 
 constexpr MouseButton operator | (const MouseButton& b1, const MouseButton& b2) noexcept
 {
-  return MouseButton(int(b1) | int(b2));
+  return MouseButton(uInt(b1) | uInt(b2));
 }
 
 constexpr MouseButton& operator |= (MouseButton& b1, const MouseButton& b2) noexcept
@@ -1283,7 +1283,7 @@ constexpr MouseButton& operator |= (MouseButton& b1, const MouseButton& b2) noex
 
 constexpr MouseButton operator & (const MouseButton& b1, const MouseButton& b2) noexcept
 {
-  return MouseButton(int(b1) & int(b2));
+  return MouseButton(uInt(b1) & uInt(b2));
 }
 
 constexpr MouseButton& operator &= (MouseButton& b1, const MouseButton& b2) noexcept

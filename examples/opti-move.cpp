@@ -106,7 +106,7 @@ void move (int xold, int yold, int xnew, int ynew)
   // Get the move string
   buffer = finalcut::FTerm::moveCursorString (xold, yold, xnew, ynew);
 
-  for (auto&& ch : buffer)
+  for (const auto& ch : buffer)
   {
     if ( ch < 0x21 )
       sequence += ctrl_character[std::size_t(ch)];

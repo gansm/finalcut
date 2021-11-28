@@ -957,7 +957,7 @@ void MyDialog::cb_updateNumber()
 {
   int select_num = 0;
 
-  for (auto&& item : myList.getData() )
+  for (const auto& item : myList.getData() )
     if ( item.isSelected() )
       select_num++;
 
@@ -985,8 +985,8 @@ void MyDialog::cb_view (const finalcut::FMenuItem* item)
   {
     if ( item && ! item->getText().isEmpty() )
       return item->getText();
-    else
-      return finalcut::FFileDialog::fileOpenChooser (this);
+
+    return finalcut::FFileDialog::fileOpenChooser (this);
   }();
 
   if ( file.isEmpty() )

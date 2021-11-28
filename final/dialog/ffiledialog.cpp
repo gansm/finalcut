@@ -586,7 +586,7 @@ void FFileDialog::selectDirectoryEntry (const std::string& name)
 
   std::size_t i{1};
 
-  for (auto&& entry : dir_entries)
+  for (const auto& entry : dir_entries)
   {
     if ( entry.name == name )
     {

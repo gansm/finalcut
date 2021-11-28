@@ -868,6 +868,10 @@ void FWidget::resize()
 {
   if ( isRootWidget() )
   {
+    // The screen content is now unknown
+    setNormal();
+    setColor (FColor::Undefined, FColor::Undefined);
+    // Determine the new terminal size
     const FRect old_term_geometry {getTermGeometry()};
     determineDesktopSize();
     FRect term_geometry {getTermGeometry()};
@@ -1129,9 +1133,7 @@ void FWidget::setStatusBar (FStatusBar* sbar)
   if ( ! sbar || statusbar == sbar )
     return;
 
-  if ( statusbar )
-    delete statusbar;
-
+  delete statusbar;
   statusbar = sbar;
 }
 
@@ -1141,9 +1143,7 @@ void FWidget::setMenuBar (FMenuBar* mbar)
   if ( ! mbar || menubar == mbar )
     return;
 
-  if ( menubar )
-    delete menubar;
-
+  delete menubar;
   menubar = mbar;
 }
 
@@ -1722,23 +1722,12 @@ void FWidget::initWidgetLayout()
 //----------------------------------------------------------------------
 void FWidget::finish()
 {
-  if ( close_widget )
-  {
-    delete close_widget;
-    close_widget = nullptr;
-  }
-
-  if ( dialog_list )
-  {
-    delete dialog_list;
-    dialog_list = nullptr;
-  }
-
-  if ( always_on_top_list )
-  {
-    delete always_on_top_list;
-    always_on_top_list = nullptr;
-  }
+  delete close_widget;
+  close_widget = nullptr;
+  delete dialog_list;
+  dialog_list = nullptr;
+  delete always_on_top_list;
+  always_on_top_list = nullptr;
 }
 
 //----------------------------------------------------------------------
@@ -1928,8 +1917,8 @@ void FWidget::drawWindows() const
   // redraw windows
   FChar default_char{};
   default_char.ch[0]        = L' ';
-  default_char.fg_color     = FColor::Black;
-  default_char.bg_color     = FColor::Black;
+  default_char.fg_color     = FColor::Default;
+  default_char.bg_color     = FColor::Default;
   default_char.attr.byte[0] = 0;
   default_char.attr.byte[1] = 0;
 

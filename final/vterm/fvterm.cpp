@@ -551,18 +551,10 @@ void FVTerm::removeArea (FTermArea*& area)
   if ( area == nullptr )
     return;
 
-  if ( area->changes != nullptr )
-  {
-    delete[] area->changes;
-    area->changes = nullptr;
-  }
-
-  if ( area->data != nullptr )
-  {
-    delete[] area->data;
-    area->data = nullptr;
-  }
-
+  delete[] area->changes;
+  area->changes = nullptr;
+  delete[] area->data;
+  area->data = nullptr;
   delete area;
   area = nullptr;
 }
@@ -1125,7 +1117,7 @@ inline void FVTerm::resetTextAreaToDefault ( const FTermArea* area
                                            , const FSize& size ) const
 {
   FChar default_char;
-  FLineChanges unchanged;
+  FLineChanges unchanged{};
 
   default_char.ch[0]        = L' ';
   default_char.fg_color     = FColor::Default;
@@ -1152,10 +1144,10 @@ inline bool FVTerm::reallocateTextArea ( FTermArea* area
   // Reallocate "height" lines for changes
   // and "size" bytes for the text area
 
-  if ( area->changes != nullptr )
+  if ( area->changes )
     delete[] area->changes;
 
-  if ( area->data != nullptr )
+  if ( area->data )
     delete[] area->data;
 
   try
@@ -1177,7 +1169,7 @@ inline bool FVTerm::reallocateTextArea (FTermArea* area, std::size_t size)
 {
   // Reallocate "size" bytes for the text area
 
-  if ( area->data != nullptr )
+  if ( area->data )
     delete[] area->data;
 
   try
@@ -1842,8 +1834,9 @@ bool FVTerm::clearFullArea (const FTermArea* area, FChar& nc) const
 void FVTerm::clearAreaWithShadow (const FTermArea* area, const FChar& nc)
 {
   FChar t_char = nc;
-  const int total_width = getFullAreaWidth(area);
+  t_char.ch[0] = L'\0';
   t_char.attr.bit.transparent = true;
+  const int total_width = getFullAreaWidth(area);
 
   for (auto y{0}; y < area->height; y++)
   {
@@ -1904,8 +1897,8 @@ uInt8 FVTerm::getByte1TransMask()
 //----------------------------------------------------------------------
 inline bool FVTerm::changedToTransparency (const FChar& from, const FChar& to) const
 {
-  return ( (~ from.attr.byte[1] & b1_trans_mask)
-         & (    to.attr.byte[1] & b1_trans_mask) ) != 0;
+  return ( uInt8(~ from.attr.byte[1] & b1_trans_mask)
+         & uInt8(    to.attr.byte[1] & b1_trans_mask) ) != 0;
 }
 
 //----------------------------------------------------------------------

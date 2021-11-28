@@ -83,7 +83,7 @@ void TextWindow::setPos (const fc::FPoint& pos, bool)
 {
   fc::FWindow::setPos (pos, false);
   putArea (getTermPos(), getVWin());
-  restoreOverlaidWindows()(*this);
+  restoreOverlaidWindows{}(*this);
 }
 
 //----------------------------------------------------------------------
@@ -113,7 +113,7 @@ void TextWindow::initLayout()
 //----------------------------------------------------------------------
 void TextWindow::adjustSize()
 {
-  fc::FWidget::adjustSize();
+  fc::FWindow::adjustSize();
   initLayout();
 }
 
@@ -154,7 +154,7 @@ void SpaceWindow::setPos (const fc::FPoint& pos, bool)
 {
   fc::FWindow::setPos (pos, false);
   putArea (getTermPos(), getVWin());
-  restoreOverlaidWindows()(*this);
+  restoreOverlaidWindows{}(*this);
 }
 
 //----------------------------------------------------------------------
@@ -197,7 +197,7 @@ void SpaceWindow::initLayout()
 //----------------------------------------------------------------------
 void SpaceWindow::adjustSize()
 {
-  fc::FWidget::adjustSize();
+  fc::FWindow::adjustSize();
   initLayout();
 }
 
@@ -205,10 +205,10 @@ void SpaceWindow::adjustSize()
 std::size_t SpaceWindow::FPointHash::operator () (const fc::FPoint& p) const noexcept
 {
   size_t seed = 0;
-  const auto hash1 = std::hash<int>()(p.getY());
-  const auto hash2 = std::hash<int>()(p.getX());
-  seed ^= hash1 + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-  seed ^= hash2 + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+  const auto hash1 = std::hash<int>{}(p.getY());
+  const auto hash2 = std::hash<int>{}(p.getX());
+  seed ^= hash1 + 0x9e3779b9 + (seed << 6u) + (seed >> 2u);
+  seed ^= hash2 + 0x9e3779b9 + (seed << 6u) + (seed >> 2u);
   return seed;
 }
 

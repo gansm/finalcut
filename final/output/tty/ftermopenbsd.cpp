@@ -100,7 +100,7 @@ bool FTermOpenBSD::setBeep (int Hz, int ms)
   if ( ms < 0 || ms > 1999 )
     return false;
 
-  wskbd_bell_data bell;
+  wskbd_bell_data bell{};
   bell.which  = WSKBD_BELL_DOALL;
   bell.pitch  = uInt(Hz);
   bell.period = uInt(ms);
@@ -112,7 +112,7 @@ bool FTermOpenBSD::setBeep (int Hz, int ms)
 //----------------------------------------------------------------------
 bool FTermOpenBSD::resetBeep()
 {
-  wskbd_bell_data default_bell;
+  wskbd_bell_data default_bell{};
   static const auto& fsystem = FSystem::getInstance();
 
   // Gets the default setting for the bell

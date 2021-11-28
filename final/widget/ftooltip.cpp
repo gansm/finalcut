@@ -132,7 +132,7 @@ void FToolTip::draw()
   if ( border )
     drawBorder();
 
-  for (auto&& line : text_components)
+  for (const auto& line : text_components)
   {
     print() << FPoint{x, y} << line;
     y++;
@@ -149,7 +149,7 @@ void FToolTip::calculateDimensions()
   if ( text_num_lines == 0 )
     return;
 
-  for (auto&& line : text_components)
+  for (const auto& line : text_components)
   {
     std::size_t column_width = getColumnWidth(line);
 

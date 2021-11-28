@@ -1343,7 +1343,7 @@ inline void FTermOutput::appendChar (FChar& next_char)
   appendAttributes (next_char);
   characterFilter (next_char);
 
-  for (auto&& ch : next_char.encoded_char)
+  for (const auto& ch : next_char.encoded_char)
   {
     if ( ch != L'\0')
     {

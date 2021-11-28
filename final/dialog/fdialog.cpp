@@ -777,7 +777,7 @@ void FDialog::done (ResultCode result)
 //----------------------------------------------------------------------
 void FDialog::draw()
 {
-  if ( tooltip && ! getMoveSizeWidget() )
+  if ( ! getMoveSizeWidget() )
   {
     delete tooltip;
     tooltip = nullptr;
@@ -1761,10 +1761,7 @@ void FDialog::cancelMouseResize()
 inline void FDialog::acceptMoveSize()
 {
   setMoveSizeWidget(nullptr);
-
-  if ( tooltip )
-    delete tooltip;
-
+  delete tooltip;
   tooltip = nullptr;
   redraw();
 }
@@ -1773,10 +1770,7 @@ inline void FDialog::acceptMoveSize()
 inline void FDialog::cancelMoveSize()
 {
   setMoveSizeWidget(nullptr);
-
-  if ( tooltip )
-    delete tooltip;
-
+  delete tooltip;
   tooltip = nullptr;
   setPos (save_geometry.getPos());
 

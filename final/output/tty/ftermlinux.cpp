@@ -51,11 +51,8 @@ namespace finalcut
 //----------------------------------------------------------------------
 FTermLinux::~FTermLinux()  // destructor
 {
-  if ( screen_font.data )
-    delete[] screen_font.data;
-
-  if ( screen_unicode_map.entries )
-    delete[] screen_unicode_map.entries;
+  deleteFontData(screen_font);
+  deleteUnicodeMapEntries(screen_unicode_map);
 }
 
 // public methods of FTermLinux
@@ -270,7 +267,7 @@ bool FTermLinux::loadVGAFont()
       vga_font = bool( ret == 0 );
 
       // Unicode character mapping
-      struct unimapdesc unimap;
+      struct unimapdesc unimap{};
       unimap.entry_ct = uInt16(fc::unicode_cp437_pairs.size());
       unimap.entries = const_cast<unipair*>(fc::unicode_cp437_pairs.data());
       setUnicodeMap(&unimap);
@@ -358,16 +355,14 @@ bool FTermLinux::loadOldFont()
                                       , screen_font.height
                                       , true );
         retval = bool( ret == 0 );
-        delete[] screen_font.data;
-        screen_font.data = nullptr;
+        deleteFontData(screen_font);
       }
 
       if ( screen_unicode_map.entries )
       {
         setUnicodeMap (&screen_unicode_map);
         initCharMap();
-        delete[] screen_unicode_map.entries;
-        screen_unicode_map.entries = nullptr;
+        deleteUnicodeMapEntries(screen_unicode_map);
       }
     }
 
@@ -527,9 +522,7 @@ bool FTermLinux::getScreenFont()
 
   if ( ret != 0 )
   {
-    if ( font.data )
-      delete[] font.data;
-
+    deleteFontData(font);
     return false;
   }
 
@@ -598,16 +591,16 @@ FTermLinux::ModifierKey& FTermLinux::getModifierKey() &
   // TIOCLINUX, subcode = 6 (TIOCL_GETSHIFTSTATE)
   if ( fsystem->ioctl(0, TIOCLINUX, &subcode) >= 0 )
   {
-    if ( subcode & (1 << KG_SHIFT) )
+    if ( subcode & (1u << KG_SHIFT) )
       mod_key.shift = true;
 
-    if ( subcode & (1 << KG_ALTGR) )
+    if ( subcode & (1u << KG_ALTGR) )
       mod_key.alt_gr = true;
 
-    if ( subcode & (1 << KG_CTRL) )
+    if ( subcode & (1u << KG_CTRL) )
       mod_key.ctrl = true;
 
-    if ( subcode & (1 << KG_ALT) )
+    if ( subcode & (1u << KG_ALT) )
       mod_key.alt = true;
   }
 
@@ -672,13 +665,13 @@ int FTermLinux::setScreenFont ( const uChar fontdata[], uInt count
   if ( ret != 0 && errno != ENOSYS && errno != EINVAL )
   {
     if ( ! direct )
-      delete[] font.data;
+      deleteFontData(font);
 
     return -1;
   }
 
   if ( ! direct )
-    delete[] font.data;
+    deleteFontData(font);
 
   if ( ret == 0 )
     return 0;
@@ -689,7 +682,7 @@ int FTermLinux::setScreenFont ( const uChar fontdata[], uInt count
 //----------------------------------------------------------------------
 int FTermLinux::setUnicodeMap (struct unimapdesc* unimap) const
 {
-  struct unimapinit advice;
+  struct unimapinit advice{};
   const int fd_tty = FTerm::getTTYFileDescriptor();
   int ret{-1};
 
@@ -740,7 +733,7 @@ inline uInt16 FTermLinux::getInputStatusRegisterOne() const
   // Miscellaneous output (read port)
   static constexpr uInt16 misc_read = 0x3cc;
   const uChar misc_value = fsystem->inPortByte(misc_read);
-  const uInt16 io_base = ( misc_value & 0x01 ) ? 0x3d0 : 0x3b0;
+  const uInt16 io_base = ( misc_value & uChar(0x01) ) ? 0x3d0 : 0x3b0;
   // 0x3ba : Input status 1 mono/MDA (read port)
   // 0x3da : Input status 1 color/CGA (read port)
   return io_base + 0x0a;
@@ -760,12 +753,12 @@ uChar FTermLinux::readAttributeController (uChar index) const
   const uInt16 input_status_1 = getInputStatusRegisterOne();
 
   fsystem->inPortByte (input_status_1);  // switch to index mode
-  fsystem->outPortByte (index & 0x1f, attrib_cntlr_write);  // selects address register
+  fsystem->outPortByte (index & uChar(0x1f), attrib_cntlr_write);  // selects address register
   const uChar res = fsystem->inPortByte (attrib_cntlr_read);  // read from data register
 
   // Disable access to the palette and unblank the display
   fsystem->inPortByte (input_status_1);  // switch to index mode
-  index = (index & 0x1f) | 0x20;  // set bit 5 (enable display)
+  index = (index & uChar(0x1f)) | 0x20;  // set bit 5 (enable display)
   fsystem->outPortByte (index, attrib_cntlr_write);
   fsystem->inPortByte (attrib_cntlr_read);
 
@@ -784,12 +777,12 @@ void FTermLinux::writeAttributeController (uChar index, uChar data) const
   const uInt16 input_status_1 = getInputStatusRegisterOne();
 
   fsystem->inPortByte (input_status_1);  // switch to index mode
-  fsystem->outPortByte (index & 0x1f, attrib_cntlr_write);  // selects address register
+  fsystem->outPortByte (index & uChar(0x1f), attrib_cntlr_write);  // selects address register
   fsystem->outPortByte (data, attrib_cntlr_write);  // write to data register
 
   // Disable access to the palette and unblank the display
   fsystem->inPortByte (input_status_1);  // switch to index mode
-  index = (index & 0x1f) | 0x20;  // set bit 5 (enable display)
+  index = (index & uChar(0x1f)) | 0x20;  // set bit 5 (enable display)
   fsystem->outPortByte (index, attrib_cntlr_write);
   fsystem->outPortByte (data, attrib_cntlr_write);
 }
@@ -835,9 +828,9 @@ int FTermLinux::setBlinkAsIntensity (bool enable) const
     return -1;  // error on KDENABIO
 
   if ( enable )
-    setAttributeMode (getAttributeMode() & 0xF7);  // clear bit 3
+    setAttributeMode (getAttributeMode() & uChar(0xF7));  // clear bit 3
   else
-    setAttributeMode (getAttributeMode() | 0x08);  // set bit 3
+    setAttributeMode (getAttributeMode() | uChar(0x08));  // set bit 3
 
   // Disable access to VGA I/O ports
   if ( fsystem->ioctl(fd_tty, KDDISABIO, 0) < 0 )
@@ -868,7 +861,7 @@ bool FTermLinux::has9BitCharacters() const
   if ( fsystem->ioctl(fd_tty, KDENABIO, 0) < 0 )
     return false;  // error on KDENABIO
 
-  const bool nine_bit_char( getAttributeMode() & 0x04 );
+  const bool nine_bit_char( getAttributeMode() & uChar(0x04) );
 
     // Disable access to VGA I/O ports
   if ( fsystem->ioctl(fd_tty, KDDISABIO, 0) < 0 )
@@ -1169,6 +1162,20 @@ sInt16 FTermLinux::getFontPos (wchar_t ucs) const
   return ( iter != end )
        ? static_cast<sInt16>(iter->fontpos)
        : NOT_FOUND;
+}
+
+//----------------------------------------------------------------------
+void FTermLinux::deleteFontData (console_font_op& font)
+{
+  delete[] font.data;
+  font.data = nullptr;
+}
+
+//----------------------------------------------------------------------
+void FTermLinux::deleteUnicodeMapEntries (unimapdesc& unicode_map)
+{
+  delete[] unicode_map.entries;
+  unicode_map.entries = nullptr;
 }
 
 //----------------------------------------------------------------------

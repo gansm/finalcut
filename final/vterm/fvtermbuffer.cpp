@@ -151,7 +151,7 @@ void FVTermBuffer::add ( FString::const_iterator& cbegin
     nc.attr.bit.char_width = 1;
   }
   else
-    nc.attr.bit.char_width = char_width & 0x03;
+    nc.attr.bit.char_width = uInt8(char_width) & 0x03;
 
   std::copy(cbegin, std::min(cend, cbegin + UNICODE_MAX), nc.ch.begin());
   data.emplace_back(nc);

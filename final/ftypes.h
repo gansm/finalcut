@@ -116,7 +116,7 @@ constexpr auto C_STR (StringT&& string) noexcept
 template <typename T>
 constexpr bool isNegative (const T& x) noexcept
 {
-  return internal::is_negative<T, std::numeric_limits<T>::is_signed>()(x);
+  return internal::is_negative<T, std::numeric_limits<T>::is_signed>{}(x);
 }
 
 template <typename T>
@@ -134,7 +134,7 @@ struct EnumHash
   constexpr std::size_t operator () (const T& mt) const noexcept
   {
     using underlying_type = std::underlying_type_t<T>;
-    return std::hash<underlying_type>()(underlying_type(mt));
+    return std::hash<underlying_type>{}(underlying_type(mt));
   }
 };
 

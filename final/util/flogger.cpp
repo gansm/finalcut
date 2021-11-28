@@ -56,7 +56,7 @@ void FLogger::newlineReplace ( std::string& str
 //----------------------------------------------------------------------
 std::string FLogger::getTimeString() const
 {
-  std::array<char, 100> str;
+  std::array<char, 100> str{};
   const auto& now = std::chrono::system_clock::now();
   const auto& t = std::chrono::system_clock::to_time_t(now);
   // Print RFC 2822 date

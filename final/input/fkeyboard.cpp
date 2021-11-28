@@ -397,16 +397,16 @@ inline FKey FKeyboard::getSingleKey()
   FKey keycode{};
 
   // Look for a utf-8 character
-  if ( utf8_input && (firstchar & 0xc0) == 0xc0 )
+  if ( utf8_input && (firstchar & uChar(0xc0)) == 0xc0 )
   {
     std::array<char, 5> utf8char{};  // Init array with '\0'
     const std::size_t buf_len = stringLength(fifo_buf);
 
-    if ( (firstchar & 0xe0) == 0xc0 )
+    if ( (firstchar & uChar(0xe0)) == 0xc0 )
       len = 2;
-    else if ( (firstchar & 0xf0) == 0xe0 )
+    else if ( (firstchar & uChar(0xf0)) == 0xe0 )
       len = 3;
-    else if ( (firstchar & 0xf8) == 0xf0 )
+    else if ( (firstchar & uChar(0xf8)) == 0xf0 )
       len = 4;
 
     if ( buf_len <  len && ! isKeypressTimeout() )
@@ -458,30 +458,30 @@ FKey FKeyboard::UTF8decode (const std::string& utf8) const
   {
     const auto ch = uChar(*iter);
 
-    if ( (ch & 0xc0) == 0x80 )
+    if ( (ch & uChar(0xc0)) == 0x80 )
     {
       // byte 2..4 = 10xxxxxx
-      ucs = (ucs << 6) | FKey(ch & 0x3f);
+      ucs = (ucs << 6) | FKey(ch & uChar(0x3f));
     }
     else if ( ch < 128 )
     {
       // byte 1 = 0xxxxxxx (1 byte mapping)
       ucs = FKey(uChar(ch));
     }
-    else if ( (ch & 0xe0) == 0xc0 )
+    else if ( (ch & uChar(0xe0)) == 0xc0 )
     {
       // byte 1 = 110xxxxx (2 byte mapping)
-      ucs = FKey(ch & 0x1f);
+      ucs = FKey(ch & uChar(0x1f));
     }
-    else if ( (ch & 0xf0) == 0xe0 )
+    else if ( (ch & uChar(0xf0)) == 0xe0 )
     {
       // byte 1 = 1110xxxx (3 byte mapping)
-      ucs = FKey(ch & 0x0f);
+      ucs = FKey(ch & uChar(0x0f));
     }
-    else if ( (ch & 0xf8) == 0xf0 )
+    else if ( (ch & uChar(0xf8)) == 0xf0 )
     {
       // byte 1 = 11110xxx (4 byte mapping)
-      ucs = FKey(ch & 0x07);
+      ucs = FKey(ch & uChar(0x07));
     }
     else
     {

@@ -137,7 +137,7 @@ class FVTerm : public FVTermAttribute
     FVTerm();
 
     template <typename FOutputType>
-    explicit FVTerm(outputClass<FOutputType>);
+    explicit FVTerm (outputClass<FOutputType>);
 
     // Disable copy assignment operator (=)
     FVTerm& operator = (const FVTerm&) = delete;
@@ -448,9 +448,9 @@ struct FVTerm::FVTermPreprocessing
 // FVTerm inline functions
 //----------------------------------------------------------------------
 template <typename FOutputType>
-FVTerm::FVTerm(outputClass<FOutputType>)
+FVTerm::FVTerm (outputClass<FOutputType>)
 {
-  init<outputClass<FOutputType>::type>();
+  init<typename outputClass<FOutputType>::type>();
 }
 
 //----------------------------------------------------------------------

@@ -681,7 +681,8 @@ void FTerm::setPalette (FColor index, int r, int g, int b)
     {
       if ( Ic )
         return FTermcap::encodeParameter(Ic, uInt16(index), rr, gg, bb);
-      else if ( Ip )
+
+      if ( Ip )
         return FTermcap::encodeParameter(Ip, uInt16(index), 0, 0, 0, rr, gg, bb);
 
       return std::string{};

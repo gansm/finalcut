@@ -1033,7 +1033,7 @@ void FListView::onMouseDown (FMouseEvent* ev)
 
       if ( tree_view )
       {
-        indent = int(item->getDepth() << 1);  // indent = 2 * depth
+        indent = int(item->getDepth() << 1u);  // indent = 2 * depth
 
         if ( item->isExpandable() && mouse_x - 2 == indent - xoffset )
           clicked_expander_pos = ev->getPos();
@@ -1092,7 +1092,7 @@ void FListView::onMouseUp (FMouseEvent* ev)
 
         if ( tree_view )
         {
-          indent = int(item->getDepth() << 1);  // indent = 2 * depth
+          indent = int(item->getDepth() << 1u);  // indent = 2 * depth
 
           if ( item->isExpandable()
             && clicked_expander_pos == ev->getPos() )
@@ -1617,7 +1617,7 @@ void FListView::drawList()
   {
     const bool is_current_line( iter == current_iter );
     const auto& item = static_cast<FListViewItem*>(*iter);
-    const int tree_offset = tree_view ? int(item->getDepth() << 1) + 1 : 0;
+    const int tree_offset = tree_view ? int(item->getDepth() << 1u) + 1 : 0;
     const int checkbox_offset = item->isCheckable() ? 1 : 0;
     path_end = getListEnd(item);
     print() << FPoint{2, 2 + y};
@@ -1665,7 +1665,7 @@ void FListView::drawListLine ( const FListViewItem* item
   setLineAttributes (is_current, is_focus);
 
   // Print the entry
-  const std::size_t indent = item->getDepth() << 1;  // indent = 2 * depth
+  const std::size_t indent = item->getDepth() << 1u;  // indent = 2 * depth
   FString line{getLinePrefix (item, indent)};
 
   // Print columns
@@ -1959,7 +1959,7 @@ void FListView::drawBufferedHeadline()
   auto last = headerline.end();
 
   // Search for the start position
-  for (auto&& tc : headerline)
+  for (const auto& tc : headerline)
   {
     if ( xoffset == 0 )
       break;
@@ -1988,7 +1988,7 @@ void FListView::drawBufferedHeadline()
     if ( left_truncated_fullwidth )
       column_width++;
 
-    for (auto&& tc : FVTermBuffer(first, last))
+    for (const auto& tc : FVTermBuffer(first, last))
     {
       const uInt8 char_width = tc.attr.bit.char_width;
 
@@ -2185,7 +2185,7 @@ void FListView::mouseHeaderClicked()
   const int header_pos = clicked_header_pos.getX() + xoffset;
   int header_start = 2 + checkbox_offset;
 
-  for (auto&& item : header)
+  for (const auto& item : header)
   {
     static constexpr int leading_space = 1;
     const bool has_sort_indicator( column == sort_column );

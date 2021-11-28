@@ -192,7 +192,7 @@ void SegmentView::draw()
   setColor(FColor::LightGray, FColor::Black);
   finalcut::drawBorder(this, FRect(FPoint{3, 6}, FPoint{40, 11}));
 
-  for (auto&& ch : input.getText().toUpper())
+  for (const auto& ch : input.getText().toUpper())
   {
     const FColorPair color{FColor::LightRed, FColor::Black};
     get7Segment(ch);

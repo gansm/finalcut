@@ -336,7 +336,7 @@ void FMessageBox::draw()
 
   setColor();
 
-  for (auto&& line : text_components)
+  for (const auto& line : text_components)
   {
     const auto& line_width = getColumnWidth(line);
 

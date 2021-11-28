@@ -223,12 +223,12 @@ void FButton::hide()
   setColor (fg, bg);
   const std::size_t s = hasShadow() ? 1 : 0;
   const std::size_t f = isFlat() ? 1 : 0;
-  const std::size_t size = getWidth() + s + (f << 1);
+  const std::size_t size = getWidth() + s + (f << 1u);
 
   if ( size == 0 )
     return;
 
-  for (std::size_t y{0}; y < getHeight() + s + (f << 1); y++)
+  for (std::size_t y{0}; y < getHeight() + s + (f << 1u); y++)
   {
     print() << FPoint{1 - int(f), 1 + int(y - f)}
             << FString{size, L' '};

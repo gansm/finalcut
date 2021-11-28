@@ -124,7 +124,7 @@ void SGRoptimizer::combineParameter()
   const auto& begin = csi_parameter.cbegin() + 1;
   const auto& end = csi_parameter.cend();
 
-  for (auto&& p : std::vector<parameter>(begin, end))
+  for (const auto& p : std::vector<parameter>(begin, end))
   {
     count++;
 

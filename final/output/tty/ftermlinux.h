@@ -143,7 +143,7 @@ class FTermLinux final
       {
         uChar m{};
         std::memcpy(&m, &m_key, sizeof(uChar));
-        return std::hash<uChar>()(m);
+        return std::hash<uChar>{}(m);
       }
     };
 
@@ -170,10 +170,10 @@ class FTermLinux final
       std::size_t operator () (const Pair& pair) const
       {
         size_t seed = 0;
-        const auto hash1 = ModifierKeyHash()(pair.modifier);
-        const auto hash2 = EnumHash<FKey>()(pair.key);
-        seed ^= hash1 + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-        seed ^= hash2 + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        const auto hash1 = ModifierKeyHash{}(pair.modifier);
+        const auto hash2 = EnumHash<FKey>{}(pair.key);
+        seed ^= hash1 + 0x9e3779b9 + (seed << 6u) + (seed >> 2u);
+        seed ^= hash2 + 0x9e3779b9 + (seed << 6u) + (seed >> 2u);
         return seed;
       }
     };
@@ -231,6 +231,8 @@ class FTermLinux final
     void                 shiftCtrlAltKeyCorrection();
     void                 initSpecialCharacter() const;
     sInt16               getFontPos (wchar_t ucs) const;
+    void                 deleteFontData (console_font_op&);
+    void                 deleteUnicodeMapEntries (unimapdesc&);
     void                 characterFallback (wchar_t, const std::vector<wchar_t>&) const;
 
     // Data members

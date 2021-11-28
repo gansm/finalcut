@@ -500,7 +500,7 @@ long FString::toLong() const
       throw std::overflow_error ("overflow");
     }
 
-    num = (num << 3) + (num << 1) + d;  // (10 * num) + d
+    num = (num << 3u) + (num << 1u) + d;  // (10 * num) + d
     p++;
   }
 
@@ -508,7 +508,7 @@ long FString::toLong() const
     throw std::invalid_argument ("no valid number");
 
   if ( neg )
-    num = (~num) + 1;
+    num = (~num) + 1u;
 
   return num;
 }
@@ -541,7 +541,7 @@ uLong FString::toULong() const
       throw std::overflow_error ("overflow");
     }
 
-    num = (num << 3) + (num << 1) + d;  // (10 * num) + d
+    num = (num << 3u) + (num << 1u) + d;  // (10 * num) + d
     p++;
   }
 
@@ -988,7 +988,7 @@ FString FString::removeDel() const
   std::size_t i{0};
   std::size_t count{0};
 
-  for (auto&& c : s)
+  for (const auto& c : s)
   {
     if ( c == 0x7f )
     {
@@ -1016,7 +1016,7 @@ FString FString::removeBackspaces() const
   FString s{*this};
   std::size_t i{0};
 
-  for (auto&& c : s)
+  for (const auto& c : s)
   {
     if ( c != L'\b' )
     {
@@ -1128,7 +1128,7 @@ inline std::wstring FString::_toWideString (const std::string& s) const
   if ( wide_length == static_cast<std::size_t>(-1) )
   {
     if ( src != s.c_str() )
-      return {std::move(dest.data()), wide_length};
+      return {dest.data(), wide_length};
 
     return {};
   }
@@ -1137,7 +1137,7 @@ inline std::wstring FString::_toWideString (const std::string& s) const
     dest[size - 1] = '\0';
 
   if ( wide_length != 0 )
-    return {std::move(dest.data()), wide_length};
+    return {dest.data(), wide_length};
 
   return {};
 }

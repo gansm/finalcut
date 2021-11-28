@@ -58,9 +58,8 @@ FListBox::FListBox (FWidget* parent)
 //----------------------------------------------------------------------
 FListBox::~FListBox()  // destructor
 {
-  if ( source_container )
-    delete source_container;  // for lazy conversion
-
+  delete source_container;  // for lazy conversion
+  source_container = nullptr;
   delOwnTimers();
 }
 
@@ -181,7 +180,7 @@ void FListBox::remove (std::size_t item)
   const std::size_t element_count = getCount();
   max_line_width = 0;
 
-  for (auto&& listbox_item : itemlist)
+  for (const auto& listbox_item : itemlist)
   {
     const auto column_width = getColumnWidth(listbox_item.getText());
 

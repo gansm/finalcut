@@ -430,7 +430,7 @@ int main (int argc, char* argv[])
 After entering the source code in *timer.cpp* you can compile
 the above program with gcc:
 ```bash
-g++ timer.cpp -o timer -O2 -lfinal -std=c++11
+g++ timer.cpp -o timer -O2 -lfinal -std=c++14
 ```
 
 
@@ -547,7 +547,7 @@ int main (int argc, char* argv[])
 After entering the source code in *user-event.cpp* you can compile
 the above program with gcc:
 ```bash
-g++ user-event.cpp -o user-event -O2 -lfinal -std=c++11
+g++ user-event.cpp -o user-event -O2 -lfinal -std=c++14
 ```
 
 
@@ -881,7 +881,7 @@ int main (int argc, char* argv[])
 After entering the source code in *callback-lambda.cpp* you can compile
 the above program with gcc:
 ```bash
-g++ callback-lambda.cpp -o callback-lambda -O2 -lfinal -std=c++11
+g++ callback-lambda.cpp -o callback-lambda -O2 -lfinal -std=c++14
 ```
 &nbsp;
 
@@ -944,7 +944,7 @@ int main (int argc, char* argv[])
 After entering the source code in *callback-method.cpp* you can compile
 the above program with gcc:
 ```bash
-g++ callback-method.cpp -o callback-method -O2 -lfinal -std=c++11
+g++ callback-method.cpp -o callback-method -O2 -lfinal -std=c++14
 ```
 &nbsp;
 
@@ -1070,7 +1070,7 @@ int main (int argc, char* argv[])
 After entering the source code in *emit-signal.cpp* you can compile
 the above program with gcc:
 ```bash
-g++ emit-signal.cpp -o emit-signal -O2 -lfinal -std=c++11
+g++ emit-signal.cpp -o emit-signal -O2 -lfinal -std=c++14
 ```
 
 
@@ -1341,7 +1341,7 @@ int main (int argc, char* argv[])
 After entering the source code in *size-adjustment.cpp* you can compile
 the above program with gcc:
 ```bash
-g++ size-adjustment.cpp -o size-adjustment -O2 -lfinal -std=c++11
+g++ size-adjustment.cpp -o size-adjustment -O2 -lfinal -std=c++14
 ```
 
 
@@ -1474,5 +1474,5 @@ int main (int argc, char* argv[])
 After entering the source code in *scrollview.cpp* you can compile
 the above program with gcc:
 ```bash
-g++ scrollview.cpp -o scrollview -O2 -lfinal -std=c++11
+g++ scrollview.cpp -o scrollview -O2 -lfinal -std=c++14
 ```

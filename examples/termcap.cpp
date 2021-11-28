@@ -179,7 +179,7 @@ void tcapString (const std::string& name, const char cap_string[])
     return;
   }
 
-  for (auto&& ch : cap_str)
+  for (const auto& ch : cap_str)
   {
     const auto c = uChar(ch);
 

@@ -235,7 +235,6 @@ void FTextView::insert (const FString& str, int pos)
 
     const auto& string = str.rtrim().expandTabs(getFOutput()->getTabstop());
     return string.split("\n");
-
   }();
 
   for (auto&& line : text_split)  // Line loop
@@ -483,7 +482,7 @@ void FTextView::initLayout()
   if ( data.empty() )
     return;
 
-  for (auto&& line : data)
+  for (const auto& line : data)
   {
     const auto column_width = getColumnWidth(line);
 
