@@ -64,10 +64,13 @@ class FTermcap final
       OK = 0
     };
 
+    static constexpr std::size_t tname_min_size = 4u;
+    static constexpr std::size_t tname_size = std::max(alignof(void*), tname_min_size);
+
     struct TCapMap
     {
       const char* string;
-      char  tname[alignof(char*)];
+      char  tname[tname_size];
     };
 
     // Using-declaration
