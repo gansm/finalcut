@@ -1,3 +1,6 @@
+2020-12-11  Markus Gans  <guru.mail@muenster.de>
+	* Correct mouse event after moving a window
+
 2020-11-16  Markus Gans  <guru.mail@muenster.de>
 	* A new example demonstrates parallax scrolling with multi-layered 
 	  stars

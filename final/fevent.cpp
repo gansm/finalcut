@@ -122,6 +122,14 @@ int FMouseEvent::getTermY() const
 MouseButton FMouseEvent::getButton() const
 { return b; }
 
+//----------------------------------------------------------------------
+void FMouseEvent::setPos (const FPoint& pos)
+{ p = pos; }
+
+//----------------------------------------------------------------------
+void FMouseEvent::setTermPos (const FPoint& termPos)
+{ tp = termPos; }
+
 
 //----------------------------------------------------------------------
 // class FWheelEvent

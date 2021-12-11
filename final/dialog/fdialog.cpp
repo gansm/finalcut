@@ -623,6 +623,8 @@ void FDialog::onMouseMove (FMouseEvent* ev)
     const FPoint deltaPos{ms.termPos - titlebar_click_pos};
     move (deltaPos);
     titlebar_click_pos = ms.termPos;
+    ev->setPos(ev->getPos() - deltaPos);
+    ev->setTermPos(ev->getTermPos() - deltaPos);
   }
 
   // Mouse event handover to the menu

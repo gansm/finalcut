@@ -59,7 +59,7 @@ fi
 # Build commands
 case "$1" in
   "--release"|"release")
-    if ! ./configure --prefix="$PREFIX" CXXFLAGS="-O3"  # "-flto -fno-rtti"
+    if ! ./configure --prefix="$PREFIX" CXXFLAGS="-O3"  # "-flto -fno-rtti -march=native"
     then
       echo "${RED}Configure failed!${NORMAL}" 1>&2
       exit 255

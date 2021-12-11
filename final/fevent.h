@@ -154,6 +154,8 @@ class FMouseEvent : public FEvent  // mouse event
     int           getTermX() const;
     int           getTermY() const;
     MouseButton   getButton() const;
+    void          setPos (const FPoint&);
+    void          setTermPos (const FPoint&);
 
   private:
     FPoint        p{};

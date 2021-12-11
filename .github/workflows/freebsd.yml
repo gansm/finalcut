@@ -20,7 +20,7 @@ jobs:
       uses: cross-platform-actions/action@v0.3.1
       with:
         operating_system: freebsd
-        version: 13.0
+        version: '13.0'
         shell: bash
         run: |
           uname -a
