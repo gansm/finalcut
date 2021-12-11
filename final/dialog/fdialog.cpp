@@ -583,6 +583,8 @@ void FDialog::onMouseUp (FMouseEvent* ev)
       const FPoint deltaPos{ms.termPos - titlebar_click_pos};
       move (deltaPos);
       titlebar_click_pos = ms.termPos;
+      ev->setPos(ev->getPos() - deltaPos);
+      ev->setTermPos(ev->getTermPos() - deltaPos);
     }
 
     // Click on titlebar menu button
