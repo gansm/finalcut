@@ -1027,7 +1027,7 @@ void FVTerm::clearArea (FTermArea* area, wchar_t fillchar) const
     return;
   }
 
-  const auto w = uInt(getFullAreaWidth(area));
+  const auto width = uInt(getFullAreaWidth(area));
 
   if ( area->right_shadow == 0 )
   {
@@ -1041,12 +1041,12 @@ void FVTerm::clearArea (FTermArea* area, wchar_t fillchar) const
   {
     auto& area_changes = area->changes[i];
     area_changes.xmin = 0;
-    area_changes.xmax = w - 1;
+    area_changes.xmax = width - 1;
 
     if ( nc.attr.bit.transparent
       || nc.attr.bit.color_overlay
       || nc.attr.bit.inherit_background )
-      area_changes.trans_count = w;
+      area_changes.trans_count = width;
     else if ( area->right_shadow != 0 )
       area_changes.trans_count = uInt(area->right_shadow);
     else
@@ -1058,8 +1058,8 @@ void FVTerm::clearArea (FTermArea* area, wchar_t fillchar) const
     const int y = area->height + i;
     auto& area_changes = area->changes[y];
     area_changes.xmin = 0;
-    area_changes.xmax = w - 1;
-    area_changes.trans_count = w;
+    area_changes.xmax = width - 1;
+    area_changes.trans_count = width;
   }
 
   area->has_changes = true;

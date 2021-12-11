@@ -121,6 +121,7 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     void includesTest();
     void controlCodesTest();
     void caseCompareTest();
+    void hashTest();
 
   private:
     finalcut::FString* s{nullptr};
@@ -162,6 +163,7 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (includesTest);
     CPPUNIT_TEST (controlCodesTest);
     CPPUNIT_TEST (caseCompareTest);
+    CPPUNIT_TEST (hashTest);
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
@@ -2325,6 +2327,39 @@ void FStringTest::caseCompareTest()
   CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"🔥 Fire", L"🔥 fire") == 0 );
   CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"🔥🔥 Fire", L"🔥 fire") > 0 );
   CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"🔥 Fire", L"🔥🔥 fire") < 0 );
+}
+
+//----------------------------------------------------------------------
+void FStringTest::hashTest()
+{
+  std::wstring ws = L"Coding for weeks can save hours of planning.";
+  finalcut::FString fs("Coding for weeks can save hours of planning.");
+  CPPUNIT_ASSERT ( std::hash<std::wstring>{}(ws) == std::hash<finalcut::FString>{}(fs) );
+  fs.setNumber(512);
+  CPPUNIT_ASSERT ( std::hash<std::wstring>{}(ws) != std::hash<finalcut::FString>{}(fs) );
+  ws.assign(L"256");
+  CPPUNIT_ASSERT ( std::hash<std::wstring>{}(ws) != std::hash<finalcut::FString>{}(fs) );
+  ws.assign(L"512");
+  CPPUNIT_ASSERT ( std::hash<std::wstring>{}(ws) == std::hash<finalcut::FString>{}(fs) );
+  fs.setString(L"FINAL CUT");
+  ws.assign(L"FINAL CUT");
+  CPPUNIT_ASSERT ( std::hash<std::wstring>{}(ws) == std::hash<finalcut::FString>{}(fs) );
+  fs << " widget toolkit";
+  CPPUNIT_ASSERT ( std::hash<std::wstring>{}(ws) != std::hash<finalcut::FString>{}(fs) );
+  ws.append(L" widget toolkit");
+  CPPUNIT_ASSERT ( std::hash<std::wstring>{}(ws) == std::hash<finalcut::FString>{}(fs) );
+  std::wstring lorem_ipsum =
+      L"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam "
+      L"nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam "
+      L"erat, sed diam voluptua. At vero eos et accusam et justo duo dolores "
+      L"et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est "
+      L"Lorem ipsum dolor sit amet.";
+  CPPUNIT_ASSERT ( std::hash<std::wstring>{}(lorem_ipsum) != std::hash<finalcut::FString>{}(fs) );
+  fs.setString(lorem_ipsum);
+  CPPUNIT_ASSERT ( std::hash<std::wstring>{}(lorem_ipsum) == std::hash<finalcut::FString>{}(fs) );
+  ws.assign(L"✂️ 𝓕𝒾𝓃𝒶𝓁 𝓒𝓊𝓉");
+  fs.setString("✂️ 𝓕𝒾𝓃𝒶𝓁 𝓒𝓊𝓉");
+  CPPUNIT_ASSERT ( std::hash<std::wstring>{}(ws) == std::hash<finalcut::FString>{}(fs) );
 }
 
 // Put the test suite in the registry

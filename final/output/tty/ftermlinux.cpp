@@ -1165,14 +1165,14 @@ sInt16 FTermLinux::getFontPos (wchar_t ucs) const
 }
 
 //----------------------------------------------------------------------
-void FTermLinux::deleteFontData (console_font_op& font)
+inline void FTermLinux::deleteFontData (console_font_op& font)
 {
   delete[] font.data;
   font.data = nullptr;
 }
 
 //----------------------------------------------------------------------
-void FTermLinux::deleteUnicodeMapEntries (unimapdesc& unicode_map)
+inline void FTermLinux::deleteUnicodeMapEntries (unimapdesc& unicode_map)
 {
   delete[] unicode_map.entries;
   unicode_map.entries = nullptr;

@@ -270,6 +270,9 @@ class FString
     friend std::istream&  operator >> (std::istream&, FString& s);
     friend std::wostream& operator << (std::wostream&, const FString&);
     friend std::wistream& operator >> (std::wistream&, FString&);
+
+    // Friend struct
+    friend struct std::hash<finalcut::FString>;
 };
 
 // non-member function forward declarations
@@ -481,5 +484,15 @@ inline FString& FString::setFormatedNumber (NumT num, char separator)
 
 
 }  // namespace finalcut
+
+//----------------------------------------------------------------------
+template <>
+struct std::hash<finalcut::FString>
+{
+  std::size_t operator () (const finalcut::FString& p) const noexcept
+  {
+    return std::hash<std::wstring>{}(p.string);
+  }
+};
 
 #endif  // FSTRING_H

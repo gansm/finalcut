@@ -470,26 +470,26 @@ long FString::toLong() const
   long tenth_limit{LONG_MAX / 10};
   long tenth_limit_digit{LONG_MAX % 10};
   const FString s{trim()};
-  const wchar_t* p = s.string.c_str();
+  auto iter = s.string.cbegin();
 
   if ( s.isEmpty() )
     throw std::invalid_argument ("empty value");
 
-  if ( *p == L'-' )
+  if ( *iter == L'-' )
   {
-    p++;
+    ++iter;
     neg = true;
     tenth_limit = -(LONG_MIN / 10);
     tenth_limit_digit += 1;
   }
-  else if ( *p == L'+' )
+  else if ( *iter == L'+' )
   {
-    p++;
+    ++iter;
   }
 
-  while ( std::iswdigit(std::wint_t(*p)) )
+  while ( std::iswdigit(std::wint_t(*iter)) )
   {
-    const auto d = uChar(*p - L'0');
+    const auto d = uChar(*iter - L'0');
 
     if ( num > tenth_limit
       || (num == tenth_limit && d > tenth_limit_digit) )
@@ -500,11 +500,11 @@ long FString::toLong() const
       throw std::overflow_error ("overflow");
     }
 
-    num = (num << 3u) + (num << 1u) + d;  // (10 * num) + d
-    p++;
+    num = (10 * num) + d;
+    ++iter;
   }
 
-  if ( *p != L'\0' && ! std::iswdigit(std::wint_t(*p)) )
+  if ( *iter != L'\0' && ! std::iswdigit(std::wint_t(*iter)) )
     throw std::invalid_argument ("no valid number");
 
   if ( neg )
@@ -520,20 +520,20 @@ uLong FString::toULong() const
   const uLong tenth_limit{ULONG_MAX / 10};
   const uLong tenth_limit_digit{ULONG_MAX % 10};
   const FString s{trim()};
-  const wchar_t* p = s.string.c_str();
+  auto iter = s.string.cbegin();
 
   if ( s.isEmpty() )
     throw std::invalid_argument ("empty value");
 
-  if ( *p == L'-' )
+  if ( *iter == L'-' )
     throw std::underflow_error ("underflow");
 
-  if ( *p == L'+' )
-    p++;
+  if ( *iter == L'+' )
+    ++iter;
 
-  while ( std::iswdigit(std::wint_t(*p)) )
+  while ( std::iswdigit(std::wint_t(*iter)) )
   {
-    const auto d = uChar(*p - L'0');
+    const auto d = uChar(*iter - L'0');
 
     if ( num > tenth_limit
       || (num == tenth_limit && d > tenth_limit_digit) )
@@ -541,11 +541,11 @@ uLong FString::toULong() const
       throw std::overflow_error ("overflow");
     }
 
-    num = (num << 3u) + (num << 1u) + d;  // (10 * num) + d
-    p++;
+    num = (10 * num) + d;
+    ++iter;
   }
 
-  if ( *p != L'\0' && ! std::iswdigit(std::wint_t(*p)) )
+  if ( *iter != L'\0' && ! std::iswdigit(std::wint_t(*iter)) )
     throw std::invalid_argument ("no valid number");
 
   return num;

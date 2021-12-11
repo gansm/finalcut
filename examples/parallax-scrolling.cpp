@@ -36,22 +36,35 @@ struct restoreOverlaidWindows : public fc::FVTerm
   {
     if ( ! getWindowList() || getWindowList()->empty() )
       return;
-  
+
     bool overlaid{false};
-  
+
     for (auto&& window : *getWindowList())
     {
       const auto win = static_cast<fc::FWidget*>(window);
-  
+
       if ( overlaid )
         putArea (win->getTermPos(), win->getVWin());
-  
+
       if ( obj.getVWin() == win->getVWin() )
         overlaid = true;
     }
   }
 };
 
+template <>
+struct std::hash<fc::FPoint>
+{
+  std::size_t operator () (const fc::FPoint& p) const noexcept
+  {
+    size_t seed = 0;
+    const auto hash1 = std::hash<int>{}(p.getY());
+    const auto hash2 = std::hash<int>{}(p.getX());
+    seed ^= hash1 + 0x9e3779b9 + (seed << 6u) + (seed >> 2u);
+    seed ^= hash2 + 0x9e3779b9 + (seed << 6u) + (seed >> 2u);
+    return seed;
+  }
+};
 
 //----------------------------------------------------------------------
 // class TextWindow
@@ -134,11 +147,6 @@ class SpaceWindow final : public fc::FWindow
     void drawNightSky();
     void initLayout() override;
     void adjustSize() override;
-
-    struct FPointHash
-    {
-      std::size_t operator () (const fc::FPoint& p) const noexcept;
-    };
 };
 
 //----------------------------------------------------------------------
@@ -177,7 +185,7 @@ void SpaceWindow::drawNightSky()
   auto gen = std::default_random_engine{std::random_device{}()};
   std::uniform_int_distribution<> distrib_width(1, width);
   std::uniform_int_distribution<> distrib_height(1, height);
-  std::unordered_set<fc::FPoint, FPointHash> generated{};
+  std::unordered_set<fc::FPoint, std::hash<fc::FPoint>> generated{};
 
   while ( generated.size() < loops )
     generated.emplace(distrib_width(gen), distrib_height(gen));
@@ -199,17 +207,6 @@ void SpaceWindow::adjustSize()
 {
   fc::FWindow::adjustSize();
   initLayout();
-}
-
-//----------------------------------------------------------------------
-std::size_t SpaceWindow::FPointHash::operator () (const fc::FPoint& p) const noexcept
-{
-  size_t seed = 0;
-  const auto hash1 = std::hash<int>{}(p.getY());
-  const auto hash2 = std::hash<int>{}(p.getX());
-  seed ^= hash1 + 0x9e3779b9 + (seed << 6u) + (seed >> 2u);
-  seed ^= hash2 + 0x9e3779b9 + (seed << 6u) + (seed >> 2u);
-  return seed;
 }
 
 
@@ -320,6 +317,8 @@ void ParallaxScrolling::onTimer (fc::FTimerEvent* ev)
   {
     scrollLeft (layer3_lhs, layer3_rhs);
   }
+
+  forceTerminalUpdate();
 }
 
 //----------------------------------------------------------------------

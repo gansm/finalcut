@@ -143,7 +143,7 @@ class FTermLinux final
 
     struct ModifierKeyHash
     {
-      std::size_t operator () (const ModifierKey& m_key) const
+      std::size_t operator () (const ModifierKey& m_key) const noexcept
       {
         uChar m{};
         std::memcpy(&m, &m_key, sizeof(uChar));
@@ -171,7 +171,7 @@ class FTermLinux final
 
     struct PairHash
     {
-      std::size_t operator () (const Pair& pair) const
+      std::size_t operator () (const Pair& pair) const noexcept
       {
         size_t seed = 0;
         const auto hash1 = ModifierKeyHash{}(pair.modifier);
@@ -184,7 +184,7 @@ class FTermLinux final
 
     struct PairEqual
     {
-      bool operator () (const Pair& lhs, const Pair& rhs) const
+      bool operator () (const Pair& lhs, const Pair& rhs) const noexcept
       {
         return std::memcmp(&lhs.modifier, &rhs.modifier, sizeof(ModifierKey)) == 0
             && lhs.key == rhs.key;
