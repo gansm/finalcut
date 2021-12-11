@@ -584,7 +584,6 @@ void FDialog::onMouseUp (FMouseEvent* ev)
       move (deltaPos);
       titlebar_click_pos = ms.termPos;
       ev->setPos(ev->getPos() - deltaPos);
-      ev->setTermPos(ev->getTermPos() - deltaPos);
     }
 
     // Click on titlebar menu button
@@ -626,7 +625,6 @@ void FDialog::onMouseMove (FMouseEvent* ev)
     move (deltaPos);
     titlebar_click_pos = ms.termPos;
     ev->setPos(ev->getPos() - deltaPos);
-    ev->setTermPos(ev->getTermPos() - deltaPos);
   }
 
   // Mouse event handover to the menu
