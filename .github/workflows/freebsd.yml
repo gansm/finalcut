@@ -16,11 +16,11 @@ jobs:
     - name: Repository checkout
       uses: actions/checkout@v2
 
-    - name: Test on FreeBSD 12.2
-      uses: cross-platform-actions/action@v0.0.1
+    - name: Test on FreeBSD 13.0
+      uses: cross-platform-actions/action@v0.3.1
       with:
         operating_system: freebsd
-        version: 12.2
+        version: 13.0
         shell: bash
         run: |
           uname -a
