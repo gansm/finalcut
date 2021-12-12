@@ -154,6 +154,9 @@ template <typename CharT>
 using is_char_based_ptr = std::is_same<char, remove_ptr_cv_t<CharT>>;
 
 template <typename CharT>
+using is_wchar_based_ptr = std::is_same<wchar_t, remove_ptr_cv_t<CharT>>;
+
+template <typename CharT>
 using remove_ref_t = std::remove_reference_t<CharT>;
 
 template <typename CharT>
@@ -164,6 +167,9 @@ using remove_ref_extent_cv_t = std::remove_cv_t<remove_ref_extent_t<CharT>>;
 
 template <typename CharT>
 using is_char_based_array = typename std::is_same<char, remove_ref_extent_cv_t<CharT>>;
+
+template <typename CharT>
+using is_wchar_based_array = typename std::is_same<wchar_t, remove_ref_extent_cv_t<CharT>>;
 
 template <typename CharT>
 using enable_if_CString_t =
@@ -177,6 +183,20 @@ struct isCString
   : std::integral_constant<bool
     , (std::is_pointer<CharT>::value && is_char_based_ptr<CharT>::value)
    || (std::is_array<remove_ref_t<CharT>>::value && is_char_based_array<CharT>::value)>
+{ };
+
+template <typename CharT>
+using enable_if_WCString_t =
+    std::enable_if_t<
+       (std::is_pointer<CharT>::value && is_wchar_based_ptr<CharT>::value)
+    || (std::is_array<remove_ref_t<CharT>>::value && is_wchar_based_array<CharT>::value)
+      , std::nullptr_t>;
+
+template <typename CharT>
+struct isWCString
+  : std::integral_constant<bool
+    , (std::is_pointer<CharT>::value && is_wchar_based_ptr<CharT>::value)
+   || (std::is_array<remove_ref_t<CharT>>::value && is_wchar_based_array<CharT>::value)>
 { };
 
 template <typename NumT>
