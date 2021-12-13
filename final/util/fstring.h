@@ -146,48 +146,89 @@ class FString
     explicit operator bool () const;
     const FString& operator () () const;
 
-    bool operator <  (const FString&) const;
+    bool operator < (const FString&) const;
     template <typename CharT
-            , enable_if_CString_t<CharT>>
-    bool operator <  (const CharT&) const;
+            , enable_if_char_ptr_t<CharT> = nullptr>
+    bool operator < (const CharT&) const;
     template <typename CharT
-            , enable_if_WCString_t<CharT>>
-    bool operator <  (const CharT&) const;
+            , enable_if_char_array_t<CharT> = nullptr>
+    bool operator < (const CharT&) const;
+    template <typename CharT
+            , enable_if_wchar_ptr_t<CharT> = nullptr>
+    bool operator < (const CharT&) const;
+    template <typename CharT
+            , enable_if_wchar_array_t<CharT> = nullptr>
+    bool operator < (const CharT&) const;
+
     bool operator <= (const FString&) const;
     template <typename CharT
-            , enable_if_CString_t<CharT>>
+            , enable_if_char_ptr_t<CharT> = nullptr>
     bool operator <= (const CharT&) const;
     template <typename CharT
-            , enable_if_WCString_t<CharT>>
+            , enable_if_char_array_t<CharT> = nullptr>
     bool operator <= (const CharT&) const;
+    template <typename CharT
+            , enable_if_wchar_ptr_t<CharT> = nullptr>
+    bool operator <= (const CharT&) const;
+    template <typename CharT
+            , enable_if_wchar_array_t<CharT> = nullptr>
+    bool operator <= (const CharT&) const;
+
     bool operator == (const FString&) const;
     template <typename CharT
-            , enable_if_CString_t<CharT>>
+            , enable_if_char_ptr_t<CharT> = nullptr>
     bool operator == (const CharT&) const;
     template <typename CharT
-            , enable_if_WCString_t<CharT>>
+            , enable_if_char_array_t<CharT> = nullptr>
     bool operator == (const CharT&) const;
+    template <typename CharT
+            , enable_if_wchar_ptr_t<CharT> = nullptr>
+    bool operator == (const CharT&) const;
+    template <typename CharT
+            , enable_if_wchar_array_t<CharT> = nullptr>
+    bool operator == (const CharT&) const;
+
     bool operator != (const FString&) const;
     template <typename CharT
-            , enable_if_CString_t<CharT>>
+            , enable_if_char_ptr_t<CharT> = nullptr>
     bool operator != (const CharT&) const;
     template <typename CharT
-            , enable_if_WCString_t<CharT>>
+            , enable_if_char_array_t<CharT> = nullptr>
     bool operator != (const CharT&) const;
+    template <typename CharT
+            , enable_if_wchar_ptr_t<CharT> = nullptr>
+    bool operator != (const CharT&) const;
+    template <typename CharT
+            , enable_if_wchar_array_t<CharT> = nullptr>
+    bool operator != (const CharT&) const;
+
     bool operator >= (const FString&) const;
     template <typename CharT
-            , enable_if_CString_t<CharT>>
+            , enable_if_char_ptr_t<CharT> = nullptr>
     bool operator >= (const CharT&) const;
     template <typename CharT
-            , enable_if_WCString_t<CharT>>
+            , enable_if_char_array_t<CharT> = nullptr>
     bool operator >= (const CharT&) const;
-    bool operator >  (const FString&) const;
     template <typename CharT
-            , enable_if_CString_t<CharT>>
-    bool operator >  (const CharT&) const;
+            , enable_if_wchar_ptr_t<CharT> = nullptr>
+    bool operator >= (const CharT&) const;
     template <typename CharT
-            , enable_if_WCString_t<CharT>>
-    bool operator >  (const CharT&) const;
+            , enable_if_wchar_array_t<CharT> = nullptr>
+    bool operator >= (const CharT&) const;
+
+    bool operator > (const FString&) const;
+    template <typename CharT
+            , enable_if_char_ptr_t<CharT> = nullptr>
+    bool operator > (const CharT&) const;
+    template <typename CharT
+            , enable_if_char_array_t<CharT> = nullptr>
+    bool operator > (const CharT&) const;
+    template <typename CharT
+            , enable_if_wchar_ptr_t<CharT> = nullptr>
+    bool operator > (const CharT&) const;
+    template <typename CharT
+            , enable_if_wchar_array_t<CharT> = nullptr>
+    bool operator > (const CharT&) const;
 
     // Accessor
     virtual FString getClassName() const;
@@ -347,7 +388,16 @@ constexpr FString::const_reference FString::operator [] (const IndexT pos) const
 
 //----------------------------------------------------------------------
 template <typename CharT
-        , enable_if_CString_t<CharT>>
+        , enable_if_char_ptr_t<CharT>>
+inline bool FString::operator < (const CharT& s) const
+{
+  char_string = _toCharString(string);
+  return ( s ) ? char_string.compare(s) < 0 : char_string.compare("") < 0;
+}
+
+//----------------------------------------------------------------------
+template <typename CharT
+        , enable_if_char_array_t<CharT>>
 inline bool FString::operator < (const CharT& s) const
 {
   char_string = _toCharString(string);
@@ -356,7 +406,15 @@ inline bool FString::operator < (const CharT& s) const
 
 //----------------------------------------------------------------------
 template <typename CharT
-        , enable_if_WCString_t<CharT>>
+        , enable_if_wchar_ptr_t<CharT>>
+inline bool FString::operator < (const CharT& s) const
+{
+  return ( s ) ? string.compare(s) < 0 : string.compare(L"") < 0;
+}
+
+//----------------------------------------------------------------------
+template <typename CharT
+        , enable_if_wchar_array_t<CharT>>
 inline bool FString::operator < (const CharT& s) const
 {
   return string.compare(s) < 0;
@@ -364,7 +422,16 @@ inline bool FString::operator < (const CharT& s) const
 
 //----------------------------------------------------------------------
 template <typename CharT
-        , enable_if_CString_t<CharT>>
+        , enable_if_char_ptr_t<CharT>>
+inline bool FString::operator <= (const CharT& s) const
+{
+  char_string = _toCharString(string);
+  return ( s ) ? char_string.compare(s) <= 0 : char_string.compare("") <= 0;
+}
+
+//----------------------------------------------------------------------
+template <typename CharT
+        , enable_if_char_array_t<CharT>>
 inline bool FString::operator <= (const CharT& s) const
 {
   char_string = _toCharString(string);
@@ -373,7 +440,15 @@ inline bool FString::operator <= (const CharT& s) const
 
 //----------------------------------------------------------------------
 template <typename CharT
-        , enable_if_WCString_t<CharT>>
+        , enable_if_wchar_ptr_t<CharT>>
+inline bool FString::operator <= (const CharT& s) const
+{
+  return ( s ) ? string.compare(s) <= 0 : string.compare(L"") <= 0;
+}
+
+//----------------------------------------------------------------------
+template <typename CharT
+        , enable_if_wchar_array_t<CharT>>
 inline bool FString::operator <= (const CharT& s) const
 {
   return string.compare(s) <= 0;
@@ -381,7 +456,16 @@ inline bool FString::operator <= (const CharT& s) const
 
 //----------------------------------------------------------------------
 template <typename CharT
-        , enable_if_CString_t<CharT>>
+        , enable_if_char_ptr_t<CharT>>
+inline bool FString::operator == (const CharT& s) const
+{
+  char_string = _toCharString(string);
+  return ( s ) ? char_string.compare(s) == 0 : char_string.compare("") == 0;
+}
+
+//----------------------------------------------------------------------
+template <typename CharT
+        , enable_if_char_array_t<CharT>>
 inline bool FString::operator == (const CharT& s) const
 {
   char_string = _toCharString(string);
@@ -390,7 +474,15 @@ inline bool FString::operator == (const CharT& s) const
 
 //----------------------------------------------------------------------
 template <typename CharT
-        , enable_if_WCString_t<CharT>>
+        , enable_if_wchar_ptr_t<CharT>>
+inline bool FString::operator == (const CharT& s) const
+{
+  return ( s ) ? string.compare(s) == 0 : string.compare(L"") == 0;
+}
+
+//----------------------------------------------------------------------
+template <typename CharT
+        , enable_if_wchar_array_t<CharT>>
 inline bool FString::operator == (const CharT& s) const
 {
   return string.compare(s) == 0;
@@ -398,7 +490,16 @@ inline bool FString::operator == (const CharT& s) const
 
 //----------------------------------------------------------------------
 template <typename CharT
-        , enable_if_CString_t<CharT>>
+        , enable_if_char_ptr_t<CharT>>
+inline bool FString::operator != (const CharT& s) const
+{
+  char_string = _toCharString(string);
+  return ( s ) ? char_string.compare(s) != 0 : char_string.compare("") != 0;
+}
+
+//----------------------------------------------------------------------
+template <typename CharT
+        , enable_if_char_array_t<CharT>>
 inline bool FString::operator != (const CharT& s) const
 {
   char_string = _toCharString(string);
@@ -407,7 +508,15 @@ inline bool FString::operator != (const CharT& s) const
 
 //----------------------------------------------------------------------
 template <typename CharT
-        , enable_if_WCString_t<CharT>>
+        , enable_if_wchar_ptr_t<CharT>>
+inline bool FString::operator != (const CharT& s) const
+{
+  return ( s ) ? string.compare(s) != 0 : string.compare(L"") != 0;
+}
+
+//----------------------------------------------------------------------
+template <typename CharT
+        , enable_if_wchar_array_t<CharT>>
 inline bool FString::operator != (const CharT& s) const
 {
   return string.compare(s) != 0;
@@ -415,7 +524,16 @@ inline bool FString::operator != (const CharT& s) const
 
 //----------------------------------------------------------------------
 template <typename CharT
-        , enable_if_CString_t<CharT>>
+        , enable_if_char_ptr_t<CharT>>
+inline bool FString::operator >= (const CharT& s) const
+{
+  char_string = _toCharString(string);
+  return ( s ) ? char_string.compare(s) >= 0 : char_string.compare("") >= 0;
+}
+
+//----------------------------------------------------------------------
+template <typename CharT
+        , enable_if_char_array_t<CharT>>
 inline bool FString::operator >= (const CharT& s) const
 {
   char_string = _toCharString(string);
@@ -424,7 +542,15 @@ inline bool FString::operator >= (const CharT& s) const
 
 //----------------------------------------------------------------------
 template <typename CharT
-        , enable_if_WCString_t<CharT>>
+        , enable_if_wchar_ptr_t<CharT>>
+inline bool FString::operator >= (const CharT& s) const
+{
+  return ( s ) ? string.compare(s) >= 0 : string.compare(L"") >= 0;
+}
+
+//----------------------------------------------------------------------
+template <typename CharT
+        , enable_if_wchar_array_t<CharT>>
 inline bool FString::operator >= (const CharT& s) const
 {
   return string.compare(s) >= 0;
@@ -432,7 +558,16 @@ inline bool FString::operator >= (const CharT& s) const
 
 //----------------------------------------------------------------------
 template <typename CharT
-        , enable_if_CString_t<CharT>>
+        , enable_if_char_ptr_t<CharT>>
+inline bool FString::operator > (const CharT& s) const
+{
+  char_string = _toCharString(string);
+  return ( s ) ? char_string.compare(s) > 0 : char_string.compare("") > 0;
+}
+
+//----------------------------------------------------------------------
+template <typename CharT
+        , enable_if_char_array_t<CharT>>
 inline bool FString::operator > (const CharT& s) const
 {
   char_string = _toCharString(string);
@@ -441,7 +576,15 @@ inline bool FString::operator > (const CharT& s) const
 
 //----------------------------------------------------------------------
 template <typename CharT
-        , enable_if_WCString_t<CharT>>
+        , enable_if_wchar_ptr_t<CharT>>
+inline bool FString::operator > (const CharT& s) const
+{
+  return ( s ) ? string.compare(s) > 0 : string.compare(L"") > 0;
+}
+
+//----------------------------------------------------------------------
+template <typename CharT
+        , enable_if_wchar_array_t<CharT>>
 inline bool FString::operator > (const CharT& s) const
 {
   return string.compare(s) > 0;

@@ -663,6 +663,20 @@ void FStringTest::equalTest()
   CPPUNIT_ASSERT ( s1.size() == 6 );
   CPPUNIT_ASSERT ( *(s1.c_str() + s1.size()) == '\0' );
 
+  // finalcut::FString == std::string, char[], char* wchar_t[], wchar_t*
+  CPPUNIT_ASSERT ( fs == s1 );
+  CPPUNIT_ASSERT ( fs == "string" );
+  CPPUNIT_ASSERT ( fs == L"string" );
+  const char* cstring = "string";
+  const wchar_t* wcstring = L"string";
+  CPPUNIT_ASSERT ( fs == cstring );
+  CPPUNIT_ASSERT ( fs == wcstring );
+  const finalcut::FString _null_str1{};
+  cstring = nullptr;
+  wcstring = nullptr;
+  CPPUNIT_ASSERT ( _null_str1 == cstring );
+  CPPUNIT_ASSERT ( _null_str1 == wcstring );
+
   // std::wstring -> finalcut::FString -> std::wstring
   const std::wstring ws1 = L"wide string";
   fs = ws1;
@@ -712,6 +726,10 @@ void FStringTest::equalTest()
   CPPUNIT_ASSERT ( ! (str == null_str2) );
   CPPUNIT_ASSERT ( ! (null_str1 == str) );
   CPPUNIT_ASSERT ( null_str1 == null_str2 );
+  cstring = nullptr;
+  wcstring = nullptr;
+  CPPUNIT_ASSERT ( _null_str1 == cstring );
+  CPPUNIT_ASSERT ( _null_str1 == wcstring );
   CPPUNIT_ASSERT_CSTRING ( null_str1.c_str(), null_str2.c_str() );
   CPPUNIT_ASSERT_WCSTRING ( null_str1.wc_str(), null_str2.wc_str() );
 
@@ -729,6 +747,19 @@ void FStringTest::notEqualTest()
   CPPUNIT_ASSERT ( ch != one_char.c_str()[0] );
   CPPUNIT_ASSERT ( one_char.getLength() == 1 );
   CPPUNIT_ASSERT ( one_char.capacity() >= 1 );
+
+  // finalcut::FString != std::string, char[], char* wchar_t[], wchar_t*
+  CPPUNIT_ASSERT ( one_char != std::string("!") );
+  CPPUNIT_ASSERT ( one_char != "!" );
+  CPPUNIT_ASSERT ( one_char != L"!" );
+  const char* cstring = "!";
+  const wchar_t* wcstring = L"!";
+  CPPUNIT_ASSERT ( one_char != cstring );
+  CPPUNIT_ASSERT ( one_char != wcstring );
+  cstring = nullptr;
+  wcstring = nullptr;
+  CPPUNIT_ASSERT ( one_char != cstring );
+  CPPUNIT_ASSERT ( one_char != wcstring );
 
   constexpr wchar_t wch = L'_';
   CPPUNIT_ASSERT ( one_char != wch );
@@ -776,6 +807,25 @@ void FStringTest::lessEqualTest()
 
   constexpr wchar_t wch = L'z';
   CPPUNIT_ASSERT ( one_char <= wch );
+  // finalcut::FString <= std::string, char[], char* wchar_t[], wchar_t*
+  CPPUNIT_ASSERT ( one_char <= std::string("x") );
+  CPPUNIT_ASSERT ( one_char <= std::string("y") );
+  CPPUNIT_ASSERT ( one_char <= "x" );
+  CPPUNIT_ASSERT ( one_char <= "y" );
+  CPPUNIT_ASSERT ( one_char <= L"x" );
+  CPPUNIT_ASSERT ( one_char <= L"y" );
+  const char* cstring = "x";
+  const wchar_t* wcstring = L"x";
+  CPPUNIT_ASSERT ( one_char <= cstring );
+  CPPUNIT_ASSERT ( one_char <= wcstring );
+  cstring = "y";
+  wcstring = L"y";
+  CPPUNIT_ASSERT ( one_char <= cstring );
+  CPPUNIT_ASSERT ( one_char <= wcstring );
+  cstring = nullptr;
+  wcstring = nullptr;
+  CPPUNIT_ASSERT ( ! (one_char <= cstring) );
+  CPPUNIT_ASSERT ( ! (one_char <= wcstring) );
 
   const finalcut::FString s1 = L"xyz";
   const finalcut::FString s2 = L"xyz";
@@ -821,6 +871,18 @@ void FStringTest::lessTest()
 
   constexpr wchar_t wch = L'z';
   CPPUNIT_ASSERT ( one_char < wch );
+  // finalcut::FString < std::string, char[], char* wchar_t[], wchar_t*
+  CPPUNIT_ASSERT ( one_char < std::string("y") );
+  CPPUNIT_ASSERT ( one_char < "y" );
+  CPPUNIT_ASSERT ( one_char < L"y" );
+  const char* cstring = "y";
+  const wchar_t* wcstring = L"y";
+  CPPUNIT_ASSERT ( one_char < cstring );
+  CPPUNIT_ASSERT ( one_char < wcstring );
+  cstring = nullptr;
+  wcstring = nullptr;
+  CPPUNIT_ASSERT ( ! (one_char < cstring) );
+  CPPUNIT_ASSERT ( ! (one_char < wcstring) );
 
   const finalcut::FString s1 = L"xyz";
   const finalcut::FString s2 = L"xzz";
@@ -854,6 +916,25 @@ void FStringTest::greaterEqualTest()
 
   constexpr wchar_t wch = L'x';
   CPPUNIT_ASSERT ( one_char >= wch );
+  // finalcut::FString >= std::string, char[], char* wchar_t[], wchar_t*
+  CPPUNIT_ASSERT ( one_char >= std::string("w") );
+  CPPUNIT_ASSERT ( one_char >= std::string("x") );
+  CPPUNIT_ASSERT ( one_char >= "w" );
+  CPPUNIT_ASSERT ( one_char >= "x" );
+  CPPUNIT_ASSERT ( one_char >= L"w" );
+  CPPUNIT_ASSERT ( one_char >= L"x" );
+  const char* cstring = "w";
+  const wchar_t* wcstring = L"w";
+  CPPUNIT_ASSERT ( one_char >= cstring );
+  CPPUNIT_ASSERT ( one_char >= wcstring );
+  cstring = "x";
+  wcstring = L"x";
+  CPPUNIT_ASSERT ( one_char >= cstring );
+  CPPUNIT_ASSERT ( one_char >= wcstring );
+  cstring = nullptr;
+  wcstring = nullptr;
+  CPPUNIT_ASSERT ( one_char >= cstring );
+  CPPUNIT_ASSERT ( one_char >= wcstring );
 
   const finalcut::FString s1 = L"xyz";
   const finalcut::FString s2 = L"xyz";
@@ -899,6 +980,18 @@ void FStringTest::greaterTest()
 
   constexpr wchar_t wch = L'w';
   CPPUNIT_ASSERT ( one_char > wch );
+  // finalcut::FString > std::string, char[], char* wchar_t[], wchar_t*
+  CPPUNIT_ASSERT ( one_char > std::string("w") );
+  CPPUNIT_ASSERT ( one_char > "w" );
+  CPPUNIT_ASSERT ( one_char > L"w" );
+  const char* cstring = "w";
+  const wchar_t* wcstring = L"w";
+  CPPUNIT_ASSERT ( one_char > cstring );
+  CPPUNIT_ASSERT ( one_char > wcstring );
+  cstring = nullptr;
+  wcstring = nullptr;
+  CPPUNIT_ASSERT ( one_char > cstring );
+  CPPUNIT_ASSERT ( one_char > wcstring );
 
   const finalcut::FString s1 = L"xyz";
   const finalcut::FString s2 = L"xww";

@@ -1,3 +1,7 @@
+2020-12-13  Markus Gans  <guru.mail@muenster.de>
+	* Faster string comparison between FString, char* std::string, 
+	  wchar_t and std:wstring
+
 2020-12-11  Markus Gans  <guru.mail@muenster.de>
 	* Correct mouse event after moving a window
 
