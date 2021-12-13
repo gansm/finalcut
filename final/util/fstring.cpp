@@ -1088,7 +1088,7 @@ inline void FString::_assign (std::wstring& s)
 }
 
 //----------------------------------------------------------------------
-inline std::string FString::_toCharString (const std::wstring& s) const
+std::string FString::_toCharString (const std::wstring& s) const
 {
   if ( s.empty() )
     return {};
