@@ -32,6 +32,8 @@ namespace fc = finalcut;
 
 struct restoreOverlaidWindows : public fc::FVTerm
 {
+  ~restoreOverlaidWindows() override;
+
   void operator () (fc::FVTerm& obj) const
   {
     if ( ! getWindowList() || getWindowList()->empty() )
@@ -51,6 +53,8 @@ struct restoreOverlaidWindows : public fc::FVTerm
     }
   }
 };
+
+restoreOverlaidWindows::~restoreOverlaidWindows() = default;
 
 template <>
 struct std::hash<fc::FPoint>

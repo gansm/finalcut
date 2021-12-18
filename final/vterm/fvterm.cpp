@@ -301,11 +301,7 @@ int FVTerm::print (const FVTermBuffer& vterm_buffer)
     return -1;
 
   auto area = getPrintArea();
-
-  if ( ! area )
-    return -1;
-
-  return print (area, vterm_buffer);
+  return area ? print (area, vterm_buffer) : -1;
 }
 
 //----------------------------------------------------------------------
@@ -331,11 +327,7 @@ int FVTerm::print (FTermArea* area, const FVTermBuffer& vterm_buffer)
 int FVTerm::print (wchar_t c)
 {
   auto area = getPrintArea();
-
-  if ( ! area )
-    return -1;
-
-  return print (area, c);
+  return area ? print (area, c) : -1;
 }
 
 //----------------------------------------------------------------------
@@ -355,11 +347,7 @@ int FVTerm::print (FTermArea* area, wchar_t c)
 int FVTerm::print (FChar& term_char)
 {
   auto area = getPrintArea();
-
-  if ( ! area )
-    return -1;
-
-  return print (area, term_char);
+  return area ? print (area, term_char) : -1;
 }
 
 //----------------------------------------------------------------------

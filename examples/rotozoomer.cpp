@@ -127,10 +127,10 @@ void RotoZoomer::draw()
     start = system_clock::now();
 
   finalcut::FDialog::draw();
-  auto cx = double(80.0 / 2.0 + (80.0 / 2.0 * std::sin(double(path) / 50.0)));
-  auto cy = double(23.0 + (23.0 * std::cos(double(path) / 50.0)));
-  auto r  = double(128.0 + 96.0 * std::cos(double(path) / 10.0));
   auto a  = double(path) / 50.0;
+  auto r  = double(128.0 + 96.0 * std::cos(double(path) / 10.0));
+  auto cx = double(80.0 / 2.0 + (80.0 / 2.0 * std::sin(a)));
+  auto cy = double(23.0 + (23.0 * std::cos(a)));
   rotozoomer (cx, cy, r, a);
 }
 
@@ -160,9 +160,9 @@ inline void RotoZoomer::rotozoomer (double cx, double cy, double r, double a)
     {
       const auto& ch = data[((Cy >> 14) & 0xf) + ((Cx >> 10) & 0xf0)];
 
-      if ( ch == '+' )
+      if ( ch == L'+' )
         print() << finalcut::FColorPair{FColor::Black, FColor::Red};
-      else if ( ch == 'x' )
+      else if ( ch == L'x' )
         print() << finalcut::FColorPair{FColor::Black, FColor::Cyan};
       else
         print() << finalcut::FColorPair{FColor::Black, FColor::White};

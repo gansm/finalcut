@@ -1,3 +1,6 @@
+2020-12-18  Markus Gans  <guru.mail@muenster.de>
+	* Move the border label methods from FButtonGroup to FScrollView
+
 2020-12-13  Markus Gans  <guru.mail@muenster.de>
 	* Faster string comparison between FString, char* std::string, 
 	  wchar_t and std:wstring

@@ -1093,7 +1093,7 @@ std::string FString::_toCharString (const std::wstring& s) const
   if ( s.empty() )
     return {};
 
-  const wchar_t* src = s.c_str();
+  auto src = s.c_str();
   auto state = std::mbstate_t();
   const auto& size = std::wcsrtombs(nullptr, &src, 0, &state) + 1;
 
@@ -1115,7 +1115,7 @@ inline std::wstring FString::_toWideString (const std::string& s) const
   if ( s.empty() )
     return {};
 
-  const char* src = s.c_str();
+  auto src = s.c_str();
   auto state = std::mbstate_t();
   const auto& size = std::mbsrtowcs(nullptr, &src, 0, &state) + 1;
 
@@ -1162,8 +1162,8 @@ std::ostream& operator << (std::ostream& outstr, const FString& s)
   }
   else if ( width > 0 )
   {
-    const FString fill_str{width, wchar_t(outstr.fill())};
-    outstr << s._toCharString(fill_str.string).c_str();
+    const std::string fill_str(width, outstr.fill());
+    outstr << fill_str;
   }
 
   return outstr;
@@ -1195,8 +1195,8 @@ std::wostream& operator << (std::wostream& outstr, const FString& s)
   }
   else if ( width > 0 )
   {
-    const FString fill_str{width, outstr.fill()};
-    outstr << fill_str.string;
+    const std::wstring fill_str(width, outstr.fill());
+    outstr << fill_str;
   }
 
   return outstr;

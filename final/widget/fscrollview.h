@@ -86,6 +86,7 @@ class FScrollView : public FWidget
     FScrollView& operator = (FScrollView&&) noexcept = delete;
     // Accessors
     FString             getClassName() const override;
+    FString&            getText() &;
     std::size_t         getViewportWidth() const;
     std::size_t         getViewportHeight() const;
     FSize               getViewportSize() const;
@@ -110,6 +111,7 @@ class FScrollView : public FWidget
                                     , bool = true ) override;
     bool                setCursorPos (const FPoint&) override;
     void                setPrintPos (const FPoint&) override;
+    void                setText (const FString&);
     bool                setViewportPrint (bool = true);
     bool                unsetViewportPrint();
     void                resetColors() override;
@@ -133,10 +135,13 @@ class FScrollView : public FWidget
     void                print (const FPoint&) override;
     void                draw() override;
     void                drawBorder() override;
+    void                drawLabel();
 
     // Event handlers
     void                onKeyPress (FKeyEvent*) override;
+    void                onMouseDown (FMouseEvent*) override;
     void                onWheel (FWheelEvent*) override;
+    void                onAccel (FAccelEvent*) override;
     void                onFocusIn (FFocusEvent*) override;
     void                onChildFocusIn (FFocusEvent*) override;
     void                onChildFocusOut (FFocusEvent*) override;
@@ -149,6 +154,7 @@ class FScrollView : public FWidget
     FTermArea*          getPrintArea() override;
 
     // Methods
+    void                setHotkeyAccelerator();
     void                initLayout() override;
     void                adjustSize() override;
     void                copy2area();
@@ -166,6 +172,8 @@ class FScrollView : public FWidget
 
     // Methods
     void                init();
+    void                drawText (const FString&, std::size_t);
+    void                directFocus();
     void                mapKeyFunctions();
     void                calculateScrollbarPos() const;
     template <typename Callback>
@@ -184,6 +192,7 @@ class FScrollView : public FWidget
     FRect              scroll_geometry{1, 1, 1, 1};
     FRect              viewport_geometry{};
     FTermArea*         viewport{nullptr};  // virtual scroll content
+    FString            text{};
     FScrollbarPtr      vbar{nullptr};
     FScrollbarPtr      hbar{nullptr};
     KeyMap             key_map{};
@@ -195,6 +204,10 @@ class FScrollView : public FWidget
 };
 
 // FScrollView inline functions
+//----------------------------------------------------------------------
+inline FString& FScrollView::getText() &
+{ return text; }
+
 //----------------------------------------------------------------------
 inline FString FScrollView::getClassName() const
 { return "FScrollView"; }

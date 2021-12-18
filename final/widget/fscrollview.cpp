@@ -25,7 +25,9 @@
 
 #include "final/fevent.h"
 #include "final/fwidgetcolors.h"
+#include "final/vterm/fcolorpair.h"
 #include "final/widget/fscrollview.h"
+#include "final/widget/fstatusbar.h"
 #include "final/widget/fwindow.h"
 
 namespace finalcut
@@ -299,6 +301,18 @@ void FScrollView::setPrintPos (const FPoint& p)
 }
 
 //----------------------------------------------------------------------
+void FScrollView::setText (const FString& txt)
+{
+  text.setString(txt);
+
+  if ( isEnabled() )
+  {
+    delAccelerator();
+    setHotkeyAccelerator();
+  }
+}
+
+//----------------------------------------------------------------------
 bool FScrollView::setViewportPrint (bool enable)
 {
   return (use_own_print_area = ! enable);
@@ -468,6 +482,7 @@ void FScrollView::draw()
 
   vbar->redraw();
   hbar->redraw();
+  drawLabel();
 }
 
 //----------------------------------------------------------------------
@@ -475,6 +490,26 @@ void FScrollView::drawBorder()
 {
   const FRect box(FPoint{1, 1}, getSize());
   finalcut::drawListBorder (this, box);
+}
+
+//----------------------------------------------------------------------
+void FScrollView::drawLabel()
+{
+  if ( text.isEmpty() )
+    return;
+
+  FString label_text{};
+  const FString txt{" " + text + " "};
+  unsetViewportPrint();
+  const auto hotkeypos = finalcut::getHotkeyPos(txt, label_text);
+
+  if ( hasBorder() )
+    FWidget::setPrintPos (FPoint{2, 1});
+  else
+    FWidget::setPrintPos (FPoint{0, 1});
+
+  drawText (label_text, hotkeypos);
+  setViewportPrint();
 }
 
 //----------------------------------------------------------------------
@@ -486,6 +521,22 @@ void FScrollView::onKeyPress (FKeyEvent* ev)
   {
     entry();
     ev->accept();
+  }
+}
+
+//----------------------------------------------------------------------
+void FScrollView::onMouseDown (FMouseEvent* ev)
+{
+  if ( ev->getButton() != MouseButton::Left )
+    return;
+
+  const int mouse_x = ev->getX();
+  const int mouse_y = ev->getY();
+
+  if ( mouse_x == 1 || mouse_x == int(getWidth())
+    || mouse_y == 1 || mouse_y == int(getHeight()) )
+  {
+    directFocus();
   }
 }
 
@@ -502,6 +553,12 @@ void FScrollView::onWheel (FWheelEvent* ev)
   {
     scrollBy (0, distance);
   }
+}
+
+//----------------------------------------------------------------------
+void FScrollView::onAccel (FAccelEvent*)
+{
+  directFocus();
 }
 
 //----------------------------------------------------------------------
@@ -611,6 +668,12 @@ FVTerm::FTermArea* FScrollView::getPrintArea()
   }
 
   return viewport;
+}
+
+//----------------------------------------------------------------------
+void FScrollView::setHotkeyAccelerator()
+{
+  setHotkeyViaString (this, text);
 }
 
 //----------------------------------------------------------------------
@@ -764,6 +827,78 @@ void FScrollView::init()
 
   if ( viewport )
     setChildPrintArea (viewport);
+}
+
+//----------------------------------------------------------------------
+void FScrollView::drawText ( const FString& label_text
+                           , std::size_t hotkeypos )
+{
+  const auto& wc = getColorTheme();
+  const std::size_t column_width = getColumnWidth(label_text);
+  std::size_t length = label_text.getLength();
+  bool ellipsis{false};
+
+  if ( column_width > getClientWidth() )
+  {
+    const std::size_t len = getClientWidth() - 3;
+    const FString s = finalcut::getColumnSubString (label_text, 1, len);
+    length = s.getLength();
+    ellipsis = true;
+  }
+
+  if ( FVTerm::getFOutput()->isMonochron() )
+    setReverse(true);
+
+  if ( isEnabled() )
+    setColor(wc->label_emphasis_fg, wc->label_bg);
+  else
+    setColor(wc->label_inactive_fg, wc->label_inactive_bg);
+
+  for (std::size_t z{0}; z < length; z++)
+  {
+    if ( (z == hotkeypos) && getFlags().active )
+    {
+      setColor (wc->label_hotkey_fg, wc->label_hotkey_bg);
+
+      if ( ! getFlags().no_underline )
+        setUnderline();
+
+      print (label_text[z]);
+
+      if ( ! getFlags().no_underline )
+        unsetUnderline();
+
+      setColor (wc->label_emphasis_fg, wc->label_bg);
+    }
+    else
+      print (label_text[z]);
+  }
+
+  if ( ellipsis )  // Print ellipsis
+    print() << FColorPair {wc->label_ellipsis_fg, wc->label_bg} << "..";
+
+  if ( FVTerm::getFOutput()->isMonochron() )
+    setReverse(true);
+}
+
+//----------------------------------------------------------------------
+void FScrollView::directFocus()
+{
+  auto focused_widget = getFocusWidget();
+  focusFirstChild();
+
+  if ( focused_widget )
+    focused_widget->redraw();
+
+  focused_widget = getFocusWidget();
+
+  if ( focused_widget )
+    focused_widget->redraw();
+
+  if ( getStatusBar() )
+  {
+    getStatusBar()->drawMessage();
+  }
 }
 
 //----------------------------------------------------------------------

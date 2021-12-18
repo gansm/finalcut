@@ -77,14 +77,12 @@ class FButtonGroup : public FScrollView
     FToggleButton*      getLastButton();
     FToggleButton*      getButton (int) const;
     std::size_t         getCount() const;
-    FString&            getText() &;
 
     // Mutator
     bool                setEnable (bool = true) override;
     bool                unsetEnable() override;
     bool                setDisable() override;
     bool                setFocus (bool = true) override;
-    void                setText (const FString&);
 
     // Inquiries
     bool                isChecked(int) const;
@@ -104,12 +102,8 @@ class FButtonGroup : public FScrollView
     void                onFocusIn (FFocusEvent*) override;
 
   protected:
-    // Mutator
-    void                setHotkeyAccelerator();
-
     // Methods
     void                draw() override;
-    void                drawLabel();
 
   private:
     // Constants
@@ -120,7 +114,6 @@ class FButtonGroup : public FScrollView
 
     // Methods
     void                init();
-    void                drawText (const FString&, std::size_t);
     bool                directFocusCheckedRadioButton (FToggleButton*) const;
     bool                directFocusRadioButton() const;
     void                directFocus();
@@ -152,9 +145,6 @@ inline bool FButtonGroup::setDisable()
 inline std::size_t FButtonGroup::getCount() const
 { return buttonlist.size(); }
 
-//----------------------------------------------------------------------
-inline FString& FButtonGroup::getText() &
-{ return text; }
 
 }  // namespace finalcut
 

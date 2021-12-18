@@ -392,7 +392,7 @@ template <typename CharT
 inline bool FString::operator < (const CharT& s) const
 {
   char_string = _toCharString(string);
-  return ( s ) ? char_string.compare(s) < 0 : char_string.compare("") < 0;
+  return s ? char_string.compare(s) < 0 : char_string.compare("") < 0;
 }
 
 //----------------------------------------------------------------------
@@ -409,7 +409,7 @@ template <typename CharT
         , enable_if_wchar_ptr_t<CharT>>
 inline bool FString::operator < (const CharT& s) const
 {
-  return ( s ) ? string.compare(s) < 0 : string.compare(L"") < 0;
+  return s ? string.compare(s) < 0 : string.compare(L"") < 0;
 }
 
 //----------------------------------------------------------------------
@@ -426,7 +426,7 @@ template <typename CharT
 inline bool FString::operator <= (const CharT& s) const
 {
   char_string = _toCharString(string);
-  return ( s ) ? char_string.compare(s) <= 0 : char_string.compare("") <= 0;
+  return s ? char_string.compare(s) <= 0 : char_string.compare("") <= 0;
 }
 
 //----------------------------------------------------------------------
@@ -443,7 +443,7 @@ template <typename CharT
         , enable_if_wchar_ptr_t<CharT>>
 inline bool FString::operator <= (const CharT& s) const
 {
-  return ( s ) ? string.compare(s) <= 0 : string.compare(L"") <= 0;
+  return s ? string.compare(s) <= 0 : string.compare(L"") <= 0;
 }
 
 //----------------------------------------------------------------------
@@ -460,7 +460,7 @@ template <typename CharT
 inline bool FString::operator == (const CharT& s) const
 {
   char_string = _toCharString(string);
-  return ( s ) ? char_string.compare(s) == 0 : char_string.compare("") == 0;
+  return s ? char_string.compare(s) == 0 : char_string.compare("") == 0;
 }
 
 //----------------------------------------------------------------------
@@ -477,7 +477,7 @@ template <typename CharT
         , enable_if_wchar_ptr_t<CharT>>
 inline bool FString::operator == (const CharT& s) const
 {
-  return ( s ) ? string.compare(s) == 0 : string.compare(L"") == 0;
+  return s ? string.compare(s) == 0 : string.compare(L"") == 0;
 }
 
 //----------------------------------------------------------------------
@@ -494,7 +494,7 @@ template <typename CharT
 inline bool FString::operator != (const CharT& s) const
 {
   char_string = _toCharString(string);
-  return ( s ) ? char_string.compare(s) != 0 : char_string.compare("") != 0;
+  return s ? char_string.compare(s) != 0 : char_string.compare("") != 0;
 }
 
 //----------------------------------------------------------------------
@@ -511,7 +511,7 @@ template <typename CharT
         , enable_if_wchar_ptr_t<CharT>>
 inline bool FString::operator != (const CharT& s) const
 {
-  return ( s ) ? string.compare(s) != 0 : string.compare(L"") != 0;
+  return s ? string.compare(s) != 0 : string.compare(L"") != 0;
 }
 
 //----------------------------------------------------------------------
@@ -528,7 +528,7 @@ template <typename CharT
 inline bool FString::operator >= (const CharT& s) const
 {
   char_string = _toCharString(string);
-  return ( s ) ? char_string.compare(s) >= 0 : char_string.compare("") >= 0;
+  return s ? char_string.compare(s) >= 0 : char_string.compare("") >= 0;
 }
 
 //----------------------------------------------------------------------
@@ -545,7 +545,7 @@ template <typename CharT
         , enable_if_wchar_ptr_t<CharT>>
 inline bool FString::operator >= (const CharT& s) const
 {
-  return ( s ) ? string.compare(s) >= 0 : string.compare(L"") >= 0;
+  return s ? string.compare(s) >= 0 : string.compare(L"") >= 0;
 }
 
 //----------------------------------------------------------------------
@@ -562,7 +562,7 @@ template <typename CharT
 inline bool FString::operator > (const CharT& s) const
 {
   char_string = _toCharString(string);
-  return ( s ) ? char_string.compare(s) > 0 : char_string.compare("") > 0;
+  return s ? char_string.compare(s) > 0 : char_string.compare("") > 0;
 }
 
 //----------------------------------------------------------------------
@@ -579,7 +579,7 @@ template <typename CharT
         , enable_if_wchar_ptr_t<CharT>>
 inline bool FString::operator > (const CharT& s) const
 {
-  return ( s ) ? string.compare(s) > 0 : string.compare(L"") > 0;
+  return s ? string.compare(s) > 0 : string.compare(L"") > 0;
 }
 
 //----------------------------------------------------------------------

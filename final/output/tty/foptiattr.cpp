@@ -1073,7 +1073,7 @@ inline void FOptiAttr::prevent_no_color_video_attributes ( FChar& attr
 
   for (uInt bit{1}; bit < no_mode; bit <<= 1)
   {
-    switch ( bit & attr_without_color )
+    switch ( bit & uInt(attr_without_color) )
     {
       case standout_mode:
         attr.attr.bit.standout = false;

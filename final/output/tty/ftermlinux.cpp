@@ -591,16 +591,16 @@ FTermLinux::ModifierKey& FTermLinux::getModifierKey() &
   // TIOCLINUX, subcode = 6 (TIOCL_GETSHIFTSTATE)
   if ( fsystem->ioctl(0, TIOCLINUX, &subcode) >= 0 )
   {
-    if ( subcode & (1u << KG_SHIFT) )
+    if ( uChar(subcode) & (1u << KG_SHIFT) )
       mod_key.shift = true;
 
-    if ( subcode & (1u << KG_ALTGR) )
+    if ( uChar(subcode) & (1u << KG_ALTGR) )
       mod_key.alt_gr = true;
 
-    if ( subcode & (1u << KG_CTRL) )
+    if ( uChar(subcode) & (1u << KG_CTRL) )
       mod_key.ctrl = true;
 
-    if ( subcode & (1u << KG_ALT) )
+    if ( uChar(subcode) & (1u << KG_ALT) )
       mod_key.alt = true;
   }
 

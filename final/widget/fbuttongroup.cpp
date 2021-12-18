@@ -24,7 +24,6 @@
 #include "final/fapplication.h"
 #include "final/fevent.h"
 #include "final/util/fsize.h"
-#include "final/vterm/fcolorpair.h"
 #include "final/widget/fbuttongroup.h"
 #include "final/widget/fstatusbar.h"
 #include "final/widget/ftogglebutton.h"
@@ -119,18 +118,6 @@ bool FButtonGroup::setFocus (bool)
 {
   // This container widget cannot have its own focus
   return false;
-}
-
-//----------------------------------------------------------------------
-void FButtonGroup::setText (const FString& txt)
-{
-  text.setString(txt);
-
-  if ( isEnabled() )
-  {
-    delAccelerator();
-    setHotkeyAccelerator();
-  }
 }
 
 //----------------------------------------------------------------------
@@ -344,12 +331,6 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
 
 // protected methods of FButtonGroup
 //----------------------------------------------------------------------
-void FButtonGroup::setHotkeyAccelerator()
-{
-  setHotkeyViaString (this, text);
-}
-
-//----------------------------------------------------------------------
 void FButtonGroup::draw()
 {
   if ( FVTerm::getFOutput()->isMonochron() )
@@ -362,27 +343,6 @@ void FButtonGroup::draw()
     setReverse(false);
 
   FScrollView::draw();
-  drawLabel();
-}
-
-//----------------------------------------------------------------------
-void FButtonGroup::drawLabel()
-{
-  if ( text.isEmpty() )
-    return;
-
-  FString label_text{};
-  const FString txt{" " + text + " "};
-  unsetViewportPrint();
-  const auto hotkeypos = finalcut::getHotkeyPos(txt, label_text);
-
-  if ( hasBorder() )
-    FWidget::setPrintPos (FPoint{2, 1});
-  else
-    FWidget::setPrintPos (FPoint{0, 1});
-
-  drawText (label_text, hotkeypos);
-  setViewportPrint();
 }
 
 
@@ -401,58 +361,6 @@ void FButtonGroup::init()
 {
   setMinimumSize (FSize{7, 3});
   buttonlist.clear();  // no buttons yet
-}
-
-//----------------------------------------------------------------------
-void FButtonGroup::drawText ( const FString& label_text
-                            , std::size_t hotkeypos )
-{
-  const auto& wc = getColorTheme();
-  const std::size_t column_width = getColumnWidth(label_text);
-  std::size_t length = label_text.getLength();
-  bool ellipsis{false};
-
-  if ( column_width > getClientWidth() )
-  {
-    const std::size_t len = getClientWidth() - 3;
-    const FString s = finalcut::getColumnSubString (label_text, 1, len);
-    length = s.getLength();
-    ellipsis = true;
-  }
-
-  if ( FVTerm::getFOutput()->isMonochron() )
-    setReverse(true);
-
-  if ( isEnabled() )
-    setColor(wc->label_emphasis_fg, wc->label_bg);
-  else
-    setColor(wc->label_inactive_fg, wc->label_inactive_bg);
-
-  for (std::size_t z{0}; z < length; z++)
-  {
-    if ( (z == hotkeypos) && getFlags().active )
-    {
-      setColor (wc->label_hotkey_fg, wc->label_hotkey_bg);
-
-      if ( ! getFlags().no_underline )
-        setUnderline();
-
-      print (label_text[z]);
-
-      if ( ! getFlags().no_underline )
-        unsetUnderline();
-
-      setColor (wc->label_emphasis_fg, wc->label_bg);
-    }
-    else
-      print (label_text[z]);
-  }
-
-  if ( ellipsis )  // Print ellipsis
-    print() << FColorPair {wc->label_ellipsis_fg, wc->label_bg} << "..";
-
-  if ( FVTerm::getFOutput()->isMonochron() )
-    setReverse(true);
 }
 
 //----------------------------------------------------------------------
