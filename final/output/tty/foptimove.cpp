@@ -563,6 +563,20 @@ int FOptiMove::capDuration (const char cap[], int affcnt) const
 
   float ms{0};
   const char* p = cap;
+  auto parse_digit = [&p, &affcnt] (float& num)
+  {
+    if ( std::isdigit(uChar(*p)) )
+      num = num * 10 + float(*p - '0');
+    else if ( *p == '*' )
+      num *= float(affcnt);
+    else if ( *p == '.' )
+    {
+      p++;
+
+      if ( *p != '>' && std::isdigit(uChar(*p)) )
+        num += float((*p - '0') / 10.0);
+    }
+  };
 
   while ( *p )
   {
@@ -574,18 +588,7 @@ int FOptiMove::capDuration (const char cap[], int affcnt) const
 
       while ( *p != '>' )
       {
-        if ( std::isdigit(uChar(*p)) )
-          num = num * 10 + float(*p - '0');
-        else if ( *p == '*' )
-          num *= float(affcnt);
-        else if ( *p == '.' )
-        {
-          p++;
-
-          if ( *p != '>' && std::isdigit(uChar(*p)) )
-            num += float((*p - '0') / 10.0);
-        }
-
+        parse_digit(num);
         p++;
       }
 

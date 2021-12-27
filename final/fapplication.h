@@ -183,7 +183,7 @@ class FApplication : public FWidget
     static void           showParameterUsage();
     void                  destroyLog();
     void                  findKeyboardWidget() const;
-    bool                  isKeyPressed() const;
+    bool                  isKeyPressed(uInt64 = 0U) const;
     void                  keyPressed();
     void                  keyReleased() const;
     void                  escapeKeyPressed() const;

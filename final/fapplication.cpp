@@ -656,15 +656,16 @@ inline void FApplication::findKeyboardWidget() const
 }
 
 //----------------------------------------------------------------------
-inline bool FApplication::isKeyPressed() const
+inline bool FApplication::isKeyPressed(uInt64 ms) const
 {
   static auto& mouse = FMouseControl::getInstance();
   static auto& keyboard = FKeyboard::getInstance();
+  auto blocking_time = (ms != 0U) ? ms : keyboard.getReadBlockingTime();
 
   if ( mouse.isGpmMouseEnabled() )
     return mouse.getGpmKeyPressed(keyboard.hasUnprocessedInput());
 
-  return (keyboard.isKeyPressed() || keyboard.hasPendingInput());
+  return (keyboard.isKeyPressed(blocking_time) || keyboard.hasPendingInput());
 }
 
 //----------------------------------------------------------------------
@@ -1309,7 +1310,7 @@ bool FApplication::processNextEvent()
   }
   else
   {
-    if ( FKeyboard::getInstance().isKeyPressed(next_event_wait) )
+    if ( isKeyPressed(next_event_wait) )
       time_last_event = TimeValue{};
   }
 
