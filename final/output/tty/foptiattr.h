@@ -253,7 +253,10 @@ class FOptiAttr final
     bool             switchOn() const;
     bool             switchOff() const;
     template <typename CharT
-            , enable_if_CString_t<CharT> = nullptr>
+            , enable_if_char_ptr_t<CharT> = nullptr>
+    bool             append_sequence (CharT);
+    template <typename CharT
+            , enable_if_char_array_t<CharT> = nullptr>
     bool             append_sequence (CharT);
     bool             append_sequence (const std::string&);
 
@@ -330,13 +333,22 @@ inline void FOptiAttr::unsetDefaultColorSupport() noexcept
 
 //----------------------------------------------------------------------
 template <typename CharT
-        , enable_if_CString_t<CharT>>
+        , enable_if_char_ptr_t<CharT>>
 inline bool FOptiAttr::append_sequence (CharT seq)
 {
   // for char* and const char*
-  return seq == nullptr
-       ? false
-       : append_sequence(std::string(seq));
+  return seq
+       ? append_sequence(std::string(seq))
+       : false;
+}
+
+//----------------------------------------------------------------------
+template <typename CharT
+        , enable_if_char_array_t<CharT>>
+inline bool FOptiAttr::append_sequence (CharT seq)
+{
+  // for char[] and const char[]
+  return append_sequence(std::string(seq));
 }
 
 }  // namespace finalcut

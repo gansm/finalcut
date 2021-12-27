@@ -1307,6 +1307,11 @@ bool FApplication::processNextEvent()
     flush();
     processLogger();
   }
+  else
+  {
+    if ( FKeyboard::getInstance().isKeyPressed(next_event_wait) )
+      time_last_event = TimeValue{};
+  }
 
   processExternalUserEvent();
   return ( num_events > 0 );

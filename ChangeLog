@@ -1,3 +1,6 @@
+2020-12-27  Markus Gans  <guru.mail@muenster.de>
+	* The number of cycles has been reduced to save CPU time
+
 2020-12-18  Markus Gans  <guru.mail@muenster.de>
 	* Move the border label methods from FButtonGroup to FScrollView
 

@@ -1448,9 +1448,9 @@ inline void FOptiAttr::detectSwitchOn (const FChar& term, const FChar& next)
   // Detect switched on attributes on transition from "term" to "next"
   // and store the result in "on"
 
-  const auto& b1_mask = internal::var::b1_mask;
-  on.attr.byte[0] = ~(term.attr.byte[0])           & next.attr.byte[0];
-  on.attr.byte[1] = ~(term.attr.byte[1]) & b1_mask & next.attr.byte[1] & b1_mask;
+  const auto& mask = internal::var::b1_mask;
+  on.attr.byte[0] = ~(term.attr.byte[0]) & next.attr.byte[0];
+  on.attr.byte[1] = ~(term.attr.byte[1]) & next.attr.byte[1] & mask;
 }
 
 //----------------------------------------------------------------------
@@ -1459,9 +1459,9 @@ inline void FOptiAttr::detectSwitchOff (const FChar& term, const FChar& next)
   // Detect switched off attributes on transition from "term" to "next"
   // and store the result in "on"
 
-  const auto& b1_mask = internal::var::b1_mask;
-  off.attr.byte[0] = term.attr.byte[0]            & ~(next.attr.byte[0]);
-  off.attr.byte[1] = term.attr.byte[1] & b1_mask  & ~(next.attr.byte[1]) & b1_mask;
+  const auto& mask = internal::var::b1_mask;
+  off.attr.byte[0] = term.attr.byte[0] & ~(next.attr.byte[0]);
+  off.attr.byte[1] = term.attr.byte[1] & ~(next.attr.byte[1]) & mask;
 }
 
 //----------------------------------------------------------------------

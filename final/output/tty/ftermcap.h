@@ -164,8 +164,8 @@ inline FString FTermcap::getClassName() const
 template <typename... Args>
 std::string FTermcap::encodeParameter (const std::string& cap, Args&&... args)
 {
-  std::array<int, 9> attr{{ 0, 0, 0, 0, 0, 0, 0, 0, 0 }};
-  attr = {{static_cast<int>(args)...}};
+  std::array<int, 9> attr {{static_cast<int>(args)...}};
+  std::fill(attr.begin() + sizeof...(args), attr.end(), 0);
   return encodeParams(cap, attr);
 }
 

@@ -106,10 +106,10 @@ void TextWindow::setPos (const fc::FPoint& pos, bool)
 //----------------------------------------------------------------------
 void TextWindow::draw()
 {
+  setColor();
   setTransparent();
   clearArea();
   unsetTransparent();
-  setColor();
   print() << fc::FPoint(1, 1) << "┌┬┐┬ ┬┌─┐  ┌─┐┌─┐┌─┐┌─┐┌─┐"
           << fc::FPoint(1, 2) << " │ ├─┤├─   └─┐├─┘├─┤│  ├─ "
           << fc::FPoint(1, 3) << " ┴ ┴ ┴└─┘  └─┘┴  ┴ ┴└─┘└─┘"
@@ -172,10 +172,10 @@ void SpaceWindow::setPos (const fc::FPoint& pos, bool)
 //----------------------------------------------------------------------
 void SpaceWindow::draw()
 {
+  setColor();
   setTransparent();
   clearArea();
   unsetTransparent();
-  setColor();
   drawNightSky();
 }
 

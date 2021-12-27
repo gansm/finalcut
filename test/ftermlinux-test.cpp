@@ -1631,10 +1631,17 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
 
         if ( ! terminal_font.data )  // If data is empty on a second run
         {
-          terminal_font.data = new uChar[font_data_size]{ };
+          try
+          {
+            terminal_font.data = new uChar[font_data_size]{ };
+          }
+          catch (const std::bad_alloc&)
+          {
+            return -1;
+          }
         }
 
-        if ( fn->data && terminal_font.data )
+        if ( fn->data )
           std::memcpy (terminal_font.data, fn->data, size);
 
         terminal_font.op = KD_FONT_OP_SET;
@@ -1750,9 +1757,16 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
         terminal_unicode_map.entries = nullptr;
       }
 
-      terminal_unicode_map.entries = new unipair[pairs]();
+      try
+      {
+        terminal_unicode_map.entries = new unipair[pairs]();
+      }
+      catch (const std::bad_alloc&)
+      {
+        return -1;
+      }
 
-      if ( umap->entries && terminal_unicode_map.entries )
+      if ( umap->entries )
       {
         std::memcpy (terminal_unicode_map.entries, umap->entries, pairs_size);
         errno = 0;
@@ -2943,7 +2957,6 @@ void FTermLinuxTest::modifierKeyTest()
 
   mod_key.shift = 0;
   mod_key.ctrl = 1;
-  mod_key.alt = 1;
   mod_keycode = linux.modifierKeyCorrection(keycode);
   CPPUNIT_ASSERT ( mod_keycode == finalcut::FKey::Ctrl_Meta_up );
 
@@ -2986,7 +2999,6 @@ void FTermLinuxTest::modifierKeyTest()
 
   mod_key.shift = 0;
   mod_key.ctrl = 1;
-  mod_key.alt = 1;
   mod_keycode = linux.modifierKeyCorrection(keycode);
   CPPUNIT_ASSERT ( mod_keycode == finalcut::FKey::Ctrl_Meta_down );
 
@@ -3029,7 +3041,6 @@ void FTermLinuxTest::modifierKeyTest()
 
   mod_key.shift = 0;
   mod_key.ctrl = 1;
-  mod_key.alt = 1;
   mod_keycode = linux.modifierKeyCorrection(keycode);
   CPPUNIT_ASSERT ( mod_keycode == finalcut::FKey::Ctrl_Meta_left );
 
@@ -3072,7 +3083,6 @@ void FTermLinuxTest::modifierKeyTest()
 
   mod_key.shift = 0;
   mod_key.ctrl = 1;
-  mod_key.alt = 1;
   mod_keycode = linux.modifierKeyCorrection(keycode);
   CPPUNIT_ASSERT ( mod_keycode == finalcut::FKey::Ctrl_Meta_right );
 
@@ -3115,7 +3125,6 @@ void FTermLinuxTest::modifierKeyTest()
 
   mod_key.shift = 0;
   mod_key.ctrl = 1;
-  mod_key.alt = 1;
   mod_keycode = linux.modifierKeyCorrection(keycode);
   CPPUNIT_ASSERT ( mod_keycode == finalcut::FKey::Ctrl_Meta_insert );
 
@@ -3158,7 +3167,6 @@ void FTermLinuxTest::modifierKeyTest()
 
   mod_key.shift = 0;
   mod_key.ctrl = 1;
-  mod_key.alt = 1;
   mod_keycode = linux.modifierKeyCorrection(keycode);
   CPPUNIT_ASSERT ( mod_keycode == finalcut::FKey::Ctrl_Meta_del_char );
 
@@ -3201,7 +3209,6 @@ void FTermLinuxTest::modifierKeyTest()
 
   mod_key.shift = 0;
   mod_key.ctrl = 1;
-  mod_key.alt = 1;
   mod_keycode = linux.modifierKeyCorrection(keycode);
   CPPUNIT_ASSERT ( mod_keycode == finalcut::FKey::Ctrl_Meta_home );
 
@@ -3244,7 +3251,6 @@ void FTermLinuxTest::modifierKeyTest()
 
   mod_key.shift = 0;
   mod_key.ctrl = 1;
-  mod_key.alt = 1;
   mod_keycode = linux.modifierKeyCorrection(keycode);
   CPPUNIT_ASSERT ( mod_keycode == finalcut::FKey::Ctrl_Meta_end );
 
@@ -3287,7 +3293,6 @@ void FTermLinuxTest::modifierKeyTest()
 
   mod_key.shift = 0;
   mod_key.ctrl = 1;
-  mod_key.alt = 1;
   mod_keycode = linux.modifierKeyCorrection(keycode);
   CPPUNIT_ASSERT ( mod_keycode == finalcut::FKey::Ctrl_Meta_page_up );
 
@@ -3330,7 +3335,6 @@ void FTermLinuxTest::modifierKeyTest()
 
   mod_key.shift = 0;
   mod_key.ctrl = 1;
-  mod_key.alt = 1;
   mod_keycode = linux.modifierKeyCorrection(keycode);
   CPPUNIT_ASSERT ( mod_keycode == finalcut::FKey::Ctrl_Meta_page_down );
 
