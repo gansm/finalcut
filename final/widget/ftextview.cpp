@@ -224,18 +224,19 @@ void FTextView::insert (const FString& str, int pos)
       hbar->show();
   };
 
-  auto&& text_split = [&str] ()
-  {
-    if ( str.isEmpty() )
-    {
-      FStringList list{};
-      list.emplace_back("");
-      return list;
-    }
+  auto&& text_split = \
+      [&str] ()
+      {
+        if ( str.isEmpty() )
+        {
+          FStringList list{};
+          list.emplace_back("");
+          return list;
+        }
 
-    const auto& string = str.rtrim().expandTabs(getFOutput()->getTabstop());
-    return string.split("\n");
-  }();
+        const auto& string = str.rtrim().expandTabs(getFOutput()->getTabstop());
+        return string.split("\n");
+      }();
 
   for (auto&& line : text_split)  // Line loop
   {

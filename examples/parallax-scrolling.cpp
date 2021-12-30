@@ -258,6 +258,8 @@ ParallaxScrolling::ParallaxScrolling (fc::FWidget* parent)
   timer3 = addTimer (100);  // 100 ms (10 cps)
   getColorTheme()->term_fg = fc::FColor::LightGray;
   getColorTheme()->term_bg = fc::FColor::Black;
+  setForegroundColor(fc::FColor::LightGray);
+  setBackgroundColor(fc::FColor::Black);
 }
 
 //----------------------------------------------------------------------

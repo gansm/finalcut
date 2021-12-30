@@ -1011,7 +1011,7 @@ void FVTerm::clearArea (FTermArea* area, wchar_t fillchar) const
 
   if ( ! (area && area->data) )
   {
-    foutput->clearTerm (fillchar);
+    foutput->clearTerminal (fillchar);
     return;
   }
 
@@ -1797,7 +1797,7 @@ bool FVTerm::clearFullArea (const FTermArea* area, FChar& nc) const
     return false;
 
   // Try to clear the terminal rapidly with a control sequence
-  if ( foutput->clearTerm (nc.ch[0]) )
+  if ( foutput->clearTerminal (nc.ch[0]) )
   {
     nc.attr.bit.printed = true;
     std::fill_n (vterm->data, area_size, nc);

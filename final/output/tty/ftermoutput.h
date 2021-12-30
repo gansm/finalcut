@@ -112,7 +112,8 @@ class FTermOutput final : public FOutput
     void           initScreenSettings() override;
     bool           scrollTerminalForward() override;
     bool           scrollTerminalReverse() override;
-    bool           clearTerm (wchar_t = L' ') override;
+    void           clearTerminalState() override;
+    bool           clearTerminal (wchar_t = L' ') override;
     void           flush() override;
     void           beep() const override;
 

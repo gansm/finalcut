@@ -220,10 +220,11 @@ void FTermcap::setDefaultPutCharFunction()
 void FTermcap::setDefaultPutStringFunction()
 {
   static const auto& fsys = FSystem::getInstance();
-  auto put_string = [] (const std::string& string)
-                    {
-                      return fsys->fputs(string.c_str(), stdout);
-                    };
+  auto put_string = \
+      [] (const std::string& string)
+      {
+        return fsys->fputs(string.c_str(), stdout);
+      };
   outs = put_string;
 }
 

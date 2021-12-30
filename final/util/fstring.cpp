@@ -392,10 +392,13 @@ std::string FString::toString() const
 FString FString::toLower() const
 {
   FString s{*this};
-  auto to_lower = [] (auto& c)
-                  {
-                    c = wchar_t(std::towlower(std::wint_t(c)));
-                  };
+
+  auto to_lower = \
+      [] (auto& c)
+      {
+        c = wchar_t(std::towlower(std::wint_t(c)));
+      };
+
   std::for_each (s.begin(), s.end(), to_lower);
   return s;
 }
@@ -404,10 +407,13 @@ FString FString::toLower() const
 FString FString::toUpper() const
 {
   FString s{*this};
-  auto to_upper = [] (auto& c)
-                  {
-                    c = wchar_t(std::towupper(std::wint_t(c)));
-                  };
+
+  auto to_upper = \
+      [] (auto& c)
+      {
+        c = wchar_t(std::towupper(std::wint_t(c)));
+      };
+
   std::for_each (s.begin(), s.end(), to_upper);
   return s;
 }

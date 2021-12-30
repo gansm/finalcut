@@ -391,21 +391,23 @@ FString getFullWidth (const FString& str)
   // Converts half-width to full-width characters
 
   FString s{str};
-  auto table_search = [] (wchar_t& c)
-  {
-    const auto& halfwidth_fullwidth = FCharMap::getHalfFullWidthMap();
-    constexpr std::size_t HALF = 0;
-    constexpr std::size_t FULL = 1;
-    const auto& found = std::find_if ( halfwidth_fullwidth.cbegin()
-                                     , halfwidth_fullwidth.cend()
-                                     , [&c] (const char_map& entry)
-                                       {
-                                         return entry[HALF] == c;
-                                       } );
 
-    if ( found != halfwidth_fullwidth.cend() )
-      c = (*found)[FULL];
-  };
+  auto table_search = \
+      [] (wchar_t& c)
+      {
+        const auto& halfwidth_fullwidth = FCharMap::getHalfFullWidthMap();
+        constexpr std::size_t HALF = 0;
+        constexpr std::size_t FULL = 1;
+        const auto& found = std::find_if ( halfwidth_fullwidth.cbegin()
+                                         , halfwidth_fullwidth.cend()
+                                         , [&c] (const char_map& entry)
+                                           {
+                                             return entry[HALF] == c;
+                                           } );
+
+        if ( found != halfwidth_fullwidth.cend() )
+          c = (*found)[FULL];
+      };
 
   for (auto&& c : s)
   {
@@ -424,21 +426,23 @@ FString getHalfWidth (const FString& str)
   // Converts full-width to half-width characters
 
   FString s{str};
-  auto table_search = [] (wchar_t& c)
-  {
-    const auto& halfwidth_fullwidth = FCharMap::getHalfFullWidthMap();
-    constexpr std::size_t HALF = 0;
-    constexpr std::size_t FULL = 1;
-    const auto& found = std::find_if ( halfwidth_fullwidth.cbegin()
-                                     , halfwidth_fullwidth.cend()
-                                     , [&c] (const char_map& entry)
-                                       {
-                                         return entry[FULL] == c;
-                                       } );
 
-    if ( found != halfwidth_fullwidth.cend() )
-      c = (*found)[HALF];
-  };
+  auto table_search = \
+      [] (wchar_t& c)
+      {
+        const auto& halfwidth_fullwidth = FCharMap::getHalfFullWidthMap();
+        constexpr std::size_t HALF = 0;
+        constexpr std::size_t FULL = 1;
+        const auto& found = std::find_if ( halfwidth_fullwidth.cbegin()
+                                         , halfwidth_fullwidth.cend()
+                                         , [&c] (const char_map& entry)
+                                           {
+                                             return entry[FULL] == c;
+                                           } );
+
+        if ( found != halfwidth_fullwidth.cend() )
+          c = (*found)[HALF];
+      };
 
   for (auto&& c : s)
   {

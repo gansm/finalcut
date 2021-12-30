@@ -869,8 +869,7 @@ void FWidget::resize()
   if ( isRootWidget() )
   {
     // The screen content is now unknown
-    setNormal();
-    setColor (FColor::Undefined, FColor::Undefined);
+    FVTerm::getFOutput()->clearTerminalState();
     // Determine the new terminal size
     const FRect old_term_geometry {getTermGeometry()};
     determineDesktopSize();

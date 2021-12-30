@@ -1,3 +1,6 @@
+2020-12-30  Markus Gans  <guru.mail@muenster.de>
+	* Resetting the terminal state on resizing
+
 2020-12-27  Markus Gans  <guru.mail@muenster.de>
 	* The number of cycles has been reduced to save CPU time
 

@@ -278,14 +278,8 @@ void FTermOutput::initTerminal (FVTerm::FTermArea* virtual_terminal)
   // Check for support for combined characters
   init_combined_character();
 
-  // term_attribute stores the current state of the terminal
-  term_attribute.ch           = {{ L'\0' }};
-  term_attribute.fg_color     = FColor::Default;
-  term_attribute.bg_color     = FColor::Default;
-  term_attribute.attr.byte[0] = 0;
-  term_attribute.attr.byte[1] = 0;
-  term_attribute.attr.byte[2] = 0;
-  term_attribute.attr.byte[3] = 0;
+  // Reset the state of the terminal
+  clearTerminalState();
 
   // Initialize the last flush time
   time_last_flush = TimeValue{};
@@ -302,7 +296,7 @@ void FTermOutput::finishTerminal()
 
   // Clear the terminal
   if ( fterm_data->isInAlternateScreen() )
-    clearTerm();
+    clearTerminal();
 }
 
 //----------------------------------------------------------------------
@@ -373,7 +367,20 @@ bool FTermOutput::scrollTerminalReverse()
 }
 
 //----------------------------------------------------------------------
-bool FTermOutput::clearTerm (wchar_t fillchar)
+void FTermOutput::clearTerminalState()
+{
+  // term_attribute stores the current state of the terminal
+  term_attribute.ch           = {{ L'\0' }};
+  term_attribute.fg_color     = FColor::Undefined;
+  term_attribute.bg_color     = FColor::Undefined;
+  term_attribute.attr.byte[0] = 0;
+  term_attribute.attr.byte[1] = 0;
+  term_attribute.attr.byte[2] = 0;
+  term_attribute.attr.byte[3] = 0;
+}
+
+//----------------------------------------------------------------------
+bool FTermOutput::clearTerminal (wchar_t fillchar)
 {
   // Clear the real terminal and put cursor at home
 

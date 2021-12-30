@@ -115,7 +115,8 @@ class FOutput : public std::enable_shared_from_this<FOutput>
     virtual void        initScreenSettings() = 0;
     virtual bool        scrollTerminalForward() = 0;
     virtual bool        scrollTerminalReverse() = 0;
-    virtual bool        clearTerm (wchar_t = L' ') = 0;
+    virtual void        clearTerminalState() = 0;
+    virtual bool        clearTerminal (wchar_t = L' ') = 0;
     virtual void        flush() = 0;
     virtual void        beep() const = 0;
 

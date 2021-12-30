@@ -677,16 +677,18 @@ void FTerm::setPalette (FColor index, int r, int g, int b)
     const int rr = (r * 1001) / 256;
     const int gg = (g * 1001) / 256;
     const int bb = (b * 1001) / 256;
-    const std::string& color_str = [&index, &rr, &gg, &bb, &Ic, &Ip] ()
-    {
-      if ( Ic )
-        return FTermcap::encodeParameter(Ic, uInt16(index), rr, gg, bb);
 
-      if ( Ip )
-        return FTermcap::encodeParameter(Ip, uInt16(index), 0, 0, 0, rr, gg, bb);
+    const std::string& color_str = \
+        [&index, &rr, &gg, &bb, &Ic, &Ip] ()
+        {
+          if ( Ic )
+            return FTermcap::encodeParameter(Ic, uInt16(index), rr, gg, bb);
 
-      return std::string{};
-    }();
+          if ( Ip )
+            return FTermcap::encodeParameter(Ip, uInt16(index), 0, 0, 0, rr, gg, bb);
+
+          return std::string{};
+        }();
 
     if ( ! color_str.empty() )
     {
@@ -785,12 +787,13 @@ std::string FTerm::getEncodingString()
   static auto& data = FTermData::getInstance();
   const auto& term_encoding = data.getTerminalEncoding();
   const auto& encoding_list = data.getEncodingList();
-  const auto& found = std::find_if ( encoding_list.cbegin()
-                                   , encoding_list.cend()
-                                   , [&term_encoding] (const auto& entry)
-                                     {
-                                       return entry.second == term_encoding;
-                                     } );
+  const auto& found = \
+      std::find_if ( encoding_list.cbegin()
+                   , encoding_list.cend()
+                   , [&term_encoding] (const auto& entry)
+                     {
+                       return entry.second == term_encoding;
+                     } );
   return ( found != encoding_list.cend() ) ? found->first : "";
 }
 
@@ -806,11 +809,12 @@ wchar_t FTerm::charEncode (const wchar_t& c, const Encoding& enc)
 {
   const auto& character = FCharMap::getCharEncodeMap();
   const auto& cend = character.cend();
-  const auto& found = std::find_if ( character.cbegin(), cend
-                                   , [&c] (const auto& entry)
-                                     {
-                                       return entry.unicode == c;
-                                     } );
+  const auto& found = \
+      std::find_if ( character.cbegin(), cend
+                   , [&c] (const auto& entry)
+                     {
+                       return entry.unicode == c;
+                     } );
 
   if ( found == cend )
     return c;
