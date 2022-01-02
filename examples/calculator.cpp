@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2021 Markus Gans                                      *
+* Copyright 2016-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -38,7 +38,8 @@ using finalcut::FPoint;
 using finalcut::FRect;
 using finalcut::FSize;
 
-constexpr lDouble pi_value{3.141'592'653'589'793'238L};
+template <typename T>
+constexpr T pi_value = T{3.141'592'653'589'793'238L};
 
 
 //----------------------------------------------------------------------
@@ -678,7 +679,7 @@ void Calc::percent (lDouble& x)
 //----------------------------------------------------------------------
 void Calc::pi (lDouble& x)
 {
-  x = pi_value;
+  x = pi_value<lDouble>;
   setDisplay(x);
 }
 
@@ -810,11 +811,11 @@ void Calc::sine (lDouble& x)
   else
   {
     if ( arcus_mode )
-      x = std::asin(x) * 180.0L / pi_value;
+      x = std::asin(x) * 180.0L / pi_value<lDouble>;
     else if ( std::fabs(std::fmod(x, 180.0L)) < LDBL_EPSILON )  // x / 180 = 0
       x = 0.0L;
     else
-      x = std::sin(x * pi_value / 180.0L);
+      x = std::sin(x * pi_value<lDouble> / 180.0L);
   }
 
   if ( errno == EDOM )
@@ -848,11 +849,11 @@ void Calc::cosine (lDouble& x)
   else
   {
     if ( arcus_mode )
-      x = std::acos(x) * 180.0L / pi_value;
+      x = std::acos(x) * 180.0L / pi_value<lDouble>;
     else if ( std::fabs(std::fmod(x - 90.0L, 180.0L)) < LDBL_EPSILON )  // (x - 90) / 180 == 0
       x = 0.0L;
     else
-      x = std::cos(x * pi_value / 180.0L);
+      x = std::cos(x * pi_value<lDouble> / 180.0L);
   }
 
   if ( errno == EDOM )
@@ -886,7 +887,7 @@ void Calc::tangent (lDouble& x)
   else
   {
     if ( arcus_mode )
-      x = std::atan(x) * 180.0L / pi_value;
+      x = std::atan(x) * 180.0L / pi_value<lDouble>;
     else
     {
       // Test if (x / 180) != 0 and x / 90 == 0
@@ -896,7 +897,7 @@ void Calc::tangent (lDouble& x)
       else if ( std::fabs(std::fmod(x, 180.0L)) < LDBL_EPSILON )  // x / 180 == 0
         x = 0.0L;
       else
-        x = std::tan(x * pi_value / 180.0L);
+        x = std::tan(x * pi_value<lDouble> / 180.0L);
     }
   }
 

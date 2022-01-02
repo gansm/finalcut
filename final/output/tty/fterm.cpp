@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2021 Markus Gans                                      *
+* Copyright 2012-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -177,12 +177,6 @@ int FTerm::getTabstop()
 int FTerm::getMaxColor()
 {
   return FTermcap::max_color;
-}
-
-//----------------------------------------------------------------------
-bool FTerm::isNormal (const FChar& ch)
-{
-  return FOptiAttr::isNormal(ch);
 }
 
 //----------------------------------------------------------------------
@@ -662,6 +656,24 @@ void FTerm::resetColorMap()
 }
 
 //----------------------------------------------------------------------
+void FTerm::clearTerminalAttributes()
+{
+  // Turn off all attributes
+  if ( TCAP(t_exit_attribute_mode) )
+  {
+    paddingPrint (TCAP(t_exit_attribute_mode));
+    std::fflush(stdout);
+  }
+
+  // Turn off pc charset mode
+  if ( TCAP(t_exit_pc_charset_mode) )
+  {
+    paddingPrint (TCAP(t_exit_pc_charset_mode));
+    std::fflush(stdout);
+  }
+}
+
+//----------------------------------------------------------------------
 void FTerm::setPalette (FColor index, int r, int g, int b)
 {
   // Redefine RGB color value for a palette entry
@@ -896,13 +908,6 @@ void FTerm::initScreenSettings()
 }
 
 //----------------------------------------------------------------------
-std::string FTerm::changeAttribute (FChar& term_attr, FChar& next_attr)
-{
-  static auto& opti_attr = FOptiAttr::getInstance();
-  return opti_attr.changeAttribute (term_attr, next_attr);
-}
-
-//----------------------------------------------------------------------
 void FTerm::changeTermSizeFinished()
 {
   static auto& data = FTermData::getInstance();
@@ -1026,7 +1031,7 @@ void FTerm::init_pc_charset()
     return;
 
   if ( data.isTermType ( FTermType::gnome_terminal
-                             | FTermType::linux_con ) )
+                       | FTermType::linux_con ) )
   {
     // Fallback if tcap "S2" is not found
     if ( ! TCAP(t_enter_pc_charset_mode) )
@@ -1785,6 +1790,9 @@ void FTerm::init()
   // KDE terminal cursor and cygwin + teraterm charmap correction
   initTermspecifics();
 
+  // Reset all terminal attributes
+  clearTerminalAttributes();
+
   // Set 220 Hz beep (100 ms)
   setBeep(220, 100);
 
@@ -1942,19 +1950,8 @@ void FTerm::finish() const
   // Restore the saved termios settings
   FTermios::restoreTTYsettings();
 
-  // Turn off all attributes
-  if ( TCAP(t_exit_attribute_mode) )
-  {
-    paddingPrint (TCAP(t_exit_attribute_mode));
-    std::fflush(stdout);
-  }
-
-  // Turn off pc charset mode
-  if ( TCAP(t_exit_pc_charset_mode) )
-  {
-    paddingPrint (TCAP(t_exit_pc_charset_mode));
-    std::fflush(stdout);
-  }
+  // Reset all terminal attributes
+  clearTerminalAttributes();
 
   // Reset xterm color settings to default values
   xterm.resetDefaults();

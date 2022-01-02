@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2021 Markus Gans                                      *
+* Copyright 2015-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -869,7 +869,9 @@ void FWidget::resize()
   if ( isRootWidget() )
   {
     // The screen content is now unknown
-    FVTerm::getFOutput()->clearTerminalState();
+    auto foutput = FVTerm::getFOutput();
+    foutput->clearTerminalState();
+    foutput->clearTerminalAttributes();
     // Determine the new terminal size
     const FRect old_term_geometry {getTermGeometry()};
     determineDesktopSize();

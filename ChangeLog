@@ -1,237 +1,237 @@
-2020-12-30  Markus Gans  <guru.mail@muenster.de>
+2021-12-30  Markus Gans  <guru.mail@muenster.de>
 	* Resetting the terminal state on resizing
 
-2020-12-27  Markus Gans  <guru.mail@muenster.de>
+2021-12-27  Markus Gans  <guru.mail@muenster.de>
 	* The number of cycles has been reduced to save CPU time
 
-2020-12-18  Markus Gans  <guru.mail@muenster.de>
+2021-12-18  Markus Gans  <guru.mail@muenster.de>
 	* Move the border label methods from FButtonGroup to FScrollView
 
-2020-12-13  Markus Gans  <guru.mail@muenster.de>
+2021-12-13  Markus Gans  <guru.mail@muenster.de>
 	* Faster string comparison between FString, char* std::string, 
 	  wchar_t and std:wstring
 
-2020-12-11  Markus Gans  <guru.mail@muenster.de>
+2021-12-11  Markus Gans  <guru.mail@muenster.de>
 	* Correct mouse event after moving a window
 
-2020-11-16  Markus Gans  <guru.mail@muenster.de>
+2021-11-16  Markus Gans  <guru.mail@muenster.de>
 	* A new example demonstrates parallax scrolling with multi-layered 
 	  stars
 
-2020-11-11  Markus Gans  <guru.mail@muenster.de>
+2021-11-11  Markus Gans  <guru.mail@muenster.de>
 	* You can now use the constructor of the FVTerm class to specify 
 	  an alternative terminal output class that must be derived from 
 	  FOutput
 
-2020-11-06  Markus Gans  <guru.mail@muenster.de>
+2021-11-06  Markus Gans  <guru.mail@muenster.de>
 	* Using the STL algorithms for the input fifo_buf
 
-2020-11-01  Markus Gans  <guru.mail@muenster.de>
+2021-11-01  Markus Gans  <guru.mail@muenster.de>
 	* Switched to the language standard C++14
 
-2020-10-31  Markus Gans  <guru.mail@muenster.de>
+2021-10-31  Markus Gans  <guru.mail@muenster.de>
 	* Version 0.8.0
 
-2021-10-28 Markus Gans  <guru.mail@muenster.de>
+2021-10-28  Markus Gans  <guru.mail@muenster.de>
 	* The keyboard and timer examples now have flicker-free scrolling
 
-2021-10-24 Markus Gans  <guru.mail@muenster.de>
+2021-10-24  Markus Gans  <guru.mail@muenster.de>
 	* Faster search for key strings through sorted arrays
 
-2021-10-23 Markus Gans  <guru.mail@muenster.de>
+2021-10-23  Markus Gans  <guru.mail@muenster.de>
 	* Virtual windows now know their own window level
 	* String filter for FListBoxItem
 
-2021-10-22 Markus Gans  <guru.mail@muenster.de>
+2021-10-22  Markus Gans  <guru.mail@muenster.de>
 	* Change FObjectList from std::list to std::vector
 
-2021-10-21 Markus Gans  <guru.mail@muenster.de>
+2021-10-21  Markus Gans  <guru.mail@muenster.de>
 	* The tab stop printing was corrected
 
-2021-10-20 Markus Gans  <guru.mail@muenster.de>
+2021-10-20  Markus Gans  <guru.mail@muenster.de>
 	* Implementation of the stringPrint() method in FTermcap
 
-2021-10-18 Markus Gans  <guru.mail@muenster.de>
+2021-10-18  Markus Gans  <guru.mail@muenster.de>
 	* Speed up FTermcap::paddingPrint() by assigning the putchar function 
 	  only once
 
-2021-10-12 Markus Gans  <guru.mail@muenster.de>
+2021-10-12  Markus Gans  <guru.mail@muenster.de>
 	* Speed up access to mouse objects in FMouseControl 
 	* The predefined escape sequences for keyboard keys are now 
 	  functional again
 	* Now, FINAL CUT also runs under GNU Hurd
 
-2021-10-08 Markus Gans  <guru.mail@muenster.de>
+2021-10-08  Markus Gans  <guru.mail@muenster.de>
 	* The visibility of the FDialog title bar buttons can now be disabled
 
-2021-10-04 Markus Gans  <guru.mail@muenster.de>
+2021-10-04  Markus Gans  <guru.mail@muenster.de>
 	* Preventing the focus of a container widget
 
-2021-10-01 Markus Gans  <guru.mail@muenster.de>
+2021-10-01  Markus Gans  <guru.mail@muenster.de>
 	* The output buffer is now flushed before the terminal is scrolled
 
-2021-09-29 Markus Gans  <guru.mail@muenster.de>
+2021-09-29  Markus Gans  <guru.mail@muenster.de>
 	* Faster FUnicode comparisons
 	* Less string comparison in FKeyboard
 
-2021-09-28 Markus Gans  <guru.mail@muenster.de>
+2021-09-28  Markus Gans  <guru.mail@muenster.de>
 	* Optimization of attribute comparisons
 	* Reset the rdbuf of clog after deleting the logger object to prevent 
 	  an invalid pointer in the rdbuf
 	* FTermcap::getNumber now returns -1 if there is no value in the termcap 
 	  database
 
-2021-09-25 Markus Gans  <guru.mail@muenster.de>
+2021-09-25  Markus Gans  <guru.mail@muenster.de>
 	* New FString auxiliary function FStringCaseCompare as strcasecmp 
 	  replacement
 	* Move attribute handling from FVTerm to FVTermAttribute
 
-2021-09-22 Markus Gans  <guru.mail@muenster.de>
+2021-09-22  Markus Gans  <guru.mail@muenster.de>
 	* The request for a terminal size change now occurs only once per 
 	  event loop cycle
 
-2021-09-22 Markus Gans  <guru.mail@muenster.de>
+2021-09-22  Markus Gans  <guru.mail@muenster.de>
 	* The individual FINAL CUT components have been moved to directories 
 	  to provide a better code overview
 	* Renaming the class FTermBuffer to FVTermBuffer, because only 
 	  virtual terminal data is buffered here
 
-2021-09-17 Markus Gans  <guru.mail@muenster.de>
+2021-09-17  Markus Gans  <guru.mail@muenster.de>
 	* Output optimization: Wide strings are now converted to 
 	  UTF-8 strings before they are inserted into the output buffer
 	* Key maps now store the length of the string to speed up 
 	  key string parsing
 
-2021-09-15 Markus Gans  <guru.mail@muenster.de>
+2021-09-15  Markus Gans  <guru.mail@muenster.de>
 	* setExitMessage is now a function without object dependencies, 
 	  so it can be called from anywhere
 	* New internal function unicode_to_utf8 which allows to convert 
 	  a wchar_t to a utf-8 string
 
-2021-09-14 Markus Gans  <guru.mail@muenster.de>
+2021-09-14  Markus Gans  <guru.mail@muenster.de>
 	* More local static variables are used to prevent repeated 
 	  value assignments
 
-2021-09-12 Markus Gans  <guru.mail@muenster.de>
+2021-09-12  Markus Gans  <guru.mail@muenster.de>
 	* The detected terminal type is now stored in FTermData
 
-2021-09-05 Markus Gans  <guru.mail@muenster.de>
+2021-09-05  Markus Gans  <guru.mail@muenster.de>
 	* The methods for the physical terminal output of class FVTerm 
 	  were extracted and moved to the new class FVTermOutput. 
 	  The class FVTermOutput is the implementation of the abstract 
 	  class FOutput. This abstraction layer can be the basis for 
 	  an alternative implementation.
 
-2021-08-01 Markus Gans  <guru.mail@muenster.de>
+2021-08-01  Markus Gans  <guru.mail@muenster.de>
 	* Fixed mutex deadlock in FObject
 
-2021-07-25 Markus Gans  <guru.mail@muenster.de>
+2021-07-25  Markus Gans  <guru.mail@muenster.de>
 	* Function setMinimizable() to minimize FDialog windows added
 
-2021-07-18 Markus Gans  <guru.mail@muenster.de>
+2021-07-18  Markus Gans  <guru.mail@muenster.de>
 	* Improved the GNU autoconf-archive check
 
-2021-06-26 Markus Gans  <guru.mail@muenster.de>
+2021-06-26  Markus Gans  <guru.mail@muenster.de>
 	* Global non-constant variables are now encapsulated in classes
 
-2021-06-19 Markus Gans  <guru.mail@muenster.de>
+2021-06-19  Markus Gans  <guru.mail@muenster.de>
 	* Moving the creator methods from FTerm to its own class
 
-2021-06-16 Markus Gans  <guru.mail@muenster.de>
+2021-06-16  Markus Gans  <guru.mail@muenster.de>
 	* Converted the internal timer from timeval 
 	  to std::chrono::time_point<system_clock>
 
-2021-06-06 Markus Gans  <guru.mail@muenster.de>
+2021-06-06  Markus Gans  <guru.mail@muenster.de>
 	* Bug fixing in FString and FTermDetection
 	* FTermDetection now has clean code by using FString instead of char*
 	* Replace std::strlen with stringLength
 
-2021-06-03 Markus Gans  <guru.mail@muenster.de>
+2021-06-03  Markus Gans  <guru.mail@muenster.de>
 	* Some FString optimizations
 
-2021-05-30 Markus Gans  <guru.mail@muenster.de>
+2021-05-30  Markus Gans  <guru.mail@muenster.de>
 	* FString internally changed from wchar_t* to std::wstring
 
-2021-05-24 Markus Gans  <guru.mail@muenster.de>
+2021-05-24  Markus Gans  <guru.mail@muenster.de>
 	* Using std::string for the attribute buffer
 
-2021-05-22 Markus Gans  <guru.mail@muenster.de>
+2021-05-22  Markus Gans  <guru.mail@muenster.de>
 	* Convert FOptiMove from char[] to std::string
 
-2021-05-13 Markus Gans  <guru.mail@muenster.de>
+2021-05-13  Markus Gans  <guru.mail@muenster.de>
 	* Prevent duplicate widget in the close widget list
 
-2021-05-07 Markus Gans  <guru.mail@muenster.de>
+2021-05-07  Markus Gans  <guru.mail@muenster.de>
 	* Some pointers were replaced by references
 
-2021-05-04 Markus Gans  <guru.mail@muenster.de>
+2021-05-04  Markus Gans  <guru.mail@muenster.de>
 	* Prevent flickering when resizing terminals or redrawing 
 	  the screen via ctrl-l
 
-2021-05-02 Markus Gans  <guru.mail@muenster.de>
+2021-05-02  Markus Gans  <guru.mail@muenster.de>
 	* Bugfix for sending multiple SIGWINCH signals from 
 	  gnome-terminal under Wayland
 
-2021-05-01 Markus Gans  <guru.mail@muenster.de>
+2021-05-01  Markus Gans  <guru.mail@muenster.de>
 	* Replace some std::bind with lambda functions
 
-2021-04-30 Markus Gans  <guru.mail@muenster.de>
+2021-04-30  Markus Gans  <guru.mail@muenster.de>
 	* Fixes Linux console bug from February 20, 2021
 
-2021-04-27 Markus Gans  <guru.mail@muenster.de>
+2021-04-27  Markus Gans  <guru.mail@muenster.de>
 	* Code optimization at widget focus
 
-2021-04-24 Markus Gans  <guru.mail@muenster.de>
+2021-04-24  Markus Gans  <guru.mail@muenster.de>
 	* Fixed mutex deadlock in FLogger
 
-2021-04-21 Markus Gans  <guru.mail@muenster.de>
+2021-04-21  Markus Gans  <guru.mail@muenster.de>
 	* Fixes the detection of the terminal size after a SIGWINCH signal
 
-2021-04-18 Markus Gans  <guru.mail@muenster.de>
+2021-04-18  Markus Gans  <guru.mail@muenster.de>
 	* Decoupling the FWidget and FWindow classes from FVTerm
 	* Avoid redrawing widgets when show() is called multiple times
 	* Readjustment of the root widget when the terminal size is changed
 
-2021-04-11 Markus Gans  <guru.mail@muenster.de>
+2021-04-11  Markus Gans  <guru.mail@muenster.de>
 	* Better support for kitty terminals
 
-2021-03-31 Markus Gans  <guru.mail@muenster.de>
+2021-03-31  Markus Gans  <guru.mail@muenster.de>
 	* argv is now stored internally as a std::vector container
 
-2021-03-30 Markus Gans  <guru.mail@muenster.de>
+2021-03-30  Markus Gans  <guru.mail@muenster.de>
 	* Stops terminal refresh during dialog resizing until all 
 	  child widgets have been redrawn
 
-2021-03-28 Markus Gans  <guru.mail@muenster.de>
+2021-03-28  Markus Gans  <guru.mail@muenster.de>
 	* Widget now have the virtual method initLayout() to set 
 	  the widget layouts automatically before the first drawing 
 	  on the terminal is done. Also texts in full-width characters, 
 	  whose character width is determined automatically, should be 
 	  calculated here.
 
-2021-03-15 Markus Gans  <guru.mail@muenster.de>
+2021-03-15  Markus Gans  <guru.mail@muenster.de>
 	* Dynamic adjustment of the terminal refresh rate between 
 	  5 and 60 Hz
 
-2021-03-09 Markus Gans  <guru.mail@muenster.de>
+2021-03-09  Markus Gans  <guru.mail@muenster.de>
 	* Implementation of an own padding print method for sending 
 	  control codes to the terminal
 
-2021-02-28 Markus Gans  <guru.mail@muenster.de>
+2021-02-28  Markus Gans  <guru.mail@muenster.de>
 	* Removing the termcap library from the header files so 
 	  that FINAL CUT programs are not affected by the preprocessor 
 	  #define macros.
 	  Many thanks to Zhenyu Zhang for this optimization suggestion
 
-2021-02-24 Markus Gans  <guru.mail@muenster.de>
+2021-02-24  Markus Gans  <guru.mail@muenster.de>
 	* Fixed the incorrect display on terminals without 
 	  UTF-8 character encoding
 
-2021-02-20 Markus Gans  <guru.mail@muenster.de>
+2021-02-20  Markus Gans  <guru.mail@muenster.de>
 	* Optimize terminal output buffer queue with differencing
 	  for strings, and control characters and control sequences
 
-2021-02-09 Markus Gans  <guru.mail@muenster.de>
+2021-02-09  Markus Gans  <guru.mail@muenster.de>
 	* Added support for combined unicode characters
 	* Added a unit test for the FTermBuffer class
 	* Added a unit test for the FTterm functions

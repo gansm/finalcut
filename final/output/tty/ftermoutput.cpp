@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021 Markus Gans                                           *
+* Copyright 2021-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -367,6 +367,12 @@ bool FTermOutput::scrollTerminalReverse()
 }
 
 //----------------------------------------------------------------------
+void FTermOutput::clearTerminalAttributes()
+{
+  FTerm::clearTerminalAttributes();
+}
+
+//----------------------------------------------------------------------
 void FTermOutput::clearTerminalState()
 {
   // term_attribute stores the current state of the terminal
@@ -389,7 +395,7 @@ bool FTermOutput::clearTerminal (wchar_t fillchar)
   const auto& cb = TCAP(t_clr_eol);
   const bool ut = FTermcap::background_color_erase;
   auto& next_attribute = FVTerm::getAttribute();
-  const auto& normal = FTerm::isNormal(next_attribute);
+  const auto& normal = FOptiAttr::isNormal(next_attribute);
   appendAttributes (next_attribute);
 
   if ( ! ( (cl || cd || cb) && (normal || ut) )
@@ -604,7 +610,7 @@ bool FTermOutput::canClearToEOL (uInt xmin, uInt y) const
     return false;
 
   uInt beginning_whitespace = 1;
-  const auto& normal = FTerm::isNormal(min_char);
+  const auto& normal = FOptiAttr::isNormal(min_char);
   const auto& ut = FTermcap::background_color_erase;
 
   for (uInt x = xmin + 1; x < uInt(vterm->width); x++)
@@ -635,7 +641,7 @@ bool FTermOutput::canClearLeadingWS (uInt& xmin, uInt y) const
     return false;
 
   uInt leading_whitespace = 1;
-  const auto& normal = FTerm::isNormal(first_char);
+  const auto& normal = FOptiAttr::isNormal(first_char);
   const auto& ut = FTermcap::background_color_erase;
 
   for (uInt x{1}; x < uInt(vterm->width); x++)
@@ -671,7 +677,7 @@ bool FTermOutput::canClearTrailingWS (uInt& xmax, uInt y) const
     return false;
 
   uInt trailing_whitespace = 1;
-  const auto& normal = FTerm::isNormal(last_char);
+  const auto& normal = FOptiAttr::isNormal(last_char);
   const auto& ut = FTermcap::background_color_erase;
 
   for (uInt x = uInt(vterm->width) - 1; x >  0 ; x--)
@@ -979,7 +985,7 @@ FTermOutput::PrintState FTermOutput::eraseCharacters ( uInt& x, uInt xmax, uInt 
   else
   {
     const uInt start_pos = x;
-    const auto& normal = FTerm::isNormal(print_char);
+    const auto& normal = FOptiAttr::isNormal(print_char);
     const auto& ut = FTermcap::background_color_erase;
 
     if ( whitespace > erase_char_length + cursor_address_length
@@ -1369,7 +1375,8 @@ inline void FTermOutput::appendChar (FChar& next_char)
 inline void FTermOutput::appendAttributes (FChar& next_attr)
 {
   // generate attribute string for the next character
-  const auto& attr_str = FTerm::changeAttribute (term_attribute, next_attr);
+  static auto& opti_attr = FOptiAttr::getInstance();
+  const auto& attr_str = opti_attr.changeAttribute (term_attribute, next_attr);
 
   if ( ! attr_str.empty() )
     appendOutputBuffer (FTermControl{attr_str});

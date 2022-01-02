@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021 Markus Gans                                           *
+* Copyright 2021-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -115,6 +115,7 @@ class FOutput : public std::enable_shared_from_this<FOutput>
     virtual void        initScreenSettings() = 0;
     virtual bool        scrollTerminalForward() = 0;
     virtual bool        scrollTerminalReverse() = 0;
+    virtual void        clearTerminalAttributes() = 0;
     virtual void        clearTerminalState() = 0;
     virtual bool        clearTerminal (wchar_t = L' ') = 0;
     virtual void        flush() = 0;

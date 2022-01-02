@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2021 Markus Gans                                      *
+* Copyright 2012-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -178,11 +178,8 @@ class FTerm final
     static int               getMaxColor();
 
     // Inquiries
-    static bool              isNormal (const FChar&);
     static bool              isRaw();
     static bool              hasUTF8();
-    static bool              hasVT100();
-    static bool              hasASCII();
     static bool              isMonochron();
     static bool              isNewFont();
     static bool              isInitialized();
@@ -219,6 +216,7 @@ class FTerm final
     static void              setKDECursor (KdeKonsoleCursorShape);
     static void              saveColorMap();
     static void              resetColorMap();
+    static void              clearTerminalAttributes();
     static void              setPalette (FColor, int, int, int);
     static void              setBeep (int, int);
     static void              resetBeep();
@@ -239,7 +237,6 @@ class FTerm final
 
     void                     initTerminal();
     static void              initScreenSettings();
-    static std::string       changeAttribute (FChar&, FChar&);
     static void              changeTermSizeFinished();
 
   private:
