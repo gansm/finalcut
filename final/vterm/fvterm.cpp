@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2021 Markus Gans                                      *
+* Copyright 2016-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -1183,7 +1183,8 @@ FVTerm::CoveredState FVTerm::isCovered ( const FPoint& pos
   auto is_covered = CoveredState::None;
   bool found{ area == vdesktop };
 
-  if ( ! area || ! win_list || win_list->empty() )
+  if ( ! area || ! win_list || win_list->empty()
+    || win_list->back()->getVWin() == area )
     return CoveredState::None;
 
   for (auto& win_obj : *win_list)
@@ -1193,18 +1194,13 @@ FVTerm::CoveredState FVTerm::isCovered ( const FPoint& pos
     if ( ! (win && win->visible) )
       continue;
 
-    const int& win_x = win->offset_left;
-    const int& win_y = win->offset_top;
-    const int width  = getFullAreaWidth(win);
-    const int height = win->minimized ? win->min_height : getFullAreaHeight(win);
-    const FRect geometry { win_x, win_y
-                         , std::size_t(width)
-                         , std::size_t(height) };
-
-    if ( found && geometry.contains(pos) )  // is covered
+    if ( found && win->contains(pos) )  // is covered
     {
       const int& x = pos.getX();
       const int& y = pos.getY();
+      const int width  = getFullAreaWidth(win);
+      const int& win_x = win->offset_left;
+      const int& win_y = win->offset_top;
       const auto& tmp = &win->data[(y - win_y) * width + (x - win_x)];
 
       if ( tmp->attr.bit.color_overlay )
@@ -1542,17 +1538,12 @@ FChar FVTerm::generateCharacter (const FPoint& pos)
     if ( ! win || ! win->visible )
       continue;
 
-    const int win_x = win->offset_left;
-    const int win_y = win->offset_top;
-    const int height = win->minimized ? win->min_height : getFullAreaHeight(win);
-    const FRect geometry { win_x, win_y
-                         , std::size_t(getFullAreaWidth(win))
-                         , std::size_t(height) };
-
     // Window is visible and contains current character
-    if ( geometry.contains(x, y) )
+    if ( win->contains(pos) )
     {
-      const auto line_len = int(geometry.getWidth());
+      const int line_len = win->width + win->right_shadow;
+      const int win_x = win->offset_left;
+      const int win_y = win->offset_top;
       auto tmp = &win->data[(y - win_y) * line_len + (x - win_x)];
 
       if ( ! tmp->attr.bit.transparent )   // Current character not transparent
@@ -1596,10 +1587,8 @@ FChar FVTerm::getCharacter ( CharacterType char_type
 {
   // Gets the overlapped or the covered character for a given position
 
-  const int x = pos.getX();
-  const int y = pos.getY();
-  int xx = std::max(x, 0);
-  int yy = std::max(y, 0);
+  int xx = std::max(pos.getX(), 0);
+  int yy = std::max(pos.getY(), 0);
 
   if ( xx >= vterm->width )
     xx = vterm->width - 1;
@@ -1636,14 +1625,9 @@ FChar FVTerm::getCharacter ( CharacterType char_type
       if ( ! win || ! win->visible )
         continue;
 
-      const int height = win->minimized ? win->min_height : getFullAreaHeight(win);
-      const FRect geometry { win->offset_left, win->offset_top
-                           , std::size_t(getFullAreaWidth(win))
-                           , std::size_t(height) };
-
       // Window visible and contains current character
-      if ( geometry.contains(x, y) )
-        getAreaCharacter (FPoint{x, y}, win, cc);
+      if ( win->contains(pos) )
+        getAreaCharacter (pos, win, cc);
     }
     else if ( char_type == CharacterType::Covered )
       break;
@@ -1981,6 +1965,24 @@ bool FVTerm::isInsideTerminal (const FPoint& pos) const
 bool FVTerm::hasPendingUpdates (const FTermArea* area)
 {
   return (area && area->has_changes);
+}
+
+
+//----------------------------------------------------------------------
+// struct FVTerm::FTermArea
+//----------------------------------------------------------------------
+
+bool FVTerm::FTermArea::contains (const FPoint& pos)
+{
+  // Is the terminal position (pos) located on my area?
+
+  const int area_height = minimized ? min_height : height + bottom_shadow;
+  const int x = pos.getX();
+  const int y = pos.getY();
+  return x >= offset_left
+      && x <= offset_left + width + right_shadow - 1
+      && y >= offset_top
+      && y <= offset_top + area_height - 1;
 }
 
 }  // namespace finalcut

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2021 Markus Gans                                      *
+* Copyright 2016-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -389,6 +389,8 @@ struct FVTerm::FTermArea  // define virtual terminal character properties
   {
     return owner.get() != nullptr;
   }
+
+  bool contains (const FPoint& pos);
 
   // Data members
   int            offset_left{0};      // Distance from left terminal side
