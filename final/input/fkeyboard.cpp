@@ -392,39 +392,35 @@ inline FKey FKeyboard::getSingleKey()
 {
   // Looking for single key code in the buffer
 
-  std::size_t len{1};
+  std::size_t len{1U};
   const auto& firstchar = uChar(fifo_buf[0]);
   FKey keycode{};
 
   // Look for a utf-8 character
   if ( utf8_input && (firstchar & uChar(0xc0)) == 0xc0 )
   {
-    std::array<char, 5> utf8char{};  // Init array with '\0'
-    const std::size_t buf_len = stringLength(fifo_buf);
+    const auto buf_len = std::size_t(fifo_offset);
 
     if ( (firstchar & uChar(0xe0)) == 0xc0 )
-      len = 2;
+      len = 2U;
     else if ( (firstchar & uChar(0xf0)) == 0xe0 )
-      len = 3;
+      len = 3U;
     else if ( (firstchar & uChar(0xf8)) == 0xf0 )
-      len = 4;
+      len = 4U;
 
     if ( buf_len <  len && ! isKeypressTimeout() )
       return FKey::Incomplete;
 
-    for (std::size_t i{0}; i < len ; i++)
-      utf8char[i] = char(uChar(fifo_buf[i]));
-
-    keycode = UTF8decode(utf8char.data());
+    keycode = UTF8decode(len);
   }
   else
     keycode = FKey(uChar(fifo_buf[0]));
 
   // Remove founded entry
   std::copy_if ( std::begin(fifo_buf) + len,
-                  std::end(fifo_buf),
-                  std::begin(fifo_buf)
-                , [] (const char& ch) { return ch != ' '; });
+                 std::end(fifo_buf),
+                 std::begin(fifo_buf)
+               , [] (const char& ch) { return ch != ' '; });
   // Fill rest with '\0'
   std::fill ( std::end(fifo_buf) - len
             , std::end(fifo_buf)
@@ -445,16 +441,16 @@ inline bool FKeyboard::isKeypressTimeout()
 }
 
 //----------------------------------------------------------------------
-FKey FKeyboard::UTF8decode (const std::string& utf8) const
+FKey FKeyboard::UTF8decode (const std::size_t len) const noexcept
 {
   using distance_type = std::string::difference_type;
+  constexpr std::size_t max = 4U;
   FKey ucs{FKey::None};  // Universal coded character
-  constexpr std::size_t max = 4;
-  const auto len = utf8.length();
-  auto end = utf8.cbegin()
-           + static_cast<distance_type>(std::min(len, max));
+  auto& utf8 = fifo_buf;
+  const auto begin = std::begin(utf8);
+  const auto end = begin + static_cast<distance_type>(std::min(len, max));
 
-  for (auto iter{utf8.cbegin()}; iter < end; ++iter)
+  for (auto iter{begin}; iter < end; ++iter)
   {
     const auto ch = uChar(*iter);
 
@@ -468,17 +464,17 @@ FKey FKeyboard::UTF8decode (const std::string& utf8) const
       // byte 1 = 0xxxxxxx (1 byte mapping)
       ucs = FKey(uChar(ch));
     }
-    else if ( (ch & uChar(0xe0)) == 0xc0 )
+    else if ( len == 2U )
     {
       // byte 1 = 110xxxxx (2 byte mapping)
       ucs = FKey(ch & uChar(0x1f));
     }
-    else if ( (ch & uChar(0xf0)) == 0xe0 )
+    else if ( len == 3U )
     {
       // byte 1 = 1110xxxx (3 byte mapping)
       ucs = FKey(ch & uChar(0x0f));
     }
-    else if ( (ch & uChar(0xf8)) == 0xf0 )
+    else if ( len == 4U )
     {
       // byte 1 = 11110xxx (4 byte mapping)
       ucs = FKey(ch & uChar(0x07));

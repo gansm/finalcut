@@ -329,8 +329,8 @@ class FVTerm : public FVTermAttribute
                                                      , const int&
                                                      , const FChar&) const;
     void                  printPaddingCharacter (FTermArea*, const FChar&);
-    bool                  isInsideTerminal (const FPoint&) const;
-    static bool           hasPendingUpdates (const FTermArea*);
+    bool                  isInsideTerminal (const FPoint&) const noexcept;
+    static bool           hasPendingUpdates (const FTermArea*) noexcept;
 
     // Data members
     FTermArea*                    print_area{nullptr};        // print area for this object
@@ -390,7 +390,7 @@ struct FVTerm::FTermArea  // define virtual terminal character properties
     return owner.get() != nullptr;
   }
 
-  bool contains (const FPoint& pos);
+  bool contains (const FPoint& pos) const noexcept;
 
   // Data members
   int            offset_left{0};      // Distance from left terminal side

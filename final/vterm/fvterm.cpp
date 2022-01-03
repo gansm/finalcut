@@ -1951,7 +1951,7 @@ void FVTerm::printPaddingCharacter (FTermArea* area, const FChar& term_char)
 }
 
 //----------------------------------------------------------------------
-bool FVTerm::isInsideTerminal (const FPoint& pos) const
+bool FVTerm::isInsideTerminal (const FPoint& pos) const noexcept
 {
   // Check whether the coordinates are within the virtual terminal
 
@@ -1962,7 +1962,7 @@ bool FVTerm::isInsideTerminal (const FPoint& pos) const
 }
 
 //----------------------------------------------------------------------
-bool FVTerm::hasPendingUpdates (const FTermArea* area)
+bool FVTerm::hasPendingUpdates (const FTermArea* area) noexcept
 {
   return (area && area->has_changes);
 }
@@ -1972,7 +1972,7 @@ bool FVTerm::hasPendingUpdates (const FTermArea* area)
 // struct FVTerm::FTermArea
 //----------------------------------------------------------------------
 
-bool FVTerm::FTermArea::contains (const FPoint& pos)
+bool FVTerm::FTermArea::contains (const FPoint& pos) const noexcept
 {
   // Is the terminal position (pos) located on my area?
 
