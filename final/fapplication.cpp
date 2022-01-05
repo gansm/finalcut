@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2013-2021 Markus Gans                                      *
+* Copyright 2013-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -718,18 +718,19 @@ inline void FApplication::performMouseAction() const
   static auto& keyboard = FKeyboard::getInstance();
   const auto key = keyboard.getKey();
   auto& buffer = keyboard.getKeyBuffer();
+  auto& len = keyboard.getKeyBufferLength();
 
   if ( key == FKey::X11mouse )
   {
-    mouse.setRawData (FMouse::MouseType::X11, buffer);
+    mouse.setRawData (FMouse::MouseType::X11, buffer, len);
   }
   else if ( key == FKey::Extended_mouse )
   {
-    mouse.setRawData (FMouse::MouseType::Sgr, buffer);
+    mouse.setRawData (FMouse::MouseType::Sgr, buffer, len);
   }
   else if ( key == FKey::Urxvt_mouse )
   {
-    mouse.setRawData (FMouse::MouseType::Urxvt, buffer);
+    mouse.setRawData (FMouse::MouseType::Urxvt, buffer, len);
   }
 
   keyboard.hasUnprocessedInput() = mouse.hasUnprocessedInput();

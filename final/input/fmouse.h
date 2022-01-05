@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2021 Markus Gans                                      *
+* Copyright 2018-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -207,7 +207,7 @@ class FMouse : public FMouseData
     // Methods
     template <typename ClassT>
     static auto           createMouseObject() -> std::unique_ptr<ClassT> ;
-    virtual void          setRawData (FKeyboard::keybuffer&) = 0;
+    virtual void          setRawData (FKeyboard::keybuffer&, int&) = 0;
     virtual void          processEvent (const TimeValue&) = 0;
 
   protected:
@@ -271,7 +271,7 @@ class FMouseGPM final : public FMouse
     bool                 isGpmMouseEnabled() const noexcept;
 
     // Methods
-    void                 setRawData (FKeyboard::keybuffer&) noexcept override;
+    void                 setRawData (FKeyboard::keybuffer&, int&) noexcept override;
     void                 processEvent (const TimeValue&) override;
     bool                 gpmMouse (bool = true);
     bool                 enableGpmMouse();
@@ -332,7 +332,7 @@ class FMouseX11 final : public FMouse
     bool                 hasData() noexcept override;
 
     // Methods
-    void                 setRawData (FKeyboard::keybuffer&) noexcept override;
+    void                 setRawData (FKeyboard::keybuffer&, int&) noexcept override;
     void                 processEvent (const TimeValue&) override;
 
   private:
@@ -388,7 +388,7 @@ class FMouseSGR final : public FMouse
     bool          hasData() noexcept override;
 
     // Methods
-    void          setRawData (FKeyboard::keybuffer&) noexcept override;
+    void          setRawData (FKeyboard::keybuffer&, int&) noexcept override;
     void          processEvent (const TimeValue&) override;
 
   private:
@@ -444,7 +444,7 @@ class FMouseUrxvt final : public FMouse
     bool          hasData() noexcept override;
 
     // Methods
-    void          setRawData (FKeyboard::keybuffer&) noexcept override;
+    void          setRawData (FKeyboard::keybuffer&, int&) noexcept override;
     void          processEvent (const TimeValue&) override;
 
   private:
@@ -562,7 +562,8 @@ class FMouseControl
     void                      enable();
     void                      disable();
     virtual void              setRawData ( const FMouse::MouseType&
-                                         , FKeyboard::keybuffer& );
+                                         , FKeyboard::keybuffer&
+                                         , int& );
     virtual void              processEvent (const TimeValue&);
     void                      processQueuedInput();
     bool                      getGpmKeyPressed (bool = true);

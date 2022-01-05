@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2021 Markus Gans                                      *
+* Copyright 2018-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -350,7 +350,7 @@ bool FMouseGPM::hasData() noexcept
 }
 
 //----------------------------------------------------------------------
-void FMouseGPM::setRawData (FKeyboard::keybuffer&) noexcept
+void FMouseGPM::setRawData (FKeyboard::keybuffer&, int&) noexcept
 {
   // This method need not be implemented for FMouseGPM
 }
@@ -578,7 +578,7 @@ bool FMouseX11::hasData() noexcept
 }
 
 //----------------------------------------------------------------------
-void FMouseX11::setRawData (FKeyboard::keybuffer& fifo_buf) noexcept
+void FMouseX11::setRawData (FKeyboard::keybuffer& fifo_buf, int& length) noexcept
 {
   // Import the X11 xterm mouse protocol (SGR-Mode) raw mouse data
 
@@ -599,6 +599,7 @@ void FMouseX11::setRawData (FKeyboard::keybuffer& fifo_buf) noexcept
             , '\0');
 
   setPending(bool(fifo_buf[0] != '\0'));
+  length -= int(len);
 }
 
 //----------------------------------------------------------------------
@@ -761,14 +762,15 @@ bool FMouseSGR::hasData() noexcept
 }
 
 //----------------------------------------------------------------------
-void FMouseSGR::setRawData (FKeyboard::keybuffer& fifo_buf) noexcept
+void FMouseSGR::setRawData (FKeyboard::keybuffer& fifo_buf, int& length) noexcept
 {
   // Import the X11 xterm mouse protocol (SGR-Mode) raw mouse data
 
-  std::size_t len = stringLength(fifo_buf);
+  const auto fifo_buf_len = std::size_t(length);
+  std::size_t len{0};
   std::size_t n{3};
 
-  while ( n < len && n <= MOUSE_BUF_SIZE + 1 )
+  while ( n < fifo_buf_len && n <= MOUSE_BUF_SIZE + 1 )
   {
     sgr_mouse[n - 3] = fifo_buf[n];
     n++;
@@ -790,6 +792,7 @@ void FMouseSGR::setRawData (FKeyboard::keybuffer& fifo_buf) noexcept
             , '\0');
 
   setPending(bool(fifo_buf[0] != '\0'));
+  length -= int(len);
 }
 
 //----------------------------------------------------------------------
@@ -999,14 +1002,15 @@ bool FMouseUrxvt::hasData() noexcept
 }
 
 //----------------------------------------------------------------------
-void FMouseUrxvt::setRawData (FKeyboard::keybuffer& fifo_buf) noexcept
+void FMouseUrxvt::setRawData (FKeyboard::keybuffer& fifo_buf, int& length) noexcept
 {
   // Import the X11 xterm mouse protocol (Urxvt-Mode) raw mouse data
 
-  std::size_t len = stringLength(fifo_buf);
+  const auto fifo_buf_len = std::size_t(length);
+  std::size_t len{0};
   std::size_t n{2};
 
-  while ( n < len && n <= MOUSE_BUF_SIZE )
+  while ( n < fifo_buf_len && n <= MOUSE_BUF_SIZE )
   {
     urxvt_mouse[n - 2] = fifo_buf[n];
     n++;
@@ -1028,6 +1032,7 @@ void FMouseUrxvt::setRawData (FKeyboard::keybuffer& fifo_buf) noexcept
             , '\0');
 
   setPending(bool(fifo_buf[0] != '\0'));
+  length -= int(len);
 }
 
 //----------------------------------------------------------------------
@@ -1527,12 +1532,13 @@ void FMouseControl::disable()
 
 //----------------------------------------------------------------------
 void FMouseControl::setRawData ( const FMouse::MouseType& mt
-                               , FKeyboard::keybuffer& fifo_buf)
+                               , FKeyboard::keybuffer& fifo_buf
+                               , int& length)
 {
   const auto iter = findMouseWithType(mt);
 
   if ( iter != mouse_protocol.end() )
-    (*iter)->setRawData (fifo_buf);
+    (*iter)->setRawData (fifo_buf, length);
 }
 
 //----------------------------------------------------------------------

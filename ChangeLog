@@ -1,3 +1,9 @@
+2022-01-05  Markus Gans  <guru.mail@muenster.de>
+	* Sharing keyboard buffer length in FKeyboard and FMouse
+
+2022-01-02  Markus Gans  <guru.mail@muenster.de>
+        * Speed up UTF-8 input parsing
+
 2022-01-02  Markus Gans  <guru.mail@muenster.de>
 	* FTermArea now checks if there is a given terminal position 
 	  in its area

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2021 Markus Gans                                      *
+* Copyright 2018-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -102,6 +102,7 @@ class FKeyboard final
     FKey                  getKey() const noexcept;
     FString               getKeyName (const FKey) const;
     keybuffer&            getKeyBuffer() & noexcept;
+    int&                  getKeyBufferLength() & noexcept;
     TimeValue             getKeyPressedTime() const noexcept;
     static uInt64         getKeypressTimeout() noexcept;
     static uInt64         getReadBlockingTime() noexcept;
@@ -208,6 +209,10 @@ inline FKey FKeyboard::getKey() const noexcept
 //----------------------------------------------------------------------
 inline FKeyboard::keybuffer& FKeyboard::getKeyBuffer() & noexcept
 { return fifo_buf; }
+
+//----------------------------------------------------------------------
+inline int& FKeyboard::getKeyBufferLength() & noexcept
+{ return fifo_offset; }
 
 //----------------------------------------------------------------------
 inline TimeValue FKeyboard::getKeyPressedTime() const noexcept
