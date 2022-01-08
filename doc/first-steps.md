@@ -149,7 +149,7 @@ How it works
 ```cpp
 #include <final/final.h>
 ```
-All final cut programs must include the *final.h* header.
+All final cut programs have to include the *final.h* header.
 
 ```cpp
 finalcut::FApplication app(argc, argv);
@@ -157,7 +157,7 @@ finalcut::FApplication app(argc, argv);
 This line creates the `finalcut::FApplication` object `app` with
 the command line arguments `argc` and `argv`. This object manages
 the application main event loop. It receives keyboard and mouse events
-and sends them to the target widgets. You must create an application
+and sends them to the target widgets. You have to create an application
 object before you can create a widgets object.
 
 The next line
@@ -209,7 +209,7 @@ Memory Management
 -----------------
 
 To create a hierarchy of FObjects (or derived classes/widgets), 
-a new FObject must initialize with its parent object.
+a new FObject has to be initialized with its parent object.
 
 ```cpp
 FObject* parent = new FObject();
@@ -239,7 +239,7 @@ parent->delChild(child);
 If an FObject with a parent will remove from the hierarchy, 
 the destructor automatically deletes the object assignment from 
 its parent object. If a class object doesn't derive from FObject, 
-you must implement storage deallocation yourself.
+you have to implement storage deallocation yourself.
 
 **File:** *memory.cpp*
 ```cpp
@@ -316,10 +316,10 @@ An event in FINAL CUT is an object that inherits from the base class
 For example, the method `FEvent::type()` returns the type 
 `fc::MouseDown_Event` when you press down a mouse button. 
 
-Some event types have data that cannot store in an `FEvent` object. 
-For example, a click event of the mouse must store which button is 
-triggered and where the mouse pointer was at that time. In classes derived 
-from `FEvent`, such as `FMouseEvent()`, we store this data.
+Some event types have data that cannot be stored in an `FEvent` object. 
+For example, a click event of the mouse requires to store which button was 
+triggered and the position of the mouse pointer at that time. In classes
+derived  from `FEvent`, such as `FMouseEvent()`, we store this data.
 
 Widgets get their events from the `event()` method inherited from FObject. 
 The implementation of `event()` in `FWidget` forwards the most common event 
@@ -1095,7 +1095,7 @@ identical to the relative positions (`getPos()` = `getTermPos()`). In
 the case of a child widget, the positioning is corresponding to the 
 upper left corner of the parent widget plus a possible padding space 
 (can be determined with `getLeftPadding()` and `getTopPadding()`). 
-If you want to ignore padding spaces, you must force this with the 
+If you want to ignore padding spaces, you have to force this with the 
 `ignorePadding()` method.
 
 <figure class="image">
