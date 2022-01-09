@@ -89,6 +89,7 @@ namespace finalcut
 //----------------------------------------------------------------------
 // class FMouseData
 //----------------------------------------------------------------------
+
 class FMouseData
 {
   public:
@@ -516,6 +517,9 @@ class FMouseCommand final
 class FMouseControl
 {
   public:
+    // Using-declaration
+    using FMouseDataPtr = std::shared_ptr<FMouseData>;
+
     // Constructor
     FMouseControl();
 
@@ -525,8 +529,8 @@ class FMouseControl
     // Accessors
     virtual FString           getClassName() const;
     static auto               getInstance() -> FMouseControl&;
+    static auto               getCurrentMouseEvent() -> FMouseDataPtr&;
     const FPoint&             getPos() &;
-    FMouseData*               getCurrentMouseEvent() const;
     void                      clearEvent();
 
     // Mutators
@@ -569,23 +573,25 @@ class FMouseControl
     void                      drawPointer();
 
   private:
-    // Using-declaration
+    // Using-declarations
     using FMousePtr = std::unique_ptr<FMouse>;
-    using FMouseDataPtr = std::unique_ptr<FMouseData>;
     using FMouseProtocol = std::vector<FMousePtr>;
 
     // Accessor
     auto                      findMouseWithType (const FMouse::MouseType&) const -> FMouseProtocol::const_iterator;
     auto                      findMouseWithData() const -> FMouseProtocol::const_iterator;
     auto                      findMouseWithEvent() const -> FMouseProtocol::const_iterator;
+
+    // Mutators
     void                      xtermMouse (bool = true) const;
     void                      enableXTermMouse() const;
     void                      disableXTermMouse() const;
+    static void               setCurrentMouseEvent (const FMouseDataPtr&);
+    static void               resetCurrentMouseEvent();
 
     // Data member
     FMouseProtocol            mouse_protocol{};
     FMouseCommand             event_cmd{};
-    static FMouseData*        current_mouse_event;
     std::queue<FMouseDataPtr> fmousedata_queue{};
     FPoint                    zero_point{0, 0};
     bool                      use_gpm_mouse{false};
@@ -596,10 +602,6 @@ class FMouseControl
 //----------------------------------------------------------------------
 inline FString FMouseControl::getClassName() const
 { return "FMouseControl"; }
-
-//----------------------------------------------------------------------
-inline FMouseData* FMouseControl::getCurrentMouseEvent() const
-{ return current_mouse_event; }
 
 //----------------------------------------------------------------------
 inline void FMouseControl::setEventCommand (const FMouseCommand& cmd)

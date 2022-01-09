@@ -1,6 +1,7 @@
 2022-01-09  Markus Gans  <guru.mail@muenster.de>
 	* Added a ring buffer to buffer unprocessed keyboard and mouse input
 	* Added a unit test for the FVTerm class
+	* The current mouse event is now cached in a shared_ptr
 
 2022-01-05  Markus Gans  <guru.mail@muenster.de>
 	* Sharing keyboard buffer length in FKeyboard and FMouse

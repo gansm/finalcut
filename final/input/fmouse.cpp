@@ -41,9 +41,6 @@
 namespace finalcut
 {
 
-// static class attributes
-FMouseData* FMouseControl::current_mouse_event{nullptr};
-
 //----------------------------------------------------------------------
 // class FMouseData
 //----------------------------------------------------------------------
@@ -58,6 +55,13 @@ FMouseData::~FMouseData() noexcept = default;  // destructor
 FString FMouseData::getClassName() const
 {
   return "FMouseData";
+}
+
+//----------------------------------------------------------------------
+auto FMouseControl::getCurrentMouseEvent() -> FMouseDataPtr&
+{
+  static const auto& current_mouse_event = std::make_unique<FMouseDataPtr>();
+  return *current_mouse_event;
 }
 
 //----------------------------------------------------------------------
@@ -1528,11 +1532,11 @@ void FMouseControl::processQueuedInput()
     FMouseDataPtr md(std::move(fmousedata_queue.front()));
     fmousedata_queue.pop();
 
-    if ( md.get() )
+    if ( md )
     {
-      current_mouse_event = md.get();
+      setCurrentMouseEvent (md);
       event_cmd.execute(*md);
-      current_mouse_event = nullptr;
+      resetCurrentMouseEvent();
     }
 
     if ( FApplication::isQuit() )
@@ -1639,6 +1643,18 @@ void FMouseControl::xtermMouse (bool enable) const
     return;
 
   FTermXTerminal::setMouseSupport (enable);
+}
+
+//----------------------------------------------------------------------
+void FMouseControl::setCurrentMouseEvent (const FMouseDataPtr& ptr)
+{
+  getCurrentMouseEvent() = ptr;
+}
+
+//----------------------------------------------------------------------
+void FMouseControl::resetCurrentMouseEvent()
+{
+  getCurrentMouseEvent() = nullptr;
 }
 
 }  // namespace finalcut

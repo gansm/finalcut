@@ -1060,7 +1060,8 @@ void FVTermTest::showFCharData (finalcut::FChar fchar)
   std::wcout << L"           attr.bit.printed: " << bool(fchar.attr.bit.printed) << L'\n';
   std::wcout << L" attr.bit.fullwidth_padding: " << bool(fchar.attr.bit.fullwidth_padding) << L'\n';
   std::wcout << L"        attr.bit.char_width: " << int(fchar.attr.bit.char_width) << L'\n';
-  std::wcout << L"                    attr[3]: " << int(fchar.attr.byte[3]) << L'\n';
+  std::wcout << L"                    attr[3]: " << int(fchar.attr.byte[3]) << L'\n'
+             << std::noboolalpha;
 }
 
 //----------------------------------------------------------------------

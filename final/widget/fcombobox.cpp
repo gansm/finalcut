@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2021 Markus Gans                                      *
+* Copyright 2019-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -596,8 +596,7 @@ void FComboBox::cb_closeComboBox()
 //----------------------------------------------------------------------
 void FComboBox::cb_inputFieldSwitch()
 {
-  const auto& mouse = FMouseControl::getInstance();
-  const auto mouse_event = mouse.getCurrentMouseEvent();
+  const auto mouse_event = FMouseControl::getCurrentMouseEvent();
 
   if ( ! mouse_event || ! mouse_event->isLeftButtonPressed() )
     return;
