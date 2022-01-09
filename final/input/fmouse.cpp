@@ -350,7 +350,7 @@ bool FMouseGPM::hasData() noexcept
 }
 
 //----------------------------------------------------------------------
-void FMouseGPM::setRawData (FKeyboard::keybuffer&, int&) noexcept
+void FMouseGPM::setRawData (FKeyboard::keybuffer&) noexcept
 {
   // This method need not be implemented for FMouseGPM
 }
@@ -578,7 +578,7 @@ bool FMouseX11::hasData() noexcept
 }
 
 //----------------------------------------------------------------------
-void FMouseX11::setRawData (FKeyboard::keybuffer& fifo_buf, int& length) noexcept
+void FMouseX11::setRawData (FKeyboard::keybuffer& fifo_buf) noexcept
 {
   // Import the X11 xterm mouse protocol (SGR-Mode) raw mouse data
 
@@ -587,19 +587,8 @@ void FMouseX11::setRawData (FKeyboard::keybuffer& fifo_buf, int& length) noexcep
   x11_mouse[1] = fifo_buf[4];
   x11_mouse[2] = fifo_buf[5];
   x11_mouse[3] = '\0';
-
-  // Remove founded entry
-  std::copy_if ( std::begin(fifo_buf) + len,
-                 std::end(fifo_buf),
-                 std::begin(fifo_buf)
-               , [] (const char& ch) { return ch != ' '; });
-  // Fill rest with '\0'
-  std::fill ( std::end(fifo_buf) - len
-            , std::end(fifo_buf)
-            , '\0');
-
-  setPending(bool(fifo_buf[0] != '\0'));
-  length -= int(len);
+  fifo_buf.pop(len);  // Remove founded entry
+  setPending(fifo_buf.hasData());
 }
 
 //----------------------------------------------------------------------
@@ -762,37 +751,31 @@ bool FMouseSGR::hasData() noexcept
 }
 
 //----------------------------------------------------------------------
-void FMouseSGR::setRawData (FKeyboard::keybuffer& fifo_buf, int& length) noexcept
+void FMouseSGR::setRawData (FKeyboard::keybuffer& fifo_buf) noexcept
 {
   // Import the X11 xterm mouse protocol (SGR-Mode) raw mouse data
 
-  const auto fifo_buf_len = std::size_t(length);
+  const auto max = fifo_buf.getSize();
   std::size_t len{0};
   std::size_t n{3};
 
-  while ( n < fifo_buf_len && n <= MOUSE_BUF_SIZE + 1 )
+  while ( n < max )
   {
     sgr_mouse[n - 3] = fifo_buf[n];
-    n++;
 
     if ( fifo_buf[n] == 'M' || fifo_buf[n] == 'm' )
-      len = n + 1;
+    {
+      n++;
+      len = n;
+      break;
+    }
+
+    n++;
   }
 
   sgr_mouse[n - 3] = '\0';
-
-  // Remove founded entry
-  std::copy_if ( std::begin(fifo_buf) + len,
-                 std::end(fifo_buf),
-                 std::begin(fifo_buf)
-               , [] (const char& ch) { return ch != ' '; });
-  // Fill rest with '\0'
-  std::fill ( std::end(fifo_buf) - len
-            , std::end(fifo_buf)
-            , '\0');
-
-  setPending(bool(fifo_buf[0] != '\0'));
-  length -= int(len);
+  fifo_buf.pop(len);  // Remove founded entry
+  setPending(fifo_buf.hasData());
 }
 
 //----------------------------------------------------------------------
@@ -1002,37 +985,31 @@ bool FMouseUrxvt::hasData() noexcept
 }
 
 //----------------------------------------------------------------------
-void FMouseUrxvt::setRawData (FKeyboard::keybuffer& fifo_buf, int& length) noexcept
+void FMouseUrxvt::setRawData (FKeyboard::keybuffer& fifo_buf) noexcept
 {
   // Import the X11 xterm mouse protocol (Urxvt-Mode) raw mouse data
 
-  const auto fifo_buf_len = std::size_t(length);
+  const auto max = fifo_buf.getSize();
   std::size_t len{0};
   std::size_t n{2};
 
-  while ( n < fifo_buf_len && n <= MOUSE_BUF_SIZE )
+  while ( n < max )
   {
     urxvt_mouse[n - 2] = fifo_buf[n];
-    n++;
 
     if ( fifo_buf[n] == 'M' || fifo_buf[n] == 'm' )
-      len = n + 1;
+    {
+      n++;
+      len = n;
+      break;
+    }
+
+    n++;
   }
 
   urxvt_mouse[n - 2] = '\0';
-
-  // Remove founded entry
-  std::copy_if ( std::begin(fifo_buf) + len,
-                 std::end(fifo_buf),
-                 std::begin(fifo_buf)
-               , [] (const char& ch) { return ch != ' '; });
-  // Fill rest with '\0'
-  std::fill ( std::end(fifo_buf) - len
-            , std::end(fifo_buf)
-            , '\0');
-
-  setPending(bool(fifo_buf[0] != '\0'));
-  length -= int(len);
+  fifo_buf.pop(len);  // Remove founded entry
+  setPending(fifo_buf.hasData());
 }
 
 //----------------------------------------------------------------------
@@ -1532,13 +1509,12 @@ void FMouseControl::disable()
 
 //----------------------------------------------------------------------
 void FMouseControl::setRawData ( const FMouse::MouseType& mt
-                               , FKeyboard::keybuffer& fifo_buf
-                               , int& length)
+                               , FKeyboard::keybuffer& fifo_buf )
 {
   const auto iter = findMouseWithType(mt);
 
   if ( iter != mouse_protocol.end() )
-    (*iter)->setRawData (fifo_buf, length);
+    (*iter)->setRawData (fifo_buf);
 }
 
 //----------------------------------------------------------------------

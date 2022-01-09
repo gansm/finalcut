@@ -207,7 +207,7 @@ class FMouse : public FMouseData
     // Methods
     template <typename ClassT>
     static auto           createMouseObject() -> std::unique_ptr<ClassT> ;
-    virtual void          setRawData (FKeyboard::keybuffer&, int&) = 0;
+    virtual void          setRawData (FKeyboard::keybuffer&) = 0;
     virtual void          processEvent (const TimeValue&) = 0;
 
   protected:
@@ -271,7 +271,7 @@ class FMouseGPM final : public FMouse
     bool                 isGpmMouseEnabled() const noexcept;
 
     // Methods
-    void                 setRawData (FKeyboard::keybuffer&, int&) noexcept override;
+    void                 setRawData (FKeyboard::keybuffer&) noexcept override;
     void                 processEvent (const TimeValue&) override;
     bool                 gpmMouse (bool = true);
     bool                 enableGpmMouse();
@@ -332,7 +332,7 @@ class FMouseX11 final : public FMouse
     bool                 hasData() noexcept override;
 
     // Methods
-    void                 setRawData (FKeyboard::keybuffer&, int&) noexcept override;
+    void                 setRawData (FKeyboard::keybuffer&) noexcept override;
     void                 processEvent (const TimeValue&) override;
 
   private:
@@ -388,7 +388,7 @@ class FMouseSGR final : public FMouse
     bool          hasData() noexcept override;
 
     // Methods
-    void          setRawData (FKeyboard::keybuffer&, int&) noexcept override;
+    void          setRawData (FKeyboard::keybuffer&) noexcept override;
     void          processEvent (const TimeValue&) override;
 
   private:
@@ -444,7 +444,7 @@ class FMouseUrxvt final : public FMouse
     bool          hasData() noexcept override;
 
     // Methods
-    void          setRawData (FKeyboard::keybuffer&, int&) noexcept override;
+    void          setRawData (FKeyboard::keybuffer&) noexcept override;
     void          processEvent (const TimeValue&) override;
 
   private:
@@ -470,7 +470,7 @@ class FMouseUrxvt final : public FMouse
     };
 
     // Constant
-    static constexpr std::size_t MOUSE_BUF_SIZE = 13;
+    static constexpr std::size_t MOUSE_BUF_SIZE = 14;
 
     // Methods
     void          setKeyState (int) noexcept;
@@ -562,8 +562,7 @@ class FMouseControl
     void                      enable();
     void                      disable();
     virtual void              setRawData ( const FMouse::MouseType&
-                                         , FKeyboard::keybuffer&
-                                         , int& );
+                                         , FKeyboard::keybuffer& );
     virtual void              processEvent (const TimeValue&);
     void                      processQueuedInput();
     bool                      getGpmKeyPressed (bool = true);

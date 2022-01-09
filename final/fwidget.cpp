@@ -869,9 +869,9 @@ void FWidget::resize()
   if ( isRootWidget() )
   {
     // The screen content is now unknown
-    auto foutput = FVTerm::getFOutput();
-    foutput->clearTerminalState();
-    foutput->clearTerminalAttributes();
+    auto foutput_ptr = FVTerm::getFOutput();
+    foutput_ptr->clearTerminalState();
+    foutput_ptr->clearTerminalAttributes();
     // Determine the new terminal size
     const FRect old_term_geometry {getTermGeometry()};
     determineDesktopSize();

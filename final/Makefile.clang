@@ -37,6 +37,7 @@ INCLUDE_HEADERS = \
 	output/tty/ftermoutput.h \
 	output/tty/ftermxterminal.h \
 	output/tty/sgr_optimizer.h \
+	util/char_ringbuffer.h \
 	util/fcallback.h \
 	util/fdata.h \
 	util/flogger.h \
@@ -124,6 +125,7 @@ OBJS = \
 	output/tty/ftermoutput.o \
 	output/tty/ftermxterminal.o \
 	output/tty/sgr_optimizer.o \
+	util/char_ringbuffer.o \
 	util/fcallback.o \
 	util/fdata.o \
 	util/flogger.o \

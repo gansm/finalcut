@@ -718,22 +718,20 @@ inline void FApplication::performMouseAction() const
   static auto& keyboard = FKeyboard::getInstance();
   const auto key = keyboard.getKey();
   auto& buffer = keyboard.getKeyBuffer();
-  auto& len = keyboard.getKeyBufferLength();
 
   if ( key == FKey::X11mouse )
   {
-    mouse.setRawData (FMouse::MouseType::X11, buffer, len);
+    mouse.setRawData (FMouse::MouseType::X11, buffer);
   }
   else if ( key == FKey::Extended_mouse )
   {
-    mouse.setRawData (FMouse::MouseType::Sgr, buffer, len);
+    mouse.setRawData (FMouse::MouseType::Sgr, buffer);
   }
   else if ( key == FKey::Urxvt_mouse )
   {
-    mouse.setRawData (FMouse::MouseType::Urxvt, buffer, len);
+    mouse.setRawData (FMouse::MouseType::Urxvt, buffer);
   }
 
-  keyboard.hasUnprocessedInput() = mouse.hasUnprocessedInput();
   queuingMouseInput();
 }
 
@@ -848,7 +846,6 @@ void FApplication::queuingMouseInput() const
   static auto& keyboard = FKeyboard::getInstance();
   auto time_keypressed = keyboard.getKeyPressedTime();
   mouse.processEvent (time_keypressed);
-  keyboard.hasUnprocessedInput() = mouse.hasUnprocessedInput();
   mouse.clearEvent();
 }
 

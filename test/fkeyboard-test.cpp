@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2021 Markus Gans                                      *
+* Copyright 2018-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -365,7 +365,7 @@ void FKeyboardTest::noArgumentTest()
 {
   CPPUNIT_ASSERT ( keyboard->getKey() == finalcut::FKey::None );
   finalcut::FKeyboard::keybuffer& buffer = keyboard->getKeyBuffer();
-  std::size_t size = sizeof(buffer);
+  std::size_t size = buffer.getCapacity();
 
   CPPUNIT_ASSERT ( size == finalcut::FKeyboard::FIFO_BUF_SIZE );
   CPPUNIT_ASSERT ( buffer[0] == 0 );

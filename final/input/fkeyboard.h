@@ -46,6 +46,7 @@
 
 #include "final/ftypes.h"
 #include "final/input/fkey_map.h"
+#include "final/util/char_ringbuffer.h"
 #include "final/util/fstring.h"
 
 namespace finalcut
@@ -91,7 +92,7 @@ class FKeyboard final
     static constexpr std::size_t FIFO_BUF_SIZE{512};
 
     // Using-declaration
-    using keybuffer = char[FIFO_BUF_SIZE];
+    using keybuffer = CharRingBuffer<FIFO_BUF_SIZE>;
 
     // Constructor
     FKeyboard();
@@ -102,7 +103,6 @@ class FKeyboard final
     FKey                  getKey() const noexcept;
     FString               getKeyName (const FKey) const;
     keybuffer&            getKeyBuffer() & noexcept;
-    int&                  getKeyBufferLength() & noexcept;
     TimeValue             getKeyPressedTime() const noexcept;
     static uInt64         getKeypressTimeout() noexcept;
     static uInt64         getReadBlockingTime() noexcept;
@@ -130,7 +130,7 @@ class FKeyboard final
     bool                  hasDataInQueue() const;
 
     // Methods
-    bool&                 hasUnprocessedInput() & noexcept;
+    bool                  hasUnprocessedInput() noexcept;
     bool                  isKeyPressed (uInt64 = read_blocking_time);
     void                  clearKeyBuffer() noexcept;
     void                  clearKeyBufferOnTimeout();
@@ -182,16 +182,14 @@ class FKeyboard final
     static bool           non_blocking_input_support;
     FKeyMapPtr            key_cap_ptr{};
     static KeyMapEnd      key_cap_end;
+    keybuffer             fifo_buf{};
     std::queue<FKey>      fkey_queue{};
     FKey                  fkey{FKey::None};
     FKey                  key{FKey::None};
-    char                  read_character{};
-    char                  fifo_buf[FIFO_BUF_SIZE]{'\0'};
-    int                   fifo_offset{0};
     int                   stdin_status_flags{0};
+    char                  read_character{};
     bool                  has_pending_input{false};
     bool                  fifo_in_use{false};
-    bool                  unprocessed_buffer_data{false};
     bool                  utf8_input{false};
     bool                  mouse_support{true};
     bool                  non_blocking_stdin{false};
@@ -209,10 +207,6 @@ inline FKey FKeyboard::getKey() const noexcept
 //----------------------------------------------------------------------
 inline FKeyboard::keybuffer& FKeyboard::getKeyBuffer() & noexcept
 { return fifo_buf; }
-
-//----------------------------------------------------------------------
-inline int& FKeyboard::getKeyBufferLength() & noexcept
-{ return fifo_offset; }
 
 //----------------------------------------------------------------------
 inline TimeValue FKeyboard::getKeyPressedTime() const noexcept

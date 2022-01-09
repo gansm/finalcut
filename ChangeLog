@@ -1,3 +1,6 @@
+2022-01-09  Markus Gans  <guru.mail@muenster.de>
+	* Added a ring buffer to buffer unprocessed keyboard and mouse input
+
 2022-01-05  Markus Gans  <guru.mail@muenster.de>
 	* Sharing keyboard buffer length in FKeyboard and FMouse
 

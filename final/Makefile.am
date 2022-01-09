@@ -43,6 +43,7 @@ libfinal_la_SOURCES = \
 	output/tty/ftermoutput.cpp \
 	output/tty/ftermxterminal.cpp \
 	output/tty/sgr_optimizer.cpp \
+	util/char_ringbuffer.cpp \
 	util/fcallback.cpp \
 	util/fdata.cpp \
 	util/flog.cpp \
@@ -141,6 +142,7 @@ finalcutoutputttyinclude_HEADERS = \
 
 finalcututilinclude_HEADERS = \
 	util/emptyfstring.h \
+	util/char_ringbuffer.h \
 	util/fcallback.h \
 	util/fdata.h \
 	util/flogger.h \
