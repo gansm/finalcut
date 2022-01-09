@@ -48,6 +48,10 @@
 namespace finalcut
 {
 
+// class forward declaration
+template <std::size_t>
+class CharRingBuffer;
+
 //----------------------------------------------------------------------
 // class FRingBuffer
 //----------------------------------------------------------------------
@@ -72,12 +76,6 @@ class FRingBuffer
           : ptr{p}
           , offset{start}
           , index{pos}
-        { }
-
-        ring_iterator (const ring_iterator& it)  // copy constructor
-          : ptr{it.ptr}
-          , offset{it.offset}
-          , index{it.index}
         { }
 
         ring_iterator& operator ++ ()  // prefix
@@ -277,13 +275,16 @@ class FRingBuffer
       elements -= s;
     }
 
-  protected:
+  private:
     // Data members
     std::array<value_type, Capacity> buffer{};
     value_type  empty_char{};
     std::size_t head{0U};
     std::size_t tail{0U};
     std::size_t elements{0U};
+
+    // Friend classes
+    friend class CharRingBuffer<Capacity>;
 };
 
 
