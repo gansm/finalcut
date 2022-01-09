@@ -130,7 +130,7 @@ class FKeyboard final
     bool                  hasDataInQueue() const;
 
     // Methods
-    bool                  hasUnprocessedInput() noexcept;
+    bool                  hasUnprocessedInput() const noexcept;
     bool                  isKeyPressed (uInt64 = read_blocking_time);
     void                  clearKeyBuffer() noexcept;
     void                  clearKeyBufferOnTimeout();

@@ -188,7 +188,7 @@
 
 /* Define to the full name and version of this package. */
 #ifndef F_PACKAGE_STRING
-#define F_PACKAGE_STRING "finalcut 0.8.0"
+#define F_PACKAGE_STRING "finalcut 0.8.1"
 #endif
 
 /* Define to the one symbol short name of this package. */
@@ -203,7 +203,7 @@
 
 /* Define to the version of this package. */
 #ifndef F_PACKAGE_VERSION
-#define F_PACKAGE_VERSION "0.8.0"
+#define F_PACKAGE_VERSION "0.8.1"
 #endif
 
 /* Define to 1 if you have the ANSI C header files. */
@@ -235,7 +235,7 @@
 
 /* Version number of package */
 #ifndef F_VERSION
-#define F_VERSION "0.8.0"
+#define F_VERSION "0.8.1"
 #endif
 
 /* Define to 1 if on MINIX. */

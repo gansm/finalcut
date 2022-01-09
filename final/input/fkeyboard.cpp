@@ -145,7 +145,7 @@ bool FKeyboard::setNonBlockingInput (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FKeyboard::hasUnprocessedInput() noexcept
+bool FKeyboard::hasUnprocessedInput() const noexcept
 {
   return fifo_buf.hasData();
 }
@@ -463,10 +463,9 @@ inline ssize_t FKeyboard::readKey()
 //----------------------------------------------------------------------
 void FKeyboard::parseKeyBuffer()
 {
-  ssize_t bytesread{};
   time_keypressed = FObject::getCurrentTime();
 
-  while ( (bytesread = readKey()) > 0 )
+  while ( readKey() > 0 )
   {
     has_pending_input = false;
 

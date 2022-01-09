@@ -843,7 +843,7 @@ void FApplication::queuingMouseInput() const
   if ( ! mouse.hasData() )
     return;
 
-  static auto& keyboard = FKeyboard::getInstance();
+  static const auto& keyboard = FKeyboard::getInstance();
   auto time_keypressed = keyboard.getKeyPressedTime();
   mouse.processEvent (time_keypressed);
   mouse.clearEvent();
