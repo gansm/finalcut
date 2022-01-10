@@ -55,6 +55,7 @@ emulator. It uses various optimization methods to improve the drawing speed.
   <img src="final-cut-application-structure.svg" alt="application structure">
   <figcaption>Figure 1.  Structure of a FINAL CUT application</figcaption>
 </figure>
+<br /><br />
 
 
 Widgets
@@ -314,7 +315,7 @@ a mouse button.
 An event in FINAL CUT is an object that inherits from the base class 
 `FEvent`. There are several event types, represented by an enum value. 
 For example, the method `FEvent::type()` returns the type 
-`fc::MouseDown_Event` when you press down a mouse button. 
+`Event::MouseDown` when you press down a mouse button. 
 
 Some event types have data that cannot store in an `FEvent` object. 
 For example, a click event of the mouse must store which button is 
@@ -1257,6 +1258,10 @@ class dialogWidget : public FDialog
   public:
     explicit dialogWidget (FWidget* parent = nullptr)
       : FDialog{parent}
+    { }
+
+  private:
+    void initLayout()
     {
       setText ("Dialog");
       setResizeable();
@@ -1265,9 +1270,9 @@ class dialogWidget : public FDialog
       // Set dialog geometry and calling adjustSize()
       setGeometry (FPoint{25, 5}, FSize{40, 12});
       setMinimumSize (FSize{25, 9});
+      FDialog::initLayout();
     }
 
-  private:
     inline void checkMinValue (int& n)
     {
       if ( n < 1 )  // Checks and corrects the minimum value
@@ -1430,7 +1435,7 @@ class dialogWidget : public FDialog
           "clicked",
           this, &dialogWidget::cb_button, std::get<2>(b)
         );
-      };
+      }
     }
 
   private:
