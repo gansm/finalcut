@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2021 Markus Gans                                      *
+* Copyright 2019-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -22,7 +22,9 @@
 
 #include <algorithm>
 
+#include "final/dialog/fdialog.h"
 #include "final/fapplication.h"
+#include "final/fevent.h"
 #include "final/fwidgetcolors.h"
 #include "final/fwidget_functions.h"
 #include "final/fwidget.h"
@@ -256,6 +258,30 @@ bool setWidgetShadow (FWidget* w, bool enable)
   }
 
   return w->getFlags().shadow;
+}
+
+//----------------------------------------------------------------------
+void passResizeCornerEventToDialog (FWidget* w, const FMouseEvent& ev)
+{
+  // Pass mouse event to the parent widget
+
+  auto parent = w->getParentWidget();
+
+  if ( ! parent || ! parent->isDialogWidget() )
+    return;
+
+  const auto& dialog = static_cast<FDialog*>(parent);
+
+  if ( ! dialog->isResizeable() || dialog->isZoomed() )
+    return;
+
+  const auto& type = ev.getType();
+  const auto& tpos = ev.getTermPos();
+  const auto& p = parent->termToWidgetPos(tpos);
+  const auto btn = ev.getButton();
+  const auto& new_ev = \
+      std::make_shared<FMouseEvent>(type, p, tpos, btn);
+  FApplication::sendEvent (parent, new_ev.get());
 }
 
 //----------------------------------------------------------------------

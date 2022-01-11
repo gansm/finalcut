@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2021 Markus Gans                                      *
+* Copyright 2014-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -370,45 +370,15 @@ void FTextView::onMouseDown (FMouseEvent* ev)
     return;
 
   setWidgetFocus(this);
-  auto parent = getParentWidget();
-
-  if ( ! parent )
-    return;
-
-  const auto& dialog = static_cast<FDialog*>(parent);
-
-  if ( parent->isDialogWidget()
-    && dialog->isResizeable()
-    && ! dialog->isZoomed() )
-  {
-    const auto b = ev->getButton();
-    const auto& tp = ev->getTermPos();
-    const auto& p = parent->termToWidgetPos(tp);
-    const auto& new_ev = \
-       std::make_shared<FMouseEvent>(Event::MouseDown, p, tp, b);
-    FApplication::sendEvent (parent, new_ev.get());
-  }
+  // Event handover to parent dialog
+  passResizeCornerEventToDialog(this, *ev);
 }
 
 //----------------------------------------------------------------------
 void FTextView::onMouseUp (FMouseEvent* ev)
 {
-  auto parent = getParentWidget();
-
-  if ( parent && parent->isDialogWidget() )
-  {
-    const auto& dialog = static_cast<FDialog*>(parent);
-
-    if ( dialog->isResizeable() && ! dialog->isZoomed() )
-    {
-      const auto b = ev->getButton();
-      const auto& tp = ev->getTermPos();
-      const auto& p = parent->termToWidgetPos(tp);
-      const auto& new_ev = \
-          std::make_shared<FMouseEvent>(Event::MouseUp, p, tp, b);
-      FApplication::sendEvent (parent, new_ev.get());
-    }
-  }
+  // Event handover to parent dialog
+  passResizeCornerEventToDialog(this, *ev);
 
   vbar->redraw();
   hbar->redraw();
@@ -417,22 +387,8 @@ void FTextView::onMouseUp (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FTextView::onMouseMove (FMouseEvent* ev)
 {
-  auto parent = getParentWidget();
-
-  if ( parent && parent->isDialogWidget() )
-  {
-    const auto& dialog = static_cast<FDialog*>(parent);
-
-    if ( dialog->isResizeable() && ! dialog->isZoomed() )
-    {
-      const auto b = ev->getButton();
-      const auto& tp = ev->getTermPos();
-      const auto& p = parent->termToWidgetPos(tp);
-      const auto& new_ev = \
-          std::make_shared<FMouseEvent>(Event::MouseMove, p, tp, b);
-      FApplication::sendEvent (parent, new_ev.get());
-    }
-  }
+  // Event handover to parent dialog
+  passResizeCornerEventToDialog(this, *ev);
 }
 
 //----------------------------------------------------------------------

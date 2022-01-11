@@ -1,3 +1,6 @@
+2022-01-11  Markus Gans  <guru.mail@muenster.de>
+	* Generalize the passing of the resize event to its parent dialog
+
 2022-01-09  Markus Gans  <guru.mail@muenster.de>
 	* Added a ring buffer to buffer unprocessed keyboard and mouse input
 	* Added a unit test for the FVTerm class

@@ -4,7 +4,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2021 Markus Gans                                      *
+* Copyright 2017-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -538,6 +538,23 @@ void FScrollView::onMouseDown (FMouseEvent* ev)
   {
     directFocus();
   }
+
+  // Event handover to parent dialog
+  passResizeCornerEventToDialog(this, *ev);
+}
+
+//----------------------------------------------------------------------
+void FScrollView::onMouseUp (FMouseEvent* ev)
+{
+  // Event handover to parent dialog
+  passResizeCornerEventToDialog(this, *ev);
+}
+
+//----------------------------------------------------------------------
+void FScrollView::onMouseMove (FMouseEvent* ev)
+{
+  // Event handover to parent dialog
+  passResizeCornerEventToDialog(this, *ev);
 }
 
 //----------------------------------------------------------------------

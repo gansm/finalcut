@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021 Markus Gans                                           *
+* Copyright 2021-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -60,6 +60,7 @@ std::size_t   getHotkeyPos (const FString& src, FString& dest);
 void          setHotkeyViaString (FWidget*, const FString&);
 void          setWidgetFocus (FWidget*);
 bool          setWidgetShadow (FWidget*, bool);
+void          passResizeCornerEventToDialog (FWidget*, const FMouseEvent&);
 void          drawShadow (FWidget*);
 void          drawTransparentShadow (FWidget*);
 void          drawBlockShadow (FWidget*);
