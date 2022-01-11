@@ -15,7 +15,7 @@ Github hosts the source code of FINAL CUT. You can make a local copy from
 the repository using git clone:
 
 ```bash
-> git clone git://github.com/gansm/finalcut.git
+> git clone https://github.com/gansm/finalcut.git
 ```
 
 

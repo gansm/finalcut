@@ -29,7 +29,7 @@ The structure of the Qt framework was originally the inspiration for the C++ cla
 ## Installation
 
 ```bash
-> git clone git://github.com/gansm/finalcut.git
+> git clone https://github.com/gansm/finalcut.git
 > cd finalcut
 > autoreconf --install --force
 > ./configure --prefix=/usr
