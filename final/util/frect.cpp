@@ -289,12 +289,12 @@ bool FRect::overlap (const FRect &r) const
 FRect FRect::intersect (const FRect& r) const
 {
   // intersection: this ∩ r
-  int _X1 = std::max(X1, r.X1);
-  int _Y1 = std::max(Y1, r.Y1);
-  int _X2 = std::min(X2, r.X2);
-  int _Y2 = std::min(Y2, r.Y2);
-  const FPoint p1{ _X1, _Y1 };
-  const FPoint p2{ _X2, _Y2 };
+  int p1_x = std::max(X1, r.X1);
+  int p1_y = std::max(Y1, r.Y1);
+  int p2_x = std::min(X2, r.X2);
+  int p2_y = std::min(Y2, r.Y2);
+  const FPoint p1{ p1_x, p1_y };
+  const FPoint p2{ p2_x, p2_y };
   return { p1, p2 };
 }
 
@@ -302,12 +302,12 @@ FRect FRect::intersect (const FRect& r) const
 FRect FRect::combined (const FRect& r) const
 {
   // Union: this ∪ r
-  int _X1 = std::min(X1, r.X1);
-  int _Y1 = std::min(Y1, r.Y1);
-  int _X2 = std::max(X2, r.X2);
-  int _Y2 = std::max(Y2, r.Y2);
-  const FPoint p1{ _X1, _Y1 };
-  const FPoint p2{ _X2, _Y2 };
+  int p1_x = std::min(X1, r.X1);
+  int p1_y = std::min(Y1, r.Y1);
+  int p2_x = std::max(X2, r.X2);
+  int p2_y = std::max(Y2, r.Y2);
+  const FPoint p1{ p1_x, p1_y };
+  const FPoint p2{ p2_x, p2_y };
   return { p1, p2 };
 }
 

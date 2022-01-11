@@ -69,7 +69,7 @@ FString::FString (const FString& s)  // copy constructor
   if ( ! s.isEmpty() )
   {
     std::wstring copy(s.string);
-    _assign (copy);
+    internal_assign (copy);
   }
 }
 
@@ -86,7 +86,7 @@ FString::FString (const std::wstring& s)
   if ( ! s.empty() )
   {
     std::wstring str(s);
-    _assign (str);
+    internal_assign (str);
   }
 }
 
@@ -96,7 +96,7 @@ FString::FString (std::wstring&& s)
   if ( ! s.empty() )
   {
     std::wstring str(std::move(s));
-    _assign (str);
+    internal_assign (str);
   }
 }
 
@@ -106,7 +106,7 @@ FString::FString (const wchar_t s[])
   if ( s )
   {
     std::wstring str(s);
-    _assign (str);
+    internal_assign (str);
   }
 }
 
@@ -115,8 +115,8 @@ FString::FString (const std::string& s)
 {
   if ( ! s.empty() )
   {
-    auto wide_string = _toWideString(s);
-    _assign(wide_string);
+    auto wide_string = internal_toWideString(s);
+    internal_assign(wide_string);
   }
 }
 
@@ -125,8 +125,8 @@ FString::FString (const char s[])
 {
   if ( s )
   {
-    auto wide_string = _toWideString(s);
-    _assign(wide_string);
+    auto wide_string = internal_toWideString(s);
+    internal_assign(wide_string);
   }
 }
 
@@ -134,7 +134,7 @@ FString::FString (const char s[])
 FString::FString (const UniChar& c)
 {
   std::wstring str{ static_cast<wchar_t>(c) };
-  _assign (str);
+  internal_assign (str);
 }
 
 //----------------------------------------------------------------------
@@ -143,7 +143,7 @@ FString::FString (const wchar_t c)
   if ( c )
   {
     std::wstring str{ c };
-    _assign (str);
+    internal_assign (str);
   }
 }
 
@@ -153,7 +153,7 @@ FString::FString (const char c)
   if ( c )
   {
     std::wstring str{ wchar_t(uChar(c)) };
-    _assign (str);
+    internal_assign (str);
   }
 }
 
@@ -168,7 +168,7 @@ FString& FString::operator = (const FString& s)
   if ( &s != this )
   {
     std::wstring str{s.string};
-    _assign (str);
+    internal_assign (str);
   }
 
   return *this;
@@ -360,7 +360,7 @@ const char* FString::c_str() const
   if ( isEmpty() )
     return "";
 
-  char_string = _toCharString(string);
+  char_string = internal_toCharString(string);
   return char_string.c_str();
 }
 
@@ -372,7 +372,7 @@ char* FString::c_str()
   if ( isEmpty() )
     return const_cast<char*>("");
 
-  char_string = _toCharString(string);
+  char_string = internal_toCharString(string);
   return const_cast<char*>(char_string.c_str());
 }
 
@@ -385,7 +385,7 @@ std::wstring FString::toWString() const
 //----------------------------------------------------------------------
 std::string FString::toString() const
 {
-  return _toCharString(string);
+  return internal_toCharString(string);
 }
 
 //----------------------------------------------------------------------
@@ -714,7 +714,7 @@ FStringList FString::split (const FString& delimiter) const
 FString& FString::setString (const FString& s)
 {
   std::wstring str{s.string};
-  _assign (str);
+  internal_assign (str);
   return *this;
 }
 
@@ -741,7 +741,7 @@ FString& FString::setNumber (sInt64 num)
     *--s = '-';
 
   std::wstring str{s};
-  _assign (str);
+  internal_assign (str);
   return *this;
 }
 
@@ -760,7 +760,7 @@ FString& FString::setNumber (uInt64 num)
   while ( num );
 
   std::wstring str{s};
-  _assign (str);
+  internal_assign (str);
   return *this;
 }
 
@@ -826,7 +826,7 @@ FString& FString::setFormatedNumber (sInt64 num, char separator)
     *--s = '-';
 
   std::wstring str{s};
-  _assign (str);
+  internal_assign (str);
   return *this;
 }
 
@@ -853,7 +853,7 @@ FString& FString::setFormatedNumber (uInt64 num, char separator)
   while ( num );
 
   std::wstring str{s};
-  _assign (str);
+  internal_assign (str);
   return *this;
 }
 
@@ -1085,7 +1085,7 @@ bool FString::includes (const FString& s) const
 
 // private methods of FString
 //----------------------------------------------------------------------
-inline void FString::_assign (std::wstring& s)
+inline void FString::internal_assign (std::wstring& s)
 {
   if ( string == s )
     return;
@@ -1094,7 +1094,7 @@ inline void FString::_assign (std::wstring& s)
 }
 
 //----------------------------------------------------------------------
-std::string FString::_toCharString (const std::wstring& s) const
+std::string FString::internal_toCharString (const std::wstring& s) const
 {
   if ( s.empty() )
     return {};
@@ -1116,7 +1116,7 @@ std::string FString::_toCharString (const std::wstring& s) const
 }
 
 //----------------------------------------------------------------------
-inline std::wstring FString::_toWideString (const std::string& s) const
+inline std::wstring FString::internal_toWideString (const std::string& s) const
 {
   if ( s.empty() )
     return {};
@@ -1164,7 +1164,7 @@ std::ostream& operator << (std::ostream& outstr, const FString& s)
 
   if ( s.string.length() > 0 )
   {
-    outstr << s._toCharString(s.string);
+    outstr << s.internal_toCharString(s.string);
   }
   else if ( width > 0 )
   {
@@ -1180,11 +1180,11 @@ std::istream& operator >> (std::istream& instr, FString& s)
 {
   std::array<char, FString::INPBUFFER + 1> buf{};
   instr.getline (buf.data(), FString::INPBUFFER);
-  auto wide_string = s._toWideString(buf.data());
+  auto wide_string = s.internal_toWideString(buf.data());
 
   if ( ! wide_string.empty() )
   {
-    s._assign (wide_string);
+    s.internal_assign (wide_string);
   }
 
   return instr;
@@ -1214,7 +1214,7 @@ std::wistream& operator >> (std::wistream& instr, FString& s)
   std::array<wchar_t, FString::INPBUFFER + 1> buf{};
   instr.getline (buf.data(), FString::INPBUFFER);
   std::wstring str(buf.data());
-  s._assign (str);
+  s.internal_assign (str);
   return instr;
 }
 

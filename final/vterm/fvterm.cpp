@@ -718,13 +718,13 @@ void FVTerm::getArea (const FRect& box, const FTermArea* area)
   if ( length < 1 )
     return;
 
-  for (auto _y = 0; _y < y_end; _y++)  // line loop
+  for (auto line = 0; line < y_end; line++)  // line loop
   {
     const int line_len = getFullAreaWidth(area);
-    const auto& tc = vterm->data[(y + _y - 1) * vterm->width + x - 1];  // terminal character
-    auto& ac = area->data[(dy + _y) * line_len + dx];  // area character
+    const auto& tc = vterm->data[(y + line - 1) * vterm->width + x - 1];  // terminal character
+    auto& ac = area->data[(dy + line) * line_len + dx];  // area character
     std::memcpy (&ac, &tc, sizeof(ac) * unsigned(length));
-    auto area_changes = area->changes[dy + _y];
+    auto area_changes = area->changes[dy + line];
 
     if ( int(area_changes.xmin) > dx )
       area_changes.xmin = uInt(dx);
@@ -801,18 +801,18 @@ void FVTerm::putArea (const FTermArea* area) const
         modified = true;
     }
 
-    int _xmin = ax + line_xmin - ol;
-    int _xmax = ax + line_xmax;
+    int new_xmin = ax + line_xmin - ol;
+    int new_xmax = ax + line_xmax;
     auto& vterm_changes = vterm->changes[ay + y];
 
-    if ( _xmin < int(vterm_changes.xmin) )
-      vterm_changes.xmin = uInt(_xmin);
+    if ( new_xmin < int(vterm_changes.xmin) )
+      vterm_changes.xmin = uInt(new_xmin);
 
-    if ( _xmax >= vterm->width )
-      _xmax = vterm->width - 1;
+    if ( new_xmax >= vterm->width )
+      new_xmax = vterm->width - 1;
 
-    if ( _xmax > int(vterm_changes.xmax) )
-      vterm_changes.xmax = uInt(_xmax);
+    if ( new_xmax > int(vterm_changes.xmax) )
+      vterm_changes.xmax = uInt(new_xmax);
 
     area_changes.xmin = uInt(width);
     area_changes.xmax = 0;

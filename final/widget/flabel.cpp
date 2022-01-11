@@ -175,9 +175,9 @@ void FLabel::onMouseDown (FMouseEvent* ev)
       const auto b = ev->getButton();
       const auto& tp = ev->getTermPos();
       const auto& p = parent->termToWidgetPos(tp);
-      const auto& _ev = \
+      const auto& new_ev = \
           std::make_shared<FMouseEvent>(Event::MouseDown, p, tp, b);
-      FApplication::sendEvent (parent, _ev.get());
+      FApplication::sendEvent (parent, new_ev.get());
     }
 
     return;
