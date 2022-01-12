@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2021 Markus Gans                                      *
+* Copyright 2015-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -56,6 +56,7 @@
 
 #include <tuple>
 
+#include "final/fevent.h"
 #include "final/menu/fmenulist.h"
 #include "final/widget/fwindow.h"
 
@@ -196,9 +197,11 @@ class FMenu : public FWindow, public FMenuList
     void         mouseMoveDeselection (FMenuItem*, MouseStates&);
     void         mouseUpOverBorder();
     void         mouseMoveOverBorder (MouseStates&) const;
-    void         passEventToSubMenu (const FMouseEvent&);
+    void         passEventToSubMenu (const FMouseEvent&) const;
     void         passEventToSuperMenu (const FMouseEvent&);
     void         passEventToMenuBar (const FMouseEvent&) const;
+    template <typename WidgetT>
+    void         passEventToWidget (WidgetT, const FMouseEvent&) const;
     bool         containsMenuStructure (const FPoint&);
     bool         containsMenuStructure (int, int);
     FMenu*       superMenuAt (const FPoint&);
@@ -314,6 +317,23 @@ inline FWidget* FMenu::getSuperMenu() const
 //----------------------------------------------------------------------
 inline void FMenu::setSuperMenu (FWidget* smenu)
 { super_menu = smenu; }
+
+//----------------------------------------------------------------------
+template <typename WidgetT>
+inline void FMenu::passEventToWidget (WidgetT widget, const FMouseEvent& ev) const
+{
+  // Mouse event handover to given widget
+
+  const auto& type = ev.getType();
+  const auto& tpos = ev.getTermPos();
+  const auto& par = widget->termToWidgetPos(tpos);
+  const MouseButton btn = ev.getButton();
+  const auto& new_ev = \
+      std::make_shared<FMouseEvent>(type, par, tpos, btn);
+  setClickedWidget(widget);
+  widget->mouse_down = true;
+  widget->onMouseMove(new_ev.get());
+}
 
 //----------------------------------------------------------------------
 inline bool FMenu::containsMenuStructure (const FPoint& p)

@@ -261,7 +261,7 @@ bool setWidgetShadow (FWidget* w, bool enable)
 }
 
 //----------------------------------------------------------------------
-void passResizeCornerEventToDialog (FWidget* w, const FMouseEvent& ev)
+void passResizeCornerEventToDialog (const FWidget* w, const FMouseEvent& ev)
 {
   // Pass mouse event to the parent widget
 
@@ -277,10 +277,10 @@ void passResizeCornerEventToDialog (FWidget* w, const FMouseEvent& ev)
 
   const auto& type = ev.getType();
   const auto& tpos = ev.getTermPos();
-  const auto& p = parent->termToWidgetPos(tpos);
+  const auto& par = parent->termToWidgetPos(tpos);
   const auto btn = ev.getButton();
   const auto& new_ev = \
-      std::make_shared<FMouseEvent>(type, p, tpos, btn);
+      std::make_shared<FMouseEvent>(type, par, tpos, btn);
   FApplication::sendEvent (parent, new_ev.get());
 }
 

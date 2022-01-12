@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2021 Markus Gans                                      *
+* Copyright 2015-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -26,7 +26,6 @@
 
 #include "final/dialog/fdialog.h"
 #include "final/fapplication.h"
-#include "final/fevent.h"
 #include "final/fwidgetcolors.h"
 #include "final/menu/fmenubar.h"
 #include "final/menu/fmenu.h"
@@ -854,18 +853,11 @@ void FMenu::mouseMoveOverBorder (MouseStates& ms) const
 }
 
 //----------------------------------------------------------------------
-void FMenu::passEventToSubMenu (const FMouseEvent& ev)
+void FMenu::passEventToSubMenu (const FMouseEvent& ev) const
 {
   // Mouse event handover to sub-menu
 
-  const auto& t = ev.getTermPos();
-  const auto& p = opened_sub_menu->termToWidgetPos(t);
-  const MouseButton b = ev.getButton();
-  const auto& _ev = \
-      std::make_shared<FMouseEvent>(Event::MouseMove, p, t, b);
-  opened_sub_menu->mouse_down = true;
-  setClickedWidget(opened_sub_menu);
-  opened_sub_menu->onMouseMove(_ev.get());
+  passEventToWidget (opened_sub_menu, ev);
 }
 
 //----------------------------------------------------------------------
@@ -874,14 +866,7 @@ void FMenu::passEventToSuperMenu (const FMouseEvent& ev)
   // Mouse event handover to super-menu
 
   auto smenu = superMenuAt (ev.getTermPos());
-  const auto& t = ev.getTermPos();
-  const auto& p = smenu->termToWidgetPos(t);
-  const MouseButton b = ev.getButton();
-  const auto& _ev = \
-      std::make_shared<FMouseEvent>(Event::MouseMove, p, t, b);
-  smenu->mouse_down = true;
-  setClickedWidget(smenu);
-  smenu->onMouseMove(_ev.get());
+  passEventToWidget (smenu, ev);
 }
 
 //----------------------------------------------------------------------
@@ -890,14 +875,7 @@ void FMenu::passEventToMenuBar (const FMouseEvent& ev) const
   // Mouse event handover to the menu bar
 
   auto menu_bar = getMenuBar();
-  const auto& t = ev.getTermPos();
-  const auto& p = menu_bar->termToWidgetPos(t);
-  const MouseButton b = ev.getButton();
-  const auto& _ev = \
-      std::make_shared<FMouseEvent>(Event::MouseMove, p, t, b);
-  setClickedWidget(menu_bar);
-  menu_bar->mouse_down = true;
-  menu_bar->onMouseMove(_ev.get());
+  passEventToWidget (menu_bar, ev);
 }
 
 //----------------------------------------------------------------------

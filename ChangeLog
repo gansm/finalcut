@@ -1,3 +1,8 @@
+2022-01-12  Markus Gans  <guru.mail@muenster.de>
+	* Dropdown menus are closed again on click outside the widget 
+	  if there is no widget at that position 
+	  (Broken since Nov 1, 2020)
+
 2022-01-11  Markus Gans  <guru.mail@muenster.de>
 	* Generalize the passing of the resize event to its parent dialog
 

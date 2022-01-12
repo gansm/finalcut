@@ -739,14 +739,12 @@ inline void FApplication::performMouseAction() const
 void FApplication::mouseEvent (const FMouseData& md)
 {
   determineClickedWidget (md);
-
-  if ( ! FWidget::getClickedWidget() )
-    return;
-
   unsetMoveSizeMode();
   closeDropDown (md);
   unselectMenubarItems (md);
-  sendMouseEvent (md);
+
+  if ( FWidget::getClickedWidget() )  // A widget was clicked
+    sendMouseEvent (md);
 }
 
 //----------------------------------------------------------------------
@@ -995,7 +993,7 @@ void FApplication::closeDropDown (const FMouseData& md) const
     return;
 
   const auto& mouse_position = md.getPos();
-  finalcut::closeDropDown (this, mouse_position);
+  finalcut::closeDropDown (this, mouse_position);  // in fwindow.cpp
 }
 
 //----------------------------------------------------------------------
