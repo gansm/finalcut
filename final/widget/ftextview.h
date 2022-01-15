@@ -81,7 +81,7 @@ class FTextView : public FWidget
         , attributes{std::move(fchar)}
       { }
 
-      FTextHighlight (std::size_t i, std::size_t l, FColor c, FStyle&& s = FStyle()) noexcept
+      FTextHighlight (std::size_t i, std::size_t l, FColor c, const FStyle& s = FStyle()) noexcept
         : index{i}
         , length{l}
       {
@@ -90,7 +90,7 @@ class FTextView : public FWidget
         attributes.attr = s.toFAttribute();
       }
 
-      FTextHighlight (std::size_t i, std::size_t l, FColorPair&& cpair, FStyle&& s = FStyle()) noexcept
+      FTextHighlight (std::size_t i, std::size_t l, const FColorPair& cpair, const FStyle& s = FStyle()) noexcept
         : index{i}
         , length{l}
       {
