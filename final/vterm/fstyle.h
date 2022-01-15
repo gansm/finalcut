@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2021 Markus Gans                                      *
+* Copyright 2020-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -67,6 +67,26 @@ class FStyle
 
     void setStyle (Style attr) noexcept
     { attribute = attr; }
+
+    FAttribute toFAttribute() const
+    {
+      FAttribute fattr{};
+      fattr.bit.bold               = (attribute & Style::Bold) != Style::None;
+      fattr.bit.dim                = (attribute & Style::Dim) != Style::None;
+      fattr.bit.italic             = (attribute & Style::Italic) != Style::None;
+      fattr.bit.underline          = (attribute & Style::Underline) != Style::None;
+      fattr.bit.blink              = (attribute & Style::Blink) != Style::None;
+      fattr.bit.reverse            = (attribute & Style::Reverse) != Style::None;
+      fattr.bit.standout           = (attribute & Style::Standout) != Style::None;
+      fattr.bit.invisible          = (attribute & Style::Invisible) != Style::None;
+      fattr.bit.protect            = (attribute & Style::Protected) != Style::None;
+      fattr.bit.crossed_out        = (attribute & Style::CrossedOut) != Style::None;
+      fattr.bit.dbl_underline      = (attribute & Style::DoubleUnderline) != Style::None;
+      fattr.bit.transparent        = (attribute & Style::Transparent) != Style::None;
+      fattr.bit.color_overlay      = (attribute & Style::ColorOverlay) != Style::None;
+      fattr.bit.inherit_background = (attribute & Style::InheritBackground) != Style::None;
+      return fattr;
+    }
 
   private:
     // Data members

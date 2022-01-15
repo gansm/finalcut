@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2021 Markus Gans                                      *
+* Copyright 2014-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -76,19 +76,19 @@ class FListBoxItem
     template <typename DT = std::nullptr_t>
     explicit FListBoxItem (const FString&, DT&& = DT() );
 
-    // Disable copy constructor
+    // Copy constructor
     FListBoxItem (const FListBoxItem&) = default;
 
-    // Disable move constructor
+    // Move constructor
     FListBoxItem (FListBoxItem&&) noexcept = default;
 
     // Destructor
     virtual ~FListBoxItem() noexcept;
 
-    // Disable copy assignment operator (=)
+    // Copy assignment operator (=)
     FListBoxItem& operator = (const FListBoxItem&) = default;
 
-    // Disable move assignment operator (=)
+    // Move assignment operator (=)
     FListBoxItem& operator = (FListBoxItem&&) noexcept = default;
 
     // Accessors

@@ -62,14 +62,14 @@ FString FTextView::getText() const
   std::size_t len{0};
 
   for (auto&& line : data)
-    len += line.getLength() + 1;  // String length + '\n'
+    len += line.text.getLength() + 1;  // String length + '\n'
 
   FString s{len};  // Reserves storage
   auto iter = s.begin();
 
   for (auto&& line : data)
   {
-    if ( ! line.isEmpty() )
+    if ( ! line.text.isEmpty() )
     {
       if ( iter != s.begin() )
       {
@@ -77,8 +77,8 @@ FString FTextView::getText() const
         ++iter;
       }
 
-      std::copy (line.begin(), line.end(), iter);
-      iter += std::distance(line.begin(), line.end());
+      std::copy (line.text.begin(), line.text.end(), iter);
+      iter += std::distance(line.text.begin(), line.text.end());
     }
   }
 
@@ -118,6 +118,24 @@ void FTextView::setText (const FString& str)
 {
   clear();
   insert(str, -1);
+}
+
+//----------------------------------------------------------------------
+void FTextView::addHighlight (std::size_t line, FTextHighlight&& hgl)
+{
+  if ( line >= data.size() )
+    return;
+
+  data[line].highlight.emplace_back(std::move(hgl));
+}
+
+//----------------------------------------------------------------------
+void FTextView::resetHighlight (std::size_t line)
+{
+  if ( line >= data.size() )
+    return;
+
+  data[line].highlight.clear();
 }
 
 //----------------------------------------------------------------------
@@ -441,7 +459,7 @@ void FTextView::initLayout()
 
   for (const auto& line : data)
   {
-    const auto column_width = getColumnWidth(line);
+    const auto column_width = getColumnWidth(line.text);
 
     if ( column_width > max_line_width )
       max_line_width = column_width;
@@ -616,7 +634,7 @@ void FTextView::drawText()
     const std::size_t n = std::size_t(yoffset) + y;
     const std::size_t pos = std::size_t(xoffset) + 1;
     const auto text_width = getTextWidth();
-    const FString line(getColumnSubString(data[n], pos, text_width));
+    const FString line(getColumnSubString(data[n].text, pos, text_width));
     std::size_t trailing_whitespace{0};
     print() << FPoint{2, 2 - nf_offset + int(y)};
     FVTermBuffer line_buffer{};
@@ -626,7 +644,7 @@ void FTextView::drawText()
       if ( ! isPrintable(fchar.ch[0]) )
         fchar.ch[0] = L'.';
 
-    print(line_buffer);
+    printHighlighted (line_buffer, data[n].highlight);
     const auto column_width = getColumnWidth(line);
 
     if ( column_width <= text_width )
@@ -637,6 +655,27 @@ void FTextView::drawText()
 
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
+}
+
+//----------------------------------------------------------------------
+void FTextView::printHighlighted ( FVTermBuffer& line_buffer
+                                 , const std::vector<FTextHighlight>& highlight )
+{
+  for (auto&& hgl : highlight)
+  {
+    for (std::size_t i{0}; i < hgl.length; i++)
+    {
+      if (hgl.index + i >= std::size_t(xoffset))
+      {
+        auto index = hgl.index + i - std::size_t(xoffset);
+        auto& fchar = line_buffer[index];
+        fchar.fg_color = hgl.attributes.fg_color;
+        fchar.bg_color = hgl.attributes.bg_color;
+        fchar.attr = hgl.attributes.attr;
+      }
+    }
+  }
+  print(line_buffer);
 }
 
 //----------------------------------------------------------------------

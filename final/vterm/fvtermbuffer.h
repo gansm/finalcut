@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2021 Markus Gans                                      *
+* Copyright 2017-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -69,6 +69,9 @@ class FVTermBuffer
     FVTermBuffer (Iterator, Iterator);
 
     // Overloaded operators
+    reference operator [] (std::size_t);
+    const_reference operator [] (const std::size_t) const;
+
     template <typename NumT
             , enable_if_arithmetic_without_char_t<NumT> = nullptr>
     FVTermBuffer& operator << (const NumT&);
@@ -133,6 +136,18 @@ template <typename Iterator>
 inline FVTermBuffer::FVTermBuffer(Iterator first, Iterator last)
 {
   data.assign(first, last);
+}
+
+//----------------------------------------------------------------------
+inline FVTermBuffer::reference FVTermBuffer::operator [] (std::size_t index)
+{
+  return data[index];
+}
+
+//----------------------------------------------------------------------
+inline FVTermBuffer::const_reference FVTermBuffer::operator [] (const std::size_t index) const
+{
+  return data[index];
 }
 
 //----------------------------------------------------------------------

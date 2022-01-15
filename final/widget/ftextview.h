@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2021 Markus Gans                                      *
+* Copyright 2014-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -54,6 +54,8 @@
 #include "final/fwidget.h"
 #include "final/util/fstring.h"
 #include "final/util/fstringstream.h"
+#include "final/vterm/fcolorpair.h"
+#include "final/vterm/fstyle.h"
 
 namespace finalcut
 {
@@ -71,7 +73,50 @@ using FScrollbarPtr = std::shared_ptr<FScrollbar>;
 class FTextView : public FWidget
 {
   public:
+    struct FTextHighlight
+    {
+      FTextHighlight (std::size_t i, std::size_t l, FChar&& fchar) noexcept
+        : index{i}
+        , length{l}
+        , attributes{std::move(fchar)}
+      { }
+
+      FTextHighlight (std::size_t i, std::size_t l, FColor c, FStyle&& s = FStyle()) noexcept
+        : index{i}
+        , length{l}
+      {
+        attributes.fg_color = c;
+        attributes.bg_color = getColorTheme()->dialog_bg;
+        attributes.attr = s.toFAttribute();
+      }
+
+      FTextHighlight (std::size_t i, std::size_t l, FColorPair&& cpair, FStyle&& s = FStyle()) noexcept
+        : index{i}
+        , length{l}
+      {
+        attributes.fg_color = cpair.getForegroundColor();
+        attributes.bg_color = cpair.getBackgroundColor();
+        attributes.attr = s.toFAttribute();
+      }
+
+      std::size_t index{};
+      std::size_t length{};
+      FChar       attributes{};
+    };
+
+    struct FTextViewLine
+    {
+      FTextViewLine (FString&& s, std::vector<FTextHighlight>&& v = {}) noexcept
+        : text{std::move(s)}
+        , highlight{std::move(v)}
+      { }
+
+      FString text{};
+      std::vector<FTextHighlight> highlight{};
+    };
+
     // Using-declarations
+    using FTextViewList = std::vector<FTextViewLine>;
     using FWidget::setGeometry;
 
     // Constructor
@@ -88,91 +133,95 @@ class FTextView : public FWidget
     FTextView& operator << (const std::string&);
 
     // Accessors
-    FString             getClassName() const override;
-    std::size_t         getColumns() const noexcept;
-    std::size_t         getRows() const;
-    FString             getText() const;
-    const FStringList&  getLines() const &;
+    FString              getClassName() const override;
+    std::size_t          getColumns() const noexcept;
+    std::size_t          getRows() const;
+    FString              getText() const;
+    const FTextViewList& getLines() const &;
 
     // Mutators
-    void                setSize (const FSize&, bool = true) override;
-    void                setGeometry ( const FPoint&, const FSize&
-                                    , bool = true ) override;
-    void                resetColors() override;
-    void                setText (const FString&);
-    void                scrollToX (int);
-    void                scrollToY (int);
-    void                scrollTo (const FPoint&);
-    void                scrollTo (int, int);
-    void                scrollToBegin();
-    void                scrollToEnd();
-    void                scrollBy (int, int);
+    void                 setSize (const FSize&, bool = true) override;
+    void                 setGeometry ( const FPoint&, const FSize&
+                                     , bool = true ) override;
+    void                 resetColors() override;
+    void                 setText (const FString&);
+    void                 addHighlight (std::size_t, FTextHighlight&&);
+    void                 resetHighlight (std::size_t);
+    void                 scrollToX (int);
+    void                 scrollToY (int);
+    void                 scrollTo (const FPoint&);
+    void                 scrollTo (int, int);
+    void                 scrollToBegin();
+    void                 scrollToEnd();
+    void                 scrollBy (int, int);
 
     // Methods
-    void                hide() override;
+    void                 hide() override;
     template <typename T>
-    void                append (const std::initializer_list<T>&);
-    void                append (const FString&);
+    void                 append (const std::initializer_list<T>&);
+    void                 append (const FString&);
     template <typename T>
-    void                insert (const std::initializer_list<T>&, int);
-    void                insert (const FString&, int);
-    void                replaceRange (const FString&, int, int);
-    void                deleteRange (int, int);
-    void                deleteLine (int);
-    void                clear();
+    void                 insert (const std::initializer_list<T>&, int);
+    void                 insert (const FString&, int);
+    void                 replaceRange (const FString&, int, int);
+    void                 deleteRange (int, int);
+    void                 deleteLine (int);
+    void                 clear();
 
     // Event handlers
-    void                onKeyPress (FKeyEvent*) override;
-    void                onMouseDown (FMouseEvent*) override;
-    void                onMouseUp (FMouseEvent*) override;
-    void                onMouseMove (FMouseEvent*) override;
-    void                onWheel (FWheelEvent*) override;
-    void                onFocusIn (FFocusEvent*) override;
-    void                onFocusOut (FFocusEvent*) override;
+    void                 onKeyPress (FKeyEvent*) override;
+    void                 onMouseDown (FMouseEvent*) override;
+    void                 onMouseUp (FMouseEvent*) override;
+    void                 onMouseMove (FMouseEvent*) override;
+    void                 onWheel (FWheelEvent*) override;
+    void                 onFocusIn (FFocusEvent*) override;
+    void                 onFocusOut (FFocusEvent*) override;
 
   protected:
     // Method
-    void                initLayout() override;
-    void                adjustSize() override;
+    void                 initLayout() override;
+    void                 adjustSize() override;
 
   private:
     // Using-declaration
     using KeyMap = std::unordered_map<FKey, std::function<void()>, EnumHash<FKey>>;
 
     // Accessors
-    std::size_t         getTextHeight() const;
-    std::size_t         getTextWidth() const;
+    std::size_t          getTextHeight() const;
+    std::size_t          getTextWidth() const;
 
     // Inquiry
-    bool                isHorizontallyScrollable() const;
-    bool                isVerticallyScrollable() const;
+    bool                 isHorizontallyScrollable() const;
+    bool                 isVerticallyScrollable() const;
 
     // Methods
-    void                init();
-    void                mapKeyFunctions();
-    void                draw() override;
-    void                drawBorder() override;
-    void                drawScrollbars() const;
-    void                drawText();
-    bool                useFDialogBorder() const;
-    bool                isPrintable (wchar_t) const;
-    void                processChanged() const;
-    void                changeOnResize() const;
+    void                 init();
+    void                 mapKeyFunctions();
+    void                 draw() override;
+    void                 drawBorder() override;
+    void                 drawScrollbars() const;
+    void                 drawText();
+    void                 printHighlighted ( FVTermBuffer&
+                                          , const std::vector<FTextHighlight>& );
+    bool                 useFDialogBorder() const;
+    bool                 isPrintable (wchar_t) const;
+    void                 processChanged() const;
+    void                 changeOnResize() const;
 
     // Callback methods
-    void                cb_vbarChange (const FWidget*);
-    void                cb_hbarChange (const FWidget*);
+    void                 cb_vbarChange (const FWidget*);
+    void                 cb_hbarChange (const FWidget*);
 
     // Data members
-    FStringList        data{};
-    FScrollbarPtr      vbar{nullptr};
-    FScrollbarPtr      hbar{nullptr};
-    KeyMap             key_map{};
-    bool               update_scrollbar{true};
-    int                xoffset{0};
-    int                yoffset{0};
-    int                nf_offset{0};
-    std::size_t        max_line_width{0};
+    FTextViewList  data{};
+    FScrollbarPtr  vbar{nullptr};
+    FScrollbarPtr  hbar{nullptr};
+    KeyMap         key_map{};
+    bool           update_scrollbar{true};
+    int            xoffset{0};
+    int            yoffset{0};
+    int            nf_offset{0};
+    std::size_t    max_line_width{0};
 };
 
 // FListBox inline functions
@@ -223,7 +272,7 @@ inline std::size_t FTextView::getRows() const
 { return std::size_t(data.size()); }
 
 //----------------------------------------------------------------------
-inline const FStringList& FTextView::getLines() const &
+inline const FTextView::FTextViewList& FTextView::getLines() const &
 { return data; }
 
 //----------------------------------------------------------------------

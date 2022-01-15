@@ -1,3 +1,7 @@
+2022-01-15  Markus Gans  <guru.mail@muenster.de>
+	* Add text highlighting for FTextView. 
+	  Thanks to Michael Lehn for the idea
+
 2022-01-12  Markus Gans  <guru.mail@muenster.de>
 	* Dropdown menus are closed again on click outside the widget 
 	  if there is no widget at that position 
