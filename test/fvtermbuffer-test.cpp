@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021 Markus Gans                                           *
+* Copyright 2021-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -57,6 +57,7 @@ class FVTermBufferTest : public CPPUNIT_NS::TestFixture
     void noArgumentTest();
     void writeTest();
     void streamTest();
+    void indexTest();
     void combiningCharacterTest();
 
   private:
@@ -68,6 +69,7 @@ class FVTermBufferTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (noArgumentTest);
     CPPUNIT_TEST (writeTest);
     CPPUNIT_TEST (streamTest);
+    CPPUNIT_TEST (indexTest);
     CPPUNIT_TEST (combiningCharacterTest);
 
     // End of test suite definition
@@ -497,6 +499,84 @@ void FVTermBufferTest::streamTest()
   CPPUNIT_ASSERT ( fchar_vec[4].attr.byte[1] == 0 );
   CPPUNIT_ASSERT ( fchar_vec[5].attr.byte[0] == 0 );
   CPPUNIT_ASSERT ( fchar_vec[5].attr.byte[1] != 0 );
+}
+
+//----------------------------------------------------------------------
+void FVTermBufferTest::indexTest()
+{
+  finalcut::FVTermBuffer vterm_buf{};
+  finalcut::FVTerm::setNormal();
+  auto color_pair1 = finalcut::FColorPair(finalcut::FColor::Red, finalcut::FColor::White);
+  auto color_pair2 = finalcut::FColorPair(finalcut::FColor::Green, finalcut::FColor::LightGray);
+  auto color_pair3 = finalcut::FColorPair(finalcut::FColor::Blue, finalcut::FColor::White);
+
+  CPPUNIT_ASSERT ( vterm_buf.isEmpty() );
+  CPPUNIT_ASSERT ( vterm_buf.getLength() == 0 );
+  CPPUNIT_ASSERT ( vterm_buf.begin() == vterm_buf.end() );
+
+  vterm_buf.print (color_pair1);
+  vterm_buf.print("Linux");
+
+  CPPUNIT_ASSERT ( ! vterm_buf.isEmpty() );
+  CPPUNIT_ASSERT ( vterm_buf.getLength() == 5 );
+  CPPUNIT_ASSERT ( vterm_buf.begin() + 5 == vterm_buf.end() );
+  vterm_buf.print (color_pair2);
+  vterm_buf.print(" for");
+
+  CPPUNIT_ASSERT ( ! vterm_buf.isEmpty() );
+  CPPUNIT_ASSERT ( vterm_buf.getLength() == 9 );
+  CPPUNIT_ASSERT ( vterm_buf.begin() + 9 == vterm_buf.end() );
+  vterm_buf.print (color_pair3);
+  vterm_buf.print(" everyone");
+
+  CPPUNIT_ASSERT ( ! vterm_buf.isEmpty() );
+  CPPUNIT_ASSERT ( vterm_buf.getLength() == 18 );
+  CPPUNIT_ASSERT ( vterm_buf.begin() + 18 == vterm_buf.end() );
+
+  const finalcut::FVTermBuffer const_buf(vterm_buf.begin(), vterm_buf.end());
+
+  for (std::size_t i{0}; i < const_buf.getLength(); i++)
+  {
+    CPPUNIT_ASSERT ( const_buf[i].ch[0] == "Linux for everyone"[i] );
+    CPPUNIT_ASSERT ( const_buf[i].attr.byte[0] == 0 );
+    CPPUNIT_ASSERT ( const_buf[i].attr.byte[1] == 0 );
+    CPPUNIT_ASSERT ( const_buf[i].attr.byte[3] == 0 );
+
+    if ( i < 5 )
+    {
+      CPPUNIT_ASSERT ( const_buf[i].fg_color == finalcut::FColor::Red );
+      CPPUNIT_ASSERT ( const_buf[i].bg_color == finalcut::FColor::White );
+    }
+    else if ( i < 9 )
+    {
+      CPPUNIT_ASSERT ( const_buf[i].fg_color == finalcut::FColor::Green );
+      CPPUNIT_ASSERT ( const_buf[i].bg_color == finalcut::FColor::LightGray );
+    }
+    else
+    {
+      CPPUNIT_ASSERT ( const_buf[i].fg_color == finalcut::FColor::Blue );
+      CPPUNIT_ASSERT ( const_buf[i].bg_color == finalcut::FColor::White );
+    }
+  }
+
+  for (std::size_t i{0}; i < vterm_buf.getLength(); i++)
+  {
+    vterm_buf[i].ch[0] = "FINAL CUT for all."[i];
+    vterm_buf[i].fg_color = finalcut::FColor::Blue;
+    vterm_buf[i].bg_color = finalcut::FColor::White;
+    vterm_buf[i].attr.bit.italic = true;
+  }
+
+  for (std::size_t i{0}; i < vterm_buf.getLength(); i++)
+  {
+    CPPUNIT_ASSERT ( vterm_buf[i].ch[0] == "FINAL CUT for all."[i] );
+    CPPUNIT_ASSERT ( vterm_buf[i].attr.byte[0] != 0 );
+    CPPUNIT_ASSERT ( vterm_buf[i].attr.byte[1] == 0 );
+    CPPUNIT_ASSERT ( vterm_buf[i].attr.byte[3] == 0 );
+    CPPUNIT_ASSERT ( vterm_buf[i].attr.bit.italic == true );
+    CPPUNIT_ASSERT ( vterm_buf[i].fg_color == finalcut::FColor::Blue );
+    CPPUNIT_ASSERT ( vterm_buf[i].bg_color == finalcut::FColor::White );
+  }
 }
 
 //----------------------------------------------------------------------

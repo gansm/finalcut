@@ -231,8 +231,6 @@ inline FVTermBuffer& FVTermBuffer::operator << (const FCharVector& vec)
   return *this;
 }
 
-
-
 //----------------------------------------------------------------------
 inline FVTermBuffer& FVTermBuffer::operator << (const FStyle& style)
 {
