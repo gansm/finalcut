@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2021 Markus Gans                                      *
+* Copyright 2019-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -47,6 +47,7 @@ class FStyleTest : public CPPUNIT_NS::TestFixture
     void copyConstructorTest();
     void assignmentTest();
     void setStyleTest();
+    void toFAttributeTest();
 
   private:
     // Adds code needed to register the test suite
@@ -58,6 +59,7 @@ class FStyleTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (copyConstructorTest);
     CPPUNIT_TEST (assignmentTest);
     CPPUNIT_TEST (setStyleTest);
+    CPPUNIT_TEST (toFAttributeTest);
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
@@ -147,6 +149,69 @@ void FStyleTest::setStyleTest()
   CPPUNIT_ASSERT ( style5.getStyle() == finalcut::Style::InheritBackground );
   style5.setStyle (finalcut::Style::None + finalcut::Style::Dim);
   CPPUNIT_ASSERT ( style5.getStyle() == finalcut::Style::Dim );
+}
+
+//----------------------------------------------------------------------
+void FStyleTest::toFAttributeTest()
+{
+  finalcut::FStyle style;
+  CPPUNIT_ASSERT ( style.toFAttribute().byte[0] == 0 );
+  CPPUNIT_ASSERT ( style.toFAttribute().byte[1] == 0 );
+  CPPUNIT_ASSERT ( style.toFAttribute().byte[2] == 0 );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.bold == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.dim == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.italic == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.underline == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.blink == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.reverse == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.standout == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.invisible == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.protect == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.crossed_out == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.dbl_underline == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.transparent == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.color_overlay == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.inherit_background == false );
+
+  style.setStyle ( finalcut::Style::Reverse
+                 + finalcut::Style::CrossedOut
+                 + finalcut::Style::InheritBackground );
+  CPPUNIT_ASSERT ( style.toFAttribute().byte[0] != 0 );
+  CPPUNIT_ASSERT ( style.toFAttribute().byte[1] != 0 );
+  CPPUNIT_ASSERT ( style.toFAttribute().byte[2] == 0 );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.bold == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.dim == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.italic == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.underline == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.blink == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.reverse == true );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.standout == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.invisible == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.protect == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.crossed_out == true );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.dbl_underline == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.transparent == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.color_overlay == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.inherit_background == true );
+
+  style.setStyle (finalcut::Style::DoubleUnderline);
+  CPPUNIT_ASSERT ( style.toFAttribute().byte[0] == 0 );
+  CPPUNIT_ASSERT ( style.toFAttribute().byte[1] != 0 );
+  CPPUNIT_ASSERT ( style.toFAttribute().byte[2] == 0 );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.bold == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.dim == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.italic == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.underline == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.blink == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.reverse == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.standout == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.invisible == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.protect == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.crossed_out == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.dbl_underline == true );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.transparent == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.color_overlay == false );
+  CPPUNIT_ASSERT ( style.toFAttribute().bit.inherit_background == false );
 }
 
 // Put the test suite in the registry

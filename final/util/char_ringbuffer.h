@@ -321,15 +321,13 @@ class CharRingBuffer final : public FRingBuffer<char, Capacity>
         length = std::min(length, getCapacity());
         return ( std::strncmp(string, &front(), length) == 0 );
       }
-      else
-      {
-        auto l1 = std::min(length, getCapacity() - head);
-        auto l2 = length - l1;
-        auto found1 = bool( std::strncmp(string, &front(), l1) == 0 );
-        auto found2 = bool( l2 == 0
-                         || std::strncmp(string + l1, &buffer[0], l2) == 0 );
-        return found1 && found2;
-      }
+
+      auto l1 = std::min(length, getCapacity() - head);
+      auto l2 = length - l1;
+      auto found1 = bool( std::strncmp(string, &front(), l1) == 0 );
+      auto found2 = bool( l2 == 0
+                       || std::strncmp(string + l1, &buffer[0], l2) == 0 );
+      return found1 && found2;
     }
 };
 

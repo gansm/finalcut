@@ -20,6 +20,7 @@ noinst_PROGRAMS = \
 	event-log \
 	fullwidth-character \
 	hello \
+	highlight-text \
 	input-dialog \
 	keyboard \
 	listbox \
@@ -51,6 +52,7 @@ dialog_SOURCES = dialog.cpp
 event_log_SOURCES = event-log.cpp
 fullwidth_character_SOURCES = fullwidth-character.cpp
 hello_SOURCES = hello.cpp
+highlight_text_SOURCES = highlight-text.cpp
 input_dialog_SOURCES = input-dialog.cpp
 keyboard_SOURCES = keyboard.cpp
 listbox_SOURCES = listbox.cpp

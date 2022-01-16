@@ -79,6 +79,7 @@ examples/background-color
 examples/opti-move
 examples/termcap
 examples/hello
+examples/highlight-text
 examples/watch
 examples/menu
 examples/scrollview

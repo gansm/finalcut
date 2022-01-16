@@ -40,6 +40,7 @@ class FObject;
 class FRect;
 class FString;
 class FWidget;
+class FMouseEvent;
 
 // Using-declarations
 using FObjectList = std::vector<FObject*>;

@@ -121,12 +121,12 @@ void FTextView::setText (const FString& str)
 }
 
 //----------------------------------------------------------------------
-void FTextView::addHighlight (std::size_t line, FTextHighlight&& hgl)
+void FTextView::addHighlight (std::size_t line, const FTextHighlight& hgl)
 {
   if ( line >= data.size() )
     return;
 
-  data[line].highlight.emplace_back(std::move(hgl));
+  data[line].highlight.emplace_back(hgl);
 }
 
 //----------------------------------------------------------------------
@@ -665,16 +665,21 @@ void FTextView::printHighlighted ( FVTermBuffer& line_buffer
   {
     for (std::size_t i{0}; i < hgl.length; i++)
     {
-      if (hgl.index + i >= std::size_t(xoffset))
-      {
-        auto index = hgl.index + i - std::size_t(xoffset);
-        auto& fchar = line_buffer[index];
-        fchar.fg_color = hgl.attributes.fg_color;
-        fchar.bg_color = hgl.attributes.bg_color;
-        fchar.attr = hgl.attributes.attr;
-      }
+      if ( hgl.index + i < std::size_t(xoffset) )
+        continue;
+
+      auto index = hgl.index + i - std::size_t(xoffset);
+
+      if ( index >= line_buffer.getLength() )
+        continue;
+
+      auto& fchar = line_buffer[index];
+      fchar.fg_color = hgl.attributes.fg_color;
+      fchar.bg_color = hgl.attributes.bg_color;
+      fchar.attr = hgl.attributes.attr;
     }
   }
+
   print(line_buffer);
 }
 

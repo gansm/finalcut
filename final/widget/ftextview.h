@@ -51,6 +51,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "final/fwidgetcolors.h"
 #include "final/fwidget.h"
 #include "final/util/fstring.h"
 #include "final/util/fstringstream.h"
@@ -78,8 +79,18 @@ class FTextView : public FWidget
       FTextHighlight (std::size_t i, std::size_t l, FChar&& fchar) noexcept
         : index{i}
         , length{l}
-        , attributes{std::move(fchar)}
+        , attributes{fchar}
       { }
+
+      FTextHighlight (std::size_t i, std::size_t l, const FStyle& s) noexcept
+        : index{i}
+        , length{l}
+      {
+        auto wc = getColorTheme();
+        attributes.fg_color = wc->dialog_fg;
+        attributes.bg_color = wc->dialog_bg;
+        attributes.attr = s.toFAttribute();
+      }
 
       FTextHighlight (std::size_t i, std::size_t l, FColor c, const FStyle& s = FStyle()) noexcept
         : index{i}
@@ -145,7 +156,7 @@ class FTextView : public FWidget
                                      , bool = true ) override;
     void                 resetColors() override;
     void                 setText (const FString&);
-    void                 addHighlight (std::size_t, FTextHighlight&&);
+    void                 addHighlight (std::size_t, const FTextHighlight&);
     void                 resetHighlight (std::size_t);
     void                 scrollToX (int);
     void                 scrollToY (int);

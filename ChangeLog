@@ -1,3 +1,7 @@
+2022-01-16  Markus Gans  <guru.mail@muenster.de>
+	* Added examples/highlight-text to demonstrate text highlighting 
+	  in FTextView
+
 2022-01-15  Markus Gans  <guru.mail@muenster.de>
 	* Add text highlighting for FTextView. 
 	  Thanks to Michael Lehn for the idea
