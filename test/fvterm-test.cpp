@@ -93,14 +93,15 @@ class FTermOutputTest : public finalcut::FOutput
   private:
     // Using-declaration
     using OutputBuffer = std::queue<char>;
+    using FSetPalette  = std::function<void(finalcut::FColor, int, int, int)>;
 
     // Accessors
     const FSetPalette& getFSetPaletteRef() const & override;
 
     // Methods
-    bool           isDefaultPaletteTheme() override;
-    void           redefineColorPalette() override;
-    void           restoreColorPalette() override;
+    bool                isDefaultPaletteTheme() override;
+    void                redefineColorPalette() override;
+    void                restoreColorPalette() override;
 
     // Data member
     finalcut::FTerm                      fterm{};

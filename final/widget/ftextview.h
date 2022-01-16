@@ -76,7 +76,7 @@ class FTextView : public FWidget
   public:
     struct FTextHighlight
     {
-      FTextHighlight (std::size_t i, std::size_t l, FChar&& fchar) noexcept
+      FTextHighlight (std::size_t i, std::size_t l, const FChar& fchar) noexcept
         : index{i}
         , length{l}
         , attributes{fchar}

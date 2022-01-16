@@ -36,7 +36,8 @@ using finalcut::FSize;
 using finalcut::FStyle;
 using FTextHighlight = finalcut::FTextView::FTextHighlight;
 
-static char lgpl3[] = R"(                   GNU LESSER GENERAL PUBLIC LICENSE
+constexpr char lgpl3[] = \
+R"(                   GNU LESSER GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
  Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
@@ -221,8 +222,8 @@ class TextWindow final : public finalcut::FDialog
     // Method
     void initLayout() override;
     void adjustSize() override;
-    std::vector<std::size_t> find_matches ( const finalcut::FString&
-                                          , const finalcut::FString& );
+    MatchList find_matches ( const finalcut::FString&
+                           , const finalcut::FString& ) const;
     template <typename... Args>
     void highlight ( std::size_t
                    , const finalcut::FString&
@@ -254,8 +255,8 @@ void TextWindow::initLayout()
 {
   FDialog::setText("LGPLv3");
   setMinimumSize (FSize{51, 6});
-  int x = 1 + int((getDesktopWidth() - 72) / 2);
-  int y = int(getDesktopHeight() / 11);
+  auto x = 1 + int((getDesktopWidth() - 72) / 2);
+  auto y = int(getDesktopHeight() / 11);
   auto window_size = FSize{72, getDesktopHeight() * 7 / 8};
   FDialog::setGeometry(FPoint{x, y}, window_size);
   scrolltext.setGeometry (FPoint{1, 2}, FSize{getWidth(), getHeight() - 1});
@@ -300,7 +301,7 @@ void TextWindow::adjustSize()
 
 //----------------------------------------------------------------------
 TextWindow::MatchList TextWindow::find_matches ( const finalcut::FString& string
-                                               , const finalcut::FString& search )
+                                               , const finalcut::FString& search ) const
 {
   MatchList matches{};
   const auto search_length = search.getLength();
