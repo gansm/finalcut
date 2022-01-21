@@ -1,3 +1,8 @@
+2022-01-21  Markus Gans  <guru.mail@muenster.de>
+	* The trailing whitespaces in a FTextView line are now printed 
+	  in the line buffer. This allows you to make text highlighting 
+	  to the end of the line
+
 2022-01-16  Markus Gans  <guru.mail@muenster.de>
 	* Added examples/highlight-text to demonstrate text highlighting 
 	  in FTextView

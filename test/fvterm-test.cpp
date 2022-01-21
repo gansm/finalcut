@@ -110,6 +110,7 @@ class FTermOutputTest : public finalcut::FOutput
     std::shared_ptr<OutputBuffer>        output_buffer{};
     std::shared_ptr<finalcut::FPoint>    term_pos{};
     finalcut::FChar                      term_attribute{};
+    const FSetPalette                    set_palette_function{&finalcut::FTerm::setPalette};
 };
 
 // static class attributes
@@ -357,8 +358,7 @@ inline void FTermOutputTest::beep() const
 //----------------------------------------------------------------------
 inline const FTermOutputTest::FSetPalette& FTermOutputTest::getFSetPaletteRef() const &
 {
-  static const FSetPalette& f = &finalcut::FTerm::setPalette;
-  return f;
+  return set_palette_function;
 }
 
 //----------------------------------------------------------------------

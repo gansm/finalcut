@@ -635,7 +635,6 @@ void FTextView::drawText()
     const std::size_t pos = std::size_t(xoffset) + 1;
     const auto text_width = getTextWidth();
     const FString line(getColumnSubString(data[n].text, pos, text_width));
-    std::size_t trailing_whitespace{0};
     print() << FPoint{2, 2 - nf_offset + int(y)};
     FVTermBuffer line_buffer{};
     line_buffer.print(line);
@@ -644,13 +643,15 @@ void FTextView::drawText()
       if ( ! isPrintable(fchar.ch[0]) )
         fchar.ch[0] = L'.';
 
-    printHighlighted (line_buffer, data[n].highlight);
     const auto column_width = getColumnWidth(line);
 
     if ( column_width <= text_width )
-      trailing_whitespace = text_width - column_width;
+    {
+      auto trailing_whitespace = text_width - column_width;
+      line_buffer.print() << FString{trailing_whitespace, L' '};
+    }
 
-    print() << FString{trailing_whitespace, L' '};
+    printHighlighted (line_buffer, data[n].highlight);
   }
 
   if ( FVTerm::getFOutput()->isMonochron() )
@@ -671,7 +672,7 @@ void FTextView::printHighlighted ( FVTermBuffer& line_buffer
       auto index = hgl.index + i - std::size_t(xoffset);
 
       if ( index >= line_buffer.getLength() )
-        continue;
+        break;
 
       auto& fchar = line_buffer[index];
       fchar.fg_color = hgl.attributes.fg_color;

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2019 Markus Gans                                      *
+* Copyright 2022 Markus Gans                                           *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -227,7 +227,7 @@ class TextWindow final : public finalcut::FDialog
     template <typename... Args>
     void highlight ( std::size_t
                    , const finalcut::FString&
-                   , const finalcut::FString& 
+                   , const finalcut::FString&
                    , Args&&... );
     void highlightText();
 
@@ -322,7 +322,7 @@ TextWindow::MatchList TextWindow::find_matches ( const finalcut::FString& string
 template <typename... Args>
 void TextWindow::highlight ( std::size_t line_number
                            , const finalcut::FString& string
-                           , const finalcut::FString& search 
+                           , const finalcut::FString& search
                            , Args&&... args )
 {
   const auto len = search.getLength();
@@ -338,7 +338,7 @@ void TextWindow::highlight ( std::size_t line_number
 void TextWindow::highlightText()
 {
   std::size_t num{0};  // Line number
-  
+
   for (const auto& line : scrolltext.getLines())
   {
     highlight (num, line.text, L"GNU", FColorPair{FColor::White, FColor::Red});
