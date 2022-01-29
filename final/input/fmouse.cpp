@@ -791,7 +791,7 @@ void FMouseSGR::processEvent (const TimeValue& time)
   int btn{0};
 
   // parse the SGR mouse string
-  const char* p = sgr_mouse;
+  const char* p = sgr_mouse.data();
 
   while ( *p && *p != ';' )
   {
@@ -1027,7 +1027,7 @@ void FMouseUrxvt::processEvent (const TimeValue& time)
   int btn{0};
 
   // Parse the Urxvt mouse string
-  const char* p = urxvt_mouse;
+  const char* p = urxvt_mouse.data();
   bool x_neg{false};
   bool y_neg{false};
 

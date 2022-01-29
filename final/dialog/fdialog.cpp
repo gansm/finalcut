@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2021 Markus Gans                                      *
+* Copyright 2012-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -350,11 +350,13 @@ void FDialog::setSize (const FSize& size, bool adjust)
   const int dw = int(getWidth()) - int(size.getWidth());
   const int dh = int(getHeight()) - int(size.getHeight());
   const auto& shadow = getShadow();
+  const std::size_t old_width = getWidth() + shadow.getWidth();
+  const std::size_t old_height = getHeight() + shadow.getHeight();
   FWindow::setSize (size, false);
 
-  // get adjust width and height
-  const std::size_t w = getWidth() + shadow.getWidth();
-  const std::size_t h = getHeight() + shadow.getHeight();
+  // get adjust width and height with shadow
+  const std::size_t width = getWidth() + shadow.getWidth();
+  const std::size_t height = getHeight() + shadow.getHeight();
 
   // dw > 0 : scale down width
   // dw = 0 : scale only height
@@ -363,16 +365,14 @@ void FDialog::setSize (const FSize& size, bool adjust)
   // dh = 0 : scale only width
   // dh < 0 : scale up height
 
-  const auto d_width = std::size_t(dw);
-  const auto d_height = std::size_t(dh);
   setTerminalUpdates (FVTerm::TerminalUpdate::Stop);
 
   // restoring the non-covered terminal areas
   if ( dw > 0 )
-    restoreVTerm ({x + int(w), y, d_width, h + d_height});  // restore right
+    restoreVTerm ({x + int(width), y, std::size_t(dw), old_height});  // restore right
 
   if ( dh > 0 )
-    restoreVTerm ({x, y + int(h), w + d_width, d_height});  // restore bottom
+    restoreVTerm ({x, y + int(height), old_width, std::size_t(dh)});  // restore bottom
 
   if ( adjust )    // Adjust the size after restoreVTerm(),
     adjustSize();  // because adjustSize() can also change x and y
@@ -1673,7 +1673,7 @@ bool FDialog::isLowerRightResizeCorner (const MouseStates& ms) const
 //----------------------------------------------------------------------
 void FDialog::resizeMouseDown (const MouseStates& ms)
 {
-  // Click on the lower right resize corner
+  // Click on the lower right resize corner (mouse button down)
 
   if ( isResizeable() && isLowerRightResizeCorner(ms) )
   {
@@ -1698,7 +1698,8 @@ void FDialog::resizeMouseDown (const MouseStates& ms)
 //----------------------------------------------------------------------
 void FDialog::resizeMouseUpMove (const MouseStates& ms, bool mouse_up)
 {
-  // Resize the dialog
+  // Resize dialog on mouse button up or on mouse movements
+
   if ( isResizeable() && ! resize_click_pos.isOrigin() )
   {
     const auto& r = getRootWidget();

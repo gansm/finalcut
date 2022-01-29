@@ -177,6 +177,7 @@ class FScrollView : public FWidget
     void                drawText (const FString&, std::size_t);
     void                directFocus();
     void                mapKeyFunctions();
+    void                changeSize (const FSize&, bool);
     void                calculateScrollbarPos() const;
     template <typename Callback>
     void                initScrollbar ( FScrollbarPtr&

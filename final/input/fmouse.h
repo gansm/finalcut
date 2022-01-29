@@ -367,7 +367,7 @@ class FMouseX11 final : public FMouse
     void         setButtonState (const int, const TimeValue&) noexcept;
 
     // Data member
-    char  x11_mouse[MOUSE_BUF_SIZE]{'\0'};
+    std::array<char, MOUSE_BUF_SIZE>x11_mouse{};
     uChar x11_button_state{all_buttons_released};
 };
 
@@ -423,7 +423,7 @@ class FMouseSGR final : public FMouse
     void          setReleasedButtonState (const int) noexcept;
 
     // Data members
-    char  sgr_mouse[MOUSE_BUF_SIZE]{'\0'};
+    std::array<char, MOUSE_BUF_SIZE> sgr_mouse{};
     uChar sgr_button_state{0x23};
 };
 
@@ -479,7 +479,7 @@ class FMouseUrxvt final : public FMouse
     void          setButtonState (const int, const TimeValue&) noexcept;
 
     // Data members
-    char  urxvt_mouse[MOUSE_BUF_SIZE]{'\0'};
+    std::array<char, MOUSE_BUF_SIZE>  urxvt_mouse{};
     uChar urxvt_button_state{all_buttons_released};
 };
 

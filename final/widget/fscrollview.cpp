@@ -242,21 +242,14 @@ void FScrollView::setHeight (std::size_t h, bool adjust)
 //----------------------------------------------------------------------
 void FScrollView::setSize (const FSize& size, bool adjust)
 {
-  const std::size_t w = size.getWidth();
-  const std::size_t h = size.getHeight();
+  // Set the scroll view size
 
-  if ( w <= vertical_border_spacing + nf_offset
-    || h <= horizontal_border_spacing )
-    return;
+   if ( size.getWidth() <= vertical_border_spacing + nf_offset
+     || size.getHeight() <= horizontal_border_spacing )
+     return;
 
   FWidget::setSize (size, adjust);
-  viewport_geometry.setSize ( w - vertical_border_spacing - nf_offset
-                            , h - horizontal_border_spacing );
-  calculateScrollbarPos();
-
-  if ( getScrollWidth() < getViewportWidth()
-    || getScrollHeight() < getViewportHeight() )
-    setScrollSize (getViewportSize());
+  changeSize (size, adjust);
 }
 
 //----------------------------------------------------------------------
@@ -266,24 +259,9 @@ void FScrollView::setGeometry ( const FPoint& pos, const FSize& size
   // Set the scroll view geometry
 
   FWidget::setGeometry (pos, size, adjust);
-  const std::size_t w = size.getWidth();
-  const std::size_t h = size.getHeight();
   scroll_geometry.setPos ( getTermX() + getLeftPadding() - 1
                          , getTermY() + getTopPadding() - 1 );
-  viewport_geometry.setSize ( w - vertical_border_spacing - nf_offset
-                            , h - horizontal_border_spacing );
-  calculateScrollbarPos();
-
-  if ( getScrollWidth() < getViewportWidth()
-    || getScrollHeight() < getViewportHeight() )
-  {
-    FScrollView::setScrollSize (getViewportSize());
-  }
-  else if ( ! adjust && viewport )
-  {
-    viewport->offset_left = scroll_geometry.getX();
-    viewport->offset_top = scroll_geometry.getY();
-  }
+  changeSize (size, adjust);
 }
 
 //----------------------------------------------------------------------
@@ -934,6 +912,27 @@ inline void FScrollView::mapKeyFunctions()
         auto yoffset_end = int(getScrollHeight() - getViewportHeight());
         scrollToY (1 + yoffset_end);
       };
+}
+
+//----------------------------------------------------------------------
+void FScrollView::changeSize (const FSize& size, bool adjust)
+{
+  const std::size_t w = size.getWidth();
+  const std::size_t h = size.getHeight();
+  viewport_geometry.setSize ( w - vertical_border_spacing - nf_offset
+                            , h - horizontal_border_spacing );
+  calculateScrollbarPos();
+
+  if ( getScrollWidth() < getViewportWidth()
+    || getScrollHeight() < getViewportHeight() )
+  {
+    setScrollSize (getViewportSize());
+  }
+  else if ( ! adjust && viewport )
+  {
+    viewport->offset_left = scroll_geometry.getX();
+    viewport->offset_top = scroll_geometry.getY();
+  }
 }
 
 //----------------------------------------------------------------------

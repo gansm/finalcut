@@ -1,3 +1,6 @@
+2022-01-29  Markus Gans  <guru.mail@muenster.de>
+	* Minor bug fix for resizing dialogs
+
 2022-01-21  Markus Gans  <guru.mail@muenster.de>
 	* The trailing whitespaces in a FTextView line are now printed 
 	  in the line buffer. This allows you to make text highlighting 

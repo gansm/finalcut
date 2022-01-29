@@ -429,24 +429,18 @@ void FWidget::setSize (const FSize& size, bool adjust)
     && getHeight() == height && wsize.getHeight() == height )
     return;
 
-  if ( width < 1 )  // A width can never be narrower than 1 character
-    width = 1;
-
-  if ( height < 1 )  // A height can never be narrower than 1 character
-    height = 1;
-
-  wsize.setWidth(width);
-  wsize.setHeight(height);
-  adjust_wsize.setWidth(width);
-  adjust_wsize.setHeight(height);
-
-  if ( adjust )
-    adjustSize();
+  // A width or a height can never be narrower than 1 character
+  wsize.setWidth(std::max(width, std::size_t(1u)));
+  wsize.setHeight(std::max(height, std::size_t(1u)));
+  adjust_wsize = wsize;
 
   double_flatline_mask.top.resize (getWidth(), false);
   double_flatline_mask.right.resize (getHeight(), false);
   double_flatline_mask.bottom.resize (getWidth(), false);
   double_flatline_mask.left.resize (getHeight(), false);
+
+  if ( adjust )
+    adjustSize();
 }
 
 //----------------------------------------------------------------------
