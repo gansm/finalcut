@@ -1,5 +1,8 @@
 2022-01-29  Markus Gans  <guru.mail@muenster.de>
 	* Minor bug fix for resizing dialogs
+	* FTextView::FTextHighlight has received new constructors without 
+	  length information. That allows to highlight text up to the end 
+	  of the line
 
 2022-01-21  Markus Gans  <guru.mail@muenster.de>
 	* The trailing whitespaces in a FTextView line are now printed 

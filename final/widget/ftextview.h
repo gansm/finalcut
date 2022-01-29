@@ -76,10 +76,17 @@ class FTextView : public FWidget
   public:
     struct FTextHighlight
     {
+      // Constants
+      static constexpr std::size_t EOL = std::numeric_limits<std::size_t>::max();
+
       FTextHighlight (std::size_t i, std::size_t l, const FChar& fchar) noexcept
         : index{i}
         , length{l}
         , attributes{fchar}
+      { }
+
+      FTextHighlight (std::size_t i, const FChar& fchar) noexcept
+        : FTextHighlight{i, EOL, fchar}
       { }
 
       FTextHighlight (std::size_t i, std::size_t l, const FStyle& s) noexcept
@@ -92,6 +99,10 @@ class FTextView : public FWidget
         attributes.attr = s.toFAttribute();
       }
 
+      FTextHighlight (std::size_t i, const FStyle& s) noexcept
+        : FTextHighlight{i, EOL, s}
+      { }
+
       FTextHighlight (std::size_t i, std::size_t l, FColor c, const FStyle& s = FStyle()) noexcept
         : index{i}
         , length{l}
@@ -100,6 +111,10 @@ class FTextView : public FWidget
         attributes.bg_color = getColorTheme()->dialog_bg;
         attributes.attr = s.toFAttribute();
       }
+
+      FTextHighlight (std::size_t i, FColor c, const FStyle& s = FStyle()) noexcept
+        : FTextHighlight{i, EOL, c, s}
+      { }
 
       FTextHighlight (std::size_t i, std::size_t l, const FColorPair& cpair, const FStyle& s = FStyle()) noexcept
         : index{i}
@@ -110,6 +125,11 @@ class FTextView : public FWidget
         attributes.attr = s.toFAttribute();
       }
 
+      FTextHighlight (std::size_t i, const FColorPair& cpair, const FStyle& s = FStyle()) noexcept
+        : FTextHighlight{i, EOL, cpair, s}
+      { }
+
+      // Data members
       std::size_t index{};
       std::size_t length{};
       FChar       attributes{};

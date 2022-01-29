@@ -145,12 +145,12 @@ class Treeview final : public finalcut::FDialog
     struct TreeItem;  // forward declaration
 
     // Methods
-    auto initAfrica() const -> std::initializer_list<TreeItem>;
-    auto initAsia() const -> std::initializer_list<TreeItem>;
-    auto initEurope() const -> std::initializer_list<TreeItem>;
-    auto initNorthAmerica() const -> std::initializer_list<TreeItem>;
-    auto initSouthAmerica() const -> std::initializer_list<TreeItem>;
-    auto initOceania() const -> std::initializer_list<TreeItem>;
+    auto initAfrica() const -> std::vector<TreeItem>;
+    auto initAsia() const -> std::vector<TreeItem>;
+    auto initEurope() const -> std::vector<TreeItem>;
+    auto initNorthAmerica() const -> std::vector<TreeItem>;
+    auto initSouthAmerica() const -> std::vector<TreeItem>;
+    auto initOceania() const -> std::vector<TreeItem>;
     void initLayout() override;
     void adjustSize() override;
 
@@ -258,9 +258,9 @@ Treeview::Treeview (finalcut::FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-auto Treeview::initAfrica() const -> std::initializer_list<Treeview::TreeItem>
+auto Treeview::initAfrica() const -> std::vector<Treeview::TreeItem>
 {
-  static const auto list = std::initializer_list<Treeview::TreeItem>
+  static const auto list = std::vector<Treeview::TreeItem>
   {
     { "Algeria", "40,400,000", "15.9", {} },
     { "Angola", "25,789,024", "20.69", {} },
@@ -289,9 +289,9 @@ auto Treeview::initAfrica() const -> std::initializer_list<Treeview::TreeItem>
 }
 
 //----------------------------------------------------------------------
-auto Treeview::initAsia() const -> std::initializer_list<Treeview::TreeItem>
+auto Treeview::initAsia() const -> std::vector<Treeview::TreeItem>
 {
-  static const auto list = std::initializer_list<Treeview::TreeItem>
+  static const auto list = std::vector<Treeview::TreeItem>
   {
     { "Afghanistan", "34,656,032", "49.88", {} },
     { "China", "1,403,500,365", "145.0", {} },
@@ -317,9 +317,9 @@ auto Treeview::initAsia() const -> std::initializer_list<Treeview::TreeItem>
 }
 
 //----------------------------------------------------------------------
-auto Treeview::initEurope() const -> std::initializer_list<Treeview::TreeItem>
+auto Treeview::initEurope() const -> std::vector<Treeview::TreeItem>
 {
-  static const auto list = std::initializer_list<Treeview::TreeItem>
+  static const auto list = std::vector<Treeview::TreeItem>
   {
     { "Austria", "8,794,267", "104.0", {} },
     { "Belarus", "9,498,700", "45.8", {} },
@@ -345,9 +345,9 @@ auto Treeview::initEurope() const -> std::initializer_list<Treeview::TreeItem>
 }
 
 //----------------------------------------------------------------------
-auto Treeview::initNorthAmerica() const -> std::initializer_list<Treeview::TreeItem>
+auto Treeview::initNorthAmerica() const -> std::vector<Treeview::TreeItem>
 {
-  static const auto list = std::initializer_list<Treeview::TreeItem>
+  static const auto list = std::vector<Treeview::TreeItem>
   {
     { "Canada", "35,151,728", "3.92", {} },
     { "Cuba", "11,239,224", "102.3", {} },
@@ -362,9 +362,9 @@ auto Treeview::initNorthAmerica() const -> std::initializer_list<Treeview::TreeI
 }
 
 //----------------------------------------------------------------------
-auto Treeview::initSouthAmerica() const -> std::initializer_list<Treeview::TreeItem>
+auto Treeview::initSouthAmerica() const -> std::vector<Treeview::TreeItem>
 {
-  static const auto list = std::initializer_list<Treeview::TreeItem>
+  static const auto list = std::vector<Treeview::TreeItem>
   {
     { "Argentina", "43,847,430", "14.4", {} },
     { "Bolivia", "11,410,651", "10.4", {} },
@@ -381,9 +381,9 @@ auto Treeview::initSouthAmerica() const -> std::initializer_list<Treeview::TreeI
 }
 
 //----------------------------------------------------------------------
-auto Treeview::initOceania() const -> std::initializer_list<Treeview::TreeItem>
+auto Treeview::initOceania() const -> std::vector<Treeview::TreeItem>
 {
-  static const auto list = std::initializer_list<Treeview::TreeItem>
+  static const auto list = std::vector<Treeview::TreeItem>
   {
     { "Australia", "24,675,900", "3.2", {} },
     { "Papua New Guinea", "7,059,653", "15.0", {} },
