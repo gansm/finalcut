@@ -1,6 +1,7 @@
 2022-02-02  Markus Gans  <guru.mail@muenster.de>
 	* Depending on the number of dialogs, FDialogListMenu is now 
 	  automatically enabled and disabled
+	* FFileDialog now shows the file filter in the title bar
 
 2022-01-29  Markus Gans  <guru.mail@muenster.de>
 	* Minor bug fix for resizing dialogs
