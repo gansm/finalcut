@@ -717,6 +717,9 @@ void delCallback()
 ### The FINAL CUT widgets emit the following default signals ###
 
 <dl>
+  <dt>FApplication</dt>
+  <dd>"first-dialog-opened"<br />"last-dialog-closed"</dd>
+
   <dt>FButton</dt>
   <dd>"clicked"</dd>
 

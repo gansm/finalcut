@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2021 Markus Gans                                      *
+* Copyright 2012-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -229,6 +229,7 @@ class FDialog : public FWindow
     bool                  isLeftOutside() const;
     bool                  isBottomOutside() const;
     bool                  isLowerRightResizeCorner (const MouseStates&) const;
+    bool                  noVisibleDialog() const;
     void                  resizeMouseDown (const MouseStates&);
     void                  resizeMouseUpMove (const MouseStates&, bool = false);
     void                  cancelMouseResize();

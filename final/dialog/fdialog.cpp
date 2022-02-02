@@ -65,10 +65,16 @@ FDialog::~FDialog()  // destructor
   if ( ! FApplication::isQuit() )
     switchToPrevWindow(this);
 
+  auto has_entry = bool( getDialogList() && ! getDialogList()->empty() );
   delDialog(this);
 
   if ( isModal() )
     unsetModal();
+
+  auto fapp = FApplication::getApplicationObject();
+
+  if ( has_entry && noVisibleDialog() )
+    fapp->emitCallback("last-dialog-closed");
 }
 
 
@@ -187,12 +193,13 @@ void FDialog::show()
 void FDialog::hide()
 {
   FWindow::hide();
+  auto fapp = FApplication::getApplicationObject();
+
+  if ( noVisibleDialog() )
+     fapp->emitCallback("last-dialog-closed");
 
   if ( isModal() )
-  {
-    auto fapp = FApplication::getApplicationObject();
     fapp->exitLoop();
-  }
 }
 
 //----------------------------------------------------------------------
@@ -1671,6 +1678,27 @@ bool FDialog::isLowerRightResizeCorner (const MouseStates& ms) const
 }
 
 //----------------------------------------------------------------------
+bool FDialog::noVisibleDialog() const
+{
+  // Is true when there is no visible dialog
+
+  if ( ! getDialogList() || getDialogList()->empty() )
+    return true;
+
+  // The number of iterations should be very low with only
+  // one visible element
+  for (const auto& dgl : *getDialogList())
+  {
+    const auto& win = static_cast<FDialog*>(dgl);
+
+    if ( ! win->isWindowHidden() )
+      return false;
+  }
+
+  return true;
+}
+
+//----------------------------------------------------------------------
 void FDialog::resizeMouseDown (const MouseStates& ms)
 {
   // Click on the lower right resize corner (mouse button down)
@@ -1787,14 +1815,24 @@ inline void FDialog::cancelMoveSize()
 void FDialog::addDialog (FWidget* obj)
 {
   // Add the dialog object obj to the dialog list
-  if ( getDialogList() )
-    getDialogList()->push_back(obj);
+
+  if ( ! getDialogList() )
+    return;
+
+  if ( getDialogList()->empty() )
+  {
+    auto fapp = FApplication::getApplicationObject();
+    fapp->emitCallback("first-dialog-opened");
+  }
+
+  getDialogList()->push_back(obj);
 }
 
 //----------------------------------------------------------------------
 void FDialog::delDialog (const FWidget* obj)
 {
   // Delete the dialog object obj from the dialog list
+
   if ( ! getDialogList() || getDialogList()->empty() )
     return;
 

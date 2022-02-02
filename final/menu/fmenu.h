@@ -243,6 +243,7 @@ class FMenu : public FWindow, public FMenuList
     // Friend classes
     friend class FCheckMenuItem;
     friend class FDialog;
+    friend class FDialogListMenu;
     friend class FMenuBar;
     friend class FMenuItem;
     friend class FRadioMenuItem;

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2021 Markus Gans                                      *
+* Copyright 2016-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include "final/fapplication.h"
 #include "final/fc.h"
 #include "final/menu/fdialoglistmenu.h"
 
@@ -55,6 +56,45 @@ void FDialogListMenu::init()
 {
   auto m_item = getItem();
   m_item->dialog_index = true;
+  auto fapp = FApplication::getApplicationObject();
+
+  if ( ! fapp )
+    return;
+
+  // FApplication callback functions
+  fapp->addCallback
+  (
+    "last-dialog-closed",
+    this,
+    &FDialogListMenu::cb_switchState,
+    false
+  );
+
+  fapp->addCallback
+  (
+    "first-dialog-opened",
+    this,
+    &FDialogListMenu::cb_switchState,
+    true
+  );
+}
+
+//----------------------------------------------------------------------
+void FDialogListMenu::cb_switchState (bool enable)
+{
+  auto m_item = getItem();
+
+  if ( ! m_item )
+    return;
+
+  m_item->setFlags().active = enable;
+  auto super = m_item->getSuperMenu();
+
+  if ( ! super )
+    return;
+
+  if ( isMenuBar(super) )
+    super->redraw();
 }
 
 }  // namespace finalcut
