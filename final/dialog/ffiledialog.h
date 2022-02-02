@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2021 Markus Gans                                      *
+* Copyright 2014-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -178,6 +178,7 @@ class FFileDialog : public FDialog
     void                 selectDirectoryEntry (const std::string&);
     int                  changeDir (const FString&);
     void                 printPath (const FString&);
+    void                 setTitelbarText();
     static FString       getHomeDir();
 
     // Callback methods

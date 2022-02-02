@@ -93,7 +93,7 @@ void FDialogListMenu::cb_switchState (bool enable)
   if ( ! super )
     return;
 
-  if ( isMenuBar(super) )
+  if ( isMenu(super) || isMenuBar(super) )
     super->redraw();
 }
 

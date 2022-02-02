@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2021 Markus Gans                                      *
+* Copyright 2014-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -176,6 +176,7 @@ void FFileDialog::setPath (const FString& dir)
 void FFileDialog::setFilter (const FString& filter)
 {
   filter_pattern = filter;
+  setTitelbarText();
 }
 
 //----------------------------------------------------------------------
@@ -288,11 +289,7 @@ void FFileDialog::init()
   else
     x = y = 1;
 
-  if ( dlg_type == DialogType::Save )
-    FDialog::setText("Save file");
-  else
-    FDialog::setText("Open file");
-
+  setTitelbarText();
   widgetSettings (FPoint{x, y});  // Create widgets
   initCallbacks();
   setModal();
@@ -673,6 +670,23 @@ void FFileDialog::printPath (const FString& txt)
 }
 
 //----------------------------------------------------------------------
+void FFileDialog::setTitelbarText()
+{
+  FString suffix = [this] ()
+  {
+    if ( ! filter_pattern.isEmpty() && filter_pattern != L"*" )
+      return FString(L" (") + filter_pattern + L")";
+    else
+      return FString();
+  }();
+
+  if ( dlg_type == DialogType::Save )
+    FDialog::setText("Save file" + suffix);
+  else
+    FDialog::setText("Open file" + suffix);
+}
+
+//----------------------------------------------------------------------
 FString FFileDialog::getHomeDir()
 {
   struct passwd pwd{};
@@ -695,12 +709,14 @@ void FFileDialog::cb_processActivate()
     || filename.getText().includes('?') )
   {
     setFilter(filename.getText());
+    redraw();  // Show new filter in title bar
     readDir();
     filebrowser.redraw();
   }
   else if ( filename.getText().getLength() == 0 )
   {
     setFilter("*");
+    redraw();  // Delete filter from title bar
     readDir();
     filebrowser.redraw();
   }
