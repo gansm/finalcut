@@ -76,7 +76,7 @@ class XpmImage
     RGB      hexToRGB (const std::string&) const;
     auto     getColorMap (const std::string&, const std::string&) const
                  -> std::pair<std::string, XpmColor>;
-    auto     getColorMapFromLine (const std::string&, int)
+    auto     getColorMapFromLine (const std::string&, int) const
                  -> std::pair<std::string, XpmColor>;
     void     printUpperLower (const XpmColor&, const XpmColor&);
 
@@ -969,7 +969,7 @@ auto XpmImage::getColorMap (const std::string& index, const std::string& str) co
 }
 
 //----------------------------------------------------------------------
-auto XpmImage::getColorMapFromLine (const std::string& line, int c)
+auto XpmImage::getColorMapFromLine (const std::string& line, int c) const
     -> std::pair<std::string, XpmColor>
 {
   const std::string index(std::begin(line), std::begin(line) + c);
