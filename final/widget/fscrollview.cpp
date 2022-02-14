@@ -66,9 +66,8 @@ void FScrollView::setScrollWidth (std::size_t width)
 
   if ( viewport )
   {
-    const FSize no_shadow(0, 0);
     scroll_geometry.setWidth (width);
-    resizeArea (scroll_geometry, no_shadow, viewport);
+    resizeArea (scroll_geometry, viewport);
 
     addPreprocessingHandler
     (
@@ -96,9 +95,8 @@ void FScrollView::setScrollHeight (std::size_t height)
 
   if ( viewport )
   {
-    const FSize no_shadow(0, 0);
     scroll_geometry.setHeight (height);
-    resizeArea (scroll_geometry, no_shadow, viewport);
+    resizeArea (scroll_geometry, viewport);
     addPreprocessingHandler
     (
       F_PREPROC_HANDLER (this, &FScrollView::copy2area)
@@ -131,9 +129,8 @@ void FScrollView::setScrollSize (const FSize& size)
 
   if ( viewport )
   {
-    const FSize no_shadow(0, 0);
     scroll_geometry.setSize (width, height);
-    resizeArea (scroll_geometry, no_shadow, viewport);
+    resizeArea (scroll_geometry, viewport);
     addPreprocessingHandler
     (
       F_PREPROC_HANDLER (this, &FScrollView::copy2area)
@@ -803,7 +800,6 @@ void FScrollView::init()
   FScrollView::resetColors();
   FScrollView::setGeometry (FPoint{1, 1}, FSize{4, 4});
   setMinimumSize (FSize{4, 4});
-  const FSize no_shadow{0, 0};
   std::size_t w = getViewportWidth();
   std::size_t h = getViewportHeight();
 
@@ -814,7 +810,7 @@ void FScrollView::init()
     h = 1;
 
   scroll_geometry.setRect (0, 0, w, h);
-  createArea (scroll_geometry, no_shadow, viewport);
+  createArea (scroll_geometry, viewport);
   addPreprocessingHandler
   (
     F_PREPROC_HANDLER (this, &FScrollView::copy2area)

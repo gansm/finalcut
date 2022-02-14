@@ -40,7 +40,8 @@ noinst_PROGRAMS = \
 	treeview \
 	ui \
 	watch \
-	windows
+	windows \
+	xpmview
 
 7segment_SOURCES = 7segment.cpp
 background_color_SOURCES = background-color.cpp
@@ -73,6 +74,7 @@ treeview_SOURCES = treeview.cpp
 ui_SOURCES = ui.cpp
 watch_SOURCES = watch.cpp
 windows_SOURCES = windows.cpp
+xpmview_SOURCES = xpmview.cpp
 
 endif
 

@@ -250,11 +250,11 @@ bool FWidget::setFocus (bool enable)
   if ( flags.focus == enable )
     return true;
 
-  auto last_focus = FWidget::getFocusWidget();
-
-  // set widget focus
+  // Set widget focus
   if ( enable && ! flags.focus )
   {
+    auto last_focus = FWidget::getFocusWidget();
+
     if ( last_focus )
       last_focus->unsetFocus();
 

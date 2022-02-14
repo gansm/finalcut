@@ -1,6 +1,12 @@
+2022-02-14  Markus Gans  <guru.mail@muenster.de>
+	* FVTerm::copyArea copies the data of the source area to the position 
+	  of the destination area
+	* FTermArea got methods to set the print position and to print data
+	* Added examples/xpmview to view X PixMap (XPM) images in a terminal
+
 2022-02-02  Markus Gans  <guru.mail@muenster.de>
-	* Depending on the number of dialogs, FDialogListMenu is now 
-	  automatically enabled and disabled
+	* Depending on the number of dialog windows, FDialogListMenu 
+	  is now automatically enabled and disabled
 	* FFileDialog now shows the file filter in the title bar
 
 2022-01-29  Markus Gans  <guru.mail@muenster.de>

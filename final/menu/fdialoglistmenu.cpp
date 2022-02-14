@@ -56,6 +56,10 @@ void FDialogListMenu::init()
 {
   auto m_item = getItem();
   m_item->dialog_index = true;
+
+  if ( getDialogList()->empty() )
+    m_item->setFlags().active = false;
+
   auto fapp = FApplication::getApplicationObject();
 
   if ( ! fapp )

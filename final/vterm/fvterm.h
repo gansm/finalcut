@@ -241,9 +241,11 @@ class FVTerm : public FVTermAttribute
     void                  createArea ( const FRect&
                                      , const FSize&
                                      , FTermArea*& );
+    void                  createArea ( const FRect&, FTermArea*&);
     void                  resizeArea ( const FRect&
                                      , const FSize&
                                      , FTermArea* ) const;
+    void                  resizeArea (const FRect&, FTermArea*) const;
     static void           removeArea (FTermArea*&);
     static void           restoreVTerm (const FRect&);
     bool                  updateVTermCursor (const FTermArea*) const;
@@ -254,6 +256,7 @@ class FVTerm : public FVTermAttribute
     static void           getArea (const FRect&, const FTermArea*);
     void                  putArea (const FTermArea*) const;
     static void           putArea (const FPoint&, const FTermArea*);
+    static void           copyArea (FTermArea*, const FPoint&, const FTermArea*);
     static int            getLayer (FVTerm&);
     static void           determineWindowLayers();
     void                  scrollAreaForward (FTermArea*) const;
@@ -325,8 +328,6 @@ class FVTerm : public FVTermAttribute
     bool                  changedToTransparency (const FChar&, const FChar&) const;
     bool                  changedFromTransparency (const FChar&, const FChar&) const;
     void                  printCharacterOnCoordinate ( FTermArea*
-                                                     , const int&
-                                                     , const int&
                                                      , const FChar&) const;
     void                  printPaddingCharacter (FTermArea*, const FChar&);
     bool                  isInsideTerminal (const FPoint&) const noexcept;
@@ -391,6 +392,22 @@ struct FVTerm::FTermArea  // define virtual terminal character properties
   }
 
   bool contains (const FPoint& pos) const noexcept;
+  bool checkPrintPos() const noexcept;
+
+  void setCursorPos (int x, int y)
+  {
+    cursor_x = x;
+    cursor_y = y;
+  }
+
+  template <typename T>
+  int print (T&& term_data)
+  {
+    if ( hasOwner() )
+      return getOwner<FVTerm*>()->print (this, std::forward<T>(term_data));
+
+    return -1;
+  }
 
   // Data members
   int            offset_left{0};      // Distance from left terminal side

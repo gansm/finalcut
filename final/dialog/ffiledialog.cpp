@@ -672,12 +672,12 @@ void FFileDialog::printPath (const FString& txt)
 //----------------------------------------------------------------------
 void FFileDialog::setTitelbarText()
 {
-  FString suffix = [this] ()
+  auto suffix = [this] () -> FString
   {
     if ( ! filter_pattern.isEmpty() && filter_pattern != L"*" )
       return FString(L" (") + filter_pattern + L")";
-    else
-      return FString();
+
+    return {};
   }();
 
   if ( dlg_type == DialogType::Save )

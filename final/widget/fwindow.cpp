@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2021 Markus Gans                                      *
+* Copyright 2015-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -676,28 +676,14 @@ void FWindow::switchToPrevWindow (const FWidget* widget)
         && w != static_cast<FWindow*>(getStatusBar())
         && w != static_cast<FWindow*>(getMenuBar()) )
       {
-        setActiveWindow(w);
+        FWindow::setActiveWindow(w);
         break;
       }
     }
     while ( iter != begin );
   }
 
-  if ( active_win )
-  {
-    auto focus = active_win->getWindowFocusWidget();
-
-    if ( ! active_win->isWindowActive() )
-      FWidget::setActiveWindow(active_win);
-
-    if ( focus )
-    {
-      focus->setFocus();
-
-      if ( ! focus->isWindowWidget() )
-        focus->redraw();
-    }
-  }
+  reactivateWindow (active_win);
 
   // Enable terminal updates again
   if ( widget )
@@ -717,7 +703,7 @@ bool FWindow::activatePrevWindow()
 
     if ( ! w->isWindowHidden() )
     {
-      FWidget::setActiveWindow(w);
+      FWindow::setActiveWindow(w);
       return true;
     }
   }
@@ -915,6 +901,32 @@ int FWindow::getWindowLayerImpl (FWidget* obj)
 
   return FVTerm::getLayer(*window);
 }
+
+//----------------------------------------------------------------------
+void FWindow::reactivateWindow (FWindow* active_win)
+{
+  if ( ! active_win )
+    return;
+
+  auto focus = active_win->getWindowFocusWidget();
+
+  if ( ! active_win->isWindowActive() )
+    FWindow::setActiveWindow(active_win);
+
+  if ( focus && ! focus->isInstanceOf("FMenuItem") )
+  {
+    focus->setFocus();
+
+    if ( ! focus->isWindowWidget() )
+      focus->redraw();
+    else
+    {
+      if ( getStatusBar() )
+        getStatusBar()->drawMessage();
+    }
+  }
+}
+
 
 // non-member functions
 //----------------------------------------------------------------------

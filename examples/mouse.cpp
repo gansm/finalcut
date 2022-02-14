@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2021 Markus Gans                                      *
+* Copyright 2017-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -466,10 +466,11 @@ void MouseDraw::drawBrush (int x, int y, bool swap_color)
       setColor (c_chooser.getForeground(), c_chooser.getBackground());
 
     // set canvas print cursor position
-    canvas->cursor_x = x - canvas->offset_left - 10;
-    canvas->cursor_y = y - canvas->offset_top - 2;
+    canvas->setCursorPos ( x - canvas->offset_left - 10
+                         , y - canvas->offset_top - 2 );
     // print on canvas
-    print (canvas, brush.getBrush());
+    canvas->print (brush.getBrush());
+
     // copy canvas to the dialog
     drawCanvas();
   }
@@ -521,9 +522,8 @@ void MouseDraw::drawCanvas()
 //----------------------------------------------------------------------
 void MouseDraw::createCanvas()
 {
-  FSize no_shadow{0, 0};
   finalcut::FRect scroll_geometry{0, 0, 1, 1};
-  createArea (scroll_geometry, no_shadow, canvas);
+  createArea (scroll_geometry, canvas);
   adjustSize();
 }
 

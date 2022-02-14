@@ -512,6 +512,7 @@ void FDialog::onKeyPress (FKeyEvent* ev)
   if ( ! ev->isAccepted() && isEscapeKey(key) )
   {
     ev->accept();
+    clearStatusBar();
 
     if ( isModal() )
       done (ResultCode::Reject);
@@ -668,6 +669,7 @@ void FDialog::onMouseDoubleClick (FMouseEvent* ev)
       window_focus_widget->setFocus();
 
     setClickedWidget(nullptr);
+    clearStatusBar();
 
     if ( isModal() )
       done (ResultCode::Reject);
@@ -1294,6 +1296,16 @@ void FDialog::drawTextBar()
 
   if ( FVTerm::getFOutput()->getMaxColor() < 16 )
     unsetBold();
+}
+
+//----------------------------------------------------------------------
+void FDialog::clearStatusBar()
+{
+  if ( ! getStatusBar() )
+    return;
+
+  getStatusBar()->clearMessage();
+  getStatusBar()->drawMessage();
 }
 
 //----------------------------------------------------------------------
@@ -1930,6 +1942,7 @@ void FDialog::cb_close()
   dialog_menu->hide();
   setClickedWidget(nullptr);
   drawTitleBar();
+  clearStatusBar();
   close();
 }
 

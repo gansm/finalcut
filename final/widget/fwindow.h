@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2021 Markus Gans                                      *
+* Copyright 2015-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -175,6 +175,7 @@ class FWindow : public FWidget
     static void         processAlwaysOnTop();
     static FWindow*     getWindowWidgetImpl (FWidget*);
     static int          getWindowLayerImpl (FWidget*);
+    static void         reactivateWindow (FWindow*);
 
     // Data members
     FWidget*            win_focus_widget{nullptr};

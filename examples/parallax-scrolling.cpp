@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021 Markus Gans                                           *
+* Copyright 2021-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -26,9 +26,109 @@
 #include <unordered_set>
 
 #include <final/final.h>
+#include "xpmimage.h"
 
 namespace fc = finalcut;
 
+/* XPM */
+static const char* saturn_xpm[] = {
+"20 20 76 1",
+" 	c None",
+".	c #4F4F4F",
+"+	c #767676",
+"@	c #363636",
+"#	c #3E3E3E",
+"$	c #727272",
+"%	c #909090",
+"&	c #878787",
+"*	c #717171",
+"=	c #656565",
+"-	c #858585",
+";	c #8E8E8E",
+">	c #898989",
+",	c #606060",
+"'	c #838383",
+")	c #7A7A7A",
+"!	c #3A3A3A",
+"~	c #575757",
+"{	c #464646",
+"]	c #6A6A6A",
+"^	c #797979",
+"/	c #9D9D9D",
+"(	c #A9A9A9",
+"_	c #AEAEAE",
+":	c #A2A2A2",
+"<	c #535353",
+"[	c #5D5D5D",
+"}	c #A3A3A3",
+"|	c #B5B5B5",
+"1	c #BEBEBE",
+"2	c #BBBBBB",
+"3	c #B2B2B2",
+"4	c #4A4A4A",
+"5	c #434343",
+"6	c #A1A1A1",
+"7	c #B9B9B9",
+"8	c #C9C9C9",
+"9	c #C4C4C4",
+"0	c #C1C1C1",
+"a	c #929292",
+"b	c #7F7F7F",
+"c	c #B4B4B4",
+"d	c #CBCBCB",
+"e	c #CFCFCF",
+"f	c #CCCCCC",
+"g	c #C5C5C5",
+"h	c #D1D1D1",
+"i	c #B6B6B6",
+"j	c #999999",
+"k	c #C0C0C0",
+"l	c #CDCDCD",
+"m	c #DDDDDD",
+"n	c #8F8F8F",
+"o	c #6D6D6D",
+"p	c #C8C8C8",
+"q	c #E4E4E4",
+"r	c #626262",
+"s	c #E2E2E2",
+"t	c #B3B3B3",
+"u	c #AAAAAA",
+"v	c #7E7E7E",
+"w	c #D5D5D5",
+"x	c #C7C7C7",
+"y	c #919191",
+"z	c #4D4D4D",
+"A	c #A8A8A8",
+"B	c #2B2B2B",
+"C	c #959595",
+"D	c #A5A5A5",
+"E	c #888888",
+"F	c #777777",
+"G	c #828282",
+"H	c #949494",
+"I	c #7D7D7D",
+"J	c #2E2E2E",
+"K	c #494949",
+"                    ",
+"                .+@ ",
+"              #$%&* ",
+"             =&-;>. ",
+"        ,'>).!~{>]  ",
+"      =^/(_:>< ['@  ",
+"      +}|123(;4-5   ",
+"     <6788920ab.    ",
+"     ^cdefghi>$     ",
+"     jk8l8m8n}o     ",
+"     /kphqh%__r     ",
+"    =j|fs8%t1u.     ",
+"   =v;kwc%|x7y      ",
+"  =*=z3%y|xkA.      ",
+" B[-# ]Ctk7D[       ",
+" 5EFrG+~EHI         ",
+"J]Cy>[              ",
+"5IE*5               ",
+"##KJ                ",
+"                    "};
 
 struct restoreOverlaidWindows : public fc::FVTerm
 {
@@ -138,14 +238,14 @@ void TextWindow::adjustSize()
 //----------------------------------------------------------------------
 // class SpaceWindow
 //----------------------------------------------------------------------
-class SpaceWindow final : public fc::FWindow
+class SpaceWindow : public fc::FWindow
 {
   public:
     // Constructor
     explicit SpaceWindow (fc::FColor, fc::FColor, fc::FWidget* = nullptr);
     void setPos (const fc::FPoint&, bool = true) override;
 
-  private:
+  protected:
     // Method
     void draw() override;
     void drawNightSky();
@@ -215,6 +315,50 @@ void SpaceWindow::adjustSize()
 
 
 //----------------------------------------------------------------------
+// class PictureSpaceWindow
+//----------------------------------------------------------------------
+class PictureSpaceWindow final : public SpaceWindow
+{
+  public:
+    // Constructor
+    explicit PictureSpaceWindow (fc::FColor, fc::FColor, fc::FWidget* = nullptr);
+
+  private:
+    // Method
+    void draw() override;
+};
+
+//----------------------------------------------------------------------
+PictureSpaceWindow::PictureSpaceWindow (fc::FColor fg, fc::FColor bg, fc::FWidget* parent)
+  : SpaceWindow{fg, bg, parent}
+{ }
+
+//----------------------------------------------------------------------
+void PictureSpaceWindow::draw()
+{
+  SpaceWindow::draw();
+
+  if ( fc::FVTerm::getFOutput()->getMaxColor() < 16 )
+    return;
+
+  XpmImage xmp_image{};
+  xmp_image.setBackgroundTransparency();
+  xmp_image.setBackgroundColor(fc::FColor::Black);
+  xmp_image.parseXPM3(saturn_xpm);
+  auto pict_size = xmp_image.getSize();
+  pict_size.setHeight(pict_size.getHeight() / 2);
+  finalcut::FRect planet_geometry(fc::FPoint(0, 0), pict_size);
+  FTermArea* planet{nullptr};
+  createArea (planet_geometry, planet);
+  setColor(fc::FColor::Black, fc::FColor::Black);
+  clearArea(planet);
+  planet->setCursorPos (1, 1);
+  planet->print(xmp_image.getTermBuffer());
+  copyArea (getVWin(), fc::FPoint(10, 10), planet);
+}
+
+
+//----------------------------------------------------------------------
 // class ParallaxScrolling
 //----------------------------------------------------------------------
 class ParallaxScrolling final : public fc::FWidget
@@ -236,16 +380,16 @@ class ParallaxScrolling final : public fc::FWidget
     void onClose (fc::FCloseEvent*) override;
 
     // Data members
-    TextWindow   text_layer{fc::FColor::Yellow, fc::FColor::Black, this};
-    SpaceWindow  layer3_lhs{fc::FColor::White, fc::FColor::Black, this};
-    SpaceWindow  layer3_rhs{fc::FColor::White, fc::FColor::Black, this};
-    SpaceWindow  layer2_lhs{fc::FColor::LightGray, fc::FColor::Black, this};
-    SpaceWindow  layer2_rhs{fc::FColor::LightGray, fc::FColor::Black, this};
-    SpaceWindow  layer1_lhs{fc::FColor::DarkGray, fc::FColor::Black, this};
-    SpaceWindow  layer1_rhs{fc::FColor::DarkGray, fc::FColor::Black, this};
-    int          timer1{-1};
-    int          timer2{-1};
-    int          timer3{-1};
+    TextWindow          text_layer{fc::FColor::Yellow, fc::FColor::Black, this};
+    SpaceWindow         layer1_lhs{fc::FColor::DarkGray, fc::FColor::Black, this};
+    SpaceWindow         layer1_rhs{fc::FColor::DarkGray, fc::FColor::Black, this};
+    SpaceWindow         layer2_lhs{fc::FColor::LightGray, fc::FColor::Black, this};
+    SpaceWindow         layer2_rhs{fc::FColor::LightGray, fc::FColor::Black, this};
+    SpaceWindow         layer3_lhs{fc::FColor::White, fc::FColor::Black, this};
+    PictureSpaceWindow  layer3_rhs{fc::FColor::White, fc::FColor::Black, this};
+    int                 timer1{-1};
+    int                 timer2{-1};
+    int                 timer3{-1};
 };
 
 //----------------------------------------------------------------------
@@ -253,6 +397,7 @@ ParallaxScrolling::ParallaxScrolling (fc::FWidget* parent)
   : fc::FWidget{parent}
 {
   // Scroll speed in characters per second (cps) respectively hertz (Hz)
+
   timer1 = addTimer (300);  // 300 ms (3.3 cps)
   timer2 = addTimer (150);  // 150 ms (6.6 cps)
   timer3 = addTimer (100);  // 100 ms (10 cps)
