@@ -892,7 +892,7 @@ void XpmImage::getValues (const std::string& line)
                                   )
                    );
 
-  if ( sscanf( values_str.data(), "%lu %lu %lu %lu"
+  if ( sscanf( values_str.data(), "%zu %zu %zu %zu"
              , &width, &height, &num_colors, &cpp ) < 4 )
     throw std::invalid_argument("less 4 numbers");
 

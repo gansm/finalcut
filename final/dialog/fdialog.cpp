@@ -1299,7 +1299,7 @@ void FDialog::drawTextBar()
 }
 
 //----------------------------------------------------------------------
-void FDialog::clearStatusBar()
+void FDialog::clearStatusBar() const
 {
   if ( ! getStatusBar() )
     return;
