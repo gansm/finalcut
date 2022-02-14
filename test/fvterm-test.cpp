@@ -835,6 +835,40 @@ void FVTermTest::FVTermBasesTest()
   CPPUNIT_ASSERT ( vwin->changes[0].trans_count == 0 );
   CPPUNIT_ASSERT ( vwin->data );
   CPPUNIT_ASSERT ( getAreaSize(vwin) == 462 );
+  CPPUNIT_ASSERT ( vwin->contains({5, 5}) );
+  CPPUNIT_ASSERT ( ! vwin->contains({4, 5}) );
+  CPPUNIT_ASSERT ( ! vwin->contains({5, 4}) );
+  CPPUNIT_ASSERT ( ! vwin->contains({4, 4}) );
+  CPPUNIT_ASSERT ( vwin->contains({26, 25}) );    // {5 + 20 + 2 - 1 = 26, 5 + 20 + 1 - 1 = 25}
+  CPPUNIT_ASSERT ( ! vwin->contains({27, 25}) );
+  CPPUNIT_ASSERT ( ! vwin->contains({26, 26}) );
+  CPPUNIT_ASSERT ( ! vwin->contains({27, 26}) );
+  vwin->minimized = true;
+  CPPUNIT_ASSERT ( vwin->contains({5, 5}) );
+  CPPUNIT_ASSERT ( ! vwin->contains({4, 5}) );
+  CPPUNIT_ASSERT ( ! vwin->contains({5, 4}) );
+  CPPUNIT_ASSERT ( ! vwin->contains({4, 4}) );
+  CPPUNIT_ASSERT ( vwin->contains({26, 5}) );    // {5 + 20 + 2 - 1 = 26, 5 + 1 - 1 = 5}
+  CPPUNIT_ASSERT ( ! vwin->contains({27, 5}) );
+  CPPUNIT_ASSERT ( ! vwin->contains({26, 6}) );
+  CPPUNIT_ASSERT ( ! vwin->contains({27, 6}) );
+  vwin->minimized = false;
+  CPPUNIT_ASSERT ( ! vwin->checkPrintPos() );
+  vwin->setCursorPos(0, 1);
+  CPPUNIT_ASSERT ( ! vwin->checkPrintPos() );
+  vwin->setCursorPos(1, 0);
+  CPPUNIT_ASSERT ( ! vwin->checkPrintPos() );
+  vwin->setCursorPos(1, 1);
+  CPPUNIT_ASSERT ( vwin->checkPrintPos() );
+  vwin->setCursorPos(22, 21);  // {20 + 2 = 22, 20 + 1 = 21}
+  CPPUNIT_ASSERT ( vwin->checkPrintPos() );
+  vwin->setCursorPos(23, 21);
+  CPPUNIT_ASSERT ( ! vwin->checkPrintPos() );
+  vwin->setCursorPos(22, 22);
+  CPPUNIT_ASSERT ( ! vwin->checkPrintPos() );
+  vwin->setCursorPos(23, 22);
+  CPPUNIT_ASSERT ( ! vwin->checkPrintPos() );
+  vwin->setCursorPos(0, 0);
 
   finalcut::FChar default_char;
   default_char.ch           = { L' ', L'\0', L'\0', L'\0', L'\0' };

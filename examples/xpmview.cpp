@@ -39,9 +39,9 @@ class XpmPicture final : public finalcut::FScrollView
     explicit XpmPicture (finalcut::FWidget* = nullptr);
 
     // Method
-    void open (finalcut::FString);
-    auto getImageSize() -> finalcut::FSize;
-    std::size_t getImageColors();
+    void open (const finalcut::FString&);
+    auto getImageSize() const -> finalcut::FSize;
+    std::size_t getImageColors() const;
 
   private:
     // Methods
@@ -57,21 +57,21 @@ XpmPicture::XpmPicture (finalcut::FWidget* parent)
 { }
 
 //----------------------------------------------------------------------
-void XpmPicture::open (finalcut::FString filename)
+void XpmPicture::open (const finalcut::FString& filename)
 {
   auto&& data = xmp_image.xpmFileToVector (filename.toString());
   xmp_image.parseXPM3(data);
 }
 
 //----------------------------------------------------------------------
-auto XpmPicture::getImageSize() -> finalcut::FSize
+auto XpmPicture::getImageSize() const -> finalcut::FSize
 {
   auto size = xmp_image.getSize();
   return size;
 }
 
 //----------------------------------------------------------------------
-std::size_t XpmPicture::getImageColors()
+std::size_t XpmPicture::getImageColors() const
 {
   return xmp_image.getColorCount();
 }
@@ -107,7 +107,8 @@ class XpmWindow final : public finalcut::FDialog
     using finalcut::FDialog::setGeometry;
 
     // Constructor
-    explicit XpmWindow (finalcut::FString, finalcut::FWidget* = nullptr);
+    explicit XpmWindow ( const finalcut::FString&
+                       , finalcut::FWidget* = nullptr );
 
     // Method
     void setSize (const FSize&, bool = true) override;
@@ -117,7 +118,7 @@ class XpmWindow final : public finalcut::FDialog
     // Method
     void initLayout() override;
     void adjustSize() override;
-    void open (finalcut::FString);
+    void open (const finalcut::FString&);
 
     // Event handler
     void onKeyPress (finalcut::FKeyEvent*) override;
@@ -128,7 +129,7 @@ class XpmWindow final : public finalcut::FDialog
 
 
 //----------------------------------------------------------------------
-XpmWindow::XpmWindow ( finalcut::FString filename
+XpmWindow::XpmWindow ( const finalcut::FString& filename
                      , finalcut::FWidget* parent )
   : finalcut::FDialog{parent}
 {
@@ -182,10 +183,11 @@ void XpmWindow::adjustSize()
 }
 
 //----------------------------------------------------------------------
-void XpmWindow::open (finalcut::FString filename)
+void XpmWindow::open (const finalcut::FString& filename)
 {
   xpm.open(filename);
-  const auto base_name = finalcut::FString(basename(filename.c_str()));
+  auto c_string = const_cast<char*>(filename.c_str());
+  const auto base_name = finalcut::FString(basename(c_string));
   FDialog::setText(base_name);
   const auto size = xpm.getImageSize();
   const auto img_width = size.getWidth();
@@ -242,7 +244,7 @@ class MainWidget final : public finalcut::FWidget
 {
   public:
     explicit MainWidget (finalcut::FWidget* parent = nullptr);
-    void open (finalcut::FString);
+    void open (const finalcut::FString&);
 
   private:
     // Event handler
@@ -286,7 +288,7 @@ MainWidget::MainWidget (finalcut::FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-void MainWidget::open (finalcut::FString filename)
+void MainWidget::open (const finalcut::FString& filename)
 {
   const auto& xpm_window = new XpmWindow(filename, this);
   xpm_window->show();

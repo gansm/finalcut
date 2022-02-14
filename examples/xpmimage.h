@@ -64,7 +64,7 @@ class XpmImage
             , enable_if_no_vector<XPMdataT> = 0>
     void     parseXPM3 (XPMdataT&);
     void     parseXPM3 (const std::vector<std::string>&);
-    auto     xpmFileToVector (std::string) -> std::vector<std::string>;
+    auto     xpmFileToVector (const std::string&) const -> std::vector<std::string>;
 
   private:
     // Using-declaration
@@ -72,8 +72,8 @@ class XpmImage
 
     // Methods
     void     getValues (const std::string&);
-    XpmColor rgb2ColorIndex (RGB);
-    RGB      hexToRGB (const std::string&);
+    XpmColor rgb2ColorIndex (RGB) const;
+    RGB      hexToRGB (const std::string&) const;
     auto     getColorMap (const std::string&, const std::string&)
                  -> std::pair<std::string, XpmColor>;
     auto     getColorMapFromLine (const std::string&, int)
@@ -82,14 +82,14 @@ class XpmImage
 
     // Data member
     finalcut::FVTermBuffer vterm_buf{};
-    std::map<std::string, XpmColor> cmap{};
+    std::map<std::string, XpmColor, std::less<>> cmap{};
     std::size_t width{};
     std::size_t height{};
     std::size_t num_colors{};
     std::size_t cpp{};
     finalcut::FColor background{finalcut::FColor::White};
     bool background_transparency{false};
-    const std::map<std::string, RGB> x11_colors
+    const std::map<std::string, RGB, std::less<>> x11_colors
     {
       { "snow"                  , {255, 250, 250} },
       { "ghost white"           , {248, 248, 255} },
@@ -901,7 +901,7 @@ void XpmImage::getValues (const std::string& line)
 }
 
 //----------------------------------------------------------------------
-XpmImage::XpmColor XpmImage::rgb2ColorIndex (RGB rgb)
+XpmImage::XpmColor XpmImage::rgb2ColorIndex (RGB rgb) const
 {
   const auto color = finalcut::rgb2ColorIndex ( std::get<0>(rgb)
                                               , std::get<1>(rgb)
@@ -910,9 +910,11 @@ XpmImage::XpmColor XpmImage::rgb2ColorIndex (RGB rgb)
 }
 
 //----------------------------------------------------------------------
-auto XpmImage::hexToRGB (const std::string& str) -> RGB
+auto XpmImage::hexToRGB (const std::string& str) const -> RGB
 {
-  uInt8 r{}, g{}, b{};
+  uInt8 r{};
+  uInt8 g{};
+  uInt8 b{};
 
   switch ( str.length() )
   {
@@ -1075,7 +1077,11 @@ void XpmImage::parseXPM3 (const std::vector<std::string>& xpm)
       {
         getValues(line);
       }
-      catch (...)
+      catch (const std::invalid_argument&)
+      {
+        return;
+      }
+      catch (const std::out_of_range&)
       {
         return;
       }
@@ -1124,7 +1130,7 @@ void XpmImage::parseXPM3 (const std::vector<std::string>& xpm)
 }
 
 //----------------------------------------------------------------------
-auto XpmImage::xpmFileToVector (std::string filename) -> std::vector<std::string>
+auto XpmImage::xpmFileToVector (const std::string& filename) const -> std::vector<std::string>
 {
   std::vector<std::string> xpm{};
   std::string line{};
@@ -1138,14 +1144,12 @@ auto XpmImage::xpmFileToVector (std::string filename) -> std::vector<std::string
     getline(infile, line);
     std::smatch match;
 
-    if ( num == 0 && line.find("/* XPM */") == std::string::npos )
+    if ( (num == 0 && line.find("/* XPM */") == std::string::npos)
+      || (line[0] == '}' && line[1] == ';') )
       break;
 
     if ( line[0] != '"' && line[0] != ' ' && line[0] != '/' )
       continue;
-
-    if ( line[0] == '}' && line[1] == ';' )
-      break;
 
     if ( std::regex_search(line, match, regex) && match.size() == 2 )
     {
