@@ -49,9 +49,12 @@ jobs:
       run: |
         wget -q "https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip"
         unzip -q "build-wrapper-linux-x86.zip" -d "/tmp" || echo
-        LATEST_VERSION=$(wget -O- https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/ 2>/dev/null | grep 'linux.zip"' | cut -d\" -f2 | tail -n1)
-        wget -q "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/$LATEST_VERSION"
-        unzip -q "$LATEST_VERSION" -d "/tmp" || echo
+        LATEST_VERSION=$(curl -H "Accept: application/vnd.github.v3+json" \
+                         https://api.github.com/repos/SonarSource/sonar-scanner-cli/releases/latest 2>/dev/null \
+                         | grep "tag_name" \
+                         | cut -d\" -f4)
+        wget -q "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${LATEST_VERSION}-linux.zip"
+        unzip -q "sonar-scanner-cli-${LATEST_VERSION}-linux.zip" -d "/tmp" || echo
         echo "sonar.host.url=https://sonarcloud.io" >> /tmp/sonar-scanner-*/conf/sonar-scanner.properties
         mkdir /tmp/sonar-cache
         autoreconf -v --install --force

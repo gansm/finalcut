@@ -33,7 +33,7 @@ namespace fc = finalcut;
 
 // XPM data
 constexpr std::array<const char*, 97> saturn_xpm = \
-{
+{{
   "20 20 76 1",
   " \tc None",
   ".\tc #4F4F4F",
@@ -131,7 +131,7 @@ constexpr std::array<const char*, 97> saturn_xpm = \
   "5IE*5               ",
   "##KJ                ",
   "                    "
-};
+}};
 
 struct restoreOverlaidWindows : public fc::FVTerm
 {
