@@ -430,7 +430,9 @@ class FVTerm_protected : public finalcut::FVTerm
 
     // Methods
     void p_createArea (const finalcut::FRect&, const finalcut::FSize&, FTermArea*&);
+    void p_createArea (const finalcut::FRect&, FTermArea*&);
     void p_resizeArea (const finalcut::FRect&, const finalcut::FSize&, FTermArea*) const;
+    void p_resizeArea (const finalcut::FRect&, FTermArea*) const;
     static void p_removeArea (FTermArea*&);
     static void p_restoreVTerm (const finalcut::FRect&);
     bool p_updateVTermCursor (const FTermArea*) const;
@@ -580,9 +582,21 @@ inline void FVTerm_protected::p_createArea (const finalcut::FRect& box, const fi
 }
 
 //----------------------------------------------------------------------
+inline void FVTerm_protected::p_createArea (const finalcut::FRect& box, FTermArea*& area)
+{
+  finalcut::FVTerm::createArea (box, area);
+}
+
+//----------------------------------------------------------------------
 inline void FVTerm_protected::p_resizeArea (const finalcut::FRect& box, const finalcut::FSize& shadow, FTermArea* area) const
 {
   finalcut::FVTerm::resizeArea (box, shadow, area);
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm_protected::p_resizeArea (const finalcut::FRect& box, FTermArea* area) const
+{
+  finalcut::FVTerm::resizeArea (box, area);
 }
 
 //----------------------------------------------------------------------
@@ -712,12 +726,30 @@ class FVTermTest : public CPPUNIT_NS::TestFixture
   protected:
     void classNameTest();
     void noArgumentTest();
+    void OwnFunctionsTest();
     void FVTermBasesTest();
 
   private:
+    template <typename T>
+    struct FRepeat
+    {
+      std::size_t repeat{0U};
+      T data{};
+    };
+
+    using RepeatFChar = FRepeat<finalcut::FChar>;
+    using RepeatFCharVector = std::vector<RepeatFChar>;
+    using RepeatFCharLine = FRepeat<RepeatFCharVector>;
+
     void         showFCharData (finalcut::FChar);
     std::size_t  getAreaSize (finalcut::FVTerm::FTermArea*);
+    bool         isAreaEqual (finalcut::FVTerm::FTermArea*, finalcut::FVTerm::FTermArea*);
     bool         isFCharEqual (const finalcut::FChar&, const finalcut::FChar&);
+    void         printOnArea (finalcut::FVTerm::FTermArea*, const finalcut::FChar&);
+    void         printOnArea (finalcut::FVTerm::FTermArea*, const RepeatFChar&);
+    void         printOnArea (finalcut::FVTerm::FTermArea*, const RepeatFCharVector&);
+    void         printOnArea (finalcut::FVTerm::FTermArea*, const RepeatFCharLine&);
+    void         printArea ( finalcut::FVTerm::FTermArea*);
 
     // Adds code needed to register the test suite
     CPPUNIT_TEST_SUITE (FVTermTest);
@@ -725,6 +757,7 @@ class FVTermTest : public CPPUNIT_NS::TestFixture
     // Add a methods to the test suite
     CPPUNIT_TEST (classNameTest);
     CPPUNIT_TEST (noArgumentTest);
+    CPPUNIT_TEST (OwnFunctionsTest);
     CPPUNIT_TEST (FVTermBasesTest);
 
     // End of test suite definition
@@ -774,6 +807,40 @@ void FVTermTest::noArgumentTest()
 }
 
 //----------------------------------------------------------------------
+void FVTermTest::OwnFunctionsTest()
+{
+  finalcut::FChar shadow_char;
+  shadow_char.ch           = { L'\0', L'\0', L'\0', L'\0', L'\0' };
+  shadow_char.encoded_char = { L'\0', L'\0', L'\0', L'\0', L'\0' };
+  shadow_char.fg_color     = finalcut::FColor::Default;
+  shadow_char.bg_color     = finalcut::FColor::Default;
+  shadow_char.attr.byte[0] = 0;
+  shadow_char.attr.byte[1] = 0;
+  shadow_char.attr.bit.transparent = true;
+  shadow_char.attr.byte[2] = 0;
+  shadow_char.attr.byte[3] = 0;
+
+  // FChar struct
+  finalcut::FChar test_char =
+  {
+    { L'\0', L'\0', L'\0', L'\0', L'\0' },
+    { L'\0', L'\0', L'\0', L'\0', L'\0' },
+    finalcut::FColor::Default,
+    finalcut::FColor::Default,
+    { 0x00, 0x00, 0x00, 0x00}  // byte 0..3
+  };
+
+  using RepeatFChar = FRepeat<finalcut::FChar>;
+  using RepeatFCharLine = FRepeat<std::vector<RepeatFChar>>;
+  RepeatFChar rep_fchar {80, test_char};
+  RepeatFCharLine rep_fchar_line {25, {rep_fchar} };
+
+  CPPUNIT_ASSERT( rep_fchar_line.data[0].data != shadow_char );
+  test_char.attr.bit.transparent = true;
+  CPPUNIT_ASSERT( test_char == shadow_char );
+}
+
+//----------------------------------------------------------------------
 void FVTermTest::FVTermBasesTest()
 {
   // With own output class
@@ -795,6 +862,7 @@ void FVTermTest::FVTermBasesTest()
   p_fvterm.setTerminalUpdates(finalcut::FVTerm::TerminalUpdate::Start);
   CPPUNIT_ASSERT ( ! p_fvterm.areTerminalUpdatesPaused() );
 
+  // Create and check a virtual window for the p_fvterm object
   finalcut::FRect geometry {finalcut::FPoint{5, 5}, finalcut::FSize{20, 20}};
   finalcut::FSize Shadow(2, 1);
   p_fvterm.p_createArea (geometry, Shadow, vwin);
@@ -917,6 +985,39 @@ void FVTermTest::FVTermBasesTest()
   CPPUNIT_ASSERT ( ! finalcut::FVTerm::hasPendingTerminalUpdates() );
   p_fvterm.p_forceTerminalUpdate();  // Call FTermOutputTest::flush()
 
+  // Check the virtual desktop
+  auto&& vdesktop = p_fvterm.p_getVirtualDesktop();
+  CPPUNIT_ASSERT ( vdesktop->hasOwner() );
+  CPPUNIT_ASSERT ( vdesktop->getOwner<FVTerm_protected*>() == &p_fvterm );
+  CPPUNIT_ASSERT ( vdesktop->offset_left == 0 );
+  CPPUNIT_ASSERT ( vdesktop->offset_top == 0 );
+  CPPUNIT_ASSERT ( vdesktop->width == 80 );
+  CPPUNIT_ASSERT ( vdesktop->height == 24 );
+  CPPUNIT_ASSERT ( vdesktop->min_width == 80 );
+  CPPUNIT_ASSERT ( vdesktop->min_height == 1 );
+  CPPUNIT_ASSERT ( vdesktop->right_shadow == 0);
+  CPPUNIT_ASSERT ( vdesktop->bottom_shadow == 0 );
+  CPPUNIT_ASSERT ( vdesktop->cursor_x == 0 );
+  CPPUNIT_ASSERT ( vdesktop->cursor_y == 0 );
+  CPPUNIT_ASSERT ( vdesktop->input_cursor_x == -1 );
+  CPPUNIT_ASSERT ( vdesktop->input_cursor_y == -1 );
+  CPPUNIT_ASSERT ( vdesktop->layer == -1 );
+  CPPUNIT_ASSERT ( ! vdesktop->input_cursor_visible );
+  CPPUNIT_ASSERT ( ! vdesktop->has_changes );
+  CPPUNIT_ASSERT ( vdesktop->visible );
+  CPPUNIT_ASSERT ( ! vdesktop->minimized );
+  CPPUNIT_ASSERT ( vdesktop->preproc_list.empty() );
+  CPPUNIT_ASSERT ( vdesktop->changes );
+  CPPUNIT_ASSERT ( vdesktop->changes[0].xmin == 80 );
+  CPPUNIT_ASSERT ( vdesktop->changes[0].xmax == 0 );
+  CPPUNIT_ASSERT ( vdesktop->changes[0].trans_count == 0 );
+  CPPUNIT_ASSERT ( vdesktop->data );
+  CPPUNIT_ASSERT ( getAreaSize(vdesktop) == 1920 );
+
+  for (std::size_t pos = 0; pos < getAreaSize(vdesktop); pos++)
+    CPPUNIT_ASSERT ( isFCharEqual(vdesktop->data[pos], default_char) );
+
+  // Check the virtual terminal
   auto&& vterm = p_fvterm.p_getVirtualTerminal();
   CPPUNIT_ASSERT ( vterm->hasOwner() );
   CPPUNIT_ASSERT ( vterm->getOwner<FVTerm_protected*>() == &p_fvterm );
@@ -948,37 +1049,13 @@ void FVTermTest::FVTermBasesTest()
   for (std::size_t pos = 0; pos < getAreaSize(vterm); pos++)
     CPPUNIT_ASSERT ( isFCharEqual(vterm->data[pos], default_char) );
 
-  auto&& vdesktop = p_fvterm.p_getVirtualDesktop();
-  CPPUNIT_ASSERT ( vdesktop->hasOwner() );
-  CPPUNIT_ASSERT ( vdesktop->getOwner<FVTerm_protected*>() == &p_fvterm );
-  CPPUNIT_ASSERT ( vdesktop->offset_left == 0 );
-  CPPUNIT_ASSERT ( vdesktop->offset_top == 0 );
-  CPPUNIT_ASSERT ( vdesktop->width == 80 );
-  CPPUNIT_ASSERT ( vdesktop->height == 24 );
-  CPPUNIT_ASSERT ( vdesktop->min_width == 80 );
-  CPPUNIT_ASSERT ( vdesktop->min_height == 1 );
-  CPPUNIT_ASSERT ( vdesktop->right_shadow == 0);
-  CPPUNIT_ASSERT ( vdesktop->bottom_shadow == 0 );
-  CPPUNIT_ASSERT ( vdesktop->cursor_x == 0 );
-  CPPUNIT_ASSERT ( vdesktop->cursor_y == 0 );
-  CPPUNIT_ASSERT ( vdesktop->input_cursor_x == -1 );
-  CPPUNIT_ASSERT ( vdesktop->input_cursor_y == -1 );
-  CPPUNIT_ASSERT ( vdesktop->layer == -1 );
-  CPPUNIT_ASSERT ( ! vdesktop->input_cursor_visible );
-  CPPUNIT_ASSERT ( ! vdesktop->has_changes );
-  CPPUNIT_ASSERT ( vdesktop->visible );
-  CPPUNIT_ASSERT ( ! vdesktop->minimized );
-  CPPUNIT_ASSERT ( vdesktop->preproc_list.empty() );
-  CPPUNIT_ASSERT ( vdesktop->changes );
-  CPPUNIT_ASSERT ( vdesktop->changes[0].xmin == 80 );
-  CPPUNIT_ASSERT ( vdesktop->changes[0].xmax == 0 );
-  CPPUNIT_ASSERT ( vdesktop->changes[0].trans_count == 0 );
-  CPPUNIT_ASSERT ( vdesktop->data );
-  CPPUNIT_ASSERT ( getAreaSize(vterm) == 1920 );
+  finalcut::FVTerm::FTermArea* test_vterm_area{};
+  auto vterm_geometry = finalcut::FRect(finalcut::FPoint{1, 1}, finalcut::FSize{80, 24});
+  p_fvterm.p_createArea (vterm_geometry, test_vterm_area);
+  printOnArea (test_vterm_area, {getAreaSize(test_vterm_area), default_char});
+  CPPUNIT_ASSERT ( isAreaEqual(test_vterm_area, vterm) );
 
-  for (std::size_t pos = 0; pos < getAreaSize(vdesktop); pos++)
-    CPPUNIT_ASSERT ( isFCharEqual(vdesktop->data[pos], default_char) );
-
+  // Virtual windows fill test
   p_fvterm.clearArea(L'▒');  // Fill with '▒'
   CPPUNIT_ASSERT ( vwin->has_changes );
 
@@ -998,15 +1075,15 @@ void FVTermTest::FVTermBasesTest()
     CPPUNIT_ASSERT ( vwin->changes[i].trans_count == 22 );
   }
 
-  finalcut::FChar bg_char;
-  bg_char.ch           = { L'▒', L'\0', L'\0', L'\0', L'\0' };
-  bg_char.encoded_char = { L'\0', L'\0', L'\0', L'\0', L'\0' };
-  bg_char.fg_color     = finalcut::FColor::Default;
-  bg_char.bg_color     = finalcut::FColor::Default;
-  bg_char.attr.byte[0] = 0;
-  bg_char.attr.byte[1] = 0;
-  bg_char.attr.byte[2] = 0;
-  bg_char.attr.byte[3] = 0;
+  // Check area
+  finalcut::FChar bg_char =
+  {
+    { L'▒', L'\0', L'\0', L'\0', L'\0' },
+    { L'\0', L'\0', L'\0', L'\0', L'\0' },
+    finalcut::FColor::Default,
+    finalcut::FColor::Default,
+    { 0x00, 0x00, 0x00, 0x00}  // byte 0..3
+  };
 
   const auto full_width = std::size_t(vwin->width)
                         + std::size_t(vwin->right_shadow);
@@ -1019,19 +1096,19 @@ void FVTermTest::FVTermBasesTest()
     }
   }
 
+  // Check shadow
   auto width = std::size_t(vwin->width);
-  finalcut::FChar shadow_char;
-  shadow_char.ch           = { L'\0', L'\0', L'\0', L'\0', L'\0' };
-  shadow_char.encoded_char = { L'\0', L'\0', L'\0', L'\0', L'\0' };
-  shadow_char.fg_color     = finalcut::FColor::Default;
-  shadow_char.bg_color     = finalcut::FColor::Default;
-  shadow_char.attr.byte[0] = 0;
-  shadow_char.attr.byte[1] = 0;
+  finalcut::FChar shadow_char =
+  {
+    { L'\0', L'\0', L'\0', L'\0', L'\0' },
+    { L'\0', L'\0', L'\0', L'\0', L'\0' },
+    finalcut::FColor::Default,
+    finalcut::FColor::Default,
+    { 0x00, 0x00, 0x00, 0x00}  // byte 0..3
+  };
   shadow_char.attr.bit.transparent = true;
-  shadow_char.attr.byte[2] = 0;
-  shadow_char.attr.byte[3] = 0;
 
-  for (auto y{0u}; y < std::size_t(full_height); y++)
+  for (auto y{0u}; y < std::size_t(full_height); y++)  // Right side shadow
   {
     for (auto x{width}; x < full_width; x++)
     {
@@ -1039,19 +1116,264 @@ void FVTermTest::FVTermBasesTest()
     }
   }
 
-  for (auto x{0u}; x < full_width; x++)
+  for (auto x{0u}; x < full_width; x++)  // Bottom shadow
   {
     auto y = full_height - 1;
     CPPUNIT_ASSERT ( isFCharEqual(vwin->data[y * full_width + x], shadow_char) );
   }
 
+  finalcut::FVTerm::FTermArea* test_vwin_area{};
+  p_fvterm.p_createArea (geometry, Shadow, test_vwin_area);
+  //
+  //                        .-------------------------- 20 line repetitions
+  //                        |      .------------------- 20 column repetitions
+  //                        |      |             .----- 2 column repetitions
+  //                        |      |             |
+  printOnArea (test_vwin_area, {20, { {20, bg_char}, {2, shadow_char} } });
+  //
+  //                        .-------------------------- 22 column repetitions
+  //                        |
+  printOnArea (test_vwin_area, {22, shadow_char});
+  printArea (vwin);
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+
   p_fvterm.p_processTerminalUpdate();
-  //CPPUNIT_ASSERT ( ! vwin->has_changes );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vterm_area, vterm) );
 
-  showFCharData(vwin->data[vwin->width + 1]);
+  // Makes the virtual window visible and thus displayable
+  // on the virtual terminal
+  vwin->visible = true;
+  showFCharData(vwin->data[full_width + 1]);
+  CPPUNIT_ASSERT ( vwin->has_changes );
+  p_fvterm.p_processTerminalUpdate();
+  CPPUNIT_ASSERT ( ! vwin->has_changes );
+  CPPUNIT_ASSERT ( ! isAreaEqual(test_vterm_area, vterm) );
+  printOnArea (test_vterm_area, {5, { {80, default_char} } });
+  printOnArea (test_vterm_area, {19, { {5, default_char}, {20, bg_char}, {55, default_char} } });
+  printArea (vterm);
+  CPPUNIT_ASSERT ( isAreaEqual(test_vterm_area, vterm) );
 
-  std::cerr << "\n" << "offset_left: " << int(vwin->changes[full_height].trans_count) << '\n';
-  std::cerr << "getAreaSize(vterm): " << int(getAreaSize(vdesktop)) << '\n';
+  // Move
+  vwin->offset_left = 0;
+  vwin->offset_top = 0;
+  p_fvterm.p_putArea ({1, 1}, vwin);
+  p_fvterm.p_processTerminalUpdate();
+  printArea (vterm);
+  printOnArea (test_vterm_area, {5, { {20, bg_char}, {60, default_char} } });
+  printOnArea (test_vterm_area, {15, { {20, bg_char}, {2, default_char}, {3, bg_char}, {55, default_char} } });
+  printOnArea (test_vterm_area, {1, { {22, default_char}, {3, bg_char}, {55, default_char} } });
+  printOnArea (test_vterm_area, {3, { {5, default_char}, {20, bg_char}, {55, default_char} } });
+  CPPUNIT_ASSERT ( isAreaEqual(test_vterm_area, vterm) );
+  p_fvterm.p_restoreVTerm ({finalcut::FPoint{21, 5}, finalcut::FSize{5, 21}});
+  p_fvterm.p_restoreVTerm ({finalcut::FPoint{5, 21}, finalcut::FSize{20, 4}});
+  printOnArea (test_vterm_area, {20, { {20, bg_char}, {60, default_char} } });
+  printOnArea (test_vterm_area, {4, { {80, default_char} } });
+  CPPUNIT_ASSERT ( isAreaEqual(test_vterm_area, vterm) );
+  printArea (vterm);
+
+  vwin->offset_left = -10;
+  vwin->offset_top = -10;
+  p_fvterm.p_putArea ({-9, -9}, vwin);
+  p_fvterm.p_processTerminalUpdate();
+  p_fvterm.p_restoreVTerm ({finalcut::FPoint{1, 1}, finalcut::FSize{22, 21}});
+  printOnArea (test_vterm_area, {10, { {10, bg_char}, {70, default_char} } });
+  printOnArea (test_vterm_area, {14, { {80, default_char} } });
+  CPPUNIT_ASSERT ( isAreaEqual(test_vterm_area, vterm) );
+  printArea (vterm);
+
+  vwin->offset_left = 70;
+  vwin->offset_top = -10;
+  p_fvterm.p_putArea ({71, -9}, vwin);
+  p_fvterm.p_processTerminalUpdate();
+  p_fvterm.p_restoreVTerm ({finalcut::FPoint{1, 1}, finalcut::FSize{12, 11}});
+  printOnArea (test_vterm_area, {10, { {70, default_char}, {10, bg_char} } });
+  printOnArea (test_vterm_area, {14, { {80, default_char} } });
+  CPPUNIT_ASSERT ( isAreaEqual(test_vterm_area, vterm) );
+  printArea (vterm);
+
+  vwin->offset_left = -10;
+  vwin->offset_top = 14;
+  p_fvterm.p_putArea ({-9, 15}, vwin);
+  p_fvterm.p_processTerminalUpdate();
+  p_fvterm.p_restoreVTerm ({finalcut::FPoint{71, 1}, finalcut::FSize{10, 11}});
+  printOnArea (test_vterm_area, {14, { {80, default_char} } });
+  printOnArea (test_vterm_area, {10, { {10, bg_char}, {70, default_char} } });
+  CPPUNIT_ASSERT ( isAreaEqual(test_vterm_area, vterm) );
+  printArea (vterm);
+
+  vwin->offset_left = 70;
+  vwin->offset_top = 14;
+  p_fvterm.p_putArea ({71, 15}, vwin);
+  p_fvterm.p_processTerminalUpdate();
+  p_fvterm.p_restoreVTerm ({finalcut::FPoint{1, 15}, finalcut::FSize{12, 10}});
+  printOnArea (test_vterm_area, {14, { {80, default_char} } });
+  printOnArea (test_vterm_area, {10, { {70, default_char}, {10, bg_char} } });
+  CPPUNIT_ASSERT ( isAreaEqual(test_vterm_area, vterm) );
+  printArea (vterm);
+
+  // Move outside
+  vwin->offset_left = -20;
+  vwin->offset_top = -20;
+  p_fvterm.p_putArea ({-19, -19}, vwin);
+  p_fvterm.p_processTerminalUpdate();
+  p_fvterm.p_restoreVTerm ({finalcut::FPoint{71, 15}, finalcut::FSize{10, 10}});
+  printOnArea (test_vterm_area, {24, { {80, default_char} } });
+  CPPUNIT_ASSERT ( isAreaEqual(test_vterm_area, vterm) );
+  printArea (vterm);
+
+  vwin->offset_left = 80;
+  vwin->offset_top = -20;
+  p_fvterm.p_putArea ({81, -19}, vwin);
+  p_fvterm.p_processTerminalUpdate();
+  CPPUNIT_ASSERT ( isAreaEqual(test_vterm_area, vterm) );
+
+  vwin->offset_left = -20;
+  vwin->offset_top = 24;
+  p_fvterm.p_putArea ({-19, 25}, vwin);
+  p_fvterm.p_processTerminalUpdate();
+  CPPUNIT_ASSERT ( isAreaEqual(test_vterm_area, vterm) );
+
+  vwin->offset_left = 80;
+  vwin->offset_top = 24;
+  p_fvterm.p_putArea ({81, 25}, vwin);
+  p_fvterm.p_processTerminalUpdate();
+  CPPUNIT_ASSERT ( isAreaEqual(test_vterm_area, vterm) );
+
+  // Virtual window is larger than virtual terminal
+  auto large_geometry = finalcut::FRect(finalcut::FPoint{1, 1}, finalcut::FSize{90, 34});
+  p_fvterm.p_resizeArea (large_geometry, vwin);
+  vwin->cursor_x = 1;
+  vwin->cursor_y = 1;
+
+  for (wchar_t i = 0; i < wchar_t(large_geometry.getHeight()); i++)
+  {
+    bg_char.ch[0] =  L'\\' + i;
+    printOnArea (vwin, {large_geometry.getWidth(), bg_char});
+  }
+
+  vwin->offset_left = -5;
+  vwin->offset_top = -5;
+  p_fvterm.p_putArea ({-4, -4}, vwin);
+
+  for (wchar_t i = 0; i < wchar_t(vterm->height); i++)
+  {
+    bg_char.ch[0] =  L'a' + i;
+    printOnArea (test_vterm_area, {std::size_t(vterm->width), bg_char});
+  }
+
+  CPPUNIT_ASSERT ( isAreaEqual(test_vterm_area, vterm) );
+  printArea (vterm);
+
+  // Deallocate area memory
+  p_fvterm.p_removeArea (test_vwin_area);
+  p_fvterm.p_removeArea (test_vterm_area);
+}
+
+//----------------------------------------------------------------------
+void FVTermTest::printOnArea ( finalcut::FVTerm::FTermArea* area
+                             , const finalcut::FChar& fchar )
+{
+  if ( area->cursor_x < 1 )
+    area->cursor_x = 1;
+
+  if ( area->cursor_y < 1 )
+    area->cursor_y = 1;
+
+  int ax = area->cursor_x - 1;
+  int ay = area->cursor_y - 1;
+  const int line_length = area->width + area->right_shadow;
+  const int line_height = area->height + area->bottom_shadow;
+  const int size = line_length * line_height;
+
+  if ( ay * line_length + ax > size )
+  {
+    auto tmp = ay * line_length + ax % size;
+    ax = tmp % line_length;
+    ay = tmp / line_height;
+    area->cursor_x = ax + 1;
+    area->cursor_y = ay + 1;
+  }
+
+  auto& ac = area->data[ay * line_length + ax];  // area character
+  std::memcpy (&ac, &fchar, sizeof(ac));  // copy character to area
+  area->cursor_x = ((ax + 1) % line_length) + 1;
+  area->cursor_y = ((ax + 1) / line_length) + area->cursor_y;
+
+  if ( area->cursor_y > line_height )
+    area->cursor_y = ((area->cursor_y - 1) % line_height) + 1;
+}
+
+//----------------------------------------------------------------------
+void FVTermTest::printOnArea ( finalcut::FVTerm::FTermArea* area
+                             , const RepeatFChar& rep_fchar )
+{
+  for (std::size_t i{0U}; i < rep_fchar.repeat; i++)
+  {
+    printOnArea (area, rep_fchar.data);
+  }
+}
+
+//----------------------------------------------------------------------
+void FVTermTest::printOnArea ( finalcut::FVTerm::FTermArea* area
+                             , const RepeatFCharVector& rep_fchar_vec )
+{
+  for (const auto& rep_fchar : rep_fchar_vec)
+  {
+    printOnArea (area, rep_fchar);
+  }
+}
+
+//----------------------------------------------------------------------
+void FVTermTest::printOnArea ( finalcut::FVTerm::FTermArea* area
+                             , const RepeatFCharLine& rep_fchar_line )
+{
+  for (std::size_t i{0U}; i < rep_fchar_line.repeat; i++)
+  {
+    printOnArea (area, rep_fchar_line.data);
+  }
+}
+
+//----------------------------------------------------------------------
+void FVTermTest::printArea ( finalcut::FVTerm::FTermArea* area )
+{
+  auto width = area->width + area->right_shadow;
+  auto height = area->height + area->bottom_shadow;
+  auto size = getAreaSize(area);
+  std::wcout << L'┌' << std::wstring(width, L'─') << L"┐\n";
+
+  for (std::size_t i{0U}; i < size; i++)
+  {
+    auto col = (i + 1) % width ;
+    auto line = (i + 1) / width;
+
+    if ( col == 1 && line < std::size_t(height) )
+      std::wcout << L"│";
+
+    auto ch = area->data[i].ch[0];
+
+    if ( ch == L'\0' )
+      ch = L' ';
+
+    std::wcout << ch;
+
+    if ( col == 0  )
+      std::wcout << L"│" << line << L"\n";
+  }
+
+  std::wcout << L'└' << std::wstring(width, L'─') << L"┘\n ";
+
+  if ( width > 9 )
+  {
+    for (int i{1}; i <= width; i++)
+      std::wcout << i / 10;
+  }
+
+  std::wcout << L"\n ";
+
+  for (int i{1}; i <= width; i++)
+    std::wcout << i % 10;
+
+  std::wcout << L"\n (" << size << L" character) \n";
 }
 
 //----------------------------------------------------------------------
@@ -1100,11 +1422,39 @@ void FVTermTest::showFCharData (finalcut::FChar fchar)
 }
 
 //----------------------------------------------------------------------
-std::size_t FVTermTest::getAreaSize (finalcut::FVTerm::FTermArea* vwin)
+std::size_t FVTermTest::getAreaSize (finalcut::FVTerm::FTermArea* area)
 {
-  const auto full_width = std::size_t(vwin->width) + std::size_t(vwin->right_shadow);
-  const auto full_height = std::size_t(vwin->height) + std::size_t(vwin->bottom_shadow);
+  const auto full_width = std::size_t(area->width) + std::size_t(area->right_shadow);
+  const auto full_height = std::size_t(area->height) + std::size_t(area->bottom_shadow);
   return full_width * full_height;
+}
+
+//----------------------------------------------------------------------
+bool FVTermTest::isAreaEqual ( finalcut::FVTerm::FTermArea* area1
+                             , finalcut::FVTerm::FTermArea* area2 )
+{
+  auto size1 = getAreaSize(area1);
+  auto size2 = getAreaSize(area2);
+
+  if ( size1 != size2
+    || area1->width != area2->width
+    || area1->right_shadow != area2->right_shadow
+    || area1->height != area2->height
+    || area1->bottom_shadow != area2->bottom_shadow )
+    return false;
+
+  for (std::size_t i{0U}; i < size1; i++)
+  {
+    if ( ! isFCharEqual (area1->data[i], area2->data[i]) )
+    {
+      std::wcout << L"differ: char " << i << L" '"
+                 << area1->data[i].ch[0] << L"' != '"
+                 << area2->data[i].ch[0] << L"'\n";
+      return false;
+    }
+  }
+
+  return true;
 }
 
 //----------------------------------------------------------------------

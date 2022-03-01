@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2021 Markus Gans                                      *
+* Copyright 2016-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -427,9 +427,9 @@ finalcut::FDialog* Window::getNext (IteratorT iter)
 
     next = static_cast<finalcut::FDialog*>(*next_element);
   } while ( ! next->isEnabled()
-          || ! next->acceptFocus()
-          || ! next->isVisible()
-          || ! next->isWindowWidget() );
+         || ! next->acceptFocus()
+         || ! next->isVisible()
+         || ! next->isWindowWidget() );
 
   return next;
 }
@@ -449,9 +449,9 @@ finalcut::FDialog* Window::getPrevious (IteratorT iter)
     --prev_element;
     prev = static_cast<finalcut::FDialog*>(*prev_element);
   } while ( ! prev->isEnabled()
-          || ! prev->acceptFocus()
-          || ! prev->isVisible()
-          || ! prev->isWindowWidget() );
+         || ! prev->acceptFocus()
+         || ! prev->isVisible()
+         || ! prev->isWindowWidget() );
 
   return prev;
 }

@@ -1,3 +1,6 @@
+2022-03-01  Markus Gans  <guru.mail@muenster.de>
+	* A virtual window can now be placed above the virtual terminal
+
 2022-02-14  Markus Gans  <guru.mail@muenster.de>
 	* FVTerm::copyArea copies the data of the source area to the position 
 	  of the destination area

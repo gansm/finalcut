@@ -534,7 +534,7 @@ void FVTerm::resizeArea ( const FRect& box
   area->has_changes   = false;
 
   const FSize size{full_width, full_height};
-  resetTextAreaToDefault (area, size);
+  resetTextAreaToDefault (area, size);  // Set default FChar in area
 }
 
 //----------------------------------------------------------------------
@@ -854,10 +854,11 @@ void FVTerm::copyArea (FTermArea* dst, const FPoint& pos, const FTermArea* src)
     return;
 
   int ax = pos.getX() - 1;
-  const int ay = pos.getY() - 1;
+  int ay = pos.getY() - 1;
   const int width = getFullAreaWidth(src);
   const int height = src->minimized ? src->min_height : getFullAreaHeight(src);
   int ol{0};  // outside left
+  int ot{0};  // outside top
   int y_end{};
   int length{};
 
@@ -867,10 +868,16 @@ void FVTerm::copyArea (FTermArea* dst, const FPoint& pos, const FTermArea* src)
     ax = 0;
   }
 
-  if ( ay + height > dst->height )
+  if ( ay < 0 )
+  {
+    ot = std::abs(ay);
+    ay = 0;
+  }
+
+  if ( height - ot + ay > dst->height )
     y_end = dst->height - ay;
   else
-    y_end = height;
+    y_end = height - ot;
 
   if ( width - ol + ax > dst->width )
     length = dst->width - ax;
@@ -885,7 +892,7 @@ void FVTerm::copyArea (FTermArea* dst, const FPoint& pos, const FTermArea* src)
     if ( src->changes[y].trans_count == 0 )
     {
       // Line has only covered characters
-      const auto& sc = src->data[y * width + ol];        // src character
+      const auto& sc = src->data[(y + ot) * width + ol];  // src character
       auto& dc = dst->data[(ay + y) * dst->width + ax];  // dst character
       putAreaLine (sc, dc, std::size_t(length));
     }
@@ -896,8 +903,8 @@ void FVTerm::copyArea (FTermArea* dst, const FPoint& pos, const FTermArea* src)
       {
         const int cx = ax + x;
         const int cy = ay + y;
-        const auto& sc = src->data[y * width + ol + x];  // src character
-        auto& dc = dst->data[cy * dst->width + cx];      // dst character
+        const auto& sc = src->data[(y + ot) * width + ol + x];  // src character
+        auto& dc = dst->data[cy * dst->width + cx];  // dst character
         putAreaCharacter (FPoint{cx, cy}, src, sc, dc);
       }
     }
@@ -1710,50 +1717,50 @@ void FVTerm::finish() const
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::putAreaLine (const FChar& area_char, FChar& vterm_char, std::size_t length)
+inline void FVTerm::putAreaLine (const FChar& src_char, FChar& dst_char, std::size_t length)
 {
   // copy "length" characters from area to terminal
 
-  std::memcpy (&vterm_char, &area_char, sizeof(vterm_char) * length);
+  std::memcpy (&dst_char, &src_char, sizeof(dst_char) * length);
 }
 
 //----------------------------------------------------------------------
 void FVTerm::putAreaCharacter ( const FPoint& pos, const FTermArea* area
-                              , const FChar& area_char, FChar& vterm_char )
+                              , const FChar& src_char, FChar& dst_char )
 {
-  if ( area_char.attr.bit.transparent )  // Transparent
+  if ( src_char.attr.bit.transparent )  // Transparent
   {
     // Restore one character on vterm
     const FChar& ch = getCoveredCharacter (pos, area);
-    std::memcpy (&vterm_char, &ch, sizeof(vterm_char));
+    std::memcpy (&dst_char, &ch, sizeof(dst_char));
   }
   else  // Not transparent
   {
-    if ( area_char.attr.bit.color_overlay )  // Transparent shadow
+    if ( src_char.attr.bit.color_overlay )  // Transparent shadow
     {
       // Get covered character + add the current color
       FChar ch = getCoveredCharacter (pos, area);
-      ch.fg_color = area_char.fg_color;
-      ch.bg_color = area_char.bg_color;
+      ch.fg_color = src_char.fg_color;
+      ch.bg_color = src_char.bg_color;
       ch.attr.bit.reverse  = false;
       ch.attr.bit.standout = false;
 
       if ( isTransparentInvisible(ch) )
         ch.ch[0] = L' ';
 
-      std::memcpy (&vterm_char, &ch, sizeof(vterm_char));
+      std::memcpy (&dst_char, &ch, sizeof(dst_char));
     }
-    else if ( area_char.attr.bit.inherit_background )
+    else if ( src_char.attr.bit.inherit_background )
     {
       // Add the covered background to this character
       FChar ch{};
-      std::memcpy (&ch, &area_char, sizeof(ch));
+      std::memcpy (&ch, &src_char, sizeof(ch));
       FChar cc = getCoveredCharacter (pos, area);
       ch.bg_color = cc.bg_color;
-      std::memcpy (&vterm_char, &ch, sizeof(vterm_char));
+      std::memcpy (&dst_char, &ch, sizeof(dst_char));
     }
     else  // Default
-      std::memcpy (&vterm_char, &area_char, sizeof(vterm_char));
+      std::memcpy (&dst_char, &src_char, sizeof(dst_char));
   }
 }
 
