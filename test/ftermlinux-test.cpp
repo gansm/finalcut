@@ -2124,6 +2124,7 @@ void FTermLinuxTest::linuxConsoleTest()
   setenv ("TERM", "linux", 1);
 
   auto& term_detection = finalcut::FTermDetection::getInstance();
+  finalcut::FTermcap::init();
   finalcut::FTermLinux linux;
 
   // setupterm is needed for tputs in ncurses >= 6.1
@@ -2163,13 +2164,13 @@ void FTermLinuxTest::linuxConsoleTest()
     auto fsystest = static_cast<test::FSystemTest*>(fsystem.get());
     std::string& characters = fsystest->getCharacters();
     linux.setUTF8 (false);
+
     CPPUNIT_ASSERT ( characters == ESC "%@" );
     characters.clear();
 
     linux.setUTF8 (true);
     CPPUNIT_ASSERT ( characters == ESC "%G" );
     characters.clear();
-
 
     linux.setBeep (20, 100);     // Hz < 21
     CPPUNIT_ASSERT ( characters.empty() );
@@ -2182,6 +2183,7 @@ void FTermLinuxTest::linuxConsoleTest()
     linux.setBeep (200, 100);    // 200 Hz - 100 ms
     CPPUNIT_ASSERT ( characters == CSI "10;200]" CSI "11;100]" );
     characters.clear();
+
     linux.resetBeep();
     CPPUNIT_ASSERT ( characters == CSI "10;750]" CSI "11;125]" );
     characters.clear();
@@ -2201,9 +2203,13 @@ void FTermLinuxTest::linuxConsoleTest()
   {
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::linux_con);
+    int wstatus;
 
-    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
+    if ( waitpid(pid, &wstatus, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
+
+    if ( WIFEXITED(wstatus) )
+      CPPUNIT_ASSERT ( WEXITSTATUS(wstatus) == 0 );
   }
 }
 
@@ -2295,9 +2301,13 @@ void FTermLinuxTest::linuxConsoleLat15Test()
   {
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::linux_con);
+    int wstatus;
 
-    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
+    if ( waitpid(pid, &wstatus, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
+
+    if ( WIFEXITED(wstatus) )
+      CPPUNIT_ASSERT ( WEXITSTATUS(wstatus) == 0 );
   }
 }
 
@@ -2342,6 +2352,7 @@ void FTermLinuxTest::linuxCursorStyleTest()
   // setupterm is needed for tputs in ncurses >= 6.1
   setupterm (static_cast<char*>(nullptr), 1, static_cast<int*>(nullptr));
   auto& term_detection = finalcut::FTermDetection::getInstance();
+  finalcut::FTermcap::init();
   finalcut::FTermLinux linux;
 
   pid_t pid = forkConEmu();
@@ -2485,9 +2496,13 @@ void FTermLinuxTest::linuxCursorStyleTest()
   {
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::linux_con);
+    int wstatus;
 
-    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
+    if ( waitpid(pid, &wstatus, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
+
+    if ( WIFEXITED(wstatus) )
+      CPPUNIT_ASSERT ( WEXITSTATUS(wstatus) == 0 );
   }
 }
 
@@ -2761,9 +2776,13 @@ void FTermLinuxTest::linuxColorPaletteTest()
   {
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::linux_con);
+    int wstatus;
 
-    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
+    if ( waitpid(pid, &wstatus, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
+
+    if ( WIFEXITED(wstatus) )
+      CPPUNIT_ASSERT ( WEXITSTATUS(wstatus) == 0 );
   }
 }
 
@@ -2905,9 +2924,13 @@ void FTermLinuxTest::linuxFontTest()
   {
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::linux_con);
+    int wstatus;
 
-    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
+    if ( waitpid(pid, &wstatus, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
+
+    if ( WIFEXITED(wstatus) )
+      CPPUNIT_ASSERT ( WEXITSTATUS(wstatus) == 0 );
   }
 }
 

@@ -3019,9 +3019,13 @@ void FTermFunctionsTest::readCursorPosTest()
   {
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::xterm);
+    int wstatus;
 
-    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
+    if ( waitpid(pid, &wstatus, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
+
+    if ( WIFEXITED(wstatus) )
+      CPPUNIT_ASSERT ( WEXITSTATUS(wstatus) == 0 );
   }
 }
 

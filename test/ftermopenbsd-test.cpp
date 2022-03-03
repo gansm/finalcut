@@ -415,9 +415,13 @@ void ftermopenbsdTest::netbsdConsoleTest()
   {
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::netbsd_con);
+    int wstatus;
 
-    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
+    if ( waitpid(pid, &wstatus, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
+
+    if ( WIFEXITED(wstatus) )
+      CPPUNIT_ASSERT ( WEXITSTATUS(wstatus) == 0 );
   }
 }
 
@@ -553,9 +557,13 @@ void ftermopenbsdTest::openbsdConsoleTest()
   {
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::openbsd_con);
+    int wstatus;
 
-    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
+    if ( waitpid(pid, &wstatus, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
+
+    if ( WIFEXITED(wstatus) )
+      CPPUNIT_ASSERT ( WEXITSTATUS(wstatus) == 0 );
   }
 }
 

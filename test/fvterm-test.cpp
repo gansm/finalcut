@@ -796,14 +796,14 @@ void FVTermTest::noArgumentTest()
   CPPUNIT_ASSERT ( fvterm_1.getWindowList()->size() == 0 );
 
   // With own output class
-  finalcut::FVTerm fvterm_2(finalcut::outputClass<FTermOutputTest>{});
+  finalcut::FVTerm fvterm_3(finalcut::outputClass<FTermOutputTest>{});
 
-  const auto& vwin = fvterm_2.getVWin();
+  const auto& vwin = fvterm_3.getVWin();
   CPPUNIT_ASSERT ( ! vwin );
-  CPPUNIT_ASSERT ( fvterm_2.getPrintCursor() == finalcut::FPoint(0, 0) );
-  CPPUNIT_ASSERT ( fvterm_2.getWindowList() );
-  CPPUNIT_ASSERT ( fvterm_2.getWindowList()->empty() );
-  CPPUNIT_ASSERT ( fvterm_2.getWindowList()->size() == 0 );
+  CPPUNIT_ASSERT ( fvterm_3.getPrintCursor() == finalcut::FPoint(0, 0) );
+  CPPUNIT_ASSERT ( fvterm_3.getWindowList() );
+  CPPUNIT_ASSERT ( fvterm_3.getWindowList()->empty() );
+  CPPUNIT_ASSERT ( fvterm_3.getWindowList()->size() == 0 );
 }
 
 //----------------------------------------------------------------------
@@ -1156,6 +1156,9 @@ void FVTermTest::FVTermBasesTest()
   // Move
   vwin->offset_left = 0;
   vwin->offset_top = 0;
+  p_fvterm.p_putArea ({1, 1}, nullptr);
+  p_fvterm.p_processTerminalUpdate();
+  CPPUNIT_ASSERT ( isAreaEqual(test_vterm_area, vterm) );
   p_fvterm.p_putArea ({1, 1}, vwin);
   p_fvterm.p_processTerminalUpdate();
   printArea (vterm);

@@ -585,7 +585,6 @@ class ftermfreebsdTest : public CPPUNIT_NS::TestFixture, test::ConEmu
 
   protected:
     void classNameTest();
-    void netbsdConsoleTest();
     void freebsdConsoleTest();
 
   private:
@@ -647,10 +646,14 @@ void ftermfreebsdTest::freebsdConsoleTest()
   data.setVGAFont (false);
   data.setMonochron (false);
   data.setTermResized (false);
+
   // setupterm is needed for tputs in ncurses >= 6.1
   setupterm (static_cast<char*>(nullptr), 1, static_cast<int*>(nullptr));
+
   auto& term_detection = finalcut::FTermDetection::getInstance();
   term_detection.setTerminalDetection(true);
+  finalcut::FTermcap::init();
+
   pid_t pid = forkConEmu();
 
   if ( isConEmuChildProcess(pid) )
@@ -784,6 +787,7 @@ void ftermfreebsdTest::freebsdConsoleTest()
 
     std::string& characters = fsystest->getCharacters();
     characters.clear();
+
     freebsd.setBeep (20, 100);     // Hz < 21
     CPPUNIT_ASSERT ( characters.empty() );
     freebsd.setBeep (32767, 100);  // Hz > 32766
@@ -796,6 +800,7 @@ void ftermfreebsdTest::freebsdConsoleTest()
 
     CPPUNIT_ASSERT ( characters == CSI "=5965;10B" );
     characters.clear();
+
     freebsd.resetBeep();
     CPPUNIT_ASSERT ( characters == CSI "=800;5B" );
     characters.clear();
@@ -809,9 +814,13 @@ void ftermfreebsdTest::freebsdConsoleTest()
   {
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::freebsd_con);
+    int wstatus;
 
-    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
+    if ( waitpid(pid, &wstatus, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
+
+    if ( WIFEXITED(wstatus) )
+      CPPUNIT_ASSERT ( WEXITSTATUS(wstatus) == 0 );
   }
 }
 
