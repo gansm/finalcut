@@ -1267,6 +1267,26 @@ void FVTermTest::FVTermBasesTest()
   CPPUNIT_ASSERT ( isAreaEqual(test_vterm_area, vterm) );
   printArea (vterm);
 
+  // Rezeize virtual terminal
+  auto new_term_size = finalcut::FSize{70, 18};
+  p_fvterm.resizeVTerm (new_term_size);
+  auto new_term_geometry = finalcut::FRect(finalcut::FPoint{1, 1}, new_term_size);
+  p_fvterm.p_resizeArea (new_term_geometry, test_vterm_area);
+  CPPUNIT_ASSERT ( isAreaEqual(test_vterm_area, vterm) );
+  CPPUNIT_ASSERT ( vterm->width == 70);
+  CPPUNIT_ASSERT ( vterm->height == 18 );
+  printArea (vterm);
+  p_fvterm.p_putArea ({-4, -4}, vwin);
+
+  for (wchar_t i = 0; i < wchar_t(vterm->height); i++)
+  {
+    bg_char.ch[0] =  L'a' + i;
+    printOnArea (test_vterm_area, {std::size_t(vterm->width), bg_char});
+  }
+
+  CPPUNIT_ASSERT ( isAreaEqual(test_vterm_area, vterm) );
+  printArea (vterm);
+
   // Deallocate area memory
   p_fvterm.p_removeArea (test_vwin_area);
   p_fvterm.p_removeArea (test_vterm_area);
