@@ -728,6 +728,7 @@ class FVTermTest : public CPPUNIT_NS::TestFixture
     void noArgumentTest();
     void OwnFunctionsTest();
     void FVTermBasesTest();
+    void FVTermPrintTest();
 
   private:
     template <typename T>
@@ -759,6 +760,7 @@ class FVTermTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (noArgumentTest);
     CPPUNIT_TEST (OwnFunctionsTest);
     CPPUNIT_TEST (FVTermBasesTest);
+    CPPUNIT_TEST (FVTermPrintTest);
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
@@ -827,7 +829,7 @@ void FVTermTest::OwnFunctionsTest()
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
     finalcut::FColor::Default,
     finalcut::FColor::Default,
-    { 0x00, 0x00, 0x00, 0x00}  // byte 0..3
+    { { 0x00, 0x00, 0x00, 0x00} }  // byte 0..3
   };
 
   using RepeatFChar = FRepeat<finalcut::FChar>;
@@ -890,6 +892,9 @@ void FVTermTest::FVTermBasesTest()
   CPPUNIT_ASSERT ( vwin->cursor_y == 0 );
   CPPUNIT_ASSERT ( vwin->input_cursor_x == -1 );
   CPPUNIT_ASSERT ( vwin->input_cursor_y == -1 );
+  vwin->setInputCursorPos (12, 4);
+  CPPUNIT_ASSERT ( vwin->input_cursor_x == 12 );
+  CPPUNIT_ASSERT ( vwin->input_cursor_y == 4 );
   CPPUNIT_ASSERT ( vwin->layer == -1 );
   CPPUNIT_ASSERT ( ! vwin->input_cursor_visible );
   CPPUNIT_ASSERT ( ! vwin->has_changes );
@@ -945,7 +950,7 @@ void FVTermTest::FVTermBasesTest()
   default_char.bg_color     = finalcut::FColor::Default;
   default_char.attr.byte[0] = 0;
   default_char.attr.byte[1] = 0;
-  default_char.attr.byte[2] = 0;
+  default_char.attr.byte[2] = 8;  // char_width = 1
   default_char.attr.byte[3] = 0;
 
   for (std::size_t pos = 0; pos < getAreaSize(vwin); pos++)
@@ -1082,7 +1087,7 @@ void FVTermTest::FVTermBasesTest()
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
     finalcut::FColor::Default,
     finalcut::FColor::Default,
-    { 0x00, 0x00, 0x00, 0x00}  // byte 0..3
+    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
   };
 
   const auto full_width = std::size_t(vwin->width)
@@ -1104,10 +1109,11 @@ void FVTermTest::FVTermBasesTest()
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
     finalcut::FColor::Default,
     finalcut::FColor::Default,
-    { 0x00, 0x00, 0x00, 0x00}  // byte 0..3
+    { { 0x00, 0x00, 0x00, 0x00} }  // byte 0..3
   };
   shadow_char.attr.bit.transparent = true;
-
+showFCharData(vwin->data[width]);
+showFCharData(shadow_char);
   for (auto y{0u}; y < std::size_t(full_height); y++)  // Right side shadow
   {
     for (auto x{width}; x < full_width; x++)
@@ -1293,6 +1299,83 @@ void FVTermTest::FVTermBasesTest()
 }
 
 //----------------------------------------------------------------------
+void FVTermTest::FVTermPrintTest()
+{
+  FVTerm_protected p_fvterm(finalcut::outputClass<FTermOutputTest>{});
+
+  auto&& vwin = p_fvterm.getVWin();
+  finalcut::FRect geometry {finalcut::FPoint{0, 0}, finalcut::FSize{15, 10}};
+  finalcut::FSize Shadow(1, 1);
+  p_fvterm.p_createArea (geometry, Shadow, vwin);
+  CPPUNIT_ASSERT ( p_fvterm.getPrintArea() == vwin );
+  CPPUNIT_ASSERT ( vwin->cursor_x == 0 );  // First column is 1
+  CPPUNIT_ASSERT ( vwin->cursor_y == 0 );  // First row is 1
+
+  // FChar struct
+  finalcut::FChar default_char =
+  {
+    { L' ', L'\0', L'\0', L'\0', L'\0' },
+    { L'\0', L'\0', L'\0', L'\0', L'\0' },
+    finalcut::FColor::Default,
+    finalcut::FColor::Default,
+    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+  };
+
+  finalcut::FVTerm::FTermArea* test_vwin_area{};
+  p_fvterm.p_createArea (geometry, Shadow, test_vwin_area);
+  printOnArea (test_vwin_area, {11, { {16, default_char} } });
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+  p_fvterm.printf("%s/%d = %4.2f...", "1", 3, 1.0f/3.0f);
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+
+  p_fvterm.setCursor({1, 0});
+  CPPUNIT_ASSERT ( vwin->cursor_x == 1 );  // First column is 1
+  CPPUNIT_ASSERT ( vwin->cursor_y == 0 );  // First row is 1
+  p_fvterm.printf("%s/%d = %4.2f...", "1", 3, 1.0f/3.0f);
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+
+  p_fvterm.setCursor({0, 1});
+  CPPUNIT_ASSERT ( vwin->cursor_x == 0 );  // First column is 1
+  CPPUNIT_ASSERT ( vwin->cursor_y == 1 );  // First row is 1
+  p_fvterm.printf("%s/%d = %4.2f...", "1", 3, 1.0f/3.0f);
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+
+  p_fvterm.setCursor({1, 1});
+  CPPUNIT_ASSERT ( vwin->cursor_x == 1 );  // First column is 1
+  CPPUNIT_ASSERT ( vwin->cursor_y == 1 );  // First row is 1
+  std::setlocale(LC_NUMERIC, "C");
+  p_fvterm.printf("%s/%d = %4.2f...", "1", 3, 1.0f/3.0f);
+  CPPUNIT_ASSERT ( vwin->cursor_x == 14 );
+  CPPUNIT_ASSERT ( vwin->cursor_y == 1 );
+  CPPUNIT_ASSERT ( ! isAreaEqual(test_vwin_area, vwin) );
+  test_vwin_area->data[0].ch[0] = '1';
+  test_vwin_area->data[1].ch[0] = '/';
+  test_vwin_area->data[2].ch[0] = '3';
+  test_vwin_area->data[3].ch[0] = ' ';
+  test_vwin_area->data[4].ch[0] = '=';
+  test_vwin_area->data[5].ch[0] = ' ';
+  test_vwin_area->data[6].ch[0] = '0';
+  test_vwin_area->data[7].ch[0] = '.';
+  test_vwin_area->data[8].ch[0] = '3';
+  test_vwin_area->data[9].ch[0] = '3';
+  test_vwin_area->data[10].ch[0] = '.';
+  test_vwin_area->data[11].ch[0] = '.';
+  test_vwin_area->data[12].ch[0] = '.';
+
+  for (std::size_t i{0}; i < 10; i++)
+    test_vwin_area->data[i].attr.bit.char_width = 1;
+
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+  CPPUNIT_ASSERT ( vwin->cursor_x == 14 );
+  CPPUNIT_ASSERT ( vwin->cursor_y == 1 );
+  //std::cerr << "(" << vwin->cursor_x << "," << vwin->cursor_y << ")\n";
+  printArea (vwin);
+
+  // Deallocate area memory
+  p_fvterm.p_removeArea (test_vwin_area);
+}
+
+//----------------------------------------------------------------------
 void FVTermTest::printOnArea ( finalcut::FVTerm::FTermArea* area
                              , const finalcut::FChar& fchar )
 {
@@ -1422,7 +1505,7 @@ void FVTermTest::showFCharData (finalcut::FChar fchar)
   std::wcout << L"               attr.bit.dim: " << bool(fchar.attr.bit.dim) << L'\n';
   std::wcout << L"            attr.bit.italic: " << bool(fchar.attr.bit.italic) << L'\n';
   std::wcout << L"         attr.bit.underline: " << bool(fchar.attr.bit.underline) << L'\n';
-  std::wcout << L"             attr.bit.blink: " << bool(fchar.attr.bit.bold) << L'\n';
+  std::wcout << L"             attr.bit.blink: " << bool(fchar.attr.bit.blink) << L'\n';
   std::wcout << L"           attr.bit.reverse: " << bool(fchar.attr.bit.reverse) << L'\n';
   std::wcout << L"          attr.bit.standout: " << bool(fchar.attr.bit.standout) << L'\n';
   std::wcout << L"         attr.bit.invisible: " << bool(fchar.attr.bit.invisible) << L'\n';

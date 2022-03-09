@@ -212,7 +212,6 @@ class FVTerm : public FVTermAttribute
     int                   print (FTermArea*, wchar_t);
     int                   print (FChar&);
     int                   print (FTermArea*, const FChar&);
-    int                   print (FTermArea*, FChar&);
     virtual void          print (const FPoint&);
     FVTerm&               print() &;
     void                  flush() const;
@@ -327,7 +326,7 @@ class FVTerm : public FVTermAttribute
     static uInt8          getByte1TransMask();
     bool                  changedToTransparency (const FChar&, const FChar&) const;
     bool                  changedFromTransparency (const FChar&, const FChar&) const;
-    void                  printCharacterOnCoordinate ( FTermArea*
+    std::size_t           printCharacterOnCoordinate ( FTermArea*
                                                      , const FChar&) const;
     void                  printPaddingCharacter (FTermArea*, const FChar&);
     bool                  isInsideTerminal (const FPoint&) const noexcept;
@@ -398,6 +397,12 @@ struct FVTerm::FTermArea  // define virtual terminal character properties
   {
     cursor_x = x;
     cursor_y = y;
+  }
+
+  void setInputCursorPos (int x, int y)
+  {
+    input_cursor_x = x;
+    input_cursor_y = y;
   }
 
   template <typename T>

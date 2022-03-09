@@ -173,27 +173,29 @@ void FVTermBufferTest::writeTest()
   CPPUNIT_ASSERT ( vterm_buf.toString() == finalcut::FString(ch) );
 
   // Write FString
-  const finalcut::FString str = "abc…ｘｙｚ";
+  const finalcut::FString str = "abc… ｘｙｚ";
   vterm_buf.clear();
   vterm_buf.print(str);
   CPPUNIT_ASSERT ( ! vterm_buf.isEmpty() );
-  CPPUNIT_ASSERT ( vterm_buf.getLength() == 7 );
-  CPPUNIT_ASSERT ( vterm_buf.getBuffer().size() == 7 );
-  CPPUNIT_ASSERT ( vterm_buf.begin() + 7 == vterm_buf.end() );
+  CPPUNIT_ASSERT ( vterm_buf.getLength() == 8 );
+  CPPUNIT_ASSERT ( vterm_buf.getBuffer().size() == 8 );
+  CPPUNIT_ASSERT ( vterm_buf.begin() + 8 == vterm_buf.end() );
   CPPUNIT_ASSERT ( vterm_buf.getBuffer()[0].ch[0] == L'a' );
   CPPUNIT_ASSERT ( vterm_buf.getBuffer()[1].ch[0] == L'b' );
   CPPUNIT_ASSERT ( vterm_buf.getBuffer()[2].ch[0] == L'c' );
   CPPUNIT_ASSERT ( vterm_buf.getBuffer()[3].ch[0] == L'…' );
-  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[4].ch[0] == L'ｘ' );
-  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[5].ch[0] == L'ｙ' );
-  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[6].ch[0] == L'ｚ' );
+  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[4].ch[0] == L' ' );
+  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[5].ch[0] == L'ｘ' );
+  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[6].ch[0] == L'ｙ' );
+  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[7].ch[0] == L'ｚ' );
   CPPUNIT_ASSERT ( vterm_buf.getBuffer()[0].attr.bit.char_width == 1 );
   CPPUNIT_ASSERT ( vterm_buf.getBuffer()[1].attr.bit.char_width == 1 );
   CPPUNIT_ASSERT ( vterm_buf.getBuffer()[2].attr.bit.char_width == 1 );
   CPPUNIT_ASSERT ( vterm_buf.getBuffer()[3].attr.bit.char_width == 1 );
-  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[4].attr.bit.char_width == 2 );
+  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[4].attr.bit.char_width == 1 );
   CPPUNIT_ASSERT ( vterm_buf.getBuffer()[5].attr.bit.char_width == 2 );
   CPPUNIT_ASSERT ( vterm_buf.getBuffer()[6].attr.bit.char_width == 2 );
+  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[7].attr.bit.char_width == 2 );
   CPPUNIT_ASSERT ( vterm_buf.toString() == str );
 
   for (std::size_t i{0}; i < 7; i++)
@@ -373,7 +375,8 @@ void FVTermBufferTest::streamTest()
   fchar_vec.front().ch[0] = L'🚧';
   fchar_vec.front().fg_color = finalcut::FColor::White;
   fchar_vec.front().bg_color = finalcut::FColor::Cyan;
-  finalcut::addColumnWidth(fchar_vec.front());
+  const auto column_width = finalcut::getColumnWidth(fchar_vec.front().ch[0]);
+  finalcut::addColumnWidth(fchar_vec.front(), column_width);
   finalcut::FVTermBuffer vterm_buf{};
   vterm_buf.print() << L'a'
                    << finalcut::FColorPair{finalcut::FColor::Yellow, finalcut::FColor::Blue}

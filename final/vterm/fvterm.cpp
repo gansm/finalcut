@@ -103,7 +103,7 @@ FPoint FVTerm::getPrintCursor()
     return { win->offset_left + win->cursor_x
            , win->offset_top + win->cursor_y };
 
-  return {0, 0};
+  return {0, 0};  // Fallback coordinates
 }
 
 //----------------------------------------------------------------------
@@ -353,29 +353,18 @@ int FVTerm::print (FChar& term_char)
 //----------------------------------------------------------------------
 int FVTerm::print (FTermArea* area, const FChar& term_char)
 {
-  auto fchar = term_char;
-  return print (area, fchar);
-}
-
-//----------------------------------------------------------------------
-int FVTerm::print (FTermArea* area, FChar& term_char)
-{
   if ( ! area || ! area->checkPrintPos() )
     return -1;  // No area or cursor position out of range
 
   if ( interpretControlCodes(area, term_char) && printWrap(area) )
     return -1;  // End of area reached
 
-  if ( term_char.attr.bit.char_width == 0 )
-    addColumnWidth(term_char);  // Add column width
-
-  auto char_width = term_char.attr.bit.char_width;
+  // Printing term_char on area at the current cursor position
+  auto char_width = printCharacterOnCoordinate (area, term_char);
 
   if ( char_width == 0 && ! term_char.attr.bit.fullwidth_padding )
     return 0;
 
-  // Printing term_char on area at the current cursor position
-  printCharacterOnCoordinate (area, term_char);
   area->cursor_x++;
   area->has_changes = true;
 
@@ -631,7 +620,7 @@ bool FVTerm::updateVTermCursor (const FTermArea* area) const
       && isInsideTerminal (FPoint{x, y})
       && isCovered (FPoint{x, y}, area) == CoveredState::None )
     {
-      vterm->setCursorPos(x, y);
+      vterm->setInputCursorPos(x, y);
       vterm->input_cursor_visible = true;
       vterm->has_changes = true;
       return true;
@@ -1038,6 +1027,7 @@ void FVTerm::clearArea (FTermArea* area, wchar_t fillchar) const
 
   FChar nc{getAttribute()};  // next character
   nc.ch[0] = fillchar;  // Current attributes with the fill character
+  nc.attr.bit.char_width = getColumnWidth(nc.ch[0]);
 
   if ( ! (area && area->data) )
   {
@@ -1142,7 +1132,7 @@ inline void FVTerm::resetTextAreaToDefault ( const FTermArea* area
   default_char.bg_color     = FColor::Default;
   default_char.attr.byte[0] = 0;
   default_char.attr.byte[1] = 0;
-  default_char.attr.byte[2] = 0;
+  default_char.attr.byte[2] = 8;  // char_width = 1
   default_char.attr.byte[3] = 0;
 
   std::fill_n (area->data, size.getArea(), default_char);
@@ -1838,6 +1828,7 @@ void FVTerm::clearAreaWithShadow (const FTermArea* area, const FChar& nc)
   FChar t_char = nc;
   t_char.ch[0] = L'\0';
   t_char.attr.bit.transparent = true;
+  t_char.attr.bit.char_width = 0;
   const int total_width = getFullAreaWidth(area);
 
   for (auto y{0}; y < area->height; y++)
@@ -1910,8 +1901,8 @@ inline bool FVTerm::changedFromTransparency (const FChar& from, const FChar& to)
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::printCharacterOnCoordinate ( FTermArea* area
-                                               , const FChar& ch) const
+inline std::size_t FVTerm::printCharacterOnCoordinate ( FTermArea* area
+                                                      , const FChar& ch) const
 {
   const int ax = area->cursor_x - 1;
   const int ay = area->cursor_y - 1;
@@ -1919,7 +1910,7 @@ inline void FVTerm::printCharacterOnCoordinate ( FTermArea* area
   auto& ac = area->data[ay * line_len + ax];  // area character
 
   if ( ac == ch )  // compare with an overloaded operator
-    return;
+    return ac.attr.bit.char_width;
 
   auto& area_changes = area->changes[ay];
 
@@ -1938,15 +1929,27 @@ inline void FVTerm::printCharacterOnCoordinate ( FTermArea* area
   // copy character to area
   std::memcpy (&ac, &ch, sizeof(ac));
 
+  if ( ac.attr.bit.char_width == 0 )
+  {
+    const auto char_width = getColumnWidth(ac.ch[0]);
+
+    if ( char_width == 0 )
+      return 0;
+
+    addColumnWidth(ac, char_width);  // Add column width
+  }
+
   if ( ax < int(area_changes.xmin) )
     area_changes.xmin = uInt(ax);
 
   if ( ax > int(area_changes.xmax) )
     area_changes.xmax = uInt(ax);
+
+  return ac.attr.bit.char_width;
 }
 
 //----------------------------------------------------------------------
-void FVTerm::printPaddingCharacter (FTermArea* area, const FChar& term_char)
+inline void FVTerm::printPaddingCharacter (FTermArea* area, const FChar& term_char)
 {
   // Creates a padding-character from the current character (term_char)
   // and prints it. It is a placeholder for the column after

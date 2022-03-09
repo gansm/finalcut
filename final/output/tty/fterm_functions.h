@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021 Markus Gans                                           *
+* Copyright 2021-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -65,7 +65,7 @@ std::size_t      getColumnWidth (const FString&);
 std::size_t      getColumnWidth (const wchar_t);
 std::size_t      getColumnWidth (const FChar&);
 std::size_t      getColumnWidth (const FVTermBuffer&);
-void             addColumnWidth (FChar&);
+void             addColumnWidth (FChar&, std::size_t);
 int              getCharLength (const FString&, std::size_t);
 int              getPrevCharLength (const FString&, std::size_t);
 std::size_t      searchLeftCharBegin (const FString&, std::size_t);

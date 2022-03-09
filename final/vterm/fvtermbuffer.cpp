@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2021 Markus Gans                                      *
+* Copyright 2017-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -108,7 +108,8 @@ int FVTermBuffer::print (wchar_t ch)
 {
   FChar nc{FVTermAttribute::getAttribute()};  // next character
   nc.ch[0] = ch;
-  addColumnWidth(nc);  // add column width
+  const auto column_width = getColumnWidth(nc.ch[0]);
+  addColumnWidth(nc, column_width);  // add column width
   nc.attr.bit.no_changes = false;
   nc.attr.bit.printed = false;
   data.emplace_back(nc);
@@ -156,7 +157,7 @@ void FVTermBuffer::add ( FString::const_iterator& cbegin
   std::copy(cbegin, std::min(cend, cbegin + UNICODE_MAX), nc.ch.begin());
   data.emplace_back(nc);
   cbegin = cend;
-  char_width = 0;
+  char_width = 0;  // reset char width
 }
 
 

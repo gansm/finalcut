@@ -1,4 +1,8 @@
 2022-03-01  Markus Gans  <guru.mail@muenster.de>
+	* Bugfix: Since February 14, setting the input cursor for the virtual 
+	  terminal did not work
+
+2022-03-01  Markus Gans  <guru.mail@muenster.de>
 	* A virtual window can now be placed above the virtual terminal
 
 2022-02-14  Markus Gans  <guru.mail@muenster.de>

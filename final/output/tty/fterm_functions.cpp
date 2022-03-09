@@ -630,9 +630,8 @@ std::size_t getColumnWidth (const FVTermBuffer& vtbuf)
 }
 
 //----------------------------------------------------------------------
-void addColumnWidth (FChar& term_char)
+void addColumnWidth (FChar& term_char, std::size_t char_width)
 {
-  const std::size_t char_width = getColumnWidth(term_char.ch[0]);
   static const auto& fterm_data = FTermData::getInstance();
 
   if ( char_width == 2
