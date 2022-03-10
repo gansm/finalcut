@@ -1002,8 +1002,8 @@ void FScrollView::setViewportCursor()
                           , viewport->input_cursor_y - 1 };
   const FPoint window_cursor_pos{ getViewportCursorPos() };
   auto printarea = getCurrentPrintArea();
-  printarea->input_cursor_x = window_cursor_pos.getX();
-  printarea->input_cursor_y = window_cursor_pos.getY();
+  printarea->setInputCursorPos ( window_cursor_pos.getX()
+                               , window_cursor_pos.getY() );
 
   if ( viewport->input_cursor_visible
     && viewport_geometry.contains(cursor_pos) )

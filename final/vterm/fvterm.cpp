@@ -344,7 +344,7 @@ int FVTerm::print (FTermArea* area, wchar_t c)
 }
 
 //----------------------------------------------------------------------
-int FVTerm::print (FChar& term_char)
+int FVTerm::print (const FChar& term_char)
 {
   auto area = getPrintArea();
   return area ? print (area, term_char) : -1;
@@ -353,11 +353,14 @@ int FVTerm::print (FChar& term_char)
 //----------------------------------------------------------------------
 int FVTerm::print (FTermArea* area, const FChar& term_char)
 {
-  if ( ! area || ! area->checkPrintPos() )
-    return -1;  // No area or cursor position out of range
+  if ( ! area )
+    return -1;  // No area
 
-  if ( interpretControlCodes(area, term_char) && printWrap(area) )
-    return -1;  // End of area reached
+  if ( interpretControlCodes(area, term_char) )
+    return 0;  // No printable character
+
+  if ( ! area->checkPrintPos() || printWrap(area) )
+    return -1;  // Cursor position out of range or end of area reached
 
   // Printing term_char on area at the current cursor position
   auto char_width = printCharacterOnCoordinate (area, term_char);
@@ -488,7 +491,7 @@ void FVTerm::resizeArea ( const FRect& box
     if ( offset_top != area->offset_top )
       area->offset_top = offset_top;
 
-    return;
+    return;  // Move only
   }
 
   bool realloc_success{false};
@@ -645,8 +648,7 @@ void FVTerm::setAreaCursor ( const FPoint& pos
   if ( ! area )
     return;
 
-  area->input_cursor_x = pos.getX() - 1;
-  area->input_cursor_y = pos.getY() - 1;
+  area->setInputCursorPos (pos.getX() - 1, pos.getY() - 1);
   area->input_cursor_visible = visible;
 }
 
@@ -1027,7 +1029,7 @@ void FVTerm::clearArea (FTermArea* area, wchar_t fillchar) const
 
   FChar nc{getAttribute()};  // next character
   nc.ch[0] = fillchar;  // Current attributes with the fill character
-  nc.attr.bit.char_width = getColumnWidth(nc.ch[0]);
+  nc.attr.bit.char_width = getColumnWidth(nc.ch[0]) & 0x03;
 
   if ( ! (area && area->data) )
   {

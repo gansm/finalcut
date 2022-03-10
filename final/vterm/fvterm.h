@@ -210,7 +210,7 @@ class FVTerm : public FVTermAttribute
     int                   print (FTermArea*, const FVTermBuffer&);
     int                   print (wchar_t);
     int                   print (FTermArea*, wchar_t);
-    int                   print (FChar&);
+    int                   print (const FChar&);
     int                   print (FTermArea*, const FChar&);
     virtual void          print (const FPoint&);
     FVTerm&               print() &;
