@@ -1412,6 +1412,8 @@ void FVTermTest::FVTermPrintTest()
   finalcut::FString string{};  // Empty string
   p_fvterm.print(vwin, string);
   CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+  p_fvterm.print(string);
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
   finalcut::FVTermBuffer fvtermbuffer{}; // Empty FVTerm buffer
   p_fvterm.print(fvtermbuffer);
   CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
@@ -1550,9 +1552,33 @@ void FVTermTest::FVTermPrintTest()
   test_vwin_area->data[53].ch[0] = 'r';
   CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
 
+  CPPUNIT_ASSERT ( term_string.size() == 7 );
+  term_string.clear();
+  CPPUNIT_ASSERT ( term_string.size() == 0 );
+  CPPUNIT_ASSERT ( term_string.empty() );
+  p_fvterm.print(term_string);
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+  p_fvterm.print(vwin, term_string);
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+
+  // Full-Width Characters
+  term_string.assign(1, fchar);
+  term_string[0].ch[0] = L'🏠';
+  term_string[0].attr.bit.char_width = 2 & 0x03;
+  p_fvterm.print(vwin, term_string);
+  p_fvterm.print(nullptr, L'⌚');
+  p_fvterm.print(fchar);
+  test_vwin_area->data[64] = fchar;
+  test_vwin_area->data[64].ch[0] = L'🏠';
+  test_vwin_area->data[64].attr.bit.char_width = 2 & 0x03;
+  test_vwin_area->data[65] = fchar;
+  test_vwin_area->data[65].attr.bit.fullwidth_padding = true;
+  test_vwin_area->data[66] = fchar;
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+
   printArea (vwin);
   //std::cerr << "(" << vwin->cursor_x << "," << vwin->cursor_y << ")\n";
-  //showFCharData(vwin->data[54]);
+  //showFCharData(vwin->data[65]);
 
   // Deallocate area memory
   p_fvterm.p_removeArea (test_vwin_area);
@@ -1632,6 +1658,9 @@ void FVTermTest::printArea ( finalcut::FVTerm::FTermArea* area )
 
   for (std::size_t i{0U}; i < size; i++)
   {
+    if ( area->data[i].attr.bit.fullwidth_padding )
+      continue;
+
     auto col = (i + 1) % width ;
     auto line = (i + 1) / width;
 

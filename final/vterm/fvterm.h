@@ -164,7 +164,7 @@ class FVTerm : public FVTermAttribute
     FVTerm& operator << (const std::wstring&);
     FVTerm& operator << (const FString&);
     FVTerm& operator << (const FVTermBuffer&);
-    FVTerm& operator << (FChar&);
+    FVTerm& operator << (const FChar&);
     FVTerm& operator << (const FCharVector&);
     FVTerm& operator << (const FPoint&);
     FVTerm& operator << (const FStyle&);
@@ -545,7 +545,7 @@ inline FVTerm& FVTerm::operator << (const FString& fstring)
 }
 
 //----------------------------------------------------------------------
-inline FVTerm& FVTerm::operator << (FChar& fchar)
+inline FVTerm& FVTerm::operator << (const FChar& fchar)
 {
   print (fchar);
   return *this;

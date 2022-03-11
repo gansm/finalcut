@@ -596,7 +596,7 @@ std::size_t getColumnWidth (const wchar_t wchar)
   static const auto& fterm_data = FTermData::getInstance();
 
   if ( (wchar >= UniChar::NF_rev_left_arrow2 && wchar <= UniChar::NF_check_mark)
-    || fterm_data.getTerminalEncoding() != Encoding::UTF8 )
+    || (wchar != L'\0' && fterm_data.getTerminalEncoding() != Encoding::UTF8) )
   {
     column_width = 1;
   }
