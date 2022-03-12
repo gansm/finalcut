@@ -382,10 +382,7 @@ int FVTerm::print (FTermArea* area, const FChar& term_char)
 
   // Prevent up scrolling
   if ( area->cursor_y > getFullAreaHeight(area) )
-  {
     area->cursor_y--;
-    return -1;
-  }
 
   return 1;
 }

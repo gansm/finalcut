@@ -75,11 +75,11 @@ int FVTermBuffer::print (const FString& string)
   for (auto&& ch : string)
   {
     auto width = getColumnWidth(ch);
-    auto wspace = std::iswspace(wint_t(ch));
+    auto ctrl_char = std::iswcntrl(wint_t(ch));
 
-    if ( width == 0 && ! wspace )  // zero-width character
+    if ( width == 0 && ! ctrl_char )  // zero-width character
     {
-      if ( iter == cbegin)
+      if ( iter == cbegin )
         ++cbegin;
 
       ++iter;
@@ -93,7 +93,7 @@ int FVTermBuffer::print (const FString& string)
     if ( width > 0 )
       char_width += width;
 
-    if ( wspace )
+    if ( ctrl_char )
       add(cbegin, iter, char_width);
   }
 
