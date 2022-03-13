@@ -750,6 +750,9 @@ class FVTermTest : public CPPUNIT_NS::TestFixture
     void OwnFunctionsTest();
     void FVTermBasesTest();
     void FVTermPrintTest();
+    void FVTermChildAreaPrintTest();
+    void FVTermScrollTest();
+    void FVTermOverlappingWindowsTest();
 
   private:
     template <typename T>
@@ -771,7 +774,7 @@ class FVTermTest : public CPPUNIT_NS::TestFixture
     void         printOnArea (finalcut::FVTerm::FTermArea*, const RepeatFChar&);
     void         printOnArea (finalcut::FVTerm::FTermArea*, const RepeatFCharVector&);
     void         printOnArea (finalcut::FVTerm::FTermArea*, const RepeatFCharLine&);
-    void         printArea ( finalcut::FVTerm::FTermArea*);
+    void         printArea (finalcut::FVTerm::FTermArea*);
 
     // Adds code needed to register the test suite
     CPPUNIT_TEST_SUITE (FVTermTest);
@@ -782,6 +785,8 @@ class FVTermTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (OwnFunctionsTest);
     CPPUNIT_TEST (FVTermBasesTest);
     CPPUNIT_TEST (FVTermPrintTest);
+    CPPUNIT_TEST (FVTermChildAreaPrintTest);
+    CPPUNIT_TEST (FVTermScrollTest);
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
@@ -1359,10 +1364,21 @@ void FVTermTest::FVTermPrintTest()
 
     FVTerm_protected p_fvterm(finalcut::outputClass<FTermOutputTest>{});
     auto&& vwin = p_fvterm.getVWin();
+    auto child_print_area = p_fvterm.p_getChildPrintArea();
+    CPPUNIT_ASSERT ( child_print_area == nullptr );
+    CPPUNIT_ASSERT ( ! p_fvterm.p_isVirtualWindow() );
+
     finalcut::FRect geometry {finalcut::FPoint{0, 0}, finalcut::FSize{15, 10}};
     finalcut::FSize Shadow(1, 1);
     p_fvterm.p_createArea (geometry, Shadow, vwin);
+    const auto& const_vwin = p_fvterm.getVWin();
+    CPPUNIT_ASSERT ( p_fvterm.p_isVirtualWindow() );
+    CPPUNIT_ASSERT ( static_cast<decltype(const_vwin)>(vwin) == const_vwin );
+    CPPUNIT_ASSERT ( ! p_fvterm.p_hasPrintArea() );
     CPPUNIT_ASSERT ( p_fvterm.getPrintArea() == vwin );
+    CPPUNIT_ASSERT ( p_fvterm.p_hasPrintArea() );
+    auto print_area = p_fvterm.p_getCurrentPrintArea();
+    CPPUNIT_ASSERT ( print_area == vwin );
     CPPUNIT_ASSERT ( vwin->cursor_x == 0 );  // First column is 1
     CPPUNIT_ASSERT ( vwin->cursor_y == 0 );  // First row is 1
     CPPUNIT_ASSERT ( vwin->offset_left == 0 );
@@ -1690,11 +1706,165 @@ void FVTermTest::FVTermPrintTest()
     CPPUNIT_ASSERT ( p_fvterm.print(L"FINAL CUT") == 9 );
     CPPUNIT_ASSERT ( vwin->cursor_x == 4 );
     CPPUNIT_ASSERT ( vwin->cursor_y == 8 );
+    test_vwin_area->data[106].ch[0] = L'F';
+    test_vwin_area->data[107].ch[0] = L'I';
+    test_vwin_area->data[108].ch[0] = L'N';
+    test_vwin_area->data[109].ch[0] = L'A';
+    test_vwin_area->data[110].ch[0] = L'L';
+    test_vwin_area->data[112].ch[0] = L'C';
+    test_vwin_area->data[113].ch[0] = L'U';
+    test_vwin_area->data[114].ch[0] = L'T';
+    CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+
+    // Stream
+    p_fvterm.print() << ' ';  // char
+    CPPUNIT_ASSERT ( vwin->cursor_x == 5 );
+    CPPUNIT_ASSERT ( vwin->cursor_y == 8 );
+    CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+
+    p_fvterm.print() << 1.23;  // double
+    CPPUNIT_ASSERT ( vwin->cursor_x == 13 );
+    CPPUNIT_ASSERT ( vwin->cursor_y == 8 );
+    test_vwin_area->data[116].ch[0] = L'1';
+    test_vwin_area->data[117].ch[0] = L'.';
+    test_vwin_area->data[118].ch[0] = L'2';
+    test_vwin_area->data[119].ch[0] = L'3';
+    test_vwin_area->data[120].ch[0] = L'0';
+    test_vwin_area->data[121].ch[0] = L'0';
+    test_vwin_area->data[122].ch[0] = L'0';
+    test_vwin_area->data[123].ch[0] = L'0';
+    CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+
+    p_fvterm.print() << L' ';  // wchar_t
+    CPPUNIT_ASSERT ( vwin->cursor_x == 14 );
+    CPPUNIT_ASSERT ( vwin->cursor_y == 8 );
+    CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+
+    wchar_t kilohertz[] = L"kHz";  // wchar_t*
+    p_fvterm.print() << kilohertz;
+    CPPUNIT_ASSERT ( vwin->cursor_x == 1 );
+    CPPUNIT_ASSERT ( vwin->cursor_y == 9 );
+    test_vwin_area->data[125].ch[0] = L'k';
+    test_vwin_area->data[126].ch[0] = L'H';
+    test_vwin_area->data[127].ch[0] = L'z';
+    CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+
+    p_fvterm.print() << finalcut::UniChar::BlackRightPointingPointer;  // UniChar
+    CPPUNIT_ASSERT ( vwin->cursor_x == 2 );
+    CPPUNIT_ASSERT ( vwin->cursor_y == 9 );
+    test_vwin_area->data[128].ch[0] = L'►';
+    CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+
+    p_fvterm.print() << std::string("fan");  // std::string
+    CPPUNIT_ASSERT ( vwin->cursor_x == 5 );
+    CPPUNIT_ASSERT ( vwin->cursor_y == 9 );
+    test_vwin_area->data[129].ch[0] = L'f';
+    test_vwin_area->data[130].ch[0] = L'a';
+    test_vwin_area->data[131].ch[0] = L'n';
+    CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+
+    p_fvterm.print() << std::wstring(L"tas");  // std::wstring
+    CPPUNIT_ASSERT ( vwin->cursor_x == 8 );
+    CPPUNIT_ASSERT ( vwin->cursor_y == 9 );
+    test_vwin_area->data[132].ch[0] = L't';
+    test_vwin_area->data[133].ch[0] = L'a';
+    test_vwin_area->data[134].ch[0] = L's';
+    CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+
+    p_fvterm.print() << finalcut::FString(L"tic");  // FString
+    CPPUNIT_ASSERT ( vwin->cursor_x == 11 );
+    CPPUNIT_ASSERT ( vwin->cursor_y == 9 );
+    test_vwin_area->data[135].ch[0] = L't';
+    test_vwin_area->data[136].ch[0] = L'i';
+    test_vwin_area->data[137].ch[0] = L'c';
+    CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+
+    p_fvterm.print() << finalcut::FPoint(3, 5);  // FPoint
+    CPPUNIT_ASSERT ( vwin->cursor_x == 3 );
+    CPPUNIT_ASSERT ( vwin->cursor_y == 5 );
+
+    fchar.ch[0] = L'y';
+    fchar.ch[1] = L'\U00000304';
+    fchar.ch[2] = L'\0';
+    fchar.attr.bit.char_width = 1 & 0x03;
+    p_fvterm.print() << fchar;  // FChar
+    CPPUNIT_ASSERT ( vwin->cursor_x == 4 );
+    CPPUNIT_ASSERT ( vwin->cursor_y == 5 );
+    test_vwin_area->data[66].ch[0] = L'y';
+    test_vwin_area->data[66].ch[1] = L'\U00000304';
+    test_vwin_area->data[66].attr.bit.char_width = 1 & 0x03;
+    CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+
+    fchar.ch[0] = L'-';
+    fchar.ch[1] = L'\0';
+    fchar.attr.byte[0] = 0;
+    fchar.fg_color = finalcut::FColor::Default;
+    fchar.bg_color = finalcut::FColor::Default;
+    finalcut::FVTerm::FCharVector dash{2, fchar};
+    p_fvterm.print() << dash;  // FCharVector
+    CPPUNIT_ASSERT ( vwin->cursor_x == 6 );
+    CPPUNIT_ASSERT ( vwin->cursor_y == 5 );
+    test_vwin_area->data[67].ch[0] = L'-';
+    test_vwin_area->data[68].ch[0] = L'-';
+    CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+
+    p_fvterm.print() << finalcut::FStyle ( finalcut::Style::Italic
+                                         | finalcut::Style::DoubleUnderline );  // FStyle
+    CPPUNIT_ASSERT ( vwin->cursor_x == 6 );
+    CPPUNIT_ASSERT ( vwin->cursor_y == 5 );
+    p_fvterm.print() << "F";
+    CPPUNIT_ASSERT ( vwin->cursor_x == 7 );
+    CPPUNIT_ASSERT ( vwin->cursor_y == 5 );
+    test_vwin_area->data[69].ch[0] = L'F';
+    test_vwin_area->data[69].attr.bit.italic = true;
+    test_vwin_area->data[69].attr.bit.dbl_underline = true;
+    CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+
+    finalcut::FColorPair cpair{finalcut::FColor::Blue, finalcut::FColor::White};
+    p_fvterm.print() << cpair;  // FColorPair
+    CPPUNIT_ASSERT ( vwin->cursor_x == 7 );
+    CPPUNIT_ASSERT ( vwin->cursor_y == 5 );
+    p_fvterm.print() << "C";
+    CPPUNIT_ASSERT ( vwin->cursor_x == 8 );
+    CPPUNIT_ASSERT ( vwin->cursor_y == 5 );
+    test_vwin_area->data[70].ch[0] = L'C';
+    test_vwin_area->data[70].fg_color = finalcut::FColor::Blue;
+    test_vwin_area->data[70].bg_color = finalcut::FColor::White;
+    test_vwin_area->data[70].attr.bit.italic = true;
+    test_vwin_area->data[70].attr.bit.dbl_underline = true;
+    CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+
+    fvtermbuffer.print("++");
+    p_fvterm.print() << fvtermbuffer;  // FVTermBuffer
+    CPPUNIT_ASSERT ( vwin->cursor_x == 10 );
+    CPPUNIT_ASSERT ( vwin->cursor_y == 5 );
+    test_vwin_area->data[71] = test_vwin_area->data[70];
+    test_vwin_area->data[71].ch[0] = L'+';
+    test_vwin_area->data[72] = test_vwin_area->data[71];
+    CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
     printArea (vwin);
 
     // Deallocate area memory
     p_fvterm.p_removeArea (test_vwin_area);
   }
+}
+
+//----------------------------------------------------------------------
+void FVTermTest::FVTermChildAreaPrintTest()
+{
+
+}
+
+//----------------------------------------------------------------------
+void FVTermTest::FVTermScrollTest()
+{
+
+}
+
+//----------------------------------------------------------------------
+void FVTermTest::FVTermOverlappingWindowsTest()
+{
+
 }
 
 //----------------------------------------------------------------------
