@@ -204,14 +204,19 @@ FListViewItem::~FListViewItem()  // destructor
   if ( ! parent )
     return;
 
-  if ( parent->isInstanceOf("FListView") )
+  try
   {
-    static_cast<FListView*>(parent)->remove (this);
+    if ( parent->isInstanceOf("FListView") )
+    {
+      static_cast<FListView*>(parent)->remove (this);
+    }
+    else if ( parent->isInstanceOf("FListViewItem") )
+    {
+      static_cast<FListViewItem*>(parent)->remove (this);
+    }
   }
-  else if ( parent->isInstanceOf("FListViewItem") )
-  {
-    static_cast<FListViewItem*>(parent)->remove (this);
-  }
+  catch (...)
+  { }
 }
 
 

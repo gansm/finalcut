@@ -1371,7 +1371,7 @@ void FVTermTest::FVTermPrintTest()
     finalcut::FRect geometry {finalcut::FPoint{0, 0}, finalcut::FSize{15, 10}};
     finalcut::FSize Shadow(1, 1);
     p_fvterm.p_createArea (geometry, Shadow, vwin);
-    const auto& const_vwin = p_fvterm.getVWin();
+    const finalcut::FVTerm::FTermArea* const_vwin = p_fvterm.getVWin();
     CPPUNIT_ASSERT ( p_fvterm.p_isVirtualWindow() );
     CPPUNIT_ASSERT ( static_cast<decltype(const_vwin)>(vwin) == const_vwin );
     CPPUNIT_ASSERT ( ! p_fvterm.p_hasPrintArea() );
@@ -1384,7 +1384,8 @@ void FVTermTest::FVTermPrintTest()
     CPPUNIT_ASSERT ( vwin->offset_left == 0 );
     CPPUNIT_ASSERT ( vwin->offset_top == 0 );
 
-    auto move_geometry = finalcut::FRect(finalcut::FPoint{12, 37}, finalcut::FSize{15, 10});
+    auto move_geometry = finalcut::FRect ( finalcut::FPoint{12, 37}
+                                         , finalcut::FSize{15, 10} );
     p_fvterm.p_resizeArea (move_geometry, Shadow, vwin);
     CPPUNIT_ASSERT ( vwin->offset_left == 12 );
     CPPUNIT_ASSERT ( vwin->offset_top == 37 );
@@ -1846,13 +1847,42 @@ void FVTermTest::FVTermPrintTest()
 
     // Deallocate area memory
     p_fvterm.p_removeArea (test_vwin_area);
-  }
+  }  // Encoding loop
 }
 
 //----------------------------------------------------------------------
 void FVTermTest::FVTermChildAreaPrintTest()
 {
+  FVTerm_protected p_fvterm(finalcut::outputClass<FTermOutputTest>{});
+  auto&& vwin = p_fvterm.getVWin();
 
+  // Create the virtual window for the p_fvterm object
+  finalcut::FRect geometry {finalcut::FPoint{1, 1}, finalcut::FSize{12, 12}};
+  p_fvterm.p_createArea (geometry, vwin);
+
+  // Create a child print area
+  finalcut::FVTerm::FTermArea* child_print_area{nullptr};
+  std::size_t w = 5;
+  std::size_t h = 2;
+  finalcut::FRect child_geometry{};
+  child_geometry.setRect (0, 0, w, h);
+  p_fvterm.p_createArea (child_geometry, child_print_area);
+  CPPUNIT_ASSERT ( ! p_fvterm.p_hasChildPrintArea() );
+  CPPUNIT_ASSERT ( p_fvterm.p_getChildPrintArea() == nullptr );
+  p_fvterm.p_setChildPrintArea (child_print_area);
+  CPPUNIT_ASSERT ( p_fvterm.p_hasChildPrintArea() );
+  CPPUNIT_ASSERT ( p_fvterm.p_getChildPrintArea() != nullptr );
+  CPPUNIT_ASSERT ( p_fvterm.p_getChildPrintArea() == child_print_area );
+
+  //addPreprocessingHandler
+  //(
+  //  F_PREPROC_HANDLER (this, &FVTerm_protected::Preprocessing)
+  //);
+
+  //delPreprocessingHandler(this);  // const FVTerm*
+
+  p_fvterm.p_setChildPrintArea (nullptr);
+  p_fvterm.p_removeArea (child_print_area);
 }
 
 //----------------------------------------------------------------------
@@ -1864,6 +1894,31 @@ void FVTermTest::FVTermScrollTest()
 //----------------------------------------------------------------------
 void FVTermTest::FVTermOverlappingWindowsTest()
 {
+  //   1       2       3       4
+  // ░░░░░░  ▒▒▒▒▒▒  ▓▓▓▓▓▓  ██████
+  // ░░░░░░  ▒▒▒▒▒▒  ▓▓▓▓▓▓  ██████
+  // ░░░░░░  ▒▒▒▒▒▒  ▓▓▓▓▓▓  ██████
+
+  //     ░░░░░░
+  //     ░░░░░░              1
+  // ▒▒▒▒░░░░░░▓▓▓▓
+  // ▒▒▒▒▒▒  ▓▓▓▓▓▓      2       3
+  // ▒▒▒▒██████▓▓▓▓
+  //     ██████              4
+  //     ██████
+
+  //     ░░░░░░
+  // ▒▒▒▒░░░░░░              1           4  top
+  // ▒▒▒▒░░▓▓▓▓▓▓                        3
+  // ▒▒▒██████▓▓▓        2       3       1
+  //    ██████▓▓▓                        2  bottom
+  //    ██████               4
+
+  // ░░░░░▒▒▒▒▒▒                         4  top
+  // ░░░░░▒▒▒▒▒▒          1     2        3
+  // ██████▓▓▓▓▓                         2
+  // ██████▓▓▓▓▓          4     3        1  botton
+  // ██████▓▓▓▓▓
 
 }
 

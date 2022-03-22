@@ -461,18 +461,15 @@ void FVTerm::resizeArea ( const FRect& box
 {
   // Resize the virtual window to a new size
 
-  const int offset_left = box.getX();
-  const int offset_top  = box.getY();
+  const auto offset_left = box.getX();
+  const auto offset_top  = box.getY();
   const auto width = int(box.getWidth());
   const auto height = int(box.getHeight());
   const auto rsw = int(shadow.getWidth());
   const auto bsh = int(shadow.getHeight());
 
-  assert ( offset_top >= 0 );
-  assert ( width > 0 && width + rsw > 0 );
-  assert ( height > 0 && height + bsh > 0 );
-  assert ( rsw >= 0 );
-  assert ( bsh >= 0 );
+  assert ( offset_top >= 0 && width > 0 && height > 0
+        && rsw >= 0 && bsh >= 0 );
 
   if ( ! area )
     return;
