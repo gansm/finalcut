@@ -215,8 +215,11 @@ FListViewItem::~FListViewItem()  // destructor
       static_cast<FListViewItem*>(parent)->remove (this);
     }
   }
-  catch (...)
-  { }
+  catch (const std::exception&)
+  {
+    std::clog << FLog::LogLevel::Error
+              << "Exception on removing this element: " << ex.what();
+  }
 }
 
 

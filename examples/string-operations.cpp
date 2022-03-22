@@ -467,9 +467,9 @@ void stringSplittingExample()
   std::cout << "     split: \""
             << split_str << "\" into substrings ->";
   finalcut::FStringList parts{ split_str.split(",") };
-  finalcut::FStringList::iterator end = parts.end();
+  auto end = parts.end();
 
-  for (finalcut::FStringList::iterator it = parts.begin(); it != end; ++it)
+  for (auto it = parts.begin(); it != end; ++it)
     std::cout << " \"" << (*it) << "\"";
 
   std::cout << std::endl;
