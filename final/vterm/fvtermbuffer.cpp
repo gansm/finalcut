@@ -144,7 +144,6 @@ void FVTermBuffer::add ( FString::const_iterator& cbegin
   nc.attr.byte[2] = 0;
   nc.attr.byte[3] = 0;
 
-
   if ( char_width == 2
     && fterm_data.getTerminalEncoding() != Encoding::UTF8 )
   {

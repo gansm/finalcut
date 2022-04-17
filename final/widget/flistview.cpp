@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2021 Markus Gans                                      *
+* Copyright 2017-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -1427,19 +1427,26 @@ void FListView::init()
 //----------------------------------------------------------------------
 inline void FListView::mapKeyFunctions()
 {
-  key_map[FKey::Return]     = [this] { processClick(); };
-  key_map[FKey::Enter]      = [this] { processClick(); };
-  key_map[FKey::Space]      = [this] { toggleCheckbox(); };
-  key_map[FKey::Up]         = [this] { stepBackward(); };
-  key_map[FKey::Down]       = [this] { stepForward(); };
-  key_map[FKey::Left]       = [this] { collapseAndScrollLeft(); };
-  key_map[FKey::Right]      = [this] { expandAndScrollRight(); };
-  key_map[FKey::Page_up]    = [this] { stepBackward(int(getClientHeight()) - 1); };
-  key_map[FKey::Page_down]  = [this] { stepForward(int(getClientHeight()) - 1); };
-  key_map[FKey::Home]       = [this] { firstPos(); };
-  key_map[FKey::End]        = [this] { lastPos(); };
-  key_map_result[FKey('+')] = [this] { return expandSubtree(); };
-  key_map_result[FKey('-')] = [this] { return collapseSubtree(); };
+  key_map =
+  {
+    { FKey::Return    , [this] { processClick(); } },
+    { FKey::Enter     , [this] { processClick(); } },
+    { FKey::Space     , [this] { toggleCheckbox(); } },
+    { FKey::Up        , [this] { stepBackward(); } },
+    { FKey::Down      , [this] { stepForward(); } },
+    { FKey::Left      , [this] { collapseAndScrollLeft(); } },
+    { FKey::Right     , [this] { expandAndScrollRight(); } },
+    { FKey::Page_up   , [this] { stepBackward(int(getClientHeight()) - 1); } },
+    { FKey::Page_down , [this] { stepForward(int(getClientHeight()) - 1); } },
+    { FKey::Home      , [this] { firstPos(); } },
+    { FKey::End       , [this] { lastPos(); } }
+  };
+
+  key_map_result =
+  {
+    { FKey('+'), [this] { return expandSubtree(); } },
+    { FKey('-'), [this] { return collapseSubtree(); } }
+  };
 }
 
 //----------------------------------------------------------------------

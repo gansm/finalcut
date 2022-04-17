@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2021 Markus Gans                                      *
+* Copyright 2014-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -617,22 +617,29 @@ void FListBox::init()
 //----------------------------------------------------------------------
 inline void FListBox::mapKeyFunctions()
 {
-  key_map[FKey::Return]    = [this] { acceptSelection(); };
-  key_map[FKey::Enter]     = [this] { acceptSelection(); };
-  key_map[FKey::Up]        = [this] { onePosUp(); };
-  key_map[FKey::Down]      = [this] { onePosDown(); };
-  key_map[FKey::Left]      = [this] { scrollLeft(); };
-  key_map[FKey::Right]     = [this] { scrollRight(); };
-  key_map[FKey::Page_up]   = [this] { onePageUp(); };
-  key_map[FKey::Page_down] = [this] { onePageDown(); };
-  key_map[FKey::Home]      = [this] { firstPos(); };
-  key_map[FKey::End]       = [this] { lastPos(); };
-  key_map_result[FKey::Insert]        = [this] { return changeSelectionAndPosition(); };
-  key_map_result[FKey::Space]         = [this] { return spacebarProcessing(); };
-  key_map_result[FKey::Erase]         = [this] { return deletePreviousCharacter(); };
-  key_map_result[FKey::Backspace]     = [this] { return deletePreviousCharacter(); };
-  key_map_result[FKey::Escape]        = [this] { return skipIncrementalSearch(); };
-  key_map_result[FKey::Escape_mintty] = [this] { return skipIncrementalSearch(); };
+  key_map =
+  {
+    { FKey::Return    , [this] { acceptSelection(); } },
+    { FKey::Enter     , [this] { acceptSelection(); } },
+    { FKey::Up        , [this] { onePosUp(); } },
+    { FKey::Down      , [this] { onePosDown(); } },
+    { FKey::Left      , [this] { scrollLeft(); } },
+    { FKey::Right     , [this] { scrollRight(); } },
+    { FKey::Page_up   , [this] { onePageUp(); } },
+    { FKey::Page_down , [this] { onePageDown(); } },
+    { FKey::Home      , [this] { firstPos(); } },
+    { FKey::End       , [this] { lastPos(); } }
+  };
+
+  key_map_result =
+  {
+    { FKey::Insert        , [this] { return changeSelectionAndPosition(); } },
+    { FKey::Space         , [this] { return spacebarProcessing(); } },
+    { FKey::Erase         , [this] { return deletePreviousCharacter(); } },
+    { FKey::Backspace     , [this] { return deletePreviousCharacter(); } },
+    { FKey::Escape        , [this] { return skipIncrementalSearch(); } },
+    { FKey::Escape_mintty , [this] { return skipIncrementalSearch(); } }
+  };
 }
 
 //----------------------------------------------------------------------

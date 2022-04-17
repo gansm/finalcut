@@ -167,7 +167,10 @@ class FTextView : public FWidget
     FString              getClassName() const override;
     std::size_t          getColumns() const noexcept;
     std::size_t          getRows() const;
+    FPoint               getScrollPos() const;
+    FSize                getTextVisibleSize() const;
     FString              getText() const;
+    FTextViewLine&       getLine (FTextViewList::size_type);
     const FTextViewList& getLines() const &;
 
     // Mutators
@@ -301,6 +304,18 @@ inline std::size_t FTextView::getColumns() const noexcept
 //----------------------------------------------------------------------
 inline std::size_t FTextView::getRows() const
 { return std::size_t(data.size()); }
+
+//----------------------------------------------------------------------
+inline FPoint FTextView::getScrollPos() const
+{ return {xoffset, yoffset}; }
+
+//----------------------------------------------------------------------
+inline FSize FTextView::getTextVisibleSize() const
+{ return {getTextWidth(), getTextHeight()}; }
+
+//----------------------------------------------------------------------
+inline FTextView::FTextViewLine& FTextView::getLine (FTextViewList::size_type line)
+{ return data.at(line); }
 
 //----------------------------------------------------------------------
 inline const FTextView::FTextViewList& FTextView::getLines() const &

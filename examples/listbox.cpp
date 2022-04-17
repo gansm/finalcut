@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2021 Markus Gans                                      *
+* Copyright 2017-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -131,12 +131,14 @@ Listbox::Listbox (FWidget* parent)
 
   // listbox 3
   //----------
-  std::map<FString, FString> TLD;
-  TLD["com"] = "Commercial";
-  TLD["org"] = "Organization";
-  TLD["net"] = "Network";
-  TLD["edu"] = "Education";
-  TLD["gov"] = "Government";
+  std::map<FString, FString> TLD =
+  {
+    { "com", "Commercial" },
+    { "org", "Organization" },
+    { "net", "Network" },
+    { "edu", "Education" },
+    { "gov", "Government" }
+  };
 
   list3.insert (TLD.cbegin(), TLD.cend(), mapToString);
   list3.setText ("key: value");

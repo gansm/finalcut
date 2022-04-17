@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2021 Markus Gans                                      *
+* Copyright 2012-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -105,22 +105,25 @@ SegmentView::SegmentView (finalcut::FWidget* parent)
 //----------------------------------------------------------------------
 void SegmentView::hexEncoding()
 {
-  code['0'] = sevenSegment{1, 1, 1, 1, 1, 1, 0};
-  code['1'] = sevenSegment{0, 1, 1, 0, 0, 0, 0};
-  code['2'] = sevenSegment{1, 1, 0, 1, 1, 0, 1};
-  code['3'] = sevenSegment{1, 1, 1, 1, 0, 0, 1};
-  code['4'] = sevenSegment{0, 1, 1, 0, 0, 1, 1};
-  code['5'] = sevenSegment{1, 0, 1, 1, 0, 1, 1};
-  code['6'] = sevenSegment{1, 0, 1, 1, 1, 1, 1};
-  code['7'] = sevenSegment{1, 1, 1, 0, 0, 0, 0};
-  code['8'] = sevenSegment{1, 1, 1, 1, 1, 1, 1};
-  code['9'] = sevenSegment{1, 1, 1, 1, 0, 1, 1};
-  code['A'] = sevenSegment{1, 1, 1, 0, 1, 1, 1};
-  code['B'] = sevenSegment{0, 0, 1, 1, 1, 1, 1};
-  code['C'] = sevenSegment{1, 0, 0, 1, 1, 1, 0};
-  code['D'] = sevenSegment{0, 1, 1, 1, 1, 0, 1};
-  code['E'] = sevenSegment{1, 0, 0, 1, 1, 1, 1};
-  code['F'] = sevenSegment{1, 0, 0, 0, 1, 1, 1};
+  code =
+  {
+    { '0', sevenSegment{1, 1, 1, 1, 1, 1, 0} },
+    { '1', sevenSegment{0, 1, 1, 0, 0, 0, 0} },
+    { '2', sevenSegment{1, 1, 0, 1, 1, 0, 1} },
+    { '3', sevenSegment{1, 1, 1, 1, 0, 0, 1} },
+    { '4', sevenSegment{0, 1, 1, 0, 0, 1, 1} },
+    { '5', sevenSegment{1, 0, 1, 1, 0, 1, 1} },
+    { '6', sevenSegment{1, 0, 1, 1, 1, 1, 1} },
+    { '7', sevenSegment{1, 1, 1, 0, 0, 0, 0} },
+    { '8', sevenSegment{1, 1, 1, 1, 1, 1, 1} },
+    { '9', sevenSegment{1, 1, 1, 1, 0, 1, 1} },
+    { 'A', sevenSegment{1, 1, 1, 0, 1, 1, 1} },
+    { 'B', sevenSegment{0, 0, 1, 1, 1, 1, 1} },
+    { 'C', sevenSegment{1, 0, 0, 1, 1, 1, 0} },
+    { 'D', sevenSegment{0, 1, 1, 1, 1, 0, 1} },
+    { 'E', sevenSegment{1, 0, 0, 1, 1, 1, 1} },
+    { 'F', sevenSegment{1, 0, 0, 0, 1, 1, 1} }
+  };
 }
 
 //----------------------------------------------------------------------

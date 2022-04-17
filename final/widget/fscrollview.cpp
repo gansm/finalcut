@@ -895,19 +895,23 @@ void FScrollView::directFocus()
 //----------------------------------------------------------------------
 inline void FScrollView::mapKeyFunctions()
 {
-  key_map[FKey::Up]        = [this] { scrollBy (0, -1); };
-  key_map[FKey::Down]      = [this] { scrollBy (0, 1); };
-  key_map[FKey::Left]      = [this] { scrollBy (-1, 0); };
-  key_map[FKey::Right]     = [this] { scrollBy (1, 0); };
-  key_map[FKey::Page_up]   = [this] { scrollBy (0, -int(getViewportHeight())); };
-  key_map[FKey::Page_down] = [this] { scrollBy (0, int(getViewportHeight())); };
-  key_map[FKey::Home]      = [this] { scrollToY (1); };
-  key_map[FKey::End]       = \
-      [this] ()
-      {
-        auto yoffset_end = int(getScrollHeight() - getViewportHeight());
-        scrollToY (1 + yoffset_end);
-      };
+  auto scrollToEnd = [this] ()
+  {
+    auto yoffset_end = int(getScrollHeight() - getViewportHeight());
+    scrollToY (1 + yoffset_end);
+  };
+
+  key_map =
+  {
+    { FKey::Up        , [this] { scrollBy (0, -1); } },
+    { FKey::Down      , [this] { scrollBy (0, 1); } },
+    { FKey::Left      , [this] { scrollBy (-1, 0); } },
+    { FKey::Right     , [this] { scrollBy (1, 0); } },
+    { FKey::Page_up   , [this] { scrollBy (0, -int(getViewportHeight())); } },
+    { FKey::Page_down , [this] { scrollBy (0, int(getViewportHeight())); } },
+    { FKey::Home      , [this] { scrollToY (1); } },
+    { FKey::End       , scrollToEnd }
+  };
 }
 
 //----------------------------------------------------------------------

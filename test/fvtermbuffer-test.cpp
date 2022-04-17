@@ -362,6 +362,35 @@ void FVTermBufferTest::writeTest()
       CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].attr.bit.char_width == 2 );
     }
   }
+
+  // Non UTF-8
+  fterm_data.setTermEncoding (finalcut::Encoding::ASCII);
+  vterm_buf.clear();
+  vterm_buf.print (L"🍅");
+  CPPUNIT_ASSERT ( ! vterm_buf.isEmpty() );
+  CPPUNIT_ASSERT ( vterm_buf.getLength() == 1 );
+  CPPUNIT_ASSERT ( vterm_buf.getBuffer().size() == 1 );
+  CPPUNIT_ASSERT ( vterm_buf.begin() + 1 == vterm_buf.end() );
+  CPPUNIT_ASSERT ( vterm_buf.front().ch[0] == L'🍅' );
+  CPPUNIT_ASSERT ( vterm_buf.front().ch[1] == L'\0' );
+  CPPUNIT_ASSERT ( vterm_buf.front().ch[2] == L'\0' );
+  CPPUNIT_ASSERT ( vterm_buf.front().ch[3] == L'\0' );
+  CPPUNIT_ASSERT ( vterm_buf.front().ch[4] == L'\0' );
+  CPPUNIT_ASSERT ( vterm_buf.front().encoded_char[0] == L'\0' );
+  CPPUNIT_ASSERT ( vterm_buf.front().encoded_char[1] == L'\0' );
+  CPPUNIT_ASSERT ( vterm_buf.front().encoded_char[2] == L'\0' );
+  CPPUNIT_ASSERT ( vterm_buf.front().encoded_char[3] == L'\0' );
+  CPPUNIT_ASSERT ( vterm_buf.front().encoded_char[4] == L'\0' );
+  CPPUNIT_ASSERT ( vterm_buf.front().fg_color == finalcut::FColor::Default );
+  CPPUNIT_ASSERT ( vterm_buf.front().bg_color == finalcut::FColor::Default );
+  CPPUNIT_ASSERT ( vterm_buf.front().attr.byte[0] == 0 );
+  CPPUNIT_ASSERT ( vterm_buf.front().attr.byte[1] == 0 );
+  CPPUNIT_ASSERT ( vterm_buf.front().attr.byte[2] != 0 );
+  CPPUNIT_ASSERT ( vterm_buf.front().attr.byte[3] == 0 );
+  CPPUNIT_ASSERT ( vterm_buf.front().attr.bit.char_width == 1 );  // is 2 for UTF-8
+  vterm_buf.front().attr.bit.char_width = 0;
+  CPPUNIT_ASSERT ( vterm_buf.front().attr.byte[2] == 0 );
+  CPPUNIT_ASSERT ( vterm_buf.toString() == finalcut::FString(L'🍅') );
 }
 
 //----------------------------------------------------------------------

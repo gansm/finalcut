@@ -1146,40 +1146,43 @@ const wchar_t* Calc::getButtonText (const ButtonName& key) const
 void Calc::mapKeyFunctions()
 {
   #define B(f) std::bind((f), this, std::placeholders::_1)  // Bind macro
-  key_map[ButtonName::Sine] = B(&Calc::sine);                   // sin
-  key_map[ButtonName::Cosine] = B(&Calc::cosine);               // cos
-  key_map[ButtonName::Tangent] = B(&Calc::tangent);             // tan
-  key_map[ButtonName::Reciprocal] = B(&Calc::reciprocal);       // 1/x
-  key_map[ButtonName::On] = B(&Calc::clear);                    // On
-  key_map[ButtonName::Natural_logarithm] = B(&Calc::log_e);     // ln
-  key_map[ButtonName::Powers_of_e] = B(&Calc::power_e);         // eˣ
-  key_map[ButtonName::Power] = B(&Calc::power);                 // yˣ
-  key_map[ButtonName::Square_root] = B(&Calc::square_root);     // sqrt
-  key_map[ButtonName::Divide] = B(&Calc::divide);               // ÷
-  key_map[ButtonName::Common_logarithm] = B(&Calc::log_10);     // lg
-  key_map[ButtonName::Powers_of_ten] = B(&Calc::power_10);      // 10ˣ
-  key_map[ButtonName::Parenthese_l] = B(&Calc::open_bracket);   // (
-  key_map[ButtonName::Parenthese_r] = B(&Calc::close_bracket);  // )
-  key_map[ButtonName::Multiply] = B(&Calc::multiply);           // *
-  key_map[ButtonName::Hyperbolic] = B(&Calc::hyperbolic);       // hyp
-  key_map[ButtonName::Seven] = B(&Calc::seven);                 // 7
-  key_map[ButtonName::Eight] = B(&Calc::eight);                 // 8
-  key_map[ButtonName::Nine] = B(&Calc::nine);                   // 9
-  key_map[ButtonName::Subtract] = B(&Calc::subtract);           // -
-  key_map[ButtonName::Arcus] = B(&Calc::arcus);                 // arc
-  key_map[ButtonName::Four] = B(&Calc::four);                   // 4
-  key_map[ButtonName::Five] = B(&Calc::five);                   // 5
-  key_map[ButtonName::Six] = B(&Calc::six);                     // 6
-  key_map[ButtonName::Add] = B(&Calc::add);                     // +
-  key_map[ButtonName::Pi] = B(&Calc::pi);                       // π
-  key_map[ButtonName::One] = B(&Calc::one);                     // 1
-  key_map[ButtonName::Two] = B(&Calc::two);                     // 2
-  key_map[ButtonName::Three] = B(&Calc::three);                 // 3
-  key_map[ButtonName::Percent] = B(&Calc::percent);             // %
-  key_map[ButtonName::Zero] = B(&Calc::zero);                   // 0
-  key_map[ButtonName::Decimal_point] = B(&Calc::radix_point);   // .
-  key_map[ButtonName::Change_sign] = B(&Calc::change_sign);     // ±
-  key_map[ButtonName::Equals] = B(&Calc::equals);               // =
+  key_map =
+  {
+    { ButtonName::Sine, B(&Calc::sine) },                   // sin
+    { ButtonName::Cosine, B(&Calc::cosine) },               // cos
+    { ButtonName::Tangent, B(&Calc::tangent) },             // tan
+    { ButtonName::Reciprocal, B(&Calc::reciprocal) },       // 1/x
+    { ButtonName::On, B(&Calc::clear) },                    // On
+    { ButtonName::Natural_logarithm, B(&Calc::log_e) },     // ln
+    { ButtonName::Powers_of_e, B(&Calc::power_e) },         // eˣ
+    { ButtonName::Power, B(&Calc::power) },                 // yˣ
+    { ButtonName::Square_root, B(&Calc::square_root) },     // sqrt
+    { ButtonName::Divide, B(&Calc::divide) },               // ÷
+    { ButtonName::Common_logarithm, B(&Calc::log_10) },     // lg
+    { ButtonName::Powers_of_ten, B(&Calc::power_10) },      // 10ˣ
+    { ButtonName::Parenthese_l, B(&Calc::open_bracket) },   // (
+    { ButtonName::Parenthese_r, B(&Calc::close_bracket) },  // )
+    { ButtonName::Multiply, B(&Calc::multiply) },           // *
+    { ButtonName::Hyperbolic, B(&Calc::hyperbolic) },       // hyp
+    { ButtonName::Seven, B(&Calc::seven) },                 // 7
+    { ButtonName::Eight, B(&Calc::eight) },                 // 8
+    { ButtonName::Nine, B(&Calc::nine) },                   // 9
+    { ButtonName::Subtract, B(&Calc::subtract) },           // -
+    { ButtonName::Arcus, B(&Calc::arcus) },                 // arc
+    { ButtonName::Four, B(&Calc::four) },                   // 4
+    { ButtonName::Five, B(&Calc::five) },                   // 5
+    { ButtonName::Six, B(&Calc::six) },                     // 6
+    { ButtonName::Add, B(&Calc::add) },                     // +
+    { ButtonName::Pi, B(&Calc::pi) },                       // π
+    { ButtonName::One, B(&Calc::one) },                     // 1
+    { ButtonName::Two, B(&Calc::two) },                     // 2
+    { ButtonName::Three, B(&Calc::three) },                 // 3
+    { ButtonName::Percent, B(&Calc::percent) },             // %
+    { ButtonName::Zero, B(&Calc::zero) },                   // 0
+    { ButtonName::Decimal_point, B(&Calc::radix_point) },   // .
+    { ButtonName::Change_sign, B(&Calc::change_sign) },     // ±
+    { ButtonName::Equals, B(&Calc::equals) }                // =
+  };
 }
 
 // Overloaded operators

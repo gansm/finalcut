@@ -550,14 +550,17 @@ void FTextView::init()
 //----------------------------------------------------------------------
 inline void FTextView::mapKeyFunctions()
 {
-  key_map[FKey::Up]        = [this] { scrollBy (0, -1); };
-  key_map[FKey::Down]      = [this] { scrollBy (0, 1); };
-  key_map[FKey::Left]      = [this] { scrollBy (-1, 0); };
-  key_map[FKey::Right]     = [this] { scrollBy (1, 0); };
-  key_map[FKey::Page_up]   = [this] { scrollBy (0, -int(getTextHeight())); };
-  key_map[FKey::Page_down] = [this] { scrollBy (0, int(getTextHeight())); };
-  key_map[FKey::Home]      = [this] { scrollToBegin(); };
-  key_map[FKey::End]       = [this] { scrollToEnd(); };
+  key_map =
+  {
+    { FKey::Up        , [this] { scrollBy (0, -1); } },
+    { FKey::Down      , [this] { scrollBy (0, 1); } },
+    { FKey::Left      , [this] { scrollBy (-1, 0); } },
+    { FKey::Right     , [this] { scrollBy (1, 0); } },
+    { FKey::Page_up   , [this] { scrollBy (0, -int(getTextHeight())); } },
+    { FKey::Page_down , [this] { scrollBy (0, int(getTextHeight())); } },
+    { FKey::Home      , [this] { scrollToBegin(); } },
+    { FKey::End       , [this] { scrollToEnd(); } }
+  };
 }
 
 //----------------------------------------------------------------------

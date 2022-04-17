@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2021 Markus Gans                                      *
+* Copyright 2012-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -119,12 +119,19 @@ class FLineEdit : public FWidget
 
     // Mutators
     void                setText (const FString&);
+    void                inputText (const FString&);
+    void                deletesCharacter();
     void                setInputFilter (const FString&);
     void                clearInputFilter();
     void                setMaxLength (std::size_t);
     void                setCursorPosition (std::size_t);
+    void                moveCursorToBegin();
+    void                moveCursorToEnd();
+    void                stepCursorForward (std::size_t = 1);
+    void                stepCursorBackward (std::size_t = 1);
     void                setLabelText (const FString&);
     void                setInputType (const InputType);
+    void                setOverwriteMode (bool = true);
     void                setLabelOrientation (const LabelOrientation);
     void                setLabelAssociatedWidget (FWidget*);
     void                resetColors() override;

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2021 Markus Gans                                      *
+* Copyright 2012-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -62,6 +62,10 @@ FLineEdit::FLineEdit (const FString& txt, FWidget* parent)
 //----------------------------------------------------------------------
 FLineEdit::~FLineEdit()  // destructor
 {
+  if ( input_type == InputType::Password )  // Zero password in memory
+    for (auto&& ch : text)
+      ch = '\0';
+
   if ( ! insert_mode )
     FVTerm::getFOutput()->setCursor(CursorMode::Insert);
 }
@@ -155,6 +159,21 @@ void FLineEdit::setText (const FString& txt)
 }
 
 //----------------------------------------------------------------------
+void FLineEdit::inputText (const FString& input)
+{
+  if ( insert_mode )
+    text.insert(input, cursor_pos);
+  else
+    text.overwrite(input, cursor_pos);
+}
+
+//----------------------------------------------------------------------
+void FLineEdit::deletesCharacter()
+{
+  deleteCurrentCharacter();
+}
+
+//----------------------------------------------------------------------
 void FLineEdit::setMaxLength (std::size_t max)
 {
   max_length = max;
@@ -193,11 +212,48 @@ void FLineEdit::setCursorPosition (std::size_t pos)
 }
 
 //----------------------------------------------------------------------
+void FLineEdit::moveCursorToBegin()
+{
+  cursorHome();
+}
+
+//----------------------------------------------------------------------
+void FLineEdit::moveCursorToEnd()
+{
+  cursorEnd();
+}
+
+//----------------------------------------------------------------------
+void FLineEdit::stepCursorForward (std::size_t steps)
+{
+  while ( steps-- )
+    cursorLeft();
+}
+
+//----------------------------------------------------------------------
+void FLineEdit::stepCursorBackward (std::size_t steps)
+{
+  while ( steps-- )
+    cursorRight();
+}
+
+//----------------------------------------------------------------------
 void FLineEdit::setLabelText (const FString& ltxt)
 {
   label_text.setString(ltxt);
   label->setText(label_text);
   adjustLabel();
+}
+
+//----------------------------------------------------------------------
+void FLineEdit::setOverwriteMode (bool overwrite)
+{
+  insert_mode = ! overwrite;
+
+  if ( insert_mode )
+    FVTerm::getFOutput()->setCursor(CursorMode::Insert);     // Insert mode
+  else
+    FVTerm::getFOutput()->setCursor(CursorMode::Overwrite);  // Overtype mode
 }
 
 //----------------------------------------------------------------------
@@ -566,16 +622,19 @@ void FLineEdit::init()
 //----------------------------------------------------------------------
 inline void FLineEdit::mapKeyFunctions()
 {
-  key_map[FKey::Left]      = [this] { cursorLeft(); };
-  key_map[FKey::Right]     = [this] { cursorRight(); };
-  key_map[FKey::Home]      = [this] { cursorHome(); };
-  key_map[FKey::End]       = [this] { cursorEnd(); };
-  key_map[FKey::Del_char]  = [this] { deleteCurrentCharacter(); };
-  key_map[FKey::Erase]     = [this] { deletePreviousCharacter(); };
-  key_map[FKey::Backspace] = [this] { deletePreviousCharacter(); };
-  key_map[FKey::Insert]    = [this] { switchInsertMode(); };
-  key_map[FKey::Return]    = [this] { acceptInput(); };
-  key_map[FKey::Enter]     = [this] { acceptInput(); };
+  key_map =
+  {
+    { FKey::Left      , [this] { cursorLeft(); } },
+    { FKey::Right     , [this] { cursorRight(); } },
+    { FKey::Home      , [this] { cursorHome(); } },
+    { FKey::End       , [this] { cursorEnd(); } },
+    { FKey::Del_char  , [this] { deleteCurrentCharacter(); } },
+    { FKey::Erase     , [this] { deletePreviousCharacter(); } },
+    { FKey::Backspace , [this] { deletePreviousCharacter(); } },
+    { FKey::Insert    , [this] { switchInsertMode(); } },
+    { FKey::Return    , [this] { acceptInput(); } },
+    { FKey::Enter     , [this] { acceptInput(); } }
+  };
 }
 
 //----------------------------------------------------------------------
@@ -1005,12 +1064,7 @@ inline void FLineEdit::deletePreviousCharacter()
 //----------------------------------------------------------------------
 inline void FLineEdit::switchInsertMode()
 {
-  insert_mode = ! insert_mode;
-
-  if ( insert_mode )
-    FVTerm::getFOutput()->setCursor(CursorMode::Insert);     // Insert mode
-  else
-    FVTerm::getFOutput()->setCursor(CursorMode::Overwrite);  // Overtype mode
+  setOverwriteMode (insert_mode);
 }
 
 //----------------------------------------------------------------------

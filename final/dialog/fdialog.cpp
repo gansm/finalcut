@@ -1001,22 +1001,25 @@ inline FDialog::MouseStates
 //----------------------------------------------------------------------
 inline void FDialog::mapKeyFunctions()
 {
-  key_map[FKey::Up]            = [this] () { moveUp(1); };
-  key_map[FKey::Down]          = [this] () { moveDown(1); };
-  key_map[FKey::Left]          = [this] () { moveLeft(1); };
-  key_map[FKey::Right]         = [this] () { moveRight(1); };
-  key_map[FKey::Meta_up]       = [this] () { reduceHeight(1); };
-  key_map[FKey::Shift_up]      = [this] () { reduceHeight(1); };
-  key_map[FKey::Meta_down]     = [this] () { expandHeight(1); };
-  key_map[FKey::Shift_down]    = [this] () { expandHeight(1); };
-  key_map[FKey::Meta_left]     = [this] () { reduceWidth(1); };
-  key_map[FKey::Shift_left]    = [this] () { reduceWidth(1); };
-  key_map[FKey::Meta_right]    = [this] () { expandWidth(1); };
-  key_map[FKey::Shift_right]   = [this] () { expandWidth(1); };
-  key_map[FKey::Return]        = [this] () { acceptMoveSize(); };
-  key_map[FKey::Enter]         = [this] () { acceptMoveSize(); };
-  key_map[FKey::Escape]        = [this] () { cancelMoveSize(); };
-  key_map[FKey::Escape_mintty] = [this] () { cancelMoveSize(); };
+  key_map =
+  {
+    { FKey::Up            , [this] () { moveUp(1); } },
+    { FKey::Down          , [this] () { moveDown(1); } },
+    { FKey::Left          , [this] () { moveLeft(1); } },
+    { FKey::Right         , [this] () { moveRight(1); } },
+    { FKey::Meta_up       , [this] () { reduceHeight(1); } },
+    { FKey::Shift_up      , [this] () { reduceHeight(1); } },
+    { FKey::Meta_down     , [this] () { expandHeight(1); } },
+    { FKey::Shift_down    , [this] () { expandHeight(1); } },
+    { FKey::Meta_left     , [this] () { reduceWidth(1); } },
+    { FKey::Shift_left    , [this] () { reduceWidth(1); } },
+    { FKey::Meta_right    , [this] () { expandWidth(1); } },
+    { FKey::Shift_right   , [this] () { expandWidth(1); } },
+    { FKey::Return        , [this] () { acceptMoveSize(); } },
+    { FKey::Enter         , [this] () { acceptMoveSize(); } },
+    { FKey::Escape        , [this] () { cancelMoveSize(); } },
+    { FKey::Escape_mintty , [this] () { cancelMoveSize(); } }
+  };
 }
 
 //----------------------------------------------------------------------
