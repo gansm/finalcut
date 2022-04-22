@@ -30,6 +30,13 @@
 
 #include <final/final.h>
 
+#undef F_PREPROC_HANDLER
+
+#define F_PREPROC_HANDLER(i,h) \
+    reinterpret_cast<finalcut::FVTerm*>((i)), \
+    std::bind ( reinterpret_cast<finalcut::FVTerm::FPreprocessingHandler>((h)) \
+              , reinterpret_cast<finalcut::FVTerm*>((i)) )
+
 //----------------------------------------------------------------------
 bool& getBellState()
 {
@@ -435,7 +442,6 @@ class FVTerm_protected : public finalcut::FVTerm
     FTermArea* p_getVirtualDesktop() const;
     FTermArea* p_getVirtualTerminal() const;
 
-
     // Mutators
     void p_setPrintArea (FTermArea*);
     void p_setChildPrintArea (FTermArea*);
@@ -447,7 +453,6 @@ class FVTerm_protected : public finalcut::FVTerm
     bool p_hasChildPrintArea() const;
     bool p_isVirtualWindow() const;
     bool p_isCursorHideable() const;
-
 
     // Methods
     void p_createArea (const finalcut::FRect&, const finalcut::FSize&, FTermArea*&);
@@ -473,6 +478,19 @@ class FVTerm_protected : public finalcut::FVTerm
     static void p_startDrawing();
     static void p_finishDrawing();
     void p_initTerminal();
+
+    void Preprocessing()
+    {
+      value++;
+    }
+
+    int& value_ref() & noexcept
+    {
+      return value;
+    }
+
+  private:
+    int value{0};
 };
 
 // public methods of FVTerm_protected
@@ -695,7 +713,7 @@ inline void FVTerm_protected::p_scrollAreaForward (FTermArea* area) const
 //----------------------------------------------------------------------
 inline void FVTerm_protected::p_scrollAreaReverse (FTermArea* area) const
 {
-  finalcut::FVTerm::scrollAreaForward (area);
+  finalcut::FVTerm::scrollAreaReverse (area);
 }
 
 //----------------------------------------------------------------------
@@ -765,6 +783,7 @@ class FVTermTest : public CPPUNIT_NS::TestFixture
     using RepeatFChar = FRepeat<finalcut::FChar>;
     using RepeatFCharVector = std::vector<RepeatFChar>;
     using RepeatFCharLine = FRepeat<RepeatFCharVector>;
+    using RepeatFCharLineVector = std::vector<RepeatFCharLine>;
 
     void         showFCharData (finalcut::FChar);
     std::size_t  getAreaSize (finalcut::FVTerm::FTermArea*);
@@ -774,6 +793,7 @@ class FVTermTest : public CPPUNIT_NS::TestFixture
     void         printOnArea (finalcut::FVTerm::FTermArea*, const RepeatFChar&);
     void         printOnArea (finalcut::FVTerm::FTermArea*, const RepeatFCharVector&);
     void         printOnArea (finalcut::FVTerm::FTermArea*, const RepeatFCharLine&);
+    void         printOnArea (finalcut::FVTerm::FTermArea*, const RepeatFCharLineVector&);
     void         printArea (finalcut::FVTerm::FTermArea*);
 
     // Adds code needed to register the test suite
@@ -1080,6 +1100,7 @@ void FVTermTest::FVTermBasesTest()
   for (std::size_t pos = 0; pos < getAreaSize(vterm); pos++)
     CPPUNIT_ASSERT ( isFCharEqual(vterm->data[pos], default_char) );
 
+  // Create a vterm comparison area
   finalcut::FVTerm::FTermArea* test_vterm_area{};
   auto vterm_geometry = finalcut::FRect(finalcut::FPoint{1, 1}, finalcut::FSize{80, 24});
   p_fvterm.p_createArea (vterm_geometry, test_vterm_area);
@@ -1156,15 +1177,16 @@ void FVTermTest::FVTermBasesTest()
     CPPUNIT_ASSERT ( isFCharEqual(vwin->data[y * full_width + x], shadow_char) );
   }
 
+  // Create a vwin comparison area
   finalcut::FVTerm::FTermArea* test_vwin_area{};
   p_fvterm.p_createArea (geometry, Shadow, test_vwin_area);
-  //
-  //                        .-------------------------- 20 line repetitions
-  //                        |      .------------------- 20 column repetitions
-  //                        |      |             .----- 2 column repetitions
-  //                        |      |             |
+
+  //                             .-------------------------- 20 line repetitions
+  //                             |      .------------------- 20 column repetitions
+  //                             |      |             .----- 2 column repetitions
+  //                             |      |             |
   printOnArea (test_vwin_area, {20, { {20, bg_char}, {2, shadow_char} } });
-  //
+
   //                        .-------------------------- 22 column repetitions
   //                        |
   printOnArea (test_vwin_area, {22, shadow_char});
@@ -1400,7 +1422,9 @@ void FVTermTest::FVTermPrintTest()
       { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
     };
 
-    // printf
+    // printf test
+
+    // Create a vwin comparison area
     finalcut::FVTerm::FTermArea* test_vwin_area{};
     p_fvterm.p_createArea (geometry, Shadow, test_vwin_area);
     printOnArea (test_vwin_area, {11, { {16, default_char} } });
@@ -1854,10 +1878,15 @@ void FVTermTest::FVTermPrintTest()
 void FVTermTest::FVTermChildAreaPrintTest()
 {
   FVTerm_protected p_fvterm(finalcut::outputClass<FTermOutputTest>{});
+
+  // virtual window
   auto&& vwin = p_fvterm.getVWin();
 
+  // virtual terminal
+  auto&& vterm = p_fvterm.p_getVirtualTerminal();
+
   // Create the virtual window for the p_fvterm object
-  finalcut::FRect geometry {finalcut::FPoint{1, 1}, finalcut::FSize{12, 12}};
+  finalcut::FRect geometry {finalcut::FPoint{34, 1}, finalcut::FSize{12, 12}};
   p_fvterm.p_createArea (geometry, vwin);
 
   // Create a child print area
@@ -1874,13 +1903,130 @@ void FVTermTest::FVTermChildAreaPrintTest()
   CPPUNIT_ASSERT ( p_fvterm.p_getChildPrintArea() != nullptr );
   CPPUNIT_ASSERT ( p_fvterm.p_getChildPrintArea() == child_print_area );
 
-  //addPreprocessingHandler
-  //(
-  //  F_PREPROC_HANDLER (this, &FVTerm_protected::Preprocessing)
-  //);
+  CPPUNIT_ASSERT ( p_fvterm.value_ref() == 0 );
+  p_fvterm.addPreprocessingHandler
+  (
+    F_PREPROC_HANDLER (&p_fvterm, &FVTerm_protected::Preprocessing)
+  );
 
-  //delPreprocessingHandler(this);  // const FVTerm*
+  CPPUNIT_ASSERT ( p_fvterm.value_ref() == 0 );
+  CPPUNIT_ASSERT ( vwin );
+  CPPUNIT_ASSERT ( ! vwin->visible );
+  vwin->visible = true;  // show()
+  CPPUNIT_ASSERT ( vwin->visible );
+  CPPUNIT_ASSERT ( ! vterm->has_changes );
+  p_fvterm.p_putArea(vwin);
+  CPPUNIT_ASSERT ( vterm->has_changes );
+  CPPUNIT_ASSERT ( p_fvterm.value_ref() == 1 );
+  p_fvterm.p_putArea(vwin);
+  CPPUNIT_ASSERT ( p_fvterm.value_ref() == 2 );
+  p_fvterm.value_ref() *= 5;
+  p_fvterm.p_putArea(vwin);
+  CPPUNIT_ASSERT ( p_fvterm.value_ref() == 11 );
+  vwin->visible = false;  // hide()
+  p_fvterm.p_putArea(vwin);
+  CPPUNIT_ASSERT ( p_fvterm.value_ref() == 11 );
+  p_fvterm.p_putArea(nullptr);
+  CPPUNIT_ASSERT ( p_fvterm.value_ref() == 11 );
 
+  for (auto i{0}; i < vterm->height; i++)
+  {
+    CPPUNIT_ASSERT ( vterm->changes[i].xmin == 80 );
+    CPPUNIT_ASSERT ( vterm->changes[i].xmax == 0 );
+    CPPUNIT_ASSERT ( vterm->changes[i].trans_count == 0 );
+  }
+
+  CPPUNIT_ASSERT ( ! vwin->has_changes );
+  p_fvterm.print() << finalcut::FColorPair(finalcut::FColor::Red, finalcut::FColor::White)
+                   << finalcut::FPoint(36, 4)  << L"=========="
+                   << finalcut::FPoint(36, 5)  << L"=        ="
+                   << finalcut::FPoint(36, 6)  << L"=        ="
+                   << finalcut::FPoint(36, 7)  << L"=        ="
+                   << finalcut::FPoint(36, 8)  << L"=        ="
+                   << finalcut::FPoint(36, 9)  << L"=        ="
+                   << finalcut::FPoint(36, 10) << L"=        ="
+                   << finalcut::FPoint(36, 11) << L"==========";
+  CPPUNIT_ASSERT ( vwin->has_changes );
+  printArea (vwin);
+
+  p_fvterm.p_putArea(vwin);
+  vwin->visible = true;  // show()
+  vterm->has_changes = false;
+  p_fvterm.p_putArea(vwin);
+  CPPUNIT_ASSERT ( vterm->has_changes );
+
+  for (auto i{0}; i < 3; i++)
+  {
+    CPPUNIT_ASSERT ( vterm->changes[i].xmin == 80 );
+    CPPUNIT_ASSERT ( vterm->changes[i].xmax == 0 );
+    CPPUNIT_ASSERT ( vterm->changes[i].trans_count == 0 );
+  }
+
+  for (auto i{3}; i < 11; i++)
+  {
+    CPPUNIT_ASSERT ( vterm->changes[i].xmin == 35 );
+    CPPUNIT_ASSERT ( vterm->changes[i].xmax == 44 );
+    CPPUNIT_ASSERT ( vterm->changes[i].trans_count == 0 );
+  }
+
+  for (auto i{11}; i < 24; i++)
+  {
+    CPPUNIT_ASSERT ( vterm->changes[i].xmin == 80 );
+    CPPUNIT_ASSERT ( vterm->changes[i].xmax == 0 );
+    CPPUNIT_ASSERT ( vterm->changes[i].trans_count == 0 );
+  }
+
+  finalcut::FChar space_char_1 =
+  {
+    { L' ', L'\0', L'\0', L'\0', L'\0' },
+    { L'\0', L'\0', L'\0', L'\0', L'\0' },
+    finalcut::FColor::Default,
+    finalcut::FColor::Default,
+    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+  };
+
+  finalcut::FChar space_char_2 =
+  {
+    { L' ', L'\0', L'\0', L'\0', L'\0' },
+    { L'\0', L'\0', L'\0', L'\0', L'\0' },
+    finalcut::FColor::Red,
+    finalcut::FColor::White,
+    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+  };
+
+  finalcut::FChar equal_sign_char =
+  {
+    { L'=', L'\0', L'\0', L'\0', L'\0' },
+    { L'\0', L'\0', L'\0', L'\0', L'\0' },
+    finalcut::FColor::Red,
+    finalcut::FColor::White,
+    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+  };
+
+  // Create a vterm comparison area
+  finalcut::FVTerm::FTermArea* test_vterm_area{};
+  auto vterm_geometry = finalcut::FRect( finalcut::FPoint{0, 0}
+                                       , finalcut::FSize{std::size_t(vterm->width), std::size_t(vterm->height)} );
+  p_fvterm.p_createArea (vterm_geometry, test_vterm_area);
+
+  // Check the virtual terminal
+  //                                .--------------- line repetitions
+  //                                |     .--------- column repetitions
+  //                                |     |
+  printOnArea (test_vterm_area, { { 3, { {80, space_char_1} } },
+                                  { 1, { {35, space_char_1}, {10, equal_sign_char}, { 35, space_char_1} } },
+                                  { 6, { {35, space_char_1}, { 1, equal_sign_char}, {  8, space_char_2}, { 1, equal_sign_char}, { 35, space_char_1} } },
+                                  { 1, { {35, space_char_1}, {10, equal_sign_char}, { 35, space_char_1} } },
+                                  {13, { {80, space_char_1} } } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vterm_area, vterm) );
+  printArea (vterm);
+
+  // Deallocate area memory
+  CPPUNIT_ASSERT ( test_vterm_area );
+  p_fvterm.p_removeArea (test_vterm_area);
+  CPPUNIT_ASSERT ( ! test_vterm_area );
+
+  p_fvterm.delPreprocessingHandler(&p_fvterm);
   p_fvterm.p_setChildPrintArea (nullptr);
   p_fvterm.p_removeArea (child_print_area);
 }
@@ -1888,7 +2034,229 @@ void FVTermTest::FVTermChildAreaPrintTest()
 //----------------------------------------------------------------------
 void FVTermTest::FVTermScrollTest()
 {
+  FVTerm_protected p_fvterm(finalcut::outputClass<FTermOutputTest>{});
 
+  // virtual window
+  auto&& vwin = p_fvterm.getVWin();
+
+  // Create the virtual window for the p_fvterm object
+  finalcut::FRect geometry {finalcut::FPoint{0, 0}, finalcut::FSize{5, 5}};
+  p_fvterm.p_createArea (geometry, vwin);
+
+  p_fvterm.print() << finalcut::FPoint{1, 1}
+                   << "1111122222333334444455555";
+
+  // Create a vwin comparison area
+  finalcut::FVTerm::FTermArea* test_vwin_area{};
+  auto vwin_geometry = finalcut::FRect( finalcut::FPoint{0, 0}, finalcut::FSize{5, 5} );
+  p_fvterm.p_createArea (vwin_geometry, test_vwin_area);
+
+  finalcut::FChar one_char =
+  {
+    { L'1', L'\0', L'\0', L'\0', L'\0' },
+    { L'\0', L'\0', L'\0', L'\0', L'\0' },
+    finalcut::FColor::Default,
+    finalcut::FColor::Default,
+    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+  };
+
+  finalcut::FChar two_char = one_char;
+  two_char.ch[0] = L'2';
+  finalcut::FChar three_char = one_char;
+  three_char.ch[0] = L'3';
+  finalcut::FChar four_char = one_char;
+  four_char.ch[0] = L'4';
+  finalcut::FChar five_char = one_char;
+  five_char.ch[0] = L'5';
+  finalcut::FChar space_char = one_char;
+  space_char.ch[0] = L' ';
+
+  // Scroll forward
+
+  printOnArea (test_vwin_area, { {5, one_char},
+                                 {5, two_char},
+                                 {5, three_char},
+                                 {5, four_char},
+                                 {5, five_char} } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+  printArea (vwin);
+
+  p_fvterm.p_scrollAreaForward (vwin);
+  printOnArea (test_vwin_area, { {5, two_char},
+                                 {5, three_char},
+                                 {5, four_char},
+                                 {5, five_char},
+                                 {5, space_char} } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+  printArea (vwin);
+
+  p_fvterm.p_scrollAreaForward (vwin);
+  printOnArea (test_vwin_area, { {5, three_char},
+                                 {5, four_char},
+                                 {5, five_char},
+                                 {5, space_char},
+                                 {5, space_char} } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+  printArea (vwin);
+
+  p_fvterm.p_scrollAreaForward (vwin);
+  printOnArea (test_vwin_area, { {5, four_char},
+                                 {5, five_char},
+                                 {5, space_char},
+                                 {5, space_char},
+                                 {5, space_char} } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+  printArea (vwin);
+
+  p_fvterm.p_scrollAreaForward (vwin);
+  printOnArea (test_vwin_area, { {5, five_char},
+                                 {5, space_char},
+                                 {5, space_char},
+                                 {5, space_char},
+                                 {5, space_char} } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+  printArea (vwin);
+
+  p_fvterm.p_scrollAreaForward (vwin);
+  printOnArea (test_vwin_area, { {5, space_char},
+                                 {5, space_char},
+                                 {5, space_char},
+                                 {5, space_char},
+                                 {5, space_char} } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+  printArea (vwin);
+
+  // Scroll reverse
+
+  p_fvterm.print() << finalcut::FPoint{1, 1}
+                   << "1111122222333334444455555";
+  printOnArea (test_vwin_area, { {5, one_char},
+                                 {5, two_char},
+                                 {5, three_char},
+                                 {5, four_char},
+                                 {5, five_char} } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+  printArea (vwin);
+
+  p_fvterm.p_scrollAreaReverse (vwin);
+  printOnArea (test_vwin_area, { {5, space_char},
+                                 {5, one_char},
+                                 {5, two_char},
+                                 {5, three_char},
+                                 {5, four_char} } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+  printArea (vwin);
+
+  p_fvterm.p_scrollAreaReverse (vwin);
+  printOnArea (test_vwin_area, { {5, space_char},
+                                 {5, space_char},
+                                 {5, one_char},
+                                 {5, two_char},
+                                 {5, three_char} } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+  printArea (vwin);
+
+  p_fvterm.p_scrollAreaReverse (vwin);
+  printOnArea (test_vwin_area, { {5, space_char},
+                                 {5, space_char},
+                                 {5, space_char},
+                                 {5, one_char},
+                                 {5, two_char} } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+  printArea (vwin);
+
+  p_fvterm.p_scrollAreaReverse (vwin);
+  printOnArea (test_vwin_area, { {5, space_char},
+                                 {5, space_char},
+                                 {5, space_char},
+                                 {5, space_char},
+                                 {5, one_char} } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+  printArea (vwin);
+
+  p_fvterm.p_scrollAreaReverse (vwin);
+  printOnArea (test_vwin_area, { {5, space_char},
+                                 {5, space_char},
+                                 {5, space_char},
+                                 {5, space_char},
+                                 {5, space_char} } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
+  printArea (vwin);
+
+  // vdesktop scrolling
+
+  auto&& vdesktop = p_fvterm.p_getVirtualDesktop();
+  printOnArea (vdesktop, { { 5, { {80, space_char} } },
+                           { 1, { {80, one_char} } },
+                           { 5, { {80, space_char} } },
+                           { 1, { {80, one_char} } },
+                           { 5, { {80, space_char} } },
+                           { 1, { {80, one_char} } },
+                           { 6, { {80, space_char} } } } );
+
+  // Create a vdesktop comparison area
+  finalcut::FVTerm::FTermArea* test_vdesktop{};
+  auto vdesktop_geometry = finalcut::FRect( finalcut::FPoint{0, 0}, finalcut::FSize{80, 24} );
+  p_fvterm.p_createArea (vdesktop_geometry, test_vdesktop);
+
+  printOnArea (test_vdesktop, { { 5, { {80, space_char} } },
+                                { 1, { {80, one_char} } },
+                                { 5, { {80, space_char} } },
+                                { 1, { {80, one_char} } },
+                                { 5, { {80, space_char} } },
+                                { 1, { {80, one_char} } },
+                                { 6, { {80, space_char} } } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vdesktop, vdesktop) );
+  printArea (vdesktop);
+
+  p_fvterm.p_scrollAreaForward (vdesktop);
+  printOnArea (test_vdesktop, { { 4, { {80, space_char} } },
+                                { 1, { {80, one_char} } },
+                                { 5, { {80, space_char} } },
+                                { 1, { {80, one_char} } },
+                                { 5, { {80, space_char} } },
+                                { 1, { {80, one_char} } },
+                                { 7, { {80, space_char} } } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vdesktop, vdesktop) );
+  printArea (vdesktop);
+
+  p_fvterm.p_scrollAreaForward (vdesktop);
+  p_fvterm.p_scrollAreaForward (vdesktop);
+  printOnArea (test_vdesktop, { { 2, { {80, space_char} } },
+                                { 1, { {80, one_char} } },
+                                { 5, { {80, space_char} } },
+                                { 1, { {80, one_char} } },
+                                { 5, { {80, space_char} } },
+                                { 1, { {80, one_char} } },
+                                { 9, { {80, space_char} } } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vdesktop, vdesktop) );
+  printArea (vdesktop);
+
+  p_fvterm.p_scrollAreaReverse (vdesktop);
+  printOnArea (test_vdesktop, { { 3, { {80, space_char} } },
+                                { 1, { {80, one_char} } },
+                                { 5, { {80, space_char} } },
+                                { 1, { {80, one_char} } },
+                                { 5, { {80, space_char} } },
+                                { 1, { {80, one_char} } },
+                                { 8, { {80, space_char} } } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vdesktop, vdesktop) );
+  printArea (vdesktop);
+
+  for (auto i{0}; i < 6; i++)
+  {
+    p_fvterm.p_scrollAreaReverse (vdesktop);
+  }
+  
+  printOnArea (test_vdesktop, { { 9, { {80, space_char} } },
+                                { 1, { {80, one_char} } },
+                                { 5, { {80, space_char} } },
+                                { 1, { {80, one_char} } },
+                                { 5, { {80, space_char} } },
+                                { 1, { {80, one_char} } },
+                                { 2, { {80, space_char} } } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vdesktop, vdesktop) );
+  printArea (vdesktop);
 }
 
 //----------------------------------------------------------------------
@@ -1987,6 +2355,16 @@ void FVTermTest::printOnArea ( finalcut::FVTerm::FTermArea* area
 }
 
 //----------------------------------------------------------------------
+void FVTermTest::printOnArea ( finalcut::FVTerm::FTermArea* area
+                             , const RepeatFCharLineVector& rep_fchar_line_vec )
+{
+  for (const auto& rep_fchar_line : rep_fchar_line_vec)
+  {
+    printOnArea (area, rep_fchar_line);
+  }
+}
+
+//----------------------------------------------------------------------
 void FVTermTest::printArea ( finalcut::FVTerm::FTermArea* area )
 {
   auto width = area->width + area->right_shadow;
@@ -2022,9 +2400,9 @@ void FVTermTest::printArea ( finalcut::FVTerm::FTermArea* area )
   {
     for (int i{1}; i <= width; i++)
       std::wcout << i / 10;
-  }
 
-  std::wcout << L"\n ";
+    std::wcout << L"\n ";
+  }
 
   for (int i{1}; i <= width; i++)
     std::wcout << i % 10;
