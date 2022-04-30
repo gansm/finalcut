@@ -684,13 +684,21 @@ inline void FVTerm::hideVTermCursor() const
 template <typename FOutputType>
 inline void FVTerm::init()
 {
-  init_object   = this;
-  vterm         = nullptr;
-  vdesktop      = nullptr;
-  b1_trans_mask = getByte1TransMask();
-  foutput       = std::make_shared<FOutputType>(*this);
-  window_list   = std::make_shared<FVTermList>();
-  initSettings();
+  if ( ! init_object )
+  {
+    init_object   = this;
+    vterm         = nullptr;
+    vdesktop      = nullptr;
+    b1_trans_mask = getByte1TransMask();
+    foutput       = std::make_shared<FOutputType>(*this);
+    window_list   = std::make_shared<FVTermList>();
+    initSettings();
+  }
+  else
+  {
+    foutput = std::shared_ptr<FOutput>(init_object->foutput);
+    window_list = std::shared_ptr<FVTermList>(init_object->window_list);
+  }
 }
 
 }  // namespace finalcut

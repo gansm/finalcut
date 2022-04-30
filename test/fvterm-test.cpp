@@ -795,6 +795,7 @@ class FVTermTest : public CPPUNIT_NS::TestFixture
     void         printOnArea (finalcut::FVTerm::FTermArea*, const RepeatFCharLine&);
     void         printOnArea (finalcut::FVTerm::FTermArea*, const RepeatFCharLineVector&);
     void         printArea (finalcut::FVTerm::FTermArea*);
+    void         moveArea (finalcut::FVTerm::FTermArea*, const finalcut::FPoint&);
 
     // Adds code needed to register the test suite
     CPPUNIT_TEST_SUITE (FVTermTest);
@@ -807,6 +808,7 @@ class FVTermTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (FVTermPrintTest);
     CPPUNIT_TEST (FVTermChildAreaPrintTest);
     CPPUNIT_TEST (FVTermScrollTest);
+    CPPUNIT_TEST (FVTermOverlappingWindowsTest);
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
@@ -953,6 +955,7 @@ void FVTermTest::FVTermBasesTest()
   CPPUNIT_ASSERT ( vwin->changes[0].xmax == 0 );
   CPPUNIT_ASSERT ( vwin->changes[0].trans_count == 0 );
   CPPUNIT_ASSERT ( vwin->data );
+  CPPUNIT_ASSERT ( ! p_fvterm.p_isActive(vwin) );
   CPPUNIT_ASSERT ( getAreaSize(vwin) == 462 );
   CPPUNIT_ASSERT ( vwin->contains({5, 5}) );
   CPPUNIT_ASSERT ( ! vwin->contains({4, 5}) );
@@ -1064,6 +1067,12 @@ void FVTermTest::FVTermBasesTest()
   CPPUNIT_ASSERT ( vdesktop->changes[0].trans_count == 0 );
   CPPUNIT_ASSERT ( vdesktop->data );
   CPPUNIT_ASSERT ( getAreaSize(vdesktop) == 1920 );
+  CPPUNIT_ASSERT ( p_fvterm.p_isActive(vdesktop) );
+  p_fvterm.p_setActiveArea(vwin);
+  CPPUNIT_ASSERT ( ! p_fvterm.p_isActive(vdesktop) );
+  CPPUNIT_ASSERT ( p_fvterm.p_isActive(vwin) );
+  p_fvterm.p_setActiveArea(vdesktop);
+  CPPUNIT_ASSERT ( p_fvterm.p_isActive(vdesktop) );
 
   for (std::size_t pos = 0; pos < getAreaSize(vdesktop); pos++)
     CPPUNIT_ASSERT ( isFCharEqual(vdesktop->data[pos], default_char) );
@@ -1085,6 +1094,10 @@ void FVTermTest::FVTermBasesTest()
   CPPUNIT_ASSERT ( vterm->input_cursor_x == -1 );
   CPPUNIT_ASSERT ( vterm->input_cursor_y == -1 );
   CPPUNIT_ASSERT ( vterm->layer == -1 );
+  CPPUNIT_ASSERT ( ! vterm->input_cursor_visible );
+  vterm->input_cursor_visible = true;
+  CPPUNIT_ASSERT ( vterm->input_cursor_visible );
+  p_fvterm.p_hideVTermCursor();
   CPPUNIT_ASSERT ( ! vterm->input_cursor_visible );
   CPPUNIT_ASSERT ( ! vterm->has_changes );
   CPPUNIT_ASSERT ( ! vterm->visible );
@@ -1427,6 +1440,13 @@ void FVTermTest::FVTermPrintTest()
     // Create a vwin comparison area
     finalcut::FVTerm::FTermArea* test_vwin_area{};
     p_fvterm.p_createArea (geometry, Shadow, test_vwin_area);
+
+    CPPUNIT_ASSERT ( p_fvterm.getPrintArea() == vwin );
+    p_fvterm.p_setPrintArea (test_vwin_area);
+    CPPUNIT_ASSERT ( p_fvterm.getPrintArea() == test_vwin_area );
+    p_fvterm.p_setPrintArea (vwin);
+    CPPUNIT_ASSERT ( p_fvterm.getPrintArea() == vwin );
+
     printOnArea (test_vwin_area, {11, { {16, default_char} } });
     CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin) );
     p_fvterm.printf("%s/%d = %4.2f...", "1", 3, 1.0f/3.0f);
@@ -2247,7 +2267,7 @@ void FVTermTest::FVTermScrollTest()
   {
     p_fvterm.p_scrollAreaReverse (vdesktop);
   }
-  
+
   printOnArea (test_vdesktop, { { 9, { {80, space_char} } },
                                 { 1, { {80, one_char} } },
                                 { 5, { {80, space_char} } },
@@ -2266,6 +2286,143 @@ void FVTermTest::FVTermOverlappingWindowsTest()
   // ░░░░░░  ▒▒▒▒▒▒  ▓▓▓▓▓▓  ██████
   // ░░░░░░  ▒▒▒▒▒▒  ▓▓▓▓▓▓  ██████
   // ░░░░░░  ▒▒▒▒▒▒  ▓▓▓▓▓▓  ██████
+  //
+  // 1 : color overlay
+  // 2 : inherit background
+  // 3 : transparency
+  // 4 : normal
+
+  FVTerm_protected p_fvterm_1(finalcut::outputClass<FTermOutputTest>{});
+  FVTerm_protected p_fvterm_2(finalcut::outputClass<FTermOutputTest>{});
+  FVTerm_protected p_fvterm_3(finalcut::outputClass<FTermOutputTest>{});
+  FVTerm_protected p_fvterm_4(finalcut::outputClass<FTermOutputTest>{});
+
+  // unique virtual terminal
+  auto&& vterm = p_fvterm_1.p_getVirtualTerminal();
+
+  // virtual windows
+  auto&& vwin_1 = p_fvterm_1.getVWin();
+  auto&& vwin_2 = p_fvterm_2.getVWin();
+  auto&& vwin_3 = p_fvterm_3.getVWin();
+  auto&& vwin_4 = p_fvterm_4.getVWin();
+
+  // Create the virtual windows for the p_fvterm_1..4 objects
+  finalcut::FRect geometry_1 {finalcut::FPoint{0, 0}, finalcut::FSize{6, 3}};
+  finalcut::FRect geometry_2 {finalcut::FPoint{8, 0}, finalcut::FSize{6, 3}};
+  finalcut::FRect geometry_3 {finalcut::FPoint{16, 0}, finalcut::FSize{6, 3}};
+  finalcut::FRect geometry_4 {finalcut::FPoint{24, 0}, finalcut::FSize{6, 3}};
+  p_fvterm_1.p_createArea (geometry_1, vwin_1);
+  p_fvterm_2.p_createArea (geometry_2, vwin_2);
+  p_fvterm_3.p_createArea (geometry_3, vwin_3);
+  p_fvterm_4.p_createArea (geometry_4, vwin_4);
+
+  CPPUNIT_ASSERT ( p_fvterm_1.getWindowList()->empty() );
+  finalcut::FVTerm::getWindowList()->push_back(&p_fvterm_1);
+  finalcut::FVTerm::getWindowList()->push_back(&p_fvterm_2);
+  finalcut::FVTerm::getWindowList()->push_back(&p_fvterm_3);
+  finalcut::FVTerm::getWindowList()->push_back(&p_fvterm_4);
+  CPPUNIT_ASSERT ( ! finalcut::FVTerm::getWindowList()->empty() );
+  CPPUNIT_ASSERT ( finalcut::FVTerm::getWindowList()->size() == 4U );
+
+  // Fill window with content
+  p_fvterm_1.print() << finalcut::FPoint{1, 1}
+                     << finalcut::FColorPair {finalcut::FColor::Black, finalcut::FColor::White}
+                     << finalcut::FStyle {finalcut::Style::ColorOverlay}
+                     << "░░░░░░░░░░░░░░░░░░"
+                     << finalcut::FStyle {finalcut::Style::None};
+
+  p_fvterm_2.print() << finalcut::FPoint{9, 1}
+                     << finalcut::FColorPair {finalcut::FColor::Black, finalcut::FColor::White}
+                     << finalcut::FStyle {finalcut::Style::InheritBackground}
+                     << "▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒"
+                     << finalcut::FStyle {finalcut::Style::None};
+
+  p_fvterm_3.print() << finalcut::FPoint{17, 1}
+                     << finalcut::FColorPair {finalcut::FColor::Black, finalcut::FColor::White}
+                     << finalcut::FStyle {finalcut::Style::Transparent}
+                     << "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
+                     << finalcut::FStyle {finalcut::Style::None};
+
+  p_fvterm_4.print() << finalcut::FPoint{25, 1}
+                     << finalcut::FColorPair {finalcut::FColor::Black, finalcut::FColor::White}
+                     << "██████████████████";
+  printArea (vwin_1);
+  printArea (vwin_2);
+  printArea (vwin_3);
+  printArea (vwin_4);
+  vwin_1->visible = true;
+  vwin_2->visible = true;
+  vwin_3->visible = true;
+  vwin_4->visible = true;
+  CPPUNIT_ASSERT ( finalcut::FVTerm::getWindowList()->size() == 4U );
+
+  // virtual desktop
+  auto&& vdesktop = p_fvterm_1.p_getVirtualDesktop();
+  p_fvterm_1.setColor (finalcut::FColor::DarkGray, finalcut::FColor::LightBlue);
+  p_fvterm_1.p_clearArea (vdesktop, L'.');
+
+  // Write changes to the virtual terminal
+  p_fvterm_1.p_processTerminalUpdate();
+  printArea (vterm);
+
+  // Create a comparison area
+  finalcut::FVTerm::FTermArea* test_area{};
+  auto geometry = finalcut::FRect( finalcut::FPoint{0, 0}, finalcut::FSize{80, 24} );
+  p_fvterm_1.p_createArea (geometry, test_area);
+
+  finalcut::FChar bg_char =
+  {
+    { L'.', L'\0', L'\0', L'\0', L'\0' },
+    { L'\0', L'\0', L'\0', L'\0', L'\0' },
+    finalcut::FColor::DarkGray,
+    finalcut::FColor::LightBlue,
+    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+  };
+
+  printOnArea (test_area, { 24, { {80, bg_char} } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_area, vdesktop) );
+
+  bg_char.attr.byte[2] = 10;
+
+  finalcut::FChar vwin_1_char =  // with color overlay
+  {
+    { L'.', L'\0', L'\0', L'\0', L'\0' },
+    { L'\0', L'\0', L'\0', L'\0', L'\0' },
+    finalcut::FColor::Black,
+    finalcut::FColor::White,
+    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+  };
+
+  finalcut::FChar vwin_2_char =  // with inherit background
+  {
+    { L'▒', L'\0', L'\0', L'\0', L'\0' },
+    { L'\0', L'\0', L'\0', L'\0', L'\0' },
+    finalcut::FColor::Black,
+    finalcut::FColor::LightBlue,
+    { { 0x00, 0x80, 0x08, 0x00} }  // byte 0..3
+  };
+
+  finalcut::FChar vwin_3_char =  // with transparency
+  {
+    { L'.', L'\0', L'\0', L'\0', L'\0' },
+    { L'\0', L'\0', L'\0', L'\0', L'\0' },
+    finalcut::FColor::DarkGray,
+    finalcut::FColor::LightBlue,
+    { { 0x00, 0x00, 0x09, 0x00} }  // byte 0..3
+  };
+
+  finalcut::FChar vwin_4_char =
+  {
+    { L'█', L'\0', L'\0', L'\0', L'\0' },
+    { L'\0', L'\0', L'\0', L'\0', L'\0' },
+    finalcut::FColor::Black,
+    finalcut::FColor::White,
+    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+  };
+
+  printOnArea (test_area, { {  3, { {6, vwin_1_char}, {2, bg_char}, {6, vwin_2_char}, {2, bg_char}, {6, vwin_3_char}, {2, bg_char}, {6, vwin_4_char}, {50, bg_char} } },
+                            { 21, { {80, bg_char} } } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_area, vterm) );
 
   //     ░░░░░░
   //     ░░░░░░              1
@@ -2274,20 +2431,161 @@ void FVTermTest::FVTermOverlappingWindowsTest()
   // ▒▒▒▒██████▓▓▓▓
   //     ██████              4
   //     ██████
+  //
+  // 1 : color overlay
+  // 2 : inherit background
+  // 3 : transparency
+  // 4 : normal
+
+  moveArea(vwin_1, finalcut::FPoint{4, 0});
+  moveArea(vwin_2, finalcut::FPoint{0, 2});
+  moveArea(vwin_3, finalcut::FPoint{8, 2});
+  moveArea(vwin_4, finalcut::FPoint{4, 4});
+  p_fvterm_1.p_restoreVTerm(geometry);
+  p_fvterm_1.p_processTerminalUpdate();
+  printArea (vterm);
+
+  bg_char.attr.bit.printed = false;
+  auto vwin_1_2_char = vwin_2_char;
+  vwin_1_2_char.bg_color = finalcut::FColor::White;
+  vwin_3_char.attr.bit.no_changes = false;
+  auto vwin_2_4_char = vwin_4_char;
+  printOnArea (test_area, { {  2, { {4, bg_char}, {6, vwin_1_char}, {70, bg_char} } },
+                            {  1, { {4, vwin_2_char}, {2, vwin_1_2_char}, {2, vwin_1_char}, {2, vwin_1_char}, {4, vwin_3_char}, {66, bg_char} } },
+                            {  1, { {6, vwin_2_char}, {2, bg_char}, {6, vwin_3_char}, {66, bg_char} } },
+                            {  1, { {4, vwin_2_char}, {2, vwin_2_4_char}, {4, vwin_4_char}, {4, vwin_3_char}, {66, bg_char} } },
+                            {  2, { {4, bg_char}, {6, vwin_4_char}, {70, bg_char} } },
+                            { 17, { {80, bg_char} } } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_area, vterm) );
 
   //     ░░░░░░
-  // ▒▒▒▒░░░░░░              1           4  top
-  // ▒▒▒▒░░▓▓▓▓▓▓                        3
-  // ▒▒▒██████▓▓▓        2       3       1
-  //    ██████▓▓▓                        2  bottom
-  //    ██████               4
+  // ▒▒▒▒░░░░░░              1          4  top
+  // ▒▒▒▒░░▓▓▓▓▓▓        2              3
+  // ▒▒▒██████▓▓▓               3       1
+  //    ██████▓▓▓           4           2  bottom
+  //    ██████
+  //
+  // 1 : color overlay
+  // 2 : inherit background
+  // 3 : transparency
+  // 4 : normal
+
+  moveArea(vwin_1, finalcut::FPoint{4, 0});
+  moveArea(vwin_2, finalcut::FPoint{0, 1});
+  moveArea(vwin_3, finalcut::FPoint{6, 2});
+  moveArea(vwin_4, finalcut::FPoint{3, 3});
+  p_fvterm_1.p_restoreVTerm(geometry);
+  p_fvterm_1.p_processTerminalUpdate();
+  printArea (vterm);
+
+  printOnArea (test_area, { {  1, { {4, bg_char}, {6, vwin_1_char}, {70, bg_char} } },
+                            {  1, { {4, vwin_2_char}, {2, vwin_1_2_char}, {4, vwin_1_char}, {70, bg_char} } },
+                            {  1, { {4, vwin_2_char}, {2, vwin_1_2_char}, {4, vwin_1_char}, {2, vwin_3_char}, {68, bg_char} } },
+                            {  1, { {3, vwin_2_char}, {6, vwin_4_char}, {3, vwin_3_char}, {68, bg_char} } },
+                            {  1, { {3, bg_char}, {6, vwin_4_char}, {3, vwin_3_char}, {68, bg_char} } },
+                            {  1, { {3, bg_char}, {6, vwin_4_char}, {71, bg_char} } },
+                            { 18, { {80, bg_char} } } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_area, vterm) );
 
   // ░░░░░▒▒▒▒▒▒                         4  top
   // ░░░░░▒▒▒▒▒▒          1     2        3
   // ██████▓▓▓▓▓                         2
   // ██████▓▓▓▓▓          4     3        1  botton
   // ██████▓▓▓▓▓
+  //
+  // 1 : color overlay
+  // 2 : inherit background
+  // 3 : transparency
+  // 4 : normal
 
+  moveArea(vwin_1, finalcut::FPoint{0, 0});
+  moveArea(vwin_2, finalcut::FPoint{5, 0});
+  moveArea(vwin_3, finalcut::FPoint{5, 2});
+  moveArea(vwin_4, finalcut::FPoint{0, 2});
+  p_fvterm_1.p_restoreVTerm(geometry);
+  p_fvterm_1.p_processTerminalUpdate();
+  printArea (vterm);
+
+  printOnArea (test_area, { {  2, { {5, vwin_1_char}, {1, vwin_1_2_char}, {5, vwin_2_char}, {69, bg_char} } },
+                            {  1, { {6, vwin_4_char}, {5, vwin_2_char}, {69, bg_char} } },
+                            {  2, { {6, vwin_4_char}, {5, vwin_3_char}, {69, bg_char} } },
+                            { 19, { {80, bg_char} } } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_area, vterm) );
+
+  // ░░░░░▒▒▒▒▒▒                         3  top
+  // ░░░░░▒▒▒▒▒▒          1     2        4
+  // █████▓▓▓▓▓▓                         2
+  // █████▓▓▓▓▓▓          4     3        1  botton
+  // █████▓▓▓▓▓▓
+  //
+  // 1 : color overlay
+  // 2 : inherit background
+  // 3 : transparency
+  // 4 : normal
+  auto window_list = finalcut::FVTerm::getWindowList();
+  std::swap(window_list->at(2), window_list->at(3));
+  p_fvterm_1.p_determineWindowLayers();
+  p_fvterm_1.p_restoreVTerm(geometry);
+  p_fvterm_1.p_processTerminalUpdate();
+  printArea (vterm);
+
+  printOnArea (test_area, { {  2, { {5, vwin_1_char}, {1, vwin_1_2_char}, {5, vwin_2_char}, {69, bg_char} } },
+                            {  1, { {6, vwin_4_char}, {5, vwin_2_char}, {69, bg_char} } },
+                            {  2, { {6, vwin_4_char}, {5, vwin_3_char}, {69, bg_char} } },
+                            { 19, { {80, bg_char} } } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_area, vterm) );
+
+  // ░░░░░▒▒▒▒▒▒                         2  top
+  // ░░░░░▒▒▒▒▒▒          1     2        3
+  // █████▒▒▒▒▒▒                         4
+  // █████▓▓▓▓▓▓          4     3        1  botton
+  // █████▓▓▓▓▓▓
+  //
+  // 1 : color overlay
+  // 2 : inherit background
+  // 3 : transparency
+  // 4 : normal
+  std::swap(window_list->at(1), window_list->at(3));
+  std::swap(window_list->at(1), window_list->at(2));
+  p_fvterm_1.p_determineWindowLayers();
+  p_fvterm_1.p_restoreVTerm(geometry);
+  p_fvterm_1.p_processTerminalUpdate();
+  printArea (vterm);
+
+  printOnArea (test_area, { {  2, { {5, vwin_1_char}, {1, vwin_1_2_char}, {5, vwin_2_char}, {69, bg_char} } },
+                            {  1, { {5, vwin_4_char}, {1, vwin_1_2_char}, {5, vwin_2_char}, {69, bg_char} } },
+                            {  2, { {6, vwin_4_char}, {5, vwin_3_char}, {69, bg_char} } },
+                            { 19, { {80, bg_char} } } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_area, vterm) );
+
+  // ░░░░░░▒▒▒▒▒                         1  top
+  // ░░░░░░▒▒▒▒▒          1     2        2
+  // ░░░░░░▒▒▒▒▒                         3
+  // █████▓▓▓▓▓▓          4     3        4  botton
+  // █████▓▓▓▓▓▓
+  //
+  // 1 : color overlay
+  // 2 : inherit background
+  // 3 : transparency
+  // 4 : normal
+  std::swap(window_list->at(0), window_list->at(3));
+  std::swap(window_list->at(0), window_list->at(2));
+  std::swap(window_list->at(0), window_list->at(1));
+  p_fvterm_1.p_determineWindowLayers();
+  p_fvterm_1.p_restoreVTerm(geometry);
+  p_fvterm_1.p_processTerminalUpdate();
+  printArea (vterm);
+
+  auto vwin_2_1_char = vwin_1_char;
+  vwin_2_1_char.ch[0] = L' ';
+  vwin_2_1_char.attr.byte[1] = 0x80;
+  auto vwin_4_1_char = vwin_1_char;
+  vwin_4_1_char.ch[0] = L' ';
+  printOnArea (test_area, { {  2, { {5, vwin_1_char}, {1, vwin_2_1_char}, {5, vwin_2_char}, {69, bg_char} } },
+                            {  1, { {5, vwin_4_1_char}, {1, vwin_2_1_char}, {5, vwin_2_char}, {69, bg_char} } },
+                            {  2, { {6, vwin_4_char}, {5, vwin_3_char}, {69, bg_char} } },
+                            { 19, { {80, bg_char} } } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_area, vterm) );
 }
 
 //----------------------------------------------------------------------
@@ -2408,6 +2706,16 @@ void FVTermTest::printArea ( finalcut::FVTerm::FTermArea* area )
     std::wcout << i % 10;
 
   std::wcout << L"\n (" << size << L" character) \n";
+}
+
+//----------------------------------------------------------------------
+void FVTermTest::moveArea (finalcut::FVTerm::FTermArea* area, const finalcut::FPoint& pos)
+{
+  if ( ! area )
+    return;
+
+  area->offset_left = pos.getX();
+  area->offset_top = pos.getY();
 }
 
 //----------------------------------------------------------------------

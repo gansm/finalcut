@@ -63,13 +63,7 @@ int                  FVTerm::tabstop{8};
 //----------------------------------------------------------------------
 FVTerm::FVTerm()
 {
-  if ( ! init_object )
-    init<FTermOutput>();
-  else
-  {
-    foutput = std::shared_ptr<FOutput>(init_object->foutput);
-    window_list = std::shared_ptr<FVTermList>(init_object->window_list);
-  }
+  init<FTermOutput>();
 }
 
 //----------------------------------------------------------------------
