@@ -771,6 +771,7 @@ class FVTermTest : public CPPUNIT_NS::TestFixture
     void FVTermChildAreaPrintTest();
     void FVTermScrollTest();
     void FVTermOverlappingWindowsTest();
+    void getFVTermAreaTest();
 
   private:
     template <typename T>
@@ -809,6 +810,7 @@ class FVTermTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (FVTermChildAreaPrintTest);
     CPPUNIT_TEST (FVTermScrollTest);
     CPPUNIT_TEST (FVTermOverlappingWindowsTest);
+    CPPUNIT_TEST (getFVTermAreaTest);
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
@@ -1120,6 +1122,13 @@ void FVTermTest::FVTermBasesTest()
   printOnArea (test_vterm_area, {getAreaSize(test_vterm_area), default_char});
   CPPUNIT_ASSERT ( isAreaEqual(test_vterm_area, vterm) );
 
+  for (auto i{0}; i < vwin->height; i++)
+  {
+    CPPUNIT_ASSERT ( vwin->changes[i].xmin == 22 );
+    CPPUNIT_ASSERT ( vwin->changes[i].xmax == 0 );
+    CPPUNIT_ASSERT ( vwin->changes[i].trans_count == 0 );
+  }
+
   // Virtual windows fill test
   p_fvterm.clearArea(L'▒');  // Fill with '▒'
   CPPUNIT_ASSERT ( vwin->has_changes );
@@ -1212,6 +1221,8 @@ void FVTermTest::FVTermBasesTest()
   // Makes the virtual window visible and thus displayable
   // on the virtual terminal
   vwin->visible = true;
+  CPPUNIT_ASSERT ( p_fvterm.p_isCursorHideable() );
+  vwin->input_cursor_visible = true;
   showFCharData(vwin->data[full_width + 1]);
   CPPUNIT_ASSERT ( vwin->has_changes );
   p_fvterm.p_processTerminalUpdate();
@@ -1356,6 +1367,28 @@ void FVTermTest::FVTermBasesTest()
   CPPUNIT_ASSERT ( isAreaEqual(test_vterm_area, vterm) );
   printArea (vterm);
 
+  // Reset line changes
+  for (auto i{0}; i < vterm->height; i++)
+  {
+    vterm->changes[i].xmin = uInt(vterm->width - 1);
+    vterm->changes[i].xmax = 0;
+  }
+
+  for (auto i{0}; i < vterm->height; i++)
+  {
+    CPPUNIT_ASSERT ( vterm->changes[i].xmin == 69 );
+    CPPUNIT_ASSERT ( vterm->changes[i].xmax == 0 );
+  }
+
+  // Force all lines of the virtual terminal to be output
+  p_fvterm.putVTerm();
+
+  for (auto i{0}; i < vterm->height; i++)
+  {
+    CPPUNIT_ASSERT ( vterm->changes[i].xmin == 0 );
+    CPPUNIT_ASSERT ( vterm->changes[i].xmax == 69 );
+  }
+
   // Deallocate area memory
   CPPUNIT_ASSERT ( test_vwin_area );
   p_fvterm.p_removeArea (test_vwin_area);
@@ -1398,6 +1431,7 @@ void FVTermTest::FVTermPrintTest()
     fterm_data.setTermEncoding (enc);
 
     FVTerm_protected p_fvterm(finalcut::outputClass<FTermOutputTest>{});
+    p_fvterm.p_initTerminal();
     auto&& vwin = p_fvterm.getVWin();
     auto child_print_area = p_fvterm.p_getChildPrintArea();
     CPPUNIT_ASSERT ( child_print_area == nullptr );
@@ -2586,6 +2620,64 @@ void FVTermTest::FVTermOverlappingWindowsTest()
                             {  2, { {6, vwin_4_char}, {5, vwin_3_char}, {69, bg_char} } },
                             { 19, { {80, bg_char} } } } );
   CPPUNIT_ASSERT ( isAreaEqual(test_area, vterm) );
+}
+
+//----------------------------------------------------------------------
+void FVTermTest::getFVTermAreaTest()
+{
+  FVTerm_protected p_fvterm(finalcut::outputClass<FTermOutputTest>{});
+
+  // unique virtual terminal
+  auto&& vterm = p_fvterm.p_getVirtualTerminal();
+
+  // virtual windows
+  auto&& vwin = p_fvterm.getVWin();
+
+  // Create the virtual windows for the p_fvterm objects
+  finalcut::FRect geometry {finalcut::FPoint{0, 0}, finalcut::FSize{80, 24}};
+  p_fvterm.p_createArea (geometry, vwin);
+
+  p_fvterm.print() << finalcut::FPoint{1, 1}
+                   << finalcut::FColorPair {finalcut::FColor::Black, finalcut::FColor::White};
+
+  for (auto n{0}; n < 6; n++)
+  {
+    for (auto i{0}; i < 20; i++) p_fvterm.print() << " /\\ ";
+    for (auto i{0}; i < 20; i++) p_fvterm.print() << "/" << [&i] () { return i < 10 ? "0" + std::to_string(i) : std::to_string(i); }() << "\\";
+    for (auto i{0}; i < 20; i++) p_fvterm.print() << "\\  /";
+    for (auto i{0}; i < 20; i++) p_fvterm.print() << " \\/ ";
+  }
+
+  vwin->visible = true;
+  p_fvterm.p_putArea(vwin);
+
+  // Write changes to the virtual terminal
+  p_fvterm.p_processTerminalUpdate();
+  printArea (vterm);
+
+  // Creates another virtual window area
+  finalcut::FVTerm::FTermArea* vwin_area{};
+  finalcut::FVTerm::FTermArea* test_vwin_area{};
+  auto vwin_geometry = finalcut::FRect( finalcut::FPoint{0, 0}, finalcut::FSize{6, 6} );
+  p_fvterm.p_createArea (vwin_geometry, vwin_area);
+  p_fvterm.p_createArea (vwin_geometry, test_vwin_area);
+
+  finalcut::FChar bg_char =
+  {
+    { L' ', L'\0', L'\0', L'\0', L'\0' },
+    { L'\0', L'\0', L'\0', L'\0', L'\0' },
+    finalcut::FColor::Default,
+    finalcut::FColor::Default,
+    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+  };
+
+  printArea (vwin_area);
+  printOnArea (test_vwin_area, { 24, { {80, bg_char} } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin_area) );
+
+  // Get rectangle block from virtual terminal
+  p_fvterm.p_getArea (finalcut::FRect(finalcut::FPoint{1, 1}, finalcut::FSize{4, 4}), vwin_area);
+  printArea (vwin_area);
 }
 
 //----------------------------------------------------------------------

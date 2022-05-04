@@ -165,6 +165,18 @@ void FLineEdit::inputText (const FString& input)
     text.insert(input, cursor_pos);
   else
     text.overwrite(input, cursor_pos);
+
+  print_text = ( isPasswordField() ) ? getPasswordText() : text;
+
+  if ( isShown() )
+  {
+    if ( ! isReadOnly() )
+      cursor_pos += input.getLength();
+
+    adjustTextOffset();
+  }
+
+  processChanged();
 }
 
 //----------------------------------------------------------------------
@@ -227,14 +239,14 @@ void FLineEdit::moveCursorToEnd()
 void FLineEdit::stepCursorForward (std::size_t steps)
 {
   while ( steps-- )
-    cursorLeft();
+    cursorRight();
 }
 
 //----------------------------------------------------------------------
 void FLineEdit::stepCursorBackward (std::size_t steps)
 {
   while ( steps-- )
-    cursorRight();
+    cursorLeft();
 }
 
 //----------------------------------------------------------------------

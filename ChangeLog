@@ -1,3 +1,11 @@
+2022-05-04  Markus Gans  <guru.mail@muenster.de>
+	* Bug fixes in FLineEdit: 
+	  - Swapped cursor move behavior in the methods stepCursorBackward() 
+	    and stepCursorForward() 
+	  - The inputText method now repositions the cursor on input and 
+	    updates the change directly on the screen 
+	  Thanks to Michael Lehn for reporting these issues
+
 2022-04-17  Markus Gans  <guru.mail@muenster.de>
 	* The FLineEdit and FTextView widgets got additional public methods for 
 	  more control. Many thanks to Michael Lehn for the good suggestions
