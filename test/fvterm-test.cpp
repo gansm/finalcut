@@ -945,6 +945,9 @@ void FVTermTest::FVTermBasesTest()
   vwin->setInputCursorPos (12, 4);
   CPPUNIT_ASSERT ( vwin->input_cursor_x == 12 );
   CPPUNIT_ASSERT ( vwin->input_cursor_y == 4 );
+  p_fvterm.p_setAreaCursor ({3, 5}, true, vwin);
+  CPPUNIT_ASSERT ( vwin->input_cursor_visible );
+  p_fvterm.p_setAreaCursor ({12, 4}, false, vwin);
   CPPUNIT_ASSERT ( vwin->layer == -1 );
   CPPUNIT_ASSERT ( ! vwin->input_cursor_visible );
   CPPUNIT_ASSERT ( ! vwin->has_changes );
@@ -2640,10 +2643,30 @@ void FVTermTest::getFVTermAreaTest()
   p_fvterm.print() << finalcut::FPoint{1, 1}
                    << finalcut::FColorPair {finalcut::FColor::Black, finalcut::FColor::White};
 
+  constexpr std::array<char[3], 256> hex_bytes =
+  {{
+    "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "0a", "0b", "0c", "0d", "0e", "0f",
+    "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "1a", "1b", "1c", "1d", "1e", "1f",
+    "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "2a", "2b", "2c", "2d", "2e", "2f",
+    "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "3a", "3b", "3c", "3d", "3e", "3f",
+    "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "4a", "4b", "4c", "4d", "4e", "4f",
+    "50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "5a", "5b", "5c", "5d", "5e", "5f",
+    "60", "61", "62", "63", "64", "65", "66", "67", "68", "69", "6a", "6b", "6c", "6d", "6e", "6f",
+    "70", "71", "72", "73", "74", "75", "76", "77", "78", "79", "7a", "7b", "7c", "7d", "7e", "7f",
+    "80", "81", "82", "83", "84", "85", "86", "87", "88", "89", "8a", "8b", "8c", "8d", "8e", "8f",
+    "90", "91", "92", "93", "94", "95", "96", "97", "98", "99", "9a", "9b", "9c", "9d", "9e", "9f",
+    "a0", "a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9", "aa", "ab", "ac", "ad", "ae", "af",
+    "b0", "b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "ba", "bb", "bc", "bd", "be", "bf",
+    "c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "ca", "cb", "cc", "cd", "ce", "cf",
+    "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9", "da", "db", "dc", "dd", "de", "df",
+    "e0", "e1", "e2", "e3", "e4", "e5", "e6", "e7", "e8", "e9", "ea", "eb", "ec", "ed", "ee", "ef",
+    "f0", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "fa", "fb", "fc", "fd", "fe", "ff"
+  }};
+
   for (auto n{0}; n < 6; n++)
   {
     for (auto i{0}; i < 20; i++) p_fvterm.print() << " /\\ ";
-    for (auto i{0}; i < 20; i++) p_fvterm.print() << "/" << [&i] () { return i < 10 ? "0" + std::to_string(i) : std::to_string(i); }() << "\\";
+    for (auto i{0}; i < 20; i++) p_fvterm.print() << "/" << hex_bytes[(n * 20) + i] << "\\";
     for (auto i{0}; i < 20; i++) p_fvterm.print() << "\\  /";
     for (auto i{0}; i < 20; i++) p_fvterm.print() << " \\/ ";
   }
@@ -2672,12 +2695,281 @@ void FVTermTest::getFVTermAreaTest()
   };
 
   printArea (vwin_area);
-  printOnArea (test_vwin_area, { 24, { {80, bg_char} } } );
+  printOnArea (test_vwin_area, { 6, { {6, bg_char} } } );
   CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin_area) );
 
   // Get rectangle block from virtual terminal
+
+  // Test with x or y is < 1
+  p_fvterm.p_getArea (finalcut::FRect(finalcut::FPoint{0, 0}, finalcut::FSize{4, 4}), vwin_area);
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin_area) );
+
+  p_fvterm.p_getArea (finalcut::FRect(finalcut::FPoint{0, 1}, finalcut::FSize{4, 4}), vwin_area);
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin_area) );
+
+  p_fvterm.p_getArea (finalcut::FRect(finalcut::FPoint{1, 0}, finalcut::FSize{4, 4}), vwin_area);
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin_area) );
+
+  // Test with x and y is >= 1
   p_fvterm.p_getArea (finalcut::FRect(finalcut::FPoint{1, 1}, finalcut::FSize{4, 4}), vwin_area);
   printArea (vwin_area);
+
+  finalcut::FChar new_bg_char = bg_char;
+  new_bg_char.fg_color = finalcut::FColor::Black;
+  new_bg_char.bg_color = finalcut::FColor::White;
+  finalcut::FChar forward_slash_char = new_bg_char;
+  forward_slash_char.ch[0] = L'/';
+  finalcut::FChar back_slash_char = new_bg_char;
+  back_slash_char.ch[0] = L'\\';
+  finalcut::FChar zero_char = new_bg_char;
+  zero_char.ch[0] = L'0';
+  printOnArea (test_vwin_area, { { 1, { {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char}, {2, bg_char} } },
+                                 { 1, { {1, forward_slash_char}, {2, zero_char}, {1, back_slash_char}, {2, bg_char} } },
+                                 { 1, { {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char}, {2, bg_char} } },
+                                 { 1, { {1, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char}, {2, bg_char} } },
+                                 { 2, { {6, bg_char} } } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin_area) );
+  p_fvterm.p_getArea (finalcut::FRect(finalcut::FPoint{3, 3}, finalcut::FSize{4, 4}), vwin_area);
+  printArea (vwin_area);
+
+  finalcut::FChar one_char = new_bg_char;
+  one_char.ch[0] = L'1';
+  finalcut::FChar four_char = new_bg_char;
+  four_char.ch[0] = L'4';
+  printOnArea (test_vwin_area, { { 1, { {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char}, {2, bg_char} } },
+                                 { 1, { {1, forward_slash_char}, {2, zero_char}, {1, back_slash_char}, {2, bg_char} } },
+                                 { 1, { {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char},  {1, back_slash_char}, {1, new_bg_char} } },
+                                 { 1, { {1, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {2, new_bg_char}, {1, back_slash_char} } },
+                                 { 1, { {2, bg_char}, {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char} } },
+                                 { 1, { {2, bg_char}, {1, four_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, one_char} } } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin_area) );
+
+  printOnArea (vwin_area, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getArea (finalcut::FRect(finalcut::FPoint{3, 3}, finalcut::FSize{4, 4}), vwin_area);
+  printOnArea (test_vwin_area, { { 2, { {6, bg_char} } },
+                                 { 1, { {2, bg_char}, {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char} } },
+                                 { 1, { {2, bg_char}, {1, forward_slash_char}, {2, new_bg_char}, {1, back_slash_char} } },
+                                 { 1, { {2, bg_char}, {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char} } },
+                                 { 1, { {2, bg_char}, {1, four_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, one_char} } } } );
+  printArea (vwin_area);
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin_area) );
+  printOnArea (vwin_area, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getArea (finalcut::FRect(finalcut::FPoint{5, 5}, finalcut::FSize{4, 4}), vwin_area);
+  printOnArea (test_vwin_area, { { 4, { {6, bg_char} } },
+                                 { 1, { {4, bg_char}, {1, new_bg_char}, {1, forward_slash_char} } },
+                                 { 1, { {4, bg_char}, {1, forward_slash_char}, {1, one_char} } } } );
+  printArea (vwin_area);
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin_area) );
+
+  // move area
+  vwin_area->offset_left += 2;
+  vwin_area->offset_top += 2;
+  printOnArea (vwin_area, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getArea (finalcut::FRect(finalcut::FPoint{5, 5}, finalcut::FSize{4, 4}), vwin_area);
+  finalcut::FChar five_char = new_bg_char;
+  five_char.ch[0] = L'5';
+  printOnArea (test_vwin_area, { { 2, { {6, bg_char} } },
+                                 { 1, { {2, bg_char}, {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char} } },
+                                 { 1, { {2, bg_char}, {1, forward_slash_char}, {1, one_char}, {1, five_char}, {1, back_slash_char} } },
+                                 { 1, { {2, bg_char}, {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char} } },
+                                 { 1, { {2, bg_char}, {1, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char} } } } );
+  printArea (vwin_area);
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin_area) );
+
+  vwin_area->offset_left += 2;
+  vwin_area->offset_top += 2;
+  printOnArea (vwin_area, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getArea (finalcut::FRect(finalcut::FPoint{5, 5}, finalcut::FSize{4, 4}), vwin_area);
+  printArea (vwin_area);
+  printOnArea (test_vwin_area, { { 1, { {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char}, {2, bg_char} } },
+                                 { 1, { {1, forward_slash_char}, {1, one_char}, {1, five_char}, {1, back_slash_char}, {2, bg_char} } },
+                                 { 1, { {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char}, {2, bg_char} } },
+                                 { 1, { {1, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char}, {2, bg_char} } },
+                                 { 2, { {6, bg_char} } } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin_area) );
+
+  vwin_area->offset_left += 1;
+  vwin_area->offset_top += 1;
+  printOnArea (vwin_area, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getArea (finalcut::FRect(finalcut::FPoint{5, 5}, finalcut::FSize{4, 4}), vwin_area);
+  printArea (vwin_area);
+  printOnArea (test_vwin_area, { { 1, { {1, one_char}, {1, five_char}, {1, back_slash_char}, {3, bg_char} } },
+                                 { 1, { {2, new_bg_char}, {1, forward_slash_char}, {3, bg_char} } },
+                                 { 1, { {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char}, {3, bg_char} } },
+                                 { 3, { {6, bg_char} } } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin_area) );
+
+  vwin_area->offset_left += 1;
+  vwin_area->offset_top += 1;
+  printOnArea (vwin_area, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getArea (finalcut::FRect(finalcut::FPoint{5, 5}, finalcut::FSize{4, 4}), vwin_area);
+  printArea (vwin_area);
+  printOnArea (test_vwin_area, { { 1, { {1, new_bg_char}, {1, forward_slash_char}, {4, bg_char} } },
+                                 { 1, { {1, forward_slash_char}, {1, new_bg_char}, {4, bg_char} } },
+                                 { 4, { {6, bg_char} } } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin_area) );
+
+  vwin_area->offset_left += 1;
+  vwin_area->offset_top += 1;
+  printOnArea (vwin_area, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getArea (finalcut::FRect(finalcut::FPoint{5, 5}, finalcut::FSize{4, 4}), vwin_area);
+  printArea (vwin_area);
+  printOnArea (test_vwin_area, { { 1, { {1, new_bg_char}, {5, bg_char} } },
+                                 { 5, { {6, bg_char} } } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin_area) );
+
+  printOnArea (vwin_area, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getArea (finalcut::FRect(finalcut::FPoint{11, 9}, finalcut::FSize{4, 4}), vwin_area);
+  printArea (vwin_area);
+  finalcut::FChar a_char = new_bg_char;
+  a_char.ch[0] = L'a';
+  printOnArea (test_vwin_area, { { 1, { {6, bg_char} } },
+                                 { 1, { {3, bg_char}, {1, back_slash_char}, {2, new_bg_char} } },
+                                 { 1, { {3, bg_char}, {1, a_char}, {1, back_slash_char}, {1, forward_slash_char} } },
+                                 { 1, { {3, bg_char}, {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char} } },
+                                 { 1, { {3, bg_char}, {1, forward_slash_char}, {2, new_bg_char} } },
+                                 { 1, { {6, bg_char} } } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin_area) );
+
+  // Get a block from a specified position of the virtual terminal
+
+  printOnArea (vwin_area, { 6, { {6, bg_char} } } );
+
+  // Test with x or y is < 1
+  p_fvterm.p_getArea (finalcut::FPoint{0, 0}, vwin_area);
+  printOnArea (test_vwin_area, { { 6, { {6, bg_char} } } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin_area) );
+
+  p_fvterm.p_getArea (finalcut::FPoint{0, 1}, vwin_area);
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin_area) );
+
+  p_fvterm.p_getArea (finalcut::FPoint{1, 0}, vwin_area);
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin_area) );
+
+  // Test with x and y is >= 1
+  p_fvterm.p_getArea (finalcut::FPoint{1, 1}, vwin_area);
+  CPPUNIT_ASSERT ( ! isAreaEqual(test_vwin_area, vwin_area) );
+  printArea (vwin_area);
+  printOnArea (test_vwin_area, { { 1, { {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char} } },
+                                 { 1, { {1, forward_slash_char}, {2, zero_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, zero_char} } },
+                                 { 1, { {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char} } },
+                                 { 1, { {1, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {2, new_bg_char}, {1, back_slash_char} } },
+                                 { 1, { {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char} } },
+                                 { 1, { {1, forward_slash_char}, {1, one_char}, {1, four_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, one_char} } } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin_area) );
+  // Position independent
+  vwin_area->offset_left += 2;
+  vwin_area->offset_top += 2;
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin_area) );
+  vwin_area->offset_left = 512;
+  vwin_area->offset_top = 512;
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin_area) );
+  vwin_area->offset_left = -24;
+  vwin_area->offset_top = -100;
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin_area) );
+  vwin_area->offset_left = 0;
+  vwin_area->offset_top = 0;
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin_area) );
+
+  // Outside
+  printOnArea (vwin_area, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getArea (finalcut::FPoint{500, 400}, vwin_area);
+  printOnArea (test_vwin_area, { { 6, { {6, bg_char} } } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin_area) );
+
+  // Top right
+  printOnArea (vwin_area, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getArea (finalcut::FPoint{75, 1}, vwin_area);
+  printArea (vwin_area);
+  finalcut::FChar two_char = new_bg_char;
+  two_char.ch[0] = L'2';
+  finalcut::FChar three_char = new_bg_char;
+  three_char.ch[0] = L'3';
+  finalcut::FChar six_char = new_bg_char;
+  six_char.ch[0] = L'6';
+  finalcut::FChar seven_char = new_bg_char;
+  seven_char.ch[0] = L'7';
+  printOnArea (test_vwin_area, { { 1, { {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char} } },
+                                 { 1, { {1, two_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, one_char}, {1, three_char}, {1, back_slash_char} } },
+                                 { 1, { {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char} } },
+                                 { 1, { {1, forward_slash_char}, {2, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char} } },
+                                 { 1, { {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char} } },
+                                 { 1, { {1, six_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, two_char}, {1, seven_char}, {1, back_slash_char} } } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin_area) );
+
+  printOnArea (vwin_area, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getArea (finalcut::FPoint{76, 1}, vwin_area);
+  printArea (vwin_area);
+  printOnArea (test_vwin_area, { { 1, { {2, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char}, {1, bg_char} } },
+                                 { 1, { {1, back_slash_char}, {1, forward_slash_char}, {1, one_char}, {1, three_char}, {1, back_slash_char}, {1, bg_char} } },
+                                 { 1, { {1, forward_slash_char}, {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char}, {1, bg_char} } },
+                                 { 1, { {2, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char}, {1, bg_char} } },
+                                 { 1, { {2, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char}, {1, bg_char} } },
+                                 { 1, { {1, back_slash_char}, {1, forward_slash_char}, {1, two_char}, {1, seven_char}, {1, back_slash_char}, {1, bg_char} } } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin_area) );
+
+  // Bottom right
+  printOnArea (vwin_area, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getArea (finalcut::FPoint{75, 19}, vwin_area);
+  printArea (vwin_area);
+  printOnArea (test_vwin_area, { { 1, { {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char} } },
+                                 { 1, { {1, forward_slash_char}, {2, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char} } },
+                                 { 1, { {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char} } },
+                                 { 1, { {1, six_char}, {1, back_slash_char}, {1, forward_slash_char}, {2, seven_char}, {1, back_slash_char} } },
+                                 { 1, { {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char} } },
+                                 { 1, { {1, forward_slash_char}, {2, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char} } } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin_area) );
+
+  printOnArea (vwin_area, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getArea (finalcut::FPoint{76, 20}, vwin_area);
+  printArea (vwin_area);
+  printOnArea (test_vwin_area, { { 1, { {2, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char}, {1, bg_char} } },
+                                 { 1, { {2, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char}, {1, bg_char} } },
+                                 { 1, { {1, back_slash_char}, {1, forward_slash_char}, {2, seven_char}, {1, back_slash_char}, {1, bg_char} } },
+                                 { 1, { {1, forward_slash_char}, {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char}, {1, bg_char} } },
+                                 { 1, { {2, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char}, {1, bg_char} } },
+                                 { 1, { {6, bg_char} } } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin_area) );
+
+  printOnArea (vwin_area, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getArea (finalcut::FPoint{77, 21}, vwin_area);
+  printArea (vwin_area);
+  printOnArea (test_vwin_area, { { 1, { {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char}, {2, bg_char} } },
+                                 { 1, { {1, forward_slash_char}, {2, seven_char}, {1, back_slash_char}, {2, bg_char} } },
+                                 { 1, { {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char}, {2, bg_char} } },
+                                 { 1, { {1, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char}, {2, bg_char} } },
+                                 { 2, { {6, bg_char} } } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin_area) );
+
+  printOnArea (vwin_area, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getArea (finalcut::FPoint{78, 22}, vwin_area);
+  printArea (vwin_area);
+  printOnArea (test_vwin_area, { { 1, { {2, seven_char}, {1, back_slash_char}, {3, bg_char} } },
+                                 { 1, { {2, new_bg_char}, {1, forward_slash_char}, {3, bg_char} } },
+                                 { 1, { {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char}, {3, bg_char} } },
+                                 { 3, { {6, bg_char} } } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin_area) );
+
+  printOnArea (vwin_area, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getArea (finalcut::FPoint{79, 23}, vwin_area);
+  printArea (vwin_area);
+  printOnArea (test_vwin_area, { { 1, { {1, new_bg_char}, {1, forward_slash_char}, {4, bg_char} } },
+                                 { 1, { {1, forward_slash_char}, {1, new_bg_char}, {4, bg_char} } },
+                                 { 4, { {6, bg_char} } } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin_area) );
+
+  printOnArea (vwin_area, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getArea (finalcut::FPoint{80, 24}, vwin_area);
+  printArea (vwin_area);
+  printOnArea (test_vwin_area, { { 1, { {1, new_bg_char}, {5, bg_char} } },
+                                 { 5, { {6, bg_char} } } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin_area) );
+
+  printOnArea (vwin_area, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getArea (finalcut::FPoint{81, 25}, vwin_area);
+  printArea (vwin_area);
+  printOnArea (test_vwin_area, { { 6, { {6, bg_char} } } } );
+  CPPUNIT_ASSERT ( isAreaEqual(test_vwin_area, vwin_area) );
 }
 
 //----------------------------------------------------------------------

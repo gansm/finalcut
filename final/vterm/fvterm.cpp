@@ -650,18 +650,12 @@ void FVTerm::getArea (const FPoint& pos, const FTermArea* area)
 
   const int ax = pos.getX() - 1;
   const int ay = pos.getY() - 1;
-  int y_end{};
-  int length{};
 
-  if ( area->height + ay > vterm->height )
-    y_end = area->height - ay;
-  else
-    y_end = area->height;
+  if ( ax < 0 || ay < 0 )
+    return;
 
-  if ( area->width + ax > vterm->width )
-    length = vterm->width - ax;
-  else
-    length = area->width;
+  int y_end  = std::min(vterm->height - ay, area->height);
+  int length = std::min(vterm->width - ax, area->width);
 
   for (auto y{0}; y < y_end; y++)  // line loop
   {
@@ -686,27 +680,20 @@ void FVTerm::getArea (const FRect& box, const FTermArea* area)
   if ( ! area )
     return;
 
-  const int x = box.getX();
-  const int y = box.getY();
-  const auto w = int(box.getWidth());
-  const auto h = int(box.getHeight());
-  const int dx = x - area->offset_left + 1;
-  const int dy = y - area->offset_top + 1;
-  int y_end{};
-  int length{};
+  int x = box.getX() - 1;
+  int y = box.getY() - 1;
+  int dx = x - area->offset_left;
+  int dy = y - area->offset_top;
+  auto w = std::min(area->width - dx, int(box.getWidth()));
+  auto h = std::min(area->height - dy, int(box.getHeight()));
 
   if ( x < 0 || y < 0 )
     return;
 
-  if ( y - 1 + h > vterm->height )
-    y_end = vterm->height - y + 1;
-  else
-    y_end = h - 1;
-
-  if ( x - 1 + w > vterm->width )
-    length = vterm->width - x + 1;
-  else
-    length = w;
+  if ( dx < 0 ) { w += dx; x -= dx; dx = 0; }
+  if ( dy < 0 ) { h += dy; y -= dy; dy = 0; }
+  const int y_end = std::min(vterm->height - y, h);
+  const int length = std::min(vterm->width - x, w);
 
   if ( length < 1 )
     return;
@@ -714,7 +701,7 @@ void FVTerm::getArea (const FRect& box, const FTermArea* area)
   for (auto line = 0; line < y_end; line++)  // line loop
   {
     const int line_len = getFullAreaWidth(area);
-    const auto& tc = vterm->data[(y + line - 1) * vterm->width + x - 1];  // terminal character
+    const auto& tc = vterm->data[(y + line) * vterm->width + x];  // terminal character
     auto& ac = area->data[(dy + line) * line_len + dx];  // area character
     std::memcpy (&ac, &tc, sizeof(ac) * unsigned(length));
     auto area_changes = area->changes[dy + line];
@@ -740,7 +727,7 @@ void FVTerm::putArea (const FTermArea* area) const
   const int width = getFullAreaWidth(area);
   const int height = area->minimized ? area->min_height : getFullAreaHeight(area);
   int ol{0};  // Outside left
-  int y_end{};
+
 
   // Call the preprocessing handler methods
   callPreprocessingHandler(area);
@@ -751,10 +738,7 @@ void FVTerm::putArea (const FTermArea* area) const
     ax = 0;
   }
 
-  if ( height + ay > vterm->height )
-    y_end = vterm->height - ay;
-  else
-    y_end = height;
+  int y_end = std::min(vterm->height - ay, height);
 
   for (auto y{0}; y < y_end; y++)  // Line loop
   {
@@ -838,8 +822,6 @@ void FVTerm::copyArea (FTermArea* dst, const FPoint& pos, const FTermArea* src)
   const int height = src->minimized ? src->min_height : getFullAreaHeight(src);
   int ol{0};  // outside left
   int ot{0};  // outside top
-  int y_end{};
-  int length{};
 
   if ( ax < 0 )
   {
@@ -853,15 +835,8 @@ void FVTerm::copyArea (FTermArea* dst, const FPoint& pos, const FTermArea* src)
     ay = 0;
   }
 
-  if ( height - ot + ay > dst->height )
-    y_end = dst->height - ay;
-  else
-    y_end = height - ot;
-
-  if ( width - ol + ax > dst->width )
-    length = dst->width - ax;
-  else
-    length = width - ol;
+  int y_end = std::min(dst->height - ay, height - ot);
+  int length = std::min(dst->width - ax, width - ol);
 
   if ( length < 1 )
     return;

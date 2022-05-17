@@ -1295,23 +1295,21 @@ void FWidget::hideArea (const FSize& size)
   if ( size.isEmpty() )
     return;
 
-  FColor fg{};
-  FColor bg{};
   const auto& parent_widget = getParentWidget();
 
   if ( parent_widget )
   {
-    fg = parent_widget->getForegroundColor();
-    bg = parent_widget->getBackgroundColor();
+    FColor fg = parent_widget->getForegroundColor();
+    FColor bg = parent_widget->getBackgroundColor();
+    setColor (fg, bg);
   }
   else
   {
     auto color_theme = getColorTheme();
-    fg = color_theme->dialog_fg;
-    bg = color_theme->dialog_bg;
+    FColor fg = color_theme->dialog_fg;
+    FColor bg = color_theme->dialog_bg;
+    setColor (fg, bg);
   }
-
-  setColor (fg, bg);
 
   if ( size.getWidth() == 0 )
     return;

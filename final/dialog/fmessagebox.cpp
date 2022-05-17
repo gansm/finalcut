@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2021 Markus Gans                                      *
+* Copyright 2014-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -276,17 +276,12 @@ inline void FMessageBox::initCallbacks()
 //----------------------------------------------------------------------
 void FMessageBox::calculateDimensions()
 {
-  FSize size{};
-  std::size_t headline_height{0};
   text_components = text.split("\n");
   max_line_width = 0;
   text_num_lines = std::size_t(text_components.size());
 
   if ( text_num_lines == 0 )
     return;
-
-  if ( ! headline_text.isEmpty() )
-    headline_height = 2;
 
   std::for_each ( text_components.cbegin()
                 , text_components.cend()
@@ -299,8 +294,8 @@ void FMessageBox::calculateDimensions()
                   }
                 );
 
-  size.setHeight (text_num_lines + 8 + headline_height);
-  size.setWidth (max_line_width + 4);
+  std::size_t headline_height = headline_text.isEmpty() ? 0 : 2;
+  FSize size{ max_line_width + 4, text_num_lines + 8 + headline_height };
 
   if ( size.getWidth() < 20 )
     size.setWidth(20);

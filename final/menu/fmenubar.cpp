@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2021 Markus Gans                                      *
+* Copyright 2015-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -368,9 +368,14 @@ void FMenuBar::drawItems()
 //----------------------------------------------------------------------
 inline void FMenuBar::drawItem (FMenuItem* menuitem, std::size_t& x)
 {
-  menuText txtdata{};
-  txtdata.startpos = x + 1;
-  txtdata.no_underline = menuitem->getFlags().no_underline;
+  menuText txtdata =
+  {
+    {},
+    x + 1,
+    NOT_SET,
+    bool(menuitem->getFlags().no_underline)
+  };
+
   FString txt{menuitem->getText()};
   std::size_t column_width = getColumnWidth(txt);
   bool is_enabled  = menuitem->isEnabled();
@@ -390,9 +395,7 @@ inline void FMenuBar::drawItem (FMenuItem* menuitem, std::size_t& x)
 
   x += column_width;
 
-  if ( ! is_enabled || is_selected )
-    txtdata.hotkeypos = NOT_SET;
-  else
+  if ( is_enabled && ! is_selected )
     txtdata.hotkeypos = hotkeypos;
 
   setCursorToHotkeyPosition (menuitem, hotkeypos);

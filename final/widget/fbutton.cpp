@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2021 Markus Gans                                      *
+* Copyright 2012-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -203,24 +203,23 @@ void FButton::setText (const FString& txt)
 //----------------------------------------------------------------------
 void FButton::hide()
 {
-  FColor fg{};
-  FColor bg{};
   const auto& parent_widget = getParentWidget();
   FWidget::hide();
 
   if ( parent_widget )
   {
-    fg = parent_widget->getForegroundColor();
-    bg = parent_widget->getBackgroundColor();
+    FColor fg = parent_widget->getForegroundColor();
+    FColor bg = parent_widget->getBackgroundColor();
+    setColor (fg, bg);
   }
   else
   {
     const auto& wc = getColorTheme();
-    fg = wc->dialog_fg;
-    bg = wc->dialog_bg;
+    FColor fg = wc->dialog_fg;
+    FColor bg = wc->dialog_bg;
+    setColor (fg, bg);
   }
 
-  setColor (fg, bg);
   const std::size_t s = hasShadow() ? 1 : 0;
   const std::size_t f = isFlat() ? 1 : 0;
   const std::size_t size = getWidth() + s + (f << 1u);

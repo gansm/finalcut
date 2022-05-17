@@ -4,7 +4,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2021 Markus Gans                                      *
+* Copyright 2014-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -168,8 +168,6 @@ bool FButtonGroup::hasCheckedButton() const
 //----------------------------------------------------------------------
 void FButtonGroup::hide()
 {
-  FColor fg{};
-  FColor bg{};
   FWidget::hide();
   const auto& parent_widget = getParentWidget();
 
@@ -185,17 +183,18 @@ void FButtonGroup::hide()
 
   if ( parent_widget )
   {
-    fg = parent_widget->getForegroundColor();
-    bg = parent_widget->getBackgroundColor();
+    FColor fg = parent_widget->getForegroundColor();
+    FColor bg = parent_widget->getBackgroundColor();
+    setColor (fg, bg);
   }
   else
   {
     const auto& wc = getColorTheme();
-    fg = wc->dialog_fg;
-    bg = wc->dialog_bg;
+    FColor fg = wc->dialog_fg;
+    FColor bg = wc->dialog_bg;
+    setColor (fg, bg);
   }
 
-  setColor (fg, bg);
   const std::size_t size = getWidth();
 
   if ( size == 0 )
