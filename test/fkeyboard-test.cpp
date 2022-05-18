@@ -382,8 +382,10 @@ void FKeyboardTest::noArgumentTest()
   CPPUNIT_ASSERT ( duration_s.count() == 0);
   CPPUNIT_ASSERT ( duration_us.count() == 0);
 
+  CPPUNIT_ASSERT ( ! keyboard->hasPendingInput() );
   CPPUNIT_ASSERT ( ! keyboard->hasUnprocessedInput() );
   CPPUNIT_ASSERT ( ! keyboard->isKeyPressed() );
+  CPPUNIT_ASSERT ( ! keyboard->hasPendingInput() );
 
   keyboard->clearKeyBufferOnTimeout();
 
@@ -467,6 +469,19 @@ void FKeyboardTest::escapeKeyTest()
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
   CPPUNIT_ASSERT ( key_pressed == finalcut::FKey::Escape );
   keyboard->clearKeyBufferOnTimeout();
+  clear();
+
+  // Check pending input
+  input("\033");
+  CPPUNIT_ASSERT ( ! keyboard->hasPendingInput() );
+
+  if ( keyboard->isKeyPressed() )
+  {
+    CPPUNIT_ASSERT ( keyboard->hasPendingInput() );
+    keyboard->fetchKeyCode();
+    CPPUNIT_ASSERT ( ! keyboard->hasPendingInput() );
+  }
+
   clear();
 }
 
@@ -2190,12 +2205,16 @@ void FKeyboardTest::metaKeyTest()
 
   // shifted meta-O
   input("\033O");
+  CPPUNIT_ASSERT ( ! keyboard->hasDataInQueue() );
   processInput();
   // Wait 100 ms - Substring keys needs a timeout
   const struct timespec ms[]{{0, 100000000L}};
   nanosleep (ms, nullptr);
+  CPPUNIT_ASSERT ( ! keyboard->hasDataInQueue() );
   keyboard->escapeKeyHandling();
+  CPPUNIT_ASSERT ( keyboard->hasDataInQueue() );
   keyboard->processQueuedInput();
+  CPPUNIT_ASSERT ( ! keyboard->hasDataInQueue() );
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
   CPPUNIT_ASSERT ( key_pressed == finalcut::FKey::Meta_O );
   clear();
@@ -2282,8 +2301,11 @@ void FKeyboardTest::metaKeyTest()
   processInput();
   // Wait 100 ms - Substring keys needs a timeout
   nanosleep (ms, nullptr);
+  CPPUNIT_ASSERT ( ! keyboard->hasDataInQueue() );
   keyboard->escapeKeyHandling();
+  CPPUNIT_ASSERT ( keyboard->hasDataInQueue() );
   keyboard->processQueuedInput();
+  CPPUNIT_ASSERT ( ! keyboard->hasDataInQueue() );
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
   CPPUNIT_ASSERT ( key_pressed == finalcut::FKey::Meta_left_square_bracket );
   clear();
@@ -2300,8 +2322,11 @@ void FKeyboardTest::metaKeyTest()
   processInput();
   // Wait 100 ms - Substring keys needs a timeout
   nanosleep (ms, nullptr);
+  CPPUNIT_ASSERT ( ! keyboard->hasDataInQueue() );
   keyboard->escapeKeyHandling();
+  CPPUNIT_ASSERT ( keyboard->hasDataInQueue() );
   keyboard->processQueuedInput();
+  CPPUNIT_ASSERT ( ! keyboard->hasDataInQueue() );
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
   CPPUNIT_ASSERT ( key_pressed == finalcut::FKey::Meta_right_square_bracket );
   clear();

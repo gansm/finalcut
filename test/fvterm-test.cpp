@@ -1226,9 +1226,18 @@ void FVTermTest::FVTermBasesTest()
   vwin->visible = true;
   CPPUNIT_ASSERT ( p_fvterm.p_isCursorHideable() );
   vwin->input_cursor_visible = true;
+  p_fvterm.p_setActiveArea(vwin);
+
+  vwin->setInputCursorPos(4, 2);
   showFCharData(vwin->data[full_width + 1]);
   CPPUNIT_ASSERT ( vwin->has_changes );
+  CPPUNIT_ASSERT ( vterm->input_cursor_x == -1 );
+  CPPUNIT_ASSERT ( vterm->input_cursor_y == -1 );
+  CPPUNIT_ASSERT ( ! vterm->input_cursor_visible );
   p_fvterm.p_processTerminalUpdate();
+  CPPUNIT_ASSERT ( vterm->input_cursor_x == 9 );
+  CPPUNIT_ASSERT ( vterm->input_cursor_y == 7 );
+  CPPUNIT_ASSERT ( vterm->input_cursor_visible );
   CPPUNIT_ASSERT ( ! vwin->has_changes );
   CPPUNIT_ASSERT ( ! isAreaEqual(test_vterm_area, vterm) );
   printOnArea (test_vterm_area, {5, { {80, default_char} } });
@@ -1391,6 +1400,24 @@ void FVTermTest::FVTermBasesTest()
     CPPUNIT_ASSERT ( vterm->changes[i].xmin == 0 );
     CPPUNIT_ASSERT ( vterm->changes[i].xmax == 69 );
   }
+
+  // Change the width only
+  new_term_size = finalcut::FSize{75, 18};
+  p_fvterm.resizeVTerm (new_term_size);
+  new_term_geometry = finalcut::FRect(finalcut::FPoint{1, 1}, new_term_size);
+  p_fvterm.p_resizeArea (new_term_geometry, test_vterm_area);
+  CPPUNIT_ASSERT ( isAreaEqual(test_vterm_area, vterm) );
+  CPPUNIT_ASSERT ( vterm->width == 75);
+  CPPUNIT_ASSERT ( vterm->height == 18 );
+
+  // No change
+  new_term_size = finalcut::FSize{75, 18};
+  p_fvterm.resizeVTerm (new_term_size);
+  new_term_geometry = finalcut::FRect(finalcut::FPoint{1, 1}, new_term_size);
+  p_fvterm.p_resizeArea (new_term_geometry, test_vterm_area);
+  CPPUNIT_ASSERT ( isAreaEqual(test_vterm_area, vterm) );
+  CPPUNIT_ASSERT ( vterm->width == 75);
+  CPPUNIT_ASSERT ( vterm->height == 18 );
 
   // Deallocate area memory
   CPPUNIT_ASSERT ( test_vwin_area );
