@@ -16,7 +16,7 @@ CLEANFILES = finalcut.pc
 SUBDIRS = final doc examples test
 
 docdir = ${datadir}/doc/${PACKAGE}
-doc_DATA = AUTHORS LICENSE.txt ChangeLog
+doc_DATA = AUTHORS LICENSE ChangeLog
 
 test: check
 

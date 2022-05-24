@@ -11,7 +11,7 @@ The structure of the Qt framework was originally the inspiration for the C++ cla
 |                    | Badge |
 |-------------------:|:------|
 | *Latest release*   | [![Latest Release](https://img.shields.io/github/release/gansm/finalcut.svg)](https://github.com/gansm/finalcut/releases) |
-| *License*          | [![license](https://img.shields.io/github/license/gansm/finalcut.svg?colorA=#333)](COPYING) |
+| *License*          | [![license](https://img.shields.io/github/license/gansm/finalcut.svg?colorA=#333)](LICENSE) |
 | *Class Reference*  | [![documented](https://codedocs.xyz/gansm/finalcut.svg)](https://codedocs.xyz/gansm/finalcut/hierarchy.html) |
 | *ARM build*        | [![ARM build](https://github.com/gansm/finalcut/actions/workflows/arm.yml/badge.svg)](https://github.com/gansm/finalcut/actions/workflows/arm.yml) |
 | *FreeBSD build*    | [![FreeBSD build](https://github.com/gansm/finalcut/actions/workflows/freebsd.yml/badge.svg)](https://github.com/gansm/finalcut/actions/workflows/freebsd.yml) |
