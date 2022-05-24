@@ -74,6 +74,10 @@ bool      FApplication::quit_now        {false};
 uInt64    FApplication::next_event_wait {5000};     // 5 ms (200 Hz)
 TimeValue FApplication::time_last_event {};
 
+// FEvent friend function forward declaration
+void setSend (FEvent&, bool = true);
+void setQueued (FEvent&, bool = true);
+
 
 //----------------------------------------------------------------------
 // class FApplication

@@ -107,8 +107,8 @@ class FEvent  // event base class
     bool  wasSent() const;
 
   private:
-    friend void setSend (FEvent&, bool = true);
-    friend void setQueued (FEvent&, bool = true);
+    friend void setSend (FEvent&, bool);
+    friend void setQueued (FEvent&, bool);
 
     // Data members
     Event t{Event::None};
