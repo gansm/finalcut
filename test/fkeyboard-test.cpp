@@ -509,8 +509,7 @@ void FKeyboardTest::severalKeysTest()
   std::cout << std::endl;
 
   // Input of two 1 byte characters
-  input("A");
-  input("B");
+  input("AB");
   processInput();
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
   CPPUNIT_ASSERT ( number_of_keys == 2 );
@@ -3028,10 +3027,10 @@ void FKeyboardTest::init()
   finalcut::internal::var::app_object \
       = reinterpret_cast<finalcut::FApplication*>(this);  // Need for isQuit()
   keyboard = new finalcut::FKeyboard();
-  auto cmd1 = std::bind(&FKeyboardTest::keyPressed, this);
-  auto cmd2 = std::bind(&FKeyboardTest::keyReleased, this);
-  auto cmd3 = std::bind(&FKeyboardTest::escapeKeyPressed, this);
-  auto cmd4 = std::bind(&FKeyboardTest::mouseTracking, this);
+  auto cmd1 = [this] () { this->keyPressed(); };
+  auto cmd2 = [this] () { this->keyReleased(); };
+  auto cmd3 = [this] () { this->escapeKeyPressed(); };
+  auto cmd4 = [this] () { this->mouseTracking(); };
   finalcut::FKeyboardCommand key_cmd1 (cmd1);
   finalcut::FKeyboardCommand key_cmd2 (cmd2);
   finalcut::FKeyboardCommand key_cmd3 (cmd3);
