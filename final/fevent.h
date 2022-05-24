@@ -103,17 +103,17 @@ class FEvent  // event base class
   public:
     explicit FEvent(Event);
     Event getType() const;
-    bool isQueued() const;
-    bool wasSent() const;
+    bool  isQueued() const;
+    bool  wasSent() const;
 
   private:
+    friend void setSend (FEvent&, bool = true);
+    friend void setQueued (FEvent&, bool = true);
+
     // Data members
     Event t{Event::None};
-    bool queued{false};
-    bool send{false};
-
-    // Friend class
-    friend class FApplication;
+    bool  queued{false};
+    bool  send{false};
 };
 
 
@@ -132,8 +132,8 @@ class FKeyEvent : public FEvent  // keyboard event
     void     ignore();
 
   private:
-    FKey     k{FKey::None};
-    bool     accpt{false};
+    FKey     k{};
+    bool     accpt{false};  // reject by default
 };
 
 
@@ -207,7 +207,7 @@ class FFocusEvent : public FEvent  // focus event
     void           ignore();
 
   private:
-    bool           accpt{true};
+    bool           accpt{true};  // accept by default
     FocusTypes     focus_type{FocusTypes::DefiniteWidget};
 };
 
@@ -230,7 +230,7 @@ class FAccelEvent : public FEvent  // focus event
     void     ignore();
 
   private:
-    bool     accpt{false};
+    bool     accpt{false};  // reject by default
     FWidget* focus_widget{};
 };
 
@@ -249,7 +249,7 @@ class FResizeEvent : public FEvent  // resize event
     void     ignore();
 
   private:
-    bool     accpt{false};
+    bool     accpt{false};  // reject by default
 };
 
 
@@ -289,7 +289,7 @@ class FCloseEvent : public FEvent  // close event
     void     ignore();
 
   private:
-    bool     accpt{false};
+    bool     accpt{false};  // reject by default
 };
 
 

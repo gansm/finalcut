@@ -222,7 +222,7 @@ bool FApplication::sendEvent (FObject* receiver, FEvent* event )
 
   // Sends the event event directly to receiver
   const auto& ret = receiver->event(event);
-  event->send = true;
+  setSend(*event);
   return ret;
 }
 
@@ -233,7 +233,7 @@ void FApplication::queueEvent (FObject* receiver, FEvent* event)
     return;
 
   // queue this event
-  event->queued = true;
+  setQueued(*event);
   event_queue.emplace_back (receiver, event);
 }
 
@@ -243,7 +243,7 @@ void FApplication::sendQueuedEvents()
   while ( eventInQueue() )
   {
     const auto& event_pair = event_queue.front();
-    event_pair.second->queued = false;
+    setQueued(*event_pair.second, false);
     sendEvent(event_pair.first, event_pair.second);
     event_queue.pop_front();
   }
@@ -1390,6 +1390,20 @@ bool FApplication::isEventProcessable ( FObject* receiver
 bool FApplication::isNextEventTimeout()
 {
   return FObject::isTimeout(time_last_event, next_event_wait);
+}
+
+
+// Friend functions definition of FEvent
+//----------------------------------------------------------------------
+void setSend (FEvent& event, bool state)
+{
+  event.send = state;
+}
+
+//----------------------------------------------------------------------
+void setQueued (FEvent& event, bool state)
+{
+  event.queued = state;
 }
 
 

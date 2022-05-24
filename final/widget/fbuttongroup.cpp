@@ -63,7 +63,7 @@ FButtonGroup::~FButtonGroup()  // destructor
   while ( iter != buttonlist.cend() )
   {
     auto toggle_button = static_cast<FToggleButton*>(*iter);
-    toggle_button->setGroup(nullptr);
+    setGroup (*toggle_button, nullptr);
     iter = buttonlist.erase(iter);
   }
 }
@@ -215,8 +215,8 @@ void FButtonGroup::insert (FToggleButton* button)
   if ( ! button )
     return;
 
-  if ( button->getGroup() )
-    button->getGroup()->remove(button);
+  if ( getGroup(*button) )
+    getGroup(*button)->remove(button);
 
   // setChecked the first FRadioButton
   if ( buttonlist.size() == 1 )
@@ -227,7 +227,7 @@ void FButtonGroup::insert (FToggleButton* button)
       first_button->setChecked();
   }
 
-  button->setGroup(this);
+  setGroup (*button, this);
   buttonlist.push_back(button);
 
   button->addCallback
@@ -252,7 +252,7 @@ void FButtonGroup::remove (FToggleButton* button)
     if ( toggle_button == button )
     {
       iter = buttonlist.erase(iter);
-      button->setGroup(nullptr);
+      setGroup (*button, nullptr);
       button->delCallback(this);
       break;
     }
@@ -486,6 +486,19 @@ void FButtonGroup::cb_buttonToggled (const FToggleButton* button) const
         toggle_button->redraw();
     }
   }
+}
+
+// FToggleButton friend function definition
+//----------------------------------------------------------------------
+FButtonGroup* getGroup (FToggleButton& toggle_btn)
+{
+  return toggle_btn.button_group;
+}
+
+//----------------------------------------------------------------------
+void setGroup (FToggleButton& toggle_btn, FButtonGroup* btngroup)
+{
+  toggle_btn.button_group = btngroup;
 }
 
 }  // namespace finalcut

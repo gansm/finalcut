@@ -13,6 +13,7 @@ noinst_PROGRAMS = \
 	fcallback_test \
 	fcolorpair_test \
 	fdata_test \
+	fevent_test \
 	char_ringbuffer_test \
 	fkeyboard_test \
 	flogger_test \
@@ -41,6 +42,7 @@ noinst_PROGRAMS = \
 fcallback_test_SOURCES = fcallback-test.cpp
 fcolorpair_test_SOURCES = fcolorpair-test.cpp
 fdata_test_SOURCES = fdata-test.cpp
+fevent_test_SOURCES = fevent-test.cpp
 char_ringbuffer_test_SOURCES = char_ringbuffer-test.cpp
 fkeyboard_test_SOURCES = fkeyboard-test.cpp
 flogger_test_SOURCES = flogger-test.cpp
@@ -73,6 +75,7 @@ TESTS = \
 	fcallback_test \
 	fcolorpair_test \
 	fdata_test \
+	fevent_test \
 	char_ringbuffer_test \
 	fkeyboard_test \
 	flogger_test \

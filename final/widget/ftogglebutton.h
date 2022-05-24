@@ -84,73 +84,75 @@ class FToggleButton : public FWidget
     // Disable move assignment operator (=)
     FToggleButton& operator = (FToggleButton&&) noexcept = delete;
     // Accessors
-    FString             getClassName() const override;
-    FString&            getText() &;
+    FString              getClassName() const override;
+    FString&             getText() &;
 
     // Mutators
-    void                setSize (const FSize&, bool = true) override;
-    void                setGeometry ( const FPoint&, const FSize&
-                                    , bool = true ) override;
-    void                resetColors() override;
-    bool                setNoUnderline (bool = true);
-    bool                unsetNoUnderline();
-    bool                setEnable (bool = true) override;
-    bool                unsetEnable() override;
-    bool                setDisable() override;
-    bool                setFocus (bool = true) override;
-    bool                unsetFocus() override;
-    bool                setChecked (bool = true);
-    bool                unsetChecked();
-    virtual void        setText (const FString&);
+    void                 setSize (const FSize&, bool = true) override;
+    void                 setGeometry ( const FPoint&, const FSize&
+                                     , bool = true ) override;
+    void                 resetColors() override;
+    bool                 setNoUnderline (bool = true);
+    bool                 unsetNoUnderline();
+    bool                 setEnable (bool = true) override;
+    bool                 unsetEnable() override;
+    bool                 setDisable() override;
+    bool                 setFocus (bool = true) override;
+    bool                 unsetFocus() override;
+    bool                 setChecked (bool = true);
+    bool                 unsetChecked();
+    virtual void         setText (const FString&);
 
     // Inquiries
-    bool                isChecked() const noexcept;
+    bool                 isChecked() const noexcept;
 
     // Method
-    void                hide() override;
+    void                 hide() override;
 
     // Event handlers
-    void                onMouseDown (FMouseEvent*) override;
-    void                onMouseUp (FMouseEvent*) override;
-    void                onWheel (FWheelEvent*) override;
-    void                onAccel (FAccelEvent*) override;
-    void                onFocusIn (FFocusEvent*) override;
-    void                onFocusOut (FFocusEvent*) override;
+    void                 onMouseDown (FMouseEvent*) override;
+    void                 onMouseUp (FMouseEvent*) override;
+    void                 onWheel (FWheelEvent*) override;
+    void                 onAccel (FAccelEvent*) override;
+    void                 onFocusIn (FFocusEvent*) override;
+    void                 onFocusOut (FFocusEvent*) override;
 
   protected:
     // Accessor
-    FButtonGroup*       getGroup() const;
+    FButtonGroup*        getGroup() const;
+    friend FButtonGroup* getGroup (FToggleButton& toggle_btn);
 
     // Mutator
-    void                setHotkeyAccelerator();
-    void                setButtonWidth (std::size_t) noexcept;
-    void                setLabelOffsetPos (std::size_t) noexcept;
+    void                 setHotkeyAccelerator();
+    void                 setButtonWidth (std::size_t) noexcept;
+    void                 setLabelOffsetPos (std::size_t) noexcept;
 
     // Inquiries
-    bool                isRadioButton() const;
-    bool                isCheckboxButton() const;
-    bool                hasGroup() const;
+    bool                 isRadioButton() const;
+    bool                 isCheckboxButton() const;
+    bool                 hasGroup() const;
 
     // Methods
-    void                draw() override;
-    void                drawLabel();
-    void                processClick() const;
-    void                processToggle() const;
+    void                 draw() override;
+    void                 drawLabel();
+    void                 processClick() const;
+    void                 processToggle() const;
 
     // Event handler
-    void                onKeyPress (FKeyEvent*) override;
+    void                 onKeyPress (FKeyEvent*) override;
 
   private:
     // Constants
     static constexpr auto NOT_SET = static_cast<std::size_t>(-1);
 
     // Mutator
-    void                setGroup (FButtonGroup*);
+    void                 setGroup (FButtonGroup*);
+    friend void          setGroup (FToggleButton&, FButtonGroup*);
 
     // Methods
-    void                init();
-    void                drawText (const FString&, std::size_t);
-    void                correctSize (FSize&) const;
+    void                 init();
+    void                 drawText (const FString&, std::size_t);
+    void                 correctSize (FSize&) const;
 
     // Data members
     FButtonGroup* button_group{nullptr};
@@ -159,9 +161,6 @@ class FToggleButton : public FWidget
     std::size_t   button_width{0};  // plus margin spaces
     bool          focus_inside_group{true};
     bool          checked{false};
-
-    // Friend classes
-    friend class FButtonGroup;
 };
 
 // FRadioButton inline functions
