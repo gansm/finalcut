@@ -969,6 +969,121 @@ void FWidget::hide()
 }
 
 //----------------------------------------------------------------------
+bool FWidget::focusNextChild()
+{
+  if ( isDialogWidget() || ! hasParent() )
+    return false;
+
+  const auto& parent = getParentWidget();
+
+  if ( ! parent
+    || ! parent->hasChildren()
+    || parent->numOfFocusableChildren() <= 1 )
+    return false;
+
+  auto iter = parent->cbegin();
+  const auto last = parent->cend();
+
+  while ( iter != last )
+  {
+    if ( ! (*iter)->isWidget() )
+    {
+      ++iter;
+      continue;
+    }
+
+    const auto& w = static_cast<FWidget*>(*iter);
+
+    if ( w != this )
+    {
+      ++iter;
+      continue;
+    }
+
+    FWidget* next{nullptr};
+    auto next_element = iter;
+
+    do
+    {
+      ++next_element;
+
+      if ( next_element == parent->cend() )
+        next_element = parent->cbegin();
+
+      if ( ! (*next_element)->isWidget() )
+        continue;
+
+      next = static_cast<FWidget*>(*next_element);
+    } while ( ! next
+           || ! next->isEnabled()
+           || ! next->acceptFocus()
+           || ! next->isShown()
+           || next->isWindowWidget() );
+
+    return changeFocus (next, parent, FocusTypes::NextWidget);
+  }  // The focus has been changed
+
+  return true;
+}
+
+//----------------------------------------------------------------------
+bool FWidget::focusPrevChild()
+{
+  if ( isDialogWidget() || ! hasParent() )
+    return false;
+
+  const auto& parent = getParentWidget();
+
+  if ( ! parent
+    || ! parent->hasChildren()
+    || parent->numOfFocusableChildren() <= 1 )
+    return false;
+
+  auto iter = parent->cend();
+  const auto first = parent->cbegin();
+
+  do
+  {
+    --iter;
+
+    if ( ! (*iter)->isWidget() )
+      continue;
+
+    const auto& w = static_cast<FWidget*>(*iter);
+
+    if ( w != this )
+      continue;
+
+    FWidget* prev{nullptr};
+    auto prev_element = iter;
+
+    do
+    {
+      if ( ! (*prev_element)->isWidget() )
+      {
+        --prev_element;
+        continue;
+      }
+
+      if ( prev_element == parent->cbegin() )
+        prev_element = parent->cend();
+
+      --prev_element;
+      prev = static_cast<FWidget*>(*prev_element);
+    } while ( ! prev
+           || ! prev->isEnabled()
+           || ! prev->acceptFocus()
+           || ! prev->isShown()
+           || prev->isWindowWidget() );
+
+    return changeFocus (prev, parent, FocusTypes::PreviousWidget);
+  }  // The focus has been changed
+  while ( iter != first );
+
+  return true;
+}
+
+//----------------------------------------------------------------------
 bool FWidget::focusFirstChild() &
 {
   if ( ! hasChildren() )
@@ -1320,121 +1435,6 @@ void FWidget::hideArea (const FSize& size)
   }
 
   flush();
-}
-
-//----------------------------------------------------------------------
-bool FWidget::focusNextChild()
-{
-  if ( isDialogWidget() || ! hasParent() )
-    return false;
-
-  const auto& parent = getParentWidget();
-
-  if ( ! parent
-    || ! parent->hasChildren()
-    || parent->numOfFocusableChildren() <= 1 )
-    return false;
-
-  auto iter = parent->cbegin();
-  const auto last = parent->cend();
-
-  while ( iter != last )
-  {
-    if ( ! (*iter)->isWidget() )
-    {
-      ++iter;
-      continue;
-    }
-
-    const auto& w = static_cast<FWidget*>(*iter);
-
-    if ( w != this )
-    {
-      ++iter;
-      continue;
-    }
-
-    FWidget* next{nullptr};
-    auto next_element = iter;
-
-    do
-    {
-      ++next_element;
-
-      if ( next_element == parent->cend() )
-        next_element = parent->cbegin();
-
-      if ( ! (*next_element)->isWidget() )
-        continue;
-
-      next = static_cast<FWidget*>(*next_element);
-    } while ( ! next
-           || ! next->isEnabled()
-           || ! next->acceptFocus()
-           || ! next->isShown()
-           || next->isWindowWidget() );
-
-    return changeFocus (next, parent, FocusTypes::NextWidget);
-  }  // The focus has been changed
-
-  return true;
-}
-
-//----------------------------------------------------------------------
-bool FWidget::focusPrevChild()
-{
-  if ( isDialogWidget() || ! hasParent() )
-    return false;
-
-  const auto& parent = getParentWidget();
-
-  if ( ! parent
-    || ! parent->hasChildren()
-    || parent->numOfFocusableChildren() <= 1 )
-    return false;
-
-  auto iter = parent->cend();
-  const auto first = parent->cbegin();
-
-  do
-  {
-    --iter;
-
-    if ( ! (*iter)->isWidget() )
-      continue;
-
-    const auto& w = static_cast<FWidget*>(*iter);
-
-    if ( w != this )
-      continue;
-
-    FWidget* prev{nullptr};
-    auto prev_element = iter;
-
-    do
-    {
-      if ( ! (*prev_element)->isWidget() )
-      {
-        --prev_element;
-        continue;
-      }
-
-      if ( prev_element == parent->cbegin() )
-        prev_element = parent->cend();
-
-      --prev_element;
-      prev = static_cast<FWidget*>(*prev_element);
-    } while ( ! prev
-           || ! prev->isEnabled()
-           || ! prev->acceptFocus()
-           || ! prev->isShown()
-           || prev->isWindowWidget() );
-
-    return changeFocus (prev, parent, FocusTypes::PreviousWidget);
-  }  // The focus has been changed
-  while ( iter != first );
-
-  return true;
 }
 
 //----------------------------------------------------------------------

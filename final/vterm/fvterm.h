@@ -80,6 +80,7 @@ class FSize;
 class FString;
 class FStyle;
 class FVTermBuffer;
+class FWidget;
 
 template <typename FOutputType>
 struct outputClass
@@ -349,6 +350,9 @@ class FVTerm : public FVTermAttribute
     static bool                   draw_completed;
     static bool                   no_terminal_updates;
     static bool                   force_terminal_update;
+
+    // friend function
+    friend void setPrintArea (FWidget&, FTermArea*);
 };
 
 

@@ -1118,4 +1118,11 @@ void FScrollView::cb_hbarChange (const FWidget*)
   update_scrollbar = true;
 }
 
+// FVTerm friend function definition
+//----------------------------------------------------------------------
+void setPrintArea (FWidget& widget, FVTerm::FTermArea* area)
+{
+  widget.print_area = area;
+}
+
 }  // namespace finalcut

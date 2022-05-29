@@ -56,6 +56,9 @@
 namespace finalcut
 {
 
+// FVTerm friend function forward declaration
+void setPrintArea (FWidget&, FVTerm::FTermArea*);
+
 //----------------------------------------------------------------------
 // class FScrollView
 //----------------------------------------------------------------------
@@ -292,7 +295,7 @@ inline void FScrollView::initScrollbar ( FScrollbarPtr& bar
 {
   finalcut::initScrollbar (bar, o, this, cb_handler);
   FTermArea* area = getPrintArea();
-  bar->setPrintArea(area);
+  finalcut::setPrintArea (*bar, area);
 }
 
 }  // namespace finalcut

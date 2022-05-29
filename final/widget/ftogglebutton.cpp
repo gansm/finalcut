@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2021 Markus Gans                                      *
+* Copyright 2014-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -141,7 +141,7 @@ void FToggleButton::resetColors()
 //----------------------------------------------------------------------
 bool FToggleButton::setNoUnderline (bool enable)
 {
-  return (flags.no_underline = enable);
+  return (setFlags().no_underline = enable);
 }
 
 //----------------------------------------------------------------------
@@ -363,7 +363,7 @@ void FToggleButton::draw()
   if ( ! isVisible() )
     return;
 
-  if ( flags.focus && getStatusBar() )
+  if ( getFlags().focus && getStatusBar() )
   {
     const auto& msg = getStatusbarMessage();
     const auto& curMsg = getStatusBar()->getMessage();
@@ -479,16 +479,16 @@ void FToggleButton::drawText (const FString& label_text, std::size_t hotkeypos)
 
   for (std::size_t z{0}; z < label_text.getLength(); z++)
   {
-    if ( (z == hotkeypos) && flags.active )
+    if ( (z == hotkeypos) && getFlags().active )
     {
       setColor (wc->label_hotkey_fg, wc->label_hotkey_bg);
 
-      if ( ! flags.no_underline )
+      if ( ! getFlags().no_underline )
         setUnderline();
 
       print ( label_text[z] );
 
-      if ( ! flags.no_underline )
+      if ( ! getFlags().no_underline )
         unsetUnderline();
 
       setColor (wc->label_fg, wc->label_bg);

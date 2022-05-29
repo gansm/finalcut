@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2021 Markus Gans                                      *
+* Copyright 2015-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -310,7 +310,9 @@ class FWidget : public FVTerm, public FObject
     virtual void             resize();
     virtual void             show();
     virtual void             hide();
-    virtual bool             focusFirstChild() &;  // widget focusing
+    virtual bool             focusNextChild();  // Change child...
+    virtual bool             focusPrevChild();  // ...focus
+    virtual bool             focusFirstChild() &;
     virtual bool             focusLastChild() &;
     FPoint                   termToWidgetPos (const FPoint&) const;
     void                     print (const FPoint&) override;
@@ -347,8 +349,6 @@ class FWidget : public FVTerm, public FObject
     virtual void             adjustSize();
     void                     adjustSizeGlobal();
     void                     hideArea (const FSize&);
-    virtual bool             focusNextChild();  // Change child...
-    virtual bool             focusPrevChild();  // ...focus
 
     // Event handlers
     bool                     event (FEvent*) override;
@@ -480,10 +480,6 @@ class FWidget : public FVTerm, public FObject
     static uInt              modal_dialog_counter;
     static bool              init_terminal;
     static bool              init_desktop;
-
-    // Friend classes
-    friend class FToggleButton;
-    friend class FScrollView;
 
     // Friend functions
     friend void detectTerminalSize();
