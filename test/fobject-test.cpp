@@ -20,6 +20,9 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <chrono>
+#include <thread>
+
 #include <cppunit/BriefTestProgressListener.h>
 #include <cppunit/CompilerOutputter.h>
 #include <cppunit/extensions/HelperMacros.h>
@@ -692,8 +695,7 @@ void FObjectTest::performTimerActionTest()
   {
     num_events += t1.processEvent();
     // Wait 100 ms
-    const struct timespec ms[]{{0, 100000000L}};
-    nanosleep (ms, nullptr);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     loop++;
   }
 

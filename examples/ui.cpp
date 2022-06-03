@@ -32,7 +32,7 @@ using FKey = finalcut::FKey;
 using finalcut::FColor;
 using finalcut::FPoint;
 using finalcut::FSize;
-
+using namespace std::literals::string_literals;
 
 //----------------------------------------------------------------------
 // class ProgressDialog
@@ -792,12 +792,11 @@ void MyDialog::cb_noFunctionMsg (const finalcut::FButton& button)
 //----------------------------------------------------------------------
 void MyDialog::cb_about()
 {
-  constexpr char libver[] = F_VERSION;
   const finalcut::FString line(2, finalcut::UniChar::BoxDrawingsHorizontal);
 
   finalcut::FMessageBox info ( "About"
                              , line + L" FINAL CUT " + line + L"\n\n"
-                               L"Version " + libver + L"\n\n"
+                               L"Version " + finalcut::fc_release + L"\n\n"
                                L"(c) 2022 by Markus Gans"
                              , finalcut::FMessageBox::ButtonType::Ok
                              , finalcut::FMessageBox::ButtonType::Reject
@@ -1031,8 +1030,7 @@ void MyDialog::cb_setInput ( const finalcut::FListBox& listbox
 
 int main (int argc, char* argv[])
 {
-  const finalcut::FString ver{F_VERSION};  // Library version
-  const finalcut::FString title { "FINAL CUT " + ver
+  const finalcut::FString title { "FINAL CUT "s + finalcut::fc_release
                                 + " (C) 2022 by Markus Gans" };
 
   // Create the application object app

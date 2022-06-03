@@ -34,6 +34,9 @@
 #include <sys/wait.h>
 #include <sys/mman.h>
 
+#include <chrono>
+#include <thread>
+
 #include <final/final.h>
 
 using finalcut::C_STR;
@@ -564,9 +567,8 @@ inline pid_t ConEmu::forkConEmu()
     // Wait until the child process is ready for input
     while ( ! *shared_state && i < timeout )
     {
-      // Wait 10 ms (= 10,000,000 ns)
-      const struct timespec ms[]{{0, 10000000L}};
-      nanosleep (ms, nullptr);
+      // Wait 10 ms
+      std::this_thread::sleep_for(std::chrono::milliseconds(10));
       i++;
     }
 

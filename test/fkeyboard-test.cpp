@@ -20,7 +20,9 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <chrono>
 #include <string>
+#include <thread>
 
 #include <cppunit/BriefTestProgressListener.h>
 #include <cppunit/CompilerOutputter.h>
@@ -78,8 +80,7 @@ struct FKeyCapMap
   char tname[4];
 };
 
-using original_type = finalcut::FKeyMap::KeyCapMapType;
-using test_type = std::array<FKeyCapMap, 188>;
+using test_type = finalcut::FKeyMap::KeyCapMapType;  // std::array<FKeyCapMap, 188>;
 
 test_type fkey =
 {{
@@ -462,9 +463,8 @@ void FKeyboardTest::escapeKeyTest()
   // Normal escape (needs a timeout)
   input("\033");
   processInput();
-  // Wait 100 ms (= 100,000,000 ns)
-  const struct timespec ms[]{{0, 100000000L}};
-  nanosleep (ms, nullptr);
+  // Wait 100 ms
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
   keyboard->escapeKeyHandling();
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
   CPPUNIT_ASSERT ( key_pressed == finalcut::FKey::Escape );
@@ -2207,8 +2207,7 @@ void FKeyboardTest::metaKeyTest()
   CPPUNIT_ASSERT ( ! keyboard->hasDataInQueue() );
   processInput();
   // Wait 100 ms - Substring keys needs a timeout
-  const struct timespec ms[]{{0, 100000000L}};
-  nanosleep (ms, nullptr);
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
   CPPUNIT_ASSERT ( ! keyboard->hasDataInQueue() );
   keyboard->escapeKeyHandling();
   CPPUNIT_ASSERT ( keyboard->hasDataInQueue() );
@@ -2299,7 +2298,7 @@ void FKeyboardTest::metaKeyTest()
   input("\033[");
   processInput();
   // Wait 100 ms - Substring keys needs a timeout
-  nanosleep (ms, nullptr);
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
   CPPUNIT_ASSERT ( ! keyboard->hasDataInQueue() );
   keyboard->escapeKeyHandling();
   CPPUNIT_ASSERT ( keyboard->hasDataInQueue() );
@@ -2320,7 +2319,7 @@ void FKeyboardTest::metaKeyTest()
   input("\033]");
   processInput();
   // Wait 100 ms - Substring keys needs a timeout
-  nanosleep (ms, nullptr);
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
   CPPUNIT_ASSERT ( ! keyboard->hasDataInQueue() );
   keyboard->escapeKeyHandling();
   CPPUNIT_ASSERT ( keyboard->hasDataInQueue() );
@@ -3050,9 +3049,7 @@ void FKeyboardTest::init()
   std::copy ( &fkey_cap_table[150].num, &fkey_cap_table[188].num, &test::fkey[150].num);
 
   // Use test::fkey as new termcap map
-  auto ptr = &test::fkey;
-  const auto& ref = *reinterpret_cast<test::original_type*>(ptr);
-  keyboard->setTermcapMap (ref);
+  keyboard->setTermcapMap (test::fkey);
 }
 
 //----------------------------------------------------------------------
@@ -3061,6 +3058,8 @@ void FKeyboardTest::input (std::string s)
   // Simulates keystrokes
 
   const char EOT = 0x04;  // End of Transmission
+  auto stdin_no = finalcut::FTermios::getStdIn();
+  fflush(stdout);
 
   std::string::const_iterator iter;
   iter = s.begin();
@@ -3069,14 +3068,17 @@ void FKeyboardTest::input (std::string s)
   {
     char c = *iter;
 
-    if ( ioctl (finalcut::FTermios::getStdIn(), TIOCSTI, &c) < 0 )
+    if ( ioctl (stdin_no, TIOCSTI, &c) < 0 )
       break;
 
     ++iter;
+    std::this_thread::sleep_for(std::chrono::milliseconds(5));
   }
 
-  if ( ioctl (finalcut::FTermios::getStdIn(), TIOCSTI, &EOT) < 0 )
+  if ( ioctl (stdin_no, TIOCSTI, &EOT) < 0 )
     return;
+
+  fflush(stdin);
 }
 
 //----------------------------------------------------------------------
@@ -3089,9 +3091,8 @@ void FKeyboardTest::processInput()
     keyboard->fetchKeyCode();
 
   keyboard->processQueuedInput();
-  // Keyboard interval timeout 75 ms (= 75,000,000 ns)
-  const struct timespec ms[]{{0, 75000000L}};
-  nanosleep (ms, nullptr);
+  // Keyboard interval timeout 75 ms
+  std::this_thread::sleep_for(std::chrono::milliseconds(75));
 }
 
 //----------------------------------------------------------------------

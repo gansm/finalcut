@@ -27,7 +27,9 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include "final/fconfig.h"
 #include "final/ftypes.h"
+
 
 // ASCII sequences
 #define ESC      "\033"     // Escape
@@ -41,6 +43,8 @@
 
 namespace finalcut
 {
+
+constexpr char fc_release[] = F_VERSION;
 
 //----------------------------------------------------------------------
 // Global constants and enumerations
