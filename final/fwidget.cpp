@@ -616,7 +616,7 @@ bool FWidget::setCursorPos (const FPoint& pos)
 
   if ( area->hasOwner() )
   {
-    const auto area_owner = area->getOwner<FWidget*>();
+    const auto& area_owner = area->getOwner<FWidget*>();
     int woffsetX = getTermX() - area_owner->getTermX();
     int woffsetY = getTermY() - area_owner->getTermY();
 

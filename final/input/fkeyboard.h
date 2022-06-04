@@ -181,7 +181,7 @@ class FKeyboard final
     static uInt64         key_timeout;
     static bool           non_blocking_input_support;
     FKeyMapPtr            key_cap_ptr{};
-    static KeyMapEnd      key_cap_end;
+    KeyMapEnd             key_cap_end{};
     keybuffer             fifo_buf{};
     std::queue<FKey>      fkey_queue{};
     FKey                  fkey{FKey::None};

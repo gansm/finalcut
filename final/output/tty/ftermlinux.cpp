@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2021 Markus Gans                                      *
+* Copyright 2018-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -1154,11 +1154,11 @@ sInt16 FTermLinux::getFontPos (wchar_t ucs) const
   auto& count = screen_unicode_map.entry_ct;
   const auto& begin = &screen_unicode_map.entries[0];
   const auto& end = &screen_unicode_map.entries[count];
-  const auto iter = std::find_if ( begin, end,
-                                   [&ucs] (const auto& entry)
-                                   {
-                                     return ucs == wchar_t(entry.unicode);
-                                   } );
+  const auto& iter = std::find_if ( begin, end,
+                                    [&ucs] (const auto& entry)
+                                    {
+                                      return ucs == wchar_t(entry.unicode);
+                                    } );
   return ( iter != end )
        ? static_cast<sInt16>(iter->fontpos)
        : NOT_FOUND;

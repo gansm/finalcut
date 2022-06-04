@@ -337,7 +337,7 @@ class FKeyboardTest : public CPPUNIT_NS::TestFixture
     // Data members
     finalcut::FKey key_pressed{finalcut::FKey::None};
     finalcut::FKey key_released{finalcut::FKey::None};
-    int  number_of_keys{0};
+    int number_of_keys{0};
     finalcut::FKeyboard* keyboard{nullptr};
 };
 
@@ -451,6 +451,8 @@ void FKeyboardTest::KeyLengthTest()
 //----------------------------------------------------------------------
 void FKeyboardTest::escapeKeyTest()
 {
+  // Higher timeout for systems with high load
+  keyboard->setKeypressTimeout(250000);  // 250 ms
   std::cout << std::endl;
 
   // Mintty application escape key
@@ -463,8 +465,8 @@ void FKeyboardTest::escapeKeyTest()
   // Normal escape (needs a timeout)
   input("\033");
   processInput();
-  // Wait 100 ms
-  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  // Wait 250 ms
+  std::this_thread::sleep_for(std::chrono::milliseconds(250));
   keyboard->escapeKeyHandling();
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
   CPPUNIT_ASSERT ( key_pressed == finalcut::FKey::Escape );
@@ -488,6 +490,8 @@ void FKeyboardTest::escapeKeyTest()
 //----------------------------------------------------------------------
 void FKeyboardTest::characterwiseInputTest()
 {
+  // Higher timeout for systems with high load
+  keyboard->setKeypressTimeout(250000);  // 250 ms
   std::cout << std::endl;
 
   // Cursor down in character by character input (e.g. rxvt-cygwin-native)
@@ -506,6 +510,8 @@ void FKeyboardTest::characterwiseInputTest()
 //----------------------------------------------------------------------
 void FKeyboardTest::severalKeysTest()
 {
+  // Higher timeout for systems with high load
+  keyboard->setKeypressTimeout(250000);  // 250 ms
   std::cout << std::endl;
 
   // Input of two 1 byte characters
@@ -530,6 +536,9 @@ void FKeyboardTest::severalKeysTest()
 //----------------------------------------------------------------------
 void FKeyboardTest::functionKeyTest()
 {
+  // Higher timeout for systems with high load
+  keyboard->setKeypressTimeout(250000);  // 250 ms
+
   // Function key F1 (numeric keypad PF1)
   input("\033OP");
   processInput();
@@ -1003,6 +1012,8 @@ void FKeyboardTest::functionKeyTest()
 //----------------------------------------------------------------------
 void FKeyboardTest::metaKeyTest()
 {
+  // Higher timeout for systems with high load
+  keyboard->setKeypressTimeout(250000);  // 250 ms
   std::cout << std::endl;
 
   // meta-insert
@@ -2206,8 +2217,8 @@ void FKeyboardTest::metaKeyTest()
   input("\033O");
   CPPUNIT_ASSERT ( ! keyboard->hasDataInQueue() );
   processInput();
-  // Wait 100 ms - Substring keys needs a timeout
-  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  // Wait 250 ms - Substring keys needs a timeout
+  std::this_thread::sleep_for(std::chrono::milliseconds(250));
   CPPUNIT_ASSERT ( ! keyboard->hasDataInQueue() );
   keyboard->escapeKeyHandling();
   CPPUNIT_ASSERT ( keyboard->hasDataInQueue() );
@@ -2297,8 +2308,8 @@ void FKeyboardTest::metaKeyTest()
   // meta-[
   input("\033[");
   processInput();
-  // Wait 100 ms - Substring keys needs a timeout
-  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  // Wait 250 ms - Substring keys needs a timeout
+  std::this_thread::sleep_for(std::chrono::milliseconds(250));
   CPPUNIT_ASSERT ( ! keyboard->hasDataInQueue() );
   keyboard->escapeKeyHandling();
   CPPUNIT_ASSERT ( keyboard->hasDataInQueue() );
@@ -2318,8 +2329,8 @@ void FKeyboardTest::metaKeyTest()
   // meta-]
   input("\033]");
   processInput();
-  // Wait 100 ms - Substring keys needs a timeout
-  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  // Wait 250 ms - Substring keys needs a timeout
+  std::this_thread::sleep_for(std::chrono::milliseconds(250));
   CPPUNIT_ASSERT ( ! keyboard->hasDataInQueue() );
   keyboard->escapeKeyHandling();
   CPPUNIT_ASSERT ( keyboard->hasDataInQueue() );
@@ -2564,6 +2575,8 @@ void FKeyboardTest::metaKeyTest()
 //----------------------------------------------------------------------
 void FKeyboardTest::sequencesTest()
 {
+  // Higher timeout for systems with high load
+  keyboard->setKeypressTimeout(250000);  // 250 ms
   std::cout << std::endl;
 
   // Clear-tab
@@ -2921,6 +2934,8 @@ void FKeyboardTest::sequencesTest()
 //----------------------------------------------------------------------
 void FKeyboardTest::mouseTest()
 {
+  // Higher timeout for systems with high load
+  keyboard->setKeypressTimeout(250000);  // 250 ms
   std::cout << std::endl;
 
   // X11 mouse
@@ -2963,6 +2978,8 @@ void FKeyboardTest::mouseTest()
 //----------------------------------------------------------------------
 void FKeyboardTest::utf8Test()
 {
+  // Higher timeout for systems with high load
+  keyboard->setKeypressTimeout(250000);  // 250 ms
   std::cout << std::endl;
 
   // UTF-8 encoded character
@@ -3008,6 +3025,8 @@ void FKeyboardTest::utf8Test()
 //----------------------------------------------------------------------
 void FKeyboardTest::unknownKeyTest()
 {
+  // Higher timeout for systems with high load
+  keyboard->setKeypressTimeout(250000);  // 250 ms
   std::cout << std::endl;
 
   // Unknown key code
@@ -3072,7 +3091,6 @@ void FKeyboardTest::input (std::string s)
       break;
 
     ++iter;
-    std::this_thread::sleep_for(std::chrono::milliseconds(5));
   }
 
   if ( ioctl (stdin_no, TIOCSTI, &EOT) < 0 )
