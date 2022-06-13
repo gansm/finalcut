@@ -770,7 +770,7 @@ inline bool FWidget::acceptPadding()
 //----------------------------------------------------------------------
 inline void FWidget::setForegroundColor (FColor color)
 {
-  // valid colors -1..254
+  // valid colors -1..255
   if ( color == FColor::Default || (color >> 8) == FColor::Black )
     foreground_color = color;
 }
@@ -778,7 +778,7 @@ inline void FWidget::setForegroundColor (FColor color)
 //----------------------------------------------------------------------
 inline void FWidget::setBackgroundColor (FColor color)
 {
-  // valid colors -1..254
+  // valid colors -1..255
   if ( color == FColor::Default || (color >> 8) == FColor::Black )
     background_color = color;
 }

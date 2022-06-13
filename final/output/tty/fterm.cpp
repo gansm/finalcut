@@ -2017,10 +2017,12 @@ void FTerm::finish_encoding() const
 void FTerm::printExitMessage()
 {
   // Print exit message
-  const auto& exit_message = getExitMessage();
+  auto& exit_message = getExitMessage();
 
   if ( ! exit_message.empty() )
     std::cerr << "Exit: " << exit_message << std::endl;
+
+  exit_message.clear();
 }
 
 //----------------------------------------------------------------------

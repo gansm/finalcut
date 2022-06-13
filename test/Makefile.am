@@ -37,7 +37,8 @@ noinst_PROGRAMS = \
 	ftermopenbsd_test \
 	fvterm_test \
 	fvtermattribute_test \
-	fvtermbuffer_test
+	fvtermbuffer_test \
+	fwidget_test
 
 fcallback_test_SOURCES = fcallback-test.cpp
 fcolorpair_test_SOURCES = fcolorpair-test.cpp
@@ -70,6 +71,7 @@ ftermopenbsd_test_LDADD = @TERMCAP_LIB@
 fvterm_test_SOURCES = fvterm-test.cpp
 fvtermattribute_test_SOURCES = fvtermattribute-test.cpp
 fvtermbuffer_test_SOURCES = fvtermbuffer-test.cpp
+fwidget_test_SOURCES = fwidget-test.cpp
 
 TESTS = \
 	fcallback_test \
@@ -99,7 +101,8 @@ TESTS = \
 	ftermopenbsd_test \
 	fvterm_test \
 	fvtermattribute_test \
-	fvtermbuffer_test
+	fvtermbuffer_test \
+	fwidget_test
 
 check_PROGRAMS = $(TESTS)
 

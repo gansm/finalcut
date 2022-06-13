@@ -1721,6 +1721,7 @@ void FWidget::finish()
   dialog_list = nullptr;
   delete always_on_top_list;
   always_on_top_list = nullptr;
+  internal::var::root_widget = nullptr;
 }
 
 //----------------------------------------------------------------------
