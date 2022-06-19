@@ -573,7 +573,7 @@ void FTerm::detectTermSize()
     static const auto& fsys = FSystem::getInstance();
     ret = fsys->ioctl (FTermios::getStdOut(), TIOCGWINSZ, &win_size);
   }
-  while (errno == EINTR);
+  while ( errno == EINTR );
 
   if ( ret != 0 || win_size.ws_col == 0 || win_size.ws_row == 0 )
   {
