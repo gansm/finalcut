@@ -474,7 +474,6 @@ void FWidgetTest::colorThemeTest()
   }
 }
 
-
 //----------------------------------------------------------------------
 void FWidgetTest::resetColorsTest()
 {
@@ -565,7 +564,6 @@ void FWidgetTest::acceleratorTest()
   wdgt.delAccelerator(&root_wdgt);
   CPPUNIT_ASSERT ( wdgt.getAcceleratorList().size() == 0 );
 }
-
 
 //----------------------------------------------------------------------
 void FWidgetTest::PosAndSizeTest()
@@ -788,7 +786,7 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 64 );
   CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 13 );
 
-  // With minimum and maximum
+  // Tests with minimum and maximum
   wdgt.setMinimumWidth(40);
   wdgt.setMinimumHeight(10);
   wdgt.setMaximumWidth(80);
@@ -1014,6 +1012,79 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 12 );
   CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 34 );
   CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 12 );
+
+  // Reset minimum and maximum
+  wdgt.setMinimumSize(finalcut::FSize(0, 0));
+  wdgt.setMaximumSize(finalcut::FSize(INT_MAX, INT_MAX));
+
+  auto box = finalcut::FRect(finalcut::FPoint(7, 7), finalcut::FSize(10, 8) );
+  wdgt.setGeometry (box);
+  CPPUNIT_ASSERT ( wdgt.getX() == 7 );
+  CPPUNIT_ASSERT ( wdgt.getY() == 7 );
+  CPPUNIT_ASSERT ( wdgt.getPos() == finalcut::FPoint(7, 7) );
+  CPPUNIT_ASSERT ( wdgt.getTermX() == 7 );
+  CPPUNIT_ASSERT ( wdgt.getTermY() == 7 );
+  CPPUNIT_ASSERT ( wdgt.getTermPos() == finalcut::FPoint(7, 7) );
+  CPPUNIT_ASSERT ( wdgt.getWidth() == 10 );
+  CPPUNIT_ASSERT ( wdgt.getHeight() == 8 );
+  CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(10, 8) );
+  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top).size() == 10 );
+  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 8 );
+  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 10 );
+  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 8 );
+
+  wdgt.setGeometry(finalcut::FPoint(22, 33), finalcut::FSize(560, 130) );
+  CPPUNIT_ASSERT ( wdgt.getX() == 22 );
+  CPPUNIT_ASSERT ( wdgt.getY() == 33 );
+  CPPUNIT_ASSERT ( wdgt.getPos() == finalcut::FPoint(22, 33) );
+  CPPUNIT_ASSERT ( wdgt.getTermX() == 22 );
+  CPPUNIT_ASSERT ( wdgt.getTermY() == 33 );
+  CPPUNIT_ASSERT ( wdgt.getTermPos() == finalcut::FPoint(22, 33) );
+  CPPUNIT_ASSERT ( wdgt.getWidth() == 560 );
+  CPPUNIT_ASSERT ( wdgt.getHeight() == 130 );
+  CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(560, 130) );
+  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top).size() == 560 );
+  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 130 );
+  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 560 );
+  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 130 );
+
+  // Test with shadow size
+  wdgt.setGeometry(finalcut::FPoint(3, 3), finalcut::FSize(5, 5) );
+  wdgt.setShadowSize(finalcut::FSize(2, 2));
+  CPPUNIT_ASSERT ( wdgt.getX() == 3 );
+  CPPUNIT_ASSERT ( wdgt.getY() == 3 );
+  CPPUNIT_ASSERT ( wdgt.getPos() == finalcut::FPoint(3, 3) );
+  CPPUNIT_ASSERT ( wdgt.getTermX() == 3 );
+  CPPUNIT_ASSERT ( wdgt.getTermY() == 3 );
+  CPPUNIT_ASSERT ( wdgt.getTermPos() == finalcut::FPoint(3, 3) );
+  CPPUNIT_ASSERT ( wdgt.getWidth() == 5 );
+  CPPUNIT_ASSERT ( wdgt.getHeight() == 5 );
+  CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(5, 5) );
+  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top).size() == 5 );
+  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 5 );
+  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 5 );
+  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 5 );
+  CPPUNIT_ASSERT ( wdgt.getShadow() == finalcut::FSize(2, 2) );
+  CPPUNIT_ASSERT ( wdgt.getGeometryWithShadow() == finalcut::FRect(finalcut::FPoint(3, 3), finalcut::FSize(7, 7)) );
+  CPPUNIT_ASSERT ( wdgt.getTermGeometryWithShadow() == finalcut::FRect(finalcut::FPoint(3, 3), finalcut::FSize(7, 7)) );
+
+  // Cursor position
+  CPPUNIT_ASSERT ( wdgt.getCursorPos() == finalcut::FPoint(-1, -1) );
+  CPPUNIT_ASSERT ( wdgt.setCursorPos(finalcut::FPoint(0, 0)) == false );
+  CPPUNIT_ASSERT ( wdgt.getCursorPos() == finalcut::FPoint(0, 0) );
+  CPPUNIT_ASSERT ( wdgt.setCursorPos(finalcut::FPoint(30, 3)) == false );
+  CPPUNIT_ASSERT ( wdgt.getCursorPos() == finalcut::FPoint(30, 3) );
+  wdgt.unsetCursorPos();
+  CPPUNIT_ASSERT ( wdgt.getCursorPos() == finalcut::FPoint(-1, -1) );
+  wdgt.setFlags().hidden = false;
+  CPPUNIT_ASSERT ( wdgt.setCursorPos(finalcut::FPoint(10, 3)) == false );
+  wdgt.setFlags().focus = true;
+  CPPUNIT_ASSERT ( wdgt.setCursorPos(finalcut::FPoint(11, 3)) == false );
+  wdgt.setFlags().window_widget = false;
+  CPPUNIT_ASSERT ( wdgt.setCursorPos(finalcut::FPoint(12, 3)) == false );
+  root_wdgt.setFlags().window_widget = true;
+  CPPUNIT_ASSERT ( wdgt.setCursorPos(finalcut::FPoint(13, 3)) == true );
+  CPPUNIT_ASSERT ( wdgt.getCursorPos() == finalcut::FPoint(13, 3) );
 }
 
 //----------------------------------------------------------------------
