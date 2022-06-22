@@ -110,8 +110,8 @@ class FWidgetTest::FSystemTest : public finalcut::FSystem
       {
         case TIOCGWINSZ:
           auto win_size = static_cast<winsize*>(argp);
-          win_size->ws_col = 80;
-          win_size->ws_row = 24;
+          win_size->ws_col = screen_size.getWidth();
+          win_size->ws_row = screen_size.getHeight();
           ret_val = 0;
           break;
       }
@@ -174,7 +174,19 @@ class FWidgetTest::FSystemTest : public finalcut::FSystem
     {
       return const_cast<char*>("");
     }
+
+    void setScreenSize (finalcut::FSize size)
+    {
+      screen_size = size;
+    }
+
+  private:
+    static finalcut::FSize screen_size;
 };
+
+// static class attribute
+//----------------------------------------------------------------------
+finalcut::FSize FWidgetTest::FSystemTest::screen_size = finalcut::FSize(80, 24);
 
 //----------------------------------------------------------------------
 void FWidgetTest::classNameTest()
@@ -1048,6 +1060,37 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 560 );
   CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 130 );
 
+  wdgt.setGeometry(finalcut::FPoint(-5, -3), finalcut::FSize(50, 30) );
+  CPPUNIT_ASSERT ( wdgt.getX() == -5 );
+  CPPUNIT_ASSERT ( wdgt.getY() == -3 );
+  CPPUNIT_ASSERT ( wdgt.getPos() == finalcut::FPoint(-5, -3) );
+  CPPUNIT_ASSERT ( wdgt.getTermX() == -5 );
+  CPPUNIT_ASSERT ( wdgt.getTermY() == -3 );
+  CPPUNIT_ASSERT ( wdgt.getTermPos() == finalcut::FPoint(-5, -3) );
+  CPPUNIT_ASSERT ( wdgt.getWidth() == 50 );
+  CPPUNIT_ASSERT ( wdgt.getHeight() == 30 );
+  CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(50, 30) );
+  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top).size() == 50 );
+  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 30 );
+  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 50 );
+  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 30 );
+
+  wdgt.setFlags().window_widget = false;
+  wdgt.setGeometry(finalcut::FPoint(-4, -2), finalcut::FSize(30, 20) );
+  CPPUNIT_ASSERT ( wdgt.getX() == 1 );
+  CPPUNIT_ASSERT ( wdgt.getY() == 1 );
+  CPPUNIT_ASSERT ( wdgt.getPos() == finalcut::FPoint(1, 1) );
+  CPPUNIT_ASSERT ( wdgt.getTermX() == 1 );
+  CPPUNIT_ASSERT ( wdgt.getTermY() == 1 );
+  CPPUNIT_ASSERT ( wdgt.getTermPos() == finalcut::FPoint(1, 1) );
+  CPPUNIT_ASSERT ( wdgt.getWidth() == 30 );
+  CPPUNIT_ASSERT ( wdgt.getHeight() == 20 );
+  CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(30, 20) );
+  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top).size() == 30 );
+  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 20 );
+  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 30 );
+  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 20 );
+
   // Test with shadow size
   wdgt.setGeometry(finalcut::FPoint(3, 3), finalcut::FSize(5, 5) );
   wdgt.setShadowSize(finalcut::FSize(2, 2));
@@ -1085,6 +1128,125 @@ void FWidgetTest::PosAndSizeTest()
   root_wdgt.setFlags().window_widget = true;
   CPPUNIT_ASSERT ( wdgt.setCursorPos(finalcut::FPoint(13, 3)) == true );
   CPPUNIT_ASSERT ( wdgt.getCursorPos() == finalcut::FPoint(13, 3) );
+
+  // Padding
+  CPPUNIT_ASSERT ( wdgt.getClientSize() == wdgt.getSize() );
+  CPPUNIT_ASSERT ( wdgt.getClientSize() == finalcut::FSize(5, 5) );
+  CPPUNIT_ASSERT ( wdgt.getClientWidth() == 5 );
+  CPPUNIT_ASSERT ( wdgt.getClientHeight() == 5 );
+  CPPUNIT_ASSERT ( wdgt.getTopPadding() == 0 );
+  CPPUNIT_ASSERT ( wdgt.getRightPadding() == 0 );
+  CPPUNIT_ASSERT ( wdgt.getBottomPadding() == 0 );
+  CPPUNIT_ASSERT ( wdgt.getLeftPadding() == 0 );
+  wdgt.setTopPadding(1);
+  CPPUNIT_ASSERT ( wdgt.getClientSize() == finalcut::FSize(5, 4) );
+  CPPUNIT_ASSERT ( wdgt.getClientWidth() == 5 );
+  CPPUNIT_ASSERT ( wdgt.getClientHeight() == 4 );
+  CPPUNIT_ASSERT ( wdgt.getTopPadding() == 1 );
+  CPPUNIT_ASSERT ( wdgt.getRightPadding() == 0 );
+  CPPUNIT_ASSERT ( wdgt.getBottomPadding() == 0 );
+  CPPUNIT_ASSERT ( wdgt.getLeftPadding() == 0 );
+  wdgt.setTopPadding(1);
+  CPPUNIT_ASSERT ( wdgt.getTopPadding() == 1 );
+
+  wdgt.setBottomPadding(2);
+  CPPUNIT_ASSERT ( wdgt.getClientSize() == finalcut::FSize(5, 2) );
+  CPPUNIT_ASSERT ( wdgt.getClientWidth() == 5 );
+  CPPUNIT_ASSERT ( wdgt.getClientHeight() == 2 );
+  CPPUNIT_ASSERT ( wdgt.getTopPadding() == 1 );
+  CPPUNIT_ASSERT ( wdgt.getRightPadding() == 0 );
+  CPPUNIT_ASSERT ( wdgt.getBottomPadding() == 2 );
+  CPPUNIT_ASSERT ( wdgt.getLeftPadding() == 0 );
+  wdgt.setBottomPadding(2);
+  CPPUNIT_ASSERT ( wdgt.getBottomPadding() == 2 );
+
+  wdgt.setRightPadding(2);
+  CPPUNIT_ASSERT ( wdgt.getClientSize() == finalcut::FSize(3, 2) );
+  CPPUNIT_ASSERT ( wdgt.getClientWidth() == 3 );
+  CPPUNIT_ASSERT ( wdgt.getClientHeight() == 2 );
+  CPPUNIT_ASSERT ( wdgt.getTopPadding() == 1 );
+  CPPUNIT_ASSERT ( wdgt.getRightPadding() == 2 );
+  CPPUNIT_ASSERT ( wdgt.getBottomPadding() == 2 );
+  CPPUNIT_ASSERT ( wdgt.getLeftPadding() == 0 );
+  wdgt.setRightPadding(2);
+  CPPUNIT_ASSERT ( wdgt.getRightPadding() == 2 );
+
+  wdgt.setLeftPadding(1);
+  CPPUNIT_ASSERT ( wdgt.getClientSize() == finalcut::FSize(2, 2) );
+  CPPUNIT_ASSERT ( wdgt.getClientWidth() == 2 );
+  CPPUNIT_ASSERT ( wdgt.getClientHeight() == 2 );
+  CPPUNIT_ASSERT ( wdgt.getTopPadding() == 1 );
+  CPPUNIT_ASSERT ( wdgt.getRightPadding() == 2 );
+  CPPUNIT_ASSERT ( wdgt.getBottomPadding() == 2 );
+  CPPUNIT_ASSERT ( wdgt.getLeftPadding() == 1 );
+  wdgt.setLeftPadding(1);
+  CPPUNIT_ASSERT ( wdgt.getLeftPadding() == 1 );
+
+  wdgt.setRightPadding(-2);
+  CPPUNIT_ASSERT ( wdgt.getClientSize() == finalcut::FSize(6, 2) );
+  CPPUNIT_ASSERT ( wdgt.getClientWidth() == 6 );
+  CPPUNIT_ASSERT ( wdgt.getClientHeight() == 2 );
+  CPPUNIT_ASSERT ( wdgt.getTopPadding() == 1 );
+  CPPUNIT_ASSERT ( wdgt.getRightPadding() == -2 );
+  CPPUNIT_ASSERT ( wdgt.getBottomPadding() == 2 );
+  CPPUNIT_ASSERT ( wdgt.getLeftPadding() == 1 );
+
+  wdgt.setTopPadding(-3);
+  CPPUNIT_ASSERT ( wdgt.getClientSize() == finalcut::FSize(6, 6) );
+  CPPUNIT_ASSERT ( wdgt.getClientWidth() == 6 );
+  CPPUNIT_ASSERT ( wdgt.getClientHeight() == 6 );
+  CPPUNIT_ASSERT ( wdgt.getTopPadding() == -3 );
+  CPPUNIT_ASSERT ( wdgt.getRightPadding() == -2 );
+  CPPUNIT_ASSERT ( wdgt.getBottomPadding() == 2 );
+  CPPUNIT_ASSERT ( wdgt.getLeftPadding() == 1 );
+
+  CPPUNIT_ASSERT ( root_wdgt.getClientSize() == finalcut::FSize(80, 24) );
+  CPPUNIT_ASSERT ( root_wdgt.getClientWidth() == 80 );
+  CPPUNIT_ASSERT ( root_wdgt.getClientHeight() == 24 );
+  CPPUNIT_ASSERT ( root_wdgt.getTopPadding() == 0 );
+  CPPUNIT_ASSERT ( root_wdgt.getRightPadding() == 0 );
+  CPPUNIT_ASSERT ( root_wdgt.getBottomPadding() == 0 );
+  CPPUNIT_ASSERT ( root_wdgt.getLeftPadding() == 0 );
+  CPPUNIT_ASSERT ( wdgt.getX() == 3 );
+  CPPUNIT_ASSERT ( wdgt.getY() == 3 );
+  CPPUNIT_ASSERT ( wdgt.getPos() == finalcut::FPoint(3, 3) );
+  CPPUNIT_ASSERT ( wdgt.getTermX() == 3 );
+  CPPUNIT_ASSERT ( wdgt.getTermY() == 3 );
+  CPPUNIT_ASSERT ( wdgt.getTermPos() == finalcut::FPoint(3, 3) );
+
+  root_wdgt.setTopPadding(1);
+  root_wdgt.setRightPadding(2);
+  root_wdgt.setBottomPadding(3);
+  root_wdgt.setLeftPadding(4);
+  CPPUNIT_ASSERT ( root_wdgt.getClientSize() == finalcut::FSize(74, 20) );
+  CPPUNIT_ASSERT ( root_wdgt.getClientWidth() == 74 );
+  CPPUNIT_ASSERT ( root_wdgt.getClientHeight() == 20 );
+  CPPUNIT_ASSERT ( root_wdgt.getTopPadding() == 1 );
+  CPPUNIT_ASSERT ( root_wdgt.getRightPadding() == 2 );
+  CPPUNIT_ASSERT ( root_wdgt.getBottomPadding() == 3 );
+  CPPUNIT_ASSERT ( root_wdgt.getLeftPadding() == 4 );
+  CPPUNIT_ASSERT ( wdgt.getX() == 3 );
+  CPPUNIT_ASSERT ( wdgt.getY() == 3 );
+  CPPUNIT_ASSERT ( wdgt.getPos() == finalcut::FPoint(3, 3) );
+  CPPUNIT_ASSERT ( wdgt.getTermX() == 7 );
+  CPPUNIT_ASSERT ( wdgt.getTermY() == 4 );
+  CPPUNIT_ASSERT ( wdgt.getTermPos() == finalcut::FPoint(7, 4) );
+
+  // Set terminal size
+  root_wdgt.setTerminalSize( finalcut::FSize(132, 43) );
+  CPPUNIT_ASSERT ( root_wdgt.getWidth() == 80 );
+  CPPUNIT_ASSERT ( root_wdgt.getHeight() == 24 );
+  CPPUNIT_ASSERT ( root_wdgt.getSize() == finalcut::FSize(80, 24) );
+  finalcut::FTermcap tcap;
+  tcap.setPutCharFunction (nullptr);  // Avoid resizing the real terminal
+  tcap.setPutStringFunction (nullptr);
+  auto& fdata = finalcut::FTermData::getInstance();
+  fdata.setTermType(finalcut::FTermType::xterm);
+  static_cast<FSystemTest*>(fsys.get())->setScreenSize(finalcut::FSize(132, 43));
+  root_wdgt.setTerminalSize( finalcut::FSize(132, 43) );
+  CPPUNIT_ASSERT ( root_wdgt.getWidth() == 132 );
+  CPPUNIT_ASSERT ( root_wdgt.getHeight() == 43 );
+  CPPUNIT_ASSERT ( root_wdgt.getSize() == finalcut::FSize(132, 43) );
 }
 
 //----------------------------------------------------------------------
