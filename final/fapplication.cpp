@@ -166,6 +166,14 @@ bool FApplication::isQuit()
 }
 
 //----------------------------------------------------------------------
+#if defined(UNIT_TEST)
+void FApplication::start()  // Simulates application start
+{
+  quit_now = false;
+}
+#endif  // defined(UNIT_TEST)
+
+//----------------------------------------------------------------------
 int FApplication::exec()  // run
 {
   if ( quit_now )

@@ -57,7 +57,7 @@ FWidget*              FWidget::show_root_widget{nullptr};
 FWidget*              FWidget::redraw_root_widget{nullptr};
 FWidget::FWidgetList* FWidget::dialog_list{nullptr};
 FWidget::FWidgetList* FWidget::always_on_top_list{nullptr};
-FWidget::FWidgetList* FWidget::close_widget{nullptr};
+FWidget::FWidgetList* FWidget::close_widget_list{nullptr};
 bool                  FWidget::init_terminal{false};
 bool                  FWidget::init_desktop{false};
 uInt                  FWidget::modal_dialog_counter{};
@@ -774,8 +774,8 @@ bool FWidget::close()
     {
       hide();
 
-      if ( ! flags.modal && ! isInFWidgetList(close_widget, this) )
-        close_widget->push_back(this);
+      if ( ! flags.modal && ! isInFWidgetList(close_widget_list, this) )
+        close_widget_list->push_back(this);
     }
 
     return true;
@@ -1671,7 +1671,7 @@ void FWidget::initRootWidget()
     // Initialize widget lists
     dialog_list        = new FWidgetList();
     always_on_top_list = new FWidgetList();
-    close_widget       = new FWidgetList();
+    close_widget_list  = new FWidgetList();
   }
   catch (const std::bad_alloc&)
   {
@@ -1715,8 +1715,8 @@ void FWidget::initWidgetLayout()
 //----------------------------------------------------------------------
 void FWidget::finish()
 {
-  delete close_widget;
-  close_widget = nullptr;
+  delete close_widget_list;
+  close_widget_list = nullptr;
   delete dialog_list;
   dialog_list = nullptr;
   delete always_on_top_list;

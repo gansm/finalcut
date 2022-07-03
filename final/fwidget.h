@@ -476,7 +476,7 @@ class FWidget : public FVTerm, public FObject
     static FWidget*          redraw_root_widget;
     static FWidgetList*      dialog_list;
     static FWidgetList*      always_on_top_list;
-    static FWidgetList*      close_widget;
+    static FWidgetList*      close_widget_list;
     static uInt              modal_dialog_counter;
     static bool              init_terminal;
     static bool              init_desktop;
@@ -967,7 +967,7 @@ inline FWidget::FWidgetList*& FWidget::getAlwaysOnTopList()
 
 //----------------------------------------------------------------------
 inline FWidget::FWidgetList*& FWidget::getWidgetCloseList()
-{ return close_widget; }
+{ return close_widget_list; }
 
 //----------------------------------------------------------------------
 inline uInt& FWidget::setModalDialogCounter()

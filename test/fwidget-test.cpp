@@ -33,7 +33,6 @@
 #include <final/final.h>
 
 
-
 //----------------------------------------------------------------------
 // class FWidgetTest
 //----------------------------------------------------------------------
@@ -50,6 +49,8 @@ class FWidgetTest : public CPPUNIT_NS::TestFixture
     void resetColorsTest();
     void acceleratorTest();
     void PosAndSizeTest();
+    void focusableChildrenTest();
+    void closeWidgetTest();
     void adjustSizeTest();
     void callbackTest();
 
@@ -66,6 +67,8 @@ class FWidgetTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (resetColorsTest);
     CPPUNIT_TEST (acceleratorTest);
     CPPUNIT_TEST (PosAndSizeTest);
+    CPPUNIT_TEST (focusableChildrenTest);
+    CPPUNIT_TEST (closeWidgetTest);
     CPPUNIT_TEST (adjustSizeTest);
     CPPUNIT_TEST (callbackTest);
 
@@ -487,7 +490,7 @@ void FWidgetTest::noArgumentTest()
 void FWidgetTest::colorThemeTest()
 {
   {
-    finalcut::FWidget root_wdgt{};  // Root Widget
+    finalcut::FWidget root_wdgt{};  // Root widget
 
     // Get color theme
     const auto& color_theme = root_wdgt.getColorTheme();
@@ -499,7 +502,7 @@ void FWidgetTest::colorThemeTest()
 
   {
     finalcut::FTermcap::max_color = 8;
-    finalcut::FWidget root_wdgt{};  // Root Widget
+    finalcut::FWidget root_wdgt{};  // Root widget
 
     // Get color theme
     const auto& color_theme = root_wdgt.getColorTheme();
@@ -511,7 +514,7 @@ void FWidgetTest::colorThemeTest()
 
   {
     finalcut::FTermcap::max_color = 16;
-    finalcut::FWidget root_wdgt{};  // Root Widget
+    finalcut::FWidget root_wdgt{};  // Root widget
 
     // Get color theme
     const auto& color_theme = root_wdgt.getColorTheme();
@@ -525,7 +528,7 @@ void FWidgetTest::colorThemeTest()
 //----------------------------------------------------------------------
 void FWidgetTest::resetColorsTest()
 {
-  finalcut::FWidget root_wdgt{};  // Root Widget
+  finalcut::FWidget root_wdgt{};  // Root widget
 
   class TestWidget : public finalcut::FWidget
   {
@@ -567,7 +570,7 @@ void FWidgetTest::resetColorsTest()
 //----------------------------------------------------------------------
 void FWidgetTest::acceleratorTest()
 {
-  finalcut::FWidget root_wdgt{};  // Root Widget
+  finalcut::FWidget root_wdgt{};  // Root widget
   finalcut::FWidget wdgt{&root_wdgt};  // Child widget
   auto& accelerator_list = root_wdgt.getAcceleratorList();
   CPPUNIT_ASSERT ( accelerator_list.size() == 0 );
@@ -619,7 +622,7 @@ void FWidgetTest::PosAndSizeTest()
   std::unique_ptr<finalcut::FSystem> fsys = std::make_unique<FSystemTest>();
   finalcut::FTerm::setFSystem(fsys);
 
-  finalcut::FWidget root_wdgt{};  // Root Widget
+  finalcut::FWidget root_wdgt{};  // Root widget
   finalcut::FWidget wdgt{&root_wdgt};  // Child widget
 
   CPPUNIT_ASSERT ( root_wdgt.getX() == 1 );
@@ -1129,6 +1132,7 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( wdgt.termToWidgetPos(finalcut::FPoint(1, 1)) == finalcut::FPoint(7, 5) );
 
   wdgt.setFlags().window_widget = false;
+  wdgt.setFlags().shown = true;
   wdgt.setGeometry(finalcut::FPoint(-4, -2), finalcut::FSize(30, 20) );
   CPPUNIT_ASSERT ( wdgt.getX() == 1 );
   CPPUNIT_ASSERT ( wdgt.getY() == 1 );
@@ -1143,6 +1147,18 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 20 );
   CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 30 );
   CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 20 );
+  CPPUNIT_ASSERT ( wdgt.childWidgetAt({0, 0}) == nullptr );
+  CPPUNIT_ASSERT ( wdgt.childWidgetAt({0, 1}) == nullptr );
+  CPPUNIT_ASSERT ( wdgt.childWidgetAt({1, 0}) == nullptr );
+  CPPUNIT_ASSERT ( wdgt.childWidgetAt({1, 1}) == nullptr );
+  CPPUNIT_ASSERT ( root_wdgt.childWidgetAt({0, 0}) == nullptr );
+  CPPUNIT_ASSERT ( root_wdgt.childWidgetAt({0, 1}) == nullptr );
+  CPPUNIT_ASSERT ( root_wdgt.childWidgetAt({1, 0}) == nullptr );
+  CPPUNIT_ASSERT ( root_wdgt.childWidgetAt({1, 1}) == &wdgt );
+  CPPUNIT_ASSERT ( root_wdgt.childWidgetAt({30, 20}) == &wdgt );
+  CPPUNIT_ASSERT ( root_wdgt.childWidgetAt({30, 21}) == nullptr );
+  CPPUNIT_ASSERT ( root_wdgt.childWidgetAt({31, 20}) == nullptr );
+  CPPUNIT_ASSERT ( root_wdgt.childWidgetAt({31, 21}) == nullptr );
 
   // Double flat line
   wdgt.setDoubleFlatLine (finalcut::Side::Top, 2, true);
@@ -1385,6 +1401,438 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( root_wdgt.getWidth() == 132 );
   CPPUNIT_ASSERT ( root_wdgt.getHeight() == 43 );
   CPPUNIT_ASSERT ( root_wdgt.getSize() == finalcut::FSize(132, 43) );
+}
+
+//----------------------------------------------------------------------
+void FWidgetTest::focusableChildrenTest()
+{
+  // root_wdgt -> main_wdgt
+  finalcut::FWidget root_wdgt{};  // Root widget
+  finalcut::FWidget main_wdgt{&root_wdgt};  // Child / main widget
+
+  CPPUNIT_ASSERT ( root_wdgt.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( main_wdgt.numOfFocusableChildren() == 0 );
+
+  // root_wdgt -> main_wdgt -> wdgt1
+  //                        -> wdgt2
+  //                        -> wdgt3
+  //                        -> wdgt4
+  finalcut::FWidget wdgt1{&main_wdgt};  // 1st Subchild
+  finalcut::FWidget wdgt2{&main_wdgt};  // 2nd Subchild
+  finalcut::FWidget wdgt3{&main_wdgt};  // 3rd Subchild
+  finalcut::FWidget wdgt4{&main_wdgt};  // 4th Subchild
+
+  CPPUNIT_ASSERT ( root_wdgt.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( main_wdgt.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt1.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt2.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt3.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt4.numOfFocusableChildren() == 0 );
+
+  // root_wdgt -> main_wdgt -> wdgt1 -> wdgt1_1
+  //                                 -> wdgt1_2
+  finalcut::FWidget wdgt1_1{&wdgt1};  // 1st Sub-subchild
+  finalcut::FWidget wdgt1_2{&wdgt1};  // 2nd Sub-subchild
+
+  CPPUNIT_ASSERT ( root_wdgt.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( root_wdgt.getFlags().focusable );
+  CPPUNIT_ASSERT ( main_wdgt.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( main_wdgt.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt1.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt1.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt2.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt2.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt3.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt3.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt4.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt4.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt1_1.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt1_1.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt1_2.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt1_2.getFlags().focusable );
+
+  main_wdgt.setFlags().shown = true;
+  CPPUNIT_ASSERT ( root_wdgt.numOfFocusableChildren() == 1 );
+  CPPUNIT_ASSERT ( root_wdgt.getFlags().focusable );
+  CPPUNIT_ASSERT ( main_wdgt.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( main_wdgt.getFlags().focusable );
+  CPPUNIT_ASSERT ( main_wdgt.acceptFocus() );
+  CPPUNIT_ASSERT ( ! main_wdgt.getFlags().window_widget );
+  CPPUNIT_ASSERT ( !main_wdgt.isWindowWidget() );
+  CPPUNIT_ASSERT ( wdgt1.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt1.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt2.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt2.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt3.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt3.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt4.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt4.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt1_1.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt1_1.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt1_2.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt1_2.getFlags().focusable );
+
+  main_wdgt.setFlags().window_widget = true;
+  CPPUNIT_ASSERT ( root_wdgt.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( root_wdgt.getFlags().focusable );
+  CPPUNIT_ASSERT ( main_wdgt.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( main_wdgt.getFlags().focusable );
+  CPPUNIT_ASSERT ( main_wdgt.acceptFocus() );
+  CPPUNIT_ASSERT ( main_wdgt.getFlags().window_widget );
+  CPPUNIT_ASSERT ( main_wdgt.isWindowWidget() );
+  CPPUNIT_ASSERT ( wdgt1.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt1.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt2.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt2.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt3.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt3.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt4.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt4.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt1_1.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt1_1.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt1_2.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt1_2.getFlags().focusable );
+
+  wdgt1.setFlags().shown = true;
+  CPPUNIT_ASSERT ( root_wdgt.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( root_wdgt.getFlags().focusable );
+  CPPUNIT_ASSERT ( main_wdgt.numOfFocusableChildren() == 1 );
+  CPPUNIT_ASSERT ( main_wdgt.getFlags().focusable );
+  CPPUNIT_ASSERT ( main_wdgt.acceptFocus() );
+  CPPUNIT_ASSERT ( main_wdgt.getFlags().window_widget );
+  CPPUNIT_ASSERT ( main_wdgt.isWindowWidget() );
+  CPPUNIT_ASSERT ( wdgt1.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt1.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt2.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt2.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt3.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt3.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt4.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt4.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt1_1.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt1_1.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt1_2.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt1_2.getFlags().focusable );
+
+  wdgt1_1.setFlags().shown = true;
+  CPPUNIT_ASSERT ( root_wdgt.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( root_wdgt.getFlags().focusable );
+  CPPUNIT_ASSERT ( main_wdgt.numOfFocusableChildren() == 1 );
+  CPPUNIT_ASSERT ( main_wdgt.getFlags().focusable );
+  CPPUNIT_ASSERT ( main_wdgt.acceptFocus() );
+  CPPUNIT_ASSERT ( main_wdgt.getFlags().window_widget );
+  CPPUNIT_ASSERT ( main_wdgt.isWindowWidget() );
+  CPPUNIT_ASSERT ( wdgt1.numOfFocusableChildren() == 1 );
+  CPPUNIT_ASSERT ( wdgt1.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt2.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt2.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt3.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt3.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt4.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt4.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt1_1.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt1_1.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt1_2.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt1_2.getFlags().focusable );
+
+  wdgt1_2.setFlags().shown = true;
+  CPPUNIT_ASSERT ( root_wdgt.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( root_wdgt.getFlags().focusable );
+  CPPUNIT_ASSERT ( main_wdgt.numOfFocusableChildren() == 1 );
+  CPPUNIT_ASSERT ( main_wdgt.getFlags().focusable );
+  CPPUNIT_ASSERT ( main_wdgt.acceptFocus() );
+  CPPUNIT_ASSERT ( main_wdgt.getFlags().window_widget );
+  CPPUNIT_ASSERT ( main_wdgt.isWindowWidget() );
+  CPPUNIT_ASSERT ( wdgt1.numOfFocusableChildren() == 2 );
+  CPPUNIT_ASSERT ( wdgt1.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt2.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt2.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt3.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt3.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt4.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt4.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt1_1.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt1_1.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt1_2.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt1_2.getFlags().focusable );
+
+  wdgt2.setFlags().shown = true;
+  CPPUNIT_ASSERT ( root_wdgt.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( root_wdgt.getFlags().focusable );
+  CPPUNIT_ASSERT ( main_wdgt.numOfFocusableChildren() == 2 );
+  CPPUNIT_ASSERT ( main_wdgt.getFlags().focusable );
+  CPPUNIT_ASSERT ( main_wdgt.acceptFocus() );
+  CPPUNIT_ASSERT ( main_wdgt.getFlags().window_widget );
+  CPPUNIT_ASSERT ( main_wdgt.isWindowWidget() );
+  CPPUNIT_ASSERT ( wdgt1.numOfFocusableChildren() == 2 );
+  CPPUNIT_ASSERT ( wdgt1.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt2.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt2.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt3.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt3.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt4.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt4.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt1_1.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt1_1.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt1_2.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt1_2.getFlags().focusable );
+
+  wdgt3.setFlags().shown = true;
+  CPPUNIT_ASSERT ( root_wdgt.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( root_wdgt.getFlags().focusable );
+  CPPUNIT_ASSERT ( main_wdgt.numOfFocusableChildren() == 3 );
+  CPPUNIT_ASSERT ( main_wdgt.getFlags().focusable );
+  CPPUNIT_ASSERT ( main_wdgt.acceptFocus() );
+  CPPUNIT_ASSERT ( main_wdgt.getFlags().window_widget );
+  CPPUNIT_ASSERT ( main_wdgt.isWindowWidget() );
+  CPPUNIT_ASSERT ( wdgt1.numOfFocusableChildren() == 2 );
+  CPPUNIT_ASSERT ( wdgt1.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt2.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt2.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt3.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt3.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt4.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt4.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt1_1.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt1_1.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt1_2.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt1_2.getFlags().focusable );
+
+  wdgt4.setFlags().shown = true;
+  CPPUNIT_ASSERT ( root_wdgt.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( root_wdgt.getFlags().focusable );
+  CPPUNIT_ASSERT ( main_wdgt.numOfFocusableChildren() == 4 );
+  CPPUNIT_ASSERT ( main_wdgt.getFlags().focusable );
+  CPPUNIT_ASSERT ( main_wdgt.acceptFocus() );
+  CPPUNIT_ASSERT ( main_wdgt.getFlags().window_widget );
+  CPPUNIT_ASSERT ( main_wdgt.isWindowWidget() );
+  CPPUNIT_ASSERT ( wdgt1.numOfFocusableChildren() == 2 );
+  CPPUNIT_ASSERT ( wdgt1.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt2.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt2.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt3.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt3.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt4.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt4.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt1_1.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt1_1.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt1_2.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt1_2.getFlags().focusable );
+
+  wdgt2.setFlags().focusable = false;
+  CPPUNIT_ASSERT ( root_wdgt.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( root_wdgt.getFlags().focusable );
+  CPPUNIT_ASSERT ( main_wdgt.numOfFocusableChildren() == 3 );
+  CPPUNIT_ASSERT ( main_wdgt.getFlags().focusable );
+  CPPUNIT_ASSERT ( main_wdgt.acceptFocus() );
+  CPPUNIT_ASSERT ( main_wdgt.getFlags().window_widget );
+  CPPUNIT_ASSERT ( main_wdgt.isWindowWidget() );
+  CPPUNIT_ASSERT ( wdgt1.numOfFocusableChildren() == 2 );
+  CPPUNIT_ASSERT ( wdgt1.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt2.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( ! wdgt2.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt3.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt3.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt4.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt4.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt1_1.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt1_1.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt1_2.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt1_2.getFlags().focusable );
+
+  wdgt1.setFlags().focusable = false;
+  CPPUNIT_ASSERT ( root_wdgt.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( root_wdgt.getFlags().focusable );
+  CPPUNIT_ASSERT ( main_wdgt.numOfFocusableChildren() == 2 );
+  CPPUNIT_ASSERT ( main_wdgt.getFlags().focusable );
+  CPPUNIT_ASSERT ( main_wdgt.acceptFocus() );
+  CPPUNIT_ASSERT ( main_wdgt.getFlags().window_widget );
+  CPPUNIT_ASSERT ( main_wdgt.isWindowWidget() );
+  CPPUNIT_ASSERT ( wdgt1.numOfFocusableChildren() == 2 );
+  CPPUNIT_ASSERT ( ! wdgt1.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt2.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( ! wdgt2.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt3.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt3.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt4.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt4.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt1_1.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt1_1.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt1_2.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt1_2.getFlags().focusable );
+
+  wdgt4.setFlags().focusable = false;
+  CPPUNIT_ASSERT ( root_wdgt.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( root_wdgt.getFlags().focusable );
+  CPPUNIT_ASSERT ( main_wdgt.numOfFocusableChildren() == 1 );
+  CPPUNIT_ASSERT ( main_wdgt.getFlags().focusable );
+  CPPUNIT_ASSERT ( main_wdgt.acceptFocus() );
+  CPPUNIT_ASSERT ( main_wdgt.getFlags().window_widget );
+  CPPUNIT_ASSERT ( main_wdgt.isWindowWidget() );
+  CPPUNIT_ASSERT ( wdgt1.numOfFocusableChildren() == 2 );
+  CPPUNIT_ASSERT ( ! wdgt1.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt2.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( ! wdgt2.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt3.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt3.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt4.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( ! wdgt4.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt1_1.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt1_1.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt1_2.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt1_2.getFlags().focusable );
+
+  wdgt3.setFlags().focusable = false;
+  CPPUNIT_ASSERT ( root_wdgt.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( root_wdgt.getFlags().focusable );
+  CPPUNIT_ASSERT ( main_wdgt.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( main_wdgt.getFlags().focusable );
+  CPPUNIT_ASSERT ( main_wdgt.acceptFocus() );
+  CPPUNIT_ASSERT ( main_wdgt.getFlags().window_widget );
+  CPPUNIT_ASSERT ( main_wdgt.isWindowWidget() );
+  CPPUNIT_ASSERT ( wdgt1.numOfFocusableChildren() == 2 );
+  CPPUNIT_ASSERT ( ! wdgt1.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt2.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( ! wdgt2.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt3.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( ! wdgt3.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt4.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( ! wdgt4.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt1_1.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt1_1.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt1_2.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt1_2.getFlags().focusable );
+
+  wdgt1_1.setFlags().focusable = false;
+  CPPUNIT_ASSERT ( root_wdgt.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( root_wdgt.getFlags().focusable );
+  CPPUNIT_ASSERT ( main_wdgt.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( main_wdgt.getFlags().focusable );
+  CPPUNIT_ASSERT ( main_wdgt.acceptFocus() );
+  CPPUNIT_ASSERT ( main_wdgt.getFlags().window_widget );
+  CPPUNIT_ASSERT ( main_wdgt.isWindowWidget() );
+  CPPUNIT_ASSERT ( wdgt1.numOfFocusableChildren() == 1 );
+  CPPUNIT_ASSERT ( ! wdgt1.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt2.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( ! wdgt2.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt3.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( ! wdgt3.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt4.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( ! wdgt4.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt1_1.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( ! wdgt1_1.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt1_2.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( wdgt1_2.getFlags().focusable );
+
+  wdgt1_2.setFlags().focusable = false;
+  CPPUNIT_ASSERT ( root_wdgt.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( root_wdgt.getFlags().focusable );
+  CPPUNIT_ASSERT ( main_wdgt.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( main_wdgt.getFlags().focusable );
+  CPPUNIT_ASSERT ( main_wdgt.acceptFocus() );
+  CPPUNIT_ASSERT ( main_wdgt.getFlags().window_widget );
+  CPPUNIT_ASSERT ( main_wdgt.isWindowWidget() );
+  CPPUNIT_ASSERT ( wdgt1.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( ! wdgt1.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt2.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( ! wdgt2.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt3.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( ! wdgt3.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt4.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( ! wdgt4.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt1_1.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( ! wdgt1_1.getFlags().focusable );
+  CPPUNIT_ASSERT ( wdgt1_2.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( ! wdgt1_2.getFlags().focusable );
+}
+
+//----------------------------------------------------------------------
+void FWidgetTest::closeWidgetTest()
+{
+
+  finalcut::FWidget root_wdgt{};  // Root widget
+  finalcut::FWidget main_wdgt{&root_wdgt};  // Child / main widget
+  finalcut::FWidget::setMainWidget(&main_wdgt);
+  main_wdgt.setFlags().shown = true;
+  CPPUNIT_ASSERT ( ! main_wdgt.getFlags().hidden );
+  CPPUNIT_ASSERT ( main_wdgt.getFlags().shown );
+
+  class TestWidget : public finalcut::FWidget
+  {
+    public:
+      TestWidget (finalcut::FWidget* parent = nullptr)
+        : finalcut::FWidget{parent}
+      { }
+
+      TestWidget (const TestWidget&) = delete;
+
+      TestWidget (TestWidget&&) noexcept = delete;
+
+      ~TestWidget() override
+      { }
+
+      void onClose (finalcut::FCloseEvent* ev)
+      {
+        if ( confirmed )
+          ev->accept();
+        else
+          ev->ignore();
+      }
+
+      void setConfirmed (bool state = true)
+      {
+        confirmed = state;
+      }
+
+      finalcut::FWidget::FWidgetList*& p_getWidgetCloseList()
+      {
+        return finalcut::FWidget::getWidgetCloseList();
+      }
+
+    private:
+      bool confirmed{false};
+  };
+
+  TestWidget wdgt{&main_wdgt};  // Subchild
+  wdgt.setFlags().shown = true;
+  CPPUNIT_ASSERT ( ! wdgt.close() );  // Close without confirmation
+  CPPUNIT_ASSERT ( ! wdgt.getFlags().hidden );
+  CPPUNIT_ASSERT ( wdgt.getFlags().shown );
+
+  wdgt.setConfirmed();
+  finalcut::FApplication::start();
+  CPPUNIT_ASSERT ( wdgt.p_getWidgetCloseList()->size() == 0 );
+  CPPUNIT_ASSERT ( wdgt.close() );
+  CPPUNIT_ASSERT ( wdgt.p_getWidgetCloseList()->size() == 1 );
+  CPPUNIT_ASSERT ( wdgt.getFlags().hidden );
+  CPPUNIT_ASSERT ( ! wdgt.getFlags().shown );
+
+  // wdgt is already in the widget close list
+  wdgt.setFlags().hidden = false;
+  wdgt.setFlags().shown = true;
+  CPPUNIT_ASSERT ( wdgt.p_getWidgetCloseList()->size() == 1 );
+  CPPUNIT_ASSERT ( wdgt.close() );
+  CPPUNIT_ASSERT ( wdgt.p_getWidgetCloseList()->size() == 1 );
+  CPPUNIT_ASSERT ( wdgt.getFlags().hidden );
+  CPPUNIT_ASSERT ( ! wdgt.getFlags().shown );
+  wdgt.p_getWidgetCloseList()->clear();
+
+  // wdgt is modal
+  wdgt.setFlags().modal = true;
+  wdgt.setFlags().hidden = false;
+  wdgt.setFlags().shown = true;
+  CPPUNIT_ASSERT ( wdgt.p_getWidgetCloseList()->size() == 0 );
+  CPPUNIT_ASSERT ( wdgt.close() );
+  CPPUNIT_ASSERT ( wdgt.p_getWidgetCloseList()->size() == 0 );
+  CPPUNIT_ASSERT ( wdgt.getFlags().hidden );
+  CPPUNIT_ASSERT ( ! wdgt.getFlags().shown );
+
+  // Close the main widget
+  CPPUNIT_ASSERT ( wdgt.p_getWidgetCloseList()->size() == 0 );
+  CPPUNIT_ASSERT ( main_wdgt.close() );
+  CPPUNIT_ASSERT ( wdgt.p_getWidgetCloseList()->size() == 0 );
+  CPPUNIT_ASSERT ( ! main_wdgt.getFlags().hidden );
+  CPPUNIT_ASSERT ( main_wdgt.getFlags().shown );
 }
 
 //----------------------------------------------------------------------
