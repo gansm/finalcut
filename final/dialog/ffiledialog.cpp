@@ -522,9 +522,7 @@ void FFileDialog::getEntry (const char* const dir, const struct dirent* d_entry)
 
   followSymLink (dir, entry);
 
-  if ( entry.directory )
-    dir_entries.push_back (entry);
-  else if ( patternMatch(filter, entry.name) )
+  if ( entry.directory || patternMatch(filter, entry.name) )
     dir_entries.push_back (entry);
   else
     entry.name.clear();

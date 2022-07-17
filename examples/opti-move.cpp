@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2021 Markus Gans                                      *
+* Copyright 2016-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -109,7 +109,7 @@ void move (int xold, int yold, int xnew, int ynew)
   for (const auto& ch : buffer)
   {
     if ( ch < 0x21 )
-      sequence += ctrl_character[std::size_t(ch)];
+      sequence += ctrl_character[uChar(ch)];
     else
       sequence += ch;
 

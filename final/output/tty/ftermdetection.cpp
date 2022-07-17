@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2021 Markus Gans                                      *
+* Copyright 2018-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -365,9 +365,7 @@ void FTermDetection::detectTerminal()
 //----------------------------------------------------------------------
 FString FTermDetection::init_256colorTerminal()
 {
-  if ( get256colorEnvString() )
-    color256 = true;
-  else if ( termtype.includes("256color") )
+  if ( get256colorEnvString() || termtype.includes("256color") )
     color256 = true;
   else
     color256 = false;

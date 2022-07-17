@@ -306,9 +306,9 @@ wchar_t cp437_to_unicode (uChar c)
   wchar_t ucs = c;
   const auto& found = std::find_if ( cp437_ucs.cbegin()
                                    , cp437_ucs.cend()
-                                   , [&c] (const char_map& entry)
+                                   , [&ucs] (const char_map& entry)
                                      {
-                                       return entry[CP437] == c;
+                                       return entry[CP437] == ucs;
                                      } );
 
   if ( found != cp437_ucs.cend() )

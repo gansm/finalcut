@@ -263,7 +263,7 @@ bool FTermLinux::loadVGAFont()
     if ( isLinuxConsole() )
     {
       // Set the standard vga font 8x16
-      const int ret = setScreenFont(fc::__8x16std, 256, 8, 16);
+      const int ret = setScreenFont(fc::F_8x16std, 256, 8, 16);
       vga_font = bool( ret == 0 );
 
       // Unicode character mapping
@@ -306,10 +306,10 @@ bool FTermLinux::loadNewFont()
 
 #if defined(ISA_SYSCTL_SUPPORT)
       if ( has9BitCharacters() )
-        ret = setScreenFont(fc::__9x16graph, 256, 8, 16);  // set 9×16
+        ret = setScreenFont(fc::F_9x16graph, 256, 8, 16);  // set 9×16
       else
 #endif
-        ret = setScreenFont(fc::__8x16graph, 256, 8, 16);  // set 8×16
+        ret = setScreenFont(fc::F_8x16graph, 256, 8, 16);  // set 8×16
 
       new_font = bool( ret == 0 );
 

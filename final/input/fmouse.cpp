@@ -603,7 +603,7 @@ void FMouseX11::processEvent (const TimeValue& time)
   const auto& mouse_position = getPos();
   const auto x = uChar(x11_mouse[1] - 0x20);
   const auto y = uChar(x11_mouse[2] - 0x20);
-  const int btn = x11_mouse[0];
+  const int btn = uChar(x11_mouse[0]);
   setNewPos (x, y);
   clearButtonState();
   setKeyState (btn);

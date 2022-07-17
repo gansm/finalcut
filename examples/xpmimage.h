@@ -79,6 +79,10 @@ class XpmImage
     auto     getColorMapFromLine (const std::string&, int) const
                  -> std::pair<std::string, XpmColor>;
     void     printUpperLower (const XpmColor&, const XpmColor&);
+    template <typename A, std::size_t N>
+    constexpr std::size_t getArraySize(const A (&array)[N]) noexcept;
+    template <typename A>
+    constexpr auto getArraySize(const A& array) -> decltype(array.size());
 
     // Data member
     finalcut::FVTermBuffer vterm_buf{};
@@ -1053,6 +1057,7 @@ template <typename XPMdataT
 void XpmImage::parseXPM3 (XPMdataT& raw_xpm)
 {
   std::vector<std::string> xpm{};
+  xpm.reserve(getArraySize(xpm));
 
   for (const auto& line : raw_xpm)
     xpm.emplace_back(line);
@@ -1163,4 +1168,18 @@ auto XpmImage::xpmFileToVector (const std::string& filename) const -> std::vecto
     infile.close();
 
   return xpm;
+}
+
+//----------------------------------------------------------------------
+template <typename A, std::size_t N>
+constexpr std::size_t XpmImage::getArraySize(const A (&array)[N]) noexcept
+{
+  return N;
+}
+
+//----------------------------------------------------------------------
+template <typename A>
+constexpr auto XpmImage::getArraySize(const A& array) -> decltype(array.size())
+{
+  return array.size();
 }

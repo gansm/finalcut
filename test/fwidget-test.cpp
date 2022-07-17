@@ -1095,6 +1095,25 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( wdgt.termToWidgetPos(finalcut::FPoint(2, 2)) == finalcut::FPoint(-4, -4) );
   CPPUNIT_ASSERT ( wdgt.termToWidgetPos(finalcut::FPoint(1, 1)) == finalcut::FPoint(-5, -5) );
 
+  // Same position and size
+  wdgt.setGeometry (box);
+  CPPUNIT_ASSERT ( wdgt.getX() == 7 );
+  CPPUNIT_ASSERT ( wdgt.getY() == 7 );
+  CPPUNIT_ASSERT ( wdgt.getPos() == finalcut::FPoint(7, 7) );
+  CPPUNIT_ASSERT ( wdgt.getTermX() == 7 );
+  CPPUNIT_ASSERT ( wdgt.getTermY() == 7 );
+  CPPUNIT_ASSERT ( wdgt.getTermPos() == finalcut::FPoint(7, 7) );
+  CPPUNIT_ASSERT ( wdgt.getWidth() == 10 );
+  CPPUNIT_ASSERT ( wdgt.getHeight() == 8 );
+  CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(10, 8) );
+  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top).size() == 10 );
+  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 8 );
+  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 10 );
+  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 8 );
+  CPPUNIT_ASSERT ( wdgt.termToWidgetPos(finalcut::FPoint(3, 3)) == finalcut::FPoint(-3, -3) );
+  CPPUNIT_ASSERT ( wdgt.termToWidgetPos(finalcut::FPoint(2, 2)) == finalcut::FPoint(-4, -4) );
+  CPPUNIT_ASSERT ( wdgt.termToWidgetPos(finalcut::FPoint(1, 1)) == finalcut::FPoint(-5, -5) );
+
   wdgt.setGeometry(finalcut::FPoint(22, 33), finalcut::FSize(560, 130) );
   CPPUNIT_ASSERT ( wdgt.getX() == 22 );
   CPPUNIT_ASSERT ( wdgt.getY() == 33 );

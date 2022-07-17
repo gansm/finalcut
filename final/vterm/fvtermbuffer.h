@@ -135,6 +135,7 @@ class FVTermBuffer
 template <typename Iterator>
 inline FVTermBuffer::FVTermBuffer(Iterator first, Iterator last)
 {
+  assert ( first != last );
   data.assign(first, last);
 }
 

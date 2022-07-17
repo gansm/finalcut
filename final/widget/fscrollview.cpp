@@ -926,7 +926,7 @@ void FScrollView::changeSize (const FSize& size, bool adjust)
   if ( getScrollWidth() < getViewportWidth()
     || getScrollHeight() < getViewportHeight() )
   {
-    setScrollSize (getViewportSize());
+    FScrollView::setScrollSize (getViewportSize());
   }
   else if ( ! adjust && viewport )
   {
