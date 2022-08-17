@@ -41,6 +41,13 @@ namespace finalcut
 // class FVTermBuffer
 //----------------------------------------------------------------------
 
+// constructors and destructor
+//----------------------------------------------------------------------
+FVTermBuffer::FVTermBuffer()  // constructor
+{
+  data.reserve(2048);  // Set initial data size to 2048 FChars
+}
+
 // public methods of FVTermBuffer
 //----------------------------------------------------------------------
 FString FVTermBuffer::toString() const
@@ -66,7 +73,7 @@ FString FVTermBuffer::toString() const
 //----------------------------------------------------------------------
 int FVTermBuffer::print (const FString& string)
 {
-  data.reserve(data.size() + string.getLength());
+  checkCapacity(data.size() + string.getLength());
   const auto last = string.cend();
   auto cbegin = string.cbegin();
   auto iter = cbegin;
@@ -130,6 +137,20 @@ void FVTermBuffer::print (const FColorPair& pair) const
 
 
 // private methods of FVTermBuffer
+//----------------------------------------------------------------------
+void FVTermBuffer::checkCapacity (std::size_t size)
+{
+  if ( size <= data.capacity() )
+    return;
+
+  const auto new_size = [&size] ()
+  {
+    return std::pow(2, std::ceil(std::log(size) / std::log(2)));
+  }();
+
+  data.reserve(new_size);
+}
+
 //----------------------------------------------------------------------
 void FVTermBuffer::add ( FString::const_iterator& cbegin
                        , const FString::const_iterator& cend

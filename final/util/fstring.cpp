@@ -1131,7 +1131,7 @@ inline std::wstring FString::internal_toWideString (const std::string& s) const
   if ( wide_length == static_cast<std::size_t>(-1) )
   {
     if ( src != s.c_str() )
-      return {dest.data(), wide_length};
+      return dest.data();
 
     return {};
   }

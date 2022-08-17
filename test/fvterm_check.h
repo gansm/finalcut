@@ -59,9 +59,9 @@ void showFCharData (const finalcut::FChar&);
 auto getAreaSize (finalcut::FVTerm::FTermArea*) -> std::size_t;
 auto isAreaEqual (finalcut::FVTerm::FTermArea*, finalcut::FVTerm::FTermArea*) -> bool;
 auto isFCharEqual (const finalcut::FChar&, const finalcut::FChar&) -> bool;
-template < typename CharT
-         , enable_if_FChar_t<CharT> = nullptr >
-void printOnArea (finalcut::FVTerm::FTermArea*, const CharT&);
+template < typename FCharT
+         , enable_if_FChar_t<FCharT> = nullptr >
+void printOnArea (finalcut::FVTerm::FTermArea*, const FCharT&);
 void printOnArea (finalcut::FVTerm::FTermArea*, const RepeatFChar&);
 void printOnArea (finalcut::FVTerm::FTermArea*, const RepeatFCharVector&);
 void printOnArea (finalcut::FVTerm::FTermArea*, const RepeatFCharLine&);
@@ -167,10 +167,10 @@ auto isFCharEqual ( const finalcut::FChar& lhs
 }
 
 //----------------------------------------------------------------------
-template < typename CharT
-         , enable_if_FChar_t<CharT> >
+template < typename FCharT
+         , enable_if_FChar_t<FCharT> >
 void printOnArea ( finalcut::FVTerm::FTermArea* area
-                 , const CharT& fchar )
+                 , const FCharT& fchar )
 {
   if ( area->cursor_x < 1 )
     area->cursor_x = 1;

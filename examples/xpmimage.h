@@ -80,9 +80,9 @@ class XpmImage
                  -> std::pair<std::string, XpmColor>;
     void     printUpperLower (const XpmColor&, const XpmColor&);
     template <typename A, std::size_t N>
-    constexpr std::size_t getArraySize(const A (&array)[N]) noexcept;
+    constexpr auto getArraySize(const A (&)[N]) const noexcept -> std::size_t;
     template <typename A>
-    constexpr auto getArraySize(const A& array) -> decltype(array.size());
+    constexpr auto getArraySize(const A& array) const -> decltype(array.size());
 
     // Data member
     finalcut::FVTermBuffer vterm_buf{};
@@ -1172,14 +1172,14 @@ auto XpmImage::xpmFileToVector (const std::string& filename) const -> std::vecto
 
 //----------------------------------------------------------------------
 template <typename A, std::size_t N>
-constexpr std::size_t XpmImage::getArraySize(const A (&array)[N]) noexcept
+constexpr auto XpmImage::getArraySize(const A (&)[N]) const noexcept -> std::size_t
 {
   return N;
 }
 
 //----------------------------------------------------------------------
 template <typename A>
-constexpr auto XpmImage::getArraySize(const A& array) -> decltype(array.size())
+constexpr auto XpmImage::getArraySize(const A& array) const -> decltype(array.size())
 {
   return array.size();
 }

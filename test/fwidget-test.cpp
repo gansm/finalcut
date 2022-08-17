@@ -31,6 +31,7 @@
 #include <cppunit/TestRunner.h>
 
 #include <final/final.h>
+#include <fvterm_check.h>
 
 
 //----------------------------------------------------------------------
@@ -1857,7 +1858,48 @@ void FWidgetTest::closeWidgetTest()
 //----------------------------------------------------------------------
 void FWidgetTest::adjustSizeTest()
 {
+  class TestWidget : public finalcut::FWidget
+  {
+    public:
+      TestWidget (finalcut::FWidget* parent = nullptr)
+        : finalcut::FWidget{parent}
+      { }
 
+      TestWidget (const TestWidget&) = delete;
+
+      TestWidget (TestWidget&&) noexcept = delete;
+
+      ~TestWidget() override
+      { }
+
+      void p_adjustSize()
+      {
+        return finalcut::FWidget::adjustSize();
+      }
+  };
+
+  TestWidget root_wdgt{};  // Root widget
+  TestWidget wdgt{&root_wdgt};  // Child widget
+  root_wdgt.setGeometry({3, 3}, {10, 5}, false);
+  wdgt.setGeometry({-2, -2}, {20, 50}, false);
+  std::cerr << "\ngetGeometry(): " << root_wdgt.getGeometry() << "\n";
+  std::cerr << "getGeometry(): " << wdgt.getGeometry() << "\n";
+  std::cerr << "getClientSize(): " << root_wdgt.getClientSize() << "\n";
+  std::cerr << "getClientSize(): " << wdgt.getClientSize() << "\n";
+  CPPUNIT_ASSERT ( root_wdgt.getGeometry() == finalcut::FRect(finalcut::FPoint(3, 3), finalcut::FSize(10, 5)) );
+  CPPUNIT_ASSERT ( wdgt.getGeometry() == finalcut::FRect(finalcut::FPoint(1, 1), finalcut::FSize(20, 50)) );
+  CPPUNIT_ASSERT ( root_wdgt.getClientSize() == finalcut::FSize(10, 5) );
+  CPPUNIT_ASSERT ( wdgt.getClientSize() == finalcut::FSize(20, 50) );
+
+  wdgt.p_adjustSize();
+  std::cerr << "getGeometry(): " << root_wdgt.getGeometry() << "\n";
+  std::cerr << "getGeometry(): " << wdgt.getGeometry() << "\n";
+  std::cerr << "getClientSize(): " << root_wdgt.getClientSize() << "\n";
+  std::cerr << "getClientSize(): " << wdgt.getClientSize() << "\n";
+  CPPUNIT_ASSERT ( root_wdgt.getGeometry() == finalcut::FRect(finalcut::FPoint(3, 3), finalcut::FSize(10, 5)) );
+  CPPUNIT_ASSERT ( wdgt.getGeometry() == finalcut::FRect(finalcut::FPoint(1, 1), finalcut::FSize(10, 5)) );
+  CPPUNIT_ASSERT ( root_wdgt.getClientSize() == finalcut::FSize(10, 5) );
+  CPPUNIT_ASSERT ( wdgt.getClientSize() == finalcut::FSize(10, 5) );
 }
 
 //----------------------------------------------------------------------

@@ -64,7 +64,8 @@ class FVTermBuffer
     using const_reference = FCharVector::const_reference;
 
     // Constructor
-    FVTermBuffer() = default;
+    FVTermBuffer();
+
     template <typename Iterator>
     FVTermBuffer (Iterator, Iterator);
 
@@ -119,10 +120,12 @@ class FVTermBuffer
     FVTermBuffer&          print ();
 
   private:
-    FCharVector            data{};
+    void                   checkCapacity (std::size_t);
     void                   add ( FString::const_iterator&
                                , const FString::const_iterator&
                                , int& );
+    // Data member
+    FCharVector            data{};
 
     // Non-member operators
     friend FCharVector& operator << ( FCharVector&
