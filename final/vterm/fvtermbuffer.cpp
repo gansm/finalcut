@@ -132,7 +132,8 @@ void FVTermBuffer::print (const FStyle& style) const
 //----------------------------------------------------------------------
 void FVTermBuffer::print (const FColorPair& pair) const
 {
-  FVTermAttribute::setColor(pair.getForegroundColor(), pair.getBackgroundColor());
+  FVTermAttribute::setColor( pair.getForegroundColor()
+                           , pair.getBackgroundColor() );
 }
 
 
@@ -145,7 +146,7 @@ void FVTermBuffer::checkCapacity (std::size_t size)
 
   const auto new_size = [&size] ()
   {
-    return std::pow(2, std::ceil(std::log(size) / std::log(2)));
+    return std::size_t(std::pow(2, std::ceil(std::log(size) / std::log(2.0))));
   }();
 
   data.reserve(new_size);
