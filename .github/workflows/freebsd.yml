@@ -27,7 +27,7 @@ jobs:
           freebsd-version
           whoami
           pwd
-          sudo pkg update -y
+          sudo pkg update -f
           sudo pkg install -y lang/gcc devel/autotools autotools automake autoconf autoconf-archive libtool pkgconf devel/ncurses devel/cppunit cppunit
           g++ --version
           autoreconf -v --install --force
