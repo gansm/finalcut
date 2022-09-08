@@ -1769,7 +1769,6 @@ void FWidgetTest::focusableChildrenTest()
 //----------------------------------------------------------------------
 void FWidgetTest::closeWidgetTest()
 {
-
   finalcut::FWidget root_wdgt{};  // Root widget
   finalcut::FWidget main_wdgt{&root_wdgt};  // Child / main widget
   finalcut::FWidget::setMainWidget(&main_wdgt);
@@ -1858,6 +1857,9 @@ void FWidgetTest::closeWidgetTest()
 //----------------------------------------------------------------------
 void FWidgetTest::adjustSizeTest()
 {
+  std::unique_ptr<finalcut::FSystem> fsys = std::make_unique<FSystemTest>();
+  finalcut::FTerm::setFSystem(fsys);
+
   class TestWidget : public finalcut::FWidget
   {
     public:
@@ -2046,6 +2048,7 @@ void FWidgetTest::adjustSizeTest()
   CPPUNIT_ASSERT ( root_wdgt.getClientSize() == finalcut::FSize(10, 5) );
   CPPUNIT_ASSERT ( child_wdgt.getClientSize() == finalcut::FSize(1, 1) );
 
+  // setMinimumSize before setSize
   child_wdgt.setMinimumWidth(2);
   child_wdgt.setMinimumHeight(2);
   child_wdgt.setSize({0, 0}, false);  // Widget width or height can not be smaller than the minimum
@@ -2059,6 +2062,58 @@ void FWidgetTest::adjustSizeTest()
   CPPUNIT_ASSERT ( child_wdgt.getGeometry() == finalcut::FRect(finalcut::FPoint(6, 4), finalcut::FSize(2, 2)) );
   CPPUNIT_ASSERT ( root_wdgt.getClientSize() == finalcut::FSize(10, 5) );
   CPPUNIT_ASSERT ( child_wdgt.getClientSize() == finalcut::FSize(2, 2) );
+
+  // Reset minimum size
+  child_wdgt.setMinimumSize({0, 0} );
+  // setSize before setMinimumSize
+  child_wdgt.setSize({0, 0}, false);  // Widget width or height can not be smaller than the minimum
+  child_wdgt.setMinimumSize({3, 3} );
+  CPPUNIT_ASSERT ( root_wdgt.getGeometry() == finalcut::FRect(finalcut::FPoint(3, 3), finalcut::FSize(10, 5)) );
+  CPPUNIT_ASSERT ( child_wdgt.getGeometry() == finalcut::FRect(finalcut::FPoint(6, 6), finalcut::FSize(1, 1)) );
+  CPPUNIT_ASSERT ( root_wdgt.getClientSize() == finalcut::FSize(10, 5) );
+  CPPUNIT_ASSERT ( child_wdgt.getClientSize() == finalcut::FSize(2, 2) );
+
+  child_wdgt.p_adjustSize();
+  CPPUNIT_ASSERT ( root_wdgt.getGeometry() == finalcut::FRect(finalcut::FPoint(3, 3), finalcut::FSize(10, 5)) );
+  CPPUNIT_ASSERT ( child_wdgt.getGeometry() == finalcut::FRect(finalcut::FPoint(6, 5), finalcut::FSize(3, 3)) );
+  CPPUNIT_ASSERT ( root_wdgt.getClientSize() == finalcut::FSize(10, 5) );
+  CPPUNIT_ASSERT ( child_wdgt.getClientSize() == finalcut::FSize(3, 3) );
+
+  // Set the minimum width and height to 0
+  child_wdgt.setMinimumSize({0, 0} );
+  child_wdgt.setMaximumSize({INT_MAX, INT_MAX} );
+  child_wdgt.setBottomPadding(1, false);
+  child_wdgt.setRightPadding(1, false);
+  root_wdgt.setPos({1, 1}, false);
+  root_wdgt.setSize({1, 1}, false);
+  child_wdgt.setPos({-2, -2}, false);
+  CPPUNIT_ASSERT ( root_wdgt.getGeometry() == finalcut::FRect(finalcut::FPoint(1, 1), finalcut::FSize(1, 1)) );
+  CPPUNIT_ASSERT ( child_wdgt.getGeometry() == finalcut::FRect(finalcut::FPoint(1, 1), finalcut::FSize(3, 3)) );
+  CPPUNIT_ASSERT ( root_wdgt.getClientSize() == finalcut::FSize(10, 5) );
+  CPPUNIT_ASSERT ( child_wdgt.getClientSize() == finalcut::FSize(3, 3) );
+
+  root_wdgt.p_adjustSize();
+  CPPUNIT_ASSERT ( root_wdgt.getGeometry() == finalcut::FRect(finalcut::FPoint(1, 1), finalcut::FSize(1, 1)) );
+  CPPUNIT_ASSERT ( child_wdgt.getGeometry() == finalcut::FRect(finalcut::FPoint(1, 1), finalcut::FSize(1, 1)) );
+  CPPUNIT_ASSERT ( root_wdgt.getClientSize() == finalcut::FSize(1, 1) );
+  CPPUNIT_ASSERT ( child_wdgt.getClientSize() == finalcut::FSize(0, 0) );
+
+  root_wdgt.setPos({9, 9}, false);
+  root_wdgt.setSize({20, 20}, false);
+  child_wdgt.setPos({2, 2}, false);
+  child_wdgt.setSize({10, 10}, false);
+  CPPUNIT_ASSERT ( root_wdgt.getTermGeometry() == finalcut::FRect(finalcut::FPoint(9, 9), finalcut::FSize(20, 20)) );
+  CPPUNIT_ASSERT ( child_wdgt.getTermGeometry() == finalcut::FRect(finalcut::FPoint(2, 2), finalcut::FSize(10, 10)) );
+  child_wdgt.setFlags().window_widget = true;
+  child_wdgt.ignorePadding(true);
+  child_wdgt.p_adjustSize();
+  CPPUNIT_ASSERT ( root_wdgt.getTermGeometry() == finalcut::FRect(finalcut::FPoint(9, 9), finalcut::FSize(20, 20)) );
+  CPPUNIT_ASSERT ( child_wdgt.getTermGeometry() == finalcut::FRect(finalcut::FPoint(2, 2), finalcut::FSize(10, 10)) );
+
+  child_wdgt.setFlags().window_widget = false;
+  child_wdgt.p_adjustSize();
+  CPPUNIT_ASSERT ( root_wdgt.getTermGeometry() == finalcut::FRect(finalcut::FPoint(9, 9), finalcut::FSize(20, 20)) );
+  CPPUNIT_ASSERT ( child_wdgt.getTermGeometry() == finalcut::FRect(finalcut::FPoint(10, 10), finalcut::FSize(10, 10)) );
 }
 
 //----------------------------------------------------------------------
