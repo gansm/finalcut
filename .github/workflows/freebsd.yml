@@ -18,7 +18,10 @@ jobs:
 
     - name: Test on FreeBSD 13.0
       uses: cross-platform-actions/action@v0.6.2
+      env:
+        IGNORE_OSVERSION: yes
       with:
+        environment_variables: IGNORE_OSVERSION
         operating_system: freebsd
         version: '13.0'
         shell: bash
