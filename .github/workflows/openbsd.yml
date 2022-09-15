@@ -10,14 +10,14 @@ on:
 
 jobs:
   build:
-    runs-on: macos-10.15
+    runs-on: ubuntu-latest
 
     steps:
     - name: Repository checkout
       uses: actions/checkout@v2
 
     - name: Test on OpenBSD 6.9
-      uses: cross-platform-actions/action@v0.3.1
+      uses: cross-platform-actions/action@v0.6.2
       with:
         operating_system: openbsd
         version: '6.9'

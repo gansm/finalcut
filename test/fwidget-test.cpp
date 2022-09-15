@@ -2119,8 +2119,23 @@ void FWidgetTest::adjustSizeTest()
 //----------------------------------------------------------------------
 void FWidgetTest::callbackTest()
 {
-  // .addCallback()
-  // .delCallback()
+  int value{0};
+  finalcut::FWidget wdgt{};
+  wdgt.addCallback( "signal", [&value] () { value++; } );
+  CPPUNIT_ASSERT ( value == 0 );
+  wdgt.emitCallback("nonsense");
+  CPPUNIT_ASSERT ( value == 0 );
+  wdgt.emitCallback("signal");
+  CPPUNIT_ASSERT ( value == 1 );
+  value *= 300;
+  wdgt.emitCallback("signal");
+  CPPUNIT_ASSERT ( value == 301 );
+  wdgt.delCallback("nonsense");
+  wdgt.emitCallback("signal");
+  CPPUNIT_ASSERT ( value == 302 );
+  wdgt.delCallback("signal");
+  wdgt.emitCallback("signal");
+  CPPUNIT_ASSERT ( value == 302 );
 }
 
 
