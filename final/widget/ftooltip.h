@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2021 Markus Gans                                      *
+* Copyright 2016-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -74,33 +74,33 @@ class FToolTip : public FWindow
     ~FToolTip () override;
 
     // Accessors
-    FString             getClassName() const override;
-    FString             getText() const;
+    auto getClassName() const -> FString override;
+    auto getText() const -> FString;
 
     // Mutators
-    void                setText (const FString&);
-    void                enableAutoTrim();
-    void                disableAutoTrim();
-    void                resetColors() override;
-    bool                setBorder (bool = true);
-    bool                unsetBorder();
+    void setText (const FString&);
+    void enableAutoTrim();
+    void disableAutoTrim();
+    void resetColors() override;
+    auto setBorder (bool = true) -> bool;
+    auto unsetBorder() -> bool;
 
     // Inquiries
-    bool                hasBorder() const;
+    auto hasBorder() const -> bool;
 
     // Methods
-    void                show() override;
+    void show() override;
 
     // Event handler
-    void                onMouseDown (FMouseEvent*) override;
+    void onMouseDown (FMouseEvent*) override;
 
   private:
     // Methods
-    void                init();
-    void                draw() override;
-    void                calculateDimensions();
-    void                initLayout() override;
-    void                adjustSize() override;
+    void init();
+    void draw() override;
+    void calculateDimensions();
+    void initLayout() override;
+    void adjustSize() override;
 
     // Data members
     FString       text{};
@@ -113,11 +113,11 @@ class FToolTip : public FWindow
 
 // FToolTip inline functions
 //----------------------------------------------------------------------
-inline FString FToolTip::getClassName() const
+inline auto FToolTip::getClassName() const -> FString
 { return "FToolTip"; }
 
 //----------------------------------------------------------------------
-inline FString FToolTip::getText() const
+inline auto FToolTip::getText() const -> FString
 { return text; }
 
 //----------------------------------------------------------------------
@@ -129,11 +129,11 @@ inline void FToolTip::disableAutoTrim()
 { text_auto_trim = false; }
 
 //----------------------------------------------------------------------
-inline bool FToolTip::unsetBorder()
+inline auto FToolTip::unsetBorder() -> bool
 { return setBorder(false); }
 
 //----------------------------------------------------------------------
-inline bool FToolTip::hasBorder() const
+inline auto FToolTip::hasBorder() const -> bool
 { return ! getFlags().no_border; }
 
 }  // namespace finalcut

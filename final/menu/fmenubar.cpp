@@ -286,7 +286,7 @@ void FMenuBar::selectItem_PostProcessing (FMenuItem* sel_item)
 }
 
 //----------------------------------------------------------------------
-bool FMenuBar::hotkeyMenu (FKeyEvent*& ev)
+auto FMenuBar::hotkeyMenu (FKeyEvent*& ev) -> bool
 {
   for (auto&& item : getItemList())
   {
@@ -619,7 +619,7 @@ void FMenuBar::openMenu (const FMenuItem* sel_item)
 }
 
 //----------------------------------------------------------------------
-bool FMenuBar::activateMenu (const FMenuItem* item)
+auto FMenuBar::activateMenu (const FMenuItem* item) -> bool
 {
   if ( ! item->hasMenu() )
     return false;
@@ -646,7 +646,7 @@ bool FMenuBar::activateMenu (const FMenuItem* item)
 }
 
 //----------------------------------------------------------------------
-bool FMenuBar::clickItem (FMenuItem* item)
+auto FMenuBar::clickItem (FMenuItem* item) -> bool
 {
   if ( item->hasMenu() )
     return false;

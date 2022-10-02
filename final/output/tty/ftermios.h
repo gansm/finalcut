@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2021 Markus Gans                                      *
+* Copyright 2018-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -55,28 +55,28 @@ class FTermios final
     FTermios();
 
     // Accessors
-    FString         getClassName() const;
-    static termios  getTTY();
-    static int      getStdIn() noexcept;
-    static int      getStdOut() noexcept;
-    static int      getStdErr() noexcept;
+    auto         getClassName() const -> FString;
+    static auto  getTTY() -> termios;
+    static auto  getStdIn() noexcept -> int;
+    static auto  getStdOut() noexcept -> int;
+    static auto  getStdErr() noexcept -> int;
 
     // Inquiries
-    static bool     isRaw() noexcept;
+    static auto  isRaw() noexcept -> bool;
 
     // Methods
-    static void     init();
-    static void     setTTY (const termios&);
-    static void     storeTTYsettings();
-    static void     restoreTTYsettings();
-    static void     setHardwareEcho();
-    static void     unsetHardwareEcho();
-    static void     setCaptureSendCharacters();
-    static void     unsetCaptureSendCharacters();
-    static bool     setRawMode (bool = true);
-    static bool     unsetRawMode();
-    static bool     setCookedMode();
-    static uInt     getBaudRate();
+    static void  init();
+    static void  setTTY (const termios&);
+    static void  storeTTYsettings();
+    static void  restoreTTYsettings();
+    static void  setHardwareEcho();
+    static void  unsetHardwareEcho();
+    static void  setCaptureSendCharacters();
+    static void  unsetCaptureSendCharacters();
+    static auto  setRawMode (bool = true) -> bool;
+    static auto  unsetRawMode() -> bool;
+    static auto  setCookedMode() -> bool;
+    static auto  getBaudRate() -> uInt;
 
   private:
     // Data members
@@ -90,31 +90,31 @@ class FTermios final
 
 // FTermios inline functions
 //----------------------------------------------------------------------
-inline FString FTermios::getClassName() const
+inline auto FTermios::getClassName() const -> FString
 { return "FTermios"; }
 
 //----------------------------------------------------------------------
-inline int FTermios::getStdIn() noexcept
+inline auto FTermios::getStdIn() noexcept -> int
 { return stdin_no; }
 
 //----------------------------------------------------------------------
-inline int FTermios::getStdOut() noexcept
+inline auto FTermios::getStdOut() noexcept -> int
 { return stdout_no; }
 
 //----------------------------------------------------------------------
-inline int FTermios::getStdErr() noexcept
+inline auto FTermios::getStdErr() noexcept -> int
 { return stderr_no; }
 
 //----------------------------------------------------------------------
-inline bool FTermios::isRaw() noexcept
+inline auto FTermios::isRaw() noexcept -> bool
 { return raw_mode; }
 
 //----------------------------------------------------------------------
-inline bool FTermios::unsetRawMode()
+inline auto FTermios::unsetRawMode() -> bool
 { return setRawMode(false); }
 
 //----------------------------------------------------------------------
-inline bool FTermios::setCookedMode()
+inline auto FTermios::setCookedMode() -> bool
 { return setRawMode(false); }
 
 }  // namespace finalcut

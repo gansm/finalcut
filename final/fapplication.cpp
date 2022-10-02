@@ -120,19 +120,19 @@ FApplication::~FApplication()  // destructor
 
 // public methods of FApplication
 //----------------------------------------------------------------------
-FApplication* FApplication::getApplicationObject()
+auto FApplication::getApplicationObject() -> FApplication*
 {
   return internal::var::app_object;
 }
 
 //----------------------------------------------------------------------
-FWidget* FApplication::getKeyboardWidget()
+auto FApplication::getKeyboardWidget() -> FWidget*
 {
   return keyboard_widget;
 }
 
 //----------------------------------------------------------------------
-FApplication::FLogPtr& FApplication::getLog()
+auto FApplication::getLog() -> FLogPtr&
 {
   // Global logger object
   static auto logger_ptr = new FLogPtr();
@@ -160,7 +160,7 @@ void FApplication::setLog (const FLogPtr& log)
 }
 
 //----------------------------------------------------------------------
-bool FApplication::isQuit()
+auto FApplication::isQuit() -> bool
 {
   return internal::var::app_object ? quit_now : true;
 }
@@ -174,7 +174,7 @@ void FApplication::start()  // Simulates application start
 #endif  // defined(UNIT_TEST)
 
 //----------------------------------------------------------------------
-int FApplication::exec()  // run
+auto FApplication::exec() -> int  // run
 {
   if ( quit_now )
   {
@@ -188,7 +188,7 @@ int FApplication::exec()  // run
 }
 
 //----------------------------------------------------------------------
-int FApplication::enterLoop()  // event loop
+auto FApplication::enterLoop() -> int  // event loop
 {
   loop_level++;
   quit_now = false;
@@ -224,7 +224,7 @@ void FApplication::quit() const
 }
 
 //----------------------------------------------------------------------
-bool FApplication::sendEvent (FObject* receiver, FEvent* event )
+auto FApplication::sendEvent (FObject* receiver, FEvent* event ) -> bool
 {
   if ( quit_now || internal::var::exit_loop || ! (bool(receiver) && bool(event)) )
     return false;
@@ -262,7 +262,7 @@ void FApplication::sendQueuedEvents()
 }
 
 //----------------------------------------------------------------------
-bool FApplication::eventInQueue() const
+auto FApplication::eventInQueue() const -> bool
 {
   if ( internal::var::app_object )
     return ( ! event_queue.empty() );
@@ -271,7 +271,7 @@ bool FApplication::eventInQueue() const
 }
 
 //----------------------------------------------------------------------
-bool FApplication::removeQueuedEvent (const FObject* receiver)
+auto FApplication::removeQueuedEvent (const FObject* receiver) -> bool
 {
   if ( ! eventInQueue() )
     return false;
@@ -668,7 +668,7 @@ inline void FApplication::findKeyboardWidget() const
 }
 
 //----------------------------------------------------------------------
-inline bool FApplication::isKeyPressed(uInt64 ms) const
+inline auto FApplication::isKeyPressed(uInt64 ms) const -> bool
 {
   static auto& mouse = FMouseControl::getInstance();
   static auto& keyboard = FKeyboard::getInstance();
@@ -768,7 +768,7 @@ inline void FApplication::sendEscapeKeyPressEvent() const
 }
 
 //----------------------------------------------------------------------
-inline bool FApplication::sendKeyDownEvent (FWidget* widget) const
+inline auto FApplication::sendKeyDownEvent (FWidget* widget) const -> bool
 {
   // Send key down event
   static const auto& keyboard = FKeyboard::getInstance();
@@ -778,7 +778,7 @@ inline bool FApplication::sendKeyDownEvent (FWidget* widget) const
 }
 
 //----------------------------------------------------------------------
-inline bool FApplication::sendKeyPressEvent (FWidget* widget) const
+inline auto FApplication::sendKeyPressEvent (FWidget* widget) const -> bool
 {
   // Send key press event
   static const auto& keyboard = FKeyboard::getInstance();
@@ -788,7 +788,7 @@ inline bool FApplication::sendKeyPressEvent (FWidget* widget) const
 }
 
 //----------------------------------------------------------------------
-inline bool FApplication::sendKeyUpEvent (FWidget* widget) const
+inline auto FApplication::sendKeyUpEvent (FWidget* widget) const -> bool
 {
   // Send key up event
   static const auto& keyboard = FKeyboard::getInstance();
@@ -826,7 +826,7 @@ inline void FApplication::sendKeyboardAccelerator()
 }
 
 //----------------------------------------------------------------------
-inline bool FApplication::hasDataInQueue() const
+inline auto FApplication::hasDataInQueue() const -> bool
 {
   static const auto& keyboard = FKeyboard::getInstance();
   static const auto& mouse = FMouseControl::getInstance();
@@ -886,7 +886,7 @@ inline void FApplication::processInput() const
 }
 
 //----------------------------------------------------------------------
-bool FApplication::processDialogSwitchAccelerator() const
+auto FApplication::processDialogSwitchAccelerator() const -> bool
 {
   static const auto& keyboard = FKeyboard::getInstance();
 
@@ -919,7 +919,7 @@ bool FApplication::processDialogSwitchAccelerator() const
 }
 
 //----------------------------------------------------------------------
-bool FApplication::processAccelerator (const FWidget& widget) const
+auto FApplication::processAccelerator (const FWidget& widget) const -> bool
 {
   if ( widget.getAcceleratorList().empty() )
     return false;
@@ -1235,7 +1235,7 @@ void FApplication::sendWheelEvent ( const FMouseData& md
 }
 
 //----------------------------------------------------------------------
-FWidget* FApplication::processParameters (const Args& args)
+auto FApplication::processParameters (const Args& args) -> FWidget*
 {
   if ( args.size() > 1 && (args[1] == "--help" || args[1] == "-h") )
   {
@@ -1300,7 +1300,7 @@ void FApplication::processLogger() const
 }
 
 //----------------------------------------------------------------------
-bool FApplication::processNextEvent()
+auto FApplication::processNextEvent() -> bool
 {
   uInt num_events{0};
 
@@ -1333,7 +1333,7 @@ void FApplication::performTimerAction (FObject* receiver, FEvent* event)
 }
 
 //----------------------------------------------------------------------
-inline bool FApplication::hasTerminalResized()
+inline auto FApplication::hasTerminalResized() -> bool
 {
   auto foutput_ptr = FVTerm::getFOutput();
   has_terminal_resized = foutput_ptr->hasTerminalResized();
@@ -1341,8 +1341,8 @@ inline bool FApplication::hasTerminalResized()
 }
 
 //----------------------------------------------------------------------
-bool FApplication::isEventProcessable ( FObject* receiver
-                                      , const FEvent* event )
+auto FApplication::isEventProcessable ( FObject* receiver
+                                      , const FEvent* event ) -> bool
 {
   if ( ! receiver->isWidget() )  // No restrictions for non-widgets
     return true;
@@ -1399,7 +1399,7 @@ bool FApplication::isEventProcessable ( FObject* receiver
 }
 
 //----------------------------------------------------------------------
-bool FApplication::isNextEventTimeout()
+auto FApplication::isNextEventTimeout() -> bool
 {
   return FObject::isTimeout(time_last_event, next_event_wait);
 }
@@ -1421,7 +1421,7 @@ void setQueued (FEvent& event, bool state)
 
 // FLog non-member operators
 //----------------------------------------------------------------------
-std::ostream& operator << (std::ostream& outstr, FLog::LogLevel l)
+auto operator << (std::ostream& outstr, FLog::LogLevel l) -> std::ostream&
 {
   *FApplication::getLog() << l;
   return outstr;

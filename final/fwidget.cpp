@@ -148,7 +148,7 @@ FWidget::~FWidget()  // destructor
 
 // public methods of FWidget
 //----------------------------------------------------------------------
-FWidget* FWidget::getRootWidget()
+auto FWidget::getRootWidget() -> FWidget*
 {
   FWidget* obj = this;
   auto p_obj = getParentWidget();
@@ -163,7 +163,7 @@ FWidget* FWidget::getRootWidget()
 }
 
 //----------------------------------------------------------------------
-FWidget* FWidget::getParentWidget() const
+auto FWidget::getParentWidget() const -> FWidget*
 {
   auto p_obj = getParent();
 
@@ -181,7 +181,7 @@ auto FWidget::getColorTheme() -> std::shared_ptr<FWidgetColors>&
 }
 
 //----------------------------------------------------------------------
-std::vector<bool>& FWidget::doubleFlatLine_ref (Side side)
+auto FWidget::doubleFlatLine_ref (Side side) -> std::vector<bool>&
 {
   auto& mask = double_flatline_mask;
 
@@ -207,7 +207,7 @@ std::vector<bool>& FWidget::doubleFlatLine_ref (Side side)
 }
 
 //----------------------------------------------------------------------
-FPoint FWidget::getPrintPos()
+auto FWidget::getPrintPos() -> FPoint
 {
   const auto& cur = getPrintCursor();
   return { cur.getX() - woffset.getX1() - getX() + 1
@@ -225,13 +225,13 @@ void FWidget::setMainWidget (FWidget* obj)
 }
 
 //----------------------------------------------------------------------
-bool FWidget::setVisible (bool enable)
+auto FWidget::setVisible (bool enable) -> bool
 {
   return (flags.visible = enable);
 }
 
 //----------------------------------------------------------------------
-bool FWidget::setEnable (bool enable)
+auto FWidget::setEnable (bool enable) -> bool
 {
   if ( enable )
     emitCallback("enable");
@@ -242,7 +242,7 @@ bool FWidget::setEnable (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FWidget::setFocus (bool enable)
+auto FWidget::setFocus (bool enable) -> bool
 {
   if ( ! isEnabled() )
     return false;
@@ -600,7 +600,7 @@ void FWidget::setGeometry (const FPoint& p, const FSize& s, bool adjust)
 }
 
 //----------------------------------------------------------------------
-bool FWidget::setCursorPos (const FPoint& pos)
+auto FWidget::setCursorPos (const FPoint& pos) -> bool
 {
   // sets the input cursor position
 
@@ -709,7 +709,7 @@ void FWidget::setDoubleFlatLine (Side side, int pos, bool bit)
 }
 
 //----------------------------------------------------------------------
-FWidget* FWidget::childWidgetAt (const FPoint& pos) &
+auto FWidget::childWidgetAt (const FPoint& pos) & -> FWidget*
 {
   if ( ! hasChildren() )
     return nullptr;
@@ -735,7 +735,7 @@ FWidget* FWidget::childWidgetAt (const FPoint& pos) &
 }
 
 //----------------------------------------------------------------------
-int FWidget::numOfFocusableChildren() &
+auto FWidget::numOfFocusableChildren() & -> int
 {
   if ( ! hasChildren() )
     return 0;
@@ -759,7 +759,7 @@ int FWidget::numOfFocusableChildren() &
 }
 
 //----------------------------------------------------------------------
-bool FWidget::close()
+auto FWidget::close() -> bool
 {
   // Sends a close event and quits the application on acceptance
 
@@ -969,7 +969,7 @@ void FWidget::hide()
 }
 
 //----------------------------------------------------------------------
-bool FWidget::focusNextChild()
+auto FWidget::focusNextChild() -> bool
 {
   if ( isDialogWidget() || ! hasParent() )
     return false;
@@ -1027,7 +1027,7 @@ bool FWidget::focusNextChild()
 }
 
 //----------------------------------------------------------------------
-bool FWidget::focusPrevChild()
+auto FWidget::focusPrevChild() -> bool
 {
   if ( isDialogWidget() || ! hasParent() )
     return false;
@@ -1084,7 +1084,7 @@ bool FWidget::focusPrevChild()
 }
 
 //----------------------------------------------------------------------
-bool FWidget::focusFirstChild() &
+auto FWidget::focusFirstChild() & -> bool
 {
   if ( ! hasChildren() )
     return false;
@@ -1126,7 +1126,7 @@ bool FWidget::focusFirstChild() &
 }
 
 //----------------------------------------------------------------------
-bool FWidget::focusLastChild() &
+auto FWidget::focusLastChild() & -> bool
 {
   if ( ! hasChildren() )
     return false;
@@ -1177,7 +1177,7 @@ void FWidget::quit()
 
 // protected methods of FWidget
 //----------------------------------------------------------------------
-FVTerm::FTermArea* FWidget::getPrintArea()
+auto FWidget::getPrintArea() -> FVTerm::FTermArea*
 {
   // returns the print area of this object
 
@@ -1229,7 +1229,7 @@ void FWidget::delPreprocessingHandler (const FVTerm* instance)
 }
 
 //----------------------------------------------------------------------
-bool FWidget::isChildPrintArea() const
+auto FWidget::isChildPrintArea() const -> bool
 {
   const auto& p_obj = static_cast<FWidget*>(getParent());
   return ( p_obj
@@ -1438,7 +1438,7 @@ void FWidget::hideArea (const FSize& size)
 }
 
 //----------------------------------------------------------------------
-bool FWidget::event (FEvent* ev)
+auto FWidget::event (FEvent* ev) -> bool
 {
   auto event_type = ev->getType();
 
@@ -1860,8 +1860,8 @@ void FWidget::setWindowFocus (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FWidget::changeFocus ( FWidget* follower, FWidget* parent
-                          , FocusTypes ft )
+auto FWidget::changeFocus ( FWidget* follower, FWidget* parent
+                          , FocusTypes ft ) -> bool
 {
   FFocusEvent out (Event::FocusOut);
   out.setFocusType(ft);
@@ -1954,7 +1954,7 @@ void FWidget::drawChildren()
 }
 
 //----------------------------------------------------------------------
-inline bool FWidget::isDefaultTheme()
+inline auto FWidget::isDefaultTheme() -> bool
 {
   FStringList default_themes
   {

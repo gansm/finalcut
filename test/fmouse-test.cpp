@@ -40,7 +40,7 @@ namespace test
 class FMouse_protected : public finalcut::FMouse
 {
   public:
-    bool hasData() noexcept override
+    auto hasData() noexcept -> bool override
     { return true; }
 
     void setRawData (finalcut::FKeyboard::keybuffer&) noexcept override
@@ -49,27 +49,27 @@ class FMouse_protected : public finalcut::FMouse
     void processEvent (const TimeValue&) override
     { }
 
-    uInt16 getMaxWidth() noexcept
+    auto getMaxWidth() noexcept -> uInt16
     {
       return finalcut::FMouse::getMaxWidth();
     }
 
-    uInt16 getMaxHeight() noexcept
+    auto getMaxHeight() noexcept -> uInt16
     {
       return finalcut::FMouse::getMaxHeight();
     }
 
-    const finalcut::FPoint& getNewMousePosition() const noexcept
+    auto getNewMousePosition() const noexcept -> const finalcut::FPoint&
     {
       return finalcut::FMouse::getNewPos();
     }
 
-    uInt64 getDblclickInterval() noexcept
+    auto getDblclickInterval() noexcept -> uInt64
     {
       return finalcut::FMouse::getDblclickInterval();
     }
 
-    bool isDblclickTimeout (const TimeValue& t)
+    auto isDblclickTimeout (const TimeValue& t) -> bool
     {
       return finalcut::FMouse::isDblclickTimeout(t);
     }
@@ -101,7 +101,7 @@ class FMouseTest : public CPPUNIT_NS::TestFixture
     void mouseControlTest();
 
   private:
-    finalcut::FKeyboard::keybuffer insertData (std::initializer_list<char>);
+    auto insertData (std::initializer_list<char>) -> finalcut::FKeyboard::keybuffer;
 
     // Adds code needed to register the test suite
     CPPUNIT_TEST_SUITE (FMouseTest);
@@ -1484,7 +1484,7 @@ void FMouseTest::mouseControlTest()
 }
 
 //----------------------------------------------------------------------
-finalcut::FKeyboard::keybuffer FMouseTest::insertData (std::initializer_list<char> list)
+auto FMouseTest::insertData (std::initializer_list<char> list) -> finalcut::FKeyboard::keybuffer
 {
   finalcut::FKeyboard::keybuffer buffer;
 

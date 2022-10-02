@@ -600,7 +600,7 @@ void FListBox::adjustSize()
 
 // private methods of FListBox
 //----------------------------------------------------------------------
-inline FString FListBox::getString (FListBoxItems::iterator iter)
+inline auto FListBox::getString (FListBoxItems::iterator iter) -> FString
 {
   return iter->getText();
 }
@@ -1198,7 +1198,7 @@ void FListBox::wheelDown (int pagesize)
 }
 
 //----------------------------------------------------------------------
-bool FListBox::dragScrollUp()
+auto FListBox::dragScrollUp() -> bool
 {
   if ( current == 1 )
   {
@@ -1211,7 +1211,7 @@ bool FListBox::dragScrollUp()
 }
 
 //----------------------------------------------------------------------
-bool FListBox::dragScrollDown()
+auto FListBox::dragScrollDown() -> bool
 {
   const auto& element_count = getCount();
 
@@ -1468,7 +1468,7 @@ inline void FListBox::lastPos()
 }
 
 //----------------------------------------------------------------------
-inline bool FListBox::skipIncrementalSearch()
+inline auto FListBox::skipIncrementalSearch() -> bool
 {
   if ( inc_search.getLength() > 0 )
   {
@@ -1487,7 +1487,7 @@ inline void FListBox::acceptSelection()
 }
 
 //----------------------------------------------------------------------
-inline bool FListBox::spacebarProcessing()
+inline auto FListBox::spacebarProcessing() -> bool
 {
   const auto& inc_len = inc_search.getLength();
 
@@ -1532,7 +1532,7 @@ inline bool FListBox::spacebarProcessing()
 }
 
 //----------------------------------------------------------------------
-inline bool FListBox::changeSelectionAndPosition()
+inline auto FListBox::changeSelectionAndPosition() -> bool
 {
   if ( isMultiSelection() )
   {
@@ -1560,7 +1560,7 @@ inline bool FListBox::changeSelectionAndPosition()
 }
 
 //----------------------------------------------------------------------
-inline bool FListBox::deletePreviousCharacter()
+inline auto FListBox::deletePreviousCharacter() -> bool
 {
   const auto& inc_len = inc_search.getLength();
 
@@ -1590,7 +1590,7 @@ inline bool FListBox::deletePreviousCharacter()
 }
 
 //----------------------------------------------------------------------
-inline bool FListBox::keyIncSearchInput (FKey key)
+inline auto FListBox::keyIncSearchInput (FKey key) -> bool
 {
   if ( key <= 0x20 || key > 0x10fff )
     return false;

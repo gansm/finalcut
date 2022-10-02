@@ -63,91 +63,91 @@ FTermOutput::~FTermOutput() noexcept = default;  // destructor
 
 // public methods of FTermOutput
 //----------------------------------------------------------------------
-std::size_t FTermOutput::getColumnNumber() const
+auto FTermOutput::getColumnNumber() const -> std::size_t
 {
   return FTerm::getColumnNumber();
 }
 
 //----------------------------------------------------------------------
-std::size_t FTermOutput::getLineNumber() const
+auto FTermOutput::getLineNumber() const -> std::size_t
 {
   return FTerm::getLineNumber();
 }
 
 //----------------------------------------------------------------------
-int FTermOutput::getTabstop() const
+auto FTermOutput::getTabstop() const -> int
 {
   return FTerm::getTabstop();
 }
 
 //----------------------------------------------------------------------
-int FTermOutput::getMaxColor() const
+auto FTermOutput::getMaxColor() const -> int
 {
   return FTerm::getMaxColor();
 }
 
 //----------------------------------------------------------------------
-Encoding FTermOutput::getEncoding() const
+auto FTermOutput::getEncoding() const -> Encoding
 {
   return fterm_data->getTerminalEncoding();
 }
 
 //----------------------------------------------------------------------
-FString FTermOutput::getKeyName (FKey keynum) const
+auto FTermOutput::getKeyName (FKey keynum) const -> FString
 {
   return FTerm::getKeyName(keynum);
 }
 
 //----------------------------------------------------------------------
-bool FTermOutput::isMonochron() const
+auto FTermOutput::isMonochron() const -> bool
 {
   return FTerm::isMonochron();
 }
 
 //----------------------------------------------------------------------
-bool FTermOutput::isNewFont() const
+auto FTermOutput::isNewFont() const -> bool
 {
   return FTerm::isNewFont();
 }
 
 //----------------------------------------------------------------------
-bool FTermOutput::isEncodable (const wchar_t& wide_char) const
+auto FTermOutput::isEncodable (const wchar_t& wide_char) const -> bool
 {
   return FTerm::isEncodable(wide_char);
 }
 
 //----------------------------------------------------------------------
-bool FTermOutput::hasTerminalResized() const
+auto FTermOutput::hasTerminalResized() const -> bool
 {
   return FTerm::hasChangedTermSize();
 }
 
 //----------------------------------------------------------------------
-bool FTermOutput::allowsTerminalSizeManipulation() const
+auto FTermOutput::allowsTerminalSizeManipulation() const -> bool
 {
   return fterm_data->isTermType(FTermType::xterm);
 }
 
 //----------------------------------------------------------------------
-bool FTermOutput::canChangeColorPalette() const
+auto FTermOutput::canChangeColorPalette() const -> bool
 {
   return FTerm::canChangeColorPalette();
 }
 
 //----------------------------------------------------------------------
-bool FTermOutput::hasHalfBlockCharacter() const
+auto FTermOutput::hasHalfBlockCharacter() const -> bool
 {
   return FTerm::hasHalfBlockCharacter();
 }
 
 //----------------------------------------------------------------------
-bool FTermOutput::hasShadowCharacter() const
+auto FTermOutput::hasShadowCharacter() const -> bool
 {
   return FTerm::hasShadowCharacter();
 }
 
 //----------------------------------------------------------------------
-bool FTermOutput::areMetaAndArrowKeysSupported() const
+auto FTermOutput::areMetaAndArrowKeysSupported() const -> bool
 {
   return ! fterm_data->isTermType(FTermType::linux_con);
 }
@@ -224,13 +224,13 @@ void FTermOutput::setTerminalSize (FSize size)
 }
 
 //----------------------------------------------------------------------
-bool FTermOutput::setVGAFont()
+auto FTermOutput::setVGAFont() -> bool
 {
   return FTerm::setVGAFont();
 }
 
 //----------------------------------------------------------------------
-bool FTermOutput::setNewFont()
+auto FTermOutput::setNewFont() -> bool
 {
   return FTerm::setNewFont();
 }
@@ -300,7 +300,7 @@ void FTermOutput::finishTerminal()
 }
 
 //----------------------------------------------------------------------
-bool FTermOutput::updateTerminal()
+auto FTermOutput::updateTerminal() -> bool
 {
   // Updates pending changes to the terminal
 
@@ -347,7 +347,7 @@ void FTermOutput::initScreenSettings()
 }
 
 //----------------------------------------------------------------------
-bool FTermOutput::scrollTerminalForward()
+auto FTermOutput::scrollTerminalForward() -> bool
 {
   if ( ! TCAP(t_scroll_forward) )
     return false;
@@ -357,7 +357,7 @@ bool FTermOutput::scrollTerminalForward()
 }
 
 //----------------------------------------------------------------------
-bool FTermOutput::scrollTerminalReverse()
+auto FTermOutput::scrollTerminalReverse() -> bool
 {
   if ( ! TCAP(t_scroll_reverse) )
     return false;
@@ -386,7 +386,7 @@ void FTermOutput::clearTerminalState()
 }
 
 //----------------------------------------------------------------------
-bool FTermOutput::clearTerminal (wchar_t fillchar)
+auto FTermOutput::clearTerminal (wchar_t fillchar) -> bool
 {
   // Clear the real terminal and put cursor at home
 
@@ -473,13 +473,13 @@ void FTermOutput::beep() const
 
 // private methods of FTermOutput
 //----------------------------------------------------------------------
-inline FStartOptions& FTermOutput::getStartOptions() &
+inline auto FTermOutput::getStartOptions() & -> FStartOptions&
 {
   return FStartOptions::getInstance();
 }
 
 //----------------------------------------------------------------------
-inline bool FTermOutput::isInputCursorInsideTerminal() const
+inline auto FTermOutput::isInputCursorInsideTerminal() const -> bool
 {
   if ( ! vterm || ! vterm->input_cursor_visible )
     return false;
@@ -491,7 +491,7 @@ inline bool FTermOutput::isInputCursorInsideTerminal() const
 }
 
 //----------------------------------------------------------------------
-inline bool FTermOutput::isDefaultPaletteTheme()
+inline auto FTermOutput::isDefaultPaletteTheme() -> bool
 {
   FStringList default_themes
   {
@@ -598,7 +598,7 @@ void FTermOutput::init_combined_character()
 }
 
 //----------------------------------------------------------------------
-bool FTermOutput::canClearToEOL (uInt xmin, uInt y) const
+auto FTermOutput::canClearToEOL (uInt xmin, uInt y) const -> bool
 {
   // Is the line from xmin to the end of the line blank?
   // => clear to end of line
@@ -629,7 +629,7 @@ bool FTermOutput::canClearToEOL (uInt xmin, uInt y) const
 }
 
 //----------------------------------------------------------------------
-bool FTermOutput::canClearLeadingWS (uInt& xmin, uInt y) const
+auto FTermOutput::canClearLeadingWS (uInt& xmin, uInt y) const -> bool
 {
   // Line has leading whitespace
   // => clear from xmin to beginning of line
@@ -665,7 +665,7 @@ bool FTermOutput::canClearLeadingWS (uInt& xmin, uInt y) const
 }
 
 //----------------------------------------------------------------------
-bool FTermOutput::canClearTrailingWS (uInt& xmax, uInt y) const
+auto FTermOutput::canClearTrailingWS (uInt& xmax, uInt y) const -> bool
 {
   // Line has trailing whitespace
   // => clear from xmax to end of line
@@ -701,7 +701,7 @@ bool FTermOutput::canClearTrailingWS (uInt& xmax, uInt y) const
 }
 
 //----------------------------------------------------------------------
-bool FTermOutput::skipUnchangedCharacters (uInt& x, uInt xmax, uInt y)
+auto FTermOutput::skipUnchangedCharacters (uInt& x, uInt xmax, uInt y) -> bool
 {
   // Skip characters without changes if it is faster than redrawing
 
@@ -954,8 +954,8 @@ inline void FTermOutput::skipPaddingCharacter ( uInt& x, uInt y
 }
 
 //----------------------------------------------------------------------
-FTermOutput::PrintState FTermOutput::eraseCharacters ( uInt& x, uInt xmax, uInt y
-                                                     , bool draw_trailing_ws )
+auto FTermOutput::eraseCharacters ( uInt& x, uInt xmax, uInt y
+                                  , bool draw_trailing_ws ) -> PrintState
 {
   // Erase a number of characters to draw simple whitespaces
 
@@ -1019,7 +1019,7 @@ FTermOutput::PrintState FTermOutput::eraseCharacters ( uInt& x, uInt xmax, uInt 
 }
 
 //----------------------------------------------------------------------
-FTermOutput::PrintState FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y)
+auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y) -> PrintState
 {
   // Repeat one character n-fold
 
@@ -1078,13 +1078,13 @@ FTermOutput::PrintState FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y
 }
 
 //----------------------------------------------------------------------
-inline bool FTermOutput::isFullWidthChar (const FChar& ch) const
+inline auto FTermOutput::isFullWidthChar (const FChar& ch) const -> bool
 {
   return ch.attr.bit.char_width == 2;
 }
 
 //----------------------------------------------------------------------
-inline bool FTermOutput::isFullWidthPaddingChar (const FChar& ch) const
+inline auto FTermOutput::isFullWidthPaddingChar (const FChar& ch) const -> bool
 {
   return ch.attr.bit.fullwidth_padding;
 }
@@ -1116,7 +1116,7 @@ void FTermOutput::cursorWrap() const
 }
 
 //----------------------------------------------------------------------
-bool FTermOutput::updateTerminalLine (uInt y)
+auto FTermOutput::updateTerminalLine (uInt y) -> bool
 {
   // Updates pending changes from line y to the terminal
 
@@ -1185,7 +1185,7 @@ bool FTermOutput::updateTerminalLine (uInt y)
 }
 
 //----------------------------------------------------------------------
-bool FTermOutput::updateTerminalCursor()
+auto FTermOutput::updateTerminalCursor() -> bool
 {
   // Updates the input cursor visibility and the position
 
@@ -1246,7 +1246,7 @@ inline void FTermOutput::flushTimeAdjustment()
 }
 
 //----------------------------------------------------------------------
-inline bool FTermOutput::isFlushTimeout() const
+inline auto FTermOutput::isFlushTimeout() const -> bool
 {
   return FObject::isTimeout (time_last_flush, flush_wait);
 }

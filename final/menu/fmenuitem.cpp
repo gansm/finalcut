@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2021 Markus Gans                                      *
+* Copyright 2015-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -86,7 +86,7 @@ FMenuItem::~FMenuItem()  // destructor
 
 // public methods of FMenuItem
 //----------------------------------------------------------------------
-bool FMenuItem::setEnable (bool enable)
+auto FMenuItem::setEnable (bool enable) -> bool
 {
   FWidget::setEnable(enable);
   auto super = getSuperMenu();
@@ -110,7 +110,7 @@ bool FMenuItem::setEnable (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FMenuItem::setFocus (bool enable)
+auto FMenuItem::setFocus (bool enable) -> bool
 {
   FWidget::setFocus(enable);
 
@@ -449,19 +449,19 @@ void FMenuItem::onFocusOut (FFocusEvent*)
 
 // protected methods of FMenuItem
 //----------------------------------------------------------------------
-bool FMenuItem::isDialog (const FWidget* w) const
+auto FMenuItem::isDialog (const FWidget* w) const -> bool
 {
   return w ? w->isDialogWidget() : false;
 }
 
 //----------------------------------------------------------------------
-bool FMenuItem::isMenuBar (const FWidget* w) const
+auto FMenuItem::isMenuBar (const FWidget* w) const -> bool
 {
   return w ? w->isInstanceOf("FMenuBar") : false;
 }
 
 //----------------------------------------------------------------------
-bool FMenuItem::isMenu (const FWidget* w) const
+auto FMenuItem::isMenu (const FWidget* w) const -> bool
 {
   if ( ! w )
     return false;
@@ -479,7 +479,7 @@ void FMenuItem::initLayout()
 
 // private methods of FMenuItem
 //----------------------------------------------------------------------
-FMenuList* FMenuItem::getFMenuList (FWidget& widget)
+auto FMenuItem::getFMenuList (FWidget& widget) -> FMenuList*
 {
   FMenuList* menu_list{nullptr};
 

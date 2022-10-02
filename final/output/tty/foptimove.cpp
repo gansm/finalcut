@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2021 Markus Gans                                      *
+* Copyright 2015-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -488,7 +488,7 @@ void FOptiMove::check_boundaries ( int& xold, int& yold
 }
 
 //----------------------------------------------------------------------
-std::string FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
+auto FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew) -> std::string
 {
   int method{0};
   int move_time{LONG_DURATION};
@@ -552,7 +552,7 @@ void FOptiMove::calculateCharDuration()
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::capDuration (const char cap[], int affcnt) const
+auto FOptiMove::capDuration (const char cap[], int affcnt) const -> int
 {
   // calculate the duration in milliseconds of a given operation
   // cap    - the term capability
@@ -606,7 +606,7 @@ int FOptiMove::capDuration (const char cap[], int affcnt) const
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::capDurationToLength (int duration) const
+auto FOptiMove::capDurationToLength (int duration) const -> int
 {
   if ( duration != LONG_DURATION )
     return (duration + char_duration - 1) / char_duration;
@@ -615,9 +615,9 @@ int FOptiMove::capDurationToLength (int duration) const
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::repeatedAppend ( std::string& dst
+auto FOptiMove::repeatedAppend ( std::string& dst
                               , const Capability& o
-                              , int count ) const
+                              , int count ) const -> int
 {
   const auto& src_len = stringLength(o.cap);
   const auto& dst_len = dst.length();
@@ -641,9 +641,9 @@ int FOptiMove::repeatedAppend ( std::string& dst
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::relativeMove ( std::string& move
-                            , int from_x, int from_y
-                            , int to_x, int to_y ) const
+auto FOptiMove::relativeMove ( std::string& move
+                             , int from_x, int from_y
+                             , int to_x, int to_y ) const -> int
 {
   int vtime{0};
   int htime{0};
@@ -677,7 +677,7 @@ int FOptiMove::relativeMove ( std::string& move
 }
 
 //----------------------------------------------------------------------
-inline int FOptiMove::verticalMove (std::string& move, int from_y, int to_y) const
+inline auto FOptiMove::verticalMove (std::string& move, int from_y, int to_y) const -> int
 {
   int vtime{LONG_DURATION};
 
@@ -739,7 +739,7 @@ inline void FOptiMove::upMove ( std::string& move, int& vtime
 }
 
 //----------------------------------------------------------------------
-inline int FOptiMove::horizontalMove (std::string& hmove, int from_x, int to_x) const
+inline auto FOptiMove::horizontalMove (std::string& hmove, int from_x, int to_x) const -> int
 {
   int htime{LONG_DURATION};
 
@@ -859,8 +859,8 @@ inline void FOptiMove::leftMove ( std::string& hmove, int& htime
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiMove::isWideMove ( int xold, int yold
-                                  , int xnew, int ynew ) const
+inline auto FOptiMove::isWideMove ( int xold, int yold
+                                  , int xnew, int ynew ) const -> bool
 {
   return xnew > MOVE_LIMIT
       && xnew < int(screen_width) - 1 - MOVE_LIMIT
@@ -868,8 +868,8 @@ inline bool FOptiMove::isWideMove ( int xold, int yold
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiMove::isMethod0Faster ( int& move_time
-                                       , int xnew, int ynew )
+inline auto FOptiMove::isMethod0Faster ( int& move_time
+                                       , int xnew, int ynew ) -> bool
 {
   // Test method 0: direct cursor addressing
 
@@ -890,9 +890,9 @@ inline bool FOptiMove::isMethod0Faster ( int& move_time
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiMove::isMethod1Faster ( int& move_time
+inline auto FOptiMove::isMethod1Faster ( int& move_time
                                        , int xold, int yold
-                                       , int xnew, int ynew ) const
+                                       , int xnew, int ynew ) const -> bool
 {
   // Test method 1: local movement
 
@@ -912,9 +912,9 @@ inline bool FOptiMove::isMethod1Faster ( int& move_time
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiMove::isMethod2Faster ( int& move_time
+inline auto FOptiMove::isMethod2Faster ( int& move_time
                                        , int yold
-                                       , int xnew, int ynew ) const
+                                       , int xnew, int ynew ) const -> bool
 {
   // Test method 2: carriage-return + local movement
 
@@ -935,8 +935,8 @@ inline bool FOptiMove::isMethod2Faster ( int& move_time
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiMove::isMethod3Faster ( int& move_time
-                                       , int xnew, int ynew ) const
+inline auto FOptiMove::isMethod3Faster ( int& move_time
+                                       , int xnew, int ynew ) const -> bool
 {
   // Test method 3: home-cursor + local movement
 
@@ -957,8 +957,8 @@ inline bool FOptiMove::isMethod3Faster ( int& move_time
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiMove::isMethod4Faster ( int& move_time
-                                       , int xnew, int ynew ) const
+inline auto FOptiMove::isMethod4Faster ( int& move_time
+                                       , int xnew, int ynew ) const -> bool
 {
   // Test method 4: home-down + local movement
   if ( F_cursor_to_ll.cap )
@@ -979,9 +979,9 @@ inline bool FOptiMove::isMethod4Faster ( int& move_time
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiMove::isMethod5Faster ( int& move_time
+inline auto FOptiMove::isMethod5Faster ( int& move_time
                                        , int yold
-                                       , int xnew, int ynew ) const
+                                       , int xnew, int ynew ) const -> bool
 {
   // Test method 5: left margin for wrap to right-hand side
   if ( automatic_left_margin

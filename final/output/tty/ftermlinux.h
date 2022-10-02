@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2021 Markus Gans                                      *
+* Copyright 2018-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -96,40 +96,40 @@ class FTermLinux final
     ~FTermLinux();
 
     // Disable copy assignment operator (=)
-    FTermLinux& operator = (const FTermLinux&) = delete;
+    auto operator = (const FTermLinux&) -> FTermLinux& = delete;
 
     // Disable move assignment operator (=)
-    FTermLinux& operator = (FTermLinux&&) noexcept = delete;
+    auto operator = (FTermLinux&&) noexcept -> FTermLinux& = delete;
 
     // Accessors
-    FString              getClassName() const;
-    static auto          getInstance() -> FTermLinux&;
-    CursorStyle          getCursorStyle() const;
-    char*                getCursorStyleString();
-    int                  getFramebufferBpp() const noexcept;
+    auto        getClassName() const -> FString;
+    static auto getInstance() -> FTermLinux&;
+    auto        getCursorStyle() const -> CursorStyle;
+    auto        getCursorStyleString() -> char*;
+    auto        getFramebufferBpp() const noexcept -> int;
 
     // Mutators
-    bool                 setCursorStyle (CursorStyle);
-    bool                 setPalette (FColor, int, int, int);
-    void                 setUTF8 (bool = true) const;
+    auto        setCursorStyle (CursorStyle) -> bool;
+    auto        setPalette (FColor, int, int, int) -> bool;
+    void        setUTF8 (bool = true) const;
 
     // Inquiries
-    static bool          isLinuxConsole();
-    bool                 isVGAFontUsed() const noexcept;
-    bool                 isNewFontUsed() const noexcept;
+    static auto isLinuxConsole() -> bool;
+    auto        isVGAFontUsed() const noexcept -> bool;
+    auto        isNewFontUsed() const noexcept -> bool;
 
     // Methods
-    void                 init();
-    void                 initCharMap() const;
-    void                 finish() const;
-    bool                 loadVGAFont();
-    bool                 loadNewFont();
-    bool                 loadOldFont();
-    bool                 saveColorMap();
-    bool                 resetColorMap();
-    void                 setBeep (int, int) const;
-    void                 resetBeep() const;
-    FKey                 modifierKeyCorrection (const FKey&);
+    void        init();
+    void        initCharMap() const;
+    void        finish() const;
+    auto        loadVGAFont() -> bool;
+    auto        loadNewFont() -> bool;
+    auto        loadOldFont() -> bool;
+    auto        saveColorMap() -> bool;
+    auto        resetColorMap() -> bool;
+    void        setBeep (int, int) const;
+    void        resetBeep() const;
+    auto        modifierKeyCorrection (const FKey&) -> FKey;
 
   private:
     struct ModifierKey  // bit field
@@ -143,7 +143,7 @@ class FTermLinux final
 
     struct ModifierKeyHash
     {
-      std::size_t operator () (const ModifierKey& m_key) const noexcept
+      auto operator () (const ModifierKey& m_key) const noexcept -> std::size_t
       {
         uChar m{};
         std::memcpy(&m, &m_key, sizeof(uChar));
@@ -171,7 +171,7 @@ class FTermLinux final
 
     struct PairHash
     {
-      std::size_t operator () (const Pair& pair) const noexcept
+      auto operator () (const Pair& pair) const noexcept -> std::size_t
       {
         size_t seed = 0;
         const auto hash1 = ModifierKeyHash{}(pair.modifier);
@@ -184,7 +184,7 @@ class FTermLinux final
 
     struct PairEqual
     {
-      bool operator () (const Pair& lhs, const Pair& rhs) const noexcept
+      auto operator () (const Pair& lhs, const Pair& rhs) const noexcept -> bool
       {
         return std::memcmp(&lhs.modifier, &rhs.modifier, sizeof(ModifierKey)) == 0
             && lhs.key == rhs.key;
@@ -195,83 +195,83 @@ class FTermLinux final
     using KeyMap = std::unordered_map<Pair, FKey, PairHash, PairEqual>;
 
     // Accessors
-    int                  getFramebuffer_bpp() const;
-    bool                 getScreenFont();
-    bool                 getUnicodeMap ();
-    ModifierKey&         getModifierKey() &;
+    auto        getFramebuffer_bpp() const -> int;
+    auto        getScreenFont() -> bool;
+    auto        getUnicodeMap () -> bool;
+    auto        getModifierKey() & -> ModifierKey&;
 
     // Inquiries
-    bool                 isLinuxTerm() const;
+    auto        isLinuxTerm() const -> bool;
 
     // Mutators
-    int                  setScreenFont ( const uChar[], uInt, uInt, uInt
-                                       , bool = false );
-    int                  setUnicodeMap (struct unimapdesc*) const;
-    void                 setLinuxCursorStyle (LinuxConsoleCursorStyle) const;
+    auto        setScreenFont ( const uChar[], uInt, uInt, uInt
+                              , bool = false ) -> int;
+    auto        setUnicodeMap (struct unimapdesc*) const -> int;
+    void        setLinuxCursorStyle (LinuxConsoleCursorStyle) const;
 
     // Methods
 #if defined(ISA_SYSCTL_SUPPORT)
-    uInt16               getInputStatusRegisterOne() const;
-    uChar                readAttributeController (uChar) const;
-    void                 writeAttributeController (uChar, uChar) const;
-    uChar                getAttributeMode() const;
-    void                 setAttributeMode (uChar) const;
-    int                  setBlinkAsIntensity (bool = true) const;
-    bool                 has9BitCharacters() const;
-    void                 getVGAPalette();
-    void                 setVGADefaultPalette();
-    bool                 setVGAPalette (FColor, int, int, int);
-    bool                 saveVGAPalette();
-    bool                 resetVGAPalette();
+    auto         getInputStatusRegisterOne() const -> uInt16;
+    auto         readAttributeController (uChar) const -> uChar;
+    void         writeAttributeController (uChar, uChar) const;
+    auto         getAttributeMode() const -> uChar;
+    void         setAttributeMode (uChar) const;
+    auto         setBlinkAsIntensity (bool = true) const -> int;
+    auto         has9BitCharacters() const -> bool;
+    void         getVGAPalette();
+    void         setVGADefaultPalette();
+    auto         setVGAPalette (FColor, int, int, int) -> bool;
+    auto         saveVGAPalette() -> bool;
+    auto         resetVGAPalette() -> bool;
 #endif  // defined(ISA_SYSCTL_SUPPORT)
-    void                 initKeyMap();
-    void                 keyCorrection();
-    void                 shiftKeyCorrection();
-    void                 ctrlKeyCorrection();
-    void                 altKeyCorrection();
-    void                 shiftCtrlKeyCorrection();
-    void                 shiftAltKeyCorrection();
-    void                 ctrlAltKeyCorrection();
-    void                 shiftCtrlAltKeyCorrection();
-    void                 initSpecialCharacter() const;
-    sInt16               getFontPos (wchar_t ucs) const;
-    void                 deleteFontData (console_font_op&);
-    void                 deleteUnicodeMapEntries (unimapdesc&);
-    void                 characterFallback (wchar_t, const std::vector<wchar_t>&) const;
+    void         initKeyMap();
+    void         keyCorrection();
+    void         shiftKeyCorrection();
+    void         ctrlKeyCorrection();
+    void         altKeyCorrection();
+    void         shiftCtrlKeyCorrection();
+    void         shiftAltKeyCorrection();
+    void         ctrlAltKeyCorrection();
+    void         shiftCtrlAltKeyCorrection();
+    void         initSpecialCharacter() const;
+    auto         getFontPos (wchar_t ucs) const -> sInt16;
+    void         deleteFontData (console_font_op&);
+    void         deleteUnicodeMapEntries (unimapdesc&);
+    void         characterFallback (wchar_t, const std::vector<wchar_t>&) const;
 
     // Data members
 #if defined(__linux__)
-    bool                 vga_font{};
-    bool                 new_font{};
-    bool                 has_saved_palette{};
-    int                  framebuffer_bpp{-1};
-    CursorStyle          linux_console_cursor_style{};
-    console_font_op      screen_font{};
-    unimapdesc           screen_unicode_map{};
-    ColorMap             saved_color_map{};
-    ColorMap             cmap{};
-    KeyMap               key_map{};
-    ModifierKey          mod_key{};
+    bool             vga_font{};
+    bool             new_font{};
+    bool             has_saved_palette{};
+    int              framebuffer_bpp{-1};
+    CursorStyle      linux_console_cursor_style{};
+    console_font_op  screen_font{};
+    unimapdesc       screen_unicode_map{};
+    ColorMap         saved_color_map{};
+    ColorMap         cmap{};
+    KeyMap           key_map{};
+    ModifierKey      mod_key{};
 #endif  // defined(__linux__)
 };
 
 
 // FTermLinux inline functions
 //----------------------------------------------------------------------
-inline FString FTermLinux::getClassName() const
+inline auto FTermLinux::getClassName() const -> FString
 { return "FTermLinux"; }
 
 //----------------------------------------------------------------------
 #if defined(__linux__)
-inline int FTermLinux::getFramebufferBpp() const noexcept
+inline auto FTermLinux::getFramebufferBpp() const noexcept -> int
 { return framebuffer_bpp; }
 
 //----------------------------------------------------------------------
-inline bool FTermLinux::isVGAFontUsed() const noexcept
+inline auto FTermLinux::isVGAFontUsed() const noexcept -> bool
 { return vga_font; }
 
 //----------------------------------------------------------------------
-inline bool FTermLinux::isNewFontUsed() const noexcept
+inline auto FTermLinux::isNewFontUsed() const noexcept -> bool
 { return new_font; }
 #endif  // defined(__linux__)
 

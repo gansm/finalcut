@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2021 Markus Gans                                      *
+* Copyright 2015-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -99,34 +99,33 @@ FTermcap::PutStringFunc FTermcap::outs                     {};
 
 // public methods of FTermcap
 //----------------------------------------------------------------------
-bool FTermcap::getFlag (const std::string& cap)
+auto FTermcap::getFlag (const std::string& cap) -> bool
 {
   return ::tgetflag(C_STR(cap.data())) == 1;
 }
 
 //----------------------------------------------------------------------
-int FTermcap::getNumber (const std::string& cap)
+auto FTermcap::getNumber (const std::string& cap) -> int
 {
   return ::tgetnum(C_STR(cap.data()));
 }
 
 //----------------------------------------------------------------------
-char* FTermcap::getString (const std::string& cap)
+auto FTermcap::getString (const std::string& cap) -> char*
 {
   auto string = ::tgetstr(C_STR(cap.data()), reinterpret_cast<char**>(&string_buf));
   return ( string && string[0] != '\0' ) ? string : nullptr;
 }
 
 //----------------------------------------------------------------------
-std::string FTermcap::encodeMotionParameter (const std::string& cap, int col, int row)
+auto FTermcap::encodeMotionParameter (const std::string& cap, int col, int row) -> std::string
 {
   auto str = ::tgoto(C_STR(cap.data()), col, row);
   return str ? str : std::string();
 }
 
 //----------------------------------------------------------------------
-FTermcap::Status FTermcap::paddingPrint ( const std::string& string
-                                        , int affcnt )
+auto FTermcap::paddingPrint (const std::string& string, int affcnt) -> Status
 {
   if ( string.empty() || ! outc )
     return Status::Error;
@@ -192,7 +191,7 @@ FTermcap::Status FTermcap::paddingPrint ( const std::string& string
 }
 
 //----------------------------------------------------------------------
-FTermcap::Status FTermcap::stringPrint (const std::string& string)
+auto FTermcap::stringPrint (const std::string& string) -> Status
 {
   if ( string.empty() || ! outs )
     return Status::Error;
@@ -436,8 +435,8 @@ void FTermcap::termcapKeys()
 }
 
 //----------------------------------------------------------------------
-std::string FTermcap::encodeParams ( const std::string& cap
-                                   , const std::array<int, 9>& params )
+auto FTermcap::encodeParams ( const std::string& cap
+                            , const std::array<int, 9>& params ) -> std::string
 {
   auto str = ::tparm ( C_STR(cap.data()), params[0], params[1]
                      , params[2], params[3], params[4], params[5]

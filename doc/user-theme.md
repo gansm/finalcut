@@ -27,7 +27,7 @@ class myWidgetColors final : public finalcut::FWidgetColors
     ~myWidgetColors() override
     { }
 
-    finalcut::FString getClassName() const override
+    auto getClassName() const -> finalcut::FString override
     {
       return "myWidgetColors";
     }
@@ -68,7 +68,7 @@ class BeeColorTheme final : public finalcut::FWidgetColors
     ~BeeColorTheme() override
     { }
 
-    finalcut::FString getClassName() const override
+    auto getClassName() const -> finalcut::FString override
     {
       return "BeeColorTheme";
     }
@@ -216,7 +216,7 @@ class myColorPalette final : public finalcut::FColorPalette
     ~myColorPalette()
     { }
 
-    finalcut::FString getClassName() const override
+    auto getClassName() const -> finalcut::FString override
     {
       return "myColorPalette";
     }
@@ -299,7 +299,7 @@ class BeeColorPalette final : public finalcut::FColorPalette
     ~BeeColorPalette()
     { }
 
-    finalcut::FString getClassName() const override
+    auto getClassName() const -> finalcut::FString override
     {
       return "BeeColorPalette";
     }
@@ -422,7 +422,7 @@ class dialogWidget final : public FDialog
     FButton         Quit{"&Quit", this};
 };
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   FApplication app(argc, argv);
 

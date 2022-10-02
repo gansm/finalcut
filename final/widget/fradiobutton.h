@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2021 Markus Gans                                      *
+* Copyright 2014-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -72,21 +72,21 @@ class FRadioButton : public FToggleButton
     ~FRadioButton() noexcept override;
 
     // Accessor
-    FString       getClassName() const override;
+    auto getClassName() const -> FString override;
 
   private:
     // Methods
-    void          init();
-    void          draw() override;
-    void          drawRadioButton();
-    void          drawChecked();
-    void          drawUnchecked();
+    void init();
+    void draw() override;
+    void drawRadioButton();
+    void drawChecked();
+    void drawUnchecked();
 };
 
 
 // FRadioButton inline functions
 //----------------------------------------------------------------------
-inline FString FRadioButton::getClassName() const
+inline auto FRadioButton::getClassName() const -> FString
 { return "FRadioButton"; }
 
 }  // namespace finalcut

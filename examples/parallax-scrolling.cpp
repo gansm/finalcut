@@ -162,7 +162,7 @@ restoreOverlaidWindows::~restoreOverlaidWindows() = default;
 template <>
 struct std::hash<fc::FPoint>
 {
-  std::size_t operator () (const fc::FPoint& p) const noexcept
+  auto operator () (const fc::FPoint& p) const noexcept -> std::size_t
   {
     size_t seed = 0;
     const auto hash1 = std::hash<int>{}(p.getY());
@@ -492,7 +492,7 @@ void ParallaxScrolling::onClose (fc::FCloseEvent* ev)
 //----------------------------------------------------------------------
 //                               main part
 //----------------------------------------------------------------------
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   // Create the application object
   fc::FApplication app{argc, argv};

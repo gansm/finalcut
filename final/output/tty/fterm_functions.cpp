@@ -58,7 +58,7 @@ enum class FullWidthSupport
 constexpr std::size_t NOT_FOUND = static_cast<std::size_t>(-1);
 
 // Function prototypes
-bool hasAmbiguousWidth (wchar_t);
+auto hasAmbiguousWidth (wchar_t) -> bool;
 
 // Data array
 const wchar_t ambiguous_width_list[] =
@@ -200,7 +200,7 @@ constexpr std::array<UniChar, 20> reverse_newfont_list =
 
 // FTerm non-member functions
 //----------------------------------------------------------------------
-uInt env2uint (const std::string& env)
+auto env2uint (const std::string& env) -> uInt
 {
   const FString str{getenv(env.data())};
 
@@ -226,7 +226,7 @@ uInt env2uint (const std::string& env)
 }
 
 //----------------------------------------------------------------------
-std::string& getExitMessage()
+auto getExitMessage() -> std::string&
 {
   static const auto& exit_message = std::make_unique<std::string>();
   return *exit_message;
@@ -239,7 +239,7 @@ void setExitMessage (const FString& message)
 }
 
 //----------------------------------------------------------------------
-FColor rgb2ColorIndex (uInt8 r, uInt8 g, uInt8 b)
+auto rgb2ColorIndex (uInt8 r, uInt8 g, uInt8 b) -> FColor
 {
   // Converts a 24-bit RGB color to a 256-color compatible approximation
 
@@ -250,7 +250,7 @@ FColor rgb2ColorIndex (uInt8 r, uInt8 g, uInt8 b)
 }
 
 //----------------------------------------------------------------------
-bool isReverseNewFontchar (wchar_t wchar)
+auto isReverseNewFontchar (wchar_t wchar) -> bool
 {
   const auto& cbegin = std::cbegin(reverse_newfont_list);
   const auto& cend = std::cend(reverse_newfont_list);
@@ -259,7 +259,7 @@ bool isReverseNewFontchar (wchar_t wchar)
 }
 
 //----------------------------------------------------------------------
-inline bool hasAmbiguousWidth (wchar_t wchar)
+inline auto hasAmbiguousWidth (wchar_t wchar) -> bool
 {
   const auto& cbegin = std::cbegin(ambiguous_width_list);
   const auto& cend = std::cend(ambiguous_width_list);
@@ -268,7 +268,7 @@ inline bool hasAmbiguousWidth (wchar_t wchar)
 }
 
 //----------------------------------------------------------------------
-bool hasFullWidthSupports()
+auto hasFullWidthSupports() -> bool
 {
   // Checks if the terminal has full-width character support
 
@@ -298,7 +298,7 @@ bool hasFullWidthSupports()
 }
 
 //----------------------------------------------------------------------
-wchar_t cp437_to_unicode (uChar c)
+auto cp437_to_unicode (uChar c) -> wchar_t
 {
   constexpr std::size_t CP437 = 0;
   constexpr std::size_t UNICODE = 1;
@@ -318,7 +318,7 @@ wchar_t cp437_to_unicode (uChar c)
 }
 
 //----------------------------------------------------------------------
-uChar unicode_to_cp437 (wchar_t ucs)
+auto unicode_to_cp437 (wchar_t ucs) -> uChar
 {
   constexpr std::size_t CP437 = 0;
   constexpr std::size_t UNICODE = 1;
@@ -339,7 +339,7 @@ uChar unicode_to_cp437 (wchar_t ucs)
 
 //----------------------------------------------------------------------
 #if defined(__CYGWIN__)
-std::string unicode_to_utf8 (wchar_t ucs)
+auto unicode_to_utf8 (wchar_t ucs) -> std::string
 {
   // 1 Byte (7-bit): 0xxxxxxx
   if ( ucs < 0x80 )
@@ -357,7 +357,7 @@ std::string unicode_to_utf8 (wchar_t ucs)
 }
 
 #else
-std::string unicode_to_utf8 (wchar_t ucs)
+auto unicode_to_utf8 (wchar_t ucs) -> std::string
 {
   // 1 Byte (7-bit): 0xxxxxxx
   if ( ucs < 0x80 )
@@ -386,7 +386,7 @@ std::string unicode_to_utf8 (wchar_t ucs)
 #endif
 
 //----------------------------------------------------------------------
-FString getFullWidth (const FString& str)
+auto getFullWidth (const FString& str) -> FString
 {
   // Converts half-width to full-width characters
 
@@ -421,7 +421,7 @@ FString getFullWidth (const FString& str)
 }
 
 //----------------------------------------------------------------------
-FString getHalfWidth (const FString& str)
+auto getHalfWidth (const FString& str) -> FString
 {
   // Converts full-width to half-width characters
 
@@ -456,9 +456,9 @@ FString getHalfWidth (const FString& str)
 }
 
 //----------------------------------------------------------------------
-FString getColumnSubString ( const FString& str
+auto getColumnSubString ( const FString& str
                            , std::size_t col_pos
-                           , std::size_t col_len )
+                           , std::size_t col_len ) -> FString
 {
   FString s{str};
   std::size_t col_first{1};
@@ -519,8 +519,8 @@ FString getColumnSubString ( const FString& str
 }
 
 //----------------------------------------------------------------------
-std::size_t getLengthFromColumnWidth ( const FString& str
-                                     , std::size_t col_len )
+auto getLengthFromColumnWidth ( const FString& str
+                                     , std::size_t col_len ) -> std::size_t
 {
   std::size_t column_width{0};
   std::size_t length{0};
@@ -538,7 +538,7 @@ std::size_t getLengthFromColumnWidth ( const FString& str
 }
 
 //----------------------------------------------------------------------
-std::size_t getColumnWidth (const FString& s, std::size_t end_pos)
+auto getColumnWidth (const FString& s, std::size_t end_pos) -> std::size_t
 {
   if ( s.isEmpty() )
     return 0;
@@ -566,7 +566,7 @@ std::size_t getColumnWidth (const FString& s, std::size_t end_pos)
 }
 
 //----------------------------------------------------------------------
-std::size_t getColumnWidth (const FString& s)
+auto getColumnWidth (const FString& s) -> std::size_t
 {
   int column_width{0};
 
@@ -580,7 +580,7 @@ std::size_t getColumnWidth (const FString& s)
 }
 
 //----------------------------------------------------------------------
-std::size_t getColumnWidth (const wchar_t wchar)
+auto getColumnWidth (const wchar_t wchar) -> std::size_t
 {
   int column_width{};
 
@@ -609,13 +609,13 @@ std::size_t getColumnWidth (const wchar_t wchar)
 }
 
 //----------------------------------------------------------------------
-std::size_t getColumnWidth (const FChar& term_char)
+auto getColumnWidth (const FChar& term_char) -> std::size_t
 {
   return std::size_t(term_char.attr.bit.char_width);
 }
 
 //----------------------------------------------------------------------
-std::size_t getColumnWidth (const FVTermBuffer& vtbuf)
+auto getColumnWidth (const FVTermBuffer& vtbuf) -> std::size_t
 {
   return ( vtbuf.isEmpty() )
          ? 0
@@ -645,13 +645,13 @@ void addColumnWidth (FChar& term_char, std::size_t char_width)
 }
 
 //----------------------------------------------------------------------
-inline int isWhitespace (const wchar_t ch) noexcept
+inline auto isWhitespace (const wchar_t ch) noexcept -> int
 {
   return std::iswspace(static_cast<wint_t>(ch));
 }
 
 //----------------------------------------------------------------------
-int getCharLength (const FString& string, std::size_t pos)
+auto getCharLength (const FString& string, std::size_t pos) -> int
 {
   // Gets the number of characters of the combined character
   // at string position pos
@@ -678,7 +678,7 @@ int getCharLength (const FString& string, std::size_t pos)
 }
 
 //----------------------------------------------------------------------
-int getPrevCharLength (const FString& string, std::size_t pos)
+auto getPrevCharLength (const FString& string, std::size_t pos) -> int
 {
   // Gets the number of characters of the previous combined character
   // at string position pos
@@ -705,7 +705,7 @@ int getPrevCharLength (const FString& string, std::size_t pos)
 }
 
 //----------------------------------------------------------------------
-std::size_t searchLeftCharBegin (const FString& string, std::size_t pos)
+auto searchLeftCharBegin (const FString& string, std::size_t pos) -> std::size_t
 {
   // Search for the next character position to the left of string position pos
 
@@ -730,7 +730,7 @@ std::size_t searchLeftCharBegin (const FString& string, std::size_t pos)
 }
 
 //----------------------------------------------------------------------
-std::size_t searchRightCharBegin (const FString& string, std::size_t pos)
+auto searchRightCharBegin (const FString& string, std::size_t pos) -> std::size_t
 {
   // Search for the next character position to the right of string position pos
 
@@ -756,7 +756,7 @@ std::size_t searchRightCharBegin (const FString& string, std::size_t pos)
 }
 
 //----------------------------------------------------------------------
-FPoint readCursorPos()
+auto readCursorPos() -> FPoint
 {
   int x{-1};
   int y{-1};

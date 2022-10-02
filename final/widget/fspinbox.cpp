@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2021 Markus Gans                                      *
+* Copyright 2019-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -72,7 +72,7 @@ void FSpinBox::setGeometry ( const FPoint& pos, const FSize& size
 }
 
 //----------------------------------------------------------------------
-bool FSpinBox::setEnable (bool enable)
+auto FSpinBox::setEnable (bool enable) -> bool
 {
   FWidget::setEnable(enable);
   input_field.setEnable(enable);
@@ -80,7 +80,7 @@ bool FSpinBox::setEnable (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FSpinBox::setFocus (bool enable)
+auto FSpinBox::setFocus (bool enable) -> bool
 {
   FWidget::setFocus(enable);
   input_field.setFocus(enable);
@@ -88,7 +88,7 @@ bool FSpinBox::setFocus (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FSpinBox::setShadow (bool enable)
+auto FSpinBox::setShadow (bool enable) -> bool
 {
   return setWidgetShadow(this, enable);
 }

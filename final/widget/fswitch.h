@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2021 Markus Gans                                      *
+* Copyright 2015-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -72,22 +72,22 @@ class FSwitch : public FToggleButton
     ~FSwitch() noexcept override;
 
     // Accessor
-    FString             getClassName() const override;
+    auto getClassName() const -> FString override;
 
     // Mutator
-    void                setText (const FString&) override;
+    void setText (const FString&) override;
 
     // Event handlers
-    void                onKeyPress (FKeyEvent*) override;
-    void                onMouseDown (FMouseEvent*) override;
-    void                onMouseUp (FMouseEvent*) override;
+    void onKeyPress (FKeyEvent*) override;
+    void onMouseDown (FMouseEvent*) override;
+    void onMouseUp (FMouseEvent*) override;
 
   private:
     // Methods
-    void                draw() override;
-    void                drawCheckButton();
-    void                drawChecked();
-    void                drawUnchecked();
+    void draw() override;
+    void drawCheckButton();
+    void drawChecked();
+    void drawUnchecked();
 
     // Data members
     std::size_t  switch_offset_pos{0};
@@ -96,7 +96,7 @@ class FSwitch : public FToggleButton
 
 // FSwitch inline functions
 //----------------------------------------------------------------------
-inline FString FSwitch::getClassName() const
+inline auto FSwitch::getClassName() const -> FString
 { return "FSwitch"; }
 
 }  // namespace finalcut

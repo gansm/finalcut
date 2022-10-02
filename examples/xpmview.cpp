@@ -41,7 +41,7 @@ class XpmPicture final : public finalcut::FScrollView
     // Method
     void open (const finalcut::FString&);
     auto getImageSize() const -> finalcut::FSize;
-    std::size_t getImageColors() const;
+    auto getImageColors() const -> std::size_t;
 
   private:
     // Methods
@@ -71,7 +71,7 @@ auto XpmPicture::getImageSize() const -> finalcut::FSize
 }
 
 //----------------------------------------------------------------------
-std::size_t XpmPicture::getImageColors() const
+auto XpmPicture::getImageColors() const -> std::size_t
 {
   return xmp_image.getColorCount();
 }
@@ -328,7 +328,7 @@ void MainWidget::cb_fileOpen()
 //                               main part
 //----------------------------------------------------------------------
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   if ( argv[1] && ( strcmp(argv[1], "--help") == 0
                  || strcmp(argv[1], "-h") == 0 ) )

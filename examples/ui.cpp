@@ -1028,7 +1028,7 @@ void MyDialog::cb_setInput ( const finalcut::FListBox& listbox
 //                               main part
 //----------------------------------------------------------------------
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   const finalcut::FString title { "FINAL CUT "s + finalcut::fc_release
                                 + " (C) 2022 by Markus Gans" };

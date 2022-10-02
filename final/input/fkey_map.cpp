@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2021 Markus Gans                                      *
+* Copyright 2018-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -36,19 +36,19 @@ auto FKeyMap::getInstance() -> FKeyMap&
 }
 
 //----------------------------------------------------------------------
-FKeyMap::KeyCapMapType& FKeyMap::getKeyCapMap()
+auto FKeyMap::getKeyCapMap() -> KeyCapMapType&
 {
   return fkey_cap_table;
 }
 
 //----------------------------------------------------------------------
-FKeyMap::KeyMapType& FKeyMap::getKeyMap()
+auto FKeyMap::getKeyMap() -> KeyMapType&
 {
   return fkey_table;
 }
 
 //----------------------------------------------------------------------
-const FKeyMap::KeyNameType& FKeyMap::getKeyName()
+auto FKeyMap::getKeyName() -> const KeyNameType&
 {
   return fkeyname;
 }

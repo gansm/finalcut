@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2021 Markus Gans                                      *
+* Copyright 2015-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -77,23 +77,23 @@ class FMenuBar : public FWindow, public FMenuList
     ~FMenuBar() override;
 
     // Accessors
-    FString       getClassName() const override;
+    auto getClassName() const -> FString override;
 
     // Methods
-    void          resetColors() override;
-    void          resetMenu();
-    void          hide() override;
-    void          adjustSize() override;
+    void resetColors() override;
+    void resetMenu();
+    void hide() override;
+    void adjustSize() override;
 
     // Event handlers
-    void          onKeyPress (FKeyEvent*) override;
-    void          onMouseDown (FMouseEvent*) override;
-    void          onMouseUp (FMouseEvent*) override;
-    void          onMouseMove (FMouseEvent*) override;
-    void          onAccel (FAccelEvent*) override;
+    void onKeyPress (FKeyEvent*) override;
+    void onMouseDown (FMouseEvent*) override;
+    void onMouseUp (FMouseEvent*) override;
+    void onMouseMove (FMouseEvent*) override;
+    void onAccel (FAccelEvent*) override;
 
     // Callback methods
-    void          cb_itemDeactivated (const FMenuItem*) const;
+    void cb_itemDeactivated (const FMenuItem*) const;
 
   private:
     struct menuText
@@ -108,39 +108,39 @@ class FMenuBar : public FWindow, public FMenuList
     static constexpr auto NOT_SET = static_cast<std::size_t>(-1);
 
     // Inquiry
-    bool          isMenu (const FMenuItem*) const;
+    auto isMenu (const FMenuItem*) const -> bool;
 
     // Methods
-    void          init();
-    void          calculateDimensions() const;
-    void          selectItem_PostProcessing (FMenuItem*) override;
-    bool          hotkeyMenu (FKeyEvent*&);
-    void          draw() override;
-    void          drawItems();
-    void          drawItem (FMenuItem*, std::size_t&);
-    void          setLineAttributes (const FMenuItem*);
-    void          setCursorToHotkeyPosition (FMenuItem*, std::size_t) const;
-    void          drawMenuText (menuText&);
-    void          drawEllipsis (const menuText&, std::size_t);
-    void          drawLeadingSpace (std::size_t&);
-    void          drawTrailingSpace (std::size_t&);
-    void          adjustItems() const;
-    void          openMenu (const FMenuItem*);
-    bool          activateMenu (const FMenuItem*);
-    bool          clickItem (FMenuItem*);
-    void          unselectMenuItem (FMenuItem*);
-    void          selectMenuItem (FMenuItem*);
-    void          mouseDownOverList (const FMouseEvent*);
-    void          mouseUpOverList (const FMouseEvent*);
-    void          mouseMoveOverList (const FMouseEvent&);
-    void          passEventToMenu (const FMouseEvent&) const;
-    void          leaveMenuBar();
+    void init();
+    void calculateDimensions() const;
+    void selectItem_PostProcessing (FMenuItem*) override;
+    auto hotkeyMenu (FKeyEvent*&) -> bool;
+    void draw() override;
+    void drawItems();
+    void drawItem (FMenuItem*, std::size_t&);
+    void setLineAttributes (const FMenuItem*);
+    void setCursorToHotkeyPosition (FMenuItem*, std::size_t) const;
+    void drawMenuText (menuText&);
+    void drawEllipsis (const menuText&, std::size_t);
+    void drawLeadingSpace (std::size_t&);
+    void drawTrailingSpace (std::size_t&);
+    void adjustItems() const;
+    void openMenu (const FMenuItem*);
+    auto activateMenu (const FMenuItem*) -> bool;
+    auto clickItem (FMenuItem*) -> bool;
+    void unselectMenuItem (FMenuItem*);
+    void selectMenuItem (FMenuItem*);
+    void mouseDownOverList (const FMouseEvent*);
+    void mouseUpOverList (const FMouseEvent*);
+    void mouseMoveOverList (const FMouseEvent&);
+    void passEventToMenu (const FMouseEvent&) const;
+    void leaveMenuBar();
 
     // Data members
-    std::size_t   screenWidth{80};
-    bool          mouse_down{false};
-    bool          drop_down{false};
-    bool          focus_changed{false};
+    std::size_t  screenWidth{80};
+    bool         mouse_down{false};
+    bool         drop_down{false};
+    bool         focus_changed{false};
 
     // Friend classes
     friend class FMenu;
@@ -150,11 +150,11 @@ class FMenuBar : public FWindow, public FMenuList
 
 // FMenuBar inline functions
 //----------------------------------------------------------------------
-inline FString FMenuBar::getClassName() const
+inline auto FMenuBar::getClassName() const -> FString
 { return "FMenuBar"; }
 
 //----------------------------------------------------------------------
-inline bool FMenuBar::isMenu (const FMenuItem* mi) const
+inline auto FMenuBar::isMenu (const FMenuItem* mi) const -> bool
 { return mi->hasMenu(); }
 
 }  // namespace finalcut

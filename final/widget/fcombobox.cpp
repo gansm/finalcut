@@ -149,7 +149,7 @@ void FDropDownListBox::drawShadow()
 }
 
 //----------------------------------------------------------------------
-bool FDropDownListBox::containsWidget (const FPoint& p)
+auto FDropDownListBox::containsWidget (const FPoint& p) -> bool
 {
   // Check mouse click position for item, menu and all sub menus
 
@@ -201,7 +201,7 @@ void FComboBox::setGeometry ( const FPoint& pos, const FSize& size
 }
 
 //----------------------------------------------------------------------
-bool FComboBox::setEnable (bool enable)
+auto FComboBox::setEnable (bool enable) -> bool
 {
   FWidget::setEnable(enable);
   input_field.setEnable(enable);
@@ -209,7 +209,7 @@ bool FComboBox::setEnable (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FComboBox::setFocus (bool enable)
+auto FComboBox::setFocus (bool enable) -> bool
 {
   FWidget::setFocus(enable);
   input_field.setFocus(enable);
@@ -217,13 +217,13 @@ bool FComboBox::setFocus (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FComboBox::setShadow (bool enable)
+auto FComboBox::setShadow (bool enable) -> bool
 {
   return setWidgetShadow(this, enable);
 }
 
 //----------------------------------------------------------------------
-bool FComboBox::setEditable (bool enable)
+auto FComboBox::setEditable (bool enable) -> bool
 {
   if ( is_editable == enable )
     return is_editable;
@@ -430,7 +430,7 @@ void FComboBox::onFocusOut (FFocusEvent*)
 
 // private methods of FComboBox
 //----------------------------------------------------------------------
-bool FComboBox::isMouseOverListWindow (const FPoint& termpos)
+auto FComboBox::isMouseOverListWindow (const FPoint& termpos) -> bool
 {
   if ( list_window.isShown() )
   {
@@ -648,8 +648,8 @@ void closeOpenComboBox()
 }
 
 //----------------------------------------------------------------------
-bool closeComboBox ( FDropDownListBox* list_window
-                   , const FPoint& mouse_position )
+auto closeComboBox ( FDropDownListBox* list_window
+                   , const FPoint& mouse_position ) -> bool
 {
   // Close the drop down list box
 

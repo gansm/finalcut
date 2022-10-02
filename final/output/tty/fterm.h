@@ -160,145 +160,145 @@ class FTerm final
     ~FTerm();
 
     // Disable copy assignment operator (=)
-    FTerm& operator = (const FTerm&) = delete;
+    auto operator = (const FTerm&) -> FTerm& = delete;
 
     // Disable move assignment operator (=)
-    FTerm& operator = (FTerm&&) noexcept = delete;
+    auto operator = (FTerm&&) noexcept -> FTerm& = delete;
 
     // Accessors
-    static FString           getClassName();
-    static std::size_t       getLineNumber();
-    static std::size_t       getColumnNumber();
-    static FString           getKeyName (FKey);
-    FCharSubstitution&       getCharSubstitutionMap() &;
-    static int               getTTYFileDescriptor();
-    static std::string       getTermType();
-    static std::string       getTermFileName();
-    static int               getTabstop();
-    static int               getMaxColor();
+    static auto getClassName() -> FString;
+    static auto getLineNumber() -> std::size_t;
+    static auto getColumnNumber() -> std::size_t;
+    static auto getKeyName (FKey) -> FString;
+    auto        getCharSubstitutionMap() & -> FCharSubstitution&;
+    static auto getTTYFileDescriptor() -> int;
+    static auto getTermType() -> std::string;
+    static auto getTermFileName() -> std::string;
+    static auto getTabstop() -> int;
+    static auto getMaxColor() -> int;
 
     // Inquiries
-    static bool              isRaw();
-    static bool              hasUTF8();
-    static bool              isMonochron();
-    static bool              isNewFont();
-    static bool              isInitialized();
-    static bool              isCursorHideable();
-    static bool              isEncodable (const wchar_t&);
-    static bool              hasChangedTermSize();
-    static bool              hasShadowCharacter();
-    static bool              hasHalfBlockCharacter();
-    static bool              hasAlternateScreen();
-    static bool              canChangeColorPalette();
+    static auto isRaw() -> bool;
+    static auto hasUTF8() -> bool;
+    static auto isMonochron() -> bool;
+    static auto isNewFont() -> bool;
+    static auto isInitialized() -> bool;
+    static auto isCursorHideable() -> bool;
+    static auto isEncodable (const wchar_t&) -> bool;
+    static auto hasChangedTermSize() -> bool;
+    static auto hasShadowCharacter() -> bool;
+    static auto hasHalfBlockCharacter() -> bool;
+    static auto hasAlternateScreen() -> bool;
+    static auto canChangeColorPalette() -> bool;
 
     // Mutators
-    static void              setFSystem (std::unique_ptr<FSystem>&);
-    static void              setTermType (const std::string&);
-    static void              setInsertCursor (bool = true);
-    static void              unsetInsertCursor();
-    static void              redefineDefaultColors (bool = true);
-    static void              setDblclickInterval (const uInt64);
-    static void              useAlternateScreen (bool = true);
-    static bool              setUTF8 (bool = true);
-    static bool              unsetUTF8();
+    static void setFSystem (std::unique_ptr<FSystem>&);
+    static void setTermType (const std::string&);
+    static void setInsertCursor (bool = true);
+    static void unsetInsertCursor();
+    static void redefineDefaultColors (bool = true);
+    static void setDblclickInterval (const uInt64);
+    static void useAlternateScreen (bool = true);
+    static auto setUTF8 (bool = true) -> bool;
+    static auto unsetUTF8() -> bool;
 
     // Methods
-    static bool              setVGAFont();
-    static bool              setNewFont();
-    static bool              resetFont();
-    static int               openConsole();
-    static int               closeConsole();
-    static std::string       moveCursorString (int, int, int, int);
-    static std::string       cursorsVisibilityString (bool = true);
-    static void              detectTermSize();
-    static void              setTermSize (const FSize&);
-    static void              setTermTitle (const FString&);
-    static void              setKDECursor (KdeKonsoleCursorShape);
-    static void              saveColorMap();
-    static void              resetColorMap();
-    static void              clearTerminalAttributes();
-    static void              setPalette (FColor, int, int, int);
-    static void              setBeep (int, int);
-    static void              resetBeep();
-    static void              beep();
+    static auto setVGAFont() -> bool;
+    static auto setNewFont() -> bool;
+    static auto resetFont() -> bool;
+    static auto openConsole() -> int;
+    static auto closeConsole() -> int;
+    static auto moveCursorString (int, int, int, int) -> std::string;
+    static auto cursorsVisibilityString (bool = true) -> std::string;
+    static void detectTermSize();
+    static void setTermSize (const FSize&);
+    static void setTermTitle (const FString&);
+    static void setKDECursor (KdeKonsoleCursorShape);
+    static void saveColorMap();
+    static void resetColorMap();
+    static void clearTerminalAttributes();
+    static void setPalette (FColor, int, int, int);
+    static void setBeep (int, int);
+    static void resetBeep();
+    static void beep();
 
-    static void              setEncoding (Encoding);
-    static std::string       getEncodingString();
-    static wchar_t           charEncode (const wchar_t&);
-    static wchar_t           charEncode (const wchar_t&, const Encoding&);
+    static void setEncoding (Encoding);
+    static auto getEncodingString() -> std::string;
+    static auto charEncode (const wchar_t&) -> wchar_t;
+    static auto charEncode (const wchar_t&, const Encoding&) -> wchar_t;
 
-    static bool              scrollTermForward();
-    static bool              scrollTermReverse();
+    static auto scrollTermForward() -> bool;
+    static auto scrollTermReverse() -> bool;
 
     template <typename... Args>
-    static void              paddingPrintf (const std::string&, Args&&...);
-    static void              paddingPrint (const std::string&, int = 1);
-    static void              stringPrint (const std::string&);
+    static void paddingPrintf (const std::string&, Args&&...);
+    static void paddingPrint (const std::string&, int = 1);
+    static void stringPrint (const std::string&);
 
-    void                     initTerminal();
-    static void              initScreenSettings();
-    static void              changeTermSizeFinished();
+    void        initTerminal();
+    static void initScreenSettings();
+    static void changeTermSizeFinished();
 
   private:
     // Methods
-    static FStartOptions&    getStartOptions();
-    static void              init_global_values();
-    static void              init_terminal_device_path();
-    static void              oscPrefix();
-    static void              oscPostfix();
-    static void              init_alt_charset();
-    static void              init_pc_charset();
-    static void              init_cygwin_charmap();
-    static void              init_teraterm_charmap();
-    static void              init_fixed_max_color();
-    static void              init_termcap();
-    static void              init_quirks();
-    static void              init_optiMove();
-    static void              init_optiAttr();
-    static bool              init_font();
-    static void              init_locale();
-    static void              init_encoding();
-    static void              init_encoding_set();
-    static void              init_term_encoding();
-    static void              init_individual_term_encoding();
-    static void              init_force_vt100_encoding();
-    static void              init_utf8_without_alt_charset();
-    static void              init_tab_quirks();
-    static void              init_captureFontAndTitle();
-    static bool              hasNoFontSettingOption();
-    static void              setInsertCursorStyle();
-    static void              setOverwriteCursorStyle();
-    static std::string       enableCursorString();
-    static std::string       disableCursorString();
-    static void              enableMouse();
-    static void              disableMouse();
-    static void              enableApplicationEscKey();
-    static void              disableApplicationEscKey();
-    static void              enableKeypad();
-    static void              disableKeypad();
-    static void              enableAlternateCharset();
-    static void              useAlternateScreenBuffer();
-    static void              useNormalScreenBuffer();
-    void                     init();
-    bool                     init_terminal() const;
-    void                     initOSspecifics() const;
-    void                     initTermspecifics() const;
-    void                     initBaudRate() const;
-    void                     finish() const;
-    void                     finishOSspecifics() const;
-    void                     finish_encoding() const;
-    static void              printExitMessage();
-    static void              terminalSizeChange();
+    static auto getStartOptions() -> FStartOptions&;
+    static void init_global_values();
+    static void init_terminal_device_path();
+    static void oscPrefix();
+    static void oscPostfix();
+    static void init_alt_charset();
+    static void init_pc_charset();
+    static void init_cygwin_charmap();
+    static void init_teraterm_charmap();
+    static void init_fixed_max_color();
+    static void init_termcap();
+    static void init_quirks();
+    static void init_optiMove();
+    static void init_optiAttr();
+    static auto init_font() -> bool;
+    static void init_locale();
+    static void init_encoding();
+    static void init_encoding_set();
+    static void init_term_encoding();
+    static void init_individual_term_encoding();
+    static void init_force_vt100_encoding();
+    static void init_utf8_without_alt_charset();
+    static void init_tab_quirks();
+    static void init_captureFontAndTitle();
+    static auto hasNoFontSettingOption() -> bool;
+    static void setInsertCursorStyle();
+    static void setOverwriteCursorStyle();
+    static auto enableCursorString() -> std::string;
+    static auto disableCursorString() -> std::string;
+    static void enableMouse();
+    static void disableMouse();
+    static void enableApplicationEscKey();
+    static void disableApplicationEscKey();
+    static void enableKeypad();
+    static void disableKeypad();
+    static void enableAlternateCharset();
+    static void useAlternateScreenBuffer();
+    static void useNormalScreenBuffer();
+    void        init();
+    auto        init_terminal() const -> bool;
+    void        initOSspecifics() const;
+    void        initTermspecifics() const;
+    void        initBaudRate() const;
+    void        finish() const;
+    void        finishOSspecifics() const;
+    void        finish_encoding() const;
+    static void printExitMessage();
+    static void terminalSizeChange();
     [[noreturn]] static void processTermination (int);
-    static void              setSignalHandler();
-    static void              resetSignalHandler();
-    static void              signal_handler (int);
+    static void setSignalHandler();
+    static void resetSignalHandler();
+    static void signal_handler (int);
 };
 
 
 // FTerm inline functions
 //----------------------------------------------------------------------
-inline FString FTerm::getClassName()
+inline auto FTerm::getClassName() -> FString
 { return "FTerm"; }
 
 //----------------------------------------------------------------------
@@ -312,7 +312,7 @@ inline void FTerm::unsetInsertCursor()
 { return setInsertCursor(false); }
 
 //----------------------------------------------------------------------
-inline bool FTerm::unsetUTF8()
+inline auto FTerm::unsetUTF8() -> bool
 { return setUTF8(false); }
 
 //----------------------------------------------------------------------
@@ -337,7 +337,7 @@ inline void FTerm::initTerminal()
 }  // namespace finalcut
 
 //----------------------------------------------------------------------
-inline std::ostream& operator << (std::ostream& os, finalcut::UniChar c)
+inline auto operator << (std::ostream& os, finalcut::UniChar c) -> std::ostream&
 {
   static const auto& data = finalcut::FTermData::getInstance();
 
@@ -348,7 +348,7 @@ inline std::ostream& operator << (std::ostream& os, finalcut::UniChar c)
 }
 
 //----------------------------------------------------------------------
-inline std::wostream& operator << (std::wostream& os, finalcut::UniChar c)
+inline auto operator << (std::wostream& os, finalcut::UniChar c) -> std::wostream&
 {
   return os << static_cast<wchar_t>(c);
 }

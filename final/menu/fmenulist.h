@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2021 Markus Gans                                      *
+* Copyright 2015-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -74,71 +74,69 @@ class FMenuList
     virtual ~FMenuList();
 
     // Disable copy assignment operator (=)
-    FMenuList& operator = (const FMenuList&) = delete;
+    auto operator = (const FMenuList&) -> FMenuList& = delete;
 
     // Disable move assignment operator (=)
-    FMenuList& operator = (FMenuList&&) noexcept = delete;
+    auto operator = (FMenuList&&) noexcept -> FMenuList& = delete;
 
     // Accessors
-    virtual FString          getClassName() const;
-    std::size_t              getCount() const;
-    FMenuItem*               getItem (int) const;
-    FMenuItem*               getSelectedItem() const;
-    const FMenuItemList&     getItemList() const;
+    virtual auto getClassName() const -> FString;
+    auto getCount() const -> std::size_t;
+    auto getItem (int) const -> FMenuItem*;
+    auto getSelectedItem() const -> FMenuItem*;
+    auto getItemList() const -> const FMenuItemList&;
 
     // Mutators
-    void                     enableItem (int);
-    void                     disableItem (int);
-    void                     setSelectedItem (FMenuItem*);
-    void                     unsetSelectedItem();
+    void enableItem (int);
+    void disableItem (int);
+    void setSelectedItem (FMenuItem*);
+    void unsetSelectedItem();
 
     // Inquiries
-    bool                     isSelected (int) const;
-    bool                     hasSelectedItem() const;
+    auto isSelected (int) const -> bool;
+    auto hasSelectedItem() const -> bool;
 
     // Methods
-    virtual void             insert (FMenuItem*);
-    virtual void             remove (FMenuItem*);
-    void                     remove (int);
-    void                     clear();
-    auto                     findFirstSelectedItem() const
-                                 -> FMenuItemList::const_iterator;
-    auto                     findLastSelectedItem () const
-                                 -> FMenuItemList::const_reverse_iterator;
-    void                     selectFirstItem();
-    void                     unselectItem();
+    virtual void insert (FMenuItem*);
+    virtual void remove (FMenuItem*);
+    void remove (int);
+    void clear();
+    auto findFirstSelectedItem() const -> FMenuItemList::const_iterator;
+    auto findLastSelectedItem () const -> FMenuItemList::const_reverse_iterator;
+    void selectFirstItem();
+    void unselectItem();
 
   protected:
-    bool                     selectNextItem();
-    bool                     selectPrevItem();
-    virtual void             selectItem_PostProcessing (FMenuItem*) = 0;
+    auto selectNextItem() -> bool;
+    auto selectPrevItem() -> bool;
+    virtual void selectItem_PostProcessing (FMenuItem*) = 0;
 
   private:
     // Data members
-    FMenuItem*               selected_item{};
-    FMenuItemList            item_list{};
+    FMenuItem*     selected_item{};
+    FMenuItemList  item_list{};
 };
 
 
 // FMenuList inline functions
 //----------------------------------------------------------------------
-inline FString FMenuList::getClassName() const
+inline auto FMenuList::getClassName() const -> FString
 { return "FMenuList"; }
 
 //----------------------------------------------------------------------
-inline std::size_t FMenuList::getCount() const
+inline auto FMenuList::getCount() const -> std::size_t
 { return item_list.size(); }
 
 //----------------------------------------------------------------------
-inline FMenuItem* FMenuList::getItem (int index) const
+inline auto FMenuList::getItem (int index) const -> FMenuItem*
 { return ( index > 0 ) ? item_list[uInt(index - 1)] : nullptr; }
 
 //----------------------------------------------------------------------
-inline FMenuItem* FMenuList::getSelectedItem() const
+inline auto FMenuList::getSelectedItem() const -> FMenuItem*
 { return selected_item; }
 
 //----------------------------------------------------------------------
-inline const FMenuList::FMenuItemList& FMenuList::getItemList() const
+inline auto FMenuList::getItemList() const -> const FMenuItemList&
 { return item_list; }
 
 //----------------------------------------------------------------------
@@ -158,11 +156,11 @@ inline void FMenuList::unsetSelectedItem()
 { selected_item = nullptr; }
 
 //----------------------------------------------------------------------
-inline bool FMenuList::isSelected(int index) const
+inline auto FMenuList::isSelected(int index) const -> bool
 { return ( index > 0 ) ? item_list[uInt(index - 1)]->isSelected() : false; }
 
 //----------------------------------------------------------------------
-inline bool FMenuList::hasSelectedItem() const
+inline auto FMenuList::hasSelectedItem() const -> bool
 { return selected_item; }
 
 }  // namespace finalcut

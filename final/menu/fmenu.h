@@ -92,49 +92,49 @@ class FMenu : public FWindow, public FMenuList
     ~FMenu() override;
 
     // Disable copy assignment operator (=)
-    FMenu& operator = (const FMenu&) = delete;
+    auto operator = (const FMenu&) -> FMenu& = delete;
 
     // Disable move assignment operator (=)
-    FMenu& operator = (FMenu&&) noexcept = delete;
+    auto operator = (FMenu&&) noexcept -> FMenu& = delete;
 
     // Accessors
-    FString             getClassName() const override;
-    FString             getText() const;
-    FMenuItem*          getItem();
+    auto getClassName() const -> FString override;
+    auto getText() const -> FString;
+    auto getItem() -> FMenuItem*;
 
     // Mutators
-    bool                setEnable (bool = true) override;
-    bool                unsetEnable() override;
-    bool                setDisable() override;
-    void                setSelected();
-    void                unsetSelected();
-    bool                setMenuWidget (bool = true);
-    bool                unsetMenuWidget();
-    void                setStatusbarMessage (const FString&) override;
-    void                setMenu (FMenu*);
-    void                setText (const FString&);
-    void                resetColors() override;
+    auto setEnable (bool = true) -> bool override;
+    auto unsetEnable() -> bool override;
+    auto setDisable() -> bool override;
+    void setSelected();
+    void unsetSelected();
+    auto setMenuWidget (bool = true) -> bool;
+    auto unsetMenuWidget() -> bool;
+    void setStatusbarMessage (const FString&) override;
+    void setMenu (FMenu*);
+    void setText (const FString&);
+    void resetColors() override;
 
     // Inquiries
-    bool                isSelected() const;
-    bool                hasHotkey() const;
-    bool                hasMenu() const;
+    auto isSelected() const -> bool;
+    auto hasHotkey() const -> bool;
+    auto hasMenu() const -> bool;
 
     // Methods
-    void                show() override;
-    void                hide() override;
+    void show() override;
+    void hide() override;
 
     // Event handlers
-    void                onKeyPress (FKeyEvent*) override;
-    void                onMouseDown (FMouseEvent*) override;
-    void                onMouseUp (FMouseEvent*) override;
-    void                onMouseMove (FMouseEvent*) override;
-    void                onAccel (FAccelEvent*) override;
+    void onKeyPress (FKeyEvent*) override;
+    void onMouseDown (FMouseEvent*) override;
+    void onMouseUp (FMouseEvent*) override;
+    void onMouseMove (FMouseEvent*) override;
+    void onAccel (FAccelEvent*) override;
 
     // Callback method
-    void                cb_menuitemEnabled();
-    void                cb_menuitemDisabled();
-    void                cb_menuitemToggled (const FMenuItem*) const;
+    void cb_menuitemEnabled();
+    void cb_menuitemDisabled();
+    void cb_menuitemToggled (const FMenuItem*) const;
 
   private:
     struct MouseStates
@@ -160,72 +160,72 @@ class FMenu : public FWindow, public FMenuList
     static constexpr bool SELECT_ITEM = true;
 
     // Accessors
-    FWidget*     getSuperMenu() const;
+    auto getSuperMenu() const -> FWidget*;
 
     // Mutators
-    void         setSuperMenu (FWidget*);
+    void setSuperMenu (FWidget*);
 
     // Inquiries
-    bool         isDialog (const FWidget*) const;
-    bool         isMenuBar (const FWidget*) const;
-    bool         isMenu (const FWidget*) const;
-    bool         isRadioMenuItem (const FWidget*) const;
-    bool         isSubMenu() const;
-    bool         isDialogMenu() const;
-    bool         isMouseOverMenu (const FPoint&);
-    bool         isMouseOverSubMenu (const FPoint&);
-    bool         isMouseOverSuperMenu (const FPoint&);
-    bool         isMouseOverMenuBar (const FPoint&) const;
+    auto isDialog (const FWidget*) const -> bool;
+    auto isMenuBar (const FWidget*) const -> bool;
+    auto isMenu (const FWidget*) const -> bool;
+    auto isRadioMenuItem (const FWidget*) const -> bool;
+    auto isSubMenu() const -> bool;
+    auto isDialogMenu() const -> bool;
+    auto isMouseOverMenu (const FPoint&) -> bool;
+    auto isMouseOverSubMenu (const FPoint&) -> bool;
+    auto isMouseOverSuperMenu (const FPoint&) -> bool;
+    auto isMouseOverMenuBar (const FPoint&) const -> bool;
 
     // Methods
-    void         init();
-    void         initCallbacks();
-    void         calculateDimensions();
-    void         adjustItems() const;
-    int          adjustX(int) const;
-    void         openSubMenu (FMenu*, bool = false);
-    void         closeOpenedSubMenu();
-    void         hideSubMenus();
-    void         hideSuperMenus() const;
-    bool         isMouseOverItem (const FPoint&, const FMenuItem*) const;
-    bool         mouseDownOverList (const FPoint&);
-    void         mouseDownSubmenu (const FMenuItem*);
-    void         mouseDownSelection (FMenuItem*, bool&);
-    bool         mouseUpOverList (const FPoint&);
-    void         mouseMoveOverList (const FPoint&, MouseStates&);
-    void         mouseMoveSelection (FMenuItem*, MouseStates&);
-    void         mouseMoveDeselection (FMenuItem*, MouseStates&);
-    void         mouseUpOverBorder();
-    void         mouseMoveOverBorder (MouseStates&) const;
-    void         passEventToSubMenu (const FMouseEvent&) const;
-    void         passEventToSuperMenu (const FMouseEvent&);
-    void         passEventToMenuBar (const FMouseEvent&) const;
+    void init();
+    void initCallbacks();
+    void calculateDimensions();
+    void adjustItems() const;
+    auto adjustX(int) const -> int;
+    void openSubMenu (FMenu*, bool = false);
+    void closeOpenedSubMenu();
+    void hideSubMenus();
+    void hideSuperMenus() const;
+    auto isMouseOverItem (const FPoint&, const FMenuItem*) const -> bool;
+    auto mouseDownOverList (const FPoint&) -> bool;
+    void mouseDownSubmenu (const FMenuItem*);
+    void mouseDownSelection (FMenuItem*, bool&);
+    auto mouseUpOverList (const FPoint&) -> bool;
+    void mouseMoveOverList (const FPoint&, MouseStates&);
+    void mouseMoveSelection (FMenuItem*, MouseStates&);
+    void mouseMoveDeselection (FMenuItem*, MouseStates&);
+    void mouseUpOverBorder();
+    void mouseMoveOverBorder (MouseStates&) const;
+    void passEventToSubMenu (const FMouseEvent&) const;
+    void passEventToSuperMenu (const FMouseEvent&);
+    void passEventToMenuBar (const FMouseEvent&) const;
     template <typename WidgetT>
-    void         passEventToWidget (WidgetT, const FMouseEvent&) const;
-    bool         containsMenuStructure (const FPoint&);
-    bool         containsMenuStructure (int, int);
-    FMenu*       superMenuAt (const FPoint&);
-    FMenu*       superMenuAt (int, int);
-    void         selectItem_PostProcessing (FMenuItem*) override;
-    void         keypressMenuBar (FKeyEvent*) const;
-    bool         hotkeyFound (FKey, const FKeyEvent&) const;
-    bool         hotkeyMenu (FKeyEvent*);
-    void         draw() override;
-    void         drawItems();
-    void         drawSeparator (int);
-    void         drawMenuLine (FMenuItem*, int);
-    void         drawCheckMarkPrefix (const FMenuItem*);
-    void         drawMenuText (MenuText&);
-    void         drawSubMenuIndicator (std::size_t&);
-    void         drawAcceleratorKey (std::size_t&, FKey);
-    void         drawTrailingSpaces (std::size_t);
-    void         setLineAttributes (const FMenuItem*, int);
-    void         setCursorToHotkeyPosition (FMenuItem*) const;
-    void         selectPrevMenu (FKeyEvent*);
-    void         selectNextMenu (FKeyEvent*);
-    void         acceptSelection();
-    void         closeMenu();
-    void         processActivate() const;
+    void passEventToWidget (WidgetT, const FMouseEvent&) const;
+    auto containsMenuStructure (const FPoint&) -> bool;
+    auto containsMenuStructure (int, int) -> bool;
+    auto superMenuAt (const FPoint&) -> FMenu*;
+    auto superMenuAt (int, int) -> FMenu*;
+    void selectItem_PostProcessing (FMenuItem*) override;
+    void keypressMenuBar (FKeyEvent*) const;
+    auto hotkeyFound (FKey, const FKeyEvent&) const -> bool;
+    auto hotkeyMenu (FKeyEvent*) -> bool;
+    void draw() override;
+    void drawItems();
+    void drawSeparator (int);
+    void drawMenuLine (FMenuItem*, int);
+    void drawCheckMarkPrefix (const FMenuItem*);
+    void drawMenuText (MenuText&);
+    void drawSubMenuIndicator (std::size_t&);
+    void drawAcceleratorKey (std::size_t&, FKey);
+    void drawTrailingSpaces (std::size_t);
+    void setLineAttributes (const FMenuItem*, int);
+    void setCursorToHotkeyPosition (FMenuItem*) const;
+    void selectPrevMenu (FKeyEvent*);
+    void selectNextMenu (FKeyEvent*);
+    void acceptSelection();
+    void closeMenu();
+    void processActivate() const;
 
     // Data members
     FMenuItem    menuitem{};
@@ -238,7 +238,7 @@ class FMenu : public FWindow, public FMenuList
     bool         has_checkable_items{false};
 
     // Friend functions
-    friend std::tuple<bool, bool> closeOpenMenus (FMenu*, const FPoint&);
+    friend auto closeOpenMenus (FMenu*, const FPoint&) -> std::tuple<bool, bool>;
 
     // Friend classes
     friend class FCheckMenuItem;
@@ -251,32 +251,32 @@ class FMenu : public FWindow, public FMenuList
 
 // non-member function forward declarations
 //----------------------------------------------------------------------
-std::tuple<bool, bool> closeOpenMenus (FMenu*, const FPoint&);
+auto closeOpenMenus (FMenu*, const FPoint&) -> std::tuple<bool, bool>;
 
 
 // FMenu inline functions
 //----------------------------------------------------------------------
-inline FString FMenu::getClassName() const
+inline auto FMenu::getClassName() const -> FString
 { return "FMenu"; }
 
 //----------------------------------------------------------------------
-inline FString FMenu::getText() const
+inline auto FMenu::getText() const -> FString
 { return menuitem.getText(); }
 
 //----------------------------------------------------------------------
-inline FMenuItem* FMenu::getItem()
+inline auto FMenu::getItem() -> FMenuItem*
 { return &menuitem; }
 
 //----------------------------------------------------------------------
-inline bool FMenu::setEnable (bool enable)
+inline auto FMenu::setEnable (bool enable) -> bool
 { return menuitem.setEnable(enable); }
 
 //----------------------------------------------------------------------
-inline bool FMenu::unsetEnable()
+inline auto FMenu::unsetEnable() -> bool
 { return menuitem.unsetEnable(); }
 
 //----------------------------------------------------------------------
-inline bool FMenu::setDisable()
+inline auto FMenu::setDisable() -> bool
 { return menuitem.setDisable(); }
 
 //----------------------------------------------------------------------
@@ -288,7 +288,7 @@ inline void FMenu::unsetSelected()
 { menuitem.unsetSelected(); }
 
 //----------------------------------------------------------------------
-inline bool FMenu::unsetMenuWidget()
+inline auto FMenu::unsetMenuWidget() -> bool
 { return setMenuWidget(false); }
 
 //----------------------------------------------------------------------
@@ -300,19 +300,19 @@ inline void FMenu::setText (const FString& txt)
 { menuitem.setText(txt); }
 
 //----------------------------------------------------------------------
-inline bool FMenu::isSelected() const
+inline auto FMenu::isSelected() const -> bool
 { return menuitem.isSelected(); }
 
 //----------------------------------------------------------------------
-inline bool FMenu::hasHotkey() const
+inline auto FMenu::hasHotkey() const -> bool
 { return menuitem.hasHotkey(); }
 
 //----------------------------------------------------------------------
-inline bool FMenu::hasMenu() const
+inline auto FMenu::hasMenu() const -> bool
 { return menuitem.hasMenu(); }
 
 //----------------------------------------------------------------------
-inline FWidget* FMenu::getSuperMenu() const
+inline auto FMenu::getSuperMenu() const -> FWidget*
 { return super_menu; }
 
 //----------------------------------------------------------------------
@@ -337,11 +337,11 @@ inline void FMenu::passEventToWidget (WidgetT widget, const FMouseEvent& ev) con
 }
 
 //----------------------------------------------------------------------
-inline bool FMenu::containsMenuStructure (const FPoint& p)
+inline auto FMenu::containsMenuStructure (const FPoint& p) -> bool
 { return containsMenuStructure (p.getX(), p.getY()); }
 
 //----------------------------------------------------------------------
-inline FMenu* FMenu::superMenuAt (const FPoint& p)
+inline auto FMenu::superMenuAt (const FPoint& p) -> FMenu*
 { return superMenuAt (p.getX(), p.getY()); }
 
 //----------------------------------------------------------------------

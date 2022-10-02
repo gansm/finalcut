@@ -233,7 +233,7 @@ void SegmentView::initLayout()
 //                               main part
 //----------------------------------------------------------------------
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   finalcut::FApplication app(argc, argv);
   SegmentView dialog(&app);

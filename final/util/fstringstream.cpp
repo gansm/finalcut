@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2021 Markus Gans                                      *
+* Copyright 2020-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -59,7 +59,7 @@ FStringStream::~FStringStream() noexcept = default;
 
 // public methods of FStringStream
 //----------------------------------------------------------------------
-FStringStream& FStringStream::operator = (FStringStream&& sstream) noexcept
+auto FStringStream::operator = (FStringStream&& sstream) noexcept -> FStringStream&
 {
   buffer = std::move(sstream.buffer);
   return *this;

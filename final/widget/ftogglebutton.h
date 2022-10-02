@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2021 Markus Gans                                      *
+* Copyright 2014-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -79,80 +79,79 @@ class FToggleButton : public FWidget
     ~FToggleButton() override;
 
     // Disable copy assignment operator (=)
-    FToggleButton& operator = (const FToggleButton&) = delete;
+    auto operator = (const FToggleButton&) -> FToggleButton& = delete;
 
     // Disable move assignment operator (=)
-    FToggleButton& operator = (FToggleButton&&) noexcept = delete;
+    auto operator = (FToggleButton&&) noexcept -> FToggleButton& = delete;
     // Accessors
-    FString              getClassName() const override;
-    FString&             getText() &;
+    auto getClassName() const -> FString override;
+    auto getText() & -> FString&;
 
     // Mutators
-    void                 setSize (const FSize&, bool = true) override;
-    void                 setGeometry ( const FPoint&, const FSize&
-                                     , bool = true ) override;
-    void                 resetColors() override;
-    bool                 setNoUnderline (bool = true);
-    bool                 unsetNoUnderline();
-    bool                 setEnable (bool = true) override;
-    bool                 unsetEnable() override;
-    bool                 setDisable() override;
-    bool                 setFocus (bool = true) override;
-    bool                 unsetFocus() override;
-    bool                 setChecked (bool = true);
-    bool                 unsetChecked();
-    virtual void         setText (const FString&);
+    void setSize (const FSize&, bool = true) override;
+    void setGeometry (const FPoint&, const FSize&, bool = true) override;
+    void resetColors() override;
+    auto setNoUnderline (bool = true) -> bool;
+    auto unsetNoUnderline() -> bool;
+    auto setEnable (bool = true) -> bool override;
+    auto unsetEnable() -> bool override;
+    auto setDisable() -> bool override;
+    auto setFocus (bool = true) -> bool override;
+    auto unsetFocus() -> bool override;
+    auto setChecked (bool = true) -> bool;
+    auto unsetChecked() -> bool;
+    virtual void setText (const FString&);
 
     // Inquiries
-    bool                 isChecked() const noexcept;
+    auto isChecked() const noexcept -> bool;
 
     // Method
-    void                 hide() override;
+    void hide() override;
 
     // Event handlers
-    void                 onMouseDown (FMouseEvent*) override;
-    void                 onMouseUp (FMouseEvent*) override;
-    void                 onWheel (FWheelEvent*) override;
-    void                 onAccel (FAccelEvent*) override;
-    void                 onFocusIn (FFocusEvent*) override;
-    void                 onFocusOut (FFocusEvent*) override;
+    void onMouseDown (FMouseEvent*) override;
+    void onMouseUp (FMouseEvent*) override;
+    void onWheel (FWheelEvent*) override;
+    void onAccel (FAccelEvent*) override;
+    void onFocusIn (FFocusEvent*) override;
+    void onFocusOut (FFocusEvent*) override;
 
   protected:
     // Accessor
-    FButtonGroup*        getGroup() const;
-    friend FButtonGroup* getGroup (FToggleButton& toggle_btn);
+    auto getGroup() const -> FButtonGroup*;
+    friend auto getGroup (FToggleButton& toggle_btn) -> FButtonGroup*;
 
     // Mutator
-    void                 setHotkeyAccelerator();
-    void                 setButtonWidth (std::size_t) noexcept;
-    void                 setLabelOffsetPos (std::size_t) noexcept;
+    void setHotkeyAccelerator();
+    void setButtonWidth (std::size_t) noexcept;
+    void setLabelOffsetPos (std::size_t) noexcept;
 
     // Inquiries
-    bool                 isRadioButton() const;
-    bool                 isCheckboxButton() const;
-    bool                 hasGroup() const;
+    auto isRadioButton() const -> bool;
+    auto isCheckboxButton() const -> bool;
+    auto hasGroup() const -> bool;
 
     // Methods
-    void                 draw() override;
-    void                 drawLabel();
-    void                 processClick() const;
-    void                 processToggle() const;
+    void draw() override;
+    void drawLabel();
+    void processClick() const;
+    void processToggle() const;
 
     // Event handler
-    void                 onKeyPress (FKeyEvent*) override;
+    void onKeyPress (FKeyEvent*) override;
 
   private:
     // Constants
     static constexpr auto NOT_SET = static_cast<std::size_t>(-1);
 
     // Mutator
-    void                 setGroup (FButtonGroup*);
-    friend void          setGroup (FToggleButton&, FButtonGroup*);
+    void setGroup (FButtonGroup*);
+    friend void setGroup (FToggleButton&, FButtonGroup*);
 
     // Methods
-    void                 init();
-    void                 drawText (const FString&, std::size_t);
-    void                 correctSize (FSize&) const;
+    void init();
+    void drawText (const FString&, std::size_t);
+    void correctSize (FSize&) const;
 
     // Data members
     FButtonGroup* button_group{nullptr};
@@ -165,38 +164,38 @@ class FToggleButton : public FWidget
 
 // FRadioButton inline functions
 //----------------------------------------------------------------------
-inline FString FToggleButton::getClassName() const
+inline auto FToggleButton::getClassName() const -> FString
 { return "FToggleButton"; }
 
 //----------------------------------------------------------------------
-inline FString& FToggleButton::getText() &
+inline auto FToggleButton::getText() & -> FString&
 { return text; }
 
 //----------------------------------------------------------------------
-inline bool FToggleButton::unsetNoUnderline()
+inline auto FToggleButton::unsetNoUnderline() -> bool
 { return setNoUnderline(false); }
 //----------------------------------------------------------------------
-inline bool FToggleButton::unsetEnable()
+inline auto FToggleButton::unsetEnable() -> bool
 { return setEnable(false); }
 
 //----------------------------------------------------------------------
-inline bool FToggleButton::setDisable()
+inline auto FToggleButton::setDisable() -> bool
 { return setEnable(false); }
 
 //----------------------------------------------------------------------
-inline bool FToggleButton::unsetFocus()
+inline auto FToggleButton::unsetFocus() -> bool
 { return setFocus(false); }
 
 //----------------------------------------------------------------------
-inline bool FToggleButton::unsetChecked()
+inline auto FToggleButton::unsetChecked() -> bool
 { return setChecked(false); }
 
 //----------------------------------------------------------------------
-inline bool FToggleButton::isChecked() const noexcept
+inline auto FToggleButton::isChecked() const noexcept -> bool
 { return checked; }
 
 //----------------------------------------------------------------------
-inline FButtonGroup* FToggleButton::getGroup() const
+inline auto FToggleButton::getGroup() const -> FButtonGroup*
 { return button_group; }
 
 //----------------------------------------------------------------------
@@ -208,7 +207,7 @@ inline void FToggleButton::setLabelOffsetPos (std::size_t offset) noexcept
 { label_offset_pos = offset; }
 
 //----------------------------------------------------------------------
-inline bool FToggleButton::hasGroup() const
+inline auto FToggleButton::hasGroup() const -> bool
 { return button_group; }
 
 }  // namespace finalcut

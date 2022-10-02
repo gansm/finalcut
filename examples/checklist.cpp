@@ -184,7 +184,7 @@ void CheckList::cb_showList()
 //                               main part
 //----------------------------------------------------------------------
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   // Create the application object
   finalcut::FApplication app(argc, argv);

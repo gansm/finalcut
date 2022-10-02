@@ -116,7 +116,7 @@ void FMessageBox::setText (const FString& txt)
 }
 
 //----------------------------------------------------------------------
-FMessageBox::ButtonType FMessageBox::exec()
+auto FMessageBox::exec() -> ButtonType
 {
   result_code = ButtonType::Reject;
   show();

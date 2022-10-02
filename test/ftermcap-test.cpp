@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021 Markus Gans                                           *
+* Copyright 2021-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -83,8 +83,8 @@ class FTermcapTest : public CPPUNIT_NS::TestFixture
     void stringPrintTest();
 
   private:
-    static int putchar_test (int);
-    static int putstring_test (const std::string&);
+    static auto putchar_test (int) -> int;
+    static auto putstring_test (const std::string&) -> int;
     static void clear();
 
     // Adds code needed to register the test suite
@@ -596,7 +596,7 @@ void FTermcapTest::stringPrintTest()
 }
 
 //----------------------------------------------------------------------
-int FTermcapTest::putchar_test (int ch)
+auto FTermcapTest::putchar_test (int ch) -> int
 {
   //std::cout << std::hex << "0x" << ch << "," << std::flush;
   output.push_back(char(ch));
@@ -604,7 +604,7 @@ int FTermcapTest::putchar_test (int ch)
 }
 
 //----------------------------------------------------------------------
-int FTermcapTest::putstring_test (const std::string& str)
+auto FTermcapTest::putstring_test (const std::string& str) -> int
 {
   //std::cout << '"' << str << '"' << std::flush;
   output.append(str);

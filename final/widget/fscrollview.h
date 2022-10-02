@@ -83,86 +83,86 @@ class FScrollView : public FWidget
     ~FScrollView() override;
 
     // Disable copy assignment operator (=)
-    FScrollView& operator = (const FScrollView&) = delete;
+    auto operator = (const FScrollView&) -> FScrollView& = delete;
 
     // Disable move assignment operator (=)
-    FScrollView& operator = (FScrollView&&) noexcept = delete;
+    auto operator = (FScrollView&&) noexcept -> FScrollView& = delete;
     // Accessors
-    FString             getClassName() const override;
-    FString&            getText() &;
-    std::size_t         getViewportWidth() const;
-    std::size_t         getViewportHeight() const;
-    FSize               getViewportSize() const;
-    std::size_t         getScrollWidth() const;
-    std::size_t         getScrollHeight() const;
-    FSize               getScrollSize() const;
-    FPoint              getScrollPos() const;
-    int                 getScrollX() const;
-    int                 getScrollY() const;
+    auto getClassName() const -> FString override;
+    auto getText() & -> FString&;
+    auto getViewportWidth() const -> std::size_t;
+    auto getViewportHeight() const -> std::size_t;
+    auto getViewportSize() const -> FSize;
+    auto getScrollWidth() const -> std::size_t;
+    auto getScrollHeight() const -> std::size_t;
+    auto getScrollSize() const -> FSize;
+    auto getScrollPos() const -> FPoint;
+    auto getScrollX() const -> int;
+    auto getScrollY() const -> int;
 
     // Mutator
-    virtual void        setScrollWidth (std::size_t);
-    virtual void        setScrollHeight (std::size_t);
-    virtual void        setScrollSize (const FSize&);
-    void                setX (int, bool = true) override;
-    void                setY (int, bool = true) override;
-    void                setPos (const FPoint&, bool = true) override;
-    void                setWidth (std::size_t, bool = true) override;
-    void                setHeight (std::size_t, bool = true) override;
-    void                setSize (const FSize&, bool = true) override;
-    void                setGeometry ( const FPoint&, const FSize&
-                                    , bool = true ) override;
-    bool                setCursorPos (const FPoint&) override;
-    void                setPrintPos (const FPoint&) override;
-    void                setText (const FString&);
-    bool                setViewportPrint (bool = true);
-    bool                unsetViewportPrint();
-    void                resetColors() override;
-    bool                setBorder (bool = true);
-    bool                unsetBorder();
-    bool                setFocus (bool = true) override;
-    void                setHorizontalScrollBarMode (ScrollBarMode);
-    void                setVerticalScrollBarMode (ScrollBarMode);
+    virtual void setScrollWidth (std::size_t);
+    virtual void setScrollHeight (std::size_t);
+    virtual void setScrollSize (const FSize&);
+    void setX (int, bool = true) override;
+    void setY (int, bool = true) override;
+    void setPos (const FPoint&, bool = true) override;
+    void setWidth (std::size_t, bool = true) override;
+    void setHeight (std::size_t, bool = true) override;
+    void setSize (const FSize&, bool = true) override;
+    void setGeometry ( const FPoint&, const FSize&
+                     , bool = true ) override;
+    auto setCursorPos (const FPoint&) -> bool override;
+    void setPrintPos (const FPoint&) override;
+    void setText (const FString&);
+    auto setViewportPrint (bool = true) -> bool;
+    auto unsetViewportPrint() -> bool;
+    void resetColors() override;
+    auto setBorder (bool = true) -> bool;
+    auto unsetBorder() -> bool;
+    auto setFocus (bool = true) -> bool override;
+    void setHorizontalScrollBarMode (ScrollBarMode);
+    void setVerticalScrollBarMode (ScrollBarMode);
 
     // Inquiries
-    bool                hasBorder() const;
-    bool                isViewportPrint() const;
+    auto hasBorder() const -> bool;
+    auto isViewportPrint() const -> bool;
 
     // Methods
-    void                clearArea (wchar_t = L' ') override;
-    void                scrollToX (int);
-    void                scrollToY (int);
-    void                scrollTo (const FPoint&);
-    void                scrollTo (int, int);
-    void                scrollBy (int, int);
-    void                print (const FPoint&) override;
-    void                draw() override;
-    void                drawBorder() override;
-    void                drawLabel();
+    void clearArea (wchar_t = L' ') override;
+    void scrollToX (int);
+    void scrollToY (int);
+    void scrollTo (const FPoint&);
+    void scrollTo (int, int);
+    void scrollBy (int, int);
+    void print (const FPoint&) override;
+    void draw() override;
+    void drawBorder() override;
+    void drawLabel();
 
     // Event handlers
-    void                onKeyPress (FKeyEvent*) override;
-    void                onMouseDown (FMouseEvent*) override;
-    void                onMouseUp (FMouseEvent*) override;
-    void                onMouseMove (FMouseEvent*) override;
-    void                onWheel (FWheelEvent*) override;
-    void                onAccel (FAccelEvent*) override;
-    void                onFocusIn (FFocusEvent*) override;
-    void                onChildFocusIn (FFocusEvent*) override;
-    void                onChildFocusOut (FFocusEvent*) override;
+    void onKeyPress (FKeyEvent*) override;
+    void onMouseDown (FMouseEvent*) override;
+    void onMouseUp (FMouseEvent*) override;
+    void onMouseMove (FMouseEvent*) override;
+    void onWheel (FWheelEvent*) override;
+    void onAccel (FAccelEvent*) override;
+    void onFocusIn (FFocusEvent*) override;
+    void onChildFocusIn (FFocusEvent*) override;
+    void onChildFocusOut (FFocusEvent*) override;
 
   protected:
     // Using-declaration
     using FVTerm::clearArea;
 
     // Accessor
-    FTermArea*          getPrintArea() override;
+    auto getPrintArea() -> FTermArea* override;
 
     // Methods
-    void                setHotkeyAccelerator();
-    void                initLayout() override;
-    void                adjustSize() override;
-    void                copy2area();
+    void setHotkeyAccelerator();
+    void initLayout() override;
+    void adjustSize() override;
+    void copy2area();
 
   private:
     // Using-declaration
@@ -173,53 +173,53 @@ class FScrollView : public FWidget
     static constexpr std::size_t horizontal_border_spacing = 2;
 
     // Accessors
-    FPoint              getViewportCursorPos();
+    auto getViewportCursorPos() -> FPoint;
 
     // Methods
-    void                init();
-    void                drawText (const FString&, std::size_t);
-    void                directFocus();
-    void                mapKeyFunctions();
-    void                changeSize (const FSize&, bool);
-    void                calculateScrollbarPos() const;
+    void init();
+    void drawText (const FString&, std::size_t);
+    void directFocus();
+    void mapKeyFunctions();
+    void changeSize (const FSize&, bool);
+    void calculateScrollbarPos() const;
     template <typename Callback>
-    void                initScrollbar ( FScrollbarPtr&
-                                      , Orientation
-                                      , Callback );
-    void                setHorizontalScrollBarVisibility() const;
-    void                setVerticalScrollBarVisibility() const;
-    void                setViewportCursor();
+    void initScrollbar ( FScrollbarPtr&
+                       , Orientation
+                       , Callback );
+    void setHorizontalScrollBarVisibility() const;
+    void setVerticalScrollBarVisibility() const;
+    void setViewportCursor();
 
     // Callback methods
-    void                cb_vbarChange (const FWidget*);
-    void                cb_hbarChange (const FWidget*);
+    void cb_vbarChange (const FWidget*);
+    void cb_hbarChange (const FWidget*);
 
     // Data members
-    FRect              scroll_geometry{1, 1, 1, 1};
-    FRect              viewport_geometry{};
-    FTermArea*         viewport{nullptr};  // virtual scroll content
-    FString            text{};
-    FScrollbarPtr      vbar{nullptr};
-    FScrollbarPtr      hbar{nullptr};
-    KeyMap             key_map{};
-    uInt8              nf_offset{0};
-    bool               use_own_print_area{false};
-    bool               update_scrollbar{true};
-    ScrollBarMode      v_mode{ScrollBarMode::Auto};  // fc:Auto, fc::Hidden or fc::Scroll
-    ScrollBarMode      h_mode{ScrollBarMode::Auto};
+    FRect          scroll_geometry{1, 1, 1, 1};
+    FRect          viewport_geometry{};
+    FTermArea*     viewport{nullptr};  // virtual scroll content
+    FString        text{};
+    FScrollbarPtr  vbar{nullptr};
+    FScrollbarPtr  hbar{nullptr};
+    KeyMap         key_map{};
+    uInt8          nf_offset{0};
+    bool           use_own_print_area{false};
+    bool           update_scrollbar{true};
+    ScrollBarMode  v_mode{ScrollBarMode::Auto};  // fc:Auto, fc::Hidden or fc::Scroll
+    ScrollBarMode  h_mode{ScrollBarMode::Auto};
 };
 
 // FScrollView inline functions
 //----------------------------------------------------------------------
-inline FString& FScrollView::getText() &
+inline auto FScrollView::getText() & -> FString&
 { return text; }
 
 //----------------------------------------------------------------------
-inline FString FScrollView::getClassName() const
+inline auto FScrollView::getClassName() const -> FString
 { return "FScrollView"; }
 
 //----------------------------------------------------------------------
-inline std::size_t FScrollView::getViewportWidth() const
+inline auto FScrollView::getViewportWidth() const -> std::size_t
 {
   return ( getScrollHeight() > getViewportHeight() )
        ? getWidth() - vertical_border_spacing - std::size_t(nf_offset)
@@ -227,51 +227,51 @@ inline std::size_t FScrollView::getViewportWidth() const
 }
 
 //----------------------------------------------------------------------
-inline std::size_t FScrollView::getViewportHeight() const
+inline auto FScrollView::getViewportHeight() const -> std::size_t
 { return getHeight() - horizontal_border_spacing; }
 
 //----------------------------------------------------------------------
-inline FSize FScrollView::getViewportSize() const
+inline auto FScrollView::getViewportSize() const -> FSize
 { return {getViewportWidth(), getViewportHeight()}; }
 
 //----------------------------------------------------------------------
-inline std::size_t FScrollView::getScrollWidth() const
+inline auto FScrollView::getScrollWidth() const -> std::size_t
 { return scroll_geometry.getWidth(); }
 
 //----------------------------------------------------------------------
-inline std::size_t FScrollView::getScrollHeight() const
+inline auto FScrollView::getScrollHeight() const -> std::size_t
 { return scroll_geometry.getHeight(); }
 
 //----------------------------------------------------------------------
-inline FSize FScrollView::getScrollSize() const
+inline auto FScrollView::getScrollSize() const -> FSize
 { return scroll_geometry.getSize(); }
 
 //----------------------------------------------------------------------
-inline FPoint FScrollView::getScrollPos() const
+inline auto FScrollView::getScrollPos() const -> FPoint
 { return viewport_geometry.getPos(); }
 
 //----------------------------------------------------------------------
-inline int FScrollView::getScrollX() const
+inline auto FScrollView::getScrollX() const -> int
 { return viewport_geometry.getX(); }
 
 //----------------------------------------------------------------------
-inline int FScrollView::getScrollY() const
+inline auto FScrollView::getScrollY() const -> int
 { return viewport_geometry.getY(); }
 
 //----------------------------------------------------------------------
-inline bool FScrollView::unsetViewportPrint()
+inline auto FScrollView::unsetViewportPrint() -> bool
 { return setViewportPrint(false); }
 
 //----------------------------------------------------------------------
-inline bool FScrollView::unsetBorder()
+inline auto FScrollView::unsetBorder() -> bool
 { return setBorder(false); }
 
 //----------------------------------------------------------------------
-inline bool FScrollView::hasBorder() const
+inline auto FScrollView::hasBorder() const -> bool
 { return ! getFlags().no_border; }
 
 //----------------------------------------------------------------------
-inline bool FScrollView::isViewportPrint() const
+inline auto FScrollView::isViewportPrint() const -> bool
 { return ! use_own_print_area; }
 
 //----------------------------------------------------------------------

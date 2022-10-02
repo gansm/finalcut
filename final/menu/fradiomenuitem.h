@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2021 Markus Gans                                      *
+* Copyright 2015-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -72,18 +72,18 @@ class FRadioMenuItem : public FMenuItem
     ~FRadioMenuItem() noexcept override;
 
     // Accessor
-    FString       getClassName() const override;
+    auto getClassName() const -> FString override;
 
   private:
     // Methods
-    void          init();
-    void          processToggle() const;
-    void          processClicked() override;
+    void init();
+    void processToggle() const;
+    void processClicked() override;
 };
 
 // FRadioMenuItem inline functions
 //----------------------------------------------------------------------
-inline FString FRadioMenuItem::getClassName() const
+inline auto FRadioMenuItem::getClassName() const -> FString
 { return "FRadioMenuItem"; }
 
 }  // namespace finalcut

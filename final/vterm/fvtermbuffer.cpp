@@ -50,7 +50,7 @@ FVTermBuffer::FVTermBuffer()  // constructor
 
 // public methods of FVTermBuffer
 //----------------------------------------------------------------------
-FString FVTermBuffer::toString() const
+auto FVTermBuffer::toString() const -> FString
 {
   std::wstring wide_string{};
   wide_string.reserve(data.size());
@@ -71,7 +71,7 @@ FString FVTermBuffer::toString() const
 }
 
 //----------------------------------------------------------------------
-int FVTermBuffer::print (const FString& string)
+auto FVTermBuffer::print (const FString& string) -> int
 {
   checkCapacity(data.size() + string.getLength());
   const auto last = string.cend();
@@ -111,7 +111,7 @@ int FVTermBuffer::print (const FString& string)
 }
 
 //----------------------------------------------------------------------
-int FVTermBuffer::print (wchar_t ch)
+auto FVTermBuffer::print (wchar_t ch) -> int
 {
   FChar nc{FVTermAttribute::getAttribute()};  // next character
   nc.ch[0] = ch;
@@ -184,8 +184,8 @@ void FVTermBuffer::add ( FString::const_iterator& cbegin
 
 // FVTermBuffer non-member operators
 //----------------------------------------------------------------------
-FVTermBuffer::FCharVector& operator << ( FVTermBuffer::FCharVector& term_string
-                                       , const FVTermBuffer& buf )
+auto operator << ( FVTermBuffer::FCharVector& term_string
+                 , const FVTermBuffer& buf ) -> FVTermBuffer::FCharVector&
 {
   if ( ! buf.data.empty() )
     term_string.assign(buf.data.cbegin(), buf.data.cend());

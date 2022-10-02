@@ -54,7 +54,7 @@ FTextView::~FTextView() noexcept = default;  // destructor
 
 // public methods of FTextView
 //----------------------------------------------------------------------
-FString FTextView::getText() const
+auto FTextView::getText() const -> FString
 {
   if ( data.empty() )
     return {""};
@@ -527,13 +527,13 @@ void FTextView::adjustSize()
 
 // private methods of FTextView
 //----------------------------------------------------------------------
-std::size_t FTextView::getTextHeight() const
+auto FTextView::getTextHeight() const -> std::size_t
 {
   return getHeight() - 2 + std::size_t(nf_offset);
 }
 
 //----------------------------------------------------------------------
-std::size_t FTextView::getTextWidth() const
+auto FTextView::getTextWidth() const -> std::size_t
 {
   return getWidth() - 2 - std::size_t(nf_offset);
 }
@@ -688,7 +688,7 @@ void FTextView::printHighlighted ( FVTermBuffer& line_buffer
 }
 
 //----------------------------------------------------------------------
-inline bool FTextView::useFDialogBorder() const
+inline auto FTextView::useFDialogBorder() const -> bool
 {
   const auto& parent = getParentWidget();
   bool use_fdialog_border{false};
@@ -708,7 +708,7 @@ inline bool FTextView::useFDialogBorder() const
 }
 
 //----------------------------------------------------------------------
-inline bool FTextView::isPrintable (wchar_t ch) const
+inline auto FTextView::isPrintable (wchar_t ch) const -> bool
 {
   // Check for printable characters
 

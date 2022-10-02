@@ -109,7 +109,7 @@ FTerm::~FTerm()  // destructor
 
 // public methods of FTerm
 //----------------------------------------------------------------------
-std::size_t FTerm::getLineNumber()
+auto FTerm::getLineNumber() -> std::size_t
 {
   static auto& fterm_data = FTermData::getInstance();
   const auto& term_geometry = fterm_data.getTerminalGeometry();
@@ -121,7 +121,7 @@ std::size_t FTerm::getLineNumber()
 }
 
 //----------------------------------------------------------------------
-std::size_t FTerm::getColumnNumber()
+auto FTerm::getColumnNumber() -> std::size_t
 {
   static auto& fterm_data = FTermData::getInstance();
   const auto& term_geometry = fterm_data.getTerminalGeometry();
@@ -133,123 +133,123 @@ std::size_t FTerm::getColumnNumber()
 }
 
 //----------------------------------------------------------------------
-FString FTerm::getKeyName (FKey keynum)
+auto FTerm::getKeyName (FKey keynum) -> FString
 {
   static const auto& keyboard = FKeyboard::getInstance();
   return keyboard.getKeyName (keynum);
 }
 
 //----------------------------------------------------------------------
-FCharSubstitution& FTerm::getCharSubstitutionMap() &
+auto FTerm::getCharSubstitutionMap() & -> FCharSubstitution&
 {
   static auto& fterm_data = FTermData::getInstance();
   return fterm_data.getCharSubstitutionMap();
 }
 
 //----------------------------------------------------------------------
-int FTerm::getTTYFileDescriptor()
+auto FTerm::getTTYFileDescriptor() -> int
 {
   static const auto& fterm_data = FTermData::getInstance();
   return fterm_data.getTTYFileDescriptor();
 }
 
 //----------------------------------------------------------------------
-std::string FTerm::getTermType()
+auto FTerm::getTermType() -> std::string
 {
   static const auto& fterm_data = FTermData::getInstance();
   return fterm_data.getTermType();
 }
 
 //----------------------------------------------------------------------
-std::string FTerm::getTermFileName()
+auto FTerm::getTermFileName() -> std::string
 {
   static const auto& fterm_data = FTermData::getInstance();
   return fterm_data.getTermFileName();
 }
 
 //----------------------------------------------------------------------
-int FTerm::getTabstop()
+auto FTerm::getTabstop() -> int
 {
   return FTermcap::tabstop;
 }
 
 //----------------------------------------------------------------------
-int FTerm::getMaxColor()
+auto FTerm::getMaxColor() -> int
 {
   return FTermcap::max_color;
 }
 
 //----------------------------------------------------------------------
-bool FTerm::hasUTF8()
+auto FTerm::hasUTF8() -> bool
 {
   static const auto& fterm_data = FTermData::getInstance();
   return fterm_data.hasUTF8Console();
 }
 
 //----------------------------------------------------------------------
-bool FTerm::isMonochron()
+auto FTerm::isMonochron() -> bool
 {
   static const auto& fterm_data = FTermData::getInstance();
   return fterm_data.isMonochron();
 }
 
 //----------------------------------------------------------------------
-bool FTerm::isNewFont()
+auto FTerm::isNewFont() -> bool
 {
   static const auto& fterm_data = FTermData::getInstance();
   return fterm_data.isNewFont();
 }
 
 //----------------------------------------------------------------------
-bool FTerm::isInitialized()
+auto FTerm::isInitialized() -> bool
 {
   return internal::var::term_initialized;
 }
 
 //----------------------------------------------------------------------
-bool FTerm::isCursorHideable()
+auto FTerm::isCursorHideable() -> bool
 {
   const auto& cursor_off_str = disableCursorString();
   return ! cursor_off_str.empty();
 }
 
 //----------------------------------------------------------------------
-bool FTerm::isEncodable (const wchar_t& c)
+auto FTerm::isEncodable (const wchar_t& c) -> bool
 {
   const auto& ch = charEncode(c);
   return ch > 0 && ch != c;
 }
 
 //----------------------------------------------------------------------
-bool FTerm::hasChangedTermSize()
+auto FTerm::hasChangedTermSize() -> bool
 {
   static auto& fterm_data = FTermData::getInstance();
   return fterm_data.hasTermResized();
 }
 
 //----------------------------------------------------------------------
-bool FTerm::hasShadowCharacter()
+auto FTerm::hasShadowCharacter() -> bool
 {
   static const auto& fterm_data = FTermData::getInstance();
   return fterm_data.hasShadowCharacter();
 }
 
 //----------------------------------------------------------------------
-bool FTerm::hasHalfBlockCharacter()
+auto FTerm::hasHalfBlockCharacter() -> bool
 {
   static const auto& fterm_data = FTermData::getInstance();
   return fterm_data.hasHalfBlockCharacter();
 }
 
 //----------------------------------------------------------------------
-bool FTerm::hasAlternateScreen()
+auto FTerm::hasAlternateScreen() -> bool
 {
   static const auto& fterm_data = FTermData::getInstance();
   return fterm_data.hasAlternateScreen();
 }
 
 //----------------------------------------------------------------------
-bool FTerm::canChangeColorPalette()
+auto FTerm::canChangeColorPalette() -> bool
 {
   static const auto& fterm_data = FTermData::getInstance();
 
@@ -307,7 +307,7 @@ void FTerm::useAlternateScreen (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FTerm::setUTF8 (bool enable)  // UTF-8 (Unicode)
+auto FTerm::setUTF8 (bool enable) -> bool  // UTF-8 (Unicode)
 {
   static auto& data = FTermData::getInstance();
 
@@ -327,7 +327,7 @@ bool FTerm::setUTF8 (bool enable)  // UTF-8 (Unicode)
 }
 
 //----------------------------------------------------------------------
-bool FTerm::setVGAFont()
+auto FTerm::setVGAFont() -> bool
 {
   static auto& data = FTermData::getInstance();
 
@@ -368,7 +368,7 @@ bool FTerm::setVGAFont()
 }
 
 //----------------------------------------------------------------------
-bool FTerm::setNewFont()
+auto FTerm::setNewFont() -> bool
 {
   static auto& data = FTermData::getInstance();
 
@@ -407,7 +407,7 @@ bool FTerm::setNewFont()
 }
 
 //----------------------------------------------------------------------
-bool FTerm::resetFont()
+auto FTerm::resetFont() -> bool
 {
   bool retval{false};
   auto& data = FTermData::getInstance();
@@ -456,7 +456,7 @@ bool FTerm::resetFont()
 }
 
 //----------------------------------------------------------------------
-int FTerm::openConsole()
+auto FTerm::openConsole() -> int
 {
   static auto& data = FTermData::getInstance();
   int fd = data.getTTYFileDescriptor();
@@ -492,7 +492,7 @@ int FTerm::openConsole()
 }
 
 //----------------------------------------------------------------------
-int FTerm::closeConsole()
+auto FTerm::closeConsole() -> int
 {
   static auto& data = FTermData::getInstance();
   const int fd = data.getTTYFileDescriptor();
@@ -512,7 +512,7 @@ int FTerm::closeConsole()
 }
 
 //----------------------------------------------------------------------
-std::string FTerm::moveCursorString (int xold, int yold, int xnew, int ynew)
+auto FTerm::moveCursorString (int xold, int yold, int xnew, int ynew) -> std::string
 {
   // Returns the cursor move string
 
@@ -529,7 +529,7 @@ std::string FTerm::moveCursorString (int xold, int yold, int xnew, int ynew)
 }
 
 //----------------------------------------------------------------------
-std::string FTerm::cursorsVisibilityString (bool enable)
+auto FTerm::cursorsVisibilityString (bool enable) -> std::string
 {
   // Hides or shows the input cursor on the terminal
 
@@ -794,7 +794,7 @@ void FTerm::setEncoding (Encoding enc)
 }
 
 //----------------------------------------------------------------------
-std::string FTerm::getEncodingString()
+auto FTerm::getEncodingString() -> std::string
 {
   static auto& data = FTermData::getInstance();
   const auto& term_encoding = data.getTerminalEncoding();
@@ -810,14 +810,14 @@ std::string FTerm::getEncodingString()
 }
 
 //----------------------------------------------------------------------
-wchar_t FTerm::charEncode (const wchar_t& c)
+auto FTerm::charEncode (const wchar_t& c) -> wchar_t
 {
   static const auto& data = FTermData::getInstance();
   return charEncode (c, data.getTerminalEncoding());
 }
 
 //----------------------------------------------------------------------
-wchar_t FTerm::charEncode (const wchar_t& c, const Encoding& enc)
+auto FTerm::charEncode (const wchar_t& c, const Encoding& enc) -> wchar_t
 {
   const auto& character = FCharMap::getCharEncodeMap();
   const auto& cend = character.cend();
@@ -840,7 +840,7 @@ wchar_t FTerm::charEncode (const wchar_t& c, const Encoding& enc)
 }
 
 //----------------------------------------------------------------------
-bool FTerm::scrollTermForward()
+auto FTerm::scrollTermForward() -> bool
 {
   if ( TCAP(t_scroll_forward) )
   {
@@ -853,7 +853,7 @@ bool FTerm::scrollTermForward()
 }
 
 //----------------------------------------------------------------------
-bool FTerm::scrollTermReverse()
+auto FTerm::scrollTermReverse() -> bool
 {
   if ( TCAP(t_scroll_reverse) )
   {
@@ -917,7 +917,7 @@ void FTerm::changeTermSizeFinished()
 
 // private methods of FTerm
 //----------------------------------------------------------------------
-inline FStartOptions& FTerm::getStartOptions()
+inline auto FTerm::getStartOptions() -> FStartOptions&
 {
   static auto& start_options = FStartOptions::getInstance();
   return start_options;
@@ -1253,7 +1253,7 @@ void FTerm::init_optiAttr()
 }
 
 //----------------------------------------------------------------------
-bool FTerm::init_font()
+auto FTerm::init_font() -> bool
 {
   if ( getStartOptions().vgafont && ! setVGAFont() )
   {
@@ -1478,7 +1478,7 @@ void FTerm::init_captureFontAndTitle()
 }
 
 //----------------------------------------------------------------------
-inline bool FTerm::hasNoFontSettingOption()
+inline auto FTerm::hasNoFontSettingOption() -> bool
 {
   static const auto& data = FTermData::getInstance();
   return ( data.isTermType ( FTermType::gnome_terminal
@@ -1526,7 +1526,7 @@ void FTerm::setOverwriteCursorStyle()
 }
 
 //----------------------------------------------------------------------
-std::string FTerm::enableCursorString()
+auto FTerm::enableCursorString() -> std::string
 {
   // Returns the cursor enable string
 
@@ -1564,7 +1564,7 @@ std::string FTerm::enableCursorString()
 }
 
 //----------------------------------------------------------------------
-std::string FTerm::disableCursorString()
+auto FTerm::disableCursorString() -> std::string
 {
   // Returns the cursor disable string
 
@@ -1820,7 +1820,7 @@ void FTerm::init()
 }
 
 //----------------------------------------------------------------------
-bool FTerm::init_terminal() const
+auto FTerm::init_terminal() const -> bool
 {
   // Initialize termios
   FTermios::init();

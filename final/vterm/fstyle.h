@@ -55,10 +55,10 @@ class FStyle
     { }
 
     // Accessor
-    FString getClassName() const
+    auto getClassName() const -> FString
     { return "FStyle"; }
 
-    Style getStyle() const noexcept
+    auto getStyle() const noexcept -> Style
     { return attribute; }
 
     // Mutators
@@ -68,7 +68,7 @@ class FStyle
     void setStyle (Style attr) noexcept
     { attribute = attr; }
 
-    FAttribute toFAttribute() const
+    auto toFAttribute() const -> FAttribute
     {
       FAttribute fattr{};
       fattr.bit.bold               = (attribute & Style::Bold) != Style::None;

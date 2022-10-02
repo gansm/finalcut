@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2021 Markus Gans                                      *
+* Copyright 2018-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -54,13 +54,13 @@ auto FTermFreeBSD::getInstance() -> FTermFreeBSD&
 }
 
 //----------------------------------------------------------------------
-FTermFreeBSD::CursorStyle FTermFreeBSD::getCursorStyle()
+auto FTermFreeBSD::getCursorStyle() -> CursorStyle
 {
   return cursor_style;
 }
 
 //----------------------------------------------------------------------
-bool FTermFreeBSD::setCursorStyle (CursorStyle style)
+auto FTermFreeBSD::setCursorStyle (CursorStyle style) -> bool
 {
   // Set cursor style in a BSD console
 
@@ -77,7 +77,7 @@ bool FTermFreeBSD::setCursorStyle (CursorStyle style)
 }
 
 //----------------------------------------------------------------------
-bool FTermFreeBSD::isFreeBSDConsole()
+auto FTermFreeBSD::isFreeBSDConsole() -> bool
 {
   // Check if it's a FreeBSD console
 
@@ -187,7 +187,7 @@ void FTermFreeBSD::warnNotInitialized()
 }
 
 //----------------------------------------------------------------------
-bool FTermFreeBSD::saveFreeBSDAltKey()
+auto FTermFreeBSD::saveFreeBSDAltKey() -> bool
 {
   // Saving the current mapping for the alt key
 
@@ -206,7 +206,7 @@ bool FTermFreeBSD::saveFreeBSDAltKey()
 }
 
 //----------------------------------------------------------------------
-bool FTermFreeBSD::setFreeBSDAltKey (uInt key)
+auto FTermFreeBSD::setFreeBSDAltKey (uInt key) -> bool
 {
   // Remapping the alt key
 
@@ -227,7 +227,7 @@ bool FTermFreeBSD::setFreeBSDAltKey (uInt key)
 }
 
 //----------------------------------------------------------------------
-bool FTermFreeBSD::setFreeBSDAlt2Meta()
+auto FTermFreeBSD::setFreeBSDAlt2Meta() -> bool
 {
   // Use the meta key when pressing the Alt key
 
@@ -235,7 +235,7 @@ bool FTermFreeBSD::setFreeBSDAlt2Meta()
 }
 
 //----------------------------------------------------------------------
-bool FTermFreeBSD::resetFreeBSDAlt2Meta()
+auto FTermFreeBSD::resetFreeBSDAlt2Meta() -> bool
 {
   // Restore the alt key mapping
 
@@ -243,7 +243,7 @@ bool FTermFreeBSD::resetFreeBSDAlt2Meta()
 }
 
 //----------------------------------------------------------------------
-bool FTermFreeBSD::setFreeBSDCursorStyle (CursorStyle style)
+auto FTermFreeBSD::setFreeBSDCursorStyle (CursorStyle style) -> bool
 {
   static const auto& fsystem = FSystem::getInstance();
   return fsystem->ioctl(0, CONS_CURSORTYPE, &style) == 0;

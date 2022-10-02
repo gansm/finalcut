@@ -160,69 +160,69 @@ class Calc final : public finalcut::FDialog
     };
 
     // Methods
-    void           drawDispay();
-    void           draw() override;
-    void           sendOnButtonAccelerator();
-    void           clear (const lDouble&);
-    void           zero (const lDouble&);
-    void           one (const lDouble&);
-    void           two (const lDouble&);
-    void           three (const lDouble&);
-    void           four (const lDouble&);
-    void           five (const lDouble&);
-    void           six (const lDouble&);
-    void           seven (const lDouble&);
-    void           eight (const lDouble&);
-    void           nine (const lDouble&);
-    void           add (const lDouble&);
-    void           subtract (const lDouble&);
-    void           multiply (const lDouble&);
-    void           divide (const lDouble&);
-    void           equals (const lDouble&);
-    void           change_sign (lDouble&);
-    void           radix_point(const lDouble&);
-    void           reciprocal (lDouble&);
-    void           percent (lDouble&);
-    void           pi (lDouble&);
-    void           open_bracket (const lDouble&);
-    void           close_bracket (const lDouble&);
-    void           log_e (lDouble&);
-    void           power_e (lDouble&);
-    void           log_10 (lDouble&);
-    void           power_10 (lDouble&);
-    void           power (const lDouble&);
-    void           square_root (lDouble&);
-    void           hyperbolic (const lDouble&);
-    void           arcus (const lDouble&);
-    void           sine (lDouble&);
-    void           cosine (lDouble&);
-    void           tangent (lDouble&);
-    bool           isDataEntryKey (const ButtonName&) const;
-    bool           isOperatorKey (const ButtonName&) const;
-    lDouble&       getValue();
-    void           setDisplay (lDouble);
-    void           setInfixOperator (char);
-    void           clearInfixOperator();
-    void           calcInfixOperator();
-    void           initLayout() override;
-    void           adjustSize() override;
-    const wchar_t* getButtonText (const ButtonName&) const;
-    void           mapKeyFunctions();
+    void drawDispay();
+    void draw() override;
+    void sendOnButtonAccelerator();
+    void clear (const lDouble&);
+    void zero (const lDouble&);
+    void one (const lDouble&);
+    void two (const lDouble&);
+    void three (const lDouble&);
+    void four (const lDouble&);
+    void five (const lDouble&);
+    void six (const lDouble&);
+    void seven (const lDouble&);
+    void eight (const lDouble&);
+    void nine (const lDouble&);
+    void add (const lDouble&);
+    void subtract (const lDouble&);
+    void multiply (const lDouble&);
+    void divide (const lDouble&);
+    void equals (const lDouble&);
+    void change_sign (lDouble&);
+    void radix_point(const lDouble&);
+    void reciprocal (lDouble&);
+    void percent (lDouble&);
+    void pi (lDouble&);
+    void open_bracket (const lDouble&);
+    void close_bracket (const lDouble&);
+    void log_e (lDouble&);
+    void power_e (lDouble&);
+    void log_10 (lDouble&);
+    void power_10 (lDouble&);
+    void power (const lDouble&);
+    void square_root (lDouble&);
+    void hyperbolic (const lDouble&);
+    void arcus (const lDouble&);
+    void sine (lDouble&);
+    void cosine (lDouble&);
+    void tangent (lDouble&);
+    auto isDataEntryKey (const ButtonName&) const -> bool;
+    auto isOperatorKey (const ButtonName&) const -> bool;
+    auto getValue() -> lDouble&;
+    void setDisplay (lDouble);
+    void setInfixOperator (char);
+    void clearInfixOperator();
+    void calcInfixOperator();
+    void initLayout() override;
+    void adjustSize() override;
+    auto getButtonText (const ButtonName&) const -> const wchar_t*;
+    void mapKeyFunctions();
 
     // Event handlers
-    void           onKeyPress (finalcut::FKeyEvent*) override;
-    void           onShow (finalcut::FShowEvent*) override;
-    void           onClose (finalcut::FCloseEvent*) override;
+    void onKeyPress (finalcut::FKeyEvent*) override;
+    void onShow (finalcut::FShowEvent*) override;
+    void onClose (finalcut::FCloseEvent*) override;
 
     // Callback method
     void           cb_buttonClicked (ButtonName);
 
     // Overloaded operators
-    friend bool        operator <  (const ButtonName& c, const int n) noexcept;
-    friend bool        operator <= (const ButtonName& c, const int n) noexcept;
-    friend ButtonName  operator +  (const ButtonName& c, const int n) noexcept;
-    friend ButtonName& operator ++ (ButtonName& c) noexcept;  // prefix
-    friend ButtonName  operator ++ (ButtonName& c, int) noexcept;  // postfix
+    friend auto operator <  (const ButtonName& c, const int n) noexcept -> bool;
+    friend auto operator <= (const ButtonName& c, const int n) noexcept -> bool;
+    friend auto operator +  (const ButtonName& c, const int n) noexcept -> ButtonName;
+    friend auto operator ++ (ButtonName& c) noexcept -> ButtonName&;  // prefix
+    friend auto operator ++ (ButtonName& c, int) noexcept -> ButtonName;  // postfix
 
     // Data members
     bool              error{false};
@@ -923,7 +923,7 @@ void Calc::draw()
 }
 
 //----------------------------------------------------------------------
-bool Calc::isDataEntryKey (const ButtonName& key) const
+auto Calc::isDataEntryKey (const ButtonName& key) const -> bool
 {
   // Test if key is in {'.', '0'..'9'}
   constexpr std::array<ButtonName, 11> key_list =
@@ -950,7 +950,7 @@ bool Calc::isDataEntryKey (const ButtonName& key) const
 }
 
 //----------------------------------------------------------------------
-bool Calc::isOperatorKey(const ButtonName& key) const
+auto Calc::isOperatorKey(const ButtonName& key) const -> bool
 {
   // Test if key is in {'*', '/', '+', '-', '^', '='}
   constexpr std::array<ButtonName, 6> operators =
@@ -972,7 +972,7 @@ bool Calc::isOperatorKey(const ButtonName& key) const
 }
 
 //----------------------------------------------------------------------
-lDouble& Calc::getValue()
+auto Calc::getValue() -> lDouble&
 {
   if ( infix_operator )
     return b;
@@ -1098,7 +1098,7 @@ void Calc::adjustSize()
 }
 
 //----------------------------------------------------------------------
-const wchar_t* Calc::getButtonText (const ButtonName& key) const
+auto Calc::getButtonText (const ButtonName& key) const -> const wchar_t*
 {
   constexpr auto num_of_buttons = std::size_t(ButtonName::NUM_OF_BUTTONS);
   constexpr std::array<const wchar_t*, num_of_buttons> button_text =
@@ -1187,32 +1187,32 @@ void Calc::mapKeyFunctions()
 
 // Overloaded operators
 //----------------------------------------------------------------------
-inline bool operator < (const Calc::ButtonName& c, const int n) noexcept
+inline auto operator < (const Calc::ButtonName& c, const int n) noexcept -> bool
 {
   return int(c) < n;
 }
 
 //----------------------------------------------------------------------
-inline bool operator <= (const Calc::ButtonName& c, const int n) noexcept
+inline auto operator <= (const Calc::ButtonName& c, const int n) noexcept -> bool
 {
   return int(c) <= n;
 }
 
 //----------------------------------------------------------------------
-inline Calc::ButtonName operator + (const Calc::ButtonName& c, const int n) noexcept
+inline auto operator + (const Calc::ButtonName& c, const int n) noexcept -> Calc::ButtonName
 {
   return Calc::ButtonName(int(c) + n);
 }
 
 //----------------------------------------------------------------------
-inline Calc::ButtonName& operator ++ (Calc::ButtonName& c) noexcept  // prefix
+inline auto operator ++ (Calc::ButtonName& c) noexcept -> Calc::ButtonName&  // prefix
 {
   c = ( c < Calc::ButtonName::NUM_OF_BUTTONS ) ? Calc::ButtonName(int(c) + 1) : Calc::ButtonName::Equals;
   return c;
 }
 
 //----------------------------------------------------------------------
-inline Calc::ButtonName operator ++ (Calc::ButtonName& c, int) noexcept  // postfix
+inline auto operator ++ (Calc::ButtonName& c, int) noexcept -> Calc::ButtonName  // postfix
 {
   Calc::ButtonName tmp = c;
   ++c;
@@ -1223,7 +1223,7 @@ inline Calc::ButtonName operator ++ (Calc::ButtonName& c, int) noexcept  // post
 //----------------------------------------------------------------------
 //                               main part
 //----------------------------------------------------------------------
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   // Create the application object
   finalcut::FApplication app(argc, argv);

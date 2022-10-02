@@ -88,7 +88,7 @@ void FStatusKey::setActive()
 }
 
 //----------------------------------------------------------------------
-bool FStatusKey::setMouseFocus(bool enable)
+auto FStatusKey::setMouseFocus(bool enable) -> bool
 {
   if ( mouse_focus == enable )
     return true;
@@ -169,7 +169,7 @@ void FStatusBar::resetColors()
 }
 
 //----------------------------------------------------------------------
-bool FStatusBar::hasActivatedKey() const
+auto FStatusBar::hasActivatedKey() const -> bool
 {
   if ( ! key_list.empty() )
   {
@@ -531,14 +531,14 @@ void FStatusBar::init()
 }
 
 //----------------------------------------------------------------------
-int FStatusBar::getKeyNameWidth (const FStatusKey* key) const
+auto FStatusBar::getKeyNameWidth (const FStatusKey* key) const -> int
 {
   const FString& key_name = FVTerm::getFOutput()->getKeyName(key->getKey());
   return int(getColumnWidth(key_name));
 }
 
 //----------------------------------------------------------------------
-int FStatusBar::getKeyTextWidth (const FStatusKey* key) const
+auto FStatusBar::getKeyTextWidth (const FStatusKey* key) const -> int
 {
   const FString& key_text = key->getText();
   return int(getColumnWidth(key_text));

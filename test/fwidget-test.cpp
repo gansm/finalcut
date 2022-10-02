@@ -90,7 +90,7 @@ class FWidgetTest::FSystemTest : public finalcut::FSystem
     { }
 
     // Methods
-    uChar inPortByte (uShort) override
+    auto inPortByte (uShort) -> uChar override
     {
       return 0;
     }
@@ -98,12 +98,12 @@ class FWidgetTest::FSystemTest : public finalcut::FSystem
     void outPortByte (uChar, uShort) override
     { }
 
-    int isTTY (int) const override
+    auto isTTY (int) const -> int override
     {
       return 1;
     }
 
-    int ioctl (int fd, uLong request, ...) override
+    auto ioctl (int fd, uLong request, ...) -> int override
     {
       va_list args{};
       void* argp{};
@@ -126,32 +126,32 @@ class FWidgetTest::FSystemTest : public finalcut::FSystem
       return ret_val;
     }
 
-    int open (const char*, int, ...) override
+    auto open (const char*, int, ...) -> int override
     {
       return 0;
     }
 
-    int close (int) override
+    auto close (int) -> int override
     {
       return 0;
     }
 
-    FILE* fopen (const char*, const char*) override
+    auto fopen (const char*, const char*) -> FILE* override
     {
       return nullptr;
     }
 
-    int fputs (const char* str, FILE* stream) override
+    auto fputs (const char* str, FILE* stream) -> int override
     {
       return std::fputs(str, stream);
     }
 
-    int fclose (FILE*) override
+    auto fclose (FILE*) -> int override
     {
       return 0;
     }
 
-    int putchar (int c) override
+    auto putchar (int c) -> int override
     {
 #if defined(__sun) && defined(__SVR4)
       return std::putchar(char(c));
@@ -160,23 +160,23 @@ class FWidgetTest::FSystemTest : public finalcut::FSystem
 #endif
     }
 
-    uid_t getuid() override
+    auto getuid() -> uid_t override
     {
       return 0;
     }
 
-    uid_t geteuid() override
+    auto geteuid() -> uid_t override
     {
       return 0;
     }
 
-    int getpwuid_r ( uid_t, struct passwd*, char*
-                   , size_t, struct passwd** ) override
+    auto getpwuid_r ( uid_t, struct passwd*, char*
+                   , size_t, struct passwd** ) -> int override
     {
       return 0;
     }
 
-    char* realpath (const char*, char*) override
+    auto realpath (const char*, char*) -> char* override
     {
       return const_cast<char*>("");
     }
@@ -1803,7 +1803,7 @@ void FWidgetTest::closeWidgetTest()
         confirmed = state;
       }
 
-      finalcut::FWidget::FWidgetList*& p_getWidgetCloseList()
+      auto p_getWidgetCloseList() -> finalcut::FWidget::FWidgetList*&
       {
         return finalcut::FWidget::getWidgetCloseList();
       }

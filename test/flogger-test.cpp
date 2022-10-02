@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2021 Markus Gans                                      *
+* Copyright 2020-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -84,7 +84,7 @@ class myLogger : public finalcut::FLog
       // An implementation is not required in this context
     }
 
-    finalcut::FString getBaseClassName() const
+    auto getBaseClassName() const -> finalcut::FString
     {
       return getClassName();
     }

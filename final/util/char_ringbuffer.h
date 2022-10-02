@@ -78,37 +78,37 @@ class FRingBuffer
           , index{pos}
         { }
 
-        ring_iterator& operator ++ ()  // prefix
+        auto operator ++ () -> ring_iterator&  // prefix
         {
           index++;
           return *this;
         }
 
-        ring_iterator operator ++ (int)  // postfix
+        auto operator ++ (int) -> ring_iterator  // postfix
         {
           ring_iterator i = *this;
           index++;
           return i;
         }
 
-        reference operator * () const
+        auto operator * () const -> reference
         {
           return ptr[(offset + index) % N];
         }
 
-        pointer operator -> () const
+        auto operator -> () const -> pointer
         {
           return &**this;
         }
 
-        bool operator == (const ring_iterator& rhs) const
+        auto operator == (const ring_iterator& rhs) const -> bool
         {
           return index  == rhs.index
               && ptr    == rhs.ptr
               && offset == rhs.offset;
         }
 
-        bool operator != (const ring_iterator& rhs) const
+        auto operator != (const ring_iterator& rhs) const -> bool
         {
           return ! (*this == rhs);
         }
@@ -120,7 +120,7 @@ class FRingBuffer
         std::size_t       index{0U};
 
         // Friend Non-member operator functions
-        friend ring_iterator operator + (const ring_iterator& iter, std::ptrdiff_t size)
+        friend auto operator + (const ring_iterator& iter, std::ptrdiff_t size) -> ring_iterator
         {
           auto tmp = iter;
           tmp.index += std::size_t(size);
@@ -141,53 +141,53 @@ class FRingBuffer
     FRingBuffer () = default;
 
     // Overloaded operators
-    reference operator [] (std::size_t index) noexcept
+    auto operator [] (std::size_t index) noexcept -> reference
     {
       return buffer[(head + index) % Capacity];
     }
 
-    const_reference operator [] (std::size_t index) const noexcept
+    auto operator [] (std::size_t index) const noexcept -> const_reference
     {
       return buffer[(head + index) % Capacity];
     }
 
     // Accessors
-    virtual FString  getClassName() const
+    virtual auto  getClassName() const -> FString
     {
       return "FRingBuffer";
     }
 
-    size_t getSize() const noexcept
+    auto getSize() const noexcept -> size_t
     {
       return elements;
     }
 
-    size_t getCapacity() const noexcept
+    auto getCapacity() const noexcept -> size_t
     {
       return Capacity;
     }
 
-    iterator begin() noexcept
+    auto begin() noexcept -> iterator
     {
       return iterator(buffer.data(), head, 0);
     }
 
-    const_iterator begin() const noexcept
+    auto begin() const noexcept -> const_iterator
     {
       return const_iterator(buffer.data(), head, 0);
     }
 
-    iterator end() noexcept
+    auto end() noexcept -> iterator
     {
       return iterator(buffer.data(), head, getSize());
     }
 
-    const_iterator end() const noexcept
+    auto end() const noexcept -> const_iterator
     {
       return const_iterator(buffer.data(), head, getSize());
     }
 
-    reference front() noexcept
+    auto front() noexcept -> reference
     {
       if ( isEmpty() )
         return empty_char;
@@ -195,7 +195,7 @@ class FRingBuffer
       return buffer[head];
     }
 
-    const_reference front() const noexcept
+    auto front() const noexcept -> const_reference
     {
       if ( isEmpty() )
         return empty_char;
@@ -203,7 +203,7 @@ class FRingBuffer
       return buffer[head];
     }
 
-    reference back() noexcept
+    auto back() noexcept -> reference
     {
       if ( isEmpty() )
         return empty_char;
@@ -212,7 +212,7 @@ class FRingBuffer
       return buffer[index];
     }
 
-    const_reference back() const noexcept
+    auto back() const noexcept -> const_reference
     {
       if ( isEmpty() )
         return empty_char;
@@ -230,17 +230,17 @@ class FRingBuffer
     }
 
     // Inquiries
-    bool isEmpty() const noexcept
+    auto isEmpty() const noexcept -> bool
     {
       return elements == 0;
     }
 
-    bool hasData() const noexcept
+    auto hasData() const noexcept -> bool
     {
       return ! isEmpty();
     }
 
-    bool isFull() const noexcept
+    auto isFull() const noexcept -> bool
     {
       return elements == Capacity;
     }
@@ -305,13 +305,13 @@ class CharRingBuffer final : public FRingBuffer<char, Capacity>
     using FRingBuffer<char, Capacity>::head;
 
     // Accessor
-    FString getClassName() const override
+    auto getClassName() const -> FString override
     {
       return "CharRingBuffer";
     }
 
     // Method
-    bool strncmp_front (const char* string, std::size_t length)
+    auto strncmp_front (const char* string, std::size_t length) -> bool
     {
       if ( length > getSize() )
         return false;

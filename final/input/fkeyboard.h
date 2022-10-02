@@ -98,45 +98,45 @@ class FKeyboard final
     FKeyboard();
 
     // Accessors
-    FString               getClassName() const;
-    static auto           getInstance() -> FKeyboard&;
-    FKey                  getKey() const noexcept;
-    FString               getKeyName (const FKey) const;
-    keybuffer&            getKeyBuffer() & noexcept;
-    TimeValue             getKeyPressedTime() const noexcept;
-    static uInt64         getKeypressTimeout() noexcept;
-    static uInt64         getReadBlockingTime() noexcept;
+    auto        getClassName() const -> FString;
+    static auto getInstance() -> FKeyboard&;
+    auto        getKey() const noexcept -> FKey;
+    auto        getKeyName (const FKey) const -> FString;
+    auto        getKeyBuffer() & noexcept -> keybuffer&;
+    auto        getKeyPressedTime() const noexcept -> TimeValue;
+    static auto getKeypressTimeout() noexcept -> uInt64;
+    static auto getReadBlockingTime() noexcept -> uInt64;
 
     // Mutators
     template <typename T>
-    void                  setTermcapMap (const T&);
-    void                  setTermcapMap();
-    static void           setKeypressTimeout (const uInt64) noexcept;
-    static void           setReadBlockingTime (const uInt64) noexcept;
-    static void           setNonBlockingInputSupport (bool = true) noexcept;
-    bool                  setNonBlockingInput (bool = true);
-    bool                  unsetNonBlockingInput() noexcept;
-    void                  enableUTF8() noexcept;
-    void                  disableUTF8() noexcept;
-    void                  enableMouseSequences() noexcept;
-    void                  disableMouseSequences() noexcept;
-    void                  setPressCommand (const FKeyboardCommand&);
-    void                  setReleaseCommand (const FKeyboardCommand&);
-    void                  setEscPressedCommand (const FKeyboardCommand&);
-    void                  setMouseTrackingCommand (const FKeyboardCommand&);
+    void        setTermcapMap (const T&);
+    void        setTermcapMap();
+    static void setKeypressTimeout (const uInt64) noexcept;
+    static void setReadBlockingTime (const uInt64) noexcept;
+    static void setNonBlockingInputSupport (bool = true) noexcept;
+    auto        setNonBlockingInput (bool = true) -> bool;
+    auto        unsetNonBlockingInput() noexcept -> bool;
+    void        enableUTF8() noexcept;
+    void        disableUTF8() noexcept;
+    void        enableMouseSequences() noexcept;
+    void        disableMouseSequences() noexcept;
+    void        setPressCommand (const FKeyboardCommand&);
+    void        setReleaseCommand (const FKeyboardCommand&);
+    void        setEscPressedCommand (const FKeyboardCommand&);
+    void        setMouseTrackingCommand (const FKeyboardCommand&);
 
     // Inquiry
-    bool                  hasPendingInput() const noexcept;
-    bool                  hasDataInQueue() const;
+    auto        hasPendingInput() const noexcept -> bool;
+    auto        hasDataInQueue() const -> bool;
 
     // Methods
-    bool                  hasUnprocessedInput() const noexcept;
-    bool                  isKeyPressed (uInt64 = read_blocking_time);
-    void                  clearKeyBuffer() noexcept;
-    void                  clearKeyBufferOnTimeout();
-    void                  fetchKeyCode();
-    void                  escapeKeyHandling();
-    void                  processQueuedInput();
+    auto        hasUnprocessedInput() const noexcept -> bool;
+    auto        isKeyPressed (uInt64 = read_blocking_time) -> bool;
+    void        clearKeyBuffer() noexcept;
+    void        clearKeyBufferOnTimeout();
+    void        fetchKeyCode();
+    void        escapeKeyHandling();
+    void        processQueuedInput();
 
   private:
     // Using-declaration
@@ -148,26 +148,26 @@ class FKeyboard final
     static constexpr std::size_t MAX_QUEUE_SIZE = 32;
 
     // Accessors
-    FKey                  getMouseProtocolKey() const;
-    FKey                  getTermcapKey();
-    FKey                  getKnownKey();
-    FKey                  getSingleKey();
+    auto        getMouseProtocolKey() const -> FKey;
+    auto        getTermcapKey() -> FKey;
+    auto        getKnownKey() -> FKey;
+    auto        getSingleKey() -> FKey;
 
     // Inquiry
-    static bool           isKeypressTimeout();
-    static bool           isIntervalTimeout();
+    static auto isKeypressTimeout() -> bool;
+    static auto isIntervalTimeout() -> bool;
 
     // Methods
-    FKey                  UTF8decode (const std::size_t) const noexcept;
-    ssize_t               readKey();
-    void                  parseKeyBuffer();
-    FKey                  parseKeyString();
-    FKey                  keyCorrection (const FKey&) const;
-    void                  substringKeyHandling();
-    void                  keyPressed() const;
-    void                  keyReleased() const;
-    void                  escapeKeyPressed() const;
-    void                  mouseTracking() const;
+    auto        UTF8decode (const std::size_t) const noexcept -> FKey;
+    auto        readKey() -> ssize_t;
+    void        parseKeyBuffer();
+    auto        parseKeyString() -> FKey;
+    auto        keyCorrection (const FKey&) const -> FKey;
+    void        substringKeyHandling();
+    void        keyPressed() const;
+    void        keyReleased() const;
+    void        escapeKeyPressed() const;
+    void        mouseTracking() const;
 
     // Data members
     FKeyboardCommand      keypressed_cmd{};
@@ -197,27 +197,27 @@ class FKeyboard final
 
 // FKeyboard inline functions
 //----------------------------------------------------------------------
-inline FString FKeyboard::getClassName() const
+inline auto FKeyboard::getClassName() const -> FString
 { return "FKeyboard"; }
 
 //----------------------------------------------------------------------
-inline FKey FKeyboard::getKey() const noexcept
+inline auto FKeyboard::getKey() const noexcept -> FKey
 { return key; }
 
 //----------------------------------------------------------------------
-inline FKeyboard::keybuffer& FKeyboard::getKeyBuffer() & noexcept
+inline auto FKeyboard::getKeyBuffer() & noexcept -> keybuffer&
 { return fifo_buf; }
 
 //----------------------------------------------------------------------
-inline TimeValue FKeyboard::getKeyPressedTime() const noexcept
+inline auto FKeyboard::getKeyPressedTime() const noexcept -> TimeValue
 { return time_keypressed; }
 
 //----------------------------------------------------------------------
-inline uInt64 FKeyboard::getKeypressTimeout() noexcept
+inline auto FKeyboard::getKeypressTimeout() noexcept -> uInt64
 { return key_timeout; }
 
 //----------------------------------------------------------------------
-inline uInt64 FKeyboard::getReadBlockingTime() noexcept
+inline auto FKeyboard::getReadBlockingTime() noexcept -> uInt64
 { return read_blocking_time; }
 
 //----------------------------------------------------------------------
@@ -254,15 +254,15 @@ inline void FKeyboard::setNonBlockingInputSupport (bool enable) noexcept
 { non_blocking_input_support = enable; }
 
 //----------------------------------------------------------------------
-inline bool FKeyboard::unsetNonBlockingInput() noexcept
+inline auto FKeyboard::unsetNonBlockingInput() noexcept -> bool
 { return setNonBlockingInput(false); }
 
 //----------------------------------------------------------------------
-inline bool FKeyboard::hasPendingInput() const noexcept
+inline auto FKeyboard::hasPendingInput() const noexcept -> bool
 { return has_pending_input; }
 
 //----------------------------------------------------------------------
-inline bool FKeyboard::hasDataInQueue() const
+inline auto FKeyboard::hasDataInQueue() const -> bool
 { return ! fkey_queue.empty(); }
 
 //----------------------------------------------------------------------

@@ -139,13 +139,13 @@ void FToggleButton::resetColors()
 }
 
 //----------------------------------------------------------------------
-bool FToggleButton::setNoUnderline (bool enable)
+auto FToggleButton::setNoUnderline (bool enable) -> bool
 {
   return (setFlags().no_underline = enable);
 }
 
 //----------------------------------------------------------------------
-bool FToggleButton::setEnable (bool enable)
+auto FToggleButton::setEnable (bool enable) -> bool
 {
   FWidget::setEnable(enable);
   resetColors();
@@ -159,7 +159,7 @@ bool FToggleButton::setEnable (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FToggleButton::setFocus (bool enable)
+auto FToggleButton::setFocus (bool enable) -> bool
 {
   FWidget::setFocus(enable);
   resetColors();
@@ -171,7 +171,7 @@ bool FToggleButton::setFocus (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FToggleButton::setChecked (bool enable)
+auto FToggleButton::setChecked (bool enable) -> bool
 {
   if ( checked != enable )
   {
@@ -346,13 +346,13 @@ void FToggleButton::setHotkeyAccelerator()
 }
 
 //----------------------------------------------------------------------
-bool FToggleButton::isRadioButton() const
+auto FToggleButton::isRadioButton() const -> bool
 {
   return isInstanceOf("FRadioButton");
 }
 
 //----------------------------------------------------------------------
-bool FToggleButton::isCheckboxButton() const
+auto FToggleButton::isCheckboxButton() const -> bool
 {
   return isInstanceOf("FCheckBox");
 }

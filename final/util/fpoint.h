@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2021 Markus Gans                                      *
+* Copyright 2014-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -55,28 +55,28 @@ class FPoint
     FPoint (int, int) noexcept;
 
     // Overloaded operators
-    FPoint& operator += (const FPoint&);
-    FPoint& operator -= (const FPoint&);
+    auto operator += (const FPoint&) -> FPoint&;
+    auto operator -= (const FPoint&) -> FPoint&;
 
     // Accessors
-    FString               getClassName() const;
-    int                   getX() const noexcept;
-    int                   getY() const noexcept;
-    void                  setX (int) noexcept;
-    void                  setY (int) noexcept;
-    void                  setPoint (const FPoint&);
-    void                  setPoint (int, int) noexcept;
+    auto getClassName() const -> FString;
+    auto getX() const noexcept -> int;
+    auto getY() const noexcept -> int;
+    void setX (int) noexcept;
+    void setY (int) noexcept;
+    void setPoint (const FPoint&);
+    void setPoint (int, int) noexcept;
 
     // Inquiry
-    bool                  isOrigin() const noexcept;
+    auto isOrigin() const noexcept -> bool;
 
     // Point references
-    int&                  x_ref() & noexcept;
-    int&                  y_ref() & noexcept;
+    auto x_ref() & noexcept -> int&;
+    auto y_ref() & noexcept -> int&;
 
     // Methods
-    void                  move (int, int) noexcept;
-    void                  move (const FPoint&);
+    void move (int, int) noexcept;
+    void move (const FPoint&);
 
   private:
     // Data members
@@ -84,13 +84,13 @@ class FPoint
     int ypos{0};
 
     // Friend operator functions
-    friend bool operator == (const FPoint&, const FPoint&);
-    friend bool operator != (const FPoint&, const FPoint&);
-    friend FPoint operator + (const FPoint&, const FPoint&);
-    friend FPoint operator - (const FPoint&, const FPoint&);
-    friend FPoint operator - (const FPoint&);
-    friend std::ostream& operator << (std::ostream&, const FPoint&);
-    friend std::istream& operator >> (std::istream&, FPoint&);
+    friend auto operator == (const FPoint&, const FPoint&) -> bool;
+    friend auto operator != (const FPoint&, const FPoint&) -> bool;
+    friend auto operator + (const FPoint&, const FPoint&) -> FPoint;
+    friend auto operator - (const FPoint&, const FPoint&) -> FPoint;
+    friend auto operator - (const FPoint&) -> FPoint;
+    friend auto operator << (std::ostream&, const FPoint&) -> std::ostream&;
+    friend auto operator >> (std::istream&, FPoint&) -> std::istream&;
 };
 
 
@@ -102,15 +102,15 @@ inline FPoint::FPoint (int x, int y) noexcept
 { }
 
 //----------------------------------------------------------------------
-inline FString FPoint::getClassName() const
+inline auto FPoint::getClassName() const -> FString
 { return "FPoint"; }
 
 //----------------------------------------------------------------------
-inline int FPoint::getX() const noexcept
+inline auto FPoint::getX() const noexcept -> int
 { return xpos; }
 
 //----------------------------------------------------------------------
-inline int FPoint::getY() const noexcept
+inline auto FPoint::getY() const noexcept -> int
 { return ypos; }
 
 //----------------------------------------------------------------------
@@ -118,33 +118,33 @@ inline void FPoint::setPoint (const FPoint& p)
 { setPoint(p.xpos, p.ypos); }
 
 //----------------------------------------------------------------------
-inline int& FPoint::x_ref() & noexcept
+inline auto FPoint::x_ref() & noexcept -> int&
 { return xpos; }
 
 //----------------------------------------------------------------------
-inline int& FPoint::y_ref() & noexcept
+inline auto FPoint::y_ref() & noexcept -> int&
 { return ypos; }
 
 
 // FPoint non-member operators
 //----------------------------------------------------------------------
-inline bool operator == (const FPoint& p1, const FPoint& p2)
+inline auto operator == (const FPoint& p1, const FPoint& p2) -> bool
 { return p1.xpos == p2.xpos && p1.ypos == p2.ypos; }
 
 //----------------------------------------------------------------------
-inline bool operator != (const FPoint& p1, const FPoint& p2)
+inline auto operator != (const FPoint& p1, const FPoint& p2) -> bool
 { return p1.xpos != p2.xpos || p1.ypos != p2.ypos; }
 
 //----------------------------------------------------------------------
-inline FPoint operator + (const FPoint& p1, const FPoint& p2)
+inline auto operator + (const FPoint& p1, const FPoint& p2) -> FPoint
 { return {p1.xpos + p2.xpos, p1.ypos + p2.ypos}; }
 
 //----------------------------------------------------------------------
-inline FPoint operator - (const FPoint& p1, const FPoint& p2)
+inline auto operator - (const FPoint& p1, const FPoint& p2) -> FPoint
 { return {p1.xpos - p2.xpos, p1.ypos - p2.ypos}; }
 
 //----------------------------------------------------------------------
-inline FPoint operator - (const FPoint& p)
+inline auto operator - (const FPoint& p) -> FPoint
 { return {-p.xpos, -p.ypos}; }
 
 }  // namespace finalcut

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2021 Markus Gans                                      *
+* Copyright 2020-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -108,7 +108,7 @@ using clean_fdata_t = typename cleanFData<T>::type;
 
 //----------------------------------------------------------------------
 template <typename T>
-constexpr FData<clean_fdata_t<T>>* makeFData (T&& data)
+constexpr auto makeFData (T&& data) -> FData<clean_fdata_t<T>>*
 {
   return new FData<clean_fdata_t<T>>(std::forward<T>(data));
 }
@@ -128,13 +128,13 @@ class FDataAccess
     virtual ~FDataAccess() noexcept;
 
     // Accessors
-    virtual FString getClassName() const
+    virtual auto getClassName() const -> FString
     {
       return "FDataAccess";
     }
 
     template<typename T>
-    constexpr clean_fdata_t<T>& get()
+    constexpr auto get() -> clean_fdata_t<T>&
     {
       return static_cast<FData<clean_fdata_t<T>>&>(*this).get();
     }
@@ -182,7 +182,7 @@ class FData : public FDataAccess
     { }
 
     // Overloaded operators
-    FData& operator = (const FData& d)  // Copy assignment operator (=)
+    auto operator = (const FData& d) -> FData&  // Copy assignment operator (=)
     {
       if ( &d != this )
       {
@@ -197,7 +197,7 @@ class FData : public FDataAccess
       return *this;
     }
 
-    FData& operator = (FData&& d) noexcept  // Move assignment operator (=)
+    auto operator = (FData&& d) noexcept -> FData&  // Move assignment operator (=)
     {
       if ( &d != this )
       {
@@ -212,7 +212,7 @@ class FData : public FDataAccess
       return *this;
     }
 
-    constexpr T operator () () const
+    constexpr auto operator () () const -> T
     {
       return value_ref;
     }
@@ -222,19 +222,19 @@ class FData : public FDataAccess
       return value_ref;
     }
 
-    constexpr FData& operator << (const T& v)
+    constexpr auto operator << (const T& v) -> FData&
     {
       value_ref.get() = v;
       return *this;
     }
 
     // Accessors
-    FString getClassName() const override
+    auto getClassName() const -> FString override
     {
       return "FData";
     }
 
-    constexpr T& get() const
+    constexpr auto get() const -> T&
     {
       return value_ref;
     }
@@ -246,20 +246,20 @@ class FData : public FDataAccess
     }
 
     // Inquiries
-    constexpr bool isInitializedCopy() const
+    constexpr auto isInitializedCopy() const -> bool
     {
       const auto& v = reinterpret_cast<void*>(const_cast<T_nocv*>(&value));
       const auto& r = reinterpret_cast<void*>(const_cast<T_nocv*>(&value_ref.get()));
       return v == r;
     }
 
-    constexpr bool isInitializedReference() const
+    constexpr auto isInitializedReference() const -> bool
     {
       return ! isInitializedCopy();
     }
 
     // Friend Non-member operator functions
-    constexpr friend std::ostream& operator << (std::ostream &os, const FData& data)
+    constexpr friend auto operator << (std::ostream &os, const FData& data) -> std::ostream&
     {
       os << data.value_ref.get();
       return os;

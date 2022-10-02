@@ -64,7 +64,7 @@ auto FTermLinux::getInstance() -> FTermLinux&
 }
 
 //----------------------------------------------------------------------
-FTermLinux::CursorStyle FTermLinux::getCursorStyle() const
+auto FTermLinux::getCursorStyle() const -> CursorStyle
 {
   // Get the current set cursor style
 
@@ -72,7 +72,7 @@ FTermLinux::CursorStyle FTermLinux::getCursorStyle() const
 }
 
 //----------------------------------------------------------------------
-char* FTermLinux::getCursorStyleString()
+auto FTermLinux::getCursorStyleString() -> char*
 {
   // Gets the current cursor style string of the Linux console
 
@@ -83,7 +83,7 @@ char* FTermLinux::getCursorStyleString()
 }
 
 //----------------------------------------------------------------------
-bool FTermLinux::setCursorStyle (CursorStyle style)
+auto FTermLinux::setCursorStyle (CursorStyle style) -> bool
 {
   // Set cursor style in linux console
 
@@ -116,7 +116,7 @@ void FTermLinux::setUTF8 (bool enable) const
 
 //----------------------------------------------------------------------
 #if defined(ISA_SYSCTL_SUPPORT)
-bool FTermLinux::setPalette (FColor index, int r, int g, int b)
+auto FTermLinux::setPalette (FColor index, int r, int g, int b) -> bool
 {
   if ( ! isLinuxTerm() )
     return false;
@@ -131,7 +131,7 @@ bool FTermLinux::setPalette (FColor, int, int, int)
 #endif
 
 //----------------------------------------------------------------------
-bool FTermLinux::isLinuxConsole()
+auto FTermLinux::isLinuxConsole() -> bool
 {
   // Check if it's a Linux console
 
@@ -253,7 +253,7 @@ void FTermLinux::finish() const
 }
 
 //----------------------------------------------------------------------
-bool FTermLinux::loadVGAFont()
+auto FTermLinux::loadVGAFont() -> bool
 {
   vga_font = true;
   new_font = false;
@@ -292,7 +292,7 @@ bool FTermLinux::loadVGAFont()
 }
 
 //----------------------------------------------------------------------
-bool FTermLinux::loadNewFont()
+auto FTermLinux::loadNewFont() -> bool
 {
   new_font = true;
   vga_font = false;
@@ -339,7 +339,7 @@ bool FTermLinux::loadNewFont()
 }
 
 //----------------------------------------------------------------------
-bool FTermLinux::loadOldFont()
+auto FTermLinux::loadOldFont() -> bool
 {
   bool retval{false};
 
@@ -377,7 +377,7 @@ bool FTermLinux::loadOldFont()
 }
 
 //----------------------------------------------------------------------
-bool FTermLinux::saveColorMap()
+auto FTermLinux::saveColorMap() -> bool
 {
   if ( ! isLinuxTerm() )
     return false;
@@ -390,7 +390,7 @@ bool FTermLinux::saveColorMap()
 }
 
 //----------------------------------------------------------------------
-bool FTermLinux::resetColorMap()
+auto FTermLinux::resetColorMap() -> bool
 {
   if ( ! isLinuxTerm() )
     return false;
@@ -436,7 +436,7 @@ void FTermLinux::resetBeep() const
 }
 
 //----------------------------------------------------------------------
-FKey FTermLinux::modifierKeyCorrection (const FKey& key_id)
+auto FTermLinux::modifierKeyCorrection (const FKey& key_id) -> FKey
 {
   // Get the current modifier key state
 
@@ -455,7 +455,7 @@ FKey FTermLinux::modifierKeyCorrection (const FKey& key_id)
 
 // private methods of FTermLinux
 //----------------------------------------------------------------------
-int FTermLinux::getFramebuffer_bpp() const
+auto FTermLinux::getFramebuffer_bpp() const -> int
 {
   int fd{-1};
   const char* fb = "/dev/fb/0";
@@ -486,7 +486,7 @@ int FTermLinux::getFramebuffer_bpp() const
 }
 
 //----------------------------------------------------------------------
-bool FTermLinux::getScreenFont()
+auto FTermLinux::getScreenFont() -> bool
 {
   struct console_font_op font{};
   const int fd_tty = FTerm::getTTYFileDescriptor();
@@ -534,7 +534,7 @@ bool FTermLinux::getScreenFont()
 }
 
 //----------------------------------------------------------------------
-bool FTermLinux::getUnicodeMap()
+auto FTermLinux::getUnicodeMap() -> bool
 {
   const int fd_tty = FTerm::getTTYFileDescriptor();
   int ret{-1};
@@ -577,7 +577,7 @@ bool FTermLinux::getUnicodeMap()
 }
 
 //----------------------------------------------------------------------
-FTermLinux::ModifierKey& FTermLinux::getModifierKey() &
+auto FTermLinux::getModifierKey() & -> ModifierKey&
 {
   // Get Linux console shift state
 
@@ -608,16 +608,16 @@ FTermLinux::ModifierKey& FTermLinux::getModifierKey() &
 }
 
 //----------------------------------------------------------------------
-bool FTermLinux::isLinuxTerm() const
+auto FTermLinux::isLinuxTerm() const -> bool
 {
   static const auto& fterm_data = FTermData::getInstance();
   return fterm_data.isTermType(FTermType::linux_con);
 }
 
 //----------------------------------------------------------------------
-int FTermLinux::setScreenFont ( const uChar fontdata[], uInt count
+auto FTermLinux::setScreenFont ( const uChar fontdata[], uInt count
                               , uInt fontwidth, uInt fontheight
-                              , bool direct)
+                              , bool direct) -> int
 {
   struct console_font_op font{};
   const int fd_tty = FTerm::getTTYFileDescriptor();
@@ -680,7 +680,7 @@ int FTermLinux::setScreenFont ( const uChar fontdata[], uInt count
 }
 
 //----------------------------------------------------------------------
-int FTermLinux::setUnicodeMap (struct unimapdesc* unimap) const
+auto FTermLinux::setUnicodeMap (struct unimapdesc* unimap) const -> int
 {
   struct unimapinit advice{};
   const int fd_tty = FTerm::getTTYFileDescriptor();
@@ -724,7 +724,7 @@ void FTermLinux::setLinuxCursorStyle (CursorStyle style) const
 
 #if defined(ISA_SYSCTL_SUPPORT)
 //----------------------------------------------------------------------
-inline uInt16 FTermLinux::getInputStatusRegisterOne() const
+inline auto FTermLinux::getInputStatusRegisterOne() const -> uInt16
 {
   // Gets the VGA input-status-register-1
 
@@ -740,7 +740,7 @@ inline uInt16 FTermLinux::getInputStatusRegisterOne() const
 }
 
 //----------------------------------------------------------------------
-uChar FTermLinux::readAttributeController (uChar index) const
+auto FTermLinux::readAttributeController (uChar index) const -> uChar
 {
   // Reads a byte from the attribute controller from a given index
 
@@ -788,7 +788,7 @@ void FTermLinux::writeAttributeController (uChar index, uChar data) const
 }
 
 //----------------------------------------------------------------------
-inline uChar FTermLinux::getAttributeMode() const
+inline auto FTermLinux::getAttributeMode() const -> uChar
 {
   // Gets the attribute mode value from the vga attribute controller
   static constexpr uChar attrib_mode = 0x10;
@@ -804,7 +804,7 @@ inline void FTermLinux::setAttributeMode (uChar data) const
 }
 
 //----------------------------------------------------------------------
-int FTermLinux::setBlinkAsIntensity (bool enable) const
+auto FTermLinux::setBlinkAsIntensity (bool enable) const -> int
 {
   // Uses blink-bit as background intensity.
   // That permits 16 colors for background
@@ -840,7 +840,7 @@ int FTermLinux::setBlinkAsIntensity (bool enable) const
 }
 
 //----------------------------------------------------------------------
-bool FTermLinux::has9BitCharacters() const
+auto FTermLinux::has9BitCharacters() const -> bool
 {
   // Are 9-bit wide characters used?
 
@@ -905,7 +905,7 @@ void FTermLinux::setVGADefaultPalette()
 }
 
 //----------------------------------------------------------------------
-bool FTermLinux::setVGAPalette (FColor index, int r, int g, int b)
+auto FTermLinux::setVGAPalette (FColor index, int r, int g, int b) -> bool
 {
   // Set the vga color map
 
@@ -923,7 +923,7 @@ bool FTermLinux::setVGAPalette (FColor index, int r, int g, int b)
 }
 
 //----------------------------------------------------------------------
-bool FTermLinux::saveVGAPalette()
+auto FTermLinux::saveVGAPalette() -> bool
 {
   // Save the current vga color map
 
@@ -938,7 +938,7 @@ bool FTermLinux::saveVGAPalette()
 }
 
 //----------------------------------------------------------------------
-bool FTermLinux::resetVGAPalette()
+auto FTermLinux::resetVGAPalette() -> bool
 {
   // Reset the vga color map
 
@@ -1148,7 +1148,7 @@ inline void FTermLinux::initSpecialCharacter() const
 }
 
 //----------------------------------------------------------------------
-sInt16 FTermLinux::getFontPos (wchar_t ucs) const
+auto FTermLinux::getFontPos (wchar_t ucs) const -> sInt16
 {
   constexpr sInt16 NOT_FOUND = -1;
   auto& count = screen_unicode_map.entry_ct;

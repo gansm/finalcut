@@ -106,32 +106,32 @@ class FFileDialog : public FDialog
     ~FFileDialog() noexcept override;
 
     // Accessors
-    FString              getClassName() const override;
-    FString              getPath() const;
-    FString              getFilter() const;
-    FString              getSelectedFile() const;
-    bool                 getShowHiddenFiles() const noexcept;
+    auto getClassName() const -> FString override;
+    auto getPath() const -> FString;
+    auto getFilter() const -> FString;
+    auto getSelectedFile() const -> FString;
+    auto getShowHiddenFiles() const noexcept -> bool;
 
     // Mutators
-    void                 setPath (const FString&);
-    void                 setFilter (const FString&);
-    bool                 setShowHiddenFiles (bool = true);
-    bool                 unsetShowHiddenFiles();
+    void setPath (const FString&);
+    void setFilter (const FString&);
+    auto setShowHiddenFiles (bool = true) -> bool;
+    auto unsetShowHiddenFiles() -> bool;
 
     // Event handler
-    void                 onKeyPress (FKeyEvent*) override;
+    void onKeyPress (FKeyEvent*) override;
 
     // Methods
-    static FString fileOpenChooser ( FWidget*
-                                   , const FString& = FString()
-                                   , const FString& = FString() );
-    static FString fileSaveChooser ( FWidget*
-                                   , const FString& = FString()
-                                   , const FString& = FString() );
+    static auto fileOpenChooser ( FWidget*
+                                , const FString& = FString()
+                                , const FString& = FString() ) -> FString;
+    static auto fileSaveChooser ( FWidget*
+                                , const FString& = FString()
+                                , const FString& = FString() ) -> FString;
 
   protected:
     // Method
-    void                 adjustSize() override;
+    void adjustSize() override;
 
   private:
     struct FDirEntry
@@ -163,74 +163,74 @@ class FFileDialog : public FDialog
     using DirEntries = std::vector<FDirEntry>;
 
     // Methods
-    void                 init();
-    void                 widgetSettings (const FPoint&);
-    void                 initCallbacks();
-    bool                 patternMatch ( const std::string&
-                                      , const std::string& ) const;
-    void                 clear();
-    sInt64               numOfDirs();
-    void                 sortDir();
-    int                  readDir();
-    void                 getEntry (const char* const, const struct dirent*);
-    void                 followSymLink (const char* const, FDirEntry&) const;
-    void                 dirEntriesToList();
-    void                 selectDirectoryEntry (const std::string&);
-    int                  changeDir (const FString&);
-    void                 printPath (const FString&);
-    void                 setTitelbarText();
-    static FString       getHomeDir();
+    void init();
+    void widgetSettings (const FPoint&);
+    void initCallbacks();
+    auto patternMatch ( const std::string&
+                      , const std::string& ) const -> bool;
+    void clear();
+    auto numOfDirs() -> sInt64;
+    void sortDir();
+    auto readDir() -> int;
+    void getEntry (const char* const, const struct dirent*);
+    void followSymLink (const char* const, FDirEntry&) const;
+    void dirEntriesToList();
+    void selectDirectoryEntry (const std::string&);
+    auto changeDir (const FString&) -> int;
+    void printPath (const FString&);
+    void setTitelbarText();
+    static auto getHomeDir() -> FString;
 
     // Callback methods
-    void                 cb_processActivate();
-    void                 cb_processRowChanged();
-    void                 cb_processClicked();
-    void                 cb_processCancel();
-    void                 cb_processOpen();
-    void                 cb_processShowHidden();
+    void cb_processActivate();
+    void cb_processRowChanged();
+    void cb_processClicked();
+    void cb_processCancel();
+    void cb_processOpen();
+    void cb_processShowHidden();
 
     // Data members
-    DirEntries       dir_entries{};
-    FString          directory{};
-    FString          filter_pattern{};
-    FLineEdit        filename{this};
-    FListBox         filebrowser{this};
-    FCheckBox        hidden_check{this};
-    FButton          cancel_btn{this};
-    FButton          open_btn{this};
-    DialogType       dlg_type{DialogType::Open};
-    bool             show_hidden{false};
+    DirEntries  dir_entries{};
+    FString     directory{};
+    FString     filter_pattern{};
+    FLineEdit   filename{this};
+    FListBox    filebrowser{this};
+    FCheckBox   hidden_check{this};
+    FButton     cancel_btn{this};
+    FButton     open_btn{this};
+    DialogType  dlg_type{DialogType::Open};
+    bool        show_hidden{false};
 
     // Friend functions
-    friend bool sortByName ( const FFileDialog::FDirEntry&
-                           , const FFileDialog::FDirEntry& );
-    friend bool sortDirFirst ( const FFileDialog::FDirEntry&
-                             , const FFileDialog::FDirEntry& );
-    friend FString fileChooser ( FWidget*
-                               , const FString&
-                               , const FString&
-                               , FFileDialog::DialogType);
+    friend auto sortByName ( const FFileDialog::FDirEntry&
+                           , const FFileDialog::FDirEntry& ) -> bool;
+    friend auto sortDirFirst ( const FFileDialog::FDirEntry&
+                             , const FFileDialog::FDirEntry& ) -> bool;
+    friend auto fileChooser ( FWidget*
+                            , const FString&
+                            , const FString&
+                            , FFileDialog::DialogType) -> FString;
 };
 
 // FMessageBox inline functions
 //----------------------------------------------------------------------
-inline FString FFileDialog::getClassName() const
+inline auto FFileDialog::getClassName() const -> FString
 { return "FFileDialog"; }
 
 //----------------------------------------------------------------------
-inline FString FFileDialog::getPath() const
+inline auto FFileDialog::getPath() const -> FString
 { return directory; }
 
 //----------------------------------------------------------------------
-inline FString FFileDialog::getFilter() const
+inline auto FFileDialog::getFilter() const -> FString
 { return filter_pattern; }
 
 //----------------------------------------------------------------------
-inline bool FFileDialog::unsetShowHiddenFiles()
+inline auto FFileDialog::unsetShowHiddenFiles() -> bool
 { return setShowHiddenFiles(false); }
 
 //----------------------------------------------------------------------
-inline bool FFileDialog::getShowHiddenFiles() const noexcept
+inline auto FFileDialog::getShowHiddenFiles() const noexcept -> bool
 { return show_hidden; }
 
 }  // namespace finalcut

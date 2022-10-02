@@ -40,9 +40,9 @@ static std::weak_ptr<FString> temp_str;
 void doubleToItem ( FListBoxItem&
                   , FDataAccess* container
                   , std::size_t index);
-FString& doubleToString (std::list<double>::const_iterator iter);
-FString& mapToString ( std::map<FString
-                     , FString>::const_iterator iter );
+auto doubleToString (std::list<double>::const_iterator iter) -> FString&;
+auto mapToString ( std::map<FString
+                     , FString>::const_iterator iter ) -> FString&;
 
 
 // Lazy conversion insert function
@@ -59,14 +59,14 @@ void doubleToItem ( FListBoxItem& item
 }
 
 // Insert converter functions
-FString& doubleToString (std::list<double>::const_iterator iter)
+auto doubleToString (std::list<double>::const_iterator iter) -> FString&
 {
   auto temp = temp_str.lock();
   return temp->setNumber(*iter);
 }
 
-FString& mapToString ( std::map<FString
-                              , FString>::const_iterator iter )
+auto mapToString ( std::map<FString
+                              , FString>::const_iterator iter ) -> FString&
 {
   auto temp = temp_str.lock();
   return *temp = iter->first + ": " + iter->second;
@@ -177,7 +177,7 @@ void Listbox::onClose (FCloseEvent* ev)
 //                               main part
 //----------------------------------------------------------------------
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   // Create the application object
   FApplication app(argc, argv);

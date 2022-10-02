@@ -177,7 +177,7 @@ class FTermcapQuirksTest : public CPPUNIT_NS::TestFixture
     void screenTest();
 
   private:
-    std::string printSequence (const std::string&);
+    auto printSequence (const std::string&) -> std::string;
 
     // Adds code needed to register the test suite
     CPPUNIT_TEST_SUITE (FTermcapQuirksTest);
@@ -807,7 +807,7 @@ void FTermcapQuirksTest::screenTest()
 
 // private methods of FOptiMoveTest
 //----------------------------------------------------------------------
-std::string FTermcapQuirksTest::printSequence (const std::string& s)
+auto FTermcapQuirksTest::printSequence (const std::string& s) -> std::string
 {
   std::string sequence;
   const std::string ctrl_character[] =

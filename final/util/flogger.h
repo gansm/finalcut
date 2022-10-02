@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2021 Markus Gans                                      *
+* Copyright 2020-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -71,23 +71,23 @@ class FLogger : public FLog
     ~FLogger() noexcept override;
 
     // Methods
-    FString       getClassName() const override;
-    void          info (const std::string&) override;
-    void          warn (const std::string&) override;
-    void          error (const std::string&) override;
-    void          debug (const std::string&) override;
-    void          flush() override;
-    void          setOutputStream (const std::ostream&) override;
-    void          setLineEnding (LineEnding) override;
-    void          enableTimestamp() override;
-    void          disableTimestamp() override;
+    auto getClassName() const -> FString override;
+    void info (const std::string&) override;
+    void warn (const std::string&) override;
+    void error (const std::string&) override;
+    void debug (const std::string&) override;
+    void flush() override;
+    void setOutputStream (const std::ostream&) override;
+    void setLineEnding (LineEnding) override;
+    void enableTimestamp() override;
+    void disableTimestamp() override;
 
   private:
     // Methods
-    void          newlineReplace (std::string&, const std::string&) const;
-    std::string   getTimeString() const;
-    std::string   getEOL() const;
-    void          printLogLine (const std::string&);
+    void newlineReplace (std::string&, const std::string&) const;
+    auto getTimeString() const -> std::string;
+    auto getEOL() const -> std::string;
+    void printLogLine (const std::string&);
 
     // Data member
     bool         timestamp{false};
@@ -98,7 +98,7 @@ class FLogger : public FLog
 
 // FLogger inline functions
 //----------------------------------------------------------------------
-inline FString FLogger::getClassName() const
+inline auto FLogger::getClassName() const -> FString
 { return "FLogger"; }
 
 //----------------------------------------------------------------------

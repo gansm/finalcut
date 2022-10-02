@@ -141,7 +141,7 @@ class FOptiMoveTest : public CPPUNIT_NS::TestFixture
     void wyse50Test();
 
   private:
-    std::string printSequence (const std::string&);
+    auto printSequence (const std::string&) -> std::string;
 
     // Adds code needed to register the test suite
     CPPUNIT_TEST_SUITE (FOptiMoveTest);
@@ -853,7 +853,7 @@ void FOptiMoveTest::wyse50Test()
 }
 
 //----------------------------------------------------------------------
-std::string FOptiMoveTest::printSequence (const std::string& s)
+auto FOptiMoveTest::printSequence (const std::string& s) -> std::string
 {
   std::string sequence;
   const std::string ctrl_character[] =

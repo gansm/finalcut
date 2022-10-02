@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2021 Markus Gans                                      *
+* Copyright 2020-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -35,19 +35,19 @@
 //----------------------------------------------------------------------
 // functions
 //----------------------------------------------------------------------
-float my_function()
+auto my_function() -> float
 {
   return 13.45F;
 }
 
 //----------------------------------------------------------------------
-long int my_function2 (long int i)
+auto my_function2 (long int i) -> long int
 {
   return 2 * i;
 }
 
 //----------------------------------------------------------------------
-long int my_function3 (long int i)
+auto my_function3 (long int i) -> long int
 {
   return 3 * i;
 }

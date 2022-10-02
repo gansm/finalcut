@@ -72,28 +72,28 @@ FLineEdit::~FLineEdit()  // destructor
 
 // FLineEdit operators
 //----------------------------------------------------------------------
-FLineEdit& FLineEdit::operator = (const FString& s)
+auto FLineEdit::operator = (const FString& s) -> FLineEdit&
 {
   setText(s);
   return *this;
 }
 
 //----------------------------------------------------------------------
-FLineEdit& FLineEdit::operator << (UniChar c)
+auto FLineEdit::operator << (UniChar c) -> FLineEdit&
 {
   setText(text + static_cast<wchar_t>(c));
   return *this;
 }
 
 //----------------------------------------------------------------------
-FLineEdit& FLineEdit::operator << (const wchar_t c)
+auto FLineEdit::operator << (const wchar_t c) -> FLineEdit&
 {
   setText(text + c);
   return *this;
 }
 
 //----------------------------------------------------------------------
-const FLineEdit& FLineEdit::operator >> (FString& s) const
+auto FLineEdit::operator >> (FString& s) const -> const FLineEdit&
 {
   s += text;
   return *this;
@@ -102,7 +102,7 @@ const FLineEdit& FLineEdit::operator >> (FString& s) const
 
 // public methods of FLineEdit
 //----------------------------------------------------------------------
-bool FLineEdit::setEnable (bool enable)
+auto FLineEdit::setEnable (bool enable) -> bool
 {
   FWidget::setEnable(enable);
   resetColors();
@@ -110,7 +110,7 @@ bool FLineEdit::setEnable (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FLineEdit::setFocus (bool enable)
+auto FLineEdit::setFocus (bool enable) -> bool
 {
   FWidget::setFocus(enable);
   resetColors();
@@ -118,13 +118,13 @@ bool FLineEdit::setFocus (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FLineEdit::setShadow (bool enable)
+auto FLineEdit::setShadow (bool enable) -> bool
 {
   return setWidgetShadow(this, enable);
 }
 
 //----------------------------------------------------------------------
-bool FLineEdit::setReadOnly (bool enable)
+auto FLineEdit::setReadOnly (bool enable) -> bool
 {
   if ( enable )
     unsetVisibleCursor();
@@ -650,7 +650,7 @@ inline void FLineEdit::mapKeyFunctions()
 }
 
 //----------------------------------------------------------------------
-bool FLineEdit::hasHotkey() const
+auto FLineEdit::hasHotkey() const -> bool
 {
   if ( label_text.isEmpty() )
     return false;
@@ -751,7 +751,7 @@ void FLineEdit::drawInputField()
 }
 
 //----------------------------------------------------------------------
-inline std::size_t FLineEdit::printTextField()
+inline auto FLineEdit::printTextField() -> std::size_t
 {
   const std::size_t text_offset_column = getColumnWidth (print_text, text_offset);
   const std::size_t start_column = text_offset_column - char_width_offset + 1;
@@ -766,7 +766,7 @@ inline std::size_t FLineEdit::printTextField()
 }
 
 //----------------------------------------------------------------------
-inline std::size_t FLineEdit::printPassword()
+inline auto FLineEdit::printPassword() -> std::size_t
 {
   const std::size_t text_offset_column = text_offset;
   const FString show_text{print_text.mid(1 + text_offset, getWidth() - 2)};
@@ -779,7 +779,7 @@ inline std::size_t FLineEdit::printPassword()
 }
 
 //----------------------------------------------------------------------
-inline std::size_t FLineEdit::getCursorColumnPos() const
+inline auto FLineEdit::getCursorColumnPos() const -> std::size_t
 {
   if ( input_type == InputType::Textfield )
     return getColumnWidth (print_text, cursor_pos);
@@ -791,19 +791,19 @@ inline std::size_t FLineEdit::getCursorColumnPos() const
 }
 
 //----------------------------------------------------------------------
-inline FString FLineEdit::getPasswordText() const
+inline auto FLineEdit::getPasswordText() const -> FString
 {
   return {text.getLength(), UniChar::Bullet};  // •
 }
 
 //----------------------------------------------------------------------
-inline bool FLineEdit::isPasswordField() const
+inline auto FLineEdit::isPasswordField() const -> bool
 {
   return input_type == InputType::Password;
 }
 
 //----------------------------------------------------------------------
-inline FLineEdit::offsetPair FLineEdit::endPosToOffset (std::size_t pos)
+inline auto FLineEdit::endPosToOffset (std::size_t pos) -> offsetPair
 {
   std::size_t input_width = getWidth() - 2;
   std::size_t fullwidth_char_offset{0};
@@ -865,7 +865,7 @@ inline FLineEdit::offsetPair FLineEdit::endPosToOffset (std::size_t pos)
 }
 
 //----------------------------------------------------------------------
-std::size_t FLineEdit::clickPosToCursorPos (std::size_t pos)
+auto FLineEdit::clickPosToCursorPos (std::size_t pos) -> std::size_t
 {
   std::size_t click_width{0};
   std::size_t idx = text_offset;
@@ -1086,7 +1086,7 @@ inline void FLineEdit::acceptInput()
 }
 
 //----------------------------------------------------------------------
-inline bool FLineEdit::keyInput (FKey key)
+inline auto FLineEdit::keyInput (FKey key) -> bool
 {
   if ( text.getLength() >= max_length )
   {
@@ -1125,7 +1125,7 @@ inline bool FLineEdit::keyInput (FKey key)
 }
 
 //----------------------------------------------------------------------
-inline wchar_t FLineEdit::characterFilter (const wchar_t c) const
+inline auto FLineEdit::characterFilter (const wchar_t c) const -> wchar_t
 {
   if ( input_filter.empty() )
     return c;

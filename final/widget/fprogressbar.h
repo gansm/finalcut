@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2021 Markus Gans                                      *
+* Copyright 2014-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -69,35 +69,34 @@ class FProgressbar : public FWidget
     ~FProgressbar() noexcept override;
 
     // Accessors
-    FString             getClassName() const override;
-    std::size_t         getPercentage() const noexcept;
+    auto getClassName() const -> FString override;
+    auto getPercentage() const noexcept -> std::size_t;
 
     // Mutators
-    void                setPercentage (std::size_t);
-    void                setSize (const FSize&, bool = true) override;
-    void                setGeometry ( const FPoint&, const FSize&
-                                    , bool = true ) override;
-    bool                setShadow (bool = true);
-    bool                unsetShadow();
+    void setPercentage (std::size_t);
+    void setSize (const FSize&, bool = true) override;
+    void setGeometry (const FPoint&, const FSize&, bool = true) override;
+    auto setShadow (bool = true) -> bool;
+    auto unsetShadow() -> bool;
 
     // Inquiries
-    bool                hasShadow() const;
+    auto hasShadow() const -> bool;
 
     // Methods
-    void                hide() override;
-    void                reset();
+    void hide() override;
+    void reset();
 
   private:
     // Constants
     static constexpr auto NOT_SET = static_cast<std::size_t>(-1);
 
     // Methods
-    void                init();
-    void                draw() override;
-    void                drawProgressLabel();
-    void                drawProgressBar();
-    std::size_t         drawProgressIndicator();
-    void                drawProgressBackground (std::size_t);
+    void init();
+    void draw() override;
+    void drawProgressLabel();
+    void drawProgressBar();
+    auto drawProgressIndicator() -> std::size_t;
+    void drawProgressBackground (std::size_t);
 
     // Data members
     std::size_t  percentage{NOT_SET};
@@ -107,19 +106,19 @@ class FProgressbar : public FWidget
 
 // FProgressbar inline functions
 //----------------------------------------------------------------------
-inline FString FProgressbar::getClassName() const
+inline auto FProgressbar::getClassName() const -> FString
 { return "FProgressbar"; }
 
 //----------------------------------------------------------------------
-inline std::size_t FProgressbar::getPercentage() const noexcept
+inline auto FProgressbar::getPercentage() const noexcept -> std::size_t
 { return percentage; }
 
 //----------------------------------------------------------------------
-inline bool FProgressbar::unsetShadow()
+inline auto FProgressbar::unsetShadow() -> bool
 { return setShadow(false); }
 
 //----------------------------------------------------------------------
-inline bool FProgressbar::hasShadow() const
+inline auto FProgressbar::hasShadow() const -> bool
 { return getFlags().shadow; }
 
 }  // namespace finalcut

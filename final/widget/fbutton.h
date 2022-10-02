@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2021 Markus Gans                                      *
+* Copyright 2012-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -68,76 +68,76 @@ class FButton : public FWidget
     ~FButton() override;
 
     // Overloaded operator
-    FButton& operator = (const FString&);
+    auto operator = (const FString&) -> FButton&;
 
     // Accessors
-    FString             getClassName() const override;
-    FString             getText() const;
+    auto getClassName() const -> FString override;
+    auto getText() const -> FString;
 
     // Mutators
-    void                setForegroundColor (FColor) override;
-    void                setBackgroundColor (FColor) override;
-    void                setHotkeyForegroundColor (FColor);
-    void                setFocusForegroundColor (FColor);
-    void                setFocusBackgroundColor (FColor);
-    void                setInactiveForegroundColor (FColor);
-    void                setInactiveBackgroundColor (FColor);
-    void                resetColors() override;
-    bool                setNoUnderline (bool = true);
-    bool                unsetNoUnderline();
-    bool                setEnable (bool = true) override;
-    bool                unsetEnable() override;
-    bool                setDisable() override;
-    bool                setFocus (bool = true) override;
-    bool                unsetFocus() override;
-    bool                setFlat (bool = true);
-    bool                unsetFlat();
-    bool                setShadow (bool = true);
-    bool                unsetShadow();
-    bool                setDown (bool = true);
-    bool                setUp();
-    bool                setClickAnimation (bool = true);
-    bool                unsetClickAnimation();
-    void                setText (const FString&);
+    void setForegroundColor (FColor) override;
+    void setBackgroundColor (FColor) override;
+    void setHotkeyForegroundColor (FColor);
+    void setFocusForegroundColor (FColor);
+    void setFocusBackgroundColor (FColor);
+    void setInactiveForegroundColor (FColor);
+    void setInactiveBackgroundColor (FColor);
+    void resetColors() override;
+    auto setNoUnderline (bool = true) -> bool;
+    auto unsetNoUnderline() -> bool;
+    auto setEnable (bool = true) -> bool override;
+    auto unsetEnable() -> bool override;
+    auto setDisable() -> bool override;
+    auto setFocus (bool = true) -> bool override;
+    auto unsetFocus() -> bool override;
+    auto setFlat (bool = true) -> bool;
+    auto unsetFlat() -> bool;
+    auto setShadow (bool = true) -> bool;
+    auto unsetShadow() -> bool;
+    auto setDown (bool = true) -> bool;
+    auto setUp() -> bool;
+    auto setClickAnimation (bool = true) -> bool;
+    auto unsetClickAnimation() -> bool;
+    void setText (const FString&);
 
     // Inquiries
-    bool                isFlat() const;
-    bool                isDown() const noexcept;
-    bool                hasShadow() const;
-    bool                hasClickAnimation() const noexcept;
+    auto isFlat() const -> bool;
+    auto isDown() const noexcept -> bool;
+    auto hasShadow() const -> bool;
+    auto hasClickAnimation() const noexcept -> bool;
 
     // Methods
-    void                hide() override;
+    void hide() override;
 
     // Event handlers
-    void                onKeyPress (FKeyEvent*) override;
-    void                onMouseDown (FMouseEvent*) override;
-    void                onMouseUp (FMouseEvent*) override;
-    void                onMouseMove (FMouseEvent*) override;
-    void                onWheel (FWheelEvent*) override;
-    void                onTimer (FTimerEvent*) override;
-    void                onAccel (FAccelEvent*) override;
-    void                onFocusIn (FFocusEvent*) override;
-    void                onFocusOut (FFocusEvent*) override;
+    void onKeyPress (FKeyEvent*) override;
+    void onMouseDown (FMouseEvent*) override;
+    void onMouseUp (FMouseEvent*) override;
+    void onMouseMove (FMouseEvent*) override;
+    void onWheel (FWheelEvent*) override;
+    void onTimer (FTimerEvent*) override;
+    void onAccel (FAccelEvent*) override;
+    void onFocusIn (FFocusEvent*) override;
+    void onFocusOut (FFocusEvent*) override;
 
   private:
     // Constants
     static constexpr auto NOT_SET = static_cast<std::size_t>(-1);
 
     // Methods
-    void                init();
-    void                setHotkeyAccelerator();
-    void                detectHotkey();
-    std::size_t         clickAnimationIndent (const FWidget*);
-    void                clearRightMargin (const FWidget*);
-    void                drawMarginLeft();
-    void                drawMarginRight();
-    void                drawTopBottomBackground();
-    void                drawButtonTextLine (const FString&);
-    void                draw() override;
-    void                updateStatusBar() const;
-    void                updateButtonColor();
-    void                processClick() const;
+    void init();
+    void setHotkeyAccelerator();
+    void detectHotkey();
+    auto clickAnimationIndent (const FWidget*) -> std::size_t;
+    void clearRightMargin (const FWidget*);
+    void drawMarginLeft();
+    void drawMarginRight();
+    void drawTopBottomBackground();
+    void drawButtonTextLine (const FString&);
+    void draw() override;
+    void updateStatusBar() const;
+    void updateButtonColor();
+    void processClick() const;
 
     // Data members
     FString      text{};
@@ -162,63 +162,63 @@ class FButton : public FWidget
 
 // FButton inline functions
 //----------------------------------------------------------------------
-inline FString FButton::getClassName() const
+inline auto FButton::getClassName() const -> FString
 { return "FButton"; }
 
 //----------------------------------------------------------------------
-inline FString FButton::getText() const
+inline auto FButton::getText() const -> FString
 { return text; }
 
 //----------------------------------------------------------------------
-inline bool FButton::unsetNoUnderline()
+inline auto FButton::unsetNoUnderline() -> bool
 { return setNoUnderline(false); }
 
 //----------------------------------------------------------------------
-inline bool FButton::unsetEnable()
+inline auto FButton::unsetEnable() -> bool
 { return setEnable(false); }
 
 //----------------------------------------------------------------------
-inline bool FButton::setDisable()
+inline auto FButton::setDisable() -> bool
 { return setEnable(false); }
 
 //----------------------------------------------------------------------
-inline bool FButton::unsetFocus()
+inline auto FButton::unsetFocus() -> bool
 { return setFocus(false); }
 
 //----------------------------------------------------------------------
-inline bool FButton::unsetFlat()
+inline auto FButton::unsetFlat() -> bool
 { return setFlat(false); }
 
 //----------------------------------------------------------------------
-inline bool FButton::unsetShadow()
+inline auto FButton::unsetShadow() -> bool
 { return setShadow(false); }
 
 //----------------------------------------------------------------------
-inline bool FButton::setUp()
+inline auto FButton::setUp() -> bool
 { return setDown(false); }
 
 //----------------------------------------------------------------------
-inline bool FButton::setClickAnimation(bool enable)
+inline auto FButton::setClickAnimation(bool enable) -> bool
 { return (click_animation = enable); }
 
 //----------------------------------------------------------------------
-inline bool FButton::unsetClickAnimation()
+inline auto FButton::unsetClickAnimation() -> bool
 { return setClickAnimation(false); }
 
 //----------------------------------------------------------------------
-inline bool FButton::isFlat() const
+inline auto FButton::isFlat() const -> bool
 { return getFlags().flat; }
 
 //----------------------------------------------------------------------
-inline bool FButton::isDown() const noexcept
+inline auto FButton::isDown() const noexcept -> bool
 { return button_down; }
 
 //----------------------------------------------------------------------
-inline bool FButton::hasShadow() const
+inline auto FButton::hasShadow() const -> bool
 { return getFlags().shadow; }
 
 //----------------------------------------------------------------------
-inline bool FButton::hasClickAnimation() const noexcept
+inline auto FButton::hasClickAnimation() const noexcept -> bool
 { return click_animation; }
 
 }  // namespace finalcut

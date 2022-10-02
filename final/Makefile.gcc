@@ -3,7 +3,7 @@
 #-----------------------------------------------------------------------------
 
 # This is where make install will install the library
-VERSION = "0.8.0"
+VERSION = "0.8.1"
 MAJOR := $(shell echo ${VERSION} | cut -d. -f1)
 LIBDIR = /usr/local/lib
 INCLUDEDIR1 = .
@@ -90,7 +90,7 @@ MAKEFILE = -f Makefile.gcc
 LDFLAGS = $(TERMCAP) -lgpm
 INCLUDES = -I..
 GPM = -D F_HAVE_LIBGPM
-VER = -D F_VERSION=$(VERSION)
+VER = -D F_VERSION=\"$(VERSION)\"
 RM = rm -f
 LIB = libfinal.so
 OBJS = \

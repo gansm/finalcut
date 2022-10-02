@@ -39,7 +39,7 @@
               , reinterpret_cast<finalcut::FVTerm*>((i)) )
 
 //----------------------------------------------------------------------
-bool& getBellState()
+auto getBellState() -> bool&
 {
   static bool bell = false;
   return bell;
@@ -66,51 +66,51 @@ class FTermOutputTest : public finalcut::FOutput
     ~FTermOutputTest() noexcept override;
 
     // Accessors
-    finalcut::FString   getClassName() const override;
-    finalcut::FTerm&    getFTerm() &;
-    std::size_t         getColumnNumber() const override;
-    std::size_t         getLineNumber() const override;
-    int                 getTabstop() const override;
-    int                 getMaxColor() const override;
-    finalcut::Encoding  getEncoding() const override;
-    finalcut::FString   getKeyName (finalcut::FKey) const override;
+    auto getClassName() const -> finalcut::FString override;
+    auto getFTerm() & -> finalcut::FTerm&;
+    auto getColumnNumber() const -> std::size_t override;
+    auto getLineNumber() const -> std::size_t override;
+    auto getTabstop() const -> int override;
+    auto getMaxColor() const -> int override;
+    auto getEncoding() const -> finalcut::Encoding override;
+    auto getKeyName (finalcut::FKey) const -> finalcut::FString override;
 
     // Mutators
-    void                setCursor (finalcut::FPoint) override;
-    void                setCursor (finalcut::CursorMode) override;
-    void                hideCursor (bool = true) override;
-    void                showCursor() override;
-    void                setTerminalSize (finalcut::FSize) override;
-    bool                setVGAFont() override;
-    bool                setNewFont() override;
-    void                setNonBlockingRead (bool = true) override;
+    void setCursor (finalcut::FPoint) override;
+    void setCursor (finalcut::CursorMode) override;
+    void hideCursor (bool = true) override;
+    void showCursor() override;
+    void setTerminalSize (finalcut::FSize) override;
+    auto setVGAFont() -> bool override;
+    auto setNewFont() -> bool override;
+    void setNonBlockingRead (bool = true) override;
 
     // Inquiries
-    bool                isCursorHideable() const override;
-    bool                isMonochron() const override;
-    bool                isNewFont() const override;
-    bool                isEncodable (const wchar_t&) const override;
-    bool                hasTerminalResized() const override;
-    bool                allowsTerminalSizeManipulation() const override;
-    bool                canChangeColorPalette() const override;
-    bool                hasHalfBlockCharacter() const override;
-    bool                hasShadowCharacter() const override;
-    bool                areMetaAndArrowKeysSupported() const override;
+    auto isCursorHideable() const -> bool override;
+    auto isMonochron() const -> bool override;
+    auto isNewFont() const -> bool override;
+    auto isEncodable (const wchar_t&) const -> bool override;
+    auto hasTerminalResized() const -> bool override;
+    auto allowsTerminalSizeManipulation() const -> bool override;
+    auto canChangeColorPalette() const -> bool override;
+    auto hasHalfBlockCharacter() const -> bool override;
+    auto hasShadowCharacter() const -> bool override;
+    auto areMetaAndArrowKeysSupported() const -> bool override;
 
     // Methods
-    void                initTerminal (finalcut::FVTerm::FTermArea*) override;
-    void                finishTerminal() override;
-    bool                updateTerminal() override;
-    void                detectTerminalSize() override;
-    void                commitTerminalResize() override;
-    void                initScreenSettings() override;
-    bool                scrollTerminalForward() override;
-    bool                scrollTerminalReverse() override;
-    void                clearTerminalAttributes() override;
-    void                clearTerminalState() override;
-    bool                clearTerminal (wchar_t = L' ') override;
-    void                flush() override;
-    void                beep() const override;
+    void initTerminal (finalcut::FVTerm::FTermArea*) override;
+    void finishTerminal() override;
+    auto updateTerminal() -> bool override;
+    void detectTerminalSize() override;
+    void commitTerminalResize() override;
+    void initScreenSettings() override;
+    auto scrollTerminalForward() -> bool override;
+    auto scrollTerminalReverse() -> bool override;
+    void clearTerminalAttributes() override;
+    void clearTerminalState() override;
+    auto clearTerminal (wchar_t = L' ') -> bool override;
+    void flush() override;
+    void beep() const override;
 
   private:
     // Using-declaration
@@ -118,12 +118,12 @@ class FTermOutputTest : public finalcut::FOutput
     using FSetPalette  = std::function<void(finalcut::FColor, int, int, int)>;
 
     // Accessors
-    const FSetPalette& getFSetPaletteRef() const & override;
+    auto getFSetPaletteRef() const & -> const FSetPalette& override;
 
     // Methods
-    bool                isDefaultPaletteTheme() override;
-    void                redefineColorPalette() override;
-    void                restoreColorPalette() override;
+    auto isDefaultPaletteTheme() -> bool override;
+    void redefineColorPalette() override;
+    void restoreColorPalette() override;
 
     // Data member
     bool                                 bell{false};
@@ -153,105 +153,105 @@ FTermOutputTest::~FTermOutputTest() noexcept = default;  // destructor
 
 // public methods of FTermOutputTest
 //----------------------------------------------------------------------
-inline finalcut::FString FTermOutputTest::getClassName() const
+inline auto FTermOutputTest::getClassName() const -> finalcut::FString
 {
   return "FTermOutputTest";
 }
 
 //----------------------------------------------------------------------
-inline std::size_t FTermOutputTest::getColumnNumber() const
+inline auto FTermOutputTest::getColumnNumber() const -> std::size_t
 {
   return 80;
 }
 
 //----------------------------------------------------------------------
-inline std::size_t FTermOutputTest::getLineNumber() const
+inline auto FTermOutputTest::getLineNumber() const -> std::size_t
 {
   return 24;
 }
 
 //----------------------------------------------------------------------
-inline int FTermOutputTest::getTabstop() const
+inline auto FTermOutputTest::getTabstop() const -> int
 {
   return 8;
 }
 
 //----------------------------------------------------------------------
-inline int FTermOutputTest::getMaxColor() const
+inline auto FTermOutputTest::getMaxColor() const -> int
 {
   return 256;
 }
 
 //----------------------------------------------------------------------
-inline finalcut::Encoding FTermOutputTest::getEncoding() const
+inline auto FTermOutputTest::getEncoding() const -> finalcut::Encoding
 {
   auto& fterm_data = finalcut::FTermData::getInstance();
   return fterm_data.getTerminalEncoding();
 }
 
 //----------------------------------------------------------------------
-inline finalcut::FString FTermOutputTest::getKeyName (finalcut::FKey keynum) const
+inline auto FTermOutputTest::getKeyName (finalcut::FKey keynum) const -> finalcut::FString
 {
   static const auto& keyboard = finalcut::FKeyboard::getInstance();
   return keyboard.getKeyName (keynum);
 }
 
 //----------------------------------------------------------------------
-inline bool FTermOutputTest::isCursorHideable() const
+inline auto FTermOutputTest::isCursorHideable() const -> bool
 {
   return true;
 }
 
 //----------------------------------------------------------------------
-inline bool FTermOutputTest::isMonochron() const
+inline auto FTermOutputTest::isMonochron() const -> bool
 {
   return false;
 }
 
 //----------------------------------------------------------------------
-inline bool FTermOutputTest::isNewFont() const
+inline auto FTermOutputTest::isNewFont() const -> bool
 {
   return false;
 }
 
 //----------------------------------------------------------------------
-inline bool FTermOutputTest::isEncodable (const wchar_t&) const
+inline auto FTermOutputTest::isEncodable (const wchar_t&) const -> bool
 {
   return true;
 }
 
 //----------------------------------------------------------------------
-inline bool FTermOutputTest::hasTerminalResized() const
+inline auto FTermOutputTest::hasTerminalResized() const -> bool
 {
   return false;
 }
 
 //----------------------------------------------------------------------
-inline bool FTermOutputTest::allowsTerminalSizeManipulation() const
+inline auto FTermOutputTest::allowsTerminalSizeManipulation() const -> bool
 {
   return true;
 }
 
 //----------------------------------------------------------------------
-inline bool FTermOutputTest::canChangeColorPalette() const
+inline auto FTermOutputTest::canChangeColorPalette() const -> bool
 {
   return true;
 }
 
 //----------------------------------------------------------------------
-inline bool FTermOutputTest::hasHalfBlockCharacter() const
+inline auto FTermOutputTest::hasHalfBlockCharacter() const -> bool
 {
   return true;
 }
 
 //----------------------------------------------------------------------
-inline bool FTermOutputTest::hasShadowCharacter() const
+inline auto FTermOutputTest::hasShadowCharacter() const -> bool
 {
   return true;
 }
 
 //----------------------------------------------------------------------
-inline bool FTermOutputTest::areMetaAndArrowKeysSupported() const
+inline auto FTermOutputTest::areMetaAndArrowKeysSupported() const -> bool
 {
   return true;
 }
@@ -279,13 +279,13 @@ inline void FTermOutputTest::setTerminalSize (finalcut::FSize)
 { }
 
 //----------------------------------------------------------------------
-inline bool FTermOutputTest::setVGAFont()
+inline auto FTermOutputTest::setVGAFont() -> bool
 {
   return true;
 }
 
 //----------------------------------------------------------------------
-inline bool FTermOutputTest::setNewFont()
+inline auto FTermOutputTest::setNewFont() -> bool
 {
   return true;
 }
@@ -321,7 +321,7 @@ inline void FTermOutputTest::finishTerminal()
 { }
 
 //----------------------------------------------------------------------
-inline bool FTermOutputTest::updateTerminal()
+inline auto FTermOutputTest::updateTerminal() -> bool
 {
   return true;
 }
@@ -339,13 +339,13 @@ inline void FTermOutputTest::initScreenSettings()
 { }
 
 //----------------------------------------------------------------------
-inline bool FTermOutputTest::scrollTerminalForward()
+inline auto FTermOutputTest::scrollTerminalForward() -> bool
 {
   return true;
 }
 
 //----------------------------------------------------------------------
-inline bool FTermOutputTest::scrollTerminalReverse()
+inline auto FTermOutputTest::scrollTerminalReverse() -> bool
 {
   return true;
 }
@@ -363,7 +363,7 @@ inline void FTermOutputTest::clearTerminalState()
 }
 
 //----------------------------------------------------------------------
-inline bool FTermOutputTest::clearTerminal (wchar_t)
+inline auto FTermOutputTest::clearTerminal (wchar_t) -> bool
 {
   return true;
 }
@@ -382,13 +382,13 @@ inline void FTermOutputTest::beep() const
 
 // public methods of FTermOutputTest
 //----------------------------------------------------------------------
-inline const FTermOutputTest::FSetPalette& FTermOutputTest::getFSetPaletteRef() const &
+inline auto FTermOutputTest::getFSetPaletteRef() const & -> const FSetPalette&
 {
   return set_palette_function;
 }
 
 //----------------------------------------------------------------------
-inline bool FTermOutputTest::isDefaultPaletteTheme()
+inline auto FTermOutputTest::isDefaultPaletteTheme() -> bool
 {
   return true;
 }
@@ -425,23 +425,23 @@ class FVTerm_protected : public finalcut::FVTerm
     explicit FVTerm_protected (finalcut::outputClass<FOutputType>);
 
     // Disable copy assignment operator (=)
-    FVTerm_protected& operator = (const FVTerm_protected&) = delete;
+    auto operator = (const FVTerm_protected&) -> FVTerm_protected& = delete;
 
     // Disable move assignment operator (=)
-    FVTerm_protected& operator = (FVTerm_protected&&) noexcept = delete;
+    auto operator = (FVTerm_protected&&) noexcept -> FVTerm_protected& = delete;
 
     void clearArea (wchar_t = L' ') override;
     void addPreprocessingHandler (const finalcut::FVTerm*, finalcut::FVTerm::FPreprocessingFunction&&) override;
     void delPreprocessingHandler (const finalcut::FVTerm*) override;
     void print (const finalcut::FPoint&) override;
-    FTermArea* getPrintArea() override;
+    auto getPrintArea() -> FTermArea* override;
     void initTerminal() override;
 
-    FTermArea* p_getPrintArea();
-    FTermArea* p_getChildPrintArea() const;
-    FTermArea* p_getCurrentPrintArea() const;
-    FTermArea* p_getVirtualDesktop() const;
-    FTermArea* p_getVirtualTerminal() const;
+    auto p_getPrintArea() -> FTermArea*;
+    auto p_getChildPrintArea() const -> FTermArea*;
+    auto p_getCurrentPrintArea() const -> FTermArea*;
+    auto p_getVirtualDesktop() const -> FTermArea*;
+    auto p_getVirtualTerminal() const -> FTermArea*;
 
     // Mutators
     void p_setPrintArea (FTermArea*);
@@ -449,11 +449,11 @@ class FVTerm_protected : public finalcut::FVTerm
     void p_setActiveArea (FTermArea*) const;
 
     // Inquiries
-    bool p_isActive (const FTermArea*) const;
-    bool p_hasPrintArea() const;
-    bool p_hasChildPrintArea() const;
-    bool p_isVirtualWindow() const;
-    bool p_isCursorHideable() const;
+    auto p_isActive (const FTermArea*) const -> bool;
+    auto p_hasPrintArea() const -> bool;
+    auto p_hasChildPrintArea() const -> bool;
+    auto p_isVirtualWindow() const -> bool;
+    auto p_isCursorHideable() const -> bool;
 
     // Methods
     void p_createArea (const finalcut::FRect&, const finalcut::FSize&, FTermArea*&);
@@ -462,20 +462,20 @@ class FVTerm_protected : public finalcut::FVTerm
     void p_resizeArea (const finalcut::FRect&, FTermArea*) const;
     static void p_removeArea (FTermArea*&);
     static void p_restoreVTerm (const finalcut::FRect&);
-    bool p_updateVTermCursor (const FTermArea*) const;
+    auto p_updateVTermCursor (const FTermArea*) const -> bool;
     void p_hideVTermCursor() const;
     static void p_setAreaCursor (const finalcut::FPoint&, bool, FTermArea*);
     static void p_getArea (const finalcut::FPoint&, const FTermArea*);
     static void p_getArea (const finalcut::FRect&, const FTermArea*);
     void p_putArea (const FTermArea*) const;
     static void p_putArea (const finalcut::FPoint&, const FTermArea*);
-    static int p_getLayer (FVTerm&);
+    static auto p_getLayer (FVTerm&) -> int;
     static void p_determineWindowLayers();
     void p_scrollAreaForward (FTermArea*) const;
     void p_scrollAreaReverse (FTermArea*) const;
     void p_clearArea (FTermArea*, wchar_t = L' ') const;
     void p_forceTerminalUpdate() const;
-    bool p_processTerminalUpdate() const;
+    auto p_processTerminalUpdate() const -> bool;
     static void p_startDrawing();
     static void p_finishDrawing();
     void p_initTerminal();
@@ -485,7 +485,7 @@ class FVTerm_protected : public finalcut::FVTerm
       value++;
     }
 
-    int& value_ref() & noexcept
+    auto value_ref() & noexcept -> int&
     {
       return value;
     }
@@ -526,7 +526,7 @@ inline void FVTerm_protected::print (const finalcut::FPoint& pos)
 }
 
 //----------------------------------------------------------------------
-inline FVTerm_protected::FTermArea* FVTerm_protected::getPrintArea()
+inline auto FVTerm_protected::getPrintArea() -> FTermArea*
 {
   return finalcut::FVTerm::getPrintArea();
 }
@@ -538,31 +538,31 @@ inline void FVTerm_protected::initTerminal()
 }
 
 //----------------------------------------------------------------------
-inline FVTerm_protected::FTermArea* FVTerm_protected::p_getPrintArea()
+inline auto FVTerm_protected::p_getPrintArea() -> FTermArea*
 {
   return finalcut::FVTerm::getPrintArea();
 }
 
 //----------------------------------------------------------------------
-inline FVTerm_protected::FTermArea* FVTerm_protected::p_getChildPrintArea() const
+inline auto FVTerm_protected::p_getChildPrintArea() const -> FTermArea*
 {
   return finalcut::FVTerm::getChildPrintArea();
 }
 
 //----------------------------------------------------------------------
-inline FVTerm_protected::FTermArea* FVTerm_protected::p_getCurrentPrintArea() const
+inline auto FVTerm_protected::p_getCurrentPrintArea() const -> FTermArea*
 {
   return finalcut::FVTerm::getCurrentPrintArea();
 }
 
 //----------------------------------------------------------------------
-inline FVTerm_protected::FTermArea* FVTerm_protected::p_getVirtualDesktop() const
+inline auto FVTerm_protected::p_getVirtualDesktop() const -> FTermArea*
 {
   return finalcut::FVTerm::getVirtualDesktop();
 }
 
 //----------------------------------------------------------------------
-inline FVTerm_protected::FTermArea* FVTerm_protected::p_getVirtualTerminal() const
+inline auto FVTerm_protected::p_getVirtualTerminal() const -> FTermArea*
 {
   return finalcut::FVTerm::getVirtualTerminal();
 }
@@ -586,31 +586,31 @@ inline void FVTerm_protected::p_setActiveArea (FTermArea* area) const
 }
 
 //----------------------------------------------------------------------
-inline bool FVTerm_protected::p_isActive (const FTermArea* area) const
+inline auto FVTerm_protected::p_isActive (const FTermArea* area) const -> bool
 {
   return finalcut::FVTerm::isActive(area);
 }
 
 //----------------------------------------------------------------------
-inline bool FVTerm_protected::p_hasPrintArea() const
+inline auto FVTerm_protected::p_hasPrintArea() const -> bool
 {
   return finalcut::FVTerm::hasPrintArea();
 }
 
 //----------------------------------------------------------------------
-inline bool FVTerm_protected::p_hasChildPrintArea() const
+inline auto FVTerm_protected::p_hasChildPrintArea() const -> bool
 {
   return finalcut::FVTerm::hasChildPrintArea();
 }
 
 //----------------------------------------------------------------------
-inline bool FVTerm_protected::p_isVirtualWindow() const
+inline auto FVTerm_protected::p_isVirtualWindow() const -> bool
 {
   return finalcut::FVTerm::isVirtualWindow();
 }
 
 //----------------------------------------------------------------------
-inline bool FVTerm_protected::p_isCursorHideable() const
+inline auto FVTerm_protected::p_isCursorHideable() const -> bool
 {
   return finalcut::FVTerm::isCursorHideable();
 }
@@ -652,7 +652,7 @@ inline void FVTerm_protected::p_restoreVTerm (const finalcut::FRect& box)
 }
 
 //----------------------------------------------------------------------
-inline bool FVTerm_protected::p_updateVTermCursor (const FTermArea* area) const
+inline auto FVTerm_protected::p_updateVTermCursor (const FTermArea* area) const -> bool
 {
   return finalcut::FVTerm::updateVTermCursor (area);
 }
@@ -694,7 +694,7 @@ inline void FVTerm_protected::p_putArea (const finalcut::FPoint& pos, const FTer
 }
 
 //----------------------------------------------------------------------
-inline int FVTerm_protected::p_getLayer (FVTerm& obj)
+inline auto FVTerm_protected::p_getLayer (FVTerm& obj) -> int
 {
   return finalcut::FVTerm::getLayer (obj);
 }
@@ -730,7 +730,7 @@ inline void FVTerm_protected::p_forceTerminalUpdate() const
 }
 
 //----------------------------------------------------------------------
-inline bool FVTerm_protected::p_processTerminalUpdate() const
+inline auto FVTerm_protected::p_processTerminalUpdate() const -> bool
 {
   return finalcut::FVTerm::processTerminalUpdate();
 }

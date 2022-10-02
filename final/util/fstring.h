@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2021 Markus Gans                                      *
+* Copyright 2012-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -107,15 +107,15 @@ class FString
     virtual ~FString ();
 
     // Overloaded operators
-    FString& operator = (const FString&);
-    FString& operator = (FString&&) noexcept;
+    auto operator = (const FString&) -> FString&;
+    auto operator = (FString&&) noexcept -> FString&;
 
-    const FString& operator += (const FString&);
+    auto operator += (const FString&) -> const FString&;
 
-    FString& operator << (const FString&);
-    FString& operator << (const UniChar&);
-    FString& operator << (const wchar_t);
-    FString& operator << (const char);
+    auto operator << (const FString&) -> FString&;
+    auto operator << (const UniChar&) -> FString&;
+    auto operator << (const wchar_t) -> FString&;
+    auto operator << (const char) -> FString&;
     template <typename NumT
             , std::enable_if_t< ( std::is_integral<NumT>::value
                              && ! std::is_same<NumT, bool>::value
@@ -123,204 +123,204 @@ class FString
                              || ( std::is_floating_point<NumT>::value
                              && ! std::is_pointer<NumT>::value )
                               , int> = 0 >
-    FString& operator << (const NumT);
+    auto operator << (const NumT) -> FString&;
 
-    const FString& operator >> (FString&) const;
-    const FString& operator >> (std::wstring&) const;
-    const FString& operator >> (std::string&) const;
-    const FString& operator >> (wchar_t&) const;
-    const FString& operator >> (char&) const;
-    const FString& operator >> (sInt16&) const;
-    const FString& operator >> (uInt16&) const;
-    const FString& operator >> (sInt32&) const;
-    const FString& operator >> (uInt32&) const;
-    const FString& operator >> (sInt64&) const;
-    const FString& operator >> (uInt64&) const;
-    const FString& operator >> (double&) const;
-    const FString& operator >> (float&) const;
+    auto operator >> (FString&) const -> const FString&;
+    auto operator >> (std::wstring&) const -> const FString&;
+    auto operator >> (std::string&) const -> const FString&;
+    auto operator >> (wchar_t&) const -> const FString&;
+    auto operator >> (char&) const -> const FString&;
+    auto operator >> (sInt16&) const -> const FString&;
+    auto operator >> (uInt16&) const -> const FString&;
+    auto operator >> (sInt32&) const -> const FString&;
+    auto operator >> (uInt32&) const -> const FString&;
+    auto operator >> (sInt64&) const -> const FString&;
+    auto operator >> (uInt64&) const -> const FString&;
+    auto operator >> (double&) const -> const FString&;
+    auto operator >> (float&) const -> const FString&;
 
     template <typename IndexT>
-    constexpr reference operator [] (const IndexT);
+    constexpr auto operator [] (const IndexT) -> reference;
     template <typename IndexT>
-    constexpr const_reference operator [] (const IndexT) const;
+    constexpr auto operator [] (const IndexT) const -> const_reference;
     explicit operator bool () const;
-    const FString& operator () () const;
+    auto operator () () const -> const FString&;
 
-    bool operator < (const FString&) const;
+    auto operator < (const FString&) const -> bool;
     template <typename CharT
             , enable_if_char_ptr_t<CharT> = nullptr>
-    bool operator < (const CharT&) const;
+    auto operator < (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_char_array_t<CharT> = nullptr>
-    bool operator < (const CharT&) const;
+    auto operator < (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_wchar_ptr_t<CharT> = nullptr>
-    bool operator < (const CharT&) const;
+    auto operator < (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_wchar_array_t<CharT> = nullptr>
-    bool operator < (const CharT&) const;
+    auto operator < (const CharT&) const -> bool;
 
-    bool operator <= (const FString&) const;
+    auto operator <= (const FString&) const -> bool;
     template <typename CharT
             , enable_if_char_ptr_t<CharT> = nullptr>
-    bool operator <= (const CharT&) const;
+    auto operator <= (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_char_array_t<CharT> = nullptr>
-    bool operator <= (const CharT&) const;
+    auto operator <= (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_wchar_ptr_t<CharT> = nullptr>
-    bool operator <= (const CharT&) const;
+    auto operator <= (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_wchar_array_t<CharT> = nullptr>
-    bool operator <= (const CharT&) const;
+    auto operator <= (const CharT&) const -> bool;
 
-    bool operator == (const FString&) const;
+    auto operator == (const FString&) const -> bool;
     template <typename CharT
             , enable_if_char_ptr_t<CharT> = nullptr>
-    bool operator == (const CharT&) const;
+    auto operator == (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_char_array_t<CharT> = nullptr>
-    bool operator == (const CharT&) const;
+    auto operator == (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_wchar_ptr_t<CharT> = nullptr>
-    bool operator == (const CharT&) const;
+    auto operator == (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_wchar_array_t<CharT> = nullptr>
-    bool operator == (const CharT&) const;
+    auto operator == (const CharT&) const -> bool;
 
-    bool operator != (const FString&) const;
+    auto operator != (const FString&) const -> bool;
     template <typename CharT
             , enable_if_char_ptr_t<CharT> = nullptr>
-    bool operator != (const CharT&) const;
+    auto operator != (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_char_array_t<CharT> = nullptr>
-    bool operator != (const CharT&) const;
+    auto operator != (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_wchar_ptr_t<CharT> = nullptr>
-    bool operator != (const CharT&) const;
+    auto operator != (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_wchar_array_t<CharT> = nullptr>
-    bool operator != (const CharT&) const;
+    auto operator != (const CharT&) const -> bool;
 
-    bool operator >= (const FString&) const;
+    auto operator >= (const FString&) const -> bool;
     template <typename CharT
             , enable_if_char_ptr_t<CharT> = nullptr>
-    bool operator >= (const CharT&) const;
+    auto operator >= (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_char_array_t<CharT> = nullptr>
-    bool operator >= (const CharT&) const;
+    auto operator >= (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_wchar_ptr_t<CharT> = nullptr>
-    bool operator >= (const CharT&) const;
+    auto operator >= (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_wchar_array_t<CharT> = nullptr>
-    bool operator >= (const CharT&) const;
+    auto operator >= (const CharT&) const -> bool;
 
-    bool operator > (const FString&) const;
+    auto operator > (const FString&) const -> bool;
     template <typename CharT
             , enable_if_char_ptr_t<CharT> = nullptr>
-    bool operator > (const CharT&) const;
+    auto operator > (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_char_array_t<CharT> = nullptr>
-    bool operator > (const CharT&) const;
+    auto operator > (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_wchar_ptr_t<CharT> = nullptr>
-    bool operator > (const CharT&) const;
+    auto operator > (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_wchar_array_t<CharT> = nullptr>
-    bool operator > (const CharT&) const;
+    auto operator > (const CharT&) const -> bool;
 
     // Accessor
-    virtual FString getClassName() const;
+    virtual auto getClassName() const -> FString;
 
     // inquiries
-    [[deprecated("No longer needed")]] bool isNull() const noexcept;
-    bool isEmpty() const noexcept;
+    [[deprecated("No longer needed")]] auto isNull() const noexcept -> bool;
+    auto isEmpty() const noexcept -> bool;
 
     // Methods
-    std::size_t getLength() const noexcept;
-    std::size_t capacity() const noexcept;
+    auto getLength() const noexcept -> std::size_t;
+    auto capacity() const noexcept -> std::size_t;
 
-    iterator begin() noexcept;
-    iterator end() noexcept;
-    const_iterator begin() const;
-    const_iterator end() const;
-    const_iterator cbegin() const noexcept;
-    const_iterator cend() const noexcept;
-    reference front();
-    reference back();
-    const_reference front() const;
-    const_reference back() const;
+    auto begin() noexcept -> iterator;
+    auto end() noexcept -> iterator;
+    auto begin() const -> const_iterator;
+    auto end() const -> const_iterator;
+    auto cbegin() const noexcept -> const_iterator;
+    auto cend() const noexcept -> const_iterator;
+    auto front() -> reference;
+    auto back() -> reference;
+    auto front() const -> const_reference;
+    auto back() const -> const_reference;
 
     template <typename... Args>
-    FString& sprintf (const FString&, Args&&...);
-    FString  clear();
+    auto sprintf (const FString&, Args&&...) -> FString&;
+    auto clear() -> FString;
 
-    const wchar_t* wc_str() const;
-    wchar_t* wc_str();
-    const char* c_str() const;
-    char* c_str();
-    std::wstring toWString() const;
-    std::string toString() const;
+    auto wc_str() const -> const wchar_t*;
+    auto wc_str() -> wchar_t*;
+    auto c_str() const -> const char*;
+    auto c_str() -> char*;
+    auto toWString() const -> std::wstring;
+    auto toString() const -> std::string;
 
-    FString toLower()  const;
-    FString toUpper()  const;
+    auto toLower() const -> FString;
+    auto toUpper() const -> FString;
 
-    sInt16  toShort()  const;
-    uInt16  toUShort() const;
-    int     toInt()    const;
-    uInt    toUInt()   const;
-    long    toLong()   const;
-    uLong   toULong()  const;
-    float   toFloat()  const;
-    double  toDouble() const;
+    auto toShort() const -> sInt16;
+    auto toUShort() const -> uInt16;
+    auto toInt() const -> int;
+    auto toUInt() const -> uInt;
+    auto toLong() const -> long;
+    auto toULong() const -> uLong;
+    auto toFloat() const -> float;
+    auto toDouble() const -> double;
 
-    FString ltrim() const;
-    FString rtrim() const;
-    FString trim()  const;
+    auto ltrim() const -> FString;
+    auto rtrim() const -> FString;
+    auto trim() const -> FString;
 
-    FString left (std::size_t) const;
-    FString right (std::size_t) const;
-    FString mid (std::size_t, std::size_t) const;
+    auto left (std::size_t) const -> FString;
+    auto right (std::size_t) const -> FString;
+    auto mid (std::size_t, std::size_t) const -> FString;
 
-    FStringList split (const FString&) const;
-    FString& setString (const FString&);
-
-    template <typename NumT>
-    FString& setNumber (NumT, int = int(getPrecision<NumT>()));
-    FString& setNumber (sInt64);
-    FString& setNumber (uInt64);
-    FString& setNumber (lDouble, int = int(getPrecision<lDouble>()));
+    auto split (const FString&) const -> FStringList;
+    auto setString (const FString&) -> FString&;
 
     template <typename NumT>
-    FString& setFormatedNumber (NumT, char = nl_langinfo(THOUSEP)[0]);
-    FString& setFormatedNumber (sInt64, char = nl_langinfo(THOUSEP)[0]);
-    FString& setFormatedNumber (uInt64, char = nl_langinfo(THOUSEP)[0]);
+    auto setNumber (NumT, int = int(getPrecision<NumT>())) -> FString&;
+    auto setNumber (sInt64) -> FString&;
+    auto setNumber (uInt64) -> FString&;
+    auto setNumber (lDouble, int = int(getPrecision<lDouble>())) -> FString&;
 
-    const FString& insert (const FString&, int);
-    const FString& insert (const FString&, std::size_t);
+    template <typename NumT>
+    auto setFormatedNumber (NumT, char = nl_langinfo(THOUSEP)[0]) -> FString&;
+    auto setFormatedNumber (sInt64, char = nl_langinfo(THOUSEP)[0]) -> FString&;
+    auto setFormatedNumber (uInt64, char = nl_langinfo(THOUSEP)[0]) -> FString&;
 
-    FString replace (const FString&, const FString&) const;
+    auto insert (const FString&, int) -> const FString&;
+    auto insert (const FString&, std::size_t) -> const FString&;
 
-    FString replaceControlCodes() const;
-    FString expandTabs (int = 8) const;
-    FString removeDel() const;
-    FString removeBackspaces() const;
+    auto replace (const FString&, const FString&) const -> FString;
 
-    const FString& overwrite (const FString&, int);
-    const FString& overwrite (const FString&, std::size_t = 0);
+    auto replaceControlCodes() const -> FString;
+    auto expandTabs (int = 8) const -> FString;
+    auto removeDel() const -> FString;
+    auto removeBackspaces() const -> FString;
 
-    const FString& remove (std::size_t, std::size_t);
-    bool  includes (const FString&) const;
+    auto overwrite (const FString&, int) -> const FString&;
+    auto overwrite (const FString&, std::size_t = 0) -> const FString&;
+
+    auto remove (std::size_t, std::size_t) -> const FString&;
+    auto includes (const FString&) const -> bool;
 
   private:
     // Constants
     static constexpr uInt INPBUFFER = 200;
 
     // Methods
-    void         internal_assign (std::wstring&);
-    std::string  internal_toCharString (const std::wstring&) const;
-    std::wstring internal_toWideString (const std::string&) const;
+    void internal_assign (std::wstring&);
+    auto internal_toCharString (const std::wstring&) const -> std::string;
+    auto internal_toWideString (const std::string&) const -> std::wstring;
 
     // Data members
     std::wstring         string{};
@@ -329,12 +329,12 @@ class FString
     static const wchar_t const_null_char;
 
     // Friend Non-member operator functions
-    friend FString operator + (const FString&, const FString&);
+    friend auto operator + (const FString&, const FString&) -> FString;
 
-    friend std::ostream&  operator << (std::ostream&, const FString&);
-    friend std::istream&  operator >> (std::istream&, FString& s);
-    friend std::wostream& operator << (std::wostream&, const FString&);
-    friend std::wistream& operator >> (std::wistream&, FString&);
+    friend auto operator << (std::ostream&, const FString&) -> std::ostream&;
+    friend auto operator >> (std::istream&, FString& s) -> std::istream&;
+    friend auto operator << (std::wostream&, const FString&) -> std::wostream&;
+    friend auto operator >> (std::wistream&, FString&) -> std::wistream&;
 
     // Friend struct
     friend struct std::hash<finalcut::FString>;
@@ -342,7 +342,7 @@ class FString
 
 // non-member function forward declarations
 //----------------------------------------------------------------------
-int FStringCaseCompare (const FString&, const FString&);
+auto FStringCaseCompare (const FString&, const FString&) -> int;
 
 // FString inline functions
 //----------------------------------------------------------------------
@@ -353,7 +353,7 @@ template <typename NumT
                          || ( std::is_floating_point<NumT>::value
                          && ! std::is_pointer<NumT>::value )
                           , int> >
-inline FString& FString::operator << (const NumT val)
+inline auto FString::operator << (const NumT val) -> FString&
 {
   const FString numstr(FString().setNumber(val));
   string.append(numstr.string);
@@ -362,7 +362,7 @@ inline FString& FString::operator << (const NumT val)
 
 //----------------------------------------------------------------------
 template <typename IndexT>
-constexpr FString::reference FString::operator [] (const IndexT pos)
+constexpr auto FString::operator [] (const IndexT pos) -> reference
 {
   if ( isNegative(pos) || pos > IndexT(string.length()) )
     throw std::out_of_range("");  // Invalid index position
@@ -375,7 +375,7 @@ constexpr FString::reference FString::operator [] (const IndexT pos)
 
 //----------------------------------------------------------------------
 template <typename IndexT>
-constexpr FString::const_reference FString::operator [] (const IndexT pos) const
+constexpr auto FString::operator [] (const IndexT pos) const -> const_reference
 {
   if ( isNegative(pos) || pos > IndexT(string.length()) )
     throw std::out_of_range("");  // Invalid index position
@@ -389,7 +389,7 @@ constexpr FString::const_reference FString::operator [] (const IndexT pos) const
 //----------------------------------------------------------------------
 template <typename CharT
         , enable_if_char_ptr_t<CharT>>
-inline bool FString::operator < (const CharT& s) const
+inline auto FString::operator < (const CharT& s) const -> bool
 {
   char_string = internal_toCharString(string);
   return s ? char_string.compare(s) < 0 : char_string.compare("") < 0;
@@ -398,7 +398,7 @@ inline bool FString::operator < (const CharT& s) const
 //----------------------------------------------------------------------
 template <typename CharT
         , enable_if_char_array_t<CharT>>
-inline bool FString::operator < (const CharT& s) const
+inline auto FString::operator < (const CharT& s) const-> bool
 {
   char_string = internal_toCharString(string);
   return char_string.compare(s) < 0;
@@ -407,7 +407,7 @@ inline bool FString::operator < (const CharT& s) const
 //----------------------------------------------------------------------
 template <typename CharT
         , enable_if_wchar_ptr_t<CharT>>
-inline bool FString::operator < (const CharT& s) const
+inline auto FString::operator < (const CharT& s) const -> bool
 {
   return s ? string.compare(s) < 0 : string.compare(L"") < 0;
 }
@@ -415,7 +415,7 @@ inline bool FString::operator < (const CharT& s) const
 //----------------------------------------------------------------------
 template <typename CharT
         , enable_if_wchar_array_t<CharT>>
-inline bool FString::operator < (const CharT& s) const
+inline auto FString::operator < (const CharT& s) const -> bool
 {
   return string.compare(s) < 0;
 }
@@ -423,7 +423,7 @@ inline bool FString::operator < (const CharT& s) const
 //----------------------------------------------------------------------
 template <typename CharT
         , enable_if_char_ptr_t<CharT>>
-inline bool FString::operator <= (const CharT& s) const
+inline auto FString::operator <= (const CharT& s) const -> bool
 {
   char_string = internal_toCharString(string);
   return s ? char_string.compare(s) <= 0 : char_string.compare("") <= 0;
@@ -432,7 +432,7 @@ inline bool FString::operator <= (const CharT& s) const
 //----------------------------------------------------------------------
 template <typename CharT
         , enable_if_char_array_t<CharT>>
-inline bool FString::operator <= (const CharT& s) const
+inline auto FString::operator <= (const CharT& s) const -> bool
 {
   char_string = internal_toCharString(string);
   return char_string.compare(s) <= 0;
@@ -441,7 +441,7 @@ inline bool FString::operator <= (const CharT& s) const
 //----------------------------------------------------------------------
 template <typename CharT
         , enable_if_wchar_ptr_t<CharT>>
-inline bool FString::operator <= (const CharT& s) const
+inline auto FString::operator <= (const CharT& s) const -> bool
 {
   return s ? string.compare(s) <= 0 : string.compare(L"") <= 0;
 }
@@ -449,7 +449,7 @@ inline bool FString::operator <= (const CharT& s) const
 //----------------------------------------------------------------------
 template <typename CharT
         , enable_if_wchar_array_t<CharT>>
-inline bool FString::operator <= (const CharT& s) const
+inline auto FString::operator <= (const CharT& s) const -> bool
 {
   return string.compare(s) <= 0;
 }
@@ -457,7 +457,7 @@ inline bool FString::operator <= (const CharT& s) const
 //----------------------------------------------------------------------
 template <typename CharT
         , enable_if_char_ptr_t<CharT>>
-inline bool FString::operator == (const CharT& s) const
+inline auto FString::operator == (const CharT& s) const -> bool
 {
   char_string = internal_toCharString(string);
   return s ? char_string.compare(s) == 0 : char_string.compare("") == 0;
@@ -466,7 +466,7 @@ inline bool FString::operator == (const CharT& s) const
 //----------------------------------------------------------------------
 template <typename CharT
         , enable_if_char_array_t<CharT>>
-inline bool FString::operator == (const CharT& s) const
+inline auto FString::operator == (const CharT& s) const -> bool
 {
   char_string = internal_toCharString(string);
   return char_string.compare(s) == 0;
@@ -475,7 +475,7 @@ inline bool FString::operator == (const CharT& s) const
 //----------------------------------------------------------------------
 template <typename CharT
         , enable_if_wchar_ptr_t<CharT>>
-inline bool FString::operator == (const CharT& s) const
+inline auto FString::operator == (const CharT& s) const -> bool
 {
   return s ? string.compare(s) == 0 : string.compare(L"") == 0;
 }
@@ -483,7 +483,7 @@ inline bool FString::operator == (const CharT& s) const
 //----------------------------------------------------------------------
 template <typename CharT
         , enable_if_wchar_array_t<CharT>>
-inline bool FString::operator == (const CharT& s) const
+inline auto FString::operator == (const CharT& s) const -> bool
 {
   return string.compare(s) == 0;
 }
@@ -491,7 +491,7 @@ inline bool FString::operator == (const CharT& s) const
 //----------------------------------------------------------------------
 template <typename CharT
         , enable_if_char_ptr_t<CharT>>
-inline bool FString::operator != (const CharT& s) const
+inline auto FString::operator != (const CharT& s) const -> bool
 {
   char_string = internal_toCharString(string);
   return s ? char_string.compare(s) != 0 : char_string.compare("") != 0;
@@ -500,7 +500,7 @@ inline bool FString::operator != (const CharT& s) const
 //----------------------------------------------------------------------
 template <typename CharT
         , enable_if_char_array_t<CharT>>
-inline bool FString::operator != (const CharT& s) const
+inline auto FString::operator != (const CharT& s) const -> bool
 {
   char_string = internal_toCharString(string);
   return char_string.compare(s) != 0;
@@ -509,7 +509,7 @@ inline bool FString::operator != (const CharT& s) const
 //----------------------------------------------------------------------
 template <typename CharT
         , enable_if_wchar_ptr_t<CharT>>
-inline bool FString::operator != (const CharT& s) const
+inline auto FString::operator != (const CharT& s) const -> bool
 {
   return s ? string.compare(s) != 0 : string.compare(L"") != 0;
 }
@@ -517,7 +517,7 @@ inline bool FString::operator != (const CharT& s) const
 //----------------------------------------------------------------------
 template <typename CharT
         , enable_if_wchar_array_t<CharT>>
-inline bool FString::operator != (const CharT& s) const
+inline auto FString::operator != (const CharT& s) const -> bool
 {
   return string.compare(s) != 0;
 }
@@ -525,7 +525,7 @@ inline bool FString::operator != (const CharT& s) const
 //----------------------------------------------------------------------
 template <typename CharT
         , enable_if_char_ptr_t<CharT>>
-inline bool FString::operator >= (const CharT& s) const
+inline auto FString::operator >= (const CharT& s) const -> bool
 {
   char_string = internal_toCharString(string);
   return s ? char_string.compare(s) >= 0 : char_string.compare("") >= 0;
@@ -534,7 +534,7 @@ inline bool FString::operator >= (const CharT& s) const
 //----------------------------------------------------------------------
 template <typename CharT
         , enable_if_char_array_t<CharT>>
-inline bool FString::operator >= (const CharT& s) const
+inline auto FString::operator >= (const CharT& s) const -> bool
 {
   char_string = internal_toCharString(string);
   return char_string.compare(s) >= 0;
@@ -543,7 +543,7 @@ inline bool FString::operator >= (const CharT& s) const
 //----------------------------------------------------------------------
 template <typename CharT
         , enable_if_wchar_ptr_t<CharT>>
-inline bool FString::operator >= (const CharT& s) const
+inline auto FString::operator >= (const CharT& s) const -> bool
 {
   return s ? string.compare(s) >= 0 : string.compare(L"") >= 0;
 }
@@ -551,7 +551,7 @@ inline bool FString::operator >= (const CharT& s) const
 //----------------------------------------------------------------------
 template <typename CharT
         , enable_if_wchar_array_t<CharT>>
-inline bool FString::operator >= (const CharT& s) const
+inline auto FString::operator >= (const CharT& s) const -> bool
 {
   return string.compare(s) >= 0;
 }
@@ -559,7 +559,7 @@ inline bool FString::operator >= (const CharT& s) const
 //----------------------------------------------------------------------
 template <typename CharT
         , enable_if_char_ptr_t<CharT>>
-inline bool FString::operator > (const CharT& s) const
+inline auto FString::operator > (const CharT& s) const -> bool
 {
   char_string = internal_toCharString(string);
   return s ? char_string.compare(s) > 0 : char_string.compare("") > 0;
@@ -568,7 +568,7 @@ inline bool FString::operator > (const CharT& s) const
 //----------------------------------------------------------------------
 template <typename CharT
         , enable_if_char_array_t<CharT>>
-inline bool FString::operator > (const CharT& s) const
+inline auto FString::operator > (const CharT& s) const -> bool
 {
   char_string = internal_toCharString(string);
   return char_string.compare(s) > 0;
@@ -577,7 +577,7 @@ inline bool FString::operator > (const CharT& s) const
 //----------------------------------------------------------------------
 template <typename CharT
         , enable_if_wchar_ptr_t<CharT>>
-inline bool FString::operator > (const CharT& s) const
+inline auto FString::operator > (const CharT& s) const -> bool
 {
   return s ? string.compare(s) > 0 : string.compare(L"") > 0;
 }
@@ -585,78 +585,78 @@ inline bool FString::operator > (const CharT& s) const
 //----------------------------------------------------------------------
 template <typename CharT
         , enable_if_wchar_array_t<CharT>>
-inline bool FString::operator > (const CharT& s) const
+inline auto FString::operator > (const CharT& s) const -> bool
 {
   return string.compare(s) > 0;
 }
 
 //----------------------------------------------------------------------
-inline FString FString::getClassName() const
+inline auto FString::getClassName() const -> FString
 { return "FString"; }
 
 //----------------------------------------------------------------------
-inline bool FString::isNull() const noexcept  // deprecated
+inline auto FString::isNull() const noexcept -> bool  // deprecated
 { return false; }
 
 //----------------------------------------------------------------------
-inline bool FString::isEmpty() const noexcept
+inline auto FString::isEmpty() const noexcept -> bool
 { return string.empty(); }
 
 //----------------------------------------------------------------------
-inline std::size_t FString::getLength() const noexcept
+inline auto FString::getLength() const noexcept -> std::size_t
 { return string.length(); }
 
 //----------------------------------------------------------------------
-inline std::size_t FString::capacity() const noexcept
+inline auto FString::capacity() const noexcept -> std::size_t
 { return string.capacity(); }
 
 //----------------------------------------------------------------------
-inline FString::iterator FString::begin() noexcept
+inline auto FString::begin() noexcept -> iterator
 { return string.begin(); }
 
 //----------------------------------------------------------------------
-inline FString::iterator FString::end() noexcept
+inline auto FString::end() noexcept -> iterator
 { return string.end(); }
 
 //----------------------------------------------------------------------
-inline FString::const_iterator FString::begin() const
+inline auto FString::begin() const -> const_iterator
 { return this->string.begin(); }
 
 //----------------------------------------------------------------------
-inline FString::const_iterator FString::end() const
+inline auto FString::end() const -> const_iterator
 { return this->string.end(); }
 
 //----------------------------------------------------------------------
-inline FString::const_iterator FString::cbegin() const noexcept
+inline auto FString::cbegin() const noexcept -> const_iterator
 { return this->string.cbegin(); }
 
 //----------------------------------------------------------------------
-inline FString::const_iterator FString::cend() const noexcept
+inline auto FString::cend() const noexcept -> const_iterator
 { return this->string.cend(); }
 
 //----------------------------------------------------------------------
-inline FString::reference FString::front()
+inline auto FString::front() -> reference
 {
   assert ( ! isEmpty() );
   return string.front();
 }
 
 //----------------------------------------------------------------------
-inline FString::reference FString::back()
+inline auto FString::back() -> reference
 {
   assert( ! isEmpty() );
   return string.back();
 }
 
 //----------------------------------------------------------------------
-inline FString::const_reference FString::front() const
+inline auto FString::front() const -> const_reference
 {
   assert ( ! isEmpty() );
   return string.front();
 }
 
 //----------------------------------------------------------------------
-inline FString::const_reference FString::back() const
+inline auto FString::back() const -> const_reference
 {
   assert( ! isEmpty() );
   return string.back();
@@ -664,7 +664,7 @@ inline FString::const_reference FString::back() const
 
 //----------------------------------------------------------------------
 template <typename... Args>
-inline FString& FString::sprintf (const FString& format, Args&&... args)
+inline auto FString::sprintf (const FString& format, Args&&... args) -> FString&
 {
   std::array<wchar_t, 4096> buf{};
 
@@ -682,7 +682,7 @@ inline FString& FString::sprintf (const FString& format, Args&&... args)
 
 //----------------------------------------------------------------------
 template <typename NumT>
-inline FString& FString::setNumber (NumT num, int precision)
+inline auto FString::setNumber (NumT num, int precision) -> FString&
 {
   if ( std::is_floating_point<NumT>::value )
     return setNumber (lDouble(num), precision);
@@ -695,7 +695,7 @@ inline FString& FString::setNumber (NumT num, int precision)
 
 //----------------------------------------------------------------------
 template <typename NumT>
-inline FString& FString::setFormatedNumber (NumT num, char separator)
+inline auto FString::setFormatedNumber (NumT num, char separator) -> FString&
 {
   if ( isNegative(num) )
     return setFormatedNumber (sInt64(num), separator);
@@ -710,7 +710,7 @@ inline FString& FString::setFormatedNumber (NumT num, char separator)
 template <>
 struct std::hash<finalcut::FString>
 {
-  std::size_t operator () (const finalcut::FString& p) const noexcept
+  auto operator () (const finalcut::FString& p) const noexcept -> std::size_t
   {
     return std::hash<std::wstring>{}(p.string);
   }

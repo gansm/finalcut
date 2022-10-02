@@ -70,66 +70,65 @@ class FOutput : public std::enable_shared_from_this<FOutput>
     virtual ~FOutput() noexcept;
 
     // Accessors
-    virtual FString     getClassName() const;
-    auto                getInstance() -> std::shared_ptr<FOutput>;
-    const FVTerm&       getFVTerm() const &;
-    virtual std::size_t getColumnNumber() const = 0;
-    virtual std::size_t getLineNumber() const = 0;
-    virtual int         getTabstop() const = 0;
-    virtual int         getMaxColor() const = 0;
-    virtual Encoding    getEncoding() const = 0;
-    virtual FString     getKeyName (FKey) const = 0;
+    virtual auto getClassName() const -> FString;
+    auto         getInstance() -> std::shared_ptr<FOutput>;
+    auto         getFVTerm() const & -> const FVTerm&;
+    virtual auto getColumnNumber() const -> std::size_t = 0;
+    virtual auto getLineNumber() const -> std::size_t = 0;
+    virtual auto getTabstop() const -> int = 0;
+    virtual auto getMaxColor() const -> int = 0;
+    virtual auto getEncoding() const -> Encoding = 0;
+    virtual auto getKeyName (FKey) const -> FString = 0;
 
     // Mutators
-    virtual void        setCursor (FPoint) = 0;
-    virtual void        setCursor (CursorMode) = 0;
-    virtual void        hideCursor (bool = true) = 0;
-    virtual void        showCursor() = 0;
-    virtual void        setTerminalSize (FSize) = 0;
-    virtual bool        setVGAFont() = 0;
-    virtual bool        setNewFont() = 0;
-    virtual void        setNonBlockingRead (bool = true) = 0;
+    virtual void setCursor (FPoint) = 0;
+    virtual void setCursor (CursorMode) = 0;
+    virtual void hideCursor (bool = true) = 0;
+    virtual void showCursor() = 0;
+    virtual void setTerminalSize (FSize) = 0;
+    virtual auto setVGAFont() -> bool = 0;
+    virtual auto setNewFont() -> bool = 0;
+    virtual void setNonBlockingRead (bool = true) = 0;
     template <typename ClassT>
-    void                setColorPaletteTheme() const;
+    void         setColorPaletteTheme() const;
     template <typename ClassT>
-    void                setColorPaletteTheme (const FSetPalette&) const;
+    void         setColorPaletteTheme (const FSetPalette&) const;
 
     // Inquiries
-    virtual bool        isCursorHideable() const = 0;
-    virtual bool        isMonochron() const = 0;
-    virtual bool        isNewFont() const = 0;
-    virtual bool        isEncodable (const wchar_t&) const = 0;
-    virtual bool        hasTerminalResized() const = 0;
-    virtual bool        allowsTerminalSizeManipulation() const = 0;
-    virtual bool        canChangeColorPalette() const = 0;
-    virtual bool        hasHalfBlockCharacter() const = 0;
-    virtual bool        hasShadowCharacter() const = 0;
-    virtual bool        areMetaAndArrowKeysSupported() const = 0;
+    virtual auto isCursorHideable() const -> bool = 0;
+    virtual auto isMonochron() const -> bool = 0;
+    virtual auto isNewFont() const -> bool = 0;
+    virtual auto isEncodable (const wchar_t&) const -> bool = 0;
+    virtual auto hasTerminalResized() const -> bool = 0;
+    virtual auto allowsTerminalSizeManipulation() const -> bool = 0;
+    virtual auto canChangeColorPalette() const -> bool = 0;
+    virtual auto hasHalfBlockCharacter() const -> bool = 0;
+    virtual auto hasShadowCharacter() const -> bool = 0;
+    virtual auto areMetaAndArrowKeysSupported() const -> bool = 0;
 
     // Methods
-    virtual void        initTerminal (FVTerm::FTermArea*) = 0;
-    virtual void        finishTerminal() = 0;
-    virtual bool        updateTerminal() = 0;
-    virtual void        detectTerminalSize() = 0;
-    virtual void        commitTerminalResize() = 0;
-    virtual void        initScreenSettings() = 0;
-    virtual bool        scrollTerminalForward() = 0;
-    virtual bool        scrollTerminalReverse() = 0;
-    virtual void        clearTerminalAttributes() = 0;
-    virtual void        clearTerminalState() = 0;
-    virtual bool        clearTerminal (wchar_t = L' ') = 0;
-    virtual void        flush() = 0;
-    virtual void        beep() const = 0;
+    virtual void initTerminal (FVTerm::FTermArea*) = 0;
+    virtual void finishTerminal() = 0;
+    virtual auto updateTerminal() -> bool = 0;
+    virtual void detectTerminalSize() = 0;
+    virtual void commitTerminalResize() = 0;
+    virtual void initScreenSettings() = 0;
+    virtual auto scrollTerminalForward() -> bool = 0;
+    virtual auto scrollTerminalReverse() -> bool = 0;
+    virtual void clearTerminalAttributes() = 0;
+    virtual void clearTerminalState() = 0;
+    virtual auto clearTerminal (wchar_t = L' ') -> bool = 0;
+    virtual void flush() = 0;
+    virtual void beep() const = 0;
 
   private:
     // Accessors
-    virtual const FSetPalette&
-                        getFSetPaletteRef() const & = 0;
+    virtual auto getFSetPaletteRef() const & -> const FSetPalette& = 0;
 
     // Methods
-    virtual bool        isDefaultPaletteTheme() = 0;
-    virtual void        redefineColorPalette() = 0;
-    virtual void        restoreColorPalette() = 0;
+    virtual auto isDefaultPaletteTheme() -> bool = 0;
+    virtual void redefineColorPalette() = 0;
+    virtual void restoreColorPalette() = 0;
 
     // Data members
     const FVTerm& fvterm{};
@@ -137,11 +136,11 @@ class FOutput : public std::enable_shared_from_this<FOutput>
 
 // FOutput inline functions
 //----------------------------------------------------------------------
-inline FString FOutput::getClassName() const
+inline auto FOutput::getClassName() const -> FString
 { return "FOutput"; }
 
 //----------------------------------------------------------------------
-inline const FVTerm& FOutput::getFVTerm() const &
+inline auto FOutput::getFVTerm() const & -> const FVTerm&
 { return fvterm; }
 
 //----------------------------------------------------------------------

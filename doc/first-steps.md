@@ -113,7 +113,7 @@ The following example creates an empty 30&times;10 character dialog.
 ```cpp
 #include <final/final.h>
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   finalcut::FApplication app(argc, argv);
   finalcut::FDialog dialog(&app);
@@ -248,7 +248,7 @@ you have to implement storage deallocation yourself.
 
 using namespace finalcut;
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   FApplication app(argc, argv);
 
@@ -409,7 +409,7 @@ class dialogWidget : public FDialog
     int id{0};
 };
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   FApplication app(argc, argv);
   dialogWidget dialog(&app);
@@ -525,8 +525,7 @@ class dialogWidget final : public FDialog
     FLabel loadavg_label{this};
 };
 
-
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   extendedApplication app(argc, argv);
   dialogWidget dialog(&app);
@@ -781,7 +780,7 @@ void cb_changeText (const FButton& button, FLabel& label)
   label.redraw();
 }
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   FApplication app(argc, argv);
   FDialog dialog(&app);
@@ -835,7 +834,7 @@ g++ callback-function.cpp -o callback-function -O2 -lfinal
 
 using namespace finalcut;
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   FApplication app(argc, argv);
   FDialog dialog(&app);
@@ -926,7 +925,7 @@ class dialogWidget : public FDialog
     FButton button{"&Quit", this};
 };
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   FApplication app(argc, argv);
   dialogWidget dialog(&app);
@@ -1052,7 +1051,7 @@ class dialogWidget : public FDialog
     FButton minus {"&-", this};
 };
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   FApplication app(argc, argv);
   dialogWidget dialog(&app);
@@ -1327,7 +1326,7 @@ class dialogWidget : public FDialog
     FButton button{"&Bottom", this};
 };
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   FApplication app(argc, argv);
   dialogWidget dialog(&app);
@@ -1459,7 +1458,7 @@ class dialogWidget : public FDialog
     FScrollView scrollview{this};
 };
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   FApplication app(argc, argv);
   app.initTerminal();  // Terminal initialization

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2021 Markus Gans                                      *
+* Copyright 2019-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -53,22 +53,22 @@ class FSystemTest : public finalcut::FSystem
     FSystemTest();
 
     // Methods
-    uChar            inPortByte (uShort) override;
+    auto            inPortByte (uShort) -> uChar override;
     void             outPortByte (uChar, uShort) override;
-    int              isTTY (int) const override;
-    int              ioctl (int, uLong, ...) override;
-    int              open (const char*, int, ...) override;
-    int              close (int) override;
-    FILE*            fopen (const char*, const char*) override;
-    int              fputs (const char*, FILE*) override;
-    int              fclose (FILE*) override;
-    int              putchar (int) override;
-    uid_t            getuid() override;
-    uid_t            geteuid() override;
-    int              getpwuid_r (uid_t, struct passwd*, char*
-                                , size_t, struct passwd** ) override;
-    char*            realpath (const char*, char*) override;
-    wskbd_bell_data& getBell();
+    auto              isTTY (int) const -> int override;
+    auto              ioctl (int, uLong, ...) -> int override;
+    auto              open (const char*, int, ...) -> int override;
+    auto              close (int) -> int override;
+    auto            fopen (const char*, const char*) -> FILE* override;
+    auto              fputs (const char*, FILE*) -> int override;
+    auto              fclose (FILE*) -> int override;
+    auto              putchar (int) -> int override;
+    auto            getuid() -> uid_t override;
+    auto            geteuid() -> uid_t override;
+    auto              getpwuid_r (uid_t, struct passwd*, char*
+                                , size_t, struct passwd** ) -> int override;
+    auto            realpath (const char*, char*) -> char* override;
+    auto getBell() -> wskbd_bell_data&;
 
   private:
     kbd_t kbdencoding{512};
@@ -90,7 +90,7 @@ FSystemTest::FSystemTest()  // constructor
 
 // public methods of FSystemTest
 //----------------------------------------------------------------------
-uChar FSystemTest::inPortByte (uShort)
+auto FSystemTest::inPortByte (uShort) -> uChar
 {
   return 0;
 }
@@ -101,14 +101,14 @@ void FSystemTest::outPortByte (uChar, uShort)
 }
 
 //----------------------------------------------------------------------
-int FSystemTest::isTTY (int fd) const
+auto FSystemTest::isTTY (int fd) const -> int
 {
   std::cerr << "Call: isatty (fd=" << fd << ")\n";
   return 1;
 }
 
 //----------------------------------------------------------------------
-int FSystemTest::ioctl (int fd, uLong request, ...)
+auto FSystemTest::ioctl (int fd, uLong request, ...) -> int
 {
   va_list args{};
   void* argp{};
@@ -194,7 +194,7 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
 }
 
 //----------------------------------------------------------------------
-int FSystemTest::open (const char* pathname, int flags, ...)
+auto FSystemTest::open (const char* pathname, int flags, ...) -> int
 {
   va_list args{};
   va_start (args, flags);
@@ -209,14 +209,14 @@ int FSystemTest::open (const char* pathname, int flags, ...)
 }
 
 //----------------------------------------------------------------------
-int FSystemTest::close (int fildes)
+auto FSystemTest::close (int fildes) -> int
 {
   std::cerr << "Call: close (fildes=" << fildes << ")\n";
   return 0;
 }
 
 //----------------------------------------------------------------------
-FILE* FSystemTest::fopen (const char* path, const char* mode)
+auto FSystemTest::fopen (const char* path, const char* mode) -> FILE*
 {
   std::cerr << "Call: fopen (path=" << path
             << ", mode=" << mode << ")\n";
@@ -224,20 +224,20 @@ FILE* FSystemTest::fopen (const char* path, const char* mode)
 }
 
 //----------------------------------------------------------------------
-int FSystemTest::fclose (FILE* fp)
+auto FSystemTest::fclose (FILE* fp) -> int
 {
   std::cerr << "Call: fclose (fp=" << fp << ")\n";
   return 0;
 }
 
 //----------------------------------------------------------------------
-int FSystemTest::fputs (const char* str, FILE* stream)
+auto FSystemTest::fputs (const char* str, FILE* stream) -> int
 {
   return std::fputs(str, stream);
 }
 
 //----------------------------------------------------------------------
-int FSystemTest::putchar (int c)
+auto FSystemTest::putchar (int c) -> int
 {
 #if defined(__sun) && defined(__SVR4)
       return std::putchar(char(c));
@@ -247,32 +247,32 @@ int FSystemTest::putchar (int c)
 }
 
 //----------------------------------------------------------------------
-uid_t FSystemTest::getuid()
+auto FSystemTest::getuid() -> uid_t
 {
   return 0;
 }
 
 //----------------------------------------------------------------------
-uid_t FSystemTest::geteuid()
+auto FSystemTest::geteuid() -> uid_t
 {
   return 0;
 }
 
 //----------------------------------------------------------------------
-int FSystemTest::getpwuid_r ( uid_t, struct passwd*, char*
-                            , size_t, struct passwd** )
+auto FSystemTest::getpwuid_r ( uid_t, struct passwd*, char*
+                            , size_t, struct passwd** ) -> int
 {
   return 0;
 }
 
 //----------------------------------------------------------------------
-char* FSystemTest::realpath (const char*, char*)
+auto FSystemTest::realpath (const char*, char*) -> char*
 {
   return const_cast<char*>("");
 }
 
 //----------------------------------------------------------------------
-wskbd_bell_data& FSystemTest::getBell()
+auto FSystemTest::getBell() -> wskbd_bell_data&
 {
   return system_bell;
 }

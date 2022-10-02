@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2021 Markus Gans                                      *
+* Copyright 2016-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -82,48 +82,48 @@ class FTermcap final
     FTermcap() = default;
 
     // Accessors
-    FString              getClassName() const;
-    static bool          getFlag (const std::string&);
-    static int           getNumber (const std::string&);
-    static char*         getString (const std::string&);
-    static std::string   encodeMotionParameter (const std::string&, int, int);
+    auto        getClassName() const -> FString;
+    static auto getFlag (const std::string&) -> bool;
+    static auto getNumber (const std::string&) -> int;
+    static auto getString (const std::string&) -> char*;
+    static auto encodeMotionParameter (const std::string&, int, int) -> std::string;
     template <typename... Args>
-    static std::string   encodeParameter (const std::string&, Args&&...);
-    static Status        paddingPrint (const std::string&, int);
-    static Status        stringPrint (const std::string&);
+    static auto encodeParameter (const std::string&, Args&&...) -> std::string;
+    static auto paddingPrint (const std::string&, int) -> Status;
+    static auto stringPrint (const std::string&) -> Status;
 
     // Inquiry
-    static bool          isInitialized();
+    static auto isInitialized() -> bool;
 
     // Mutator
     template<typename PutChar>
-    static void          setPutCharFunction (const PutChar&);
-    static void          setDefaultPutCharFunction();
+    static void setPutCharFunction (const PutChar&);
+    static void setDefaultPutCharFunction();
     template<typename PutString>
-    static void          setPutStringFunction (const PutString&);
-    static void          setDefaultPutStringFunction();
-    static void          setBaudrate (int);
+    static void setPutStringFunction (const PutString&);
+    static void setDefaultPutStringFunction();
+    static void setBaudrate (int);
 
     // Methods
-    static void          init();
+    static void init();
 
     // Data members
-    static bool          background_color_erase;
-    static bool          can_change_color_palette;
-    static bool          automatic_left_margin;
-    static bool          automatic_right_margin;
-    static bool          eat_nl_glitch;
-    static bool          has_ansi_escape_sequences;
-    static bool          ansi_default_color;
-    static bool          osc_support;
-    static bool          no_utf8_acs_chars;
-    static bool          no_padding_char;
-    static bool          xon_xoff_flow_control;
-    static int           max_color;
-    static int           tabstop;
-    static int           padding_baudrate;
-    static int           attr_without_color;
-    static TCapMapType   strings;
+    static bool         background_color_erase;
+    static bool         can_change_color_palette;
+    static bool         automatic_left_margin;
+    static bool         automatic_right_margin;
+    static bool         eat_nl_glitch;
+    static bool         has_ansi_escape_sequences;
+    static bool         ansi_default_color;
+    static bool         osc_support;
+    static bool         no_utf8_acs_chars;
+    static bool         no_padding_char;
+    static bool         xon_xoff_flow_control;
+    static int          max_color;
+    static int          tabstop;
+    static int          padding_baudrate;
+    static int          attr_without_color;
+    static TCapMapType  strings;
 
   private:
     // Using-declaration
@@ -133,19 +133,20 @@ class FTermcap final
     static constexpr std::size_t BUF_SIZE{2048};
 
     // Methods
-    static void          termcap();
-    static void          termcapError (int);
-    static void          termcapVariables();
-    static void          termcapBoleans();
-    static void          termcapNumerics();
-    static void          termcapStrings();
-    static void          termcapKeys();
-    static std::string   encodeParams ( const std::string&
-                                      , const std::array<int, 9>& );
-    static void          delayOutput (int);
-    static void          decimalPoint (string_iterator&, int&);
-    static void          readDigits (string_iterator&, int&);
-    static void          asteriskSlash (string_iterator&, int&, int, bool&);
+    static void termcap();
+    static void termcapError (int);
+    static void termcapVariables();
+    static void termcapBoleans();
+    static void termcapNumerics();
+    static void termcapStrings();
+    static void termcapKeys();
+    static auto encodeParams ( const std::string&
+                             , const std::array<int, 9>& ) -> std::string;
+    static void delayOutput (int);
+    static void decimalPoint (string_iterator&, int&);
+    static void readDigits (string_iterator&, int&);
+    static void asteriskSlash (string_iterator&, int&, int, bool&);
+
     // Data member
     static bool          initialized;
     static int           baudrate;
@@ -157,12 +158,12 @@ class FTermcap final
 
 // FTermcap inline functions
 //----------------------------------------------------------------------
-inline FString FTermcap::getClassName() const
+inline auto FTermcap::getClassName() const -> FString
 { return "FTermcap"; }
 
 //----------------------------------------------------------------------
 template <typename... Args>
-std::string FTermcap::encodeParameter (const std::string& cap, Args&&... args)
+auto FTermcap::encodeParameter (const std::string& cap, Args&&... args) -> std::string
 {
   std::array<int, 9> attr {{static_cast<int>(args)...}};
   std::fill(attr.begin() + sizeof...(args), attr.end(), 0);
@@ -170,7 +171,7 @@ std::string FTermcap::encodeParameter (const std::string& cap, Args&&... args)
 }
 
 //----------------------------------------------------------------------
-inline bool FTermcap::isInitialized()
+inline auto FTermcap::isInitialized() -> bool
 {
   // FTermcap is fully initialized when the termcap database has been
   // read and the function pointers outc and outs are set

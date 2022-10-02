@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2021 Markus Gans                                      *
+* Copyright 2018-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -55,7 +55,7 @@ class FWidgetColors
     virtual ~FWidgetColors() noexcept;
 
     // Method
-    virtual FString getClassName() const;
+    virtual auto getClassName() const -> FString;
     virtual void setColorTheme() = 0;
 
     // Data members
@@ -149,7 +149,7 @@ class FWidgetColors
 
 // FWidgetColors inline functions
 //----------------------------------------------------------------------
-inline FString FWidgetColors::getClassName() const
+inline auto FWidgetColors::getClassName() const -> FString
 { return "FWidgetColors"; }
 
 
@@ -180,13 +180,13 @@ class default8ColorTheme final : public FWidgetColors
     ~default8ColorTheme() noexcept override;
 
     // Method
-    FString getClassName() const override;
+    auto getClassName() const -> FString override;
     void setColorTheme() override;
 };
 
 // default8ColorTheme inline functions
 //----------------------------------------------------------------------
-inline FString default8ColorTheme::getClassName() const
+inline auto default8ColorTheme::getClassName() const -> FString
 { return "default8ColorTheme"; }
 
 
@@ -217,13 +217,13 @@ class default16ColorTheme final : public FWidgetColors
     ~default16ColorTheme() noexcept override;
 
     // Method
-    FString getClassName() const override;
+    auto getClassName() const -> FString override;
     void setColorTheme() override;
 };
 
 // default16ColorTheme inline functions
 //----------------------------------------------------------------------
-inline FString default16ColorTheme::getClassName() const
+inline auto default16ColorTheme::getClassName() const -> FString
 { return "default16ColorTheme"; }
 
 
@@ -254,13 +254,13 @@ class default8ColorDarkTheme final : public FWidgetColors
     ~default8ColorDarkTheme() noexcept override;
 
     // Method
-    FString getClassName() const override;
+    auto getClassName() const -> FString override;
     void setColorTheme() override;
 };
 
 // default8ColorDarkTheme inline functions
 //----------------------------------------------------------------------
-inline FString default8ColorDarkTheme::getClassName() const
+inline auto default8ColorDarkTheme::getClassName() const -> FString
 { return "default8ColorDarkTheme"; }
 
 
@@ -291,13 +291,13 @@ class default16ColorDarkTheme final : public FWidgetColors
     ~default16ColorDarkTheme() noexcept override;
 
     // Method
-    FString getClassName() const override;
+    auto getClassName() const -> FString override;
     void setColorTheme() override;
 };
 
 // default16ColorDarkTheme inline functions
 //----------------------------------------------------------------------
-inline FString default16ColorDarkTheme::getClassName() const
+inline auto default16ColorDarkTheme::getClassName() const -> FString
 { return "default16ColorDarkTheme"; }
 
 }  // namespace finalcut

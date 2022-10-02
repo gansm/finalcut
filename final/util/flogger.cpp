@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2021 Markus Gans                                      *
+* Copyright 2020-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -54,7 +54,7 @@ void FLogger::newlineReplace ( std::string& str
 }
 
 //----------------------------------------------------------------------
-std::string FLogger::getTimeString() const
+auto FLogger::getTimeString() const -> std::string
 {
   std::array<char, 100> str{};
   const auto& now = std::chrono::system_clock::now();
@@ -67,7 +67,7 @@ std::string FLogger::getTimeString() const
 }
 
 //----------------------------------------------------------------------
-std::string FLogger::getEOL() const
+auto FLogger::getEOL() const -> std::string
 {
   if ( getEnding() == LineEnding::LF )
     return "\n";

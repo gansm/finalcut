@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2021 Markus Gans                                      *
+* Copyright 2014-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -65,61 +65,61 @@ class FRect
     FRect (const FPoint&, const FPoint&) noexcept;
 
     // Accessors
-    FString               getClassName() const;
-    int                   getX1() const noexcept;
-    int                   getY1() const noexcept;
-    int                   getX2() const noexcept;
-    int                   getY2() const noexcept;
-    int                   getX() const noexcept;
-    int                   getY() const noexcept;
-    FPoint                getPos() const;
-    FPoint                getUpperLeftPos() const;
-    FPoint                getUpperRightPos() const;
-    FPoint                getLowerLeftPos() const;
-    FPoint                getLowerRightPos() const;
-    std::size_t           getWidth() const noexcept;
-    std::size_t           getHeight() const noexcept;
-    FSize                 getSize() const;
+    auto getClassName() const -> FString;
+    auto getX1() const noexcept -> int;
+    auto getY1() const noexcept -> int;
+    auto getX2() const noexcept -> int;
+    auto getY2() const noexcept -> int;
+    auto getX() const noexcept -> int;
+    auto getY() const noexcept -> int;
+    auto getPos() const -> FPoint;
+    auto getUpperLeftPos() const -> FPoint;
+    auto getUpperRightPos() const -> FPoint;
+    auto getLowerLeftPos() const -> FPoint;
+    auto getLowerRightPos() const -> FPoint;
+    auto getWidth() const noexcept -> std::size_t;
+    auto getHeight() const noexcept -> std::size_t;
+    auto getSize() const -> FSize;
 
     // Mutators
-    void                  setX1 (int) noexcept;
-    void                  setY1 (int) noexcept;
-    void                  setX2 (int) noexcept;
-    void                  setY2 (int) noexcept;
-    void                  setX (int) noexcept;
-    void                  setY (int) noexcept;
-    void                  setPos (int, int) noexcept;
-    void                  setPos (const FPoint&);
-    void                  setWidth (std::size_t) noexcept;
-    void                  setHeight (std::size_t) noexcept;
-    void                  setSize (std::size_t, std::size_t) noexcept;
-    void                  setSize (const FSize&);
-    void                  setRect (const FRect&);
-    void                  setRect (const FPoint&, const FSize&);
-    void                  setRect (int, int, std::size_t, std::size_t) noexcept;
-    void                  setCoordinates (const FPoint&, const FPoint&);
-    void                  setCoordinates (int, int, int, int) noexcept;
+    void setX1 (int) noexcept;
+    void setY1 (int) noexcept;
+    void setX2 (int) noexcept;
+    void setY2 (int) noexcept;
+    void setX (int) noexcept;
+    void setY (int) noexcept;
+    void setPos (int, int) noexcept;
+    void setPos (const FPoint&);
+    void setWidth (std::size_t) noexcept;
+    void setHeight (std::size_t) noexcept;
+    void setSize (std::size_t, std::size_t) noexcept;
+    void setSize (const FSize&);
+    void setRect (const FRect&);
+    void setRect (const FPoint&, const FSize&);
+    void setRect (int, int, std::size_t, std::size_t) noexcept;
+    void setCoordinates (const FPoint&, const FPoint&);
+    void setCoordinates (int, int, int, int) noexcept;
 
     // Inquiry
-    bool                  isEmpty() const;
+    auto isEmpty() const -> bool;
 
     // Coordinate references
-    int&                  x1_ref() & noexcept;
-    int&                  y1_ref() & noexcept;
-    int&                  x2_ref() & noexcept;
-    int&                  y2_ref() & noexcept;
+    auto x1_ref() & noexcept -> int&;
+    auto y1_ref() & noexcept -> int&;
+    auto x2_ref() & noexcept -> int&;
+    auto y2_ref() & noexcept -> int&;
 
     // Methods
-    void                  move (int, int) noexcept;
-    void                  move (const FPoint&);
-    void                  scaleBy (int, int) noexcept;
-    void                  scaleBy (const FPoint&);
-    bool                  contains (int, int) const noexcept;
-    bool                  contains (const FPoint&) const;
-    bool                  contains (const FRect&) const;
-    bool                  overlap  (const FRect&) const;
-    FRect                 intersect (const FRect&) const;
-    FRect                 combined (const FRect&) const;
+    void move (int, int) noexcept;
+    void move (const FPoint&);
+    void scaleBy (int, int) noexcept;
+    void scaleBy (const FPoint&);
+    auto contains (int, int) const noexcept -> bool;
+    auto contains (const FPoint&) const -> bool;
+    auto contains (const FRect&) const -> bool;
+    auto overlap  (const FRect&) const -> bool;
+    auto intersect (const FRect&) const -> FRect;
+    auto combined (const FRect&) const -> FRect;
 
   private:
     // Data members
@@ -129,12 +129,12 @@ class FRect
     int Y2{-1};
 
     // Friend operator functions
-    friend FRect operator + (const FRect&, const FSize&);
-    friend FRect operator - (const FRect&, const FSize&);
-    friend bool  operator == (const FRect&, const FRect&);
-    friend bool  operator != (const FRect&, const FRect&);
-    friend std::ostream& operator << (std::ostream&, const FRect&);
-    friend std::istream& operator >> (std::istream&, FRect&);
+    friend auto operator + (const FRect&, const FSize&) -> FRect;
+    friend auto operator - (const FRect&, const FSize&) -> FRect;
+    friend auto operator == (const FRect&, const FRect&) -> bool;
+    friend auto operator != (const FRect&, const FRect&) -> bool;
+    friend auto operator << (std::ostream&, const FRect&) -> std::ostream&;
+    friend auto operator >> (std::istream&, FRect&) -> std::istream&;
 };
 
 // FRect inline functions
@@ -147,61 +147,61 @@ inline FRect::FRect (int x, int y, std::size_t width, std::size_t height) noexce
 { }
 
 //----------------------------------------------------------------------
-inline FString FRect::getClassName() const
+inline auto FRect::getClassName() const -> FString
 { return "FRect"; }
 
 //----------------------------------------------------------------------
-inline int FRect::getX1() const noexcept
+inline auto FRect::getX1() const noexcept -> int
 { return X1; }
 
 //----------------------------------------------------------------------
-inline int FRect::getY1() const noexcept
+inline auto FRect::getY1() const noexcept -> int
 { return Y1; }
 
 //----------------------------------------------------------------------
-inline int FRect::getX2() const noexcept
+inline auto FRect::getX2() const noexcept -> int
 { return X2; }
 
 //----------------------------------------------------------------------
-inline int FRect::getY2() const noexcept
+inline auto FRect::getY2() const noexcept -> int
 { return Y2; }
 
 //----------------------------------------------------------------------
-inline int FRect::getX() const noexcept
+inline auto FRect::getX() const noexcept -> int
 { return X1; }
 
 //----------------------------------------------------------------------
-inline int FRect::getY() const noexcept
+inline auto FRect::getY() const noexcept -> int
 { return Y1; }
 
 //----------------------------------------------------------------------
-inline std::size_t FRect::getWidth() const noexcept
+inline auto FRect::getWidth() const noexcept -> std::size_t
 {
   const int w = X2 - (X1 - 1);  // overflow save
   return ( w < 0 ) ? 0 : std::size_t(w);
 }
 
 //----------------------------------------------------------------------
-inline std::size_t FRect::getHeight() const noexcept
+inline auto FRect::getHeight() const noexcept -> std::size_t
 {
   const int h = Y2 - (Y1 - 1);  // overflow save
   return ( h < 0 ) ? 0 : std::size_t(h);
 }
 
 //----------------------------------------------------------------------
-inline int& FRect::x1_ref() & noexcept
+inline auto FRect::x1_ref() & noexcept -> int&
 { return X1; }
 
 //----------------------------------------------------------------------
-inline int& FRect::y1_ref() & noexcept
+inline auto FRect::y1_ref() & noexcept -> int&
 { return Y1; }
 
 //----------------------------------------------------------------------
-inline int& FRect::x2_ref() & noexcept
+inline auto FRect::x2_ref() & noexcept -> int&
 { return X2; }
 
 //----------------------------------------------------------------------
-inline int& FRect::y2_ref() & noexcept
+inline auto FRect::y2_ref() & noexcept -> int&
 { return Y2; }
 
 }  // namespace finalcut

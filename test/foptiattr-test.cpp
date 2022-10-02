@@ -78,7 +78,7 @@ class FOptiAttrTest : public CPPUNIT_NS::TestFixture
     void wyse50Test();
 
   private:
-    std::string printSequence (const std::string&);
+    auto printSequence (const std::string&) -> std::string;
 
     // Adds code needed to register the test suite
     CPPUNIT_TEST_SUITE (FOptiAttrTest);
@@ -4626,7 +4626,7 @@ void FOptiAttrTest::wyse50Test()
 }
 
 //----------------------------------------------------------------------
-std::string FOptiAttrTest::printSequence (const std::string& s)
+auto FOptiAttrTest::printSequence (const std::string& s) -> std::string
 {
   std::string sequence;
   const std::string ctrl_character[] =

@@ -71,7 +71,7 @@ FButtonGroup::~FButtonGroup()  // destructor
 
 // public methods of FButtonGroup
 //----------------------------------------------------------------------
-FToggleButton* FButtonGroup::getButton (int index) const
+auto FButtonGroup::getButton (int index) const -> FToggleButton*
 {
   if ( buttonlist.empty() )
     return nullptr;
@@ -85,7 +85,7 @@ FToggleButton* FButtonGroup::getButton (int index) const
 }
 
 //----------------------------------------------------------------------
-FToggleButton* FButtonGroup::getFirstButton()
+auto FButtonGroup::getFirstButton() -> FToggleButton*
 {
   auto widget = getFirstFocusableWidget(buttonlist);
   auto toggle_button = static_cast<FToggleButton*>(widget);
@@ -93,7 +93,7 @@ FToggleButton* FButtonGroup::getFirstButton()
 }
 
 //----------------------------------------------------------------------
-FToggleButton* FButtonGroup::getLastButton()
+auto FButtonGroup::getLastButton() -> FToggleButton*
 {
   auto widget = getLastFocusableWidget(buttonlist);
   auto toggle_button = static_cast<FToggleButton*>(widget);
@@ -101,7 +101,7 @@ FToggleButton* FButtonGroup::getLastButton()
 }
 
 //----------------------------------------------------------------------
-bool FButtonGroup::setEnable (bool enable)
+auto FButtonGroup::setEnable (bool enable) -> bool
 {
   FWidget::setEnable(enable);
 
@@ -114,14 +114,14 @@ bool FButtonGroup::setEnable (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FButtonGroup::setFocus (bool)
+auto FButtonGroup::setFocus (bool) -> bool
 {
   // This container widget cannot have its own focus
   return false;
 }
 
 //----------------------------------------------------------------------
-bool FButtonGroup::isChecked (int index) const
+auto FButtonGroup::isChecked (int index) const -> bool
 {
   const auto& button = getButton(index);
 
@@ -132,7 +132,7 @@ bool FButtonGroup::isChecked (int index) const
 }
 
 //----------------------------------------------------------------------
-bool FButtonGroup::hasFocusedButton() const
+auto FButtonGroup::hasFocusedButton() const -> bool
 {
   if ( buttonlist.empty() )
     return false;
@@ -149,7 +149,7 @@ bool FButtonGroup::hasFocusedButton() const
 }
 
 //----------------------------------------------------------------------
-bool FButtonGroup::hasCheckedButton() const
+auto FButtonGroup::hasCheckedButton() const -> bool
 {
   if ( buttonlist.empty() )
     return false;
@@ -347,7 +347,7 @@ void FButtonGroup::draw()
 
 // private methods of FButtonGroup
 //----------------------------------------------------------------------
-bool FButtonGroup::isRadioButton (const FToggleButton* button) const
+auto FButtonGroup::isRadioButton (const FToggleButton* button) const -> bool
 {
   if ( ! button )
     return false;
@@ -363,7 +363,7 @@ void FButtonGroup::init()
 }
 
 //----------------------------------------------------------------------
-bool FButtonGroup::directFocusCheckedRadioButton (FToggleButton* item) const
+auto FButtonGroup::directFocusCheckedRadioButton (FToggleButton* item) const -> bool
 {
   if ( ! isRadioButton(item) )
     return false;
@@ -383,7 +383,7 @@ bool FButtonGroup::directFocusCheckedRadioButton (FToggleButton* item) const
 }
 
 //----------------------------------------------------------------------
-bool FButtonGroup::directFocusRadioButton() const
+auto FButtonGroup::directFocusRadioButton() const -> bool
 {
   if ( ! hasCheckedButton() || buttonlist.empty() )
     return false;
@@ -490,7 +490,7 @@ void FButtonGroup::cb_buttonToggled (const FToggleButton* button) const
 
 // FToggleButton friend function definition
 //----------------------------------------------------------------------
-FButtonGroup* getGroup (FToggleButton& toggle_btn)
+auto getGroup (FToggleButton& toggle_btn) -> FButtonGroup*
 {
   return toggle_btn.button_group;
 }

@@ -222,8 +222,8 @@ class TextWindow final : public finalcut::FDialog
     // Method
     void initLayout() override;
     void adjustSize() override;
-    MatchList find_matches ( const finalcut::FString&
-                           , const finalcut::FString& ) const;
+    auto find_matches ( const finalcut::FString&
+                           , const finalcut::FString& ) const -> MatchList;
     template <typename... Args>
     void highlight ( std::size_t
                    , const finalcut::FString&
@@ -300,8 +300,8 @@ void TextWindow::adjustSize()
 }
 
 //----------------------------------------------------------------------
-TextWindow::MatchList TextWindow::find_matches ( const finalcut::FString& string
-                                               , const finalcut::FString& search ) const
+auto TextWindow::find_matches ( const finalcut::FString& string
+                                               , const finalcut::FString& search ) const -> TextWindow::MatchList
 {
   MatchList matches{};
   const auto search_length = search.getLength();
@@ -375,7 +375,7 @@ void TextWindow::onClose (finalcut::FCloseEvent* ev)
 //                               main part
 //----------------------------------------------------------------------
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   // Create the application object app
   finalcut::FApplication app{argc, argv};

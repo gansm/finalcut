@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2021 Markus Gans                                      *
+* Copyright 2016-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -99,58 +99,58 @@ class FOptiAttr final
     FOptiAttr();
 
     // Accessors
-    FString          getClassName() const;
-    static auto      getInstance() -> FOptiAttr&;
+    auto        getClassName() const -> FString;
+    static auto getInstance() -> FOptiAttr&;
 
     // Mutators
-    void             setTermEnvironment (const TermEnv&);
-    void             setMaxColor (const int&) noexcept;
-    void             setNoColorVideo (int) noexcept;
-    void             setDefaultColorSupport() noexcept;
-    void             unsetDefaultColorSupport() noexcept;
-    void             set_enter_bold_mode (const char[]);
-    void             set_exit_bold_mode (const char[]);
-    void             set_enter_dim_mode (const char[]);
-    void             set_exit_dim_mode (const char[]);
-    void             set_enter_italics_mode (const char[]);
-    void             set_exit_italics_mode (const char[]);
-    void             set_enter_underline_mode (const char[]);
-    void             set_exit_underline_mode (const char[]);
-    void             set_enter_blink_mode (const char[]);
-    void             set_exit_blink_mode (const char[]);
-    void             set_enter_reverse_mode (const char[]);
-    void             set_exit_reverse_mode (const char[]);
-    void             set_enter_secure_mode (const char[]);
-    void             set_exit_secure_mode (const char[]);
-    void             set_enter_protected_mode (const char[]);
-    void             set_exit_protected_mode (const char[]);
-    void             set_enter_crossed_out_mode (const char[]);
-    void             set_exit_crossed_out_mode (const char[]);
-    void             set_enter_dbl_underline_mode (const char[]);
-    void             set_exit_dbl_underline_mode (const char[]);
-    void             set_enter_standout_mode (const char[]);
-    void             set_exit_standout_mode (const char[]);
-    void             set_set_attributes (const char[]);
-    void             set_exit_attribute_mode (const char[]);
-    void             set_enter_alt_charset_mode (const char[]);
-    void             set_exit_alt_charset_mode (const char[]);
-    void             set_enter_pc_charset_mode (const char[]);
-    void             set_exit_pc_charset_mode (const char[]);
-    void             set_a_foreground_color (const char[]);
-    void             set_a_background_color (const char[]);
-    void             set_foreground_color (const char[]);
-    void             set_background_color (const char[]);
-    void             set_term_color_pair (const char[]);
-    void             set_orig_pair (const char[]);
-    void             set_orig_orig_colors (const char[]);
+    void        setTermEnvironment (const TermEnv&);
+    void        setMaxColor (const int&) noexcept;
+    void        setNoColorVideo (int) noexcept;
+    void        setDefaultColorSupport() noexcept;
+    void        unsetDefaultColorSupport() noexcept;
+    void        set_enter_bold_mode (const char[]);
+    void        set_exit_bold_mode (const char[]);
+    void        set_enter_dim_mode (const char[]);
+    void        set_exit_dim_mode (const char[]);
+    void        set_enter_italics_mode (const char[]);
+    void        set_exit_italics_mode (const char[]);
+    void        set_enter_underline_mode (const char[]);
+    void        set_exit_underline_mode (const char[]);
+    void        set_enter_blink_mode (const char[]);
+    void        set_exit_blink_mode (const char[]);
+    void        set_enter_reverse_mode (const char[]);
+    void        set_exit_reverse_mode (const char[]);
+    void        set_enter_secure_mode (const char[]);
+    void        set_exit_secure_mode (const char[]);
+    void        set_enter_protected_mode (const char[]);
+    void        set_exit_protected_mode (const char[]);
+    void        set_enter_crossed_out_mode (const char[]);
+    void        set_exit_crossed_out_mode (const char[]);
+    void        set_enter_dbl_underline_mode (const char[]);
+    void        set_exit_dbl_underline_mode (const char[]);
+    void        set_enter_standout_mode (const char[]);
+    void        set_exit_standout_mode (const char[]);
+    void        set_set_attributes (const char[]);
+    void        set_exit_attribute_mode (const char[]);
+    void        set_enter_alt_charset_mode (const char[]);
+    void        set_exit_alt_charset_mode (const char[]);
+    void        set_enter_pc_charset_mode (const char[]);
+    void        set_exit_pc_charset_mode (const char[]);
+    void        set_a_foreground_color (const char[]);
+    void        set_a_background_color (const char[]);
+    void        set_foreground_color (const char[]);
+    void        set_background_color (const char[]);
+    void        set_term_color_pair (const char[]);
+    void        set_orig_pair (const char[]);
+    void        set_orig_orig_colors (const char[]);
 
     // Inquiry
-    static bool      isNormal (const FChar&);
+    static auto isNormal (const FChar&) -> bool;
 
     // Methods
-    void             initialize();
-    static FColor    vga2ansi (FColor);
-    std::string      changeAttribute (FChar&, FChar&);
+    void        initialize();
+    static auto vga2ansi (FColor) -> FColor;
+    auto        changeAttribute (FChar&, FChar&) -> std::string;
 
   private:
     struct Capability
@@ -193,126 +193,126 @@ class FOptiAttr final
     };
 
     // Mutators
-    bool             setTermBold (FChar&);
-    bool             unsetTermBold (FChar&);
-    bool             setTermDim (FChar&);
-    bool             unsetTermDim (FChar&);
-    bool             setTermItalic (FChar&);
-    bool             unsetTermItalic (FChar&);
-    bool             setTermUnderline (FChar&);
-    bool             unsetTermUnderline (FChar&);
-    bool             setTermBlink (FChar&);
-    bool             unsetTermBlink (FChar&);
-    bool             setTermReverse (FChar&);
-    bool             unsetTermReverse (FChar&);
-    bool             setTermStandout (FChar&);
-    bool             unsetTermStandout (FChar&);
-    bool             setTermInvisible (FChar&);
-    bool             unsetTermInvisible (FChar&);
-    bool             setTermProtected (FChar&);
-    bool             unsetTermProtected (FChar&);
-    bool             setTermCrossedOut (FChar&);
-    bool             unsetTermCrossedOut (FChar&);
-    bool             setTermDoubleUnderline (FChar&);
-    bool             unsetTermDoubleUnderline (FChar&);
-    bool             setTermAttributes (FChar&, const TCapAttributes&);
-    bool             unsetTermAttributes (FChar&);
-    bool             setTermAltCharset (FChar&);
-    bool             unsetTermAltCharset (FChar&);
-    bool             setTermPCcharset (FChar&);
-    bool             unsetTermPCcharset (FChar&);
-    bool             setTermDefaultColor (FChar&);
-    void             setAttributesOn (FChar&);
-    void             setAttributesOff (FChar&);
+    auto        setTermBold (FChar&) -> bool;
+    auto        unsetTermBold (FChar&) -> bool;
+    auto        setTermDim (FChar&) -> bool;
+    auto        unsetTermDim (FChar&) -> bool;
+    auto        setTermItalic (FChar&) -> bool;
+    auto        unsetTermItalic (FChar&) -> bool;
+    auto        setTermUnderline (FChar&) -> bool;
+    auto        unsetTermUnderline (FChar&) -> bool;
+    auto        setTermBlink (FChar&) -> bool;
+    auto        unsetTermBlink (FChar&) -> bool;
+    auto        setTermReverse (FChar&) -> bool;
+    auto        unsetTermReverse (FChar&) -> bool;
+    auto        setTermStandout (FChar&) -> bool;
+    auto        unsetTermStandout (FChar&) -> bool;
+    auto        setTermInvisible (FChar&) -> bool;
+    auto        unsetTermInvisible (FChar&) -> bool;
+    auto        setTermProtected (FChar&) -> bool;
+    auto        unsetTermProtected (FChar&) -> bool;
+    auto        setTermCrossedOut (FChar&) -> bool;
+    auto        unsetTermCrossedOut (FChar&) -> bool;
+    auto        setTermDoubleUnderline (FChar&) -> bool;
+    auto        unsetTermDoubleUnderline (FChar&) -> bool;
+    auto        setTermAttributes (FChar&, const TCapAttributes&) -> bool;
+    auto        unsetTermAttributes (FChar&) -> bool;
+    auto        setTermAltCharset (FChar&) -> bool;
+    auto        unsetTermAltCharset (FChar&) -> bool;
+    auto        setTermPCcharset (FChar&) -> bool;
+    auto        unsetTermPCcharset (FChar&) -> bool;
+    auto        setTermDefaultColor (FChar&) -> bool;
+    void        setAttributesOn (FChar&);
+    void        setAttributesOff (FChar&);
 
     // Inquiries
-    static bool      hasColor (const FChar&);
-    static bool      hasAttribute (const FChar&);
-    static bool      hasNoAttribute (const FChar&);
+    static auto hasColor (const FChar&) -> bool;
+    static auto hasAttribute (const FChar&) -> bool;
+    static auto hasNoAttribute (const FChar&) -> bool;
 
     // Methods
-    bool             hasColorChanged (const FChar&, const FChar&) const;
-    void             resetColor (FChar&) const;
-    void             prevent_no_color_video_attributes (FChar&, bool = false);
-    void             deactivateAttributes (FChar&, FChar&);
-    void             changeAttributeSGR (FChar&, FChar&);
-    void             changeAttributeSeparately (FChar&, FChar&);
-    void             change_color (FChar&, FChar&);
-    void             change_to_default_color (FChar&, FChar&, FColor&, FColor&);
-    void             change_current_color (const FChar&, FColor, FColor);
-    void             resetAttribute (FChar&) const;
-    void             reset (FChar&) const;
-    bool             caused_reset_attributes (const char[], uChar = all_tests) const;
-    bool             hasCharsetEquivalence() const;
-    static uInt8     getByte0ReverseMask();
-    static uInt8     getByte1Mask();
-    static uInt8     getByte1ResetMask();
-    static uInt8     getByte2ResetMask();
-    void             detectSwitchOn (const FChar&, const FChar&);
-    void             detectSwitchOff (const FChar&, const FChar&);
-    bool             switchOn() const;
-    bool             switchOff() const;
+    auto        hasColorChanged (const FChar&, const FChar&) const -> bool;
+    void        resetColor (FChar&) const;
+    void        prevent_no_color_video_attributes (FChar&, bool = false);
+    void        deactivateAttributes (FChar&, FChar&);
+    void        changeAttributeSGR (FChar&, FChar&);
+    void        changeAttributeSeparately (FChar&, FChar&);
+    void        change_color (FChar&, FChar&);
+    void        change_to_default_color (FChar&, FChar&, FColor&, FColor&);
+    void        change_current_color (const FChar&, FColor, FColor);
+    void        resetAttribute (FChar&) const;
+    void        reset (FChar&) const;
+    auto        caused_reset_attributes (const char[], uChar = all_tests) const -> bool;
+    auto        hasCharsetEquivalence() const -> bool;
+    static auto getByte0ReverseMask() -> uInt8;
+    static auto getByte1Mask() -> uInt8;
+    static auto getByte1ResetMask() -> uInt8;
+    static auto getByte2ResetMask() -> uInt8;
+    void        detectSwitchOn (const FChar&, const FChar&);
+    void        detectSwitchOff (const FChar&, const FChar&);
+    auto        switchOn() const -> bool;
+    auto        switchOff() const -> bool;
     template <typename CharT
             , enable_if_char_ptr_t<CharT> = nullptr>
-    bool             append_sequence (CharT);
+    auto        append_sequence (CharT) -> bool;
     template <typename CharT
             , enable_if_char_array_t<CharT> = nullptr>
-    bool             append_sequence (CharT);
-    bool             append_sequence (const std::string&);
+    auto        append_sequence (CharT) -> bool;
+    auto        append_sequence (const std::string&) -> bool;
 
     // Data members
-    Capability       F_enter_bold_mode{};
-    Capability       F_exit_bold_mode{};
-    Capability       F_enter_dim_mode{};
-    Capability       F_exit_dim_mode{};
-    Capability       F_enter_italics_mode{};
-    Capability       F_exit_italics_mode{};
-    Capability       F_enter_underline_mode{};
-    Capability       F_exit_underline_mode{};
-    Capability       F_enter_blink_mode{};
-    Capability       F_exit_blink_mode{};
-    Capability       F_enter_reverse_mode{};
-    Capability       F_exit_reverse_mode{};
-    Capability       F_enter_standout_mode{};
-    Capability       F_exit_standout_mode{};
-    Capability       F_enter_secure_mode{};
-    Capability       F_exit_secure_mode{};
-    Capability       F_enter_protected_mode{};
-    Capability       F_exit_protected_mode{};
-    Capability       F_enter_crossed_out_mode{};
-    Capability       F_exit_crossed_out_mode{};
-    Capability       F_enter_dbl_underline_mode{};
-    Capability       F_exit_dbl_underline_mode{};
-    Capability       F_set_attributes{};
-    Capability       F_exit_attribute_mode{};
-    Capability       F_enter_alt_charset_mode{};
-    Capability       F_exit_alt_charset_mode{};
-    Capability       F_enter_pc_charset_mode{};
-    Capability       F_exit_pc_charset_mode{};
-    Capability       F_set_a_foreground{};
-    Capability       F_set_a_background{};
-    Capability       F_set_foreground{};
-    Capability       F_set_background{};
-    Capability       F_set_color_pair{};
-    Capability       F_orig_pair{};
-    Capability       F_orig_colors{};
+    Capability   F_enter_bold_mode{};
+    Capability   F_exit_bold_mode{};
+    Capability   F_enter_dim_mode{};
+    Capability   F_exit_dim_mode{};
+    Capability   F_enter_italics_mode{};
+    Capability   F_exit_italics_mode{};
+    Capability   F_enter_underline_mode{};
+    Capability   F_exit_underline_mode{};
+    Capability   F_enter_blink_mode{};
+    Capability   F_exit_blink_mode{};
+    Capability   F_enter_reverse_mode{};
+    Capability   F_exit_reverse_mode{};
+    Capability   F_enter_standout_mode{};
+    Capability   F_exit_standout_mode{};
+    Capability   F_enter_secure_mode{};
+    Capability   F_exit_secure_mode{};
+    Capability   F_enter_protected_mode{};
+    Capability   F_exit_protected_mode{};
+    Capability   F_enter_crossed_out_mode{};
+    Capability   F_exit_crossed_out_mode{};
+    Capability   F_enter_dbl_underline_mode{};
+    Capability   F_exit_dbl_underline_mode{};
+    Capability   F_set_attributes{};
+    Capability   F_exit_attribute_mode{};
+    Capability   F_enter_alt_charset_mode{};
+    Capability   F_exit_alt_charset_mode{};
+    Capability   F_enter_pc_charset_mode{};
+    Capability   F_exit_pc_charset_mode{};
+    Capability   F_set_a_foreground{};
+    Capability   F_set_a_background{};
+    Capability   F_set_foreground{};
+    Capability   F_set_background{};
+    Capability   F_set_color_pair{};
+    Capability   F_orig_pair{};
+    Capability   F_orig_colors{};
 
-    FChar            on{};
-    FChar            off{};
-    std::string      attr_buf{};
-    SGRoptimizer     sgr_optimizer{attr_buf};
-    int              max_color{1};
-    int              attr_without_color{0};
-    bool             ansi_default_color{false};
-    bool             alt_equal_pc_charset{false};
-    bool             monochron{true};
-    bool             fake_reverse{false};
+    FChar        on{};
+    FChar        off{};
+    std::string  attr_buf{};
+    SGRoptimizer sgr_optimizer{attr_buf};
+    int          max_color{1};
+    int          attr_without_color{0};
+    bool         ansi_default_color{false};
+    bool         alt_equal_pc_charset{false};
+    bool         monochron{true};
+    bool         fake_reverse{false};
 };
 
 
 // FOptiAttr inline functions
 //----------------------------------------------------------------------
-inline FString FOptiAttr::getClassName() const
+inline auto FOptiAttr::getClassName() const -> FString
 { return "FOptiAttr"; }
 
 //----------------------------------------------------------------------
@@ -334,7 +334,7 @@ inline void FOptiAttr::unsetDefaultColorSupport() noexcept
 //----------------------------------------------------------------------
 template <typename CharT
         , enable_if_char_ptr_t<CharT>>
-inline bool FOptiAttr::append_sequence (CharT seq)
+inline auto FOptiAttr::append_sequence (CharT seq) -> bool
 {
   // for char* and const char*
   return seq
@@ -345,7 +345,7 @@ inline bool FOptiAttr::append_sequence (CharT seq)
 //----------------------------------------------------------------------
 template <typename CharT
         , enable_if_char_array_t<CharT>>
-inline bool FOptiAttr::append_sequence (CharT seq)
+inline auto FOptiAttr::append_sequence (CharT seq) -> bool
 {
   // for char[] and const char[]
   return append_sequence(std::string(seq));

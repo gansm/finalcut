@@ -62,23 +62,23 @@ class XpmImage
     // Methods
     template <typename XPMdataT
             , enable_if_no_vector<XPMdataT> = 0>
-    void     parseXPM3 (XPMdataT&);
-    void     parseXPM3 (const std::vector<std::string>&);
-    auto     xpmFileToVector (const std::string&) const -> std::vector<std::string>;
+    void parseXPM3 (XPMdataT&);
+    void parseXPM3 (const std::vector<std::string>&);
+    auto xpmFileToVector (const std::string&) const -> std::vector<std::string>;
 
   private:
     // Using-declaration
     using FTermArea = finalcut::FVTerm::FTermArea;
 
     // Methods
-    void     getValues (const std::string&);
-    XpmColor rgb2ColorIndex (RGB) const;
-    RGB      hexToRGB (const std::string&) const;
-    auto     getColorMap (const std::string&, const std::string&) const
-                 -> std::pair<std::string, XpmColor>;
-    auto     getColorMapFromLine (const std::string&, int) const
-                 -> std::pair<std::string, XpmColor>;
-    void     printUpperLower (const XpmColor&, const XpmColor&);
+    void getValues (const std::string&);
+    auto rgb2ColorIndex (RGB) const -> XpmColor;
+    auto hexToRGB (const std::string&) const -> RGB;
+    auto getColorMap (const std::string&, const std::string&) const
+                     -> std::pair<std::string, XpmColor>;
+    auto getColorMapFromLine (const std::string&, int) const
+                     -> std::pair<std::string, XpmColor>;
+    void printUpperLower (const XpmColor&, const XpmColor&);
     template <typename A, std::size_t N>
     constexpr auto getArraySize(const A (&)[N]) const noexcept -> std::size_t;
     template <typename A>
@@ -905,7 +905,7 @@ void XpmImage::getValues (const std::string& line)
 }
 
 //----------------------------------------------------------------------
-XpmImage::XpmColor XpmImage::rgb2ColorIndex (RGB rgb) const
+auto XpmImage::rgb2ColorIndex (RGB rgb) const -> XpmImage::XpmColor
 {
   const auto color = finalcut::rgb2ColorIndex ( std::get<0>(rgb)
                                               , std::get<1>(rgb)

@@ -41,36 +41,36 @@ class FString;
 class FVTermBuffer;
 
 // non-member function forward declarations
-uInt             env2uint (const std::string&);
-std::string&     getExitMessage();
-void             setExitMessage (const FString&);
-FColor           rgb2ColorIndex (uInt8, uInt8, uInt8);
-bool             isReverseNewFontchar (wchar_t);
-bool             hasFullWidthSupports();
-wchar_t          cp437_to_unicode (uChar);
-uChar            unicode_to_cp437 (wchar_t);
+auto env2uint (const std::string&) -> uInt;
+auto getExitMessage() -> std::string&;
+void setExitMessage (const FString&);
+auto rgb2ColorIndex (uInt8, uInt8, uInt8) -> FColor;
+auto isReverseNewFontchar (wchar_t) -> bool;
+auto hasFullWidthSupports() -> bool;
+auto cp437_to_unicode (uChar) -> wchar_t;
+auto unicode_to_cp437 (wchar_t) -> uChar;
 
 #if defined(__CYGWIN__)
-  std::string    unicode_to_utf8 (wchar_t ucs);
+  auto unicode_to_utf8 (wchar_t ucs) -> std::string;
 #else
-  std::string    unicode_to_utf8 (wchar_t ucs);
+  auto unicode_to_utf8 (wchar_t ucs) -> std::string;
 #endif
 
-FString          getFullWidth (const FString&);
-FString          getHalfWidth (const FString&);
-FString          getColumnSubString (const FString&, std::size_t, std::size_t);
-std::size_t      getLengthFromColumnWidth (const FString&, std::size_t);
-std::size_t      getColumnWidth (const FString&, std::size_t);
-std::size_t      getColumnWidth (const FString&);
-std::size_t      getColumnWidth (const wchar_t);
-std::size_t      getColumnWidth (const FChar&);
-std::size_t      getColumnWidth (const FVTermBuffer&);
-void             addColumnWidth (FChar&, std::size_t);
-int              getCharLength (const FString&, std::size_t);
-int              getPrevCharLength (const FString&, std::size_t);
-std::size_t      searchLeftCharBegin (const FString&, std::size_t);
-std::size_t      searchRightCharBegin (const FString&, std::size_t);
-FPoint           readCursorPos();
+auto getFullWidth (const FString&) -> FString;
+auto getHalfWidth (const FString&) -> FString;
+auto getColumnSubString (const FString&, std::size_t, std::size_t) -> FString;
+auto getLengthFromColumnWidth (const FString&, std::size_t) -> std::size_t;
+auto getColumnWidth (const FString&, std::size_t) -> std::size_t;
+auto getColumnWidth (const FString&) -> std::size_t;
+auto getColumnWidth (const wchar_t) -> std::size_t;
+auto getColumnWidth (const FChar&) -> std::size_t;
+auto getColumnWidth (const FVTermBuffer&) -> std::size_t;
+void addColumnWidth (FChar&, std::size_t);
+auto getCharLength (const FString&, std::size_t) -> int;
+auto getPrevCharLength (const FString&, std::size_t) -> int;
+auto searchLeftCharBegin (const FString&, std::size_t) -> std::size_t;
+auto searchRightCharBegin (const FString&, std::size_t) -> std::size_t;
+auto readCursorPos() -> FPoint;
 
 }  // namespace finalcut
 

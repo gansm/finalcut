@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2021 Markus Gans                                      *
+* Copyright 2014-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -102,9 +102,9 @@ class FEvent  // event base class
 {
   public:
     explicit FEvent(Event);
-    Event getType() const;
-    bool  isQueued() const;
-    bool  wasSent() const;
+    auto getType() const -> Event;
+    auto isQueued() const -> bool;
+    auto wasSent() const -> bool;
 
   private:
     friend void setSend (FEvent&, bool);
@@ -126,14 +126,14 @@ class FKeyEvent : public FEvent  // keyboard event
   public:
     FKeyEvent (Event, FKey);
 
-    FKey     key() const;
-    bool     isAccepted() const;
-    void     accept();
-    void     ignore();
+    auto key() const -> FKey;
+    auto isAccepted() const -> bool;
+    void accept();
+    void ignore();
 
   private:
-    FKey     k{};
-    bool     accpt{false};  // reject by default
+    FKey k{};
+    bool accpt{false};  // reject by default
 };
 
 
@@ -147,20 +147,20 @@ class FMouseEvent : public FEvent  // mouse event
     FMouseEvent (Event, const FPoint&, const FPoint&, MouseButton);
     FMouseEvent (Event, const FPoint&, MouseButton);
 
-    const FPoint& getPos() const &;
-    const FPoint& getTermPos() const &;
-    int           getX() const;
-    int           getY() const;
-    int           getTermX() const;
-    int           getTermY() const;
-    MouseButton   getButton() const;
-    void          setPos (const FPoint&);
-    void          setTermPos (const FPoint&);
+    auto getPos() const & -> const FPoint&;
+    auto getTermPos() const & -> const FPoint&;
+    auto getX() const -> int;
+    auto getY() const -> int;
+    auto getTermX() const -> int;
+    auto getTermY() const -> int;
+    auto getButton() const -> MouseButton;
+    void setPos (const FPoint&);
+    void setTermPos (const FPoint&);
 
   private:
-    FPoint        p{};
-    FPoint        tp{};
-    MouseButton   b{};
+    FPoint      p{};
+    FPoint      tp{};
+    MouseButton b{};
 };
 
 
@@ -174,18 +174,18 @@ class FWheelEvent : public FEvent  // wheel event
     FWheelEvent (Event, const FPoint&, MouseWheel);
     FWheelEvent (Event, const FPoint&, const FPoint&, MouseWheel);
 
-    const FPoint& getPos() const &;
-    const FPoint& getTermPos() const &;
-    int           getX() const;
-    int           getY() const;
-    int           getTermX() const;
-    int           getTermY() const;
-    MouseWheel    getWheel() const;
+    auto getPos() const & -> const FPoint&;
+    auto getTermPos() const & -> const FPoint&;
+    auto getX() const -> int;
+    auto getY() const -> int;
+    auto getTermX() const -> int;
+    auto getTermY() const -> int;
+    auto getWheel() const -> MouseWheel;
 
   private:
-    FPoint        p{};
-    FPoint        tp{};
-    MouseWheel    w{MouseWheel::None};
+    FPoint     p{};
+    FPoint     tp{};
+    MouseWheel w{MouseWheel::None};
 };
 
 
@@ -198,17 +198,17 @@ class FFocusEvent : public FEvent  // focus event
   public:
     explicit FFocusEvent (Event);
 
-    bool           gotFocus()  const;
-    bool           lostFocus() const;
-    FocusTypes     getFocusType() const;
-    void           setFocusType (FocusTypes);
-    bool           isAccepted() const;
-    void           accept();
-    void           ignore();
+    auto gotFocus()  const -> bool;
+    auto lostFocus() const -> bool;
+    auto getFocusType() const -> FocusTypes;
+    void setFocusType (FocusTypes);
+    auto isAccepted() const -> bool;
+    void accept();
+    void ignore();
 
   private:
-    bool           accpt{true};  // accept by default
-    FocusTypes     focus_type{FocusTypes::DefiniteWidget};
+    bool       accpt{true};  // accept by default
+    FocusTypes focus_type{FocusTypes::DefiniteWidget};
 };
 
 
@@ -222,12 +222,12 @@ class FAccelEvent : public FEvent  // focus event
   public:
     FAccelEvent (Event, FWidget*);
     FAccelEvent (const FAccelEvent&) = delete;
-    FAccelEvent& operator = (const FAccelEvent&) = delete;
+    auto operator = (const FAccelEvent&) -> FAccelEvent& = delete;
 
-    FWidget* focusedWidget() const;
-    bool     isAccepted() const;
-    void     accept();
-    void     ignore();
+    auto focusedWidget() const -> FWidget*;
+    auto isAccepted() const -> bool;
+    void accept();
+    void ignore();
 
   private:
     bool     accpt{false};  // reject by default
@@ -244,12 +244,12 @@ class FResizeEvent : public FEvent  // resize event
   public:
     explicit FResizeEvent (Event);
 
-    bool     isAccepted() const;
-    void     accept();
-    void     ignore();
+    auto isAccepted() const -> bool;
+    void accept();
+    void ignore();
 
   private:
-    bool     accpt{false};  // reject by default
+    bool accpt{false};  // reject by default
 };
 
 
@@ -284,12 +284,12 @@ class FCloseEvent : public FEvent  // close event
   public:
     explicit FCloseEvent(Event);
 
-    bool     isAccepted() const;
-    void     accept();
-    void     ignore();
+    auto isAccepted() const -> bool;
+    void accept();
+    void ignore();
 
   private:
-    bool     accpt{false};  // reject by default
+    bool accpt{false};  // reject by default
 };
 
 
@@ -302,10 +302,10 @@ class FTimerEvent : public FEvent  // timer event
   public:
     FTimerEvent (Event, int);
 
-    int      getTimerId() const;
+    auto getTimerId() const -> int;
 
   private:
-    int      id{0};
+    int id{0};
 };
 
 
@@ -318,35 +318,35 @@ class FUserEvent : public FEvent  // user event
   public:
     FUserEvent (Event, int);
 
-    int               getUserId() const;
+    auto getUserId() const -> int;
     template <typename T>
-    FData<T>&&        getFDataObject() const;
+    auto getFDataObject() const -> FData<T>&&;
     template <typename T>
-    clean_fdata_t<T>& getData() const;
+    auto getData() const -> clean_fdata_t<T>&;
     template <typename T>
-    void              setFDataObject (T&&);
+    void setFDataObject (T&&);
     template <typename T>
-    void              setData (T&&);
+    void setData (T&&);
 
   private:
     // Using-declaration
     using FDataAccessPtr = std::shared_ptr<FDataAccess>;
 
     // Data members
-    int               uid{0};
-    FDataAccessPtr    data_pointer{nullptr};
+    int            uid{0};
+    FDataAccessPtr data_pointer{nullptr};
 };
 
 //----------------------------------------------------------------------
 template <typename T>
-inline FData<T>&& FUserEvent::getFDataObject() const
+inline auto FUserEvent::getFDataObject() const -> FData<T>&&
 {
   return static_cast<FData<T>&&>(*data_pointer);
 }
 
 //----------------------------------------------------------------------
 template <typename T>
-inline clean_fdata_t<T>& FUserEvent::getData() const
+inline auto FUserEvent::getData() const -> clean_fdata_t<T>&
 {
   return static_cast<FData<clean_fdata_t<T>>&>(*data_pointer).get();
 }

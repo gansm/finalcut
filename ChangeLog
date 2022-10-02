@@ -1,3 +1,6 @@
+2022-10-02  Markus Gans  <guru.mail@muenster.de>
+	* Strict use of trailing return type
+
 2022-06-13  Markus Gans  <guru.mail@muenster.de>
 	* Added a unit test for the FWidget class
 

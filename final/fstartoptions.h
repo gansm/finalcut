@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2021 Markus Gans                                      *
+* Copyright 2019-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -56,7 +56,7 @@ class FStartOptions final
     FStartOptions();
 
     // Accessors
-    static FString getClassName();
+    static auto getClassName() -> FString;
     static auto getInstance() -> FStartOptions&;
 
     // Mutator
@@ -84,12 +84,12 @@ class FStartOptions final
     uInt16 dark_theme           : 1;
     uInt16                      : 15;  // padding bits
 
-    Encoding                    encoding{Encoding::Unknown};
-    std::ofstream               logfile_stream{};
+    Encoding      encoding{Encoding::Unknown};
+    std::ofstream logfile_stream{};
 };
 
 //----------------------------------------------------------------------
-inline FString FStartOptions::getClassName()
+inline auto FStartOptions::getClassName() -> FString
 { return "FStartOptions"; }
 
 }  // namespace finalcut

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2021 Markus Gans                                      *
+* Copyright 2018-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -45,17 +45,17 @@ class FObject_protected : public finalcut::FObject
   public:
     FObject_protected() = default;
 
-    bool event (finalcut::FEvent* ev) override
+    auto event (finalcut::FEvent* ev) -> bool override
     {
       return finalcut::FObject::event(ev);
     }
 
-    FTimerList* getTimerList() const
+    auto getTimerList() const -> FTimerList*
     {
       return finalcut::FObject::getTimerList();
     }
 
-    uInt processEvent()
+    auto processEvent() -> uInt
     {
       return processTimerEvent();
     }
@@ -65,7 +65,7 @@ class FObject_protected : public finalcut::FObject
       finalcut::FObject::setWidgetProperty (property);
     }
 
-    bool isWidget()
+    auto isWidget() -> bool
     {
       return finalcut::FObject::isWidget();
     }
@@ -88,7 +88,7 @@ class FObject_timer : public finalcut::FObject
   public:
     FObject_timer() = default;
 
-    int getValue() const
+    auto getValue() const -> int
     {
       return value;
     }
@@ -112,7 +112,7 @@ class FObject_userEvent : public finalcut::FObject
   public:
     FObject_userEvent() = default;
 
-    int getValue() const
+    auto getValue() const -> int
     {
       return value;
     }

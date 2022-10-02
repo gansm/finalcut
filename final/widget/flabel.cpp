@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2021 Markus Gans                                      *
+* Copyright 2014-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -61,28 +61,28 @@ FLabel::~FLabel()  // destructor
 
 // FLabel operators
 //----------------------------------------------------------------------
-FLabel& FLabel::operator = (const FString& s)
+auto FLabel::operator = (const FString& s) -> FLabel&
 {
   setText(s);
   return *this;
 }
 
 //----------------------------------------------------------------------
-FLabel& FLabel::operator << (UniChar c)
+auto FLabel::operator << (UniChar c) -> FLabel&
 {
   setText(text + static_cast<wchar_t>(c));
   return *this;
 }
 
 //----------------------------------------------------------------------
-FLabel& FLabel::operator << (const wchar_t c)
+auto FLabel::operator << (const wchar_t c) -> FLabel&
 {
   setText(text + c);
   return *this;
 }
 
 //----------------------------------------------------------------------
-const FLabel& FLabel::operator >> (FString& s) const
+auto FLabel::operator >> (FString& s) const -> const FLabel&
 {
   s += text;
   return *this;
@@ -124,7 +124,7 @@ void FLabel::resetColors()
 }
 
 //----------------------------------------------------------------------
-bool FLabel::setEnable (bool enable)
+auto FLabel::setEnable (bool enable) -> bool
 {
   FWidget::setEnable(enable);
 
@@ -225,7 +225,7 @@ void FLabel::setHotkeyAccelerator()
 }
 
 //----------------------------------------------------------------------
-std::size_t FLabel::getAlignOffset (const std::size_t length) const
+auto FLabel::getAlignOffset (const std::size_t length) const -> std::size_t
 {
   const std::size_t width(getWidth());
 

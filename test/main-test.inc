@@ -2,7 +2,7 @@
 //                               main part
 //----------------------------------------------------------------------
 
-int main (int, char**)
+auto main (int, char**) -> int
 {
   // Informs test listeners about test results
   CPPUNIT_NS::TestResult testresult;

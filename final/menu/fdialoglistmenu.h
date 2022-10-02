@@ -78,7 +78,7 @@ class FDialogListMenu : public FMenu
     ~FDialogListMenu() noexcept override;
 
     // Accessors
-    FString getClassName() const override;
+    auto getClassName() const -> FString override;
 
   private:
     // Method
@@ -91,7 +91,7 @@ class FDialogListMenu : public FMenu
 
 // FDialogListMenu inline functions
 //----------------------------------------------------------------------
-inline FString FDialogListMenu::getClassName() const
+inline auto FDialogListMenu::getClassName() const -> FString
 { return "FDialogListMenu"; }
 
 }  // namespace finalcut

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2021 Markus Gans                                      *
+* Copyright 2018-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -32,8 +32,8 @@ namespace finalcut
 {
 
 // static class attributes
-kbd_t    FTermOpenBSD::bsd_keyboard_encoding{0};
-bool     FTermOpenBSD::meta_sends_escape{true};
+kbd_t  FTermOpenBSD::bsd_keyboard_encoding{0};
+bool   FTermOpenBSD::meta_sends_escape{true};
 
 
 //----------------------------------------------------------------------
@@ -49,7 +49,7 @@ auto FTermOpenBSD::getInstance() -> FTermOpenBSD&
 }
 
 //----------------------------------------------------------------------
-bool FTermOpenBSD::isBSDConsole()
+auto FTermOpenBSD::isBSDConsole() -> bool
 {
   // Check if it's a NetBSD/OpenBSD workstation console
 
@@ -87,7 +87,7 @@ void FTermOpenBSD::finish()
 }
 
 //----------------------------------------------------------------------
-bool FTermOpenBSD::setBeep (int Hz, int ms)
+auto FTermOpenBSD::setBeep (int Hz, int ms) -> bool
 {
   if ( ! isBSDConsole() )
     return false;
@@ -110,7 +110,7 @@ bool FTermOpenBSD::setBeep (int Hz, int ms)
 }
 
 //----------------------------------------------------------------------
-bool FTermOpenBSD::resetBeep()
+auto FTermOpenBSD::resetBeep() -> bool
 {
   wskbd_bell_data default_bell{};
   static const auto& fsystem = FSystem::getInstance();
@@ -138,7 +138,7 @@ void FTermOpenBSD::warnNotInitialized()
 }
 
 //----------------------------------------------------------------------
-bool FTermOpenBSD::saveBSDConsoleEncoding()
+auto FTermOpenBSD::saveBSDConsoleEncoding() -> bool
 {
   static kbd_t k_encoding{};
   int ret{-1};
@@ -155,21 +155,21 @@ bool FTermOpenBSD::saveBSDConsoleEncoding()
 }
 
 //----------------------------------------------------------------------
-bool FTermOpenBSD::setBSDConsoleEncoding (kbd_t k_encoding)
+auto FTermOpenBSD::setBSDConsoleEncoding (kbd_t k_encoding) -> bool
 {
   static const auto& fsystem = FSystem::getInstance();
   return fsystem->ioctl(0, WSKBDIO_SETENCODING, &k_encoding) >= 0;
 }
 
 //----------------------------------------------------------------------
-bool FTermOpenBSD::setBSDConsoleMetaEsc()
+auto FTermOpenBSD::setBSDConsoleMetaEsc() -> bool
 {
   static constexpr kbd_t meta_esc = 0x20;  // Generate ESC prefix on ALT-key
   return setBSDConsoleEncoding (bsd_keyboard_encoding | meta_esc);
 }
 
 //----------------------------------------------------------------------
-bool FTermOpenBSD::resetBSDConsoleEncoding()
+auto FTermOpenBSD::resetBSDConsoleEncoding() -> bool
 {
   return setBSDConsoleEncoding (bsd_keyboard_encoding);
 }

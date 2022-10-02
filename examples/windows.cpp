@@ -190,10 +190,10 @@ class Window final : public finalcut::FDialog
         WinData (WinData&&) noexcept = default;
 
         // copy assignment operator (=)
-        WinData& operator = (const WinData&) = default;
+        auto operator = (const WinData&) -> WinData& = default;
 
         // move assignment operator (=)
-        WinData& operator = (WinData&&) noexcept = default;
+        auto operator = (WinData&&) noexcept -> WinData& = default;
 
         // Data members
         bool is_open{false};
@@ -214,9 +214,9 @@ class Window final : public finalcut::FDialog
     void addClickedCallback ( finalcut::FWidget*
                             , InstanceT&&, CallbackT&&, Args&&... );
     template <typename IteratorT>
-    finalcut::FDialog* getNext (IteratorT);
+    auto getNext (IteratorT) -> finalcut::FDialog*;
     template <typename IteratorT>
-    finalcut::FDialog* getPrevious (IteratorT iter);
+    auto getPrevious (IteratorT iter) -> finalcut::FDialog*;
 
     // Event handlers
     void onClose (finalcut::FCloseEvent*) override;
@@ -413,7 +413,7 @@ void Window::addClickedCallback ( finalcut::FWidget* widget
 
 //----------------------------------------------------------------------
 template <typename IteratorT>
-finalcut::FDialog* Window::getNext (IteratorT iter)
+auto Window::getNext (IteratorT iter) -> finalcut::FDialog*
 {
   auto next_element = iter;
   finalcut::FDialog* next{nullptr};
@@ -436,7 +436,7 @@ finalcut::FDialog* Window::getNext (IteratorT iter)
 
 //----------------------------------------------------------------------
 template <typename IteratorT>
-finalcut::FDialog* Window::getPrevious (IteratorT iter)
+auto Window::getPrevious (IteratorT iter) -> finalcut::FDialog*
 {
   auto prev_element = iter;
   finalcut::FDialog* prev;
@@ -578,7 +578,7 @@ void Window::cb_destroyWindow (WinData& win_dat) const
 //                               main part
 //----------------------------------------------------------------------
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   // Create the application object
   finalcut::FApplication app {argc, argv};

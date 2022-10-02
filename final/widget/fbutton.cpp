@@ -58,7 +58,7 @@ FButton::~FButton()  // destructor
 
 // FButton operator
 //----------------------------------------------------------------------
-FButton& FButton::operator = (const FString& s)
+auto FButton::operator = (const FString& s) -> FButton&
 {
   setText(s);
   return *this;
@@ -142,13 +142,13 @@ void FButton::resetColors()
 }
 
 //----------------------------------------------------------------------
-bool FButton::setNoUnderline (bool enable)
+auto FButton::setNoUnderline (bool enable) -> bool
 {
   return (setFlags().no_underline = enable);
 }
 
 //----------------------------------------------------------------------
-bool FButton::setEnable (bool enable)
+auto FButton::setEnable (bool enable) -> bool
 {
   FWidget::setEnable(enable);
 
@@ -162,7 +162,7 @@ bool FButton::setEnable (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FButton::setFocus (bool enable)
+auto FButton::setFocus (bool enable) -> bool
 {
   FWidget::setFocus(enable);
   updateButtonColor();
@@ -170,19 +170,19 @@ bool FButton::setFocus (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FButton::setFlat (bool enable)
+auto FButton::setFlat (bool enable) -> bool
 {
   return (setFlags().flat = enable);
 }
 
 //----------------------------------------------------------------------
-bool FButton::setShadow (bool enable)
+auto FButton::setShadow (bool enable) -> bool
 {
   return setWidgetShadow(this, enable);
 }
 
 //----------------------------------------------------------------------
-bool FButton::setDown (bool enable)
+auto FButton::setDown (bool enable) -> bool
 {
   if ( button_down != enable )
   {
@@ -399,7 +399,7 @@ inline void FButton::detectHotkey()
 }
 
 //----------------------------------------------------------------------
-inline std::size_t FButton::clickAnimationIndent (const FWidget* parent_widget)
+inline auto FButton::clickAnimationIndent (const FWidget* parent_widget) -> std::size_t
 {
   if ( ! button_down || ! click_animation )
     return 0;

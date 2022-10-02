@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2021 Markus Gans                                      *
+* Copyright 2018-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -60,7 +60,7 @@ class FColorPalette
     virtual ~FColorPalette() noexcept;
 
     // Accessor
-    virtual FString getClassName() const;
+    virtual auto getClassName() const -> FString;
     static auto getInstance() -> std::shared_ptr<FColorPalette>&;
 
     // Methods
@@ -78,7 +78,7 @@ class FColorPalette
 
 // FColorPalette inline functions
 //----------------------------------------------------------------------
-inline FString FColorPalette::getClassName() const
+inline auto FColorPalette::getClassName() const -> FString
 { return "FColorPalette"; }
 
 
@@ -109,7 +109,7 @@ class default8ColorPalette final : public FColorPalette
     ~default8ColorPalette() noexcept override;
 
     // Accessor
-    FString getClassName() const override;
+    auto getClassName() const -> FString override;
 
     // Methods
     void setColorPalette() override;
@@ -118,7 +118,7 @@ class default8ColorPalette final : public FColorPalette
 
 // default8ColorPalette inline functions
 //----------------------------------------------------------------------
-inline FString default8ColorPalette::getClassName() const
+inline auto default8ColorPalette::getClassName() const -> FString
 { return "default8ColorPalette"; }
 
 
@@ -149,7 +149,7 @@ class default16ColorPalette final : public FColorPalette
     ~default16ColorPalette() noexcept override;
 
     // Accessor
-    FString getClassName() const override;
+    auto getClassName() const -> FString override;
 
     // Methods
     void setColorPalette() override;
@@ -158,7 +158,7 @@ class default16ColorPalette final : public FColorPalette
 
 // default16ColorPalette inline functions
 //----------------------------------------------------------------------
-inline FString default16ColorPalette::getClassName() const
+inline auto default16ColorPalette::getClassName() const -> FString
 { return "default16ColorPalette"; }
 
 /*  Inheritance diagram
@@ -188,7 +188,7 @@ class default16DarkColorPalette final : public FColorPalette
     ~default16DarkColorPalette() noexcept override;
 
     // Accessor
-    FString getClassName() const override;
+    auto getClassName() const -> FString override;
 
     // Methods
     void setColorPalette() override;
@@ -197,7 +197,7 @@ class default16DarkColorPalette final : public FColorPalette
 
 // default16ColorPalette inline functions
 //----------------------------------------------------------------------
-inline FString default16DarkColorPalette::getClassName() const
+inline auto default16DarkColorPalette::getClassName() const -> FString
 { return "default16DarkColorPalette"; }
 
 }  // namespace finalcut

@@ -262,7 +262,7 @@ void FScrollView::setGeometry ( const FPoint& pos, const FSize& size
 }
 
 //----------------------------------------------------------------------
-bool FScrollView::setCursorPos (const FPoint& p)
+auto FScrollView::setCursorPos (const FPoint& p) -> bool
 {
   return FWidget::setCursorPos ({ p.getX() + getLeftPadding()
                                 , p.getY() + getTopPadding() });
@@ -288,7 +288,7 @@ void FScrollView::setText (const FString& txt)
 }
 
 //----------------------------------------------------------------------
-bool FScrollView::setViewportPrint (bool enable)
+auto FScrollView::setViewportPrint (bool enable) -> bool
 {
   return (use_own_print_area = ! enable);
 }
@@ -303,13 +303,13 @@ void FScrollView::resetColors()
 }
 
 //----------------------------------------------------------------------
-bool FScrollView::setBorder (bool enable)
+auto FScrollView::setBorder (bool enable) -> bool
 {
   return (setFlags().no_border = ! enable);
 }
 
 //----------------------------------------------------------------------
-bool FScrollView::setFocus (bool)
+auto FScrollView::setFocus (bool) -> bool
 {
   // This container widget cannot have its own focus
   return false;
@@ -647,7 +647,7 @@ void FScrollView::onChildFocusOut (FFocusEvent* out_ev)
 
 // protected methods of FScrollView
 //----------------------------------------------------------------------
-FVTerm::FTermArea* FScrollView::getPrintArea()
+auto FScrollView::getPrintArea() -> FVTerm::FTermArea*
 {
   // returns print area or viewport
 
@@ -768,7 +768,7 @@ void FScrollView::copy2area()
 
 // private methods of FScrollView
 //----------------------------------------------------------------------
-inline FPoint FScrollView::getViewportCursorPos()
+inline auto FScrollView::getViewportCursorPos() -> FPoint
 {
   auto window = FWindow::getWindowWidget(this);
 

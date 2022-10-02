@@ -28,7 +28,7 @@
 #include <final/final.h>
 
 // function prototype
-bool keyPressed();
+auto keyPressed() -> bool;
 void term_boundaries (int&, int&);
 void move (int, int, int, int);
 
@@ -36,7 +36,7 @@ void move (int, int, int, int);
 //----------------------------------------------------------------------
 // functions
 //----------------------------------------------------------------------
-bool keyPressed()
+auto keyPressed() -> bool
 {
   // Waiting for keypress
 
@@ -200,7 +200,7 @@ DirectLogger::~DirectLogger() noexcept = default;  // destructor
 //----------------------------------------------------------------------
 //                               main part
 //----------------------------------------------------------------------
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   // Disable mouse, color palette changes and terminal data requests
   auto& start_options = finalcut::FStartOptions::getInstance();

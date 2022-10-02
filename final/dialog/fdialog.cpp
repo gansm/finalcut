@@ -80,7 +80,7 @@ FDialog::~FDialog()  // destructor
 
 // public methods of FDialog
 //----------------------------------------------------------------------
-bool FDialog::setDialogWidget (bool enable)
+auto FDialog::setDialogWidget (bool enable) -> bool
 {
   if ( isDialogWidget() == enable )
     return true;
@@ -96,7 +96,7 @@ bool FDialog::setDialogWidget (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FDialog::setModal (bool enable)
+auto FDialog::setModal (bool enable) -> bool
 {
   if ( isModal() == enable )
     return true;
@@ -116,7 +116,7 @@ bool FDialog::setModal (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FDialog::setBorder (bool enable)
+auto FDialog::setBorder (bool enable) -> bool
 {
   if ( enable )
   {
@@ -146,7 +146,7 @@ void FDialog::resetColors()
 }
 
 //----------------------------------------------------------------------
-bool FDialog::setResizeable (bool enable)
+auto FDialog::setResizeable (bool enable) -> bool
 {
   FWindow::setResizeable (enable);
 
@@ -159,7 +159,7 @@ bool FDialog::setResizeable (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FDialog::setMinimizable (bool enable)
+auto FDialog::setMinimizable (bool enable) -> bool
 {
   FWindow::setMinimizable (enable);
 
@@ -203,7 +203,7 @@ void FDialog::hide()
 }
 
 //----------------------------------------------------------------------
-FDialog::ResultCode FDialog::exec()
+auto FDialog::exec() -> ResultCode
 {
   result_code = ResultCode::Reject;
   show();
@@ -296,7 +296,7 @@ void FDialog::move (const FPoint& d_pos)
 }
 
 //----------------------------------------------------------------------
-inline bool FDialog::moveUp (int n)
+inline auto FDialog::moveUp (int n) -> bool
 {
   if ( isBottomOutside() )
   {
@@ -312,14 +312,14 @@ inline bool FDialog::moveUp (int n)
 }
 
 //----------------------------------------------------------------------
-inline bool FDialog::moveDown (int n)
+inline auto FDialog::moveDown (int n) -> bool
 {
   move ({0, n});
   return ! setPos_error;
 }
 
 //----------------------------------------------------------------------
-inline bool FDialog::moveLeft (int n)
+inline auto FDialog::moveLeft (int n) -> bool
 {
   if ( isLeftOutside() )
   {
@@ -335,7 +335,7 @@ inline bool FDialog::moveLeft (int n)
 }
 
 //----------------------------------------------------------------------
-inline bool FDialog::moveRight (int n)
+inline auto FDialog::moveRight (int n) -> bool
 {
   move ({n, 0});
   return ! setPos_error;
@@ -396,7 +396,7 @@ void FDialog::setSize (const FSize& size, bool adjust)
 }
 
 //----------------------------------------------------------------------
-bool FDialog::reduceHeight (int n)
+auto FDialog::reduceHeight (int n) -> bool
 {
   if ( ! isResizeable() )
     return false;
@@ -406,7 +406,7 @@ bool FDialog::reduceHeight (int n)
 }
 
 //----------------------------------------------------------------------
-bool FDialog::expandHeight (int n)
+auto FDialog::expandHeight (int n) -> bool
 {
   if ( ! isResizeable() || getHeight() + std::size_t(getY()) > getMaxHeight() )
     return false;
@@ -416,7 +416,7 @@ bool FDialog::expandHeight (int n)
 }
 
 //----------------------------------------------------------------------
-bool FDialog::reduceWidth (int n)
+auto FDialog::reduceWidth (int n) -> bool
 {
   if ( ! isResizeable() )
     return false;
@@ -426,7 +426,7 @@ bool FDialog::reduceWidth (int n)
 }
 
 //----------------------------------------------------------------------
-bool FDialog::expandWidth (int n)
+auto FDialog::expandWidth (int n) -> bool
 {
   if ( ! isResizeable() || getWidth() + std::size_t(getX()) > getMaxWidth() )
     return false;
@@ -436,7 +436,7 @@ bool FDialog::expandWidth (int n)
 }
 
 //----------------------------------------------------------------------
-bool FDialog::zoomWindow()
+auto FDialog::zoomWindow() -> bool
 {
   bool ret_val = FWindow::zoomWindow();
   setZoomItem();
@@ -444,7 +444,7 @@ bool FDialog::zoomWindow()
 }
 
 //----------------------------------------------------------------------
-bool FDialog::minimizeWindow()
+auto FDialog::minimizeWindow() -> bool
 {
   bool ret_val = FWindow::minimizeWindow();
   setMinimizeItem();
@@ -984,8 +984,8 @@ void FDialog::initCloseMenuItem (FMenu* menu)
 }
 
 //----------------------------------------------------------------------
-inline FDialog::MouseStates
-    FDialog::initMouseStates (const FMouseEvent& ev, bool mouse_over_menu) const
+inline auto
+    FDialog::initMouseStates (const FMouseEvent& ev, bool mouse_over_menu) const -> MouseStates
 {
   return {
            ev.getX(),
@@ -1446,13 +1446,13 @@ void FDialog::setZoomItem()
 }
 
 //----------------------------------------------------------------------
-inline std::size_t FDialog::getMenuButtonWidth() const
+inline auto FDialog::getMenuButtonWidth() const -> std::size_t
 {
   return titlebar_buttons ? 3 : 0;
 }
 
 //----------------------------------------------------------------------
-inline std::size_t FDialog::getZoomButtonWidth() const
+inline auto FDialog::getZoomButtonWidth() const -> std::size_t
 {
   if ( titlebar_buttons && isResizeable() )
     return FVTerm::getFOutput()->isNewFont() ? 2 : 3;
@@ -1461,7 +1461,7 @@ inline std::size_t FDialog::getZoomButtonWidth() const
 }
 
 //----------------------------------------------------------------------
-inline std::size_t FDialog::getMinimizeButtonWidth() const
+inline auto FDialog::getMinimizeButtonWidth() const -> std::size_t
 {
   if ( titlebar_buttons && isMinimizable() )
     return FVTerm::getFOutput()->isNewFont() ? 2 : 3;
@@ -1570,7 +1570,7 @@ void FDialog::pressZoomButton (const MouseStates& ms)
 }
 
 //----------------------------------------------------------------------
-inline bool FDialog::isMouseOverMenu (const FPoint& termpos) const
+inline auto FDialog::isMouseOverMenu (const FPoint& termpos) const -> bool
 {
   auto menu_geometry = dialog_menu->getTermGeometry();
 
@@ -1579,13 +1579,13 @@ inline bool FDialog::isMouseOverMenu (const FPoint& termpos) const
 }
 
 //----------------------------------------------------------------------
-inline bool FDialog::isMouseOverMenuButton (const MouseStates& ms) const
+inline auto FDialog::isMouseOverMenuButton (const MouseStates& ms) const -> bool
 {
   return ( ms.mouse_x <= int(ms.menu_btn) && ms.mouse_y == 1 );
 }
 
 //----------------------------------------------------------------------
-inline bool FDialog::isMouseOverZoomButton (const MouseStates& ms) const
+inline auto FDialog::isMouseOverZoomButton (const MouseStates& ms) const -> bool
 {
   return ( isResizeable()
         && ms.mouse_x > int(getWidth() - ms.zoom_btn)
@@ -1594,7 +1594,7 @@ inline bool FDialog::isMouseOverZoomButton (const MouseStates& ms) const
 }
 
 //----------------------------------------------------------------------
-inline bool FDialog::isMouseOverMinimizeButton (const MouseStates& ms)  const
+inline auto FDialog::isMouseOverMinimizeButton (const MouseStates& ms)  const -> bool
 {
   return ( isMinimizable()
         && ms.mouse_x > int(getWidth() - ms.minimize_btn - ms.zoom_btn)
@@ -1603,7 +1603,7 @@ inline bool FDialog::isMouseOverMinimizeButton (const MouseStates& ms)  const
 }
 
 //----------------------------------------------------------------------
-inline bool FDialog::isMouseOverTitlebar (const MouseStates& ms) const
+inline auto FDialog::isMouseOverTitlebar (const MouseStates& ms) const -> bool
 {
   return ( ms.mouse_x > int(ms.menu_btn)
         && ms.mouse_x <= int(getWidth() - ms.minimize_btn - ms.zoom_btn)
@@ -1660,7 +1660,7 @@ inline void FDialog::lowerActivateDialog()
 }
 
 //----------------------------------------------------------------------
-bool FDialog::isOutsideTerminal (const FPoint& pos) const
+auto FDialog::isOutsideTerminal (const FPoint& pos) const -> bool
 {
   return ( pos.getX() + int(getWidth()) <= 1
         || pos.getX() > int(getMaxWidth())
@@ -1669,19 +1669,19 @@ bool FDialog::isOutsideTerminal (const FPoint& pos) const
 }
 
 //----------------------------------------------------------------------
-bool FDialog::isLeftOutside() const
+auto FDialog::isLeftOutside() const -> bool
 {
   return getX() > int(getMaxWidth());
 }
 
 //----------------------------------------------------------------------
-bool FDialog::isBottomOutside() const
+auto FDialog::isBottomOutside() const -> bool
 {
   return getY() > int(getMaxHeight());
 }
 
 //----------------------------------------------------------------------
-bool FDialog::isLowerRightResizeCorner (const MouseStates& ms) const
+auto FDialog::isLowerRightResizeCorner (const MouseStates& ms) const -> bool
 {
   // 3 characters in the lower right corner  |
   //                                         x
@@ -1693,7 +1693,7 @@ bool FDialog::isLowerRightResizeCorner (const MouseStates& ms) const
 }
 
 //----------------------------------------------------------------------
-bool FDialog::noVisibleDialog() const
+auto FDialog::noVisibleDialog() const -> bool
 {
   // Is true when there is no visible dialog
 

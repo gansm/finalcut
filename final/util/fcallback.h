@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2021 Markus Gans                                      *
+* Copyright 2020-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -67,8 +67,8 @@ struct FCallbackData
   FCallbackData (const FCallbackData&) = default;
   FCallbackData (FCallbackData&&) noexcept = default;
 
-  FCallbackData& operator = (const FCallbackData&) = default;
-  FCallbackData& operator = (FCallbackData&&) noexcept = default;
+  auto operator = (const FCallbackData&) -> FCallbackData& = default;
+  auto operator = (FCallbackData&&) noexcept -> FCallbackData& = default;
 
   // Data members
   FString   cb_signal{};
@@ -142,11 +142,11 @@ class FCallback
     ~FCallback() noexcept = default;
 
     // Disable copy assignment operator (=)
-    FCallback& operator = (const FCallback&) = delete;
+    auto operator = (const FCallback&) -> FCallback& = delete;
 
     // Accessors
-    FString getClassName() const;
-    std::size_t getCallbackCount() const;
+    auto getClassName() const -> FString;
+    auto getCallbackCount() const -> std::size_t;
 
     // Methods
     template <typename Object
@@ -218,11 +218,11 @@ class FCallback
 
 // FCallback inline functions
 //----------------------------------------------------------------------
-inline FString FCallback::getClassName() const
+inline auto FCallback::getClassName() const -> FString
 { return "FCallback"; }
 
 //----------------------------------------------------------------------
-inline std::size_t FCallback::getCallbackCount() const
+inline auto FCallback::getCallbackCount() const -> std::size_t
 { return callback_objects.size(); }
 
 //----------------------------------------------------------------------

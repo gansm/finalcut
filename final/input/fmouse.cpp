@@ -52,7 +52,7 @@ FMouseData::~FMouseData() noexcept = default;  // destructor
 
 // public methods of FMouseData
 //----------------------------------------------------------------------
-FString FMouseData::getClassName() const
+auto FMouseData::getClassName() const -> FString
 {
   return "FMouseData";
 }
@@ -65,84 +65,84 @@ auto FMouseControl::getCurrentMouseEvent() -> FMouseDataPtr&
 }
 
 //----------------------------------------------------------------------
-const FPoint& FMouseData::getPos() const & noexcept
+auto FMouseData::getPos() const & noexcept -> const FPoint&
 {
   return mouse;
 }
 
 //----------------------------------------------------------------------
-bool FMouseData::isLeftButtonPressed() const noexcept
+auto FMouseData::isLeftButtonPressed() const noexcept -> bool
 {
   return getButtonState().left_button == State::Pressed;
 }
 
 //----------------------------------------------------------------------
-bool FMouseData::isLeftButtonReleased() const noexcept
+auto FMouseData::isLeftButtonReleased() const noexcept -> bool
 {
   return getButtonState().left_button == State::Released;
 }
 
 //----------------------------------------------------------------------
-bool FMouseData::isLeftButtonDoubleClick() const noexcept
+auto FMouseData::isLeftButtonDoubleClick() const noexcept -> bool
 {
   return getButtonState().left_button == State::DoubleClick;
 }
 
 //----------------------------------------------------------------------
-bool FMouseData::isRightButtonPressed() const noexcept
+auto FMouseData::isRightButtonPressed() const noexcept -> bool
 {
   return getButtonState().right_button == State::Pressed;
 }
 
 //----------------------------------------------------------------------
-bool FMouseData::isRightButtonReleased() const noexcept
+auto FMouseData::isRightButtonReleased() const noexcept -> bool
 {
   return getButtonState().right_button == State::Released;
 }
 //----------------------------------------------------------------------
-bool FMouseData::isMiddleButtonPressed() const noexcept
+auto FMouseData::isMiddleButtonPressed() const noexcept -> bool
 {
   return getButtonState().middle_button == State::Pressed;
 }
 
 //----------------------------------------------------------------------
-bool FMouseData::isMiddleButtonReleased() const noexcept
+auto FMouseData::isMiddleButtonReleased() const noexcept -> bool
 {
   return getButtonState().middle_button == State::Released;
 }
 
 //----------------------------------------------------------------------
-bool FMouseData::isShiftKeyPressed() const noexcept
+auto FMouseData::isShiftKeyPressed() const noexcept -> bool
 {
   return getButtonState().shift_button;
 }
 
 //----------------------------------------------------------------------
-bool FMouseData::isControlKeyPressed() const noexcept
+auto FMouseData::isControlKeyPressed() const noexcept -> bool
 {
   return getButtonState().control_button;
 }
 
 //----------------------------------------------------------------------
-bool FMouseData::isMetaKeyPressed() const noexcept
+auto FMouseData::isMetaKeyPressed() const noexcept -> bool
 {
   return getButtonState().meta_button;
 }
 
 //----------------------------------------------------------------------
-bool FMouseData::isWheelUp() const noexcept
+auto FMouseData::isWheelUp() const noexcept -> bool
 {
   return getButtonState().wheel_up;
 }
 
 //----------------------------------------------------------------------
-bool FMouseData::isWheelDown() const noexcept
+auto FMouseData::isWheelDown() const noexcept -> bool
 {
   return getButtonState().wheel_down;
 }
 
 //----------------------------------------------------------------------
-bool FMouseData::isMoved() const noexcept
+auto FMouseData::isMoved() const noexcept -> bool
 {
   return getButtonState().mouse_moved;
 }
@@ -164,13 +164,13 @@ void FMouseData::clearButtonState() noexcept
 
 // protected methods of FMouseData
 //----------------------------------------------------------------------
-inline FMouseData::FMouseButton& FMouseData::getButtonState() & noexcept
+inline auto FMouseData::getButtonState() & noexcept -> FMouseButton&
 {
   return b_state;
 }
 
 //----------------------------------------------------------------------
-inline const FMouseData::FMouseButton& FMouseData::getButtonState() const & noexcept
+inline auto FMouseData::getButtonState() const & noexcept -> const FMouseButton&
 {
   return b_state;
 }
@@ -197,13 +197,13 @@ FMouse::FMouse()
 
 // public methods of FMouse
 //----------------------------------------------------------------------
-FString FMouse::getClassName() const
+auto FMouse::getClassName() const -> FString
 {
   return "FMouse";
 }
 
 //----------------------------------------------------------------------
-FMouse::MouseType FMouse::getMouseTypeID() const noexcept
+auto FMouse::getMouseTypeID() const noexcept -> MouseType
 {
   return MouseType_id;
 }
@@ -233,13 +233,13 @@ void FMouse::setDblclickInterval (const uInt64 timeout) noexcept
 }
 
 //----------------------------------------------------------------------
-bool FMouse::hasEvent() const noexcept
+auto FMouse::hasEvent() const noexcept -> bool
 {
   return mouse_event_occurred;
 }
 
 //----------------------------------------------------------------------
-bool FMouse::hasUnprocessedInput() const noexcept
+auto FMouse::hasUnprocessedInput() const noexcept -> bool
 {
   return unprocessed_buffer_data;
 }
@@ -247,31 +247,31 @@ bool FMouse::hasUnprocessedInput() const noexcept
 
 // protected methods of FMouse
 //----------------------------------------------------------------------
-const FPoint& FMouse::getNewPos() const & noexcept
+auto FMouse::getNewPos() const & noexcept -> const FPoint&
 {
   return new_mouse_position;
 }
 
 //----------------------------------------------------------------------
-uInt16 FMouse::getMaxWidth() const noexcept
+auto FMouse::getMaxWidth() const noexcept -> uInt16
 {
   return max_width;
 }
 
 //----------------------------------------------------------------------
-uInt16 FMouse::getMaxHeight() const noexcept
+auto FMouse::getMaxHeight() const noexcept -> uInt16
 {
   return max_height;
 }
 
 //----------------------------------------------------------------------
-uInt64 FMouse::getDblclickInterval() const noexcept
+auto FMouse::getDblclickInterval() const noexcept -> uInt64
 {
   return dblclick_interval;
 }
 
 //----------------------------------------------------------------------
-TimeValue FMouse::getMousePressedTime() const noexcept
+auto FMouse::getMousePressedTime() const noexcept -> TimeValue
 {
   return time_mousepressed;
 }
@@ -313,7 +313,7 @@ void FMouse::setEvent() noexcept
 }
 
 //----------------------------------------------------------------------
-bool FMouse::isDblclickTimeout (const TimeValue& time) const
+auto FMouse::isDblclickTimeout (const TimeValue& time) const -> bool
 {
   return FObject::isTimeout (time, dblclick_interval);
 }
@@ -336,7 +336,7 @@ FMouseGPM::FMouseGPM()
 
 // public methods of FMouseX11
 //----------------------------------------------------------------------
-FString FMouseGPM::getClassName() const
+auto FMouseGPM::getClassName() const -> FString
 {
   return "FMouseGPM";
 }
@@ -348,7 +348,7 @@ void FMouseGPM::setStdinNo (int file_descriptor) noexcept
 }
 
 //----------------------------------------------------------------------
-bool FMouseGPM::hasData() noexcept
+auto FMouseGPM::hasData() noexcept -> bool
 {
   return has_gpm_mouse_data;
 }
@@ -418,7 +418,7 @@ void FMouseGPM::processEvent (const TimeValue&)
 }
 
 //----------------------------------------------------------------------
-bool FMouseGPM::gpmMouse (bool enable)
+auto FMouseGPM::gpmMouse (bool enable) -> bool
 {
   // activate/deactivate the gpm mouse support
 
@@ -447,7 +447,7 @@ bool FMouseGPM::gpmMouse (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FMouseGPM::hasSignificantEvents() const noexcept
+auto FMouseGPM::hasSignificantEvents() const noexcept -> bool
 {
   return ! (gpm_ev.type & GPM_MOVE)
       || gpm_ev.wdy != 0
@@ -503,7 +503,7 @@ void FMouseGPM::interpretKeyUp() noexcept
 }
 
 //----------------------------------------------------------------------
-bool FMouseGPM::getGpmKeyPressed (bool is_pending)
+auto FMouseGPM::getGpmKeyPressed (bool is_pending) -> bool
 {
   setPending(is_pending);
   has_gpm_mouse_data = false;
@@ -525,7 +525,7 @@ void FMouseGPM::drawPointer() const
 }
 
 //----------------------------------------------------------------------
-FMouseGPM::gpmEventType FMouseGPM::gpmEvent (bool clear) const
+auto FMouseGPM::gpmEvent (bool clear) const -> gpmEventType
 {
   const int max = ( gpm_fd > stdin_no ) ? gpm_fd : stdin_no;
   fd_set ifds{};
@@ -570,13 +570,13 @@ FMouseX11::FMouseX11()
 
 // public methods of FMouseX11
 //----------------------------------------------------------------------
-FString FMouseX11::getClassName() const
+auto FMouseX11::getClassName() const -> FString
 {
   return "FMouseX11";
 }
 
 //----------------------------------------------------------------------
-bool FMouseX11::hasData() noexcept
+auto FMouseX11::hasData() noexcept -> bool
 {
   return ( x11_mouse[0] );
 }
@@ -743,13 +743,13 @@ FMouseSGR::FMouseSGR()
 
 // public methods of FMouseSGR
 //----------------------------------------------------------------------
-FString FMouseSGR::getClassName() const
+auto FMouseSGR::getClassName() const -> FString
 {
   return "FMouseSGR";
 }
 
 //----------------------------------------------------------------------
-bool FMouseSGR::hasData() noexcept
+auto FMouseSGR::hasData() noexcept -> bool
 {
   return ( sgr_mouse[0] );
 }
@@ -977,13 +977,13 @@ FMouseUrxvt::FMouseUrxvt()
 
 // public methods of FMouseUrxvt
 //----------------------------------------------------------------------
-FString FMouseUrxvt::getClassName() const
+auto FMouseUrxvt::getClassName() const -> FString
 {
   return "FMouseUrxvt";
 }
 
 //----------------------------------------------------------------------
-bool FMouseUrxvt::hasData() noexcept
+auto FMouseUrxvt::hasData() noexcept -> bool
 {
   return ( urxvt_mouse[0] );
 }
@@ -1250,7 +1250,7 @@ auto FMouseControl::getInstance() -> FMouseControl&
 }
 
 //----------------------------------------------------------------------
-const FPoint& FMouseControl::getPos() &
+auto FMouseControl::getPos() & -> const FPoint&
 {
   const auto& iter = findMouseWithEvent();
 
@@ -1330,19 +1330,19 @@ void FMouseControl::useXtermMouse (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FMouseControl::hasData()
+auto FMouseControl::hasData() -> bool
 {
   return findMouseWithData() != mouse_protocol.end();  // with data
 }
 
 //----------------------------------------------------------------------
-bool FMouseControl::hasEvent()
+auto FMouseControl::hasEvent() -> bool
 {
   return findMouseWithEvent() != mouse_protocol.end();  // with event
 }
 
 //----------------------------------------------------------------------
-bool FMouseControl::isLeftButtonPressed()
+auto FMouseControl::isLeftButtonPressed() -> bool
 {
   auto iter = findMouseWithEvent();
   const bool found = (iter != mouse_protocol.end());
@@ -1350,7 +1350,7 @@ bool FMouseControl::isLeftButtonPressed()
 }
 
 //----------------------------------------------------------------------
-bool FMouseControl::isLeftButtonReleased()
+auto FMouseControl::isLeftButtonReleased() -> bool
 {
   auto iter = findMouseWithEvent();
   const bool found = (iter != mouse_protocol.end());
@@ -1358,7 +1358,7 @@ bool FMouseControl::isLeftButtonReleased()
 }
 
 //----------------------------------------------------------------------
-bool FMouseControl::isLeftButtonDoubleClick()
+auto FMouseControl::isLeftButtonDoubleClick() -> bool
 {
   auto iter = findMouseWithEvent();
   const bool found = (iter != mouse_protocol.end());
@@ -1366,7 +1366,7 @@ bool FMouseControl::isLeftButtonDoubleClick()
 }
 
 //----------------------------------------------------------------------
-bool FMouseControl::isRightButtonPressed()
+auto FMouseControl::isRightButtonPressed() -> bool
 {
   auto iter = findMouseWithEvent();
   const bool found = (iter != mouse_protocol.end());
@@ -1374,7 +1374,7 @@ bool FMouseControl::isRightButtonPressed()
 }
 
 //----------------------------------------------------------------------
-bool FMouseControl::isRightButtonReleased()
+auto FMouseControl::isRightButtonReleased() -> bool
 {
   auto iter = findMouseWithEvent();
   const bool found = (iter != mouse_protocol.end());
@@ -1382,7 +1382,7 @@ bool FMouseControl::isRightButtonReleased()
 }
 
 //----------------------------------------------------------------------
-bool FMouseControl::isMiddleButtonPressed()
+auto FMouseControl::isMiddleButtonPressed() -> bool
 {
   auto iter = findMouseWithEvent();
   const bool found = (iter != mouse_protocol.end());
@@ -1390,7 +1390,7 @@ bool FMouseControl::isMiddleButtonPressed()
 }
 
 //----------------------------------------------------------------------
-bool FMouseControl::isMiddleButtonReleased()
+auto FMouseControl::isMiddleButtonReleased() -> bool
 {
   auto iter = findMouseWithEvent();
   const bool found = (iter != mouse_protocol.end());
@@ -1398,7 +1398,7 @@ bool FMouseControl::isMiddleButtonReleased()
 }
 
 //----------------------------------------------------------------------
-bool FMouseControl::isShiftKeyPressed()
+auto FMouseControl::isShiftKeyPressed() -> bool
 {
   auto iter = findMouseWithEvent();
   const bool found = (iter != mouse_protocol.end());
@@ -1406,7 +1406,7 @@ bool FMouseControl::isShiftKeyPressed()
 }
 
 //----------------------------------------------------------------------
-bool FMouseControl::isControlKeyPressed()
+auto FMouseControl::isControlKeyPressed() -> bool
 {
   auto iter = findMouseWithEvent();
   const bool found = (iter != mouse_protocol.end());
@@ -1414,7 +1414,7 @@ bool FMouseControl::isControlKeyPressed()
 }
 
 //----------------------------------------------------------------------
-bool FMouseControl::isMetaKeyPressed()
+auto FMouseControl::isMetaKeyPressed() -> bool
 {
   auto iter = findMouseWithEvent();
   const bool found = (iter != mouse_protocol.end());
@@ -1422,7 +1422,7 @@ bool FMouseControl::isMetaKeyPressed()
 }
 
 //----------------------------------------------------------------------
-bool FMouseControl::isWheelUp()
+auto FMouseControl::isWheelUp() -> bool
 {
   auto iter = findMouseWithEvent();
   const bool found = (iter != mouse_protocol.end());
@@ -1430,7 +1430,7 @@ bool FMouseControl::isWheelUp()
 }
 
 //----------------------------------------------------------------------
-bool FMouseControl::isWheelDown()
+auto FMouseControl::isWheelDown() -> bool
 {
   auto iter = findMouseWithEvent();
   const bool found = (iter != mouse_protocol.end());
@@ -1438,7 +1438,7 @@ bool FMouseControl::isWheelDown()
 }
 
 //----------------------------------------------------------------------
-bool FMouseControl::isMoved()
+auto FMouseControl::isMoved() -> bool
 {
   auto iter = findMouseWithEvent();
   const bool found = (iter != mouse_protocol.end());
@@ -1446,7 +1446,7 @@ bool FMouseControl::isMoved()
 }
 
 //----------------------------------------------------------------------
-bool FMouseControl::hasUnprocessedInput() const
+auto FMouseControl::hasUnprocessedInput() const -> bool
 {
   return std::any_of ( std::cbegin(mouse_protocol)
                      , std::cend(mouse_protocol)
@@ -1459,7 +1459,7 @@ bool FMouseControl::hasUnprocessedInput() const
 
 //----------------------------------------------------------------------
 #ifdef F_HAVE_LIBGPM
-bool FMouseControl::isGpmMouseEnabled() noexcept
+auto FMouseControl::isGpmMouseEnabled() noexcept -> bool
 {
   if ( ! use_gpm_mouse || mouse_protocol.empty() )
     return false;
@@ -1562,7 +1562,7 @@ void FMouseControl::processEvent (const TimeValue& time)
 
 //----------------------------------------------------------------------
 #ifdef F_HAVE_LIBGPM
-bool FMouseControl::getGpmKeyPressed (bool pending)
+auto FMouseControl::getGpmKeyPressed (bool pending) -> bool
 {
   if ( mouse_protocol.empty() )
     return false;

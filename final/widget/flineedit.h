@@ -96,81 +96,81 @@ class FLineEdit : public FWidget
     ~FLineEdit() override;
 
     // Disable copy assignment operator (=)
-    FLineEdit& operator = (const FLineEdit&) = delete;
+    auto operator = (const FLineEdit&) -> FLineEdit& = delete;
 
     // Disable move assignment operator (=)
-    FLineEdit& operator = (FLineEdit&&) noexcept = delete;
+    auto operator = (FLineEdit&&) noexcept -> FLineEdit& = delete;
 
     // Overloaded operators
-    FLineEdit& operator = (const FString&);
+    auto operator = (const FString&) -> FLineEdit&;
     template <typename typeT>
-    FLineEdit& operator << (const typeT&);
-    FLineEdit& operator << (UniChar);
-    FLineEdit& operator << (const wchar_t);
-    const FLineEdit& operator >> (FString&) const;
+    auto operator << (const typeT&) -> FLineEdit&;
+    auto operator << (UniChar) -> FLineEdit&;
+    auto operator << (const wchar_t) -> FLineEdit&;
+    auto operator >> (FString&) const -> const FLineEdit&;
 
     // Accessors
-    FString             getClassName() const override;
-    FString             getText() const;
-    std::size_t         getMaxLength() const noexcept;
-    std::size_t         getCursorPosition() const noexcept;
-    FLabel*             getLabelObject() const;
-    LabelOrientation    getLabelOrientation() const;
+    auto getClassName() const -> FString override;
+    auto getText() const -> FString;
+    auto getMaxLength() const noexcept -> std::size_t;
+    auto getCursorPosition() const noexcept -> std::size_t;
+    auto getLabelObject() const -> FLabel*;
+    auto getLabelOrientation() const -> LabelOrientation;
 
     // Mutators
-    void                setText (const FString&);
-    void                inputText (const FString&);
-    void                deletesCharacter();
-    void                setInputFilter (const FString&);
-    void                clearInputFilter();
-    void                setMaxLength (std::size_t);
-    void                setCursorPosition (std::size_t);
-    void                moveCursorToBegin();
-    void                moveCursorToEnd();
-    void                stepCursorForward (std::size_t = 1);
-    void                stepCursorBackward (std::size_t = 1);
-    void                setLabelText (const FString&);
-    void                setInputType (const InputType);
-    void                setOverwriteMode (bool = true);
-    void                setLabelOrientation (const LabelOrientation);
-    void                setLabelAssociatedWidget (FWidget*);
-    void                resetColors() override;
-    void                setSize (const FSize&, bool = true) override;
-    void                setGeometry ( const FPoint&, const FSize&
+    void setText (const FString&);
+    void inputText (const FString&);
+    void deletesCharacter();
+    void setInputFilter (const FString&);
+    void clearInputFilter();
+    void setMaxLength (std::size_t);
+    void setCursorPosition (std::size_t);
+    void moveCursorToBegin();
+    void moveCursorToEnd();
+    void stepCursorForward (std::size_t = 1);
+    void stepCursorBackward (std::size_t = 1);
+    void setLabelText (const FString&);
+    void setInputType (const InputType);
+    void setOverwriteMode (bool = true);
+    void setLabelOrientation (const LabelOrientation);
+    void setLabelAssociatedWidget (FWidget*);
+    void resetColors() override;
+    void setSize (const FSize&, bool = true) override;
+    void setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
-    bool                setEnable (bool = true) override;
-    bool                unsetEnable() override;
-    bool                setDisable() override;
-    bool                setFocus (bool = true) override;
-    bool                unsetFocus() override;
-    bool                setShadow (bool = true);
-    bool                unsetShadow();
-    bool                setReadOnly (bool = true);
-    bool                unsetReadOnly();
+    auto setEnable (bool = true) -> bool override;
+    auto unsetEnable() -> bool override;
+    auto setDisable() -> bool override;
+    auto setFocus (bool = true) -> bool override;
+    auto unsetFocus() -> bool override;
+    auto setShadow (bool = true) -> bool;
+    auto unsetShadow() -> bool;
+    auto setReadOnly (bool = true) -> bool;
+    auto unsetReadOnly() -> bool;
 
     // Inquiry
-    bool                hasShadow() const;
-    bool                isReadOnly() const noexcept;
+    auto hasShadow() const -> bool;
+    auto isReadOnly() const noexcept -> bool;
 
     // Methods
-    void                hide() override;
-    void                clear();
+    void hide() override;
+    void clear();
 
     // Event handlers
-    void                onKeyPress (FKeyEvent*) override;
-    void                onMouseDown (FMouseEvent*) override;
-    void                onMouseUp (FMouseEvent*) override;
-    void                onMouseMove (FMouseEvent*) override;
-    void                onWheel (FWheelEvent*) override;
-    void                onTimer (FTimerEvent*) override;
-    void                onAccel (FAccelEvent*) override;
-    void                onHide (FHideEvent*) override;
-    void                onFocusIn (FFocusEvent*) override;
-    void                onFocusOut (FFocusEvent*) override;
+    void onKeyPress (FKeyEvent*) override;
+    void onMouseDown (FMouseEvent*) override;
+    void onMouseUp (FMouseEvent*) override;
+    void onMouseMove (FMouseEvent*) override;
+    void onWheel (FWheelEvent*) override;
+    void onTimer (FTimerEvent*) override;
+    void onAccel (FAccelEvent*) override;
+    void onHide (FHideEvent*) override;
+    void onFocusIn (FFocusEvent*) override;
+    void onFocusOut (FFocusEvent*) override;
 
   protected:
-    void                adjustLabel();
-    void                adjustSize() override;
+    void adjustLabel();
+    void adjustSize() override;
 
   private:
     // Using-declaration
@@ -182,31 +182,31 @@ class FLineEdit : public FWidget
     static constexpr auto NOT_FOUND = static_cast<std::size_t>(-1);
 
     // Methods
-    void                init();
-    void                mapKeyFunctions();
-    bool                hasHotkey() const;
-    void                draw() override;
-    void                drawInputField();
-    std::size_t         printTextField();
-    std::size_t         printPassword();
-    std::size_t         getCursorColumnPos() const;
-    FString             getPasswordText() const;
-    bool                isPasswordField() const;
-    offsetPair          endPosToOffset (std::size_t);
-    std::size_t         clickPosToCursorPos (std::size_t);
-    void                adjustTextOffset();
-    void                cursorLeft();
-    void                cursorRight();
-    void                cursorHome();
-    void                cursorEnd();
-    void                deleteCurrentCharacter();
-    void                deletePreviousCharacter();
-    void                switchInsertMode();
-    void                acceptInput();
-    bool                keyInput (FKey);
-    wchar_t             characterFilter (const wchar_t) const;
-    void                processActivate();
-    void                processChanged() const;
+    void init();
+    void mapKeyFunctions();
+    auto hasHotkey() const -> bool;
+    void draw() override;
+    void drawInputField();
+    auto printTextField() -> std::size_t;
+    auto printPassword() -> std::size_t;
+    auto getCursorColumnPos() const -> std::size_t;
+    auto getPasswordText() const -> FString;
+    auto isPasswordField() const -> bool;
+    auto endPosToOffset (std::size_t) -> offsetPair;
+    auto clickPosToCursorPos (std::size_t) -> std::size_t;
+    void adjustTextOffset();
+    void cursorLeft();
+    void cursorRight();
+    void cursorHome();
+    void cursorEnd();
+    void deleteCurrentCharacter();
+    void deletePreviousCharacter();
+    void switchInsertMode();
+    void acceptInput();
+    auto keyInput (FKey) -> bool;
+    auto characterFilter (const wchar_t) const -> wchar_t;
+    void processActivate();
+    void processChanged() const;
 
     // Data members
     FString          text{""};
@@ -234,7 +234,7 @@ class FLineEdit : public FWidget
 // FLineEdit inline functions
 //----------------------------------------------------------------------
 template <typename typeT>
-inline FLineEdit& FLineEdit::operator << (const typeT& s)
+inline auto FLineEdit::operator << (const typeT& s) -> FLineEdit&
 {
   FString str{};
   str << s;
@@ -243,27 +243,27 @@ inline FLineEdit& FLineEdit::operator << (const typeT& s)
 }
 
 //----------------------------------------------------------------------
-inline FString FLineEdit::getClassName() const
+inline auto FLineEdit::getClassName() const -> FString
 { return "FLineEdit"; }
 
 //----------------------------------------------------------------------
-inline FString FLineEdit::getText() const
+inline auto FLineEdit::getText() const -> FString
 { return text; }
 
 //----------------------------------------------------------------------
-inline std::size_t FLineEdit::getMaxLength() const noexcept
+inline auto FLineEdit::getMaxLength() const noexcept -> std::size_t
 { return max_length; }
 
 //----------------------------------------------------------------------
-inline std::size_t FLineEdit::getCursorPosition() const noexcept
+inline auto FLineEdit::getCursorPosition() const noexcept -> std::size_t
 { return cursor_pos; }
 
 //----------------------------------------------------------------------
-inline FLabel* FLineEdit::getLabelObject() const
+inline auto FLineEdit::getLabelObject() const -> FLabel*
 { return label; }
 
 //----------------------------------------------------------------------
-inline FLineEdit::LabelOrientation FLineEdit::getLabelOrientation() const
+inline auto FLineEdit::getLabelOrientation() const -> LabelOrientation
 { return label_orientation; }
 
 //----------------------------------------------------------------------
@@ -283,31 +283,31 @@ inline void FLineEdit::setLabelAssociatedWidget (FWidget* w)
 { label_associated_widget = w; }
 
 //----------------------------------------------------------------------
-inline bool FLineEdit::unsetEnable()
+inline auto FLineEdit::unsetEnable() -> bool
 { return setEnable(false); }
 
 //----------------------------------------------------------------------
-inline bool FLineEdit::setDisable()
+inline auto FLineEdit::setDisable() -> bool
 { return setEnable(false); }
 
 //----------------------------------------------------------------------
-inline bool FLineEdit::unsetFocus()
+inline auto FLineEdit::unsetFocus() -> bool
 { return setFocus(false); }
 
 //----------------------------------------------------------------------
-inline bool FLineEdit::unsetShadow()
+inline auto FLineEdit::unsetShadow() -> bool
 { return setShadow(false); }
 
 //----------------------------------------------------------------------
-inline bool FLineEdit::unsetReadOnly()
+inline auto FLineEdit::unsetReadOnly() -> bool
 { return setReadOnly(true); }
 
 //----------------------------------------------------------------------
-inline bool FLineEdit::hasShadow() const
+inline auto FLineEdit::hasShadow() const -> bool
 { return getFlags().shadow; }
 
 //----------------------------------------------------------------------
-inline bool FLineEdit::isReadOnly() const noexcept
+inline auto FLineEdit::isReadOnly() const noexcept -> bool
 { return read_only; }
 
 }  // namespace finalcut

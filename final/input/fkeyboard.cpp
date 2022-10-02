@@ -46,10 +46,10 @@ namespace finalcut
 {
 
 // static class attributes
-uInt64 FKeyboard::key_timeout{100'000};             // 100 ms  (10 Hz)
-uInt64 FKeyboard::read_blocking_time{100'000};      // 100 ms  (10 Hz)
-uInt64 FKeyboard::read_blocking_time_short{5'000};  //   5 ms (200 Hz)
-bool   FKeyboard::non_blocking_input_support{true};
+uInt64    FKeyboard::key_timeout{100'000};             // 100 ms  (10 Hz)
+uInt64    FKeyboard::read_blocking_time{100'000};      // 100 ms  (10 Hz)
+uInt64    FKeyboard::read_blocking_time_short{5'000};  //   5 ms (200 Hz)
+bool      FKeyboard::non_blocking_input_support{true};
 TimeValue FKeyboard::time_keypressed{};
 
 
@@ -97,7 +97,7 @@ void FKeyboard::fetchKeyCode()
 }
 
 //----------------------------------------------------------------------
-FString FKeyboard::getKeyName (const FKey keynum) const
+auto FKeyboard::getKeyName (const FKey keynum) const -> FString
 {
   const auto& fkeyname = FKeyMap::getKeyName();
   const auto& found_key = std::find_if
@@ -120,7 +120,7 @@ FString FKeyboard::getKeyName (const FKey keynum) const
 }
 
 //----------------------------------------------------------------------
-bool FKeyboard::setNonBlockingInput (bool enable)
+auto FKeyboard::setNonBlockingInput (bool enable) -> bool
 {
   if ( enable == non_blocking_stdin )
     return non_blocking_stdin;
@@ -144,13 +144,13 @@ bool FKeyboard::setNonBlockingInput (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FKeyboard::hasUnprocessedInput() const noexcept
+auto FKeyboard::hasUnprocessedInput() const noexcept -> bool
 {
   return fifo_buf.hasData();
 }
 
 //----------------------------------------------------------------------
-bool FKeyboard::isKeyPressed (uInt64 blocking_time)
+auto FKeyboard::isKeyPressed (uInt64 blocking_time) -> bool
 {
   if ( has_pending_input )
     return false;
@@ -250,7 +250,7 @@ void FKeyboard::processQueuedInput()
 
 // private methods of FKeyboard
 //----------------------------------------------------------------------
-inline FKey FKeyboard::getMouseProtocolKey() const
+inline auto FKeyboard::getMouseProtocolKey() const -> FKey
 {
   // Looking for mouse string in the key buffer
 
@@ -278,7 +278,7 @@ inline FKey FKeyboard::getMouseProtocolKey() const
 }
 
 //----------------------------------------------------------------------
-inline FKey FKeyboard::getTermcapKey()
+inline auto FKeyboard::getTermcapKey() -> FKey
 {
   // Looking for termcap key strings in the buffer
 
@@ -315,7 +315,7 @@ inline FKey FKeyboard::getTermcapKey()
 }
 
 //----------------------------------------------------------------------
-inline FKey FKeyboard::getKnownKey()
+inline auto FKeyboard::getKnownKey() -> FKey
 {
   // Looking for a known key strings in the buffer
 
@@ -360,7 +360,7 @@ inline FKey FKeyboard::getKnownKey()
 }
 
 //----------------------------------------------------------------------
-inline FKey FKeyboard::getSingleKey()
+inline auto FKeyboard::getSingleKey() -> FKey
 {
   // Looking for single key code in the buffer
 
@@ -397,13 +397,13 @@ inline FKey FKeyboard::getSingleKey()
 }
 
 //----------------------------------------------------------------------
-inline bool FKeyboard::isKeypressTimeout()
+inline auto FKeyboard::isKeypressTimeout() -> bool
 {
   return FObject::isTimeout (time_keypressed, key_timeout);
 }
 
 //----------------------------------------------------------------------
-FKey FKeyboard::UTF8decode (const std::size_t len) const noexcept
+auto FKeyboard::UTF8decode (const std::size_t len) const noexcept -> FKey
 {
   using distance_type = CharRingBuffer<FIFO_BUF_SIZE>::difference_type;
   constexpr std::size_t max = 4U;
@@ -451,7 +451,7 @@ FKey FKeyboard::UTF8decode (const std::size_t len) const noexcept
 }
 
 //----------------------------------------------------------------------
-inline ssize_t FKeyboard::readKey()
+inline auto FKeyboard::readKey() -> ssize_t
 {
   setNonBlockingInput();
   const ssize_t bytes = read(FTermios::getStdIn(), &read_character, 1);
@@ -498,7 +498,7 @@ void FKeyboard::parseKeyBuffer()
 }
 
 //----------------------------------------------------------------------
-FKey FKeyboard::parseKeyString()
+auto FKeyboard::parseKeyString() -> FKey
 {
   const auto& firstchar = fifo_buf.front();
 
@@ -527,7 +527,7 @@ FKey FKeyboard::parseKeyString()
 }
 
 //----------------------------------------------------------------------
-FKey FKeyboard::keyCorrection (const FKey& keycode) const
+auto FKeyboard::keyCorrection (const FKey& keycode) const -> FKey
 {
   FKey key_correction;
 

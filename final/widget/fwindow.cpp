@@ -80,14 +80,14 @@ FWindow::~FWindow()  // destructor
 
 // public methods of FWindow
 //----------------------------------------------------------------------
-FWidget* FWindow::getWindowFocusWidget() const
+auto FWindow::getWindowFocusWidget() const -> FWidget*
 {
   // returns the focused widget of this window
   return win_focus_widget;
 }
 
 //----------------------------------------------------------------------
-bool FWindow::setWindowWidget (bool enable)
+auto FWindow::setWindowWidget (bool enable) -> bool
 {
   if ( isWindowWidget() == enable )
     return true;
@@ -143,7 +143,7 @@ void FWindow::setWindowFocusWidget (FWidget* obj)
 }
 
 //----------------------------------------------------------------------
-bool FWindow::activateWindow (bool enable)
+auto FWindow::activateWindow (bool enable) -> bool
 {
   // activate/deactivate this window
   if ( enable )
@@ -163,19 +163,19 @@ void FWindow::unsetActiveWindow() const
 }
 
 //----------------------------------------------------------------------
-bool FWindow::setResizeable (bool enable)
+auto FWindow::setResizeable (bool enable) -> bool
 {
   return (setFlags().resizeable = enable);
 }
 
 //----------------------------------------------------------------------
-bool FWindow::setMinimizable (bool enable)
+auto FWindow::setMinimizable (bool enable) -> bool
 {
   return (setFlags().minimizable = enable);
 }
 
 //----------------------------------------------------------------------
-bool FWindow::setTransparentShadow (bool enable)
+auto FWindow::setTransparentShadow (bool enable) -> bool
 {
   setFlags().shadow = setFlags().trans_shadow = enable;
 
@@ -188,7 +188,7 @@ bool FWindow::setTransparentShadow (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FWindow::setShadow (bool enable)
+auto FWindow::setShadow (bool enable) -> bool
 {
   if ( FVTerm::getFOutput()->isMonochron() )
     return false;
@@ -210,7 +210,7 @@ bool FWindow::setShadow (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FWindow::setAlwaysOnTop (bool enable)
+auto FWindow::setAlwaysOnTop (bool enable) -> bool
 {
   if ( isAlwaysOnTop() == enable )
     return true;
@@ -234,7 +234,7 @@ bool FWindow::setAlwaysOnTop (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FWindow::isMinimized() const
+auto FWindow::isMinimized() const -> bool
 {
   // returns the window minimized state
 
@@ -245,7 +245,7 @@ bool FWindow::isMinimized() const
 }
 
 //----------------------------------------------------------------------
-bool FWindow::isWindowHidden() const
+auto FWindow::isWindowHidden() const -> bool
 {
   // returns the window hidden state
 
@@ -443,7 +443,7 @@ void FWindow::move (const FPoint& pos)
 }
 
 //----------------------------------------------------------------------
-FWindow* FWindow::getWindowWidgetAt (int x, int y)
+auto FWindow::getWindowWidgetAt (int x, int y) -> FWindow*
 {
   // returns the window object to the corresponding coordinates
 
@@ -535,7 +535,7 @@ void FWindow::swapWindow (const FWidget* obj1, const FWidget* obj2)
 }
 
 //----------------------------------------------------------------------
-bool FWindow::raiseWindow (FWidget* obj)
+auto FWindow::raiseWindow (FWidget* obj) -> bool
 {
   // raises the window widget obj to the top
 
@@ -570,7 +570,7 @@ bool FWindow::raiseWindow (FWidget* obj)
 }
 
 //----------------------------------------------------------------------
-bool FWindow::lowerWindow (FWidget* obj)
+auto FWindow::lowerWindow (FWidget* obj) -> bool
 {
   // lowers the window widget obj to the bottom
 
@@ -602,7 +602,7 @@ bool FWindow::lowerWindow (FWidget* obj)
 }
 
 //----------------------------------------------------------------------
-bool FWindow::zoomWindow()
+auto FWindow::zoomWindow() -> bool
 {
   if ( zoomed )
   {
@@ -630,7 +630,7 @@ bool FWindow::zoomWindow()
 }
 
 //----------------------------------------------------------------------
-bool FWindow::minimizeWindow()
+auto FWindow::minimizeWindow() -> bool
 {
   if ( ! isVirtualWindow() )
     return false;
@@ -691,7 +691,7 @@ void FWindow::switchToPrevWindow (const FWidget* widget)
 }
 
 //----------------------------------------------------------------------
-bool FWindow::activatePrevWindow()
+auto FWindow::activatePrevWindow() -> bool
 {
   // activate the previous window
   const auto& w = previous_window;
@@ -748,7 +748,7 @@ void FWindow::adjustSize()
 }
 
 //----------------------------------------------------------------------
-bool FWindow::event (FEvent* ev)
+auto FWindow::event (FEvent* ev) -> bool
 {
   auto event_type = ev->getType();
 
@@ -805,7 +805,7 @@ void FWindow::onWindowLowered (FEvent*)
 
 // private methods of FWindow
 //----------------------------------------------------------------------
-inline FRect FWindow::getVisibleTermGeometry (FWindow* win)
+inline auto FWindow::getVisibleTermGeometry (FWindow* win) -> FRect
 {
   auto& term_geometry = win->getTermGeometry();
 
@@ -867,7 +867,7 @@ void FWindow::processAlwaysOnTop()
 }
 
 //----------------------------------------------------------------------
-FWindow* FWindow::getWindowWidgetImpl (FWidget* obj)
+auto FWindow::getWindowWidgetImpl (FWidget* obj) -> FWindow*
 {
   // returns the window object to the given widget obj
   auto p_obj = obj->getParentWidget();
@@ -885,7 +885,7 @@ FWindow* FWindow::getWindowWidgetImpl (FWidget* obj)
 }
 
 //----------------------------------------------------------------------
-int FWindow::getWindowLayerImpl (FWidget* obj)
+auto FWindow::getWindowLayerImpl (FWidget* obj) -> int
 {
   // returns the window layer from the widget obj
 
