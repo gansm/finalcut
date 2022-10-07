@@ -421,8 +421,8 @@ void FSpinBox::cb_inputFieldChange (const FLineEdit& lineedit)
     value = 0;
   else
   {
-    const std::wregex regex(L"[-]?[[:xdigit:]]+");
     std::wsmatch match;
+    const auto& regex = std::wregex(LR"([-]?[[:xdigit:]]+)");
     const auto& text = lineedit.getText().toWString();
 
     if ( std::regex_search(text, match, regex) )

@@ -119,6 +119,9 @@ void showFCharData (const finalcut::FChar& fchar)
 //----------------------------------------------------------------------
 auto getAreaSize (finalcut::FVTerm::FTermArea* area) -> std::size_t
 {
+  if ( ! area )
+    return 0;
+
   const auto full_width = std::size_t(area->width) + std::size_t(area->right_shadow);
   const auto full_height = std::size_t(area->height) + std::size_t(area->bottom_shadow);
   return full_width * full_height;
@@ -128,6 +131,9 @@ auto getAreaSize (finalcut::FVTerm::FTermArea* area) -> std::size_t
 auto isAreaEqual ( finalcut::FVTerm::FTermArea* area1
                  , finalcut::FVTerm::FTermArea* area2 ) -> bool
 {
+  if ( ! area1 || ! area2 )
+    return false;
+
   auto size1 = getAreaSize(area1);
   auto size2 = getAreaSize(area2);
 

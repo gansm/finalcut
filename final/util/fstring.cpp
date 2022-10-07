@@ -900,7 +900,7 @@ auto FString::insert (const FString& s, int pos) -> const FString&
   if ( isNegative(pos) || uInt(pos) > string.length() )
     throw std::out_of_range("");
 
-  string.insert(uInt(pos), s.string, 0 , s.getLength());
+  string.insert(uInt(pos), s.string, 0, s.getLength());
   return *this;
 }
 
@@ -910,7 +910,7 @@ auto FString::insert (const FString& s, std::size_t pos) -> const FString&
   if ( pos > string.length() )
     throw std::out_of_range("");
 
-  string.insert(uInt(pos), s.string, 0 , s.getLength());
+  string.insert(uInt(pos), s.string, 0, s.getLength());
   return *this;
 }
 

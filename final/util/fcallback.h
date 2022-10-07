@@ -242,8 +242,7 @@ inline void FCallback::addCallback ( FString&&  cb_signal
   auto fn = std::bind ( std::forward<Function>(cb_member)
                       , std::forward<Object>(cb_instance)
                       , std::forward<Args>(args)... );
-  FCallbackData obj{ std::move(cb_signal), instance, nullptr, fn };
-  callback_objects.push_back(obj);
+  callback_objects.emplace_back (std::move(cb_signal), instance, nullptr, fn);
 }
 
 //----------------------------------------------------------------------
@@ -260,8 +259,7 @@ inline void FCallback::addCallback ( FString&&  cb_signal
   // Add a function object to an instance as callback
 
   auto fn = std::bind (std::forward<Function>(cb_function), std::forward<Args>(args)...);
-  FCallbackData obj{ std::move(cb_signal), cb_instance, nullptr, fn };
-  callback_objects.push_back(obj);
+  callback_objects.emplace_back (std::move(cb_signal), cb_instance, nullptr, fn);
 }
 
 //----------------------------------------------------------------------
@@ -276,8 +274,7 @@ inline void FCallback::addCallback ( FString&&  cb_signal
 
   auto fn = std::bind ( std::forward<Function>(cb_function)
                       , std::forward<Args>(args)... );
-  FCallbackData obj{ std::move(cb_signal), nullptr, nullptr, fn };
-  callback_objects.push_back(obj);
+  callback_objects.emplace_back (std::move(cb_signal), nullptr, nullptr, fn);
 }
 
 //----------------------------------------------------------------------
@@ -291,8 +288,7 @@ inline void FCallback::addCallback ( FString&& cb_signal
   // Add a function object reference as callback
 
   auto fn = std::bind (cb_function, std::forward<Args>(args)...);
-  FCallbackData obj{ std::move(cb_signal), nullptr, nullptr, fn };
-  callback_objects.push_back(obj);
+  callback_objects.emplace_back (std::move(cb_signal), nullptr, nullptr, fn);
 }
 
 //----------------------------------------------------------------------
@@ -307,8 +303,7 @@ inline void FCallback::addCallback ( FString&& cb_signal
 
   auto ptr = reinterpret_cast<void*>(&cb_function);
   auto fn = std::bind (cb_function, std::forward<Args>(args)...);
-  FCallbackData obj{ std::move(cb_signal), nullptr, ptr, fn };
-  callback_objects.push_back(obj);
+  callback_objects.emplace_back (std::move(cb_signal), nullptr, ptr, fn);
 }
 
 //----------------------------------------------------------------------
@@ -324,8 +319,7 @@ inline void FCallback::addCallback ( FString&&  cb_signal
   auto ptr = reinterpret_cast<void*>(cb_function);
   auto fn = std::bind ( std::forward<Function>(cb_function)
                       , std::forward<Args>(args)... );
-  FCallbackData obj{ std::move(cb_signal), nullptr, ptr, fn };
-  callback_objects.push_back(obj);
+  callback_objects.emplace_back(std::move(cb_signal), nullptr, ptr, fn);
 }
 
 //----------------------------------------------------------------------

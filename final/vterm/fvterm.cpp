@@ -1866,7 +1866,7 @@ inline auto FVTerm::changedFromTransparency (const FChar& from, const FChar& to)
 
 //----------------------------------------------------------------------
 inline auto FVTerm::printCharacterOnCoordinate ( FTermArea* area
-                                                      , const FChar& ch) const -> std::size_t
+                                               , const FChar& ch) const -> std::size_t
 {
   const int ax = area->cursor_x - 1;
   const int ay = area->cursor_y - 1;

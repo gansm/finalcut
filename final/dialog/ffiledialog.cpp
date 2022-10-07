@@ -213,16 +213,16 @@ void FFileDialog::onKeyPress (FKeyEvent* ev)
 
 //----------------------------------------------------------------------
 auto FFileDialog::fileOpenChooser ( FWidget* parent
-                                     , const FString& dirname
-                                     , const FString& filter ) -> FString
+                                  , const FString& dirname
+                                  , const FString& filter ) -> FString
 {
   return fileChooser (parent, dirname, filter, DialogType::Open);
 }
 
 //----------------------------------------------------------------------
 auto FFileDialog::fileSaveChooser ( FWidget* parent
-                                     , const FString& dirname
-                                     , const FString& filter ) -> FString
+                                  , const FString& dirname
+                                  , const FString& filter ) -> FString
 {
   return fileChooser (parent, dirname, filter, DialogType::Save);
 }

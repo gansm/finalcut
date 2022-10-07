@@ -139,7 +139,8 @@ class FVTermBuffer
 template <typename Iterator>
 inline FVTermBuffer::FVTermBuffer(Iterator first, Iterator last)
 {
-  assert ( first != last );
+  assert ( first < last );
+  checkCapacity (std::size_t(last - first));
   data.assign(first, last);
 }
 

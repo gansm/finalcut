@@ -672,7 +672,7 @@ inline auto FApplication::isKeyPressed(uInt64 ms) const -> bool
 {
   static auto& mouse = FMouseControl::getInstance();
   static auto& keyboard = FKeyboard::getInstance();
-  auto blocking_time = (ms != 0U) ? ms : keyboard.getReadBlockingTime();
+  const auto blocking_time = (ms != 0U) ? ms : keyboard.getReadBlockingTime();
 
   if ( mouse.isGpmMouseEnabled() )
     return mouse.getGpmKeyPressed(keyboard.hasUnprocessedInput());

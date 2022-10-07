@@ -76,7 +76,7 @@ FMenuItem::~FMenuItem()  // destructor
       menu_list->remove(this);
   }
 
-  delAccelerator();
+  FMenuItem::delAccelerator();
 
   // remove dialog list item callback from the dialog
   if ( associated_window )

@@ -41,8 +41,8 @@ FSystemImpl::~FSystemImpl() noexcept = default;  // destructor
 // public methods of FSystemImpl
 //----------------------------------------------------------------------
 auto FSystemImpl::getpwuid_r ( uid_t uid, struct passwd* pwd
-                            , char* buf, size_t buflen
-                            , struct passwd** result ) -> int
+                             , char* buf, size_t buflen
+                             , struct passwd** result ) -> int
 {
   return ::getpwuid_r (uid, pwd, buf, buflen, result);
 }

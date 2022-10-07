@@ -1490,8 +1490,8 @@ void FListView::sort (Compare cmp)
 
 //----------------------------------------------------------------------
 auto FListView::getAlignOffset ( const Align align
-                                      , const std::size_t column_width
-                                      , const std::size_t width ) const -> std::size_t
+                               , const std::size_t column_width
+                               , const std::size_t width ) const -> std::size_t
 {
   if ( align == Align::Center )
   {
@@ -1847,7 +1847,7 @@ inline auto FListView::getCheckBox (const FListViewItem* item) const -> FString
 
 //----------------------------------------------------------------------
 inline auto FListView::getLinePrefix ( const FListViewItem* item
-                                        , std::size_t indent ) const -> FString
+                                     , std::size_t indent ) const -> FString
 {
   FString line{""};
 

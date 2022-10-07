@@ -1423,7 +1423,7 @@ void FMenu::processActivate() const
 // non-member functions
 //----------------------------------------------------------------------
 auto closeOpenMenus ( FMenu* menu
-                                      , const FPoint& mouse_position ) -> std::tuple<bool, bool>
+                    , const FPoint& mouse_position ) -> std::tuple<bool, bool>
 {
   // Close the open menu
 

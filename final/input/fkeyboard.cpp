@@ -282,7 +282,7 @@ inline auto FKeyboard::getTermcapKey() -> FKey
 {
   // Looking for termcap key strings in the buffer
 
-  static_assert ( FIFO_BUF_SIZE > 0 , "FIFO buffer too small" );
+  static_assert ( FIFO_BUF_SIZE > 0, "FIFO buffer too small" );
 
   if ( key_cap_ptr.use_count() == 0 )
     return NOT_SET;
@@ -319,7 +319,7 @@ inline auto FKeyboard::getKnownKey() -> FKey
 {
   // Looking for a known key strings in the buffer
 
-  static_assert ( FIFO_BUF_SIZE > 0 , "FIFO buffer too small" );
+  static_assert ( FIFO_BUF_SIZE > 0, "FIFO buffer too small" );
 
   const auto buf_len = fifo_buf.getSize();
   const auto& key_map = FKeyMap::getKeyMap();

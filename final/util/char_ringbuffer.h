@@ -143,11 +143,13 @@ class FRingBuffer
     // Overloaded operators
     auto operator [] (std::size_t index) noexcept -> reference
     {
+      static_assert ( Capacity > 0, "Ring buffer has no memory" );
       return buffer[(head + index) % Capacity];
     }
 
     auto operator [] (std::size_t index) const noexcept -> const_reference
     {
+      static_assert ( Capacity > 0, "Ring buffer has no memory" );
       return buffer[(head + index) % Capacity];
     }
 
@@ -251,6 +253,7 @@ class FRingBuffer
       if ( isFull() )
         return;
 
+      static_assert ( Capacity > 0, "Ring buffer has no memory" );
       buffer[tail] = item;
       tail = (tail + 1) % Capacity;
       elements++;
@@ -261,6 +264,7 @@ class FRingBuffer
       if ( isEmpty() )
         return;
 
+      static_assert ( Capacity > 0, "Ring buffer has no memory" );
       head = (head + 1) % Capacity;
       elements--;
     }
@@ -270,6 +274,7 @@ class FRingBuffer
       if ( isEmpty() )
         return;
 
+      static_assert ( Capacity > 0, "Ring buffer has no memory" );
       s = std::min(s, elements);
       head = (head + s) % Capacity;
       elements -= s;

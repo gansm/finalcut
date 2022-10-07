@@ -520,7 +520,7 @@ auto getColumnSubString ( const FString& str
 
 //----------------------------------------------------------------------
 auto getLengthFromColumnWidth ( const FString& str
-                                     , std::size_t col_len ) -> std::size_t
+                              , std::size_t col_len ) -> std::size_t
 {
   std::size_t column_width{0};
   std::size_t length{0};
