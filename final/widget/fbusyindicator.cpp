@@ -103,13 +103,13 @@ void FBusyIndicator::onTimer (finalcut::FTimerEvent*)
   if ( FVTerm::getFOutput()->getEncoding() == Encoding::UTF8 )
   {
     const wchar_t last = uni_pattern[7];
-    std::memmove(&uni_pattern[1], &uni_pattern[0] , sizeof(wchar_t) * 7);
+    std::memmove(&uni_pattern[1], &uni_pattern[0], sizeof(wchar_t) * 7);
     uni_pattern[0] = last;
   }
   else
   {
     const char last = pattern[7];
-    std::memmove(&pattern[1], &pattern[0] , sizeof(char) * 7);
+    std::memmove(&pattern[1], &pattern[0], sizeof(char) * 7);
     pattern[0] = last;
   }
 

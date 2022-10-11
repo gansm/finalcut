@@ -4,7 +4,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2021 Markus Gans                                      *
+* Copyright 2014-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -72,89 +72,79 @@ class FButtonGroup : public FScrollView
     ~FButtonGroup() override;
 
     // Accessor
-    FString             getClassName() const override;
-    FToggleButton*      getFirstButton();
-    FToggleButton*      getLastButton();
-    FToggleButton*      getButton (int) const;
-    std::size_t         getCount() const;
-    FString&            getText() &;
+    auto getClassName() const -> FString override;
+    auto getFirstButton() -> FToggleButton*;
+    auto getLastButton() -> FToggleButton*;
+    auto getButton (int) const -> FToggleButton*;
+    auto getCount() const -> std::size_t;
 
     // Mutator
-    bool                setEnable (bool = true) override;
-    bool                unsetEnable() override;
-    bool                setDisable() override;
-    bool                setFocus (bool = true) override;
-    void                setText (const FString&);
+    auto setEnable (bool = true) -> bool override;
+    auto unsetEnable() -> bool override;
+    auto setDisable() -> bool override;
+    auto setFocus (bool = true) -> bool override;
 
     // Inquiries
-    bool                isChecked(int) const;
-    bool                hasFocusedButton() const;
-    bool                hasCheckedButton() const;
+    auto isChecked(int) const -> bool;
+    auto hasFocusedButton() const -> bool;
+    auto hasCheckedButton() const -> bool;
 
     // Methods
-    void                hide() override;
-    void                insert (FToggleButton*);
-    void                remove (FToggleButton*);
-    void                checkScrollSize (const FToggleButton*);
-    void                checkScrollSize (const FRect&);
+    void hide() override;
+    void insert (FToggleButton*);
+    void remove (FToggleButton*);
+    void checkScrollSize (const FToggleButton*);
+    void checkScrollSize (const FRect&);
 
     // Event handlers
-    void                onMouseDown (FMouseEvent*) override;
-    void                onAccel (FAccelEvent*) override;
-    void                onFocusIn (FFocusEvent*) override;
+    void onMouseDown (FMouseEvent*) override;
+    void onAccel (FAccelEvent*) override;
+    void onFocusIn (FFocusEvent*) override;
 
   protected:
-    // Mutator
-    void                setHotkeyAccelerator();
-
     // Methods
-    void                draw() override;
-    void                drawLabel();
+    void draw() override;
 
   private:
     // Constants
     static constexpr auto NOT_SET = static_cast<std::size_t>(-1);
 
     // Inquiries
-    bool                isRadioButton (const FToggleButton*) const;
+    auto isRadioButton (const FToggleButton*) const -> bool;
 
     // Methods
-    void                init();
-    void                drawText (const FString&, std::size_t);
-    bool                directFocusCheckedRadioButton (FToggleButton*) const;
-    bool                directFocusRadioButton() const;
-    void                directFocus();
-    void                focusCheckedRadioButton (FToggleButton*, FFocusEvent*);
-    void                focusInRadioButton (FFocusEvent*);
+    void init();
+    auto directFocusCheckedRadioButton (FToggleButton*) const -> bool;
+    auto directFocusRadioButton() const -> bool;
+    void directFocus();
+    void focusCheckedRadioButton (FToggleButton*, FFocusEvent*);
+    void focusInRadioButton (FFocusEvent*);
 
     // Callback method
-    void                cb_buttonToggled (const FToggleButton*) const;
+    void cb_buttonToggled (const FToggleButton*) const;
 
     // Data members
-    FString        text{};
-    FObjectList    buttonlist{};
+    FString      text{};
+    FObjectList  buttonlist{};
 };
 
 // FButtonGroup inline functions
 //----------------------------------------------------------------------
-inline FString FButtonGroup::getClassName() const
+inline auto FButtonGroup::getClassName() const -> FString
 { return "FButtonGroup"; }
 
 //----------------------------------------------------------------------
-inline bool FButtonGroup::unsetEnable()
+inline auto FButtonGroup::unsetEnable() -> bool
 { return setEnable(false); }
 
 //----------------------------------------------------------------------
-inline bool FButtonGroup::setDisable()
+inline auto FButtonGroup::setDisable() -> bool
 { return setEnable(false); }
 
 //----------------------------------------------------------------------
-inline std::size_t FButtonGroup::getCount() const
+inline auto FButtonGroup::getCount() const -> std::size_t
 { return buttonlist.size(); }
 
-//----------------------------------------------------------------------
-inline FString& FButtonGroup::getText() &
-{ return text; }
 
 }  // namespace finalcut
 

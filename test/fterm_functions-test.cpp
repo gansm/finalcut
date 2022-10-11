@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021 Markus Gans                                           *
+* Copyright 2021-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -1146,109 +1146,127 @@ void FTermFunctionsTest::FullWidthHalfWidthTest()
   std::wstring s = L"1";
   std::copy(std::begin(s), std::end(s), std::begin(fchar.ch));
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 0 );
-  finalcut::addColumnWidth(fchar);
+  auto column_width = finalcut::getColumnWidth(fchar.ch[0]);
+  finalcut::addColumnWidth(fchar, column_width);
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 1 );
   fchar.attr.bit.char_width = 0x00 & 0x03;
   s = L"\t";
   std::copy(std::begin(s), std::end(s), std::begin(fchar.ch));
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 0 );
-  finalcut::addColumnWidth(fchar);
+  column_width = finalcut::getColumnWidth(fchar.ch[0]);
+  finalcut::addColumnWidth(fchar, column_width);
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 0 );
   fchar.attr.bit.char_width = 0x00 & 0x03;
   s = L"\r";
   std::copy(std::begin(s), std::end(s), std::begin(fchar.ch));
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 0 );
-  finalcut::addColumnWidth(fchar);
+  column_width = finalcut::getColumnWidth(fchar.ch[0]);
+  finalcut::addColumnWidth(fchar, column_width);
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 0 );
   fchar.attr.bit.char_width = 0x00 & 0x03;
   s = L"\n";
   std::copy(std::begin(s), std::end(s), std::begin(fchar.ch));
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 0 );
-  finalcut::addColumnWidth(fchar);
+  column_width = finalcut::getColumnWidth(fchar.ch[0]);
+  finalcut::addColumnWidth(fchar, column_width);
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 0 );
   fchar.attr.bit.char_width = 0x00 & 0x03;
   s = L"\v";
   std::copy(std::begin(s), std::end(s), std::begin(fchar.ch));
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 0 );
-  finalcut::addColumnWidth(fchar);
+  column_width = finalcut::getColumnWidth(fchar.ch[0]);
+  finalcut::addColumnWidth(fchar, column_width);
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 0 );
   fchar.attr.bit.char_width = 0x00 & 0x03;
   s = L" ";
   std::copy(std::begin(s), std::end(s), std::begin(fchar.ch));
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 0 );
-  finalcut::addColumnWidth(fchar);
+  column_width = finalcut::getColumnWidth(fchar.ch[0]);
+  finalcut::addColumnWidth(fchar, column_width);
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 1 );
   fchar.attr.bit.char_width = 0x00 & 0x03;
   s = L"0";
   std::copy(std::begin(s), std::end(s), std::begin(fchar.ch));
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 0 );
-  finalcut::addColumnWidth(fchar);
+  column_width = finalcut::getColumnWidth(fchar.ch[0]);
+  finalcut::addColumnWidth(fchar, column_width);
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 1 );
   fchar.attr.bit.char_width = 0x00 & 0x03;
   s = L"1";
   std::copy(std::begin(s), std::end(s), std::begin(fchar.ch));
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 0 );
-  finalcut::addColumnWidth(fchar);
+  column_width = finalcut::getColumnWidth(fchar.ch[0]);
+  finalcut::addColumnWidth(fchar, column_width);
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 1 );
   fchar.attr.bit.char_width = 0x00 & 0x03;
   s = L"2";
   std::copy(std::begin(s), std::end(s), std::begin(fchar.ch));
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 0 );
-  finalcut::addColumnWidth(fchar);
+  column_width = finalcut::getColumnWidth(fchar.ch[0]);
+  finalcut::addColumnWidth(fchar, column_width);
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 1 );
   fchar.attr.bit.char_width = 0x00 & 0x03;
   s = L"3";
   std::copy(std::begin(s), std::end(s), std::begin(fchar.ch));
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 0 );
-  finalcut::addColumnWidth(fchar);
+  column_width = finalcut::getColumnWidth(fchar.ch[0]);
+  finalcut::addColumnWidth(fchar, column_width);
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 1 );
   fchar.attr.bit.char_width = 0x00 & 0x03;
   s = L"０";
   std::copy(std::begin(s), std::end(s), std::begin(fchar.ch));
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 0 );
-  finalcut::addColumnWidth(fchar);
+  column_width = finalcut::getColumnWidth(fchar.ch[0]);
+  finalcut::addColumnWidth(fchar, column_width);
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 2 );
   fchar.attr.bit.char_width = 0x00 & 0x03;
   s = L"１";
   std::copy(std::begin(s), std::end(s), std::begin(fchar.ch));
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 0 );
-  finalcut::addColumnWidth(fchar);
+  column_width = finalcut::getColumnWidth(fchar.ch[0]);
+  finalcut::addColumnWidth(fchar, column_width);
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 2 );
   fchar.attr.bit.char_width = 0x00 & 0x03;
   s = L"２";
   std::copy(std::begin(s), std::end(s), std::begin(fchar.ch));
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 0 );
-  finalcut::addColumnWidth(fchar);
+  column_width = finalcut::getColumnWidth(fchar.ch[0]);
+  finalcut::addColumnWidth(fchar, column_width);
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 2 );
   fchar.attr.bit.char_width = 0x00 & 0x03;
   s = L"３";
   std::copy(std::begin(s), std::end(s), std::begin(fchar.ch));
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 0 );
-  finalcut::addColumnWidth(fchar);
+  column_width = finalcut::getColumnWidth(fchar.ch[0]);
+  finalcut::addColumnWidth(fchar, column_width);
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 2 );
   fchar.attr.bit.char_width = 0x00 & 0x03;
   s = L"\U00000300";
   std::copy(std::begin(s), std::end(s), std::begin(fchar.ch));
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 0 );
-  finalcut::addColumnWidth(fchar);
+  column_width = finalcut::getColumnWidth(fchar.ch[0]);
+  finalcut::addColumnWidth(fchar, column_width);
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 0 );
   fchar.attr.bit.char_width = 0x00 & 0x03;
   s = L"\U00000348";
   std::copy(std::begin(s), std::end(s), std::begin(fchar.ch));
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 0 );
-  finalcut::addColumnWidth(fchar);
+  column_width = finalcut::getColumnWidth(fchar.ch[0]);
+  finalcut::addColumnWidth(fchar, column_width);
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 0 );
   fchar.attr.bit.char_width = 0x00 & 0x03;
   s = L"\U0000094d";
   std::copy(std::begin(s), std::end(s), std::begin(fchar.ch));
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 0 );
-  finalcut::addColumnWidth(fchar);
+  column_width = finalcut::getColumnWidth(fchar.ch[0]);
+  finalcut::addColumnWidth(fchar, column_width);
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 0 );
   fchar.attr.bit.char_width = 0x00 & 0x03;
   s = L"\U00000e37";
   std::copy(std::begin(s), std::end(s), std::begin(fchar.ch));
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 0 );
-  finalcut::addColumnWidth(fchar);
+  column_width = finalcut::getColumnWidth(fchar.ch[0]);
+  finalcut::addColumnWidth(fchar, column_width);
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 0 );
   fchar.attr.bit.char_width = 0x00 & 0x03;
 
@@ -3019,9 +3037,13 @@ void FTermFunctionsTest::readCursorPosTest()
   {
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::xterm);
+    int wstatus;
 
-    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
+    if ( waitpid(pid, &wstatus, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
+
+    if ( WIFEXITED(wstatus) )
+      CPPUNIT_ASSERT ( WEXITSTATUS(wstatus) == 0 );
   }
 }
 

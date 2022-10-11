@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2021 Markus Gans                                      *
+* Copyright 2012-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -65,16 +65,22 @@ FDialog::~FDialog()  // destructor
   if ( ! FApplication::isQuit() )
     switchToPrevWindow(this);
 
+  auto has_entry = bool( getDialogList() && ! getDialogList()->empty() );
   delDialog(this);
 
   if ( isModal() )
     unsetModal();
+
+  auto fapp = FApplication::getApplicationObject();
+
+  if ( has_entry && noVisibleDialog() )
+    fapp->emitCallback("last-dialog-closed");
 }
 
 
 // public methods of FDialog
 //----------------------------------------------------------------------
-bool FDialog::setDialogWidget (bool enable)
+auto FDialog::setDialogWidget (bool enable) -> bool
 {
   if ( isDialogWidget() == enable )
     return true;
@@ -90,7 +96,7 @@ bool FDialog::setDialogWidget (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FDialog::setModal (bool enable)
+auto FDialog::setModal (bool enable) -> bool
 {
   if ( isModal() == enable )
     return true;
@@ -110,7 +116,7 @@ bool FDialog::setModal (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FDialog::setBorder (bool enable)
+auto FDialog::setBorder (bool enable) -> bool
 {
   if ( enable )
   {
@@ -140,7 +146,7 @@ void FDialog::resetColors()
 }
 
 //----------------------------------------------------------------------
-bool FDialog::setResizeable (bool enable)
+auto FDialog::setResizeable (bool enable) -> bool
 {
   FWindow::setResizeable (enable);
 
@@ -153,7 +159,7 @@ bool FDialog::setResizeable (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FDialog::setMinimizable (bool enable)
+auto FDialog::setMinimizable (bool enable) -> bool
 {
   FWindow::setMinimizable (enable);
 
@@ -187,16 +193,17 @@ void FDialog::show()
 void FDialog::hide()
 {
   FWindow::hide();
+  auto fapp = FApplication::getApplicationObject();
+
+  if ( noVisibleDialog() )
+     fapp->emitCallback("last-dialog-closed");
 
   if ( isModal() )
-  {
-    auto fapp = FApplication::getApplicationObject();
     fapp->exitLoop();
-  }
 }
 
 //----------------------------------------------------------------------
-FDialog::ResultCode FDialog::exec()
+auto FDialog::exec() -> ResultCode
 {
   result_code = ResultCode::Reject;
   show();
@@ -289,7 +296,7 @@ void FDialog::move (const FPoint& d_pos)
 }
 
 //----------------------------------------------------------------------
-inline bool FDialog::moveUp (int n)
+inline auto FDialog::moveUp (int n) -> bool
 {
   if ( isBottomOutside() )
   {
@@ -305,14 +312,14 @@ inline bool FDialog::moveUp (int n)
 }
 
 //----------------------------------------------------------------------
-inline bool FDialog::moveDown (int n)
+inline auto FDialog::moveDown (int n) -> bool
 {
   move ({0, n});
   return ! setPos_error;
 }
 
 //----------------------------------------------------------------------
-inline bool FDialog::moveLeft (int n)
+inline auto FDialog::moveLeft (int n) -> bool
 {
   if ( isLeftOutside() )
   {
@@ -328,7 +335,7 @@ inline bool FDialog::moveLeft (int n)
 }
 
 //----------------------------------------------------------------------
-inline bool FDialog::moveRight (int n)
+inline auto FDialog::moveRight (int n) -> bool
 {
   move ({n, 0});
   return ! setPos_error;
@@ -350,11 +357,13 @@ void FDialog::setSize (const FSize& size, bool adjust)
   const int dw = int(getWidth()) - int(size.getWidth());
   const int dh = int(getHeight()) - int(size.getHeight());
   const auto& shadow = getShadow();
+  const std::size_t old_width = getWidth() + shadow.getWidth();
+  const std::size_t old_height = getHeight() + shadow.getHeight();
   FWindow::setSize (size, false);
 
-  // get adjust width and height
-  const std::size_t w = getWidth() + shadow.getWidth();
-  const std::size_t h = getHeight() + shadow.getHeight();
+  // get adjust width and height with shadow
+  const std::size_t width = getWidth() + shadow.getWidth();
+  const std::size_t height = getHeight() + shadow.getHeight();
 
   // dw > 0 : scale down width
   // dw = 0 : scale only height
@@ -363,16 +372,14 @@ void FDialog::setSize (const FSize& size, bool adjust)
   // dh = 0 : scale only width
   // dh < 0 : scale up height
 
-  const auto d_width = std::size_t(dw);
-  const auto d_height = std::size_t(dh);
   setTerminalUpdates (FVTerm::TerminalUpdate::Stop);
 
   // restoring the non-covered terminal areas
   if ( dw > 0 )
-    restoreVTerm ({x + int(w), y, d_width, h + d_height});  // restore right
+    restoreVTerm ({x + int(width), y, std::size_t(dw), old_height});  // restore right
 
   if ( dh > 0 )
-    restoreVTerm ({x, y + int(h), w + d_width, d_height});  // restore bottom
+    restoreVTerm ({x, y + int(height), old_width, std::size_t(dh)});  // restore bottom
 
   if ( adjust )    // Adjust the size after restoreVTerm(),
     adjustSize();  // because adjustSize() can also change x and y
@@ -389,7 +396,7 @@ void FDialog::setSize (const FSize& size, bool adjust)
 }
 
 //----------------------------------------------------------------------
-bool FDialog::reduceHeight (int n)
+auto FDialog::reduceHeight (int n) -> bool
 {
   if ( ! isResizeable() )
     return false;
@@ -399,7 +406,7 @@ bool FDialog::reduceHeight (int n)
 }
 
 //----------------------------------------------------------------------
-bool FDialog::expandHeight (int n)
+auto FDialog::expandHeight (int n) -> bool
 {
   if ( ! isResizeable() || getHeight() + std::size_t(getY()) > getMaxHeight() )
     return false;
@@ -409,7 +416,7 @@ bool FDialog::expandHeight (int n)
 }
 
 //----------------------------------------------------------------------
-bool FDialog::reduceWidth (int n)
+auto FDialog::reduceWidth (int n) -> bool
 {
   if ( ! isResizeable() )
     return false;
@@ -419,7 +426,7 @@ bool FDialog::reduceWidth (int n)
 }
 
 //----------------------------------------------------------------------
-bool FDialog::expandWidth (int n)
+auto FDialog::expandWidth (int n) -> bool
 {
   if ( ! isResizeable() || getWidth() + std::size_t(getX()) > getMaxWidth() )
     return false;
@@ -429,7 +436,7 @@ bool FDialog::expandWidth (int n)
 }
 
 //----------------------------------------------------------------------
-bool FDialog::zoomWindow()
+auto FDialog::zoomWindow() -> bool
 {
   bool ret_val = FWindow::zoomWindow();
   setZoomItem();
@@ -437,7 +444,7 @@ bool FDialog::zoomWindow()
 }
 
 //----------------------------------------------------------------------
-bool FDialog::minimizeWindow()
+auto FDialog::minimizeWindow() -> bool
 {
   bool ret_val = FWindow::minimizeWindow();
   setMinimizeItem();
@@ -505,6 +512,7 @@ void FDialog::onKeyPress (FKeyEvent* ev)
   if ( ! ev->isAccepted() && isEscapeKey(key) )
   {
     ev->accept();
+    clearStatusBar();
 
     if ( isModal() )
       done (ResultCode::Reject);
@@ -517,7 +525,7 @@ void FDialog::onKeyPress (FKeyEvent* ev)
 void FDialog::onMouseDown (FMouseEvent* ev)
 {
   const auto width = int(getWidth());
-  const MouseStates ms = initMouseStates(*ev, false);
+  const auto& ms = initMouseStates(*ev, false);
   deactivateMinimizeButton();
   deactivateZoomButton();
 
@@ -568,7 +576,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FDialog::onMouseUp (FMouseEvent* ev)
 {
-  const MouseStates ms = initMouseStates(*ev, false);
+  const auto& ms = initMouseStates(*ev, false);
 
   if ( ev->getButton() == MouseButton::Left )
   {
@@ -583,6 +591,7 @@ void FDialog::onMouseUp (FMouseEvent* ev)
       const FPoint deltaPos{ms.termPos - titlebar_click_pos};
       move (deltaPos);
       titlebar_click_pos = ms.termPos;
+      ev->setPos(ev->getPos() - deltaPos);
     }
 
     // Click on titlebar menu button
@@ -613,7 +622,7 @@ void FDialog::onMouseUp (FMouseEvent* ev)
 void FDialog::onMouseMove (FMouseEvent* ev)
 {
   auto mouse_over_menu = isMouseOverMenu(ev->getTermPos());
-  const MouseStates ms = initMouseStates(*ev, mouse_over_menu);
+  const auto& ms = initMouseStates(*ev, mouse_over_menu);
 
   if ( ev->getButton() != MouseButton::Left )
     return;
@@ -623,6 +632,7 @@ void FDialog::onMouseMove (FMouseEvent* ev)
     const FPoint deltaPos{ms.termPos - titlebar_click_pos};
     move (deltaPos);
     titlebar_click_pos = ms.termPos;
+    ev->setPos(ev->getPos() - deltaPos);
   }
 
   // Mouse event handover to the menu
@@ -637,7 +647,7 @@ void FDialog::onMouseMove (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FDialog::onMouseDoubleClick (FMouseEvent* ev)
 {
-  const MouseStates ms = initMouseStates(*ev, false);
+  const auto& ms = initMouseStates(*ev, false);
 
   if ( ev->getButton() != MouseButton::Left )
     return;
@@ -659,6 +669,7 @@ void FDialog::onMouseDoubleClick (FMouseEvent* ev)
       window_focus_widget->setFocus();
 
     setClickedWidget(nullptr);
+    clearStatusBar();
 
     if ( isModal() )
       done (ResultCode::Reject);
@@ -777,7 +788,7 @@ void FDialog::done (ResultCode result)
 //----------------------------------------------------------------------
 void FDialog::draw()
 {
-  if ( tooltip && ! getMoveSizeWidget() )
+  if ( ! getMoveSizeWidget() )
   {
     delete tooltip;
     tooltip = nullptr;
@@ -973,8 +984,8 @@ void FDialog::initCloseMenuItem (FMenu* menu)
 }
 
 //----------------------------------------------------------------------
-inline FDialog::MouseStates
-    FDialog::initMouseStates (const FMouseEvent& ev, bool mouse_over_menu) const
+inline auto
+    FDialog::initMouseStates (const FMouseEvent& ev, bool mouse_over_menu) const -> MouseStates
 {
   return {
            ev.getX(),
@@ -990,22 +1001,25 @@ inline FDialog::MouseStates
 //----------------------------------------------------------------------
 inline void FDialog::mapKeyFunctions()
 {
-  key_map[FKey::Up]            = [this] () { moveUp(1); };
-  key_map[FKey::Down]          = [this] () { moveDown(1); };
-  key_map[FKey::Left]          = [this] () { moveLeft(1); };
-  key_map[FKey::Right]         = [this] () { moveRight(1); };
-  key_map[FKey::Meta_up]       = [this] () { reduceHeight(1); };
-  key_map[FKey::Shift_up]      = [this] () { reduceHeight(1); };
-  key_map[FKey::Meta_down]     = [this] () { expandHeight(1); };
-  key_map[FKey::Shift_down]    = [this] () { expandHeight(1); };
-  key_map[FKey::Meta_left]     = [this] () { reduceWidth(1); };
-  key_map[FKey::Shift_left]    = [this] () { reduceWidth(1); };
-  key_map[FKey::Meta_right]    = [this] () { expandWidth(1); };
-  key_map[FKey::Shift_right]   = [this] () { expandWidth(1); };
-  key_map[FKey::Return]        = [this] () { acceptMoveSize(); };
-  key_map[FKey::Enter]         = [this] () { acceptMoveSize(); };
-  key_map[FKey::Escape]        = [this] () { cancelMoveSize(); };
-  key_map[FKey::Escape_mintty] = [this] () { cancelMoveSize(); };
+  key_map =
+  {
+    { FKey::Up            , [this] () { moveUp(1); } },
+    { FKey::Down          , [this] () { moveDown(1); } },
+    { FKey::Left          , [this] () { moveLeft(1); } },
+    { FKey::Right         , [this] () { moveRight(1); } },
+    { FKey::Meta_up       , [this] () { reduceHeight(1); } },
+    { FKey::Shift_up      , [this] () { reduceHeight(1); } },
+    { FKey::Meta_down     , [this] () { expandHeight(1); } },
+    { FKey::Shift_down    , [this] () { expandHeight(1); } },
+    { FKey::Meta_left     , [this] () { reduceWidth(1); } },
+    { FKey::Shift_left    , [this] () { reduceWidth(1); } },
+    { FKey::Meta_right    , [this] () { expandWidth(1); } },
+    { FKey::Shift_right   , [this] () { expandWidth(1); } },
+    { FKey::Return        , [this] () { acceptMoveSize(); } },
+    { FKey::Enter         , [this] () { acceptMoveSize(); } },
+    { FKey::Escape        , [this] () { cancelMoveSize(); } },
+    { FKey::Escape_mintty , [this] () { cancelMoveSize(); } }
+  };
 }
 
 //----------------------------------------------------------------------
@@ -1025,7 +1039,7 @@ void FDialog::drawBorder()
 
   if ( FVTerm::getFOutput()->isNewFont() )  // Draw a newfont U-shaped frame
   {
-    const FRect r{FPoint{1, 1}, getSize()};
+    const FRect r{{1, 1}, getSize()};
 
     for (auto y = r.getY1() + 1; y < r.getY2(); y++)
     {
@@ -1288,6 +1302,16 @@ void FDialog::drawTextBar()
 }
 
 //----------------------------------------------------------------------
+void FDialog::clearStatusBar() const
+{
+  if ( ! getStatusBar() )
+    return;
+
+  getStatusBar()->clearMessage();
+  getStatusBar()->drawMessage();
+}
+
+//----------------------------------------------------------------------
 void FDialog::restoreOverlaidWindows()
 {
   // Restoring overlaid windows
@@ -1422,13 +1446,13 @@ void FDialog::setZoomItem()
 }
 
 //----------------------------------------------------------------------
-inline std::size_t FDialog::getMenuButtonWidth() const
+inline auto FDialog::getMenuButtonWidth() const -> std::size_t
 {
   return titlebar_buttons ? 3 : 0;
 }
 
 //----------------------------------------------------------------------
-inline std::size_t FDialog::getZoomButtonWidth() const
+inline auto FDialog::getZoomButtonWidth() const -> std::size_t
 {
   if ( titlebar_buttons && isResizeable() )
     return FVTerm::getFOutput()->isNewFont() ? 2 : 3;
@@ -1437,7 +1461,7 @@ inline std::size_t FDialog::getZoomButtonWidth() const
 }
 
 //----------------------------------------------------------------------
-inline std::size_t FDialog::getMinimizeButtonWidth() const
+inline auto FDialog::getMinimizeButtonWidth() const -> std::size_t
 {
   if ( titlebar_buttons && isMinimizable() )
     return FVTerm::getFOutput()->isNewFont() ? 2 : 3;
@@ -1546,7 +1570,7 @@ void FDialog::pressZoomButton (const MouseStates& ms)
 }
 
 //----------------------------------------------------------------------
-inline bool FDialog::isMouseOverMenu (const FPoint& termpos) const
+inline auto FDialog::isMouseOverMenu (const FPoint& termpos) const -> bool
 {
   auto menu_geometry = dialog_menu->getTermGeometry();
 
@@ -1555,13 +1579,13 @@ inline bool FDialog::isMouseOverMenu (const FPoint& termpos) const
 }
 
 //----------------------------------------------------------------------
-inline bool FDialog::isMouseOverMenuButton (const MouseStates& ms) const
+inline auto FDialog::isMouseOverMenuButton (const MouseStates& ms) const -> bool
 {
   return ( ms.mouse_x <= int(ms.menu_btn) && ms.mouse_y == 1 );
 }
 
 //----------------------------------------------------------------------
-inline bool FDialog::isMouseOverZoomButton (const MouseStates& ms) const
+inline auto FDialog::isMouseOverZoomButton (const MouseStates& ms) const -> bool
 {
   return ( isResizeable()
         && ms.mouse_x > int(getWidth() - ms.zoom_btn)
@@ -1570,7 +1594,7 @@ inline bool FDialog::isMouseOverZoomButton (const MouseStates& ms) const
 }
 
 //----------------------------------------------------------------------
-inline bool FDialog::isMouseOverMinimizeButton (const MouseStates& ms)  const
+inline auto FDialog::isMouseOverMinimizeButton (const MouseStates& ms)  const -> bool
 {
   return ( isMinimizable()
         && ms.mouse_x > int(getWidth() - ms.minimize_btn - ms.zoom_btn)
@@ -1579,7 +1603,7 @@ inline bool FDialog::isMouseOverMinimizeButton (const MouseStates& ms)  const
 }
 
 //----------------------------------------------------------------------
-inline bool FDialog::isMouseOverTitlebar (const MouseStates& ms) const
+inline auto FDialog::isMouseOverTitlebar (const MouseStates& ms) const -> bool
 {
   return ( ms.mouse_x > int(ms.menu_btn)
         && ms.mouse_x <= int(getWidth() - ms.minimize_btn - ms.zoom_btn)
@@ -1597,11 +1621,11 @@ inline void FDialog::passEventToSubMenu ( const MouseStates& ms
   const auto& g = ms.termPos;
   const auto& p = dialog_menu->termToWidgetPos(g);
   const auto b = ev.getButton();
-  const auto& _ev = \
+  const auto& new_ev = \
       std::make_shared<FMouseEvent>(Event::MouseMove, p, g, b);
   dialog_menu->mouse_down = true;
   setClickedWidget(dialog_menu);
-  dialog_menu->onMouseMove(_ev.get());
+  dialog_menu->onMouseMove(new_ev.get());
 }
 
 //----------------------------------------------------------------------
@@ -1636,7 +1660,7 @@ inline void FDialog::lowerActivateDialog()
 }
 
 //----------------------------------------------------------------------
-bool FDialog::isOutsideTerminal (const FPoint& pos) const
+auto FDialog::isOutsideTerminal (const FPoint& pos) const -> bool
 {
   return ( pos.getX() + int(getWidth()) <= 1
         || pos.getX() > int(getMaxWidth())
@@ -1645,19 +1669,19 @@ bool FDialog::isOutsideTerminal (const FPoint& pos) const
 }
 
 //----------------------------------------------------------------------
-bool FDialog::isLeftOutside() const
+auto FDialog::isLeftOutside() const -> bool
 {
   return getX() > int(getMaxWidth());
 }
 
 //----------------------------------------------------------------------
-bool FDialog::isBottomOutside() const
+auto FDialog::isBottomOutside() const -> bool
 {
   return getY() > int(getMaxHeight());
 }
 
 //----------------------------------------------------------------------
-bool FDialog::isLowerRightResizeCorner (const MouseStates& ms) const
+auto FDialog::isLowerRightResizeCorner (const MouseStates& ms) const -> bool
 {
   // 3 characters in the lower right corner  |
   //                                         x
@@ -1669,9 +1693,30 @@ bool FDialog::isLowerRightResizeCorner (const MouseStates& ms) const
 }
 
 //----------------------------------------------------------------------
+auto FDialog::noVisibleDialog() const -> bool
+{
+  // Is true when there is no visible dialog
+
+  if ( ! getDialogList() || getDialogList()->empty() )
+    return true;
+
+  // The number of iterations should be very low with only
+  // one visible element
+  for (const auto& dgl : *getDialogList())
+  {
+    const auto& win = static_cast<FDialog*>(dgl);
+
+    if ( ! win->isWindowHidden() )
+      return false;
+  }
+
+  return true;
+}
+
+//----------------------------------------------------------------------
 void FDialog::resizeMouseDown (const MouseStates& ms)
 {
-  // Click on the lower right resize corner
+  // Click on the lower right resize corner (mouse button down)
 
   if ( isResizeable() && isLowerRightResizeCorner(ms) )
   {
@@ -1696,7 +1741,8 @@ void FDialog::resizeMouseDown (const MouseStates& ms)
 //----------------------------------------------------------------------
 void FDialog::resizeMouseUpMove (const MouseStates& ms, bool mouse_up)
 {
-  // Resize the dialog
+  // Resize dialog on mouse button up or on mouse movements
+
   if ( isResizeable() && ! resize_click_pos.isOrigin() )
   {
     const auto& r = getRootWidget();
@@ -1761,10 +1807,7 @@ void FDialog::cancelMouseResize()
 inline void FDialog::acceptMoveSize()
 {
   setMoveSizeWidget(nullptr);
-
-  if ( tooltip )
-    delete tooltip;
-
+  delete tooltip;
   tooltip = nullptr;
   redraw();
 }
@@ -1773,10 +1816,7 @@ inline void FDialog::acceptMoveSize()
 inline void FDialog::cancelMoveSize()
 {
   setMoveSizeWidget(nullptr);
-
-  if ( tooltip )
-    delete tooltip;
-
+  delete tooltip;
   tooltip = nullptr;
   setPos (save_geometry.getPos());
 
@@ -1790,14 +1830,24 @@ inline void FDialog::cancelMoveSize()
 void FDialog::addDialog (FWidget* obj)
 {
   // Add the dialog object obj to the dialog list
-  if ( getDialogList() )
-    getDialogList()->push_back(obj);
+
+  if ( ! getDialogList() )
+    return;
+
+  if ( getDialogList()->empty() )
+  {
+    auto fapp = FApplication::getApplicationObject();
+    fapp->emitCallback("first-dialog-opened");
+  }
+
+  getDialogList()->push_back(obj);
 }
 
 //----------------------------------------------------------------------
 void FDialog::delDialog (const FWidget* obj)
 {
   // Delete the dialog object obj from the dialog list
+
   if ( ! getDialogList() || getDialogList()->empty() )
     return;
 
@@ -1895,6 +1945,7 @@ void FDialog::cb_close()
   dialog_menu->hide();
   setClickedWidget(nullptr);
   drawTitleBar();
+  clearStatusBar();
   close();
 }
 

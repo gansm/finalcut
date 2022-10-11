@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2021 Markus Gans                                      *
+* Copyright 2018-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -76,41 +76,41 @@ class FTermOpenBSD final
 {
   public:
     // Accessor
-    FString            getClassName() const;
-    static auto        getInstance() -> FTermOpenBSD&;
+    auto        getClassName() const -> FString;
+    static auto getInstance() -> FTermOpenBSD&;
 
     // Inquiries
-    static bool        isBSDConsole();
+    static auto isBSDConsole() -> bool;
 
     // Mutators
-    static void        disableMetaSendsEscape() noexcept;
-    static void        enableMetaSendsEscape() noexcept;
+    static void disableMetaSendsEscape() noexcept;
+    static void enableMetaSendsEscape() noexcept;
 
     // Methods
-    static void        init();
-    static void        finish();
-    static bool        setBeep (int, int);
-    static bool        resetBeep();
+    static void init();
+    static void finish();
+    static auto setBeep (int, int) -> bool;
+    static auto resetBeep() -> bool;
 
 #if defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
   private:
     // Methods
-    static void        warnNotInitialized();
-    static bool        saveBSDConsoleEncoding();
-    static bool        setBSDConsoleEncoding (kbd_t);
-    static bool        setBSDConsoleMetaEsc();
-    static bool        resetBSDConsoleEncoding();
+    static void warnNotInitialized();
+    static auto saveBSDConsoleEncoding() -> bool;
+    static auto setBSDConsoleEncoding (kbd_t) -> bool;
+    static auto setBSDConsoleMetaEsc() -> bool;
+    static auto resetBSDConsoleEncoding() -> bool;
 
     // Data members
-    static kbd_t       bsd_keyboard_encoding;
-    static bool        meta_sends_escape;
+    static kbd_t  bsd_keyboard_encoding;
+    static bool   meta_sends_escape;
 #endif  // defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
 };
 
 
 // FTermOpenBSD inline functions
 //----------------------------------------------------------------------
-inline FString FTermOpenBSD::getClassName() const
+inline auto FTermOpenBSD::getClassName() const -> FString
 { return "FTermOpenBSD"; }
 
 //----------------------------------------------------------------------

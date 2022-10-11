@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2021 Markus Gans                                      *
+* Copyright 2020-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -39,7 +39,7 @@ FLog::~FLog()  // destructor
 
 // public methods of FLog
 //----------------------------------------------------------------------
-FLog& FLog::operator << (LogLevel log_level)
+auto FLog::operator << (LogLevel log_level) -> FLog&
 {
   sync();
   std::lock_guard<std::mutex> lock_guard(current_log_mutex);
@@ -47,19 +47,19 @@ FLog& FLog::operator << (LogLevel log_level)
   switch ( log_level )
   {
     case LogLevel::Info:
-      current_log = [this] (const std::string& s) { info(s); };
+      current_log = [this] (const auto& s) { info(s); };
       break;
 
     case LogLevel::Warn:
-      current_log = [this] (const std::string& s) { warn(s); };
+      current_log = [this] (const auto& s) { warn(s); };
       break;
 
     case LogLevel::Error:
-      current_log = [this] (const std::string& s) { error(s); };
+      current_log = [this] (const auto& s) { error(s); };
       break;
 
     case LogLevel::Debug:
-      current_log = [this] (const std::string& s) { debug(s); };
+      current_log = [this] (const auto& s) { debug(s); };
       break;
 
     default:
@@ -72,7 +72,7 @@ FLog& FLog::operator << (LogLevel log_level)
 
 // protected methods of FLog
 //----------------------------------------------------------------------
-int FLog::sync()
+auto FLog::sync() -> int
 {
   if ( ! str().empty() )
   {
@@ -84,4 +84,3 @@ int FLog::sync()
 }
 
 }  // namespace finalcut
-

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2021 Markus Gans                                      *
+* Copyright 2020-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -53,7 +53,7 @@ class RotoZoomer final : public finalcut::FDialog
     explicit RotoZoomer (finalcut::FWidget* = nullptr, bool = false, int = 314);
 
     // Accessors
-    finalcut::FString getReport() const;
+    auto getReport() const -> finalcut::FString;
 
     // Event handlers
     void onShow (finalcut::FShowEvent*) override;
@@ -127,18 +127,18 @@ void RotoZoomer::draw()
     start = system_clock::now();
 
   finalcut::FDialog::draw();
-  auto cx = double(80.0 / 2.0 + (80.0 / 2.0 * std::sin(double(path) / 50.0)));
-  auto cy = double(23.0 + (23.0 * std::cos(double(path) / 50.0)));
-  auto r  = double(128.0 + 96.0 * std::cos(double(path) / 10.0));
   auto a  = double(path) / 50.0;
+  auto r  = double(128.0 + 96.0 * std::cos(double(path) / 10.0));
+  auto cx = double(80.0 / 2.0 + (80.0 / 2.0 * std::sin(a)));
+  auto cy = double(23.0 + (23.0 * std::cos(a)));
   rotozoomer (cx, cy, r, a);
 }
 
 //----------------------------------------------------------------------
 inline void RotoZoomer::rotozoomer (double cx, double cy, double r, double a)
 {
-  const auto Cols = int(getClientWidth());
-  const auto Lines = int(getClientHeight());
+  const auto& Cols = int(getClientWidth());
+  const auto& Lines = int(getClientHeight());
   auto Ax   = int(4096.0 * (cx + r * std::cos(a)));
   auto Ay   = int(4096.0 * (cy + r * std::sin(a)));
   auto Bx   = int(4096.0 * (cx + r * std::cos(a + 2.02358)));
@@ -158,11 +158,11 @@ inline void RotoZoomer::rotozoomer (double cx, double cy, double r, double a)
 
     for (auto x = 0; x < Cols; x++)
     {
-      auto ch = data[((Cy >> 14) & 0xf) + ((Cx >> 10) & 0xf0)];
+      const auto& ch = data[((Cy >> 14) & 0xf) + ((Cx >> 10) & 0xf0)];
 
-      if ( ch == '+' )
+      if ( ch == L'+' )
         print() << finalcut::FColorPair{FColor::Black, FColor::Red};
-      else if ( ch == 'x' )
+      else if ( ch == L'x' )
         print() << finalcut::FColorPair{FColor::Black, FColor::Cyan};
       else
         print() << finalcut::FColorPair{FColor::Black, FColor::White};
@@ -187,7 +187,7 @@ void RotoZoomer::generateReport()
   finalcut::FStringStream rep;
   dimension_str << getDesktopWidth()
                 << "x" << getDesktopHeight();
-  auto elapsed_ms = int(duration_cast<milliseconds>(end - start).count());
+  const auto elapsed_ms = int(duration_cast<milliseconds>(end - start).count());
   time_str << double(elapsed_ms) / 1000 << "s";
   fps_str << double(loops) * 1000.0 / double(elapsed_ms);
 
@@ -203,7 +203,7 @@ void RotoZoomer::generateReport()
 }
 
 //----------------------------------------------------------------------
-inline finalcut::FString RotoZoomer::getReport() const
+inline auto RotoZoomer::getReport() const -> finalcut::FString
 {
   return report;
 }
@@ -287,7 +287,7 @@ void RotoZoomer::adjustSize()
 //----------------------------------------------------------------------
 //                               main part
 //----------------------------------------------------------------------
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   bool benchmark{false};
   finalcut::FString report{};

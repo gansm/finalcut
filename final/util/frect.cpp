@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2021 Markus Gans                                      *
+* Copyright 2014-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -54,43 +54,43 @@ FRect::FRect (const FPoint& p1, const FPoint& p2) noexcept
 
 // public methods of FRect
 //----------------------------------------------------------------------
-bool FRect::isEmpty() const
+auto FRect::isEmpty() const -> bool
 {
   return X2 == X1 - 1 && Y2 == Y1 - 1;
 }
 
 //----------------------------------------------------------------------
-FPoint FRect::getPos() const
+auto FRect::getPos() const -> FPoint
 {
   return { X1, Y1 };
 }
 
 //----------------------------------------------------------------------
-FPoint FRect::getUpperLeftPos() const
+auto FRect::getUpperLeftPos() const -> FPoint
 {
   return { X1, Y1 };
 }
 
 //----------------------------------------------------------------------
-FPoint FRect::getUpperRightPos() const
+auto FRect::getUpperRightPos() const -> FPoint
 {
   return { X2, Y1 };
 }
 
 //----------------------------------------------------------------------
-FPoint FRect::getLowerLeftPos() const
+auto FRect::getLowerLeftPos() const -> FPoint
 {
   return { X1, Y2 };
 }
 
 //----------------------------------------------------------------------
-FPoint FRect::getLowerRightPos() const
+auto FRect::getLowerRightPos() const -> FPoint
 {
   return { X2, Y2 };
 }
 
 //----------------------------------------------------------------------
-FSize FRect::getSize() const
+auto FRect::getSize() const -> FSize
 {
   return { getWidth(), getHeight() };
 }
@@ -258,63 +258,63 @@ void FRect::scaleBy (const FPoint& d)
 }
 
 //----------------------------------------------------------------------
-bool FRect::contains (int x, int y) const noexcept
+auto FRect::contains (int x, int y) const noexcept -> bool
 {
   return x >= X1 && x <= X2
       && y >= Y1 && y <= Y2;
 }
 
 //----------------------------------------------------------------------
-bool FRect::contains (const FPoint& p) const
+auto FRect::contains (const FPoint& p) const -> bool
 {
   return p.getX() >= X1 && p.getX() <= X2
       && p.getY() >= Y1 && p.getY() <= Y2;
 }
 
 //----------------------------------------------------------------------
-bool FRect::contains (const FRect& r) const
+auto FRect::contains (const FRect& r) const -> bool
 {
   return r.X1 >= X1 && r.X2 <= X2
       && r.Y1 >= Y1 && r.Y2 <= Y2;
 }
 
 //----------------------------------------------------------------------
-bool FRect::overlap (const FRect &r) const
+auto FRect::overlap (const FRect &r) const -> bool
 {
   return ( std::max(X1, r.X1) <= std::min(X2, r.X2)
         && std::max(Y1, r.Y1) <= std::min(Y2, r.Y2) );
 }
 
 //----------------------------------------------------------------------
-FRect FRect::intersect (const FRect& r) const
+auto FRect::intersect (const FRect& r) const -> FRect
 {
   // intersection: this ∩ r
-  int _X1 = std::max(X1, r.X1);
-  int _Y1 = std::max(Y1, r.Y1);
-  int _X2 = std::min(X2, r.X2);
-  int _Y2 = std::min(Y2, r.Y2);
-  const FPoint p1{ _X1, _Y1 };
-  const FPoint p2{ _X2, _Y2 };
+  int p1_x = std::max(X1, r.X1);
+  int p1_y = std::max(Y1, r.Y1);
+  int p2_x = std::min(X2, r.X2);
+  int p2_y = std::min(Y2, r.Y2);
+  const FPoint p1{ p1_x, p1_y };
+  const FPoint p2{ p2_x, p2_y };
   return { p1, p2 };
 }
 
 //----------------------------------------------------------------------
-FRect FRect::combined (const FRect& r) const
+auto FRect::combined (const FRect& r) const -> FRect
 {
   // Union: this ∪ r
-  int _X1 = std::min(X1, r.X1);
-  int _Y1 = std::min(Y1, r.Y1);
-  int _X2 = std::max(X2, r.X2);
-  int _Y2 = std::max(Y2, r.Y2);
-  const FPoint p1{ _X1, _Y1 };
-  const FPoint p2{ _X2, _Y2 };
+  int p1_x = std::min(X1, r.X1);
+  int p1_y = std::min(Y1, r.Y1);
+  int p2_x = std::max(X2, r.X2);
+  int p2_y = std::max(Y2, r.Y2);
+  const FPoint p1{ p1_x, p1_y };
+  const FPoint p2{ p2_x, p2_y };
   return { p1, p2 };
 }
 
 
 // FRect non-member operators
 //----------------------------------------------------------------------
-FRect operator + (const FRect& r, const FSize& s)
+auto operator + (const FRect& r, const FSize& s) -> FRect
 {
   return { r.X1
          , r.Y1
@@ -323,7 +323,7 @@ FRect operator + (const FRect& r, const FSize& s)
 }
 
 //----------------------------------------------------------------------
-FRect operator - (const FRect& r, const FSize& s)
+auto operator - (const FRect& r, const FSize& s) -> FRect
 {
   return { r.X1
          , r.Y1
@@ -332,7 +332,7 @@ FRect operator - (const FRect& r, const FSize& s)
 }
 
 //----------------------------------------------------------------------
-bool operator == (const FRect& r1, const FRect& r2)
+auto operator == (const FRect& r1, const FRect& r2) -> bool
 {
   return r1.X1 == r2.X1
       && r1.Y1 == r2.Y1
@@ -341,7 +341,7 @@ bool operator == (const FRect& r1, const FRect& r2)
 }
 
 //----------------------------------------------------------------------
-bool operator != (const FRect& r1, const FRect& r2)
+auto operator != (const FRect& r1, const FRect& r2) -> bool
 {
   return r1.X1 != r2.X1
       || r1.Y1 != r2.Y1
@@ -350,7 +350,7 @@ bool operator != (const FRect& r1, const FRect& r2)
 }
 
 //----------------------------------------------------------------------
-std::ostream& operator << (std::ostream& outstr, const FRect& r)
+auto operator << (std::ostream& outstr, const FRect& r) -> std::ostream&
 {
   outstr << r.X1 << " "
          << r.Y1 << " "
@@ -360,7 +360,7 @@ std::ostream& operator << (std::ostream& outstr, const FRect& r)
 }
 
 //----------------------------------------------------------------------
-std::istream& operator >> (std::istream& instr, FRect& r)
+auto operator >> (std::istream& instr, FRect& r) -> std::istream&
 {
   int x1{};
   int y1{};

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2021 Markus Gans                                      *
+* Copyright 2015-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -57,7 +57,7 @@ FWidget*              FWidget::show_root_widget{nullptr};
 FWidget*              FWidget::redraw_root_widget{nullptr};
 FWidget::FWidgetList* FWidget::dialog_list{nullptr};
 FWidget::FWidgetList* FWidget::always_on_top_list{nullptr};
-FWidget::FWidgetList* FWidget::close_widget{nullptr};
+FWidget::FWidgetList* FWidget::close_widget_list{nullptr};
 bool                  FWidget::init_terminal{false};
 bool                  FWidget::init_desktop{false};
 uInt                  FWidget::modal_dialog_counter{};
@@ -148,7 +148,7 @@ FWidget::~FWidget()  // destructor
 
 // public methods of FWidget
 //----------------------------------------------------------------------
-FWidget* FWidget::getRootWidget()
+auto FWidget::getRootWidget() -> FWidget*
 {
   FWidget* obj = this;
   auto p_obj = getParentWidget();
@@ -163,7 +163,7 @@ FWidget* FWidget::getRootWidget()
 }
 
 //----------------------------------------------------------------------
-FWidget* FWidget::getParentWidget() const
+auto FWidget::getParentWidget() const -> FWidget*
 {
   auto p_obj = getParent();
 
@@ -176,12 +176,12 @@ FWidget* FWidget::getParentWidget() const
 //----------------------------------------------------------------------
 auto FWidget::getColorTheme() -> std::shared_ptr<FWidgetColors>&
 {
-  static const auto& color_theme = make_unique<std::shared_ptr<FWidgetColors>>();
+  static const auto& color_theme = std::make_unique<std::shared_ptr<FWidgetColors>>();
   return *color_theme;
 }
 
 //----------------------------------------------------------------------
-std::vector<bool>& FWidget::doubleFlatLine_ref (Side side)
+auto FWidget::doubleFlatLine_ref (Side side) -> std::vector<bool>&
 {
   auto& mask = double_flatline_mask;
 
@@ -207,7 +207,7 @@ std::vector<bool>& FWidget::doubleFlatLine_ref (Side side)
 }
 
 //----------------------------------------------------------------------
-FPoint FWidget::getPrintPos()
+auto FWidget::getPrintPos() -> FPoint
 {
   const auto& cur = getPrintCursor();
   return { cur.getX() - woffset.getX1() - getX() + 1
@@ -225,13 +225,13 @@ void FWidget::setMainWidget (FWidget* obj)
 }
 
 //----------------------------------------------------------------------
-bool FWidget::setVisible (bool enable)
+auto FWidget::setVisible (bool enable) -> bool
 {
   return (flags.visible = enable);
 }
 
 //----------------------------------------------------------------------
-bool FWidget::setEnable (bool enable)
+auto FWidget::setEnable (bool enable) -> bool
 {
   if ( enable )
     emitCallback("enable");
@@ -242,7 +242,7 @@ bool FWidget::setEnable (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FWidget::setFocus (bool enable)
+auto FWidget::setFocus (bool enable) -> bool
 {
   if ( ! isEnabled() )
     return false;
@@ -250,11 +250,11 @@ bool FWidget::setFocus (bool enable)
   if ( flags.focus == enable )
     return true;
 
-  auto last_focus = FWidget::getFocusWidget();
-
-  // set widget focus
+  // Set widget focus
   if ( enable && ! flags.focus )
   {
+    auto last_focus = FWidget::getFocusWidget();
+
     if ( last_focus )
       last_focus->unsetFocus();
 
@@ -429,24 +429,18 @@ void FWidget::setSize (const FSize& size, bool adjust)
     && getHeight() == height && wsize.getHeight() == height )
     return;
 
-  if ( width < 1 )  // A width can never be narrower than 1 character
-    width = 1;
-
-  if ( height < 1 )  // A height can never be narrower than 1 character
-    height = 1;
-
-  wsize.setWidth(width);
-  wsize.setHeight(height);
-  adjust_wsize.setWidth(width);
-  adjust_wsize.setHeight(height);
-
-  if ( adjust )
-    adjustSize();
+  // A width or a height can never be narrower than 1 character
+  wsize.setWidth(std::max(width, std::size_t(1u)));
+  wsize.setHeight(std::max(height, std::size_t(1u)));
+  adjust_wsize = wsize;
 
   double_flatline_mask.top.resize (getWidth(), false);
   double_flatline_mask.right.resize (getHeight(), false);
   double_flatline_mask.bottom.resize (getWidth(), false);
   double_flatline_mask.left.resize (getHeight(), false);
+
+  if ( adjust )
+    adjustSize();
 }
 
 //----------------------------------------------------------------------
@@ -606,7 +600,7 @@ void FWidget::setGeometry (const FPoint& p, const FSize& s, bool adjust)
 }
 
 //----------------------------------------------------------------------
-bool FWidget::setCursorPos (const FPoint& pos)
+auto FWidget::setCursorPos (const FPoint& pos) -> bool
 {
   // sets the input cursor position
 
@@ -622,7 +616,7 @@ bool FWidget::setCursorPos (const FPoint& pos)
 
   if ( area->hasOwner() )
   {
-    const auto area_owner = area->getOwner<FWidget*>();
+    const auto& area_owner = area->getOwner<FWidget*>();
     int woffsetX = getTermX() - area_owner->getTermX();
     int woffsetY = getTermY() - area_owner->getTermY();
 
@@ -715,7 +709,7 @@ void FWidget::setDoubleFlatLine (Side side, int pos, bool bit)
 }
 
 //----------------------------------------------------------------------
-FWidget* FWidget::childWidgetAt (const FPoint& pos) &
+auto FWidget::childWidgetAt (const FPoint& pos) & -> FWidget*
 {
   if ( ! hasChildren() )
     return nullptr;
@@ -741,7 +735,7 @@ FWidget* FWidget::childWidgetAt (const FPoint& pos) &
 }
 
 //----------------------------------------------------------------------
-int FWidget::numOfFocusableChildren() &
+auto FWidget::numOfFocusableChildren() & -> int
 {
   if ( ! hasChildren() )
     return 0;
@@ -765,7 +759,7 @@ int FWidget::numOfFocusableChildren() &
 }
 
 //----------------------------------------------------------------------
-bool FWidget::close()
+auto FWidget::close() -> bool
 {
   // Sends a close event and quits the application on acceptance
 
@@ -780,8 +774,8 @@ bool FWidget::close()
     {
       hide();
 
-      if ( ! flags.modal && ! isInFWidgetList(close_widget, this) )
-        close_widget->push_back(this);
+      if ( ! flags.modal && ! isInFWidgetList(close_widget_list, this) )
+        close_widget_list->push_back(this);
     }
 
     return true;
@@ -868,6 +862,11 @@ void FWidget::resize()
 {
   if ( isRootWidget() )
   {
+    // The screen content is now unknown
+    auto foutput_ptr = FVTerm::getFOutput();
+    foutput_ptr->clearTerminalState();
+    foutput_ptr->clearTerminalAttributes();
+    // Determine the new terminal size
     const FRect old_term_geometry {getTermGeometry()};
     determineDesktopSize();
     FRect term_geometry {getTermGeometry()};
@@ -970,7 +969,122 @@ void FWidget::hide()
 }
 
 //----------------------------------------------------------------------
-bool FWidget::focusFirstChild() &
+auto FWidget::focusNextChild() -> bool
+{
+  if ( isDialogWidget() || ! hasParent() )
+    return false;
+
+  const auto& parent = getParentWidget();
+
+  if ( ! parent
+    || ! parent->hasChildren()
+    || parent->numOfFocusableChildren() <= 1 )
+    return false;
+
+  auto iter = parent->cbegin();
+  const auto last = parent->cend();
+
+  while ( iter != last )
+  {
+    if ( ! (*iter)->isWidget() )
+    {
+      ++iter;
+      continue;
+    }
+
+    const auto& w = static_cast<FWidget*>(*iter);
+
+    if ( w != this )
+    {
+      ++iter;
+      continue;
+    }
+
+    FWidget* next{nullptr};
+    auto next_element = iter;
+
+    do
+    {
+      ++next_element;
+
+      if ( next_element == parent->cend() )
+        next_element = parent->cbegin();
+
+      if ( ! (*next_element)->isWidget() )
+        continue;
+
+      next = static_cast<FWidget*>(*next_element);
+    } while ( ! next
+           || ! next->isEnabled()
+           || ! next->acceptFocus()
+           || ! next->isShown()
+           || next->isWindowWidget() );
+
+    return changeFocus (next, parent, FocusTypes::NextWidget);
+  }  // The focus has been changed
+
+  return true;
+}
+
+//----------------------------------------------------------------------
+auto FWidget::focusPrevChild() -> bool
+{
+  if ( isDialogWidget() || ! hasParent() )
+    return false;
+
+  const auto& parent = getParentWidget();
+
+  if ( ! parent
+    || ! parent->hasChildren()
+    || parent->numOfFocusableChildren() <= 1 )
+    return false;
+
+  auto iter = parent->cend();
+  const auto first = parent->cbegin();
+
+  do
+  {
+    --iter;
+
+    if ( ! (*iter)->isWidget() )
+      continue;
+
+    const auto& w = static_cast<FWidget*>(*iter);
+
+    if ( w != this )
+      continue;
+
+    FWidget* prev{nullptr};
+    auto prev_element = iter;
+
+    do
+    {
+      if ( ! (*prev_element)->isWidget() )
+      {
+        --prev_element;
+        continue;
+      }
+
+      if ( prev_element == parent->cbegin() )
+        prev_element = parent->cend();
+
+      --prev_element;
+      prev = static_cast<FWidget*>(*prev_element);
+    } while ( ! prev
+           || ! prev->isEnabled()
+           || ! prev->acceptFocus()
+           || ! prev->isShown()
+           || prev->isWindowWidget() );
+
+    return changeFocus (prev, parent, FocusTypes::PreviousWidget);
+  }  // The focus has been changed
+  while ( iter != first );
+
+  return true;
+}
+
+//----------------------------------------------------------------------
+auto FWidget::focusFirstChild() & -> bool
 {
   if ( ! hasChildren() )
     return false;
@@ -1012,7 +1126,7 @@ bool FWidget::focusFirstChild() &
 }
 
 //----------------------------------------------------------------------
-bool FWidget::focusLastChild() &
+auto FWidget::focusLastChild() & -> bool
 {
   if ( ! hasChildren() )
     return false;
@@ -1063,7 +1177,7 @@ void FWidget::quit()
 
 // protected methods of FWidget
 //----------------------------------------------------------------------
-FVTerm::FTermArea* FWidget::getPrintArea()
+auto FWidget::getPrintArea() -> FVTerm::FTermArea*
 {
   // returns the print area of this object
 
@@ -1115,7 +1229,7 @@ void FWidget::delPreprocessingHandler (const FVTerm* instance)
 }
 
 //----------------------------------------------------------------------
-bool FWidget::isChildPrintArea() const
+auto FWidget::isChildPrintArea() const -> bool
 {
   const auto& p_obj = static_cast<FWidget*>(getParent());
   return ( p_obj
@@ -1129,9 +1243,7 @@ void FWidget::setStatusBar (FStatusBar* sbar)
   if ( ! sbar || statusbar == sbar )
     return;
 
-  if ( statusbar )
-    delete statusbar;
-
+  delete statusbar;
   statusbar = sbar;
 }
 
@@ -1141,9 +1253,7 @@ void FWidget::setMenuBar (FMenuBar* mbar)
   if ( ! mbar || menubar == mbar )
     return;
 
-  if ( menubar )
-    delete menubar;
-
+  delete menubar;
   menubar = mbar;
 }
 
@@ -1300,23 +1410,21 @@ void FWidget::hideArea (const FSize& size)
   if ( size.isEmpty() )
     return;
 
-  FColor fg{};
-  FColor bg{};
   const auto& parent_widget = getParentWidget();
 
   if ( parent_widget )
   {
-    fg = parent_widget->getForegroundColor();
-    bg = parent_widget->getBackgroundColor();
+    FColor fg = parent_widget->getForegroundColor();
+    FColor bg = parent_widget->getBackgroundColor();
+    setColor (fg, bg);
   }
   else
   {
     auto color_theme = getColorTheme();
-    fg = color_theme->dialog_fg;
-    bg = color_theme->dialog_bg;
+    FColor fg = color_theme->dialog_fg;
+    FColor bg = color_theme->dialog_bg;
+    setColor (fg, bg);
   }
-
-  setColor (fg, bg);
 
   if ( size.getWidth() == 0 )
     return;
@@ -1330,122 +1438,7 @@ void FWidget::hideArea (const FSize& size)
 }
 
 //----------------------------------------------------------------------
-bool FWidget::focusNextChild()
-{
-  if ( isDialogWidget() || ! hasParent() )
-    return false;
-
-  const auto& parent = getParentWidget();
-
-  if ( ! parent
-    || ! parent->hasChildren()
-    || parent->numOfFocusableChildren() <= 1 )
-    return false;
-
-  auto iter = parent->cbegin();
-  const auto last = parent->cend();
-
-  while ( iter != last )
-  {
-    if ( ! (*iter)->isWidget() )
-    {
-      ++iter;
-      continue;
-    }
-
-    const auto& w = static_cast<FWidget*>(*iter);
-
-    if ( w != this )
-    {
-      ++iter;
-      continue;
-    }
-
-    FWidget* next{nullptr};
-    auto next_element = iter;
-
-    do
-    {
-      ++next_element;
-
-      if ( next_element == parent->cend() )
-        next_element = parent->cbegin();
-
-      if ( ! (*next_element)->isWidget() )
-        continue;
-
-      next = static_cast<FWidget*>(*next_element);
-    } while ( ! next
-           || ! next->isEnabled()
-           || ! next->acceptFocus()
-           || ! next->isShown()
-           || next->isWindowWidget() );
-
-    return changeFocus (next, parent, FocusTypes::NextWidget);
-  }  // The focus has been changed
-
-  return true;
-}
-
-//----------------------------------------------------------------------
-bool FWidget::focusPrevChild()
-{
-  if ( isDialogWidget() || ! hasParent() )
-    return false;
-
-  const auto& parent = getParentWidget();
-
-  if ( ! parent
-    || ! parent->hasChildren()
-    || parent->numOfFocusableChildren() <= 1 )
-    return false;
-
-  auto iter = parent->cend();
-  const auto first = parent->cbegin();
-
-  do
-  {
-    --iter;
-
-    if ( ! (*iter)->isWidget() )
-      continue;
-
-    const auto& w = static_cast<FWidget*>(*iter);
-
-    if ( w != this )
-      continue;
-
-    FWidget* prev{nullptr};
-    auto prev_element = iter;
-
-    do
-    {
-      if ( ! (*prev_element)->isWidget() )
-      {
-        --prev_element;
-        continue;
-      }
-
-      if ( prev_element == parent->cbegin() )
-        prev_element = parent->cend();
-
-      --prev_element;
-      prev = static_cast<FWidget*>(*prev_element);
-    } while ( ! prev
-           || ! prev->isEnabled()
-           || ! prev->acceptFocus()
-           || ! prev->isShown()
-           || prev->isWindowWidget() );
-
-    return changeFocus (prev, parent, FocusTypes::PreviousWidget);
-  }  // The focus has been changed
-  while ( iter != first );
-
-  return true;
-}
-
-//----------------------------------------------------------------------
-bool FWidget::event (FEvent* ev)
+auto FWidget::event (FEvent* ev) -> bool
 {
   auto event_type = ev->getType();
 
@@ -1678,7 +1671,7 @@ void FWidget::initRootWidget()
     // Initialize widget lists
     dialog_list        = new FWidgetList();
     always_on_top_list = new FWidgetList();
-    close_widget       = new FWidgetList();
+    close_widget_list  = new FWidgetList();
   }
   catch (const std::bad_alloc&)
   {
@@ -1722,23 +1715,13 @@ void FWidget::initWidgetLayout()
 //----------------------------------------------------------------------
 void FWidget::finish()
 {
-  if ( close_widget )
-  {
-    delete close_widget;
-    close_widget = nullptr;
-  }
-
-  if ( dialog_list )
-  {
-    delete dialog_list;
-    dialog_list = nullptr;
-  }
-
-  if ( always_on_top_list )
-  {
-    delete always_on_top_list;
-    always_on_top_list = nullptr;
-  }
+  delete close_widget_list;
+  close_widget_list = nullptr;
+  delete dialog_list;
+  dialog_list = nullptr;
+  delete always_on_top_list;
+  always_on_top_list = nullptr;
+  internal::var::root_widget = nullptr;
 }
 
 //----------------------------------------------------------------------
@@ -1795,7 +1778,7 @@ inline void FWidget::insufficientSpaceAdjust()
 //----------------------------------------------------------------------
 void FWidget::KeyPressEvent (FKeyEvent* kev)
 {
-  auto change_focus = [this] (const FKey key)
+  auto change_focus = [this] (const auto& key)
   {
     if ( isFocusNextKey(key) )
       return focusNextChild();
@@ -1843,7 +1826,7 @@ void FWidget::KeyDownEvent (FKeyEvent* kev)
 //----------------------------------------------------------------------
 void FWidget::emitWheelCallback (const FWheelEvent* ev) const
 {
-  const MouseWheel wheel = ev->getWheel();
+  const auto& wheel = ev->getWheel();
 
   if ( wheel == MouseWheel::Up )
     emitCallback("mouse-wheel-up");
@@ -1877,8 +1860,8 @@ void FWidget::setWindowFocus (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FWidget::changeFocus ( FWidget* follower, FWidget* parent
-                          , FocusTypes ft )
+auto FWidget::changeFocus ( FWidget* follower, FWidget* parent
+                          , FocusTypes ft ) -> bool
 {
   FFocusEvent out (Event::FocusOut);
   out.setFocusType(ft);
@@ -1928,8 +1911,8 @@ void FWidget::drawWindows() const
   // redraw windows
   FChar default_char{};
   default_char.ch[0]        = L' ';
-  default_char.fg_color     = FColor::Black;
-  default_char.bg_color     = FColor::Black;
+  default_char.fg_color     = FColor::Default;
+  default_char.bg_color     = FColor::Default;
   default_char.attr.byte[0] = 0;
   default_char.attr.byte[1] = 0;
 
@@ -1971,7 +1954,7 @@ void FWidget::drawChildren()
 }
 
 //----------------------------------------------------------------------
-inline bool FWidget::isDefaultTheme()
+inline auto FWidget::isDefaultTheme() -> bool
 {
   FStringList default_themes
   {

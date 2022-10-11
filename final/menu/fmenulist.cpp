@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2021 Markus Gans                                      *
+* Copyright 2015-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -103,7 +103,7 @@ auto FMenuList::findFirstSelectedItem() const
   (
     item_list.cbegin(),
     item_list.cend(),
-    [] (const FMenuItem* item)
+    [] (const auto& item)
     {
       return item->isSelected();
     }
@@ -118,7 +118,7 @@ auto FMenuList::findLastSelectedItem() const
   (
     item_list.crbegin(),
     item_list.crend(),
-    [] (const FMenuItem* item)
+    [] (const auto& item)
     {
       return item->isSelected();
     }
@@ -161,7 +161,7 @@ void FMenuList::unselectItem()
 }
 
 //----------------------------------------------------------------------
-bool FMenuList::selectNextItem()
+auto FMenuList::selectNextItem() -> bool
 {
   const auto& list = getItemList();
   auto iter = findFirstSelectedItem();
@@ -195,7 +195,7 @@ bool FMenuList::selectNextItem()
 }
 
 //----------------------------------------------------------------------
-bool FMenuList::selectPrevItem()
+auto FMenuList::selectPrevItem() -> bool
 {
   const auto& list = getItemList();
   auto iter = findLastSelectedItem();

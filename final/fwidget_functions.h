@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021 Markus Gans                                           *
+* Copyright 2021-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -40,38 +40,40 @@ class FObject;
 class FRect;
 class FString;
 class FWidget;
+class FMouseEvent;
 
 // Using-declarations
 using FObjectList = std::vector<FObject*>;
 using FWidgetList = std::vector<FWidget*>;
 
 // non-member function forward declarations
-void          detectTerminalSize();
-bool          isFocusNextKey (const FKey);
-bool          isFocusPrevKey (const FKey);
-bool          isDialogMenuKey (const FKey);
-bool          isEnterKey (const FKey);
-bool          isEscapeKey (const FKey);
-FWidget*      getFirstFocusableWidget (const FObjectList&);
-FWidget*      getLastFocusableWidget (const FObjectList&);
-bool          isInFWidgetList (const FWidgetList*, const FWidget*);
-FKey          getHotkey (const FString&);
-std::size_t   getHotkeyPos (const FString& src, FString& dest);
-void          setHotkeyViaString (FWidget*, const FString&);
-void          setWidgetFocus (FWidget*);
-bool          setWidgetShadow (FWidget*, bool);
-void          drawShadow (FWidget*);
-void          drawTransparentShadow (FWidget*);
-void          drawBlockShadow (FWidget*);
-void          clearShadow (FWidget*);
-void          drawFlatBorder (FWidget*);
-void          clearFlatBorder (FWidget*);
-void          checkBorder (const FWidget*, FRect&);
-void          drawBorder (FWidget*, const FRect&);
-void          drawListBorder (FWidget*, const FRect&);
-void          drawBox (FWidget*, const FRect&);
-void          drawNewFontBox (FWidget*, const FRect&);
-void          drawNewFontListBox (FWidget*, const FRect&);
+void detectTerminalSize();
+auto isFocusNextKey (const FKey) -> bool;
+auto isFocusPrevKey (const FKey) -> bool;
+auto isDialogMenuKey (const FKey) -> bool;
+auto isEnterKey (const FKey) -> bool;
+auto isEscapeKey (const FKey) -> bool;
+auto getFirstFocusableWidget (const FObjectList&) -> FWidget*;
+auto getLastFocusableWidget (const FObjectList&) -> FWidget*;
+auto isInFWidgetList (const FWidgetList*, const FWidget*) -> bool;
+auto getHotkey (const FString&) -> FKey;
+auto getHotkeyPos (const FString& src, FString& dest) -> std::size_t;
+void setHotkeyViaString (FWidget*, const FString&);
+void setWidgetFocus (FWidget*);
+auto setWidgetShadow (FWidget*, bool) -> bool;
+void passResizeCornerEventToDialog (const FWidget*, const FMouseEvent&);
+void drawShadow (FWidget*);
+void drawTransparentShadow (FWidget*);
+void drawBlockShadow (FWidget*);
+void clearShadow (FWidget*);
+void drawFlatBorder (FWidget*);
+void clearFlatBorder (FWidget*);
+void checkBorder (const FWidget*, FRect&);
+void drawBorder (FWidget*, const FRect&);
+void drawListBorder (FWidget*, const FRect&);
+void drawBox (FWidget*, const FRect&);
+void drawNewFontBox (FWidget*, const FRect&);
+void drawNewFontListBox (FWidget*, const FRect&);
 
 }  // namespace finalcut
 

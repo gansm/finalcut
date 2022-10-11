@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2013-2021 Markus Gans                                      *
+* Copyright 2013-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -74,6 +74,10 @@ bool      FApplication::quit_now        {false};
 uInt64    FApplication::next_event_wait {5000};     // 5 ms (200 Hz)
 TimeValue FApplication::time_last_event {};
 
+// FEvent friend function forward declaration
+void setSend (FEvent&, bool = true);
+void setQueued (FEvent&, bool = true);
+
 
 //----------------------------------------------------------------------
 // class FApplication
@@ -116,19 +120,19 @@ FApplication::~FApplication()  // destructor
 
 // public methods of FApplication
 //----------------------------------------------------------------------
-FApplication* FApplication::getApplicationObject()
+auto FApplication::getApplicationObject() -> FApplication*
 {
   return internal::var::app_object;
 }
 
 //----------------------------------------------------------------------
-FWidget* FApplication::getKeyboardWidget()
+auto FApplication::getKeyboardWidget() -> FWidget*
 {
   return keyboard_widget;
 }
 
 //----------------------------------------------------------------------
-FApplication::FLogPtr& FApplication::getLog()
+auto FApplication::getLog() -> FLogPtr&
 {
   // Global logger object
   static auto logger_ptr = new FLogPtr();
@@ -156,13 +160,21 @@ void FApplication::setLog (const FLogPtr& log)
 }
 
 //----------------------------------------------------------------------
-bool FApplication::isQuit()
+auto FApplication::isQuit() -> bool
 {
   return internal::var::app_object ? quit_now : true;
 }
 
 //----------------------------------------------------------------------
-int FApplication::exec()  // run
+#if defined(UNIT_TEST)
+void FApplication::start()  // Simulates application start
+{
+  quit_now = false;
+}
+#endif  // defined(UNIT_TEST)
+
+//----------------------------------------------------------------------
+auto FApplication::exec() -> int  // run
 {
   if ( quit_now )
   {
@@ -176,7 +188,7 @@ int FApplication::exec()  // run
 }
 
 //----------------------------------------------------------------------
-int FApplication::enterLoop()  // event loop
+auto FApplication::enterLoop() -> int  // event loop
 {
   loop_level++;
   quit_now = false;
@@ -212,7 +224,7 @@ void FApplication::quit() const
 }
 
 //----------------------------------------------------------------------
-bool FApplication::sendEvent (FObject* receiver, FEvent* event )
+auto FApplication::sendEvent (FObject* receiver, FEvent* event ) -> bool
 {
   if ( quit_now || internal::var::exit_loop || ! (bool(receiver) && bool(event)) )
     return false;
@@ -221,8 +233,8 @@ bool FApplication::sendEvent (FObject* receiver, FEvent* event )
     return false;
 
   // Sends the event event directly to receiver
-  bool ret = receiver->event(event);
-  event->send = true;
+  const auto& ret = receiver->event(event);
+  setSend(*event);
   return ret;
 }
 
@@ -233,7 +245,7 @@ void FApplication::queueEvent (FObject* receiver, FEvent* event)
     return;
 
   // queue this event
-  event->queued = true;
+  setQueued(*event);
   event_queue.emplace_back (receiver, event);
 }
 
@@ -242,15 +254,15 @@ void FApplication::sendQueuedEvents()
 {
   while ( eventInQueue() )
   {
-    const EventPair& event_pair = event_queue.front();
-    event_pair.second->queued = false;
+    const auto& event_pair = event_queue.front();
+    setQueued(*event_pair.second, false);
     sendEvent(event_pair.first, event_pair.second);
     event_queue.pop_front();
   }
 }
 
 //----------------------------------------------------------------------
-bool FApplication::eventInQueue() const
+auto FApplication::eventInQueue() const -> bool
 {
   if ( internal::var::app_object )
     return ( ! event_queue.empty() );
@@ -259,7 +271,7 @@ bool FApplication::eventInQueue() const
 }
 
 //----------------------------------------------------------------------
-bool FApplication::removeQueuedEvent (const FObject* receiver)
+auto FApplication::removeQueuedEvent (const FObject* receiver) -> bool
 {
   if ( ! eventInQueue() )
     return false;
@@ -335,7 +347,7 @@ void FApplication::setLogFile (const FString& filename)
   if ( log_stream.is_open() )
   {
     // Get the global logger object
-    FLog& log = *FApplication::getLog();
+    auto& log = *FApplication::getLog();
     log.setOutputStream(log_stream);
     log.enableTimestamp();
     log.setLineEnding (FLog::LineEnding::LF);
@@ -357,7 +369,7 @@ void FApplication::setKeyboardWidget (FWidget* widget)
 void FApplication::closeConfirmationDialog (FWidget* w, FCloseEvent* ev)
 {
   internal::var::app_object->unsetMoveSizeMode();
-  const FMessageBox::ButtonType ret = \
+  const auto& ret = \
       FMessageBox::info ( w, "Quit"
                         , "Do you really want\n"
                           "to quit the program ?"
@@ -414,7 +426,7 @@ void FApplication::init()
 
   // Initialize mouse control
   static auto& mouse = FMouseControl::getInstance();
-  auto cmd = [this] (const FMouseData& md) { this->mouseEvent(md); };
+  auto cmd = [this] (const auto& md) { this->mouseEvent(md); };
   FMouseCommand mouse_cmd (cmd);
   mouse.setEventCommand (mouse_cmd);
   // Set stdin number for a gpm-mouse
@@ -430,7 +442,7 @@ void FApplication::init()
 //----------------------------------------------------------------------
 void FApplication::setTerminalEncoding (const FString& enc_str)
 {
-  const FString& enc = enc_str.toLower();
+  const auto& enc = enc_str.toLower();
 
   if ( enc.includes("utf8") )
     getStartOptions().encoding = Encoding::UTF8;
@@ -482,40 +494,40 @@ inline void FApplication::setLongOptions (std::vector<CmdOption>& long_options)
 //----------------------------------------------------------------------
 inline void FApplication::setCmdOptionsMap (CmdMap& cmd_map)
 {
-  auto enc = [] (const FString& s) { FApplication::setTerminalEncoding(s); };
-  auto log = [] (const FString& s) { FApplication::setLogFile(s); };
+  auto enc = [] (const auto& s) { FApplication::setTerminalEncoding(s); };
+  auto log = [] (const auto& s) { FApplication::setLogFile(s); };
   auto opt = &FApplication::getStartOptions;
 
   // --encoding
-  cmd_map['e'] = [enc] (const char* arg) { enc(FString(arg)); };
+  cmd_map['e'] = [enc] (const auto& arg) { enc(FString(arg)); };
   // --log-file
-  cmd_map['l'] = [log] (const char* arg) { log(FString(arg)); };
+  cmd_map['l'] = [log] (const auto& arg) { log(FString(arg)); };
   // --no-mouse
-  cmd_map['m'] = [opt] (const char*) { opt().mouse_support = false; };
+  cmd_map['m'] = [opt] (const auto&) { opt().mouse_support = false; };
   // --no-optimized-cursor
-  cmd_map['o'] = [opt] (const char*) { opt().cursor_optimisation = false; };
+  cmd_map['o'] = [opt] (const auto&) { opt().cursor_optimisation = false; };
   // --no-terminal-detection
-  cmd_map['d'] = [opt] (const char*) { opt().terminal_detection = false; };
+  cmd_map['d'] = [opt] (const auto&) { opt().terminal_detection = false; };
   // --no-terminal-data-request
-  cmd_map['r'] = [opt] (const char*) { opt().terminal_data_request = false; };
+  cmd_map['r'] = [opt] (const auto&) { opt().terminal_data_request = false; };
   // --no-color-change
-  cmd_map['c'] = [opt] (const char*) { opt().color_change = false; };
+  cmd_map['c'] = [opt] (const auto&) { opt().color_change = false; };
   // --no-sgr-optimizer
-  cmd_map['s'] = [opt] (const char*) { opt().sgr_optimizer = false; };
+  cmd_map['s'] = [opt] (const auto&) { opt().sgr_optimizer = false; };
   // --vgafont
-  cmd_map['v'] = [opt] (const char*) { opt().vgafont = true; };
+  cmd_map['v'] = [opt] (const auto&) { opt().vgafont = true; };
   // --newfont
-  cmd_map['n'] = [opt] (const char*) { opt().newfont = true; };
+  cmd_map['n'] = [opt] (const auto&) { opt().newfont = true; };
   // --dark-theme
-  cmd_map['t'] = [opt] (const char*) { opt().dark_theme = true; };
+  cmd_map['t'] = [opt] (const auto&) { opt().dark_theme = true; };
 #if defined(__FreeBSD__) || defined(__DragonFly__)
   // --no-esc-for-alt-meta
-  cmd_map['E'] = [opt] (const char*) { opt().meta_sends_escape = false; };
+  cmd_map['E'] = [opt] (const auto&) { opt().meta_sends_escape = false; };
   // --no-cursorstyle-change
-  cmd_map['C'] = [opt] (const char*) { opt().change_cursorstyle = false; };
+  cmd_map['C'] = [opt] (const auto&) { opt().change_cursorstyle = false; };
 #elif defined(__NetBSD__) || defined(__OpenBSD__)
   // --no-esc-for-alt-meta
-  cmd_map['E'] = [opt] (const char*) { opt().meta_sends_escape = false; };
+  cmd_map['E'] = [opt] (const auto&) { opt().meta_sends_escape = false; };
 #endif
 }
 
@@ -531,7 +543,7 @@ void FApplication::cmdOptions (const Args& args)
   std::transform ( args.cbegin()
                  , args.cend()
                  , argv.begin()
-                 , [] (const std::string& str)
+                 , [] (const auto& str)
                    {
                      return str.data();
                    }
@@ -560,7 +572,7 @@ void FApplication::cmdOptions (const Args& args)
 }
 
 //----------------------------------------------------------------------
-inline FStartOptions& FApplication::getStartOptions()
+inline auto FApplication::getStartOptions() -> FStartOptions&
 {
   static auto& start_options = FStartOptions::getInstance();
   return start_options;
@@ -656,15 +668,16 @@ inline void FApplication::findKeyboardWidget() const
 }
 
 //----------------------------------------------------------------------
-inline bool FApplication::isKeyPressed() const
+inline auto FApplication::isKeyPressed(uInt64 ms) const -> bool
 {
   static auto& mouse = FMouseControl::getInstance();
   static auto& keyboard = FKeyboard::getInstance();
+  const auto blocking_time = (ms != 0U) ? ms : keyboard.getReadBlockingTime();
 
   if ( mouse.isGpmMouseEnabled() )
     return mouse.getGpmKeyPressed(keyboard.hasUnprocessedInput());
 
-  return (keyboard.isKeyPressed() || keyboard.hasPendingInput());
+  return (keyboard.isKeyPressed(blocking_time) || keyboard.hasPendingInput());
 }
 
 //----------------------------------------------------------------------
@@ -731,7 +744,6 @@ inline void FApplication::performMouseAction() const
     mouse.setRawData (FMouse::MouseType::Urxvt, buffer);
   }
 
-  keyboard.hasUnprocessedInput() = mouse.hasUnprocessedInput();
   queuingMouseInput();
 }
 
@@ -739,14 +751,12 @@ inline void FApplication::performMouseAction() const
 void FApplication::mouseEvent (const FMouseData& md)
 {
   determineClickedWidget (md);
-
-  if ( ! FWidget::getClickedWidget() )
-    return;
-
   unsetMoveSizeMode();
   closeDropDown (md);
   unselectMenubarItems (md);
-  sendMouseEvent (md);
+
+  if ( FWidget::getClickedWidget() )  // A widget was clicked
+    sendMouseEvent (md);
 }
 
 //----------------------------------------------------------------------
@@ -758,7 +768,7 @@ inline void FApplication::sendEscapeKeyPressEvent() const
 }
 
 //----------------------------------------------------------------------
-inline bool FApplication::sendKeyDownEvent (FWidget* widget) const
+inline auto FApplication::sendKeyDownEvent (FWidget* widget) const -> bool
 {
   // Send key down event
   static const auto& keyboard = FKeyboard::getInstance();
@@ -768,7 +778,7 @@ inline bool FApplication::sendKeyDownEvent (FWidget* widget) const
 }
 
 //----------------------------------------------------------------------
-inline bool FApplication::sendKeyPressEvent (FWidget* widget) const
+inline auto FApplication::sendKeyPressEvent (FWidget* widget) const -> bool
 {
   // Send key press event
   static const auto& keyboard = FKeyboard::getInstance();
@@ -778,7 +788,7 @@ inline bool FApplication::sendKeyPressEvent (FWidget* widget) const
 }
 
 //----------------------------------------------------------------------
-inline bool FApplication::sendKeyUpEvent (FWidget* widget) const
+inline auto FApplication::sendKeyUpEvent (FWidget* widget) const -> bool
 {
   // Send key up event
   static const auto& keyboard = FKeyboard::getInstance();
@@ -816,7 +826,7 @@ inline void FApplication::sendKeyboardAccelerator()
 }
 
 //----------------------------------------------------------------------
-inline bool FApplication::hasDataInQueue() const
+inline auto FApplication::hasDataInQueue() const -> bool
 {
   static const auto& keyboard = FKeyboard::getInstance();
   static const auto& mouse = FMouseControl::getInstance();
@@ -843,10 +853,9 @@ void FApplication::queuingMouseInput() const
   if ( ! mouse.hasData() )
     return;
 
-  static auto& keyboard = FKeyboard::getInstance();
+  static const auto& keyboard = FKeyboard::getInstance();
   auto time_keypressed = keyboard.getKeyPressedTime();
   mouse.processEvent (time_keypressed);
-  keyboard.hasUnprocessedInput() = mouse.hasUnprocessedInput();
   mouse.clearEvent();
 }
 
@@ -877,7 +886,7 @@ inline void FApplication::processInput() const
 }
 
 //----------------------------------------------------------------------
-bool FApplication::processDialogSwitchAccelerator() const
+auto FApplication::processDialogSwitchAccelerator() const -> bool
 {
   static const auto& keyboard = FKeyboard::getInstance();
 
@@ -910,7 +919,7 @@ bool FApplication::processDialogSwitchAccelerator() const
 }
 
 //----------------------------------------------------------------------
-bool FApplication::processAccelerator (const FWidget& widget) const
+auto FApplication::processAccelerator (const FWidget& widget) const -> bool
 {
   if ( widget.getAcceleratorList().empty() )
     return false;
@@ -996,7 +1005,7 @@ void FApplication::closeDropDown (const FMouseData& md) const
     return;
 
   const auto& mouse_position = md.getPos();
-  finalcut::closeDropDown (this, mouse_position);
+  finalcut::closeDropDown (this, mouse_position);  // in fwindow.cpp
 }
 
 //----------------------------------------------------------------------
@@ -1226,7 +1235,7 @@ void FApplication::sendWheelEvent ( const FMouseData& md
 }
 
 //----------------------------------------------------------------------
-FWidget* FApplication::processParameters (const Args& args)
+auto FApplication::processParameters (const Args& args) -> FWidget*
 {
   if ( args.size() > 1 && (args[1] == "--help" || args[1] == "-h") )
   {
@@ -1291,7 +1300,7 @@ void FApplication::processLogger() const
 }
 
 //----------------------------------------------------------------------
-bool FApplication::processNextEvent()
+auto FApplication::processNextEvent() -> bool
 {
   uInt num_events{0};
 
@@ -1307,6 +1316,11 @@ bool FApplication::processNextEvent()
     flush();
     processLogger();
   }
+  else
+  {
+    if ( isKeyPressed(next_event_wait) )
+      time_last_event = TimeValue{};
+  }
 
   processExternalUserEvent();
   return ( num_events > 0 );
@@ -1319,7 +1333,7 @@ void FApplication::performTimerAction (FObject* receiver, FEvent* event)
 }
 
 //----------------------------------------------------------------------
-inline bool FApplication::hasTerminalResized()
+inline auto FApplication::hasTerminalResized() -> bool
 {
   auto foutput_ptr = FVTerm::getFOutput();
   has_terminal_resized = foutput_ptr->hasTerminalResized();
@@ -1327,8 +1341,8 @@ inline bool FApplication::hasTerminalResized()
 }
 
 //----------------------------------------------------------------------
-bool FApplication::isEventProcessable ( FObject* receiver
-                                      , const FEvent* event )
+auto FApplication::isEventProcessable ( FObject* receiver
+                                      , const FEvent* event ) -> bool
 {
   if ( ! receiver->isWidget() )  // No restrictions for non-widgets
     return true;
@@ -1368,7 +1382,7 @@ bool FApplication::isEventProcessable ( FObject* receiver
 
       if ( std::any_of( blocked_events.cbegin()
                       , blocked_events.cend()
-                      , [&event](const Event& ev)
+                      , [&event](const auto& ev)
                         {
                           return ev == event->getType();
                         } ) )
@@ -1385,15 +1399,29 @@ bool FApplication::isEventProcessable ( FObject* receiver
 }
 
 //----------------------------------------------------------------------
-bool FApplication::isNextEventTimeout()
+auto FApplication::isNextEventTimeout() -> bool
 {
   return FObject::isTimeout(time_last_event, next_event_wait);
 }
 
 
+// Friend functions definition of FEvent
+//----------------------------------------------------------------------
+void setSend (FEvent& event, bool state)
+{
+  event.send = state;
+}
+
+//----------------------------------------------------------------------
+void setQueued (FEvent& event, bool state)
+{
+  event.queued = state;
+}
+
+
 // FLog non-member operators
 //----------------------------------------------------------------------
-std::ostream& operator << (std::ostream& outstr, FLog::LogLevel l)
+auto operator << (std::ostream& outstr, FLog::LogLevel l) -> std::ostream&
 {
   *FApplication::getLog() << l;
   return outstr;

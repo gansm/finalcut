@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2021 Markus Gans                                      *
+* Copyright 2020-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -81,11 +81,11 @@ class FLog : public std::stringbuf
     ~FLog() override;
 
     template <typename T>
-    FLog& operator << (const T& s);
-    FLog& operator << (IOManip);
-    FLog& operator << (LogLevel);
+    auto operator << (const T& s) -> FLog&;
+    auto operator << (IOManip) -> FLog&;
+    auto operator << (LogLevel) -> FLog&;
 
-    virtual FString getClassName() const;
+    virtual auto getClassName() const -> FString;
     virtual void info (const std::string&) = 0;
     virtual void warn (const std::string&) = 0;
     virtual void error (const std::string&) = 0;
@@ -97,29 +97,29 @@ class FLog : public std::stringbuf
     virtual void disableTimestamp() = 0;
 
   protected:
-    int               sync() override;
-    const LogLevel&   getLevel() const;
-    LogLevel&         setLevel();
-    const LineEnding& getEnding() const;
-    LineEnding&       setEnding();
+    auto sync() -> int override;
+    auto getLevel() const -> const LogLevel&;
+    auto setLevel() -> LogLevel&;
+    auto getEnding() const -> const LineEnding&;
+    auto setEnding() -> LineEnding&;
 
   private:
     // Data member
     LogLevel     level{LogLevel::Info};
     LineEnding   end_of_line{LineEnding::CRLF};
-    FLogPrint    current_log{ [this] (const std::string& s) { info(s); } };
+    FLogPrint    current_log{ [this] (const auto& s) { info(s); } };
     std::mutex   current_log_mutex{};
     std::mutex   stream_mutex{};
     std::ostream stream{this};
 
     // Friend Non-member operator functions
-    friend std::ostream& operator << (std::ostream&, LogLevel);
+    friend auto operator << (std::ostream&, LogLevel) -> std::ostream&;
 };
 
 // FLog inline functions
 //----------------------------------------------------------------------
 template <typename T>
-inline FLog& FLog::operator << (const T& s)
+inline auto FLog::operator << (const T& s) -> FLog&
 {
   std::lock_guard<std::mutex> lock_guard(stream_mutex);
   stream << s;
@@ -127,7 +127,7 @@ inline FLog& FLog::operator << (const T& s)
 }
 
 //----------------------------------------------------------------------
-inline FLog& FLog::operator << (IOManip pf)
+inline auto FLog::operator << (IOManip pf) -> FLog&
 {
   std::lock_guard<std::mutex> lock_guard(stream_mutex);
   pf(stream);
@@ -135,29 +135,31 @@ inline FLog& FLog::operator << (IOManip pf)
 }
 
 //----------------------------------------------------------------------
-inline FString FLog::getClassName() const
-{ return "FLog"; }
+inline auto FLog::getClassName() const -> FString
+{
+  return "FLog";
+}
 
 //----------------------------------------------------------------------
-inline const FLog::LogLevel& FLog::getLevel() const
+inline auto FLog::getLevel() const -> const LogLevel&
 {
   return level;
 }
 
 //----------------------------------------------------------------------
-inline FLog::LogLevel& FLog::setLevel()
+inline auto FLog::setLevel() -> LogLevel&
 {
   return level;
 }
 
 //----------------------------------------------------------------------
-inline const FLog::LineEnding& FLog::getEnding() const
+inline auto FLog::getEnding() const -> const LineEnding&
 {
   return end_of_line;
 }
 
 //----------------------------------------------------------------------
-inline FLog::LineEnding& FLog::setEnding()
+inline auto FLog::setEnding() -> LineEnding&
 {
   return end_of_line;
 }

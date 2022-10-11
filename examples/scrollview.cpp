@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2021 Markus Gans                                      *
+* Copyright 2017-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -124,12 +124,11 @@ void Scrollview::draw()
 
   const auto& wc = getColorTheme();
   setColor (wc->label_inactive_fg, wc->dialog_bg);
+  setPrintPos (FPoint{1, 1});
   clearArea();
 
   for (auto y{0}; y < int(getScrollHeight()); y++)
   {
-    print() << FPoint{1, 1 + y};
-
     for (auto x{0}; x < int(getScrollWidth()); x++)
       print (32 + ((x + y) % 0x5f));
   }
@@ -253,7 +252,7 @@ void Scrollviewdemo::cb_quit()
 //----------------------------------------------------------------------
 //                               main part
 //----------------------------------------------------------------------
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   // Create the application object
   finalcut::FApplication app{argc, argv};

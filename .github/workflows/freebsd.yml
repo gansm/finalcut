@@ -10,24 +10,24 @@ on:
 
 jobs:
   build:
-    runs-on: macos-10.15
+    runs-on: ubuntu-latest
 
     steps:
     - name: Repository checkout
       uses: actions/checkout@v2
 
-    - name: Test on FreeBSD 12.2
-      uses: cross-platform-actions/action@v0.0.1
+    - name: Test on FreeBSD 13.0
+      uses: cross-platform-actions/action@v0.6.2
       with:
         operating_system: freebsd
-        version: 12.2
+        version: '13.0'
         shell: bash
         run: |
           uname -a
           freebsd-version
           whoami
           pwd
-          sudo pkg update
+          sudo env IGNORE_OSVERSION=yes pkg update -f
           sudo pkg install -y lang/gcc devel/autotools autotools automake autoconf autoconf-archive libtool pkgconf devel/ncurses devel/cppunit cppunit
           g++ --version
           autoreconf -v --install --force

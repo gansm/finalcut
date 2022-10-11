@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2021 Markus Gans                                      *
+* Copyright 2014-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -85,7 +85,7 @@ void FProgressbar::setGeometry ( const FPoint& pos, const FSize& size
 }
 
 //----------------------------------------------------------------------
-bool FProgressbar::setShadow (bool enable)
+auto FProgressbar::setShadow (bool enable) -> bool
 {
   return setWidgetShadow(this, enable);
 }
@@ -94,7 +94,7 @@ bool FProgressbar::setShadow (bool enable)
 void FProgressbar::hide()
 {
   FWidget::hide();
-  const FSize shadow = hasShadow() ? FSize(1, 1) : FSize(0, 0);
+  const auto& shadow = hasShadow() ? FSize(1, 1) : FSize(0, 0);
   hideArea (getSize() + shadow);
   print() << FPoint{int(getWidth()) - 4, 0}
           << "      ";  // hide percentage
@@ -167,7 +167,7 @@ void FProgressbar::drawProgressBar()
 }
 
 //----------------------------------------------------------------------
-std::size_t FProgressbar::drawProgressIndicator()
+auto FProgressbar::drawProgressIndicator() -> std::size_t
 {
   // Draw the progress indicator
 

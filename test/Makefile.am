@@ -7,12 +7,14 @@ LIBS = -lfinal $(CPPUNIT_LIBS)
 if CPPUNIT_TEST
 
 AM_LDFLAGS = -L$(top_builddir)/final/.libs
-AM_CPPFLAGS = -I$(top_srcdir)/final -Wall -Werror -std=c++11
+AM_CPPFLAGS = -I$(top_srcdir)/final -Wall -Werror -std=c++14
 
 noinst_PROGRAMS = \
 	fcallback_test \
 	fcolorpair_test \
 	fdata_test \
+	fevent_test \
+	char_ringbuffer_test \
 	fkeyboard_test \
 	flogger_test \
 	fmouse_test \
@@ -33,12 +35,16 @@ noinst_PROGRAMS = \
 	fterm_functions_test \
 	ftermlinux_test \
 	ftermopenbsd_test \
+	fvterm_test \
 	fvtermattribute_test \
-	fvtermbuffer_test
+	fvtermbuffer_test \
+	fwidget_test
 
 fcallback_test_SOURCES = fcallback-test.cpp
 fcolorpair_test_SOURCES = fcolorpair-test.cpp
 fdata_test_SOURCES = fdata-test.cpp
+fevent_test_SOURCES = fevent-test.cpp
+char_ringbuffer_test_SOURCES = char_ringbuffer-test.cpp
 fkeyboard_test_SOURCES = fkeyboard-test.cpp
 flogger_test_SOURCES = flogger-test.cpp
 fmouse_test_SOURCES = fmouse-test.cpp
@@ -62,13 +68,17 @@ ftermlinux_test_SOURCES = ftermlinux-test.cpp
 ftermlinux_test_LDADD = @TERMCAP_LIB@
 ftermopenbsd_test_SOURCES = ftermopenbsd-test.cpp
 ftermopenbsd_test_LDADD = @TERMCAP_LIB@
+fvterm_test_SOURCES = fvterm-test.cpp
 fvtermattribute_test_SOURCES = fvtermattribute-test.cpp
 fvtermbuffer_test_SOURCES = fvtermbuffer-test.cpp
+fwidget_test_SOURCES = fwidget-test.cpp
 
 TESTS = \
 	fcallback_test \
 	fcolorpair_test \
 	fdata_test \
+	fevent_test \
+	char_ringbuffer_test \
 	fkeyboard_test \
 	flogger_test \
 	fmouse_test \
@@ -89,8 +99,10 @@ TESTS = \
 	fterm_functions_test \
 	ftermlinux_test \
 	ftermopenbsd_test \
+	fvterm_test \
 	fvtermattribute_test \
-	fvtermbuffer_test
+	fvtermbuffer_test \
+	fwidget_test
 
 check_PROGRAMS = $(TESTS)
 

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2013-2021 Markus Gans                                      *
+* Copyright 2013-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -113,47 +113,50 @@ class FApplication : public FWidget
     ~FApplication() override;
 
     // Disable copy assignment operator (=)
-    FApplication& operator = (const FApplication&) = delete;
+    auto operator = (const FApplication&) -> FApplication& = delete;
 
     // Disable move assignment operator (=)
-    FApplication& operator = (FApplication&&) noexcept = delete;
+    auto operator = (FApplication&&) noexcept -> FApplication& = delete;
 
     // Accessors
-    FString               getClassName() const override;
-    Args                  getArgs() const;
-    static FApplication*  getApplicationObject();
-    static FWidget*       getKeyboardWidget();
-    static FLogPtr&       getLog();
+    auto         getClassName() const -> FString override;
+    auto         getArgs() const -> Args;
+    static auto  getApplicationObject() -> FApplication*;
+    static auto  getKeyboardWidget() -> FWidget*;
+    static auto  getLog() -> FLogPtr&;
 
     // Mutator
-    static void           setLog (const FLogPtr&);
+    static void  setLog (const FLogPtr&);
 
     // Inquiry
-    static bool           isQuit();
+    static auto  isQuit() -> bool;
 
     // Methods
-    int                   exec();  // run
-    int                   enterLoop();
-    void                  exitLoop() const;
-    static void           exit (int = EXIT_SUCCESS);
-    void                  quit() const;
-    static bool           sendEvent (FObject*, FEvent*);
-    void                  queueEvent (FObject*, FEvent*);
-    void                  sendQueuedEvents();
-    bool                  eventInQueue() const;
-    bool                  removeQueuedEvent (const FObject*);
-    void                  initTerminal() override;
-    static void           setDefaultTheme();
-    static void           setDarkTheme();
-    static void           setLogFile (const FString&);
-    static void           setKeyboardWidget (FWidget*);
-    static void           closeConfirmationDialog (FWidget*, FCloseEvent*);
+#if defined(UNIT_TEST)
+    static void  start();  // Simulates application start
+#endif
+    auto         exec() -> int;  // run
+    auto         enterLoop() -> int;
+    void         exitLoop() const;
+    static void  exit (int = EXIT_SUCCESS);
+    void         quit() const;
+    static auto  sendEvent (FObject*, FEvent*) -> bool;
+    void         queueEvent (FObject*, FEvent*);
+    void         sendQueuedEvents();
+    auto         eventInQueue() const -> bool;
+    auto         removeQueuedEvent (const FObject*) -> bool;
+    void         initTerminal() override;
+    static void  setDefaultTheme();
+    static void  setDarkTheme();
+    static void  setLogFile (const FString&);
+    static void  setKeyboardWidget (FWidget*);
+    static void  closeConfirmationDialog (FWidget*, FCloseEvent*);
 
     // Callback method
-    void                  cb_exitApp (FWidget*) const;
+    void         cb_exitApp (FWidget*) const;
 
   protected:
-    virtual void          processExternalUserEvent();
+    virtual void processExternalUserEvent();
 
   private:
 #if defined(__sun) && defined(__SVR4)
@@ -174,99 +177,99 @@ class FApplication : public FWidget
     using CmdMap = std::unordered_map<int, std::function<void(char*)>>;
 
     // Methods
-    void                  init();
-    static void           setTerminalEncoding (const FString&);
-    static void           setLongOptions(std::vector<CmdOption>&);
-    static void           setCmdOptionsMap (CmdMap&);
-    static void           cmdOptions (const Args&);
-    static FStartOptions& getStartOptions();
-    static void           showParameterUsage();
-    void                  destroyLog();
-    void                  findKeyboardWidget() const;
-    bool                  isKeyPressed() const;
-    void                  keyPressed();
-    void                  keyReleased() const;
-    void                  escapeKeyPressed() const;
-    void                  mouseTracking() const;
-    void                  performKeyboardAction();
-    void                  performMouseAction() const;
-    void                  mouseEvent (const FMouseData&);
-    void                  sendEscapeKeyPressEvent() const;
-    bool                  sendKeyDownEvent (FWidget*) const;
-    bool                  sendKeyPressEvent (FWidget*) const;
-    bool                  sendKeyUpEvent (FWidget*) const;
-    void                  sendKeyboardAccelerator();
-    bool                  hasDataInQueue() const;
-    void                  queuingKeyboardInput() const;
-    void                  queuingMouseInput() const;
-    void                  processKeyboardEvent() const;
-    void                  processMouseEvent() const;
-    void                  processInput() const;
-    bool                  processDialogSwitchAccelerator() const;
-    bool                  processAccelerator (const FWidget&) const;
-    void                  determineClickedWidget (const FMouseData&);
-    void                  unsetMoveSizeMode() const;
-    void                  closeDropDown (const FMouseData&) const;
-    void                  unselectMenubarItems (const FMouseData&) const;
-    void                  sendMouseEvent (const FMouseData&) const;
-    void                  sendMouseMoveEvent ( const FMouseData&
-                                             , const FPoint&
-                                             , const FPoint&
-                                             , MouseButton ) const;
-    void                  sendMouseLeftClickEvent ( const FMouseData&
-                                                  , const FPoint&
-                                                  , const FPoint&
-                                                  , MouseButton ) const;
-    void                  sendMouseRightClickEvent ( const FMouseData&
-                                                   , const FPoint&
-                                                   , const FPoint&
-                                                   , MouseButton ) const;
-    void                  sendMouseMiddleClickEvent ( const FMouseData&
-                                                    , const FPoint&
-                                                    , const FPoint&
-                                                    , MouseButton ) const;
-    void                  sendWheelEvent ( const FMouseData&
+    void         init();
+    static void  setTerminalEncoding (const FString&);
+    static void  setLongOptions(std::vector<CmdOption>&);
+    static void  setCmdOptionsMap (CmdMap&);
+    static void  cmdOptions (const Args&);
+    static auto  getStartOptions() -> FStartOptions&;
+    static void  showParameterUsage();
+    void         destroyLog();
+    void         findKeyboardWidget() const;
+    auto         isKeyPressed(uInt64 = 0U) const -> bool;
+    void         keyPressed();
+    void         keyReleased() const;
+    void         escapeKeyPressed() const;
+    void         mouseTracking() const;
+    void         performKeyboardAction();
+    void         performMouseAction() const;
+    void         mouseEvent (const FMouseData&);
+    void         sendEscapeKeyPressEvent() const;
+    auto         sendKeyDownEvent (FWidget*) const -> bool;
+    auto         sendKeyPressEvent (FWidget*) const -> bool;
+    auto         sendKeyUpEvent (FWidget*) const -> bool;
+    void         sendKeyboardAccelerator();
+    auto         hasDataInQueue() const -> bool;
+    void         queuingKeyboardInput() const;
+    void         queuingMouseInput() const;
+    void         processKeyboardEvent() const;
+    void         processMouseEvent() const;
+    void         processInput() const;
+    auto         processDialogSwitchAccelerator() const -> bool;
+    auto         processAccelerator (const FWidget&) const -> bool;
+    void         determineClickedWidget (const FMouseData&);
+    void         unsetMoveSizeMode() const;
+    void         closeDropDown (const FMouseData&) const;
+    void         unselectMenubarItems (const FMouseData&) const;
+    void         sendMouseEvent (const FMouseData&) const;
+    void         sendMouseMoveEvent ( const FMouseData&
+                                    , const FPoint&
+                                    , const FPoint&
+                                    , MouseButton ) const;
+    void         sendMouseLeftClickEvent ( const FMouseData&
                                          , const FPoint&
-                                         , const FPoint& ) const;
-    static FWidget*       processParameters (const Args&);
-    void                  processResizeEvent();
-    void                  processCloseWidget();
-    void                  processLogger() const;
-    bool                  processNextEvent();
-    void                  performTimerAction (FObject*, FEvent*) override;
-    bool                  hasTerminalResized();
-    static bool           isEventProcessable (FObject*, const FEvent*);
-    static bool           isNextEventTimeout();
+                                         , const FPoint&
+                                         , MouseButton ) const;
+    void         sendMouseRightClickEvent ( const FMouseData&
+                                          , const FPoint&
+                                          , const FPoint&
+                                          , MouseButton ) const;
+    void         sendMouseMiddleClickEvent ( const FMouseData&
+                                           , const FPoint&
+                                           , const FPoint&
+                                           , MouseButton ) const;
+    void         sendWheelEvent ( const FMouseData&
+                                , const FPoint&
+                                , const FPoint& ) const;
+    static auto  processParameters (const Args&) -> FWidget*;
+    void         processResizeEvent();
+    void         processCloseWidget();
+    void         processLogger() const;
+    auto         processNextEvent() -> bool;
+    void         performTimerAction (FObject*, FEvent*) override;
+    auto         hasTerminalResized() -> bool;
+    static auto  isEventProcessable (FObject*, const FEvent*) -> bool;
+    static auto  isNextEventTimeout() -> bool;
 
     // Data members
-    Args                  app_args{};
-    uInt64                key_timeout{100000};        // 100 ms
-    uInt64                dblclick_interval{500000};  // 500 ms
-    std::streambuf*       default_clog_rdbuf{std::clog.rdbuf()};
-    FWidget*              clicked_widget{};
-    FEventQueue           event_queue{};
-    bool                  has_terminal_resized{false};
-    static uInt64         next_event_wait;
-    static TimeValue      time_last_event;
-    static int            loop_level;
-    static int            quit_code;
-    static bool           quit_now;
-    static FWidget*       keyboard_widget;
+    Args             app_args{};
+    uInt64           key_timeout{100'000};        // 100 ms
+    uInt64           dblclick_interval{500'000};  // 500 ms
+    std::streambuf*  default_clog_rdbuf{std::clog.rdbuf()};
+    FWidget*         clicked_widget{};
+    FEventQueue      event_queue{};
+    bool             has_terminal_resized{false};
+    static uInt64    next_event_wait;
+    static TimeValue time_last_event;
+    static int       loop_level;
+    static int       quit_code;
+    static bool      quit_now;
+    static FWidget*  keyboard_widget;
 };
 
 // non-member function forward declarations
 // implemented in fwidget_functions.cpp
 //----------------------------------------------------------------------
-FApplication* getFApplication();
+auto getFApplication() -> FApplication*;
 
 
 // FApplication inline functions
 //----------------------------------------------------------------------
-inline FString FApplication::getClassName() const
+inline auto FApplication::getClassName() const -> FString
 { return "FApplication"; }
 
 //----------------------------------------------------------------------
-inline FApplication::Args FApplication::getArgs() const
+inline auto FApplication::getArgs() const -> Args
 { return app_args; }
 
 //----------------------------------------------------------------------

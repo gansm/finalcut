@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2021 Markus Gans                                      *
+* Copyright 2018-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -59,7 +59,7 @@ FTermXTerminal::FTermXTerminal() = default;
 //----------------------------------------------------------------------
 auto FTermXTerminal::getInstance() -> FTermXTerminal&
 {
-  static const auto& xterm = make_unique<FTermXTerminal>();
+  static const auto& xterm = std::make_unique<FTermXTerminal>();
   return *xterm;
 }
 
@@ -562,7 +562,7 @@ inline void FTermXTerminal::setXTermDefaultsMouseCursor()
 }
 
 //----------------------------------------------------------------------
-inline bool FTermXTerminal::canSetXTermBackground() const
+inline auto FTermXTerminal::canSetXTermBackground() const -> bool
 {
   static const auto& fterm_data = FTermData::getInstance();
   return ( xterm_default_colors
@@ -675,7 +675,7 @@ void FTermXTerminal::resetXTermHighlightBackground() const
 }
 
 //----------------------------------------------------------------------
-bool FTermXTerminal::canResetColor() const
+auto FTermXTerminal::canResetColor() const -> bool
 {
   static const auto& fterm_data = FTermData::getInstance();
 
@@ -720,7 +720,7 @@ void FTermXTerminal::oscPostfix() const
 }
 
 //----------------------------------------------------------------------
-FString FTermXTerminal::captureXTermFont() const
+auto FTermXTerminal::captureXTermFont() const -> FString
 {
   static const auto& fterm_data = FTermData::getInstance();
 
@@ -742,7 +742,7 @@ FString FTermXTerminal::captureXTermFont() const
   FD_ZERO(&ifds);
   FD_SET(stdin_no, &ifds);
   tv.tv_sec  = 0;
-  tv.tv_usec = 150000;  // 150 ms
+  tv.tv_usec = 150'000;  // 150 ms
 
   // Read the terminal answer
   if ( select(stdin_no + 1, &ifds, nullptr, nullptr, &tv) < 1 )
@@ -781,7 +781,7 @@ FString FTermXTerminal::captureXTermFont() const
 }
 
 //----------------------------------------------------------------------
-FString FTermXTerminal::captureXTermTitle() const
+auto FTermXTerminal::captureXTermTitle() const -> FString
 {
   if ( FTermData::getInstance().isTermType(FTermType::kde_konsole) )
     return {};
@@ -796,7 +796,7 @@ FString FTermXTerminal::captureXTermTitle() const
   FD_ZERO(&ifds);
   FD_SET(stdin_no, &ifds);
   tv.tv_sec  = 0;
-  tv.tv_usec = 150000;  // 150 ms
+  tv.tv_usec = 150'000;  // 150 ms
 
   // read the terminal answer
   if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) < 1 )

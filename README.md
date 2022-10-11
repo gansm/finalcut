@@ -11,10 +11,11 @@ The structure of the Qt framework was originally the inspiration for the C++ cla
 |                    | Badge |
 |-------------------:|:------|
 | *Latest release*   | [![Latest Release](https://img.shields.io/github/release/gansm/finalcut.svg)](https://github.com/gansm/finalcut/releases) |
-| *License*          | [![license](https://img.shields.io/github/license/gansm/finalcut.svg?colorA=#333)](COPYING) |
+| *License*          | [![LGPL v3](https://img.shields.io/badge/License-LGPL_v3-blue.svg)](LICENSE) |
 | *Class Reference*  | [![documented](https://codedocs.xyz/gansm/finalcut.svg)](https://codedocs.xyz/gansm/finalcut/hierarchy.html) |
 | *ARM build*        | [![ARM build](https://github.com/gansm/finalcut/actions/workflows/arm.yml/badge.svg)](https://github.com/gansm/finalcut/actions/workflows/arm.yml) |
 | *FreeBSD build*    | [![FreeBSD build](https://github.com/gansm/finalcut/actions/workflows/freebsd.yml/badge.svg)](https://github.com/gansm/finalcut/actions/workflows/freebsd.yml) |
+| *NetBSD build*     | [![NetBSD build](https://github.com/gansm/finalcut/actions/workflows/netbsd.yml/badge.svg)](https://github.com/gansm/finalcut/actions/workflows/netbsd.yml) |
 | *OpenBSD build*    | [![OpenBSD build](https://github.com/gansm/finalcut/actions/workflows/openbsd.yml/badge.svg)](https://github.com/gansm/finalcut/actions/workflows/openbsd.yml) |
 | *macOS build*      | [![macOS build](https://github.com/gansm/finalcut/actions/workflows/macos.yml/badge.svg)](https://github.com/gansm/finalcut/actions/workflows/macos.yml) |
 | *Cygwin build*     | [![Cygwin build](https://github.com/gansm/finalcut/actions/workflows/cygwin.yml/badge.svg)](https://github.com/gansm/finalcut/actions/workflows/cygwin.yml) |
@@ -28,7 +29,7 @@ The structure of the Qt framework was originally the inspiration for the C++ cla
 ## Installation
 
 ```bash
-> git clone git://github.com/gansm/finalcut.git
+> git clone https://github.com/gansm/finalcut.git
 > cd finalcut
 > autoreconf --install --force
 > ./configure --prefix=/usr
@@ -278,4 +279,4 @@ https://github.com/gansm/finalcut/issues
 
 ## License
 
-GNU Lesser General Public License Version 3 <a href="https://www.gnu.org/licenses/lgpl-3.0-standalone.html"><img width="200" align="right" src="https://camo.githubusercontent.com/726b87cc2ebaf8c40716842ff509c5f874381c8e/68747470733a2f2f75706c6f61642e77696b696d656469612e6f72672f77696b6970656469612f636f6d6d6f6e732f332f33622f4c47504c76335f4c6f676f2e737667" alt="LGPLv3" data-canonical-src="https://upload.wikimedia.org/wikipedia/commons/3/3b/LGPLv3_Logo.svg"></a>
+Licensed under the [GNU Lesser General Public License, Version 3.0](LICENSE) <a href="https://www.gnu.org/licenses/lgpl-3.0-standalone.html"><img width="200" align="right" src="https://camo.githubusercontent.com/726b87cc2ebaf8c40716842ff509c5f874381c8e/68747470733a2f2f75706c6f61642e77696b696d656469612e6f72672f77696b6970656469612f636f6d6d6f6e732f332f33622f4c47504c76335f4c6f676f2e737667" alt="LGPLv3" data-canonical-src="https://upload.wikimedia.org/wikipedia/commons/3/3b/LGPLv3_Logo.svg"></a>

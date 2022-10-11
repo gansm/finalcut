@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2021 Markus Gans                                      *
+* Copyright 2015-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -79,7 +79,7 @@ FObject::~FObject()  // destructor
 
 // public methods of FObject
 //----------------------------------------------------------------------
-FObject* FObject::getChild (int index) const &
+auto FObject::getChild (int index) const & -> FObject*
 {
   // returns the child for the index number
 
@@ -95,7 +95,7 @@ FObject* FObject::getChild (int index) const &
 }
 
 //----------------------------------------------------------------------
-bool FObject::isChild (const FObject* obj) const &
+auto FObject::isChild (const FObject* obj) const & -> bool
 {
   // Find out if obj is a child object of mine
 
@@ -171,7 +171,7 @@ void FObject::setParent (FObject* parent) &
 }
 
 //----------------------------------------------------------------------
-bool FObject::event (FEvent* ev)
+auto FObject::event (FEvent* ev) -> bool
 {
   // Receives events on this object
 
@@ -190,13 +190,13 @@ bool FObject::event (FEvent* ev)
 }
 
 //----------------------------------------------------------------------
-TimeValue FObject::getCurrentTime()
+auto FObject::getCurrentTime() -> TimeValue
 {
   return system_clock::now();  // Get the current time
 }
 
 //----------------------------------------------------------------------
-bool FObject::isTimeout (const TimeValue& time, uInt64 timeout)
+auto FObject::isTimeout (const TimeValue& time, uInt64 timeout) -> bool
 {
   // Checks whether the specified time span (timeout in µs) has elapsed
 
@@ -211,7 +211,7 @@ bool FObject::isTimeout (const TimeValue& time, uInt64 timeout)
 }
 
 //----------------------------------------------------------------------
-int FObject::addTimer (int interval) &
+auto FObject::addTimer (int interval) & -> int
 {
   // Create a timer and returns the timer identifier number
   // (interval in ms)
@@ -257,7 +257,7 @@ int FObject::addTimer (int interval) &
 }
 
 //----------------------------------------------------------------------
-bool FObject::delTimer (int id) const &
+auto FObject::delTimer (int id) const & -> bool
 {
   // Deletes a timer by using the timer identifier number
 
@@ -282,7 +282,7 @@ bool FObject::delTimer (int id) const &
 }
 
 //----------------------------------------------------------------------
-bool FObject::delOwnTimers() const &
+auto FObject::delOwnTimers() const & -> bool
 {
   // Deletes all timers of this object
 
@@ -309,7 +309,7 @@ bool FObject::delOwnTimers() const &
 }
 
 //----------------------------------------------------------------------
-bool FObject::delAllTimers() const &
+auto FObject::delAllTimers() const & -> bool
 {
   // Deletes all timers of all objects
 
@@ -344,7 +344,7 @@ void FObject::onUserEvent (FUserEvent*)
 }
 
 //----------------------------------------------------------------------
-uInt FObject::processTimerEvent()
+auto FObject::processTimerEvent() -> uInt
 {
   uInt activated{0};
   std::unique_lock<std::mutex> unique_lock( internal::var::timer_mutex
@@ -396,7 +396,7 @@ void FObject::performTimerAction (FObject*, FEvent*)
 //----------------------------------------------------------------------
 auto FObject::globalTimerList() -> const FTimerListUniquePtr&
 {
-  static const auto& timer_list = make_unique<FTimerList>();
+  static const auto& timer_list = std::make_unique<FTimerList>();
   return timer_list;
 }
 

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2021 Markus Gans                                      *
+* Copyright 2017-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -179,7 +179,7 @@ void tcapString (const std::string& name, const char cap_string[])
     return;
   }
 
-  for (auto&& ch : cap_str)
+  for (const auto& ch : cap_str)
   {
     const auto c = uChar(ch);
 
@@ -303,7 +303,7 @@ void showString()
 //----------------------------------------------------------------------
 //                               main part
 //----------------------------------------------------------------------
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   // Disabling the switch to the alternative screen
   finalcut::FTerm::useAlternateScreen(false);

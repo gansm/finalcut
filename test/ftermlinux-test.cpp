@@ -111,25 +111,25 @@ class FSystemTest : public finalcut::FSystem
     ~FSystemTest() override;
 
     // Methods
-    uChar            inPortByte (uShort) override;
+    auto            inPortByte (uShort) -> uChar override;
     void             outPortByte (uChar, uShort) override;
-    int              isTTY (int) const override;
-    int              ioctl (int, uLong, ...) override;
-    int              open (const char*, int, ...) override;
-    int              close (int) override;
-    FILE*            fopen (const char*, const char*) override;
-    int              fclose (FILE*) override;
-    int              fputs (const char*, FILE*) override;
-    int              putchar (int) override;
-    uid_t            getuid() override;
-    uid_t            geteuid() override;
-    int              getpwuid_r ( uid_t, struct passwd*, char*
-                                , size_t, struct passwd** ) override;
-    char*            realpath (const char*, char*) override;
-    RGB&             getRGB (finalcut::FColor);
-    console_font_op& getConsoleFont();
-    ShiftState&      getShiftState();
-    std::string&     getCharacters();
+    auto              isTTY (int) const -> int override;
+    auto              ioctl (int, uLong, ...) -> int override;
+    auto              open (const char*, int, ...) -> int override;
+    auto              close (int) -> int override;
+    auto            fopen (const char*, const char*) -> FILE* override;
+    auto              fclose (FILE*) -> int override;
+    auto              fputs (const char*, FILE*) -> int override;
+    auto              putchar (int) -> int override;
+    auto            getuid() -> uid_t override;
+    auto            geteuid() -> uid_t override;
+    auto              getpwuid_r ( uid_t, struct passwd*, char*
+                                , size_t, struct passwd** ) -> int override;
+    auto            realpath (const char*, char*) -> char* override;
+    auto             getRGB (finalcut::FColor) -> RGB&;
+    auto getConsoleFont() -> console_font_op&;
+    auto      getShiftState() -> ShiftState&;
+    auto     getCharacters() -> std::string&;
     void             setCodeset (Codeset);
 
   private:
@@ -1502,7 +1502,7 @@ FSystemTest::~FSystemTest()  // destructor
 
 // public methods of FSystemTest
 //----------------------------------------------------------------------
-uChar FSystemTest::inPortByte (uShort port)
+auto FSystemTest::inPortByte (uShort port) -> uChar
 {
   std::cerr << "Call: im (port=" << port << ")\n";
 
@@ -1552,14 +1552,14 @@ void FSystemTest::outPortByte (uChar value, uShort port)
 }
 
 //----------------------------------------------------------------------
-int FSystemTest::isTTY (int fd) const
+auto FSystemTest::isTTY (int fd) const -> int
 {
   std::cerr << "Call: isatty (fd=" << fd << ")\n";
   return 1;
 }
 
 //----------------------------------------------------------------------
-int FSystemTest::ioctl (int fd, uLong request, ...)
+auto FSystemTest::ioctl (int fd, uLong request, ...) -> int
 {
   va_list args{};
   void* argp{};
@@ -1631,10 +1631,17 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
 
         if ( ! terminal_font.data )  // If data is empty on a second run
         {
-          terminal_font.data = new uChar[font_data_size]{ };
+          try
+          {
+            terminal_font.data = new uChar[font_data_size]{ };
+          }
+          catch (const std::bad_alloc&)
+          {
+            return -1;
+          }
         }
 
-        if ( fn->data && terminal_font.data )
+        if ( fn->data )
           std::memcpy (terminal_font.data, fn->data, size);
 
         terminal_font.op = KD_FONT_OP_SET;
@@ -1750,9 +1757,16 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
         terminal_unicode_map.entries = nullptr;
       }
 
-      terminal_unicode_map.entries = new unipair[pairs]();
+      try
+      {
+        terminal_unicode_map.entries = new unipair[pairs]();
+      }
+      catch (const std::bad_alloc&)
+      {
+        return -1;
+      }
 
-      if ( umap->entries && terminal_unicode_map.entries )
+      if ( umap->entries )
       {
         std::memcpy (terminal_unicode_map.entries, umap->entries, pairs_size);
         errno = 0;
@@ -1827,7 +1841,7 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
 }
 
 //----------------------------------------------------------------------
-int FSystemTest::open (const char* pathname, int flags, ...)
+auto FSystemTest::open (const char* pathname, int flags, ...) -> int
 {
   va_list args{};
   va_start (args, flags);
@@ -1838,7 +1852,7 @@ int FSystemTest::open (const char* pathname, int flags, ...)
             << "\", flags=" << flags
             << ", mode=" << mode << ")\n";
 
-  if ( std::strncmp(pathname, "/dev/fb0", 9) == 0
+  if ( std::strncmp(pathname, "/dev/fb0", 8) == 0
     || std::strncmp(pathname, "/dev/fb/0", 9) == 0 )
     return 99;  // File descriptor
 
@@ -1846,14 +1860,14 @@ int FSystemTest::open (const char* pathname, int flags, ...)
 }
 
 //----------------------------------------------------------------------
-int FSystemTest::close (int fildes)
+auto FSystemTest::close (int fildes) -> int
 {
   std::cerr << "Call: close (fildes=" << fildes << ")\n";
   return 0;
 }
 
 //----------------------------------------------------------------------
-FILE* FSystemTest::fopen (const char* path, const char* mode)
+auto FSystemTest::fopen (const char* path, const char* mode) -> FILE*
 {
   std::cerr << "Call: fopen (path=" << path
             << ", mode=" << mode << ")\n";
@@ -1861,14 +1875,14 @@ FILE* FSystemTest::fopen (const char* path, const char* mode)
 }
 
 //----------------------------------------------------------------------
-int FSystemTest::fclose (FILE* fp)
+auto FSystemTest::fclose (FILE* fp) -> int
 {
   std::cerr << "Call: fclose (fp=" << fp << ")\n";
   return 0;
 }
 
 //----------------------------------------------------------------------
-int FSystemTest::fputs (const char* str, FILE* stream)
+auto FSystemTest::fputs (const char* str, FILE* stream) -> int
 {
   std::cerr << "Call: fputs (" << str << ", " << stream << ")\n";
   std::string string = str;
@@ -1884,7 +1898,7 @@ int FSystemTest::fputs (const char* str, FILE* stream)
 }
 
 //----------------------------------------------------------------------
-int FSystemTest::putchar (int c)
+auto FSystemTest::putchar (int c) -> int
 {
   std::cerr << "Call: putchar (" << c << ")\n";
   characters.push_back(c);
@@ -1892,32 +1906,32 @@ int FSystemTest::putchar (int c)
 }
 
 //----------------------------------------------------------------------
-uid_t FSystemTest::getuid()
+auto FSystemTest::getuid() -> uid_t
 {
   return 0;
 }
 
 //----------------------------------------------------------------------
-uid_t FSystemTest::geteuid()
+auto FSystemTest::geteuid() -> uid_t
 {
   return 0;
 }
 
 //----------------------------------------------------------------------
-int FSystemTest::getpwuid_r ( uid_t, struct passwd*, char*
-                            , size_t, struct passwd** )
+auto FSystemTest::getpwuid_r ( uid_t, struct passwd*, char*
+                            , size_t, struct passwd** ) -> int
 {
   return 0;
 }
 
 //----------------------------------------------------------------------
-char* FSystemTest::realpath (const char*, char*)
+auto FSystemTest::realpath (const char*, char*) -> char*
 {
   return const_cast<char*>("");
 }
 
 //----------------------------------------------------------------------
-FSystemTest::RGB& FSystemTest::getRGB (finalcut::FColor c)
+auto FSystemTest::getRGB (finalcut::FColor c) -> RGB&
 {
   auto i = std::size_t(c);
 
@@ -1928,19 +1942,19 @@ FSystemTest::RGB& FSystemTest::getRGB (finalcut::FColor c)
 }
 
 //----------------------------------------------------------------------
-console_font_op& FSystemTest::getConsoleFont()
+auto FSystemTest::getConsoleFont() -> console_font_op&
 {
   return terminal_font;
 }
 
 //----------------------------------------------------------------------
-FSystemTest::ShiftState& FSystemTest::getShiftState()
+auto FSystemTest::getShiftState() -> ShiftState&
 {
   return shift_state;
 }
 
 //----------------------------------------------------------------------
-std::string& FSystemTest::getCharacters()
+auto FSystemTest::getCharacters() -> std::string&
 {
   return characters;
 }
@@ -2073,7 +2087,7 @@ void FTermLinuxTest::classNameTest()
 //----------------------------------------------------------------------
 void FTermLinuxTest::linuxConsoleTest()
 {
-  std::unique_ptr<finalcut::FSystem> fsys = finalcut::make_unique<test::FSystemTest>();
+  std::unique_ptr<finalcut::FSystem> fsys = std::make_unique<test::FSystemTest>();
   finalcut::FTerm::setFSystem(fsys);
   std::cout << "\n";
   auto& data = finalcut::FTermData::getInstance();
@@ -2110,6 +2124,7 @@ void FTermLinuxTest::linuxConsoleTest()
   setenv ("TERM", "linux", 1);
 
   auto& term_detection = finalcut::FTermDetection::getInstance();
+  finalcut::FTermcap::init();
   finalcut::FTermLinux linux;
 
   // setupterm is needed for tputs in ncurses >= 6.1
@@ -2149,13 +2164,13 @@ void FTermLinuxTest::linuxConsoleTest()
     auto fsystest = static_cast<test::FSystemTest*>(fsystem.get());
     std::string& characters = fsystest->getCharacters();
     linux.setUTF8 (false);
+
     CPPUNIT_ASSERT ( characters == ESC "%@" );
     characters.clear();
 
     linux.setUTF8 (true);
     CPPUNIT_ASSERT ( characters == ESC "%G" );
     characters.clear();
-
 
     linux.setBeep (20, 100);     // Hz < 21
     CPPUNIT_ASSERT ( characters.empty() );
@@ -2168,6 +2183,7 @@ void FTermLinuxTest::linuxConsoleTest()
     linux.setBeep (200, 100);    // 200 Hz - 100 ms
     CPPUNIT_ASSERT ( characters == CSI "10;200]" CSI "11;100]" );
     characters.clear();
+
     linux.resetBeep();
     CPPUNIT_ASSERT ( characters == CSI "10;750]" CSI "11;125]" );
     characters.clear();
@@ -2187,16 +2203,20 @@ void FTermLinuxTest::linuxConsoleTest()
   {
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::linux_con);
+    int wstatus;
 
-    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
+    if ( waitpid(pid, &wstatus, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
+
+    if ( WIFEXITED(wstatus) )
+      CPPUNIT_ASSERT ( WEXITSTATUS(wstatus) == 0 );
   }
 }
 
 //----------------------------------------------------------------------
 void FTermLinuxTest::linuxConsoleLat15Test()
 {
-  std::unique_ptr<finalcut::FSystem> fsys = finalcut::make_unique<test::FSystemTest>();
+  std::unique_ptr<finalcut::FSystem> fsys = std::make_unique<test::FSystemTest>();
   auto fsystest = static_cast<test::FSystemTest*>(fsys.get());
   fsystest->setCodeset(test::FSystemTest::Codeset::lat15);
   finalcut::FTerm::setFSystem(fsys);
@@ -2281,16 +2301,20 @@ void FTermLinuxTest::linuxConsoleLat15Test()
   {
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::linux_con);
+    int wstatus;
 
-    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
+    if ( waitpid(pid, &wstatus, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
+
+    if ( WIFEXITED(wstatus) )
+      CPPUNIT_ASSERT ( WEXITSTATUS(wstatus) == 0 );
   }
 }
 
 //----------------------------------------------------------------------
 void FTermLinuxTest::linuxCursorStyleTest()
 {
-  std::unique_ptr<finalcut::FSystem> fsys = finalcut::make_unique<test::FSystemTest>();
+  std::unique_ptr<finalcut::FSystem> fsys = std::make_unique<test::FSystemTest>();
   finalcut::FTerm::setFSystem(fsys);
   std::cout << "\n";
   auto& data = finalcut::FTermData::getInstance();
@@ -2328,6 +2352,7 @@ void FTermLinuxTest::linuxCursorStyleTest()
   // setupterm is needed for tputs in ncurses >= 6.1
   setupterm (static_cast<char*>(nullptr), 1, static_cast<int*>(nullptr));
   auto& term_detection = finalcut::FTermDetection::getInstance();
+  finalcut::FTermcap::init();
   finalcut::FTermLinux linux;
 
   pid_t pid = forkConEmu();
@@ -2471,16 +2496,20 @@ void FTermLinuxTest::linuxCursorStyleTest()
   {
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::linux_con);
+    int wstatus;
 
-    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
+    if ( waitpid(pid, &wstatus, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
+
+    if ( WIFEXITED(wstatus) )
+      CPPUNIT_ASSERT ( WEXITSTATUS(wstatus) == 0 );
   }
 }
 
 //----------------------------------------------------------------------
 void FTermLinuxTest::linuxColorPaletteTest()
 {
-  std::unique_ptr<finalcut::FSystem> fsys = finalcut::make_unique<test::FSystemTest>();
+  std::unique_ptr<finalcut::FSystem> fsys = std::make_unique<test::FSystemTest>();
   finalcut::FTerm::setFSystem(fsys);
   std::cout << "\n";
   auto& data = finalcut::FTermData::getInstance();
@@ -2747,16 +2776,20 @@ void FTermLinuxTest::linuxColorPaletteTest()
   {
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::linux_con);
+    int wstatus;
 
-    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
+    if ( waitpid(pid, &wstatus, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
+
+    if ( WIFEXITED(wstatus) )
+      CPPUNIT_ASSERT ( WEXITSTATUS(wstatus) == 0 );
   }
 }
 
 //----------------------------------------------------------------------
 void FTermLinuxTest::linuxFontTest()
 {
-  std::unique_ptr<finalcut::FSystem> fsys = finalcut::make_unique<test::FSystemTest>();
+  std::unique_ptr<finalcut::FSystem> fsys = std::make_unique<test::FSystemTest>();
   finalcut::FTerm::setFSystem(fsys);
   std::cout << "\n";
   auto& data = finalcut::FTermData::getInstance();
@@ -2891,16 +2924,20 @@ void FTermLinuxTest::linuxFontTest()
   {
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::linux_con);
+    int wstatus;
 
-    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
+    if ( waitpid(pid, &wstatus, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
+
+    if ( WIFEXITED(wstatus) )
+      CPPUNIT_ASSERT ( WEXITSTATUS(wstatus) == 0 );
   }
 }
 
 //----------------------------------------------------------------------
 void FTermLinuxTest::modifierKeyTest()
 {
-  std::unique_ptr<finalcut::FSystem> fsys = finalcut::make_unique<test::FSystemTest>();
+  std::unique_ptr<finalcut::FSystem> fsys = std::make_unique<test::FSystemTest>();
   finalcut::FTerm::setFSystem(fsys);
 
   const auto& fsystem = finalcut::FSystem::getInstance();
@@ -2943,7 +2980,6 @@ void FTermLinuxTest::modifierKeyTest()
 
   mod_key.shift = 0;
   mod_key.ctrl = 1;
-  mod_key.alt = 1;
   mod_keycode = linux.modifierKeyCorrection(keycode);
   CPPUNIT_ASSERT ( mod_keycode == finalcut::FKey::Ctrl_Meta_up );
 
@@ -2986,7 +3022,6 @@ void FTermLinuxTest::modifierKeyTest()
 
   mod_key.shift = 0;
   mod_key.ctrl = 1;
-  mod_key.alt = 1;
   mod_keycode = linux.modifierKeyCorrection(keycode);
   CPPUNIT_ASSERT ( mod_keycode == finalcut::FKey::Ctrl_Meta_down );
 
@@ -3029,7 +3064,6 @@ void FTermLinuxTest::modifierKeyTest()
 
   mod_key.shift = 0;
   mod_key.ctrl = 1;
-  mod_key.alt = 1;
   mod_keycode = linux.modifierKeyCorrection(keycode);
   CPPUNIT_ASSERT ( mod_keycode == finalcut::FKey::Ctrl_Meta_left );
 
@@ -3072,7 +3106,6 @@ void FTermLinuxTest::modifierKeyTest()
 
   mod_key.shift = 0;
   mod_key.ctrl = 1;
-  mod_key.alt = 1;
   mod_keycode = linux.modifierKeyCorrection(keycode);
   CPPUNIT_ASSERT ( mod_keycode == finalcut::FKey::Ctrl_Meta_right );
 
@@ -3115,7 +3148,6 @@ void FTermLinuxTest::modifierKeyTest()
 
   mod_key.shift = 0;
   mod_key.ctrl = 1;
-  mod_key.alt = 1;
   mod_keycode = linux.modifierKeyCorrection(keycode);
   CPPUNIT_ASSERT ( mod_keycode == finalcut::FKey::Ctrl_Meta_insert );
 
@@ -3158,7 +3190,6 @@ void FTermLinuxTest::modifierKeyTest()
 
   mod_key.shift = 0;
   mod_key.ctrl = 1;
-  mod_key.alt = 1;
   mod_keycode = linux.modifierKeyCorrection(keycode);
   CPPUNIT_ASSERT ( mod_keycode == finalcut::FKey::Ctrl_Meta_del_char );
 
@@ -3201,7 +3232,6 @@ void FTermLinuxTest::modifierKeyTest()
 
   mod_key.shift = 0;
   mod_key.ctrl = 1;
-  mod_key.alt = 1;
   mod_keycode = linux.modifierKeyCorrection(keycode);
   CPPUNIT_ASSERT ( mod_keycode == finalcut::FKey::Ctrl_Meta_home );
 
@@ -3244,7 +3274,6 @@ void FTermLinuxTest::modifierKeyTest()
 
   mod_key.shift = 0;
   mod_key.ctrl = 1;
-  mod_key.alt = 1;
   mod_keycode = linux.modifierKeyCorrection(keycode);
   CPPUNIT_ASSERT ( mod_keycode == finalcut::FKey::Ctrl_Meta_end );
 
@@ -3287,7 +3316,6 @@ void FTermLinuxTest::modifierKeyTest()
 
   mod_key.shift = 0;
   mod_key.ctrl = 1;
-  mod_key.alt = 1;
   mod_keycode = linux.modifierKeyCorrection(keycode);
   CPPUNIT_ASSERT ( mod_keycode == finalcut::FKey::Ctrl_Meta_page_up );
 
@@ -3330,7 +3358,6 @@ void FTermLinuxTest::modifierKeyTest()
 
   mod_key.shift = 0;
   mod_key.ctrl = 1;
-  mod_key.alt = 1;
   mod_keycode = linux.modifierKeyCorrection(keycode);
   CPPUNIT_ASSERT ( mod_keycode == finalcut::FKey::Ctrl_Meta_page_down );
 

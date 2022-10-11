@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2021 Markus Gans                                      *
+* Copyright 2015-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -37,8 +37,8 @@
 
 #if !defined (__cplusplus)
   #error "You need a C++ compiler like g++ or clang++"
-#elif __cplusplus > 1 && __cplusplus < 201103
-  #error "Your C++ compiler does not support the C++11 standard!"
+#elif __cplusplus > 1 && __cplusplus < 201402L
+  #error "Your C++ compiler does not support the C++14 standard!"
 #endif
 
 #include <sys/time.h>  // need for gettimeofday
@@ -104,57 +104,57 @@ class FObject
     virtual ~FObject();
 
     // Disable copy assignment operator (=)
-    FObject& operator = (const FObject&) = delete;
+    auto operator = (const FObject&) -> FObject& = delete;
 
     // Disable move assignment operator (=)
-    FObject& operator = (FObject&&) noexcept = delete;
+    auto operator = (FObject&&) noexcept -> FObject& = delete;
 
     // Accessors
-    virtual FString       getClassName() const;
-    FObject*              getParent() const &;
-    FObject*              getChild (int) const &;
-    FObjectList&          getChildren() &;
-    const FObjectList&    getChildren() const &;
-    std::size_t           getMaxChildren() const & noexcept;
-    std::size_t           numOfChildren() const &;
-    iterator              begin();
-    iterator              end();
-    const_iterator        begin() const;
-    const_iterator        end() const;
-    const_iterator        cbegin() const noexcept;
-    const_iterator        cend() const noexcept;
-    reference             front();
-    reference             back();
-    const_reference       front() const;
-    const_reference       back() const;
+    virtual auto getClassName() const -> FString;
+    auto         getParent() const & -> FObject*;
+    auto         getChild (int) const & -> FObject*;
+    auto         getChildren() & -> FObjectList&;
+    auto         getChildren() const & -> const FObjectList&;
+    auto         getMaxChildren() const & noexcept -> std::size_t;
+    auto         numOfChildren() const & -> std::size_t;
+    auto         begin() -> iterator;
+    auto         end() -> iterator;
+    auto         begin() const -> const_iterator;
+    auto         end() const -> const_iterator;
+    auto         cbegin() const noexcept -> const_iterator;
+    auto         cend() const noexcept -> const_iterator;
+    auto         front() -> reference;
+    auto         back() -> reference;
+    auto         front() const -> const_reference;
+    auto         back() const -> const_reference;
 
     // Mutator
-    void                  setMaxChildren (std::size_t) noexcept;
+    void         setMaxChildren (std::size_t) noexcept;
 
     // Inquiries
-    bool                  hasParent() const & noexcept;
-    bool                  hasChildren() const &;
-    bool                  isChild (const FObject*) const &;
-    bool                  isDirectChild (const FObject*) const &;
-    bool                  isWidget() const noexcept;
-    bool                  isInstanceOf (const FString&) const;
+    auto         hasParent() const & noexcept -> bool;
+    auto         hasChildren() const & -> bool;
+    auto         isChild (const FObject*) const & -> bool;
+    auto         isDirectChild (const FObject*) const & -> bool;
+    auto         isWidget() const noexcept -> bool;
+    auto         isInstanceOf (const FString&) const -> bool;
 
     // Methods
-    void                  removeParent() &;
-    void                  addChild (FObject*) &;
-    void                  delChild (FObject*) &;
-    void                  setParent (FObject*) &;
+    void         removeParent() &;
+    void         addChild (FObject*) &;
+    void         delChild (FObject*) &;
+    void         setParent (FObject*) &;
 
     // Event handler
-    virtual bool          event (FEvent*);
+    virtual auto event (FEvent*) -> bool;
 
     // Timer methods
-    static TimeValue      getCurrentTime();
-    static bool           isTimeout (const TimeValue&, uInt64);
-    int                   addTimer (int) &;
-    bool                  delTimer (int) const &;
-    bool                  delOwnTimers() const &;
-    bool                  delAllTimers() const &;
+    static auto  getCurrentTime() -> TimeValue;
+    static auto  isTimeout (const TimeValue&, uInt64) -> bool;
+    auto         addTimer (int) & -> int;
+    auto         delTimer (int) const & -> bool;
+    auto         delOwnTimers() const & -> bool;
+    auto         delAllTimers() const & -> bool;
 
   protected:
     struct FTimerData
@@ -170,94 +170,94 @@ class FObject
     using FTimerListUniquePtr = std::unique_ptr<FTimerList>;
 
     // Accessor
-    FTimerList*           getTimerList() const;
+    auto         getTimerList() const -> FTimerList*;
 
     // Mutator
-    void                  setWidgetProperty (bool = true);
+    void         setWidgetProperty (bool = true);
 
     // Method
-    uInt                  processTimerEvent();
+    auto         processTimerEvent() -> uInt;
 
     // Event handler
-    virtual void          onTimer (FTimerEvent*);
-    virtual void          onUserEvent (FUserEvent*);
+    virtual void onTimer (FTimerEvent*);
+    virtual void onUserEvent (FUserEvent*);
 
   private:
     // Method
-    virtual void          performTimerAction (FObject*, FEvent*);
-    static auto           globalTimerList() -> const FTimerListUniquePtr&;
+    virtual void performTimerAction (FObject*, FEvent*);
+    static auto  globalTimerList() -> const FTimerListUniquePtr&;
 
     // Data members
-    FObject*              parent_obj{nullptr};
-    FObjectList           children_list{};  // no children yet
-    std::size_t           max_children{UNLIMITED};
-    bool                  has_parent{false};
-    bool                  widget_object{false};
+    FObject*     parent_obj{nullptr};
+    FObjectList  children_list{};  // no children yet
+    std::size_t  max_children{UNLIMITED};
+    bool         has_parent{false};
+    bool         widget_object{false};
 };
 
 
 //----------------------------------------------------------------------
-inline FString FObject::getClassName() const
+inline auto FObject::getClassName() const -> FString
 { return "FObject"; }
 
 //----------------------------------------------------------------------
-inline FObject* FObject::getParent() const &
+inline auto FObject::getParent() const & -> FObject*
 { return parent_obj; }
 
 //----------------------------------------------------------------------
-inline FObject::FObjectList& FObject::getChildren() &
+inline auto FObject::getChildren() & -> FObjectList&
 { return children_list; }
 
 //----------------------------------------------------------------------
-inline const FObject::FObjectList& FObject::getChildren() const &
+inline auto FObject::getChildren() const & -> const FObjectList&
 { return children_list; }
 
 //----------------------------------------------------------------------
-inline std::size_t FObject::getMaxChildren() const & noexcept
+inline auto FObject::getMaxChildren() const & noexcept -> std::size_t
 { return max_children; }
 
 //----------------------------------------------------------------------
-inline std::size_t FObject::numOfChildren() const &
+inline auto FObject::numOfChildren() const & -> std::size_t
 { return children_list.size(); }
 
 //----------------------------------------------------------------------
-inline FObject::iterator FObject::begin()
+inline auto FObject::begin() -> iterator
 { return children_list.begin(); }
 
 //----------------------------------------------------------------------
-inline FObject::iterator FObject::end()
+inline auto FObject::end() -> iterator
 { return children_list.end(); }
 
 //----------------------------------------------------------------------
-inline FObject::const_iterator FObject::begin() const
+inline auto FObject::begin() const -> const_iterator
 { return children_list.begin(); }
 
 //----------------------------------------------------------------------
-inline FObject::const_iterator FObject::end() const
+inline auto FObject::end() const -> const_iterator
 { return children_list.end(); }
 
 //----------------------------------------------------------------------
-inline FObject::const_iterator FObject::cbegin() const noexcept
+inline auto FObject::cbegin() const noexcept -> const_iterator
 { return children_list.cbegin(); }
 
 //----------------------------------------------------------------------
-inline FObject::const_iterator FObject::cend() const noexcept
+inline auto FObject::cend() const noexcept -> const_iterator
 { return children_list.cend(); }
 
 //----------------------------------------------------------------------
-inline FObject::reference FObject::front()
+inline auto FObject::front() -> reference
 { return children_list.front(); }
 
 //----------------------------------------------------------------------
-inline FObject::reference FObject::back()
+inline auto FObject::back() -> reference
 { return children_list.back(); }
 
 //----------------------------------------------------------------------
-inline FObject::const_reference FObject::front() const
+inline auto FObject::front() const -> const_reference
 { return children_list.front(); }
 
 //----------------------------------------------------------------------
-inline FObject::const_reference FObject::back() const
+inline auto FObject::back() const -> const_reference
 { return children_list.back(); }
 
 //----------------------------------------------------------------------
@@ -265,27 +265,27 @@ inline void FObject::setMaxChildren (std::size_t max) noexcept
 { max_children = max; }
 
 //----------------------------------------------------------------------
-inline bool FObject::hasParent() const & noexcept
+inline auto FObject::hasParent() const & noexcept -> bool
 { return has_parent; }
 
 //----------------------------------------------------------------------
-inline bool FObject::hasChildren() const &
+inline auto FObject::hasChildren() const & -> bool
 { return ! children_list.empty(); }
 
 //----------------------------------------------------------------------
-inline bool FObject::isDirectChild (const FObject* obj) const &
+inline auto FObject::isDirectChild (const FObject* obj) const & -> bool
 { return obj->getParent() == this; }
 
 //----------------------------------------------------------------------
-inline bool FObject::isWidget() const noexcept
+inline auto FObject::isWidget() const noexcept -> bool
 { return widget_object; }
 
 //----------------------------------------------------------------------
-inline bool FObject::isInstanceOf (const FString& classname) const
+inline auto FObject::isInstanceOf (const FString& classname) const -> bool
 { return classname == getClassName(); }
 
 //----------------------------------------------------------------------
-inline FObject::FTimerList* FObject::getTimerList() const
+inline auto FObject::getTimerList() const -> FTimerList*
 { return globalTimerList().get(); }
 
 //----------------------------------------------------------------------

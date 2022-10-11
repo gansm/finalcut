@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2021 Markus Gans                                      *
+* Copyright 2015-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -26,7 +26,6 @@
 
 #include "final/dialog/fdialog.h"
 #include "final/fapplication.h"
-#include "final/fevent.h"
 #include "final/fwidgetcolors.h"
 #include "final/menu/fmenubar.h"
 #include "final/menu/fmenu.h"
@@ -68,7 +67,7 @@ FMenu::~FMenu()  // destructor
 
 // public methods of FMenu
 //----------------------------------------------------------------------
-bool FMenu::setMenuWidget (bool enable)
+auto FMenu::setMenuWidget (bool enable) -> bool
 {
   if ( isMenuWidget() == enable )
     return true;
@@ -147,9 +146,9 @@ void FMenu::onKeyPress (FKeyEvent* ev)
     FKey::Meta_7, FKey::Meta_8, FKey::Meta_9
   }};
 
-  if ( std::any_of( std::begin(ignore_list)
-                  , std::end(ignore_list)
-                  , [&key] (FKey k) { return key == k; } ) )
+  if ( std::any_of( std::cbegin(ignore_list)
+                  , std::cend(ignore_list)
+                  , [&key] (const auto& k) { return key == k; } ) )
     return;
 
   if ( key == FKey::Up )
@@ -316,7 +315,7 @@ void FMenu::cb_menuitemToggled (const FMenuItem* m_item) const
   if ( ! (has_checkable_items && m_item && m_item->isChecked()) )
     return;
 
-  auto list = getItemList();
+  const auto& list = getItemList();
 
   if ( list.empty() )
     return;
@@ -335,31 +334,31 @@ void FMenu::cb_menuitemToggled (const FMenuItem* m_item) const
 
 // private methods of FMenu
 //----------------------------------------------------------------------
-bool FMenu::isDialog (const FWidget* w) const
+auto FMenu::isDialog (const FWidget* w) const -> bool
 {
   return w->isDialogWidget();
 }
 
 //----------------------------------------------------------------------
-bool FMenu::isMenuBar (const FWidget* w) const
+auto FMenu::isMenuBar (const FWidget* w) const -> bool
 {
   return w->isInstanceOf("FMenuBar");
 }
 
 //----------------------------------------------------------------------
-bool FMenu::isMenu (const FWidget* w) const
+auto FMenu::isMenu (const FWidget* w) const -> bool
 {
   return w->isInstanceOf("FMenu");
 }
 
 //----------------------------------------------------------------------
-bool FMenu::isRadioMenuItem (const FWidget* w) const
+auto FMenu::isRadioMenuItem (const FWidget* w) const -> bool
 {
   return w->isInstanceOf("FRadioMenuItem");
 }
 
 //----------------------------------------------------------------------
-bool FMenu::isSubMenu() const
+auto FMenu::isSubMenu() const -> bool
 {
   const auto& super = getSuperMenu();
 
@@ -367,20 +366,20 @@ bool FMenu::isSubMenu() const
 }
 
 //----------------------------------------------------------------------
-bool FMenu::isDialogMenu() const
+auto FMenu::isDialogMenu() const -> bool
 {
   const auto& super = getSuperMenu();
   return super ? super->isDialogWidget() : false;
 }
 
 //----------------------------------------------------------------------
-bool FMenu::isMouseOverMenu (const FPoint& termpos)
+auto FMenu::isMouseOverMenu (const FPoint& termpos) -> bool
 {
   return getTermGeometry().contains(termpos);
 }
 
 //----------------------------------------------------------------------
-bool FMenu::isMouseOverSubMenu (const FPoint& termpos)
+auto FMenu::isMouseOverSubMenu (const FPoint& termpos) -> bool
 {
   if ( opened_sub_menu )
   {
@@ -394,14 +393,14 @@ bool FMenu::isMouseOverSubMenu (const FPoint& termpos)
 }
 
 //----------------------------------------------------------------------
-bool FMenu::isMouseOverSuperMenu (const FPoint& termpos)
+auto FMenu::isMouseOverSuperMenu (const FPoint& termpos) -> bool
 {
   const auto& smenu = superMenuAt(termpos);
   return smenu;
 }
 
 //----------------------------------------------------------------------
-bool FMenu::isMouseOverMenuBar (const FPoint& termpos) const
+auto FMenu::isMouseOverMenuBar (const FPoint& termpos) const -> bool
 {
   return ( getMenuBar()
         && isMenuBar(getMenuBar())
@@ -421,7 +420,7 @@ void FMenu::init()
   FMenu::hide();
   FMenu::resetColors();
   menuitem.setMenu(this);
-  FWidget* parent = getParentWidget();
+  const auto& parent = getParentWidget();
 
   if ( parent )
   {
@@ -468,7 +467,7 @@ void FMenu::calculateDimensions()
   for (auto&& item : getItemList())
   {
     std::size_t item_width = item->getTextWidth() + 2;
-    const FKey accel_key = item->accel_key;
+    const auto& accel_key = item->accel_key;
     const bool has_menu = item->hasMenu();
 
     if ( has_menu )
@@ -521,7 +520,7 @@ void FMenu::adjustItems() const
   {
     if ( item->hasMenu() )
     {
-      auto menu = item->getMenu();
+      const auto& menu = item->getMenu();
       int menu_X = getTermX() + int(max_item_width) + 1;
       menu_X = menu->adjustX(menu_X);
       const int menu_Y = item->getTermY() - 2;
@@ -537,7 +536,7 @@ void FMenu::adjustItems() const
 }
 
 //----------------------------------------------------------------------
-int FMenu::adjustX (int x_pos) const
+auto FMenu::adjustX (int x_pos) const -> int
 {
   // Is menu outside on the right of the screen?
   if ( x_pos + int(max_item_width) >= int(getDesktopWidth() - 1) )
@@ -635,7 +634,7 @@ void FMenu::hideSuperMenus() const
 }
 
 //----------------------------------------------------------------------
-bool FMenu::isMouseOverItem (const FPoint& mouse_pos, const FMenuItem* item) const
+auto FMenu::isMouseOverItem (const FPoint& mouse_pos, const FMenuItem* item) const -> bool
 {
   const int x1 = item->getX();
   const int x2 = item->getX() + int(item->getWidth());
@@ -646,7 +645,7 @@ bool FMenu::isMouseOverItem (const FPoint& mouse_pos, const FMenuItem* item) con
 }
 
 //----------------------------------------------------------------------
-bool FMenu::mouseDownOverList (const FPoint& mouse_pos)
+auto FMenu::mouseDownOverList (const FPoint& mouse_pos) -> bool
 {
   bool focus_changed{false};
 
@@ -669,7 +668,7 @@ void FMenu::mouseDownSubmenu (const FMenuItem* m_item)
   if ( ! hasSelectedItem() )
     return;
 
-  auto sel_item = getSelectedItem();
+  const auto& sel_item = getSelectedItem();
 
   if ( ! sel_item
     || ! sel_item->hasMenu()
@@ -720,7 +719,7 @@ void FMenu::mouseDownSelection (FMenuItem* m_item, bool& focus_changed)
 }
 
 //----------------------------------------------------------------------
-bool FMenu::mouseUpOverList (const FPoint& mouse_pos)
+auto FMenu::mouseUpOverList (const FPoint& mouse_pos) -> bool
 {
   for (auto&& item : getItemList())
   {
@@ -854,18 +853,11 @@ void FMenu::mouseMoveOverBorder (MouseStates& ms) const
 }
 
 //----------------------------------------------------------------------
-void FMenu::passEventToSubMenu (const FMouseEvent& ev)
+void FMenu::passEventToSubMenu (const FMouseEvent& ev) const
 {
   // Mouse event handover to sub-menu
 
-  const auto& t = ev.getTermPos();
-  const auto& p = opened_sub_menu->termToWidgetPos(t);
-  const MouseButton b = ev.getButton();
-  const auto& _ev = \
-      std::make_shared<FMouseEvent>(Event::MouseMove, p, t, b);
-  opened_sub_menu->mouse_down = true;
-  setClickedWidget(opened_sub_menu);
-  opened_sub_menu->onMouseMove(_ev.get());
+  passEventToWidget (opened_sub_menu, ev);
 }
 
 //----------------------------------------------------------------------
@@ -874,14 +866,7 @@ void FMenu::passEventToSuperMenu (const FMouseEvent& ev)
   // Mouse event handover to super-menu
 
   auto smenu = superMenuAt (ev.getTermPos());
-  const auto& t = ev.getTermPos();
-  const auto& p = smenu->termToWidgetPos(t);
-  const MouseButton b = ev.getButton();
-  const auto& _ev = \
-      std::make_shared<FMouseEvent>(Event::MouseMove, p, t, b);
-  smenu->mouse_down = true;
-  setClickedWidget(smenu);
-  smenu->onMouseMove(_ev.get());
+  passEventToWidget (smenu, ev);
 }
 
 //----------------------------------------------------------------------
@@ -890,18 +875,11 @@ void FMenu::passEventToMenuBar (const FMouseEvent& ev) const
   // Mouse event handover to the menu bar
 
   auto menu_bar = getMenuBar();
-  const auto& t = ev.getTermPos();
-  const auto& p = menu_bar->termToWidgetPos(t);
-  const MouseButton b = ev.getButton();
-  const auto& _ev = \
-      std::make_shared<FMouseEvent>(Event::MouseMove, p, t, b);
-  setClickedWidget(menu_bar);
-  menu_bar->mouse_down = true;
-  menu_bar->onMouseMove(_ev.get());
+  passEventToWidget (menu_bar, ev);
 }
 
 //----------------------------------------------------------------------
-bool FMenu::containsMenuStructure (int x, int y)
+auto FMenu::containsMenuStructure (int x, int y) -> bool
 {
   // Check mouse click position for item, menu and all sub menus
 
@@ -920,7 +898,7 @@ bool FMenu::containsMenuStructure (int x, int y)
 }
 
 //----------------------------------------------------------------------
-FMenu* FMenu::superMenuAt (int x, int y)
+auto FMenu::superMenuAt (int x, int y) -> FMenu*
 {
   // Check mouse click position for super menu
 
@@ -970,10 +948,10 @@ void FMenu::keypressMenuBar (FKeyEvent* ev) const
 }
 
 //----------------------------------------------------------------------
-inline bool FMenu::hotkeyFound (FKey hotkey, const FKeyEvent& ev) const
+inline auto FMenu::hotkeyFound (FKey hotkey, const FKeyEvent& ev) const -> bool
 {
   bool found{false};
-  const FKey key = ev.key();
+  const auto& key = ev.key();
 
   if ( hotkey > 0xff00 && hotkey < 0xff5f )  // full-width character
     hotkey -= 0xfee0;
@@ -991,9 +969,9 @@ inline bool FMenu::hotkeyFound (FKey hotkey, const FKeyEvent& ev) const
 }
 
 //----------------------------------------------------------------------
-bool FMenu::hotkeyMenu (FKeyEvent* ev)
+auto FMenu::hotkeyMenu (FKeyEvent* ev) -> bool
 {
-  auto try_to_open_submenu = [this] (FMenu* sub_menu)
+  auto try_to_open_submenu = [this] (const auto& sub_menu)
   {
     if ( ! sub_menu->isShown() )
       openSubMenu (sub_menu, SELECT_ITEM);
@@ -1444,8 +1422,8 @@ void FMenu::processActivate() const
 
 // non-member functions
 //----------------------------------------------------------------------
-std::tuple<bool, bool> closeOpenMenus ( FMenu* menu
-                                      , const FPoint& mouse_position )
+auto closeOpenMenus ( FMenu* menu
+                    , const FPoint& mouse_position ) -> std::tuple<bool, bool>
 {
   // Close the open menu
 

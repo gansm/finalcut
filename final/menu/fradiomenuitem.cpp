@@ -58,7 +58,7 @@ void FRadioMenuItem::init()
 {
   setCheckable();
   setRadioButton();
-  FWidget* parent = getParentWidget();
+  const auto& parent = getParentWidget();
 
   if ( ! parent )
     return;

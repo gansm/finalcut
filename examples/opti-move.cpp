@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2021 Markus Gans                                      *
+* Copyright 2016-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -28,7 +28,7 @@
 #include <final/final.h>
 
 // function prototype
-bool keyPressed();
+auto keyPressed() -> bool;
 void term_boundaries (int&, int&);
 void move (int, int, int, int);
 
@@ -36,7 +36,7 @@ void move (int, int, int, int);
 //----------------------------------------------------------------------
 // functions
 //----------------------------------------------------------------------
-bool keyPressed()
+auto keyPressed() -> bool
 {
   // Waiting for keypress
 
@@ -106,10 +106,10 @@ void move (int xold, int yold, int xnew, int ynew)
   // Get the move string
   buffer = finalcut::FTerm::moveCursorString (xold, yold, xnew, ynew);
 
-  for (auto&& ch : buffer)
+  for (const auto& ch : buffer)
   {
     if ( ch < 0x21 )
-      sequence += ctrl_character[std::size_t(ch)];
+      sequence += ctrl_character[uChar(ch)];
     else
       sequence += ch;
 
@@ -200,7 +200,7 @@ DirectLogger::~DirectLogger() noexcept = default;  // destructor
 //----------------------------------------------------------------------
 //                               main part
 //----------------------------------------------------------------------
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   // Disable mouse, color palette changes and terminal data requests
   auto& start_options = finalcut::FStartOptions::getInstance();

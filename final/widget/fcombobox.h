@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2021 Markus Gans                                      *
+* Copyright 2019-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -79,30 +79,29 @@ class FDropDownListBox : public FWindow
     ~FDropDownListBox () override;
 
     // Accessors
-    FString             getClassName() const override;
+    auto getClassName() const -> FString override;
 
     // Mutators
-    void                setGeometry ( const FPoint&, const FSize&
-                                    , bool = true ) override;
+    void setGeometry (const FPoint&, const FSize&, bool = true ) override;
     // Inquiries
-    bool                isEmpty() const;
+    auto isEmpty() const -> bool;
 
     // Methods
-    void                show() override;
-    void                hide() override;
+    void show() override;
+    void hide() override;
 
   private:
     // Methods
-    void                init();
-    void                draw() override;
-    void                drawShadow();
-    bool                containsWidget (const FPoint&);
+    void init();
+    void draw() override;
+    void drawShadow();
+    auto containsWidget (const FPoint&) -> bool;
 
     // Data members
-    FListBox            list{this};
+    FListBox list{this};
 
     // Friend functions
-    friend bool closeComboBox (FDropDownListBox*, const FPoint&);
+    friend auto closeComboBox (FDropDownListBox*, const FPoint&) -> bool;
 
     // Friend classes
     friend class FComboBox;
@@ -110,11 +109,11 @@ class FDropDownListBox : public FWindow
 
 // FDropDownListBox inline functions
 //----------------------------------------------------------------------
-inline FString FDropDownListBox::getClassName() const
+inline auto FDropDownListBox::getClassName() const -> FString
 { return "FDropDownListBox"; }
 
 //----------------------------------------------------------------------
-inline bool FDropDownListBox::isEmpty() const
+inline auto FDropDownListBox::isEmpty() const -> bool
 { return list.getCount() == 0; }
 
 
@@ -136,138 +135,136 @@ class FComboBox : public FWidget
     ~FComboBox() noexcept override;
 
     // Accessors
-    FString             getClassName() const override;
-    std::size_t         getCount() const;
-    FString             getText() const;
+    auto getClassName() const -> FString override;
+    auto getCount() const -> std::size_t;
+    auto getText() const -> FString;
     template <typename DT>
-    clean_fdata_t<DT>&  getItemData();
-    LabelOrientation    getLabelOrientation() const;
+    auto getItemData() -> clean_fdata_t<DT>&;
+    auto getLabelOrientation() const -> LabelOrientation;
 
     // Mutators
-    void                setSize (const FSize&, bool = true) override;
-    void                setGeometry ( const FPoint&, const FSize&
-                                    , bool = true ) override;
-    bool                setEnable (bool = true) override;
-    bool                unsetEnable() override;
-    bool                setDisable() override;
-    bool                setFocus (bool = true) override;
-    bool                unsetFocus() override;
-    bool                setShadow (bool = true);
-    bool                unsetShadow();
-    bool                setEditable (bool = true);
-    bool                unsetEditable();
-    void                setCurrentItem (std::size_t);
-    void                setMaxVisibleItems (std::size_t);
-    void                setText (const FString&);
-    void                clearText();
-    void                setLabelText (const FString&);
-    void                setLabelOrientation (const LabelOrientation);
+    void setSize (const FSize&, bool = true) override;
+    void setGeometry (const FPoint&, const FSize&, bool = true) override;
+    auto setEnable (bool = true) -> bool override;
+    auto unsetEnable() -> bool override;
+    auto setDisable() -> bool override;
+    auto setFocus (bool = true) -> bool override;
+    auto unsetFocus() -> bool override;
+    auto setShadow (bool = true) -> bool;
+    auto unsetShadow() -> bool;
+    auto setEditable (bool = true) -> bool;
+    auto unsetEditable() -> bool;
+    void setCurrentItem (std::size_t);
+    void setMaxVisibleItems (std::size_t);
+    void setText (const FString&);
+    void clearText();
+    void setLabelText (const FString&);
+    void setLabelOrientation (const LabelOrientation);
 
     // Inquiries
-    bool                hasShadow() const;
+    auto hasShadow() const -> bool;
 
     // Methods
-    void                insert (const FListBoxItem&);
+    void insert (const FListBoxItem&);
     template <typename T
             , typename DT = std::nullptr_t>
-    void                insert ( const std::initializer_list<T>& list
-                               , DT&& = DT() );
+    void insert (const std::initializer_list<T>& list, DT&& = DT());
     template <typename ItemT
             , typename DT = std::nullptr_t>
-    void                insert (const ItemT&, DT&& = DT());
-    void                remove (std::size_t);
-    void                reserve (std::size_t);
-    void                clear();
-    virtual void        showDropDown();
-    virtual void        hideDropDown();
+    void insert (const ItemT&, DT&& = DT());
+    void remove (std::size_t);
+    void reserve (std::size_t);
+    void clear();
+    virtual void showDropDown();
+    virtual void hideDropDown();
 
     // Event handlers
-    void                onKeyPress (FKeyEvent*) override;
-    void                onMouseDown (FMouseEvent*) override;
-    void                onMouseMove (FMouseEvent*) override;
-    void                onWheel (FWheelEvent*) override;
-    void                onFocusOut (FFocusEvent*) override;
+    void onKeyPress (FKeyEvent*) override;
+    void onMouseDown (FMouseEvent*) override;
+    void onMouseMove (FMouseEvent*) override;
+    void onWheel (FWheelEvent*) override;
+    void onFocusOut (FFocusEvent*) override;
 
   private:
     // Inquiries
-    bool                isMouseOverListWindow (const FPoint&);
+    auto isMouseOverListWindow (const FPoint&) -> bool;
 
     // Methods
-    void                init();
-    void                initCallbacks();
-    void                draw() override;
-    void                onePosUp();
-    void                onePosDown();
-    void                passEventToListWindow (const FMouseEvent&);
-    void                processClick() const;
-    void                processRowChanged() const;
+    void init();
+    void initCallbacks();
+    void draw() override;
+    void onePosUp();
+    void onePosDown();
+    void passEventToListWindow (const FMouseEvent&);
+    void processClick() const;
+    void processRowChanged() const;
 
     // Callback methods
-    void                cb_setInputField();
-    void                cb_closeComboBox();
-    void                cb_inputFieldSwitch();
-    void                cb_inputFieldHandOver();
+    void cb_setInputField();
+    void cb_closeComboBox();
+    void cb_inputFieldSwitch();
+    void cb_inputFieldHandOver();
 
     // Data members
-    FLineEdit           input_field{this};
-    FDropDownListBox    list_window{this};
-    std::size_t         max_items{8};
-    int                 nf{0};
-    bool                is_editable{true};
+    FLineEdit         input_field{this};
+    FDropDownListBox  list_window{this};
+    std::size_t       max_items{8};
+    int               nf{0};
+    bool              is_editable{true};
 };
 
 // non-member function forward declarations
 //----------------------------------------------------------------------
 void closeOpenComboBox();
-bool closeComboBox (FDropDownListBox*, const FPoint&);
+auto closeComboBox (FDropDownListBox*, const FPoint&) -> bool;
 
 // FComboBox inline functions
 //----------------------------------------------------------------------
-inline FString FComboBox::getClassName() const
+inline auto FComboBox::getClassName() const -> FString
 { return "FComboBox"; }
 
 //----------------------------------------------------------------------
-inline std::size_t FComboBox::getCount() const
+inline auto FComboBox::getCount() const -> std::size_t
 { return list_window.list.getCount(); }
 
 //----------------------------------------------------------------------
-inline FString FComboBox::getText() const
+inline auto FComboBox::getText() const -> FString
 { return input_field.getText(); }
 
 //----------------------------------------------------------------------
 template <typename DT>
-inline clean_fdata_t<DT>& FComboBox::getItemData()
+inline auto FComboBox::getItemData() -> clean_fdata_t<DT>&
 {
   const std::size_t index = list_window.list.currentItem();
   return list_window.list.getItem(index).getData<DT>();
 }
 
 //----------------------------------------------------------------------
-inline FLineEdit::LabelOrientation FComboBox::getLabelOrientation() const
+inline auto FComboBox::getLabelOrientation() const -> FLineEdit::LabelOrientation
 { return input_field.getLabelOrientation(); }
 
 //----------------------------------------------------------------------
-inline bool FComboBox::unsetEnable()
+inline auto FComboBox::unsetEnable() -> bool
 { return setEnable(false); }
 
 //----------------------------------------------------------------------
-inline bool FComboBox::setDisable()
+inline auto FComboBox::setDisable() -> bool
 { return setEnable(false); }
 
 //----------------------------------------------------------------------
-inline bool FComboBox::unsetFocus()
+inline auto FComboBox::unsetFocus() -> bool
 { return setFocus(false); }
 
 //----------------------------------------------------------------------
-inline bool FComboBox::unsetShadow()
+inline auto FComboBox::unsetShadow() -> bool
 { return setShadow(false); }
 
 //----------------------------------------------------------------------
-inline bool FComboBox::unsetEditable()
+inline auto FComboBox::unsetEditable() -> bool
 { return setEditable(false); }
 
 //----------------------------------------------------------------------
-inline bool FComboBox::hasShadow() const
+inline auto FComboBox::hasShadow() const -> bool
 { return getFlags().shadow; }
 
 //----------------------------------------------------------------------

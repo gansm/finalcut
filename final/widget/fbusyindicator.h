@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2021 Markus Gans                                      *
+* Copyright 2020-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -76,14 +76,14 @@ class FBusyIndicator : public FToolTip
     ~FBusyIndicator() noexcept override;
 
     // Accessors
-    FString             getClassName() const override;
+    auto getClassName() const -> FString override;
 
     // Inquiries
-    bool                isRunning() const noexcept;
+    auto isRunning() const noexcept -> bool;
 
     // Methods
-    void                start();
-    void                stop();
+    void start();
+    void stop();
 
   private:
     // Constants
@@ -107,11 +107,11 @@ class FBusyIndicator : public FToolTip
 
 // FBusyIndicator inline functions
 //----------------------------------------------------------------------
-inline FString FBusyIndicator::getClassName() const
+inline auto FBusyIndicator::getClassName() const -> FString
 { return "FBusyIndicator"; }
 
 //----------------------------------------------------------------------
-inline bool FBusyIndicator::isRunning() const noexcept
+inline auto FBusyIndicator::isRunning() const noexcept -> bool
 {
   return running;
 }

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2021 Markus Gans                                      *
+* Copyright 2015-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -41,7 +41,7 @@ class AttribDlg final : public finalcut::FDialog
     explicit AttribDlg (finalcut::FWidget* = nullptr);
 
     // Methods
-    FColor getBGColor() const;
+    auto getBGColor() const -> FColor;
 
     // Event handlers
     void onKeyPress (finalcut::FKeyEvent*) override;
@@ -86,7 +86,7 @@ AttribDlg::AttribDlg (finalcut::FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FColor AttribDlg::getBGColor() const
+auto AttribDlg::getBGColor() const -> FColor
 {
   return bgcolor;
 }
@@ -476,7 +476,7 @@ void AttribDemo::draw()
 //----------------------------------------------------------------------
 //                               main part
 //----------------------------------------------------------------------
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   // Create the application object
   finalcut::FApplication app {argc, argv};

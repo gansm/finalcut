@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2021 Markus Gans                                      *
+* Copyright 2014-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -82,10 +82,14 @@ void FMessageBox::setHeadline (const FString& headline)
 {
   headline_text.setString(headline);
   setHeight(getHeight() + 2, true);
-
-  for (std::size_t n{0}; n < num_buttons && n < MAX_BUTTONS; n++)
-    if ( button[n] )
-      button[n]->setY (int(getHeight()) - 4, false);
+  std::for_each ( button.cbegin()
+                , button.cend()
+                , [this] (const auto& btn)
+                  {
+                    if ( btn )
+                      btn->setY (int(getHeight()) - 4, false);
+                  }
+                );
 
   const std::size_t column_width = getColumnWidth(headline_text);
 
@@ -112,7 +116,7 @@ void FMessageBox::setText (const FString& txt)
 }
 
 //----------------------------------------------------------------------
-FMessageBox::ButtonType FMessageBox::exec()
+auto FMessageBox::exec() -> ButtonType
 {
   result_code = ButtonType::Reject;
   show();
@@ -203,7 +207,7 @@ inline void FMessageBox::allocation()
 {
   try
   {
-    button[0].reset(new FButton (this));
+    button[0] = std::make_unique<FButton>(this);
     button[0]->setText(button_text[std::size_t(button_digit[0])]);
     button[0]->setPos(FPoint{3, int(getHeight()) - 4}, false);
     button[0]->setWidth(1, false);
@@ -212,7 +216,7 @@ inline void FMessageBox::allocation()
 
     if ( button_digit[1] > ButtonType::Reject )
     {
-      button[1].reset(new FButton(this));
+      button[1] = std::make_unique<FButton>(this);
       button[1]->setText(button_text[std::size_t(button_digit[1])]);
       button[1]->setPos(FPoint{17, int(getHeight()) - 4}, false);
       button[1]->setWidth(0, false);
@@ -221,7 +225,7 @@ inline void FMessageBox::allocation()
 
     if ( button_digit[2] > ButtonType::Reject )
     {
-      button[2].reset(new FButton(this));
+      button[2] = std::make_unique<FButton>(this);
       button[2]->setText(button_text[std::size_t(button_digit[2])]);
       button[2]->setPos(FPoint{32, int(getHeight()) - 4}, false);
       button[2]->setWidth(0, false);
@@ -272,8 +276,6 @@ inline void FMessageBox::initCallbacks()
 //----------------------------------------------------------------------
 void FMessageBox::calculateDimensions()
 {
-  FSize size{};
-  std::size_t headline_height{0};
   text_components = text.split("\n");
   max_line_width = 0;
   text_num_lines = std::size_t(text_components.size());
@@ -281,19 +283,19 @@ void FMessageBox::calculateDimensions()
   if ( text_num_lines == 0 )
     return;
 
-  if ( ! headline_text.isEmpty() )
-    headline_height = 2;
+  std::for_each ( text_components.cbegin()
+                , text_components.cend()
+                , [this] (const auto& line)
+                  {
+                    const std::size_t column_width = getColumnWidth(line);
 
-  for (auto&& line : text_components)
-  {
-    const std::size_t column_width = getColumnWidth(line);
+                    if ( column_width > max_line_width )
+                      max_line_width = column_width;
+                  }
+                );
 
-    if ( column_width > max_line_width )
-      max_line_width = column_width;
-  }
-
-  size.setHeight (text_num_lines + 8 + headline_height);
-  size.setWidth (max_line_width + 4);
+  std::size_t headline_height = headline_text.isEmpty() ? 0 : 2;
+  FSize size{ max_line_width + 4, text_num_lines + 8 + headline_height };
 
   if ( size.getWidth() < 20 )
     size.setWidth(20);
@@ -329,9 +331,9 @@ void FMessageBox::draw()
 
   setColor();
 
-  for (auto&& line : text_components)
+  for (const auto& line : text_components)
   {
-    const std::size_t line_width = getColumnWidth(line);
+    const auto& line_width = getColumnWidth(line);
 
     if ( center_text )  // center one line
       center_x = int((max_line_width - line_width) / 2);

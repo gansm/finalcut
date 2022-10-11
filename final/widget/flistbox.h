@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2021 Markus Gans                                      *
+* Copyright 2014-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -76,50 +76,50 @@ class FListBoxItem
     template <typename DT = std::nullptr_t>
     explicit FListBoxItem (const FString&, DT&& = DT() );
 
-    // Disable copy constructor
+    // Copy constructor
     FListBoxItem (const FListBoxItem&) = default;
 
-    // Disable move constructor
+    // Move constructor
     FListBoxItem (FListBoxItem&&) noexcept = default;
 
     // Destructor
     virtual ~FListBoxItem() noexcept;
 
-    // Disable copy assignment operator (=)
-    FListBoxItem& operator = (const FListBoxItem&) = default;
+    // Copy assignment operator (=)
+    auto operator = (const FListBoxItem&) -> FListBoxItem& = default;
 
-    // Disable move assignment operator (=)
-    FListBoxItem& operator = (FListBoxItem&&) noexcept = default;
+    // Move assignment operator (=)
+    auto operator = (FListBoxItem&&) noexcept -> FListBoxItem& = default;
 
     // Accessors
-    virtual FString       getClassName() const;
-    virtual FString       getText() const;
+    virtual auto getClassName() const -> FString;
+    virtual auto getText() const -> FString;
     template <typename DT>
-    clean_fdata_t<DT>&    getData() const;
+    auto getData() const -> clean_fdata_t<DT>&;
 
     // Mutators
-    void                  setText (const FString&);
+    void setText (const FString&);
     template <typename DT>
-    void                  setData (DT&&);
+    void setData (DT&&);
 
     // Inquiries
-    bool                  isSelected() const;
+    auto isSelected() const -> bool;
 
     // Methods
-    void                  clear();
+    void clear();
 
   private:
     // Using-declaration
     using FDataAccessPtr = std::shared_ptr<FDataAccess>;
 
     // Methods
-    FString               stringFilter(const FString&) const;
+    auto stringFilter(const FString&) const -> FString;
 
     // Data members
-    FString               text{};
-    FDataAccessPtr        data_pointer{};
-    BracketType           brackets{BracketType::None};
-    bool                  selected{false};
+    FString         text{};
+    FDataAccessPtr  data_pointer{};
+    BracketType     brackets{BracketType::None};
+    bool            selected{false};
 
     // Friend classes
     friend class FListBox;
@@ -135,16 +135,16 @@ inline FListBoxItem::FListBoxItem (const FString& txt, DT&& data)
 { }
 
 //----------------------------------------------------------------------
-inline FString FListBoxItem::getClassName() const
+inline auto FListBoxItem::getClassName() const -> FString
 { return "FListBoxItem"; }
 
 //----------------------------------------------------------------------
-inline FString FListBoxItem::getText() const
+inline auto FListBoxItem::getText() const -> FString
 { return text; }
 
 //----------------------------------------------------------------------
 template <typename DT>
-inline clean_fdata_t<DT>& FListBoxItem::getData() const
+inline auto FListBoxItem::getData() const -> clean_fdata_t<DT>&
 {
   return static_cast<FData<clean_fdata_t<DT>>&>(*data_pointer).get();
 }
@@ -164,7 +164,7 @@ inline void FListBoxItem::setData (DT&& data)
 }
 
 //----------------------------------------------------------------------
-inline bool FListBoxItem::isSelected() const
+inline auto FListBoxItem::isSelected() const -> bool
 { return selected; }
 
 //----------------------------------------------------------------------
@@ -172,7 +172,7 @@ inline void FListBoxItem::clear()
 { text.clear(); }
 
 //----------------------------------------------------------------------
-inline FString FListBoxItem::stringFilter (const FString& txt) const
+inline auto FListBoxItem::stringFilter (const FString& txt) const -> FString
 {
   return txt.rtrim()
             .expandTabs(FVTerm::getFOutput()->getTabstop())
@@ -212,94 +212,91 @@ class FListBox : public FWidget
     ~FListBox() override;
 
     // Disable copy assignment operator (=)
-    FListBox& operator = (const FListBox&) = delete;
+    auto operator = (const FListBox&) -> FListBox& = delete;
 
     // Disable move assignment operator (=)
-    FListBox& operator = (FListBox&&) noexcept = delete;
+    auto operator = (FListBox&&) noexcept -> FListBox& = delete;
 
     // Accessors
-    FString              getClassName() const override;
-    std::size_t          getCount() const;
-    FListBoxItem&        getItem (std::size_t) &;
-    const FListBoxItem&  getItem (std::size_t) const &;
-    FListBoxItem&        getItem (FListBoxItems::iterator) &;
-    const FListBoxItem&  getItem (FListBoxItems::const_iterator) const &;
-    std::size_t          currentItem() const noexcept;
-    FListBoxItems&       getData() &;
-    const FListBoxItems& getData() const &;
-    FString&             getText() &;
+    auto getClassName() const -> FString override;
+    auto getCount() const -> std::size_t;
+    auto getItem (std::size_t) & -> FListBoxItem&;
+    auto getItem (std::size_t) const & -> const FListBoxItem&;
+    auto getItem (FListBoxItems::iterator) & -> FListBoxItem&;
+    auto getItem (FListBoxItems::const_iterator) const & -> const FListBoxItem&;
+    auto currentItem() const noexcept -> std::size_t;
+    auto getData() & -> FListBoxItems&;
+    auto getData() const & -> const FListBoxItems&;
+    auto getText() & -> FString&;
 
     // Mutators
-    void                 setCurrentItem (std::size_t);
-    void                 setCurrentItem (FListBoxItems::iterator);
-    void                 selectItem (std::size_t);
-    void                 selectItem (FListBoxItems::iterator) const;
-    void                 unselectItem (std::size_t);
-    void                 unselectItem (FListBoxItems::iterator) const;
-    void                 showInsideBrackets (const std::size_t, BracketType);
-    void                 showNoBrackets (std::size_t);
-    void                 showNoBrackets (FListBoxItems::iterator) const;
-    void                 setSize (const FSize&, bool = true) override;
-    void                 setGeometry ( const FPoint&, const FSize&
-                                     , bool = true ) override;
-    void                 setMultiSelection (bool = true);
-    void                 unsetMultiSelection ();
-    bool                 setDisable() override;
-    void                 setText (const FString&);
+    void setCurrentItem (std::size_t);
+    void setCurrentItem (FListBoxItems::iterator);
+    void selectItem (std::size_t);
+    void selectItem (FListBoxItems::iterator) const;
+    void unselectItem (std::size_t);
+    void unselectItem (FListBoxItems::iterator) const;
+    void showInsideBrackets (const std::size_t, BracketType);
+    void showNoBrackets (std::size_t);
+    void showNoBrackets (FListBoxItems::iterator) const;
+    void setSize (const FSize&, bool = true) override;
+    void setGeometry (const FPoint&, const FSize&, bool = true) override;
+    void setMultiSelection (bool = true);
+    void unsetMultiSelection ();
+    auto setDisable() -> bool override;
+    void setText (const FString&);
 
     // Inquiries
-    bool                 isSelected (std::size_t) const;
-    bool                 isSelected (FListBoxItems::iterator) const;
-    bool                 isMultiSelection() const;
-    bool                 hasBrackets (std::size_t) const;
-    bool                 hasBrackets (FListBoxItems::iterator) const;
+    auto isSelected (std::size_t) const -> bool;
+    auto isSelected (FListBoxItems::iterator) const -> bool;
+    auto isMultiSelection() const -> bool;
+    auto hasBrackets (std::size_t) const -> bool;
+    auto hasBrackets (FListBoxItems::iterator) const -> bool;
 
     // Methods
-    void                 hide() override;
+    void hide() override;
     template <typename Iterator
             , typename InsertConverter>
-    void                 insert ( Iterator, Iterator
-                                , const InsertConverter& );
+    void insert (Iterator, Iterator, const InsertConverter&);
     template <typename Container
             , typename LazyConverter>
-    void                 insert ( const Container&
-                                , LazyConverter&& );
+    void insert (const Container&, LazyConverter&&);
     template <typename Container
             , typename LazyConverter>
-    void                 insert (Container*, LazyConverter&&);
-    void                 insert (const FListBoxItem&);
+    void insert (Container*, LazyConverter&&);
+    void insert (const FListBoxItem&);
     template <typename T
             , typename DT = std::nullptr_t>
-    void                 insert ( const std::initializer_list<T>& list
-                                , BracketType = BracketType::None
-                                , bool = false
-                                , DT&& = DT() );
+    void insert ( const std::initializer_list<T>& list
+                , BracketType = BracketType::None
+                , bool = false
+                , DT&& = DT() );
     template <typename ItemT
             , typename DT = std::nullptr_t>
-    void                 insert ( const ItemT&
-                                , BracketType = BracketType::None
-                                , bool = false
-                                , DT&& = DT() );
-    void                 remove (std::size_t);
-    void                 reserve (std::size_t);
-    void                 clear();
+    void insert ( const ItemT&
+                , BracketType = BracketType::None
+                , bool = false
+                , DT&& = DT() );
+    void remove (std::size_t);
+    void reserve (std::size_t);
+    void clear();
 
     // Event handlers
-    void                 onKeyPress (FKeyEvent*) override;
-    void                 onMouseDown (FMouseEvent*) override;
-    void                 onMouseUp (FMouseEvent*) override;
-    void                 onMouseMove (FMouseEvent*) override;
-    void                 onMouseDoubleClick (FMouseEvent*) override;
-    void                 onWheel (FWheelEvent*) override;
-    void                 onTimer (FTimerEvent*) override;
-    void                 onFocusIn (FFocusEvent*) override;
-    void                 onFocusOut (FFocusEvent*) override;
+    void onKeyPress (FKeyEvent*) override;
+    void onMouseDown (FMouseEvent*) override;
+    void onMouseUp (FMouseEvent*) override;
+    void onMouseMove (FMouseEvent*) override;
+    void onMouseDoubleClick (FMouseEvent*) override;
+    void onWheel (FWheelEvent*) override;
+    void onTimer (FTimerEvent*) override;
+    void onFocusIn (FFocusEvent*) override;
+    void onFocusOut (FFocusEvent*) override;
 
   protected:
     // Methods
-    void                 initLayout() override;
-    void                 adjustYOffset (std::size_t);
-    void                 adjustSize() override;
+    void initLayout() override;
+    void adjustYOffset (std::size_t);
+    void adjustSize() override;
 
   private:
     // Using-declaration
@@ -316,70 +313,70 @@ class FListBox : public FWidget
     };
 
     // Accessors
-    static FString       getString (FListBoxItems::iterator);
+    static auto getString (FListBoxItems::iterator) -> FString;
 
     // Inquiry
-    bool                 isHorizontallyScrollable() const;
-    bool                 isVerticallyScrollable() const;
+    auto isHorizontallyScrollable() const -> bool;
+    auto isVerticallyScrollable() const -> bool;
 
     // Methods
-    void                 init();
-    void                 mapKeyFunctions();
-    void                 processKeyAction (FKeyEvent*);
-    void                 draw() override;
-    void                 drawBorder() override;
-    void                 drawScrollbars() const;
-    void                 drawHeadline();
-    void                 drawList();
-    void                 drawListLine (int, FListBoxItems::iterator, bool);
-    void                 printLeftBracket (BracketType);
-    void                 printRightBracket (BracketType);
-    void                 drawListBracketsLine (int, FListBoxItems::iterator, bool);
-    void                 setLineAttributes (int, bool, bool, bool&);
-    void                 unsetAttributes() const;
-    void                 updateDrawing (bool, bool);
-    void                 recalculateHorizontalBar (std::size_t, bool);
-    void                 recalculateVerticalBar (std::size_t) const;
-    void                 multiSelection (std::size_t);
-    void                 multiSelectionUpTo (std::size_t);
-    void                 wheelUp (int);
-    void                 wheelDown (int);
-    bool                 dragScrollUp();
-    bool                 dragScrollDown();
-    void                 dragUp (MouseButton);
-    void                 dragDown (MouseButton);
-    void                 stopDragScroll();
-    void                 prevListItem (int);
-    void                 nextListItem (int);
-    void                 scrollToX (int);
-    void                 scrollToY (int);
-    void                 scrollLeft (int);
-    void                 scrollRight (int);
-    void                 scrollLeft();
-    void                 scrollRight();
-    void                 onePosUp();
-    void                 onePosDown();
-    void                 onePageUp();
-    void                 onePageDown();
-    void                 firstPos();
-    void                 lastPos();
-    bool                 skipIncrementalSearch();
-    void                 acceptSelection();
-    bool                 spacebarProcessing();
-    bool                 changeSelectionAndPosition();
-    bool                 deletePreviousCharacter();
-    bool                 keyIncSearchInput (FKey);
-    void                 processClick() const;
-    void                 processSelect() const;
-    void                 processRowChanged() const;
-    void                 processChanged() const;
-    void                 changeOnResize() const;
-    void                 lazyConvert (FListBoxItems::iterator, std::size_t);
-    FListBoxItems::iterator index2iterator (std::size_t);
-    FListBoxItems::const_iterator index2iterator (std::size_t index) const;
+    void init();
+    void mapKeyFunctions();
+    void processKeyAction (FKeyEvent*);
+    void draw() override;
+    void drawBorder() override;
+    void drawScrollbars() const;
+    void drawHeadline();
+    void drawList();
+    void drawListLine (int, FListBoxItems::iterator, bool);
+    void printLeftBracket (BracketType);
+    void printRightBracket (BracketType);
+    void drawListBracketsLine (int, FListBoxItems::iterator, bool);
+    void setLineAttributes (int, bool, bool, bool&);
+    void unsetAttributes() const;
+    void updateDrawing (bool, bool);
+    void recalculateHorizontalBar (std::size_t, bool);
+    void recalculateVerticalBar (std::size_t) const;
+    void multiSelection (std::size_t);
+    void multiSelectionUpTo (std::size_t);
+    void wheelUp (int);
+    void wheelDown (int);
+    auto dragScrollUp() -> bool;
+    auto dragScrollDown() -> bool;
+    void dragUp (MouseButton);
+    void dragDown (MouseButton);
+    void stopDragScroll();
+    void prevListItem (int);
+    void nextListItem (int);
+    void scrollToX (int);
+    void scrollToY (int);
+    void scrollLeft (int);
+    void scrollRight (int);
+    void scrollLeft();
+    void scrollRight();
+    void onePosUp();
+    void onePosDown();
+    void onePageUp();
+    void onePageDown();
+    void firstPos();
+    void lastPos();
+    auto skipIncrementalSearch() -> bool;
+    void acceptSelection();
+    auto spacebarProcessing() -> bool;
+    auto changeSelectionAndPosition() -> bool;
+    auto deletePreviousCharacter() -> bool;
+    auto keyIncSearchInput (FKey) -> bool;
+    void processClick() const;
+    void processSelect() const;
+    void processRowChanged() const;
+    void processChanged() const;
+    void changeOnResize() const;
+    void lazyConvert (FListBoxItems::iterator, std::size_t);
+    auto index2iterator (std::size_t) -> FListBoxItems::iterator;
+    auto index2iterator (std::size_t index) const -> FListBoxItems::const_iterator;
     // Callback methods
-    void                 cb_vbarChange (const FWidget*);
-    void                 cb_hbarChange (const FWidget*);
+    void cb_vbarChange (const FWidget*);
+    void cb_hbarChange (const FWidget*);
 
     // Function Pointer
     LazyInsert      lazy_inserter{};
@@ -417,7 +414,7 @@ namespace flistboxhelper
 {
 
 template <typename Container>
-constexpr clean_fdata_t<Container>& getContainer(FDataAccess* container)
+constexpr auto getContainer(FDataAccess* container) -> clean_fdata_t<Container>&
 {
   return static_cast<FData<clean_fdata_t<Container>>&>(*container).get();
 }
@@ -456,49 +453,49 @@ inline FListBox::FListBox ( Container container
 }
 
 //----------------------------------------------------------------------
-inline FString FListBox::getClassName() const
+inline auto FListBox::getClassName() const -> FString
 { return "FListBox"; }
 
 //----------------------------------------------------------------------
-inline std::size_t FListBox::getCount() const
+inline auto FListBox::getCount() const -> std::size_t
 { return itemlist.size(); }
 
 //----------------------------------------------------------------------
-inline FListBoxItem& FListBox::getItem (std::size_t index) &
+inline auto FListBox::getItem (std::size_t index) & -> FListBoxItem&
 {
   auto iter = index2iterator(index - 1);
   return *iter;
 }
 
 //----------------------------------------------------------------------
-inline const FListBoxItem& FListBox::getItem (std::size_t index) const &
+inline auto FListBox::getItem (std::size_t index) const & -> const FListBoxItem&
 {
   auto iter = index2iterator(index - 1);
   return *iter;
 }
 
 //----------------------------------------------------------------------
-inline FListBoxItem& FListBox::getItem (FListBoxItems::iterator iter) &
+inline auto FListBox::getItem (FListBoxItems::iterator iter) & -> FListBoxItem&
 { return *iter; }
 
 //----------------------------------------------------------------------
-inline const FListBoxItem& FListBox::getItem (FListBoxItems::const_iterator iter) const &
+inline auto FListBox::getItem (FListBoxItems::const_iterator iter) const & -> const FListBoxItem&
 { return *iter; }
 
 //----------------------------------------------------------------------
-inline std::size_t FListBox::currentItem() const noexcept
+inline auto FListBox::currentItem() const noexcept -> std::size_t
 { return current; }
 
 //----------------------------------------------------------------------
-inline FListBox::FListBoxItems& FListBox::getData() &
+inline auto FListBox::getData() & -> FListBoxItems&
 { return itemlist; }
 
 //----------------------------------------------------------------------
-inline const FListBox::FListBoxItems& FListBox::getData() const &
+inline auto FListBox::getData() const & -> const FListBoxItems&
 { return itemlist; }
 
 //----------------------------------------------------------------------
-inline FString& FListBox::getText() &
+inline auto FListBox::getText() & -> FString&
 { return text; }
 
 //----------------------------------------------------------------------
@@ -534,27 +531,27 @@ inline void FListBox::unsetMultiSelection()
 { setMultiSelection(false); }
 
 //----------------------------------------------------------------------
-inline bool FListBox::setDisable()
+inline auto FListBox::setDisable() -> bool
 { return setEnable(false); }
 
 //----------------------------------------------------------------------
-inline bool FListBox::isSelected (std::size_t index) const
+inline auto FListBox::isSelected (std::size_t index) const -> bool
 { return index2iterator(index - 1)->selected; }
 
 //----------------------------------------------------------------------
-inline bool FListBox::isSelected (FListBoxItems::iterator iter) const
+inline auto FListBox::isSelected (FListBoxItems::iterator iter) const -> bool
 { return iter->selected; }
 
 //----------------------------------------------------------------------
-inline bool FListBox::isMultiSelection() const
+inline auto FListBox::isMultiSelection() const -> bool
 { return multi_select; }
 
 //----------------------------------------------------------------------
-inline bool FListBox::hasBrackets(std::size_t index) const
+inline auto FListBox::hasBrackets(std::size_t index) const -> bool
 { return index2iterator(index - 1)->brackets != BracketType::None; }
 
 //----------------------------------------------------------------------
-inline bool FListBox::hasBrackets(FListBoxItems::iterator iter) const
+inline auto FListBox::hasBrackets(FListBoxItems::iterator iter) const -> bool
 { return iter->brackets != BracketType::None; }
 
 //----------------------------------------------------------------------
@@ -633,16 +630,16 @@ void FListBox::insert ( const ItemT& item
 }
 
 //----------------------------------------------------------------------
-inline bool FListBox::isHorizontallyScrollable() const
+inline auto FListBox::isHorizontallyScrollable() const -> bool
 { return max_line_width + 1 >= getClientWidth(); }
 
 //----------------------------------------------------------------------
-inline bool FListBox::isVerticallyScrollable() const
+inline auto FListBox::isVerticallyScrollable() const -> bool
 { return getCount() > getClientHeight(); }
 
 //----------------------------------------------------------------------
-inline FListBox::FListBoxItems::iterator \
-    FListBox::index2iterator (std::size_t index)
+inline auto \
+    FListBox::index2iterator (std::size_t index) -> FListBoxItems::iterator
 {
   auto iter = itemlist.begin();
   std::advance (iter, index);
@@ -650,8 +647,8 @@ inline FListBox::FListBoxItems::iterator \
 }
 
 //----------------------------------------------------------------------
-inline FListBox::FListBoxItems::const_iterator \
-    FListBox::index2iterator (std::size_t index) const
+inline auto \
+    FListBox::index2iterator (std::size_t index) const -> FListBoxItems::const_iterator
 {
   auto iter = itemlist.begin();
   std::advance (iter, index);

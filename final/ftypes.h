@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2021 Markus Gans                                      *
+* Copyright 2017-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -80,7 +80,7 @@ template <typename T
         , bool is_signed>
 struct is_negative
 {
-  inline bool operator () (const T& x) const
+  constexpr auto operator () (const T& x) const noexcept -> bool
   {
     return x < 0;
   }
@@ -89,7 +89,7 @@ struct is_negative
 template <typename T>
 struct is_negative<T, false>
 {
-  inline bool operator () (const T&) const
+  constexpr auto operator () (const T&) const noexcept -> bool
   {
     return false;
   }
@@ -99,30 +99,30 @@ struct is_negative<T, false>
 
 // Check for 7-bit ASCII
 template<typename CharT>
-inline bool is7bit (CharT ch)
+constexpr auto is7bit (CharT ch) noexcept -> bool
 {
-  using char_type = typename std::make_unsigned<CharT>::type;
+  using char_type = std::make_unsigned_t<CharT>;
   return static_cast<char_type>(ch) < 128;
 }
 
 
 // Typecast to c-string
 template <typename StringT>
-auto C_STR (StringT&& string) -> char*
+constexpr auto C_STR (StringT&& string) noexcept
 {
   return const_cast<char*>(std::forward<StringT>(string));
 }
 
 template <typename T>
-constexpr bool isNegative (const T& x)
+constexpr auto isNegative (const T& x) noexcept -> bool
 {
-  return internal::is_negative<T, std::numeric_limits<T>::is_signed>()(x);
+  return internal::is_negative<T, std::numeric_limits<T>::is_signed>{}(x);
 }
 
 template <typename T>
 struct getPrecision
 {
-  constexpr operator int () const
+  constexpr explicit operator int () const noexcept
   {
     return std::numeric_limits<T>::digits10;
   }
@@ -131,58 +131,64 @@ struct getPrecision
 template <typename T>
 struct EnumHash
 {
-  std::size_t operator () (const T& mt) const noexcept
+  constexpr auto operator () (const T& mt) const noexcept -> std::size_t
   {
-    using underlying_type = typename std::underlying_type<T>::type;
-    return std::hash<underlying_type>()(underlying_type(mt));
+    using underlying_type = std::underlying_type_t<T>;
+    return std::hash<underlying_type>{}(underlying_type(mt));
   }
 };
 
-template <typename T, typename... Args>
-inline std::unique_ptr<T> make_unique (Args&&... args)
-{
-  return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
-}
-
-template <typename Iter>
-constexpr std::reverse_iterator<Iter> make_reverse_iterator (Iter iter)
-{
-  return std::reverse_iterator<Iter>(iter);
-}
-
 template <typename CharT>
-constexpr std::size_t stringLength (const CharT* s)
+constexpr auto stringLength (const CharT* s) noexcept -> std::size_t
 {
   return std::char_traits<CharT>::length(s);
 }
 
 template <typename CharT>
-using remove_ptr_t = typename std::remove_pointer<CharT>::type;
+using remove_ptr_t = std::remove_pointer_t<CharT>;
 
 template <typename CharT>
-using remove_ptr_cv_t = typename std::remove_cv<remove_ptr_t<CharT>>::type;
+using remove_ptr_cv_t = std::remove_cv_t<remove_ptr_t<CharT>>;
 
 template <typename CharT>
-using is_char_based_ptr = typename std::is_same<char, remove_ptr_cv_t<CharT>>;
+using is_char_based_ptr = std::is_same<char, remove_ptr_cv_t<CharT>>;
 
 template <typename CharT>
-using remove_ref_t = typename std::remove_reference<CharT>::type;
+using is_wchar_based_ptr = std::is_same<wchar_t, remove_ptr_cv_t<CharT>>;
 
 template <typename CharT>
-using remove_ref_extent_t = typename std::remove_extent<remove_ref_t<CharT>>::type;
+using remove_ref_t = std::remove_reference_t<CharT>;
 
 template <typename CharT>
-using remove_ref_extent_cv_t = typename std::remove_cv<remove_ref_extent_t<CharT>>::type;
+using remove_ref_extent_t = std::remove_extent_t<remove_ref_t<CharT>>;
+
+template <typename CharT>
+using remove_ref_extent_cv_t = std::remove_cv_t<remove_ref_extent_t<CharT>>;
 
 template <typename CharT>
 using is_char_based_array = typename std::is_same<char, remove_ref_extent_cv_t<CharT>>;
 
 template <typename CharT>
-using CString =
-    typename std::enable_if<
-               (std::is_pointer<CharT>::value && is_char_based_ptr<CharT>::value)
-            || (std::is_array<remove_ref_t<CharT>>::value && is_char_based_array<CharT>::value)
-              , std::nullptr_t>;
+using is_wchar_based_array = typename std::is_same<wchar_t, remove_ref_extent_cv_t<CharT>>;
+
+template <typename CharT>
+using enable_if_char_ptr_t =
+    std::enable_if_t<
+        std::is_pointer<CharT>::value && is_char_based_ptr<CharT>::value
+      , std::nullptr_t>;
+
+template <typename CharT>
+using enable_if_char_array_t =
+    std::enable_if_t<
+        std::is_array<remove_ref_t<CharT>>::value && is_char_based_array<CharT>::value
+      , std::nullptr_t>;
+
+template <typename CharT>
+using enable_if_CString_t =
+    std::enable_if_t<
+       (std::is_pointer<CharT>::value && is_char_based_ptr<CharT>::value)
+    || (std::is_array<remove_ref_t<CharT>>::value && is_char_based_array<CharT>::value)
+      , std::nullptr_t>;
 
 template <typename CharT>
 struct isCString
@@ -191,11 +197,37 @@ struct isCString
    || (std::is_array<remove_ref_t<CharT>>::value && is_char_based_array<CharT>::value)>
 { };
 
+template <typename CharT>
+using enable_if_wchar_ptr_t =
+    std::enable_if_t<
+        std::is_pointer<CharT>::value && is_wchar_based_ptr<CharT>::value
+      , std::nullptr_t>;
+
+template <typename CharT>
+using enable_if_wchar_array_t =
+    std::enable_if_t<
+        std::is_array<remove_ref_t<CharT>>::value && is_wchar_based_array<CharT>::value
+      , std::nullptr_t>;
+
+template <typename CharT>
+using enable_if_WCString_t =
+    std::enable_if_t<
+       (std::is_pointer<CharT>::value && is_wchar_based_ptr<CharT>::value)
+    || (std::is_array<remove_ref_t<CharT>>::value && is_wchar_based_array<CharT>::value)
+      , std::nullptr_t>;
+
+template <typename CharT>
+struct isWCString
+  : std::integral_constant<bool
+    , (std::is_pointer<CharT>::value && is_wchar_based_ptr<CharT>::value)
+   || (std::is_array<remove_ref_t<CharT>>::value && is_wchar_based_array<CharT>::value)>
+{ };
+
 template <typename NumT>
-using is_arithmetic_without_char =
-  typename std::enable_if< std::is_arithmetic<NumT>::value
-                        && ! std::is_same<char, NumT>::value
-                        , std::nullptr_t>;
+using enable_if_arithmetic_without_char_t =
+  std::enable_if_t< std::is_arithmetic<NumT>::value
+                 && ! std::is_same<char, NumT>::value
+                 , std::nullptr_t>;
 
 struct TCapAttributes
 {
@@ -243,8 +275,8 @@ struct FCharAttribute
 
 union FAttribute
 {
-  FCharAttribute bit;
   uInt8 byte[4];
+  FCharAttribute bit;
 };
 
 static constexpr std::size_t UNICODE_MAX = 5;
@@ -264,11 +296,11 @@ struct FChar
 
 // FChar operator functions
 //----------------------------------------------------------------------
-inline bool isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexcept
+constexpr auto isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool
 {
-  auto l_iter = lhs.cbegin();
-  auto r_iter = rhs.cbegin();
-  const auto& l_last = lhs.cend();
+  auto l_iter = std::cbegin(lhs);
+  auto r_iter = std::cbegin(rhs);
+  const auto& l_last = std::cend(lhs);
 
   while ( l_iter != l_last )
   {
@@ -288,7 +320,7 @@ inline bool isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexcept
 }
 
 //----------------------------------------------------------------------
-inline bool operator == (const FChar& lhs, const FChar& rhs)
+constexpr auto operator == (const FChar& lhs, const FChar& rhs) noexcept -> bool
 {
   return isFUnicodeEqual(lhs.ch, rhs.ch)
       && lhs.fg_color     == rhs.fg_color
@@ -300,7 +332,7 @@ inline bool operator == (const FChar& lhs, const FChar& rhs)
 }
 
 //----------------------------------------------------------------------
-inline bool operator != (const FChar& lhs, const FChar& rhs)
+constexpr auto operator != (const FChar& lhs, const FChar& rhs) noexcept -> bool
 {
   return ! ( lhs == rhs );
 }

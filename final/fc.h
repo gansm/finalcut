@@ -27,7 +27,9 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include "final/fconfig.h"
 #include "final/ftypes.h"
+
 
 // ASCII sequences
 #define ESC      "\033"     // Escape
@@ -41,6 +43,8 @@
 
 namespace finalcut
 {
+
+constexpr char fc_release[] = F_VERSION;
 
 //----------------------------------------------------------------------
 // Global constants and enumerations
@@ -252,52 +256,52 @@ enum class UniChar : wchar_t
  * (2) Only supported in use with newfont
  */
 
-constexpr bool operator < (const UniChar& c1, const wchar_t c2) noexcept
+constexpr auto operator < (const UniChar& c1, const wchar_t c2) noexcept -> bool
 {
   return wchar_t(c1) < c2;
 }
 
-constexpr bool operator > (const UniChar& c1, const wchar_t c2) noexcept
+constexpr auto operator > (const UniChar& c1, const wchar_t c2) noexcept -> bool
 {
   return wchar_t(c1) > c2;
 }
 
-constexpr bool operator < (const wchar_t c1, const UniChar& c2) noexcept
+constexpr auto operator < (const wchar_t c1, const UniChar& c2) noexcept -> bool
 {
   return c1 < wchar_t(c2);
 }
 
-constexpr bool operator > (const wchar_t c1, const UniChar& c2) noexcept
+constexpr auto operator > (const wchar_t c1, const UniChar& c2) noexcept -> bool
 {
   return c1 > wchar_t(c2);
 }
 
-constexpr bool operator <= (const UniChar& c1, const wchar_t c2) noexcept
+constexpr auto operator <= (const UniChar& c1, const wchar_t c2) noexcept -> bool
 {
   return wchar_t(c1) <= c2;
 }
 
-constexpr bool operator >= (const UniChar& c1, const wchar_t c2) noexcept
+constexpr auto operator >= (const UniChar& c1, const wchar_t c2) noexcept -> bool
 {
   return wchar_t(c1) >= c2;
 }
 
-constexpr bool operator <= (const wchar_t c1, const UniChar& c2) noexcept
+constexpr auto operator <= (const wchar_t c1, const UniChar& c2) noexcept -> bool
 {
   return c1 <= wchar_t(c2);
 }
 
-constexpr bool operator >= (const wchar_t c1, const UniChar& c2) noexcept
+constexpr auto operator >= (const wchar_t c1, const UniChar& c2) noexcept -> bool
 {
   return c1 >= wchar_t(c2);
 }
 
-constexpr bool operator == (const wchar_t c1, const UniChar& c2) noexcept
+constexpr auto operator == (const wchar_t c1, const UniChar& c2) noexcept -> bool
 {
   return c1 == wchar_t(c2);
 }
 
-constexpr bool operator == (const UniChar& c1, const wchar_t c2) noexcept
+constexpr auto operator == (const UniChar& c1, const wchar_t c2) noexcept -> bool
 {
   return wchar_t(c1) == c2;
 }
@@ -797,73 +801,73 @@ enum class FKey : uInt32
   Incomplete                 = UINT32_MAX
 };
 
-constexpr FKey operator >> (const FKey& k, const uInt32 n) noexcept
+constexpr auto operator >> (const FKey& k, const uInt32 n) noexcept -> FKey
 {
   return FKey(uInt32(k) >> n);
 }
 
-constexpr FKey operator << (const FKey& k, const uInt32 n) noexcept
+constexpr auto operator << (const FKey& k, const uInt32 n) noexcept -> FKey
 {
   return FKey(uInt32(k) << n);
 }
 
-constexpr bool operator < (const FKey& k1, const uInt32 k2) noexcept
+constexpr auto operator < (const FKey& k1, const uInt32 k2) noexcept -> bool
 {
   return uInt32(k1) < k2;
 }
 
-constexpr bool operator > (const FKey& k1, const uInt32 k2) noexcept
+constexpr auto operator > (const FKey& k1, const uInt32 k2) noexcept -> bool
 {
   return uInt32(k1) > k2;
 }
 
-constexpr bool operator <= (const FKey& k1, const uInt32 k2) noexcept
+constexpr auto operator <= (const FKey& k1, const uInt32 k2) noexcept -> bool
 {
   return uInt32(k1) <= k2;
 }
 
-constexpr bool operator >= (const FKey& k1, const uInt32 k2) noexcept
+constexpr auto operator >= (const FKey& k1, const uInt32 k2) noexcept -> bool
 {
   return uInt32(k1) >= k2;
 }
 
-constexpr FKey operator | (const FKey& k1, const FKey& k2) noexcept
+constexpr auto operator | (const FKey& k1, const FKey& k2) noexcept -> FKey
 {
   return FKey(uInt32(k1) | uInt32(k2));
 }
 
-constexpr FKey operator & (const FKey& k1, const FKey& k2) noexcept
+constexpr auto operator & (const FKey& k1, const FKey& k2) noexcept -> FKey
 {
   return FKey(uInt32(k1) & uInt32(k2));
 }
 
-constexpr FKey operator + (const FKey& k1, const uInt32 k2) noexcept
+constexpr auto operator + (const FKey& k1, const uInt32 k2) noexcept -> FKey
 {
   return ( k1 < UINT32_MAX - k2 ) ? FKey(uInt32(k1) + k2) : FKey::None;
 }
 
-constexpr FKey operator + (const FKey& k1, const FKey& k2) noexcept
+constexpr auto operator + (const FKey& k1, const FKey& k2) noexcept -> FKey
 {
   return k1 + uInt32(k2);
 }
 
-constexpr FKey operator - (const FKey& k1, const uInt32 k2) noexcept
+constexpr auto operator - (const FKey& k1, const uInt32 k2) noexcept -> FKey
 {
   return ( k1 > k2 ) ? FKey(uInt32(k1) - k2) : FKey::None;
 }
 
-constexpr FKey operator - (const FKey& k1, const FKey& k2) noexcept
+constexpr auto operator - (const FKey& k1, const FKey& k2) noexcept -> FKey
 {
   return k1 - uInt32(k2);
 }
 
-inline FKey& operator += (FKey& k1, uInt32 k2) noexcept
+constexpr auto operator += (FKey& k1, uInt32 k2) noexcept -> FKey&
 {
   k1 = ( k1 < UINT32_MAX - k2 ) ? FKey(uInt32(k1) + k2) : FKey::None;
   return k1;
 }
 
-inline FKey& operator -= (FKey& k1, uInt32 k2) noexcept
+constexpr auto operator -= (FKey& k1, uInt32 k2) noexcept -> FKey&
 {
   k1 = ( k1 > k2 ) ? FKey(uInt32(k1) - k2) : FKey::None;
   return k1;
@@ -1134,91 +1138,87 @@ enum class FColor : uInt16
   Undefined         = static_cast<uInt16>(-2)
 };
 
-constexpr FColor operator >> (const FColor& c, const uInt16 n) noexcept
+constexpr auto operator >> (const FColor& c, const uInt16 n) noexcept -> FColor
 {
   return FColor(uInt16(c) >> n);
 }
 
-constexpr FColor operator << (const FColor& c, const uInt16 n) noexcept
+constexpr auto operator << (const FColor& c, const uInt16 n) noexcept -> FColor
 {
   return FColor(uInt16(c) << n);
 }
 
-constexpr bool operator < (const FColor& c, const uInt16 n) noexcept
+constexpr auto operator < (const FColor& c, const uInt16 n) noexcept -> bool
 {
   return uInt16(c) < n;
 }
 
-constexpr bool operator > (const FColor& c, const uInt16 n) noexcept
+constexpr auto operator > (const FColor& c, const uInt16 n) noexcept -> bool
 {
   return uInt16(c) > n;
 }
 
-constexpr bool operator == (const FColor& c, const uInt16 n) noexcept
+constexpr auto operator == (const FColor& c, const uInt16 n) noexcept -> bool
 {
   return uInt16(c) == n;
 }
 
-constexpr bool operator <= (const FColor& c, const uInt16 n) noexcept
+constexpr auto operator <= (const FColor& c, const uInt16 n) noexcept -> bool
 {
   return uInt16(c) <= n;
 }
 
-constexpr bool operator >= (const FColor& c, const uInt16 n) noexcept
+constexpr auto operator >= (const FColor& c, const uInt16 n) noexcept -> bool
 {
   return uInt16(c) >= n;
 }
 
-constexpr FColor operator + (const FColor& c, const uInt16 n) noexcept
+constexpr auto operator + (const FColor& c, const uInt16 n) noexcept -> FColor
 {
   return FColor(uInt16(c) + n);
 }
 
-constexpr FColor operator - (const FColor& c, const uInt16 n) noexcept
+constexpr auto operator - (const FColor& c, const uInt16 n) noexcept -> FColor
 {
   return FColor(uInt16(c) - n);
 }
 
-constexpr FColor operator % (const FColor& c, const uInt16 n) noexcept
+constexpr auto operator % (const FColor& c, const uInt16 n) noexcept -> FColor
 {
   return FColor(uInt16(c) % n);
 }
 
-inline FColor& operator %= (FColor& c, uInt16 n) noexcept
+constexpr auto operator %= (FColor& c, uInt16 n) noexcept -> FColor&
 {
   c =  FColor(uInt16(c) % n);
   return c;
 }
 
-inline FColor& operator ++ (FColor& c) noexcept  // prefix
+constexpr auto operator ++ (FColor& c) noexcept -> FColor&  // prefix
 {
   c = ( uInt16(c) < 255 ) ? FColor(uInt16(c) + 1) : FColor::Default;
   return c;
 }
 
-inline FColor operator ++ (FColor& c, int) noexcept  // postfix
+constexpr auto operator ++ (FColor& c, int) noexcept -> FColor  // postfix
 {
   const FColor tmp = c;
   ++c;
   return tmp;
 }
 
-inline FColor& operator -- (FColor& c) noexcept  // prefix
+constexpr auto operator -- (FColor& c) noexcept -> FColor&  // prefix
 {
-  c = [&c] ()
-  {
-    if ( uInt16(c) > 0 )
-      return FColor(uInt16(c) - 1);
+  if ( uInt16(c) > 0 )
+    return (c = FColor(uInt16(c) - 1));
 
-    if ( c == FColor::Black )  // value 0
-      return FColor::Default;  // value uInt16(-1)
+  if ( c == FColor::Black )        // value 0
+    return (c = FColor::Default);  // value uInt16(-1)
 
-    return FColor(255);        // --(-1) = 255
-  }();
-  return c;
+  return (c = FColor(255));        // --(-1) = 255
 }
 
-inline FColor operator -- (FColor& c, int) noexcept  // postfix
+constexpr auto operator -- (FColor& c, int) noexcept -> FColor  // postfix
 {
   const FColor tmp = c;
   --c;
@@ -1246,24 +1246,24 @@ enum class Style : uInt16
   InheritBackground = 1U << 13U
 };
 
-constexpr Style operator + (const Style& a1, const Style& a2) noexcept
+constexpr auto operator + (const Style& a1, const Style& a2) noexcept -> Style
 {
   return Style(uInt16(a1) + uInt16(a2));
 }
 
-constexpr Style operator | (const Style& a1, const Style& a2) noexcept
+constexpr auto operator | (const Style& a1, const Style& a2) noexcept -> Style
 {
   return Style(uInt16(a1) | uInt16(a2));
 }
 
-constexpr Style operator & (const Style& a1, const Style& a2) noexcept
+constexpr auto operator & (const Style& a1, const Style& a2) noexcept -> Style
 {
   return Style(uInt16(a1) & uInt16(a2));
 }
 
 
 // Mouse/keyboard state values
-enum class MouseButton : int
+enum class MouseButton : uInt
 {
   None    = 0x00,
   Left    = 0x01,
@@ -1274,23 +1274,23 @@ enum class MouseButton : int
   Meta    = 0x20
 };
 
-constexpr MouseButton operator | (const MouseButton& b1, const MouseButton& b2) noexcept
+constexpr auto operator | (const MouseButton& b1, const MouseButton& b2) noexcept -> MouseButton
 {
-  return MouseButton(int(b1) | int(b2));
+  return MouseButton(uInt(b1) | uInt(b2));
 }
 
-inline MouseButton& operator |= (MouseButton& b1, const MouseButton& b2) noexcept
+constexpr auto operator |= (MouseButton& b1, const MouseButton& b2) noexcept -> MouseButton&
 {
   b1 = b1 | b2;
   return b1;
 }
 
-constexpr MouseButton operator & (const MouseButton& b1, const MouseButton& b2) noexcept
+constexpr auto operator & (const MouseButton& b1, const MouseButton& b2) noexcept -> MouseButton
 {
-  return MouseButton(int(b1) & int(b2));
+  return MouseButton(uInt(b1) & uInt(b2));
 }
 
-inline MouseButton& operator &= (MouseButton& b1, const MouseButton& b2) noexcept
+constexpr auto operator &= (MouseButton& b1, const MouseButton& b2) noexcept -> MouseButton&
 {
   b1 = b1 & b2;
   return b1;
@@ -1331,19 +1331,19 @@ enum class FTermType : uInt32
   kitty          = 1U << 20U   // kitty (GPU based terminal emulator)
 };
 
-using FTermTypeT = typename std::underlying_type<FTermType>::type;
+using FTermTypeT = std::underlying_type_t<FTermType>;
 
-constexpr FTermTypeT operator | (const FTermType& t1, const FTermType& t2) noexcept
+constexpr auto operator | (const FTermType& t1, const FTermType& t2) noexcept -> FTermTypeT
 {
   return FTermTypeT(t1) | FTermTypeT(t2);
 }
 
-constexpr FTermTypeT operator | (FTermTypeT t1, const FTermType& t2) noexcept
+constexpr auto operator | (FTermTypeT t1, const FTermType& t2) noexcept -> FTermTypeT
 {
   return t1 | FTermTypeT(t2);
 }
 
-constexpr FTermTypeT operator | (const FTermType& t1, FTermTypeT t2) noexcept
+constexpr auto operator | (const FTermType& t1, FTermTypeT t2) noexcept -> FTermTypeT
 {
   return FTermTypeT(t1) | t2;
 }

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2021 Markus Gans                                      *
+* Copyright 2015-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -75,8 +75,8 @@ void FMenuBar::resetMenu()
 void FMenuBar::hide()
 {
   const auto& wc = getColorTheme();
-  FColor fg = wc->term_fg;
-  FColor bg = wc->term_bg;
+  const auto& fg = wc->term_fg;
+  const auto& bg = wc->term_bg;
   setColor (fg, bg);
   print() << FPoint{1, 1} << FString{getDesktopWidth(), L' '};
   FWindow::hide();
@@ -92,7 +92,7 @@ void FMenuBar::adjustSize()
 //----------------------------------------------------------------------
 void FMenuBar::onKeyPress (FKeyEvent* ev)
 {
-  const auto key = ev->key();
+  const auto& key = ev->key();
 
   if ( isEnterKey(key)
     || key == FKey::Up
@@ -286,21 +286,21 @@ void FMenuBar::selectItem_PostProcessing (FMenuItem* sel_item)
 }
 
 //----------------------------------------------------------------------
-bool FMenuBar::hotkeyMenu (FKeyEvent*& ev)
+auto FMenuBar::hotkeyMenu (FKeyEvent*& ev) -> bool
 {
   for (auto&& item : getItemList())
   {
     if ( item->isEnabled() )
     {
-      FKey hotkey = item->getHotkey();
-      FKey key = ev->key();
+      auto hotkey = item->getHotkey();
+      const auto key = ev->key();
 
       if ( hotkey > 0xff00 && hotkey < 0xff5f )  // full-width character
         hotkey -= 0xfee0;
 
       if ( FKey::Meta_offset + FKey(std::tolower(int(hotkey))) == key )
       {
-        auto sel_item = getSelectedItem();
+        const auto& sel_item = getSelectedItem();
 
         if ( sel_item && sel_item->hasMenu() )
           sel_item->getMenu()->unselectItem();
@@ -342,7 +342,7 @@ void FMenuBar::draw()
 //----------------------------------------------------------------------
 void FMenuBar::drawItems()
 {
-  auto list = getItemList();
+  const auto& list = getItemList();
 
   if ( list.empty() )
     return;
@@ -368,9 +368,14 @@ void FMenuBar::drawItems()
 //----------------------------------------------------------------------
 inline void FMenuBar::drawItem (FMenuItem* menuitem, std::size_t& x)
 {
-  menuText txtdata{};
-  txtdata.startpos = x + 1;
-  txtdata.no_underline = menuitem->getFlags().no_underline;
+  menuText txtdata =
+  {
+    {},
+    x + 1,
+    NOT_SET,
+    bool(menuitem->getFlags().no_underline)
+  };
+
   FString txt{menuitem->getText()};
   std::size_t column_width = getColumnWidth(txt);
   bool is_enabled  = menuitem->isEnabled();
@@ -390,9 +395,7 @@ inline void FMenuBar::drawItem (FMenuItem* menuitem, std::size_t& x)
 
   x += column_width;
 
-  if ( ! is_enabled || is_selected )
-    txtdata.hotkeypos = NOT_SET;
-  else
+  if ( is_enabled && ! is_selected )
     txtdata.hotkeypos = hotkeypos;
 
   setCursorToHotkeyPosition (menuitem, hotkeypos);
@@ -616,7 +619,7 @@ void FMenuBar::openMenu (const FMenuItem* sel_item)
 }
 
 //----------------------------------------------------------------------
-bool FMenuBar::activateMenu (const FMenuItem* item)
+auto FMenuBar::activateMenu (const FMenuItem* item) -> bool
 {
   if ( ! item->hasMenu() )
     return false;
@@ -643,7 +646,7 @@ bool FMenuBar::activateMenu (const FMenuItem* item)
 }
 
 //----------------------------------------------------------------------
-bool FMenuBar::clickItem (FMenuItem* item)
+auto FMenuBar::clickItem (FMenuItem* item) -> bool
 {
   if ( item->hasMenu() )
     return false;
@@ -678,7 +681,7 @@ void FMenuBar::unselectMenuItem (FMenuItem* item)
 //----------------------------------------------------------------------
 void FMenuBar::mouseDownOverList (const FMouseEvent* ev)
 {
-  auto list = getItemList();
+  const auto& list = getItemList();
 
   if ( list.empty() )
     return;
@@ -716,7 +719,7 @@ void FMenuBar::mouseDownOverList (const FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FMenuBar::mouseUpOverList (const FMouseEvent* ev)
 {
-  auto list = getItemList();
+  const auto& list = getItemList();
 
   if ( list.empty() )
     return;
@@ -753,7 +756,7 @@ void FMenuBar::mouseUpOverList (const FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FMenuBar::mouseMoveOverList (const FMouseEvent& ev)
 {
-  auto list = getItemList();
+  const auto& list = getItemList();
 
   if ( list.empty() )
     return;

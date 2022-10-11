@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2021 Markus Gans                                      *
+* Copyright 2020-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -54,9 +54,9 @@ void FLogger::newlineReplace ( std::string& str
 }
 
 //----------------------------------------------------------------------
-std::string FLogger::getTimeString() const
+auto FLogger::getTimeString() const -> std::string
 {
-  std::array<char, 100> str;
+  std::array<char, 100> str{};
   const auto& now = std::chrono::system_clock::now();
   const auto& t = std::chrono::system_clock::to_time_t(now);
   // Print RFC 2822 date
@@ -67,7 +67,7 @@ std::string FLogger::getTimeString() const
 }
 
 //----------------------------------------------------------------------
-std::string FLogger::getEOL() const
+auto FLogger::getEOL() const -> std::string
 {
   if ( getEnding() == LineEnding::LF )
     return "\n";
@@ -84,7 +84,7 @@ std::string FLogger::getEOL() const
 //----------------------------------------------------------------------
 void FLogger::printLogLine (const std::string& msg)
 {
-  const std::string& log_level = [this] ()
+  const auto& log_level = [this] ()
   {
     switch ( getLevel() )
     {
@@ -104,7 +104,7 @@ void FLogger::printLogLine (const std::string& msg)
     return std::string("");
   }();
 
-  const std::string& prefix = [this, &log_level] ()
+  const auto& prefix = [this, &log_level] ()
   {
     if ( timestamp )
       return getTimeString() + " [" + log_level + "] ";
@@ -113,8 +113,8 @@ void FLogger::printLogLine (const std::string& msg)
   }();
 
   std::string message{msg};
-  const std::string& eol = getEOL();
-  const std::string replace_str = eol + prefix;
+  const auto& eol = getEOL();
+  const auto replace_str = eol + prefix;
   newlineReplace (message, replace_str);
   std::lock_guard<std::mutex> lock_guard(output_mutex);
   output << prefix << message << eol;

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2021 Markus Gans                                      *
+* Copyright 2016-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -38,7 +38,8 @@ using finalcut::FPoint;
 using finalcut::FRect;
 using finalcut::FSize;
 
-constexpr lDouble pi_value{3.141592653589793238L};
+template <typename T>
+constexpr T pi_value = T{3.141'592'653'589'793'238L};
 
 
 //----------------------------------------------------------------------
@@ -159,69 +160,69 @@ class Calc final : public finalcut::FDialog
     };
 
     // Methods
-    void           drawDispay();
-    void           draw() override;
-    void           sendOnButtonAccelerator();
-    void           clear (const lDouble&);
-    void           zero (const lDouble&);
-    void           one (const lDouble&);
-    void           two (const lDouble&);
-    void           three (const lDouble&);
-    void           four (const lDouble&);
-    void           five (const lDouble&);
-    void           six (const lDouble&);
-    void           seven (const lDouble&);
-    void           eight (const lDouble&);
-    void           nine (const lDouble&);
-    void           add (const lDouble&);
-    void           subtract (const lDouble&);
-    void           multiply (const lDouble&);
-    void           divide (const lDouble&);
-    void           equals (const lDouble&);
-    void           change_sign (lDouble&);
-    void           radix_point(const lDouble&);
-    void           reciprocal (lDouble&);
-    void           percent (lDouble&);
-    void           pi (lDouble&);
-    void           open_bracket (const lDouble&);
-    void           close_bracket (const lDouble&);
-    void           log_e (lDouble&);
-    void           power_e (lDouble&);
-    void           log_10 (lDouble&);
-    void           power_10 (lDouble&);
-    void           power (const lDouble&);
-    void           square_root (lDouble&);
-    void           hyperbolic (const lDouble&);
-    void           arcus (const lDouble&);
-    void           sine (lDouble&);
-    void           cosine (lDouble&);
-    void           tangent (lDouble&);
-    bool           isDataEntryKey (const ButtonName&) const;
-    bool           isOperatorKey (const ButtonName&) const;
-    lDouble&       getValue();
-    void           setDisplay (lDouble);
-    void           setInfixOperator (char);
-    void           clearInfixOperator();
-    void           calcInfixOperator();
-    void           initLayout() override;
-    void           adjustSize() override;
-    const wchar_t* getButtonText (const ButtonName&) const;
-    void           mapKeyFunctions();
+    void drawDispay();
+    void draw() override;
+    void sendOnButtonAccelerator();
+    void clear (const lDouble&);
+    void zero (const lDouble&);
+    void one (const lDouble&);
+    void two (const lDouble&);
+    void three (const lDouble&);
+    void four (const lDouble&);
+    void five (const lDouble&);
+    void six (const lDouble&);
+    void seven (const lDouble&);
+    void eight (const lDouble&);
+    void nine (const lDouble&);
+    void add (const lDouble&);
+    void subtract (const lDouble&);
+    void multiply (const lDouble&);
+    void divide (const lDouble&);
+    void equals (const lDouble&);
+    void change_sign (lDouble&);
+    void radix_point(const lDouble&);
+    void reciprocal (lDouble&);
+    void percent (lDouble&);
+    void pi (lDouble&);
+    void open_bracket (const lDouble&);
+    void close_bracket (const lDouble&);
+    void log_e (lDouble&);
+    void power_e (lDouble&);
+    void log_10 (lDouble&);
+    void power_10 (lDouble&);
+    void power (const lDouble&);
+    void square_root (lDouble&);
+    void hyperbolic (const lDouble&);
+    void arcus (const lDouble&);
+    void sine (lDouble&);
+    void cosine (lDouble&);
+    void tangent (lDouble&);
+    auto isDataEntryKey (const ButtonName&) const -> bool;
+    auto isOperatorKey (const ButtonName&) const -> bool;
+    auto getValue() -> lDouble&;
+    void setDisplay (lDouble);
+    void setInfixOperator (char);
+    void clearInfixOperator();
+    void calcInfixOperator();
+    void initLayout() override;
+    void adjustSize() override;
+    auto getButtonText (const ButtonName&) const -> const wchar_t*;
+    void mapKeyFunctions();
 
     // Event handlers
-    void           onKeyPress (finalcut::FKeyEvent*) override;
-    void           onShow (finalcut::FShowEvent*) override;
-    void           onClose (finalcut::FCloseEvent*) override;
+    void onKeyPress (finalcut::FKeyEvent*) override;
+    void onShow (finalcut::FShowEvent*) override;
+    void onClose (finalcut::FCloseEvent*) override;
 
     // Callback method
     void           cb_buttonClicked (ButtonName);
 
     // Overloaded operators
-    friend bool        operator <  (const ButtonName& c, const int n) noexcept;
-    friend bool        operator <= (const ButtonName& c, const int n) noexcept;
-    friend ButtonName  operator +  (const ButtonName& c, const int n) noexcept;
-    friend ButtonName& operator ++ (ButtonName& c) noexcept;  // prefix
-    friend ButtonName  operator ++ (ButtonName& c, int) noexcept;  // postfix
+    friend auto operator <  (const ButtonName& c, const int n) noexcept -> bool;
+    friend auto operator <= (const ButtonName& c, const int n) noexcept -> bool;
+    friend auto operator +  (const ButtonName& c, const int n) noexcept -> ButtonName;
+    friend auto operator ++ (ButtonName& c) noexcept -> ButtonName&;  // prefix
+    friend auto operator ++ (ButtonName& c, int) noexcept -> ButtonName;  // postfix
 
     // Data members
     bool              error{false};
@@ -678,7 +679,7 @@ void Calc::percent (lDouble& x)
 //----------------------------------------------------------------------
 void Calc::pi (lDouble& x)
 {
-  x = pi_value;
+  x = pi_value<lDouble>;
   setDisplay(x);
 }
 
@@ -810,11 +811,11 @@ void Calc::sine (lDouble& x)
   else
   {
     if ( arcus_mode )
-      x = std::asin(x) * 180.0L / pi_value;
+      x = std::asin(x) * 180.0L / pi_value<lDouble>;
     else if ( std::fabs(std::fmod(x, 180.0L)) < LDBL_EPSILON )  // x / 180 = 0
       x = 0.0L;
     else
-      x = std::sin(x * pi_value / 180.0L);
+      x = std::sin(x * pi_value<lDouble> / 180.0L);
   }
 
   if ( errno == EDOM )
@@ -848,11 +849,11 @@ void Calc::cosine (lDouble& x)
   else
   {
     if ( arcus_mode )
-      x = std::acos(x) * 180.0L / pi_value;
+      x = std::acos(x) * 180.0L / pi_value<lDouble>;
     else if ( std::fabs(std::fmod(x - 90.0L, 180.0L)) < LDBL_EPSILON )  // (x - 90) / 180 == 0
       x = 0.0L;
     else
-      x = std::cos(x * pi_value / 180.0L);
+      x = std::cos(x * pi_value<lDouble> / 180.0L);
   }
 
   if ( errno == EDOM )
@@ -886,7 +887,7 @@ void Calc::tangent (lDouble& x)
   else
   {
     if ( arcus_mode )
-      x = std::atan(x) * 180.0L / pi_value;
+      x = std::atan(x) * 180.0L / pi_value<lDouble>;
     else
     {
       // Test if (x / 180) != 0 and x / 90 == 0
@@ -896,7 +897,7 @@ void Calc::tangent (lDouble& x)
       else if ( std::fabs(std::fmod(x, 180.0L)) < LDBL_EPSILON )  // x / 180 == 0
         x = 0.0L;
       else
-        x = std::tan(x * pi_value / 180.0L);
+        x = std::tan(x * pi_value<lDouble> / 180.0L);
     }
   }
 
@@ -922,7 +923,7 @@ void Calc::draw()
 }
 
 //----------------------------------------------------------------------
-bool Calc::isDataEntryKey (const ButtonName& key) const
+auto Calc::isDataEntryKey (const ButtonName& key) const -> bool
 {
   // Test if key is in {'.', '0'..'9'}
   constexpr std::array<ButtonName, 11> key_list =
@@ -949,7 +950,7 @@ bool Calc::isDataEntryKey (const ButtonName& key) const
 }
 
 //----------------------------------------------------------------------
-bool Calc::isOperatorKey(const ButtonName& key) const
+auto Calc::isOperatorKey(const ButtonName& key) const -> bool
 {
   // Test if key is in {'*', '/', '+', '-', '^', '='}
   constexpr std::array<ButtonName, 6> operators =
@@ -971,7 +972,7 @@ bool Calc::isOperatorKey(const ButtonName& key) const
 }
 
 //----------------------------------------------------------------------
-lDouble& Calc::getValue()
+auto Calc::getValue() -> lDouble&
 {
   if ( infix_operator )
     return b;
@@ -1097,7 +1098,7 @@ void Calc::adjustSize()
 }
 
 //----------------------------------------------------------------------
-const wchar_t* Calc::getButtonText (const ButtonName& key) const
+auto Calc::getButtonText (const ButtonName& key) const -> const wchar_t*
 {
   constexpr auto num_of_buttons = std::size_t(ButtonName::NUM_OF_BUTTONS);
   constexpr std::array<const wchar_t*, num_of_buttons> button_text =
@@ -1145,70 +1146,73 @@ const wchar_t* Calc::getButtonText (const ButtonName& key) const
 void Calc::mapKeyFunctions()
 {
   #define B(f) std::bind((f), this, std::placeholders::_1)  // Bind macro
-  key_map[ButtonName::Sine] = B(&Calc::sine);                   // sin
-  key_map[ButtonName::Cosine] = B(&Calc::cosine);               // cos
-  key_map[ButtonName::Tangent] = B(&Calc::tangent);             // tan
-  key_map[ButtonName::Reciprocal] = B(&Calc::reciprocal);       // 1/x
-  key_map[ButtonName::On] = B(&Calc::clear);                    // On
-  key_map[ButtonName::Natural_logarithm] = B(&Calc::log_e);     // ln
-  key_map[ButtonName::Powers_of_e] = B(&Calc::power_e);         // eˣ
-  key_map[ButtonName::Power] = B(&Calc::power);                 // yˣ
-  key_map[ButtonName::Square_root] = B(&Calc::square_root);     // sqrt
-  key_map[ButtonName::Divide] = B(&Calc::divide);               // ÷
-  key_map[ButtonName::Common_logarithm] = B(&Calc::log_10);     // lg
-  key_map[ButtonName::Powers_of_ten] = B(&Calc::power_10);      // 10ˣ
-  key_map[ButtonName::Parenthese_l] = B(&Calc::open_bracket);   // (
-  key_map[ButtonName::Parenthese_r] = B(&Calc::close_bracket);  // )
-  key_map[ButtonName::Multiply] = B(&Calc::multiply);           // *
-  key_map[ButtonName::Hyperbolic] = B(&Calc::hyperbolic);       // hyp
-  key_map[ButtonName::Seven] = B(&Calc::seven);                 // 7
-  key_map[ButtonName::Eight] = B(&Calc::eight);                 // 8
-  key_map[ButtonName::Nine] = B(&Calc::nine);                   // 9
-  key_map[ButtonName::Subtract] = B(&Calc::subtract);           // -
-  key_map[ButtonName::Arcus] = B(&Calc::arcus);                 // arc
-  key_map[ButtonName::Four] = B(&Calc::four);                   // 4
-  key_map[ButtonName::Five] = B(&Calc::five);                   // 5
-  key_map[ButtonName::Six] = B(&Calc::six);                     // 6
-  key_map[ButtonName::Add] = B(&Calc::add);                     // +
-  key_map[ButtonName::Pi] = B(&Calc::pi);                       // π
-  key_map[ButtonName::One] = B(&Calc::one);                     // 1
-  key_map[ButtonName::Two] = B(&Calc::two);                     // 2
-  key_map[ButtonName::Three] = B(&Calc::three);                 // 3
-  key_map[ButtonName::Percent] = B(&Calc::percent);             // %
-  key_map[ButtonName::Zero] = B(&Calc::zero);                   // 0
-  key_map[ButtonName::Decimal_point] = B(&Calc::radix_point);   // .
-  key_map[ButtonName::Change_sign] = B(&Calc::change_sign);     // ±
-  key_map[ButtonName::Equals] = B(&Calc::equals);               // =
+  key_map =
+  {
+    { ButtonName::Sine, B(&Calc::sine) },                   // sin
+    { ButtonName::Cosine, B(&Calc::cosine) },               // cos
+    { ButtonName::Tangent, B(&Calc::tangent) },             // tan
+    { ButtonName::Reciprocal, B(&Calc::reciprocal) },       // 1/x
+    { ButtonName::On, B(&Calc::clear) },                    // On
+    { ButtonName::Natural_logarithm, B(&Calc::log_e) },     // ln
+    { ButtonName::Powers_of_e, B(&Calc::power_e) },         // eˣ
+    { ButtonName::Power, B(&Calc::power) },                 // yˣ
+    { ButtonName::Square_root, B(&Calc::square_root) },     // sqrt
+    { ButtonName::Divide, B(&Calc::divide) },               // ÷
+    { ButtonName::Common_logarithm, B(&Calc::log_10) },     // lg
+    { ButtonName::Powers_of_ten, B(&Calc::power_10) },      // 10ˣ
+    { ButtonName::Parenthese_l, B(&Calc::open_bracket) },   // (
+    { ButtonName::Parenthese_r, B(&Calc::close_bracket) },  // )
+    { ButtonName::Multiply, B(&Calc::multiply) },           // *
+    { ButtonName::Hyperbolic, B(&Calc::hyperbolic) },       // hyp
+    { ButtonName::Seven, B(&Calc::seven) },                 // 7
+    { ButtonName::Eight, B(&Calc::eight) },                 // 8
+    { ButtonName::Nine, B(&Calc::nine) },                   // 9
+    { ButtonName::Subtract, B(&Calc::subtract) },           // -
+    { ButtonName::Arcus, B(&Calc::arcus) },                 // arc
+    { ButtonName::Four, B(&Calc::four) },                   // 4
+    { ButtonName::Five, B(&Calc::five) },                   // 5
+    { ButtonName::Six, B(&Calc::six) },                     // 6
+    { ButtonName::Add, B(&Calc::add) },                     // +
+    { ButtonName::Pi, B(&Calc::pi) },                       // π
+    { ButtonName::One, B(&Calc::one) },                     // 1
+    { ButtonName::Two, B(&Calc::two) },                     // 2
+    { ButtonName::Three, B(&Calc::three) },                 // 3
+    { ButtonName::Percent, B(&Calc::percent) },             // %
+    { ButtonName::Zero, B(&Calc::zero) },                   // 0
+    { ButtonName::Decimal_point, B(&Calc::radix_point) },   // .
+    { ButtonName::Change_sign, B(&Calc::change_sign) },     // ±
+    { ButtonName::Equals, B(&Calc::equals) }                // =
+  };
 }
 
 // Overloaded operators
 //----------------------------------------------------------------------
-inline bool operator < (const Calc::ButtonName& c, const int n) noexcept
+inline auto operator < (const Calc::ButtonName& c, const int n) noexcept -> bool
 {
   return int(c) < n;
 }
 
 //----------------------------------------------------------------------
-inline bool operator <= (const Calc::ButtonName& c, const int n) noexcept
+inline auto operator <= (const Calc::ButtonName& c, const int n) noexcept -> bool
 {
   return int(c) <= n;
 }
 
 //----------------------------------------------------------------------
-inline Calc::ButtonName operator + (const Calc::ButtonName& c, const int n) noexcept
+inline auto operator + (const Calc::ButtonName& c, const int n) noexcept -> Calc::ButtonName
 {
   return Calc::ButtonName(int(c) + n);
 }
 
 //----------------------------------------------------------------------
-inline Calc::ButtonName& operator ++ (Calc::ButtonName& c) noexcept  // prefix
+inline auto operator ++ (Calc::ButtonName& c) noexcept -> Calc::ButtonName&  // prefix
 {
   c = ( c < Calc::ButtonName::NUM_OF_BUTTONS ) ? Calc::ButtonName(int(c) + 1) : Calc::ButtonName::Equals;
   return c;
 }
 
 //----------------------------------------------------------------------
-inline Calc::ButtonName operator ++ (Calc::ButtonName& c, int) noexcept  // postfix
+inline auto operator ++ (Calc::ButtonName& c, int) noexcept -> Calc::ButtonName  // postfix
 {
   Calc::ButtonName tmp = c;
   ++c;
@@ -1219,7 +1223,7 @@ inline Calc::ButtonName operator ++ (Calc::ButtonName& c, int) noexcept  // post
 //----------------------------------------------------------------------
 //                               main part
 //----------------------------------------------------------------------
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   // Create the application object
   finalcut::FApplication app(argc, argv);

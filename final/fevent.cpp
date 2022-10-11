@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2021 Markus Gans                                      *
+* Copyright 2014-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -35,15 +35,15 @@ FEvent::FEvent (Event ev_type)  // constructor
 { }
 
 //----------------------------------------------------------------------
-Event FEvent::getType() const
+auto FEvent::getType() const -> Event
 { return t; }
 
 //----------------------------------------------------------------------
-bool FEvent::isQueued() const
+auto FEvent::isQueued() const -> bool
 { return queued; }
 
 //----------------------------------------------------------------------
-bool FEvent::wasSent() const
+auto FEvent::wasSent() const -> bool
 { return send; }
 
 
@@ -57,11 +57,11 @@ FKeyEvent::FKeyEvent (Event ev_type, FKey key_num)  // constructor
 { }
 
 //----------------------------------------------------------------------
-FKey FKeyEvent::key() const
+auto FKeyEvent::key() const -> FKey
 { return k; }
 
 //----------------------------------------------------------------------
-bool FKeyEvent::isAccepted() const
+auto FKeyEvent::isAccepted() const -> bool
 { return accpt; }
 
 //----------------------------------------------------------------------
@@ -95,32 +95,40 @@ FMouseEvent::FMouseEvent ( Event ev_type  // constructor
 { }
 
 //----------------------------------------------------------------------
-const FPoint& FMouseEvent::getPos() const &
+auto FMouseEvent::getPos() const & -> const FPoint&
 { return p; }
 
 //----------------------------------------------------------------------
-const FPoint& FMouseEvent::getTermPos() const &
+auto FMouseEvent::getTermPos() const & -> const FPoint&
 { return tp; }
 
 //----------------------------------------------------------------------
-int FMouseEvent::getX() const
+auto FMouseEvent::getX() const -> int
 { return p.getX(); }
 
 //----------------------------------------------------------------------
-int FMouseEvent::getY() const
+auto FMouseEvent::getY() const -> int
 { return p.getY(); }
 
 //----------------------------------------------------------------------
-int FMouseEvent::getTermX() const
+auto FMouseEvent::getTermX() const -> int
 { return tp.getX(); }
 
 //----------------------------------------------------------------------
-int FMouseEvent::getTermY() const
+auto FMouseEvent::getTermY() const -> int
 { return tp.getY(); }
 
 //----------------------------------------------------------------------
-MouseButton FMouseEvent::getButton() const
+auto FMouseEvent::getButton() const -> MouseButton
 { return b; }
+
+//----------------------------------------------------------------------
+void FMouseEvent::setPos (const FPoint& pos)
+{ p = pos; }
+
+//----------------------------------------------------------------------
+void FMouseEvent::setTermPos (const FPoint& termPos)
+{ tp = termPos; }
 
 
 //----------------------------------------------------------------------
@@ -145,31 +153,31 @@ FWheelEvent::FWheelEvent ( Event ev_type  // constructor
 { }
 
 //----------------------------------------------------------------------
-const FPoint& FWheelEvent::getPos() const &
+auto FWheelEvent::getPos() const & -> const FPoint&
 { return p; }
 
 //----------------------------------------------------------------------
-const FPoint& FWheelEvent::getTermPos() const &
+auto FWheelEvent::getTermPos() const & -> const FPoint&
 { return tp; }
 
 //----------------------------------------------------------------------
-int FWheelEvent::getX() const
+auto FWheelEvent::getX() const -> int
 { return p.getX(); }
 
 //----------------------------------------------------------------------
-int FWheelEvent::getY() const
+auto FWheelEvent::getY() const -> int
 { return p.getY(); }
 
 //----------------------------------------------------------------------
-int FWheelEvent::getTermX() const
+auto FWheelEvent::getTermX() const -> int
 { return tp.getX(); }
 
 //----------------------------------------------------------------------
-int FWheelEvent::getTermY() const
+auto FWheelEvent::getTermY() const -> int
 { return tp.getY(); }
 
 //----------------------------------------------------------------------
-MouseWheel FWheelEvent::getWheel() const
+auto FWheelEvent::getWheel() const -> MouseWheel
 { return w; }
 
 
@@ -182,19 +190,19 @@ FFocusEvent::FFocusEvent (Event ev_type)  // constructor
 { }
 
 //----------------------------------------------------------------------
-bool FFocusEvent::gotFocus() const
+auto FFocusEvent::gotFocus() const -> bool
 {
   return getType() == Event::FocusIn;
 }
 
 //----------------------------------------------------------------------
-bool FFocusEvent::lostFocus() const
+auto FFocusEvent::lostFocus() const -> bool
 {
   return getType() == Event::FocusOut;
 }
 
 //----------------------------------------------------------------------
-FocusTypes FFocusEvent::getFocusType() const
+auto FFocusEvent::getFocusType() const -> FocusTypes
 { return focus_type; }
 
 //----------------------------------------------------------------------
@@ -202,7 +210,7 @@ void FFocusEvent::setFocusType (FocusTypes ft)
 { focus_type = ft; }
 
 //----------------------------------------------------------------------
-bool FFocusEvent::isAccepted() const
+auto FFocusEvent::isAccepted() const -> bool
 { return accpt; }
 
 //----------------------------------------------------------------------
@@ -224,11 +232,11 @@ FAccelEvent::FAccelEvent (Event ev_type, FWidget* focused)  // constructor
 { }
 
 //----------------------------------------------------------------------
-FWidget* FAccelEvent::focusedWidget() const
+auto FAccelEvent::focusedWidget() const -> FWidget*
 { return focus_widget; }
 
 //----------------------------------------------------------------------
-bool FAccelEvent::isAccepted() const
+auto FAccelEvent::isAccepted() const -> bool
 { return accpt; }
 
 //----------------------------------------------------------------------
@@ -249,7 +257,7 @@ FResizeEvent::FResizeEvent (Event ev_type)  // constructor
 { }
 
 //----------------------------------------------------------------------
-bool FResizeEvent::isAccepted() const
+auto FResizeEvent::isAccepted() const -> bool
 { return accpt; }
 
 //----------------------------------------------------------------------
@@ -288,7 +296,7 @@ FCloseEvent::FCloseEvent (Event ev_type)  // constructor
 { }
 
 //----------------------------------------------------------------------
-bool FCloseEvent::isAccepted() const
+auto FCloseEvent::isAccepted() const -> bool
 { return accpt; }
 
 //----------------------------------------------------------------------
@@ -310,7 +318,7 @@ FTimerEvent::FTimerEvent (Event ev_type, int timer_id)  // constructor
 { }
 
 //----------------------------------------------------------------------
-int FTimerEvent::getTimerId() const
+auto FTimerEvent::getTimerId() const -> int
 { return id; }
 
 
@@ -324,7 +332,7 @@ FUserEvent::FUserEvent (Event ev_type, int user_event_id)  // constructor
 { }
 
 //----------------------------------------------------------------------
-int FUserEvent::getUserId() const
+auto FUserEvent::getUserId() const -> int
 { return uid; }
 
 }  // namespace finalcut

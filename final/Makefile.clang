@@ -3,7 +3,7 @@
 #-----------------------------------------------------------------------------
 
 # This is where make install will install the library
-VERSION = "0.8.0"
+VERSION = "0.8.1"
 MAJOR := $(shell echo ${VERSION} | cut -d. -f1)
 LIBDIR = /usr/local/lib
 INCLUDEDIR1 = .
@@ -37,6 +37,7 @@ INCLUDE_HEADERS = \
 	output/tty/ftermoutput.h \
 	output/tty/ftermxterminal.h \
 	output/tty/sgr_optimizer.h \
+	util/char_ringbuffer.h \
 	util/fcallback.h \
 	util/fdata.h \
 	util/flogger.h \
@@ -84,12 +85,12 @@ INCLUDE_HEADERS = \
 
 # compiler parameter
 CXX = clang++
-CCXFLAGS = $(OPTIMIZE) $(PROFILE) -DCOMPILE_FINAL_CUT $(DEBUG) $(VER) $(GPM) -fexceptions -std=c++11
+CCXFLAGS = $(OPTIMIZE) $(PROFILE) -DCOMPILE_FINAL_CUT $(DEBUG) $(VER) $(GPM) -fexceptions -std=c++14
 MAKEFILE = -f Makefile.clang
 LDFLAGS = $(TERMCAP) -lgpm
 INCLUDES = -I..
 GPM = -D F_HAVE_LIBGPM
-VER = -D F_VERSION=$(VERSION)
+VER = -D F_VERSION=\"$(VERSION)\"
 RM = rm -f
 LIB = libfinal.so
 OBJS = \
@@ -124,6 +125,7 @@ OBJS = \
 	output/tty/ftermoutput.o \
 	output/tty/ftermxterminal.o \
 	output/tty/sgr_optimizer.o \
+	util/char_ringbuffer.o \
 	util/fcallback.o \
 	util/fdata.o \
 	util/flogger.o \
@@ -230,7 +232,7 @@ clean:
 	$(RM) $(LIB)* $(OBJS) .depend *.gcno *.gcda *.gch *.plist *~
 
 dep:
-	$(CXX) $(INCLUDES) -std=c++11 -DCOMPILE_FINAL_CUT -MM *.cpp >.depend
+	$(CXX) $(INCLUDES) -std=c++14 -DCOMPILE_FINAL_CUT -MM *.cpp >.depend
 
 #
 # include .depend if it exists

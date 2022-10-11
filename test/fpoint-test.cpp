@@ -116,8 +116,8 @@ void FPointTest::moveConstructorTest()
 {
   finalcut::FPoint p1 (25, 16);
   const finalcut::FPoint p2 (std::move(p1));
-  CPPUNIT_ASSERT ( p1.getX() == 25 );
-  CPPUNIT_ASSERT ( p1.getY() == 16 );
+  CPPUNIT_ASSERT ( p1.getX() == 25 );  // p1 is used after move
+  CPPUNIT_ASSERT ( p1.getY() == 16 );  // p1 is used after move
   CPPUNIT_ASSERT ( p2.getX() == 25 );
   CPPUNIT_ASSERT ( p2.getY() == 16 );
 }
@@ -152,9 +152,9 @@ void FPointTest::assignmentTest()
 
   // Move assignment operator
   finalcut::FPoint p3 = std::move(p2);
-  CPPUNIT_ASSERT ( p2.getX() == 40 );
-  CPPUNIT_ASSERT ( p2.getY() == 12 );
-  CPPUNIT_ASSERT ( ! p2.isOrigin() );
+  CPPUNIT_ASSERT ( p2.getX() == 40 );  // p2 is used after move
+  CPPUNIT_ASSERT ( p2.getY() == 12 );  // p2 is used after move
+  CPPUNIT_ASSERT ( ! p2.isOrigin() );  // p2 is used after move
   CPPUNIT_ASSERT ( p3.getX() == 40 );
   CPPUNIT_ASSERT ( p3.getY() == 12 );
 

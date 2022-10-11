@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2021 Markus Gans                                      *
+* Copyright 2017-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -32,18 +32,18 @@ using finalcut::FSize;
 
 
 // Function prototypes
-sInt64 stringToNumber (const finalcut::FString&);
-bool sortAscending (const finalcut::FObject*, const finalcut::FObject*);
-bool sortDescending (const finalcut::FObject*, const finalcut::FObject*);
-bool isLessThanInteger (const finalcut::FString&, const finalcut::FString&);
-bool isLessThanDouble (const finalcut::FString&, const finalcut::FString&);
-bool isGreaterThanInteger (const finalcut::FString&, const finalcut::FString&);
-bool isGreaterThanDouble (const finalcut::FString&, const finalcut::FString&);
+auto stringToNumber (const finalcut::FString&) -> sInt64;
+auto sortAscending (const finalcut::FObject*, const finalcut::FObject*) -> bool;
+auto sortDescending (const finalcut::FObject*, const finalcut::FObject*) -> bool;
+auto isLessThanInteger (const finalcut::FString&, const finalcut::FString&) -> bool;
+auto isLessThanDouble (const finalcut::FString&, const finalcut::FString&) -> bool;
+auto isGreaterThanInteger (const finalcut::FString&, const finalcut::FString&) -> bool;
+auto isGreaterThanDouble (const finalcut::FString&, const finalcut::FString&) -> bool;
 
 
 // non-member functions
 //----------------------------------------------------------------------
-sInt64 stringToNumber (const finalcut::FString& str)
+auto stringToNumber (const finalcut::FString& str) -> sInt64
 {
   // Cut off one character (because LONG_MAX = 2147483647)
   auto num_string = str.left(str.getLength() - 1);
@@ -54,8 +54,8 @@ sInt64 stringToNumber (const finalcut::FString& str)
 }
 
 //----------------------------------------------------------------------
-inline bool isLessThanInteger ( const finalcut::FString& lhs
-                              , const finalcut::FString& rhs )
+inline auto isLessThanInteger ( const finalcut::FString& lhs
+                              , const finalcut::FString& rhs ) -> bool
 {
   const sInt64 l_number = stringToNumber(lhs);
   const sInt64 r_number = stringToNumber(rhs);
@@ -63,8 +63,8 @@ inline bool isLessThanInteger ( const finalcut::FString& lhs
 }
 
 //----------------------------------------------------------------------
-inline bool isLessThanDouble ( const finalcut::FString& lhs
-                             , const finalcut::FString& rhs )
+inline auto isLessThanDouble ( const finalcut::FString& lhs
+                             , const finalcut::FString& rhs ) -> bool
 {
   std::setlocale(LC_NUMERIC, "C");
   const double l_number = lhs.toDouble();
@@ -73,8 +73,8 @@ inline bool isLessThanDouble ( const finalcut::FString& lhs
 }
 
 //----------------------------------------------------------------------
-inline bool isGreaterThanInteger ( const finalcut::FString& lhs
-                                 , const finalcut::FString& rhs )
+inline auto isGreaterThanInteger ( const finalcut::FString& lhs
+                                 , const finalcut::FString& rhs ) -> bool
 {
   const sInt64 l_number = stringToNumber(lhs);
   const sInt64 r_number = stringToNumber(rhs);
@@ -82,8 +82,8 @@ inline bool isGreaterThanInteger ( const finalcut::FString& lhs
 }
 
 //----------------------------------------------------------------------
-inline bool isGreaterThanDouble ( const finalcut::FString& lhs
-                         , const finalcut::FString& rhs )
+inline auto isGreaterThanDouble ( const finalcut::FString& lhs
+                         , const finalcut::FString& rhs ) -> bool
 {
   std::setlocale(LC_NUMERIC, "C");
   const double l_number = lhs.toDouble();
@@ -92,8 +92,8 @@ inline bool isGreaterThanDouble ( const finalcut::FString& lhs
 }
 
 //----------------------------------------------------------------------
-bool sortAscending ( const finalcut::FObject* lhs
-                   , const finalcut::FObject* rhs )
+auto sortAscending ( const finalcut::FObject* lhs
+                   , const finalcut::FObject* rhs ) -> bool
 {
   const auto& l_item = static_cast<const finalcut::FListViewItem*>(lhs);
   const auto& r_item = static_cast<const finalcut::FListViewItem*>(rhs);
@@ -111,8 +111,8 @@ bool sortAscending ( const finalcut::FObject* lhs
 }
 
 //----------------------------------------------------------------------
-bool sortDescending ( const finalcut::FObject* lhs
-                    , const finalcut::FObject* rhs )
+auto sortDescending ( const finalcut::FObject* lhs
+                    , const finalcut::FObject* rhs ) -> bool
 {
   const auto& l_item = static_cast<const finalcut::FListViewItem*>(lhs);
   const auto& r_item = static_cast<const finalcut::FListViewItem*>(rhs);
@@ -145,12 +145,12 @@ class Treeview final : public finalcut::FDialog
     struct TreeItem;  // forward declaration
 
     // Methods
-    auto initAfrica() const -> std::initializer_list<TreeItem>;
-    auto initAsia() const -> std::initializer_list<TreeItem>;
-    auto initEurope() const -> std::initializer_list<TreeItem>;
-    auto initNorthAmerica() const -> std::initializer_list<TreeItem>;
-    auto initSouthAmerica() const -> std::initializer_list<TreeItem>;
-    auto initOceania() const -> std::initializer_list<TreeItem>;
+    auto initAfrica() const -> std::vector<TreeItem>;
+    auto initAsia() const -> std::vector<TreeItem>;
+    auto initEurope() const -> std::vector<TreeItem>;
+    auto initNorthAmerica() const -> std::vector<TreeItem>;
+    auto initSouthAmerica() const -> std::vector<TreeItem>;
+    auto initOceania() const -> std::vector<TreeItem>;
     void initLayout() override;
     void adjustSize() override;
 
@@ -178,10 +178,10 @@ struct Treeview::TreeItem
 {
   using const_iterator = const char* const*;
 
-  const_iterator cbegin() const noexcept
+  auto cbegin() const noexcept -> const_iterator
   { return &name; }
 
-  const_iterator cend() const noexcept
+  auto cend() const noexcept -> const_iterator
   { return std::next(&density); }
 
   // Data members
@@ -258,9 +258,9 @@ Treeview::Treeview (finalcut::FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-auto Treeview::initAfrica() const -> std::initializer_list<Treeview::TreeItem>
+auto Treeview::initAfrica() const -> std::vector<Treeview::TreeItem>
 {
-  static const auto list = std::initializer_list<Treeview::TreeItem>
+  auto list = std::vector<Treeview::TreeItem>
   {
     { "Algeria", "40,400,000", "15.9", {} },
     { "Angola", "25,789,024", "20.69", {} },
@@ -289,9 +289,9 @@ auto Treeview::initAfrica() const -> std::initializer_list<Treeview::TreeItem>
 }
 
 //----------------------------------------------------------------------
-auto Treeview::initAsia() const -> std::initializer_list<Treeview::TreeItem>
+auto Treeview::initAsia() const -> std::vector<Treeview::TreeItem>
 {
-  static const auto list = std::initializer_list<Treeview::TreeItem>
+  auto list = std::vector<Treeview::TreeItem>
   {
     { "Afghanistan", "34,656,032", "49.88", {} },
     { "China", "1,403,500,365", "145.0", {} },
@@ -317,9 +317,9 @@ auto Treeview::initAsia() const -> std::initializer_list<Treeview::TreeItem>
 }
 
 //----------------------------------------------------------------------
-auto Treeview::initEurope() const -> std::initializer_list<Treeview::TreeItem>
+auto Treeview::initEurope() const -> std::vector<Treeview::TreeItem>
 {
-  static const auto list = std::initializer_list<Treeview::TreeItem>
+  auto list = std::vector<Treeview::TreeItem>
   {
     { "Austria", "8,794,267", "104.0", {} },
     { "Belarus", "9,498,700", "45.8", {} },
@@ -345,9 +345,9 @@ auto Treeview::initEurope() const -> std::initializer_list<Treeview::TreeItem>
 }
 
 //----------------------------------------------------------------------
-auto Treeview::initNorthAmerica() const -> std::initializer_list<Treeview::TreeItem>
+auto Treeview::initNorthAmerica() const -> std::vector<Treeview::TreeItem>
 {
-  static const auto list = std::initializer_list<Treeview::TreeItem>
+  auto list = std::vector<Treeview::TreeItem>
   {
     { "Canada", "35,151,728", "3.92", {} },
     { "Cuba", "11,239,224", "102.3", {} },
@@ -362,9 +362,9 @@ auto Treeview::initNorthAmerica() const -> std::initializer_list<Treeview::TreeI
 }
 
 //----------------------------------------------------------------------
-auto Treeview::initSouthAmerica() const -> std::initializer_list<Treeview::TreeItem>
+auto Treeview::initSouthAmerica() const -> std::vector<Treeview::TreeItem>
 {
-  static const auto list = std::initializer_list<Treeview::TreeItem>
+  auto list = std::vector<Treeview::TreeItem>
   {
     { "Argentina", "43,847,430", "14.4", {} },
     { "Bolivia", "11,410,651", "10.4", {} },
@@ -381,9 +381,9 @@ auto Treeview::initSouthAmerica() const -> std::initializer_list<Treeview::TreeI
 }
 
 //----------------------------------------------------------------------
-auto Treeview::initOceania() const -> std::initializer_list<Treeview::TreeItem>
+auto Treeview::initOceania() const -> std::vector<Treeview::TreeItem>
 {
-  static const auto list = std::initializer_list<Treeview::TreeItem>
+  auto list = std::vector<Treeview::TreeItem>
   {
     { "Australia", "24,675,900", "3.2", {} },
     { "Papua New Guinea", "7,059,653", "15.0", {} },
@@ -444,7 +444,7 @@ void Treeview::onClose (finalcut::FCloseEvent* ev)
 //                               main part
 //----------------------------------------------------------------------
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   // Create the application object
   finalcut::FApplication app{argc, argv};

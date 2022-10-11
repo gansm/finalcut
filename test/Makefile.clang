@@ -9,7 +9,7 @@ BINDIR = /usr/local/bin
 CXX = clang++
 SRCS = $(wildcard *.cpp)
 OBJS = $(SRCS:%.cpp=%)
-CCXFLAGS = $(OPTIMIZE) $(PROFILE) $(DEBUG) -std=c++11
+CCXFLAGS = $(OPTIMIZE) $(PROFILE) $(DEBUG) -std=c++14
 MAKEFILE = -f Makefile.clang
 LDFLAGS = -L../src -lfinal $(TERMCAP) -lcppunit -ldl
 INCLUDES = -I. -I.. -I/usr/include

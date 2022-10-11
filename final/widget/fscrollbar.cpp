@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2021 Markus Gans                                      *
+* Copyright 2012-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -616,7 +616,7 @@ void FScrollbar::drawButtons()
 }
 
 //----------------------------------------------------------------------
-FScrollbar::ScrollType FScrollbar::getClickedScrollType (int x, int y) const
+auto FScrollbar::getClickedScrollType (int x, int y) const -> ScrollType
 {
   if ( bar_orientation == Orientation::Vertical )
     return getVerticalClickedScrollType(y);
@@ -625,7 +625,7 @@ FScrollbar::ScrollType FScrollbar::getClickedScrollType (int x, int y) const
 }
 
 //----------------------------------------------------------------------
-FScrollbar::ScrollType FScrollbar::getVerticalClickedScrollType (int y) const
+auto FScrollbar::getVerticalClickedScrollType (int y) const -> ScrollType
 {
   if ( y == 1 )
     return ScrollType::StepBackward;  // decrement button
@@ -643,7 +643,7 @@ FScrollbar::ScrollType FScrollbar::getVerticalClickedScrollType (int y) const
 }
 
 //----------------------------------------------------------------------
-FScrollbar::ScrollType FScrollbar::getHorizontalClickedScrollType (int x) const
+auto FScrollbar::getHorizontalClickedScrollType (int x) const -> ScrollType
 {
   if ( FVTerm::getFOutput()->isNewFont() )
   {
@@ -678,7 +678,7 @@ FScrollbar::ScrollType FScrollbar::getHorizontalClickedScrollType (int x) const
 }
 
 //----------------------------------------------------------------------
-int FScrollbar::getSliderClickPos (int mouse_x, int mouse_y) const
+auto FScrollbar::getSliderClickPos (int mouse_x, int mouse_y) const -> int
 {
   // Get the clicked position on the slider
 

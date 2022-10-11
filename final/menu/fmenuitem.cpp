@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2021 Markus Gans                                      *
+* Copyright 2015-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -76,7 +76,7 @@ FMenuItem::~FMenuItem()  // destructor
       menu_list->remove(this);
   }
 
-  delAccelerator();
+  FMenuItem::delAccelerator();
 
   // remove dialog list item callback from the dialog
   if ( associated_window )
@@ -86,7 +86,7 @@ FMenuItem::~FMenuItem()  // destructor
 
 // public methods of FMenuItem
 //----------------------------------------------------------------------
-bool FMenuItem::setEnable (bool enable)
+auto FMenuItem::setEnable (bool enable) -> bool
 {
   FWidget::setEnable(enable);
   auto super = getSuperMenu();
@@ -110,7 +110,7 @@ bool FMenuItem::setEnable (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FMenuItem::setFocus (bool enable)
+auto FMenuItem::setFocus (bool enable) -> bool
 {
   FWidget::setFocus(enable);
 
@@ -178,7 +178,7 @@ void FMenuItem::setText (const FString& txt)
 void FMenuItem::addAccelerator (FKey key, FWidget* obj) &
 {
   const auto& root = getRootWidget();
-  FAccelerator accel = { key, obj };
+  const FAccelerator accel{ key, obj };
 
   if ( root )
   {
@@ -196,7 +196,7 @@ void FMenuItem::delAccelerator (FWidget* obj) &
 
   if ( root && ! root->setAcceleratorList().empty() )
   {
-    auto list = root->setAcceleratorList();
+    auto& list = root->setAcceleratorList();
     auto iter = list.cbegin();
 
     while ( iter != list.cend() )
@@ -449,19 +449,19 @@ void FMenuItem::onFocusOut (FFocusEvent*)
 
 // protected methods of FMenuItem
 //----------------------------------------------------------------------
-bool FMenuItem::isDialog (const FWidget* w) const
+auto FMenuItem::isDialog (const FWidget* w) const -> bool
 {
   return w ? w->isDialogWidget() : false;
 }
 
 //----------------------------------------------------------------------
-bool FMenuItem::isMenuBar (const FWidget* w) const
+auto FMenuItem::isMenuBar (const FWidget* w) const -> bool
 {
   return w ? w->isInstanceOf("FMenuBar") : false;
 }
 
 //----------------------------------------------------------------------
-bool FMenuItem::isMenu (const FWidget* w) const
+auto FMenuItem::isMenu (const FWidget* w) const -> bool
 {
   if ( ! w )
     return false;
@@ -479,7 +479,7 @@ void FMenuItem::initLayout()
 
 // private methods of FMenuItem
 //----------------------------------------------------------------------
-FMenuList* FMenuItem::getFMenuList (FWidget& widget)
+auto FMenuItem::getFMenuList (FWidget& widget) -> FMenuList*
 {
   FMenuList* menu_list{nullptr};
 
@@ -514,7 +514,7 @@ void FMenuItem::init()
   }
 
   setGeometry (FPoint{1, 1}, FSize{text_width + 2, 1}, false);
-  FWidget* parent = getParentWidget();
+  const auto& parent = getParentWidget();
 
   if ( ! parent )
     return;
@@ -582,7 +582,7 @@ void FMenuItem::updateSuperMenuDimensions()
 //----------------------------------------------------------------------
 void FMenuItem::updateMenubarDimensions() const
 {
-  FWidget* parent = getParentWidget();
+  const auto& parent = getParentWidget();
 
   if ( ! parent || ! isMenuBar(parent) )
     return;
@@ -650,7 +650,7 @@ void FMenuItem::createDialogList (FMenu* winmenu) const
       win_item->addCallback
       (
         "clicked",
-        static_cast<std::remove_reference<decltype(win_item)>::type>(win_item),
+        static_cast<std::remove_reference_t<decltype(win_item)>>(win_item),
         &FMenuItem::cb_switchToDialog,
         win
       );
@@ -658,7 +658,7 @@ void FMenuItem::createDialogList (FMenu* winmenu) const
       win->addCallback
       (
         "destroy",
-        static_cast<std::remove_reference<decltype(win_item)>::type>(win_item),
+        static_cast<std::remove_reference_t<decltype(win_item)>>(win_item),
         &FMenuItem::cb_destroyDialog,
         win
       );

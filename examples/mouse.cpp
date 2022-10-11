@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2021 Markus Gans                                      *
+* Copyright 2017-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -40,8 +40,8 @@ class ColorChooser final : public finalcut::FWidget
     explicit ColorChooser (finalcut::FWidget* = nullptr);
 
     // Accessors
-    FColor getForeground() const;
-    FColor getBackground() const;
+    auto getForeground() const -> FColor;
+    auto getBackground() const -> FColor;
 
   private:
     // Mutator
@@ -75,13 +75,13 @@ ColorChooser::ColorChooser (finalcut::FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-inline FColor ColorChooser::getForeground() const
+inline auto ColorChooser::getForeground() const -> FColor
 {
   return fg_color;
 }
 
 //----------------------------------------------------------------------
-inline FColor ColorChooser::getBackground() const
+inline auto ColorChooser::getBackground() const -> FColor
 {
   return bg_color;
 }
@@ -177,7 +177,7 @@ class Brushes final : public finalcut::FWidget
     explicit Brushes (finalcut::FWidget* = nullptr);
 
     // Accessor
-    wchar_t getBrush() const;
+    auto getBrush() const -> wchar_t;
 
     // Mutators
     void setForeground (FColor);
@@ -281,7 +281,7 @@ void Brushes::onMouseDown (finalcut::FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-inline wchar_t Brushes::getBrush() const
+inline auto Brushes::getBrush() const -> wchar_t
 {
   return brush;
 }
@@ -322,10 +322,10 @@ class MouseDraw final : public finalcut::FDialog
     ~MouseDraw() noexcept override;
 
     // Disable copy assignment operator (=)
-    MouseDraw& operator = (const MouseDraw&) = delete;
+    auto operator = (const MouseDraw&) -> MouseDraw& = delete;
 
     // Disable move assignment operator (=)
-    MouseDraw& operator = (MouseDraw&&) noexcept = delete;
+    auto operator = (MouseDraw&&) noexcept -> MouseDraw& = delete;
 
     // Methods
     void setGeometry (const FPoint&, const FSize&, bool = true) override;
@@ -466,10 +466,11 @@ void MouseDraw::drawBrush (int x, int y, bool swap_color)
       setColor (c_chooser.getForeground(), c_chooser.getBackground());
 
     // set canvas print cursor position
-    canvas->cursor_x = x - canvas->offset_left - 10;
-    canvas->cursor_y = y - canvas->offset_top - 2;
+    canvas->setCursorPos ( x - canvas->offset_left - 10
+                         , y - canvas->offset_top - 2 );
     // print on canvas
-    print (canvas, brush.getBrush());
+    canvas->print (brush.getBrush());
+
     // copy canvas to the dialog
     drawCanvas();
   }
@@ -521,9 +522,8 @@ void MouseDraw::drawCanvas()
 //----------------------------------------------------------------------
 void MouseDraw::createCanvas()
 {
-  FSize no_shadow{0, 0};
   finalcut::FRect scroll_geometry{0, 0, 1, 1};
-  createArea (scroll_geometry, no_shadow, canvas);
+  createArea (scroll_geometry, canvas);
   adjustSize();
 }
 
@@ -586,7 +586,7 @@ void MouseDraw::cb_colorChanged()
 //----------------------------------------------------------------------
 //                               main part
 //----------------------------------------------------------------------
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   // Create the application object
   finalcut::FApplication app{argc, argv};

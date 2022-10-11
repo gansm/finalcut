@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2021 Markus Gans                                      *
+* Copyright 2016-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -151,10 +151,10 @@ class MainWindow final : public finalcut::FDialog
     ~MainWindow() noexcept override;
 
     // Disable copy assignment operator (=)
-    MainWindow& operator = (const MainWindow&) = delete;
+    auto operator = (const MainWindow&) -> MainWindow& = delete;
 
     // Disable move assignment operator (=)
-    MainWindow& operator = (MainWindow&&) noexcept = delete;
+    auto operator = (MainWindow&&) noexcept -> MainWindow& = delete;
 
   private:
     // Method
@@ -265,7 +265,7 @@ void MainWindow::onTimer (finalcut::FTimerEvent*)
 //                               main part
 //----------------------------------------------------------------------
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   // Create the application object
   finalcut::FApplication app {argc, argv};

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2021 Markus Gans                                      *
+* Copyright 2018-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -63,10 +63,10 @@ class FCharSubstitution
       wchar_t to;
     };
 
-    wchar_t  getMappedChar (wchar_t) const;
-    void     setCharMapping (const Map&);
-    bool     isEmpty() const;
-    void     sort();
+    auto getMappedChar (wchar_t) const -> wchar_t;
+    void setCharMapping (const Map&);
+    auto isEmpty() const -> bool;
+    void sort();
 
   private:
     std::vector<Map> sub_map{};
@@ -74,11 +74,11 @@ class FCharSubstitution
 
 // FTermData inline functions
 //----------------------------------------------------------------------
-inline wchar_t FCharSubstitution::getMappedChar (wchar_t c) const
+inline auto FCharSubstitution::getMappedChar (wchar_t c) const -> wchar_t
 {
   const auto& cend = sub_map.cend();
   auto iter = std::find_if ( sub_map.cbegin(), cend,
-                             [&c] (const Map& map)
+                             [&c] (const auto& map)
                              {
                                return map.from == c;
                              } );
@@ -94,7 +94,7 @@ inline void FCharSubstitution::setCharMapping (const Map& m)
 {
   const auto& end = sub_map.end();
   auto iter = std::find_if ( sub_map.begin(), end,
-                             [&m] (const Map& map)
+                             [&m] (const auto& map)
                              {
                                return map.from == m.from;
                              } );
@@ -106,7 +106,7 @@ inline void FCharSubstitution::setCharMapping (const Map& m)
 }
 
 //----------------------------------------------------------------------
-inline bool FCharSubstitution::isEmpty() const
+inline auto FCharSubstitution::isEmpty() const -> bool
 {
   return sub_map.empty();
 }
@@ -115,7 +115,7 @@ inline bool FCharSubstitution::isEmpty() const
 inline void FCharSubstitution::sort()
 {
   std::sort ( sub_map.begin(), sub_map.end()
-            , [] (const Map& lhs, const Map& rhs)
+            , [] (const auto& lhs, const auto& rhs)
               {
                 return lhs.from < rhs.from;
               }
@@ -143,252 +143,252 @@ class FTermData final
     FTermData () = default;
 
     // Accessors
-    FString            getClassName() const;
-    static auto        getInstance() -> FTermData&;
-    EncodingMap&       getEncodingList() &;
-    FCharSubstitution& getCharSubstitutionMap() &;
-    Encoding           getTerminalEncoding() const;
-    FRect&             getTerminalGeometry() &;
-    const FRect&       getTerminalGeometry() const &;
-    int                getTTYFileDescriptor() const noexcept;
-    uInt               getBaudrate() const noexcept;
-    const std::string& getTermType() const & ;
-    const std::string& getTermFileName() const &;
-    int                getGnomeTerminalID() const noexcept;
-    kittyVersion       getKittyVersion() const noexcept;
-    const FString&     getXtermFont() const &;
-    const FString&     getXtermTitle() const &;
+    auto        getClassName() const -> FString;
+    static auto getInstance() -> FTermData&;
+    auto        getEncodingList() & -> EncodingMap&;
+    auto        getCharSubstitutionMap() & -> FCharSubstitution&;
+    auto        getTerminalEncoding() const -> Encoding;
+    auto        getTerminalGeometry() & -> FRect&;
+    auto        getTerminalGeometry() const & -> const FRect&;
+    auto        getTTYFileDescriptor() const noexcept -> int;
+    auto        getBaudrate() const noexcept -> uInt;
+    auto        getTermType() const & -> const std::string& ;
+    auto        getTermFileName() const & -> const std::string&;
+    auto        getGnomeTerminalID() const noexcept -> int;
+    auto        getKittyVersion() const noexcept -> kittyVersion;
+    auto        getXtermFont() const & -> const FString&;
+    auto        getXtermTitle() const & -> const FString&;
 #if DEBUG
-    int                getFramebufferBpp() const noexcept;
+    auto        getFramebufferBpp() const noexcept -> int;
 #endif
 
     // Inquiries
-    bool               hasShadowCharacter() const noexcept;
-    bool               hasHalfBlockCharacter() const noexcept;
-    bool               hasCursorOptimisation() const noexcept;
-    bool               isCursorHidden() const noexcept;
-    bool               hasAlternateScreen() const noexcept;
-    bool               isInAlternateScreen() const noexcept;
-    bool               hasASCIIConsole() const noexcept;
-    bool               hasVT100Console() const noexcept;
-    bool               hasUTF8Console() const noexcept;
-    bool               isUTF8() const noexcept;
-    bool               isNewFont() const noexcept;
-    bool               isVGAFont() const noexcept;
-    bool               isMonochron() const noexcept;
-    bool               hasTermResized();
-    bool               isTermType (FTermType) const;
-    bool               isTermType (FTermTypeT) const;
+    auto        hasShadowCharacter() const noexcept -> bool;
+    auto        hasHalfBlockCharacter() const noexcept -> bool;
+    auto        hasCursorOptimisation() const noexcept -> bool;
+    auto        isCursorHidden() const noexcept -> bool;
+    auto        hasAlternateScreen() const noexcept -> bool;
+    auto        isInAlternateScreen() const noexcept -> bool;
+    auto        hasASCIIConsole() const noexcept -> bool;
+    auto        hasVT100Console() const noexcept -> bool;
+    auto        hasUTF8Console() const noexcept -> bool;
+    auto        isUTF8() const noexcept -> bool;
+    auto        isNewFont() const noexcept -> bool;
+    auto        isVGAFont() const noexcept -> bool;
+    auto        isMonochron() const noexcept -> bool;
+    auto        hasTermResized() -> bool;
+    auto        isTermType (FTermType) const -> bool;
+    auto        isTermType (FTermTypeT) const -> bool;
 
     // Mutators
-    void               setTermEncoding (Encoding) noexcept;
-    void               setTTYFileDescriptor (int) noexcept;
-    void               setBaudrate (uInt) noexcept;
-    void               supportShadowCharacter (bool = true) noexcept;
-    void               supportHalfBlockCharacter (bool = true) noexcept;
-    void               supportCursorOptimisation (bool = true) noexcept;
-    void               setCursorHidden (bool = true) noexcept;
-    void               useAlternateScreen (bool = true) noexcept;
-    void               setAlternateScreenInUse (bool = true) noexcept;
-    void               setASCIIConsole (bool = true) noexcept;
-    void               setVT100Console (bool = true) noexcept;
-    void               setUTF8Console (bool = true) noexcept;
-    void               setUTF8 (bool = true) noexcept;
-    void               setNewFont (bool = true) noexcept;
-    void               setVGAFont (bool = true) noexcept;
-    void               setMonochron (bool = true) noexcept;
-    void               setTermResized (bool = true);
-    void               setTermType (const std::string&);
-    void               setTermType (FTermType);
-    void               unsetTermType (FTermType);
-    void               setTermFileName (const std::string&);
-    void               setGnomeTerminalID (int) noexcept;
-    void               setKittyVersion (const kittyVersion&);
-    void               setXtermFont (const FString&);
-    void               setXtermTitle (const FString&);
+    void        setTermEncoding (Encoding) noexcept;
+    void        setTTYFileDescriptor (int) noexcept;
+    void        setBaudrate (uInt) noexcept;
+    void        supportShadowCharacter (bool = true) noexcept;
+    void        supportHalfBlockCharacter (bool = true) noexcept;
+    void        supportCursorOptimisation (bool = true) noexcept;
+    void        setCursorHidden (bool = true) noexcept;
+    void        useAlternateScreen (bool = true) noexcept;
+    void        setAlternateScreenInUse (bool = true) noexcept;
+    void        setASCIIConsole (bool = true) noexcept;
+    void        setVT100Console (bool = true) noexcept;
+    void        setUTF8Console (bool = true) noexcept;
+    void        setUTF8 (bool = true) noexcept;
+    void        setNewFont (bool = true) noexcept;
+    void        setVGAFont (bool = true) noexcept;
+    void        setMonochron (bool = true) noexcept;
+    void        setTermResized (bool = true);
+    void        setTermType (const std::string&);
+    void        setTermType (FTermType);
+    void        unsetTermType (FTermType);
+    void        setTermFileName (const std::string&);
+    void        setGnomeTerminalID (int) noexcept;
+    void        setKittyVersion (const kittyVersion&);
+    void        setXtermFont (const FString&);
+    void        setXtermTitle (const FString&);
 #if DEBUG
-    void               setFramebufferBpp (int) noexcept;
+    void        setFramebufferBpp (int) noexcept;
 #endif
 
   private:
     // Data members
-    EncodingMap           encoding_list{};
-    FCharSubstitution     char_substitution_map{};
-    FRect                 terminal_geometry{};  // current terminal geometry
-    FString               xterm_font{};
-    FString               xterm_title{};
-    FString               exit_message{};
-    FTermTypeT            terminal_type{};
-    Encoding              term_encoding{Encoding::Unknown};
+    EncodingMap        encoding_list{};
+    FCharSubstitution  char_substitution_map{};
+    FRect              terminal_geometry{};  // current terminal geometry
+    FString            xterm_font{};
+    FString            xterm_title{};
+    FString            exit_message{};
+    FTermTypeT         terminal_type{};
+    Encoding           term_encoding{Encoding::Unknown};
 
     // Teletype (tty) file descriptor is still undefined (-1)
-    int                   fd_tty{-1};
+    int                fd_tty{-1};
 
     // Gnome terminal id from SecDA
     // Example: vte version 0.40.0 = 0 * 100 + 40 * 100 + 0 = 4000
     //                      a.b.c  = a * 100 +  b * 100 + c
-    int                   gnome_terminal_id{0};
-    kittyVersion          kitty_version{0, 0};
+    int                gnome_terminal_id{0};
+    kittyVersion       kitty_version{0, 0};
 
 #if DEBUG
-    int                   framebuffer_bpp{-1};
+    int                framebuffer_bpp{-1};
 #endif
 
-    uInt                  baudrate{0};
-    std::string           termtype{};
-    std::string           termfilename{};
-    std::mutex            resize_mutex{};
-    std::atomic<int>      resize_count{0};
-    bool                  shadow_character{true};
-    bool                  half_block_character{true};
-    bool                  cursor_optimisation{true};
-    bool                  hidden_cursor{false};  // Global cursor hidden state
-    bool                  use_alternate_screen{true};
-    bool                  alternate_screen{false};
-    bool                  ascii_console{false};
-    bool                  vt100_console{false};
-    bool                  utf8_console{false};
-    bool                  utf8_state{false};
-    bool                  new_font{false};
-    bool                  vga_font{false};
-    bool                  monochron{false};
+    uInt               baudrate{0};
+    std::string        termtype{};
+    std::string        termfilename{};
+    std::mutex         resize_mutex{};
+    std::atomic<int>   resize_count{0};
+    bool               shadow_character{true};
+    bool               half_block_character{true};
+    bool               cursor_optimisation{true};
+    bool               hidden_cursor{false};  // Global cursor hidden state
+    bool               use_alternate_screen{true};
+    bool               alternate_screen{false};
+    bool               ascii_console{false};
+    bool               vt100_console{false};
+    bool               utf8_console{false};
+    bool               utf8_state{false};
+    bool               new_font{false};
+    bool               vga_font{false};
+    bool               monochron{false};
 };
 
 // FTermData inline functions
 //----------------------------------------------------------------------
-inline FString FTermData::getClassName() const
+inline auto FTermData::getClassName() const -> FString
 { return "FTermData"; }
 
 //----------------------------------------------------------------------
 inline auto FTermData::getInstance() -> FTermData&
 {
-  static const auto& data = make_unique<FTermData>();
+  static const auto& data = std::make_unique<FTermData>();
   return *data;
 }
 
 //----------------------------------------------------------------------
-inline FTermData::EncodingMap& FTermData::getEncodingList() &
+inline auto FTermData::getEncodingList() & -> EncodingMap&
 { return encoding_list; }
 
 //----------------------------------------------------------------------
-inline FCharSubstitution& FTermData::getCharSubstitutionMap() &
+inline auto FTermData::getCharSubstitutionMap() & -> FCharSubstitution&
 { return char_substitution_map; }
 
 //----------------------------------------------------------------------
-inline Encoding FTermData::getTerminalEncoding() const
+inline auto FTermData::getTerminalEncoding() const -> Encoding
 { return term_encoding; }
 
 //----------------------------------------------------------------------
-inline FRect& FTermData::getTerminalGeometry() &
+inline auto FTermData::getTerminalGeometry() & -> FRect&
 { return terminal_geometry; }
 
 //----------------------------------------------------------------------
-inline const FRect& FTermData::getTerminalGeometry() const &
+inline auto FTermData::getTerminalGeometry() const & -> const FRect&
 { return terminal_geometry; }
 
 //----------------------------------------------------------------------
-inline int FTermData::getTTYFileDescriptor() const noexcept
+inline auto FTermData::getTTYFileDescriptor() const noexcept -> int
 { return fd_tty; }
 
 //----------------------------------------------------------------------
-inline uInt FTermData::getBaudrate() const noexcept
+inline auto FTermData::getBaudrate() const noexcept -> uInt
 { return baudrate; }
 
 //----------------------------------------------------------------------
-inline const std::string& FTermData::getTermType() const &
+inline auto FTermData::getTermType() const & -> const std::string&
 { return termtype; }
 
 //----------------------------------------------------------------------
-inline const std::string& FTermData::getTermFileName() const &
+inline auto FTermData::getTermFileName() const & -> const std::string&
 { return termfilename; }
 
 //----------------------------------------------------------------------
-inline int FTermData::getGnomeTerminalID() const noexcept
+inline auto FTermData::getGnomeTerminalID() const noexcept -> int
 { return gnome_terminal_id; }
 
 //----------------------------------------------------------------------
-inline FTermData::kittyVersion FTermData::getKittyVersion() const noexcept
+inline auto FTermData::getKittyVersion() const noexcept -> kittyVersion
 { return kitty_version; }
 
 //----------------------------------------------------------------------
-inline const FString& FTermData::getXtermFont() const &
+inline auto FTermData::getXtermFont() const & -> const FString&
 { return xterm_font; }
 
 //----------------------------------------------------------------------
-inline const FString& FTermData::getXtermTitle() const &
+inline auto FTermData::getXtermTitle() const & -> const FString&
 { return xterm_title; }
 
 //----------------------------------------------------------------------
 #if DEBUG
-inline int FTermData::getFramebufferBpp() const noexcept
+inline auto FTermData::getFramebufferBpp() const noexcept -> int
 { return framebuffer_bpp; }
 #endif
 
 //----------------------------------------------------------------------
-inline bool FTermData::hasShadowCharacter() const noexcept
+inline auto FTermData::hasShadowCharacter() const noexcept -> bool
 { return shadow_character; }
 
 //----------------------------------------------------------------------
-inline bool FTermData::hasHalfBlockCharacter() const noexcept
+inline auto FTermData::hasHalfBlockCharacter() const noexcept -> bool
 { return half_block_character; }
 
 //----------------------------------------------------------------------
-inline bool FTermData::hasCursorOptimisation() const noexcept
+inline auto FTermData::hasCursorOptimisation() const noexcept -> bool
 { return cursor_optimisation; }
 
 //----------------------------------------------------------------------
-inline bool FTermData::isCursorHidden() const noexcept
+inline auto FTermData::isCursorHidden() const noexcept -> bool
 { return hidden_cursor; }
 
 //----------------------------------------------------------------------
-inline bool FTermData::hasAlternateScreen() const noexcept
+inline auto FTermData::hasAlternateScreen() const noexcept -> bool
 { return use_alternate_screen; }
 
 //----------------------------------------------------------------------
-inline bool FTermData::isInAlternateScreen() const noexcept
+inline auto FTermData::isInAlternateScreen() const noexcept -> bool
 { return alternate_screen; }
 
 //----------------------------------------------------------------------
-inline bool FTermData::hasASCIIConsole() const noexcept
+inline auto FTermData::hasASCIIConsole() const noexcept -> bool
 { return ascii_console; }
 
 //----------------------------------------------------------------------
-inline bool FTermData::hasVT100Console() const noexcept
+inline auto FTermData::hasVT100Console() const noexcept -> bool
 { return vt100_console; }
 
 //----------------------------------------------------------------------
-inline bool FTermData::hasUTF8Console() const noexcept
+inline auto FTermData::hasUTF8Console() const noexcept -> bool
 { return utf8_console; }
 
 //----------------------------------------------------------------------
-inline bool FTermData::isUTF8() const noexcept
+inline auto FTermData::isUTF8() const noexcept -> bool
 { return utf8_state; }
 
 //----------------------------------------------------------------------
-inline bool FTermData::isNewFont() const noexcept
+inline auto FTermData::isNewFont() const noexcept -> bool
 { return new_font; }
 
 //----------------------------------------------------------------------
-inline bool FTermData::isVGAFont() const noexcept
+inline auto FTermData::isVGAFont() const noexcept -> bool
 { return vga_font; }
 
 //----------------------------------------------------------------------
-inline bool FTermData::isMonochron() const noexcept
+inline auto FTermData::isMonochron() const noexcept -> bool
 { return monochron; }
 
 //----------------------------------------------------------------------
-inline bool FTermData::hasTermResized()
+inline auto FTermData::hasTermResized() -> bool
 {
   std::lock_guard<std::mutex> resize_lock_guard(resize_mutex);
   return resize_count.load() > 0;
 }
 
 //----------------------------------------------------------------------
-inline bool FTermData::isTermType (FTermType type) const
+inline auto FTermData::isTermType (FTermType type) const -> bool
 { return terminal_type & static_cast<FTermTypeT>(type); }
 
 //----------------------------------------------------------------------
-inline bool FTermData::isTermType (FTermTypeT mask) const
+inline auto FTermData::isTermType (FTermTypeT mask) const -> bool
 { return terminal_type & mask; }
 
 //----------------------------------------------------------------------

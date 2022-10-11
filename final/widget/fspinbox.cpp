@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2021 Markus Gans                                      *
+* Copyright 2019-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -72,7 +72,7 @@ void FSpinBox::setGeometry ( const FPoint& pos, const FSize& size
 }
 
 //----------------------------------------------------------------------
-bool FSpinBox::setEnable (bool enable)
+auto FSpinBox::setEnable (bool enable) -> bool
 {
   FWidget::setEnable(enable);
   input_field.setEnable(enable);
@@ -80,7 +80,7 @@ bool FSpinBox::setEnable (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FSpinBox::setFocus (bool enable)
+auto FSpinBox::setFocus (bool enable) -> bool
 {
   FWidget::setFocus(enable);
   input_field.setFocus(enable);
@@ -88,7 +88,7 @@ bool FSpinBox::setFocus (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FSpinBox::setShadow (bool enable)
+auto FSpinBox::setShadow (bool enable) -> bool
 {
   return setWidgetShadow(this, enable);
 }
@@ -149,7 +149,7 @@ void FSpinBox::hide()
 {
   input_field.hide();
   FWidget::hide();
-  const FSize shadow = hasShadow() ? FSize{1, 1} : FSize{0, 0};
+  const auto& shadow = hasShadow() ? FSize{1, 1} : FSize{0, 0};
   hideArea (getSize() + shadow);
 }
 
@@ -239,7 +239,7 @@ void FSpinBox::onMouseUp (FMouseEvent*)
 //----------------------------------------------------------------------
 void FSpinBox::onWheel (FWheelEvent* ev)
 {
-  const MouseWheel wheel = ev->getWheel();
+  const auto& wheel = ev->getWheel();
 
   delOwnTimers();
   forceFocus();
@@ -293,7 +293,7 @@ void FSpinBox::init()
 {
   setShadow();
   auto parent_widget = getParentWidget();
-  FLabel* label = input_field.getLabelObject();
+  auto label = input_field.getLabelObject();
   label->setParent(getParent());
   label->setForegroundColor (parent_widget->getForegroundColor());
   label->setBackgroundColor (parent_widget->getBackgroundColor());
@@ -421,8 +421,8 @@ void FSpinBox::cb_inputFieldChange (const FLineEdit& lineedit)
     value = 0;
   else
   {
-    const std::wregex regex(L"[-]?[[:xdigit:]]+");
     std::wsmatch match;
+    const auto& regex = std::wregex(LR"([-]?[[:xdigit:]]+)");
     const auto& text = lineedit.getText().toWString();
 
     if ( std::regex_search(text, match, regex) )

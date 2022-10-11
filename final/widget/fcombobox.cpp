@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2021 Markus Gans                                      *
+* Copyright 2019-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -149,11 +149,11 @@ void FDropDownListBox::drawShadow()
 }
 
 //----------------------------------------------------------------------
-bool FDropDownListBox::containsWidget (const FPoint& p)
+auto FDropDownListBox::containsWidget (const FPoint& p) -> bool
 {
   // Check mouse click position for item, menu and all sub menus
 
-  FWidget* parent = getParentWidget();
+  const auto& parent = getParentWidget();
 
   if ( getTermGeometry().contains(p) )
     return true;
@@ -201,7 +201,7 @@ void FComboBox::setGeometry ( const FPoint& pos, const FSize& size
 }
 
 //----------------------------------------------------------------------
-bool FComboBox::setEnable (bool enable)
+auto FComboBox::setEnable (bool enable) -> bool
 {
   FWidget::setEnable(enable);
   input_field.setEnable(enable);
@@ -209,7 +209,7 @@ bool FComboBox::setEnable (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FComboBox::setFocus (bool enable)
+auto FComboBox::setFocus (bool enable) -> bool
 {
   FWidget::setFocus(enable);
   input_field.setFocus(enable);
@@ -217,13 +217,13 @@ bool FComboBox::setFocus (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FComboBox::setShadow (bool enable)
+auto FComboBox::setShadow (bool enable) -> bool
 {
   return setWidgetShadow(this, enable);
 }
 
 //----------------------------------------------------------------------
-bool FComboBox::setEditable (bool enable)
+auto FComboBox::setEditable (bool enable) -> bool
 {
   if ( is_editable == enable )
     return is_editable;
@@ -430,7 +430,7 @@ void FComboBox::onFocusOut (FFocusEvent*)
 
 // private methods of FComboBox
 //----------------------------------------------------------------------
-bool FComboBox::isMouseOverListWindow (const FPoint& termpos)
+auto FComboBox::isMouseOverListWindow (const FPoint& termpos) -> bool
 {
   if ( list_window.isShown() )
   {
@@ -446,7 +446,7 @@ void FComboBox::init()
 {
   setShadow();
   const auto& parent_widget = getParentWidget();
-  FLabel* label = input_field.getLabelObject();
+  auto label = input_field.getLabelObject();
   label->setParent(getParent());
   label->setForegroundColor (parent_widget->getForegroundColor());
   label->setBackgroundColor (parent_widget->getBackgroundColor());
@@ -557,11 +557,11 @@ void FComboBox::passEventToListWindow (const FMouseEvent& ev)
   const auto& t = ev.getTermPos();
   const auto& p = list_window.list.termToWidgetPos(t);
   const auto b = ev.getButton();
-  const auto& _ev = \
+  const auto& new_ev = \
       std::make_shared<FMouseEvent>(Event::MouseMove, p, t, b);
   setClickedWidget(&list_window.list);
   list_window.list.setFocus();
-  list_window.list.onMouseMove(_ev.get());
+  list_window.list.onMouseMove(new_ev.get());
 }
 
 //----------------------------------------------------------------------
@@ -596,8 +596,7 @@ void FComboBox::cb_closeComboBox()
 //----------------------------------------------------------------------
 void FComboBox::cb_inputFieldSwitch()
 {
-  auto& mouse = FMouseControl::getInstance();
-  auto mouse_event = mouse.getCurrentMouseEvent();
+  const auto mouse_event = FMouseControl::getCurrentMouseEvent();
 
   if ( ! mouse_event || ! mouse_event->isLeftButtonPressed() )
     return;
@@ -624,11 +623,11 @@ void FComboBox::cb_inputFieldHandOver()
   const auto& t = mouse.getPos();
   const auto& p = list_window.list.termToWidgetPos(t);
   const auto b = ( mouse.isLeftButtonPressed() ) ? MouseButton::Left : MouseButton::None;
-  const auto& _ev = \
+  const auto& new_ev = \
       std::make_shared<FMouseEvent>(Event::MouseMove, p, t, b);
   setClickedWidget(&list_window.list);
   list_window.list.setFocus();
-  list_window.list.onMouseMove(_ev.get());
+  list_window.list.onMouseMove(new_ev.get());
 }
 
 // non-member functions
@@ -649,8 +648,8 @@ void closeOpenComboBox()
 }
 
 //----------------------------------------------------------------------
-bool closeComboBox ( FDropDownListBox* list_window
-                   , const FPoint& mouse_position )
+auto closeComboBox ( FDropDownListBox* list_window
+                   , const FPoint& mouse_position ) -> bool
 {
   // Close the drop down list box
 

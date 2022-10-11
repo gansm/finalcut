@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2021 Markus Gans                                       *
+* Copyright 2019-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -39,40 +39,40 @@ namespace finalcut
 //----------------------------------------------------------------------
 auto FTermDebugData::getInstance() -> FTermDebugData&
 {
-  static const auto& debug_data = make_unique<FTermDebugData>();
+  static const auto& debug_data = std::make_unique<FTermDebugData>();
   return *debug_data;
 }
 
 //----------------------------------------------------------------------
-const FString& FTermDebugData::getAnswerbackString() &
+auto FTermDebugData::getAnswerbackString() & -> const FString&
 {
   static auto& term_detection = FTermDetection::getInstance();
   return term_detection.getAnswerbackString();
 }
 
 //----------------------------------------------------------------------
-const FString& FTermDebugData::getSecDAString() &
+auto FTermDebugData::getSecDAString() & -> const FString&
 {
   static auto& term_detection = FTermDetection::getInstance();
   return term_detection.getSecDAString();
 }
 
 //----------------------------------------------------------------------
-const FString& FTermDebugData::getTermType_256color() &
+auto FTermDebugData::getTermType_256color() & -> const FString&
 {
   static auto& term_detection = FTermDetection::getInstance();
   return term_detection.getTermType_256color();
 }
 
 //----------------------------------------------------------------------
-const FString& FTermDebugData::getTermType_Answerback() &
+auto FTermDebugData::getTermType_Answerback() & -> const FString&
 {
   static auto& term_detection = FTermDetection::getInstance();
   return term_detection.getTermType_Answerback();
 }
 
 //----------------------------------------------------------------------
-const FString& FTermDebugData::getTermType_SecDA() &
+auto FTermDebugData::getTermType_SecDA() & -> const FString&
 {
   static auto& term_detection = FTermDetection::getInstance();
   return term_detection.getTermType_SecDA();
@@ -80,7 +80,7 @@ const FString& FTermDebugData::getTermType_SecDA() &
 
 //----------------------------------------------------------------------
 #if defined(__linux__)
-int FTermDebugData::getFramebufferBpp()
+auto FTermDebugData::getFramebufferBpp() -> int
 {
   static auto& fterm_data = FTermData::getInstance();
   return fterm_data.getFramebufferBpp();

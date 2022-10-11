@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2021 Markus Gans                                      *
+* Copyright 2019-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -40,15 +40,15 @@ FSystemImpl::~FSystemImpl() noexcept = default;  // destructor
 
 // public methods of FSystemImpl
 //----------------------------------------------------------------------
-int FSystemImpl::getpwuid_r ( uid_t uid, struct passwd* pwd
-                            , char* buf, size_t buflen
-                            , struct passwd** result )
+auto FSystemImpl::getpwuid_r ( uid_t uid, struct passwd* pwd
+                             , char* buf, size_t buflen
+                             , struct passwd** result ) -> int
 {
   return ::getpwuid_r (uid, pwd, buf, buflen, result);
 }
 
 //----------------------------------------------------------------------
-char* FSystemImpl::realpath (const char* path, char* resolved_path)
+auto FSystemImpl::realpath (const char* path, char* resolved_path) -> char*
 {
   return ::realpath(path, resolved_path);
 }

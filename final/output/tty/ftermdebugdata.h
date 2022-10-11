@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2021 Markus Gans                                      *
+* Copyright 2018-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -53,19 +53,19 @@ class FTermDebugData final
     FTermDebugData() = default;
 
     // Accessors
-    static FString getClassName();
-    static auto    getInstance() -> FTermDebugData&;
-    const FString& getAnswerbackString() &;
-    const FString& getSecDAString() &;
-    const FString& getTermType_256color() &;
-    const FString& getTermType_Answerback() &;
-    const FString& getTermType_SecDA() &;
+    static auto getClassName() -> FString;
+    static auto getInstance() -> FTermDebugData&;
+    auto        getAnswerbackString() & -> const FString&;
+    auto        getSecDAString() & -> const FString&;
+    auto        getTermType_256color() & -> const FString&;
+    auto        getTermType_Answerback() & -> const FString&;
+    auto        getTermType_SecDA() & -> const FString&;
 #if defined(__linux__)
-    int            getFramebufferBpp();
+    auto        getFramebufferBpp() -> int;
 #endif
 };
 
-inline FString FTermDebugData::getClassName()
+inline auto FTermDebugData::getClassName() -> FString
 { return "FTermDebugData"; }
 
 }  // namespace finalcut

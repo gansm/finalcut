@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2021 Markus Gans                                      *
+* Copyright 2015-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -57,14 +57,14 @@ class emptyFString final
     // Constructors
     emptyFString() = default;
 
-    static FString getClassName()
+    static auto getClassName() -> FString
     {
       return "emptyFString";
     }
 
-    static const FString& get()
+    static auto get() -> const FString&
     {
-      static const auto& empty_string = make_unique<FString>("");
+      static const auto& empty_string = std::make_unique<FString>("");
       return *empty_string;
     }
 };

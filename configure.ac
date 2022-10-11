@@ -4,8 +4,8 @@
 
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT([finalcut], [0.8.0])
-AC_CONFIG_HEADER([config.h])
+AC_INIT([finalcut], [0.8.1])
+AC_CONFIG_HEADERS([config.h])
 AX_PREFIX_CONFIG_H([final/fconfig.h], [F])
 AC_CONFIG_SRCDIR([final/fobject.cpp])
 AC_USE_SYSTEM_EXTENSIONS
@@ -21,7 +21,6 @@ fi
 AC_PROG_CXX
 
 # Checks for header files.
-AC_HEADER_STDC
 AC_CHECK_HEADERS( \
 		 linux/fb.h \
 		 sys/io.h \
@@ -75,7 +74,7 @@ LT_OUTPUT
 ### This defines the version number of the installed .so files
 ### Update this value for every release!  (A:B:C will map to foo.so.(A-C).C.B)
 ### using libtool's versioning system.
-AC_SUBST(SO_VERSION, ["8:0:8"])
+AC_SUBST(SO_VERSION, ["8:1:8"])
 
 AC_SUBST([LIBTOOL_DEPS])
 
@@ -89,10 +88,10 @@ AC_CONFIG_FILES([Makefile
                  test/Makefile
                  finalcut.pc])
 
-# Check for C++11 support
-m4_ifdef([AX_CXX_COMPILE_STDCXX_11],
-         [AX_CXX_COMPILE_STDCXX_11([noext],[mandatory])],
-         [AC_MSG_ERROR([Macro AX_CXX_COMPILE_STDCXX_11 not found. Please install GNU autoconf-archive])])
+# Check for C++14 support
+m4_ifdef([AX_CXX_COMPILE_STDCXX_14],
+         [AX_CXX_COMPILE_STDCXX_14([noext],[mandatory])],
+         [AC_MSG_ERROR([Macro AX_CXX_COMPILE_STDCXX_14 not found. Please install GNU autoconf-archive])])
 
 # use GPM (General Purpose Mouse)
 AC_ARG_WITH([gpm],

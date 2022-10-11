@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2021 Markus Gans                                      *
+* Copyright 2018-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -58,13 +58,13 @@ namespace finalcut
 //----------------------------------------------------------------------
 auto FTermDetection::getInstance() -> FTermDetection&
 {
-  static const auto& term_detection = make_unique<FTermDetection>();
+  static const auto& term_detection = std::make_unique<FTermDetection>();
   return *term_detection;
 }
 
 //----------------------------------------------------------------------
 #if DEBUG
-const FString& FTermDetection::getAnswerbackString() const &
+auto FTermDetection::getAnswerbackString() const & -> const FString&
 {
   // Get the answerback message that was output after
   // sending the enquiry character (ENQ)
@@ -72,7 +72,7 @@ const FString& FTermDetection::getAnswerbackString() const &
 }
 
 //----------------------------------------------------------------------
-const FString& FTermDetection::getSecDAString() const &
+auto FTermDetection::getSecDAString() const & -> const FString&
 {
   // Get the secondary device attributes (SEC_DA)
   return sec_da;
@@ -136,7 +136,7 @@ void FTermDetection::getSystemTermType()
 }
 
 //----------------------------------------------------------------------
-bool FTermDetection::getTTYtype()
+auto FTermDetection::getTTYtype() -> bool
 {
   // Analyse /etc/ttytype and get the term name
   // ------------------------------------------
@@ -197,7 +197,7 @@ bool FTermDetection::getTTYtype()
 
 #if F_HAVE_GETTTYNAM
 //----------------------------------------------------------------------
-bool FTermDetection::getTTYSFileEntry()
+auto FTermDetection::getTTYSFileEntry() -> bool
 {
   // Analyse /etc/ttys and get the term name (used in BSD Unix)
 
@@ -215,7 +215,7 @@ bool FTermDetection::getTTYSFileEntry()
 
   if ( ttys_entryt )
   {
-    const char* type = ttys_entryt->ty_type;
+    const auto& type = ttys_entryt->ty_type;
 
     if ( type != nullptr )
     {
@@ -363,11 +363,9 @@ void FTermDetection::detectTerminal()
 }
 
 //----------------------------------------------------------------------
-FString FTermDetection::init_256colorTerminal()
+auto FTermDetection::init_256colorTerminal() -> FString
 {
-  if ( get256colorEnvString() )
-    color256 = true;
-  else if ( termtype.includes("256color") )
+  if ( get256colorEnvString() || termtype.includes("256color") )
     color256 = true;
   else
     color256 = false;
@@ -383,7 +381,7 @@ FString FTermDetection::init_256colorTerminal()
 }
 
 //----------------------------------------------------------------------
-bool FTermDetection::get256colorEnvString()
+auto FTermDetection::get256colorEnvString() -> bool
 {
   // Enable 256 color capabilities
   color_env.string1 = std::getenv("COLORTERM");
@@ -405,7 +403,7 @@ bool FTermDetection::get256colorEnvString()
 }
 
 //----------------------------------------------------------------------
-FString FTermDetection::termtype_256color_quirks()
+auto FTermDetection::termtype_256color_quirks() -> FString
 {
   FString new_termtype{};
   static auto& fterm_data = FTermData::getInstance();
@@ -460,7 +458,7 @@ FString FTermDetection::termtype_256color_quirks()
 }
 
 //----------------------------------------------------------------------
-FString FTermDetection::determineMaxColor (const FString& current_termtype)
+auto FTermDetection::determineMaxColor (const FString& current_termtype) -> FString
 {
   // Determine xterm maximum number of colors via OSC 4
 
@@ -500,13 +498,13 @@ FString FTermDetection::determineMaxColor (const FString& current_termtype)
 }
 
 //----------------------------------------------------------------------
-FString FTermDetection::getXTermColorName (FColor color) const
+auto FTermDetection::getXTermColorName (FColor color) const -> FString
 {
   FString color_str{""};
   std::array<char, 30> buf{};
   fd_set ifds{};
   struct timeval tv{};
-  const int stdin_no = FTermios::getStdIn();
+  const auto& stdin_no = FTermios::getStdIn();
 
   // get color
   auto index = uInt16(color);
@@ -515,7 +513,7 @@ FString FTermDetection::getXTermColorName (FColor color) const
   FD_ZERO(&ifds);
   FD_SET(stdin_no, &ifds);
   tv.tv_sec  = 0;
-  tv.tv_usec = 150000;  // 150 ms
+  tv.tv_usec = 150'000;  // 150 ms
 
   // read the terminal answer
   if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) < 1 )
@@ -556,7 +554,7 @@ FString FTermDetection::getXTermColorName (FColor color) const
 }
 
 //----------------------------------------------------------------------
-FString FTermDetection::parseAnswerbackMsg (const FString& current_termtype)
+auto FTermDetection::parseAnswerbackMsg (const FString& current_termtype) -> FString
 {
   FString new_termtype{current_termtype};
   static auto& keyboard = FKeyboard::getInstance();
@@ -590,19 +588,19 @@ FString FTermDetection::parseAnswerbackMsg (const FString& current_termtype)
 }
 
 //----------------------------------------------------------------------
-FString FTermDetection::getAnswerbackMsg() const
+auto FTermDetection::getAnswerbackMsg() const -> FString
 {
   FString answerback{""};
   fd_set ifds{};
   struct timeval tv{};
-  const int stdin_no = FTermios::getStdIn();
+  const auto& stdin_no = FTermios::getStdIn();
   // Send enquiry character
   std::putchar (ENQ[0]);
   std::fflush(stdout);
   FD_ZERO(&ifds);
   FD_SET(stdin_no, &ifds);
   tv.tv_sec  = 0;
-  tv.tv_usec = 150000;  // 150 ms
+  tv.tv_usec = 150'000;  // 150 ms
 
   // Read the answerback message
   if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) < 1 )
@@ -624,13 +622,13 @@ FString FTermDetection::getAnswerbackMsg() const
   while ( pos < temp.size() );
 
   if ( pos > 0 )
-    answerback = temp.data();
+    return temp.data();
 
   return answerback;
 }
 
 //----------------------------------------------------------------------
-FString FTermDetection::parseSecDA (const FString& current_termtype)
+auto FTermDetection::parseSecDA (const FString& current_termtype) -> FString
 {
   // The Linux console and older cygwin terminals knows no Sec_DA
 
@@ -650,8 +648,8 @@ FString FTermDetection::parseSecDA (const FString& current_termtype)
   // remove the last byte ("c")
   temp.remove(temp.getLength() - 1, 1);
   // split into components
-  const auto sec_da_components = temp.split(';');
-  const auto num_components = sec_da_components.size();
+  const auto& sec_da_components = temp.split(';');
+  const auto& num_components = sec_da_components.size();
 
   // The second device attribute (SEC_DA) always has 3 parameters,
   // otherwise it usually has a copy of the device attribute (primary DA)
@@ -670,7 +668,7 @@ FString FTermDetection::parseSecDA (const FString& current_termtype)
   // Read the terminal hardware option
   secondary_da.terminal_id_hardware = str2int(sec_da_components[2]);
 
-  FString new_termtype = secDA_Analysis(current_termtype);
+  const auto& new_termtype = secDA_Analysis(current_termtype);
 
 #if DEBUG
   if ( ! new_termtype.isEmpty() )
@@ -681,7 +679,7 @@ FString FTermDetection::parseSecDA (const FString& current_termtype)
 }
 
 //----------------------------------------------------------------------
-int FTermDetection::str2int (const FString& s) const
+auto FTermDetection::str2int (const FString& s) const -> int
 {
   // This is not a general string to integer conversion method.
   // It is only used in this class to convert the device attribute
@@ -711,15 +709,15 @@ int FTermDetection::str2int (const FString& s) const
 }
 
 //----------------------------------------------------------------------
-FString FTermDetection::getSecDA() const
+auto FTermDetection::getSecDA() const -> FString
 {
   FString sec_da_str{""};
 
   int a{0};
   int b{0};
   int c{0};
-  const int stdin_no{FTermios::getStdIn()};
-  const int stdout_no{FTermios::getStdOut()};
+  const auto& stdin_no{FTermios::getStdIn()};
+  const auto& stdout_no{FTermios::getStdOut()};
   fd_set ifds{};
   struct timeval tv{};
   const std::string SECDA{ESC "[>c"};
@@ -732,7 +730,7 @@ FString FTermDetection::getSecDA() const
   FD_ZERO(&ifds);
   FD_SET(stdin_no, &ifds);
   tv.tv_sec  = 0;
-  tv.tv_usec = 600000;  // 600 ms
+  tv.tv_usec = 600'000;  // 600 ms
 
   // Read the answer
   if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) < 1 )
@@ -761,7 +759,7 @@ FString FTermDetection::getSecDA() const
 }
 
 //----------------------------------------------------------------------
-FString FTermDetection::secDA_Analysis (const FString& current_termtype)
+auto FTermDetection::secDA_Analysis (const FString& current_termtype) -> FString
 {
   FString new_termtype{current_termtype};
 
@@ -840,7 +838,7 @@ FString FTermDetection::secDA_Analysis (const FString& current_termtype)
 }
 
 //----------------------------------------------------------------------
-inline FString FTermDetection::secDA_Analysis_0 (const FString& current_termtype) const
+inline auto FTermDetection::secDA_Analysis_0 (const FString& current_termtype) const -> FString
 {
   // Terminal ID 0 - DEC VT100
 
@@ -864,7 +862,7 @@ inline FString FTermDetection::secDA_Analysis_0 (const FString& current_termtype
 }
 
 //----------------------------------------------------------------------
-inline FString FTermDetection::secDA_Analysis_1 (const FString& current_termtype)
+inline auto FTermDetection::secDA_Analysis_1 (const FString& current_termtype) -> FString
 {
   // Terminal ID 1 - DEC VT220
 
@@ -880,7 +878,7 @@ inline FString FTermDetection::secDA_Analysis_1 (const FString& current_termtype
 }
 
 //----------------------------------------------------------------------
-inline FString FTermDetection::secDA_Analysis_24 (const FString& current_termtype)
+inline auto FTermDetection::secDA_Analysis_24 (const FString& current_termtype) -> FString
 {
   // Terminal ID 24 - DEC VT320
 
@@ -909,7 +907,7 @@ inline FString FTermDetection::secDA_Analysis_24 (const FString& current_termtyp
 }
 
 //----------------------------------------------------------------------
-inline FString FTermDetection::secDA_Analysis_32() const
+inline auto FTermDetection::secDA_Analysis_32() const -> FString
 {
   // Terminal ID 32 - Tera Term
 
@@ -919,7 +917,7 @@ inline FString FTermDetection::secDA_Analysis_32() const
 }
 
 //----------------------------------------------------------------------
-inline FString FTermDetection::secDA_Analysis_65 (const FString& current_termtype)
+inline auto FTermDetection::secDA_Analysis_65 (const FString& current_termtype) -> FString
 {
   // Terminal ID 65 - DEC VT525 and VTE >= 0.53.0
 
@@ -927,7 +925,7 @@ inline FString FTermDetection::secDA_Analysis_65 (const FString& current_termtyp
 }
 
 //----------------------------------------------------------------------
-inline FString FTermDetection::secDA_Analysis_67() const
+inline auto FTermDetection::secDA_Analysis_67() const -> FString
 {
   // Terminal ID 67 - cygwin
 
@@ -938,7 +936,7 @@ inline FString FTermDetection::secDA_Analysis_67() const
 }
 
 //----------------------------------------------------------------------
-inline FString FTermDetection::secDA_Analysis_77()
+inline auto FTermDetection::secDA_Analysis_77() -> FString
 {
   // Terminal ID 77 - mintty
 
@@ -950,7 +948,7 @@ inline FString FTermDetection::secDA_Analysis_77()
 }
 
 //----------------------------------------------------------------------
-inline FString FTermDetection::secDA_Analysis_82() const
+inline auto FTermDetection::secDA_Analysis_82() const -> FString
 {
   // Terminal ID 82 - rxvt
 
@@ -967,7 +965,7 @@ inline FString FTermDetection::secDA_Analysis_82() const
 }
 
 //----------------------------------------------------------------------
-inline FString FTermDetection::secDA_Analysis_83 (const FString& current_termtype) const
+inline auto FTermDetection::secDA_Analysis_83 (const FString& current_termtype) const -> FString
 {
   // Terminal ID 83 - screen
 
@@ -977,7 +975,7 @@ inline FString FTermDetection::secDA_Analysis_83 (const FString& current_termtyp
 }
 
 //----------------------------------------------------------------------
-inline FString FTermDetection::secDA_Analysis_84 (const FString& current_termtype) const
+inline auto FTermDetection::secDA_Analysis_84 (const FString& current_termtype) const -> FString
 {
   // Terminal ID 84 - tmux
 
@@ -988,7 +986,7 @@ inline FString FTermDetection::secDA_Analysis_84 (const FString& current_termtyp
 }
 
 //----------------------------------------------------------------------
-inline FString FTermDetection::secDA_Analysis_85() const
+inline auto FTermDetection::secDA_Analysis_85() const -> FString
 {
   // Terminal ID 85 - rxvt-unicode
 
@@ -1011,7 +1009,7 @@ inline FString FTermDetection::secDA_Analysis_85() const
 }
 
 //----------------------------------------------------------------------
-inline FString FTermDetection::secDA_Analysis_vte (const FString& current_termtype)
+inline auto FTermDetection::secDA_Analysis_vte (const FString& current_termtype) -> FString
 {
   // VTE terminal library
   // (Since VTE 0.53.0 the terminal ID has changed from 1 to 65)
@@ -1025,7 +1023,7 @@ inline FString FTermDetection::secDA_Analysis_vte (const FString& current_termty
     // Each gnome-terminal should be able to use 256 colors
     color256 = true;
     new_termtype = "gnome-256color";
-    auto id = secondary_da.terminal_id_version;
+    const auto& id = secondary_da.terminal_id_version;
     fterm_data.setGnomeTerminalID(id);
 
     // VTE 0.40.0 or higher and gnome-terminal 3.16 or higher
@@ -1037,7 +1035,7 @@ inline FString FTermDetection::secDA_Analysis_vte (const FString& current_termty
 }
 
 //----------------------------------------------------------------------
-inline FString FTermDetection::secDA_Analysis_kitty (const FString& current_termtype)
+inline auto FTermDetection::secDA_Analysis_kitty (const FString& current_termtype) -> FString
 {
   // kitty
 
@@ -1048,8 +1046,8 @@ inline FString FTermDetection::secDA_Analysis_kitty (const FString& current_term
     // All kitty terminals can use 256 colors
     color256 = true;
     new_termtype = "xterm-kitty";
-    int n1 = secondary_da.terminal_id_version - 4000;
-    int n2 = secondary_da.terminal_id_hardware;
+    const auto& n1 = secondary_da.terminal_id_version - 4000;
+    const auto& n2 = secondary_da.terminal_id_hardware;
     FTermData::kittyVersion kitty_version { n1, n2 };
     FTermData::getInstance().setKittyVersion(kitty_version);
   }

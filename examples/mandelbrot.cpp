@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2021 Markus Gans                                      *
+* Copyright 2015-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -75,8 +75,8 @@ void Mandelbrot::draw()
 
   const int xoffset{2};
   const int yoffset{2};
-  const auto Cols = int(getClientWidth());
-  const auto Lines = int(getClientHeight());
+  const auto& Cols = int(getClientWidth());
+  const auto& Lines = int(getClientHeight());
   int current_line{0};
 
   if ( Cols < 2 || Lines < 2 )
@@ -159,7 +159,7 @@ void Mandelbrot::adjustSize()
 //----------------------------------------------------------------------
 //                               main part
 //----------------------------------------------------------------------
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   // Create the application object
   finalcut::FApplication app{argc, argv};

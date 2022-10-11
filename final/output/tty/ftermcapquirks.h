@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2021 Markus Gans                                      *
+* Copyright 2018-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -51,7 +51,7 @@ class FTermcapQuirks final
     FTermcapQuirks() = default;
 
     // Accessor
-    FString getClassName() const;
+    auto getClassName() const -> FString;
 
     // Methods
     static void terminalFixup();
@@ -81,7 +81,7 @@ class FTermcapQuirks final
 
 // FTermcapQuirks inline functions
 //----------------------------------------------------------------------
-inline FString FTermcapQuirks::getClassName() const
+inline auto FTermcapQuirks::getClassName() const -> FString
 { return "FTermcapQuirks"; }
 
 }  // namespace finalcut

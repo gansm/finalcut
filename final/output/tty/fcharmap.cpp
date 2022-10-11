@@ -32,46 +32,46 @@ namespace finalcut
 //----------------------------------------------------------------------
 auto FCharMap::getInstance() -> FCharMap&
 {
-  static const auto& char_map = make_unique<FCharMap>();
+  static const auto& char_map = std::make_unique<FCharMap>();
   return *char_map;
 }
 
 //----------------------------------------------------------------------
-const wchar_t& FCharMap::getCharacter ( const CharEncodeMap& char_enc
-                                , const Encoding& enc )
+auto FCharMap::getCharacter ( const CharEncodeMap& char_enc
+                            , const Encoding& enc ) -> const wchar_t&
 {
   const auto array = reinterpret_cast<const wchar_t*>(&char_enc);
   return array[std::size_t(enc)];
 }
 
 //----------------------------------------------------------------------
-wchar_t& FCharMap::setCharacter ( CharEncodeMap& char_enc
-                                , const Encoding& enc )
+auto FCharMap::setCharacter ( CharEncodeMap& char_enc
+                            , const Encoding& enc ) -> wchar_t&
 {
   const auto array = reinterpret_cast<wchar_t*>(&char_enc);
   return array[std::size_t(enc)];
 }
 
 //----------------------------------------------------------------------
-FCharMap::CharEncodeType& FCharMap::getCharEncodeMap()
+auto FCharMap::getCharEncodeMap() -> CharEncodeType&
 {
   return character;
 }
 
 //----------------------------------------------------------------------
-const FCharMap::DECGraphicsType& FCharMap::getDECSpecialGraphics()
+auto FCharMap::getDECSpecialGraphics() -> const DECGraphicsType&
 {
   return dec_special_graphics;
 }
 
 //----------------------------------------------------------------------
-const FCharMap::Cp437UcsType& FCharMap::getCP437UCSMap()
+auto FCharMap::getCP437UCSMap() -> const Cp437UcsType&
 {
   return cp437_ucs;
 }
 
 //----------------------------------------------------------------------
-const FCharMap::HalfFullWidthType& FCharMap::getHalfFullWidthMap()
+auto FCharMap::getHalfFullWidthMap() -> const HalfFullWidthType&
 {
   return halfwidth_fullwidth;
 }

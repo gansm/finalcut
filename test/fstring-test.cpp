@@ -121,6 +121,7 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     void includesTest();
     void controlCodesTest();
     void caseCompareTest();
+    void hashTest();
 
   private:
     finalcut::FString* s{nullptr};
@@ -162,6 +163,7 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (includesTest);
     CPPUNIT_TEST (controlCodesTest);
     CPPUNIT_TEST (caseCompareTest);
+    CPPUNIT_TEST (hashTest);
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
@@ -341,9 +343,9 @@ void FStringTest::moveConstructorTest()
   CPPUNIT_ASSERT_WCSTRING ( s2.wc_str(), L"abc" );
   CPPUNIT_ASSERT ( s2.getLength() == 3 );
   CPPUNIT_ASSERT ( s2.capacity() >= 3 );
-  CPPUNIT_ASSERT ( s1.isEmpty() );
-  CPPUNIT_ASSERT ( s1.getLength() == 0 );
-  CPPUNIT_ASSERT ( s1.capacity() < std::wstring().max_size() );
+  CPPUNIT_ASSERT ( s1.isEmpty() );                               // s1 is used after move
+  CPPUNIT_ASSERT ( s1.getLength() == 0 );                        // s1 is used after move
+  CPPUNIT_ASSERT ( s1.capacity() < std::wstring().max_size() );  // s1 is used after move
 }
 
 //----------------------------------------------------------------------
@@ -488,9 +490,9 @@ void FStringTest::assignmentTest()
   CPPUNIT_ASSERT ( s11 == L"abc" );
   CPPUNIT_ASSERT ( s11.getLength() == 3 );
   CPPUNIT_ASSERT ( s11.capacity() >= 3 );
-  CPPUNIT_ASSERT ( s10.isEmpty() );
-  CPPUNIT_ASSERT ( s10.getLength() == 0 );
-  CPPUNIT_ASSERT ( s10.capacity() < std::wstring().max_size() );
+  CPPUNIT_ASSERT ( s10.isEmpty() );                               // s10 is used after move
+  CPPUNIT_ASSERT ( s10.getLength() == 0 );                        // s10 is used after move
+  CPPUNIT_ASSERT ( s10.capacity() < std::wstring().max_size() );  // s10 is used after move
 }
 
 //----------------------------------------------------------------------
@@ -661,6 +663,20 @@ void FStringTest::equalTest()
   CPPUNIT_ASSERT ( s1.size() == 6 );
   CPPUNIT_ASSERT ( *(s1.c_str() + s1.size()) == '\0' );
 
+  // finalcut::FString == std::string, char[], char* wchar_t[], wchar_t*
+  CPPUNIT_ASSERT ( fs == s1 );
+  CPPUNIT_ASSERT ( fs == "string" );
+  CPPUNIT_ASSERT ( fs == L"string" );
+  const char* cstring = "string";
+  const wchar_t* wcstring = L"string";
+  CPPUNIT_ASSERT ( fs == cstring );
+  CPPUNIT_ASSERT ( fs == wcstring );
+  const finalcut::FString _null_str1{};
+  cstring = nullptr;
+  wcstring = nullptr;
+  CPPUNIT_ASSERT ( _null_str1 == cstring );
+  CPPUNIT_ASSERT ( _null_str1 == wcstring );
+
   // std::wstring -> finalcut::FString -> std::wstring
   const std::wstring ws1 = L"wide string";
   fs = ws1;
@@ -710,6 +726,10 @@ void FStringTest::equalTest()
   CPPUNIT_ASSERT ( ! (str == null_str2) );
   CPPUNIT_ASSERT ( ! (null_str1 == str) );
   CPPUNIT_ASSERT ( null_str1 == null_str2 );
+  cstring = nullptr;
+  wcstring = nullptr;
+  CPPUNIT_ASSERT ( _null_str1 == cstring );
+  CPPUNIT_ASSERT ( _null_str1 == wcstring );
   CPPUNIT_ASSERT_CSTRING ( null_str1.c_str(), null_str2.c_str() );
   CPPUNIT_ASSERT_WCSTRING ( null_str1.wc_str(), null_str2.wc_str() );
 
@@ -727,6 +747,19 @@ void FStringTest::notEqualTest()
   CPPUNIT_ASSERT ( ch != one_char.c_str()[0] );
   CPPUNIT_ASSERT ( one_char.getLength() == 1 );
   CPPUNIT_ASSERT ( one_char.capacity() >= 1 );
+
+  // finalcut::FString != std::string, char[], char* wchar_t[], wchar_t*
+  CPPUNIT_ASSERT ( one_char != std::string("!") );
+  CPPUNIT_ASSERT ( one_char != "!" );
+  CPPUNIT_ASSERT ( one_char != L"!" );
+  const char* cstring = "!";
+  const wchar_t* wcstring = L"!";
+  CPPUNIT_ASSERT ( one_char != cstring );
+  CPPUNIT_ASSERT ( one_char != wcstring );
+  cstring = nullptr;
+  wcstring = nullptr;
+  CPPUNIT_ASSERT ( one_char != cstring );
+  CPPUNIT_ASSERT ( one_char != wcstring );
 
   constexpr wchar_t wch = L'_';
   CPPUNIT_ASSERT ( one_char != wch );
@@ -774,6 +807,25 @@ void FStringTest::lessEqualTest()
 
   constexpr wchar_t wch = L'z';
   CPPUNIT_ASSERT ( one_char <= wch );
+  // finalcut::FString <= std::string, char[], char* wchar_t[], wchar_t*
+  CPPUNIT_ASSERT ( one_char <= std::string("x") );
+  CPPUNIT_ASSERT ( one_char <= std::string("y") );
+  CPPUNIT_ASSERT ( one_char <= "x" );
+  CPPUNIT_ASSERT ( one_char <= "y" );
+  CPPUNIT_ASSERT ( one_char <= L"x" );
+  CPPUNIT_ASSERT ( one_char <= L"y" );
+  const char* cstring = "x";
+  const wchar_t* wcstring = L"x";
+  CPPUNIT_ASSERT ( one_char <= cstring );
+  CPPUNIT_ASSERT ( one_char <= wcstring );
+  cstring = "y";
+  wcstring = L"y";
+  CPPUNIT_ASSERT ( one_char <= cstring );
+  CPPUNIT_ASSERT ( one_char <= wcstring );
+  cstring = nullptr;
+  wcstring = nullptr;
+  CPPUNIT_ASSERT ( ! (one_char <= cstring) );
+  CPPUNIT_ASSERT ( ! (one_char <= wcstring) );
 
   const finalcut::FString s1 = L"xyz";
   const finalcut::FString s2 = L"xyz";
@@ -819,6 +871,18 @@ void FStringTest::lessTest()
 
   constexpr wchar_t wch = L'z';
   CPPUNIT_ASSERT ( one_char < wch );
+  // finalcut::FString < std::string, char[], char* wchar_t[], wchar_t*
+  CPPUNIT_ASSERT ( one_char < std::string("y") );
+  CPPUNIT_ASSERT ( one_char < "y" );
+  CPPUNIT_ASSERT ( one_char < L"y" );
+  const char* cstring = "y";
+  const wchar_t* wcstring = L"y";
+  CPPUNIT_ASSERT ( one_char < cstring );
+  CPPUNIT_ASSERT ( one_char < wcstring );
+  cstring = nullptr;
+  wcstring = nullptr;
+  CPPUNIT_ASSERT ( ! (one_char < cstring) );
+  CPPUNIT_ASSERT ( ! (one_char < wcstring) );
 
   const finalcut::FString s1 = L"xyz";
   const finalcut::FString s2 = L"xzz";
@@ -852,6 +916,25 @@ void FStringTest::greaterEqualTest()
 
   constexpr wchar_t wch = L'x';
   CPPUNIT_ASSERT ( one_char >= wch );
+  // finalcut::FString >= std::string, char[], char* wchar_t[], wchar_t*
+  CPPUNIT_ASSERT ( one_char >= std::string("w") );
+  CPPUNIT_ASSERT ( one_char >= std::string("x") );
+  CPPUNIT_ASSERT ( one_char >= "w" );
+  CPPUNIT_ASSERT ( one_char >= "x" );
+  CPPUNIT_ASSERT ( one_char >= L"w" );
+  CPPUNIT_ASSERT ( one_char >= L"x" );
+  const char* cstring = "w";
+  const wchar_t* wcstring = L"w";
+  CPPUNIT_ASSERT ( one_char >= cstring );
+  CPPUNIT_ASSERT ( one_char >= wcstring );
+  cstring = "x";
+  wcstring = L"x";
+  CPPUNIT_ASSERT ( one_char >= cstring );
+  CPPUNIT_ASSERT ( one_char >= wcstring );
+  cstring = nullptr;
+  wcstring = nullptr;
+  CPPUNIT_ASSERT ( one_char >= cstring );
+  CPPUNIT_ASSERT ( one_char >= wcstring );
 
   const finalcut::FString s1 = L"xyz";
   const finalcut::FString s2 = L"xyz";
@@ -897,6 +980,18 @@ void FStringTest::greaterTest()
 
   constexpr wchar_t wch = L'w';
   CPPUNIT_ASSERT ( one_char > wch );
+  // finalcut::FString > std::string, char[], char* wchar_t[], wchar_t*
+  CPPUNIT_ASSERT ( one_char > std::string("w") );
+  CPPUNIT_ASSERT ( one_char > "w" );
+  CPPUNIT_ASSERT ( one_char > L"w" );
+  const char* cstring = "w";
+  const wchar_t* wcstring = L"w";
+  CPPUNIT_ASSERT ( one_char > cstring );
+  CPPUNIT_ASSERT ( one_char > wcstring );
+  cstring = nullptr;
+  wcstring = nullptr;
+  CPPUNIT_ASSERT ( one_char > cstring );
+  CPPUNIT_ASSERT ( one_char > wcstring );
 
   const finalcut::FString s1 = L"xyz";
   const finalcut::FString s2 = L"xww";
@@ -1379,9 +1474,9 @@ void FStringTest::convertFromNumberTest()
   constexpr double      n16 =  1234.5678;
   constexpr lDouble     n17 =  12345.67890L;
 
-  CPPUNIT_ASSERT ( finalcut::getPrecision<float>() == FLT_DIG );
-  CPPUNIT_ASSERT ( finalcut::getPrecision<double>() == DBL_DIG );
-  CPPUNIT_ASSERT ( finalcut::getPrecision<lDouble>() == LDBL_DIG );
+  CPPUNIT_ASSERT ( int(finalcut::getPrecision<float>()) == FLT_DIG );
+  CPPUNIT_ASSERT ( int(finalcut::getPrecision<double>()) == DBL_DIG );
+  CPPUNIT_ASSERT ( int(finalcut::getPrecision<lDouble>()) == LDBL_DIG );
 
   CPPUNIT_ASSERT ( finalcut::FString().setNumber(n1) == "-12" );
   CPPUNIT_ASSERT ( finalcut::FString().setNumber(n2) == "12" );
@@ -2325,6 +2420,39 @@ void FStringTest::caseCompareTest()
   CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"🔥 Fire", L"🔥 fire") == 0 );
   CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"🔥🔥 Fire", L"🔥 fire") > 0 );
   CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"🔥 Fire", L"🔥🔥 fire") < 0 );
+}
+
+//----------------------------------------------------------------------
+void FStringTest::hashTest()
+{
+  std::wstring ws = L"Coding for weeks can save hours of planning.";
+  finalcut::FString fs("Coding for weeks can save hours of planning.");
+  CPPUNIT_ASSERT ( std::hash<std::wstring>{}(ws) == std::hash<finalcut::FString>{}(fs) );
+  fs.setNumber(512);
+  CPPUNIT_ASSERT ( std::hash<std::wstring>{}(ws) != std::hash<finalcut::FString>{}(fs) );
+  ws.assign(L"256");
+  CPPUNIT_ASSERT ( std::hash<std::wstring>{}(ws) != std::hash<finalcut::FString>{}(fs) );
+  ws.assign(L"512");
+  CPPUNIT_ASSERT ( std::hash<std::wstring>{}(ws) == std::hash<finalcut::FString>{}(fs) );
+  fs.setString(L"FINAL CUT");
+  ws.assign(L"FINAL CUT");
+  CPPUNIT_ASSERT ( std::hash<std::wstring>{}(ws) == std::hash<finalcut::FString>{}(fs) );
+  fs << " widget toolkit";
+  CPPUNIT_ASSERT ( std::hash<std::wstring>{}(ws) != std::hash<finalcut::FString>{}(fs) );
+  ws.append(L" widget toolkit");
+  CPPUNIT_ASSERT ( std::hash<std::wstring>{}(ws) == std::hash<finalcut::FString>{}(fs) );
+  std::wstring lorem_ipsum =
+      L"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam "
+      L"nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam "
+      L"erat, sed diam voluptua. At vero eos et accusam et justo duo dolores "
+      L"et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est "
+      L"Lorem ipsum dolor sit amet.";
+  CPPUNIT_ASSERT ( std::hash<std::wstring>{}(lorem_ipsum) != std::hash<finalcut::FString>{}(fs) );
+  fs.setString(lorem_ipsum);
+  CPPUNIT_ASSERT ( std::hash<std::wstring>{}(lorem_ipsum) == std::hash<finalcut::FString>{}(fs) );
+  ws.assign(L"✂️ 𝓕𝒾𝓃𝒶𝓁 𝓒𝓊𝓉");
+  fs.setString("✂️ 𝓕𝒾𝓃𝒶𝓁 𝓒𝓊𝓉");
+  CPPUNIT_ASSERT ( std::hash<std::wstring>{}(ws) == std::hash<finalcut::FString>{}(fs) );
 }
 
 // Put the test suite in the registry

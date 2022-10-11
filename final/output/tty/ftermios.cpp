@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2021 Markus Gans                                      *
+* Copyright 2018-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -74,7 +74,7 @@ void FTermios::init()
 }
 
 //----------------------------------------------------------------------
-termios FTermios::getTTY()
+auto FTermios::getTTY() -> termios
 {
   struct termios t{};
 
@@ -174,7 +174,7 @@ void FTermios::unsetCaptureSendCharacters()
 }
 
 //----------------------------------------------------------------------
-bool FTermios::setRawMode (bool enable)
+auto FTermios::setRawMode (bool enable) -> bool
 {
   // set + unset flags for raw mode
   if ( raw_mode == enable )
@@ -222,7 +222,7 @@ bool FTermios::setRawMode (bool enable)
 }
 
 //----------------------------------------------------------------------
-uInt FTermios::getBaudRate()
+auto FTermios::getBaudRate() -> uInt
 {
   std::unordered_map<speed_t, uInt> outspeed;
   outspeed[B0]      = 0;       // hang up

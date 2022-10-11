@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2021 Markus Gans                                      *
+* Copyright 2014-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -35,7 +35,7 @@ namespace finalcut
 
 // public methods of FSize
 //----------------------------------------------------------------------
-FSize& FSize::operator += (const FSize& s)
+auto FSize::operator += (const FSize& s) -> FSize&
 {
   constexpr std::size_t max = std::numeric_limits<std::size_t>::max();
   width = ( width < max - s.width) ? width + s.width : max;
@@ -44,7 +44,7 @@ FSize& FSize::operator += (const FSize& s)
 }
 
 //----------------------------------------------------------------------
-FSize& FSize::operator -= (const FSize& s)
+auto FSize::operator -= (const FSize& s) -> FSize&
 {
   width = ( width >= s.width ) ? width - s.width : 0;
   height = ( height >= s.height ) ? height - s.height : 0;
@@ -78,7 +78,7 @@ void FSize::setSize (std::size_t w, std::size_t h) noexcept
 }
 
 //----------------------------------------------------------------------
-bool FSize::isEmpty() const noexcept
+auto FSize::isEmpty() const noexcept -> bool
 {
   return width == 0 && height == 0;
 }
@@ -115,14 +115,14 @@ void FSize::scaleBy (const FPoint& d)
 
 // FSize non-member operators
 //----------------------------------------------------------------------
-std::ostream& operator << (std::ostream& outstr, const FSize& s)
+auto operator << (std::ostream& outstr, const FSize& s) -> std::ostream&
 {
   outstr << s.width << " " << s.height;
   return outstr;
 }
 
 //----------------------------------------------------------------------
-std::istream& operator >> (std::istream& instr, FSize& s)
+auto operator >> (std::istream& instr, FSize& s) -> std::istream&
 {
   std::size_t w;
   std::size_t h;

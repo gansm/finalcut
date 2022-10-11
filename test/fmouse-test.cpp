@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2021 Markus Gans                                      *
+* Copyright 2018-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -40,7 +40,7 @@ namespace test
 class FMouse_protected : public finalcut::FMouse
 {
   public:
-    bool hasData() noexcept override
+    auto hasData() noexcept -> bool override
     { return true; }
 
     void setRawData (finalcut::FKeyboard::keybuffer&) noexcept override
@@ -49,27 +49,27 @@ class FMouse_protected : public finalcut::FMouse
     void processEvent (const TimeValue&) override
     { }
 
-    uInt16 getMaxWidth() noexcept
+    auto getMaxWidth() noexcept -> uInt16
     {
       return finalcut::FMouse::getMaxWidth();
     }
 
-    uInt16 getMaxHeight() noexcept
+    auto getMaxHeight() noexcept -> uInt16
     {
       return finalcut::FMouse::getMaxHeight();
     }
 
-    const finalcut::FPoint& getNewMousePosition() const noexcept
+    auto getNewMousePosition() const noexcept -> const finalcut::FPoint&
     {
       return finalcut::FMouse::getNewPos();
     }
 
-    uInt64 getDblclickInterval() noexcept
+    auto getDblclickInterval() noexcept -> uInt64
     {
       return finalcut::FMouse::getDblclickInterval();
     }
 
-    bool isDblclickTimeout (const TimeValue& t)
+    auto isDblclickTimeout (const TimeValue& t) -> bool
     {
       return finalcut::FMouse::isDblclickTimeout(t);
     }
@@ -101,6 +101,8 @@ class FMouseTest : public CPPUNIT_NS::TestFixture
     void mouseControlTest();
 
   private:
+    auto insertData (std::initializer_list<char>) -> finalcut::FKeyboard::keybuffer;
+
     // Adds code needed to register the test suite
     CPPUNIT_TEST_SUITE (FMouseTest);
 
@@ -265,12 +267,12 @@ void FMouseTest::x11MouseTest()
   CPPUNIT_ASSERT ( x11_mouse.getMouseTypeID() == finalcut::FMouse::MouseType::X11 );
   CPPUNIT_ASSERT ( ! x11_mouse.hasData() );
 
-  finalcut::FKeyboard::keybuffer rawdata1 = \
-      { 0x1b, '[', 'M', 0x23, 0x50, 0x32, 0x40, 0x40 };
+  auto rawdata1 = insertData ({ 0x1b, '[', 'M', 0x23, 0x50, 0x32, 0x40, 0x40 });
   x11_mouse.setRawData (rawdata1);
   CPPUNIT_ASSERT ( x11_mouse.hasData() );
   CPPUNIT_ASSERT ( x11_mouse.hasUnprocessedInput() );
-  CPPUNIT_ASSERT ( std::strcmp(rawdata1, "@@") == 0 );
+  CPPUNIT_ASSERT ( rawdata1.getSize() == 2 );
+  CPPUNIT_ASSERT ( rawdata1.strncmp_front("@@", 2) );
 
   auto tv = finalcut::FObject::getCurrentTime();
   x11_mouse.processEvent (tv);
@@ -292,15 +294,13 @@ void FMouseTest::x11MouseTest()
   CPPUNIT_ASSERT ( ! x11_mouse.isMoved() );
 
   // The same input again
-  finalcut::FKeyboard::keybuffer raw = \
-      { 0x1b, '[', 'M', 0x23, 0x50, 0x32 };
+  auto raw = insertData ({ 0x1b, '[', 'M', 0x23, 0x50, 0x32 });
   x11_mouse.setRawData (raw);
   x11_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! x11_mouse.hasEvent() );
 
   // Left mouse button pressed
-  finalcut::FKeyboard::keybuffer rawdata2 = \
-      { 0x1b, '[', 'M', 0x20, 0x21, 0x21 };
+  auto rawdata2 = insertData ({ 0x1b, '[', 'M', 0x20, 0x21, 0x21 });
   x11_mouse.setRawData (rawdata2);
   CPPUNIT_ASSERT ( x11_mouse.hasData() );
   CPPUNIT_ASSERT ( ! x11_mouse.hasUnprocessedInput() );
@@ -323,8 +323,7 @@ void FMouseTest::x11MouseTest()
   CPPUNIT_ASSERT ( ! x11_mouse.isMoved() );
 
   // Left mouse button released
-  finalcut::FKeyboard::keybuffer rawdata3 = \
-      { 0x1b, '[', 'M', 0x23, 0x21, 0x21 };
+  auto rawdata3 = insertData ({ 0x1b, '[', 'M', 0x23, 0x21, 0x21 });
   x11_mouse.setRawData (rawdata3);
 
   CPPUNIT_ASSERT ( x11_mouse.hasData() );
@@ -348,8 +347,7 @@ void FMouseTest::x11MouseTest()
   CPPUNIT_ASSERT ( ! x11_mouse.isMoved() );
 
   // Left mouse button pressed again (double click)
-  finalcut::FKeyboard::keybuffer rawdata4 = \
-      { 0x1b, '[', 'M', 0x20, 0x21, 0x21 };
+  auto rawdata4 = insertData ({ 0x1b, '[', 'M', 0x20, 0x21, 0x21 });
   x11_mouse.setRawData (rawdata4);
 
   CPPUNIT_ASSERT ( x11_mouse.hasData() );
@@ -375,9 +373,8 @@ void FMouseTest::x11MouseTest()
 
 
   // Middle mouse button
-  finalcut::FKeyboard::keybuffer rawdata5 = \
-      { 0x1b, '[', 'M', 0x21, 0x21, 0x21
-      , 0x1b, '[', 'M', 0x23, 0x21, 0x21 };
+  auto rawdata5 = insertData ({ 0x1b, '[', 'M', 0x21, 0x21, 0x21
+                              , 0x1b, '[', 'M', 0x23, 0x21, 0x21 });
   x11_mouse.setRawData (rawdata5);
 
   CPPUNIT_ASSERT ( x11_mouse.hasData() );
@@ -408,9 +405,8 @@ void FMouseTest::x11MouseTest()
   CPPUNIT_ASSERT ( x11_mouse.isMiddleButtonReleased() );
 
   // Right mouse button
-  finalcut::FKeyboard::keybuffer rawdata6 = \
-      { 0x1b, '[', 'M', 0x22, 0x21, 0x21
-      , 0x1b, '[', 'M', 0x23, 0x21, 0x21 };
+  auto rawdata6 = insertData ({ 0x1b, '[', 'M', 0x22, 0x21, 0x21
+                              , 0x1b, '[', 'M', 0x23, 0x21, 0x21 });
   x11_mouse.setRawData (rawdata6);
 
   CPPUNIT_ASSERT ( x11_mouse.hasData() );
@@ -441,9 +437,8 @@ void FMouseTest::x11MouseTest()
   CPPUNIT_ASSERT ( x11_mouse.isRightButtonReleased() );
 
   // Mouse wheel
-  finalcut::FKeyboard::keybuffer rawdata7 = \
-      { 0x1b, '[', 'M', 0x60, 0x70, 0x39
-      , 0x1b, '[', 'M', 0x61, 0x70, 0x39 };
+  auto rawdata7 = insertData ({ 0x1b, '[', 'M', 0x60, 0x70, 0x39
+                              , 0x1b, '[', 'M', 0x61, 0x70, 0x39 });
   x11_mouse.setRawData (rawdata7);
 
   CPPUNIT_ASSERT ( x11_mouse.hasData() );
@@ -473,10 +468,9 @@ void FMouseTest::x11MouseTest()
   CPPUNIT_ASSERT ( x11_mouse.isWheelDown() );
 
   // Mouse move
-  finalcut::FKeyboard::keybuffer rawdata8 = \
-      { 0x1b, '[', 'M', 0x20, 0x21, 0x21
-      , 0x1b, '[', 'M', 0x40, 0x23, 0x25
-      , 0x1b, '[', 'M', 0x23, 0x23, 0x25 };
+  auto rawdata8 = insertData ({ 0x1b, '[', 'M', 0x20, 0x21, 0x21
+                              , 0x1b, '[', 'M', 0x40, 0x23, 0x25
+                              , 0x1b, '[', 'M', 0x23, 0x23, 0x25 });
   x11_mouse.setRawData (rawdata8);
 
   CPPUNIT_ASSERT ( x11_mouse.hasData() );
@@ -511,11 +505,10 @@ void FMouseTest::x11MouseTest()
   CPPUNIT_ASSERT ( ! x11_mouse.isMoved() );
 
   // Mouse + keyboard modifier key
-  finalcut::FKeyboard::keybuffer rawdata9 = \
-      { 0x1b, '[', 'M', 0x24, 0x30, 0x40
-      , 0x1b, '[', 'M', 0x28, 0x30, 0x40
-      , 0x1b, '[', 'M', 0x30, 0x30, 0x40
-      , 0x1b, '[', 'M', 0x3c, 0x30, 0x40 };
+  auto rawdata9 = insertData ({ 0x1b, '[', 'M', 0x24, 0x30, 0x40
+                              , 0x1b, '[', 'M', 0x28, 0x30, 0x40
+                              , 0x1b, '[', 'M', 0x30, 0x30, 0x40
+                              , 0x1b, '[', 'M', 0x3c, 0x30, 0x40 });
   x11_mouse.setRawData (rawdata9);
 
   CPPUNIT_ASSERT ( x11_mouse.hasData() );
@@ -561,8 +554,7 @@ void FMouseTest::x11MouseTest()
   CPPUNIT_ASSERT ( x11_mouse.isMetaKeyPressed() );
 
   // Clear event test
-  finalcut::FKeyboard::keybuffer rawdata10 = \
-      { 0x1b, '[', 'M', 0x20, 0x7f, 0x3f };
+  auto rawdata10 = insertData ({ 0x1b, '[', 'M', 0x20, 0x7f, 0x3f });
   x11_mouse.setRawData (rawdata10);
   CPPUNIT_ASSERT ( x11_mouse.hasData() );
   x11_mouse.processEvent (tv);
@@ -579,13 +571,13 @@ void FMouseTest::sgrMouseTest()
   CPPUNIT_ASSERT ( ! sgr_mouse.hasData() );
 
   // Left mouse button pressed
-  finalcut::FKeyboard::keybuffer rawdata1 = \
-      { 0x1b, '[', '<', '0', ';', '7'
-      , '3', ';', '4', 'M', '@', '@' };
+  auto rawdata1 = insertData ({ 0x1b, '[', '<', '0', ';', '7'
+                              , '3', ';', '4', 'M', '@', '@' });
   sgr_mouse.setRawData (rawdata1);
   CPPUNIT_ASSERT ( sgr_mouse.hasData() );
   CPPUNIT_ASSERT ( sgr_mouse.hasUnprocessedInput() );
-  CPPUNIT_ASSERT ( std::strcmp(rawdata1, "@@") == 0 );
+  CPPUNIT_ASSERT ( rawdata1.getSize() == 2 );
+  CPPUNIT_ASSERT ( rawdata1.strncmp_front("@@", 2) );
 
   auto tv = finalcut::FObject::getCurrentTime();
   sgr_mouse.processEvent (tv);
@@ -607,15 +599,13 @@ void FMouseTest::sgrMouseTest()
   CPPUNIT_ASSERT ( ! sgr_mouse.isMoved() );
 
   // The same input again
-  finalcut::FKeyboard::keybuffer raw = \
-      { 0x1b, '[', '<', '0', ';', '7', '3', ';', '4', 'M' };
+  auto raw = insertData ({ 0x1b, '[', '<', '0', ';', '7', '3', ';', '4', 'M' });
   sgr_mouse.setRawData (raw);
   sgr_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! sgr_mouse.hasEvent() );
 
   // Left mouse button released
-  finalcut::FKeyboard::keybuffer rawdata2 = \
-      { 0x1b, '[', '<', '0', ';', '7', '3', ';', '4', 'm' };
+  auto rawdata2 = insertData ({ 0x1b, '[', '<', '0', ';', '7', '3', ';', '4', 'm' });
   sgr_mouse.setRawData (rawdata2);
 
   CPPUNIT_ASSERT ( sgr_mouse.hasData() );
@@ -639,8 +629,7 @@ void FMouseTest::sgrMouseTest()
   CPPUNIT_ASSERT ( ! sgr_mouse.isMoved() );
 
   // Left mouse button pressed again (double click)
-  finalcut::FKeyboard::keybuffer rawdata4 = \
-      { 0x1b, '[', '<', '0', ';', '7', '3', ';', '4', 'M' };
+  auto rawdata4 = insertData ({ 0x1b, '[', '<', '0', ';', '7', '3', ';', '4', 'M' });
   sgr_mouse.setRawData (rawdata4);
 
   CPPUNIT_ASSERT ( sgr_mouse.hasData() );
@@ -665,9 +654,8 @@ void FMouseTest::sgrMouseTest()
   CPPUNIT_ASSERT ( ! sgr_mouse.isMoved() );
 
   // Middle mouse button
-  finalcut::FKeyboard::keybuffer rawdata5 = \
-      { 0x1b, '[', '<', '1', ';', '1', ';', '1', 'M'
-      , 0x1b, '[', '<', '1', ';', '1', ';', '1', 'm' };
+  auto rawdata5 = insertData ({ 0x1b, '[', '<', '1', ';', '1', ';', '1', 'M'
+                              , 0x1b, '[', '<', '1', ';', '1', ';', '1', 'm' });
   sgr_mouse.setRawData (rawdata5);
 
   CPPUNIT_ASSERT ( sgr_mouse.hasData() );
@@ -698,9 +686,8 @@ void FMouseTest::sgrMouseTest()
   CPPUNIT_ASSERT ( sgr_mouse.isMiddleButtonReleased() );
 
   // Right mouse button
-  finalcut::FKeyboard::keybuffer rawdata6 = \
-      { 0x1b, '[', '<', '2', ';', '3', ';', '3', 'M'
-      , 0x1b, '[', '<', '2', ';', '3', ';', '4', 'm' };
+  auto rawdata6 = insertData ({ 0x1b, '[', '<', '2', ';', '3', ';', '3', 'M'
+                              , 0x1b, '[', '<', '2', ';', '3', ';', '4', 'm' });
   sgr_mouse.setRawData (rawdata6);
 
   CPPUNIT_ASSERT ( sgr_mouse.hasData() );
@@ -732,9 +719,8 @@ void FMouseTest::sgrMouseTest()
   CPPUNIT_ASSERT ( sgr_mouse.isRightButtonReleased() );
 
   // Mouse wheel
-  finalcut::FKeyboard::keybuffer rawdata7 = \
-      { 0x1b, '[', '<', '6', '4', ';', '4', ';', '9', 'M'
-      , 0x1b, '[', '<', '6', '5', ';', '4', ';', '9', 'M' };
+  auto rawdata7 = insertData ({ 0x1b, '[', '<', '6', '4', ';', '4', ';', '9', 'M'
+                              , 0x1b, '[', '<', '6', '5', ';', '4', ';', '9', 'M' });
   sgr_mouse.setRawData (rawdata7);
 
   CPPUNIT_ASSERT ( sgr_mouse.hasData() );
@@ -764,10 +750,9 @@ void FMouseTest::sgrMouseTest()
   CPPUNIT_ASSERT ( sgr_mouse.isWheelDown() );
 
   // Mouse move
-  finalcut::FKeyboard::keybuffer rawdata8 = \
-      { 0x1b, '[', '<', '0', ';', '1', ';', '2', 'M'
-      , 0x1b, '[', '<', '3', '2', ';', '2', ';', '3', 'M'
-      , 0x1b, '[', '<', '0', ';', '3', ';', '4', 'm' };
+  auto rawdata8 = insertData ({ 0x1b, '[', '<', '0', ';', '1', ';', '2', 'M'
+                              , 0x1b, '[', '<', '3', '2', ';', '2', ';', '3', 'M'
+                              , 0x1b, '[', '<', '0', ';', '3', ';', '4', 'm' });
   sgr_mouse.setRawData (rawdata8);
 
   CPPUNIT_ASSERT ( sgr_mouse.hasData() );
@@ -802,11 +787,10 @@ void FMouseTest::sgrMouseTest()
   CPPUNIT_ASSERT ( ! sgr_mouse.isMoved() );
 
   // Mouse + keyboard modifier key
-  finalcut::FKeyboard::keybuffer rawdata9 = \
-      { 0x1b, '[', '<', '4', ';', '5', ';', '5', 'M'
-      , 0x1b, '[', '<', '8', ';', '5', ';', '5', 'M'
-      , 0x1b, '[', '<', '1', '6', ';', '5', ';', '5', 'M'
-      , 0x1b, '[', '<', '2', '8', ';', '5', ';', '5', 'M' };
+  auto rawdata9 = insertData ({ 0x1b, '[', '<', '4', ';', '5', ';', '5', 'M'
+                              , 0x1b, '[', '<', '8', ';', '5', ';', '5', 'M'
+                              , 0x1b, '[', '<', '1', '6', ';', '5', ';', '5', 'M'
+                              , 0x1b, '[', '<', '2', '8', ';', '5', ';', '5', 'M' });
   sgr_mouse.setRawData (rawdata9);
 
   CPPUNIT_ASSERT ( sgr_mouse.hasData() );
@@ -852,8 +836,7 @@ void FMouseTest::sgrMouseTest()
   CPPUNIT_ASSERT ( sgr_mouse.isMetaKeyPressed() );
 
   // Clear event test
-  finalcut::FKeyboard::keybuffer rawdata10 = \
-      { 0x1b, '[', '<', '2', ';', '1', ';', '1', 'M' };
+  auto rawdata10 = insertData ({ 0x1b, '[', '<', '2', ';', '1', ';', '1', 'M' });
   sgr_mouse.setRawData (rawdata10);
   CPPUNIT_ASSERT ( sgr_mouse.hasData() );
   sgr_mouse.processEvent (tv);
@@ -862,10 +845,9 @@ void FMouseTest::sgrMouseTest()
   CPPUNIT_ASSERT ( ! sgr_mouse.hasEvent() );
 
   // Wrong mouse data
-  finalcut::FKeyboard::keybuffer rawdata11 = \
-      { 0x1b, '[', '<', '2', 'O', ';', '2', ';', '2', 'M'
-      , 0x1b, '[', '<', '1', ';', 'x', ';', '3', 'M'
-      , 0x1b, '[', '<', '6', ';', '5', ';', '@', 'M', '@' };
+  auto rawdata11 = insertData ({ 0x1b, '[', '<', '2', 'O', ';', '2', ';', '2', 'M'
+                               , 0x1b, '[', '<', '1', ';', 'x', ';', '3', 'M'
+                               , 0x1b, '[', '<', '6', ';', '5', ';', '@', 'M', '@' });
   sgr_mouse.setRawData (rawdata11);
   CPPUNIT_ASSERT ( sgr_mouse.hasData() );
   sgr_mouse.processEvent (tv);
@@ -882,7 +864,8 @@ void FMouseTest::sgrMouseTest()
   CPPUNIT_ASSERT ( ! sgr_mouse.hasEvent() );
 
   CPPUNIT_ASSERT ( sgr_mouse.hasUnprocessedInput() );
-  CPPUNIT_ASSERT ( std::strcmp(rawdata11, "@") == 0 );
+  CPPUNIT_ASSERT ( rawdata11.getSize() == 1 );
+  CPPUNIT_ASSERT ( rawdata11.strncmp_front("@", 1) );
 }
 
 //----------------------------------------------------------------------
@@ -893,13 +876,13 @@ void FMouseTest::urxvtMouseTest()
   CPPUNIT_ASSERT ( ! urxvt_mouse.hasData() );
 
   // Left mouse button pressed
-  finalcut::FKeyboard::keybuffer rawdata1 = \
-      { 0x1b, '[', '3', '2', ';', '4'
-      , '9', ';', '6', 'M', '@', '@' };
+  auto rawdata1 = insertData ({ 0x1b, '[', '3', '2', ';', '4'
+                              , '9', ';', '6', 'M', '@', '@' });
   urxvt_mouse.setRawData (rawdata1);
   CPPUNIT_ASSERT ( urxvt_mouse.hasData() );
   CPPUNIT_ASSERT ( urxvt_mouse.hasUnprocessedInput() );
-  CPPUNIT_ASSERT ( std::strcmp(rawdata1, "@@") == 0 );
+  CPPUNIT_ASSERT ( rawdata1.getSize() == 2 );
+  CPPUNIT_ASSERT ( rawdata1.strncmp_front("@@", 2) );
 
   auto tv = finalcut::FObject::getCurrentTime();
   urxvt_mouse.processEvent (tv);
@@ -920,15 +903,13 @@ void FMouseTest::urxvtMouseTest()
   CPPUNIT_ASSERT ( ! urxvt_mouse.isMoved() );
 
   // The same input again
-  finalcut::FKeyboard::keybuffer raw = \
-      { 0x1b, '[', '3', '2', ';', '4', '9', ';', '6', 'M' };
+  auto raw = insertData ({ 0x1b, '[', '3', '2', ';', '4', '9', ';', '6', 'M' });
   urxvt_mouse.setRawData (raw);
   urxvt_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! urxvt_mouse.hasEvent() );
 
   // Left mouse button released
-  finalcut::FKeyboard::keybuffer rawdata2 = \
-      { 0x1b, '[', '3', '5', ';', '4', '9', ';', '6', 'M' };
+  auto rawdata2 = insertData ({ 0x1b, '[', '3', '5', ';', '4', '9', ';', '6', 'M' });
   urxvt_mouse.setRawData (rawdata2);
 
   CPPUNIT_ASSERT ( urxvt_mouse.hasData() );
@@ -952,8 +933,7 @@ void FMouseTest::urxvtMouseTest()
   CPPUNIT_ASSERT ( ! urxvt_mouse.isMoved() );
 
   // Left mouse button pressed again (double click)
-  finalcut::FKeyboard::keybuffer rawdata4 = \
-      { 0x1b, '[', '3', '2', ';', '4', '9', ';', '6', 'M' };
+  auto rawdata4 = insertData ({ 0x1b, '[', '3', '2', ';', '4', '9', ';', '6', 'M' });
   urxvt_mouse.setRawData (rawdata4);
 
   CPPUNIT_ASSERT ( urxvt_mouse.hasData() );
@@ -978,9 +958,8 @@ void FMouseTest::urxvtMouseTest()
   CPPUNIT_ASSERT ( ! urxvt_mouse.isMoved() );
 
   // Middle mouse button
-  finalcut::FKeyboard::keybuffer rawdata5 = \
-      { 0x1b, '[', '3', '3', ';', '1', ';', '1', 'M'
-      , 0x1b, '[', '3', '5', ';', '1', ';', '1', 'M' };
+  auto rawdata5 = insertData ({ 0x1b, '[', '3', '3', ';', '1', ';', '1', 'M'
+                              , 0x1b, '[', '3', '5', ';', '1', ';', '1', 'M' });
   urxvt_mouse.setRawData (rawdata5);
 
   CPPUNIT_ASSERT ( urxvt_mouse.hasData() );
@@ -1011,9 +990,8 @@ void FMouseTest::urxvtMouseTest()
   CPPUNIT_ASSERT ( urxvt_mouse.isMiddleButtonReleased() );
 
   // Right mouse button
-  finalcut::FKeyboard::keybuffer rawdata6 = \
-      { 0x1b, '[', '3', '4', ';', '3', ';', '3', 'M'
-      , 0x1b, '[', '3', '5', ';', '3', ';', '4', 'M' };
+  auto rawdata6 = insertData ({ 0x1b, '[', '3', '4', ';', '3', ';', '3', 'M'
+                              , 0x1b, '[', '3', '5', ';', '3', ';', '4', 'M' });
   urxvt_mouse.setRawData (rawdata6);
 
   CPPUNIT_ASSERT ( urxvt_mouse.hasData() );
@@ -1045,9 +1023,8 @@ void FMouseTest::urxvtMouseTest()
   CPPUNIT_ASSERT ( urxvt_mouse.isRightButtonReleased() );
 
   // Mouse wheel
-  finalcut::FKeyboard::keybuffer rawdata7 = \
-      { 0x1b, '[', '9', '6', ';', '4', ';', '9', 'M'
-      , 0x1b, '[', '9', '7', ';', '4', ';', '9', 'M' };
+  auto rawdata7 = insertData ({ 0x1b, '[', '9', '6', ';', '4', ';', '9', 'M'
+                              , 0x1b, '[', '9', '7', ';', '4', ';', '9', 'M' });
   urxvt_mouse.setRawData (rawdata7);
 
   CPPUNIT_ASSERT ( urxvt_mouse.hasData() );
@@ -1077,10 +1054,9 @@ void FMouseTest::urxvtMouseTest()
   CPPUNIT_ASSERT ( urxvt_mouse.isWheelDown() );
 
   // Mouse move
-  finalcut::FKeyboard::keybuffer rawdata8 = \
-      { 0x1b, '[', '3', '2', ';', '1', ';', '2', 'M'
-      , 0x1b, '[', '6', '4', ';', '2', ';', '3', 'M'
-      , 0x1b, '[', '3', '5', ';', '3', ';', '4', 'M' };
+  auto rawdata8 = insertData ({ 0x1b, '[', '3', '2', ';', '1', ';', '2', 'M'
+                              , 0x1b, '[', '6', '4', ';', '2', ';', '3', 'M'
+                              , 0x1b, '[', '3', '5', ';', '3', ';', '4', 'M' });
   urxvt_mouse.setRawData (rawdata8);
 
   CPPUNIT_ASSERT ( urxvt_mouse.hasData() );
@@ -1115,11 +1091,10 @@ void FMouseTest::urxvtMouseTest()
   CPPUNIT_ASSERT ( ! urxvt_mouse.isMoved() );
 
   // Mouse + keyboard modifier key
-  finalcut::FKeyboard::keybuffer rawdata9 = \
-      { 0x1b, '[', '3', '6', ';', '5', ';', '5', 'M'
-      , 0x1b, '[', '4', '0', ';', '5', ';', '5', 'M'
-      , 0x1b, '[', '4', '8', ';', '5', ';', '5', 'M'
-      , 0x1b, '[', '6', '0', ';', '5', ';', '5', 'M' };
+  auto rawdata9 = insertData ({ 0x1b, '[', '3', '6', ';', '5', ';', '5', 'M'
+                              , 0x1b, '[', '4', '0', ';', '5', ';', '5', 'M'
+                              , 0x1b, '[', '4', '8', ';', '5', ';', '5', 'M'
+                              , 0x1b, '[', '6', '0', ';', '5', ';', '5', 'M' });
   urxvt_mouse.setRawData (rawdata9);
 
   CPPUNIT_ASSERT ( urxvt_mouse.hasData() );
@@ -1165,8 +1140,7 @@ void FMouseTest::urxvtMouseTest()
   CPPUNIT_ASSERT ( urxvt_mouse.isMetaKeyPressed() );
 
   // Clear event test
-  finalcut::FKeyboard::keybuffer rawdata10 = \
-      { 0x1b, '[', '3', '2', ';', '1', ';', '1', 'M' };
+  auto rawdata10 = insertData ({ 0x1b, '[', '3', '2', ';', '1', ';', '1', 'M' });
   urxvt_mouse.setRawData (rawdata10);
   CPPUNIT_ASSERT ( urxvt_mouse.hasData() );
   urxvt_mouse.processEvent (tv);
@@ -1175,10 +1149,9 @@ void FMouseTest::urxvtMouseTest()
   CPPUNIT_ASSERT ( ! urxvt_mouse.hasEvent() );
 
   // Wrong mouse data
-  finalcut::FKeyboard::keybuffer rawdata11 = \
-      { 0x1b, '[', '3', 'O', ';', '2', ';', '2', 'M'
-      , 0x1b, '[', '3', '3', ';', 'x', ';', '3', 'M'
-      , 0x1b, '[', '3', '4', ';', '5', ';', '@', 'M', '@' };
+  auto rawdata11 = insertData ({ 0x1b, '[', '3', 'O', ';', '2', ';', '2', 'M'
+                               , 0x1b, '[', '3', '3', ';', 'x', ';', '3', 'M'
+                               , 0x1b, '[', '3', '4', ';', '5', ';', '@', 'M', '@' });
   urxvt_mouse.setRawData (rawdata11);
   CPPUNIT_ASSERT ( urxvt_mouse.hasData() );
   urxvt_mouse.processEvent (tv);
@@ -1195,12 +1168,12 @@ void FMouseTest::urxvtMouseTest()
   CPPUNIT_ASSERT ( ! urxvt_mouse.hasEvent() );
 
   CPPUNIT_ASSERT ( urxvt_mouse.hasUnprocessedInput() );
-  CPPUNIT_ASSERT ( std::strcmp(rawdata11, "@") == 0 );
+  CPPUNIT_ASSERT ( rawdata11.getSize() == 1 );
+  CPPUNIT_ASSERT ( rawdata11.strncmp_front("@", 1) );
 
   // Negative values
-  finalcut::FKeyboard::keybuffer rawdata12 = \
-      { 0x1b, '[', '3', '2', ';', '-', '5', ';', '5', 'M'
-      , 0x1b, '[', '3', '2', ';', '3', ';', '-', '3', 'M' };
+  auto rawdata12 = insertData ({ 0x1b, '[', '3', '2', ';', '-', '5', ';', '5', 'M'
+                               , 0x1b, '[', '3', '2', ';', '3', ';', '-', '3', 'M' });
   urxvt_mouse.setRawData (rawdata12);
   CPPUNIT_ASSERT ( urxvt_mouse.hasData() );
   CPPUNIT_ASSERT ( urxvt_mouse.hasUnprocessedInput() );
@@ -1221,8 +1194,7 @@ void FMouseTest::urxvtMouseTest()
   // Oversize values
   urxvt_mouse.setMaxWidth(40);
   urxvt_mouse.setMaxHeight(20);
-  finalcut::FKeyboard::keybuffer rawdata13 = \
-      { 0x1b, '[', '3', '2', ';', '7', '0', ';', '2', '5', 'M' };
+  auto rawdata13 = insertData ({ 0x1b, '[', '3', '2', ';', '7', '0', ';', '2', '5', 'M' });
   urxvt_mouse.setRawData (rawdata13);
   CPPUNIT_ASSERT ( urxvt_mouse.hasData() );
   urxvt_mouse.processEvent (tv);
@@ -1293,9 +1265,8 @@ void FMouseTest::mouseControlTest()
   }
 
   // Left mouse button pressed on an X11 mouse
-  finalcut::FKeyboard::keybuffer rawdata1 = \
-      { 0x1b, '[', 'M', 0x20, 0x25, 0x28
-      , 0x1b, '[', 'M', 0x23, 0x25, 0x28 };
+  auto rawdata1 = insertData ({ 0x1b, '[', 'M', 0x20, 0x25, 0x28
+                              , 0x1b, '[', 'M', 0x23, 0x25, 0x28 });
   mouse_control.setRawData (finalcut::FMouse::MouseType::X11, rawdata1);
 
   CPPUNIT_ASSERT ( mouse_control.hasData() );
@@ -1338,9 +1309,8 @@ void FMouseTest::mouseControlTest()
   CPPUNIT_ASSERT ( ! mouse_control.isLeftButtonDoubleClick() );
 
   // Middle mouse button on an SGR mouse
-  finalcut::FKeyboard::keybuffer rawdata2 = \
-      { 0x1b, '[', '<', '1', ';', '1', ';', '1', 'M'
-      , 0x1b, '[', '<', '1', ';', '1', ';', '1', 'm' };
+  auto rawdata2 = insertData ({ 0x1b, '[', '<', '1', ';', '1', ';', '1', 'M'
+                              , 0x1b, '[', '<', '1', ';', '1', ';', '1', 'm' });
   mouse_control.setRawData (finalcut::FMouse::MouseType::Sgr, rawdata2);
   CPPUNIT_ASSERT ( mouse_control.hasData() );
   CPPUNIT_ASSERT ( mouse_control.hasUnprocessedInput() );
@@ -1380,8 +1350,8 @@ void FMouseTest::mouseControlTest()
   CPPUNIT_ASSERT ( mouse_control.isMiddleButtonReleased() );
 
   // Right mouse button on a urxvt mouse
-  finalcut::FKeyboard::keybuffer rawdata3 = { 0x1b, '[', '3', '4', ';', '3', ';', '3', 'M'
-                    , 0x1b, '[', '3', '5', ';', '3', ';', '4', 'M' };
+  auto rawdata3 = insertData ({ 0x1b, '[', '3', '4', ';', '3', ';', '3', 'M'
+                              , 0x1b, '[', '3', '5', ';', '3', ';', '4', 'M' });
   mouse_control.setRawData (finalcut::FMouse::MouseType::Urxvt, rawdata3);
   CPPUNIT_ASSERT ( mouse_control.hasData() );
   CPPUNIT_ASSERT ( mouse_control.hasUnprocessedInput() );
@@ -1423,9 +1393,8 @@ void FMouseTest::mouseControlTest()
   CPPUNIT_ASSERT ( mouse_control.isRightButtonReleased() );
 
   // Mouse wheel on an X11 mouse
-  finalcut::FKeyboard::keybuffer rawdata4 = \
-      { 0x1b, '[', 'M', 0x60, 0x70, 0x39
-      , 0x1b, '[', 'M', 0x61, 0x70, 0x39 };
+  auto rawdata4 = insertData ({ 0x1b, '[', 'M', 0x60, 0x70, 0x39
+                              , 0x1b, '[', 'M', 0x61, 0x70, 0x39 });
   mouse_control.setRawData (finalcut::FMouse::MouseType::X11, rawdata4);
   CPPUNIT_ASSERT ( mouse_control.hasData() );
   CPPUNIT_ASSERT ( mouse_control.hasUnprocessedInput() );
@@ -1464,10 +1433,9 @@ void FMouseTest::mouseControlTest()
   CPPUNIT_ASSERT ( mouse_control.isWheelDown() );
 
   // Mouse move on an SGR mouse
-  finalcut::FKeyboard::keybuffer rawdata5 = \
-      { 0x1b, '[', '<', '0', ';', '1', ';', '2', 'M'
-      , 0x1b, '[', '<', '3', '2', ';', '2', ';', '3', 'M'
-      , 0x1b, '[', '<', '0', ';', '3', ';', '4', 'm' };
+  auto rawdata5 = insertData ({ 0x1b, '[', '<', '0', ';', '1', ';', '2', 'M'
+                              , 0x1b, '[', '<', '3', '2', ';', '2', ';', '3', 'M'
+                              , 0x1b, '[', '<', '0', ';', '3', ';', '4', 'm' });
   mouse_control.setRawData (finalcut::FMouse::MouseType::Sgr, rawdata5);
   CPPUNIT_ASSERT ( mouse_control.hasData() );
   CPPUNIT_ASSERT ( mouse_control.hasUnprocessedInput() );
@@ -1515,6 +1483,16 @@ void FMouseTest::mouseControlTest()
   mouse_control.disable();
 }
 
+//----------------------------------------------------------------------
+auto FMouseTest::insertData (std::initializer_list<char> list) -> finalcut::FKeyboard::keybuffer
+{
+  finalcut::FKeyboard::keybuffer buffer;
+
+  for (const char& ch : list)
+    buffer.push(ch);
+
+  return buffer;
+}
 
 // Put the test suite in the registry
 CPPUNIT_TEST_SUITE_REGISTRATION (FMouseTest);

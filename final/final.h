@@ -4,7 +4,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2021 Markus Gans                                      *
+* Copyright 2014-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -61,6 +61,7 @@
 #include <final/output/tty/ftermoutput.h>
 #include <final/output/tty/ftermxterminal.h>
 #include <final/output/tty/sgr_optimizer.h>
+#include <final/util/char_ringbuffer.h>
 #include <final/util/emptyfstring.h>
 #include <final/util/fdata.h>
 #include <final/util/flogger.h>

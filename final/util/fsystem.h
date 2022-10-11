@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2021 Markus Gans                                      *
+* Copyright 2019-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -63,21 +63,21 @@ class FSystem
     static auto   getInstance() -> std::unique_ptr<FSystem>&;
 
     // Methods
-    virtual uChar inPortByte (uShort) = 0;
-    virtual void  outPortByte (uChar, uShort) = 0;
-    virtual int   isTTY (int) const = 0;
-    virtual int   ioctl (int, uLong, ...) = 0;
-    virtual int   open (const char*, int, ...) = 0;
-    virtual int   close (int) = 0;
-    virtual FILE* fopen (const char*, const char*) = 0;
-    virtual int   fclose (FILE*) = 0;
-    virtual int   fputs (const char*, FILE*) = 0;
-    virtual int   putchar (int) = 0;
-    virtual uid_t getuid() = 0;
-    virtual uid_t geteuid() = 0;
-    virtual int   getpwuid_r ( uid_t, struct passwd*, char*
-                             , size_t, struct passwd**) = 0;
-    virtual char* realpath (const char*, char*) = 0;
+    virtual auto inPortByte (uShort) -> uChar = 0;
+    virtual void outPortByte (uChar, uShort) = 0;
+    virtual auto isTTY (int) const -> int = 0;
+    virtual auto ioctl (int, uLong, ...) -> int = 0;
+    virtual auto open (const char*, int, ...) -> int = 0;
+    virtual auto close (int) -> int = 0;
+    virtual auto fopen (const char*, const char*) -> FILE* = 0;
+    virtual auto fclose (FILE*) -> int = 0;
+    virtual auto fputs (const char*, FILE*) -> int = 0;
+    virtual auto putchar (int) -> int = 0;
+    virtual auto getuid() -> uid_t = 0;
+    virtual auto geteuid() -> uid_t = 0;
+    virtual auto getpwuid_r ( uid_t, struct passwd*, char*
+                            , size_t, struct passwd**) -> int = 0;
+    virtual auto realpath (const char*, char*) -> char* = 0;
 };
 
 }  // namespace finalcut

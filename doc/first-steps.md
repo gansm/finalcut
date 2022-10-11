@@ -55,6 +55,7 @@ emulator. It uses various optimization methods to improve the drawing speed.
   <img src="final-cut-application-structure.svg" alt="application structure">
   <figcaption>Figure 1.  Structure of a FINAL CUT application</figcaption>
 </figure>
+<br /><br />
 
 
 Widgets
@@ -112,7 +113,7 @@ The following example creates an empty 30&times;10 character dialog.
 ```cpp
 #include <final/final.h>
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   finalcut::FApplication app(argc, argv);
   finalcut::FDialog dialog(&app);
@@ -149,7 +150,7 @@ How it works
 ```cpp
 #include <final/final.h>
 ```
-All final cut programs must include the *final.h* header.
+All final cut programs have to include the *final.h* header.
 
 ```cpp
 finalcut::FApplication app(argc, argv);
@@ -157,7 +158,7 @@ finalcut::FApplication app(argc, argv);
 This line creates the `finalcut::FApplication` object `app` with
 the command line arguments `argc` and `argv`. This object manages
 the application main event loop. It receives keyboard and mouse events
-and sends them to the target widgets. You must create an application
+and sends them to the target widgets. You have to create an application
 object before you can create a widgets object.
 
 The next line
@@ -199,25 +200,25 @@ if available) visible.
 ```cpp
 return app.exec();
 ```
-The last line calls `exec()` to start the application and return
+The last line calls `exec()` to start the application and to return
 the result to the operating system. The started application enters
 the main event loop. This loop does not end until the window is
-not closed.
+closed.
 
 
 Memory Management
 -----------------
 
 To create a hierarchy of FObjects (or derived classes/widgets), 
-a new FObject must initialize with its parent object.
+a new FObject has to be initialized with its parent object.
 
 ```cpp
 FObject* parent = new FObject();
 FObject* child  = new FObject(parent);
 ```
 
-To deallocate the used memory of a parent FObject, the allocated memory 
-of its child objects will also automatically deallocate.
+When the used memory of a parent FObject gets deallocated, the allocated
+memory of its child objects will also be deallocated automatically.
 
 An object can also be assigned to another object later via `addChild()`.
 
@@ -227,7 +228,7 @@ FObject* child = new FObject();
 parent->addChild(child);
 ```
 
-The child object assignment can also remove at any time with 
+The child object assignment can be removed at any time with 
 `delChild()`.
 
 ```cpp
@@ -236,10 +237,10 @@ FObject* child  = new FObject(parent);
 parent->delChild(child);
 ```
 
-If an FObject with a parent will remove from the hierarchy, 
+If an FObject with a parent gets removed from the hierarchy, 
 the destructor automatically deletes the object assignment from 
 its parent object. If a class object doesn't derive from FObject, 
-you must implement storage deallocation yourself.
+you have to implement storage deallocation yourself.
 
 **File:** *memory.cpp*
 ```cpp
@@ -247,7 +248,7 @@ you must implement storage deallocation yourself.
 
 using namespace finalcut;
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   FApplication app(argc, argv);
 
@@ -296,7 +297,7 @@ Calling `FApplication::exec()` starts the FINAL CUT main event loop.
 While the event loop is running, the system checks all the time whether 
 an event has occurred and sends it to the application's currently focused 
 object. The events of the terminal, such as keystrokes, mouse actions, or 
-terminal size changing, are translated into `FEvent` objects, and sent them to 
+terminal size changing, are translated into `FEvent` objects, and are sent to 
 the active `FObject`. It is also possible to use `FApplication::sendEvent()` 
 or `FApplication::queueEvent()` to send a specific event to an object.
 
@@ -314,18 +315,18 @@ a mouse button.
 An event in FINAL CUT is an object that inherits from the base class 
 `FEvent`. There are several event types, represented by an enum value. 
 For example, the method `FEvent::type()` returns the type 
-`fc::MouseDown_Event` when you press down a mouse button. 
+`Event::MouseDown` when you press down a mouse button. 
 
-Some event types have data that cannot store in an `FEvent` object. 
-For example, a click event of the mouse must store which button is 
-triggered and where the mouse pointer was at that time. In classes derived 
-from `FEvent`, such as `FMouseEvent()`, we store this data.
+Some event types have data that cannot be stored in an `FEvent` object. 
+For example, a click event of the mouse requires to store which button was 
+triggered and the position of the mouse pointer at that time. In classes
+derived  from `FEvent`, such as `FMouseEvent()`, we store this data.
 
-Widgets get their events from the `event()` method inherited from FObject. 
+Widgets get their events from the `event()` method inherited from `FObject`. 
 The implementation of `event()` in `FWidget` forwards the most common event 
 types to specific event handlers such as `FMouseEvent()`, `FKeyEvent()` or 
-`FResizeEvent()`. There are many other event types. You can create own event 
-types and send them to other objects and widgets.
+`FResizeEvent()`. There are many other event types. You can create your own
+event types and send them to other objects and widgets.
 
 
 ### Available event types ###
@@ -408,7 +409,7 @@ class dialogWidget : public FDialog
     int id{0};
 };
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   FApplication app(argc, argv);
   dialogWidget dialog(&app);
@@ -430,7 +431,7 @@ int main (int argc, char* argv[])
 After entering the source code in *timer.cpp* you can compile
 the above program with gcc:
 ```bash
-g++ timer.cpp -o timer -O2 -lfinal -std=c++11
+g++ timer.cpp -o timer -O2 -lfinal -std=c++14
 ```
 
 
@@ -439,7 +440,7 @@ g++ timer.cpp -o timer -O2 -lfinal -std=c++11
 You can use the `FUserEvent()` to create a individual event and send it to a 
 specific object. If you want to create more than one user event, you can 
 specify an identification number (0 in the example below) to identify the 
-different events. This number can get later with `getUserId()`.
+different events. Afterwards this number can be retrieved with `getUserId()`.
 
 User events should be generated in the main event loop. For this purpose, 
 the class `FApplication` provides the virtual method 
@@ -524,8 +525,7 @@ class dialogWidget final : public FDialog
     FLabel loadavg_label{this};
 };
 
-
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   extendedApplication app(argc, argv);
   dialogWidget dialog(&app);
@@ -547,7 +547,7 @@ int main (int argc, char* argv[])
 After entering the source code in *user-event.cpp* you can compile
 the above program with gcc:
 ```bash
-g++ user-event.cpp -o user-event -O2 -lfinal -std=c++11
+g++ user-event.cpp -o user-event -O2 -lfinal -std=c++14
 ```
 
 
@@ -716,6 +716,9 @@ void delCallback()
 ### The FINAL CUT widgets emit the following default signals ###
 
 <dl>
+  <dt>FApplication</dt>
+  <dd>"first-dialog-opened"<br />"last-dialog-closed"</dd>
+
   <dt>FButton</dt>
   <dd>"clicked"</dd>
 
@@ -777,7 +780,7 @@ void cb_changeText (const FButton& button, FLabel& label)
   label.redraw();
 }
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   FApplication app(argc, argv);
   FDialog dialog(&app);
@@ -831,7 +834,7 @@ g++ callback-function.cpp -o callback-function -O2 -lfinal
 
 using namespace finalcut;
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   FApplication app(argc, argv);
   FDialog dialog(&app);
@@ -881,7 +884,7 @@ int main (int argc, char* argv[])
 After entering the source code in *callback-lambda.cpp* you can compile
 the above program with gcc:
 ```bash
-g++ callback-lambda.cpp -o callback-lambda -O2 -lfinal -std=c++11
+g++ callback-lambda.cpp -o callback-lambda -O2 -lfinal -std=c++14
 ```
 &nbsp;
 
@@ -922,7 +925,7 @@ class dialogWidget : public FDialog
     FButton button{"&Quit", this};
 };
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   FApplication app(argc, argv);
   dialogWidget dialog(&app);
@@ -944,7 +947,7 @@ int main (int argc, char* argv[])
 After entering the source code in *callback-method.cpp* you can compile
 the above program with gcc:
 ```bash
-g++ callback-method.cpp -o callback-method -O2 -lfinal -std=c++11
+g++ callback-method.cpp -o callback-method -O2 -lfinal -std=c++14
 ```
 &nbsp;
 
@@ -1048,7 +1051,7 @@ class dialogWidget : public FDialog
     FButton minus {"&-", this};
 };
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   FApplication app(argc, argv);
   dialogWidget dialog(&app);
@@ -1070,7 +1073,7 @@ int main (int argc, char* argv[])
 After entering the source code in *emit-signal.cpp* you can compile
 the above program with gcc:
 ```bash
-g++ emit-signal.cpp -o emit-signal -O2 -lfinal -std=c++11
+g++ emit-signal.cpp -o emit-signal -O2 -lfinal -std=c++14
 ```
 
 
@@ -1095,7 +1098,7 @@ identical to the relative positions (`getPos()` = `getTermPos()`). In
 the case of a child widget, the positioning is corresponding to the 
 upper left corner of the parent widget plus a possible padding space 
 (can be determined with `getLeftPadding()` and `getTopPadding()`). 
-If you want to ignore padding spaces, you must force this with the 
+If you want to ignore padding spaces, you have to force this with the 
 `ignorePadding()` method.
 
 <figure class="image">
@@ -1185,8 +1188,8 @@ unnecessarily often.
 The terminal area in which a widget appears determines its geometry. 
 The geometry of a widget is composed of its position and its size. 
 A widget position is always of object type `FPoint` and a widget 
-size of type `FSize`. The widget geometry can get as `FRect` object
- via the widget method `getGeometry()` and set with the method 
+size of type `FSize`. The widget geometry can be retrieved as `FRect`
+object via the widget method `getGeometry()` and set with the method 
 `setGeometry()`. The `getTermGeometry()` method gets the total values 
 of the terminal geometry.
 If you are only interested in the size of a widget, you can also use 
@@ -1257,6 +1260,10 @@ class dialogWidget : public FDialog
   public:
     explicit dialogWidget (FWidget* parent = nullptr)
       : FDialog{parent}
+    { }
+
+  private:
+    void initLayout()
     {
       setText ("Dialog");
       setResizeable();
@@ -1265,9 +1272,9 @@ class dialogWidget : public FDialog
       // Set dialog geometry and calling adjustSize()
       setGeometry (FPoint{25, 5}, FSize{40, 12});
       setMinimumSize (FSize{25, 9});
+      FDialog::initLayout();
     }
 
-  private:
     inline void checkMinValue (int& n)
     {
       if ( n < 1 )  // Checks and corrects the minimum value
@@ -1319,7 +1326,7 @@ class dialogWidget : public FDialog
     FButton button{"&Bottom", this};
 };
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   FApplication app(argc, argv);
   dialogWidget dialog(&app);
@@ -1341,7 +1348,7 @@ int main (int argc, char* argv[])
 After entering the source code in *size-adjustment.cpp* you can compile
 the above program with gcc:
 ```bash
-g++ size-adjustment.cpp -o size-adjustment -O2 -lfinal -std=c++11
+g++ size-adjustment.cpp -o size-adjustment -O2 -lfinal -std=c++14
 ```
 
 
@@ -1430,7 +1437,7 @@ class dialogWidget : public FDialog
           "clicked",
           this, &dialogWidget::cb_button, std::get<2>(b)
         );
-      };
+      }
     }
 
   private:
@@ -1451,7 +1458,7 @@ class dialogWidget : public FDialog
     FScrollView scrollview{this};
 };
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   FApplication app(argc, argv);
   app.initTerminal();  // Terminal initialization
@@ -1474,5 +1481,5 @@ int main (int argc, char* argv[])
 After entering the source code in *scrollview.cpp* you can compile
 the above program with gcc:
 ```bash
-g++ scrollview.cpp -o scrollview -O2 -lfinal -std=c++11
+g++ scrollview.cpp -o scrollview -O2 -lfinal -std=c++14
 ```

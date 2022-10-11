@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2020 Markus Gans                                      *
+* Copyright 2019-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -31,7 +31,7 @@ using finalcut::FSize;
 //----------------------------------------------------------------------
 //                               main part
 //----------------------------------------------------------------------
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   // Create the application object
   finalcut::FApplication app{argc, argv};
@@ -105,13 +105,13 @@ int main (int argc, char* argv[])
 
   // Callback lambda expressions
   auto cb_exit = \
-      [] (const finalcut::FApplication& a)
+      [] (const auto& a)
       {
         a.quit();
       };
 
   auto cb_tooltip = \
-      [] (finalcut::FDialog* a)
+      [] (const auto& a)
       {
         finalcut::FToolTip tooltip(a);
         tooltip.setText (full("A tooltip with\ncharacters\n"

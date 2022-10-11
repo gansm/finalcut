@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2021 Markus Gans                                      *
+* Copyright 2014-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -88,7 +88,7 @@ void FStatusKey::setActive()
 }
 
 //----------------------------------------------------------------------
-bool FStatusKey::setMouseFocus(bool enable)
+auto FStatusKey::setMouseFocus(bool enable) -> bool
 {
   if ( mouse_focus == enable )
     return true;
@@ -169,7 +169,7 @@ void FStatusBar::resetColors()
 }
 
 //----------------------------------------------------------------------
-bool FStatusBar::hasActivatedKey() const
+auto FStatusBar::hasActivatedKey() const -> bool
 {
   if ( ! key_list.empty() )
   {
@@ -185,8 +185,8 @@ bool FStatusBar::hasActivatedKey() const
 void FStatusBar::hide()
 {
   const auto& wc = getColorTheme();
-  const FColor fg = wc->term_fg;
-  const FColor bg = wc->term_bg;
+  const auto& fg = wc->term_fg;
+  const auto& bg = wc->term_bg;
   setColor (fg, bg);
   print() << FPoint{1, 1} << FString{getDesktopWidth(), L' '};
   FWindow::hide();
@@ -531,14 +531,14 @@ void FStatusBar::init()
 }
 
 //----------------------------------------------------------------------
-int FStatusBar::getKeyNameWidth (const FStatusKey* key) const
+auto FStatusBar::getKeyNameWidth (const FStatusKey* key) const -> int
 {
   const FString& key_name = FVTerm::getFOutput()->getKeyName(key->getKey());
   return int(getColumnWidth(key_name));
 }
 
 //----------------------------------------------------------------------
-int FStatusBar::getKeyTextWidth (const FStatusKey* key) const
+auto FStatusBar::getKeyTextWidth (const FStatusKey* key) const -> int
 {
   const FString& key_text = key->getText();
   return int(getColumnWidth(key_text));
@@ -605,7 +605,7 @@ void FStatusBar::drawKey (FKeyList::const_iterator iter)
 {
   // Draw not active key
 
-  const auto item = *iter;
+  const auto& item = *iter;
   const auto& wc = getColorTheme();
   setColor (wc->statusbar_hotkey_fg, wc->statusbar_hotkey_bg);
   x++;

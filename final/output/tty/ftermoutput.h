@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021 Markus Gans                                           *
+* Copyright 2021-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -72,49 +72,51 @@ class FTermOutput final : public FOutput
     ~FTermOutput() noexcept override;
 
     // Accessors
-    FString        getClassName() const override;
-    FTerm&         getFTerm() &;
-    std::size_t    getColumnNumber() const override;
-    std::size_t    getLineNumber() const override;
-    int            getTabstop() const override;
-    int            getMaxColor() const override;
-    Encoding       getEncoding() const override;
-    FString        getKeyName (FKey) const override;
+    auto getClassName() const -> FString override;
+    auto getFTerm() & -> FTerm&;
+    auto getColumnNumber() const -> std::size_t override;
+    auto getLineNumber() const -> std::size_t override;
+    auto getTabstop() const -> int override;
+    auto getMaxColor() const -> int override;
+    auto getEncoding() const -> Encoding override;
+    auto getKeyName (FKey) const -> FString override;
 
     // Mutators
-    void           setCursor (FPoint) override;
-    void           setCursor (CursorMode) override;
-    void           hideCursor (bool = true) override;
-    void           showCursor() override;
-    void           setTerminalSize (FSize) override;
-    bool           setVGAFont() override;
-    bool           setNewFont() override;
-    void           setNonBlockingRead (bool = true) override;
+    void setCursor (FPoint) override;
+    void setCursor (CursorMode) override;
+    void hideCursor (bool = true) override;
+    void showCursor() override;
+    void setTerminalSize (FSize) override;
+    auto setVGAFont() -> bool override;
+    auto setNewFont() -> bool override;
+    void setNonBlockingRead (bool = true) override;
 
     // Inquiries
-    bool           isCursorHideable() const override;
-    bool           isMonochron() const override;
-    bool           isNewFont() const override;
-    bool           isEncodable (wchar_t) const override;
-    bool           hasTerminalResized() const override;
-    bool           allowsTerminalSizeManipulation() const override;
-    bool           canChangeColorPalette() const override;
-    bool           hasHalfBlockCharacter() const override;
-    bool           hasShadowCharacter() const override;
-    bool           areMetaAndArrowKeysSupported() const override;
+    auto isCursorHideable() const -> bool override;
+    auto isMonochron() const -> bool override;
+    auto isNewFont() const -> bool override;
+    auto isEncodable (const wchar_t&) const -> bool override;
+    auto hasTerminalResized() const -> bool override;
+    auto allowsTerminalSizeManipulation() const -> bool override;
+    auto canChangeColorPalette() const -> bool override;
+    auto hasHalfBlockCharacter() const -> bool override;
+    auto hasShadowCharacter() const -> bool override;
+    auto areMetaAndArrowKeysSupported() const -> bool override;
 
     // Methods
-    void           initTerminal (FVTerm::FTermArea*) override;
-    void           finishTerminal() override;
-    bool           updateTerminal() override;
-    void           detectTerminalSize() override;
-    void           commitTerminalResize() override;
-    void           initScreenSettings() override;
-    bool           scrollTerminalForward() override;
-    bool           scrollTerminalReverse() override;
-    bool           clearTerm (wchar_t = L' ') override;
-    void           flush() override;
-    void           beep() const override;
+    void initTerminal (FVTerm::FTermArea*) override;
+    void finishTerminal() override;
+    auto updateTerminal() -> bool override;
+    void detectTerminalSize() override;
+    void commitTerminalResize() override;
+    void initScreenSettings() override;
+    auto scrollTerminalForward() -> bool override;
+    auto scrollTerminalReverse() -> bool override;
+    void clearTerminalAttributes() override;
+    void clearTerminalState() override;
+    auto clearTerminal (wchar_t = L' ') -> bool override;
+    void flush() override;
+    void beep() const override;
 
   private:
     // Constants
@@ -159,52 +161,52 @@ class FTermOutput final : public FOutput
 
     // Constants
     //   Upper and lower flush limit
-    static constexpr uInt64 MIN_FLUSH_WAIT = 16667;   //   16.6 ms = 60 Hz
-    static constexpr uInt64 MAX_FLUSH_WAIT = 200000;  //  200.0 ms = 5 Hz
+    static constexpr uInt64 MIN_FLUSH_WAIT = 16'667;   //   16.6 ms = 60 Hz
+    static constexpr uInt64 MAX_FLUSH_WAIT = 200'000;  //  200.0 ms = 5 Hz
 
     // Accessors
-    const FSetPalette& getFSetPaletteRef() const & override;
+    auto getFSetPaletteRef() const & -> const FSetPalette& override;
 
     // Methods
-    FStartOptions& getStartOptions() &;
-    bool           isInputCursorInsideTerminal() const;
-    bool           isDefaultPaletteTheme() override;
-    void           redefineColorPalette() override;
-    void           restoreColorPalette() override;
-    void           init_characterLengths();
-    void           init_combined_character();
-    bool           canClearToEOL (uInt, uInt) const;
-    bool           canClearLeadingWS (uInt&, uInt) const;
-    bool           canClearTrailingWS (uInt&, uInt) const;
-    bool           skipUnchangedCharacters (uInt&, uInt, uInt);
-    void           printRange (uInt, uInt, uInt, bool);
-    void           replaceNonPrintableFullwidth (uInt, FChar&) const;
-    void           printCharacter (uInt&, uInt, bool, FChar&);
-    void           printFullWidthCharacter (uInt&, uInt, FChar&);
-    void           printFullWidthPaddingCharacter (uInt&, uInt, FChar&);
-    void           printHalfCovertFullWidthCharacter (uInt&, uInt, FChar&);
-    void           skipPaddingCharacter (uInt&, uInt, const FChar&) const;
-    PrintState     eraseCharacters (uInt&, uInt, uInt, bool);
-    PrintState     repeatCharacter (uInt&, uInt, uInt);
-    bool           isFullWidthChar (const FChar&) const;
-    bool           isFullWidthPaddingChar (const FChar&) const;
-    void           cursorWrap() const;
-    bool           updateTerminalLine (uInt);
-    bool           updateTerminalCursor();
-    void           flushTimeAdjustment();
-    bool           isFlushTimeout() const;
-    void           markAsPrinted (uInt, uInt) const;
-    void           markAsPrinted (uInt, uInt, uInt) const;
-    void           newFontChanges (FChar&) const;
-    void           charsetChanges (FChar&) const;
-    void           appendCharacter (FChar&);
-    void           appendChar (FChar&);
-    void           appendAttributes (FChar&);
-    void           appendLowerRight (FChar&);
-    void           characterFilter (FChar&);
-    void           appendOutputBuffer (const FTermControl&) const;
-    void           appendOutputBuffer (const FTermUniChar&) const;
-    void           appendOutputBuffer (const FTermString&) const;
+    auto getStartOptions() & -> FStartOptions&;
+    auto isInputCursorInsideTerminal() const -> bool;
+    auto isDefaultPaletteTheme() -> bool override;
+    void redefineColorPalette() override;
+    void restoreColorPalette() override;
+    void init_characterLengths();
+    void init_combined_character();
+    auto canClearToEOL (uInt, uInt) const -> bool;
+    auto canClearLeadingWS (uInt&, uInt) const -> bool;
+    auto canClearTrailingWS (uInt&, uInt) const -> bool;
+    auto skipUnchangedCharacters (uInt&, uInt, uInt) -> bool;
+    void printRange (uInt, uInt, uInt, bool);
+    void replaceNonPrintableFullwidth (uInt, FChar&) const;
+    void printCharacter (uInt&, uInt, bool, FChar&);
+    void printFullWidthCharacter (uInt&, uInt, FChar&);
+    void printFullWidthPaddingCharacter (uInt&, uInt, FChar&);
+    void printHalfCovertFullWidthCharacter (uInt&, uInt, FChar&);
+    void skipPaddingCharacter (uInt&, uInt, const FChar&) const;
+    auto eraseCharacters (uInt&, uInt, uInt, bool) -> PrintState;
+    auto repeatCharacter (uInt&, uInt, uInt) -> PrintState;
+    auto isFullWidthChar (const FChar&) const -> bool;
+    auto isFullWidthPaddingChar (const FChar&) const -> bool;
+    void cursorWrap() const;
+    auto updateTerminalLine (uInt) -> bool;
+    auto updateTerminalCursor() -> bool;
+    void flushTimeAdjustment();
+    auto isFlushTimeout() const -> bool;
+    void markAsPrinted (uInt, uInt) const;
+    void markAsPrinted (uInt, uInt, uInt) const;
+    void newFontChanges (FChar&) const;
+    void charsetChanges (FChar&) const;
+    void appendCharacter (FChar&);
+    void appendChar (FChar&);
+    void appendAttributes (FChar&);
+    void appendLowerRight (FChar&);
+    void characterFilter (FChar&);
+    void appendOutputBuffer (const FTermControl&) const;
+    void appendOutputBuffer (const FTermUniChar&) const;
+    void appendOutputBuffer (const FTermString&) const;
 
     // Data members
     FTerm                         fterm{};
@@ -228,11 +230,11 @@ class FTermOutput final : public FOutput
 
 // FTermOutput inline functions
 //----------------------------------------------------------------------
-inline FString FTermOutput::getClassName() const
+inline auto FTermOutput::getClassName() const -> FString
 { return "FTermOutput"; }
 
 //----------------------------------------------------------------------
-inline FTerm& FTermOutput::getFTerm() &
+inline auto FTermOutput::getFTerm() & -> FTerm&
 { return fterm; }
 
 //----------------------------------------------------------------------
@@ -240,11 +242,11 @@ inline void FTermOutput::showCursor()
 { return hideCursor(false); }
 
 //----------------------------------------------------------------------
-inline bool FTermOutput::isCursorHideable() const
+inline auto FTermOutput::isCursorHideable() const -> bool
 { return cursor_hideable; }
 
 //----------------------------------------------------------------------
-inline const FTermOutput::FSetPalette& FTermOutput::getFSetPaletteRef() const &
+inline auto FTermOutput::getFSetPaletteRef() const & -> const FSetPalette&
 {
   static const FSetPalette& f = &FTerm::setPalette;
   return f;

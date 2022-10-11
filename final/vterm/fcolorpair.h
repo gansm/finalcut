@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2021 Markus Gans                                      *
+* Copyright 2019-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -56,13 +56,13 @@ class FColorPair
     { }
 
     // Accessor
-    FString getClassName() const
+    auto getClassName() const -> FString
     { return "FColorPair"; }
 
-    FColor getForegroundColor() const noexcept
+    auto getForegroundColor() const noexcept -> FColor
     { return fg_color; }
 
-    FColor getBackgroundColor() const noexcept
+    auto getBackgroundColor() const noexcept -> FColor
     { return bg_color; }
 
     // Mutators

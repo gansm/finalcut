@@ -1,0 +1,10 @@
+apk add gcc g++
+apk add make
+apk add automake autoconf autoconf-archive
+apk add libtool
+apk add pkgconf
+apk add gpm gpm-dev
+apk add linux-headers
+apk add ncurses-dev ncurses-terminfo
+apk add cppunit
+

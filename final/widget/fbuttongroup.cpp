@@ -4,7 +4,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2021 Markus Gans                                      *
+* Copyright 2014-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -24,7 +24,6 @@
 #include "final/fapplication.h"
 #include "final/fevent.h"
 #include "final/util/fsize.h"
-#include "final/vterm/fcolorpair.h"
 #include "final/widget/fbuttongroup.h"
 #include "final/widget/fstatusbar.h"
 #include "final/widget/ftogglebutton.h"
@@ -64,7 +63,7 @@ FButtonGroup::~FButtonGroup()  // destructor
   while ( iter != buttonlist.cend() )
   {
     auto toggle_button = static_cast<FToggleButton*>(*iter);
-    toggle_button->setGroup(nullptr);
+    setGroup (*toggle_button, nullptr);
     iter = buttonlist.erase(iter);
   }
 }
@@ -72,7 +71,7 @@ FButtonGroup::~FButtonGroup()  // destructor
 
 // public methods of FButtonGroup
 //----------------------------------------------------------------------
-FToggleButton* FButtonGroup::getButton (int index) const
+auto FButtonGroup::getButton (int index) const -> FToggleButton*
 {
   if ( buttonlist.empty() )
     return nullptr;
@@ -86,7 +85,7 @@ FToggleButton* FButtonGroup::getButton (int index) const
 }
 
 //----------------------------------------------------------------------
-FToggleButton* FButtonGroup::getFirstButton()
+auto FButtonGroup::getFirstButton() -> FToggleButton*
 {
   auto widget = getFirstFocusableWidget(buttonlist);
   auto toggle_button = static_cast<FToggleButton*>(widget);
@@ -94,7 +93,7 @@ FToggleButton* FButtonGroup::getFirstButton()
 }
 
 //----------------------------------------------------------------------
-FToggleButton* FButtonGroup::getLastButton()
+auto FButtonGroup::getLastButton() -> FToggleButton*
 {
   auto widget = getLastFocusableWidget(buttonlist);
   auto toggle_button = static_cast<FToggleButton*>(widget);
@@ -102,7 +101,7 @@ FToggleButton* FButtonGroup::getLastButton()
 }
 
 //----------------------------------------------------------------------
-bool FButtonGroup::setEnable (bool enable)
+auto FButtonGroup::setEnable (bool enable) -> bool
 {
   FWidget::setEnable(enable);
 
@@ -115,26 +114,14 @@ bool FButtonGroup::setEnable (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FButtonGroup::setFocus (bool)
+auto FButtonGroup::setFocus (bool) -> bool
 {
   // This container widget cannot have its own focus
   return false;
 }
 
 //----------------------------------------------------------------------
-void FButtonGroup::setText (const FString& txt)
-{
-  text.setString(txt);
-
-  if ( isEnabled() )
-  {
-    delAccelerator();
-    setHotkeyAccelerator();
-  }
-}
-
-//----------------------------------------------------------------------
-bool FButtonGroup::isChecked (int index) const
+auto FButtonGroup::isChecked (int index) const -> bool
 {
   const auto& button = getButton(index);
 
@@ -145,7 +132,7 @@ bool FButtonGroup::isChecked (int index) const
 }
 
 //----------------------------------------------------------------------
-bool FButtonGroup::hasFocusedButton() const
+auto FButtonGroup::hasFocusedButton() const -> bool
 {
   if ( buttonlist.empty() )
     return false;
@@ -162,7 +149,7 @@ bool FButtonGroup::hasFocusedButton() const
 }
 
 //----------------------------------------------------------------------
-bool FButtonGroup::hasCheckedButton() const
+auto FButtonGroup::hasCheckedButton() const -> bool
 {
   if ( buttonlist.empty() )
     return false;
@@ -181,8 +168,6 @@ bool FButtonGroup::hasCheckedButton() const
 //----------------------------------------------------------------------
 void FButtonGroup::hide()
 {
-  FColor fg{};
-  FColor bg{};
   FWidget::hide();
   const auto& parent_widget = getParentWidget();
 
@@ -198,17 +183,18 @@ void FButtonGroup::hide()
 
   if ( parent_widget )
   {
-    fg = parent_widget->getForegroundColor();
-    bg = parent_widget->getBackgroundColor();
+    FColor fg = parent_widget->getForegroundColor();
+    FColor bg = parent_widget->getBackgroundColor();
+    setColor (fg, bg);
   }
   else
   {
     const auto& wc = getColorTheme();
-    fg = wc->dialog_fg;
-    bg = wc->dialog_bg;
+    FColor fg = wc->dialog_fg;
+    FColor bg = wc->dialog_bg;
+    setColor (fg, bg);
   }
 
-  setColor (fg, bg);
   const std::size_t size = getWidth();
 
   if ( size == 0 )
@@ -229,8 +215,8 @@ void FButtonGroup::insert (FToggleButton* button)
   if ( ! button )
     return;
 
-  if ( button->getGroup() )
-    button->getGroup()->remove(button);
+  if ( getGroup(*button) )
+    getGroup(*button)->remove(button);
 
   // setChecked the first FRadioButton
   if ( buttonlist.size() == 1 )
@@ -241,7 +227,7 @@ void FButtonGroup::insert (FToggleButton* button)
       first_button->setChecked();
   }
 
-  button->setGroup(this);
+  setGroup (*button, this);
   buttonlist.push_back(button);
 
   button->addCallback
@@ -266,7 +252,7 @@ void FButtonGroup::remove (FToggleButton* button)
     if ( toggle_button == button )
     {
       iter = buttonlist.erase(iter);
-      button->setGroup(nullptr);
+      setGroup (*button, nullptr);
       button->delCallback(this);
       break;
     }
@@ -344,12 +330,6 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
 
 // protected methods of FButtonGroup
 //----------------------------------------------------------------------
-void FButtonGroup::setHotkeyAccelerator()
-{
-  setHotkeyViaString (this, text);
-}
-
-//----------------------------------------------------------------------
 void FButtonGroup::draw()
 {
   if ( FVTerm::getFOutput()->isMonochron() )
@@ -362,33 +342,12 @@ void FButtonGroup::draw()
     setReverse(false);
 
   FScrollView::draw();
-  drawLabel();
-}
-
-//----------------------------------------------------------------------
-void FButtonGroup::drawLabel()
-{
-  if ( text.isEmpty() )
-    return;
-
-  FString label_text{};
-  const FString txt{" " + text + " "};
-  unsetViewportPrint();
-  const auto hotkeypos = finalcut::getHotkeyPos(txt, label_text);
-
-  if ( hasBorder() )
-    FWidget::setPrintPos (FPoint{2, 1});
-  else
-    FWidget::setPrintPos (FPoint{0, 1});
-
-  drawText (label_text, hotkeypos);
-  setViewportPrint();
 }
 
 
 // private methods of FButtonGroup
 //----------------------------------------------------------------------
-bool FButtonGroup::isRadioButton (const FToggleButton* button) const
+auto FButtonGroup::isRadioButton (const FToggleButton* button) const -> bool
 {
   if ( ! button )
     return false;
@@ -404,59 +363,7 @@ void FButtonGroup::init()
 }
 
 //----------------------------------------------------------------------
-void FButtonGroup::drawText ( const FString& label_text
-                            , std::size_t hotkeypos )
-{
-  const auto& wc = getColorTheme();
-  const std::size_t column_width = getColumnWidth(label_text);
-  std::size_t length = label_text.getLength();
-  bool ellipsis{false};
-
-  if ( column_width > getClientWidth() )
-  {
-    const std::size_t len = getClientWidth() - 3;
-    const FString s = finalcut::getColumnSubString (label_text, 1, len);
-    length = s.getLength();
-    ellipsis = true;
-  }
-
-  if ( FVTerm::getFOutput()->isMonochron() )
-    setReverse(true);
-
-  if ( isEnabled() )
-    setColor(wc->label_emphasis_fg, wc->label_bg);
-  else
-    setColor(wc->label_inactive_fg, wc->label_inactive_bg);
-
-  for (std::size_t z{0}; z < length; z++)
-  {
-    if ( (z == hotkeypos) && getFlags().active )
-    {
-      setColor (wc->label_hotkey_fg, wc->label_hotkey_bg);
-
-      if ( ! getFlags().no_underline )
-        setUnderline();
-
-      print (label_text[z]);
-
-      if ( ! getFlags().no_underline )
-        unsetUnderline();
-
-      setColor (wc->label_emphasis_fg, wc->label_bg);
-    }
-    else
-      print (label_text[z]);
-  }
-
-  if ( ellipsis )  // Print ellipsis
-    print() << FColorPair {wc->label_ellipsis_fg, wc->label_bg} << "..";
-
-  if ( FVTerm::getFOutput()->isMonochron() )
-    setReverse(true);
-}
-
-//----------------------------------------------------------------------
-bool FButtonGroup::directFocusCheckedRadioButton (FToggleButton* item) const
+auto FButtonGroup::directFocusCheckedRadioButton (FToggleButton* item) const -> bool
 {
   if ( ! isRadioButton(item) )
     return false;
@@ -476,7 +383,7 @@ bool FButtonGroup::directFocusCheckedRadioButton (FToggleButton* item) const
 }
 
 //----------------------------------------------------------------------
-bool FButtonGroup::directFocusRadioButton() const
+auto FButtonGroup::directFocusRadioButton() const -> bool
 {
   if ( ! hasCheckedButton() || buttonlist.empty() )
     return false;
@@ -579,6 +486,19 @@ void FButtonGroup::cb_buttonToggled (const FToggleButton* button) const
         toggle_button->redraw();
     }
   }
+}
+
+// FToggleButton friend function definition
+//----------------------------------------------------------------------
+auto getGroup (FToggleButton& toggle_btn) -> FButtonGroup*
+{
+  return toggle_btn.button_group;
+}
+
+//----------------------------------------------------------------------
+void setGroup (FToggleButton& toggle_btn, FButtonGroup* btngroup)
+{
+  toggle_btn.button_group = btngroup;
 }
 
 }  // namespace finalcut

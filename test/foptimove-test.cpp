@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2021 Markus Gans                                      *
+* Copyright 2018-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -141,7 +141,7 @@ class FOptiMoveTest : public CPPUNIT_NS::TestFixture
     void wyse50Test();
 
   private:
-    std::string printSequence (const std::string&);
+    auto printSequence (const std::string&) -> std::string;
 
     // Adds code needed to register the test suite
     CPPUNIT_TEST_SUITE (FOptiMoveTest);
@@ -853,7 +853,7 @@ void FOptiMoveTest::wyse50Test()
 }
 
 //----------------------------------------------------------------------
-std::string FOptiMoveTest::printSequence (const std::string& s)
+auto FOptiMoveTest::printSequence (const std::string& s) -> std::string
 {
   std::string sequence;
   const std::string ctrl_character[] =
@@ -868,7 +868,7 @@ std::string FOptiMoveTest::printSequence (const std::string& s)
   for (char ch : s)
   {
     if ( ch < 0x21 )
-      sequence += ctrl_character[uInt(ch)];
+      sequence += ctrl_character[uChar(ch)];
     else
       sequence += ch;
 

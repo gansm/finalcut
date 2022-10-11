@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2021 Markus Gans                                      *
+* Copyright 2014-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -54,7 +54,7 @@ FTextView::~FTextView() noexcept = default;  // destructor
 
 // public methods of FTextView
 //----------------------------------------------------------------------
-FString FTextView::getText() const
+auto FTextView::getText() const -> FString
 {
   if ( data.empty() )
     return {""};
@@ -62,14 +62,14 @@ FString FTextView::getText() const
   std::size_t len{0};
 
   for (auto&& line : data)
-    len += line.getLength() + 1;  // String length + '\n'
+    len += line.text.getLength() + 1;  // String length + '\n'
 
   FString s{len};  // Reserves storage
   auto iter = s.begin();
 
   for (auto&& line : data)
   {
-    if ( ! line.isEmpty() )
+    if ( ! line.text.isEmpty() )
     {
       if ( iter != s.begin() )
       {
@@ -77,8 +77,8 @@ FString FTextView::getText() const
         ++iter;
       }
 
-      std::copy (line.begin(), line.end(), iter);
-      iter += std::distance(line.begin(), line.end());
+      std::copy (line.text.begin(), line.text.end(), iter);
+      iter += std::distance(line.text.begin(), line.text.end());
     }
   }
 
@@ -118,6 +118,24 @@ void FTextView::setText (const FString& str)
 {
   clear();
   insert(str, -1);
+}
+
+//----------------------------------------------------------------------
+void FTextView::addHighlight (std::size_t line, const FTextHighlight& hgl)
+{
+  if ( line >= data.size() )
+    return;
+
+  data[line].highlight.emplace_back(hgl);
+}
+
+//----------------------------------------------------------------------
+void FTextView::resetHighlight (std::size_t line)
+{
+  if ( line >= data.size() )
+    return;
+
+  data[line].highlight.clear();
 }
 
 //----------------------------------------------------------------------
@@ -215,22 +233,28 @@ void FTextView::append (const FString& str)
 //----------------------------------------------------------------------
 void FTextView::insert (const FString& str, int pos)
 {
-  FString s{};
-
   if ( pos < 0 || pos >= int(getRows()) )
     pos = int(getRows());
-
-  if ( str.isEmpty() )
-    s = "\n";
-  else
-    s = FString{str}.rtrim().expandTabs(getFOutput()->getTabstop());
 
   auto showHorizontallyScrollable = [this] ()
   {
     if ( isShown() && isHorizontallyScrollable() )
       hbar->show();
   };
-  auto text_split = s.split("\n");
+
+  auto&& text_split = \
+      [&str] ()
+      {
+        if ( str.isEmpty() )
+        {
+          FStringList list{};
+          list.emplace_back("");
+          return list;
+        }
+
+        const auto& string = str.rtrim().expandTabs(getFOutput()->getTabstop());
+        return string.split("\n");
+      }();
 
   for (auto&& line : text_split)  // Line loop
   {
@@ -255,10 +279,11 @@ void FTextView::insert (const FString& str, int pos)
         showHorizontallyScrollable();
       }
     }
+
+    data.emplace (data.cbegin() + pos, std::move(line));
+    pos++;
   }
 
-  auto iter = data.cbegin();
-  data.insert (iter + pos, text_split.cbegin(), text_split.cend());
   const int vmax = ( getRows() > getTextHeight() )
                    ? int(getRows()) - int(getTextHeight())
                    : 0;
@@ -320,7 +345,6 @@ void FTextView::clear()
   // clear list from screen
   setColor();
 
-
   if ( useFDialogBorder() )
   {
     auto parent = getParentWidget();
@@ -364,45 +388,15 @@ void FTextView::onMouseDown (FMouseEvent* ev)
     return;
 
   setWidgetFocus(this);
-  auto parent = getParentWidget();
-
-  if ( ! parent )
-    return;
-
-  const auto& dialog = static_cast<FDialog*>(parent);
-
-  if ( parent->isDialogWidget()
-    && dialog->isResizeable()
-    && ! dialog->isZoomed() )
-  {
-    const auto b = ev->getButton();
-    const auto& tp = ev->getTermPos();
-    const auto& p = parent->termToWidgetPos(tp);
-    const auto& _ev = \
-       std::make_shared<FMouseEvent>(Event::MouseDown, p, tp, b);
-    FApplication::sendEvent (parent, _ev.get());
-  }
+  // Event handover to parent dialog
+  passResizeCornerEventToDialog(this, *ev);
 }
 
 //----------------------------------------------------------------------
 void FTextView::onMouseUp (FMouseEvent* ev)
 {
-  auto parent = getParentWidget();
-
-  if ( parent && parent->isDialogWidget() )
-  {
-    const auto& dialog = static_cast<FDialog*>(parent);
-
-    if ( dialog->isResizeable() && ! dialog->isZoomed() )
-    {
-      const auto b = ev->getButton();
-      const auto& tp = ev->getTermPos();
-      const auto& p = parent->termToWidgetPos(tp);
-      const auto& _ev = \
-          std::make_shared<FMouseEvent>(Event::MouseUp, p, tp, b);
-      FApplication::sendEvent (parent, _ev.get());
-    }
-  }
+  // Event handover to parent dialog
+  passResizeCornerEventToDialog(this, *ev);
 
   vbar->redraw();
   hbar->redraw();
@@ -411,29 +405,15 @@ void FTextView::onMouseUp (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FTextView::onMouseMove (FMouseEvent* ev)
 {
-  auto parent = getParentWidget();
-
-  if ( parent && parent->isDialogWidget() )
-  {
-    const auto& dialog = static_cast<FDialog*>(parent);
-
-    if ( dialog->isResizeable() && ! dialog->isZoomed() )
-    {
-      const auto b = ev->getButton();
-      const auto& tp = ev->getTermPos();
-      const auto& p = parent->termToWidgetPos(tp);
-      const auto& _ev = \
-          std::make_shared<FMouseEvent>(Event::MouseMove, p, tp, b);
-      FApplication::sendEvent (parent, _ev.get());
-    }
-  }
+  // Event handover to parent dialog
+  passResizeCornerEventToDialog(this, *ev);
 }
 
 //----------------------------------------------------------------------
 void FTextView::onWheel (FWheelEvent* ev)
 {
   static constexpr int distance = 4;
-  const MouseWheel wheel = ev->getWheel();
+  const auto& wheel = ev->getWheel();
 
   if ( wheel == MouseWheel::Up )
     scrollBy (0, -distance);
@@ -477,9 +457,9 @@ void FTextView::initLayout()
   if ( data.empty() )
     return;
 
-  for (auto&& line : data)
+  for (const auto& line : data)
   {
-    const auto column_width = getColumnWidth(line);
+    const auto column_width = getColumnWidth(line.text);
 
     if ( column_width > max_line_width )
       max_line_width = column_width;
@@ -547,13 +527,13 @@ void FTextView::adjustSize()
 
 // private methods of FTextView
 //----------------------------------------------------------------------
-std::size_t FTextView::getTextHeight() const
+auto FTextView::getTextHeight() const -> std::size_t
 {
   return getHeight() - 2 + std::size_t(nf_offset);
 }
 
 //----------------------------------------------------------------------
-std::size_t FTextView::getTextWidth() const
+auto FTextView::getTextWidth() const -> std::size_t
 {
   return getWidth() - 2 - std::size_t(nf_offset);
 }
@@ -570,14 +550,17 @@ void FTextView::init()
 //----------------------------------------------------------------------
 inline void FTextView::mapKeyFunctions()
 {
-  key_map[FKey::Up]        = [this] { scrollBy (0, -1); };
-  key_map[FKey::Down]      = [this] { scrollBy (0, 1); };
-  key_map[FKey::Left]      = [this] { scrollBy (-1, 0); };
-  key_map[FKey::Right]     = [this] { scrollBy (1, 0); };
-  key_map[FKey::Page_up]   = [this] { scrollBy (0, -int(getTextHeight())); };
-  key_map[FKey::Page_down] = [this] { scrollBy (0, int(getTextHeight())); };
-  key_map[FKey::Home]      = [this] { scrollToBegin(); };
-  key_map[FKey::End]       = [this] { scrollToEnd(); };
+  key_map =
+  {
+    { FKey::Up        , [this] { scrollBy (0, -1); } },
+    { FKey::Down      , [this] { scrollBy (0, 1); } },
+    { FKey::Left      , [this] { scrollBy (-1, 0); } },
+    { FKey::Right     , [this] { scrollBy (1, 0); } },
+    { FKey::Page_up   , [this] { scrollBy (0, -int(getTextHeight())); } },
+    { FKey::Page_down , [this] { scrollBy (0, int(getTextHeight())); } },
+    { FKey::Home      , [this] { scrollToBegin(); } },
+    { FKey::End       , [this] { scrollToEnd(); } }
+  };
 }
 
 //----------------------------------------------------------------------
@@ -654,8 +637,7 @@ void FTextView::drawText()
     const std::size_t n = std::size_t(yoffset) + y;
     const std::size_t pos = std::size_t(xoffset) + 1;
     const auto text_width = getTextWidth();
-    const FString line(getColumnSubString(data[n], pos, text_width));
-    std::size_t trailing_whitespace{0};
+    const FString line(getColumnSubString(data[n].text, pos, text_width));
     print() << FPoint{2, 2 - nf_offset + int(y)};
     FVTermBuffer line_buffer{};
     line_buffer.print(line);
@@ -664,13 +646,15 @@ void FTextView::drawText()
       if ( ! isPrintable(fchar.ch[0]) )
         fchar.ch[0] = L'.';
 
-    print(line_buffer);
     const auto column_width = getColumnWidth(line);
 
     if ( column_width <= text_width )
-      trailing_whitespace = text_width - column_width;
+    {
+      auto trailing_whitespace = text_width - column_width;
+      line_buffer.print() << FString{trailing_whitespace, L' '};
+    }
 
-    print() << FString{trailing_whitespace, L' '};
+    printHighlighted (line_buffer, data[n].highlight);
   }
 
   if ( FVTerm::getFOutput()->isMonochron() )
@@ -678,7 +662,33 @@ void FTextView::drawText()
 }
 
 //----------------------------------------------------------------------
-inline bool FTextView::useFDialogBorder() const
+void FTextView::printHighlighted ( FVTermBuffer& line_buffer
+                                 , const std::vector<FTextHighlight>& highlight )
+{
+  for (auto&& hgl : highlight)
+  {
+    for (std::size_t i{0}; i < hgl.length; i++)
+    {
+      if ( hgl.index + i < std::size_t(xoffset) )
+        continue;
+
+      auto index = hgl.index + i - std::size_t(xoffset);
+
+      if ( index >= line_buffer.getLength() )
+        break;
+
+      auto& fchar = line_buffer[index];
+      fchar.fg_color = hgl.attributes.fg_color;
+      fchar.bg_color = hgl.attributes.bg_color;
+      fchar.attr = hgl.attributes.attr;
+    }
+  }
+
+  print(line_buffer);
+}
+
+//----------------------------------------------------------------------
+inline auto FTextView::useFDialogBorder() const -> bool
 {
   const auto& parent = getParentWidget();
   bool use_fdialog_border{false};
@@ -698,7 +708,7 @@ inline bool FTextView::useFDialogBorder() const
 }
 
 //----------------------------------------------------------------------
-inline bool FTextView::isPrintable (wchar_t ch) const
+inline auto FTextView::isPrintable (wchar_t ch) const -> bool
 {
   // Check for printable characters
 
@@ -737,7 +747,7 @@ void FTextView::changeOnResize() const
 //----------------------------------------------------------------------
 void FTextView::cb_vbarChange (const FWidget*)
 {
-  const FScrollbar::ScrollType scroll_type = vbar->getScrollType();
+  const auto scroll_type = vbar->getScrollType();
   static constexpr int wheel_distance = 4;
   int distance{1};
 
@@ -784,7 +794,7 @@ void FTextView::cb_vbarChange (const FWidget*)
 //----------------------------------------------------------------------
 void FTextView::cb_hbarChange (const FWidget*)
 {
-  const FScrollbar::ScrollType scroll_type = hbar->getScrollType();
+  const auto scroll_type = hbar->getScrollType();
   static constexpr int wheel_distance = 4;
   int distance{1};
 

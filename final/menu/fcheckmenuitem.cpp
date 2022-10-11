@@ -55,7 +55,7 @@ FCheckMenuItem::~FCheckMenuItem() noexcept = default;  // destructor
 void FCheckMenuItem::init()
 {
   setCheckable();
-  FWidget* parent = getParentWidget();
+  const auto& parent = getParentWidget();
 
   if ( ! parent )
     return;

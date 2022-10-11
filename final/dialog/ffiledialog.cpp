@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2021 Markus Gans                                      *
+* Copyright 2014-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -40,26 +40,26 @@ namespace finalcut
 
 // non-member functions
 //----------------------------------------------------------------------
-bool sortByName ( const FFileDialog::FDirEntry& lhs
-                , const FFileDialog::FDirEntry& rhs )
+auto sortByName ( const FFileDialog::FDirEntry& lhs
+                , const FFileDialog::FDirEntry& rhs ) -> bool
 {
   // lhs < rhs
   return FStringCaseCompare(lhs.name, rhs.name) < 0;
 }
 
 //----------------------------------------------------------------------
-bool sortDirFirst ( const FFileDialog::FDirEntry& lhs
-                  , const FFileDialog::FDirEntry& rhs )
+auto sortDirFirst ( const FFileDialog::FDirEntry& lhs
+                  , const FFileDialog::FDirEntry& rhs ) -> bool
 {
   // sort directories first
   return ( lhs.directory && ! rhs.directory );
 }
 
 //----------------------------------------------------------------------
-FString fileChooser ( FWidget* parent
-                    , const FString& dirname
-                    , const FString& filter
-                    , FFileDialog::DialogType type )
+auto fileChooser ( FWidget* parent
+                 , const FString& dirname
+                 , const FString& filter
+                 , FFileDialog::DialogType type ) -> FString
 {
   FString ret{};
   FString path{dirname};
@@ -123,7 +123,7 @@ FFileDialog::~FFileDialog() noexcept = default;  // destructor
 
 // public methods of FFileDialog
 //----------------------------------------------------------------------
-FString FFileDialog::getSelectedFile() const
+auto FFileDialog::getSelectedFile() const -> FString
 {
   const auto n = uLong(filebrowser.currentItem() - 1);
 
@@ -176,10 +176,11 @@ void FFileDialog::setPath (const FString& dir)
 void FFileDialog::setFilter (const FString& filter)
 {
   filter_pattern = filter;
+  setTitelbarText();
 }
 
 //----------------------------------------------------------------------
-bool FFileDialog::setShowHiddenFiles (bool enable)
+auto FFileDialog::setShowHiddenFiles (bool enable) -> bool
 {
   if ( show_hidden == enable )
     return show_hidden;
@@ -201,7 +202,7 @@ void FFileDialog::onKeyPress (FKeyEvent* ev)
   if ( ! filebrowser.hasFocus() )
     return;
 
-  const FKey key = ev->key();
+  const auto& key = ev->key();
 
   if ( key == FKey::Erase || key == FKey::Backspace )
   {
@@ -211,17 +212,17 @@ void FFileDialog::onKeyPress (FKeyEvent* ev)
 }
 
 //----------------------------------------------------------------------
-FString FFileDialog::fileOpenChooser ( FWidget* parent
-                                     , const FString& dirname
-                                     , const FString& filter )
+auto FFileDialog::fileOpenChooser ( FWidget* parent
+                                  , const FString& dirname
+                                  , const FString& filter ) -> FString
 {
   return fileChooser (parent, dirname, filter, DialogType::Open);
 }
 
 //----------------------------------------------------------------------
-FString FFileDialog::fileSaveChooser ( FWidget* parent
-                                     , const FString& dirname
-                                     , const FString& filter )
+auto FFileDialog::fileSaveChooser ( FWidget* parent
+                                  , const FString& dirname
+                                  , const FString& filter ) -> FString
 {
   return fileChooser (parent, dirname, filter, DialogType::Save);
 }
@@ -288,11 +289,7 @@ void FFileDialog::init()
   else
     x = y = 1;
 
-  if ( dlg_type == DialogType::Save )
-    FDialog::setText("Save file");
-  else
-    FDialog::setText("Open file");
-
+  setTitelbarText();
   widgetSettings (FPoint{x, y});  // Create widgets
   initCallbacks();
   setModal();
@@ -366,8 +363,8 @@ void FFileDialog::initCallbacks()
 }
 
 //----------------------------------------------------------------------
-inline bool FFileDialog::patternMatch ( const std::string& pattern
-                                      , const std::string& fname ) const
+inline auto FFileDialog::patternMatch ( const std::string& pattern
+                                      , const std::string& fname ) const -> bool
 {
   std::string search{};
   search.reserve(128);
@@ -394,14 +391,14 @@ void FFileDialog::clear()
 }
 
 //----------------------------------------------------------------------
-sInt64 FFileDialog::numOfDirs()
+auto FFileDialog::numOfDirs() -> sInt64
 {
   if ( dir_entries.empty() )
     return 0;
 
   const sInt64 n = std::count_if ( std::begin(dir_entries)
                                  , std::end(dir_entries)
-                                 , [] (const FDirEntry& entry)
+                                 , [] (const auto& entry)
                                    {
                                      return entry.directory
                                          && entry.name != ".";
@@ -434,7 +431,7 @@ void FFileDialog::sortDir()
 }
 
 //----------------------------------------------------------------------
-int FFileDialog::readDir()
+auto FFileDialog::readDir() -> int
 {
   const auto& dir = directory.c_str();
   auto directory_stream = opendir(dir);
@@ -525,9 +522,7 @@ void FFileDialog::getEntry (const char* const dir, const struct dirent* d_entry)
 
   followSymLink (dir, entry);
 
-  if ( entry.directory )
-    dir_entries.push_back (entry);
-  else if ( patternMatch(filter, entry.name) )
+  if ( entry.directory || patternMatch(filter, entry.name) )
     dir_entries.push_back (entry);
   else
     entry.name.clear();
@@ -566,13 +561,16 @@ void FFileDialog::dirEntriesToList()
   if ( dir_entries.empty() )
     return;
 
-  for (auto&& entry : dir_entries)
-  {
-    if ( entry.directory )
-      filebrowser.insert(FString{entry.name}, BracketType::Brackets);
-    else
-      filebrowser.insert(FString{entry.name});
-  }
+  std::for_each ( dir_entries.cbegin()
+                , dir_entries.cend()
+                , [this] (const auto& entry)
+                  {
+                    if ( entry.directory )
+                      filebrowser.insert(FString{entry.name}, BracketType::Brackets);
+                    else
+                      filebrowser.insert(FString{entry.name});
+                  }
+                );
 }
 
 //----------------------------------------------------------------------
@@ -583,7 +581,7 @@ void FFileDialog::selectDirectoryEntry (const std::string& name)
 
   std::size_t i{1};
 
-  for (auto&& entry : dir_entries)
+  for (const auto& entry : dir_entries)
   {
     if ( entry.name == name )
     {
@@ -597,7 +595,7 @@ void FFileDialog::selectDirectoryEntry (const std::string& name)
 }
 
 //----------------------------------------------------------------------
-int FFileDialog::changeDir (const FString& dirname)
+auto FFileDialog::changeDir (const FString& dirname) -> int
 {
   FString lastdir{directory};
   FString newdir{dirname};
@@ -656,7 +654,7 @@ void FFileDialog::printPath (const FString& txt)
 {
   const auto& path = txt;
   const std::size_t max_width = filebrowser.getWidth() - 4;
-  const std::size_t column_width = getColumnWidth(path);
+  const auto column_width = getColumnWidth(path);
 
   if ( column_width > max_width )
   {
@@ -670,7 +668,24 @@ void FFileDialog::printPath (const FString& txt)
 }
 
 //----------------------------------------------------------------------
-FString FFileDialog::getHomeDir()
+void FFileDialog::setTitelbarText()
+{
+  auto suffix = [this] ()
+  {
+    if ( ! filter_pattern.isEmpty() && filter_pattern != L"*" )
+      return FString(L" (") + filter_pattern + L")";
+
+    return FString{};
+  }();
+
+  if ( dlg_type == DialogType::Save )
+    FDialog::setText("Save file" + suffix);
+  else
+    FDialog::setText("Open file" + suffix);
+}
+
+//----------------------------------------------------------------------
+auto FFileDialog::getHomeDir() -> FString
 {
   struct passwd pwd{};
   struct passwd* pwd_ptr{};
@@ -692,12 +707,14 @@ void FFileDialog::cb_processActivate()
     || filename.getText().includes('?') )
   {
     setFilter(filename.getText());
+    redraw();  // Show new filter in title bar
     readDir();
     filebrowser.redraw();
   }
   else if ( filename.getText().getLength() == 0 )
   {
     setFilter("*");
+    redraw();  // Delete filter from title bar
     readDir();
     filebrowser.redraw();
   }
@@ -716,7 +733,7 @@ void FFileDialog::cb_processActivate()
     {
       found = std::any_of ( std::begin(dir_entries)
                           , std::end(dir_entries)
-                          , [&input] (const FDirEntry& entry)
+                          , [&input] (const auto& entry)
                             {
                               return ! entry.name.empty()
                                   && input

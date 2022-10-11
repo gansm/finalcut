@@ -16,7 +16,7 @@ list boxes, status bars and so on.
 Installation
 ------------
 
-> git clone git://github.com/gansm/finalcut.git
+> git clone https://github.com/gansm/finalcut.git
 > cd finalcut
 > autoreconf --install --force
 > ./configure --prefix=/usr

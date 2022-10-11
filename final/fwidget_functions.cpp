@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2021 Markus Gans                                      *
+* Copyright 2019-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -22,7 +22,9 @@
 
 #include <algorithm>
 
+#include "final/dialog/fdialog.h"
 #include "final/fapplication.h"
+#include "final/fevent.h"
 #include "final/fwidgetcolors.h"
 #include "final/fwidget_functions.h"
 #include "final/fwidget.h"
@@ -35,7 +37,7 @@ namespace finalcut
 
 // FWidget non-member functions
 //----------------------------------------------------------------------
-bool isFocusNextKey (const FKey key)
+auto isFocusNextKey (const FKey key) -> bool
 {
   return ( key == FKey::Tab
         || key == FKey::Right
@@ -43,7 +45,7 @@ bool isFocusNextKey (const FKey key)
 }
 
 //----------------------------------------------------------------------
-bool isFocusPrevKey (const FKey key)
+auto isFocusPrevKey (const FKey key) -> bool
 {
   return ( key == FKey::Back_tab
         || key == FKey::Left
@@ -51,7 +53,7 @@ bool isFocusPrevKey (const FKey key)
 }
 
 //----------------------------------------------------------------------
-bool isDialogMenuKey (const FKey key)
+auto isDialogMenuKey (const FKey key) -> bool
 {
   return ( key == FKey::Ctrl_caret     // Ctrl+^ (Ctrl+6)
         || key == FKey::F22            // Shift+F10
@@ -59,21 +61,21 @@ bool isDialogMenuKey (const FKey key)
 }
 
 //----------------------------------------------------------------------
-bool isEnterKey (const FKey key)
+auto isEnterKey (const FKey key) -> bool
 {
   return ( key == FKey::Return
         || key == FKey::Enter );
 }
 
 //----------------------------------------------------------------------
-bool isEscapeKey (const FKey key)
+auto isEscapeKey (const FKey key) -> bool
 {
   return ( key == FKey::Escape
         || key == FKey::Escape_mintty );
 }
 
 //----------------------------------------------------------------------
-FWidget* getFirstFocusableWidget (const FObject::FObjectList& list)
+auto getFirstFocusableWidget (const FObject::FObjectList& list) -> FWidget*
 {
   if ( list.empty() )
     return nullptr;
@@ -97,7 +99,7 @@ FWidget* getFirstFocusableWidget (const FObject::FObjectList& list)
 }
 
 //----------------------------------------------------------------------
-FWidget* getLastFocusableWidget (const FObject::FObjectList& list)
+auto getLastFocusableWidget (const FObject::FObjectList& list) -> FWidget*
 {
   if ( list.empty() )
     return nullptr;
@@ -122,23 +124,23 @@ FWidget* getLastFocusableWidget (const FObject::FObjectList& list)
 }
 
 //----------------------------------------------------------------------
-bool isInFWidgetList (const FWidget::FWidgetList* list, const FWidget* obj)
+auto isInFWidgetList (const FWidget::FWidgetList* list, const FWidget* obj) -> bool
 {
   if ( ! list || ! obj )
     return false;
 
   return std::any_of ( list->cbegin(), list->cend()
-                     , [&obj] (const FWidget* w) { return w == obj; } );
+                     , [&obj] (const auto& w) { return w == obj; } );
 }
 
 //----------------------------------------------------------------------
-FApplication* getFApplication()
+auto getFApplication() -> FApplication*
 {
   return FApplication::getApplicationObject();
 }
 
 //----------------------------------------------------------------------
-FKey getHotkey (const FString& text)
+auto getHotkey (const FString& text) -> FKey
 {
   // Returns the hotkey character from a string
   // e.g. "E&xit" returns 'x'
@@ -171,7 +173,7 @@ FKey getHotkey (const FString& text)
 }
 
 //----------------------------------------------------------------------
-std::size_t getHotkeyPos (const FString& src, FString& dest)
+auto getHotkeyPos (const FString& src, FString& dest) -> std::size_t
 {
   // Find hotkey position in string
   // + generate a new string without the '&'-sign
@@ -240,7 +242,7 @@ void setWidgetFocus (FWidget* widget)
 }
 
 //----------------------------------------------------------------------
-bool setWidgetShadow (FWidget* w, bool enable)
+auto setWidgetShadow (FWidget* w, bool enable) -> bool
 {
   if ( enable
     && FVTerm::getFOutput()->getEncoding() != Encoding::VT100
@@ -256,6 +258,30 @@ bool setWidgetShadow (FWidget* w, bool enable)
   }
 
   return w->getFlags().shadow;
+}
+
+//----------------------------------------------------------------------
+void passResizeCornerEventToDialog (const FWidget* w, const FMouseEvent& ev)
+{
+  // Pass mouse event to the parent widget
+
+  auto parent = w->getParentWidget();
+
+  if ( ! parent || ! parent->isDialogWidget() )
+    return;
+
+  const auto& dialog = static_cast<FDialog*>(parent);
+
+  if ( ! dialog->isResizeable() || dialog->isZoomed() )
+    return;
+
+  const auto& type = ev.getType();
+  const auto& tpos = ev.getTermPos();
+  const auto& par = parent->termToWidgetPos(tpos);
+  const auto btn = ev.getButton();
+  const auto& new_ev = \
+      std::make_shared<FMouseEvent>(type, par, tpos, btn);
+  FApplication::sendEvent (parent, new_ev.get());
 }
 
 //----------------------------------------------------------------------
@@ -523,11 +549,11 @@ inline void checkBorder (const FWidget* w, FRect& r)
   if ( r.y1_ref() < 1 )
     r.y1_ref() = 1;
 
-  if ( r.x2_ref() > int(w->getWidth()) )
-    r.x2_ref() = int(w->getWidth());
+  if ( r.x2_ref() > r.x1_ref() + int(w->getWidth()) - 1 )
+    r.x2_ref() = r.x1_ref() + int(w->getWidth()) - 1;
 
-  if ( r.y2_ref() > int(w->getHeight()) )
-    r.y2_ref() = int(w->getHeight());
+  if ( r.y2_ref() > r.y1_ref() + int(w->getHeight()) - 1 )
+    r.y2_ref() = r.y1_ref() + int(w->getHeight()) - 1;
 }
 
 //----------------------------------------------------------------------
@@ -565,7 +591,7 @@ inline void drawBox (FWidget* w, const FRect& r)
 {
   // Use box-drawing characters to draw a border
 
-  if ( ! w )
+  if ( ! w || r.getWidth() < 3 )
     return;
 
   w->print() << r.getUpperLeftPos()

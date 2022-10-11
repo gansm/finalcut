@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2021 Markus Gans                                      *
+* Copyright 2015-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -65,18 +65,18 @@ class FCharMap final
     FCharMap() = default;
 
     // Accessors
-    FString                         getClassName() const;
-    static auto                     getInstance() -> FCharMap&;
-    static const wchar_t&           getCharacter ( const CharEncodeMap& char_enc
-                                                 , const Encoding& enc );
-    static CharEncodeType&          getCharEncodeMap();
-    static const DECGraphicsType&   getDECSpecialGraphics();
-    static const Cp437UcsType&      getCP437UCSMap();
-    static const HalfFullWidthType& getHalfFullWidthMap();
+    auto        getClassName() const -> FString;
+    static auto getInstance() -> FCharMap&;
+    static auto getCharacter ( const CharEncodeMap& char_enc
+                             , const Encoding& enc ) -> const wchar_t&;
+    static auto getCharEncodeMap() -> CharEncodeType&;
+    static auto getDECSpecialGraphics() -> const DECGraphicsType&;
+    static auto getCP437UCSMap() -> const Cp437UcsType&;
+    static auto getHalfFullWidthMap() -> const HalfFullWidthType&;
 
     // Mutators
-    static wchar_t&                 setCharacter ( CharEncodeMap& char_enc
-                                                 , const Encoding& enc );
+    static auto setCharacter ( CharEncodeMap& char_enc
+                             , const Encoding& enc ) -> wchar_t&;
 
   private:
     // Data members
@@ -88,7 +88,7 @@ class FCharMap final
 
 // FCharMap inline functions
 //----------------------------------------------------------------------
-inline FString FCharMap::getClassName() const
+inline auto FCharMap::getClassName() const -> FString
 { return "FCharMap"; }
 
 }  // namespace finalcut

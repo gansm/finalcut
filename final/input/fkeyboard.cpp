@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2021 Markus Gans                                      *
+* Copyright 2018-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -46,12 +46,11 @@ namespace finalcut
 {
 
 // static class attributes
-uInt64 FKeyboard::key_timeout{100000};             // 100 ms  (10 Hz)
-uInt64 FKeyboard::read_blocking_time{100000};      // 100 ms  (10 Hz)
-uInt64 FKeyboard::read_blocking_time_short{5000};  //   5 ms (200 Hz)
-bool   FKeyboard::non_blocking_input_support{true};
+uInt64    FKeyboard::key_timeout{100'000};             // 100 ms  (10 Hz)
+uInt64    FKeyboard::read_blocking_time{100'000};      // 100 ms  (10 Hz)
+uInt64    FKeyboard::read_blocking_time_short{5'000};  //   5 ms (200 Hz)
+bool      FKeyboard::non_blocking_input_support{true};
 TimeValue FKeyboard::time_keypressed{};
-FKeyboard::KeyMapEnd FKeyboard::key_cap_end{};
 
 
 //----------------------------------------------------------------------
@@ -74,7 +73,7 @@ FKeyboard::FKeyboard()
   // Sort the known key map by string length
   auto& key_map = FKeyMap::getKeyMap();
   std::sort ( key_map.begin(), key_map.end()
-            , [] (const FKeyMap::KeyMap& lhs, const FKeyMap::KeyMap& rhs)
+            , [] (const auto& lhs, const auto& rhs)
               {
                 return lhs.length < rhs.length;
               }
@@ -86,7 +85,7 @@ FKeyboard::FKeyboard()
 //----------------------------------------------------------------------
 auto FKeyboard::getInstance() -> FKeyboard&
 {
-  static const auto& keyboard = make_unique<FKeyboard>();
+  static const auto& keyboard = std::make_unique<FKeyboard>();
   return *keyboard;
 }
 
@@ -98,14 +97,14 @@ void FKeyboard::fetchKeyCode()
 }
 
 //----------------------------------------------------------------------
-FString FKeyboard::getKeyName (const FKey keynum) const
+auto FKeyboard::getKeyName (const FKey keynum) const -> FString
 {
   const auto& fkeyname = FKeyMap::getKeyName();
   const auto& found_key = std::find_if
   (
     fkeyname.cbegin(),
     fkeyname.cend(),
-    [&keynum] (const FKeyMap::KeyName& kn)
+    [&keynum] (const auto& kn)
     {
       return ( kn.num != FKey::None && kn.num == keynum );
     }
@@ -121,7 +120,7 @@ FString FKeyboard::getKeyName (const FKey keynum) const
 }
 
 //----------------------------------------------------------------------
-bool FKeyboard::setNonBlockingInput (bool enable)
+auto FKeyboard::setNonBlockingInput (bool enable) -> bool
 {
   if ( enable == non_blocking_stdin )
     return non_blocking_stdin;
@@ -145,13 +144,13 @@ bool FKeyboard::setNonBlockingInput (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool& FKeyboard::hasUnprocessedInput() & noexcept
+auto FKeyboard::hasUnprocessedInput() const noexcept -> bool
 {
-  return unprocessed_buffer_data;
+  return fifo_buf.hasData();
 }
 
 //----------------------------------------------------------------------
-bool FKeyboard::isKeyPressed (uInt64 blocking_time)
+auto FKeyboard::isKeyPressed (uInt64 blocking_time) -> bool
 {
   if ( has_pending_input )
     return false;
@@ -192,11 +191,9 @@ void FKeyboard::clearKeyBuffer() noexcept
 {
   // Empty the buffer
 
-  fifo_offset = 0;
   fkey = FKey::None;
   key = FKey::None;
-  std::fill_n (fifo_buf, FIFO_BUF_SIZE, '\0');
-  fifo_in_use = false;
+  fifo_buf.clear();
 }
 
 //----------------------------------------------------------------------
@@ -204,7 +201,7 @@ void FKeyboard::clearKeyBufferOnTimeout()
 {
   // Empty the buffer on timeout
 
-  if ( fifo_in_use && isKeypressTimeout() )
+  if ( fifo_buf.hasData() && isKeypressTimeout() )
     clearKeyBuffer();
 }
 
@@ -214,16 +211,11 @@ void FKeyboard::escapeKeyHandling()
   // Send an escape key press event if there is only one 0x1b
   // in the buffer and the timeout is reached
 
-  if ( fifo_in_use
-    && fifo_offset == 1
+  if ( fifo_buf.getSize() == 1
     && fifo_buf[0] == 0x1b
-    && fifo_buf[1] == 0x00
     && isKeypressTimeout() )
   {
-    fifo_offset = 0;
-    fifo_buf[0] = 0x00;
-    fifo_in_use = false;
-    unprocessed_buffer_data = false;
+    fifo_buf.clear();
     escapeKeyPressed();
   }
 
@@ -258,14 +250,14 @@ void FKeyboard::processQueuedInput()
 
 // private methods of FKeyboard
 //----------------------------------------------------------------------
-inline FKey FKeyboard::getMouseProtocolKey() const
+inline auto FKeyboard::getMouseProtocolKey() const -> FKey
 {
   // Looking for mouse string in the key buffer
 
   if ( ! mouse_support )
     return NOT_SET;
 
-  const auto buf_len = std::size_t(fifo_offset);
+  const auto buf_len = fifo_buf.getSize();
 
   // x11 mouse tracking
   if ( buf_len >= 6 && fifo_buf[1] == '[' && fifo_buf[2] == 'M' )
@@ -286,21 +278,21 @@ inline FKey FKeyboard::getMouseProtocolKey() const
 }
 
 //----------------------------------------------------------------------
-inline FKey FKeyboard::getTermcapKey()
+inline auto FKeyboard::getTermcapKey() -> FKey
 {
   // Looking for termcap key strings in the buffer
 
-  static_assert ( FIFO_BUF_SIZE > 0 , "FIFO buffer too small" );
+  static_assert ( FIFO_BUF_SIZE > 0, "FIFO buffer too small" );
 
   if ( key_cap_ptr.use_count() == 0 )
     return NOT_SET;
 
-  const auto buf_len = std::size_t(fifo_offset);
+  const auto buf_len = fifo_buf.getSize();
   const auto& found_key = std::find_if
   (
     key_cap_ptr->cbegin(),
     key_cap_end,
-    [this, &buf_len] (const FKeyMap::KeyCapMap& cap_key)
+    [this, &buf_len] (const auto& cap_key)
     {
       const auto& kstr = cap_key.string;
       const auto& klen = cap_key.length;
@@ -308,22 +300,14 @@ inline FKey FKeyboard::getTermcapKey()
       if ( klen == 0 || klen != buf_len )
         return false;
 
-      return ( std::strncmp(kstr, fifo_buf, klen) == 0 );
+      return fifo_buf.strncmp_front (kstr, klen);
     }
   );
 
   if ( found_key != key_cap_end )  // found
   {
     const std::size_t len = found_key->length;
-    std::size_t n{};
-
-    for (n = len; n < FIFO_BUF_SIZE; n++)  // Remove founded entry
-      fifo_buf[n - len] = fifo_buf[n];
-
-    for (n = n - len; n < FIFO_BUF_SIZE; n++)  // Fill rest with '\0'
-      fifo_buf[n] = '\0';
-
-    unprocessed_buffer_data = bool(fifo_buf[0] != '\0');
+    fifo_buf.pop(len);  // Remove founded entry
     return found_key->num;
   }
 
@@ -331,19 +315,19 @@ inline FKey FKeyboard::getTermcapKey()
 }
 
 //----------------------------------------------------------------------
-inline FKey FKeyboard::getKnownKey()
+inline auto FKeyboard::getKnownKey() -> FKey
 {
   // Looking for a known key strings in the buffer
 
-  static_assert ( FIFO_BUF_SIZE > 0 , "FIFO buffer too small" );
+  static_assert ( FIFO_BUF_SIZE > 0, "FIFO buffer too small" );
 
-  const auto buf_len = std::size_t(fifo_offset);
+  const auto buf_len = fifo_buf.getSize();
   const auto& key_map = FKeyMap::getKeyMap();
   const auto& found_key = std::find_if
   (
     key_map.cbegin(),
     key_map.cend(),
-    [this, &buf_len] (const FKeyMap::KeyMap& known_key)
+    [this, &buf_len] (const auto& known_key)
     {
       const auto& kstr = known_key.string;  // This string is never null
       const auto& klen = known_key.length;
@@ -351,14 +335,13 @@ inline FKey FKeyboard::getKnownKey()
       if ( klen != buf_len )
         return false;
 
-      return ( std::strncmp(kstr, fifo_buf, klen) == 0 );
+      return fifo_buf.strncmp_front (kstr, klen);
     }
   );
 
   if ( found_key != key_map.cend() )  // found
   {
     const std::size_t len = found_key->length;
-    std::size_t n{};
 
     if ( len == 2
       && ( fifo_buf[1] == 'O'
@@ -369,13 +352,7 @@ inline FKey FKeyboard::getKnownKey()
       return FKey::Incomplete;
     }
 
-    for (n = len; n < FIFO_BUF_SIZE; n++)  // Remove founded entry
-      fifo_buf[n - len] = fifo_buf[n];
-
-    for (n = n - len; n < FIFO_BUF_SIZE; n++)  // Fill rest with '\0'
-      fifo_buf[n] = '\0';
-
-    unprocessed_buffer_data = bool(fifo_buf[0] != '\0');
+    fifo_buf.pop(len);  // Remove founded entry
     return found_key->num;
   }
 
@@ -383,46 +360,35 @@ inline FKey FKeyboard::getKnownKey()
 }
 
 //----------------------------------------------------------------------
-inline FKey FKeyboard::getSingleKey()
+inline auto FKeyboard::getSingleKey() -> FKey
 {
   // Looking for single key code in the buffer
 
-  std::size_t len{1};
-  std::size_t n{};
-  const auto& firstchar = uChar(fifo_buf[0]);
+  std::size_t len{1U};
+  const auto& firstchar = fifo_buf.front();
   FKey keycode{};
 
   // Look for a utf-8 character
-  if ( utf8_input && (firstchar & 0xc0) == 0xc0 )
+  if ( utf8_input && (firstchar & uChar(0xc0)) == 0xc0 )
   {
-    std::array<char, 5> utf8char{};  // Init array with '\0'
-    const std::size_t buf_len = stringLength(fifo_buf);
+    const auto buf_len = fifo_buf.getSize();
 
-    if ( (firstchar & 0xe0) == 0xc0 )
-      len = 2;
-    else if ( (firstchar & 0xf0) == 0xe0 )
-      len = 3;
-    else if ( (firstchar & 0xf8) == 0xf0 )
-      len = 4;
+    if ( (firstchar & uChar(0xe0)) == 0xc0 )
+      len = 2U;
+    else if ( (firstchar & uChar(0xf0)) == 0xe0 )
+      len = 3U;
+    else if ( (firstchar & uChar(0xf8)) == 0xf0 )
+      len = 4U;
 
-    if ( buf_len <  len && ! isKeypressTimeout() )
+    if ( buf_len < len && ! isKeypressTimeout() )
       return FKey::Incomplete;
 
-    for (std::size_t i{0}; i < len ; i++)
-      utf8char[i] = char(uChar(fifo_buf[i]));
-
-    keycode = UTF8decode(utf8char.data());
+    keycode = UTF8decode(len);
   }
   else
-    keycode = FKey(uChar(fifo_buf[0]));
+    keycode = FKey(uChar(firstchar));
 
-  for (n = len; n < FIFO_BUF_SIZE; n++)  // Remove the key from the buffer front
-    fifo_buf[n - len] = fifo_buf[n];
-
-  for (n = n - len; n < FIFO_BUF_SIZE; n++)  // Fill the rest with '\0' bytes
-    fifo_buf[n] = '\0';
-
-  unprocessed_buffer_data = bool(fifo_buf[0] != '\0');
+  fifo_buf.pop(len);  // Remove founded entry
 
   if ( keycode == FKey(0) )  // Ctrl+Space or Ctrl+@
     keycode = FKey::Ctrl_space;
@@ -431,49 +397,48 @@ inline FKey FKeyboard::getSingleKey()
 }
 
 //----------------------------------------------------------------------
-inline bool FKeyboard::isKeypressTimeout()
+inline auto FKeyboard::isKeypressTimeout() -> bool
 {
   return FObject::isTimeout (time_keypressed, key_timeout);
 }
 
 //----------------------------------------------------------------------
-FKey FKeyboard::UTF8decode (const std::string& utf8) const
+auto FKeyboard::UTF8decode (const std::size_t len) const noexcept -> FKey
 {
-  using distance_type = std::string::difference_type;
+  using distance_type = CharRingBuffer<FIFO_BUF_SIZE>::difference_type;
+  constexpr std::size_t max = 4U;
   FKey ucs{FKey::None};  // Universal coded character
-  constexpr std::size_t max = 4;
-  const auto len = utf8.length();
-  auto end = utf8.cbegin()
-           + static_cast<distance_type>(std::min(len, max));
+  const auto begin = std::begin(fifo_buf);
+  const auto end = begin + static_cast<distance_type>(std::min(len, max));
 
-  for (auto iter{utf8.cbegin()}; iter < end; ++iter)
+  for (auto iter{begin}; iter != end; ++iter)
   {
     const auto ch = uChar(*iter);
 
-    if ( (ch & 0xc0) == 0x80 )
+    if ( (ch & uChar(0xc0)) == 0x80 )
     {
       // byte 2..4 = 10xxxxxx
-      ucs = (ucs << 6) | FKey(ch & 0x3f);
+      ucs = (ucs << 6) | FKey(ch & uChar(0x3f));
     }
     else if ( ch < 128 )
     {
       // byte 1 = 0xxxxxxx (1 byte mapping)
       ucs = FKey(uChar(ch));
     }
-    else if ( (ch & 0xe0) == 0xc0 )
+    else if ( len == 2U )
     {
       // byte 1 = 110xxxxx (2 byte mapping)
-      ucs = FKey(ch & 0x1f);
+      ucs = FKey(ch & uChar(0x1f));
     }
-    else if ( (ch & 0xf0) == 0xe0 )
+    else if ( len == 3U )
     {
       // byte 1 = 1110xxxx (3 byte mapping)
-      ucs = FKey(ch & 0x0f);
+      ucs = FKey(ch & uChar(0x0f));
     }
-    else if ( (ch & 0xf8) == 0xf0 )
+    else if ( len == 4U )
     {
       // byte 1 = 11110xxx (4 byte mapping)
-      ucs = FKey(ch & 0x07);
+      ucs = FKey(ch & uChar(0x07));
     }
     else
     {
@@ -486,7 +451,7 @@ FKey FKeyboard::UTF8decode (const std::string& utf8) const
 }
 
 //----------------------------------------------------------------------
-inline ssize_t FKeyboard::readKey()
+inline auto FKeyboard::readKey() -> ssize_t
 {
   setNonBlockingInput();
   const ssize_t bytes = read(FTermios::getStdIn(), &read_character, 1);
@@ -497,22 +462,17 @@ inline ssize_t FKeyboard::readKey()
 //----------------------------------------------------------------------
 void FKeyboard::parseKeyBuffer()
 {
-  ssize_t bytesread{};
   time_keypressed = FObject::getCurrentTime();
 
-  while ( (bytesread = readKey()) > 0 )
+  while ( readKey() > 0 )
   {
     has_pending_input = false;
 
-    if ( bytesread + fifo_offset <= int(FIFO_BUF_SIZE) )
-    {
-      fifo_buf[fifo_offset] = read_character;
-      fifo_offset++;
-      fifo_in_use = true;
-    }
+    if ( ! fifo_buf.isFull() )
+      fifo_buf.push(read_character);
 
     // Read the rest from the fifo buffer
-    while ( fifo_offset > 0 && fkey != FKey::Incomplete )
+    while ( fifo_buf.hasData() && fkey != FKey::Incomplete )
     {
       fkey = parseKeyString();
       fkey = keyCorrection(fkey);
@@ -523,15 +483,11 @@ void FKeyboard::parseKeyBuffer()
       {
         key = fkey;
         mouseTracking();
-        fifo_offset = int(stringLength(fifo_buf));
         break;
       }
 
       if ( fkey != FKey::Incomplete )
-      {
         fkey_queue.push(fkey);
-        fifo_offset = int(stringLength(fifo_buf));
-      }
     }
 
     fkey = FKey::None;
@@ -542,9 +498,9 @@ void FKeyboard::parseKeyBuffer()
 }
 
 //----------------------------------------------------------------------
-FKey FKeyboard::parseKeyString()
+auto FKeyboard::parseKeyString() -> FKey
 {
-  const auto& firstchar = uChar(fifo_buf[0]);
+  const auto& firstchar = fifo_buf.front();
 
   if ( firstchar == ESC[0] )
   {
@@ -571,7 +527,7 @@ FKey FKeyboard::parseKeyString()
 }
 
 //----------------------------------------------------------------------
-FKey FKeyboard::keyCorrection (const FKey& keycode) const
+auto FKeyboard::keyCorrection (const FKey& keycode) const -> FKey
 {
   FKey key_correction;
 
@@ -598,18 +554,11 @@ void FKeyboard::substringKeyHandling()
   // Some keys (Meta-O, Meta-[, Meta-]) used substrings
   // of other keys and are only processed after a timeout
 
-  if ( fifo_in_use
-    && fifo_offset == 2
+  if ( fifo_buf.getSize() == 2
     && fifo_buf[0] == 0x1b
     && (fifo_buf[1] == 'O' || fifo_buf[1] == '[' || fifo_buf[1] == ']')
-    && fifo_buf[2] == '\0'
     && isKeypressTimeout() )
   {
-    fifo_offset = 0;
-    fifo_buf[0] = 0x00;
-    fifo_in_use = false;
-    unprocessed_buffer_data = false;
-
     if ( fifo_buf[1] == 'O' )
       fkey = FKey::Meta_O;
     else if ( fifo_buf[1] == '[' )
@@ -618,6 +567,7 @@ void FKeyboard::substringKeyHandling()
       fkey = FKey::Meta_right_square_bracket;
 
     fkey_queue.push(fkey);
+    fifo_buf.clear();
   }
 }
 

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2021 Markus Gans                                      *
+* Copyright 2018-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -19,6 +19,9 @@
 * License along with this program.  If not, see                        *
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
+
+#include <chrono>
+#include <thread>
 
 #include <cppunit/BriefTestProgressListener.h>
 #include <cppunit/CompilerOutputter.h>
@@ -42,17 +45,17 @@ class FObject_protected : public finalcut::FObject
   public:
     FObject_protected() = default;
 
-    bool event (finalcut::FEvent* ev) override
+    auto event (finalcut::FEvent* ev) -> bool override
     {
       return finalcut::FObject::event(ev);
     }
 
-    FTimerList* getTimerList() const
+    auto getTimerList() const -> FTimerList*
     {
       return finalcut::FObject::getTimerList();
     }
 
-    uInt processEvent()
+    auto processEvent() -> uInt
     {
       return processTimerEvent();
     }
@@ -62,7 +65,7 @@ class FObject_protected : public finalcut::FObject
       finalcut::FObject::setWidgetProperty (property);
     }
 
-    bool isWidget()
+    auto isWidget() -> bool
     {
       return finalcut::FObject::isWidget();
     }
@@ -85,7 +88,7 @@ class FObject_timer : public finalcut::FObject
   public:
     FObject_timer() = default;
 
-    int getValue() const
+    auto getValue() const -> int
     {
       return value;
     }
@@ -109,7 +112,7 @@ class FObject_userEvent : public finalcut::FObject
   public:
     FObject_userEvent() = default;
 
-    int getValue() const
+    auto getValue() const -> int
     {
       return value;
     }
@@ -221,7 +224,6 @@ void FObjectTest::noArgumentTest()
   CPPUNIT_ASSERT ( t.event(ev) );
   delete ev;
 
-  CPPUNIT_ASSERT ( ! finalcut::fc::emptyFString::get().isNull() );
   CPPUNIT_ASSERT ( finalcut::fc::emptyFString::get().isEmpty() );
 }
 
@@ -693,8 +695,7 @@ void FObjectTest::performTimerActionTest()
   {
     num_events += t1.processEvent();
     // Wait 100 ms
-    const struct timespec ms[]{{0, 100000000L}};
-    nanosleep (ms, nullptr);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     loop++;
   }
 

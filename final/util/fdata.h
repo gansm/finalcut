@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2021 Markus Gans                                      *
+* Copyright 2020-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -73,7 +73,7 @@ template <typename T>
 struct cleanCondition<T, true, false>
 {
   // Array to pointer
-  using type = typename std::remove_extent<T>::type*;
+  using type = std::remove_extent_t<T>*;
 };
 
 //----------------------------------------------------------------------
@@ -81,8 +81,12 @@ template <typename T>
 struct cleanCondition<T, false, true>
 {
   // Add pointer to function
-  using type = typename std::add_pointer<T>::type;
+  using type = std::add_pointer_t<T>;
 };
+
+//----------------------------------------------------------------------
+template<typename T>
+using cleanCondition_t = typename cleanCondition<T>::type;
 
 }  // namespace internal
 
@@ -91,11 +95,11 @@ template <typename T>
 class cleanFData
 {
   private:
-    using remove_ref = typename std::remove_reference<T>::type;
+    using remove_ref = std::remove_reference_t<T>;
 
   public:
     // Similar to std::decay, but keeps const and volatile
-    using type = typename internal::cleanCondition<remove_ref>::type;
+    using type = internal::cleanCondition_t<remove_ref>;
 };
 
 //----------------------------------------------------------------------
@@ -104,7 +108,7 @@ using clean_fdata_t = typename cleanFData<T>::type;
 
 //----------------------------------------------------------------------
 template <typename T>
-constexpr FData<clean_fdata_t<T>>* makeFData (T&& data)
+constexpr auto makeFData (T&& data) -> FData<clean_fdata_t<T>>*
 {
   return new FData<clean_fdata_t<T>>(std::forward<T>(data));
 }
@@ -124,13 +128,13 @@ class FDataAccess
     virtual ~FDataAccess() noexcept;
 
     // Accessors
-    virtual FString getClassName() const
+    virtual auto getClassName() const -> FString
     {
       return "FDataAccess";
     }
 
     template<typename T>
-    clean_fdata_t<T>& get()
+    constexpr auto get() -> clean_fdata_t<T>&
     {
       return static_cast<FData<clean_fdata_t<T>>&>(*this).get();
     }
@@ -138,7 +142,7 @@ class FDataAccess
     // Mutator
     template <typename T
             , typename V>
-    void set (V&& data)
+    constexpr void set (V&& data)
     {
       static_cast<FData<T>&>(*this).set(std::forward<V>(data));
     }
@@ -153,7 +157,7 @@ template <typename T>
 class FData : public FDataAccess
 {
   public:
-    using T_nocv = typename std::remove_cv<T>::type;
+    using T_nocv = std::remove_cv_t<T>;
 
     // Constructors
     explicit FData (T& v)  // constructor
@@ -178,7 +182,7 @@ class FData : public FDataAccess
     { }
 
     // Overloaded operators
-    FData& operator = (const FData& d)  // Copy assignment operator (=)
+    auto operator = (const FData& d) -> FData&  // Copy assignment operator (=)
     {
       if ( &d != this )
       {
@@ -193,7 +197,7 @@ class FData : public FDataAccess
       return *this;
     }
 
-    FData& operator = (FData&& d) noexcept  // Move assignment operator (=)
+    auto operator = (FData&& d) noexcept -> FData&  // Move assignment operator (=)
     {
       if ( &d != this )
       {
@@ -208,54 +212,54 @@ class FData : public FDataAccess
       return *this;
     }
 
-    T operator () () const
+    constexpr auto operator () () const -> T
     {
       return value_ref;
     }
 
-    explicit operator T () const
+    constexpr explicit operator T () const
     {
       return value_ref;
     }
 
-    FData& operator << (const T& v)
+    constexpr auto operator << (const T& v) -> FData&
     {
       value_ref.get() = v;
       return *this;
     }
 
     // Accessors
-    FString getClassName() const override
+    auto getClassName() const -> FString override
     {
       return "FData";
     }
 
-    T& get() const
+    constexpr auto get() const -> T&
     {
       return value_ref;
     }
 
     // Mutator
-    void set (const T& v)
+    constexpr void set (const T& v)
     {
       value_ref.get() = v;
     }
 
     // Inquiries
-    bool isInitializedCopy() const
+    constexpr auto isInitializedCopy() const -> bool
     {
       const auto& v = reinterpret_cast<void*>(const_cast<T_nocv*>(&value));
       const auto& r = reinterpret_cast<void*>(const_cast<T_nocv*>(&value_ref.get()));
       return v == r;
     }
 
-    bool isInitializedReference() const
+    constexpr auto isInitializedReference() const -> bool
     {
       return ! isInitializedCopy();
     }
 
     // Friend Non-member operator functions
-    friend std::ostream& operator << (std::ostream &os, const FData& data)
+    constexpr friend auto operator << (std::ostream &os, const FData& data) -> std::ostream&
     {
       os << data.value_ref.get();
       return os;

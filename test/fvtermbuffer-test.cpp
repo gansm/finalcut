@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021 Markus Gans                                           *
+* Copyright 2021-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -57,6 +57,7 @@ class FVTermBufferTest : public CPPUNIT_NS::TestFixture
     void noArgumentTest();
     void writeTest();
     void streamTest();
+    void indexTest();
     void combiningCharacterTest();
 
   private:
@@ -68,6 +69,7 @@ class FVTermBufferTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (noArgumentTest);
     CPPUNIT_TEST (writeTest);
     CPPUNIT_TEST (streamTest);
+    CPPUNIT_TEST (indexTest);
     CPPUNIT_TEST (combiningCharacterTest);
 
     // End of test suite definition
@@ -171,27 +173,29 @@ void FVTermBufferTest::writeTest()
   CPPUNIT_ASSERT ( vterm_buf.toString() == finalcut::FString(ch) );
 
   // Write FString
-  const finalcut::FString str = "abc…ｘｙｚ";
+  const finalcut::FString str = "abc… ｘｙｚ";
   vterm_buf.clear();
   vterm_buf.print(str);
   CPPUNIT_ASSERT ( ! vterm_buf.isEmpty() );
-  CPPUNIT_ASSERT ( vterm_buf.getLength() == 7 );
-  CPPUNIT_ASSERT ( vterm_buf.getBuffer().size() == 7 );
-  CPPUNIT_ASSERT ( vterm_buf.begin() + 7 == vterm_buf.end() );
+  CPPUNIT_ASSERT ( vterm_buf.getLength() == 8 );
+  CPPUNIT_ASSERT ( vterm_buf.getBuffer().size() == 8 );
+  CPPUNIT_ASSERT ( vterm_buf.begin() + 8 == vterm_buf.end() );
   CPPUNIT_ASSERT ( vterm_buf.getBuffer()[0].ch[0] == L'a' );
   CPPUNIT_ASSERT ( vterm_buf.getBuffer()[1].ch[0] == L'b' );
   CPPUNIT_ASSERT ( vterm_buf.getBuffer()[2].ch[0] == L'c' );
   CPPUNIT_ASSERT ( vterm_buf.getBuffer()[3].ch[0] == L'…' );
-  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[4].ch[0] == L'ｘ' );
-  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[5].ch[0] == L'ｙ' );
-  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[6].ch[0] == L'ｚ' );
+  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[4].ch[0] == L' ' );
+  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[5].ch[0] == L'ｘ' );
+  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[6].ch[0] == L'ｙ' );
+  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[7].ch[0] == L'ｚ' );
   CPPUNIT_ASSERT ( vterm_buf.getBuffer()[0].attr.bit.char_width == 1 );
   CPPUNIT_ASSERT ( vterm_buf.getBuffer()[1].attr.bit.char_width == 1 );
   CPPUNIT_ASSERT ( vterm_buf.getBuffer()[2].attr.bit.char_width == 1 );
   CPPUNIT_ASSERT ( vterm_buf.getBuffer()[3].attr.bit.char_width == 1 );
-  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[4].attr.bit.char_width == 2 );
+  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[4].attr.bit.char_width == 1 );
   CPPUNIT_ASSERT ( vterm_buf.getBuffer()[5].attr.bit.char_width == 2 );
   CPPUNIT_ASSERT ( vterm_buf.getBuffer()[6].attr.bit.char_width == 2 );
+  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[7].attr.bit.char_width == 2 );
   CPPUNIT_ASSERT ( vterm_buf.toString() == str );
 
   for (std::size_t i{0}; i < 7; i++)
@@ -358,6 +362,35 @@ void FVTermBufferTest::writeTest()
       CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].attr.bit.char_width == 2 );
     }
   }
+
+  // Non UTF-8
+  fterm_data.setTermEncoding (finalcut::Encoding::ASCII);
+  vterm_buf.clear();
+  vterm_buf.print (L"🍅");
+  CPPUNIT_ASSERT ( ! vterm_buf.isEmpty() );
+  CPPUNIT_ASSERT ( vterm_buf.getLength() == 1 );
+  CPPUNIT_ASSERT ( vterm_buf.getBuffer().size() == 1 );
+  CPPUNIT_ASSERT ( vterm_buf.begin() + 1 == vterm_buf.end() );
+  CPPUNIT_ASSERT ( vterm_buf.front().ch[0] == L'🍅' );
+  CPPUNIT_ASSERT ( vterm_buf.front().ch[1] == L'\0' );
+  CPPUNIT_ASSERT ( vterm_buf.front().ch[2] == L'\0' );
+  CPPUNIT_ASSERT ( vterm_buf.front().ch[3] == L'\0' );
+  CPPUNIT_ASSERT ( vterm_buf.front().ch[4] == L'\0' );
+  CPPUNIT_ASSERT ( vterm_buf.front().encoded_char[0] == L'\0' );
+  CPPUNIT_ASSERT ( vterm_buf.front().encoded_char[1] == L'\0' );
+  CPPUNIT_ASSERT ( vterm_buf.front().encoded_char[2] == L'\0' );
+  CPPUNIT_ASSERT ( vterm_buf.front().encoded_char[3] == L'\0' );
+  CPPUNIT_ASSERT ( vterm_buf.front().encoded_char[4] == L'\0' );
+  CPPUNIT_ASSERT ( vterm_buf.front().fg_color == finalcut::FColor::Default );
+  CPPUNIT_ASSERT ( vterm_buf.front().bg_color == finalcut::FColor::Default );
+  CPPUNIT_ASSERT ( vterm_buf.front().attr.byte[0] == 0 );
+  CPPUNIT_ASSERT ( vterm_buf.front().attr.byte[1] == 0 );
+  CPPUNIT_ASSERT ( vterm_buf.front().attr.byte[2] != 0 );
+  CPPUNIT_ASSERT ( vterm_buf.front().attr.byte[3] == 0 );
+  CPPUNIT_ASSERT ( vterm_buf.front().attr.bit.char_width == 1 );  // is 2 for UTF-8
+  vterm_buf.front().attr.bit.char_width = 0;
+  CPPUNIT_ASSERT ( vterm_buf.front().attr.byte[2] == 0 );
+  CPPUNIT_ASSERT ( vterm_buf.toString() == finalcut::FString(L'🍅') );
 }
 
 //----------------------------------------------------------------------
@@ -371,26 +404,32 @@ void FVTermBufferTest::streamTest()
   fchar_vec.front().ch[0] = L'🚧';
   fchar_vec.front().fg_color = finalcut::FColor::White;
   fchar_vec.front().bg_color = finalcut::FColor::Cyan;
-  finalcut::addColumnWidth(fchar_vec.front());
+  const auto column_width = finalcut::getColumnWidth(fchar_vec.front().ch[0]);
+  finalcut::addColumnWidth(fchar_vec.front(), column_width);
   finalcut::FVTermBuffer vterm_buf{};
+  char char_array[] = {'.', '\0'};
+  finalcut::FString fstring{L'*'};
   vterm_buf.print() << L'a'
-                   << finalcut::FColorPair{finalcut::FColor::Yellow, finalcut::FColor::Blue}
-                   << 1
-                   << finalcut::FColorPair{finalcut::FColor::Cyan, finalcut::FColor::White}
-                   << finalcut::FStyle(finalcut::Style::Dim)
-                   << finalcut::UniChar::NF_Bullet
-                   << finalcut::FStyle(finalcut::Style::Blink)
-                   << fchar_vec
-                   << std::string("🚀")
-                   << finalcut::FStyle(finalcut::Style::None)
-                   << finalcut::FStyle(finalcut::Style::DoubleUnderline)
-                   << finalcut::FColorPair{finalcut::FColor::Black, finalcut::FColor::White}
-                   << std::wstring(L"🚴");
+                    << finalcut::FColorPair{finalcut::FColor::Yellow, finalcut::FColor::Blue}
+                    << 1
+                    << finalcut::FColorPair{finalcut::FColor::Cyan, finalcut::FColor::White}
+                    << finalcut::FStyle(finalcut::Style::Dim)
+                    << finalcut::UniChar::NF_Bullet
+                    << finalcut::FStyle(finalcut::Style::Blink)
+                    << fchar_vec
+                    << std::string("🚀")
+                    << finalcut::FStyle(finalcut::Style::None)
+                    << finalcut::FStyle(finalcut::Style::DoubleUnderline)
+                    << finalcut::FColorPair{finalcut::FColor::Black, finalcut::FColor::White}
+                    << std::wstring(L"🚴")
+                    << '*'
+                    << char_array
+                    << fstring;
 
   CPPUNIT_ASSERT ( ! vterm_buf.isEmpty() );
-  CPPUNIT_ASSERT ( vterm_buf.getLength() == 6 );
-  CPPUNIT_ASSERT ( vterm_buf.getBuffer().size() == 6 );
-  CPPUNIT_ASSERT ( vterm_buf.begin() + 6 == vterm_buf.end() );
+  CPPUNIT_ASSERT ( vterm_buf.getLength() == 9 );
+  CPPUNIT_ASSERT ( vterm_buf.getBuffer().size() == 9 );
+  CPPUNIT_ASSERT ( vterm_buf.begin() + 9 == vterm_buf.end() );
   CPPUNIT_ASSERT ( vterm_buf.getBuffer()[0].ch[0] == L'a' );
   CPPUNIT_ASSERT ( vterm_buf.getBuffer()[0].fg_color == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( vterm_buf.getBuffer()[0].bg_color == finalcut::FColor::Default );
@@ -440,9 +479,9 @@ void FVTermBufferTest::streamTest()
   if ( multi_color_emojis )
     CPPUNIT_ASSERT ( vterm_buf.getBuffer()[5].attr.bit.char_width == 2 );
 
-  CPPUNIT_ASSERT ( vterm_buf.toString() == "a1\U0000e1f9🚧🚀🚴" );
+  CPPUNIT_ASSERT ( vterm_buf.toString() == "a1\U0000e1f9🚧🚀🚴*.*" );
 
-  for (std::size_t i{0}; i < 6; i++)
+  for (std::size_t i{0}; i < 9; i++)
   {
     CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].ch[1] == L'\0' );
     CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].ch[2] == L'\0' );
@@ -465,14 +504,17 @@ void FVTermBufferTest::streamTest()
 
   fchar_vec << vterm_buf;
   CPPUNIT_ASSERT ( ! fchar_vec.empty() );
-  CPPUNIT_ASSERT ( fchar_vec.size() == 6 );
-  CPPUNIT_ASSERT ( fchar_vec.begin() + 6 == fchar_vec.end() );
+  CPPUNIT_ASSERT ( fchar_vec.size() == 9 );
+  CPPUNIT_ASSERT ( fchar_vec.begin() + 9 == fchar_vec.end() );
   CPPUNIT_ASSERT ( fchar_vec[0].ch[0] == L'a' );
   CPPUNIT_ASSERT ( fchar_vec[1].ch[0] == L'1' );
   CPPUNIT_ASSERT ( fchar_vec[2].ch[0] == L'\U0000e1f9' );
   CPPUNIT_ASSERT ( fchar_vec[3].ch[0] == L'🚧' );
   CPPUNIT_ASSERT ( fchar_vec[4].ch[0] == L'🚀' );
   CPPUNIT_ASSERT ( fchar_vec[5].ch[0] == L'🚴' );
+  CPPUNIT_ASSERT ( fchar_vec[6].ch[0] == L'*' );
+  CPPUNIT_ASSERT ( fchar_vec[7].ch[0] == L'.' );
+  CPPUNIT_ASSERT ( fchar_vec[8].ch[0] == L'*' );
   CPPUNIT_ASSERT ( fchar_vec[0].fg_color == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( fchar_vec[0].bg_color == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( fchar_vec[1].fg_color == finalcut::FColor::Yellow );
@@ -485,6 +527,12 @@ void FVTermBufferTest::streamTest()
   CPPUNIT_ASSERT ( fchar_vec[4].bg_color == finalcut::FColor::White );
   CPPUNIT_ASSERT ( fchar_vec[5].fg_color == finalcut::FColor::Black );
   CPPUNIT_ASSERT ( fchar_vec[5].bg_color == finalcut::FColor::White );
+  CPPUNIT_ASSERT ( fchar_vec[6].fg_color == finalcut::FColor::Black );
+  CPPUNIT_ASSERT ( fchar_vec[6].bg_color == finalcut::FColor::White );
+  CPPUNIT_ASSERT ( fchar_vec[7].fg_color == finalcut::FColor::Black );
+  CPPUNIT_ASSERT ( fchar_vec[7].bg_color == finalcut::FColor::White );
+  CPPUNIT_ASSERT ( fchar_vec[8].fg_color == finalcut::FColor::Black );
+  CPPUNIT_ASSERT ( fchar_vec[8].bg_color == finalcut::FColor::White );
   CPPUNIT_ASSERT ( fchar_vec[0].attr.byte[0] == 0 );
   CPPUNIT_ASSERT ( fchar_vec[0].attr.byte[1] == 0 );
   CPPUNIT_ASSERT ( fchar_vec[1].attr.byte[0] == 0 );
@@ -497,6 +545,90 @@ void FVTermBufferTest::streamTest()
   CPPUNIT_ASSERT ( fchar_vec[4].attr.byte[1] == 0 );
   CPPUNIT_ASSERT ( fchar_vec[5].attr.byte[0] == 0 );
   CPPUNIT_ASSERT ( fchar_vec[5].attr.byte[1] != 0 );
+  CPPUNIT_ASSERT ( fchar_vec[6].attr.byte[0] == 0 );
+  CPPUNIT_ASSERT ( fchar_vec[6].attr.byte[1] != 0 );
+  CPPUNIT_ASSERT ( fchar_vec[7].attr.byte[0] == 0 );
+  CPPUNIT_ASSERT ( fchar_vec[7].attr.byte[1] != 0 );
+  CPPUNIT_ASSERT ( fchar_vec[8].attr.byte[0] == 0 );
+  CPPUNIT_ASSERT ( fchar_vec[8].attr.byte[1] != 0 );
+}
+
+//----------------------------------------------------------------------
+void FVTermBufferTest::indexTest()
+{
+  finalcut::FVTermBuffer vterm_buf{};
+  finalcut::FVTerm::setNormal();
+  auto color_pair1 = finalcut::FColorPair(finalcut::FColor::Red, finalcut::FColor::White);
+  auto color_pair2 = finalcut::FColorPair(finalcut::FColor::Green, finalcut::FColor::LightGray);
+  auto color_pair3 = finalcut::FColorPair(finalcut::FColor::Blue, finalcut::FColor::White);
+
+  CPPUNIT_ASSERT ( vterm_buf.isEmpty() );
+  CPPUNIT_ASSERT ( vterm_buf.getLength() == 0 );
+  CPPUNIT_ASSERT ( vterm_buf.begin() == vterm_buf.end() );
+
+  vterm_buf.print (color_pair1);
+  vterm_buf.print("Linux");
+
+  CPPUNIT_ASSERT ( ! vterm_buf.isEmpty() );
+  CPPUNIT_ASSERT ( vterm_buf.getLength() == 5 );
+  CPPUNIT_ASSERT ( vterm_buf.begin() + 5 == vterm_buf.end() );
+  vterm_buf.print (color_pair2);
+  vterm_buf.print(" for");
+
+  CPPUNIT_ASSERT ( ! vterm_buf.isEmpty() );
+  CPPUNIT_ASSERT ( vterm_buf.getLength() == 9 );
+  CPPUNIT_ASSERT ( vterm_buf.begin() + 9 == vterm_buf.end() );
+  vterm_buf.print (color_pair3);
+  vterm_buf.print(" everyone");
+
+  CPPUNIT_ASSERT ( ! vterm_buf.isEmpty() );
+  CPPUNIT_ASSERT ( vterm_buf.getLength() == 18 );
+  CPPUNIT_ASSERT ( vterm_buf.begin() + 18 == vterm_buf.end() );
+
+  const finalcut::FVTermBuffer const_buf(vterm_buf.begin(), vterm_buf.end());
+
+  for (std::size_t i{0}; i < const_buf.getLength(); i++)
+  {
+    CPPUNIT_ASSERT ( const_buf[i].ch[0] == "Linux for everyone"[i] );
+    CPPUNIT_ASSERT ( const_buf[i].attr.byte[0] == 0 );
+    CPPUNIT_ASSERT ( const_buf[i].attr.byte[1] == 0 );
+    CPPUNIT_ASSERT ( const_buf[i].attr.byte[3] == 0 );
+
+    if ( i < 5 )
+    {
+      CPPUNIT_ASSERT ( const_buf[i].fg_color == finalcut::FColor::Red );
+      CPPUNIT_ASSERT ( const_buf[i].bg_color == finalcut::FColor::White );
+    }
+    else if ( i < 9 )
+    {
+      CPPUNIT_ASSERT ( const_buf[i].fg_color == finalcut::FColor::Green );
+      CPPUNIT_ASSERT ( const_buf[i].bg_color == finalcut::FColor::LightGray );
+    }
+    else
+    {
+      CPPUNIT_ASSERT ( const_buf[i].fg_color == finalcut::FColor::Blue );
+      CPPUNIT_ASSERT ( const_buf[i].bg_color == finalcut::FColor::White );
+    }
+  }
+
+  for (std::size_t i{0}; i < vterm_buf.getLength(); i++)
+  {
+    vterm_buf[i].ch[0] = "FINAL CUT for all."[i];
+    vterm_buf[i].fg_color = finalcut::FColor::Blue;
+    vterm_buf[i].bg_color = finalcut::FColor::White;
+    vterm_buf[i].attr.bit.italic = true;
+  }
+
+  for (std::size_t i{0}; i < vterm_buf.getLength(); i++)
+  {
+    CPPUNIT_ASSERT ( vterm_buf[i].ch[0] == "FINAL CUT for all."[i] );
+    CPPUNIT_ASSERT ( vterm_buf[i].attr.byte[0] != 0 );
+    CPPUNIT_ASSERT ( vterm_buf[i].attr.byte[1] == 0 );
+    CPPUNIT_ASSERT ( vterm_buf[i].attr.byte[3] == 0 );
+    CPPUNIT_ASSERT ( vterm_buf[i].attr.bit.italic == true );
+    CPPUNIT_ASSERT ( vterm_buf[i].fg_color == finalcut::FColor::Blue );
+    CPPUNIT_ASSERT ( vterm_buf[i].bg_color == finalcut::FColor::White );
+  }
 }
 
 //----------------------------------------------------------------------

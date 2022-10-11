@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2021 Markus Gans                                      *
+* Copyright 2019-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -86,7 +86,7 @@ class FSystemImpl : public FSystem
 
     // Methods
 #if defined(ISA_SYSCTL_SUPPORT)
-    uChar inPortByte (uShort port) override
+    auto inPortByte (uShort port) -> uChar override
     {
       return ::inb (port);
     }
@@ -108,12 +108,12 @@ class FSystemImpl : public FSystem
     { }
 #endif
 
-    int isTTY (int fd) const override
+    auto isTTY (int fd) const -> int override
     {
       return ::isatty(fd);
     }
 
-    int ioctl (int fd, uLong request, ...) override
+    auto ioctl (int fd, uLong request, ...) -> int override
     {
       va_list args{};
       va_start (args, request);
@@ -123,7 +123,7 @@ class FSystemImpl : public FSystem
       return ret;
     }
 
-    int open (const char* pathname, int flags, ...) override
+    auto open (const char* pathname, int flags, ...) -> int override
     {
       va_list args{};
       va_start (args, flags);
@@ -133,27 +133,27 @@ class FSystemImpl : public FSystem
       return ret;
     }
 
-    int close (int fildes) override
+    auto close (int fildes) -> int override
     {
       return ::close(fildes);
     }
 
-    FILE* fopen (const char* path, const char* mode) override
+    auto fopen (const char* path, const char* mode) -> FILE* override
     {
       return std::fopen (path, mode);
     }
 
-    int fclose (FILE* fp) override
+    auto fclose (FILE* fp) -> int override
     {
       return std::fclose (fp);
     }
 
-    int fputs (const char* str, FILE* stream) override
+    auto fputs (const char* str, FILE* stream) -> int override
     {
       return std::fputs (str, stream);
     }
 
-    int putchar (int c) override
+    auto putchar (int c) -> int override
     {
 #if defined(__sun) && defined(__SVR4)
       return std::putchar(char(c));
@@ -162,20 +162,20 @@ class FSystemImpl : public FSystem
 #endif
     }
 
-    uid_t getuid() override
+    auto getuid() -> uid_t override
     {
       return ::getuid();
     }
 
-    uid_t geteuid() override
+    auto geteuid() -> uid_t override
     {
       return ::geteuid();
     }
 
-    int getpwuid_r ( uid_t, struct passwd*, char*, size_t
-                   , struct passwd** ) override;
+    auto getpwuid_r ( uid_t, struct passwd*, char*, size_t
+                   , struct passwd** ) -> int override;
 
-    char* realpath (const char*, char*) override;
+    auto realpath (const char*, char*) -> char* override;
 };
 
 }  // namespace finalcut

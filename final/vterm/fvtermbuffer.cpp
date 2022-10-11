@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2021 Markus Gans                                      *
+* Copyright 2017-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -41,15 +41,22 @@ namespace finalcut
 // class FVTermBuffer
 //----------------------------------------------------------------------
 
+// constructors and destructor
+//----------------------------------------------------------------------
+FVTermBuffer::FVTermBuffer()  // constructor
+{
+  data.reserve(2048);  // Set initial data size to 2048 FChars
+}
+
 // public methods of FVTermBuffer
 //----------------------------------------------------------------------
-FString FVTermBuffer::toString() const
+auto FVTermBuffer::toString() const -> FString
 {
   std::wstring wide_string{};
   wide_string.reserve(data.size());
   std::for_each ( data.cbegin()
                 , data.cend()
-                , [&wide_string] (const FChar& fchar)
+                , [&wide_string] (const auto& fchar)
                   {
                     for (auto&& ch : fchar.ch)
                     {
@@ -60,13 +67,13 @@ FString FVTermBuffer::toString() const
                     }
                   }
                 );
-  return wide_string;
+  return FString(std::move(wide_string));
 }
 
 //----------------------------------------------------------------------
-int FVTermBuffer::print (const FString& string)
+auto FVTermBuffer::print (const FString& string) -> int
 {
-  data.reserve(data.size() + string.getLength());
+  checkCapacity(data.size() + string.getLength());
   const auto last = string.cend();
   auto cbegin = string.cbegin();
   auto iter = cbegin;
@@ -75,11 +82,11 @@ int FVTermBuffer::print (const FString& string)
   for (auto&& ch : string)
   {
     auto width = getColumnWidth(ch);
-    auto wspace = std::iswspace(wint_t(ch));
+    auto ctrl_char = std::iswcntrl(wint_t(ch));
 
-    if ( width == 0 && ! wspace )  // zero-width character
+    if ( width == 0 && ! ctrl_char )  // zero-width character
     {
-      if ( iter == cbegin)
+      if ( iter == cbegin )
         ++cbegin;
 
       ++iter;
@@ -93,7 +100,7 @@ int FVTermBuffer::print (const FString& string)
     if ( width > 0 )
       char_width += width;
 
-    if ( wspace )
+    if ( ctrl_char )
       add(cbegin, iter, char_width);
   }
 
@@ -104,11 +111,12 @@ int FVTermBuffer::print (const FString& string)
 }
 
 //----------------------------------------------------------------------
-int FVTermBuffer::print (wchar_t ch)
+auto FVTermBuffer::print (wchar_t ch) -> int
 {
   FChar nc{FVTermAttribute::getAttribute()};  // next character
   nc.ch[0] = ch;
-  addColumnWidth(nc);  // add column width
+  const auto column_width = getColumnWidth(nc.ch[0]);
+  addColumnWidth(nc, column_width);  // add column width
   nc.attr.bit.no_changes = false;
   nc.attr.bit.printed = false;
   data.emplace_back(nc);
@@ -124,11 +132,26 @@ void FVTermBuffer::print (const FStyle& style) const
 //----------------------------------------------------------------------
 void FVTermBuffer::print (const FColorPair& pair) const
 {
-  FVTermAttribute::setColor(pair.getForegroundColor(), pair.getBackgroundColor());
+  FVTermAttribute::setColor( pair.getForegroundColor()
+                           , pair.getBackgroundColor() );
 }
 
 
 // private methods of FVTermBuffer
+//----------------------------------------------------------------------
+void FVTermBuffer::checkCapacity (std::size_t size)
+{
+  if ( size <= data.capacity() )
+    return;
+
+  const auto new_size = [&size] ()
+  {
+    return std::size_t(std::pow(2, std::ceil(std::log(size) / std::log(2.0))));
+  }();
+
+  data.reserve(new_size);
+}
+
 //----------------------------------------------------------------------
 void FVTermBuffer::add ( FString::const_iterator& cbegin
                        , const FString::const_iterator& cend
@@ -143,7 +166,6 @@ void FVTermBuffer::add ( FString::const_iterator& cbegin
   nc.attr.byte[2] = 0;
   nc.attr.byte[3] = 0;
 
-
   if ( char_width == 2
     && fterm_data.getTerminalEncoding() != Encoding::UTF8 )
   {
@@ -151,19 +173,19 @@ void FVTermBuffer::add ( FString::const_iterator& cbegin
     nc.attr.bit.char_width = 1;
   }
   else
-    nc.attr.bit.char_width = char_width & 0x03;
+    nc.attr.bit.char_width = uInt8(char_width) & 0x03;
 
   std::copy(cbegin, std::min(cend, cbegin + UNICODE_MAX), nc.ch.begin());
   data.emplace_back(nc);
   cbegin = cend;
-  char_width = 0;
+  char_width = 0;  // reset char width
 }
 
 
 // FVTermBuffer non-member operators
 //----------------------------------------------------------------------
-FVTermBuffer::FCharVector& operator << ( FVTermBuffer::FCharVector& term_string
-                                       , const FVTermBuffer& buf )
+auto operator << ( FVTermBuffer::FCharVector& term_string
+                 , const FVTermBuffer& buf ) -> FVTermBuffer::FCharVector&
 {
   if ( ! buf.data.empty() )
     term_string.assign(buf.data.cbegin(), buf.data.cend());

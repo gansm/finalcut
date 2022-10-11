@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2021 Markus Gans                                      *
+* Copyright 2020-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -74,16 +74,16 @@ class FStringStream : public std::wiostream
     ~FStringStream() noexcept override;
 
     // Disable copy assignment operator (=)
-    FStringStream& operator = (const FStringStream&) = delete;
+    auto operator = (const FStringStream&) -> FStringStream& = delete;
 
     // Move assignment operator (=)
-    FStringStream& operator = (FStringStream&&) noexcept;
+    auto operator = (FStringStream&&) noexcept -> FStringStream&;
 
-    virtual FString getClassName() const;
+    virtual auto getClassName() const -> FString;
     void swap (FStringStream&) noexcept;
     void clear();
-    std::wstringbuf* rdbuf();
-    FString str() const;
+    auto rdbuf() -> std::wstringbuf*;
+    auto str() const -> FString;
 
   private:
     std::wstringbuf buffer{in_out};
@@ -92,7 +92,7 @@ class FStringStream : public std::wiostream
 
 // FStringStream inline functions
 //----------------------------------------------------------------------
-inline FString FStringStream::getClassName() const
+inline auto FStringStream::getClassName() const -> FString
 { return "FStringStream"; }
 
 //----------------------------------------------------------------------
@@ -100,11 +100,11 @@ inline void FStringStream::clear()
 { buffer.str(L""); }
 
 //----------------------------------------------------------------------
-inline std::wstringbuf* FStringStream::rdbuf()
+inline auto FStringStream::rdbuf() -> std::wstringbuf*
 { return &buffer; }
 
 //----------------------------------------------------------------------
-inline FString FStringStream::str() const
+inline auto FStringStream::str() const -> FString
 { return FString{buffer.str()}; }
 
 

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2021 Markus Gans                                      *
+* Copyright 2012-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -58,7 +58,7 @@ FButton::~FButton()  // destructor
 
 // FButton operator
 //----------------------------------------------------------------------
-FButton& FButton::operator = (const FString& s)
+auto FButton::operator = (const FString& s) -> FButton&
 {
   setText(s);
   return *this;
@@ -142,13 +142,13 @@ void FButton::resetColors()
 }
 
 //----------------------------------------------------------------------
-bool FButton::setNoUnderline (bool enable)
+auto FButton::setNoUnderline (bool enable) -> bool
 {
   return (setFlags().no_underline = enable);
 }
 
 //----------------------------------------------------------------------
-bool FButton::setEnable (bool enable)
+auto FButton::setEnable (bool enable) -> bool
 {
   FWidget::setEnable(enable);
 
@@ -162,7 +162,7 @@ bool FButton::setEnable (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FButton::setFocus (bool enable)
+auto FButton::setFocus (bool enable) -> bool
 {
   FWidget::setFocus(enable);
   updateButtonColor();
@@ -170,19 +170,19 @@ bool FButton::setFocus (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FButton::setFlat (bool enable)
+auto FButton::setFlat (bool enable) -> bool
 {
   return (setFlags().flat = enable);
 }
 
 //----------------------------------------------------------------------
-bool FButton::setShadow (bool enable)
+auto FButton::setShadow (bool enable) -> bool
 {
   return setWidgetShadow(this, enable);
 }
 
 //----------------------------------------------------------------------
-bool FButton::setDown (bool enable)
+auto FButton::setDown (bool enable) -> bool
 {
   if ( button_down != enable )
   {
@@ -203,32 +203,31 @@ void FButton::setText (const FString& txt)
 //----------------------------------------------------------------------
 void FButton::hide()
 {
-  FColor fg{};
-  FColor bg{};
-  auto parent_widget = getParentWidget();
+  const auto& parent_widget = getParentWidget();
   FWidget::hide();
 
   if ( parent_widget )
   {
-    fg = parent_widget->getForegroundColor();
-    bg = parent_widget->getBackgroundColor();
+    FColor fg = parent_widget->getForegroundColor();
+    FColor bg = parent_widget->getBackgroundColor();
+    setColor (fg, bg);
   }
   else
   {
     const auto& wc = getColorTheme();
-    fg = wc->dialog_fg;
-    bg = wc->dialog_bg;
+    FColor fg = wc->dialog_fg;
+    FColor bg = wc->dialog_bg;
+    setColor (fg, bg);
   }
 
-  setColor (fg, bg);
   const std::size_t s = hasShadow() ? 1 : 0;
   const std::size_t f = isFlat() ? 1 : 0;
-  const std::size_t size = getWidth() + s + (f << 1);
+  const std::size_t size = getWidth() + s + (f << 1u);
 
   if ( size == 0 )
     return;
 
-  for (std::size_t y{0}; y < getHeight() + s + (f << 1); y++)
+  for (std::size_t y{0}; y < getHeight() + s + (f << 1u); y++)
   {
     print() << FPoint{1 - int(f), 1 + int(y - f)}
             << FString{size, L' '};
@@ -400,7 +399,7 @@ inline void FButton::detectHotkey()
 }
 
 //----------------------------------------------------------------------
-inline std::size_t FButton::clickAnimationIndent (const FWidget* parent_widget)
+inline auto FButton::clickAnimationIndent (const FWidget* parent_widget) -> std::size_t
 {
   if ( ! button_down || ! click_animation )
     return 0;

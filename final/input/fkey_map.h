@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2021 Markus Gans                                      *
+* Copyright 2015-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -70,11 +70,11 @@ class FKeyMap final
     FKeyMap() = default;
 
     // Accessors
-    FString                   getClassName() const;
-    static auto               getInstance() -> FKeyMap&;
-    static KeyCapMapType&     getKeyCapMap();
-    static KeyMapType&        getKeyMap();
-    static const KeyNameType& getKeyName();
+    auto        getClassName() const -> FString;
+    static auto getInstance() -> FKeyMap&;
+    static auto getKeyCapMap() -> KeyCapMapType&;
+    static auto getKeyMap() -> KeyMapType&;
+    static auto getKeyName() -> const KeyNameType&;
 
   private:
     // Data members
@@ -85,7 +85,7 @@ class FKeyMap final
 
 // FKeyMap inline functions
 //----------------------------------------------------------------------
-inline FString FKeyMap::getClassName() const
+inline auto FKeyMap::getClassName() const -> FString
 { return "FKeyMap"; }
 
 }  // namespace finalcut

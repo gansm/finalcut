@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2021 Markus Gans                                      *
+* Copyright 2017-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -163,7 +163,7 @@ void CheckList::cb_showList()
 {
   finalcut::FString shopping_list{};
 
-  for (auto item : listview.getData())
+  for (const auto& item : listview.getData())
   {
     if ( item->isChecked() )
       shopping_list << finalcut::UniChar::Bullet << ' ' << item->getText(1) << '\n';
@@ -184,7 +184,7 @@ void CheckList::cb_showList()
 //                               main part
 //----------------------------------------------------------------------
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   // Create the application object
   finalcut::FApplication app(argc, argv);

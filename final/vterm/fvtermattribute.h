@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021 Markus Gans                                           *
+* Copyright 2021-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -65,97 +65,97 @@ class FVTermAttribute
     virtual ~FVTermAttribute() noexcept;
 
     // Disable copy assignment operator (=)
-    FVTermAttribute& operator = (const FVTermAttribute&) = delete;
+    auto operator = (const FVTermAttribute&) -> FVTermAttribute& = delete;
 
     // Disable move assignment operator (=)
-    FVTermAttribute& operator = (FVTermAttribute&&) noexcept = delete;
+    auto operator = (FVTermAttribute&&) noexcept -> FVTermAttribute& = delete;
 
     // Accessors
-    virtual FString       getClassName() const;
-    static FColor         getTermForegroundColor();
-    static FColor         getTermBackgroundColor();
-    static FChar&         getAttribute();
+    virtual auto getClassName() const -> FString;
+    static auto  getTermForegroundColor() -> FColor;
+    static auto  getTermBackgroundColor() -> FColor;
+    static auto  getAttribute() -> FChar&;
 
     // Mutators
-    static void           setColor (FColor, FColor);
-    static void           setNormal();
-    static void           setBold (bool = true);
-    static void           unsetBold();
-    static void           setDim (bool = true);
-    static void           unsetDim();
-    static void           setItalic (bool = true);
-    static void           unsetItalic();
-    static void           setUnderline (bool = true);
-    static void           unsetUnderline();
-    static void           setBlink (bool = true);
-    static void           unsetBlink();
-    static void           setReverse (bool = true);
-    static void           unsetReverse();
-    static void           setStandout (bool = true);
-    static void           unsetStandout();
-    static void           setInvisible (bool = true);
-    static void           unsetInvisible();
-    static void           setProtected (bool = true);
-    static void           unsetProtected();
-    static void           setCrossedOut (bool = true);
-    static void           unsetCrossedOut();
-    static void           setDoubleUnderline (bool = true);
-    static void           unsetDoubleUnderline();
-    static void           setAltCharset (bool = true);
-    static void           unsetAltCharset();
-    static void           setPCcharset (bool = true);
-    static void           unsetPCcharset();
-    static void           setTransparent (bool = true);
-    static void           unsetTransparent();
-    static void           setColorOverlay (bool = true);
-    static void           unsetColorOverlay();
-    static void           setInheritBackground (bool = true);
-    static void           unsetInheritBackground();
+    static void  setColor (FColor, FColor);
+    static void  setNormal();
+    static void  setBold (bool = true);
+    static void  unsetBold();
+    static void  setDim (bool = true);
+    static void  unsetDim();
+    static void  setItalic (bool = true);
+    static void  unsetItalic();
+    static void  setUnderline (bool = true);
+    static void  unsetUnderline();
+    static void  setBlink (bool = true);
+    static void  unsetBlink();
+    static void  setReverse (bool = true);
+    static void  unsetReverse();
+    static void  setStandout (bool = true);
+    static void  unsetStandout();
+    static void  setInvisible (bool = true);
+    static void  unsetInvisible();
+    static void  setProtected (bool = true);
+    static void  unsetProtected();
+    static void  setCrossedOut (bool = true);
+    static void  unsetCrossedOut();
+    static void  setDoubleUnderline (bool = true);
+    static void  unsetDoubleUnderline();
+    static void  setAltCharset (bool = true);
+    static void  unsetAltCharset();
+    static void  setPCcharset (bool = true);
+    static void  unsetPCcharset();
+    static void  setTransparent (bool = true);
+    static void  unsetTransparent();
+    static void  setColorOverlay (bool = true);
+    static void  unsetColorOverlay();
+    static void  setInheritBackground (bool = true);
+    static void  unsetInheritBackground();
 
     // Inquiries
-    static bool           isBold();
-    static bool           isDim();
-    static bool           isItalic();
-    static bool           isUnderline();
-    static bool           isBlink();
-    static bool           isReverse();
-    static bool           isStandout();
-    static bool           isInvisible();
-    static bool           isProtected();
-    static bool           isCrossedOut();
-    static bool           isDoubleUnderline();
-    static bool           isAltCharset();
-    static bool           isPCcharset();
-    static bool           isTransparent();
-    static bool           isColorOverlay();
-    static bool           isInheritBackground();
+    static auto  isBold() -> bool;
+    static auto  isDim() -> bool;
+    static auto  isItalic() -> bool;
+    static auto  isUnderline() -> bool;
+    static auto  isBlink() -> bool;
+    static auto  isReverse() -> bool;
+    static auto  isStandout() -> bool;
+    static auto  isInvisible() -> bool;
+    static auto  isProtected() -> bool;
+    static auto  isCrossedOut() -> bool;
+    static auto  isDoubleUnderline() -> bool;
+    static auto  isAltCharset() -> bool;
+    static auto  isPCcharset() -> bool;
+    static auto  isTransparent() -> bool;
+    static auto  isColorOverlay() -> bool;
+    static auto  isInheritBackground() -> bool;
 
     // Methods
-    static void           initAttribute();
-    static void           print (const FStyle&);
-    static void           print (const FColorPair&);
+    static void  initAttribute();
+    static void  print (const FStyle&);
+    static void  print (const FColorPair&);
 
   private:
     // Data members
-    static FChar          next_attribute;
+    static FChar next_attribute;
 };
 
 
 // FVTermAttribute inline functions
 //----------------------------------------------------------------------
-inline FString FVTermAttribute::getClassName() const
+inline auto FVTermAttribute::getClassName() const -> FString
 { return "FVTermAttribute"; }
 
 //----------------------------------------------------------------------
-inline FColor FVTermAttribute::getTermForegroundColor()
+inline auto FVTermAttribute::getTermForegroundColor() -> FColor
 { return next_attribute.fg_color; }
 
 //----------------------------------------------------------------------
-inline FColor FVTermAttribute::getTermBackgroundColor()
+inline auto FVTermAttribute::getTermBackgroundColor() -> FColor
 { return next_attribute.bg_color; }
 
 //----------------------------------------------------------------------
-inline FChar& FVTermAttribute::getAttribute()
+inline auto FVTermAttribute::getAttribute() -> FChar&
 { return next_attribute; }
 
 //----------------------------------------------------------------------
@@ -306,67 +306,67 @@ inline void FVTermAttribute::unsetInheritBackground()
 { setInheritBackground(false); }
 
 //----------------------------------------------------------------------
-inline bool FVTermAttribute::isBold()
+inline auto FVTermAttribute::isBold() -> bool
 { return next_attribute.attr.bit.bold; }
 
 //----------------------------------------------------------------------
-inline bool FVTermAttribute::isDim()
+inline auto FVTermAttribute::isDim() -> bool
 { return next_attribute.attr.bit.dim; }
 
 //----------------------------------------------------------------------
-inline bool FVTermAttribute::isItalic()
+inline auto FVTermAttribute::isItalic() -> bool
 { return next_attribute.attr.bit.italic; }
 
 //----------------------------------------------------------------------
-inline bool FVTermAttribute::isUnderline()
+inline auto FVTermAttribute::isUnderline() -> bool
 { return next_attribute.attr.bit.underline; }
 
 //----------------------------------------------------------------------
-inline bool FVTermAttribute::isBlink()
+inline auto FVTermAttribute::isBlink() -> bool
 { return next_attribute.attr.bit.blink; }
 
 //----------------------------------------------------------------------
-inline bool FVTermAttribute::isReverse()
+inline auto FVTermAttribute::isReverse() -> bool
 { return next_attribute.attr.bit.reverse; }
 
 //----------------------------------------------------------------------
-inline bool FVTermAttribute::isStandout()
+inline auto FVTermAttribute::isStandout() -> bool
 { return next_attribute.attr.bit.standout; }
 
 //----------------------------------------------------------------------
-inline bool FVTermAttribute::isInvisible()
+inline auto FVTermAttribute::isInvisible() -> bool
 { return next_attribute.attr.bit.invisible; }
 
 //----------------------------------------------------------------------
-inline bool FVTermAttribute::isProtected()
+inline auto FVTermAttribute::isProtected() -> bool
 { return next_attribute.attr.bit.protect; }
 
 //----------------------------------------------------------------------
-inline bool FVTermAttribute::isCrossedOut()
+inline auto FVTermAttribute::isCrossedOut() -> bool
 { return next_attribute.attr.bit.crossed_out; }
 
 //----------------------------------------------------------------------
-inline bool FVTermAttribute::isDoubleUnderline()
+inline auto FVTermAttribute::isDoubleUnderline() -> bool
 { return next_attribute.attr.bit.dbl_underline; }
 
 //----------------------------------------------------------------------
-inline bool FVTermAttribute::isAltCharset()
+inline auto FVTermAttribute::isAltCharset() -> bool
 { return next_attribute.attr.bit.alt_charset; }
 
 //----------------------------------------------------------------------
-inline bool FVTermAttribute::isPCcharset()
+inline auto FVTermAttribute::isPCcharset() -> bool
 { return next_attribute.attr.bit.pc_charset; }
 
 //----------------------------------------------------------------------
-inline bool FVTermAttribute::isTransparent()
+inline auto FVTermAttribute::isTransparent() -> bool
 { return next_attribute.attr.bit.transparent; }
 
 //----------------------------------------------------------------------
-inline bool FVTermAttribute::isColorOverlay()
+inline auto FVTermAttribute::isColorOverlay() -> bool
 { return next_attribute.attr.bit.color_overlay; }
 
 //----------------------------------------------------------------------
-inline bool FVTermAttribute::isInheritBackground()
+inline auto FVTermAttribute::isInheritBackground() -> bool
 { return next_attribute.attr.bit.inherit_background; }
 
 }  // namespace finalcut

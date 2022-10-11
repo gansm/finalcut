@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2021 Markus Gans                                      *
+* Copyright 2019-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -33,6 +33,9 @@
 
 #include <sys/wait.h>
 #include <sys/mman.h>
+
+#include <chrono>
+#include <thread>
 
 #include <final/final.h>
 
@@ -111,36 +114,36 @@ class ConEmu
     }
 
     // Disable assignment operator (=)
-    ConEmu& operator = (const ConEmu&) = delete;
+    auto operator = (const ConEmu&) -> ConEmu& = delete;
 
   protected:
     // Mutators
     void        enableConEmuDebug (bool) noexcept;
 
     // Inquiries
-    bool        isConEmuChildProcess (pid_t) const noexcept;
+    auto        isConEmuChildProcess (pid_t) const noexcept -> bool;
 
     // Methods
     void        printConEmuDebug();
     void        closeConEmuStdStreams();
-    pid_t       forkConEmu();
+    auto       forkConEmu() -> pid_t;
     void        startConEmuTerminal (console);
 
   private:
     // Accessors
-    const char* getAnswerback (console);
-    const char* getDSR (console);
-    const char* getDECID (console);
-    const char* getDA (console);
-    const char* getDA1 (console);
-    const char* getSEC_DA (console);
+    auto getAnswerback (console) -> const char*;
+    auto getDSR (console) -> const char*;
+    auto getDECID (console) -> const char*;
+    auto getDA (console) -> const char*;
+    auto getDA1 (console) -> const char*;
+    auto getSEC_DA (console) -> const char*;
 
     // Methods
-    bool        openMasterPTY();
-    bool        openSlavePTY();
-    void        closeMasterPTY();
-    void        closeSlavePTY();
-    void        parseTerminalBuffer (std::size_t, console);
+    auto openMasterPTY() -> bool;
+    auto openSlavePTY() -> bool;
+    void closeMasterPTY();
+    void closeSlavePTY();
+    void parseTerminalBuffer (std::size_t, console);
 
     // Data members
     int                fd_stdin{fileno(stdin)};
@@ -432,7 +435,7 @@ inline void ConEmu::enableConEmuDebug (bool enable) noexcept
 }
 
 //----------------------------------------------------------------------
-inline bool ConEmu::isConEmuChildProcess (pid_t pid) const noexcept
+inline auto ConEmu::isConEmuChildProcess (pid_t pid) const noexcept -> bool
 {
   return bool( pid == 0 );
 }
@@ -488,7 +491,7 @@ inline void ConEmu::closeConEmuStdStreams()
 }
 
 //----------------------------------------------------------------------
-inline pid_t ConEmu::forkConEmu()
+inline auto ConEmu::forkConEmu() -> pid_t
 {
   // Initialize buffer with '\0'
   std::fill_n (buffer, sizeof(buffer), '\0');
@@ -564,9 +567,8 @@ inline pid_t ConEmu::forkConEmu()
     // Wait until the child process is ready for input
     while ( ! *shared_state && i < timeout )
     {
-      // Wait 10 ms (= 10,000,000 ns)
-      const struct timespec ms[]{{0, 10000000L}};
-      nanosleep (ms, nullptr);
+      // Wait 10 ms
+      std::this_thread::sleep_for(std::chrono::milliseconds(10));
       i++;
     }
 
@@ -575,8 +577,6 @@ inline pid_t ConEmu::forkConEmu()
 
   return pid;
 }
-
-
 
 //----------------------------------------------------------------------
 inline void ConEmu::startConEmuTerminal (console con)
@@ -634,7 +634,7 @@ inline void ConEmu::startConEmuTerminal (console con)
 
 // private methods of ConEmu
 //----------------------------------------------------------------------
-inline const char* ConEmu::getAnswerback (console con)
+inline auto ConEmu::getAnswerback (console con) -> const char*
 {
   static const char* Answerback[] =
   {
@@ -666,7 +666,7 @@ inline const char* ConEmu::getAnswerback (console con)
 }
 
 //----------------------------------------------------------------------
-inline const char* ConEmu::getDSR (console con)
+inline auto ConEmu::getDSR (console con) -> const char*
 {
   static const char* DSR[] =
   {
@@ -698,7 +698,7 @@ inline const char* ConEmu::getDSR (console con)
 }
 
 //----------------------------------------------------------------------
-inline const char* ConEmu::getDECID (console con)
+inline auto ConEmu::getDECID (console con) -> const char*
 {
   static const char* DECID[] =
   {
@@ -730,7 +730,7 @@ inline const char* ConEmu::getDECID (console con)
 }
 
 //----------------------------------------------------------------------
-inline const char* ConEmu::getDA (console con)
+inline auto ConEmu::getDA (console con) -> const char*
 {
   static const char* DA[] =
   {
@@ -762,7 +762,7 @@ inline const char* ConEmu::getDA (console con)
 }
 
 //----------------------------------------------------------------------
-inline const char* ConEmu::getDA1 (console con)
+inline auto ConEmu::getDA1 (console con) -> const char*
 {
   static const char* DA1[] =
   {
@@ -794,7 +794,7 @@ inline const char* ConEmu::getDA1 (console con)
 }
 
 //----------------------------------------------------------------------
-inline const char* ConEmu::getSEC_DA (console con)
+inline auto ConEmu::getSEC_DA (console con) -> const char*
 {
   static const char* SEC_DA[] =
   {
@@ -826,7 +826,7 @@ inline const char* ConEmu::getSEC_DA (console con)
 }
 
 //----------------------------------------------------------------------
-inline bool ConEmu::openMasterPTY()
+inline auto ConEmu::openMasterPTY() -> bool
 {
   int result;
 
@@ -852,7 +852,7 @@ inline bool ConEmu::openMasterPTY()
 }
 
 //----------------------------------------------------------------------
-inline bool ConEmu::openSlavePTY()
+inline auto ConEmu::openSlavePTY() -> bool
 {
   closeSlavePTY();
 

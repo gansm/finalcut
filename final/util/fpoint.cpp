@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2021 Markus Gans                                      *
+* Copyright 2014-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -33,7 +33,7 @@ namespace finalcut
 
 // public methods of FPoint
 //----------------------------------------------------------------------
-FPoint& FPoint::operator += (const FPoint& p)
+auto FPoint::operator += (const FPoint& p) -> FPoint&
 {
   xpos += p.xpos;
   ypos += p.ypos;
@@ -41,7 +41,7 @@ FPoint& FPoint::operator += (const FPoint& p)
 }
 
 //----------------------------------------------------------------------
-FPoint& FPoint::operator -= (const FPoint& p)
+auto FPoint::operator -= (const FPoint& p) -> FPoint&
 {
   xpos -= p.xpos;
   ypos -= p.ypos;
@@ -68,7 +68,7 @@ void FPoint::setPoint (int x, int y) noexcept
 }
 
 //----------------------------------------------------------------------
-bool FPoint::isOrigin() const noexcept
+auto FPoint::isOrigin() const noexcept -> bool
 {
   return xpos == 0 && ypos == 0;
 }
@@ -88,14 +88,14 @@ void FPoint::move (const FPoint& d)
 }
 
 //----------------------------------------------------------------------
-std::ostream& operator << (std::ostream& outstr, const FPoint& p)
+auto operator << (std::ostream& outstr, const FPoint& p) -> std::ostream&
 {
   outstr << p.xpos << " " << p.ypos;
   return outstr;
 }
 
 //----------------------------------------------------------------------
-std::istream& operator >> (std::istream& instr, FPoint& p)
+auto operator >> (std::istream& instr, FPoint& p) -> std::istream&
 {
   int x{};
   int y{};

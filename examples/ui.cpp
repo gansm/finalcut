@@ -32,7 +32,7 @@ using FKey = finalcut::FKey;
 using finalcut::FColor;
 using finalcut::FPoint;
 using finalcut::FSize;
-
+using namespace std::literals::string_literals;
 
 //----------------------------------------------------------------------
 // class ProgressDialog
@@ -792,13 +792,12 @@ void MyDialog::cb_noFunctionMsg (const finalcut::FButton& button)
 //----------------------------------------------------------------------
 void MyDialog::cb_about()
 {
-  constexpr char libver[] = F_VERSION;
   const finalcut::FString line(2, finalcut::UniChar::BoxDrawingsHorizontal);
 
   finalcut::FMessageBox info ( "About"
                              , line + L" FINAL CUT " + line + L"\n\n"
-                               L"Version " + libver + L"\n\n"
-                               L"(c) 2021 by Markus Gans"
+                               L"Version " + finalcut::fc_release + L"\n\n"
+                               L"(c) 2022 by Markus Gans"
                              , finalcut::FMessageBox::ButtonType::Ok
                              , finalcut::FMessageBox::ButtonType::Reject
                              , finalcut::FMessageBox::ButtonType::Reject
@@ -957,7 +956,7 @@ void MyDialog::cb_updateNumber()
 {
   int select_num = 0;
 
-  for (auto&& item : myList.getData() )
+  for (const auto& item : myList.getData() )
     if ( item.isSelected() )
       select_num++;
 
@@ -981,12 +980,13 @@ void MyDialog::cb_activateButton ( const finalcut::FRadioButton& rb
 //----------------------------------------------------------------------
 void MyDialog::cb_view (const finalcut::FMenuItem* item)
 {
-  finalcut::FString file{};
+  finalcut::FString file = [&item, this] ()
+  {
+    if ( item && ! item->getText().isEmpty() )
+      return item->getText();
 
-  if ( item && ! item->getText().isEmpty() )
-    file = item->getText();
-  else
-    file = finalcut::FFileDialog::fileOpenChooser (this);
+    return finalcut::FFileDialog::fileOpenChooser (this);
+  }();
 
   if ( file.isEmpty() )
     return;
@@ -994,8 +994,8 @@ void MyDialog::cb_view (const finalcut::FMenuItem* item)
   const auto& view = new TextWindow(this);
   finalcut::FString filename(basename(const_cast<char*>(file.c_str())));
   view->setText ("Viewer: " + filename);
-  view->setGeometry ( FPoint { 1 + int((getRootWidget()->getWidth() - 60) / 2),
-                               int(getRootWidget()->getHeight() / 6) }
+  view->setGeometry ( FPoint { 1 + int((getRootWidget()->getWidth() - 60) / 2)
+                             , int(getRootWidget()->getHeight() / 6) }
                     , FSize{60, getRootWidget()->getHeight() * 3 / 4} );
   view->setMinimizable();
   view->setResizeable();
@@ -1028,11 +1028,10 @@ void MyDialog::cb_setInput ( const finalcut::FListBox& listbox
 //                               main part
 //----------------------------------------------------------------------
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
-  const finalcut::FString ver{F_VERSION};  // Library version
-  const finalcut::FString title { "FINAL CUT " + ver
-                                + " (C) 2021 by Markus Gans" };
+  const finalcut::FString title { "FINAL CUT "s + finalcut::fc_release
+                                + " (C) 2022 by Markus Gans" };
 
   // Create the application object app
   finalcut::FApplication app{argc, argv};

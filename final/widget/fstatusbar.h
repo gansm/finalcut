@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2021 Markus Gans                                      *
+* Copyright 2014-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -87,44 +87,44 @@ class FStatusKey : public FWidget
     ~FStatusKey() override;
 
     // Disable copy assignment operator (=)
-    FStatusKey& operator = (const FStatusKey&) = delete;
+    auto operator = (const FStatusKey&) -> FStatusKey& = delete;
 
     // Disable move assignment operator (=)
-    FStatusKey& operator = (FStatusKey&&) noexcept = delete;
+    auto operator = (FStatusKey&&) noexcept -> FStatusKey& = delete;
 
     // Accessors
-    FString             getClassName() const override;
-    virtual FKey        getKey() const noexcept;
-    virtual FString     getText() const;
+    auto getClassName() const -> FString override;
+    virtual auto getKey() const noexcept -> FKey;
+    virtual auto getText() const -> FString;
 
     // Mutators
-    void                setKey (FKey) noexcept;
-    void                setText (const FString&);
-    void                setActive();
-    void                unsetActive() noexcept;
-    bool                setMouseFocus (bool = true);
-    bool                unsetMouseFocus();
+    void setKey (FKey) noexcept;
+    void setText (const FString&);
+    void setActive();
+    void unsetActive() noexcept;
+    auto setMouseFocus (bool = true) -> bool;
+    auto unsetMouseFocus() -> bool;
 
     // Inquiry
-    bool                isActivated() const noexcept;
-    bool                hasMouseFocus() const noexcept;
+    auto isActivated() const noexcept -> bool;
+    auto hasMouseFocus() const noexcept -> bool;
 
     // Event handler
-    void                onAccel (FAccelEvent*) override;
+    void onAccel (FAccelEvent*) override;
 
   private:
     // Methods
-    void                init();
-    void                processActivate() const;
-    FStatusBar*         getConnectedStatusbar() const;
-    void                setConnectedStatusbar (FStatusBar*);
+    void init();
+    void processActivate() const;
+    auto getConnectedStatusbar() const -> FStatusBar*;
+    void setConnectedStatusbar (FStatusBar*);
 
     // Data members
-    FString     text{};
-    FStatusBar* bar{nullptr};
-    FKey        key{};
-    bool        active{false};
-    bool        mouse_focus{false};
+    FString      text{};
+    FStatusBar*  bar{nullptr};
+    FKey         key{};
+    bool         active{false};
+    bool         mouse_focus{false};
 
     // Friend class
     friend class FStatusBar;
@@ -133,15 +133,15 @@ class FStatusKey : public FWidget
 
 // FStatusKey inline functions
 //----------------------------------------------------------------------
-inline FString FStatusKey::getClassName() const
+inline auto FStatusKey::getClassName() const -> FString
 { return "FStatusKey"; }
 
 //----------------------------------------------------------------------
-inline FKey FStatusKey::getKey() const noexcept
+inline auto FStatusKey::getKey() const noexcept -> FKey
 { return key; }
 
 //----------------------------------------------------------------------
-inline FString FStatusKey::getText() const
+inline auto FStatusKey::getText() const -> FString
 { return text; }
 
 //----------------------------------------------------------------------
@@ -157,19 +157,19 @@ inline void FStatusKey::unsetActive() noexcept
 { active = false; }
 
 //----------------------------------------------------------------------
-inline bool FStatusKey::unsetMouseFocus()
+inline auto FStatusKey::unsetMouseFocus() -> bool
 { return setMouseFocus(false); }
 
 //----------------------------------------------------------------------
-inline bool FStatusKey::isActivated() const noexcept
+inline auto FStatusKey::isActivated() const noexcept -> bool
 { return active; }
 
 //----------------------------------------------------------------------
-inline bool FStatusKey::hasMouseFocus() const noexcept
+inline auto FStatusKey::hasMouseFocus() const noexcept -> bool
 { return mouse_focus; }
 
 //----------------------------------------------------------------------
-inline FStatusBar* FStatusKey::getConnectedStatusbar() const
+inline auto FStatusKey::getConnectedStatusbar() const -> FStatusBar*
 { return bar; }
 
 //----------------------------------------------------------------------
@@ -191,74 +191,74 @@ class FStatusBar : public FWindow
     ~FStatusBar() override;
 
     // Accessors
-    FString             getClassName() const override;
-    FStatusKey*         getStatusKey (int) const;
-    FString             getMessage() const;
-    std::size_t         getCount() const;
+    auto getClassName() const -> FString override;
+    auto getStatusKey (int) const -> FStatusKey*;
+    auto getMessage() const -> FString;
+    auto getCount() const -> std::size_t;
 
     // Mutators
-    void                activateKey (int);
-    void                deactivateKey (int);
-    void                setMessage (const FString&);
-    void                resetColors() override;
+    void activateKey (int);
+    void deactivateKey (int);
+    void setMessage (const FString&);
+    void resetColors() override;
 
     // Inquiries
-    bool                isActivated (int) const;
-    bool                hasActivatedKey() const;
+    auto isActivated (int) const -> bool;
+    auto hasActivatedKey() const -> bool;
 
     // Methods
-    void                hide() override;
-    void                drawMessage();
-    void                clearMessage();
-    void                insert (FStatusKey*);
-    void                remove (FStatusKey*);
-    void                remove (int);
-    void                clear();
-    void                adjustSize() override;
+    void hide() override;
+    void drawMessage();
+    void clearMessage();
+    void insert (FStatusKey*);
+    void remove (FStatusKey*);
+    void remove (int);
+    void clear();
+    void adjustSize() override;
 
     // Event handlers
-    void                onMouseDown (FMouseEvent*) override;
-    void                onMouseUp (FMouseEvent*) override;
-    void                onMouseMove (FMouseEvent*) override;
+    void onMouseDown (FMouseEvent*) override;
+    void onMouseUp (FMouseEvent*) override;
+    void onMouseMove (FMouseEvent*) override;
 
     // Callback method
-    void                cb_statuskey_activated (const FStatusKey*);
+    void cb_statuskey_activated (const FStatusKey*);
 
   private:
     // Using-declaration
     using FKeyList = std::vector<FStatusKey*>;
 
     // Methods
-    void                init();
-    int                 getKeyNameWidth (const FStatusKey*) const;
-    int                 getKeyTextWidth (const FStatusKey*) const;
-    void                draw() override;
-    void                drawKeys();
-    void                drawKey (FKeyList::const_iterator);
-    void                drawActiveKey (FKeyList::const_iterator);
+    void init();
+    auto getKeyNameWidth (const FStatusKey*) const -> int;
+    auto getKeyTextWidth (const FStatusKey*) const -> int;
+    void draw() override;
+    void drawKeys();
+    void drawKey (FKeyList::const_iterator);
+    void drawActiveKey (FKeyList::const_iterator);
 
     // Data members
-    FKeyList            key_list{};
-    FString             text{""};
-    std::size_t         screenWidth{80};
-    int                 keyname_len{0};
-    int                 x{-1};
-    int                 x_msg{-1};
-    bool                mouse_down{};
+    FKeyList     key_list{};
+    FString      text{""};
+    std::size_t  screenWidth{80};
+    int          keyname_len{0};
+    int          x{-1};
+    int          x_msg{-1};
+    bool         mouse_down{};
 };
 
 
 // FStatusBar inline functions
 //----------------------------------------------------------------------
-inline FString FStatusBar::getClassName() const
+inline auto FStatusBar::getClassName() const -> FString
 { return "FStatusBar"; }
 
 //----------------------------------------------------------------------
-inline FStatusKey* FStatusBar::getStatusKey (int index) const
+inline auto FStatusBar::getStatusKey (int index) const -> FStatusKey*
 { return key_list[uInt(index - 1)]; }
 
 //----------------------------------------------------------------------
-inline std::size_t FStatusBar::getCount() const
+inline auto FStatusBar::getCount() const -> std::size_t
 { return key_list.size(); }
 
 //----------------------------------------------------------------------
@@ -270,11 +270,11 @@ inline void FStatusBar::deactivateKey (int index)
 { key_list[uInt(index - 1)]->unsetActive(); }
 
 //----------------------------------------------------------------------
-inline bool FStatusBar::isActivated(int index) const
+inline auto FStatusBar::isActivated(int index) const -> bool
 { return key_list[uInt(index - 1)]->isActivated(); }
 
 //----------------------------------------------------------------------
-inline FString FStatusBar::getMessage() const
+inline auto FStatusBar::getMessage() const -> FString
 { return text; }
 
 //----------------------------------------------------------------------

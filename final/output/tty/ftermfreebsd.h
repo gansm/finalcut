@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2021 Markus Gans                                      *
+* Copyright 2018-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -83,35 +83,35 @@ class FTermFreeBSD final
     using CursorStyle = FreeBSDConsoleCursorStyle;
 
     // Accessors
-    FString            getClassName() const;
-    static auto        getInstance() -> FTermFreeBSD&;
-    static CursorStyle getCursorStyle();
+    auto        getClassName() const -> FString;
+    static auto getInstance() -> FTermFreeBSD&;
+    static auto getCursorStyle() -> CursorStyle;
 
     // Inquiry
-    static bool        isFreeBSDConsole();
+    static auto isFreeBSDConsole() -> bool;
 
     // Mutators
-    static bool        setCursorStyle (CursorStyle);
-    static void        enableChangeCursorStyle() noexcept;
-    static void        disableChangeCursorStyle() noexcept;
-    static void        enableMetaSendsEscape() noexcept;
-    static void        disableMetaSendsEscape() noexcept;
-    static void        setBeep (int, int);
-    static void        resetBeep();
+    static auto setCursorStyle (CursorStyle) -> bool;
+    static void enableChangeCursorStyle() noexcept;
+    static void disableChangeCursorStyle() noexcept;
+    static void enableMetaSendsEscape() noexcept;
+    static void disableMetaSendsEscape() noexcept;
+    static void setBeep (int, int);
+    static void resetBeep();
 
     // Methods
-    static void        init();
-    static void        initCharMap();
-    static void        finish();
+    static void init();
+    static void initCharMap();
+    static void finish();
 
   private:
     // Methods
-    static void        warnNotInitialized();
-    static bool        saveFreeBSDAltKey();
-    static bool        setFreeBSDAltKey (uInt);
-    static bool        setFreeBSDAlt2Meta();
-    static bool        resetFreeBSDAlt2Meta();
-    static bool        setFreeBSDCursorStyle (CursorStyle);
+    static void warnNotInitialized();
+    static auto saveFreeBSDAltKey() -> bool;
+    static auto setFreeBSDAltKey (uInt) -> bool;
+    static auto setFreeBSDAlt2Meta() -> bool;
+    static auto resetFreeBSDAlt2Meta() -> bool;
+    static auto setFreeBSDCursorStyle (CursorStyle) -> bool;
 
     // Data members
     static uInt        bsd_alt_keymap;
@@ -123,7 +123,7 @@ class FTermFreeBSD final
 
 // FTermFreeBSD inline functions
 //----------------------------------------------------------------------
-inline FString FTermFreeBSD::getClassName() const
+inline auto FTermFreeBSD::getClassName() const -> FString
 { return "FTermFreeBSD"; }
 
 //----------------------------------------------------------------------
