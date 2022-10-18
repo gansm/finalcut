@@ -138,7 +138,9 @@ class FRingBuffer
     using value_type      = T;
 
     // Constructors
-    FRingBuffer () = default;
+    FRingBuffer() = default;
+
+    virtual ~FRingBuffer() = default;
 
     // Overloaded operators
     auto operator [] (std::size_t index) noexcept -> reference
@@ -192,7 +194,7 @@ class FRingBuffer
     auto front() noexcept -> reference
     {
       if ( isEmpty() )
-        return empty_char;
+        return empty_element;
 
       return buffer[head];
     }
@@ -200,7 +202,7 @@ class FRingBuffer
     auto front() const noexcept -> const_reference
     {
       if ( isEmpty() )
-        return empty_char;
+        return empty_element;
 
       return buffer[head];
     }
@@ -208,7 +210,7 @@ class FRingBuffer
     auto back() noexcept -> reference
     {
       if ( isEmpty() )
-        return empty_char;
+        return empty_element;
 
       std::size_t index = (tail == 0) ? Capacity - 1 : tail - 1;
       return buffer[index];
@@ -217,7 +219,7 @@ class FRingBuffer
     auto back() const noexcept -> const_reference
     {
       if ( isEmpty() )
-        return empty_char;
+        return empty_element;
 
       std::size_t index = (tail == 0) ? Capacity - 1 : tail - 1;
       return buffer[index];
@@ -259,6 +261,29 @@ class FRingBuffer
       elements++;
     }
 
+    void push_back (const T& item) noexcept
+    {
+      push (item);
+    }
+
+    template <typename... Args>
+    void emplace (Args&&... args)
+    {
+      if ( isFull() )
+        return;
+
+      static_assert ( Capacity > 0, "Ring buffer has no memory" );
+      buffer[tail] = T(std::forward<Args>(args)...);
+      tail = (tail + 1) % Capacity;
+      elements++;
+    }
+
+    template <typename... Args>
+    void emplace_back (Args&&... args)
+    {
+      emplace (std::forward<Args>(args)...);
+    }
+
     void pop() noexcept
     {
       if ( isEmpty() )
@@ -267,6 +292,11 @@ class FRingBuffer
       static_assert ( Capacity > 0, "Ring buffer has no memory" );
       head = (head + 1) % Capacity;
       elements--;
+    }
+
+    void pop_front() noexcept
+    {
+      pop();
     }
 
     void pop (std::size_t s) noexcept
@@ -283,7 +313,7 @@ class FRingBuffer
   private:
     // Data members
     std::array<value_type, Capacity> buffer{};
-    value_type  empty_char{};
+    value_type  empty_element{};
     std::size_t head{0U};
     std::size_t tail{0U};
     std::size_t elements{0U};

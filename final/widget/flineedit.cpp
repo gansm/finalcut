@@ -1130,7 +1130,7 @@ inline auto FLineEdit::characterFilter (const wchar_t c) const -> wchar_t
   if ( input_filter.empty() )
     return c;
 
-  if ( regex_match(std::wstring(1, c), std::wregex(input_filter)) )
+  if ( std::regex_match(std::wstring(1, c), std::wregex(input_filter)) )
     return c;
 
   return L'\0';

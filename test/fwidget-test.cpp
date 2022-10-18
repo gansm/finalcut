@@ -103,7 +103,7 @@ class FWidgetTest::FSystemTest : public finalcut::FSystem
       return 1;
     }
 
-    auto ioctl (int fd, uLong request, ...) -> int override
+    auto ioctl (int, uLong request, ...) -> int override
     {
       va_list args{};
       void* argp{};

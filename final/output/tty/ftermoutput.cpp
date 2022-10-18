@@ -42,6 +42,8 @@ namespace finalcut
 // static class attributes
 FVTerm::FTermArea* FTermOutput::vterm{nullptr};
 FTermData*         FTermOutput::fterm_data{nullptr};
+constexpr uInt64   FTermOutput::MIN_FLUSH_WAIT;
+constexpr uInt64   FTermOutput::MAX_FLUSH_WAIT;
 
 //----------------------------------------------------------------------
 // class FTermOutput
@@ -440,11 +442,11 @@ void FTermOutput::flush()
 
   flushTimeAdjustment();
 
-  if ( ! output_buffer || output_buffer->empty()
+  if ( ! output_buffer || output_buffer->isEmpty()
     || ! (isFlushTimeout() || getFVTerm().isTerminalUpdateForced()) )
     return;
 
-  while ( ! output_buffer->empty() )
+  while ( ! output_buffer->isEmpty() )
   {
     const auto& first = output_buffer->front();
     const auto& type = first.type;
@@ -846,7 +848,7 @@ void FTermOutput::printFullWidthCharacter ( uInt& x, uInt y
   {
     // Print ellipses for the 1st full-width character column
     appendAttributes (print_char);
-    appendOutputBuffer (FTermUniChar{UniChar::HorizontalEllipsis});
+    appendOutputBuffer (UniChar::HorizontalEllipsis);
     term_pos->x_ref()++;
     markAsPrinted (x, y);
 
@@ -855,7 +857,7 @@ void FTermOutput::printFullWidthCharacter ( uInt& x, uInt y
       // Print ellipses for the 2nd full-width character column
       x++;
       appendAttributes (next_char);
-      appendOutputBuffer (FTermUniChar{UniChar::HorizontalEllipsis});
+      appendOutputBuffer (UniChar::HorizontalEllipsis);
       term_pos->x_ref()++;
       markAsPrinted (x, y);
     }
@@ -900,7 +902,7 @@ void FTermOutput::printFullWidthPaddingCharacter ( uInt& x, uInt y
   {
     // Print ellipses for the 1st full-width character column
     appendAttributes (print_char);
-    appendOutputBuffer (FTermUniChar{UniChar::HorizontalEllipsis});
+    appendOutputBuffer (UniChar::HorizontalEllipsis);
     term_pos->x_ref()++;
     markAsPrinted (x, y);
   }
@@ -929,7 +931,7 @@ void FTermOutput::printHalfCovertFullWidthCharacter ( uInt& x, uInt y
       x--;
       term_pos->x_ref()--;
       appendAttributes (prev_char);
-      appendOutputBuffer (FTermUniChar{UniChar::HorizontalEllipsis});
+      appendOutputBuffer (UniChar::HorizontalEllipsis);
       term_pos->x_ref()++;
       markAsPrinted (x, y);
       x++;
@@ -1215,11 +1217,7 @@ inline void FTermOutput::flushTimeAdjustment()
   else
   {
     auto usec = uInt64(duration_cast<microseconds>(diff).count());
-
-    if ( usec < MIN_FLUSH_WAIT )
-      usec = MIN_FLUSH_WAIT;
-    else if ( usec > MAX_FLUSH_WAIT )
-      usec = MAX_FLUSH_WAIT;
+    usec = std::min(std::max(usec, MIN_FLUSH_WAIT), MAX_FLUSH_WAIT);
 
     if ( usec >= flush_average )
       flush_average += (usec - flush_average) / 10;
@@ -1361,9 +1359,9 @@ inline void FTermOutput::appendChar (FChar& next_char)
     if ( ch != L'\0')
     {
       if ( getEncoding() == Encoding::UTF8 )
-        appendOutputBuffer (FTermString{unicode_to_utf8(ch)});
+        appendOutputBuffer (unicode_to_utf8(ch));
       else
-        appendOutputBuffer (FTermString{std::string(1, char(uChar(ch)))});
+        appendOutputBuffer (std::string(1, char(uChar(ch))));
     }
 
     if ( ! combined_char_support )
@@ -1457,30 +1455,41 @@ inline void FTermOutput::characterFilter (FChar& next_char)
 }
 
 //----------------------------------------------------------------------
-inline void FTermOutput::appendOutputBuffer (const FTermControl& ctrl) const
+inline void FTermOutput::checkFreeBufferSize()
 {
-  output_buffer->push( {OutputType::Control, ctrl.string} );
+  if ( output_buffer->isFull() )
+    flush();
 }
 
 //----------------------------------------------------------------------
-inline void FTermOutput::appendOutputBuffer (const FTermUniChar& c) const
+inline void FTermOutput::appendOutputBuffer (const FTermControl& ctrl)
 {
-  appendOutputBuffer(FTermString{unicode_to_utf8(wchar_t(c.ch))});
+  output_buffer->emplace(OutputType::Control, ctrl.string);
+  checkFreeBufferSize();
 }
 
 //----------------------------------------------------------------------
-void FTermOutput::appendOutputBuffer (const FTermString& str) const
+inline void FTermOutput::appendOutputBuffer (UniChar&& ch)
+{
+  appendOutputBuffer(unicode_to_utf8(wchar_t(ch)));
+}
+
+//----------------------------------------------------------------------
+void FTermOutput::appendOutputBuffer (std::string&& string)
 {
   auto& last = output_buffer->back();
 
-  if ( ! output_buffer->empty() && last.type == OutputType::String )
+  if ( ! output_buffer->isEmpty() && last.type == OutputType::String )
   {
     // Append string data to the back element
     auto& string_buf = last.data;
-    string_buf.append(str.string);
+    string_buf.append(string);
   }
   else
-    output_buffer->push( {OutputType::String, str.string} );
+  {
+    output_buffer->emplace(OutputType::String, string);
+    checkFreeBufferSize();
+  }
 }
 
 }  // namespace finalcut

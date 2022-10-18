@@ -98,10 +98,10 @@ class FLog : public std::stringbuf
 
   protected:
     auto sync() -> int override;
-    auto getLevel() const -> const LogLevel&;
-    auto setLevel() -> LogLevel&;
-    auto getEnding() const -> const LineEnding&;
-    auto setEnding() -> LineEnding&;
+    virtual auto getLevel() const -> const LogLevel& final;
+    virtual auto setLevel() -> LogLevel& final;
+    virtual auto getEnding() const -> const LineEnding& final;
+    virtual auto setEnding() -> LineEnding& final;
 
   private:
     // Data member

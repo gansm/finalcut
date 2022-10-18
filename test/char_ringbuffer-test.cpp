@@ -44,6 +44,7 @@ class CharRingBufferTest : public CPPUNIT_NS::TestFixture
     void noArgumentTest();
     void BaseTest();
     void IteratorTest();
+    void emplaceTest();
     void KeyStringTest();
 
   private:
@@ -55,6 +56,7 @@ class CharRingBufferTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (noArgumentTest);
     CPPUNIT_TEST (BaseTest);
     CPPUNIT_TEST (IteratorTest);
+    CPPUNIT_TEST (emplaceTest);
     CPPUNIT_TEST (KeyStringTest);
 
     // End of test suite definition
@@ -336,7 +338,7 @@ void CharRingBufferTest::BaseTest()
   CPPUNIT_ASSERT ( char_rbuf.strncmp_front("EF~", 3) );
   CPPUNIT_ASSERT ( char_rbuf.back() == '~' );
 
-  char_rbuf.pop();
+  char_rbuf.pop_front();
   CPPUNIT_ASSERT ( ! char_rbuf.isEmpty() );
   CPPUNIT_ASSERT ( char_rbuf.hasData() );
   CPPUNIT_ASSERT ( ! char_rbuf.isFull() );
@@ -391,7 +393,7 @@ void CharRingBufferTest::BaseTest()
   CPPUNIT_ASSERT ( char_rbuf[2] == 'F' );  // Currently not in use
   CPPUNIT_ASSERT ( char_rbuf.strncmp_front("", 0) );
 
-  char_rbuf.push('H');
+  char_rbuf.push_back('H');
   CPPUNIT_ASSERT ( ! char_rbuf.isEmpty() );
   CPPUNIT_ASSERT ( char_rbuf.hasData() );
   CPPUNIT_ASSERT ( ! char_rbuf.isFull() );
@@ -488,6 +490,165 @@ void CharRingBufferTest::IteratorTest()
 }
 
 //----------------------------------------------------------------------
+void CharRingBufferTest::emplaceTest()
+{
+  finalcut::CharRingBuffer<4> char_rbuf;
+  char* physical_buffer = &char_rbuf[0];
+  CPPUNIT_ASSERT ( char_rbuf.isEmpty() );
+  CPPUNIT_ASSERT ( ! char_rbuf.hasData() );
+  CPPUNIT_ASSERT ( ! char_rbuf.isFull() );
+  CPPUNIT_ASSERT ( char_rbuf.getSize() == 0 );
+  CPPUNIT_ASSERT ( char_rbuf.getCapacity() == 4 );
+  CPPUNIT_ASSERT ( char_rbuf.front() == '\0' );
+  CPPUNIT_ASSERT ( char_rbuf.back() == '\0' );
+  CPPUNIT_ASSERT ( char_rbuf.begin() == char_rbuf.end() );
+  CPPUNIT_ASSERT ( physical_buffer[0] == '\0' );  // Currently not in use
+  CPPUNIT_ASSERT ( physical_buffer[1] == '\0' );  // Currently not in use
+  CPPUNIT_ASSERT ( physical_buffer[2] == '\0' );  // Currently not in use
+  CPPUNIT_ASSERT ( physical_buffer[3] == '\0' );  // Currently not in use
+
+  char_rbuf.emplace('H');
+  char_rbuf.emplace_back('i');
+  CPPUNIT_ASSERT ( ! char_rbuf.isEmpty() );
+  CPPUNIT_ASSERT ( char_rbuf.hasData() );
+  CPPUNIT_ASSERT ( ! char_rbuf.isFull() );
+  CPPUNIT_ASSERT ( char_rbuf.getSize() == 2 );
+  CPPUNIT_ASSERT ( char_rbuf.getCapacity() == 4 );
+  CPPUNIT_ASSERT ( char_rbuf.front() == 'H' );
+  CPPUNIT_ASSERT ( char_rbuf.back() == 'i' );
+  CPPUNIT_ASSERT ( char_rbuf.begin() != char_rbuf.end() );
+  CPPUNIT_ASSERT ( physical_buffer[0] == 'H' );
+  CPPUNIT_ASSERT ( physical_buffer[1] == 'i' );
+  CPPUNIT_ASSERT ( physical_buffer[2] == '\0' );  // Currently not in use
+  CPPUNIT_ASSERT ( physical_buffer[3] == '\0' );  // Currently not in use
+
+  struct Data
+  {
+    int integer;
+    char character;
+
+    Data ()
+      : integer{0}
+      , character{'\0'}
+    { }
+
+    Data (int i, char ch)
+      : integer{i}
+      , character{ch}
+    { }
+
+    auto operator == (const Data& rhs) const -> bool
+    {
+      return integer == rhs.integer
+          && character == rhs.character;
+    }
+  };
+
+  finalcut::FRingBuffer<Data, 4> data_rbuf;
+  Data* physical_data_buffer = &data_rbuf[0];
+  CPPUNIT_ASSERT ( data_rbuf.isEmpty() );
+  CPPUNIT_ASSERT ( ! data_rbuf.hasData() );
+  CPPUNIT_ASSERT ( ! data_rbuf.isFull() );
+  CPPUNIT_ASSERT ( data_rbuf.getSize() == 0 );
+  CPPUNIT_ASSERT ( data_rbuf.getCapacity() == 4 );
+  CPPUNIT_ASSERT ( data_rbuf.front() == Data{} );
+  CPPUNIT_ASSERT ( data_rbuf.back() == Data{} );
+  CPPUNIT_ASSERT ( data_rbuf.begin() == data_rbuf.end() );
+  CPPUNIT_ASSERT ( bool ( physical_data_buffer[0] == Data{ 0, '\0' } ) );  // Currently not in use
+  CPPUNIT_ASSERT ( bool ( physical_data_buffer[1] == Data{ 0, '\0' } ) );  // Currently not in use
+  CPPUNIT_ASSERT ( bool ( physical_data_buffer[2] == Data{ 0, '\0' } ) );  // Currently not in use
+  CPPUNIT_ASSERT ( bool ( physical_data_buffer[3] == Data{ 0, '\0' } ) );  // Currently not in use
+
+  data_rbuf.emplace(1, 'H');
+  data_rbuf.emplace_back(2, 'i');
+  data_rbuf.emplace(3, '!');
+
+  CPPUNIT_ASSERT ( ! data_rbuf.isEmpty() );
+  CPPUNIT_ASSERT ( data_rbuf.hasData() );
+  CPPUNIT_ASSERT ( ! data_rbuf.isFull() );
+  CPPUNIT_ASSERT ( data_rbuf.getSize() == 3 );
+  CPPUNIT_ASSERT ( data_rbuf.getCapacity() == 4 );
+  CPPUNIT_ASSERT ( data_rbuf.front() == Data(1, 'H') );
+  CPPUNIT_ASSERT ( data_rbuf.back() == Data(3, '!') );
+  CPPUNIT_ASSERT ( data_rbuf.begin() != data_rbuf.end() );
+  CPPUNIT_ASSERT ( physical_data_buffer[0] == Data( 1, 'H') );
+  CPPUNIT_ASSERT ( physical_data_buffer[0].integer == 1 );
+  CPPUNIT_ASSERT ( physical_data_buffer[0].character == 'H' );
+  CPPUNIT_ASSERT ( physical_data_buffer[1] == Data( 2, 'i') );
+  CPPUNIT_ASSERT ( physical_data_buffer[1].integer == 2 );
+  CPPUNIT_ASSERT ( physical_data_buffer[1].character == 'i' );
+  CPPUNIT_ASSERT ( physical_data_buffer[2] == Data( 3, '!') );
+  CPPUNIT_ASSERT ( physical_data_buffer[2].integer == 3 );
+  CPPUNIT_ASSERT ( physical_data_buffer[2].character == '!' );
+  CPPUNIT_ASSERT ( physical_data_buffer[3] == Data( 0, '\0') );  // Currently not in use
+  CPPUNIT_ASSERT ( physical_data_buffer[3].integer == 0 );  // Currently not in use
+  CPPUNIT_ASSERT ( physical_data_buffer[3].character == '\0' );  // Currently not in use
+
+  struct Data2
+  {
+    long number;
+    std::string string;
+
+    Data2()
+      : number{0}
+      , string{}
+    { }
+
+    Data2 (long l, const std::string& s)
+      : number{l}
+      , string{s}
+    { }
+
+    auto operator == (const Data2& rhs) const -> bool
+    {
+      return number == rhs.number
+          && string == rhs.string;
+    }
+  };
+
+  using Data2Buffer = finalcut::FRingBuffer<Data2, 4>;
+  auto data2_rbuf = std::make_shared<Data2Buffer>();
+
+  Data2* physical_data2_buffer = &(*data2_rbuf)[0];
+  CPPUNIT_ASSERT ( data2_rbuf->isEmpty() );
+  CPPUNIT_ASSERT ( ! data2_rbuf->hasData() );
+  CPPUNIT_ASSERT ( ! data2_rbuf->isFull() );
+  CPPUNIT_ASSERT ( data2_rbuf->getSize() == 0 );
+  CPPUNIT_ASSERT ( data2_rbuf->getCapacity() == 4 );
+  CPPUNIT_ASSERT ( data2_rbuf->front() == Data2{} );
+  CPPUNIT_ASSERT ( data2_rbuf->back() == Data2{} );
+  CPPUNIT_ASSERT ( data2_rbuf->begin() == data2_rbuf->end() );
+  CPPUNIT_ASSERT ( physical_data2_buffer[0] == Data2(0, std::string()) );  // Currently not in use
+  CPPUNIT_ASSERT ( physical_data2_buffer[1] == Data2(0, std::string()) );  // Currently not in use
+  CPPUNIT_ASSERT ( physical_data2_buffer[2] == Data2(0, std::string()) );  // Currently not in use
+  CPPUNIT_ASSERT ( physical_data2_buffer[3] == Data2(0, std::string()) );  // Currently not in use
+
+  data2_rbuf->emplace(1, "Hello,");
+  data2_rbuf->emplace_back(2, "world!");
+
+  CPPUNIT_ASSERT ( ! data2_rbuf->isEmpty() );
+  CPPUNIT_ASSERT ( data2_rbuf->hasData() );
+  CPPUNIT_ASSERT ( ! data2_rbuf->isFull() );
+  CPPUNIT_ASSERT ( data2_rbuf->getSize() == 2 );
+  CPPUNIT_ASSERT ( data2_rbuf->getCapacity() == 4 );
+  CPPUNIT_ASSERT ( data2_rbuf->front() == Data2(1, "Hello,") );
+  CPPUNIT_ASSERT ( data2_rbuf->back() == Data2(2, "world!") );
+  CPPUNIT_ASSERT ( data2_rbuf->begin() != data2_rbuf->end() );
+  CPPUNIT_ASSERT ( physical_data2_buffer[0] == Data2( 1, "Hello,") );
+  CPPUNIT_ASSERT ( physical_data2_buffer[0].number == 1 );
+  CPPUNIT_ASSERT ( physical_data2_buffer[0].string == "Hello," );
+  CPPUNIT_ASSERT ( physical_data2_buffer[1] == Data2( 2, "world!") );
+  CPPUNIT_ASSERT ( physical_data2_buffer[1].number == 2 );
+  CPPUNIT_ASSERT ( physical_data2_buffer[1].string == "world!" );
+  CPPUNIT_ASSERT ( physical_data2_buffer[2] == Data2( 0, std::string()) );  // Currently not in use
+  CPPUNIT_ASSERT ( physical_data2_buffer[2].number == 0 );  // Currently not in use
+  CPPUNIT_ASSERT ( physical_data2_buffer[2].string == std::string() );  // Currently not in use
+  CPPUNIT_ASSERT ( physical_data2_buffer[3] == Data2( 0, std::string()) );  // Currently not in use
+  CPPUNIT_ASSERT ( physical_data2_buffer[3].number == 0 );  // Currently not in use
+  CPPUNIT_ASSERT ( physical_data2_buffer[3].string == std::string() );  // Currently not in use
+}
+
+//----------------------------------------------------------------------
 void CharRingBufferTest::KeyStringTest()
 {
   finalcut::CharRingBuffer<12> char_rbuf;
@@ -540,30 +701,30 @@ void CharRingBufferTest::KeyStringTest()
   CPPUNIT_ASSERT ( char_rbuf.begin() != char_rbuf.end() );
   CPPUNIT_ASSERT ( char_rbuf.begin() + 12 == char_rbuf.end() );
   CPPUNIT_ASSERT ( std::string(char_rbuf.begin(), char_rbuf.end()).compare("\033[A\033[C\033[B\033[D") == 0 );
-  CPPUNIT_ASSERT ( physical_buffer[0] == '\033' );  // Currently not in use
-  CPPUNIT_ASSERT ( physical_buffer[1] == '[' );  // Currently not in use
-  CPPUNIT_ASSERT ( physical_buffer[2] == 'A' );  // Currently not in use
-  CPPUNIT_ASSERT ( physical_buffer[3] == '\033' );  // Currently not in use
-  CPPUNIT_ASSERT ( physical_buffer[4] == '[' );  // Currently not in use
-  CPPUNIT_ASSERT ( physical_buffer[5] == 'C' );  // Currently not in use
-  CPPUNIT_ASSERT ( physical_buffer[6] == '\033' );  // Currently not in use
-  CPPUNIT_ASSERT ( physical_buffer[7] == '[' );  // Currently not in use
-  CPPUNIT_ASSERT ( physical_buffer[8] == 'B' );  // Currently not in use
-  CPPUNIT_ASSERT ( physical_buffer[9] == '\033' );  // Currently not in use
-  CPPUNIT_ASSERT ( physical_buffer[10] == '[' );  // Currently not in use
-  CPPUNIT_ASSERT ( physical_buffer[11] == 'D' );  // Currently not in use
-  CPPUNIT_ASSERT ( char_rbuf[0] == '\033' );  // Currently not in use
-  CPPUNIT_ASSERT ( char_rbuf[1] == '[' );  // Currently not in use
-  CPPUNIT_ASSERT ( char_rbuf[2] == 'A' );  // Currently not in use
-  CPPUNIT_ASSERT ( char_rbuf[3] == '\033' );  // Currently not in use
-  CPPUNIT_ASSERT ( char_rbuf[4] == '[' );  // Currently not in use
-  CPPUNIT_ASSERT ( char_rbuf[5] == 'C' );  // Currently not in use
-  CPPUNIT_ASSERT ( char_rbuf[6] == '\033' );  // Currently not in use
-  CPPUNIT_ASSERT ( char_rbuf[7] == '[' );  // Currently not in use
-  CPPUNIT_ASSERT ( char_rbuf[8] == 'B' );  // Currently not in use
-  CPPUNIT_ASSERT ( char_rbuf[9] == '\033' );  // Currently not in use
-  CPPUNIT_ASSERT ( char_rbuf[10] == '[' );  // Currently not in use
-  CPPUNIT_ASSERT ( char_rbuf[11] == 'D' );  // Currently not in use
+  CPPUNIT_ASSERT ( physical_buffer[0] == '\033' );
+  CPPUNIT_ASSERT ( physical_buffer[1] == '[' );
+  CPPUNIT_ASSERT ( physical_buffer[2] == 'A' );
+  CPPUNIT_ASSERT ( physical_buffer[3] == '\033' );
+  CPPUNIT_ASSERT ( physical_buffer[4] == '[' );
+  CPPUNIT_ASSERT ( physical_buffer[5] == 'C' );
+  CPPUNIT_ASSERT ( physical_buffer[6] == '\033' );
+  CPPUNIT_ASSERT ( physical_buffer[7] == '[' );
+  CPPUNIT_ASSERT ( physical_buffer[8] == 'B' );
+  CPPUNIT_ASSERT ( physical_buffer[9] == '\033' );
+  CPPUNIT_ASSERT ( physical_buffer[10] == '[' );
+  CPPUNIT_ASSERT ( physical_buffer[11] == 'D' );
+  CPPUNIT_ASSERT ( char_rbuf[0] == '\033' );
+  CPPUNIT_ASSERT ( char_rbuf[1] == '[' );
+  CPPUNIT_ASSERT ( char_rbuf[2] == 'A' );
+  CPPUNIT_ASSERT ( char_rbuf[3] == '\033' );
+  CPPUNIT_ASSERT ( char_rbuf[4] == '[' );
+  CPPUNIT_ASSERT ( char_rbuf[5] == 'C' );
+  CPPUNIT_ASSERT ( char_rbuf[6] == '\033' );
+  CPPUNIT_ASSERT ( char_rbuf[7] == '[' );
+  CPPUNIT_ASSERT ( char_rbuf[8] == 'B' );
+  CPPUNIT_ASSERT ( char_rbuf[9] == '\033' );
+  CPPUNIT_ASSERT ( char_rbuf[10] == '[' );
+  CPPUNIT_ASSERT ( char_rbuf[11] == 'D' );
   CPPUNIT_ASSERT ( char_rbuf.strncmp_front("\033[A", 3) );
   CPPUNIT_ASSERT ( char_rbuf.strncmp_front("\033[A\033[C", 6) );
   CPPUNIT_ASSERT ( char_rbuf.strncmp_front("\033[A\033[C\033[B", 9) );

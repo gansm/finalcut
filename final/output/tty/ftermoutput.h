@@ -41,13 +41,13 @@
 #endif
 
 #include <memory>
-#include <queue>
 #include <string>
 #include <tuple>
 #include <utility>
 
 #include "final/output/foutput.h"
 #include "final/output/tty/fterm.h"
+#include "final/util/char_ringbuffer.h"
 
 namespace finalcut
 {
@@ -125,16 +125,6 @@ class FTermOutput final : public FOutput
       std::string string;
     };
 
-    struct FTermUniChar
-    {
-      UniChar ch;
-    };
-
-    struct FTermString
-    {
-      std::string string;
-    };
-
     // Enumerations
     enum class PrintState
     {
@@ -152,17 +142,29 @@ class FTermOutput final : public FOutput
 
     struct OutputData
     {
+      OutputData()
+        : type{OutputType::String}
+        , data{}
+      { }
+
+      OutputData (OutputType t, std::string s)
+        : type{t}
+        , data{s}
+      { }
+
       OutputType  type;
       std::string data;
     };
-
-    // Using-declaration
-    using OutputBuffer = std::queue<OutputData>;
 
     // Constants
     //   Upper and lower flush limit
     static constexpr uInt64 MIN_FLUSH_WAIT = 16'667;   //   16.6 ms = 60 Hz
     static constexpr uInt64 MAX_FLUSH_WAIT = 200'000;  //  200.0 ms = 5 Hz
+    //   Output buffer size
+    static constexpr std::size_t BUFFER_SIZE = 32'768;  // 32 KB
+
+    // Using-declaration
+    using OutputBuffer = FRingBuffer<OutputData, BUFFER_SIZE>;
 
     // Accessors
     auto getFSetPaletteRef() const & -> const FSetPalette& override;
@@ -204,9 +206,10 @@ class FTermOutput final : public FOutput
     void appendAttributes (FChar&);
     void appendLowerRight (FChar&);
     void characterFilter (FChar&);
-    void appendOutputBuffer (const FTermControl&) const;
-    void appendOutputBuffer (const FTermUniChar&) const;
-    void appendOutputBuffer (const FTermString&) const;
+    void checkFreeBufferSize();
+    void appendOutputBuffer (const FTermControl&);
+    void appendOutputBuffer (UniChar&&);
+    void appendOutputBuffer (std::string&&);
 
     // Data members
     FTerm                         fterm{};

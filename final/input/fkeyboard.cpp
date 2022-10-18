@@ -487,7 +487,7 @@ void FKeyboard::parseKeyBuffer()
       }
 
       if ( fkey != FKey::Incomplete )
-        fkey_queue.push(fkey);
+        fkey_queue.emplace(fkey);
     }
 
     fkey = FKey::None;
@@ -566,7 +566,7 @@ void FKeyboard::substringKeyHandling()
     else
       fkey = FKey::Meta_right_square_bracket;
 
-    fkey_queue.push(fkey);
+    fkey_queue.emplace(fkey);
     fifo_buf.clear();
   }
 }

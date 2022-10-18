@@ -139,7 +139,7 @@ void FVTermBuffer::print (const FColorPair& pair) const
 
 // private methods of FVTermBuffer
 //----------------------------------------------------------------------
-void FVTermBuffer::checkCapacity (std::size_t size)
+inline void FVTermBuffer::checkCapacity (std::size_t size)
 {
   if ( size <= data.capacity() )
     return;

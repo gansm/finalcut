@@ -1,3 +1,7 @@
+2022-10-18  Markus Gans  <guru.mail@muenster.de>
+	* To improve performance, the output buffer queue has been replaced 
+	  with a ring buffer
+
 2022-10-02  Markus Gans  <guru.mail@muenster.de>
 	* Strict use of trailing return type
 
