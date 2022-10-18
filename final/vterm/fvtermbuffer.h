@@ -120,7 +120,7 @@ class FVTermBuffer
     auto print () -> FVTermBuffer&;
 
   private:
-    void checkCapacity (std::size_t);
+    inline void checkCapacity (std::size_t);
     void add ( FString::const_iterator&
              , const FString::const_iterator&
              , int& );
@@ -318,6 +318,20 @@ inline auto FVTermBuffer::printf (const FString& format, Args&&... args) -> int
 //----------------------------------------------------------------------
 inline auto FVTermBuffer::print() -> FVTermBuffer&
 { return *this; }
+
+//----------------------------------------------------------------------
+void FVTermBuffer::checkCapacity (std::size_t size)
+{
+  if ( size <= data.capacity() )
+    return;
+
+  const auto new_size = [&size] ()
+  {
+    return std::size_t(std::pow(2, std::ceil(std::log(size) / std::log(2.0))));
+  }();
+
+  data.reserve(new_size);
+}
 
 }  // namespace finalcut
 
