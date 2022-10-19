@@ -1472,7 +1472,7 @@ inline void FTermOutput::appendOutputBuffer (const FTermControl& ctrl)
 //----------------------------------------------------------------------
 inline void FTermOutput::appendOutputBuffer (UniChar&& ch)
 {
-  appendOutputBuffer(std::move(unicode_to_utf8(wchar_t(std::move(ch)))));
+  appendOutputBuffer(unicode_to_utf8(wchar_t(std::move(ch))));
 }
 
 //----------------------------------------------------------------------
@@ -1484,7 +1484,7 @@ void FTermOutput::appendOutputBuffer (std::string&& string)
   {
     // Append string data to the back element
     auto& string_buf = last.data;
-    string_buf.append(std::move(string));
+    string_buf.append(string);
   }
   else
   {
