@@ -502,6 +502,9 @@ void FTermFunctionsTest::utf8Test()
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'ö')
                    == std::string({char(0xc3), char(0xb6)}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(wchar_t(finalcut::UniChar::Pi))
+                   == std::string({char(0xcf), char(0x80)}) );
   // Last 2 byte character
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'\U000007ff')
                    == std::string({char(0xdf), char(0xbf)}) );
@@ -583,6 +586,9 @@ void FTermFunctionsTest::utf8Test()
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'')
                    == std::string({char(0xee), char(0x80), char(0x80)}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(wchar_t(finalcut::UniChar::Euro))
+                   == std::string({char(0xe2), char(0x82), char(0xac)}) );
 
   // Private Use Area
   auto newfont_char_e1b3 = finalcut::UniChar::NF_border_line_vertical;

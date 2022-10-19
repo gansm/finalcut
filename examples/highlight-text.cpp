@@ -301,7 +301,7 @@ void TextWindow::adjustSize()
 
 //----------------------------------------------------------------------
 auto TextWindow::find_matches ( const finalcut::FString& string
-                                               , const finalcut::FString& search ) const -> TextWindow::MatchList
+                              , const finalcut::FString& search ) const -> TextWindow::MatchList
 {
   MatchList matches{};
   const auto search_length = search.getLength();

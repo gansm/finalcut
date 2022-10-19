@@ -4,7 +4,7 @@
 
 LIBS = @FINAL_LIBS@
 
-AM_CPPFLAGS = -I$(top_srcdir)/final -Wall -Wextra -Werror -DCOMPILE_FINAL_CUT -std=c++14
+AM_CPPFLAGS = -I$(top_srcdir)/final -Wall -Werror -DCOMPILE_FINAL_CUT -std=c++14
 AUTOMAKE_OPTIONS = subdir-objects
 
 SUBDIRS = . font

@@ -35,6 +35,7 @@
 #include "final/output/tty/ftermios.h"
 #include "final/output/tty/ftermoutput.h"
 #include "final/output/tty/ftermxterminal.h"
+#include "final/util/char_ringbuffer.h"
 
 namespace finalcut
 {
@@ -1471,7 +1472,7 @@ inline void FTermOutput::appendOutputBuffer (const FTermControl& ctrl)
 //----------------------------------------------------------------------
 inline void FTermOutput::appendOutputBuffer (UniChar&& ch)
 {
-  appendOutputBuffer(unicode_to_utf8(wchar_t(ch)));
+  appendOutputBuffer(std::move(unicode_to_utf8(wchar_t(std::move(ch)))));
 }
 
 //----------------------------------------------------------------------
@@ -1483,11 +1484,11 @@ void FTermOutput::appendOutputBuffer (std::string&& string)
   {
     // Append string data to the back element
     auto& string_buf = last.data;
-    string_buf.append(string);
+    string_buf.append(std::move(string));
   }
   else
   {
-    output_buffer->emplace(OutputType::String, string);
+    output_buffer->emplace(OutputType::String, std::move(string));
     checkFreeBufferSize();
   }
 }

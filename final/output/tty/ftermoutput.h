@@ -47,7 +47,6 @@
 
 #include "final/output/foutput.h"
 #include "final/output/tty/fterm.h"
-#include "final/util/char_ringbuffer.h"
 
 namespace finalcut
 {
@@ -55,6 +54,8 @@ namespace finalcut
 // class forward declaration
 class FStartOptions;
 class FTermData;
+template <typename T, std::size_t Capacity>
+class FRingBuffer;
 
 //----------------------------------------------------------------------
 // class FTermOutput
@@ -144,16 +145,20 @@ class FTermOutput final : public FOutput
     {
       OutputData()
         : type{OutputType::String}
-        , data{}
       { }
 
-      OutputData (OutputType t, std::string s)
+      OutputData (OutputType t, const std::string& s)
         : type{t}
         , data{s}
       { }
 
+      OutputData (OutputType t, std::string&& s)
+        : type{t}
+        , data{std::move(s)}
+      { }
+
       OutputType  type;
-      std::string data;
+      std::string data{};
     };
 
     // Constants
