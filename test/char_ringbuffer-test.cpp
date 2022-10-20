@@ -95,6 +95,7 @@ void CharRingBufferTest::BaseTest()
 {
   finalcut::CharRingBuffer<3> char_rbuf;
   char* physical_buffer = &char_rbuf[0];
+  std::memcpy (physical_buffer, "\0\0\0", 4);
   CPPUNIT_ASSERT ( char_rbuf.isEmpty() );
   CPPUNIT_ASSERT ( ! char_rbuf.hasData() );
   CPPUNIT_ASSERT ( ! char_rbuf.isFull() );
@@ -439,6 +440,9 @@ void CharRingBufferTest::BaseTest()
 void CharRingBufferTest::IteratorTest()
 {
   finalcut::CharRingBuffer<32> char_rbuf;
+  std::memcpy ( &char_rbuf[0]
+              , "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+              , 32 );
   const std::initializer_list<char> mouse_data = \
       { 0x1b, '[', '<', '0', ';', '5', '0', ';', '8', 'M'
       , 0x1b, '[', '<', '0', ';', '5', '1', ';', '9', 'M'

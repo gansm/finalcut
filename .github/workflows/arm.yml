@@ -32,7 +32,7 @@ jobs:
         arch: ${{ matrix.arch }}
         distro: bullseye
         run: |
-          lsb_release -a
+          hostnamectl status
           uname -a
           whoami
           tty || echo
