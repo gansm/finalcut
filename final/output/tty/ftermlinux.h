@@ -106,7 +106,7 @@ class FTermLinux final
     static auto getInstance() -> FTermLinux&;
     auto        getCursorStyle() const -> CursorStyle;
     auto        getCursorStyleString() -> char*;
-    auto        getFramebufferBpp() const noexcept -> int;
+    inline auto getFramebufferBpp() const noexcept -> int;
 
     // Mutators
     auto        setCursorStyle (CursorStyle) -> bool;
@@ -115,8 +115,8 @@ class FTermLinux final
 
     // Inquiries
     static auto isLinuxConsole() -> bool;
-    auto        isVGAFontUsed() const noexcept -> bool;
-    auto        isNewFontUsed() const noexcept -> bool;
+    inline auto isVGAFontUsed() const noexcept -> bool;
+    inline auto isNewFontUsed() const noexcept -> bool;
 
     // Methods
     void        init();

@@ -83,8 +83,8 @@ class FTermOpenBSD final
     static auto isBSDConsole() -> bool;
 
     // Mutators
-    static void disableMetaSendsEscape() noexcept;
-    static void enableMetaSendsEscape() noexcept;
+    inline static void disableMetaSendsEscape() noexcept;
+    inline static void enableMetaSendsEscape() noexcept;
 
     // Methods
     static void init();

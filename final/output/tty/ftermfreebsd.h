@@ -92,10 +92,10 @@ class FTermFreeBSD final
 
     // Mutators
     static auto setCursorStyle (CursorStyle) -> bool;
-    static void enableChangeCursorStyle() noexcept;
-    static void disableChangeCursorStyle() noexcept;
-    static void enableMetaSendsEscape() noexcept;
-    static void disableMetaSendsEscape() noexcept;
+    inline static void enableChangeCursorStyle() noexcept;
+    inline static void disableChangeCursorStyle() noexcept;
+    inline static void enableMetaSendsEscape() noexcept;
+    inline static void disableMetaSendsEscape() noexcept;
     static void setBeep (int, int);
     static void resetBeep();
 

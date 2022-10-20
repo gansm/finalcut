@@ -114,6 +114,11 @@ case "$1" in
     fi
     ;;
 
+  "--clean"|"clean")
+    make distclean
+    exit
+    ;;
+
   "--help"|"help"|*)
     echo "Usage:"
     echo "  $(basename "$0") {COMMAND}"
@@ -126,6 +131,7 @@ case "$1" in
     echo "  unit-test     Compile with CppUnit testing"
     echo "  cpu-profiler  Link with Google cpu performance profiler"
     echo "  coverage      Compile with options for coverage analysis with gcov"
+    echo "  clean         Clean up the project"
     echo "  help          Show this help"
     exit
     ;;

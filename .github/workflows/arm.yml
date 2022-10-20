@@ -27,10 +27,11 @@ jobs:
 
     - name: Test on ARM architecture
       uses: darsvador/run-on-arch-action@v1.0.10
+      uses: uraimo/run-on-arch-action@v2
       id: runcmd
       with:
         architecture: ${{ matrix.architecture }}
-        distribution: buster
+        distribution: bullseye
         run: |
           lsb_release -a
           uname -a
@@ -55,6 +56,7 @@ jobs:
             autoconf \
             autoconf-archive
           # Build
+          g++ --version
           autoreconf -v --install --force
           ./configure --prefix=/usr
           make -j10

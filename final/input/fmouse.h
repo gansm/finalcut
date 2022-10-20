@@ -269,14 +269,14 @@ class FMouseGPM final : public FMouse
 
     // Inquiry
     auto         hasData() noexcept -> bool override;
-    auto         isGpmMouseEnabled() const noexcept -> bool;
+    inline auto  isGpmMouseEnabled() const noexcept -> bool;
 
     // Methods
     void         setRawData (FKeyboard::keybuffer&) noexcept override;
     void         processEvent (const TimeValue&) override;
     auto         gpmMouse (bool = true) -> bool;
-    auto         enableGpmMouse() -> bool;
-    auto         disableGpmMouse() -> bool;
+    inline auto  enableGpmMouse() -> bool;
+    inline auto  disableGpmMouse() -> bool;
     auto         hasSignificantEvents() const noexcept -> bool;
     void         interpretKeyDown() noexcept;
     void         interpretKeyUp() noexcept;
@@ -499,7 +499,7 @@ class FMouseCommand final
 
     // Method
     template <typename T>
-    void execute(T&& arg) const
+    inline void execute(T&& arg) const
     {
       handler(std::forward<T>(arg));
     }
@@ -538,7 +538,7 @@ class FMouseControl
     void         setMaxWidth (uInt16);
     void         setMaxHeight (uInt16);
     void         setDblclickInterval (const uInt64) const;
-    void         setEventCommand (const FMouseCommand&);
+    inline void  setEventCommand (const FMouseCommand&);
     void         useGpmMouse (bool = true);
     void         useXtermMouse (bool = true);
 
@@ -559,7 +559,7 @@ class FMouseControl
     auto         isWheelDown() -> bool;
     auto         isMoved() -> bool;
     auto         hasUnprocessedInput() const -> bool;
-    auto         hasDataInQueue() const -> bool;
+    inline auto  hasDataInQueue() const -> bool;
     auto         isGpmMouseEnabled() noexcept -> bool;
 
     // Methods
@@ -584,8 +584,8 @@ class FMouseControl
 
     // Mutators
     void         xtermMouse (bool = true) const;
-    void         enableXTermMouse() const;
-    void         disableXTermMouse() const;
+    inline void  enableXTermMouse() const;
+    inline void  disableXTermMouse() const;
     static void  setCurrentMouseEvent (const FMouseDataPtr&);
     static void  resetCurrentMouseEvent();
 

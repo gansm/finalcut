@@ -78,37 +78,37 @@ class FRingBuffer
           , index{pos}
         { }
 
-        auto operator ++ () -> ring_iterator&  // prefix
+        inline auto operator ++ () -> ring_iterator&  // prefix
         {
           index++;
           return *this;
         }
 
-        auto operator ++ (int) -> ring_iterator  // postfix
+        inline auto operator ++ (int) -> ring_iterator  // postfix
         {
           ring_iterator i = *this;
           index++;
           return i;
         }
 
-        auto operator * () const -> reference
+        inline auto operator * () const -> reference
         {
           return ptr[(offset + index) % N];
         }
 
-        auto operator -> () const -> pointer
+        inline auto operator -> () const -> pointer
         {
           return &**this;
         }
 
-        auto operator == (const ring_iterator& rhs) const -> bool
+        inline auto operator == (const ring_iterator& rhs) const -> bool
         {
           return index  == rhs.index
               && ptr    == rhs.ptr
               && offset == rhs.offset;
         }
 
-        auto operator != (const ring_iterator& rhs) const -> bool
+        inline auto operator != (const ring_iterator& rhs) const -> bool
         {
           return ! (*this == rhs);
         }
@@ -120,7 +120,7 @@ class FRingBuffer
         std::size_t       index{0U};
 
         // Friend Non-member operator functions
-        friend auto operator + (const ring_iterator& iter, std::ptrdiff_t size) -> ring_iterator
+        inline friend auto operator + (const ring_iterator& iter, std::ptrdiff_t size) -> ring_iterator
         {
           auto tmp = iter;
           tmp.index += std::size_t(size);
@@ -143,13 +143,13 @@ class FRingBuffer
     virtual ~FRingBuffer() = default;
 
     // Overloaded operators
-    auto operator [] (std::size_t index) noexcept -> reference
+    inline auto operator [] (std::size_t index) noexcept -> reference
     {
       static_assert ( Capacity > 0, "Ring buffer has no memory" );
       return buffer[(head + index) % Capacity];
     }
 
-    auto operator [] (std::size_t index) const noexcept -> const_reference
+    inline auto operator [] (std::size_t index) const noexcept -> const_reference
     {
       static_assert ( Capacity > 0, "Ring buffer has no memory" );
       return buffer[(head + index) % Capacity];
@@ -161,37 +161,37 @@ class FRingBuffer
       return "FRingBuffer";
     }
 
-    auto getSize() const noexcept -> size_t
+    inline auto getSize() const noexcept -> size_t
     {
       return elements;
     }
 
-    auto getCapacity() const noexcept -> size_t
+    inline auto getCapacity() const noexcept -> size_t
     {
       return Capacity;
     }
 
-    auto begin() noexcept -> iterator
+    inline auto begin() noexcept -> iterator
     {
       return iterator(buffer.data(), head, 0);
     }
 
-    auto begin() const noexcept -> const_iterator
+    inline auto begin() const noexcept -> const_iterator
     {
       return const_iterator(buffer.data(), head, 0);
     }
 
-    auto end() noexcept -> iterator
+    inline auto end() noexcept -> iterator
     {
       return iterator(buffer.data(), head, getSize());
     }
 
-    auto end() const noexcept -> const_iterator
+    inline auto end() const noexcept -> const_iterator
     {
       return const_iterator(buffer.data(), head, getSize());
     }
 
-    auto front() noexcept -> reference
+    inline auto front() noexcept -> reference
     {
       if ( isEmpty() )
         return empty_element;
@@ -199,7 +199,7 @@ class FRingBuffer
       return buffer[head];
     }
 
-    auto front() const noexcept -> const_reference
+    inline auto front() const noexcept -> const_reference
     {
       if ( isEmpty() )
         return empty_element;
@@ -207,7 +207,7 @@ class FRingBuffer
       return buffer[head];
     }
 
-    auto back() noexcept -> reference
+    inline auto back() noexcept -> reference
     {
       if ( isEmpty() )
         return empty_element;
@@ -216,7 +216,7 @@ class FRingBuffer
       return buffer[index];
     }
 
-    auto back() const noexcept -> const_reference
+    inline auto back() const noexcept -> const_reference
     {
       if ( isEmpty() )
         return empty_element;
@@ -226,7 +226,7 @@ class FRingBuffer
     }
 
     // Mutators
-    void clear() noexcept
+    inline void clear() noexcept
     {
       head = 0U;
       tail = 0U;
@@ -234,23 +234,23 @@ class FRingBuffer
     }
 
     // Inquiries
-    auto isEmpty() const noexcept -> bool
+    inline auto isEmpty() const noexcept -> bool
     {
       return elements == 0;
     }
 
-    auto hasData() const noexcept -> bool
+    inline auto hasData() const noexcept -> bool
     {
       return ! isEmpty();
     }
 
-    auto isFull() const noexcept -> bool
+    inline auto isFull() const noexcept -> bool
     {
       return elements == Capacity;
     }
 
     // Methods
-    void push (const T& item) noexcept
+    inline void push (const T& item) noexcept
     {
       if ( isFull() )
         return;
@@ -261,13 +261,13 @@ class FRingBuffer
       elements++;
     }
 
-    void push_back (const T& item) noexcept
+    inline void push_back (const T& item) noexcept
     {
       push (item);
     }
 
     template <typename... Args>
-    void emplace (Args&&... args)
+    inline void emplace (Args&&... args)
     {
       if ( isFull() )
         return;
@@ -279,12 +279,12 @@ class FRingBuffer
     }
 
     template <typename... Args>
-    void emplace_back (Args&&... args)
+    inline void emplace_back (Args&&... args)
     {
       emplace (std::forward<Args>(args)...);
     }
 
-    void pop() noexcept
+    inline void pop() noexcept
     {
       if ( isEmpty() )
         return;
@@ -294,12 +294,12 @@ class FRingBuffer
       elements--;
     }
 
-    void pop_front() noexcept
+    inline void pop_front() noexcept
     {
       pop();
     }
 
-    void pop (std::size_t s) noexcept
+    inline void pop (std::size_t s) noexcept
     {
       if ( isEmpty() )
         return;
@@ -312,7 +312,7 @@ class FRingBuffer
 
   private:
     // Data members
-    std::array<value_type, Capacity> buffer{};
+    std::array<value_type, Capacity> buffer;
     value_type  empty_element{};
     std::size_t head{0U};
     std::size_t tail{0U};

@@ -58,14 +58,14 @@ class FStyle
     auto getClassName() const -> FString
     { return "FStyle"; }
 
-    auto getStyle() const noexcept -> Style
+    inline auto getStyle() const noexcept -> Style
     { return attribute; }
 
     // Mutators
-    void setStyle (const FStyle& style)
+    inline void setStyle (const FStyle& style)
     { attribute = style.attribute; }
 
-    void setStyle (Style attr) noexcept
+    inline void setStyle (Style attr) noexcept
     { attribute = attr; }
 
     auto toFAttribute() const -> FAttribute

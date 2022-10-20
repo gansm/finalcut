@@ -154,26 +154,26 @@ class FVTerm : public FVTermAttribute
 
     template <typename CharT
             , enable_if_CString_t<CharT> = nullptr>
-    auto operator << (const CharT&) -> FVTerm&;
-    auto operator << (char) -> FVTerm&;
-    auto operator << (wchar_t) -> FVTerm&;
-    auto operator << (const wchar_t*) -> FVTerm&;
-    auto operator << (const UniChar&) -> FVTerm&;
-    auto operator << (const std::string&) -> FVTerm&;
-    auto operator << (const std::wstring&) -> FVTerm&;
-    auto operator << (const FString&) -> FVTerm&;
+    inline auto operator << (const CharT&) -> FVTerm&;
+    inline auto operator << (char) -> FVTerm&;
+    inline auto operator << (wchar_t) -> FVTerm&;
+    inline auto operator << (const wchar_t*) -> FVTerm&;
+    inline auto operator << (const UniChar&) -> FVTerm&;
+    inline auto operator << (const std::string&) -> FVTerm&;
+    inline auto operator << (const std::wstring&) -> FVTerm&;
+    inline auto operator << (const FString&) -> FVTerm&;
     auto operator << (const FVTermBuffer&) -> FVTerm&;
-    auto operator << (const FChar&) -> FVTerm&;
-    auto operator << (const FCharVector&) -> FVTerm&;
-    auto operator << (const FPoint&) -> FVTerm&;
-    auto operator << (const FStyle&) -> FVTerm&;
-    auto operator << (const FColorPair&) -> FVTerm&;
+    inline auto operator << (const FChar&) -> FVTerm&;
+    inline auto operator << (const FCharVector&) -> FVTerm&;
+    inline auto operator << (const FPoint&) -> FVTerm&;
+    inline auto operator << (const FStyle&) -> FVTerm&;
+    inline auto operator << (const FColorPair&) -> FVTerm&;
 
     // Accessors
     auto         getClassName() const -> FString override;
     static auto  getFOutput() -> std::shared_ptr<FOutput>;
-    auto         getVWin() -> FTermArea*&;
-    auto         getVWin() const -> const FTermArea*;
+    inline auto  getVWin() -> FTermArea*&;
+    inline auto  getVWin() const -> const FTermArea*;
     auto         getPrintCursor() -> FPoint;
     static auto  getWindowList() -> FVTermList*;
 
@@ -181,13 +181,13 @@ class FVTerm : public FVTermAttribute
     void         setTerminalUpdates (TerminalUpdate) const;
     void         setCursor (const FPoint&);
     static void  setNonBlockingRead (bool = true);
-    static void  unsetNonBlockingRead();
+    inline static void  unsetNonBlockingRead();
 
     // Inquiries
-    static auto  isDrawingFinished() noexcept -> bool;
-    static auto  isTerminalUpdateForced() noexcept -> bool;
-    static auto  areTerminalUpdatesPaused() noexcept -> bool;
-    static auto  hasPendingTerminalUpdates() -> bool;
+    inline static auto  isDrawingFinished() noexcept -> bool;
+    inline static auto  isTerminalUpdateForced() noexcept -> bool;
+    inline static auto  areTerminalUpdatesPaused() noexcept -> bool;
+    inline static auto  hasPendingTerminalUpdates() -> bool;
 
     // Methods
     virtual void clearArea (wchar_t = L' ');
@@ -212,27 +212,27 @@ class FVTerm : public FVTermAttribute
     auto         print (const FChar&) -> int;
     auto         print (FTermArea*, const FChar&) -> int;
     virtual void print (const FPoint&);
-    auto         print() & -> FVTerm&;
+    inline auto  print() & -> FVTerm&;
     void         flush() const;
 
   protected:
     // Accessor
     virtual auto getPrintArea() -> FTermArea*;
-    auto         getChildPrintArea() const -> FTermArea*;
-    auto         getCurrentPrintArea() const -> FTermArea*;
-    auto         getVirtualDesktop() const -> FTermArea*;
-    auto         getVirtualTerminal() const -> FTermArea*;
+    inline auto  getChildPrintArea() const -> FTermArea*;
+    inline auto  getCurrentPrintArea() const -> FTermArea*;
+    inline auto  getVirtualDesktop() const -> FTermArea*;
+    inline auto  getVirtualTerminal() const -> FTermArea*;
 
     // Mutators
-    void         setPrintArea (FTermArea*);
-    void         setChildPrintArea (FTermArea*);
-    void         setActiveArea (FTermArea*) const;
+    inline void  setPrintArea (FTermArea*);
+    inline void  setChildPrintArea (FTermArea*);
+    inline void  setActiveArea (FTermArea*) const;
 
     // Inquiries
-    auto         isActive (const FTermArea*) const -> bool;
-    auto         hasPrintArea() const -> bool;
-    auto         hasChildPrintArea() const -> bool;
-    auto         isVirtualWindow() const -> bool;
+    inline auto  isActive (const FTermArea*) const -> bool;
+    inline auto  hasPrintArea() const -> bool;
+    inline auto  hasChildPrintArea() const -> bool;
+    inline auto  isVirtualWindow() const -> bool;
     auto         isCursorHideable() const -> bool;
 
     // Methods
@@ -247,7 +247,7 @@ class FVTerm : public FVTermAttribute
     static void  removeArea (FTermArea*&);
     static void  restoreVTerm (const FRect&);
     auto         updateVTermCursor (const FTermArea*) const -> bool;
-    void         hideVTermCursor() const;
+    inline void  hideVTermCursor() const;
     static void  setAreaCursor ( const FPoint&
                                , bool, FTermArea* );
     static void  getArea (const FPoint&, const FTermArea*);
@@ -376,18 +376,18 @@ struct FVTerm::FTermArea  // define virtual terminal character properties
   auto operator = (const FTermArea&) -> FTermArea& = delete;
 
   template <typename T>
-  auto getOwner() const -> clean_fdata_t<T>&
+  inline auto getOwner() const -> clean_fdata_t<T>&
   {
     return static_cast<FData<clean_fdata_t<T>>&>(*owner).get();
   }
 
   template <typename T>
-  void setOwner (T&& obj)
+  inline void setOwner (T&& obj)
   {
     owner.reset(makeFData(std::forward<T>(obj)));
   }
 
-  auto hasOwner() const -> bool
+  inline auto hasOwner() const -> bool
   {
     return owner.get() != nullptr;
   }
@@ -395,20 +395,20 @@ struct FVTerm::FTermArea  // define virtual terminal character properties
   auto contains (const FPoint& pos) const noexcept -> bool;
   auto checkPrintPos() const noexcept -> bool;
 
-  void setCursorPos (int x, int y)
+  inline void setCursorPos (int x, int y)
   {
     cursor_x = x;
     cursor_y = y;
   }
 
-  void setInputCursorPos (int x, int y)
+  inline void setInputCursorPos (int x, int y)
   {
     input_cursor_x = x;
     input_cursor_y = y;
   }
 
   template <typename T>
-  auto print (T&& term_data) -> int
+  inline auto print (T&& term_data) -> int
   {
     if ( hasOwner() )
       return getOwner<FVTerm*>()->print (this, std::forward<T>(term_data));

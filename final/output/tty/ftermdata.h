@@ -63,10 +63,10 @@ class FCharSubstitution
       wchar_t to;
     };
 
-    auto getMappedChar (wchar_t) const -> wchar_t;
-    void setCharMapping (const Map&);
-    auto isEmpty() const -> bool;
-    void sort();
+    inline auto getMappedChar (wchar_t) const -> wchar_t;
+    inline void setCharMapping (const Map&);
+    inline auto isEmpty() const -> bool;
+    inline void sort();
 
   private:
     std::vector<Map> sub_map{};
@@ -145,69 +145,69 @@ class FTermData final
     // Accessors
     auto        getClassName() const -> FString;
     static auto getInstance() -> FTermData&;
-    auto        getEncodingList() & -> EncodingMap&;
-    auto        getCharSubstitutionMap() & -> FCharSubstitution&;
-    auto        getTerminalEncoding() const -> Encoding;
-    auto        getTerminalGeometry() & -> FRect&;
-    auto        getTerminalGeometry() const & -> const FRect&;
-    auto        getTTYFileDescriptor() const noexcept -> int;
-    auto        getBaudrate() const noexcept -> uInt;
-    auto        getTermType() const & -> const std::string& ;
-    auto        getTermFileName() const & -> const std::string&;
-    auto        getGnomeTerminalID() const noexcept -> int;
-    auto        getKittyVersion() const noexcept -> kittyVersion;
-    auto        getXtermFont() const & -> const FString&;
-    auto        getXtermTitle() const & -> const FString&;
+    inline auto getEncodingList() & -> EncodingMap&;
+    inline auto getCharSubstitutionMap() & -> FCharSubstitution&;
+    inline auto getTerminalEncoding() const -> Encoding;
+    inline auto getTerminalGeometry() & -> FRect&;
+    inline auto getTerminalGeometry() const & -> const FRect&;
+    inline auto getTTYFileDescriptor() const noexcept -> int;
+    inline auto getBaudrate() const noexcept -> uInt;
+    inline auto getTermType() const & -> const std::string& ;
+    inline auto getTermFileName() const & -> const std::string&;
+    inline auto getGnomeTerminalID() const noexcept -> int;
+    inline auto getKittyVersion() const noexcept -> kittyVersion;
+    inline auto getXtermFont() const & -> const FString&;
+    inline auto getXtermTitle() const & -> const FString&;
 #if DEBUG
-    auto        getFramebufferBpp() const noexcept -> int;
+    inline auto getFramebufferBpp() const noexcept -> int;
 #endif
 
     // Inquiries
-    auto        hasShadowCharacter() const noexcept -> bool;
-    auto        hasHalfBlockCharacter() const noexcept -> bool;
-    auto        hasCursorOptimisation() const noexcept -> bool;
-    auto        isCursorHidden() const noexcept -> bool;
-    auto        hasAlternateScreen() const noexcept -> bool;
-    auto        isInAlternateScreen() const noexcept -> bool;
-    auto        hasASCIIConsole() const noexcept -> bool;
-    auto        hasVT100Console() const noexcept -> bool;
-    auto        hasUTF8Console() const noexcept -> bool;
-    auto        isUTF8() const noexcept -> bool;
-    auto        isNewFont() const noexcept -> bool;
-    auto        isVGAFont() const noexcept -> bool;
-    auto        isMonochron() const noexcept -> bool;
-    auto        hasTermResized() -> bool;
-    auto        isTermType (FTermType) const -> bool;
-    auto        isTermType (FTermTypeT) const -> bool;
+    inline auto hasShadowCharacter() const noexcept -> bool;
+    inline auto hasHalfBlockCharacter() const noexcept -> bool;
+    inline auto hasCursorOptimisation() const noexcept -> bool;
+    inline auto isCursorHidden() const noexcept -> bool;
+    inline auto hasAlternateScreen() const noexcept -> bool;
+    inline auto isInAlternateScreen() const noexcept -> bool;
+    inline auto hasASCIIConsole() const noexcept -> bool;
+    inline auto hasVT100Console() const noexcept -> bool;
+    inline auto hasUTF8Console() const noexcept -> bool;
+    inline auto isUTF8() const noexcept -> bool;
+    inline auto isNewFont() const noexcept -> bool;
+    inline auto isVGAFont() const noexcept -> bool;
+    inline auto isMonochron() const noexcept -> bool;
+    inline auto hasTermResized() -> bool;
+    inline auto isTermType (FTermType) const -> bool;
+    inline auto isTermType (FTermTypeT) const -> bool;
 
     // Mutators
-    void        setTermEncoding (Encoding) noexcept;
-    void        setTTYFileDescriptor (int) noexcept;
-    void        setBaudrate (uInt) noexcept;
-    void        supportShadowCharacter (bool = true) noexcept;
-    void        supportHalfBlockCharacter (bool = true) noexcept;
-    void        supportCursorOptimisation (bool = true) noexcept;
-    void        setCursorHidden (bool = true) noexcept;
-    void        useAlternateScreen (bool = true) noexcept;
-    void        setAlternateScreenInUse (bool = true) noexcept;
-    void        setASCIIConsole (bool = true) noexcept;
-    void        setVT100Console (bool = true) noexcept;
-    void        setUTF8Console (bool = true) noexcept;
-    void        setUTF8 (bool = true) noexcept;
-    void        setNewFont (bool = true) noexcept;
-    void        setVGAFont (bool = true) noexcept;
-    void        setMonochron (bool = true) noexcept;
-    void        setTermResized (bool = true);
-    void        setTermType (const std::string&);
-    void        setTermType (FTermType);
-    void        unsetTermType (FTermType);
-    void        setTermFileName (const std::string&);
-    void        setGnomeTerminalID (int) noexcept;
-    void        setKittyVersion (const kittyVersion&);
-    void        setXtermFont (const FString&);
-    void        setXtermTitle (const FString&);
+    inline void setTermEncoding (Encoding) noexcept;
+    inline void setTTYFileDescriptor (int) noexcept;
+    inline void setBaudrate (uInt) noexcept;
+    inline void supportShadowCharacter (bool = true) noexcept;
+    inline void supportHalfBlockCharacter (bool = true) noexcept;
+    inline void supportCursorOptimisation (bool = true) noexcept;
+    inline void setCursorHidden (bool = true) noexcept;
+    inline void useAlternateScreen (bool = true) noexcept;
+    inline void setAlternateScreenInUse (bool = true) noexcept;
+    inline void setASCIIConsole (bool = true) noexcept;
+    inline void setVT100Console (bool = true) noexcept;
+    inline void setUTF8Console (bool = true) noexcept;
+    inline void setUTF8 (bool = true) noexcept;
+    inline void setNewFont (bool = true) noexcept;
+    inline void setVGAFont (bool = true) noexcept;
+    inline void setMonochron (bool = true) noexcept;
+    inline void setTermResized (bool = true);
+    inline void setTermType (const std::string&);
+    inline void setTermType (FTermType);
+    inline void unsetTermType (FTermType);
+    inline void setTermFileName (const std::string&);
+    inline void setGnomeTerminalID (int) noexcept;
+    inline void setKittyVersion (const kittyVersion&);
+    inline void setXtermFont (const FString&);
+    inline void setXtermTitle (const FString&);
 #if DEBUG
-    void        setFramebufferBpp (int) noexcept;
+    inline void setFramebufferBpp (int) noexcept;
 #endif
 
   private:

@@ -91,26 +91,26 @@ class FOptiMove final
     // Accessors
     auto        getClassName() const -> FString;
     static auto getInstance() -> FOptiMove&;
-    auto        getCursorHomeLength() const -> uInt;
-    auto        getCarriageReturnLength() const -> uInt;
-    auto        getCursorToLLLength() const -> uInt;
-    auto        getTabLength() const -> uInt;
-    auto        getBackTabLength() const -> uInt;
-    auto        getCursorUpLength() const -> uInt;
-    auto        getCursorDownLength() const -> uInt;
-    auto        getCursorLeftLength() const -> uInt;
-    auto        getCursorRightLength() const -> uInt;
-    auto        getCursorAddressLength() const -> uInt;
-    auto        getColumnAddressLength() const -> uInt;
-    auto        getRowAddressLength() const -> uInt;
-    auto        getParmUpCursorLength() const -> uInt;
-    auto        getParmDownCursorLength() const -> uInt;
-    auto        getParmLeftCursorLength() const -> uInt;
-    auto        getParmRightCursorLength() const -> uInt;
-    auto        getEraseCharsLength() const -> uInt;
-    auto        getRepeatCharLength() const -> uInt;
-    auto        getClrBolLength() const -> uInt;
-    auto        getClrEolLength() const -> uInt;
+    inline auto getCursorHomeLength() const -> uInt;
+    inline auto getCarriageReturnLength() const -> uInt;
+    inline auto getCursorToLLLength() const -> uInt;
+    inline auto getTabLength() const -> uInt;
+    inline auto getBackTabLength() const -> uInt;
+    inline auto getCursorUpLength() const -> uInt;
+    inline auto getCursorDownLength() const -> uInt;
+    inline auto getCursorLeftLength() const -> uInt;
+    inline auto getCursorRightLength() const -> uInt;
+    inline auto getCursorAddressLength() const -> uInt;
+    inline auto getColumnAddressLength() const -> uInt;
+    inline auto getRowAddressLength() const -> uInt;
+    inline auto getParmUpCursorLength() const -> uInt;
+    inline auto getParmDownCursorLength() const -> uInt;
+    inline auto getParmLeftCursorLength() const -> uInt;
+    inline auto getParmRightCursorLength() const -> uInt;
+    inline auto getEraseCharsLength() const -> uInt;
+    inline auto getRepeatCharLength() const -> uInt;
+    inline auto getClrBolLength() const -> uInt;
+    inline auto getClrEolLength() const -> uInt;
 
     // Mutators
     void        setBaudRate (int);
@@ -137,8 +137,8 @@ class FOptiMove final
     void        set_repeat_char (const char[]);
     void        set_clr_bol (const char[]);
     void        set_clr_eol (const char[]);
-    void        set_auto_left_margin (bool = true) noexcept;
-    void        set_eat_newline_glitch (bool = true) noexcept;
+    inline void set_auto_left_margin (bool = true) noexcept;
+    inline void set_eat_newline_glitch (bool = true) noexcept;
 
     // Methods
     void        check_boundaries (int&, int&, int&, int&) const;

@@ -118,16 +118,16 @@ class ConEmu
 
   protected:
     // Mutators
-    void        enableConEmuDebug (bool) noexcept;
+    inline void  enableConEmuDebug (bool) noexcept;
 
     // Inquiries
-    auto        isConEmuChildProcess (pid_t) const noexcept -> bool;
+    inline auto  isConEmuChildProcess (pid_t) const noexcept -> bool;
 
     // Methods
-    void        printConEmuDebug();
-    void        closeConEmuStdStreams();
-    auto       forkConEmu() -> pid_t;
-    void        startConEmuTerminal (console);
+    void         printConEmuDebug();
+    inline void  closeConEmuStdStreams();
+    auto         forkConEmu() -> pid_t;
+    void         startConEmuTerminal (console);
 
   private:
     // Accessors

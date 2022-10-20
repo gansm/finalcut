@@ -72,7 +72,7 @@ class FOutput : public std::enable_shared_from_this<FOutput>
     // Accessors
     virtual auto getClassName() const -> FString;
     auto         getInstance() -> std::shared_ptr<FOutput>;
-    auto         getFVTerm() const & -> const FVTerm&;
+    inline auto  getFVTerm() const & -> const FVTerm&;
     virtual auto getColumnNumber() const -> std::size_t = 0;
     virtual auto getLineNumber() const -> std::size_t = 0;
     virtual auto getTabstop() const -> int = 0;
@@ -90,9 +90,9 @@ class FOutput : public std::enable_shared_from_this<FOutput>
     virtual auto setNewFont() -> bool = 0;
     virtual void setNonBlockingRead (bool = true) = 0;
     template <typename ClassT>
-    void         setColorPaletteTheme() const;
+    inline void setColorPaletteTheme() const;
     template <typename ClassT>
-    void         setColorPaletteTheme (const FSetPalette&) const;
+    inline void setColorPaletteTheme (const FSetPalette&) const;
 
     // Inquiries
     virtual auto isCursorHideable() const -> bool = 0;

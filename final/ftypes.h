@@ -80,7 +80,7 @@ template <typename T
         , bool is_signed>
 struct is_negative
 {
-  constexpr auto operator () (const T& x) const noexcept -> bool
+  inline constexpr auto operator () (const T& x) const noexcept -> bool
   {
     return x < 0;
   }
@@ -89,7 +89,7 @@ struct is_negative
 template <typename T>
 struct is_negative<T, false>
 {
-  constexpr auto operator () (const T&) const noexcept -> bool
+  inline constexpr auto operator () (const T&) const noexcept -> bool
   {
     return false;
   }
@@ -99,7 +99,7 @@ struct is_negative<T, false>
 
 // Check for 7-bit ASCII
 template<typename CharT>
-constexpr auto is7bit (CharT ch) noexcept -> bool
+inline constexpr auto is7bit (CharT ch) noexcept -> bool
 {
   using char_type = std::make_unsigned_t<CharT>;
   return static_cast<char_type>(ch) < 128;
@@ -108,13 +108,13 @@ constexpr auto is7bit (CharT ch) noexcept -> bool
 
 // Typecast to c-string
 template <typename StringT>
-constexpr auto C_STR (StringT&& string) noexcept
+inline constexpr auto C_STR (StringT&& string) noexcept
 {
   return const_cast<char*>(std::forward<StringT>(string));
 }
 
 template <typename T>
-constexpr auto isNegative (const T& x) noexcept -> bool
+inline constexpr auto isNegative (const T& x) noexcept -> bool
 {
   return internal::is_negative<T, std::numeric_limits<T>::is_signed>{}(x);
 }
@@ -122,7 +122,7 @@ constexpr auto isNegative (const T& x) noexcept -> bool
 template <typename T>
 struct getPrecision
 {
-  constexpr explicit operator int () const noexcept
+  inline constexpr explicit operator int () const noexcept
   {
     return std::numeric_limits<T>::digits10;
   }
@@ -131,7 +131,7 @@ struct getPrecision
 template <typename T>
 struct EnumHash
 {
-  constexpr auto operator () (const T& mt) const noexcept -> std::size_t
+  inline constexpr auto operator () (const T& mt) const noexcept -> std::size_t
   {
     using underlying_type = std::underlying_type_t<T>;
     return std::hash<underlying_type>{}(underlying_type(mt));
@@ -139,7 +139,7 @@ struct EnumHash
 };
 
 template <typename CharT>
-constexpr auto stringLength (const CharT* s) noexcept -> std::size_t
+inline constexpr auto stringLength (const CharT* s) noexcept -> std::size_t
 {
   return std::char_traits<CharT>::length(s);
 }
@@ -296,7 +296,7 @@ struct FChar
 
 // FChar operator functions
 //----------------------------------------------------------------------
-constexpr auto isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool
+inline constexpr auto isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool
 {
   auto l_iter = std::cbegin(lhs);
   auto r_iter = std::cbegin(rhs);
@@ -320,7 +320,7 @@ constexpr auto isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexce
 }
 
 //----------------------------------------------------------------------
-constexpr auto operator == (const FChar& lhs, const FChar& rhs) noexcept -> bool
+inline constexpr auto operator == (const FChar& lhs, const FChar& rhs) noexcept -> bool
 {
   return isFUnicodeEqual(lhs.ch, rhs.ch)
       && lhs.fg_color     == rhs.fg_color
@@ -332,7 +332,7 @@ constexpr auto operator == (const FChar& lhs, const FChar& rhs) noexcept -> bool
 }
 
 //----------------------------------------------------------------------
-constexpr auto operator != (const FChar& lhs, const FChar& rhs) noexcept -> bool
+inline constexpr auto operator != (const FChar& lhs, const FChar& rhs) noexcept -> bool
 {
   return ! ( lhs == rhs );
 }

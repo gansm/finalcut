@@ -59,33 +59,33 @@ class FColorPair
     auto getClassName() const -> FString
     { return "FColorPair"; }
 
-    auto getForegroundColor() const noexcept -> FColor
+    inline auto getForegroundColor() const noexcept -> FColor
     { return fg_color; }
 
-    auto getBackgroundColor() const noexcept -> FColor
+    inline auto getBackgroundColor() const noexcept -> FColor
     { return bg_color; }
 
     // Mutators
-    void setForegroundColor (FColor color) noexcept
+    inline void setForegroundColor (FColor color) noexcept
     { fg_color = color; }
 
-    void setBackgroundColor (FColor color) noexcept
+    inline void setBackgroundColor (FColor color) noexcept
     { bg_color = color; }
 
-    void setColorPair (const FColorPair& pair) noexcept
+    inline void setColorPair (const FColorPair& pair) noexcept
     {
       fg_color = pair.fg_color;
       bg_color = pair.bg_color;
     }
 
-    void setColorPair (FColor fg, FColor bg) noexcept
+    inline void setColorPair (FColor fg, FColor bg) noexcept
     {
       fg_color = fg;
       bg_color = bg;
     }
 
     // Methods
-    void swap() noexcept
+    inline void swap() noexcept
     {
       std::swap (fg_color, bg_color);
     }

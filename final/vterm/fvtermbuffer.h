@@ -70,54 +70,54 @@ class FVTermBuffer
     FVTermBuffer (Iterator, Iterator);
 
     // Overloaded operators
-    auto operator [] (std::size_t) -> reference;
-    auto operator [] (const std::size_t) const -> const_reference;
+    inline auto operator [] (std::size_t) -> reference;
+    inline auto operator [] (const std::size_t) const -> const_reference;
 
     template <typename NumT
             , enable_if_arithmetic_without_char_t<NumT> = nullptr>
-    auto operator << (const NumT&) -> FVTermBuffer&;
+    inline auto operator << (const NumT&) -> FVTermBuffer&;
 
     template <typename CharT
             , enable_if_CString_t<CharT> = nullptr>
-    auto operator << (const CharT&) -> FVTermBuffer&;
-    auto operator << (char) -> FVTermBuffer&;
-    auto operator << (wchar_t) -> FVTermBuffer&;
-    auto operator << (const wchar_t*) -> FVTermBuffer&;
-    auto operator << (const UniChar&) -> FVTermBuffer&;
-    auto operator << (const std::string&) -> FVTermBuffer&;
-    auto operator << (const std::wstring&) -> FVTermBuffer&;
-    auto operator << (const FString&) -> FVTermBuffer&;
-    auto operator << (FChar&) -> FVTermBuffer&;
-    auto operator << (const FCharVector&) -> FVTermBuffer&;
-    auto operator << (const FStyle&) -> FVTermBuffer&;
-    auto operator << (const FColorPair&) -> FVTermBuffer&;
+    inline auto operator << (const CharT&) -> FVTermBuffer&;
+    inline auto operator << (char) -> FVTermBuffer&;
+    inline auto operator << (wchar_t) -> FVTermBuffer&;
+    inline auto operator << (const wchar_t*) -> FVTermBuffer&;
+    inline auto operator << (const UniChar&) -> FVTermBuffer&;
+    inline auto operator << (const std::string&) -> FVTermBuffer&;
+    inline auto operator << (const std::wstring&) -> FVTermBuffer&;
+    inline auto operator << (const FString&) -> FVTermBuffer&;
+    inline auto operator << (FChar&) -> FVTermBuffer&;
+    inline auto operator << (const FCharVector&) -> FVTermBuffer&;
+    inline auto operator << (const FStyle&) -> FVTermBuffer&;
+    inline auto operator << (const FColorPair&) -> FVTermBuffer&;
 
     // Accessors
     auto getClassName() const -> FString;
-    auto getLength() const -> std::size_t;
-    auto getBuffer() const -> const FCharVector&;
+    inline auto getLength() const -> std::size_t;
+    inline auto getBuffer() const -> const FCharVector&;
 
     // Inquiry
-    auto isEmpty() const -> bool;
+    inline auto isEmpty() const -> bool;
 
     // Methods
-    auto begin() -> iterator;
-    auto end() -> iterator;
-    auto begin() const -> const_iterator;
-    auto end() const -> const_iterator;
-    auto front() -> reference;
-    auto back() -> reference;
-    auto front() const -> const_reference;
-    auto back() const -> const_reference;
+    inline auto begin() -> iterator;
+    inline auto end() -> iterator;
+    inline auto begin() const -> const_iterator;
+    inline auto end() const -> const_iterator;
+    inline auto front() -> reference;
+    inline auto back() -> reference;
+    inline auto front() const -> const_reference;
+    inline auto back() const -> const_reference;
     auto toString() const -> FString;
-    void clear();
+    inline void clear();
     template <typename... Args>
-    auto printf (const FString&, Args&&...) -> int;
+    inline auto printf (const FString&, Args&&...) -> int;
     auto print (const FString&) -> int;
     auto print (wchar_t) -> int;
     void print (const FStyle&) const;
     void print (const FColorPair&) const;
-    auto print () -> FVTermBuffer&;
+    inline auto print () -> FVTermBuffer&;
 
   private:
     inline void checkCapacity (std::size_t);

@@ -36,6 +36,8 @@
 #include "final/output/tty/ftermoutput.h"
 #include "final/output/tty/ftermxterminal.h"
 #include "final/util/char_ringbuffer.h"
+#include "final/util/fpoint.h"
+#include "final/util/fsize.h"
 
 namespace finalcut
 {

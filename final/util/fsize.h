@@ -65,9 +65,9 @@ class FSize
 
     // Accessors
     auto getClassName() const -> FString;
-    auto getWidth() const noexcept -> std::size_t;
-    auto getHeight() const noexcept -> std::size_t;
-    auto getArea() const noexcept -> std::size_t;
+    inline auto getWidth() const noexcept -> std::size_t;
+    inline auto getHeight() const noexcept -> std::size_t;
+    inline auto getArea() const noexcept -> std::size_t;
     void setWidth (std::size_t) noexcept;
     void setHeight (std::size_t) noexcept;
     void setSize (const FSize&);
@@ -77,8 +77,8 @@ class FSize
     auto isEmpty() const noexcept -> bool;
 
     // Side references
-    auto width_ref() & noexcept -> std::size_t&;
-    auto height_ref() & noexcept -> std::size_t&;
+    inline auto width_ref() & noexcept -> std::size_t&;
+    inline auto height_ref() & noexcept -> std::size_t&;
 
     // Methods
     void scaleBy (int, int) noexcept;
@@ -90,12 +90,12 @@ class FSize
     std::size_t height{0};
 
     // Friend operator functions
-    friend auto operator <  (const FSize&, const FSize&) -> bool;
-    friend auto operator <= (const FSize&, const FSize&) -> bool;
-    friend auto operator == (const FSize&, const FSize&) -> bool;
-    friend auto operator != (const FSize&, const FSize&) -> bool;
-    friend auto operator >= (const FSize&, const FSize&) -> bool;
-    friend auto operator >  (const FSize&, const FSize&) -> bool;
+    inline friend auto operator <  (const FSize&, const FSize&) -> bool;
+    inline friend auto operator <= (const FSize&, const FSize&) -> bool;
+    inline friend auto operator == (const FSize&, const FSize&) -> bool;
+    inline friend auto operator != (const FSize&, const FSize&) -> bool;
+    inline friend auto operator >= (const FSize&, const FSize&) -> bool;
+    inline friend auto operator >  (const FSize&, const FSize&) -> bool;
     friend auto operator + (const FSize&, const FSize&) -> FSize;
     friend auto operator - (const FSize&, const FSize&) -> FSize;
 

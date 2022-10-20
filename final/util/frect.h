@@ -66,19 +66,19 @@ class FRect
 
     // Accessors
     auto getClassName() const -> FString;
-    auto getX1() const noexcept -> int;
-    auto getY1() const noexcept -> int;
-    auto getX2() const noexcept -> int;
-    auto getY2() const noexcept -> int;
-    auto getX() const noexcept -> int;
-    auto getY() const noexcept -> int;
+    inline auto getX1() const noexcept -> int;
+    inline auto getY1() const noexcept -> int;
+    inline auto getX2() const noexcept -> int;
+    inline auto getY2() const noexcept -> int;
+    inline auto getX() const noexcept -> int;
+    inline auto getY() const noexcept -> int;
     auto getPos() const -> FPoint;
     auto getUpperLeftPos() const -> FPoint;
     auto getUpperRightPos() const -> FPoint;
     auto getLowerLeftPos() const -> FPoint;
     auto getLowerRightPos() const -> FPoint;
-    auto getWidth() const noexcept -> std::size_t;
-    auto getHeight() const noexcept -> std::size_t;
+    inline auto getWidth() const noexcept -> std::size_t;
+    inline auto getHeight() const noexcept -> std::size_t;
     auto getSize() const -> FSize;
 
     // Mutators
@@ -104,10 +104,10 @@ class FRect
     auto isEmpty() const -> bool;
 
     // Coordinate references
-    auto x1_ref() & noexcept -> int&;
-    auto y1_ref() & noexcept -> int&;
-    auto x2_ref() & noexcept -> int&;
-    auto y2_ref() & noexcept -> int&;
+    inline auto x1_ref() & noexcept -> int&;
+    inline auto y1_ref() & noexcept -> int&;
+    inline auto x2_ref() & noexcept -> int&;
+    inline auto y2_ref() & noexcept -> int&;
 
     // Methods
     void move (int, int) noexcept;

@@ -54,7 +54,7 @@ class FTermXTerminal final
     FTermXTerminal();
 
     // Mutators
-    void        redefineDefaultColors (bool = true) noexcept;
+    inline void redefineDefaultColors (bool = true) noexcept;
     void        setCursorStyle (XTermCursorStyle);
     void        setFont (const FString&);
     void        setTitle (const FString&);
@@ -66,25 +66,25 @@ class FTermXTerminal final
     void        setMouseBackground (const FString&);
     void        setHighlightBackground (const FString&);
     static void setMouseSupport (bool = true);
-    static void unsetMouseSupport();
+    inline static void unsetMouseSupport();
     void        metaSendsESC (bool = true);
 
     // Accessors
     auto        getClassName() const -> FString;
     static auto getInstance() -> FTermXTerminal&;
-    auto        getCursorStyle() const noexcept -> XTermCursorStyle;
-    auto        getFont() const -> FString;
-    auto        getTitle() const -> FString;
-    auto        getForeground() const -> FString;
-    auto        getBackground() const -> FString;
-    auto        getCursorColor() const -> FString;
-    auto        getMouseForeground() const -> FString;
-    auto        getMouseBackground() const -> FString;
-    auto        getHighlightBackground() const -> FString;
+    inline auto getCursorStyle() const noexcept -> XTermCursorStyle;
+    inline auto getFont() const -> FString;
+    inline auto getTitle() const -> FString;
+    inline auto getForeground() const -> FString;
+    inline auto getBackground() const -> FString;
+    inline auto getCursorColor() const -> FString;
+    inline auto getMouseForeground() const -> FString;
+    inline auto getMouseBackground() const -> FString;
+    inline auto getHighlightBackground() const -> FString;
 
     // Inquiries
-    auto        hasFont() const -> bool;
-    auto        hasTitle() const -> bool;
+    inline auto hasFont() const -> bool;
+    inline auto hasTitle() const -> bool;
 
     // Methods
     void        setDefaults();

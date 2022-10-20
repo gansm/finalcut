@@ -191,15 +191,15 @@ class FTerm final
     static auto canChangeColorPalette() -> bool;
 
     // Mutators
-    static void setFSystem (std::unique_ptr<FSystem>&);
+    inline static void setFSystem (std::unique_ptr<FSystem>&);
     static void setTermType (const std::string&);
     static void setInsertCursor (bool = true);
-    static void unsetInsertCursor();
+    inline static void unsetInsertCursor();
     static void redefineDefaultColors (bool = true);
     static void setDblclickInterval (const uInt64);
     static void useAlternateScreen (bool = true);
     static auto setUTF8 (bool = true) -> bool;
-    static auto unsetUTF8() -> bool;
+    inline static auto unsetUTF8() -> bool;
 
     // Methods
     static auto setVGAFont() -> bool;
@@ -234,7 +234,7 @@ class FTerm final
     static void paddingPrint (const std::string&, int = 1);
     static void stringPrint (const std::string&);
 
-    void        initTerminal();
+    inline void initTerminal();
     static void initScreenSettings();
     static void changeTermSizeFinished();
 

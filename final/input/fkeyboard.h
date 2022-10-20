@@ -100,34 +100,34 @@ class FKeyboard final
     // Accessors
     auto        getClassName() const -> FString;
     static auto getInstance() -> FKeyboard&;
-    auto        getKey() const noexcept -> FKey;
+    inline auto getKey() const noexcept -> FKey;
     auto        getKeyName (const FKey) const -> FString;
-    auto        getKeyBuffer() & noexcept -> keybuffer&;
-    auto        getKeyPressedTime() const noexcept -> TimeValue;
-    static auto getKeypressTimeout() noexcept -> uInt64;
-    static auto getReadBlockingTime() noexcept -> uInt64;
+    inline auto getKeyBuffer() & noexcept -> keybuffer&;
+    inline auto getKeyPressedTime() const noexcept -> TimeValue;
+    inline static auto getKeypressTimeout() noexcept -> uInt64;
+    inline static auto getReadBlockingTime() noexcept -> uInt64;
 
     // Mutators
     template <typename T>
     void        setTermcapMap (const T&);
     void        setTermcapMap();
-    static void setKeypressTimeout (const uInt64) noexcept;
-    static void setReadBlockingTime (const uInt64) noexcept;
-    static void setNonBlockingInputSupport (bool = true) noexcept;
-    auto        setNonBlockingInput (bool = true) -> bool;
-    auto        unsetNonBlockingInput() noexcept -> bool;
-    void        enableUTF8() noexcept;
-    void        disableUTF8() noexcept;
-    void        enableMouseSequences() noexcept;
-    void        disableMouseSequences() noexcept;
-    void        setPressCommand (const FKeyboardCommand&);
-    void        setReleaseCommand (const FKeyboardCommand&);
-    void        setEscPressedCommand (const FKeyboardCommand&);
-    void        setMouseTrackingCommand (const FKeyboardCommand&);
+    inline static void setKeypressTimeout (const uInt64) noexcept;
+    inline static void setReadBlockingTime (const uInt64) noexcept;
+    inline static void setNonBlockingInputSupport (bool = true) noexcept;
+    auto         setNonBlockingInput (bool = true) -> bool;
+    inline auto  unsetNonBlockingInput() noexcept -> bool;
+    inline void  enableUTF8() noexcept;
+    inline void  disableUTF8() noexcept;
+    inline void  enableMouseSequences() noexcept;
+    inline void  disableMouseSequences() noexcept;
+    inline void  setPressCommand (const FKeyboardCommand&);
+    inline void  setReleaseCommand (const FKeyboardCommand&);
+    inline void  setEscPressedCommand (const FKeyboardCommand&);
+    inline void  setMouseTrackingCommand (const FKeyboardCommand&);
 
     // Inquiry
-    auto        hasPendingInput() const noexcept -> bool;
-    auto        hasDataInQueue() const -> bool;
+    inline auto  hasPendingInput() const noexcept -> bool;
+    inline auto  hasDataInQueue() const -> bool;
 
     // Methods
     auto        hasUnprocessedInput() const noexcept -> bool;

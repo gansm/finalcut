@@ -59,23 +59,23 @@ class FTermDetection final
     // Accessors
     auto        getClassName() const -> FString;
     static auto getInstance() -> FTermDetection&;
-    auto        getTermType() const & -> const FString&;
+    inline auto getTermType() const & -> const FString&;
 
 #if DEBUG
     auto        getAnswerbackString() const & -> const FString&;
     auto        getSecDAString() const & -> const FString&;
-    auto        getTermType_256color() const & -> const FString&;
-    auto        getTermType_Answerback() const & -> const FString&;
-    auto        getTermType_SecDA() const & -> const FString&;
+    inline auto getTermType_256color() const & -> const FString&;
+    inline auto getTermType_Answerback() const & -> const FString&;
+    inline auto getTermType_SecDA() const & -> const FString&;
 #endif
 
     // Inquiries
-    auto        canDisplay256Colors() const noexcept -> bool;
-    auto        hasTerminalDetection() const noexcept -> bool;
-    auto        hasSetCursorStyleSupport() const noexcept -> bool;
+    inline auto canDisplay256Colors() const noexcept -> bool;
+    inline auto hasTerminalDetection() const noexcept -> bool;
+    inline auto hasSetCursorStyleSupport() const noexcept -> bool;
 
     // Mutators
-    void        setTerminalDetection (bool = true) noexcept;
+    inline void setTerminalDetection (bool = true) noexcept;
     void        setTtyTypeFileName (const FString&);
 
     // Methods

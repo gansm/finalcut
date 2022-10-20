@@ -57,12 +57,12 @@ class FTermios final
     // Accessors
     auto         getClassName() const -> FString;
     static auto  getTTY() -> termios;
-    static auto  getStdIn() noexcept -> int;
-    static auto  getStdOut() noexcept -> int;
-    static auto  getStdErr() noexcept -> int;
+    inline static auto  getStdIn() noexcept -> int;
+    inline static auto  getStdOut() noexcept -> int;
+    inline static auto  getStdErr() noexcept -> int;
 
     // Inquiries
-    static auto  isRaw() noexcept -> bool;
+    inline static auto  isRaw() noexcept -> bool;
 
     // Methods
     static void  init();
@@ -74,8 +74,8 @@ class FTermios final
     static void  setCaptureSendCharacters();
     static void  unsetCaptureSendCharacters();
     static auto  setRawMode (bool = true) -> bool;
-    static auto  unsetRawMode() -> bool;
-    static auto  setCookedMode() -> bool;
+    inline static auto  unsetRawMode() -> bool;
+    inline static auto  setCookedMode() -> bool;
     static auto  getBaudRate() -> uInt;
 
   private:

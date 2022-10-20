@@ -88,21 +88,21 @@ class FTermcap final
     static auto getString (const std::string&) -> char*;
     static auto encodeMotionParameter (const std::string&, int, int) -> std::string;
     template <typename... Args>
-    static auto encodeParameter (const std::string&, Args&&...) -> std::string;
+    inline static auto encodeParameter (const std::string&, Args&&...) -> std::string;
     static auto paddingPrint (const std::string&, int) -> Status;
     static auto stringPrint (const std::string&) -> Status;
 
     // Inquiry
-    static auto isInitialized() -> bool;
+    inline static auto isInitialized() -> bool;
 
     // Mutator
     template<typename PutChar>
-    static void setPutCharFunction (const PutChar&);
+    inline static void setPutCharFunction (const PutChar&);
     static void setDefaultPutCharFunction();
     template<typename PutString>
-    static void setPutStringFunction (const PutString&);
+    inline static void setPutStringFunction (const PutString&);
     static void setDefaultPutStringFunction();
-    static void setBaudrate (int);
+    inline static void setBaudrate (int);
 
     // Methods
     static void init();

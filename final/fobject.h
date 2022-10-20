@@ -111,33 +111,33 @@ class FObject
 
     // Accessors
     virtual auto getClassName() const -> FString;
-    auto         getParent() const & -> FObject*;
+    inline auto  getParent() const & -> FObject*;
     auto         getChild (int) const & -> FObject*;
-    auto         getChildren() & -> FObjectList&;
-    auto         getChildren() const & -> const FObjectList&;
-    auto         getMaxChildren() const & noexcept -> std::size_t;
-    auto         numOfChildren() const & -> std::size_t;
-    auto         begin() -> iterator;
-    auto         end() -> iterator;
-    auto         begin() const -> const_iterator;
-    auto         end() const -> const_iterator;
-    auto         cbegin() const noexcept -> const_iterator;
-    auto         cend() const noexcept -> const_iterator;
-    auto         front() -> reference;
-    auto         back() -> reference;
-    auto         front() const -> const_reference;
-    auto         back() const -> const_reference;
+    inline auto  getChildren() & -> FObjectList&;
+    inline auto  getChildren() const & -> const FObjectList&;
+    inline auto  getMaxChildren() const & noexcept -> std::size_t;
+    inline auto  numOfChildren() const & -> std::size_t;
+    inline auto  begin() -> iterator;
+    inline auto  end() -> iterator;
+    inline auto  begin() const -> const_iterator;
+    inline auto  end() const -> const_iterator;
+    inline auto  cbegin() const noexcept -> const_iterator;
+    inline auto  cend() const noexcept -> const_iterator;
+    inline auto  front() -> reference;
+    inline auto  back() -> reference;
+    inline auto  front() const -> const_reference;
+    inline auto  back() const -> const_reference;
 
     // Mutator
-    void         setMaxChildren (std::size_t) noexcept;
+    inline void  setMaxChildren (std::size_t) noexcept;
 
     // Inquiries
-    auto         hasParent() const & noexcept -> bool;
-    auto         hasChildren() const & -> bool;
+    inline auto  hasParent() const & noexcept -> bool;
+    inline auto  hasChildren() const & -> bool;
     auto         isChild (const FObject*) const & -> bool;
-    auto         isDirectChild (const FObject*) const & -> bool;
-    auto         isWidget() const noexcept -> bool;
-    auto         isInstanceOf (const FString&) const -> bool;
+    inline auto  isDirectChild (const FObject*) const & -> bool;
+    inline auto  isWidget() const noexcept -> bool;
+    inline auto  isInstanceOf (const FString&) const -> bool;
 
     // Methods
     void         removeParent() &;
@@ -170,10 +170,10 @@ class FObject
     using FTimerListUniquePtr = std::unique_ptr<FTimerList>;
 
     // Accessor
-    auto         getTimerList() const -> FTimerList*;
+    inline auto  getTimerList() const -> FTimerList*;
 
     // Mutator
-    void         setWidgetProperty (bool = true);
+    inline void  setWidgetProperty (bool = true);
 
     // Method
     auto         processTimerEvent() -> uInt;

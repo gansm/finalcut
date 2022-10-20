@@ -1,3 +1,6 @@
+2022-10-20  Markus Gans  <guru.mail@muenster.de>
+	* Speed-up code through more inline functions
+
 2022-10-18  Markus Gans  <guru.mail@muenster.de>
 	* To improve performance, the output buffer queue has been replaced 
 	  with a ring buffer

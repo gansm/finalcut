@@ -174,80 +174,80 @@ class FWidget : public FVTerm, public FObject
     auto         getClassName() const -> FString override;
     auto         getRootWidget() -> FWidget*;
     auto         getParentWidget() const -> FWidget*;
-    static auto  getMainWidget() -> FWidget*&;
-    static auto  getActiveWindow() -> FWidget*&;
-    static auto  getFocusWidget() -> FWidget*&;
-    static auto  getClickedWidget() -> FWidget*&;
-    static auto  getOpenMenu() -> FWidget*&;
-    static auto  getMoveSizeWidget() -> FWidget*&;
-    static auto  getMenuBar() -> FMenuBar*;
-    static auto  getStatusBar() -> FStatusBar*;
+    inline static auto getMainWidget() -> FWidget*&;
+    inline static auto getActiveWindow() -> FWidget*&;
+    inline static auto getFocusWidget() -> FWidget*&;
+    inline static auto getClickedWidget() -> FWidget*&;
+    inline static auto getOpenMenu() -> FWidget*&;
+    inline static auto getMoveSizeWidget() -> FWidget*&;
+    inline static auto getMenuBar() -> FMenuBar*;
+    inline static auto getStatusBar() -> FStatusBar*;
     static auto  getColorTheme() -> std::shared_ptr<FWidgetColors>&;
-    auto         getAcceleratorList() const & -> const FAcceleratorList&;
-    auto         getStatusbarMessage() const -> FString;
-    auto         getForegroundColor() const noexcept -> FColor;  // get the primary
-    auto         getBackgroundColor() const noexcept -> FColor;  // widget colors
+    inline auto  getAcceleratorList() const & -> const FAcceleratorList&;
+    inline auto  getStatusbarMessage() const -> FString;
+    inline auto  getForegroundColor() const noexcept -> FColor;  // get the primary
+    inline auto  getBackgroundColor() const noexcept -> FColor;  // widget colors
     auto         doubleFlatLine_ref (Side) -> std::vector<bool>&;
     // Positioning and sizes accessors...
-    auto         getX() const -> int;
-    auto         getY() const -> int;
-    auto         getPos() const -> FPoint;
-    auto         getTermX() const -> int;
-    auto         getTermY() const -> int;
-    auto         getTermPos() const -> FPoint;
-    auto         getWidth() const -> std::size_t;
-    auto         getHeight() const -> std::size_t;
-    auto         getSize() const -> FSize;
-    auto         getTopPadding() const noexcept -> int;
-    auto         getLeftPadding() const noexcept -> int;
-    auto         getBottomPadding() const noexcept -> int;
-    auto         getRightPadding() const noexcept -> int;
-    auto         getClientWidth() const -> std::size_t;
-    auto         getClientHeight() const -> std::size_t;
-    auto         getClientSize() const -> FSize;
-    auto         getMaxWidth() const -> std::size_t;
-    auto         getMaxHeight() const -> std::size_t;
-    auto         getShadow() const & -> const FSize&;
-    auto         getGeometry() const & -> const FRect&;
-    auto         getGeometryWithShadow() & -> const FRect&;
-    auto         getTermGeometry() & -> const FRect&;
-    auto         getTermGeometryWithShadow() & -> const FRect&;
-    auto         getDesktopWidth() const -> std::size_t;
-    auto         getDesktopHeight() const -> std::size_t;
-    auto         getFlags() const & -> const FWidgetFlags&;
-    auto         getCursorPos() const -> FPoint;
+    inline auto  getX() const -> int;
+    inline auto  getY() const -> int;
+    inline auto  getPos() const -> FPoint;
+    inline auto  getTermX() const -> int;
+    inline auto  getTermY() const -> int;
+    inline auto  getTermPos() const -> FPoint;
+    inline auto  getWidth() const -> std::size_t;
+    inline auto  getHeight() const -> std::size_t;
+    inline auto  getSize() const -> FSize;
+    inline auto  getTopPadding() const noexcept -> int;
+    inline auto  getLeftPadding() const noexcept -> int;
+    inline auto  getBottomPadding() const noexcept -> int;
+    inline auto  getRightPadding() const noexcept -> int;
+    inline auto  getClientWidth() const -> std::size_t;
+    inline auto  getClientHeight() const -> std::size_t;
+    inline auto  getClientSize() const -> FSize;
+    inline auto  getMaxWidth() const -> std::size_t;
+    inline auto  getMaxHeight() const -> std::size_t;
+    inline auto  getShadow() const & -> const FSize&;
+    inline auto  getGeometry() const & -> const FRect&;
+    inline auto  getGeometryWithShadow() & -> const FRect&;
+    inline auto  getTermGeometry() & -> const FRect&;
+    inline auto  getTermGeometryWithShadow() & -> const FRect&;
+    inline auto  getDesktopWidth() const -> std::size_t;
+    inline auto  getDesktopHeight() const -> std::size_t;
+    inline auto  getFlags() const & -> const FWidgetFlags&;
+    inline auto  getCursorPos() const -> FPoint;
     auto         getPrintPos() -> FPoint;
 
     // Mutators
     static void  setMainWidget (FWidget*);
-    static void  setFocusWidget (FWidget*);
-    static void  setClickedWidget (FWidget*);
+    inline static void setFocusWidget (FWidget*);
+    inline static void setClickedWidget (FWidget*);
     static void  setMoveSizeWidget (FWidget*);
-    static void  setActiveWindow (FWidget*);
-    static void  setOpenMenu (FWidget*);
+    inline static void setActiveWindow (FWidget*);
+    inline static void setOpenMenu (FWidget*);
     template <typename ClassT>
-    static void  setColorTheme();
-    auto         setAcceleratorList() & -> FAcceleratorList&;
-    virtual void setStatusbarMessage (const FString&);
+    inline static void  setColorTheme();
+    inline auto  setAcceleratorList() & -> FAcceleratorList&;
+    inline virtual void setStatusbarMessage (const FString&);
     auto         setVisible (bool = true) -> bool;
-    auto         unsetVisible() -> bool;
+    inline auto  unsetVisible() -> bool;
     virtual auto setEnable (bool = true) -> bool;
     virtual auto unsetEnable() -> bool;
-    virtual auto setDisable() -> bool;
-    virtual auto setVisibleCursor (bool = true) -> bool;  // input cursor visibility
-    virtual auto unsetVisibleCursor() -> bool;            // for the widget
+    inline virtual auto setDisable() -> bool;
+    inline virtual auto setVisibleCursor (bool = true) -> bool;  // input cursor visibility
+    inline virtual auto unsetVisibleCursor() -> bool;            // for the widget
     virtual auto setFocus (bool = true) -> bool;
-    virtual auto unsetFocus() -> bool;
+    inline virtual auto unsetFocus() -> bool;
     void         setFocusable (bool = true);
     void         unsetFocusable();
-    auto         ignorePadding (bool = true) -> bool;    // ignore padding from
-    auto         acceptPadding() -> bool;                // the parent widget
-    virtual void setForegroundColor (FColor);
-    virtual void setBackgroundColor (FColor);
+    inline auto  ignorePadding (bool = true) -> bool;    // ignore padding from
+    inline auto  acceptPadding() -> bool;                // the parent widget
+    inline virtual void setForegroundColor (FColor);
+    inline virtual void setBackgroundColor (FColor);
     virtual void resetColors();
     void         useParentWidgetColor();
     void         setColor() const;
-    auto         setFlags() & -> FWidgetFlags&;
+    inline auto  setFlags() & -> FWidgetFlags&;
     // Positioning and sizes mutators...
     virtual void setX (int, bool = true);
     virtual void setY (int, bool = true);
@@ -260,51 +260,51 @@ class FWidget : public FVTerm, public FObject
     void         setBottomPadding (int, bool = true);
     void         setRightPadding (int, bool = true);
     void         setTerminalSize (const FSize&) const;
-    virtual void setGeometry (const FRect&, bool = true);
+    inline virtual void setGeometry (const FRect&, bool = true);
     virtual void setGeometry (const FPoint&, const FSize&, bool = true);
-    virtual void setShadowSize (const FSize&);
-    void         setMinimumWidth (std::size_t);
-    void         setMinimumHeight (std::size_t);
-    void         setMinimumSize (const FSize&);
-    void         setMaximumWidth (std::size_t);
-    void         setMaximumHeight (std::size_t);
-    void         setMaximumSize (const FSize&);
-    void         setFixedSize (const FSize&);
+    inline virtual void setShadowSize (const FSize&);
+    inline void  setMinimumWidth (std::size_t);
+    inline void  setMinimumHeight (std::size_t);
+    inline void  setMinimumSize (const FSize&);
+    inline void  setMaximumWidth (std::size_t);
+    inline void  setMaximumHeight (std::size_t);
+    inline void  setMaximumSize (const FSize&);
+    inline void  setFixedSize (const FSize&);
     virtual auto setCursorPos (const FPoint&) -> bool;
-    void         unsetCursorPos();
+    inline void  unsetCursorPos();
     virtual void setPrintPos (const FPoint&);
     void         setDoubleFlatLine (Side, bool = true);
-    void         unsetDoubleFlatLine (Side);
+    inline void  unsetDoubleFlatLine (Side);
     void         setDoubleFlatLine (Side, int, bool = true);
-    void         unsetDoubleFlatLine (Side, int);
+    inline void  unsetDoubleFlatLine (Side, int);
 
     // Inquiries
-    auto         isRootWidget() const -> bool;
-    auto         isWindowWidget() const -> bool;
-    auto         isDialogWidget() const -> bool;
-    auto         isMenuWidget() const -> bool;
-    auto         isVisible() const -> bool;
-    auto         isShown() const -> bool;
-    auto         isHidden() const -> bool;
-    auto         isEnabled() const -> bool;
-    auto         hasVisibleCursor() const -> bool;
-    auto         hasFocus() const -> bool;
-    auto         acceptFocus() const -> bool;  // is focusable
-    auto         isPaddingIgnored() const -> bool;
+    inline auto  isRootWidget() const -> bool;
+    inline auto  isWindowWidget() const -> bool;
+    inline auto  isDialogWidget() const -> bool;
+    inline auto  isMenuWidget() const -> bool;
+    inline auto  isVisible() const -> bool;
+    inline auto  isShown() const -> bool;
+    inline auto  isHidden() const -> bool;
+    inline auto  isEnabled() const -> bool;
+    inline auto  hasVisibleCursor() const -> bool;
+    inline auto  hasFocus() const -> bool;
+    inline auto  acceptFocus() const -> bool;  // is focusable
+    inline auto  isPaddingIgnored() const -> bool;
 
     // Methods
     auto         childWidgetAt (const FPoint&) & -> FWidget*;
     auto         numOfFocusableChildren() & -> int;
     virtual auto close() -> bool;
-    void         clearStatusbarMessage();
+    inline void  clearStatusbarMessage();
     template <typename... Args>
-    void         addCallback (FString&&, Args&&...) & noexcept;
+    inline void  addCallback (FString&&, Args&&...) & noexcept;
     template <typename... Args>
-    void         delCallback (Args&&...) & noexcept;
-    void         emitCallback (const FString&) const &;
-    void         addAccelerator (FKey) &;
+    inline void  delCallback (Args&&...) & noexcept;
+    inline void  emitCallback (const FString&) const &;
+    inline void  addAccelerator (FKey) &;
     virtual void addAccelerator (FKey, FWidget*) &;
-    void         delAccelerator () &;
+    inline void  delAccelerator () &;
     virtual void delAccelerator (FWidget*) &;
     virtual void redraw();
     virtual void resize();
@@ -314,19 +314,19 @@ class FWidget : public FVTerm, public FObject
     virtual auto focusPrevChild() -> bool;  // ...focus
     virtual auto focusFirstChild() & -> bool;
     virtual auto focusLastChild() & -> bool;
-    auto         termToWidgetPos (const FPoint&) const -> FPoint;
-    void         print (const FPoint&) override;
+    inline auto  termToWidgetPos (const FPoint&) const -> FPoint;
+    inline void  print (const FPoint&) override;
     virtual void move (const FPoint&);
-    virtual void drawBorder();
+    inline virtual void drawBorder();
     static void  quit();
 
   protected:
     // Accessor
     auto         getPrintArea() -> FTermArea* override;
-    static auto  getModalDialogCounter() -> uInt;
-    static auto  getDialogList() -> FWidgetList*&;
-    static auto  getAlwaysOnTopList() -> FWidgetList*&;
-    static auto  getWidgetCloseList() -> FWidgetList*&;
+    inline static auto getModalDialogCounter() -> uInt;
+    inline static auto getDialogList() -> FWidgetList*&;
+    inline static auto getAlwaysOnTopList() -> FWidgetList*&;
+    inline static auto getWidgetCloseList() -> FWidgetList*&;
     void         addPreprocessingHandler ( const FVTerm*
                                          , FPreprocessingFunction&& ) override;
     void         delPreprocessingHandler (const FVTerm*) override;
