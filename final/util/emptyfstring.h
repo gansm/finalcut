@@ -57,7 +57,7 @@ class emptyFString final
     // Constructors
     emptyFString() = default;
 
-    static auto getClassName() -> FString
+    inline static auto getClassName() -> FString
     {
       return "emptyFString";
     }

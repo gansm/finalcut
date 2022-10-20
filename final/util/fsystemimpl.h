@@ -173,7 +173,7 @@ class FSystemImpl : public FSystem
     }
 
     auto getpwuid_r ( uid_t, struct passwd*, char*, size_t
-                   , struct passwd** ) -> int override;
+                    , struct passwd** ) -> int override;
 
     auto realpath (const char*, char*) -> char* override;
 };

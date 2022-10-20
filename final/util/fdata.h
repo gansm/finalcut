@@ -134,7 +134,7 @@ class FDataAccess
     }
 
     template<typename T>
-    inline constexpr auto get() -> clean_fdata_t<T>&
+    constexpr auto get() -> clean_fdata_t<T>&
     {
       return static_cast<FData<clean_fdata_t<T>>&>(*this).get();
     }
@@ -142,7 +142,7 @@ class FDataAccess
     // Mutator
     template <typename T
             , typename V>
-    inline constexpr void set (V&& data)
+    constexpr void set (V&& data)
     {
       static_cast<FData<T>&>(*this).set(std::forward<V>(data));
     }
@@ -212,17 +212,17 @@ class FData : public FDataAccess
       return *this;
     }
 
-    inline constexpr auto operator () () const -> T
+    constexpr auto operator () () const -> T
     {
       return value_ref;
     }
 
-    inline constexpr explicit operator T () const
+    constexpr explicit operator T () const
     {
       return value_ref;
     }
 
-    inline constexpr auto operator << (const T& v) -> FData&
+    constexpr auto operator << (const T& v) -> FData&
     {
       value_ref.get() = v;
       return *this;
@@ -234,32 +234,32 @@ class FData : public FDataAccess
       return "FData";
     }
 
-    inline constexpr auto get() const -> T&
+    constexpr auto get() const -> T&
     {
       return value_ref;
     }
 
     // Mutator
-    inline constexpr void set (const T& v)
+    constexpr void set (const T& v)
     {
       value_ref.get() = v;
     }
 
     // Inquiries
-    inline constexpr auto isInitializedCopy() const -> bool
+    constexpr auto isInitializedCopy() const -> bool
     {
       const auto& v = reinterpret_cast<void*>(const_cast<T_nocv*>(&value));
       const auto& r = reinterpret_cast<void*>(const_cast<T_nocv*>(&value_ref.get()));
       return v == r;
     }
 
-    inline constexpr auto isInitializedReference() const -> bool
+    constexpr auto isInitializedReference() const -> bool
     {
       return ! isInitializedCopy();
     }
 
     // Friend Non-member operator functions
-    inline constexpr friend auto operator << (std::ostream &os, const FData& data) -> std::ostream&
+    constexpr friend auto operator << (std::ostream &os, const FData& data) -> std::ostream&
     {
       os << data.value_ref.get();
       return os;

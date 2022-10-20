@@ -57,29 +57,29 @@ class FTermDetection final
     FTermDetection() = default;
 
     // Accessors
-    auto        getClassName() const -> FString;
-    static auto getInstance() -> FTermDetection&;
-    inline auto getTermType() const & -> const FString&;
+    auto  getClassName() const -> FString;
+    static auto  getInstance() -> FTermDetection&;
+    auto  getTermType() const & -> const FString&;
 
 #if DEBUG
-    auto        getAnswerbackString() const & -> const FString&;
-    auto        getSecDAString() const & -> const FString&;
-    inline auto getTermType_256color() const & -> const FString&;
-    inline auto getTermType_Answerback() const & -> const FString&;
-    inline auto getTermType_SecDA() const & -> const FString&;
+    auto  getAnswerbackString() const & -> const FString&;
+    auto  getSecDAString() const & -> const FString&;
+    auto  getTermType_256color() const & -> const FString&;
+    auto  getTermType_Answerback() const & -> const FString&;
+    auto  getTermType_SecDA() const & -> const FString&;
 #endif
 
     // Inquiries
-    inline auto canDisplay256Colors() const noexcept -> bool;
-    inline auto hasTerminalDetection() const noexcept -> bool;
-    inline auto hasSetCursorStyleSupport() const noexcept -> bool;
+    auto  canDisplay256Colors() const noexcept -> bool;
+    auto  hasTerminalDetection() const noexcept -> bool;
+    auto  hasSetCursorStyleSupport() const noexcept -> bool;
 
     // Mutators
-    inline void setTerminalDetection (bool = true) noexcept;
-    void        setTtyTypeFileName (const FString&);
+    void  setTerminalDetection (bool = true) noexcept;
+    void  setTtyTypeFileName (const FString&);
 
     // Methods
-    void        detect();
+    void  detect();
 
   private:
     struct colorEnv
@@ -102,37 +102,37 @@ class FTermDetection final
     };
 
     // Methods
-    void        getSystemTermType();
-    auto        getTTYtype() -> bool;
+    void  getSystemTermType();
+    auto  getTTYtype() -> bool;
 #if F_HAVE_GETTTYNAM
-    auto        getTTYSFileEntry() -> bool;
+    auto  getTTYSFileEntry() -> bool;
 #endif
-    void        termtypeAnalysis();
-    void        detectTerminal();
-    auto        init_256colorTerminal() -> FString;
-    auto        get256colorEnvString() -> bool;
-    auto        termtype_256color_quirks() -> FString;
-    auto        determineMaxColor (const FString&) -> FString;
-    auto        getXTermColorName (FColor) const -> FString;
-    auto        parseAnswerbackMsg (const FString&) -> FString;
-    auto        getAnswerbackMsg() const -> FString;
-    auto        parseSecDA (const FString&) -> FString;
-    auto        str2int (const FString&) const -> int;
-    auto        getSecDA() const -> FString;
-    auto        secDA_Analysis (const FString&) -> FString;
-    auto        secDA_Analysis_0 (const FString&) const -> FString;
-    auto        secDA_Analysis_1 (const FString&) -> FString;
-    auto        secDA_Analysis_24 (const FString&) -> FString;
-    auto        secDA_Analysis_32 () const -> FString;
-    auto        secDA_Analysis_65 (const FString&) -> FString;
-    auto        secDA_Analysis_67 () const -> FString;
-    auto        secDA_Analysis_77 () -> FString;
-    auto        secDA_Analysis_82 () const -> FString;
-    auto        secDA_Analysis_83 (const FString&) const -> FString;
-    auto        secDA_Analysis_84 (const FString&) const -> FString;
-    auto        secDA_Analysis_85 () const -> FString;
-    auto        secDA_Analysis_vte (const FString&) -> FString;
-    auto        secDA_Analysis_kitty (const FString&) -> FString;
+    void  termtypeAnalysis();
+    void  detectTerminal();
+    auto  init_256colorTerminal() -> FString;
+    auto  get256colorEnvString() -> bool;
+    auto  termtype_256color_quirks() -> FString;
+    auto  determineMaxColor (const FString&) -> FString;
+    auto  getXTermColorName (FColor) const -> FString;
+    auto  parseAnswerbackMsg (const FString&) -> FString;
+    auto  getAnswerbackMsg() const -> FString;
+    auto  parseSecDA (const FString&) -> FString;
+    auto  str2int (const FString&) const -> int;
+    auto  getSecDA() const -> FString;
+    auto  secDA_Analysis (const FString&) -> FString;
+    auto  secDA_Analysis_0 (const FString&) const -> FString;
+    auto  secDA_Analysis_1 (const FString&) -> FString;
+    auto  secDA_Analysis_24 (const FString&) -> FString;
+    auto  secDA_Analysis_32 () const -> FString;
+    auto  secDA_Analysis_65 (const FString&) -> FString;
+    auto  secDA_Analysis_67 () const -> FString;
+    auto  secDA_Analysis_77 () -> FString;
+    auto  secDA_Analysis_82 () const -> FString;
+    auto  secDA_Analysis_83 (const FString&) const -> FString;
+    auto  secDA_Analysis_84 (const FString&) const -> FString;
+    auto  secDA_Analysis_85 () const -> FString;
+    auto  secDA_Analysis_vte (const FString&) -> FString;
+    auto  secDA_Analysis_kitty (const FString&) -> FString;
 
     // Data members
 #if DEBUG

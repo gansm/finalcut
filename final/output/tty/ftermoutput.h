@@ -74,7 +74,7 @@ class FTermOutput final : public FOutput
 
     // Accessors
     auto getClassName() const -> FString override;
-    inline auto getFTerm() & -> FTerm&;
+    auto getFTerm() & -> FTerm&;
     auto getColumnNumber() const -> std::size_t override;
     auto getLineNumber() const -> std::size_t override;
     auto getTabstop() const -> int override;
@@ -86,14 +86,14 @@ class FTermOutput final : public FOutput
     void setCursor (FPoint) override;
     void setCursor (CursorMode) override;
     void hideCursor (bool = true) override;
-    inline void showCursor() override;
+    void showCursor() override;
     void setTerminalSize (FSize) override;
     auto setVGAFont() -> bool override;
     auto setNewFont() -> bool override;
     void setNonBlockingRead (bool = true) override;
 
     // Inquiries
-    inline auto isCursorHideable() const -> bool override;
+    auto isCursorHideable() const -> bool override;
     auto isMonochron() const -> bool override;
     auto isNewFont() const -> bool override;
     auto isEncodable (const wchar_t&) const -> bool override;
@@ -172,7 +172,7 @@ class FTermOutput final : public FOutput
     using OutputBuffer = FRingBuffer<OutputData, BUFFER_SIZE>;
 
     // Accessors
-    inline auto getFSetPaletteRef() const & -> const FSetPalette& override;
+    auto getFSetPaletteRef() const & -> const FSetPalette& override;
 
     // Methods
     auto getStartOptions() & -> FStartOptions&;

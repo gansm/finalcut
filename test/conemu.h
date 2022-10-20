@@ -118,32 +118,32 @@ class ConEmu
 
   protected:
     // Mutators
-    inline void  enableConEmuDebug (bool) noexcept;
+    void  enableConEmuDebug (bool) noexcept;
 
     // Inquiries
-    inline auto  isConEmuChildProcess (pid_t) const noexcept -> bool;
+    auto  isConEmuChildProcess (pid_t) const noexcept -> bool;
 
     // Methods
-    void         printConEmuDebug();
-    inline void  closeConEmuStdStreams();
-    auto         forkConEmu() -> pid_t;
-    void         startConEmuTerminal (console);
+    void  printConEmuDebug();
+    void  closeConEmuStdStreams();
+    auto  forkConEmu() -> pid_t;
+    void  startConEmuTerminal (console);
 
   private:
     // Accessors
-    auto getAnswerback (console) -> const char*;
-    auto getDSR (console) -> const char*;
-    auto getDECID (console) -> const char*;
-    auto getDA (console) -> const char*;
-    auto getDA1 (console) -> const char*;
-    auto getSEC_DA (console) -> const char*;
+    auto  getAnswerback (console) -> const char*;
+    auto  getDSR (console) -> const char*;
+    auto  getDECID (console) -> const char*;
+    auto  getDA (console) -> const char*;
+    auto  getDA1 (console) -> const char*;
+    auto  getSEC_DA (console) -> const char*;
 
     // Methods
-    auto openMasterPTY() -> bool;
-    auto openSlavePTY() -> bool;
-    void closeMasterPTY();
-    void closeSlavePTY();
-    void parseTerminalBuffer (std::size_t, console);
+    auto  openMasterPTY() -> bool;
+    auto  openSlavePTY() -> bool;
+    void  closeMasterPTY();
+    void  closeSlavePTY();
+    void  parseTerminalBuffer (std::size_t, console);
 
     // Data members
     int                fd_stdin{fileno(stdin)};

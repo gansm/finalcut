@@ -60,19 +60,19 @@ class FPoint
 
     // Accessors
     auto getClassName() const -> FString;
-    inline auto getX() const noexcept -> int;
-    inline auto getY() const noexcept -> int;
+    auto getX() const noexcept -> int;
+    auto getY() const noexcept -> int;
     void setX (int) noexcept;
     void setY (int) noexcept;
-    inline void setPoint (const FPoint&);
+    void setPoint (const FPoint&);
     void setPoint (int, int) noexcept;
 
     // Inquiry
     auto isOrigin() const noexcept -> bool;
 
     // Point references
-    inline auto x_ref() & noexcept -> int&;
-    inline auto y_ref() & noexcept -> int&;
+    auto x_ref() & noexcept -> int&;
+    auto y_ref() & noexcept -> int&;
 
     // Methods
     void move (int, int) noexcept;
@@ -84,11 +84,11 @@ class FPoint
     int ypos{0};
 
     // Friend operator functions
-    inline friend auto operator == (const FPoint&, const FPoint&) -> bool;
-    inline friend auto operator != (const FPoint&, const FPoint&) -> bool;
-    inline friend auto operator + (const FPoint&, const FPoint&) -> FPoint;
-    inline friend auto operator - (const FPoint&, const FPoint&) -> FPoint;
-    inline friend auto operator - (const FPoint&) -> FPoint;
+    friend auto operator == (const FPoint&, const FPoint&) -> bool;
+    friend auto operator != (const FPoint&, const FPoint&) -> bool;
+    friend auto operator + (const FPoint&, const FPoint&) -> FPoint;
+    friend auto operator - (const FPoint&, const FPoint&) -> FPoint;
+    friend auto operator - (const FPoint&) -> FPoint;
     friend auto operator << (std::ostream&, const FPoint&) -> std::ostream&;
     friend auto operator >> (std::istream&, FPoint&) -> std::istream&;
 };

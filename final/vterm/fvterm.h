@@ -154,114 +154,114 @@ class FVTerm : public FVTermAttribute
 
     template <typename CharT
             , enable_if_CString_t<CharT> = nullptr>
-    inline auto operator << (const CharT&) -> FVTerm&;
-    inline auto operator << (char) -> FVTerm&;
-    inline auto operator << (wchar_t) -> FVTerm&;
-    inline auto operator << (const wchar_t*) -> FVTerm&;
-    inline auto operator << (const UniChar&) -> FVTerm&;
-    inline auto operator << (const std::string&) -> FVTerm&;
-    inline auto operator << (const std::wstring&) -> FVTerm&;
-    inline auto operator << (const FString&) -> FVTerm&;
+    auto operator << (const CharT&) -> FVTerm&;
+    auto operator << (char) -> FVTerm&;
+    auto operator << (wchar_t) -> FVTerm&;
+    auto operator << (const wchar_t*) -> FVTerm&;
+    auto operator << (const UniChar&) -> FVTerm&;
+    auto operator << (const std::string&) -> FVTerm&;
+    auto operator << (const std::wstring&) -> FVTerm&;
+    auto operator << (const FString&) -> FVTerm&;
     auto operator << (const FVTermBuffer&) -> FVTerm&;
-    inline auto operator << (const FChar&) -> FVTerm&;
-    inline auto operator << (const FCharVector&) -> FVTerm&;
-    inline auto operator << (const FPoint&) -> FVTerm&;
-    inline auto operator << (const FStyle&) -> FVTerm&;
-    inline auto operator << (const FColorPair&) -> FVTerm&;
+    auto operator << (const FChar&) -> FVTerm&;
+    auto operator << (const FCharVector&) -> FVTerm&;
+    auto operator << (const FPoint&) -> FVTerm&;
+    auto operator << (const FStyle&) -> FVTerm&;
+    auto operator << (const FColorPair&) -> FVTerm&;
 
     // Accessors
-    auto         getClassName() const -> FString override;
+    auto  getClassName() const -> FString override;
     static auto  getFOutput() -> std::shared_ptr<FOutput>;
-    inline auto  getVWin() -> FTermArea*&;
-    inline auto  getVWin() const -> const FTermArea*;
-    auto         getPrintCursor() -> FPoint;
+    auto  getVWin() -> FTermArea*&;
+    auto  getVWin() const -> const FTermArea*;
+    auto  getPrintCursor() -> FPoint;
     static auto  getWindowList() -> FVTermList*;
 
     // Mutators
-    void         setTerminalUpdates (TerminalUpdate) const;
-    void         setCursor (const FPoint&);
+    void  setTerminalUpdates (TerminalUpdate) const;
+    void  setCursor (const FPoint&);
     static void  setNonBlockingRead (bool = true);
-    inline static void  unsetNonBlockingRead();
+    static void  unsetNonBlockingRead();
 
     // Inquiries
-    inline static auto  isDrawingFinished() noexcept -> bool;
-    inline static auto  isTerminalUpdateForced() noexcept -> bool;
-    inline static auto  areTerminalUpdatesPaused() noexcept -> bool;
-    inline static auto  hasPendingTerminalUpdates() -> bool;
+    static auto  isDrawingFinished() noexcept -> bool;
+    static auto  isTerminalUpdateForced() noexcept -> bool;
+    static auto  areTerminalUpdatesPaused() noexcept -> bool;
+    static auto  hasPendingTerminalUpdates() -> bool;
 
     // Methods
     virtual void clearArea (wchar_t = L' ');
-    void         createVTerm (const FSize&);
-    void         resizeVTerm (const FSize&) const;
-    void         putVTerm() const;
-    auto         updateTerminal() const -> bool;
+    void  createVTerm (const FSize&);
+    void  resizeVTerm (const FSize&) const;
+    void  putVTerm() const;
+    auto  updateTerminal() const -> bool;
     virtual void addPreprocessingHandler ( const FVTerm*
                                          , FPreprocessingFunction&& );
     virtual void delPreprocessingHandler (const FVTerm*);
-    auto         interpretControlCodes (FTermArea*, const FChar&) const -> bool;
+    auto  interpretControlCodes (FTermArea*, const FChar&) const -> bool;
     template <typename... Args>
-    auto         printf (const FString&, Args&&...) -> int;
-    auto         print (const FString&) -> int;
-    auto         print (FTermArea*, const FString&) -> int;
-    auto         print (const std::vector<FChar>&) -> int;
-    auto         print (FTermArea*, const std::vector<FChar>&) -> int;
-    auto         print (const FVTermBuffer&) -> int;
-    auto         print (FTermArea*, const FVTermBuffer&) -> int;
-    auto         print (wchar_t) -> int;
-    auto         print (FTermArea*, wchar_t) -> int;
-    auto         print (const FChar&) -> int;
-    auto         print (FTermArea*, const FChar&) -> int;
+    auto  printf (const FString&, Args&&...) -> int;
+    auto  print (const FString&) -> int;
+    auto  print (FTermArea*, const FString&) -> int;
+    auto  print (const std::vector<FChar>&) -> int;
+    auto  print (FTermArea*, const std::vector<FChar>&) -> int;
+    auto  print (const FVTermBuffer&) -> int;
+    auto  print (FTermArea*, const FVTermBuffer&) -> int;
+    auto  print (wchar_t) -> int;
+    auto  print (FTermArea*, wchar_t) -> int;
+    auto  print (const FChar&) -> int;
+    auto  print (FTermArea*, const FChar&) -> int;
     virtual void print (const FPoint&);
-    inline auto  print() & -> FVTerm&;
-    void         flush() const;
+    auto  print() & -> FVTerm&;
+    void  flush() const;
 
   protected:
     // Accessor
     virtual auto getPrintArea() -> FTermArea*;
-    inline auto  getChildPrintArea() const -> FTermArea*;
-    inline auto  getCurrentPrintArea() const -> FTermArea*;
-    inline auto  getVirtualDesktop() const -> FTermArea*;
-    inline auto  getVirtualTerminal() const -> FTermArea*;
+    auto  getChildPrintArea() const -> FTermArea*;
+    auto  getCurrentPrintArea() const -> FTermArea*;
+    auto  getVirtualDesktop() const -> FTermArea*;
+    auto  getVirtualTerminal() const -> FTermArea*;
 
     // Mutators
-    inline void  setPrintArea (FTermArea*);
-    inline void  setChildPrintArea (FTermArea*);
-    inline void  setActiveArea (FTermArea*) const;
+    void  setPrintArea (FTermArea*);
+    void  setChildPrintArea (FTermArea*);
+    void  setActiveArea (FTermArea*) const;
 
     // Inquiries
-    inline auto  isActive (const FTermArea*) const -> bool;
-    inline auto  hasPrintArea() const -> bool;
-    inline auto  hasChildPrintArea() const -> bool;
-    inline auto  isVirtualWindow() const -> bool;
-    auto         isCursorHideable() const -> bool;
+    auto  isActive (const FTermArea*) const -> bool;
+    auto  hasPrintArea() const -> bool;
+    auto  hasChildPrintArea() const -> bool;
+    auto  isVirtualWindow() const -> bool;
+    auto  isCursorHideable() const -> bool;
 
     // Methods
-    void         createArea ( const FRect&
-                            , const FSize&
-                            , FTermArea*& );
-    void         createArea ( const FRect&, FTermArea*&);
-    void         resizeArea ( const FRect&
-                            , const FSize&
-                            , FTermArea* ) const;
-    void         resizeArea (const FRect&, FTermArea*) const;
+    void  createArea ( const FRect&
+                     , const FSize&
+                     , FTermArea*& );
+    void  createArea ( const FRect&, FTermArea*&);
+    void  resizeArea ( const FRect&
+                     , const FSize&
+                     , FTermArea* ) const;
+    void  resizeArea (const FRect&, FTermArea*) const;
     static void  removeArea (FTermArea*&);
     static void  restoreVTerm (const FRect&);
-    auto         updateVTermCursor (const FTermArea*) const -> bool;
-    inline void  hideVTermCursor() const;
+    auto  updateVTermCursor (const FTermArea*) const -> bool;
+    void  hideVTermCursor() const;
     static void  setAreaCursor ( const FPoint&
                                , bool, FTermArea* );
     static void  getArea (const FPoint&, const FTermArea*);
     static void  getArea (const FRect&, const FTermArea*);
-    void         putArea (const FTermArea*) const;
+    void  putArea (const FTermArea*) const;
     static void  putArea (const FPoint&, const FTermArea*);
     static void  copyArea (FTermArea*, const FPoint&, const FTermArea*);
     static auto  getLayer (FVTerm&) -> int;
     static void  determineWindowLayers();
-    void         scrollAreaForward (FTermArea*) const;
-    void         scrollAreaReverse (FTermArea*) const;
-    void         clearArea (FTermArea*, wchar_t = L' ') const;
-    void         forceTerminalUpdate() const;
-    auto         processTerminalUpdate() const -> bool;
+    void  scrollAreaForward (FTermArea*) const;
+    void  scrollAreaReverse (FTermArea*) const;
+    void  clearArea (FTermArea*, wchar_t = L' ') const;
+    void  forceTerminalUpdate() const;
+    auto  processTerminalUpdate() const -> bool;
     static void  startDrawing();
     static void  finishDrawing();
     virtual void initTerminal();
@@ -278,14 +278,14 @@ class FVTerm : public FVTermAttribute
     };
 
     // Methods
-    void         resetTextAreaToDefault ( const FTermArea*
+    void  resetTextAreaToDefault ( const FTermArea*
                                         , const FSize&) const;
     static auto  reallocateTextArea ( FTermArea*
                                     , std::size_t
                                     , std::size_t ) -> bool;
     static auto  reallocateTextArea ( FTermArea*
                                     , std::size_t ) -> bool;
-    static auto  isCovered (const FPoint&, const FTermArea*) -> CoveredState;
+    static auto isCovered (const FPoint&, const FTermArea*) -> CoveredState;
     static constexpr auto  getFullAreaWidth (const FTermArea*) -> int;
     static constexpr auto  getFullAreaHeight (const FTermArea*) -> int;
     static void updateOverlappedColor (const FChar&, const FChar&, FChar&);

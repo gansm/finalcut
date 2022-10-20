@@ -81,8 +81,8 @@ class FLog : public std::stringbuf
     ~FLog() override;
 
     template <typename T>
-    inline auto operator << (const T& s) -> FLog&;
-    inline auto operator << (IOManip) -> FLog&;
+    auto operator << (const T& s) -> FLog&;
+    auto operator << (IOManip) -> FLog&;
     auto operator << (LogLevel) -> FLog&;
 
     virtual auto getClassName() const -> FString;
@@ -98,10 +98,10 @@ class FLog : public std::stringbuf
 
   protected:
     auto sync() -> int override;
-    inline virtual auto getLevel() const -> const LogLevel& final;
-    inline virtual auto setLevel() -> LogLevel& final;
-    inline virtual auto getEnding() const -> const LineEnding& final;
-    inline virtual auto setEnding() -> LineEnding& final;
+    virtual auto getLevel() const -> const LogLevel& final;
+    virtual auto setLevel() -> LogLevel& final;
+    virtual auto getEnding() const -> const LineEnding& final;
+    virtual auto setEnding() -> LineEnding& final;
 
   private:
     // Data member

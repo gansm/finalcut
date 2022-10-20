@@ -123,7 +123,7 @@ class FString
                              || ( std::is_floating_point<NumT>::value
                              && ! std::is_pointer<NumT>::value )
                               , int> = 0 >
-    inline auto operator << (const NumT) -> FString&;
+    auto operator << (const NumT) -> FString&;
 
     auto operator >> (FString&) const -> const FString&;
     auto operator >> (std::wstring&) const -> const FString&;
@@ -140,50 +140,50 @@ class FString
     auto operator >> (float&) const -> const FString&;
 
     template <typename IndexT>
-    inline constexpr auto operator [] (const IndexT) -> reference;
+    constexpr auto operator [] (const IndexT) -> reference;
     template <typename IndexT>
-    inline constexpr auto operator [] (const IndexT) const -> const_reference;
+    constexpr auto operator [] (const IndexT) const -> const_reference;
     explicit operator bool () const;
     auto operator () () const -> const FString&;
 
     auto operator < (const FString&) const -> bool;
     template <typename CharT
             , enable_if_char_ptr_t<CharT> = nullptr>
-    inline auto operator < (const CharT&) const -> bool;
+    auto operator < (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_char_array_t<CharT> = nullptr>
-    inline auto operator < (const CharT&) const -> bool;
+    auto operator < (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_wchar_ptr_t<CharT> = nullptr>
-    inline auto operator < (const CharT&) const -> bool;
+    auto operator < (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_wchar_array_t<CharT> = nullptr>
-    inline auto operator < (const CharT&) const -> bool;
+    auto operator < (const CharT&) const -> bool;
 
     auto operator <= (const FString&) const -> bool;
     template <typename CharT
             , enable_if_char_ptr_t<CharT> = nullptr>
-    inline auto operator <= (const CharT&) const -> bool;
+    auto operator <= (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_char_array_t<CharT> = nullptr>
-    inline auto operator <= (const CharT&) const -> bool;
+    auto operator <= (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_wchar_ptr_t<CharT> = nullptr>
-    inline auto operator <= (const CharT&) const -> bool;
+    auto operator <= (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_wchar_array_t<CharT> = nullptr>
-    inline auto operator <= (const CharT&) const -> bool;
+    auto operator <= (const CharT&) const -> bool;
 
     auto operator == (const FString&) const -> bool;
     template <typename CharT
             , enable_if_char_ptr_t<CharT> = nullptr>
-    inline auto operator == (const CharT&) const -> bool;
+    auto operator == (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_char_array_t<CharT> = nullptr>
-    inline auto operator == (const CharT&) const -> bool;
+    auto operator == (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_wchar_ptr_t<CharT> = nullptr>
-    inline auto operator == (const CharT&) const -> bool;
+    auto operator == (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_wchar_array_t<CharT> = nullptr>
     auto operator == (const CharT&) const -> bool;
@@ -194,63 +194,63 @@ class FString
     auto operator != (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_char_array_t<CharT> = nullptr>
-    inline auto operator != (const CharT&) const -> bool;
+    auto operator != (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_wchar_ptr_t<CharT> = nullptr>
-    inline auto operator != (const CharT&) const -> bool;
+    auto operator != (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_wchar_array_t<CharT> = nullptr>
-    inline auto operator != (const CharT&) const -> bool;
+    auto operator != (const CharT&) const -> bool;
 
     auto operator >= (const FString&) const -> bool;
     template <typename CharT
             , enable_if_char_ptr_t<CharT> = nullptr>
-    inline auto operator >= (const CharT&) const -> bool;
+    auto operator >= (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_char_array_t<CharT> = nullptr>
-    inline auto operator >= (const CharT&) const -> bool;
+    auto operator >= (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_wchar_ptr_t<CharT> = nullptr>
-    inline auto operator >= (const CharT&) const -> bool;
+    auto operator >= (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_wchar_array_t<CharT> = nullptr>
-    inline auto operator >= (const CharT&) const -> bool;
+    auto operator >= (const CharT&) const -> bool;
 
     auto operator > (const FString&) const -> bool;
     template <typename CharT
             , enable_if_char_ptr_t<CharT> = nullptr>
-    inline auto operator > (const CharT&) const -> bool;
+    auto operator > (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_char_array_t<CharT> = nullptr>
-    inline auto operator > (const CharT&) const -> bool;
+    auto operator > (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_wchar_ptr_t<CharT> = nullptr>
-    inline auto operator > (const CharT&) const -> bool;
+    auto operator > (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_wchar_array_t<CharT> = nullptr>
-    inline auto operator > (const CharT&) const -> bool;
+    auto operator > (const CharT&) const -> bool;
 
     // Accessor
     virtual auto getClassName() const -> FString;
 
     // inquiries
-    [[deprecated("No longer needed")]] inline auto isNull() const noexcept -> bool;
-    inline auto isEmpty() const noexcept -> bool;
+    [[deprecated("No longer needed")]] auto isNull() const noexcept -> bool;
+    auto isEmpty() const noexcept -> bool;
 
     // Methods
-    inline auto getLength() const noexcept -> std::size_t;
-    inline auto capacity() const noexcept -> std::size_t;
+    auto getLength() const noexcept -> std::size_t;
+    auto capacity() const noexcept -> std::size_t;
 
-    inline auto begin() noexcept -> iterator;
-    inline auto end() noexcept -> iterator;
-    inline auto begin() const -> const_iterator;
-    inline auto end() const -> const_iterator;
-    inline auto cbegin() const noexcept -> const_iterator;
-    inline auto cend() const noexcept -> const_iterator;
-    inline auto front() -> reference;
-    inline auto back() -> reference;
-    inline auto front() const -> const_reference;
-    inline auto back() const -> const_reference;
+    auto begin() noexcept -> iterator;
+    auto end() noexcept -> iterator;
+    auto begin() const -> const_iterator;
+    auto end() const -> const_iterator;
+    auto cbegin() const noexcept -> const_iterator;
+    auto cend() const noexcept -> const_iterator;
+    auto front() -> reference;
+    auto back() -> reference;
+    auto front() const -> const_reference;
+    auto back() const -> const_reference;
 
     template <typename... Args>
     auto sprintf (const FString&, Args&&...) -> FString&;

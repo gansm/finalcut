@@ -63,10 +63,10 @@ class FCharSubstitution
       wchar_t to;
     };
 
-    inline auto getMappedChar (wchar_t) const -> wchar_t;
-    inline void setCharMapping (const Map&);
-    inline auto isEmpty() const -> bool;
-    inline void sort();
+    auto getMappedChar (wchar_t) const -> wchar_t;
+    void setCharMapping (const Map&);
+    auto isEmpty() const -> bool;
+    void sort();
 
   private:
     std::vector<Map> sub_map{};

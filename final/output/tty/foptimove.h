@@ -89,60 +89,60 @@ class FOptiMove final
     explicit FOptiMove (int = 0);
 
     // Accessors
-    auto        getClassName() const -> FString;
-    static auto getInstance() -> FOptiMove&;
-    inline auto getCursorHomeLength() const -> uInt;
-    inline auto getCarriageReturnLength() const -> uInt;
-    inline auto getCursorToLLLength() const -> uInt;
-    inline auto getTabLength() const -> uInt;
-    inline auto getBackTabLength() const -> uInt;
-    inline auto getCursorUpLength() const -> uInt;
-    inline auto getCursorDownLength() const -> uInt;
-    inline auto getCursorLeftLength() const -> uInt;
-    inline auto getCursorRightLength() const -> uInt;
-    inline auto getCursorAddressLength() const -> uInt;
-    inline auto getColumnAddressLength() const -> uInt;
-    inline auto getRowAddressLength() const -> uInt;
-    inline auto getParmUpCursorLength() const -> uInt;
-    inline auto getParmDownCursorLength() const -> uInt;
-    inline auto getParmLeftCursorLength() const -> uInt;
-    inline auto getParmRightCursorLength() const -> uInt;
-    inline auto getEraseCharsLength() const -> uInt;
-    inline auto getRepeatCharLength() const -> uInt;
-    inline auto getClrBolLength() const -> uInt;
-    inline auto getClrEolLength() const -> uInt;
+    auto  getClassName() const -> FString;
+    static auto  getInstance() -> FOptiMove&;
+    auto  getCursorHomeLength() const -> uInt;
+    auto  getCarriageReturnLength() const -> uInt;
+    auto  getCursorToLLLength() const -> uInt;
+    auto  getTabLength() const -> uInt;
+    auto  getBackTabLength() const -> uInt;
+    auto  getCursorUpLength() const -> uInt;
+    auto  getCursorDownLength() const -> uInt;
+    auto  getCursorLeftLength() const -> uInt;
+    auto  getCursorRightLength() const -> uInt;
+    auto  getCursorAddressLength() const -> uInt;
+    auto  getColumnAddressLength() const -> uInt;
+    auto  getRowAddressLength() const -> uInt;
+    auto  getParmUpCursorLength() const -> uInt;
+    auto  getParmDownCursorLength() const -> uInt;
+    auto  getParmLeftCursorLength() const -> uInt;
+    auto  getParmRightCursorLength() const -> uInt;
+    auto  getEraseCharsLength() const -> uInt;
+    auto  getRepeatCharLength() const -> uInt;
+    auto  getClrBolLength() const -> uInt;
+    auto  getClrEolLength() const -> uInt;
 
     // Mutators
-    void        setBaudRate (int);
-    void        setTabStop (int);
-    void        setTermSize (std::size_t, std::size_t);
-    void        setTermEnvironment (const TermEnv&);
-    void        set_cursor_home (const char[]);
-    void        set_cursor_to_ll (const char[]);
-    void        set_carriage_return (const char[]);
-    void        set_tabular (const char[]);
-    void        set_back_tab (const char[]);
-    void        set_cursor_up (const char[]);
-    void        set_cursor_down (const char[]);
-    void        set_cursor_left (const char[]);
-    void        set_cursor_right (const char[]);
-    void        set_cursor_address (const char[]);
-    void        set_column_address (const char[]);
-    void        set_row_address (const char[]);
-    void        set_parm_up_cursor (const char[]);
-    void        set_parm_down_cursor (const char[]);
-    void        set_parm_left_cursor (const char[]);
-    void        set_parm_right_cursor (const char[]);
-    void        set_erase_chars (const char[]);
-    void        set_repeat_char (const char[]);
-    void        set_clr_bol (const char[]);
-    void        set_clr_eol (const char[]);
-    inline void set_auto_left_margin (bool = true) noexcept;
-    inline void set_eat_newline_glitch (bool = true) noexcept;
+    void  setBaudRate (int);
+    void  setTabStop (int);
+    void  setTermSize (std::size_t, std::size_t);
+    void  setTermEnvironment (const TermEnv&);
+    void  set_cursor_home (const char[]);
+    void  set_cursor_to_ll (const char[]);
+    void  set_carriage_return (const char[]);
+    void  set_tabular (const char[]);
+    void  set_back_tab (const char[]);
+    void  set_cursor_up (const char[]);
+    void  set_cursor_down (const char[]);
+    void  set_cursor_left (const char[]);
+    void  set_cursor_right (const char[]);
+    void  set_cursor_address (const char[]);
+    void  set_column_address (const char[]);
+    void  set_row_address (const char[]);
+    void  set_parm_up_cursor (const char[]);
+    void  set_parm_down_cursor (const char[]);
+    void  set_parm_left_cursor (const char[]);
+    void  set_parm_right_cursor (const char[]);
+    void  set_erase_chars (const char[]);
+    void  set_repeat_char (const char[]);
+    void  set_clr_bol (const char[]);
+    void  set_clr_eol (const char[]);
+    void  set_auto_left_margin (bool = true) noexcept;
+    void  set_eat_newline_glitch (bool = true) noexcept;
 
     // Methods
-    void        check_boundaries (int&, int&, int&, int&) const;
-    auto        moveCursor (int, int, int, int) -> std::string;
+    void  check_boundaries (int&, int&, int&, int&) const;
+    auto  moveCursor (int, int, int, int) -> std::string;
 
   private:
     struct Capability
@@ -162,26 +162,26 @@ class FOptiMove final
     // maximum character distance to avoid direct cursor addressing
 
     // Methods
-    void        calculateCharDuration();
-    auto        capDuration (const char[], int) const -> int;
-    auto        capDurationToLength (int) const -> int;
-    auto        repeatedAppend (std::string&, const Capability&, int) const -> int;
-    auto        relativeMove (std::string&, int, int, int, int) const -> int;
-    auto        verticalMove (std::string&, int, int) const -> int;
-    void        downMove (std::string&, int&, int, int) const;
-    void        upMove (std::string&, int&, int, int) const;
-    auto        horizontalMove (std::string&, int, int) const -> int;
-    void        rightMove (std::string&, int&, int, int) const;
-    void        leftMove (std::string&, int&, int, int) const;
+    void  calculateCharDuration();
+    auto  capDuration (const char[], int) const -> int;
+    auto  capDurationToLength (int) const -> int;
+    auto  repeatedAppend (std::string&, const Capability&, int) const -> int;
+    auto  relativeMove (std::string&, int, int, int, int) const -> int;
+    auto  verticalMove (std::string&, int, int) const -> int;
+    void  downMove (std::string&, int&, int, int) const;
+    void  upMove (std::string&, int&, int, int) const;
+    auto  horizontalMove (std::string&, int, int) const -> int;
+    void  rightMove (std::string&, int&, int, int) const;
+    void  leftMove (std::string&, int&, int, int) const;
 
-    auto        isWideMove (int, int, int, int) const -> bool;
-    auto        isMethod0Faster (int&, int, int) -> bool;
-    auto        isMethod1Faster (int&, int, int, int, int) const -> bool;
-    auto        isMethod2Faster (int&, int, int, int) const -> bool;
-    auto        isMethod3Faster (int&, int, int) const -> bool;
-    auto        isMethod4Faster (int&, int, int) const -> bool;
-    auto        isMethod5Faster (int&, int, int, int) const -> bool;
-    void        moveByMethod (int, int, int, int, int);
+    auto  isWideMove (int, int, int, int) const -> bool;
+    auto  isMethod0Faster (int&, int, int) -> bool;
+    auto  isMethod1Faster (int&, int, int, int, int) const -> bool;
+    auto  isMethod2Faster (int&, int, int, int) const -> bool;
+    auto  isMethod3Faster (int&, int, int) const -> bool;
+    auto  isMethod4Faster (int&, int, int) const -> bool;
+    auto  isMethod5Faster (int&, int, int, int) const -> bool;
+    void  moveByMethod (int, int, int, int, int);
 
     // Data members
     Capability  F_cursor_home{};

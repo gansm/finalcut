@@ -494,6 +494,7 @@ void CharRingBufferTest::emplaceTest()
 {
   finalcut::CharRingBuffer<4> char_rbuf;
   char* physical_buffer = &char_rbuf[0];
+  std::memcpy (physical_buffer, "\0\0\0", 4);
   CPPUNIT_ASSERT ( char_rbuf.isEmpty() );
   CPPUNIT_ASSERT ( ! char_rbuf.hasData() );
   CPPUNIT_ASSERT ( ! char_rbuf.isFull() );
@@ -653,6 +654,7 @@ void CharRingBufferTest::KeyStringTest()
 {
   finalcut::CharRingBuffer<12> char_rbuf;
   char* physical_buffer = &char_rbuf[0];
+  std::memcpy (physical_buffer, "\0\0\0\0\0\0\0\0\0\0\0\0", 12);
   CPPUNIT_ASSERT ( char_rbuf.isEmpty() );
   CPPUNIT_ASSERT ( ! char_rbuf.hasData() );
   CPPUNIT_ASSERT ( ! char_rbuf.isFull() );

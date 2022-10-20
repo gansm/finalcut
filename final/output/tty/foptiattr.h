@@ -104,10 +104,10 @@ class FOptiAttr final
 
     // Mutators
     void        setTermEnvironment (const TermEnv&);
-    inline void setMaxColor (const int&) noexcept;
-    inline void setNoColorVideo (int) noexcept;
-    inline void setDefaultColorSupport() noexcept;
-    inline void unsetDefaultColorSupport() noexcept;
+    void        setMaxColor (const int&) noexcept;
+    void        setNoColorVideo (int) noexcept;
+    void        setDefaultColorSupport() noexcept;
+    void        unsetDefaultColorSupport() noexcept;
     void        set_enter_bold_mode (const char[]);
     void        set_exit_bold_mode (const char[]);
     void        set_enter_dim_mode (const char[]);
@@ -254,10 +254,10 @@ class FOptiAttr final
     auto        switchOff() const -> bool;
     template <typename CharT
             , enable_if_char_ptr_t<CharT> = nullptr>
-    inline auto append_sequence (CharT) -> bool;
+    auto        append_sequence (CharT) -> bool;
     template <typename CharT
             , enable_if_char_array_t<CharT> = nullptr>
-    inline auto append_sequence (CharT) -> bool;
+    auto        append_sequence (CharT) -> bool;
     auto        append_sequence (const std::string&) -> bool;
 
     // Data members

@@ -81,9 +81,9 @@ class FStringStream : public std::wiostream
 
     virtual auto getClassName() const -> FString;
     void swap (FStringStream&) noexcept;
-    inline void clear();
-    inline auto rdbuf() -> std::wstringbuf*;
-    inline auto str() const -> FString;
+    void clear();
+    auto rdbuf() -> std::wstringbuf*;
+    auto str() const -> FString;
 
   private:
     std::wstringbuf buffer{in_out};

@@ -102,34 +102,34 @@ class FTermLinux final
     auto operator = (FTermLinux&&) noexcept -> FTermLinux& = delete;
 
     // Accessors
-    auto        getClassName() const -> FString;
+    auto  getClassName() const -> FString;
     static auto getInstance() -> FTermLinux&;
-    auto        getCursorStyle() const -> CursorStyle;
-    auto        getCursorStyleString() -> char*;
-    inline auto getFramebufferBpp() const noexcept -> int;
+    auto  getCursorStyle() const -> CursorStyle;
+    auto  getCursorStyleString() -> char*;
+    auto  getFramebufferBpp() const noexcept -> int;
 
     // Mutators
-    auto        setCursorStyle (CursorStyle) -> bool;
-    auto        setPalette (FColor, int, int, int) -> bool;
-    void        setUTF8 (bool = true) const;
+    auto  setCursorStyle (CursorStyle) -> bool;
+    auto  setPalette (FColor, int, int, int) -> bool;
+    void  setUTF8 (bool = true) const;
 
     // Inquiries
     static auto isLinuxConsole() -> bool;
-    inline auto isVGAFontUsed() const noexcept -> bool;
-    inline auto isNewFontUsed() const noexcept -> bool;
+    auto isVGAFontUsed() const noexcept -> bool;
+    auto isNewFontUsed() const noexcept -> bool;
 
     // Methods
-    void        init();
-    void        initCharMap() const;
-    void        finish() const;
-    auto        loadVGAFont() -> bool;
-    auto        loadNewFont() -> bool;
-    auto        loadOldFont() -> bool;
-    auto        saveColorMap() -> bool;
-    auto        resetColorMap() -> bool;
-    void        setBeep (int, int) const;
-    void        resetBeep() const;
-    auto        modifierKeyCorrection (const FKey&) -> FKey;
+    void  init();
+    void  initCharMap() const;
+    void  finish() const;
+    auto  loadVGAFont() -> bool;
+    auto  loadNewFont() -> bool;
+    auto  loadOldFont() -> bool;
+    auto  saveColorMap() -> bool;
+    auto  resetColorMap() -> bool;
+    void  setBeep (int, int) const;
+    void  resetBeep() const;
+    auto  modifierKeyCorrection (const FKey&) -> FKey;
 
   private:
     struct ModifierKey  // bit field
@@ -195,49 +195,49 @@ class FTermLinux final
     using KeyMap = std::unordered_map<Pair, FKey, PairHash, PairEqual>;
 
     // Accessors
-    auto        getFramebuffer_bpp() const -> int;
-    auto        getScreenFont() -> bool;
-    auto        getUnicodeMap () -> bool;
-    auto        getModifierKey() & -> ModifierKey&;
+    auto  getFramebuffer_bpp() const -> int;
+    auto  getScreenFont() -> bool;
+    auto  getUnicodeMap () -> bool;
+    auto  getModifierKey() & -> ModifierKey&;
 
     // Inquiries
-    auto        isLinuxTerm() const -> bool;
+    auto  isLinuxTerm() const -> bool;
 
     // Mutators
-    auto        setScreenFont ( const uChar[], uInt, uInt, uInt
-                              , bool = false ) -> int;
-    auto        setUnicodeMap (struct unimapdesc*) const -> int;
-    void        setLinuxCursorStyle (LinuxConsoleCursorStyle) const;
+    auto  setScreenFont ( const uChar[], uInt, uInt, uInt
+                        , bool = false ) -> int;
+    auto  setUnicodeMap (struct unimapdesc*) const -> int;
+    void  setLinuxCursorStyle (LinuxConsoleCursorStyle) const;
 
     // Methods
 #if defined(ISA_SYSCTL_SUPPORT)
-    auto         getInputStatusRegisterOne() const -> uInt16;
-    auto         readAttributeController (uChar) const -> uChar;
-    void         writeAttributeController (uChar, uChar) const;
-    auto         getAttributeMode() const -> uChar;
-    void         setAttributeMode (uChar) const;
-    auto         setBlinkAsIntensity (bool = true) const -> int;
-    auto         has9BitCharacters() const -> bool;
-    void         getVGAPalette();
-    void         setVGADefaultPalette();
-    auto         setVGAPalette (FColor, int, int, int) -> bool;
-    auto         saveVGAPalette() -> bool;
-    auto         resetVGAPalette() -> bool;
+    auto  getInputStatusRegisterOne() const -> uInt16;
+    auto  readAttributeController (uChar) const -> uChar;
+    void  writeAttributeController (uChar, uChar) const;
+    auto  getAttributeMode() const -> uChar;
+    void  setAttributeMode (uChar) const;
+    auto  setBlinkAsIntensity (bool = true) const -> int;
+    auto  has9BitCharacters() const -> bool;
+    void  getVGAPalette();
+    void  setVGADefaultPalette();
+    auto  setVGAPalette (FColor, int, int, int) -> bool;
+    auto  saveVGAPalette() -> bool;
+    auto  resetVGAPalette() -> bool;
 #endif  // defined(ISA_SYSCTL_SUPPORT)
-    void         initKeyMap();
-    void         keyCorrection();
-    void         shiftKeyCorrection();
-    void         ctrlKeyCorrection();
-    void         altKeyCorrection();
-    void         shiftCtrlKeyCorrection();
-    void         shiftAltKeyCorrection();
-    void         ctrlAltKeyCorrection();
-    void         shiftCtrlAltKeyCorrection();
-    void         initSpecialCharacter() const;
-    auto         getFontPos (wchar_t ucs) const -> sInt16;
-    void         deleteFontData (console_font_op&);
-    void         deleteUnicodeMapEntries (unimapdesc&);
-    void         characterFallback (wchar_t, const std::vector<wchar_t>&) const;
+    void  initKeyMap();
+    void  keyCorrection();
+    void  shiftKeyCorrection();
+    void  ctrlKeyCorrection();
+    void  altKeyCorrection();
+    void  shiftCtrlKeyCorrection();
+    void  shiftAltKeyCorrection();
+    void  ctrlAltKeyCorrection();
+    void  shiftCtrlAltKeyCorrection();
+    void  initSpecialCharacter() const;
+    auto  getFontPos (wchar_t ucs) const -> sInt16;
+    void  deleteFontData (console_font_op&);
+    void  deleteUnicodeMapEntries (unimapdesc&);
+    void  characterFallback (wchar_t, const std::vector<wchar_t>&) const;
 
     // Data members
 #if defined(__linux__)

@@ -72,15 +72,15 @@ class FLogger : public FLog
 
     // Methods
     auto getClassName() const -> FString override;
-    inline void info (const std::string&) override;
-    inline void warn (const std::string&) override;
-    inline void error (const std::string&) override;
-    inline void debug (const std::string&) override;
-    inline void flush() override;
-    inline void setOutputStream (const std::ostream&) override;
-    inline void setLineEnding (LineEnding) override;
-    inline void enableTimestamp() override;
-    inline void disableTimestamp() override;
+    void info (const std::string&) override;
+    void warn (const std::string&) override;
+    void error (const std::string&) override;
+    void debug (const std::string&) override;
+    void flush() override;
+    void setOutputStream (const std::ostream&) override;
+    void setLineEnding (LineEnding) override;
+    void enableTimestamp() override;
+    void disableTimestamp() override;
 
   private:
     // Methods
