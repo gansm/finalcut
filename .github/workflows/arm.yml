@@ -11,15 +11,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Build on ${{ matrix.architecture }}
+    name: Build on ${{ matrix.arch }}
 
     # Run steps on a matrix of 3 arch/distro combinations
     strategy:
       matrix:
         include:
-          - architecture: aarch64
-          - architecture: armv7
-          - architecture: armv6
+          - arch: aarch64
+          - arch: armv7
+          - arch: armv6
 
     steps:
     - name: Repository checkout
@@ -29,8 +29,8 @@ jobs:
       uses: uraimo/run-on-arch-action@v2
       id: runcmd
       with:
-        architecture: ${{ matrix.architecture }}
-        distribution: bullseye
+        arch: ${{ matrix.arch }}
+        distro: bullseye
         run: |
           lsb_release -a
           uname -a
