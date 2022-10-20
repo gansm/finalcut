@@ -538,7 +538,7 @@ class FMouseControl
     void  setMaxWidth (uInt16);
     void  setMaxHeight (uInt16);
     void  setDblclickInterval (const uInt64) const;
-    inline void  setEventCommand (const FMouseCommand&);
+    void  setEventCommand (const FMouseCommand&);
     void  useGpmMouse (bool = true);
     void  useXtermMouse (bool = true);
 
@@ -559,7 +559,7 @@ class FMouseControl
     auto  isWheelDown() -> bool;
     auto  isMoved() -> bool;
     auto  hasUnprocessedInput() const -> bool;
-    inline auto  hasDataInQueue() const -> bool;
+    auto  hasDataInQueue() const -> bool;
     auto isGpmMouseEnabled() noexcept -> bool;
 
     // Methods
@@ -584,8 +584,8 @@ class FMouseControl
 
     // Mutators
     void  xtermMouse (bool = true) const;
-    inline void  enableXTermMouse() const;
-    inline void  disableXTermMouse() const;
+    void  enableXTermMouse() const;
+    void  disableXTermMouse() const;
     static void  setCurrentMouseEvent (const FMouseDataPtr&);
     static void  resetCurrentMouseEvent();
 
