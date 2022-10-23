@@ -340,7 +340,7 @@ class CharRingBuffer final : public FRingBuffer<char, Capacity>
     using FRingBuffer<char, Capacity>::head;
 
     // Accessor
-    auto getClassName() const -> FString override
+    inline auto getClassName() const -> FString override
     {
       return "CharRingBuffer";
     }

@@ -92,7 +92,7 @@ auto FKeyboard::getInstance() -> FKeyboard&
 //----------------------------------------------------------------------
 void FKeyboard::fetchKeyCode()
 {
-  if ( fkey_queue.size() < MAX_QUEUE_SIZE )
+  if ( ! fkey_queue.isFull() )
     parseKeyBuffer();
 }
 
@@ -216,7 +216,7 @@ void FKeyboard::escapeKeyHandling()
     && isKeypressTimeout() )
   {
     fifo_buf.clear();
-    escapeKeyPressed();
+    escapeKeyPressedCommand();
   }
 
   // Handling of keys that are substrings of other keys
@@ -226,19 +226,19 @@ void FKeyboard::escapeKeyHandling()
 //----------------------------------------------------------------------
 void FKeyboard::processQueuedInput()
 {
-  while ( ! fkey_queue.empty() )
+  while ( ! fkey_queue.isEmpty() )
   {
     key = fkey_queue.front();
     fkey_queue.pop();
 
     if ( key > FKey::None )
     {
-      keyPressed();
+      keyPressedCommand();
 
       if ( FApplication::isQuit() )
         return;
 
-      keyReleased();
+      keyReleasedCommand();
 
       if ( FApplication::isQuit() )
         return;
@@ -462,10 +462,9 @@ inline auto FKeyboard::readKey() -> ssize_t
 //----------------------------------------------------------------------
 void FKeyboard::parseKeyBuffer()
 {
-  time_keypressed = FObject::getCurrentTime();
-
   while ( readKey() > 0 )
   {
+    time_keypressed = FObject::getCurrentTime();
     has_pending_input = false;
 
     if ( ! fifo_buf.isFull() )
@@ -482,7 +481,7 @@ void FKeyboard::parseKeyBuffer()
         || fkey == FKey::Urxvt_mouse )
       {
         key = fkey;
-        mouseTracking();
+        mouseTrackingCommand();
         break;
       }
 
@@ -492,7 +491,7 @@ void FKeyboard::parseKeyBuffer()
 
     fkey = FKey::None;
 
-    if ( fkey_queue.size() >= MAX_QUEUE_SIZE )
+    if ( fkey_queue.isFull() )
       break;
   }
 }
@@ -572,25 +571,25 @@ void FKeyboard::substringKeyHandling()
 }
 
 //----------------------------------------------------------------------
-void FKeyboard::keyPressed() const
+void FKeyboard::keyPressedCommand() const
 {
   keypressed_cmd.execute();
 }
 
 //----------------------------------------------------------------------
-void FKeyboard::keyReleased() const
+void FKeyboard::keyReleasedCommand() const
 {
   keyreleased_cmd.execute();
 }
 
 //----------------------------------------------------------------------
-void FKeyboard::escapeKeyPressed() const
+void FKeyboard::escapeKeyPressedCommand() const
 {
   escape_key_cmd.execute();
 }
 
 //----------------------------------------------------------------------
-void FKeyboard::mouseTracking() const
+void FKeyboard::mouseTrackingCommand() const
 {
   mouse_tracking_cmd.execute();
 }

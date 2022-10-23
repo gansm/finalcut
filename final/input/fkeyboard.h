@@ -41,7 +41,6 @@
 #include <array>
 #include <functional>
 #include <memory>
-#include <queue>
 #include <string>
 
 #include "final/ftypes.h"
@@ -139,13 +138,14 @@ class FKeyboard final
     void  processQueuedInput();
 
   private:
-    // Using-declaration
-    using FKeyMapPtr = std::shared_ptr<FKeyMap::KeyCapMapType>;
-    using KeyMapEnd = FKeyMap::KeyCapMapType::const_iterator;
-
     // Constants
     static constexpr FKey NOT_SET = static_cast<FKey>(-1);
     static constexpr std::size_t MAX_QUEUE_SIZE = 32;
+
+    // Using-declaration
+    using FKeyMapPtr = std::shared_ptr<FKeyMap::KeyCapMapType>;
+    using KeyMapEnd = FKeyMap::KeyCapMapType::const_iterator;
+    using KeyQueue = FRingBuffer<FKey, MAX_QUEUE_SIZE>;
 
     // Accessors
     auto  getMouseProtocolKey() const -> FKey;
@@ -164,10 +164,10 @@ class FKeyboard final
     auto  parseKeyString() -> FKey;
     auto  keyCorrection (const FKey&) const -> FKey;
     void  substringKeyHandling();
-    void  keyPressed() const;
-    void  keyReleased() const;
-    void  escapeKeyPressed() const;
-    void  mouseTracking() const;
+    void  keyPressedCommand() const;
+    void  keyReleasedCommand() const;
+    void  escapeKeyPressedCommand() const;
+    void  mouseTrackingCommand() const;
 
     // Data members
     FKeyboardCommand  keypressed_cmd{};
@@ -183,7 +183,7 @@ class FKeyboard final
     FKeyMapPtr        key_cap_ptr{};
     KeyMapEnd         key_cap_end{};
     keybuffer         fifo_buf{};
-    std::queue<FKey>  fkey_queue{};
+    KeyQueue          fkey_queue{};
     FKey              fkey{FKey::None};
     FKey              key{FKey::None};
     int               stdin_status_flags{0};
@@ -263,7 +263,7 @@ inline auto FKeyboard::hasPendingInput() const noexcept -> bool
 
 //----------------------------------------------------------------------
 inline auto FKeyboard::hasDataInQueue() const -> bool
-{ return ! fkey_queue.empty(); }
+{ return ! fkey_queue.isEmpty(); }
 
 //----------------------------------------------------------------------
 inline void FKeyboard::enableUTF8() noexcept

@@ -68,7 +68,6 @@
 #include <cstddef>
 #include <functional>
 #include <memory>
-#include <queue>
 #include <utility>
 #include <vector>
 
@@ -560,7 +559,7 @@ class FMouseControl
     auto  isMoved() -> bool;
     auto  hasUnprocessedInput() const -> bool;
     auto  hasDataInQueue() const -> bool;
-    auto isGpmMouseEnabled() noexcept -> bool;
+    auto  isGpmMouseEnabled() noexcept -> bool;
 
     // Methods
     void  enable();
@@ -573,9 +572,13 @@ class FMouseControl
     void  drawPointer();
 
   private:
+    // Constants
+    static constexpr std::size_t MAX_QUEUE_SIZE = 64;
+
     // Using-declarations
     using FMousePtr = std::unique_ptr<FMouse>;
     using FMouseProtocol = std::vector<FMousePtr>;
+    using MouseQueue = FRingBuffer<FMouseDataPtr, MAX_QUEUE_SIZE>;
 
     // Accessor
     auto  findMouseWithType (const FMouse::MouseType&) const -> FMouseProtocol::const_iterator;
@@ -590,12 +593,12 @@ class FMouseControl
     static void  resetCurrentMouseEvent();
 
     // Data member
-    FMouseProtocol            mouse_protocol{};
-    FMouseCommand             event_cmd{};
-    std::queue<FMouseDataPtr> fmousedata_queue{};
-    FPoint                    zero_point{0, 0};
-    bool                      use_gpm_mouse{false};
-    bool                      use_xterm_mouse{false};
+    FMouseProtocol  mouse_protocol{};
+    FMouseCommand   event_cmd{};
+    MouseQueue      fmousedata_queue{};
+    FPoint          zero_point{0, 0};
+    bool            use_gpm_mouse{false};
+    bool            use_xterm_mouse{false};
 };
 
 // FMouseControl inline functions
@@ -609,7 +612,7 @@ inline void FMouseControl::setEventCommand (const FMouseCommand& cmd)
 
 //----------------------------------------------------------------------
 inline auto FMouseControl::hasDataInQueue() const -> bool
-{ return ! fmousedata_queue.empty(); }
+{ return ! fmousedata_queue.isEmpty(); }
 
 //----------------------------------------------------------------------
 inline void FMouseControl::enableXTermMouse() const

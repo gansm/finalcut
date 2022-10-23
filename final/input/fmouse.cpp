@@ -1524,7 +1524,7 @@ void FMouseControl::setRawData ( const FMouse::MouseType& mt
 //----------------------------------------------------------------------
 void FMouseControl::processQueuedInput()
 {
-  while ( ! fmousedata_queue.empty() )
+  while ( ! fmousedata_queue.isEmpty() )
   {
     if ( FApplication::isQuit() )
       return;

@@ -881,8 +881,13 @@ inline void FApplication::processInput() const
 
   queuingKeyboardInput();
   queuingMouseInput();
-  processKeyboardEvent();
-  processMouseEvent();
+
+  do
+  {
+    processKeyboardEvent();
+    processMouseEvent();
+  }
+  while ( hasDataInQueue() );
 }
 
 //----------------------------------------------------------------------
