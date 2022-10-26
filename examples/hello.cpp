@@ -30,7 +30,7 @@ auto main (int argc, char* argv[]) -> int
 
   // Create a simple dialog box
   finalcut::FMessageBox mbox{&app};
-  mbox.setText("Hello world");
+  mbox.setText("Hello, World!");
 
   // Start the application
   mbox.exec();

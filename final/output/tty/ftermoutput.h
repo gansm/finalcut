@@ -143,21 +143,14 @@ class FTermOutput final : public FOutput
 
     struct OutputData
     {
-      OutputData()
-        : type{OutputType::String}
-      { }
+      OutputData() = default;
 
-      OutputData (OutputType t, const std::string& s)
-        : type{t}
-        , data{s}
-      { }
-
-      OutputData (OutputType t, std::string&& s)
+      OutputData (OutputType t, std::string s)
         : type{t}
         , data{std::move(s)}
       { }
 
-      OutputType  type;
+      OutputType  type{OutputType::String};
       std::string data{};
     };
 

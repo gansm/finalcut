@@ -529,13 +529,10 @@ void CharRingBufferTest::emplaceTest()
 
   struct Data
   {
-    int integer;
-    char character;
+    int integer{0};
+    char character{'\0'};
 
-    Data ()
-      : integer{0}
-      , character{'\0'}
-    { }
+    Data () = default;
 
     Data (int i, char ch)
       : integer{i}
@@ -591,13 +588,10 @@ void CharRingBufferTest::emplaceTest()
 
   struct Data2
   {
-    long number;
-    std::string string;
+    long number{0};
+    std::string string{};
 
-    Data2()
-      : number{0}
-      , string{}
-    { }
+    Data2() = default;
 
     Data2 (long l, const std::string& s)
       : number{l}

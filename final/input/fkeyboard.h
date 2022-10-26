@@ -96,6 +96,18 @@ class FKeyboard final
     // Constructor
     FKeyboard();
 
+    // Disable copy constructor
+    FKeyboard (const FKeyboard&) = delete;
+
+    // Disable move constructor
+    FKeyboard (FKeyboard&&) noexcept = delete;
+
+    // Disable copy assignment operator (=)
+    auto operator = (const FKeyboard&) -> FKeyboard& = delete;
+
+    // Disable move assignment operator (=)
+    auto operator = (FKeyboard&&) noexcept -> FKeyboard& = delete;
+
     // Accessors
     auto  getClassName() const -> FString;
     static auto getInstance() -> FKeyboard&;

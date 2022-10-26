@@ -1095,7 +1095,7 @@ void XpmImage::parseXPM3 (const std::vector<std::string>& xpm)
       upperPixel.resize(width);
       lowerPixel.resize(width);
     }
-    else if ( num > 0 && num <= num_colors )
+    else if ( num <= num_colors )
     {
       cmap.emplace(getColorMapFromLine(line, int(cpp)));
     }

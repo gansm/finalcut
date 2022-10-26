@@ -1474,7 +1474,7 @@ inline void FTermOutput::appendOutputBuffer (const FTermControl& ctrl)
 //----------------------------------------------------------------------
 inline void FTermOutput::appendOutputBuffer (UniChar&& ch)
 {
-  appendOutputBuffer(unicode_to_utf8(wchar_t(std::move(ch))));
+  appendOutputBuffer(unicode_to_utf8(wchar_t(ch)));
 }
 
 //----------------------------------------------------------------------

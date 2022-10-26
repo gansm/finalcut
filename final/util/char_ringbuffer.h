@@ -138,7 +138,9 @@ class FRingBuffer
     using value_type      = T;
 
     // Constructors
-    FRingBuffer() = default;
+    FRingBuffer()
+      : buffer()
+    { }
 
     virtual ~FRingBuffer() = default;
 
