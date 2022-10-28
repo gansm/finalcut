@@ -760,10 +760,7 @@ auto readCursorPos() -> FPoint
 {
   int x{-1};
   int y{-1};
-  const int stdin_no{FTermios::getStdIn()};
   const int stdout_no{FTermios::getStdOut()};
-  fd_set ifds{};
-  struct timeval tv{};
   const std::string DECXCPR{ESC "[6n"};
 
   // Report Cursor Position (DECXCPR)
@@ -771,28 +768,9 @@ auto readCursorPos() -> FPoint
     return {x, y};
 
   std::fflush(stdout);
-  FD_ZERO(&ifds);
-  FD_SET(stdin_no, &ifds);
-  tv.tv_sec  = 0;
-  tv.tv_usec = 100'000;  // 100 ms
   std::array<char, 20> temp{};
-  std::size_t pos{0};
-
-  // Read the answer
-  if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) != 1 )
-    return {x, y};
-
-  do
-  {
-    std::size_t bytes_free = temp.size() - pos - 1;
-    const ssize_t bytes = read(stdin_no, &temp[pos], bytes_free);
-
-    if ( bytes <= 0 )
-      break;
-
-    pos += std::size_t(bytes);
-  }
-  while ( pos < temp.size() && ! std::strchr(temp.data(), 'R') );
+  auto isWithout_R = [] (const auto& t) { return ! std::strchr(t.data(), 'R'); };
+  auto pos = captureTerminalInput(temp, 100'000, isWithout_R);
 
   if ( pos > 4 )
   {

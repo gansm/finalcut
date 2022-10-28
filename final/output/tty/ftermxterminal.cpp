@@ -730,38 +730,15 @@ auto FTermXTerminal::captureXTermFont() const -> FString
     return {};
   }
 
-  fd_set ifds{};
-  struct timeval tv{};
-  const int stdin_no = FTermios::getStdIn();
-
   // Querying the terminal font
   oscPrefix();
   FTerm::paddingPrint (OSC "50;?" BEL);
   oscPostfix();
   std::fflush(stdout);
-  FD_ZERO(&ifds);
-  FD_SET(stdin_no, &ifds);
-  tv.tv_sec  = 0;
-  tv.tv_usec = 150'000;  // 150 ms
-
-  // Read the terminal answer
-  if ( select(stdin_no + 1, &ifds, nullptr, nullptr, &tv) < 1 )
-    return {};
-
   std::array<char, 150> temp{};
-  std::size_t pos{0};
-
-  do
-  {
-    std::size_t bytes_free = temp.size() - pos - 1;
-    const ssize_t bytes = read(stdin_no, &temp[pos], bytes_free);
-
-    if ( bytes <= 0 )
-      break;
-
-    pos += std::size_t(bytes);
-  }
-  while ( pos < temp.size() && ! std::strchr(temp.data(), '\a') );
+  // BEL = \a = bell character
+  auto isWithout_BEL = [] (const auto& t) { return ! std::strchr(t.data(), '\a'); };
+  auto pos = captureTerminalInput(temp, 150'000, isWithout_BEL);
 
   if ( pos > 5 && temp[0] == ESC[0] && temp[1] == ']' && temp[2] == '5'
                && temp[3] == '0' && temp[4] == ';' )
@@ -786,36 +763,13 @@ auto FTermXTerminal::captureXTermTitle() const -> FString
   if ( FTermData::getInstance().isTermType(FTermType::kde_konsole) )
     return {};
 
-  fd_set ifds{};
-  struct timeval tv{};
-  const int stdin_no{FTermios::getStdIn()};
-
   // Report window title
   FTerm::paddingPrint (CSI "21t");
   std::fflush(stdout);
-  FD_ZERO(&ifds);
-  FD_SET(stdin_no, &ifds);
-  tv.tv_sec  = 0;
-  tv.tv_usec = 150'000;  // 150 ms
-
-  // read the terminal answer
-  if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) < 1 )
-    return {};
-
   std::array<char, 512> temp{};
-  std::size_t pos{0};
-
-  do
-  {
-    std::size_t bytes_free = temp.size() - pos - 1;
-    const ssize_t bytes = read(stdin_no, &temp[pos], bytes_free);
-
-    if ( bytes <= 0 )
-      break;
-
-    pos += std::size_t(bytes);
-  }
-  while ( pos < temp.size() && std::strstr(temp.data(), ESC "\\") == nullptr );
+  // ST = ESC + \ = string terminator
+  auto isWithout_ST  = [] (const auto& t) { return ! std::strstr(t.data(), ESC "\\"); };
+  auto pos = captureTerminalInput(temp, 150'000, isWithout_ST);
 
   if ( pos > 6 && temp[0] == ESC[0] && temp[1] == ']' && temp[2] == 'l' )
   {

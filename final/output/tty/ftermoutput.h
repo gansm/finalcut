@@ -206,7 +206,7 @@ class FTermOutput final : public FOutput
     void characterFilter (FChar&);
     void checkFreeBufferSize();
     void appendOutputBuffer (const FTermControl&);
-    void appendOutputBuffer (UniChar&&);
+    void appendOutputBuffer (const UniChar&);
     void appendOutputBuffer (std::string&&);
 
     // Data members

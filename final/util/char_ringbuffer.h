@@ -158,7 +158,7 @@ class FRingBuffer
     }
 
     // Accessors
-    virtual auto  getClassName() const -> FString
+    virtual inline auto  getClassName() const -> FString
     {
       return "FRingBuffer";
     }

@@ -33,6 +33,7 @@
 #include "final/output/tty/ftermcap.h"
 #include "final/output/tty/ftermdata.h"
 #include "final/output/tty/ftermdetection.h"
+#include "final/output/tty/fterm_functions.h"
 #include "final/output/tty/fterm.h"
 #include "final/output/tty/ftermios.h"
 #include "final/util/emptyfstring.h"
@@ -500,40 +501,14 @@ auto FTermDetection::determineMaxColor (const FString& current_termtype) -> FStr
 //----------------------------------------------------------------------
 auto FTermDetection::getXTermColorName (FColor color) const -> FString
 {
-  FString color_str{""};
-  std::array<char, 30> buf{};
-  fd_set ifds{};
-  struct timeval tv{};
-  const auto& stdin_no = FTermios::getStdIn();
-
   // get color
   auto index = uInt16(color);
   std::fprintf (stdout, OSC "4;%hu;?" BEL, index);
   std::fflush (stdout);
-  FD_ZERO(&ifds);
-  FD_SET(stdin_no, &ifds);
-  tv.tv_sec  = 0;
-  tv.tv_usec = 150'000;  // 150 ms
-
-  // read the terminal answer
-  if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) < 1 )
-    return color_str;
-
-  constexpr auto parse = "\033]4;%10hu;%509[^\n]s";
   std::array<char, 35> temp{};
-  std::size_t pos{0};
-
-  do
-  {
-    std::size_t bytes_free = temp.size() - pos - 1;
-    const ssize_t bytes = read(stdin_no, &temp[pos], bytes_free);
-
-    if ( bytes <= 0 )
-      break;
-
-    pos += std::size_t(bytes);
-  }
-  while ( pos < temp.size() );
+  auto pos = captureTerminalInput(temp, 150'000);
+  constexpr auto parse = "\033]4;%10hu;%509[^\n]s";
+  std::array<char, 30> buf{};
 
   if ( pos > 4 && std::sscanf(temp.data(), parse, &index, buf.data()) == 2 )
   {
@@ -547,10 +522,10 @@ auto FTermDetection::getXTermColorName (FColor color) const -> FString
     if ( n >= 6 && buf[n - 2] == ESC[0] && buf[n - 1] == '\\' )
       buf[n - 2] = '\0';
 
-    color_str = buf.data();
+    return buf.data();
   }
 
-  return color_str;
+  return {};
 }
 
 //----------------------------------------------------------------------
@@ -590,41 +565,16 @@ auto FTermDetection::parseAnswerbackMsg (const FString& current_termtype) -> FSt
 //----------------------------------------------------------------------
 auto FTermDetection::getAnswerbackMsg() const -> FString
 {
-  FString answerback{""};
-  fd_set ifds{};
-  struct timeval tv{};
-  const auto& stdin_no = FTermios::getStdIn();
   // Send enquiry character
   std::putchar (ENQ[0]);
   std::fflush(stdout);
-  FD_ZERO(&ifds);
-  FD_SET(stdin_no, &ifds);
-  tv.tv_sec  = 0;
-  tv.tv_usec = 150'000;  // 150 ms
-
-  // Read the answerback message
-  if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) < 1 )
-    return answerback;
-
   std::array<char, 10> temp{};
-  std::size_t pos{0};
-
-  do
-  {
-    std::size_t bytes_free = temp.size() - pos - 1;
-    const ssize_t bytes = read(stdin_no, &temp[pos], bytes_free);
-
-    if ( bytes <= 0 )
-      break;
-
-    pos += std::size_t(bytes);
-  }
-  while ( pos < temp.size() );
+  auto pos = captureTerminalInput(temp, 150'000);
 
   if ( pos > 0 )
     return temp.data();
 
-  return answerback;
+  return {};
 }
 
 //----------------------------------------------------------------------
@@ -711,46 +661,22 @@ auto FTermDetection::str2int (const FString& s) const -> int
 //----------------------------------------------------------------------
 auto FTermDetection::getSecDA() const -> FString
 {
-  FString sec_da_str{""};
-
-  int a{0};
-  int b{0};
-  int c{0};
-  const auto& stdin_no{FTermios::getStdIn()};
   const auto& stdout_no{FTermios::getStdOut()};
-  fd_set ifds{};
-  struct timeval tv{};
   const std::string SECDA{ESC "[>c"};
 
   // Get the secondary device attributes
   if ( write(stdout_no, SECDA.data(), SECDA.length()) == -1 )
-    return sec_da_str;
+    return {};
 
   std::fflush(stdout);
-  FD_ZERO(&ifds);
-  FD_SET(stdin_no, &ifds);
-  tv.tv_sec  = 0;
-  tv.tv_usec = 600'000;  // 600 ms
-
-  // Read the answer
-  if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) < 1 )
-    return sec_da_str;
-
-  constexpr auto parse = "\033[>%10d;%10d;%10dc";
   std::array<char, 40> temp{};
-  std::size_t pos{0};
-
-  do
-  {
-    std::size_t bytes_free = temp.size() - pos - 1;
-    const ssize_t bytes = read(stdin_no, &temp[pos], bytes_free);
-
-    if ( bytes <= 0 )
-      break;
-
-    pos += std::size_t(bytes);
-  }
-  while ( pos < temp.size() && ! std::strchr(temp.data(), 'c') );
+  auto isWithout_c = [] (const auto& t) { return ! std::strchr(t.data(), 'c'); };
+  auto pos = captureTerminalInput(temp, 600'000, isWithout_c);
+  constexpr auto parse = "\033[>%10d;%10d;%10dc";
+  FString sec_da_str{""};
+  int a{0};
+  int b{0};
+  int c{0};
 
   if ( pos > 3 && std::sscanf(temp.data(), parse, &a, &b, &c) == 3 )
     sec_da_str.sprintf("\033[>%d;%d;%dc", a, b, c);
