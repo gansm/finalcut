@@ -318,7 +318,7 @@ class FString
     static constexpr uInt INPBUFFER = 200;
 
     // Methods
-    void internal_assign (std::wstring&);
+    void internal_assign (std::wstring);
     auto internal_toCharString (const std::wstring&) const -> std::string;
     auto internal_toWideString (const std::string&) const -> std::wstring;
 

@@ -66,95 +66,65 @@ FString::FString (std::size_t len, const UniChar& c)
 //----------------------------------------------------------------------
 FString::FString (const FString& s)  // copy constructor
 {
-  if ( ! s.isEmpty() )
-  {
-    std::wstring copy(s.string);
-    internal_assign (copy);
-  }
+  internal_assign(std::wstring{s.string});
 }
 
 //----------------------------------------------------------------------
 FString::FString (FString&& s) noexcept  // move constructor
   : string{std::move(s.string)}
-{
-  s.string.clear();
-}
+{ }
 
 //----------------------------------------------------------------------
 FString::FString (const std::wstring& s)
 {
-  if ( ! s.empty() )
-  {
-    std::wstring str(s);
-    internal_assign (str);
-  }
+  internal_assign(std::wstring{s});
 }
 
 //----------------------------------------------------------------------
 FString::FString (std::wstring&& s)
 {
-  if ( ! s.empty() )
-  {
-    std::wstring str(std::move(s));
-    internal_assign (str);
-  }
+  string = s;
 }
 
 //----------------------------------------------------------------------
 FString::FString (const wchar_t s[])
 {
   if ( s )
-  {
-    std::wstring str(s);
-    internal_assign (str);
-  }
+    internal_assign(std::wstring{s});
 }
 
 //----------------------------------------------------------------------
 FString::FString (const std::string& s)
 {
   if ( ! s.empty() )
-  {
-    auto wide_string = internal_toWideString(s);
-    internal_assign(wide_string);
-  }
+    internal_assign(internal_toWideString(s));
 }
 
 //----------------------------------------------------------------------
 FString::FString (const char s[])
 {
   if ( s )
-  {
-    auto wide_string = internal_toWideString(s);
-    internal_assign(wide_string);
-  }
+    internal_assign(internal_toWideString(s));
 }
 
 //----------------------------------------------------------------------
 FString::FString (const UniChar& c)
 {
-  std::wstring str{ static_cast<wchar_t>(c) };
-  internal_assign (str);
+  internal_assign(std::wstring{static_cast<wchar_t>(c)});
 }
 
 //----------------------------------------------------------------------
 FString::FString (const wchar_t c)
 {
   if ( c )
-  {
-    std::wstring str{ c };
-    internal_assign (str);
-  }
+    internal_assign(std::wstring{c});
 }
 
 //----------------------------------------------------------------------
 FString::FString (const char c)
 {
   if ( c )
-  {
-    std::wstring str{ wchar_t(uChar(c)) };
-    internal_assign (str);
-  }
+    internal_assign(std::wstring{wchar_t(uChar(c))});
 }
 
 //----------------------------------------------------------------------
@@ -166,10 +136,7 @@ FString::~FString() = default;  // destructor
 auto FString::operator = (const FString& s) -> FString&
 {
   if ( &s != this )
-  {
-    std::wstring str{s.string};
-    internal_assign (str);
-  }
+    internal_assign(std::wstring{s.string});
 
   return *this;
 }
@@ -178,10 +145,7 @@ auto FString::operator = (const FString& s) -> FString&
 auto FString::operator = (FString&& s) noexcept -> FString&
 {
   if ( &s != this )
-  {
     string = s.string;
-    s.string.clear();
-  }
 
   return *this;
 }
@@ -1082,11 +1046,8 @@ auto FString::includes (const FString& s) const -> bool
 
 // private methods of FString
 //----------------------------------------------------------------------
-inline void FString::internal_assign (std::wstring& s)
+inline void FString::internal_assign (std::wstring s)
 {
-  if ( string == s )
-    return;
-
   s.swap(string);
 }
 

@@ -216,30 +216,14 @@ auto FObject::addTimer (int interval) & -> int
   // Create a timer and returns the timer identifier number
   // (interval in ms)
 
-  int id{1};
+  static int id{0};
   std::lock_guard<std::mutex> lock_guard(internal::var::timer_mutex);
   auto& timer_list = globalTimerList();
 
-  // find an unused timer id
-  if ( ! timer_list->empty() )
-  {
-    auto iter = timer_list->cbegin();
-    const auto& last = timer_list->cend();
-
-    while ( iter != last )
-    {
-      if ( iter->id == id )
-      {
-        iter = timer_list->cbegin();
-        id++;
-        continue;
-      }
-      ++iter;
-    }
-  }
-
-  if ( id <= 0 || id > int(timer_list->size() + 1) )
-    return 0;
+  if ( id != std::numeric_limits<int>::max() )
+    id++;
+  else
+    id = 1;
 
   const auto time_interval = milliseconds(interval);
   const auto timeout = getCurrentTime() + time_interval;
