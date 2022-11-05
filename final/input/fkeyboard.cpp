@@ -399,7 +399,7 @@ inline auto FKeyboard::getSingleKey() -> FKey
 //----------------------------------------------------------------------
 inline auto FKeyboard::isKeypressTimeout() -> bool
 {
-  return FObject::isTimeout (time_keypressed, key_timeout);
+  return FTimer<FObject>::isTimeout (time_keypressed, key_timeout);
 }
 
 //----------------------------------------------------------------------
@@ -464,7 +464,7 @@ void FKeyboard::parseKeyBuffer()
 {
   while ( readKey() > 0 )
   {
-    time_keypressed = FObject::getCurrentTime();
+    time_keypressed = FTimer<FObject>::getCurrentTime();
     has_pending_input = false;
 
     if ( ! fifo_buf.isFull() )

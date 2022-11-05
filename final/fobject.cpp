@@ -22,7 +22,6 @@
 
 #include <algorithm>
 #include <memory>
-#include <mutex>
 
 #include "final/fc.h"
 #include "final/fevent.h"
@@ -30,19 +29,6 @@
 
 namespace finalcut
 {
-
-namespace internal
-{
-
-struct var
-{
-  static std::mutex timer_mutex;
-};
-
-std::mutex var::timer_mutex{};
-
-}  // namespace internal
-
 
 //----------------------------------------------------------------------
 // class FObject
@@ -189,128 +175,6 @@ auto FObject::event (FEvent* ev) -> bool
   return true;
 }
 
-//----------------------------------------------------------------------
-auto FObject::getCurrentTime() -> TimeValue
-{
-  return system_clock::now();  // Get the current time
-}
-
-//----------------------------------------------------------------------
-auto FObject::isTimeout (const TimeValue& time, uInt64 timeout) -> bool
-{
-  // Checks whether the specified time span (timeout in µs) has elapsed
-
-  const auto& now = getCurrentTime();
-
-  if ( now < time )
-    return false;
-
-  const auto diff = now - time;
-  const auto& diff_usec = uInt64(duration_cast<microseconds>(diff).count());
-  return diff_usec > timeout;
-}
-
-//----------------------------------------------------------------------
-auto FObject::addTimer (int interval) & -> int
-{
-  // Create a timer and returns the timer identifier number
-  // (interval in ms)
-
-  static int id{0};
-  std::lock_guard<std::mutex> lock_guard(internal::var::timer_mutex);
-  auto& timer_list = globalTimerList();
-
-  if ( id != std::numeric_limits<int>::max() )
-    id++;
-  else
-    id = 1;
-
-  const auto time_interval = milliseconds(interval);
-  const auto timeout = getCurrentTime() + time_interval;
-  FTimerData t{ id, time_interval, timeout, this };
-
-  // insert in list sorted by timeout
-  auto iter = timer_list->cbegin();
-  const auto& last = timer_list->cend();
-
-  while ( iter != last && iter->timeout < t.timeout )
-    ++iter;
-
-  timer_list->insert (iter, t);
-  return id;
-}
-
-//----------------------------------------------------------------------
-auto FObject::delTimer (int id) const & -> bool
-{
-  // Deletes a timer by using the timer identifier number
-
-  if ( id <= 0 )
-    return false;
-
-  std::lock_guard<std::mutex> lock_guard(internal::var::timer_mutex);
-  auto& timer_list = globalTimerList();
-  auto iter = timer_list->cbegin();
-  const auto& last = timer_list->cend();
-
-  while ( iter != last && iter->id != id )
-    ++iter;
-
-  if ( iter != last )
-  {
-    timer_list->erase(iter);
-    return true;
-  }
-
-  return false;
-}
-
-//----------------------------------------------------------------------
-auto FObject::delOwnTimers() const & -> bool
-{
-  // Deletes all timers of this object
-
-  std::lock_guard<std::mutex> lock_guard(internal::var::timer_mutex);
-  auto& timer_list = globalTimerList();
-
-  if ( ! timer_list )
-    return false;
-
-  if ( timer_list->empty() )
-    return false;
-
-  auto iter = timer_list->cbegin();
-
-  while ( iter != timer_list->cend() )
-  {
-    if ( iter->object == this )
-      iter = timer_list->erase(iter);
-    else
-      ++iter;
-  }
-
-  return true;
-}
-
-//----------------------------------------------------------------------
-auto FObject::delAllTimers() const & -> bool
-{
-  // Deletes all timers of all objects
-
-  std::lock_guard<std::mutex> lock_guard(internal::var::timer_mutex);
-  auto& timer_list = globalTimerList();
-
-  if ( ! timer_list )
-    return false;
-
-  if ( timer_list->empty() )
-    return false;
-
-  timer_list->clear();
-  timer_list->shrink_to_fit();
-  return true;
-}
-
 
 // protected methods of FObject
 //----------------------------------------------------------------------
@@ -327,61 +191,5 @@ void FObject::onUserEvent (FUserEvent*)
   // to receive user events for this object
 }
 
-//----------------------------------------------------------------------
-auto FObject::processTimerEvent() -> uInt
-{
-  uInt activated{0};
-  std::unique_lock<std::mutex> unique_lock( internal::var::timer_mutex
-                                          , std::defer_lock );
-
-  if ( ! unique_lock.try_lock() )
-    return 0;
-
-  auto currentTime = getCurrentTime();
-  auto& timer_list = globalTimerList();
-
-  if ( ! timer_list || timer_list->empty() )
-    return 0;
-
-  for (auto&& timer : *timer_list)
-  {
-    if ( ! timer.id
-      || ! timer.object
-      || currentTime < timer.timeout )  // Timer not expired
-      continue;
-
-    timer.timeout += timer.interval;
-
-    if ( timer.timeout < currentTime )
-      timer.timeout = currentTime + timer.interval;
-
-    if ( timer.interval > microseconds(0) )
-      ++activated;
-
-    auto id = timer.id;
-    auto object = timer.object;
-
-    unique_lock.unlock();
-    FTimerEvent t_ev(Event::Timer, id);
-    performTimerAction (object, &t_ev);
-    unique_lock.lock();
-  }
-
-  return activated;
-}
-
-//----------------------------------------------------------------------
-void FObject::performTimerAction (FObject*, FEvent*)
-{
-  // This method must be reimplemented in a subclass
-  // to process the passed object and timer event
-}
-
-//----------------------------------------------------------------------
-auto FObject::globalTimerList() -> const FTimerListUniquePtr&
-{
-  static const auto& timer_list = std::make_unique<FTimerList>();
-  return timer_list;
-}
 
 }  // namespace finalcut

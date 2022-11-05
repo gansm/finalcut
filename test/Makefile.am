@@ -35,6 +35,7 @@ noinst_PROGRAMS = \
 	fterm_functions_test \
 	ftermlinux_test \
 	ftermopenbsd_test \
+	ftimer_test \
 	fvterm_test \
 	fvtermattribute_test \
 	fvtermbuffer_test \
@@ -68,6 +69,7 @@ ftermlinux_test_SOURCES = ftermlinux-test.cpp
 ftermlinux_test_LDADD = @TERMCAP_LIB@
 ftermopenbsd_test_SOURCES = ftermopenbsd-test.cpp
 ftermopenbsd_test_LDADD = @TERMCAP_LIB@
+ftimer_test_SOURCES = ftimer-test.cpp
 fvterm_test_SOURCES = fvterm-test.cpp
 fvtermattribute_test_SOURCES = fvtermattribute-test.cpp
 fvtermbuffer_test_SOURCES = fvtermbuffer-test.cpp
@@ -99,6 +101,7 @@ TESTS = \
 	fterm_functions_test \
 	ftermlinux_test \
 	ftermopenbsd_test \
+	ftimer_test \
 	fvterm_test \
 	fvtermattribute_test \
 	fvtermbuffer_test \

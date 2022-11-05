@@ -20,12 +20,17 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-/*  Base class
- *  ══════════
+/*  Inheritance diagram
+ *  ═══════════════════
  *
- * ▕▔▔▔▔▔▔▔▔▔▏
- * ▕ FObject ▏
- * ▕▁▁▁▁▁▁▁▁▁▏
+ *      ▕▔▔▔▔▔▔▔▔▏
+ *      ▕ FTimer ▏
+ *      ▕▁▁▁▁▁▁▁▁▏
+ *           ▲
+ *           │
+ *      ▕▔▔▔▔▔▔▔▔▔▏
+ *      ▕ FObject ▏
+ *      ▕▁▁▁▁▁▁▁▁▁▏
  */
 
 #ifndef FOBJECT_H
@@ -44,22 +49,15 @@
 #include <sys/time.h>  // need for gettimeofday
 #include <cstdlib>
 #include <cstring>
-#include <chrono>
 #include <memory>
 #include <vector>
 
+#include "final/ftimer.h"
 #include "final/ftypes.h"
 #include "final/util/fstring.h"
 
 namespace finalcut
 {
-
-using std::chrono::duration_cast;
-using std::chrono::seconds;
-using std::chrono::milliseconds;
-using std::chrono::microseconds;
-using std::chrono::system_clock;
-using std::chrono::time_point;
 
 // class forward declaration
 class FEvent;
@@ -78,7 +76,7 @@ class FUserEvent;
 // class FObject
 //----------------------------------------------------------------------
 
-class FObject
+class FObject : public FTimer<FObject>
 {
   public:
     // Using-declarations
@@ -101,7 +99,7 @@ class FObject
     FObject (FObject&&) noexcept = delete;
 
     // Destructor
-    virtual ~FObject();
+    ~FObject() override;
 
     // Disable copy assignment operator (=)
     auto operator = (const FObject&) -> FObject& = delete;
@@ -110,7 +108,7 @@ class FObject
     auto operator = (FObject&&) noexcept -> FObject& = delete;
 
     // Accessors
-    virtual auto getClassName() const -> FString;
+    auto  getClassName() const -> FString override;
     auto  getParent() const & -> FObject*;
     auto  getChild (int) const & -> FObject*;
     auto  getChildren() & -> FObjectList&;
@@ -148,45 +146,15 @@ class FObject
     // Event handler
     virtual auto event (FEvent*) -> bool;
 
-    // Timer methods
-    static auto  getCurrentTime() -> TimeValue;
-    static auto  isTimeout (const TimeValue&, uInt64) -> bool;
-    auto  addTimer (int) & -> int;
-    auto  delTimer (int) const & -> bool;
-    auto  delOwnTimers() const & -> bool;
-    auto  delAllTimers() const & -> bool;
-
   protected:
-    struct FTimerData
-    {
-      int          id;
-      milliseconds interval;
-      TimeValue    timeout;
-      FObject*     object;
-    };
-
-    // Using-declaration
-    using FTimerList = std::vector<FTimerData>;
-    using FTimerListUniquePtr = std::unique_ptr<FTimerList>;
-
-    // Accessor
-    auto  getTimerList() const -> FTimerList*;
-
     // Mutator
     void  setWidgetProperty (bool = true);
-
-    // Method
-    auto  processTimerEvent() -> uInt;
 
     // Event handler
     virtual void onTimer (FTimerEvent*);
     virtual void onUserEvent (FUserEvent*);
 
   private:
-    // Method
-    virtual void performTimerAction (FObject*, FEvent*);
-    static auto  globalTimerList() -> const FTimerListUniquePtr&;
-
     // Data members
     FObject*     parent_obj{nullptr};
     FObjectList  children_list{};  // no children yet
@@ -195,7 +163,7 @@ class FObject
     bool         widget_object{false};
 };
 
-
+// FObject inline functions
 //----------------------------------------------------------------------
 inline auto FObject::getClassName() const -> FString
 { return "FObject"; }
@@ -283,10 +251,6 @@ inline auto FObject::isWidget() const noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FObject::isInstanceOf (const FString& classname) const -> bool
 { return classname == getClassName(); }
-
-//----------------------------------------------------------------------
-inline auto FObject::getTimerList() const -> FTimerList*
-{ return globalTimerList().get(); }
 
 //----------------------------------------------------------------------
 inline void FObject::setWidgetProperty (bool property)

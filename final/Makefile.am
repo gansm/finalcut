@@ -82,6 +82,7 @@ libfinal_la_SOURCES = \
 	fevent.cpp \
 	fobject.cpp \
 	fstartoptions.cpp \
+	ftimer.cpp \
 	fwidgetcolors.cpp \
 	fwidget.cpp \
 	fwidget_functions.cpp
@@ -192,6 +193,7 @@ finalcutinclude_HEADERS = \
 	final.h \
 	fobject.h \
 	fstartoptions.h \
+	ftimer.h \
 	ftypes.h \
 	fwidgetcolors.h \
 	fwidget_functions.h \

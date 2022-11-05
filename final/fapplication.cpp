@@ -1311,7 +1311,7 @@ auto FApplication::processNextEvent() -> bool
 
   if ( hasDataInQueue() || hasTerminalResized() || isNextEventTimeout() )
   {
-    time_last_event = FObject::getCurrentTime();
+    time_last_event = FTimer<FObject>::getCurrentTime();
     num_events += processTimerEvent();
     processInput();
     processResizeEvent();
@@ -1406,7 +1406,7 @@ auto FApplication::isEventProcessable ( FObject* receiver
 //----------------------------------------------------------------------
 auto FApplication::isNextEventTimeout() -> bool
 {
-  return FObject::isTimeout(time_last_event, next_event_wait);
+  return FTimer<FObject>::isTimeout(time_last_event, next_event_wait);
 }
 
 

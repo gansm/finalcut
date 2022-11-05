@@ -466,7 +466,7 @@ void FTermOutput::flush()
   std::fflush(stdout);
   static auto& mouse = FMouseControl::getInstance();
   mouse.drawPointer();
-  time_last_flush = FObject::getCurrentTime();
+  time_last_flush = FTimer<FObject>::getCurrentTime();
 }
 
 //----------------------------------------------------------------------
@@ -1208,7 +1208,7 @@ auto FTermOutput::updateTerminalCursor() -> bool
 //----------------------------------------------------------------------
 inline void FTermOutput::flushTimeAdjustment()
 {
-  const auto now = FObject::getCurrentTime();
+  const auto now = FTimer<FObject>::getCurrentTime();
   const auto diff = now - time_last_flush;
 
   if ( diff > milliseconds(400) )
@@ -1249,7 +1249,7 @@ inline void FTermOutput::flushTimeAdjustment()
 //----------------------------------------------------------------------
 inline auto FTermOutput::isFlushTimeout() const -> bool
 {
-  return FObject::isTimeout (time_last_flush, flush_wait);
+  return FTimer<FObject>::isTimeout (time_last_flush, flush_wait);
 }
 
 //----------------------------------------------------------------------
