@@ -27,7 +27,7 @@ jobs:
         # The package installation is currently broken. Please see https://github.com/egor-tensin/setup-cygwin/issues/9
 
     - name: Package installation workaround 
-      run: C:\tools\cygwin\cygwinsetup.exe `
+      run: C:\cygwin\cygwinsetup.exe `
            --quiet-mode `
            --no-desktop `
            --no-startmenu `
