@@ -467,8 +467,8 @@ class FVTerm_protected : public finalcut::FVTerm
     auto p_updateVTermCursor (const FTermArea*) const -> bool;
     void p_hideVTermCursor() const;
     static void p_setAreaCursor (const finalcut::FPoint&, bool, FTermArea*);
-    static void p_getArea (const finalcut::FPoint&, const FTermArea*);
-    static void p_getArea (const finalcut::FRect&, const FTermArea*);
+    static void p_getArea (const finalcut::FPoint&, FTermArea*);
+    static void p_getArea (const finalcut::FRect&, FTermArea*);
     void p_putArea (const FTermArea*) const;
     static void p_putArea (const finalcut::FPoint&, const FTermArea*);
     static auto p_getLayer (FVTerm&) -> int;
@@ -672,13 +672,13 @@ inline void FVTerm_protected::p_setAreaCursor (const finalcut::FPoint& pos, bool
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm_protected::p_getArea (const finalcut::FPoint& pos, const FTermArea* area)
+inline void FVTerm_protected::p_getArea (const finalcut::FPoint& pos, FTermArea* area)
 {
   finalcut::FVTerm::getArea (pos, area);
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm_protected::p_getArea (const finalcut::FRect& box, const FTermArea* area)
+inline void FVTerm_protected::p_getArea (const finalcut::FRect& box, FTermArea* area)
 {
   finalcut::FVTerm::getArea (box, area);
 }
@@ -2754,6 +2754,16 @@ void FVTermTest::getFVTermAreaTest()
   CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin_area) );
   p_fvterm.p_getArea (finalcut::FRect(finalcut::FPoint{3, 3}, finalcut::FSize{4, 4}), vwin_area);
   test::printArea (vwin_area);
+  const auto& fchar_pos1 = vwin_area->getFChar(0, 0);
+  const auto& fchar_pos2 = vwin_area->getFChar(finalcut::FPoint{3, 3});
+  auto& fchar_pos3 = vwin_area->getFChar(3, 4);
+  auto& fchar_pos4 = vwin_area->getFChar(finalcut::FPoint{5, 5});
+  CPPUNIT_ASSERT ( &fchar_pos1 == &vwin_area->data[0] );
+  CPPUNIT_ASSERT ( &fchar_pos2 == &vwin_area->data[3 * 6 + 3] );  // 6 = width of area
+  CPPUNIT_ASSERT ( &fchar_pos3 == &vwin_area->data[4 * 6 + 3] );  // 6 = width of area
+  CPPUNIT_ASSERT ( &fchar_pos4 == &vwin_area->data[5 * 6 + 5] );  // 6 = width of area
+  CPPUNIT_ASSERT ( &fchar_pos4 == &vwin_area->data[6 * 6 - 1] );  // 6 = width of area
+  CPPUNIT_ASSERT ( &vwin_area->getFChar(10, 0) == &vwin_area->getFChar(4, 1) );
 
   finalcut::FChar one_char = new_bg_char;
   one_char.ch[0] = L'1';

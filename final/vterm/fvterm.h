@@ -58,6 +58,7 @@
 #include "final/fc.h"
 #include "final/output/tty/fterm_functions.h"
 #include "final/util/fdata.h"
+#include "final/util/fpoint.h"
 #include "final/util/fstringstream.h"
 #include "final/vterm/fvtermattribute.h"
 
@@ -72,7 +73,6 @@ namespace finalcut
 // class forward declaration
 class FColorPair;
 class FOutput;
-class FPoint;
 class FRect;
 class FSize;
 class FString;
@@ -250,8 +250,8 @@ class FVTerm : public FVTermAttribute
     void  hideVTermCursor() const;
     static void  setAreaCursor ( const FPoint&
                                , bool, FTermArea* );
-    static void  getArea (const FPoint&, const FTermArea*);
-    static void  getArea (const FRect&, const FTermArea*);
+    static void  getArea (const FPoint&, FTermArea*);
+    static void  getArea (const FRect&, FTermArea*);
     void  putArea (const FTermArea*) const;
     static void  putArea (const FPoint&, const FTermArea*);
     static void  copyArea (FTermArea*, const FPoint&, const FTermArea*);
@@ -317,10 +317,9 @@ class FVTerm : public FVTermAttribute
     static void putAreaLine (const FChar&, FChar&, std::size_t);
     static void putAreaCharacter ( const FPoint&, const FTermArea*
                                  , const FChar&, FChar& );
-    static void getAreaCharacter ( const FPoint&, const FTermArea*
-                                 , FChar*& );
+    static void getAreaCharacter (const FPoint&, FTermArea*, FChar*&);
     auto        clearFullArea (const FTermArea*, FChar&) const -> bool;
-    static void clearAreaWithShadow (const FTermArea*, const FChar&);
+    static void clearAreaWithShadow (FTermArea*, const FChar&);
     auto        printWrap (FTermArea*) const -> bool;
     static auto getByte1TransMask() -> uInt8;
     auto        changedToTransparency (const FChar&, const FChar&) const -> bool;
@@ -395,6 +394,26 @@ struct FVTerm::FTermArea  // define virtual terminal character properties
   auto contains (const FPoint& pos) const noexcept -> bool;
   auto checkPrintPos() const noexcept -> bool;
 
+  inline const FChar& getFChar (int x, int y) const
+  {
+    return data[y * (width + right_shadow) + x];
+  }
+
+  inline FChar& getFChar (int x, int y)
+  {
+    return data[y * (width + right_shadow) + x];
+  }
+
+  inline const FChar& getFChar (const FPoint& pos) const
+  {
+    return getFChar(pos.getX(), pos.getY());
+  }
+
+  inline FChar& getFChar (const FPoint& pos)
+  {
+    return getFChar(pos.getX(), pos.getY());
+  }
+
   inline void setCursorPos (int x, int y)
   {
     cursor_x = x;
@@ -447,6 +466,30 @@ struct D
     // No deleting of pointer objects when exiting the std::unique_ptr
   }
 };
+
+//----------------------------------------------------------------------
+inline auto FVTerm::FTermArea::contains (const FPoint& pos) const noexcept -> bool
+{
+  // Is the terminal position (pos) located on my area?
+
+  const int area_height = minimized ? min_height : height + bottom_shadow;
+  const int x = pos.getX();
+  const int y = pos.getY();
+  return x >= offset_left
+      && x <= offset_left + width + right_shadow - 1
+      && y >= offset_top
+      && y <= offset_top + area_height - 1;
+}
+
+//----------------------------------------------------------------------
+inline auto FVTerm::FTermArea::checkPrintPos() const noexcept -> bool
+{
+  return cursor_x > 0
+      && cursor_y > 0
+      && cursor_x <= width + right_shadow
+      && cursor_y <= height + bottom_shadow;
+}
+
 
 //----------------------------------------------------------------------
 // struct FVTerm::FVTermPreprocessing
@@ -681,6 +724,13 @@ inline auto FVTerm::isVirtualWindow() const -> bool
 //----------------------------------------------------------------------
 inline void FVTerm::hideVTermCursor() const
 { vterm->input_cursor_visible = false; }
+
+//----------------------------------------------------------------------
+inline auto FVTerm::getLayer (FVTerm& obj) -> int
+{
+  // returns the layer from the FVTerm object
+  return obj.FVTerm::getPrintArea()->layer;
+}
 
 //----------------------------------------------------------------------
 template <typename FOutputType>

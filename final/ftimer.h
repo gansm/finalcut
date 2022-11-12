@@ -73,8 +73,7 @@ class FTimer
 {
   public:
     // Destructor
-    virtual ~FTimer()
-    { }
+    virtual ~FTimer() = default;
 
     // Accessors
     inline virtual auto getClassName() const -> FString

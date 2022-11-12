@@ -1,3 +1,6 @@
+2022-11-12  Markus Gans  <guru.mail@muenster.de>
+	* Direct access to a character in a print area via coordinates
+
 2022-11-05  Markus Gans  <guru.mail@muenster.de>
 	* The new class FTimer now contains all timer methods
 
