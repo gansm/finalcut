@@ -34,7 +34,7 @@ jobs:
            --root C:\cygwin\ `
            --local-package-dir C:\cygwin\packages `
            --site "http://mirrors.kernel.org/sourceware/cygwin/" `
-           --packages git grep make libncurses-devel gcc-core gcc-g++ automake autoconf autoconf-archive libtool pkgconf cppunit
+           --packages "git grep make libncurses-devel gcc-core gcc-g++ automake autoconf autoconf-archive libtool pkgconf cppunit"
 
     - name: Test on Cygwin environment
       run: |

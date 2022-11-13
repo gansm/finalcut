@@ -10,7 +10,7 @@ on:
 
 jobs:
   analyze:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
 
     env:
       COVERITY_SCAN_BRANCH_PATTERN:     "${{ github.ref}}"
