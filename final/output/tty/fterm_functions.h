@@ -29,6 +29,7 @@
 
 #if defined(__CYGWIN__)
   #include "final/fconfig.h"  // includes _GNU_SOURCE for fd_set
+  #include <sys/select.h>  // need for FD_ZERO, FD_SET, FD_CLR, ...
 #endif
 
 #include <unistd.h>
