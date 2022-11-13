@@ -26,14 +26,15 @@ jobs:
         #packages: git grep make libncurses-devel gcc-core gcc-g++ automake autoconf autoconf-archive libtool pkgconf cppunit
         # The package installation is currently broken. Please see https://github.com/egor-tensin/setup-cygwin/issues/9
 
+    - name: Download apt-cyg 
+      run: Invoke-WebRequest "https://raw.githubusercontent.com/transcode-open/apt-cyg/master/apt-cyg" -OutFile C:\cygwin\usr\local\bin\apt-cyg
+
     - name: Test on Cygwin environment
       run: |
         uname -a
         whoami
         pwd
-        wget https://raw.githubusercontent.com/transcode-open/apt-cyg/master/apt-cyg
-        chmod +x apt-cyg
-        mv apt-cyg /usr/local/bin
+        chmod +x /usr/local/bin/apt-cyg
         apt-cyg install git
         apt-cyg install grep
         apt-cyg install make
