@@ -29,6 +29,9 @@ jobs:
     - name: Download apt-cyg 
       run: Invoke-WebRequest "https://raw.githubusercontent.com/transcode-open/apt-cyg/master/apt-cyg" -OutFile C:\cygwin\usr\local\bin\apt-cyg
 
+    - name: Install wget 
+      run: C:\cygwin\cygwinsetup.exe -q -P wget
+
     - name: Test on Cygwin environment
       run: |
         uname -a
