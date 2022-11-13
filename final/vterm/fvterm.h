@@ -394,33 +394,33 @@ struct FVTerm::FTermArea  // define virtual terminal character properties
   auto contains (const FPoint& pos) const noexcept -> bool;
   auto checkPrintPos() const noexcept -> bool;
 
-  inline const FChar& getFChar (int x, int y) const
+  inline auto getFChar (int x, int y) const -> const FChar&
   {
     return data[y * (width + right_shadow) + x];
   }
 
-  inline FChar& getFChar (int x, int y)
+  inline auto getFChar (int x, int y) noexcept -> FChar&
   {
     return data[y * (width + right_shadow) + x];
   }
 
-  inline const FChar& getFChar (const FPoint& pos) const
+  inline auto getFChar (const FPoint& pos) const noexcept -> const FChar&
   {
     return getFChar(pos.getX(), pos.getY());
   }
 
-  inline FChar& getFChar (const FPoint& pos)
+  inline auto getFChar (const FPoint& pos) noexcept -> FChar&
   {
     return getFChar(pos.getX(), pos.getY());
   }
 
-  inline void setCursorPos (int x, int y)
+  inline void setCursorPos (int x, int y) noexcept
   {
     cursor_x = x;
     cursor_y = y;
   }
 
-  inline void setInputCursorPos (int x, int y)
+  inline void setInputCursorPos (int x, int y) noexcept
   {
     input_cursor_x = x;
     input_cursor_y = y;

@@ -81,7 +81,7 @@ class FTimer
       return "FTimer";
     }
 
-    static auto getCurrentTime() -> TimeValue
+    static inline auto getCurrentTime() -> TimeValue
     {
       return system_clock::now();  // Get the current time
     }
@@ -126,7 +126,7 @@ class FTimer
 // public methods of FTimer
 //----------------------------------------------------------------------
 template <typename ObjectT>
-auto FTimer<ObjectT>::isTimeout (const TimeValue& time, uInt64 timeout) -> bool
+inline auto FTimer<ObjectT>::isTimeout (const TimeValue& time, uInt64 timeout) -> bool
 {
   // Checks whether the specified time span (timeout in µs) has elapsed
 

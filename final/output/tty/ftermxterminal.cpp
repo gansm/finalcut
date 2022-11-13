@@ -20,10 +20,6 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-#if defined(__CYGWIN__)
-  #include "final/fconfig.h"  // includes _GNU_SOURCE for fd_set
-#endif
-
 #include <array>
 
 #include "final/fapplication.h"
