@@ -76,7 +76,7 @@ class FUserEvent;
 // class FObject
 //----------------------------------------------------------------------
 
-class FObject : public FTimer<FObject>
+class FObject : public FObjectTimer
 {
   public:
     // Using-declarations

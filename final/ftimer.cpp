@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include "final/fobject.h"
 #include "final/ftimer.h"
 
 namespace finalcut
@@ -28,9 +29,58 @@ namespace finalcut
 namespace internal
 {
 
+static auto getInstance() -> FTimer<FObject>*
+{
+  static const auto& fobject_timer = std::make_unique<FTimer<FObject>>();
+  return fobject_timer.get();
+}
+
 std::mutex timer_var::mutex{};
 
 }  // namespace internal
+
+// Static class attribute
+FTimer<FObject>* FObjectTimer::timer{nullptr};
+
+//----------------------------------------------------------------------
+// class FObjectTimer
+//----------------------------------------------------------------------
+
+// Specialization for FObject
+//----------------------------------------------------------------------
+template <>
+auto FTimer<FObject>::globalTimerList() -> const FTimerListUniquePtr&
+{
+  static const auto& timer_list = std::make_unique<FTimerList>();
+  return timer_list;
+}
+
+// FTimer non-member functions
+//----------------------------------------------------------------------
+int getNextId()
+{
+  static int id{0};
+  return ( id != std::numeric_limits<int>::max() ) ? ++id : 1;
+}
+
+
+//----------------------------------------------------------------------
+// class FObjectTimer
+//----------------------------------------------------------------------
+
+FObjectTimer::FObjectTimer()
+{
+  if ( ! timer )
+    timer = internal::getInstance();
+}
+
+// private methods of FTimer
+//----------------------------------------------------------------------
+void FObjectTimer::performTimerAction (FObject*, FEvent*)
+{
+  // This method must be reimplemented in a subclass
+  // to process the passed object and timer event
+}
 
 }  // namespace finalcut
 

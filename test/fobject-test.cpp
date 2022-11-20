@@ -41,8 +41,10 @@ namespace test
 //----------------------------------------------------------------------
 
 class FObject_protected : public finalcut::FObject
+                        , public finalcut::FTimer<finalcut::FObject>
 {
   public:
+    // Constructor
     FObject_protected() = default;
 
     auto event (finalcut::FEvent* ev) -> bool override
@@ -50,14 +52,14 @@ class FObject_protected : public finalcut::FObject
       return finalcut::FObject::event(ev);
     }
 
-    auto getTimerList() const -> FTimerList*
+    auto getTimerList() const -> finalcut::FTimer<finalcut::FObject>::FTimerList*
     {
       return finalcut::FObject::getTimerList();
     }
 
     auto processEvent() -> uInt
     {
-      return processTimerEvent();
+      return finalcut::FObject::processTimerEvent();
     }
 
     void setWidgetProperty (bool property)

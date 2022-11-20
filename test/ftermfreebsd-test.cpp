@@ -578,7 +578,8 @@ auto FSystemTest::getTerminalKeymap() -> struct keymap_t&
 // class ftermfreebsdTest
 //----------------------------------------------------------------------
 
-class ftermfreebsdTest : public CPPUNIT_NS::TestFixture, test::ConEmu
+class ftermfreebsdTest : public CPPUNIT_NS::TestFixture
+                       , test::ConEmu
 {
   public:
     ftermfreebsdTest() = default;

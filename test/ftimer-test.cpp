@@ -40,19 +40,27 @@ namespace test
 // class FTimer_protected
 //----------------------------------------------------------------------
 
-class FTimer_protected : public finalcut::FTimer<finalcut::FObject>
+class FTimer_protected : public finalcut::FObjectTimer
+                       , public finalcut::FTimer<finalcut::FObject>
 {
   public:
+    // Using-declarations
+    using finalcut::FObjectTimer::addTimer;
+    using finalcut::FObjectTimer::delAllTimers;
+    using finalcut::FObjectTimer::delOwnTimers;
+    using finalcut::FObjectTimer::delTimer;
+
+    // Constructor
     FTimer_protected() = default;
 
-    auto getTimerList() const -> FTimerList*
+    auto getTimerList() const -> finalcut::FTimer<finalcut::FObject>::FTimerList*
     {
-      return finalcut::FTimer<finalcut::FObject>::getTimerList();
+      return finalcut::FObjectTimer::getTimerList();
     }
 
     auto processEvent() -> uInt
     {
-      return processTimerEvent();
+      return finalcut::FObjectTimer::processTimerEvent();
     }
 
     void performTimerAction (finalcut::FObject*, finalcut::FEvent*) override
@@ -135,14 +143,14 @@ void FTimerTest::timeTest()
 {
   TimeValue time1{};
   uInt64 timeout = 750000;  // 750 ms
-  time1 = finalcut::FTimer<finalcut::FObject>::getCurrentTime();
-  CPPUNIT_ASSERT ( ! finalcut::FTimer<finalcut::FObject>::isTimeout (time1, timeout) );
+  time1 = finalcut::FObjectTimer::getCurrentTime();
+  CPPUNIT_ASSERT ( ! finalcut::FObjectTimer::isTimeout (time1, timeout) );
   sleep(1);
-  CPPUNIT_ASSERT ( finalcut::FTimer<finalcut::FObject>::isTimeout (time1, timeout) );
+  CPPUNIT_ASSERT ( finalcut::FObjectTimer::isTimeout (time1, timeout) );
   time1 = TimeValue{}
         + std::chrono::seconds(300)
         + std::chrono::microseconds(2000000);
-  CPPUNIT_ASSERT ( finalcut::FTimer<finalcut::FObject>::isTimeout (time1, timeout) );
+  CPPUNIT_ASSERT ( finalcut::FObjectTimer::isTimeout (time1, timeout) );
 }
 
 //----------------------------------------------------------------------

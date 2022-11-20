@@ -1,3 +1,6 @@
+2022-11-20  Markus Gans  <guru.mail@muenster.de>
+	* FTimer specialization for FObject in FObjectTimer
+
 2022-11-12  Markus Gans  <guru.mail@muenster.de>
 	* Direct access to a character in a print area via coordinates
 

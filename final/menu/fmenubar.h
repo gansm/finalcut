@@ -67,7 +67,8 @@ class FMenu;
 // class FMenuBar
 //----------------------------------------------------------------------
 
-class FMenuBar : public FWindow, public FMenuList
+class FMenuBar : public FWindow
+               , public FMenuList
 {
   public:
     // Constructor

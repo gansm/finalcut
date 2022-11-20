@@ -38,7 +38,8 @@
 // class FTermFunctionsTest
 //----------------------------------------------------------------------
 
-class FTermFunctionsTest : public CPPUNIT_NS::TestFixture, test::ConEmu
+class FTermFunctionsTest : public CPPUNIT_NS::TestFixture
+                         , test::ConEmu
 {
   public:
     FTermFunctionsTest()

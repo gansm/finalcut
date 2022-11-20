@@ -319,7 +319,7 @@ void FMouse::setEvent() noexcept
 //----------------------------------------------------------------------
 auto FMouse::isDblclickTimeout (const TimeValue& time) const -> bool
 {
-  return FTimer<FObject>::isTimeout (time, dblclick_interval);
+  return FObjectTimer::isTimeout (time, dblclick_interval);
 }
 
 

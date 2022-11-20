@@ -81,18 +81,18 @@ class FTimer
       return "FTimer";
     }
 
-    static inline auto getCurrentTime() -> TimeValue
+    inline auto getCurrentTime() -> TimeValue
     {
       return system_clock::now();  // Get the current time
     }
 
     // Inquiries
-    static auto  isTimeout (const TimeValue&, uInt64) -> bool;
+    auto  isTimeout (const TimeValue&, uInt64) -> bool;
 
     // Methods
-    auto  addTimer (int) & -> int;
+    auto  addTimer (ObjectT*, int) & -> int;
     auto  delTimer (int) const & -> bool;
-    auto  delOwnTimers() const & -> bool;
+    auto  delOwnTimers(const ObjectT*) const & -> bool;
     auto  delAllTimers() const & -> bool;
 
   protected:
@@ -115,13 +115,20 @@ class FTimer
     }
 
     // Method
-    auto processTimerEvent() -> uInt;
+    template <typename CallbackT>
+    auto processTimerEvent(CallbackT) -> uInt;
 
   private:
     // Method
-    virtual void performTimerAction (ObjectT*, FEvent*);
     static auto globalTimerList() -> const FTimerListUniquePtr&;
+
+    // Friend classes
+    friend class FObjectTimer;
 };
+
+// non-member function forward declarations
+//----------------------------------------------------------------------
+int getNextId();
 
 // public methods of FTimer
 //----------------------------------------------------------------------
@@ -142,23 +149,17 @@ inline auto FTimer<ObjectT>::isTimeout (const TimeValue& time, uInt64 timeout) -
 
 //----------------------------------------------------------------------
 template <typename ObjectT>
-auto FTimer<ObjectT>::addTimer (int interval) & -> int
+auto FTimer<ObjectT>::addTimer (ObjectT* object, int interval) & -> int
 {
   // Create a timer and returns the timer identifier number
   // (interval in ms)
 
-  static int id{0};
   std::lock_guard<std::mutex> lock_guard(internal::timer_var::mutex);
   auto& timer_list = globalTimerList();
-
-  if ( id != std::numeric_limits<int>::max() )
-    id++;
-  else
-    id = 1;
-
+  int id = getNextId();
   const auto time_interval = milliseconds(interval);
   const auto timeout = getCurrentTime() + time_interval;
-  FTimerData t{ id, time_interval, timeout, static_cast<ObjectT*>(this) };
+  FTimerData t{ id, time_interval, timeout, object };
 
   // insert in list sorted by timeout
   auto iter = timer_list->cbegin();
@@ -199,7 +200,7 @@ auto FTimer<ObjectT>::delTimer (int id) const & -> bool
 
 //----------------------------------------------------------------------
 template <typename ObjectT>
-auto FTimer<ObjectT>::delOwnTimers() const & -> bool
+auto FTimer<ObjectT>::delOwnTimers(const ObjectT* object) const & -> bool
 {
   // Deletes all timers of this object
 
@@ -216,7 +217,7 @@ auto FTimer<ObjectT>::delOwnTimers() const & -> bool
 
   while ( iter != timer_list->cend() )
   {
-    if ( iter->object == this )
+    if ( iter->object == object )
       iter = timer_list->erase(iter);
     else
       ++iter;
@@ -248,7 +249,8 @@ auto FTimer<ObjectT>::delAllTimers() const & -> bool
 // protected methods of FTimer
 //----------------------------------------------------------------------
 template <typename ObjectT>
-auto FTimer<ObjectT>::processTimerEvent() -> uInt
+template <typename CallbackT>
+auto FTimer<ObjectT>::processTimerEvent(CallbackT callback) -> uInt
 {
   uInt activated{0};
   std::unique_lock<std::mutex> unique_lock ( internal::timer_var::mutex
@@ -283,7 +285,7 @@ auto FTimer<ObjectT>::processTimerEvent() -> uInt
 
     unique_lock.unlock();
     FTimerEvent t_ev(Event::Timer, id);
-    performTimerAction (object, &t_ev);
+    callback (object, &t_ev);
     unique_lock.lock();
   }
 
@@ -293,19 +295,94 @@ auto FTimer<ObjectT>::processTimerEvent() -> uInt
 // private methods of FTimer
 //----------------------------------------------------------------------
 template <typename ObjectT>
-inline void FTimer<ObjectT>::performTimerAction (ObjectT*, FEvent*)
-{
-  // This method must be reimplemented in a subclass
-  // to process the passed object and timer event
-}
-
-//----------------------------------------------------------------------
-template <typename ObjectT>
-inline auto FTimer<ObjectT>::globalTimerList() -> const FTimerListUniquePtr&
+auto FTimer<ObjectT>::globalTimerList() -> const FTimerListUniquePtr&
 {
   static const auto& timer_list = std::make_unique<FTimerList>();
   return timer_list;
 }
+
+// class forward declaration
+class FObject;
+
+// Specialization for FObject
+template <>
+auto FTimer<FObject>::globalTimerList() -> const FTimerListUniquePtr&;
+
+
+//----------------------------------------------------------------------
+// class FObjectTimer
+//----------------------------------------------------------------------
+class FObjectTimer
+{
+  public:
+    FObjectTimer();
+
+    // Destructor
+    virtual ~FObjectTimer() = default;
+
+    // Accessors
+    inline virtual auto getClassName() const -> FString
+    {
+      return "FObjectTimer";
+    }
+
+    static inline auto getCurrentTime() -> TimeValue
+    {
+      return timer->getCurrentTime();
+    }
+
+    // Inquiries
+    static auto isTimeout (const TimeValue& time, uInt64 timeout) -> bool
+    {
+      return timer->isTimeout(time, timeout);
+    }
+
+    // Methods
+    auto addTimer (int interval) -> int
+    {
+      return timer->addTimer(reinterpret_cast<FObject*>(this), interval);
+    }
+
+    auto delTimer (int id) const -> bool
+    {
+      return timer->delTimer(id);
+    }
+
+    auto delOwnTimers() const -> bool
+    {
+      return timer->delOwnTimers(reinterpret_cast<const FObject*>(this));
+    }
+
+    auto delAllTimers() const -> bool
+    {
+      return timer->delAllTimers();
+    }
+
+  protected:
+    auto getTimerList() const -> FTimer<FObject>::FTimerList*
+    {
+      //return timer->getTimerList();
+      return timer->globalTimerList().get();
+    }
+
+    // Method
+    auto processTimerEvent() -> uInt
+    {
+      return timer->processTimerEvent( [this] (FObject* receiver, FEvent* event)
+                                       {
+                                         performTimerAction(receiver, event);
+                                       }
+                                     );
+    }
+
+  private:
+    // Method
+    virtual void performTimerAction (FObject*, FEvent*);
+
+    // Data members
+    static FTimer<FObject>* timer;
+};
+
 
 }  // namespace finalcut
 

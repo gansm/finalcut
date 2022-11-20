@@ -2045,7 +2045,8 @@ void FSystemTest::initFScreenInfo()
 // class FTermLinuxTest
 //----------------------------------------------------------------------
 
-class FTermLinuxTest : public CPPUNIT_NS::TestFixture, test::ConEmu
+class FTermLinuxTest : public CPPUNIT_NS::TestFixture
+                     , test::ConEmu
 {
   public:
     FTermLinuxTest() = default;

@@ -124,7 +124,8 @@ class FWidgetColors;
 // class FWidget
 //----------------------------------------------------------------------
 
-class FWidget : public FVTerm, public FObject
+class FWidget : public FVTerm
+              , public FObject
 {
   public:
     struct FAccelerator

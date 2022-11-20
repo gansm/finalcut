@@ -227,7 +227,8 @@ void EventDialog::onWindowLowered (finalcut::FEvent* ev)
 // class EventLog
 //----------------------------------------------------------------------
 
-class EventLog final : public finalcut::FDialog, public std::ostringstream
+class EventLog final : public finalcut::FDialog
+                     , public std::ostringstream
 {
   public:
     // Constructor
