@@ -81,7 +81,7 @@ class FTimer
       return "FTimer";
     }
 
-    inline auto getCurrentTime() -> TimeValue
+    inline auto getCurrentTime() const -> TimeValue
     {
       return system_clock::now();  // Get the current time
     }
@@ -259,7 +259,7 @@ auto FTimer<ObjectT>::processTimerEvent(CallbackT callback) -> uInt
   if ( ! unique_lock.try_lock() )
     return 0;
 
-  auto currentTime = getCurrentTime();
+  const auto& currentTime = getCurrentTime();
   auto& timer_list = globalTimerList();
 
   if ( ! timer_list || timer_list->empty() )
@@ -361,7 +361,6 @@ class FObjectTimer
   protected:
     auto getTimerList() const -> FTimer<FObject>::FTimerList*
     {
-      //return timer->getTimerList();
       return timer->globalTimerList().get();
     }
 
