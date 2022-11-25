@@ -1554,18 +1554,7 @@ void FListView::draw()
 
   drawScrollbars();
   drawList();
-
-  if ( getFlags().focus && getStatusBar() )
-  {
-    const auto& msg = getStatusbarMessage();
-    const auto& curMsg = getStatusBar()->getMessage();
-
-    if ( curMsg != msg )
-    {
-      getStatusBar()->setMessage(msg);
-      getStatusBar()->drawMessage();
-    }
-  }
+  updateStatusbar (this);
 }
 
 //----------------------------------------------------------------------

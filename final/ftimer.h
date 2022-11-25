@@ -340,7 +340,7 @@ class FObjectTimer
     // Methods
     auto addTimer (int interval) -> int
     {
-      return timer->addTimer(reinterpret_cast<FObject*>(this), interval);
+      return timer->addTimer(selfPointer<FObject*>(), interval);
     }
 
     auto delTimer (int id) const -> bool
@@ -350,7 +350,7 @@ class FObjectTimer
 
     auto delOwnTimers() const -> bool
     {
-      return timer->delOwnTimers(reinterpret_cast<const FObject*>(this));
+      return timer->delOwnTimers(selfPointer<const FObject*>());
     }
 
     auto delAllTimers() const -> bool
@@ -377,6 +377,18 @@ class FObjectTimer
   private:
     // Method
     virtual void performTimerAction (FObject*, FEvent*);
+
+    template <typename T>
+    inline auto selfPointer() -> T
+    {
+      return T(this);
+    }
+
+    template <typename T>
+    inline auto selfPointer() const -> T
+    {
+      return T(this);
+    }
 
     // Data members
     static FTimer<FObject>* timer;

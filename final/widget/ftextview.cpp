@@ -570,19 +570,7 @@ void FTextView::draw()
   drawBorder();
   drawScrollbars();
   drawText();
-
-  if ( hasFocus() && getStatusBar() )
-  {
-    const auto& msg = getStatusbarMessage();
-    const auto& curMsg = getStatusBar()->getMessage();
-
-    if ( curMsg != msg )
-    {
-      getStatusBar()->setMessage(msg);
-      getStatusBar()->drawMessage();
-    }
-  }
-
+  updateStatusbar(this);
   setCursorPos ({int(getWidth()), int(getHeight())});
 }
 

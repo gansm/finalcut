@@ -659,4 +659,23 @@ inline void drawNewFontListBox (FWidget* w, const FRect& r)
              << UniChar::NF_border_line_left_up;         // ╵
 }
 
+//----------------------------------------------------------------------
+void updateStatusbar (FWidget* w, bool need_focus)
+{
+  if ( w->hasFocus() != need_focus )
+    return;
+
+  if ( auto sbar = w->getStatusBar() )
+  {
+    const auto& msg = w->getStatusbarMessage();
+    const auto& curMsg = sbar->getMessage();
+
+    if ( curMsg != msg )
+    {
+      sbar->setMessage(msg);
+      sbar->drawMessage();
+    }
+  }
+}
+
 }  // namespace finalcut

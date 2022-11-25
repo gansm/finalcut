@@ -226,10 +226,10 @@ void FApplication::quit() const
 //----------------------------------------------------------------------
 auto FApplication::sendEvent (FObject* receiver, FEvent* event ) -> bool
 {
-  if ( quit_now || internal::var::exit_loop || ! (bool(receiver) && bool(event)) )
-    return false;
-
-  if ( ! isEventProcessable (receiver, event) )
+  if ( quit_now
+    || internal::var::exit_loop
+    || ! (bool(receiver) && bool(event))
+    || ! isEventProcessable (receiver, event) )
     return false;
 
   // Sends the event event directly to receiver

@@ -1,3 +1,6 @@
+2022-11-25  Markus Gans  <guru.mail@muenster.de>
+	* New helper function to update the widget text of the status bar
+
 2022-11-20  Markus Gans  <guru.mail@muenster.de>
 	* FTimer specialization for FObject in FObjectTimer
 

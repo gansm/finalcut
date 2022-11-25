@@ -197,7 +197,7 @@ class FMenu : public FWindow
     void mouseMoveSelection (FMenuItem*, MouseStates&);
     void mouseMoveDeselection (FMenuItem*, MouseStates&);
     void mouseUpOverBorder();
-    void mouseMoveOverBorder (MouseStates&) const;
+    void mouseMoveOverBorder (MouseStates&);
     void passEventToSubMenu (const FMouseEvent&) const;
     void passEventToSuperMenu (const FMouseEvent&);
     void passEventToMenuBar (const FMouseEvent&) const;

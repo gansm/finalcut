@@ -832,21 +832,11 @@ void FMenu::mouseUpOverBorder()
 }
 
 //----------------------------------------------------------------------
-void FMenu::mouseMoveOverBorder (MouseStates& ms) const
+void FMenu::mouseMoveOverBorder (MouseStates& ms)
 {
   // Mouse is moved over border or separator line
 
-  if ( getStatusBar() )
-  {
-    const auto& msg = getStatusbarMessage();
-    const auto& curMsg = getStatusBar()->getMessage();
-
-    if ( curMsg != msg )
-    {
-      getStatusBar()->setMessage(msg);
-      getStatusBar()->drawMessage();
-    }
-  }
+  updateStatusbar (this, false);
 
   if ( opened_sub_menu )
     ms.hide_sub_menu = true;

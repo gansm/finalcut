@@ -639,23 +639,7 @@ void FButton::draw()
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);  // Dark background
 
-  updateStatusBar();
-}
-
-//----------------------------------------------------------------------
-void FButton::updateStatusBar() const
-{
-  if ( ! getFlags().focus || ! getStatusBar() )
-    return;
-
-  const auto& msg = getStatusbarMessage();
-  const auto& curMsg = getStatusBar()->getMessage();
-
-  if ( curMsg != msg )
-  {
-    getStatusBar()->setMessage(msg);
-    getStatusBar()->drawMessage();
-  }
+  updateStatusbar (this);
 }
 
 //----------------------------------------------------------------------

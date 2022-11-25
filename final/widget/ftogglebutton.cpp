@@ -363,17 +363,7 @@ void FToggleButton::draw()
   if ( ! isVisible() )
     return;
 
-  if ( getFlags().focus && getStatusBar() )
-  {
-    const auto& msg = getStatusbarMessage();
-    const auto& curMsg = getStatusBar()->getMessage();
-
-    if ( curMsg != msg )
-    {
-      getStatusBar()->setMessage(msg);
-      getStatusBar()->drawMessage();
-    }
-  }
+  updateStatusbar (this);
 
   // set the cursor to the button
   if ( isRadioButton() || isCheckboxButton() )

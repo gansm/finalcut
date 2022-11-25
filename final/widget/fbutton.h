@@ -135,7 +135,6 @@ class FButton : public FWidget
     void drawTopBottomBackground();
     void drawButtonTextLine (const FString&);
     void draw() override;
-    void updateStatusBar() const;
     void updateButtonColor();
     void processClick() const;
 
