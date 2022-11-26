@@ -712,7 +712,7 @@ auto FString::setNumber (sInt64 num) -> FString&
 //----------------------------------------------------------------------
 auto FString::setNumber (uInt64 num) -> FString&
 {
-  wchar_t buf[30]{};
+  std::array<wchar_t, 30> buf{};
   wchar_t* s = &buf[29];  // Pointer to the last character
   *s = '\0';
 
@@ -798,7 +798,7 @@ auto FString::setFormatedNumber (sInt64 num, char separator) -> FString&
 auto FString::setFormatedNumber (uInt64 num, char separator) -> FString&
 {
   int n{0};
-  wchar_t buf[30]{};
+  std::array<wchar_t, 30> buf{};
   wchar_t* s = &buf[29];  // Pointer to the last character
   *s = L'\0';
 

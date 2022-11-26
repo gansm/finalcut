@@ -129,9 +129,6 @@ class FTermcap final
     // Using-declaration
     using string_iterator = std::string::const_iterator;
 
-    // Constant
-    static constexpr std::size_t BUF_SIZE{2048};
-
     // Methods
     static void  termcap();
     static void  termcapError (int);
@@ -151,7 +148,6 @@ class FTermcap final
     static bool          initialized;
     static int           baudrate;
     static char          PC;
-    static char          string_buf[BUF_SIZE];
     static PutCharFunc   outc;
     static PutStringFunc outs;
 };

@@ -74,7 +74,7 @@ void drawListBorder (FWidget*, const FRect&);
 void drawBox (FWidget*, const FRect&);
 void drawNewFontBox (FWidget*, const FRect&);
 void drawNewFontListBox (FWidget*, const FRect&);
-void updateStatusbar (FWidget* w, bool = true);
+void updateStatusbar (const FWidget* w, bool = true);
 
 }  // namespace finalcut
 

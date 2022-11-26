@@ -61,6 +61,25 @@
 namespace finalcut
 {
 
+namespace internal
+{
+
+// Constant
+static constexpr std::size_t BUF_SIZE{2048};
+
+// Function
+static auto getStringBuffer() -> char*
+{
+  static std::array<char, BUF_SIZE> string_buf{};
+  return string_buf.data();
+}
+
+// Data pointer
+static char*  buffer      {nullptr};
+static char** buffer_addr {nullptr};
+
+}  // namespace internal
+
 // static class attributes
 bool                    FTermcap::initialized              {false};
 bool                    FTermcap::background_color_erase   {false};
@@ -80,9 +99,9 @@ int                     FTermcap::padding_baudrate         {0};
 int                     FTermcap::attr_without_color       {0};
 int                     FTermcap::baudrate                 {9600};
 char                    FTermcap::PC                       {'\0'};
-char                    FTermcap::string_buf[2048]         {};
 FTermcap::PutCharFunc   FTermcap::outc                     {};
 FTermcap::PutStringFunc FTermcap::outs                     {};
+
 
 //----------------------------------------------------------------------
 // class FTermcap
@@ -113,7 +132,7 @@ auto FTermcap::getNumber (const std::string& cap) -> int
 //----------------------------------------------------------------------
 auto FTermcap::getString (const std::string& cap) -> char*
 {
-  auto string = ::tgetstr(C_STR(cap.data()), reinterpret_cast<char**>(&string_buf));
+  const auto& string = ::tgetstr(C_STR(cap.data()), internal::buffer_addr);
   return ( string && string[0] != '\0' ) ? string : nullptr;
 }
 
@@ -202,6 +221,8 @@ auto FTermcap::stringPrint (const std::string& string) -> Status
 //----------------------------------------------------------------------
 void FTermcap::init()
 {
+  internal::buffer = internal::getStringBuffer();
+  internal::buffer_addr = &internal::buffer;
   termcap();
   setDefaultPutCharFunction();
   setDefaultPutStringFunction();
@@ -234,7 +255,7 @@ void FTermcap::termcap()
 {
   static constexpr int success = 1;
   static constexpr int uninitialized = -2;
-  static char term_buffer[BUF_SIZE]{};
+  static std::array<char, internal::BUF_SIZE> term_buffer{};
   std::vector<std::string> terminals{};
   int status = uninitialized;
   static auto& fterm_data = FTermData::getInstance();
@@ -260,9 +281,9 @@ void FTermcap::termcap()
 
     // Open the termcap file + load entry for termtype
 #if defined(__sun) && defined(__SVR4)
-    status = tgetent(term_buffer, const_cast<char*>(termtype.data()));
+    status = tgetent(term_buffer.data(), const_cast<char*>(termtype.data()));
 #else
-    status = tgetent(term_buffer, termtype.data());
+    status = tgetent(term_buffer.data(), termtype.data());
 #endif
 
     if ( status == success )

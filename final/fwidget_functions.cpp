@@ -660,7 +660,7 @@ inline void drawNewFontListBox (FWidget* w, const FRect& r)
 }
 
 //----------------------------------------------------------------------
-void updateStatusbar (FWidget* w, bool need_focus)
+void updateStatusbar (const FWidget* w, bool need_focus)
 {
   if ( w->hasFocus() != need_focus )
     return;
