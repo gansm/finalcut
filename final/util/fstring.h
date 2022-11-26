@@ -234,7 +234,6 @@ class FString
     virtual auto getClassName() const -> FString;
 
     // inquiries
-    [[deprecated("No longer needed")]] auto isNull() const noexcept -> bool;
     auto isEmpty() const noexcept -> bool;
 
     // Methods
@@ -593,10 +592,6 @@ inline auto FString::operator > (const CharT& s) const -> bool
 //----------------------------------------------------------------------
 inline auto FString::getClassName() const -> FString
 { return "FString"; }
-
-//----------------------------------------------------------------------
-inline auto FString::isNull() const noexcept -> bool  // deprecated
-{ return false; }
 
 //----------------------------------------------------------------------
 inline auto FString::isEmpty() const noexcept -> bool
