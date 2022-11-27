@@ -469,7 +469,7 @@ class FVTerm_protected : public finalcut::FVTerm
     static void p_setAreaCursor (const finalcut::FPoint&, bool, FTermArea*);
     static void p_getArea (const finalcut::FPoint&, FTermArea*);
     static void p_getArea (const finalcut::FRect&, FTermArea*);
-    void p_putArea (const FTermArea*) const;
+    void p_putArea (FTermArea*) const;
     static void p_putArea (const finalcut::FPoint&, const FTermArea*);
     static auto p_getLayer (FVTerm&) -> int;
     static void p_determineWindowLayers();
@@ -684,7 +684,7 @@ inline void FVTerm_protected::p_getArea (const finalcut::FRect& box, FTermArea* 
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm_protected::p_putArea (const FTermArea* area) const
+inline void FVTerm_protected::p_putArea (FTermArea* area) const
 {
   finalcut::FVTerm::putArea (area);
 }
@@ -896,7 +896,7 @@ void FVTermTest::FVTermBasesTest()
   finalcut::FSize Shadow(2, 1);
   p_fvterm.p_createArea (geometry, Shadow, vwin);
 
-  if ( ! (vwin && vwin->owner && vwin->changes) )
+  if ( ! (vwin && vwin->owner) || vwin->changes.empty() )
   {
     CPPUNIT_ASSERT ( false );
     return;
@@ -931,7 +931,7 @@ void FVTermTest::FVTermBasesTest()
   CPPUNIT_ASSERT ( ! vwin->visible );
   CPPUNIT_ASSERT ( ! vwin->minimized );
   CPPUNIT_ASSERT ( vwin->preproc_list.empty() );
-  CPPUNIT_ASSERT ( vwin->changes );
+  CPPUNIT_ASSERT ( ! vwin->changes.empty() );
   CPPUNIT_ASSERT ( &(vwin->changes[0]) != nullptr );
 
   if ( &(vwin->changes[0]) )
@@ -941,7 +941,7 @@ void FVTermTest::FVTermBasesTest()
     CPPUNIT_ASSERT ( vwin->changes[0].trans_count == 0 );
   }
 
-  CPPUNIT_ASSERT ( vwin->data );
+  CPPUNIT_ASSERT ( ! vwin->data.empty() );
   CPPUNIT_ASSERT ( ! p_fvterm.p_isActive(vwin) );
   CPPUNIT_ASSERT ( test::getAreaSize(vwin) == 462 );
   CPPUNIT_ASSERT ( vwin->contains({5, 5}) );
@@ -1048,11 +1048,11 @@ void FVTermTest::FVTermBasesTest()
   CPPUNIT_ASSERT ( vdesktop->visible );
   CPPUNIT_ASSERT ( ! vdesktop->minimized );
   CPPUNIT_ASSERT ( vdesktop->preproc_list.empty() );
-  CPPUNIT_ASSERT ( vdesktop->changes );
+  CPPUNIT_ASSERT ( ! vdesktop->changes.empty() );
   CPPUNIT_ASSERT ( vdesktop->changes[0].xmin == 80 );
   CPPUNIT_ASSERT ( vdesktop->changes[0].xmax == 0 );
   CPPUNIT_ASSERT ( vdesktop->changes[0].trans_count == 0 );
-  CPPUNIT_ASSERT ( vdesktop->data );
+  CPPUNIT_ASSERT ( ! vdesktop->data.empty() );
   CPPUNIT_ASSERT ( test::getAreaSize(vdesktop) == 1920 );
   CPPUNIT_ASSERT ( p_fvterm.p_isActive(vdesktop) );
   p_fvterm.p_setActiveArea(vwin);
@@ -1090,11 +1090,11 @@ void FVTermTest::FVTermBasesTest()
   CPPUNIT_ASSERT ( ! vterm->visible );
   CPPUNIT_ASSERT ( ! vterm->minimized );
   CPPUNIT_ASSERT ( vterm->preproc_list.empty() );
-  CPPUNIT_ASSERT ( vterm->changes );
+  CPPUNIT_ASSERT ( ! vterm->changes.empty() );
   CPPUNIT_ASSERT ( vterm->changes[0].xmin == 80 );
   CPPUNIT_ASSERT ( vterm->changes[0].xmax == 0 );
   CPPUNIT_ASSERT ( vterm->changes[0].trans_count == 0 );
-  CPPUNIT_ASSERT ( vterm->data );
+  CPPUNIT_ASSERT ( ! vterm->data.empty() );
   CPPUNIT_ASSERT ( test::getAreaSize(vterm) == 1920 );
 
   for (std::size_t pos = 0; pos < test::getAreaSize(vterm); pos++)

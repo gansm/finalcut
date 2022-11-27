@@ -832,7 +832,7 @@ void FMenu::mouseUpOverBorder()
 }
 
 //----------------------------------------------------------------------
-void FMenu::mouseMoveOverBorder (MouseStates& ms)
+void FMenu::mouseMoveOverBorder (MouseStates& ms) const
 {
   // Mouse is moved over border or separator line
 

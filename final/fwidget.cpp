@@ -1928,7 +1928,7 @@ void FWidget::drawWindows() const
       auto v_win = win->getVWin();
       const int w = v_win->width  + v_win->right_shadow;
       const int h = v_win->height + v_win->bottom_shadow;
-      std::fill_n (v_win->data, w * h, default_char);
+      std::fill_n (v_win->data.begin(), w * h, default_char);
       win->redraw();
     }
   }

@@ -74,10 +74,6 @@ static auto getStringBuffer() -> char*
   return string_buf.data();
 }
 
-// Data pointer
-static char*  buffer      {nullptr};
-static char** buffer_addr {nullptr};
-
 }  // namespace internal
 
 // static class attributes
@@ -99,6 +95,8 @@ int                     FTermcap::padding_baudrate         {0};
 int                     FTermcap::attr_without_color       {0};
 int                     FTermcap::baudrate                 {9600};
 char                    FTermcap::PC                       {'\0'};
+char*                   FTermcap::buffer                   {nullptr};
+char**                  FTermcap::buffer_addr              {nullptr};
 FTermcap::PutCharFunc   FTermcap::outc                     {};
 FTermcap::PutStringFunc FTermcap::outs                     {};
 
@@ -132,7 +130,7 @@ auto FTermcap::getNumber (const std::string& cap) -> int
 //----------------------------------------------------------------------
 auto FTermcap::getString (const std::string& cap) -> char*
 {
-  const auto& string = ::tgetstr(C_STR(cap.data()), internal::buffer_addr);
+  const auto& string = ::tgetstr(C_STR(cap.data()), buffer_addr);
   return ( string && string[0] != '\0' ) ? string : nullptr;
 }
 
@@ -221,8 +219,8 @@ auto FTermcap::stringPrint (const std::string& string) -> Status
 //----------------------------------------------------------------------
 void FTermcap::init()
 {
-  internal::buffer = internal::getStringBuffer();
-  internal::buffer_addr = &internal::buffer;
+  buffer = internal::getStringBuffer();
+  buffer_addr = &buffer;
   termcap();
   setDefaultPutCharFunction();
   setDefaultPutStringFunction();

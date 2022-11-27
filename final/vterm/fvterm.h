@@ -150,36 +150,36 @@ class FVTerm : public FVTermAttribute
     // Overloaded operators
     template <typename NumT
             , enable_if_arithmetic_without_char_t<NumT> = nullptr>
-    auto operator << (const NumT&) -> FVTerm&;
+    auto operator << (const NumT&) noexcept -> FVTerm&;
 
     template <typename CharT
             , enable_if_CString_t<CharT> = nullptr>
-    auto operator << (const CharT&) -> FVTerm&;
-    auto operator << (char) -> FVTerm&;
-    auto operator << (wchar_t) -> FVTerm&;
-    auto operator << (const wchar_t*) -> FVTerm&;
-    auto operator << (const UniChar&) -> FVTerm&;
-    auto operator << (const std::string&) -> FVTerm&;
-    auto operator << (const std::wstring&) -> FVTerm&;
-    auto operator << (const FString&) -> FVTerm&;
-    auto operator << (const FVTermBuffer&) -> FVTerm&;
-    auto operator << (const FChar&) -> FVTerm&;
-    auto operator << (const FCharVector&) -> FVTerm&;
-    auto operator << (const FPoint&) -> FVTerm&;
-    auto operator << (const FStyle&) -> FVTerm&;
-    auto operator << (const FColorPair&) -> FVTerm&;
+    auto operator << (const CharT&) noexcept -> FVTerm&;
+    auto operator << (char) noexcept -> FVTerm&;
+    auto operator << (wchar_t) noexcept -> FVTerm&;
+    auto operator << (const wchar_t*) noexcept -> FVTerm&;
+    auto operator << (const UniChar&) noexcept -> FVTerm&;
+    auto operator << (const std::string&) noexcept -> FVTerm&;
+    auto operator << (const std::wstring&) noexcept -> FVTerm&;
+    auto operator << (const FString&) noexcept -> FVTerm&;
+    auto operator << (const FVTermBuffer&) noexcept -> FVTerm&;
+    auto operator << (const FChar&) noexcept -> FVTerm&;
+    auto operator << (const FCharVector&) noexcept -> FVTerm&;
+    auto operator << (const FPoint&) noexcept -> FVTerm&;
+    auto operator << (const FStyle&) noexcept -> FVTerm&;
+    auto operator << (const FColorPair&) noexcept -> FVTerm&;
 
     // Accessors
     auto  getClassName() const -> FString override;
     static auto  getFOutput() -> std::shared_ptr<FOutput>;
-    auto  getVWin() -> FTermArea*&;
-    auto  getVWin() const -> const FTermArea*;
+    auto  getVWin() noexcept -> FTermArea*&;
+    auto  getVWin() const noexcept -> const FTermArea*;
     auto  getPrintCursor() -> FPoint;
     static auto  getWindowList() -> FVTermList*;
 
     // Mutators
     void  setTerminalUpdates (TerminalUpdate) const;
-    void  setCursor (const FPoint&);
+    void  setCursor (const FPoint&) noexcept;
     static void  setNonBlockingRead (bool = true);
     static void  unsetNonBlockingRead();
 
@@ -187,30 +187,30 @@ class FVTerm : public FVTermAttribute
     static auto  isDrawingFinished() noexcept -> bool;
     static auto  isTerminalUpdateForced() noexcept -> bool;
     static auto  areTerminalUpdatesPaused() noexcept -> bool;
-    static auto  hasPendingTerminalUpdates() -> bool;
+    static auto  hasPendingTerminalUpdates() noexcept -> bool;
 
     // Methods
     virtual void clearArea (wchar_t = L' ');
-    void  createVTerm (const FSize&);
-    void  resizeVTerm (const FSize&) const;
+    void  createVTerm (const FSize&) noexcept;
+    void  resizeVTerm (const FSize&) const noexcept;
     void  putVTerm() const;
     auto  updateTerminal() const -> bool;
     virtual void addPreprocessingHandler ( const FVTerm*
                                          , FPreprocessingFunction&& );
     virtual void delPreprocessingHandler (const FVTerm*);
-    auto  interpretControlCodes (FTermArea*, const FChar&) const -> bool;
+    auto  interpretControlCodes (FTermArea*, const FChar&) const noexcept -> bool;
     template <typename... Args>
-    auto  printf (const FString&, Args&&...) -> int;
-    auto  print (const FString&) -> int;
-    auto  print (FTermArea*, const FString&) -> int;
-    auto  print (const std::vector<FChar>&) -> int;
-    auto  print (FTermArea*, const std::vector<FChar>&) -> int;
-    auto  print (const FVTermBuffer&) -> int;
-    auto  print (FTermArea*, const FVTermBuffer&) -> int;
-    auto  print (wchar_t) -> int;
-    auto  print (FTermArea*, wchar_t) -> int;
-    auto  print (const FChar&) -> int;
-    auto  print (FTermArea*, const FChar&) -> int;
+    auto  printf (const FString&, Args&&...) noexcept -> int;
+    auto  print (const FString&) noexcept -> int;
+    auto  print (FTermArea*, const FString&) noexcept -> int;
+    auto  print (const std::vector<FChar>&) noexcept -> int;
+    auto  print (FTermArea*, const std::vector<FChar>&) noexcept -> int;
+    auto  print (const FVTermBuffer&) noexcept -> int;
+    auto  print (FTermArea*, const FVTermBuffer&) noexcept -> int;
+    auto  print (wchar_t) noexcept -> int;
+    auto  print (FTermArea*, wchar_t) noexcept -> int;
+    auto  print (const FChar&) noexcept -> int;
+    auto  print (FTermArea*, const FChar&) noexcept -> int;
     virtual void print (const FPoint&);
     auto  print() & -> FVTerm&;
     void  flush() const;
@@ -245,25 +245,25 @@ class FVTerm : public FVTermAttribute
                      , FTermArea* ) const;
     void  resizeArea (const FRect&, FTermArea*) const;
     static void  removeArea (FTermArea*&);
-    static void  restoreVTerm (const FRect&);
-    auto  updateVTermCursor (const FTermArea*) const -> bool;
+    static void  restoreVTerm (const FRect&) noexcept;
+    auto  updateVTermCursor (const FTermArea*) const noexcept -> bool;
     void  hideVTermCursor() const;
     static void  setAreaCursor ( const FPoint&
-                               , bool, FTermArea* );
-    static void  getArea (const FPoint&, FTermArea*);
-    static void  getArea (const FRect&, FTermArea*);
-    void  putArea (const FTermArea*) const;
-    static void  putArea (const FPoint&, const FTermArea*);
-    static void  copyArea (FTermArea*, const FPoint&, const FTermArea*);
-    static auto  getLayer (FVTerm&) -> int;
-    static void  determineWindowLayers();
+                               , bool, FTermArea* ) noexcept;
+    static void  getArea (const FPoint&, FTermArea*) noexcept;
+    static void  getArea (const FRect&, FTermArea*) noexcept;
+    void  putArea (FTermArea*) const noexcept;
+    static void  putArea (const FPoint&, const FTermArea*) noexcept;
+    static void  copyArea (FTermArea*, const FPoint&, const FTermArea*) noexcept;
+    static auto  getLayer (FVTerm&) noexcept -> int;
+    static void  determineWindowLayers() noexcept;
     void  scrollAreaForward (FTermArea*) const;
     void  scrollAreaReverse (FTermArea*) const;
-    void  clearArea (FTermArea*, wchar_t = L' ') const;
+    void  clearArea (FTermArea*, wchar_t = L' ') const noexcept;
     void  forceTerminalUpdate() const;
     auto  processTerminalUpdate() const -> bool;
-    static void  startDrawing();
-    static void  finishDrawing();
+    static void  startDrawing() noexcept;
+    static void  finishDrawing() noexcept;
     virtual void initTerminal();
 
   private:
@@ -278,24 +278,24 @@ class FVTerm : public FVTermAttribute
     };
 
     // Methods
-    void  resetTextAreaToDefault ( const FTermArea*
-                                        , const FSize&) const;
+    void  resetTextAreaToDefault ( FTermArea*
+                                 , const FSize&) const noexcept;
     static auto  reallocateTextArea ( FTermArea*
                                     , std::size_t
                                     , std::size_t ) -> bool;
     static auto  reallocateTextArea ( FTermArea*
                                     , std::size_t ) -> bool;
-    static auto isCovered (const FPoint&, const FTermArea*) -> CoveredState;
-    static constexpr auto  getFullAreaWidth (const FTermArea*) -> int;
-    static constexpr auto  getFullAreaHeight (const FTermArea*) -> int;
-    static void updateOverlappedColor (const FChar&, const FChar&, FChar&);
-    static void updateOverlappedCharacter (FChar&, FChar&);
-    static void updateShadedCharacter (const FChar&, FChar&, FChar&);
-    static void updateInheritBackground (const FChar&, const FChar&, FChar&);
-    static void updateCharacter (const FChar&, FChar&);
+    static auto isCovered (const FPoint&, const FTermArea*) noexcept -> CoveredState;
+    static constexpr auto  getFullAreaWidth (const FTermArea*) noexcept -> int;
+    static constexpr auto  getFullAreaHeight (const FTermArea*) noexcept -> int;
+    static void updateOverlappedColor (const FChar&, const FChar&, FChar&) noexcept;
+    static void updateOverlappedCharacter (FChar&, FChar&) noexcept;
+    static void updateShadedCharacter (const FChar&, FChar&, FChar&) noexcept;
+    static void updateInheritBackground (const FChar&, const FChar&, FChar&) noexcept;
+    static void updateCharacter (const FChar&, FChar&) noexcept;
     static auto updateVTermCharacter ( const FTermArea*
                                      , const FPoint&
-                                     , const FPoint& ) -> bool;
+                                     , const FPoint& ) noexcept -> bool;
     void        updateVTerm() const;
     void        scrollTerminalForward() const;
     void        scrollTerminalReverse() const;
@@ -318,14 +318,14 @@ class FVTerm : public FVTermAttribute
     static void putAreaCharacter ( const FPoint&, const FTermArea*
                                  , const FChar&, FChar& );
     static void getAreaCharacter (const FPoint&, FTermArea*, FChar*&);
-    auto        clearFullArea (const FTermArea*, FChar&) const -> bool;
-    static void clearAreaWithShadow (FTermArea*, const FChar&);
+    auto        clearFullArea (FTermArea*, FChar&) const -> bool;
+    static void clearAreaWithShadow (FTermArea*, const FChar&) noexcept;
     auto        printWrap (FTermArea*) const -> bool;
     static auto getByte1TransMask() -> uInt8;
     auto        changedToTransparency (const FChar&, const FChar&) const -> bool;
     auto        changedFromTransparency (const FChar&, const FChar&) const -> bool;
     auto        printCharacterOnCoordinate ( FTermArea*
-                                           , const FChar&) const -> std::size_t;
+                                           , const FChar&) const noexcept -> std::size_t;
     void        printPaddingCharacter (FTermArea*, const FChar&);
     auto        isInsideTerminal (const FPoint&) const noexcept -> bool;
     static auto hasPendingUpdates (const FTermArea*) noexcept -> bool;
@@ -360,7 +360,9 @@ class FVTerm : public FVTermAttribute
 struct FVTerm::FTermArea  // define virtual terminal character properties
 {
   // Using-declaration
-  using FDataAccessPtr = std::shared_ptr<FDataAccess>;
+  using FDataAccessPtr  = std::shared_ptr<FDataAccess>;
+  using FLineChangesPtr = std::vector<FLineChanges>;
+  using FCharPtr        = std::vector<FChar>;
 
   // Constructor
   FTermArea() = default;
@@ -394,7 +396,7 @@ struct FVTerm::FTermArea  // define virtual terminal character properties
   auto contains (const FPoint& pos) const noexcept -> bool;
   auto checkPrintPos() const noexcept -> bool;
 
-  inline auto getFChar (int x, int y) const -> const FChar&
+  inline auto getFChar (int x, int y) const noexcept -> const FChar&
   {
     return data[y * (width + right_shadow) + x];
   }
@@ -436,35 +438,27 @@ struct FVTerm::FTermArea  // define virtual terminal character properties
   }
 
   // Data members
-  int            offset_left{0};      // Distance from left terminal side
-  int            offset_top{0};       // Distance from top of the terminal
-  int            width{-1};           // Window width
-  int            height{-1};          // Window height
-  int            min_width{-1};       // Minimized window width
-  int            min_height{-1};      // Minimized window height
-  int            right_shadow{0};     // Right window shadow
-  int            bottom_shadow{0};    // Bottom window shadow
-  int            cursor_x{0};         // X-position for the next write operation
-  int            cursor_y{0};         // Y-position for the next write operation
-  int            input_cursor_x{-1};  // X-position input cursor
-  int            input_cursor_y{-1};  // Y-position input cursor
-  int            layer{-1};
-  bool           input_cursor_visible{false};
-  bool           has_changes{false};
-  bool           visible{false};
-  bool           minimized{false};
-  FDataAccessPtr owner{nullptr};      // Object that owns this FTermArea
-  FPreprocessing preproc_list{};
-  FLineChanges*  changes{nullptr};
-  FChar*         data{nullptr};       // FChar data of the drawing area
-};
-
-struct D
-{
-  void operator () (const FVTerm*) const
-  {
-    // No deleting of pointer objects when exiting the std::unique_ptr
-  }
+  int             offset_left{0};      // Distance from left terminal side
+  int             offset_top{0};       // Distance from top of the terminal
+  int             width{-1};           // Window width
+  int             height{-1};          // Window height
+  int             min_width{-1};       // Minimized window width
+  int             min_height{-1};      // Minimized window height
+  int             right_shadow{0};     // Right window shadow
+  int             bottom_shadow{0};    // Bottom window shadow
+  int             cursor_x{0};         // X-position for the next write operation
+  int             cursor_y{0};         // Y-position for the next write operation
+  int             input_cursor_x{-1};  // X-position input cursor
+  int             input_cursor_y{-1};  // Y-position input cursor
+  int             layer{-1};
+  bool            input_cursor_visible{false};
+  bool            has_changes{false};
+  bool            visible{false};
+  bool            minimized{false};
+  FDataAccessPtr  owner{nullptr};      // Object that owns this FTermArea
+  FPreprocessing  preproc_list{};
+  FLineChangesPtr changes{};
+  FCharPtr        data{};              // FChar data of the drawing area
 };
 
 //----------------------------------------------------------------------
@@ -494,6 +488,13 @@ inline auto FVTerm::FTermArea::checkPrintPos() const noexcept -> bool
 //----------------------------------------------------------------------
 // struct FVTerm::FVTermPreprocessing
 //----------------------------------------------------------------------
+struct D
+{
+  void operator () (const FVTerm*) const noexcept
+  {
+    // No deleting of pointer objects when exiting the std::unique_ptr
+  }
+};
 
 struct FVTerm::FVTermPreprocessing
 {
@@ -525,7 +526,7 @@ FVTerm::FVTerm (outputClass<FOutputType>)
 //----------------------------------------------------------------------
 template <typename NumT
         , enable_if_arithmetic_without_char_t<NumT>>
-inline auto FVTerm::operator << (const NumT& n) -> FVTerm&
+inline auto FVTerm::operator << (const NumT& n) noexcept -> FVTerm&
 {
   print (FString(std::to_string(n)));
   return *this;
@@ -534,91 +535,91 @@ inline auto FVTerm::operator << (const NumT& n) -> FVTerm&
 //----------------------------------------------------------------------
 template <typename CharT
         , enable_if_CString_t<CharT>>
-inline auto FVTerm::operator << (const CharT& s) -> FVTerm&
+inline auto FVTerm::operator << (const CharT& s) noexcept -> FVTerm&
 {
   print (FString(s));
   return *this;
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::operator << (char c) -> FVTerm&
+inline auto FVTerm::operator << (char c) noexcept -> FVTerm&
 {
   print (wchar_t(uChar(c)));
   return *this;
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::operator << (wchar_t c) -> FVTerm&
+inline auto FVTerm::operator << (wchar_t c) noexcept -> FVTerm&
 {
   print (c);
   return *this;
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::operator << (const wchar_t* wide_string) -> FVTerm&
+inline auto FVTerm::operator << (const wchar_t* wide_string) noexcept -> FVTerm&
 {
   print (FString(wide_string));
   return *this;
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::operator << (const UniChar& c) -> FVTerm&
+inline auto FVTerm::operator << (const UniChar& c) noexcept -> FVTerm&
 {
   print (static_cast<wchar_t>(c));  // Required under Solaris
   return *this;
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::operator << (const std::string& string) -> FVTerm&
+inline auto FVTerm::operator << (const std::string& string) noexcept -> FVTerm&
 {
   print (FString(string));
   return *this;
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::operator << (const std::wstring& wide_string) -> FVTerm&
+inline auto FVTerm::operator << (const std::wstring& wide_string) noexcept -> FVTerm&
 {
   print (FString(wide_string));
   return *this;
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::operator << (const FString& fstring) -> FVTerm&
+inline auto FVTerm::operator << (const FString& fstring) noexcept -> FVTerm&
 {
   print (fstring);
   return *this;
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::operator << (const FChar& fchar) -> FVTerm&
+inline auto FVTerm::operator << (const FChar& fchar) noexcept -> FVTerm&
 {
   print (fchar);
   return *this;
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::operator << (const FCharVector& term_string) -> FVTerm&
+inline auto FVTerm::operator << (const FCharVector& term_string) noexcept -> FVTerm&
 {
   print (term_string);
   return *this;
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::operator << (const FPoint& pos) -> FVTerm&
+inline auto FVTerm::operator << (const FPoint& pos) noexcept -> FVTerm&
 {
   print (pos);
   return *this;
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::operator << (const FStyle& t_style) -> FVTerm&
+inline auto FVTerm::operator << (const FStyle& t_style) noexcept -> FVTerm&
 {
   print (t_style);
   return *this;
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::operator << (const FColorPair& pair) -> FVTerm&
+inline auto FVTerm::operator << (const FColorPair& pair) noexcept -> FVTerm&
 {
   print (pair);
   return *this;
@@ -629,11 +630,11 @@ inline auto FVTerm::getClassName() const -> FString
 { return "FVTerm"; }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::getVWin() -> FTermArea*&
+inline auto FVTerm::getVWin() noexcept -> FTermArea*&
 { return vwin; }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::getVWin() const -> const FTermArea*
+inline auto FVTerm::getVWin() const noexcept -> const FTermArea*
 { return vwin; }
 
 //----------------------------------------------------------------------
@@ -661,12 +662,12 @@ inline auto FVTerm::areTerminalUpdatesPaused() noexcept -> bool
 { return no_terminal_updates; }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::hasPendingTerminalUpdates() -> bool
+inline auto FVTerm::hasPendingTerminalUpdates() noexcept -> bool
 { return hasPendingUpdates(vterm); }
 
 //----------------------------------------------------------------------
 template <typename... Args>
-inline auto FVTerm::printf (const FString& format, Args&&... args) -> int
+inline auto FVTerm::printf (const FString& format, Args&&... args) noexcept -> int
 {
   FString str{};
   str.sprintf (format, std::forward<Args>(args)...);
@@ -726,7 +727,7 @@ inline void FVTerm::hideVTermCursor() const
 { vterm->input_cursor_visible = false; }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::getLayer (FVTerm& obj) -> int
+inline auto FVTerm::getLayer (FVTerm& obj) noexcept -> int
 {
   // returns the layer from the FVTerm object
   return obj.FVTerm::getPrintArea()->layer;

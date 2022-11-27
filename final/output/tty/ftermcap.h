@@ -148,6 +148,8 @@ class FTermcap final
     static bool          initialized;
     static int           baudrate;
     static char          PC;
+    static char*         buffer;
+    static char**        buffer_addr;
     static PutCharFunc   outc;
     static PutStringFunc outs;
 };
