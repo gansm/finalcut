@@ -494,23 +494,23 @@ void MouseDraw::drawCanvas()
   const int ay = 1 + getTermY() - printarea->offset_top;
   const int y_end = canvas->height;
   const int x_end = canvas->width;
-  const int w_line_len = printarea->width + printarea->right_shadow;
 
   for (auto y{0}; y < y_end; y++)  // line loop
   {
     // canvas character
-    const auto& canvaschar = canvas->data[y * x_end];
+    const auto& canvaschar = canvas->getFChar(0, y);
     // window character
-    auto& winchar = printarea->data[(ay + y) * w_line_len + ax];
+    auto& winchar = printarea->getFChar(ax, ay + y);
     std::memcpy ( &winchar
                 , &canvaschar
                 , sizeof(finalcut::FChar) * unsigned(x_end) );
+    auto& line_changes = printarea->changes[ay + y];
 
-    if ( int(printarea->changes[ay + y].xmin) > ax )
-      printarea->changes[ay + y].xmin = uInt(ax);
+    if ( int(line_changes.xmin) > ax )
+      line_changes.xmin = uInt(ax);
 
-    if ( int(printarea->changes[ay + y].xmax) < ax + x_end - 1 )
-      printarea->changes[ay + y].xmax = uInt(ax + x_end - 1);
+    if ( int(line_changes.xmax) < ax + x_end - 1 )
+      line_changes.xmax = uInt(ax + x_end - 1);
   }
 
   printarea->has_changes = true;

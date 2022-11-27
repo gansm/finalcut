@@ -42,7 +42,7 @@ void doubleToItem ( FListBoxItem&
                   , std::size_t index);
 auto doubleToString (std::list<double>::const_iterator iter) -> FString&;
 auto mapToString ( std::map<FString
-                     , FString>::const_iterator iter ) -> FString&;
+                 , FString>::const_iterator iter ) -> FString&;
 
 
 // Lazy conversion insert function
@@ -66,7 +66,7 @@ auto doubleToString (std::list<double>::const_iterator iter) -> FString&
 }
 
 auto mapToString ( std::map<FString
-                              , FString>::const_iterator iter ) -> FString&
+                 , FString>::const_iterator iter ) -> FString&
 {
   auto temp = temp_str.lock();
   return *temp = iter->first + ": " + iter->second;
