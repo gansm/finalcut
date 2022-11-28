@@ -1,0 +1,50 @@
+name: "Alpine Linux build"
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 7 * * 2'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Repository checkout
+      uses: actions/checkout@v3
+
+    - name: Install latest Alpine Linux
+      uses: jirutka/setup-alpine@v1
+      with:
+        arch: x86_64
+        branch: latest-stable
+        packages: >
+          gcc
+          g++
+          make
+          automake
+          autoconf
+          autoconf-archive
+          libtool
+          pkgconf
+          gpm
+          gpm-dev
+          linux-headers
+          ncurses-dev
+          ncurses-terminfo
+          cppunit
+
+    - name: Test on Alpine Linux environment
+      run: |
+        uname -a
+        whoami
+        pwd
+        g++ --version
+        autoreconf --force --install --verbose --warnings=all
+        automake --add-missing --copy
+        ./configure --prefix=/usr
+        make -j10
+      shell: alpine.sh {0}
+
