@@ -38,11 +38,13 @@ jobs:
         pwd
         cygcheck -c -d  # Show installed Cygwin packages
         g++ --version
+        cd "$(cygpath -u $WORKSPACE_PATH)"
         autoreconf --force --install --verbose --warnings=all
         automake --add-missing --copy
         ./configure --prefix=/usr
         make -j10
       shell: C:\cygwin\bin\bash.exe --login '{0}'
       env:
+        WORKSPACE_PATH: "${{ github.workspace }}"
         SHELLOPTS: igncr
 
