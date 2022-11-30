@@ -810,7 +810,7 @@ void FScrollView::init()
     h = 1;
 
   scroll_geometry.setRect (0, 0, w, h);
-  createArea (scroll_geometry, viewport);
+  viewport = createArea (scroll_geometry);
   addPreprocessingHandler
   (
     F_PREPROC_HANDLER (this, &FScrollView::copy2area)

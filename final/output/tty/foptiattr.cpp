@@ -1477,7 +1477,7 @@ inline auto FOptiAttr::switchOff() const -> bool
 }
 
 //----------------------------------------------------------------------
-inline auto FOptiAttr::append_sequence (const std::string& seq) -> bool
+inline auto FOptiAttr::append_sequence (std::string seq) -> bool
 {
   if ( seq.empty() )
     return false;

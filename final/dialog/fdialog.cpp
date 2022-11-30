@@ -75,7 +75,7 @@ FDialog::~FDialog()  // destructor
 
   auto fapp = FApplication::getApplicationObject();
 
-  if ( has_entry && noVisibleDialog() )
+  if ( fapp && has_entry && noVisibleDialog() )
     fapp->emitCallback("last-dialog-closed");
 }
 
@@ -1839,7 +1839,9 @@ void FDialog::addDialog (FWidget* obj)
   if ( getDialogList()->empty() )
   {
     auto fapp = FApplication::getApplicationObject();
-    fapp->emitCallback("first-dialog-opened");
+
+    if ( fapp )
+      fapp->emitCallback("first-dialog-opened");
   }
 
   getDialogList()->push_back(obj);

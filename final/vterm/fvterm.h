@@ -236,13 +236,9 @@ class FVTerm : public FVTermAttribute
     auto  isCursorHideable() const -> bool;
 
     // Methods
-    void  createArea ( const FRect&
-                     , const FSize&
-                     , FTermArea*& );
-    void  createArea ( const FRect&, FTermArea*&);
-    void  resizeArea ( const FRect&
-                     , const FSize&
-                     , FTermArea* ) const;
+    auto  createArea (const FRect&, const FSize&) -> FTermArea*;
+    auto  createArea (const FRect&) -> FTermArea*;
+    void  resizeArea (const FRect&, const FSize&, FTermArea*) const;
     void  resizeArea (const FRect&, FTermArea*) const;
     static void  removeArea (FTermArea*&);
     static void  restoreVTerm (const FRect&) noexcept;
@@ -280,11 +276,10 @@ class FVTerm : public FVTermAttribute
     // Methods
     void  resetTextAreaToDefault ( FTermArea*
                                  , const FSize&) const noexcept;
-    static auto  reallocateTextArea ( FTermArea*
-                                    , std::size_t
-                                    , std::size_t ) -> bool;
-    static auto  reallocateTextArea ( FTermArea*
-                                    , std::size_t ) -> bool;
+    static auto resizeTextArea ( FTermArea*
+                               , std::size_t
+                               , std::size_t ) -> bool;
+    static auto resizeTextArea (FTermArea*, std::size_t) -> bool;
     static auto isCovered (const FPoint&, const FTermArea*) noexcept -> CoveredState;
     static constexpr auto  getFullAreaWidth (const FTermArea*) noexcept -> int;
     static constexpr auto  getFullAreaHeight (const FTermArea*) noexcept -> int;
@@ -677,6 +672,12 @@ inline auto FVTerm::printf (const FString& format, Args&&... args) noexcept -> i
 //----------------------------------------------------------------------
 inline auto FVTerm::print() & -> FVTerm&
 { return *this; }
+
+//----------------------------------------------------------------------
+inline void FVTerm::print (const FPoint& p)
+{
+  setCursor (p);
+}
 
 //----------------------------------------------------------------------
 inline auto FVTerm::getChildPrintArea() const -> FTermArea*

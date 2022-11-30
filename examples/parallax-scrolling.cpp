@@ -352,7 +352,7 @@ void PictureSpaceWindow::draw()
   pict_size.setHeight(pict_size.getHeight() / 2);
   finalcut::FRect planet_geometry(fc::FPoint(0, 0), pict_size);
   FTermArea* planet{nullptr};
-  createArea (planet_geometry, planet);
+  planet = createArea (planet_geometry);
   setColor(fc::FColor::Black, fc::FColor::Black);
   clearArea(planet);
   planet->setCursorPos (1, 1);

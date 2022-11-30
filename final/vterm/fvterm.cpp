@@ -145,7 +145,7 @@ void FVTerm::createVTerm (const FSize& size) noexcept
 
   const FRect box{0, 0, size.getWidth(), size.getHeight()};
   const FSize shadow{0, 0};
-  createArea (box, shadow, vterm);
+  vterm = createArea (box, shadow);
 }
 
 //----------------------------------------------------------------------
@@ -381,12 +381,6 @@ auto FVTerm::print (FTermArea* area, const FChar& term_char) noexcept -> int
 }
 
 //----------------------------------------------------------------------
-void FVTerm::print (const FPoint& p)
-{
-  setCursor (p);
-}
-
-//----------------------------------------------------------------------
 void FVTerm::flush() const
 {
   foutput->flush();
@@ -418,33 +412,23 @@ auto FVTerm::getPrintArea() -> FTermArea*
 }
 
 //----------------------------------------------------------------------
-void FVTerm::createArea ( const FRect& box
-                        , const FSize& shadow
-                        , FTermArea*& area )
+auto FVTerm::createArea (const FRect& box, const FSize& shadow) -> FTermArea*
 {
   // initialize virtual window
 
-  try
-  {
-    area = new FTermArea;
-  }
-  catch (const std::bad_alloc&)
-  {
-    badAllocOutput ("FTermArea");
-    return;
-  }
-
+  auto area = new FTermArea;
   area->setOwner<FVTerm*>(this);
   resizeArea (box, shadow, area);
+  return area;
 }
 
 //----------------------------------------------------------------------
-void FVTerm::createArea (const FRect& box, FTermArea*& area)
+auto FVTerm::createArea (const FRect& box) -> FTermArea*
 {
   // initialize virtual window
 
   const auto no_shadow = FSize(0, 0);
-  createArea (box, no_shadow, area);
+  return createArea (box, no_shadow);
 }
 
 //----------------------------------------------------------------------
@@ -488,13 +472,13 @@ void FVTerm::resizeArea ( const FRect& box
 
   if ( getFullAreaHeight(area) != int(full_height) )
   {
-    realloc_success = reallocateTextArea ( area
-                                         , full_height
-                                         , area_size );
+    realloc_success = resizeTextArea ( area
+                                     , full_height
+                                     , area_size );
   }
   else if ( getFullAreaWidth(area) != int(full_width) )
   {
-    realloc_success = reallocateTextArea (area, area_size);
+    realloc_success = resizeTextArea(area, area_size);
   }
   else
     return;
@@ -1089,42 +1073,27 @@ inline void FVTerm::resetTextAreaToDefault ( FTermArea* area
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::reallocateTextArea ( FTermArea* area
-                                       , std::size_t height
-                                       , std::size_t size ) -> bool
+inline auto FVTerm::resizeTextArea ( FTermArea* area
+                                   , std::size_t height
+                                   , std::size_t size ) -> bool
 {
-  // Reallocate "height" lines for changes
-  // and "size" bytes for the text area
+  // Set the number of lines for changes to "height"
+  // and resize the text area to "size" elements
 
-  try
-  {
-    area->changes.resize(height);
-    area->data.resize(size);
-  }
-  catch (const std::bad_alloc&)
-  {
-    badAllocOutput ("FLineChanges[height] or FChar[size]");
-    return false;
-  }
-
+  area->changes.resize(height);
+  area->changes.shrink_to_fit();
+  area->data.resize(size);
+  area->data.shrink_to_fit();
   return true;
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::reallocateTextArea (FTermArea* area, std::size_t size) -> bool
+inline auto FVTerm::resizeTextArea (FTermArea* area, std::size_t size) -> bool
 {
-  // Reallocate "size" bytes for the text area
+  // Resize text area to "size" FChar elements
 
-  try
-  {
-    area->data.resize(size);
-  }
-  catch (const std::bad_alloc&)
-  {
-    badAllocOutput ("FChar[size]");
-    return false;
-  }
-
+  area->data.resize(size);
+  area->data.shrink_to_fit();
   return true;
 }
 
@@ -1613,7 +1582,7 @@ void FVTerm::initSettings()
 
   // Create virtual desktop area
   FSize shadow_size{0, 0};
-  createArea (term_geometry, shadow_size, vdesktop);
+  vdesktop = createArea (term_geometry, shadow_size);
   vdesktop->visible = true;
   active_area = vdesktop;
 }

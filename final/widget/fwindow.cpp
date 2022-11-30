@@ -49,7 +49,7 @@ FWindow::FWindow(FWidget* parent)
   setWindowWidget();
   FRect geometry {getTermGeometry()};
   geometry.move(-1, -1);
-  createArea (geometry, getShadow(), getVWin());
+  getVWin() = createArea (geometry, getShadow());
   addWindow (this);
 }
 

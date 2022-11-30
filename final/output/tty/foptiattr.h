@@ -258,7 +258,7 @@ class FOptiAttr final
     template <typename CharT
             , enable_if_char_array_t<CharT> = nullptr>
     auto        append_sequence (CharT) -> bool;
-    auto        append_sequence (const std::string&) -> bool;
+    auto        append_sequence (std::string) -> bool;
 
     // Data members
     Capability   F_enter_bold_mode{};

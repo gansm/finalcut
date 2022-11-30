@@ -458,8 +458,8 @@ class FVTerm_protected : public finalcut::FVTerm
     auto p_isCursorHideable() const -> bool;
 
     // Methods
-    void p_createArea (const finalcut::FRect&, const finalcut::FSize&, FTermArea*&);
-    void p_createArea (const finalcut::FRect&, FTermArea*&);
+    auto p_createArea (const finalcut::FRect&, const finalcut::FSize&) -> FTermArea*;
+    auto p_createArea (const finalcut::FRect&) -> FTermArea*;
     void p_resizeArea (const finalcut::FRect&, const finalcut::FSize&, FTermArea*) const;
     void p_resizeArea (const finalcut::FRect&, FTermArea*) const;
     static void p_removeArea (FTermArea*&);
@@ -618,15 +618,15 @@ inline auto FVTerm_protected::p_isCursorHideable() const -> bool
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm_protected::p_createArea (const finalcut::FRect& box, const finalcut::FSize& shadow, FTermArea*& area)
+inline auto FVTerm_protected::p_createArea (const finalcut::FRect& box, const finalcut::FSize& shadow) -> FTermArea*
 {
-  finalcut::FVTerm::createArea (box, shadow, area);
+  return finalcut::FVTerm::createArea (box, shadow);
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm_protected::p_createArea (const finalcut::FRect& box, FTermArea*& area)
+inline auto FVTerm_protected::p_createArea (const finalcut::FRect& box) -> FTermArea*
 {
-  finalcut::FVTerm::createArea (box, area);
+  return finalcut::FVTerm::createArea (box);
 }
 
 //----------------------------------------------------------------------
@@ -894,7 +894,7 @@ void FVTermTest::FVTermBasesTest()
   // Create and check a virtual window for the p_fvterm object
   finalcut::FRect geometry {finalcut::FPoint{5, 5}, finalcut::FSize{20, 20}};
   finalcut::FSize Shadow(2, 1);
-  p_fvterm.p_createArea (geometry, Shadow, vwin);
+  vwin = p_fvterm.p_createArea (geometry, Shadow);
 
   if ( ! (vwin && vwin->owner) || vwin->changes.empty() )
   {
@@ -1103,7 +1103,7 @@ void FVTermTest::FVTermBasesTest()
   // Create a vterm comparison area
   finalcut::FVTerm::FTermArea* test_vterm_area{};
   auto vterm_geometry = finalcut::FRect(finalcut::FPoint{1, 1}, finalcut::FSize{80, 24});
-  p_fvterm.p_createArea (vterm_geometry, test_vterm_area);
+  test_vterm_area = p_fvterm.p_createArea (vterm_geometry);
   test::printOnArea (test_vterm_area, {test::getAreaSize(test_vterm_area), default_char});
   CPPUNIT_ASSERT ( test::isAreaEqual(test_vterm_area, vterm) );
 
@@ -1186,7 +1186,7 @@ void FVTermTest::FVTermBasesTest()
 
   // Create a vwin comparison area
   finalcut::FVTerm::FTermArea* test_vwin_area{};
-  p_fvterm.p_createArea (geometry, Shadow, test_vwin_area);
+  test_vwin_area = p_fvterm.p_createArea (geometry, Shadow);
 
   //                             .-------------------------- 20 line repetitions
   //                             |      .------------------- 20 column repetitions
@@ -1451,7 +1451,7 @@ void FVTermTest::FVTermPrintTest()
 
     finalcut::FRect geometry {finalcut::FPoint{0, 0}, finalcut::FSize{15, 10}};
     finalcut::FSize Shadow(1, 1);
-    p_fvterm.p_createArea (geometry, Shadow, vwin);
+    vwin = p_fvterm.p_createArea (geometry, Shadow);
     const finalcut::FVTerm::FTermArea* const_vwin = p_fvterm.getVWin();
     CPPUNIT_ASSERT ( p_fvterm.p_isVirtualWindow() );
     CPPUNIT_ASSERT ( static_cast<decltype(const_vwin)>(vwin) == const_vwin );
@@ -1492,7 +1492,7 @@ void FVTermTest::FVTermPrintTest()
 
     // Create a vwin comparison area
     finalcut::FVTerm::FTermArea* test_vwin_area{};
-    p_fvterm.p_createArea (geometry, Shadow, test_vwin_area);
+    test_vwin_area = p_fvterm.p_createArea (geometry, Shadow);
 
     CPPUNIT_ASSERT ( p_fvterm.getPrintArea() == vwin );
     p_fvterm.p_setPrintArea (test_vwin_area);
@@ -1960,7 +1960,7 @@ void FVTermTest::FVTermChildAreaPrintTest()
 
   // Create the virtual window for the p_fvterm object
   finalcut::FRect geometry {finalcut::FPoint{34, 1}, finalcut::FSize{12, 12}};
-  p_fvterm.p_createArea (geometry, vwin);
+  vwin = p_fvterm.p_createArea (geometry);
 
   // Create a child print area
   finalcut::FVTerm::FTermArea* child_print_area{nullptr};
@@ -1968,7 +1968,7 @@ void FVTermTest::FVTermChildAreaPrintTest()
   std::size_t h = 2;
   finalcut::FRect child_geometry{};
   child_geometry.setRect (0, 0, w, h);
-  p_fvterm.p_createArea (child_geometry, child_print_area);
+  child_print_area = p_fvterm.p_createArea (child_geometry);
   CPPUNIT_ASSERT ( ! p_fvterm.p_hasChildPrintArea() );
   CPPUNIT_ASSERT ( p_fvterm.p_getChildPrintArea() == nullptr );
   p_fvterm.p_setChildPrintArea (child_print_area);
@@ -2087,7 +2087,7 @@ void FVTermTest::FVTermChildAreaPrintTest()
   finalcut::FVTerm::FTermArea* test_vterm_area{};
   auto vterm_geometry = finalcut::FRect( finalcut::FPoint{0, 0}
                                        , finalcut::FSize{std::size_t(vterm->width), std::size_t(vterm->height)} );
-  p_fvterm.p_createArea (vterm_geometry, test_vterm_area);
+  test_vterm_area = p_fvterm.p_createArea (vterm_geometry);
 
   // Check the virtual terminal
   //                                .--------------- line repetitions
@@ -2121,7 +2121,7 @@ void FVTermTest::FVTermScrollTest()
 
   // Create the virtual window for the p_fvterm object
   finalcut::FRect geometry {finalcut::FPoint{0, 0}, finalcut::FSize{5, 5}};
-  p_fvterm.p_createArea (geometry, vwin);
+  vwin = p_fvterm.p_createArea (geometry);
 
   p_fvterm.print() << finalcut::FPoint{1, 1}
                    << "1111122222333334444455555";
@@ -2129,7 +2129,7 @@ void FVTermTest::FVTermScrollTest()
   // Create a vwin comparison area
   finalcut::FVTerm::FTermArea* test_vwin_area{};
   auto vwin_geometry = finalcut::FRect( finalcut::FPoint{0, 0}, finalcut::FSize{5, 5} );
-  p_fvterm.p_createArea (vwin_geometry, test_vwin_area);
+  test_vwin_area = p_fvterm.p_createArea (vwin_geometry);
 
   finalcut::FChar one_char =
   {
@@ -2277,7 +2277,7 @@ void FVTermTest::FVTermScrollTest()
   // Create a vdesktop comparison area
   finalcut::FVTerm::FTermArea* test_vdesktop{};
   auto vdesktop_geometry = finalcut::FRect( finalcut::FPoint{0, 0}, finalcut::FSize{80, 24} );
-  p_fvterm.p_createArea (vdesktop_geometry, test_vdesktop);
+  test_vdesktop = p_fvterm.p_createArea (vdesktop_geometry);
 
   test::printOnArea (test_vdesktop, { { 5, { {80, space_char} } },
                                       { 1, { {80, one_char} } },
@@ -2371,10 +2371,10 @@ void FVTermTest::FVTermOverlappingWindowsTest()
   finalcut::FRect geometry_2 {finalcut::FPoint{8, 0}, finalcut::FSize{6, 3}};
   finalcut::FRect geometry_3 {finalcut::FPoint{16, 0}, finalcut::FSize{6, 3}};
   finalcut::FRect geometry_4 {finalcut::FPoint{24, 0}, finalcut::FSize{6, 3}};
-  p_fvterm_1.p_createArea (geometry_1, vwin_1);
-  p_fvterm_2.p_createArea (geometry_2, vwin_2);
-  p_fvterm_3.p_createArea (geometry_3, vwin_3);
-  p_fvterm_4.p_createArea (geometry_4, vwin_4);
+  vwin_1 = p_fvterm_1.p_createArea (geometry_1);
+  vwin_2 = p_fvterm_2.p_createArea (geometry_2);
+  vwin_3 = p_fvterm_3.p_createArea (geometry_3);
+  vwin_4 = p_fvterm_4.p_createArea (geometry_4);
 
   CPPUNIT_ASSERT ( p_fvterm_1.getWindowList()->empty() );
   finalcut::FVTerm::getWindowList()->push_back(&p_fvterm_1);
@@ -2428,7 +2428,7 @@ void FVTermTest::FVTermOverlappingWindowsTest()
   // Create a comparison area
   finalcut::FVTerm::FTermArea* test_area{};
   auto geometry = finalcut::FRect( finalcut::FPoint{0, 0}, finalcut::FSize{80, 24} );
-  p_fvterm_1.p_createArea (geometry, test_area);
+  test_area = p_fvterm_1.p_createArea (geometry);
 
   finalcut::FChar bg_char =
   {
@@ -2661,7 +2661,7 @@ void FVTermTest::getFVTermAreaTest()
 
   // Create the virtual windows for the p_fvterm objects
   finalcut::FRect geometry {finalcut::FPoint{0, 0}, finalcut::FSize{80, 24}};
-  p_fvterm.p_createArea (geometry, vwin);
+  vwin = p_fvterm.p_createArea (geometry);
 
   p_fvterm.print() << finalcut::FPoint{1, 1}
                    << finalcut::FColorPair {finalcut::FColor::Black, finalcut::FColor::White};
@@ -2705,8 +2705,8 @@ void FVTermTest::getFVTermAreaTest()
   finalcut::FVTerm::FTermArea* vwin_area{};
   finalcut::FVTerm::FTermArea* test_vwin_area{};
   auto vwin_geometry = finalcut::FRect( finalcut::FPoint{0, 0}, finalcut::FSize{6, 6} );
-  p_fvterm.p_createArea (vwin_geometry, vwin_area);
-  p_fvterm.p_createArea (vwin_geometry, test_vwin_area);
+  vwin_area = p_fvterm.p_createArea (vwin_geometry);
+  test_vwin_area = p_fvterm.p_createArea (vwin_geometry);
 
   finalcut::FChar bg_char =
   {
