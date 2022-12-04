@@ -351,13 +351,12 @@ void PictureSpaceWindow::draw()
   auto pict_size = xmp_image.getSize();
   pict_size.setHeight(pict_size.getHeight() / 2);
   finalcut::FRect planet_geometry(fc::FPoint(0, 0), pict_size);
-  FTermArea* planet{nullptr};
-  planet = createArea (planet_geometry);
+  std::shared_ptr<FTermArea> planet(createArea (planet_geometry));
   setColor(fc::FColor::Black, fc::FColor::Black);
-  clearArea(planet);
+  clearArea(planet.get());
   planet->setCursorPos (1, 1);
   planet->print(xmp_image.getTermBuffer());
-  copyArea (getVWin(), fc::FPoint(10, 10), planet);
+  copyArea (getVWin(), fc::FPoint(10, 10), planet.get());
 }
 
 

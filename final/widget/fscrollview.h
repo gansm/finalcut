@@ -177,6 +177,7 @@ class FScrollView : public FWidget
 
     // Methods
     void init();
+    void createViewport (const FSize&) noexcept;
     void drawText (const FString&, std::size_t);
     void directFocus();
     void mapKeyFunctions();
@@ -195,18 +196,18 @@ class FScrollView : public FWidget
     void cb_hbarChange (const FWidget*);
 
     // Data members
-    FRect          scroll_geometry{1, 1, 1, 1};
-    FRect          viewport_geometry{};
-    FTermArea*     viewport{nullptr};  // virtual scroll content
-    FString        text{};
-    FScrollbarPtr  vbar{nullptr};
-    FScrollbarPtr  hbar{nullptr};
-    KeyMap         key_map{};
-    uInt8          nf_offset{0};
-    bool           use_own_print_area{false};
-    bool           update_scrollbar{true};
-    ScrollBarMode  v_mode{ScrollBarMode::Auto};  // fc:Auto, fc::Hidden or fc::Scroll
-    ScrollBarMode  h_mode{ScrollBarMode::Auto};
+    FRect                      scroll_geometry{1, 1, 1, 1};
+    FRect                      viewport_geometry{};
+    std::unique_ptr<FTermArea> viewport{};  // virtual scroll content
+    FString                    text{};
+    FScrollbarPtr              vbar{nullptr};
+    FScrollbarPtr              hbar{nullptr};
+    KeyMap                     key_map{};
+    uInt8                      nf_offset{0};
+    bool                       use_own_print_area{false};
+    bool                       update_scrollbar{true};
+    ScrollBarMode              v_mode{ScrollBarMode::Auto};  // fc:Auto, fc::Hidden or fc::Scroll
+    ScrollBarMode              h_mode{ScrollBarMode::Auto};
 };
 
 // FScrollView inline functions

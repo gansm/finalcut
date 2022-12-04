@@ -48,9 +48,7 @@ FScrollView::FScrollView (FWidget* parent)
 //----------------------------------------------------------------------
 FScrollView::~FScrollView()  // destructor
 {
-  removeArea (viewport);
-  viewport = nullptr;
-  setChildPrintArea (viewport);
+  setChildPrintArea (viewport.get());
 }
 
 
@@ -67,13 +65,13 @@ void FScrollView::setScrollWidth (std::size_t width)
   if ( viewport )
   {
     scroll_geometry.setWidth (width);
-    resizeArea (scroll_geometry, viewport);
+    resizeArea (scroll_geometry, viewport.get());
 
     addPreprocessingHandler
     (
       F_PREPROC_HANDLER (this, &FScrollView::copy2area)
     );
-    setChildPrintArea (viewport);
+    setChildPrintArea (viewport.get());
   }
 
   hbar->setMaximum (int(width - getViewportWidth()));
@@ -96,12 +94,12 @@ void FScrollView::setScrollHeight (std::size_t height)
   if ( viewport )
   {
     scroll_geometry.setHeight (height);
-    resizeArea (scroll_geometry, viewport);
+    resizeArea (scroll_geometry, viewport.get());
     addPreprocessingHandler
     (
       F_PREPROC_HANDLER (this, &FScrollView::copy2area)
     );
-    setChildPrintArea (viewport);
+    setChildPrintArea (viewport.get());
   }
 
   vbar->setMaximum (int(height - getViewportHeight()));
@@ -130,12 +128,12 @@ void FScrollView::setScrollSize (const FSize& size)
   if ( viewport )
   {
     scroll_geometry.setSize (width, height);
-    resizeArea (scroll_geometry, viewport);
+    resizeArea (scroll_geometry, viewport.get());
     addPreprocessingHandler
     (
       F_PREPROC_HANDLER (this, &FScrollView::copy2area)
     );
-    setChildPrintArea (viewport);
+    setChildPrintArea (viewport.get());
   }
 
   const auto xoffset_end = int(getScrollWidth() - getViewportWidth());
@@ -337,7 +335,7 @@ void FScrollView::setVerticalScrollBarMode (ScrollBarMode mode)
 void FScrollView::clearArea (wchar_t fillchar)
 {
   if ( viewport )
-    clearArea (viewport, fillchar);
+    clearArea (viewport.get(), fillchar);
 }
 
 //----------------------------------------------------------------------
@@ -655,11 +653,11 @@ auto FScrollView::getPrintArea() -> FVTerm::FTermArea*
   {
     setChildPrintArea (nullptr);
     auto area = FWidget::getPrintArea();
-    setChildPrintArea (viewport);
+    setChildPrintArea (viewport.get());
     return area;
   }
 
-  return viewport;
+  return viewport.get();
 }
 
 //----------------------------------------------------------------------
@@ -745,19 +743,18 @@ void FScrollView::copy2area()
 
   for (auto y{0}; y < y_end; y++)  // line loop
   {
-    const int v_line_len = viewport->width;
-    const int a_line_len = printarea->width + printarea->right_shadow;
     // viewport character
-    const auto& vc = viewport->data[(dy + y) * v_line_len + dx];
+    const auto& vc = viewport->getFChar(dx, dy + y);
     // area character
-    auto& ac = printarea->data[(ay + y) * a_line_len + ax];
+    auto& ac = printarea->getFChar(ax, ay + y);
     std::memcpy (&ac, &vc, sizeof(FChar) * unsigned(x_end));
+    auto& line_changes = printarea->changes[std::size_t(ay + y)];
 
-    if ( int(printarea->changes[ay + y].xmin) > ax )
-      printarea->changes[ay + y].xmin = uInt(ax);
+    if ( int(line_changes.xmin) > ax )
+      line_changes.xmin = uInt(ax);
 
-    if ( int(printarea->changes[ay + y].xmax) < ax + x_end - 1 )
-      printarea->changes[ay + y].xmax = uInt(ax + x_end - 1);
+    if ( int(line_changes.xmax) < ax + x_end - 1 )
+      line_changes.xmax = uInt(ax + x_end - 1);
   }
 
   setViewportCursor();
@@ -800,24 +797,32 @@ void FScrollView::init()
   FScrollView::resetColors();
   FScrollView::setGeometry (FPoint{1, 1}, FSize{4, 4});
   setMinimumSize (FSize{4, 4});
-  std::size_t w = getViewportWidth();
-  std::size_t h = getViewportHeight();
+  std::size_t width = getViewportWidth();
+  std::size_t height = getViewportHeight();
 
-  if ( w < 1 )
-    w = 1;
+  if ( width < 1 )
+    width = 1;
 
-  if ( h < 1 )
-    h = 1;
+  if ( height < 1 )
+    height = 1;
 
-  scroll_geometry.setRect (0, 0, w, h);
-  viewport = createArea (scroll_geometry);
+  createViewport({width, height});
   addPreprocessingHandler
   (
     F_PREPROC_HANDLER (this, &FScrollView::copy2area)
   );
 
   if ( viewport )
-    setChildPrintArea (viewport);
+    setChildPrintArea (viewport.get());
+}
+
+//----------------------------------------------------------------------
+inline void FScrollView::createViewport (const FSize& size) noexcept
+{
+  // Initialization of the scrollable viewport
+
+  scroll_geometry.setSize(size);
+  viewport = createArea(scroll_geometry);
 }
 
 //----------------------------------------------------------------------

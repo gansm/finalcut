@@ -47,9 +47,7 @@ FWindow::FWindow(FWidget* parent)
   : FWidget{parent}
 {
   setWindowWidget();
-  FRect geometry {getTermGeometry()};
-  geometry.move(-1, -1);
-  getVWin() = createArea (geometry, getShadow());
+  createVWin();
   addWindow (this);
 }
 
@@ -73,8 +71,6 @@ FWindow::~FWindow()  // destructor
     const auto& t_geometry = getTermGeometryWithShadow();
     restoreVTerm (t_geometry);
   }
-
-  removeArea (getVWin());
 }
 
 
@@ -804,6 +800,16 @@ void FWindow::onWindowLowered (FEvent*)
 
 
 // private methods of FWindow
+//----------------------------------------------------------------------
+inline void FWindow::createVWin() noexcept
+{
+  // Initialize virtual window
+
+  FRect geometry {getTermGeometry()};
+  geometry.move(-1, -1);
+  setVWin(createArea(geometry, getShadow()));
+}
+
 //----------------------------------------------------------------------
 inline auto FWindow::getVisibleTermGeometry (FWindow* win) -> FRect
 {

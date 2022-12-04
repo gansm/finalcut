@@ -62,13 +62,13 @@ class FStyle
     { return attribute; }
 
     // Mutators
-    inline void setStyle (const FStyle& style)
+    inline void setStyle (const FStyle& style) noexcept
     { attribute = style.attribute; }
 
     inline void setStyle (Style attr) noexcept
     { attribute = attr; }
 
-    auto toFAttribute() const -> FAttribute
+    auto toFAttribute() const noexcept -> FAttribute
     {
       FAttribute fattr{};
       fattr.bit.bold               = (attribute & Style::Bold) != Style::None;

@@ -351,7 +351,7 @@ class MouseDraw final : public finalcut::FDialog
     void cb_colorChanged();
 
     // Data members
-    FTermArea*   canvas{nullptr};
+    std::shared_ptr<FTermArea> canvas{};
     ColorChooser c_chooser{this};
     Brushes      brush{this};
 };
@@ -387,12 +387,12 @@ void MouseDraw::setGeometry ( const FPoint& p, const FSize& s, bool adjust)
   const FSize no_shadow{0, 0};
   const int old_w = canvas->width;
   const int old_h = canvas->height;
-  resizeArea (scroll_geometry, no_shadow, canvas);
+  resizeArea (scroll_geometry, no_shadow, canvas.get());
 
   if ( old_w != canvas->width || old_h != canvas->height )
   {
     setColor(getForegroundColor(), getBackgroundColor());
-    clearArea (canvas, ' ');
+    clearArea (canvas.get(), ' ');
   }
 }
 
@@ -523,7 +523,7 @@ void MouseDraw::drawCanvas()
 void MouseDraw::createCanvas()
 {
   finalcut::FRect scroll_geometry{0, 0, 1, 1};
-  canvas = createArea (scroll_geometry);
+  canvas = std::move(createArea(scroll_geometry));
   adjustSize();
 }
 

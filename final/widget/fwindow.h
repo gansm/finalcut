@@ -170,6 +170,7 @@ class FWindow : public FWidget
 
   private:
     // Methods
+    void         createVWin() noexcept;
     static auto  getVisibleTermGeometry (FWindow*) -> FRect;
     static void  deleteFromAlwaysOnTopList (const FWidget*);
     static void  processAlwaysOnTop();

@@ -609,7 +609,7 @@ auto FTermOutput::canClearToEOL (uInt xmin, uInt y) const -> bool
   // => clear to end of line
 
   const auto& ce = TCAP(t_clr_eol);
-  const auto& min_char = vterm->getFChar(xmin, y);
+  const auto& min_char = vterm->getFChar(int(xmin), int(y));
 
   if ( ! ce || min_char.ch[0] != L' ' )
     return false;
@@ -620,7 +620,7 @@ auto FTermOutput::canClearToEOL (uInt xmin, uInt y) const -> bool
 
   for (uInt x = xmin + 1; x < uInt(vterm->width); x++)
   {
-    const auto& ch = vterm->getFChar(x, y);
+    const auto& ch = vterm->getFChar(int(x), int(y));
 
     if ( min_char == ch )
       beginning_whitespace++;
@@ -640,7 +640,7 @@ auto FTermOutput::canClearLeadingWS (uInt& xmin, uInt y) const -> bool
   // => clear from xmin to beginning of line
 
   const auto& cb = TCAP(t_clr_bol);
-  const auto& first_char = vterm->getFChar(0, y);
+  const auto& first_char = vterm->getFChar(0, int(y));
 
   if ( ! cb || first_char.ch[0] != L' ' )
     return false;
@@ -651,7 +651,7 @@ auto FTermOutput::canClearLeadingWS (uInt& xmin, uInt y) const -> bool
 
   for (uInt x{1}; x < uInt(vterm->width); x++)
   {
-    const auto& ch = vterm->getFChar(x, y);
+    const auto& ch = vterm->getFChar(int(x), int(y));
 
     if ( first_char == ch )
       leading_whitespace++;
@@ -676,7 +676,7 @@ auto FTermOutput::canClearTrailingWS (uInt& xmax, uInt y) const -> bool
   // => clear from xmax to end of line
 
   const auto& ce = TCAP(t_clr_eol);
-  const auto& last_char = vterm->getFChar(vterm->width - 1, y);
+  const auto& last_char = vterm->getFChar(vterm->width - 1, int(y));
 
   if ( ! ce || last_char.ch[0] != L' ' )
     return false;
@@ -687,7 +687,7 @@ auto FTermOutput::canClearTrailingWS (uInt& xmax, uInt y) const -> bool
 
   for (uInt x = uInt(vterm->width) - 1; x >  0 ; x--)
   {
-    const auto& ch = vterm->getFChar(x, y);
+    const auto& ch = vterm->getFChar(int(x), int(y));
 
     if ( last_char == ch )
       trailing_whitespace++;
@@ -710,7 +710,7 @@ auto FTermOutput::skipUnchangedCharacters (uInt& x, uInt xmax, uInt y) -> bool
 {
   // Skip characters without changes if it is faster than redrawing
 
-  auto& print_char = vterm->getFChar(x, y);
+  auto& print_char = vterm->getFChar(int(x), int(y));
   print_char.attr.bit.printed = true;
 
   if ( ! print_char.attr.bit.no_changes )
@@ -720,7 +720,7 @@ auto FTermOutput::skipUnchangedCharacters (uInt& x, uInt xmax, uInt y) -> bool
 
   for (uInt i = x + 1; i <= xmax; i++)
   {
-    const auto& ch = vterm->getFChar(i, y);
+    const auto& ch = vterm->getFChar(int(i), int(y));
 
     if ( ch.attr.bit.no_changes )
       count++;
@@ -748,7 +748,7 @@ void FTermOutput::printRange ( uInt xmin, uInt xmax, uInt y
 
   while ( x <= xmax )
   {
-    auto& print_char = vterm->getFChar(x, y);
+    auto& print_char = vterm->getFChar(int(x), int(y));
     print_char.attr.bit.printed = true;
     replaceNonPrintableFullwidth (x, print_char);
 
@@ -833,7 +833,7 @@ void FTermOutput::printCharacter ( uInt& x, uInt y, bool min_and_not_max
 void FTermOutput::printFullWidthCharacter ( uInt& x, uInt y
                                           , FChar& print_char )
 {
-  auto& next_char = vterm->getFChar(x + 1, y);
+  auto& next_char = vterm->getFChar(int(x + 1), int(y));
 
   if ( print_char.attr.byte[0] == next_char.attr.byte[0]
     && print_char.attr.byte[1] == next_char.attr.byte[1]
@@ -871,7 +871,7 @@ void FTermOutput::printFullWidthCharacter ( uInt& x, uInt y
 void FTermOutput::printFullWidthPaddingCharacter ( uInt& x, uInt y
                                                  , FChar& print_char)
 {
-  auto& prev_char = vterm->getFChar(x - 1, y);
+  auto& prev_char = vterm->getFChar(int(x - 1), int(y));
 
   if ( print_char.attr.byte[0] == prev_char.attr.byte[0]
     && print_char.attr.byte[1] == prev_char.attr.byte[1]
@@ -915,7 +915,7 @@ void FTermOutput::printFullWidthPaddingCharacter ( uInt& x, uInt y
 void FTermOutput::printHalfCovertFullWidthCharacter ( uInt& x, uInt y
                                                     , FChar& print_char )
 {
-  auto& prev_char = vterm->getFChar(x - 1, y);
+  auto& prev_char = vterm->getFChar(int(x - 1), int(y));
 
   if ( isFullWidthChar(prev_char) && ! isFullWidthPaddingChar(print_char) )
   {
@@ -965,7 +965,7 @@ auto FTermOutput::eraseCharacters ( uInt& x, uInt xmax, uInt y
   // Erase a number of characters to draw simple whitespaces
 
   const auto& ec = TCAP(t_erase_chars);
-  auto& print_char = vterm->getFChar(x, y);
+  auto& print_char = vterm->getFChar(int(x), int(y));
 
   if ( ! ec || print_char.ch[0] != L' ' )
     return PrintState::NothingPrinted;
@@ -974,7 +974,7 @@ auto FTermOutput::eraseCharacters ( uInt& x, uInt xmax, uInt y
 
   for (uInt i = x + 1; i <= xmax; i++)
   {
-    const auto& ch = vterm->getFChar(i, y);
+    const auto& ch = vterm->getFChar(int(i), int(y));
 
     if ( print_char == ch )
       whitespace++;
@@ -1029,7 +1029,7 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y) -> PrintState
   // Repeat one character n-fold
 
   const auto& rp = TCAP(t_repeat_char);
-  auto& print_char = vterm->getFChar(x, y);
+  auto& print_char = vterm->getFChar(int(x), int(y));
 
   if ( ! rp )
     return PrintState::NothingPrinted;
@@ -1038,7 +1038,7 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y) -> PrintState
 
   for (uInt i = x + 1; i <= xmax; i++)
   {
-    const auto& ch = vterm->getFChar(i, y);
+    const auto& ch = vterm->getFChar(int(i), int(y));
 
     if ( print_char == ch )
       repetitions++;
@@ -1153,7 +1153,7 @@ auto FTermOutput::updateTerminalLine (uInt y) -> bool
 
     if ( is_eol_clean )
     {
-      auto& min_char = vterm->getFChar(xmin, y);
+      auto& min_char = vterm->getFChar(int(xmin), int(y));
       appendAttributes (min_char);
       appendOutputBuffer (FTermControl{ce});
       markAsPrinted (xmin, uInt(vterm->width - 1), y);
@@ -1163,7 +1163,7 @@ auto FTermOutput::updateTerminalLine (uInt y) -> bool
       if ( draw_leading_ws )
       {
         const auto& cb = TCAP(t_clr_bol);
-        auto& first_char = vterm->getFChar(0, y);
+        auto& first_char = vterm->getFChar(int(0), int(y));
         appendAttributes (first_char);
         appendOutputBuffer (FTermControl{cb});
         markAsPrinted (0, xmin, y);
@@ -1173,7 +1173,7 @@ auto FTermOutput::updateTerminalLine (uInt y) -> bool
 
       if ( draw_trailing_ws )
       {
-        auto& last_char = vterm->getFChar(vterm->width - 1, y);
+        auto& last_char = vterm->getFChar(vterm->width - 1, int(y));
         appendAttributes (last_char);
         appendOutputBuffer (FTermControl{ce});
         markAsPrinted (xmax + 1, uInt(vterm->width - 1), y);
@@ -1257,7 +1257,7 @@ inline void FTermOutput::markAsPrinted (uInt x, uInt y) const
 {
   // Marks a character as printed
 
-  vterm->getFChar(x, y).attr.bit.printed = true;
+  vterm->getFChar(int(x), int(y)).attr.bit.printed = true;
 }
 
 //----------------------------------------------------------------------
@@ -1266,7 +1266,7 @@ inline void FTermOutput::markAsPrinted (uInt from, uInt to, uInt y) const
   // Marks characters in the specified range [from .. to] as printed
 
   for (uInt x = from; x <= to; x++)
-    vterm->getFChar(x, y).attr.bit.printed = true;
+    vterm->getFChar(int(x), int(y)).attr.bit.printed = true;
 }
 
 //----------------------------------------------------------------------

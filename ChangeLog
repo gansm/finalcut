@@ -1,3 +1,6 @@
+2022-12-04  Markus Gans  <guru.mail@muenster.de>
+	* Virtual windows now use C++ smart pointers for data storage
+
 2022-11-26  Markus Gans  <guru.mail@muenster.de>
 	* Removed the deprecated method isNull() in FString
 
