@@ -523,7 +523,7 @@ void MouseDraw::drawCanvas()
 void MouseDraw::createCanvas()
 {
   finalcut::FRect scroll_geometry{0, 0, 1, 1};
-  canvas = std::move(createArea(scroll_geometry));
+  canvas = createArea(scroll_geometry);
   adjustSize();
 }
 

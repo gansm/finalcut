@@ -263,7 +263,7 @@ auto FVTerm::print (const FString& string) noexcept -> int
 }
 
 //----------------------------------------------------------------------
-auto FVTerm::print (FTermArea* area, const FString& string) noexcept -> int
+auto FVTerm::print (FTermArea* area, const FString& string) const noexcept -> int
 {
   if ( ! area || string.isEmpty() )
     return -1;
@@ -284,7 +284,7 @@ auto FVTerm::print (const std::vector<FChar>& term_string) noexcept -> int
 }
 
 //----------------------------------------------------------------------
-auto FVTerm::print (FTermArea* area, const std::vector<FChar>& term_string) noexcept -> int
+auto FVTerm::print (FTermArea* area, const std::vector<FChar>& term_string) const noexcept -> int
 {
   if ( ! area || term_string.empty() )
     return -1;
@@ -304,7 +304,7 @@ auto FVTerm::print (const FVTermBuffer& vterm_buffer) noexcept -> int
 }
 
 //----------------------------------------------------------------------
-auto FVTerm::print (FTermArea* area, const FVTermBuffer& vterm_buffer) noexcept -> int
+auto FVTerm::print (FTermArea* area, const FVTermBuffer& vterm_buffer) const noexcept -> int
 {
   int len{0};
 
@@ -330,7 +330,7 @@ auto FVTerm::print (wchar_t c) noexcept -> int
 }
 
 //----------------------------------------------------------------------
-auto FVTerm::print (FTermArea* area, wchar_t c) noexcept -> int
+auto FVTerm::print (FTermArea* area, wchar_t c) const noexcept -> int
 {
   if ( ! area )
     return -1;
@@ -1581,7 +1581,7 @@ void FVTerm::initSettings()
 }
 
 //----------------------------------------------------------------------
-void FVTerm::finish()
+void FVTerm::finish() const
 {
   // Resetting the terminal
   setNormal();

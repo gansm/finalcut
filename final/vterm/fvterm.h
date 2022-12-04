@@ -204,13 +204,13 @@ class FVTerm : public FVTermAttribute
     template <typename... Args>
     auto  printf (const FString&, Args&&...) noexcept -> int;
     auto  print (const FString&) noexcept -> int;
-    auto  print (FTermArea*, const FString&) noexcept -> int;
+    auto  print (FTermArea*, const FString&) const noexcept -> int;
     auto  print (const std::vector<FChar>&) noexcept -> int;
-    auto  print (FTermArea*, const std::vector<FChar>&) noexcept -> int;
+    auto  print (FTermArea*, const std::vector<FChar>&) const noexcept -> int;
     auto  print (const FVTermBuffer&) noexcept -> int;
-    auto  print (FTermArea*, const FVTermBuffer&) noexcept -> int;
+    auto  print (FTermArea*, const FVTermBuffer&) const noexcept -> int;
     auto  print (wchar_t) noexcept -> int;
-    auto  print (FTermArea*, wchar_t) noexcept -> int;
+    auto  print (FTermArea*, wchar_t) const noexcept -> int;
     auto  print (const FChar&) noexcept -> int;
     auto  print (FTermArea*, const FChar&) const noexcept -> int;
     virtual void print (const FPoint&);
@@ -306,7 +306,7 @@ class FVTerm : public FVTermAttribute
     template <typename FOutputType>
     void  init();
     void  initSettings();
-    void  finish();
+    void  finish() const;
     void  putAreaLine (const FChar&, FChar&, std::size_t) const;
     void  putAreaCharacter ( const FPoint&, const FTermArea*
                            , const FChar&, FChar& ) const;
