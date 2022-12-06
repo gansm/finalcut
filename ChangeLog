@@ -1,3 +1,7 @@
+2022-12-06  Markus Gans  <guru.mail@muenster.de>
+	* FLineEdit can set the alignment (left, center, or right) for 
+	  the content of the entry
+
 2022-12-04  Markus Gans  <guru.mail@muenster.de>
 	* Virtual windows now use C++ smart pointers for data storage
 

@@ -135,6 +135,17 @@ auto FLineEdit::setReadOnly (bool enable) -> bool
 }
 
 //----------------------------------------------------------------------
+void FLineEdit::setAlignment (Align align) noexcept
+{
+  if ( align != Align::Left
+    && align != Align::Center
+    && align != Align::Right )
+    alignment = Align::Left;
+  else
+    alignment = align;
+}
+
+//----------------------------------------------------------------------
 void FLineEdit::setText (const FString& txt)
 {
   if ( txt )
@@ -659,6 +670,24 @@ auto FLineEdit::hasHotkey() const -> bool
 }
 
 //----------------------------------------------------------------------
+auto FLineEdit::getAlignOffset (const std::size_t length) const -> std::size_t
+{
+  const std::size_t width(getWidth());
+
+  if ( alignment == Align::Center )
+  {
+    if ( length < width )
+      return (width - length) / 2;
+  }
+  else if ( alignment == Align::Right && length < width )
+  {
+    return width - length;
+  }
+
+  return 0;
+}
+
+//----------------------------------------------------------------------
 void FLineEdit::draw()
 {
   if ( cursor_pos == NOT_SET && ! isReadOnly() )
@@ -713,10 +742,11 @@ void FLineEdit::drawInputField()
     return std::size_t(0);
   }();
 
-  while ( x_pos + 1 < getWidth() )
+  if ( x_pos + align_offset + 1 < getWidth() )
   {
-    print (' ');
-    x_pos++;
+    const auto trailing_spaces = getWidth() - x_pos - align_offset;
+    print(FString{trailing_spaces, L' '});
+    x_pos =+ trailing_spaces;
   }
 
   if ( isActiveFocus && FVTerm::getFOutput()->getMaxColor() < 16 )
@@ -733,7 +763,8 @@ void FLineEdit::drawInputField()
 
   // set the cursor to the insert pos.
   const auto cursor_pos_column = getCursorColumnPos();
-  const auto xpos = int(2 + cursor_pos_column
+  const auto xpos = int(2 + align_offset
+                          + cursor_pos_column
                           - text_offset_column
                           + char_width_offset);
   setCursorPos ({xpos, 1});
@@ -746,11 +777,15 @@ inline auto FLineEdit::printTextField() -> std::size_t
   const std::size_t start_column = text_offset_column - char_width_offset + 1;
   const FString& show_text = \
       getColumnSubString(print_text, start_column, getWidth() - 2);
+  x_pos = getColumnWidth(show_text);
+  align_offset = getAlignOffset(x_pos + 2);
+
+  if ( align_offset > 0 )
+    print (FString{align_offset, L' '});  // leading spaces
 
   if ( ! show_text.isEmpty() )
     print (show_text);
 
-  x_pos = getColumnWidth(show_text);
   return text_offset_column;
 }
 
@@ -759,11 +794,15 @@ inline auto FLineEdit::printPassword() -> std::size_t
 {
   const std::size_t text_offset_column = text_offset;
   const FString show_text{print_text.mid(1 + text_offset, getWidth() - 2)};
+  x_pos = show_text.getLength();
+  align_offset = getAlignOffset(x_pos + 2);
+
+  if ( align_offset > 0 )
+    print (FString{align_offset, ' '});  // leading spaces
 
   if ( ! show_text.isEmpty() )
-    print() << FString{show_text.getLength(), UniChar::Bullet};  // •
+    print() << FString{x_pos, UniChar::Bullet};  // •
 
-  x_pos = show_text.getLength();
   return text_offset_column;
 }
 
@@ -856,7 +895,7 @@ inline auto FLineEdit::endPosToOffset (std::size_t pos) -> offsetPair
 //----------------------------------------------------------------------
 auto FLineEdit::clickPosToCursorPos (std::size_t pos) -> std::size_t
 {
-  std::size_t click_width{0};
+  std::size_t click_width{align_offset};
   std::size_t idx = text_offset;
   const std::size_t len = print_text.getLength();
   pos -= char_width_offset;

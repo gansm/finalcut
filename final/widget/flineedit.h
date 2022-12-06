@@ -111,6 +111,7 @@ class FLineEdit : public FWidget
 
     // Accessors
     auto getClassName() const -> FString override;
+    auto getAlignment() const noexcept -> Align;
     auto getText() const -> FString;
     auto getMaxLength() const noexcept -> std::size_t;
     auto getCursorPosition() const noexcept -> std::size_t;
@@ -118,6 +119,7 @@ class FLineEdit : public FWidget
     auto getLabelOrientation() const -> LabelOrientation;
 
     // Mutators
+    void setAlignment (Align) noexcept;
     void setText (const FString&);
     void inputText (const FString&);
     void deletesCharacter();
@@ -185,6 +187,7 @@ class FLineEdit : public FWidget
     void init();
     void mapKeyFunctions();
     auto hasHotkey() const -> bool;
+    auto getAlignOffset (const std::size_t) const -> std::size_t;
     void draw() override;
     void drawInputField();
     auto printTextField() -> std::size_t;
@@ -223,6 +226,8 @@ class FLineEdit : public FWidget
     bool             scroll_timer{false};
     bool             insert_mode{true};
     bool             read_only{false};
+    Align            alignment{Align::Left};
+    std::size_t      align_offset{0};
     std::size_t      cursor_pos{NOT_SET};
     std::size_t      text_offset{0};
     std::size_t      char_width_offset{0};
@@ -245,6 +250,10 @@ inline auto FLineEdit::operator << (const typeT& s) -> FLineEdit&
 //----------------------------------------------------------------------
 inline auto FLineEdit::getClassName() const -> FString
 { return "FLineEdit"; }
+
+//----------------------------------------------------------------------
+inline auto FLineEdit::getAlignment() const noexcept -> Align
+{ return alignment; }
 
 //----------------------------------------------------------------------
 inline auto FLineEdit::getText() const -> FString
