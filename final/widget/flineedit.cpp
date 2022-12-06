@@ -746,7 +746,6 @@ void FLineEdit::drawInputField()
   {
     const auto trailing_spaces = getWidth() - x_pos - align_offset;
     print(FString{trailing_spaces, L' '});
-    x_pos =+ trailing_spaces;
   }
 
   if ( isActiveFocus && FVTerm::getFOutput()->getMaxColor() < 16 )
