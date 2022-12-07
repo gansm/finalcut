@@ -744,7 +744,7 @@ void FLineEdit::drawInputField()
 
   if ( x_pos + align_offset + 1 < getWidth() )
   {
-    const auto trailing_spaces = getWidth() - x_pos - align_offset;
+    const auto trailing_spaces = getWidth() - x_pos - align_offset - 1;
     print(FString{trailing_spaces, L' '});
   }
 

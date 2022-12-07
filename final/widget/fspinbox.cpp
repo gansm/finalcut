@@ -299,6 +299,7 @@ void FSpinBox::init()
   label->setBackgroundColor (parent_widget->getBackgroundColor());
   input_field.setLabelAssociatedWidget(this);
   input_field.setInputFilter("[-[:digit:]]");  // Only numbers
+  input_field.setAlignment (Align::Right);
   input_field.unsetShadow();
   input_field << value;
   input_field.addCallback
