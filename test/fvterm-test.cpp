@@ -1704,6 +1704,8 @@ void FVTermTest::FVTermPrintTest()
     p_fvterm.print(vwin, term_string);
     CPPUNIT_ASSERT ( p_fvterm.print(nullptr, L'⌚') == -1 );
     p_fvterm.print(fchar);
+    CPPUNIT_ASSERT ( vwin->changes[4].xmin == 0 );
+    CPPUNIT_ASSERT ( vwin->changes[4].xmax == 1 );  // padding char or '.'
 
     if ( enc == finalcut::Encoding::VT100 )
     {

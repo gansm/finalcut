@@ -48,6 +48,7 @@
 #endif
 
 #include <limits>
+#include <tuple>
 #include <unordered_map>
 #include <utility>
 
@@ -190,8 +191,8 @@ class FLineEdit : public FWidget
     auto getAlignOffset (const std::size_t) const -> std::size_t;
     void draw() override;
     void drawInputField();
-    auto printTextField() -> std::size_t;
-    auto printPassword() -> std::size_t;
+    auto printTextField() -> std::tuple<std::size_t, std::size_t>;
+    auto printPassword() -> std::tuple<std::size_t, std::size_t>;
     auto getCursorColumnPos() const -> std::size_t;
     auto getPasswordText() const -> FString;
     auto isPasswordField() const -> bool;
@@ -231,7 +232,6 @@ class FLineEdit : public FWidget
     std::size_t      cursor_pos{NOT_SET};
     std::size_t      text_offset{0};
     std::size_t      char_width_offset{0};
-    std::size_t      x_pos{0};
     std::size_t      max_length{std::numeric_limits<std::size_t>::max()};
 };
 

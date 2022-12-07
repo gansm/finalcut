@@ -1811,19 +1811,21 @@ inline auto FVTerm::printCharacterOnCoordinate ( FTermArea* area
 
   if ( ac.attr.bit.char_width == 0 )
   {
-    const auto char_width = getColumnWidth(ac.ch[0]);
+    const auto new_char_width = getColumnWidth(ac.ch[0]);
 
-    if ( char_width == 0 )
+    if ( new_char_width == 0 )
       return 0;
 
-    addColumnWidth(ac, char_width);  // Add column width
+    addColumnWidth(ac, new_char_width);  // Add column width
   }
+
+  const auto padding = int(ac.attr.bit.char_width == 2);
 
   if ( ax < int(line_changes.xmin) )
     line_changes.xmin = uInt(ax);
 
-  if ( ax > int(line_changes.xmax) )
-    line_changes.xmax = uInt(ax);
+  if ( ax + padding > int(line_changes.xmax) )
+    line_changes.xmax = uInt(ax + padding);
 
   return ac.attr.bit.char_width;
 }

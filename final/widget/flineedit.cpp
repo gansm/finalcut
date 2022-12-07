@@ -725,7 +725,9 @@ void FLineEdit::drawInputField()
   if ( isActiveFocus && FVTerm::getFOutput()->getMaxColor() < 16 )
     setBold();
 
-  const std::size_t text_offset_column = [this] ()
+  std::size_t text_offset_column;
+  std::size_t x_pos;
+  std::tie(text_offset_column, x_pos) = [this] ()
   {
     switch ( input_type )
     {
@@ -739,7 +741,7 @@ void FLineEdit::drawInputField()
         break;
     }
 
-    return std::size_t(0);
+    return std::make_tuple (std::size_t(0), std::size_t(0));
   }();
 
   if ( x_pos + align_offset + 1 < getWidth() )
@@ -770,13 +772,13 @@ void FLineEdit::drawInputField()
 }
 
 //----------------------------------------------------------------------
-inline auto FLineEdit::printTextField() -> std::size_t
+inline auto FLineEdit::printTextField() -> std::tuple<std::size_t, std::size_t>
 {
   const std::size_t text_offset_column = getColumnWidth (print_text, text_offset);
   const std::size_t start_column = text_offset_column - char_width_offset + 1;
   const FString& show_text = \
       getColumnSubString(print_text, start_column, getWidth() - 2);
-  x_pos = getColumnWidth(show_text);
+  const auto x_pos = getColumnWidth(show_text);
   align_offset = getAlignOffset(x_pos + 2);
 
   if ( align_offset > 0 )
@@ -785,15 +787,15 @@ inline auto FLineEdit::printTextField() -> std::size_t
   if ( ! show_text.isEmpty() )
     print (show_text);
 
-  return text_offset_column;
+  return std::make_tuple (text_offset_column, x_pos);
 }
 
 //----------------------------------------------------------------------
-inline auto FLineEdit::printPassword() -> std::size_t
+inline auto FLineEdit::printPassword() -> std::tuple<std::size_t, std::size_t>
 {
   const std::size_t text_offset_column = text_offset;
   const FString show_text{print_text.mid(1 + text_offset, getWidth() - 2)};
-  x_pos = show_text.getLength();
+  const auto x_pos = show_text.getLength();
   align_offset = getAlignOffset(x_pos + 2);
 
   if ( align_offset > 0 )
@@ -802,7 +804,7 @@ inline auto FLineEdit::printPassword() -> std::size_t
   if ( ! show_text.isEmpty() )
     print() << FString{x_pos, UniChar::Bullet};  // •
 
-  return text_offset_column;
+  return std::make_tuple (text_offset_column, x_pos);
 }
 
 //----------------------------------------------------------------------

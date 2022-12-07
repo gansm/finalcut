@@ -1,3 +1,7 @@
+2022-12-08  Markus Gans  <guru.mail@muenster.de>
+	* Fixed the changes on printing of the last full-width character 
+	  in a virtual window
+
 2022-12-06  Markus Gans  <guru.mail@muenster.de>
 	* FLineEdit can set the alignment (left, center, or right) for 
 	  the content of the entry
