@@ -2659,6 +2659,31 @@ void FTermFunctionsTest::combiningCharacterTest()
   CPPUNIT_ASSERT ( finalcut::searchRightCharBegin(combining, 3) == NOT_FOUND );
   CPPUNIT_ASSERT ( finalcut::searchRightCharBegin(combining, 4) == NOT_FOUND );
 
+  // Leading whitespace
+  combining = L" " + combining;
+  CPPUNIT_ASSERT ( finalcut::getCharLength(combining, 0) == 1 );
+  CPPUNIT_ASSERT ( finalcut::getCharLength(combining, 1) == -1 );
+  CPPUNIT_ASSERT ( finalcut::getCharLength(combining, 2) == -1 );
+  CPPUNIT_ASSERT ( finalcut::getCharLength(combining, 3) == 1 );
+  CPPUNIT_ASSERT ( finalcut::getCharLength(combining, 4) == 1 );
+  CPPUNIT_ASSERT ( finalcut::getPrevCharLength(combining, 0) == -1 );
+  CPPUNIT_ASSERT ( finalcut::getPrevCharLength(combining, 1) == -1 );
+  CPPUNIT_ASSERT ( finalcut::getPrevCharLength(combining, 2) == -1 );
+  CPPUNIT_ASSERT ( finalcut::getPrevCharLength(combining, 3) == 3 );
+  CPPUNIT_ASSERT ( finalcut::getPrevCharLength(combining, 4) == 1 );
+  CPPUNIT_ASSERT ( finalcut::searchLeftCharBegin(combining, 0) == NOT_FOUND );
+  CPPUNIT_ASSERT ( finalcut::searchLeftCharBegin(combining, 1) == 0 );
+  CPPUNIT_ASSERT ( finalcut::searchLeftCharBegin(combining, 2) == 0 );
+  CPPUNIT_ASSERT ( finalcut::searchLeftCharBegin(combining, 3) == 0 );
+  CPPUNIT_ASSERT ( finalcut::searchLeftCharBegin(combining, 4) == 3 );
+  CPPUNIT_ASSERT ( finalcut::searchLeftCharBegin(combining, 5) == 4 );
+  CPPUNIT_ASSERT ( finalcut::searchRightCharBegin(combining, 0) == 3 );
+  CPPUNIT_ASSERT ( finalcut::searchRightCharBegin(combining, 1) == 3 );
+  CPPUNIT_ASSERT ( finalcut::searchRightCharBegin(combining, 2) == 3 );
+  CPPUNIT_ASSERT ( finalcut::searchRightCharBegin(combining, 3) == 4 );
+  CPPUNIT_ASSERT ( finalcut::searchRightCharBegin(combining, 4) == NOT_FOUND );
+  CPPUNIT_ASSERT ( finalcut::searchRightCharBegin(combining, 5) == NOT_FOUND );
+
   // Characters with separate and with combined diacritical marks
   combining = L"u\U00000300=\U000000f9";  // u ` = ù
   CPPUNIT_ASSERT ( finalcut::getCharLength(combining, 0) == 2 );

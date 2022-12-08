@@ -688,7 +688,7 @@ auto getPrevCharLength (const FString& string, std::size_t pos) -> int
   const auto& ch = string[n];
   std::size_t char_width = getColumnWidth(ch);
 
-  if ( (char_width == 0 || n == 0 || n >= len) && ! isWhitespace(ch) )
+  if ( n == 0 || n >= len || (char_width == 0 && ! isWhitespace(ch)) )
     return -1;
 
   do
