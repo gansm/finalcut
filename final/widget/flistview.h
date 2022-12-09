@@ -224,7 +224,7 @@ class FListViewIterator
     // Constructor
     FListViewIterator () = default;
     ~FListViewIterator () = default;
-    FListViewIterator (Iterator);
+    explicit FListViewIterator (Iterator);
     FListViewIterator (const FListViewIterator&) = default;
     FListViewIterator (FListViewIterator&& i) noexcept
       : iter_path{std::move(i.iter_path)}
@@ -235,9 +235,10 @@ class FListViewIterator
     // Overloaded operators
     auto operator = (const FListViewIterator&) -> FListViewIterator& = default;
     auto operator = (FListViewIterator&&) noexcept -> FListViewIterator& = default;
-    auto operator ++ () -> FListViewIterator&;     // prefix
+    auto operator = (Iterator iter) -> FListViewIterator&;
+    auto operator ++ () -> FListViewIterator&;    // prefix
     auto operator ++ (int) -> FListViewIterator;  // postfix
-    auto operator -- () -> FListViewIterator&;     // prefix
+    auto operator -- () -> FListViewIterator&;    // prefix
     auto operator -- (int) -> FListViewIterator;  // postfix
     auto operator += (int) -> FListViewIterator&;
     auto operator -= (int) -> FListViewIterator&;
@@ -245,6 +246,8 @@ class FListViewIterator
     auto operator -> () const -> FObject*;
     auto operator == (const FListViewIterator&) const -> bool;
     auto operator != (const FListViewIterator&) const -> bool;
+    auto operator == (Iterator) const -> bool;
+    auto operator != (Iterator) const -> bool;
 
     // Accessor
     auto getClassName() const -> FString;
@@ -281,6 +284,14 @@ inline auto FListViewIterator::operator == (const FListViewIterator& rhs) const 
 //----------------------------------------------------------------------
 inline auto FListViewIterator::operator != (const FListViewIterator& rhs) const -> bool
 { return node != rhs.node; }
+
+//----------------------------------------------------------------------
+inline auto FListViewIterator::operator == (Iterator iter) const -> bool
+{ return node == iter; }
+
+//----------------------------------------------------------------------
+inline auto FListViewIterator::operator != (Iterator iter) const -> bool
+{ return node != iter; }
 
 //----------------------------------------------------------------------
 inline auto FListViewIterator::getClassName() const -> FString

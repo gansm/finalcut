@@ -53,7 +53,7 @@ FVTermBuffer::FVTermBuffer()  // constructor
 auto FVTermBuffer::toString() const -> FString
 {
   std::wstring wide_string{};
-  wide_string.reserve(data.size());
+  checkCapacity(wide_string, data.size());
   std::for_each ( data.cbegin()
                 , data.cend()
                 , [&wide_string] (const auto& fchar)
@@ -73,7 +73,7 @@ auto FVTermBuffer::toString() const -> FString
 //----------------------------------------------------------------------
 auto FVTermBuffer::print (const FString& string) -> int
 {
-  checkCapacity(data.size() + string.getLength());
+  checkCapacity(data, data.size() + string.getLength());
   const auto last = string.cend();
   auto cbegin = string.cbegin();
   auto iter = cbegin;

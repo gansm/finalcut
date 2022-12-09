@@ -120,7 +120,6 @@ class FVTermBuffer
     auto print () -> FVTermBuffer&;
 
   private:
-    void checkCapacity (std::size_t);
     void add ( FString::const_iterator&
              , const FString::const_iterator&
              , int& );
@@ -133,6 +132,9 @@ class FVTermBuffer
                             , const FVTermBuffer& ) -> FCharVector&;
 };
 
+// non-member function forward declarations
+template<typename T>
+constexpr void checkCapacity (T&, std::size_t) noexcept;
 
 // FVTermBuffer inline functions
 //----------------------------------------------------------------------
@@ -140,7 +142,7 @@ template <typename Iterator>
 inline FVTermBuffer::FVTermBuffer(Iterator first, Iterator last)
 {
   assert ( first < last );
-  checkCapacity (std::size_t(last - first));
+  checkCapacity (data, std::size_t(last - first));
   data.assign(first, last);
 }
 
@@ -320,9 +322,10 @@ inline auto FVTermBuffer::print() -> FVTermBuffer&
 { return *this; }
 
 //----------------------------------------------------------------------
-inline void FVTermBuffer::checkCapacity (std::size_t size)
+template<typename T>
+constexpr void checkCapacity (T& buffer, std::size_t size) noexcept
 {
-  if ( size <= data.capacity() )
+  if ( size <= buffer.capacity() )
     return;
 
   const auto new_size = [&size] ()
@@ -330,7 +333,7 @@ inline void FVTermBuffer::checkCapacity (std::size_t size)
     return std::size_t(std::pow(2, std::ceil(std::log(size) / std::log(2.0))));
   }();
 
-  data.reserve(new_size);
+  buffer.reserve(new_size);
 }
 
 }  // namespace finalcut

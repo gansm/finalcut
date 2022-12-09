@@ -489,6 +489,15 @@ FListViewIterator::FListViewIterator (Iterator iter)
 
 // FListViewIterator operators
 //----------------------------------------------------------------------
+auto FListViewIterator::operator = (Iterator iter) -> FListViewIterator&
+{
+  iter_path = IteratorStack{};
+  node = iter;
+  position = 0;
+  return *this;
+}
+
+//----------------------------------------------------------------------
 auto FListViewIterator::operator ++ () -> FListViewIterator&  // prefix
 {
   nextElement(node);

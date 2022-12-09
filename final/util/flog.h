@@ -61,7 +61,7 @@ class FLog : public std::stringbuf
   public:
     // Using-declaration
     using FLogPrint = std::function<void(const std::string&)>;
-    using IOManip = std::ostream& (*)(std::ostream&);
+    using IOManip = decltype(std::endl<char, std::char_traits<char>>);
 
     // Enumerations
     enum class LogLevel
