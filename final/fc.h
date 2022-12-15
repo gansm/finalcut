@@ -80,7 +80,7 @@ enum class Event
 };
 
 // Internal character encoding
-enum class Encoding : std::size_t
+enum class Encoding
 {
   UTF8,
   VT100,

@@ -42,6 +42,18 @@
 namespace finalcut
 {
 
+namespace internal
+{
+
+struct var
+{
+  static Encoding terminal_encoding;
+};
+
+Encoding var::terminal_encoding{Encoding::Unknown};
+
+}  // namespace internal
+
 // static class attributes
 FVTerm::FTermArea* FTermOutput::vterm{nullptr};
 FTermData*         FTermOutput::fterm_data{nullptr};
@@ -94,7 +106,7 @@ auto FTermOutput::getMaxColor() const -> int
 //----------------------------------------------------------------------
 auto FTermOutput::getEncoding() const -> Encoding
 {
-  return fterm_data->getTerminalEncoding();
+  return internal::var::terminal_encoding;
 }
 
 //----------------------------------------------------------------------
@@ -265,6 +277,7 @@ void FTermOutput::setNonBlockingRead (bool enable)
 void FTermOutput::initTerminal (FVTerm::FTermArea* virtual_terminal)
 {
   getFTerm().initTerminal();
+  internal::var::terminal_encoding = fterm_data->getTerminalEncoding();
 
   // Redefine the color palette
   redefineColorPalette();
@@ -589,7 +602,7 @@ void FTermOutput::init_combined_character()
     return;
 #endif
 
-  if ( getEncoding() != Encoding::UTF8
+  if ( internal::var::terminal_encoding != Encoding::UTF8
     || fterm_data->isTermType(FTermType::cygwin) )
     return;
 
@@ -1293,7 +1306,7 @@ inline void FTermOutput::charsetChanges (FChar& next_char) const
                , next_char.encoded_char.begin()
                , [] (const wchar_t& ch) { return ch != L'\0'; } );
 
-  if ( getEncoding() == Encoding::UTF8 )
+  if ( internal::var::terminal_encoding == Encoding::UTF8 )
     return;
 
   const auto& ch = next_char.ch[0];
@@ -1312,9 +1325,9 @@ inline void FTermOutput::charsetChanges (FChar& next_char) const
 
   first_enc_char = ch_enc;
 
-  if ( getEncoding() == Encoding::VT100 )
+  if ( internal::var::terminal_encoding == Encoding::VT100 )
     next_char.attr.bit.alt_charset = true;
-  else if ( getEncoding() == Encoding::PC )
+  else if ( internal::var::terminal_encoding == Encoding::PC )
   {
     next_char.attr.bit.pc_charset = true;
 
@@ -1361,7 +1374,7 @@ inline void FTermOutput::appendChar (FChar& next_char)
   {
     if ( ch != L'\0')
     {
-      if ( getEncoding() == Encoding::UTF8 )
+      if ( internal::var::terminal_encoding == Encoding::UTF8 )
         appendOutputBuffer (unicode_to_utf8(ch));
       else
         appendOutputBuffer (std::string(1, char(uChar(ch))));

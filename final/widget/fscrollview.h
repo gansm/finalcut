@@ -87,6 +87,7 @@ class FScrollView : public FWidget
 
     // Disable move assignment operator (=)
     auto operator = (FScrollView&&) noexcept -> FScrollView& = delete;
+
     // Accessors
     auto getClassName() const -> FString override;
     auto getText() & -> FString&;
@@ -184,9 +185,7 @@ class FScrollView : public FWidget
     void changeSize (const FSize&, bool);
     void calculateScrollbarPos() const;
     template <typename Callback>
-    void initScrollbar ( FScrollbarPtr&
-                       , Orientation
-                       , Callback );
+    void initScrollbar (FScrollbarPtr&, Orientation, Callback);
     void setHorizontalScrollBarVisibility() const;
     void setVerticalScrollBarVisibility() const;
     void setViewportCursor();

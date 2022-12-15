@@ -40,11 +40,22 @@
 namespace finalcut
 {
 
+namespace internal
+{
+
+struct var
+{
+  static bool fvterm_initialized;  // Global init state
+};
+
+bool var::fvterm_initialized{false};
+
+}  // namespace internal
+
 // static class attributes
 bool                 FVTerm::draw_completed{false};
 bool                 FVTerm::no_terminal_updates{false};
 bool                 FVTerm::force_terminal_update{false};
-const FVTerm*        FVTerm::init_object{nullptr};
 FVTerm::FTermArea*   FVTerm::active_area{nullptr};
 FChar                FVTerm::s_ch{};
 FChar                FVTerm::i_ch{};
@@ -66,7 +77,7 @@ FVTerm::FVTerm()
 //----------------------------------------------------------------------
 FVTerm::~FVTerm()  // destructor
 {
-  if ( init_object == this )
+  if ( getGlobalFVTermInstance() == this )
     finish();
 }
 
@@ -82,6 +93,7 @@ auto FVTerm::operator << (const FVTermBuffer& vterm_buffer) noexcept -> FVTerm&
 //----------------------------------------------------------------------
 auto FVTerm::getFOutput() -> std::shared_ptr<FOutput>
 {
+  static const auto& init_object = getGlobalFVTermInstance();
   return init_object->foutput;
 }
 
@@ -127,6 +139,7 @@ void FVTerm::setCursor (const FPoint& pos) noexcept
 //----------------------------------------------------------------------
 void FVTerm::setNonBlockingRead (bool enable)
 {
+  static const auto& init_object = getGlobalFVTermInstance();
   init_object->foutput->setNonBlockingRead (enable);
 }
 
@@ -424,6 +437,7 @@ auto FVTerm::createArea (const FRect& box, const FSize& shadow) -> std::unique_p
 
   auto area = std::make_unique<FTermArea>();
   area->setOwner<FVTerm*>(this);
+  area->encoding = foutput->getEncoding();
   resizeArea (box, shadow, area.get());
   return area;
 }
@@ -1038,10 +1052,54 @@ void FVTerm::initTerminal()
 {
   foutput->initTerminal(vterm.get());
   tabstop = foutput->getTabstop();
+  resetAreaEncoding();
 }
 
 
 // private methods of FVTerm
+//----------------------------------------------------------------------
+void FVTerm::setGlobalFVTermInstance (FVTerm* ptr)
+{
+  getGlobalFVTermInstance() = ptr;
+}
+
+//----------------------------------------------------------------------
+auto FVTerm::getGlobalFVTermInstance() -> FVTerm*&
+{
+  static FVTerm* init_object{nullptr};
+  return init_object;
+}
+
+//----------------------------------------------------------------------
+auto FVTerm::isInitialized() -> bool
+{
+  return internal::var::fvterm_initialized;
+}
+
+//----------------------------------------------------------------------
+void FVTerm::resetAreaEncoding()
+{
+  auto encoding = foutput->getEncoding();
+  vdesktop->encoding = encoding;
+  vterm->encoding = encoding;
+
+  for (auto&& window : *window_list)
+  {
+    auto v_win = window->getVWin();
+
+    if ( ! v_win )
+      continue;
+
+    v_win->encoding = encoding;
+
+    for (auto&& pcall : v_win->preproc_list)
+    {
+      if ( pcall->instance && pcall->instance->child_print_area )
+        pcall->instance->child_print_area->encoding = encoding;
+    }
+  }
+}
+
 //----------------------------------------------------------------------
 inline void FVTerm::resetTextAreaToDefault ( FTermArea* area
                                            , const FSize& size ) const noexcept
@@ -1578,6 +1636,9 @@ void FVTerm::initSettings()
   // Create virtual desktop area
   createVDesktop (term_size);
   active_area = vdesktop.get();
+
+  // fvterm is now initialized
+  internal::var::fvterm_initialized = true;
 }
 
 //----------------------------------------------------------------------
@@ -1587,7 +1648,8 @@ void FVTerm::finish() const
   setNormal();
   foutput->finishTerminal();
   forceTerminalUpdate();
-  init_object = nullptr;
+  internal::var::fvterm_initialized = false;
+  setGlobalFVTermInstance(nullptr);
 }
 
 //----------------------------------------------------------------------
@@ -1842,7 +1904,7 @@ inline void FVTerm::printPaddingCharacter (FTermArea* area, const FChar& term_ch
   // Copy character to padding character
   std::memcpy (&pc, &term_char, sizeof(pc));
 
-  if ( foutput->getEncoding() == Encoding::UTF8 )
+  if ( area->encoding == Encoding::UTF8 )
   {
     pc.ch = {{ L'\0' }};
     pc.attr.bit.fullwidth_padding = true;

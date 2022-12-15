@@ -1,3 +1,6 @@
+2022-12-14  Markus Gans  <guru.mail@muenster.de>
+	* Simplifies the request of the encoding
+
 2022-12-08  Markus Gans  <guru.mail@muenster.de>
 	* Fixed the changes on printing of the last full-width character 
 	  in a virtual window

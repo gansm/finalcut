@@ -274,6 +274,10 @@ class FVTerm : public FVTermAttribute
     };
 
     // Methods
+    static void setGlobalFVTermInstance (FVTerm* ptr);
+    static auto getGlobalFVTermInstance() -> FVTerm*&;
+    static auto isInitialized() -> bool;
+    void  resetAreaEncoding();
     void  resetTextAreaToDefault ( FTermArea*
                                  , const FSize&) const noexcept;
     auto  resizeTextArea (FTermArea*, std::size_t, std::size_t ) const -> bool;
@@ -329,7 +333,6 @@ class FVTerm : public FVTermAttribute
     std::unique_ptr<FTermArea>   vwin{};                     // virtual window
     std::shared_ptr<FOutput>     foutput{};                  // Terminal output class
     std::shared_ptr<FVTermList>  window_list{};              // List of all window owner
-    static const FVTerm*         init_object;                // Global FVTerm object
     std::shared_ptr<FTermArea>   vterm{};                    // virtual terminal
     std::shared_ptr<FTermArea>   vdesktop{};                 // virtual desktop
     static FTermArea*            active_area;                // active area
@@ -444,6 +447,7 @@ struct FVTerm::FTermArea  // define virtual terminal character properties
   int             input_cursor_x{-1};  // X-position input cursor
   int             input_cursor_y{-1};  // Y-position input cursor
   int             layer{-1};
+  Encoding        encoding{Encoding::Unknown};
   bool            input_cursor_visible{false};
   bool            has_changes{false};
   bool            visible{false};
@@ -633,7 +637,8 @@ inline auto FVTerm::getVWin() const noexcept -> const FTermArea*
 //----------------------------------------------------------------------
 inline auto FVTerm::getWindowList() -> FVTermList*
 {
-  return (init_object && init_object->window_list)
+  static const auto& init_object = getGlobalFVTermInstance();
+  return (isInitialized() && init_object->window_list)
         ? init_object->window_list.get()
         : nullptr;
 }
@@ -660,7 +665,7 @@ inline auto FVTerm::areTerminalUpdatesPaused() noexcept -> bool
 
 //----------------------------------------------------------------------
 inline auto FVTerm::hasPendingTerminalUpdates() noexcept -> bool
-{ return hasPendingUpdates(init_object->vterm.get()); }
+{ return hasPendingUpdates(getGlobalFVTermInstance()->vterm.get()); }
 
 //----------------------------------------------------------------------
 template <typename... Args>
@@ -740,9 +745,9 @@ inline auto FVTerm::getLayer (FVTerm& obj) noexcept -> int
 template <typename FOutputType>
 inline void FVTerm::init()
 {
-  if ( ! init_object )
+  if ( ! isInitialized() )
   {
-    init_object   = this;
+    setGlobalFVTermInstance(this);
     b1_trans_mask = getByte1TransMask();
     foutput       = std::make_shared<FOutputType>(*this);
     window_list   = std::make_shared<FVTermList>();
@@ -750,6 +755,7 @@ inline void FVTerm::init()
   }
   else
   {
+    static const auto& init_object = getGlobalFVTermInstance();
     foutput     = std::shared_ptr<FOutput>(init_object->foutput);
     window_list = std::shared_ptr<FVTermList>(init_object->window_list);
     vterm       = std::shared_ptr<FTermArea>(init_object->vterm);
