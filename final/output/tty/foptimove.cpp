@@ -616,8 +616,8 @@ auto FOptiMove::capDurationToLength (int duration) const -> int
 
 //----------------------------------------------------------------------
 auto FOptiMove::repeatedAppend ( std::string& dst
-                              , const Capability& o
-                              , int count ) const -> int
+                               , const Capability& o
+                               , int count ) const -> int
 {
   const auto& src_len = stringLength(o.cap);
   const auto& dst_len = dst.length();
@@ -759,52 +759,110 @@ inline auto FOptiMove::horizontalMove (std::string& hmove, int from_x, int to_x)
 }
 
 //----------------------------------------------------------------------
+inline void FOptiMove::moveWithParmRightCursor ( std::string& hmove
+                                               , int& htime, int num ) const
+{
+  // Use parameterized cursor right capability
+  hmove = FTermcap::encodeParameter(F_parm_right_cursor.cap, num);
+  htime = F_parm_right_cursor.duration;
+}
+
+//----------------------------------------------------------------------
+inline void FOptiMove::moveWithRightCursor ( std::string& hmove, int& htime
+                                           , int num, int from_x, int to_x ) const
+{
+  std::string str{};
+  int htime_r{0};
+
+  // try to use tab
+  if ( tabstop > 0 && F_tab.cap )
+  {
+    int pos = from_x;
+
+    for ( int tab_pos = pos + tabstop - (pos % tabstop)
+        ; tab_pos <= to_x
+        ; tab_pos += tabstop )
+    {
+      htime_r += repeatedAppend (str, F_tab, 1);
+
+      if ( htime_r >= LONG_DURATION )
+        break;
+
+      pos = tab_pos;
+    }
+
+    num = to_x - pos;
+  }
+
+  // Use the cursor right capability
+  htime_r += repeatedAppend (str, F_cursor_right, num);
+
+  if ( htime_r < htime )
+  {
+    hmove = str;
+    htime = htime_r;
+  }
+}
+
+//----------------------------------------------------------------------
 inline void FOptiMove::rightMove ( std::string& hmove, int& htime
                                  , int from_x, int to_x ) const
 {
   int num = to_x - from_x;
 
+  if ( num == 0 )
+    return;
+
   if ( F_parm_right_cursor.cap && F_parm_right_cursor.duration < htime )
-  {
-    hmove = FTermcap::encodeParameter(F_parm_right_cursor.cap, num);
-    htime = F_parm_right_cursor.duration;
-  }
+    moveWithParmRightCursor (hmove, htime, num);
 
   if ( F_cursor_right.cap )
+    moveWithRightCursor (hmove, htime, num, from_x, to_x);
+}
+
+//----------------------------------------------------------------------
+inline void FOptiMove::moveWithParmLeftCursor ( std::string& hmove
+                                              , int& htime, int num ) const
+{
+  // Use parameterized cursor right capability
+  hmove = FTermcap::encodeParameter(F_parm_left_cursor.cap, num);
+  htime = F_parm_left_cursor.duration;
+}
+
+//----------------------------------------------------------------------
+inline void FOptiMove::moveWithLeftCursor ( std::string& hmove, int& htime
+                                          , int num, int from_x, int to_x ) const
+{
+  std::string str{};
+  int htime_l{0};
+
+  // try to use backward tab
+  if ( tabstop > 0 && F_back_tab.cap )
   {
-    std::string str{};
-    int htime_r{0};
+    int pos = from_x;
 
-    // try to use tab
-    if ( tabstop > 0 && F_tab.cap )
+    for ( int tab_pos = ( pos > 0 ) ? ((pos - 1) / tabstop) * tabstop : -1
+        ; tab_pos >= to_x
+        ; tab_pos = ( pos > 0 ) ? ((pos - 1) / tabstop) * tabstop : -1)
     {
-      int pos = from_x;
+      htime_l += repeatedAppend (str, F_back_tab, 1);
 
-      while ( true )
-      {
-        const int tab_pos = pos + tabstop - (pos % tabstop);
+      if ( htime_l >= LONG_DURATION )
+        break;
 
-        if ( tab_pos > to_x )
-          break;
-
-        htime_r += repeatedAppend (str, F_tab, 1);
-
-        if ( htime_r >= LONG_DURATION )
-          break;
-
-        pos = tab_pos;
-      }
-
-      num = to_x - pos;
+      pos = tab_pos;
     }
 
-    htime_r += repeatedAppend (str, F_cursor_right, num);
+    num = pos - to_x;
+  }
 
-    if ( htime_r < htime )
-    {
-      hmove = str;
-      htime = htime_r;
-    }
+  // Use the cursor left capability
+  htime_l += repeatedAppend (str, F_cursor_left, num);
+
+  if ( htime_l < htime )
+  {
+    hmove = str;
+    htime = htime_l;
   }
 }
 
@@ -814,48 +872,14 @@ inline void FOptiMove::leftMove ( std::string& hmove, int& htime
 {
   int num = from_x - to_x;
 
+  if ( num == 0 )
+    return;
+
   if ( F_parm_left_cursor.cap && F_parm_left_cursor.duration < htime )
-  {
-    hmove = FTermcap::encodeParameter(F_parm_left_cursor.cap, num);
-    htime = F_parm_left_cursor.duration;
-  }
+    moveWithParmLeftCursor (hmove, htime, num);
 
   if ( F_cursor_left.cap )
-  {
-    std::string str{};
-    int htime_l{0};
-
-    // try to use backward tab
-    if ( tabstop > 0 && F_back_tab.cap )
-    {
-      int pos = from_x;
-
-      while ( true )
-      {
-        const int tab_pos = ( pos > 0 ) ? ((pos - 1) / tabstop) * tabstop : -1;
-
-        if ( tab_pos < to_x )
-          break;
-
-        htime_l += repeatedAppend (str, F_back_tab, 1);
-
-        if ( htime_l >= LONG_DURATION )
-          break;
-
-        pos = tab_pos;
-      }
-
-      num = pos - to_x;
-    }
-
-    htime_l += repeatedAppend (str, F_cursor_left, num);
-
-    if ( htime_l < htime )
-    {
-      hmove = str;
-      htime = htime_l;
-    }
-  }
+    moveWithLeftCursor (hmove, htime, num, from_x, to_x);
 }
 
 //----------------------------------------------------------------------

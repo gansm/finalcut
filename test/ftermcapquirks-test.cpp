@@ -674,7 +674,8 @@ void FTermcapQuirksTest::sunTest()
 
   for (std::size_t i = 0; fkey_cap_table[i].tname[0] != 0; i++)
   {
-    if ( std::strncmp(fkey_cap_table[i].tname, "K2", 2) == 0 )  // center of keypad
+    if ( std::strncmp(fkey_cap_table[i].tname, "K2", 2) == 0
+      && finalcut::stringLength(fkey_cap_table[i].tname) == 2 )  // center of keypad
       CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "218z" );
 
@@ -687,7 +688,8 @@ void FTermcapQuirksTest::sunTest()
       CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , "\177" );
 
-    if ( std::strncmp(fkey_cap_table[i].tname, "@7", 2) == 0 )  // end key
+    if ( std::strncmp(fkey_cap_table[i].tname, "@7", 2) == 0
+      && finalcut::stringLength(fkey_cap_table[i].tname) == 2 )  // end key
       CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "220z" );
 
@@ -702,12 +704,13 @@ void FTermcapQuirksTest::sunTest()
     if ( std::strncmp(fkey_cap_table[i].tname, "F2", 2) == 0 )  // F12 function key
       CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "235z" );
-
-    if ( std::strncmp(fkey_cap_table[i].tname, "kh", 2) == 0 )  // home key
+    if ( std::strncmp(fkey_cap_table[i].tname, "kh", 2) == 0
+      && finalcut::stringLength(fkey_cap_table[i].tname) == 2 )  // home key
       CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "214z" );
 
-    if ( std::strncmp(fkey_cap_table[i].tname, "kI", 2) == 0 )  // insert-character key
+    if ( std::strncmp(fkey_cap_table[i].tname, "kI", 2) == 0
+      && finalcut::stringLength(fkey_cap_table[i].tname) == 2 )  // insert-character key
       CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "247z" );
 
@@ -731,7 +734,8 @@ void FTermcapQuirksTest::sunTest()
       CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "195z" );
 
-    if ( std::strncmp(fkey_cap_table[i].tname, "K2", 2) == 0 )  // center of keypad
+    if ( std::strncmp(fkey_cap_table[i].tname, "K2", 2) == 0
+      && finalcut::stringLength(fkey_cap_table[i].tname) == 2 )  // center of keypad
       CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "218z" );
 

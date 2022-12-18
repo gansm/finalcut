@@ -1329,8 +1329,7 @@ void FDialog::restoreOverlaidWindows()
 
     if ( overlaid )
       putArea (win->getTermPos(), win->getVWin());
-
-    if ( getVWin() == win->getVWin() )
+    else if ( getVWin() == win->getVWin() )
       overlaid = true;
   }
 }

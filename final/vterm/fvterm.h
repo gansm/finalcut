@@ -250,7 +250,7 @@ class FVTerm : public FVTermAttribute
     void  getArea (const FRect&, FTermArea*) const noexcept;
     void  putArea (FTermArea*) const noexcept;
     void  putArea (const FPoint&, const FTermArea*) const noexcept;
-    void  copyArea (FTermArea*, const FPoint&, const FTermArea*) const noexcept;
+    void  copyArea (FTermArea*, const FPoint&, const FTermArea* const)  const noexcept;
     static auto  getLayer (FVTerm&) noexcept -> int;
     static void  determineWindowLayers() noexcept;
     void  scrollAreaForward (FTermArea*) const;
@@ -277,7 +277,7 @@ class FVTerm : public FVTermAttribute
     static void setGlobalFVTermInstance (FVTerm* ptr);
     static auto getGlobalFVTermInstance() -> FVTerm*&;
     static auto isInitialized() -> bool;
-    void  resetAreaEncoding();
+    void  resetAreaEncoding() const;
     void  resetTextAreaToDefault ( FTermArea*
                                  , const FSize&) const noexcept;
     auto  resizeTextArea (FTermArea*, std::size_t, std::size_t ) const -> bool;
@@ -301,6 +301,8 @@ class FVTerm : public FVTermAttribute
     void  clearChildAreaChanges (const FTermArea*) const;
     auto  isInsideArea (const FPoint&, const FTermArea*) const -> bool;
     auto  isTransparentInvisible (const FChar&) const -> bool;
+    auto  updateTransparency (const FChar&, const FChar&) const -> FChar&;
+    auto  updateInheritedBackground (const FChar&, const FChar&) const -> FChar&;
     auto  generateCharacter (const FPoint&) const -> FChar;
     auto  getCharacter ( CharacterType
                        , const FPoint&

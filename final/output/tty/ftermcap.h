@@ -139,9 +139,11 @@ class FTermcap final
     static void  termcapKeys();
     static auto  encodeParams ( const std::string&
                               , const std::array<int, 9>& ) -> std::string;
+    static auto  hasDelay (const std::string&) -> bool;
     static void  delayOutput (int);
-    static void  decimalPoint (string_iterator&, int&);
+    static auto  readNumber (string_iterator&, int, bool&) -> int;
     static void  readDigits (string_iterator&, int&);
+    static void  decimalPoint (string_iterator&, int&);
     static void  asteriskSlash (string_iterator&, int&, int, bool&);
 
     // Data member

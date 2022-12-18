@@ -171,7 +171,11 @@ class FOptiMove final
     void  downMove (std::string&, int&, int, int) const;
     void  upMove (std::string&, int&, int, int) const;
     auto  horizontalMove (std::string&, int, int) const -> int;
+    void  moveWithParmRightCursor (std::string&, int&, int) const;
+    void  moveWithRightCursor (std::string&, int&, int, int, int) const;
     void  rightMove (std::string&, int&, int, int) const;
+    void  moveWithParmLeftCursor (std::string&, int&, int) const;
+    void  moveWithLeftCursor (std::string&, int&, int, int, int) const;
     void  leftMove (std::string&, int&, int, int) const;
 
     auto  isWideMove (int, int, int, int) const -> bool;

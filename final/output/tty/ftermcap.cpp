@@ -147,10 +147,7 @@ auto FTermcap::paddingPrint (const std::string& string, int affcnt) -> Status
   if ( string.empty() || ! outc )
     return Status::Error;
 
-  bool has_delay = (TCAP(t_bell) && string == std::string(TCAP(t_bell)))
-                || (TCAP(t_flash_screen) && string == std::string(TCAP(t_flash_screen)))
-                || ( ! xon_xoff_flow_control && padding_baudrate
-                  && (baudrate >= padding_baudrate) );
+  bool has_delay = hasDelay(string);
   auto iter = string.cbegin();
 
   while ( iter != string.cend() )
@@ -170,26 +167,12 @@ auto FTermcap::paddingPrint (const std::string& string, int affcnt) -> Status
       }
       else
       {
-        ++iter;
-        const auto first_digit = iter;
+        const int number = readNumber(iter, affcnt, has_delay);
 
-        if ( ! std::isdigit(uChar(*iter)) && *iter != '.' )
+        if ( number == -1 )
         {
           outc(int('$'));
           outc(int('<'));
-          continue;
-        }
-
-        int number = 0;
-        readDigits (iter, number);
-        decimalPoint (iter, number);
-        asteriskSlash (iter, number, affcnt, has_delay);
-
-        if ( *iter != '>' )
-        {
-          outc(int('$'));
-          outc(int('<'));
-          iter = first_digit;
           continue;
         }
 
@@ -461,6 +444,39 @@ auto FTermcap::encodeParams ( const std::string& cap
                      , params[2], params[3], params[4], params[5]
                      , params[6], params[7], params[8] );
   return str ? str : std::string();
+}
+
+//----------------------------------------------------------------------
+inline auto  FTermcap::hasDelay (const std::string& string) -> bool
+{
+  return (TCAP(t_bell) && string == std::string(TCAP(t_bell)))
+      || (TCAP(t_flash_screen) && string == std::string(TCAP(t_flash_screen)))
+      || ( ! xon_xoff_flow_control && padding_baudrate
+        && (baudrate >= padding_baudrate) );
+}
+
+//----------------------------------------------------------------------
+inline auto FTermcap::readNumber ( string_iterator& iter, int affcnt
+                                 , bool& has_delay) -> int
+{
+  ++iter;
+  const auto first_digit = iter;
+
+  if ( ! std::isdigit(uChar(*iter)) && *iter != '.' )
+    return -1;
+
+  int number = 0;
+  readDigits(iter, number);
+  decimalPoint(iter, number);
+  asteriskSlash(iter, number, affcnt, has_delay);
+
+  if ( *iter != '>' )
+  {
+    iter = first_digit;
+    return -1;
+  }
+
+  return number;
 }
 
 //----------------------------------------------------------------------

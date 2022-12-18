@@ -630,15 +630,17 @@ auto FTermOutput::canClearToEOL (uInt xmin, uInt y) const -> bool
   uInt beginning_whitespace = 1;
   const auto& normal = FOptiAttr::isNormal(min_char);
   const auto& ut = FTermcap::background_color_erase;
+  int x = int(xmin) + 1;
+  auto* ch = &vterm->getFChar(x, int(y));
 
-  for (uInt x = xmin + 1; x < uInt(vterm->width); x++)
+  for (; x < vterm->width; x++)
   {
-    const auto& ch = vterm->getFChar(int(x), int(y));
-
-    if ( min_char == ch )
+    if ( min_char == *ch )
       beginning_whitespace++;
     else
       break;
+
+    ++ch;
   }
 
   return ( beginning_whitespace == uInt(vterm->width) - xmin
@@ -661,15 +663,17 @@ auto FTermOutput::canClearLeadingWS (uInt& xmin, uInt y) const -> bool
   uInt leading_whitespace = 1;
   const auto& normal = FOptiAttr::isNormal(first_char);
   const auto& ut = FTermcap::background_color_erase;
+  int x = 1;
+  auto* ch = &vterm->getFChar(x, int(y));
 
-  for (uInt x{1}; x < uInt(vterm->width); x++)
+  for (; x < vterm->width; x++)
   {
-    const auto& ch = vterm->getFChar(int(x), int(y));
-
-    if ( first_char == ch )
+    if ( first_char == *ch )
       leading_whitespace++;
     else
       break;
+
+    ++ch;
   }
 
   if ( leading_whitespace > xmin && (ut || normal)
@@ -697,15 +701,17 @@ auto FTermOutput::canClearTrailingWS (uInt& xmax, uInt y) const -> bool
   uInt trailing_whitespace = 1;
   const auto& normal = FOptiAttr::isNormal(last_char);
   const auto& ut = FTermcap::background_color_erase;
+  int x = vterm->width - 1;
+  auto* ch = &vterm->getFChar(x, int(y));
 
-  for (uInt x = uInt(vterm->width) - 1; x >  0 ; x--)
+  for (; x > 0 ; x--)
   {
-    const auto& ch = vterm->getFChar(int(x), int(y));
-
-    if ( last_char == ch )
+    if ( last_char == *ch )
       trailing_whitespace++;
     else
       break;
+
+    --ch;
   }
 
   if ( trailing_whitespace > uInt(vterm->width) - xmax && (ut || normal)
@@ -730,15 +736,17 @@ auto FTermOutput::skipUnchangedCharacters (uInt& x, uInt xmax, uInt y) -> bool
     return false;
 
   uInt count{1};
+  uInt i = x + 1;
+  auto* ch = &vterm->getFChar(int(i), int(y));
 
-  for (uInt i = x + 1; i <= xmax; i++)
+  for (; i <= xmax; i++)
   {
-    const auto& ch = vterm->getFChar(int(i), int(y));
-
-    if ( ch.attr.bit.no_changes )
+    if ( ch->attr.bit.no_changes )
       count++;
     else
       break;
+
+    ++ch;
   }
 
   if ( count > cursor_address_length )
@@ -758,12 +766,15 @@ void FTermOutput::printRange ( uInt xmin, uInt xmax, uInt y
   const auto& ec = TCAP(t_erase_chars);
   const auto& rp = TCAP(t_repeat_char);
   uInt x = xmin;
+  auto* min_char = &vterm->getFChar(int(x), int(y));
+  auto* print_char = min_char;
 
   while ( x <= xmax )
   {
-    auto& print_char = vterm->getFChar(int(x), int(y));
-    print_char.attr.bit.printed = true;
-    replaceNonPrintableFullwidth (x, print_char);
+    print_char = min_char + (x - xmin);
+    print_char->attr.bit.printed = true;
+
+    replaceNonPrintableFullwidth (x, *print_char);
 
     // skip character with no changes
     if ( skipUnchangedCharacters(x, xmax, y) )
@@ -773,7 +784,7 @@ void FTermOutput::printRange ( uInt xmin, uInt xmax, uInt y
     }
 
     // Erase character
-    if ( ec && print_char.ch[0] == L' ' )
+    if ( ec && print_char->ch[0] == L' ' )
     {
       if ( eraseCharacters(x, xmax, y, draw_trailing_ws) \
            == PrintState::LineCompletelyPrinted )
@@ -786,7 +797,7 @@ void FTermOutput::printRange ( uInt xmin, uInt xmax, uInt y
     else  // General character output
     {
       bool min_and_not_max( x == xmin && xmin != xmax );
-      printCharacter (x, y, min_and_not_max, print_char);
+      printCharacter (x, y, min_and_not_max, *print_char);
     }
 
     x++;
@@ -1112,25 +1123,24 @@ void FTermOutput::cursorWrap() const
 {
   // Wrap the cursor
 
-  if ( term_pos->getX() >= vterm->width )
+  if ( term_pos->getX() < vterm->width )
+    return;
+
+  if ( term_pos->getY() == vterm->height - 1 )
   {
-    if ( term_pos->getY() == vterm->height - 1 )
-      term_pos->x_ref()--;
-    else
-    {
-      if ( FTermcap::eat_nl_glitch )
-      {
-        term_pos->setPoint(-1, -1);
-      }
-      else if ( FTermcap::automatic_right_margin )
-      {
-        term_pos->setX(0);
-        term_pos->y_ref()++;
-      }
-      else
-        term_pos->x_ref()--;
-    }
+    term_pos->x_ref()--;
   }
+  else if ( FTermcap::eat_nl_glitch )
+  {
+      term_pos->setPoint(-1, -1);
+  }
+  else if ( FTermcap::automatic_right_margin )
+  {
+    term_pos->setX(0);
+    term_pos->y_ref()++;
+  }
+  else
+    term_pos->x_ref()--;
 }
 
 //----------------------------------------------------------------------
