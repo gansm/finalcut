@@ -473,6 +473,12 @@ class FListView : public FWidget
     void dragUp (MouseButton);
     void dragDown (MouseButton);
     void stopDragScroll();
+    void toggleItemExpandState (FListViewItem*);
+    void toggleItemCheckState (FListViewItem*);
+    auto isCheckboxClicked (int, int) const -> bool;
+    void resetClickedPositions();
+    auto isWithinHeaderBounds (const FPoint&) const -> bool;
+    auto isWithinListBounds (const FPoint&) const -> bool;
     auto appendItem (FListViewItem*) -> iterator;
     void processClick() const;
     void processRowChanged() const;
@@ -492,9 +498,11 @@ class FListView : public FWidget
     void stepBackward (int);
     void scrollToX (int);
     void scrollToY (int);
-    void scrollTo (const FPoint &);
+    void scrollTo (const FPoint&);
     void scrollTo (int, int);
     void scrollBy (int, int);
+    auto isItemListEmpty() const -> bool;
+    auto isTreeView() const -> bool;
     auto hasCheckableItems() const -> bool;
 
     // Callback methods
@@ -732,8 +740,20 @@ inline auto FListView::isVerticallyScrollable() const -> bool
 { return getCount() > getClientHeight(); }
 
 //----------------------------------------------------------------------
+inline void FListView::toggleItemCheckState (FListViewItem* item)
+{ item->setChecked(! item->isChecked()); }
+
+//----------------------------------------------------------------------
 inline void FListView::scrollTo (const FPoint& pos)
 { scrollTo(pos.getX(), pos.getY()); }
+
+//----------------------------------------------------------------------
+inline auto FListView::isItemListEmpty() const -> bool
+{ return itemlist.empty(); }
+
+//----------------------------------------------------------------------
+inline auto FListView::isTreeView() const -> bool
+{ return tree_view; }
 
 //----------------------------------------------------------------------
 inline auto FListView::hasCheckableItems() const -> bool

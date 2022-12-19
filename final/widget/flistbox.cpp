@@ -293,15 +293,12 @@ void FListBox::onMouseDown (FMouseEvent* ev)
   setWidgetFocus(this);
   const int yoffset_before = yoffset;
   const std::size_t current_before = current;
-  const int mouse_x = ev->getX();
-  const int mouse_y = ev->getY();
 
-  if ( mouse_x > 1 && mouse_x < int(getWidth())
-    && mouse_y > 1 && mouse_y < int(getHeight()) )
+  if ( isWithinListBounds(ev->getPos()) )
   {
     click_on_list = true;
     const std::size_t element_count = getCount();
-    current = std::size_t(yoffset + mouse_y - 1);
+    current = std::size_t(yoffset + ev->getY() - 1);
 
     if ( current > element_count )
       current = element_count;
@@ -333,20 +330,15 @@ void FListBox::onMouseUp (FMouseEvent* ev)
 {
   click_on_list = false;
 
-  if ( drag_scroll != DragScrollMode::None )
+  if ( isDragging(drag_scroll) )
     stopDragScroll();
 
-  if ( ev->getButton() == MouseButton::Left )
-  {
-    const int mouse_x = ev->getX();
-    const int mouse_y = ev->getY();
+  if ( ev->getButton() != MouseButton::Left )
+    return;
 
-    if ( mouse_x > 1 && mouse_x < int(getWidth())
-      && mouse_y > 1 && mouse_y < int(getHeight())
-      && ! isMultiSelection() )
-    {
-      processSelect();
-    }
+  if ( isWithinListBounds(ev->getPos()) && ! isMultiSelection() )
+  {
+    processSelect();
   }
 }
 
@@ -362,11 +354,9 @@ void FListBox::onMouseMove (FMouseEvent* ev)
 
   const std::size_t current_before = current;
   const int yoffset_before = yoffset;
-  const int mouse_x = ev->getX();
   const int mouse_y = ev->getY();
 
-  if ( mouse_x > 1 && mouse_x < int(getWidth())
-    && mouse_y > 1 && mouse_y < int(getHeight()) )
+  if ( isWithinListBounds(ev->getPos()) )
   {
     click_on_list = true;
     const std::size_t element_count = getCount();
@@ -412,20 +402,14 @@ void FListBox::onMouseMove (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FListBox::onMouseDoubleClick (FMouseEvent* ev)
 {
-  if ( ev->getButton() != MouseButton::Left )
+  if ( ev->getButton() != MouseButton::Left
+    || ! isWithinListBounds(ev->getPos()) )
     return;
 
-  const int mouse_x = ev->getX();
-  const int mouse_y = ev->getY();
+  if ( yoffset + ev->getY() - 1 > int(getCount()) )
+    return;
 
-  if ( mouse_x > 1 && mouse_x < int(getWidth())
-    && mouse_y > 1 && mouse_y < int(getHeight()) )
-  {
-    if ( yoffset + mouse_y - 1 > int(getCount()) )
-      return;
-
-    processClick();
-  }
+  processClick();
 }
 
 //----------------------------------------------------------------------
@@ -478,7 +462,7 @@ void FListBox::onWheel (FWheelEvent* ev)
   static constexpr int wheel_distance = 4;
   const auto& wheel = ev->getWheel();
 
-  if ( drag_scroll != DragScrollMode::None )
+  if ( isDragging(drag_scroll) )
     stopDragScroll();
 
   if ( wheel == MouseWheel::Up )
@@ -1217,7 +1201,7 @@ auto FListBox::dragScrollDown() -> bool
 //----------------------------------------------------------------------
 void FListBox::dragUp (MouseButton mouse_button)
 {
-  if ( drag_scroll != DragScrollMode::None
+  if ( isDragging(drag_scroll)
     && scroll_distance < int(getClientHeight()) )
     scroll_distance++;
 
@@ -1242,7 +1226,7 @@ void FListBox::dragUp (MouseButton mouse_button)
 //----------------------------------------------------------------------
 void FListBox::dragDown (MouseButton mouse_button)
 {
-  if ( drag_scroll != DragScrollMode::None
+  if ( isDragging(drag_scroll)
     && scroll_distance < int(getClientHeight()) )
     scroll_distance++;
 
@@ -1454,6 +1438,15 @@ inline void FListBox::lastPos()
     yoffset = yoffset_end;
 
   inc_search.clear();
+}
+
+//----------------------------------------------------------------------
+inline auto FListBox::isWithinListBounds (const FPoint& pos) const -> bool
+{
+  return pos.getX() > 1
+      && pos.getX() < int(getWidth())
+      && pos.getY() > 1
+      && pos.getY() < int(getHeight());
 }
 
 //----------------------------------------------------------------------

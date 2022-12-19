@@ -550,8 +550,8 @@ void FVTerm::restoreVTerm (const FRect& box) const noexcept
     for (int tx{0}; tx < w; tx++)
     {
       int xpos = x + tx;
-      auto& tc = vterm->getFChar(xpos, ypos);
-      auto sc = generateCharacter(FPoint{xpos, ypos});
+      auto& tc = vterm->getFChar(xpos, ypos);  // terminal character
+      auto sc = generateCharacter(FPoint{xpos, ypos});  // shown character
       tc = sc;
     }
 
@@ -632,14 +632,10 @@ void FVTerm::getArea (const FPoint& pos, FTermArea* area) const noexcept
   {
     const auto& tc = vterm->getFChar(ax, ay + y);  // terminal character
     auto& ac = area->getFChar(0, y);  // area character
-    std::memcpy (&ac, &tc, sizeof(ac) * unsigned(length));
+    putAreaLine (tc, ac, unsigned(length));
     auto& line_changes = area->changes[std::size_t(y)];
-
-    if ( int(line_changes.xmin) > 0 )
-      line_changes.xmin = 0;
-
-    if ( int(line_changes.xmax) < length - 1 )
-      line_changes.xmax = uInt(length - 1);
+    line_changes.xmin = 0;
+    line_changes.xmax = uInt(length - 1);
   }
 }
 
@@ -673,14 +669,10 @@ void FVTerm::getArea (const FRect& box, FTermArea* area) const noexcept
   {
     const auto& tc = vterm->getFChar(x, y + line);  // terminal character
     auto& ac = area->getFChar(dx, dy + line);  // area character
-    std::memcpy (&ac, &tc, sizeof(ac) * unsigned(length));
+    putAreaLine (tc, ac, unsigned(length));
     auto& line_changes = area->changes[std::size_t(dy + line)];
-
-    if ( int(line_changes.xmin) > dx )
-      line_changes.xmin = uInt(dx);
-
-    if ( int(line_changes.xmax) < dx + length - 1 )
-      line_changes.xmax = uInt(dx + length - 1);
+    line_changes.xmin = std::min(line_changes.xmin, uInt(dx));
+    line_changes.xmax = std::max(line_changes.xmax, uInt(dx + length - 1));
   }
 }
 
@@ -839,7 +831,7 @@ void FVTerm::scrollAreaForward (FTermArea* area) const
   {
     auto& dc = area->getFChar(0, y);  // destination character
     const auto& sc = area->getFChar(0, y + 1);  // source character
-    std::memcpy (&dc, &sc, sizeof(dc) * unsigned(area->width));
+    putAreaLine (sc, dc, unsigned(area->width));
     auto& line_changes = area->changes[std::size_t(y)];
     line_changes.xmin = 0;
     line_changes.xmax = uInt(x_max);
@@ -848,7 +840,7 @@ void FVTerm::scrollAreaForward (FTermArea* area) const
   // insert a new line below
   FChar nc{};  // next character
   const auto& lc = area->getFChar(x_max, area->height - 2);  // last character
-  std::memcpy (&nc, &lc, sizeof(nc));
+  nc = lc;
   nc.ch[0] = L' ';
   auto& dc = area->getFChar(0, y_max);  // destination character
   std::fill_n (&dc, area->width, nc);
@@ -876,7 +868,7 @@ void FVTerm::scrollAreaReverse (FTermArea* area) const
   {
     auto& dc = area->getFChar(0, y);  // destination character
     const auto& sc = area->getFChar(0, y - 1);  // source character
-    std::memcpy (&dc, &sc, sizeof(dc) * unsigned(area->width));
+    putAreaLine (sc, dc, unsigned(area->width));
     auto& line_changes = area->changes[std::size_t(y)];
     line_changes.xmin = 0;
     line_changes.xmax = uInt(x_max);
@@ -885,7 +877,7 @@ void FVTerm::scrollAreaReverse (FTermArea* area) const
   // insert a new line above
   FChar nc{};  // next character
   const auto& lc = area->getFChar(0, 1);  // last character
-  std::memcpy (&nc, &lc, sizeof(nc));
+  nc = lc;
   nc.ch[0] = L' ';
   auto& dc = area->getFChar(0, 0);  // destination character
   std::fill_n (&dc, area->width, nc);
@@ -1153,8 +1145,7 @@ inline void FVTerm::updateOverlappedColor ( const FChar& area_char
   // Add the overlapping color to this character
 
   // New character
-  FChar nc{};
-  std::memcpy (&nc, &area_char, sizeof(nc));
+  FChar nc{area_char};
   nc.fg_color = over_char.fg_color;
   nc.bg_color = over_char.bg_color;
   nc.attr.bit.reverse  = false;
@@ -1164,7 +1155,7 @@ inline void FVTerm::updateOverlappedColor ( const FChar& area_char
     nc.ch[0] = L' ';
 
   nc.attr.bit.no_changes = bool(vterm_char.attr.bit.printed && vterm_char == nc);
-  std::memcpy (&vterm_char, &nc, sizeof(vterm_char));
+  vterm_char = nc;
 }
 
 //----------------------------------------------------------------------
@@ -1175,7 +1166,7 @@ inline void FVTerm::updateOverlappedCharacter ( FChar& cover_char
 
   cover_char.attr.bit.no_changes = \
       bool(vterm_char.attr.bit.printed && vterm_char == cover_char);
-  std::memcpy (&vterm_char, &cover_char, sizeof(vterm_char));
+  vterm_char = cover_char;
 }
 
 //----------------------------------------------------------------------
@@ -1195,7 +1186,7 @@ inline void FVTerm::updateShadedCharacter ( const FChar& area_char
 
   cover_char.attr.bit.no_changes = \
       bool(vterm_char.attr.bit.printed && vterm_char == cover_char);
-  std::memcpy (&vterm_char, &cover_char, sizeof(vterm_char));
+  vterm_char = cover_char;
 }
 
 //----------------------------------------------------------------------
@@ -1206,12 +1197,11 @@ inline void FVTerm::updateInheritBackground ( const FChar& area_char
   // Add the covered background to this character
 
   // New character
-  FChar nc{};
-  std::memcpy (&nc, &area_char, sizeof(nc));
+  FChar nc{area_char};
   nc.bg_color = cover_char.bg_color;
   nc.attr.bit.no_changes = \
       bool(vterm_char.attr.bit.printed && vterm_char == nc);
-  std::memcpy (&vterm_char, &nc, sizeof(vterm_char));
+  vterm_char = nc;
 }
 
 //----------------------------------------------------------------------
@@ -1220,7 +1210,7 @@ inline void FVTerm::updateCharacter ( const FChar& area_char
 {
   // Copy a area character to the virtual terminal
 
-  std::memcpy (&vterm_char, &area_char, sizeof(vterm_char));
+  vterm_char = area_char;
 
   if ( vterm_char.attr.bit.printed && vterm_char == area_char )
     vterm_char.attr.bit.no_changes = true;
@@ -1502,13 +1492,8 @@ auto FVTerm::getCharacter ( CharacterType char_type
 
   int xx = std::max(pos.getX(), 0);
   int yy = std::max(pos.getY(), 0);
-
-  if ( xx >= vterm->width )
-    xx = vterm->width - 1;
-
-  if ( yy >= vterm->height )
-    yy = vterm->height - 1;
-
+  xx = std::min(xx, vterm->width - 1);
+  yy = std::min(yy, vterm->height - 1);
   auto cc = &vdesktop->getFChar(xx, yy);  // covered character
   const auto& win_list = getWindowList();
 
@@ -1522,24 +1507,17 @@ auto FVTerm::getCharacter ( CharacterType char_type
 
   for (auto&& win_obj : *win_list)
   {
-    bool significant_char{false};
-
-    // char_type can be "overlapped_character"
-    // or "covered_character"
-    if ( char_type == CharacterType::Covered )
-      significant_char = bool(layer >= getLayer(*win_obj));
-    else
-      significant_char = bool(layer < getLayer(*win_obj));
+    // char_type can be "overlapped_character" or "covered_character"
+    bool significant_char = (char_type == CharacterType::Covered)
+                          ? (layer >= getLayer(*win_obj))
+                          : (layer < getLayer(*win_obj));
 
     if ( has_an_owner && win_obj != &area_owner && significant_char )
     {
       const auto& win = win_obj->getVWin();
 
-      if ( ! win || ! win->visible )
-        continue;
-
       // Window visible and contains current character
-      if ( win->contains(pos) )
+      if ( win && win->visible && win->contains(pos) )
         getAreaCharacter (pos, win, cc);
     }
     else if ( char_type == CharacterType::Covered )
@@ -1612,7 +1590,7 @@ void FVTerm::putAreaCharacter ( const FPoint& pos, const FTermArea* area
   {
     // Restore one character on vterm
     const FChar& ch = getCoveredCharacter (pos, area);
-    std::memcpy (&dst_char, &ch, sizeof(dst_char));
+    dst_char = ch;
   }
   else  // Not transparent
   {
@@ -1628,19 +1606,18 @@ void FVTerm::putAreaCharacter ( const FPoint& pos, const FTermArea* area
       if ( isTransparentInvisible(ch) )
         ch.ch[0] = L' ';
 
-      std::memcpy (&dst_char, &ch, sizeof(dst_char));
+      dst_char = ch;
     }
     else if ( src_char.attr.bit.inherit_background )
     {
       // Add the covered background to this character
-      FChar ch{};
-      std::memcpy (&ch, &src_char, sizeof(ch));
+      FChar ch{src_char};
       FChar cc = getCoveredCharacter (pos, area);
       ch.bg_color = cc.bg_color;
-      std::memcpy (&dst_char, &ch, sizeof(dst_char));
+      dst_char = ch;
     }
     else  // Default
-      std::memcpy (&dst_char, &src_char, sizeof(dst_char));
+      dst_char = src_char;
   }
 }
 
@@ -1660,7 +1637,7 @@ void FVTerm::getAreaCharacter ( const FPoint& pos, FTermArea* area
     if ( tmp.attr.bit.color_overlay )  // transparent shadow
     {
       // Keep the current vterm character
-      std::memcpy (&s_ch, cc, sizeof(s_ch));
+      s_ch = *cc;
       s_ch.fg_color = tmp.fg_color;
       s_ch.bg_color = tmp.bg_color;
       s_ch.attr.bit.reverse  = false;
@@ -1670,7 +1647,7 @@ void FVTerm::getAreaCharacter ( const FPoint& pos, FTermArea* area
     else if ( tmp.attr.bit.inherit_background )
     {
       // Add the covered background to this character
-      std::memcpy (&i_ch, &tmp, sizeof(i_ch));
+      i_ch = tmp;
       i_ch.bg_color = cc->bg_color;  // last background color
       cc = &i_ch;
     }
@@ -1813,7 +1790,7 @@ inline auto FVTerm::printCharacterOnCoordinate ( FTermArea* area
   }
 
   // copy character to area
-  std::memcpy (&ac, &ch, sizeof(ac));
+  ac = ch;
 
   if ( ac.attr.bit.char_width == 0 )
   {
@@ -1843,10 +1820,7 @@ inline void FVTerm::printPaddingCharacter (FTermArea* area, const FChar& term_ch
   // and prints it. It is a placeholder for the column after
   // a full-width character.
 
-  FChar pc;  // padding character
-
-  // Copy character to padding character
-  std::memcpy (&pc, &term_char, sizeof(pc));
+  FChar pc{term_char};  // Copy character to padding character
 
   if ( area->encoding == Encoding::UTF8 )
   {

@@ -417,7 +417,7 @@ void FLineEdit::onMouseDown (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FLineEdit::onMouseUp (FMouseEvent*)
 {
-  if ( drag_scroll != DragScrollMode::None )
+  if ( isDragging(drag_scroll) )
   {
     delOwnTimers();
     drag_scroll = DragScrollMode::None;

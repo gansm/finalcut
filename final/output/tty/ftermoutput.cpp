@@ -631,7 +631,7 @@ auto FTermOutput::canClearToEOL (uInt xmin, uInt y) const -> bool
   const auto& normal = FOptiAttr::isNormal(min_char);
   const auto& ut = FTermcap::background_color_erase;
   int x = int(xmin) + 1;
-  auto* ch = &vterm->getFChar(x, int(y));
+  const auto* ch = &vterm->getFChar(x, int(y));
 
   for (; x < vterm->width; x++)
   {
@@ -664,7 +664,7 @@ auto FTermOutput::canClearLeadingWS (uInt& xmin, uInt y) const -> bool
   const auto& normal = FOptiAttr::isNormal(first_char);
   const auto& ut = FTermcap::background_color_erase;
   int x = 1;
-  auto* ch = &vterm->getFChar(x, int(y));
+  const auto* ch = &vterm->getFChar(x, int(y));
 
   for (; x < vterm->width; x++)
   {
@@ -702,7 +702,7 @@ auto FTermOutput::canClearTrailingWS (uInt& xmax, uInt y) const -> bool
   const auto& normal = FOptiAttr::isNormal(last_char);
   const auto& ut = FTermcap::background_color_erase;
   int x = vterm->width - 1;
-  auto* ch = &vterm->getFChar(x, int(y));
+  const auto* ch = &vterm->getFChar(x, int(y));
 
   for (; x > 0 ; x--)
   {
@@ -737,7 +737,7 @@ auto FTermOutput::skipUnchangedCharacters (uInt& x, uInt xmax, uInt y) -> bool
 
   uInt count{1};
   uInt i = x + 1;
-  auto* ch = &vterm->getFChar(int(i), int(y));
+  const auto* ch = &vterm->getFChar(int(i), int(y));
 
   for (; i <= xmax; i++)
   {
@@ -767,11 +767,10 @@ void FTermOutput::printRange ( uInt xmin, uInt xmax, uInt y
   const auto& rp = TCAP(t_repeat_char);
   uInt x = xmin;
   auto* min_char = &vterm->getFChar(int(x), int(y));
-  auto* print_char = min_char;
 
   while ( x <= xmax )
   {
-    print_char = min_char + (x - xmin);
+    auto* print_char = min_char + (x - xmin);
     print_char->attr.bit.printed = true;
 
     replaceNonPrintableFullwidth (x, *print_char);

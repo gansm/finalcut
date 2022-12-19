@@ -360,6 +360,7 @@ class FListBox : public FWidget
     void onePageDown();
     void firstPos();
     void lastPos();
+    auto isWithinListBounds (const FPoint&) const -> bool;
     auto skipIncrementalSearch() -> bool;
     void acceptSelection();
     auto spacebarProcessing() -> bool;

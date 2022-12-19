@@ -1371,6 +1371,11 @@ enum class DragScrollMode
   SelectRightward = 8
 };
 
+constexpr auto isDragging (const DragScrollMode& drag_scroll) noexcept -> bool
+{
+  return drag_scroll != DragScrollMode::None;
+}
+
 // Scroll bar visibility mode
 enum class ScrollBarMode
 {
