@@ -188,6 +188,7 @@ class FDialog : public FWindow
     void initCloseMenuItem (FMenu*);
     auto initMouseStates (const FMouseEvent&, bool) const -> MouseStates;
     void mapKeyFunctions();
+    void recoverBackgroundAfterMove (const FPoint&, const FRect&);
     void drawBorder() override;
     void drawTitleBar();
     void drawBarButton();
@@ -223,6 +224,8 @@ class FDialog : public FWindow
     auto isMouseOverTitlebar (const MouseStates&) const -> bool;
     void passEventToSubMenu ( const MouseStates&
                             , const FMouseEvent& );
+    void handleLeftMouseDown (const MouseStates&);
+    void handleRightAndMiddleMouseDown (const MouseButton&, const MouseStates&);
     void moveSizeKey (FKeyEvent*);
     void raiseActivateDialog();
     void lowerActivateDialog();

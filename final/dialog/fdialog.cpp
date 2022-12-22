@@ -225,63 +225,18 @@ void FDialog::setPos (const FPoint& pos, bool)
     return;
   }
 
-  const int dx = getX() - pos.getX();
-  const int dy = getY() - pos.getY();
-  const int old_x = getTermX();
-  const int old_y = getTermY();
-  const auto& shadow = getShadow();
-  const std::size_t width = getWidth() + shadow.getWidth();  // width + right shadow
-  const std::size_t height = getHeight() + shadow.getHeight();  // height + bottom shadow
-  const FRect old_geometry {getTermGeometryWithShadow()};
+  // Save current position values
+  const auto delta_pos = getPos() - pos;
+  const auto old_geometry = getTermGeometryWithShadow();
 
-  // move to the new position
-  FWindow::setPos(pos, false);
+  // Move to the new position
+  FWindow::setPos (pos, false);
+
+  // Copy dialog to virtual terminal
   putArea (getTermPos(), getVWin());
 
-  // restoring the non-covered terminal areas
-  if ( getTermGeometry().overlap(old_geometry) && ! isMinimized() )
-  {
-    FRect restore{};
-    const auto d_width = std::size_t(std::abs(dx));
-    const auto d_height = std::size_t(std::abs(dy));
-
-    // dx > 0 : move left
-    // dx = 0 : move vertical
-    // dx < 0 : move right
-    // dy > 0 : move up
-    // dy = 0 : move horizontal
-    // dy < 0 : move down
-
-    if ( dx > 0 )
-    {
-      if ( dy > 0 )
-        restore.setRect ( old_x + int(width) - dx, old_y
-                        , d_width, height - d_height );
-      else
-        restore.setRect ( old_x + int(width) - dx, old_y - dy
-                        , d_width, height - d_height );
-    }
-    else
-    {
-      if ( dy > 0 )
-        restore.setRect (old_x, old_y, d_width, height - d_height);
-      else
-        restore.setRect (old_x, old_y - dy, d_width, height - d_height);
-    }
-
-    restoreVTerm (restore);
-
-    if ( dy > 0 )
-      restore.setRect ( old_x, old_y + int(height) - dy, width, d_height);
-    else
-      restore.setRect ( old_x, old_y, width, d_height);
-
-    restoreVTerm (restore);
-  }
-  else
-  {
-    restoreVTerm (old_geometry);
-  }
+  // Restore background outside the dialog
+  recoverBackgroundAfterMove (delta_pos, old_geometry);
 
   restoreOverlaidWindows();
   FWindow::adjustSize();
@@ -526,53 +481,18 @@ void FDialog::onKeyPress (FKeyEvent* ev)
 //----------------------------------------------------------------------
 void FDialog::onMouseDown (FMouseEvent* ev)
 {
-  const auto width = int(getWidth());
   const auto& ms = initMouseStates(*ev, false);
   deactivateMinimizeButton();
   deactivateZoomButton();
 
   if ( ev->getButton() == MouseButton::Left )
   {
-    // Click on titlebar or window: raise + activate
-    raiseActivateDialog();
-
-    if ( isMouseOverTitlebar(ms) )
-      titlebar_click_pos.setPoint (ev->getTermX(), ev->getTermY());
-    else
-      titlebar_click_pos.setPoint (0, 0);
-
-    // Click on titlebar menu button
-    if ( isMouseOverMenuButton(ms) )
-      openMenu();
-    else
-    {
-      activateZoomButton(ms);
-      activateMinimizeButton(ms);
-    }
-
-    // Click on the lower right resize corner
-    resizeMouseDown(ms);
+    handleLeftMouseDown(ms);
   }
-  else  // ev->getButton() != MouseButton::Left
+  else
   {
-    // Click on titlebar menu button
-    if ( isMouseOverMenuButton(ms) && dialog_menu->isShown() )
-      leaveMenu();  // close menu
-
-    cancelMouseResize();  // Cancel resize
+    handleRightAndMiddleMouseDown(ev->getButton(), ms);
   }
-
-  const auto first = int(getMenuButtonWidth() + 1);
-
-  // Click on titlebar: just activate
-  if ( ev->getButton() == MouseButton::Right
-    && ms.mouse_x >= first && ms.mouse_x <= width && ms.mouse_y == 1 )
-      activateDialog();
-
-  // Click on titlebar: lower + activate
-  if ( ev->getButton() == MouseButton::Middle
-    && ms.mouse_x >= first && ms.mouse_x <= width && ms.mouse_y == 1 )
-      lowerActivateDialog();
 }
 
 //----------------------------------------------------------------------
@@ -1022,6 +942,47 @@ inline void FDialog::mapKeyFunctions()
     { FKey::Escape        , [this] () { cancelMoveSize(); } },
     { FKey::Escape_mintty , [this] () { cancelMoveSize(); } }
   };
+}
+
+//----------------------------------------------------------------------
+inline void FDialog::recoverBackgroundAfterMove ( const FPoint& delta_pos
+                                                , const FRect& old_geometry )
+{
+  // restoring the non-covered terminal areas
+  if ( getTermGeometry().overlap(old_geometry) && ! isMinimized() )
+  {
+    const auto& shadow = getShadow();
+    const auto width = getWidth() + shadow.getWidth();  // width + right shadow
+    const auto height = getHeight() + shadow.getHeight();  // height + bottom shadow
+    const int dx = delta_pos.getX();
+    const int dy = delta_pos.getY();
+    const int old_x = old_geometry.getX();
+    const int old_y = old_geometry.getY();
+    const auto delta_width = std::size_t(std::abs(dx));
+    const auto delta_height = std::size_t(std::abs(dy));
+
+    // dx > 0 : move left
+    // dx = 0 : move vertical
+    // dx < 0 : move right
+    // dy > 0 : move up
+    // dy = 0 : move horizontal
+    // dy < 0 : move down
+    int x1 = ( dx > 0 ) ? old_x + int(width) - dx : old_x;
+    int y1 = ( dy > 0 ) ? old_y : old_y - dy;
+    int x2 = old_x;
+    int y2 = ( dy > 0 ) ? old_y + int(height) - dy : old_y;
+    FRect vertical{x1, y1, delta_width, height - delta_height};
+    FRect horizontal{x2, y2, width, delta_height};
+    // Restore the terminal in the two rectangles
+    restoreVTerm (vertical);
+    restoreVTerm (horizontal);
+  }
+  else
+  {
+    // If the terminal does not overlap or the dialog is minimized,
+    // restore the entire old geometry
+    restoreVTerm (old_geometry);
+  }
 }
 
 //----------------------------------------------------------------------
@@ -1627,6 +1588,53 @@ inline void FDialog::passEventToSubMenu ( const MouseStates& ms
   dialog_menu->mouse_down = true;
   setClickedWidget(dialog_menu);
   dialog_menu->onMouseMove(new_ev.get());
+}
+
+//----------------------------------------------------------------------
+inline void FDialog::handleLeftMouseDown (const MouseStates& ms)
+{
+  // Click on titlebar or window: raise + activate
+  raiseActivateDialog();
+
+  if ( isMouseOverTitlebar(ms) )
+    titlebar_click_pos.setPoint (ms.termPos);
+  else
+    titlebar_click_pos.setPoint (0, 0);
+
+  // Click on titlebar menu button
+  if ( isMouseOverMenuButton(ms) )
+    openMenu();
+  else
+  {
+    activateZoomButton(ms);
+    activateMinimizeButton(ms);
+  }
+
+  // Click on the lower right resize corner
+  resizeMouseDown(ms);
+}
+
+//----------------------------------------------------------------------
+inline void FDialog::handleRightAndMiddleMouseDown ( const MouseButton& button
+                                                   , const MouseStates& ms )
+{
+  // Click on titlebar menu button
+  if ( isMouseOverMenuButton(ms) && dialog_menu->isShown() )
+    leaveMenu();  // close menu
+
+  cancelMouseResize();  // Cancel resize
+  const auto width = int(getWidth());
+  const auto first = int(getMenuButtonWidth() + 1);
+
+  // Click on titlebar: just activate
+  if ( button == MouseButton::Right
+    && ms.mouse_x >= first && ms.mouse_x <= width && ms.mouse_y == 1 )
+      activateDialog();
+
+  // Click on titlebar: lower + activate
+  if ( button == MouseButton::Middle
+    && ms.mouse_x >= first && ms.mouse_x <= width && ms.mouse_y == 1 )
+      lowerActivateDialog();
 }
 
 //----------------------------------------------------------------------

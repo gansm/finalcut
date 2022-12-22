@@ -96,6 +96,7 @@
 
 #include <functional>
 #include <memory>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -372,6 +373,10 @@ class FWidget : public FVTerm
     virtual void onClose (FCloseEvent*);
 
   private:
+    // Using-declaration
+    using EventHandler = std::function<void(FEvent*)>;
+    using EventMap = std::unordered_map<Event, EventHandler, EnumHash<Event>>;
+
     struct WidgetSizeHints
     {
       WidgetSizeHints() = default;
@@ -419,6 +424,7 @@ class FWidget : public FVTerm
 
     // Methods
     void  determineDesktopSize();
+    void  mapEventFunctions();
     void  initRootWidget();
     void  initWidgetLayout();
     void  finish();
@@ -463,6 +469,7 @@ class FWidget : public FVTerm
     FColor               background_color{FColor::Default};
     FString              statusbar_message{};
     FAcceleratorList     accelerator_list{};
+    EventMap             event_map{};
     FCallback            callback_impl{};
 
     static FStatusBar*   statusbar;

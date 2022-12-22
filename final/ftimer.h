@@ -35,6 +35,7 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <algorithm>
 #include <chrono>
 #include <mutex>
 
@@ -159,16 +160,18 @@ auto FTimer<ObjectT>::addTimer (ObjectT* object, int interval) & -> int
   int id = getNextId();
   const auto time_interval = milliseconds(interval);
   const auto timeout = getCurrentTime() + time_interval;
-  FTimerData t{ id, time_interval, timeout, object };
+  FTimerData timedata{ id, time_interval, timeout, object };
 
-  // insert in list sorted by timeout
-  auto iter = timer_list->cbegin();
-  const auto& last = timer_list->cend();
-
-  while ( iter != last && iter->timeout < t.timeout )
-    ++iter;
-
-  timer_list->insert (iter, t);
+  // Insert in list sorted by timeout
+  timer_list->insert( std::lower_bound( timer_list->cbegin()
+                                      , timer_list->cend()
+                                      , timedata
+                                      , [] (const auto& a, const auto& b)
+                                        {
+                                          return a.timeout < b.timeout;
+                                        }
+                                      )
+                    , timedata);
   return id;
 }
 
@@ -183,19 +186,23 @@ auto FTimer<ObjectT>::delTimer (int id) const & -> bool
 
   std::lock_guard<std::mutex> lock_guard(internal::timer_var::mutex);
   auto& timer_list = globalTimerList();
-  auto iter = timer_list->cbegin();
-  const auto& last = timer_list->cend();
 
-  while ( iter != last && iter->id != id )
-    ++iter;
+  if ( ! timer_list || timer_list->empty() )
+    return false;
 
-  if ( iter != last )
-  {
-    timer_list->erase(iter);
-    return true;
-  }
+  auto iter = std::find_if ( timer_list->cbegin()
+                           , timer_list->cend()
+                           , [id] (const auto& timer)
+                             {
+                               return timer.id == id;
+                             }
+                           );
 
-  return false;
+  if ( iter == timer_list->cend() )
+    return false;
+
+  timer_list->erase(iter);
+  return true;
 }
 
 //----------------------------------------------------------------------
@@ -207,22 +214,16 @@ auto FTimer<ObjectT>::delOwnTimers(const ObjectT* object) const & -> bool
   std::lock_guard<std::mutex> lock_guard(internal::timer_var::mutex);
   auto& timer_list = globalTimerList();
 
-  if ( ! timer_list )
+  if ( ! timer_list || timer_list->empty() )
     return false;
 
-  if ( timer_list->empty() )
-    return false;
-
-  auto iter = timer_list->cbegin();
-
-  while ( iter != timer_list->cend() )
-  {
-    if ( iter->object == object )
-      iter = timer_list->erase(iter);
-    else
-      ++iter;
-  }
-
+  timer_list->erase ( std::remove_if( timer_list->begin()
+                                    , timer_list->end()
+                                    , [&object] (const auto& timer)
+                                      {
+                                        return timer.object == object;
+                                      }
+                                    ), timer_list->end() );
   return true;
 }
 
@@ -235,10 +236,7 @@ auto FTimer<ObjectT>::delAllTimers() const & -> bool
   std::lock_guard<std::mutex> lock_guard(internal::timer_var::mutex);
   auto& timer_list = globalTimerList();
 
-  if ( ! timer_list )
-    return false;
-
-  if ( timer_list->empty() )
+  if ( ! timer_list || timer_list->empty() )
     return false;
 
   timer_list->clear();
@@ -253,17 +251,18 @@ template <typename CallbackT>
 auto FTimer<ObjectT>::processTimerEvent(CallbackT callback) -> uInt
 {
   uInt activated{0};
-  std::unique_lock<std::mutex> unique_lock ( internal::timer_var::mutex
-                                           , std::defer_lock );
+  std::unique_lock<std::mutex> lock ( internal::timer_var::mutex
+                                    , std::defer_lock );
 
-  if ( ! unique_lock.try_lock() )
+  if ( ! lock.try_lock() )
     return 0;
 
-  const auto& currentTime = getCurrentTime();
   auto& timer_list = globalTimerList();
 
   if ( ! timer_list || timer_list->empty() )
     return 0;
+
+  const auto& currentTime = getCurrentTime();
 
   for (auto&& timer : *timer_list)
   {
@@ -280,13 +279,10 @@ auto FTimer<ObjectT>::processTimerEvent(CallbackT callback) -> uInt
     if ( timer.interval > microseconds(0) )
       ++activated;
 
-    auto id = timer.id;
-    auto object = timer.object;
-
-    unique_lock.unlock();
-    FTimerEvent t_ev(Event::Timer, id);
-    callback (object, &t_ev);
-    unique_lock.lock();
+    lock.unlock();
+    FTimerEvent t_ev(Event::Timer, timer.id);
+    callback (timer.object, &t_ev);
+    lock.lock();
   }
 
   return activated;

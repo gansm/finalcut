@@ -129,17 +129,14 @@ void FObject::delChild (FObject* obj) &
 {
   // Deletes the child object obj from children list
 
-  if ( ! obj )
+  if ( ! (obj && hasChildren()) )
     return;
 
-  if ( hasChildren() )
-  {
-    obj->parent_obj = nullptr;
-    obj->has_parent = false;
-    auto end = children_list.end();
-    auto last = std::remove (children_list.begin(), end, obj);
-    children_list.erase(last, end);
-  }
+  obj->parent_obj = nullptr;
+  obj->has_parent = false;
+  auto end = children_list.end();
+  auto last = std::remove (children_list.begin(), end, obj);
+  children_list.erase(last, end);
 }
 
 //----------------------------------------------------------------------

@@ -97,6 +97,7 @@ FWidget::FWidget (FWidget* parent)
     woffset = parent->wclient_offset;
   }
 
+  mapEventFunctions();
   flags.visible_cursor = false;
   double_flatline_mask.top.resize (getWidth(), false);
   double_flatline_mask.right.resize (getHeight(), false);
@@ -981,49 +982,43 @@ auto FWidget::focusNextChild() -> bool
     || parent->numOfFocusableChildren() <= 1 )
     return false;
 
+  FWidget* next = nullptr;
   auto iter = parent->cbegin();
   const auto last = parent->cend();
 
-  while ( iter != last )
+  while ( iter != last )  // Search for this widget
   {
+    if ( ! (*iter)->isWidget() )  // Skip non-widget elements
+    {
+      ++iter;
+      continue;
+    }
+
+    if ( static_cast<FWidget*>(*iter) == this )
+      break;  // Stop search when we reach this widget
+
+    ++iter;
+  }
+
+  do  // Search the next focusable widget
+  {
+    ++iter;
+
+    if ( iter == parent->cend() )
+      iter = parent->cbegin();
+
     if ( ! (*iter)->isWidget() )
-    {
-      ++iter;
       continue;
-    }
 
-    const auto& w = static_cast<FWidget*>(*iter);
+    next = static_cast<FWidget*>(*iter);
+  } while ( ! next
+         || ! next->isEnabled()
+         || ! next->acceptFocus()
+         || ! next->isShown()
+         || next->isWindowWidget() );
 
-    if ( w != this )
-    {
-      ++iter;
-      continue;
-    }
-
-    FWidget* next{nullptr};
-    auto next_element = iter;
-
-    do
-    {
-      ++next_element;
-
-      if ( next_element == parent->cend() )
-        next_element = parent->cbegin();
-
-      if ( ! (*next_element)->isWidget() )
-        continue;
-
-      next = static_cast<FWidget*>(*next_element);
-    } while ( ! next
-           || ! next->isEnabled()
-           || ! next->acceptFocus()
-           || ! next->isShown()
-           || next->isWindowWidget() );
-
-    return changeFocus (next, parent, FocusTypes::NextWidget);
-  }  // The focus has been changed
-
-  return true;
+  // Change focus to the next widget and return true if successful
+  return changeFocus (next, parent, FocusTypes::NextWidget);
 }
 
 //----------------------------------------------------------------------
@@ -1039,48 +1034,41 @@ auto FWidget::focusPrevChild() -> bool
     || parent->numOfFocusableChildren() <= 1 )
     return false;
 
+  FWidget* prev{nullptr};
   auto iter = parent->cend();
   const auto first = parent->cbegin();
 
-  do
+  do  // Search for this widget
   {
+    --iter;
+
+    if ( ! (*iter)->isWidget() )  // Skip non-widget elements
+      continue;
+
+    if ( static_cast<FWidget*>(*iter) == this )
+      break;  // Stop search when we reach this widget
+  }
+  while ( iter != first );
+
+  do  // Search the previous focusable widget
+  {
+    if ( iter == parent->cbegin() )
+      iter = parent->cend();
+
     --iter;
 
     if ( ! (*iter)->isWidget() )
       continue;
 
-    const auto& w = static_cast<FWidget*>(*iter);
+    prev = static_cast<FWidget*>(*iter);
+  } while ( ! prev
+         || ! prev->isEnabled()
+         || ! prev->acceptFocus()
+         || ! prev->isShown()
+         || prev->isWindowWidget() );
 
-    if ( w != this )
-      continue;
-
-    FWidget* prev{nullptr};
-    auto prev_element = iter;
-
-    do
-    {
-      if ( ! (*prev_element)->isWidget() )
-      {
-        --prev_element;
-        continue;
-      }
-
-      if ( prev_element == parent->cbegin() )
-        prev_element = parent->cend();
-
-      --prev_element;
-      prev = static_cast<FWidget*>(*prev_element);
-    } while ( ! prev
-           || ! prev->isEnabled()
-           || ! prev->acceptFocus()
-           || ! prev->isShown()
-           || prev->isWindowWidget() );
-
-    return changeFocus (prev, parent, FocusTypes::PreviousWidget);
-  }  // The focus has been changed
-  while ( iter != first );
-
-  return true;
+  // Change focus to the previous widget and return true if successful
+  return changeFocus (prev, parent, FocusTypes::PreviousWidget);
 }
 
 //----------------------------------------------------------------------
@@ -1089,16 +1077,12 @@ auto FWidget::focusFirstChild() & -> bool
   if ( ! hasChildren() )
     return false;
 
-  auto iter = FObject::cbegin();
-  const auto last = FObject::cend();
-
-  while ( iter != last )
+  for ( auto iter = FObject::cbegin();
+        iter != FObject::cend();
+        ++iter )
   {
-    if ( ! (*iter)->isWidget() )
-    {
-      ++iter;
+    if ( ! (*iter)->isWidget() )  // Skip non-widget elements
       continue;
-    }
 
     auto widget = static_cast<FWidget*>(*iter);
 
@@ -1109,17 +1093,11 @@ auto FWidget::focusFirstChild() & -> bool
       widget->setFocus();
 
       if ( widget->numOfChildren() >= 1
-        && ! widget->focusFirstChild()
-        && widget->isWindowWidget() )
-      {
-        ++iter;
+        && ! widget->focusFirstChild() && widget->isWindowWidget() )
         continue;
-      }
 
       return true;
     }
-
-    ++iter;
   }
 
   return false;
@@ -1131,14 +1109,11 @@ auto FWidget::focusLastChild() & -> bool
   if ( ! hasChildren() )
     return false;
 
-  auto iter  = FObject::cend();
-  const auto first = FObject::cbegin();
-
-  do
+  for ( auto iter = FObject::cend() - 1;
+        iter != FObject::cbegin();
+        --iter )
   {
-    --iter;
-
-    if ( ! (*iter)->isWidget() )
+    if ( ! (*iter)->isWidget() )  // Skip non-widget elements
       continue;
 
     auto widget = static_cast<FWidget*>(*iter);
@@ -1156,7 +1131,6 @@ auto FWidget::focusLastChild() & -> bool
       return true;
     }
   }
-  while ( iter != first );
 
   return false;
 }
@@ -1440,87 +1414,14 @@ void FWidget::hideArea (const FSize& size)
 //----------------------------------------------------------------------
 auto FWidget::event (FEvent* ev) -> bool
 {
-  auto event_type = ev->getType();
+  auto iter = event_map.find(ev->getType());
 
-  if ( event_type == Event::KeyPress )
-  {
-    KeyPressEvent (static_cast<FKeyEvent*>(ev));
-  }
-  else if ( event_type == Event::KeyUp )
-  {
-    onKeyUp (static_cast<FKeyEvent*>(ev));
-  }
-  else if ( event_type == Event::KeyDown )
-  {
-    KeyDownEvent (static_cast<FKeyEvent*>(ev));
-  }
-  else if ( event_type== Event::MouseDown )
-  {
-    emitCallback("mouse-press");
-    onMouseDown (static_cast<FMouseEvent*>(ev));
-  }
-  else if ( event_type == Event::MouseUp )
-  {
-    emitCallback("mouse-release");
-    onMouseUp (static_cast<FMouseEvent*>(ev));
-  }
-  else if ( event_type== Event::MouseDoubleClick )
-  {
-    onMouseDoubleClick (static_cast<FMouseEvent*>(ev));
-  }
-  else if ( event_type == Event::MouseWheel )
-  {
-    emitWheelCallback(static_cast<FWheelEvent*>(ev));
-    onWheel (static_cast<FWheelEvent*>(ev));
-  }
-  else if ( event_type == Event::MouseMove )
-  {
-    emitCallback("mouse-move");
-    onMouseMove (static_cast<FMouseEvent*>(ev));
-  }
-  else if ( event_type == Event::FocusIn )
-  {
-    emitCallback("focus-in");
-    onFocusIn (static_cast<FFocusEvent*>(ev));
-  }
-  else if ( event_type == Event::FocusOut )
-  {
-    emitCallback("focus-out");
-    onFocusOut (static_cast<FFocusEvent*>(ev));
-  }
-  else if ( event_type == Event::ChildFocusIn )
-  {
-    onChildFocusIn (static_cast<FFocusEvent*>(ev));
-  }
-  else if ( event_type == Event::ChildFocusOut )
-  {
-    onChildFocusOut (static_cast<FFocusEvent*>(ev));
-  }
-  else if ( event_type == Event::Accelerator )
-  {
-    onAccel (static_cast<FAccelEvent*>(ev));
-  }
-  else if ( event_type == Event::Resize )
-  {
-    onResize (static_cast<FResizeEvent*>(ev));
-  }
-  else if ( event_type == Event::Show )
-  {
-    onShow (static_cast<FShowEvent*>(ev));
-  }
-  else if ( event_type == Event::Hide )
-  {
-    onHide (static_cast<FHideEvent*>(ev));
-  }
-  else if ( event_type == Event::Close )
-  {
-    onClose (static_cast<FCloseEvent*>(ev));
-  }
-  else
-  {
+  // If the event type is not found,
+  // call the base class event handler
+  if ( iter == event_map.end() )
     return FObject::event(ev);
-  }
 
+  iter->second(ev);
   return true;
 }
 
@@ -1661,6 +1562,116 @@ void FWidget::determineDesktopSize()
   woffset.setRect(0, 0, width, height);
   auto r = internal::var::root_widget;
   wclient_offset.setRect(r->padding.left, r->padding.top, width, height);
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::mapEventFunctions()
+{
+  event_map =
+  {
+    { Event::KeyPress,
+      [this] (FEvent* ev)
+      {
+        KeyPressEvent (static_cast<FKeyEvent*>(ev));
+      }
+    },
+    { Event::KeyUp,
+      [this] (FEvent* ev)
+      {
+        onKeyUp (static_cast<FKeyEvent*>(ev));
+      }
+    },
+    { Event::KeyDown,
+      [this] (FEvent* ev)
+      {
+        KeyDownEvent(static_cast<FKeyEvent*>(ev));
+      }
+    },
+    { Event::MouseDown,
+      [this] (FEvent* ev)
+      {
+        emitCallback("mouse-press"); onMouseDown (static_cast<FMouseEvent*>(ev));
+      }
+    },
+    { Event::MouseUp,
+      [this] (FEvent* ev)
+      {
+        emitCallback("mouse-release"); onMouseUp (static_cast<FMouseEvent*>(ev));
+      }
+    },
+    { Event::MouseDoubleClick,
+      [this] (FEvent* ev)
+      {
+        onMouseDoubleClick (static_cast<FMouseEvent*>(ev));
+      }
+    },
+    { Event::MouseWheel,
+      [this] (FEvent* ev)
+      {
+        emitWheelCallback(static_cast<FWheelEvent*>(ev)); onWheel (static_cast<FWheelEvent*>(ev));
+      }
+    },
+    { Event::MouseMove,
+      [this] (FEvent* ev)
+      {
+        emitCallback("mouse-move"); onMouseMove (static_cast<FMouseEvent*>(ev));
+      }
+    },
+    { Event::FocusIn,
+      [this] (FEvent* ev)
+      {
+        emitCallback("focus-in"); onFocusIn (static_cast<FFocusEvent*>(ev));
+      }
+    },
+    { Event::FocusOut,
+      [this] (FEvent* ev)
+      {
+        emitCallback("focus-out"); onFocusOut (static_cast<FFocusEvent*>(ev));
+      }
+    },
+    { Event::ChildFocusIn,
+      [this] (FEvent* ev)
+      {
+        onChildFocusIn (static_cast<FFocusEvent*>(ev));
+      }
+    },
+    { Event::ChildFocusOut,
+      [this] (FEvent* ev)
+      {
+        onChildFocusOut (static_cast<FFocusEvent*>(ev));
+      }
+    },
+    { Event::Accelerator,
+      [this] (FEvent* ev)
+      {
+        onAccel (static_cast<FAccelEvent*>(ev));
+      }
+    },
+    { Event::Resize,
+      [this] (FEvent* ev)
+      {
+        onResize (static_cast<FResizeEvent*>(ev));
+      }
+    },
+    { Event::Show,
+      [this] (FEvent* ev)
+      {
+        onShow (static_cast<FShowEvent*>(ev));
+      }
+    },
+    { Event::Hide,
+      [this] (FEvent* ev)
+      {
+        onHide (static_cast<FHideEvent*>(ev));
+      }
+    },
+    { Event::Close,
+      [this] (FEvent* ev)
+      {
+        onClose (static_cast<FCloseEvent*>(ev));
+      }
+    }
+  };
 }
 
 //----------------------------------------------------------------------

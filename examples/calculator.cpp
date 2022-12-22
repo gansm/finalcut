@@ -875,9 +875,6 @@ void Calc::tangent (lDouble& x)
       if ( x < 1 )
       {
         x = 0.5L * std::log((1 + x) / (1 - x));
-
-        if ( errno == EDOM || errno == ERANGE )
-          error = true;
       }
       else
         error = true;
@@ -901,7 +898,7 @@ void Calc::tangent (lDouble& x)
     }
   }
 
-  if ( errno == EDOM )
+  if ( errno == EDOM || errno == ERANGE )
     error = true;
 
   setDisplay(x);

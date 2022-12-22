@@ -774,8 +774,10 @@ auto readCursorPos() -> FPoint
 
   if ( pos > 4 )
   {
-    constexpr auto parse = "\033[%4d;%4dR";
-    std::sscanf(temp.data(), parse, &y, &x );
+    constexpr auto parse1 = "%19s";  // Read max. 19 characters (+ '\0')
+    constexpr auto parse2 = "\033[%4d;%4dR";
+    std::sscanf(temp.data(), parse1, temp.data());
+    std::sscanf(temp.data(), parse2, &y, &x );
   }
 
   return {x, y};

@@ -456,6 +456,8 @@ class FListView : public FWidget
     void drawSortIndicator (std::size_t&, std::size_t);
     void drawHeadlineLabel (const HeaderItems::const_iterator&);
     void drawHeaderBorder (std::size_t);
+    auto findHeaderStartPos (bool&) -> FVTermBuffer::iterator;
+    auto findHeaderEndPos (FVTermBuffer::iterator, bool&, bool&) -> FVTermBuffer::iterator;
     void drawBufferedHeadline();
     void drawColumnEllipsis ( const HeaderItems::const_iterator&
                             , const FString& );
@@ -473,8 +475,8 @@ class FListView : public FWidget
     void dragUp (MouseButton);
     void dragDown (MouseButton);
     void stopDragScroll();
-    void toggleItemExpandState (FListViewItem*);
-    void toggleItemCheckState (FListViewItem*);
+    void toggleItemExpandState (FListViewItem*) const;
+    void toggleItemCheckState (FListViewItem*) const;
     auto isCheckboxClicked (int, int) const -> bool;
     void resetClickedPositions();
     auto isWithinHeaderBounds (const FPoint&) const -> bool;
@@ -740,7 +742,7 @@ inline auto FListView::isVerticallyScrollable() const -> bool
 { return getCount() > getClientHeight(); }
 
 //----------------------------------------------------------------------
-inline void FListView::toggleItemCheckState (FListViewItem* item)
+inline void FListView::toggleItemCheckState (FListViewItem* item) const
 { item->setChecked(! item->isChecked()); }
 
 //----------------------------------------------------------------------

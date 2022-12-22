@@ -1916,27 +1916,17 @@ void FListView::drawHeadlineLabel (const HeaderItems::const_iterator& iter)
 }
 
 //----------------------------------------------------------------------
-void FListView::drawBufferedHeadline()
+inline auto FListView::findHeaderStartPos (bool& left_trunc) -> FVTermBuffer::iterator
 {
-  // Print the FVTermBuffer object
-
-  if ( headerline.isEmpty() )
-    return;
-
   std::size_t column_offset{0};
-  std::size_t column_width{0};
   std::size_t offset{0};
-  bool left_truncated_fullwidth{false};
-  bool right_truncated_fullwidth{false};
-  auto last = headerline.end();
 
-  // Search for the start position
-  for (const auto& tc : headerline)
+  for (const auto& term_char : headerline)
   {
     if ( xoffset == 0 )
       break;
 
-    column_offset += getColumnWidth(tc);
+    column_offset += getColumnWidth(term_char);
     offset++;
 
     if ( column_offset == std::size_t(xoffset) )
@@ -1944,62 +1934,88 @@ void FListView::drawBufferedHeadline()
 
     if ( column_offset > std::size_t(xoffset) && column_offset >= 2 )
     {
-      left_truncated_fullwidth = true;
+      left_trunc = true;
       break;
     }
   }
 
   auto first = headerline.begin();
   std::advance(first, offset);
+  return first;
+}
 
-  // Search for the end position
-  if ( getColumnWidth(headerline) > getClientWidth() )
+//----------------------------------------------------------------------
+inline auto FListView::findHeaderEndPos ( FVTermBuffer::iterator first
+                                        , bool& left_trunc
+                                        , bool& right_trunc ) -> FVTermBuffer::iterator
+{
+  std::size_t character{0};
+  std::size_t column_width{0};
+  auto last = headerline.end();
+
+  if ( getColumnWidth(headerline) <= getClientWidth() )
+    return last;
+
+  if ( left_trunc )
+    column_width++;
+
+  for (const auto& tc : FVTermBuffer(first, last))
   {
-    std::size_t character{0};
+    const uInt8 char_width = tc.attr.bit.char_width;
 
-    if ( left_truncated_fullwidth )
-      column_width++;
-
-    for (const auto& tc : FVTermBuffer(first, last))
+    if ( column_width + char_width > getClientWidth() )
     {
-      const uInt8 char_width = tc.attr.bit.char_width;
-
-      if ( column_width + char_width > getClientWidth() )
-      {
-        column_width++;
-        right_truncated_fullwidth = true;
-        break;
-      }
-
-      column_width += char_width;
-      character++;
-
-      if ( column_width == getClientWidth() )
-        break;
+      column_width++;
+      right_trunc = true;
+      break;
     }
 
-    last = first;
-    std::advance(last, character);
+    column_width += char_width;
+    character++;
+
+    if ( column_width == getClientWidth() )
+      break;
   }
-  else
-    column_width = getColumnWidth(headerline);
+
+  last = first;
+  std::advance(last, character);
+  return last;
+}
+
+//----------------------------------------------------------------------
+void FListView::drawBufferedHeadline()
+{
+  // Print the FVTermBuffer object
+
+  if ( headerline.isEmpty() )
+    return;
+
+  bool left_trunc{false};  // left truncated full-width
+  bool right_trunc{false};  // right truncated full-width
+
+  // Search for the start position
+  auto first = findHeaderStartPos(left_trunc);
+
+  // Search for the end position
+  auto last = findHeaderEndPos (first, left_trunc, right_trunc);
 
   // Print the header line
   print() << FPoint{2, 1};
 
-  if ( left_truncated_fullwidth )
+  if ( left_trunc )
     print (UniChar::SingleLeftAngleQuotationMark);  // ‹
 
   print() << FVTermBuffer(first, last);
 
-  if ( right_truncated_fullwidth )
+  if ( right_trunc )
     print (UniChar::SingleRightAngleQuotationMark);  // ›
 
-  while ( column_width < getClientWidth() )
+  for ( std::size_t column_width = getColumnWidth(headerline);
+        column_width < getClientWidth();
+        column_width++ )
   {
     setColor();
     print(UniChar::BoxDrawingsHorizontal);
-    column_width++;
   }
 }
 
@@ -2331,7 +2347,7 @@ inline void FListView::stopDragScroll()
 }
 
 //----------------------------------------------------------------------
-inline void FListView::toggleItemExpandState (FListViewItem* item)
+inline void FListView::toggleItemExpandState (FListViewItem* item) const
 {
   if ( item->isExpand() )
     item->collapse();
