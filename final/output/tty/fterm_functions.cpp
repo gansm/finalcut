@@ -243,10 +243,10 @@ auto rgb2ColorIndex (uInt8 r, uInt8 g, uInt8 b) -> FColor
 {
   // Converts a 24-bit RGB color to a 256-color compatible approximation
 
-  const uInt16 ri = (((r * 5) + 127) / 255) * 36;
-  const uInt16 gi = (((g * 5) + 127) / 255) * 6;
-  const uInt16 bi = (((b * 5) + 127) / 255);
-  return FColor(16 + ri + gi + bi);
+  const uInt16 ri = ((r * 5) + 127) / 255;
+  const uInt16 gi = ((g * 5) + 127) / 255;
+  const uInt16 bi = ((b * 5) + 127) / 255;
+  return FColor(16 + ri * 36 + gi * 6 + bi);
 }
 
 //----------------------------------------------------------------------
@@ -457,8 +457,8 @@ auto getHalfWidth (const FString& str) -> FString
 
 //----------------------------------------------------------------------
 auto getColumnSubString ( const FString& str
-                           , std::size_t col_pos
-                           , std::size_t col_len ) -> FString
+                        , std::size_t col_pos
+                        , std::size_t col_len ) -> FString
 {
   FString s{str};
   std::size_t col_first{1};
@@ -595,8 +595,8 @@ auto getColumnWidth (const wchar_t wchar) -> std::size_t
   column_width = wcwidth(wchar);
   static const auto& fterm_data = FTermData::getInstance();
 
-  if ( (wchar >= UniChar::NF_rev_left_arrow2 && wchar <= UniChar::NF_check_mark)
-    || (wchar != L'\0' && fterm_data.getTerminalEncoding() != Encoding::UTF8) )
+  if ( (fterm_data.getTerminalEncoding() != Encoding::UTF8 && wchar != L'\0' )
+    || (wchar >= UniChar::NF_rev_left_arrow2 && wchar <= UniChar::NF_check_mark) )
   {
     column_width = 1;
   }
@@ -774,10 +774,8 @@ auto readCursorPos() -> FPoint
 
   if ( pos > 4 )
   {
-    constexpr auto parse1 = "%19s";  // Read max. 19 characters (+ '\0')
-    constexpr auto parse2 = "\033[%4d;%4dR";
-    std::sscanf(temp.data(), parse1, temp.data());
-    std::sscanf(temp.data(), parse2, &y, &x );
+    constexpr auto parse = "\033[%4d;%4dR";
+    std::sscanf(temp.data(), parse, &y, &x );
   }
 
   return {x, y};

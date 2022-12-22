@@ -1018,7 +1018,9 @@ auto FWidget::focusNextChild() -> bool
          || next->isWindowWidget() );
 
   // Change focus to the next widget and return true if successful
-  return changeFocus (next, parent, FocusTypes::NextWidget);
+  return ( next )
+       ? changeFocus (next, parent, FocusTypes::NextWidget)
+       : false;
 }
 
 //----------------------------------------------------------------------
@@ -1068,7 +1070,9 @@ auto FWidget::focusPrevChild() -> bool
          || prev->isWindowWidget() );
 
   // Change focus to the previous widget and return true if successful
-  return changeFocus (prev, parent, FocusTypes::PreviousWidget);
+  return ( prev )
+       ? changeFocus (prev, parent, FocusTypes::PreviousWidget)
+       : false;
 }
 
 //----------------------------------------------------------------------
@@ -1077,14 +1081,12 @@ auto FWidget::focusFirstChild() & -> bool
   if ( ! hasChildren() )
     return false;
 
-  for ( auto iter = FObject::cbegin();
-        iter != FObject::cend();
-        ++iter )
+  for ( auto& item : getChildren() )
   {
-    if ( ! (*iter)->isWidget() )  // Skip non-widget elements
+    if ( ! item->isWidget() )  // Skip non-widget elements
       continue;
 
-    auto widget = static_cast<FWidget*>(*iter);
+    auto widget = static_cast<FWidget*>(item);
 
     if ( widget->isEnabled()
       && widget->acceptFocus()

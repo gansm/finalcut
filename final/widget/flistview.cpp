@@ -1946,7 +1946,7 @@ inline auto FListView::findHeaderStartPos (bool& left_trunc) -> FVTermBuffer::it
 
 //----------------------------------------------------------------------
 inline auto FListView::findHeaderEndPos ( FVTermBuffer::iterator first
-                                        , bool& left_trunc
+                                        , bool left_trunc
                                         , bool& right_trunc ) -> FVTermBuffer::iterator
 {
   std::size_t character{0};

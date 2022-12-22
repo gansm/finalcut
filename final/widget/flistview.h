@@ -457,7 +457,7 @@ class FListView : public FWidget
     void drawHeadlineLabel (const HeaderItems::const_iterator&);
     void drawHeaderBorder (std::size_t);
     auto findHeaderStartPos (bool&) -> FVTermBuffer::iterator;
-    auto findHeaderEndPos (FVTermBuffer::iterator, bool&, bool&) -> FVTermBuffer::iterator;
+    auto findHeaderEndPos (FVTermBuffer::iterator, bool, bool&) -> FVTermBuffer::iterator;
     void drawBufferedHeadline();
     void drawColumnEllipsis ( const HeaderItems::const_iterator&
                             , const FString& );

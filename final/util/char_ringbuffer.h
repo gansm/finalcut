@@ -78,37 +78,37 @@ class FRingBuffer
           , index{pos}
         { }
 
-        inline auto operator ++ () -> ring_iterator&  // prefix
+        inline auto operator ++ () noexcept -> ring_iterator&  // prefix
         {
           index++;
           return *this;
         }
 
-        inline auto operator ++ (int) -> ring_iterator  // postfix
+        inline auto operator ++ (int) noexcept -> ring_iterator  // postfix
         {
           ring_iterator i = *this;
           index++;
           return i;
         }
 
-        inline auto operator * () const -> reference
+        inline auto operator * () const noexcept -> reference
         {
           return ptr[(offset + index) % N];
         }
 
-        inline auto operator -> () const -> pointer
+        inline auto operator -> () const noexcept -> pointer
         {
           return &**this;
         }
 
-        inline auto operator == (const ring_iterator& rhs) const -> bool
+        inline auto operator == (const ring_iterator& rhs) const noexcept -> bool
         {
           return index  == rhs.index
               && ptr    == rhs.ptr
               && offset == rhs.offset;
         }
 
-        inline auto operator != (const ring_iterator& rhs) const -> bool
+        inline auto operator != (const ring_iterator& rhs) const noexcept -> bool
         {
           return ! (*this == rhs);
         }
@@ -120,7 +120,8 @@ class FRingBuffer
         std::size_t       index{0U};
 
         // Friend Non-member operator functions
-        inline friend auto operator + (const ring_iterator& iter, std::ptrdiff_t size) -> ring_iterator
+        inline friend auto operator + ( const ring_iterator& iter
+                                      , std::ptrdiff_t size ) noexcept -> ring_iterator
         {
           auto tmp = iter;
           tmp.index += std::size_t(size);
