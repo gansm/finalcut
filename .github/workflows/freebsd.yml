@@ -21,6 +21,7 @@ jobs:
       env:
         WORKSPACE_PATH: "${{ github.workspace }}"
       with:
+        environment_variables: WORKSPACE_PATH
         operating_system: freebsd
         version: '13.0'
         shell: bash
