@@ -721,40 +721,44 @@ void FMenu::mouseDownSelection (FMenuItem* m_item, bool& focus_changed)
 //----------------------------------------------------------------------
 auto FMenu::mouseUpOverList (const FPoint& mouse_pos) -> bool
 {
+  FMenuItem* selected_item = nullptr;
+
   for (auto&& item : getItemList())
   {
     if ( item->isSelected() && isMouseOverItem(mouse_pos, item) )
-    {
-      // Mouse pointer over item
-      if ( item->hasMenu() )
-      {
-        auto sub_menu = item->getMenu();
-        if ( ! sub_menu->isShown() )
-          openSubMenu (sub_menu, SELECT_ITEM);
-        else if ( opened_sub_menu )
-        {
-          opened_sub_menu->selectFirstItem();
-
-          if ( opened_sub_menu->hasSelectedItem() )
-            opened_sub_menu->getSelectedItem()->setFocus();
-
-          opened_sub_menu->redraw();
-
-          if ( getStatusBar() )
-            getStatusBar()->drawMessage();
-        }
-
-        return true;
-      }
-
-      unselectItem();
-      hide();
-      hideSuperMenus();
-      item->processClicked();
-    }
+      selected_item = item;  // Mouse pointer over item
   }
 
-  return false;
+  if ( ! selected_item )
+    return false;
+
+  if ( selected_item->hasMenu() )
+  {
+    auto sub_menu = selected_item->getMenu();
+
+    if ( ! sub_menu->isShown() )
+      openSubMenu (sub_menu, SELECT_ITEM);
+    else if ( opened_sub_menu )
+    {
+      opened_sub_menu->selectFirstItem();
+
+      if ( opened_sub_menu->hasSelectedItem() )
+        opened_sub_menu->getSelectedItem()->setFocus();
+
+      opened_sub_menu->redraw();
+
+      if ( getStatusBar() )
+        getStatusBar()->drawMessage();
+    }
+
+    return true;
+  }
+
+  unselectItem();
+  hide();
+  hideSuperMenus();
+  selected_item->processClicked();
+  return true;
 }
 
 //----------------------------------------------------------------------

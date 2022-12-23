@@ -153,36 +153,38 @@ auto FTermcap::paddingPrint (const std::string& string, int affcnt) -> Status
   while ( iter != string.cend() )
   {
     if ( *iter != '$' )
-      outc(int(*iter));
-    else
     {
+      outc (int(*iter));
       ++iter;
+      continue;
+    }
 
-      if ( *iter != '<' )
-      {
-        outc(int('$'));
+    ++iter;
 
-        if ( iter != string.cend() )
-          outc(int(*iter));
-      }
+    if ( iter == string.cend() || *iter != '<' )
+    {
+      outc (int('$'));
+
+      if ( iter != string.cend() )
+        outc (int(*iter));
       else
-      {
-        const int number = readNumber(iter, affcnt, has_delay);
+        break;
 
-        if ( number == -1 )
-        {
-          outc(int('$'));
-          outc(int('<'));
-          continue;
-        }
+      ++iter;
+      continue;
+    }
 
-        if ( has_delay && number > 0 )
-          delayOutput(number / 10);
-      }  // end of else (*iter == '<')
-    }  // end of else (*iter == '$')
+    const int number = readNumber(iter, affcnt, has_delay);
 
-    if ( iter == string.cend() )
-      break;
+    if ( number == -1 )
+    {
+      outc (int('$'));
+      outc (int('<'));
+      continue;
+    }
+
+    if ( has_delay && number > 0 )
+      delayOutput(number / 10);
 
     ++iter;
   }

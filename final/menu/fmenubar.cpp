@@ -290,43 +290,42 @@ auto FMenuBar::hotkeyMenu (FKeyEvent*& ev) -> bool
 {
   for (auto&& item : getItemList())
   {
-    if ( item->isEnabled() )
+    if ( ! item->isEnabled() )
+      continue;
+
+    auto hotkey = item->getHotkey();
+
+    if ( hotkey > 0xff00 && hotkey < 0xff5f )  // full-width character
+      hotkey -= 0xfee0;
+
+    if ( FKey::Meta_offset + FKey(std::tolower(int(hotkey))) == ev->key() )
     {
-      auto hotkey = item->getHotkey();
-      const auto key = ev->key();
+      const auto& sel_item = getSelectedItem();
 
-      if ( hotkey > 0xff00 && hotkey < 0xff5f )  // full-width character
-        hotkey -= 0xfee0;
+      if ( sel_item && sel_item->hasMenu() )
+        sel_item->getMenu()->unselectItem();
 
-      if ( FKey::Meta_offset + FKey(std::tolower(int(hotkey))) == key )
+      unselectItem();
+
+      if ( item->hasMenu() )
       {
-        const auto& sel_item = getSelectedItem();
-
-        if ( sel_item && sel_item->hasMenu() )
-          sel_item->getMenu()->unselectItem();
-
-        unselectItem();
-
-        if ( item->hasMenu() )
-        {
-          setTerminalUpdates (FVTerm::TerminalUpdate::Stop);
-          item->setSelected();
-          setSelectedItem(item);
-          item->setFocus();
-          openMenu(item);
-          setTerminalUpdates (FVTerm::TerminalUpdate::Start);
-        }
-        else
-        {
-          setSelectedItem(nullptr);
-          redraw();
-          drop_down = false;
-          item->processClicked();
-        }
-
-        ev->accept();
-        return true;
+        setTerminalUpdates (FVTerm::TerminalUpdate::Stop);
+        item->setSelected();
+        setSelectedItem(item);
+        item->setFocus();
+        openMenu(item);
+        setTerminalUpdates (FVTerm::TerminalUpdate::Start);
       }
+      else
+      {
+        setSelectedItem(nullptr);
+        redraw();
+        drop_down = false;
+        item->processClicked();
+      }
+
+      ev->accept();
+      return true;
     }
   }
 

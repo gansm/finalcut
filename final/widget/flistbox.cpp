@@ -908,16 +908,9 @@ inline void FListBox::drawListBracketsLine ( int y
 }
 
 //----------------------------------------------------------------------
-inline void FListBox::setLineAttributes ( int y
-                                        , bool isLineSelected
-                                        , bool lineHasBrackets
-                                        , bool& serach_mark )
+inline void FListBox::setInitialLineAttributes (bool isLineSelected)
 {
-  const bool isCurrentLine( y + yoffset + 1 == int(current) );
-  const std::size_t inc_len = inc_search.getLength();
-  const std::size_t inc_width = getColumnWidth(inc_search);
   const auto& wc = getColorTheme();
-  print() << FPoint{2, 2 + int(y)};
 
   if ( isLineSelected )
   {
@@ -933,52 +926,76 @@ inline void FListBox::setLineAttributes ( int y
     else
       setColor (wc->list_fg, wc->list_bg);
   }
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::setCurrentLineAttributes ( int y
+                                               , bool isLineSelected
+                                               , bool lineHasBrackets
+                                               , bool& serach_mark )
+{
+  const auto& wc = getColorTheme();
+  const std::size_t inc_len = inc_search.getLength();
+  const std::size_t inc_width = getColumnWidth(inc_search);
+
+  if ( getFlags().focus && FVTerm::getFOutput()->getMaxColor() < 16 )
+    setBold();
+
+  if ( isLineSelected )
+  {
+    if ( FVTerm::getFOutput()->isMonochron() )
+      setBold();
+    else if ( getFlags().focus )
+      setColor ( wc->selected_current_element_focus_fg
+               , wc->selected_current_element_focus_bg );
+    else
+      setColor ( wc->selected_current_element_fg
+               , wc->selected_current_element_bg );
+
+    setCursorPos ({3, 2 + y});  // first character
+  }
+  else
+  {
+    if ( FVTerm::getFOutput()->isMonochron() )
+      unsetBold();
+
+    if ( getFlags().focus )
+    {
+      setColor ( wc->current_element_focus_fg
+               , wc->current_element_focus_bg );
+      const int b = lineHasBrackets ? 1 : 0;
+
+      if ( inc_len > 0 )  // incremental search
+      {
+        serach_mark = true;
+        // Place the cursor on the last found character
+        setCursorPos ({2 + b + int(inc_width), 2 + y});
+      }
+      else  // only highlighted
+        setCursorPos ({3 + b, 2 + y});  // first character
+    }
+    else
+      setColor ( wc->current_element_fg
+               , wc->current_element_bg );
+  }
+
+  if ( FVTerm::getFOutput()->isMonochron() )
+    setReverse(false);
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::setLineAttributes ( int y
+                                        , bool isLineSelected
+                                        , bool lineHasBrackets
+                                        , bool& serach_mark )
+{
+  const bool isCurrentLine( y + yoffset + 1 == int(current) );
+  print() << FPoint{2, 2 + y};
+  setInitialLineAttributes(isLineSelected);
 
   if ( isCurrentLine )
   {
-    if ( getFlags().focus && FVTerm::getFOutput()->getMaxColor() < 16 )
-      setBold();
-
-    if ( isLineSelected )
-    {
-      if ( FVTerm::getFOutput()->isMonochron() )
-        setBold();
-      else if ( getFlags().focus )
-        setColor ( wc->selected_current_element_focus_fg
-                 , wc->selected_current_element_focus_bg );
-      else
-        setColor ( wc->selected_current_element_fg
-                 , wc->selected_current_element_bg );
-
-      setCursorPos ({3, 2 + int(y)});  // first character
-    }
-    else
-    {
-      if ( FVTerm::getFOutput()->isMonochron() )
-        unsetBold();
-
-      if ( getFlags().focus )
-      {
-        setColor ( wc->current_element_focus_fg
-                 , wc->current_element_focus_bg );
-        const int b = lineHasBrackets ? 1 : 0;
-
-        if ( inc_len > 0 )  // incremental search
-        {
-          serach_mark = true;
-          // Place the cursor on the last found character
-          setCursorPos ({2 + b + int(inc_width), 2 + int(y)});
-        }
-        else  // only highlighted
-          setCursorPos ({3 + b, 2 + int(y)});  // first character
-      }
-      else
-        setColor ( wc->current_element_fg
-                 , wc->current_element_bg );
-    }
-
-    if ( FVTerm::getFOutput()->isMonochron() )
-      setReverse(false);
+    setCurrentLineAttributes(y, isLineSelected, lineHasBrackets, serach_mark);
   }
   else
   {

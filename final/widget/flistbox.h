@@ -332,6 +332,8 @@ class FListBox : public FWidget
     void printLeftBracket (BracketType);
     void printRightBracket (BracketType);
     void drawListBracketsLine (int, FListBoxItems::iterator, bool);
+    void setInitialLineAttributes (bool);
+    void setCurrentLineAttributes (int, bool, bool, bool&);
     void setLineAttributes (int, bool, bool, bool&);
     void unsetAttributes() const;
     void updateDrawing (bool, bool);

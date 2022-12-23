@@ -140,6 +140,24 @@ auto getFApplication() -> FApplication*
 }
 
 //----------------------------------------------------------------------
+auto getAlignOffset ( Align alignment
+                    , const std::size_t width
+                    , const std::size_t length ) -> std::size_t
+{
+  if ( alignment == Align::Center )
+  {
+    if ( length < width )
+      return (width - length) / 2;
+  }
+  else if ( alignment == Align::Right && length < width )
+  {
+    return width - length;
+  }
+
+  return 0;
+}
+
+//----------------------------------------------------------------------
 auto getHotkey (const FString& text) -> FKey
 {
   // Returns the hotkey character from a string

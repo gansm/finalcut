@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2021 Markus Gans                                      *
+* Copyright 2019-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -59,22 +59,23 @@ class SGRoptimizer final
     void optimize();
 
   private:
-    // Constants
-    static constexpr auto NOT_SET = static_cast<std::size_t>(-1);
-
-    // Methods
-    void findParameter();
-    void combineParameter();
-
-    // Data member
-    std::string& seq;
-
     struct parameter
     {
       std::size_t start;
       std::size_t end;
     };
 
+    // Constants
+    static constexpr auto NOT_SET = static_cast<std::size_t>(-1);
+
+    // Methods
+    void findParameter();
+    void combineParameter();
+    void handleSGRterminating ( const parameter&, std::size_t&
+                              , std::size_t, std::size_t );
+
+    // Data member
+    std::string& seq;
     std::vector<parameter> csi_parameter{};
 };
 

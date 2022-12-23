@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2021 Markus Gans                                      *
+* Copyright 2019-2022 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -132,16 +132,7 @@ void SGRoptimizer::combineParameter()
     {
       if ( seq[read_pos] == 'm' )
       {
-        if ( p.start == p.end )  // Esc [ m
-        {
-          seq[write_pos] = '0';
-          write_pos++;
-        }
-
-        if ( count == csi_parameter.size() )
-          seq[write_pos] = 'm';
-        else
-          seq[write_pos] = ';';
+        handleSGRterminating(p, write_pos, count, csi_parameter.size());
       }
       else
         seq[write_pos] = seq[read_pos];
@@ -158,6 +149,24 @@ void SGRoptimizer::combineParameter()
   }
 
   seq.erase(write_pos);
+}
+
+//----------------------------------------------------------------------
+inline void SGRoptimizer::handleSGRterminating ( const parameter& p
+                                               , std::size_t& write_pos
+                                               , std::size_t count
+                                               , std::size_t size )
+{
+  if ( p.start == p.end )  // Esc [ m
+  {
+    seq[write_pos] = '0';
+    write_pos++;
+  }
+
+  if ( count == size )
+    seq[write_pos] = 'm';
+  else
+    seq[write_pos] = ';';
 }
 
 }  // namespace finalcut

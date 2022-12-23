@@ -986,7 +986,7 @@ auto FWidget::focusNextChild() -> bool
   auto iter = parent->cbegin();
   const auto last = parent->cend();
 
-  while ( iter != last )  // Search for this widget
+  while ( iter != last )  // Search forward for this widget
   {
     if ( ! (*iter)->isWidget() )  // Skip non-widget elements
     {
@@ -1000,6 +1000,8 @@ auto FWidget::focusNextChild() -> bool
     ++iter;
   }
 
+  auto iter_of_this_widget = iter;
+
   do  // Search the next focusable widget
   {
     ++iter;
@@ -1007,18 +1009,17 @@ auto FWidget::focusNextChild() -> bool
     if ( iter == parent->cend() )
       iter = parent->cbegin();
 
-    if ( ! (*iter)->isWidget() )
-      continue;
-
-    next = static_cast<FWidget*>(*iter);
-  } while ( ! next
-         || ! next->isEnabled()
-         || ! next->acceptFocus()
-         || ! next->isShown()
-         || next->isWindowWidget() );
+    if ( (*iter)->isWidget() )
+      next = static_cast<FWidget*>(*iter);
+  } while ( iter != iter_of_this_widget
+         && ( ! next
+           || ! next->isEnabled()
+           || ! next->acceptFocus()
+           || ! next->isShown()
+           || next->isWindowWidget() ) );
 
   // Change focus to the next widget and return true if successful
-  return ( next )
+  return next
        ? changeFocus (next, parent, FocusTypes::NextWidget)
        : false;
 }
@@ -1040,7 +1041,7 @@ auto FWidget::focusPrevChild() -> bool
   auto iter = parent->cend();
   const auto first = parent->cbegin();
 
-  do  // Search for this widget
+  do  // Search backwards for this widget
   {
     --iter;
 
@@ -1052,6 +1053,8 @@ auto FWidget::focusPrevChild() -> bool
   }
   while ( iter != first );
 
+  auto iter_of_this_widget = iter;
+
   do  // Search the previous focusable widget
   {
     if ( iter == parent->cbegin() )
@@ -1059,18 +1062,17 @@ auto FWidget::focusPrevChild() -> bool
 
     --iter;
 
-    if ( ! (*iter)->isWidget() )
-      continue;
-
-    prev = static_cast<FWidget*>(*iter);
-  } while ( ! prev
-         || ! prev->isEnabled()
-         || ! prev->acceptFocus()
-         || ! prev->isShown()
-         || prev->isWindowWidget() );
+    if ( (*iter)->isWidget() )
+      prev = static_cast<FWidget*>(*iter);
+  } while ( iter != iter_of_this_widget
+         && ( ! prev
+           || ! prev->isEnabled()
+           || ! prev->acceptFocus()
+           || ! prev->isShown()
+           || prev->isWindowWidget() ) );
 
   // Change focus to the previous widget and return true if successful
-  return ( prev )
+  return prev
        ? changeFocus (prev, parent, FocusTypes::PreviousWidget)
        : false;
 }

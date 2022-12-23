@@ -56,6 +56,7 @@ auto isEscapeKey (const FKey) -> bool;
 auto getFirstFocusableWidget (const FObjectList&) -> FWidget*;
 auto getLastFocusableWidget (const FObjectList&) -> FWidget*;
 auto isInFWidgetList (const FWidgetList*, const FWidget*) -> bool;
+auto getAlignOffset (Align, const std::size_t, const std::size_t) -> std::size_t;
 auto getHotkey (const FString&) -> FKey;
 auto getHotkeyPos (const FString& src, FString& dest) -> std::size_t;
 void setHotkeyViaString (FWidget*, const FString&);

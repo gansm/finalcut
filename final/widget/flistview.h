@@ -448,6 +448,7 @@ class FListView : public FWidget
     void drawScrollbars() const;
     void drawHeadlines();
     void drawList();
+    void adjustWidthForTreeView (std::size_t&, std::size_t, bool);
     void drawListLine (const FListViewItem*, bool, bool);
     void clearList();
     void setLineAttributes (bool, bool) const;

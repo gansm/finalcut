@@ -25,6 +25,7 @@
 
 #include "final/fapplication.h"
 #include "final/fevent.h"
+#include "final/fwidget_functions.h"
 #include "final/util/flog.h"
 #include "final/vterm/fcolorpair.h"
 #include "final/widget/flabel.h"
@@ -227,19 +228,7 @@ void FLabel::setHotkeyAccelerator()
 //----------------------------------------------------------------------
 auto FLabel::getAlignOffset (const std::size_t length) const -> std::size_t
 {
-  const std::size_t width(getWidth());
-
-  if ( alignment == Align::Center )
-  {
-    if ( length < width )
-      return (width - length) / 2;
-  }
-  else if ( alignment == Align::Right && length < width )
-  {
-    return width - length;
-  }
-
-  return 0;
+  return finalcut::getAlignOffset (alignment, getWidth(), length);
 }
 
 //----------------------------------------------------------------------

@@ -556,31 +556,30 @@ void FListViewIterator::nextElement (Iterator& iter)
     iter_path.push(iter);
     iter = item->begin();
     position++;
+    return;
   }
-  else
+
+  position++;
+  bool forward{};
+
+  do
   {
-    position++;
-    bool forward{};
+    forward = false;  // Reset forward
+    ++iter;
 
-    do
+    if ( iter_path.empty() )
+      continue;
+
+    const auto& parent_iter = iter_path.top();
+
+    if ( iter == (*parent_iter)->cend() )
     {
-      forward = false;  // Reset forward
-      ++iter;
-
-      if ( ! iter_path.empty() )
-      {
-        const auto& parent_iter = iter_path.top();
-
-        if ( iter == (*parent_iter)->cend() )
-        {
-          iter = parent_iter;
-          iter_path.pop();
-          forward = true;
-        }
-      }
+      iter = parent_iter;
+      iter_path.pop();
+      forward = true;
     }
-    while ( forward );
   }
+  while ( forward );
 }
 
 //----------------------------------------------------------------------
@@ -1629,6 +1628,17 @@ void FListView::drawList()
 }
 
 //----------------------------------------------------------------------
+inline void FListView::adjustWidthForTreeView ( std::size_t& width
+                                              , std::size_t indent
+                                              , bool is_checkable )
+{
+  width -= (indent + 1);
+
+  if ( is_checkable )
+    width -= checkbox_space;
+}
+
+//----------------------------------------------------------------------
 void FListView::drawListLine ( const FListViewItem* item
                              , bool is_focus
                              , bool is_current )
@@ -1656,12 +1666,7 @@ void FListView::drawListLine ( const FListViewItem* item
       const std::size_t align_offset = getAlignOffset (align, column_width, width);
 
       if ( isTreeView() && col == 1 )
-      {
-        width -= (indent + 1);
-
-        if ( item->isCheckable() )
-          width -= checkbox_space;
-      }
+        adjustWidthForTreeView (width, indent, item->isCheckable());
 
       // Insert alignment spaces
       if ( align_offset > 0 )
