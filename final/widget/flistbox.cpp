@@ -908,7 +908,7 @@ inline void FListBox::drawListBracketsLine ( int y
 }
 
 //----------------------------------------------------------------------
-inline void FListBox::setInitialLineAttributes (bool isLineSelected)
+inline void FListBox::setInitialLineAttributes (bool isLineSelected) const
 {
   const auto& wc = getColorTheme();
 

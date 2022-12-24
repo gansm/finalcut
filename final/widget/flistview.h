@@ -448,7 +448,7 @@ class FListView : public FWidget
     void drawScrollbars() const;
     void drawHeadlines();
     void drawList();
-    void adjustWidthForTreeView (std::size_t&, std::size_t, bool);
+    void adjustWidthForTreeView (std::size_t&, std::size_t, bool) const;
     void drawListLine (const FListViewItem*, bool, bool);
     void clearList();
     void setLineAttributes (bool, bool) const;
@@ -483,6 +483,7 @@ class FListView : public FWidget
     auto isWithinHeaderBounds (const FPoint&) const -> bool;
     auto isWithinListBounds (const FPoint&) const -> bool;
     auto appendItem (FListViewItem*) -> iterator;
+    void handleListEvent (FMouseEvent*);
     void processClick() const;
     void processRowChanged() const;
     void processChanged() const;

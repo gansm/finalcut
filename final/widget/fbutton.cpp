@@ -505,41 +505,51 @@ inline void FButton::drawTopBottomBackground()
 }
 
 //----------------------------------------------------------------------
-inline void FButton::drawButtonTextLine (const FString& button_text)
+inline void FButton::printLeadingSpaces (std::size_t& pos)
 {
-  std::size_t z{0};
-  std::size_t pos{};
-  std::size_t columns{0};
-  print() << FPoint{2 + int(indent), 1 + int(vcenter_offset)}
-          << FColorPair{button_fg, button_bg};
-
-  if ( getWidth() < column_width + 1 )
+  if ( getWidth() < column_width + 1 )  // Calculate center offset
     center_offset = 0;
   else
     center_offset = (getWidth() - column_width - 1) / 2;
 
-  // Print button text line
-  for (pos = 0; pos < center_offset; pos++)
+  for (pos = 0; pos < center_offset; pos++)  // Print leading spaces
     print (space_char);  // █
+}
 
-  if ( hotkeypos == NOT_SET )
+//----------------------------------------------------------------------
+void FButton::setCursorPositionOnButton()
+{
+  if ( hotkeypos == NOT_SET )  // Set cursor position
     setCursorPos ({ 2 + int(center_offset)
                   , 1 + int(vcenter_offset) });  // first character
   else
     setCursorPos ({ 2 + int(center_offset + hotkeypos)
                   , 1 + int(vcenter_offset) });  // hotkey
+}
 
+//----------------------------------------------------------------------
+inline void FButton::modifyStyle()
+{
   if ( ! getFlags().active && FVTerm::getFOutput()->isMonochron() )
     setReverse(true);  // Light background
 
   if ( active_focus && (FVTerm::getFOutput()->isMonochron()
                      || FVTerm::getFOutput()->getMaxColor() < 16) )
     setBold();
+}
+
+//----------------------------------------------------------------------
+inline void FButton::printButtonText ( const FString& button_text
+                                     , std::size_t& pos )
+{
+  std::size_t idx{0};
+  std::size_t columns{0};
 
   while ( pos < center_offset + column_width && columns + 2 < getWidth() )
   {
-    if ( z == hotkeypos && getFlags().active )
+    if ( idx == hotkeypos && getFlags().active )
     {
+      // Modify colors and style on the hotkey position
       setColor (button_hotkey_fg, button_bg);
 
       if ( ! active_focus && FVTerm::getFOutput()->getMaxColor() < 16 )
@@ -548,8 +558,9 @@ inline void FButton::drawButtonTextLine (const FString& button_text)
       if ( ! getFlags().no_underline )
         setUnderline();
 
-      print (button_text[z]);
+      print (button_text[idx]);
 
+      // Reset style and color after the hotkey position
       if ( ! active_focus && FVTerm::getFOutput()->getMaxColor() < 16 )
         unsetBold();
 
@@ -560,27 +571,54 @@ inline void FButton::drawButtonTextLine (const FString& button_text)
     }
     else
     {
-      print (button_text[z]);
+      print (button_text[idx]);  // Print button text
     }
 
-    const auto char_width = getColumnWidth(button_text[z]);
+    const auto char_width = getColumnWidth(button_text[idx]);
     columns += char_width;
     pos += char_width;
-    z++;
+    idx++;
   }
+}
 
+//----------------------------------------------------------------------
+inline void FButton::printEllipsis()
+{
   if ( column_width + 1 >= getWidth() )
-  {
-    // Print ellipsis
     print() << FPoint{int(getWidth() + indent) - 2, 1} << "..";
-  }
+}
 
+//----------------------------------------------------------------------
+inline void FButton::resetStyle()
+{
   if ( active_focus && (FVTerm::getFOutput()->isMonochron()
                      || FVTerm::getFOutput()->getMaxColor() < 16) )
     unsetBold();
+}
 
+//----------------------------------------------------------------------
+inline void FButton::printTrailingSpaces (std::size_t pos)
+{
   for (pos = center_offset + column_width; pos < getWidth() - 2; pos++)
     print (space_char);  // █
+}
+
+//----------------------------------------------------------------------
+inline void FButton::drawButtonTextLine (const FString& button_text)
+{
+  std::size_t pos{};
+
+  // Set initial cursor position and text color
+  print() << FPoint{2 + int(indent), 1 + int(vcenter_offset)}
+          << FColorPair{button_fg, button_bg};
+
+  printLeadingSpaces (pos);
+  setCursorPositionOnButton();
+  modifyStyle();  // Modify style for monochrome or low color terminal
+  printButtonText (button_text, pos);
+  printEllipsis();  // Print ellipsis if necessary
+  resetStyle();  // Reset style for monochrome or low color terminal
+  printTrailingSpaces (pos);
 }
 
 //----------------------------------------------------------------------

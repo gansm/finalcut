@@ -1013,51 +1013,13 @@ void FListView::onMouseDown (FMouseEvent* ev)
   setWidgetFocus(this);
   first_line_position_before = first_visible_line.getPosition();
 
-  if ( isWithinHeaderBounds(ev->getPos()) )  // Header
+  if ( isWithinHeaderBounds(ev->getPos()) )
   {
-    clicked_header_pos = ev->getPos();
+    clicked_header_pos = ev->getPos();  // Handle events in the header
   }
-  else if ( isWithinListBounds(ev->getPos()) )  // List
+  else if ( isWithinListBounds(ev->getPos()) && ! isItemListEmpty() )
   {
-    if ( isItemListEmpty() )
-      return;
-
-    int indent = 0;
-    const int new_pos = first_visible_line.getPosition() + ev->getY() - 2;
-
-    if ( new_pos < int(getCount()) )
-      setRelativePosition (ev->getY() - 2);
-
-    const auto& item = getCurrentItem();
-
-    if ( isTreeView() )
-    {
-      indent = int(item->getDepth() << 1u);  // indent = 2 * depth
-
-      if ( item->isExpandable() && ev->getX() - 2 == indent - xoffset )
-        clicked_expander_pos = ev->getPos();
-    }
-
-    if ( hasCheckableItems() )
-    {
-      if ( isTreeView() )
-        indent++;  // Plus one space
-
-      if ( item->isCheckable() && isCheckboxClicked(ev->getX(), indent) )
-      {
-        clicked_checkbox_item = item;
-      }
-    }
-
-    if ( isShown() )
-      drawList();
-
-    vbar->setValue (first_visible_line.getPosition());
-
-    if ( first_line_position_before != first_visible_line.getPosition() )
-      vbar->drawBar();
-
-    forceTerminalUpdate();
+    handleListEvent(ev);  // Handle events in the list
   }
 }
 
@@ -1630,7 +1592,7 @@ void FListView::drawList()
 //----------------------------------------------------------------------
 inline void FListView::adjustWidthForTreeView ( std::size_t& width
                                               , std::size_t indent
-                                              , bool is_checkable )
+                                              , bool is_checkable ) const
 {
   width -= (indent + 1);
 
@@ -1925,22 +1887,27 @@ inline auto FListView::findHeaderStartPos (bool& left_trunc) -> FVTermBuffer::it
 {
   std::size_t column_offset{0};
   std::size_t offset{0};
+  bool stop = false;
 
   for (const auto& term_char : headerline)
   {
+    if ( stop )
+      break;
+
     if ( xoffset == 0 )
-      break;
-
-    column_offset += getColumnWidth(term_char);
-    offset++;
-
-    if ( column_offset == std::size_t(xoffset) )
-      break;
-
-    if ( column_offset > std::size_t(xoffset) && column_offset >= 2 )
+      stop = true;
+    else
     {
-      left_trunc = true;
-      break;
+      column_offset += getColumnWidth(term_char);
+      offset++;
+
+      if ( column_offset == std::size_t(xoffset) )
+        stop = true;
+      else if ( column_offset > std::size_t(xoffset) && column_offset >= 2 )
+      {
+        left_trunc = true;
+        stop = true;
+      }
     }
   }
 
@@ -2405,6 +2372,48 @@ auto FListView::appendItem (FListViewItem* item) -> FObject::iterator
 }
 
 //----------------------------------------------------------------------
+void FListView::handleListEvent (FMouseEvent* ev)
+{
+  int indent = 0;
+  const int new_pos = first_visible_line.getPosition() + ev->getY() - 2;
+
+  if ( new_pos < int(getCount()) )
+    setRelativePosition (ev->getY() - 2);
+
+  const auto& item = getCurrentItem();
+
+  if ( isTreeView() )  // Handle tree view events
+  {
+    indent = int(item->getDepth() << 1u);  // indent = 2 * depth
+
+    if ( item->isExpandable() && ev->getX() - 2 == indent - xoffset )
+      clicked_expander_pos = ev->getPos();
+  }
+
+  if ( hasCheckableItems() )  // Handle checkable item events
+  {
+    if ( isTreeView() )
+      indent++;  // Plus one space
+
+    if ( item->isCheckable() && isCheckboxClicked(ev->getX(), indent) )
+    {
+      clicked_checkbox_item = item;
+    }
+  }
+
+  // Redraw the list and update the vertical scrollbar
+  if ( isShown() )
+    drawList();
+
+  vbar->setValue (first_visible_line.getPosition());
+
+  if ( first_line_position_before != first_visible_line.getPosition() )
+    vbar->drawBar();
+
+  forceTerminalUpdate();
+}
+
+//----------------------------------------------------------------------
 void FListView::processClick() const
 {
   if ( isItemListEmpty() )
@@ -2458,50 +2467,51 @@ inline void FListView::collapseAndScrollLeft()
   const int position_before = current_iter.getPosition();
   auto item = getCurrentItem();
 
-  if ( xoffset == 0 && item && ! isItemListEmpty() )
+  if ( xoffset != 0 || ! item || isItemListEmpty() )
   {
-    if ( isTreeView() && item->isExpandable() && item->isExpand() )
-    {
-      // Collapse element
-      item->collapse();
-      adjustSize();
-      vbar->calculateSliderValues();
-      // Force vertical scrollbar redraw
-      first_line_position_before = -1;
-    }
-    else if ( item->hasParent() )
-    {
-      // Jump to parent element
-      const auto& parent = item->getParent();
+    if ( xoffset > 0 )  // Scroll left
+      xoffset--;
 
-      if ( parent->isInstanceOf("FListViewItem") )
+    return;
+  }
+
+  if ( isTreeView() && item->isExpandable() && item->isExpand() )
+  {
+    // Collapse element
+    item->collapse();
+    adjustSize();
+    vbar->calculateSliderValues();
+    // Force vertical scrollbar redraw
+    first_line_position_before = -1;
+    return;
+  }
+
+  if ( ! item->hasParent() )
+    return;
+
+  // Jump to parent element
+  const auto& parent = item->getParent();
+
+  if ( parent->isInstanceOf("FListViewItem") )
+  {
+    current_iter.parentElement();
+
+    if ( current_iter.getPosition() < first_line_position_before )
+    {
+      const int difference = position_before - current_iter.getPosition();
+
+      if ( first_visible_line.getPosition() - difference >= 0 )
       {
-        current_iter.parentElement();
-
-        if ( current_iter.getPosition() < first_line_position_before )
-        {
-          const int difference = position_before - current_iter.getPosition();
-
-          if ( first_visible_line.getPosition() - difference >= 0 )
-          {
-            first_visible_line -= difference;
-            last_visible_line -= difference;
-          }
-          else
-          {
-            const int d = first_visible_line.getPosition();
-            first_visible_line -= d;
-            last_visible_line -= d;
-          }
-        }
+        first_visible_line -= difference;
+        last_visible_line -= difference;
+      }
+      else
+      {
+        const int d = first_visible_line.getPosition();
+        first_visible_line -= d;
+        last_visible_line -= d;
       }
     }
-  }
-  else
-  {
-    // Scroll left
-    if ( xoffset > 0 )
-      xoffset--;
   }
 }
 

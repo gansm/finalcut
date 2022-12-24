@@ -133,6 +133,13 @@ class FButton : public FWidget
     void drawMarginLeft();
     void drawMarginRight();
     void drawTopBottomBackground();
+    void printLeadingSpaces (std::size_t&);
+    void setCursorPositionOnButton();
+    void modifyStyle();
+    void printButtonText (const FString&, std::size_t&);
+    void printEllipsis();
+    void resetStyle();
+    void printTrailingSpaces (std::size_t);
     void drawButtonTextLine (const FString&);
     void draw() override;
     void updateButtonColor();

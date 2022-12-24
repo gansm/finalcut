@@ -140,6 +140,8 @@ class FLabel : public FWidget
     void draw() override;
     void drawMultiLine();
     void drawSingleLine();
+    void printHotkeyChar (wchar_t);
+    void printLineContent (FString&, std::size_t);
     void printLine (FString&);
 
     // Data members
