@@ -141,7 +141,7 @@ void FToggleButton::resetColors()
 //----------------------------------------------------------------------
 auto FToggleButton::setNoUnderline (bool enable) -> bool
 {
-  return (setFlags().no_underline = enable);
+  return (setFlags().feature.no_underline = enable);
 }
 
 //----------------------------------------------------------------------
@@ -469,16 +469,16 @@ void FToggleButton::drawText (const FString& label_text, std::size_t hotkeypos)
 
   for (std::size_t z{0}; z < label_text.getLength(); z++)
   {
-    if ( (z == hotkeypos) && getFlags().active )
+    if ( (z == hotkeypos) && getFlags().feature.active )
     {
       setColor (wc->label_hotkey_fg, wc->label_hotkey_bg);
 
-      if ( ! getFlags().no_underline )
+      if ( ! getFlags().feature.no_underline )
         setUnderline();
 
       print ( label_text[z] );
 
-      if ( ! getFlags().no_underline )
+      if ( ! getFlags().feature.no_underline )
         unsetUnderline();
 
       setColor (wc->label_fg, wc->label_bg);

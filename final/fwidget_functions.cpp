@@ -266,16 +266,16 @@ auto setWidgetShadow (FWidget* w, bool enable) -> bool
     && FVTerm::getFOutput()->getEncoding() != Encoding::VT100
     && FVTerm::getFOutput()->getEncoding() != Encoding::ASCII )
   {
-    w->setFlags().shadow = true;
+    w->setFlags().shadow.shadow = true;
     w->setShadowSize(FSize{1, 1});
   }
   else
   {
-    w->setFlags().shadow = false;
+    w->setFlags().shadow.shadow = false;
     w->setShadowSize(FSize{0, 0});
   }
 
-  return w->getFlags().shadow;
+  return w->getFlags().shadow.shadow;
 }
 
 //----------------------------------------------------------------------
@@ -305,19 +305,19 @@ void passResizeCornerEventToDialog (const FWidget* w, const FMouseEvent& ev)
 //----------------------------------------------------------------------
 void drawShadow (FWidget* w)
 {
-  if ( FVTerm::getFOutput()->isMonochron() && ! w->flags.trans_shadow )
+  if ( FVTerm::getFOutput()->isMonochron() && ! w->flags.shadow.trans_shadow )
     return;
 
-  if ( (FVTerm::getFOutput()->getEncoding() == Encoding::VT100 && ! w->flags.trans_shadow)
-    || (FVTerm::getFOutput()->getEncoding() == Encoding::ASCII && ! w->flags.trans_shadow) )
+  if ( (FVTerm::getFOutput()->getEncoding() == Encoding::VT100 && ! w->flags.shadow.trans_shadow)
+    || (FVTerm::getFOutput()->getEncoding() == Encoding::ASCII && ! w->flags.shadow.trans_shadow) )
   {
     clearShadow(w);
     return;
   }
 
-  if ( w->flags.trans_shadow )
+  if ( w->flags.shadow.trans_shadow )
     drawTransparentShadow (w);  // transparent shadow
-  else if ( w->flags.shadow )
+  else if ( w->flags.shadow.shadow )
     drawBlockShadow (w);        // non-transparent shadow
 }
 

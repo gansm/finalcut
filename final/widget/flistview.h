@@ -483,7 +483,7 @@ class FListView : public FWidget
     auto isWithinHeaderBounds (const FPoint&) const -> bool;
     auto isWithinListBounds (const FPoint&) const -> bool;
     auto appendItem (FListViewItem*) -> iterator;
-    void handleListEvent (FMouseEvent*);
+    void handleListEvent (const FMouseEvent*);
     void processClick() const;
     void processRowChanged() const;
     void processChanged() const;

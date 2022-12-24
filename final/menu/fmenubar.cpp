@@ -372,7 +372,7 @@ inline void FMenuBar::drawItem (FMenuItem* menuitem, std::size_t& x)
     {},
     x + 1,
     NOT_SET,
-    bool(menuitem->getFlags().no_underline)
+    bool(menuitem->getFlags().feature.no_underline)
   };
 
   FString txt{menuitem->getText()};

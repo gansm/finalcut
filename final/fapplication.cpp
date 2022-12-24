@@ -1365,7 +1365,7 @@ auto FApplication::isEventProcessable ( FObject* receiver
 
     // block events for widgets in non modal windows
     if ( window
-      && ! window->getFlags().modal
+      && ! window->getFlags().visibility.modal
       && ! window->isMenuWidget() )
     {
       constexpr std::array<const Event, 13> blocked_events

@@ -87,7 +87,7 @@ auto FDialog::setDialogWidget (bool enable) -> bool
   if ( isDialogWidget() == enable )
     return true;
 
-  setFlags().dialog_widget = enable;
+  setFlags().type.dialog_widget = enable;
 
   if ( enable )
     setTermOffsetWithPadding();
@@ -103,13 +103,13 @@ auto FDialog::setModal (bool enable) -> bool
   if ( isModal() == enable )
     return true;
 
-  setFlags().modal = enable;
+  setFlags().visibility.modal = enable;
 
   if ( enable )
   {
     setModalDialogCounter()++;
     FKeyboard::getInstance().clearKeyBuffer();
-    setFlags().minimizable = false;
+    setFlags().feature.minimizable = false;
   }
   else
     setModalDialogCounter()--;
@@ -135,7 +135,7 @@ auto FDialog::setBorder (bool enable) -> bool
     setRightPadding(0);
   }
 
-  return ( setFlags().no_border = (! enable) );
+  return ( setFlags().feature.no_border = (! enable) );
 }
 
 //----------------------------------------------------------------------
@@ -727,7 +727,7 @@ void FDialog::draw()
   drawTitleBar();
   setCursorPos({2, int(getHeight()) - 1});
 
-  if ( getFlags().shadow )
+  if ( getFlags().shadow.shadow )
     drawDialogShadow();
 
   if ( FVTerm::getFOutput()->isMonochron() )
@@ -737,7 +737,7 @@ void FDialog::draw()
 //----------------------------------------------------------------------
 void FDialog::drawDialogShadow()
 {
-  if ( FVTerm::getFOutput()->isMonochron() && ! getFlags().trans_shadow )
+  if ( FVTerm::getFOutput()->isMonochron() && ! getFlags().shadow.trans_shadow )
     return;
 
   if ( isMinimized() )
@@ -1386,7 +1386,7 @@ void FDialog::setMinimizeItem()
     minimize_item->setStatusbarMessage ("Minimizes the window");
   }
 
-  if ( getFlags().shadow )
+  if ( getFlags().shadow.shadow )
     drawDialogShadow();
 }
 

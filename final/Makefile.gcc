@@ -82,6 +82,7 @@ INCLUDE_HEADERS = \
 	ftimer.h \
 	fwidgetcolors.h \
 	fwidget_functions.h \
+	fwidget_flags.h \
 	fwidget.h
 
 # compiler parameter

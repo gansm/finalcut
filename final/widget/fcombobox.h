@@ -265,7 +265,7 @@ inline auto FComboBox::unsetEditable() -> bool
 
 //----------------------------------------------------------------------
 inline auto FComboBox::hasShadow() const -> bool
-{ return getFlags().shadow; }
+{ return getFlags().shadow.shadow; }
 
 //----------------------------------------------------------------------
 template <typename T

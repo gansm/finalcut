@@ -197,6 +197,7 @@ finalcutinclude_HEADERS = \
 	ftypes.h \
 	fwidgetcolors.h \
 	fwidget_functions.h \
+	fwidget_flags.h \
 	fwidget.h
 
 clean-local:

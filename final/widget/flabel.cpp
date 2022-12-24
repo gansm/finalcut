@@ -320,12 +320,12 @@ void FLabel::printHotkeyChar (wchar_t ch)
   const auto& wc = getColorTheme();
   setColor (wc->label_hotkey_fg, wc->label_hotkey_bg);
 
-  if ( ! getFlags().no_underline )
+  if ( ! getFlags().feature.no_underline )
     setUnderline();
 
   print (ch);
 
-  if ( ! getFlags().no_underline )
+  if ( ! getFlags().feature.no_underline )
     unsetUnderline();
 
   if ( hasEmphasis() )
@@ -347,7 +347,7 @@ void FLabel::printLineContent (FString& line, std::size_t to_char)
       line[z] = L' ';
     }
 
-    if ( z == hotkeypos && getFlags().active )
+    if ( z == hotkeypos && getFlags().feature.active )
       printHotkeyChar (line[z]);
     else
       print (line[z]);

@@ -513,7 +513,7 @@ void FComboBox::draw()
   else
     print() << UniChar::BlackDownPointingTriangle;  // ▼
 
-  if ( getFlags().shadow )
+  if ( getFlags().shadow.shadow )
     drawShadow(this);
 }
 

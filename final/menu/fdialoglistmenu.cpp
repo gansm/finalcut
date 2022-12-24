@@ -58,7 +58,7 @@ void FDialogListMenu::init()
   m_item->dialog_index = true;
 
   if ( getDialogList()->empty() )
-    m_item->setFlags().active = false;
+    m_item->setFlags().feature.active = false;
 
   auto fapp = FApplication::getApplicationObject();
 
@@ -91,7 +91,7 @@ void FDialogListMenu::cb_switchState (bool enable)
   if ( ! m_item )
     return;
 
-  m_item->setFlags().active = enable;
+  m_item->setFlags().feature.active = enable;
   auto super = m_item->getSuperMenu();
 
   if ( ! super )

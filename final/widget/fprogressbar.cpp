@@ -127,7 +127,7 @@ void FProgressbar::draw()
   drawProgressLabel();
   drawProgressBar();
 
-  if ( getFlags().shadow )
+  if ( getFlags().shadow.shadow )
     drawShadow(this);
 
   forceTerminalUpdate();

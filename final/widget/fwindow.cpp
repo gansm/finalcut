@@ -88,7 +88,7 @@ auto FWindow::setWindowWidget (bool enable) -> bool
   if ( isWindowWidget() == enable )
     return true;
 
-  setFlags().window_widget = enable;
+  setFlags().type.window_widget = enable;
 
   if ( enable )
     setTermOffset();
@@ -161,19 +161,19 @@ void FWindow::unsetActiveWindow() const
 //----------------------------------------------------------------------
 auto FWindow::setResizeable (bool enable) -> bool
 {
-  return (setFlags().resizeable = enable);
+  return (setFlags().feature.resizeable = enable);
 }
 
 //----------------------------------------------------------------------
 auto FWindow::setMinimizable (bool enable) -> bool
 {
-  return (setFlags().minimizable = enable);
+  return (setFlags().feature.minimizable = enable);
 }
 
 //----------------------------------------------------------------------
 auto FWindow::setTransparentShadow (bool enable) -> bool
 {
-  setFlags().shadow = setFlags().trans_shadow = enable;
+  setFlags().shadow.shadow = setFlags().shadow.trans_shadow = enable;
 
   if ( enable )
     setShadowSize (FSize{2, 1});
@@ -191,14 +191,14 @@ auto FWindow::setShadow (bool enable) -> bool
 
   if ( enable )
   {
-    setFlags().shadow = true;
-    setFlags().trans_shadow = false;
+    setFlags().shadow.shadow = true;
+    setFlags().shadow.trans_shadow = false;
     setShadowSize (FSize{1, 1});
   }
   else
   {
-    setFlags().shadow = false;
-    setFlags().trans_shadow = false;
+    setFlags().shadow.shadow = false;
+    setFlags().shadow.trans_shadow = false;
     setShadowSize (FSize{0, 0});
   }
 
@@ -211,7 +211,7 @@ auto FWindow::setAlwaysOnTop (bool enable) -> bool
   if ( isAlwaysOnTop() == enable )
     return true;
 
-  setFlags().always_on_top = enable;
+  setFlags().visibility.always_on_top = enable;
 
   if ( enable )
   {
@@ -504,8 +504,8 @@ void FWindow::swapWindow (const FWidget* obj1, const FWidget* obj2)
 
   if ( ! getWindowList()
     || getWindowList()->empty()
-    || obj1->getFlags().modal
-    || obj2->getFlags().modal )
+    || obj1->getFlags().visibility.modal
+    || obj2->getFlags().visibility.modal )
     return;
 
   auto iter = getWindowList()->cbegin();
@@ -542,7 +542,7 @@ auto FWindow::raiseWindow (FWidget* obj) -> bool
 
   const auto last = static_cast<FWidget*>(getWindowList()->back());
 
-  if ( last == obj || (last->getFlags().modal && ! obj->isMenuWidget()) )
+  if ( last == obj || (last->getFlags().visibility.modal && ! obj->isMenuWidget()) )
     return false;
 
   auto iter = getWindowList()->cbegin();
@@ -574,7 +574,7 @@ auto FWindow::lowerWindow (FWidget* obj) -> bool
     || getWindowList()->empty()
     || ! obj->isWindowWidget()
     || getWindowList()->front() == obj
-    || obj->getFlags().modal )
+    || obj->getFlags().visibility.modal )
     return false;
 
   auto iter = getWindowList()->cbegin();

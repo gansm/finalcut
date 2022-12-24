@@ -313,7 +313,7 @@ inline auto FLineEdit::unsetReadOnly() -> bool
 
 //----------------------------------------------------------------------
 inline auto FLineEdit::hasShadow() const -> bool
-{ return getFlags().shadow; }
+{ return getFlags().shadow.shadow; }
 
 //----------------------------------------------------------------------
 inline auto FLineEdit::isReadOnly() const noexcept -> bool

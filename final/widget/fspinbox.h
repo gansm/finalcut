@@ -190,7 +190,7 @@ inline auto FSpinBox::unsetShadow() -> bool
 
 //----------------------------------------------------------------------
 inline auto FSpinBox::hasShadow() const -> bool
-{ return getFlags().shadow; }
+{ return getFlags().shadow.shadow; }
 
 //----------------------------------------------------------------------
 inline void FSpinBox::setLabelText (const FString& s)

@@ -74,7 +74,7 @@ class XpmImage
     void getValues (const std::string&);
     void handleNumZero ( const std::string&, std::vector<XpmColor>&
                        , std::vector<XpmColor>& );
-    void handleNumColors (const std::string&, int);
+    void handleNumColors (const std::string&);
     void parseLine ( const std::string&, std::size_t, std::vector<XpmColor>&
                    , std::vector<XpmColor>& );
     auto rgb2ColorIndex (RGB) const -> XpmColor;
@@ -933,9 +933,9 @@ inline void XpmImage::handleNumZero ( const std::string& line
 }
 
 //----------------------------------------------------------------------
-inline void XpmImage::handleNumColors (const std::string& line, int cpp)
+inline void XpmImage::handleNumColors (const std::string& line)
 {
-  cmap.emplace (getColorMapFromLine(line, cpp));
+  cmap.emplace (getColorMapFromLine(line, int(cpp)));
 }
 
 //----------------------------------------------------------------------
@@ -1148,7 +1148,7 @@ void XpmImage::parseXPM3 (const std::vector<std::string>& xpm)
     }
     else if ( num <= num_colors )
     {
-      cmap.emplace (getColorMapFromLine(line, cpp));
+      handleNumColors (line);
     }
     else
     {

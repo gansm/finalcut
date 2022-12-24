@@ -249,23 +249,23 @@ inline auto FWindow::isWindowActive() const noexcept -> bool
 
 //----------------------------------------------------------------------
 inline auto FWindow::isResizeable() const -> bool
-{ return getFlags().resizeable; }
+{ return getFlags().feature.resizeable; }
 
 //----------------------------------------------------------------------
 inline auto FWindow::isMinimizable() const -> bool
-{ return getFlags().minimizable; }
+{ return getFlags().feature.minimizable; }
 
 //----------------------------------------------------------------------
 inline auto FWindow::isAlwaysOnTop() const -> bool
-{ return getFlags().always_on_top; }
+{ return getFlags().visibility.always_on_top; }
 
 //----------------------------------------------------------------------
 inline auto FWindow::hasTransparentShadow() const -> bool
-{ return getFlags().trans_shadow; }
+{ return getFlags().shadow.trans_shadow; }
 
 //----------------------------------------------------------------------
 inline auto FWindow::hasShadow() const -> bool
-{ return getFlags().shadow; }
+{ return getFlags().shadow.shadow; }
 
 //----------------------------------------------------------------------
 inline auto FWindow::getWindowWidgetAt (const FPoint& pos) -> FWindow*

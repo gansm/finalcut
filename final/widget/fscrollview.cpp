@@ -303,7 +303,7 @@ void FScrollView::resetColors()
 //----------------------------------------------------------------------
 auto FScrollView::setBorder (bool enable) -> bool
 {
-  return (setFlags().no_border = ! enable);
+  return (setFlags().feature.no_border = ! enable);
 }
 
 //----------------------------------------------------------------------
@@ -852,16 +852,16 @@ void FScrollView::drawText ( const FString& label_text
 
   for (std::size_t z{0}; z < length; z++)
   {
-    if ( (z == hotkeypos) && getFlags().active )
+    if ( (z == hotkeypos) && getFlags().feature.active )
     {
       setColor (wc->label_hotkey_fg, wc->label_hotkey_bg);
 
-      if ( ! getFlags().no_underline )
+      if ( ! getFlags().feature.no_underline )
         setUnderline();
 
       print (label_text[z]);
 
-      if ( ! getFlags().no_underline )
+      if ( ! getFlags().feature.no_underline )
         unsetUnderline();
 
       setColor (wc->label_emphasis_fg, wc->label_bg);

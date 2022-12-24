@@ -102,6 +102,7 @@
 
 #include "final/fobject.h"
 #include "final/ftypes.h"
+#include "final/fwidget_flags.h"
 #include "final/fwidget_functions.h"
 #include "final/output/foutput.h"
 #include "final/util/fcallback.h"
@@ -140,31 +141,6 @@ class FWidget : public FVTerm
     using FVTerm::print;
     using FWidgetList = std::vector<FWidget*>;
     using FAcceleratorList = std::vector<FAccelerator>;
-
-    struct FWidgetFlags  // Properties of a widget ⚑
-    {
-      uInt32 shadow         : 1;
-      uInt32 trans_shadow   : 1;
-      uInt32 active         : 1;
-      uInt32 visible        : 1;
-      uInt32 shown          : 1;
-      uInt32 hidden         : 1;
-      uInt32 focus          : 1;
-      uInt32 focusable      : 1;
-      uInt32 scrollable     : 1;
-      uInt32 resizeable     : 1;
-      uInt32 minimizable    : 1;
-      uInt32 modal          : 1;
-      uInt32 visible_cursor : 1;
-      uInt32 window_widget  : 1;
-      uInt32 dialog_widget  : 1;
-      uInt32 menu_widget    : 1;
-      uInt32 always_on_top  : 1;
-      uInt32 flat           : 1;
-      uInt32 no_border      : 1;
-      uInt32 no_underline   : 1;
-      uInt32                : 12;  // padding bits
-    };
 
     // Constructor
     explicit FWidget (FWidget* = nullptr);
@@ -405,6 +381,24 @@ class FWidget : public FVTerm
       DoubleLineMask() = default;
       ~DoubleLineMask() = default;
 
+      inline void setWidth (std::size_t width)
+      {
+        top.resize (width, false);
+        bottom.resize (width, false);
+      }
+
+      inline void setHeight (std::size_t height)
+      {
+        right.resize (height, false);
+        left.resize (height, false);
+      }
+
+      inline void setSize (std::size_t width, std::size_t height)
+      {
+        setWidth (width);
+        setHeight (height);
+      }
+
       std::vector<bool> top{};
       std::vector<bool> right{};
       std::vector<bool> bottom{};
@@ -449,7 +443,6 @@ class FWidget : public FVTerm
     WidgetSizeHints      size_hints{};
     DoubleLineMask       double_flatline_mask{};
     WidgetPadding        padding{};
-    bool                 ignore_padding{false};
 
     // widget size
     FRect                wsize{1, 1, 1, 1};
@@ -749,7 +742,7 @@ inline auto FWidget::setDisable() -> bool
 
 //----------------------------------------------------------------------
 inline auto FWidget::setVisibleCursor (bool enable) -> bool
-{ return (flags.visible_cursor = enable); }
+{ return (flags.visibility.visible_cursor = enable); }
 
 //----------------------------------------------------------------------
 inline auto FWidget::unsetVisibleCursor() -> bool
@@ -761,19 +754,19 @@ inline auto FWidget::unsetFocus() -> bool
 
 //----------------------------------------------------------------------
 inline void FWidget::setFocusable (bool enable)
-{ flags.focusable = enable; }
+{ flags.focus.focusable = enable; }
 
 //----------------------------------------------------------------------
 inline void FWidget::unsetFocusable()
-{ flags.focusable = false; }
+{ flags.focus.focusable = false; }
 
 //----------------------------------------------------------------------
 inline auto FWidget::ignorePadding (bool enable) -> bool
-{ return (ignore_padding = enable); }
+{ return (flags.feature.ignore_padding = enable); }
 
 //----------------------------------------------------------------------
 inline auto FWidget::acceptPadding() -> bool
-{ return (ignore_padding = false); }
+{ return (flags.feature.ignore_padding = false); }
 
 //----------------------------------------------------------------------
 inline void FWidget::setForegroundColor (FColor color)
@@ -868,47 +861,47 @@ inline auto FWidget::isRootWidget() const -> bool
 
 //----------------------------------------------------------------------
 inline auto FWidget::isVisible() const -> bool
-{ return flags.visible; }
+{ return flags.visibility.visible; }
 
 //----------------------------------------------------------------------
 inline auto FWidget::isShown() const -> bool
-{ return flags.shown; }
+{ return flags.visibility.shown; }
 
 //----------------------------------------------------------------------
 inline auto FWidget::isHidden() const -> bool
-{ return flags.hidden; }
+{ return flags.visibility.hidden; }
 
 //----------------------------------------------------------------------
 inline auto FWidget::isWindowWidget() const -> bool
-{ return flags.window_widget; }
+{ return flags.type.window_widget; }
 
 //----------------------------------------------------------------------
 inline auto FWidget::isDialogWidget() const -> bool
-{ return flags.dialog_widget; }
+{ return flags.type.dialog_widget; }
 
 //----------------------------------------------------------------------
 inline auto FWidget::isMenuWidget() const -> bool
-{ return flags.menu_widget; }
+{ return flags.type.menu_widget; }
 
 //----------------------------------------------------------------------
 inline auto FWidget::isEnabled() const -> bool
-{ return flags.active; }
+{ return flags.feature.active; }
 
 //----------------------------------------------------------------------
 inline auto FWidget::hasVisibleCursor() const -> bool
-{ return flags.visible_cursor; }
+{ return flags.visibility.visible_cursor; }
 
 //----------------------------------------------------------------------
 inline auto FWidget::hasFocus() const -> bool
-{ return flags.focus; }
+{ return flags.focus.focus; }
 
 //----------------------------------------------------------------------
 inline auto FWidget::acceptFocus() const -> bool  // is focusable
-{ return flags.focusable; }
+{ return flags.focus.focusable; }
 
 //----------------------------------------------------------------------
 inline auto FWidget::isPaddingIgnored() const -> bool
-{ return ignore_padding; }
+{ return flags.feature.ignore_padding; }
 
 //----------------------------------------------------------------------
 inline void FWidget::clearStatusbarMessage()

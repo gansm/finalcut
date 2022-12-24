@@ -74,11 +74,11 @@ FWidget::FWidget (FWidget* parent)
   // init bit field with 0
   memset (&flags, 0, sizeof(flags));
 
-  flags.active = true;          // Enable widget by default
-  flags.visible = true;         // A widget is visible by default
-  flags.focusable = true;       // A widget is focusable by default
-  flags.visible_cursor = true;  // A widget has a visible cursor by default
-  setWidgetProperty (true);     // This FObject is a widget
+  flags.feature.active = true;             // Enable widget by default
+  flags.visibility.visible = true;         // A widget is visible by default
+  flags.focus.focusable = true;            // A widget is focusable by default
+  flags.visibility.visible_cursor = true;  // A widget has a visible cursor by default
+  setWidgetProperty (true);                // This FObject is a widget
 
   if ( ! parent )
   {
@@ -98,11 +98,8 @@ FWidget::FWidget (FWidget* parent)
   }
 
   mapEventFunctions();
-  flags.visible_cursor = false;
-  double_flatline_mask.top.resize (getWidth(), false);
-  double_flatline_mask.right.resize (getHeight(), false);
-  double_flatline_mask.bottom.resize (getWidth(), false);
-  double_flatline_mask.left.resize (getHeight(), false);
+  flags.visibility.visible_cursor = false;
+  double_flatline_mask.setSize (getWidth(), getHeight());
 }
 
 //----------------------------------------------------------------------
@@ -121,7 +118,7 @@ FWidget::~FWidget()  // destructor
     FApplication::setKeyboardWidget(nullptr);
 
   // unset the local window widget focus
-  if ( flags.focus )
+  if ( flags.focus.focus )
   {
     if ( auto window = FWindow::getWindowWidget(this) )
       if ( window != this )
@@ -228,7 +225,7 @@ void FWidget::setMainWidget (FWidget* obj)
 //----------------------------------------------------------------------
 auto FWidget::setVisible (bool enable) -> bool
 {
-  return (flags.visible = enable);
+  return (flags.visibility.visible = enable);
 }
 
 //----------------------------------------------------------------------
@@ -239,7 +236,7 @@ auto FWidget::setEnable (bool enable) -> bool
   else
     emitCallback("disable");
 
-  return (flags.active = enable);
+  return (flags.feature.active = enable);
 }
 
 //----------------------------------------------------------------------
@@ -248,11 +245,11 @@ auto FWidget::setFocus (bool enable) -> bool
   if ( ! isEnabled() )
     return false;
 
-  if ( flags.focus == enable )
+  if ( flags.focus.focus == enable )
     return true;
 
   // Set widget focus
-  if ( enable && ! flags.focus )
+  if ( enable && ! flags.focus.focus )
   {
     auto last_focus = FWidget::getFocusWidget();
 
@@ -267,7 +264,7 @@ auto FWidget::setFocus (bool enable) -> bool
 
   // Set status bar text for widget focus
   setStatusbarText (enable);
-  return (flags.focus = enable);
+  return (flags.focus.focus = enable);
 }
 
 //----------------------------------------------------------------------
@@ -375,8 +372,8 @@ void FWidget::setPos (const FPoint& p, bool adjust)
 //----------------------------------------------------------------------
 void FWidget::setWidth (std::size_t width, bool adjust)
 {
-  width = std::min (width, size_hints.max_width);
-  width = std::max (width, size_hints.min_width);
+  width = std::max ( std::min (width, size_hints.max_width)
+                   , size_hints.min_width );
 
   if ( getWidth() == width && wsize.getWidth() == width  )
     return;
@@ -390,15 +387,14 @@ void FWidget::setWidth (std::size_t width, bool adjust)
   if ( adjust )
     adjustSize();
 
-  double_flatline_mask.top.resize (getWidth(), false);
-  double_flatline_mask.bottom.resize (getWidth(), false);
+  double_flatline_mask.setWidth (getWidth());
 }
 
 //----------------------------------------------------------------------
 void FWidget::setHeight (std::size_t height, bool adjust)
 {
-  height = std::min (height, size_hints.max_height);
-  height = std::max (height, size_hints.min_height);
+  height = std::max ( std::min (height, size_hints.max_height)
+                    , size_hints.min_height );
 
   if ( getHeight() == height && wsize.getHeight() == height )
     return;
@@ -412,33 +408,26 @@ void FWidget::setHeight (std::size_t height, bool adjust)
   if ( adjust )
     adjustSize();
 
-  double_flatline_mask.right.resize (getHeight(), false);
-  double_flatline_mask.left.resize (getHeight(), false);
+  double_flatline_mask.setHeight (getHeight());
 }
 
 //----------------------------------------------------------------------
 void FWidget::setSize (const FSize& size, bool adjust)
 {
-  std::size_t width = size.getWidth();
-  std::size_t height = size.getHeight();
-  width  = std::min (width,  size_hints.max_width);
-  width  = std::max (width,  size_hints.min_width);
-  height = std::min (height, size_hints.max_height);
-  height = std::max (height, size_hints.min_height);
+  std::size_t width = std::max ( std::min (size.getWidth(), size_hints.max_width)
+                               , size_hints.min_width );
+  std::size_t height = std::max ( std::min (size.getHeight(), size_hints.max_height)
+                                , size_hints.min_height );
 
   if ( getWidth() == width && wsize.getWidth() == width
     && getHeight() == height && wsize.getHeight() == height )
     return;
 
   // A width or a height can never be narrower than 1 character
-  wsize.setWidth(std::max(width, std::size_t(1u)));
-  wsize.setHeight(std::max(height, std::size_t(1u)));
+  wsize.setSize ( std::max(width, std::size_t(1u))
+                , std::max(height, std::size_t(1u)) );
   adjust_wsize = wsize;
-
-  double_flatline_mask.top.resize (getWidth(), false);
-  double_flatline_mask.right.resize (getHeight(), false);
-  double_flatline_mask.bottom.resize (getWidth(), false);
-  double_flatline_mask.left.resize (getHeight(), false);
+  double_flatline_mask.setSize (getWidth(), getHeight());
 
   if ( adjust )
     adjustSize();
@@ -559,12 +548,10 @@ void FWidget::setGeometry (const FPoint& p, const FSize& s, bool adjust)
 
   const int x = p.getX();
   const int y = p.getY();
-  std::size_t w = s.getWidth();
-  std::size_t h = s.getHeight();
-  w = std::min (w, size_hints.max_width);
-  w = std::max (w, size_hints.min_width);
-  h = std::min (h, size_hints.max_height);
-  h = std::max (h, size_hints.min_height);
+  std::size_t w = std::max ( std::min (s.getWidth(), size_hints.max_width)
+                           , size_hints.min_width );
+  std::size_t h = std::max ( std::min (s.getHeight(), size_hints.max_height)
+                           , size_hints.min_height );
 
   if ( getPos() == p && getWidth() == w && getHeight() == h )
     return;
@@ -580,8 +567,8 @@ void FWidget::setGeometry (const FPoint& p, const FSize& s, bool adjust)
     wsize.setY(std::max(y, 1));
   }
 
-  wsize.setWidth(std::max(w, std::size_t(1u)));
-  wsize.setHeight(std::max(h, std::size_t(1u)));
+  wsize.setSize ( std::max(w, std::size_t(1u))
+                , std::max(h, std::size_t(1u)) );
   adjust_wsize = wsize;
   const int term_x = getTermX();
   const int term_y = getTermY();
@@ -591,10 +578,7 @@ void FWidget::setGeometry (const FPoint& p, const FSize& s, bool adjust)
                                 , term_x - 2 + int(getWidth()) - padding.right
                                 , term_y - 2 + int(getHeight()) - padding.bottom );
 
-  double_flatline_mask.top.resize (getWidth(), false);
-  double_flatline_mask.right.resize (getHeight(), false);
-  double_flatline_mask.bottom.resize (getWidth(), false);
-  double_flatline_mask.left.resize (getHeight(), false);
+  double_flatline_mask.setSize (getWidth(), getHeight());
 
   if ( adjust )
     adjustSize();
@@ -607,7 +591,7 @@ auto FWidget::setCursorPos (const FPoint& pos) -> bool
 
   widget_cursor_position.setPoint(pos);
 
-  if ( ! flags.focus || flags.hidden || isWindowWidget() )
+  if ( ! flags.focus.focus || flags.visibility.hidden || isWindowWidget() )
     return false;
 
   if ( ! FWindow::getWindowWidget(this) )
@@ -627,7 +611,7 @@ auto FWidget::setCursorPos (const FPoint& pos) -> bool
       woffsetY += (1 - area_owner->getTopPadding());
     }
 
-    bool visible = ! isCursorHideable() || flags.visible_cursor;
+    bool visible = ! isCursorHideable() || flags.visibility.visible_cursor;
     setAreaCursor ( { woffsetX + pos.getX()
                     , woffsetY + pos.getY() }
                   , visible
@@ -775,7 +759,7 @@ auto FWidget::close() -> bool
     {
       hide();
 
-      if ( ! flags.modal && ! isInFWidgetList(close_widget_list, this) )
+      if ( ! flags.visibility.modal && ! isInFWidgetList(close_widget_list, this) )
         close_widget_list->push_back(this);
     }
 
@@ -886,10 +870,7 @@ void FWidget::resize()
     adjustSize();
 
   // resize the four double-flatline-masks
-  double_flatline_mask.top.resize (getWidth(), false);
-  double_flatline_mask.right.resize (getHeight(), false);
-  double_flatline_mask.bottom.resize (getWidth(), false);
-  double_flatline_mask.left.resize (getHeight(), false);
+  double_flatline_mask.setSize (getWidth(), getHeight());
 }
 
 //----------------------------------------------------------------------
@@ -913,8 +894,8 @@ void FWidget::show()
   initWidgetLayout();  // Makes initial layout settings
   adjustSize();        // Alignment before drawing
   draw();              // Draw the widget
-  flags.hidden = false;
-  flags.shown = true;
+  flags.visibility.hidden = false;
+  flags.visibility.shown = true;
 
   if ( hasChildren() )
   {
@@ -922,7 +903,7 @@ void FWidget::show()
     {
       auto child_widget = static_cast<FWidget*>(child);
 
-      if ( child->isWidget() && ! child_widget->flags.hidden )
+      if ( child->isWidget() && ! child_widget->flags.visibility.hidden )
         child_widget->show();
     }
   }
@@ -943,13 +924,13 @@ void FWidget::hide()
 {
   // Hide the widget
 
-  flags.hidden = true;
+  flags.visibility.hidden = true;
 
   if ( isVisible() )
   {
-    flags.shown = false;
+    flags.visibility.shown = false;
 
-    if ( flags.visible_cursor && FWidget::getFocusWidget() == this )
+    if ( flags.visibility.visible_cursor && FWidget::getFocusWidget() == this )
     {
       getPrintArea()->input_cursor_visible = false;
     }
@@ -1322,12 +1303,12 @@ void FWidget::adjustSize()
 
     if ( isWindowWidget() )
     {
-      if ( ignore_padding && ! isDialogWidget() )
+      if ( flags.feature.ignore_padding && ! isDialogWidget() )
         setTermOffset();
       else
         woffset = internal::var::root_widget->wclient_offset;
     }
-    else if ( ignore_padding && p )
+    else if ( flags.feature.ignore_padding && p )
     {
       woffset.setCoordinates ( p->getTermX() - 1
                              , p->getTermY() - 1
@@ -1815,7 +1796,7 @@ void FWidget::KeyPressEvent (FKeyEvent* kev)
 
     if ( kev->isAccepted()
       || widget->isRootWidget()
-      || widget->getFlags().modal )
+      || widget->getFlags().visibility.modal )
       return;
 
     widget = widget->getParentWidget();

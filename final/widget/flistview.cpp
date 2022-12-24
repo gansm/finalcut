@@ -1556,9 +1556,9 @@ void FListView::drawList()
     print() << FPoint{2, 2 + y};
 
     // Draw one FListViewItem
-    drawListLine (item, getFlags().focus, is_current_line);
+    drawListLine (item, getFlags().focus.focus, is_current_line);
 
-    if ( getFlags().focus && is_current_line )
+    if ( getFlags().focus.focus && is_current_line )
     {
       int xpos = 3 + tree_offset + checkbox_offset - xoffset;
 
@@ -2372,7 +2372,7 @@ auto FListView::appendItem (FListViewItem* item) -> FObject::iterator
 }
 
 //----------------------------------------------------------------------
-void FListView::handleListEvent (FMouseEvent* ev)
+void FListView::handleListEvent (const FMouseEvent* ev)
 {
   int indent = 0;
   const int new_pos = first_visible_line.getPosition() + ev->getY() - 2;

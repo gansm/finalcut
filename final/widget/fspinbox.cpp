@@ -346,7 +346,7 @@ void FSpinBox::draw()
           << inc_button_color
           << UniChar::BlackUpPointingTriangle;   // ▲
 
-  if ( getFlags().shadow )
+  if ( getFlags().shadow.shadow )
     drawShadow(this);
 }
 

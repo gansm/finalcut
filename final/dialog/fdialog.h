@@ -309,11 +309,11 @@ inline void FDialog::setText (const FString& txt)
 
 //----------------------------------------------------------------------
 inline auto FDialog::isModal() const -> bool
-{ return getFlags().modal; }
+{ return getFlags().visibility.modal; }
 
 //----------------------------------------------------------------------
 inline auto FDialog::hasBorder() const -> bool
-{ return ! getFlags().no_border; }
+{ return ! getFlags().feature.no_border; }
 
 }  // namespace finalcut
 

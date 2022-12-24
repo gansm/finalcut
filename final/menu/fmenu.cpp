@@ -72,7 +72,7 @@ auto FMenu::setMenuWidget (bool enable) -> bool
   if ( isMenuWidget() == enable )
     return true;
 
-  return (setFlags().menu_widget = enable);
+  return (setFlags().type.menu_widget = enable);
 }
 
 //----------------------------------------------------------------------
@@ -721,20 +721,20 @@ void FMenu::mouseDownSelection (FMenuItem* m_item, bool& focus_changed)
 //----------------------------------------------------------------------
 auto FMenu::mouseUpOverList (const FPoint& mouse_pos) -> bool
 {
-  FMenuItem* selected_item = nullptr;
+  FMenuItem* sel_item = nullptr;
 
   for (auto&& item : getItemList())
   {
     if ( item->isSelected() && isMouseOverItem(mouse_pos, item) )
-      selected_item = item;  // Mouse pointer over item
+      sel_item = item;  // Mouse pointer over item
   }
 
-  if ( ! selected_item )
+  if ( ! sel_item )
     return false;
 
-  if ( selected_item->hasMenu() )
+  if ( sel_item->hasMenu() )
   {
-    auto sub_menu = selected_item->getMenu();
+    auto sub_menu = sel_item->getMenu();
 
     if ( ! sub_menu->isShown() )
       openSubMenu (sub_menu, SELECT_ITEM);
@@ -757,7 +757,7 @@ auto FMenu::mouseUpOverList (const FPoint& mouse_pos) -> bool
   unselectItem();
   hide();
   hideSuperMenus();
-  selected_item->processClicked();
+  sel_item->processClicked();
   return true;
 }
 
@@ -1093,7 +1093,7 @@ inline void FMenu::drawMenuLine (FMenuItem* m_item, int y)
   if ( hotkeypos != NOT_SET )
     column_width--;
 
-  txtdata.no_underline = m_item->getFlags().no_underline;
+  txtdata.no_underline = m_item->getFlags().feature.no_underline;
   setCursorToHotkeyPosition (m_item);
 
   if ( ! is_enabled || is_selected )

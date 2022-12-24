@@ -268,7 +268,7 @@ inline auto FScrollView::unsetBorder() -> bool
 
 //----------------------------------------------------------------------
 inline auto FScrollView::hasBorder() const -> bool
-{ return ! getFlags().no_border; }
+{ return ! getFlags().feature.no_border; }
 
 //----------------------------------------------------------------------
 inline auto FScrollView::isViewportPrint() const -> bool

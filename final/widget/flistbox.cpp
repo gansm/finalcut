@@ -803,7 +803,7 @@ inline void FListBox::drawListLine ( int y
   const FString element(getColumnSubString (getString(iter), first, max_width));
   auto column_width = getColumnWidth(element);
 
-  if ( FVTerm::getFOutput()->isMonochron() && isCurrentLine && getFlags().focus )
+  if ( FVTerm::getFOutput()->isMonochron() && isCurrentLine && getFlags().focus.focus )
     print (UniChar::BlackRightPointingPointer);  // ►
   else
     print (' ');
@@ -814,14 +814,14 @@ inline void FListBox::drawListLine ( int y
 
   for (std::size_t i{0}; i < element.getLength(); i++)
   {
-    if ( serach_mark && i == inc_len && getFlags().focus  )
+    if ( serach_mark && i == inc_len && getFlags().focus.focus  )
       setColor ( wc->current_element_focus_fg
                , wc->current_element_focus_bg );
 
     print (element[i]);
   }
 
-  if ( FVTerm::getFOutput()->isMonochron() && isCurrentLine  && getFlags().focus )
+  if ( FVTerm::getFOutput()->isMonochron() && isCurrentLine  && getFlags().focus.focus )
   {
     print (UniChar::BlackLeftPointingPointer);  // ◄
     column_width++;
@@ -854,7 +854,7 @@ inline void FListBox::drawListBracketsLine ( int y
   const std::size_t inc_len = inc_search.getLength();
   const bool isCurrentLine( y + yoffset + 1 == int(current) );
 
-  if ( FVTerm::getFOutput()->isMonochron() && isCurrentLine && getFlags().focus )
+  if ( FVTerm::getFOutput()->isMonochron() && isCurrentLine && getFlags().focus.focus )
     print (UniChar::BlackRightPointingPointer);  // ►
   else
     print (' ');
@@ -897,7 +897,7 @@ inline void FListBox::drawListBracketsLine ( int y
     column_width++;
   }
 
-  if ( FVTerm::getFOutput()->isMonochron() && isCurrentLine && getFlags().focus )
+  if ( FVTerm::getFOutput()->isMonochron() && isCurrentLine && getFlags().focus.focus )
   {
     print (UniChar::BlackLeftPointingPointer);   // ◄
     column_width++;
@@ -938,14 +938,14 @@ inline void FListBox::setCurrentLineAttributes ( int y
   const std::size_t inc_len = inc_search.getLength();
   const std::size_t inc_width = getColumnWidth(inc_search);
 
-  if ( getFlags().focus && FVTerm::getFOutput()->getMaxColor() < 16 )
+  if ( getFlags().focus.focus && FVTerm::getFOutput()->getMaxColor() < 16 )
     setBold();
 
   if ( isLineSelected )
   {
     if ( FVTerm::getFOutput()->isMonochron() )
       setBold();
-    else if ( getFlags().focus )
+    else if ( getFlags().focus.focus )
       setColor ( wc->selected_current_element_focus_fg
                , wc->selected_current_element_focus_bg );
     else
@@ -959,7 +959,7 @@ inline void FListBox::setCurrentLineAttributes ( int y
     if ( FVTerm::getFOutput()->isMonochron() )
       unsetBold();
 
-    if ( getFlags().focus )
+    if ( getFlags().focus.focus )
     {
       setColor ( wc->current_element_focus_fg
                , wc->current_element_focus_bg );
@@ -1001,7 +1001,7 @@ inline void FListBox::setLineAttributes ( int y
   {
     if ( FVTerm::getFOutput()->isMonochron() )
       setReverse(true);
-    else if ( getFlags().focus && FVTerm::getFOutput()->getMaxColor() < 16 )
+    else if ( getFlags().focus.focus && FVTerm::getFOutput()->getMaxColor() < 16 )
       unsetBold();
   }
 }

@@ -135,10 +135,10 @@ class FButton : public FWidget
     void drawTopBottomBackground();
     void printLeadingSpaces (std::size_t&);
     void setCursorPositionOnButton();
-    void modifyStyle();
+    void modifyStyle() const;
     void printButtonText (const FString&, std::size_t&);
     void printEllipsis();
-    void resetStyle();
+    void resetStyle() const;
     void printTrailingSpaces (std::size_t);
     void drawButtonTextLine (const FString&);
     void draw() override;
@@ -213,7 +213,7 @@ inline auto FButton::unsetClickAnimation() -> bool
 
 //----------------------------------------------------------------------
 inline auto FButton::isFlat() const -> bool
-{ return getFlags().flat; }
+{ return getFlags().feature.flat; }
 
 //----------------------------------------------------------------------
 inline auto FButton::isDown() const noexcept -> bool
@@ -221,7 +221,7 @@ inline auto FButton::isDown() const noexcept -> bool
 
 //----------------------------------------------------------------------
 inline auto FButton::hasShadow() const -> bool
-{ return getFlags().shadow; }
+{ return getFlags().shadow.shadow; }
 
 //----------------------------------------------------------------------
 inline auto FButton::hasClickAnimation() const noexcept -> bool

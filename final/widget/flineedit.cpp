@@ -692,7 +692,7 @@ void FLineEdit::draw()
 //----------------------------------------------------------------------
 void FLineEdit::drawInputField()
 {
-  const bool isActiveFocus = getFlags().active && getFlags().focus;
+  const bool isActiveFocus = getFlags().feature.active && getFlags().focus.focus;
   print() << FPoint{1, 1};
 
   if ( FVTerm::getFOutput()->isMonochron() )
@@ -748,7 +748,7 @@ void FLineEdit::drawInputField()
     setUnderline(false);
   }
 
-  if ( getFlags().shadow )
+  if ( getFlags().shadow.shadow )
     drawShadow(this);
 
   // set the cursor to the insert pos.
