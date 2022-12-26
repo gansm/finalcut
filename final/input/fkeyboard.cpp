@@ -259,14 +259,21 @@ inline auto FKeyboard::getMouseProtocolKey() const -> FKey
 
   const auto buf_len = fifo_buf.getSize();
 
+  if ( buf_len < 3 || fifo_buf[1] != '[' )
+    return NOT_SET;
+
   // x11 mouse tracking
-  if ( buf_len >= 6 && fifo_buf[1] == '[' && fifo_buf[2] == 'M' )
-    return FKey::X11mouse;
+  if ( fifo_buf[1] == '[' && fifo_buf[2] == 'M' )
+    return ( buf_len < 6 ) ? FKey::Incomplete : FKey::X11mouse;
 
   // SGR mouse tracking
-  if ( fifo_buf[1] == '[' && fifo_buf[2] == '<' && buf_len >= 9
-    && (fifo_buf[buf_len - 1] == 'M' || fifo_buf[buf_len - 1] == 'm') )
-    return FKey::Extended_mouse;
+  if ( fifo_buf[1] == '[' && fifo_buf[2] == '<' )
+  {
+    if ( buf_len < 9 || (fifo_buf[buf_len - 1] != 'M' && fifo_buf[buf_len - 1] != 'm') )
+      return FKey::Incomplete;  // Incomplete mouse sequence
+    else
+      return FKey::Extended_mouse;
+  }
 
   // urxvt mouse tracking
   if ( fifo_buf[1] == '[' && fifo_buf[2] >= '1' && fifo_buf[2] <= '9'

@@ -1,3 +1,7 @@
+2022-12-26  Markus Gans  <guru.mail@muenster.de>
+	* Incomplete mouse sequences are no longer checked by 
+	  the keyboard parser
+
 2022-12-24  Markus Gans  <guru.mail@muenster.de>
 	* Widget flags are now organized in a hierarchical structure
 
