@@ -310,18 +310,18 @@ class FKeyboardTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST_SUITE (FKeyboardTest);
 
     // Add a methods to the test suite
-    //CPPUNIT_TEST (classNameTest);
-    //CPPUNIT_TEST (noArgumentTest);
-    //CPPUNIT_TEST (KeyLengthTest);
-    //CPPUNIT_TEST (escapeKeyTest);
-    //CPPUNIT_TEST (characterwiseInputTest);
-    //CPPUNIT_TEST (severalKeysTest);
-    //CPPUNIT_TEST (functionKeyTest);
-    //CPPUNIT_TEST (metaKeyTest);
-    //CPPUNIT_TEST (sequencesTest);
-    //CPPUNIT_TEST (mouseTest);
+    CPPUNIT_TEST (classNameTest);
+    CPPUNIT_TEST (noArgumentTest);
+    CPPUNIT_TEST (KeyLengthTest);
+    CPPUNIT_TEST (escapeKeyTest);
+    CPPUNIT_TEST (characterwiseInputTest);
+    CPPUNIT_TEST (severalKeysTest);
+    CPPUNIT_TEST (functionKeyTest);
+    CPPUNIT_TEST (metaKeyTest);
+    CPPUNIT_TEST (sequencesTest);
+    CPPUNIT_TEST (mouseTest);
     CPPUNIT_TEST (utf8Test);
-    //CPPUNIT_TEST (unknownKeyTest);
+    CPPUNIT_TEST (unknownKeyTest);
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
