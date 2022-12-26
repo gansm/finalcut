@@ -262,7 +262,7 @@ void FTermOutput::setNonBlockingRead (bool enable)
   if ( ttyname_r(1, termfilename, sizeof(termfilename)) )
     termfilename[0] = '\0';
 
-  if ( std::strncmp(termfilename, "/dev/cons", 9) == 0 )
+  if ( std::memcmp(termfilename, "/dev/cons", 9) == 0 )
   {
     FKeyboard::setNonBlockingInputSupport(false);
     return;

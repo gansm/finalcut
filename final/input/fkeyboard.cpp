@@ -371,21 +371,36 @@ inline auto FKeyboard::getSingleKey() -> FKey
 {
   // Looking for single key code in the buffer
 
-  std::size_t len{1U};
   const auto& firstchar = fifo_buf.front();
   FKey keycode{};
+
+  // Use a lookup table to map firstchar to the corresponding length
+  static constexpr std::array<uInt8, 256> len_lookup
+  {{
+    1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U,  // 0x00
+    1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U,  // 0x10
+    1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U,  // 0x20
+    1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U,  // 0x30
+    1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U,  // 0x40
+    1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U,  // 0x50
+    1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U,  // 0x60
+    1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U,  // 0x70
+    1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U,  // 0x80
+    1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U,  // 0x90
+    1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U,  // 0xA0
+    1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U,  // 0xB0
+    2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U,  // 0xC0
+    2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U,  // 0xD0
+    3U, 3U, 3U, 3U, 3U, 3U, 3U, 3U, 3U, 3U, 3U, 3U, 3U, 3U, 3U, 3U,  // 0xE0
+    4U, 4U, 4U, 4U, 4U, 4U, 4U, 4U, 5U, 5U, 5U, 5U, 6U, 6U, 1U, 1U   // 0xF0
+  }};
+
+  auto len = len_lookup[firstchar & 0xff];
 
   // Look for a utf-8 character
   if ( utf8_input && (firstchar & uChar(0xc0)) == 0xc0 )
   {
     const auto buf_len = fifo_buf.getSize();
-
-    if ( (firstchar & uChar(0xe0)) == 0xc0 )
-      len = 2U;
-    else if ( (firstchar & uChar(0xf0)) == 0xe0 )
-      len = 3U;
-    else if ( (firstchar & uChar(0xf8)) == 0xf0 )
-      len = 4U;
 
     if ( buf_len < len && ! isKeypressTimeout() )
       return FKey::Incomplete;
@@ -508,28 +523,28 @@ auto FKeyboard::parseKeyString() -> FKey
 {
   const auto& firstchar = fifo_buf.front();
 
-  if ( firstchar == ESC[0] )
-  {
-    FKey keycode = getMouseProtocolKey();
+  if ( firstchar != ESC[0] )
+    return getSingleKey();
 
-    if ( keycode != NOT_SET )
-      return keycode;
+  if ( fifo_buf.getSize() == 1 )
+    return isKeypressTimeout() ? getSingleKey() : FKey::Incomplete;
 
-    keycode = getTermcapKey();
+  FKey keycode = getMouseProtocolKey();
 
-    if ( keycode != NOT_SET )
-      return keycode;
+  if ( keycode != NOT_SET )
+    return keycode;
 
-    keycode = getKnownKey();
+  keycode = getTermcapKey();
 
-    if ( keycode != NOT_SET )
-      return keycode;
+  if ( keycode != NOT_SET )
+    return keycode;
 
-    if ( ! isKeypressTimeout() )
-      return FKey::Incomplete;
-  }
+  keycode = getKnownKey();
 
-  return getSingleKey();
+  if ( keycode != NOT_SET )
+    return keycode;
+
+  return isKeypressTimeout() ? getSingleKey() : FKey::Incomplete;
 }
 
 //----------------------------------------------------------------------

@@ -554,7 +554,7 @@ auto FOptiAttr::vga2ansi (FColor color) -> FColor
     color = FColor::Black;
   else if ( color < 16 )
   {
-    constexpr std::array<FColor, 16> lookup_table =
+    static constexpr std::array<FColor, 16> lookup_table
     {{
       FColor(0), FColor(4),  FColor(2),  FColor(6),
       FColor(1), FColor(5),  FColor(3),  FColor(7),
@@ -1264,7 +1264,7 @@ inline void FOptiAttr::change_to_default_color ( FChar& term, FChar& next
       const char* sgr_49;
       const auto& op = F_orig_pair.cap;
 
-      if ( op && std::strncmp (op, CSI "39;49;25m", 11) == 0 )
+      if ( op && std::memcmp (op, CSI "39;49;25m", 11) == 0 )
         sgr_49 = CSI "49;25m";
       else
         sgr_49 = CSI "49m";
@@ -1360,18 +1360,18 @@ auto FOptiAttr::caused_reset_attributes (const char cap[], uChar test) const -> 
     const auto& se = F_exit_standout_mode.cap;
     const auto& me = F_exit_attribute_mode.cap;
 
-    if ( (test & test_ansi_reset) && std::strncmp (cap, CSI "m", 3) == 0 )
+    if ( (test & test_ansi_reset) && std::memcmp (cap, CSI "m", 3) == 0 )
       return true;
 
-    if ( (test & test_adm3_reset) && std::strncmp (cap, ESC "G0", 3) == 0 )
+    if ( (test & test_adm3_reset) && std::memcmp (cap, ESC "G0", 3) == 0 )
       return true;
 
     if ( (test & same_like_ue) && ue && std::strcmp (cap, ue) == 0
-       && std::strncmp (cap, CSI "24m", 5) != 0)
+       && std::memcmp (cap, CSI "24m", 5) != 0)
       return true;
 
     if ( (test & same_like_se) && se && std::strcmp (cap, se) == 0
-       && std::strncmp (cap, CSI "27m", 5) != 0 )
+       && std::memcmp (cap, CSI "27m", 5) != 0 )
       return true;
 
     if ( (test & same_like_me) && me && std::strcmp (cap, me) == 0 )

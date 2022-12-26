@@ -389,7 +389,7 @@ void FTermcapQuirks::sunConsole()
       const std::string& tname = key.first;
       const std::string& string = key.second;
 
-      if ( std::strncmp(fkey_cap_table[i].tname, tname.c_str(), tname.size()) == 0
+      if ( std::memcmp(fkey_cap_table[i].tname, tname.c_str(), tname.size()) == 0
         && stringLength(fkey_cap_table[i].tname) == tname.size() )
       {
         fkey_cap_table[i].string = string.c_str();
@@ -488,7 +488,7 @@ void FTermcapQuirks::ecma48()
 {
   // Test for standard ECMA-48 (ANSI X3.64) terminal
   if ( ! TCAP(t_exit_underline_mode)
-    || std::strncmp(TCAP(t_exit_underline_mode), CSI "24m", 5) != 0 )
+    || std::memcmp(TCAP(t_exit_underline_mode), CSI "24m", 5) != 0 )
     return;
 
   // Seems to be a ECMA-48 (ANSI X3.64) compatible terminal

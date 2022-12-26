@@ -151,7 +151,7 @@ class FKeyboard final
 
   private:
     // Constants
-    static constexpr FKey NOT_SET = static_cast<FKey>(-1);
+    static constexpr FKey NOT_SET = static_cast<FKey>(-2);
     static constexpr std::size_t MAX_QUEUE_SIZE = 32;
 
     // Using-declaration

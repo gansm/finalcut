@@ -401,7 +401,7 @@ void FTermcap::termcapStrings()
 
   const auto& ho = TCAP(t_cursor_home);
 
-  if ( ho && std::strncmp(ho, "\033[H", 3) == 0 )
+  if ( ho && std::memcmp(ho, "\033[H", 3) == 0 )
     has_ansi_escape_sequences = true;
 
   const auto& pc = TCAP(t_pad_char);

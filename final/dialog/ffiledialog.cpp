@@ -464,7 +464,7 @@ auto FFileDialog::readDir() -> int
 
       // Skip ".." for the root directory
       if ( dir[0] == '/' && dir[1] == '\0'
-        && std::strcmp(next->d_name, "..") == 0  )
+        && std::memcmp(next->d_name, "..", 2) == 0  )
         continue;
 
       getEntry(dir, next);

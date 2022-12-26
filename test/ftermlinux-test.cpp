@@ -1852,8 +1852,8 @@ auto FSystemTest::open (const char* pathname, int flags, ...) -> int
             << "\", flags=" << flags
             << ", mode=" << mode << ")\n";
 
-  if ( std::strncmp(pathname, "/dev/fb0", 8) == 0
-    || std::strncmp(pathname, "/dev/fb/0", 9) == 0 )
+  if ( std::memcmp(pathname, "/dev/fb0", 8) == 0
+    || std::memcmp(pathname, "/dev/fb/0", 9) == 0 )
     return 99;  // File descriptor
 
   return 0;
