@@ -52,38 +52,6 @@ auto FSize::operator -= (const FSize& s) -> FSize&
 }
 
 //----------------------------------------------------------------------
-void FSize::setWidth (std::size_t w) noexcept
-{
-  width = w;
-}
-
-//----------------------------------------------------------------------
-void FSize::setHeight (std::size_t h) noexcept
-{
-  height = h;
-}
-
-//----------------------------------------------------------------------
-void FSize::setSize (const FSize& s)
-{
-  width = s.width;
-  height = s.height;
-}
-
-//----------------------------------------------------------------------
-void FSize::setSize (std::size_t w, std::size_t h) noexcept
-{
-  width = w;
-  height = h;
-}
-
-//----------------------------------------------------------------------
-auto FSize::isEmpty() const noexcept -> bool
-{
-  return width == 0 && height == 0;
-}
-
-//----------------------------------------------------------------------
 void FSize::scaleBy (int dx, int dy) noexcept
 {
   if ( dx < 0 )

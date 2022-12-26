@@ -127,6 +127,32 @@ inline auto FSize::getArea() const noexcept -> std::size_t
 { return width * height; }
 
 //----------------------------------------------------------------------
+inline void FSize::setWidth (std::size_t w) noexcept
+{ width = w; }
+
+//----------------------------------------------------------------------
+inline void FSize::setHeight (std::size_t h) noexcept
+{ height = h; }
+
+//----------------------------------------------------------------------
+inline void FSize::setSize (const FSize& s)
+{
+  width = s.width;
+  height = s.height;
+}
+
+//----------------------------------------------------------------------
+inline void FSize::setSize (std::size_t w, std::size_t h) noexcept
+{
+  width = w;
+  height = h;
+}
+
+//----------------------------------------------------------------------
+inline auto FSize::isEmpty() const noexcept -> bool
+{ return width == 0 && height == 0; }
+
+//----------------------------------------------------------------------
 inline auto FSize::width_ref() & noexcept -> std::size_t&
 { return width; }
 

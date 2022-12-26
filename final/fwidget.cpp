@@ -273,7 +273,7 @@ void FWidget::resetColors()
   if ( ! hasChildren() )
     return;
 
-  for (auto&& child : getChildren())
+  for (auto* child : getChildren())
   {
     if ( child->isWidget() )
     {
@@ -441,17 +441,17 @@ void FWidget::setTopPadding (int top, bool adjust)
 
   padding.top = top;
 
-  if ( adjust )
+  if ( ! adjust )
+    return;
+
+  if ( isRootWidget() )
   {
-    if ( isRootWidget() )
-    {
-      auto r = internal::var::root_widget;
-      r->wclient_offset.setY1 (r->padding.top);
-      adjustSizeGlobal();
-    }
-    else
-      adjustSize();
+    auto r = internal::var::root_widget;
+    r->wclient_offset.setY1 (r->padding.top);
+    adjustSizeGlobal();
   }
+  else
+    adjustSize();
 }
 
 //----------------------------------------------------------------------
@@ -462,17 +462,17 @@ void FWidget::setLeftPadding (int left, bool adjust)
 
   padding.left = left;
 
-  if ( adjust )
+  if ( ! adjust )
+    return;
+
+  if ( isRootWidget() )
   {
-    if ( isRootWidget() )
-    {
-      auto r = internal::var::root_widget;
-      r->wclient_offset.setX1 (r->padding.left);
-      adjustSizeGlobal();
-    }
-    else
-      adjustSize();
+    auto r = internal::var::root_widget;
+    r->wclient_offset.setX1 (r->padding.left);
+    adjustSizeGlobal();
   }
+  else
+    adjustSize();
 }
 
 //----------------------------------------------------------------------
@@ -483,22 +483,22 @@ void FWidget::setBottomPadding (int bottom, bool adjust)
 
   padding.bottom = bottom;
 
-  if ( adjust )
+  if ( ! adjust )
+    return;
+
+  if ( isRootWidget() )
   {
-    if ( isRootWidget() )
-    {
-      auto r = internal::var::root_widget;
-      auto root_height = int(r->getHeight());
-      auto root_pb = r->padding.bottom;
+    auto r = internal::var::root_widget;
+    auto root_height = int(r->getHeight());
+    auto root_pb = r->padding.bottom;
 
-      if ( root_height > 1 + root_pb )
-        r->wclient_offset.setY2 (root_height - 1 - root_pb);
+    if ( root_height > 1 + root_pb )
+      r->wclient_offset.setY2 (root_height - 1 - root_pb);
 
-      adjustSizeGlobal();
-    }
-    else
-      adjustSize();
+    adjustSizeGlobal();
   }
+  else
+    adjustSize();
 }
 
 //----------------------------------------------------------------------
@@ -509,22 +509,22 @@ void FWidget::setRightPadding (int right, bool adjust)
 
   padding.right = right;
 
-  if ( adjust )
+  if ( ! adjust )
+    return;
+
+  if ( isRootWidget() )
   {
-    if ( isRootWidget() )
-    {
-      auto r = internal::var::root_widget;
-      auto root_width = int(r->getWidth());
-      auto root_pr = r->padding.right;
+    auto r = internal::var::root_widget;
+    auto root_width = int(r->getWidth());
+    auto root_pr = r->padding.right;
 
-      if ( root_width > 1 + root_pr )
-        r->wclient_offset.setX2  (root_width - 1 - root_pr);
+    if ( root_width > 1 + root_pr )
+      r->wclient_offset.setX2  (root_width - 1 - root_pr);
 
-      adjustSizeGlobal();
-    }
-    else
-      adjustSize();
+    adjustSizeGlobal();
   }
+  else
+    adjustSize();
 }
 
 //----------------------------------------------------------------------
@@ -532,13 +532,13 @@ void FWidget::setTerminalSize (const FSize& size) const
 {
   // Set terminal size to width x height
 
-  if ( FVTerm::getFOutput()->allowsTerminalSizeManipulation() )
-  {
-    internal::var::root_widget->wsize.setRect(FPoint{1, 1}, size);
-    internal::var::root_widget->adjust_wsize = internal::var::root_widget->wsize;
-    FVTerm::getFOutput()->setTerminalSize(size);
-    detectTerminalSize();
-  }
+  if ( ! FVTerm::getFOutput()->allowsTerminalSizeManipulation() )
+    return;
+
+  internal::var::root_widget->wsize.setRect(FPoint{1, 1}, size);
+  internal::var::root_widget->adjust_wsize = internal::var::root_widget->wsize;
+  FVTerm::getFOutput()->setTerminalSize(size);
+  detectTerminalSize();
 }
 
 //----------------------------------------------------------------------
@@ -591,35 +591,33 @@ auto FWidget::setCursorPos (const FPoint& pos) -> bool
 
   widget_cursor_position.setPoint(pos);
 
-  if ( ! flags.focus.focus || flags.visibility.hidden || isWindowWidget() )
-    return false;
-
-  if ( ! FWindow::getWindowWidget(this) )
+  if ( ! flags.focus.focus
+    || flags.visibility.hidden
+    || isWindowWidget()
+    || ! FWindow::getWindowWidget(this) )
     return false;
 
   const auto& area = getPrintArea();
 
-  if ( area->hasOwner() )
+  if ( ! area->hasOwner() )
+    return false;
+
+  const auto& area_owner = area->getOwner<FWidget*>();
+  int woffsetX = getTermX() - area_owner->getTermX();
+  int woffsetY = getTermY() - area_owner->getTermY();
+
+  if ( isChildPrintArea() )
   {
-    const auto& area_owner = area->getOwner<FWidget*>();
-    int woffsetX = getTermX() - area_owner->getTermX();
-    int woffsetY = getTermY() - area_owner->getTermY();
-
-    if ( isChildPrintArea() )
-    {
-      woffsetX += (1 - area_owner->getLeftPadding());
-      woffsetY += (1 - area_owner->getTopPadding());
-    }
-
-    bool visible = ! isCursorHideable() || flags.visibility.visible_cursor;
-    setAreaCursor ( { woffsetX + pos.getX()
-                    , woffsetY + pos.getY() }
-                  , visible
-                  , area );
-    return true;
+    woffsetX += (1 - area_owner->getLeftPadding());
+    woffsetY += (1 - area_owner->getTopPadding());
   }
 
-  return false;
+  bool visible = ! isCursorHideable() || flags.visibility.visible_cursor;
+  setAreaCursor ( { woffsetX + pos.getX()
+                  , woffsetY + pos.getY() }
+                , visible
+                , area );
+  return true;
 }
 
 //----------------------------------------------------------------------
@@ -699,7 +697,7 @@ auto FWidget::childWidgetAt (const FPoint& pos) & -> FWidget*
   if ( ! hasChildren() )
     return nullptr;
 
-  for (auto&& child : getChildren())
+  for (auto* child : getChildren())
   {
     if ( ! child->isWidget() )
       continue;
@@ -727,7 +725,7 @@ auto FWidget::numOfFocusableChildren() & -> int
 
   int num{0};
 
-  for (auto&& child : getChildren())
+  for (auto* child : getChildren())
   {
     if ( child->isWidget() )
     {
@@ -751,22 +749,20 @@ auto FWidget::close() -> bool
   FCloseEvent ev(Event::Close);
   FApplication::sendEvent(this, &ev);
 
-  if ( ev.isAccepted() )
+  if ( ! ev.isAccepted() )
+    return false;
+
+  if ( this == getMainWidget() )
+    quit();
+  else
   {
-    if ( this == getMainWidget() )
-      quit();
-    else
-    {
-      hide();
+    hide();
 
-      if ( ! flags.visibility.modal && ! isInFWidgetList(close_widget_list, this) )
-        close_widget_list->push_back(this);
-    }
-
-    return true;
+    if ( ! flags.visibility.modal && ! isInFWidgetList(close_widget_list, this) )
+      close_widget_list->push_back(this);
   }
 
-  return false;
+  return true;
 }
 
 //----------------------------------------------------------------------
@@ -794,18 +790,17 @@ void FWidget::delAccelerator (FWidget* obj) &
   if ( ! widget || widget == statusbar || widget == menubar )
     widget = getRootWidget();
 
-  if ( widget
-    && ! widget->accelerator_list.empty() )
-  {
-    auto iter = widget->accelerator_list.cbegin();
+  if ( ! widget || widget->accelerator_list.empty() )
+    return;
 
-    while ( iter != widget->accelerator_list.cend() )
-    {
-      if ( iter->object == obj )
-        iter = widget->accelerator_list.erase(iter);
-      else
-        ++iter;
-    }
+  auto iter = widget->accelerator_list.cbegin();
+
+  while ( iter != widget->accelerator_list.cend() )
+  {
+    if ( iter->object == obj )
+      iter = widget->accelerator_list.erase(iter);
+    else
+      ++iter;
   }
 }
 
@@ -899,7 +894,7 @@ void FWidget::show()
 
   if ( hasChildren() )
   {
-    for (auto&& child : getChildren())
+    for (auto* child : getChildren())
     {
       auto child_widget = static_cast<FWidget*>(child);
 
@@ -926,28 +921,28 @@ void FWidget::hide()
 
   flags.visibility.hidden = true;
 
-  if ( isVisible() )
+  if ( ! isVisible() )
+    return;
+
+  flags.visibility.shown = false;
+
+  if ( flags.visibility.visible_cursor && FWidget::getFocusWidget() == this )
   {
-    flags.visibility.shown = false;
-
-    if ( flags.visibility.visible_cursor && FWidget::getFocusWidget() == this )
-    {
-      getPrintArea()->input_cursor_visible = false;
-    }
-
-    if ( ! isDialogWidget()
-      && FWidget::getFocusWidget() == this
-      && ! focusPrevChild() )
-    {
-      if ( FWidget::getFocusWidget() )
-        FWidget::getFocusWidget()->unsetFocus();
-
-      FWidget::setFocusWidget(getParentWidget());
-    }
-
-    FHideEvent hide_ev (Event::Hide);
-    FApplication::sendEvent(this, &hide_ev);
+    getPrintArea()->input_cursor_visible = false;
   }
+
+  if ( ! isDialogWidget()
+    && FWidget::getFocusWidget() == this
+    && ! focusPrevChild() )
+  {
+    if ( FWidget::getFocusWidget() )
+      FWidget::getFocusWidget()->unsetFocus();
+
+    FWidget::setFocusWidget(getParentWidget());
+  }
+
+  FHideEvent hide_ev (Event::Hide);
+  FApplication::sendEvent(this, &hide_ev);
 }
 
 //----------------------------------------------------------------------
@@ -1064,7 +1059,7 @@ auto FWidget::focusFirstChild() & -> bool
   if ( ! hasChildren() )
     return false;
 
-  for ( auto& item : getChildren() )
+  for (auto* item : getChildren())
   {
     if ( ! item->isWidget() )  // Skip non-widget elements
       continue;
@@ -1335,7 +1330,7 @@ void FWidget::adjustSize()
 
   if ( hasChildren() )
   {
-    for (auto&& child : getChildren())
+    for (auto* child : getChildren())
     {
       auto widget = static_cast<FWidget*>(child);
 
@@ -1698,7 +1693,7 @@ void FWidget::initWidgetLayout()
   if ( ! hasChildren() )
     return;
 
-  for (auto&& child : getChildren())
+  for (auto* child : getChildren())
   {
     if ( child->isWidget() )
     {
@@ -1721,6 +1716,60 @@ void FWidget::finish()
 }
 
 //----------------------------------------------------------------------
+inline void FWidget::moveLeftIfNotEnoughSpace()
+{
+  int diff = getTermX() + int(getWidth()) - padding.right - (woffset.getX2() + 2);
+
+  if ( diff <= 0 )
+    return;
+
+  adjust_wsize.x1_ref() = std::max(adjust_wsize.getX1() - diff, 1);
+  adjust_wsize.x2_ref() -= diff;
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::moveUpIfNotEnoughSpace()
+{
+  int diff = getTermY() + int(getHeight()) - padding.bottom - (woffset.getY2() + 2);
+
+  if ( diff <= 0 )
+    return;
+
+  adjust_wsize.y1_ref() = std::max(adjust_wsize.getY1() - diff, 1);
+  adjust_wsize.y2_ref() -= diff;
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::reduceWidthIfNotEnoughSpace()
+{
+  int diff = woffset.getX1() + int(getWidth()) - 1 - woffset.getX2();
+  adjust_wsize.x2_ref() = std::min ( adjust_wsize.getX2() - diff
+                                   , adjust_wsize.getX2() );
+
+  // Handle the minimum hint value
+  adjust_wsize.x2_ref() = adjust_wsize.getX1()
+                        + int(std::max(getWidth(), size_hints.min_width)) - 1;
+
+  // The minimum with is 1
+  adjust_wsize.x2_ref() = adjust_wsize.getX1() + std::max(int(getWidth()), 1) - 1;
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::reduceHeightIfNotEnoughSpace()
+{
+  int diff = woffset.getY1() + int(getHeight()) - 1 - woffset.getY2();
+  adjust_wsize.y2_ref() = std::min ( adjust_wsize.getY2() - diff
+                                   , adjust_wsize.getY2() );
+
+  // Handle the minimum hint value
+  adjust_wsize.y2_ref() = adjust_wsize.getY1()
+                        + int(std::max(getHeight(), size_hints.min_height)) - 1;
+
+  // The minimum with is 1
+  adjust_wsize.y2_ref() = adjust_wsize.getY1() + std::max(int(getHeight()), 1) - 1;
+}
+
+//----------------------------------------------------------------------
 inline void FWidget::insufficientSpaceAdjust()
 {
   // Move and shrink widget if there is not enough space available
@@ -1728,47 +1777,10 @@ inline void FWidget::insufficientSpaceAdjust()
   if ( isWindowWidget() )
     return;
 
-  // move left if not enough space
-  while ( getTermX() + int(getWidth()) - padding.right > woffset.getX2() + 2 )
-  {
-    if ( adjust_wsize.x1_ref() < 2 )
-      adjust_wsize.x1_ref() = 1;
-    else
-      adjust_wsize.x1_ref()--;
-
-    adjust_wsize.x2_ref()--;
-  }
-
-  // move up if not enough space
-  while ( getTermY() + int(getHeight()) - padding.bottom > woffset.getY2() + 2 )
-  {
-    if ( adjust_wsize.y1_ref() < 2 )
-      adjust_wsize.y1_ref() = 1;
-    else
-      adjust_wsize.y1_ref()--;
-
-    adjust_wsize.y2_ref()--;
-  }
-
-  // reduce the width if not enough space
-  while ( woffset.getX1() + int(getWidth()) - 1 > woffset.getX2() )
-    adjust_wsize.x2_ref()--;
-
-  if ( getWidth() < size_hints.min_width )
-    adjust_wsize.setWidth(size_hints.min_width);
-
-  if ( getWidth() == 0 )
-    adjust_wsize.setWidth(1);
-
-  // reduce the height if not enough space
-  while ( woffset.getY1() + int(getHeight()) - 1 > woffset.getY2() )
-    adjust_wsize.y2_ref()--;
-
-  if ( getHeight() < size_hints.min_height )
-    adjust_wsize.setHeight(size_hints.min_height);
-
-  if ( getHeight() == 0 )
-    adjust_wsize.setHeight(1);
+  moveLeftIfNotEnoughSpace();      // move left if not enough space
+  moveUpIfNotEnoughSpace();        // move up if not enough space
+  reduceWidthIfNotEnoughSpace();   // reduce the width if not enough space
+  reduceHeightIfNotEnoughSpace();  // reduce the height if not enough space
 }
 
 //----------------------------------------------------------------------
@@ -1937,7 +1949,7 @@ void FWidget::drawChildren()
   if ( ! hasChildren() )
     return;
 
-  for (auto&& child : getChildren())
+  for (auto* child : getChildren())
   {
     if ( child->isWidget() )
     {

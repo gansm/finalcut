@@ -422,6 +422,7 @@ void FWidgetTest::noArgumentTest()
   CPPUNIT_ASSERT ( wdgt.getFlags().feature.flat == false );
   CPPUNIT_ASSERT ( wdgt.getFlags().feature.no_border == false );
   CPPUNIT_ASSERT ( wdgt.getFlags().feature.no_underline == false );
+  CPPUNIT_ASSERT ( wdgt.getFlags().feature.ignore_padding == false );
 
   wdgt.setVisible(false);
   CPPUNIT_ASSERT ( wdgt.getFlags().visibility.visible == false );
@@ -478,12 +479,16 @@ void FWidgetTest::noArgumentTest()
   CPPUNIT_ASSERT ( wdgt.getFlags().focus.focusable == true );
 
   wdgt.ignorePadding(false);
+  CPPUNIT_ASSERT ( wdgt.getFlags().feature.ignore_padding == false );
   CPPUNIT_ASSERT ( ! wdgt.isPaddingIgnored() );
   wdgt.ignorePadding(true);
+  CPPUNIT_ASSERT ( wdgt.getFlags().feature.ignore_padding == true );
   CPPUNIT_ASSERT ( wdgt.isPaddingIgnored() );
   wdgt.acceptPadding();
+  CPPUNIT_ASSERT ( wdgt.getFlags().feature.ignore_padding == false );
   CPPUNIT_ASSERT ( ! wdgt.isPaddingIgnored() );
   wdgt.ignorePadding();
+  CPPUNIT_ASSERT ( wdgt.getFlags().feature.ignore_padding == true );
   CPPUNIT_ASSERT ( wdgt.isPaddingIgnored() );
 }
 

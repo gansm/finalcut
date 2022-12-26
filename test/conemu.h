@@ -585,8 +585,10 @@ inline void ConEmu::startConEmuTerminal (console con)
     return;
 
   closeSlavePTY();
+  uInt64 timeout = 10'000'000;  // 10 seconds
+  TimeValue time_last_data = finalcut::FObjectTimer::getCurrentTime();
 
-  while ( true )
+  while ( ! finalcut::FObjectTimer::isTimeout (time_last_data, timeout) )
   {
     fd_set ifds;
     struct timeval tv;
@@ -611,6 +613,7 @@ inline void ConEmu::startConEmuTerminal (console con)
       {
         buffer[len] = '\0';
         write (fd_master, buffer, len);  // Send data to the master side
+        time_last_data = finalcut::FObjectTimer::getCurrentTime();
       }
     }
 
@@ -626,6 +629,7 @@ inline void ConEmu::startConEmuTerminal (console con)
       {
         buffer[len] = '\0';
         parseTerminalBuffer (len, con);
+        time_last_data = finalcut::FObjectTimer::getCurrentTime();
       }
     }
   }

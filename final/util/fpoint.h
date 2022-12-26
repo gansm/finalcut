@@ -114,8 +114,27 @@ inline auto FPoint::getY() const noexcept -> int
 { return ypos; }
 
 //----------------------------------------------------------------------
+inline void FPoint::setX (int x) noexcept
+{ xpos = x; }
+
+//----------------------------------------------------------------------
+inline void FPoint::setY (int y) noexcept
+{ ypos = y; }
+
+//----------------------------------------------------------------------
 inline void FPoint::setPoint (const FPoint& p)
 { setPoint(p.xpos, p.ypos); }
+
+//----------------------------------------------------------------------
+inline void FPoint::setPoint (int x, int y) noexcept
+{
+  xpos = x;
+  ypos = y;
+}
+
+//----------------------------------------------------------------------
+inline auto FPoint::isOrigin() const noexcept -> bool
+{ return xpos == 0 && ypos == 0; }
 
 //----------------------------------------------------------------------
 inline auto FPoint::x_ref() & noexcept -> int&
@@ -125,6 +144,19 @@ inline auto FPoint::x_ref() & noexcept -> int&
 inline auto FPoint::y_ref() & noexcept -> int&
 { return ypos; }
 
+//----------------------------------------------------------------------
+inline void FPoint::move (int dx, int dy) noexcept
+{
+  xpos += dx;
+  ypos += dy;
+}
+
+//----------------------------------------------------------------------
+inline void FPoint::move (const FPoint& d)
+{
+  xpos += d.getX();
+  ypos += d.getY();
+}
 
 // FPoint non-member operators
 //----------------------------------------------------------------------

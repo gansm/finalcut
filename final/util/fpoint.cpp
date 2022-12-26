@@ -49,45 +49,6 @@ auto FPoint::operator -= (const FPoint& p) -> FPoint&
 }
 
 //----------------------------------------------------------------------
-void FPoint::setX (int x) noexcept
-{
-  xpos = x;
-}
-
-//----------------------------------------------------------------------
-void FPoint::setY (int y) noexcept
-{
-  ypos = y;
-}
-
-//----------------------------------------------------------------------
-void FPoint::setPoint (int x, int y) noexcept
-{
-  xpos = x;
-  ypos = y;
-}
-
-//----------------------------------------------------------------------
-auto FPoint::isOrigin() const noexcept -> bool
-{
-  return xpos == 0 && ypos == 0;
-}
-
-//----------------------------------------------------------------------
-void FPoint::move (int dx, int dy) noexcept
-{
-  xpos += dx;
-  ypos += dy;
-}
-
-//----------------------------------------------------------------------
-void FPoint::move (const FPoint& d)
-{
-  xpos += d.getX();
-  ypos += d.getY();
-}
-
-//----------------------------------------------------------------------
 auto operator << (std::ostream& outstr, const FPoint& p) -> std::ostream&
 {
   outstr << p.xpos << " " << p.ypos;

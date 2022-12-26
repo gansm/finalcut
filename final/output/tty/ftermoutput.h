@@ -156,8 +156,8 @@ class FTermOutput final : public FOutput
 
     // Constants
     //   Upper and lower flush limit
-    static constexpr uInt64 MIN_FLUSH_WAIT = 16'667;   //   16.6 ms = 60 Hz
-    static constexpr uInt64 MAX_FLUSH_WAIT = 200'000;  //  200.0 ms = 5 Hz
+    static constexpr uInt64 MIN_FLUSH_WAIT = 16'667;   //  16.6 ms = 60 Hz
+    static constexpr uInt64 MAX_FLUSH_WAIT = 200'000;  // 200.0 ms = 5 Hz
     //   Output buffer size
     static constexpr std::size_t BUFFER_SIZE = 32'768;  // 32 KB
 

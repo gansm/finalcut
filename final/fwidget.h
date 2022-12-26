@@ -422,6 +422,10 @@ class FWidget : public FVTerm
     void  initRootWidget();
     void  initWidgetLayout();
     void  finish();
+    void  moveLeftIfNotEnoughSpace();
+    void  moveUpIfNotEnoughSpace();
+    void  reduceWidthIfNotEnoughSpace();
+    void  reduceHeightIfNotEnoughSpace();
     void  insufficientSpaceAdjust();
     void  KeyPressEvent (FKeyEvent*);
     void  KeyDownEvent (FKeyEvent*);
