@@ -1,0 +1,15 @@
+exclude:
+- ".*/debian/.*"
+- ".*/doc/.*"
+- ".*/examples/.*"
+- ".*/final/font/.*"
+- ".*/misc/.*"
+- ".*/m4/.*"
+- ".*/scripts/.*"
+- ".*/build.sh"
+- ".*/ltmain.sh"
+
+component_depth: 2
+
+languages:
+- name: "Cpp"
