@@ -252,6 +252,7 @@ void Scrollviewdemo::cb_quit()
 //----------------------------------------------------------------------
 //                               main part
 //----------------------------------------------------------------------
+
 auto main (int argc, char* argv[]) -> int
 {
   // Create the application object

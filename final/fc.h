@@ -1354,7 +1354,7 @@ enum class FocusTypes
 {
   NextWidget     = 0x00,
   PreviousWidget = 0x01,
-  DefiniteWidget = 0x03  // event default
+  DefiniteWidget = 0x03  // Focus event default value
 };
 
 // Mouse drag scrolling mode

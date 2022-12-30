@@ -269,8 +269,6 @@ Calc::Calc (FWidget* parent)
     btn->setFlat();
     btn->setNoUnderline();
     btn->setText(getButtonText(key));
-    btn->setDoubleFlatLine(finalcut::Side::Top);
-    btn->setDoubleFlatLine(finalcut::Side::Bottom);
 
     if ( finalcut::FVTerm::getFOutput()->isNewFont() )
       btn->unsetClickAnimation();
@@ -1067,6 +1065,9 @@ void Calc::calcInfixOperator()
 {
   switch ( infix_operator )
   {
+    case '\0':  // The infix operator has not been set yet
+      return;
+
     case '*':
       calcMultiplication();
       break;
@@ -1088,7 +1089,7 @@ void Calc::calcInfixOperator()
       break;
 
     default:
-      break;
+      throw std::invalid_argument{"Invalid infix operator"};
   }
 
   clearInfixOperator();
@@ -1114,6 +1115,9 @@ void Calc::initLayout()
       const int y = (int(key) + n) / 5 * 2 + 3;
       btn->setGeometry(FPoint{x, y}, FSize{5, 1});
     }
+
+    btn->setDoubleFlatLine(finalcut::Side::Top);
+    btn->setDoubleFlatLine(finalcut::Side::Bottom);
   }
 
   FDialog::initLayout();
