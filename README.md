@@ -24,9 +24,7 @@ The structure of the Qt framework was originally the inspiration for the C++ cla
 | *Coverity Scan*    | [![Coverity Scan Status](https://img.shields.io/coverity/scan/6508.svg)](https://scan.coverity.com/projects/6508 ) |
 | *SonarCloud*       | [![Quality gate](https://sonarcloud.io/api/project_badges/measure?project=gansm_finalcut&metric=alert_status)](https://sonarcloud.io/dashboard?id=gansm_finalcut) |
 | *CodeFactor*       | [![CodeFactor](https://www.codefactor.io/repository/github/gansm/finalcut/badge)](https://www.codefactor.io/repository/github/gansm/finalcut) |
-| *SIGRID Publish*       | [![sigrid-publish](https://github.com/MichielCuijpers/finalcut/actions/workflows/sigrid-publish.yml/badge.svg?branch=main)](https://github.com/MichielCuijpers/finalcut/actions/workflows/sigrid-publish.yml) |
-| *SIGRID Pull Request*       | [![sigrid-publish](https://github.com/MichielCuijpers/finalcut/actions/workflows/sigrid-pullrequest.yml/badge.svg?branch=main)](https://github.com/MichielCuijpers/finalcut/actions/workflows/sigrid-pullrequest.yml) |
-
+| *SIGRID*       | [![sigrid-publish](https://github.com/MichielCuijpers/finalcut/actions/workflows/sigrid-publish.yml/badge.svg?branch=main)](https://github.com/MichielCuijpers/finalcut/actions/workflows/sigrid-publish.yml) |
 
 
 ## Installation
