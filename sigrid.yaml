@@ -1,5 +1,4 @@
 exclude:
-- ".*/debian/.*"
 - ".*/doc/.*"
 - ".*/examples/.*"
 - ".*/final/font/.*"

@@ -59,7 +59,7 @@ Is my platform supported?
 -------------------------
 
 The supported platforms are Linux, FreeBSD, NetBSD, OpenBSD, macOS, 
-Cygwin on Microsoft Windows and Oracle Solaris
+Cygwin on Microsoft Windows, GNU Hurd, and Oracle Solaris
 
 
 What do I need to write my own programs with FINAL CUT?

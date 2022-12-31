@@ -24,10 +24,12 @@ The design of FINAL CUT's C++ class structure was inspired by the Qt framework. 
 | *Coverity Scan*    | [![Coverity Scan Status](https://img.shields.io/coverity/scan/6508.svg)](https://scan.coverity.com/projects/6508 ) |
 | *SonarCloud*       | [![Quality gate](https://sonarcloud.io/api/project_badges/measure?project=gansm_finalcut&metric=alert_status)](https://sonarcloud.io/dashboard?id=gansm_finalcut) |
 | *CodeFactor*       | [![CodeFactor](https://www.codefactor.io/repository/github/gansm/finalcut/badge)](https://www.codefactor.io/repository/github/gansm/finalcut) |
-| *SIGRID*       | [![sigrid-publish](https://github.com/MichielCuijpers/finalcut/actions/workflows/sigrid-publish.yml/badge.svg?branch=main)](https://github.com/MichielCuijpers/finalcut/actions/workflows/sigrid-publish.yml) |
+| *SIGRID*       | [![sigrid-publish](https://github.com/gansm/finalcut/actions/workflows/sigrid-publish.yml/badge.svg?branch=main)](https://github.com/gansm/finalcut/actions/workflows/sigrid-publish.yml) |
 
 
 ## Installation
+
+Before installing FINAL CUT, check if your computer meets the requirements. You can find these in the FAQ section under "[What do I need to build this library?](doc/faq.md#what-do-i-need-to-build-this-library)".
 
 ```bash
 > git clone https://github.com/gansm/finalcut.git
@@ -39,6 +41,10 @@ The design of FINAL CUT's C++ class structure was inspired by the Qt framework. 
 ```
 
 ## Supported platforms
+
+If your platform is not listed here, it may still be compatible with FINAL CUT. I welcome any [help](Contributing.md) to make this software available on more platforms.
+
+FINAL CUT currently works on the following platforms:
 
 * Linux
 * FreeBSD

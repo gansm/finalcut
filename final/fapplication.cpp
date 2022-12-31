@@ -1428,7 +1428,15 @@ void setQueued (FEvent& event, bool state)
 //----------------------------------------------------------------------
 auto operator << (std::ostream& outstr, FLog::LogLevel l) -> std::ostream&
 {
-  *FApplication::getLog() << l;
+  try
+  {
+    *FApplication::getLog() << l;
+  }
+  catch (const std::invalid_argument&)
+  {
+    *FApplication::getLog() << FLog::LogLevel::Info;
+  }
+
   return outstr;
 }
 
