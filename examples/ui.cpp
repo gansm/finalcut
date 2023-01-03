@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2019 Markus Gans                                      *
+* Copyright 2012-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -151,9 +151,7 @@ void ProgressDialog::onTimer (finalcut::FTimerEvent*)
   more.setEnable();
   quit.setEnable();
   redraw();
-
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
+  finalcut::drawStatusBarMessage();
 }
 
 //----------------------------------------------------------------------

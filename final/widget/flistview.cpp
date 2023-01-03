@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2022 Markus Gans                                      *
+* Copyright 2017-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -971,7 +971,7 @@ void FListView::sort()
       break;
 
     default:
-      return;
+      throw std::invalid_argument{"Invalid sort type"};
   }
 
   sort(comparator);
@@ -1213,22 +1213,10 @@ void FListView::onWheel (FWheelEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FListView::onFocusIn (FFocusEvent*)
+void FListView::onFocusOut (FFocusEvent* out_ev)
 {
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
-}
-
-//----------------------------------------------------------------------
-void FListView::onFocusOut (FFocusEvent*)
-{
-  if ( getStatusBar() )
-  {
-    getStatusBar()->clearMessage();
-    getStatusBar()->drawMessage();
-  }
-
   delOwnTimers();
+  FWidget::onFocusOut(out_ev);
 }
 
 
@@ -2816,7 +2804,7 @@ void FListView::cb_vbarChange (const FWidget*)
       break;
 
     default:
-      break;
+      throw std::invalid_argument{"Invalid scroll type"};
   }
 
   if ( isShown() )
@@ -2871,7 +2859,7 @@ void FListView::cb_hbarChange (const FWidget*)
       break;
 
     default:
-      break;
+      throw std::invalid_argument{"Invalid scroll type"};
   }
 
   if ( isShown() )

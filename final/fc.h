@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2021 Markus Gans                                      *
+* Copyright 2015-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -66,6 +66,7 @@ enum class Event
   FocusOut,          // focus out
   ChildFocusIn,      // child focus in
   ChildFocusOut,     // child focus out
+  FailAtChildFocus,  // No further focusable child widgets
   WindowActive,      // activate window
   WindowInactive,    // deactivate window
   WindowRaised,      // raise window

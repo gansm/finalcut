@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2022 Markus Gans                                      *
+* Copyright 2012-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -106,14 +106,6 @@ auto FLineEdit::operator >> (FString& s) const -> const FLineEdit&
 auto FLineEdit::setEnable (bool enable) -> bool
 {
   FWidget::setEnable(enable);
-  resetColors();
-  return enable;
-}
-
-//----------------------------------------------------------------------
-auto FLineEdit::setFocus (bool enable) -> bool
-{
-  FWidget::setFocus(enable);
   resetColors();
   return enable;
 }
@@ -561,8 +553,10 @@ void FLineEdit::onHide (FHideEvent*)
 }
 
 //----------------------------------------------------------------------
-void FLineEdit::onFocusIn (FFocusEvent*)
+void FLineEdit::onFocusIn (FFocusEvent* in_ev)
 {
+  resetColors();
+
   if ( ! isReadOnly() )
   {
     if ( insert_mode )
@@ -571,21 +565,18 @@ void FLineEdit::onFocusIn (FFocusEvent*)
       FVTerm::getFOutput()->setCursor(CursorMode::Overwrite);
   }
 
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
+  FWidget::onFocusIn(in_ev);
 }
 
 //----------------------------------------------------------------------
-void FLineEdit::onFocusOut (FFocusEvent*)
+void FLineEdit::onFocusOut (FFocusEvent* out_ev)
 {
-  if ( getStatusBar() )
-  {
-    getStatusBar()->clearMessage();
-    getStatusBar()->drawMessage();
-  }
+  resetColors();
 
   if ( ! insert_mode && ! isReadOnly() )
     FVTerm::getFOutput()->setCursor(CursorMode::Insert);
+
+  FWidget::onFocusOut(out_ev);
 }
 
 
@@ -727,10 +718,8 @@ void FLineEdit::drawInputField()
         return printPassword();
 
       default:
-        break;
+        throw std::invalid_argument{"Invalid input type"};
     }
-
-    return std::make_tuple (std::size_t(0), std::size_t(0));
   }();
 
   if ( x_pos + align_offset + 1 < getWidth() )

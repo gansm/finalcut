@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2013-2022 Markus Gans                                      *
+* Copyright 2013-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -383,8 +383,7 @@ void FApplication::closeConfirmationDialog (FWidget* w, FCloseEvent* ev)
     ev->ignore();
 
     // Status bar restore after closing the FMessageBox
-    if ( getStatusBar() )
-      getStatusBar()->drawMessage();
+    drawStatusBarMessage();
   }
 }
 
@@ -632,12 +631,13 @@ void FApplication::showParameterUsage()
 //----------------------------------------------------------------------
 inline void FApplication::destroyLog()
 {
+  // Reset the rdbuf of clog
+  std::clog << std::flush;
+  std::clog.rdbuf(default_clog_rdbuf);
+
   // Delete the logger
   const FLogPtr* logger = &(getLog());
   delete logger;
-
-  // Reset the rdbuf of clog
-  std::clog.rdbuf(default_clog_rdbuf);
 }
 
 //----------------------------------------------------------------------
@@ -660,7 +660,7 @@ inline void FApplication::findKeyboardWidget() const
   {
     widget = getMainWidget();
 
-    if ( widget && widget->numOfChildren() >= 1 )
+    if ( widget && widget->numOfFocusableChildren() >= 1 )
       widget->focusFirstChild();
   }
 
@@ -1041,8 +1041,7 @@ void FApplication::unselectMenubarItems (const FMouseData& md) const
     if ( ! FWidget::getClickedWidget() )
       FWindow::switchToPrevWindow(this);
 
-    if ( FWidget::getStatusBar() )
-      FWidget::getStatusBar()->drawMessage();
+    drawStatusBarMessage();
   }
 }
 

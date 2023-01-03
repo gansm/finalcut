@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2022 Markus Gans                                      *
+* Copyright 2015-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -214,7 +214,8 @@ class FWidget : public FVTerm
     virtual auto setDisable() -> bool;
     virtual auto setVisibleCursor (bool = true) -> bool;  // input cursor visibility
     virtual auto unsetVisibleCursor() -> bool;            // for the widget
-    virtual auto setFocus (bool = true) -> bool;
+    virtual auto setFocus ( bool = true
+                          , FocusTypes = FocusTypes::DefiniteWidget) -> bool;
     virtual auto unsetFocus() -> bool;
     void  setFocusable (bool = true);
     void  unsetFocusable();
@@ -342,6 +343,7 @@ class FWidget : public FVTerm
     virtual void onFocusOut (FFocusEvent*);
     virtual void onChildFocusIn (FFocusEvent*);
     virtual void onChildFocusOut (FFocusEvent*);
+    virtual void onFailAtChildFocus (FFocusEvent*);
     virtual void onAccel (FAccelEvent*);
     virtual void onResize (FResizeEvent*);
     virtual void onShow (FShowEvent*);
@@ -383,12 +385,18 @@ class FWidget : public FVTerm
 
       inline void setWidth (std::size_t width)
       {
+        if ( top.size() == width && bottom.size() == width )
+          return;
+
         top.resize (width, false);
         bottom.resize (width, false);
       }
 
       inline void setHeight (std::size_t height)
       {
+        if ( right.size() == height && left.size() == height )
+          return;
+
         right.resize (height, false);
         left.resize (height, false);
       }
@@ -431,7 +439,15 @@ class FWidget : public FVTerm
     void  KeyDownEvent (FKeyEvent*);
     void  emitWheelCallback (const FWheelEvent*) const;
     void  setWindowFocus (bool = true);
-    auto  changeFocus (FWidget*, FWidget*, FocusTypes) -> bool;
+    auto  searchForwardForWidget ( FWidget*
+                                 , FWidget*)  -> FObjectList::const_iterator;
+    auto  searchBackwardsForWidget ( FWidget*
+                                   , FWidget* ) -> FObjectList::const_iterator;
+    auto  canReceiveFocus (FWidget*) -> bool;
+    void  setFocusOnThisWidget (FocusTypes);
+    auto  sendFailAtChildFocusEvent (FWidget*, FocusTypes) -> bool;
+    auto  sendFocusOutEvent (FWidget*, FocusTypes) -> bool;
+    auto  sendFocusInEvent (FWidget*, FocusTypes) -> bool;
     void  processDestroy() const;
     virtual void draw();
     void  drawWindows() const;
@@ -754,7 +770,7 @@ inline auto FWidget::unsetVisibleCursor() -> bool
 
 //----------------------------------------------------------------------
 inline auto FWidget::unsetFocus() -> bool
-{ return setFocus(false); }
+{ return setFocus(false, FocusTypes::DefiniteWidget); }
 
 //----------------------------------------------------------------------
 inline void FWidget::setFocusable (bool enable)

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2022 Markus Gans                                      *
+* Copyright 2018-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -277,7 +277,7 @@ inline auto FKeyboard::getMouseProtocolKey() const -> FKey
 
   // urxvt mouse tracking
   if ( fifo_buf[1] == '[' && fifo_buf[2] >= '1' && fifo_buf[2] <= '9'
-    && fifo_buf[3] >= '0' && fifo_buf[3] <= '9' && buf_len >= 9
+    && std::isdigit(fifo_buf[3]) && buf_len >= 9
     && fifo_buf[buf_len - 1] == 'M' )
     return FKey::Urxvt_mouse;
 

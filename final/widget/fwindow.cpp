@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2022 Markus Gans                                      *
+* Copyright 2015-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -921,15 +921,17 @@ void FWindow::reactivateWindow (FWindow* active_win)
 
   if ( focus && ! focus->isInstanceOf("FMenuItem") )
   {
-    focus->setFocus();
+    // Renew the focus of the focused widget in the current window
+    auto last_focus = FWidget::getFocusWidget();
 
-    if ( ! focus->isWindowWidget() )
-      focus->redraw();
-    else
-    {
-      if ( getStatusBar() )
-        getStatusBar()->drawMessage();
-    }
+    if ( last_focus )
+      last_focus->setFlags().focus.focus = false;
+
+    FWidget::setFocusWidget(focus);
+    focus->setFlags().focus.focus = true;
+    active_win->setWindowFocusWidget (focus);
+    FFocusEvent f_in (Event::FocusIn);
+    FApplication::sendEvent (focus, &f_in);
   }
 }
 
@@ -970,8 +972,7 @@ void closeDropDown (const FWidget* widget, const FPoint& mouse_position)
   if ( ! (FWidget::getClickedWidget() || is_dialog_menu) )
     FWindow::switchToPrevWindow(widget);
 
-  if ( FWidget::getStatusBar() )
-    FWidget::getStatusBar()->drawMessage();
+  drawStatusBarMessage();
 }
 
 }  // namespace finalcut

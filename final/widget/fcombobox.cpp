@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2022 Markus Gans                                      *
+* Copyright 2019-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -205,14 +205,6 @@ auto FComboBox::setEnable (bool enable) -> bool
 {
   FWidget::setEnable(enable);
   input_field.setEnable(enable);
-  return enable;
-}
-
-//----------------------------------------------------------------------
-auto FComboBox::setFocus (bool enable) -> bool
-{
-  FWidget::setFocus(enable);
-  input_field.setFocus(enable);
   return enable;
 }
 
@@ -422,9 +414,17 @@ void FComboBox::onWheel (FWheelEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FComboBox::onFocusOut (FFocusEvent*)
+void FComboBox::onFocusIn (FFocusEvent* in_ev)
+{
+  setWidgetFocus (&input_field);
+  FWidget::onFocusIn(in_ev);
+}
+
+//----------------------------------------------------------------------
+void FComboBox::onFocusOut (FFocusEvent* out_ev)
 {
   hideDropDown();
+  FWidget::onFocusOut(out_ev);
 }
 
 

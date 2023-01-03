@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2022 Markus Gans                                      *
+* Copyright 2012-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -144,8 +144,6 @@ class FLineEdit : public FWidget
     auto setEnable (bool = true) -> bool override;
     auto unsetEnable() -> bool override;
     auto setDisable() -> bool override;
-    auto setFocus (bool = true) -> bool override;
-    auto unsetFocus() -> bool override;
     auto setShadow (bool = true) -> bool;
     auto unsetShadow() -> bool;
     auto setReadOnly (bool = true) -> bool;
@@ -298,10 +296,6 @@ inline auto FLineEdit::unsetEnable() -> bool
 //----------------------------------------------------------------------
 inline auto FLineEdit::setDisable() -> bool
 { return setEnable(false); }
-
-//----------------------------------------------------------------------
-inline auto FLineEdit::unsetFocus() -> bool
-{ return setFocus(false); }
 
 //----------------------------------------------------------------------
 inline auto FLineEdit::unsetShadow() -> bool

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2022 Markus Gans                                           *
+* Copyright 2022-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -324,17 +324,16 @@ void FWidgetTest::noArgumentTest()
   auto& right = wdgt.doubleFlatLine_ref(finalcut::Side::Right);
   auto& bottom = wdgt.doubleFlatLine_ref(finalcut::Side::Bottom);
   auto& left = wdgt.doubleFlatLine_ref(finalcut::Side::Left);
-  auto& default_side = wdgt.doubleFlatLine_ref(static_cast<finalcut::Side>(99));  // Side::Top fallback
+  CPPUNIT_ASSERT_THROW ( wdgt.doubleFlatLine_ref(static_cast<finalcut::Side>(99))
+                       , std::invalid_argument );
   CPPUNIT_ASSERT ( top.size() == 1 );
   CPPUNIT_ASSERT ( right.size() == 1 );
   CPPUNIT_ASSERT ( bottom.size() == 1 );
   CPPUNIT_ASSERT ( left.size() == 1 );
-  CPPUNIT_ASSERT ( default_side.size() == 1 );
   CPPUNIT_ASSERT ( top[0] == false );
   CPPUNIT_ASSERT ( right[0] == false );
   CPPUNIT_ASSERT ( bottom[0] == false );
   CPPUNIT_ASSERT ( left[0] == false );
-  CPPUNIT_ASSERT ( default_side[0] == false );
   wdgt.setDoubleFlatLine(finalcut::Side::Top);
   CPPUNIT_ASSERT ( top[0] == true );
   wdgt.setDoubleFlatLine(finalcut::Side::Right);
@@ -343,7 +342,6 @@ void FWidgetTest::noArgumentTest()
   CPPUNIT_ASSERT ( bottom[0] == true );
   wdgt.setDoubleFlatLine(finalcut::Side::Left);
   CPPUNIT_ASSERT ( left[0] == true );
-  CPPUNIT_ASSERT ( default_side[0] == true );
   top[0] = false;
   right[0] = false;
   bottom[0] = false;
@@ -352,7 +350,8 @@ void FWidgetTest::noArgumentTest()
   CPPUNIT_ASSERT ( right[0] == false );
   CPPUNIT_ASSERT ( bottom[0] == false );
   CPPUNIT_ASSERT ( left[0] == false );
-  wdgt.setDoubleFlatLine(static_cast<finalcut::Side>(99));
+  CPPUNIT_ASSERT_THROW ( wdgt.setDoubleFlatLine(static_cast<finalcut::Side>(99))
+                       , std::invalid_argument );
   CPPUNIT_ASSERT ( top[0] == false );
   CPPUNIT_ASSERT ( right[0] == false );
   CPPUNIT_ASSERT ( bottom[0] == false );
@@ -1200,7 +1199,8 @@ void FWidgetTest::PosAndSizeTest()
   wdgt.setDoubleFlatLine (finalcut::Side::Bottom, 5, true);
   wdgt.setDoubleFlatLine (finalcut::Side::Bottom, 15, true);
   wdgt.setDoubleFlatLine (finalcut::Side::Left, 12, true);
-  wdgt.setDoubleFlatLine (static_cast<finalcut::Side>(99), 1, true);
+  CPPUNIT_ASSERT_THROW ( wdgt.setDoubleFlatLine (static_cast<finalcut::Side>(99), 1, true)
+                       , std::invalid_argument );
   CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[0] == false );
   CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[1] == true );
   CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[2] == true );
@@ -1769,6 +1769,71 @@ void FWidgetTest::focusableChildrenTest()
   CPPUNIT_ASSERT ( ! wdgt1_1.getFlags().focus.focusable );
   CPPUNIT_ASSERT ( wdgt1_2.numOfFocusableChildren() == 0 );
   CPPUNIT_ASSERT ( ! wdgt1_2.getFlags().focus.focusable );
+
+  // Test FocusNextChild
+  finalcut::FWidget parent{&root_wdgt};
+  finalcut::FWidget child1{&parent};
+  finalcut::FWidget child2{&parent};
+  finalcut::FWidget child3{&parent};
+  finalcut::FWidget child4{&parent};
+
+  // Test focusing on the next child when no children have focus
+  CPPUNIT_ASSERT ( parent.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( child1.getFlags().feature.active );
+  CPPUNIT_ASSERT ( child2.getFlags().feature.active );
+  CPPUNIT_ASSERT ( child3.getFlags().feature.active );
+  CPPUNIT_ASSERT ( child4.getFlags().feature.active );
+  CPPUNIT_ASSERT ( child1.getFlags().focus.focusable );
+  CPPUNIT_ASSERT ( child2.getFlags().focus.focusable );
+  CPPUNIT_ASSERT ( child3.getFlags().focus.focusable );
+  CPPUNIT_ASSERT ( child4.getFlags().focus.focusable );
+  CPPUNIT_ASSERT ( ! child1.getFlags().visibility.shown );
+  CPPUNIT_ASSERT ( ! child2.getFlags().visibility.shown );
+  CPPUNIT_ASSERT ( ! child3.getFlags().visibility.shown );
+  CPPUNIT_ASSERT ( ! child4.getFlags().visibility.shown );
+  child1.setFlags().visibility.shown = true;
+  child2.setFlags().visibility.shown = true;
+  child3.setFlags().visibility.shown = true;
+  child4.setFlags().visibility.shown = true;
+  CPPUNIT_ASSERT ( parent.numOfFocusableChildren() == 4 );
+  CPPUNIT_ASSERT ( child1.getFlags().visibility.shown );
+  CPPUNIT_ASSERT ( child2.getFlags().visibility.shown );
+  CPPUNIT_ASSERT ( child3.getFlags().visibility.shown );
+  CPPUNIT_ASSERT ( child4.getFlags().visibility.shown );
+  CPPUNIT_ASSERT ( ! child1.isWindowWidget() );
+  CPPUNIT_ASSERT ( ! child2.isWindowWidget() );
+  CPPUNIT_ASSERT ( ! child3.isWindowWidget() );
+  CPPUNIT_ASSERT ( ! child4.isWindowWidget() );
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+  CPPUNIT_ASSERT ( ! parent.focusNextChild() );
+  child1.setFocus();  // Set the initial focus
+  CPPUNIT_ASSERT ( child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+  CPPUNIT_ASSERT ( child1.focusNextChild() );
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+  CPPUNIT_ASSERT ( child2.focusNextChild() );
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+  CPPUNIT_ASSERT ( child3.focusNextChild() );
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( child4.hasFocus() );
+  CPPUNIT_ASSERT ( child4.focusNextChild() );
+  CPPUNIT_ASSERT ( child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
 }
 
 //----------------------------------------------------------------------

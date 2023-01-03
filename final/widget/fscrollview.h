@@ -4,7 +4,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2022 Markus Gans                                      *
+* Copyright 2017-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -121,7 +121,6 @@ class FScrollView : public FWidget
     void resetColors() override;
     auto setBorder (bool = true) -> bool;
     auto unsetBorder() -> bool;
-    auto setFocus (bool = true) -> bool override;
     void setHorizontalScrollBarMode (ScrollBarMode);
     void setVerticalScrollBarMode (ScrollBarMode);
 
@@ -151,6 +150,7 @@ class FScrollView : public FWidget
     void onFocusIn (FFocusEvent*) override;
     void onChildFocusIn (FFocusEvent*) override;
     void onChildFocusOut (FFocusEvent*) override;
+    void onFailAtChildFocus (FFocusEvent*) override;
 
   protected:
     // Using-declaration

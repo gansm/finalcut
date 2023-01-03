@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2022 Markus Gans                                      *
+* Copyright 2015-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -116,14 +116,14 @@ void FMenuBar::onKeyPress (FKeyEvent* ev)
 
     ev->accept();
   }
-  else if ( key == FKey::Left )
-  {
-    selectPrevItem();
-    ev->accept();
-  }
-  else if ( key == FKey::Right )
+  else if ( key == FKey::Right || key == FKey::Tab )
   {
     selectNextItem();
+    ev->accept();
+  }
+  else if ( key == FKey::Left || key == FKey::Back_tab )
+  {
+    selectPrevItem();
     ev->accept();
   }
   else if ( isEscapeKey(key) )
@@ -198,10 +198,7 @@ void FMenuBar::onAccel (FAccelEvent* ev)
   unselectItem();
   selectFirstItem();
   getSelectedItem()->setFocus();
-
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
-
+  drawStatusBarMessage();
   redraw();
   forceTerminalUpdate();
   ev->accept();
@@ -272,13 +269,9 @@ void FMenuBar::selectItem_PostProcessing (FMenuItem* sel_item)
   sel_item->setFocus();
 
   if ( drop_down && sel_item->hasMenu() )
-  {
     openMenu(sel_item);
-  }
 
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
-
+  drawStatusBarMessage();
   setSelectedItem(sel_item);
   redraw();
   setTerminalUpdates (FVTerm::TerminalUpdate::Start);
@@ -569,10 +562,14 @@ void FMenuBar::adjustItems() const
 //----------------------------------------------------------------------
 void FMenuBar::selectMenuItem (FMenuItem* item)
 {
+  auto focused_widget = getFocusWidget();
+
+  if ( ! item->isEnabled() && focused_widget )
+    focused_widget->unsetFocus();
+
   if ( ! item->isEnabled() || item->isSelected() )
     return;
 
-  auto focused_widget = getFocusWidget();
   unselectItem();
   item->setSelected();
   item->setFocus();
@@ -609,10 +606,7 @@ void FMenuBar::openMenu (const FMenuItem* sel_item)
     first_item->setFocus();
 
   menu->redraw();
-
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
-
+  drawStatusBarMessage();
   redraw();
   drop_down = true;
 }
@@ -633,9 +627,7 @@ auto FMenuBar::activateMenu (const FMenuItem* item) -> bool
     if ( first_item )
       first_item->setFocus();
 
-    if ( getStatusBar() )
-      getStatusBar()->drawMessage();
-
+    drawStatusBarMessage();
     redraw();
     menu->redraw();
     drop_down = true;
@@ -844,10 +836,7 @@ void FMenuBar::leaveMenuBar()
     getStatusBar()->clearMessage();
 
   switchToPrevWindow(this);
-
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
-
+  drawStatusBarMessage();
   mouse_down = false;
 }
 

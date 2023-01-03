@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2022 Markus Gans                                      *
+* Copyright 2019-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -88,8 +88,6 @@ class FSpinBox : public FWidget
     auto setEnable (bool = true) -> bool override;
     auto unsetEnable() -> bool override;
     auto setDisable() -> bool override;
-    auto setFocus (bool = true) -> bool override;
-    auto unsetFocus() -> bool override;
     auto setShadow (bool = true) -> bool;
     auto unsetShadow() -> bool;
     void setValue (sInt64);
@@ -113,6 +111,7 @@ class FSpinBox : public FWidget
     void onMouseUp (FMouseEvent*) override;
     void onWheel (FWheelEvent*) override;
     void onTimer (FTimerEvent*) override;
+    void onFocusIn (FFocusEvent*) override;
 
   private:
     // Enumeration
@@ -179,10 +178,6 @@ inline auto FSpinBox::unsetEnable() -> bool
 //----------------------------------------------------------------------
 inline auto FSpinBox::setDisable() -> bool
 { return setEnable(false); }
-
-//----------------------------------------------------------------------
-inline auto FSpinBox::unsetFocus() -> bool
-{ return setFocus(false); }
 
 //----------------------------------------------------------------------
 inline auto FSpinBox::unsetShadow() -> bool

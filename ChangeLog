@@ -1,3 +1,7 @@
+2023-01-03  Markus Gans  <guru.mail@muenster.de>
+	* The way how a widget gets the focus has been changed. It is now 
+	  a single step that includes sending focus events
+
 2022-12-26  Markus Gans  <guru.mail@muenster.de>
 	* Incomplete mouse sequences are no longer checked by 
 	  the keyboard parser

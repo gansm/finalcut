@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2022 Markus Gans                                      *
+* Copyright 2014-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -64,7 +64,7 @@ class FPoint
     auto getY() const noexcept -> int;
     void setX (int) noexcept;
     void setY (int) noexcept;
-    void setPoint (const FPoint&);
+    void setPoint (const FPoint&) noexcept;
     void setPoint (int, int) noexcept;
 
     // Inquiry
@@ -76,7 +76,7 @@ class FPoint
 
     // Methods
     void move (int, int) noexcept;
-    void move (const FPoint&);
+    void move (const FPoint&) noexcept;
 
   private:
     // Data members
@@ -122,7 +122,7 @@ inline void FPoint::setY (int y) noexcept
 { ypos = y; }
 
 //----------------------------------------------------------------------
-inline void FPoint::setPoint (const FPoint& p)
+inline void FPoint::setPoint (const FPoint& p) noexcept
 { setPoint(p.xpos, p.ypos); }
 
 //----------------------------------------------------------------------
@@ -152,7 +152,7 @@ inline void FPoint::move (int dx, int dy) noexcept
 }
 
 //----------------------------------------------------------------------
-inline void FPoint::move (const FPoint& d)
+inline void FPoint::move (const FPoint& d) noexcept
 {
   xpos += d.getX();
   ypos += d.getY();

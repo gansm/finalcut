@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2022 Markus Gans                                      *
+* Copyright 2014-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -76,7 +76,7 @@ void FSize::scaleBy (int dx, int dy) noexcept
 }
 
 //----------------------------------------------------------------------
-void FSize::scaleBy (const FPoint& d)
+void FSize::scaleBy (const FPoint& d) noexcept
 {
   scaleBy (d.getX(), d.getY());
 }

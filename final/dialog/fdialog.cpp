@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2022 Markus Gans                                      *
+* Copyright 2012-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -64,15 +64,14 @@ FDialog::~FDialog()  // destructor
   delete dialog_menu;
   dgl_menuitem = nullptr;
 
+  if ( isModal() )
+    unsetModal();
+
   if ( ! FApplication::isQuit() )
     switchToPrevWindow(this);
 
   auto has_entry = bool( getDialogList() && ! getDialogList()->empty() );
   delDialog(this);
-
-  if ( isModal() )
-    unsetModal();
-
   auto fapp = FApplication::getApplicationObject();
 
   if ( fapp && has_entry && noVisibleDialog() )
@@ -437,8 +436,7 @@ void FDialog::activateDialog()
       old_focus->redraw();
   }
 
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
+  drawStatusBarMessage();
 }
 
 //----------------------------------------------------------------------
@@ -649,8 +647,7 @@ void FDialog::onWindowActive (FEvent*)
       focusFirstChild();
   }
 
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
+  drawStatusBarMessage();
 }
 
 //----------------------------------------------------------------------
@@ -1324,9 +1321,7 @@ void FDialog::leaveMenu()
     getWindowFocusWidget()->setFocus();
 
   redraw();
-
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
+  drawStatusBarMessage();
 }
 
 //----------------------------------------------------------------------
@@ -1367,9 +1362,7 @@ void FDialog::selectFirstMenuItem()
     first_item->setFocus();
 
   dialog_menu->redraw();
-
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
+  drawStatusBarMessage();
 }
 
 //----------------------------------------------------------------------

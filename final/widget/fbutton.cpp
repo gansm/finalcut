@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2022 Markus Gans                                      *
+* Copyright 2012-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -157,14 +157,6 @@ auto FButton::setEnable (bool enable) -> bool
   else
     delAccelerator();
 
-  updateButtonColor();
-  return enable;
-}
-
-//----------------------------------------------------------------------
-auto FButton::setFocus (bool enable) -> bool
-{
-  FWidget::setFocus(enable);
   updateButtonColor();
   return enable;
 }
@@ -336,8 +328,7 @@ void FButton::onAccel (FAccelEvent* ev)
       else
         redraw();
 
-      if ( getStatusBar() )
-        getStatusBar()->drawMessage();
+      drawStatusBarMessage();
     }
   }
   else if ( click_animation )
@@ -351,20 +342,17 @@ void FButton::onAccel (FAccelEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FButton::onFocusIn (FFocusEvent*)
+void FButton::onFocusIn (FFocusEvent* in_ev)
 {
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
+  updateButtonColor();
+  FWidget::onFocusIn(in_ev);
 }
 
 //----------------------------------------------------------------------
-void FButton::onFocusOut (FFocusEvent*)
+void FButton::onFocusOut (FFocusEvent* out_ev)
 {
-  if ( getStatusBar() )
-  {
-    getStatusBar()->clearMessage();
-    getStatusBar()->drawMessage();
-  }
+  updateButtonColor();
+  FWidget::onFocusOut(out_ev);
 }
 
 

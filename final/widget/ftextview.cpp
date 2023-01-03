@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2022 Markus Gans                                      *
+* Copyright 2014-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -426,23 +426,6 @@ void FTextView::onWheel (FWheelEvent* ev)
   forceTerminalUpdate();
 }
 
-//----------------------------------------------------------------------
-void FTextView::onFocusIn (FFocusEvent*)
-{
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
-}
-
-//----------------------------------------------------------------------
-void FTextView::onFocusOut (FFocusEvent*)
-{
-  if ( getStatusBar() )
-  {
-    getStatusBar()->clearMessage();
-    getStatusBar()->drawMessage();
-  }
-}
-
 
 // protected methods of FTextView
 //----------------------------------------------------------------------
@@ -773,7 +756,7 @@ void FTextView::cb_vbarChange (const FWidget*)
       break;
 
     default:
-      break;
+      throw std::invalid_argument{"Invalid scroll type"};
   }
 
   update_scrollbar = true;
@@ -820,7 +803,7 @@ void FTextView::cb_hbarChange (const FWidget*)
       break;
 
     default:
-      break;
+      throw std::invalid_argument{"Invalid scroll type"};
   }
 
   update_scrollbar = true;

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2022 Markus Gans                                      *
+* Copyright 2019-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -254,9 +254,7 @@ void setWidgetFocus (FWidget* widget)
     focused_widget->redraw();
 
   widget->redraw();
-
-  if ( FWidget::getStatusBar() )
-    FWidget::getStatusBar()->drawMessage();
+  drawStatusBarMessage();
 }
 
 //----------------------------------------------------------------------
@@ -694,6 +692,13 @@ void updateStatusbar (const FWidget* w, bool need_focus)
       sbar->drawMessage();
     }
   }
+}
+
+//----------------------------------------------------------------------
+void drawStatusBarMessage()
+{
+  if ( FWidget::getStatusBar() )
+    FWidget::getStatusBar()->drawMessage();
 }
 
 }  // namespace finalcut

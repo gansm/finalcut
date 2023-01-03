@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2022 Markus Gans                                      *
+* Copyright 2019-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -76,14 +76,6 @@ auto FSpinBox::setEnable (bool enable) -> bool
 {
   FWidget::setEnable(enable);
   input_field.setEnable(enable);
-  return enable;
-}
-
-//----------------------------------------------------------------------
-auto FSpinBox::setFocus (bool enable) -> bool
-{
-  FWidget::setFocus(enable);
-  input_field.setFocus(enable);
   return enable;
 }
 
@@ -283,9 +275,17 @@ void FSpinBox::onTimer (FTimerEvent*)
       break;
 
     default:
-      break;
+      throw std::invalid_argument{"Invalid spining state"};
   }
 }
+
+//----------------------------------------------------------------------
+void FSpinBox::onFocusIn (FFocusEvent* in_ev)
+{
+  setWidgetFocus (&input_field);
+  FWidget::onFocusIn(in_ev);
+}
+
 
 // private methods of FSpinBox
 //----------------------------------------------------------------------
