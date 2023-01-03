@@ -439,15 +439,15 @@ class FWidget : public FVTerm
     void  KeyDownEvent (FKeyEvent*);
     void  emitWheelCallback (const FWheelEvent*) const;
     void  setWindowFocus (bool = true);
-    auto  searchForwardForWidget ( FWidget*
-                                 , FWidget*)  -> FObjectList::const_iterator;
-    auto  searchBackwardsForWidget ( FWidget*
-                                   , FWidget* ) -> FObjectList::const_iterator;
-    auto  canReceiveFocus (FWidget*) -> bool;
+    auto  searchForwardForWidget ( const FWidget*
+                                 , const FWidget*) const  -> FObjectList::const_iterator;
+    auto  searchBackwardsForWidget ( const FWidget*
+                                   , const FWidget* ) const -> FObjectList::const_iterator;
+    auto  canReceiveFocus (const FWidget*) const -> bool;
     void  setFocusOnThisWidget (FocusTypes);
-    auto  sendFailAtChildFocusEvent (FWidget*, FocusTypes) -> bool;
-    auto  sendFocusOutEvent (FWidget*, FocusTypes) -> bool;
-    auto  sendFocusInEvent (FWidget*, FocusTypes) -> bool;
+    auto  sendFailAtChildFocusEvent (FWidget*, FocusTypes) const -> bool;
+    auto  sendFocusOutEvent (FWidget*, FocusTypes) const -> bool;
+    auto  sendFocusInEvent (FWidget*, FocusTypes) const -> bool;
     void  processDestroy() const;
     virtual void draw();
     void  drawWindows() const;

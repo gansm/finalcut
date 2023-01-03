@@ -551,7 +551,6 @@ auto FMenu::adjustX (int x_pos) const -> int
 //----------------------------------------------------------------------
 void FMenu::openSubMenu (FMenu* sub_menu, bool select)
 {
-
   // open sub menu
 
   if ( ! sub_menu || sub_menu->isShown() )

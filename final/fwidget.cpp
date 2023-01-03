@@ -1845,8 +1845,8 @@ void FWidget::setWindowFocus (bool enable)
 }
 
 //----------------------------------------------------------------------
-inline auto FWidget::searchForwardForWidget ( FWidget* parent
-                                            , FWidget* widget ) -> FObjectList::const_iterator
+inline auto FWidget::searchForwardForWidget ( const FWidget* parent
+                                            , const FWidget* widget ) const -> FObjectList::const_iterator
 {
   auto iter = parent->cbegin();
   const auto last = parent->cend();
@@ -1869,8 +1869,8 @@ inline auto FWidget::searchForwardForWidget ( FWidget* parent
 }
 
 //----------------------------------------------------------------------
-inline auto FWidget::searchBackwardsForWidget ( FWidget* parent
-                                              , FWidget* widget ) -> FObjectList::const_iterator
+inline auto FWidget::searchBackwardsForWidget ( const FWidget* parent
+                                              , const FWidget* widget ) const -> FObjectList::const_iterator
 {
   auto iter = parent->cend();
   const auto first = parent->cbegin();
@@ -1891,7 +1891,7 @@ inline auto FWidget::searchBackwardsForWidget ( FWidget* parent
 }
 
 //----------------------------------------------------------------------
-inline auto FWidget::canReceiveFocus (FWidget* widget) -> bool
+inline auto FWidget::canReceiveFocus (const FWidget* widget) const -> bool
 {
   return ! widget
       || ! widget->isEnabled()
@@ -1927,7 +1927,8 @@ inline void FWidget::setFocusOnThisWidget (FocusTypes ft)
 }
 
 //----------------------------------------------------------------------
-inline auto FWidget::sendFailAtChildFocusEvent (FWidget* widget, FocusTypes ft) -> bool
+inline auto FWidget::sendFailAtChildFocusEvent ( FWidget* widget
+                                               , FocusTypes ft ) const -> bool
 {
   if ( ! widget )
     return false;
@@ -1940,7 +1941,8 @@ inline auto FWidget::sendFailAtChildFocusEvent (FWidget* widget, FocusTypes ft) 
 }
 
 //----------------------------------------------------------------------
-inline auto FWidget::sendFocusOutEvent (FWidget* widget, FocusTypes ft) -> bool
+inline auto FWidget::sendFocusOutEvent ( FWidget* widget
+                                       , FocusTypes ft ) const -> bool
 {
   if ( ! widget )
     return false;
@@ -1968,7 +1970,8 @@ inline auto FWidget::sendFocusOutEvent (FWidget* widget, FocusTypes ft) -> bool
 }
 
 //----------------------------------------------------------------------
-inline auto FWidget::sendFocusInEvent (FWidget* widget, FocusTypes ft) -> bool
+inline auto FWidget::sendFocusInEvent ( FWidget* widget
+                                      , FocusTypes ft ) const -> bool
 {
   if ( ! widget )
     return false;

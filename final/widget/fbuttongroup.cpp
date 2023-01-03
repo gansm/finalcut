@@ -314,7 +314,6 @@ void FButtonGroup::onChildFocusOut (FFocusEvent* out_ev)
     }
 
     focused_button->redraw();
-
   }
   else
     FScrollView::onChildFocusOut(out_ev);

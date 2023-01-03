@@ -54,7 +54,7 @@ FRect::FRect (const FPoint& p1, const FPoint& p2) noexcept
 
 // public methods of FRect
 //----------------------------------------------------------------------
-auto FRect::intersect (const FRect& r) const -> FRect
+auto FRect::intersect (const FRect& r) const noexcept -> FRect
 {
   // intersection: this ∩ r
   int p1_x = std::max(X1, r.X1);
@@ -67,7 +67,7 @@ auto FRect::intersect (const FRect& r) const -> FRect
 }
 
 //----------------------------------------------------------------------
-auto FRect::combined (const FRect& r) const -> FRect
+auto FRect::combined (const FRect& r) const noexcept -> FRect
 {
   // Union: this ∪ r
   int p1_x = std::min(X1, r.X1);

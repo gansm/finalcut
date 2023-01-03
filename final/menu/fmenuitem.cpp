@@ -682,7 +682,7 @@ void FMenuItem::passMouseEvent ( T widget, const FMouseEvent* ev
 }
 
 //----------------------------------------------------------------------
-inline void FMenuItem::resetSelectedItem (FMenuList* list)
+inline void FMenuItem::resetSelectedItem (const FMenuList* list) const
 {
   if ( ! list )
     return;

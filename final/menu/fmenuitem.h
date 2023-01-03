@@ -170,7 +170,7 @@ class FMenuItem : public FWidget
     void createDialogList (FMenu*) const;
     template <typename T>
     void passMouseEvent (T, const FMouseEvent*, Event) const;
-    void resetSelectedItem (FMenuList*);
+    void resetSelectedItem (const FMenuList*) const;
 
     // Callback methods
     void cb_switchToDialog (FDialog*) const;

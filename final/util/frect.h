@@ -70,14 +70,14 @@ class FRect
     auto getY2() const noexcept -> int;
     auto getX() const noexcept -> int;
     auto getY() const noexcept -> int;
-    auto getPos() const -> FPoint;
-    auto getUpperLeftPos() const -> FPoint;
-    auto getUpperRightPos() const -> FPoint;
-    auto getLowerLeftPos() const -> FPoint;
-    auto getLowerRightPos() const -> FPoint;
+    auto getPos() const noexcept -> FPoint;
+    auto getUpperLeftPos() const noexcept -> FPoint;
+    auto getUpperRightPos() const noexcept -> FPoint;
+    auto getLowerLeftPos() const noexcept -> FPoint;
+    auto getLowerRightPos() const noexcept -> FPoint;
     auto getWidth() const noexcept -> std::size_t;
     auto getHeight() const noexcept -> std::size_t;
-    auto getSize() const -> FSize;
+    auto getSize() const noexcept -> FSize;
 
     // Mutators
     void setX1 (int) noexcept;
@@ -91,11 +91,11 @@ class FRect
     void setWidth (std::size_t) noexcept;
     void setHeight (std::size_t) noexcept;
     void setSize (std::size_t, std::size_t) noexcept;
-    void setSize (const FSize&);
-    void setRect (const FRect&);
-    void setRect (const FPoint&, const FSize&);
+    void setSize (const FSize&) noexcept;
+    void setRect (const FRect&) noexcept;
+    void setRect (const FPoint&, const FSize&) noexcept;
     void setRect (int, int, std::size_t, std::size_t) noexcept;
-    void setCoordinates (const FPoint&, const FPoint&);
+    void setCoordinates (const FPoint&, const FPoint&) noexcept;
     void setCoordinates (int, int, int, int) noexcept;
 
     // Inquiry
@@ -109,15 +109,15 @@ class FRect
 
     // Methods
     void move (int, int) noexcept;
-    void move (const FPoint&);
+    void move (const FPoint&) noexcept;
     void scaleBy (int, int) noexcept;
-    void scaleBy (const FPoint&);
+    void scaleBy (const FPoint&) noexcept;
     auto contains (int, int) const noexcept -> bool;
-    auto contains (const FPoint&) const -> bool;
-    auto contains (const FRect&) const -> bool;
-    auto overlap  (const FRect&) const -> bool;
-    auto intersect (const FRect&) const -> FRect;
-    auto combined (const FRect&) const -> FRect;
+    auto contains (const FPoint&) const noexcept -> bool;
+    auto contains (const FRect&) const noexcept -> bool;
+    auto overlap  (const FRect&) const noexcept -> bool;
+    auto intersect (const FRect&) const noexcept -> FRect;
+    auto combined (const FRect&) const noexcept -> FRect;
 
   private:
     // Data members
@@ -173,23 +173,23 @@ inline auto FRect::getY() const noexcept -> int
 { return Y1; }
 
 //----------------------------------------------------------------------
-inline auto FRect::getPos() const -> FPoint
+inline auto FRect::getPos() const noexcept -> FPoint
 { return { X1, Y1 }; }
 
 //----------------------------------------------------------------------
-inline auto FRect::getUpperLeftPos() const -> FPoint
+inline auto FRect::getUpperLeftPos() const noexcept -> FPoint
 { return { X1, Y1 }; }
 
 //----------------------------------------------------------------------
-inline auto FRect::getUpperRightPos() const -> FPoint
+inline auto FRect::getUpperRightPos() const noexcept -> FPoint
 { return { X2, Y1 }; }
 
 //----------------------------------------------------------------------
-inline auto FRect::getLowerLeftPos() const -> FPoint
+inline auto FRect::getLowerLeftPos() const noexcept -> FPoint
 { return { X1, Y2 }; }
 
 //----------------------------------------------------------------------
-inline auto FRect::getLowerRightPos() const -> FPoint
+inline auto FRect::getLowerRightPos() const noexcept -> FPoint
 { return { X2, Y2 }; }
 
 //----------------------------------------------------------------------
@@ -205,7 +205,7 @@ inline auto FRect::getHeight() const noexcept -> std::size_t
 }
 
 //----------------------------------------------------------------------
-inline auto FRect::getSize() const -> FSize
+inline auto FRect::getSize() const noexcept -> FSize
 { return { getWidth(), getHeight() }; }
 
 //----------------------------------------------------------------------
@@ -278,14 +278,14 @@ inline void FRect::setSize (std::size_t width, std::size_t height) noexcept
 }
 
 //----------------------------------------------------------------------
-inline void FRect::setSize (const FSize& s)
+inline void FRect::setSize (const FSize& s) noexcept
 {
   X2 = X1 + int(s.getWidth()) - 1;
   Y2 = Y1 + int(s.getHeight()) - 1;
 }
 
 //----------------------------------------------------------------------
-inline void FRect::setRect (const FRect& r)
+inline void FRect::setRect (const FRect& r) noexcept
 {
   X1 = r.X1;
   Y1 = r.Y1;
@@ -294,7 +294,7 @@ inline void FRect::setRect (const FRect& r)
 }
 
 //----------------------------------------------------------------------
-inline void FRect::setRect (const FPoint& p, const FSize& s)
+inline void FRect::setRect (const FPoint& p, const FSize& s) noexcept
 {
   X1 = p.getX();
   Y1 = p.getY();
@@ -312,7 +312,7 @@ inline void FRect::setRect (int x, int y, std::size_t width, std::size_t height)
 }
 
 //----------------------------------------------------------------------
-inline void FRect::setCoordinates (const FPoint& p1, const FPoint& p2)
+inline void FRect::setCoordinates (const FPoint& p1, const FPoint& p2) noexcept
 {
   setCoordinates (p1.getX(), p1.getY(), p2.getX(), p2.getY());
 }
@@ -356,7 +356,7 @@ inline void FRect::move (int dx, int dy) noexcept
 }
 
 //----------------------------------------------------------------------
-inline void FRect::move (const FPoint& d)
+inline void FRect::move (const FPoint& d) noexcept
 {
   X1 += d.getX();
   Y1 += d.getY();
@@ -372,7 +372,7 @@ inline void FRect::scaleBy (int dx, int dy) noexcept
 }
 
 //----------------------------------------------------------------------
-inline void FRect::scaleBy (const FPoint& d)
+inline void FRect::scaleBy (const FPoint& d) noexcept
 {
   X2 += d.getX();
   Y2 += d.getY();
@@ -386,21 +386,21 @@ inline auto FRect::contains (int x, int y) const noexcept -> bool
 }
 
 //----------------------------------------------------------------------
-inline auto FRect::contains (const FPoint& p) const -> bool
+inline auto FRect::contains (const FPoint& p) const noexcept -> bool
 {
   return p.getX() >= X1 && p.getX() <= X2
       && p.getY() >= Y1 && p.getY() <= Y2;
 }
 
 //----------------------------------------------------------------------
-inline auto FRect::contains (const FRect& r) const -> bool
+inline auto FRect::contains (const FRect& r) const noexcept -> bool
 {
   return r.X1 >= X1 && r.X2 <= X2
       && r.Y1 >= Y1 && r.Y2 <= Y2;
 }
 
 //----------------------------------------------------------------------
-inline auto FRect::overlap (const FRect &r) const -> bool
+inline auto FRect::overlap (const FRect &r) const noexcept -> bool
 {
   return ( std::max(X1, r.X1) <= std::min(X2, r.X2)
         && std::max(Y1, r.Y1) <= std::min(Y2, r.Y2) );
