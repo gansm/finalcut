@@ -120,6 +120,9 @@ class FWidget_protected : public finalcut::FWidget
     void onShow (finalcut::FShowEvent*) override;
     void onHide (finalcut::FHideEvent*) override;
     void onClose (finalcut::FCloseEvent*) override;
+
+    // From FObject
+    void p_setWidgetProperty (bool);
 };
 
 //----------------------------------------------------------------------
@@ -362,6 +365,11 @@ inline void FWidget_protected::onClose (finalcut::FCloseEvent*)
   setLastEvent (finalcut::Event::Close);
 }
 
+//----------------------------------------------------------------------
+void FWidget_protected::p_setWidgetProperty (bool property)
+{
+  finalcut::FObject::setWidgetProperty (property);
+}
 
 //----------------------------------------------------------------------
 // class FWidgetTest
@@ -2099,13 +2107,14 @@ void FWidgetTest::focusableChildrenTest()
   CPPUNIT_ASSERT ( wdgt1_2.numOfFocusableChildren() == 0 );
   CPPUNIT_ASSERT ( ! wdgt1_2.getFlags().focus.focusable );
 
-  // Test focusing the next child widget
+  // Test focusing the next widget
   FWidget_protected parent{&root_wdgt};
   FWidget_protected child1{&parent};
   FWidget_protected child2{&parent};
   FWidget_protected child3{&parent};
   FWidget_protected child4{&parent};
 
+  CPPUNIT_ASSERT ( ! root_wdgt.focusNextChild() );  // No parent test
   CPPUNIT_ASSERT ( parent.numOfFocusableChildren() == 0 );
   CPPUNIT_ASSERT ( child1.getFlags().feature.active );
   CPPUNIT_ASSERT ( child2.getFlags().feature.active );
@@ -2142,6 +2151,15 @@ void FWidgetTest::focusableChildrenTest()
   CPPUNIT_ASSERT ( ! child2.hasFocus() );
   CPPUNIT_ASSERT ( ! child3.hasFocus() );
   CPPUNIT_ASSERT ( ! child4.hasFocus() );
+
+  child1.setFlags().type.dialog_widget = true;
+  CPPUNIT_ASSERT ( ! child1.focusNextChild() );
+  CPPUNIT_ASSERT ( child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+
+  child1.setFlags().type.dialog_widget = false;
   CPPUNIT_ASSERT ( child1.focusNextChild() );
   CPPUNIT_ASSERT ( ! child1.hasFocus() );
   CPPUNIT_ASSERT ( child2.hasFocus() );
@@ -2163,6 +2181,16 @@ void FWidgetTest::focusableChildrenTest()
   CPPUNIT_ASSERT ( ! child3.hasFocus() );
   CPPUNIT_ASSERT ( ! child4.hasFocus() );
 
+  child2.p_setWidgetProperty(false);
+  CPPUNIT_ASSERT ( child1.focusNextChild() );
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+  CPPUNIT_ASSERT ( child3.focusNextChild() );
+  CPPUNIT_ASSERT ( child4.focusNextChild() );
+
+  child2.p_setWidgetProperty(true);
   child2.setFlags().feature.active = false;
   CPPUNIT_ASSERT ( parent.numOfFocusableChildren() == 3 );
   CPPUNIT_ASSERT ( child1.focusNextChild() );
@@ -2291,6 +2319,186 @@ void FWidgetTest::focusableChildrenTest()
   CPPUNIT_ASSERT ( ! child2.hasFocus() );
   CPPUNIT_ASSERT ( ! child3.hasFocus() );
   CPPUNIT_ASSERT ( ! child4.hasFocus() );
+
+  // Test focusing the previous widget
+  child1.unsetFocus();
+  CPPUNIT_ASSERT ( ! root_wdgt.focusPrevChild() );  // No parent test
+  CPPUNIT_ASSERT ( parent.numOfFocusableChildren() == 4 );
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+  CPPUNIT_ASSERT ( ! parent.focusPrevChild() );
+  child4.setFocus();  // Set the initial focus on the last child
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( child4.hasFocus() );
+
+  child4.setFlags().type.dialog_widget = true;
+  CPPUNIT_ASSERT ( ! child4.focusPrevChild() );
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( child4.hasFocus() );
+
+  child4.setFlags().type.dialog_widget = false;
+  CPPUNIT_ASSERT ( child4.focusPrevChild() );
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+  CPPUNIT_ASSERT ( child3.focusPrevChild() );
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+  CPPUNIT_ASSERT ( child2.focusPrevChild() );
+  CPPUNIT_ASSERT ( child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+  CPPUNIT_ASSERT ( child1.focusPrevChild() );
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( child4.hasFocus() );
+
+  child3.p_setWidgetProperty(false);
+  CPPUNIT_ASSERT ( child4.focusPrevChild() );
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+
+  child3.p_setWidgetProperty(true);
+  child3.setFlags().feature.active = false;
+  CPPUNIT_ASSERT ( parent.numOfFocusableChildren() == 3 );
+  CPPUNIT_ASSERT ( child4.focusPrevChild() );
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+
+  child4.setFocus();  // Set the initial focus on the last child
+  child3.setFlags().feature.active = true;
+  child3.setFlags().focus.focusable = false;
+  child2.setFlags().visibility.shown = false;
+  CPPUNIT_ASSERT ( parent.numOfFocusableChildren() == 2 );
+  CPPUNIT_ASSERT ( child4.focusPrevChild() );
+  CPPUNIT_ASSERT ( child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+
+  child4.setFocus();  // Set the initial focus on the last child
+  child1.setFlags().visibility.shown = false;
+  CPPUNIT_ASSERT ( parent.numOfFocusableChildren() == 1 );
+  resetLastEvent();
+  CPPUNIT_ASSERT ( getLastEvent() == finalcut::Event::None );
+  CPPUNIT_ASSERT ( child4.focusPrevChild() );
+  CPPUNIT_ASSERT ( getLastEvent() == finalcut::Event::FailAtChildFocus );
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( child4.hasFocus() );
+
+  child4.unsetFocus();  // Reset the focus of first child
+  child4.setFlags().visibility.shown = false;
+  CPPUNIT_ASSERT ( parent.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( ! child4.focusPrevChild() );
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+
+  child4.setFlags().visibility.shown = true;
+  child4.setFocus();  // Set the initial focus on the first child
+  child3.setFlags().focus.focusable = true;
+  child2.setFlags().visibility.shown = true;
+  child3.setFlags().type.window_widget = true;
+  child1.setFlags().visibility.shown = true;
+  CPPUNIT_ASSERT ( parent.numOfFocusableChildren() == 3 );
+  CPPUNIT_ASSERT ( child3.isWindowWidget() );
+  CPPUNIT_ASSERT ( child4.focusPrevChild() );
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+
+  // Test focusing the last child widget
+  child2.unsetFocus();  // Reset the focus of first child
+  child3.setFlags().type.window_widget = false;
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+  CPPUNIT_ASSERT ( parent.numOfFocusableChildren() == 4 );
+  CPPUNIT_ASSERT ( child4.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( ! child4.focusLastChild() );
+
+  child1.setFlags().feature.active = false;
+  child2.setFlags().feature.active = false;
+  child3.setFlags().feature.active = false;
+  child4.setFlags().feature.active = false;
+  CPPUNIT_ASSERT ( parent.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( ! parent.focusLastChild() );
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+
+  child4.setFlags().feature.active = true;
+  child4.setFlags().focus.focusable = false;
+  CPPUNIT_ASSERT ( parent.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( ! parent.focusLastChild() );
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+
+  child3.setFlags().feature.active = true;
+  child3.setFlags().type.menu_widget = true;
+  CPPUNIT_ASSERT ( child3.isMenuWidget() );
+  CPPUNIT_ASSERT ( parent.numOfFocusableChildren() == 1 );
+  // A menu widget cannot receive focus as first element !
+  CPPUNIT_ASSERT ( ! parent.focusLastChild() );
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+
+  child1.setFlags().feature.active = true;
+  CPPUNIT_ASSERT ( parent.numOfFocusableChildren() == 2 );
+  CPPUNIT_ASSERT ( parent.focusLastChild() );
+  CPPUNIT_ASSERT ( child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+
+  child2.setFlags().feature.active = true;
+  CPPUNIT_ASSERT ( parent.numOfFocusableChildren() == 3 );
+  CPPUNIT_ASSERT ( parent.focusLastChild() );
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+
+  child3.setFlags().type.menu_widget = false;
+  CPPUNIT_ASSERT ( parent.numOfFocusableChildren() == 3 );
+  CPPUNIT_ASSERT ( parent.focusLastChild() );
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+
+  child4.setFlags().focus.focusable = true;
+  CPPUNIT_ASSERT ( parent.numOfFocusableChildren() == 4 );
+  CPPUNIT_ASSERT ( parent.focusLastChild() );
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( child4.hasFocus() );
 }
 
 //----------------------------------------------------------------------

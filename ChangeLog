@@ -1,4 +1,5 @@
 2023-01-04  Markus Gans  <guru.mail@muenster.de>
+	* FObject now supports reverse iterators
 	* Small improvement of the display speed
 
 2023-01-03  Markus Gans  <guru.mail@muenster.de>

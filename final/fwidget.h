@@ -442,7 +442,7 @@ class FWidget : public FVTerm
     auto  searchForwardForWidget ( const FWidget*
                                  , const FWidget*) const  -> FObjectList::const_iterator;
     auto  searchBackwardsForWidget ( const FWidget*
-                                   , const FWidget* ) const -> FObjectList::const_iterator;
+                                   , const FWidget* ) const -> FObjectList::const_reverse_iterator;
     auto  canReceiveFocus (const FWidget*) const -> bool;
     void  setFocusOnThisWidget (FocusTypes);
     auto  sendFailAtChildFocusEvent (FWidget*, FocusTypes) const -> bool;

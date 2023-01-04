@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2022 Markus Gans                                      *
+* Copyright 2018-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -510,10 +510,26 @@ void FObjectTest::iteratorTest()
   CPPUNIT_ASSERT ( child2->getParent() == obj );
   CPPUNIT_ASSERT ( child3->getParent() == obj );
 
+  // iterator
+  finalcut::FObject::iterator iter, last;
+  iter = obj->begin();
+  last = obj->end();
+  std::size_t i = 0;
+
+  while ( iter != last )
+  {
+    i++;
+    ++iter;
+  }
+
+  CPPUNIT_ASSERT ( obj->numOfChildren() == i );
+  CPPUNIT_ASSERT ( i == 3 );
+
+  // const iterator 1
   finalcut::FObject::const_iterator c_iter, c_last;
   c_iter = obj->begin();
   c_last = obj->end();
-  std::size_t i = 0;
+  i = 0;
 
   while ( c_iter != c_last )
   {
@@ -524,15 +540,61 @@ void FObjectTest::iteratorTest()
   CPPUNIT_ASSERT ( obj->numOfChildren() == i );
   CPPUNIT_ASSERT ( i == 3 );
 
-  finalcut::FObject::iterator iter, last;
-  iter = obj->begin();
-  last = obj->end();
+  // const iterator 2
+  finalcut::FObject::const_iterator c_iter2, c_last2;
+  c_iter2 = obj->cbegin();
+  c_last2 = obj->cend();
   i = 0;
 
-  while ( iter != last )
+  while ( c_iter2 != c_last2 )
   {
     i++;
-    ++iter;
+    ++c_iter2;
+  }
+
+  CPPUNIT_ASSERT ( obj->numOfChildren() == i );
+  CPPUNIT_ASSERT ( i == 3 );
+
+  // reverse iterator
+  finalcut::FObject::reverse_iterator r_iter, r_first;
+  r_iter = obj->rbegin();
+  r_first = obj->rend();
+  i = 0;
+
+  while ( r_iter != r_first )
+  {
+    i++;
+    ++r_iter;
+  }
+
+  CPPUNIT_ASSERT ( obj->numOfChildren() == i );
+  CPPUNIT_ASSERT ( i == 3 );
+
+  // const reverse iterator 1
+  finalcut::FObject::const_reverse_iterator cr_iter, cr_first;
+  cr_iter = obj->rbegin();
+  cr_first = obj->rend();
+  i = 0;
+
+  while ( cr_iter != cr_first )
+  {
+    i++;
+    ++cr_iter;
+  }
+
+  CPPUNIT_ASSERT ( obj->numOfChildren() == i );
+  CPPUNIT_ASSERT ( i == 3 );
+
+  // const reverse iterator 2
+  finalcut::FObject::const_reverse_iterator cr_iter2, cr_first2;
+  cr_iter2 = obj->crbegin();
+  cr_first2 = obj->crend();
+  i = 0;
+
+  while ( cr_iter2 != cr_first2 )
+  {
+    i++;
+    ++cr_iter2;
   }
 
   CPPUNIT_ASSERT ( obj->numOfChildren() == i );

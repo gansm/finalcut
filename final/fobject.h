@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2022 Markus Gans                                      *
+* Copyright 2015-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -80,11 +80,13 @@ class FObject : public FObjectTimer
 {
   public:
     // Using-declarations
-    using FObjectList     = std::vector<FObject*>;
-    using iterator        = FObjectList::iterator;
-    using const_iterator  = FObjectList::const_iterator;
-    using reference       = FObjectList::reference;
-    using const_reference = FObjectList::const_reference;
+    using FObjectList            = std::vector<FObject*>;
+    using iterator               = FObjectList::iterator;
+    using reverse_iterator       = FObjectList::reverse_iterator;
+    using const_iterator         = FObjectList::const_iterator;
+    using const_reverse_iterator = FObjectList::const_reverse_iterator;
+    using reference              = FObjectList::reference;
+    using const_reference        = FObjectList::const_reference;
 
     // Constants
     static constexpr auto UNLIMITED = static_cast<std::size_t>(-1);
@@ -121,6 +123,12 @@ class FObject : public FObjectTimer
     auto  end() const -> const_iterator;
     auto  cbegin() const noexcept -> const_iterator;
     auto  cend() const noexcept -> const_iterator;
+    auto  rbegin() -> reverse_iterator;
+    auto  rend() -> reverse_iterator;
+    auto  rbegin() const -> const_reverse_iterator;
+    auto  rend() const -> const_reverse_iterator;
+    auto  crbegin() const noexcept -> const_reverse_iterator;
+    auto  crend() const noexcept -> const_reverse_iterator;
     auto  front() -> reference;
     auto  back() -> reference;
     auto  front() const -> const_reference;
@@ -211,6 +219,30 @@ inline auto FObject::cbegin() const noexcept -> const_iterator
 //----------------------------------------------------------------------
 inline auto FObject::cend() const noexcept -> const_iterator
 { return children_list.cend(); }
+
+//----------------------------------------------------------------------
+inline auto FObject::rbegin() -> reverse_iterator
+{ return children_list.rbegin(); }
+
+//----------------------------------------------------------------------
+inline auto FObject::rend() -> reverse_iterator
+{ return children_list.rend(); }
+
+//----------------------------------------------------------------------
+inline auto FObject::rbegin() const -> const_reverse_iterator
+{ return children_list.rbegin(); }
+
+//----------------------------------------------------------------------
+inline auto FObject::rend() const -> const_reverse_iterator
+{ return children_list.rend(); }
+
+//----------------------------------------------------------------------
+inline auto FObject::crbegin() const noexcept -> const_reverse_iterator
+{ return children_list.crbegin(); }
+
+//----------------------------------------------------------------------
+inline auto FObject::crend() const noexcept -> const_reverse_iterator
+{ return children_list.crend(); }
 
 //----------------------------------------------------------------------
 inline auto FObject::front() -> reference

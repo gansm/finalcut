@@ -941,6 +941,8 @@ void FWidget::hide()
 //----------------------------------------------------------------------
 auto FWidget::focusNextChild() -> bool
 {
+  // Focusing the next widget
+
   if ( isDialogWidget() || ! hasParent() )
     return false;
 
@@ -980,6 +982,8 @@ auto FWidget::focusNextChild() -> bool
 //----------------------------------------------------------------------
 auto FWidget::focusPrevChild() -> bool
 {
+  // Focusing the previous widget
+
   if ( isDialogWidget() || ! hasParent() )
     return false;
 
@@ -997,10 +1001,10 @@ auto FWidget::focusPrevChild() -> bool
 
   do  // Search the previous focusable widget
   {
-    if ( iter == parent->cbegin() )
-      iter = parent->cend();
+    ++iter;
 
-    --iter;
+    if ( iter == parent->crend() )
+      iter = parent->crbegin();
 
     if ( (*iter)->isWidget() )
       prev = static_cast<FWidget*>(*iter);
@@ -1018,6 +1022,8 @@ auto FWidget::focusPrevChild() -> bool
 //----------------------------------------------------------------------
 auto FWidget::focusFirstChild() & -> bool
 {
+  // Focusing the first child widget
+
   if ( ! hasChildren() )
     return false;
 
@@ -1046,12 +1052,14 @@ auto FWidget::focusFirstChild() & -> bool
 //----------------------------------------------------------------------
 auto FWidget::focusLastChild() & -> bool
 {
+  // Focusing the last child widget
+
   if ( ! hasChildren() )
     return false;
 
-  for ( auto iter = FObject::cend() - 1;
-        iter != FObject::cbegin();
-        --iter )
+  for ( auto iter = FObject::crbegin();
+        iter != FObject::crend();
+        ++iter )
   {
     if ( ! (*iter)->isWidget() )  // Skip non-widget elements
       continue;
@@ -1871,22 +1879,24 @@ inline auto FWidget::searchForwardForWidget ( const FWidget* parent
 
 //----------------------------------------------------------------------
 inline auto FWidget::searchBackwardsForWidget ( const FWidget* parent
-                                              , const FWidget* widget ) const -> FObjectList::const_iterator
+                                              , const FWidget* widget ) const -> FObjectList::const_reverse_iterator
 {
-  auto iter = parent->cend();
-  const auto first = parent->cbegin();
+  auto iter = parent->crbegin();
+  const auto first = parent->crend();
 
-  do  // Search backwards for this widget
+  while ( iter != first )  // Search backwards for this widget
   {
-    --iter;
-
     if ( ! (*iter)->isWidget() )  // Skip non-widget elements
+    {
+      ++iter;
       continue;
+    }
 
     if ( static_cast<FWidget*>(*iter) == widget )
       break;  // Stop search when we reach this widget
+
+    ++iter;
   }
-  while ( iter != first );
 
   return iter;
 }
