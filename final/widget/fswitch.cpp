@@ -34,7 +34,7 @@ namespace finalcut
 
 // constructor and destructor
 //----------------------------------------------------------------------
-FSwitch::FSwitch(FWidget* parent)
+FSwitch::FSwitch (FWidget* parent)
   : FToggleButton{parent}
 {
   setButtonWidth(11);

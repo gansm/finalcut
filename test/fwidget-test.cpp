@@ -33,6 +33,335 @@
 #include <final/final.h>
 #include <fvterm_check.h>
 
+//----------------------------------------------------------------------
+auto getLastEvent() -> finalcut::Event&
+{
+  static finalcut::Event event = finalcut::Event::None;
+  return event;
+}
+
+//----------------------------------------------------------------------
+void setLastEvent (finalcut::Event event)
+{
+  getLastEvent() = event;
+}
+
+//----------------------------------------------------------------------
+void resetLastEvent()
+{
+  getLastEvent() = finalcut::Event::None;
+}
+
+//----------------------------------------------------------------------
+// class FWidget_protected
+//----------------------------------------------------------------------
+
+class FWidget_protected : public finalcut::FWidget
+{
+  public:
+    // Using-declarations
+    using FWidgetList = std::vector<finalcut::FWidget*>;
+
+    // Disable copy constructor
+    FWidget_protected (const FWidget_protected&) = delete;
+
+    // Disable move constructor
+    FWidget_protected (FWidget_protected&&) noexcept = delete;
+
+    // Constructor
+    explicit FWidget_protected (finalcut::FWidget* = nullptr);
+
+    // Accessor
+    auto  getPrintArea() -> finalcut::FWidget::FTermArea* override;
+    static auto p_getModalDialogCounter() -> uInt;
+    static auto p_getDialogList() -> FWidgetList*&;
+    static auto p_getAlwaysOnTopList() -> FWidgetList*&;
+    static auto p_getWidgetCloseList() -> FWidgetList*&;
+    void  addPreprocessingHandler ( const finalcut::FVTerm*
+                                  , FPreprocessingFunction&& ) override;
+    void  delPreprocessingHandler (const finalcut::FVTerm*) override;
+
+    // Inquiry
+    auto  p_isChildPrintArea() const -> bool;
+
+    // Mutators
+    void setStatusBar (finalcut::FStatusBar*) override;
+    void setMenuBar (finalcut::FMenuBar*) override;
+    static auto  p_setModalDialogCounter() -> uInt&;
+    void  p_setParentOffset();
+    void  p_setTermOffset();
+    void  p_setTermOffsetWithPadding();
+
+    // Methods
+    void  initTerminal() override;
+    void  p_initDesktop();
+    void  initLayout() override;
+    void  adjustSize() override;
+    void  p_adjustSizeGlobal();
+    void  p_hideArea (const finalcut::FSize&);
+
+    // Event handlers
+    auto event (finalcut::FEvent*) -> bool override;
+    void onKeyPress (finalcut::FKeyEvent*) override;
+    void onKeyUp (finalcut::FKeyEvent*) override;
+    void onKeyDown (finalcut::FKeyEvent*) override;
+    void onMouseDown (finalcut::FMouseEvent*) override;
+    void onMouseUp (finalcut::FMouseEvent*) override;
+    void onMouseDoubleClick (finalcut::FMouseEvent*) override;
+    void onWheel (finalcut::FWheelEvent*) override;
+    void onMouseMove (finalcut::FMouseEvent*) override;
+    void onFocusIn (finalcut::FFocusEvent*) override;
+    void onFocusOut (finalcut::FFocusEvent*) override;
+    void onChildFocusIn (finalcut::FFocusEvent*) override;
+    void onChildFocusOut (finalcut::FFocusEvent*) override;
+    void onFailAtChildFocus (finalcut::FFocusEvent*) override;
+    void onAccel (finalcut::FAccelEvent*) override;
+    void onResize (finalcut::FResizeEvent*) override;
+    void onShow (finalcut::FShowEvent*) override;
+    void onHide (finalcut::FHideEvent*) override;
+    void onClose (finalcut::FCloseEvent*) override;
+};
+
+//----------------------------------------------------------------------
+inline FWidget_protected::FWidget_protected (finalcut::FWidget* parent)
+  : finalcut::FWidget{parent}
+{ }
+
+//----------------------------------------------------------------------
+inline auto FWidget_protected::getPrintArea() -> finalcut::FWidget::FTermArea*
+{
+  return finalcut::FWidget::getPrintArea();
+}
+
+//----------------------------------------------------------------------
+inline auto FWidget_protected::p_getModalDialogCounter() -> uInt
+{
+  return finalcut::FWidget::getModalDialogCounter();
+}
+
+//----------------------------------------------------------------------
+inline auto FWidget_protected::p_getDialogList() -> FWidgetList*&
+{
+  return finalcut::FWidget::getDialogList();
+}
+
+//----------------------------------------------------------------------
+inline auto FWidget_protected::p_getAlwaysOnTopList() -> FWidgetList*&
+{
+  return finalcut::FWidget::getAlwaysOnTopList();
+}
+
+//----------------------------------------------------------------------
+inline auto FWidget_protected::p_getWidgetCloseList() -> FWidgetList*&
+{
+  return finalcut::FWidget::getWidgetCloseList();
+}
+
+//----------------------------------------------------------------------
+inline void FWidget_protected::addPreprocessingHandler ( const finalcut::FVTerm* instance
+                                                       , FPreprocessingFunction&& function )
+{
+  finalcut::FWidget::addPreprocessingHandler (instance, std::move(function));
+}
+
+//----------------------------------------------------------------------
+inline void FWidget_protected::delPreprocessingHandler (const finalcut::FVTerm* instance)
+{
+  finalcut::FWidget::delPreprocessingHandler (instance);
+}
+
+//----------------------------------------------------------------------
+inline auto FWidget_protected::p_isChildPrintArea() const -> bool
+{
+  return finalcut::FWidget::isChildPrintArea();
+}
+
+//----------------------------------------------------------------------
+inline void FWidget_protected::setStatusBar (finalcut::FStatusBar* sbar)
+{
+  finalcut::FWidget::setStatusBar (sbar);
+}
+
+//----------------------------------------------------------------------
+inline void FWidget_protected::setMenuBar (finalcut::FMenuBar* mbar)
+{
+  finalcut::FWidget::setMenuBar (mbar);
+}
+
+//----------------------------------------------------------------------
+inline auto FWidget_protected::p_setModalDialogCounter() -> uInt&
+{
+  return finalcut::FWidget::setModalDialogCounter();
+}
+
+//----------------------------------------------------------------------
+inline void FWidget_protected::p_setParentOffset()
+{
+  finalcut::FWidget::setParentOffset();
+}
+
+//----------------------------------------------------------------------
+inline void FWidget_protected::p_setTermOffset()
+{
+  finalcut::FWidget::setTermOffset();
+}
+
+//----------------------------------------------------------------------
+inline void FWidget_protected::p_setTermOffsetWithPadding()
+{
+  finalcut::FWidget::setTermOffsetWithPadding();
+}
+
+//----------------------------------------------------------------------
+inline void FWidget_protected::initTerminal()
+{
+  finalcut::FWidget::initTerminal();
+}
+
+//----------------------------------------------------------------------
+inline void FWidget_protected::p_initDesktop()
+{
+  finalcut::FWidget::initDesktop();
+}
+
+//----------------------------------------------------------------------
+inline void FWidget_protected::initLayout()
+{
+  finalcut::FWidget::initLayout();
+}
+
+//----------------------------------------------------------------------
+inline void FWidget_protected::adjustSize()
+{
+  finalcut::FWidget::adjustSize();
+}
+
+//----------------------------------------------------------------------
+inline void FWidget_protected::p_adjustSizeGlobal()
+{
+  finalcut::FWidget::adjustSizeGlobal();
+}
+
+//----------------------------------------------------------------------
+inline void FWidget_protected::p_hideArea (const finalcut::FSize& size)
+{
+  finalcut::FWidget::hideArea (size);
+}
+
+//----------------------------------------------------------------------
+inline auto FWidget_protected::event (finalcut::FEvent* ev) -> bool
+{
+  return finalcut::FWidget::event(ev);
+}
+
+//----------------------------------------------------------------------
+inline void FWidget_protected::onKeyPress (finalcut::FKeyEvent*)
+{
+  setLastEvent (finalcut::Event::KeyPress);
+}
+
+//----------------------------------------------------------------------
+inline void FWidget_protected::onKeyUp (finalcut::FKeyEvent*)
+{
+  setLastEvent (finalcut::Event::KeyUp);
+}
+
+//----------------------------------------------------------------------
+inline void FWidget_protected::onKeyDown (finalcut::FKeyEvent*)
+{
+  setLastEvent (finalcut::Event::KeyDown);
+}
+
+//----------------------------------------------------------------------
+inline void FWidget_protected::onMouseDown (finalcut::FMouseEvent*)
+{
+  setLastEvent (finalcut::Event::MouseDown);
+}
+
+//----------------------------------------------------------------------
+inline void FWidget_protected::onMouseUp (finalcut::FMouseEvent*)
+{
+  setLastEvent (finalcut::Event::MouseUp);
+}
+
+//----------------------------------------------------------------------
+inline void FWidget_protected::onMouseDoubleClick (finalcut::FMouseEvent*)
+{
+  setLastEvent (finalcut::Event::MouseDoubleClick);
+}
+
+//----------------------------------------------------------------------
+inline void FWidget_protected::onWheel (finalcut::FWheelEvent*)
+{
+  setLastEvent (finalcut::Event::MouseWheel);
+}
+
+//----------------------------------------------------------------------
+inline void FWidget_protected::onMouseMove (finalcut::FMouseEvent*)
+{
+  setLastEvent (finalcut::Event::MouseMove);
+}
+
+//----------------------------------------------------------------------
+inline void FWidget_protected::onFocusIn (finalcut::FFocusEvent*)
+{
+  setLastEvent (finalcut::Event::FocusIn);
+}
+
+//----------------------------------------------------------------------
+inline void FWidget_protected::onFocusOut (finalcut::FFocusEvent*)
+{
+  setLastEvent (finalcut::Event::FocusOut);
+}
+
+//----------------------------------------------------------------------
+inline void FWidget_protected::onChildFocusIn (finalcut::FFocusEvent*)
+{
+  setLastEvent (finalcut::Event::ChildFocusIn);
+}
+
+//----------------------------------------------------------------------
+inline void FWidget_protected::onChildFocusOut (finalcut::FFocusEvent*)
+{
+  setLastEvent (finalcut::Event::ChildFocusOut);
+}
+
+//----------------------------------------------------------------------
+inline void FWidget_protected::onFailAtChildFocus (finalcut::FFocusEvent*)
+{
+  setLastEvent (finalcut::Event::FailAtChildFocus);
+}
+
+//----------------------------------------------------------------------
+inline void FWidget_protected::onAccel (finalcut::FAccelEvent*)
+{
+  setLastEvent (finalcut::Event::Accelerator);
+}
+
+//----------------------------------------------------------------------
+inline void FWidget_protected::onResize (finalcut::FResizeEvent*)
+{
+  setLastEvent (finalcut::Event::Resize);
+}
+
+//----------------------------------------------------------------------
+inline void FWidget_protected::onShow (finalcut::FShowEvent*)
+{
+  setLastEvent (finalcut::Event::Show);
+}
+
+//----------------------------------------------------------------------
+inline void FWidget_protected::onHide (finalcut::FHideEvent*)
+{
+  setLastEvent (finalcut::Event::Hide);
+}
+
+//----------------------------------------------------------------------
+inline void FWidget_protected::onClose (finalcut::FCloseEvent*)
+{
+  setLastEvent (finalcut::Event::Close);
+}
+
 
 //----------------------------------------------------------------------
 // class FWidgetTest
@@ -1770,14 +2099,13 @@ void FWidgetTest::focusableChildrenTest()
   CPPUNIT_ASSERT ( wdgt1_2.numOfFocusableChildren() == 0 );
   CPPUNIT_ASSERT ( ! wdgt1_2.getFlags().focus.focusable );
 
-  // Test FocusNextChild
-  finalcut::FWidget parent{&root_wdgt};
-  finalcut::FWidget child1{&parent};
-  finalcut::FWidget child2{&parent};
-  finalcut::FWidget child3{&parent};
-  finalcut::FWidget child4{&parent};
+  // Test focusing the next child widget
+  FWidget_protected parent{&root_wdgt};
+  FWidget_protected child1{&parent};
+  FWidget_protected child2{&parent};
+  FWidget_protected child3{&parent};
+  FWidget_protected child4{&parent};
 
-  // Test focusing on the next child when no children have focus
   CPPUNIT_ASSERT ( parent.numOfFocusableChildren() == 0 );
   CPPUNIT_ASSERT ( child1.getFlags().feature.active );
   CPPUNIT_ASSERT ( child2.getFlags().feature.active );
@@ -1809,7 +2137,7 @@ void FWidgetTest::focusableChildrenTest()
   CPPUNIT_ASSERT ( ! child3.hasFocus() );
   CPPUNIT_ASSERT ( ! child4.hasFocus() );
   CPPUNIT_ASSERT ( ! parent.focusNextChild() );
-  child1.setFocus();  // Set the initial focus
+  child1.setFocus();  // Set the initial focus on the first child
   CPPUNIT_ASSERT ( child1.hasFocus() );
   CPPUNIT_ASSERT ( ! child2.hasFocus() );
   CPPUNIT_ASSERT ( ! child3.hasFocus() );
@@ -1830,6 +2158,135 @@ void FWidgetTest::focusableChildrenTest()
   CPPUNIT_ASSERT ( ! child3.hasFocus() );
   CPPUNIT_ASSERT ( child4.hasFocus() );
   CPPUNIT_ASSERT ( child4.focusNextChild() );
+  CPPUNIT_ASSERT ( child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+
+  child2.setFlags().feature.active = false;
+  CPPUNIT_ASSERT ( parent.numOfFocusableChildren() == 3 );
+  CPPUNIT_ASSERT ( child1.focusNextChild() );
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+
+  child1.setFocus();  // Set the initial focus on the first child
+  child2.setFlags().feature.active = true;
+  child2.setFlags().focus.focusable = false;
+  child3.setFlags().visibility.shown = false;
+  CPPUNIT_ASSERT ( parent.numOfFocusableChildren() == 2 );
+  CPPUNIT_ASSERT ( child1.focusNextChild() );
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( child4.hasFocus() );
+
+  finalcut::FApplication::start();
+  child1.setFocus();  // Set the initial focus on the first child
+  child4.setFlags().visibility.shown = false;
+  CPPUNIT_ASSERT ( parent.numOfFocusableChildren() == 1 );
+  resetLastEvent();
+  CPPUNIT_ASSERT ( getLastEvent() == finalcut::Event::None );
+  CPPUNIT_ASSERT ( child1.focusNextChild() );
+  CPPUNIT_ASSERT ( getLastEvent() == finalcut::Event::FailAtChildFocus );
+  CPPUNIT_ASSERT ( child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+
+  child1.unsetFocus();  // Reset the focus of first child
+  child1.setFlags().visibility.shown = false;
+  CPPUNIT_ASSERT ( parent.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( ! child1.focusNextChild() );
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+
+  child1.setFlags().visibility.shown = true;
+  child1.setFocus();  // Set the initial focus on the first child
+  child2.setFlags().focus.focusable = true;
+  child3.setFlags().visibility.shown = true;
+  child2.setFlags().type.window_widget = true;
+  child4.setFlags().visibility.shown = true;
+  CPPUNIT_ASSERT ( parent.numOfFocusableChildren() == 3 );
+  CPPUNIT_ASSERT ( child2.isWindowWidget() );
+  CPPUNIT_ASSERT ( child1.focusNextChild() );
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+
+  // Test focusing the first child widget
+  child3.unsetFocus();  // Reset the focus of first child
+  child2.setFlags().type.window_widget = false;
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+  CPPUNIT_ASSERT ( parent.numOfFocusableChildren() == 4 );
+  CPPUNIT_ASSERT ( child1.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( ! child1.focusFirstChild() );
+
+  child1.setFlags().feature.active = false;
+  child2.setFlags().feature.active = false;
+  child3.setFlags().feature.active = false;
+  child4.setFlags().feature.active = false;
+  CPPUNIT_ASSERT ( parent.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( ! parent.focusFirstChild() );
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+
+  child1.setFlags().feature.active = true;
+  child1.setFlags().focus.focusable = false;
+  CPPUNIT_ASSERT ( parent.numOfFocusableChildren() == 0 );
+  CPPUNIT_ASSERT ( ! parent.focusFirstChild() );
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+
+  child2.setFlags().feature.active = true;
+  child2.setFlags().type.menu_widget = true;
+  CPPUNIT_ASSERT ( child2.isMenuWidget() );
+  CPPUNIT_ASSERT ( parent.numOfFocusableChildren() == 1 );
+  // A menu widget cannot receive focus as first element !
+  CPPUNIT_ASSERT ( ! parent.focusFirstChild() );
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+
+  child4.setFlags().feature.active = true;
+  CPPUNIT_ASSERT ( parent.numOfFocusableChildren() == 2 );
+  CPPUNIT_ASSERT ( parent.focusFirstChild() );
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( child4.hasFocus() );
+
+  child3.setFlags().feature.active = true;
+  CPPUNIT_ASSERT ( parent.numOfFocusableChildren() == 3 );
+  CPPUNIT_ASSERT ( parent.focusFirstChild() );
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+
+  child2.setFlags().type.menu_widget = false;
+  CPPUNIT_ASSERT ( parent.numOfFocusableChildren() == 3 );
+  CPPUNIT_ASSERT ( parent.focusFirstChild() );
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+
+  child1.setFlags().focus.focusable = true;
+  CPPUNIT_ASSERT ( parent.numOfFocusableChildren() == 4 );
+  CPPUNIT_ASSERT ( parent.focusFirstChild() );
   CPPUNIT_ASSERT ( child1.hasFocus() );
   CPPUNIT_ASSERT ( ! child2.hasFocus() );
   CPPUNIT_ASSERT ( ! child3.hasFocus() );

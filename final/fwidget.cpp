@@ -723,7 +723,8 @@ auto FWidget::numOfFocusableChildren() & -> int
     {
       const auto& widget = static_cast<FWidget*>(child);
 
-      if ( widget->isShown()
+      if ( widget->isEnabled()
+        && widget->isShown()
         && widget->acceptFocus()
         && ! widget->isWindowWidget() )
         num++;
@@ -947,7 +948,7 @@ auto FWidget::focusNextChild() -> bool
 
   if ( ! parent
     || ! parent->hasChildren()
-    || parent->numOfFocusableChildren() <= 1 )
+    || parent->numOfFocusableChildren() < 1 )
     return false;
 
   FWidget* next = nullptr;
@@ -986,7 +987,7 @@ auto FWidget::focusPrevChild() -> bool
 
   if ( ! parent
     || ! parent->hasChildren()
-    || parent->numOfFocusableChildren() <= 1 )
+    || parent->numOfFocusableChildren() < 1 )
     return false;
 
   FWidget* prev{nullptr};
