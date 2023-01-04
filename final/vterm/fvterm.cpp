@@ -767,27 +767,29 @@ void FVTerm::copyArea (FTermArea* dst, const FPoint& pos, const FTermArea* const
 
   for (int y{0}; y < y_end; y++)  // line loop
   {
+    const int cy = ay + y;
+    int cx = ax;
+    auto& dst_changes = dst->changes[std::size_t(cy)];
+    const auto* sc = &src->getFChar(ol, ot + y);  // src character
+    auto* dc = &dst->getFChar(ax, cy);  // dst character
+
     if ( src->changes[std::size_t(y)].trans_count > 0 )
     {
       // Line has one or more transparent characters
       for (int x{0}; x < length; x++)  // column loop
       {
-        const int cx = ax + x;
-        const int cy = ay + y;
-        const auto* sc = &src->getFChar(ol + x, ot + y);  // src character
-        auto* dc = &dst->getFChar(cx, cy);  // dst character
         putAreaCharacter(FPoint{cx, cy}, src, *sc, *dc);
+        cx++;  // x-position
+        ++sc;  // src character
+        ++dc;  // dst character
       }
     }
     else
     {
       // Line has only covered characters
-      const auto* sc = &src->getFChar(ol, ot + y);  // src character
-      auto* dc = &dst->getFChar(ax, ay + y);  // dst character
       putAreaLine (*sc, *dc, std::size_t(length));
     }
 
-    auto& dst_changes = dst->changes[std::size_t(ay + y)];
     dst_changes.xmin = std::min(uInt(ax), dst_changes.xmin);
     dst_changes.xmax = std::max(uInt(ax + length - 1), dst_changes.xmax);
   }
@@ -1408,7 +1410,7 @@ auto FVTerm::isInsideArea (const FPoint& pos, const FTermArea* area) const -> bo
 }
 
 //----------------------------------------------------------------------
-auto FVTerm::isTransparentInvisible (const FChar& fchar) const -> bool
+inline auto FVTerm::isTransparentInvisible (const FChar& fchar) const -> bool
 {
   const auto& fist_char = fchar.ch[0];
   return ( fist_char == UniChar::LowerHalfBlock
@@ -1512,7 +1514,7 @@ auto FVTerm::getCharacter ( CharacterType char_type
                           ? (layer >= getLayer(*win_obj))
                           : (layer < getLayer(*win_obj));
 
-    if ( has_an_owner && win_obj != &area_owner && significant_char )
+    if ( significant_char && has_an_owner && win_obj != &area_owner )
     {
       const auto& win = win_obj->getVWin();
 
@@ -1589,32 +1591,27 @@ void FVTerm::putAreaCharacter ( const FPoint& pos, const FTermArea* area
   if ( src_char.attr.bit.transparent )  // Transparent
   {
     // Restore one character on vterm
-    const FChar& ch = getCoveredCharacter (pos, area);
-    dst_char = ch;
+    dst_char = getCoveredCharacter (pos, area);
   }
   else  // Not transparent
   {
     if ( src_char.attr.bit.color_overlay )  // Transparent shadow
     {
       // Get covered character + add the current color
-      FChar ch = getCoveredCharacter (pos, area);
-      ch.fg_color = src_char.fg_color;
-      ch.bg_color = src_char.bg_color;
-      ch.attr.bit.reverse  = false;
-      ch.attr.bit.standout = false;
+      dst_char = getCoveredCharacter (pos, area);
+      dst_char.fg_color = src_char.fg_color;
+      dst_char.bg_color = src_char.bg_color;
+      dst_char.attr.bit.reverse  = false;
+      dst_char.attr.bit.standout = false;
 
-      if ( isTransparentInvisible(ch) )
-        ch.ch[0] = L' ';
-
-      dst_char = ch;
+      if ( isTransparentInvisible(dst_char) )
+        dst_char.ch[0] = L' ';
     }
     else if ( src_char.attr.bit.inherit_background )
     {
       // Add the covered background to this character
-      FChar ch{src_char};
-      FChar cc = getCoveredCharacter (pos, area);
-      ch.bg_color = cc.bg_color;
-      dst_char = ch;
+      dst_char = src_char;
+      dst_char.bg_color = getCoveredCharacter(pos, area).bg_color;
     }
     else  // Default
       dst_char = src_char;
@@ -1632,28 +1629,28 @@ void FVTerm::getAreaCharacter ( const FPoint& pos, FTermArea* area
   auto& tmp = area->getFChar(x - area_x, y - area_y);
 
   // Current character not transparent
-  if ( ! tmp.attr.bit.transparent )
+  if ( tmp.attr.bit.transparent )
+    return;
+
+  if ( tmp.attr.bit.color_overlay )  // transparent shadow
   {
-    if ( tmp.attr.bit.color_overlay )  // transparent shadow
-    {
-      // Keep the current vterm character
-      s_ch = *cc;
-      s_ch.fg_color = tmp.fg_color;
-      s_ch.bg_color = tmp.bg_color;
-      s_ch.attr.bit.reverse  = false;
-      s_ch.attr.bit.standout = false;
-      cc = &s_ch;
-    }
-    else if ( tmp.attr.bit.inherit_background )
-    {
-      // Add the covered background to this character
-      i_ch = tmp;
-      i_ch.bg_color = cc->bg_color;  // last background color
-      cc = &i_ch;
-    }
-    else  // default
-      cc = &tmp;
+    // Keep the current vterm character
+    s_ch = *cc;
+    s_ch.fg_color = tmp.fg_color;
+    s_ch.bg_color = tmp.bg_color;
+    s_ch.attr.bit.reverse  = false;
+    s_ch.attr.bit.standout = false;
+    cc = &s_ch;
   }
+  else if ( tmp.attr.bit.inherit_background )
+  {
+    // Add the covered background to this character
+    i_ch = tmp;
+    i_ch.bg_color = cc->bg_color;  // last background color
+    cc = &i_ch;
+  }
+  else  // default
+    cc = &tmp;
 }
 
 //----------------------------------------------------------------------

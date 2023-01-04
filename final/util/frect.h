@@ -87,7 +87,7 @@ class FRect
     void setX (int) noexcept;
     void setY (int) noexcept;
     void setPos (int, int) noexcept;
-    void setPos (const FPoint&);
+    void setPos (const FPoint&) noexcept;
     void setWidth (std::size_t) noexcept;
     void setHeight (std::size_t) noexcept;
     void setSize (std::size_t, std::size_t) noexcept;
@@ -252,7 +252,7 @@ inline void FRect::setPos (int x, int y) noexcept
 }
 
 //----------------------------------------------------------------------
-inline void FRect::setPos (const FPoint& p)
+inline void FRect::setPos (const FPoint& p) noexcept
 {
   const int dX = X2 - X1;
   const int dY = Y2 - Y1;

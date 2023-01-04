@@ -1,3 +1,6 @@
+2023-01-04  Markus Gans  <guru.mail@muenster.de>
+	* Small improvement of the display speed
+
 2023-01-03  Markus Gans  <guru.mail@muenster.de>
 	* The way how a widget gets the focus has been changed. It is now 
 	  a single step that includes sending focus events

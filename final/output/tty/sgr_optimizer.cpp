@@ -79,9 +79,7 @@ void SGRoptimizer::findParameter()
         continue;
 
       if ( seq[i] == 'm')
-      {
         csi_parameter.push_back({start, i});
-      }
 
       esc = csi = false;
       start = NOT_SET;
