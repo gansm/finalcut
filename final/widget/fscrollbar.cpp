@@ -247,7 +247,10 @@ void FScrollbar::onMouseDown (FMouseEvent* ev)
     && ev->getButton() != MouseButton::Middle )
     return;
 
-  setWidgetFocus(getParentWidget());
+  const auto& parent_widget = getParentWidget();
+
+  if ( parent_widget && ! parent_widget->isInstanceOf("FScrollView") )
+    setWidgetFocus(parent_widget);
 
   if ( min == max )
     return;
