@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2022 Markus Gans                                      *
+* Copyright 2018-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -67,6 +67,16 @@ class FMouse_protected : public finalcut::FMouse
     auto getDblclickInterval() noexcept -> uInt64
     {
       return finalcut::FMouse::getDblclickInterval();
+    }
+
+    void setNewMousePosition (int x, int y) noexcept
+    {
+      finalcut::FMouse::setNewPos(x, y);
+    }
+
+    void useNewMousePosition() noexcept
+    {
+      finalcut::FMouse::useNewPos();
     }
 
     auto isDblclickTimeout (const TimeValue& t) -> bool
@@ -196,6 +206,14 @@ void FMouseTest::noArgumentTest()
 
   finalcut::FMouseControl mouse_control;
   CPPUNIT_ASSERT ( ! mouse_control.hasData() );
+
+  mouse.setNewMousePosition(5, 12);
+  CPPUNIT_ASSERT ( mouse.getPos() == finalcut::FPoint(0, 0) );
+  CPPUNIT_ASSERT ( mouse.getNewMousePosition() == finalcut::FPoint(5, 12) );
+
+  mouse.useNewMousePosition();
+  CPPUNIT_ASSERT ( mouse.getPos() == finalcut::FPoint(5, 12) );
+  CPPUNIT_ASSERT ( mouse.getNewMousePosition() == finalcut::FPoint(5, 12) );
 }
 
 //----------------------------------------------------------------------

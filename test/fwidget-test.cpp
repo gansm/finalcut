@@ -1522,6 +1522,9 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( root_wdgt.childWidgetAt({31, 21}) == nullptr );
 
   // Double flat line
+  wdgt.setDoubleFlatLine (finalcut::Side::Top, -6, true);  // ignore
+  wdgt.setDoubleFlatLine (finalcut::Side::Top, -2, true);  // ignore
+  wdgt.setDoubleFlatLine (finalcut::Side::Top, 0, true);  // ignore
   wdgt.setDoubleFlatLine (finalcut::Side::Top, 2, true);
   wdgt.setDoubleFlatLine (finalcut::Side::Top, 3, true);
   wdgt.setDoubleFlatLine (finalcut::Side::Top, 5, true);
@@ -2320,8 +2323,16 @@ void FWidgetTest::focusableChildrenTest()
   CPPUNIT_ASSERT ( ! child3.hasFocus() );
   CPPUNIT_ASSERT ( ! child4.hasFocus() );
 
+  child1.p_setWidgetProperty(false);
+  CPPUNIT_ASSERT ( parent.focusFirstChild() );
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( child2.hasFocus() );
+  CPPUNIT_ASSERT ( ! child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+  child1.p_setWidgetProperty(true);
+
   // Test focusing the previous widget
-  child1.unsetFocus();
+  child2.unsetFocus();
   CPPUNIT_ASSERT ( ! root_wdgt.focusPrevChild() );  // No parent test
   CPPUNIT_ASSERT ( parent.numOfFocusableChildren() == 4 );
   CPPUNIT_ASSERT ( ! child1.hasFocus() );
@@ -2499,6 +2510,14 @@ void FWidgetTest::focusableChildrenTest()
   CPPUNIT_ASSERT ( ! child2.hasFocus() );
   CPPUNIT_ASSERT ( ! child3.hasFocus() );
   CPPUNIT_ASSERT ( child4.hasFocus() );
+
+  child4.p_setWidgetProperty(false);
+  CPPUNIT_ASSERT ( parent.focusLastChild() );
+  CPPUNIT_ASSERT ( ! child1.hasFocus() );
+  CPPUNIT_ASSERT ( ! child2.hasFocus() );
+  CPPUNIT_ASSERT ( child3.hasFocus() );
+  CPPUNIT_ASSERT ( ! child4.hasFocus() );
+  child4.p_setWidgetProperty(true);
 }
 
 //----------------------------------------------------------------------

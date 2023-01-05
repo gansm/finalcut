@@ -536,9 +536,13 @@ void FScrollView::onFocusIn (FFocusEvent* in_ev)
     FWidget::onFocusIn(in_ev);
 
   if ( in_ev->getFocusType() == FocusTypes::NextWidget )
-    focusFirstChild();
+  {
+    focusFirstChild() ? in_ev->accept() : in_ev->ignore();
+  }
   else if ( in_ev->getFocusType() == FocusTypes::PreviousWidget )
-    focusLastChild();
+  {
+    focusLastChild() ? in_ev->accept() : in_ev->ignore();
+  }
 }
 
 //----------------------------------------------------------------------

@@ -1433,7 +1433,12 @@ auto operator << (std::ostream& outstr, FLog::LogLevel l) -> std::ostream&
   }
   catch (const std::invalid_argument&)
   {
-    *FApplication::getLog() << FLog::LogLevel::Info;
+    try
+    {
+      *FApplication::getLog() << FLog::LogLevel::Info;
+    }
+    catch (const std::invalid_argument&)  // Avoid being thrown again
+    { }
   }
 
   return outstr;

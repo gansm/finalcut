@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2022 Markus Gans                                      *
+* Copyright 2016-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -303,7 +303,7 @@ class FVTerm : public FVTermAttribute
     auto  isTransparentInvisible (const FChar&) const -> bool;
     auto  updateTransparency (const FChar&, const FChar&) const -> FChar&;
     auto  updateInheritedBackground (const FChar&, const FChar&) const -> FChar&;
-    auto  generateCharacter (const FPoint&) const -> FChar;
+    auto  generateCharacter (const FPoint&) const -> FChar&;
     auto  getCharacter ( CharacterType
                        , const FPoint&
                        , const FTermArea* ) const -> FChar;
