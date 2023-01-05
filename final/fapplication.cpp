@@ -887,7 +887,8 @@ inline void FApplication::processInput() const
     processKeyboardEvent();
     processMouseEvent();
   }
-  while ( hasDataInQueue() );
+  while ( ! quit_now && hasDataInQueue() );
+  // quit_now is checked again to avoid an infinite loop on exit
 }
 
 //----------------------------------------------------------------------
@@ -1438,7 +1439,9 @@ auto operator << (std::ostream& outstr, FLog::LogLevel l) -> std::ostream&
       *FApplication::getLog() << FLog::LogLevel::Info;
     }
     catch (const std::invalid_argument&)  // Avoid being thrown again
-    { }
+    {
+      *FApplication::getLog();
+    }
   }
 
   return outstr;

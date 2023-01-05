@@ -1,5 +1,6 @@
 2023-01-05  Markus Gans  <guru.mail@muenster.de>
 	* Bugfix for broken scrollbar behavior in FScrollView widget
+	* Bugfix for infinite loop on input queue processing on exit
 
 2023-01-04  Markus Gans  <guru.mail@muenster.de>
 	* FObject now supports reverse iterators
