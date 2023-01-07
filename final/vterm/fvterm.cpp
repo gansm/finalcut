@@ -45,10 +45,12 @@ namespace internal
 
 struct var
 {
-  static bool fvterm_initialized;  // Global init state
+  static bool  fvterm_initialized;  // Global init state
+  static uInt8 b1_transparent_mask;
 };
 
-bool var::fvterm_initialized{false};
+bool  var::fvterm_initialized{false};
+uInt8 var::b1_transparent_mask{};
 
 }  // namespace internal
 
@@ -71,6 +73,7 @@ int                  FVTerm::tabstop{8};
 //----------------------------------------------------------------------
 FVTerm::FVTerm()
 {
+  internal::var::b1_transparent_mask = getByte1TransparentMask();
   init<FTermOutput>();
 }
 
@@ -476,12 +479,8 @@ void FVTerm::resizeArea ( const FRect& box
     && rsw == area->right_shadow
     && bsh == area->bottom_shadow )
   {
-    if ( offset_left != area->offset_left )
-      area->offset_left = offset_left;
-
-    if ( offset_top != area->offset_top )
-      area->offset_top = offset_top;
-
+    area->offset_left = offset_left;
+    area->offset_top = offset_top;
     return;  // Move only
   }
 
@@ -492,13 +491,11 @@ void FVTerm::resizeArea ( const FRect& box
 
   if ( getFullAreaHeight(area) != int(full_height) )
   {
-    realloc_success = resizeTextArea ( area
-                                     , full_height
-                                     , area_size );
+    realloc_success = resizeTextArea (area, full_height, area_size);
   }
   else if ( getFullAreaWidth(area) != int(full_width) )
   {
-    realloc_success = resizeTextArea(area, area_size);
+    realloc_success = resizeTextArea (area, area_size);
   }
   else
     return;
@@ -768,21 +765,15 @@ void FVTerm::copyArea (FTermArea* dst, const FPoint& pos, const FTermArea* const
   for (int y{0}; y < y_end; y++)  // line loop
   {
     const int cy = ay + y;
-    int cx = ax;
     auto& dst_changes = dst->changes[std::size_t(cy)];
     const auto* sc = &src->getFChar(ol, ot + y);  // src character
     auto* dc = &dst->getFChar(ax, cy);  // dst character
 
     if ( src->changes[std::size_t(y)].trans_count > 0 )
     {
-      // Line has one or more transparent characters
-      for (int x{0}; x < length; x++)  // column loop
-      {
-        putAreaCharacter(FPoint{cx, cy}, src, *sc, *dc);
-        cx++;  // x-position
-        ++sc;  // src character
-        ++dc;  // dst character
-      }
+      // Line with hidden and transparent characters
+      putTransparentAreaLine ( sc, dc, length
+                             , src, std::move(FPoint{ax, cy}) );
     }
     else
     {
@@ -1070,8 +1061,7 @@ inline auto FVTerm::resizeTextArea ( FTermArea* area
 
   area->changes.resize(height);
   area->changes.shrink_to_fit();
-  area->data.resize(size);
-  area->data.shrink_to_fit();
+  resizeTextArea (area, size);
   return true;
 }
 
@@ -1488,7 +1478,7 @@ auto FVTerm::generateCharacter (const FPoint& pos) const -> FChar&
 //----------------------------------------------------------------------
 auto FVTerm::getCharacter ( CharacterType char_type
                           , const FPoint& pos
-                          , const FTermArea* area ) const -> FChar
+                          , const FTermArea* area ) const -> FChar&
 {
   // Gets the overlapped or the covered character for a given position
 
@@ -1530,17 +1520,27 @@ auto FVTerm::getCharacter ( CharacterType char_type
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::getCoveredCharacter (const FPoint& pos, const FTermArea* area) const -> FChar
+inline auto FVTerm::getCoveredCharacter (const FPoint& pos, const FTermArea* area) const -> FChar&
 {
   // Gets the covered character for a given position
   return getCharacter (CharacterType::Covered, pos, area);
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::getOverlappedCharacter (const FPoint& pos, const FTermArea* area) const -> FChar
+inline auto FVTerm::getOverlappedCharacter (const FPoint& pos, const FTermArea* area) const -> FChar&
 {
   // Gets the overlapped character for a given position
   return getCharacter (CharacterType::Overlapped, pos, area);
+}
+
+//----------------------------------------------------------------------
+auto FVTerm::getByte1TransparentMask() -> uInt8
+{
+  FAttribute mask{};
+  mask.bit.transparent = true;
+  mask.bit.color_overlay = true;
+  mask.bit.inherit_background = true;
+  return mask.byte[1];
 }
 
 //----------------------------------------------------------------------
@@ -1582,6 +1582,50 @@ inline void FVTerm::putAreaLine (const FChar& src_char, FChar& dst_char, std::si
   // copy "length" characters from area to terminal
 
   std::memcpy (&dst_char, &src_char, length * sizeof(dst_char));
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::putTransparentAreaLine ( const FChar* src_char
+                                           , FChar* dst_char, const int length
+                                           , const FTermArea* src_area
+                                           , FPoint&& pos ) const
+{
+  const int last_char = pos.getX() + length - 1;
+  const FChar* start_char{nullptr};
+  std::size_t non_trans_count{0};
+
+  // Line has one or more transparent characters
+  for (; pos.getX() <= last_char; pos.x_ref()++)  // column loop
+  {
+    if ( (src_char->attr.byte[1] & internal::var::b1_transparent_mask) == 0 )
+    {
+      if ( non_trans_count == 0 )
+        start_char = src_char;
+
+      non_trans_count++;
+    }
+    else if ( non_trans_count != 0 )
+    {
+      putAreaLine (*start_char, *dst_char, non_trans_count);
+      dst_char += non_trans_count;  // dst character
+      non_trans_count = 0;
+      putAreaCharacter(pos, src_area, *src_char, *dst_char);
+      ++dst_char;  // dst character
+    }
+    else
+    {
+      putAreaCharacter(pos, src_area, *src_char, *dst_char);
+      ++dst_char;  // dst character
+    }
+
+    if ( pos.getX() == last_char && non_trans_count != 0 )
+    {
+      putAreaLine (*start_char, *dst_char, non_trans_count);
+      break;
+    }
+
+    ++src_char;  // src character
+  }
 }
 
 //----------------------------------------------------------------------

@@ -1,3 +1,6 @@
+2023-01-07  Markus Gans  <guru.mail@muenster.de>
+	* Accelerated copying of lines with transparent characters
+
 2023-01-05  Markus Gans  <guru.mail@muenster.de>
 	* Bugfix for broken scrollbar behavior in FScrollView widget
 	* Bugfix for infinite loop on input queue processing on exit

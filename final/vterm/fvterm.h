@@ -306,14 +306,17 @@ class FVTerm : public FVTermAttribute
     auto  generateCharacter (const FPoint&) const -> FChar&;
     auto  getCharacter ( CharacterType
                        , const FPoint&
-                       , const FTermArea* ) const -> FChar;
-    auto  getCoveredCharacter (const FPoint&, const FTermArea*) const -> FChar;
-    auto  getOverlappedCharacter (const FPoint&, const FTermArea*) const -> FChar;
+                       , const FTermArea* ) const -> FChar&;
+    auto  getCoveredCharacter (const FPoint&, const FTermArea*) const -> FChar&;
+    auto  getOverlappedCharacter (const FPoint&, const FTermArea*) const -> FChar&;
+    static auto getByte1TransparentMask() -> uInt8;
     template <typename FOutputType>
     void  init();
     void  initSettings();
     void  finish() const;
     void  putAreaLine (const FChar&, FChar&, std::size_t) const;
+    void  putTransparentAreaLine ( const FChar*, FChar*, const int
+                                 , const FTermArea*, FPoint&&  ) const;
     void  putAreaCharacter ( const FPoint&, const FTermArea*
                            , const FChar&, FChar& ) const;
     void  getAreaCharacter (const FPoint&, FTermArea*, FChar*&) const;

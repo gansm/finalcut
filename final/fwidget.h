@@ -427,6 +427,10 @@ class FWidget : public FVTerm
     // Methods
     void  determineDesktopSize();
     void  mapEventFunctions();
+    void  mapKeyEvents();
+    void  mapMouseEvents();
+    void  mapFocusEvents();
+    void  mapWidgetEvents();
     void  initRootWidget();
     void  initWidgetLayout();
     void  finish();

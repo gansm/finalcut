@@ -1524,7 +1524,18 @@ void FWidget::determineDesktopSize()
 //----------------------------------------------------------------------
 inline void FWidget::mapEventFunctions()
 {
-  event_map =
+  mapKeyEvents();
+  mapMouseEvents();
+  mapFocusEvents();
+  mapWidgetEvents();
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::mapKeyEvents()
+{
+  // Key events
+
+  event_map.insert (
   {
     { Event::KeyPress,
       [this] (FEvent* ev)
@@ -1543,17 +1554,29 @@ inline void FWidget::mapEventFunctions()
       {
         KeyDownEvent(static_cast<FKeyEvent*>(ev));
       }
-    },
+    }
+  } );
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::mapMouseEvents()
+{
+  // Mouse events
+
+  event_map.insert (
+  {
     { Event::MouseDown,
       [this] (FEvent* ev)
       {
-        emitCallback("mouse-press"); onMouseDown (static_cast<FMouseEvent*>(ev));
+        emitCallback("mouse-press");
+        onMouseDown (static_cast<FMouseEvent*>(ev));
       }
     },
     { Event::MouseUp,
       [this] (FEvent* ev)
       {
-        emitCallback("mouse-release"); onMouseUp (static_cast<FMouseEvent*>(ev));
+        emitCallback("mouse-release");
+        onMouseUp (static_cast<FMouseEvent*>(ev));
       }
     },
     { Event::MouseDoubleClick,
@@ -1565,25 +1588,39 @@ inline void FWidget::mapEventFunctions()
     { Event::MouseWheel,
       [this] (FEvent* ev)
       {
-        emitWheelCallback(static_cast<FWheelEvent*>(ev)); onWheel (static_cast<FWheelEvent*>(ev));
+        emitWheelCallback(static_cast<FWheelEvent*>(ev));
+        onWheel (static_cast<FWheelEvent*>(ev));
       }
     },
     { Event::MouseMove,
       [this] (FEvent* ev)
       {
-        emitCallback("mouse-move"); onMouseMove (static_cast<FMouseEvent*>(ev));
+        emitCallback("mouse-move");
+        onMouseMove (static_cast<FMouseEvent*>(ev));
       }
-    },
+    }
+  } );
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::mapFocusEvents()
+{
+  // Focus events
+
+  event_map.insert (
+  {
     { Event::FocusIn,
       [this] (FEvent* ev)
       {
-        emitCallback("focus-in"); onFocusIn (static_cast<FFocusEvent*>(ev));
+        emitCallback("focus-in");
+        onFocusIn (static_cast<FFocusEvent*>(ev));
       }
     },
     { Event::FocusOut,
       [this] (FEvent* ev)
       {
-        emitCallback("focus-out"); onFocusOut (static_cast<FFocusEvent*>(ev));
+        emitCallback("focus-out");
+        onFocusOut (static_cast<FFocusEvent*>(ev));
       }
     },
     { Event::ChildFocusIn,
@@ -1603,7 +1640,17 @@ inline void FWidget::mapEventFunctions()
       {
         onFailAtChildFocus (static_cast<FFocusEvent*>(ev));
       }
-    },
+    }
+  } );
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::mapWidgetEvents()
+{
+  // Widget events
+
+  event_map.insert (
+  {
     { Event::Accelerator,
       [this] (FEvent* ev)
       {
@@ -1634,7 +1681,7 @@ inline void FWidget::mapEventFunctions()
         onClose (static_cast<FCloseEvent*>(ev));
       }
     }
-  };
+  } );
 }
 
 //----------------------------------------------------------------------
