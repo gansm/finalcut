@@ -66,7 +66,7 @@ FWidget*  FWidget::active_window        {nullptr};  // the active window
 FWidget*  FWidget::focus_widget         {nullptr};  // has keyboard input focus
 FWidget*  FWidget::clicked_widget       {nullptr};  // is focused by click
 FWidget*  FWidget::open_menu            {nullptr};  // currently open menu
-FWidget*  FWidget::move_size_widget     {nullptr};  // move/size by keyboard
+FWidget*  FWidget::move_resize_widget   {nullptr};  // move or resize by keyboard
 FWidget*  FApplication::keyboard_widget {nullptr};  // has the keyboard focus
 int       FApplication::loop_level      {0};        // event loop level
 int       FApplication::quit_code       {EXIT_SUCCESS};
@@ -368,7 +368,7 @@ void FApplication::setKeyboardWidget (FWidget* widget)
 //----------------------------------------------------------------------
 void FApplication::closeConfirmationDialog (FWidget* w, FCloseEvent* ev)
 {
-  internal::var::app_object->unsetMoveSizeMode();
+  internal::var::app_object->unsetMoveResizeMode();
   const auto& ret = \
       FMessageBox::info ( w, "Quit"
                         , "Do you really want\n"
@@ -647,7 +647,7 @@ inline void FApplication::findKeyboardWidget() const
 
   FWidget* widget{nullptr};
   auto focus = getFocusWidget();
-  auto move_size = getMoveSizeWidget();
+  auto move_size = getMoveResizeWidget();
 
   if ( focus )
   {
@@ -751,7 +751,7 @@ inline void FApplication::performMouseAction() const
 void FApplication::mouseEvent (const FMouseData& md)
 {
   determineClickedWidget (md);
-  unsetMoveSizeMode();
+  unsetMoveResizeMode();
   closeDropDown (md);
   unselectMenubarItems (md);
 
@@ -905,8 +905,8 @@ auto FApplication::processDialogSwitchAccelerator() const -> bool
 
     if ( s > 0 && s >= n )
     {
-      // unset the move/size mode
-      auto move_size = getMoveSizeWidget();
+      // unset the move/resize mode
+      auto move_size = getMoveResizeWidget();
 
       if ( move_size )
       {
@@ -937,7 +937,7 @@ auto FApplication::processAccelerator (const FWidget& widget) const -> bool
     if ( item.key == keyboard.getKey() )
     {
       // unset the move/size mode
-      auto move_size = getMoveSizeWidget();
+      auto move_size = getMoveResizeWidget();
 
       if ( move_size )
       {
@@ -988,16 +988,16 @@ void FApplication::determineClickedWidget (const FMouseData& md)
 }
 
 //----------------------------------------------------------------------
-void FApplication::unsetMoveSizeMode() const
+void FApplication::unsetMoveResizeMode() const
 {
-  // Unset the move/size mode
+  // Unset the move or resize mode
 
-  auto& move_size = getMoveSizeWidget();
+  auto& move_size = getMoveResizeWidget();
 
   if ( move_size )
   {
     FWidget* w{nullptr};
-    std::swap(w, move_size);  // Clear move_size_widget
+    std::swap(w, move_size);  // Clear move_resize_widget
     w->redraw();
   }
 }

@@ -396,7 +396,7 @@ inline auto FButton::clickAnimationIndent (const FWidget* parent_widget) -> std:
   if ( getFlags().feature.flat )
     clearFlatBorder(this);
   else if ( hasShadow() )
-    clearShadow(this);
+    clearBlockShadow(this);
 
   if ( parent_widget )
     setColor ( parent_widget->getForegroundColor()

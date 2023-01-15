@@ -1925,7 +1925,6 @@ inline auto FListView::findHeaderEndPos ( FVTermBuffer::iterator first
 
     if ( column_width + char_width > getClientWidth() )
     {
-      column_width++;
       right_trunc = true;
       break;
     }

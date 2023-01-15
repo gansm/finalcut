@@ -568,7 +568,7 @@ void FWidgetTest::noArgumentTest()
   CPPUNIT_ASSERT ( root_wdgt.getFocusWidget() == nullptr );
   CPPUNIT_ASSERT ( root_wdgt.getClickedWidget() == nullptr );
   CPPUNIT_ASSERT ( root_wdgt.getOpenMenu() == nullptr );
-  CPPUNIT_ASSERT ( root_wdgt.getMoveSizeWidget() == nullptr );
+  CPPUNIT_ASSERT ( root_wdgt.getMoveResizeWidget() == nullptr );
   CPPUNIT_ASSERT ( root_wdgt.getMenuBar() == nullptr );
   CPPUNIT_ASSERT ( root_wdgt.getStatusBar() == nullptr );
 
@@ -599,9 +599,9 @@ void FWidgetTest::noArgumentTest()
   CPPUNIT_ASSERT ( wdgt.getOpenMenu() == &wdgt );
 
   // Set the moving or resizing widget
-  CPPUNIT_ASSERT ( wdgt.getMoveSizeWidget() == nullptr );
+  CPPUNIT_ASSERT ( wdgt.getMoveResizeWidget() == nullptr );
   wdgt.setMoveSizeWidget(&wdgt);
-  CPPUNIT_ASSERT ( wdgt.getMoveSizeWidget() == &wdgt );
+  CPPUNIT_ASSERT ( wdgt.getMoveResizeWidget() == &wdgt );
 
   // Menu bar and status bar
   CPPUNIT_ASSERT ( wdgt.getMenuBar() == nullptr );

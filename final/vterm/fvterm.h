@@ -248,7 +248,7 @@ class FVTerm : public FVTermAttribute
     void  setAreaCursor (const FPoint&, bool, FTermArea*) const noexcept;
     void  getArea (const FPoint&, FTermArea*) const noexcept;
     void  getArea (const FRect&, FTermArea*) const noexcept;
-    void  putArea (FTermArea*) const noexcept;
+    void  addLayer (FTermArea*) const noexcept;
     void  putArea (const FPoint&, const FTermArea*) const noexcept;
     void  copyArea (FTermArea*, const FPoint&, const FTermArea* const)  const noexcept;
     static auto  getLayer (FVTerm&) noexcept -> int;
@@ -278,21 +278,13 @@ class FVTerm : public FVTermAttribute
     static auto getGlobalFVTermInstance() -> FVTerm*&;
     static auto isInitialized() -> bool;
     void  resetAreaEncoding() const;
-    void  resetTextAreaToDefault ( FTermArea*
-                                 , const FSize&) const noexcept;
+    void  resetTextAreaToDefault (FTermArea*, const FSize&) const noexcept;
     auto  resizeTextArea (FTermArea*, std::size_t, std::size_t ) const -> bool;
     auto  resizeTextArea (FTermArea*, std::size_t) const -> bool;
     auto  isCovered (const FPoint&, const FTermArea*) const noexcept -> CoveredState;
     constexpr auto  getFullAreaWidth (const FTermArea*) const noexcept -> int;
     constexpr auto  getFullAreaHeight (const FTermArea*) const noexcept -> int;
-    void  updateOverlappedColor (const FChar&, const FChar&, FChar&) const noexcept;
-    void  updateOverlappedCharacter (FChar&, FChar&) const noexcept;
-    void  updateShadedCharacter (const FChar&, FChar&, FChar&) const noexcept;
-    void  updateInheritBackground (const FChar&, const FChar&, FChar&) const noexcept;
-    void  updateCharacter (const FChar&, FChar&) const noexcept;
-    auto  updateVTermCharacter ( const FTermArea*
-                               , const FPoint&
-                               , const FPoint& ) const noexcept -> bool;
+    void  passChangesToOverlap (const FTermArea*) const;
     void  updateVTerm() const;
     void  scrollTerminalForward() const;
     void  scrollTerminalReverse() const;
@@ -308,13 +300,14 @@ class FVTerm : public FVTermAttribute
                        , const FPoint&
                        , const FTermArea* ) const -> FChar&;
     auto  getCoveredCharacter (const FPoint&, const FTermArea*) const -> FChar&;
-    auto  getOverlappedCharacter (const FPoint&, const FTermArea*) const -> FChar&;
-    static auto getByte1TransparentMask() -> uInt8;
+    static void defineByte1TransparentMask();
     template <typename FOutputType>
     void  init();
     void  initSettings();
     void  finish() const;
-    void  putAreaLine (const FChar&, FChar&, std::size_t) const;
+    void  putAreaLine (const FChar&, FChar&, const std::size_t) const;
+    void  addTransparentAreaLine (const FChar*, FChar*, const std::size_t) const;
+    void  addTransparentAreaChar (const FChar&, FChar&) const;
     void  putTransparentAreaLine ( const FChar*, FChar*, const int
                                  , const FTermArea*, FPoint&&  ) const;
     void  putAreaCharacter ( const FPoint&, const FTermArea*
@@ -323,7 +316,7 @@ class FVTerm : public FVTermAttribute
     auto  clearFullArea (FTermArea*, FChar&) const -> bool;
     void  clearAreaWithShadow (FTermArea*, const FChar&) const noexcept;
     auto  printWrap (FTermArea*) const -> bool;
-    auto  getByte1TransMask() const -> uInt8;
+    auto  getByte1PrintTransMask() const -> uInt8;
     auto  changedToTransparency (const FChar&, const FChar&) const -> bool;
     auto  changedFromTransparency (const FChar&, const FChar&) const -> bool;
     auto  printCharacterOnCoordinate ( FTermArea*
@@ -343,9 +336,10 @@ class FVTerm : public FVTermAttribute
     static FTermArea*            active_area;                // active area
     static FChar                 s_ch;                       // shadow character
     static FChar                 i_ch;                       // inherit background character
-    static uInt8                 b1_trans_mask;              // Transparency mask
+    static uInt8                 b1_print_trans_mask;        // Transparency mask
     static int                   tabstop;
     static bool                  draw_completed;
+    static bool                  skip_one_vterm_update;
     static bool                  no_terminal_updates;
     static bool                  force_terminal_update;
 
@@ -394,7 +388,8 @@ struct FVTerm::FTermArea  // define virtual terminal character properties
     return owner.get() != nullptr;
   }
 
-  auto contains (const FPoint& pos) const noexcept -> bool;
+  auto contains (const FPoint&) const noexcept -> bool;
+  auto isOverlapped (const FTermArea*) -> bool;
   auto checkPrintPos() const noexcept -> bool;
 
   inline auto getFChar (int x, int y) const noexcept -> const FChar&
@@ -468,13 +463,41 @@ inline auto FVTerm::FTermArea::contains (const FPoint& pos) const noexcept -> bo
 {
   // Is the terminal position (pos) located on my area?
 
-  const int area_height = minimized ? min_height : height + bottom_shadow;
+  const int current_height = minimized ? min_height : height + bottom_shadow;
   const int x = pos.getX();
   const int y = pos.getY();
   return x >= offset_left
       && x <= offset_left + width + right_shadow - 1
       && y >= offset_top
-      && y <= offset_top + area_height - 1;
+      && y <= offset_top + current_height - 1;
+}
+
+//----------------------------------------------------------------------
+inline auto FVTerm::FTermArea::isOverlapped (const FTermArea* area) -> bool
+{
+  const int current_height = minimized ? min_height
+                                       : height + bottom_shadow;
+  const int x1 = offset_left;
+  const int x2 = offset_left + width + right_shadow - 1;
+  const int y1 = offset_top;
+  const int y2 = offset_top + current_height - 1;
+
+  const int area_current_height = area->minimized ? area->min_height
+                                                  : area->height + area->bottom_shadow;
+  const int area_x1 = area->offset_left;
+  const int area_x2 = area->offset_left + area->width + area->right_shadow - 1;
+  const int area_y1 = area->offset_top;
+  const int area_y2 = area->offset_top + area_current_height - 1;
+/*
+if ( std::max(x1, area_x1) <= std::min(x2, area_x2)
+  && std::max(y1, area_y1) <= std::min(y2, area_y2) )
+{
+  std::clog << "(" << x1 << ", " << y1 << "; " << x2 << ", " << y2 << ") <-> "
+            << "(" << area_x1 << ", " << area_y1 << "; " << area_x2 << ", " << area_y2 << ")\n";
+}
+*/
+  return ( std::max(x1, area_x1) <= std::min(x2, area_x2)
+        && std::max(y1, area_y1) <= std::min(y2, area_y2) );
 }
 
 //----------------------------------------------------------------------
@@ -753,7 +776,8 @@ inline void FVTerm::init()
   if ( ! isInitialized() )
   {
     setGlobalFVTermInstance(this);
-    b1_trans_mask = getByte1TransMask();
+    defineByte1TransparentMask();
+    b1_print_trans_mask = getByte1PrintTransMask();
     foutput       = std::make_shared<FOutputType>(*this);
     window_list   = std::make_shared<FVTermList>();
     initSettings();

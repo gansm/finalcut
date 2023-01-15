@@ -307,16 +307,16 @@ void FDialog::setSize (const FSize& size, bool adjust)
 
   const int x = getTermX();
   const int y = getTermY();
-  const int dw = int(getWidth()) - int(size.getWidth());
-  const int dh = int(getHeight()) - int(size.getHeight());
   const auto& shadow = getShadow();
+  const int dw = int(getWidth()) - int(size.getWidth()) + int(shadow.getWidth());
+  const int dh = int(getHeight()) - int(size.getHeight()) + int(shadow.getHeight());
   const std::size_t old_width = getWidth() + shadow.getWidth();
   const std::size_t old_height = getHeight() + shadow.getHeight();
   FWindow::setSize (size, false);
 
   // get adjust width and height with shadow
-  const std::size_t width = getWidth() + shadow.getWidth();
-  const std::size_t height = getHeight() + shadow.getHeight();
+  const std::size_t width = getWidth();
+  const std::size_t height = getHeight();
 
   // dw > 0 : scale down width
   // dw = 0 : scale only height
@@ -327,6 +327,11 @@ void FDialog::setSize (const FSize& size, bool adjust)
 
   setTerminalUpdates (FVTerm::TerminalUpdate::Stop);
 
+  if ( adjust )    // Adjust the size after restoreVTerm(),
+    adjustSize();  // because adjustSize() can also change x and y
+
+  redraw();
+
   // restoring the non-covered terminal areas
   if ( dw > 0 )
     restoreVTerm ({x + int(width), y, std::size_t(dw), old_height});  // restore right
@@ -334,10 +339,6 @@ void FDialog::setSize (const FSize& size, bool adjust)
   if ( dh > 0 )
     restoreVTerm ({x, y + int(height), old_width, std::size_t(dh)});  // restore bottom
 
-  if ( adjust )    // Adjust the size after restoreVTerm(),
-    adjustSize();  // because adjustSize() can also change x and y
-
-  redraw();
 
   // handle overlaid windows
   restoreOverlaidWindows();
@@ -345,7 +346,9 @@ void FDialog::setSize (const FSize& size, bool adjust)
   // set the cursor to the focus widget
   setCursorToFocusWidget();
 
-  setTerminalUpdates (FVTerm::TerminalUpdate::Start);
+  // Update the terminal
+  setTerminalUpdates (FVTerm::TerminalUpdate::Continue);
+  forceTerminalUpdate();
 }
 
 //----------------------------------------------------------------------
@@ -455,7 +458,7 @@ void FDialog::onKeyPress (FKeyEvent* ev)
   }
 
   // Dialog move and resize functions
-  if ( getMoveSizeWidget() )
+  if ( getMoveResizeWidget() )
     moveSizeKey(ev);
 
   if ( this == getMainWidget() )
@@ -704,7 +707,7 @@ void FDialog::done (ResultCode result)
 //----------------------------------------------------------------------
 void FDialog::draw()
 {
-  if ( ! getMoveSizeWidget() )
+  if ( ! getMoveResizeWidget() )
   {
     delete tooltip;
     tooltip = nullptr;
@@ -734,9 +737,7 @@ void FDialog::drawDialogShadow()
   if ( FVTerm::getFOutput()->isMonochron() && ! getFlags().shadow.trans_shadow )
     return;
 
-  if ( isMinimized() )
-    clearShadow(this);
-  else
+  if ( ! isMinimized() )
     drawShadow(this);
 }
 
@@ -985,7 +986,7 @@ void FDialog::drawBorder()
   if ( ! hasBorder() )
     return;
 
-  if ( (getMoveSizeWidget() == this || ! resize_click_pos.isOrigin() )
+  if ( (getMoveResizeWidget() == this || ! resize_click_pos.isOrigin() )
     && ! isZoomed() )
   {
     const auto& wc = getColorTheme();
@@ -1742,51 +1743,51 @@ void FDialog::resizeMouseUpMove (const MouseStates& ms, bool mouse_up)
 {
   // Resize dialog on mouse button up or on mouse movements
 
-  if ( isResizeable() && ! resize_click_pos.isOrigin() )
+  if ( ! isResizeable() || resize_click_pos.isOrigin() )
+    return;
+
+  const auto& r = getRootWidget();
+  resize_click_pos = ms.termPos;
+  const int x2 = resize_click_pos.getX();
+  const int y2 = resize_click_pos.getY();
+  int x2_offset{0};
+  int y2_offset{0};
+
+  if ( r )
   {
-    const auto& r = getRootWidget();
-    resize_click_pos = ms.termPos;
-    const int x2 = resize_click_pos.getX();
-    const int y2 = resize_click_pos.getY();
-    int x2_offset{0};
-    int y2_offset{0};
+    x2_offset = r->getLeftPadding();
+    y2_offset = r->getTopPadding();
+  }
 
-    if ( r )
-    {
-      x2_offset = r->getLeftPadding();
-      y2_offset = r->getTopPadding();
-    }
+  if ( ms.termPos != getTermGeometry().getLowerRightPos() )
+  {
+    int w{};
+    int h{};
+    const FPoint deltaPos{ms.termPos - resize_click_pos};
 
-    if ( ms.termPos != getTermGeometry().getLowerRightPos() )
-    {
-      int w{};
-      int h{};
-      const FPoint deltaPos{ms.termPos - resize_click_pos};
+    if ( x2 - x2_offset <= int(getMaxWidth()) )
+      w = resize_click_pos.getX() + deltaPos.getX() - getTermX() + 1;
+    else
+      w = int(getMaxWidth()) - getTermX() + x2_offset + 1;
 
-      if ( x2 - x2_offset <= int(getMaxWidth()) )
-        w = resize_click_pos.getX() + deltaPos.getX() - getTermX() + 1;
-      else
-        w = int(getMaxWidth()) - getTermX() + x2_offset + 1;
+    if ( y2 - y2_offset <= int(getMaxHeight()) )
+      h = resize_click_pos.getY() + deltaPos.getY() - getTermY() + 1;
+    else
+      h = int(getMaxHeight()) - getTermY() + y2_offset + 1;
 
-      if ( y2 - y2_offset <= int(getMaxHeight()) )
-        h = resize_click_pos.getY() + deltaPos.getY() - getTermY() + 1;
-      else
-        h = int(getMaxHeight()) - getTermY() + y2_offset + 1;
+    const FSize size ( ( w >= 0) ? std::size_t(w) : 0
+                     , ( h >= 0) ? std::size_t(h) : 0 );
+    setSize (size);
+  }
 
-      const FSize size ( ( w >= 0) ? std::size_t(w) : 0
-                       , ( h >= 0) ? std::size_t(h) : 0 );
-      setSize (size);
-    }
+  if ( mouse_up )
+  {
+    // Reset the border color
+    resize_click_pos.setPoint (0, 0);
 
-    if ( mouse_up )
-    {
-      // Reset the border color
-      resize_click_pos.setPoint (0, 0);
-
-      // redraw() is required to draw the standard (black) border
-      // and client objects with ignorePadding() option.
-      redraw();
-    }
+    // redraw() is required to draw the standard (black) border
+    // and client objects with ignorePadding() option.
+    redraw();
   }
 }
 

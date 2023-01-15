@@ -66,7 +66,7 @@ void passResizeCornerEventToDialog (const FWidget*, const FMouseEvent&);
 void drawShadow (FWidget*);
 void drawTransparentShadow (FWidget*);
 void drawBlockShadow (FWidget*);
-void clearShadow (FWidget*);
+void clearBlockShadow (FWidget*);
 void drawFlatBorder (FWidget*);
 void clearFlatBorder (FWidget*);
 void checkBorder (const FWidget*, FRect&);

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021-2022 Markus Gans                                      *
+* Copyright 2021-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -1147,68 +1147,68 @@ auto FTermOutput::updateTerminalLine (uInt y) -> bool
 {
   // Updates pending changes from line y to the terminal
 
-  bool ret{false};
   auto& vterm_changes = vterm->changes[y];
   uInt& xmin = vterm_changes.xmin;
   uInt& xmax = vterm_changes.xmax;
 
-  if ( xmin <= xmax )  // Line has changes
+  if ( xmin > xmax )  // This line has no changes
   {
-    ret = true;
-    bool draw_leading_ws = false;
-    bool draw_trailing_ws = false;
-    const auto& ce = TCAP(t_clr_eol);
-
-    // Clear rest of line
-    bool is_eol_clean = canClearToEOL (xmin, y);
-
-    if ( ! is_eol_clean )
-    {
-      // leading whitespace
-      draw_leading_ws = canClearLeadingWS (xmin, y);
-
-      // trailing whitespace
-      draw_trailing_ws = canClearTrailingWS (xmax, y);
-    }
-
-    setCursor (FPoint{int(xmin), int(y)});
-
-    if ( is_eol_clean )
-    {
-      auto& min_char = vterm->getFChar(int(xmin), int(y));
-      appendAttributes (min_char);
-      appendOutputBuffer (FTermControl{ce});
-      markAsPrinted (xmin, uInt(vterm->width - 1), y);
-    }
-    else
-    {
-      if ( draw_leading_ws )
-      {
-        const auto& cb = TCAP(t_clr_bol);
-        auto& first_char = vterm->getFChar(int(0), int(y));
-        appendAttributes (first_char);
-        appendOutputBuffer (FTermControl{cb});
-        markAsPrinted (0, xmin, y);
-      }
-
-      printRange (xmin, xmax, y, draw_trailing_ws);
-
-      if ( draw_trailing_ws )
-      {
-        auto& last_char = vterm->getFChar(vterm->width - 1, int(y));
-        appendAttributes (last_char);
-        appendOutputBuffer (FTermControl{ce});
-        markAsPrinted (xmax + 1, uInt(vterm->width - 1), y);
-      }
-    }
-
-    // Reset line changes
-    xmin = uInt(vterm->width);
-    xmax = 0;
+    cursorWrap();
+    return false;
   }
 
+  bool draw_leading_ws = false;
+  bool draw_trailing_ws = false;
+  const auto& ce = TCAP(t_clr_eol);
+
+  // Clear rest of line
+  bool is_eol_clean = canClearToEOL (xmin, y);
+
+  if ( ! is_eol_clean )
+  {
+    // leading whitespace
+    draw_leading_ws = canClearLeadingWS (xmin, y);
+
+    // trailing whitespace
+    draw_trailing_ws = canClearTrailingWS (xmax, y);
+  }
+
+  setCursor (FPoint{int(xmin), int(y)});
+
+  if ( is_eol_clean )
+  {
+    auto& min_char = vterm->getFChar(int(xmin), int(y));
+    appendAttributes (min_char);
+    appendOutputBuffer (FTermControl{ce});
+    markAsPrinted (xmin, uInt(vterm->width - 1), y);
+  }
+  else
+  {
+    if ( draw_leading_ws )
+    {
+      const auto& cb = TCAP(t_clr_bol);
+      auto& first_char = vterm->getFChar(int(0), int(y));
+      appendAttributes (first_char);
+      appendOutputBuffer (FTermControl{cb});
+      markAsPrinted (0, xmin, y);
+    }
+
+    printRange (xmin, xmax, y, draw_trailing_ws);
+
+    if ( draw_trailing_ws )
+    {
+      auto& last_char = vterm->getFChar(vterm->width - 1, int(y));
+      appendAttributes (last_char);
+      appendOutputBuffer (FTermControl{ce});
+      markAsPrinted (xmax + 1, uInt(vterm->width - 1), y);
+    }
+  }
+
+  // Reset line changes and wrap the cursor
+  xmin = uInt(vterm->width);
+  xmax = 0;
   cursorWrap();
-  return ret;
+  return false;
 }
 
 //----------------------------------------------------------------------

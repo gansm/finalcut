@@ -157,7 +157,7 @@ class FWidget : public FVTerm
     static auto  getFocusWidget() -> FWidget*&;
     static auto  getClickedWidget() -> FWidget*&;
     static auto  getOpenMenu() -> FWidget*&;
-    static auto  getMoveSizeWidget() -> FWidget*&;
+    static auto  getMoveResizeWidget() -> FWidget*&;
     static auto  getMenuBar() -> FMenuBar*;
     static auto  getStatusBar() -> FStatusBar*;
     static auto  getColorTheme() -> std::shared_ptr<FWidgetColors>&;
@@ -496,7 +496,7 @@ class FWidget : public FVTerm
     static FWidget*      focus_widget;
     static FWidget*      clicked_widget;
     static FWidget*      open_menu;
-    static FWidget*      move_size_widget;
+    static FWidget*      move_resize_widget;
     static FWidget*      show_root_widget;
     static FWidget*      redraw_root_widget;
     static FWidgetList*  dialog_list;
@@ -511,7 +511,7 @@ class FWidget : public FVTerm
     friend void  drawShadow (FWidget*);
     friend void  drawTransparentShadow (FWidget*);
     friend void  drawBlockShadow (FWidget*);
-    friend void  clearShadow (FWidget*);
+    friend void  clearBlockShadow (FWidget*);
     friend void  drawFlatBorder (FWidget*);
     friend void  clearFlatBorder (FWidget*);
 };
@@ -543,8 +543,8 @@ inline auto FWidget::getOpenMenu() -> FWidget*&
 { return open_menu; }
 
 //----------------------------------------------------------------------
-inline auto FWidget::getMoveSizeWidget() -> FWidget*&
-{ return move_size_widget; }
+inline auto FWidget::getMoveResizeWidget() -> FWidget*&
+{ return move_resize_widget; }
 
 //----------------------------------------------------------------------
 inline auto FWidget::getMenuBar() -> FMenuBar*
@@ -746,7 +746,7 @@ inline void FWidget::setColorTheme()
 
 //----------------------------------------------------------------------
 inline void FWidget::setMoveSizeWidget (FWidget* obj)
-{ move_size_widget = obj; }
+{ move_resize_widget = obj; }
 
 //----------------------------------------------------------------------
 inline void FWidget::setStatusbarMessage (const FString& msg)

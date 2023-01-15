@@ -1,3 +1,6 @@
+2023-01-15  Markus Gans  <guru.mail@muenster.de>
+	* Speed-up of the update routine for virtual terminal
+
 2023-01-07  Markus Gans  <guru.mail@muenster.de>
 	* Accelerated copying of lines with transparent characters
 

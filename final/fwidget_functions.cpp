@@ -309,7 +309,7 @@ void drawShadow (FWidget* w)
   if ( (FVTerm::getFOutput()->getEncoding() == Encoding::VT100 && ! w->flags.shadow.trans_shadow)
     || (FVTerm::getFOutput()->getEncoding() == Encoding::ASCII && ! w->flags.shadow.trans_shadow) )
   {
-    clearShadow(w);
+    clearBlockShadow(w);
     return;
   }
 
@@ -396,7 +396,7 @@ void drawBlockShadow (FWidget* w)
 }
 
 //----------------------------------------------------------------------
-void clearShadow (FWidget* w)
+void clearBlockShadow (FWidget* w)
 {
   if ( FVTerm::getFOutput()->isMonochron() )
     return;

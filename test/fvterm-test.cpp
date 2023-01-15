@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021-2022 Markus Gans                                      *
+* Copyright 2021-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -468,7 +468,7 @@ class FVTerm_protected : public finalcut::FVTerm
     void p_setAreaCursor (const finalcut::FPoint&, bool, FTermArea*);
     void p_getArea (const finalcut::FPoint&, FTermArea*) const;
     void p_getArea (const finalcut::FRect&, FTermArea*) const;
-    void p_putArea (FTermArea*) const;
+    void p_addLayer (FTermArea*) const;
     void p_putArea (const finalcut::FPoint&, const FTermArea*) const;
     static auto p_getLayer (FVTerm&) -> int;
     static void p_determineWindowLayers();
@@ -677,9 +677,9 @@ inline void FVTerm_protected::p_getArea (const finalcut::FRect& box, FTermArea* 
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm_protected::p_putArea (FTermArea* area) const
+inline void FVTerm_protected::p_addLayer (FTermArea* area) const
 {
-  finalcut::FVTerm::putArea (area);
+  finalcut::FVTerm::addLayer (area);
 }
 
 //----------------------------------------------------------------------
@@ -1994,18 +1994,18 @@ void FVTermTest::FVTermChildAreaPrintTest()
   vwin->visible = true;  // show()
   CPPUNIT_ASSERT ( vwin->visible );
   CPPUNIT_ASSERT ( ! vterm->has_changes );
-  p_fvterm.p_putArea(vwin);
+  p_fvterm.p_addLayer(vwin);
   CPPUNIT_ASSERT ( vterm->has_changes );
   CPPUNIT_ASSERT ( p_fvterm.value_ref() == 1 );
-  p_fvterm.p_putArea(vwin);
+  p_fvterm.p_addLayer(vwin);
   CPPUNIT_ASSERT ( p_fvterm.value_ref() == 2 );
   p_fvterm.value_ref() *= 5;
-  p_fvterm.p_putArea(vwin);
+  p_fvterm.p_addLayer(vwin);
   CPPUNIT_ASSERT ( p_fvterm.value_ref() == 11 );
   vwin->visible = false;  // hide()
-  p_fvterm.p_putArea(vwin);
+  p_fvterm.p_addLayer(vwin);
   CPPUNIT_ASSERT ( p_fvterm.value_ref() == 11 );
-  p_fvterm.p_putArea(nullptr);
+  p_fvterm.p_addLayer(nullptr);
   CPPUNIT_ASSERT ( p_fvterm.value_ref() == 11 );
 
   for (auto i{0}; i < vterm->height; i++)
@@ -2028,10 +2028,10 @@ void FVTermTest::FVTermChildAreaPrintTest()
   CPPUNIT_ASSERT ( vwin->has_changes );
   test::printArea (vwin);
 
-  p_fvterm.p_putArea(vwin);
+  p_fvterm.p_addLayer(vwin);
   vwin->visible = true;  // show()
   vterm->has_changes = false;
-  p_fvterm.p_putArea(vwin);
+  p_fvterm.p_addLayer(vwin);
   CPPUNIT_ASSERT ( vterm->has_changes );
 
   for (auto i{0}; i < 3; i++)
@@ -2704,7 +2704,7 @@ void FVTermTest::getFVTermAreaTest()
   }
 
   vwin->visible = true;
-  p_fvterm.p_putArea(vwin);
+  p_fvterm.p_addLayer(vwin);
 
   // Write changes to the virtual terminal
   p_fvterm.p_processTerminalUpdate();
