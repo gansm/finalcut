@@ -237,7 +237,6 @@ void FDialog::setPos (const FPoint& pos, bool)
   // Restore background outside the dialog
   recoverBackgroundAfterMove (delta_pos, old_geometry);
 
-  restoreOverlaidWindows();
   FWindow::adjustSize();
   setCursorToFocusWidget();
 }
@@ -256,7 +255,6 @@ inline auto FDialog::moveUp (int n) -> bool
     const auto y_max = int(getMaxHeight());
     FWindow::setY(y_max, false);
     putArea (getTermPos(), getVWin());
-    restoreOverlaidWindows();
   }
   else
     move ({0, -n});
@@ -279,7 +277,6 @@ inline auto FDialog::moveLeft (int n) -> bool
     const auto x_max = int(getMaxWidth());
     FWindow::setX(x_max, false);
     putArea (getTermPos(), getVWin());
-    restoreOverlaidWindows();
   }
   else
     move ({-n, 0});
@@ -308,15 +305,15 @@ void FDialog::setSize (const FSize& size, bool adjust)
   const int x = getTermX();
   const int y = getTermY();
   const auto& shadow = getShadow();
-  const int dw = int(getWidth()) - int(size.getWidth()) + int(shadow.getWidth());
-  const int dh = int(getHeight()) - int(size.getHeight()) + int(shadow.getHeight());
+  const int dw = int(getWidth()) - int(size.getWidth());
+  const int dh = int(getHeight()) - int(size.getHeight());
   const std::size_t old_width = getWidth() + shadow.getWidth();
   const std::size_t old_height = getHeight() + shadow.getHeight();
   FWindow::setSize (size, false);
 
   // get adjust width and height with shadow
-  const std::size_t width = getWidth();
-  const std::size_t height = getHeight();
+  const std::size_t width = getWidth() + shadow.getWidth();
+  const std::size_t height = getHeight() + shadow.getHeight();
 
   // dw > 0 : scale down width
   // dw = 0 : scale only height
@@ -332,6 +329,9 @@ void FDialog::setSize (const FSize& size, bool adjust)
 
   redraw();
 
+  // Copy dialog to virtual terminal
+  putArea (getTermPos(), getVWin());
+
   // restoring the non-covered terminal areas
   if ( dw > 0 )
     restoreVTerm ({x + int(width), y, std::size_t(dw), old_height});  // restore right
@@ -339,16 +339,11 @@ void FDialog::setSize (const FSize& size, bool adjust)
   if ( dh > 0 )
     restoreVTerm ({x, y + int(height), old_width, std::size_t(dh)});  // restore bottom
 
-
-  // handle overlaid windows
-  restoreOverlaidWindows();
-
   // set the cursor to the focus widget
   setCursorToFocusWidget();
 
   // Update the terminal
   setTerminalUpdates (FVTerm::TerminalUpdate::Continue);
-  forceTerminalUpdate();
 }
 
 //----------------------------------------------------------------------
@@ -1267,27 +1262,6 @@ void FDialog::clearStatusBar() const
 
   getStatusBar()->clearMessage();
   getStatusBar()->drawMessage();
-}
-
-//----------------------------------------------------------------------
-void FDialog::restoreOverlaidWindows()
-{
-  // Restoring overlaid windows
-
-  if ( ! getWindowList() || getWindowList()->empty() )
-    return;
-
-  bool overlaid{false};
-
-  for (auto&& window : *getWindowList())
-  {
-    const auto win = static_cast<FWidget*>(window);
-
-    if ( overlaid )
-      putArea (win->getTermPos(), win->getVWin());
-    else if ( getVWin() == win->getVWin() )
-      overlaid = true;
-  }
 }
 
 //----------------------------------------------------------------------

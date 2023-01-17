@@ -529,35 +529,24 @@ void FVTerm::resizeArea (const FRect& box, FTermArea* area) const
 //----------------------------------------------------------------------
 void FVTerm::restoreVTerm (const FRect& box) const noexcept
 {
-  if ( ! vterm )
+  const auto& win_list = getWindowList();
+
+  if ( ! vterm || ! win_list || win_list->empty())
     return;
 
-  int x = std::max(0, box.getX() - 1);
-  int y = std::max(0, box.getY() - 1);
-  int w = std::min(int(box.getWidth()), vterm->width - x);
-  int h = std::min(int(box.getHeight()), vterm->height - y);
+  const auto vterm_size = FSize{ std::size_t(vterm->width)
+                               , std::size_t(vterm->height) };
 
-  if (w <= 0 || h <= 0)
-    return;
+  if ( vdesktop && vdesktop->reprint(box, vterm_size) )
+    addLayer(vdesktop.get());
 
-  for (int ty{0}; ty < h; ty++)
+  for (auto&& win_obj : *win_list)
   {
-    int ypos = y + ty;
+    const auto& win = win_obj->getVWin();
 
-    for (int tx{0}; tx < w; tx++)
-    {
-      int xpos = x + tx;
-      auto& tc = vterm->getFChar(xpos, ypos);  // terminal character
-      auto sc = generateCharacter(FPoint{xpos, ypos});  // shown character
-      tc = sc;
-    }
-
-    auto& vterm_changes = vterm->changes[std::size_t(ypos)];
-    vterm_changes.xmin = uInt(std::min(int(vterm_changes.xmin), x));
-    vterm_changes.xmax = uInt(std::max(int(vterm_changes.xmax), x + w - 1));
+    if ( win && win->visible && win->reprint(box, vterm_size) )
+      addLayer(win);
   }
-
-  vterm->has_changes = true;
 }
 
 //----------------------------------------------------------------------
@@ -745,8 +734,11 @@ void FVTerm::putArea (const FPoint& pos, const FTermArea* area) const noexcept
 {
   // Copies the given area block to the virtual terminal position
 
-  if ( area && area->visible )
-    copyArea (vterm.get(), pos, area);
+  if ( ! area || ! area->visible )
+    return;
+
+  copyArea (vterm.get(), pos, area);
+  restoreOverlaidWindows(area);
 }
 
 //----------------------------------------------------------------------
@@ -786,7 +778,6 @@ void FVTerm::copyArea (FTermArea* dst, const FPoint& pos, const FTermArea* const
       // Line with hidden and transparent characters
       putTransparentAreaLine ( sc, dc, length
                              , src, FPoint{ax, cy} );
-      //addTransparentAreaLine (sc, dc, length);
     }
     else
     {
@@ -1190,6 +1181,29 @@ void FVTerm::passChangesToOverlap (const FTermArea* area) const
 }
 
 //----------------------------------------------------------------------
+void FVTerm::restoreOverlaidWindows (const FTermArea* area) const noexcept
+{
+  // Restoring overlaid windows
+
+  const auto& win_list = getWindowList();
+
+  if ( ! win_list || win_list->empty() )
+    return;
+
+  bool overlaid{false};
+
+  for (auto&& win_obj : *win_list)
+  {
+    const auto& win = win_obj->getVWin();
+
+    if ( overlaid && win && win->visible && win->isOverlapped(area) )
+      copyArea (vterm.get(), FPoint{win->offset_left + 1, win->offset_top + 1}, win);
+    else if ( getVWin() == win )
+      overlaid = true;
+  }
+}
+
+//----------------------------------------------------------------------
 void FVTerm::updateVTerm() const
 {
   // Updates the character data from all areas to VTerm
@@ -1542,7 +1556,6 @@ inline void FVTerm::addTransparentAreaLine ( const FChar* src_char
     if ( src_char == last_char && non_trans_count != 0 )
     {
       putAreaLine (*start_char, *dst_char, non_trans_count);
-      dst_char += non_trans_count;
       break;
     }
   }

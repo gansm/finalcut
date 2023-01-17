@@ -164,6 +164,7 @@ auto isFCharEqual ( const finalcut::FChar& lhs
 {
   finalcut::FAttribute attr{};
   attr.bit.no_changes = true;
+  attr.bit.printed = true;
 
   return finalcut::isFUnicodeEqual(lhs.ch, rhs.ch)
       && finalcut::isFUnicodeEqual(lhs.encoded_char, rhs.encoded_char)

@@ -514,9 +514,7 @@ void MouseDraw::drawCanvas()
   }
 
   printarea->has_changes = true;
-
-  if ( updateTerminal() )
-    flush();
+  forceTerminalUpdate();
 }
 
 //----------------------------------------------------------------------

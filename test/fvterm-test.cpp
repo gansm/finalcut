@@ -2645,7 +2645,6 @@ void FVTermTest::FVTermOverlappingWindowsTest()
 
   auto vwin_2_1_char = vwin_1_char;
   vwin_2_1_char.ch[0] = L' ';
-  vwin_2_1_char.attr.byte[1] = 0x80;
   auto vwin_4_1_char = vwin_1_char;
   vwin_4_1_char.ch[0] = L' ';
   test::printOnArea (test_area, { {  2, { {5, vwin_1_char}, {1, vwin_2_1_char}, {5, vwin_2_char}, {69, bg_char} } },

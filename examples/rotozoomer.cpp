@@ -22,6 +22,7 @@
 
 #include <cmath>
 
+#include <array>
 #include <chrono>
 #include <iomanip>
 #include <string>
@@ -86,7 +87,7 @@ RotoZoomer::RotoZoomer (finalcut::FWidget* parent, bool is_benchmark, int num_lo
   , loops{num_loops}
 {
   FDialog::setText ("Rotozoomer effect");
-  const wchar_t init_val[4] = {L' ', L'+', L'x', L' '};
+  const std::array<wchar_t, 4> init_val{{L' ', L'+', L'x', L' '}};
   std::size_t h{0};
 
   for (int i{0}; i < 2; i++)

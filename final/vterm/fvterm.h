@@ -59,6 +59,8 @@
 #include "final/output/tty/fterm_functions.h"
 #include "final/util/fdata.h"
 #include "final/util/fpoint.h"
+#include "final/util/frect.h"
+#include "final/util/fsize.h"
 #include "final/util/fstringstream.h"
 #include "final/vterm/fvtermattribute.h"
 
@@ -73,7 +75,6 @@ namespace finalcut
 // class forward declaration
 class FColorPair;
 class FOutput;
-class FRect;
 class FSize;
 class FString;
 class FStyle;
@@ -285,6 +286,7 @@ class FVTerm : public FVTermAttribute
     constexpr auto  getFullAreaWidth (const FTermArea*) const noexcept -> int;
     constexpr auto  getFullAreaHeight (const FTermArea*) const noexcept -> int;
     void  passChangesToOverlap (const FTermArea*) const;
+    void  restoreOverlaidWindows (const FTermArea* area) const noexcept;
     void  updateVTerm() const;
     void  scrollTerminalForward() const;
     void  scrollTerminalReverse() const;
@@ -389,8 +391,10 @@ struct FVTerm::FTermArea  // define virtual terminal character properties
   }
 
   auto contains (const FPoint&) const noexcept -> bool;
-  auto isOverlapped (const FTermArea*) -> bool;
+  auto isOverlapped (const FRect&) const noexcept -> bool;
+  auto isOverlapped (const FTermArea*) const noexcept -> bool;
   auto checkPrintPos() const noexcept -> bool;
+  auto reprint (const FRect&, const FSize&) noexcept -> bool;
 
   inline auto getFChar (int x, int y) const noexcept -> const FChar&
   {
@@ -473,7 +477,21 @@ inline auto FVTerm::FTermArea::contains (const FPoint& pos) const noexcept -> bo
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::FTermArea::isOverlapped (const FTermArea* area) -> bool
+inline auto FVTerm::FTermArea::isOverlapped (const FRect& box) const noexcept -> bool
+{
+  const int current_height = minimized ? min_height
+                                       : height + bottom_shadow;
+  const int x1 = offset_left;
+  const int x2 = offset_left + width + right_shadow - 1;
+  const int y1 = offset_top;
+  const int y2 = offset_top + current_height - 1;
+
+  return ( std::max(x1, box.getX1() - 1) <= std::min(x2, box.getX2() - 1)
+        && std::max(y1, box.getY1() - 1) <= std::min(y2, box.getY2() - 1) );
+}
+
+//----------------------------------------------------------------------
+inline auto FVTerm::FTermArea::isOverlapped (const FTermArea* area) const noexcept -> bool
 {
   const int current_height = minimized ? min_height
                                        : height + bottom_shadow;
@@ -488,14 +506,7 @@ inline auto FVTerm::FTermArea::isOverlapped (const FTermArea* area) -> bool
   const int area_x2 = area->offset_left + area->width + area->right_shadow - 1;
   const int area_y1 = area->offset_top;
   const int area_y2 = area->offset_top + area_current_height - 1;
-/*
-if ( std::max(x1, area_x1) <= std::min(x2, area_x2)
-  && std::max(y1, area_y1) <= std::min(y2, area_y2) )
-{
-  std::clog << "(" << x1 << ", " << y1 << "; " << x2 << ", " << y2 << ") <-> "
-            << "(" << area_x1 << ", " << area_y1 << "; " << area_x2 << ", " << area_y2 << ")\n";
-}
-*/
+
   return ( std::max(x1, area_x1) <= std::min(x2, area_x2)
         && std::max(y1, area_y1) <= std::min(y2, area_y2) );
 }
@@ -507,6 +518,42 @@ inline auto FVTerm::FTermArea::checkPrintPos() const noexcept -> bool
       && cursor_y > 0
       && cursor_x <= width + right_shadow
       && cursor_y <= height + bottom_shadow;
+}
+
+
+//----------------------------------------------------------------------
+inline auto FVTerm::FTermArea::reprint (const FRect& box, const FSize& term_size) noexcept -> bool
+{
+  if ( ! isOverlapped(box) )
+    return false;
+
+  const int x = box.getX() - 1;
+  const int y = box.getY() - 1;
+  const int w = int(box.getWidth());
+  const int h = int(box.getHeight());
+
+  if ( w <= 0 || h <= 0 )
+    return false;
+
+  has_changes = true;
+  const int y_start = std::max(0, std::max(y, offset_top)) - offset_top;
+  const int box_y2 = y + h - 1;
+  const int current_height = minimized ? min_height : height + bottom_shadow;
+  const int y2 = offset_top + current_height - 1;
+  const int y_end = std::min(int(term_size.getHeight()) - 1, std::min(box_y2, y2)) - offset_top;
+
+  for (auto y{y_start}; y <= y_end; y++)  // Line loop
+  {
+    const int x_start = std::max(0, std::max(x, offset_left)) - offset_left;
+    const int box_x2 = x + w - 1;
+    const int x2 = offset_left + width + right_shadow - 1;
+    const int x_end = std::min(int(term_size.getWidth()) - 1 , std::min(box_x2, x2)) - offset_left;
+    auto& line_changes = changes[std::size_t(y)];
+    line_changes.xmin = std::min(line_changes.xmin, uInt(x_start));
+    line_changes.xmax = std::max(line_changes.xmax, uInt(x_end));
+  }
+
+  return true;
 }
 
 

@@ -133,9 +133,9 @@ constexpr std::array<const char*, 97> saturn_xpm = \
   "                    "
 }};
 
-struct restoreOverlaidWindows : public fc::FVTerm
+struct restoreOverlaid : public fc::FVTerm
 {
-  ~restoreOverlaidWindows() override;
+  ~restoreOverlaid() override;
 
   void operator () (fc::FVTerm& obj) const
   {
@@ -157,7 +157,7 @@ struct restoreOverlaidWindows : public fc::FVTerm
   }
 };
 
-restoreOverlaidWindows::~restoreOverlaidWindows() = default;
+restoreOverlaid::~restoreOverlaid() = default;
 
 template <>
 struct std::hash<fc::FPoint>
@@ -203,7 +203,7 @@ void TextWindow::setPos (const fc::FPoint& pos, bool)
 {
   fc::FWindow::setPos (pos, false);
   putArea (getTermPos(), getVWin());
-  restoreOverlaidWindows{}(*this);
+  restoreOverlaid{}(*this);
 }
 
 //----------------------------------------------------------------------
@@ -269,7 +269,7 @@ void SpaceWindow::setPos (const fc::FPoint& pos, bool)
 {
   fc::FWindow::setPos (pos, false);
   putArea (getTermPos(), getVWin());
-  restoreOverlaidWindows{}(*this);
+  restoreOverlaid{}(*this);
 }
 
 //----------------------------------------------------------------------

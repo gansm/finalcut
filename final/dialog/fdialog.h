@@ -199,7 +199,6 @@ class FDialog : public FWindow
     void printMinimizeButton();
     void drawTextBar();
     void clearStatusBar() const;
-    void restoreOverlaidWindows();
     void setCursorToFocusWidget();
     void leaveMenu();
     void openMenu();
