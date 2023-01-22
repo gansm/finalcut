@@ -2420,6 +2420,18 @@ void FVTermTest::FVTermOverlappingWindowsTest()
   vwin_2->visible = true;
   vwin_3->visible = true;
   vwin_4->visible = true;
+
+  CPPUNIT_ASSERT ( vwin_1->layer == -1 );
+  CPPUNIT_ASSERT ( vwin_2->layer == -1 );
+  CPPUNIT_ASSERT ( vwin_3->layer == -1 );
+  CPPUNIT_ASSERT ( vwin_4->layer == -1 );
+  p_fvterm_1.p_determineWindowLayers();
+  CPPUNIT_ASSERT ( vwin_1->layer == 1 );
+  CPPUNIT_ASSERT ( vwin_2->layer == 2 );
+  CPPUNIT_ASSERT ( vwin_3->layer == 3 );
+  CPPUNIT_ASSERT ( vwin_4->layer == 4 );
+  
+  
   CPPUNIT_ASSERT ( finalcut::FVTerm::getWindowList()->size() == 4U );
 
   // virtual desktop

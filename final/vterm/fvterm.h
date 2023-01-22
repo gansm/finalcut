@@ -295,9 +295,6 @@ class FVTerm : public FVTermAttribute
     void  clearChildAreaChanges (const FTermArea*) const;
     auto  isInsideArea (const FPoint&, const FTermArea*) const -> bool;
     auto  isTransparentInvisible (const FChar&) const -> bool;
-    auto  updateTransparency (const FChar&, const FChar&) const -> FChar&;
-    auto  updateInheritedBackground (const FChar&, const FChar&) const -> FChar&;
-    auto  generateCharacter (const FPoint&) const -> FChar&;
     auto  getCharacter ( CharacterType
                        , const FPoint&
                        , const FTermArea* ) const -> FChar&;
@@ -310,8 +307,10 @@ class FVTerm : public FVTermAttribute
     void  putAreaLine (const FChar&, FChar&, const std::size_t) const;
     void  addTransparentAreaLine (const FChar*, FChar*, const std::size_t) const;
     void  addTransparentAreaChar (const FChar&, FChar&) const;
-    void  putTransparentAreaLine ( const FChar*, FChar*, const int
-                                 , const FTermArea*, FPoint&&  ) const;
+    void  putTransparentAreaLine ( const FChar&, FChar&, const int
+                                 , const FTermArea*, FPoint ) const;
+    void  putAreaLineWithTransparency ( const FChar*, FChar*, const int
+                                      , const FTermArea*, FPoint&& ) const;
     void  putAreaCharacter ( const FPoint&, const FTermArea*
                            , const FChar&, FChar& ) const;
     void  getAreaCharacter (const FPoint&, FTermArea*, FChar*&) const;
@@ -527,25 +526,25 @@ inline auto FVTerm::FTermArea::reprint (const FRect& box, const FSize& term_size
   if ( ! isOverlapped(box) )
     return false;
 
-  const int x = box.getX() - 1;
-  const int y = box.getY() - 1;
-  const int w = int(box.getWidth());
-  const int h = int(box.getHeight());
+  const int x_pos = box.getX() - 1;
+  const int y_pos = box.getY() - 1;
+  const auto w = int(box.getWidth());
+  const auto h = int(box.getHeight());
 
-  if ( w <= 0 || h <= 0 )
+  if ( w == 0 || h == 0 )
     return false;
 
   has_changes = true;
-  const int y_start = std::max(0, std::max(y, offset_top)) - offset_top;
-  const int box_y2 = y + h - 1;
+  const int y_start = std::max(0, std::max(y_pos, offset_top)) - offset_top;
+  const int box_y2 = y_pos + h - 1;
   const int current_height = minimized ? min_height : height + bottom_shadow;
   const int y2 = offset_top + current_height - 1;
   const int y_end = std::min(int(term_size.getHeight()) - 1, std::min(box_y2, y2)) - offset_top;
 
   for (auto y{y_start}; y <= y_end; y++)  // Line loop
   {
-    const int x_start = std::max(0, std::max(x, offset_left)) - offset_left;
-    const int box_x2 = x + w - 1;
+    const int x_start = std::max(0, std::max(x_pos, offset_left)) - offset_left;
+    const int box_x2 = x_pos + w - 1;
     const int x2 = offset_left + width + right_shadow - 1;
     const int x_end = std::min(int(term_size.getWidth()) - 1 , std::min(box_x2, x2)) - offset_left;
     auto& line_changes = changes[std::size_t(y)];
@@ -825,8 +824,8 @@ inline void FVTerm::init()
     setGlobalFVTermInstance(this);
     defineByte1TransparentMask();
     b1_print_trans_mask = getByte1PrintTransMask();
-    foutput       = std::make_shared<FOutputType>(*this);
-    window_list   = std::make_shared<FVTermList>();
+    foutput     = std::make_shared<FOutputType>(*this);
+    window_list = std::make_shared<FVTermList>();
     initSettings();
   }
   else

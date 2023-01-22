@@ -148,7 +148,7 @@ struct restoreOverlaid : public fc::FVTerm
     {
       const auto win = static_cast<fc::FWidget*>(window);
 
-      if ( overlaid )
+      if ( overlaid && win->getVWin()->visible )
         putArea (win->getTermPos(), win->getVWin());
 
       if ( obj.getVWin() == win->getVWin() )
@@ -225,7 +225,7 @@ void TextWindow::initLayout()
   auto size = fc::FSize{26, 5};
   auto x = int(getDesktopWidth() - size.getWidth()) / 2;
   auto y = int(getDesktopHeight() - size.getHeight()) / 2;
-  auto position = fc::FPoint{x,  y};
+  auto position = fc::FPoint{x, y};
   setGeometry(position, size, false);
   fc::FWidget::initLayout();
 }
@@ -392,6 +392,7 @@ class ParallaxScrolling final : public fc::FWidget
     int                 timer1{-1};
     int                 timer2{-1};
     int                 timer3{-1};
+    bool                quit_app{false};
 };
 
 //----------------------------------------------------------------------
@@ -442,20 +443,25 @@ void ParallaxScrolling::adjustSize()
 //----------------------------------------------------------------------
 void ParallaxScrolling::scrollLeft (SpaceWindow& lhs, SpaceWindow& rhs) const
 {
-  if ( rhs.getPos().getX() == 1 )
-    lhs.setPos ({int(getDesktopWidth() + 1), 1});
+  auto new_lhs_pos = ( rhs.getPos().getX() == 1 )
+                   ? fc::FPoint{int(getDesktopWidth() + 1), 1}
+                   : lhs.getPos() - fc::FPoint{1, 0};
 
-  if ( lhs.getPos().getX() == 1
-    && lhs.getPos().getX() > rhs.getPos().getX() )
-    rhs.setPos ({int(getDesktopWidth() + 1), 1});
+  auto new_rhs_pos = ( new_lhs_pos.getX() == 1
+                    && new_lhs_pos.getX() > rhs.getPos().getX() )
+                   ? fc::FPoint{int(getDesktopWidth() + 1), 1}
+                   : rhs.getPos() - fc::FPoint{1, 0};
 
-  lhs.setPos (lhs.getPos() - fc::FPoint(1,0));
-  rhs.setPos (rhs.getPos() - fc::FPoint(1,0));
+  lhs.setPos (new_lhs_pos);
+  rhs.setPos (new_rhs_pos);
 }
 
 //----------------------------------------------------------------------
 void ParallaxScrolling::onTimer (fc::FTimerEvent* ev)
 {
+  if ( ! isShown() )
+    return;
+
   const int timer_id = ev->getTimerId();
 
   if ( timer1 == timer_id )
@@ -477,8 +483,13 @@ void ParallaxScrolling::onTimer (fc::FTimerEvent* ev)
 //----------------------------------------------------------------------
 void ParallaxScrolling::onAccel (fc::FAccelEvent* ev)
 {
+  if ( quit_app )
+    return;
+
+  quit_app = true;
   close();
   ev->accept();
+  quit_app = false;
 }
 
 //----------------------------------------------------------------------

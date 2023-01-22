@@ -290,13 +290,13 @@ void FTermOutput::initTerminal (FVTerm::FTermArea* virtual_terminal)
   cursor_hideable = FTerm::isCursorHideable();
   hideCursor();
 
-  // Initialize character lengths
+  // Defining the character length of termcap strings
   init_characterLengths();
 
   // Check for support for combined characters
   init_combined_character();
 
-  // Reset the state of the terminal
+  // Resetting the status of terminal attributes
   clearTerminalState();
 
   // Initialize the last flush time
