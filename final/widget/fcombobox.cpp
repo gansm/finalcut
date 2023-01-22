@@ -427,6 +427,23 @@ void FComboBox::onFocusOut (FFocusEvent* out_ev)
   FWidget::onFocusOut(out_ev);
 }
 
+//----------------------------------------------------------------------
+void FComboBox::onFailAtChildFocus (FFocusEvent* fail_ev)
+{
+  // Change the focus away from FComboBox to another widget
+
+  if ( fail_ev->getFocusType() == FocusTypes::NextWidget )
+  {
+    fail_ev->accept();
+    focusNextChild();
+  }
+  else if ( fail_ev->getFocusType() == FocusTypes::PreviousWidget )
+  {
+    fail_ev->accept();
+    focusPrevChild();
+  }
+}
+
 
 // private methods of FComboBox
 //----------------------------------------------------------------------

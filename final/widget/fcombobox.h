@@ -183,6 +183,7 @@ class FComboBox : public FWidget
     void onWheel (FWheelEvent*) override;
     void onFocusIn (FFocusEvent*) override;
     void onFocusOut (FFocusEvent*) override;
+    void onFailAtChildFocus (FFocusEvent*) override;
 
   private:
     // Inquiries

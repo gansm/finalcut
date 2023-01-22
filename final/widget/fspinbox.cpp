@@ -161,12 +161,12 @@ void FSpinBox::onKeyPress (FKeyEvent* ev)
   {
     focusPrevChild();
   }
-  else if ( key == FKey::Up )
+  else if ( key == FKey::Up || key == FKey::Scroll_backward )
   {
     increaseValue();
     ev->accept();
   }
-  else if ( key == FKey::Down )
+  else if ( key == FKey::Down || key == FKey::Scroll_forward )
   {
     decreaseValue();
     ev->accept();
@@ -284,6 +284,23 @@ void FSpinBox::onFocusIn (FFocusEvent* in_ev)
 {
   setWidgetFocus (&input_field);
   FWidget::onFocusIn(in_ev);
+}
+
+//----------------------------------------------------------------------
+void FSpinBox::onFailAtChildFocus (FFocusEvent* fail_ev)
+{
+  // Change the focus away from FComboBox to another widget
+
+  if ( fail_ev->getFocusType() == FocusTypes::NextWidget )
+  {
+    fail_ev->accept();
+    focusNextChild();
+  }
+  else if ( fail_ev->getFocusType() == FocusTypes::PreviousWidget )
+  {
+    fail_ev->accept();
+    focusPrevChild();
+  }
 }
 
 

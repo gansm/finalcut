@@ -112,6 +112,7 @@ class FSpinBox : public FWidget
     void onWheel (FWheelEvent*) override;
     void onTimer (FTimerEvent*) override;
     void onFocusIn (FFocusEvent*) override;
+    void onFailAtChildFocus (FFocusEvent*) override;
 
   private:
     // Enumeration
