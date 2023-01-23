@@ -605,8 +605,8 @@ auto FWindow::zoomWindow() -> bool
     zoomed = false;
     const FRect oldGeometry (getTermGeometryWithShadow());
     setGeometry (normalGeometry);
-    restoreVTerm (oldGeometry);
     redraw();
+    restoreVTerm (oldGeometry);
   }
   else
   {
@@ -618,8 +618,8 @@ auto FWindow::zoomWindow() -> bool
     normalGeometry = getGeometry();
     const FRect oldGeometry (getTermGeometryWithShadow());
     setGeometry (FPoint{1, 1}, FSize{getMaxWidth(), getMaxHeight()});
-    restoreVTerm (oldGeometry);
     redraw();
+    restoreVTerm (oldGeometry);
   }
 
   return zoomed;

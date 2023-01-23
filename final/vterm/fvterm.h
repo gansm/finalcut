@@ -307,7 +307,7 @@ class FVTerm : public FVTermAttribute
     void  putAreaLine (const FChar&, FChar&, const std::size_t) const;
     void  addTransparentAreaLine (const FChar*, FChar*, const std::size_t) const;
     void  addTransparentAreaChar (const FChar&, FChar&) const;
-    void  putTransparentAreaLine ( const FChar&, FChar&, const int
+    void  putTransparentAreaLine ( const FChar&, FChar&, const std::size_t
                                  , const FTermArea*, FPoint ) const;
     void  putAreaLineWithTransparency ( const FChar*, FChar*, const int
                                       , const FTermArea*, FPoint&& ) const;
@@ -548,8 +548,8 @@ inline auto FVTerm::FTermArea::reprint (const FRect& box, const FSize& term_size
     const int x2 = offset_left + width + right_shadow - 1;
     const int x_end = std::min(int(term_size.getWidth()) - 1 , std::min(box_x2, x2)) - offset_left;
     auto& line_changes = changes[std::size_t(y)];
-    line_changes.xmin = std::min(line_changes.xmin, uInt(x_start));
-    line_changes.xmax = std::max(line_changes.xmax, uInt(x_end));
+    line_changes.xmin = std::size_t(std::min(int(line_changes.xmin), x_start));
+    line_changes.xmax = std::size_t(std::max(int(line_changes.xmax), x_end));
   }
 
   return true;

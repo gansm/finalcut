@@ -1467,7 +1467,10 @@ inline void FVTerm::addTransparentAreaLine ( const FChar* src_char
 
   for (; src_char < end_char; src_char++)  // column loop
   {
-    if ( (src_char->attr.byte[1] & internal::var::b1_transparent_mask) == 0 )
+    const auto isTransparent = \
+        bool((src_char->attr.byte[1] & internal::var::b1_transparent_mask) != 0);
+
+    if ( ! isTransparent )
     {
       if ( non_trans_count == 0 )
         start_char = src_char;
@@ -1533,14 +1536,14 @@ inline void FVTerm::addTransparentAreaChar (const FChar& src_char, FChar& dst_ch
 //----------------------------------------------------------------------
 inline void FVTerm::putTransparentAreaLine ( const FChar& src_char
                                            , FChar& dst_char
-                                           , const int length
+                                           , const std::size_t length
                                            , const FTermArea* src_area
                                            , FPoint start_pos ) const
 {
   auto src = &src_char;
   auto dst = &dst_char;
   const auto end = src + length;
-  start_pos.x_ref() -= length;
+  start_pos.x_ref() -= int(length);
 
   for (; src < end; ++src)  // column loop
   {
@@ -1557,13 +1560,13 @@ inline void FVTerm::putAreaLineWithTransparency ( const FChar* src_char
                                                 , const FTermArea* src_area
                                                 , FPoint&& pos ) const
 {
-  const int last_char = pos.getX() + length - 1;
+  const int end_char = pos.getX() + length;
   const FChar* start_char{nullptr};
   std::size_t trans_count{0};
   std::size_t non_trans_count{0};
 
   // Line has one or more transparent characters
-  for (; pos.getX() <= last_char; pos.x_ref()++)  // column loop
+  while ( pos.getX() < end_char )  // column loop
   {
     const auto isTransparent = \
         bool((src_char->attr.byte[1] & internal::var::b1_transparent_mask) != 0);
@@ -1596,10 +1599,10 @@ inline void FVTerm::putAreaLineWithTransparency ( const FChar* src_char
       non_trans_count++;
     }
 
-    if ( pos.getX() == last_char )
-    {
-      pos.x_ref()++;
+    pos.x_ref()++;
 
+    if ( pos.getX() == end_char )
+    {
       if ( trans_count != 0 )
         putTransparentAreaLine (*start_char, *dst_char, trans_count , src_area, pos);
       else if ( non_trans_count != 0 )

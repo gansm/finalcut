@@ -304,9 +304,9 @@ void FDialog::setSize (const FSize& size, bool adjust)
 
   const int x = getTermX();
   const int y = getTermY();
-  const auto& shadow = getShadow();
   const int dw = int(getWidth()) - int(size.getWidth());
   const int dh = int(getHeight()) - int(size.getHeight());
+  const auto& shadow = getShadow();
   const std::size_t old_width = getWidth() + shadow.getWidth();
   const std::size_t old_height = getHeight() + shadow.getHeight();
   FWindow::setSize (size, false);
