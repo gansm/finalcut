@@ -60,8 +60,6 @@ bool                 FVTerm::skip_one_vterm_update{false};
 bool                 FVTerm::no_terminal_updates{false};
 bool                 FVTerm::force_terminal_update{false};
 FVTerm::FTermArea*   FVTerm::active_area{nullptr};
-FChar                FVTerm::s_ch{};
-FChar                FVTerm::i_ch{};
 uInt8                FVTerm::b1_print_trans_mask{};
 int                  FVTerm::tabstop{8};
 
@@ -666,7 +664,7 @@ void FVTerm::getArea (const FRect& box, FTermArea* area) const noexcept
 //----------------------------------------------------------------------
 void FVTerm::addLayer (FTermArea* area) const noexcept
 {
-  // Transmit changes in area to the virtual terminal
+  // Transmit changes in area to the virtual terminal (add layer to vterm)
 
   if ( ! area || ! area->visible )
     return;
@@ -708,7 +706,7 @@ void FVTerm::addLayer (FTermArea* area) const noexcept
     if ( line_changes.trans_count > 0 )
     {
       // Line with hidden and transparent characters
-      addTransparentAreaLine (&ac, &tc, length);
+      addAreaLineWithTransparency (&ac, &tc, length);
     }
     else
     {
@@ -777,8 +775,7 @@ void FVTerm::copyArea (FTermArea* dst, const FPoint& pos, const FTermArea* const
     if ( src->changes[std::size_t(y)].trans_count > 0 )
     {
       // Line with hidden and transparent characters
-      putAreaLineWithTransparency ( sc, dc, length
-                                  , src, FPoint{ax, cy} );
+      putAreaLineWithTransparency (sc, dc, length, FPoint{ax, cy});
     }
     else
     {
@@ -1169,8 +1166,8 @@ void FVTerm::passChangesToOverlap (const FTermArea* area) const
         const int win_x2 = win_offset_left + win->width + win->right_shadow - 1;
         const int x_end = std::min(vterm->width - 1, std::min(area_x2, win_x2)) - win_offset_left;
         auto& line_changes = win->changes[std::size_t(y)];
-        line_changes.xmin = std::min(int(line_changes.xmin), x_start);
-        line_changes.xmax = std::max(int(line_changes.xmax), x_end);
+        line_changes.xmin = uInt(std::min(int(line_changes.xmin), x_start));
+        line_changes.xmax = uInt(std::max(int(line_changes.xmax), x_end));
       }
     }
 
@@ -1354,57 +1351,6 @@ inline auto FVTerm::isTransparentInvisible (const FChar& fchar) const -> bool
 }
 
 //----------------------------------------------------------------------
-auto FVTerm::getCharacter ( CharacterType char_type
-                          , const FPoint& pos
-                          , const FTermArea* area ) const -> FChar&
-{
-  // Gets the overlapped or the covered character for a given position
-
-  int xx = std::max(pos.getX(), 0);
-  int yy = std::max(pos.getY(), 0);
-  xx = std::min(xx, vterm->width - 1);
-  yy = std::min(yy, vterm->height - 1);
-  auto cc = &vdesktop->getFChar(xx, yy);  // covered character
-  const auto& win_list = getWindowList();
-
-  if ( ! area || ! win_list || win_list->empty() )
-    return *cc;
-
-  // Get the window layer of this widget object
-  const auto has_an_owner = area->hasOwner();
-  auto& area_owner = *area->getOwner<FVTerm*>();
-  const int layer = has_an_owner ? getLayer(area_owner) : 0;
-
-  for (auto&& win_obj : *win_list)
-  {
-    // char_type can be "overlapped_character" or "covered_character"
-    bool significant_char = (char_type == CharacterType::Covered)
-                          ? (layer >= getLayer(*win_obj))
-                          : (layer < getLayer(*win_obj));
-
-    if ( significant_char && has_an_owner && win_obj != &area_owner )
-    {
-      const auto& win = win_obj->getVWin();
-
-      // Window visible and contains current character
-      if ( win && win->visible && win->contains(pos) )
-        getAreaCharacter (pos, win, cc);
-    }
-    else if ( char_type == CharacterType::Covered )
-      break;
-  }
-
-  return *cc;
-}
-
-//----------------------------------------------------------------------
-inline auto FVTerm::getCoveredCharacter (const FPoint& pos, const FTermArea* area) const -> FChar&
-{
-  // Gets the covered character for a given position
-  return getCharacter (CharacterType::Covered, pos, area);
-}
-
-//----------------------------------------------------------------------
 void FVTerm::defineByte1TransparentMask()
 {
   FAttribute mask{};
@@ -1456,46 +1402,147 @@ inline void FVTerm::putAreaLine (const FChar& src_char, FChar& dst_char, const s
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::addTransparentAreaLine ( const FChar* src_char
-                                           , FChar* dst_char
-                                           , const std::size_t length ) const
+inline void FVTerm::putAreaLineWithTransparency ( const FChar* src_char
+                                                , FChar* dst_char
+                                                , const int length
+                                                , FPoint&& pos ) const
 {
-  const auto end_char = src_char + length;
-  const auto last_char = end_char - 1;
+  const int end_char = pos.getX() + length;
   const FChar* start_char{nullptr};
+  std::size_t trans_count{0};
   std::size_t non_trans_count{0};
 
-  for (; src_char < end_char; src_char++)  // column loop
+  // Line has one or more transparent characters
+  while ( pos.getX() < end_char )  // column loop
   {
     const auto isTransparent = \
         bool((src_char->attr.byte[1] & internal::var::b1_transparent_mask) != 0);
 
-    if ( ! isTransparent )
+    if ( isTransparent && non_trans_count != 0 )
+    {
+      putAreaLine (*start_char, *dst_char, non_trans_count);
+      dst_char += non_trans_count;  // dst character
+      non_trans_count = 0;
+    }
+    else if ( ! isTransparent && trans_count != 0 )
+    {
+      putTransparentAreaLine (pos, trans_count);
+      dst_char += trans_count;  // dst character
+      trans_count = 0;
+    }
+
+    if ( isTransparent )
+    {
+      if ( trans_count == 0 )
+        start_char = src_char;
+
+      trans_count++;
+    }
+    else
     {
       if ( non_trans_count == 0 )
         start_char = src_char;
 
       non_trans_count++;
     }
-    else if ( non_trans_count != 0 )
+
+    pos.x_ref()++;
+
+    if ( pos.getX() == end_char )
+    {
+      if ( trans_count != 0 )
+      {
+        putTransparentAreaLine (pos, trans_count);
+      }
+      else if ( non_trans_count != 0 )
+        putAreaLine (*start_char, *dst_char, non_trans_count);
+
+      break;
+    }
+
+    ++src_char;  // src character
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::putTransparentAreaLine ( const FPoint& pos
+                                           , const std::size_t length ) const
+{
+  FRect box(pos.getX() + 1 - int(length), pos.getY() + 1, length, 1);
+  restoreVTerm(box);
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::addAreaLineWithTransparency ( const FChar* src_char
+                                                , FChar* dst_char
+                                                , const std::size_t length ) const
+{
+  const auto end_char = src_char + length;
+  const auto last_char = end_char - 1;
+  const FChar* start_char{nullptr};
+  std::size_t trans_count{0};
+  std::size_t non_trans_count{0};
+
+  while ( src_char < end_char )  // column loop
+  {
+    const auto isTransparent = \
+        bool((src_char->attr.byte[1] & internal::var::b1_transparent_mask) != 0);
+
+    if ( isTransparent && non_trans_count != 0 )
     {
       putAreaLine (*start_char, *dst_char, non_trans_count);
       dst_char += non_trans_count;  // dst character
       non_trans_count = 0;
-      addTransparentAreaChar (*src_char, *dst_char);
-      ++dst_char;  // dst character
+    }
+    else if ( ! isTransparent && trans_count != 0 )
+    {
+      addTransparentAreaLine (*start_char, *dst_char, trans_count);
+      dst_char += trans_count;  // dst character
+      trans_count = 0;
+    }
+
+    if ( isTransparent )
+    {
+      if ( trans_count == 0 )
+        start_char = src_char;
+
+      trans_count++;
     }
     else
     {
-      addTransparentAreaChar (*src_char, *dst_char);
-      ++dst_char;  // dst character
+      if ( non_trans_count == 0 )
+        start_char = src_char;
+
+      non_trans_count++;
     }
 
-    if ( src_char == last_char && non_trans_count != 0 )
+    if ( src_char == last_char )
     {
-      putAreaLine (*start_char, *dst_char, non_trans_count);
+      if ( trans_count != 0 )
+        addTransparentAreaLine (*start_char, *dst_char, trans_count);
+      else if ( non_trans_count != 0 )
+        putAreaLine (*start_char, *dst_char, non_trans_count);
+
       break;
     }
+
+    src_char++;
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::addTransparentAreaLine ( const FChar& src_char
+                                           , FChar& dst_char
+                                           , const std::size_t length ) const
+{
+  auto src = &src_char;
+  auto dst = &dst_char;
+  const auto end = src + length;
+
+  for (; src < end; ++src)  // column loop
+  {
+    addTransparentAreaChar (*src, *dst);
+    ++dst;  // dst character
   }
 }
 
@@ -1531,154 +1578,6 @@ inline void FVTerm::addTransparentAreaChar (const FChar& src_char, FChar& dst_ch
   }
   else  // Default
     dst_char = src_char;
-}
-
-//----------------------------------------------------------------------
-inline void FVTerm::putTransparentAreaLine ( const FChar& src_char
-                                           , FChar& dst_char
-                                           , const std::size_t length
-                                           , const FTermArea* src_area
-                                           , FPoint start_pos ) const
-{
-  auto src = &src_char;
-  auto dst = &dst_char;
-  const auto end = src + length;
-  start_pos.x_ref() -= int(length);
-
-  for (; src < end; ++src)  // column loop
-  {
-    putAreaCharacter (start_pos, src_area, *src, *dst);
-    start_pos.x_ref()++;
-    ++dst;  // dst character
-  }
-}
-
-//----------------------------------------------------------------------
-inline void FVTerm::putAreaLineWithTransparency ( const FChar* src_char
-                                                , FChar* dst_char
-                                                , const int length
-                                                , const FTermArea* src_area
-                                                , FPoint&& pos ) const
-{
-  const int end_char = pos.getX() + length;
-  const FChar* start_char{nullptr};
-  std::size_t trans_count{0};
-  std::size_t non_trans_count{0};
-
-  // Line has one or more transparent characters
-  while ( pos.getX() < end_char )  // column loop
-  {
-    const auto isTransparent = \
-        bool((src_char->attr.byte[1] & internal::var::b1_transparent_mask) != 0);
-
-    if ( isTransparent && non_trans_count != 0 )
-    {
-      putAreaLine (*start_char, *dst_char, non_trans_count);
-      dst_char += non_trans_count;  // dst character
-      non_trans_count = 0;
-    }
-    else if ( ! isTransparent && trans_count != 0 )
-    {
-      putTransparentAreaLine (*start_char, *dst_char, trans_count, src_area, pos);
-      dst_char += trans_count;  // dst character
-      trans_count = 0;
-    }
-
-    if ( isTransparent )
-    {
-      if ( trans_count == 0 )
-        start_char = src_char;
-
-      trans_count++;
-    }
-    else
-    {
-      if ( non_trans_count == 0 )
-        start_char = src_char;
-
-      non_trans_count++;
-    }
-
-    pos.x_ref()++;
-
-    if ( pos.getX() == end_char )
-    {
-      if ( trans_count != 0 )
-        putTransparentAreaLine (*start_char, *dst_char, trans_count , src_area, pos);
-      else if ( non_trans_count != 0 )
-        putAreaLine (*start_char, *dst_char, non_trans_count);
-
-      break;
-    }
-
-    ++src_char;  // src character
-  }
-}
-
-//----------------------------------------------------------------------
-void FVTerm::putAreaCharacter ( const FPoint& pos, const FTermArea* area
-                              , const FChar& src_char, FChar& dst_char ) const
-{
-  if ( src_char.attr.bit.transparent )  // Transparent
-  {
-    // Restore one character on vterm
-    dst_char = getCoveredCharacter (pos, area);
-  }
-  else if ( src_char.attr.bit.color_overlay )  // Transparent shadow
-  {
-    // Get covered character + add the current color
-    dst_char = getCoveredCharacter (pos, area);
-    dst_char.fg_color = src_char.fg_color;
-    dst_char.bg_color = src_char.bg_color;
-    dst_char.attr.bit.reverse  = false;
-    dst_char.attr.bit.standout = false;
-
-    if ( isTransparentInvisible(dst_char) )
-      dst_char.ch[0] = L' ';
-  }
-  else if ( src_char.attr.bit.inherit_background )
-  {
-    // Add the covered background to this character
-    dst_char = src_char;
-    dst_char.bg_color = getCoveredCharacter(pos, area).bg_color;
-  }
-  else  // Default
-    dst_char = src_char;
-}
-
-//----------------------------------------------------------------------
-void FVTerm::getAreaCharacter ( const FPoint& pos, FTermArea* area
-                              , FChar*& cc ) const
-{
-  const int area_x = area->offset_left;
-  const int area_y = area->offset_top;
-  const int x = pos.getX();
-  const int y = pos.getY();
-  auto& tmp = area->getFChar(x - area_x, y - area_y);
-
-  // Current character not transparent
-  if ( tmp.attr.bit.transparent )
-    return;
-
-  if ( tmp.attr.bit.color_overlay )  // transparent shadow
-  {
-    // Keep the current vterm character
-    s_ch = *cc;
-    s_ch.fg_color = tmp.fg_color;
-    s_ch.bg_color = tmp.bg_color;
-    s_ch.attr.bit.reverse  = false;
-    s_ch.attr.bit.standout = false;
-    cc = &s_ch;
-  }
-  else if ( tmp.attr.bit.inherit_background )
-  {
-    // Add the covered background to this character
-    i_ch = tmp;
-    i_ch.bg_color = cc->bg_color;  // last background color
-    cc = &i_ch;
-  }
-  else  // default
-    cc = &tmp;
 }
 
 //----------------------------------------------------------------------

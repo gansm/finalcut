@@ -504,7 +504,7 @@ void MouseDraw::drawCanvas()
     std::memcpy ( &winchar
                 , &canvaschar
                 , sizeof(finalcut::FChar) * unsigned(x_end) );
-    auto& line_changes = printarea->changes[ay + y];
+    auto& line_changes = printarea->changes[unsigned(ay + y)];
 
     if ( int(line_changes.xmin) > ax )
       line_changes.xmin = uInt(ax);

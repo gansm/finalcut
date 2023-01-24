@@ -96,13 +96,13 @@ RotoZoomer::RotoZoomer (finalcut::FWidget* parent, bool is_benchmark, int num_lo
     {
       for (int k{0}; k < 8; k++)
       {
-        data[h] = init_val[2 * i];
+        data[h] = init_val[unsigned(2 * i)];
         h++;
       }
 
       for (int k{0}; k < 8; k++)
       {
-        data[h] = init_val[(2 * i) + 1];
+        data[h] = init_val[unsigned((2 * i) + 1)];
         h++;
       }
     }

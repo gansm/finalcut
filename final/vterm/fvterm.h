@@ -295,25 +295,17 @@ class FVTerm : public FVTermAttribute
     void  clearChildAreaChanges (const FTermArea*) const;
     auto  isInsideArea (const FPoint&, const FTermArea*) const -> bool;
     auto  isTransparentInvisible (const FChar&) const -> bool;
-    auto  getCharacter ( CharacterType
-                       , const FPoint&
-                       , const FTermArea* ) const -> FChar&;
-    auto  getCoveredCharacter (const FPoint&, const FTermArea*) const -> FChar&;
     static void defineByte1TransparentMask();
     template <typename FOutputType>
     void  init();
     void  initSettings();
     void  finish() const;
     void  putAreaLine (const FChar&, FChar&, const std::size_t) const;
-    void  addTransparentAreaLine (const FChar*, FChar*, const std::size_t) const;
+    void  putAreaLineWithTransparency (const FChar*, FChar*, const int, FPoint&&) const;
+    void  putTransparentAreaLine (const FPoint&, const std::size_t) const;
+    void  addAreaLineWithTransparency (const FChar*, FChar*, const std::size_t) const;
+    void  addTransparentAreaLine (const FChar&, FChar&, const std::size_t) const;
     void  addTransparentAreaChar (const FChar&, FChar&) const;
-    void  putTransparentAreaLine ( const FChar&, FChar&, const std::size_t
-                                 , const FTermArea*, FPoint ) const;
-    void  putAreaLineWithTransparency ( const FChar*, FChar*, const int
-                                      , const FTermArea*, FPoint&& ) const;
-    void  putAreaCharacter ( const FPoint&, const FTermArea*
-                           , const FChar&, FChar& ) const;
-    void  getAreaCharacter (const FPoint&, FTermArea*, FChar*&) const;
     auto  clearFullArea (FTermArea*, FChar&) const -> bool;
     void  clearAreaWithShadow (FTermArea*, const FChar&) const noexcept;
     auto  printWrap (FTermArea*) const -> bool;
@@ -335,8 +327,6 @@ class FVTerm : public FVTermAttribute
     std::shared_ptr<FTermArea>   vterm{};                    // virtual terminal
     std::shared_ptr<FTermArea>   vdesktop{};                 // virtual desktop
     static FTermArea*            active_area;                // active area
-    static FChar                 s_ch;                       // shadow character
-    static FChar                 i_ch;                       // inherit background character
     static uInt8                 b1_print_trans_mask;        // Transparency mask
     static int                   tabstop;
     static bool                  draw_completed;
@@ -548,8 +538,8 @@ inline auto FVTerm::FTermArea::reprint (const FRect& box, const FSize& term_size
     const int x2 = offset_left + width + right_shadow - 1;
     const int x_end = std::min(int(term_size.getWidth()) - 1 , std::min(box_x2, x2)) - offset_left;
     auto& line_changes = changes[std::size_t(y)];
-    line_changes.xmin = std::size_t(std::min(int(line_changes.xmin), x_start));
-    line_changes.xmax = std::size_t(std::max(int(line_changes.xmax), x_end));
+    line_changes.xmin = uInt(std::min(int(line_changes.xmin), x_start));
+    line_changes.xmax = uInt(std::max(int(line_changes.xmax), x_end));
   }
 
   return true;
