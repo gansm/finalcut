@@ -167,6 +167,7 @@ void FVTerm::createVTerm (const FSize& size) noexcept
 
   const FRect box{0, 0, size.getWidth(), size.getHeight()};
   vterm = createArea(box);
+  vterm_old = createArea(box);
 }
 
 //----------------------------------------------------------------------
@@ -176,6 +177,7 @@ void FVTerm::resizeVTerm (const FSize& size) const noexcept
 
   const FRect box{0, 0, size.getWidth(), size.getHeight()};
   resizeArea (box, vterm.get());
+  resizeArea (box, vterm_old.get());
 }
 
 //----------------------------------------------------------------------
@@ -183,7 +185,7 @@ void FVTerm::putVTerm() const
 {
   for (auto i{0}; i < vterm->height; i++)
   {
-    auto& vterm_changes = vterm->changes[std::size_t(i)];
+    auto& vterm_changes = vterm->changes[unsigned(i)];
     vterm_changes.xmin = 0;
     vterm_changes.xmax = uInt(vterm->width - 1);
   }
@@ -194,7 +196,54 @@ void FVTerm::putVTerm() const
 //----------------------------------------------------------------------
 auto FVTerm::updateTerminal() const -> bool
 {
-  return foutput->updateTerminal();
+  auto terminal_updated = foutput->updateTerminal();
+
+  if ( terminal_updated )
+    saveCurrentVTerm();
+
+  return terminal_updated;
+}
+
+//----------------------------------------------------------------------
+void FVTerm::reduceTerminalLineUpdates (uInt y)
+{
+  static const auto& init_object = getGlobalFVTermInstance();
+  static auto& vterm = init_object->vterm;
+  static auto& vterm_old = init_object->vterm_old;
+  auto& vterm_changes = vterm->changes[unsigned(y)];
+  uInt& xmin = vterm_changes.xmin;
+  uInt& xmax = vterm_changes.xmax;
+
+  if ( xmin > xmax )  // No changes
+    return;
+
+  auto* first = &vterm->getFChar(int(xmin), y);
+  auto* first_old = &vterm_old->getFChar(int(xmin), y);
+  auto* last = &vterm->getFChar(int(xmax), y);
+  auto* last_old = &vterm_old->getFChar(int(xmax), y);
+
+  while ( xmin < xmax && *first == *first_old )
+  {
+    xmin++;
+    first++;
+    first_old++;
+  }
+
+  while ( last > first && *last == *last_old )
+  {
+    xmax--;
+    last--;
+    last_old--;
+  }
+
+  while ( last > first )
+  {
+    if ( *last == *last_old )
+      last->attr.bit.no_changes = true;
+
+    last--;
+    last_old--;
+  }
 }
 
 //----------------------------------------------------------------------
@@ -618,7 +667,7 @@ void FVTerm::getArea (const FPoint& pos, FTermArea* area) const noexcept
     const auto& tc = vterm->getFChar(ax, ay + y);  // terminal character
     auto& ac = area->getFChar(0, y);  // area character
     putAreaLine (tc, ac, unsigned(length));
-    auto& line_changes = area->changes[std::size_t(y)];
+    auto& line_changes = area->changes[unsigned(y)];
     line_changes.xmin = 0;
     line_changes.xmax = uInt(length - 1);
   }
@@ -655,7 +704,7 @@ void FVTerm::getArea (const FRect& box, FTermArea* area) const noexcept
     const auto& tc = vterm->getFChar(x, y + line);  // terminal character
     auto& ac = area->getFChar(dx, dy + line);  // area character
     putAreaLine (tc, ac, unsigned(length));
-    auto& line_changes = area->changes[std::size_t(dy + line)];
+    auto& line_changes = area->changes[unsigned(dy + line)];
     line_changes.xmin = std::min(line_changes.xmin, uInt(dx));
     line_changes.xmax = std::max(line_changes.xmax, uInt(dx + length - 1));
   }
@@ -681,7 +730,7 @@ void FVTerm::addLayer (FTermArea* area) const noexcept
 
   for (auto y{0}; y < y_end; y++)  // Line loop
   {
-    auto& line_changes = area->changes[std::size_t(y)];
+    auto& line_changes = area->changes[unsigned(y)];
     auto line_xmin = int(line_changes.xmin);
     auto line_xmax = int(line_changes.xmax);
 
@@ -716,7 +765,7 @@ void FVTerm::addLayer (FTermArea* area) const noexcept
 
     int new_xmin = ax + line_xmin - ol;
     int new_xmax = ax + line_xmax;
-    auto& vterm_changes = vterm->changes[std::size_t(ty)];
+    auto& vterm_changes = vterm->changes[unsigned(ty)];
     vterm_changes.xmin = std::min(vterm_changes.xmin, uInt(new_xmin));
     new_xmax = std::min(new_xmax, vterm->width - 1);
     vterm_changes.xmax = std::max (vterm_changes.xmax, uInt(new_xmax));
@@ -768,11 +817,11 @@ void FVTerm::copyArea (FTermArea* dst, const FPoint& pos, const FTermArea* const
   for (int y{0}; y < y_end; y++)  // line loop
   {
     const int cy = ay + y;
-    auto& dst_changes = dst->changes[std::size_t(cy)];
+    auto& dst_changes = dst->changes[unsigned(cy)];
     const auto* sc = &src->getFChar(ol, ot + y);  // src character
     auto* dc = &dst->getFChar(ax, cy);  // dst character
 
-    if ( src->changes[std::size_t(y)].trans_count > 0 )
+    if ( src->changes[unsigned(y)].trans_count > 0 )
     {
       // Line with hidden and transparent characters
       putAreaLineWithTransparency (sc, dc, length, FPoint{ax, cy});
@@ -780,7 +829,7 @@ void FVTerm::copyArea (FTermArea* dst, const FPoint& pos, const FTermArea* const
     else
     {
       // Line has only covered characters
-      putAreaLine (*sc, *dc, std::size_t(length));
+      putAreaLine (*sc, *dc, unsigned(length));
     }
 
     dst_changes.xmin = std::min(uInt(ax), dst_changes.xmin);
@@ -827,7 +876,7 @@ void FVTerm::scrollAreaForward (FTermArea* area) const
     auto& dc = area->getFChar(0, y);  // destination character
     const auto& sc = area->getFChar(0, y + 1);  // source character
     putAreaLine (sc, dc, unsigned(area->width));
-    auto& line_changes = area->changes[std::size_t(y)];
+    auto& line_changes = area->changes[unsigned(y)];
     line_changes.xmin = 0;
     line_changes.xmax = uInt(x_max);
   }
@@ -839,7 +888,7 @@ void FVTerm::scrollAreaForward (FTermArea* area) const
   nc.ch[0] = L' ';
   auto& dc = area->getFChar(0, y_max);  // destination character
   std::fill_n (&dc, area->width, nc);
-  auto& new_line_changes = area->changes[std::size_t(y_max)];
+  auto& new_line_changes = area->changes[unsigned(y_max)];
   new_line_changes.xmin = 0;
   new_line_changes.xmax = uInt(x_max);
   area->has_changes = true;
@@ -864,7 +913,7 @@ void FVTerm::scrollAreaReverse (FTermArea* area) const
     auto& dc = area->getFChar(0, y);  // destination character
     const auto& sc = area->getFChar(0, y - 1);  // source character
     putAreaLine (sc, dc, unsigned(area->width));
-    auto& line_changes = area->changes[std::size_t(y)];
+    auto& line_changes = area->changes[unsigned(y)];
     line_changes.xmin = 0;
     line_changes.xmax = uInt(x_max);
   }
@@ -876,7 +925,7 @@ void FVTerm::scrollAreaReverse (FTermArea* area) const
   nc.ch[0] = L' ';
   auto& dc = area->getFChar(0, 0);  // destination character
   std::fill_n (&dc, area->width, nc);
-  auto& new_line_changes = area->changes[std::size_t(y_max)];
+  auto& new_line_changes = area->changes[unsigned(y_max)];
   new_line_changes.xmin = 0;
   new_line_changes.xmax = uInt(x_max);
   area->has_changes = true;
@@ -912,7 +961,7 @@ void FVTerm::clearArea (FTermArea* area, wchar_t fillchar) const noexcept
 
   for (auto i{0}; i < area->height; i++)
   {
-    auto& line_changes = area->changes[std::size_t(i)];
+    auto& line_changes = area->changes[unsigned(i)];
     line_changes.xmin = 0;
     line_changes.xmax = width - 1;
 
@@ -929,7 +978,7 @@ void FVTerm::clearArea (FTermArea* area, wchar_t fillchar) const noexcept
   for (auto i{0}; i < area->bottom_shadow; i++)
   {
     const int y = area->height + i;
-    auto& line_changes = area->changes[std::size_t(y)];
+    auto& line_changes = area->changes[unsigned(y)];
     line_changes.xmin = 0;
     line_changes.xmax = width - 1;
     line_changes.trans_count = width;
@@ -1165,7 +1214,7 @@ void FVTerm::passChangesToOverlap (const FTermArea* area) const
         const int area_x2 = area->offset_left + area->width + area->right_shadow - 1;
         const int win_x2 = win_offset_left + win->width + win->right_shadow - 1;
         const int x_end = std::min(vterm->width - 1, std::min(area_x2, win_x2)) - win_offset_left;
-        auto& line_changes = win->changes[std::size_t(y)];
+        auto& line_changes = win->changes[unsigned(y)];
         line_changes.xmin = uInt(std::min(int(line_changes.xmin), x_start));
         line_changes.xmax = uInt(std::max(int(line_changes.xmax), x_end));
       }
@@ -1250,7 +1299,7 @@ inline void FVTerm::scrollTerminalForward() const
   // avoid update lines from 0 to (y_max - 1)
   for (auto y{0}; y < y_max; y++)
   {
-    auto& vdesktop_changes = vdesktop->changes[std::size_t(y)];
+    auto& vdesktop_changes = vdesktop->changes[unsigned(y)];
     vdesktop_changes.xmin = uInt(vdesktop->width - 1);
     vdesktop_changes.xmax = 0;
   }
@@ -1273,7 +1322,7 @@ inline void FVTerm::scrollTerminalReverse() const
   // avoid update lines from 1 to y_max
   for (auto y{0}; y < y_max; y++)
   {
-    auto& vdesktop_changes = vdesktop->changes[std::size_t(y + 1)];
+    auto& vdesktop_changes = vdesktop->changes[unsigned(y + 1)];
     vdesktop_changes.xmin = uInt(vdesktop->width - 1);
     vdesktop_changes.xmax = 0;
   }
@@ -1392,6 +1441,15 @@ void FVTerm::finish() const
   internal::var::fvterm_initialized = false;
   setGlobalFVTermInstance(nullptr);
 }
+
+//----------------------------------------------------------------------
+inline void FVTerm::saveCurrentVTerm() const
+{
+  // Save the content of the virtual terminal 
+  vterm_old->data = vterm->data;
+}
+
+
 
 //----------------------------------------------------------------------
 inline void FVTerm::putAreaLine (const FChar& src_char, FChar& dst_char, const std::size_t length) const
@@ -1600,7 +1658,7 @@ auto FVTerm::clearFullArea (FTermArea* area, FChar& nc) const -> bool
   {
     for (auto i{0}; i < vdesktop->height; i++)
     {
-      auto& vdesktop_changes = vdesktop->changes[std::size_t(i)];
+      auto& vdesktop_changes = vdesktop->changes[unsigned(i)];
       vdesktop_changes.xmin = 0;
       vdesktop_changes.xmax = uInt(vdesktop->width) - 1;
       vdesktop_changes.trans_count = 0;
@@ -1699,7 +1757,7 @@ inline auto FVTerm::printCharacterOnCoordinate ( FTermArea* area
   if ( ac == ch )  // compare with an overloaded operator
     return ac.attr.bit.char_width;
 
-  auto& line_changes = area->changes[std::size_t(ay)];
+  auto& line_changes = area->changes[unsigned(ay)];
 
   if ( changedToTransparency(ac, ch) )
   {

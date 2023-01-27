@@ -190,6 +190,7 @@ class FTextView : public FWidget
 
     // Methods
     void hide() override;
+    void clear();
     template <typename T>
     void append (const std::initializer_list<T>&);
     void append (const FString&);
@@ -199,7 +200,6 @@ class FTextView : public FWidget
     void replaceRange (const FString&, int, int);
     void deleteRange (int, int);
     void deleteLine (int);
-    void clear();
 
     // Event handlers
     void onKeyPress (FKeyEvent*) override;

@@ -335,6 +335,8 @@ auto FTermOutput::updateTerminal() -> bool
 
   for (uInt y{0}; y < uInt(vterm->height); y++)
   {
+    FVTerm::reduceTerminalLineUpdates(y);
+
     if ( updateTerminalLine(y) )
       changedlines++;
   }
@@ -1208,7 +1210,7 @@ auto FTermOutput::updateTerminalLine (uInt y) -> bool
   xmin = uInt(vterm->width);
   xmax = 0;
   cursorWrap();
-  return false;
+  return true;
 }
 
 //----------------------------------------------------------------------

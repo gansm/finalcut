@@ -225,6 +225,50 @@ void FTextView::hide()
 }
 
 //----------------------------------------------------------------------
+void FTextView::clear()
+{
+  data.clear();
+  data.shrink_to_fit();
+  xoffset = 0;
+  yoffset = 0;
+  max_line_width = 0;
+
+  vbar->setMinimum(0);
+  vbar->setValue(0);
+  vbar->hide();
+
+  hbar->setMinimum(0);
+  hbar->setValue(0);
+  hbar->hide();
+
+  // clear list from screen
+  setColor();
+
+  if ( useFDialogBorder() )
+  {
+    auto parent = getParentWidget();
+
+    if ( parent )
+      static_cast<FDialog*>(parent)->redraw();
+  }
+  else
+    drawBorder();
+
+  const std::size_t size = getWidth() - 2;
+
+  if ( size == 0 )
+    return;
+
+  for (auto y{0}; y < int(getTextHeight()); y++)
+  {
+    print() << FPoint{2, 2 - nf_offset + y}
+            << FString{size, L' '};
+  }
+
+  processChanged();
+}
+
+//----------------------------------------------------------------------
 void FTextView::append (const FString& str)
 {
   insert(str, -1);
@@ -323,50 +367,6 @@ void FTextView::deleteRange (int from, int to)
 
   auto iter = data.cbegin();
   data.erase (iter + from, iter + to + 1);
-}
-
-//----------------------------------------------------------------------
-void FTextView::clear()
-{
-  data.clear();
-  data.shrink_to_fit();
-  xoffset = 0;
-  yoffset = 0;
-  max_line_width = 0;
-
-  vbar->setMinimum(0);
-  vbar->setValue(0);
-  vbar->hide();
-
-  hbar->setMinimum(0);
-  hbar->setValue(0);
-  hbar->hide();
-
-  // clear list from screen
-  setColor();
-
-  if ( useFDialogBorder() )
-  {
-    auto parent = getParentWidget();
-
-    if ( parent )
-      static_cast<FDialog*>(parent)->redraw();
-  }
-  else
-    drawBorder();
-
-  const std::size_t size = getWidth() - 2;
-
-  if ( size == 0 )
-    return;
-
-  for (auto y{0}; y < int(getTextHeight()); y++)
-  {
-    print() << FPoint{2, 2 - nf_offset + y}
-            << FString{size, L' '};
-  }
-
-  processChanged();
 }
 
 //----------------------------------------------------------------------

@@ -109,7 +109,7 @@ class FVTerm : public FVTermAttribute
     using FCharVector = std::vector<FChar>;
     using FPreprocessingHandler = void (FVTerm::*)();
     using FPreprocessingFunction = std::function<void()>;
-    using FPreprocessing = std::vector<std::unique_ptr<FVTermPreprocessing>>;
+    using FPreprocVector = std::vector<std::unique_ptr<FVTermPreprocessing>>;
     using FVTermList = std::vector<FVTerm*>;
 
     // Enumerations
@@ -198,6 +198,7 @@ class FVTerm : public FVTermAttribute
     void  resizeVTerm (const FSize&) const noexcept;
     void  putVTerm() const;
     auto  updateTerminal() const -> bool;
+    static void reduceTerminalLineUpdates (uInt);
     virtual void addPreprocessingHandler ( const FVTerm*
                                          , FPreprocessingFunction&& );
     virtual void delPreprocessingHandler (const FVTerm*);
@@ -300,6 +301,7 @@ class FVTerm : public FVTermAttribute
     void  init();
     void  initSettings();
     void  finish() const;
+    void  saveCurrentVTerm() const;
     void  putAreaLine (const FChar&, FChar&, const std::size_t) const;
     void  putAreaLineWithTransparency (const FChar*, FChar*, const int, FPoint&&) const;
     void  putTransparentAreaLine (const FPoint&, const std::size_t) const;
@@ -319,14 +321,15 @@ class FVTerm : public FVTermAttribute
     static auto hasPendingUpdates (const FTermArea*) noexcept -> bool;
 
     // Data members
-    FTermArea*                   print_area{nullptr};        // print area for this object
-    FTermArea*                   child_print_area{nullptr};  // print area for children
-    std::unique_ptr<FTermArea>   vwin{};                     // virtual window
+    FTermArea*                   print_area{nullptr};        // Print area for this object
+    FTermArea*                   child_print_area{nullptr};  // Print area for children
+    std::unique_ptr<FTermArea>   vwin{};                     // Virtual window
     std::shared_ptr<FOutput>     foutput{};                  // Terminal output class
     std::shared_ptr<FVTermList>  window_list{};              // List of all window owner
-    std::shared_ptr<FTermArea>   vterm{};                    // virtual terminal
-    std::shared_ptr<FTermArea>   vdesktop{};                 // virtual desktop
-    static FTermArea*            active_area;                // active area
+    std::shared_ptr<FTermArea>   vterm{};                    // Virtual terminal
+    std::shared_ptr<FTermArea>   vterm_old{};                // Last virtual terminal
+    std::shared_ptr<FTermArea>   vdesktop{};                 // Virtual desktop
+    static FTermArea*            active_area;                // Active area
     static uInt8                 b1_print_trans_mask;        // Transparency mask
     static int                   tabstop;
     static bool                  draw_completed;
@@ -334,7 +337,7 @@ class FVTerm : public FVTermAttribute
     static bool                  no_terminal_updates;
     static bool                  force_terminal_update;
 
-    // friend function
+    // Friend function
     friend void setPrintArea (FWidget&, FTermArea*);
 };
 
@@ -343,7 +346,7 @@ class FVTerm : public FVTermAttribute
 // struct FVTerm::FTermArea
 //----------------------------------------------------------------------
 
-struct FVTerm::FTermArea  // define virtual terminal character properties
+struct FVTerm::FTermArea  // Define virtual terminal character properties
 {
   // Using-declaration
   using FDataAccessPtr  = std::shared_ptr<FDataAccess>;
@@ -387,12 +390,12 @@ struct FVTerm::FTermArea  // define virtual terminal character properties
 
   inline auto getFChar (int x, int y) const noexcept -> const FChar&
   {
-    return data[std::size_t(y) * std::size_t(width + right_shadow) + std::size_t(x)];
+    return data[unsigned(y) * unsigned(width + right_shadow) + unsigned(x)];
   }
 
   inline auto getFChar (int x, int y) noexcept -> FChar&
   {
-    return data[std::size_t(y) * std::size_t(width + right_shadow) + std::size_t(x)];
+    return data[unsigned(y) * unsigned(width + right_shadow) + unsigned(x)];
   }
 
   inline auto getFChar (const FPoint& pos) const noexcept -> const FChar&
@@ -446,7 +449,7 @@ struct FVTerm::FTermArea  // define virtual terminal character properties
   bool            visible{false};
   bool            minimized{false};
   FDataAccessPtr  owner{nullptr};      // Object that owns this FTermArea
-  FPreprocessing  preproc_list{};
+  FPreprocVector  preproc_list{};
   FLineChangesPtr changes{};
   FCharPtr        data{};              // FChar data of the drawing area
 };
@@ -824,6 +827,7 @@ inline void FVTerm::init()
     foutput     = std::shared_ptr<FOutput>(init_object->foutput);
     window_list = std::shared_ptr<FVTermList>(init_object->window_list);
     vterm       = std::shared_ptr<FTermArea>(init_object->vterm);
+    vterm_old   = std::shared_ptr<FTermArea>(init_object->vterm_old);
     vdesktop    = std::shared_ptr<FTermArea>(init_object->vdesktop);
   }
 }

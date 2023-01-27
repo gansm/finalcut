@@ -116,12 +116,12 @@ void FMenuBar::onKeyPress (FKeyEvent* ev)
 
     ev->accept();
   }
-  else if ( key == FKey::Right || key == FKey::Tab )
+  else if ( isFocusNextKey(key) )
   {
     selectNextItem();
     ev->accept();
   }
-  else if ( key == FKey::Left || key == FKey::Back_tab )
+  else if ( isFocusPrevKey(key) )
   {
     selectPrevItem();
     ev->accept();
@@ -581,17 +581,17 @@ void FMenuBar::selectMenuItem (FMenuItem* item)
   setSelectedItem(item);
   focus_changed = true;
 
-  if ( item->hasMenu() )
-  {
-    auto menu = item->getMenu();
+  if ( ! item->hasMenu() )
+    return;
 
-    if ( menu->hasSelectedItem() )
-    {
-      menu->unselectItem();
-      menu->redraw();
-      drop_down = true;
-    }
-  }
+  auto menu = item->getMenu();
+
+  if ( ! menu->hasSelectedItem() )
+    return;
+
+  menu->unselectItem();
+  menu->redraw();
+  drop_down = true;
 }
 
 //----------------------------------------------------------------------
