@@ -208,8 +208,8 @@ auto FVTerm::updateTerminal() const -> bool
 void FVTerm::reduceTerminalLineUpdates (uInt y)
 {
   static const auto& init_object = getGlobalFVTermInstance();
-  static auto& vterm = init_object->vterm;
-  static auto& vterm_old = init_object->vterm_old;
+  static const auto& vterm = init_object->vterm;
+  static const auto& vterm_old = init_object->vterm_old;
   auto& vterm_changes = vterm->changes[unsigned(y)];
   uInt& xmin = vterm_changes.xmin;
   uInt& xmax = vterm_changes.xmax;
@@ -217,10 +217,10 @@ void FVTerm::reduceTerminalLineUpdates (uInt y)
   if ( xmin > xmax )  // No changes
     return;
 
-  auto* first = &vterm->getFChar(int(xmin), y);
-  auto* first_old = &vterm_old->getFChar(int(xmin), y);
+  const auto* first = &vterm->getFChar(int(xmin), y);
+  const auto* first_old = &vterm_old->getFChar(int(xmin), y);
   auto* last = &vterm->getFChar(int(xmax), y);
-  auto* last_old = &vterm_old->getFChar(int(xmax), y);
+  const auto* last_old = &vterm_old->getFChar(int(xmax), y);
 
   while ( xmin < xmax && *first == *first_old )
   {
@@ -1446,7 +1446,7 @@ void FVTerm::finish() const
 inline void FVTerm::saveCurrentVTerm() const
 {
   // Save the content of the virtual terminal 
-  vterm_old->data = vterm->data;
+  std::memcpy(vterm_old->data.data(), vterm->data.data(), vterm->data.size());
 }
 
 
