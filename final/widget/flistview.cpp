@@ -2018,7 +2018,7 @@ void FListView::updateDrawing (bool draw_vbar, bool draw_hbar)
 //----------------------------------------------------------------------
 auto FListView::determineLineWidth (FListViewItem* item) -> std::size_t
 {
-  static constexpr std::size_t padding_space = 1;
+  std::size_t padding_space = 1;
   std::size_t line_width = padding_space;  // leading space
   std::size_t column_idx{0};
   const auto entries = std::size_t(item->column_list.size());
@@ -2042,6 +2042,9 @@ auto FListView::determineLineWidth (FListViewItem* item) -> std::size_t
         header_item.width = int(len);
     }
 
+    if ( &header_item == &header.back() )  // Last column
+      padding_space = 0;
+
     // width + trailing space
     line_width += std::size_t(header_item.width) + padding_space;
 
@@ -2061,13 +2064,11 @@ inline void FListView::beforeInsertion (FListViewItem* item)
 //----------------------------------------------------------------------
 inline void FListView::afterInsertion()
 {
-  if ( itemlist.size() == 1 )
-  {
-    // Select first item on insert
+  if ( itemlist.size() == 1 )  // Select first item on insert
     current_iter = itemlist.begin();
-    // The visible area of the list begins with the first element
-    first_visible_line = itemlist.begin();
-  }
+
+  // The visible area of the list begins with the first element
+  first_visible_line = itemlist.begin();
 
   // Sort list by a column (only if activated)
   sort();

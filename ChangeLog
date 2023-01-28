@@ -1,3 +1,6 @@
+2023-01-29  Markus Gans  <guru.mail@muenster.de>
+	* Fixed invalid iterator on post-inserting an item in FListView
+
 2023-01-22  Markus Gans  <guru.mail@muenster.de>
 	* Fix focus-in and focus-out errors FComboBox and FSpinBox
 
