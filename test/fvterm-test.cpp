@@ -2431,7 +2431,6 @@ void FVTermTest::FVTermOverlappingWindowsTest()
   CPPUNIT_ASSERT ( vwin_3->layer == 3 );
   CPPUNIT_ASSERT ( vwin_4->layer == 4 );
 
-
   CPPUNIT_ASSERT ( finalcut::FVTerm::getWindowList()->size() == 4U );
 
   // virtual desktop

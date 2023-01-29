@@ -25,59 +25,89 @@
 using finalcut::FPoint;
 using finalcut::FSize;
 
+
+//----------------------------------------------------------------------
+// class MyApplication
+//----------------------------------------------------------------------
+
 class MyApplication : public finalcut::FApplication
 {
   public:
+    // Using-declaration
+    using finalcut::FApplication::FApplication;
+
+    // Constructor
     MyApplication (const int& argc, char* argv[])
       : finalcut::FApplication(argc, argv)
     { }
 
   private:
-    void onTermFocusIn (finalcut::FFocusEvent*) override
-    {
-      auto color_theme = getColorTheme();
-      color_theme->term_bg = finalcut::FColor::LightBlue;
-      redraw();
-    }
-
-    void onTermFocusOut (finalcut::FFocusEvent*) override
-    {
-      auto color_theme = getColorTheme();
-      color_theme->term_bg = finalcut::FColor::LightGray;
-      redraw();
-    }
+    // Event handler
+    void onTermFocusIn (finalcut::FFocusEvent*) override;
+    void onTermFocusOut (finalcut::FFocusEvent*) override;
 };
 
+//----------------------------------------------------------------------
+void MyApplication::onTermFocusIn (finalcut::FFocusEvent*)
+{
+  auto color_theme = getColorTheme();
+  color_theme->term_bg = finalcut::FColor::LightBlue;
+  redraw();
+}
+
+//----------------------------------------------------------------------
+void MyApplication::onTermFocusOut (finalcut::FFocusEvent*)
+{
+  auto color_theme = getColorTheme();
+  color_theme->term_bg = finalcut::FColor::LightGray;
+  redraw();
+}
+
+
+//----------------------------------------------------------------------
+// class Dialog
+//----------------------------------------------------------------------
 
 class Dialog final : public finalcut::FDialog
 {
   public:
-    explicit Dialog (FWidget* parent = nullptr)
-      : FDialog{"Terminal focus", parent}
-    {
-      quit_button.addCallback
-      (
-        "clicked",
-        finalcut::getFApplication(),
-        &finalcut::FApplication::cb_exitApp,
-        this
-      );
-    }
+    // Constructor
+    explicit Dialog (FWidget* = nullptr);
 
   private:
-    void initLayout()
-    {
-      finalcut::FDialog::setGeometry (FPoint{21, 8}, FSize{40, 6});
-      quit_button.setGeometry (FPoint{27, 2}, FSize{10, 1});
-      label.setGeometry (FPoint{2, 2}, FSize{24, 1});
-      finalcut::FDialog::initLayout();
-    }
+    void initLayout() override;
 
-    // Data member
+    // Data members
     finalcut::FButton quit_button{"&Quit", this};
     finalcut::FLabel label{"Change terminal focus...",this};
 };
 
+//----------------------------------------------------------------------
+Dialog::Dialog (FWidget* parent)
+  : FDialog{"Terminal focus", parent}
+{
+  quit_button.addCallback
+  (
+    "clicked",
+    finalcut::getFApplication(),
+    &finalcut::FApplication::cb_exitApp,
+    this
+  );
+}
+
+//----------------------------------------------------------------------
+void Dialog::initLayout()
+{
+  finalcut::FDialog::setGeometry (FPoint{21, 8}, FSize{40, 6});
+  quit_button.setGeometry (FPoint{27, 2}, FSize{10, 1});
+  label.setGeometry (FPoint{2, 2}, FSize{24, 1});
+  finalcut::FDialog::initLayout();
+}
+
+
+//----------------------------------------------------------------------
+//                               main part
+//----------------------------------------------------------------------
 
 int main (int argc, char* argv[])
 {
