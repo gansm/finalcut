@@ -67,6 +67,8 @@ enum class Event
   ChildFocusIn,      // child focus in
   ChildFocusOut,     // child focus out
   FailAtChildFocus,  // No further focusable child widgets
+  TerminalFocusIn,   // terminal focus in
+  TerminalFocusOut,  // terminal focus out
   WindowActive,      // activate window
   WindowInactive,    // deactivate window
   WindowRaised,      // raise window
@@ -697,6 +699,8 @@ enum class FKey : uInt32
   Shift_Meta_menu            = 0x01600005,  // shifted M-menu
   Ctrl_Meta_menu             = 0x01600006,  // control-M-menu
   Shift_Ctrl_Meta_menu       = 0x01600007,  // shifted control-M-menu
+  Term_Focus_In              = 0x01900000,  // Terminal focus-in event
+  Term_Focus_Out             = 0x01900001,  // Terminal focus-out event
   Escape_mintty              = 0x0200001b,  // mintty Esc
   X11mouse                   = 0x02000020,  // xterm mouse
   Extended_mouse             = 0x02000021,  // SGR extended mouse

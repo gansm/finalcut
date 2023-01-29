@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2022 Markus Gans                                      *
+* Copyright 2015-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -63,8 +63,8 @@ class FKeyMap final
 
     // Using-declaration
     using KeyCapMapType = std::array<KeyCapMap, 188>;
-    using KeyMapType = std::array<KeyMap, 232>;
-    using KeyNameType = std::array<KeyName, 388>;
+    using KeyMapType = std::array<KeyMap, 234>;
+    using KeyNameType = std::array<KeyName, 390>;
 
     // Constructors
     FKeyMap() = default;

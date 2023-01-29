@@ -343,6 +343,8 @@ class FWidget : public FVTerm
     virtual void onFocusOut (FFocusEvent*);
     virtual void onChildFocusIn (FFocusEvent*);
     virtual void onChildFocusOut (FFocusEvent*);
+    virtual void onTermFocusIn (FFocusEvent*);
+    virtual void onTermFocusOut (FFocusEvent*);
     virtual void onFailAtChildFocus (FFocusEvent*);
     virtual void onAccel (FAccelEvent*);
     virtual void onResize (FResizeEvent*);

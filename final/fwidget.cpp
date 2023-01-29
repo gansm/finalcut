@@ -1467,6 +1467,20 @@ void FWidget::onFailAtChildFocus (FFocusEvent*)
 }
 
 //----------------------------------------------------------------------
+void FWidget::onTermFocusIn (FFocusEvent*)
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive a terminal focus-in event (terminal get focus)
+}
+
+//----------------------------------------------------------------------
+void FWidget::onTermFocusOut (FFocusEvent*)
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive a terminal focus-out event (terminal lost focus)
+}
+
+//----------------------------------------------------------------------
 void FWidget::onAccel (FAccelEvent*)
 {
   // This event handler can be reimplemented in a subclass to receive
@@ -1639,6 +1653,18 @@ inline void FWidget::mapFocusEvents()
       [this] (FEvent* ev)
       {
         onFailAtChildFocus (static_cast<FFocusEvent*>(ev));
+      }
+    },
+    { Event::TerminalFocusOut,
+      [this] (FEvent* ev)
+      {
+        onTermFocusOut (static_cast<FFocusEvent*>(ev));
+      }
+    },
+    { Event::TerminalFocusIn,
+      [this] (FEvent* ev)
+      {
+        onTermFocusIn (static_cast<FFocusEvent*>(ev));
       }
     }
   } );

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2022 Markus Gans                                      *
+* Copyright 2018-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -1854,6 +1854,20 @@ void FKeyboardTest::metaKeyTest()
   processInput();
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
   CPPUNIT_ASSERT ( key_pressed == finalcut::FKey::Ctrl_Meta_menu );
+  clear();
+
+  // term focus-in
+  input("\033[I");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == finalcut::FKey::Term_Focus_In );
+  clear();
+
+  // term focus-out
+  input("\033[O");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == finalcut::FKey::Term_Focus_Out );
   clear();
 
   // shift-ctrl-meta-menu

@@ -60,6 +60,7 @@ examples/scrollview
 examples/string-operations
 examples/term-attributes
 examples/termcap
+examples/terminal-focus
 examples/timer
 examples/transparent
 examples/treeview

@@ -1768,9 +1768,12 @@ void FTerm::init()
   // Enable the terminal mouse support
   enableMouse();
 
-  // Activate meta key sends escape
+  // Activate meta key sends escape + terminal focus event
   if ( FTermData::getInstance().isTermType(FTermType::xterm) )
+  {
     FTermXTerminal::getInstance().metaSendsESC(true);
+    FTermXTerminal::getInstance().setFocusSupport(true);
+  }
 
   // switch to application escape key mode
   enableApplicationEscKey();
@@ -1973,9 +1976,12 @@ void FTerm::finish() const
   if ( getStartOptions().mouse_support )
     disableMouse();
 
-  // Deactivate meta key sends escape
+  // Deactivate terminal focus event + meta key sends escape
   if ( data.isTermType(FTermType::xterm) )
+  {
+    xterm.setFocusSupport(false);
     xterm.metaSendsESC(false);
+  }
 
   // Switch to the normal screen
   useNormalScreenBuffer();

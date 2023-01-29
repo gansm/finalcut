@@ -713,6 +713,11 @@ inline void FApplication::performKeyboardAction()
   {
     redraw();
   }
+  else if ( keyboard.getKey() == FKey::Term_Focus_In
+         || keyboard.getKey() == FKey::Term_Focus_Out )
+  {
+    processTerminalFocus (keyboard.getKey());  // Term focus-in/focus-out
+  }
   else
   {
     const bool acceptKeyDown = sendKeyDownEvent (keyboard_widget);
@@ -955,6 +960,31 @@ auto FApplication::processAccelerator (const FWidget& widget) const -> bool
   }
 
   return false;
+}
+
+//----------------------------------------------------------------------
+void FApplication::processTerminalFocus (const FKey& key)
+{
+  auto root_widget = getRootWidget();
+
+  if ( ! root_widget
+    || ( key != FKey::Term_Focus_In && key != FKey::Term_Focus_Out ) )
+    return;
+
+  // unset the move/size mode
+  auto move_size = getMoveResizeWidget();
+
+  if ( move_size )
+  {
+    setMoveSizeWidget(nullptr);
+    move_size->redraw();
+  }
+
+  auto event = ( key == FKey::Term_Focus_In )
+              ? Event::TerminalFocusIn
+              : Event::TerminalFocusOut;
+  FFocusEvent tf_ev (event);
+  sendEvent (root_widget, &tf_ev);
 }
 
 //----------------------------------------------------------------------

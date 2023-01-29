@@ -207,6 +207,7 @@ class FApplication : public FWidget
     void         processInput() const;
     auto         processDialogSwitchAccelerator() const -> bool;
     auto         processAccelerator (const FWidget&) const -> bool;
+    void         processTerminalFocus (const FKey&);
     void         determineClickedWidget (const FMouseData&);
     void         unsetMoveResizeMode() const;
     void         closeDropDown (const FMouseData&) const;

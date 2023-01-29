@@ -1445,7 +1445,7 @@ void FVTerm::finish() const
 //----------------------------------------------------------------------
 inline void FVTerm::saveCurrentVTerm() const
 {
-  // Save the content of the virtual terminal 
+  // Save the content of the virtual terminal
   std::memcpy(vterm_old->data.data(), vterm->data.data(), vterm->data.size());
 }
 

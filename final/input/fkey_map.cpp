@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2022 Markus Gans                                      *
+* Copyright 2018-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -387,6 +387,8 @@ FKeyMap::KeyMapType FKeyMap::fkey_table =
   { FKey::Shift_Meta_menu           , "\033[29;4~"  , 7},  // Shift-M-Menu
   { FKey::Ctrl_Meta_menu            , "\033[29;7~"  , 7},  // Ctrl-M-Menu
   { FKey::Shift_Ctrl_Meta_menu      , "\033[29;8~"  , 7},  // Shift-Ctrl-M-Menu
+  { FKey::Term_Focus_In             , "\033[I"      , 3},  // Terminal focus-in event
+  { FKey::Term_Focus_Out            , "\033[O"      , 3},  // Terminal focus-out event
   { FKey::Escape_mintty             , "\033O[", 3},  // Mintty Esc
   { FKey::Meta_tab                  , "\033\t", 2},  // M-Tab
   { FKey::Meta_enter                , "\033\n", 2},  // M-Enter
@@ -778,6 +780,8 @@ constexpr FKeyMap::KeyNameType FKeyMap::fkeyname =
   { FKey::Shift_Meta_menu           , "Shift+Meta+Menu" },
   { FKey::Ctrl_Meta_menu            , "Ctrl+Meta+Menu" },
   { FKey::Shift_Ctrl_Meta_menu      , "Shift+Ctrl+Meta+Menu" },
+  { FKey::Term_Focus_In             , "terminal focus-in" },
+  { FKey::Term_Focus_Out            , "terminal focus-out" },
   { FKey::Meta_tab                  , "Meta+Tab" },
   { FKey::Meta_enter                , "Meta+Enter" },
   { FKey::Meta_space                , "Meta+Space" },

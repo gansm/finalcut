@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2022 Markus Gans                                      *
+* Copyright 2018-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -67,6 +67,8 @@ class FTermXTerminal final
     void  setHighlightBackground (const FString&);
     static void  setMouseSupport (bool = true);
     static void  unsetMouseSupport();
+    void  setFocusSupport (bool enable = true);
+    void  unsetFocusSupport();
     void  metaSendsESC (bool = true);
 
     // Accessors
@@ -130,11 +132,14 @@ class FTermXTerminal final
     auto  captureXTermTitle() const -> FString;
     static void enableXTermMouse();
     static void disableXTermMouse();
+    void  enableXTermFocus();
+    void  disableXTermFocus();
     void  enableXTermMetaSendsESC();
     void  disableXTermMetaSendsESC();
 
     // Data members
     static bool       mouse_support;
+    bool              focus_support{false};
     bool              meta_sends_esc{false};
     bool              xterm_default_colors{false};
     bool              title_was_changed{false};
@@ -208,6 +213,10 @@ inline auto FTermXTerminal::hasTitle() const -> bool
 //----------------------------------------------------------------------
 inline void FTermXTerminal::unsetMouseSupport()
 { setMouseSupport (false); }
+
+//----------------------------------------------------------------------
+inline void FTermXTerminal::unsetFocusSupport()
+{ setFocusSupport (false); }
 
 }  // namespace finalcut
 
