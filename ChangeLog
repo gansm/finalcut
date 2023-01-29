@@ -3,6 +3,8 @@
 	* The application will now be notified when the focus changes in 
 	  the terminal window, through the new onTermFocusIn() and 
 	  onTermFocusOut() event methods
+	* New methods removeColumn() and removeAllColumns() for 
+	  FListView to remove columns
 
 2023-01-22  Markus Gans  <guru.mail@muenster.de>
 	* Fix focus-in and focus-out errors FComboBox and FSpinBox

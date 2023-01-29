@@ -303,7 +303,7 @@ class FVTerm : public FVTermAttribute
     void  finish() const;
     void  saveCurrentVTerm() const;
     void  putAreaLine (const FChar&, FChar&, const std::size_t) const;
-    void  putAreaLineWithTransparency (const FChar*, FChar*, const int, FPoint&&) const;
+    void  putAreaLineWithTransparency (const FChar*, FChar*, const int, FPoint) const;
     void  putTransparentAreaLine (const FPoint&, const std::size_t) const;
     void  addAreaLineWithTransparency (const FChar*, FChar*, const std::size_t) const;
     void  addTransparentAreaLine (const FChar&, FChar&, const std::size_t) const;

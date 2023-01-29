@@ -824,7 +824,7 @@ void FVTerm::copyArea (FTermArea* dst, const FPoint& pos, const FTermArea* const
     if ( src->changes[unsigned(y)].trans_count > 0 )
     {
       // Line with hidden and transparent characters
-      putAreaLineWithTransparency (sc, dc, length, FPoint{ax, cy});
+      putAreaLineWithTransparency (sc, dc, length, {ax, cy});
     }
     else
     {
@@ -1463,7 +1463,7 @@ inline void FVTerm::putAreaLine (const FChar& src_char, FChar& dst_char, const s
 inline void FVTerm::putAreaLineWithTransparency ( const FChar* src_char
                                                 , FChar* dst_char
                                                 , const int length
-                                                , FPoint&& pos ) const
+                                                , FPoint pos ) const
 {
   const int end_char = pos.getX() + length;
   const FChar* start_char{nullptr};

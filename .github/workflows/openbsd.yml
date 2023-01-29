@@ -26,8 +26,8 @@ jobs:
           uname -a
           whoami
           pwd
-          # http://ftp.openbsd.org/pub/OpenBSD/7.1/packages/amd64/
-          sudo pkg_add gcc-11.2.0p2 g++-11.2.0p2 automake-1.16.3 autoconf-2.71 autoconf-archive libtool pkgconf cppunit
+          # http://ftp.openbsd.org/pub/OpenBSD/7.2/packages/amd64/
+          sudo pkg_add gcc-11.2.0p3 g++-11.2.0p3 automake-1.16.5 autoconf-2.71 autoconf-archive libtool pkgconf cppunit
           export CXX=eg++
           export AUTOCONF_VERSION=2.71
           export AUTOMAKE_VERSION=1.16

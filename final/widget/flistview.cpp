@@ -798,7 +798,57 @@ auto FListView::addColumn (const FString& label, int width) -> int
     new_column.fixed_width = true;
 
   header.push_back (new_column);
-  return int(std::distance(header.cbegin(), header.cend()));
+  return int(header.size());
+}
+
+//----------------------------------------------------------------------
+auto FListView::removeColumn (int column) -> int
+{
+  // Deletes a column from the list and empties it if all columns are gone
+
+  if ( column < 1 || header.empty() || column > int(header.size()) )
+    return int(header.size());
+
+  if ( header.size() == 1 )
+  {
+    header.clear();
+    clear();
+    return 0;
+  }
+
+  header.erase (header.begin() + column - 1);
+  max_line_width = 0;
+  auto iter = itemlist.begin();
+
+  while ( iter != itemlist.end() )
+  {
+    const auto& item = static_cast<FListViewItem*>(*iter);
+    item->column_list.erase (item->column_list.begin() + column - 1);
+    std::size_t line_width = determineLineWidth (item);
+    recalculateHorizontalBar (line_width);
+    ++iter;
+  }
+
+  current_iter = itemlist.begin();
+  first_visible_line = itemlist.begin();
+  adjustScrollbars(getCount());
+  drawList();
+  drawBorder();
+  drawHeadlines();
+  drawScrollbars();
+  processChanged();
+  return int(header.size());
+}
+
+//----------------------------------------------------------------------
+void FListView::removeAllColumns()
+{
+  // Deletes all columns and clears the list
+
+  max_line_width = 0;
+  adjustScrollbars(0);
+  header.clear();
+  clear();
 }
 
 //----------------------------------------------------------------------
@@ -2095,13 +2145,13 @@ void FListView::recalculateHorizontalBar (std::size_t len)
     hbar->setPageSize (int(max_line_width), int(getWidth() - nf_offset) - 4);
     hbar->calculateSliderValues();
 
-    if ( isShown() )
-    {
-      if ( isHorizontallyScrollable() )
-        hbar->show();
-      else
-        hbar->hide();
-    }
+    if ( ! isShown() )
+      return;
+
+    if ( isHorizontallyScrollable() )
+      hbar->show();
+    else
+      hbar->hide();
   }
 }
 

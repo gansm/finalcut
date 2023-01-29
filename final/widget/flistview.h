@@ -359,6 +359,8 @@ class FListView : public FWidget
 
     // Methods
     virtual auto addColumn (const FString&, int = USE_MAX_SIZE) -> int;
+    virtual auto removeColumn (int) -> int;
+    void removeAllColumns();
     void hide() override;
     auto insert (FListViewItem*) -> iterator;
     auto insert (FListViewItem*, iterator) -> iterator;
