@@ -36,11 +36,6 @@ class MyApplication : public finalcut::FApplication
     // Using-declaration
     using finalcut::FApplication::FApplication;
 
-    // Constructor
-    MyApplication (const int& argc, char* argv[])
-      : finalcut::FApplication(argc, argv)
-    { }
-
   private:
     // Event handler
     void onTermFocusIn (finalcut::FFocusEvent*) override;
