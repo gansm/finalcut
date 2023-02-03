@@ -584,7 +584,7 @@ void FTermXTerminal::resetXTermColorMap() const
 {
   // Reset the entire color table
 
-  if ( FTermData::getInstance().isTermType(FTermType::mintty) )
+  if ( FTermData::getInstance().isTermType(FTermType::mintty) || FTermData::getInstance().isTermType(FTermType::st) )
   {
     FTerm::paddingPrint (ESC "c");  // Full Reset (RIS)
   }

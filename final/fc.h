@@ -1333,7 +1333,8 @@ enum class FTermType : uInt32
   tmux           = 1U << 17U,  // TMux (terminal multiplexer)
   kterm          = 1U << 18U,  // Kterm (multi-lingual terminal emulator)
   mlterm         = 1U << 19U,  // MLterm (multi-lingual terminal emulator)
-  kitty          = 1U << 20U   // kitty (GPU based terminal emulator)
+  kitty          = 1U << 20U,   // kitty (GPU based terminal emulator)
+  st             = 1U << 21U   // st (suckless.org terminal)
 };
 
 using FTermTypeT = std::underlying_type_t<FTermType>;

@@ -299,6 +299,9 @@ void FTermDetection::termtypeAnalysis()
   // kitty
   if ( termtype.left(11) == "xterm-kitty" )
     fterm_data.setTermType (FTermType::kitty);
+  // st
+  if ( termtype.left(2) == "st" )
+    fterm_data.setTermType (FTermType::st);
 }
 
 //----------------------------------------------------------------------
