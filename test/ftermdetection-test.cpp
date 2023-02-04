@@ -59,6 +59,7 @@ class FTermDetectionTest : public CPPUNIT_NS::TestFixture
     void teraTermTest();
     void cygwinTest();
     void minttyTest();
+    void sttermTest();
     void linuxTest();
     void freebsdTest();
     void netbsdTest();
@@ -89,6 +90,7 @@ class FTermDetectionTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (teraTermTest);
     CPPUNIT_TEST (cygwinTest);
     CPPUNIT_TEST (minttyTest);
+    CPPUNIT_TEST (sttermTest);
     CPPUNIT_TEST (linuxTest);
     CPPUNIT_TEST (freebsdTest);
     CPPUNIT_TEST (netbsdTest);
@@ -150,6 +152,7 @@ void FTermDetectionTest::ansiTest()
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::tera_term) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::cygwin) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::mintty) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::stterm) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::linux_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::freebsd_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::netbsd_con) );
@@ -233,6 +236,7 @@ void FTermDetectionTest::xtermTest()
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::tera_term) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::cygwin) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::mintty) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::stterm) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::linux_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::freebsd_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::netbsd_con) );
@@ -311,6 +315,7 @@ void FTermDetectionTest::rxvtTest()
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::tera_term) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::cygwin) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::mintty) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::stterm) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::linux_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::freebsd_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::netbsd_con) );
@@ -386,6 +391,7 @@ void FTermDetectionTest::urxvtTest()
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::tera_term) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::cygwin) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::mintty) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::stterm) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::linux_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::freebsd_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::netbsd_con) );
@@ -461,6 +467,7 @@ void FTermDetectionTest::kdeKonsoleTest()
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::tera_term) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::cygwin) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::mintty) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::stterm) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::linux_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::freebsd_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::netbsd_con) );
@@ -536,6 +543,7 @@ void FTermDetectionTest::gnomeTerminalTest()
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::tera_term) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::cygwin) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::mintty) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::stterm) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::linux_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::freebsd_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::netbsd_con) );
@@ -611,6 +619,7 @@ void FTermDetectionTest::newerVteTerminalTest()
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::tera_term) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::cygwin) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::mintty) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::stterm) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::linux_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::freebsd_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::netbsd_con) );
@@ -686,6 +695,7 @@ void FTermDetectionTest::puttyTest()
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::tera_term) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::cygwin) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::mintty) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::stterm) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::linux_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::freebsd_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::netbsd_con) );
@@ -764,6 +774,7 @@ void FTermDetectionTest::windowsTerminalTest()
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::tera_term) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::cygwin) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::mintty) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::stterm) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::linux_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::freebsd_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::netbsd_con) );
@@ -839,6 +850,7 @@ void FTermDetectionTest::teraTermTest()
     CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::tera_term) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::cygwin) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::mintty) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::stterm) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::linux_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::freebsd_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::netbsd_con) );
@@ -914,6 +926,7 @@ void FTermDetectionTest::cygwinTest()
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::tera_term) );
     CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::cygwin) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::mintty) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::stterm) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::linux_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::freebsd_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::netbsd_con) );
@@ -997,6 +1010,7 @@ void FTermDetectionTest::minttyTest()
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::tera_term) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::cygwin) );
     CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::mintty) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::stterm) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::linux_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::freebsd_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::netbsd_con) );
@@ -1025,6 +1039,82 @@ void FTermDetectionTest::minttyTest()
   {
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::console::mintty);
+    int wstatus;
+
+    if ( waitpid(pid, &wstatus, WUNTRACED) != pid )
+      std::cerr << "waitpid error" << std::endl;
+
+    if ( WIFEXITED(wstatus) )
+      CPPUNIT_ASSERT ( WEXITSTATUS(wstatus) == 0 );
+  }
+}
+
+//----------------------------------------------------------------------
+void FTermDetectionTest::sttermTest()
+{
+  auto& data = finalcut::FTermData::getInstance();
+  finalcut::FTermDetection detect;
+  data.setTermType("st-256color");
+  detect.setTerminalDetection(true);
+
+  pid_t pid = forkConEmu();
+
+  if ( isConEmuChildProcess(pid) )
+  {
+    // (gdb) set follow-fork-mode child
+    setenv ("TERM", "st-256color", 1);
+    unsetenv("TERMCAP");
+    unsetenv("COLORTERM");
+    unsetenv("COLORFGBG");
+    unsetenv("VTE_VERSION");
+    unsetenv("XTERM_VERSION");
+    unsetenv("ROXTERM_ID");
+    unsetenv("KONSOLE_DBUS_SESSION");
+    unsetenv("KONSOLE_DCOP");
+    unsetenv("TMUX");
+    unsetenv("KITTY_WINDOW_ID");
+    detect.detect();
+
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::xterm) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::ansi) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::rxvt) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::urxvt) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::kde_konsole) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::gnome_terminal) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::putty) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::win_terminal) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::tera_term) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::cygwin) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::mintty) );
+    CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::stterm) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::linux_con) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::freebsd_con) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::netbsd_con) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::openbsd_con) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::sun_con) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::screen) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::tmux) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::kterm) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::mlterm) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::kitty) );
+    CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
+    CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
+    CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
+    CPPUNIT_ASSERT ( detect.getTermType() == "st-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType_256color() == "" );
+    CPPUNIT_ASSERT ( detect.getTermType_Answerback() == "" );
+    CPPUNIT_ASSERT ( detect.getTermType_SecDA() == "" );
+    CPPUNIT_ASSERT ( detect.getAnswerbackString() == "" );
+    CPPUNIT_ASSERT ( detect.getSecDAString() == "" );
+
+    printConEmuDebug();
+    closeConEmuStdStreams();
+    exit(EXIT_SUCCESS);
+  }
+  else  // Parent
+  {
+    // Start the terminal emulation
+    startConEmuTerminal (ConEmu::console::stterm);
     int wstatus;
 
     if ( waitpid(pid, &wstatus, WUNTRACED) != pid )
@@ -1072,6 +1162,7 @@ void FTermDetectionTest::linuxTest()
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::tera_term) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::cygwin) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::mintty) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::stterm) );
     CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::linux_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::freebsd_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::netbsd_con) );
@@ -1155,6 +1246,7 @@ void FTermDetectionTest::freebsdTest()
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::tera_term) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::cygwin) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::mintty) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::stterm) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::linux_con) );
     CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::freebsd_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::netbsd_con) );
@@ -1240,6 +1332,7 @@ void FTermDetectionTest::netbsdTest()
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::tera_term) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::cygwin) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::mintty) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::stterm) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::linux_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::freebsd_con) );
     CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::netbsd_con) );
@@ -1323,6 +1416,7 @@ void FTermDetectionTest::openbsdTest()
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::tera_term) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::cygwin) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::mintty) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::stterm) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::linux_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::freebsd_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::netbsd_con) );
@@ -1404,6 +1498,7 @@ void FTermDetectionTest::sunTest()
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::tera_term) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::cygwin) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::mintty) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::stterm) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::linux_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::freebsd_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::netbsd_con) );
@@ -1486,6 +1581,7 @@ void FTermDetectionTest::screenTest()
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::tera_term) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::cygwin) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::mintty) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::stterm) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::linux_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::freebsd_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::netbsd_con) );
@@ -1567,6 +1663,7 @@ void FTermDetectionTest::tmuxTest()
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::tera_term) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::cygwin) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::mintty) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::stterm) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::linux_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::freebsd_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::netbsd_con) );
@@ -1643,6 +1740,7 @@ void FTermDetectionTest::ktermTest()
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::tera_term) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::cygwin) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::mintty) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::stterm) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::linux_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::freebsd_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::netbsd_con) );
@@ -1729,6 +1827,7 @@ void FTermDetectionTest::mltermTest()
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::tera_term) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::cygwin) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::mintty) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::stterm) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::linux_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::freebsd_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::netbsd_con) );
@@ -1809,6 +1908,7 @@ void FTermDetectionTest::kittyTest()
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::tera_term) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::cygwin) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::mintty) );
+    CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::stterm) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::linux_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::freebsd_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::netbsd_con) );

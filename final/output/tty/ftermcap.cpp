@@ -100,6 +100,59 @@ char**                  FTermcap::buffer_addr              {nullptr};
 FTermcap::PutCharFunc   FTermcap::outc                     {};
 FTermcap::PutStringFunc FTermcap::outs                     {};
 
+//----------------------------------------------------------------------
+inline auto getKeyEntry (FKey key) -> FKeyMap::KeyCapMap*
+{
+  auto& fkey_cap_table = FKeyMap::getKeyCapMap();
+  std::size_t i{0};
+
+  do
+  {
+    if ( fkey_cap_table[i].num == key )
+      return &fkey_cap_table[i];
+
+    i++;
+  }
+  while ( fkey_cap_table[i].num != FKey::F63 );
+
+  return nullptr;
+}
+
+//----------------------------------------------------------------------
+inline void del2ndKeyIfDuplicate ( FKeyMap::KeyCapMap* first
+                                 , FKeyMap::KeyCapMap* second )
+{
+  if ( ! first || ! second )
+    return;
+
+  auto len = std::min(first->length, second->length);
+
+  if ( std::memcmp(first->string, second->string, len) == 0 )
+  {
+    second->string = nullptr;
+    second->length = 0;
+  }
+}
+
+//----------------------------------------------------------------------
+void delDuplicateKeys()
+{
+  // Fixes incorrect key detection caused by duplicate key sequences
+  // (required e.g. for st - simple terminal)
+
+  auto* home_key  = getKeyEntry(FKey::Home);
+  auto* end_key   = getKeyEntry(FKey::End);
+  auto* ppage_key = getKeyEntry(FKey::Page_up);
+  auto* npage_key = getKeyEntry(FKey::Page_down);
+  auto* a1_key    = getKeyEntry(FKey::Upper_left);
+  auto* c1_key    = getKeyEntry(FKey::Lower_left);
+  auto* a3_key    = getKeyEntry(FKey::Upper_right);
+  auto* c3_key    = getKeyEntry(FKey::Lower_right);
+  del2ndKeyIfDuplicate (home_key, a1_key);
+  del2ndKeyIfDuplicate (end_key, c1_key);
+  del2ndKeyIfDuplicate (ppage_key, a3_key);
+  del2ndKeyIfDuplicate (npage_key, c3_key);
+}
 
 //----------------------------------------------------------------------
 // class FTermcap
@@ -424,8 +477,10 @@ void FTermcap::termcapKeys()
       break;
 
     entry.string = getString(entry.tname);
-    entry.length = entry.string ? finalcut::stringLength(entry.string) : 0;
+    entry.length = entry.string ? uInt8(finalcut::stringLength(entry.string)) : 0;
   }
+
+  delDuplicateKeys();
 
   // Sort key map list by string length (string length 0 at end)
   std::sort ( cap_map.begin(), cap_map.end()
@@ -449,7 +504,7 @@ auto FTermcap::encodeParams ( const std::string& cap
 }
 
 //----------------------------------------------------------------------
-inline auto  FTermcap::hasDelay (const std::string& string) -> bool
+inline auto FTermcap::hasDelay (const std::string& string) -> bool
 {
   return (TCAP(t_bell) && string == std::string(TCAP(t_bell)))
       || (TCAP(t_flash_screen) && string == std::string(TCAP(t_flash_screen)))
