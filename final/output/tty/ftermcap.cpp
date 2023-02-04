@@ -119,7 +119,7 @@ inline auto getKeyEntry (FKey key) -> FKeyMap::KeyCapMap*
 }
 
 //----------------------------------------------------------------------
-inline void del2ndKeyIfDuplicate ( FKeyMap::KeyCapMap* first
+inline void del2ndKeyIfDuplicate ( const FKeyMap::KeyCapMap* first
                                  , FKeyMap::KeyCapMap* second )
 {
   if ( ! first || ! second )

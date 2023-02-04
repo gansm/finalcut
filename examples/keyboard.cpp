@@ -70,10 +70,11 @@ void Keyboard::onKeyPress (finalcut::FKeyEvent* ev)
   }
   else
     print() << '\n';
-  std::ostringstream ss;
-  ss << std::hex << uInt32(key_id);
-  finalcut::FString hexkey = ss.str();
-  print() << "Key " << key_name << " (id " << hexkey << ")" ;
+
+  finalcut::FStringStream fss;
+  fss << "Key " << key_name << " (id 0x" << std::setfill(L'0')
+      << std::setw(2) << std::hex << uInt32(key_id) << ")" ;
+  print (fss.str());
   setAreaCursor (getPrintPos(), true, getVirtualDesktop());
   forceTerminalUpdate();
 }
