@@ -588,13 +588,24 @@ void FTermXTerminal::resetXTermColorMap() const
   {
     FTerm::paddingPrint (ESC "c");  // Full Reset (RIS)
   }
+  else if ( canResetColor()
+         && FTermData::getInstance().isTermType(FTermType::stterm) )
+  {
+    for (int c{0}; c < 16; c++)
+    {
+      oscPrefix();
+      FTerm::paddingPrintf (OSC "104;%d" BEL, c);
+      oscPostfix();
+    }
+  }
   else if ( canResetColor() )
   {
     oscPrefix();
     FTerm::paddingPrint (OSC "104" BEL);
     oscPostfix();
-    std::fflush(stdout);
   }
+
+  std::fflush(stdout);
 }
 
 //----------------------------------------------------------------------

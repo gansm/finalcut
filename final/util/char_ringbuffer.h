@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2022 Markus Gans                                           *
+* Copyright 2022-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -164,12 +164,12 @@ class FRingBuffer
       return "FRingBuffer";
     }
 
-    inline auto getSize() const noexcept -> size_t
+    inline auto getSize() const noexcept -> std::size_t
     {
       return elements;
     }
 
-    inline auto getCapacity() const noexcept -> size_t
+    inline auto getCapacity() const noexcept -> std::size_t
     {
       return Capacity;
     }
@@ -349,7 +349,7 @@ class CharRingBuffer final : public FRingBuffer<char, Capacity>
     }
 
     // Method
-    auto strncmp_front (const char* string, std::size_t length) -> bool
+    auto strncmp_front (const char* string, std::size_t length) const noexcept -> bool
     {
       if ( length > getSize() )
         return false;

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2022 Markus Gans                                      *
+* Copyright 2018-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -269,6 +269,10 @@ void FTermDetection::termtypeAnalysis()
   // mlterm
   if ( termtype.left(6) == "mlterm" )
     fterm_data.setTermType (FTermType::mlterm);
+
+  // st - simple terminal
+  if ( termtype.left(11) == "st-256color" )
+    fterm_data.setTermType (FTermType::stterm);
 
   // rxvt
   if ( termtype.left(4) == "rxvt" )

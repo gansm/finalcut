@@ -44,7 +44,7 @@ class FKeyMap final
     {
       FKey num;
       const char* string;
-      std::size_t length;
+      uInt8 length;
       char tname[4];
     };
 
@@ -52,7 +52,7 @@ class FKeyMap final
     {
       FKey num;
       char string[8];
-      std::size_t length;
+      uInt8 length;
     };
 
     struct KeyName

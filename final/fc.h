@@ -1324,16 +1324,17 @@ enum class FTermType : uInt32
   tera_term      = 1U << 8U,   // Tera Term
   cygwin         = 1U << 9U,   // Cygwin
   mintty         = 1U << 10U,  // Mintty
-  linux_con      = 1U << 11U,  // Linux Console
-  freebsd_con    = 1U << 12U,  // FreeBSD workstation Console
-  netbsd_con     = 1U << 13U,  // NetBSD workstation console
-  openbsd_con    = 1U << 14U,  // OpenBSD workstation Console
-  sun_con        = 1U << 15U,  // Sun Microsystems workstation console
-  screen         = 1U << 16U,  // GNU Screen
-  tmux           = 1U << 17U,  // TMux (terminal multiplexer)
-  kterm          = 1U << 18U,  // Kterm (multi-lingual terminal emulator)
-  mlterm         = 1U << 19U,  // MLterm (multi-lingual terminal emulator)
-  kitty          = 1U << 20U   // kitty (GPU based terminal emulator)
+  stterm         = 1U << 11U,  // st - simple terminal
+  linux_con      = 1U << 12U,  // Linux Console
+  freebsd_con    = 1U << 13U,  // FreeBSD workstation Console
+  netbsd_con     = 1U << 14U,  // NetBSD workstation console
+  openbsd_con    = 1U << 15U,  // OpenBSD workstation Console
+  sun_con        = 1U << 16U,  // Sun Microsystems workstation console
+  screen         = 1U << 17U,  // GNU Screen
+  tmux           = 1U << 18U,  // TMux (terminal multiplexer)
+  kterm          = 1U << 19U,  // Kterm (multi-lingual terminal emulator)
+  mlterm         = 1U << 20U,  // MLterm (multi-lingual terminal emulator)
+  kitty          = 1U << 21U   // kitty (GPU based terminal emulator)
 };
 
 using FTermTypeT = std::underlying_type_t<FTermType>;

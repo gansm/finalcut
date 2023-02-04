@@ -74,7 +74,7 @@ class Dialog final : public finalcut::FDialog
 
     // Data members
     finalcut::FButton quit_button{"&Quit", this};
-    finalcut::FLabel label{"Change terminal focus...",this};
+    finalcut::FLabel label{"Change terminal focus...", this};
 };
 
 //----------------------------------------------------------------------
