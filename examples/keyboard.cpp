@@ -19,7 +19,7 @@
 * License along with this program.  If not, see                        *
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
-
+#include <sstream>
 #include <final/final.h>
 
 //----------------------------------------------------------------------
@@ -70,8 +70,10 @@ void Keyboard::onKeyPress (finalcut::FKeyEvent* ev)
   }
   else
     print() << '\n';
-
-  print() << "Key " << key_name << " (id " << uInt32(key_id) << ")";
+  std::ostringstream ss;
+  ss << std::hex << uInt32(key_id);
+  finalcut::FString hexkey = ss.str();
+  print() << "Key " << key_name << " (id " << hexkey << ")" ;
   setAreaCursor (getPrintPos(), true, getVirtualDesktop());
   forceTerminalUpdate();
 }
