@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2022 Markus Gans                                      *
+* Copyright 2015-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -19,7 +19,7 @@
 * License along with this program.  If not, see                        *
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
-#include <sstream>
+
 #include <final/final.h>
 
 //----------------------------------------------------------------------

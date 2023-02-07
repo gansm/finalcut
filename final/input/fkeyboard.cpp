@@ -295,27 +295,12 @@ inline auto FKeyboard::getTermcapKey() -> FKey
     return NOT_SET;
 
   const auto buf_len = fifo_buf.getSize();
-  const auto& found_key = std::find_if
-  (
-    key_cap_ptr->cbegin(),
-    key_cap_end,
-    [this, &buf_len] (const auto& cap_key)
-    {
-      const auto& kstr = cap_key.string;
-      const auto& klen = cap_key.length;
+  auto found_key = fkeyhashmap::getTermcapKey(fifo_buf);
 
-      if ( klen == 0 || klen != buf_len )
-        return false;
-
-      return fifo_buf.strncmp_front (kstr, klen);
-    }
-  );
-
-  if ( found_key != key_cap_end )  // found
+  if ( found_key != FKey::None )  // found
   {
-    const std::size_t len = found_key->length;
-    fifo_buf.pop(len);  // Remove founded entry
-    return found_key->num;
+    fifo_buf.pop(buf_len);  // Remove founded entry
+    return found_key;
   }
 
   return NOT_SET;
@@ -327,30 +312,12 @@ inline auto FKeyboard::getKnownKey() -> FKey
   // Looking for a known key strings in the buffer
 
   static_assert ( FIFO_BUF_SIZE > 0, "FIFO buffer too small" );
-
   const auto buf_len = fifo_buf.getSize();
-  const auto& key_map = FKeyMap::getKeyMap();
-  const auto& found_key = std::find_if
-  (
-    key_map.cbegin(),
-    key_map.cend(),
-    [this, &buf_len] (const auto& known_key)
-    {
-      const auto& kstr = known_key.string;  // This string is never null
-      const auto& klen = known_key.length;
+  auto found_key = fkeyhashmap::getKnownKey(fifo_buf);
 
-      if ( klen != buf_len )
-        return false;
-
-      return fifo_buf.strncmp_front (kstr, klen);
-    }
-  );
-
-  if ( found_key != key_map.cend() )  // found
+  if ( found_key != FKey::None )  // found
   {
-    const std::size_t len = found_key->length;
-
-    if ( len == 2
+    if ( buf_len == 2
       && ( fifo_buf[1] == 'O'
         || fifo_buf[1] == '['
         || fifo_buf[1] == ']' )
@@ -359,8 +326,8 @@ inline auto FKeyboard::getKnownKey() -> FKey
       return FKey::Incomplete;
     }
 
-    fifo_buf.pop(len);  // Remove founded entry
-    return found_key->num;
+    fifo_buf.pop(buf_len);  // Remove founded entry
+    return found_key;
   }
 
   return NOT_SET;

@@ -1,3 +1,7 @@
+2023-02-07  Markus Gans  <guru.mail@muenster.de>
+	* Keys are now identified via a hash map to speed up escape sequence 
+	  searches
+
 2023-02-04  Markus Gans  <guru.mail@muenster.de>
 	* Adapted color reset for st - simple terminal
 	* Fixes incorrect key detection caused by duplicate key sequences

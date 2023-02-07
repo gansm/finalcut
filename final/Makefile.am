@@ -106,6 +106,7 @@ finalcutdialoginclude_HEADERS = \
 
 finalcutinputinclude_HEADERS = \
 	input/fkeyboard.h \
+	input/fkey_hashmap.h \
 	input/fkey_map.h \
 	input/fmouse.h
 

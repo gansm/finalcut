@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2022 Markus Gans                                      *
+* Copyright 2018-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -44,6 +44,7 @@
 #include <string>
 
 #include "final/ftypes.h"
+#include "final/input/fkey_hashmap.h"
 #include "final/input/fkey_map.h"
 #include "final/util/char_ringbuffer.h"
 #include "final/util/fstring.h"
@@ -238,6 +239,7 @@ inline void FKeyboard::setTermcapMap (const T& keymap)
 {
   key_cap_ptr = std::make_shared<T>(keymap);
   key_cap_end = key_cap_ptr->cend();
+  fkeyhashmap::setKeyCapMap<keybuffer>(key_cap_ptr->cbegin(), key_cap_end);
 }
 
 //----------------------------------------------------------------------
@@ -251,6 +253,7 @@ inline void FKeyboard::setTermcapMap()
                              , [] (const FKeyMap::KeyCapMap& entry)
                                { return entry.length == 0; }
                              );
+  fkeyhashmap::setKeyCapMap<keybuffer>(key_cap_ptr->cbegin(), key_cap_end);
 }
 
 //----------------------------------------------------------------------

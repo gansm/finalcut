@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2022 Markus Gans                                      *
+* Copyright 2015-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -76,6 +76,9 @@ static auto getStringBuffer() -> char*
 
 }  // namespace internal
 
+// Function prototypes
+static void delDuplicateKeys();
+
 // static class attributes
 bool                    FTermcap::initialized              {false};
 bool                    FTermcap::background_color_erase   {false};
@@ -135,19 +138,19 @@ inline void del2ndKeyIfDuplicate ( const FKeyMap::KeyCapMap* first
 }
 
 //----------------------------------------------------------------------
-void delDuplicateKeys()
+static void delDuplicateKeys()
 {
   // Fixes incorrect key detection caused by duplicate key sequences
   // (required e.g. for st - simple terminal)
 
-  auto* home_key  = getKeyEntry(FKey::Home);
-  auto* end_key   = getKeyEntry(FKey::End);
-  auto* ppage_key = getKeyEntry(FKey::Page_up);
-  auto* npage_key = getKeyEntry(FKey::Page_down);
-  auto* a1_key    = getKeyEntry(FKey::Upper_left);
-  auto* c1_key    = getKeyEntry(FKey::Lower_left);
-  auto* a3_key    = getKeyEntry(FKey::Upper_right);
-  auto* c3_key    = getKeyEntry(FKey::Lower_right);
+  const auto* home_key = getKeyEntry(FKey::Home);
+  const auto* end_key = getKeyEntry(FKey::End);
+  const auto* ppage_key = getKeyEntry(FKey::Page_up);
+  const auto* npage_key = getKeyEntry(FKey::Page_down);
+  auto* a1_key = getKeyEntry(FKey::Upper_left);
+  auto* c1_key = getKeyEntry(FKey::Lower_left);
+  auto* a3_key = getKeyEntry(FKey::Upper_right);
+  auto* c3_key = getKeyEntry(FKey::Lower_right);
   del2ndKeyIfDuplicate (home_key, a1_key);
   del2ndKeyIfDuplicate (end_key, c1_key);
   del2ndKeyIfDuplicate (ppage_key, a3_key);

@@ -217,10 +217,10 @@ void FVTerm::reduceTerminalLineUpdates (uInt y)
   if ( xmin > xmax )  // No changes
     return;
 
-  const auto* first = &vterm->getFChar(int(xmin), y);
-  const auto* first_old = &vterm_old->getFChar(int(xmin), y);
-  auto* last = &vterm->getFChar(int(xmax), y);
-  const auto* last_old = &vterm_old->getFChar(int(xmax), y);
+  const auto* first = &vterm->getFChar(int(xmin), int(y));
+  const auto* first_old = &vterm_old->getFChar(int(xmin), int(y));
+  auto* last = &vterm->getFChar(int(xmax), int(y));
+  const auto* last_old = &vterm_old->getFChar(int(xmax), int(y));
 
   while ( xmin < xmax && *first == *first_old )
   {
