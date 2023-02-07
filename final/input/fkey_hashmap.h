@@ -57,6 +57,7 @@ struct KeySequence
     , length(l)
   { }
 
+  //explicit KeySequence (const BufferT& buf)
   KeySequence (const BufferT& buf)
     : buffer(&buf)
   { }
@@ -68,7 +69,7 @@ struct KeySequence
 
 //----------------------------------------------------------------------
 template <typename IterT>
-constexpr inline auto hash_function (IterT iter, const IterT end) -> std::size_t
+constexpr auto hash_function (IterT iter, const IterT end) -> std::size_t
 {
   std::size_t sum = 0;
 
@@ -86,9 +87,9 @@ constexpr inline auto hash_function (IterT iter, const IterT end) -> std::size_t
 
 //----------------------------------------------------------------------
 template <typename BufferT>
-inline auto hash_function (const BufferT& buf) -> std::size_t
+constexpr auto hash_function (const BufferT& buf) -> std::size_t
 {
-  return hash_function(buf.begin(), buf.end());
+  return hash_function (std::begin(buf), std::end(buf));
 }
 
 //----------------------------------------------------------------------
@@ -196,7 +197,7 @@ auto createKeyMap() -> HashMap<BufferT>
 
 //----------------------------------------------------------------------
 template <typename BufferT>
-static auto getKeyCapMap() -> internal::HashMap<BufferT>&
+auto getKeyCapMap() -> internal::HashMap<BufferT>&
 {
   using HashMapType = internal::HashMap<BufferT>;
   static const auto& fkey_cap_map = std::make_unique<HashMapType>(internal::createKeyCapMap<BufferT>());
@@ -205,14 +206,14 @@ static auto getKeyCapMap() -> internal::HashMap<BufferT>&
 
 //----------------------------------------------------------------------
 template <typename BufferT, typename IterT>
-static void setKeyCapMap (IterT begin, IterT end)
+void setKeyCapMap (IterT begin, IterT end)
 {
   getKeyCapMap<BufferT>() = internal::createKeyCapMap<BufferT>(begin, end);
 }
 
 //----------------------------------------------------------------------
 template <typename BufferT>
-static auto getKeyMap() -> internal::HashMap<BufferT>&
+auto getKeyMap() -> internal::HashMap<BufferT>&
 {
   using HashMapType = internal::HashMap<BufferT>;
   static const auto& fkey_map = std::make_unique<HashMapType>(internal::createKeyMap<BufferT>());
