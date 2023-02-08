@@ -62,7 +62,7 @@ class FKeyMap final
     };
 
     // Using-declaration
-    using KeyCapMapType = std::array<KeyCapMap, 188>;
+    using KeyCapMapType = std::array<KeyCapMap, 190>;
     using KeyMapType = std::array<KeyMap, 234>;
     using KeyNameType = std::array<KeyName, 390>;
 

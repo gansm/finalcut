@@ -80,7 +80,7 @@ struct FKeyCapMap
   char tname[4];
 };
 
-using test_type = finalcut::FKeyMap::KeyCapMapType;  // std::array<FKeyCapMap, 188>;
+using test_type = finalcut::FKeyMap::KeyCapMapType;  // std::array<FKeyCapMap, 190>;
 
 test_type fkey =
 {{
@@ -274,6 +274,8 @@ test_type fkey =
   { finalcut::FKey::Upper_left      , nullptr    , 0, "K1x"},  // keypad upper left
   { finalcut::FKey::Upper_right     , nullptr    , 0, "K3x"},  // keypad upper right
   { finalcut::FKey::Center          , nullptr    , 0, "K2x"},  // keypad center
+  { finalcut::FKey::Center          , nullptr    , 0, "K2X"},  // Keypad center
+  { finalcut::FKey::Center          , nullptr    , 0, "K2y"},  // Keypad center
   { finalcut::FKey::Lower_left      , nullptr    , 0, "K4x"},  // keypad lower left
   { finalcut::FKey::Lower_right     , nullptr    , 0, "K5x"}   // keypad lower right
 }};
@@ -3080,7 +3082,7 @@ void FKeyboardTest::init()
 
   // Copy the section with the fixed escape sequences
   auto& fkey_cap_table = finalcut::FKeyMap::getInstance().getKeyCapMap();
-  std::copy ( &fkey_cap_table[150].num, &fkey_cap_table[188].num, &test::fkey[150].num);
+  std::copy ( &fkey_cap_table[150].num, &fkey_cap_table[190].num, &test::fkey[150].num);
 
   // Use test::fkey as new termcap map
   keyboard->setTermcapMap (test::fkey);

@@ -247,6 +247,8 @@ FKeyMap::KeyCapMapType FKeyMap::fkey_cap_table
   { FKey::Upper_left      , ESC "Ow",  3, "K1x"},  // Keypad Upper left
   { FKey::Upper_right     , ESC "Oy",  3, "K3x"},  // Keypad Upper right
   { FKey::Center          , ESC "Ou",  3, "K2x"},  // Keypad Center
+  { FKey::Center          , ESC "OE",  3, "K2X"},  // Keypad Center
+  { FKey::Center          , ESC "OG",  3, "K2y"},  // Keypad Center
   { FKey::Lower_left      , ESC "Oq",  3, "K4x"},  // Keypad Lower left
   { FKey::Lower_right     , ESC "Os",  3, "K5x"}   // Keypad Lower right
 }};

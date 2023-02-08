@@ -1,3 +1,6 @@
+2023-02-08  Markus Gans  <guru.mail@muenster.de>
+	* Better detection of the keypad center key
+
 2023-02-07  Markus Gans  <guru.mail@muenster.de>
 	* Keys are now identified via a hash map to speed up escape sequence 
 	  searches
