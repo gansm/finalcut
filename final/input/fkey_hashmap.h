@@ -43,8 +43,9 @@ struct Const
 {
   static auto getMaxHashSize() -> std::size_t
   {
-    return std::max( FKeyMap::getKeyMap().size()
-                   , FKeyMap::getKeyCapMap().size() ) * 2;
+    static const auto size = std::max( FKeyMap::getKeyMap().size()
+                                     , FKeyMap::getKeyCapMap().size() ) * 2;
+    return size;
   }
 };
 
@@ -57,8 +58,7 @@ struct KeySequence
     , length(l)
   { }
 
-  //explicit KeySequence (const BufferT& buf)
-  KeySequence (const BufferT& buf)
+  explicit KeySequence (const BufferT& buf)
     : buffer(&buf)
   { }
 
@@ -75,11 +75,9 @@ constexpr auto hash_function (IterT iter, const IterT end) -> std::size_t
 
   while ( iter != end )
   {
-    std::size_t next = (iter + 1 != end )
-                     ? std::size_t(*(iter + 1)) << 8
-                     : 0;
-    sum += std::size_t(*iter) + next;
+    sum += std::size_t(*iter);
     ++iter;
+    sum += ( iter != end ) ? std::size_t(*iter) << 8 : 0;
   }
 
   return sum % Const::getMaxHashSize();
@@ -225,7 +223,7 @@ template <typename BufferT>
 auto getTermcapKey (const BufferT& char_rbuf) -> FKey
 {
   auto& hashmap = getKeyCapMap<BufferT>();
-  auto iter = hashmap.find(char_rbuf);
+  auto iter = hashmap.find(internal::KeySequence<BufferT>(char_rbuf));
 
   if ( iter != hashmap.end() )  // found
     return iter->second;
@@ -238,7 +236,7 @@ template <typename BufferT>
 auto getKnownKey (const BufferT& char_rbuf) -> FKey
 {
   auto& hashmap = getKeyMap<BufferT>();
-  auto iter = hashmap.find(char_rbuf);
+  auto iter = hashmap.find(internal::KeySequence<BufferT>(char_rbuf));
 
   if ( iter != hashmap.end() )  // found
     return iter->second;

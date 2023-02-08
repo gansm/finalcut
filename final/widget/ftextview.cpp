@@ -372,11 +372,11 @@ void FTextView::deleteRange (int from, int to)
 //----------------------------------------------------------------------
 void FTextView::onKeyPress (FKeyEvent* ev)
 {
-  const auto& entry = key_map[ev->key()];
+  const auto& iter = key_map.find(ev->key());
 
-  if ( entry )
+  if ( iter != key_map.end() )
   {
-    entry();
+    iter->second();
     ev->accept();
   }
 }

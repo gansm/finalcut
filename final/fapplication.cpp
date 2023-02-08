@@ -561,10 +561,10 @@ void FApplication::cmdOptions (const Args& args)
     if ( opt == -1 )
       break;
 
-    const auto& entry = cmd_map[opt];
+    const auto& iter = cmd_map.find(opt);
 
-    if ( entry )
-      entry(optarg);
+    if ( iter != cmd_map.end() )
+      iter->second(optarg);
   }
 
   cmd_map.clear();

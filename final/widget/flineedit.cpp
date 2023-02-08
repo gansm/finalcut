@@ -356,11 +356,11 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
     return;
 
   const auto key = ev->key();
-  const auto& entry = key_map[key];
+  const auto& iter = key_map.find(key);
 
-  if ( entry )
+  if ( iter != key_map.end() )
   {
-    entry();
+    iter->second();
     ev->accept();
   }
   else if ( key == FKey::Tab || key == FKey::Back_tab

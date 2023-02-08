@@ -444,12 +444,12 @@ auto FTermLinux::modifierKeyCorrection (const FKey& key_id) -> FKey
     return key_id;
 
   const Pair pair{getModifierKey(), key_id};
-  const auto& key = key_map[pair];
+  const auto& iter = key_map.find(pair);
 
-  if ( key == FKey(0) )    // Not found
+  if ( iter == key_map.end() )  // Not found
     return key_id;
 
-  return key_map[pair];    // Found
+  return iter->second;  // Found
 }
 
 

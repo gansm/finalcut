@@ -1605,10 +1605,10 @@ inline void FDialog::handleRightAndMiddleMouseDown ( const MouseButton& button
 //----------------------------------------------------------------------
 inline void FDialog::moveSizeKey (FKeyEvent* ev)
 {
-  const auto& entry = key_map[ev->key()];
+  const auto& iter = key_map.find(ev->key());
 
-  if ( entry )
-    entry();
+  if ( iter != key_map.end() )
+    iter->second();
 
   // Accept for all, so that parent widgets will not receive keystrokes
   ev->accept();
