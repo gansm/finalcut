@@ -80,6 +80,7 @@ INCLUDE_HEADERS = \
 	fobject.h \
 	fstartoptions.h \
 	ftimer.h \
+	ftypes.h \
 	fwidgetcolors.h \
 	fwidget_functions.h \
 	fwidget_flags.h \
@@ -167,6 +168,7 @@ OBJS = \
 	fobject.o \
 	fstartoptions.o \
 	ftimer.o \
+	ftypes.o \
 	fwidgetcolors.o \
 	fwidget_functions.o \
 	fwidget.o \
