@@ -733,12 +733,12 @@ void FVTerm::addLayer (FTermArea* area) const noexcept
     auto& line_changes = area->changes[unsigned(y)];
     auto line_xmin = int(line_changes.xmin);
     auto line_xmax = int(line_changes.xmax);
+    line_xmin = std::max(line_xmin, ol);
+    line_xmax = std::min(line_xmax, vterm->width + ol - ax - 1);
 
     if ( line_xmin > line_xmax )
       continue;
 
-    line_xmin = std::max(line_xmin, ol);
-    line_xmax = std::min(line_xmax, vterm->width + ol - ax - 1);
     const std::size_t length = unsigned(line_xmax - line_xmin + 1);
     const int tx = ax - ol;  // Global terminal positions for x
     const int ty = ay + y;  // Global terminal positions for y

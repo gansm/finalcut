@@ -1696,7 +1696,8 @@ void FTerm::useAlternateScreenBuffer()
   // Saves the screen and the cursor position
   if ( TCAP(t_enter_ca_mode) )
   {
-    paddingPrint (TCAP(t_enter_ca_mode));
+    paddingPrint (TCAP(t_enter_ca_mode));  // Use alternate screen buffer
+    paddingPrint (TCAP(t_clear_screen));  // Ensure the display is cleared
     std::fflush(stdout);
     FTermData::getInstance().setAlternateScreenInUse(true);
   }
@@ -1713,7 +1714,7 @@ void FTerm::useNormalScreenBuffer()
   // restores the screen and the cursor position
   if ( TCAP(t_exit_ca_mode) )
   {
-    paddingPrint (TCAP(t_exit_ca_mode));
+    paddingPrint (TCAP(t_exit_ca_mode));  // Use Normal Screen Buffer
     std::fflush(stdout);
     FTermData::getInstance().setAlternateScreenInUse(false);
   }
