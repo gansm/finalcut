@@ -212,6 +212,14 @@ void FScrollView::setWidth (std::size_t w, bool adjust)
 
   if ( getScrollWidth() < getViewportWidth() )
     setScrollWidth (getViewportWidth());
+
+  if ( ! viewport )
+    return;
+
+  // Insufficient space scrolling
+  viewport_geometry.x1_ref() = \
+      std::min ( int(getScrollWidth() - getViewportWidth())
+               , viewport_geometry.getX1() );
 }
 
 //----------------------------------------------------------------------
@@ -226,6 +234,14 @@ void FScrollView::setHeight (std::size_t h, bool adjust)
 
   if ( getScrollHeight() < getViewportHeight() )
     setScrollHeight (getViewportHeight());
+
+  if ( ! viewport )
+    return;
+
+  // Insufficient space scrolling
+  viewport_geometry.y1_ref() = \
+      std::min ( int(getScrollHeight() - getViewportHeight())
+               , viewport_geometry.getY1() );
 }
 
 //----------------------------------------------------------------------
@@ -901,6 +917,17 @@ void FScrollView::changeSize (const FSize& size, bool adjust)
     viewport->offset_left = scroll_geometry.getX();
     viewport->offset_top = scroll_geometry.getY();
   }
+
+  if ( ! viewport )
+    return;
+
+  // Insufficient space scrolling
+  viewport_geometry.x1_ref() = \
+      std::min ( int(getScrollWidth() - getViewportWidth())
+               , viewport_geometry.getX1() );
+  viewport_geometry.y1_ref() = \
+      std::min ( int(getScrollHeight() - getViewportHeight())
+               , viewport_geometry.getY1() );
 }
 
 //----------------------------------------------------------------------

@@ -1,3 +1,7 @@
+2023-02-14  Markus Gans  <guru.mail@muenster.de>
+	* Fixes the problem of insufficient space on resizing in FScrollView 
+	  by scrolling backwards
+
 2023-02-08  Markus Gans  <guru.mail@muenster.de>
 	* Better detection of the keypad center key
 
