@@ -1426,21 +1426,20 @@ void FListView::processKeyAction (FKeyEvent* ev)
   {
     iter->second();
     ev->accept();
+    return;
   }
-  else
-  {
-    const auto& iter_result = key_map_result.find(idx);
 
-    if ( iter_result != key_map_result.end() )
-    {
-      if ( iter_result->second() )
-        ev->accept();
-    }
-    else
-    {
-      ev->ignore();
-    }
+  const auto& iter_result = key_map_result.find(idx);
+
+  if ( iter_result != key_map_result.end() )
+  {
+    if ( iter_result->second() )
+      ev->accept();
+
+    return;
   }
+
+  ev->ignore();
 }
 
 //----------------------------------------------------------------------

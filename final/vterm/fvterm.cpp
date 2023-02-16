@@ -229,7 +229,7 @@ void FVTerm::reduceTerminalLineUpdates (uInt y)
     first_old++;
   }
 
-  while ( last > first && *last == *last_old )
+  while ( last >= first && *last == *last_old )
   {
     xmax--;
     last--;
@@ -1446,7 +1446,7 @@ void FVTerm::finish() const
 inline void FVTerm::saveCurrentVTerm() const
 {
   // Save the content of the virtual terminal
-  std::memcpy(vterm_old->data.data(), vterm->data.data(), vterm->data.size());
+  std::memcpy(vterm_old->data.data(), vterm->data.data(), vterm->data.size() * sizeof(FChar));
 }
 
 

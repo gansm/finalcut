@@ -767,6 +767,7 @@ class FVTermTest : public CPPUNIT_NS::TestFixture
     void FVTermChildAreaPrintTest();
     void FVTermScrollTest();
     void FVTermOverlappingWindowsTest();
+    void FVTermReduceUpdatesTest();
     void getFVTermAreaTest();
 
   private:
@@ -782,6 +783,7 @@ class FVTermTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (FVTermChildAreaPrintTest);
     CPPUNIT_TEST (FVTermScrollTest);
     CPPUNIT_TEST (FVTermOverlappingWindowsTest);
+    CPPUNIT_TEST (FVTermReduceUpdatesTest);
     CPPUNIT_TEST (getFVTermAreaTest);
 
     // End of test suite definition
@@ -2663,6 +2665,215 @@ void FVTermTest::FVTermOverlappingWindowsTest()
                                   {  2, { {6, vwin_4_char}, {5, vwin_3_char}, {69, bg_char} } },
                                   { 19, { {80, bg_char} } } } );
   CPPUNIT_ASSERT ( test::isAreaEqual(test_area, vterm) );
+}
+
+//----------------------------------------------------------------------
+void FVTermTest::FVTermReduceUpdatesTest()
+{
+  FVTerm_protected p_fvterm(finalcut::outputClass<FTermOutputTest>{});
+
+  // unique virtual terminal
+  auto vterm = p_fvterm.p_getVirtualTerminal();
+
+  // virtual windows
+  auto vwin = p_fvterm.getVWin();
+
+  // Create the virtual windows for the p_fvterm objects
+  finalcut::FRect geometry {finalcut::FPoint{0, 0}, finalcut::FSize{15, 15}};
+  auto vwin_ptr = p_fvterm.p_createArea (geometry);
+  vwin = vwin_ptr.get();
+  p_fvterm.setVWin(std::move(vwin_ptr));
+
+  p_fvterm.print() << finalcut::FPoint{1, 1}
+                   << finalcut::FColorPair { finalcut::FColor::Black
+                                           , finalcut::FColor::White };
+  p_fvterm.print() << "!\"#$%&'()*+,-./";  // Line 0
+  p_fvterm.print() << "0123456789:;<=>";   // Line 1
+  p_fvterm.print() << "?@ABCDEFGHIJKLM";   // Line 2
+  p_fvterm.print() << "NOPQRSTUVWXYZ[\\";  // Line 3
+  p_fvterm.print() << "]^_`abcdefghijk";   // Line 4
+  p_fvterm.print() << "lmnopqrstuvwxyz";   // Line 5
+  p_fvterm.print() << "!\"#$%&'()*+,-./";  // Line 6
+  p_fvterm.print() << "0123456789:;<=>";   // Line 7
+  p_fvterm.print() << "?@ABCDEFGHIJKLM";   // Line 8
+  p_fvterm.print() << "NOPQRSTUVWXYZ[\\";  // Line 9
+  p_fvterm.print() << "]^_`abcdefghijk";   // Line 10
+  p_fvterm.print() << "lmnopqrstuvwxyz";   // Line 11
+  p_fvterm.print() << "!\"#$%&'()*+,-./";  // Line 12
+  p_fvterm.print() << "0123456789:;<=>";   // Line 13
+  p_fvterm.print() << "?@ABCDEFGHIJKLM";   // Line 14
+  vwin->visible = true;
+  p_fvterm.p_addLayer(vwin);
+
+  // Write changes to the virtual terminal
+  p_fvterm.p_processTerminalUpdate();
+  test::printArea (vterm);
+
+  for (auto i{0}; i < 15; i++)
+  {
+    CPPUNIT_ASSERT ( vterm->changes[i].xmin == 0 );
+    CPPUNIT_ASSERT ( vterm->changes[i].xmax == 14 );
+    CPPUNIT_ASSERT ( vterm->changes[i].trans_count == 0 );
+  }
+
+  for (auto i{15}; i < vterm->height; i++)
+  {
+    CPPUNIT_ASSERT ( vterm->changes[i].xmin == 80 );
+    CPPUNIT_ASSERT ( vterm->changes[i].xmax == 0 );
+    CPPUNIT_ASSERT ( vterm->changes[i].trans_count == 0 );
+  }
+
+  p_fvterm.updateTerminal();
+
+  // Simulate printing
+  for (auto y{0}; y < vterm->height; y++)
+  {
+    for (auto x{vterm->changes[y].xmin}; x < vterm->changes[y].xmax; x++)
+      vterm->getFChar(int(x), int(y)).attr.bit.printed = true;
+
+    vterm->changes[y].xmin = uInt(vterm->width);
+    vterm->changes[y].xmax = 0;
+  }
+
+  for (auto y{0}; y < vterm->height; y++)
+  {
+    for (auto x{0}; x < vterm->width; x++)
+      CPPUNIT_ASSERT ( vterm->getFChar(x, y).attr.bit.no_changes == false );
+  }
+
+  std::cerr << '\n';
+
+  p_fvterm.print() << finalcut::FPoint{1, 1}
+                   << finalcut::FColorPair { finalcut::FColor::Black
+                                           , finalcut::FColor::White };
+  p_fvterm.print() << "!\"#$%&'()*+,-./";  // Line 0
+  p_fvterm.print() << "0123456789:;<=>";   // Line 1
+  p_fvterm.print() << "?@ABCDEFGHIJKLM";   // Line 2
+  p_fvterm.print() << "NOPQRSTUVWXYZ[\\";  // Line 3
+  p_fvterm.print() << "]^_`abcdefghijk";   // Line 4
+  p_fvterm.print() << "lmnopqrstuvwxyz";   // Line 5
+  p_fvterm.print() << "!\"#$%--------./";  // Line 6
+  p_fvterm.print() << "0123456789:;★★★";   // Line 7
+  p_fvterm.print() << "AAABCDEFGHIJKLM";   // Line 8
+  p_fvterm.print() << "NOPQRSTUVWXYZZZ";   // Line 9
+  p_fvterm.print() << "☺☺☺`abcdefghij☺";   // Line 10
+  p_fvterm.print() << "lmnop☺☺☻☺☺vwxyz";   // Line 11
+  p_fvterm.print() << "!\"#$%&'()*+,-./";  // Line 12
+  p_fvterm.print() << "0123456789:;<=>";   // Line 13
+  p_fvterm.print() << "?@ABCDEFGHIJKLM";   // Line 14
+  p_fvterm.p_addLayer(vwin);
+
+
+  for (auto y{0}; y < vterm->height; y++)
+  {
+    for (auto x{0}; x < vterm->width; x++)
+      CPPUNIT_ASSERT ( vterm->getFChar(x, y).attr.bit.no_changes == false );
+  }
+
+  for (auto i{0}; i < 6; i++)
+  {
+    CPPUNIT_ASSERT ( vterm->changes[i].xmin == 80 );
+    CPPUNIT_ASSERT ( vterm->changes[i].xmax == 0 );
+    CPPUNIT_ASSERT ( vterm->changes[i].trans_count == 0 );
+  }
+
+  CPPUNIT_ASSERT ( vterm->changes[6].xmin == 5 );
+  CPPUNIT_ASSERT ( vterm->changes[6].xmax == 11 );
+  CPPUNIT_ASSERT ( vterm->changes[6].trans_count == 0 );
+
+  CPPUNIT_ASSERT ( vterm->changes[7].xmin == 12 );
+  CPPUNIT_ASSERT ( vterm->changes[7].xmax == 14 );
+  CPPUNIT_ASSERT ( vterm->changes[7].trans_count == 0 );
+
+  CPPUNIT_ASSERT ( vterm->changes[8].xmin == 0 );
+  CPPUNIT_ASSERT ( vterm->changes[8].xmax == 1 );
+  CPPUNIT_ASSERT ( vterm->changes[8].trans_count == 0 );
+
+  CPPUNIT_ASSERT ( vterm->changes[9].xmin == 13 );
+  CPPUNIT_ASSERT ( vterm->changes[9].xmax == 14 );
+  CPPUNIT_ASSERT ( vterm->changes[9].trans_count == 0 );
+
+  CPPUNIT_ASSERT ( vterm->changes[10].xmin == 0 );
+  CPPUNIT_ASSERT ( vterm->changes[10].xmax == 14 );
+  CPPUNIT_ASSERT ( vterm->changes[10].trans_count == 0 );
+
+  CPPUNIT_ASSERT ( vterm->changes[11].xmin == 5 );
+  CPPUNIT_ASSERT ( vterm->changes[11].xmax == 9 );
+  CPPUNIT_ASSERT ( vterm->changes[11].trans_count == 0 );
+
+  for (auto i{12}; i < vterm->height; i++)
+  {
+    CPPUNIT_ASSERT ( vterm->changes[i].xmin == 80 );
+    CPPUNIT_ASSERT ( vterm->changes[i].xmax == 0 );
+    CPPUNIT_ASSERT ( vterm->changes[i].trans_count == 0 );
+  }
+
+  // Reset xmin and xmax values + reduceTerminalLineUpdates()
+  for (auto i{0}; i < vterm->height; i++)
+  {
+    vterm->changes[i].xmin = 0;
+    vterm->changes[i].xmax = 14;
+    finalcut::FVTerm::reduceTerminalLineUpdates(i);
+  }
+
+  for (auto y{0}; y < 10; y++)
+  {
+    for (auto x{0}; x < vterm->width; x++)
+      CPPUNIT_ASSERT ( vterm->getFChar(x, y).attr.bit.no_changes == false );
+  }
+
+  for (auto x{0}; x < 3; x++)
+    CPPUNIT_ASSERT ( vterm->getFChar(x, 10).attr.bit.no_changes == false );
+
+  for (auto x{3}; x < 14; x++)
+    CPPUNIT_ASSERT ( vterm->getFChar(x, 10).attr.bit.no_changes == true );
+
+  for (auto x{14}; x < vterm->width; x++)
+    CPPUNIT_ASSERT ( vterm->getFChar(x, 10).attr.bit.no_changes == false );
+
+  for (auto y{11}; y < vterm->height; y++)
+  {
+    for (auto x{0}; x < vterm->width; x++)
+      CPPUNIT_ASSERT ( vterm->getFChar(x, y).attr.bit.no_changes == false );
+  }
+
+  for (auto i{0}; i < 6; i++)
+  {
+    CPPUNIT_ASSERT ( vterm->changes[i].xmin == 14 );
+    CPPUNIT_ASSERT ( vterm->changes[i].xmax == 13 );
+    CPPUNIT_ASSERT ( vterm->changes[i].trans_count == 0 );
+  }
+
+  CPPUNIT_ASSERT ( vterm->changes[6].xmin == 5 );
+  CPPUNIT_ASSERT ( vterm->changes[6].xmax == 11 );
+  CPPUNIT_ASSERT ( vterm->changes[6].trans_count == 0 );
+
+  CPPUNIT_ASSERT ( vterm->changes[7].xmin == 12 );
+  CPPUNIT_ASSERT ( vterm->changes[7].xmax == 14 );
+  CPPUNIT_ASSERT ( vterm->changes[7].trans_count == 0 );
+
+  CPPUNIT_ASSERT ( vterm->changes[8].xmin == 0 );
+  CPPUNIT_ASSERT ( vterm->changes[8].xmax == 1 );
+  CPPUNIT_ASSERT ( vterm->changes[8].trans_count == 0 );
+
+  CPPUNIT_ASSERT ( vterm->changes[9].xmin == 13 );
+  CPPUNIT_ASSERT ( vterm->changes[9].xmax == 14 );
+  CPPUNIT_ASSERT ( vterm->changes[9].trans_count == 0 );
+
+  CPPUNIT_ASSERT ( vterm->changes[10].xmin == 0 );
+  CPPUNIT_ASSERT ( vterm->changes[10].xmax == 14 );
+  CPPUNIT_ASSERT ( vterm->changes[10].trans_count == 0 );
+
+  CPPUNIT_ASSERT ( vterm->changes[11].xmin == 5 );
+  CPPUNIT_ASSERT ( vterm->changes[11].xmax == 9 );
+  CPPUNIT_ASSERT ( vterm->changes[11].trans_count == 0 );
+
+  for (auto i{12}; i < vterm->height; i++)
+  {
+    CPPUNIT_ASSERT ( vterm->changes[i].xmin == 14 );
+    CPPUNIT_ASSERT ( vterm->changes[i].xmax == 13 );
+    CPPUNIT_ASSERT ( vterm->changes[i].trans_count == 0 );
+  }
 }
 
 //----------------------------------------------------------------------
