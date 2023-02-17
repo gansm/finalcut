@@ -1289,7 +1289,7 @@ inline void FVTerm::scrollTerminalForward() const
 {
   // Scrolls the terminal up one line
 
-  forceTerminalUpdate();  // Empty buffer before scrolling
+  foutput->flush();  // Empty buffer before scrolling
 
   if ( ! foutput->scrollTerminalForward() )
     return;
@@ -1305,6 +1305,8 @@ inline void FVTerm::scrollTerminalForward() const
   }
 
   putArea (FPoint{1, 1}, vdesktop.get());
+  saveCurrentVTerm();  // Ensure that the current terminal is comparable
+  forceTerminalUpdate();
 }
 
 //----------------------------------------------------------------------
@@ -1312,7 +1314,7 @@ inline void FVTerm::scrollTerminalReverse() const
 {
   // Scrolls the terminal down one line
 
-  forceTerminalUpdate();  // Empty buffer before scrolling
+  foutput->flush();  // Empty buffer before scrolling
 
   if ( ! foutput->scrollTerminalReverse() )
     return;
@@ -1328,6 +1330,8 @@ inline void FVTerm::scrollTerminalReverse() const
   }
 
   putArea (FPoint{1, 1}, vdesktop.get());
+  saveCurrentVTerm();  // Ensure that the current terminal is comparable
+  forceTerminalUpdate();
 }
 
 //----------------------------------------------------------------------
@@ -1653,6 +1657,7 @@ auto FVTerm::clearFullArea (FTermArea* area, FChar& nc) const -> bool
   {
     nc.attr.bit.printed = true;
     std::fill_n (vterm->data.begin(), area_size, nc);
+    saveCurrentVTerm();
   }
   else
   {

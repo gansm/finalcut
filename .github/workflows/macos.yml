@@ -28,6 +28,7 @@ jobs:
         brew update
         brew install automake
         brew install autoconf-archive
+        brew install pkg-config
 
     - name: Build
       run: |

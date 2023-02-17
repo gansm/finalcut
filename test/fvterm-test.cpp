@@ -86,6 +86,7 @@ class FTermOutputTest : public finalcut::FOutput
     auto setVGAFont() -> bool override;
     auto setNewFont() -> bool override;
     void setNonBlockingRead (bool = true) override;
+    static void setNoForce (bool = true);
 
     // Inquiries
     auto isCursorHideable() const -> bool override;
@@ -129,6 +130,7 @@ class FTermOutputTest : public finalcut::FOutput
 
     // Data member
     bool                                 bell{false};
+    static bool                          no_force;
     finalcut::FTerm                      fterm{};
     static finalcut::FVTerm::FTermArea*  vterm;
     static finalcut::FTermData*          fterm_data;
@@ -139,6 +141,7 @@ class FTermOutputTest : public finalcut::FOutput
 };
 
 // static class attributes
+bool                         FTermOutputTest::no_force{false};
 finalcut::FVTerm::FTermArea* FTermOutputTest::vterm{nullptr};
 finalcut::FTermData*         FTermOutputTest::fterm_data{nullptr};
 
@@ -300,6 +303,12 @@ inline void FTermOutputTest::setNonBlockingRead (bool enable)
 }
 
 //----------------------------------------------------------------------
+inline void FTermOutputTest::setNoForce (bool state)
+{
+  no_force = state;
+}
+
+//----------------------------------------------------------------------
 inline void FTermOutputTest::initTerminal (finalcut::FVTerm::FTermArea* virtual_terminal)
 {
   vterm         = virtual_terminal;
@@ -373,7 +382,8 @@ inline auto FTermOutputTest::clearTerminal (wchar_t) -> bool
 //----------------------------------------------------------------------
 inline void FTermOutputTest::flush()
 {
-  CPPUNIT_ASSERT ( finalcut::FVTerm::isTerminalUpdateForced() );
+  if ( ! no_force )
+    CPPUNIT_ASSERT ( finalcut::FVTerm::isTerminalUpdateForced() );
 }
 
 //----------------------------------------------------------------------
@@ -2289,7 +2299,9 @@ void FVTermTest::FVTermScrollTest()
   CPPUNIT_ASSERT ( test::isAreaEqual(test_vdesktop, vdesktop) );
   test::printArea (vdesktop);
 
+  FTermOutputTest::setNoForce(true);
   p_fvterm.p_scrollAreaForward (vdesktop);
+  FTermOutputTest::setNoForce(false);
   test::printOnArea (test_vdesktop, { { 4, { {80, space_char} } },
                                       { 1, { {80, one_char} } },
                                       { 5, { {80, space_char} } },
@@ -2300,8 +2312,10 @@ void FVTermTest::FVTermScrollTest()
   CPPUNIT_ASSERT ( test::isAreaEqual(test_vdesktop, vdesktop) );
   test::printArea (vdesktop);
 
+  FTermOutputTest::setNoForce(true);
   p_fvterm.p_scrollAreaForward (vdesktop);
   p_fvterm.p_scrollAreaForward (vdesktop);
+  FTermOutputTest::setNoForce(false);
   test::printOnArea (test_vdesktop, { { 2, { {80, space_char} } },
                                       { 1, { {80, one_char} } },
                                       { 5, { {80, space_char} } },
@@ -2312,7 +2326,9 @@ void FVTermTest::FVTermScrollTest()
   CPPUNIT_ASSERT ( test::isAreaEqual(test_vdesktop, vdesktop) );
   test::printArea (vdesktop);
 
+  FTermOutputTest::setNoForce(true);
   p_fvterm.p_scrollAreaReverse (vdesktop);
+  FTermOutputTest::setNoForce(false);
   test::printOnArea (test_vdesktop, { { 3, { {80, space_char} } },
                                       { 1, { {80, one_char} } },
                                       { 5, { {80, space_char} } },
@@ -2325,7 +2341,9 @@ void FVTermTest::FVTermScrollTest()
 
   for (auto i{0}; i < 6; i++)
   {
+    FTermOutputTest::setNoForce(true);
     p_fvterm.p_scrollAreaReverse (vdesktop);
+    FTermOutputTest::setNoForce(false);
   }
 
   test::printOnArea (test_vdesktop, { { 9, { {80, space_char} } },
