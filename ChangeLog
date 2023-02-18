@@ -1,5 +1,9 @@
 2023-02-17  Markus Gans  <guru.mail@muenster.de>
+<<<<<<< HEAD
 	* Fixes the conflict between reducing changes and hardware scrolling
+=======
+	* Fixes the conflict between reducing changes and scrolling hardware
+>>>>>>> 31182abb4ceafb4d83645bcfb7ae196ce6ed1e6a
 
 2023-02-14  Markus Gans  <guru.mail@muenster.de>
 	* Fixes the problem of insufficient space on resizing in FScrollView 
