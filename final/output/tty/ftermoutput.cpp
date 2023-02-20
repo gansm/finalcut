@@ -876,7 +876,7 @@ void FTermOutput::printFullWidthCharacter ( uInt& x, uInt y
   {
     // Print ellipses for the 1st full-width character column
     appendAttributes (print_char);
-    appendOutputBuffer (UniChar::HorizontalEllipsis);
+    appendOutputBuffer (UniChar::HorizontalEllipsis);  // …
     term_pos->x_ref()++;
     markAsPrinted (x, y);
 
@@ -885,7 +885,7 @@ void FTermOutput::printFullWidthCharacter ( uInt& x, uInt y
       // Print ellipses for the 2nd full-width character column
       x++;
       appendAttributes (next_char);
-      appendOutputBuffer (UniChar::HorizontalEllipsis);
+      appendOutputBuffer (UniChar::HorizontalEllipsis);  // …
       term_pos->x_ref()++;
       markAsPrinted (x, y);
     }
@@ -930,7 +930,7 @@ void FTermOutput::printFullWidthPaddingCharacter ( uInt& x, uInt y
   {
     // Print ellipses for the 1st full-width character column
     appendAttributes (print_char);
-    appendOutputBuffer (UniChar::HorizontalEllipsis);
+    appendOutputBuffer (UniChar::HorizontalEllipsis);  // …
     term_pos->x_ref()++;
     markAsPrinted (x, y);
   }
@@ -959,7 +959,7 @@ void FTermOutput::printHalfCovertFullWidthCharacter ( uInt& x, uInt y
       x--;
       term_pos->x_ref()--;
       appendAttributes (prev_char);
-      appendOutputBuffer (UniChar::HorizontalEllipsis);
+      appendOutputBuffer (UniChar::HorizontalEllipsis);  // …
       term_pos->x_ref()++;
       markAsPrinted (x, y);
       x++;

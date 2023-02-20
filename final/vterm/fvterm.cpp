@@ -1621,9 +1621,8 @@ inline void FVTerm::addTransparentAreaChar (const FChar& src_char, FChar& dst_ch
     // Get covered character + add the current color
     dst_char.fg_color = src_char.fg_color;
     dst_char.bg_color = src_char.bg_color;
-    std::memcpy ( &dst_char.attr.byte[0]
-                , &src_char.attr.byte[0]
-                , sizeof(src_char.attr.byte) );
+    dst_char.attr.byte[0] = src_char.attr.byte[0];
+    dst_char.attr.byte[1] = src_char.attr.byte[1];
     dst_char.attr.bit.color_overlay  = false;
     dst_char.attr.bit.reverse  = false;
     dst_char.attr.bit.standout = false;
