@@ -818,8 +818,7 @@ inline void FTermOutput::replaceNonPrintableFullwidth ( uInt x
     print_char.ch[1] = L'\0';
     print_char.attr.bit.fullwidth_padding = false;
   }
-  else if ( x == uInt(vterm->width - 1)
-         && isFullWidthChar(print_char) )
+  else if ( x == uInt(vterm->width - 1) && isFullWidthChar(print_char) )
   {
     print_char.ch[0] = wchar_t(UniChar::SingleRightAngleQuotationMark);  // ›
     print_char.ch[1] = L'\0';
@@ -1073,11 +1072,14 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y) -> PrintState
 
   if ( repetitions == 1 )
   {
-    appendCharacter (print_char);
-    markAsPrinted (x, y);
+    bool min_and_not_max( x != xmax );
+    printCharacter (x, y, min_and_not_max, print_char);
   }
   else
   {
+    // Every full-width character is always followed by a padding
+    // character, so that two or more consecutive full-width characters
+    // cannot repeat in their byte sequence
     const uInt start_pos = x;
 
     if ( repetitions > repeat_char_length

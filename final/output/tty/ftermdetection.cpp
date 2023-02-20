@@ -303,6 +303,10 @@ void FTermDetection::termtypeAnalysis()
   // kitty
   if ( termtype.left(11) == "xterm-kitty" )
     fterm_data.setTermType (FTermType::kitty);
+
+  // alacritty
+  if ( termtype.left(9) == "alacritty" )
+    fterm_data.setTermType (FTermType::xterm);
 }
 
 //----------------------------------------------------------------------
