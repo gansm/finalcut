@@ -482,9 +482,9 @@ class FVTerm_protected : public finalcut::FVTerm
     void p_putArea (const finalcut::FPoint&, const FTermArea*) const;
     static auto p_getLayer (FVTerm&) -> int;
     static void p_determineWindowLayers();
-    void p_scrollAreaForward (FTermArea*) const;
-    void p_scrollAreaReverse (FTermArea*) const;
-    void p_clearArea (FTermArea*, wchar_t = L' ') const;
+    void p_scrollAreaForward (FTermArea*);
+    void p_scrollAreaReverse (FTermArea*);
+    void p_clearArea (FTermArea*, wchar_t = L' ');
     void p_forceTerminalUpdate() const;
     auto p_processTerminalUpdate() const -> bool;
     static void p_startDrawing();
@@ -711,19 +711,19 @@ inline void FVTerm_protected::p_determineWindowLayers()
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm_protected::p_scrollAreaForward (FTermArea* area) const
+inline void FVTerm_protected::p_scrollAreaForward (FTermArea* area)
 {
   finalcut::FVTerm::scrollAreaForward (area);
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm_protected::p_scrollAreaReverse (FTermArea* area) const
+inline void FVTerm_protected::p_scrollAreaReverse (FTermArea* area)
 {
   finalcut::FVTerm::scrollAreaReverse (area);
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm_protected::p_clearArea (FTermArea* area, wchar_t fillchar) const
+inline void FVTerm_protected::p_clearArea (FTermArea* area, wchar_t fillchar)
 {
   finalcut::FVTerm::clearArea (area, fillchar);
 }
