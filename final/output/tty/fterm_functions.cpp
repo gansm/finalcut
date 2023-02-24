@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2020 Markus Gans                                      *
+* Copyright 2019-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -268,7 +268,7 @@ inline auto hasAmbiguousWidth (wchar_t wchar) -> bool
 }
 
 //----------------------------------------------------------------------
-auto hasFullWidthSupports() -> bool
+inline auto hasFullWidthSupportsImpl() -> bool
 {
   // Checks if the terminal has full-width character support
 
@@ -295,6 +295,12 @@ auto hasFullWidthSupports() -> bool
   }
 
   return has_fullwidth_support == FullWidthSupport::Yes;
+}
+
+//----------------------------------------------------------------------
+auto hasFullWidthSupports() -> bool
+{
+  return hasFullWidthSupportsImpl();
 }
 
 //----------------------------------------------------------------------
@@ -600,7 +606,7 @@ auto getColumnWidth (const wchar_t wchar) -> std::size_t
   {
     column_width = 1;
   }
-  else if ( ! hasFullWidthSupports() )
+  else if ( ! hasFullWidthSupportsImpl() )
   {
     column_width = std::min(column_width, 1);
   }

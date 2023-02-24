@@ -212,7 +212,7 @@ class FVTerm : public FVTermAttribute
     auto  print (const FVTermBuffer&) noexcept -> int;
     auto  print (FTermArea*, const FVTermBuffer&) const noexcept -> int;
     auto  print (wchar_t) noexcept -> int;
-    auto  print (FTermArea*, wchar_t) const noexcept -> int;
+    auto  print (FTermArea*, wchar_t) noexcept -> int;
     auto  print (const FChar&) noexcept -> int;
     auto  print (FTermArea*, const FChar&) const noexcept -> int;
     virtual void print (const FPoint&);
@@ -323,6 +323,7 @@ class FVTerm : public FVTermAttribute
     // Data members
     FTermArea*                   print_area{nullptr};        // Print area for this object
     FTermArea*                   child_print_area{nullptr};  // Print area for children
+    FChar                        nc{};                       // next character
     std::unique_ptr<FTermArea>   vwin{};                     // Virtual window
     std::shared_ptr<FOutput>     foutput{};                  // Terminal output class
     std::shared_ptr<FVTermList>  window_list{};              // List of all window owner

@@ -393,15 +393,20 @@ auto FVTerm::print (wchar_t c) noexcept -> int
 }
 
 //----------------------------------------------------------------------
-auto FVTerm::print (FTermArea* area, wchar_t c) const noexcept -> int
+auto FVTerm::print (FTermArea* area, wchar_t c) noexcept -> int
 {
   if ( ! area )
     return -1;
 
-  FChar nc{getAttribute()};  // next character
-  nc.ch[0] = c;
+  static auto& next_attribute = getAttribute();
+  nc.fg_color     = next_attribute.fg_color;
+  nc.bg_color     = next_attribute.bg_color;
+  nc.attr.byte[0] = next_attribute.attr.byte[0];
+  nc.attr.byte[1] = next_attribute.attr.byte[1];
   nc.attr.byte[2] = 0;
   nc.attr.byte[3] = 0;
+  nc.ch[0] = c;
+  nc.ch[1] = L'\0';
   return print (area, nc);
 }
 
@@ -1699,7 +1704,7 @@ void FVTerm::clearAreaWithShadow (FTermArea* area, const FChar& nc) const noexce
 }
 
 //----------------------------------------------------------------------
-auto FVTerm::printWrap (FTermArea* area) const -> bool
+inline auto FVTerm::printWrap (FTermArea* area) const -> bool
 {
   bool end_of_area{false};
   const int width  = area->width;

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2022 Markus Gans                                      *
+* Copyright 2017-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -74,6 +74,7 @@ auto FVTermBuffer::toString() const -> FString
 auto FVTermBuffer::print (const FString& string) -> int
 {
   checkCapacity(data, data.size() + string.getLength());
+  getNextCharacterAttribute();
   const auto last = string.cend();
   auto cbegin = string.cbegin();
   auto iter = cbegin;
@@ -113,12 +114,11 @@ auto FVTermBuffer::print (const FString& string) -> int
 //----------------------------------------------------------------------
 auto FVTermBuffer::print (wchar_t ch) -> int
 {
-  FChar nc{FVTermAttribute::getAttribute()};  // next character
+  getNextCharacterAttribute();
   nc.ch[0] = ch;
+  nc.ch[1] = L'\0';
   const auto column_width = getColumnWidth(nc.ch[0]);
   addColumnWidth(nc, column_width);  // add column width
-  nc.attr.bit.no_changes = false;
-  nc.attr.bit.printed = false;
   data.emplace_back(nc);
   return 1;
 }
@@ -139,6 +139,18 @@ void FVTermBuffer::print (const FColorPair& pair) const
 
 // private methods of FVTermBuffer
 //----------------------------------------------------------------------
+inline void FVTermBuffer::getNextCharacterAttribute()
+{
+  static auto& next_attribute = FVTermAttribute::getAttribute();
+  nc.fg_color     = next_attribute.fg_color;
+  nc.bg_color     = next_attribute.bg_color;
+  nc.attr.byte[0] = next_attribute.attr.byte[0];
+  nc.attr.byte[1] = next_attribute.attr.byte[1];
+  nc.attr.byte[2] = 0;
+  nc.attr.byte[3] = 0;
+}
+
+//----------------------------------------------------------------------
 void FVTermBuffer::add ( FString::const_iterator& cbegin
                        , const FString::const_iterator& cend
                        , int& char_width )
@@ -148,20 +160,25 @@ void FVTermBuffer::add ( FString::const_iterator& cbegin
   if ( cbegin == cend )
     return;
 
-  FChar nc{FVTermAttribute::getAttribute()};  // next character
-  nc.attr.byte[2] = 0;
-  nc.attr.byte[3] = 0;
-
   if ( char_width == 2
     && fterm_data.getTerminalEncoding() != Encoding::UTF8 )
   {
-    nc.ch[0] = '.';
+    nc.ch[0] = L'.';
+    nc.ch[1] = L'\0';
     nc.attr.bit.char_width = 1;
   }
   else
-    nc.attr.bit.char_width = uInt8(char_width) & 0x03;
+  {
+    const auto end = std::min(cend, cbegin + UNICODE_MAX);
+    std::copy(cbegin, end, nc.ch.begin());
+    const auto idx = std::size_t(end - cbegin);
 
-  std::copy(cbegin, std::min(cend, cbegin + UNICODE_MAX), nc.ch.begin());
+    if ( idx < UNICODE_MAX )
+      nc.ch[idx] = L'\0';
+
+    nc.attr.bit.char_width = uInt8(char_width) & 0x03;
+  }
+
   data.emplace_back(nc);
   cbegin = cend;
   char_width = 0;  // reset char width

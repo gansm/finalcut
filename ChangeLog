@@ -1,8 +1,12 @@
+2023-02-24  Markus Gans  <guru.mail@muenster.de>
+	* Small speed-up of the print function
+
 2023-02-20  Markus Gans  <guru.mail@muenster.de>
 	* Fixes display problems with half-covered full-width characters 
 	  with color overlay
 	* Fixes display inconsistencies that occur when a full-width 
-	  character is used in combination with the repeat (REP) function
+	  character is used in combination with the terminal repeat (REP) 
+	  function
 
 2023-02-17  Markus Gans  <guru.mail@muenster.de>
 	* Fixes the conflict between reducing changes and hardware scrolling

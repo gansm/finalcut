@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2022 Markus Gans                                      *
+* Copyright 2012-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -358,7 +358,6 @@ void FScrollbar::onMouseMove (FMouseEvent* ev)
     {
       setValue(new_val);
       drawBar();
-      forceTerminalUpdate();
       processScroll();
     }
   }
@@ -742,7 +741,6 @@ void FScrollbar::jumpToClickPos (int x, int y)
   {
     setValue(new_val);
     drawBar();
-    forceTerminalUpdate();
     scroll_type = ScrollType::Jump;
     processScroll();
   }
