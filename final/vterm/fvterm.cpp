@@ -398,7 +398,7 @@ auto FVTerm::print (FTermArea* area, wchar_t c) noexcept -> int
   if ( ! area )
     return -1;
 
-  static auto& next_attribute = getAttribute();
+  static const auto& next_attribute = getAttribute();
   nc.fg_color     = next_attribute.fg_color;
   nc.bg_color     = next_attribute.bg_color;
   nc.attr.byte[0] = next_attribute.attr.byte[0];
@@ -866,7 +866,7 @@ void FVTerm::determineWindowLayers() noexcept
 }
 
 //----------------------------------------------------------------------
-void FVTerm::scrollAreaForward (FTermArea* area) const
+void FVTerm::scrollAreaForward (FTermArea* area)
 {
   // Scrolls the entire area on line up
 
@@ -887,10 +887,12 @@ void FVTerm::scrollAreaForward (FTermArea* area) const
   }
 
   // insert a new line below
-  FChar nc{};  // next character
   const auto& lc = area->getFChar(x_max, area->height - 2);  // last character
-  nc = lc;
+  nc.fg_color = lc.fg_color;
+  nc.bg_color = lc.bg_color;
+  nc.attr  = lc.attr;
   nc.ch[0] = L' ';
+  nc.ch[1] = L'\0';
   auto& dc = area->getFChar(0, y_max);  // destination character
   std::fill_n (&dc, area->width, nc);
   auto& new_line_changes = area->changes[unsigned(y_max)];
@@ -903,7 +905,7 @@ void FVTerm::scrollAreaForward (FTermArea* area) const
 }
 
 //----------------------------------------------------------------------
-void FVTerm::scrollAreaReverse (FTermArea* area) const
+void FVTerm::scrollAreaReverse (FTermArea* area)
 {
   // Scrolls the entire area one line down
 
@@ -924,10 +926,12 @@ void FVTerm::scrollAreaReverse (FTermArea* area) const
   }
 
   // insert a new line above
-  FChar nc{};  // next character
   const auto& lc = area->getFChar(0, 1);  // last character
-  nc = lc;
+  nc.fg_color = lc.fg_color;
+  nc.bg_color = lc.bg_color;
+  nc.attr  = lc.attr;
   nc.ch[0] = L' ';
+  nc.ch[1] = L'\0';
   auto& dc = area->getFChar(0, 0);  // destination character
   std::fill_n (&dc, area->width, nc);
   auto& new_line_changes = area->changes[unsigned(y_max)];
@@ -940,12 +944,16 @@ void FVTerm::scrollAreaReverse (FTermArea* area) const
 }
 
 //----------------------------------------------------------------------
-void FVTerm::clearArea (FTermArea* area, wchar_t fillchar) const noexcept
+void FVTerm::clearArea (FTermArea* area, wchar_t fillchar) noexcept
 {
   // Clear the area with the current attributes
 
-  FChar nc{getAttribute()};  // next character
+  static const auto& next_attribute = getAttribute();
+  nc.fg_color = next_attribute.fg_color;
+  nc.bg_color = next_attribute.bg_color;
+  nc.attr = next_attribute.attr;
   nc.ch[0] = fillchar;  // Current attributes with the fill character
+  nc.ch[1] = L'\0';
   nc.attr.bit.char_width = getColumnWidth(nc.ch[0]) & 0x03;
 
   if ( ! area || area->data.empty() )
@@ -1647,20 +1655,20 @@ inline void FVTerm::addTransparentAreaChar (const FChar& src_char, FChar& dst_ch
 }
 
 //----------------------------------------------------------------------
-auto FVTerm::clearFullArea (FTermArea* area, FChar& nc) const -> bool
+auto FVTerm::clearFullArea (FTermArea* area, FChar& fillchar) const -> bool
 {
   // Clear area
   const int area_size = area->width * area->height;
-  std::fill_n (area->data.begin(), area_size, nc);
+  std::fill_n (area->data.begin(), area_size, fillchar);
 
   if ( area != vdesktop.get() )  // Is the area identical to the desktop?
     return false;
 
   // Try to clear the terminal rapidly with a control sequence
-  if ( foutput->clearTerminal (nc.ch[0]) )
+  if ( foutput->clearTerminal (fillchar.ch[0]) )
   {
-    nc.attr.bit.printed = true;
-    std::fill_n (vterm->data.begin(), area_size, nc);
+    fillchar.attr.bit.printed = true;
+    std::fill_n (vterm->data.begin(), area_size, fillchar);
     saveCurrentVTerm();
   }
   else
@@ -1680,9 +1688,9 @@ auto FVTerm::clearFullArea (FTermArea* area, FChar& nc) const -> bool
 }
 
 //----------------------------------------------------------------------
-void FVTerm::clearAreaWithShadow (FTermArea* area, const FChar& nc) const noexcept
+void FVTerm::clearAreaWithShadow (FTermArea* area, const FChar& fillchar) const noexcept
 {
-  FChar t_char = nc;
+  FChar t_char = fillchar;
   t_char.ch[0] = L'\0';
   t_char.attr.bit.transparent = true;
   t_char.attr.bit.char_width = 0;
@@ -1691,7 +1699,7 @@ void FVTerm::clearAreaWithShadow (FTermArea* area, const FChar& nc) const noexce
   for (auto y{0}; y < area->height; y++)
   {
     // Clear area
-    std::fill_n (&area->getFChar(0, y), total_width, nc);
+    std::fill_n (&area->getFChar(0, y), total_width, fillchar);
     // Make right shadow transparent
     std::fill_n (&area->getFChar(area->width, y), area->right_shadow, t_char);
   }

@@ -255,9 +255,9 @@ class FVTerm : public FVTermAttribute
     void  copyArea (FTermArea*, const FPoint&, const FTermArea* const)  const noexcept;
     static auto  getLayer (FVTerm&) noexcept -> int;
     static void  determineWindowLayers() noexcept;
-    void  scrollAreaForward (FTermArea*) const;
-    void  scrollAreaReverse (FTermArea*) const;
-    void  clearArea (FTermArea*, wchar_t = L' ') const noexcept;
+    void  scrollAreaForward (FTermArea*);
+    void  scrollAreaReverse (FTermArea*);
+    void  clearArea (FTermArea*, wchar_t = L' ') noexcept;
     void  forceTerminalUpdate() const;
     auto  processTerminalUpdate() const -> bool;
     static void  startDrawing() noexcept;
