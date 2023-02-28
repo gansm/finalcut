@@ -21,7 +21,7 @@
 ***********************************************************************/
 
 #if defined(__CYGWIN__)
-  #include "final/fconfig.h"  // includes _GNU_SOURCE for strsignal
+  #include "final/fconfig.h"  // includes _GNU_SOURCE for strsignal()
 #endif
 
 #include <algorithm>

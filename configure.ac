@@ -39,7 +39,7 @@ AC_CHECK_HEADERS( \
                  list \
 		 map \
 		 queue \
-		 vector)
+		 vector )
 
 # Checks for library functions.
 AC_CHECK_FUNCS( \
@@ -49,7 +49,8 @@ AC_CHECK_FUNCS( \
 		select \
 		strdup \
 		strstr \
-		vsnprintf )
+		vsnprintf \
+		wcwidth )
 
 
 # Checks for 'tgetent'

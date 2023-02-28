@@ -1,3 +1,6 @@
+2023-02-28  Markus Gans  <guru.mail@muenster.de>
+	* Fix missing deletion of no_changes and printed attributes on transparency
+
 2023-02-24  Markus Gans  <guru.mail@muenster.de>
 	* Small speed-up of the print function
 

@@ -1625,17 +1625,16 @@ inline void FVTerm::addTransparentAreaLine ( const FChar& src_char
 inline void FVTerm::addTransparentAreaChar (const FChar& src_char, FChar& dst_char) const
 {
   if ( src_char.attr.bit.transparent )  // Transparent
-  {
-    // Leave character on vterm untouched
-    dst_char.attr.bit.printed = false;
-  }
-  else if ( src_char.attr.bit.color_overlay )  // Transparent shadow
+    return;  // Leave character on vterm untouched
+
+  if ( src_char.attr.bit.color_overlay )  // Color overlay
   {
     // Get covered character + add the current color
     dst_char.fg_color = src_char.fg_color;
     dst_char.bg_color = src_char.bg_color;
     dst_char.attr.byte[0] = src_char.attr.byte[0];
     dst_char.attr.byte[1] = src_char.attr.byte[1];
+    dst_char.attr.byte[2] &= ~0x03; // Clearing "no_changes" and "printed"
     dst_char.attr.bit.color_overlay  = false;
     dst_char.attr.bit.reverse  = false;
     dst_char.attr.bit.standout = false;
@@ -1649,6 +1648,7 @@ inline void FVTerm::addTransparentAreaChar (const FChar& src_char, FChar& dst_ch
     auto bg_color = dst_char.bg_color;
     dst_char = src_char;
     dst_char.bg_color = bg_color;
+    dst_char.attr.byte[2] &= ~0x03; // Clearing "no_changes" and "printed"
   }
   else  // Default
     dst_char = src_char;

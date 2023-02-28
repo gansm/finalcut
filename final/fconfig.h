@@ -166,6 +166,11 @@
 #define F_HAVE_VSNPRINTF 1
 #endif
 
+/* Define to 1 if you have the `wcwidth' function. */
+#ifndef F_HAVE_WCWIDTH
+#define F_HAVE_WCWIDTH 1
+#endif
+
 /* Define to the sub-directory where libtool stores uninstalled libraries. */
 #ifndef F_LT_OBJDIR
 #define F_LT_OBJDIR ".libs/"
