@@ -1,3 +1,6 @@
+2023-03-13  Markus Gans  <guru.mail@muenster.de>
+	* Speed up the drawing of shadows and boxes
+
 2023-02-28  Markus Gans  <guru.mail@muenster.de>
 	* Fix missing deletion of no_changes and printed attributes on transparency
 

@@ -86,7 +86,7 @@ void XpmPicture::draw()
   setColor (wc->label_inactive_fg, wc->dialog_bg);
   clearArea();
   print() << FPoint{1, 1};
-  const auto& term_buffer = xmp_image.getTermBuffer();
+  auto& term_buffer = xmp_image.getTermBuffer();
   print(term_buffer);
 
   if ( finalcut::FVTerm::getFOutput()->isMonochron() )

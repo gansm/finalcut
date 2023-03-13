@@ -63,6 +63,7 @@
 #include "final/util/fsize.h"
 #include "final/util/fstringstream.h"
 #include "final/vterm/fvtermattribute.h"
+#include "final/vterm/fvtermbuffer.h"
 
 #define F_PREPROC_HANDLER(i,h) \
     reinterpret_cast<FVTerm*>((i)), \
@@ -163,7 +164,7 @@ class FVTerm : public FVTermAttribute
     auto operator << (const std::string&) noexcept -> FVTerm&;
     auto operator << (const std::wstring&) noexcept -> FVTerm&;
     auto operator << (const FString&) noexcept -> FVTerm&;
-    auto operator << (const FVTermBuffer&) noexcept -> FVTerm&;
+    auto operator << (FVTermBuffer&) noexcept -> FVTerm&;
     auto operator << (const FChar&) noexcept -> FVTerm&;
     auto operator << (const FCharVector&) noexcept -> FVTerm&;
     auto operator << (const FPoint&) noexcept -> FVTerm&;
@@ -206,11 +207,11 @@ class FVTerm : public FVTermAttribute
     template <typename... Args>
     auto  printf (const FString&, Args&&...) noexcept -> int;
     auto  print (const FString&) noexcept -> int;
-    auto  print (FTermArea*, const FString&) const noexcept -> int;
+    auto  print (FTermArea*, const FString&) noexcept -> int;
     auto  print (const std::vector<FChar>&) noexcept -> int;
-    auto  print (FTermArea*, const std::vector<FChar>&) const noexcept -> int;
-    auto  print (const FVTermBuffer&) noexcept -> int;
-    auto  print (FTermArea*, const FVTermBuffer&) const noexcept -> int;
+    auto  print (FTermArea*, const std::vector<FChar>&) noexcept -> int;
+    auto  print (FVTermBuffer&) noexcept -> int;
+    auto  print (FTermArea*, FVTermBuffer&) noexcept -> int;
     auto  print (wchar_t) noexcept -> int;
     auto  print (FTermArea*, wchar_t) noexcept -> int;
     auto  print (const FChar&) noexcept -> int;
@@ -323,6 +324,7 @@ class FVTerm : public FVTermAttribute
     // Data members
     FTermArea*                   print_area{nullptr};        // Print area for this object
     FTermArea*                   child_print_area{nullptr};  // Print area for children
+    FVTermBuffer                 vterm_buffer{};             // Print buffer
     FChar                        nc{};                       // next character
     std::unique_ptr<FTermArea>   vwin{};                     // Virtual window
     std::shared_ptr<FOutput>     foutput{};                  // Terminal output class
@@ -737,7 +739,7 @@ inline auto FVTerm::hasPendingTerminalUpdates() noexcept -> bool
 
 //----------------------------------------------------------------------
 template <typename... Args>
-inline auto FVTerm::printf (const FString& format, Args&&... args) noexcept -> int
+auto FVTerm::printf (const FString& format, Args&&... args) noexcept -> int
 {
   FString str{};
   str.sprintf (format, std::forward<Args>(args)...);

@@ -110,6 +110,8 @@ class FVTermBuffer
     auto front() const -> const_reference;
     auto back() const -> const_reference;
     auto toString() const -> FString;
+    template <typename Iterator>
+    void assign (Iterator, Iterator);
     void clear();
     template <typename... Args>
     auto printf (const FString&, Args&&...) -> int;
@@ -141,11 +143,9 @@ constexpr void checkCapacity (T&, std::size_t) noexcept;
 // FVTermBuffer inline functions
 //----------------------------------------------------------------------
 template <typename Iterator>
-inline FVTermBuffer::FVTermBuffer(Iterator first, Iterator last)
+inline FVTermBuffer::FVTermBuffer (Iterator first, Iterator last)
 {
-  assert ( first < last );
-  checkCapacity (data, std::size_t(last - first));
-  data.assign(first, last);
+  assign(first, last);
 }
 
 //----------------------------------------------------------------------
@@ -304,10 +304,18 @@ inline auto FVTermBuffer::back() const -> const_reference
 { return data.back(); }
 
 //----------------------------------------------------------------------
+template <typename Iterator>
+inline void FVTermBuffer::assign (Iterator first, Iterator last)
+{
+  assert ( first < last );
+  checkCapacity (data, std::size_t(last - first));
+  data.assign(first, last);
+}
+
+//----------------------------------------------------------------------
 inline void FVTermBuffer::clear()
 {
   data.clear();
-  data.shrink_to_fit();
 }
 
 //----------------------------------------------------------------------

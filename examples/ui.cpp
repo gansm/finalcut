@@ -585,13 +585,11 @@ void MyDialog::initFlatButtons()
   MyButton1.setStatusbarMessage ("Sine function");
   MyButton1.setNoUnderline();
   MyButton1.setFlat();
-  MyButton1.setDoubleFlatLine (finalcut::Side::Bottom);
 
   MyButton2.setText (L"&COS");
   MyButton2.setStatusbarMessage ("Cosine function");
   MyButton2.setNoUnderline();
   MyButton2.setFlat();
-  MyButton2.setDoubleFlatLine (finalcut::Side::Top);
 
   MyButton3.setText (L"&=");
   MyButton3.setStatusbarMessage ("Equal");
@@ -729,7 +727,9 @@ void MyDialog::initWidgetsCallbacks()
 void MyDialog::initLayout()
 {
   MyButton1.setGeometry(FPoint{3, 3}, FSize{5, 1});
+  MyButton1.setDoubleFlatLine (finalcut::Side::Bottom);
   MyButton2.setGeometry(FPoint{3, 5}, FSize{5, 1});
+  MyButton2.setDoubleFlatLine (finalcut::Side::Top);
   MyButton3.setGeometry(FPoint{10, 3}, FSize{5, 3});
   MyButton4.setGeometry(FPoint{20, 8}, FSize{12, 1});
   MyButton5.setGeometry(FPoint{20, 11}, FSize{12, 1});

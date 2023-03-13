@@ -302,6 +302,7 @@ void FDialog::setSize (const FSize& size, bool adjust)
     return;
   }
 
+  setTerminalUpdates (FVTerm::TerminalUpdate::Stop);
   const int x = getTermX();
   const int y = getTermY();
   const int dw = int(getWidth()) - int(size.getWidth());
@@ -321,8 +322,6 @@ void FDialog::setSize (const FSize& size, bool adjust)
   // dh > 0 : scale down height
   // dh = 0 : scale only width
   // dh < 0 : scale up height
-
-  setTerminalUpdates (FVTerm::TerminalUpdate::Stop);
 
   if ( adjust )    // Adjust the size after restoreVTerm(),
     adjustSize();  // because adjustSize() can also change x and y
@@ -990,29 +989,13 @@ void FDialog::drawBorder()
   else
     setColor();
 
-  if ( FVTerm::getFOutput()->isNewFont() )  // Draw a newfont U-shaped frame
-  {
-    const FRect r{{1, 1}, getSize()};
+  FRect box{{1, 2}, getSize()};
+  box.scaleBy(0, -1);
 
-    for (auto y = r.getY1() + 1; y < r.getY2(); y++)
-    {
-      print() << FPoint{r.getX1(), y}
-              << UniChar::NF_border_line_left        // border left ⎸
-              << FPoint{r.getX2(), y}
-              << UniChar::NF_rev_border_line_right;  // border right⎹
-    }
-
-    print() << r.getLowerLeftPos()
-            << UniChar::NF_border_corner_lower_left        // ⎣
-            << FString{r.getWidth() - 2, UniChar::NF_border_line_bottom}  // _
-            << UniChar::NF_rev_border_corner_lower_right;  // ⎦
-  }
+  if ( FVTerm::getFOutput()->isNewFont() )
+    finalcut::drawNewFontUShapedBox(this, box);  // Draw a newfont U-shaped frame
   else
-  {
-    FRect box{{1, 2}, getSize()};
-    box.scaleBy(0, -1);
     finalcut::drawBorder(this, box);
-  }
 }
 
 //----------------------------------------------------------------------
@@ -1706,7 +1689,7 @@ void FDialog::resizeMouseDown (const MouseStates& ms)
       setSize (size, true);
     }
     else
-      drawBorder();
+      redraw();  // with border color change
   }
   else
     resize_click_pos.setPoint (0, 0);

@@ -51,7 +51,7 @@ class XpmImage
     XpmImage() = default;
 
     // Accessors
-    auto getTermBuffer() const -> const finalcut::FVTermBuffer&;
+    auto getTermBuffer() -> finalcut::FVTermBuffer&;
     auto getSize() const -> finalcut::FSize;
     auto getColorCount() const -> std::size_t;
 
@@ -857,7 +857,7 @@ class XpmImage
 };
 
 //----------------------------------------------------------------------
-auto XpmImage::getTermBuffer() const -> const finalcut::FVTermBuffer&
+auto XpmImage::getTermBuffer() -> finalcut::FVTermBuffer&
 {
   return vterm_buf;
 }

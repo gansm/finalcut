@@ -2013,7 +2013,8 @@ void FListView::drawBufferedHeadline()
   if ( left_trunc )
     print (UniChar::SingleLeftAngleQuotationMark);  // ‹
 
-  print() << FVTermBuffer(first, last);
+  auto buffer = FVTermBuffer(first, last);
+  print() << buffer;
 
   if ( right_trunc )
     print (UniChar::SingleRightAngleQuotationMark);  // ›

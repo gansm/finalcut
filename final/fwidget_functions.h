@@ -67,6 +67,7 @@ void drawShadow (FWidget*);
 void drawTransparentShadow (FWidget*);
 void drawBlockShadow (FWidget*);
 void clearBlockShadow (FWidget*);
+void drawGenericBlockShadow (FWidget*, const std::array<FChar, 4>&);
 void drawFlatBorder (FWidget*);
 void clearFlatBorder (FWidget*);
 void checkBorder (const FWidget*, FRect&);
@@ -74,7 +75,9 @@ void drawBorder (FWidget*, const FRect&);
 void drawListBorder (FWidget*, const FRect&);
 void drawBox (FWidget*, const FRect&);
 void drawNewFontBox (FWidget*, const FRect&);
+void drawNewFontUShapedBox (FWidget*, const FRect&);
 void drawNewFontListBox (FWidget*, const FRect&);
+void drawGenericBox (FWidget*, const FRect&, const std::array<wchar_t, 8>&);
 void updateStatusbar (const FWidget* w, bool = true);
 void drawStatusBarMessage();
 

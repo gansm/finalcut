@@ -34,7 +34,6 @@
 #include "final/util/fsystem.h"
 #include "final/vterm/fcolorpair.h"
 #include "final/vterm/fstyle.h"
-#include "final/vterm/fvtermbuffer.h"
 #include "final/vterm/fvterm.h"
 
 namespace finalcut
@@ -83,9 +82,9 @@ FVTerm::~FVTerm()  // destructor
 }
 
 //----------------------------------------------------------------------
-auto FVTerm::operator << (const FVTermBuffer& vterm_buffer) noexcept -> FVTerm&
+auto FVTerm::operator << (FVTermBuffer& buffer) noexcept -> FVTerm&
 {
-  print (vterm_buffer);
+  print (buffer);
   return *this;
 }
 
@@ -320,18 +319,16 @@ auto FVTerm::print (const FString& string) noexcept -> int
   if ( string.isEmpty() )
     return 0;
 
-  FVTermBuffer vterm_buffer{};
   vterm_buffer.print(string);
   return print (vterm_buffer);
 }
 
 //----------------------------------------------------------------------
-auto FVTerm::print (FTermArea* area, const FString& string) const noexcept -> int
+auto FVTerm::print (FTermArea* area, const FString& string) noexcept -> int
 {
   if ( ! area || string.isEmpty() )
     return -1;
 
-  FVTermBuffer vterm_buffer{};
   vterm_buffer.print(string);
   return print (area, vterm_buffer);
 }
@@ -342,39 +339,39 @@ auto FVTerm::print (const std::vector<FChar>& term_string) noexcept -> int
   if ( term_string.empty() )
     return -1;
 
-  FVTermBuffer vterm_buffer{term_string.cbegin(), term_string.cend()};
+  vterm_buffer.assign(term_string.cbegin(), term_string.cend());
   return print (vterm_buffer);
 }
 
 //----------------------------------------------------------------------
-auto FVTerm::print (FTermArea* area, const std::vector<FChar>& term_string) const noexcept -> int
+auto FVTerm::print (FTermArea* area, const std::vector<FChar>& term_string) noexcept -> int
 {
   if ( ! area || term_string.empty() )
     return -1;
 
-  FVTermBuffer vterm_buffer{term_string.cbegin(), term_string.cend()};
+  vterm_buffer.assign(term_string.cbegin(), term_string.cend());
   return print (area, vterm_buffer);
 }
 
 //----------------------------------------------------------------------
-auto FVTerm::print (const FVTermBuffer& vterm_buffer) noexcept -> int
+auto FVTerm::print (FVTermBuffer& buffer) noexcept -> int
 {
-  if ( vterm_buffer.isEmpty() )
+  if ( buffer.isEmpty() )
     return -1;
 
   auto area = getPrintArea();
-  return area ? print (area, vterm_buffer) : -1;
+  return area ? print (area, buffer) : -1;
 }
 
 //----------------------------------------------------------------------
-auto FVTerm::print (FTermArea* area, const FVTermBuffer& vterm_buffer) const noexcept -> int
+auto FVTerm::print (FTermArea* area, FVTermBuffer& buffer)  noexcept -> int
 {
   int len{0};
 
-  if ( ! area || vterm_buffer.isEmpty() )
+  if ( ! area || buffer.isEmpty() )
     return -1;
 
-  for (auto&& fchar : vterm_buffer)
+  for (auto&& fchar : buffer)
   {
     if ( print(area, fchar) == -1 )  // Print next character
       break;  // No area or end of area reached
@@ -382,6 +379,7 @@ auto FVTerm::print (FTermArea* area, const FVTermBuffer& vterm_buffer) const noe
     len++;
   }
 
+  buffer.clear();
   return len;
 }
 
@@ -398,11 +396,11 @@ auto FVTerm::print (FTermArea* area, wchar_t c) noexcept -> int
   if ( ! area )
     return -1;
 
-  static const auto& next_attribute = getAttribute();
-  nc.fg_color     = next_attribute.fg_color;
-  nc.bg_color     = next_attribute.bg_color;
-  nc.attr.byte[0] = next_attribute.attr.byte[0];
-  nc.attr.byte[1] = next_attribute.attr.byte[1];
+  static const auto& next_attr = getAttribute();
+  nc.fg_color     = next_attr.fg_color;
+  nc.bg_color     = next_attr.bg_color;
+  nc.attr.byte[0] = next_attr.attr.byte[0];
+  nc.attr.byte[1] = next_attr.attr.byte[1];
   nc.attr.byte[2] = 0;
   nc.attr.byte[3] = 0;
   nc.ch[0] = c;
@@ -948,10 +946,10 @@ void FVTerm::clearArea (FTermArea* area, wchar_t fillchar) noexcept
 {
   // Clear the area with the current attributes
 
-  static const auto& next_attribute = getAttribute();
-  nc.fg_color = next_attribute.fg_color;
-  nc.bg_color = next_attribute.bg_color;
-  nc.attr = next_attribute.attr;
+  static const auto& next_attr = getAttribute();
+  nc.fg_color = next_attr.fg_color;
+  nc.bg_color = next_attr.bg_color;
+  nc.attr = next_attr.attr;
   nc.ch[0] = fillchar;  // Current attributes with the fill character
   nc.ch[1] = L'\0';
   nc.attr.bit.char_width = getColumnWidth(nc.ch[0]) & 0x03;
@@ -1098,21 +1096,17 @@ void FVTerm::resetAreaEncoding() const
 inline void FVTerm::resetTextAreaToDefault ( FTermArea* area
                                            , const FSize& size ) const noexcept
 {
-  FChar default_char;
-  FLineChanges unchanged{};
-
-  default_char.ch[0]        = L' ';
-  default_char.fg_color     = FColor::Default;
-  default_char.bg_color     = FColor::Default;
-  memset (&default_char.attr.byte, 0, sizeof(default_char.attr.byte));
-  default_char.attr.bit.char_width = 1;
-
+  FChar default_char
+  {
+    { { L' ',  L'\0', L'\0', L'\0', L'\0' } },
+    { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
+    FColor::Default,
+    FColor::Default,
+    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3 (byte 2 = 0x08 = char_width 1)
+  };
   std::fill_n (area->data.begin(), size.getArea(), default_char);
 
-  unchanged.xmin = uInt(size.getWidth());
-  unchanged.xmax = 0;
-  unchanged.trans_count = 0;
-
+  FLineChanges unchanged { uInt(size.getWidth()), 0, 0 };
   std::fill_n (area->changes.begin(), size.getHeight(), unchanged);
 }
 
@@ -1125,7 +1119,6 @@ inline auto FVTerm::resizeTextArea ( FTermArea* area
   // and resize the text area to "size" elements
 
   area->changes.resize(height);
-  area->changes.shrink_to_fit();
   resizeTextArea (area, size);
   return true;
 }
@@ -1136,7 +1129,6 @@ inline auto FVTerm::resizeTextArea (FTermArea* area, std::size_t size) const -> 
   // Resize text area to "size" FChar elements
 
   area->data.resize(size);
-  area->data.shrink_to_fit();
   return true;
 }
 
@@ -1691,15 +1683,15 @@ auto FVTerm::clearFullArea (FTermArea* area, FChar& fillchar) const -> bool
 void FVTerm::clearAreaWithShadow (FTermArea* area, const FChar& fillchar) const noexcept
 {
   FChar t_char = fillchar;
-  t_char.ch[0] = L'\0';
+  t_char.ch[0] = L' ';
   t_char.attr.bit.transparent = true;
-  t_char.attr.bit.char_width = 0;
+  t_char.attr.bit.char_width = 1;
   const int total_width = getFullAreaWidth(area);
 
   for (auto y{0}; y < area->height; y++)
   {
     // Clear area
-    std::fill_n (&area->getFChar(0, y), total_width, fillchar);
+    std::fill_n (&area->getFChar(0, y), area->width, fillchar);
     // Make right shadow transparent
     std::fill_n (&area->getFChar(area->width, y), area->right_shadow, t_char);
   }
@@ -1707,7 +1699,7 @@ void FVTerm::clearAreaWithShadow (FTermArea* area, const FChar& fillchar) const 
   // Make bottom shadow transparent
   for (auto y{0}; y < area->bottom_shadow; y++)
   {
-    std::fill_n (&area->getFChar(0, y + area->height), total_width, t_char);
+    std::fill_n (&area->getFChar(0, area->height + y), total_width, t_char);
   }
 }
 
@@ -1765,7 +1757,7 @@ inline auto FVTerm::changedFromTransparency (const FChar& from, const FChar& to)
 
 //----------------------------------------------------------------------
 inline auto FVTerm::printCharacterOnCoordinate ( FTermArea* area
-                                               , const FChar& ch) const noexcept -> std::size_t
+                                               , const FChar& ch ) const noexcept -> std::size_t
 {
   const int ax = area->cursor_x - 1;
   const int ay = area->cursor_y - 1;
