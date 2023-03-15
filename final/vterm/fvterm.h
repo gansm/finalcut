@@ -211,7 +211,7 @@ class FVTerm : public FVTermAttribute
     auto  print (const std::vector<FChar>&) noexcept -> int;
     auto  print (FTermArea*, const std::vector<FChar>&) noexcept -> int;
     auto  print (FVTermBuffer&) noexcept -> int;
-    auto  print (FTermArea*, FVTermBuffer&) noexcept -> int;
+    auto  print (FTermArea*, FVTermBuffer&) const noexcept -> int;
     auto  print (wchar_t) noexcept -> int;
     auto  print (FTermArea*, wchar_t) noexcept -> int;
     auto  print (const FChar&) noexcept -> int;
@@ -319,6 +319,7 @@ class FVTerm : public FVTermAttribute
                                      , const FChar&) const noexcept -> std::size_t;
     void  printPaddingCharacter (FTermArea*, const FChar&) const;
     auto  isInsideTerminal (const FPoint&) const noexcept -> bool;
+    auto  canUpdateTerminalNow() const -> bool;
     static auto hasPendingUpdates (const FTermArea*) noexcept -> bool;
 
     // Data members

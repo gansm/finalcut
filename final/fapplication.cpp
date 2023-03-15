@@ -1285,11 +1285,10 @@ auto FApplication::processParameters (const Args& args) -> FWidget*
 //----------------------------------------------------------------------
 void FApplication::processResizeEvent()
 {
-  auto foutput_ptr = FVTerm::getFOutput();
-
   if ( ! has_terminal_resized )  // A SIGWINCH signal was received
     return;
 
+  auto foutput_ptr = FVTerm::getFOutput();
   foutput_ptr->detectTerminalSize();  // Detect and save the current terminal size
   static auto& mouse = FMouseControl::getInstance();
   mouse.setMaxWidth (uInt16(getDesktopWidth()));
@@ -1300,6 +1299,13 @@ void FApplication::processResizeEvent()
 
   if ( r_ev.isAccepted() )
     foutput_ptr->commitTerminalResize();
+}
+
+//----------------------------------------------------------------------
+void FApplication::processDialogResizeMove()
+{
+  for (auto&& dialog : *FWidget::getDialogList())
+    dialog->flushChanges();
 }
 
 //----------------------------------------------------------------------
@@ -1347,6 +1353,7 @@ auto FApplication::processNextEvent() -> bool
     processResizeEvent();
     processCloseWidget();
     sendQueuedEvents();
+    processDialogResizeMove();
     processTerminalUpdate();  // after terminal changes
     flush();
     processLogger();

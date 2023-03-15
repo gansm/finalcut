@@ -221,6 +221,7 @@ void FDialog::setPos (const FPoint& pos, bool)
   if ( isOutsideTerminal(pos) || isZoomed() || getPos() == pos )
   {
     setPos_error = true;
+    new_pos.setPoint (getPos());
     return;
   }
 
@@ -230,6 +231,7 @@ void FDialog::setPos (const FPoint& pos, bool)
 
   // Move to the new position
   FWindow::setPos (pos, false);
+  new_pos.setPoint (getPos());
 
   // Copy dialog to virtual terminal
   putArea (getTermPos(), getVWin());
@@ -296,9 +298,10 @@ void FDialog::setSize (const FSize& size, bool adjust)
 {
   setSize_error = false;
 
-  if ( getSize() == size || isZoomed() )
+  if ( getSize() == size || size.isEmpty() || isZoomed() )
   {
     setSize_error = true;
+    new_size.setSize (getSize());
     return;
   }
 
@@ -311,6 +314,7 @@ void FDialog::setSize (const FSize& size, bool adjust)
   const std::size_t old_width = getWidth() + shadow.getWidth();
   const std::size_t old_height = getHeight() + shadow.getHeight();
   FWindow::setSize (size, false);
+  new_size.setSize (getSize());
 
   // get adjust width and height with shadow
   const std::size_t width = getWidth() + shadow.getWidth();
@@ -399,6 +403,16 @@ auto FDialog::minimizeWindow() -> bool
   bool ret_val = FWindow::minimizeWindow();
   setMinimizeItem();
   return ret_val;
+}
+
+//----------------------------------------------------------------------
+void FDialog::flushChanges()
+{
+  if ( getSize() != new_size )
+    setSize (new_size);
+
+  if ( getPos() != new_pos )
+    setPos(new_pos);
 }
 
 //----------------------------------------------------------------------
@@ -544,7 +558,7 @@ void FDialog::onMouseMove (FMouseEvent* ev)
   if ( ! titlebar_click_pos.isOrigin() )
   {
     const FPoint deltaPos{ms.termPos - titlebar_click_pos};
-    move (deltaPos);
+    new_pos.setPoint (new_pos + deltaPos);
     titlebar_click_pos = ms.termPos;
     ev->setPos(ev->getPos() - deltaPos);
   }
@@ -1545,7 +1559,10 @@ inline void FDialog::handleLeftMouseDown (const MouseStates& ms)
   raiseActivateDialog();
 
   if ( isMouseOverTitlebar(ms) )
+  {
     titlebar_click_pos.setPoint (ms.termPos);
+    new_pos.setPoint (getPos());
+  }
   else
     titlebar_click_pos.setPoint (0, 0);
 
@@ -1734,7 +1751,8 @@ void FDialog::resizeMouseUpMove (const MouseStates& ms, bool mouse_up)
 
     const FSize size ( ( w >= 0) ? std::size_t(w) : 0
                      , ( h >= 0) ? std::size_t(h) : 0 );
-    setSize (size);
+    new_size.setSize (size);
+    resize_click_pos = ms.termPos;
   }
 
   if ( mouse_up )

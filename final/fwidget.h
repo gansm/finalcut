@@ -285,6 +285,7 @@ class FWidget : public FVTerm
     virtual void addAccelerator (FKey, FWidget*) &;
     void  delAccelerator () &;
     virtual void delAccelerator (FWidget*) &;
+    virtual void flushChanges();
     virtual void redraw();
     virtual void resize();
     virtual void show();
@@ -512,8 +513,6 @@ class FWidget : public FVTerm
     friend void  detectTerminalSize();
     friend void  drawShadow (FWidget*);
     friend void  drawTransparentShadow (FWidget*);
-    //friend void  drawBlockShadow (FWidget*);
-    friend void  clearBlockShadow (FWidget*);
     friend void  drawGenericBox (FWidget*, const FRect&, const std::array<wchar_t, 8>&);
     friend void  drawGenericBlockShadow (FWidget*, const std::array<FChar, 4>&);
     friend void  drawFlatBorder (FWidget*);

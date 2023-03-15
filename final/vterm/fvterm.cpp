@@ -24,6 +24,7 @@
 #include <string>
 #include <vector>
 
+#include "final/fapplication.h"
 #include "final/fc.h"
 #include "final/ftypes.h"
 #include "final/output/tty/ftermoutput.h"
@@ -195,7 +196,11 @@ void FVTerm::putVTerm() const
 //----------------------------------------------------------------------
 auto FVTerm::updateTerminal() const -> bool
 {
-  auto terminal_updated = foutput->updateTerminal();
+  // Update terminal screen when modified
+
+  auto terminal_updated = canUpdateTerminalNow()
+                        ? foutput->updateTerminal()
+                        : false;
 
   if ( terminal_updated )
     saveCurrentVTerm();
@@ -364,14 +369,14 @@ auto FVTerm::print (FVTermBuffer& buffer) noexcept -> int
 }
 
 //----------------------------------------------------------------------
-auto FVTerm::print (FTermArea* area, FVTermBuffer& buffer)  noexcept -> int
+auto FVTerm::print (FTermArea* area, FVTermBuffer& buffer) const noexcept -> int
 {
   int len{0};
 
   if ( ! area || buffer.isEmpty() )
     return -1;
 
-  for (auto&& fchar : buffer)
+  for (const auto& fchar : buffer)
   {
     if ( print(area, fchar) == -1 )  // Print next character
       break;  // No area or end of area reached
@@ -1683,9 +1688,9 @@ auto FVTerm::clearFullArea (FTermArea* area, FChar& fillchar) const -> bool
 void FVTerm::clearAreaWithShadow (FTermArea* area, const FChar& fillchar) const noexcept
 {
   FChar t_char = fillchar;
-  t_char.ch[0] = L' ';
+  t_char.ch[0] = L'\0';
   t_char.attr.bit.transparent = true;
-  t_char.attr.bit.char_width = 1;
+  t_char.attr.bit.char_width = 0;
   const int total_width = getFullAreaWidth(area);
 
   for (auto y{0}; y < area->height; y++)
@@ -1839,6 +1844,19 @@ auto FVTerm::isInsideTerminal (const FPoint& pos) const noexcept -> bool
   const auto y = pos.getY();
   return x >= 0 && x < int(foutput->getColumnNumber())
       && y >= 0 && y < int(foutput->getLineNumber());
+}
+
+//----------------------------------------------------------------------
+auto FVTerm::canUpdateTerminalNow() const -> bool
+{
+  // Check if terminal updates were stopped, application is stopping,
+  // VTerm has no changes, or the drawing is not completed
+
+  return  ! FVTerm::areTerminalUpdatesPaused()
+       && ! FApplication::isQuit()
+       && ( foutput->isFlushTimeout() || FVTerm::isTerminalUpdateForced() )
+       && FVTerm::hasPendingTerminalUpdates()
+       && FVTerm::isDrawingFinished();
 }
 
 //----------------------------------------------------------------------

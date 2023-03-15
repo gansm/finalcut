@@ -21,8 +21,8 @@
 ***********************************************************************/
 
 #include <unistd.h>
+#include <unordered_map>
 
-#include "final/fapplication.h"
 #include "final/fobject.h"
 #include "final/fstartoptions.h"
 #include "final/input/fkeyboard.h"
@@ -131,6 +131,12 @@ auto FTermOutput::isNewFont() const -> bool
 auto FTermOutput::isEncodable (const wchar_t& wide_char) const -> bool
 {
   return FTerm::isEncodable(wide_char);
+}
+
+//----------------------------------------------------------------------
+auto FTermOutput::isFlushTimeout() const -> bool
+{
+  return FObjectTimer::isTimeout (time_last_flush, flush_wait);
 }
 
 //----------------------------------------------------------------------
@@ -321,15 +327,6 @@ void FTermOutput::finishTerminal()
 auto FTermOutput::updateTerminal() -> bool
 {
   // Updates pending changes to the terminal
-
-  // Check if terminal updates were stopped, application is stopping,
-  // VTerm has no changes, or the drawing is not completed
-  if ( FVTerm::areTerminalUpdatesPaused() || FApplication::isQuit()
-    || ! (isFlushTimeout() || FVTerm::isTerminalUpdateForced())
-    || ! (FVTerm::hasPendingTerminalUpdates() && FVTerm::isDrawingFinished()) )
-  {
-    return false;
-  }
 
   std::size_t changedlines = 0;
 
@@ -1270,12 +1267,6 @@ inline void FTermOutput::flushTimeAdjustment()
 
     flush_wait = flush_median;
   }
-}
-
-//----------------------------------------------------------------------
-inline auto FTermOutput::isFlushTimeout() const -> bool
-{
-  return FObjectTimer::isTimeout (time_last_flush, flush_wait);
 }
 
 //----------------------------------------------------------------------

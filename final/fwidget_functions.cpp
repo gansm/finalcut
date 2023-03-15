@@ -349,7 +349,7 @@ void drawTransparentShadow (FWidget* w)
   const auto shadow_width = uInt(area->right_shadow);
   const auto shadow_height = uInt(area->bottom_shadow);
   const auto& wc = FWidget::getColorTheme();
- 
+
   const FChar transparent_char
   {
     { { L'\0',  L'\0', L'\0', L'\0', L'\0' } },
@@ -472,7 +472,7 @@ void clearBlockShadow (FWidget* w)
 {
   if ( ! w || ! FVTerm::getFOutput()->hasShadowCharacter() )
     return;
-    
+
   const auto& wc = FWidget::getColorTheme();
 
   FChar spacer_char

@@ -1,3 +1,7 @@
+2023-03-16  Markus Gans  <guru.mail@muenster.de>
+	* Size and position changes in FDialog are now made immediately before 
+	  terminal output to speed up mouse-based changes
+
 2023-03-13  Markus Gans  <guru.mail@muenster.de>
 	* Speed up the drawing of shadows and boxes
 

@@ -798,6 +798,13 @@ void FWidget::delAccelerator (FWidget* obj) &
 }
 
 //----------------------------------------------------------------------
+void FWidget::flushChanges()
+{
+  // This method can be reimplemented in a subclass
+  // to handle pending changes
+}
+
+//----------------------------------------------------------------------
 void FWidget::redraw()
 {
   // Redraw the widget immediately unless it is hidden.

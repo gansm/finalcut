@@ -93,6 +93,7 @@ class FTermOutputTest : public finalcut::FOutput
     auto isMonochron() const -> bool override;
     auto isNewFont() const -> bool override;
     auto isEncodable (const wchar_t&) const -> bool override;
+    auto isFlushTimeout() const -> bool override;
     auto hasTerminalResized() const -> bool override;
     auto allowsTerminalSizeManipulation() const -> bool override;
     auto canChangeColorPalette() const -> bool override;
@@ -221,6 +222,12 @@ inline auto FTermOutputTest::isNewFont() const -> bool
 
 //----------------------------------------------------------------------
 inline auto FTermOutputTest::isEncodable (const wchar_t&) const -> bool
+{
+  return true;
+}
+
+//----------------------------------------------------------------------
+inline auto FTermOutputTest::isFlushTimeout() const -> bool
 {
   return true;
 }
@@ -2741,6 +2748,9 @@ void FVTermTest::FVTermReduceUpdatesTest()
     CPPUNIT_ASSERT ( vterm->changes[i].trans_count == 0 );
   }
 
+  finalcut::FApplication::start();
+  finalcut::FApplication fapp(0, nullptr);
+  p_fvterm.p_finishDrawing();
   p_fvterm.updateTerminal();
 
   // Simulate printing

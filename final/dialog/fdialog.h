@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2022 Markus Gans                                      *
+* Copyright 2012-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -138,6 +138,7 @@ class FDialog : public FWindow
     auto expandWidth (int) -> bool;
     auto zoomWindow() -> bool override;
     auto minimizeWindow() -> bool override;
+    void flushChanges() override;
     void activateDialog();
 
     // Event handlers
@@ -259,6 +260,8 @@ class FDialog : public FWindow
     bool        setSize_error{false};
     FPoint      titlebar_click_pos{};
     FPoint      resize_click_pos{};
+    FPoint      new_pos{};
+    FSize       new_size{};
     FRect       save_geometry{};  // required by keyboard move/size
     FMenu*      dialog_menu{nullptr};
     FMenuItem*  dgl_menuitem{nullptr};

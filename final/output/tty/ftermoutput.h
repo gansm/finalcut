@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021-2022 Markus Gans                                      *
+* Copyright 2021-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -97,6 +97,7 @@ class FTermOutput final : public FOutput
     auto isMonochron() const -> bool override;
     auto isNewFont() const -> bool override;
     auto isEncodable (const wchar_t&) const -> bool override;
+    auto isFlushTimeout() const -> bool;
     auto hasTerminalResized() const -> bool override;
     auto allowsTerminalSizeManipulation() const -> bool override;
     auto canChangeColorPalette() const -> bool override;
@@ -194,7 +195,6 @@ class FTermOutput final : public FOutput
     auto updateTerminalLine (uInt) -> bool;
     auto updateTerminalCursor() -> bool;
     void flushTimeAdjustment();
-    auto isFlushTimeout() const -> bool;
     void markAsPrinted (uInt, uInt) const;
     void markAsPrinted (uInt, uInt, uInt) const;
     void newFontChanges (FChar&) const;
