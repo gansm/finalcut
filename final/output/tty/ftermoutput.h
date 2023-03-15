@@ -97,7 +97,7 @@ class FTermOutput final : public FOutput
     auto isMonochron() const -> bool override;
     auto isNewFont() const -> bool override;
     auto isEncodable (const wchar_t&) const -> bool override;
-    auto isFlushTimeout() const -> bool;
+    auto isFlushTimeout() const -> bool override;
     auto hasTerminalResized() const -> bool override;
     auto allowsTerminalSizeManipulation() const -> bool override;
     auto canChangeColorPalette() const -> bool override;
