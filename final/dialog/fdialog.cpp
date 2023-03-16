@@ -706,6 +706,14 @@ void FDialog::onWindowLowered (FEvent*)
 
 // protected methods of FDialog
 //----------------------------------------------------------------------
+void FDialog::adjustSize()
+{
+  FWindow::adjustSize();
+  new_pos.setPoint (getPos());
+  new_size.setSize (getSize());
+}
+
+//----------------------------------------------------------------------
 void FDialog::done (ResultCode result)
 {
   hide();

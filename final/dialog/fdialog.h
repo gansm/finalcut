@@ -155,6 +155,7 @@ class FDialog : public FWindow
 
   protected:
     // Methods
+    void adjustSize() override;
     void done (ResultCode);
     void draw() override;
     void drawDialogShadow();

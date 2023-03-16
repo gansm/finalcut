@@ -1302,7 +1302,7 @@ void FApplication::processResizeEvent()
 }
 
 //----------------------------------------------------------------------
-void FApplication::processDialogResizeMove()
+void FApplication::processDialogResizeMove() const
 {
   for (auto&& dialog : *FWidget::getDialogList())
     dialog->flushChanges();

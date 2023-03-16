@@ -235,7 +235,7 @@ class FApplication : public FWidget
     static auto  processParameters (const Args&) -> FWidget*;
     void         processResizeEvent();
     void         processCloseWidget();
-    void         processDialogResizeMove();
+    void         processDialogResizeMove() const;
     void         processLogger() const;
     auto         processNextEvent() -> bool;
     void         performTimerAction (FObject*, FEvent*) override;

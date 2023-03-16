@@ -897,7 +897,7 @@ void FVTerm::scrollAreaForward (FTermArea* area)
   nc.ch[0] = L' ';
   nc.ch[1] = L'\0';
   auto& dc = area->getFChar(0, y_max);  // destination character
-  std::fill_n (&dc, area->width, nc);
+  std::fill (&dc, &dc + area->width, nc);
   auto& new_line_changes = area->changes[unsigned(y_max)];
   new_line_changes.xmin = 0;
   new_line_changes.xmax = uInt(x_max);
@@ -936,7 +936,7 @@ void FVTerm::scrollAreaReverse (FTermArea* area)
   nc.ch[0] = L' ';
   nc.ch[1] = L'\0';
   auto& dc = area->getFChar(0, 0);  // destination character
-  std::fill_n (&dc, area->width, nc);
+  std::fill (&dc, &dc + area->width, nc);
   auto& new_line_changes = area->changes[unsigned(y_max)];
   new_line_changes.xmin = 0;
   new_line_changes.xmax = uInt(x_max);
@@ -1109,10 +1109,10 @@ inline void FVTerm::resetTextAreaToDefault ( FTermArea* area
     FColor::Default,
     { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3 (byte 2 = 0x08 = char_width 1)
   };
-  std::fill_n (area->data.begin(), size.getArea(), default_char);
+  std::fill (area->data.begin(), area->data.end(), default_char);
 
   FLineChanges unchanged { uInt(size.getWidth()), 0, 0 };
-  std::fill_n (area->changes.begin(), size.getHeight(), unchanged);
+  std::fill (area->changes.begin(), area->changes.end(), unchanged);
 }
 
 //----------------------------------------------------------------------
@@ -1655,8 +1655,7 @@ inline void FVTerm::addTransparentAreaChar (const FChar& src_char, FChar& dst_ch
 auto FVTerm::clearFullArea (FTermArea* area, FChar& fillchar) const -> bool
 {
   // Clear area
-  const int area_size = area->width * area->height;
-  std::fill_n (area->data.begin(), area_size, fillchar);
+  std::fill (area->data.begin(), area->data.end(), fillchar);
 
   if ( area != vdesktop.get() )  // Is the area identical to the desktop?
     return false;
@@ -1665,7 +1664,7 @@ auto FVTerm::clearFullArea (FTermArea* area, FChar& fillchar) const -> bool
   if ( foutput->clearTerminal (fillchar.ch[0]) )
   {
     fillchar.attr.bit.printed = true;
-    std::fill_n (vterm->data.begin(), area_size, fillchar);
+    std::fill (vterm->data.begin(), vterm->data.end(), fillchar);
     saveCurrentVTerm();
   }
   else
@@ -1696,15 +1695,18 @@ void FVTerm::clearAreaWithShadow (FTermArea* area, const FChar& fillchar) const 
   for (auto y{0}; y < area->height; y++)
   {
     // Clear area
-    std::fill_n (&area->getFChar(0, y), area->width, fillchar);
+    const auto area_pos = &area->getFChar(0, y);
+    std::fill (area_pos, area_pos + area->width, fillchar);
     // Make right shadow transparent
-    std::fill_n (&area->getFChar(area->width, y), area->right_shadow, t_char);
+    const auto shadow_begin = &area->getFChar(area->width, y);
+    std::fill (shadow_begin, shadow_begin + area->right_shadow, t_char);
   }
 
   // Make bottom shadow transparent
   for (auto y{0}; y < area->bottom_shadow; y++)
   {
-    std::fill_n (&area->getFChar(0, area->height + y), total_width, t_char);
+    const auto area_pos = &area->getFChar(0, area->height + y);
+    std::fill (area_pos, area_pos + total_width, t_char);
   }
 }
 

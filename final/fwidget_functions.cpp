@@ -21,6 +21,7 @@
 ***********************************************************************/
 
 #include <algorithm>
+#include <array>
 
 #include "final/dialog/fdialog.h"
 #include "final/fapplication.h"
@@ -336,18 +337,14 @@ void drawTransparentShadow (FWidget* w)
 {
   // transparent shadow
 
-  if ( ! w )
+  if ( ! w || ! w->getPrintArea() )
     return;
 
-  auto area = w->getPrintArea();
-
-  if ( ! area )
-    return;
-
-  const auto width = uInt(area->width);
-  const auto height = uInt(area->height);
-  const auto shadow_width = uInt(area->right_shadow);
-  const auto shadow_height = uInt(area->bottom_shadow);
+  auto& area = *w->getPrintArea();
+  const auto width = uInt(area.width);
+  const auto height = uInt(area.height);
+  const auto shadow_width = uInt(area.right_shadow);
+  const auto shadow_height = uInt(area.bottom_shadow);
   const auto& wc = FWidget::getColorTheme();
 
   const FChar transparent_char
@@ -368,12 +365,12 @@ void drawTransparentShadow (FWidget* w)
     { { 0x00, 0x40, 0x00, 0x00} }  // byte 0..3 (byte 1 = 0x64 = color_overlay)
   };
 
-  auto* area_pos = &area->getFChar(int(width), 0);
-  auto& area_changes = area->changes;
+  auto* area_pos = &area.getFChar(int(width), 0);
+  auto& area_changes = area.changes;
 
-  if ( shadow_width )
+  if ( shadow_width > 0 )  // Draw right shadow
   {
-    std::fill_n (area_pos, shadow_width, transparent_char);
+    std::fill (area_pos, area_pos + shadow_width, transparent_char);
     area_changes[0].xmin = std::min(area_changes[0].xmin, width);
     area_changes[0].xmax = width + shadow_width - 1;
     area_changes[0].trans_count += shadow_width;
@@ -384,24 +381,24 @@ void drawTransparentShadow (FWidget* w)
       area_changes[y].xmin = std::min(area_changes[y].xmin, width);
       area_changes[y].xmax = width + shadow_width - 1;
       area_changes[y].trans_count += shadow_width;
-      std::fill_n (area_pos, shadow_width, color_overlay_char);
+      std::fill (area_pos, area_pos + shadow_width, color_overlay_char);
     }
 
     area_pos += shadow_width;
   }
 
-  for (std::size_t y{1}; y <= shadow_height; y++)
+  for (std::size_t y{1}; y <= shadow_height; y++)  // Draw bottom shadow
   {
     area_changes[y].xmin = 0;
     area_changes[y].xmax = width + shadow_width - 1;
     area_changes[y].trans_count += width + shadow_width;
-    std::fill_n (area_pos, shadow_width, transparent_char);
+    std::fill (area_pos, area_pos + shadow_width, transparent_char);
     area_pos += shadow_width;
-    std::fill_n (area_pos, width, color_overlay_char);
+    std::fill (area_pos, area_pos + width, color_overlay_char);
     area_pos += width;
   }
 
-  area->has_changes = true;
+  area.has_changes = true;
 
   if ( FVTerm::getFOutput()->isMonochron() )
     w->setReverse(false);
@@ -501,43 +498,44 @@ void clearBlockShadow (FWidget* w)
 void drawGenericBlockShadow ( FWidget* w
                             , const std::array<FChar, 4>& shadow_char )
 {
-  auto area = w->getPrintArea();
-
-  if ( ! area )
+  if ( ! w
+    || ! w->getPrintArea()
+    || ! FVTerm::getFOutput()->hasShadowCharacter() )
     return;
-
+  
+  auto& area = *w->getPrintArea();
   const bool is_window = w->isWindowWidget();
-  const auto width = is_window ? uInt(area->width) : uInt(w->getWidth());
-  const auto height = is_window ? uInt(area->height) : uInt(w->getHeight());
-  const auto shadow_width = uInt(area->right_shadow);
-  const auto shadow_height = uInt(area->bottom_shadow);
-  const auto x_offset = w->woffset.getX1() + w->getX() - area->offset_left - 1;
-  const auto y_offset = w->woffset.getY1() + w->getY() - area->offset_top - 1;
+  const auto width = is_window ? uInt(area.width) : uInt(w->getWidth());
+  const auto height = is_window ? uInt(area.height) : uInt(w->getHeight());
+  const auto shadow_width = uInt(area.right_shadow);
+  const auto shadow_height = uInt(area.bottom_shadow);
+  const auto x_offset = w->woffset.getX1() + w->getX() - area.offset_left - 1;
+  const auto y_offset = w->woffset.getY1() + w->getY() - area.offset_top - 1;
 
   if ( is_window && (shadow_width < 1 || shadow_height < 1) )
     return;
 
   auto y = uInt(y_offset);
-  auto& area_changes = area->changes;
-  auto* area_pos = &area->getFChar(x_offset + int(width), y_offset);
+  auto& area_changes = area.changes;
+  auto* area_pos = &area.getFChar(x_offset + int(width), y_offset);
   *area_pos = shadow_char[0];  // ▄
   area_changes[y].xmin = std::min(area_changes[y].xmin, x_offset + width);
   area_changes[y].xmax = std::max(area_changes[y].xmax, x_offset + width);
-  area_changes[y].trans_count += 1;
+  area_changes[y].trans_count++;
 
   for (y = y_offset + 1; y < y_offset + height; y++)
   {
-    area_pos = &area->getFChar(x_offset + int(width), y);
+    area_pos = &area.getFChar(x_offset + int(width), y);
     *area_pos = shadow_char[1];  // █
     area_changes[y].xmin = std::min(area_changes[y].xmin, x_offset + width);
     area_changes[y].xmax = std::max(area_changes[y].xmax, x_offset + width);
-    area_changes[y].trans_count += 1;
+    area_changes[y].trans_count++;
   }
 
-  area_pos = &area->getFChar(x_offset, y_offset + int(height));
+  area_pos = &area.getFChar(x_offset, y_offset + int(height));
   *area_pos = shadow_char[2];  // ' '
   ++area_pos;
-  std::fill_n (area_pos, width, shadow_char[3]);  // ▀
+  std::fill (area_pos, area_pos + width, shadow_char[3]);  // ▀
   area_changes[y].xmin = std::min(area_changes[y].xmin, uInt(x_offset));
   area_changes[y].xmax = std::max(area_changes[y].xmax, x_offset + width);
   area_changes[y].trans_count += width + 1;
@@ -788,14 +786,10 @@ inline void drawNewFontListBox (FWidget* w, const FRect& r)
 void drawGenericBox ( FWidget* w, const FRect& r
                     , const std::array<wchar_t, 8>& box_char )
 {
-  if ( ! w || r.getWidth() < 3 )
+  if ( ! w || ! w->getPrintArea() || r.getWidth() < 3 )
     return;
 
-  auto area = w->getPrintArea();
-
-  if ( ! area )
-    return;
-
+  auto& area = *w->getPrintArea();
   auto fchar = FVTermAttribute::getAttribute();
   fchar.attr.bit.char_width = 1;
   fchar.ch[0] = box_char[0];
@@ -803,15 +797,15 @@ void drawGenericBox ( FWidget* w, const FRect& r
   const auto is_transparent = (fchar.attr.byte[1] & b1_print_trans_mask) != 0;
   auto box = r;
   box.move (-1, -1);
-  const auto x_offset = w->woffset.getX1() + w->getX() - area->offset_left - 1;
-  const auto y_offset = w->woffset.getY1() + w->getY() - area->offset_top - 1;
-  auto& area_changes = area->changes;
-  auto* area_pos = &area->getFChar(x_offset + box.getX1(), y_offset + box.getY1());
+  const auto x_offset = w->woffset.getX1() + w->getX() - area.offset_left - 1;
+  const auto y_offset = w->woffset.getY1() + w->getY() - area.offset_top - 1;
+  auto& area_changes = area.changes;
+  auto* area_pos = &area.getFChar(x_offset + box.getX1(), y_offset + box.getY1());
   *area_pos = fchar;
   ++area_pos;
   fchar.ch[0] = box_char[1];
   const auto line_length = box.getWidth() - 2;
-  std::fill_n (area_pos, line_length, fchar);
+  std::fill (area_pos, area_pos + line_length, fchar);
   area_pos += line_length;
   fchar.ch[0] = box_char[2];
   *area_pos = fchar;
@@ -822,7 +816,7 @@ void drawGenericBox ( FWidget* w, const FRect& r
 
   for (y = y_offset + uInt(box.getY1()) + 1; y < y_offset + uInt(box.getY2()); y++)
   {
-    area_pos = &area->getFChar(x_offset + box.getX1(), y);
+    area_pos = &area.getFChar(x_offset + box.getX1(), y);
     fchar.ch[0] = box_char[3];
     *area_pos = fchar;
     area_pos += box.getWidth() - 1;
@@ -833,12 +827,12 @@ void drawGenericBox ( FWidget* w, const FRect& r
     area_changes[y].trans_count += uInt(is_transparent) * box.getWidth();
   }
 
-  area_pos = &area->getFChar(x_offset + box.getX1(), y);
+  area_pos = &area.getFChar(x_offset + box.getX1(), y);
   fchar.ch[0] = box_char[5];
   *area_pos = fchar;
   ++area_pos;
   fchar.ch[0] = box_char[6];
-  std::fill_n (area_pos, line_length, fchar);
+  std::fill (area_pos, area_pos + line_length, fchar);
   area_pos += line_length;
   fchar.ch[0] = box_char[7];
   *area_pos = fchar;
@@ -846,7 +840,7 @@ void drawGenericBox ( FWidget* w, const FRect& r
   area_changes[y].xmin = std::min(area_changes[y].xmin, uInt(x_offset + box.getX1()));
   area_changes[y].xmax = std::max(area_changes[y].xmax, uInt(x_offset + box.getX2()));
   area_changes[y].trans_count += uInt(is_transparent) * box.getWidth();
-  area->has_changes = true;
+  area.has_changes = true;
 }
 
 //----------------------------------------------------------------------

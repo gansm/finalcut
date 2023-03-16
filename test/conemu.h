@@ -495,7 +495,7 @@ inline void ConEmu::closeConEmuStdStreams()
 inline auto ConEmu::forkConEmu() -> pid_t
 {
   // Initialize buffer with '\0'
-  std::fill_n (buffer, sizeof(buffer), '\0');
+  std::fill (buffer, buffer + sizeof(buffer), '\0');
 
   if ( ! openMasterPTY() )
     return -1;
