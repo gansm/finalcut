@@ -388,19 +388,7 @@ auto FVTerm::print (const FVTermBuffer& buffer) noexcept -> int
 //----------------------------------------------------------------------
 auto FVTerm::print (FTermArea* area, FVTermBuffer& buffer) const noexcept -> int
 {
-  int len{0};
-
-  if ( ! area || buffer.isEmpty() )
-    return -1;
-
-  for (const auto& fchar : buffer)
-  {
-    if ( print(area, fchar) == -1 )  // Print next character
-      break;  // No area or end of area reached
-
-    len++;
-  }
-
+  auto len = print (area, static_cast<const FVTermBuffer&>(buffer));
   buffer.clear();  // Clear FVTermBuffer after printing
   return len;
 }
