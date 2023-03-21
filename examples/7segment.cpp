@@ -189,10 +189,6 @@ void SegmentView::get7Segment (const wchar_t c)
 void SegmentView::draw()
 {
   std::vector<finalcut::FVTermBuffer> vtbuffer(3);
-  finalcut::FVTermBuffer left_space1{};
-  finalcut::FVTermBuffer left_space2{};
-  finalcut::FVTermBuffer left_space3{};
-
   FDialog::draw();
   setColor(FColor::LightGray, FColor::Black);
   finalcut::drawBorder(this, FRect(FPoint{3, 6}, FPoint{40, 11}));
@@ -207,17 +203,13 @@ void SegmentView::draw()
   }
 
   const std::size_t length = vtbuffer[0].getLength();
-
-  if ( length < 36 )
-  {
-    left_space1 << finalcut::FString(36 - length, ' ');
-    left_space2 << finalcut::FString(36 - length, ' ');
-    left_space3 << finalcut::FString(36 - length, ' ');
-  }
-
-  print() << FPoint {4, 7} << left_space1 << vtbuffer[0]
-          << FPoint {4, 8} << left_space2 << vtbuffer[1]
-          << FPoint {4, 9} << left_space3 << vtbuffer[2]
+  const finalcut::FVTermBuffer left_space = \
+      length < 36
+      ? finalcut::FVTermBuffer() << finalcut::FString(36 - length, ' ')
+      : finalcut::FVTermBuffer();
+  print() << FPoint {4, 7} << left_space << vtbuffer[0]
+          << FPoint {4, 8} << left_space << vtbuffer[1]
+          << FPoint {4, 9} << left_space << vtbuffer[2]
           << FPoint {4, 10} << finalcut::FString{36, ' '};
 }
 

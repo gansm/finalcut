@@ -89,6 +89,13 @@ auto FVTerm::operator << (FVTermBuffer& buffer) noexcept -> FVTerm&
   return *this;
 }
 
+//----------------------------------------------------------------------
+auto FVTerm::operator << (const FVTermBuffer& buffer) noexcept -> FVTerm&
+{
+  print (buffer);
+  return *this;
+}
+
 
 // public methods of FVTerm
 //----------------------------------------------------------------------
@@ -369,6 +376,16 @@ auto FVTerm::print (FVTermBuffer& buffer) noexcept -> int
 }
 
 //----------------------------------------------------------------------
+auto FVTerm::print (const FVTermBuffer& buffer) noexcept -> int
+{
+  if ( buffer.isEmpty() )
+    return -1;
+
+  auto area = getPrintArea();
+  return area ? print (area, buffer) : -1;
+}
+
+//----------------------------------------------------------------------
 auto FVTerm::print (FTermArea* area, FVTermBuffer& buffer) const noexcept -> int
 {
   int len{0};
@@ -384,7 +401,26 @@ auto FVTerm::print (FTermArea* area, FVTermBuffer& buffer) const noexcept -> int
     len++;
   }
 
-  buffer.clear();
+  buffer.clear();  // Clear FVTermBuffer after printing
+  return len;
+}
+
+//----------------------------------------------------------------------
+auto FVTerm::print (FTermArea* area, const FVTermBuffer& buffer) const noexcept -> int
+{
+  int len{0};
+
+  if ( ! area || buffer.isEmpty() )
+    return -1;
+
+  for (const auto& fchar : buffer)
+  {
+    if ( print(area, fchar) == -1 )  // Print next character
+      break;  // No area or end of area reached
+
+    len++;
+  }
+
   return len;
 }
 

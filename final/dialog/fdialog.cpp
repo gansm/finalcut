@@ -240,7 +240,7 @@ void FDialog::setPos (const FPoint& pos, bool)
   recoverBackgroundAfterMove (delta_pos, old_geometry);
 
   FWindow::adjustSize();
-  setCursorToFocusWidget();
+  //setCursorToFocusWidget();
 }
 
 //----------------------------------------------------------------------

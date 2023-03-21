@@ -171,12 +171,11 @@ void FVTermBuffer::add ( FString::const_iterator& cbegin
   {
     const auto end = std::min(cend, cbegin + UNICODE_MAX);
     std::copy(cbegin, end, nc.ch.begin());
+    nc.attr.bit.char_width = uInt8(char_width) & 0x03;
     const auto idx = std::size_t(end - cbegin);
 
     if ( idx < UNICODE_MAX )
       nc.ch[idx] = L'\0';
-
-    nc.attr.bit.char_width = uInt8(char_width) & 0x03;
   }
 
   data.emplace_back(nc);

@@ -165,6 +165,7 @@ class FVTerm : public FVTermAttribute
     auto operator << (const std::wstring&) noexcept -> FVTerm&;
     auto operator << (const FString&) noexcept -> FVTerm&;
     auto operator << (FVTermBuffer&) noexcept -> FVTerm&;
+    auto operator << (const FVTermBuffer&) noexcept -> FVTerm&;
     auto operator << (const FChar&) noexcept -> FVTerm&;
     auto operator << (const FCharVector&) noexcept -> FVTerm&;
     auto operator << (const FPoint&) noexcept -> FVTerm&;
@@ -211,7 +212,9 @@ class FVTerm : public FVTermAttribute
     auto  print (const std::vector<FChar>&) noexcept -> int;
     auto  print (FTermArea*, const std::vector<FChar>&) noexcept -> int;
     auto  print (FVTermBuffer&) noexcept -> int;
+    auto  print (const FVTermBuffer&) noexcept -> int;
     auto  print (FTermArea*, FVTermBuffer&) const noexcept -> int;
+    auto  print (FTermArea*, const FVTermBuffer&) const noexcept -> int;
     auto  print (wchar_t) noexcept -> int;
     auto  print (FTermArea*, wchar_t) noexcept -> int;
     auto  print (const FChar&) noexcept -> int;

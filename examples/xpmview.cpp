@@ -87,9 +87,7 @@ void XpmPicture::draw()
   clearArea();
   print() << FPoint{1, 1};
   const auto& term_buffer = xmp_image.getTermBuffer();
-  finalcut::FVTermBuffer print_term_buffer( term_buffer.begin()
-                                          , term_buffer.end() );
-  print(print_term_buffer);
+  print(term_buffer);
 
   if ( finalcut::FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
