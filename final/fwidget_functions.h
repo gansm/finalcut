@@ -48,6 +48,7 @@ using FWidgetList = std::vector<FWidget*>;
 
 // non-member function forward declarations
 void detectTerminalSize();
+void initByte1PrintTransMask();
 auto isFocusNextKey (const FKey) -> bool;
 auto isFocusPrevKey (const FKey) -> bool;
 auto isDialogMenuKey (const FKey) -> bool;

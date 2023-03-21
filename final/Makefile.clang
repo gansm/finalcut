@@ -168,7 +168,6 @@ OBJS = \
 	fobject.o \
 	fstartoptions.o \
 	ftimer.o \
-	ftypes.o \
 	fwidgetcolors.o \
 	fwidget_functions.o \
 	fwidget.o \

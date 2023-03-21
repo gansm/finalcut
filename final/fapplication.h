@@ -159,19 +159,8 @@ class FApplication : public FWidget
     virtual void processExternalUserEvent();
 
   private:
-#if defined(__sun) && defined(__SVR4)
-    struct CmdOption
-    {
-      const char* name;  // <- name is without 'const' in Solaris
-      int         has_arg;
-      int*        flag;
-      int         val;
-    };
-#else
-    using CmdOption = struct option;
-#endif
-
     // Using-declaration
+    using CmdOption = struct option;
     using EventPair = std::pair<FObject*, FEvent*>;
     using FEventQueue = std::deque<EventPair>;
     using CmdMap = std::unordered_map<int, std::function<void(char*)>>;
@@ -179,7 +168,7 @@ class FApplication : public FWidget
     // Methods
     void         init();
     static void  setTerminalEncoding (const FString&);
-    static void  setLongOptions(std::vector<CmdOption>&);
+    static auto  getLongOptions() -> const std::vector<struct option>&;
     static void  setCmdOptionsMap (CmdMap&);
     static void  cmdOptions (const Args&);
     static auto  getStartOptions() -> FStartOptions&;

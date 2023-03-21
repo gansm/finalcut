@@ -463,9 +463,9 @@ void FApplication::setTerminalEncoding (const FString& enc_str)
 }
 
 //----------------------------------------------------------------------
-inline void FApplication::setLongOptions (std::vector<CmdOption>& long_options)
+inline auto FApplication::getLongOptions() -> const std::vector<CmdOption>&
 {
-  long_options =
+  static const std::vector<CmdOption>& long_options =
   {
     {"encoding",                 required_argument, nullptr,  'e' },
     {"log-file",                 required_argument, nullptr,  'l' },
@@ -488,6 +488,7 @@ inline void FApplication::setLongOptions (std::vector<CmdOption>& long_options)
 
     {nullptr,                    0,                 nullptr,  0   }
   };
+  return long_options;
 }
 
 //----------------------------------------------------------------------
@@ -552,9 +553,8 @@ void FApplication::cmdOptions (const Args& args)
   {
     opterr = 0;
     int idx{0};
-    std::vector<CmdOption> long_options{};
-    setLongOptions(long_options);
-    auto p = reinterpret_cast<const struct option*>(long_options.data());
+    const auto& long_options = getLongOptions();
+    auto p = static_cast<const struct option*>(long_options.data());
     auto argv_data = const_cast<char* const*>(argv.data());
     const int opt = getopt_long (int(argc), argv_data, "", p, &idx);
 

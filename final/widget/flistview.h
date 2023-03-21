@@ -730,11 +730,17 @@ auto
 
 //----------------------------------------------------------------------
 inline auto FListView::getData() & -> FListViewItems&
-{ return reinterpret_cast<FListViewItems&>(itemlist); }
+{
+  FObjectList* ptr = &itemlist;
+  return *static_cast<FListViewItems*>(static_cast<void*>(ptr));
+}
 
 //----------------------------------------------------------------------
 inline auto FListView::getData() const & -> const FListViewItems&
-{ return reinterpret_cast<const FListViewItems&>(itemlist); }
+{
+  const FObjectList* ptr = &itemlist;
+  return *static_cast<const FListViewItems*>(static_cast<const void*>(ptr));
+}
 
 //----------------------------------------------------------------------
 inline auto FListView::isHorizontallyScrollable() const -> bool

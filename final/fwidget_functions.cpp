@@ -36,7 +36,21 @@
 namespace finalcut
 {
 
-const auto b1_print_trans_mask = [] ()
+namespace internal
+{
+
+struct var
+{
+  static uInt8 b1_print_trans_mask;
+};
+
+uInt8 var::b1_print_trans_mask{};
+
+}  // namespace internal
+
+// FWidget non-member functions
+//----------------------------------------------------------------------
+void initByte1PrintTransMask()
 {
   // Set bits that must not be reset
   FAttribute mask{};
@@ -45,10 +59,9 @@ const auto b1_print_trans_mask = [] ()
   mask.bit.inherit_background = true;
   mask.bit.no_changes = true;
   mask.bit.printed = true;
-  return mask.byte[1];
-}();
+  internal::var::b1_print_trans_mask = mask.byte[1];
+}
 
-// FWidget non-member functions
 //----------------------------------------------------------------------
 auto isFocusNextKey (const FKey key) -> bool
 {
@@ -502,22 +515,22 @@ void drawGenericBlockShadow ( FWidget* w
     || ! w->getPrintArea()
     || ! FVTerm::getFOutput()->hasShadowCharacter() )
     return;
-  
+
   auto& area = *w->getPrintArea();
   const bool is_window = w->isWindowWidget();
   const auto width = is_window ? uInt(area.width) : uInt(w->getWidth());
   const auto height = is_window ? uInt(area.height) : uInt(w->getHeight());
   const auto shadow_width = uInt(area.right_shadow);
   const auto shadow_height = uInt(area.bottom_shadow);
-  const auto x_offset = w->woffset.getX1() + w->getX() - area.offset_left - 1;
-  const auto y_offset = w->woffset.getY1() + w->getY() - area.offset_top - 1;
+  const auto x_offset = uInt(w->woffset.getX1() + w->getX() - area.offset_left - 1);
+  const auto y_offset = uInt(w->woffset.getY1() + w->getY() - area.offset_top - 1);
 
   if ( is_window && (shadow_width < 1 || shadow_height < 1) )
     return;
 
-  auto y = uInt(y_offset);
+  auto y = y_offset;
   auto& area_changes = area.changes;
-  auto* area_pos = &area.getFChar(x_offset + int(width), y_offset);
+  auto* area_pos = &area.getFChar(int(x_offset + width), int(y_offset));
   *area_pos = shadow_char[0];  // ▄
   area_changes[y].xmin = std::min(area_changes[y].xmin, x_offset + width);
   area_changes[y].xmax = std::max(area_changes[y].xmax, x_offset + width);
@@ -525,14 +538,14 @@ void drawGenericBlockShadow ( FWidget* w
 
   for (y = y_offset + 1; y < y_offset + height; y++)
   {
-    area_pos = &area.getFChar(x_offset + int(width), y);
+    area_pos = &area.getFChar(int(x_offset + width), int(y));
     *area_pos = shadow_char[1];  // █
     area_changes[y].xmin = std::min(area_changes[y].xmin, x_offset + width);
     area_changes[y].xmax = std::max(area_changes[y].xmax, x_offset + width);
     area_changes[y].trans_count++;
   }
 
-  area_pos = &area.getFChar(x_offset, y_offset + int(height));
+  area_pos = &area.getFChar(int(x_offset), int(y_offset + height));
   *area_pos = shadow_char[2];  // ' '
   ++area_pos;
   std::fill (area_pos, area_pos + width, shadow_char[3]);  // ▀
@@ -794,13 +807,13 @@ void drawGenericBox ( FWidget* w, const FRect& r
   fchar.attr.bit.char_width = 1;
   fchar.ch[0] = box_char[0];
   fchar.ch[1] = L'\0';
-  const auto is_transparent = (fchar.attr.byte[1] & b1_print_trans_mask) != 0;
+  const auto is_transparent = (fchar.attr.byte[1] & internal::var::b1_print_trans_mask) != 0;
   auto box = r;
   box.move (-1, -1);
-  const auto x_offset = w->woffset.getX1() + w->getX() - area.offset_left - 1;
-  const auto y_offset = w->woffset.getY1() + w->getY() - area.offset_top - 1;
+  const auto x_offset = uInt(w->woffset.getX1() + w->getX() - area.offset_left - 1);
+  const auto y_offset = uInt(w->woffset.getY1() + w->getY() - area.offset_top - 1);
   auto& area_changes = area.changes;
-  auto* area_pos = &area.getFChar(x_offset + box.getX1(), y_offset + box.getY1());
+  auto* area_pos = &area.getFChar(int(x_offset) + box.getX1(), int(y_offset) + box.getY1());
   *area_pos = fchar;
   ++area_pos;
   fchar.ch[0] = box_char[1];
@@ -809,25 +822,25 @@ void drawGenericBox ( FWidget* w, const FRect& r
   area_pos += line_length;
   fchar.ch[0] = box_char[2];
   *area_pos = fchar;
-  auto y = uInt(y_offset) + box.getY1();
-  area_changes[y].xmin = std::min(area_changes[y].xmin, uInt(x_offset + box.getX1()));
-  area_changes[y].xmax = std::max(area_changes[y].xmax, uInt(x_offset + box.getX2()));
+  auto y = y_offset + uInt(box.getY1());
+  area_changes[y].xmin = std::min(area_changes[y].xmin, x_offset + uInt(box.getX1()));
+  area_changes[y].xmax = std::max(area_changes[y].xmax, x_offset + uInt(box.getX2()));
   area_changes[y].trans_count += uInt(is_transparent) * box.getWidth();
 
   for (y = y_offset + uInt(box.getY1()) + 1; y < y_offset + uInt(box.getY2()); y++)
   {
-    area_pos = &area.getFChar(x_offset + box.getX1(), y);
+    area_pos = &area.getFChar(int(x_offset) + box.getX1(), int(y));
     fchar.ch[0] = box_char[3];
     *area_pos = fchar;
     area_pos += box.getWidth() - 1;
     fchar.ch[0] = box_char[4];
     *area_pos = fchar;
-    area_changes[y].xmin = std::min(area_changes[y].xmin, uInt(x_offset + box.getX1()));
-    area_changes[y].xmax = std::max(area_changes[y].xmax, uInt(x_offset + box.getX2()));
+    area_changes[y].xmin = std::min(area_changes[y].xmin, x_offset + uInt(box.getX1()));
+    area_changes[y].xmax = std::max(area_changes[y].xmax, x_offset + uInt(box.getX2()));
     area_changes[y].trans_count += uInt(is_transparent) * box.getWidth();
   }
 
-  area_pos = &area.getFChar(x_offset + box.getX1(), y);
+  area_pos = &area.getFChar(int(x_offset) + box.getX1(), int(y));
   fchar.ch[0] = box_char[5];
   *area_pos = fchar;
   ++area_pos;
@@ -837,8 +850,8 @@ void drawGenericBox ( FWidget* w, const FRect& r
   fchar.ch[0] = box_char[7];
   *area_pos = fchar;
   y = y_offset + uInt(box.getY2());
-  area_changes[y].xmin = std::min(area_changes[y].xmin, uInt(x_offset + box.getX1()));
-  area_changes[y].xmax = std::max(area_changes[y].xmax, uInt(x_offset + box.getX2()));
+  area_changes[y].xmin = std::min(area_changes[y].xmin, x_offset + uInt(box.getX1()));
+  area_changes[y].xmax = std::max(area_changes[y].xmax, x_offset + uInt(box.getX2()));
   area_changes[y].trans_count += uInt(is_transparent) * box.getWidth();
   area.has_changes = true;
 }
