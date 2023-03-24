@@ -554,7 +554,7 @@ void FApplication::cmdOptions (const Args& args)
     opterr = 0;
     int idx{0};
     const auto& long_options = getLongOptions();
-    auto p = static_cast<const struct option*>(long_options.data());
+    const struct option* p = long_options.data();
     auto argv_data = const_cast<char* const*>(argv.data());
     const int opt = getopt_long (int(argc), argv_data, "", p, &idx);
 

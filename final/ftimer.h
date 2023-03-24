@@ -117,7 +117,7 @@ class FTimer
 
     // Method
     template <typename CallbackT>
-    auto processTimerEvent(CallbackT) -> uInt;
+    auto processTimerEvent (CallbackT) -> uInt;
 
   private:
     // Method
@@ -248,7 +248,7 @@ auto FTimer<ObjectT>::delAllTimers() const & -> bool
 //----------------------------------------------------------------------
 template <typename ObjectT>
 template <typename CallbackT>
-auto FTimer<ObjectT>::processTimerEvent(CallbackT callback) -> uInt
+auto FTimer<ObjectT>::processTimerEvent (CallbackT callback) -> uInt
 {
   uInt activated{0};
   std::unique_lock<std::mutex> lock ( internal::timer_var::mutex
@@ -363,11 +363,11 @@ class FObjectTimer
     // Method
     auto processTimerEvent() -> uInt
     {
-      return timer->processTimerEvent( [this] (FObject* receiver, FEvent* event)
-                                       {
-                                         performTimerAction(receiver, event);
-                                       }
-                                     );
+      return timer->processTimerEvent ( [this] (FObject* receiver, FEvent* event)
+                                        {
+                                          performTimerAction(receiver, event);
+                                        }
+                                      );
     }
 
   private:

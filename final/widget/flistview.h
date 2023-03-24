@@ -521,7 +521,7 @@ class FListView : public FWidget
     FListViewIterator     current_iter{};
     FListViewIterator     first_visible_line{};
     FListViewIterator     last_visible_line{};
-    HeaderItems           header{};
+    HeaderItems           header;  // GitHub issues #122
     FVTermBuffer          headerline{};
     FScrollbarPtr         vbar{nullptr};
     FScrollbarPtr         hbar{nullptr};

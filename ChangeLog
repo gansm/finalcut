@@ -1,3 +1,6 @@
+2023-03-24  Markus Gans  <guru.mail@muenster.de>
+	* Compile fix for clang++ 15 with std=c++20
+
 2023-03-16  Markus Gans  <guru.mail@muenster.de>
 	* Size and position changes in FDialog are now made immediately before 
 	  terminal output to speed up mouse-based changes
