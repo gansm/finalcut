@@ -65,6 +65,7 @@ FWidget*  FWidget::main_widget          {nullptr};  // main application widget
 FWidget*  FWidget::active_window        {nullptr};  // the active window
 FWidget*  FWidget::focus_widget         {nullptr};  // has keyboard input focus
 FWidget*  FWidget::clicked_widget       {nullptr};  // is focused by click
+FWidget*  FApplication::clicked_widget  {nullptr};  // is focused by click
 FWidget*  FWidget::open_menu            {nullptr};  // currently open menu
 FWidget*  FWidget::move_resize_widget   {nullptr};  // move or resize by keyboard
 FWidget*  FApplication::keyboard_widget {nullptr};  // has the keyboard focus
@@ -297,6 +298,12 @@ auto FApplication::removeQueuedEvent (const FObject* receiver) -> bool
 }
 
 //----------------------------------------------------------------------
+void FApplication::registerMouseHandler (const FMouseHandler& fn)
+{
+  mouse_handler_list.push_back(fn);
+}
+
+//----------------------------------------------------------------------
 void FApplication::initTerminal()
 {
   if ( ! isQuit() )
@@ -368,7 +375,7 @@ void FApplication::setKeyboardWidget (FWidget* widget)
 //----------------------------------------------------------------------
 void FApplication::closeConfirmationDialog (FWidget* w, FCloseEvent* ev)
 {
-  internal::var::app_object->unsetMoveResizeMode();
+  internal::var::app_object->unsetMoveResizeMode(FMouseData{});
   const auto& ret = \
       FMessageBox::info ( w, "Quit"
                         , "Do you really want\n"
@@ -432,6 +439,10 @@ void FApplication::init()
   mouse.setStdinNo (FTermios::getStdIn());
   // Set the default double click interval
   mouse.setDblclickInterval (dblclick_interval);
+
+  // Restister mouse handler callbacks
+  registerMouseHandler (FApplication::determineClickedWidget);
+  registerMouseHandler (FApplication::unsetMoveResizeMode);
 
   // Initialize logging
   if ( ! getStartOptions().logfile_stream.is_open() )
@@ -755,13 +766,10 @@ inline void FApplication::performMouseAction() const
 //----------------------------------------------------------------------
 void FApplication::mouseEvent (const FMouseData& md)
 {
-  determineClickedWidget (md);
-  unsetMoveResizeMode();
-  closeDropDown (md);
-  unselectMenubarItems (md);
+  for (auto&& mouse_handler : mouse_handler_list)
+    mouse_handler(md);  // Execute mouse handler
 
-  if ( FWidget::getClickedWidget() )  // A widget was clicked
-    sendMouseEvent (md);
+  sendMouseEvent (md);
 }
 
 //----------------------------------------------------------------------
@@ -1008,77 +1016,36 @@ void FApplication::determineClickedWidget (const FMouseData& md)
   // Determine the window object on the current click position
   auto window = FWindow::getWindowWidgetAt (mouse_position);
 
-  if ( window )
-  {
-    // Determine the widget at the current click position
-    auto child = window->childWidgetAt(mouse_position);
-    clicked_widget = ( child != nullptr ) ? child : window;
-    setClickedWidget (clicked_widget);
-  }
+  if ( ! window )
+    return;
+
+  // Determine the widget at the current click position
+  auto child = window->childWidgetAt(mouse_position);
+  clicked_widget = ( child != nullptr ) ? child : window;
+  setClickedWidget (clicked_widget);
 }
 
 //----------------------------------------------------------------------
-void FApplication::unsetMoveResizeMode() const
+void FApplication::unsetMoveResizeMode (const FMouseData&)
 {
   // Unset the move or resize mode
 
   auto& move_size = getMoveResizeWidget();
 
-  if ( move_size )
-  {
-    FWidget* w{nullptr};
-    std::swap(w, move_size);  // Clear move_resize_widget
-    w->redraw();
-  }
-}
-
-//----------------------------------------------------------------------
-void FApplication::closeDropDown (const FMouseData& md) const
-{
-  // Close the open menu
-
-  if ( md.isMoved() )
+  if ( ! move_size )
     return;
 
-  const auto& mouse_position = md.getPos();
-  finalcut::closeDropDown (this, mouse_position);  // in fwindow.cpp
-}
-
-//----------------------------------------------------------------------
-void FApplication::unselectMenubarItems (const FMouseData& md) const
-{
-  // Unselect the menu bar items
-
-  const auto& openmenu = FWidget::getOpenMenu();
-  auto menu_bar = FWidget::getMenuBar();
-
-  if ( openmenu || md.isMoved() )
-    return;
-
-  if ( ! (menu_bar && menu_bar->hasSelectedItem()) )
-    return;
-
-  const auto& mouse_position = md.getPos();
-
-  if ( ! menu_bar->getTermGeometry().contains(mouse_position) )
-  {
-    if ( FWidget::getStatusBar() )
-      FWidget::getStatusBar()->clearMessage();
-
-    menu_bar->resetMenu();
-    menu_bar->redraw();
-
-    // No widget was been clicked
-    if ( ! FWidget::getClickedWidget() )
-      FWindow::switchToPrevWindow(this);
-
-    drawStatusBarMessage();
-  }
+  FWidget* w{nullptr};
+  std::swap(w, move_size);  // Clear move_resize_widget
+  w->redraw();
 }
 
 //----------------------------------------------------------------------
 void FApplication::sendMouseEvent (const FMouseData& md) const
 {
+  if ( ! FWidget::getClickedWidget() )  // No widget was clicked
+    return;
+
   const auto& mouse_position = md.getPos();
   MouseButton key_state{MouseButton::None};
 

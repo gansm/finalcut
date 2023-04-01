@@ -24,6 +24,7 @@
 
 #include "final/fapplication.h"
 #include "final/fevent.h"
+#include "final/input/fmouse.h"
 #include "final/menu/fmenubar.h"
 #include "final/menu/fmenu.h"
 #include "final/widget/fcombobox.h"
@@ -33,9 +34,20 @@
 namespace finalcut
 {
 
+namespace internal
+{
+
+struct var
+{
+  static bool fwindow_init_flag;  // FWindow init state
+};
+
+bool var::fwindow_init_flag{false};
+
+}  // namespace internal
+
 // static attributes
 FWindow* FWindow::previous_window{nullptr};
-
 
 //----------------------------------------------------------------------
 // class FWindow
@@ -46,6 +58,14 @@ FWindow* FWindow::previous_window{nullptr};
 FWindow::FWindow(FWidget* parent)
   : FWidget{parent}
 {
+  if ( ! internal::var::fwindow_init_flag )
+  {
+    auto app_object = FApplication::getApplicationObject();
+    app_object->registerMouseHandler (closeDropDownMouseHandler);
+    app_object->registerMouseHandler (unselectMenubarItemsMouseHandler);
+    internal::var::fwindow_init_flag = true;
+  }
+
   setWindowWidget();
   createVWin();
   addWindow (this);
@@ -938,6 +958,17 @@ void FWindow::reactivateWindow (FWindow* active_win)
 
 // non-member functions
 //----------------------------------------------------------------------
+void closeDropDownMouseHandler (const FMouseData& md)
+{
+  if ( md.isMoved() )
+    return;
+
+  const auto& mouse_position = md.getPos();
+  auto app_object = FApplication::getApplicationObject();
+  finalcut::closeDropDown (app_object, mouse_position);
+}
+
+//----------------------------------------------------------------------
 void closeDropDown (const FWidget* widget, const FPoint& mouse_position)
 {
   // Close the pop down windows
@@ -970,6 +1001,42 @@ void closeDropDown (const FWidget* widget, const FPoint& mouse_position)
 
   // No widget was been clicked and the menu is no dialog menu
   if ( ! (FWidget::getClickedWidget() || is_dialog_menu) )
+    FWindow::switchToPrevWindow(widget);
+
+  drawStatusBarMessage();
+}
+
+//----------------------------------------------------------------------
+void unselectMenubarItemsMouseHandler (const FMouseData& md)
+{
+  if ( md.isMoved() )
+    return;
+
+  const auto& mouse_position = md.getPos();
+  auto app_object = FApplication::getApplicationObject();
+  finalcut::unselectMenubarItems (app_object, mouse_position);
+}
+
+//----------------------------------------------------------------------
+void unselectMenubarItems (const FWidget* widget, const FPoint& mouse_position)
+{
+  // Unselect the menu bar items
+
+  auto menu_bar = FWidget::getMenuBar();
+
+  if ( FWidget::getOpenMenu()
+    || ! (menu_bar && menu_bar->hasSelectedItem())
+    || menu_bar->getTermGeometry().contains(mouse_position) )
+    return;
+
+  if ( FWidget::getStatusBar() )
+    FWidget::getStatusBar()->clearMessage();
+
+  menu_bar->resetMenu();
+  menu_bar->redraw();
+
+  // No widget was been clicked
+  if ( ! FWidget::getClickedWidget() )
     FWindow::switchToPrevWindow(widget);
 
   drawStatusBarMessage();

@@ -1,3 +1,6 @@
+2023-04-01  Markus Gans  <guru.mail@muenster.de>
+	* FApplication now has the ability to register mouse handler functions
+
 2023-03-24  Markus Gans  <guru.mail@muenster.de>
 	* Compile fix for clang++ 15 with std=c++20
 

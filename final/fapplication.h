@@ -99,6 +99,7 @@ class FApplication : public FWidget
     // Typedef
     using FLogPtr = std::shared_ptr<FLog>;
     using Args = std::vector<std::string>;
+    using FMouseHandler = std::function<void(FMouseData)>;
 
     // Constructor
     FApplication (const int&, char*[]);
@@ -145,6 +146,7 @@ class FApplication : public FWidget
     void         sendQueuedEvents();
     auto         eventInQueue() const -> bool;
     auto         removeQueuedEvent (const FObject*) -> bool;
+    void         registerMouseHandler (const FMouseHandler&);
     void         initTerminal() override;
     static void  setDefaultTheme();
     static void  setDarkTheme();
@@ -163,6 +165,7 @@ class FApplication : public FWidget
     using CmdOption = struct option;
     using EventPair = std::pair<FObject*, FEvent*>;
     using FEventQueue = std::deque<EventPair>;
+    using FMouseHandlerList = std::vector<FMouseHandler>;
     using CmdMap = std::unordered_map<int, std::function<void(char*)>>;
 
     // Methods
@@ -197,10 +200,8 @@ class FApplication : public FWidget
     auto         processDialogSwitchAccelerator() const -> bool;
     auto         processAccelerator (const FWidget&) const -> bool;
     void         processTerminalFocus (const FKey&);
-    void         determineClickedWidget (const FMouseData&);
-    void         unsetMoveResizeMode() const;
-    void         closeDropDown (const FMouseData&) const;
-    void         unselectMenubarItems (const FMouseData&) const;
+    static void  determineClickedWidget (const FMouseData&);
+    static void  unsetMoveResizeMode (const FMouseData&);
     void         sendMouseEvent (const FMouseData&) const;
     void         sendMouseMoveEvent ( const FMouseData&
                                     , const FPoint&
@@ -233,19 +234,20 @@ class FApplication : public FWidget
     static auto  isNextEventTimeout() -> bool;
 
     // Data members
-    Args             app_args{};
-    uInt64           key_timeout{100'000};        // 100 ms
-    uInt64           dblclick_interval{500'000};  // 500 ms
-    std::streambuf*  default_clog_rdbuf{std::clog.rdbuf()};
-    FWidget*         clicked_widget{};
-    FEventQueue      event_queue{};
-    bool             has_terminal_resized{false};
-    static uInt64    next_event_wait;
-    static TimeValue time_last_event;
-    static int       loop_level;
-    static int       quit_code;
-    static bool      quit_now;
-    static FWidget*  keyboard_widget;
+    Args              app_args{};
+    uInt64            key_timeout{100'000};        // 100 ms
+    uInt64            dblclick_interval{500'000};  // 500 ms
+    std::streambuf*   default_clog_rdbuf{std::clog.rdbuf()};
+    FEventQueue       event_queue{};
+    FMouseHandlerList mouse_handler_list{};
+    bool              has_terminal_resized{false};
+    static uInt64     next_event_wait;
+    static TimeValue  time_last_event;
+    static int        loop_level;
+    static int        quit_code;
+    static bool       quit_now;
+    static FWidget*   clicked_widget;
+    static FWidget*   keyboard_widget;
 };
 
 // non-member function forward declarations

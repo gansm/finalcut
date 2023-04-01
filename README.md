@@ -2,9 +2,11 @@
 
 # Library for creating terminal applications with text-based widgets
 
-FINAL CUT is a C++ class library and widget toolkit that enables developers to create [text-based user interface](https://en.wikipedia.org/wiki/Text-based_user_interface). It offers full [mouse](doc/mouse-control.md#title-bar-actions-on-mouse-clicks) support, [UTF-8](https://en.wikipedia.org/wiki/UTF-8) character encoding, support for [full-width characters](https://en.wikipedia.org/wiki/Halfwidth_and_fullwidth_forms), and the capability to display [combined unicode characters](https://en.wikipedia.org/wiki/Combining_character). The library helps the programmer to create an application for the text console. It allows it to handle multiple text windows on the screen.
+FINAL CUT is a C++ class library and widget toolkit that enables developers to create [text-based user interfaces](https://en.wikipedia.org/wiki/Text-based_user_interface). FINAL CUT is a standalone library that interacts directly with the terminal without relying on external libraries such as [ncurses](https://invisible-island.net/ncurses/ncurses.html) or [termbox](https://code.google.com/archive/p/termbox/).
 
-The design of FINAL CUT's C++ class structure was inspired by the Qt framework. It offers a variety of general controls, including dialog boxes, push buttons, checkboxes, radio buttons, input lines, list boxes, and status bars.
+FINAL CUT provides full [mouse](doc/mouse-control.md#title-bar-actions-on-mouse-clicks) support, [UTF-8](https://en.wikipedia.org/wiki/UTF-8) character encoding, [full-width character](https://en.wikipedia.org/wiki/Halfwidth_and_fullwidth_forms) support, and the ability to display [combined Unicode characters](https://en.wikipedia.org/wiki/Combining_character). The library helps the programmer to create a text console application. It allows handling multiple text windows on the screen.
+
+The design of the C++ class structure of FINAL CUT was inspired by the Qt framework. It provides a variety of common controls, including dialog boxes, push buttons, check boxes, radio buttons, input lines, list boxes, and status bars. With FINAL CUT, developers can create text-based user interfaces that are both functional and visually appealing.
 
 ## Building and code analysis
 

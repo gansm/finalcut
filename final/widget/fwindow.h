@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2022 Markus Gans                                      *
+* Copyright 2015-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -179,17 +179,20 @@ class FWindow : public FWidget
     static void  reactivateWindow (FWindow*);
 
     // Data members
-    FWidget*         win_focus_widget{nullptr};
-    FRect            normalGeometry{};
-    static FWindow*  previous_window;
-    bool             window_active{false};
-    bool             zoomed{false};
+    FWidget*              win_focus_widget{nullptr};
+    FRect                 normalGeometry{};
+    static FWindow*       previous_window;
+    bool                  window_active{false};
+    bool                  zoomed{false};
 };
 
 // non-member function forward declarations
 //----------------------------------------------------------------------
+class FMouseData;  // class forward declaration
+void closeDropDownMouseHandler (const FMouseData&);
 void closeDropDown (const FWidget*, const FPoint&);
-
+void unselectMenubarItemsMouseHandler (const FMouseData&);
+void unselectMenubarItems (const FWidget*, const FPoint&);
 
 // FWindow inline functions
 //----------------------------------------------------------------------
