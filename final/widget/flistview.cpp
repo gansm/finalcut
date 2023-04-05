@@ -668,7 +668,7 @@ auto FListView::getColumnAlignment (int column) const -> Align
 {
   // Get the alignment for a column
 
-  if ( column < 1 || header.empty() || column > int(header.size()) )
+  if ( isColumnIndexInvalid(column) )
     return Align::Left;
 
   // Convert column position to address offset (index)
@@ -681,7 +681,7 @@ auto FListView::getColumnText (int column) const -> FString
 {
   // Get the text of column
 
-  if ( column < 1 || header.empty() || column > int(header.size()) )
+  if ( isColumnIndexInvalid(column) )
     return fc::emptyFString::get();
 
   // Convert column position to address offset (index)
@@ -727,7 +727,7 @@ void FListView::setColumnAlignment (int column, Align align)
 {
   // Set the alignment for a column
 
-  if ( column < 1 || header.empty() || column > int(header.size()) )
+  if ( isColumnIndexInvalid(column) )
     return;
 
   // Convert column position to address offset (index)
@@ -740,7 +740,7 @@ void FListView::setColumnText (int column, const FString& label)
 {
   // Set the text for a column
 
-  if ( column < 1 || header.empty() || column > int(header.size()) )
+  if ( isColumnIndexInvalid(column) )
     return;
 
   // Convert column position to address offset (index)
@@ -762,7 +762,7 @@ void FListView::setColumnSortType (int column, SortType type)
 {
   // Sets the sort type by which the list is to be sorted
 
-  if ( column < 1 || header.empty() || column > int(header.size()) )
+  if ( isColumnIndexInvalid(column) )
     return;
 
   const std::size_t size = std::size_t(column) + 1;
@@ -778,11 +778,52 @@ void FListView::setColumnSort (int column, SortOrder order)
 {
   // Sets the column to sort by + the sorting order
 
-  if ( column < 1 || header.empty() || column > int(header.size()) )
+  if ( isColumnIndexInvalid(column) )
     column = -1;
 
   sort_column = column;
   sort_order = order;
+}
+
+//----------------------------------------------------------------------
+void FListView::showColumn (int column)
+{
+  // Shows the column with the given column value
+
+  if ( isColumnIndexInvalid(column) )
+    return;
+
+  // Convert column position to address offset (index)
+  const auto index = std::size_t(column - 1);
+  header[index].visible = true;
+  // Update and redraw the layout of the list view
+  updateLayout();
+}
+
+//----------------------------------------------------------------------
+void FListView::hideColumn (int column)
+{
+  // Hides the column with the given column value
+
+  if ( isColumnIndexInvalid(column) )
+    return;
+
+  // Convert column position to address offset (index)
+  const auto index = std::size_t(column - 1);
+  header[index].visible = false;
+  // Update and redraw the layout of the list view
+  updateLayout();
+}
+
+//----------------------------------------------------------------------
+auto FListView::isColumnHidden (int column) const -> bool
+{
+  if ( isColumnIndexInvalid(column) )
+    return true;
+
+  // Convert column position to address offset (index)
+  const auto index = std::size_t(column - 1);
+  return ! header[index].visible;
 }
 
 //----------------------------------------------------------------------
@@ -806,7 +847,7 @@ auto FListView::removeColumn (int column) -> int
 {
   // Deletes a column from the list and empties it if all columns are gone
 
-  if ( column < 1 || header.empty() || column > int(header.size()) )
+  if ( isColumnIndexInvalid(column) )
     return int(header.size());
 
   if ( header.size() == 1 )
@@ -1561,7 +1602,7 @@ void FListView::drawHeadlines()
 
   while ( iter != header.cend() )
   {
-    if ( ! iter->name.isEmpty() )
+    if ( iter->visible && ! iter->name.isEmpty() )
       drawHeadlineLabel(iter);  // Draw into FVTermBuffer object
 
     ++iter;
@@ -1654,6 +1695,12 @@ void FListView::drawListLine ( const FListViewItem* item
   {
     for (std::size_t col{0}; col < item->column_list.size(); )
     {
+      if ( ! header[col].visible )
+      {
+        col++;
+        continue;
+      }
+
       static constexpr std::size_t ellipsis_length = 2;
       const auto& text = item->column_list[col];
       auto width = std::size_t(header[col].width);
@@ -2046,6 +2093,25 @@ void FListView::drawColumnEllipsis ( const HeaderItems::const_iterator& iter
 }
 
 //----------------------------------------------------------------------
+void FListView::updateLayout()
+{
+  max_line_width = 0;
+
+  for (auto iter = itemlist.begin(); iter != itemlist.end(); ++iter)
+  {
+    const auto& item = static_cast<FListViewItem*>(*iter);
+    std::size_t line_width = determineLineWidth (item);
+    recalculateHorizontalBar (line_width);
+  }
+
+  adjustScrollbars(getCount());
+  drawList();
+  drawBorder();
+  drawHeadlines();
+  drawScrollbars();
+}
+
+//----------------------------------------------------------------------
 void FListView::updateDrawing (bool draw_vbar, bool draw_hbar)
 {
   if ( isShown() )
@@ -2095,7 +2161,8 @@ auto FListView::determineLineWidth (FListViewItem* item) -> std::size_t
       padding_space = 0;
 
     // width + trailing space
-    line_width += std::size_t(header_item.width) + padding_space;
+    if ( header_item.visible )
+      line_width += std::size_t(header_item.width) + padding_space;
 
     column_idx++;
   }
@@ -2184,6 +2251,12 @@ void FListView::mouseHeaderClicked()
 
   for (const auto& item : header)
   {
+    if ( isColumnHidden(column) )
+    {
+      column++;
+      continue;
+    }
+
     static constexpr int leading_space = 1;
     const bool has_sort_indicator( column == sort_column );
     auto click_width = int(getColumnWidth(item.name));

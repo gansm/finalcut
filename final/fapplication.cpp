@@ -375,7 +375,7 @@ void FApplication::setKeyboardWidget (FWidget* widget)
 //----------------------------------------------------------------------
 void FApplication::closeConfirmationDialog (FWidget* w, FCloseEvent* ev)
 {
-  internal::var::app_object->unsetMoveResizeMode(FMouseData{});
+  FApplication::unsetMoveResizeMode(FMouseData{});
   const auto& ret = \
       FMessageBox::info ( w, "Quit"
                         , "Do you really want\n"
@@ -764,9 +764,9 @@ inline void FApplication::performMouseAction() const
 }
 
 //----------------------------------------------------------------------
-void FApplication::mouseEvent (const FMouseData& md)
+void FApplication::mouseEvent (const FMouseData& md) const
 {
-  for (auto&& mouse_handler : mouse_handler_list)
+  for (const auto& mouse_handler : mouse_handler_list)
     mouse_handler(md);  // Execute mouse handler
 
   sendMouseEvent (md);

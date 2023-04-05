@@ -1,3 +1,6 @@
+2023-04-06  Markus Gans  <guru.mail@muenster.de>
+	* Individual columns can now be shown and hidden in FListView
+
 2023-04-01  Markus Gans  <guru.mail@muenster.de>
 	* FApplication now has the ability to register mouse handler functions
 

@@ -334,6 +334,7 @@ class FListView : public FWidget
     // Accessors
     auto getClassName() const -> FString override;
     auto getCount() const -> std::size_t;
+    auto getColumnCount() const -> std::size_t;
     auto getColumnAlignment (int) const -> Align;
     auto getColumnText (int) const -> FString;
     auto getColumnSortType (int) const -> SortType;
@@ -354,8 +355,13 @@ class FListView : public FWidget
     template <typename Compare>
     void setUserDescendingCompare (Compare);
     void hideSortIndicator (bool = true);
+    void showColumn (int);
+    void hideColumn (int);
     auto setTreeView (bool = true) -> bool;
     auto unsetTreeView() -> bool;
+
+    // Inquiries
+    auto isColumnHidden (int) const -> bool;
 
     // Methods
     virtual auto addColumn (const FString&, int = USE_MAX_SIZE) -> int;
@@ -463,6 +469,7 @@ class FListView : public FWidget
     void drawBufferedHeadline();
     void drawColumnEllipsis ( const HeaderItems::const_iterator&
                             , const FString& );
+    void updateLayout();
     void updateDrawing (bool, bool);
     auto determineLineWidth (FListViewItem*) -> std::size_t;
     void beforeInsertion (FListViewItem*);
@@ -508,6 +515,7 @@ class FListView : public FWidget
     void scrollBy (int, int);
     auto isItemListEmpty() const -> bool;
     auto isTreeView() const -> bool;
+    auto isColumnIndexInvalid (int) const -> bool;
     auto hasCheckableItems() const -> bool;
 
     // Callback methods
@@ -567,6 +575,7 @@ struct FListView::Header
     Align   alignment{Align::Left};
     int     width{0};
     bool    fixed_width{false};
+    bool    visible{true};
 };
 
 
@@ -751,6 +760,10 @@ inline auto FListView::isVerticallyScrollable() const -> bool
 { return getCount() > getClientHeight(); }
 
 //----------------------------------------------------------------------
+inline auto FListView::getColumnCount() const -> std::size_t
+{ return header.size(); }
+
+//----------------------------------------------------------------------
 inline void FListView::toggleItemCheckState (FListViewItem* item) const
 { item->setChecked(! item->isChecked()); }
 
@@ -765,6 +778,12 @@ inline auto FListView::isItemListEmpty() const -> bool
 //----------------------------------------------------------------------
 inline auto FListView::isTreeView() const -> bool
 { return tree_view; }
+
+//----------------------------------------------------------------------
+inline auto FListView::isColumnIndexInvalid (int column) const -> bool
+{
+  return column < 1 || header.empty() || column > int(header.size());
+}
 
 //----------------------------------------------------------------------
 inline auto FListView::hasCheckableItems() const -> bool

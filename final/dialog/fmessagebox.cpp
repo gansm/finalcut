@@ -294,7 +294,12 @@ void FMessageBox::calculateDimensions()
                   }
                 );
 
-  std::size_t headline_height = headline_text.isEmpty() ? 0 : 2;
+  const std::size_t headline_height = headline_text.isEmpty() ? 0 : 2;
+  const std::size_t headline_width = getColumnWidth(headline_text);
+
+  if ( headline_width > max_line_width )
+    max_line_width = headline_width;
+
   FSize size{ max_line_width + 4, text_num_lines + 8 + headline_height };
 
   if ( size.getWidth() < 20 )

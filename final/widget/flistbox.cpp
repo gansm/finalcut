@@ -336,10 +336,9 @@ void FListBox::onMouseUp (FMouseEvent* ev)
   if ( ev->getButton() != MouseButton::Left )
     return;
 
-  if ( isWithinListBounds(ev->getPos()) && ! isMultiSelection() )
-  {
+  if ( isWithinListBounds(ev->getPos())
+    && ! isMultiSelection() )
     processSelect();
-  }
 }
 
 //----------------------------------------------------------------------
