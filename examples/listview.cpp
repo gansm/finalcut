@@ -222,28 +222,31 @@ void Listview::cb_showHideColumns()
     , this
   );
 
-  auto columns = listview.getColumnCount();
+  auto number_of_columns = listview.getColumnCount();
   std::vector<std::shared_ptr<finalcut::FCheckBox>> checkboxes{};
 
-  for (std::size_t column{0}; column < columns; column++)
+  for (std::size_t column{0}; column < number_of_columns; column++)
   {
-    auto col_name = listview.getColumnText(column + 1);
+    auto col_name = listview.getColumnText(int(column) + 1);
     checkboxes.emplace_back(std::make_shared<finalcut::FCheckBox>(col_name, &column_header_dlg));
     checkboxes[column]->setGeometry (FPoint{6, 4 + int(column)}, FSize{20, 1});
 
-    if ( ! listview.isColumnHidden(column + 1) )
+    if ( ! listview.isColumnHidden(int(column) + 1) )
       checkboxes[column]->setChecked();
   }
 
   column_header_dlg.setHeadline("Select columns to view");
-  column_header_dlg.exec();
+  const auto& ret = column_header_dlg.exec();
 
-  for (std::size_t column{0}; column < columns; column++)
+  if ( ret != finalcut::FMessageBox::ButtonType::Ok )
+    return;
+
+  for (std::size_t column{0}; column < number_of_columns; column++)
   {
-    if ( listview.isColumnHidden(column + 1) && checkboxes[column]->isChecked() )
-      listview.showColumn(column + 1);
-    else if ( ! listview.isColumnHidden(column + 1) && ! checkboxes[column]->isChecked() )
-      listview.hideColumn(column + 1);
+    if ( listview.isColumnHidden(int(column) + 1) && checkboxes[column]->isChecked() )
+      listview.showColumn(int(column) + 1);
+    else if ( ! listview.isColumnHidden(int(column) + 1) && ! checkboxes[column]->isChecked() )
+      listview.hideColumn(int(column) + 1);
   }
 }
 

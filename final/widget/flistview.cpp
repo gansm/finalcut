@@ -2096,14 +2096,15 @@ void FListView::drawColumnEllipsis ( const HeaderItems::const_iterator& iter
 void FListView::updateLayout()
 {
   max_line_width = 0;
-
-  for (auto iter = itemlist.begin(); iter != itemlist.end(); ++iter)
-  {
-    const auto& item = static_cast<FListViewItem*>(*iter);
-    std::size_t line_width = determineLineWidth (item);
-    recalculateHorizontalBar (line_width);
-  }
-
+  std::for_each ( itemlist.begin()
+                , itemlist.end()
+                , [this] (FObject* obj_item)
+                  {
+                    const auto& item = static_cast<FListViewItem*>(obj_item);
+                    std::size_t line_width = determineLineWidth (item);
+                    recalculateHorizontalBar (line_width);
+                  }
+                );
   adjustScrollbars(getCount());
   drawList();
   drawBorder();
