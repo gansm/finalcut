@@ -1195,7 +1195,7 @@ constexpr auto operator % (const FColor& c, const uInt16 n) noexcept -> FColor
 
 constexpr auto operator %= (FColor& c, uInt16 n) noexcept -> FColor&
 {
-  c =  FColor(uInt16(c) % n);
+  c = FColor(uInt16(c) % n);
   return c;
 }
 
@@ -1256,6 +1256,11 @@ constexpr auto operator + (const Style& a1, const Style& a2) noexcept -> Style
   return Style(uInt16(a1) + uInt16(a2));
 }
 
+constexpr auto operator - (const Style& a) noexcept -> Style
+{
+  return Style(-(uInt16(a)));
+}
+
 constexpr auto operator | (const Style& a1, const Style& a2) noexcept -> Style
 {
   return Style(uInt16(a1) | uInt16(a2));
@@ -1264,6 +1269,12 @@ constexpr auto operator | (const Style& a1, const Style& a2) noexcept -> Style
 constexpr auto operator & (const Style& a1, const Style& a2) noexcept -> Style
 {
   return Style(uInt16(a1) & uInt16(a2));
+}
+
+constexpr auto operator ^= (Style& a, const Style& b) noexcept -> Style&
+{
+  a = Style(uInt16(a) ^ uInt16(b));
+  return a;
 }
 
 

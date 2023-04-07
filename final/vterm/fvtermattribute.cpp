@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021-2022 Markus Gans                                      *
+* Copyright 2021-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -63,7 +63,7 @@ void FVTermAttribute::initAttribute()
 //----------------------------------------------------------------------
 void FVTermAttribute::print (const FStyle& style)
 {
-  const std::unordered_map<Style, std::function<void(bool)>> attributeLookup
+  static const std::unordered_map<Style, std::function<void(bool)>> attributeLookup
   {
     { Style::Bold, &FVTermAttribute::setBold },
     { Style::Dim, &FVTermAttribute::setDim },
@@ -84,17 +84,20 @@ void FVTermAttribute::print (const FStyle& style)
   Style attr = style.getStyle();
 
   if ( attr == Style::None )
-    setNormal();
-  else
   {
-    for (const auto& p : attributeLookup)
-    {
-      const auto& style_name = p.first;
-      const auto& set_function = p.second;
+    setNormal();
+    return;
+  }
 
-      if ( (attr & style_name) != Style::None )
-        set_function(true);
-    }
+  while ( attr != Style::None )
+  {
+    const auto style_name = Style(attr & -attr);  // Find rightmost set bit
+    const auto iter = attributeLookup.find(style_name);
+
+    if ( iter != attributeLookup.end() )
+      iter->second(true);  // Sets the found style
+
+    attr ^= style_name; // Clear the rightmost set bit
   }
 }
 

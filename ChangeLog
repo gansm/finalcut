@@ -1,3 +1,7 @@
+2023-04-07  Markus Gans  <guru.mail@muenster.de>
+	* Processing of FStyle in print() statements is now faster because only 
+	  set data bits are considered
+
 2023-04-06  Markus Gans  <guru.mail@muenster.de>
 	* Individual columns can now be shown and hidden in FListView
 
