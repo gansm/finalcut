@@ -1,3 +1,7 @@
+2023-04-08  Markus Gans  <guru.mail@muenster.de>
+	* Clears the FScrollView viewport area after viewport creation or 
+	  resizing
+
 2023-04-07  Markus Gans  <guru.mail@muenster.de>
 	* Processing of FStyle in print() statements is now faster because only 
 	  set data bits are considered

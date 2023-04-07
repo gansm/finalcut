@@ -66,7 +66,8 @@ void FScrollView::setScrollWidth (std::size_t width)
   {
     scroll_geometry.setWidth (width);
     resizeArea (scroll_geometry, viewport.get());
-
+    setColor();
+    clearArea();
     addPreprocessingHandler
     (
       F_PREPROC_HANDLER (this, &FScrollView::copy2area)
@@ -95,6 +96,8 @@ void FScrollView::setScrollHeight (std::size_t height)
   {
     scroll_geometry.setHeight (height);
     resizeArea (scroll_geometry, viewport.get());
+    setColor();
+    clearArea();
     addPreprocessingHandler
     (
       F_PREPROC_HANDLER (this, &FScrollView::copy2area)
@@ -123,6 +126,8 @@ void FScrollView::setScrollSize (const FSize& size)
   {
     scroll_geometry.setSize (width, height);
     resizeArea (scroll_geometry, viewport.get());
+    setColor();
+    clearArea();
     addPreprocessingHandler
     (
       F_PREPROC_HANDLER (this, &FScrollView::copy2area)
@@ -804,6 +809,8 @@ inline void FScrollView::createViewport (const FSize& size) noexcept
 
   scroll_geometry.setSize(size);
   viewport = createArea(scroll_geometry);
+  setColor();
+  clearArea();
 }
 
 //----------------------------------------------------------------------

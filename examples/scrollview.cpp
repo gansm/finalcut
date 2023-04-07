@@ -105,6 +105,7 @@ void Scrollview::initLayout()
                        , FSize{5, 1} );
   FScrollView::initLayout();
 }
+
 //----------------------------------------------------------------------
 void Scrollview::setScrollSize (const FSize& size)
 {
