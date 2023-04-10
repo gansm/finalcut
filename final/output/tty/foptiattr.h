@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2022 Markus Gans                                      *
+* Copyright 2016-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -37,6 +37,7 @@
 
 #include <cassert>
 #include <algorithm>  // need for std::swap
+#include <array>
 #include <string>
 
 #include "final/ftypes.h"
@@ -159,6 +160,17 @@ class FOptiAttr final
       bool  caused_reset;
     };
 
+    // Using-declarations
+    using SetFunctionCall = std::function<bool(FOptiAttr*, FChar&)>;
+
+    struct AttributeHandlerEntry
+    {
+      FAttribute mask;
+      SetFunctionCall function;
+    };
+
+    using AttributeHandlers = std::array<AttributeHandlerEntry, 13>;
+
     // Enumerations
     enum init_reset_tests
     {
@@ -224,6 +236,8 @@ class FOptiAttr final
     auto        setTermDefaultColor (FChar&) -> bool;
     void        setAttributesOn (FChar&);
     void        setAttributesOff (FChar&);
+    void        setAttributes ( const FAttribute&
+                              , const AttributeHandlers&, FChar& );
 
     // Inquiries
     static auto hasColor (const FChar&) -> bool;

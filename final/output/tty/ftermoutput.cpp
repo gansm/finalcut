@@ -992,15 +992,17 @@ auto FTermOutput::eraseCharacters ( uInt& x, uInt xmax, uInt y
     return PrintState::NothingPrinted;
 
   uInt whitespace{1};
+  uInt i = x + 1;
+  const auto* ch = &vterm->getFChar(int(i), int(y));
 
-  for (uInt i = x + 1; i <= xmax; i++)
+  for (; i <= xmax; i++)
   {
-    const auto& ch = vterm->getFChar(int(i), int(y));
-
-    if ( print_char == ch )
+    if ( print_char == *ch )
       whitespace++;
     else
       break;
+
+    ++ch;
   }
 
   if ( whitespace == 1 )
@@ -1056,15 +1058,17 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y) -> PrintState
     return PrintState::NothingPrinted;
 
   uInt repetitions{1};
+  uInt i = x + 1;
+  const auto* ch = &vterm->getFChar(int(i), int(y));
 
-  for (uInt i = x + 1; i <= xmax; i++)
+  for (; i <= xmax; i++)
   {
-    const auto& ch = vterm->getFChar(int(i), int(y));
-
-    if ( print_char == ch )
+    if ( print_char == *ch )
       repetitions++;
     else
       break;
+
+    ++ch;
   }
 
   if ( repetitions == 1 )
@@ -1282,8 +1286,15 @@ inline void FTermOutput::markAsPrinted (uInt from, uInt to, uInt y) const
 {
   // Marks characters in the specified range [from .. to] as printed
 
-  for (uInt x = from; x <= to; x++)
-    vterm->getFChar(int(x), int(y)).attr.bit.printed = true;
+  uInt x = from;
+  auto* ch = &vterm->getFChar(int(x), int(y));
+
+  while ( x <= to )
+  {
+    ch->attr.bit.printed = true;
+    x++;
+    ++ch;
+  }
 }
 
 //----------------------------------------------------------------------

@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <functional>
 #include <unordered_map>
 
 #include "final/vterm/fcolorpair.h"

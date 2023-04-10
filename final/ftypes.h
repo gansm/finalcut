@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2022 Markus Gans                                      *
+* Copyright 2017-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -276,6 +276,7 @@ struct FCharAttribute
 union FAttribute
 {
   uInt8 byte[4];
+  uInt32 word;
   FCharAttribute bit;
 };
 
@@ -298,25 +299,17 @@ struct FChar
 //----------------------------------------------------------------------
 constexpr auto isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool
 {
-  auto l_iter = std::cbegin(lhs);
-  auto r_iter = std::cbegin(rhs);
-  const auto& l_last = std::cend(lhs);
+  const wchar_t* l_iter = std::cbegin(lhs);
+  const wchar_t* r_iter = std::cbegin(rhs);
+  const wchar_t* const l_last = std::cend(lhs);
 
-  while ( l_iter != l_last )
+  while ( *l_iter == *r_iter && *l_iter != L'\0' && l_iter != l_last )
   {
-    if ( *l_iter == *r_iter )
-    {
-      if ( *l_iter == L'\0' )
-        return true;
-
-      ++l_iter;
-      ++r_iter;
-    }
-    else
-      return false;
+    ++l_iter;
+    ++r_iter;
   }
 
-  return true;
+  return *l_iter == *r_iter;
 }
 
 //----------------------------------------------------------------------

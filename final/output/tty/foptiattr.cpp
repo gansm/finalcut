@@ -22,6 +22,8 @@
 
 #include <cstring>
 #include <array>
+#include <functional>
+#include <utility>
 
 #include "final/fc.h"
 #include "final/fstartoptions.h"
@@ -940,87 +942,75 @@ auto FOptiAttr::setTermDefaultColor (FChar& term) -> bool
 //----------------------------------------------------------------------
 void FOptiAttr::setAttributesOn (FChar& term)
 {
-  if ( on.attr.bit.alt_charset )
-    setTermAltCharset(term);
+  static const AttributeHandlers attribute_on_handlers
+  {{
+    { {0x00, 0x08, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermAltCharset(fchar); } },
+    { {0x00, 0x10, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermPCcharset(fchar); } },
+    { {0x01, 0x00, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermBold(fchar); } },
+    { {0x02, 0x00, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermDim(fchar); } },
+    { {0x04, 0x00, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermItalic(fchar); } },
+    { {0x08, 0x00, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermUnderline(fchar); } },
+    { {0x10, 0x00, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermBlink(fchar); } },
+    { {0x20, 0x00, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermReverse(fchar); } },
+    { {0x40, 0x00, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermStandout(fchar); } },
+    { {0x80, 0x00, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermInvisible(fchar); } },
+    { {0x00, 0x01, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermProtected(fchar); } },
+    { {0x00, 0x02, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermCrossedOut(fchar); } },
+    { {0x00, 0x04, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermDoubleUnderline(fchar); } }
+  }};
 
-  if ( on.attr.bit.pc_charset )
-    setTermPCcharset(term);
-
-  if ( on.attr.bit.bold )
-    setTermBold(term);
-
-  if ( on.attr.bit.dim )
-    setTermDim(term);
-
-  if ( on.attr.bit.italic )
-    setTermItalic(term);
-
-  if ( on.attr.bit.underline )
-    setTermUnderline(term);
-
-  if ( on.attr.bit.blink )
-    setTermBlink(term);
-
-  if ( on.attr.bit.reverse )
-    setTermReverse(term);
-
-  if ( on.attr.bit.standout )
-    setTermStandout(term);
-
-  if ( on.attr.bit.invisible )
-    setTermInvisible(term);
-
-  if ( on.attr.bit.protect )
-    setTermProtected(term);
-
-  if ( on.attr.bit.crossed_out )
-    setTermCrossedOut(term);
-
-  if ( on.attr.bit.dbl_underline )
-    setTermDoubleUnderline(term);
+  setAttributes (on.attr, attribute_on_handlers, term);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::setAttributesOff (FChar& term)
 {
-  if ( off.attr.bit.pc_charset )
-    unsetTermPCcharset(term);
+  static const AttributeHandlers attribute_off_handlers
+  {{
+    { {0x00, 0x10, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermPCcharset(fchar); } },
+    { {0x00, 0x08, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermAltCharset(fchar); } },
+    { {0x01, 0x00, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermBold(fchar); } },
+    { {0x02, 0x00, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermDim(fchar); } },
+    { {0x04, 0x00, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermItalic(fchar); } },
+    { {0x08, 0x00, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermUnderline(fchar); } },
+    { {0x10, 0x00, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermBlink(fchar); } },
+    { {0x20, 0x00, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermReverse(fchar); } },
+    { {0x40, 0x00, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermStandout(fchar); } },
+    { {0x80, 0x00, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermInvisible(fchar); } },
+    { {0x00, 0x01, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermProtected(fchar); } },
+    { {0x00, 0x02, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermCrossedOut(fchar); } },
+    { {0x00, 0x04, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermDoubleUnderline(fchar); } }
+  }};
 
-  if ( off.attr.bit.alt_charset )
-    unsetTermAltCharset(term);
+  setAttributes (off.attr, attribute_off_handlers, term);
+}
 
-  if ( off.attr.bit.bold )
-    unsetTermBold(term);
+//----------------------------------------------------------------------
+void FOptiAttr::setAttributes ( const FAttribute& attribute
+                              , const AttributeHandlers& attribute_handlers
+                              , FChar& term )
+{
+  FAttribute attr{attribute};
 
-  if ( off.attr.bit.dim )
-    unsetTermDim(term);
+  if ( ! attr.word )
+    return;
 
-  if ( off.attr.bit.italic )
-    unsetTermItalic(term);
+  for (const auto& handler : attribute_handlers)
+  {
+    auto& mask = handler.mask;
 
-  if ( off.attr.bit.underline )
-    unsetTermUnderline(term);
+    for (std::size_t b{0}; b < 2; b++)
+    {
+      if ( ! (attr.byte[b] & mask.byte[b]) )
+        continue;
 
-  if ( off.attr.bit.blink )
-    unsetTermBlink(term);
+      handler.function(this, term);  // Call function
+      attr.byte[b] ^= mask.byte[b];  // Clear found bit
+    }
 
-  if ( off.attr.bit.reverse )
-    unsetTermReverse(term);
-
-  if ( off.attr.bit.standout )
-    unsetTermStandout(term);
-
-  if ( off.attr.bit.invisible )
-    unsetTermInvisible(term);
-
-  if ( off.attr.bit.protect )
-    unsetTermProtected(term);
-
-  if ( off.attr.bit.crossed_out )
-    unsetTermCrossedOut(term);
-
-  if ( off.attr.bit.dbl_underline )
-    unsetTermDoubleUnderline(term);
+    if ( ! attr.word )
+      break;
+  }
 }
 
 //----------------------------------------------------------------------
@@ -1071,9 +1061,14 @@ inline void FOptiAttr::prevent_no_color_video_attributes ( FChar& attr
   if ( ! (hasColor(attr) || next_has_color) || attr_without_color <= 0 )
     return;
 
-  for (uInt bit{1}; bit < no_mode; bit <<= 1)
+  auto set_bits = uInt(attr_without_color);
+
+  while ( set_bits )
   {
-    switch ( bit & uInt(attr_without_color) )
+    uInt bit = set_bits & -set_bits;  // Get rightmost set bit
+    set_bits &= ~bit;  // Clear rightmost set bit
+
+    switch ( bit )
     {
       case standout_mode:
         attr.attr.bit.standout = false;
