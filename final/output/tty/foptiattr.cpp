@@ -944,19 +944,19 @@ void FOptiAttr::setAttributesOn (FChar& term)
 {
   static const AttributeHandlers attribute_on_handlers
   {{
-    { {0x00, 0x08, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermAltCharset(fchar); } },
-    { {0x00, 0x10, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermPCcharset(fchar); } },
-    { {0x01, 0x00, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermBold(fchar); } },
-    { {0x02, 0x00, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermDim(fchar); } },
-    { {0x04, 0x00, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermItalic(fchar); } },
-    { {0x08, 0x00, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermUnderline(fchar); } },
-    { {0x10, 0x00, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermBlink(fchar); } },
-    { {0x20, 0x00, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermReverse(fchar); } },
-    { {0x40, 0x00, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermStandout(fchar); } },
-    { {0x80, 0x00, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermInvisible(fchar); } },
-    { {0x00, 0x01, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermProtected(fchar); } },
-    { {0x00, 0x02, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermCrossedOut(fchar); } },
-    { {0x00, 0x04, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermDoubleUnderline(fchar); } }
+    { {{0x00, 0x08, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermAltCharset(fchar); } },
+    { {{0x00, 0x10, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermPCcharset(fchar); } },
+    { {{0x01, 0x00, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermBold(fchar); } },
+    { {{0x02, 0x00, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermDim(fchar); } },
+    { {{0x04, 0x00, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermItalic(fchar); } },
+    { {{0x08, 0x00, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermUnderline(fchar); } },
+    { {{0x10, 0x00, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermBlink(fchar); } },
+    { {{0x20, 0x00, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermReverse(fchar); } },
+    { {{0x40, 0x00, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermStandout(fchar); } },
+    { {{0x80, 0x00, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermInvisible(fchar); } },
+    { {{0x00, 0x01, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermProtected(fchar); } },
+    { {{0x00, 0x02, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermCrossedOut(fchar); } },
+    { {{0x00, 0x04, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermDoubleUnderline(fchar); } }
   }};
 
   setAttributes (on.attr, attribute_on_handlers, term);
@@ -967,19 +967,19 @@ void FOptiAttr::setAttributesOff (FChar& term)
 {
   static const AttributeHandlers attribute_off_handlers
   {{
-    { {0x00, 0x10, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermPCcharset(fchar); } },
-    { {0x00, 0x08, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermAltCharset(fchar); } },
-    { {0x01, 0x00, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermBold(fchar); } },
-    { {0x02, 0x00, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermDim(fchar); } },
-    { {0x04, 0x00, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermItalic(fchar); } },
-    { {0x08, 0x00, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermUnderline(fchar); } },
-    { {0x10, 0x00, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermBlink(fchar); } },
-    { {0x20, 0x00, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermReverse(fchar); } },
-    { {0x40, 0x00, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermStandout(fchar); } },
-    { {0x80, 0x00, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermInvisible(fchar); } },
-    { {0x00, 0x01, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermProtected(fchar); } },
-    { {0x00, 0x02, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermCrossedOut(fchar); } },
-    { {0x00, 0x04, 0x00, 0x00}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermDoubleUnderline(fchar); } }
+    { {{0x00, 0x10, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermPCcharset(fchar); } },
+    { {{0x00, 0x08, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermAltCharset(fchar); } },
+    { {{0x01, 0x00, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermBold(fchar); } },
+    { {{0x02, 0x00, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermDim(fchar); } },
+    { {{0x04, 0x00, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermItalic(fchar); } },
+    { {{0x08, 0x00, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermUnderline(fchar); } },
+    { {{0x10, 0x00, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermBlink(fchar); } },
+    { {{0x20, 0x00, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermReverse(fchar); } },
+    { {{0x40, 0x00, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermStandout(fchar); } },
+    { {{0x80, 0x00, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermInvisible(fchar); } },
+    { {{0x00, 0x01, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermProtected(fchar); } },
+    { {{0x00, 0x02, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermCrossedOut(fchar); } },
+    { {{0x00, 0x04, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermDoubleUnderline(fchar); } }
   }};
 
   setAttributes (off.attr, attribute_off_handlers, term);
@@ -1065,7 +1065,7 @@ inline void FOptiAttr::prevent_no_color_video_attributes ( FChar& attr
 
   while ( set_bits )
   {
-    uInt bit = set_bits & -set_bits;  // Get rightmost set bit
+    uInt bit = set_bits & (~set_bits + 1);  // Get rightmost set bit
     set_bits &= ~bit;  // Clear rightmost set bit
 
     switch ( bit )

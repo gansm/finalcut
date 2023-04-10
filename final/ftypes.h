@@ -299,9 +299,9 @@ struct FChar
 //----------------------------------------------------------------------
 constexpr auto isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool
 {
-  const wchar_t* l_iter = std::cbegin(lhs);
-  const wchar_t* r_iter = std::cbegin(rhs);
-  const wchar_t* const l_last = std::cend(lhs);
+  const auto* l_iter = std::cbegin(lhs);
+  const auto* r_iter = std::cbegin(rhs);
+  const auto* const l_last = std::cend(lhs);
 
   while ( *l_iter == *r_iter && *l_iter != L'\0' && l_iter != l_last )
   {

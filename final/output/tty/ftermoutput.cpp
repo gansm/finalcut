@@ -1033,7 +1033,7 @@ auto FTermOutput::eraseCharacters ( uInt& x, uInt xmax, uInt y
     {
       x--;
 
-      for (uInt i{0}; i < whitespace; i++)
+      for (i = 0; i < whitespace; i++)
       {
         appendCharacter (print_char);
         x++;
@@ -1097,7 +1097,7 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y) -> PrintState
     {
       x--;
 
-      for (uInt i{0}; i < repetitions; i++)
+      for (i = 0; i < repetitions; i++)
       {
         appendCharacter (print_char);
         x++;
