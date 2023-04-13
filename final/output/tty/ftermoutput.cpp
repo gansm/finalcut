@@ -663,7 +663,7 @@ auto FTermOutput::canClearLeadingWS (uInt& xmin, uInt y) const -> bool
   const auto& ut = FTermcap::background_color_erase;
   const auto* ch = first_char + 1;
 
-  for (int x{int(xmin) + 1}; x < vterm->width; x++)
+  for (int x{1}; x < vterm->width; x++)
   {
     if ( *first_char == *ch )
       leading_whitespace++;
@@ -1156,11 +1156,9 @@ auto FTermOutput::updateTerminalLine (uInt y) -> bool
   }
 
   // Clear rest of line
-  bool is_eol_clean = canClearToEOL (xmin, y);
-  setCursor (FPoint{int(xmin), int(y)});
-
-  if ( is_eol_clean )
+  if ( canClearToEOL (xmin, y) )
   {
+    setCursor (FPoint{int(xmin), int(y)});
     auto& min_char = vterm->getFChar(int(xmin), int(y));
     appendAttributes (min_char);
     appendOutputBuffer (FTermControl{TCAP(t_clr_eol)});
@@ -1170,6 +1168,7 @@ auto FTermOutput::updateTerminalLine (uInt y) -> bool
   {
     bool draw_leading_ws = canClearLeadingWS (xmin, y);  // leading whitespace
     bool draw_trailing_ws = canClearTrailingWS (xmax, y);  // trailing whitespace
+    setCursor (FPoint{int(xmin), int(y)});
 
     if ( draw_leading_ws )
     {
