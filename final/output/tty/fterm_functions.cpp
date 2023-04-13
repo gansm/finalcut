@@ -26,6 +26,7 @@
 
 #include <algorithm>
 #include <array>
+#include <iterator>
 #include <limits>
 #include <numeric>
 #include <utility>
@@ -662,25 +663,26 @@ auto getCharLength (const FString& string, std::size_t pos) -> int
   // Gets the number of characters of the combined character
   // at string position pos
 
-  const auto& len = string.getLength();
-  std::size_t n = pos;
-  const auto& ch = string[n];
-  std::size_t char_width = getColumnWidth(ch);
-
-  if ( isWhitespace(ch) )
-    return 1;
-
-  if ( char_width == 0 || n >= len )
+  if ( pos >= string.getLength() )
     return -1;
 
-  do
-  {
-    n++;
-    char_width = getColumnWidth(string[n]);
-  }
-  while ( n < len && char_width == 0 && ! isWhitespace(string[n]) );
+  const auto begin = std::next(string.cbegin(), pos);
 
-  return static_cast<int>(n - pos);
+  if ( isWhitespace(*begin) )
+    return 1;
+
+  if ( getColumnWidth(*begin) == 0 )
+    return -1;
+
+  auto iter = std::next(begin);
+  const auto end = string.cend();
+
+  while ( iter < end && getColumnWidth(*iter) == 0 && ! isWhitespace(*iter) )
+  {
+    ++iter;
+  }
+
+  return static_cast<int>(iter - begin);
 }
 
 //----------------------------------------------------------------------

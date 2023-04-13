@@ -621,20 +621,19 @@ auto FTermOutput::canClearToEOL (uInt xmin, uInt y) const -> bool
   // => clear to end of line
 
   const auto& ce = TCAP(t_clr_eol);
-  const auto& min_char = vterm->getFChar(int(xmin), int(y));
+  const auto* min_char = &vterm->getFChar(int(xmin), int(y));
 
-  if ( ! ce || min_char.ch[0] != L' ' )
+  if ( ! ce || min_char->ch[0] != L' ' )
     return false;
 
   uInt beginning_whitespace = 1;
-  const auto& normal = FOptiAttr::isNormal(min_char);
+  const auto& normal = FOptiAttr::isNormal(*min_char);
   const auto& ut = FTermcap::background_color_erase;
-  int x = int(xmin) + 1;
-  const auto* ch = &vterm->getFChar(x, int(y));
+  const auto* ch = min_char + 1;
 
-  for (; x < vterm->width; x++)
+  for (int x{int(xmin) + 1}; x < vterm->width; x++)
   {
-    if ( min_char == *ch )
+    if ( *min_char == *ch )
       beginning_whitespace++;
     else
       break;
@@ -654,20 +653,19 @@ auto FTermOutput::canClearLeadingWS (uInt& xmin, uInt y) const -> bool
   // => clear from xmin to beginning of line
 
   const auto& cb = TCAP(t_clr_bol);
-  const auto& first_char = vterm->getFChar(0, int(y));
+  const auto* first_char = &vterm->getFChar(0, int(y));
 
-  if ( ! cb || first_char.ch[0] != L' ' )
+  if ( ! cb || first_char->ch[0] != L' ' )
     return false;
 
   uInt leading_whitespace = 1;
-  const auto& normal = FOptiAttr::isNormal(first_char);
+  const auto& normal = FOptiAttr::isNormal(*first_char);
   const auto& ut = FTermcap::background_color_erase;
-  int x = 1;
-  const auto* ch = &vterm->getFChar(x, int(y));
+  const auto* ch = first_char + 1;
 
-  for (; x < vterm->width; x++)
+  for (int x{int(xmin) + 1}; x < vterm->width; x++)
   {
-    if ( first_char == *ch )
+    if ( *first_char == *ch )
       leading_whitespace++;
     else
       break;
@@ -692,20 +690,19 @@ auto FTermOutput::canClearTrailingWS (uInt& xmax, uInt y) const -> bool
   // => clear from xmax to end of line
 
   const auto& ce = TCAP(t_clr_eol);
-  const auto& last_char = vterm->getFChar(vterm->width - 1, int(y));
+  const auto* last_char = &vterm->getFChar(vterm->width - 1, int(y));
 
-  if ( ! ce || last_char.ch[0] != L' ' )
+  if ( ! ce || last_char->ch[0] != L' ' )
     return false;
 
   uInt trailing_whitespace = 1;
-  const auto& normal = FOptiAttr::isNormal(last_char);
+  const auto& normal = FOptiAttr::isNormal(*last_char);
   const auto& ut = FTermcap::background_color_erase;
-  int x = vterm->width - 1;
-  const auto* ch = &vterm->getFChar(x, int(y));
+  const auto* ch = last_char;
 
-  for (; x > 0 ; x--)
+  for (int x{vterm->width - 1}; x > 0 ; x--)
   {
-    if ( last_char == *ch )
+    if ( *last_char == *ch )
       trailing_whitespace++;
     else
       break;
@@ -728,17 +725,16 @@ auto FTermOutput::skipUnchangedCharacters (uInt& x, uInt xmax, uInt y) -> bool
 {
   // Skip characters without changes if it is faster than redrawing
 
-  auto& print_char = vterm->getFChar(int(x), int(y));
-  print_char.attr.bit.printed = true;
+  auto* print_char = &vterm->getFChar(int(x), int(y));
+  print_char->attr.bit.printed = true;
 
-  if ( ! print_char.attr.bit.no_changes )
+  if ( ! print_char->attr.bit.no_changes )
     return false;
 
   uInt count{1};
-  uInt i = x + 1;
-  const auto* ch = &vterm->getFChar(int(i), int(y));
+  const auto* ch = print_char + 1;
 
-  for (; i <= xmax; i++)
+  for (uInt i{x + 1}; i <= xmax; i++)
   {
     if ( ch->attr.bit.no_changes )
       count++;
@@ -771,7 +767,6 @@ void FTermOutput::printRange ( uInt xmin, uInt xmax, uInt y
   {
     auto* print_char = min_char + (x - xmin);
     print_char->attr.bit.printed = true;
-
     replaceNonPrintableFullwidth (x, *print_char);
 
     // skip character with no changes
@@ -986,18 +981,17 @@ auto FTermOutput::eraseCharacters ( uInt& x, uInt xmax, uInt y
   // Erase a number of characters to draw simple whitespaces
 
   const auto& ec = TCAP(t_erase_chars);
-  auto& print_char = vterm->getFChar(int(x), int(y));
+  auto* print_char = &vterm->getFChar(int(x), int(y));
 
-  if ( ! ec || print_char.ch[0] != L' ' )
+  if ( ! ec || print_char->ch[0] != L' ' )
     return PrintState::NothingPrinted;
 
   uInt whitespace{1};
-  uInt i = x + 1;
-  const auto* ch = &vterm->getFChar(int(i), int(y));
+  const auto* ch = print_char + 1;
 
-  for (; i <= xmax; i++)
+  for (uInt i{x + 1}; i <= xmax; i++)
   {
-    if ( print_char == *ch )
+    if ( *print_char == *ch )
       whitespace++;
     else
       break;
@@ -1007,19 +1001,19 @@ auto FTermOutput::eraseCharacters ( uInt& x, uInt xmax, uInt y
 
   if ( whitespace == 1 )
   {
-    appendCharacter (print_char);
+    appendCharacter (*print_char);
     markAsPrinted (x, y);
   }
   else
   {
     const uInt start_pos = x;
-    const auto& normal = FOptiAttr::isNormal(print_char);
+    const auto& normal = FOptiAttr::isNormal(*print_char);
     const auto& ut = FTermcap::background_color_erase;
 
     if ( whitespace > erase_char_length + cursor_address_length
       && (ut || normal) )
     {
-      appendAttributes (print_char);
+      appendAttributes (*print_char);
       appendOutputBuffer (FTermControl{FTermcap::encodeParameter(ec, whitespace)});
 
       if ( x + whitespace - 1 < xmax || draw_trailing_ws )
@@ -1033,9 +1027,9 @@ auto FTermOutput::eraseCharacters ( uInt& x, uInt xmax, uInt y
     {
       x--;
 
-      for (i = 0; i < whitespace; i++)
+      for (uInt i{0}; i < whitespace; i++)
       {
-        appendCharacter (print_char);
+        appendCharacter (*print_char);
         x++;
       }
     }
@@ -1052,18 +1046,17 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y) -> PrintState
   // Repeat one character n-fold
 
   const auto& rp = TCAP(t_repeat_char);
-  auto& print_char = vterm->getFChar(int(x), int(y));
+  auto* print_char = &vterm->getFChar(int(x), int(y));
 
   if ( ! rp )
     return PrintState::NothingPrinted;
 
   uInt repetitions{1};
-  uInt i = x + 1;
-  const auto* ch = &vterm->getFChar(int(i), int(y));
+  const auto* ch = print_char + 1;
 
-  for (; i <= xmax; i++)
+  for (uInt i{x + 1}; i <= xmax; i++)
   {
-    if ( print_char == *ch )
+    if ( *print_char == *ch )
       repetitions++;
     else
       break;
@@ -1074,7 +1067,7 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y) -> PrintState
   if ( repetitions == 1 )
   {
     bool min_and_not_max( x != xmax );
-    printCharacter (x, y, min_and_not_max, print_char);
+    printCharacter (x, y, min_and_not_max, *print_char);
   }
   else
   {
@@ -1084,12 +1077,12 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y) -> PrintState
     const uInt start_pos = x;
 
     if ( repetitions > repeat_char_length
-      && is7bit(print_char.ch[0]) && print_char.ch[1] == L'\0' )
+      && is7bit(print_char->ch[0]) && print_char->ch[1] == L'\0' )
     {
-      newFontChanges (print_char);
-      charsetChanges (print_char);
-      appendAttributes (print_char);
-      appendOutputBuffer (FTermControl{FTermcap::encodeParameter(rp, print_char.ch[0], repetitions)});
+      newFontChanges (*print_char);
+      charsetChanges (*print_char);
+      appendAttributes (*print_char);
+      appendOutputBuffer (FTermControl{FTermcap::encodeParameter(rp, print_char->ch[0], repetitions)});
       term_pos->x_ref() += int(repetitions);
       x = x + repetitions - 1;
     }
@@ -1097,9 +1090,9 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y) -> PrintState
     {
       x--;
 
-      for (i = 0; i < repetitions; i++)
+      for (uInt i{0}; i < repetitions; i++)
       {
-        appendCharacter (print_char);
+        appendCharacter (*print_char);
         x++;
       }
     }
@@ -1162,39 +1155,27 @@ auto FTermOutput::updateTerminalLine (uInt y) -> bool
     return false;
   }
 
-  bool draw_leading_ws = false;
-  bool draw_trailing_ws = false;
-  const auto& ce = TCAP(t_clr_eol);
-
   // Clear rest of line
   bool is_eol_clean = canClearToEOL (xmin, y);
-
-  if ( ! is_eol_clean )
-  {
-    // leading whitespace
-    draw_leading_ws = canClearLeadingWS (xmin, y);
-
-    // trailing whitespace
-    draw_trailing_ws = canClearTrailingWS (xmax, y);
-  }
-
   setCursor (FPoint{int(xmin), int(y)});
 
   if ( is_eol_clean )
   {
     auto& min_char = vterm->getFChar(int(xmin), int(y));
     appendAttributes (min_char);
-    appendOutputBuffer (FTermControl{ce});
+    appendOutputBuffer (FTermControl{TCAP(t_clr_eol)});
     markAsPrinted (xmin, uInt(vterm->width - 1), y);
   }
   else
   {
+    bool draw_leading_ws = canClearLeadingWS (xmin, y);  // leading whitespace
+    bool draw_trailing_ws = canClearTrailingWS (xmax, y);  // trailing whitespace
+
     if ( draw_leading_ws )
     {
-      const auto& cb = TCAP(t_clr_bol);
       auto& first_char = vterm->getFChar(int(0), int(y));
       appendAttributes (first_char);
-      appendOutputBuffer (FTermControl{cb});
+      appendOutputBuffer (FTermControl{TCAP(t_clr_bol)});
       markAsPrinted (0, xmin, y);
     }
 
@@ -1204,7 +1185,7 @@ auto FTermOutput::updateTerminalLine (uInt y) -> bool
     {
       auto& last_char = vterm->getFChar(vterm->width - 1, int(y));
       appendAttributes (last_char);
-      appendOutputBuffer (FTermControl{ce});
+      appendOutputBuffer (FTermControl{TCAP(t_clr_eol)});
       markAsPrinted (xmax + 1, uInt(vterm->width - 1), y);
     }
   }

@@ -1738,10 +1738,10 @@ void FVTerm::clearAreaWithShadow (FTermArea* area, const FChar& fillchar) const 
 inline auto FVTerm::printWrap (FTermArea* area) const -> bool
 {
   bool end_of_area{false};
-  const int width  = area->width;
-  const int height = area->height;
-  const int rsh    = area->right_shadow;
-  const int bsh    = area->bottom_shadow;
+  const int& width  = area->width;
+  const int& height = area->height;
+  const int& rsh    = area->right_shadow;
+  const int& bsh    = area->bottom_shadow;
 
   // Line break at right margin
   if ( area->cursor_x > width + rsh )
@@ -1792,47 +1792,47 @@ inline auto FVTerm::printCharacterOnCoordinate ( FTermArea* area
 {
   const int ax = area->cursor_x - 1;
   const int ay = area->cursor_y - 1;
-  auto& ac = area->getFChar(ax, ay);  // area character
+  auto* ac = &area->getFChar(ax, ay);  // area character
 
-  if ( ac == ch )  // compare with an overloaded operator
-    return ac.attr.bit.char_width;
+  if ( *ac == ch )  // compare with an overloaded operator
+    return ac->attr.bit.char_width;
 
   auto& line_changes = area->changes[unsigned(ay)];
 
-  if ( changedToTransparency(ac, ch) )
+  if ( changedToTransparency(*ac, ch) )
   {
     // add one transparent character form line
     line_changes.trans_count++;
   }
 
-  if ( changedFromTransparency(ac, ch) )
+  if ( changedFromTransparency(*ac, ch) )
   {
     // remove one transparent character from line
     line_changes.trans_count--;
   }
 
   // copy character to area
-  ac = ch;
+  *ac = ch;
 
-  if ( ac.attr.bit.char_width == 0 )
+  if ( ac->attr.bit.char_width == 0 )
   {
-    const auto new_char_width = getColumnWidth(ac.ch[0]);
+    const auto new_char_width = getColumnWidth(ac->ch[0]);
 
     if ( new_char_width == 0 )
       return 0;
 
-    addColumnWidth(ac, new_char_width);  // Add column width
+    addColumnWidth(*ac, new_char_width);  // Add column width
   }
 
-  const auto padding = int(ac.attr.bit.char_width == 2);
+  const auto padding = unsigned(ac->attr.bit.char_width == 2);
 
-  if ( ax < int(line_changes.xmin) )
+  if ( uInt(ax) < line_changes.xmin )
     line_changes.xmin = uInt(ax);
 
-  if ( ax + padding > int(line_changes.xmax) )
-    line_changes.xmax = uInt(ax + padding);
+  if ( uInt(ax) + padding > line_changes.xmax )
+    line_changes.xmax = uInt(ax) + padding;
 
-  return ac.attr.bit.char_width;
+  return ac->attr.bit.char_width;
 }
 
 //----------------------------------------------------------------------
