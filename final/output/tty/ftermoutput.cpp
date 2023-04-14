@@ -1266,13 +1266,12 @@ inline void FTermOutput::markAsPrinted (uInt from, uInt to, uInt y) const
 {
   // Marks characters in the specified range [from .. to] as printed
 
-  uInt x = from;
-  auto* ch = &vterm->getFChar(int(x), int(y));
+  auto* ch = &vterm->getFChar(int(from), int(y));
+  auto* end = ch + to - from + 1;
 
-  while ( x <= to )
+  while ( ch < end )
   {
     ch->attr.bit.printed = true;
-    x++;
     ++ch;
   }
 }
@@ -1296,12 +1295,24 @@ inline void FTermOutput::newFontChanges (FChar& next_char) const
 //----------------------------------------------------------------------
 inline void FTermOutput::charsetChanges (FChar& next_char) const
 {
-  std::copy_if ( next_char.ch.cbegin()
-               , next_char.ch.cend()
-               , next_char.encoded_char.begin()
-               , [] (const wchar_t& ch) { return ch != L'\0'; } );
+  auto iter_enc_ch = next_char.encoded_char.begin();
+  auto iter_ch = next_char.ch.cbegin();
+  auto end_ch = next_char.ch.cend();
 
-  if ( internal::var::terminal_encoding == Encoding::UTF8 )
+  while ( iter_ch < end_ch )
+  {
+    *iter_enc_ch = *iter_ch;
+
+    if ( *iter_ch == L'\0' )
+      break;
+
+    ++iter_ch;
+    ++iter_enc_ch;
+  }
+
+  const auto terminal_encoding = internal::var::terminal_encoding;
+
+  if ( terminal_encoding == Encoding::UTF8 )
     return;
 
   const auto& ch = next_char.ch[0];
@@ -1320,16 +1331,15 @@ inline void FTermOutput::charsetChanges (FChar& next_char) const
 
   first_enc_char = ch_enc;
 
-  if ( internal::var::terminal_encoding == Encoding::VT100 )
+  if ( terminal_encoding == Encoding::VT100 )
     next_char.attr.bit.alt_charset = true;
-  else if ( internal::var::terminal_encoding == Encoding::PC )
+  else if ( terminal_encoding == Encoding::PC )
   {
     next_char.attr.bit.pc_charset = true;
+    const auto is_putty = fterm_data->isTermType(FTermType::putty);
+    const auto is_xterm = fterm_data->isTermType(FTermType::xterm);
 
-    if ( fterm_data->isTermType(FTermType::putty) )
-      return;
-
-    if ( fterm_data->isTermType(FTermType::xterm) && ch_enc < 0x20 )  // Character 0x00..0x1f
+    if ( ! is_putty && is_xterm && ch_enc < 0x20 )  // Character 0x00..0x1f
     {
       if ( FTerm::hasUTF8() )
         first_enc_char = int(FTerm::charEncode(ch, Encoding::ASCII));

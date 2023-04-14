@@ -474,17 +474,10 @@ void FOptiMove::check_boundaries ( int& xold, int& yold
   if ( yold < 0 || yold >= int(screen_height) )
     yold = -1;
 
-  if ( xnew < 0 )
-    xnew = 0;
-
-  if ( ynew < 0 )
-    ynew = 0;
-
-  if ( xnew >= int(screen_width) )
-    xnew = int(screen_width) - 1;
-
-  if ( ynew >= int(screen_height) )
-    ynew = int(screen_height) - 1;
+  xnew = std::max(0, xnew);
+  ynew = std::max(0, ynew);
+  xnew = std::min(int(screen_width) - 1, xnew);
+  ynew = std::min(int(screen_height) - 1, ynew);
 }
 
 //----------------------------------------------------------------------
@@ -916,14 +909,13 @@ inline auto FOptiMove::isMethod0Faster ( int& move_time
 //----------------------------------------------------------------------
 inline auto FOptiMove::isMethod1Faster ( int& move_time
                                        , int xold, int yold
-                                       , int xnew, int ynew ) const -> bool
+                                       , int xnew, int ynew ) -> bool
 {
   // Test method 1: local movement
 
   if ( xold >= 0 && yold >= 0 )
   {
-    std::string null_result{};
-    const int new_time = relativeMove (null_result, xold, yold, xnew, ynew);
+    const int new_time = relativeMove (temp_result, xold, yold, xnew, ynew);
 
     if ( new_time < LONG_DURATION && new_time < move_time )
     {
@@ -938,14 +930,13 @@ inline auto FOptiMove::isMethod1Faster ( int& move_time
 //----------------------------------------------------------------------
 inline auto FOptiMove::isMethod2Faster ( int& move_time
                                        , int yold
-                                       , int xnew, int ynew ) const -> bool
+                                       , int xnew, int ynew ) -> bool
 {
   // Test method 2: carriage-return + local movement
 
   if ( yold >= 0 && F_carriage_return.cap )
   {
-    std::string null_result{};
-    const int new_time = relativeMove (null_result, 0, yold, xnew, ynew);
+    const int new_time = relativeMove (temp_result, 0, yold, xnew, ynew);
 
     if ( new_time < LONG_DURATION
       && F_carriage_return.duration + new_time < move_time )
@@ -960,14 +951,13 @@ inline auto FOptiMove::isMethod2Faster ( int& move_time
 
 //----------------------------------------------------------------------
 inline auto FOptiMove::isMethod3Faster ( int& move_time
-                                       , int xnew, int ynew ) const -> bool
+                                       , int xnew, int ynew ) -> bool
 {
   // Test method 3: home-cursor + local movement
 
   if ( F_cursor_home.cap )
   {
-    std::string null_result{};
-    const int new_time = relativeMove (null_result, 0, 0, xnew, ynew);
+    const int new_time = relativeMove (temp_result, 0, 0, xnew, ynew);
 
     if ( new_time < LONG_DURATION
       && F_cursor_home.duration + new_time < move_time )
@@ -982,14 +972,13 @@ inline auto FOptiMove::isMethod3Faster ( int& move_time
 
 //----------------------------------------------------------------------
 inline auto FOptiMove::isMethod4Faster ( int& move_time
-                                       , int xnew, int ynew ) const -> bool
+                                       , int xnew, int ynew ) -> bool
 {
   // Test method 4: home-down + local movement
   if ( F_cursor_to_ll.cap )
   {
-    std::string null_result{};
     int down = int(screen_height) - 1;
-    const int new_time = relativeMove (null_result, 0, down, xnew, ynew);
+    const int new_time = relativeMove (temp_result, 0, down, xnew, ynew);
 
     if ( new_time < LONG_DURATION
       && F_cursor_to_ll.duration + new_time < move_time )
@@ -1005,7 +994,7 @@ inline auto FOptiMove::isMethod4Faster ( int& move_time
 //----------------------------------------------------------------------
 inline auto FOptiMove::isMethod5Faster ( int& move_time
                                        , int yold
-                                       , int xnew, int ynew ) const -> bool
+                                       , int xnew, int ynew ) -> bool
 {
   // Test method 5: left margin for wrap to right-hand side
   if ( automatic_left_margin
@@ -1013,10 +1002,9 @@ inline auto FOptiMove::isMethod5Faster ( int& move_time
     && yold > 0
     && F_cursor_left.cap )
   {
-    std::string null_result{};
     int x = int(screen_width) - 1;
     int y = yold - 1;
-    const int new_time = relativeMove (null_result, x, y, xnew, ynew);
+    const int new_time = relativeMove (temp_result, x, y, xnew, ynew);
 
     if ( new_time < LONG_DURATION
       && F_carriage_return.cap
@@ -1050,28 +1038,25 @@ void FOptiMove::moveByMethod ( int method
       if ( F_carriage_return.cap )
       {
         move_buf = F_carriage_return.cap;
-        std::string s{};
-        relativeMove (s, 0, yold, xnew, ynew);
-        move_buf.append(s);
+        relativeMove (temp_result, 0, yold, xnew, ynew);
+        move_buf.append(temp_result);
       }
       break;
 
     case 3:
       move_buf = F_cursor_home.cap;
       {
-        std::string s{};
-        relativeMove (s, 0, 0, xnew, ynew);
-        move_buf.append(s);
+        relativeMove (temp_result, 0, 0, xnew, ynew);
+        move_buf.append(temp_result);
       }
       break;
 
     case 4:
       move_buf = F_cursor_to_ll.cap;
       {
-        std::string s{};
         int down = int(screen_height) - 1;
-        relativeMove (s, 0, down, xnew, ynew);
-        move_buf.append(s);
+        relativeMove (temp_result, 0, down, xnew, ynew);
+        move_buf.append(temp_result);
       }
       break;
 
@@ -1083,11 +1068,10 @@ void FOptiMove::moveByMethod ( int method
 
       move_buf.append(F_cursor_left.cap);
       {
-        std::string s{};
         int x = int(screen_width) - 1;
         int y = yold - 1;
-        relativeMove (s, x, y, xnew, ynew);
-        move_buf.append(s);
+        relativeMove (temp_result, x, y, xnew, ynew);
+        move_buf.append(temp_result);
       }
       break;
 

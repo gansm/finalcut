@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2022 Markus Gans                                      *
+* Copyright 2015-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -180,11 +180,11 @@ class FOptiMove final
 
     auto  isWideMove (int, int, int, int) const -> bool;
     auto  isMethod0Faster (int&, int, int) -> bool;
-    auto  isMethod1Faster (int&, int, int, int, int) const -> bool;
-    auto  isMethod2Faster (int&, int, int, int) const -> bool;
-    auto  isMethod3Faster (int&, int, int) const -> bool;
-    auto  isMethod4Faster (int&, int, int) const -> bool;
-    auto  isMethod5Faster (int&, int, int, int) const -> bool;
+    auto  isMethod1Faster (int&, int, int, int, int) -> bool;
+    auto  isMethod2Faster (int&, int, int, int) -> bool;
+    auto  isMethod3Faster (int&, int, int) -> bool;
+    auto  isMethod4Faster (int&, int, int) -> bool;
+    auto  isMethod5Faster (int&, int, int, int) -> bool;
     void  moveByMethod (int, int, int, int, int);
 
     // Data members
@@ -215,6 +215,7 @@ class FOptiMove final
     int         baudrate{9600};
     int         tabstop{0};
     std::string move_buf{};
+    std::string temp_result{};
     bool        automatic_left_margin{false};
     bool        eat_nl_glitch{false};
 
