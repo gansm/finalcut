@@ -1267,7 +1267,7 @@ inline void FTermOutput::markAsPrinted (uInt from, uInt to, uInt y) const
   // Marks characters in the specified range [from .. to] as printed
 
   auto* ch = &vterm->getFChar(int(from), int(y));
-  auto* end = ch + to - from + 1;
+  const auto* end = ch + to - from + 1;
 
   while ( ch < end )
   {

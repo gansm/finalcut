@@ -114,9 +114,13 @@ void SGRoptimizer::combineParameter()
   std::size_t write_pos = first.end;
 
   if ( first.start == first.end )  // Esc [ m
-    seq[write_pos++] = '0';
+  {
+    seq[write_pos] = '0';
+    write_pos++;
+  }
 
-  seq[write_pos++] = ';';
+  seq[write_pos] = ';';
+  write_pos++;
   auto iter = csi_parameter.cbegin() + 1;
   const auto end = csi_parameter.cend();
 
@@ -151,7 +155,10 @@ inline void SGRoptimizer::handleSGRterminating ( const std::vector<parameter>::c
                                                , std::size_t size )
 {
   if ( iter->start == iter->end )  // Esc [ m
-    seq[write_pos++] = '0';
+  {
+    seq[write_pos] = '0';
+    write_pos++;
+  }
 
   if ( count != size )
     seq[write_pos] = ';';

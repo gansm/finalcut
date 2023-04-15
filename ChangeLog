@@ -1,3 +1,7 @@
+2023-04-15  Markus Gans  <guru.mail@muenster.de>
+	* Terminal focus-in and focus-out events can be disabled with 
+	  the --no-terminal-focus-events parameter
+
 2023-04-08  Markus Gans  <guru.mail@muenster.de>
 	* Clears the FScrollView viewport area after viewport creation or 
 	  resizing

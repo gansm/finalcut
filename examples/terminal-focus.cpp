@@ -1,5 +1,5 @@
 /***********************************************************************
-* terminal-focus.cpp - Example for terminal focus-in an focus-out      *
+* terminal-focus.cpp - Example for terminal focus-in and focus-out     *
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *

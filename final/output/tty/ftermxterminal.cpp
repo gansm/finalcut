@@ -851,7 +851,7 @@ void FTermXTerminal::enableXTermFocus()
   if ( focus_support )
     return;  // The terminal focus event is already activated
 
-  FTerm::paddingPrint (CSI "?1004h");  // enable SGR mouse mode
+  FTerm::paddingPrint (CSI "?1004h");  // enable send FocusIn/FocusOut
   std::fflush(stdout);
   focus_support = true;
 }
@@ -864,7 +864,7 @@ void FTermXTerminal::disableXTermFocus()
   if ( ! focus_support )
     return;  // The terminal focus event was already deactivated
 
-  FTerm::paddingPrint (CSI "?1004l");    // disable x11 mouse tracking
+  FTerm::paddingPrint (CSI "?1004l");  // disable Send FocusIn/FocusOut
   std::fflush(stdout);
   focus_support = false;
 }

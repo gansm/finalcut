@@ -484,6 +484,7 @@ inline auto FApplication::getLongOptions() -> const std::vector<CmdOption>&
     {"no-optimized-cursor",      no_argument,       nullptr,  'o' },
     {"no-terminal-detection",    no_argument,       nullptr,  'd' },
     {"no-terminal-data-request", no_argument,       nullptr,  'r' },
+    {"no-terminal-focus-events", no_argument,       nullptr,  'f' },
     {"no-color-change",          no_argument,       nullptr,  'c' },
     {"no-sgr-optimizer",         no_argument,       nullptr,  's' },
     {"vgafont",                  no_argument,       nullptr,  'v' },
@@ -521,6 +522,8 @@ inline void FApplication::setCmdOptionsMap (CmdMap& cmd_map)
   cmd_map['d'] = [opt] (const auto&) { opt().terminal_detection = false; };
   // --no-terminal-data-request
   cmd_map['r'] = [opt] (const auto&) { opt().terminal_data_request = false; };
+  // --no-terminal-focus-events
+  cmd_map['f'] = [opt] (const auto&) { opt().terminal_focus_events = false; };
   // --no-color-change
   cmd_map['c'] = [opt] (const auto&) { opt().color_change = false; };
   // --no-sgr-optimizer
@@ -611,6 +614,8 @@ void FApplication::showParameterUsage()
     << "    Disable terminal detection\n"
     << "  --no-terminal-data-request"
     << "    Do not determine terminal font and title\n"
+    << "  --no-terminal-focus-events"
+    << "    Do not send focus-in and focus-out events\n"
     << "  --no-color-change         "
     << "    Do not redefine the color palette\n"
     << "  --no-sgr-optimizer        "

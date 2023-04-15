@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2021 Markus Gans                                      *
+* Copyright 2019-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -38,7 +38,7 @@ FStartOptions::FStartOptions()
   , mouse_support{true}
   , terminal_detection{true}
   , terminal_data_request{true}
-  , color_change{true}
+  , terminal_focus_events{true}
   , sgr_optimizer{true}
   , vgafont{false}
   , newfont{false}
@@ -49,6 +49,7 @@ FStartOptions::FStartOptions()
   , meta_sends_escape{true}
 #endif
   , dark_theme{false}
+  , color_change{true}
 { }
 
 
@@ -70,6 +71,8 @@ void FStartOptions::setDefault()
   vgafont = false;
   newfont = false;
   encoding = Encoding::Unknown;
+  dark_theme = false;
+  terminal_focus_events = true;
 
 #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
   meta_sends_escape = true;

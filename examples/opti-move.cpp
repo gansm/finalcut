@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2022 Markus Gans                                      *
+* Copyright 2017-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -64,21 +64,15 @@ void term_boundaries (int& x, int& y)
   // checks and corrects the terminal boundaries
   const auto term_width  = int(finalcut::FVTerm::getFOutput()->getColumnNumber());
   const auto term_height = int(finalcut::FVTerm::getFOutput()->getLineNumber());
-
-  if ( x < 0 )
-    x = 0;
-
-  if ( y < 0 )
-    y = 0;
+  x = std::max(0, x);
+  y = std::max(0, y);
+  y = std::min(term_height - 1, y);
 
   if ( x >= term_width && term_width > 0 )
   {
     y += x / term_width;
     x %= term_width;
   }
-
-  if ( y >= term_height )
-    y = term_height - 1;
 }
 
 //----------------------------------------------------------------------
@@ -207,6 +201,7 @@ auto main (int argc, char* argv[]) -> int
   start_options.mouse_support = false;
   start_options.color_change = false;
   start_options.terminal_data_request = false;
+  start_options.terminal_focus_events = false;
 
   // Create the application object
   finalcut::FApplication term_app{argc, argv};

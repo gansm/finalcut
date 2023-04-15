@@ -1773,7 +1773,9 @@ void FTerm::init()
   if ( FTermData::getInstance().isTermType(FTermType::xterm) )
   {
     FTermXTerminal::getInstance().metaSendsESC(true);
-    FTermXTerminal::getInstance().setFocusSupport(true);
+
+    if ( getStartOptions().terminal_focus_events )
+      FTermXTerminal::getInstance().setFocusSupport(true);
   }
 
   // switch to application escape key mode
@@ -1980,7 +1982,9 @@ void FTerm::finish() const
   // Deactivate terminal focus event + meta key sends escape
   if ( data.isTermType(FTermType::xterm) )
   {
-    xterm.setFocusSupport(false);
+    if ( getStartOptions().terminal_focus_events )
+      xterm.setFocusSupport(false);
+
     xterm.metaSendsESC(false);
   }
 
