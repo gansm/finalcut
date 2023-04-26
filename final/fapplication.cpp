@@ -667,10 +667,7 @@ inline void FApplication::findKeyboardWidget() const
 
   if ( focus )
   {
-    if ( move_size )
-      widget = move_size;
-    else
-      widget = focus;
+    widget = move_size ? move_size : focus;
   }
   else
   {
@@ -1365,12 +1362,9 @@ auto FApplication::isEventProcessable ( FObject* receiver
 
   if ( getModalDialogCounter() > 0 )
   {
-    const FWidget* window;
-
-    if ( widget->isWindowWidget() )
-      window = widget;
-    else
-      window = FWindow::getWindowWidget(widget);
+    const FWidget* window = widget->isWindowWidget()
+                          ? widget
+                          : FWindow::getWindowWidget(widget);
 
     // block events for widgets in non modal windows
     if ( window

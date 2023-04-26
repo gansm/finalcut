@@ -641,10 +641,7 @@ void FButton::draw()
   if ( hotkeypos != NOT_SET )
     column_width--;
 
-  if ( getHeight() >= 2 )
-    vcenter_offset = (getHeight() - 1) / 2;
-  else
-    vcenter_offset = 0;
+  vcenter_offset = getHeight() >= 2 ? (getHeight() - 1) / 2 : 0;
 
   // Print left margin
   drawMarginLeft();

@@ -485,10 +485,7 @@ auto FOptiAttr::isNormal (const FChar& ch) -> bool
 //----------------------------------------------------------------------
 void FOptiAttr::initialize()
 {
-  if ( max_color < 8 )
-    monochron = true;
-  else
-    monochron = false;
+  monochron = max_color < 8;
 
   if ( caused_reset_attributes(F_exit_bold_mode.cap) )
     F_exit_bold_mode.caused_reset = true;

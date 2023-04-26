@@ -1141,7 +1141,7 @@ void FTermOutput::cursorWrap() const
 }
 
 //----------------------------------------------------------------------
-auto FTermOutput::updateTerminalLine (uInt y) -> bool
+inline auto FTermOutput::updateTerminalLine (uInt y) -> bool
 {
   // Updates pending changes from line y to the terminal
 

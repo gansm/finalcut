@@ -160,11 +160,7 @@ inline void SGRoptimizer::handleSGRterminating ( const std::vector<parameter>::c
     write_pos++;
   }
 
-  if ( count != size )
-    seq[write_pos] = ';';
-  else
-    seq[write_pos] = 'm';
-
+  seq[write_pos] = count != size ? ';' : 'm';
   write_pos++;
 }
 

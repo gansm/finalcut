@@ -314,10 +314,7 @@ auto FTerm::setUTF8 (bool enable) -> bool  // UTF-8 (Unicode)
   if ( data.isUTF8() == enable )
     return enable;
 
-  if ( enable )
-    data.setUTF8(true);
-  else
-    data.setUTF8(false);
+  data.setUTF8(enable);
 
 #if defined(__linux__)
   FTermLinux::getInstance().setUTF8 (enable);

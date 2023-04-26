@@ -802,17 +802,24 @@ void drawGenericBox ( FWidget* w, const FRect& r
   if ( ! w || ! w->getPrintArea() || r.getWidth() < 3 )
     return;
 
+  // Get references to frequently accessed variables
   auto& area = *w->getPrintArea();
+  auto& area_changes = area.changes;
   auto fchar = FVTermAttribute::getAttribute();
+
+  // Prepare the first character to draw the box
   fchar.attr.bit.char_width = 1;
   fchar.ch[0] = box_char[0];
   fchar.ch[1] = L'\0';
   const auto is_transparent = (fchar.attr.byte[1] & internal::var::b1_print_trans_mask) != 0;
+
+  // Adjust box position to match print area
   auto box = r;
   box.move (-1, -1);
   const auto x_offset = uInt(w->woffset.getX1() + w->getX() - area.offset_left - 1);
   const auto y_offset = uInt(w->woffset.getY1() + w->getY() - area.offset_top - 1);
-  auto& area_changes = area.changes;
+
+  // Draw the top line of the box
   auto* area_pos = &area.getFChar(int(x_offset) + box.getX1(), int(y_offset) + box.getY1());
   *area_pos = fchar;
   ++area_pos;
@@ -822,11 +829,14 @@ void drawGenericBox ( FWidget* w, const FRect& r
   area_pos += line_length;
   fchar.ch[0] = box_char[2];
   *area_pos = fchar;
+
+  // Update area_changes for the top line
   auto y = y_offset + uInt(box.getY1());
   area_changes[y].xmin = std::min(area_changes[y].xmin, x_offset + uInt(box.getX1()));
   area_changes[y].xmax = std::max(area_changes[y].xmax, x_offset + uInt(box.getX2()));
   area_changes[y].trans_count += uInt(is_transparent) * box.getWidth();
 
+  // Draw the sides of the box
   for (y = y_offset + uInt(box.getY1()) + 1; y < y_offset + uInt(box.getY2()); y++)
   {
     area_pos = &area.getFChar(int(x_offset) + box.getX1(), int(y));
@@ -835,11 +845,13 @@ void drawGenericBox ( FWidget* w, const FRect& r
     area_pos += box.getWidth() - 1;
     fchar.ch[0] = box_char[4];
     *area_pos = fchar;
+    // Update area_changes for the sides
     area_changes[y].xmin = std::min(area_changes[y].xmin, x_offset + uInt(box.getX1()));
     area_changes[y].xmax = std::max(area_changes[y].xmax, x_offset + uInt(box.getX2()));
     area_changes[y].trans_count += uInt(is_transparent) * box.getWidth();
   }
 
+  // Draw the bottom line of the box
   area_pos = &area.getFChar(int(x_offset) + box.getX1(), int(y));
   fchar.ch[0] = box_char[5];
   *area_pos = fchar;
@@ -849,6 +861,8 @@ void drawGenericBox ( FWidget* w, const FRect& r
   area_pos += line_length;
   fchar.ch[0] = box_char[7];
   *area_pos = fchar;
+
+  // Update area_changes for the bottom line
   y = y_offset + uInt(box.getY2());
   area_changes[y].xmin = std::min(area_changes[y].xmin, x_offset + uInt(box.getX1()));
   area_changes[y].xmax = std::max(area_changes[y].xmax, x_offset + uInt(box.getX2()));

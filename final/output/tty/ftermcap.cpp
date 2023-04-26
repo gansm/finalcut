@@ -430,10 +430,7 @@ void FTermcap::termcapNumerics()
   if ( max_color < 0 )
     max_color = 1;
 
-  if ( max_color < 8 )
-    fterm_data.setMonochron(true);
-  else
-    fterm_data.setMonochron(false);
+  fterm_data.setMonochron(max_color < 8);
 
   // Get initial spacing for hardware tab stop
   tabstop = getNumber("it");
