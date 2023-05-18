@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2022 Markus Gans                                      *
+* Copyright 2014-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -55,8 +55,8 @@ void FProgressbar::setPercentage (std::size_t percentage_value)
     percentage = 100;
   else if ( percentage_value <= percentage && percentage != NOT_SET )
     return;
-  else
-    percentage = percentage_value;
+
+  percentage = percentage_value;
 
   if ( isShown() )
   {
@@ -127,7 +127,7 @@ void FProgressbar::draw()
   drawProgressLabel();
   drawProgressBar();
 
-  if ( getFlags().shadow )
+  if ( getFlags().shadow.shadow )
     drawShadow(this);
 
   forceTerminalUpdate();

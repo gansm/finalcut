@@ -71,7 +71,8 @@ class FMenuItem;
 // class FMenu
 //----------------------------------------------------------------------
 
-class FMenu : public FWindow, public FMenuList
+class FMenu : public FWindow
+            , public FMenuList
 {
   public:
     // Using-declaration

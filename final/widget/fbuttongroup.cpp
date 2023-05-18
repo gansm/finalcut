@@ -4,7 +4,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2022 Markus Gans                                      *
+* Copyright 2014-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -85,19 +85,17 @@ auto FButtonGroup::getButton (int index) const -> FToggleButton*
 }
 
 //----------------------------------------------------------------------
-auto FButtonGroup::getFirstButton() -> FToggleButton*
+auto FButtonGroup::getFocusedButton() const -> FToggleButton*
 {
-  auto widget = getFirstFocusableWidget(buttonlist);
-  auto toggle_button = static_cast<FToggleButton*>(widget);
-  return toggle_button;
+  return findButtonIf ( [] (const auto* toggle_button)
+                        { return toggle_button->hasFocus(); } );
 }
 
 //----------------------------------------------------------------------
-auto FButtonGroup::getLastButton() -> FToggleButton*
+auto FButtonGroup::getCheckedButton() const -> FToggleButton*
 {
-  auto widget = getLastFocusableWidget(buttonlist);
-  auto toggle_button = static_cast<FToggleButton*>(widget);
-  return toggle_button;
+  return findButtonIf ( [] (const auto* toggle_button)
+                        { return toggle_button->isChecked(); } );
 }
 
 //----------------------------------------------------------------------
@@ -114,13 +112,6 @@ auto FButtonGroup::setEnable (bool enable) -> bool
 }
 
 //----------------------------------------------------------------------
-auto FButtonGroup::setFocus (bool) -> bool
-{
-  // This container widget cannot have its own focus
-  return false;
-}
-
-//----------------------------------------------------------------------
 auto FButtonGroup::isChecked (int index) const -> bool
 {
   const auto& button = getButton(index);
@@ -134,35 +125,13 @@ auto FButtonGroup::isChecked (int index) const -> bool
 //----------------------------------------------------------------------
 auto FButtonGroup::hasFocusedButton() const -> bool
 {
-  if ( buttonlist.empty() )
-    return false;
-
-  for (auto&& item : buttonlist)
-  {
-    const auto& toggle_button = static_cast<FToggleButton*>(item);
-
-    if ( toggle_button->hasFocus() )
-      return true;
-  }
-
-  return false;
+  return getFocusedButton();
 }
 
 //----------------------------------------------------------------------
 auto FButtonGroup::hasCheckedButton() const -> bool
 {
-  if ( buttonlist.empty() )
-    return false;
-
-  for (auto&& item : buttonlist)
-  {
-    const auto& toggle_button = static_cast<FToggleButton*>(item);
-
-    if ( toggle_button->isChecked() )
-      return true;
-  }
-
-  return false;
+  return getCheckedButton();
 }
 
 //----------------------------------------------------------------------
@@ -238,6 +207,7 @@ void FButtonGroup::insert (FToggleButton* button)
   );
 }
 
+//----------------------------------------------------------------------
 void FButtonGroup::remove (FToggleButton* button)
 {
   if ( ! button || buttonlist.empty() )
@@ -302,29 +272,51 @@ void FButtonGroup::onAccel (FAccelEvent*)
 void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
 {
   in_ev->ignore();  // Change default value to ignore
-  focusInRadioButton (in_ev);
+  auto checked_radio_button = getCheckedRadioButton();
 
-  if ( ! in_ev->isAccepted() )
+  if ( checked_radio_button )
+    checked_radio_button->setFocus();
+
+  if ( ! hasFocusedButton() )
   {
     in_ev->accept();
-    auto prev_element = getFocusWidget();
-
-    if ( in_ev->getFocusType() == FocusTypes::NextWidget )
-      focusFirstChild();
-    else if ( in_ev->getFocusType() == FocusTypes::PreviousWidget )
-      focusLastChild();
-
-    if ( prev_element )
-      prev_element->redraw();
-
-    if ( getFocusWidget() )
-      getFocusWidget()->redraw();
+    FScrollView::onFocusIn(in_ev);
   }
+}
 
-  if ( getStatusBar() )
+//----------------------------------------------------------------------
+void FButtonGroup::onChildFocusOut (FFocusEvent* out_ev)
+{
+  // Change the focus away from FScrollView to another widget
+
+  auto focused_widget = FWidget::getFocusWidget();
+  auto focused_button = findButtonIf
+  (
+    [&focused_widget] (const auto* toggle_button)
+    {
+      return toggle_button == focused_widget;
+    }
+  );
+
+  if ( focused_button && focused_button->hasRadiobuttonFocus()
+    && isRadioButton(focused_button) )
   {
-    getStatusBar()->drawMessage();
+    if ( out_ev->getFocusType() == FocusTypes::NextWidget )
+    {
+      out_ev->accept();
+      focusNextChild();
+    }
+
+    if ( out_ev->getFocusType() == FocusTypes::PreviousWidget )
+    {
+      out_ev->accept();
+      focusPrevChild();
+    }
+
+    focused_button->redraw();
   }
+  else
+    FScrollView::onChildFocusOut(out_ev);
 }
 
 
@@ -388,13 +380,10 @@ auto FButtonGroup::directFocusRadioButton() const -> bool
   if ( ! hasCheckedButton() || buttonlist.empty() )
     return false;
 
-  for (auto&& item : buttonlist)
-  {
-    auto toggle_button = static_cast<FToggleButton*>(item);
+  auto checked_button = getCheckedButton();
 
-    if ( toggle_button->isChecked() )
-      return directFocusCheckedRadioButton (toggle_button);
-  }
+  if ( checked_button )
+    return directFocusCheckedRadioButton (checked_button);
 
   return false;
 }
@@ -416,53 +405,39 @@ void FButtonGroup::directFocus()
       focused_widget->redraw();
   }
 
-  if ( getStatusBar() )
-  {
-    getStatusBar()->drawMessage();
-  }
+  drawStatusBarMessage();
 }
 
 //----------------------------------------------------------------------
-void FButtonGroup::focusCheckedRadioButton ( FToggleButton* toggle_button
-                                           , FFocusEvent* in_ev )
-{
-  auto prev_element = getFocusWidget();
-
-  toggle_button->setFocus();
-
-  FFocusEvent cfi (Event::ChildFocusIn);
-  FApplication::sendEvent(this, &cfi);
-
-  FFocusEvent in (Event::FocusIn);
-  FApplication::sendEvent(toggle_button, &in);
-
-  if ( in.isAccepted() )
-    in_ev->accept();
-
-  if ( prev_element )
-    prev_element->redraw();
-
-  toggle_button->redraw();
-}
-
-//----------------------------------------------------------------------
-void FButtonGroup::focusInRadioButton (FFocusEvent* in_ev)
+auto FButtonGroup::getCheckedRadioButton() -> FToggleButton*
 {
   if ( ! hasCheckedButton() || buttonlist.empty() )
-    return;
+    return nullptr;
+
+  auto checked_button = getCheckedButton();
+
+  if ( checked_button && isRadioButton(checked_button) )
+    return checked_button;
+
+  return nullptr;
+}
+
+//----------------------------------------------------------------------
+template <typename UnaryPredicate>
+inline auto FButtonGroup::findButtonIf (UnaryPredicate p) const -> FToggleButton*
+{
+  if ( buttonlist.empty() )
+    return nullptr;
 
   for (auto&& item : buttonlist)
   {
-    auto toggle_button = static_cast<FToggleButton*>(item);
+    const auto& toggle_button = static_cast<FToggleButton*>(item);
 
-    if ( toggle_button->isChecked() )
-    {
-      if ( isRadioButton(toggle_button) )
-        focusCheckedRadioButton (toggle_button, in_ev);
-
-      break;
-    }
+    if ( p(toggle_button) )
+      return toggle_button;
   }
+
+  return nullptr;
 }
 
 //----------------------------------------------------------------------

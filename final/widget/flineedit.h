@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2022 Markus Gans                                      *
+* Copyright 2012-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -48,6 +48,7 @@
 #endif
 
 #include <limits>
+#include <tuple>
 #include <unordered_map>
 #include <utility>
 
@@ -111,6 +112,7 @@ class FLineEdit : public FWidget
 
     // Accessors
     auto getClassName() const -> FString override;
+    auto getAlignment() const noexcept -> Align;
     auto getText() const -> FString;
     auto getMaxLength() const noexcept -> std::size_t;
     auto getCursorPosition() const noexcept -> std::size_t;
@@ -118,6 +120,7 @@ class FLineEdit : public FWidget
     auto getLabelOrientation() const -> LabelOrientation;
 
     // Mutators
+    void setAlignment (Align) noexcept;
     void setText (const FString&);
     void inputText (const FString&);
     void deletesCharacter();
@@ -141,8 +144,6 @@ class FLineEdit : public FWidget
     auto setEnable (bool = true) -> bool override;
     auto unsetEnable() -> bool override;
     auto setDisable() -> bool override;
-    auto setFocus (bool = true) -> bool override;
-    auto unsetFocus() -> bool override;
     auto setShadow (bool = true) -> bool;
     auto unsetShadow() -> bool;
     auto setReadOnly (bool = true) -> bool;
@@ -185,10 +186,11 @@ class FLineEdit : public FWidget
     void init();
     void mapKeyFunctions();
     auto hasHotkey() const -> bool;
+    auto getAlignOffset (const std::size_t) const -> std::size_t;
     void draw() override;
     void drawInputField();
-    auto printTextField() -> std::size_t;
-    auto printPassword() -> std::size_t;
+    auto printTextField() -> std::tuple<std::size_t, std::size_t>;
+    auto printPassword() -> std::tuple<std::size_t, std::size_t>;
     auto getCursorColumnPos() const -> std::size_t;
     auto getPasswordText() const -> FString;
     auto isPasswordField() const -> bool;
@@ -223,10 +225,11 @@ class FLineEdit : public FWidget
     bool             scroll_timer{false};
     bool             insert_mode{true};
     bool             read_only{false};
+    Align            alignment{Align::Left};
+    std::size_t      align_offset{0};
     std::size_t      cursor_pos{NOT_SET};
     std::size_t      text_offset{0};
     std::size_t      char_width_offset{0};
-    std::size_t      x_pos{0};
     std::size_t      max_length{std::numeric_limits<std::size_t>::max()};
 };
 
@@ -245,6 +248,10 @@ inline auto FLineEdit::operator << (const typeT& s) -> FLineEdit&
 //----------------------------------------------------------------------
 inline auto FLineEdit::getClassName() const -> FString
 { return "FLineEdit"; }
+
+//----------------------------------------------------------------------
+inline auto FLineEdit::getAlignment() const noexcept -> Align
+{ return alignment; }
 
 //----------------------------------------------------------------------
 inline auto FLineEdit::getText() const -> FString
@@ -291,10 +298,6 @@ inline auto FLineEdit::setDisable() -> bool
 { return setEnable(false); }
 
 //----------------------------------------------------------------------
-inline auto FLineEdit::unsetFocus() -> bool
-{ return setFocus(false); }
-
-//----------------------------------------------------------------------
 inline auto FLineEdit::unsetShadow() -> bool
 { return setShadow(false); }
 
@@ -304,7 +307,7 @@ inline auto FLineEdit::unsetReadOnly() -> bool
 
 //----------------------------------------------------------------------
 inline auto FLineEdit::hasShadow() const -> bool
-{ return getFlags().shadow; }
+{ return getFlags().shadow.shadow; }
 
 //----------------------------------------------------------------------
 inline auto FLineEdit::isReadOnly() const noexcept -> bool

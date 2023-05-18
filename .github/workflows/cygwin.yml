@@ -15,11 +15,17 @@ jobs:
 
     strategy:
       matrix:
-        platform: [i686, x64]
+        platform: [x86, x86_64]
 
     steps:
+    - name: Git - auto-converting CRLF line endings into LF
+      run: git config --global core.autocrlf input
+
+    - name: Repository checkout
+      uses: actions/checkout@v3
+
     - name: Install Cygwin
-      uses: egor-tensin/setup-cygwin@v3
+      uses: cygwin/cygwin-install-action@v3
       with:
         platform: ${{ matrix.platform }}
         install-dir: C:\cygwin
@@ -32,14 +38,13 @@ jobs:
         pwd
         cygcheck -c -d  # Show installed Cygwin packages
         g++ --version
-        mkdir src && cd src
-        git clone https://github.com/gansm/finalcut.git
-        cd finalcut || echo "The source code directory was not found!"
+        cd "$(cygpath -u $WORKSPACE_PATH)"
         autoreconf --force --install --verbose --warnings=all
         automake --add-missing --copy
         ./configure --prefix=/usr
         make -j10
       shell: C:\cygwin\bin\bash.exe --login '{0}'
       env:
+        WORKSPACE_PATH: "${{ github.workspace }}"
         SHELLOPTS: igncr
 

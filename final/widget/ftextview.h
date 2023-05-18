@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2022 Markus Gans                                      *
+* Copyright 2014-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -190,6 +190,7 @@ class FTextView : public FWidget
 
     // Methods
     void hide() override;
+    void clear();
     template <typename T>
     void append (const std::initializer_list<T>&);
     void append (const FString&);
@@ -199,7 +200,6 @@ class FTextView : public FWidget
     void replaceRange (const FString&, int, int);
     void deleteRange (int, int);
     void deleteLine (int);
-    void clear();
 
     // Event handlers
     void onKeyPress (FKeyEvent*) override;
@@ -207,8 +207,6 @@ class FTextView : public FWidget
     void onMouseUp (FMouseEvent*) override;
     void onMouseMove (FMouseEvent*) override;
     void onWheel (FWheelEvent*) override;
-    void onFocusIn (FFocusEvent*) override;
-    void onFocusOut (FFocusEvent*) override;
 
   protected:
     // Method

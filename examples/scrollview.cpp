@@ -105,6 +105,7 @@ void Scrollview::initLayout()
                        , FSize{5, 1} );
   FScrollView::initLayout();
 }
+
 //----------------------------------------------------------------------
 void Scrollview::setScrollSize (const FSize& size)
 {
@@ -252,6 +253,7 @@ void Scrollviewdemo::cb_quit()
 //----------------------------------------------------------------------
 //                               main part
 //----------------------------------------------------------------------
+
 auto main (int argc, char* argv[]) -> int
 {
   // Create the application object

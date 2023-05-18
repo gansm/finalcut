@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2022 Markus Gans                                      *
+* Copyright 2020-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -22,6 +22,7 @@
 
 #include <cmath>
 
+#include <array>
 #include <chrono>
 #include <iomanip>
 #include <string>
@@ -80,42 +81,30 @@ class RotoZoomer final : public finalcut::FDialog
 
 
 //----------------------------------------------------------------------
-RotoZoomer::RotoZoomer (finalcut::FWidget* parent, bool b, int l)
+RotoZoomer::RotoZoomer (finalcut::FWidget* parent, bool is_benchmark, int num_loops)
   : finalcut::FDialog{parent}
-  , benchmark{b}
-  , loops{l}
+  , benchmark{is_benchmark}
+  , loops{num_loops}
 {
   FDialog::setText ("Rotozoomer effect");
-
+  const std::array<wchar_t, 4> init_val{{L' ', L'+', L'x', L' '}};
   std::size_t h{0};
 
-  for (std::size_t j{0}; j < 8; j++)
+  for (int i{0}; i < 2; i++)
   {
-    for (std::size_t i{0}; i < 8; i++)
+    for (int j{0}; j < 8; j++)
     {
-      data[h] = L' ';
-      h++;
-    }
+      for (int k{0}; k < 8; k++)
+      {
+        data[h] = init_val[unsigned(2 * i)];
+        h++;
+      }
 
-    for (std::size_t i{0}; i < 8; i++)
-    {
-      data[h] = L'+';
-      h++;
-    }
-  }
-
-  for (std::size_t j{0}; j < 8; j++)
-  {
-    for (std::size_t i{0}; i < 8; i++)
-    {
-      data[h] = L'x';
-      h++;
-    }
-
-    for (std::size_t i{0}; i < 8; i++)
-    {
-      data[h] = L' ';
-      h++;
+      for (int k{0}; k < 8; k++)
+      {
+        data[h] = init_val[unsigned((2 * i) + 1)];
+        h++;
+      }
     }
   }
 }

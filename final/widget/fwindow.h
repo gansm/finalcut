@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2022 Markus Gans                                      *
+* Copyright 2015-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -170,6 +170,7 @@ class FWindow : public FWidget
 
   private:
     // Methods
+    void         createVWin() noexcept;
     static auto  getVisibleTermGeometry (FWindow*) -> FRect;
     static void  deleteFromAlwaysOnTopList (const FWidget*);
     static void  processAlwaysOnTop();
@@ -178,17 +179,20 @@ class FWindow : public FWidget
     static void  reactivateWindow (FWindow*);
 
     // Data members
-    FWidget*         win_focus_widget{nullptr};
-    FRect            normalGeometry{};
-    static FWindow*  previous_window;
-    bool             window_active{false};
-    bool             zoomed{false};
+    FWidget*              win_focus_widget{nullptr};
+    FRect                 normalGeometry{};
+    static FWindow*       previous_window;
+    bool                  window_active{false};
+    bool                  zoomed{false};
 };
 
 // non-member function forward declarations
 //----------------------------------------------------------------------
+class FMouseData;  // class forward declaration
+void closeDropDownMouseHandler (const FMouseData&);
 void closeDropDown (const FWidget*, const FPoint&);
-
+void unselectMenubarItemsMouseHandler (const FMouseData&);
+void unselectMenubarItems (const FWidget*, const FPoint&);
 
 // FWindow inline functions
 //----------------------------------------------------------------------
@@ -248,23 +252,23 @@ inline auto FWindow::isWindowActive() const noexcept -> bool
 
 //----------------------------------------------------------------------
 inline auto FWindow::isResizeable() const -> bool
-{ return getFlags().resizeable; }
+{ return getFlags().feature.resizeable; }
 
 //----------------------------------------------------------------------
 inline auto FWindow::isMinimizable() const -> bool
-{ return getFlags().minimizable; }
+{ return getFlags().feature.minimizable; }
 
 //----------------------------------------------------------------------
 inline auto FWindow::isAlwaysOnTop() const -> bool
-{ return getFlags().always_on_top; }
+{ return getFlags().visibility.always_on_top; }
 
 //----------------------------------------------------------------------
 inline auto FWindow::hasTransparentShadow() const -> bool
-{ return getFlags().trans_shadow; }
+{ return getFlags().shadow.trans_shadow; }
 
 //----------------------------------------------------------------------
 inline auto FWindow::hasShadow() const -> bool
-{ return getFlags().shadow; }
+{ return getFlags().shadow.shadow; }
 
 //----------------------------------------------------------------------
 inline auto FWindow::getWindowWidgetAt (const FPoint& pos) -> FWindow*

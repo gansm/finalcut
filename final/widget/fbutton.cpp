@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2022 Markus Gans                                      *
+* Copyright 2012-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -144,7 +144,7 @@ void FButton::resetColors()
 //----------------------------------------------------------------------
 auto FButton::setNoUnderline (bool enable) -> bool
 {
-  return (setFlags().no_underline = enable);
+  return (setFlags().feature.no_underline = enable);
 }
 
 //----------------------------------------------------------------------
@@ -162,17 +162,9 @@ auto FButton::setEnable (bool enable) -> bool
 }
 
 //----------------------------------------------------------------------
-auto FButton::setFocus (bool enable) -> bool
-{
-  FWidget::setFocus(enable);
-  updateButtonColor();
-  return enable;
-}
-
-//----------------------------------------------------------------------
 auto FButton::setFlat (bool enable) -> bool
 {
-  return (setFlags().flat = enable);
+  return (setFlags().feature.flat = enable);
 }
 
 //----------------------------------------------------------------------
@@ -336,8 +328,7 @@ void FButton::onAccel (FAccelEvent* ev)
       else
         redraw();
 
-      if ( getStatusBar() )
-        getStatusBar()->drawMessage();
+      drawStatusBarMessage();
     }
   }
   else if ( click_animation )
@@ -351,20 +342,17 @@ void FButton::onAccel (FAccelEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FButton::onFocusIn (FFocusEvent*)
+void FButton::onFocusIn (FFocusEvent* in_ev)
 {
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
+  updateButtonColor();
+  FWidget::onFocusIn(in_ev);
 }
 
 //----------------------------------------------------------------------
-void FButton::onFocusOut (FFocusEvent*)
+void FButton::onFocusOut (FFocusEvent* out_ev)
 {
-  if ( getStatusBar() )
-  {
-    getStatusBar()->clearMessage();
-    getStatusBar()->drawMessage();
-  }
+  updateButtonColor();
+  FWidget::onFocusOut(out_ev);
 }
 
 
@@ -405,10 +393,10 @@ inline auto FButton::clickAnimationIndent (const FWidget* parent_widget) -> std:
     return 0;
 
   // noshadow + indent one character to the right
-  if ( getFlags().flat )
+  if ( getFlags().feature.flat )
     clearFlatBorder(this);
   else if ( hasShadow() )
-    clearShadow(this);
+    clearBlockShadow(this);
 
   if ( parent_widget )
     setColor ( parent_widget->getForegroundColor()
@@ -440,7 +428,7 @@ inline void FButton::clearRightMargin (const FWidget* parent_widget)
 
     print() << FPoint{1 + int(getWidth()), y} << ' ';  // clear right
 
-    if ( getFlags().active && FVTerm::getFOutput()->isMonochron() )
+    if ( getFlags().feature.active && FVTerm::getFOutput()->isMonochron() )
       setReverse(false);  // Dark background
   }
 }
@@ -505,82 +493,120 @@ inline void FButton::drawTopBottomBackground()
 }
 
 //----------------------------------------------------------------------
-inline void FButton::drawButtonTextLine (const FString& button_text)
+inline void FButton::printLeadingSpaces (std::size_t& pos)
 {
-  std::size_t z{0};
-  std::size_t pos{};
-  std::size_t columns{0};
-  print() << FPoint{2 + int(indent), 1 + int(vcenter_offset)}
-          << FColorPair{button_fg, button_bg};
-
-  if ( getWidth() < column_width + 1 )
+  if ( getWidth() < column_width + 1 )  // Calculate center offset
     center_offset = 0;
   else
     center_offset = (getWidth() - column_width - 1) / 2;
 
-  // Print button text line
-  for (pos = 0; pos < center_offset; pos++)
+  for (pos = 0; pos < center_offset; pos++)  // Print leading spaces
     print (space_char);  // █
+}
 
-  if ( hotkeypos == NOT_SET )
+//----------------------------------------------------------------------
+void FButton::setCursorPositionOnButton()
+{
+  if ( hotkeypos == NOT_SET )  // Set cursor position
     setCursorPos ({ 2 + int(center_offset)
                   , 1 + int(vcenter_offset) });  // first character
   else
     setCursorPos ({ 2 + int(center_offset + hotkeypos)
                   , 1 + int(vcenter_offset) });  // hotkey
+}
 
-  if ( ! getFlags().active && FVTerm::getFOutput()->isMonochron() )
+//----------------------------------------------------------------------
+inline void FButton::modifyStyle() const
+{
+  if ( ! getFlags().feature.active && FVTerm::getFOutput()->isMonochron() )
     setReverse(true);  // Light background
 
   if ( active_focus && (FVTerm::getFOutput()->isMonochron()
                      || FVTerm::getFOutput()->getMaxColor() < 16) )
     setBold();
+}
+
+//----------------------------------------------------------------------
+inline void FButton::printButtonText ( const FString& button_text
+                                     , std::size_t& pos )
+{
+  std::size_t idx{0};
+  std::size_t columns{0};
 
   while ( pos < center_offset + column_width && columns + 2 < getWidth() )
   {
-    if ( z == hotkeypos && getFlags().active )
+    if ( idx == hotkeypos && getFlags().feature.active )
     {
+      // Modify colors and style on the hotkey position
       setColor (button_hotkey_fg, button_bg);
 
       if ( ! active_focus && FVTerm::getFOutput()->getMaxColor() < 16 )
         setBold();
 
-      if ( ! getFlags().no_underline )
+      if ( ! getFlags().feature.no_underline )
         setUnderline();
 
-      print (button_text[z]);
+      print (button_text[idx]);
 
+      // Reset style and color after the hotkey position
       if ( ! active_focus && FVTerm::getFOutput()->getMaxColor() < 16 )
         unsetBold();
 
-      if ( ! getFlags().no_underline )
+      if ( ! getFlags().feature.no_underline )
         unsetUnderline();
 
       setColor (button_fg, button_bg);
     }
     else
     {
-      print (button_text[z]);
+      print (button_text[idx]);  // Print button text
     }
 
-    const auto char_width = getColumnWidth(button_text[z]);
+    const auto char_width = getColumnWidth(button_text[idx]);
     columns += char_width;
     pos += char_width;
-    z++;
+    idx++;
   }
+}
 
+//----------------------------------------------------------------------
+inline void FButton::printEllipsis()
+{
   if ( column_width + 1 >= getWidth() )
-  {
-    // Print ellipsis
     print() << FPoint{int(getWidth() + indent) - 2, 1} << "..";
-  }
+}
 
+//----------------------------------------------------------------------
+inline void FButton::resetStyle() const
+{
   if ( active_focus && (FVTerm::getFOutput()->isMonochron()
                      || FVTerm::getFOutput()->getMaxColor() < 16) )
     unsetBold();
+}
 
+//----------------------------------------------------------------------
+inline void FButton::printTrailingSpaces (std::size_t pos)
+{
   for (pos = center_offset + column_width; pos < getWidth() - 2; pos++)
     print (space_char);  // █
+}
+
+//----------------------------------------------------------------------
+inline void FButton::drawButtonTextLine (const FString& button_text)
+{
+  std::size_t pos{};
+
+  // Set initial cursor position and text color
+  print() << FPoint{2 + int(indent), 1 + int(vcenter_offset)}
+          << FColorPair{button_fg, button_bg};
+
+  printLeadingSpaces (pos);
+  setCursorPositionOnButton();
+  modifyStyle();  // Modify style for monochrome or low color terminal
+  printButtonText (button_text, pos);
+  printEllipsis();  // Print ellipsis if necessary
+  resetStyle();  // Reset style for monochrome or low color terminal
+  printTrailingSpaces (pos);
 }
 
 //----------------------------------------------------------------------
@@ -590,7 +616,7 @@ void FButton::draw()
   const auto& parent_widget = getParentWidget();
   column_width = getColumnWidth(text);
   space_char = L' ';
-  active_focus = getFlags().active && getFlags().focus;
+  active_focus = getFlags().feature.active && getFlags().focus.focus;
 
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);  // Light background
@@ -601,13 +627,13 @@ void FButton::draw()
   // Clear right margin after animation
   clearRightMargin (parent_widget);
 
-  if ( ! getFlags().active && FVTerm::getFOutput()->isMonochron() )
+  if ( ! getFlags().feature.active && FVTerm::getFOutput()->isMonochron() )
     space_char = wchar_t(UniChar::MediumShade);  // ▒ simulates greyed out at Monochron
 
-  if ( FVTerm::getFOutput()->isMonochron() && (getFlags().active || getFlags().focus) )
+  if ( FVTerm::getFOutput()->isMonochron() && (getFlags().feature.active || getFlags().focus.focus) )
     setReverse(false);  // Dark background
 
-  if ( getFlags().flat && ! button_down )
+  if ( getFlags().feature.flat && ! button_down )
     drawFlatBorder(this);
 
   hotkeypos = finalcut::getHotkeyPos(text, button_text);
@@ -615,10 +641,7 @@ void FButton::draw()
   if ( hotkeypos != NOT_SET )
     column_width--;
 
-  if ( getHeight() >= 2 )
-    vcenter_offset = (getHeight() - 1) / 2;
-  else
-    vcenter_offset = 0;
+  vcenter_offset = getHeight() >= 2 ? (getHeight() - 1) / 2 : 0;
 
   // Print left margin
   drawMarginLeft();
@@ -633,29 +656,13 @@ void FButton::draw()
   drawTopBottomBackground();
 
   // Draw button shadow
-  if ( ! getFlags().flat && getFlags().shadow && ! button_down )
+  if ( ! getFlags().feature.flat && getFlags().shadow.shadow && ! button_down )
     drawShadow(this);
 
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);  // Dark background
 
-  updateStatusBar();
-}
-
-//----------------------------------------------------------------------
-void FButton::updateStatusBar() const
-{
-  if ( ! getFlags().focus || ! getStatusBar() )
-    return;
-
-  const auto& msg = getStatusbarMessage();
-  const auto& curMsg = getStatusBar()->getMessage();
-
-  if ( curMsg != msg )
-  {
-    getStatusBar()->setMessage(msg);
-    getStatusBar()->drawMessage();
-  }
+  updateStatusbar (this);
 }
 
 //----------------------------------------------------------------------

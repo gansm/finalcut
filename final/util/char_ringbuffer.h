@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2022 Markus Gans                                           *
+* Copyright 2022-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -78,37 +78,37 @@ class FRingBuffer
           , index{pos}
         { }
 
-        auto operator ++ () -> ring_iterator&  // prefix
+        inline auto operator ++ () noexcept -> ring_iterator&  // prefix
         {
           index++;
           return *this;
         }
 
-        auto operator ++ (int) -> ring_iterator  // postfix
+        inline auto operator ++ (int) noexcept -> ring_iterator  // postfix
         {
           ring_iterator i = *this;
           index++;
           return i;
         }
 
-        auto operator * () const -> reference
+        inline auto operator * () const noexcept -> reference
         {
           return ptr[(offset + index) % N];
         }
 
-        auto operator -> () const -> pointer
+        inline auto operator -> () const noexcept -> pointer
         {
           return &**this;
         }
 
-        auto operator == (const ring_iterator& rhs) const -> bool
+        inline auto operator == (const ring_iterator& rhs) const noexcept -> bool
         {
           return index  == rhs.index
               && ptr    == rhs.ptr
               && offset == rhs.offset;
         }
 
-        auto operator != (const ring_iterator& rhs) const -> bool
+        inline auto operator != (const ring_iterator& rhs) const noexcept -> bool
         {
           return ! (*this == rhs);
         }
@@ -120,7 +120,8 @@ class FRingBuffer
         std::size_t       index{0U};
 
         // Friend Non-member operator functions
-        friend auto operator + (const ring_iterator& iter, std::ptrdiff_t size) -> ring_iterator
+        inline friend auto operator + ( const ring_iterator& iter
+                                      , std::ptrdiff_t size ) noexcept -> ring_iterator
         {
           auto tmp = iter;
           tmp.index += std::size_t(size);
@@ -138,93 +139,97 @@ class FRingBuffer
     using value_type      = T;
 
     // Constructors
-    FRingBuffer () = default;
+    FRingBuffer()
+      : buffer()
+    { }
+
+    virtual ~FRingBuffer() = default;
 
     // Overloaded operators
-    auto operator [] (std::size_t index) noexcept -> reference
+    inline auto operator [] (std::size_t index) noexcept -> reference
     {
       static_assert ( Capacity > 0, "Ring buffer has no memory" );
       return buffer[(head + index) % Capacity];
     }
 
-    auto operator [] (std::size_t index) const noexcept -> const_reference
+    inline auto operator [] (std::size_t index) const noexcept -> const_reference
     {
       static_assert ( Capacity > 0, "Ring buffer has no memory" );
       return buffer[(head + index) % Capacity];
     }
 
     // Accessors
-    virtual auto  getClassName() const -> FString
+    virtual inline auto  getClassName() const -> FString
     {
       return "FRingBuffer";
     }
 
-    auto getSize() const noexcept -> size_t
+    inline auto getSize() const noexcept -> std::size_t
     {
       return elements;
     }
 
-    auto getCapacity() const noexcept -> size_t
+    inline auto getCapacity() const noexcept -> std::size_t
     {
       return Capacity;
     }
 
-    auto begin() noexcept -> iterator
+    inline auto begin() noexcept -> iterator
     {
       return iterator(buffer.data(), head, 0);
     }
 
-    auto begin() const noexcept -> const_iterator
+    inline auto begin() const noexcept -> const_iterator
     {
       return const_iterator(buffer.data(), head, 0);
     }
 
-    auto end() noexcept -> iterator
+    inline auto end() noexcept -> iterator
     {
       return iterator(buffer.data(), head, getSize());
     }
 
-    auto end() const noexcept -> const_iterator
+    inline auto end() const noexcept -> const_iterator
     {
       return const_iterator(buffer.data(), head, getSize());
     }
 
-    auto front() noexcept -> reference
+    inline auto front() noexcept -> reference
     {
       if ( isEmpty() )
-        return empty_char;
+        return empty_element;
 
       return buffer[head];
     }
 
-    auto front() const noexcept -> const_reference
+    inline auto front() const noexcept -> const_reference
     {
       if ( isEmpty() )
-        return empty_char;
+        return empty_element;
 
       return buffer[head];
     }
 
-    auto back() noexcept -> reference
+    inline auto back() noexcept -> reference
     {
       if ( isEmpty() )
-        return empty_char;
+        return empty_element;
 
       std::size_t index = (tail == 0) ? Capacity - 1 : tail - 1;
       return buffer[index];
     }
 
-    auto back() const noexcept -> const_reference
+    inline auto back() const noexcept -> const_reference
     {
       if ( isEmpty() )
-        return empty_char;
+        return empty_element;
 
       std::size_t index = (tail == 0) ? Capacity - 1 : tail - 1;
       return buffer[index];
     }
 
     // Mutators
-    void clear() noexcept
+    inline void clear() noexcept
     {
       head = 0U;
       tail = 0U;
@@ -232,23 +237,23 @@ class FRingBuffer
     }
 
     // Inquiries
-    auto isEmpty() const noexcept -> bool
+    inline auto isEmpty() const noexcept -> bool
     {
       return elements == 0;
     }
 
-    auto hasData() const noexcept -> bool
+    inline auto hasData() const noexcept -> bool
     {
       return ! isEmpty();
     }
 
-    auto isFull() const noexcept -> bool
+    inline auto isFull() const noexcept -> bool
     {
       return elements == Capacity;
     }
 
     // Methods
-    void push (const T& item) noexcept
+    inline void push (const T& item) noexcept
     {
       if ( isFull() )
         return;
@@ -259,7 +264,30 @@ class FRingBuffer
       elements++;
     }
 
-    void pop() noexcept
+    inline void push_back (const T& item) noexcept
+    {
+      push (item);
+    }
+
+    template <typename... Args>
+    inline void emplace (Args&&... args)
+    {
+      if ( isFull() )
+        return;
+
+      static_assert ( Capacity > 0, "Ring buffer has no memory" );
+      buffer[tail] = T(std::forward<Args>(args)...);
+      tail = (tail + 1) % Capacity;
+      elements++;
+    }
+
+    template <typename... Args>
+    inline void emplace_back (Args&&... args)
+    {
+      emplace (std::forward<Args>(args)...);
+    }
+
+    inline void pop() noexcept
     {
       if ( isEmpty() )
         return;
@@ -269,7 +297,12 @@ class FRingBuffer
       elements--;
     }
 
-    void pop (std::size_t s) noexcept
+    inline void pop_front() noexcept
+    {
+      pop();
+    }
+
+    inline void pop (std::size_t s) noexcept
     {
       if ( isEmpty() )
         return;
@@ -282,8 +315,8 @@ class FRingBuffer
 
   private:
     // Data members
-    std::array<value_type, Capacity> buffer{};
-    value_type  empty_char{};
+    std::array<value_type, Capacity> buffer;
+    value_type  empty_element{};
     std::size_t head{0U};
     std::size_t tail{0U};
     std::size_t elements{0U};
@@ -310,29 +343,33 @@ class CharRingBuffer final : public FRingBuffer<char, Capacity>
     using FRingBuffer<char, Capacity>::head;
 
     // Accessor
-    auto getClassName() const -> FString override
+    inline auto getClassName() const -> FString override
     {
       return "CharRingBuffer";
     }
 
     // Method
-    auto strncmp_front (const char* string, std::size_t length) -> bool
+    auto strncmp_front (const char* string, std::size_t length) const noexcept -> bool
     {
       if ( length > getSize() )
         return false;
 
       if ( tail > head )
       {
-        length = std::min(length, getCapacity());
-        return ( std::strncmp(string, &front(), length) == 0 );
+        const auto min_length = std::min(length, getCapacity());
+        return std::memcmp(string, &front(), min_length) == 0;
       }
 
       auto l1 = std::min(length, getCapacity() - head);
       auto l2 = length - l1;
-      auto found1 = bool( std::strncmp(string, &front(), l1) == 0 );
-      auto found2 = bool( l2 == 0
-                       || std::strncmp(string + l1, &buffer[0], l2) == 0 );
-      return found1 && found2;
+
+      if ( std::memcmp(string, &front(), l1) != 0 )
+        return false;
+
+      if ( l2 == 0 )
+        return true;
+
+      return std::memcmp(string + l1, &buffer[0], l2) == 0;
     }
 };
 

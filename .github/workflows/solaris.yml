@@ -14,7 +14,7 @@ jobs:
 
     steps:
     - name: Repository checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Test on Solaris 11.4
       uses: vmactions/solaris-vm@v0
@@ -22,6 +22,7 @@ jobs:
         prepare: |
           pkg install gcc-7
           pkgutil -y -i automake autoconf autoconf_archive libtool pkgconfig libcppunit1_12_1 libcppunit_dev gsed ggrep
+        mem: 4096
         run: |
           uname -a
           whoami

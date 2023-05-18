@@ -57,12 +57,12 @@ class emptyFString final
     // Constructors
     emptyFString() = default;
 
-    static auto getClassName() -> FString
+    inline static auto getClassName() -> FString
     {
       return "emptyFString";
     }
 
-    static auto get() -> const FString&
+    inline static auto get() -> const FString&
     {
       static const auto& empty_string = std::make_unique<FString>("");
       return *empty_string;

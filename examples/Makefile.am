@@ -35,6 +35,7 @@ noinst_PROGRAMS = \
 	string-operations \
 	term-attributes \
 	termcap \
+	terminal-focus \
 	timer \
 	transparent \
 	treeview \
@@ -68,6 +69,7 @@ scrollview_SOURCES = scrollview.cpp
 string_operations_SOURCES = string-operations.cpp
 term_attributes_SOURCES = term-attributes.cpp
 termcap_SOURCES = termcap.cpp
+terminal_focus_SOURCES = terminal-focus.cpp
 timer_SOURCES = timer.cpp
 transparent_SOURCES = transparent.cpp
 treeview_SOURCES = treeview.cpp

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2022 Markus Gans                                      *
+* Copyright 2015-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -61,6 +61,24 @@
 namespace finalcut
 {
 
+namespace internal
+{
+
+// Constant
+static constexpr std::size_t BUF_SIZE{2048};
+
+// Function
+static auto getStringBuffer() -> char*
+{
+  static std::array<char, BUF_SIZE> string_buf{};
+  return string_buf.data();
+}
+
+}  // namespace internal
+
+// Function prototypes
+static void delDuplicateKeys();
+
 // static class attributes
 bool                    FTermcap::initialized              {false};
 bool                    FTermcap::background_color_erase   {false};
@@ -80,9 +98,64 @@ int                     FTermcap::padding_baudrate         {0};
 int                     FTermcap::attr_without_color       {0};
 int                     FTermcap::baudrate                 {9600};
 char                    FTermcap::PC                       {'\0'};
-char                    FTermcap::string_buf[2048]         {};
+char*                   FTermcap::buffer                   {nullptr};
+char**                  FTermcap::buffer_addr              {nullptr};
 FTermcap::PutCharFunc   FTermcap::outc                     {};
 FTermcap::PutStringFunc FTermcap::outs                     {};
+
+//----------------------------------------------------------------------
+inline auto getKeyEntry (FKey key) -> FKeyMap::KeyCapMap*
+{
+  auto& fkey_cap_table = FKeyMap::getKeyCapMap();
+  std::size_t i{0};
+
+  do
+  {
+    if ( fkey_cap_table[i].num == key )
+      return &fkey_cap_table[i];
+
+    i++;
+  }
+  while ( fkey_cap_table[i].num != FKey::F63 );
+
+  return nullptr;
+}
+
+//----------------------------------------------------------------------
+inline void del2ndKeyIfDuplicate ( const FKeyMap::KeyCapMap* first
+                                 , FKeyMap::KeyCapMap* second )
+{
+  if ( ! first || ! second )
+    return;
+
+  auto len = std::min(first->length, second->length);
+
+  if ( std::memcmp(first->string, second->string, len) == 0 )
+  {
+    second->string = nullptr;
+    second->length = 0;
+  }
+}
+
+//----------------------------------------------------------------------
+static void delDuplicateKeys()
+{
+  // Fixes incorrect key detection caused by duplicate key sequences
+  // (required e.g. for st - simple terminal)
+
+  const auto* home_key = getKeyEntry(FKey::Home);
+  const auto* end_key = getKeyEntry(FKey::End);
+  const auto* ppage_key = getKeyEntry(FKey::Page_up);
+  const auto* npage_key = getKeyEntry(FKey::Page_down);
+  auto* a1_key = getKeyEntry(FKey::Upper_left);
+  auto* c1_key = getKeyEntry(FKey::Lower_left);
+  auto* a3_key = getKeyEntry(FKey::Upper_right);
+  auto* c3_key = getKeyEntry(FKey::Lower_right);
+  del2ndKeyIfDuplicate (home_key, a1_key);
+  del2ndKeyIfDuplicate (end_key, c1_key);
+  del2ndKeyIfDuplicate (ppage_key, a3_key);
+  del2ndKeyIfDuplicate (npage_key, c3_key);
+}
 
 //----------------------------------------------------------------------
 // class FTermcap
@@ -113,7 +186,7 @@ auto FTermcap::getNumber (const std::string& cap) -> int
 //----------------------------------------------------------------------
 auto FTermcap::getString (const std::string& cap) -> char*
 {
-  auto string = ::tgetstr(C_STR(cap.data()), reinterpret_cast<char**>(&string_buf));
+  const auto& string = ::tgetstr(C_STR(cap.data()), buffer_addr);
   return ( string && string[0] != '\0' ) ? string : nullptr;
 }
 
@@ -130,59 +203,44 @@ auto FTermcap::paddingPrint (const std::string& string, int affcnt) -> Status
   if ( string.empty() || ! outc )
     return Status::Error;
 
-  bool has_delay = (TCAP(t_bell) && string == std::string(TCAP(t_bell)))
-                || (TCAP(t_flash_screen) && string == std::string(TCAP(t_flash_screen)))
-                || ( ! xon_xoff_flow_control && padding_baudrate
-                  && (baudrate >= padding_baudrate) );
+  bool has_delay = hasDelay(string);
   auto iter = string.cbegin();
 
   while ( iter != string.cend() )
   {
     if ( *iter != '$' )
-      outc(int(*iter));
-    else
     {
+      outc (int(*iter));
       ++iter;
+      continue;
+    }
 
-      if ( *iter != '<' )
-      {
-        outc(int('$'));
+    ++iter;
 
-        if ( iter != string.cend() )
-          outc(int(*iter));
-      }
+    if ( iter == string.cend() || *iter != '<' )
+    {
+      outc (int('$'));
+
+      if ( iter != string.cend() )
+        outc (int(*iter));
       else
-      {
-        ++iter;
-        const auto first_digit = iter;
+        break;
 
-        if ( ! std::isdigit(uChar(*iter)) && *iter != '.' )
-        {
-          outc(int('$'));
-          outc(int('<'));
-          continue;
-        }
+      ++iter;
+      continue;
+    }
 
-        int number = 0;
-        readDigits (iter, number);
-        decimalPoint (iter, number);
-        asteriskSlash (iter, number, affcnt, has_delay);
+    const int number = readNumber(iter, affcnt, has_delay);
 
-        if ( *iter != '>' )
-        {
-          outc(int('$'));
-          outc(int('<'));
-          iter = first_digit;
-          continue;
-        }
+    if ( number == -1 )
+    {
+      outc (int('$'));
+      outc (int('<'));
+      continue;
+    }
 
-        if ( has_delay && number > 0 )
-          delayOutput(number / 10);
-      }  // end of else (*iter == '<')
-    }  // end of else (*iter == '$')
-
-    if ( iter == string.cend() )
-      break;
+    if ( has_delay && number > 0 )
+      delayOutput(number / 10);
 
     ++iter;
   }
@@ -202,6 +260,8 @@ auto FTermcap::stringPrint (const std::string& string) -> Status
 //----------------------------------------------------------------------
 void FTermcap::init()
 {
+  buffer = internal::getStringBuffer();
+  buffer_addr = &buffer;
   termcap();
   setDefaultPutCharFunction();
   setDefaultPutStringFunction();
@@ -234,7 +294,7 @@ void FTermcap::termcap()
 {
   static constexpr int success = 1;
   static constexpr int uninitialized = -2;
-  static char term_buffer[BUF_SIZE]{};
+  static std::array<char, internal::BUF_SIZE> term_buffer{};
   std::vector<std::string> terminals{};
   int status = uninitialized;
   static auto& fterm_data = FTermData::getInstance();
@@ -260,9 +320,9 @@ void FTermcap::termcap()
 
     // Open the termcap file + load entry for termtype
 #if defined(__sun) && defined(__SVR4)
-    status = tgetent(term_buffer, const_cast<char*>(termtype.data()));
+    status = tgetent(term_buffer.data(), const_cast<char*>(termtype.data()));
 #else
-    status = tgetent(term_buffer, termtype.data());
+    status = tgetent(term_buffer.data(), termtype.data());
 #endif
 
     if ( status == success )
@@ -370,10 +430,7 @@ void FTermcap::termcapNumerics()
   if ( max_color < 0 )
     max_color = 1;
 
-  if ( max_color < 8 )
-    fterm_data.setMonochron(true);
-  else
-    fterm_data.setMonochron(false);
+  fterm_data.setMonochron(max_color < 8);
 
   // Get initial spacing for hardware tab stop
   tabstop = getNumber("it");
@@ -397,7 +454,7 @@ void FTermcap::termcapStrings()
 
   const auto& ho = TCAP(t_cursor_home);
 
-  if ( ho && std::strncmp(ho, "\033[H", 3) == 0 )
+  if ( ho && std::memcmp(ho, "\033[H", 3) == 0 )
     has_ansi_escape_sequences = true;
 
   const auto& pc = TCAP(t_pad_char);
@@ -420,8 +477,10 @@ void FTermcap::termcapKeys()
       break;
 
     entry.string = getString(entry.tname);
-    entry.length = entry.string ? finalcut::stringLength(entry.string) : 0;
+    entry.length = entry.string ? uInt8(finalcut::stringLength(entry.string)) : 0;
   }
+
+  delDuplicateKeys();
 
   // Sort key map list by string length (string length 0 at end)
   std::sort ( cap_map.begin(), cap_map.end()
@@ -442,6 +501,39 @@ auto FTermcap::encodeParams ( const std::string& cap
                      , params[2], params[3], params[4], params[5]
                      , params[6], params[7], params[8] );
   return str ? str : std::string();
+}
+
+//----------------------------------------------------------------------
+inline auto FTermcap::hasDelay (const std::string& string) -> bool
+{
+  return (TCAP(t_bell) && string == std::string(TCAP(t_bell)))
+      || (TCAP(t_flash_screen) && string == std::string(TCAP(t_flash_screen)))
+      || ( ! xon_xoff_flow_control && padding_baudrate
+        && (baudrate >= padding_baudrate) );
+}
+
+//----------------------------------------------------------------------
+inline auto FTermcap::readNumber ( string_iterator& iter, int affcnt
+                                 , bool& has_delay) -> int
+{
+  ++iter;
+  const auto first_digit = iter;
+
+  if ( ! std::isdigit(uChar(*iter)) && *iter != '.' )
+    return -1;
+
+  int number = 0;
+  readDigits(iter, number);
+  decimalPoint(iter, number);
+  asteriskSlash(iter, number, affcnt, has_delay);
+
+  if ( *iter != '>' )
+  {
+    iter = first_digit;
+    return -1;
+  }
+
+  return number;
 }
 
 //----------------------------------------------------------------------

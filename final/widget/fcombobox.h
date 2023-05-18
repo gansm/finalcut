@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2022 Markus Gans                                      *
+* Copyright 2019-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -148,8 +148,6 @@ class FComboBox : public FWidget
     auto setEnable (bool = true) -> bool override;
     auto unsetEnable() -> bool override;
     auto setDisable() -> bool override;
-    auto setFocus (bool = true) -> bool override;
-    auto unsetFocus() -> bool override;
     auto setShadow (bool = true) -> bool;
     auto unsetShadow() -> bool;
     auto setEditable (bool = true) -> bool;
@@ -183,7 +181,9 @@ class FComboBox : public FWidget
     void onMouseDown (FMouseEvent*) override;
     void onMouseMove (FMouseEvent*) override;
     void onWheel (FWheelEvent*) override;
+    void onFocusIn (FFocusEvent*) override;
     void onFocusOut (FFocusEvent*) override;
+    void onFailAtChildFocus (FFocusEvent*) override;
 
   private:
     // Inquiries
@@ -252,10 +252,6 @@ inline auto FComboBox::setDisable() -> bool
 { return setEnable(false); }
 
 //----------------------------------------------------------------------
-inline auto FComboBox::unsetFocus() -> bool
-{ return setFocus(false); }
-
-//----------------------------------------------------------------------
 inline auto FComboBox::unsetShadow() -> bool
 { return setShadow(false); }
 
@@ -265,7 +261,7 @@ inline auto FComboBox::unsetEditable() -> bool
 
 //----------------------------------------------------------------------
 inline auto FComboBox::hasShadow() const -> bool
-{ return getFlags().shadow; }
+{ return getFlags().shadow.shadow; }
 
 //----------------------------------------------------------------------
 template <typename T

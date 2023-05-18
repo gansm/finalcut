@@ -143,71 +143,71 @@ class FTermData final
     FTermData () = default;
 
     // Accessors
-    auto        getClassName() const -> FString;
+    auto getClassName() const -> FString;
     static auto getInstance() -> FTermData&;
-    auto        getEncodingList() & -> EncodingMap&;
-    auto        getCharSubstitutionMap() & -> FCharSubstitution&;
-    auto        getTerminalEncoding() const -> Encoding;
-    auto        getTerminalGeometry() & -> FRect&;
-    auto        getTerminalGeometry() const & -> const FRect&;
-    auto        getTTYFileDescriptor() const noexcept -> int;
-    auto        getBaudrate() const noexcept -> uInt;
-    auto        getTermType() const & -> const std::string& ;
-    auto        getTermFileName() const & -> const std::string&;
-    auto        getGnomeTerminalID() const noexcept -> int;
-    auto        getKittyVersion() const noexcept -> kittyVersion;
-    auto        getXtermFont() const & -> const FString&;
-    auto        getXtermTitle() const & -> const FString&;
+    auto getEncodingList() & -> EncodingMap&;
+    auto getCharSubstitutionMap() & -> FCharSubstitution&;
+    auto getTerminalEncoding() const -> Encoding;
+    auto getTerminalGeometry() & -> FRect&;
+    auto getTerminalGeometry() const & -> const FRect&;
+    auto getTTYFileDescriptor() const noexcept -> int;
+    auto getBaudrate() const noexcept -> uInt;
+    auto getTermType() const & -> const std::string& ;
+    auto getTermFileName() const & -> const std::string&;
+    auto getGnomeTerminalID() const noexcept -> int;
+    auto getKittyVersion() const noexcept -> kittyVersion;
+    auto getXtermFont() const & -> const FString&;
+    auto getXtermTitle() const & -> const FString&;
 #if DEBUG
-    auto        getFramebufferBpp() const noexcept -> int;
+    auto getFramebufferBpp() const noexcept -> int;
 #endif
 
     // Inquiries
-    auto        hasShadowCharacter() const noexcept -> bool;
-    auto        hasHalfBlockCharacter() const noexcept -> bool;
-    auto        hasCursorOptimisation() const noexcept -> bool;
-    auto        isCursorHidden() const noexcept -> bool;
-    auto        hasAlternateScreen() const noexcept -> bool;
-    auto        isInAlternateScreen() const noexcept -> bool;
-    auto        hasASCIIConsole() const noexcept -> bool;
-    auto        hasVT100Console() const noexcept -> bool;
-    auto        hasUTF8Console() const noexcept -> bool;
-    auto        isUTF8() const noexcept -> bool;
-    auto        isNewFont() const noexcept -> bool;
-    auto        isVGAFont() const noexcept -> bool;
-    auto        isMonochron() const noexcept -> bool;
-    auto        hasTermResized() -> bool;
-    auto        isTermType (FTermType) const -> bool;
-    auto        isTermType (FTermTypeT) const -> bool;
+    auto hasShadowCharacter() const noexcept -> bool;
+    auto hasHalfBlockCharacter() const noexcept -> bool;
+    auto hasCursorOptimisation() const noexcept -> bool;
+    auto isCursorHidden() const noexcept -> bool;
+    auto hasAlternateScreen() const noexcept -> bool;
+    auto isInAlternateScreen() const noexcept -> bool;
+    auto hasASCIIConsole() const noexcept -> bool;
+    auto hasVT100Console() const noexcept -> bool;
+    auto hasUTF8Console() const noexcept -> bool;
+    auto isUTF8() const noexcept -> bool;
+    auto isNewFont() const noexcept -> bool;
+    auto isVGAFont() const noexcept -> bool;
+    auto isMonochron() const noexcept -> bool;
+    auto hasTermResized() -> bool;
+    auto isTermType (FTermType) const -> bool;
+    auto isTermType (FTermTypeT) const -> bool;
 
     // Mutators
-    void        setTermEncoding (Encoding) noexcept;
-    void        setTTYFileDescriptor (int) noexcept;
-    void        setBaudrate (uInt) noexcept;
-    void        supportShadowCharacter (bool = true) noexcept;
-    void        supportHalfBlockCharacter (bool = true) noexcept;
-    void        supportCursorOptimisation (bool = true) noexcept;
-    void        setCursorHidden (bool = true) noexcept;
-    void        useAlternateScreen (bool = true) noexcept;
-    void        setAlternateScreenInUse (bool = true) noexcept;
-    void        setASCIIConsole (bool = true) noexcept;
-    void        setVT100Console (bool = true) noexcept;
-    void        setUTF8Console (bool = true) noexcept;
-    void        setUTF8 (bool = true) noexcept;
-    void        setNewFont (bool = true) noexcept;
-    void        setVGAFont (bool = true) noexcept;
-    void        setMonochron (bool = true) noexcept;
-    void        setTermResized (bool = true);
-    void        setTermType (const std::string&);
-    void        setTermType (FTermType);
-    void        unsetTermType (FTermType);
-    void        setTermFileName (const std::string&);
-    void        setGnomeTerminalID (int) noexcept;
-    void        setKittyVersion (const kittyVersion&);
-    void        setXtermFont (const FString&);
-    void        setXtermTitle (const FString&);
+    void setTermEncoding (Encoding) noexcept;
+    void setTTYFileDescriptor (int) noexcept;
+    void setBaudrate (uInt) noexcept;
+    void supportShadowCharacter (bool = true) noexcept;
+    void supportHalfBlockCharacter (bool = true) noexcept;
+    void supportCursorOptimisation (bool = true) noexcept;
+    void setCursorHidden (bool = true) noexcept;
+    void useAlternateScreen (bool = true) noexcept;
+    void setAlternateScreenInUse (bool = true) noexcept;
+    void setASCIIConsole (bool = true) noexcept;
+    void setVT100Console (bool = true) noexcept;
+    void setUTF8Console (bool = true) noexcept;
+    void setUTF8 (bool = true) noexcept;
+    void setNewFont (bool = true) noexcept;
+    void setVGAFont (bool = true) noexcept;
+    void setMonochron (bool = true) noexcept;
+    void setTermResized (bool = true);
+    void setTermType (const std::string&);
+    void setTermType (FTermType);
+    void unsetTermType (FTermType);
+    void setTermFileName (const std::string&);
+    void setGnomeTerminalID (int) noexcept;
+    void setKittyVersion (const kittyVersion&);
+    void setXtermFont (const FString&);
+    void setXtermTitle (const FString&);
 #if DEBUG
-    void        setFramebufferBpp (int) noexcept;
+    void setFramebufferBpp (int) noexcept;
 #endif
 
   private:

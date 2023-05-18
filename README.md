@@ -2,9 +2,11 @@
 
 # Library for creating terminal applications with text-based widgets
 
-FINAL CUT is a C++ class library and widget toolkit with full [mouse](doc/mouse-control.md#title-bar-actions-on-mouse-clicks) support for creating a [text-based user interface](https://en.wikipedia.org/wiki/Text-based_user_interface). The library supports the programmer to develop an application for the text console. It allows the simultaneous handling of multiple text windows on the screen.
+FINAL CUT is a C++ class library and widget toolkit that enables developers to create [text-based user interfaces](https://en.wikipedia.org/wiki/Text-based_user_interface). FINAL CUT is a standalone library that interacts directly with the terminal without relying on external libraries such as [ncurses](https://invisible-island.net/ncurses/ncurses.html) or [termbox](https://code.google.com/archive/p/termbox/).
 
-The structure of the Qt framework was originally the inspiration for the C++ class design of FINAL CUT. It provides common controls like dialog boxes, push buttons, check boxes, radio buttons, input lines, list boxes, status bars and so on.
+FINAL CUT provides full [mouse](doc/mouse-control.md#title-bar-actions-on-mouse-clicks) support, [UTF-8](https://en.wikipedia.org/wiki/UTF-8) character encoding, [full-width character](https://en.wikipedia.org/wiki/Halfwidth_and_fullwidth_forms) support, and the ability to display [combined Unicode characters](https://en.wikipedia.org/wiki/Combining_character). The library helps the programmer to create a text console application. It allows handling multiple text windows on the screen.
+
+The design of the C++ class structure of FINAL CUT was inspired by the Qt framework. It provides a variety of common controls, including dialog boxes, push buttons, check boxes, radio buttons, input lines, list boxes, and status bars. With FINAL CUT, developers can create text-based user interfaces that are both functional and visually appealing.
 
 ## Building and code analysis
 
@@ -20,13 +22,16 @@ The structure of the Qt framework was originally the inspiration for the C++ cla
 | *macOS build*      | [![macOS build](https://github.com/gansm/finalcut/actions/workflows/macos.yml/badge.svg)](https://github.com/gansm/finalcut/actions/workflows/macos.yml) |
 | *Cygwin build*     | [![Cygwin build](https://github.com/gansm/finalcut/actions/workflows/cygwin.yml/badge.svg)](https://github.com/gansm/finalcut/actions/workflows/cygwin.yml) |
 | *Solaris build*    | [![Solaris build](https://github.com/gansm/finalcut/actions/workflows/solaris.yml/badge.svg)](https://github.com/gansm/finalcut/actions/workflows/solaris.yml) |
-| *CodeQL analysis*  | [![CodeQL analysis](https://github.com/gansm/finalcut/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/gansm/finalcut/actions/workflows/codeql-analysis.yml) |
-| *LGTM*             | [![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/gansm/finalcut.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/gansm/finalcut/context:cpp) |
+| *CodeQL analysis*  | [![CodeQL analysis](https://github.com/gansm/finalcut/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/gansm/finalcut/security/code-scanning) |
 | *Coverity Scan*    | [![Coverity Scan Status](https://img.shields.io/coverity/scan/6508.svg)](https://scan.coverity.com/projects/6508 ) |
 | *SonarCloud*       | [![Quality gate](https://sonarcloud.io/api/project_badges/measure?project=gansm_finalcut&metric=alert_status)](https://sonarcloud.io/dashboard?id=gansm_finalcut) |
 | *CodeFactor*       | [![CodeFactor](https://www.codefactor.io/repository/github/gansm/finalcut/badge)](https://www.codefactor.io/repository/github/gansm/finalcut) |
+| *SIGRID*       | [![sigrid-publish](https://github.com/gansm/finalcut/actions/workflows/sigrid-publish.yml/badge.svg?branch=main)](https://github.com/gansm/finalcut/actions/workflows/sigrid-publish.yml) |
+
 
 ## Installation
+
+Before installing FINAL CUT, check if your computer meets the requirements. You can find these in the FAQ section under "[What do I need to build this library?](doc/faq.md#what-do-i-need-to-build-this-library)".
 
 ```bash
 > git clone https://github.com/gansm/finalcut.git
@@ -38,6 +43,10 @@ The structure of the Qt framework was originally the inspiration for the C++ cla
 ```
 
 ## Supported platforms
+
+If your platform is not listed here, it may still be compatible with FINAL CUT. I welcome any [help](Contributing.md) to make this software available on more platforms.
+
+FINAL CUT currently works on the following platforms:
 
 * Linux
 * FreeBSD
@@ -221,11 +230,11 @@ printf(...)
               ├────┤ FWidget │◄─────┼────┤ FToggleButton │◄─┼──┤ FCheckBox │
 ┌─────────┐   │    └────┬────┘      │    └───────────────┘  │  └───────────┘
 │ FObject │◄──┘         :1          │    ┌──────────────┐   │  ┌─────────┐
-└─────────┘      ┌──────┴────────┐  ├────┤ FProgressbar │   └──┤ FSwitch │
-                 │ FWidgetColors │  │    └──────────────┘      └─────────┘
-                 └───────────────┘  │    ┌────────────┐
-                                    ├────┤ FScrollbar │
-                                    │    └────────────┘
+└────┬────┘      ┌──────┴────────┐  ├────┤ FProgressbar │   └──┤ FSwitch │
+     ▼           │ FWidgetColors │  │    └──────────────┘      └─────────┘
+ ┌───┴────┐      └───────────────┘  │    ┌────────────┐
+ │ FTimer │                         ├────┤ FScrollbar │
+ └────────┘                         │    └────────────┘
                                     │    ┌───────────┐
                                     ├────┤ FTextView │
                                     │    └───────────┘

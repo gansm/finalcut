@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2022 Markus Gans                                      *
+* Copyright 2017-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -489,6 +489,15 @@ FListViewIterator::FListViewIterator (Iterator iter)
 
 // FListViewIterator operators
 //----------------------------------------------------------------------
+auto FListViewIterator::operator = (Iterator iter) -> FListViewIterator&
+{
+  iter_path = IteratorStack{};
+  node = iter;
+  position = 0;
+  return *this;
+}
+
+//----------------------------------------------------------------------
 auto FListViewIterator::operator ++ () -> FListViewIterator&  // prefix
 {
   nextElement(node);
@@ -547,31 +556,30 @@ void FListViewIterator::nextElement (Iterator& iter)
     iter_path.push(iter);
     iter = item->begin();
     position++;
+    return;
   }
-  else
+
+  position++;
+  bool forward{};
+
+  do
   {
-    position++;
-    bool forward{};
+    forward = false;  // Reset forward
+    ++iter;
 
-    do
+    if ( iter_path.empty() )
+      continue;
+
+    const auto& parent_iter = iter_path.top();
+
+    if ( iter == (*parent_iter)->cend() )
     {
-      forward = false;  // Reset forward
-      ++iter;
-
-      if ( ! iter_path.empty() )
-      {
-        const auto& parent_iter = iter_path.top();
-
-        if ( iter == (*parent_iter)->cend() )
-        {
-          iter = parent_iter;
-          iter_path.pop();
-          forward = true;
-        }
-      }
+      iter = parent_iter;
+      iter_path.pop();
+      forward = true;
     }
-    while ( forward );
   }
+  while ( forward );
 }
 
 //----------------------------------------------------------------------
@@ -660,7 +668,7 @@ auto FListView::getColumnAlignment (int column) const -> Align
 {
   // Get the alignment for a column
 
-  if ( column < 1 || header.empty() || column > int(header.size()) )
+  if ( isColumnIndexInvalid(column) )
     return Align::Left;
 
   // Convert column position to address offset (index)
@@ -673,7 +681,7 @@ auto FListView::getColumnText (int column) const -> FString
 {
   // Get the text of column
 
-  if ( column < 1 || header.empty() || column > int(header.size()) )
+  if ( isColumnIndexInvalid(column) )
     return fc::emptyFString::get();
 
   // Convert column position to address offset (index)
@@ -719,7 +727,7 @@ void FListView::setColumnAlignment (int column, Align align)
 {
   // Set the alignment for a column
 
-  if ( column < 1 || header.empty() || column > int(header.size()) )
+  if ( isColumnIndexInvalid(column) )
     return;
 
   // Convert column position to address offset (index)
@@ -732,7 +740,7 @@ void FListView::setColumnText (int column, const FString& label)
 {
   // Set the text for a column
 
-  if ( column < 1 || header.empty() || column > int(header.size()) )
+  if ( isColumnIndexInvalid(column) )
     return;
 
   // Convert column position to address offset (index)
@@ -754,7 +762,7 @@ void FListView::setColumnSortType (int column, SortType type)
 {
   // Sets the sort type by which the list is to be sorted
 
-  if ( column < 1 || header.empty() || column > int(header.size()) )
+  if ( isColumnIndexInvalid(column) )
     return;
 
   const std::size_t size = std::size_t(column) + 1;
@@ -770,11 +778,52 @@ void FListView::setColumnSort (int column, SortOrder order)
 {
   // Sets the column to sort by + the sorting order
 
-  if ( column < 1 || header.empty() || column > int(header.size()) )
+  if ( isColumnIndexInvalid(column) )
     column = -1;
 
   sort_column = column;
   sort_order = order;
+}
+
+//----------------------------------------------------------------------
+void FListView::showColumn (int column)
+{
+  // Shows the column with the given column value
+
+  if ( isColumnIndexInvalid(column) )
+    return;
+
+  // Convert column position to address offset (index)
+  const auto index = std::size_t(column - 1);
+  header[index].visible = true;
+  // Update and redraw the layout of the list view
+  updateLayout();
+}
+
+//----------------------------------------------------------------------
+void FListView::hideColumn (int column)
+{
+  // Hides the column with the given column value
+
+  if ( isColumnIndexInvalid(column) )
+    return;
+
+  // Convert column position to address offset (index)
+  const auto index = std::size_t(column - 1);
+  header[index].visible = false;
+  // Update and redraw the layout of the list view
+  updateLayout();
+}
+
+//----------------------------------------------------------------------
+auto FListView::isColumnHidden (int column) const -> bool
+{
+  if ( isColumnIndexInvalid(column) )
+    return true;
+
+  // Convert column position to address offset (index)
+  const auto index = std::size_t(column - 1);
+  return ! header[index].visible;
 }
 
 //----------------------------------------------------------------------
@@ -790,7 +839,57 @@ auto FListView::addColumn (const FString& label, int width) -> int
     new_column.fixed_width = true;
 
   header.push_back (new_column);
-  return int(std::distance(header.cbegin(), header.cend()));
+  return int(header.size());
+}
+
+//----------------------------------------------------------------------
+auto FListView::removeColumn (int column) -> int
+{
+  // Deletes a column from the list and empties it if all columns are gone
+
+  if ( isColumnIndexInvalid(column) )
+    return int(header.size());
+
+  if ( header.size() == 1 )
+  {
+    header.clear();
+    clear();
+    return 0;
+  }
+
+  header.erase (header.begin() + column - 1);
+  max_line_width = 0;
+  auto iter = itemlist.begin();
+
+  while ( iter != itemlist.end() )
+  {
+    const auto& item = static_cast<FListViewItem*>(*iter);
+    item->column_list.erase (item->column_list.begin() + column - 1);
+    std::size_t line_width = determineLineWidth (item);
+    recalculateHorizontalBar (line_width);
+    ++iter;
+  }
+
+  current_iter = itemlist.begin();
+  first_visible_line = itemlist.begin();
+  adjustScrollbars(getCount());
+  drawList();
+  drawBorder();
+  drawHeadlines();
+  drawScrollbars();
+  processChanged();
+  return int(header.size());
+}
+
+//----------------------------------------------------------------------
+void FListView::removeAllColumns()
+{
+  // Deletes all columns and clears the list
+
+  max_line_width = 0;
+  adjustScrollbars(0);
+  header.clear();
+  clear();
 }
 
 //----------------------------------------------------------------------
@@ -842,7 +941,7 @@ auto FListView::insert ( FListViewItem* item
 //----------------------------------------------------------------------
 void FListView::remove (FListViewItem* item)
 {
-  if ( item == nullptr || itemlist.empty() )
+  if ( ! item || isItemListEmpty() )
     return;
 
   auto parent = item->getParent();
@@ -895,7 +994,7 @@ void FListView::remove (FListViewItem* item)
   const std::size_t element_count = getCount();
   recalculateVerticalBar (element_count);
 
-  if ( itemlist.empty() )
+  if ( isItemListEmpty() )
   {
     current_iter = getNullIterator();
     first_visible_line = getNullIterator();
@@ -935,51 +1034,38 @@ void FListView::sort()
 {
   // Sorts the list view according to the specified setting
 
-  if ( sort_column < 1 && sort_column > int(header.size()) )
+  if ( sort_column < 1 || sort_column > int(header.size()) )
     return;
 
   SortType column_sort_type = getColumnSortType(sort_column);
+  std::function<bool(const FObject*, const FObject*)> comparator;
 
   switch ( column_sort_type )
   {
     case SortType::Unknown:
     case SortType::Name:
-      if ( sort_order == SortOrder::Ascending )
-      {
-        sort (sortAscendingByName);
-      }
-      else if ( sort_order == SortOrder::Descending )
-      {
-        sort (sortDescendingByName);
-      }
+      comparator = ( sort_order == SortOrder::Ascending )
+                 ? sortAscendingByName
+                 : sortDescendingByName;
       break;
 
     case SortType::Number:
-      if ( sort_order == SortOrder::Ascending )
-      {
-        sort (sortAscendingByNumber);
-      }
-      else if ( sort_order == SortOrder::Descending )
-      {
-        sort (sortDescendingByNumber);
-      }
+      comparator = ( sort_order == SortOrder::Ascending )
+                 ? sortAscendingByNumber
+                 : sortDescendingByNumber;
       break;
 
     case SortType::UserDefined:
-      if ( sort_order == SortOrder::Ascending && user_defined_ascending )
-      {
-        sort (user_defined_ascending);
-      }
-      else if ( sort_order == SortOrder::Descending && user_defined_descending )
-      {
-        sort (user_defined_descending);
-      }
+      comparator = ( sort_order == SortOrder::Ascending )
+                 ? user_defined_ascending
+                 : user_defined_descending;
       break;
 
     default:
-      return;
+      throw std::invalid_argument{"Invalid sort type"};
   }
 
+  sort(comparator);
   current_iter = itemlist.begin();
   first_visible_line = itemlist.begin();
   processChanged();
@@ -1016,131 +1102,75 @@ void FListView::onMouseDown (FMouseEvent* ev)
   }
 
   setWidgetFocus(this);
-  const int mouse_x = ev->getX();
-  const int mouse_y = ev->getY();
   first_line_position_before = first_visible_line.getPosition();
 
-  if ( mouse_x > 1 && mouse_x < int(getWidth()) )
+  if ( isWithinHeaderBounds(ev->getPos()) )
   {
-    if ( mouse_y == 1 )  // Header
-    {
-      clicked_header_pos = ev->getPos();
-    }
-    else if ( mouse_y > 1 && mouse_y < int(getHeight()) )  // List
-    {
-      if ( itemlist.empty() )
-        return;
-
-      int indent = 0;
-      const int new_pos = first_visible_line.getPosition() + mouse_y - 2;
-
-      if ( new_pos < int(getCount()) )
-        setRelativePosition (mouse_y - 2);
-
-      const auto& item = getCurrentItem();
-
-      if ( tree_view )
-      {
-        indent = int(item->getDepth() << 1u);  // indent = 2 * depth
-
-        if ( item->isExpandable() && mouse_x - 2 == indent - xoffset )
-          clicked_expander_pos = ev->getPos();
-      }
-
-      if ( hasCheckableItems() )
-      {
-        if ( tree_view )
-          indent++;  // Plus one space
-
-        if ( mouse_x >= 3 + indent - xoffset
-          && mouse_x <= 5 + indent - xoffset
-          && item->isCheckable() )
-        {
-          clicked_checkbox_item = item;
-        }
-      }
-
-      if ( isShown() )
-        drawList();
-
-      vbar->setValue (first_visible_line.getPosition());
-
-      if ( first_line_position_before != first_visible_line.getPosition() )
-        vbar->drawBar();
-
-      forceTerminalUpdate();
-    }
+    clicked_header_pos = ev->getPos();  // Handle events in the header
+  }
+  else if ( isWithinListBounds(ev->getPos()) && ! isItemListEmpty() )
+  {
+    handleListEvent(ev);  // Handle events in the list
   }
 }
 
 //----------------------------------------------------------------------
 void FListView::onMouseUp (FMouseEvent* ev)
 {
-  if ( drag_scroll != DragScrollMode::None )
+  if ( isDragging(drag_scroll) )
     stopDragScroll();
 
-  if ( ev->getButton() == MouseButton::Left )
+  if ( ev->getButton() != MouseButton::Left )
   {
-    const int mouse_x = ev->getX();
-    const int mouse_y = ev->getY();
+    resetClickedPositions();
+    return;
+  }
 
-    if ( mouse_x > 1 && mouse_x < int(getWidth()) )
+  if ( isWithinHeaderBounds(ev->getPos())
+    && clicked_header_pos == ev->getPos() )  // Header
+  {
+    mouseHeaderClicked();
+    return;
+  }
+
+  if ( ! isWithinListBounds(ev->getPos()) )  // List
+  {
+    resetClickedPositions();
+    return;
+  }
+
+  if ( isItemListEmpty() )
+    return;
+
+  int indent{0};
+  const auto& item = getCurrentItem();
+
+  if ( isTreeView() )
+  {
+    indent = int(item->getDepth() << 1u);  // indent = 2 * depth
+
+    if ( item->isExpandable()
+      && clicked_expander_pos == ev->getPos() )
     {
-      if ( mouse_y == 1 && clicked_header_pos == ev->getPos() )  // Header
-      {
-        mouseHeaderClicked();
-      }
-      else if ( mouse_y > 1 && mouse_y < int(getHeight()) )  // List
-      {
-        if ( itemlist.empty() )
-          return;
+      toggleItemExpandState(item);
+      adjustScrollbars (getCount());
 
-        int indent{0};
-        const auto& item = getCurrentItem();
-
-        if ( tree_view )
-        {
-          indent = int(item->getDepth() << 1u);  // indent = 2 * depth
-
-          if ( item->isExpandable()
-            && clicked_expander_pos == ev->getPos() )
-          {
-            if ( item->isExpand() )
-              item->collapse();
-            else
-              item->expand();
-
-            adjustScrollbars (getCount());
-
-            if ( isShown() )
-              draw();
-          }
-        }
-
-        if ( hasCheckableItems() )
-        {
-          if ( tree_view )
-            indent++;  // Plus one space
-
-          if ( mouse_x >= 3 + indent - xoffset
-            && mouse_x <= 5 + indent - xoffset
-            && clicked_checkbox_item == item )
-          {
-            item->setChecked(! item->isChecked());
-
-            if ( isShown() )
-              draw();
-          }
-        }
-
-        processRowChanged();
-      }
+      if ( isShown() )
+        draw();
     }
   }
 
-  clicked_expander_pos.setPoint(-1, -1);
-  clicked_header_pos.setPoint(-1, -1);
-  clicked_checkbox_item = nullptr;
+  if ( hasCheckableItems() && clicked_checkbox_item == item
+    && isCheckboxClicked(ev->getX(), indent) )
+  {
+    toggleItemCheckState(item);
+
+    if ( isShown() )
+      draw();
+  }
+
+  processRowChanged();
+  resetClickedPositions();
 }
 
 //----------------------------------------------------------------------
@@ -1152,12 +1182,10 @@ void FListView::onMouseMove (FMouseEvent* ev)
     return;
   }
 
-  const int mouse_x = ev->getX();
   const int mouse_y = ev->getY();
   first_line_position_before = first_visible_line.getPosition();
 
-  if ( mouse_x > 1 && mouse_x < int(getWidth())
-    && mouse_y > 1 && mouse_y < int(getHeight()) )
+  if ( isWithinListBounds(ev->getPos()) )
   {
     const int new_pos = first_visible_line.getPosition() + mouse_y - 2;
 
@@ -1190,27 +1218,19 @@ void FListView::onMouseDoubleClick (FMouseEvent* ev)
   if ( ev->getButton() != MouseButton::Left )
     return;
 
-  const int mouse_x = ev->getX();
-  const int mouse_y = ev->getY();
-
-  if ( mouse_x > 1 && mouse_x < int(getWidth())
-    && mouse_y > 1 && mouse_y < int(getHeight()) )
+  if ( isWithinListBounds(ev->getPos()) )
   {
-    if ( first_visible_line.getPosition() + mouse_y - 1 > int(getCount()) )
+    if ( first_visible_line.getPosition() + ev->getY() - 1 > int(getCount()) )
       return;
 
-    if ( itemlist.empty() )
+    if ( isItemListEmpty() )
       return;
 
     auto item = getCurrentItem();
 
-    if ( tree_view && item->isExpandable() )
+    if ( isTreeView() && item->isExpandable() )
     {
-      if ( item->isExpand() )
-        item->collapse();
-      else
-        item->expand();
-
+      toggleItemExpandState(item);
       adjustScrollbars (getCount());  // after expand or collapse
 
       if ( isShown() )
@@ -1261,7 +1281,7 @@ void FListView::onWheel (FWheelEvent* ev)
   static constexpr int wheel_distance = 4;
   first_line_position_before = first_visible_line.getPosition();
 
-  if ( drag_scroll != DragScrollMode::None )
+  if ( isDragging(drag_scroll) )
     stopDragScroll();
 
   if ( ev->getWheel() == MouseWheel::Up )
@@ -1284,22 +1304,10 @@ void FListView::onWheel (FWheelEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FListView::onFocusIn (FFocusEvent*)
+void FListView::onFocusOut (FFocusEvent* out_ev)
 {
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
-}
-
-//----------------------------------------------------------------------
-void FListView::onFocusOut (FFocusEvent*)
-{
-  if ( getStatusBar() )
-  {
-    getStatusBar()->clearMessage();
-    getStatusBar()->drawMessage();
-  }
-
   delOwnTimers();
+  FWidget::onFocusOut(out_ev);
 }
 
 
@@ -1453,27 +1461,26 @@ inline void FListView::mapKeyFunctions()
 void FListView::processKeyAction (FKeyEvent* ev)
 {
   const auto idx = ev->key();
-  const auto& entry = key_map[idx];
+  const auto& iter = key_map.find(idx);
 
-  if ( entry )
+  if ( iter != key_map.end() )
   {
-    entry();
+    iter->second();
     ev->accept();
+    return;
   }
-  else
-  {
-    const auto& entry_result = key_map_result[idx];
 
-    if ( entry_result )
-    {
-      if ( entry_result() )
-        ev->accept();
-    }
-    else
-    {
-      ev->ignore();
-    }
+  const auto& iter_result = key_map_result.find(idx);
+
+  if ( iter_result != key_map_result.end() )
+  {
+    if ( iter_result->second() )
+      ev->accept();
+
+    return;
   }
+
+  ev->ignore();
 }
 
 //----------------------------------------------------------------------
@@ -1554,18 +1561,7 @@ void FListView::draw()
 
   drawScrollbars();
   drawList();
-
-  if ( getFlags().focus && getStatusBar() )
-  {
-    const auto& msg = getStatusbarMessage();
-    const auto& curMsg = getStatusBar()->getMessage();
-
-    if ( curMsg != msg )
-    {
-      getStatusBar()->setMessage(msg);
-      getStatusBar()->drawMessage();
-    }
-  }
+  updateStatusbar (this);
 }
 
 //----------------------------------------------------------------------
@@ -1606,7 +1602,7 @@ void FListView::drawHeadlines()
 
   while ( iter != header.cend() )
   {
-    if ( ! iter->name.isEmpty() )
+    if ( iter->visible && ! iter->name.isEmpty() )
       drawHeadlineLabel(iter);  // Draw into FVTermBuffer object
 
     ++iter;
@@ -1619,7 +1615,7 @@ void FListView::drawHeadlines()
 //----------------------------------------------------------------------
 void FListView::drawList()
 {
-  if ( itemlist.empty() || getHeight() <= 2 || getWidth() <= 4 )
+  if ( isItemListEmpty() || getHeight() <= 2 || getWidth() <= 4 )
     return;
 
   int y{0};
@@ -1632,15 +1628,15 @@ void FListView::drawList()
   {
     const bool is_current_line( iter == current_iter );
     const auto& item = static_cast<FListViewItem*>(*iter);
-    const int tree_offset = tree_view ? int(item->getDepth() << 1u) + 1 : 0;
+    const int tree_offset = isTreeView() ? int(item->getDepth() << 1u) + 1 : 0;
     const int checkbox_offset = item->isCheckable() ? 1 : 0;
     path_end = getListEnd(item);
     print() << FPoint{2, 2 + y};
 
     // Draw one FListViewItem
-    drawListLine (item, getFlags().focus, is_current_line);
+    drawListLine (item, getFlags().focus.focus, is_current_line);
 
-    if ( getFlags().focus && is_current_line )
+    if ( getFlags().focus.focus && is_current_line )
     {
       int xpos = 3 + tree_offset + checkbox_offset - xoffset;
 
@@ -1672,6 +1668,17 @@ void FListView::drawList()
 }
 
 //----------------------------------------------------------------------
+inline void FListView::adjustWidthForTreeView ( std::size_t& width
+                                              , std::size_t indent
+                                              , bool is_checkable ) const
+{
+  width -= (indent + 1);
+
+  if ( is_checkable )
+    width -= checkbox_space;
+}
+
+//----------------------------------------------------------------------
 void FListView::drawListLine ( const FListViewItem* item
                              , bool is_focus
                              , bool is_current )
@@ -1688,6 +1695,12 @@ void FListView::drawListLine ( const FListViewItem* item
   {
     for (std::size_t col{0}; col < item->column_list.size(); )
     {
+      if ( ! header[col].visible )
+      {
+        col++;
+        continue;
+      }
+
       static constexpr std::size_t ellipsis_length = 2;
       const auto& text = item->column_list[col];
       auto width = std::size_t(header[col].width);
@@ -1698,13 +1711,8 @@ void FListView::drawListLine ( const FListViewItem* item
       const auto align = getColumnAlignment(int(col));
       const std::size_t align_offset = getAlignOffset (align, column_width, width);
 
-      if ( tree_view && col == 1 )
-      {
-        width -= (indent + 1);
-
-        if ( item->isCheckable() )
-          width -= checkbox_space;
-      }
+      if ( isTreeView() && col == 1 )
+        adjustWidthForTreeView (width, indent, item->isCheckable());
 
       // Insert alignment spaces
       if ( align_offset > 0 )
@@ -1851,7 +1859,7 @@ inline auto FListView::getLinePrefix ( const FListViewItem* item
 {
   FString line{""};
 
-  if ( tree_view )
+  if ( isTreeView() )
   {
     if ( indent > 0 )
       line = FString{indent, L' '};
@@ -1959,6 +1967,77 @@ void FListView::drawHeadlineLabel (const HeaderItems::const_iterator& iter)
 }
 
 //----------------------------------------------------------------------
+inline auto FListView::findHeaderStartPos (bool& left_trunc) -> FVTermBuffer::iterator
+{
+  std::size_t column_offset{0};
+  std::size_t offset{0};
+  bool stop = false;
+
+  for (const auto& term_char : headerline)
+  {
+    if ( stop )
+      break;
+
+    if ( xoffset == 0 )
+      stop = true;
+    else
+    {
+      column_offset += getColumnWidth(term_char);
+      offset++;
+
+      if ( column_offset == std::size_t(xoffset) )
+        stop = true;
+      else if ( column_offset > std::size_t(xoffset) && column_offset >= 2 )
+      {
+        left_trunc = true;
+        stop = true;
+      }
+    }
+  }
+
+  auto first = headerline.begin();
+  std::advance(first, offset);
+  return first;
+}
+
+//----------------------------------------------------------------------
+inline auto FListView::findHeaderEndPos ( FVTermBuffer::iterator first
+                                        , bool left_trunc
+                                        , bool& right_trunc ) -> FVTermBuffer::iterator
+{
+  std::size_t character{0};
+  std::size_t column_width{0};
+  auto last = headerline.end();
+
+  if ( getColumnWidth(headerline) <= getClientWidth() )
+    return last;
+
+  if ( left_trunc )
+    column_width++;
+
+  for (const auto& tc : FVTermBuffer(first, last))
+  {
+    const uInt8 char_width = tc.attr.bit.char_width;
+
+    if ( column_width + char_width > getClientWidth() )
+    {
+      right_trunc = true;
+      break;
+    }
+
+    column_width += char_width;
+    character++;
+
+    if ( column_width == getClientWidth() )
+      break;
+  }
+
+  last = first;
+  std::advance(last, character);
+  return last;
+}
+
+//----------------------------------------------------------------------
 void FListView::drawBufferedHeadline()
 {
   // Print the FVTermBuffer object
@@ -1966,83 +2045,32 @@ void FListView::drawBufferedHeadline()
   if ( headerline.isEmpty() )
     return;
 
-  std::size_t column_offset{0};
-  std::size_t column_width{0};
-  std::size_t offset{0};
-  bool left_truncated_fullwidth{false};
-  bool right_truncated_fullwidth{false};
-  auto last = headerline.end();
+  bool left_trunc{false};  // left truncated full-width
+  bool right_trunc{false};  // right truncated full-width
 
   // Search for the start position
-  for (const auto& tc : headerline)
-  {
-    if ( xoffset == 0 )
-      break;
-
-    column_offset += getColumnWidth(tc);
-    offset++;
-
-    if ( column_offset == std::size_t(xoffset) )
-      break;
-
-    if ( column_offset > std::size_t(xoffset) && column_offset >= 2 )
-    {
-      left_truncated_fullwidth = true;
-      break;
-    }
-  }
-
-  auto first = headerline.begin();
-  std::advance(first, offset);
+  auto first = findHeaderStartPos(left_trunc);
 
   // Search for the end position
-  if ( getColumnWidth(headerline) > getClientWidth() )
-  {
-    std::size_t character{0};
-
-    if ( left_truncated_fullwidth )
-      column_width++;
-
-    for (const auto& tc : FVTermBuffer(first, last))
-    {
-      const uInt8 char_width = tc.attr.bit.char_width;
-
-      if ( column_width + char_width > getClientWidth() )
-      {
-        column_width++;
-        right_truncated_fullwidth = true;
-        break;
-      }
-
-      column_width += char_width;
-      character++;
-
-      if ( column_width == getClientWidth() )
-        break;
-    }
-
-    last = first;
-    std::advance(last, character);
-  }
-  else
-    column_width = getColumnWidth(headerline);
+  auto last = findHeaderEndPos (first, left_trunc, right_trunc);
 
   // Print the header line
   print() << FPoint{2, 1};
 
-  if ( left_truncated_fullwidth )
+  if ( left_trunc )
     print (UniChar::SingleLeftAngleQuotationMark);  // ‹
 
   print() << FVTermBuffer(first, last);
 
-  if ( right_truncated_fullwidth )
+  if ( right_trunc )
     print (UniChar::SingleRightAngleQuotationMark);  // ›
 
-  while ( column_width < getClientWidth() )
+  for ( std::size_t column_width = getColumnWidth(headerline);
+        column_width < getClientWidth();
+        column_width++ )
   {
     setColor();
     print(UniChar::BoxDrawingsHorizontal);
-    column_width++;
   }
 }
 
@@ -2062,6 +2090,26 @@ void FListView::drawColumnEllipsis ( const HeaderItems::const_iterator& iter
 
   if ( iter == header.cend() - 1 )  // Last element
     headerline << ' ';
+}
+
+//----------------------------------------------------------------------
+void FListView::updateLayout()
+{
+  max_line_width = 0;
+  std::for_each ( itemlist.begin()
+                , itemlist.end()
+                , [this] (FObject* obj_item)
+                  {
+                    const auto& item = static_cast<FListViewItem*>(obj_item);
+                    std::size_t line_width = determineLineWidth (item);
+                    recalculateHorizontalBar (line_width);
+                  }
+                );
+  adjustScrollbars(getCount());
+  drawList();
+  drawBorder();
+  drawHeadlines();
+  drawScrollbars();
 }
 
 //----------------------------------------------------------------------
@@ -2086,7 +2134,7 @@ void FListView::updateDrawing (bool draw_vbar, bool draw_hbar)
 //----------------------------------------------------------------------
 auto FListView::determineLineWidth (FListViewItem* item) -> std::size_t
 {
-  static constexpr std::size_t padding_space = 1;
+  std::size_t padding_space = 1;
   std::size_t line_width = padding_space;  // leading space
   std::size_t column_idx{0};
   const auto entries = std::size_t(item->column_list.size());
@@ -2110,8 +2158,12 @@ auto FListView::determineLineWidth (FListViewItem* item) -> std::size_t
         header_item.width = int(len);
     }
 
+    if ( &header_item == &header.back() )  // Last column
+      padding_space = 0;
+
     // width + trailing space
-    line_width += std::size_t(header_item.width) + padding_space;
+    if ( header_item.visible )
+      line_width += std::size_t(header_item.width) + padding_space;
 
     column_idx++;
   }
@@ -2129,13 +2181,11 @@ inline void FListView::beforeInsertion (FListViewItem* item)
 //----------------------------------------------------------------------
 inline void FListView::afterInsertion()
 {
-  if ( itemlist.size() == 1 )
-  {
-    // Select first item on insert
+  if ( itemlist.size() == 1 )  // Select first item on insert
     current_iter = itemlist.begin();
-    // The visible area of the list begins with the first element
-    first_visible_line = itemlist.begin();
-  }
+
+  // The visible area of the list begins with the first element
+  first_visible_line = itemlist.begin();
 
   // Sort list by a column (only if activated)
   sort();
@@ -2162,13 +2212,13 @@ void FListView::recalculateHorizontalBar (std::size_t len)
     hbar->setPageSize (int(max_line_width), int(getWidth() - nf_offset) - 4);
     hbar->calculateSliderValues();
 
-    if ( isShown() )
-    {
-      if ( isHorizontallyScrollable() )
-        hbar->show();
-      else
-        hbar->hide();
-    }
+    if ( ! isShown() )
+      return;
+
+    if ( isHorizontallyScrollable() )
+      hbar->show();
+    else
+      hbar->hide();
   }
 }
 
@@ -2202,6 +2252,12 @@ void FListView::mouseHeaderClicked()
 
   for (const auto& item : header)
   {
+    if ( isColumnHidden(column) )
+    {
+      column++;
+      continue;
+    }
+
     static constexpr int leading_space = 1;
     const bool has_sort_indicator( column == sort_column );
     auto click_width = int(getColumnWidth(item.name));
@@ -2236,7 +2292,7 @@ void FListView::mouseHeaderClicked()
 //----------------------------------------------------------------------
 void FListView::wheelUp (int pagesize)
 {
-  if ( itemlist.empty() || current_iter.getPosition() == 0 )
+  if ( isItemListEmpty() || current_iter.getPosition() == 0 )
     return;
 
   if ( first_visible_line.getPosition() >= pagesize )
@@ -2260,7 +2316,7 @@ void FListView::wheelUp (int pagesize)
 //----------------------------------------------------------------------
 void FListView::wheelDown (int pagesize)
 {
-  if ( itemlist.empty() )
+  if ( isItemListEmpty() )
     return;
 
   const auto element_count = int(getCount());
@@ -2317,7 +2373,7 @@ auto FListView::dragScrollDown (int position_before) -> bool
 //----------------------------------------------------------------------
 void FListView::dragUp (MouseButton mouse_button)
 {
-  if ( drag_scroll != DragScrollMode::None
+  if ( isDragging(drag_scroll)
     && scroll_distance < int(getClientHeight()) )
     scroll_distance++;
 
@@ -2342,7 +2398,7 @@ void FListView::dragUp (MouseButton mouse_button)
 //----------------------------------------------------------------------
 void FListView::dragDown (MouseButton mouse_button)
 {
-  if ( drag_scroll != DragScrollMode::None
+  if ( isDragging(drag_scroll)
     && scroll_distance < int(getClientHeight()) )
     scroll_distance++;
 
@@ -2365,12 +2421,56 @@ void FListView::dragDown (MouseButton mouse_button)
 }
 
 //----------------------------------------------------------------------
-void FListView::stopDragScroll()
+inline void FListView::stopDragScroll()
 {
   delOwnTimers();
   scroll_timer = false;
   scroll_distance = 1;
   drag_scroll = DragScrollMode::None;
+}
+
+//----------------------------------------------------------------------
+inline void FListView::toggleItemExpandState (FListViewItem* item) const
+{
+  if ( item->isExpand() )
+    item->collapse();
+  else
+    item->expand();
+}
+
+//----------------------------------------------------------------------
+inline auto FListView::isCheckboxClicked (int mouse_x, int indent) const -> bool
+{
+  if ( isTreeView() )
+    indent++;  // Plus one space
+
+  return mouse_x >= 3 + indent - xoffset
+      && mouse_x <= 5 + indent - xoffset;
+}
+
+//----------------------------------------------------------------------
+inline void FListView::resetClickedPositions()
+{
+  clicked_expander_pos.setPoint(-1, -1);
+  clicked_header_pos.setPoint(-1, -1);
+  clicked_checkbox_item = nullptr;
+}
+
+//----------------------------------------------------------------------
+auto FListView::isWithinHeaderBounds (const FPoint& pos) const -> bool
+{
+  return pos.getX() > 1
+      && pos.getX() < int(getWidth())
+      && pos.getY() == 1;
+}
+
+//----------------------------------------------------------------------
+auto FListView::isWithinListBounds (const FPoint& pos) const -> bool
+{
+  return pos.getX() > 1
+      && pos.getX() < int(getWidth())
+      && pos.getY() > 1
+      && pos.getY() < int(getHeight());
 }
 
 //----------------------------------------------------------------------
@@ -2383,9 +2483,51 @@ auto FListView::appendItem (FListViewItem* item) -> FObject::iterator
 }
 
 //----------------------------------------------------------------------
+void FListView::handleListEvent (const FMouseEvent* ev)
+{
+  int indent = 0;
+  const int new_pos = first_visible_line.getPosition() + ev->getY() - 2;
+
+  if ( new_pos < int(getCount()) )
+    setRelativePosition (ev->getY() - 2);
+
+  const auto& item = getCurrentItem();
+
+  if ( isTreeView() )  // Handle tree view events
+  {
+    indent = int(item->getDepth() << 1u);  // indent = 2 * depth
+
+    if ( item->isExpandable() && ev->getX() - 2 == indent - xoffset )
+      clicked_expander_pos = ev->getPos();
+  }
+
+  if ( hasCheckableItems() )  // Handle checkable item events
+  {
+    if ( isTreeView() )
+      indent++;  // Plus one space
+
+    if ( item->isCheckable() && isCheckboxClicked(ev->getX(), indent) )
+    {
+      clicked_checkbox_item = item;
+    }
+  }
+
+  // Redraw the list and update the vertical scrollbar
+  if ( isShown() )
+    drawList();
+
+  vbar->setValue (first_visible_line.getPosition());
+
+  if ( first_line_position_before != first_visible_line.getPosition() )
+    vbar->drawBar();
+
+  forceTerminalUpdate();
+}
+
+//----------------------------------------------------------------------
 void FListView::processClick() const
 {
-  if ( itemlist.empty() )
+  if ( isItemListEmpty() )
     return;
 
   emitCallback("clicked");
@@ -2421,13 +2563,13 @@ void FListView::changeOnResize() const
 //----------------------------------------------------------------------
 inline void FListView::toggleCheckbox()
 {
-  if ( itemlist.empty() )
+  if ( isItemListEmpty() )
     return;
 
   auto item = getCurrentItem();
 
   if ( item->isCheckable() )
-    item->setChecked(! item->isChecked());
+    toggleItemCheckState(item);
 }
 
 //----------------------------------------------------------------------
@@ -2436,50 +2578,51 @@ inline void FListView::collapseAndScrollLeft()
   const int position_before = current_iter.getPosition();
   auto item = getCurrentItem();
 
-  if ( xoffset == 0 && item && ! itemlist.empty() )
+  if ( xoffset != 0 || ! item || isItemListEmpty() )
   {
-    if ( tree_view && item->isExpandable() && item->isExpand() )
-    {
-      // Collapse element
-      item->collapse();
-      adjustSize();
-      vbar->calculateSliderValues();
-      // Force vertical scrollbar redraw
-      first_line_position_before = -1;
-    }
-    else if ( item->hasParent() )
-    {
-      // Jump to parent element
-      const auto& parent = item->getParent();
+    if ( xoffset > 0 )  // Scroll left
+      xoffset--;
 
-      if ( parent->isInstanceOf("FListViewItem") )
+    return;
+  }
+
+  if ( isTreeView() && item->isExpandable() && item->isExpand() )
+  {
+    // Collapse element
+    item->collapse();
+    adjustSize();
+    vbar->calculateSliderValues();
+    // Force vertical scrollbar redraw
+    first_line_position_before = -1;
+    return;
+  }
+
+  if ( ! item->hasParent() )
+    return;
+
+  // Jump to parent element
+  const auto& parent = item->getParent();
+
+  if ( parent->isInstanceOf("FListViewItem") )
+  {
+    current_iter.parentElement();
+
+    if ( current_iter.getPosition() < first_line_position_before )
+    {
+      const int difference = position_before - current_iter.getPosition();
+
+      if ( first_visible_line.getPosition() - difference >= 0 )
       {
-        current_iter.parentElement();
-
-        if ( current_iter.getPosition() < first_line_position_before )
-        {
-          const int difference = position_before - current_iter.getPosition();
-
-          if ( first_visible_line.getPosition() - difference >= 0 )
-          {
-            first_visible_line -= difference;
-            last_visible_line -= difference;
-          }
-          else
-          {
-            const int d = first_visible_line.getPosition();
-            first_visible_line -= d;
-            last_visible_line -= d;
-          }
-        }
+        first_visible_line -= difference;
+        last_visible_line -= difference;
+      }
+      else
+      {
+        const int d = first_visible_line.getPosition();
+        first_visible_line -= d;
+        last_visible_line -= d;
       }
     }
-  }
-  else
-  {
-    // Scroll left
-    if ( xoffset > 0 )
-      xoffset--;
   }
 }
 
@@ -2489,7 +2632,7 @@ inline void FListView::expandAndScrollRight()
   const int xoffset_end = int(max_line_width) - int(getClientWidth());
   auto item = getCurrentItem();
 
-  if ( tree_view && ! itemlist.empty() && item
+  if ( isTreeView() && ! isItemListEmpty() && item
     && item->isExpandable() && ! item->isExpand() )
   {
     // Expand element
@@ -2512,7 +2655,7 @@ inline void FListView::expandAndScrollRight()
 //----------------------------------------------------------------------
 inline void FListView::firstPos()
 {
-  if ( itemlist.empty() )
+  if ( isItemListEmpty() )
     return;
 
   current_iter -= current_iter.getPosition();
@@ -2524,7 +2667,7 @@ inline void FListView::firstPos()
 //----------------------------------------------------------------------
 inline void FListView::lastPos()
 {
-  if ( itemlist.empty() )
+  if ( isItemListEmpty() )
     return;
 
   const auto element_count = int(getCount());
@@ -2537,12 +2680,12 @@ inline void FListView::lastPos()
 //----------------------------------------------------------------------
 inline auto FListView::expandSubtree() -> bool
 {
-  if ( itemlist.empty() )
+  if ( isItemListEmpty() )
     return false;
 
   auto item = getCurrentItem();
 
-  if ( tree_view && item->isExpandable() && ! item->isExpand() )
+  if ( isTreeView() && item->isExpandable() && ! item->isExpand() )
   {
     item->expand();
     adjustScrollbars (getCount());
@@ -2555,12 +2698,12 @@ inline auto FListView::expandSubtree() -> bool
 //----------------------------------------------------------------------
 inline auto FListView::collapseSubtree() -> bool
 {
-  if ( itemlist.empty() )
+  if ( isItemListEmpty() )
     return false;
 
   auto item = getCurrentItem();
 
-  if ( tree_view && item->isExpandable() && item->isExpand() )
+  if ( isTreeView() && item->isExpandable() && item->isExpand() )
   {
     item->collapse();
     adjustScrollbars (getCount());
@@ -2580,7 +2723,7 @@ void FListView::setRelativePosition (int ry)
 //----------------------------------------------------------------------
 void FListView::stepForward()
 {
-  if ( itemlist.empty() )
+  if ( isItemListEmpty() )
     return;
 
   if ( current_iter == last_visible_line )
@@ -2602,7 +2745,7 @@ void FListView::stepForward()
 //----------------------------------------------------------------------
 void FListView::stepBackward()
 {
-  if ( itemlist.empty() )
+  if ( isItemListEmpty() )
     return;
 
   if ( current_iter == first_visible_line
@@ -2619,7 +2762,7 @@ void FListView::stepBackward()
 //----------------------------------------------------------------------
 void FListView::stepForward (int distance)
 {
-  if ( itemlist.empty() )
+  if ( isItemListEmpty() )
     return;
 
   const auto element_count = int(getCount());
@@ -2655,7 +2798,7 @@ void FListView::stepForward (int distance)
 //----------------------------------------------------------------------
 void FListView::stepBackward (int distance)
 {
-  if ( itemlist.empty() || current_iter.getPosition() == 0 )
+  if ( isItemListEmpty() || current_iter.getPosition() == 0 )
     return;
 
   if ( current_iter.getPosition() - distance >= 0 )
@@ -2784,7 +2927,7 @@ void FListView::cb_vbarChange (const FWidget*)
       break;
 
     default:
-      break;
+      throw std::invalid_argument{"Invalid scroll type"};
   }
 
   if ( isShown() )
@@ -2839,7 +2982,7 @@ void FListView::cb_hbarChange (const FWidget*)
       break;
 
     default:
-      break;
+      throw std::invalid_argument{"Invalid scroll type"};
   }
 
   if ( isShown() )

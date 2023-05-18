@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2022 Markus Gans                                      *
+* Copyright 2019-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -76,14 +76,6 @@ auto FSpinBox::setEnable (bool enable) -> bool
 {
   FWidget::setEnable(enable);
   input_field.setEnable(enable);
-  return enable;
-}
-
-//----------------------------------------------------------------------
-auto FSpinBox::setFocus (bool enable) -> bool
-{
-  FWidget::setFocus(enable);
-  input_field.setFocus(enable);
   return enable;
 }
 
@@ -169,12 +161,12 @@ void FSpinBox::onKeyPress (FKeyEvent* ev)
   {
     focusPrevChild();
   }
-  else if ( key == FKey::Up )
+  else if ( key == FKey::Up || key == FKey::Scroll_backward )
   {
     increaseValue();
     ev->accept();
   }
-  else if ( key == FKey::Down )
+  else if ( key == FKey::Down || key == FKey::Scroll_forward )
   {
     decreaseValue();
     ev->accept();
@@ -283,9 +275,34 @@ void FSpinBox::onTimer (FTimerEvent*)
       break;
 
     default:
-      break;
+      throw std::invalid_argument{"Invalid spining state"};
   }
 }
+
+//----------------------------------------------------------------------
+void FSpinBox::onFocusIn (FFocusEvent* in_ev)
+{
+  setWidgetFocus (&input_field);
+  FWidget::onFocusIn(in_ev);
+}
+
+//----------------------------------------------------------------------
+void FSpinBox::onFailAtChildFocus (FFocusEvent* fail_ev)
+{
+  // Change the focus away from FComboBox to another widget
+
+  if ( fail_ev->getFocusType() == FocusTypes::NextWidget )
+  {
+    fail_ev->accept();
+    focusNextChild();
+  }
+  else if ( fail_ev->getFocusType() == FocusTypes::PreviousWidget )
+  {
+    fail_ev->accept();
+    focusPrevChild();
+  }
+}
+
 
 // private methods of FSpinBox
 //----------------------------------------------------------------------
@@ -299,6 +316,7 @@ void FSpinBox::init()
   label->setBackgroundColor (parent_widget->getBackgroundColor());
   input_field.setLabelAssociatedWidget(this);
   input_field.setInputFilter("[-[:digit:]]");  // Only numbers
+  input_field.setAlignment (Align::Right);
   input_field.unsetShadow();
   input_field << value;
   input_field.addCallback
@@ -345,7 +363,7 @@ void FSpinBox::draw()
           << inc_button_color
           << UniChar::BlackUpPointingTriangle;   // ▲
 
-  if ( getFlags().shadow )
+  if ( getFlags().shadow.shadow )
     drawShadow(this);
 }
 

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021-2022 Markus Gans                                      *
+* Copyright 2021-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -48,6 +48,7 @@ using FWidgetList = std::vector<FWidget*>;
 
 // non-member function forward declarations
 void detectTerminalSize();
+void initByte1PrintTransMask();
 auto isFocusNextKey (const FKey) -> bool;
 auto isFocusPrevKey (const FKey) -> bool;
 auto isDialogMenuKey (const FKey) -> bool;
@@ -56,6 +57,7 @@ auto isEscapeKey (const FKey) -> bool;
 auto getFirstFocusableWidget (const FObjectList&) -> FWidget*;
 auto getLastFocusableWidget (const FObjectList&) -> FWidget*;
 auto isInFWidgetList (const FWidgetList*, const FWidget*) -> bool;
+auto getAlignOffset (Align, const std::size_t, const std::size_t) -> std::size_t;
 auto getHotkey (const FString&) -> FKey;
 auto getHotkeyPos (const FString& src, FString& dest) -> std::size_t;
 void setHotkeyViaString (FWidget*, const FString&);
@@ -65,7 +67,8 @@ void passResizeCornerEventToDialog (const FWidget*, const FMouseEvent&);
 void drawShadow (FWidget*);
 void drawTransparentShadow (FWidget*);
 void drawBlockShadow (FWidget*);
-void clearShadow (FWidget*);
+void clearBlockShadow (FWidget*);
+void drawGenericBlockShadow (FWidget*, const std::array<FChar, 4>&);
 void drawFlatBorder (FWidget*);
 void clearFlatBorder (FWidget*);
 void checkBorder (const FWidget*, FRect&);
@@ -73,7 +76,11 @@ void drawBorder (FWidget*, const FRect&);
 void drawListBorder (FWidget*, const FRect&);
 void drawBox (FWidget*, const FRect&);
 void drawNewFontBox (FWidget*, const FRect&);
+void drawNewFontUShapedBox (FWidget*, const FRect&);
 void drawNewFontListBox (FWidget*, const FRect&);
+void drawGenericBox (FWidget*, const FRect&, const std::array<wchar_t, 8>&);
+void updateStatusbar (const FWidget* w, bool = true);
+void drawStatusBarMessage();
 
 }  // namespace finalcut
 

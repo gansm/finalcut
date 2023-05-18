@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2022 Markus Gans                                      *
+* Copyright 2014-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -64,7 +64,7 @@ class FPoint
     auto getY() const noexcept -> int;
     void setX (int) noexcept;
     void setY (int) noexcept;
-    void setPoint (const FPoint&);
+    void setPoint (const FPoint&) noexcept;
     void setPoint (int, int) noexcept;
 
     // Inquiry
@@ -76,7 +76,7 @@ class FPoint
 
     // Methods
     void move (int, int) noexcept;
-    void move (const FPoint&);
+    void move (const FPoint&) noexcept;
 
   private:
     // Data members
@@ -114,8 +114,27 @@ inline auto FPoint::getY() const noexcept -> int
 { return ypos; }
 
 //----------------------------------------------------------------------
-inline void FPoint::setPoint (const FPoint& p)
+inline void FPoint::setX (int x) noexcept
+{ xpos = x; }
+
+//----------------------------------------------------------------------
+inline void FPoint::setY (int y) noexcept
+{ ypos = y; }
+
+//----------------------------------------------------------------------
+inline void FPoint::setPoint (const FPoint& p) noexcept
 { setPoint(p.xpos, p.ypos); }
+
+//----------------------------------------------------------------------
+inline void FPoint::setPoint (int x, int y) noexcept
+{
+  xpos = x;
+  ypos = y;
+}
+
+//----------------------------------------------------------------------
+inline auto FPoint::isOrigin() const noexcept -> bool
+{ return xpos == 0 && ypos == 0; }
 
 //----------------------------------------------------------------------
 inline auto FPoint::x_ref() & noexcept -> int&
@@ -125,6 +144,19 @@ inline auto FPoint::x_ref() & noexcept -> int&
 inline auto FPoint::y_ref() & noexcept -> int&
 { return ypos; }
 
+//----------------------------------------------------------------------
+inline void FPoint::move (int dx, int dy) noexcept
+{
+  xpos += dx;
+  ypos += dy;
+}
+
+//----------------------------------------------------------------------
+inline void FPoint::move (const FPoint& d) noexcept
+{
+  xpos += d.getX();
+  ypos += d.getY();
+}
 
 // FPoint non-member operators
 //----------------------------------------------------------------------

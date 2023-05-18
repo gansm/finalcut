@@ -134,7 +134,7 @@ inline auto FToolTip::unsetBorder() -> bool
 
 //----------------------------------------------------------------------
 inline auto FToolTip::hasBorder() const -> bool
-{ return ! getFlags().no_border; }
+{ return ! getFlags().feature.no_border; }
 
 }  // namespace finalcut
 

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2022 Markus Gans                                      *
+* Copyright 2015-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -102,8 +102,6 @@ class FMenuItem : public FWidget
 
     // Mutators
     auto setEnable (bool = true) -> bool override;
-    auto setFocus (bool = true) -> bool override;
-    auto unsetFocus() -> bool override;
     void setSelected();
     void unsetSelected();
     void setSeparator();
@@ -172,6 +170,7 @@ class FMenuItem : public FWidget
     void createDialogList (FMenu*) const;
     template <typename T>
     void passMouseEvent (T, const FMouseEvent*, Event) const;
+    void resetSelectedItem (const FMenuList*) const;
 
     // Callback methods
     void cb_switchToDialog (FDialog*) const;
@@ -227,10 +226,6 @@ inline auto FMenuItem::getTextWidth() const noexcept -> std::size_t
 //----------------------------------------------------------------------
 inline auto FMenuItem::getText() const -> FString
 { return text; }
-
-//----------------------------------------------------------------------
-inline auto FMenuItem::unsetFocus() -> bool
-{ return setFocus(false); }
 
 //----------------------------------------------------------------------
 inline void FMenuItem::setSeparator()

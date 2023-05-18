@@ -83,7 +83,9 @@ EventDialog::EventDialog (finalcut::FWidget* parent)
 //----------------------------------------------------------------------
 void EventDialog::initLayout()
 {
-  FDialog::setText ("Event dialog");
+  using namespace std::string_literals;
+  auto gear = "\u2699";
+  FDialog::setText ("Event dialog "s + gear);
   FDialog::setGeometry (FPoint{15, 2}, FSize{53, 12});
   label.setGeometry (FPoint(1, 1), getClientSize(), false);
   FDialog::initLayout();
@@ -227,7 +229,8 @@ void EventDialog::onWindowLowered (finalcut::FEvent* ev)
 // class EventLog
 //----------------------------------------------------------------------
 
-class EventLog final : public finalcut::FDialog, public std::ostringstream
+class EventLog final : public finalcut::FDialog
+                     , public std::ostringstream
 {
   public:
     // Constructor
@@ -297,7 +300,9 @@ void EventLog::onClose (finalcut::FCloseEvent* ev)
 //----------------------------------------------------------------------
 void EventLog::initLayout()
 {
-  FDialog::setText ("Event log");
+  using namespace std::string_literals;
+  auto lightning = "\u26a1";
+  FDialog::setText ("Event log "s + lightning);
   FDialog::setGeometry (FPoint{4, 16}, FSize{75, 8});
   FDialog::setResizeable();
   scrolltext.setGeometry (FPoint{1, 2}, FSize{getWidth(), getHeight() - 1});

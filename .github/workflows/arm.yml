@@ -11,28 +11,28 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Build on ${{ matrix.architecture }}
+    name: Build on ${{ matrix.arch }}
 
     # Run steps on a matrix of 3 arch/distro combinations
     strategy:
       matrix:
         include:
-          - architecture: aarch64
-          - architecture: armv7
-          - architecture: armv6
+          - arch: aarch64
+          - arch: armv7
+          - arch: armv6
 
     steps:
     - name: Repository checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Test on ARM architecture
-      uses: darsvador/run-on-arch-action@v1.0.10
+      uses: uraimo/run-on-arch-action@v2
       id: runcmd
       with:
-        architecture: ${{ matrix.architecture }}
-        distribution: buster
+        arch: ${{ matrix.arch }}
+        distro: bullseye
         run: |
-          lsb_release -a
+          cat /etc/os-release
           uname -a
           whoami
           tty || echo
@@ -55,6 +55,7 @@ jobs:
             autoconf \
             autoconf-archive
           # Build
+          g++ --version
           autoreconf -v --install --force
           ./configure --prefix=/usr
           make -j10

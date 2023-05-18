@@ -113,7 +113,6 @@
 
 #include <functional>
 #include <memory>
-#include <queue>
 #include <string>
 #include <utility>
 #include <vector>
@@ -235,7 +234,7 @@ class FTerm final
     static void paddingPrint (const std::string&, int = 1);
     static void stringPrint (const std::string&);
 
-    void        initTerminal();
+    void initTerminal();
     static void initScreenSettings();
     static void changeTermSizeFinished();
 

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2022 Markus Gans                                      *
+* Copyright 2015-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -24,6 +24,7 @@
 
 #include "final/fapplication.h"
 #include "final/fevent.h"
+#include "final/input/fmouse.h"
 #include "final/menu/fmenubar.h"
 #include "final/menu/fmenu.h"
 #include "final/widget/fcombobox.h"
@@ -33,9 +34,20 @@
 namespace finalcut
 {
 
+namespace internal
+{
+
+struct var
+{
+  static bool fwindow_init_flag;  // FWindow init state
+};
+
+bool var::fwindow_init_flag{false};
+
+}  // namespace internal
+
 // static attributes
 FWindow* FWindow::previous_window{nullptr};
-
 
 //----------------------------------------------------------------------
 // class FWindow
@@ -46,10 +58,16 @@ FWindow* FWindow::previous_window{nullptr};
 FWindow::FWindow(FWidget* parent)
   : FWidget{parent}
 {
+  if ( ! internal::var::fwindow_init_flag )
+  {
+    auto app_object = FApplication::getApplicationObject();
+    app_object->registerMouseHandler (closeDropDownMouseHandler);
+    app_object->registerMouseHandler (unselectMenubarItemsMouseHandler);
+    internal::var::fwindow_init_flag = true;
+  }
+
   setWindowWidget();
-  FRect geometry {getTermGeometry()};
-  geometry.move(-1, -1);
-  createArea (geometry, getShadow(), getVWin());
+  createVWin();
   addWindow (this);
 }
 
@@ -73,8 +91,6 @@ FWindow::~FWindow()  // destructor
     const auto& t_geometry = getTermGeometryWithShadow();
     restoreVTerm (t_geometry);
   }
-
-  removeArea (getVWin());
 }
 
 
@@ -92,7 +108,7 @@ auto FWindow::setWindowWidget (bool enable) -> bool
   if ( isWindowWidget() == enable )
     return true;
 
-  setFlags().window_widget = enable;
+  setFlags().type.window_widget = enable;
 
   if ( enable )
     setTermOffset();
@@ -165,19 +181,19 @@ void FWindow::unsetActiveWindow() const
 //----------------------------------------------------------------------
 auto FWindow::setResizeable (bool enable) -> bool
 {
-  return (setFlags().resizeable = enable);
+  return (setFlags().feature.resizeable = enable);
 }
 
 //----------------------------------------------------------------------
 auto FWindow::setMinimizable (bool enable) -> bool
 {
-  return (setFlags().minimizable = enable);
+  return (setFlags().feature.minimizable = enable);
 }
 
 //----------------------------------------------------------------------
 auto FWindow::setTransparentShadow (bool enable) -> bool
 {
-  setFlags().shadow = setFlags().trans_shadow = enable;
+  setFlags().shadow.shadow = setFlags().shadow.trans_shadow = enable;
 
   if ( enable )
     setShadowSize (FSize{2, 1});
@@ -195,14 +211,14 @@ auto FWindow::setShadow (bool enable) -> bool
 
   if ( enable )
   {
-    setFlags().shadow = true;
-    setFlags().trans_shadow = false;
+    setFlags().shadow.shadow = true;
+    setFlags().shadow.trans_shadow = false;
     setShadowSize (FSize{1, 1});
   }
   else
   {
-    setFlags().shadow = false;
-    setFlags().trans_shadow = false;
+    setFlags().shadow.shadow = false;
+    setFlags().shadow.trans_shadow = false;
     setShadowSize (FSize{0, 0});
   }
 
@@ -215,7 +231,7 @@ auto FWindow::setAlwaysOnTop (bool enable) -> bool
   if ( isAlwaysOnTop() == enable )
     return true;
 
-  setFlags().always_on_top = enable;
+  setFlags().visibility.always_on_top = enable;
 
   if ( enable )
   {
@@ -508,8 +524,8 @@ void FWindow::swapWindow (const FWidget* obj1, const FWidget* obj2)
 
   if ( ! getWindowList()
     || getWindowList()->empty()
-    || obj1->getFlags().modal
-    || obj2->getFlags().modal )
+    || obj1->getFlags().visibility.modal
+    || obj2->getFlags().visibility.modal )
     return;
 
   auto iter = getWindowList()->cbegin();
@@ -546,7 +562,7 @@ auto FWindow::raiseWindow (FWidget* obj) -> bool
 
   const auto last = static_cast<FWidget*>(getWindowList()->back());
 
-  if ( last == obj || (last->getFlags().modal && ! obj->isMenuWidget()) )
+  if ( last == obj || (last->getFlags().visibility.modal && ! obj->isMenuWidget()) )
     return false;
 
   auto iter = getWindowList()->cbegin();
@@ -578,7 +594,7 @@ auto FWindow::lowerWindow (FWidget* obj) -> bool
     || getWindowList()->empty()
     || ! obj->isWindowWidget()
     || getWindowList()->front() == obj
-    || obj->getFlags().modal )
+    || obj->getFlags().visibility.modal )
     return false;
 
   auto iter = getWindowList()->cbegin();
@@ -609,8 +625,8 @@ auto FWindow::zoomWindow() -> bool
     zoomed = false;
     const FRect oldGeometry (getTermGeometryWithShadow());
     setGeometry (normalGeometry);
-    restoreVTerm (oldGeometry);
     redraw();
+    restoreVTerm (oldGeometry);
   }
   else
   {
@@ -622,8 +638,8 @@ auto FWindow::zoomWindow() -> bool
     normalGeometry = getGeometry();
     const FRect oldGeometry (getTermGeometryWithShadow());
     setGeometry (FPoint{1, 1}, FSize{getMaxWidth(), getMaxHeight()});
-    restoreVTerm (oldGeometry);
     redraw();
+    restoreVTerm (oldGeometry);
   }
 
   return zoomed;
@@ -805,6 +821,16 @@ void FWindow::onWindowLowered (FEvent*)
 
 // private methods of FWindow
 //----------------------------------------------------------------------
+inline void FWindow::createVWin() noexcept
+{
+  // Initialize virtual window
+
+  FRect geometry {getTermGeometry()};
+  geometry.move(-1, -1);
+  setVWin(createArea(geometry, getShadow()));
+}
+
+//----------------------------------------------------------------------
 inline auto FWindow::getVisibleTermGeometry (FWindow* win) -> FRect
 {
   auto& term_geometry = win->getTermGeometry();
@@ -915,20 +941,33 @@ void FWindow::reactivateWindow (FWindow* active_win)
 
   if ( focus && ! focus->isInstanceOf("FMenuItem") )
   {
-    focus->setFocus();
+    // Renew the focus of the focused widget in the current window
+    auto last_focus = FWidget::getFocusWidget();
 
-    if ( ! focus->isWindowWidget() )
-      focus->redraw();
-    else
-    {
-      if ( getStatusBar() )
-        getStatusBar()->drawMessage();
-    }
+    if ( last_focus )
+      last_focus->setFlags().focus.focus = false;
+
+    FWidget::setFocusWidget(focus);
+    focus->setFlags().focus.focus = true;
+    active_win->setWindowFocusWidget (focus);
+    FFocusEvent f_in (Event::FocusIn);
+    FApplication::sendEvent (focus, &f_in);
   }
 }
 
 
 // non-member functions
+//----------------------------------------------------------------------
+void closeDropDownMouseHandler (const FMouseData& md)
+{
+  if ( md.isMoved() )
+    return;
+
+  const auto& mouse_position = md.getPos();
+  auto app_object = FApplication::getApplicationObject();
+  finalcut::closeDropDown (app_object, mouse_position);
+}
+
 //----------------------------------------------------------------------
 void closeDropDown (const FWidget* widget, const FPoint& mouse_position)
 {
@@ -964,8 +1003,43 @@ void closeDropDown (const FWidget* widget, const FPoint& mouse_position)
   if ( ! (FWidget::getClickedWidget() || is_dialog_menu) )
     FWindow::switchToPrevWindow(widget);
 
+  drawStatusBarMessage();
+}
+
+//----------------------------------------------------------------------
+void unselectMenubarItemsMouseHandler (const FMouseData& md)
+{
+  if ( md.isMoved() )
+    return;
+
+  const auto& mouse_position = md.getPos();
+  auto app_object = FApplication::getApplicationObject();
+  finalcut::unselectMenubarItems (app_object, mouse_position);
+}
+
+//----------------------------------------------------------------------
+void unselectMenubarItems (const FWidget* widget, const FPoint& mouse_position)
+{
+  // Unselect the menu bar items
+
+  auto menu_bar = FWidget::getMenuBar();
+
+  if ( FWidget::getOpenMenu()
+    || ! (menu_bar && menu_bar->hasSelectedItem())
+    || menu_bar->getTermGeometry().contains(mouse_position) )
+    return;
+
   if ( FWidget::getStatusBar() )
-    FWidget::getStatusBar()->drawMessage();
+    FWidget::getStatusBar()->clearMessage();
+
+  menu_bar->resetMenu();
+  menu_bar->redraw();
+
+  // No widget was been clicked
+  if ( ! FWidget::getClickedWidget() )
+    FWindow::switchToPrevWindow(widget);
+
+  drawStatusBarMessage();
 }
 
 }  // namespace finalcut

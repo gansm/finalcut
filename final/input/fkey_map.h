@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2022 Markus Gans                                      *
+* Copyright 2015-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -44,7 +44,7 @@ class FKeyMap final
     {
       FKey num;
       const char* string;
-      std::size_t length;
+      uInt8 length;
       char tname[4];
     };
 
@@ -52,7 +52,7 @@ class FKeyMap final
     {
       FKey num;
       char string[8];
-      std::size_t length;
+      uInt8 length;
     };
 
     struct KeyName
@@ -62,9 +62,9 @@ class FKeyMap final
     };
 
     // Using-declaration
-    using KeyCapMapType = std::array<KeyCapMap, 188>;
-    using KeyMapType = std::array<KeyMap, 232>;
-    using KeyNameType = std::array<KeyName, 388>;
+    using KeyCapMapType = std::array<KeyCapMap, 190>;
+    using KeyMapType = std::array<KeyMap, 234>;
+    using KeyNameType = std::array<KeyName, 390>;
 
     // Constructors
     FKeyMap() = default;

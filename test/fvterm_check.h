@@ -162,13 +162,17 @@ auto isAreaEqual ( finalcut::FVTerm::FTermArea* area1
 auto isFCharEqual ( const finalcut::FChar& lhs
                   , const finalcut::FChar& rhs ) -> bool
 {
+  finalcut::FAttribute attr{};
+  attr.bit.no_changes = true;
+  attr.bit.printed = true;
+
   return finalcut::isFUnicodeEqual(lhs.ch, rhs.ch)
       && finalcut::isFUnicodeEqual(lhs.encoded_char, rhs.encoded_char)
       && lhs.fg_color     == rhs.fg_color
       && lhs.bg_color     == rhs.bg_color
       && lhs.attr.byte[0] == rhs.attr.byte[0]
       && lhs.attr.byte[1] == rhs.attr.byte[1]
-      && lhs.attr.byte[2] == rhs.attr.byte[2]
+      && (~ attr.byte[2] & lhs.attr.byte[2]) == (~ attr.byte[2] & rhs.attr.byte[2])
       && lhs.attr.byte[3] == rhs.attr.byte[3];
 }
 

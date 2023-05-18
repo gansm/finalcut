@@ -47,10 +47,10 @@ Timer::Timer (finalcut::FWidget* parent)
   : finalcut::FWidget{parent}
 {
   addTimer (60000);              // 1-minute timer
-  const int id = addTimer (50);  // 50-millisecond timer
-  addTimer (1000);               // 1-second timer
-  delTimer (id);
   addTimer (250);                // 250-millisecond timer
+  addTimer (1000);               // 1-second timer
+  const int id = addTimer (50);  // 50-millisecond timer
+  delTimer (id);
 
   getColorTheme()->term_fg = finalcut::FColor::Default;
   getColorTheme()->term_bg = finalcut::FColor::Default;

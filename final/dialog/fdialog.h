@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2022 Markus Gans                                      *
+* Copyright 2012-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -138,6 +138,7 @@ class FDialog : public FWindow
     auto expandWidth (int) -> bool;
     auto zoomWindow() -> bool override;
     auto minimizeWindow() -> bool override;
+    void flushChanges() override;
     void activateDialog();
 
     // Event handlers
@@ -154,6 +155,7 @@ class FDialog : public FWindow
 
   protected:
     // Methods
+    void adjustSize() override;
     void done (ResultCode);
     void draw() override;
     void drawDialogShadow();
@@ -188,6 +190,7 @@ class FDialog : public FWindow
     void initCloseMenuItem (FMenu*);
     auto initMouseStates (const FMouseEvent&, bool) const -> MouseStates;
     void mapKeyFunctions();
+    void recoverBackgroundAfterMove (const FPoint&, const FRect&);
     void drawBorder() override;
     void drawTitleBar();
     void drawBarButton();
@@ -198,7 +201,6 @@ class FDialog : public FWindow
     void printMinimizeButton();
     void drawTextBar();
     void clearStatusBar() const;
-    void restoreOverlaidWindows();
     void setCursorToFocusWidget();
     void leaveMenu();
     void openMenu();
@@ -223,6 +225,8 @@ class FDialog : public FWindow
     auto isMouseOverTitlebar (const MouseStates&) const -> bool;
     void passEventToSubMenu ( const MouseStates&
                             , const FMouseEvent& );
+    void handleLeftMouseDown (const MouseStates&);
+    void handleRightAndMiddleMouseDown (const MouseButton&, const MouseStates&);
     void moveSizeKey (FKeyEvent*);
     void raiseActivateDialog();
     void lowerActivateDialog();
@@ -257,6 +261,8 @@ class FDialog : public FWindow
     bool        setSize_error{false};
     FPoint      titlebar_click_pos{};
     FPoint      resize_click_pos{};
+    FPoint      new_pos{};
+    FSize       new_size{};
     FRect       save_geometry{};  // required by keyboard move/size
     FMenu*      dialog_menu{nullptr};
     FMenuItem*  dgl_menuitem{nullptr};
@@ -306,11 +312,11 @@ inline void FDialog::setText (const FString& txt)
 
 //----------------------------------------------------------------------
 inline auto FDialog::isModal() const -> bool
-{ return getFlags().modal; }
+{ return getFlags().visibility.modal; }
 
 //----------------------------------------------------------------------
 inline auto FDialog::hasBorder() const -> bool
-{ return ! getFlags().no_border; }
+{ return ! getFlags().feature.no_border; }
 
 }  // namespace finalcut
 

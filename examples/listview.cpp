@@ -52,9 +52,11 @@ class Listview final : public finalcut::FDialog
 
     // Callback method
     void cb_showInMessagebox();
+    void cb_showHideColumns();
 
     // Data members
     finalcut::FListView listview{this};
+    finalcut::FButton   columns{this};
     finalcut::FButton   quit{this};
 };
 
@@ -92,7 +94,8 @@ Listview::Listview (finalcut::FWidget* parent)
   // Populate FListView with a list of items
   populate();
 
-  // Quit button
+  // Set push button text
+  columns.setText (L"&Columns");
   quit.setText (L"&Quit");
 
   // Add some function callbacks
@@ -102,6 +105,12 @@ Listview::Listview (finalcut::FWidget* parent)
     finalcut::getFApplication(),
     &finalcut::FApplication::cb_exitApp,
     this
+  );
+
+  columns.addCallback
+  (
+    "clicked",
+    this, &Listview::cb_showHideColumns
   );
 
   listview.addCallback
@@ -171,6 +180,8 @@ void Listview::initLayout()
 {
   // Set FListView geometry
   listview.setGeometry(FPoint{2, 1}, FSize{33, 14});
+  // Set columns button geometry
+  columns.setGeometry(FPoint{2, 16}, FSize{11, 1});
   // Set quit button geometry
   quit.setGeometry(FPoint{24, 16}, FSize{10, 1});
   FDialog::initLayout();
@@ -198,6 +209,46 @@ void Listview::cb_showInMessagebox()
   info.show();
 }
 
+//----------------------------------------------------------------------
+void Listview::cb_showHideColumns()
+{
+  finalcut::FMessageBox column_header_dlg \
+  (
+    "Show colums"
+    , "\n\n\n\n"
+    , finalcut::FMessageBox::ButtonType::Ok
+    , finalcut::FMessageBox::ButtonType::Cancel
+    , finalcut::FMessageBox::ButtonType::Reject
+    , this
+  );
+
+  auto number_of_columns = listview.getColumnCount();
+  std::vector<std::shared_ptr<finalcut::FCheckBox>> checkboxes{};
+
+  for (std::size_t column{0}; column < number_of_columns; column++)
+  {
+    auto col_name = listview.getColumnText(int(column) + 1);
+    checkboxes.emplace_back(std::make_shared<finalcut::FCheckBox>(col_name, &column_header_dlg));
+    checkboxes[column]->setGeometry (FPoint{6, 4 + int(column)}, FSize{20, 1});
+
+    if ( ! listview.isColumnHidden(int(column) + 1) )
+      checkboxes[column]->setChecked();
+  }
+
+  column_header_dlg.setHeadline("Select columns to view");
+  const auto& ret = column_header_dlg.exec();
+
+  if ( ret != finalcut::FMessageBox::ButtonType::Ok )
+    return;
+
+  for (std::size_t column{0}; column < number_of_columns; column++)
+  {
+    if ( listview.isColumnHidden(int(column) + 1) && checkboxes[column]->isChecked() )
+      listview.showColumn(int(column) + 1);
+    else if ( ! listview.isColumnHidden(int(column) + 1) && ! checkboxes[column]->isChecked() )
+      listview.hideColumn(int(column) + 1);
+  }
+}
 
 //----------------------------------------------------------------------
 //                               main part

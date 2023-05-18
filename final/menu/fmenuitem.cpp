@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2022 Markus Gans                                      *
+* Copyright 2015-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -104,46 +104,6 @@ auto FMenuItem::setEnable (bool enable) -> bool
   {
     if ( super && isMenuBar(super) )
       super->delAccelerator (this);
-  }
-
-  return enable;
-}
-
-//----------------------------------------------------------------------
-auto FMenuItem::setFocus (bool enable) -> bool
-{
-  FWidget::setFocus(enable);
-
-  if ( ! enable || ! isEnabled() || selected )
-    return enable;
-
-  auto menu_list = getFMenuList(*getSuperMenu());
-  setSelected();
-
-  if ( menu_list )
-  {
-    menu_list->unselectItem();
-    menu_list->setSelectedItem(this);
-  }
-
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
-
-  auto parent = getSuperMenu();
-
-  if ( isMenuBar(parent) )
-  {
-    auto menubar_ptr = static_cast<FMenuBar*>(parent);
-
-    if ( menubar_ptr )
-      menubar_ptr->redraw();
-  }
-  else if ( isMenu(parent) )
-  {
-    auto menu_ptr = static_cast<FMenu*>(parent);
-
-    if ( menu_ptr )
-      menu_ptr->redraw();
   }
 
   return enable;
@@ -384,9 +344,7 @@ void FMenuItem::onAccel (FAccelEvent* ev)
 
   if ( menu )
   {
-    if ( mbar->getSelectedItem() )
-      mbar->getSelectedItem()->unsetSelected();
-
+    resetSelectedItem(mbar);
     setSelected();
     mbar->setSelectedItem(this);
     openMenu();
@@ -401,10 +359,7 @@ void FMenuItem::onAccel (FAccelEvent* ev)
       focused_widget->redraw();
 
     menu->redraw();
-
-    if ( getStatusBar() )
-      getStatusBar()->drawMessage();
-
+    drawStatusBarMessage();
     mbar->redraw();
     mbar->drop_down = true;
   }
@@ -422,28 +377,52 @@ void FMenuItem::onAccel (FAccelEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::onFocusIn (FFocusEvent*)
+void FMenuItem::onFocusIn (FFocusEvent* in_ev)
 {
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
+  if ( selected )
+  {
+    FWidget::onFocusIn(in_ev);
+    return;
+  }
+
+  auto menu_list = getFMenuList(*getSuperMenu());
+  auto parent = getSuperMenu();
+  setSelected();
+
+  if ( menu_list )
+  {
+    menu_list->unselectItem();
+    menu_list->setSelectedItem(this);
+  }
+
+  if ( isMenuBar(parent) )
+  {
+    auto menubar_ptr = static_cast<FMenuBar*>(parent);
+
+    if ( menubar_ptr )
+      menubar_ptr->redraw();
+  }
+  else if ( isMenu(parent) )
+  {
+    auto menu_ptr = static_cast<FMenu*>(parent);
+
+    if ( menu_ptr )
+      menu_ptr->redraw();
+  }
+
+  FWidget::onFocusIn(in_ev);
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::onFocusOut (FFocusEvent*)
+void FMenuItem::onFocusOut (FFocusEvent* out_ev)
 {
-  unsetSelected();
-
-  if ( super_menu && isMenuBar(super_menu) )
+  if ( isMenuBar(super_menu) )
   {
     auto mbar = static_cast<FMenuBar*>(super_menu);
     mbar->redraw();
   }
 
-  if ( getStatusBar() )
-  {
-    getStatusBar()->clearMessage();
-    getStatusBar()->drawMessage();
-  }
+  FWidget::onFocusOut(out_ev);
 }
 
 
@@ -700,6 +679,18 @@ void FMenuItem::passMouseEvent ( T widget, const FMouseEvent* ev
   {
     widget->onMouseMove(_ev.get());
   }
+}
+
+//----------------------------------------------------------------------
+inline void FMenuItem::resetSelectedItem (const FMenuList* list) const
+{
+  if ( ! list )
+    return;
+
+  auto selected_item = list->getSelectedItem();
+
+  if ( selected_item )
+    selected_item->unsetSelected();
 }
 
 //----------------------------------------------------------------------

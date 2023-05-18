@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2022 Markus Gans                                      *
+* Copyright 2014-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -96,14 +96,13 @@ class FToggleButton : public FWidget
     auto setEnable (bool = true) -> bool override;
     auto unsetEnable() -> bool override;
     auto setDisable() -> bool override;
-    auto setFocus (bool = true) -> bool override;
-    auto unsetFocus() -> bool override;
     auto setChecked (bool = true) -> bool;
     auto unsetChecked() -> bool;
     virtual void setText (const FString&);
 
     // Inquiries
     auto isChecked() const noexcept -> bool;
+    auto hasRadiobuttonFocus() const noexcept -> bool;
 
     // Method
     void hide() override;
@@ -151,6 +150,7 @@ class FToggleButton : public FWidget
     // Methods
     void init();
     void drawText (const FString&, std::size_t);
+    void performButtonAction();
     void correctSize (FSize&) const;
 
     // Data members
@@ -158,7 +158,7 @@ class FToggleButton : public FWidget
     FString       text{};
     std::size_t   label_offset_pos{0};
     std::size_t   button_width{0};  // plus margin spaces
-    bool          focus_inside_group{true};
+    bool          radiobutton_focus{false};
     bool          checked{false};
 };
 
@@ -183,16 +183,16 @@ inline auto FToggleButton::setDisable() -> bool
 { return setEnable(false); }
 
 //----------------------------------------------------------------------
-inline auto FToggleButton::unsetFocus() -> bool
-{ return setFocus(false); }
-
-//----------------------------------------------------------------------
 inline auto FToggleButton::unsetChecked() -> bool
 { return setChecked(false); }
 
 //----------------------------------------------------------------------
 inline auto FToggleButton::isChecked() const noexcept -> bool
 { return checked; }
+
+//----------------------------------------------------------------------
+inline auto FToggleButton::hasRadiobuttonFocus() const noexcept -> bool
+{ return radiobutton_focus; }
 
 //----------------------------------------------------------------------
 inline auto FToggleButton::getGroup() const -> FButtonGroup*

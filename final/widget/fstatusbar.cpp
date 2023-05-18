@@ -389,101 +389,91 @@ void FStatusBar::onMouseDown (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FStatusBar::onMouseUp (FMouseEvent* ev)
 {
-  if ( hasActivatedKey() )
+  if ( hasActivatedKey()
+    || ev->getButton() != MouseButton::Left
+    || mouse_down == false
+    || key_list.empty() )
     return;
 
-  if ( ev->getButton() != MouseButton::Left )
-    return;
+  mouse_down = false;
+  int X{1};
+  auto iter = key_list.cbegin();
+  const auto& last = key_list.cend();
 
-  if ( mouse_down )
+  while ( iter != last )
   {
-    mouse_down = false;
+    const int x1 = X;
+    const int kname_len = getKeyNameWidth(*iter);
+    const int txt_length = getKeyTextWidth(*iter);
+    const int x2 = x1 + kname_len + txt_length + 1;
 
-    if ( ! key_list.empty() )
+    if ( (*iter)->hasMouseFocus() )
     {
-      int X{1};
-      auto iter = key_list.cbegin();
-      const auto& last = key_list.cend();
+      (*iter)->unsetMouseFocus();
+      const int mouse_x = ev->getX();
+      const int mouse_y = ev->getY();
 
-      while ( iter != last )
-      {
-        const int x1 = X;
-        const int kname_len = getKeyNameWidth(*iter);
-        const int txt_length = getKeyTextWidth(*iter);
-        const int x2 = x1 + kname_len + txt_length + 1;
+      if ( mouse_x >= x1 && mouse_x <= x2 && mouse_y == 1 )
+        (*iter)->setActive();
 
-        if ( (*iter)->hasMouseFocus() )
-        {
-          (*iter)->unsetMouseFocus();
-          const int mouse_x = ev->getX();
-          const int mouse_y = ev->getY();
-
-          if ( mouse_x >= x1 && mouse_x <= x2 && mouse_y == 1 )
-            (*iter)->setActive();
-
-          // unset after get back from callback
-          (*iter)->unsetActive();
-          redraw();
-        }
-
-        X = x2 + 2;
-        ++iter;
-      }
+      // unset after get back from callback
+      (*iter)->unsetActive();
+      redraw();
     }
+
+    X = x2 + 2;
+    ++iter;
   }
 }
 
 //----------------------------------------------------------------------
 void FStatusBar::onMouseMove (FMouseEvent* ev)
 {
-  if ( hasActivatedKey() )
+  if ( hasActivatedKey()
+    || ev->getButton() != MouseButton::Left
+    || mouse_down == false
+    || key_list.empty() )
     return;
 
-  if ( ev->getButton() != MouseButton::Left )
-    return;
+  bool focus_changed{false};
+  int X{1};
+  auto iter = key_list.cbegin();
+  const auto& last = key_list.cend();
 
-  if ( mouse_down && ! key_list.empty() )
+  while ( iter != last )
   {
-    bool focus_changed{false};
-    int X{1};
-    auto iter = key_list.cbegin();
-    const auto& last = key_list.cend();
+    const int x1 = X;
+    const int kname_len = getKeyNameWidth(*iter);
+    const int txt_length = getKeyTextWidth(*iter);
+    const int x2 = x1 + kname_len + txt_length + 1;
+    const int mouse_x = ev->getX();
+    const int mouse_y = ev->getY();
 
-    while ( iter != last )
+    if ( mouse_x >= x1
+      && mouse_x <= x2
+      && mouse_y == 1 )
     {
-      const int x1 = X;
-      const int kname_len = getKeyNameWidth(*iter);
-      const int txt_length = getKeyTextWidth(*iter);
-      const int x2 = x1 + kname_len + txt_length + 1;
-      const int mouse_x = ev->getX();
-      const int mouse_y = ev->getY();
-
-      if ( mouse_x >= x1
-        && mouse_x <= x2
-        && mouse_y == 1 )
+      if ( ! (*iter)->hasMouseFocus() )
       {
-        if ( ! (*iter)->hasMouseFocus() )
-        {
-          (*iter)->setMouseFocus();
-          focus_changed = true;
-        }
+        (*iter)->setMouseFocus();
+        focus_changed = true;
       }
-      else
+    }
+    else
+    {
+      if ( (*iter)->hasMouseFocus() )
       {
-        if ( (*iter)->hasMouseFocus() )
-        {
-          (*iter)->unsetMouseFocus();
-          focus_changed = true;
-        }
+        (*iter)->unsetMouseFocus();
+        focus_changed = true;
       }
-
-      X = x2 + 2;
-      ++iter;
     }
 
-    if ( focus_changed )
-      redraw();
+    X = x2 + 2;
+    ++iter;
   }
+
+  if ( focus_changed )
+    redraw();
 }
 
 //----------------------------------------------------------------------

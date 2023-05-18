@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2019 Markus Gans                                      *
+* Copyright 2012-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -151,9 +151,7 @@ void ProgressDialog::onTimer (finalcut::FTimerEvent*)
   more.setEnable();
   quit.setEnable();
   redraw();
-
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
+  finalcut::drawStatusBarMessage();
 }
 
 //----------------------------------------------------------------------
@@ -587,13 +585,11 @@ void MyDialog::initFlatButtons()
   MyButton1.setStatusbarMessage ("Sine function");
   MyButton1.setNoUnderline();
   MyButton1.setFlat();
-  MyButton1.setDoubleFlatLine (finalcut::Side::Bottom);
 
   MyButton2.setText (L"&COS");
   MyButton2.setStatusbarMessage ("Cosine function");
   MyButton2.setNoUnderline();
   MyButton2.setFlat();
-  MyButton2.setDoubleFlatLine (finalcut::Side::Top);
 
   MyButton3.setText (L"&=");
   MyButton3.setStatusbarMessage ("Equal");
@@ -731,7 +727,9 @@ void MyDialog::initWidgetsCallbacks()
 void MyDialog::initLayout()
 {
   MyButton1.setGeometry(FPoint{3, 3}, FSize{5, 1});
+  MyButton1.setDoubleFlatLine (finalcut::Side::Bottom);
   MyButton2.setGeometry(FPoint{3, 5}, FSize{5, 1});
+  MyButton2.setDoubleFlatLine (finalcut::Side::Top);
   MyButton3.setGeometry(FPoint{10, 3}, FSize{5, 3});
   MyButton4.setGeometry(FPoint{20, 8}, FSize{12, 1});
   MyButton5.setGeometry(FPoint{20, 11}, FSize{12, 1});
@@ -797,7 +795,7 @@ void MyDialog::cb_about()
   finalcut::FMessageBox info ( "About"
                              , line + L" FINAL CUT " + line + L"\n\n"
                                L"Version " + finalcut::fc_release + L"\n\n"
-                               L"(c) 2022 by Markus Gans"
+                               L"(c) 2023 by Markus Gans"
                              , finalcut::FMessageBox::ButtonType::Ok
                              , finalcut::FMessageBox::ButtonType::Reject
                              , finalcut::FMessageBox::ButtonType::Reject
@@ -1031,7 +1029,7 @@ void MyDialog::cb_setInput ( const finalcut::FListBox& listbox
 auto main (int argc, char* argv[]) -> int
 {
   const finalcut::FString title { "FINAL CUT "s + finalcut::fc_release
-                                + " (C) 2022 by Markus Gans" };
+                                + " (C) 2023 by Markus Gans" };
 
   // Create the application object app
   finalcut::FApplication app{argc, argv};

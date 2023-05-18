@@ -351,7 +351,7 @@ class MouseDraw final : public finalcut::FDialog
     void cb_colorChanged();
 
     // Data members
-    FTermArea*   canvas{nullptr};
+    std::shared_ptr<FTermArea> canvas{};
     ColorChooser c_chooser{this};
     Brushes      brush{this};
 };
@@ -387,12 +387,12 @@ void MouseDraw::setGeometry ( const FPoint& p, const FSize& s, bool adjust)
   const FSize no_shadow{0, 0};
   const int old_w = canvas->width;
   const int old_h = canvas->height;
-  resizeArea (scroll_geometry, no_shadow, canvas);
+  resizeArea (scroll_geometry, no_shadow, canvas.get());
 
   if ( old_w != canvas->width || old_h != canvas->height )
   {
     setColor(getForegroundColor(), getBackgroundColor());
-    clearArea (canvas, ' ');
+    clearArea (canvas.get(), ' ');
   }
 }
 
@@ -494,36 +494,34 @@ void MouseDraw::drawCanvas()
   const int ay = 1 + getTermY() - printarea->offset_top;
   const int y_end = canvas->height;
   const int x_end = canvas->width;
-  const int w_line_len = printarea->width + printarea->right_shadow;
 
   for (auto y{0}; y < y_end; y++)  // line loop
   {
     // canvas character
-    const auto& canvaschar = canvas->data[y * x_end];
+    const auto& canvaschar = canvas->getFChar(0, y);
     // window character
-    auto& winchar = printarea->data[(ay + y) * w_line_len + ax];
+    auto& winchar = printarea->getFChar(ax, ay + y);
     std::memcpy ( &winchar
                 , &canvaschar
                 , sizeof(finalcut::FChar) * unsigned(x_end) );
+    auto& line_changes = printarea->changes[unsigned(ay + y)];
 
-    if ( int(printarea->changes[ay + y].xmin) > ax )
-      printarea->changes[ay + y].xmin = uInt(ax);
+    if ( int(line_changes.xmin) > ax )
+      line_changes.xmin = uInt(ax);
 
-    if ( int(printarea->changes[ay + y].xmax) < ax + x_end - 1 )
-      printarea->changes[ay + y].xmax = uInt(ax + x_end - 1);
+    if ( int(line_changes.xmax) < ax + x_end - 1 )
+      line_changes.xmax = uInt(ax + x_end - 1);
   }
 
   printarea->has_changes = true;
-
-  if ( updateTerminal() )
-    flush();
+  forceTerminalUpdate();
 }
 
 //----------------------------------------------------------------------
 void MouseDraw::createCanvas()
 {
   finalcut::FRect scroll_geometry{0, 0, 1, 1};
-  createArea (scroll_geometry, canvas);
+  canvas = createArea(scroll_geometry);
   adjustSize();
 }
 

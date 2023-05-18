@@ -79,8 +79,11 @@ INCLUDE_HEADERS = \
 	final.h \
 	fobject.h \
 	fstartoptions.h \
+	ftimer.h \
+	ftypes.h \
 	fwidgetcolors.h \
 	fwidget_functions.h \
+	fwidget_flags.h \
 	fwidget.h
 
 # compiler parameter
@@ -164,6 +167,7 @@ OBJS = \
 	fevent.o \
 	fobject.o \
 	fstartoptions.o \
+	ftimer.o \
 	fwidgetcolors.o \
 	fwidget_functions.o \
 	fwidget.o \

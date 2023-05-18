@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2022 Markus Gans                                      *
+* Copyright 2015-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -474,17 +474,10 @@ void FOptiMove::check_boundaries ( int& xold, int& yold
   if ( yold < 0 || yold >= int(screen_height) )
     yold = -1;
 
-  if ( xnew < 0 )
-    xnew = 0;
-
-  if ( ynew < 0 )
-    ynew = 0;
-
-  if ( xnew >= int(screen_width) )
-    xnew = int(screen_width) - 1;
-
-  if ( ynew >= int(screen_height) )
-    ynew = int(screen_height) - 1;
+  xnew = std::max(0, xnew);
+  ynew = std::max(0, ynew);
+  xnew = std::min(int(screen_width) - 1, xnew);
+  ynew = std::min(int(screen_height) - 1, ynew);
 }
 
 //----------------------------------------------------------------------
@@ -616,8 +609,8 @@ auto FOptiMove::capDurationToLength (int duration) const -> int
 
 //----------------------------------------------------------------------
 auto FOptiMove::repeatedAppend ( std::string& dst
-                              , const Capability& o
-                              , int count ) const -> int
+                               , const Capability& o
+                               , int count ) const -> int
 {
   const auto& src_len = stringLength(o.cap);
   const auto& dst_len = dst.length();
@@ -759,52 +752,110 @@ inline auto FOptiMove::horizontalMove (std::string& hmove, int from_x, int to_x)
 }
 
 //----------------------------------------------------------------------
+inline void FOptiMove::moveWithParmRightCursor ( std::string& hmove
+                                               , int& htime, int num ) const
+{
+  // Use parameterized cursor right capability
+  hmove = FTermcap::encodeParameter(F_parm_right_cursor.cap, num);
+  htime = F_parm_right_cursor.duration;
+}
+
+//----------------------------------------------------------------------
+inline void FOptiMove::moveWithRightCursor ( std::string& hmove, int& htime
+                                           , int num, int from_x, int to_x ) const
+{
+  std::string str{};
+  int htime_r{0};
+
+  // try to use tab
+  if ( tabstop > 0 && F_tab.cap )
+  {
+    int pos = from_x;
+
+    for ( int tab_pos = pos + tabstop - (pos % tabstop)
+        ; tab_pos <= to_x
+        ; tab_pos += tabstop )
+    {
+      htime_r += repeatedAppend (str, F_tab, 1);
+
+      if ( htime_r >= LONG_DURATION )
+        break;
+
+      pos = tab_pos;
+    }
+
+    num = to_x - pos;
+  }
+
+  // Use the cursor right capability
+  htime_r += repeatedAppend (str, F_cursor_right, num);
+
+  if ( htime_r < htime )
+  {
+    hmove = str;
+    htime = htime_r;
+  }
+}
+
+//----------------------------------------------------------------------
 inline void FOptiMove::rightMove ( std::string& hmove, int& htime
                                  , int from_x, int to_x ) const
 {
   int num = to_x - from_x;
 
+  if ( num == 0 )
+    return;
+
   if ( F_parm_right_cursor.cap && F_parm_right_cursor.duration < htime )
-  {
-    hmove = FTermcap::encodeParameter(F_parm_right_cursor.cap, num);
-    htime = F_parm_right_cursor.duration;
-  }
+    moveWithParmRightCursor (hmove, htime, num);
 
   if ( F_cursor_right.cap )
+    moveWithRightCursor (hmove, htime, num, from_x, to_x);
+}
+
+//----------------------------------------------------------------------
+inline void FOptiMove::moveWithParmLeftCursor ( std::string& hmove
+                                              , int& htime, int num ) const
+{
+  // Use parameterized cursor right capability
+  hmove = FTermcap::encodeParameter(F_parm_left_cursor.cap, num);
+  htime = F_parm_left_cursor.duration;
+}
+
+//----------------------------------------------------------------------
+inline void FOptiMove::moveWithLeftCursor ( std::string& hmove, int& htime
+                                          , int num, int from_x, int to_x ) const
+{
+  std::string str{};
+  int htime_l{0};
+
+  // try to use backward tab
+  if ( tabstop > 0 && F_back_tab.cap )
   {
-    std::string str{};
-    int htime_r{0};
+    int pos = from_x;
 
-    // try to use tab
-    if ( tabstop > 0 && F_tab.cap )
+    for ( int tab_pos = ( pos > 0 ) ? ((pos - 1) / tabstop) * tabstop : -1
+        ; tab_pos >= to_x
+        ; tab_pos = ( pos > 0 ) ? ((pos - 1) / tabstop) * tabstop : -1)
     {
-      int pos = from_x;
+      htime_l += repeatedAppend (str, F_back_tab, 1);
 
-      while ( true )
-      {
-        const int tab_pos = pos + tabstop - (pos % tabstop);
+      if ( htime_l >= LONG_DURATION )
+        break;
 
-        if ( tab_pos > to_x )
-          break;
-
-        htime_r += repeatedAppend (str, F_tab, 1);
-
-        if ( htime_r >= LONG_DURATION )
-          break;
-
-        pos = tab_pos;
-      }
-
-      num = to_x - pos;
+      pos = tab_pos;
     }
 
-    htime_r += repeatedAppend (str, F_cursor_right, num);
+    num = pos - to_x;
+  }
 
-    if ( htime_r < htime )
-    {
-      hmove = str;
-      htime = htime_r;
-    }
+  // Use the cursor left capability
+  htime_l += repeatedAppend (str, F_cursor_left, num);
+
+  if ( htime_l < htime )
+  {
+    hmove = str;
+    htime = htime_l;
   }
 }
 
@@ -814,48 +865,14 @@ inline void FOptiMove::leftMove ( std::string& hmove, int& htime
 {
   int num = from_x - to_x;
 
+  if ( num == 0 )
+    return;
+
   if ( F_parm_left_cursor.cap && F_parm_left_cursor.duration < htime )
-  {
-    hmove = FTermcap::encodeParameter(F_parm_left_cursor.cap, num);
-    htime = F_parm_left_cursor.duration;
-  }
+    moveWithParmLeftCursor (hmove, htime, num);
 
   if ( F_cursor_left.cap )
-  {
-    std::string str{};
-    int htime_l{0};
-
-    // try to use backward tab
-    if ( tabstop > 0 && F_back_tab.cap )
-    {
-      int pos = from_x;
-
-      while ( true )
-      {
-        const int tab_pos = ( pos > 0 ) ? ((pos - 1) / tabstop) * tabstop : -1;
-
-        if ( tab_pos < to_x )
-          break;
-
-        htime_l += repeatedAppend (str, F_back_tab, 1);
-
-        if ( htime_l >= LONG_DURATION )
-          break;
-
-        pos = tab_pos;
-      }
-
-      num = pos - to_x;
-    }
-
-    htime_l += repeatedAppend (str, F_cursor_left, num);
-
-    if ( htime_l < htime )
-    {
-      hmove = str;
-      htime = htime_l;
-    }
-  }
+    moveWithLeftCursor (hmove, htime, num, from_x, to_x);
 }
 
 //----------------------------------------------------------------------
@@ -892,14 +909,13 @@ inline auto FOptiMove::isMethod0Faster ( int& move_time
 //----------------------------------------------------------------------
 inline auto FOptiMove::isMethod1Faster ( int& move_time
                                        , int xold, int yold
-                                       , int xnew, int ynew ) const -> bool
+                                       , int xnew, int ynew ) -> bool
 {
   // Test method 1: local movement
 
   if ( xold >= 0 && yold >= 0 )
   {
-    std::string null_result{};
-    const int new_time = relativeMove (null_result, xold, yold, xnew, ynew);
+    const int new_time = relativeMove (temp_result, xold, yold, xnew, ynew);
 
     if ( new_time < LONG_DURATION && new_time < move_time )
     {
@@ -914,14 +930,13 @@ inline auto FOptiMove::isMethod1Faster ( int& move_time
 //----------------------------------------------------------------------
 inline auto FOptiMove::isMethod2Faster ( int& move_time
                                        , int yold
-                                       , int xnew, int ynew ) const -> bool
+                                       , int xnew, int ynew ) -> bool
 {
   // Test method 2: carriage-return + local movement
 
   if ( yold >= 0 && F_carriage_return.cap )
   {
-    std::string null_result{};
-    const int new_time = relativeMove (null_result, 0, yold, xnew, ynew);
+    const int new_time = relativeMove (temp_result, 0, yold, xnew, ynew);
 
     if ( new_time < LONG_DURATION
       && F_carriage_return.duration + new_time < move_time )
@@ -936,14 +951,13 @@ inline auto FOptiMove::isMethod2Faster ( int& move_time
 
 //----------------------------------------------------------------------
 inline auto FOptiMove::isMethod3Faster ( int& move_time
-                                       , int xnew, int ynew ) const -> bool
+                                       , int xnew, int ynew ) -> bool
 {
   // Test method 3: home-cursor + local movement
 
   if ( F_cursor_home.cap )
   {
-    std::string null_result{};
-    const int new_time = relativeMove (null_result, 0, 0, xnew, ynew);
+    const int new_time = relativeMove (temp_result, 0, 0, xnew, ynew);
 
     if ( new_time < LONG_DURATION
       && F_cursor_home.duration + new_time < move_time )
@@ -958,14 +972,13 @@ inline auto FOptiMove::isMethod3Faster ( int& move_time
 
 //----------------------------------------------------------------------
 inline auto FOptiMove::isMethod4Faster ( int& move_time
-                                       , int xnew, int ynew ) const -> bool
+                                       , int xnew, int ynew ) -> bool
 {
   // Test method 4: home-down + local movement
   if ( F_cursor_to_ll.cap )
   {
-    std::string null_result{};
     int down = int(screen_height) - 1;
-    const int new_time = relativeMove (null_result, 0, down, xnew, ynew);
+    const int new_time = relativeMove (temp_result, 0, down, xnew, ynew);
 
     if ( new_time < LONG_DURATION
       && F_cursor_to_ll.duration + new_time < move_time )
@@ -981,7 +994,7 @@ inline auto FOptiMove::isMethod4Faster ( int& move_time
 //----------------------------------------------------------------------
 inline auto FOptiMove::isMethod5Faster ( int& move_time
                                        , int yold
-                                       , int xnew, int ynew ) const -> bool
+                                       , int xnew, int ynew ) -> bool
 {
   // Test method 5: left margin for wrap to right-hand side
   if ( automatic_left_margin
@@ -989,10 +1002,9 @@ inline auto FOptiMove::isMethod5Faster ( int& move_time
     && yold > 0
     && F_cursor_left.cap )
   {
-    std::string null_result{};
     int x = int(screen_width) - 1;
     int y = yold - 1;
-    const int new_time = relativeMove (null_result, x, y, xnew, ynew);
+    const int new_time = relativeMove (temp_result, x, y, xnew, ynew);
 
     if ( new_time < LONG_DURATION
       && F_carriage_return.cap
@@ -1015,6 +1027,9 @@ void FOptiMove::moveByMethod ( int method
 {
   switch ( method )
   {
+    case 0:  // direct cursor addressing
+      return;
+
     case 1:
       relativeMove (move_buf, xold, yold, xnew, ynew);
       break;
@@ -1023,28 +1038,25 @@ void FOptiMove::moveByMethod ( int method
       if ( F_carriage_return.cap )
       {
         move_buf = F_carriage_return.cap;
-        std::string s{};
-        relativeMove (s, 0, yold, xnew, ynew);
-        move_buf.append(s);
+        relativeMove (temp_result, 0, yold, xnew, ynew);
+        move_buf.append(temp_result);
       }
       break;
 
     case 3:
       move_buf = F_cursor_home.cap;
       {
-        std::string s{};
-        relativeMove (s, 0, 0, xnew, ynew);
-        move_buf.append(s);
+        relativeMove (temp_result, 0, 0, xnew, ynew);
+        move_buf.append(temp_result);
       }
       break;
 
     case 4:
       move_buf = F_cursor_to_ll.cap;
       {
-        std::string s{};
         int down = int(screen_height) - 1;
-        relativeMove (s, 0, down, xnew, ynew);
-        move_buf.append(s);
+        relativeMove (temp_result, 0, down, xnew, ynew);
+        move_buf.append(temp_result);
       }
       break;
 
@@ -1056,16 +1068,15 @@ void FOptiMove::moveByMethod ( int method
 
       move_buf.append(F_cursor_left.cap);
       {
-        std::string s{};
         int x = int(screen_width) - 1;
         int y = yold - 1;
-        relativeMove (s, x, y, xnew, ynew);
-        move_buf.append(s);
+        relativeMove (temp_result, x, y, xnew, ynew);
+        move_buf.append(temp_result);
       }
       break;
 
     default:
-      break;
+      throw std::invalid_argument{"Invalid cursor movement method"};
   }
 }
 

@@ -66,6 +66,7 @@ class ConEmu
       tera_term,
       cygwin,
       mintty,
+      stterm,
       linux_con,
       freebsd_con,
       netbsd_con,
@@ -118,32 +119,32 @@ class ConEmu
 
   protected:
     // Mutators
-    void        enableConEmuDebug (bool) noexcept;
+    void  enableConEmuDebug (bool) noexcept;
 
     // Inquiries
-    auto        isConEmuChildProcess (pid_t) const noexcept -> bool;
+    auto  isConEmuChildProcess (pid_t) const noexcept -> bool;
 
     // Methods
-    void        printConEmuDebug();
-    void        closeConEmuStdStreams();
-    auto       forkConEmu() -> pid_t;
-    void        startConEmuTerminal (console);
+    void  printConEmuDebug();
+    void  closeConEmuStdStreams();
+    auto  forkConEmu() -> pid_t;
+    void  startConEmuTerminal (console);
 
   private:
     // Accessors
-    auto getAnswerback (console) -> const char*;
-    auto getDSR (console) -> const char*;
-    auto getDECID (console) -> const char*;
-    auto getDA (console) -> const char*;
-    auto getDA1 (console) -> const char*;
-    auto getSEC_DA (console) -> const char*;
+    auto  getAnswerback (console) -> const char*;
+    auto  getDSR (console) -> const char*;
+    auto  getDECID (console) -> const char*;
+    auto  getDA (console) -> const char*;
+    auto  getDA1 (console) -> const char*;
+    auto  getSEC_DA (console) -> const char*;
 
     // Methods
-    auto openMasterPTY() -> bool;
-    auto openSlavePTY() -> bool;
-    void closeMasterPTY();
-    void closeSlavePTY();
-    void parseTerminalBuffer (std::size_t, console);
+    auto  openMasterPTY() -> bool;
+    auto  openSlavePTY() -> bool;
+    void  closeMasterPTY();
+    void  closeSlavePTY();
+    void  parseTerminalBuffer (std::size_t, console);
 
     // Data members
     int                fd_stdin{fileno(stdin)};
@@ -494,7 +495,7 @@ inline void ConEmu::closeConEmuStdStreams()
 inline auto ConEmu::forkConEmu() -> pid_t
 {
   // Initialize buffer with '\0'
-  std::fill_n (buffer, sizeof(buffer), '\0');
+  std::fill (buffer, buffer + sizeof(buffer), '\0');
 
   if ( ! openMasterPTY() )
     return -1;
@@ -585,8 +586,10 @@ inline void ConEmu::startConEmuTerminal (console con)
     return;
 
   closeSlavePTY();
+  uInt64 timeout = 10'000'000;  // 10 seconds
+  TimeValue time_last_data = finalcut::FObjectTimer::getCurrentTime();
 
-  while ( true )
+  while ( ! finalcut::FObjectTimer::isTimeout (time_last_data, timeout) )
   {
     fd_set ifds;
     struct timeval tv;
@@ -611,6 +614,7 @@ inline void ConEmu::startConEmuTerminal (console con)
       {
         buffer[len] = '\0';
         write (fd_master, buffer, len);  // Send data to the master side
+        time_last_data = finalcut::FObjectTimer::getCurrentTime();
       }
     }
 
@@ -626,6 +630,7 @@ inline void ConEmu::startConEmuTerminal (console con)
       {
         buffer[len] = '\0';
         parseTerminalBuffer (len, con);
+        time_last_data = finalcut::FObjectTimer::getCurrentTime();
       }
     }
   }
@@ -650,6 +655,7 @@ inline auto ConEmu::getAnswerback (console con) -> const char*
     nullptr,         // Tera Term
     nullptr,         // Cygwin
     nullptr,         // Mintty
+    nullptr,         // st - simple terminal
     nullptr,         // Linux console
     nullptr,         // FreeBSD console
     nullptr,         // NetBSD console
@@ -682,6 +688,7 @@ inline auto ConEmu::getDSR (console con) -> const char*
     C_STR("\033[0n"),  // Tera Term
     nullptr,           // Cygwin
     C_STR("\033[0n"),  // Mintty
+    nullptr,           // st - simple terminal
     C_STR("\033[0n"),  // Linux console
     C_STR("\033[0n"),  // FreeBSD console
     C_STR("\033[0n"),  // NetBSD console
@@ -714,6 +721,7 @@ inline auto ConEmu::getDECID (console con) -> const char*
     C_STR("\033[?1;2c"),                   // Tera Term
     nullptr,                               // Cygwin
     C_STR("\033[?1;2;6;22c"),              // Mintty
+    C_STR("\033[?6c"),                     // st - simple terminal
     C_STR("\033[?6c"),                     // Linux console
     nullptr,                               // FreeBSD console
     nullptr,                               // NetBSD console
@@ -746,6 +754,7 @@ inline auto ConEmu::getDA (console con) -> const char*
     C_STR("\033[?1;2c"),                   // Tera Term
     C_STR("\033[?6c"),                     // Cygwin
     C_STR("\033[?1;2;6;22c"),              // Mintty
+    C_STR("\033[?6c"),                     // st - simple terminal
     C_STR("\033[?6c"),                     // Linux console
     C_STR("\033[?1;2c"),                   // FreeBSD console
     C_STR("\033[?62;6c"),                  // NetBSD console
@@ -778,6 +787,7 @@ inline auto ConEmu::getDA1 (console con) -> const char*
     C_STR("\033[?1;2c"),              // Tera Term
     C_STR("\033[?6c"),                // Cygwin
     C_STR("\033[?1;2;6;22c"),         // Mintty
+    nullptr,                          // st - simple terminal
     nullptr,                          // Linux console
     nullptr,                          // FreeBSD console
     nullptr,                          // NetBSD console
@@ -810,6 +820,7 @@ inline auto ConEmu::getSEC_DA (console con) -> const char*
     C_STR("\033[>32;278;0c"),     // Tera Term
     C_STR("\033[>67;200502;0c"),  // Cygwin
     C_STR("\033[>77;20402;0c"),   // Mintty
+    nullptr,                      // st - simple terminal
     nullptr,                      // Linux console
     C_STR("\033[>0;10;0c"),       // FreeBSD console
     C_STR("\033[>24;20;0c"),      // NetBSD console
@@ -992,6 +1003,7 @@ inline void ConEmu::parseTerminalBuffer (std::size_t length, console con)
              && con != console::cygwin
              && con != console::win_terminal
              && con != console::mintty
+             && con != console::stterm
              && con != console::linux_con
              && con != console::freebsd_con
              && con != console::netbsd_con
@@ -1021,6 +1033,7 @@ inline void ConEmu::parseTerminalBuffer (std::size_t length, console con)
         && con != console::cygwin
         && con != console::win_terminal
         && con != console::mintty
+        && con != console::stterm
         && con != console::linux_con
         && con != console::freebsd_con
         && con != console::netbsd_con
@@ -1057,6 +1070,7 @@ inline void ConEmu::parseTerminalBuffer (std::size_t length, console con)
         && con != console::cygwin
         && con != console::win_terminal
         && con != console::mintty
+        && con != console::stterm
         && con != console::linux_con
         && con != console::freebsd_con
         && con != console::netbsd_con
@@ -1096,6 +1110,7 @@ inline void ConEmu::parseTerminalBuffer (std::size_t length, console con)
         && con != console::cygwin
         && con != console::win_terminal
         && con != console::mintty
+        && con != console::stterm
         && con != console::linux_con
         && con != console::freebsd_con
         && con != console::netbsd_con

@@ -50,9 +50,6 @@ namespace finalcut
 class FSystem
 {
   public:
-    // Using-declaration
-    using fn_putc = int (*)(int);
-
     // Constructor
     FSystem() = default;
 

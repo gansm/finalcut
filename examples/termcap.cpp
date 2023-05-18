@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2022 Markus Gans                                      *
+* Copyright 2017-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -294,7 +294,7 @@ void showString()
 
   for (const auto& entry : Data::strings)
   {
-    const std::string name = entry.name;
+    const auto& name = entry.name;
     const auto cap = std::size_t(entry.cap);
     tcapString (name, tcap_strings[cap].string);
   }

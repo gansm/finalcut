@@ -185,6 +185,9 @@ void FLoggerTest::defaultObjectTest()
   CPPUNIT_ASSERT ( buf.str() == "[DEBUG] Hello, World!\r\n" );
   buf.str("");  // Clear buffer
 
+  CPPUNIT_ASSERT_THROW ( log << static_cast<finalcut::FLog::LogLevel>(-1)
+                       , std::invalid_argument );
+
   // Without stream
   log.info("Hello, World!");
   CPPUNIT_ASSERT ( buf.str() == "[INFO] Hello, World!\r\n" );
@@ -397,6 +400,9 @@ void FLoggerTest::applicationObjectTest()
   std::clog << finalcut::FLog::LogLevel::Error << "myLogger 6" << std::endl;
   CPPUNIT_ASSERT ( buf.str() == "Error: myLogger 6\n\n" );
   buf.str("");  // Clear buffer
+
+  // Exceptions are caught in FApplication
+  CPPUNIT_ASSERT_NO_THROW ( std::clog << static_cast<finalcut::FLog::LogLevel>(99) );
 
   // Reset to the default rdbuf of clog
   std::clog.rdbuf(default_clog_rdbuf);

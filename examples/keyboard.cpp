@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2022 Markus Gans                                      *
+* Copyright 2015-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -71,7 +71,10 @@ void Keyboard::onKeyPress (finalcut::FKeyEvent* ev)
   else
     print() << '\n';
 
-  print() << "Key " << key_name << " (id " << uInt32(key_id) << ")";
+  finalcut::FStringStream fss;
+  fss << "Key " << key_name << " (id 0x" << std::setfill(L'0')
+      << std::setw(2) << std::hex << uInt32(key_id) << ")" ;
+  print (fss.str());
   setAreaCursor (getPrintPos(), true, getVirtualDesktop());
   forceTerminalUpdate();
 }

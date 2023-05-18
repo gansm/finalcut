@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2022 Markus Gans                                      *
+* Copyright 2014-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -202,7 +202,6 @@ void FTextView::scrollTo (int x, int y)
   }
 
   drawText();
-  forceTerminalUpdate();
 }
 
 //----------------------------------------------------------------------
@@ -222,6 +221,50 @@ void FTextView::hide()
 {
   FWidget::hide();
   hideArea (getSize());
+}
+
+//----------------------------------------------------------------------
+void FTextView::clear()
+{
+  data.clear();
+  data.shrink_to_fit();
+  xoffset = 0;
+  yoffset = 0;
+  max_line_width = 0;
+
+  vbar->setMinimum(0);
+  vbar->setValue(0);
+  vbar->hide();
+
+  hbar->setMinimum(0);
+  hbar->setValue(0);
+  hbar->hide();
+
+  // clear list from screen
+  setColor();
+
+  if ( useFDialogBorder() )
+  {
+    auto parent = getParentWidget();
+
+    if ( parent )
+      static_cast<FDialog*>(parent)->redraw();
+  }
+  else
+    drawBorder();
+
+  const std::size_t size = getWidth() - 2;
+
+  if ( size == 0 )
+    return;
+
+  for (auto y{0}; y < int(getTextHeight()); y++)
+  {
+    print() << FPoint{2, 2 - nf_offset + y}
+            << FString{size, L' '};
+  }
+
+  processChanged();
 }
 
 //----------------------------------------------------------------------
@@ -326,57 +369,13 @@ void FTextView::deleteRange (int from, int to)
 }
 
 //----------------------------------------------------------------------
-void FTextView::clear()
-{
-  data.clear();
-  data.shrink_to_fit();
-  xoffset = 0;
-  yoffset = 0;
-  max_line_width = 0;
-
-  vbar->setMinimum(0);
-  vbar->setValue(0);
-  vbar->hide();
-
-  hbar->setMinimum(0);
-  hbar->setValue(0);
-  hbar->hide();
-
-  // clear list from screen
-  setColor();
-
-  if ( useFDialogBorder() )
-  {
-    auto parent = getParentWidget();
-
-    if ( parent )
-      static_cast<FDialog*>(parent)->redraw();
-  }
-  else
-    drawBorder();
-
-  const std::size_t size = getWidth() - 2;
-
-  if ( size == 0 )
-    return;
-
-  for (auto y{0}; y < int(getTextHeight()); y++)
-  {
-    print() << FPoint{2, 2 - nf_offset + y}
-            << FString{size, L' '};
-  }
-
-  processChanged();
-}
-
-//----------------------------------------------------------------------
 void FTextView::onKeyPress (FKeyEvent* ev)
 {
-  const auto& entry = key_map[ev->key()];
+  const auto& iter = key_map.find(ev->key());
 
-  if ( entry )
+  if ( iter != key_map.end() )
   {
-    entry();
+    iter->second();
     ev->accept();
   }
 }
@@ -422,25 +421,6 @@ void FTextView::onWheel (FWheelEvent* ev)
 
   if ( isShown() )
     drawText();
-
-  forceTerminalUpdate();
-}
-
-//----------------------------------------------------------------------
-void FTextView::onFocusIn (FFocusEvent*)
-{
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
-}
-
-//----------------------------------------------------------------------
-void FTextView::onFocusOut (FFocusEvent*)
-{
-  if ( getStatusBar() )
-  {
-    getStatusBar()->clearMessage();
-    getStatusBar()->drawMessage();
-  }
 }
 
 
@@ -570,19 +550,7 @@ void FTextView::draw()
   drawBorder();
   drawScrollbars();
   drawText();
-
-  if ( hasFocus() && getStatusBar() )
-  {
-    const auto& msg = getStatusbarMessage();
-    const auto& curMsg = getStatusBar()->getMessage();
-
-    if ( curMsg != msg )
-    {
-      getStatusBar()->setMessage(msg);
-      getStatusBar()->drawMessage();
-    }
-  }
-
+  updateStatusbar(this);
   setCursorPos ({int(getWidth()), int(getHeight())});
 }
 
@@ -785,7 +753,7 @@ void FTextView::cb_vbarChange (const FWidget*)
       break;
 
     default:
-      break;
+      throw std::invalid_argument{"Invalid scroll type"};
   }
 
   update_scrollbar = true;
@@ -832,7 +800,7 @@ void FTextView::cb_hbarChange (const FWidget*)
       break;
 
     default:
-      break;
+      throw std::invalid_argument{"Invalid scroll type"};
   }
 
   update_scrollbar = true;

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021-2022 Markus Gans                                      *
+* Copyright 2021-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -99,6 +99,7 @@ class FOutput : public std::enable_shared_from_this<FOutput>
     virtual auto isMonochron() const -> bool = 0;
     virtual auto isNewFont() const -> bool = 0;
     virtual auto isEncodable (const wchar_t&) const -> bool = 0;
+    virtual auto isFlushTimeout() const -> bool = 0;
     virtual auto hasTerminalResized() const -> bool = 0;
     virtual auto allowsTerminalSizeManipulation() const -> bool = 0;
     virtual auto canChangeColorPalette() const -> bool = 0;

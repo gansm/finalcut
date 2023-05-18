@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2022 Markus Gans                                      *
+* Copyright 2014-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -141,7 +141,7 @@ void FToggleButton::resetColors()
 //----------------------------------------------------------------------
 auto FToggleButton::setNoUnderline (bool enable) -> bool
 {
-  return (setFlags().no_underline = enable);
+  return (setFlags().feature.no_underline = enable);
 }
 
 //----------------------------------------------------------------------
@@ -154,18 +154,6 @@ auto FToggleButton::setEnable (bool enable) -> bool
     setHotkeyAccelerator();
   else
     delAccelerator();
-
-  return enable;
-}
-
-//----------------------------------------------------------------------
-auto FToggleButton::setFocus (bool enable) -> bool
-{
-  FWidget::setFocus(enable);
-  resetColors();
-
-  if ( isEnabled() && hasFocus() && isRadioButton() )
-    focus_inside_group = false;
 
   return enable;
 }
@@ -222,20 +210,7 @@ void FToggleButton::onMouseUp (FMouseEvent* ev)
   if ( ! getTermGeometry().contains(ev->getTermPos()) )
     return;
 
-  if ( isRadioButton() )
-  {
-    if ( ! checked )
-    {
-      checked = true;
-      processToggle();
-    }
-  }
-  else
-  {
-    checked = ! checked;
-    processToggle();
-  }
-
+  performButtonAction();
   redraw();
   processClick();
 }
@@ -266,75 +241,29 @@ void FToggleButton::onAccel (FAccelEvent* ev)
     }
   }
 
-  if ( isRadioButton() )
-  {
-    if ( ! checked )
-    {
-      checked = true;
-      processToggle();
-    }
-  }
-  else
-  {
-    checked = ! checked;
-    processToggle();
-  }
-
+  performButtonAction();
   redraw();
-
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
-
+  drawStatusBarMessage();
   processClick();
   ev->accept();
 }
 
 //----------------------------------------------------------------------
-void FToggleButton::onFocusIn (FFocusEvent*)
+void FToggleButton::onFocusIn (FFocusEvent* in_ev)
 {
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
+  resetColors();
+
+  if ( isEnabled() && hasFocus() && isRadioButton() )
+    radiobutton_focus = true;  // Reactivate radio button focus
+
+  FWidget::onFocusIn(in_ev);
 }
 
 //----------------------------------------------------------------------
 void FToggleButton::onFocusOut (FFocusEvent* out_ev)
 {
-  if ( getStatusBar() )
-  {
-    getStatusBar()->clearMessage();
-    getStatusBar()->drawMessage();
-  }
-
-  if ( ! hasGroup() )
-    return;
-
-  if ( ! focus_inside_group && isRadioButton()  )
-  {
-    focus_inside_group = true;
-    out_ev->ignore();
-
-    if ( out_ev->getFocusType() == FocusTypes::NextWidget )
-      getGroup()->focusNextChild();
-
-    if ( out_ev->getFocusType() == FocusTypes::PreviousWidget )
-      getGroup()->focusPrevChild();
-
-    redraw();
-  }
-  else if ( this == getGroup()->getLastButton()
-         && out_ev->getFocusType() == FocusTypes::NextWidget )
-  {
-    out_ev->ignore();
-    getGroup()->focusNextChild();
-    redraw();
-  }
-  else if ( this == getGroup()->getFirstButton()
-         && out_ev->getFocusType() == FocusTypes::PreviousWidget )
-  {
-    out_ev->ignore();
-    getGroup()->focusPrevChild();
-    redraw();
-  }
+  resetColors();
+  FWidget::onFocusOut(out_ev);
 }
 
 
@@ -363,17 +292,7 @@ void FToggleButton::draw()
   if ( ! isVisible() )
     return;
 
-  if ( getFlags().focus && getStatusBar() )
-  {
-    const auto& msg = getStatusbarMessage();
-    const auto& curMsg = getStatusBar()->getMessage();
-
-    if ( curMsg != msg )
-    {
-      getStatusBar()->setMessage(msg);
-      getStatusBar()->drawMessage();
-    }
-  }
+  updateStatusbar (this);
 
   // set the cursor to the button
   if ( isRadioButton() || isCheckboxButton() )
@@ -415,32 +334,19 @@ void FToggleButton::onKeyPress (FKeyEvent* ev)
 
   if ( isEnterKey(key) || key == FKey::Space )
   {
-    if ( isRadioButton() )
-    {
-      if ( ! checked )
-      {
-        checked = true;
-        processToggle();
-      }
-    }
-    else
-    {
-      checked = ! checked;
-      processToggle();
-    }
-
+    performButtonAction();
     processClick();
     ev->accept();
   }
   else if ( key == FKey::Down || key == FKey::Right )
   {
-    focus_inside_group = true;
+    radiobutton_focus = false;  // Use normal focus
     focusNextChild();
     ev->accept();
   }
   else if ( key == FKey::Up || key == FKey::Left )
   {
-    focus_inside_group = true;
+    radiobutton_focus = false;  // Use normal focus
     focusPrevChild();
     ev->accept();
   }
@@ -479,16 +385,16 @@ void FToggleButton::drawText (const FString& label_text, std::size_t hotkeypos)
 
   for (std::size_t z{0}; z < label_text.getLength(); z++)
   {
-    if ( (z == hotkeypos) && getFlags().active )
+    if ( (z == hotkeypos) && getFlags().feature.active )
     {
       setColor (wc->label_hotkey_fg, wc->label_hotkey_bg);
 
-      if ( ! getFlags().no_underline )
+      if ( ! getFlags().feature.no_underline )
         setUnderline();
 
       print ( label_text[z] );
 
-      if ( ! getFlags().no_underline )
+      if ( ! getFlags().feature.no_underline )
         unsetUnderline();
 
       setColor (wc->label_fg, wc->label_bg);
@@ -499,6 +405,24 @@ void FToggleButton::drawText (const FString& label_text, std::size_t hotkeypos)
 
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
+}
+
+//----------------------------------------------------------------------
+void FToggleButton::performButtonAction()
+{
+  if ( isRadioButton() )
+  {
+    if ( ! checked )
+    {
+      checked = true;
+      processToggle();
+    }
+  }
+  else
+  {
+    checked = ! checked;
+    processToggle();
+  }
 }
 
 //----------------------------------------------------------------------

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2022 Markus Gans                                      *
+* Copyright 2018-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -92,7 +92,7 @@ auto FKeyboard::getInstance() -> FKeyboard&
 //----------------------------------------------------------------------
 void FKeyboard::fetchKeyCode()
 {
-  if ( fkey_queue.size() < MAX_QUEUE_SIZE )
+  if ( ! fkey_queue.isFull() )
     parseKeyBuffer();
 }
 
@@ -216,7 +216,7 @@ void FKeyboard::escapeKeyHandling()
     && isKeypressTimeout() )
   {
     fifo_buf.clear();
-    escapeKeyPressed();
+    escapeKeyPressedCommand();
   }
 
   // Handling of keys that are substrings of other keys
@@ -226,19 +226,19 @@ void FKeyboard::escapeKeyHandling()
 //----------------------------------------------------------------------
 void FKeyboard::processQueuedInput()
 {
-  while ( ! fkey_queue.empty() )
+  while ( ! fkey_queue.isEmpty() )
   {
     key = fkey_queue.front();
     fkey_queue.pop();
 
     if ( key > FKey::None )
     {
-      keyPressed();
+      keyPressedCommand();
 
       if ( FApplication::isQuit() )
         return;
 
-      keyReleased();
+      keyReleasedCommand();
 
       if ( FApplication::isQuit() )
         return;
@@ -259,18 +259,25 @@ inline auto FKeyboard::getMouseProtocolKey() const -> FKey
 
   const auto buf_len = fifo_buf.getSize();
 
+  if ( buf_len < 3 || fifo_buf[1] != '[' )
+    return NOT_SET;
+
   // x11 mouse tracking
-  if ( buf_len >= 6 && fifo_buf[1] == '[' && fifo_buf[2] == 'M' )
-    return FKey::X11mouse;
+  if ( fifo_buf[1] == '[' && fifo_buf[2] == 'M' )
+    return ( buf_len < 6 ) ? FKey::Incomplete : FKey::X11mouse;
 
   // SGR mouse tracking
-  if ( fifo_buf[1] == '[' && fifo_buf[2] == '<' && buf_len >= 9
-    && (fifo_buf[buf_len - 1] == 'M' || fifo_buf[buf_len - 1] == 'm') )
-    return FKey::Extended_mouse;
+  if ( fifo_buf[1] == '[' && fifo_buf[2] == '<' )
+  {
+    if ( buf_len < 9 || (fifo_buf[buf_len - 1] != 'M' && fifo_buf[buf_len - 1] != 'm') )
+      return FKey::Incomplete;  // Incomplete mouse sequence
+    else
+      return FKey::Extended_mouse;
+  }
 
   // urxvt mouse tracking
   if ( fifo_buf[1] == '[' && fifo_buf[2] >= '1' && fifo_buf[2] <= '9'
-    && fifo_buf[3] >= '0' && fifo_buf[3] <= '9' && buf_len >= 9
+    && std::isdigit(fifo_buf[3]) && buf_len >= 9
     && fifo_buf[buf_len - 1] == 'M' )
     return FKey::Urxvt_mouse;
 
@@ -288,27 +295,12 @@ inline auto FKeyboard::getTermcapKey() -> FKey
     return NOT_SET;
 
   const auto buf_len = fifo_buf.getSize();
-  const auto& found_key = std::find_if
-  (
-    key_cap_ptr->cbegin(),
-    key_cap_end,
-    [this, &buf_len] (const auto& cap_key)
-    {
-      const auto& kstr = cap_key.string;
-      const auto& klen = cap_key.length;
+  auto found_key = fkeyhashmap::getTermcapKey(fifo_buf);
 
-      if ( klen == 0 || klen != buf_len )
-        return false;
-
-      return fifo_buf.strncmp_front (kstr, klen);
-    }
-  );
-
-  if ( found_key != key_cap_end )  // found
+  if ( found_key != FKey::None )  // found
   {
-    const std::size_t len = found_key->length;
-    fifo_buf.pop(len);  // Remove founded entry
-    return found_key->num;
+    fifo_buf.pop(buf_len);  // Remove founded entry
+    return found_key;
   }
 
   return NOT_SET;
@@ -320,30 +312,12 @@ inline auto FKeyboard::getKnownKey() -> FKey
   // Looking for a known key strings in the buffer
 
   static_assert ( FIFO_BUF_SIZE > 0, "FIFO buffer too small" );
-
   const auto buf_len = fifo_buf.getSize();
-  const auto& key_map = FKeyMap::getKeyMap();
-  const auto& found_key = std::find_if
-  (
-    key_map.cbegin(),
-    key_map.cend(),
-    [this, &buf_len] (const auto& known_key)
-    {
-      const auto& kstr = known_key.string;  // This string is never null
-      const auto& klen = known_key.length;
+  auto found_key = fkeyhashmap::getKnownKey(fifo_buf);
 
-      if ( klen != buf_len )
-        return false;
-
-      return fifo_buf.strncmp_front (kstr, klen);
-    }
-  );
-
-  if ( found_key != key_map.cend() )  // found
+  if ( found_key != FKey::None )  // found
   {
-    const std::size_t len = found_key->length;
-
-    if ( len == 2
+    if ( buf_len == 2
       && ( fifo_buf[1] == 'O'
         || fifo_buf[1] == '['
         || fifo_buf[1] == ']' )
@@ -352,8 +326,8 @@ inline auto FKeyboard::getKnownKey() -> FKey
       return FKey::Incomplete;
     }
 
-    fifo_buf.pop(len);  // Remove founded entry
-    return found_key->num;
+    fifo_buf.pop(buf_len);  // Remove founded entry
+    return found_key;
   }
 
   return NOT_SET;
@@ -364,21 +338,36 @@ inline auto FKeyboard::getSingleKey() -> FKey
 {
   // Looking for single key code in the buffer
 
-  std::size_t len{1U};
   const auto& firstchar = fifo_buf.front();
   FKey keycode{};
+
+  // Use a lookup table to map firstchar to the corresponding length
+  static constexpr std::array<uInt8, 256> len_lookup
+  {{
+    1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U,  // 0x00 - 0x0F
+    1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U,  // 0x10 - 0x1F
+    1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U,  // 0x20 - 0x2F
+    1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U,  // 0x30 - 0x3F
+    1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U,  // 0x40 - 0x4F
+    1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U,  // 0x50 - 0x5F
+    1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U,  // 0x60 - 0x6F
+    1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U,  // 0x70 - 0x7F
+    1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U,  // 0x80 - 0x8F
+    1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U,  // 0x90 - 0x9F
+    1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U,  // 0xA0 - 0xAF
+    1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U, 1U,  // 0xB0 - 0xBF
+    2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U,  // 0xC0 - 0xCF
+    2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U, 2U,  // 0xD0 - 0xDF
+    3U, 3U, 3U, 3U, 3U, 3U, 3U, 3U, 3U, 3U, 3U, 3U, 3U, 3U, 3U, 3U,  // 0xE0 - 0xEF
+    4U, 4U, 4U, 4U, 4U, 4U, 4U, 4U, 5U, 5U, 5U, 5U, 6U, 6U, 1U, 1U   // 0xF0 - 0xFF
+  }};
+
+  auto len = len_lookup[firstchar & 0xff];
 
   // Look for a utf-8 character
   if ( utf8_input && (firstchar & uChar(0xc0)) == 0xc0 )
   {
     const auto buf_len = fifo_buf.getSize();
-
-    if ( (firstchar & uChar(0xe0)) == 0xc0 )
-      len = 2U;
-    else if ( (firstchar & uChar(0xf0)) == 0xe0 )
-      len = 3U;
-    else if ( (firstchar & uChar(0xf8)) == 0xf0 )
-      len = 4U;
 
     if ( buf_len < len && ! isKeypressTimeout() )
       return FKey::Incomplete;
@@ -399,7 +388,7 @@ inline auto FKeyboard::getSingleKey() -> FKey
 //----------------------------------------------------------------------
 inline auto FKeyboard::isKeypressTimeout() -> bool
 {
-  return FObject::isTimeout (time_keypressed, key_timeout);
+  return FObjectTimer::isTimeout (time_keypressed, key_timeout);
 }
 
 //----------------------------------------------------------------------
@@ -462,10 +451,9 @@ inline auto FKeyboard::readKey() -> ssize_t
 //----------------------------------------------------------------------
 void FKeyboard::parseKeyBuffer()
 {
-  time_keypressed = FObject::getCurrentTime();
-
   while ( readKey() > 0 )
   {
+    time_keypressed = FObjectTimer::getCurrentTime();
     has_pending_input = false;
 
     if ( ! fifo_buf.isFull() )
@@ -482,17 +470,17 @@ void FKeyboard::parseKeyBuffer()
         || fkey == FKey::Urxvt_mouse )
       {
         key = fkey;
-        mouseTracking();
+        mouseTrackingCommand();
         break;
       }
 
       if ( fkey != FKey::Incomplete )
-        fkey_queue.push(fkey);
+        fkey_queue.emplace(fkey);
     }
 
     fkey = FKey::None;
 
-    if ( fkey_queue.size() >= MAX_QUEUE_SIZE )
+    if ( fkey_queue.isFull() )
       break;
   }
 }
@@ -502,28 +490,28 @@ auto FKeyboard::parseKeyString() -> FKey
 {
   const auto& firstchar = fifo_buf.front();
 
-  if ( firstchar == ESC[0] )
-  {
-    FKey keycode = getMouseProtocolKey();
+  if ( firstchar != ESC[0] )
+    return getSingleKey();
 
-    if ( keycode != NOT_SET )
-      return keycode;
+  if ( fifo_buf.getSize() == 1 )
+    return isKeypressTimeout() ? getSingleKey() : FKey::Incomplete;
 
-    keycode = getTermcapKey();
+  FKey keycode = getMouseProtocolKey();
 
-    if ( keycode != NOT_SET )
-      return keycode;
+  if ( keycode != NOT_SET )
+    return keycode;
 
-    keycode = getKnownKey();
+  keycode = getTermcapKey();
 
-    if ( keycode != NOT_SET )
-      return keycode;
+  if ( keycode != NOT_SET )
+    return keycode;
 
-    if ( ! isKeypressTimeout() )
-      return FKey::Incomplete;
-  }
+  keycode = getKnownKey();
 
-  return getSingleKey();
+  if ( keycode != NOT_SET )
+    return keycode;
+
+  return isKeypressTimeout() ? getSingleKey() : FKey::Incomplete;
 }
 
 //----------------------------------------------------------------------
@@ -566,31 +554,31 @@ void FKeyboard::substringKeyHandling()
     else
       fkey = FKey::Meta_right_square_bracket;
 
-    fkey_queue.push(fkey);
+    fkey_queue.emplace(fkey);
     fifo_buf.clear();
   }
 }
 
 //----------------------------------------------------------------------
-void FKeyboard::keyPressed() const
+void FKeyboard::keyPressedCommand() const
 {
   keypressed_cmd.execute();
 }
 
 //----------------------------------------------------------------------
-void FKeyboard::keyReleased() const
+void FKeyboard::keyReleasedCommand() const
 {
   keyreleased_cmd.execute();
 }
 
 //----------------------------------------------------------------------
-void FKeyboard::escapeKeyPressed() const
+void FKeyboard::escapeKeyPressedCommand() const
 {
   escape_key_cmd.execute();
 }
 
 //----------------------------------------------------------------------
-void FKeyboard::mouseTracking() const
+void FKeyboard::mouseTrackingCommand() const
 {
   mouse_tracking_cmd.execute();
 }

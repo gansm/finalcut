@@ -133,9 +133,9 @@ constexpr std::array<const char*, 97> saturn_xpm = \
   "                    "
 }};
 
-struct restoreOverlaidWindows : public fc::FVTerm
+struct restoreOverlaid : public fc::FVTerm
 {
-  ~restoreOverlaidWindows() override;
+  ~restoreOverlaid() override;
 
   void operator () (fc::FVTerm& obj) const
   {
@@ -148,7 +148,7 @@ struct restoreOverlaidWindows : public fc::FVTerm
     {
       const auto win = static_cast<fc::FWidget*>(window);
 
-      if ( overlaid )
+      if ( overlaid && win->getVWin()->visible )
         putArea (win->getTermPos(), win->getVWin());
 
       if ( obj.getVWin() == win->getVWin() )
@@ -157,7 +157,7 @@ struct restoreOverlaidWindows : public fc::FVTerm
   }
 };
 
-restoreOverlaidWindows::~restoreOverlaidWindows() = default;
+restoreOverlaid::~restoreOverlaid() = default;
 
 template <>
 struct std::hash<fc::FPoint>
@@ -203,7 +203,7 @@ void TextWindow::setPos (const fc::FPoint& pos, bool)
 {
   fc::FWindow::setPos (pos, false);
   putArea (getTermPos(), getVWin());
-  restoreOverlaidWindows{}(*this);
+  restoreOverlaid{}(*this);
 }
 
 //----------------------------------------------------------------------
@@ -225,7 +225,7 @@ void TextWindow::initLayout()
   auto size = fc::FSize{26, 5};
   auto x = int(getDesktopWidth() - size.getWidth()) / 2;
   auto y = int(getDesktopHeight() - size.getHeight()) / 2;
-  auto position = fc::FPoint{x,  y};
+  auto position = fc::FPoint{x, y};
   setGeometry(position, size, false);
   fc::FWidget::initLayout();
 }
@@ -269,7 +269,7 @@ void SpaceWindow::setPos (const fc::FPoint& pos, bool)
 {
   fc::FWindow::setPos (pos, false);
   putArea (getTermPos(), getVWin());
-  restoreOverlaidWindows{}(*this);
+  restoreOverlaid{}(*this);
 }
 
 //----------------------------------------------------------------------
@@ -351,13 +351,12 @@ void PictureSpaceWindow::draw()
   auto pict_size = xmp_image.getSize();
   pict_size.setHeight(pict_size.getHeight() / 2);
   finalcut::FRect planet_geometry(fc::FPoint(0, 0), pict_size);
-  FTermArea* planet{nullptr};
-  createArea (planet_geometry, planet);
+  std::shared_ptr<FTermArea> planet(createArea (planet_geometry));
   setColor(fc::FColor::Black, fc::FColor::Black);
-  clearArea(planet);
+  clearArea(planet.get());
   planet->setCursorPos (1, 1);
   planet->print(xmp_image.getTermBuffer());
-  copyArea (getVWin(), fc::FPoint(10, 10), planet);
+  copyArea (getVWin(), fc::FPoint(10, 10), planet.get());
 }
 
 
@@ -393,6 +392,7 @@ class ParallaxScrolling final : public fc::FWidget
     int                 timer1{-1};
     int                 timer2{-1};
     int                 timer3{-1};
+    bool                quit_app{false};
 };
 
 //----------------------------------------------------------------------
@@ -443,20 +443,25 @@ void ParallaxScrolling::adjustSize()
 //----------------------------------------------------------------------
 void ParallaxScrolling::scrollLeft (SpaceWindow& lhs, SpaceWindow& rhs) const
 {
-  if ( rhs.getPos().getX() == 1 )
-    lhs.setPos ({int(getDesktopWidth() + 1), 1});
+  auto new_lhs_pos = ( rhs.getPos().getX() == 1 )
+                   ? fc::FPoint{int(getDesktopWidth() + 1), 1}
+                   : lhs.getPos() - fc::FPoint{1, 0};
 
-  if ( lhs.getPos().getX() == 1
-    && lhs.getPos().getX() > rhs.getPos().getX() )
-    rhs.setPos ({int(getDesktopWidth() + 1), 1});
+  auto new_rhs_pos = ( new_lhs_pos.getX() == 1
+                    && new_lhs_pos.getX() > rhs.getPos().getX() )
+                   ? fc::FPoint{int(getDesktopWidth() + 1), 1}
+                   : rhs.getPos() - fc::FPoint{1, 0};
 
-  lhs.setPos (lhs.getPos() - fc::FPoint(1,0));
-  rhs.setPos (rhs.getPos() - fc::FPoint(1,0));
+  lhs.setPos (new_lhs_pos);
+  rhs.setPos (new_rhs_pos);
 }
 
 //----------------------------------------------------------------------
 void ParallaxScrolling::onTimer (fc::FTimerEvent* ev)
 {
+  if ( ! isShown() )
+    return;
+
   const int timer_id = ev->getTimerId();
 
   if ( timer1 == timer_id )
@@ -478,8 +483,13 @@ void ParallaxScrolling::onTimer (fc::FTimerEvent* ev)
 //----------------------------------------------------------------------
 void ParallaxScrolling::onAccel (fc::FAccelEvent* ev)
 {
+  if ( quit_app )
+    return;
+
+  quit_app = true;
   close();
   ev->accept();
+  quit_app = false;
 }
 
 //----------------------------------------------------------------------

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2022 Markus Gans                                      *
+* Copyright 2018-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -54,87 +54,92 @@ class FTermXTerminal final
     FTermXTerminal();
 
     // Mutators
-    void        redefineDefaultColors (bool = true) noexcept;
-    void        setCursorStyle (XTermCursorStyle);
-    void        setFont (const FString&);
-    void        setTitle (const FString&);
-    void        setTermSize (const FSize&);
-    void        setForeground (const FString&);
-    void        setBackground (const FString&);
-    void        setCursorColor (const FString&);
-    void        setMouseForeground (const FString&);
-    void        setMouseBackground (const FString&);
-    void        setHighlightBackground (const FString&);
-    static void setMouseSupport (bool = true);
-    static void unsetMouseSupport();
-    void        metaSendsESC (bool = true);
+    void  redefineDefaultColors (bool = true) noexcept;
+    void  setCursorStyle (XTermCursorStyle);
+    void  setFont (const FString&);
+    void  setTitle (const FString&);
+    void  setTermSize (const FSize&);
+    void  setForeground (const FString&);
+    void  setBackground (const FString&);
+    void  setCursorColor (const FString&);
+    void  setMouseForeground (const FString&);
+    void  setMouseBackground (const FString&);
+    void  setHighlightBackground (const FString&);
+    static void  setMouseSupport (bool = true);
+    static void  unsetMouseSupport();
+    void  setFocusSupport (bool enable = true);
+    void  unsetFocusSupport();
+    void  metaSendsESC (bool = true);
 
     // Accessors
-    auto        getClassName() const -> FString;
-    static auto getInstance() -> FTermXTerminal&;
-    auto        getCursorStyle() const noexcept -> XTermCursorStyle;
-    auto        getFont() const -> FString;
-    auto        getTitle() const -> FString;
-    auto        getForeground() const -> FString;
-    auto        getBackground() const -> FString;
-    auto        getCursorColor() const -> FString;
-    auto        getMouseForeground() const -> FString;
-    auto        getMouseBackground() const -> FString;
-    auto        getHighlightBackground() const -> FString;
+    auto  getClassName() const -> FString;
+    static auto  getInstance() -> FTermXTerminal&;
+    auto  getCursorStyle() const noexcept -> XTermCursorStyle;
+    auto  getFont() const -> FString;
+    auto  getTitle() const -> FString;
+    auto  getForeground() const -> FString;
+    auto  getBackground() const -> FString;
+    auto  getCursorColor() const -> FString;
+    auto  getMouseForeground() const -> FString;
+    auto  getMouseBackground() const -> FString;
+    auto  getHighlightBackground() const -> FString;
 
     // Inquiries
-    auto        hasFont() const -> bool;
-    auto        hasTitle() const -> bool;
+    auto  hasFont() const -> bool;
+    auto  hasTitle() const -> bool;
 
     // Methods
-    void        setDefaults();
-    void        resetColorMap() const;
-    void        resetForeground();
-    void        resetBackground();
-    void        resetCursorColor();
-    void        resetMouseForeground();
-    void        resetMouseBackground();
-    void        resetHighlightBackground();
-    void        resetDefaults();
-    void        resetTitle();
-    void        captureFontAndTitle();
+    void  setDefaults();
+    void  resetColorMap() const;
+    void  resetForeground();
+    void  resetBackground();
+    void  resetCursorColor();
+    void  resetMouseForeground();
+    void  resetMouseBackground();
+    void  resetHighlightBackground();
+    void  resetDefaults();
+    void  resetTitle();
+    void  captureFontAndTitle();
 
   private:
     // Methods
-    void        warnNotInitialized() const;
-    void        setXTermCursorStyle();
-    void        setXTermFont();
-    void        setXTermTitle();
-    void        setXTermSize() const;
-    void        setXTermForeground();
-    void        setXTermBackground();
-    void        setXTermCursorColor();
-    void        setXTermMouseForeground();
-    void        setXTermMouseBackground();
-    void        setXTermHighlightBackground();
-    void        setXTerm8ColorDefaults();
-    void        setXTerm16ColorDefaults();
-    void        setXTermDefaultsMouseCursor();
-    auto        canSetXTermBackground() const -> bool;
-    void        resetXTermColorMap() const;
-    void        resetXTermForeground() const;
-    void        resetXTermBackground() const;
-    void        resetXTermCursorColor() const;
-    void        resetXTermMouseForeground() const;
-    void        resetXTermMouseBackground() const;
-    void        resetXTermHighlightBackground() const;
-    auto        canResetColor() const -> bool;
-    void        oscPrefix() const;
-    void        oscPostfix() const;
-    auto        captureXTermFont() const -> FString;
-    auto        captureXTermTitle() const -> FString;
+    void  warnNotInitialized() const;
+    void  setXTermCursorStyle();
+    void  setXTermFont();
+    void  setXTermTitle();
+    void  setXTermSize() const;
+    void  setXTermForeground();
+    void  setXTermBackground();
+    void  setXTermCursorColor();
+    void  setXTermMouseForeground();
+    void  setXTermMouseBackground();
+    void  setXTermHighlightBackground();
+    void  setXTerm8ColorDefaults();
+    void  setXTerm16ColorDefaults();
+    void  setXTermDefaultsMouseCursor();
+    auto  canSetXTermBackground() const -> bool;
+    void  resetXTermColorMap() const;
+    void  resetXTermForeground() const;
+    void  resetXTermBackground() const;
+    void  resetXTermCursorColor() const;
+    void  resetXTermMouseForeground() const;
+    void  resetXTermMouseBackground() const;
+    void  resetXTermHighlightBackground() const;
+    auto  canResetColor() const -> bool;
+    void  oscPrefix() const;
+    void  oscPostfix() const;
+    auto  captureXTermFont() const -> FString;
+    auto  captureXTermTitle() const -> FString;
     static void enableXTermMouse();
     static void disableXTermMouse();
-    void        enableXTermMetaSendsESC();
-    void        disableXTermMetaSendsESC();
+    void  enableXTermFocus();
+    void  disableXTermFocus();
+    void  enableXTermMetaSendsESC();
+    void  disableXTermMetaSendsESC();
 
     // Data members
     static bool       mouse_support;
+    bool              focus_support{false};
     bool              meta_sends_esc{false};
     bool              xterm_default_colors{false};
     bool              title_was_changed{false};
@@ -208,6 +213,10 @@ inline auto FTermXTerminal::hasTitle() const -> bool
 //----------------------------------------------------------------------
 inline void FTermXTerminal::unsetMouseSupport()
 { setMouseSupport (false); }
+
+//----------------------------------------------------------------------
+inline void FTermXTerminal::unsetFocusSupport()
+{ setFocusSupport (false); }
 
 }  // namespace finalcut
 

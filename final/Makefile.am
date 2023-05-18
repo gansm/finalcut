@@ -82,6 +82,7 @@ libfinal_la_SOURCES = \
 	fevent.cpp \
 	fobject.cpp \
 	fstartoptions.cpp \
+	ftimer.cpp \
 	fwidgetcolors.cpp \
 	fwidget.cpp \
 	fwidget_functions.cpp
@@ -105,6 +106,7 @@ finalcutdialoginclude_HEADERS = \
 
 finalcutinputinclude_HEADERS = \
 	input/fkeyboard.h \
+	input/fkey_hashmap.h \
 	input/fkey_map.h \
 	input/fmouse.h
 
@@ -192,9 +194,11 @@ finalcutinclude_HEADERS = \
 	final.h \
 	fobject.h \
 	fstartoptions.h \
+	ftimer.h \
 	ftypes.h \
 	fwidgetcolors.h \
 	fwidget_functions.h \
+	fwidget_flags.h \
 	fwidget.h
 
 clean-local:

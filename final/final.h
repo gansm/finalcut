@@ -31,8 +31,10 @@
 #include <final/fevent.h>
 #include <final/fobject.h>
 #include <final/fstartoptions.h>
+#include <final/ftimer.h>
 #include <final/ftypes.h>
 #include <final/fwidgetcolors.h>
+#include <final/fwidget_flags.h>
 #include <final/fwidget.h>
 #include <final/dialog/fdialog.h>
 #include <final/dialog/ffiledialog.h>

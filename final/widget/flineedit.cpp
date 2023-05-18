@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2022 Markus Gans                                      *
+* Copyright 2012-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -26,6 +26,7 @@
 #include "final/fapplication.h"
 #include "final/fevent.h"
 #include "final/fwidgetcolors.h"
+#include "final/fwidget_functions.h"
 #include "final/util/flog.h"
 #include "final/util/fpoint.h"
 #include "final/util/fsize.h"
@@ -110,14 +111,6 @@ auto FLineEdit::setEnable (bool enable) -> bool
 }
 
 //----------------------------------------------------------------------
-auto FLineEdit::setFocus (bool enable) -> bool
-{
-  FWidget::setFocus(enable);
-  resetColors();
-  return enable;
-}
-
-//----------------------------------------------------------------------
 auto FLineEdit::setShadow (bool enable) -> bool
 {
   return setWidgetShadow(this, enable);
@@ -132,6 +125,17 @@ auto FLineEdit::setReadOnly (bool enable) -> bool
     setVisibleCursor();
 
   return (read_only = enable);
+}
+
+//----------------------------------------------------------------------
+void FLineEdit::setAlignment (Align align) noexcept
+{
+  if ( align != Align::Left
+    && align != Align::Center
+    && align != Align::Right )
+    alignment = Align::Left;
+  else
+    alignment = align;
 }
 
 //----------------------------------------------------------------------
@@ -352,11 +356,11 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
     return;
 
   const auto key = ev->key();
-  const auto& entry = key_map[key];
+  const auto& iter = key_map.find(key);
 
-  if ( entry )
+  if ( iter != key_map.end() )
   {
-    entry();
+    iter->second();
     ev->accept();
   }
   else if ( key == FKey::Tab || key == FKey::Back_tab
@@ -406,7 +410,7 @@ void FLineEdit::onMouseDown (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FLineEdit::onMouseUp (FMouseEvent*)
 {
-  if ( drag_scroll != DragScrollMode::None )
+  if ( isDragging(drag_scroll) )
   {
     delOwnTimers();
     drag_scroll = DragScrollMode::None;
@@ -549,8 +553,10 @@ void FLineEdit::onHide (FHideEvent*)
 }
 
 //----------------------------------------------------------------------
-void FLineEdit::onFocusIn (FFocusEvent*)
+void FLineEdit::onFocusIn (FFocusEvent* in_ev)
 {
+  resetColors();
+
   if ( ! isReadOnly() )
   {
     if ( insert_mode )
@@ -559,21 +565,18 @@ void FLineEdit::onFocusIn (FFocusEvent*)
       FVTerm::getFOutput()->setCursor(CursorMode::Overwrite);
   }
 
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
+  FWidget::onFocusIn(in_ev);
 }
 
 //----------------------------------------------------------------------
-void FLineEdit::onFocusOut (FFocusEvent*)
+void FLineEdit::onFocusOut (FFocusEvent* out_ev)
 {
-  if ( getStatusBar() )
-  {
-    getStatusBar()->clearMessage();
-    getStatusBar()->drawMessage();
-  }
+  resetColors();
 
   if ( ! insert_mode && ! isReadOnly() )
     FVTerm::getFOutput()->setCursor(CursorMode::Insert);
+
+  FWidget::onFocusOut(out_ev);
 }
 
 
@@ -659,6 +662,12 @@ auto FLineEdit::hasHotkey() const -> bool
 }
 
 //----------------------------------------------------------------------
+auto FLineEdit::getAlignOffset (const std::size_t length) const -> std::size_t
+{
+  return finalcut::getAlignOffset (alignment, getWidth(), length);
+}
+
+//----------------------------------------------------------------------
 void FLineEdit::draw()
 {
   if ( cursor_pos == NOT_SET && ! isReadOnly() )
@@ -668,24 +677,13 @@ void FLineEdit::draw()
     adjustTextOffset();
 
   drawInputField();
-
-  if ( getFlags().focus && getStatusBar() )
-  {
-    const auto& msg = getStatusbarMessage();
-    const auto& curMsg = getStatusBar()->getMessage();
-
-    if ( curMsg != msg )
-    {
-      getStatusBar()->setMessage(msg);
-      getStatusBar()->drawMessage();
-    }
-  }
+  updateStatusbar (this);
 }
 
 //----------------------------------------------------------------------
 void FLineEdit::drawInputField()
 {
-  const bool isActiveFocus = getFlags().active && getFlags().focus;
+  const bool isActiveFocus = getFlags().feature.active && getFlags().focus.focus;
   print() << FPoint{1, 1};
 
   if ( FVTerm::getFOutput()->isMonochron() )
@@ -707,7 +705,9 @@ void FLineEdit::drawInputField()
   if ( isActiveFocus && FVTerm::getFOutput()->getMaxColor() < 16 )
     setBold();
 
-  const std::size_t text_offset_column = [this] ()
+  std::size_t text_offset_column;
+  std::size_t x_pos;
+  std::tie(text_offset_column, x_pos) = [this] ()
   {
     switch ( input_type )
     {
@@ -718,16 +718,14 @@ void FLineEdit::drawInputField()
         return printPassword();
 
       default:
-        break;
+        throw std::invalid_argument{"Invalid input type"};
     }
-
-    return std::size_t(0);
   }();
 
-  while ( x_pos + 1 < getWidth() )
+  if ( x_pos + align_offset + 1 < getWidth() )
   {
-    print (' ');
-    x_pos++;
+    const auto trailing_spaces = getWidth() - x_pos - align_offset - 1;
+    print(FString{trailing_spaces, L' '});
   }
 
   if ( isActiveFocus && FVTerm::getFOutput()->getMaxColor() < 16 )
@@ -739,43 +737,52 @@ void FLineEdit::drawInputField()
     setUnderline(false);
   }
 
-  if ( getFlags().shadow )
+  if ( getFlags().shadow.shadow )
     drawShadow(this);
 
   // set the cursor to the insert pos.
   const auto cursor_pos_column = getCursorColumnPos();
-  const auto xpos = int(2 + cursor_pos_column
+  const auto xpos = int(2 + align_offset
+                          + cursor_pos_column
                           - text_offset_column
                           + char_width_offset);
   setCursorPos ({xpos, 1});
 }
 
 //----------------------------------------------------------------------
-inline auto FLineEdit::printTextField() -> std::size_t
+inline auto FLineEdit::printTextField() -> std::tuple<std::size_t, std::size_t>
 {
   const std::size_t text_offset_column = getColumnWidth (print_text, text_offset);
   const std::size_t start_column = text_offset_column - char_width_offset + 1;
   const FString& show_text = \
       getColumnSubString(print_text, start_column, getWidth() - 2);
+  const auto x_pos = getColumnWidth(show_text);
+  align_offset = getAlignOffset(x_pos + 2);
+
+  if ( align_offset > 0 )
+    print (FString{align_offset, L' '});  // leading spaces
 
   if ( ! show_text.isEmpty() )
     print (show_text);
 
-  x_pos = getColumnWidth(show_text);
-  return text_offset_column;
+  return std::make_tuple (text_offset_column, x_pos);
 }
 
 //----------------------------------------------------------------------
-inline auto FLineEdit::printPassword() -> std::size_t
+inline auto FLineEdit::printPassword() -> std::tuple<std::size_t, std::size_t>
 {
   const std::size_t text_offset_column = text_offset;
   const FString show_text{print_text.mid(1 + text_offset, getWidth() - 2)};
+  const auto x_pos = show_text.getLength();
+  align_offset = getAlignOffset(x_pos + 2);
+
+  if ( align_offset > 0 )
+    print (FString{align_offset, ' '});  // leading spaces
 
   if ( ! show_text.isEmpty() )
-    print() << FString{show_text.getLength(), UniChar::Bullet};  // •
+    print() << FString{x_pos, UniChar::Bullet};  // •
 
-  x_pos = show_text.getLength();
-  return text_offset_column;
+  return std::make_tuple (text_offset_column, x_pos);
 }
 
 //----------------------------------------------------------------------
@@ -867,7 +874,7 @@ inline auto FLineEdit::endPosToOffset (std::size_t pos) -> offsetPair
 //----------------------------------------------------------------------
 auto FLineEdit::clickPosToCursorPos (std::size_t pos) -> std::size_t
 {
-  std::size_t click_width{0};
+  std::size_t click_width{align_offset};
   std::size_t idx = text_offset;
   const std::size_t len = print_text.getLength();
   pos -= char_width_offset;
@@ -1130,7 +1137,7 @@ inline auto FLineEdit::characterFilter (const wchar_t c) const -> wchar_t
   if ( input_filter.empty() )
     return c;
 
-  if ( regex_match(std::wstring(1, c), std::wregex(input_filter)) )
+  if ( std::regex_match(std::wstring(1, c), std::wregex(input_filter)) )
     return c;
 
   return L'\0';

@@ -237,12 +237,13 @@ void FCallbackTest::instanceWithFunctionObjectCallbackTest()
   finalcut::FCallback cb{};
   cb_class c{15, &root_widget};
   int i{100};
-  auto func1 = std::bind(&cb_class::cb_method_ptr, &c, &i);
-  auto func2 = std::bind(&cb_class::cb_method_ptr_const, &c, &i);
-  auto func3 = std::bind(&cb_class::cb_method_ref, &c, std::ref(i));
-  auto func4 = std::bind(&cb_class::cb_method_ref_const, &c, std::ref(i));
-  auto func5 = std::bind(&cb_class::cb_method_ptr, &c, std::placeholders::_1);
-  auto func6 = std::bind(&cb_class::cb_method_ref, &c, std::placeholders::_1);
+  auto func1 = [ptr = &c, data = &i] { ptr->cb_method_ptr(data); };
+  auto func2 = [ptr = &c, data = &i] { ptr->cb_method_ptr_const(data); };
+  auto func3 = [ptr = &c, &i] { ptr->cb_method_ref(i); };
+  auto func4 = [ptr = &c, &i] { ptr->cb_method_ref_const(i); };
+  auto func5 = [ptr = &c](auto&& data) { ptr->cb_method_ptr(std::forward<decltype(data)>(data)); };
+  auto func6 = [ptr = &c](auto&& data) { ptr->cb_method_ref(std::forward<decltype(data)>(data)); };
+
   using Object = decltype(&c);
   using ClassObject = decltype(func1);
 

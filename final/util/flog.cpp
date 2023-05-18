@@ -63,7 +63,7 @@ auto FLog::operator << (LogLevel log_level) -> FLog&
       break;
 
     default:
-      break;
+      throw std::invalid_argument{"Invalid log level"};
   }
 
   return *this;

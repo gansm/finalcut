@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021-2022 Markus Gans                                      *
+* Copyright 2021-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -41,7 +41,6 @@
 #endif
 
 #include <memory>
-#include <queue>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -55,6 +54,8 @@ namespace finalcut
 // class forward declaration
 class FStartOptions;
 class FTermData;
+template <typename T, std::size_t Capacity>
+class FRingBuffer;
 
 //----------------------------------------------------------------------
 // class FTermOutput
@@ -96,6 +97,7 @@ class FTermOutput final : public FOutput
     auto isMonochron() const -> bool override;
     auto isNewFont() const -> bool override;
     auto isEncodable (const wchar_t&) const -> bool override;
+    auto isFlushTimeout() const -> bool override;
     auto hasTerminalResized() const -> bool override;
     auto allowsTerminalSizeManipulation() const -> bool override;
     auto canChangeColorPalette() const -> bool override;
@@ -125,16 +127,6 @@ class FTermOutput final : public FOutput
       std::string string;
     };
 
-    struct FTermUniChar
-    {
-      UniChar ch;
-    };
-
-    struct FTermString
-    {
-      std::string string;
-    };
-
     // Enumerations
     enum class PrintState
     {
@@ -152,17 +144,26 @@ class FTermOutput final : public FOutput
 
     struct OutputData
     {
-      OutputType  type;
-      std::string data;
-    };
+      OutputData() = default;
 
-    // Using-declaration
-    using OutputBuffer = std::queue<OutputData>;
+      OutputData (OutputType t, std::string s)
+        : type{t}
+        , data{std::move(s)}
+      { }
+
+      OutputType  type{OutputType::String};
+      std::string data{};
+    };
 
     // Constants
     //   Upper and lower flush limit
-    static constexpr uInt64 MIN_FLUSH_WAIT = 16'667;   //   16.6 ms = 60 Hz
-    static constexpr uInt64 MAX_FLUSH_WAIT = 200'000;  //  200.0 ms = 5 Hz
+    static constexpr uInt64 MIN_FLUSH_WAIT = 16'667;   //  16.6 ms = 60 Hz
+    static constexpr uInt64 MAX_FLUSH_WAIT = 200'000;  // 200.0 ms = 5 Hz
+    //   Output buffer size
+    static constexpr std::size_t BUFFER_SIZE = 32'768;  // 32 KB
+
+    // Using-declaration
+    using OutputBuffer = FRingBuffer<OutputData, BUFFER_SIZE>;
 
     // Accessors
     auto getFSetPaletteRef() const & -> const FSetPalette& override;
@@ -194,7 +195,6 @@ class FTermOutput final : public FOutput
     auto updateTerminalLine (uInt) -> bool;
     auto updateTerminalCursor() -> bool;
     void flushTimeAdjustment();
-    auto isFlushTimeout() const -> bool;
     void markAsPrinted (uInt, uInt) const;
     void markAsPrinted (uInt, uInt, uInt) const;
     void newFontChanges (FChar&) const;
@@ -204,9 +204,10 @@ class FTermOutput final : public FOutput
     void appendAttributes (FChar&);
     void appendLowerRight (FChar&);
     void characterFilter (FChar&);
-    void appendOutputBuffer (const FTermControl&) const;
-    void appendOutputBuffer (const FTermUniChar&) const;
-    void appendOutputBuffer (const FTermString&) const;
+    void checkFreeBufferSize();
+    void appendOutputBuffer (const FTermControl&);
+    void appendOutputBuffer (const UniChar&);
+    void appendOutputBuffer (std::string&&);
 
     // Data members
     FTerm                         fterm{};

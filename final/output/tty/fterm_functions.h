@@ -27,6 +27,12 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#if defined(__CYGWIN__)
+  #include <sys/select.h>  // need for FD_ZERO, FD_SET, FD_CLR, ...
+#endif
+
+#include <unistd.h>
+
 #include <string>
 
 #include "final/ftypes.h"
@@ -71,6 +77,46 @@ auto getPrevCharLength (const FString&, std::size_t) -> int;
 auto searchLeftCharBegin (const FString&, std::size_t) -> std::size_t;
 auto searchRightCharBegin (const FString&, std::size_t) -> std::size_t;
 auto readCursorPos() -> FPoint;
+
+template<std::size_t size, typename UnaryPredicate>
+auto captureTerminalInput ( std::array<char, size>& data
+                          , uInt64 timeout_us
+                          , UnaryPredicate p ) -> std::size_t
+{
+  const int stdin_no{0};
+  fd_set ifds{};
+  struct timeval tv{};
+  FD_ZERO(&ifds);
+  FD_SET(stdin_no, &ifds);
+  tv.tv_sec  = 0;
+  tv.tv_usec = suseconds_t(timeout_us);
+  std::size_t pos{0};
+
+  // Read data form stdin
+  if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) < 1 )
+    return 0;
+
+  do
+  {
+    std::size_t bytes_free = data.size() - pos - 1;
+    const ssize_t bytes = read(stdin_no, &data[pos], bytes_free);
+
+    if ( bytes <= 0 )
+      break;
+
+    pos += std::size_t(bytes);
+  }
+  while ( pos < data.size() && p(data) );
+
+  return pos;
+}
+
+template<typename Data>
+auto captureTerminalInput (Data&& data, uInt64 timeout_us) -> std::size_t
+{
+  const auto isTrue = [] (auto) { return true; };
+  return captureTerminalInput (std::forward<Data>(data), timeout_us, isTrue);
+}
 
 }  // namespace finalcut
 

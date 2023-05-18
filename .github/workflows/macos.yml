@@ -14,7 +14,7 @@ jobs:
 
     steps:
     - name: Repository checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Before_install
       run: |
@@ -28,6 +28,7 @@ jobs:
         brew update
         brew install automake
         brew install autoconf-archive
+        brew install pkg-config
 
     - name: Build
       run: |

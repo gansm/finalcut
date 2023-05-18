@@ -4,7 +4,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2022 Markus Gans                                      *
+* Copyright 2014-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -73,19 +73,18 @@ class FButtonGroup : public FScrollView
 
     // Accessor
     auto getClassName() const -> FString override;
-    auto getFirstButton() -> FToggleButton*;
-    auto getLastButton() -> FToggleButton*;
     auto getButton (int) const -> FToggleButton*;
+    auto getFocusedButton() const -> FToggleButton*;
+    auto getCheckedButton() const -> FToggleButton*;
     auto getCount() const -> std::size_t;
 
     // Mutator
     auto setEnable (bool = true) -> bool override;
     auto unsetEnable() -> bool override;
     auto setDisable() -> bool override;
-    auto setFocus (bool = true) -> bool override;
 
     // Inquiries
-    auto isChecked(int) const -> bool;
+    auto isChecked (int) const -> bool;
     auto hasFocusedButton() const -> bool;
     auto hasCheckedButton() const -> bool;
 
@@ -100,6 +99,7 @@ class FButtonGroup : public FScrollView
     void onMouseDown (FMouseEvent*) override;
     void onAccel (FAccelEvent*) override;
     void onFocusIn (FFocusEvent*) override;
+    void onChildFocusOut (FFocusEvent*) override;
 
   protected:
     // Methods
@@ -117,8 +117,9 @@ class FButtonGroup : public FScrollView
     auto directFocusCheckedRadioButton (FToggleButton*) const -> bool;
     auto directFocusRadioButton() const -> bool;
     void directFocus();
-    void focusCheckedRadioButton (FToggleButton*, FFocusEvent*);
-    void focusInRadioButton (FFocusEvent*);
+    auto getCheckedRadioButton() -> FToggleButton*;
+    template <typename UnaryPredicate>
+    auto findButtonIf (UnaryPredicate) const -> FToggleButton*;
 
     // Callback method
     void cb_buttonToggled (const FToggleButton*) const;

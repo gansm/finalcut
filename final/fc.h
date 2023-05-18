@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2021 Markus Gans                                      *
+* Copyright 2015-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -66,6 +66,9 @@ enum class Event
   FocusOut,          // focus out
   ChildFocusIn,      // child focus in
   ChildFocusOut,     // child focus out
+  FailAtChildFocus,  // No further focusable child widgets
+  TerminalFocusIn,   // terminal focus in
+  TerminalFocusOut,  // terminal focus out
   WindowActive,      // activate window
   WindowInactive,    // deactivate window
   WindowRaised,      // raise window
@@ -80,7 +83,7 @@ enum class Event
 };
 
 // Internal character encoding
-enum class Encoding : std::size_t
+enum class Encoding
 {
   UTF8,
   VT100,
@@ -696,6 +699,8 @@ enum class FKey : uInt32
   Shift_Meta_menu            = 0x01600005,  // shifted M-menu
   Ctrl_Meta_menu             = 0x01600006,  // control-M-menu
   Shift_Ctrl_Meta_menu       = 0x01600007,  // shifted control-M-menu
+  Term_Focus_In              = 0x01900000,  // Terminal focus-in event
+  Term_Focus_Out             = 0x01900001,  // Terminal focus-out event
   Escape_mintty              = 0x0200001b,  // mintty Esc
   X11mouse                   = 0x02000020,  // xterm mouse
   Extended_mouse             = 0x02000021,  // SGR extended mouse
@@ -1190,7 +1195,7 @@ constexpr auto operator % (const FColor& c, const uInt16 n) noexcept -> FColor
 
 constexpr auto operator %= (FColor& c, uInt16 n) noexcept -> FColor&
 {
-  c =  FColor(uInt16(c) % n);
+  c = FColor(uInt16(c) % n);
   return c;
 }
 
@@ -1251,6 +1256,11 @@ constexpr auto operator + (const Style& a1, const Style& a2) noexcept -> Style
   return Style(uInt16(a1) + uInt16(a2));
 }
 
+constexpr auto operator - (const Style& a) noexcept -> Style
+{
+  return Style(-(uInt16(a)));
+}
+
 constexpr auto operator | (const Style& a1, const Style& a2) noexcept -> Style
 {
   return Style(uInt16(a1) | uInt16(a2));
@@ -1259,6 +1269,12 @@ constexpr auto operator | (const Style& a1, const Style& a2) noexcept -> Style
 constexpr auto operator & (const Style& a1, const Style& a2) noexcept -> Style
 {
   return Style(uInt16(a1) & uInt16(a2));
+}
+
+constexpr auto operator ^= (Style& a, const Style& b) noexcept -> Style&
+{
+  a = Style(uInt16(a) ^ uInt16(b));
+  return a;
 }
 
 
@@ -1319,16 +1335,17 @@ enum class FTermType : uInt32
   tera_term      = 1U << 8U,   // Tera Term
   cygwin         = 1U << 9U,   // Cygwin
   mintty         = 1U << 10U,  // Mintty
-  linux_con      = 1U << 11U,  // Linux Console
-  freebsd_con    = 1U << 12U,  // FreeBSD workstation Console
-  netbsd_con     = 1U << 13U,  // NetBSD workstation console
-  openbsd_con    = 1U << 14U,  // OpenBSD workstation Console
-  sun_con        = 1U << 15U,  // Sun Microsystems workstation console
-  screen         = 1U << 16U,  // GNU Screen
-  tmux           = 1U << 17U,  // TMux (terminal multiplexer)
-  kterm          = 1U << 18U,  // Kterm (multi-lingual terminal emulator)
-  mlterm         = 1U << 19U,  // MLterm (multi-lingual terminal emulator)
-  kitty          = 1U << 20U   // kitty (GPU based terminal emulator)
+  stterm         = 1U << 11U,  // st - simple terminal
+  linux_con      = 1U << 12U,  // Linux Console
+  freebsd_con    = 1U << 13U,  // FreeBSD workstation Console
+  netbsd_con     = 1U << 14U,  // NetBSD workstation console
+  openbsd_con    = 1U << 15U,  // OpenBSD workstation Console
+  sun_con        = 1U << 16U,  // Sun Microsystems workstation console
+  screen         = 1U << 17U,  // GNU Screen
+  tmux           = 1U << 18U,  // TMux (terminal multiplexer)
+  kterm          = 1U << 19U,  // Kterm (multi-lingual terminal emulator)
+  mlterm         = 1U << 20U,  // MLterm (multi-lingual terminal emulator)
+  kitty          = 1U << 21U   // kitty (GPU based terminal emulator)
 };
 
 using FTermTypeT = std::underlying_type_t<FTermType>;
@@ -1354,7 +1371,7 @@ enum class FocusTypes
 {
   NextWidget     = 0x00,
   PreviousWidget = 0x01,
-  DefiniteWidget = 0x03  // event default
+  DefiniteWidget = 0x03  // Focus event default value
 };
 
 // Mouse drag scrolling mode
@@ -1370,6 +1387,11 @@ enum class DragScrollMode
   SelectLeftward  = 7,
   SelectRightward = 8
 };
+
+constexpr auto isDragging (const DragScrollMode& drag_scroll) noexcept -> bool
+{
+  return drag_scroll != DragScrollMode::None;
+}
 
 // Scroll bar visibility mode
 enum class ScrollBarMode

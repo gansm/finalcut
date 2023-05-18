@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2020 Markus Gans                                      *
+* Copyright 2019-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -26,6 +26,7 @@
 
 #include <algorithm>
 #include <array>
+#include <iterator>
 #include <limits>
 #include <numeric>
 #include <utility>
@@ -243,10 +244,10 @@ auto rgb2ColorIndex (uInt8 r, uInt8 g, uInt8 b) -> FColor
 {
   // Converts a 24-bit RGB color to a 256-color compatible approximation
 
-  const uInt16 ri = (((r * 5) + 127) / 255) * 36;
-  const uInt16 gi = (((g * 5) + 127) / 255) * 6;
-  const uInt16 bi = (((b * 5) + 127) / 255);
-  return FColor(16 + ri + gi + bi);
+  const uInt16 ri = ((r * 5) + 127) / 255;
+  const uInt16 gi = ((g * 5) + 127) / 255;
+  const uInt16 bi = ((b * 5) + 127) / 255;
+  return FColor(16 + ri * 36 + gi * 6 + bi);
 }
 
 //----------------------------------------------------------------------
@@ -268,7 +269,7 @@ inline auto hasAmbiguousWidth (wchar_t wchar) -> bool
 }
 
 //----------------------------------------------------------------------
-auto hasFullWidthSupports() -> bool
+inline auto hasFullWidthSupportsImpl() -> bool
 {
   // Checks if the terminal has full-width character support
 
@@ -295,6 +296,12 @@ auto hasFullWidthSupports() -> bool
   }
 
   return has_fullwidth_support == FullWidthSupport::Yes;
+}
+
+//----------------------------------------------------------------------
+auto hasFullWidthSupports() -> bool
+{
+  return hasFullWidthSupportsImpl();
 }
 
 //----------------------------------------------------------------------
@@ -457,8 +464,8 @@ auto getHalfWidth (const FString& str) -> FString
 
 //----------------------------------------------------------------------
 auto getColumnSubString ( const FString& str
-                           , std::size_t col_pos
-                           , std::size_t col_len ) -> FString
+                        , std::size_t col_pos
+                        , std::size_t col_len ) -> FString
 {
   FString s{str};
   std::size_t col_first{1};
@@ -595,12 +602,12 @@ auto getColumnWidth (const wchar_t wchar) -> std::size_t
   column_width = wcwidth(wchar);
   static const auto& fterm_data = FTermData::getInstance();
 
-  if ( (wchar >= UniChar::NF_rev_left_arrow2 && wchar <= UniChar::NF_check_mark)
-    || (wchar != L'\0' && fterm_data.getTerminalEncoding() != Encoding::UTF8) )
+  if ( (fterm_data.getTerminalEncoding() != Encoding::UTF8 && wchar != L'\0' )
+    || (wchar >= UniChar::NF_rev_left_arrow2 && wchar <= UniChar::NF_check_mark) )
   {
     column_width = 1;
   }
-  else if ( ! hasFullWidthSupports() )
+  else if ( ! hasFullWidthSupportsImpl() )
   {
     column_width = std::min(column_width, 1);
   }
@@ -656,25 +663,26 @@ auto getCharLength (const FString& string, std::size_t pos) -> int
   // Gets the number of characters of the combined character
   // at string position pos
 
-  const auto& len = string.getLength();
-  std::size_t n = pos;
-  const auto& ch = string[n];
-  std::size_t char_width = getColumnWidth(ch);
-
-  if ( isWhitespace(ch) )
-    return 1;
-
-  if ( char_width == 0 || n >= len )
+  if ( pos >= string.getLength() )
     return -1;
 
-  do
-  {
-    n++;
-    char_width = getColumnWidth(string[n]);
-  }
-  while ( n < len && char_width == 0 && ! isWhitespace(string[n]) );
+  const auto begin = std::next(string.cbegin(), pos);
 
-  return static_cast<int>(n - pos);
+  if ( isWhitespace(*begin) )
+    return 1;
+
+  if ( getColumnWidth(*begin) == 0 )
+    return -1;
+
+  auto iter = std::next(begin);
+  const auto end = string.cend();
+
+  while ( iter < end && getColumnWidth(*iter) == 0 && ! isWhitespace(*iter) )
+  {
+    ++iter;
+  }
+
+  return static_cast<int>(iter - begin);
 }
 
 //----------------------------------------------------------------------
@@ -688,7 +696,7 @@ auto getPrevCharLength (const FString& string, std::size_t pos) -> int
   const auto& ch = string[n];
   std::size_t char_width = getColumnWidth(ch);
 
-  if ( (char_width == 0 || n == 0 || n >= len) && ! isWhitespace(ch) )
+  if ( n == 0 || n >= len || (char_width == 0 && ! isWhitespace(ch)) )
     return -1;
 
   do
@@ -760,10 +768,7 @@ auto readCursorPos() -> FPoint
 {
   int x{-1};
   int y{-1};
-  const int stdin_no{FTermios::getStdIn()};
   const int stdout_no{FTermios::getStdOut()};
-  fd_set ifds{};
-  struct timeval tv{};
   const std::string DECXCPR{ESC "[6n"};
 
   // Report Cursor Position (DECXCPR)
@@ -771,28 +776,9 @@ auto readCursorPos() -> FPoint
     return {x, y};
 
   std::fflush(stdout);
-  FD_ZERO(&ifds);
-  FD_SET(stdin_no, &ifds);
-  tv.tv_sec  = 0;
-  tv.tv_usec = 100'000;  // 100 ms
   std::array<char, 20> temp{};
-  std::size_t pos{0};
-
-  // Read the answer
-  if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) != 1 )
-    return {x, y};
-
-  do
-  {
-    std::size_t bytes_free = temp.size() - pos - 1;
-    const ssize_t bytes = read(stdin_no, &temp[pos], bytes_free);
-
-    if ( bytes <= 0 )
-      break;
-
-    pos += std::size_t(bytes);
-  }
-  while ( pos < temp.size() && ! std::strchr(temp.data(), 'R') );
+  auto isWithout_R = [] (const auto& t) { return ! std::strchr(t.data(), 'R'); };
+  auto pos = captureTerminalInput(temp, 100'000, isWithout_R);
 
   if ( pos > 4 )
   {

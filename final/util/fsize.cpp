@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2022 Markus Gans                                      *
+* Copyright 2014-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -52,63 +52,29 @@ auto FSize::operator -= (const FSize& s) -> FSize&
 }
 
 //----------------------------------------------------------------------
-void FSize::setWidth (std::size_t w) noexcept
-{
-  width = w;
-}
-
-//----------------------------------------------------------------------
-void FSize::setHeight (std::size_t h) noexcept
-{
-  height = h;
-}
-
-//----------------------------------------------------------------------
-void FSize::setSize (const FSize& s)
-{
-  width = s.width;
-  height = s.height;
-}
-
-//----------------------------------------------------------------------
-void FSize::setSize (std::size_t w, std::size_t h) noexcept
-{
-  width = w;
-  height = h;
-}
-
-//----------------------------------------------------------------------
-auto FSize::isEmpty() const noexcept -> bool
-{
-  return width == 0 && height == 0;
-}
-
-//----------------------------------------------------------------------
 void FSize::scaleBy (int dx, int dy) noexcept
 {
   if ( dx < 0 )
   {
-    if ( std::size_t(-dx) < width )
-      width -= std::size_t(-dx);
-    else
-      width = std::size_t(-dx) - width;
+    width = ( std::size_t(-dx) < width )
+            ? width - std::size_t(-dx)
+            : std::size_t(-dx) - width;
   }
   else
     width += std::size_t(dx);
 
   if ( dy < 0 )
   {
-    if ( std::size_t(-dy) < height )
-      height -= std::size_t(-dy);
-    else
-      height = std::size_t(-dy) - height;
+    height = ( std::size_t(-dy) < height )
+             ? height - std::size_t(-dy)
+             : std::size_t(-dy) - height;
   }
   else
     height += std::size_t(dy);
 }
 
 //----------------------------------------------------------------------
-void FSize::scaleBy (const FPoint& d)
+void FSize::scaleBy (const FPoint& d) noexcept
 {
   scaleBy (d.getX(), d.getY());
 }

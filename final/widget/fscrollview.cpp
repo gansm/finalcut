@@ -4,7 +4,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2022 Markus Gans                                      *
+* Copyright 2017-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -48,9 +48,7 @@ FScrollView::FScrollView (FWidget* parent)
 //----------------------------------------------------------------------
 FScrollView::~FScrollView()  // destructor
 {
-  removeArea (viewport);
-  viewport = nullptr;
-  setChildPrintArea (viewport);
+  setChildPrintArea (viewport.get());
 }
 
 
@@ -67,13 +65,14 @@ void FScrollView::setScrollWidth (std::size_t width)
   if ( viewport )
   {
     scroll_geometry.setWidth (width);
-    resizeArea (scroll_geometry, viewport);
-
+    resizeArea (scroll_geometry, viewport.get());
+    setColor();
+    clearArea();
     addPreprocessingHandler
     (
       F_PREPROC_HANDLER (this, &FScrollView::copy2area)
     );
-    setChildPrintArea (viewport);
+    setChildPrintArea (viewport.get());
   }
 
   hbar->setMaximum (int(width - getViewportWidth()));
@@ -96,12 +95,14 @@ void FScrollView::setScrollHeight (std::size_t height)
   if ( viewport )
   {
     scroll_geometry.setHeight (height);
-    resizeArea (scroll_geometry, viewport);
+    resizeArea (scroll_geometry, viewport.get());
+    setColor();
+    clearArea();
     addPreprocessingHandler
     (
       F_PREPROC_HANDLER (this, &FScrollView::copy2area)
     );
-    setChildPrintArea (viewport);
+    setChildPrintArea (viewport.get());
   }
 
   vbar->setMaximum (int(height - getViewportHeight()));
@@ -115,14 +116,8 @@ void FScrollView::setScrollHeight (std::size_t height)
 //----------------------------------------------------------------------
 void FScrollView::setScrollSize (const FSize& size)
 {
-  std::size_t width = size.getWidth();
-  std::size_t height = size.getHeight();
-
-  if ( width < getViewportWidth() )
-    width = getViewportWidth();
-
-  if ( height < getViewportHeight() )
-    height = getViewportHeight();
+  std::size_t width = std::max(size.getWidth(), getViewportWidth());
+  std::size_t height = std::max(size.getHeight(), getViewportHeight());
 
   if ( getScrollWidth() == width && getScrollHeight() == height )
     return;
@@ -130,12 +125,14 @@ void FScrollView::setScrollSize (const FSize& size)
   if ( viewport )
   {
     scroll_geometry.setSize (width, height);
-    resizeArea (scroll_geometry, viewport);
+    resizeArea (scroll_geometry, viewport.get());
+    setColor();
+    clearArea();
     addPreprocessingHandler
     (
       F_PREPROC_HANDLER (this, &FScrollView::copy2area)
     );
-    setChildPrintArea (viewport);
+    setChildPrintArea (viewport.get());
   }
 
   const auto xoffset_end = int(getScrollWidth() - getViewportWidth());
@@ -165,15 +162,15 @@ void FScrollView::setX (int x, bool adjust)
 {
   FWidget::setX (x, adjust);
 
-  if ( ! adjust )
-  {
-    scroll_geometry.setX (getTermX() + getLeftPadding() - 1);
+  if ( adjust )
+    return;
 
-    if ( viewport )
-    {
-      viewport->offset_left = scroll_geometry.getX();
-      viewport->offset_top = scroll_geometry.getY();
-    }
+  scroll_geometry.setX (getTermX() + getLeftPadding() - 1);
+
+  if ( viewport )
+  {
+    viewport->offset_left = scroll_geometry.getX();
+    viewport->offset_top = scroll_geometry.getY();
   }
 }
 
@@ -182,15 +179,15 @@ void FScrollView::setY (int y, bool adjust)
 {
   FWidget::setY (y, adjust);
 
-  if ( ! adjust )
-  {
-    scroll_geometry.setY (getTermY() + getTopPadding() - 1);
+  if ( adjust )
+    return;
 
-    if ( viewport )
-    {
-      viewport->offset_left = scroll_geometry.getX();
-      viewport->offset_top = scroll_geometry.getY();
-    }
+  scroll_geometry.setY (getTermY() + getTopPadding() - 1);
+
+  if ( viewport )
+  {
+    viewport->offset_left = scroll_geometry.getX();
+    viewport->offset_top = scroll_geometry.getY();
   }
 }
 
@@ -201,11 +198,11 @@ void FScrollView::setPos (const FPoint& p, bool adjust)
   scroll_geometry.setPos ( getTermX() + getLeftPadding() - 1
                          , getTermY() + getTopPadding() - 1 );
 
-  if ( ! adjust && viewport )
-  {
-    viewport->offset_left = scroll_geometry.getX();
-    viewport->offset_top = scroll_geometry.getY();
-  }
+  if ( adjust || ! viewport )
+    return;
+
+  viewport->offset_left = scroll_geometry.getX();
+  viewport->offset_top = scroll_geometry.getY();
 }
 
 //----------------------------------------------------------------------
@@ -220,6 +217,14 @@ void FScrollView::setWidth (std::size_t w, bool adjust)
 
   if ( getScrollWidth() < getViewportWidth() )
     setScrollWidth (getViewportWidth());
+
+  if ( ! viewport )
+    return;
+
+  // Insufficient space scrolling
+  viewport_geometry.x1_ref() = \
+      std::min ( int(getScrollWidth() - getViewportWidth())
+               , viewport_geometry.getX1() );
 }
 
 //----------------------------------------------------------------------
@@ -234,6 +239,14 @@ void FScrollView::setHeight (std::size_t h, bool adjust)
 
   if ( getScrollHeight() < getViewportHeight() )
     setScrollHeight (getViewportHeight());
+
+  if ( ! viewport )
+    return;
+
+  // Insufficient space scrolling
+  viewport_geometry.y1_ref() = \
+      std::min ( int(getScrollHeight() - getViewportHeight())
+               , viewport_geometry.getY1() );
 }
 
 //----------------------------------------------------------------------
@@ -305,14 +318,7 @@ void FScrollView::resetColors()
 //----------------------------------------------------------------------
 auto FScrollView::setBorder (bool enable) -> bool
 {
-  return (setFlags().no_border = ! enable);
-}
-
-//----------------------------------------------------------------------
-auto FScrollView::setFocus (bool) -> bool
-{
-  // This container widget cannot have its own focus
-  return false;
+  return (setFlags().feature.no_border = ! enable);
 }
 
 //----------------------------------------------------------------------
@@ -337,7 +343,7 @@ void FScrollView::setVerticalScrollBarMode (ScrollBarMode mode)
 void FScrollView::clearArea (wchar_t fillchar)
 {
   if ( viewport )
-    clearArea (viewport, fillchar);
+    clearArea (viewport.get(), fillchar);
 }
 
 //----------------------------------------------------------------------
@@ -369,21 +375,10 @@ void FScrollView::scrollTo (int x, int y)
   if ( xoffset == x && yoffset == y )
     return;
 
-  xoffset = x;
-  yoffset = y;
-
-  if ( yoffset < 0 )
-    yoffset = 0;
-
-  if ( yoffset > yoffset_end )
-    yoffset = yoffset_end;
-
-  if ( xoffset < 0 )
-    xoffset = 0;
-
-  if ( xoffset > xoffset_end )
-    xoffset = xoffset_end;
-
+  xoffset = std::max(x, 0);
+  xoffset = std::min(xoffset, xoffset_end);
+  yoffset = std::max(y, 0);
+  yoffset = std::min(yoffset, yoffset_end);
   const bool changeX( xoffset_before != xoffset );
   const bool changeY( yoffset_before != yoffset );
 
@@ -418,7 +413,6 @@ void FScrollView::scrollTo (int x, int y)
 
   viewport->has_changes = true;
   copy2area();
-  forceTerminalUpdate();
 }
 
 //----------------------------------------------------------------------
@@ -490,11 +484,11 @@ void FScrollView::drawLabel()
 //----------------------------------------------------------------------
 void FScrollView::onKeyPress (FKeyEvent* ev)
 {
-  const auto& entry = key_map[ev->key()];
+  const auto& iter = key_map.find(ev->key());
 
-  if ( entry )
+  if ( iter != key_map.end() )
   {
-    entry();
+    iter->second();
     ev->accept();
   }
 }
@@ -558,23 +552,16 @@ void FScrollView::onFocusIn (FFocusEvent* in_ev)
 {
   // Sets the focus to a child widget if it exists
 
-  if ( hasChildren() )
+  if ( ! hasChildren() )
+    FWidget::onFocusIn(in_ev);
+
+  if ( in_ev->getFocusType() == FocusTypes::NextWidget )
   {
-    auto prev_element = getFocusWidget();
-
-    if ( in_ev->getFocusType() == FocusTypes::NextWidget )
-      focusFirstChild();
-    else if ( in_ev->getFocusType() == FocusTypes::PreviousWidget )
-      focusLastChild();
-
-    if ( prev_element )
-      prev_element->redraw();
-
-    if ( getFocusWidget() )
-      getFocusWidget()->redraw();
-
-    FFocusEvent cfi (Event::ChildFocusIn);
-    onChildFocusIn(&cfi);
+    focusFirstChild() ? in_ev->accept() : in_ev->ignore();
+  }
+  else if ( in_ev->getFocusType() == FocusTypes::PreviousWidget )
+  {
+    focusLastChild() ? in_ev->accept() : in_ev->ignore();
   }
 }
 
@@ -588,29 +575,20 @@ void FScrollView::onChildFocusIn (FFocusEvent*)
   if ( ! focus )
     return;
 
-  const FRect widget_geometry = focus->getGeometryWithShadow();
+  const auto& widget_geometry = focus->getGeometryWithShadow();
   FRect vp_geometry = viewport_geometry;
   vp_geometry.move(1, 1);
 
   if ( ! vp_geometry.contains(widget_geometry) )
   {
-    int x{};
-    int y{};
     const int vx = vp_geometry.getX();
     const int vy = vp_geometry.getY();
     const int wx = widget_geometry.getX();
     const int wy = widget_geometry.getY();
-
-    if ( wx > vx )
-      x = widget_geometry.getX2() - int(vp_geometry.getWidth()) + 1;
-    else
-      x = wx;
-
-    if ( wy > vy )
-      y = widget_geometry.getY2() - int(vp_geometry.getHeight()) + 1;
-    else
-      y = wy;
-
+    const auto width = int(vp_geometry.getWidth());
+    const auto height = int(vp_geometry.getHeight());
+    const int x = ( wx > vx ) ? widget_geometry.getX2() - width + 1 : wx;
+    const int y = ( wy > vy ) ? widget_geometry.getY2() - height + 1 : wy;
     scrollTo (x, y);
   }
 }
@@ -626,21 +604,38 @@ void FScrollView::onChildFocusOut (FFocusEvent* out_ev)
   {
     const auto& last_widget = getLastFocusableWidget(getChildren());
 
-    if ( focus == last_widget )
-    {
-      out_ev->accept();
-      focusNextChild();
-    }
+    if ( focus != last_widget )
+      return;
+
+    out_ev->accept();
+    focusNextChild();
   }
   else if ( out_ev->getFocusType() == FocusTypes::PreviousWidget )
   {
     const auto& first_widget = getFirstFocusableWidget(getChildren());
 
-    if ( focus == first_widget )
-    {
-      out_ev->accept();
-      focusPrevChild();
-    }
+    if ( focus != first_widget )
+      return;
+
+    out_ev->accept();
+    focusPrevChild();
+  }
+}
+
+//----------------------------------------------------------------------
+void FScrollView::onFailAtChildFocus (FFocusEvent* fail_ev)
+{
+  // Change the focus away from FScrollView to another widget
+
+  if ( fail_ev->getFocusType() == FocusTypes::NextWidget )
+  {
+    fail_ev->accept();
+    focusNextChild();
+  }
+  else if ( fail_ev->getFocusType() == FocusTypes::PreviousWidget )
+  {
+    fail_ev->accept();
+    focusPrevChild();
   }
 }
 
@@ -655,11 +650,11 @@ auto FScrollView::getPrintArea() -> FVTerm::FTermArea*
   {
     setChildPrintArea (nullptr);
     auto area = FWidget::getPrintArea();
-    setChildPrintArea (viewport);
+    setChildPrintArea (viewport.get());
     return area;
   }
 
-  return viewport;
+  return viewport.get();
 }
 
 //----------------------------------------------------------------------
@@ -745,19 +740,14 @@ void FScrollView::copy2area()
 
   for (auto y{0}; y < y_end; y++)  // line loop
   {
-    const int v_line_len = viewport->width;
-    const int a_line_len = printarea->width + printarea->right_shadow;
     // viewport character
-    const auto& vc = viewport->data[(dy + y) * v_line_len + dx];
+    const auto& vc = viewport->getFChar(dx, dy + y);
     // area character
-    auto& ac = printarea->data[(ay + y) * a_line_len + ax];
+    auto& ac = printarea->getFChar(ax, ay + y);
     std::memcpy (&ac, &vc, sizeof(FChar) * unsigned(x_end));
-
-    if ( int(printarea->changes[ay + y].xmin) > ax )
-      printarea->changes[ay + y].xmin = uInt(ax);
-
-    if ( int(printarea->changes[ay + y].xmax) < ax + x_end - 1 )
-      printarea->changes[ay + y].xmax = uInt(ax + x_end - 1);
+    auto& line_changes = printarea->changes[std::size_t(ay + y)];
+    line_changes.xmin = std::min(line_changes.xmin, uInt(ax));
+    line_changes.xmax = std::max(line_changes.xmax, uInt(ax + x_end - 1));
   }
 
   setViewportCursor();
@@ -800,24 +790,27 @@ void FScrollView::init()
   FScrollView::resetColors();
   FScrollView::setGeometry (FPoint{1, 1}, FSize{4, 4});
   setMinimumSize (FSize{4, 4});
-  std::size_t w = getViewportWidth();
-  std::size_t h = getViewportHeight();
-
-  if ( w < 1 )
-    w = 1;
-
-  if ( h < 1 )
-    h = 1;
-
-  scroll_geometry.setRect (0, 0, w, h);
-  createArea (scroll_geometry, viewport);
+  std::size_t width = std::max(getViewportWidth(), std::size_t(1));
+  std::size_t height = std::max(getViewportHeight(), std::size_t(1));
+  createViewport({width, height});
   addPreprocessingHandler
   (
     F_PREPROC_HANDLER (this, &FScrollView::copy2area)
   );
 
   if ( viewport )
-    setChildPrintArea (viewport);
+    setChildPrintArea (viewport.get());
+}
+
+//----------------------------------------------------------------------
+inline void FScrollView::createViewport (const FSize& size) noexcept
+{
+  // Initialization of the scrollable viewport
+
+  scroll_geometry.setSize(size);
+  viewport = createArea(scroll_geometry);
+  setColor();
+  clearArea();
 }
 
 //----------------------------------------------------------------------
@@ -847,16 +840,16 @@ void FScrollView::drawText ( const FString& label_text
 
   for (std::size_t z{0}; z < length; z++)
   {
-    if ( (z == hotkeypos) && getFlags().active )
+    if ( (z == hotkeypos) && getFlags().feature.active )
     {
       setColor (wc->label_hotkey_fg, wc->label_hotkey_bg);
 
-      if ( ! getFlags().no_underline )
+      if ( ! getFlags().feature.no_underline )
         setUnderline();
 
       print (label_text[z]);
 
-      if ( ! getFlags().no_underline )
+      if ( ! getFlags().feature.no_underline )
         unsetUnderline();
 
       setColor (wc->label_emphasis_fg, wc->label_bg);
@@ -886,10 +879,7 @@ void FScrollView::directFocus()
   if ( focused_widget )
     focused_widget->redraw();
 
-  if ( getStatusBar() )
-  {
-    getStatusBar()->drawMessage();
-  }
+  drawStatusBarMessage();
 }
 
 //----------------------------------------------------------------------
@@ -933,6 +923,17 @@ void FScrollView::changeSize (const FSize& size, bool adjust)
     viewport->offset_left = scroll_geometry.getX();
     viewport->offset_top = scroll_geometry.getY();
   }
+
+  if ( ! viewport )
+    return;
+
+  // Insufficient space scrolling
+  viewport_geometry.x1_ref() = \
+      std::min ( int(getScrollWidth() - getViewportWidth())
+               , viewport_geometry.getX1() );
+  viewport_geometry.y1_ref() = \
+      std::min ( int(getScrollHeight() - getViewportHeight())
+               , viewport_geometry.getY1() );
 }
 
 //----------------------------------------------------------------------
@@ -1061,7 +1062,7 @@ void FScrollView::cb_vbarChange (const FWidget*)
       break;
 
     default:
-      break;
+      throw std::invalid_argument{"Invalid scroll type"};
   }
 
   update_scrollbar = true;
@@ -1112,7 +1113,7 @@ void FScrollView::cb_hbarChange (const FWidget*)
       break;
 
     default:
-      break;
+      throw std::invalid_argument{"Invalid scroll type"};
   }
 
   update_scrollbar = true;

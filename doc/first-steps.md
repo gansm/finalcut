@@ -346,6 +346,9 @@ enum class Event
   FocusOut,          // focus out
   ChildFocusIn,      // child focus in
   ChildFocusOut,     // child focus out
+  FailAtChildFocus,  // No further focusable child widgets
+  TerminalFocusIn,   // terminal focus in
+  TerminalFocusOut,  // terminal focus out
   WindowActive,      // activate window
   WindowInactive,    // deactivate window
   WindowRaised,      // raise window

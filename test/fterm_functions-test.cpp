@@ -38,7 +38,8 @@
 // class FTermFunctionsTest
 //----------------------------------------------------------------------
 
-class FTermFunctionsTest : public CPPUNIT_NS::TestFixture, test::ConEmu
+class FTermFunctionsTest : public CPPUNIT_NS::TestFixture
+                         , test::ConEmu
 {
   public:
     FTermFunctionsTest()
@@ -502,6 +503,9 @@ void FTermFunctionsTest::utf8Test()
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'ö')
                    == std::string({char(0xc3), char(0xb6)}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(wchar_t(finalcut::UniChar::Pi))
+                   == std::string({char(0xcf), char(0x80)}) );
   // Last 2 byte character
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'\U000007ff')
                    == std::string({char(0xdf), char(0xbf)}) );
@@ -583,6 +587,9 @@ void FTermFunctionsTest::utf8Test()
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'')
                    == std::string({char(0xee), char(0x80), char(0x80)}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(wchar_t(finalcut::UniChar::Euro))
+                   == std::string({char(0xe2), char(0x82), char(0xac)}) );
 
   // Private Use Area
   auto newfont_char_e1b3 = finalcut::UniChar::NF_border_line_vertical;
@@ -2651,6 +2658,31 @@ void FTermFunctionsTest::combiningCharacterTest()
   CPPUNIT_ASSERT ( finalcut::searchRightCharBegin(combining, 2) == 3 );
   CPPUNIT_ASSERT ( finalcut::searchRightCharBegin(combining, 3) == NOT_FOUND );
   CPPUNIT_ASSERT ( finalcut::searchRightCharBegin(combining, 4) == NOT_FOUND );
+
+  // Leading whitespace
+  combining = L" " + combining;
+  CPPUNIT_ASSERT ( finalcut::getCharLength(combining, 0) == 1 );
+  CPPUNIT_ASSERT ( finalcut::getCharLength(combining, 1) == -1 );
+  CPPUNIT_ASSERT ( finalcut::getCharLength(combining, 2) == -1 );
+  CPPUNIT_ASSERT ( finalcut::getCharLength(combining, 3) == 1 );
+  CPPUNIT_ASSERT ( finalcut::getCharLength(combining, 4) == 1 );
+  CPPUNIT_ASSERT ( finalcut::getPrevCharLength(combining, 0) == -1 );
+  CPPUNIT_ASSERT ( finalcut::getPrevCharLength(combining, 1) == -1 );
+  CPPUNIT_ASSERT ( finalcut::getPrevCharLength(combining, 2) == -1 );
+  CPPUNIT_ASSERT ( finalcut::getPrevCharLength(combining, 3) == 3 );
+  CPPUNIT_ASSERT ( finalcut::getPrevCharLength(combining, 4) == 1 );
+  CPPUNIT_ASSERT ( finalcut::searchLeftCharBegin(combining, 0) == NOT_FOUND );
+  CPPUNIT_ASSERT ( finalcut::searchLeftCharBegin(combining, 1) == 0 );
+  CPPUNIT_ASSERT ( finalcut::searchLeftCharBegin(combining, 2) == 0 );
+  CPPUNIT_ASSERT ( finalcut::searchLeftCharBegin(combining, 3) == 0 );
+  CPPUNIT_ASSERT ( finalcut::searchLeftCharBegin(combining, 4) == 3 );
+  CPPUNIT_ASSERT ( finalcut::searchLeftCharBegin(combining, 5) == 4 );
+  CPPUNIT_ASSERT ( finalcut::searchRightCharBegin(combining, 0) == 3 );
+  CPPUNIT_ASSERT ( finalcut::searchRightCharBegin(combining, 1) == 3 );
+  CPPUNIT_ASSERT ( finalcut::searchRightCharBegin(combining, 2) == 3 );
+  CPPUNIT_ASSERT ( finalcut::searchRightCharBegin(combining, 3) == 4 );
+  CPPUNIT_ASSERT ( finalcut::searchRightCharBegin(combining, 4) == NOT_FOUND );
+  CPPUNIT_ASSERT ( finalcut::searchRightCharBegin(combining, 5) == NOT_FOUND );
 
   // Characters with separate and with combined diacritical marks
   combining = L"u\U00000300=\U000000f9";  // u ` = ù

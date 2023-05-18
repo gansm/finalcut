@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2022 Markus Gans                                      *
+* Copyright 2018-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -80,7 +80,7 @@ struct FKeyCapMap
   char tname[4];
 };
 
-using test_type = finalcut::FKeyMap::KeyCapMapType;  // std::array<FKeyCapMap, 188>;
+using test_type = finalcut::FKeyMap::KeyCapMapType;  // std::array<FKeyCapMap, 190>;
 
 test_type fkey =
 {{
@@ -274,6 +274,8 @@ test_type fkey =
   { finalcut::FKey::Upper_left      , nullptr    , 0, "K1x"},  // keypad upper left
   { finalcut::FKey::Upper_right     , nullptr    , 0, "K3x"},  // keypad upper right
   { finalcut::FKey::Center          , nullptr    , 0, "K2x"},  // keypad center
+  { finalcut::FKey::Center          , nullptr    , 0, "K2X"},  // Keypad center
+  { finalcut::FKey::Center          , nullptr    , 0, "K2y"},  // Keypad center
   { finalcut::FKey::Lower_left      , nullptr    , 0, "K4x"},  // keypad lower left
   { finalcut::FKey::Lower_right     , nullptr    , 0, "K5x"}   // keypad lower right
 }};
@@ -301,6 +303,7 @@ class FKeyboardTest : public CPPUNIT_NS::TestFixture
     void functionKeyTest();
     void metaKeyTest();
     void sequencesTest();
+    void hashmapTest();
     void mouseTest();
     void utf8Test();
     void unknownKeyTest();
@@ -319,6 +322,7 @@ class FKeyboardTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (functionKeyTest);
     CPPUNIT_TEST (metaKeyTest);
     CPPUNIT_TEST (sequencesTest);
+    CPPUNIT_TEST (hashmapTest);
     CPPUNIT_TEST (mouseTest);
     CPPUNIT_TEST (utf8Test);
     CPPUNIT_TEST (unknownKeyTest);
@@ -1856,6 +1860,20 @@ void FKeyboardTest::metaKeyTest()
   CPPUNIT_ASSERT ( key_pressed == finalcut::FKey::Ctrl_Meta_menu );
   clear();
 
+  // term focus-in
+  input("\033[I");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == finalcut::FKey::Term_Focus_In );
+  clear();
+
+  // term focus-out
+  input("\033[O");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == finalcut::FKey::Term_Focus_Out );
+  clear();
+
   // shift-ctrl-meta-menu
   input("\033[29;8~");
   processInput();
@@ -2932,6 +2950,91 @@ void FKeyboardTest::sequencesTest()
 }
 
 //----------------------------------------------------------------------
+void FKeyboardTest::hashmapTest()
+{
+  using keybuffer = finalcut::CharRingBuffer<12>;
+  finalcut::fkeyhashmap::setKeyCapMap<keybuffer>(std::begin(test::fkey), std::end(test::fkey));
+  keybuffer char_rbuf;
+  char* physical_buffer = &char_rbuf[0];
+  std::memcpy (physical_buffer, "\0\0\0\0\0\0\0\0\0\0\0\0", 12);
+
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getTermcapKey(char_rbuf) == finalcut::FKey::None );
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getKnownKey(char_rbuf) == finalcut::FKey::None );
+  char_rbuf.push('\033');
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getTermcapKey(char_rbuf) == finalcut::FKey::None );
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getKnownKey(char_rbuf) == finalcut::FKey::None );
+  char_rbuf.push('[');
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getTermcapKey(char_rbuf) == finalcut::FKey::None );
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getKnownKey(char_rbuf) == finalcut::FKey::Meta_left_square_bracket );
+  char_rbuf.push('2');
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getTermcapKey(char_rbuf) == finalcut::FKey::None );
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getKnownKey(char_rbuf) == finalcut::FKey::None );
+  char_rbuf.push(';');
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getTermcapKey(char_rbuf) == finalcut::FKey::None );
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getKnownKey(char_rbuf) == finalcut::FKey::None );
+  char_rbuf.push('3');
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getTermcapKey(char_rbuf) == finalcut::FKey::None );
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getKnownKey(char_rbuf) == finalcut::FKey::None );
+  char_rbuf.push('~');
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getTermcapKey(char_rbuf) == finalcut::FKey::None );
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getKnownKey(char_rbuf) == finalcut::FKey::Meta_insert );
+  char_rbuf.pop(char_rbuf.getSize());
+
+  char_rbuf.push('\177');
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getTermcapKey(char_rbuf) == finalcut::FKey::Backspace );
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getKnownKey(char_rbuf) == finalcut::FKey::None );
+  char_rbuf.pop();
+
+  char_rbuf.push('\033');
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getTermcapKey(char_rbuf) == finalcut::FKey::None );
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getKnownKey(char_rbuf) == finalcut::FKey::None );
+  char_rbuf.push('O');
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getTermcapKey(char_rbuf) == finalcut::FKey::None );
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getKnownKey(char_rbuf) == finalcut::FKey::Meta_O );
+  char_rbuf.push('P');
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getTermcapKey(char_rbuf) == finalcut::FKey::F1 );
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getKnownKey(char_rbuf) == finalcut::FKey::None );
+  char_rbuf.pop(char_rbuf.getSize());
+
+  char_rbuf.push('\033');
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getTermcapKey(char_rbuf) == finalcut::FKey::None );
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getKnownKey(char_rbuf) == finalcut::FKey::None );
+  char_rbuf.push('[');
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getTermcapKey(char_rbuf) == finalcut::FKey::None );
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getKnownKey(char_rbuf) == finalcut::FKey::Meta_left_square_bracket );
+  char_rbuf.push('1');
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getTermcapKey(char_rbuf) == finalcut::FKey::None );
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getKnownKey(char_rbuf) == finalcut::FKey::None );
+  char_rbuf.push(';');
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getTermcapKey(char_rbuf) == finalcut::FKey::None );
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getKnownKey(char_rbuf) == finalcut::FKey::None );
+  char_rbuf.push('2');
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getTermcapKey(char_rbuf) == finalcut::FKey::None );
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getKnownKey(char_rbuf) == finalcut::FKey::None );
+  char_rbuf.push('B');
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getTermcapKey(char_rbuf) == finalcut::FKey::Scroll_forward );
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getKnownKey(char_rbuf) == finalcut::FKey::None );
+  char_rbuf[4] = '6';
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getTermcapKey(char_rbuf) == finalcut::FKey::None );
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getKnownKey(char_rbuf) == finalcut::FKey::Shift_Ctrl_down );
+  char_rbuf.pop(char_rbuf.getSize());
+
+  char_rbuf.push('\033');
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getTermcapKey(char_rbuf) == finalcut::FKey::None );
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getKnownKey(char_rbuf) == finalcut::FKey::None );
+  char_rbuf.push('[');
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getTermcapKey(char_rbuf) == finalcut::FKey::None );
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getKnownKey(char_rbuf) == finalcut::FKey::Meta_left_square_bracket );
+  char_rbuf.push('I');
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getTermcapKey(char_rbuf) == finalcut::FKey::None );
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getKnownKey(char_rbuf) == finalcut::FKey::Term_Focus_In );
+  char_rbuf.back() = 'O';
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getTermcapKey(char_rbuf) == finalcut::FKey::None );
+  CPPUNIT_ASSERT ( finalcut::fkeyhashmap::getKnownKey(char_rbuf) == finalcut::FKey::Term_Focus_Out );
+  char_rbuf.pop(char_rbuf.getSize());
+}
+
+//----------------------------------------------------------------------
 void FKeyboardTest::mouseTest()
 {
   // Higher timeout for systems with high load
@@ -3012,7 +3115,8 @@ void FKeyboardTest::utf8Test()
   key_pressed = finalcut::FKey(0xffffffff);
   input("\377");
   processInput();
-  CPPUNIT_ASSERT ( key_pressed == finalcut::FKey(0xffffffff) );
+  static constexpr finalcut::FKey NOT_SET = static_cast<finalcut::FKey>(-2);
+  CPPUNIT_ASSERT ( key_pressed == NOT_SET );
 
   // Without UTF-8 support
   keyboard->disableUTF8();
@@ -3065,7 +3169,7 @@ void FKeyboardTest::init()
 
   // Copy the section with the fixed escape sequences
   auto& fkey_cap_table = finalcut::FKeyMap::getInstance().getKeyCapMap();
-  std::copy ( &fkey_cap_table[150].num, &fkey_cap_table[188].num, &test::fkey[150].num);
+  std::copy ( &fkey_cap_table[150].num, &fkey_cap_table[190].num, &test::fkey[150].num);
 
   // Use test::fkey as new termcap map
   keyboard->setTermcapMap (test::fkey);

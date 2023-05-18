@@ -86,11 +86,7 @@ CheckList::CheckList (finalcut::FWidget* parent)
   populate();
 
   // Add callback method
-  listview.addCallback
-  (
-    "clicked",
-    this, &CheckList::cb_showList
-  );
+  listview.addCallback("clicked", this, &CheckList::cb_showList);
 }
 
 //----------------------------------------------------------------------
@@ -122,19 +118,25 @@ void CheckList::populate()
 //----------------------------------------------------------------------
 void CheckList::initLayout()
 {
-  FDialog::setText (L"Shopping list");
-  const std::size_t nf_offset = ( finalcut::FVTerm::getFOutput()->isNewFont() ) ? 1 : 0;
-  FDialog::setSize (FSize{28 + nf_offset, 13} );
+  finalcut::FDialog::setText (L"Shopping list");
+  const auto is_newfont = finalcut::FVTerm::getFOutput()->isNewFont();
+  const std::size_t nf_offset = is_newfont ? 1 : 0;
   listview.setGeometry ( FPoint{1 + int(nf_offset), 2}
                        , FSize{getWidth() - nf_offset, getHeight() - 1} );
-  FDialog::initLayout();
+  finalcut::FDialog::initLayout();
 }
 
 //----------------------------------------------------------------------
 void CheckList::adjustSize()
 {
+  const auto is_newfont = finalcut::FVTerm::getFOutput()->isNewFont();
+  const std::size_t nf_offset = is_newfont ? 1 : 0;
+  const std::size_t w{28 + nf_offset};
+  const std::size_t h{13};
+  const int x = 1 + int((getDesktopWidth() - getWidth()) / 2);
+  const int y = 5;
+  setGeometry (FPoint{x, y}, FSize{w, h}, false);
   finalcut::FDialog::adjustSize();
-  setPos(FPoint{int(1 + (getDesktopWidth() - getWidth()) / 2), 5});
 }
 
 //----------------------------------------------------------------------

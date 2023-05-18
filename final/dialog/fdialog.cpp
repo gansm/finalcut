@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2022 Markus Gans                                      *
+* Copyright 2012-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -25,10 +25,12 @@
 #include "final/dialog/fdialog.h"
 #include "final/fapplication.h"
 #include "final/fevent.h"
+#include "final/ftypes.h"
 #include "final/fwidgetcolors.h"
 #include "final/input/fkeyboard.h"
 #include "final/menu/fmenubar.h"
 #include "final/menu/fmenuitem.h"
+#include "final/util/flog.h"
 #include "final/widget/fcombobox.h"
 #include "final/widget/fstatusbar.h"
 #include "final/widget/ftooltip.h"
@@ -62,18 +64,17 @@ FDialog::~FDialog()  // destructor
   delete dialog_menu;
   dgl_menuitem = nullptr;
 
+  if ( isModal() )
+    unsetModal();
+
   if ( ! FApplication::isQuit() )
     switchToPrevWindow(this);
 
   auto has_entry = bool( getDialogList() && ! getDialogList()->empty() );
   delDialog(this);
-
-  if ( isModal() )
-    unsetModal();
-
   auto fapp = FApplication::getApplicationObject();
 
-  if ( has_entry && noVisibleDialog() )
+  if ( fapp && has_entry && noVisibleDialog() )
     fapp->emitCallback("last-dialog-closed");
 }
 
@@ -85,7 +86,7 @@ auto FDialog::setDialogWidget (bool enable) -> bool
   if ( isDialogWidget() == enable )
     return true;
 
-  setFlags().dialog_widget = enable;
+  setFlags().type.dialog_widget = enable;
 
   if ( enable )
     setTermOffsetWithPadding();
@@ -101,13 +102,13 @@ auto FDialog::setModal (bool enable) -> bool
   if ( isModal() == enable )
     return true;
 
-  setFlags().modal = enable;
+  setFlags().visibility.modal = enable;
 
   if ( enable )
   {
     setModalDialogCounter()++;
     FKeyboard::getInstance().clearKeyBuffer();
-    setFlags().minimizable = false;
+    setFlags().feature.minimizable = false;
   }
   else
     setModalDialogCounter()--;
@@ -133,7 +134,7 @@ auto FDialog::setBorder (bool enable) -> bool
     setRightPadding(0);
   }
 
-  return ( setFlags().no_border = (! enable) );
+  return ( setFlags().feature.no_border = (! enable) );
 }
 
 //----------------------------------------------------------------------
@@ -220,73 +221,26 @@ void FDialog::setPos (const FPoint& pos, bool)
   if ( isOutsideTerminal(pos) || isZoomed() || getPos() == pos )
   {
     setPos_error = true;
+    new_pos.setPoint (getPos());
     return;
   }
 
-  const int dx = getX() - pos.getX();
-  const int dy = getY() - pos.getY();
-  const int old_x = getTermX();
-  const int old_y = getTermY();
-  const auto& shadow = getShadow();
-  const std::size_t width = getWidth() + shadow.getWidth();  // width + right shadow
-  const std::size_t height = getHeight() + shadow.getHeight();  // height + bottom shadow
-  const FRect old_geometry {getTermGeometryWithShadow()};
+  // Save current position values
+  const auto delta_pos = getPos() - pos;
+  const auto old_geometry = getTermGeometryWithShadow();
 
-  // move to the new position
-  FWindow::setPos(pos, false);
+  // Move to the new position
+  FWindow::setPos (pos, false);
+  new_pos.setPoint (getPos());
+
+  // Copy dialog to virtual terminal
   putArea (getTermPos(), getVWin());
 
-  // restoring the non-covered terminal areas
-  if ( getTermGeometry().overlap(old_geometry) && ! isMinimized() )
-  {
-    FRect restore{};
-    const auto d_width = std::size_t(std::abs(dx));
-    const auto d_height = std::size_t(std::abs(dy));
+  // Restore background outside the dialog
+  recoverBackgroundAfterMove (delta_pos, old_geometry);
 
-    // dx > 0 : move left
-    // dx = 0 : move vertical
-    // dx < 0 : move right
-    // dy > 0 : move up
-    // dy = 0 : move horizontal
-    // dy < 0 : move down
-
-    if ( dx > 0 )
-    {
-      if ( dy > 0 )
-        restore.setRect ( old_x + int(width) - dx, old_y
-                        , d_width, height - d_height );
-      else
-        restore.setRect ( old_x + int(width) - dx, old_y - dy
-                        , d_width, height - d_height );
-    }
-    else
-    {
-      if ( dy > 0 )
-        restore.setRect (old_x, old_y, d_width, height - d_height);
-      else
-        restore.setRect (old_x, old_y - dy, d_width, height - d_height);
-    }
-
-    restoreVTerm (restore);
-
-    if ( dy > 0 )
-      restore.setRect ( old_x, old_y + int(height) - dy, width, d_height);
-    else
-      restore.setRect ( old_x, old_y, width, d_height);
-
-    restoreVTerm (restore);
-  }
-  else
-  {
-    restoreVTerm (old_geometry);
-  }
-
-  restoreOverlaidWindows();
   FWindow::adjustSize();
   setCursorToFocusWidget();
-
-  if ( updateTerminal() )
-    flush();
 }
 
 //----------------------------------------------------------------------
@@ -303,7 +257,6 @@ inline auto FDialog::moveUp (int n) -> bool
     const auto y_max = int(getMaxHeight());
     FWindow::setY(y_max, false);
     putArea (getTermPos(), getVWin());
-    restoreOverlaidWindows();
   }
   else
     move ({0, -n});
@@ -326,7 +279,6 @@ inline auto FDialog::moveLeft (int n) -> bool
     const auto x_max = int(getMaxWidth());
     FWindow::setX(x_max, false);
     putArea (getTermPos(), getVWin());
-    restoreOverlaidWindows();
   }
   else
     move ({-n, 0});
@@ -346,12 +298,14 @@ void FDialog::setSize (const FSize& size, bool adjust)
 {
   setSize_error = false;
 
-  if ( getSize() == size || isZoomed() )
+  if ( getSize() == size || size.isEmpty() || isZoomed() )
   {
     setSize_error = true;
+    new_size.setSize (getSize());
     return;
   }
 
+  setTerminalUpdates (FVTerm::TerminalUpdate::Stop);
   const int x = getTermX();
   const int y = getTermY();
   const int dw = int(getWidth()) - int(size.getWidth());
@@ -360,6 +314,7 @@ void FDialog::setSize (const FSize& size, bool adjust)
   const std::size_t old_width = getWidth() + shadow.getWidth();
   const std::size_t old_height = getHeight() + shadow.getHeight();
   FWindow::setSize (size, false);
+  new_size.setSize (getSize());
 
   // get adjust width and height with shadow
   const std::size_t width = getWidth() + shadow.getWidth();
@@ -372,7 +327,13 @@ void FDialog::setSize (const FSize& size, bool adjust)
   // dh = 0 : scale only width
   // dh < 0 : scale up height
 
-  setTerminalUpdates (FVTerm::TerminalUpdate::Stop);
+  if ( adjust )    // Adjust the size after restoreVTerm(),
+    adjustSize();  // because adjustSize() can also change x and y
+
+  redraw();
+
+  // Copy dialog to virtual terminal
+  putArea (getTermPos(), getVWin());
 
   // restoring the non-covered terminal areas
   if ( dw > 0 )
@@ -381,18 +342,11 @@ void FDialog::setSize (const FSize& size, bool adjust)
   if ( dh > 0 )
     restoreVTerm ({x, y + int(height), old_width, std::size_t(dh)});  // restore bottom
 
-  if ( adjust )    // Adjust the size after restoreVTerm(),
-    adjustSize();  // because adjustSize() can also change x and y
-
-  redraw();
-
-  // handle overlaid windows
-  restoreOverlaidWindows();
-
   // set the cursor to the focus widget
   setCursorToFocusWidget();
 
-  setTerminalUpdates (FVTerm::TerminalUpdate::Start);
+  // Update the terminal
+  setTerminalUpdates (FVTerm::TerminalUpdate::Continue);
 }
 
 //----------------------------------------------------------------------
@@ -452,6 +406,16 @@ auto FDialog::minimizeWindow() -> bool
 }
 
 //----------------------------------------------------------------------
+void FDialog::flushChanges()
+{
+  if ( getSize() != new_size )
+    setSize (new_size);
+
+  if ( getPos() != new_pos )
+    setPos(new_pos);
+}
+
+//----------------------------------------------------------------------
 void FDialog::activateDialog()
 {
   if ( isWindowActive() )
@@ -480,8 +444,7 @@ void FDialog::activateDialog()
       old_focus->redraw();
   }
 
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
+  drawStatusBarMessage();
 }
 
 //----------------------------------------------------------------------
@@ -503,7 +466,7 @@ void FDialog::onKeyPress (FKeyEvent* ev)
   }
 
   // Dialog move and resize functions
-  if ( getMoveSizeWidget() )
+  if ( getMoveResizeWidget() )
     moveSizeKey(ev);
 
   if ( this == getMainWidget() )
@@ -524,53 +487,18 @@ void FDialog::onKeyPress (FKeyEvent* ev)
 //----------------------------------------------------------------------
 void FDialog::onMouseDown (FMouseEvent* ev)
 {
-  const auto width = int(getWidth());
   const auto& ms = initMouseStates(*ev, false);
   deactivateMinimizeButton();
   deactivateZoomButton();
 
   if ( ev->getButton() == MouseButton::Left )
   {
-    // Click on titlebar or window: raise + activate
-    raiseActivateDialog();
-
-    if ( isMouseOverTitlebar(ms) )
-      titlebar_click_pos.setPoint (ev->getTermX(), ev->getTermY());
-    else
-      titlebar_click_pos.setPoint (0, 0);
-
-    // Click on titlebar menu button
-    if ( isMouseOverMenuButton(ms) )
-      openMenu();
-    else
-    {
-      activateZoomButton(ms);
-      activateMinimizeButton(ms);
-    }
-
-    // Click on the lower right resize corner
-    resizeMouseDown(ms);
+    handleLeftMouseDown(ms);
   }
-  else  // ev->getButton() != MouseButton::Left
+  else
   {
-    // Click on titlebar menu button
-    if ( isMouseOverMenuButton(ms) && dialog_menu->isShown() )
-      leaveMenu();  // close menu
-
-    cancelMouseResize();  // Cancel resize
+    handleRightAndMiddleMouseDown(ev->getButton(), ms);
   }
-
-  const auto first = int(getMenuButtonWidth() + 1);
-
-  // Click on titlebar: just activate
-  if ( ev->getButton() == MouseButton::Right
-    && ms.mouse_x >= first && ms.mouse_x <= width && ms.mouse_y == 1 )
-      activateDialog();
-
-  // Click on titlebar: lower + activate
-  if ( ev->getButton() == MouseButton::Middle
-    && ms.mouse_x >= first && ms.mouse_x <= width && ms.mouse_y == 1 )
-      lowerActivateDialog();
 }
 
 //----------------------------------------------------------------------
@@ -630,7 +558,7 @@ void FDialog::onMouseMove (FMouseEvent* ev)
   if ( ! titlebar_click_pos.isOrigin() )
   {
     const FPoint deltaPos{ms.termPos - titlebar_click_pos};
-    move (deltaPos);
+    new_pos.setPoint (new_pos + deltaPos);
     titlebar_click_pos = ms.termPos;
     ev->setPos(ev->getPos() - deltaPos);
   }
@@ -727,8 +655,7 @@ void FDialog::onWindowActive (FEvent*)
       focusFirstChild();
   }
 
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
+  drawStatusBarMessage();
 }
 
 //----------------------------------------------------------------------
@@ -779,6 +706,14 @@ void FDialog::onWindowLowered (FEvent*)
 
 // protected methods of FDialog
 //----------------------------------------------------------------------
+void FDialog::adjustSize()
+{
+  FWindow::adjustSize();
+  new_pos.setPoint (getPos());
+  new_size.setSize (getSize());
+}
+
+//----------------------------------------------------------------------
 void FDialog::done (ResultCode result)
 {
   hide();
@@ -788,7 +723,7 @@ void FDialog::done (ResultCode result)
 //----------------------------------------------------------------------
 void FDialog::draw()
 {
-  if ( ! getMoveSizeWidget() )
+  if ( ! getMoveResizeWidget() )
   {
     delete tooltip;
     tooltip = nullptr;
@@ -805,7 +740,7 @@ void FDialog::draw()
   drawTitleBar();
   setCursorPos({2, int(getHeight()) - 1});
 
-  if ( getFlags().shadow )
+  if ( getFlags().shadow.shadow )
     drawDialogShadow();
 
   if ( FVTerm::getFOutput()->isMonochron() )
@@ -815,12 +750,10 @@ void FDialog::draw()
 //----------------------------------------------------------------------
 void FDialog::drawDialogShadow()
 {
-  if ( FVTerm::getFOutput()->isMonochron() && ! getFlags().trans_shadow )
+  if ( FVTerm::getFOutput()->isMonochron() && ! getFlags().shadow.trans_shadow )
     return;
 
-  if ( isMinimized() )
-    clearShadow(this);
-  else
+  if ( ! isMinimized() )
     drawShadow(this);
 }
 
@@ -1023,12 +956,53 @@ inline void FDialog::mapKeyFunctions()
 }
 
 //----------------------------------------------------------------------
+inline void FDialog::recoverBackgroundAfterMove ( const FPoint& delta_pos
+                                                , const FRect& old_geometry )
+{
+  // restoring the non-covered terminal areas
+  if ( getTermGeometry().overlap(old_geometry) && ! isMinimized() )
+  {
+    const auto& shadow = getShadow();
+    const auto width = getWidth() + shadow.getWidth();  // width + right shadow
+    const auto height = getHeight() + shadow.getHeight();  // height + bottom shadow
+    const int dx = delta_pos.getX();
+    const int dy = delta_pos.getY();
+    const int old_x = old_geometry.getX();
+    const int old_y = old_geometry.getY();
+    const auto delta_width = std::size_t(std::abs(dx));
+    const auto delta_height = std::size_t(std::abs(dy));
+
+    // dx > 0 : move left
+    // dx = 0 : move vertical
+    // dx < 0 : move right
+    // dy > 0 : move up
+    // dy = 0 : move horizontal
+    // dy < 0 : move down
+    int x1 = ( dx > 0 ) ? old_x + int(width) - dx : old_x;
+    int y1 = ( dy > 0 ) ? old_y : old_y - dy;
+    int x2 = old_x;
+    int y2 = ( dy > 0 ) ? old_y + int(height) - dy : old_y;
+    FRect vertical{x1, y1, delta_width, height - delta_height};
+    FRect horizontal{x2, y2, width, delta_height};
+    // Restore the terminal in the two rectangles
+    restoreVTerm (vertical);
+    restoreVTerm (horizontal);
+  }
+  else
+  {
+    // If the terminal does not overlap or the dialog is minimized,
+    // restore the entire old geometry
+    restoreVTerm (old_geometry);
+  }
+}
+
+//----------------------------------------------------------------------
 void FDialog::drawBorder()
 {
   if ( ! hasBorder() )
     return;
 
-  if ( (getMoveSizeWidget() == this || ! resize_click_pos.isOrigin() )
+  if ( (getMoveResizeWidget() == this || ! resize_click_pos.isOrigin() )
     && ! isZoomed() )
   {
     const auto& wc = getColorTheme();
@@ -1037,29 +1011,13 @@ void FDialog::drawBorder()
   else
     setColor();
 
-  if ( FVTerm::getFOutput()->isNewFont() )  // Draw a newfont U-shaped frame
-  {
-    const FRect r{{1, 1}, getSize()};
+  FRect box{{1, 2}, getSize()};
+  box.scaleBy(0, -1);
 
-    for (auto y = r.getY1() + 1; y < r.getY2(); y++)
-    {
-      print() << FPoint{r.getX1(), y}
-              << UniChar::NF_border_line_left        // border left ⎸
-              << FPoint{r.getX2(), y}
-              << UniChar::NF_rev_border_line_right;  // border right⎹
-    }
-
-    print() << r.getLowerLeftPos()
-            << UniChar::NF_border_corner_lower_left        // ⎣
-            << FString{r.getWidth() - 2, UniChar::NF_border_line_bottom}  // _
-            << UniChar::NF_rev_border_corner_lower_right;  // ⎦
-  }
+  if ( FVTerm::getFOutput()->isNewFont() )
+    finalcut::drawNewFontUShapedBox(this, box);  // Draw a newfont U-shaped frame
   else
-  {
-    FRect box{{1, 2}, getSize()};
-    box.scaleBy(0, -1);
     finalcut::drawBorder(this, box);
-  }
 }
 
 //----------------------------------------------------------------------
@@ -1312,28 +1270,6 @@ void FDialog::clearStatusBar() const
 }
 
 //----------------------------------------------------------------------
-void FDialog::restoreOverlaidWindows()
-{
-  // Restoring overlaid windows
-
-  if ( ! getWindowList() || getWindowList()->empty() )
-    return;
-
-  bool overlaid{false};
-
-  for (auto&& window : *getWindowList())
-  {
-    const auto win = static_cast<FWidget*>(window);
-
-    if ( overlaid )
-      putArea (win->getTermPos(), win->getVWin());
-
-    if ( getVWin() == win->getVWin() )
-      overlaid = true;
-  }
-}
-
-//----------------------------------------------------------------------
 void FDialog::setCursorToFocusWidget()
 {
   // Set the cursor to the focus widget
@@ -1362,9 +1298,7 @@ void FDialog::leaveMenu()
     getWindowFocusWidget()->setFocus();
 
   redraw();
-
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
+  drawStatusBarMessage();
 }
 
 //----------------------------------------------------------------------
@@ -1405,9 +1339,7 @@ void FDialog::selectFirstMenuItem()
     first_item->setFocus();
 
   dialog_menu->redraw();
-
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
+  drawStatusBarMessage();
 }
 
 //----------------------------------------------------------------------
@@ -1424,7 +1356,7 @@ void FDialog::setMinimizeItem()
     minimize_item->setStatusbarMessage ("Minimizes the window");
   }
 
-  if ( getFlags().shadow )
+  if ( getFlags().shadow.shadow )
     drawDialogShadow();
 }
 
@@ -1629,12 +1561,62 @@ inline void FDialog::passEventToSubMenu ( const MouseStates& ms
 }
 
 //----------------------------------------------------------------------
+inline void FDialog::handleLeftMouseDown (const MouseStates& ms)
+{
+  // Click on titlebar or window: raise + activate
+  raiseActivateDialog();
+
+  if ( isMouseOverTitlebar(ms) )
+  {
+    titlebar_click_pos.setPoint (ms.termPos);
+    new_pos.setPoint (getPos());
+  }
+  else
+    titlebar_click_pos.setPoint (0, 0);
+
+  // Click on titlebar menu button
+  if ( isMouseOverMenuButton(ms) )
+    openMenu();
+  else
+  {
+    activateZoomButton(ms);
+    activateMinimizeButton(ms);
+  }
+
+  // Click on the lower right resize corner
+  resizeMouseDown(ms);
+}
+
+//----------------------------------------------------------------------
+inline void FDialog::handleRightAndMiddleMouseDown ( const MouseButton& button
+                                                   , const MouseStates& ms )
+{
+  // Click on titlebar menu button
+  if ( isMouseOverMenuButton(ms) && dialog_menu->isShown() )
+    leaveMenu();  // close menu
+
+  cancelMouseResize();  // Cancel resize
+  const auto width = int(getWidth());
+  const auto first = int(getMenuButtonWidth() + 1);
+
+  // Click on titlebar: just activate
+  if ( button == MouseButton::Right
+    && ms.mouse_x >= first && ms.mouse_x <= width && ms.mouse_y == 1 )
+      activateDialog();
+
+  // Click on titlebar: lower + activate
+  if ( button == MouseButton::Middle
+    && ms.mouse_x >= first && ms.mouse_x <= width && ms.mouse_y == 1 )
+      lowerActivateDialog();
+}
+
+//----------------------------------------------------------------------
 inline void FDialog::moveSizeKey (FKeyEvent* ev)
 {
-  const auto& entry = key_map[ev->key()];
+  const auto& iter = key_map.find(ev->key());
 
-  if ( entry )
-    entry();
+  if ( iter != key_map.end() )
+    iter->second();
 
   // Accept for all, so that parent widgets will not receive keystrokes
   ev->accept();
@@ -1732,7 +1714,7 @@ void FDialog::resizeMouseDown (const MouseStates& ms)
       setSize (size, true);
     }
     else
-      drawBorder();
+      redraw();  // with border color change
   }
   else
     resize_click_pos.setPoint (0, 0);
@@ -1743,51 +1725,52 @@ void FDialog::resizeMouseUpMove (const MouseStates& ms, bool mouse_up)
 {
   // Resize dialog on mouse button up or on mouse movements
 
-  if ( isResizeable() && ! resize_click_pos.isOrigin() )
+  if ( ! isResizeable() || resize_click_pos.isOrigin() )
+    return;
+
+  const auto& r = getRootWidget();
+  resize_click_pos = ms.termPos;
+  const int x2 = resize_click_pos.getX();
+  const int y2 = resize_click_pos.getY();
+  int x2_offset{0};
+  int y2_offset{0};
+
+  if ( r )
   {
-    const auto& r = getRootWidget();
+    x2_offset = r->getLeftPadding();
+    y2_offset = r->getTopPadding();
+  }
+
+  if ( ms.termPos != getTermGeometry().getLowerRightPos() )
+  {
+    int w{};
+    int h{};
+    const FPoint deltaPos{ms.termPos - resize_click_pos};
+
+    if ( x2 - x2_offset <= int(getMaxWidth()) )
+      w = resize_click_pos.getX() + deltaPos.getX() - getTermX() + 1;
+    else
+      w = int(getMaxWidth()) - getTermX() + x2_offset + 1;
+
+    if ( y2 - y2_offset <= int(getMaxHeight()) )
+      h = resize_click_pos.getY() + deltaPos.getY() - getTermY() + 1;
+    else
+      h = int(getMaxHeight()) - getTermY() + y2_offset + 1;
+
+    const FSize size ( ( w >= 0) ? std::size_t(w) : 0
+                     , ( h >= 0) ? std::size_t(h) : 0 );
+    new_size.setSize (size);
     resize_click_pos = ms.termPos;
-    const int x2 = resize_click_pos.getX();
-    const int y2 = resize_click_pos.getY();
-    int x2_offset{0};
-    int y2_offset{0};
+  }
 
-    if ( r )
-    {
-      x2_offset = r->getLeftPadding();
-      y2_offset = r->getTopPadding();
-    }
+  if ( mouse_up )
+  {
+    // Reset the border color
+    resize_click_pos.setPoint (0, 0);
 
-    if ( ms.termPos != getTermGeometry().getLowerRightPos() )
-    {
-      int w{};
-      int h{};
-      const FPoint deltaPos{ms.termPos - resize_click_pos};
-
-      if ( x2 - x2_offset <= int(getMaxWidth()) )
-        w = resize_click_pos.getX() + deltaPos.getX() - getTermX() + 1;
-      else
-        w = int(getMaxWidth()) - getTermX() + x2_offset + 1;
-
-      if ( y2 - y2_offset <= int(getMaxHeight()) )
-        h = resize_click_pos.getY() + deltaPos.getY() - getTermY() + 1;
-      else
-        h = int(getMaxHeight()) - getTermY() + y2_offset + 1;
-
-      const FSize size ( ( w >= 0) ? std::size_t(w) : 0
-                       , ( h >= 0) ? std::size_t(h) : 0 );
-      setSize (size);
-    }
-
-    if ( mouse_up )
-    {
-      // Reset the border color
-      resize_click_pos.setPoint (0, 0);
-
-      // redraw() is required to draw the standard (black) border
-      // and client objects with ignorePadding() option.
-      redraw();
-    }
+    // redraw() is required to draw the standard (black) border
+    // and client objects with ignorePadding() option.
+    redraw();
   }
 }
 
@@ -1837,7 +1820,9 @@ void FDialog::addDialog (FWidget* obj)
   if ( getDialogList()->empty() )
   {
     auto fapp = FApplication::getApplicationObject();
-    fapp->emitCallback("first-dialog-opened");
+
+    if ( fapp )
+      fapp->emitCallback("first-dialog-opened");
   }
 
   getDialogList()->push_back(obj);

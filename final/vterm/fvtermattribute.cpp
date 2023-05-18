@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021 Markus Gans                                           *
+* Copyright 2021-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -19,6 +19,9 @@
 * License along with this program.  If not, see                        *
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
+
+#include <functional>
+#include <unordered_map>
 
 #include "final/vterm/fcolorpair.h"
 #include "final/vterm/fstyle.h"
@@ -61,26 +64,41 @@ void FVTermAttribute::initAttribute()
 //----------------------------------------------------------------------
 void FVTermAttribute::print (const FStyle& style)
 {
+  static const std::unordered_map<Style, std::function<void(bool)>> attributeLookup
+  {
+    { Style::Bold, &FVTermAttribute::setBold },
+    { Style::Dim, &FVTermAttribute::setDim },
+    { Style::Italic, &FVTermAttribute::setItalic },
+    { Style::Underline, &FVTermAttribute::setUnderline },
+    { Style::Blink, &FVTermAttribute::setBlink },
+    { Style::Reverse, &FVTermAttribute::setReverse },
+    { Style::Standout, &FVTermAttribute::setStandout },
+    { Style::Invisible, &FVTermAttribute::setInvisible },
+    { Style::Protected, &FVTermAttribute::setProtected },
+    { Style::CrossedOut, &FVTermAttribute::setCrossedOut },
+    { Style::DoubleUnderline, &FVTermAttribute::setDoubleUnderline },
+    { Style::Transparent, &FVTermAttribute::setTransparent },
+    { Style::ColorOverlay, &FVTermAttribute::setColorOverlay },
+    { Style::InheritBackground, &FVTermAttribute::setInheritBackground }
+  };
+
   Style attr = style.getStyle();
 
   if ( attr == Style::None )
-    setNormal();
-  else
   {
-    if ( (attr & Style::Bold) != Style::None ) setBold();
-    if ( (attr & Style::Dim) != Style::None ) setDim();
-    if ( (attr & Style::Italic) != Style::None ) setItalic();
-    if ( (attr & Style::Underline) != Style::None ) setUnderline();
-    if ( (attr & Style::Blink) != Style::None ) setBlink();
-    if ( (attr & Style::Reverse) != Style::None ) setReverse();
-    if ( (attr & Style::Standout) != Style::None ) setStandout();
-    if ( (attr & Style::Invisible) != Style::None ) setInvisible();
-    if ( (attr & Style::Protected) != Style::None ) setProtected();
-    if ( (attr & Style::CrossedOut) != Style::None ) setCrossedOut();
-    if ( (attr & Style::DoubleUnderline) != Style::None ) setDoubleUnderline();
-    if ( (attr & Style::Transparent) != Style::None ) setTransparent();
-    if ( (attr & Style::ColorOverlay) != Style::None ) setColorOverlay();
-    if ( (attr & Style::InheritBackground) != Style::None ) setInheritBackground();
+    setNormal();
+    return;
+  }
+
+  while ( attr != Style::None )
+  {
+    const auto style_name = Style(attr & -attr);  // Find rightmost set bit
+    const auto iter = attributeLookup.find(style_name);
+
+    if ( iter != attributeLookup.end() )
+      iter->second(true);  // Sets the found style
+
+    attr ^= style_name; // Clear the rightmost set bit
   }
 }
 

@@ -1,3 +1,143 @@
+2023-04-15  Markus Gans  <guru.mail@muenster.de>
+	* Terminal focus-in and focus-out events can be disabled with 
+	  the --no-terminal-focus-events parameter
+
+2023-04-08  Markus Gans  <guru.mail@muenster.de>
+	* Clears the FScrollView viewport area after viewport creation or 
+	  resizing
+
+2023-04-07  Markus Gans  <guru.mail@muenster.de>
+	* Processing of FStyle in print() statements is now faster because only 
+	  set data bits are considered
+
+2023-04-06  Markus Gans  <guru.mail@muenster.de>
+	* Individual columns can now be shown and hidden in FListView
+
+2023-04-01  Markus Gans  <guru.mail@muenster.de>
+	* FApplication now has the ability to register mouse handler functions
+
+2023-03-24  Markus Gans  <guru.mail@muenster.de>
+	* Compile fix for clang++ 15 with std=c++20
+
+2023-03-16  Markus Gans  <guru.mail@muenster.de>
+	* Size and position changes in FDialog are now made immediately before 
+	  terminal output to speed up mouse-based changes
+
+2023-03-13  Markus Gans  <guru.mail@muenster.de>
+	* Speed up the drawing of shadows and boxes
+
+2023-02-28  Markus Gans  <guru.mail@muenster.de>
+	* Fix missing deletion of no_changes and printed attributes on transparency
+
+2023-02-24  Markus Gans  <guru.mail@muenster.de>
+	* Small speed-up of the print function
+
+2023-02-20  Markus Gans  <guru.mail@muenster.de>
+	* Fixes display problems with half-covered full-width characters 
+	  with color overlay
+	* Fixes display inconsistencies that occur when a full-width 
+	  character is used in combination with the terminal repeat (REP) 
+	  function
+
+2023-02-17  Markus Gans  <guru.mail@muenster.de>
+	* Fixes the conflict between reducing changes and hardware scrolling
+
+2023-02-14  Markus Gans  <guru.mail@muenster.de>
+	* Fixes the problem of insufficient space on resizing in FScrollView 
+	  by scrolling backwards
+
+2023-02-08  Markus Gans  <guru.mail@muenster.de>
+	* Better detection of the keypad center key
+
+2023-02-07  Markus Gans  <guru.mail@muenster.de>
+	* Keys are now identified via a hash map to speed up escape sequence 
+	  searches
+
+2023-02-04  Markus Gans  <guru.mail@muenster.de>
+	* Adapted color reset for st - simple terminal
+	* Fixes incorrect key detection caused by duplicate key sequences
+
+2023-01-29  Markus Gans  <guru.mail@muenster.de>
+	* Fixed invalid iterator on post-inserting an item in FListView
+	* The application will now be notified when the focus changes in 
+	  the terminal window, through the new onTermFocusIn() and 
+	  onTermFocusOut() event methods
+	* New methods removeColumn() and removeAllColumns() for 
+	  FListView to remove columns
+
+2023-01-22  Markus Gans  <guru.mail@muenster.de>
+	* Fix focus-in and focus-out errors FComboBox and FSpinBox
+
+2023-01-15  Markus Gans  <guru.mail@muenster.de>
+	* Speed-up of the update routine for virtual terminal
+
+2023-01-07  Markus Gans  <guru.mail@muenster.de>
+	* Accelerated copying of lines with transparent characters
+
+2023-01-05  Markus Gans  <guru.mail@muenster.de>
+	* Bugfix for broken scrollbar behavior in FScrollView widget
+	* Bugfix for infinite loop on input queue processing on exit
+
+2023-01-04  Markus Gans  <guru.mail@muenster.de>
+	* FObject now supports reverse iterators
+	* Small improvement of the display speed
+
+2023-01-03  Markus Gans  <guru.mail@muenster.de>
+	* The way how a widget gets the focus has been changed. It is now 
+	  a single step that includes sending focus events
+
+2022-12-26  Markus Gans  <guru.mail@muenster.de>
+	* Incomplete mouse sequences are no longer checked by 
+	  the keyboard parser
+	* Fixing the conflict between NOT_SET and FKey::Incomplete
+
+2022-12-24  Markus Gans  <guru.mail@muenster.de>
+	* Widget flags are now organized in a hierarchical structure
+
+2022-12-14  Markus Gans  <guru.mail@muenster.de>
+	* Simplifies the request of the encoding
+
+2022-12-08  Markus Gans  <guru.mail@muenster.de>
+	* Fixed the changes on printing of the last full-width character 
+	  in a virtual window
+	* Bugfix: getPrevCharLength() crashed on strings with a leading space
+
+2022-12-06  Markus Gans  <guru.mail@muenster.de>
+	* FLineEdit can set the alignment (left, center, or right) for 
+	  the content of the entry
+
+2022-12-04  Markus Gans  <guru.mail@muenster.de>
+	* Virtual windows now use C++ smart pointers for data storage
+
+2022-11-26  Markus Gans  <guru.mail@muenster.de>
+	* Removed the deprecated method isNull() in FString
+
+2022-11-25  Markus Gans  <guru.mail@muenster.de>
+	* New helper function to update the widget text of the status bar
+
+2022-11-20  Markus Gans  <guru.mail@muenster.de>
+	* FTimer specialization for FObject in FObjectTimer
+
+2022-11-12  Markus Gans  <guru.mail@muenster.de>
+	* Direct access to a character in a print area via coordinates
+
+2022-11-05  Markus Gans  <guru.mail@muenster.de>
+	* The new class FTimer now contains all timer methods
+
+2022-10-28  Markus Gans  <guru.mail@muenster.de>
+	* Generalize text reading from terminal
+
+2022-10-23  Markus Gans  <guru.mail@muenster.de>
+	* Queuing of mouse and keyboard inputs is now implemented with 
+	  a ring buffer
+
+2022-10-20  Markus Gans  <guru.mail@muenster.de>
+	* Speed-up code through more inline functions
+
+2022-10-18  Markus Gans  <guru.mail@muenster.de>
+	* To improve performance, the output buffer queue has been replaced 
+	  with a ring buffer
+
 2022-10-02  Markus Gans  <guru.mail@muenster.de>
 	* Strict use of trailing return type
 

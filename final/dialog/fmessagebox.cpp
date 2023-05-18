@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2022 Markus Gans                                      *
+* Copyright 2014-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -152,7 +152,7 @@ void FMessageBox::adjustSize()
 
   const int x = 1 + int((max_width - getWidth()) / 2);
   const int y = 1 + int((max_height - getHeight()) / 3);
-  setPos(FPoint{x, y}, false);
+  FWindow::setPos(FPoint{x, y}, false);
   FDialog::adjustSize();
 }
 
@@ -294,13 +294,18 @@ void FMessageBox::calculateDimensions()
                   }
                 );
 
-  std::size_t headline_height = headline_text.isEmpty() ? 0 : 2;
+  const std::size_t headline_height = headline_text.isEmpty() ? 0 : 2;
+  const std::size_t headline_width = getColumnWidth(headline_text);
+
+  if ( headline_width > max_line_width )
+    max_line_width = headline_width;
+
   FSize size{ max_line_width + 4, text_num_lines + 8 + headline_height };
 
   if ( size.getWidth() < 20 )
     size.setWidth(20);
 
-  setSize(size);
+  FWindow::setSize(size);
 }
 
 //----------------------------------------------------------------------

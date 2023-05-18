@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2022 Markus Gans                                      *
+* Copyright 2020-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -58,17 +58,17 @@ class FStyle
     auto getClassName() const -> FString
     { return "FStyle"; }
 
-    auto getStyle() const noexcept -> Style
+    inline auto getStyle() const noexcept -> Style
     { return attribute; }
 
     // Mutators
-    void setStyle (const FStyle& style)
-    { attribute = style.attribute; }
+    inline void setStyle (const FStyle& style) noexcept
+    { attribute = style.attribute & Style(ATTRIBUTE_MASK); }
 
-    void setStyle (Style attr) noexcept
-    { attribute = attr; }
+    inline void setStyle (Style attr) noexcept
+    { attribute = attr & Style(ATTRIBUTE_MASK); }
 
-    auto toFAttribute() const -> FAttribute
+    auto toFAttribute() const noexcept -> FAttribute
     {
       FAttribute fattr{};
       fattr.bit.bold               = (attribute & Style::Bold) != Style::None;
@@ -89,6 +89,10 @@ class FStyle
     }
 
   private:
+    // Constant
+    static constexpr auto ATTRIBUTE_MASK = \
+        Style((uInt16(Style::InheritBackground) << 1) - 1);
+
     // Data members
     Style attribute;  // Save character attributes
 };

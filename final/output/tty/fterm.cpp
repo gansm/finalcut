@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2022 Markus Gans                                      *
+* Copyright 2012-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -21,7 +21,7 @@
 ***********************************************************************/
 
 #if defined(__CYGWIN__)
-  #include "final/fconfig.h"  // includes _GNU_SOURCE for strsignal
+  #include "final/fconfig.h"  // includes _GNU_SOURCE for strsignal()
 #endif
 
 #include <algorithm>
@@ -314,10 +314,7 @@ auto FTerm::setUTF8 (bool enable) -> bool  // UTF-8 (Unicode)
   if ( data.isUTF8() == enable )
     return enable;
 
-  if ( enable )
-    data.setUTF8(true);
-  else
-    data.setUTF8(false);
+  data.setUTF8(enable);
 
 #if defined(__linux__)
   FTermLinux::getInstance().setUTF8 (enable);
@@ -1696,7 +1693,8 @@ void FTerm::useAlternateScreenBuffer()
   // Saves the screen and the cursor position
   if ( TCAP(t_enter_ca_mode) )
   {
-    paddingPrint (TCAP(t_enter_ca_mode));
+    paddingPrint (TCAP(t_enter_ca_mode));  // Use alternate screen buffer
+    paddingPrint (TCAP(t_clear_screen));  // Ensure the display is cleared
     std::fflush(stdout);
     FTermData::getInstance().setAlternateScreenInUse(true);
   }
@@ -1713,7 +1711,7 @@ void FTerm::useNormalScreenBuffer()
   // restores the screen and the cursor position
   if ( TCAP(t_exit_ca_mode) )
   {
-    paddingPrint (TCAP(t_exit_ca_mode));
+    paddingPrint (TCAP(t_exit_ca_mode));  // Use Normal Screen Buffer
     std::fflush(stdout);
     FTermData::getInstance().setAlternateScreenInUse(false);
   }
@@ -1768,9 +1766,14 @@ void FTerm::init()
   // Enable the terminal mouse support
   enableMouse();
 
-  // Activate meta key sends escape
+  // Activate meta key sends escape + terminal focus event
   if ( FTermData::getInstance().isTermType(FTermType::xterm) )
+  {
     FTermXTerminal::getInstance().metaSendsESC(true);
+
+    if ( getStartOptions().terminal_focus_events )
+      FTermXTerminal::getInstance().setFocusSupport(true);
+  }
 
   // switch to application escape key mode
   enableApplicationEscKey();
@@ -1973,9 +1976,14 @@ void FTerm::finish() const
   if ( getStartOptions().mouse_support )
     disableMouse();
 
-  // Deactivate meta key sends escape
+  // Deactivate terminal focus event + meta key sends escape
   if ( data.isTermType(FTermType::xterm) )
+  {
+    if ( getStartOptions().terminal_focus_events )
+      xterm.setFocusSupport(false);
+
     xterm.metaSendsESC(false);
+  }
 
   // Switch to the normal screen
   useNormalScreenBuffer();
@@ -2091,7 +2099,7 @@ void FTerm::signal_handler (int sig_num)
       processTermination(sig_num);
 
     default:
-      break;
+      break;  // Unknown signal handler number
   }
 }
 

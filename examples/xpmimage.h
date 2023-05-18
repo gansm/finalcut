@@ -51,7 +51,7 @@ class XpmImage
     XpmImage() = default;
 
     // Accessors
-    auto getTermBuffer() const -> const finalcut::FVTermBuffer&;
+    auto getTermBuffer() -> finalcut::FVTermBuffer&;
     auto getSize() const -> finalcut::FSize;
     auto getColorCount() const -> std::size_t;
 
@@ -72,6 +72,11 @@ class XpmImage
 
     // Methods
     void getValues (const std::string&);
+    void handleNumZero ( const std::string&, std::vector<XpmColor>&
+                       , std::vector<XpmColor>& );
+    void handleNumColors (const std::string&);
+    void parseLine ( const std::string&, std::size_t, std::vector<XpmColor>&
+                   , std::vector<XpmColor>& );
     auto rgb2ColorIndex (RGB) const -> XpmColor;
     auto hexToRGB (const std::string&) const -> RGB;
     auto getColorMap (const std::string&, const std::string&) const
@@ -852,7 +857,7 @@ class XpmImage
 };
 
 //----------------------------------------------------------------------
-auto XpmImage::getTermBuffer() const -> const finalcut::FVTermBuffer&
+auto XpmImage::getTermBuffer() -> finalcut::FVTermBuffer&
 {
   return vterm_buf;
 }
@@ -902,6 +907,67 @@ void XpmImage::getValues (const std::string& line)
 
   if ( num_colors > 65535 || cpp > 15 )
      throw std::out_of_range("values too high");
+}
+
+//----------------------------------------------------------------------
+inline void XpmImage::handleNumZero ( const std::string& line
+                                    , std::vector<XpmColor>& upperPixel
+                                    , std::vector<XpmColor>& lowerPixel)
+{
+  try
+  {
+    getValues(line);
+  }
+  catch (const std::invalid_argument&)
+  {
+    return;
+  }
+  catch (const std::out_of_range&)
+  {
+    return;
+  }
+
+  vterm_buf.clear();
+  upperPixel.resize(width);
+  lowerPixel.resize(width);
+}
+
+//----------------------------------------------------------------------
+inline void XpmImage::handleNumColors (const std::string& line)
+{
+  cmap.emplace (getColorMapFromLine(line, int(cpp)));
+}
+
+//----------------------------------------------------------------------
+inline void XpmImage::parseLine ( const std::string& line, std::size_t y,
+                                  std::vector<XpmColor>& upperPixel,
+                                  std::vector<XpmColor>& lowerPixel)
+{
+  for (std::size_t x{0}; x < width; x++)
+  {
+    auto diff = static_cast<std::ptrdiff_t>(x * cpp);
+    auto chars_per_pixel = static_cast<std::ptrdiff_t>(cpp);
+    auto iter = std::begin(line) + diff;
+    std::string pixel_str(iter, iter + chars_per_pixel);
+
+    if ( y % 2 == 0 )
+    {
+      upperPixel[x] = cmap.find(pixel_str)->second;
+
+      if ( y == height - 1 )
+        lowerPixel[x] = NONE;
+    }
+    else
+    {
+      lowerPixel[x] = cmap[pixel_str];
+    }
+  }
+
+  if ( y % 2 == 1 || y == height - 1 )
+  {
+    for (std::size_t x{0}; x < width; x++)
+      printUpperLower (upperPixel[x], lowerPixel[x]);
+  }
 }
 
 //----------------------------------------------------------------------
@@ -1078,55 +1144,15 @@ void XpmImage::parseXPM3 (const std::vector<std::string>& xpm)
   {
     if ( num == 0 )
     {
-      try
-      {
-        getValues(line);
-      }
-      catch (const std::invalid_argument&)
-      {
-        return;
-      }
-      catch (const std::out_of_range&)
-      {
-        return;
-      }
-
-      vterm_buf.clear();
-      upperPixel.resize(width);
-      lowerPixel.resize(width);
+      handleNumZero(line, upperPixel, lowerPixel);
     }
-    else if ( num > 0 && num <= num_colors )
+    else if ( num <= num_colors )
     {
-      cmap.emplace(getColorMapFromLine(line, int(cpp)));
+      handleNumColors (line);
     }
     else
     {
-      for (std::size_t x{0}; x < width; x++)
-      {
-        auto diff = static_cast<std::ptrdiff_t>(x * cpp);
-        auto chars_per_pixel = static_cast<std::ptrdiff_t>(cpp);
-        auto iter = std::begin(line) + diff;
-        std::string pixel_str(iter, iter + chars_per_pixel);
-
-        if ( y % 2 == 0 )
-        {
-          upperPixel[x] = cmap.find(pixel_str)->second;
-
-          if ( y == height - 1 )
-            lowerPixel[x] = NONE;
-        }
-        else
-        {
-          lowerPixel[x] = cmap[pixel_str];
-        }
-      }
-
-      if ( y % 2 == 1 || y == height - 1 )
-      {
-        for (std::size_t x{0}; x < width; x++)
-          printUpperLower (upperPixel[x], lowerPixel[x]);
-      }
-
+      parseLine (line, y, upperPixel, lowerPixel);
       y++;
     }
 

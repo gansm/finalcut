@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2022 Markus Gans                                      *
+* Copyright 2015-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -72,7 +72,7 @@ auto FMenu::setMenuWidget (bool enable) -> bool
   if ( isMenuWidget() == enable )
     return true;
 
-  return (setFlags().menu_widget = enable);
+  return (setFlags().type.menu_widget = enable);
 }
 
 //----------------------------------------------------------------------
@@ -183,9 +183,7 @@ void FMenu::onMouseDown (FMouseEvent* ev)
         getSelectedItem()->setFocus();
 
       redraw();
-
-      if ( getStatusBar() )
-        getStatusBar()->drawMessage();
+      drawStatusBarMessage();
     }
 
     return;
@@ -555,10 +553,7 @@ void FMenu::openSubMenu (FMenu* sub_menu, bool select)
 {
   // open sub menu
 
-  if ( ! sub_menu )
-    return;
-
-  if ( sub_menu->isShown() )
+  if ( ! sub_menu || sub_menu->isShown() )
     return;
 
   if ( select )
@@ -573,9 +568,7 @@ void FMenu::openSubMenu (FMenu* sub_menu, bool select)
   opened_sub_menu = sub_menu;
   raiseWindow (sub_menu);
   sub_menu->redraw();
-
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
+  drawStatusBarMessage();
 }
 
 //----------------------------------------------------------------------
@@ -684,9 +677,7 @@ void FMenu::mouseDownSubmenu (const FMenuItem* m_item)
     raiseWindow (opened_sub_menu);
     opened_sub_menu->redraw();
     sel_item->setFocus();
-
-    if ( getStatusBar() )
-      getStatusBar()->drawMessage();
+    drawStatusBarMessage();
   }
 }
 
@@ -706,8 +697,7 @@ void FMenu::mouseDownSelection (FMenuItem* m_item, bool& focus_changed)
   if ( focused_widget )
     focused_widget->redraw();
 
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
+  drawStatusBarMessage();
 
   if ( m_item->hasMenu() )
   {
@@ -721,40 +711,42 @@ void FMenu::mouseDownSelection (FMenuItem* m_item, bool& focus_changed)
 //----------------------------------------------------------------------
 auto FMenu::mouseUpOverList (const FPoint& mouse_pos) -> bool
 {
+  FMenuItem* sel_item = nullptr;
+
   for (auto&& item : getItemList())
   {
     if ( item->isSelected() && isMouseOverItem(mouse_pos, item) )
-    {
-      // Mouse pointer over item
-      if ( item->hasMenu() )
-      {
-        auto sub_menu = item->getMenu();
-        if ( ! sub_menu->isShown() )
-          openSubMenu (sub_menu, SELECT_ITEM);
-        else if ( opened_sub_menu )
-        {
-          opened_sub_menu->selectFirstItem();
-
-          if ( opened_sub_menu->hasSelectedItem() )
-            opened_sub_menu->getSelectedItem()->setFocus();
-
-          opened_sub_menu->redraw();
-
-          if ( getStatusBar() )
-            getStatusBar()->drawMessage();
-        }
-
-        return true;
-      }
-
-      unselectItem();
-      hide();
-      hideSuperMenus();
-      item->processClicked();
-    }
+      sel_item = item;  // Mouse pointer over item
   }
 
-  return false;
+  if ( ! sel_item )
+    return false;
+
+  if ( sel_item->hasMenu() )
+  {
+    auto sub_menu = sel_item->getMenu();
+
+    if ( ! sub_menu->isShown() )
+      openSubMenu (sub_menu, SELECT_ITEM);
+    else if ( opened_sub_menu )
+    {
+      opened_sub_menu->selectFirstItem();
+
+      if ( opened_sub_menu->hasSelectedItem() )
+        opened_sub_menu->getSelectedItem()->setFocus();
+
+      opened_sub_menu->redraw();
+      drawStatusBarMessage();
+    }
+
+    return true;
+  }
+
+  unselectItem();
+  hide();
+  hideSuperMenus();
+  sel_item->processClicked();
+  return true;
 }
 
 //----------------------------------------------------------------------
@@ -787,8 +779,7 @@ void FMenu::mouseMoveSelection (FMenuItem* m_item, MouseStates& ms)
   if ( focused_widget )
     focused_widget->redraw();
 
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
+  drawStatusBarMessage();
 
   // Sub menu handling
   if ( m_item->hasMenu() )
@@ -836,17 +827,7 @@ void FMenu::mouseMoveOverBorder (MouseStates& ms) const
 {
   // Mouse is moved over border or separator line
 
-  if ( getStatusBar() )
-  {
-    const auto& msg = getStatusbarMessage();
-    const auto& curMsg = getStatusBar()->getMessage();
-
-    if ( curMsg != msg )
-    {
-      getStatusBar()->setMessage(msg);
-      getStatusBar()->drawMessage();
-    }
-  }
+  updateStatusbar (this, false);
 
   if ( opened_sub_menu )
     ms.hide_sub_menu = true;
@@ -928,10 +909,7 @@ void FMenu::selectItem_PostProcessing (FMenuItem* sel_item)
   unselectItem();
   sel_item->setSelected();
   sel_item->setFocus();
-
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
-
+  drawStatusBarMessage();
   setSelectedItem(sel_item);
   redraw();
   setTerminalUpdates (FVTerm::TerminalUpdate::Start);
@@ -1099,7 +1077,7 @@ inline void FMenu::drawMenuLine (FMenuItem* m_item, int y)
   if ( hotkeypos != NOT_SET )
     column_width--;
 
-  txtdata.no_underline = m_item->getFlags().no_underline;
+  txtdata.no_underline = m_item->getFlags().feature.no_underline;
   setCursorToHotkeyPosition (m_item);
 
   if ( ! is_enabled || is_selected )
@@ -1338,9 +1316,7 @@ inline void FMenu::selectPrevMenu (FKeyEvent* ev)
       smenu->getSelectedItem()->setFocus();
 
     smenu->redraw();
-
-    if ( getStatusBar() )
-      getStatusBar()->drawMessage();
+    drawStatusBarMessage();
   }
   else
     keypressMenuBar(ev);  // select previous menu
@@ -1409,8 +1385,7 @@ inline void FMenu::closeMenu()
       switchToPrevWindow(this);
   }
 
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
+  drawStatusBarMessage();
 }
 
 //----------------------------------------------------------------------

@@ -119,7 +119,7 @@ inline auto FProgressbar::unsetShadow() -> bool
 
 //----------------------------------------------------------------------
 inline auto FProgressbar::hasShadow() const -> bool
-{ return getFlags().shadow; }
+{ return getFlags().shadow.shadow; }
 
 }  // namespace finalcut
 

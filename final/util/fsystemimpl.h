@@ -86,12 +86,12 @@ class FSystemImpl : public FSystem
 
     // Methods
 #if defined(ISA_SYSCTL_SUPPORT)
-    auto inPortByte (uShort port) -> uChar override
+    inline auto inPortByte (uShort port) -> uChar override
     {
       return ::inb (port);
     }
 #else
-    uChar inPortByte (uShort) override
+    inline uChar inPortByte (uShort) override
     {
       return 0;
     }
@@ -99,21 +99,21 @@ class FSystemImpl : public FSystem
 
 
 #if defined(ISA_SYSCTL_SUPPORT)
-    void outPortByte (uChar value, uShort port) override
+    inline void outPortByte (uChar value, uShort port) override
     {
       ::outb (value, port);
     }
 #else
-    void outPortByte (uChar, uShort) override
+    inline void outPortByte (uChar, uShort) override
     { }
 #endif
 
-    auto isTTY (int fd) const -> int override
+    inline auto isTTY (int fd) const -> int override
     {
       return ::isatty(fd);
     }
 
-    auto ioctl (int fd, uLong request, ...) -> int override
+    inline auto ioctl (int fd, uLong request, ...) -> int override
     {
       va_list args{};
       va_start (args, request);
@@ -123,7 +123,7 @@ class FSystemImpl : public FSystem
       return ret;
     }
 
-    auto open (const char* pathname, int flags, ...) -> int override
+    inline auto open (const char* pathname, int flags, ...) -> int override
     {
       va_list args{};
       va_start (args, flags);
@@ -133,27 +133,27 @@ class FSystemImpl : public FSystem
       return ret;
     }
 
-    auto close (int fildes) -> int override
+    inline auto close (int fildes) -> int override
     {
       return ::close(fildes);
     }
 
-    auto fopen (const char* path, const char* mode) -> FILE* override
+    inline auto fopen (const char* path, const char* mode) -> FILE* override
     {
       return std::fopen (path, mode);
     }
 
-    auto fclose (FILE* fp) -> int override
+    inline auto fclose (FILE* fp) -> int override
     {
       return std::fclose (fp);
     }
 
-    auto fputs (const char* str, FILE* stream) -> int override
+    inline auto fputs (const char* str, FILE* stream) -> int override
     {
       return std::fputs (str, stream);
     }
 
-    auto putchar (int c) -> int override
+    inline auto putchar (int c) -> int override
     {
 #if defined(__sun) && defined(__SVR4)
       return std::putchar(char(c));
@@ -162,18 +162,18 @@ class FSystemImpl : public FSystem
 #endif
     }
 
-    auto getuid() -> uid_t override
+    inline auto getuid() -> uid_t override
     {
       return ::getuid();
     }
 
-    auto geteuid() -> uid_t override
+    inline auto geteuid() -> uid_t override
     {
       return ::geteuid();
     }
 
     auto getpwuid_r ( uid_t, struct passwd*, char*, size_t
-                   , struct passwd** ) -> int override;
+                    , struct passwd** ) -> int override;
 
     auto realpath (const char*, char*) -> char* override;
 };

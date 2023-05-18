@@ -332,6 +332,8 @@ class FListBox : public FWidget
     void printLeftBracket (BracketType);
     void printRightBracket (BracketType);
     void drawListBracketsLine (int, FListBoxItems::iterator, bool);
+    void setInitialLineAttributes (bool) const;
+    void setCurrentLineAttributes (int, bool, bool, bool&);
     void setLineAttributes (int, bool, bool, bool&);
     void unsetAttributes() const;
     void updateDrawing (bool, bool);
@@ -360,6 +362,7 @@ class FListBox : public FWidget
     void onePageDown();
     void firstPos();
     void lastPos();
+    auto isWithinListBounds (const FPoint&) const -> bool;
     auto skipIncrementalSearch() -> bool;
     void acceptSelection();
     auto spacebarProcessing() -> bool;

@@ -25,6 +25,7 @@
 
 #include "final/fapplication.h"
 #include "final/fevent.h"
+#include "final/fwidget_functions.h"
 #include "final/util/flog.h"
 #include "final/vterm/fcolorpair.h"
 #include "final/widget/flabel.h"
@@ -227,19 +228,7 @@ void FLabel::setHotkeyAccelerator()
 //----------------------------------------------------------------------
 auto FLabel::getAlignOffset (const std::size_t length) const -> std::size_t
 {
-  const std::size_t width(getWidth());
-
-  if ( alignment == Align::Center )
-  {
-    if ( length < width )
-      return (width - length) / 2;
-  }
-  else if ( alignment == Align::Right && length < width )
-  {
-    return width - length;
-  }
-
-  return 0;
+  return finalcut::getAlignOffset (alignment, getWidth(), length);
 }
 
 //----------------------------------------------------------------------
@@ -326,6 +315,46 @@ void FLabel::drawSingleLine()
 }
 
 //----------------------------------------------------------------------
+void FLabel::printHotkeyChar (wchar_t ch)
+{
+  const auto& wc = getColorTheme();
+  setColor (wc->label_hotkey_fg, wc->label_hotkey_bg);
+
+  if ( ! getFlags().feature.no_underline )
+    setUnderline();
+
+  print (ch);
+
+  if ( ! getFlags().feature.no_underline )
+    unsetUnderline();
+
+  if ( hasEmphasis() )
+    setColor (emphasis_color, getBackgroundColor());
+  else
+    setColor();
+}
+
+//----------------------------------------------------------------------
+void FLabel::printLineContent (FString& line, std::size_t to_char)
+{
+  for (std::size_t z{0}; z < to_char; z++)
+  {
+    if ( ! std::iswprint(std::wint_t(line[z]))
+      && ! FVTerm::getFOutput()->isNewFont()
+      && ( line[z] < UniChar::NF_rev_left_arrow2
+        || line[z] > UniChar::NF_check_mark ) )
+    {
+      line[z] = L' ';
+    }
+
+    if ( z == hotkeypos && getFlags().feature.active )
+      printHotkeyChar (line[z]);
+    else
+      print (line[z]);
+  }
+}
+
+//----------------------------------------------------------------------
 void FLabel::printLine (FString& line)
 {
   std::size_t to_char{};
@@ -349,41 +378,11 @@ void FLabel::printLine (FString& line)
   if ( hasReverseMode() )
     setReverse(true);
 
-  for (std::size_t z{0}; z < to_char; z++)
-  {
-    if ( ! std::iswprint(std::wint_t(line[z]))
-      && ! FVTerm::getFOutput()->isNewFont()
-      && ( line[z] < UniChar::NF_rev_left_arrow2
-        || line[z] > UniChar::NF_check_mark ) )
-    {
-      line[z] = L' ';
-    }
-
-    if ( z == hotkeypos && getFlags().active )
-    {
-      const auto& wc = getColorTheme();
-      setColor (wc->label_hotkey_fg, wc->label_hotkey_bg);
-
-      if ( ! getFlags().no_underline )
-        setUnderline();
-
-      print (line[z]);
-
-      if ( ! getFlags().no_underline )
-        unsetUnderline();
-
-      if ( hasEmphasis() )
-        setColor (emphasis_color, getBackgroundColor());
-      else
-        setColor();
-    }
-    else
-      print (line[z]);
-  }
+  printLineContent (line, to_char);  // Print the line
 
   if ( column_width > width )
   {
-    // Print ellipsis
+    // Print ellipsis if the line is too long to fit in the width
     print() << FColorPair{ellipsis_color, getBackgroundColor()}
             << FString{".."}.left(width);
     setColor();

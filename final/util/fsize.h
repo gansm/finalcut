@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2022 Markus Gans                                      *
+* Copyright 2014-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -70,7 +70,7 @@ class FSize
     auto getArea() const noexcept -> std::size_t;
     void setWidth (std::size_t) noexcept;
     void setHeight (std::size_t) noexcept;
-    void setSize (const FSize&);
+    void setSize (const FSize&) noexcept;
     void setSize (std::size_t, std::size_t) noexcept;
 
     // Inquiry
@@ -82,7 +82,7 @@ class FSize
 
     // Methods
     void scaleBy (int, int) noexcept;
-    void scaleBy (const FPoint&);
+    void scaleBy (const FPoint&) noexcept;
 
   private:
     // Data members
@@ -125,6 +125,32 @@ inline auto FSize::getHeight() const noexcept -> std::size_t
 //----------------------------------------------------------------------
 inline auto FSize::getArea() const noexcept -> std::size_t
 { return width * height; }
+
+//----------------------------------------------------------------------
+inline void FSize::setWidth (std::size_t w) noexcept
+{ width = w; }
+
+//----------------------------------------------------------------------
+inline void FSize::setHeight (std::size_t h) noexcept
+{ height = h; }
+
+//----------------------------------------------------------------------
+inline void FSize::setSize (const FSize& s) noexcept
+{
+  width = s.width;
+  height = s.height;
+}
+
+//----------------------------------------------------------------------
+inline void FSize::setSize (std::size_t w, std::size_t h) noexcept
+{
+  width = w;
+  height = h;
+}
+
+//----------------------------------------------------------------------
+inline auto FSize::isEmpty() const noexcept -> bool
+{ return width == 0 && height == 0; }
 
 //----------------------------------------------------------------------
 inline auto FSize::width_ref() & noexcept -> std::size_t&

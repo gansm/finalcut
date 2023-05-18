@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2022 Markus Gans                                      *
+* Copyright 2017-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -110,6 +110,8 @@ class FVTermBuffer
     auto front() const -> const_reference;
     auto back() const -> const_reference;
     auto toString() const -> FString;
+    template <typename Iterator>
+    void assign (Iterator, Iterator);
     void clear();
     template <typename... Args>
     auto printf (const FString&, Args&&...) -> int;
@@ -120,28 +122,30 @@ class FVTermBuffer
     auto print () -> FVTermBuffer&;
 
   private:
-    void checkCapacity (std::size_t);
+    void getNextCharacterAttribute();
     void add ( FString::const_iterator&
              , const FString::const_iterator&
              , int& );
 
     // Data member
     FCharVector data{};
+    FChar       nc{};  // next character
 
     // Non-member operators
     friend auto operator << ( FCharVector&
                             , const FVTermBuffer& ) -> FCharVector&;
 };
 
+// non-member function forward declarations
+template<typename T>
+constexpr void checkCapacity (T&, std::size_t) noexcept;
 
 // FVTermBuffer inline functions
 //----------------------------------------------------------------------
 template <typename Iterator>
-inline FVTermBuffer::FVTermBuffer(Iterator first, Iterator last)
+inline FVTermBuffer::FVTermBuffer (Iterator first, Iterator last)
 {
-  assert ( first < last );
-  checkCapacity (std::size_t(last - first));
-  data.assign(first, last);
+  assign(first, last);
 }
 
 //----------------------------------------------------------------------
@@ -300,10 +304,18 @@ inline auto FVTermBuffer::back() const -> const_reference
 { return data.back(); }
 
 //----------------------------------------------------------------------
+template <typename Iterator>
+inline void FVTermBuffer::assign (Iterator first, Iterator last)
+{
+  assert ( first < last );
+  checkCapacity (data, std::size_t(last - first));
+  data.assign(first, last);
+}
+
+//----------------------------------------------------------------------
 inline void FVTermBuffer::clear()
 {
   data.clear();
-  data.shrink_to_fit();
 }
 
 //----------------------------------------------------------------------
@@ -318,6 +330,21 @@ inline auto FVTermBuffer::printf (const FString& format, Args&&... args) -> int
 //----------------------------------------------------------------------
 inline auto FVTermBuffer::print() -> FVTermBuffer&
 { return *this; }
+
+//----------------------------------------------------------------------
+template<typename T>
+constexpr void checkCapacity (T& buffer, std::size_t size) noexcept
+{
+  if ( size <= buffer.capacity() )
+    return;
+
+  const auto new_size = [&size] ()
+  {
+    return std::size_t(std::pow(2, std::ceil(std::log(size) / std::log(2.0))));
+  }();
+
+  buffer.reserve(new_size);
+}
 
 }  // namespace finalcut
 

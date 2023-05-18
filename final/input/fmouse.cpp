@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2022 Markus Gans                                      *
+* Copyright 2018-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -19,6 +19,10 @@
 * License along with this program.  If not, see                        *
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
+
+#if defined(__CYGWIN__)
+  #include "final/fconfig.h"  // includes _GNU_SOURCE for fd_set
+#endif
 
 #include <cstdio>
 #include <cstring>
@@ -40,6 +44,29 @@
 
 namespace finalcut
 {
+
+// Function prototypes
+template <typename NumT, typename UnaryPredicate>
+auto parseNumberIf (const char*&, NumT&, UnaryPredicate) -> bool;
+
+// non-member functions
+//----------------------------------------------------------------------
+template <typename NumT, typename UnaryPredicate>
+inline auto parseNumberIf ( const char*& p
+                          , NumT& number
+                          , UnaryPredicate up ) -> bool
+{
+  while ( *p && up(*p) )
+  {
+    if ( ! std::isdigit(*p) )
+      return false;
+
+    number = 10 * number + (*p - '0');
+    p++;
+  }
+
+  return true;
+}
 
 //----------------------------------------------------------------------
 // class FMouseData
@@ -289,6 +316,12 @@ void FMouse::setNewPos (int x, int y) noexcept
 }
 
 //----------------------------------------------------------------------
+void FMouse::useNewPos() noexcept
+{
+  setPos(new_mouse_position);
+}
+
+//----------------------------------------------------------------------
 void FMouse::setPending (bool is_pending) noexcept
 {
   unprocessed_buffer_data = is_pending;
@@ -315,7 +348,7 @@ void FMouse::setEvent() noexcept
 //----------------------------------------------------------------------
 auto FMouse::isDblclickTimeout (const TimeValue& time) const -> bool
 {
-  return FObject::isTimeout (time, dblclick_interval);
+  return FObjectTimer::isTimeout (time, dblclick_interval);
 }
 
 
@@ -659,24 +692,11 @@ void FMouseX11::setButtonState (const int btn, const TimeValue& time) noexcept
 {
   // Get the x11 mouse button state
 
-  const auto& mouse_position = getPos();
-
   switch ( btn )
   {
     case button1_pressed:
     case button1_pressed_move:
-      if ( mouse_position == getNewPos()
-        && x11_button_state == all_buttons_released
-        && ! isDblclickTimeout(getMousePressedTime()) )
-      {
-        resetMousePressedTime();
-        getButtonState().left_button = State::DoubleClick;
-      }
-      else
-      {
-        setMousePressedTime (time);  // save click time
-        getButtonState().left_button = State::Pressed;
-      }
+      handleButton1Pressed(time);
       break;
 
     case button2_pressed:
@@ -692,26 +712,7 @@ void FMouseX11::setButtonState (const int btn, const TimeValue& time) noexcept
       break;
 
     case all_buttons_released:
-      switch ( x11_button_state & button_mask )
-      {
-        case button1_pressed:
-        case button1_pressed_move:
-          getButtonState().left_button = State::Released;
-          break;
-
-        case button2_pressed:
-        case button2_pressed_move:
-          getButtonState().middle_button = State::Released;
-          break;
-
-        case button3_pressed:
-        case button3_pressed_move:
-          getButtonState().right_button = State::Released;
-          break;
-
-        default:
-          break;
-      }
+      handleButtonRelease();
       break;
 
     case button_up:
@@ -726,6 +727,48 @@ void FMouseX11::setButtonState (const int btn, const TimeValue& time) noexcept
 
       default:
         break;
+  }
+}
+
+//----------------------------------------------------------------------
+void FMouseX11::handleButton1Pressed (const TimeValue& time) noexcept
+{
+  if ( getPos() == getNewPos()
+    && x11_button_state == all_buttons_released
+    && ! isDblclickTimeout(getMousePressedTime()) )
+  {
+    resetMousePressedTime();
+    getButtonState().left_button = State::DoubleClick;
+  }
+  else
+  {
+    setMousePressedTime (time);  // save click time
+    getButtonState().left_button = State::Pressed;
+  }
+}
+
+//----------------------------------------------------------------------
+void FMouseX11::handleButtonRelease() noexcept
+{
+  switch ( x11_button_state & button_mask )
+  {
+    case button1_pressed:
+    case button1_pressed_move:
+      getButtonState().left_button = State::Released;
+      break;
+
+    case button2_pressed:
+    case button2_pressed_move:
+      getButtonState().middle_button = State::Released;
+      break;
+
+    case button3_pressed:
+    case button3_pressed_move:
+      getButtonState().right_button = State::Released;
+      break;
+
+    default:
+      break;
   }
 }
 
@@ -786,51 +829,42 @@ void FMouseSGR::setRawData (FKeyboard::keybuffer& fifo_buf) noexcept
 void FMouseSGR::processEvent (const TimeValue& time)
 {
   const auto& mouse_position = getPos();
-  uInt16 x{0};
-  uInt16 y{0};
+  sInt16 x{0};
+  sInt16 y{0};
   int btn{0};
 
-  // parse the SGR mouse string
+  // Parse the SGR mouse string
   const char* p = sgr_mouse.data();
 
-  while ( *p && *p != ';' )
+  // Parse button
+  if ( ! parseNumberIf (p, btn, [] (char ch) { return ch != ';'; }) )
   {
-    if ( *p < '0' || *p > '9')
-    {
-      clearEvent();
-      sgr_mouse[0] = '\0';  // Delete already interpreted data
-      return;
-    }
-
-    btn = 10 * btn + (*p - '0');
-    p++;
+    clearEvent();
+    sgr_mouse[0] = '\0';  // Delete already interpreted data
+    return;
   }
 
-  while ( *p++ && *p != ';' )
-  {
-    if ( *p < '0' || *p > '9')
-    {
-      clearEvent();
-      sgr_mouse[0] = '\0';  // Delete already interpreted data
-      return;
-    }
+  if ( *p ) p++;  // ship one character after the number
 
-    x = uInt16(10 * x + (*p - '0'));
+  // Parse x-value
+  if ( ! parseNumberIf (p, x, [] (char ch) { return ch != ';'; }) )
+  {
+    clearEvent();
+    sgr_mouse[0] = '\0';  // Delete already interpreted data
+    return;
   }
 
-  while ( *p++ && *p != 'M' && *p != 'm' )
-  {
-    if ( *p < '0' || *p > '9')
-    {
-      clearEvent();
-      sgr_mouse[0] = '\0';  // Delete already interpreted data
-      return;
-    }
+  if ( *p ) p++;  // ship one character after the number
 
-    y = uInt16(10 * y + (*p - '0'));
+  // Parse y-value
+  if ( ! parseNumberIf (p, y, [] (char ch) { return ch != 'M' && ch != 'm'; }) )
+  {
+    clearEvent();
+    sgr_mouse[0] = '\0';  // Delete already interpreted data
+    return;
   }
 
-  setNewPos (x, y);
+  setNewPos (x, y);  // Update the mouse state
   clearButtonState();
   setKeyState (btn);
   setMoveState (mouse_position, btn);
@@ -851,7 +885,7 @@ void FMouseSGR::processEvent (const TimeValue& time)
   }
 
   setEvent();
-  setPos (FPoint{x, y});
+  useNewPos();
   // Get the button state from string
   sgr_button_state = uChar(((*p & 0x20) << 2) + btn);
   // Delete already interpreted data
@@ -889,24 +923,11 @@ void FMouseSGR::setPressedButtonState ( const int btn
 {
   // Gets the extended x11 mouse mode (SGR) status for pressed buttons
 
-  const auto& mouse_position = getPos();
-
   switch ( btn )
   {
     case button1:
     case button1_move:
-      if ( mouse_position == getNewPos()
-        && (((sgr_button_state & 0x80) >> 2) + 'M') == released
-        && ! isDblclickTimeout(getMousePressedTime()) )
-      {
-        resetMousePressedTime();
-        getButtonState().left_button = State::DoubleClick;
-      }
-      else
-      {
-        setMousePressedTime (time);  // save click time
-        getButtonState().left_button = State::Pressed;
-      }
+      handleButton1Pressed(time);
       break;
 
     case button2:
@@ -933,6 +954,23 @@ void FMouseSGR::setPressedButtonState ( const int btn
 
     default:
       break;
+  }
+}
+
+//----------------------------------------------------------------------
+void FMouseSGR::handleButton1Pressed (const TimeValue& time) noexcept
+{
+  if ( getPos() == getNewPos()
+    && (((sgr_button_state & 0x80) >> 2) + 'M') == released
+    && ! isDblclickTimeout(getMousePressedTime()) )
+  {
+    resetMousePressedTime();
+    getButtonState().left_button = State::DoubleClick;
+  }
+  else
+  {
+    setMousePressedTime (time);  // save click time
+    getButtonState().left_button = State::Pressed;
   }
 }
 
@@ -1022,8 +1060,8 @@ void FMouseUrxvt::processEvent (const TimeValue& time)
   // Parse and interpret the X11 xterm mouse string (Urxvt-Mode)
 
   const auto& mouse_position = getPos();
-  uInt16 x{0};
-  uInt16 y{0};
+  sInt16 x{0};
+  sInt16 y{0};
   int btn{0};
 
   // Parse the Urxvt mouse string
@@ -1031,17 +1069,12 @@ void FMouseUrxvt::processEvent (const TimeValue& time)
   bool x_neg{false};
   bool y_neg{false};
 
-  while ( *p && *p != ';' )
+  // Parse button
+  if ( ! parseNumberIf (p, btn, [] (char ch) { return ch != ';'; }) )
   {
-    if ( *p < '0' || *p > '9')
-    {
-      clearEvent();
-      urxvt_mouse[0] = '\0';  // Delete already interpreted data
-      return;
-    }
-
-    btn = 10 * btn + (*p - '0');
-    p++;
+    clearEvent();
+    urxvt_mouse[0] = '\0';  // Delete already interpreted data
+    return;
   }
 
   if ( *++p == '-' )
@@ -1050,17 +1083,12 @@ void FMouseUrxvt::processEvent (const TimeValue& time)
     x_neg = true;
   }
 
-  while ( *p && *p != ';' )
+  // Parse x-value
+  if ( ! parseNumberIf (p, x, [] (char ch) { return ch != ';'; }) )
   {
-    if ( *p < '0' || *p > '9')
-    {
-      clearEvent();
-      urxvt_mouse[0] = '\0';  // Delete already interpreted data
-      return;
-    }
-
-    x = uInt16(10 * x + (*p - '0'));
-    p++;
+    clearEvent();
+    urxvt_mouse[0] = '\0';  // Delete already interpreted data
+    return;
   }
 
   if ( *++p == '-' )
@@ -1069,17 +1097,12 @@ void FMouseUrxvt::processEvent (const TimeValue& time)
     y_neg = true;
   }
 
-  while ( *p && *p != 'M' )
+  // Parse y-value
+  if ( ! parseNumberIf (p, y, [] (char ch) { return ch != 'M'; }) )
   {
-    if ( *p < '0' || *p > '9')
-    {
-      clearEvent();
-      urxvt_mouse[0] = '\0';  // Delete already interpreted data
-      return;
-    }
-
-    y = uInt16(10 * y + (*p - '0'));
-    p++;
+    clearEvent();
+    urxvt_mouse[0] = '\0';  // Delete already interpreted data
+    return;
   }
 
   if ( x_neg || x == 0 )
@@ -1088,12 +1111,8 @@ void FMouseUrxvt::processEvent (const TimeValue& time)
   if ( y_neg || y == 0 )
     y = 1;
 
-  if ( x > getMaxWidth() )
-    x = getMaxWidth();
-
-  if ( y > getMaxHeight() )
-    y = getMaxHeight();
-
+  x = std::min(x, sInt16(getMaxWidth()));
+  y = std::min(y, sInt16(getMaxHeight()));
   setNewPos (x, y);
   clearButtonState();
   setKeyState (btn);
@@ -1111,7 +1130,7 @@ void FMouseUrxvt::processEvent (const TimeValue& time)
   }
 
   setEvent();
-  setPos (FPoint{x, y});
+  useNewPos();
   urxvt_button_state = uChar(btn);
   // Delete already interpreted data
   urxvt_mouse[0] = '\0';
@@ -1181,26 +1200,7 @@ void FMouseUrxvt::setButtonState (const int btn, const TimeValue& time) noexcept
       break;
 
     case all_buttons_released:
-      switch ( urxvt_button_state & button_mask )
-      {
-        case button1_pressed:
-        case button1_pressed_move:
-          getButtonState().left_button = State::Released;
-          break;
-
-        case button2_pressed:
-        case button2_pressed_move:
-          getButtonState().middle_button = State::Released;
-          break;
-
-        case button3_pressed:
-        case button3_pressed_move:
-          getButtonState().right_button = State::Released;
-          break;
-
-        default:
-          break;
-      }
+      handleButtonRelease();
       break;
 
     case button_up:
@@ -1215,6 +1215,31 @@ void FMouseUrxvt::setButtonState (const int btn, const TimeValue& time) noexcept
 
       default:
         break;
+  }
+}
+
+//----------------------------------------------------------------------
+void FMouseUrxvt::handleButtonRelease() noexcept
+{
+  switch ( urxvt_button_state & button_mask )
+  {
+    case button1_pressed:
+    case button1_pressed_move:
+      getButtonState().left_button = State::Released;
+      break;
+
+    case button2_pressed:
+    case button2_pressed_move:
+      getButtonState().middle_button = State::Released;
+      break;
+
+    case button3_pressed:
+    case button3_pressed_move:
+      getButtonState().right_button = State::Released;
+      break;
+
+    default:
+      break;
   }
 }
 
@@ -1524,7 +1549,7 @@ void FMouseControl::setRawData ( const FMouse::MouseType& mt
 //----------------------------------------------------------------------
 void FMouseControl::processQueuedInput()
 {
-  while ( ! fmousedata_queue.empty() )
+  while ( ! fmousedata_queue.isEmpty() )
   {
     if ( FApplication::isQuit() )
       return;

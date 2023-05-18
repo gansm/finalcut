@@ -284,7 +284,8 @@ auto FSystemTest::getBell() -> wskbd_bell_data&
 // class ftermopenbsdTest
 //----------------------------------------------------------------------
 
-class ftermopenbsdTest : public CPPUNIT_NS::TestFixture, test::ConEmu
+class ftermopenbsdTest : public CPPUNIT_NS::TestFixture
+                       , test::ConEmu
 {
   public:
     ftermopenbsdTest() = default;

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2022 Markus Gans                                      *
+* Copyright 2012-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -88,8 +88,6 @@ class FButton : public FWidget
     auto setEnable (bool = true) -> bool override;
     auto unsetEnable() -> bool override;
     auto setDisable() -> bool override;
-    auto setFocus (bool = true) -> bool override;
-    auto unsetFocus() -> bool override;
     auto setFlat (bool = true) -> bool;
     auto unsetFlat() -> bool;
     auto setShadow (bool = true) -> bool;
@@ -133,9 +131,15 @@ class FButton : public FWidget
     void drawMarginLeft();
     void drawMarginRight();
     void drawTopBottomBackground();
+    void printLeadingSpaces (std::size_t&);
+    void setCursorPositionOnButton();
+    void modifyStyle() const;
+    void printButtonText (const FString&, std::size_t&);
+    void printEllipsis();
+    void resetStyle() const;
+    void printTrailingSpaces (std::size_t);
     void drawButtonTextLine (const FString&);
     void draw() override;
-    void updateStatusBar() const;
     void updateButtonColor();
     void processClick() const;
 
@@ -182,10 +186,6 @@ inline auto FButton::setDisable() -> bool
 { return setEnable(false); }
 
 //----------------------------------------------------------------------
-inline auto FButton::unsetFocus() -> bool
-{ return setFocus(false); }
-
-//----------------------------------------------------------------------
 inline auto FButton::unsetFlat() -> bool
 { return setFlat(false); }
 
@@ -207,7 +207,7 @@ inline auto FButton::unsetClickAnimation() -> bool
 
 //----------------------------------------------------------------------
 inline auto FButton::isFlat() const -> bool
-{ return getFlags().flat; }
+{ return getFlags().feature.flat; }
 
 //----------------------------------------------------------------------
 inline auto FButton::isDown() const noexcept -> bool
@@ -215,7 +215,7 @@ inline auto FButton::isDown() const noexcept -> bool
 
 //----------------------------------------------------------------------
 inline auto FButton::hasShadow() const -> bool
-{ return getFlags().shadow; }
+{ return getFlags().shadow.shadow; }
 
 //----------------------------------------------------------------------
 inline auto FButton::hasClickAnimation() const noexcept -> bool

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2022 Markus Gans                                      *
+* Copyright 2017-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -224,7 +224,7 @@ class FListViewIterator
     // Constructor
     FListViewIterator () = default;
     ~FListViewIterator () = default;
-    FListViewIterator (Iterator);
+    explicit FListViewIterator (Iterator);
     FListViewIterator (const FListViewIterator&) = default;
     FListViewIterator (FListViewIterator&& i) noexcept
       : iter_path{std::move(i.iter_path)}
@@ -235,9 +235,10 @@ class FListViewIterator
     // Overloaded operators
     auto operator = (const FListViewIterator&) -> FListViewIterator& = default;
     auto operator = (FListViewIterator&&) noexcept -> FListViewIterator& = default;
-    auto operator ++ () -> FListViewIterator&;     // prefix
+    auto operator = (Iterator iter) -> FListViewIterator&;
+    auto operator ++ () -> FListViewIterator&;    // prefix
     auto operator ++ (int) -> FListViewIterator;  // postfix
-    auto operator -- () -> FListViewIterator&;     // prefix
+    auto operator -- () -> FListViewIterator&;    // prefix
     auto operator -- (int) -> FListViewIterator;  // postfix
     auto operator += (int) -> FListViewIterator&;
     auto operator -= (int) -> FListViewIterator&;
@@ -245,6 +246,8 @@ class FListViewIterator
     auto operator -> () const -> FObject*;
     auto operator == (const FListViewIterator&) const -> bool;
     auto operator != (const FListViewIterator&) const -> bool;
+    auto operator == (Iterator) const -> bool;
+    auto operator != (Iterator) const -> bool;
 
     // Accessor
     auto getClassName() const -> FString;
@@ -281,6 +284,14 @@ inline auto FListViewIterator::operator == (const FListViewIterator& rhs) const 
 //----------------------------------------------------------------------
 inline auto FListViewIterator::operator != (const FListViewIterator& rhs) const -> bool
 { return node != rhs.node; }
+
+//----------------------------------------------------------------------
+inline auto FListViewIterator::operator == (Iterator iter) const -> bool
+{ return node == iter; }
+
+//----------------------------------------------------------------------
+inline auto FListViewIterator::operator != (Iterator iter) const -> bool
+{ return node != iter; }
 
 //----------------------------------------------------------------------
 inline auto FListViewIterator::getClassName() const -> FString
@@ -323,6 +334,7 @@ class FListView : public FWidget
     // Accessors
     auto getClassName() const -> FString override;
     auto getCount() const -> std::size_t;
+    auto getColumnCount() const -> std::size_t;
     auto getColumnAlignment (int) const -> Align;
     auto getColumnText (int) const -> FString;
     auto getColumnSortType (int) const -> SortType;
@@ -343,11 +355,18 @@ class FListView : public FWidget
     template <typename Compare>
     void setUserDescendingCompare (Compare);
     void hideSortIndicator (bool = true);
+    void showColumn (int);
+    void hideColumn (int);
     auto setTreeView (bool = true) -> bool;
     auto unsetTreeView() -> bool;
 
+    // Inquiries
+    auto isColumnHidden (int) const -> bool;
+
     // Methods
     virtual auto addColumn (const FString&, int = USE_MAX_SIZE) -> int;
+    virtual auto removeColumn (int) -> int;
+    void removeAllColumns();
     void hide() override;
     auto insert (FListViewItem*) -> iterator;
     auto insert (FListViewItem*, iterator) -> iterator;
@@ -387,7 +406,6 @@ class FListView : public FWidget
     void onMouseDoubleClick (FMouseEvent*) override;
     void onWheel (FWheelEvent*) override;
     void onTimer (FTimerEvent*) override;
-    void onFocusIn (FFocusEvent*) override;
     void onFocusOut (FFocusEvent*) override;
 
   protected:
@@ -437,6 +455,7 @@ class FListView : public FWidget
     void drawScrollbars() const;
     void drawHeadlines();
     void drawList();
+    void adjustWidthForTreeView (std::size_t&, std::size_t, bool) const;
     void drawListLine (const FListViewItem*, bool, bool);
     void clearList();
     void setLineAttributes (bool, bool) const;
@@ -445,9 +464,12 @@ class FListView : public FWidget
     void drawSortIndicator (std::size_t&, std::size_t);
     void drawHeadlineLabel (const HeaderItems::const_iterator&);
     void drawHeaderBorder (std::size_t);
+    auto findHeaderStartPos (bool&) -> FVTermBuffer::iterator;
+    auto findHeaderEndPos (FVTermBuffer::iterator, bool, bool&) -> FVTermBuffer::iterator;
     void drawBufferedHeadline();
     void drawColumnEllipsis ( const HeaderItems::const_iterator&
                             , const FString& );
+    void updateLayout();
     void updateDrawing (bool, bool);
     auto determineLineWidth (FListViewItem*) -> std::size_t;
     void beforeInsertion (FListViewItem*);
@@ -462,7 +484,14 @@ class FListView : public FWidget
     void dragUp (MouseButton);
     void dragDown (MouseButton);
     void stopDragScroll();
+    void toggleItemExpandState (FListViewItem*) const;
+    void toggleItemCheckState (FListViewItem*) const;
+    auto isCheckboxClicked (int, int) const -> bool;
+    void resetClickedPositions();
+    auto isWithinHeaderBounds (const FPoint&) const -> bool;
+    auto isWithinListBounds (const FPoint&) const -> bool;
     auto appendItem (FListViewItem*) -> iterator;
+    void handleListEvent (const FMouseEvent*);
     void processClick() const;
     void processRowChanged() const;
     void processChanged() const;
@@ -481,9 +510,12 @@ class FListView : public FWidget
     void stepBackward (int);
     void scrollToX (int);
     void scrollToY (int);
-    void scrollTo (const FPoint &);
+    void scrollTo (const FPoint&);
     void scrollTo (int, int);
     void scrollBy (int, int);
+    auto isItemListEmpty() const -> bool;
+    auto isTreeView() const -> bool;
+    auto isColumnIndexInvalid (int) const -> bool;
     auto hasCheckableItems() const -> bool;
 
     // Callback methods
@@ -497,7 +529,7 @@ class FListView : public FWidget
     FListViewIterator     current_iter{};
     FListViewIterator     first_visible_line{};
     FListViewIterator     last_visible_line{};
-    HeaderItems           header{};
+    HeaderItems           header;  // GitHub issues #122
     FVTermBuffer          headerline{};
     FScrollbarPtr         vbar{nullptr};
     FScrollbarPtr         hbar{nullptr};
@@ -543,6 +575,7 @@ struct FListView::Header
     Align   alignment{Align::Left};
     int     width{0};
     bool    fixed_width{false};
+    bool    visible{true};
 };
 
 
@@ -706,11 +739,17 @@ auto
 
 //----------------------------------------------------------------------
 inline auto FListView::getData() & -> FListViewItems&
-{ return reinterpret_cast<FListViewItems&>(itemlist); }
+{
+  FObjectList* ptr = &itemlist;
+  return *static_cast<FListViewItems*>(static_cast<void*>(ptr));
+}
 
 //----------------------------------------------------------------------
 inline auto FListView::getData() const & -> const FListViewItems&
-{ return reinterpret_cast<const FListViewItems&>(itemlist); }
+{
+  const FObjectList* ptr = &itemlist;
+  return *static_cast<const FListViewItems*>(static_cast<const void*>(ptr));
+}
 
 //----------------------------------------------------------------------
 inline auto FListView::isHorizontallyScrollable() const -> bool
@@ -721,8 +760,30 @@ inline auto FListView::isVerticallyScrollable() const -> bool
 { return getCount() > getClientHeight(); }
 
 //----------------------------------------------------------------------
+inline auto FListView::getColumnCount() const -> std::size_t
+{ return header.size(); }
+
+//----------------------------------------------------------------------
+inline void FListView::toggleItemCheckState (FListViewItem* item) const
+{ item->setChecked(! item->isChecked()); }
+
+//----------------------------------------------------------------------
 inline void FListView::scrollTo (const FPoint& pos)
 { scrollTo(pos.getX(), pos.getY()); }
+
+//----------------------------------------------------------------------
+inline auto FListView::isItemListEmpty() const -> bool
+{ return itemlist.empty(); }
+
+//----------------------------------------------------------------------
+inline auto FListView::isTreeView() const -> bool
+{ return tree_view; }
+
+//----------------------------------------------------------------------
+inline auto FListView::isColumnIndexInvalid (int column) const -> bool
+{
+  return column < 1 || header.empty() || column > int(header.size());
+}
 
 //----------------------------------------------------------------------
 inline auto FListView::hasCheckableItems() const -> bool

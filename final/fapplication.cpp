@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2013-2022 Markus Gans                                      *
+* Copyright 2013-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -65,8 +65,9 @@ FWidget*  FWidget::main_widget          {nullptr};  // main application widget
 FWidget*  FWidget::active_window        {nullptr};  // the active window
 FWidget*  FWidget::focus_widget         {nullptr};  // has keyboard input focus
 FWidget*  FWidget::clicked_widget       {nullptr};  // is focused by click
+FWidget*  FApplication::clicked_widget  {nullptr};  // is focused by click
 FWidget*  FWidget::open_menu            {nullptr};  // currently open menu
-FWidget*  FWidget::move_size_widget     {nullptr};  // move/size by keyboard
+FWidget*  FWidget::move_resize_widget   {nullptr};  // move or resize by keyboard
 FWidget*  FApplication::keyboard_widget {nullptr};  // has the keyboard focus
 int       FApplication::loop_level      {0};        // event loop level
 int       FApplication::quit_code       {EXIT_SUCCESS};
@@ -226,10 +227,10 @@ void FApplication::quit() const
 //----------------------------------------------------------------------
 auto FApplication::sendEvent (FObject* receiver, FEvent* event ) -> bool
 {
-  if ( quit_now || internal::var::exit_loop || ! (bool(receiver) && bool(event)) )
-    return false;
-
-  if ( ! isEventProcessable (receiver, event) )
+  if ( quit_now
+    || internal::var::exit_loop
+    || ! (bool(receiver) && bool(event))
+    || ! isEventProcessable (receiver, event) )
     return false;
 
   // Sends the event event directly to receiver
@@ -294,6 +295,12 @@ auto FApplication::removeQueuedEvent (const FObject* receiver) -> bool
   }
 
   return retval;
+}
+
+//----------------------------------------------------------------------
+void FApplication::registerMouseHandler (const FMouseHandler& fn)
+{
+  mouse_handler_list.push_back(fn);
 }
 
 //----------------------------------------------------------------------
@@ -368,7 +375,7 @@ void FApplication::setKeyboardWidget (FWidget* widget)
 //----------------------------------------------------------------------
 void FApplication::closeConfirmationDialog (FWidget* w, FCloseEvent* ev)
 {
-  internal::var::app_object->unsetMoveSizeMode();
+  FApplication::unsetMoveResizeMode(FMouseData{});
   const auto& ret = \
       FMessageBox::info ( w, "Quit"
                         , "Do you really want\n"
@@ -383,8 +390,7 @@ void FApplication::closeConfirmationDialog (FWidget* w, FCloseEvent* ev)
     ev->ignore();
 
     // Status bar restore after closing the FMessageBox
-    if ( getStatusBar() )
-      getStatusBar()->drawMessage();
+    drawStatusBarMessage();
   }
 }
 
@@ -434,6 +440,10 @@ void FApplication::init()
   // Set the default double click interval
   mouse.setDblclickInterval (dblclick_interval);
 
+  // Restister mouse handler callbacks
+  registerMouseHandler (FApplication::determineClickedWidget);
+  registerMouseHandler (FApplication::unsetMoveResizeMode);
+
   // Initialize logging
   if ( ! getStartOptions().logfile_stream.is_open() )
     getLog()->setLineEnding(FLog::LineEnding::CRLF);
@@ -464,9 +474,9 @@ void FApplication::setTerminalEncoding (const FString& enc_str)
 }
 
 //----------------------------------------------------------------------
-inline void FApplication::setLongOptions (std::vector<CmdOption>& long_options)
+inline auto FApplication::getLongOptions() -> const std::vector<CmdOption>&
 {
-  long_options =
+  static const std::vector<CmdOption>& long_options =
   {
     {"encoding",                 required_argument, nullptr,  'e' },
     {"log-file",                 required_argument, nullptr,  'l' },
@@ -474,6 +484,7 @@ inline void FApplication::setLongOptions (std::vector<CmdOption>& long_options)
     {"no-optimized-cursor",      no_argument,       nullptr,  'o' },
     {"no-terminal-detection",    no_argument,       nullptr,  'd' },
     {"no-terminal-data-request", no_argument,       nullptr,  'r' },
+    {"no-terminal-focus-events", no_argument,       nullptr,  'f' },
     {"no-color-change",          no_argument,       nullptr,  'c' },
     {"no-sgr-optimizer",         no_argument,       nullptr,  's' },
     {"vgafont",                  no_argument,       nullptr,  'v' },
@@ -489,6 +500,7 @@ inline void FApplication::setLongOptions (std::vector<CmdOption>& long_options)
 
     {nullptr,                    0,                 nullptr,  0   }
   };
+  return long_options;
 }
 
 //----------------------------------------------------------------------
@@ -510,6 +522,8 @@ inline void FApplication::setCmdOptionsMap (CmdMap& cmd_map)
   cmd_map['d'] = [opt] (const auto&) { opt().terminal_detection = false; };
   // --no-terminal-data-request
   cmd_map['r'] = [opt] (const auto&) { opt().terminal_data_request = false; };
+  // --no-terminal-focus-events
+  cmd_map['f'] = [opt] (const auto&) { opt().terminal_focus_events = false; };
   // --no-color-change
   cmd_map['c'] = [opt] (const auto&) { opt().color_change = false; };
   // --no-sgr-optimizer
@@ -553,19 +567,18 @@ void FApplication::cmdOptions (const Args& args)
   {
     opterr = 0;
     int idx{0};
-    std::vector<CmdOption> long_options{};
-    setLongOptions(long_options);
-    auto p = reinterpret_cast<const struct option*>(long_options.data());
+    const auto& long_options = getLongOptions();
+    const struct option* p = long_options.data();
     auto argv_data = const_cast<char* const*>(argv.data());
     const int opt = getopt_long (int(argc), argv_data, "", p, &idx);
 
     if ( opt == -1 )
       break;
 
-    const auto& entry = cmd_map[opt];
+    const auto& iter = cmd_map.find(opt);
 
-    if ( entry )
-      entry(optarg);
+    if ( iter != cmd_map.end() )
+      iter->second(optarg);
   }
 
   cmd_map.clear();
@@ -601,6 +614,8 @@ void FApplication::showParameterUsage()
     << "    Disable terminal detection\n"
     << "  --no-terminal-data-request"
     << "    Do not determine terminal font and title\n"
+    << "  --no-terminal-focus-events"
+    << "    Do not send focus-in and focus-out events\n"
     << "  --no-color-change         "
     << "    Do not redefine the color palette\n"
     << "  --no-sgr-optimizer        "
@@ -632,12 +647,13 @@ void FApplication::showParameterUsage()
 //----------------------------------------------------------------------
 inline void FApplication::destroyLog()
 {
+  // Reset the rdbuf of clog
+  std::clog << std::flush;
+  std::clog.rdbuf(default_clog_rdbuf);
+
   // Delete the logger
   const FLogPtr* logger = &(getLog());
   delete logger;
-
-  // Reset the rdbuf of clog
-  std::clog.rdbuf(default_clog_rdbuf);
 }
 
 //----------------------------------------------------------------------
@@ -647,20 +663,17 @@ inline void FApplication::findKeyboardWidget() const
 
   FWidget* widget{nullptr};
   auto focus = getFocusWidget();
-  auto move_size = getMoveSizeWidget();
+  auto move_size = getMoveResizeWidget();
 
   if ( focus )
   {
-    if ( move_size )
-      widget = move_size;
-    else
-      widget = focus;
+    widget = move_size ? move_size : focus;
   }
   else
   {
     widget = getMainWidget();
 
-    if ( widget && widget->numOfChildren() >= 1 )
+    if ( widget && widget->numOfFocusableChildren() >= 1 )
       widget->focusFirstChild();
   }
 
@@ -713,6 +726,11 @@ inline void FApplication::performKeyboardAction()
   {
     redraw();
   }
+  else if ( keyboard.getKey() == FKey::Term_Focus_In
+         || keyboard.getKey() == FKey::Term_Focus_Out )
+  {
+    processTerminalFocus (keyboard.getKey());  // Term focus-in/focus-out
+  }
   else
   {
     const bool acceptKeyDown = sendKeyDownEvent (keyboard_widget);
@@ -748,15 +766,12 @@ inline void FApplication::performMouseAction() const
 }
 
 //----------------------------------------------------------------------
-void FApplication::mouseEvent (const FMouseData& md)
+void FApplication::mouseEvent (const FMouseData& md) const
 {
-  determineClickedWidget (md);
-  unsetMoveSizeMode();
-  closeDropDown (md);
-  unselectMenubarItems (md);
+  for (const auto& mouse_handler : mouse_handler_list)
+    mouse_handler(md);  // Execute mouse handler
 
-  if ( FWidget::getClickedWidget() )  // A widget was clicked
-    sendMouseEvent (md);
+  sendMouseEvent (md);
 }
 
 //----------------------------------------------------------------------
@@ -881,8 +896,14 @@ inline void FApplication::processInput() const
 
   queuingKeyboardInput();
   queuingMouseInput();
-  processKeyboardEvent();
-  processMouseEvent();
+
+  do
+  {
+    processKeyboardEvent();
+    processMouseEvent();
+  }
+  while ( ! quit_now && hasDataInQueue() );
+  // quit_now is checked again to avoid an infinite loop on exit
 }
 
 //----------------------------------------------------------------------
@@ -899,8 +920,8 @@ auto FApplication::processDialogSwitchAccelerator() const -> bool
 
     if ( s > 0 && s >= n )
     {
-      // unset the move/size mode
-      auto move_size = getMoveSizeWidget();
+      // unset the move/resize mode
+      auto move_size = getMoveResizeWidget();
 
       if ( move_size )
       {
@@ -931,7 +952,7 @@ auto FApplication::processAccelerator (const FWidget& widget) const -> bool
     if ( item.key == keyboard.getKey() )
     {
       // unset the move/size mode
-      auto move_size = getMoveSizeWidget();
+      auto move_size = getMoveResizeWidget();
 
       if ( move_size )
       {
@@ -949,6 +970,31 @@ auto FApplication::processAccelerator (const FWidget& widget) const -> bool
   }
 
   return false;
+}
+
+//----------------------------------------------------------------------
+void FApplication::processTerminalFocus (const FKey& key)
+{
+  auto root_widget = getRootWidget();
+
+  if ( ! root_widget
+    || ( key != FKey::Term_Focus_In && key != FKey::Term_Focus_Out ) )
+    return;
+
+  // unset the move/size mode
+  auto move_size = getMoveResizeWidget();
+
+  if ( move_size )
+  {
+    setMoveSizeWidget(nullptr);
+    move_size->redraw();
+  }
+
+  auto event = ( key == FKey::Term_Focus_In )
+              ? Event::TerminalFocusIn
+              : Event::TerminalFocusOut;
+  FFocusEvent tf_ev (event);
+  sendEvent (root_widget, &tf_ev);
 }
 
 //----------------------------------------------------------------------
@@ -972,78 +1018,36 @@ void FApplication::determineClickedWidget (const FMouseData& md)
   // Determine the window object on the current click position
   auto window = FWindow::getWindowWidgetAt (mouse_position);
 
-  if ( window )
-  {
-    // Determine the widget at the current click position
-    auto child = window->childWidgetAt(mouse_position);
-    clicked_widget = ( child != nullptr ) ? child : window;
-    setClickedWidget (clicked_widget);
-  }
+  if ( ! window )
+    return;
+
+  // Determine the widget at the current click position
+  auto child = window->childWidgetAt(mouse_position);
+  clicked_widget = ( child != nullptr ) ? child : window;
+  setClickedWidget (clicked_widget);
 }
 
 //----------------------------------------------------------------------
-void FApplication::unsetMoveSizeMode() const
+void FApplication::unsetMoveResizeMode (const FMouseData&)
 {
-  // Unset the move/size mode
+  // Unset the move or resize mode
 
-  auto& move_size = getMoveSizeWidget();
+  auto& move_size = getMoveResizeWidget();
 
-  if ( move_size )
-  {
-    FWidget* w{nullptr};
-    std::swap(w, move_size);  // Clear move_size_widget
-    w->redraw();
-  }
-}
-
-//----------------------------------------------------------------------
-void FApplication::closeDropDown (const FMouseData& md) const
-{
-  // Close the open menu
-
-  if ( md.isMoved() )
+  if ( ! move_size )
     return;
 
-  const auto& mouse_position = md.getPos();
-  finalcut::closeDropDown (this, mouse_position);  // in fwindow.cpp
-}
-
-//----------------------------------------------------------------------
-void FApplication::unselectMenubarItems (const FMouseData& md) const
-{
-  // Unselect the menu bar items
-
-  const auto& openmenu = FWidget::getOpenMenu();
-  auto menu_bar = FWidget::getMenuBar();
-
-  if ( openmenu || md.isMoved() )
-    return;
-
-  if ( ! (menu_bar && menu_bar->hasSelectedItem()) )
-    return;
-
-  const auto& mouse_position = md.getPos();
-
-  if ( ! menu_bar->getTermGeometry().contains(mouse_position) )
-  {
-    if ( FWidget::getStatusBar() )
-      FWidget::getStatusBar()->clearMessage();
-
-    menu_bar->resetMenu();
-    menu_bar->redraw();
-
-    // No widget was been clicked
-    if ( ! FWidget::getClickedWidget() )
-      FWindow::switchToPrevWindow(this);
-
-    if ( FWidget::getStatusBar() )
-      FWidget::getStatusBar()->drawMessage();
-  }
+  FWidget* w{nullptr};
+  std::swap(w, move_size);  // Clear move_resize_widget
+  w->redraw();
 }
 
 //----------------------------------------------------------------------
 void FApplication::sendMouseEvent (const FMouseData& md) const
 {
+  if ( ! FWidget::getClickedWidget() )  // No widget was clicked
+    return;
+
   const auto& mouse_position = md.getPos();
   MouseButton key_state{MouseButton::None};
 
@@ -1250,11 +1254,10 @@ auto FApplication::processParameters (const Args& args) -> FWidget*
 //----------------------------------------------------------------------
 void FApplication::processResizeEvent()
 {
-  auto foutput_ptr = FVTerm::getFOutput();
-
   if ( ! has_terminal_resized )  // A SIGWINCH signal was received
     return;
 
+  auto foutput_ptr = FVTerm::getFOutput();
   foutput_ptr->detectTerminalSize();  // Detect and save the current terminal size
   static auto& mouse = FMouseControl::getInstance();
   mouse.setMaxWidth (uInt16(getDesktopWidth()));
@@ -1265,6 +1268,13 @@ void FApplication::processResizeEvent()
 
   if ( r_ev.isAccepted() )
     foutput_ptr->commitTerminalResize();
+}
+
+//----------------------------------------------------------------------
+void FApplication::processDialogResizeMove() const
+{
+  for (auto&& dialog : *FWidget::getDialogList())
+    dialog->flushChanges();
 }
 
 //----------------------------------------------------------------------
@@ -1306,12 +1316,13 @@ auto FApplication::processNextEvent() -> bool
 
   if ( hasDataInQueue() || hasTerminalResized() || isNextEventTimeout() )
   {
-    time_last_event = FObject::getCurrentTime();
+    time_last_event = FObjectTimer::getCurrentTime();
     num_events += processTimerEvent();
     processInput();
     processResizeEvent();
     processCloseWidget();
     sendQueuedEvents();
+    processDialogResizeMove();
     processTerminalUpdate();  // after terminal changes
     flush();
     processLogger();
@@ -1351,16 +1362,13 @@ auto FApplication::isEventProcessable ( FObject* receiver
 
   if ( getModalDialogCounter() > 0 )
   {
-    const FWidget* window;
-
-    if ( widget->isWindowWidget() )
-      window = widget;
-    else
-      window = FWindow::getWindowWidget(widget);
+    const FWidget* window = widget->isWindowWidget()
+                          ? widget
+                          : FWindow::getWindowWidget(widget);
 
     // block events for widgets in non modal windows
     if ( window
-      && ! window->getFlags().modal
+      && ! window->getFlags().visibility.modal
       && ! window->isMenuWidget() )
     {
       constexpr std::array<const Event, 13> blocked_events
@@ -1401,7 +1409,7 @@ auto FApplication::isEventProcessable ( FObject* receiver
 //----------------------------------------------------------------------
 auto FApplication::isNextEventTimeout() -> bool
 {
-  return FObject::isTimeout(time_last_event, next_event_wait);
+  return FObjectTimer::isTimeout(time_last_event, next_event_wait);
 }
 
 
@@ -1423,7 +1431,22 @@ void setQueued (FEvent& event, bool state)
 //----------------------------------------------------------------------
 auto operator << (std::ostream& outstr, FLog::LogLevel l) -> std::ostream&
 {
-  *FApplication::getLog() << l;
+  try
+  {
+    *FApplication::getLog() << l;
+  }
+  catch (const std::invalid_argument&)
+  {
+    try
+    {
+      *FApplication::getLog() << FLog::LogLevel::Info;
+    }
+    catch (const std::invalid_argument&)  // Avoid being thrown again
+    {
+      *FApplication::getLog();
+    }
+  }
+
   return outstr;
 }
 

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2022 Markus Gans                                      *
+* Copyright 2014-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -293,15 +293,12 @@ void FListBox::onMouseDown (FMouseEvent* ev)
   setWidgetFocus(this);
   const int yoffset_before = yoffset;
   const std::size_t current_before = current;
-  const int mouse_x = ev->getX();
-  const int mouse_y = ev->getY();
 
-  if ( mouse_x > 1 && mouse_x < int(getWidth())
-    && mouse_y > 1 && mouse_y < int(getHeight()) )
+  if ( isWithinListBounds(ev->getPos()) )
   {
     click_on_list = true;
     const std::size_t element_count = getCount();
-    current = std::size_t(yoffset + mouse_y - 1);
+    current = std::size_t(yoffset + ev->getY() - 1);
 
     if ( current > element_count )
       current = element_count;
@@ -333,21 +330,15 @@ void FListBox::onMouseUp (FMouseEvent* ev)
 {
   click_on_list = false;
 
-  if ( drag_scroll != DragScrollMode::None )
+  if ( isDragging(drag_scroll) )
     stopDragScroll();
 
-  if ( ev->getButton() == MouseButton::Left )
-  {
-    const int mouse_x = ev->getX();
-    const int mouse_y = ev->getY();
+  if ( ev->getButton() != MouseButton::Left )
+    return;
 
-    if ( mouse_x > 1 && mouse_x < int(getWidth())
-      && mouse_y > 1 && mouse_y < int(getHeight())
-      && ! isMultiSelection() )
-    {
-      processSelect();
-    }
-  }
+  if ( isWithinListBounds(ev->getPos())
+    && ! isMultiSelection() )
+    processSelect();
 }
 
 //----------------------------------------------------------------------
@@ -362,11 +353,9 @@ void FListBox::onMouseMove (FMouseEvent* ev)
 
   const std::size_t current_before = current;
   const int yoffset_before = yoffset;
-  const int mouse_x = ev->getX();
   const int mouse_y = ev->getY();
 
-  if ( mouse_x > 1 && mouse_x < int(getWidth())
-    && mouse_y > 1 && mouse_y < int(getHeight()) )
+  if ( isWithinListBounds(ev->getPos()) )
   {
     click_on_list = true;
     const std::size_t element_count = getCount();
@@ -412,20 +401,14 @@ void FListBox::onMouseMove (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FListBox::onMouseDoubleClick (FMouseEvent* ev)
 {
-  if ( ev->getButton() != MouseButton::Left )
+  if ( ev->getButton() != MouseButton::Left
+    || ! isWithinListBounds(ev->getPos()) )
     return;
 
-  const int mouse_x = ev->getX();
-  const int mouse_y = ev->getY();
+  if ( yoffset + ev->getY() - 1 > int(getCount()) )
+    return;
 
-  if ( mouse_x > 1 && mouse_x < int(getWidth())
-    && mouse_y > 1 && mouse_y < int(getHeight()) )
-  {
-    if ( yoffset + mouse_y - 1 > int(getCount()) )
-      return;
-
-    processClick();
-  }
+  processClick();
 }
 
 //----------------------------------------------------------------------
@@ -478,7 +461,7 @@ void FListBox::onWheel (FWheelEvent* ev)
   static constexpr int wheel_distance = 4;
   const auto& wheel = ev->getWheel();
 
-  if ( drag_scroll != DragScrollMode::None )
+  if ( isDragging(drag_scroll) )
     stopDragScroll();
 
   if ( wheel == MouseWheel::Up )
@@ -504,25 +487,19 @@ void FListBox::onWheel (FWheelEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FListBox::onFocusIn (FFocusEvent*)
+void FListBox::onFocusIn (FFocusEvent* in_ev)
 {
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
-
+  drawStatusBarMessage();
   inc_search.clear();
+  FWidget::onFocusIn(in_ev);
 }
 
 //----------------------------------------------------------------------
-void FListBox::onFocusOut (FFocusEvent*)
+void FListBox::onFocusOut (FFocusEvent* out_ev)
 {
-  if ( getStatusBar() )
-  {
-    getStatusBar()->clearMessage();
-    getStatusBar()->drawMessage();
-  }
-
   delOwnTimers();
   inc_search.clear();
+  FWidget::onFocusOut(out_ev);
 }
 
 
@@ -646,20 +623,20 @@ inline void FListBox::mapKeyFunctions()
 void FListBox::processKeyAction (FKeyEvent* ev)
 {
   const auto idx = ev->key();
-  const auto& entry = key_map[idx];
+  const auto& iter = key_map.find(idx);
 
-  if ( entry )
+  if ( iter != key_map.end() )
   {
-    entry();
+    iter->second();
     ev->accept();
   }
   else
   {
-    const auto& entry_result = key_map_result[idx];
+    const auto& iter_result = key_map_result.find(idx);
 
-    if ( entry_result )
+    if ( iter_result != key_map_result.end() )
     {
-      if ( entry_result() )
+      if ( iter_result->second() )
         ev->accept();
     }
     else if ( keyIncSearchInput(idx) )
@@ -700,18 +677,7 @@ void FListBox::draw()
 
   drawScrollbars();
   drawList();
-
-  if ( getFlags().focus && getStatusBar() )
-  {
-    const auto& msg = getStatusbarMessage();
-    const auto& curMsg = getStatusBar()->getMessage();
-
-    if ( curMsg != msg )
-    {
-      getStatusBar()->setMessage(msg);
-      getStatusBar()->drawMessage();
-    }
-  }
+  updateStatusbar (this);
 }
 
 //----------------------------------------------------------------------
@@ -830,7 +796,7 @@ inline void FListBox::drawListLine ( int y
   const FString element(getColumnSubString (getString(iter), first, max_width));
   auto column_width = getColumnWidth(element);
 
-  if ( FVTerm::getFOutput()->isMonochron() && isCurrentLine && getFlags().focus )
+  if ( FVTerm::getFOutput()->isMonochron() && isCurrentLine && getFlags().focus.focus )
     print (UniChar::BlackRightPointingPointer);  // ►
   else
     print (' ');
@@ -841,14 +807,14 @@ inline void FListBox::drawListLine ( int y
 
   for (std::size_t i{0}; i < element.getLength(); i++)
   {
-    if ( serach_mark && i == inc_len && getFlags().focus  )
+    if ( serach_mark && i == inc_len && getFlags().focus.focus  )
       setColor ( wc->current_element_focus_fg
                , wc->current_element_focus_bg );
 
     print (element[i]);
   }
 
-  if ( FVTerm::getFOutput()->isMonochron() && isCurrentLine  && getFlags().focus )
+  if ( FVTerm::getFOutput()->isMonochron() && isCurrentLine  && getFlags().focus.focus )
   {
     print (UniChar::BlackLeftPointingPointer);  // ◄
     column_width++;
@@ -881,7 +847,7 @@ inline void FListBox::drawListBracketsLine ( int y
   const std::size_t inc_len = inc_search.getLength();
   const bool isCurrentLine( y + yoffset + 1 == int(current) );
 
-  if ( FVTerm::getFOutput()->isMonochron() && isCurrentLine && getFlags().focus )
+  if ( FVTerm::getFOutput()->isMonochron() && isCurrentLine && getFlags().focus.focus )
     print (UniChar::BlackRightPointingPointer);  // ►
   else
     print (' ');
@@ -924,7 +890,7 @@ inline void FListBox::drawListBracketsLine ( int y
     column_width++;
   }
 
-  if ( FVTerm::getFOutput()->isMonochron() && isCurrentLine && getFlags().focus )
+  if ( FVTerm::getFOutput()->isMonochron() && isCurrentLine && getFlags().focus.focus )
   {
     print (UniChar::BlackLeftPointingPointer);   // ◄
     column_width++;
@@ -935,16 +901,9 @@ inline void FListBox::drawListBracketsLine ( int y
 }
 
 //----------------------------------------------------------------------
-inline void FListBox::setLineAttributes ( int y
-                                        , bool isLineSelected
-                                        , bool lineHasBrackets
-                                        , bool& serach_mark )
+inline void FListBox::setInitialLineAttributes (bool isLineSelected) const
 {
-  const bool isCurrentLine( y + yoffset + 1 == int(current) );
-  const std::size_t inc_len = inc_search.getLength();
-  const std::size_t inc_width = getColumnWidth(inc_search);
   const auto& wc = getColorTheme();
-  print() << FPoint{2, 2 + int(y)};
 
   if ( isLineSelected )
   {
@@ -960,58 +919,82 @@ inline void FListBox::setLineAttributes ( int y
     else
       setColor (wc->list_fg, wc->list_bg);
   }
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::setCurrentLineAttributes ( int y
+                                               , bool isLineSelected
+                                               , bool lineHasBrackets
+                                               , bool& serach_mark )
+{
+  const auto& wc = getColorTheme();
+  const std::size_t inc_len = inc_search.getLength();
+  const std::size_t inc_width = getColumnWidth(inc_search);
+
+  if ( getFlags().focus.focus && FVTerm::getFOutput()->getMaxColor() < 16 )
+    setBold();
+
+  if ( isLineSelected )
+  {
+    if ( FVTerm::getFOutput()->isMonochron() )
+      setBold();
+    else if ( getFlags().focus.focus )
+      setColor ( wc->selected_current_element_focus_fg
+               , wc->selected_current_element_focus_bg );
+    else
+      setColor ( wc->selected_current_element_fg
+               , wc->selected_current_element_bg );
+
+    setCursorPos ({3, 2 + y});  // first character
+  }
+  else
+  {
+    if ( FVTerm::getFOutput()->isMonochron() )
+      unsetBold();
+
+    if ( getFlags().focus.focus )
+    {
+      setColor ( wc->current_element_focus_fg
+               , wc->current_element_focus_bg );
+      const int b = lineHasBrackets ? 1 : 0;
+
+      if ( inc_len > 0 )  // incremental search
+      {
+        serach_mark = true;
+        // Place the cursor on the last found character
+        setCursorPos ({2 + b + int(inc_width), 2 + y});
+      }
+      else  // only highlighted
+        setCursorPos ({3 + b, 2 + y});  // first character
+    }
+    else
+      setColor ( wc->current_element_fg
+               , wc->current_element_bg );
+  }
+
+  if ( FVTerm::getFOutput()->isMonochron() )
+    setReverse(false);
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::setLineAttributes ( int y
+                                        , bool isLineSelected
+                                        , bool lineHasBrackets
+                                        , bool& serach_mark )
+{
+  const bool isCurrentLine( y + yoffset + 1 == int(current) );
+  print() << FPoint{2, 2 + y};
+  setInitialLineAttributes(isLineSelected);
 
   if ( isCurrentLine )
   {
-    if ( getFlags().focus && FVTerm::getFOutput()->getMaxColor() < 16 )
-      setBold();
-
-    if ( isLineSelected )
-    {
-      if ( FVTerm::getFOutput()->isMonochron() )
-        setBold();
-      else if ( getFlags().focus )
-        setColor ( wc->selected_current_element_focus_fg
-                 , wc->selected_current_element_focus_bg );
-      else
-        setColor ( wc->selected_current_element_fg
-                 , wc->selected_current_element_bg );
-
-      setCursorPos ({3, 2 + int(y)});  // first character
-    }
-    else
-    {
-      if ( FVTerm::getFOutput()->isMonochron() )
-        unsetBold();
-
-      if ( getFlags().focus )
-      {
-        setColor ( wc->current_element_focus_fg
-                 , wc->current_element_focus_bg );
-        const int b = lineHasBrackets ? 1 : 0;
-
-        if ( inc_len > 0 )  // incremental search
-        {
-          serach_mark = true;
-          // Place the cursor on the last found character
-          setCursorPos ({2 + b + int(inc_width), 2 + int(y)});
-        }
-        else  // only highlighted
-          setCursorPos ({3 + b, 2 + int(y)});  // first character
-      }
-      else
-        setColor ( wc->current_element_fg
-                 , wc->current_element_bg );
-    }
-
-    if ( FVTerm::getFOutput()->isMonochron() )
-      setReverse(false);
+    setCurrentLineAttributes(y, isLineSelected, lineHasBrackets, serach_mark);
   }
   else
   {
     if ( FVTerm::getFOutput()->isMonochron() )
       setReverse(true);
-    else if ( getFlags().focus && FVTerm::getFOutput()->getMaxColor() < 16 )
+    else if ( getFlags().focus.focus && FVTerm::getFOutput()->getMaxColor() < 16 )
       unsetBold();
   }
 }
@@ -1228,7 +1211,7 @@ auto FListBox::dragScrollDown() -> bool
 //----------------------------------------------------------------------
 void FListBox::dragUp (MouseButton mouse_button)
 {
-  if ( drag_scroll != DragScrollMode::None
+  if ( isDragging(drag_scroll)
     && scroll_distance < int(getClientHeight()) )
     scroll_distance++;
 
@@ -1253,7 +1236,7 @@ void FListBox::dragUp (MouseButton mouse_button)
 //----------------------------------------------------------------------
 void FListBox::dragDown (MouseButton mouse_button)
 {
-  if ( drag_scroll != DragScrollMode::None
+  if ( isDragging(drag_scroll)
     && scroll_distance < int(getClientHeight()) )
     scroll_distance++;
 
@@ -1465,6 +1448,15 @@ inline void FListBox::lastPos()
     yoffset = yoffset_end;
 
   inc_search.clear();
+}
+
+//----------------------------------------------------------------------
+inline auto FListBox::isWithinListBounds (const FPoint& pos) const -> bool
+{
+  return pos.getX() > 1
+      && pos.getX() < int(getWidth())
+      && pos.getY() > 1
+      && pos.getY() < int(getHeight());
 }
 
 //----------------------------------------------------------------------
@@ -1719,7 +1711,7 @@ void FListBox::cb_vbarChange (const FWidget*)
       break;
 
     default:
-      break;
+      throw std::invalid_argument{"Invalid scroll type"};
   }
 
   if ( current_before != current )
@@ -1780,7 +1772,7 @@ void FListBox::cb_hbarChange (const FWidget*)
       break;
 
     default:
-      break;
+      throw std::invalid_argument{"Invalid scroll type"};
   }
 
   if ( xoffset_before != xoffset )

@@ -203,6 +203,11 @@ class Calc final : public finalcut::FDialog
     void setDisplay (lDouble);
     void setInfixOperator (char);
     void clearInfixOperator();
+    void calcMultiplication();
+    void calcDivision();
+    void calcAddition();
+    void calcSubtraction();
+    void calcExponentiation();
     void calcInfixOperator();
     void initLayout() override;
     void adjustSize() override;
@@ -264,8 +269,6 @@ Calc::Calc (FWidget* parent)
     btn->setFlat();
     btn->setNoUnderline();
     btn->setText(getButtonText(key));
-    btn->setDoubleFlatLine(finalcut::Side::Top);
-    btn->setDoubleFlatLine(finalcut::Side::Bottom);
 
     if ( finalcut::FVTerm::getFOutput()->isNewFont() )
       btn->unsetClickAnimation();
@@ -875,9 +878,6 @@ void Calc::tangent (lDouble& x)
       if ( x < 1 )
       {
         x = 0.5L * std::log((1 + x) / (1 - x));
-
-        if ( errno == EDOM || errno == ERANGE )
-          error = true;
       }
       else
         error = true;
@@ -901,7 +901,7 @@ void Calc::tangent (lDouble& x)
     }
   }
 
-  if ( errno == EDOM )
+  if ( errno == EDOM || errno == ERANGE )
     error = true;
 
   setDisplay(x);
@@ -1000,63 +1000,96 @@ inline void Calc::clearInfixOperator()
 }
 
 //----------------------------------------------------------------------
+inline void Calc::calcMultiplication()
+{
+  if ( std::fabs(a) > LDBL_EPSILON )  // a != 0.0L
+  {
+    // ln(a * b) = ln(a) + ln(b)
+    if ( std::log(std::abs(a)) + std::log(std::abs(b)) <= std::log(LDBL_MAX) )
+      a *= b;
+    else
+      error = true;
+  }
+  else
+    b = 0.0L;
+}
+
+//----------------------------------------------------------------------
+inline void Calc::calcDivision()
+{
+  if ( std::fabs(b) > LDBL_EPSILON )  // b != 0.0L
+    a /= b;
+  else
+    error = true;
+}
+
+//----------------------------------------------------------------------
+inline void Calc::calcAddition()
+{
+  if ( std::fabs(a) > LDBL_EPSILON )  // a != 0.0L
+  {
+    if ( std::log(std::abs(a)) + std::log(std::abs(1 + b / a)) <= std::log(LDBL_MAX) )
+      a += b;
+    else
+      error = true;
+  }
+  else
+    a = b;
+}
+
+//----------------------------------------------------------------------
+inline void Calc::calcSubtraction()
+{
+  if ( std::fabs(b) > LDBL_EPSILON )  // b != 0.0L
+  {
+    if ( std::log(std::abs(a)) + std::log(std::abs(1 - b / a)) <= std::log(LDBL_MAX) )
+      a -= b;
+    else
+      error = true;
+  }
+  else
+    a = b * (-1.0L);
+}
+
+//----------------------------------------------------------------------
+inline void Calc::calcExponentiation()
+{
+  a = std::pow(a, b);
+
+  if ( errno == EDOM || errno == ERANGE )
+    error = true;
+}
+
+//----------------------------------------------------------------------
 void Calc::calcInfixOperator()
 {
   switch ( infix_operator )
   {
+    case '\0':  // The infix operator has not been set yet
+      return;
+
     case '*':
-      if ( std::fabs(a) > LDBL_EPSILON )  // a != 0.0L
-      {
-        // ln(a * b) = ln(a) + ln(b)
-        if ( std::log(std::abs(a)) + std::log(std::abs(b)) <= std::log(LDBL_MAX) )
-          a *= b;
-        else
-          error = true;
-      }
-      else
-        b = 0.0L;
+      calcMultiplication();
       break;
 
     case '/':
-      if ( std::fabs(b) > LDBL_EPSILON )  // b != 0.0L
-        a /= b;
-      else
-        error = true;
+      calcDivision();
       break;
 
     case '+':
-      if ( std::fabs(a) > LDBL_EPSILON )  // a != 0.0L
-      {
-        if ( std::log(std::abs(a)) + std::log(std::abs(1 + b / a)) <= std::log(LDBL_MAX) )
-          a += b;
-        else
-          error = true;
-      }
-      else
-        a = b;
+      calcAddition();
       break;
 
     case '-':
-      if ( std::fabs(b) > LDBL_EPSILON )  // b != 0.0L
-      {
-        if ( std::log(std::abs(a)) + std::log(std::abs(1 - b / a)) <= std::log(LDBL_MAX) )
-          a -= b;
-        else
-          error = true;
-      }
-      else
-        a = b * (-1.0L);
+      calcSubtraction();
       break;
 
     case '^':
-      a = std::pow(a, b);
-
-      if ( errno == EDOM || errno == ERANGE )
-        error = true;
+      calcExponentiation();
       break;
 
     default:
-      break;
+      throw std::invalid_argument{"Invalid infix operator"};
   }
 
   clearInfixOperator();
@@ -1082,6 +1115,9 @@ void Calc::initLayout()
       const int y = (int(key) + n) / 5 * 2 + 3;
       btn->setGeometry(FPoint{x, y}, FSize{5, 1});
     }
+
+    btn->setDoubleFlatLine(finalcut::Side::Top);
+    btn->setDoubleFlatLine(finalcut::Side::Bottom);
   }
 
   FDialog::initLayout();
