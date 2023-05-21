@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2022 Markus Gans                                      *
+* Copyright 2018-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -41,6 +41,7 @@
 #include <mutex>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "final/fc.h"
 #include "final/ftypes.h"
@@ -152,7 +153,7 @@ class FTermData final
     auto getTerminalGeometry() const & -> const FRect&;
     auto getTTYFileDescriptor() const noexcept -> int;
     auto getBaudrate() const noexcept -> uInt;
-    auto getTermType() const & -> const std::string& ;
+    auto getTermType() const & -> const std::string&;
     auto getTermFileName() const & -> const std::string&;
     auto getGnomeTerminalID() const noexcept -> int;
     auto getKittyVersion() const noexcept -> kittyVersion;

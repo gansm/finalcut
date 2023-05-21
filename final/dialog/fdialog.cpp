@@ -21,6 +21,7 @@
 ***********************************************************************/
 
 #include <memory>
+#include <utility>
 
 #include "final/dialog/fdialog.h"
 #include "final/fapplication.h"
@@ -776,7 +777,7 @@ void FDialog::init()
   ignorePadding();
   setDialogWidget();
   // Initialize geometry values
-  setGeometry (FPoint{1, 1}, FSize{10, 10}, false);
+  FWindow::setGeometry (FPoint{1, 1}, FSize{10, 10}, false);
   setMinimumSize (FSize{15, 4});
   mapKeyFunctions();
   addDialog(this);

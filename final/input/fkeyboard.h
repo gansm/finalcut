@@ -42,6 +42,7 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "final/ftypes.h"
 #include "final/input/fkey_hashmap.h"

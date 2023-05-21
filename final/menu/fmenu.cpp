@@ -22,6 +22,7 @@
 
 #include <memory>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 #include "final/dialog/fdialog.h"
@@ -412,7 +413,7 @@ void FMenu::init()
   setLeftPadding(1);
   setBottomPadding(1);
   setRightPadding(1);
-  setGeometry (FPoint{1, 1}, FSize{10, 2}, false);  // initialize geometry values
+  FWindow::setGeometry (FPoint{1, 1}, FSize{10, 2}, false);  // initialize geometry values
   setTransparentShadow();
   setMenuWidget();
   FMenu::hide();

@@ -560,7 +560,7 @@ void FMouseGPM::drawPointer() const
 //----------------------------------------------------------------------
 auto FMouseGPM::gpmEvent (bool clear) const -> gpmEventType
 {
-  const int max = ( gpm_fd > stdin_no ) ? gpm_fd : stdin_no;
+  const int max = std::max(gpm_fd, stdin_no);
   fd_set ifds{};
   struct timeval tv{};
 

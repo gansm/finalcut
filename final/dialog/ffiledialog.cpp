@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2022 Markus Gans                                      *
+* Copyright 2014-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -21,6 +21,7 @@
 ***********************************************************************/
 
 #include <array>
+#include <utility>
 #include <vector>
 
 #if defined(__CYGWIN__)
@@ -278,7 +279,7 @@ void FFileDialog::init()
   int x{};
   int y{};
 
-  setGeometry(FPoint{1, 1}, FSize{w, h}, false);
+  FWindow::setGeometry(FPoint{1, 1}, FSize{w, h}, false);
   const auto& parent_widget = getParentWidget();
 
   if ( parent_widget )

@@ -569,7 +569,7 @@ class FListView : public FWidget
 struct FListView::Header
 {
   public:
-    Header () = default;
+    Header() = default;
 
     FString name{};
     Align   alignment{Align::Left};

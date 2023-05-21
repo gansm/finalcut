@@ -98,7 +98,7 @@ void FVTermAttribute::print (const FStyle& style)
     if ( iter != attributeLookup.end() )
       iter->second(true);  // Sets the found style
 
-    attr ^= style_name; // Clear the rightmost set bit
+    attr ^= style_name;  // Clear the rightmost set bit
   }
 }
 

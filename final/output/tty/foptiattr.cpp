@@ -20,16 +20,16 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-#include <cstring>
 #include <array>
+#include <cstring>
 #include <functional>
+#include <memory>
 #include <utility>
 
 #include "final/fc.h"
 #include "final/fstartoptions.h"
 #include "final/output/tty/foptiattr.h"
 #include "final/output/tty/ftermcap.h"
-
 
 namespace finalcut
 {

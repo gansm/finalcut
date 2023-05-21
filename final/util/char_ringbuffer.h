@@ -40,8 +40,11 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include <cstring>
+#include <algorithm>
 #include <array>
+#include <cstring>
+#include <string>
+#include <utility>
 
 #include <final/util/fstring.h>
 
