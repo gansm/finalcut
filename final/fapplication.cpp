@@ -1327,10 +1327,9 @@ auto FApplication::processNextEvent() -> bool
     flush();
     processLogger();
   }
-  else
+  else if ( isKeyPressed(next_event_wait) )
   {
-    if ( isKeyPressed(next_event_wait) )
-      time_last_event = TimeValue{};
+    time_last_event = TimeValue{};
   }
 
   processExternalUserEvent();

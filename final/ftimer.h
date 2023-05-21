@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2022 Markus Gans                                           *
+* Copyright 2022-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -37,7 +37,9 @@
 
 #include <algorithm>
 #include <chrono>
+#include <memory>
 #include <mutex>
+#include <vector>
 
 #include "final/fevent.h"
 #include "final/util/fstring.h"
@@ -129,7 +131,7 @@ class FTimer
 
 // non-member function forward declarations
 //----------------------------------------------------------------------
-int getNextId();
+auto getNextId() -> int;
 
 // public methods of FTimer
 //----------------------------------------------------------------------

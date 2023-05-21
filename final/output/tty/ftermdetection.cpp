@@ -25,6 +25,8 @@
 #endif
 
 #include <array>
+#include <memory>
+#include <string>
 
 #include "final/fapplication.h"
 #include "final/fc.h"

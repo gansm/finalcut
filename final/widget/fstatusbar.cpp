@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2022 Markus Gans                                      *
+* Copyright 2014-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <utility>
 #include <vector>
 
 #include "final/fevent.h"
@@ -101,7 +102,7 @@ auto FStatusKey::setMouseFocus(bool enable) -> bool
 //----------------------------------------------------------------------
 void FStatusKey::init()
 {
-  setGeometry (FPoint{1, 1}, FSize{1, 1});
+  FWidget::setGeometry (FPoint{1, 1}, FSize{1, 1});
   FWidget* parent = getParentWidget();
 
   if ( parent && parent->isInstanceOf("FStatusBar") )
@@ -507,7 +508,7 @@ void FStatusBar::init()
   const std::size_t w = r->getWidth();
   const auto h = int(r->getHeight());
   // initialize geometry values
-  setGeometry (FPoint{1, h}, FSize{w, 1}, false);
+  FWindow::setGeometry (FPoint{1, h}, FSize{w, 1}, false);
   setAlwaysOnTop();
   setStatusBar(this);
   ignorePadding();

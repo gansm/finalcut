@@ -27,6 +27,11 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <algorithm>
+#include <memory>
+#include <string>
+#include <unordered_map>
+
 #include "final/fc.h"
 #include "final/input/fkey_map.h"
 

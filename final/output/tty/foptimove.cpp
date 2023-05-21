@@ -20,8 +20,10 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-#include <cstring>
+#include <algorithm>
 #include <array>
+#include <cstring>
+#include <memory>
 
 #include "final/fapplication.h"
 #include "final/fc.h"

@@ -49,14 +49,13 @@ FProgressbar::~FProgressbar() noexcept = default;  // destructor
 //----------------------------------------------------------------------
 void FProgressbar::setPercentage (std::size_t percentage_value)
 {
-  if ( percentage_value == NOT_SET )
-    percentage = NOT_SET;
-  else if ( percentage_value > 100 )
-    percentage = 100;
-  else if ( percentage_value <= percentage && percentage != NOT_SET )
+  if ( percentage_value <= percentage && percentage != NOT_SET )
     return;
 
   percentage = percentage_value;
+
+  if ( percentage > 100 )
+    percentage = 100;
 
   if ( isShown() )
   {

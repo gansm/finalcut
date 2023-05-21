@@ -48,6 +48,7 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <memory>
 #include <unordered_map>
 
 #include "final/fwidget.h"

@@ -49,6 +49,7 @@
 
 #include <sys/time.h>  // need for timeval (cygwin)
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <tuple>

@@ -492,7 +492,7 @@ void FMenuItem::init()
     text_width--;
   }
 
-  setGeometry (FPoint{1, 1}, FSize{text_width + 2, 1}, false);
+  FWidget::setGeometry (FPoint{1, 1}, FSize{text_width + 2, 1}, false);
   const auto& parent = getParentWidget();
 
   if ( ! parent )

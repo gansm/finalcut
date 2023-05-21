@@ -134,13 +134,13 @@ void FScrollbar::setOrientation (Orientation o)
 
   if ( o == Orientation::Vertical && bar_orientation == Orientation::Horizontal )
   {
-    setWidth(1);
-    setHeight(length);
+    FWidget::setWidth(1);
+    FWidget::setHeight(length);
   }
   else if ( o == Orientation::Horizontal && bar_orientation == Orientation::Vertical )
   {
-    setWidth(length);
-    setHeight(1);
+    FWidget::setWidth(length);
+    FWidget::setHeight(1);
   }
 
   calculateSliderValues();

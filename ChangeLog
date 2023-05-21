@@ -1,3 +1,6 @@
+2023-05-18  Markus Gans  <guru.mail@muenster.de>
+	* Version 0.9.0
+
 2023-04-15  Markus Gans  <guru.mail@muenster.de>
 	* Terminal focus-in and focus-out events can be disabled with 
 	  the --no-terminal-focus-events parameter
@@ -235,7 +238,7 @@
 	* Move the border label methods from FButtonGroup to FScrollView
 
 2021-12-13  Markus Gans  <guru.mail@muenster.de>
-	* Faster string comparison between FString, char* std::string, 
+	* Faster string comparison between FString, char*, std::string, 
 	  wchar_t and std:wstring
 
 2021-12-11  Markus Gans  <guru.mail@muenster.de>

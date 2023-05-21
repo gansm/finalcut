@@ -21,6 +21,7 @@
 ***********************************************************************/
 
 #include <array>
+#include <memory>
 
 #include "final/fc.h"
 #include "final/input/fkey_map.h"

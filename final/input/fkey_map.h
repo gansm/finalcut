@@ -28,6 +28,7 @@
 #endif
 
 #include <array>
+#include <string>
 
 #include "final/ftypes.h"
 #include "final/util/fstring.h"

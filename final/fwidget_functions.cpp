@@ -22,6 +22,7 @@
 
 #include <algorithm>
 #include <array>
+#include <memory>
 
 #include "final/dialog/fdialog.h"
 #include "final/fapplication.h"

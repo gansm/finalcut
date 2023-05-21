@@ -21,6 +21,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <algorithm>
 #include <memory>
 
 #include "final/fevent.h"

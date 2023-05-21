@@ -271,8 +271,8 @@ inline auto FKeyboard::getMouseProtocolKey() const -> FKey
   {
     if ( buf_len < 9 || (fifo_buf[buf_len - 1] != 'M' && fifo_buf[buf_len - 1] != 'm') )
       return FKey::Incomplete;  // Incomplete mouse sequence
-    else
-      return FKey::Extended_mouse;
+
+    return FKey::Extended_mouse;
   }
 
   // urxvt mouse tracking

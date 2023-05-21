@@ -28,6 +28,7 @@
 #include <array>
 #include <iterator>
 #include <limits>
+#include <memory>
 #include <numeric>
 #include <utility>
 
@@ -388,7 +389,7 @@ auto unicode_to_utf8 (wchar_t ucs) -> std::string
            , char(0x80 | uChar((ucs >> 6u) & 0x3f))
            , char(0x80 | uChar(ucs & 0x3f)) };
 
-  return unicode_to_utf8(L'�'); // Invalid character
+  return unicode_to_utf8(L'�');  // Invalid character
 }
 #endif
 

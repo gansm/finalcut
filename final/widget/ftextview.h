@@ -47,8 +47,14 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <limits>
+#include <limits>
+#include <memory>
+#include <memory>
 #include <string>
 #include <unordered_map>
+#include <utility>
+#include <utility>
 #include <vector>
 
 #include "final/fwidgetcolors.h"
@@ -137,7 +143,7 @@ class FTextView : public FWidget
 
     struct FTextViewLine
     {
-      FTextViewLine (FString&& s, std::vector<FTextHighlight>&& v = {}) noexcept
+      explicit FTextViewLine (FString&& s, std::vector<FTextHighlight>&& v = {}) noexcept
         : text{std::move(s)}
         , highlight{std::move(v)}
       { }

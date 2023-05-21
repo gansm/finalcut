@@ -20,6 +20,8 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <utility>
+
 #include "final/fapplication.h"
 #include "final/fevent.h"
 #include "final/vterm/fcolorpair.h"
