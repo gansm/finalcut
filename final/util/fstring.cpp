@@ -790,7 +790,7 @@ auto FString::setFormatedNumber (sInt64 num, FString separator) -> FString&
     *--s = '-';
 
   std::wstring str{s};
-  internal_assign (str);
+  internal_assign (std::move(str));
   return *this;
 }
 
@@ -817,7 +817,7 @@ auto FString::setFormatedNumber (uInt64 num, FString separator) -> FString&
   while ( num );
 
   std::wstring str{s};
-  internal_assign (str);
+  internal_assign (std::move(str));
   return *this;
 }
 
