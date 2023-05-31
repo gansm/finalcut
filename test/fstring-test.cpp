@@ -1376,6 +1376,14 @@ void FStringTest::formatTest()
 
   fnum2.setFormatedNumber(uInt64(9223372036854775807u), '\0');
   CPPUNIT_ASSERT ( fnum2 == "9 223 372 036 854 775 807" );
+
+  // Non-breaking space
+  //   value: 0xa0 = \240
+  //   UTF-8: 0xc2 0xa0 = \302 \204
+  fnum2.setFormatedNumber(uInt64(9223372036854775807u), L"\240");
+  CPPUNIT_ASSERT ( fnum2 == "9\302\240" "223\302\240" "372\302\240"
+                            "036\302\240" "854\302\240" "775\302\240"
+                            "807" );
 #else
   // 32-bit architecture
   fnum1.setFormatedNumber(0xffffffffu, '\'');
@@ -1395,6 +1403,13 @@ void FStringTest::formatTest()
 
   fnum2.setFormatedNumber(uInt32(2147483647u), '\0');
   CPPUNIT_ASSERT ( fnum2 == "2 147 483 647" );
+
+  // Non-breaking space
+  //   value: 0xa0 = \240
+  //   UTF-8: 0xc2 0xa0 = \302 \204
+  fnum2.setFormatedNumber(uInt32(2147483647u), L"\240");
+  CPPUNIT_ASSERT ( fnum2 == "2\302\240" "147\302\240" "483\302\240"
+                            "647" );
 #endif
 
   fnum1.setFormatedNumber(sInt16(-2048), '_');

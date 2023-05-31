@@ -760,15 +760,15 @@ auto FString::setNumber (lDouble f_num, int precision) -> FString&
 }
 
 //----------------------------------------------------------------------
-auto FString::setFormatedNumber (sInt64 num, char separator) -> FString&
+auto FString::setFormatedNumber (sInt64 num, FString separator) -> FString&
 {
   int n{0};
   std::array<wchar_t, 30> buf{};
   wchar_t* s = &buf[29];  // Pointer to the last character
   auto abs_num = static_cast<uInt64>(num);
 
-  if ( separator == 0 )
-    separator = ' ';
+  if ( separator[0] == 0 )
+    separator = L" ";
 
   if ( num < 0 )
     abs_num = static_cast<uInt64>(-num);
@@ -782,7 +782,7 @@ auto FString::setFormatedNumber (sInt64 num, char separator) -> FString&
     n++;
 
     if ( abs_num && n % 3 == 0 )
-      *--s = separator;
+      *--s = separator[0];
   }
   while ( abs_num );
 
@@ -795,15 +795,15 @@ auto FString::setFormatedNumber (sInt64 num, char separator) -> FString&
 }
 
 //----------------------------------------------------------------------
-auto FString::setFormatedNumber (uInt64 num, char separator) -> FString&
+auto FString::setFormatedNumber (uInt64 num, FString separator) -> FString&
 {
   int n{0};
   std::array<wchar_t, 30> buf{};
   wchar_t* s = &buf[29];  // Pointer to the last character
   *s = L'\0';
 
-  if ( separator == 0 )
-    separator = ' ';
+  if ( separator[0] == 0 )
+    separator = L" ";
 
   do
   {
@@ -812,7 +812,7 @@ auto FString::setFormatedNumber (uInt64 num, char separator) -> FString&
     n++;
 
     if ( num && n % 3 == 0 )
-      *--s = separator;
+      *--s = separator[0];
   }
   while ( num );
 

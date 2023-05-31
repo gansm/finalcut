@@ -292,9 +292,9 @@ class FString
     auto setNumber (lDouble, int = int(getPrecision<lDouble>())) -> FString&;
 
     template <typename NumT>
-    auto setFormatedNumber (NumT, char = nl_langinfo(THOUSEP)[0]) -> FString&;
-    auto setFormatedNumber (sInt64, char = nl_langinfo(THOUSEP)[0]) -> FString&;
-    auto setFormatedNumber (uInt64, char = nl_langinfo(THOUSEP)[0]) -> FString&;
+    auto setFormatedNumber (NumT, FString = nl_langinfo(THOUSEP)) -> FString&;
+    auto setFormatedNumber (sInt64, FString = nl_langinfo(THOUSEP)) -> FString&;
+    auto setFormatedNumber (uInt64, FString = nl_langinfo(THOUSEP)) -> FString&;
 
     auto insert (const FString&, int) -> const FString&;
     auto insert (const FString&, std::size_t) -> const FString&;
@@ -690,7 +690,7 @@ inline auto FString::setNumber (NumT num, int precision) -> FString&
 
 //----------------------------------------------------------------------
 template <typename NumT>
-inline auto FString::setFormatedNumber (NumT num, char separator) -> FString&
+inline auto FString::setFormatedNumber (NumT num, FString separator) -> FString&
 {
   if ( isNegative(num) )
     return setFormatedNumber (sInt64(num), separator);
