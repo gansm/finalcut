@@ -540,6 +540,14 @@ void FScrollView::onWheel (FWheelEvent* ev)
   {
     scrollBy (0, distance);
   }
+  else if ( ev->getWheel() == MouseWheel::Left )
+  {
+    scrollBy (-distance, 0);
+  }
+  else if ( ev->getWheel() == MouseWheel::Right )
+  {
+    scrollBy (distance, 0);
+  }
 }
 
 //----------------------------------------------------------------------
@@ -1055,10 +1063,12 @@ void FScrollView::cb_vbarChange (const FWidget*)
       break;
 
     case FScrollbar::ScrollType::WheelUp:
+    case FScrollbar::ScrollType::WheelLeft:
       scrollBy (0, -wheel_distance);
       break;
 
     case FScrollbar::ScrollType::WheelDown:
+    case FScrollbar::ScrollType::WheelRight:
       scrollBy (0, wheel_distance);
       break;
 
@@ -1106,10 +1116,12 @@ void FScrollView::cb_hbarChange (const FWidget*)
       break;
 
     case FScrollbar::ScrollType::WheelUp:
+    case FScrollbar::ScrollType::WheelLeft:
       scrollBy (-wheel_distance, 0);
       break;
 
     case FScrollbar::ScrollType::WheelDown:
+    case FScrollbar::ScrollType::WheelRight:
       scrollBy (wheel_distance, 0);
       break;
 

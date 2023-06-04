@@ -479,6 +479,8 @@ class FListView : public FWidget
     void mouseHeaderClicked();
     void wheelUp (int);
     void wheelDown (int);
+    void wheelLeft (int);
+    void wheelRight (int);
     auto dragScrollUp (int) -> bool;
     auto dragScrollDown (int) -> bool;
     void dragUp (MouseButton);

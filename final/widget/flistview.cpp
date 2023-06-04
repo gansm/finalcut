@@ -1280,15 +1280,20 @@ void FListView::onWheel (FWheelEvent* ev)
 {
   const int position_before = current_iter.getPosition();
   static constexpr int wheel_distance = 4;
+  const auto& wheel = ev->getWheel();
   first_line_position_before = first_visible_line.getPosition();
 
   if ( isDragging(drag_scroll) )
     stopDragScroll();
 
-  if ( ev->getWheel() == MouseWheel::Up )
+  if ( wheel == MouseWheel::Up )
     wheelUp (wheel_distance);
-  else if ( ev->getWheel() == MouseWheel::Down )
+  else if ( wheel == MouseWheel::Down )
     wheelDown (wheel_distance);
+  else if ( wheel == MouseWheel::Left )
+    wheelLeft (wheel_distance);
+  else if ( wheel == MouseWheel::Right )
+    wheelRight (wheel_distance);
 
   if ( position_before != current_iter.getPosition() )
     processRowChanged();
@@ -2344,6 +2349,30 @@ void FListView::wheelDown (int pagesize)
 }
 
 //----------------------------------------------------------------------
+void FListView::wheelLeft (int pagesize)
+{
+  if ( isItemListEmpty() || xoffset == 0 )
+    return;
+
+  const int xoffset_before = xoffset;
+  scrollBy (-pagesize, 0);
+  const bool draw_hbar(xoffset_before != xoffset);
+  updateDrawing (false, draw_hbar);
+}
+
+//----------------------------------------------------------------------
+void FListView::wheelRight (int pagesize)
+{
+  if ( isItemListEmpty() )
+    return;
+
+  const int xoffset_before = xoffset;
+  scrollBy (pagesize, 0);
+  const bool draw_hbar(xoffset_before != xoffset);
+  updateDrawing (false, draw_hbar);
+}
+
+//----------------------------------------------------------------------
 auto FListView::dragScrollUp (int position_before) -> bool
 {
   if ( position_before == 0 )
@@ -2920,10 +2949,12 @@ void FListView::cb_vbarChange (const FWidget*)
       break;
 
     case FScrollbar::ScrollType::WheelUp:
+    case FScrollbar::ScrollType::WheelLeft:
       wheelUp (wheel_distance);
       break;
 
     case FScrollbar::ScrollType::WheelDown:
+    case FScrollbar::ScrollType::WheelRight:
       wheelDown (wheel_distance);
       break;
 
@@ -2975,10 +3006,12 @@ void FListView::cb_hbarChange (const FWidget*)
       break;
 
     case FScrollbar::ScrollType::WheelUp:
+    case FScrollbar::ScrollType::WheelLeft:
       scrollBy (-wheel_distance, 0);
       break;
 
     case FScrollbar::ScrollType::WheelDown:
+    case FScrollbar::ScrollType::WheelRight:
       scrollBy (wheel_distance, 0);
       break;
 

@@ -393,6 +393,10 @@ void FScrollbar::onWheel (FWheelEvent* ev)
     scroll_type = ScrollType::WheelUp;
   else if ( wheel == MouseWheel::Down )
     scroll_type = ScrollType::WheelDown;
+  else if ( wheel == MouseWheel::Left )
+    scroll_type = ScrollType::WheelLeft;
+  else if ( wheel == MouseWheel::Right )
+    scroll_type = ScrollType::WheelRight;
 
   processScroll();
 }

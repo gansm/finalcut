@@ -1010,7 +1010,9 @@ void FApplication::determineClickedWidget (const FMouseData& md)
     && ! md.isRightButtonPressed()
     && ! md.isMiddleButtonPressed()
     && ! md.isWheelUp()
-    && ! md.isWheelDown() )
+    && ! md.isWheelDown()
+    && ! md.isWheelLeft()
+    && ! md.isWheelRight() )
     return;
 
   const auto& mouse_position = md.getPos();
@@ -1215,27 +1217,34 @@ void FApplication::sendWheelEvent ( const FMouseData& md
                                   , const FPoint& widgetMousePos
                                   , const FPoint& mouse_position ) const
 {
-  if ( md.isWheelUp() )
-  {
-    FWheelEvent wheel_ev ( Event::MouseWheel
-                         , widgetMousePos
-                         , mouse_position
-                         , MouseWheel::Up );
-    auto scroll_over_widget = clicked_widget;
-    setClickedWidget(nullptr);
-    sendEvent(scroll_over_widget, &wheel_ev);
-  }
+  if ( ! md.isWheelUp() && ! md.isWheelDown()
+    && ! md.isWheelLeft() && ! md.isWheelRight() )
+    return;
 
-  if ( md.isWheelDown() )
+  auto mouse_wheel = [&md] ()
   {
-    FWheelEvent wheel_ev ( Event::MouseWheel
-                         , widgetMousePos
-                         , mouse_position
-                         , MouseWheel::Down );
-    auto scroll_over_widget = clicked_widget;
-    setClickedWidget(nullptr);
-    sendEvent (scroll_over_widget, &wheel_ev);
-  }
+    if ( md.isWheelUp() )
+      return MouseWheel::Up;
+
+    if ( md.isWheelDown() )
+      return MouseWheel::Down;
+
+    if ( md.isWheelLeft() )
+      return MouseWheel::Left;
+
+    if ( md.isWheelRight() )
+      return MouseWheel::Right;
+
+    return MouseWheel::None;
+  }();
+
+  FWheelEvent wheel_ev ( Event::MouseWheel
+                       , widgetMousePos
+                       , mouse_position
+                       , mouse_wheel );
+  auto scroll_over_widget = clicked_widget;
+  setClickedWidget(nullptr);
+  sendEvent (scroll_over_widget, &wheel_ev);
 }
 
 //----------------------------------------------------------------------

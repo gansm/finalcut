@@ -182,6 +182,8 @@ void FMouseTest::noArgumentTest()
   CPPUNIT_ASSERT ( ! mouse.isMetaKeyPressed() );
   CPPUNIT_ASSERT ( ! mouse.isWheelUp() );
   CPPUNIT_ASSERT ( ! mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! mouse.isWheelRight() );
   CPPUNIT_ASSERT ( ! mouse.isMoved() );
   CPPUNIT_ASSERT ( ! mouse.hasUnprocessedInput() );
   CPPUNIT_ASSERT ( mouse.getMouseTypeID() == finalcut::FMouse::MouseType::None );
@@ -309,6 +311,8 @@ void FMouseTest::x11MouseTest()
   CPPUNIT_ASSERT ( ! x11_mouse.isMetaKeyPressed() );
   CPPUNIT_ASSERT ( ! x11_mouse.isWheelUp() );
   CPPUNIT_ASSERT ( ! x11_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isWheelRight() );
   CPPUNIT_ASSERT ( ! x11_mouse.isMoved() );
 
   // The same input again
@@ -338,6 +342,8 @@ void FMouseTest::x11MouseTest()
   CPPUNIT_ASSERT ( ! x11_mouse.isMetaKeyPressed() );
   CPPUNIT_ASSERT ( ! x11_mouse.isWheelUp() );
   CPPUNIT_ASSERT ( ! x11_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isWheelRight() );
   CPPUNIT_ASSERT ( ! x11_mouse.isMoved() );
 
   // Left mouse button released
@@ -362,6 +368,8 @@ void FMouseTest::x11MouseTest()
   CPPUNIT_ASSERT ( ! x11_mouse.isMetaKeyPressed() );
   CPPUNIT_ASSERT ( ! x11_mouse.isWheelUp() );
   CPPUNIT_ASSERT ( ! x11_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isWheelRight() );
   CPPUNIT_ASSERT ( ! x11_mouse.isMoved() );
 
   // Left mouse button pressed again (double click)
@@ -387,6 +395,8 @@ void FMouseTest::x11MouseTest()
   CPPUNIT_ASSERT ( ! x11_mouse.isMetaKeyPressed() );
   CPPUNIT_ASSERT ( ! x11_mouse.isWheelUp() );
   CPPUNIT_ASSERT ( ! x11_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isWheelRight() );
   CPPUNIT_ASSERT ( ! x11_mouse.isMoved() );
 
 
@@ -414,6 +424,8 @@ void FMouseTest::x11MouseTest()
   CPPUNIT_ASSERT ( ! x11_mouse.isMetaKeyPressed() );
   CPPUNIT_ASSERT ( ! x11_mouse.isWheelUp() );
   CPPUNIT_ASSERT ( ! x11_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isWheelRight() );
   CPPUNIT_ASSERT ( ! x11_mouse.isMoved() );
 
   x11_mouse.setRawData (rawdata5);
@@ -446,6 +458,8 @@ void FMouseTest::x11MouseTest()
   CPPUNIT_ASSERT ( ! x11_mouse.isMetaKeyPressed() );
   CPPUNIT_ASSERT ( ! x11_mouse.isWheelUp() );
   CPPUNIT_ASSERT ( ! x11_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isWheelRight() );
   CPPUNIT_ASSERT ( ! x11_mouse.isMoved() );
 
   x11_mouse.setRawData (rawdata6);
@@ -456,7 +470,9 @@ void FMouseTest::x11MouseTest()
 
   // Mouse wheel
   auto rawdata7 = insertData ({ 0x1b, '[', 'M', 0x60, 0x70, 0x39
-                              , 0x1b, '[', 'M', 0x61, 0x70, 0x39 });
+                              , 0x1b, '[', 'M', 0x61, 0x70, 0x39
+                              , 0x1b, '[', 'M', 0x62, 0x70, 0x39
+                              , 0x1b, '[', 'M', 0x63, 0x70, 0x39 });
   x11_mouse.setRawData (rawdata7);
 
   CPPUNIT_ASSERT ( x11_mouse.hasData() );
@@ -478,12 +494,33 @@ void FMouseTest::x11MouseTest()
   CPPUNIT_ASSERT ( ! x11_mouse.isMetaKeyPressed() );
   CPPUNIT_ASSERT ( x11_mouse.isWheelUp() );
   CPPUNIT_ASSERT ( ! x11_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isWheelRight() );
   CPPUNIT_ASSERT ( ! x11_mouse.isMoved() );
 
   x11_mouse.setRawData (rawdata7);
   x11_mouse.processEvent (tv);
-  CPPUNIT_ASSERT ( ! x11_mouse.hasUnprocessedInput() );
+  CPPUNIT_ASSERT ( x11_mouse.hasUnprocessedInput() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isWheelUp() );
   CPPUNIT_ASSERT ( x11_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isWheelRight() );
+
+  x11_mouse.setRawData (rawdata7);
+  x11_mouse.processEvent (tv);
+  CPPUNIT_ASSERT ( x11_mouse.hasUnprocessedInput() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isWheelUp() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( x11_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isWheelRight() );
+
+  x11_mouse.setRawData (rawdata7);
+  x11_mouse.processEvent (tv);
+  CPPUNIT_ASSERT ( ! x11_mouse.hasUnprocessedInput() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isWheelUp() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( x11_mouse.isWheelRight() );
 
   // Mouse move
   auto rawdata8 = insertData ({ 0x1b, '[', 'M', 0x20, 0x21, 0x21
@@ -510,6 +547,8 @@ void FMouseTest::x11MouseTest()
   CPPUNIT_ASSERT ( ! x11_mouse.isMetaKeyPressed() );
   CPPUNIT_ASSERT ( ! x11_mouse.isWheelUp() );
   CPPUNIT_ASSERT ( ! x11_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isWheelRight() );
   CPPUNIT_ASSERT ( ! x11_mouse.isMoved() );
 
   x11_mouse.setRawData (rawdata8);
@@ -548,6 +587,8 @@ void FMouseTest::x11MouseTest()
   CPPUNIT_ASSERT ( ! x11_mouse.isMetaKeyPressed() );
   CPPUNIT_ASSERT ( ! x11_mouse.isWheelUp() );
   CPPUNIT_ASSERT ( ! x11_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isWheelRight() );
   CPPUNIT_ASSERT ( ! x11_mouse.isMoved() );
 
   x11_mouse.setRawData (rawdata9);
@@ -614,6 +655,8 @@ void FMouseTest::sgrMouseTest()
   CPPUNIT_ASSERT ( ! sgr_mouse.isMetaKeyPressed() );
   CPPUNIT_ASSERT ( ! sgr_mouse.isWheelUp() );
   CPPUNIT_ASSERT ( ! sgr_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isWheelRight() );
   CPPUNIT_ASSERT ( ! sgr_mouse.isMoved() );
 
   // The same input again
@@ -644,6 +687,8 @@ void FMouseTest::sgrMouseTest()
   CPPUNIT_ASSERT ( ! sgr_mouse.isMetaKeyPressed() );
   CPPUNIT_ASSERT ( ! sgr_mouse.isWheelUp() );
   CPPUNIT_ASSERT ( ! sgr_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isWheelRight() );
   CPPUNIT_ASSERT ( ! sgr_mouse.isMoved() );
 
   // Left mouse button pressed again (double click)
@@ -669,6 +714,8 @@ void FMouseTest::sgrMouseTest()
   CPPUNIT_ASSERT ( ! sgr_mouse.isMetaKeyPressed() );
   CPPUNIT_ASSERT ( ! sgr_mouse.isWheelUp() );
   CPPUNIT_ASSERT ( ! sgr_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isWheelRight() );
   CPPUNIT_ASSERT ( ! sgr_mouse.isMoved() );
 
   // Middle mouse button
@@ -695,6 +742,8 @@ void FMouseTest::sgrMouseTest()
   CPPUNIT_ASSERT ( ! sgr_mouse.isMetaKeyPressed() );
   CPPUNIT_ASSERT ( ! sgr_mouse.isWheelUp() );
   CPPUNIT_ASSERT ( ! sgr_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isWheelRight() );
   CPPUNIT_ASSERT ( ! sgr_mouse.isMoved() );
 
   sgr_mouse.setRawData (rawdata5);
@@ -727,6 +776,8 @@ void FMouseTest::sgrMouseTest()
   CPPUNIT_ASSERT ( ! sgr_mouse.isMetaKeyPressed() );
   CPPUNIT_ASSERT ( ! sgr_mouse.isWheelUp() );
   CPPUNIT_ASSERT ( ! sgr_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isWheelRight() );
   CPPUNIT_ASSERT ( ! sgr_mouse.isMoved() );
 
   sgr_mouse.setRawData (rawdata6);
@@ -738,7 +789,9 @@ void FMouseTest::sgrMouseTest()
 
   // Mouse wheel
   auto rawdata7 = insertData ({ 0x1b, '[', '<', '6', '4', ';', '4', ';', '9', 'M'
-                              , 0x1b, '[', '<', '6', '5', ';', '4', ';', '9', 'M' });
+                              , 0x1b, '[', '<', '6', '5', ';', '4', ';', '9', 'M'
+                              , 0x1b, '[', '<', '6', '6', ';', '4', ';', '9', 'M'
+                              , 0x1b, '[', '<', '6', '7', ';', '4', ';', '9', 'M' });
   sgr_mouse.setRawData (rawdata7);
 
   CPPUNIT_ASSERT ( sgr_mouse.hasData() );
@@ -760,12 +813,33 @@ void FMouseTest::sgrMouseTest()
   CPPUNIT_ASSERT ( ! sgr_mouse.isMetaKeyPressed() );
   CPPUNIT_ASSERT ( sgr_mouse.isWheelUp() );
   CPPUNIT_ASSERT ( ! sgr_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isWheelRight() );
   CPPUNIT_ASSERT ( ! sgr_mouse.isMoved() );
 
   sgr_mouse.setRawData (rawdata7);
   sgr_mouse.processEvent (tv);
-  CPPUNIT_ASSERT ( ! sgr_mouse.hasUnprocessedInput() );
+  CPPUNIT_ASSERT ( sgr_mouse.hasUnprocessedInput() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isWheelUp() );
   CPPUNIT_ASSERT ( sgr_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isWheelRight() );
+
+  sgr_mouse.setRawData (rawdata7);
+  sgr_mouse.processEvent (tv);
+  CPPUNIT_ASSERT ( sgr_mouse.hasUnprocessedInput() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isWheelUp() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( sgr_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isWheelRight() );
+
+  sgr_mouse.setRawData (rawdata7);
+  sgr_mouse.processEvent (tv);
+  CPPUNIT_ASSERT ( ! sgr_mouse.hasUnprocessedInput() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isWheelUp() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( sgr_mouse.isWheelRight() );
 
   // Mouse move
   auto rawdata8 = insertData ({ 0x1b, '[', '<', '0', ';', '1', ';', '2', 'M'
@@ -792,6 +866,8 @@ void FMouseTest::sgrMouseTest()
   CPPUNIT_ASSERT ( ! sgr_mouse.isMetaKeyPressed() );
   CPPUNIT_ASSERT ( ! sgr_mouse.isWheelUp() );
   CPPUNIT_ASSERT ( ! sgr_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isWheelRight() );
   CPPUNIT_ASSERT ( ! sgr_mouse.isMoved() );
 
   sgr_mouse.setRawData (rawdata8);
@@ -830,6 +906,8 @@ void FMouseTest::sgrMouseTest()
   CPPUNIT_ASSERT ( ! sgr_mouse.isMetaKeyPressed() );
   CPPUNIT_ASSERT ( ! sgr_mouse.isWheelUp() );
   CPPUNIT_ASSERT ( ! sgr_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isWheelRight() );
   CPPUNIT_ASSERT ( ! sgr_mouse.isMoved() );
 
   sgr_mouse.setRawData (rawdata9);
@@ -918,6 +996,8 @@ void FMouseTest::urxvtMouseTest()
   CPPUNIT_ASSERT ( ! urxvt_mouse.isMetaKeyPressed() );
   CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelUp() );
   CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelRight() );
   CPPUNIT_ASSERT ( ! urxvt_mouse.isMoved() );
 
   // The same input again
@@ -948,6 +1028,8 @@ void FMouseTest::urxvtMouseTest()
   CPPUNIT_ASSERT ( ! urxvt_mouse.isMetaKeyPressed() );
   CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelUp() );
   CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelRight() );
   CPPUNIT_ASSERT ( ! urxvt_mouse.isMoved() );
 
   // Left mouse button pressed again (double click)
@@ -973,6 +1055,8 @@ void FMouseTest::urxvtMouseTest()
   CPPUNIT_ASSERT ( ! urxvt_mouse.isMetaKeyPressed() );
   CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelUp() );
   CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelRight() );
   CPPUNIT_ASSERT ( ! urxvt_mouse.isMoved() );
 
   // Middle mouse button
@@ -999,6 +1083,8 @@ void FMouseTest::urxvtMouseTest()
   CPPUNIT_ASSERT ( ! urxvt_mouse.isMetaKeyPressed() );
   CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelUp() );
   CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelRight() );
   CPPUNIT_ASSERT ( ! urxvt_mouse.isMoved() );
 
   urxvt_mouse.setRawData (rawdata5);
@@ -1031,6 +1117,8 @@ void FMouseTest::urxvtMouseTest()
   CPPUNIT_ASSERT ( ! urxvt_mouse.isMetaKeyPressed() );
   CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelUp() );
   CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelRight() );
   CPPUNIT_ASSERT ( ! urxvt_mouse.isMoved() );
 
   urxvt_mouse.setRawData (rawdata6);
@@ -1042,7 +1130,9 @@ void FMouseTest::urxvtMouseTest()
 
   // Mouse wheel
   auto rawdata7 = insertData ({ 0x1b, '[', '9', '6', ';', '4', ';', '9', 'M'
-                              , 0x1b, '[', '9', '7', ';', '4', ';', '9', 'M' });
+                              , 0x1b, '[', '9', '7', ';', '4', ';', '9', 'M'
+                              , 0x1b, '[', '9', '8', ';', '4', ';', '9', 'M'
+                              , 0x1b, '[', '9', '9', ';', '4', ';', '9', 'M' });
   urxvt_mouse.setRawData (rawdata7);
 
   CPPUNIT_ASSERT ( urxvt_mouse.hasData() );
@@ -1064,12 +1154,33 @@ void FMouseTest::urxvtMouseTest()
   CPPUNIT_ASSERT ( ! urxvt_mouse.isMetaKeyPressed() );
   CPPUNIT_ASSERT ( urxvt_mouse.isWheelUp() );
   CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelRight() );
   CPPUNIT_ASSERT ( ! urxvt_mouse.isMoved() );
 
   urxvt_mouse.setRawData (rawdata7);
   urxvt_mouse.processEvent (tv);
-  CPPUNIT_ASSERT ( ! urxvt_mouse.hasUnprocessedInput() );
+  CPPUNIT_ASSERT ( urxvt_mouse.hasUnprocessedInput() );
+  CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelUp() );
   CPPUNIT_ASSERT ( urxvt_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelRight() );
+
+  urxvt_mouse.setRawData (rawdata7);
+  urxvt_mouse.processEvent (tv);
+  CPPUNIT_ASSERT ( urxvt_mouse.hasUnprocessedInput() );
+  CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelUp() );
+  CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( urxvt_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelRight() );
+
+  urxvt_mouse.setRawData (rawdata7);
+  urxvt_mouse.processEvent (tv);
+  CPPUNIT_ASSERT ( ! urxvt_mouse.hasUnprocessedInput() );
+  CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelUp() );
+  CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( urxvt_mouse.isWheelRight() );
 
   // Mouse move
   auto rawdata8 = insertData ({ 0x1b, '[', '3', '2', ';', '1', ';', '2', 'M'
@@ -1096,6 +1207,8 @@ void FMouseTest::urxvtMouseTest()
   CPPUNIT_ASSERT ( ! urxvt_mouse.isMetaKeyPressed() );
   CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelUp() );
   CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelRight() );
   CPPUNIT_ASSERT ( ! urxvt_mouse.isMoved() );
 
   urxvt_mouse.setRawData (rawdata8);
@@ -1134,6 +1247,8 @@ void FMouseTest::urxvtMouseTest()
   CPPUNIT_ASSERT ( ! urxvt_mouse.isMetaKeyPressed() );
   CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelUp() );
   CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! urxvt_mouse.isWheelRight() );
   CPPUNIT_ASSERT ( ! urxvt_mouse.isMoved() );
 
   urxvt_mouse.setRawData (rawdata9);
@@ -1272,6 +1387,8 @@ void FMouseTest::mouseControlTest()
   CPPUNIT_ASSERT ( ! mouse_control.isMetaKeyPressed() );
   CPPUNIT_ASSERT ( ! mouse_control.isWheelUp() );
   CPPUNIT_ASSERT ( ! mouse_control.isWheelDown() );
+  CPPUNIT_ASSERT ( ! mouse_control.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! mouse_control.isWheelRight() );
   CPPUNIT_ASSERT ( ! mouse_control.isMoved() );
   CPPUNIT_ASSERT ( ! mouse_control.hasUnprocessedInput() );
   CPPUNIT_ASSERT ( ! mouse_control.hasDataInQueue() );
@@ -1307,6 +1424,8 @@ void FMouseTest::mouseControlTest()
   CPPUNIT_ASSERT ( ! mouse_control.isMetaKeyPressed() );
   CPPUNIT_ASSERT ( ! mouse_control.isWheelUp() );
   CPPUNIT_ASSERT ( ! mouse_control.isWheelDown() );
+  CPPUNIT_ASSERT ( ! mouse_control.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! mouse_control.isWheelRight() );
   CPPUNIT_ASSERT ( ! mouse_control.isMoved() );
   CPPUNIT_ASSERT ( mouse_control.hasUnprocessedInput() );
   CPPUNIT_ASSERT ( mouse_control.hasDataInQueue() );
@@ -1350,6 +1469,8 @@ void FMouseTest::mouseControlTest()
   CPPUNIT_ASSERT ( ! mouse_control.isMetaKeyPressed() );
   CPPUNIT_ASSERT ( ! mouse_control.isWheelUp() );
   CPPUNIT_ASSERT ( ! mouse_control.isWheelDown() );
+  CPPUNIT_ASSERT ( ! mouse_control.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! mouse_control.isWheelRight() );
   CPPUNIT_ASSERT ( ! mouse_control.isMoved() );
   CPPUNIT_ASSERT ( mouse_control.hasDataInQueue() );
 
@@ -1391,6 +1512,8 @@ void FMouseTest::mouseControlTest()
   CPPUNIT_ASSERT ( ! mouse_control.isMetaKeyPressed() );
   CPPUNIT_ASSERT ( ! mouse_control.isWheelUp() );
   CPPUNIT_ASSERT ( ! mouse_control.isWheelDown() );
+  CPPUNIT_ASSERT ( ! mouse_control.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! mouse_control.isWheelRight() );
   CPPUNIT_ASSERT ( ! mouse_control.isMoved() );
   CPPUNIT_ASSERT ( mouse_control.hasDataInQueue() );
 
@@ -1412,7 +1535,9 @@ void FMouseTest::mouseControlTest()
 
   // Mouse wheel on an X11 mouse
   auto rawdata4 = insertData ({ 0x1b, '[', 'M', 0x60, 0x70, 0x39
-                              , 0x1b, '[', 'M', 0x61, 0x70, 0x39 });
+                              , 0x1b, '[', 'M', 0x61, 0x70, 0x39
+                              , 0x1b, '[', 'M', 0x62, 0x70, 0x39
+                              , 0x1b, '[', 'M', 0x63, 0x70, 0x39 });
   mouse_control.setRawData (finalcut::FMouse::MouseType::X11, rawdata4);
   CPPUNIT_ASSERT ( mouse_control.hasData() );
   CPPUNIT_ASSERT ( mouse_control.hasUnprocessedInput() );
@@ -1434,6 +1559,8 @@ void FMouseTest::mouseControlTest()
   CPPUNIT_ASSERT ( ! mouse_control.isMetaKeyPressed() );
   CPPUNIT_ASSERT ( mouse_control.isWheelUp() );
   CPPUNIT_ASSERT ( ! mouse_control.isWheelDown() );
+  CPPUNIT_ASSERT ( ! mouse_control.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! mouse_control.isWheelRight() );
   CPPUNIT_ASSERT ( ! mouse_control.isMoved() );
   CPPUNIT_ASSERT ( mouse_control.hasDataInQueue() );
 
@@ -1447,8 +1574,27 @@ void FMouseTest::mouseControlTest()
 
   mouse_control.setRawData (finalcut::FMouse::MouseType::X11, rawdata4);
   mouse_control.processEvent (tv);
-  CPPUNIT_ASSERT ( ! mouse_control.hasUnprocessedInput() );
+  CPPUNIT_ASSERT ( mouse_control.hasUnprocessedInput() );
+  CPPUNIT_ASSERT ( ! mouse_control.isWheelUp() );
   CPPUNIT_ASSERT ( mouse_control.isWheelDown() );
+  CPPUNIT_ASSERT ( ! mouse_control.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! mouse_control.isWheelRight() );
+
+  mouse_control.setRawData (finalcut::FMouse::MouseType::X11, rawdata4);
+  mouse_control.processEvent (tv);
+  CPPUNIT_ASSERT ( mouse_control.hasUnprocessedInput() );
+  CPPUNIT_ASSERT ( ! mouse_control.isWheelUp() );
+  CPPUNIT_ASSERT ( ! mouse_control.isWheelDown() );
+  CPPUNIT_ASSERT ( mouse_control.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! mouse_control.isWheelRight() );
+
+  mouse_control.setRawData (finalcut::FMouse::MouseType::X11, rawdata4);
+  mouse_control.processEvent (tv);
+  CPPUNIT_ASSERT ( ! mouse_control.hasUnprocessedInput() );
+  CPPUNIT_ASSERT ( ! mouse_control.isWheelUp() );
+  CPPUNIT_ASSERT ( ! mouse_control.isWheelDown() );
+  CPPUNIT_ASSERT ( ! mouse_control.isWheelLeft() );
+  CPPUNIT_ASSERT ( mouse_control.isWheelRight() );
 
   // Mouse move on an SGR mouse
   auto rawdata5 = insertData ({ 0x1b, '[', '<', '0', ';', '1', ';', '2', 'M'
@@ -1475,6 +1621,8 @@ void FMouseTest::mouseControlTest()
   CPPUNIT_ASSERT ( ! mouse_control.isMetaKeyPressed() );
   CPPUNIT_ASSERT ( ! mouse_control.isWheelUp() );
   CPPUNIT_ASSERT ( ! mouse_control.isWheelDown() );
+  CPPUNIT_ASSERT ( ! mouse_control.isWheelLeft() );
+  CPPUNIT_ASSERT ( ! mouse_control.isWheelRight() );
   CPPUNIT_ASSERT ( ! mouse_control.isMoved() );
   CPPUNIT_ASSERT ( mouse_control.hasDataInQueue() );
 

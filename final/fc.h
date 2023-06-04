@@ -1316,9 +1316,11 @@ constexpr auto operator &= (MouseButton& b1, const MouseButton& b2) noexcept -> 
 // Mouse wheel state values
 enum class MouseWheel
 {
-  None = 0x00,
-  Up   = 0x01,
-  Down = 0x02
+  None  = 0x00,
+  Up    = 0x01,
+  Down  = 0x02,
+  Left  = 0x03,
+  Right = 0x04,
 };
 
 // Terminal type
