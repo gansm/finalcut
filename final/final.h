@@ -39,6 +39,11 @@
 #include <final/dialog/fdialog.h>
 #include <final/dialog/ffiledialog.h>
 #include <final/dialog/fmessagebox.h>
+#include <final/eventloop/eventloop.h>
+#include <final/eventloop/io_monitor.h>
+#include <final/eventloop/monitor.h>
+#include <final/eventloop/signal_monitor.h>
+#include <final/eventloop/timer_monitor.h>
 #include <final/input/fkeyboard.h>
 #include <final/input/fkey_map.h>
 #include <final/input/fmouse.h>

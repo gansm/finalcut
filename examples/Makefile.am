@@ -18,6 +18,7 @@ noinst_PROGRAMS = \
 	choice \
 	dialog \
 	event-log \
+	eventloop \
 	fullwidth-character \
 	hello \
 	highlight-text \
@@ -52,6 +53,7 @@ checklist_SOURCES = checklist.cpp
 choice_SOURCES = choice.cpp
 dialog_SOURCES = dialog.cpp
 event_log_SOURCES = event-log.cpp
+eventloop_SOURCES = eventloop.cpp
 fullwidth_character_SOURCES = fullwidth-character.cpp
 hello_SOURCES = hello.cpp
 highlight_text_SOURCES = highlight-text.cpp
