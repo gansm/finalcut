@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <time.h>
 #include <unistd.h>
 
 #include <csignal>
@@ -66,7 +67,8 @@ std::mutex timer_nodes_mutex{};
   const auto seconds{std::chrono::duration_cast<std::chrono::seconds>(duration)};
   duration -= seconds;
 
-  return timespec{ seconds.count(), duration.count() };
+  return timespec{ static_cast<time_t>(seconds.count())
+                 , static_cast<long>(duration.count()) };
 }
 
 //----------------------------------------------------------------------
@@ -84,7 +86,12 @@ void onSigAlrm (int, siginfo_t* signal_info, void*)
     {
       // The event loop is notified by write access to the pipe
       uint64_t buffer{1U};
-      ::write (timer_node.fd, &buffer, sizeof(buffer));
+      auto successful = ::write (timer_node.fd, &buffer, sizeof(buffer)) > 0;
+
+      if ( ! successful )
+      {
+        // Possible error handling
+      }
     }
 
     break;
@@ -108,7 +115,7 @@ TimerMonitor::~TimerMonitor() noexcept  // destructor
   ::close (alarm_pipe_fd[0]);
   ::close (alarm_pipe_fd[1]);
 
-  if ( nullptr == timer_id )
+  if ( timer_id == 0 )
     return;
 
   auto iter{timer_nodes.begin()};
@@ -185,7 +192,13 @@ void TimerMonitor::trigger (short return_events)
 {
   // Pipe to reset the signaling for poll()
   uint64_t buffer{0};
-  ::read (fd, &buffer, sizeof(buffer));
+  auto successful = ::read (fd, &buffer, sizeof(buffer)) > 0;
+
+  if ( ! successful )
+  {
+    // Possible error handling
+  }
+
   Monitor::trigger(return_events);
 }
 

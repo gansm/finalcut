@@ -36,6 +36,8 @@
 #ifndef TIMER_MONITOR_H
 #define TIMER_MONITOR_H
 
+#include <time.h>
+
 #include <chrono>
 
 #include "monitor.h"
@@ -60,7 +62,7 @@ class TimerMonitor final : public Monitor
 
   private:
     // Data members
-    timer_t timer_id{nullptr};
+    timer_t timer_id{0};
     int     alarm_pipe_fd[2]{-1, -1};
 };
 

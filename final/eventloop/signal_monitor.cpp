@@ -121,7 +121,12 @@ void SignalMonitor::onSignal (int signal_number)
   {
     // The event loop is notified by write access to the pipe
     uint64_t buffer{1U};
-    ::write (monitor->signal_pipe_fd[1], &buffer, sizeof(buffer));
+    auto successful = ::write (monitor->signal_pipe_fd[1], &buffer, sizeof(buffer)) > 0;
+
+    if ( ! successful )
+    {
+      // Possible error handling
+    }
   }
 }
 
@@ -130,6 +135,12 @@ void SignalMonitor::trigger (short return_events)
 {
   // Read pipe to reset signaling for poll()
   uint64_t buffer{0};
-  ::read (fd, &buffer, sizeof(buffer));
+  auto successful = ::read (fd, &buffer, sizeof(buffer)) > 0;
+
+  if ( ! successful )
+  {
+    // Possible error handling
+  }
+
   Monitor::trigger(return_events);
 }
