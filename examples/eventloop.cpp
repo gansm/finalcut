@@ -111,9 +111,11 @@ auto main() -> int
                      , [] (Monitor* monitor, short)
                        {
                          uint8_t Char{0};
-                         (void)read( monitor->getFd(), &Char, 1);
-                         std::cout << "typed in: '" << Char << "'"
-                                   << std::endl;
+                         const ssize_t bytes = ::read( monitor->getFd(), &Char, 1);
+
+                         if ( bytes > 0 )
+                           std::cout << "typed in: '" << Char << "'"
+                                     << std::endl;
                        },
                        nullptr );
 
