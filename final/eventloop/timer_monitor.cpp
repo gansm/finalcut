@@ -20,6 +20,10 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#if defined(__CYGWIN__)
+  #define _XOPEN_SOURCE 700
+#endif
+
 #include <time.h>
 #include <unistd.h>
 
@@ -41,6 +45,7 @@ namespace
 struct TimerNode
 {
   public:
+    // Constructor
     TimerNode (timer_t tid, TimerMonitor* tmon, int file_descriptor)
       : timer_id{tid}
       , timer_monitor{tmon}

@@ -36,10 +36,12 @@
 #ifndef SIGNAL_MONITOR_H
 #define SIGNAL_MONITOR_H
 
-#include <csignal>
 #include <map>
+#include <memory>
 
 #include "monitor.h"
+
+class SigactionImpl;
 
 class SignalMonitor final : public Monitor
 {
@@ -47,21 +49,37 @@ class SignalMonitor final : public Monitor
     // Constructor
     SignalMonitor() = delete;
     explicit SignalMonitor(EventLoop*);
+
+    // Destructor
     ~SignalMonitor() noexcept override;
+
+    // Copy assignment operator (=)
+    SignalMonitor& operator = (const SignalMonitor&);
 
     // Methods
     void init (int, handler_t, void*);
     void trigger (short) override;
 
   private:
-    // Method
+    // Methods
     static void onSignal (int);
+    auto getSigactionImpl() const -> const SigactionImpl*;
+    auto getSigactionImpl() -> SigactionImpl*;
 
     // Data members
     int signal_number{-1};
     int signal_pipe_fd[2]{-1, -1};
-    struct sigaction old_sig_action{};
     static std::map<int, SignalMonitor*> signal_monitors;
+    std::unique_ptr<SigactionImpl> impl;
 };
+
+// SigactionImpl inline functions
+//----------------------------------------------------------------------
+auto SignalMonitor::getSigactionImpl() const -> const SigactionImpl*
+{ return impl.get(); }
+
+//----------------------------------------------------------------------
+auto SignalMonitor::getSigactionImpl() -> SigactionImpl*
+{ return impl.get(); }
 
 #endif  // SIGNAL_MONITOR_H

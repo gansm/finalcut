@@ -38,7 +38,7 @@
 class EventLoop;
 class Monitor;
 
-typedef std::function<void(Monitor*, short)> handler_t;
+using handler_t = std::function<void(Monitor*, short)>;
 
 class Monitor
 {
@@ -46,15 +46,17 @@ class Monitor
     // Constructor
     explicit Monitor (EventLoop*);
     Monitor() = delete;
+
+    // Destructor
     virtual ~Monitor();
 
     // Accessors
-    auto getEvents() -> short;
-    auto getFd() -> int;
-    auto getUserContext() -> void*;
+    auto getEvents() const -> short;
+    auto getFd() const -> int;
+    auto getUserContext() const -> void*;
 
     // Inquiry
-    auto isActive() -> bool;
+    auto isActive() const -> bool;
 
     // Methods
     virtual void resume();
@@ -79,5 +81,37 @@ class Monitor
     // Friend classes
     friend class EventLoop;
 };
+
+// inline functions
+//----------------------------------------------------------------------
+inline auto Monitor::getEvents() const -> short
+{ return events; }
+
+//----------------------------------------------------------------------
+inline auto Monitor::getFd() const -> int
+{ return fd; }
+
+//----------------------------------------------------------------------
+inline auto Monitor::getUserContext() const -> void*
+{ return user_context; }
+
+//----------------------------------------------------------------------
+inline auto Monitor::isActive() const -> bool
+{ return active; }
+
+//----------------------------------------------------------------------
+inline void Monitor::resume()
+{ active = true; }
+
+//----------------------------------------------------------------------
+inline void Monitor::suspend()
+{ active = false; }
+
+//----------------------------------------------------------------------
+inline void Monitor::trigger (short return_events)
+{
+  if ( handler )
+    handler (this, return_events);
+}
 
 #endif  // MONITOR_H
