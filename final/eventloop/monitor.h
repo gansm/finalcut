@@ -46,6 +46,8 @@ class Monitor
     // Constructor
     explicit Monitor (EventLoop*);
     Monitor() = delete;
+    Monitor(const Monitor&) = delete;
+    Monitor(const Monitor&&) = delete;
     virtual ~Monitor();
 
     // Accessors
@@ -57,6 +59,8 @@ class Monitor
     auto isActive() -> bool;
 
     // Methods
+    auto operator=(const Monitor&) -> Monitor& = delete;
+    auto operator=(const Monitor&&) -> Monitor& = delete;
     virtual void resume();
     virtual void suspend();
 

@@ -108,7 +108,7 @@ TimerMonitor::~TimerMonitor() noexcept  // destructor
   ::close (alarm_pipe_fd[0]);
   ::close (alarm_pipe_fd[1]);
 
-  if ( nullptr == timer_id )
+  if ( static_cast<timer_t>(0) == timer_id )
     return;
 
   auto iter{timer_nodes.begin()};
@@ -185,7 +185,22 @@ void TimerMonitor::trigger (short return_events)
 {
   // Pipe to reset the signaling for poll()
   uint64_t buffer{0};
-  ::read (fd, &buffer, sizeof(buffer));
+  size_t   bytesRead{0};
+
+  //Ensure that the correct number of bytes are read from the pipe.
+  while ( bytesRead < sizeof(buffer) ) {
+    ssize_t currentBytesRead{
+      ::read (fd, &buffer, sizeof(buffer) - bytesRead)};
+    if ( -1 == currentBytesRead ) {
+      int               error{errno};
+      std::error_code   errCode{error, std::generic_category()};
+      std::system_error sysErr{errCode, strerror(error)};
+      throw (sysErr);
+    }
+    else {
+      bytesRead += static_cast<size_t>(currentBytesRead);
+    }
+  }
   Monitor::trigger(return_events);
 }
 

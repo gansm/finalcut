@@ -46,6 +46,8 @@ class SignalMonitor final : public Monitor
   public:
     // Constructor
     SignalMonitor() = delete;
+    SignalMonitor(const SignalMonitor&) = delete;
+    SignalMonitor(const SignalMonitor&&) = delete;
     explicit SignalMonitor(EventLoop*);
     ~SignalMonitor() noexcept override;
 
@@ -55,6 +57,8 @@ class SignalMonitor final : public Monitor
 
   private:
     // Method
+    auto operator=(const SignalMonitor&) -> SignalMonitor& = delete;
+    auto operator=(const SignalMonitor&&) -> SignalMonitor& = delete;
     static void onSignal (int);
 
     // Data members

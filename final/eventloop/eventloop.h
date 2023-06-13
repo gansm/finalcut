@@ -33,6 +33,7 @@
 
 #include <list>
 #include <poll.h>
+#include <array>
 
 #include "monitor.h"
 
@@ -55,11 +56,11 @@ class EventLoop
     void removeMonitor (Monitor*);
 
     // Data members
-    bool                running{false};
-    bool                monitors_changed{false};
-    std::list<Monitor*> monitors{};
-    struct pollfd       fds[MAX_MONITORS]{};
-    Monitor*            lookup_table[MAX_MONITORS]{};
+    bool                               running{false};
+    bool                               monitors_changed{false};
+    std::list<Monitor*>                monitors{};
+    struct pollfd                      fds[MAX_MONITORS]{};
+    std::array<Monitor*, MAX_MONITORS> lookup_table{};
 
     // Friend classes
     friend class Monitor;

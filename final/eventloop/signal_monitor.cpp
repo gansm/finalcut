@@ -94,8 +94,8 @@ void SignalMonitor::init (int sn, handler_t hdl, void* uc)
   if ( sigaction(sn, &SigAction, &old_sig_action) != 0 )
   {
     int Error = errno;
-    ::close(signal_pipe_fd[0]);
-    ::close(signal_pipe_fd[1]);
+    (void)::close(signal_pipe_fd[0]);
+    (void)::close(signal_pipe_fd[1]);
     std::error_code ErrCode{Error, std::generic_category()};
     std::system_error SysErr{ErrCode, strerror(Error)};
     throw (SysErr);
@@ -114,7 +114,7 @@ void SignalMonitor::onSignal (int signal_number)
 
   if ( iter == signal_monitors.end() )
     return;
-  
+
   SignalMonitor* monitor{iter->second};
 
   if ( monitor->isActive() )
@@ -128,8 +128,23 @@ void SignalMonitor::onSignal (int signal_number)
 //----------------------------------------------------------------------
 void SignalMonitor::trigger (short return_events)
 {
-  // Read pipe to reset signaling for poll()
+  // Pipe to reset the signaling for poll()
   uint64_t buffer{0};
-  ::read (fd, &buffer, sizeof(buffer));
+  size_t   bytesRead{0};
+
+  //Ensure that the correct number of bytes are read from the pipe.
+  while ( bytesRead < sizeof(buffer) ) {
+    ssize_t currentBytesRead{
+      ::read (fd, &buffer, sizeof(buffer) - bytesRead)};
+    if ( -1 == currentBytesRead ) {
+      int               error{errno};
+      std::error_code   errCode{error, std::generic_category()};
+      std::system_error sysErr{errCode, strerror(error)};
+      throw (sysErr);
+    }
+    else {
+      bytesRead += static_cast<size_t>(currentBytesRead);
+    }
+  }
   Monitor::trigger(return_events);
 }

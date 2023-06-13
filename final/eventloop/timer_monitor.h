@@ -43,8 +43,9 @@
 class TimerMonitor final : public Monitor
 {
   public:
-    // Disable default constructor
     TimerMonitor() = delete;
+    TimerMonitor(const TimerMonitor&) = delete;
+    TimerMonitor(const TimerMonitor&&) = delete;
 
     // Constructor
     explicit TimerMonitor(EventLoop*);
@@ -54,13 +55,15 @@ class TimerMonitor final : public Monitor
 
     // Methods
     void init (handler_t, void*);
+    auto operator=(const TimerMonitor&) -> TimerMonitor& = delete;
+    auto operator=(const TimerMonitor&&) -> TimerMonitor& = delete;
     void setInterval ( std::chrono::nanoseconds
                      , std::chrono::nanoseconds );
     void trigger(short) override;
 
   private:
     // Data members
-    timer_t timer_id{nullptr};
+    timer_t timer_id{ static_cast<timer_t>(0) };
     int     alarm_pipe_fd[2]{-1, -1};
 };
 
