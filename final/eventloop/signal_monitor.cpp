@@ -81,15 +81,6 @@ SignalMonitor::~SignalMonitor() noexcept  // destructor
   signal_monitors.erase(signal_number);
 }
 
-// SignalMonitor operator
-//----------------------------------------------------------------------
-SignalMonitor& SignalMonitor::operator = (const SignalMonitor& sm)
-{
-  if ( this != &sm )
-    impl.reset(new SigactionImpl(*sm.impl));
-
-  return *this;
-}
 
 // public methods of SignalMonitor
 //----------------------------------------------------------------------

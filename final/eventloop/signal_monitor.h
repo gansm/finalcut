@@ -55,15 +55,12 @@ class SignalMonitor final : public Monitor
     // Destructor
     ~SignalMonitor() noexcept override;
 
-    // Copy assignment operator (=)
-    SignalMonitor& operator = (const SignalMonitor&);
-
     // Methods
     void init (int, handler_t, void*);
     void trigger (short) override;
 
   private:
-    // Disable copy constructor
+    // Disable copy operator
     auto operator = (const SignalMonitor&) -> SignalMonitor& = delete;
 
     // Disable move assignment operator (=)
