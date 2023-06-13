@@ -63,7 +63,6 @@ inline auto SigactionImpl::getSigaction() const -> const struct sigaction*
 inline auto SigactionImpl::getSigaction() -> struct sigaction*
 { return &old_sig_action; }
 
-
 // SignalMonitor constructors and destructor
 //----------------------------------------------------------------------
 SignalMonitor::SignalMonitor (EventLoop* eloop)
@@ -81,15 +80,6 @@ SignalMonitor::~SignalMonitor() noexcept  // destructor
   signal_monitors.erase(signal_number);
 }
 
-// SignalMonitor operator
-//----------------------------------------------------------------------
-SignalMonitor& SignalMonitor::operator = (const SignalMonitor& sm)
-{
-  if ( this != &sm )
-    impl.reset(new SigactionImpl(*sm.impl));
-
-  return *this;
-}
 
 // public methods of SignalMonitor
 //----------------------------------------------------------------------
