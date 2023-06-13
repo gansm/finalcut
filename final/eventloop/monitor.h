@@ -47,6 +47,12 @@ class Monitor
     explicit Monitor (EventLoop*);
     Monitor() = delete;
 
+    // Disable copy constructor
+    Monitor (const Monitor&) = delete;
+
+    // Disable move constructor
+    Monitor (Monitor&&) noexcept = delete;
+
     // Destructor
     virtual ~Monitor();
 
@@ -57,6 +63,12 @@ class Monitor
 
     // Inquiry
     auto isActive() const -> bool;
+
+    // Disable copy assignment operator (=)
+    auto operator = (const Monitor&) -> Monitor& = delete;
+
+    // Disable move assignment operator (=)
+    auto operator = (Monitor&&) noexcept -> Monitor& = delete;
 
     // Methods
     virtual void resume();

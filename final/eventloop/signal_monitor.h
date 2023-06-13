@@ -48,6 +48,8 @@ class SignalMonitor final : public Monitor
   public:
     // Constructor
     SignalMonitor() = delete;
+    SignalMonitor(const SignalMonitor&) = delete;
+    SignalMonitor(const SignalMonitor&&) = delete;
     explicit SignalMonitor(EventLoop*);
 
     // Destructor
@@ -61,6 +63,12 @@ class SignalMonitor final : public Monitor
     void trigger (short) override;
 
   private:
+    // Disable copy constructor
+    auto operator = (const SignalMonitor&) -> SignalMonitor& = delete;
+
+    // Disable move assignment operator (=)
+    auto operator = (SignalMonitor&&) noexcept -> SignalMonitor& = delete;
+
     // Methods
     static void onSignal (int);
     auto getSigactionImpl() const -> const SigactionImpl*;

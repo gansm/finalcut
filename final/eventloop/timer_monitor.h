@@ -45,14 +45,25 @@
 class TimerMonitor final : public Monitor
 {
   public:
-    // Disable default constructor
     TimerMonitor() = delete;
 
+    // Disable copy constructor
+    TimerMonitor (const TimerMonitor&) = delete;
+
+    // Disable move constructor
+    TimerMonitor (TimerMonitor&&) noexcept = delete;
+
     // Constructor
-    explicit TimerMonitor(EventLoop*);
+    explicit TimerMonitor (EventLoop*);
 
     // Destructor
     ~TimerMonitor() noexcept override;
+
+    // Disable copy assignment operator (=)
+    auto operator = (const TimerMonitor&) -> TimerMonitor& = delete;
+
+    // Disable move assignment operator (=)
+    auto operator = (TimerMonitor&&) noexcept -> TimerMonitor& = delete;
 
     // Methods
     void init (handler_t, void*);
@@ -62,7 +73,7 @@ class TimerMonitor final : public Monitor
 
   private:
     // Data members
-    timer_t timer_id{0};
+    timer_t timer_id{static_cast<timer_t>(0)};
     int     alarm_pipe_fd[2]{-1, -1};
 };
 

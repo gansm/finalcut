@@ -43,6 +43,8 @@ class IoMonitor final : public Monitor
   public:
     // Constructor
     IoMonitor() = delete;
+    IoMonitor(const IoMonitor&) = delete;
+    IoMonitor(const IoMonitor&&) = delete;
     explicit IoMonitor (EventLoop*);
 
     // Destructor
@@ -50,6 +52,8 @@ class IoMonitor final : public Monitor
 
     // Method
     void init (int, short, handler_t, void*);
+    auto operator=(const IoMonitor&) -> IoMonitor& = delete;
+    auto operator=(const IoMonitor&&) -> IoMonitor& = delete;
 };
 
 #endif // IO_MONITOR_H
