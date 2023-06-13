@@ -80,7 +80,7 @@ std::mutex timer_nodes_mutex{};
 void onSigAlrm (int, siginfo_t* signal_info, void*)
 {
   const timer_t timer_id{*static_cast<const timer_t*>(signal_info->si_value.sival_ptr)};
-  timer_nodes_mutex.lock();
+  std::lock_guard<std::mutex> lock_guard(timer_nodes_mutex);
 
   for (const auto& timer_node : timer_nodes)
   {
@@ -101,8 +101,6 @@ void onSigAlrm (int, siginfo_t* signal_info, void*)
 
     break;
   }
-
-  timer_nodes_mutex.unlock();
 }
 
 }  // anonymous namespace
