@@ -73,7 +73,7 @@ auto EventLoop::run() -> int
 
     for (nfds_t index{0}; index < fd_count; index++)
     {
-      pollfd& current_fd = fds[index];
+      const pollfd& current_fd = fds[index];
 
       if ( current_fd.revents != 0
         && (current_fd.revents & current_fd.events) )

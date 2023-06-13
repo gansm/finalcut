@@ -79,10 +79,10 @@ std::mutex timer_nodes_mutex{};
 //----------------------------------------------------------------------
 void onSigAlrm (int, siginfo_t* signal_info, void*)
 {
-  const timer_t timer_id{*static_cast<timer_t*>(signal_info->si_value.sival_ptr)};
+  const timer_t timer_id{*static_cast<const timer_t*>(signal_info->si_value.sival_ptr)};
   timer_nodes_mutex.lock();
 
-  for (auto& timer_node : timer_nodes)
+  for (const auto& timer_node : timer_nodes)
   {
     if ( timer_id != timer_node.timer_id )
       continue;
@@ -120,7 +120,7 @@ TimerMonitor::~TimerMonitor() noexcept  // destructor
   ::close (alarm_pipe_fd[0]);
   ::close (alarm_pipe_fd[1]);
 
-  if ( timer_id == static_cast<timer_t>(0) )
+  if ( timer_id == static_cast<timer_t>(nullptr) )
     return;
 
   auto iter{timer_nodes.begin()};

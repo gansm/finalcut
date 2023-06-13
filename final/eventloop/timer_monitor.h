@@ -73,7 +73,7 @@ class TimerMonitor final : public Monitor
 
   private:
     // Data members
-    timer_t timer_id{static_cast<timer_t>(0)};
+    timer_t timer_id{static_cast<timer_t>(nullptr)};
     int     alarm_pipe_fd[2]{-1, -1};
 };
 

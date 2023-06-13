@@ -145,7 +145,7 @@ void SignalMonitor::onSignal (int signal_number)
   if ( iter == signal_monitors.end() )
     return;
 
-  SignalMonitor* monitor{iter->second};
+  const SignalMonitor* monitor{iter->second};
 
   if ( monitor->isActive() )
   {
