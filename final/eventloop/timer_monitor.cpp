@@ -150,7 +150,7 @@ void TimerMonitor::init (handler_t hdl, void* uc)
   user_context = uc;
   events       = POLLIN;
 
-  if ( ::pipe(alarm_pipe_fd) != 0 )
+  if ( ::pipe(alarm_pipe_fd.data()) != 0 )
   {
     throw std::runtime_error{"No pipe could be set up for the timer."};
   }

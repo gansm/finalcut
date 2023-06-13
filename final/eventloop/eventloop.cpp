@@ -54,7 +54,7 @@ auto EventLoop::run() -> int
 
     while ( true )
     {
-      poll_result = poll(fds, fd_count, -1);
+      poll_result = poll(fds.data(), fd_count, -1);
 
       if ( poll_result != -1 || errno != EINTR )
         break;

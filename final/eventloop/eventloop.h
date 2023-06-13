@@ -56,11 +56,11 @@ class EventLoop
     void removeMonitor (Monitor*);
 
     // Data members
-    bool                               running{false};
-    bool                               monitors_changed{false};
-    std::list<Monitor*>                monitors{};
-    struct pollfd                      fds[MAX_MONITORS]{};
-    std::array<Monitor*, MAX_MONITORS> lookup_table{};
+    bool running{false};
+    bool monitors_changed{false};
+    std::list<Monitor*>  monitors{};
+    std::array<struct pollfd, MAX_MONITORS> fds{};
+    std::array<Monitor*, MAX_MONITORS>      lookup_table{};
 
     // Friend classes
     friend class Monitor;

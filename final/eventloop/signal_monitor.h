@@ -36,6 +36,7 @@
 #ifndef SIGNAL_MONITOR_H
 #define SIGNAL_MONITOR_H
 
+#include <array>
 #include <map>
 #include <memory>
 
@@ -73,7 +74,7 @@ class SignalMonitor final : public Monitor
 
     // Data members
     int signal_number{-1};
-    int signal_pipe_fd[2]{-1, -1};
+    std::array<int, 2> signal_pipe_fd{-1, -1};
     static std::map<int, SignalMonitor*> signal_monitors;
     std::unique_ptr<SigactionImpl> impl;
 };

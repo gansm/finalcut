@@ -38,6 +38,7 @@
 
 #include <time.h>
 
+#include <array>
 #include <chrono>
 
 #include "monitor.h"
@@ -74,7 +75,7 @@ class TimerMonitor final : public Monitor
   private:
     // Data members
     timer_t timer_id{static_cast<timer_t>(nullptr)};
-    int     alarm_pipe_fd[2]{-1, -1};
+    std::array<int, 2> alarm_pipe_fd{-1, -1};
 };
 
 #endif  // TIMER_MONITOR_H

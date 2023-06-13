@@ -108,7 +108,7 @@ void SignalMonitor::init (int sn, handler_t hdl, void* uc)
   }
 
   // Set up pipe for notification
-  if ( ::pipe(signal_pipe_fd) != 0 )
+  if ( ::pipe(signal_pipe_fd.data()) != 0 )
   {
     throw std::runtime_error{"No pipe could be set up for the signal monitor."};
   }
