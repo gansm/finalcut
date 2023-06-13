@@ -80,11 +80,11 @@ class SignalMonitor final : public Monitor
 
 // SigactionImpl inline functions
 //----------------------------------------------------------------------
-auto SignalMonitor::getSigactionImpl() const -> const SigactionImpl*
+inline auto SignalMonitor::getSigactionImpl() const -> const SigactionImpl*
 { return impl.get(); }
 
 //----------------------------------------------------------------------
-auto SignalMonitor::getSigactionImpl() -> SigactionImpl*
+inline auto SignalMonitor::getSigactionImpl() -> SigactionImpl*
 { return impl.get(); }
 
 #endif  // SIGNAL_MONITOR_H

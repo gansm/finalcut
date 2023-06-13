@@ -128,7 +128,7 @@ void SignalMonitor::init (int sn, handler_t hdl, void* uc)
     (void)::close(signal_pipe_fd[1]);
     std::error_code ErrCode{Error, std::generic_category()};
     std::system_error SysErr{ErrCode, strerror(Error)};
-    throw (SysErr);
+    throw SysErr;
   }
 
   // Enter the monitor instance in the assignment table
@@ -177,7 +177,7 @@ void SignalMonitor::trigger (short return_events)
       int error{errno};
       std::error_code err_code{error, std::generic_category()};
       std::system_error sys_err{err_code, strerror(error)};
-      throw (sys_err);
+      throw sys_err;
     }
     else
     {

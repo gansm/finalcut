@@ -189,7 +189,7 @@ void TimerMonitor::setInterval ( std::chrono::nanoseconds first,
   int error = errno;
   std::error_code err_code{error, std::generic_category()};
   std::system_error sys_err{err_code, strerror(error)};
-  throw (sys_err);
+  throw sys_err;
 }
 
 //----------------------------------------------------------------------
@@ -209,7 +209,7 @@ void TimerMonitor::trigger (short return_events)
       int error{errno};
       std::error_code err_code{error, std::generic_category()};
       std::system_error sys_err{err_code, strerror(error)};
-      throw (sys_err);
+      throw sys_err;
     }
     else
     {
@@ -235,9 +235,9 @@ class SigAlrmHandlerInstaller
         return;
 
       int error = errno;
-      std::error_code ErrCode{error, std::generic_category()};
-      std::system_error SysErr{ErrCode, strerror(error)};
-      throw (SysErr);
+      std::error_code err_code{error, std::generic_category()};
+      std::system_error sys_err{err_code, strerror(error)};
+      throw sys_err;
     }
 
     ~SigAlrmHandlerInstaller()  // destructor
