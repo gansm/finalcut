@@ -46,6 +46,8 @@ class IoMonitor final : public Monitor
     IoMonitor(const IoMonitor&) = delete;
     IoMonitor(const IoMonitor&&) = delete;
     explicit IoMonitor (EventLoop*);
+
+    // Destructor
     ~IoMonitor() noexcept override;
 
     // Method

@@ -1,5 +1,5 @@
 /***********************************************************************
-* main.cpp - Example of using the event loop                           *
+* eventloop.cpp - Example of using the event loop                      *
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
@@ -27,10 +27,7 @@
 #include <cstdio>
 #include <iostream>
 
-#include "eventloop.h"
-#include "io_monitor.h"
-#include "signal_monitor.h"
-#include "timer_monitor.h"
+#include <final/final.h>
 
 EventLoop Loop{};
 
@@ -114,9 +111,11 @@ auto main() -> int
                      , [] (Monitor* monitor, short)
                        {
                          uint8_t Char{0};
-                         (void)read( monitor->getFd(), &Char, 1);
-                         std::cout << "typed in: '" << Char << "'"
-                                   << std::endl;
+                         const ssize_t bytes = ::read( monitor->getFd(), &Char, 1);
+
+                         if ( bytes > 0 )
+                           std::cout << "typed in: '" << Char << "'"
+                                     << std::endl;
                        },
                        nullptr );
 

@@ -83,6 +83,11 @@
 #define F_HAVE_SELECT 1
 #endif
 
+/* Define to 1 if you have the `sigaction' function. */
+#ifndef F_HAVE_SIGACTION
+#define F_HAVE_SIGACTION 1
+#endif
+
 /* Define to 1 if you have the <stdint.h> header file. */
 #ifndef F_HAVE_STDINT_H
 #define F_HAVE_STDINT_H 1

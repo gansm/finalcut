@@ -20,8 +20,13 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#if defined(__CYGWIN__)
+  #define _XOPEN_SOURCE 700
+#endif
+
 #include <unistd.h>
 
+#include <csignal>
 #include <cstring>
 #include <stdexcept>
 #include <system_error>
@@ -34,22 +39,57 @@
 std::map<int, SignalMonitor*> SignalMonitor::signal_monitors{};
 
 
-// constructors and destructor
+class SigactionImpl
+{
+  public:
+    // Destructor
+    ~SigactionImpl() = default;
+
+    // Accessors
+    auto getSigaction() const -> const struct sigaction*;
+    auto getSigaction() -> struct sigaction*;
+
+  private:
+    // Data members
+    struct sigaction old_sig_action{};
+};
+
+// SigactionImpl inline functions
+//----------------------------------------------------------------------
+inline auto SigactionImpl::getSigaction() const -> const struct sigaction*
+{ return &old_sig_action; }
+
+//----------------------------------------------------------------------
+inline auto SigactionImpl::getSigaction() -> struct sigaction*
+{ return &old_sig_action; }
+
+
+// SignalMonitor constructors and destructor
 //----------------------------------------------------------------------
 SignalMonitor::SignalMonitor (EventLoop* eloop)
   : Monitor(eloop)
+  , impl(std::make_unique<SigactionImpl>())
 { }
 
 //----------------------------------------------------------------------
 SignalMonitor::~SignalMonitor() noexcept  // destructor
 {
   // Restore original signal handling.
-  sigaction (signal_number, &old_sig_action, nullptr);
+  sigaction (signal_number, getSigactionImpl()->getSigaction(), nullptr);
 
   // Remove monitor instance from the assignment table.
   signal_monitors.erase(signal_number);
 }
 
+// SignalMonitor operator
+//----------------------------------------------------------------------
+SignalMonitor& SignalMonitor::operator = (const SignalMonitor& sm)
+{
+  if ( this != &sm )
+    impl.reset(new SigactionImpl(*sm.impl));
+
+  return *this;
+}
 
 // public methods of SignalMonitor
 //----------------------------------------------------------------------
@@ -91,7 +131,7 @@ void SignalMonitor::init (int sn, handler_t hdl, void* uc)
   sigemptyset(&SigAction.sa_mask);
   SigAction.sa_flags = 0;
 
-  if ( sigaction(sn, &SigAction, &old_sig_action) != 0 )
+  if ( sigaction(sn, &SigAction, getSigactionImpl()->getSigaction()) != 0 )
   {
     int Error = errno;
     (void)::close(signal_pipe_fd[0]);
@@ -121,7 +161,12 @@ void SignalMonitor::onSignal (int signal_number)
   {
     // The event loop is notified by write access to the pipe
     uint64_t buffer{1U};
-    ::write (monitor->signal_pipe_fd[1], &buffer, sizeof(buffer));
+    auto successful = ::write (monitor->signal_pipe_fd[1], &buffer, sizeof(buffer)) > 0;
+
+    if ( ! successful )
+    {
+      // Possible error handling
+    }
   }
 }
 
@@ -130,21 +175,25 @@ void SignalMonitor::trigger (short return_events)
 {
   // Pipe to reset the signaling for poll()
   uint64_t buffer{0};
-  size_t   bytesRead{0};
+  std::size_t bytes_read{0};
 
-  //Ensure that the correct number of bytes are read from the pipe.
-  while ( bytesRead < sizeof(buffer) ) {
-    ssize_t currentBytesRead{
-      ::read (fd, &buffer, sizeof(buffer) - bytesRead)};
-    if ( -1 == currentBytesRead ) {
-      int               error{errno};
-      std::error_code   errCode{error, std::generic_category()};
-      std::system_error sysErr{errCode, strerror(error)};
-      throw (sysErr);
+  // Ensure that the correct number of bytes are read from the pipe
+  while ( bytes_read < sizeof(buffer) )
+  {
+    ssize_t current_bytes_read = ::read (fd, &buffer, sizeof(buffer) - bytes_read);
+
+    if ( current_bytes_read == -1 )
+    {
+      int error{errno};
+      std::error_code err_code{error, std::generic_category()};
+      std::system_error sys_err{err_code, strerror(error)};
+      throw (sys_err);
     }
-    else {
-      bytesRead += static_cast<size_t>(currentBytesRead);
+    else
+    {
+      bytes_read += static_cast<size_t>(current_bytes_read);
     }
   }
+
   Monitor::trigger(return_events);
 }

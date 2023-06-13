@@ -32,7 +32,7 @@ auto EventLoop::run() -> int
 {
   running = true;
 
-  while ( running )
+  do
   {
     nfds_t fd_count = 0;
     monitors_changed = false;
@@ -89,6 +89,7 @@ auto EventLoop::run() -> int
       }
     }
   }
+  while ( running );
 
   return 0;
 }

@@ -47,16 +47,20 @@ AC_CHECK_FUNCS( \
 		geteuid \
 		getttynam \
 		select \
+		sigaction \
 		strdup \
 		strstr \
 		vsnprintf \
 		wcwidth )
 
-
 # Checks for 'tgetent'
 AC_SEARCH_LIBS([tgetent], [terminfo mytinfo termlib termcap tinfo ncurses curses])
 # Checks for 'tparm'
 AC_SEARCH_LIBS([tparm], [terminfo mytinfo termlib termcap tinfo ncurses curses])
+# Checks for 'timer_create'
+AC_SEARCH_LIBS([timer_create], [rt])
+# Checks for 'timer_create'
+AC_SEARCH_LIBS([timer_settime], [rt])
 
 AC_SUBST([FINAL_LIBS])
 AC_SUBST([TERMCAP_LIB])

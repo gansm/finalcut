@@ -20,6 +20,11 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#if defined(__CYGWIN__)
+  #define _XOPEN_SOURCE 700
+#endif
+
+#include <time.h>
 #include <unistd.h>
 
 #include <csignal>
@@ -40,6 +45,7 @@ namespace
 struct TimerNode
 {
   public:
+    // Constructor
     TimerNode (timer_t tid, TimerMonitor* tmon, int file_descriptor)
       : timer_id{tid}
       , timer_monitor{tmon}
@@ -66,7 +72,8 @@ std::mutex timer_nodes_mutex{};
   const auto seconds{std::chrono::duration_cast<std::chrono::seconds>(duration)};
   duration -= seconds;
 
-  return timespec{ seconds.count(), duration.count() };
+  return timespec{ static_cast<time_t>(seconds.count())
+                 , static_cast<long>(duration.count()) };
 }
 
 //----------------------------------------------------------------------
@@ -84,7 +91,12 @@ void onSigAlrm (int, siginfo_t* signal_info, void*)
     {
       // The event loop is notified by write access to the pipe
       uint64_t buffer{1U};
-      ::write (timer_node.fd, &buffer, sizeof(buffer));
+      auto successful = ::write (timer_node.fd, &buffer, sizeof(buffer)) > 0;
+
+      if ( ! successful )
+      {
+        // Possible error handling
+      }
     }
 
     break;
@@ -108,7 +120,7 @@ TimerMonitor::~TimerMonitor() noexcept  // destructor
   ::close (alarm_pipe_fd[0]);
   ::close (alarm_pipe_fd[1]);
 
-  if ( static_cast<timer_t>(0) == timer_id )
+  if ( timer_id == static_cast<timer_t>(0) )
     return;
 
   auto iter{timer_nodes.begin()};
@@ -175,9 +187,9 @@ void TimerMonitor::setInterval ( std::chrono::nanoseconds first,
     return;
 
   int error = errno;
-  std::error_code ErrCode{error, std::generic_category()};
-  std::system_error SysErr{ErrCode, strerror(error)};
-  throw (SysErr);
+  std::error_code err_code{error, std::generic_category()};
+  std::system_error sys_err{err_code, strerror(error)};
+  throw (sys_err);
 }
 
 //----------------------------------------------------------------------
@@ -185,22 +197,26 @@ void TimerMonitor::trigger (short return_events)
 {
   // Pipe to reset the signaling for poll()
   uint64_t buffer{0};
-  size_t   bytesRead{0};
+  std::size_t bytes_read{0};
 
-  //Ensure that the correct number of bytes are read from the pipe.
-  while ( bytesRead < sizeof(buffer) ) {
-    ssize_t currentBytesRead{
-      ::read (fd, &buffer, sizeof(buffer) - bytesRead)};
-    if ( -1 == currentBytesRead ) {
-      int               error{errno};
-      std::error_code   errCode{error, std::generic_category()};
-      std::system_error sysErr{errCode, strerror(error)};
-      throw (sysErr);
+  // Ensure that the correct number of bytes are read from the pipe.
+  while ( bytes_read < sizeof(buffer) )
+  {
+    auto current_bytes_read = ::read(fd, &buffer, sizeof(buffer) - bytes_read);
+
+    if ( current_bytes_read == -1 )
+    {
+      int error{errno};
+      std::error_code err_code{error, std::generic_category()};
+      std::system_error sys_err{err_code, strerror(error)};
+      throw (sys_err);
     }
-    else {
-      bytesRead += static_cast<size_t>(currentBytesRead);
+    else
+    {
+      bytes_read += static_cast<size_t>(current_bytes_read);
     }
   }
+
   Monitor::trigger(return_events);
 }
 

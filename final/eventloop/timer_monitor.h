@@ -36,6 +36,8 @@
 #ifndef TIMER_MONITOR_H
 #define TIMER_MONITOR_H
 
+#include <time.h>
+
 #include <chrono>
 
 #include "monitor.h"
@@ -44,26 +46,34 @@ class TimerMonitor final : public Monitor
 {
   public:
     TimerMonitor() = delete;
-    TimerMonitor(const TimerMonitor&) = delete;
-    TimerMonitor(const TimerMonitor&&) = delete;
+
+    // Disable copy constructor
+    TimerMonitor (const TimerMonitor&) = delete;
+
+    // Disable move constructor
+    TimerMonitor (TimerMonitor&&) noexcept = delete;
 
     // Constructor
-    explicit TimerMonitor(EventLoop*);
+    explicit TimerMonitor (EventLoop*);
 
     // Destructor
     ~TimerMonitor() noexcept override;
 
+    // Disable copy assignment operator (=)
+    auto operator = (const TimerMonitor&) -> TimerMonitor& = delete;
+
+    // Disable move assignment operator (=)
+    auto operator = (TimerMonitor&&) noexcept -> TimerMonitor& = delete;
+
     // Methods
     void init (handler_t, void*);
-    auto operator=(const TimerMonitor&) -> TimerMonitor& = delete;
-    auto operator=(const TimerMonitor&&) -> TimerMonitor& = delete;
     void setInterval ( std::chrono::nanoseconds
                      , std::chrono::nanoseconds );
     void trigger(short) override;
 
   private:
     // Data members
-    timer_t timer_id{ static_cast<timer_t>(0) };
+    timer_t timer_id{static_cast<timer_t>(0)};
     int     alarm_pipe_fd[2]{-1, -1};
 };
 
