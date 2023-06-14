@@ -58,10 +58,7 @@ auto main() -> int
   // (no echo, no line buffering).
   tcgetattr (STDIN_FILENO, &OriginalTermIoSettings);
   atexit (onExit);
-  struct termios new_term_io_settings
-  {
-    OriginalTermIoSettings
-  };
+  struct termios new_term_io_settings{OriginalTermIoSettings};
   new_term_io_settings.c_lflag &= ~(ECHO | ICANON);
   tcsetattr (STDIN_FILENO, TCSAFLUSH, &new_term_io_settings);
 

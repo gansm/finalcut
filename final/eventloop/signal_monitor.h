@@ -79,13 +79,4 @@ class SignalMonitor final : public Monitor
     std::unique_ptr<SigactionImpl> impl;
 };
 
-// SigactionImpl inline functions
-//----------------------------------------------------------------------
-inline auto SignalMonitor::getSigactionImpl() const -> const SigactionImpl*
-{ return impl.get(); }
-
-//----------------------------------------------------------------------
-inline auto SignalMonitor::getSigactionImpl() -> SigactionImpl*
-{ return impl.get(); }
-
 #endif  // SIGNAL_MONITOR_H

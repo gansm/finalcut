@@ -54,6 +54,16 @@ class SigactionImpl
     struct sigaction old_sig_action{};
 };
 
+// SigactionImpl functions
+//----------------------------------------------------------------------
+auto SignalMonitor::getSigactionImpl() const -> const SigactionImpl*
+{ return impl.get(); }
+
+//----------------------------------------------------------------------
+auto SignalMonitor::getSigactionImpl() -> SigactionImpl*
+{ return impl.get(); }
+
+
 // SigactionImpl inline functions
 //----------------------------------------------------------------------
 inline auto SigactionImpl::getSigaction() const -> const struct sigaction*
