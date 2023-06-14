@@ -78,7 +78,5 @@ class SignalMonitor final : public Monitor
     static std::map<int, SignalMonitor*> signal_monitors;
     std::unique_ptr<SigactionImpl> impl;
 };
-inline auto SignalMonitor::getSigactionImpl() const -> const SigactionImpl*
-inline auto SignalMonitor::getSigactionImpl() -> SigactionImpl*
 
 #endif  // SIGNAL_MONITOR_H
