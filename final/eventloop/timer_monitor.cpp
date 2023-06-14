@@ -79,10 +79,10 @@ std::mutex timer_nodes_mutex{};
 //----------------------------------------------------------------------
 void onSigAlrm (int, siginfo_t* signal_info, void*)
 {
-  const timer_t timer_id{*static_cast<timer_t*>(signal_info->si_value.sival_ptr)};
-  timer_nodes_mutex.lock();
+  const timer_t timer_id{*static_cast<const timer_t*>(signal_info->si_value.sival_ptr)};
+  std::lock_guard<std::mutex> lock_guard(timer_nodes_mutex);
 
-  for (auto& timer_node : timer_nodes)
+  for (const auto& timer_node : timer_nodes)
   {
     if ( timer_id != timer_node.timer_id )
       continue;
@@ -101,8 +101,6 @@ void onSigAlrm (int, siginfo_t* signal_info, void*)
 
     break;
   }
-
-  timer_nodes_mutex.unlock();
 }
 
 }  // anonymous namespace
@@ -120,7 +118,7 @@ TimerMonitor::~TimerMonitor() noexcept  // destructor
   ::close (alarm_pipe_fd[0]);
   ::close (alarm_pipe_fd[1]);
 
-  if ( timer_id == static_cast<timer_t>(0) )
+  if ( timer_id == static_cast<timer_t>(nullptr) )
     return;
 
   auto iter{timer_nodes.begin()};
@@ -150,7 +148,7 @@ void TimerMonitor::init (handler_t hdl, void* uc)
   user_context = uc;
   events       = POLLIN;
 
-  if ( ::pipe(alarm_pipe_fd) != 0 )
+  if ( ::pipe(alarm_pipe_fd.data()) != 0 )
   {
     throw std::runtime_error{"No pipe could be set up for the timer."};
   }
@@ -189,7 +187,7 @@ void TimerMonitor::setInterval ( std::chrono::nanoseconds first,
   int error = errno;
   std::error_code err_code{error, std::generic_category()};
   std::system_error sys_err{err_code, strerror(error)};
-  throw (sys_err);
+  throw sys_err;
 }
 
 //----------------------------------------------------------------------
@@ -209,7 +207,7 @@ void TimerMonitor::trigger (short return_events)
       int error{errno};
       std::error_code err_code{error, std::generic_category()};
       std::system_error sys_err{err_code, strerror(error)};
-      throw (sys_err);
+      throw sys_err;
     }
     else
     {
@@ -235,9 +233,9 @@ class SigAlrmHandlerInstaller
         return;
 
       int error = errno;
-      std::error_code ErrCode{error, std::generic_category()};
-      std::system_error SysErr{ErrCode, strerror(error)};
-      throw (SysErr);
+      std::error_code err_code{error, std::generic_category()};
+      std::system_error sys_err{err_code, strerror(error)};
+      throw sys_err;
     }
 
     ~SigAlrmHandlerInstaller()  // destructor

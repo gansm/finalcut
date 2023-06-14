@@ -54,7 +54,7 @@ auto EventLoop::run() -> int
 
     while ( true )
     {
-      poll_result = poll(fds, fd_count, -1);
+      poll_result = poll(fds.data(), fd_count, -1);
 
       if ( poll_result != -1 || errno != EINTR )
         break;
@@ -73,7 +73,7 @@ auto EventLoop::run() -> int
 
     for (nfds_t index{0}; index < fd_count; index++)
     {
-      pollfd& current_fd = fds[index];
+      const pollfd& current_fd = fds[index];
 
       if ( current_fd.revents != 0
         && (current_fd.revents & current_fd.events) )

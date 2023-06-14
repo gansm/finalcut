@@ -73,7 +73,6 @@ inline auto SigactionImpl::getSigaction() const -> const struct sigaction*
 inline auto SigactionImpl::getSigaction() -> struct sigaction*
 { return &old_sig_action; }
 
-
 // SignalMonitor constructors and destructor
 //----------------------------------------------------------------------
 SignalMonitor::SignalMonitor (EventLoop* eloop)
@@ -119,7 +118,7 @@ void SignalMonitor::init (int sn, handler_t hdl, void* uc)
   }
 
   // Set up pipe for notification
-  if ( ::pipe(signal_pipe_fd) != 0 )
+  if ( ::pipe(signal_pipe_fd.data()) != 0 )
   {
     throw std::runtime_error{"No pipe could be set up for the signal monitor."};
   }
@@ -139,7 +138,7 @@ void SignalMonitor::init (int sn, handler_t hdl, void* uc)
     (void)::close(signal_pipe_fd[1]);
     std::error_code ErrCode{Error, std::generic_category()};
     std::system_error SysErr{ErrCode, strerror(Error)};
-    throw (SysErr);
+    throw SysErr;
   }
 
   // Enter the monitor instance in the assignment table
@@ -156,7 +155,7 @@ void SignalMonitor::onSignal (int signal_number)
   if ( iter == signal_monitors.end() )
     return;
 
-  SignalMonitor* monitor{iter->second};
+  const SignalMonitor* monitor{iter->second};
 
   if ( monitor->isActive() )
   {
@@ -188,7 +187,7 @@ void SignalMonitor::trigger (short return_events)
       int error{errno};
       std::error_code err_code{error, std::generic_category()};
       std::system_error sys_err{err_code, strerror(error)};
-      throw (sys_err);
+      throw sys_err;
     }
     else
     {

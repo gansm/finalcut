@@ -70,13 +70,13 @@ auto main() -> int
   (void)fcntl(STDIN_FILENO, F_SETFL, stdin_flags | O_NONBLOCK);
 
   // Configure monitors
-  timer1.init ( [] (Monitor*, short)
+  timer1.init ( [] (const Monitor*, short)
                 {
                    std::cout << "Tick" << std::endl;
                 }
                 , nullptr );
 
-  timer2.init ( [] (Monitor*, short)
+  timer2.init ( [] (const Monitor*, short)
                 {
                   std::cout << "Tock" << std::endl;
                 }
@@ -89,7 +89,7 @@ auto main() -> int
                      , std::chrono::nanoseconds{ 1'000'000'000 } );
 
   sig_int_monitor.init ( SIGINT
-                       , [] (Monitor*, short)
+                       , [] (const Monitor*, short)
                          {
                            std::cout << "Signal SIGINT received."
                                      << std::endl;
@@ -98,7 +98,7 @@ auto main() -> int
                          , nullptr );
 
   sig_abrt_monitor.init ( SIGABRT
-                        , [] (Monitor*, short)
+                        , [] (const Monitor*, short)
                         {
                           std::cout << "Signal SIGABRT received."
                                     << std::endl;
@@ -108,7 +108,7 @@ auto main() -> int
 
   stdin_monitor.init ( STDIN_FILENO
                      , POLLIN
-                     , [] (Monitor* monitor, short)
+                     , [] (const Monitor* monitor, short)
                        {
                          uint8_t Char{0};
                          const ssize_t bytes = ::read( monitor->getFd(), &Char, 1);

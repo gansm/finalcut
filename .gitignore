@@ -42,6 +42,7 @@ examples/choice
 examples/.deps/
 examples/dialog
 examples/event-log
+examples/eventloop
 examples/fullwidth-character
 examples/hello
 examples/highlight-text
