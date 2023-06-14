@@ -108,6 +108,7 @@ final/widget/.depend
 final/widget/.deps/
 final/widget/.dirstamp
 final/widget/.libs/
+m4/
 test/.deps/
 test/.libs/
 test/*_test

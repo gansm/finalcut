@@ -126,9 +126,9 @@ void SignalMonitor::init (int sn, handler_t hdl, void* uc)
     int Error = errno;
     (void)::close(signal_pipe_fd[0]);
     (void)::close(signal_pipe_fd[1]);
-    std::error_code ErrCode{Error, std::generic_category()};
-    std::system_error SysErr{ErrCode, strerror(Error)};
-    throw SysErr;
+    std::error_code err_code{Error, std::generic_category()};
+    std::system_error sys_err{err_code, strerror(Error)};
+    throw sys_err;
   }
 
   // Enter the monitor instance in the assignment table
