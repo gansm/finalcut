@@ -118,7 +118,7 @@ TimerMonitor::~TimerMonitor() noexcept  // destructor
   ::close (alarm_pipe_fd[0]);
   ::close (alarm_pipe_fd[1]);
 
-  if ( timer_id == static_cast<timer_t>(0) )
+  if ( timer_id == timer_t{} )
     return;
 
   auto iter{timer_nodes.begin()};

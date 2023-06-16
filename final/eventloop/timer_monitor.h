@@ -74,7 +74,7 @@ class TimerMonitor final : public Monitor
 
   private:
     // Data members
-    timer_t timer_id{static_cast<timer_t>(0)};
+    timer_t timer_id{};
     std::array<int, 2> alarm_pipe_fd{-1, -1};
 };
 
