@@ -141,7 +141,7 @@ void TimerMonitor::init (handler_t hdl, void* uc)
 {
   if ( already_initialized )
   {
-    throw std::runtime_error{"This instance has already been initialised."};
+    throw monitor_error{"This instance has already been initialised."};
   }
 
   handler      = std::move(hdl);
@@ -150,7 +150,7 @@ void TimerMonitor::init (handler_t hdl, void* uc)
 
   if ( ::pipe(alarm_pipe_fd.data()) != 0 )
   {
-    throw std::runtime_error{"No pipe could be set up for the timer."};
+    throw monitor_error{"No pipe could be set up for the timer."};
   }
 
   fd = alarm_pipe_fd[0];  // Read end of pipe
@@ -168,7 +168,7 @@ void TimerMonitor::init (handler_t hdl, void* uc)
   {
     ::close (alarm_pipe_fd[0]);
     ::close (alarm_pipe_fd[1]);
-    throw std::runtime_error{"No POSIX timer could be reserved."};
+    throw monitor_error{"No POSIX timer could be reserved."};
   }
 
   already_initialized = true;

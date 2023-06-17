@@ -32,11 +32,24 @@
 #define MONITOR_H
 
 #include <functional>
-
+#include <stdexcept>
+#include <string>
 
 // class forward declaration
 class EventLoop;
 class Monitor;
+
+class monitor_error : public std::runtime_error
+{
+  public:
+    explicit monitor_error (const std::string& what)
+      : runtime_error(what)
+    { }
+
+    explicit monitor_error (const char* what)
+      : runtime_error(what)
+    { }
+};
 
 using handler_t = std::function<void(Monitor*, short)>;
 
