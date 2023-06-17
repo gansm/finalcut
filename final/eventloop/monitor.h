@@ -42,13 +42,7 @@ class Monitor;
 class monitor_error : public std::runtime_error
 {
   public:
-    explicit monitor_error (const std::string& what)
-      : runtime_error(what)
-    { }
-
-    explicit monitor_error (const char* what)
-      : runtime_error(what)
-    { }
+    using std::runtime_error::runtime_error;
 };
 
 using handler_t = std::function<void(Monitor*, short)>;
