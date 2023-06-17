@@ -80,12 +80,13 @@ auto EventLoop::run() -> int
       {
         lookup_table[index]->trigger(current_fd.revents);
 
-        if ( monitors_changed
-          || int(++processed_fds) == poll_result
-          || ! running )
-        {
+        if ( monitors_changed || ! running )
           break;
-        }
+
+        ++processed_fds;
+
+        if ( int(processed_fds) == poll_result )
+          break;
       }
     }
   }

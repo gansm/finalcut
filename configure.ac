@@ -50,6 +50,7 @@ AC_CHECK_FUNCS( \
 		sigaction \
 		strdup \
 		strstr \
+		timer_create \
 		vsnprintf \
 		wcwidth )
 
