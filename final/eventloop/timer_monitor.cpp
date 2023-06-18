@@ -72,8 +72,7 @@ std::mutex timer_nodes_mutex{};
   const auto seconds{std::chrono::duration_cast<std::chrono::seconds>(duration)};
   duration -= seconds;
 
-  return timespec{ static_cast<time_t>(seconds.count())
-                 , static_cast<long>(duration.count()) };
+  return timespec{static_cast<time_t>(seconds.count()), duration.count()};
 }
 
 //----------------------------------------------------------------------
