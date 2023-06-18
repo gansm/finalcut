@@ -72,14 +72,13 @@ std::mutex timer_nodes_mutex{};
   const auto seconds{std::chrono::duration_cast<std::chrono::seconds>(duration)};
   duration -= seconds;
 
-  return timespec{ static_cast<time_t>(seconds.count())
-                 , static_cast<long>(duration.count()) };
+  return timespec{static_cast<time_t>(seconds.count()), duration.count()};
 }
 
 //----------------------------------------------------------------------
 void onSigAlrm (int, siginfo_t* signal_info, void*)
 {
-  const timer_t timer_id{*static_cast<const timer_t*>(signal_info->si_value.sival_ptr)};
+  const auto& timer_id = *static_cast<const timer_t*>(signal_info->si_value.sival_ptr);
   std::lock_guard<std::mutex> lock_guard(timer_nodes_mutex);
 
   for (const auto& timer_node : timer_nodes)
