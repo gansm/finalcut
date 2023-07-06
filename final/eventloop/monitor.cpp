@@ -23,6 +23,9 @@
 #include "eventloop.h"
 #include "monitor.h"
 
+namespace finalcut
+{
+
 // constructors and destructor
 //----------------------------------------------------------------------
 Monitor::Monitor (EventLoop* eloop)
@@ -37,3 +40,5 @@ Monitor::~Monitor()  // destructor
   if ( nullptr != eventloop )
     eventloop->removeMonitor(this);
 }
+
+}  // namespace finalcut

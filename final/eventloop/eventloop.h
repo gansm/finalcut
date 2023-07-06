@@ -37,6 +37,9 @@
 
 #include "monitor.h"
 
+namespace finalcut
+{
+
 class EventLoop
 {
   public:
@@ -50,6 +53,7 @@ class EventLoop
   private:
     // Constants
     static constexpr nfds_t MAX_MONITORS{50};
+    static constexpr int WAIT_INDEFINITELY{-1};
 
     // Methods
     void addMonitor (Monitor*);
@@ -65,5 +69,7 @@ class EventLoop
     // Friend classes
     friend class Monitor;
 };
+
+}  // namespace finalcut
 
 #endif  // EVENTLOOP_H

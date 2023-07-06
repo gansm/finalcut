@@ -38,6 +38,9 @@
 
 #include "monitor.h"
 
+namespace finalcut
+{
+
 class IoMonitor final : public Monitor
 {
   public:
@@ -55,5 +58,7 @@ class IoMonitor final : public Monitor
     auto operator=(const IoMonitor&) -> IoMonitor& = delete;
     auto operator=(const IoMonitor&&) -> IoMonitor& = delete;
 };
+
+}  // namespace finalcut
 
 #endif // IO_MONITOR_H

@@ -29,7 +29,7 @@
 
 #include <final/final.h>
 
-EventLoop Loop{};
+finalcut::EventLoop Loop{};
 
 struct termios OriginalTermIoSettings{};
 
@@ -48,11 +48,11 @@ void onExit()
 
 auto main() -> int
 {
-  TimerMonitor timer1{&Loop};
-  TimerMonitor timer2{&Loop};
-  SignalMonitor sig_int_monitor{&Loop};
-  SignalMonitor sig_abrt_monitor{&Loop};
-  IoMonitor stdin_monitor{&Loop};
+  finalcut::TimerMonitor timer1{&Loop};
+  finalcut::TimerMonitor timer2{&Loop};
+  finalcut::SignalMonitor sig_int_monitor{&Loop};
+  finalcut::SignalMonitor sig_abrt_monitor{&Loop};
+  finalcut::IoMonitor stdin_monitor{&Loop};
 
   // Save terminal setting and set terminal to raw mode
   // (no echo, no line buffering).
@@ -67,13 +67,13 @@ auto main() -> int
   (void)fcntl(STDIN_FILENO, F_SETFL, stdin_flags | O_NONBLOCK);
 
   // Configure monitors
-  timer1.init ( [] (const Monitor*, short)
+  timer1.init ( [] (const finalcut::Monitor*, short)
                 {
                    std::cout << "Tick" << std::endl;
                 }
                 , nullptr );
 
-  timer2.init ( [] (const Monitor*, short)
+  timer2.init ( [] (const finalcut::Monitor*, short)
                 {
                   std::cout << "Tock" << std::endl;
                 }
@@ -86,7 +86,7 @@ auto main() -> int
                      , std::chrono::nanoseconds{ 1'000'000'000 } );
 
   sig_int_monitor.init ( SIGINT
-                       , [] (const Monitor*, short)
+                       , [] (const finalcut::Monitor*, short)
                          {
                            std::cout << "Signal SIGINT received."
                                      << std::endl;
@@ -95,7 +95,7 @@ auto main() -> int
                          , nullptr );
 
   sig_abrt_monitor.init ( SIGABRT
-                        , [] (const Monitor*, short)
+                        , [] (const finalcut::Monitor*, short)
                         {
                           std::cout << "Signal SIGABRT received."
                                     << std::endl;
@@ -105,7 +105,7 @@ auto main() -> int
 
   stdin_monitor.init ( STDIN_FILENO
                      , POLLIN
-                     , [] (const Monitor* monitor, short)
+                     , [] (const finalcut::Monitor* monitor, short)
                        {
                          uint8_t Char{0};
                          const ssize_t bytes = ::read( monitor->getFd(), &Char, 1);

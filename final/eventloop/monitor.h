@@ -35,6 +35,9 @@
 #include <stdexcept>
 #include <string>
 
+namespace finalcut
+{
+
 // class forward declaration
 class EventLoop;
 class Monitor;
@@ -132,5 +135,7 @@ inline void Monitor::trigger (short return_events)
   if ( handler )
     handler (this, return_events);
 }
+
+}  // namespace finalcut
 
 #endif  // MONITOR_H

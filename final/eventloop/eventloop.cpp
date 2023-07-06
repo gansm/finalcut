@@ -26,6 +26,9 @@
 
 #include "eventloop.h"
 
+namespace finalcut
+{
+
 // public methods of EventLoop
 //----------------------------------------------------------------------
 auto EventLoop::run() -> int
@@ -54,7 +57,7 @@ auto EventLoop::run() -> int
 
     while ( true )
     {
-      poll_result = poll(fds.data(), fd_count, -1);
+      poll_result = poll(fds.data(), fd_count, WAIT_INDEFINITELY);
 
       if ( poll_result != -1 || errno != EINTR )
         break;
@@ -117,3 +120,5 @@ void EventLoop::removeMonitor (Monitor* monitor)
   monitors.remove(monitor);
   monitors_changed = true;
 }
+
+}  // namespace finalcut

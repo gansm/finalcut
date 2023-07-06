@@ -153,6 +153,12 @@
 #define F_HAVE_TERM_H 1
 #endif
 
+/* Define to 1 if you have the `timer_create' function. */
+/* #undef HAVE_TIMER_CREATE */
+
+/* Define to 1 if you have the `timer_settime' function. */
+/* #undef HAVE_TIMER_SETTIME */
+
 /* Define to 1 if you have the <ttyent.h> header file. */
 #ifndef F_HAVE_TTYENT_H
 #define F_HAVE_TTYENT_H 1

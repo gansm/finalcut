@@ -41,7 +41,23 @@
 #include <array>
 #include <chrono>
 
+#include "ftypes.h"
 #include "monitor.h"
+
+namespace finalcut
+{
+
+constexpr auto getTimerClass() -> char*
+{
+  #if defined(__APPLE__) && defined(__MACH__)
+    return C_STR("kqueue-timer");
+  #elif defined(__OpenBSD__)
+    return C_STR("kqueue-timer");
+  #else
+    return C_STR("posix-timer");
+  #endif
+}
+
 
 class TimerMonitor final : public Monitor
 {
@@ -77,5 +93,7 @@ class TimerMonitor final : public Monitor
     timer_t timer_id{};
     std::array<int, 2> alarm_pipe_fd{-1, -1};
 };
+
+}  // namespace finalcut
 
 #endif  // TIMER_MONITOR_H

@@ -39,7 +39,7 @@
 #include "eventloop.h"
 #include "timer_monitor.h"
 
-namespace
+namespace finalcut
 {
 
 struct TimerNode
@@ -102,8 +102,6 @@ void onSigAlrm (int, siginfo_t* signal_info, void*)
     break;
   }
 }
-
-}  // anonymous namespace
 
 
 // constructors and destructor
@@ -249,3 +247,5 @@ class SigAlrmHandlerInstaller
 };
 
 SigAlrmHandlerInstaller Installer{};
+
+}  // namespace finalcut

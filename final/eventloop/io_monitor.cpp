@@ -24,6 +24,9 @@
 
 #include "io_monitor.h"
 
+namespace finalcut
+{
+
 // constructors and destructor
 //----------------------------------------------------------------------
 IoMonitor::IoMonitor (EventLoop* eloop)
@@ -44,3 +47,5 @@ void IoMonitor::init ( int file_descriptor, short ev
   handler      = std::move(hdl);
   user_context = uc;
 }
+
+}  // namespace finalcut

@@ -42,6 +42,9 @@
 
 #include "monitor.h"
 
+namespace finalcut
+{
+
 class SigactionImpl;
 
 class SignalMonitor final : public Monitor
@@ -78,5 +81,7 @@ class SignalMonitor final : public Monitor
     static std::map<int, SignalMonitor*> signal_monitors;
     std::unique_ptr<SigactionImpl> impl;
 };
+
+}  // namespace finalcut
 
 #endif  // SIGNAL_MONITOR_H

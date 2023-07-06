@@ -35,6 +35,9 @@
 #include "eventloop.h"
 #include "signal_monitor.h"
 
+namespace finalcut
+{
+
 // static class attributes
 std::map<int, SignalMonitor*> SignalMonitor::signal_monitors{};
 
@@ -197,3 +200,5 @@ void SignalMonitor::trigger (short return_events)
 
   Monitor::trigger(return_events);
 }
+
+}  // namespace finalcut
