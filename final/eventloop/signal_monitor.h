@@ -45,8 +45,6 @@
 namespace finalcut
 {
 
-class SigactionImpl;
-
 class SignalMonitor final : public Monitor
 {
   public:
@@ -64,6 +62,8 @@ class SignalMonitor final : public Monitor
     void trigger (short) override;
 
   private:
+    class SigactionImpl;
+
     // Disable copy assignment operator (=)
     auto operator = (const SignalMonitor&) -> SignalMonitor& = delete;
 

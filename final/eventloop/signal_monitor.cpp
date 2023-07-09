@@ -42,7 +42,7 @@ namespace finalcut
 std::map<int, SignalMonitor*> SignalMonitor::signal_monitors{};
 
 
-class SigactionImpl
+class SignalMonitor::SigactionImpl
 {
   public:
     // Destructor
@@ -69,11 +69,11 @@ auto SignalMonitor::getSigactionImpl() -> SigactionImpl*
 
 // SigactionImpl inline functions
 //----------------------------------------------------------------------
-inline auto SigactionImpl::getSigaction() const -> const struct sigaction*
+inline auto SignalMonitor::SigactionImpl::getSigaction() const -> const struct sigaction*
 { return &old_sig_action; }
 
 //----------------------------------------------------------------------
-inline auto SigactionImpl::getSigaction() -> struct sigaction*
+inline auto SignalMonitor::SigactionImpl::getSigaction() -> struct sigaction*
 { return &old_sig_action; }
 
 // SignalMonitor constructors and destructor
