@@ -76,7 +76,6 @@ auto EventLoop::run() -> int
 
     for (nfds_t index{0}; index < fd_count; index++)
     {
-      bool leave{false};
       const pollfd& current_fd = fds[index];
 
       if ( current_fd.revents == 0
@@ -84,13 +83,10 @@ auto EventLoop::run() -> int
         continue;
 
       lookup_table[index]->trigger(current_fd.revents);
-
-      if ( monitors_changed || ! running )
-        leave = true;
-
       ++processed_fds;
 
-      if ( leave || int(processed_fds) == poll_result )
+      if ( monitors_changed || ! running
+        || int(processed_fds) == poll_result )
         break;
     }
   }
