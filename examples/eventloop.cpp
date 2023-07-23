@@ -92,15 +92,15 @@ auto main() -> int
                                      << std::endl;
                            Loop.leave();
                          }
-                         , nullptr );
+                       , nullptr );
 
   sig_abrt_monitor.init ( SIGABRT
                         , [] (const finalcut::Monitor*, short)
-                        {
-                          std::cout << "Signal SIGABRT received."
-                                    << std::endl;
-                          Loop.leave();
-                        }
+                          {
+                            std::cout << "Signal SIGABRT received."
+                                      << std::endl;
+                            Loop.leave();
+                          }
                         , nullptr );
 
   stdin_monitor.init ( STDIN_FILENO
@@ -113,8 +113,8 @@ auto main() -> int
                          if ( bytes > 0 )
                            std::cout << "typed in: '" << Char << "'"
                                      << std::endl;
-                       },
-                       nullptr );
+                       }
+                     , nullptr );
 
   // Start monitors
   timer1.resume();

@@ -2002,7 +2002,8 @@ inline auto FListView::findHeaderStartPos (bool& left_trunc) -> FVTermBuffer::it
   }
 
   auto first = headerline.begin();
-  std::advance(first, offset);
+  using distance_type = FVTermBuffer::difference_type;
+  std::advance(first, distance_type(offset));
   return first;
 }
 
@@ -2039,7 +2040,8 @@ inline auto FListView::findHeaderEndPos ( FVTermBuffer::iterator first
   }
 
   last = first;
-  std::advance(last, character);
+  using distance_type = FVTermBuffer::difference_type;
+  std::advance(last, distance_type(character));
   return last;
 }
 

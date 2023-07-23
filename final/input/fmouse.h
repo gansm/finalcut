@@ -104,7 +104,7 @@ class FMouseData
     // Destructor
     virtual ~FMouseData() noexcept;
 
-    // copy assignment operator (=)
+    // Copy assignment operator (=)
     auto operator = (const FMouseData&) -> FMouseData& = default;
 
     // Move assignment operator (=)

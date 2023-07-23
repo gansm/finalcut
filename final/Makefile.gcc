@@ -109,6 +109,7 @@ OBJS = \
 	eventloop/io_monitor.o \
 	eventloop/monitor.o \
 	eventloop/signal_monitor.o \
+	eventloop/posix_timer.o \
 	eventloop/timer_monitor.o \
 	input/fkeyboard.o \
 	input/fkey_map.o \

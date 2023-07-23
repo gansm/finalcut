@@ -17,7 +17,9 @@ libfinal_la_SOURCES = \
 	dialog/fmessagebox.cpp \
 	eventloop/eventloop.cpp \
 	eventloop/io_monitor.cpp \
+	eventloop/kqueue_timer.cpp \
 	eventloop/monitor.cpp \
+	eventloop/posix_timer.cpp \
 	eventloop/signal_monitor.cpp \
 	eventloop/timer_monitor.cpp \
 	input/fkeyboard.cpp \

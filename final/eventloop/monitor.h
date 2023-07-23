@@ -42,13 +42,40 @@ namespace finalcut
 class EventLoop;
 class Monitor;
 
+//----------------------------------------------------------------------
+// class monitor_error
+//----------------------------------------------------------------------
+
 class monitor_error : public std::runtime_error
 {
   public:
     using std::runtime_error::runtime_error;
+
+    // Copy constructor
+    monitor_error (const monitor_error&) = default;
+
+    // Move constructor
+    monitor_error (monitor_error&&) noexcept = default;
+
+    // Copy assignment operator (=)
+    auto operator = (const monitor_error&) -> monitor_error& = default;
+
+    // Move assignment operator (=)
+    auto operator = (monitor_error&&) noexcept -> monitor_error& = default;
+
+    // Destructor
+    ~monitor_error() override;
 };
 
+
+
+// Using-declaration
 using handler_t = std::function<void(Monitor*, short)>;
+
+
+//----------------------------------------------------------------------
+// class Monitor
+//----------------------------------------------------------------------
 
 class Monitor
 {
@@ -85,12 +112,15 @@ class Monitor
     virtual void suspend();
 
   protected:
+    // Constants
+    static constexpr int NO_FILE_DESCRIPTOR{-1};
+
     // Methods
     virtual void trigger (short);
 
     // Data member
     EventLoop*  eventloop{};
-    int         fd{-1};
+    int         fd{NO_FILE_DESCRIPTOR};
     short       events{0};
     handler_t   handler{};
     void*       user_context{nullptr};
@@ -104,7 +134,7 @@ class Monitor
     friend class EventLoop;
 };
 
-// inline functions
+// Monitor inline functions
 //----------------------------------------------------------------------
 inline auto Monitor::getEvents() const -> short
 { return events; }

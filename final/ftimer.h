@@ -226,7 +226,8 @@ auto FTimer<ObjectT>::delOwnTimers(const ObjectT* object) const & -> bool
                                       {
                                         return timer.object == object;
                                       }
-                                    ), timer_list->end() );
+                                    )
+                    , timer_list->end() );
   return true;
 }
 

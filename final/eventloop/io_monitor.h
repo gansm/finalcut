@@ -36,19 +36,28 @@
 #ifndef IO_MONITOR_H
 #define IO_MONITOR_H
 
-#include "monitor.h"
+#include "final/eventloop/monitor.h"
 
 namespace finalcut
 {
 
+//----------------------------------------------------------------------
+// class IoMonitor
+//----------------------------------------------------------------------
+
 class IoMonitor final : public Monitor
 {
   public:
-    // Constructor
+    // Disable default constructor
     IoMonitor() = delete;
-    IoMonitor(const IoMonitor&) = delete;
-    IoMonitor(const IoMonitor&&) = delete;
+
     explicit IoMonitor (EventLoop*);
+
+    // Disable copy constructor
+    IoMonitor(const IoMonitor&) = delete;
+
+    // Disable move constructor
+    IoMonitor(const IoMonitor&&) = delete;
 
     // Destructor
     ~IoMonitor() noexcept override;

@@ -35,10 +35,14 @@
 #include <poll.h>
 #include <array>
 
-#include "monitor.h"
+#include "final/eventloop/monitor.h"
 
 namespace finalcut
 {
+
+//----------------------------------------------------------------------
+// class EventLoop
+//----------------------------------------------------------------------
 
 class EventLoop
 {

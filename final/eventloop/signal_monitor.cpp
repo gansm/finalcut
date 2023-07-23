@@ -32,8 +32,8 @@
 #include <system_error>
 #include <utility>
 
-#include "eventloop.h"
-#include "signal_monitor.h"
+#include "final/eventloop/eventloop.h"
+#include "final/eventloop/signal_monitor.h"
 
 namespace finalcut
 {
@@ -41,6 +41,10 @@ namespace finalcut
 // static class attributes
 std::map<int, SignalMonitor*> SignalMonitor::signal_monitors{};
 
+
+//----------------------------------------------------------------------
+// class SignalMonitor::SigactionImpl
+//----------------------------------------------------------------------
 
 class SignalMonitor::SigactionImpl
 {
@@ -57,17 +61,7 @@ class SignalMonitor::SigactionImpl
     struct sigaction old_sig_action{};
 };
 
-// SigactionImpl functions
-//----------------------------------------------------------------------
-auto SignalMonitor::getSigactionImpl() const -> const SigactionImpl*
-{ return impl.get(); }
-
-//----------------------------------------------------------------------
-auto SignalMonitor::getSigactionImpl() -> SigactionImpl*
-{ return impl.get(); }
-
-
-// SigactionImpl inline functions
+// SignalMonitor::SigactionImpl inline functions
 //----------------------------------------------------------------------
 inline auto SignalMonitor::SigactionImpl::getSigaction() const -> const struct sigaction*
 { return &old_sig_action; }
@@ -76,7 +70,12 @@ inline auto SignalMonitor::SigactionImpl::getSigaction() const -> const struct s
 inline auto SignalMonitor::SigactionImpl::getSigaction() -> struct sigaction*
 { return &old_sig_action; }
 
-// SignalMonitor constructors and destructor
+
+//----------------------------------------------------------------------
+// class SignalMonitor
+//----------------------------------------------------------------------
+
+// constructors and destructor
 //----------------------------------------------------------------------
 SignalMonitor::SignalMonitor (EventLoop* eloop)
   : Monitor(eloop)
@@ -129,12 +128,12 @@ void SignalMonitor::init (int sn, handler_t hdl, void* uc)
   fd = signal_pipe_fd[0];  // Read end of pipe
 
   // Install signal handler
-  struct sigaction SigAction{};
-  SigAction.sa_handler = onSignal;
-  sigemptyset(&SigAction.sa_mask);
-  SigAction.sa_flags = 0;
+  struct sigaction sig_action{};
+  sig_action.sa_handler = onSignal;
+  sigemptyset(&sig_action.sa_mask);
+  sig_action.sa_flags = 0;
 
-  if ( sigaction(sn, &SigAction, getSigactionImpl()->getSigaction()) != 0 )
+  if ( sigaction(sn, &sig_action, getSigactionImpl()->getSigaction()) != 0 )
   {
     int Error = errno;
     (void)::close(signal_pipe_fd[0]);
@@ -199,6 +198,20 @@ void SignalMonitor::trigger (short return_events)
   }
 
   Monitor::trigger(return_events);
+}
+
+
+// private methods of SignalMonitor
+//----------------------------------------------------------------------
+auto SignalMonitor::getSigactionImpl() const -> const SigactionImpl*
+{
+  return impl.get();
+}
+
+//----------------------------------------------------------------------
+auto SignalMonitor::getSigactionImpl() -> SigactionImpl*
+{
+  return impl.get();
 }
 
 }  // namespace finalcut

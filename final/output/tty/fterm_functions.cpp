@@ -667,7 +667,8 @@ auto getCharLength (const FString& string, std::size_t pos) -> int
   if ( pos >= string.getLength() )
     return -1;
 
-  const auto begin = std::next(string.cbegin(), pos);
+  using distance_type = FString::difference_type;
+  const auto begin = std::next(string.cbegin(), distance_type(pos));
 
   if ( isWhitespace(*begin) )
     return 1;

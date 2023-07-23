@@ -40,19 +40,28 @@
 #include <map>
 #include <memory>
 
-#include "monitor.h"
+#include "final/eventloop/monitor.h"
 
 namespace finalcut
 {
 
+//----------------------------------------------------------------------
+// class SignalMonitor
+//----------------------------------------------------------------------
+
 class SignalMonitor final : public Monitor
 {
   public:
-    // Constructor
-    SignalMonitor() = delete;
-    SignalMonitor(const SignalMonitor&) = delete;
-    SignalMonitor(const SignalMonitor&&) = delete;
     explicit SignalMonitor(EventLoop*);
+
+    // Disable default constructor
+    SignalMonitor() = delete;
+
+    // Disable copy constructor
+    SignalMonitor(const SignalMonitor&) = delete;
+
+    // Disable move constructor
+    SignalMonitor(const SignalMonitor&&) = delete;
 
     // Destructor
     ~SignalMonitor() noexcept override;
@@ -62,6 +71,7 @@ class SignalMonitor final : public Monitor
     void trigger (short) override;
 
   private:
+    // class forward declaration
     class SigactionImpl;
 
     // Disable copy assignment operator (=)
@@ -77,7 +87,7 @@ class SignalMonitor final : public Monitor
 
     // Data members
     int signal_number{-1};
-    std::array<int, 2> signal_pipe_fd{-1, -1};
+    std::array<int, 2> signal_pipe_fd{{-1, -1}};
     static std::map<int, SignalMonitor*> signal_monitors;
     std::unique_ptr<SigactionImpl> impl;
 };

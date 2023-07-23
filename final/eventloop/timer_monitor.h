@@ -23,43 +23,163 @@
 /*  Inheritance diagram
  *  ═══════════════════
  *
- *      ▕▔▔▔▔▔▔▔▔▔▏
- *      ▕ Monitor ▏
- *      ▕▁▁▁▁▁▁▁▁▁▏
- *           ▲
- *           │
- *    ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
- *    ▕ TimerMonitor ▏
- *    ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ *          ▕▔▔▔▔▔▔▔▔▔▏
+ *          ▕ Monitor ▏
+ *          ▕▁▁▁▁▁▁▁▁▁▏
+ *               ▲
+ *               │
+ *      ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *      ▕ TimerMonitorImpl ▏
+ *      ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ *        ▲              ▲
+ *        │              │
+ *  ▕▔▔▔▔▔▔▔▔▔▔▔▔▏ ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *  ▕ PosixTimer ▏ ▕ KqueueTimer ▏ (platform-specific)
+ *  ▕▁▁▁▁▁▁▁▁▁▁▁▁▏ ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ *           ▲         ▲
+ *           │         │
+ *         ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *         ▕ TimerMonitor ▏
+ *         ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
  */
 
 #ifndef TIMER_MONITOR_H
 #define TIMER_MONITOR_H
 
+#if (defined(__APPLE__) && defined(__MACH__)) || defined(__OpenBSD__)
+  #define USE_KQUEUE_TIMER
+  #include <unistd.h>
+  #include <sys/event.h>
+  #include <sys/types.h>
+#else
+  #define USE_POSIX_TIMER
+#endif
+
 #include <time.h>
 
 #include <array>
 #include <chrono>
+#include <vector>
 
-#include "ftypes.h"
-#include "monitor.h"
+#include "final/eventloop/monitor.h"
+#include "final/ftypes.h"
 
 namespace finalcut
 {
 
-constexpr auto getTimerClass() -> char*
+//----------------------------------------------------------------------
+// class TimerMonitorImpl
+//----------------------------------------------------------------------
+
+class TimerMonitorImpl : public Monitor
+{
+  public:
+    // Constructor
+    explicit TimerMonitorImpl (EventLoop* eloop)
+      : Monitor(eloop)
+    { }
+
+    // Destructor
+    ~TimerMonitorImpl() override;
+
+    // Methods
+    virtual void init (handler_t, void*) = 0;
+    virtual void setInterval ( std::chrono::nanoseconds
+                             , std::chrono::nanoseconds ) = 0;
+};
+
+
+//----------------------------------------------------------------------
+// class PosixTimer
+//----------------------------------------------------------------------
+
+class PosixTimer : public TimerMonitorImpl
+{
+  public:
+    // Constructor
+    explicit PosixTimer (EventLoop*);
+
+    // Destructor
+    ~PosixTimer() noexcept override;
+
+    // Methods
+    void init (handler_t, void*) override;
+    void setInterval ( std::chrono::nanoseconds
+                     , std::chrono::nanoseconds ) override;
+    void trigger(short) override;
+
+  private:
+#if defined(USE_POSIX_TIMER)
+    // Data members
+    timer_t timer_id{};
+    std::array<int, 2> alarm_pipe_fd{NO_FILE_DESCRIPTOR, NO_FILE_DESCRIPTOR};
+#endif  // defined(USE_POSIX_TIMER)
+};
+
+
+//----------------------------------------------------------------------
+// class KqueueTimer
+//----------------------------------------------------------------------
+
+class KqueueTimer : public TimerMonitorImpl
+{
+  public:
+    // Constructor
+    explicit KqueueTimer (EventLoop*);
+
+    // Destructor
+    ~KqueueTimer() noexcept override;
+
+    // Methods
+    void init (handler_t, void*) override;
+    void setInterval ( std::chrono::nanoseconds
+                     , std::chrono::nanoseconds ) override;
+    void trigger(short) override;
+
+  private:
+#if defined(USE_KQUEUE_TIMER)
+    // Constants
+    static constexpr int NO_TIMER_ID{-1};
+
+    // Data members
+    struct TimerSpec
+    {
+      int period_ms{};
+      int first_ms{};
+    };
+
+    int       timer_id{NO_TIMER_ID};
+    bool      first_interval{true};
+    TimerSpec timer_spec{};
+    handler_t timer_handler{};
+
+    // Friend classes
+    friend class KqueueHandler;
+#endif  // defined(USE_KQUEUE_TIMER)
+};
+
+
+//----------------------------------------------------------------------
+// struct TimerClass
+//----------------------------------------------------------------------
+
+struct TimerClass
 {
   #if defined(__APPLE__) && defined(__MACH__)
-    return C_STR("kqueue-timer");
+    using type = KqueueTimer;
   #elif defined(__OpenBSD__)
-    return C_STR("kqueue-timer");
+    using type = KqueueTimer;
   #else
-    return C_STR("posix-timer");
+    using type = PosixTimer;
   #endif
-}
+};
 
 
-class TimerMonitor final : public Monitor
+//----------------------------------------------------------------------
+// class TimerMonitor
+//----------------------------------------------------------------------
+
+class TimerMonitor final : public TimerClass::type
 {
   public:
     TimerMonitor() = delete;
@@ -71,27 +191,18 @@ class TimerMonitor final : public Monitor
     TimerMonitor (TimerMonitor&&) noexcept = delete;
 
     // Constructor
-    explicit TimerMonitor (EventLoop*);
+    explicit TimerMonitor (EventLoop* eloop)
+      : TimerClass::type(eloop)
+    { }
 
     // Destructor
-    ~TimerMonitor() noexcept override;
+    ~TimerMonitor() override;
 
     // Disable copy assignment operator (=)
     auto operator = (const TimerMonitor&) -> TimerMonitor& = delete;
 
     // Disable move assignment operator (=)
     auto operator = (TimerMonitor&&) noexcept -> TimerMonitor& = delete;
-
-    // Methods
-    void init (handler_t, void*);
-    void setInterval ( std::chrono::nanoseconds
-                     , std::chrono::nanoseconds );
-    void trigger(short) override;
-
-  private:
-    // Data members
-    timer_t timer_id{};
-    std::array<int, 2> alarm_pipe_fd{-1, -1};
 };
 
 }  // namespace finalcut

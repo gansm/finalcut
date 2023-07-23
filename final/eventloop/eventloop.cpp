@@ -24,10 +24,14 @@
 
 #include <iostream>
 
-#include "eventloop.h"
+#include "final/eventloop/eventloop.h"
 
 namespace finalcut
 {
+
+//----------------------------------------------------------------------
+// class EventLoop
+//----------------------------------------------------------------------
 
 // public methods of EventLoop
 //----------------------------------------------------------------------
@@ -61,12 +65,6 @@ auto EventLoop::run() -> int
 
       if ( poll_result != -1 || errno != EINTR )
         break;
-    }
-
-    if ( poll_result == -1 )
-    {
-      std::cerr << "Arghh! " << errno << std::endl;
-      continue;
     }
 
     if ( poll_result <= 0 )

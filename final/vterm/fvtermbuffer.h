@@ -62,6 +62,7 @@ class FVTermBuffer
     using const_iterator  = FCharVector::const_iterator;
     using reference       = FCharVector::reference;
     using const_reference = FCharVector::const_reference;
+    using difference_type = FCharVector::difference_type;
 
     // Constructor
     FVTermBuffer();

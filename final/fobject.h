@@ -87,6 +87,7 @@ class FObject : public FObjectTimer
     using const_reverse_iterator = FObjectList::const_reverse_iterator;
     using reference              = FObjectList::reference;
     using const_reference        = FObjectList::const_reference;
+    using difference_type        = FObjectList::difference_type;
 
     // Constants
     static constexpr auto UNLIMITED = static_cast<std::size_t>(-1);

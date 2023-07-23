@@ -647,7 +647,8 @@ inline auto \
     FListBox::index2iterator (std::size_t index) -> FListBoxItems::iterator
 {
   auto iter = itemlist.begin();
-  std::advance (iter, index);
+  using distance_type = FListBoxItems::difference_type;
+  std::advance (iter, distance_type(index));
   return iter;
 }
 
@@ -656,7 +657,8 @@ inline auto \
     FListBox::index2iterator (std::size_t index) const -> FListBoxItems::const_iterator
 {
   auto iter = itemlist.begin();
-  std::advance (iter, index);
+  using distance_type = FListBoxItems::difference_type;
+  std::advance (iter, distance_type(index));
   return iter;
 }
 
