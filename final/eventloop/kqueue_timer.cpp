@@ -98,6 +98,17 @@ static std::vector<struct kevent> time_events{};
 class KqueueHandler
 {
   public:
+    // Constructor
+    KqueueHandler() = default;
+
+    // Copy constructor - no mutex copies
+    KqueueHandler (const KqueueHandler&)
+    { }
+
+    // Move constructor - no mutex copies
+    KqueueHandler (KqueueHandler&&) noexcept
+    { }
+
     // Overloaded operator
     void operator () (Monitor* monitor, short revents)
     {
@@ -152,7 +163,7 @@ class KqueueHandler
 
   private:
     // Data members
-    std::mutex timer_nodes_mutex{};
+    mutable std::mutex timer_nodes_mutex{};
 };
 
 

@@ -126,7 +126,7 @@ class SigAlrmHandler
     operator HandlerReturnType () const noexcept
     {
       // Converts a member function pointer to a function pointer
-      return invoke;
+      return &invoke;
     };
 
   private:
@@ -285,6 +285,18 @@ class SigAlrmHandlerInstaller
     }
 
   private:
+    // Disable copy constructor
+    SigAlrmHandlerInstaller (const SigAlrmHandlerInstaller&) = delete;
+
+    // Disable move constructor
+    SigAlrmHandlerInstaller (SigAlrmHandlerInstaller&&) noexcept = delete;
+
+      // Disable copy assignment operator (=)
+    auto operator = (const SigAlrmHandlerInstaller&) -> SigAlrmHandlerInstaller& = delete;
+
+    // Disable move assignment operator (=)
+    auto operator = (SigAlrmHandlerInstaller&&) noexcept -> SigAlrmHandlerInstaller& = delete;
+
     // Data member
     struct sigaction original_signal_handle{};
 };
