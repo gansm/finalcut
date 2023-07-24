@@ -297,7 +297,7 @@ class FMouseGPM final : public FMouse
     };
 
     // Method
-    auto         gpmEvent (bool = true) const -> gpmEventType;
+    auto gpmEvent (bool = true) const -> gpmEventType;
 
     // Data member
     Gpm_Event gpm_ev{};

@@ -30,8 +30,7 @@ namespace finalcut
 // class monitor_error
 //----------------------------------------------------------------------
 
-monitor_error::~monitor_error()
-{ }
+monitor_error::~monitor_error() = default;
 
 
 //----------------------------------------------------------------------

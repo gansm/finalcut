@@ -29,15 +29,21 @@
 
 #include <final/final.h>
 
-finalcut::EventLoop Loop{};
 
-struct termios OriginalTermIoSettings{};
+struct Global
+{
+  static struct termios original_term_io_settings;  // global termios object
+};
+
+// static class attribute
+struct termios Global::original_term_io_settings{};
+
 
 //----------------------------------------------------------------------
 void onExit()
 {
   // Restore terminal control
-  tcsetattr (STDIN_FILENO, TCSAFLUSH, &OriginalTermIoSettings);
+  tcsetattr (STDIN_FILENO, TCSAFLUSH, &Global::original_term_io_settings);
   std::cout << "Bye!" << std::endl;
 }
 
@@ -48,17 +54,18 @@ void onExit()
 
 auto main() -> int
 {
-  finalcut::TimerMonitor timer1{&Loop};
-  finalcut::TimerMonitor timer2{&Loop};
-  finalcut::SignalMonitor sig_int_monitor{&Loop};
-  finalcut::SignalMonitor sig_abrt_monitor{&Loop};
-  finalcut::IoMonitor stdin_monitor{&Loop};
+  finalcut::EventLoop loop{};
+  finalcut::TimerMonitor timer1{&loop};
+  finalcut::TimerMonitor timer2{&loop};
+  finalcut::SignalMonitor sig_int_monitor{&loop};
+  finalcut::SignalMonitor sig_abrt_monitor{&loop};
+  finalcut::IoMonitor stdin_monitor{&loop};
 
   // Save terminal setting and set terminal to raw mode
   // (no echo, no line buffering).
-  tcgetattr (STDIN_FILENO, &OriginalTermIoSettings);
+  tcgetattr (STDIN_FILENO, &Global::original_term_io_settings);
   atexit (onExit);
-  struct termios new_term_io_settings{OriginalTermIoSettings};
+  struct termios new_term_io_settings{Global::original_term_io_settings};
   new_term_io_settings.c_lflag &= ~(ECHO | ICANON);
   tcsetattr (STDIN_FILENO, TCSAFLUSH, &new_term_io_settings);
 
@@ -86,20 +93,20 @@ auto main() -> int
                      , std::chrono::nanoseconds{ 1'000'000'000 } );
 
   sig_int_monitor.init ( SIGINT
-                       , [] (const finalcut::Monitor*, short)
+                       , [&loop] (const finalcut::Monitor*, short)
                          {
                            std::cout << "Signal SIGINT received."
                                      << std::endl;
-                           Loop.leave();
+                           loop.leave();
                          }
                        , nullptr );
 
   sig_abrt_monitor.init ( SIGABRT
-                        , [] (const finalcut::Monitor*, short)
+                        , [&loop] (const finalcut::Monitor*, short)
                           {
                             std::cout << "Signal SIGABRT received."
                                       << std::endl;
-                            Loop.leave();
+                            loop.leave();
                           }
                         , nullptr );
 
@@ -124,5 +131,5 @@ auto main() -> int
   stdin_monitor.resume();
 
   // Monitoring
-  return Loop.run();
+  return loop.run();
 }

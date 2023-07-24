@@ -74,6 +74,9 @@ namespace finalcut
 class TimerMonitorImpl : public Monitor
 {
   public:
+    // Using-declaration
+    using Monitor::Monitor;
+
     // Constructor
     explicit TimerMonitorImpl (EventLoop* eloop)
       : Monitor(eloop)
@@ -108,8 +111,8 @@ class PosixTimer : public TimerMonitorImpl
                      , std::chrono::nanoseconds ) override;
     void trigger(short) override;
 
-  private:
 #if defined(USE_POSIX_TIMER)
+  private:
     // Data members
     timer_t timer_id{};
     std::array<int, 2> alarm_pipe_fd{NO_FILE_DESCRIPTOR, NO_FILE_DESCRIPTOR};
@@ -136,18 +139,18 @@ class KqueueTimer : public TimerMonitorImpl
                      , std::chrono::nanoseconds ) override;
     void trigger(short) override;
 
-  private:
 #if defined(USE_KQUEUE_TIMER)
-    // Constants
-    static constexpr int NO_TIMER_ID{-1};
-
-    // Data members
+  private:
     struct TimerSpec
     {
       int period_ms{};
       int first_ms{};
     };
 
+    // Constants
+    static constexpr int NO_TIMER_ID{-1};
+
+    // Data members
     int       timer_id{NO_TIMER_ID};
     bool      first_interval{true};
     TimerSpec timer_spec{};
@@ -182,6 +185,10 @@ struct TimerClass
 class TimerMonitor final : public TimerClass::type
 {
   public:
+    // Using-declarations
+    using base_class = TimerClass::type;
+    using base_class::base_class;
+
     TimerMonitor() = delete;
 
     // Disable copy constructor

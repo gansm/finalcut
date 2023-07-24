@@ -69,7 +69,6 @@ struct TimerNode
 };
 
 static std::list<TimerNode> timer_nodes{};
-static std::mutex timer_nodes_mutex{};
 
 
 //----------------------------------------------------------------------
@@ -86,32 +85,60 @@ static std::mutex timer_nodes_mutex{};
                  , static_cast<long>(duration.count()) };
 }
 
+
 //----------------------------------------------------------------------
-static void onSigAlrm (int, siginfo_t* signal_info, void*)
+// class SigAlrmHandler
+//----------------------------------------------------------------------
+
+class SigAlrmHandler
 {
-  const auto& timer_id = *static_cast<const timer_t*>(signal_info->si_value.sival_ptr);
-  std::lock_guard<std::mutex> lock_guard(timer_nodes_mutex);
+  public:
+    // Using-declaration
+    using HandlerReturnType = void (*)(int, siginfo_t*, void*);
 
-  for (const auto& timer_node : timer_nodes)
-  {
-    if ( timer_id != timer_node.timer_id )
-      continue;
-
-    if ( timer_node.timer_monitor->isActive() )
+    // Overloaded operators
+    void operator () (int, siginfo_t* signal_info, void*)
     {
-      // The event loop is notified by write access to the pipe
-      uint64_t buffer{1U};
-      auto successful = ::write (timer_node.fd, &buffer, sizeof(buffer)) > 0;
+      const auto& timer_id = *static_cast<const timer_t*>(signal_info->si_value.sival_ptr);
+      std::lock_guard<std::mutex> lock_guard(timer_nodes_mutex);
 
-      if ( ! successful )
+      for (const auto& timer_node : timer_nodes)
       {
-        // Possible error handling
+        if ( timer_id != timer_node.timer_id )
+          continue;
+
+        if ( timer_node.timer_monitor->isActive() )
+        {
+          // The event loop is notified by write access to the pipe
+          uint64_t buffer{1U};
+          auto successful = ::write (timer_node.fd, &buffer, sizeof(buffer)) > 0;
+
+          if ( ! successful )
+          {
+            // Possible error handling
+          }
+        }
+
+        break;
       }
     }
 
-    break;
-  }
-}
+    operator HandlerReturnType () const noexcept
+    {
+      // Converts a member function pointer to a function pointer
+      return invoke;
+    };
+
+  private:
+    // Method
+    static void invoke (int, siginfo_t* signal_info, void*)
+    {
+      return SigAlrmHandler{}.operator()(0, signal_info, nullptr);
+    }
+
+    // Data members
+    std::mutex timer_nodes_mutex{};
+};
 
 
 //----------------------------------------------------------------------
@@ -240,7 +267,7 @@ class SigAlrmHandlerInstaller
     {
       struct sigaction signal_handle{};
       sigemptyset(&signal_handle.sa_mask);
-      signal_handle.sa_sigaction = onSigAlrm;
+      signal_handle.sa_sigaction = SigAlrmHandler();
       signal_handle.sa_flags = SA_SIGINFO;
 
       if ( sigaction(SIGALRM, &signal_handle, &original_signal_handle) != -1 )

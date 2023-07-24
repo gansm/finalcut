@@ -89,7 +89,6 @@ struct TimerNode
 
 static std::vector<TimerNode> timer_nodes{};
 static std::vector<struct kevent> time_events{};
-static std::mutex timer_nodes_mutex{};
 
 
 //----------------------------------------------------------------------
@@ -99,7 +98,8 @@ static std::mutex timer_nodes_mutex{};
 class KqueueHandler
 {
   public:
-    void operator () (Monitor* monitor, short revents) const
+    // Overloaded operator
+    void operator () (Monitor* monitor, short revents)
     {
       std::lock_guard<std::mutex> lock_guard(timer_nodes_mutex);
 
@@ -149,6 +149,10 @@ class KqueueHandler
         kqueue_timer_ptr->timer_handler(monitor, revents);
       }
     }
+
+  private:
+    // Data members
+    std::mutex timer_nodes_mutex{};
 };
 
 
