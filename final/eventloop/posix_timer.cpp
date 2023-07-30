@@ -42,6 +42,7 @@
 #include <system_error>
 #include <utility>
 
+#include "final/eventloop/eventloop_functions.h"
 #include "final/eventloop/eventloop.h"
 #include "final/eventloop/timer_monitor.h"
 
@@ -230,28 +231,7 @@ void PosixTimer::setInterval ( std::chrono::nanoseconds first,
 //----------------------------------------------------------------------
 void PosixTimer::trigger (short return_events)
 {
-  // Pipe to reset the signaling for poll()
-  uint64_t buffer{0};
-  std::size_t bytes_read{0};
-
-  // Ensure that the correct number of bytes are read from the pipe
-  while ( bytes_read < sizeof(buffer) )
-  {
-    auto current_bytes_read = ::read(fd, &buffer, sizeof(buffer) - bytes_read);
-
-    if ( current_bytes_read == -1 )
-    {
-      int error{errno};
-      std::error_code err_code{error, std::generic_category()};
-      std::system_error sys_err{err_code, strerror(error)};
-      throw sys_err;
-    }
-    else
-    {
-      bytes_read += static_cast<size_t>(current_bytes_read);
-    }
-  }
-
+  drainPipe(fd);
   Monitor::trigger(return_events);
 }
 
