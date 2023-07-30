@@ -77,11 +77,6 @@ class TimerMonitorImpl : public Monitor
     // Using-declaration
     using Monitor::Monitor;
 
-    // Constructor
-    explicit TimerMonitorImpl (EventLoop* eloop)
-      : Monitor(eloop)
-    { }
-
     // Destructor
     ~TimerMonitorImpl() override;
 
