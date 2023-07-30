@@ -39,56 +39,10 @@ auto EventLoop::run() -> int
 {
   running = true;
 
-  do
+  while ( running )
   {
-    nfds_t fd_count = 0;
-    monitors_changed = false;
-
-    for (Monitor* monitor : monitors)
-    {
-      if ( monitor->isActive() )
-      {
-        fds[fd_count] = { monitor->getFd(), monitor->getEvents(), 0 };
-        lookup_table[fd_count] = monitor;
-        fd_count++;
-      }
-
-      if ( fd_count >= MAX_MONITORS )
-        break;
-    }
-
-    int poll_result{};
-
-    while ( true )
-    {
-      poll_result = poll(fds.data(), fd_count, WAIT_INDEFINITELY);
-
-      if ( poll_result != -1 || errno != EINTR )
-        break;
-    }
-
-    if ( poll_result <= 0 )
-      continue;
-
-    nfds_t processed_fds{0};
-
-    for (nfds_t index{0}; index < fd_count; index++)
-    {
-      const pollfd& current_fd = fds[index];
-
-      if ( current_fd.revents == 0
-        || ! (current_fd.revents & current_fd.events) )
-        continue;
-
-      lookup_table[index]->trigger(current_fd.revents);
-      ++processed_fds;
-
-      if ( monitors_changed || ! running
-        || int(processed_fds) == poll_result )
-        break;
-    }
+    processNextEvents();
   }
-  while ( running );
 
   return 0;
 }
@@ -101,6 +55,66 @@ void EventLoop::leave()
 
 
 // private methods of EventLoop
+//----------------------------------------------------------------------
+inline void EventLoop::processNextEvents()
+{
+  nfds_t fd_count = 0;
+  monitors_changed = false;
+
+  for (Monitor* monitor : monitors)
+  {
+    if ( monitor->isActive() )
+    {
+      fds[fd_count] = { monitor->getFd(), monitor->getEvents(), 0 };
+      lookup_table[fd_count] = monitor;
+      fd_count++;
+    }
+
+    if ( fd_count >= MAX_MONITORS )
+      break;
+  }
+
+  int poll_result{};
+
+  while ( true )
+  {
+    poll_result = poll(fds.data(), fd_count, WAIT_INDEFINITELY);
+
+    if ( poll_result != -1 || errno != EINTR )
+      break;
+  }
+
+  if ( poll_result <= 0 )
+    return;
+
+  // Dispatch events waiting in fds
+  dispatcher(fd_count, poll_result);
+}
+
+//----------------------------------------------------------------------
+inline void EventLoop::dispatcher (nfds_t fd_count, int poll_result)
+{
+  // Dispatching events that are waiting in fds
+  nfds_t processed_fds{0};
+
+  for (nfds_t index{0}; index < fd_count; index++)
+  {
+    const pollfd& current_fd = fds[index];
+
+    if ( current_fd.revents == 0
+      || ! (current_fd.revents & current_fd.events) )
+      continue;
+
+    // Call the event handler for current_fd
+    lookup_table[index]->trigger(current_fd.revents);
+    ++processed_fds;
+
+    if ( monitors_changed || ! running
+      || int(processed_fds) == poll_result )
+      break;
+  }
+}
+
 //----------------------------------------------------------------------
 void EventLoop::addMonitor (Monitor* monitor)
 {

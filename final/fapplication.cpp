@@ -894,11 +894,13 @@ inline void FApplication::processInput() const
   if ( quit_now || internal::var::exit_loop || has_terminal_resized )
     return;
 
+  // Keyboard and mouse raw data processing
   queuingKeyboardInput();
   queuingMouseInput();
 
   do
   {
+    // Processing of captured keyboard and mouse events
     processKeyboardEvent();
     processMouseEvent();
   }
@@ -1328,12 +1330,12 @@ auto FApplication::processNextEvent() -> bool
     time_last_event = FObjectTimer::getCurrentTime();
     num_events += processTimerEvent();
     processInput();
-    processResizeEvent();
+    processResizeEvent();  // when the terminal size has changed
     processCloseWidget();
     sendQueuedEvents();
     processDialogResizeMove();
-    processTerminalUpdate();  // after terminal changes
-    flush();
+    processTerminalUpdate();  // for changed areas on the terminal
+    flush();  // Flush output buffer (via an instance of FOutput)
     processLogger();
   }
   else if ( isKeyPressed(next_event_wait) )

@@ -1289,7 +1289,7 @@ void FVTerm::updateVTerm() const
 
   if ( hasPendingUpdates(vdesktop.get()) )
   {
-    addLayer(vdesktop.get());
+    addLayer(vdesktop.get());  // Add vdesktop changes to vterm
     vdesktop->has_changes = false;
   }
 
@@ -1306,7 +1306,7 @@ void FVTerm::updateVTerm() const
     if ( hasPendingUpdates(v_win) )
     {
       passChangesToOverlap(v_win);
-      addLayer(v_win);
+      addLayer(v_win);  // Add v_win changes to vterm
       v_win->has_changes = false;
     }
     else if ( hasChildAreaChanges(v_win) )

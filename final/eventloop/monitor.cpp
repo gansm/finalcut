@@ -48,7 +48,7 @@ Monitor::Monitor (EventLoop* eloop)
 //----------------------------------------------------------------------
 Monitor::~Monitor()  // destructor
 {
-  if ( nullptr != eventloop )
+  if ( eventloop )
     eventloop->removeMonitor(this);
 }
 
