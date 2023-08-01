@@ -20,6 +20,8 @@ jobs:
       uses: vmactions/solaris-vm@v0
       with:
         prepare: |
+          pkg publisher solaris
+          pkg update --accept
           pkg install gcc-11
           pkgutil -y -i automake autoconf autoconf_archive libtool pkgconfig libcppunit1_12_1 libcppunit_dev gsed ggrep
         mem: 4096
