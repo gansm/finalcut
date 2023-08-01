@@ -21,9 +21,11 @@ jobs:
       with:
         prepare: |
           pkg publisher solaris
-          pkg update --accept
           echo "========= before ggc install ========="
           pkg install -v gcc-11
+          test -f /usr/bin/gcc || test -f /usr/gcc/11/bin/gcc && ln -s ../gcc/11/bin/gcc /usr/bin/gcc
+          test -f /usr/bin/g++ || test -f /usr/gcc/11/bin/g++ && ln -s ../gcc/11/bin/g++ /usr/bin/g++
+          /usr/bin/g++ -dumpfullversion -dumpversion
           echo "========= after ggc install ========="
           pkgutil -y -i automake autoconf autoconf_archive libtool pkgconfig libcppunit1_12_1 libcppunit_dev gsed ggrep
         mem: 4096
@@ -36,5 +38,5 @@ jobs:
           export PATH
           autoreconf -v --install --force
           ./configure --prefix=/usr
-          gmake V=1 -j$(nproc)
+          CXX="/usr/gcc/11/bin/g++" gmake V=1 -j$(nproc)
 
