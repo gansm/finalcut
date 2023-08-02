@@ -21,12 +21,14 @@ jobs:
       with:
         prepare: |
           pkg publisher solaris
-          pkg update --accept
+          pkg update -vvv --accept entire@latest
           pkg publisher solaris
-          pkg list -af gcc
-          pkg list -af gcc-11
+          beadm list
+          pkg info entire
+          pkg list -af entire
+          pkg list -af gcc-7
           echo "========= before ggc install ========="
-          pkg install -v --accept developer/gcc/gcc-c-11 developer/gcc/gcc-common-11 developer/gcc/gcc-gobjc-11 system/library/gcc/gcc-c++-runtime-11 system/library/gcc/gcc-c-runtime-11 system/library/gcc/gcc-gobjc-runtime-11
+          pkg install -vvv --accept developer/gcc-11
           g++ -dumpfullversion -dumpversion
           echo "========= after ggc install ========="
           pkgutil -y -i automake autoconf autoconf_archive libtool pkgconfig libcppunit1_12_1 libcppunit_dev gsed ggrep
