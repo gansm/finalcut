@@ -39,6 +39,7 @@ jobs:
           gcc \
           g++ \
           gpm \
+          git \
           wget \
           unzip \
           libgpm-dev \
