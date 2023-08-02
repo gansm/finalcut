@@ -25,9 +25,8 @@ jobs:
           pkg publisher solaris
           pkg list -af gcc
           pkg list -af gcc-11
-          pfexec pkg update -nv
           echo "========= before ggc install ========="
-          pkg install -v --accept developer/gcc-11
+          pkg install -v --accept developer/gcc/gcc-c-11 developer/gcc/gcc-common-11 developer/gcc/gcc-gobjc-11 system/library/gcc/gcc-c++-runtime-11 system/library/gcc/gcc-c-runtime-11 system/library/gcc/gcc-gobjc-runtime-11
           g++ -dumpfullversion -dumpversion
           echo "========= after ggc install ========="
           pkgutil -y -i automake autoconf autoconf_archive libtool pkgconfig libcppunit1_12_1 libcppunit_dev gsed ggrep
