@@ -21,6 +21,11 @@ jobs:
       with:
         prepare: |
           pkg publisher solaris
+          pkg update --accept
+          pkg publisher solaris
+          pkg list -af entire
+          pfexec pkg update -nv
+          pkg publisher solaris
           echo "========= before ggc install ========="
           pkg install -v --accept gcc-11
           g++ -dumpfullversion -dumpversion
