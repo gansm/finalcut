@@ -47,12 +47,6 @@ auto EventLoop::run() -> int
   return 0;
 }
 
-//----------------------------------------------------------------------
-void EventLoop::leave()
-{
-  running = false;
-}
-
 
 // private methods of EventLoop
 //----------------------------------------------------------------------

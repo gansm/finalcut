@@ -95,7 +95,7 @@ class SigAlrmHandler
 {
   public:
     // Using-declaration
-    using HandlerReturnType = void (*)(int, siginfo_t*, void*);
+    using HandlerReturnType = std::decay<void(int, siginfo_t*, void*)>::type;
 
     // Overloaded operators
     void operator () (int, siginfo_t* signal_info, void*)

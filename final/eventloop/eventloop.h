@@ -76,6 +76,11 @@ class EventLoop
     friend class Monitor;
 };
 
+// EventLoop inline functions
+//----------------------------------------------------------------------
+inline void EventLoop::leave()
+{ running = false; }
+
 }  // namespace finalcut
 
 #endif  // EVENTLOOP_H

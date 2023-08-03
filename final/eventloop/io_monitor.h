@@ -64,8 +64,8 @@ class IoMonitor final : public Monitor
 
     // Method
     void init (int, short, handler_t, void*);
-    auto operator=(const IoMonitor&) -> IoMonitor& = delete;
-    auto operator=(const IoMonitor&&) -> IoMonitor& = delete;
+    auto operator = (const IoMonitor&) -> IoMonitor& = delete;
+    auto operator = (const IoMonitor&&) -> IoMonitor& = delete;
 };
 
 }  // namespace finalcut

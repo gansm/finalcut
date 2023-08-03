@@ -192,11 +192,6 @@ class TimerMonitor final : public TimerClass::type
     // Disable move constructor
     TimerMonitor (TimerMonitor&&) noexcept = delete;
 
-    // Constructor
-    explicit TimerMonitor (EventLoop* eloop)
-      : TimerClass::type(eloop)
-    { }
-
     // Destructor
     ~TimerMonitor() override;
 
