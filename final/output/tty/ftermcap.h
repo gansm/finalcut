@@ -77,8 +77,8 @@ class FTermcap final
 
     // Using-declaration
     using TCapMapType = std::array<TCapMap, 85>;
-    using PutCharFunc = std::decay<int(int)>::type;
-    using PutStringFunc = std::decay<int(const std::string&)>::type;
+    using PutCharFunc = std::decay_t<int(int)>;
+    using PutStringFunc = std::decay_t<int(const std::string&)>;
 
     // Constructors
     FTermcap() = default;
