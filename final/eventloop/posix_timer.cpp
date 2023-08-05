@@ -181,17 +181,17 @@ PosixTimer::~PosixTimer() noexcept  // destructor
 //----------------------------------------------------------------------
 void PosixTimer::init (handler_t hdl, void* uc)
 {
-  if ( already_initialized )
+  if ( isInitialized() )
     throw monitor_error{"This instance has already been initialised."};
 
-  handler      = std::move(hdl);
-  user_context = uc;
-  events       = POLLIN;
+  setEvents (POLLIN);
+  setHandler (std::move(hdl));
+  setUserContext (uc);
 
   if ( ::pipe(alarm_pipe_fd.data()) != 0 )
     throw monitor_error{"No pipe could be set up for the timer."};
 
-  fd = alarm_pipe_fd[0];  // Read end of pipe
+  setFileDescriptor(alarm_pipe_fd[0]);  // Read end of pipe
 
   struct sigevent sig_event{};
   sig_event.sigev_notify          = SIGEV_SIGNAL;
@@ -209,7 +209,7 @@ void PosixTimer::init (handler_t hdl, void* uc)
     throw monitor_error{"No POSIX timer could be reserved."};
   }
 
-  already_initialized = true;
+  setInitialized();
 }
 
 //----------------------------------------------------------------------
@@ -231,7 +231,7 @@ void PosixTimer::setInterval ( std::chrono::nanoseconds first,
 //----------------------------------------------------------------------
 void PosixTimer::trigger (short return_events)
 {
-  drainPipe(fd);
+  drainPipe(getFileDescriptor());
   Monitor::trigger(return_events);
 }
 

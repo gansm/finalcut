@@ -59,7 +59,7 @@ inline void EventLoop::processNextEvents()
   {
     if ( monitor->isActive() )
     {
-      fds[fd_count] = { monitor->getFd(), monitor->getEvents(), 0 };
+      fds[fd_count] = { monitor->getFileDescriptor(), monitor->getEvents(), 0 };
       lookup_table[fd_count] = monitor;
       fd_count++;
     }

@@ -98,13 +98,13 @@ SignalMonitor::~SignalMonitor() noexcept  // destructor
 //----------------------------------------------------------------------
 void SignalMonitor::init (int sn, handler_t hdl, void* uc)
 {
-  if ( already_initialized )
+  if ( isInitialized() )
     throw monitor_error{"This instance has already been initialised."};
 
-  handler       = std::move(hdl);
-  user_context  = uc;
-  events        = POLLIN;
   signal_number = sn;
+  setEvents (POLLIN);
+  setHandler (std::move(hdl));
+  setUserContext (uc);
 
   // SIGALRM is handled by the timer monitor
   if ( SIGALRM == sn )
@@ -126,7 +126,7 @@ void SignalMonitor::init (int sn, handler_t hdl, void* uc)
     throw monitor_error{"No pipe could be set up for the signal monitor."};
   }
 
-  fd = signal_pipe_fd[0];  // Read end of pipe
+  setFileDescriptor(signal_pipe_fd[0]);  // Read end of pipe
 
   // Install signal handler
   struct sigaction sig_action{};
@@ -146,7 +146,7 @@ void SignalMonitor::init (int sn, handler_t hdl, void* uc)
 
   // Enter the monitor instance in the assignment table
   signal_monitors[sn] = this;
-  already_initialized = true;
+  setInitialized();
 }
 
 //----------------------------------------------------------------------
@@ -176,7 +176,7 @@ void SignalMonitor::onSignal (int signal_number)
 //----------------------------------------------------------------------
 void SignalMonitor::trigger (short return_events)
 {
-  drainPipe(fd);
+  drainPipe(getFileDescriptor());
   Monitor::trigger(return_events);
 }
 

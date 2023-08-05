@@ -46,10 +46,10 @@ IoMonitor::~IoMonitor() noexcept = default;  // destructor
 void IoMonitor::init ( int file_descriptor, short ev
                      , handler_t hdl, void* uc )
 {
-  fd           = file_descriptor;
-  events       = ev;
-  handler      = std::move(hdl);
-  user_context = uc;
+  setFileDescriptor (file_descriptor);
+  setEvents (ev);
+  setHandler (std::move(hdl));
+  setUserContext (uc);
 }
 
 }  // namespace finalcut

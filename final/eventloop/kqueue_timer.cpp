@@ -207,19 +207,18 @@ KqueueTimer::~KqueueTimer() noexcept  // destructor
 //----------------------------------------------------------------------
 void KqueueTimer::init (handler_t hdl, void* uc)
 {
-  if ( already_initialized )
+  if ( isInitialized() )
     throw monitor_error{"This instance has already been initialised."};
 
-  timer_id      = getTimerID();
-  fd            = getKqueue();
-  events        = POLLIN;
+  setFileDescriptor (getKqueue());
+  setEvents (POLLIN);
+  setHandler (std::move(KqueueHandler()));
+  setUserContext (uc);
+  timer_id = getTimerID();
   timer_handler = std::move(hdl);
-  user_context  = uc;
-  handler       = KqueueHandler();
   time_events.emplace_back();
   timer_nodes.emplace_back(timer_id, this);
-
-  already_initialized = true;
+  setInitialized();
 }
 
 //----------------------------------------------------------------------
@@ -236,7 +235,7 @@ void KqueueTimer::setInterval ( std::chrono::nanoseconds first,
   EV_SET(&ev_set, timer_id, EVFILT_TIMER, kq_flags, 0, ms, nullptr);
 
   // Register event with kqueue
-  if ( ::kevent(fd, &ev_set, 1, nullptr, 0, nullptr) != 0 )
+  if ( ::kevent(getFileDescriptor(), &ev_set, 1, nullptr, 0, nullptr) != 0 )
     throw monitor_error{"Cannot register event in kqueue."};
 }
 

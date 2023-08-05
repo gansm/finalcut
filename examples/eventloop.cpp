@@ -115,7 +115,7 @@ auto main() -> int
                      , [] (const finalcut::Monitor* monitor, short)
                        {
                          uint8_t Char{0};
-                         const ssize_t bytes = ::read( monitor->getFd(), &Char, 1);
+                         const ssize_t bytes = ::read(monitor->getFileDescriptor(), &Char, 1);
 
                          if ( bytes > 0 )
                            std::cout << "typed in: '" << Char << "'"

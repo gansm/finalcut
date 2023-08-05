@@ -95,7 +95,7 @@ class Monitor
 
     // Accessors
     auto getEvents() const -> short;
-    auto getFd() const -> int;
+    auto getFileDescriptor() const -> int;
     auto getUserContext() const -> void*;
 
     // Inquiry
@@ -115,20 +115,28 @@ class Monitor
     // Constants
     static constexpr int NO_FILE_DESCRIPTOR{-1};
 
+    // Mutators
+    void         setFileDescriptor (int);
+    void         setEvents (short);
+    void         setHandler (handler_t&&);
+    void         setUserContext (void*);
+    void         setInitialized();
+
+    // Inquiry
+    auto         isInitialized() -> bool;
+
     // Methods
     virtual void trigger (short);
 
+  private:
     // Data member
+    bool        active{false};
     EventLoop*  eventloop{};
     int         fd{NO_FILE_DESCRIPTOR};
     short       events{0};
     handler_t   handler{};
     void*       user_context{nullptr};
-    bool        already_initialized{false};
-
-  private:
-    // Data member
-    bool active{false};
+    bool        monitor_initialized{false};
 
     // Friend classes
     friend class EventLoop;
@@ -140,8 +148,9 @@ inline auto Monitor::getEvents() const -> short
 { return events; }
 
 //----------------------------------------------------------------------
-inline auto Monitor::getFd() const -> int
+inline auto Monitor::getFileDescriptor() const -> int
 { return fd; }
+
 
 //----------------------------------------------------------------------
 inline auto Monitor::getUserContext() const -> void*
@@ -165,6 +174,30 @@ inline void Monitor::trigger (short return_events)
   if ( handler )
     handler (this, return_events);
 }
+
+//----------------------------------------------------------------------
+inline void Monitor::setFileDescriptor (int file_descriptor)
+{ fd = file_descriptor; }
+
+//----------------------------------------------------------------------
+inline void Monitor::setEvents (short ev)
+{ events = ev; }
+
+//----------------------------------------------------------------------
+inline void Monitor::setHandler (handler_t&& hdl)
+{ handler = std::move(hdl); }
+
+//----------------------------------------------------------------------
+inline void Monitor::setUserContext (void* uc)
+{ user_context = uc; }
+
+//----------------------------------------------------------------------
+inline void Monitor::setInitialized()
+{ monitor_initialized = true; }
+
+//----------------------------------------------------------------------
+inline auto Monitor::isInitialized() -> bool
+{ return monitor_initialized; }
 
 }  // namespace finalcut
 
