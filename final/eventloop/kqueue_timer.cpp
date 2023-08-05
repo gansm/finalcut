@@ -95,7 +95,7 @@ static std::vector<struct kevent> time_events{};
 // class KqueueHandler
 //----------------------------------------------------------------------
 
-class KqueueHandler
+class KqueueHandler final
 {
   public:
     // Constructor
@@ -212,7 +212,7 @@ void KqueueTimer::init (handler_t hdl, void* uc)
 
   setFileDescriptor (getKqueue());
   setEvents (POLLIN);
-  setHandler (std::move(KqueueHandler()));
+  setHandler (KqueueHandler());
   setUserContext (uc);
   timer_id = getTimerID();
   timer_handler = std::move(hdl);
@@ -250,7 +250,7 @@ void KqueueTimer::trigger (short return_events)
 // struct KqueueHandlerInstaller
 //----------------------------------------------------------------------
 
-struct KqueueHandlerInstaller
+struct KqueueHandlerInstaller final
 {
   // constructor
   KqueueHandlerInstaller()

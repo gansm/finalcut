@@ -53,7 +53,7 @@ namespace finalcut
 // struct TimerNode
 //----------------------------------------------------------------------
 
-struct TimerNode
+struct TimerNode final
 {
   public:
     // Constructor
@@ -91,7 +91,7 @@ static std::list<TimerNode> timer_nodes{};
 // class SigAlrmHandler
 //----------------------------------------------------------------------
 
-class SigAlrmHandler
+class SigAlrmHandler final
 {
   public:
     // Using-declaration
@@ -240,7 +240,7 @@ void PosixTimer::trigger (short return_events)
 // class SigAlrmHandlerInstaller
 //----------------------------------------------------------------------
 
-class SigAlrmHandlerInstaller
+class SigAlrmHandlerInstaller final
 {
   public:
     SigAlrmHandlerInstaller()  // constructor
