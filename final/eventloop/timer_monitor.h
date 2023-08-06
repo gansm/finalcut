@@ -67,9 +67,9 @@
 namespace finalcut
 {
 
-// class forward declaration
+// class and struct forward declaration
 class SigAlrmHandlerInstaller;
-class KqueueHandlerInstaller;
+struct KqueueHandlerInstaller;
 
 //----------------------------------------------------------------------
 // class TimerMonitorImpl
