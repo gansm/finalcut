@@ -123,7 +123,7 @@ class Monitor
     void         setInitialized();
 
     // Inquiry
-    auto         isInitialized() -> bool;
+    auto         isInitialized() const -> bool;
 
     // Methods
     virtual void trigger (short);
@@ -196,7 +196,7 @@ inline void Monitor::setInitialized()
 { monitor_initialized = true; }
 
 //----------------------------------------------------------------------
-inline auto Monitor::isInitialized() -> bool
+inline auto Monitor::isInitialized() const -> bool
 { return monitor_initialized; }
 
 }  // namespace finalcut

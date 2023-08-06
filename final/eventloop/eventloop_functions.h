@@ -27,8 +27,6 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include "final/eventloop/eventloop_functions.h"
-
 namespace finalcut
 {
 

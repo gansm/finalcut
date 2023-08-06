@@ -67,10 +67,13 @@
 namespace finalcut
 {
 
+// class forward declaration
+class SigAlrmHandlerInstaller;
+class KqueueHandlerInstaller;
+
 //----------------------------------------------------------------------
 // class TimerMonitorImpl
 //----------------------------------------------------------------------
-
 class TimerMonitorImpl : public Monitor
 {
   public:
@@ -90,7 +93,6 @@ class TimerMonitorImpl : public Monitor
 //----------------------------------------------------------------------
 // class PosixTimer
 //----------------------------------------------------------------------
-
 class PosixTimer : public TimerMonitorImpl
 {
   public:
@@ -111,6 +113,7 @@ class PosixTimer : public TimerMonitorImpl
     // Data members
     timer_t timer_id{};
     std::array<int, 2> alarm_pipe_fd{NO_FILE_DESCRIPTOR, NO_FILE_DESCRIPTOR};
+    static SigAlrmHandlerInstaller* sig_alrm_handler_installer;
 #endif  // defined(USE_POSIX_TIMER)
 };
 
@@ -150,6 +153,7 @@ class KqueueTimer : public TimerMonitorImpl
     bool      first_interval{true};
     TimerSpec timer_spec{};
     handler_t timer_handler{};
+    static KqueueHandlerInstaller* kqueue_handler_installer;
 
     // Friend classes
     friend class KqueueHandler;

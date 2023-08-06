@@ -26,6 +26,7 @@
 #include <cstddef>
 #include <system_error>
 		
+#include "final/eventloop/eventloop_functions.h"
 #include "final/ftypes.h"
 
 namespace finalcut

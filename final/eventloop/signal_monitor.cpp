@@ -30,17 +30,32 @@
 #include <cstring>
 #include <stdexcept>
 #include <system_error>
+#include <unordered_map>
 #include <utility>
 
 #include "final/eventloop/eventloop_functions.h"
 #include "final/eventloop/eventloop.h"
 #include "final/eventloop/signal_monitor.h"
 
+// Fix warning with recursive macros 'sa_handler' and 'sa_sigaction'
+#if defined(__clang__)
+  #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
+#endif
+
+
 namespace finalcut
 {
 
-// static class attributes
-std::map<int, SignalMonitor*> SignalMonitor::signal_monitors{};
+// Using-declaration
+using SignalMonitorMap = std::unordered_map<int, SignalMonitor*>;
+
+//----------------------------------------------------------------------
+static auto getSignalMonitorMap() -> SignalMonitorMap&
+{
+  // Encapsulate global map object
+  static const auto& signal_monitors = std::make_unique<SignalMonitorMap>();
+  return *signal_monitors;
+}
 
 
 //----------------------------------------------------------------------
@@ -90,7 +105,7 @@ SignalMonitor::~SignalMonitor() noexcept  // destructor
   sigaction (signal_number, getSigactionImpl()->getSigaction(), nullptr);
 
   // Remove monitor instance from the assignment table.
-  signal_monitors.erase(signal_number);
+  getSignalMonitorMap().erase(signal_number);
 }
 
 
@@ -102,6 +117,7 @@ void SignalMonitor::init (int sn, handler_t hdl, void* uc)
     throw monitor_error{"This instance has already been initialised."};
 
   signal_number = sn;
+  auto& signal_monitors = getSignalMonitorMap();
   setEvents (POLLIN);
   setHandler (std::move(hdl));
   setUserContext (uc);
@@ -153,6 +169,7 @@ void SignalMonitor::init (int sn, handler_t hdl, void* uc)
 void SignalMonitor::onSignal (int signal_number)
 {
   // Determine the signal monitor instance
+  auto& signal_monitors = getSignalMonitorMap();
   const auto iter = signal_monitors.find(signal_number);
 
   if ( iter == signal_monitors.end() )

@@ -46,8 +46,44 @@
 #include "final/eventloop/eventloop.h"
 #include "final/eventloop/timer_monitor.h"
 
+// Fix warning with recursive macros 'sa_handler' and 'sa_sigaction'
+#if defined(__clang__)
+  #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
+#endif
+
+
 namespace finalcut
 {
+
+// struct forward declaration
+struct TimerNode;
+
+// Using-declaration
+using TimerNodesList = std::list<TimerNode>;
+
+
+//----------------------------------------------------------------------
+#if __cplusplus > 1 && __cplusplus >= 201703L
+  constexpr auto durationToTimespec (std::chrono::nanoseconds duration) -> timespec
+#else
+  static auto durationToTimespec (std::chrono::nanoseconds duration) -> timespec
+#endif
+{
+  const auto seconds{std::chrono::duration_cast<std::chrono::seconds>(duration)};
+  duration -= seconds;
+
+  return timespec{ static_cast<time_t>(seconds.count())
+                 , static_cast<long>(duration.count()) };
+}
+
+//----------------------------------------------------------------------
+static auto getTimerNodes() -> TimerNodesList&
+{
+  // Encapsulate global list object
+  static const auto& timer_nodes = std::make_unique<TimerNodesList>();
+  return *timer_nodes;
+}
+
 
 //----------------------------------------------------------------------
 // struct TimerNode
@@ -69,23 +105,6 @@ struct TimerNode final
     int         fd{};
 };
 
-static std::list<TimerNode> timer_nodes{};
-
-
-//----------------------------------------------------------------------
-#if __cplusplus > 1 && __cplusplus >= 201703L
-  constexpr auto durationToTimespec (std::chrono::nanoseconds duration) -> timespec
-#else
-  static auto durationToTimespec (std::chrono::nanoseconds duration) -> timespec
-#endif
-{
-  const auto seconds{std::chrono::duration_cast<std::chrono::seconds>(duration)};
-  duration -= seconds;
-
-  return timespec{ static_cast<time_t>(seconds.count())
-                 , static_cast<long>(duration.count()) };
-}
-
 
 //----------------------------------------------------------------------
 // class SigAlrmHandler
@@ -103,7 +122,7 @@ class SigAlrmHandler final
       const auto& timer_id = *static_cast<const timer_t*>(signal_info->si_value.sival_ptr);
       std::lock_guard<std::mutex> lock_guard(timer_nodes_mutex);
 
-      for (const auto& timer_node : timer_nodes)
+      for (const auto& timer_node : getTimerNodes())
       {
         if ( timer_id != timer_node.timer_id )
           continue;
@@ -128,7 +147,7 @@ class SigAlrmHandler final
     {
       // Converts a member function pointer to a function pointer
       return &invoke;
-    };
+    }
 
   private:
     // Method
@@ -140,100 +159,6 @@ class SigAlrmHandler final
     // Data members
     std::mutex timer_nodes_mutex{};
 };
-
-
-//----------------------------------------------------------------------
-// class PosixTimer
-//----------------------------------------------------------------------
-
-// constructors and destructor
-//----------------------------------------------------------------------
-PosixTimer::PosixTimer (EventLoop* eloop)
-  : TimerMonitorImpl(eloop)
-{ }
-
-//----------------------------------------------------------------------
-PosixTimer::~PosixTimer() noexcept  // destructor
-{
-  ::close (alarm_pipe_fd[0]);
-  ::close (alarm_pipe_fd[1]);
-
-  if ( timer_id == timer_t{} )
-    return;
-
-  auto iter{timer_nodes.begin()};
-
-  while ( iter != timer_nodes.end() )
-  {
-    if ( iter->timer_id == timer_id )
-    {
-      timer_delete(timer_id);
-      timer_nodes.erase(iter);
-      break;
-    }
-
-    ++iter;
-  }
-}
-
-
-// public methods of PosixTimer
-//----------------------------------------------------------------------
-void PosixTimer::init (handler_t hdl, void* uc)
-{
-  if ( isInitialized() )
-    throw monitor_error{"This instance has already been initialised."};
-
-  setEvents (POLLIN);
-  setHandler (std::move(hdl));
-  setUserContext (uc);
-
-  if ( ::pipe(alarm_pipe_fd.data()) != 0 )
-    throw monitor_error{"No pipe could be set up for the timer."};
-
-  setFileDescriptor(alarm_pipe_fd[0]);  // Read end of pipe
-
-  struct sigevent sig_event{};
-  sig_event.sigev_notify          = SIGEV_SIGNAL;
-  sig_event.sigev_signo           = SIGALRM;
-  sig_event.sigev_value.sival_ptr = &timer_id;
-
-  if ( timer_create(CLOCK_MONOTONIC, &sig_event, &timer_id) == 0 )
-  {
-    timer_nodes.emplace_back(timer_id, this, alarm_pipe_fd[1]);
-  }
-  else
-  {
-    ::close (alarm_pipe_fd[0]);
-    ::close (alarm_pipe_fd[1]);
-    throw monitor_error{"No POSIX timer could be reserved."};
-  }
-
-  setInitialized();
-}
-
-//----------------------------------------------------------------------
-void PosixTimer::setInterval ( std::chrono::nanoseconds first,
-                               std::chrono::nanoseconds periodic )
-{
-  struct itimerspec timer_spec { durationToTimespec(periodic)
-                               , durationToTimespec(first) };
-
-  if ( timer_settime(timer_id, 0, &timer_spec, nullptr) != -1 )
-    return;
-
-  const int error = errno;
-  std::error_code err_code{error, std::generic_category()};
-  std::system_error sys_err{err_code, strerror(error)};
-  throw sys_err;
-}
-
-//----------------------------------------------------------------------
-void PosixTimer::trigger (short return_events)
-{
-  drainPipe(getFileDescriptor());
-  Monitor::trigger(return_events);
-}
 
 
 //----------------------------------------------------------------------
@@ -281,7 +206,112 @@ class SigAlrmHandlerInstaller final
     struct sigaction original_signal_handle{};
 };
 
-static SigAlrmHandlerInstaller Installer{};
+//----------------------------------------------------------------------
+static auto startSigAlrmHandlerInstaller() -> SigAlrmHandlerInstaller*
+{
+  static const auto& sig_alrm_handler = std::make_unique<SigAlrmHandlerInstaller>();
+  return sig_alrm_handler.get();
+}
+
+// static class attributes
+SigAlrmHandlerInstaller* PosixTimer::sig_alrm_handler_installer{};
+
+
+//----------------------------------------------------------------------
+// class PosixTimer
+//----------------------------------------------------------------------
+
+// constructors and destructor
+//----------------------------------------------------------------------
+PosixTimer::PosixTimer (EventLoop* eloop)
+  : TimerMonitorImpl(eloop)
+{
+  sig_alrm_handler_installer = startSigAlrmHandlerInstaller();
+}
+
+//----------------------------------------------------------------------
+PosixTimer::~PosixTimer() noexcept  // destructor
+{
+  ::close (alarm_pipe_fd[0]);
+  ::close (alarm_pipe_fd[1]);
+
+  if ( timer_id == timer_t{} )
+    return;
+
+  auto& timer_nodes{getTimerNodes()};
+  auto iter{timer_nodes.begin()};
+
+  while ( iter != timer_nodes.end() )
+  {
+    if ( iter->timer_id == timer_id )
+    {
+      timer_delete(timer_id);
+      timer_nodes.erase(iter);
+      break;
+    }
+
+    ++iter;
+  }
+}
+
+
+// public methods of PosixTimer
+//----------------------------------------------------------------------
+void PosixTimer::init (handler_t hdl, void* uc)
+{
+  if ( isInitialized() )
+    throw monitor_error{"This instance has already been initialised."};
+
+  setEvents (POLLIN);
+  setHandler (std::move(hdl));
+  setUserContext (uc);
+
+  if ( ::pipe(alarm_pipe_fd.data()) != 0 )
+    throw monitor_error{"No pipe could be set up for the timer."};
+
+  setFileDescriptor(alarm_pipe_fd[0]);  // Read end of pipe
+
+  struct sigevent sig_event{};
+  sig_event.sigev_notify          = SIGEV_SIGNAL;
+  sig_event.sigev_signo           = SIGALRM;
+  sig_event.sigev_value.sival_ptr = &timer_id;
+
+  if ( timer_create(CLOCK_MONOTONIC, &sig_event, &timer_id) == 0 )
+  {
+    getTimerNodes().emplace_back(timer_id, this, alarm_pipe_fd[1]);
+  }
+  else
+  {
+    ::close (alarm_pipe_fd[0]);
+    ::close (alarm_pipe_fd[1]);
+    throw monitor_error{"No POSIX timer could be reserved."};
+  }
+
+  setInitialized();
+}
+
+//----------------------------------------------------------------------
+void PosixTimer::setInterval ( std::chrono::nanoseconds first,
+                               std::chrono::nanoseconds periodic )
+{
+  struct itimerspec timer_spec { durationToTimespec(periodic)
+                               , durationToTimespec(first) };
+
+  if ( timer_settime(timer_id, 0, &timer_spec, nullptr) != -1 )
+    return;
+
+  const int error = errno;
+  std::error_code err_code{error, std::generic_category()};
+  std::system_error sys_err{err_code, strerror(error)};
+  throw sys_err;
+}
+
+//----------------------------------------------------------------------
+void PosixTimer::trigger (short return_events)
+{
+  drainPipe(getFileDescriptor());
+  Monitor::trigger(return_events);
+}
 
 }  // namespace finalcut
 

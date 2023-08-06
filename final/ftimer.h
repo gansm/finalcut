@@ -96,7 +96,7 @@ class FTimer
     // Methods
     auto  addTimer (ObjectT*, int) & -> int;
     auto  delTimer (int) const & -> bool;
-    auto  delOwnTimers(const ObjectT*) const & -> bool;
+    auto  delOwnTimers (const ObjectT*) const & -> bool;
     auto  delAllTimers() const & -> bool;
 
   protected:
