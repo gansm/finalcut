@@ -40,7 +40,7 @@ struct termios Global::original_term_io_settings{};
 
 
 //----------------------------------------------------------------------
-void onExit()
+static void onExit()
 {
   // Restore terminal control
   tcsetattr (STDIN_FILENO, TCSAFLUSH, &Global::original_term_io_settings);
@@ -66,7 +66,7 @@ auto main() -> int
   tcgetattr (STDIN_FILENO, &Global::original_term_io_settings);
   atexit (onExit);
   struct termios new_term_io_settings{Global::original_term_io_settings};
-  new_term_io_settings.c_lflag &= ~(ECHO | ICANON);
+  new_term_io_settings.c_lflag &= uInt(~(ECHO | ICANON));
   tcsetattr (STDIN_FILENO, TCSAFLUSH, &new_term_io_settings);
 
   // Set file descriptor of stdin to non-blocking mode

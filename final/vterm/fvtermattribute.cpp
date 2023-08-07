@@ -33,6 +33,39 @@ namespace finalcut
 // static class attributes
 FChar FVTermAttribute::next_attribute{};
 
+// Using-declaration
+using map_type = std::pair<const Style, std::function<void(bool)>>;
+using AttributeLookupMap = std::unordered_map<const Style, std::function<void(bool)>>;
+
+//----------------------------------------------------------------------
+static auto getAttributeLookupMap() -> AttributeLookupMap&
+{
+  // Encapsulate global unordered_map object
+  static const auto& attribute_lookup = std::make_unique<AttributeLookupMap>
+  (
+    std::initializer_list<map_type>
+    ({
+      { Style::Bold, &FVTermAttribute::setBold },
+      { Style::Dim, &FVTermAttribute::setDim },
+      { Style::Italic, &FVTermAttribute::setItalic },
+      { Style::Underline, &FVTermAttribute::setUnderline },
+      { Style::Blink, &FVTermAttribute::setBlink },
+      { Style::Reverse, &FVTermAttribute::setReverse },
+      { Style::Standout, &FVTermAttribute::setStandout },
+      { Style::Invisible, &FVTermAttribute::setInvisible },
+      { Style::Protected, &FVTermAttribute::setProtected },
+      { Style::CrossedOut, &FVTermAttribute::setCrossedOut },
+      { Style::DoubleUnderline, &FVTermAttribute::setDoubleUnderline },
+      { Style::Transparent, &FVTermAttribute::setTransparent },
+      { Style::ColorOverlay, &FVTermAttribute::setColorOverlay },
+      { Style::InheritBackground, &FVTermAttribute::setInheritBackground }
+    })
+  );
+
+  return *attribute_lookup;
+}
+
+
 //----------------------------------------------------------------------
 // class FVTermAttribute
 //----------------------------------------------------------------------
@@ -64,25 +97,8 @@ void FVTermAttribute::initAttribute()
 //----------------------------------------------------------------------
 void FVTermAttribute::print (const FStyle& style)
 {
-  static const std::unordered_map<Style, std::function<void(bool)>> attributeLookup
-  {
-    { Style::Bold, &FVTermAttribute::setBold },
-    { Style::Dim, &FVTermAttribute::setDim },
-    { Style::Italic, &FVTermAttribute::setItalic },
-    { Style::Underline, &FVTermAttribute::setUnderline },
-    { Style::Blink, &FVTermAttribute::setBlink },
-    { Style::Reverse, &FVTermAttribute::setReverse },
-    { Style::Standout, &FVTermAttribute::setStandout },
-    { Style::Invisible, &FVTermAttribute::setInvisible },
-    { Style::Protected, &FVTermAttribute::setProtected },
-    { Style::CrossedOut, &FVTermAttribute::setCrossedOut },
-    { Style::DoubleUnderline, &FVTermAttribute::setDoubleUnderline },
-    { Style::Transparent, &FVTermAttribute::setTransparent },
-    { Style::ColorOverlay, &FVTermAttribute::setColorOverlay },
-    { Style::InheritBackground, &FVTermAttribute::setInheritBackground }
-  };
-
   Style attr = style.getStyle();
+  static const auto& attribute_lookup = getAttributeLookupMap();
 
   if ( attr == Style::None )
   {
@@ -93,9 +109,9 @@ void FVTermAttribute::print (const FStyle& style)
   while ( attr != Style::None )
   {
     const auto style_name = Style(attr & -attr);  // Find rightmost set bit
-    const auto iter = attributeLookup.find(style_name);
+    const auto iter = attribute_lookup.find(style_name);
 
-    if ( iter != attributeLookup.end() )
+    if ( iter != attribute_lookup.end() )
       iter->second(true);  // Sets the found style
 
     attr ^= style_name;  // Clear the rightmost set bit

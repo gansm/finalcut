@@ -238,8 +238,8 @@ PosixTimer::~PosixTimer() noexcept  // destructor
   if ( timer_id == timer_t{} )
     return;
 
-  auto& timer_nodes{getTimerNodes()};
-  auto iter{timer_nodes.begin()};
+  static auto& timer_nodes = getTimerNodes();
+  auto iter = timer_nodes.begin();
 
   while ( iter != timer_nodes.end() )
   {

@@ -155,7 +155,7 @@ class KqueueHandler final
                            {
                              return item.timer_id == ident;
                            };
-        auto& timer_nodes = getTimerNodes();
+        static auto& timer_nodes = getTimerNodes();
         const auto iter = std::find_if( timer_nodes.begin()
                                       , timer_nodes.end()
                                       , is_timer_id );

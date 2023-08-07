@@ -258,6 +258,8 @@ class FOptiAttr final
     void        reset (FChar&) const;
     auto        caused_reset_attributes (const char[], uChar = all_tests) const -> bool;
     auto        hasCharsetEquivalence() const -> bool;
+    static auto getAttributeOnHandlers() -> const AttributeHandlers&;
+    static auto getAttributeOffHandlers() -> const AttributeHandlers&;
     static auto getByte0ReverseMask() -> uInt8;
     static auto getByte1Mask() -> uInt8;
     static auto getByte1ResetMask() -> uInt8;

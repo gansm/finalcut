@@ -117,7 +117,7 @@ void SignalMonitor::init (int sn, handler_t hdl, void* uc)
     throw monitor_error{"This instance has already been initialised."};
 
   signal_number = sn;
-  auto& signal_monitors = getSignalMonitorMap();
+  static auto& signal_monitors = getSignalMonitorMap();
   setEvents (POLLIN);
   setHandler (std::move(hdl));
   setUserContext (uc);
@@ -169,7 +169,7 @@ void SignalMonitor::init (int sn, handler_t hdl, void* uc)
 void SignalMonitor::onSignal (int signal_number)
 {
   // Determine the signal monitor instance
-  auto& signal_monitors = getSignalMonitorMap();
+  static auto& signal_monitors = getSignalMonitorMap();
   const auto iter = signal_monitors.find(signal_number);
 
   if ( iter == signal_monitors.end() )
