@@ -35,6 +35,8 @@
 #include <stdexcept>
 #include <string>
 
+#include "final/util/fstring.h"
+
 namespace finalcut
 {
 
@@ -94,6 +96,7 @@ class Monitor
     virtual ~Monitor();
 
     // Accessors
+    auto getClassName() const -> FString;
     auto getEvents() const -> short;
     auto getFileDescriptor() const -> int;
     auto getUserContext() const -> void*;
@@ -143,6 +146,10 @@ class Monitor
 };
 
 // Monitor inline functions
+//----------------------------------------------------------------------
+inline auto Monitor::getClassName() const -> FString
+{ return "Monitor"; }
+
 //----------------------------------------------------------------------
 inline auto Monitor::getEvents() const -> short
 { return events; }

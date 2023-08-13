@@ -36,6 +36,7 @@
 #include <array>
 
 #include "final/eventloop/monitor.h"
+#include "final/util/fstring.h"
 
 namespace finalcut
 {
@@ -49,6 +50,9 @@ class EventLoop
   public:
     // Constructor
     EventLoop() = default;
+
+    // Accessor
+    auto getClassName() const -> FString;
 
     // Methods
     auto run() -> int;
@@ -77,6 +81,10 @@ class EventLoop
 };
 
 // EventLoop inline functions
+//----------------------------------------------------------------------
+inline auto EventLoop::getClassName() const -> FString
+{ return "EventLoop"; }
+
 //----------------------------------------------------------------------
 inline void EventLoop::leave()
 { running = false; }

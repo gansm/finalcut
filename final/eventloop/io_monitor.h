@@ -37,6 +37,7 @@
 #define IO_MONITOR_H
 
 #include "final/eventloop/monitor.h"
+#include "final/util/fstring.h"
 
 namespace finalcut
 {
@@ -62,11 +63,19 @@ class IoMonitor final : public Monitor
     // Destructor
     ~IoMonitor() noexcept override;
 
+    // Accessor
+    auto getClassName() const -> FString;
+
     // Method
     void init (int, short, handler_t, void*);
     auto operator = (const IoMonitor&) -> IoMonitor& = delete;
     auto operator = (const IoMonitor&&) -> IoMonitor& = delete;
 };
+
+// IoMonitor inline functions
+//----------------------------------------------------------------------
+inline auto IoMonitor::getClassName() const -> FString
+{ return "IoMonitor"; }
 
 }  // namespace finalcut
 

@@ -41,6 +41,7 @@
 #include <memory>
 
 #include "final/eventloop/monitor.h"
+#include "final/util/fstring.h"
 
 namespace finalcut
 {
@@ -66,6 +67,9 @@ class SignalMonitor final : public Monitor
     // Destructor
     ~SignalMonitor() noexcept override;
 
+    // Accessor
+    auto getClassName() const -> FString;
+
     // Methods
     void init (int, handler_t, void*);
     void trigger (short) override;
@@ -90,6 +94,11 @@ class SignalMonitor final : public Monitor
     std::array<int, 2> signal_pipe_fd{{-1, -1}};
     std::unique_ptr<SigactionImpl> impl;
 };
+
+// SignalMonitor inline functions
+//----------------------------------------------------------------------
+inline auto SignalMonitor::getClassName() const -> FString
+{ return "SignalMonitor"; }
 
 }  // namespace finalcut
 
