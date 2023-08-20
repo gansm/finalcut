@@ -28,7 +28,14 @@
 #include <cppunit/TestResultCollector.h>
 #include <cppunit/TestRunner.h>
 
+#include <chrono>
+#include <string>
+
 #include <final/final.h>
+
+using std::chrono::duration_cast;
+using std::chrono::milliseconds;
+using std::chrono::high_resolution_clock;
 
 void getException()
 { throw finalcut::monitor_error{"Monitor error"}; }
@@ -108,6 +115,21 @@ inline void Monitor_protected::p_trigger (short return_events)
   finalcut::Monitor::trigger(return_events);
 }
 
+namespace
+{
+
+std::function<void(int)> signal_handler;
+
+//----------------------------------------------------------------------
+void sigHandler (int num)
+{
+  CPPUNIT_ASSERT ( num == SIGALRM );
+  std::cout << "Call sigHandler(" << num << ")\n";
+  signal_handler(num);
+}
+
+}
+
 
 //----------------------------------------------------------------------
 // class EventloopMonitorTest
@@ -121,17 +143,27 @@ class EventloopMonitorTest : public CPPUNIT_NS::TestFixture
   protected:
     void classNameTest();
     void noArgumentTest();
+    void eventLoopTest();
     void setMonitorTest();
+    void IoMonitorTest();
+    void SignalMonitorTest();
+    void TimerMonitorTest();
     void exceptionTest();
 
   private:
+    void keyboard_input (std::string);
+
     // Adds code needed to register the test suite
     CPPUNIT_TEST_SUITE (EventloopMonitorTest);
 
     // Add a methods to the test suite
     CPPUNIT_TEST (classNameTest);
     CPPUNIT_TEST (noArgumentTest);
+    CPPUNIT_TEST (eventLoopTest);
     CPPUNIT_TEST (setMonitorTest);
+    CPPUNIT_TEST (IoMonitorTest);
+    CPPUNIT_TEST (SignalMonitorTest);
+    CPPUNIT_TEST (TimerMonitorTest);
     CPPUNIT_TEST (exceptionTest);
 
     // End of test suite definition
@@ -143,9 +175,20 @@ class EventloopMonitorTest : public CPPUNIT_NS::TestFixture
 void EventloopMonitorTest::classNameTest()
 {
   finalcut::EventLoop eloop{};
-  const finalcut::Monitor m(&eloop);
-  const finalcut::FString& classname = m.getClassName();
-  CPPUNIT_ASSERT ( classname == "Monitor" );
+  const finalcut::Monitor monitor(&eloop);
+  const finalcut::IoMonitor io_monitor(&eloop);
+  const finalcut::SignalMonitor signal_monitor(&eloop);
+  const finalcut::TimerMonitor timer_monitor(&eloop);
+  const finalcut::FString& eloop_classname = eloop.getClassName();
+  const finalcut::FString& monitor_classname = monitor.getClassName();
+  const finalcut::FString& io_monitor_classname = io_monitor.getClassName();
+  const finalcut::FString& signal_monitor_classname = signal_monitor.getClassName();
+  const finalcut::FString& timer_monitor_classname = timer_monitor.getClassName();
+  CPPUNIT_ASSERT ( eloop_classname == "EventLoop" );
+  CPPUNIT_ASSERT ( monitor_classname == "Monitor" );
+  CPPUNIT_ASSERT ( io_monitor_classname == "IoMonitor" );
+  CPPUNIT_ASSERT ( signal_monitor_classname == "SignalMonitor" );
+  CPPUNIT_ASSERT ( timer_monitor_classname == "TimerMonitor" );
 }
 
 //----------------------------------------------------------------------
@@ -157,6 +200,53 @@ void EventloopMonitorTest::noArgumentTest()
   CPPUNIT_ASSERT ( m.getFileDescriptor() == -1 );  // No File Descriptor
   CPPUNIT_ASSERT ( m.getUserContext() == nullptr );
   CPPUNIT_ASSERT ( ! m.isActive() );
+}
+
+//----------------------------------------------------------------------
+void EventloopMonitorTest::eventLoopTest()
+{
+  // Test without monitor
+  finalcut::EventLoop eloop{};
+  signal_handler = [&eloop] (int num)
+  {
+    eloop.leave();
+  };
+  signal(SIGALRM, sigHandler);  // Register signal handler
+  std::cout << "\n";
+  alarm(1);  // Schedule a alarm after 1 seconds
+  CPPUNIT_ASSERT ( eloop.run() == 0 );
+
+  // Test with one monitor
+  Monitor_protected mon(&eloop);
+  CPPUNIT_ASSERT ( mon.getEvents() == 0 );
+  CPPUNIT_ASSERT ( mon.getFileDescriptor() == -1 );  // No File Descriptor
+  CPPUNIT_ASSERT ( mon.getUserContext() == nullptr );
+  CPPUNIT_ASSERT ( ! mon.isActive() );
+  mon.p_setEvents (POLLIN);
+  std::array<int, 2> pipe_fd{{-1, -1}};
+  auto callback_handler = [&pipe_fd, &eloop] (const finalcut::Monitor*, short)
+  {
+    std::cout << "Callback handle";
+    uint64_t buf{0};
+    CPPUNIT_ASSERT ( ::read(pipe_fd[0], &buf, sizeof(buf)) == sizeof(buf) );
+    CPPUNIT_ASSERT ( buf == std::numeric_limits<uint64_t>::max() );
+    eloop.leave();
+  };
+  mon.p_setHandler(callback_handler);
+  CPPUNIT_ASSERT ( ::pipe(pipe_fd.data()) == 0 );
+  mon.p_setFileDescriptor(pipe_fd[0]);  // Read end of pipe
+  mon.resume();
+  signal_handler = [&pipe_fd] (int)
+  {
+    uint64_t buf{std::numeric_limits<uint64_t>::max()};
+    CPPUNIT_ASSERT ( ::write (pipe_fd[1], &buf, sizeof(buf)) > 0 );
+  };
+  alarm(1);  // Schedule a alarm after 1 seconds
+  CPPUNIT_ASSERT ( eloop.run() == 0 );
+  CPPUNIT_ASSERT ( mon.getEvents() == POLLIN );
+  CPPUNIT_ASSERT ( mon.getFileDescriptor() == pipe_fd[0] );
+  CPPUNIT_ASSERT ( mon.getUserContext() == nullptr );
+  CPPUNIT_ASSERT ( mon.isActive() );
 }
 
 //----------------------------------------------------------------------
@@ -199,12 +289,128 @@ void EventloopMonitorTest::setMonitorTest()
 }
 
 //----------------------------------------------------------------------
+void EventloopMonitorTest::IoMonitorTest()
+{
+  finalcut::EventLoop eloop{};
+  signal_handler = [this] (int)
+  {
+    keyboard_input("A");
+  };
+  signal(SIGALRM, sigHandler);  // Register signal handler
+  finalcut::IoMonitor stdin_monitor{&eloop};
+  auto callback_handler = [&eloop] (const finalcut::Monitor* mon, short)
+  {
+    std::cout << "\nIoMonitor callback handle";
+    uint8_t buf{0};
+    const auto bytes = ::read(mon->getFileDescriptor(), &buf, 1);
+    CPPUNIT_ASSERT ( bytes == 1 );
+    CPPUNIT_ASSERT ( buf == 'A' );
+    eloop.leave();
+  };
+  stdin_monitor.init (STDIN_FILENO, POLLIN, callback_handler, nullptr);
+  std::cout << "\n";
+  alarm(1);  // Schedule a alarm after 1 seconds
+  stdin_monitor.resume();
+  CPPUNIT_ASSERT ( eloop.run() == 0 );
+}
+
+//----------------------------------------------------------------------
+void EventloopMonitorTest::SignalMonitorTest()
+{
+  finalcut::EventLoop eloop{};
+  signal_handler = [] (int)
+  {
+    std::raise(SIGABRT);  // Send abort signal
+  };
+  signal(SIGALRM, sigHandler);  // Register signal handler
+  finalcut::SignalMonitor sig_abrt_monitor{&eloop};
+  auto callback_handler = [&eloop] (const finalcut::Monitor*, short)
+  {
+    std::cout << "SignalMonitor callback handle";
+    eloop.leave();
+  };
+  sig_abrt_monitor.init(SIGABRT, callback_handler, nullptr);
+  std::cout << "\n";
+  alarm(1);  // Schedule a alarm after 1 seconds
+  sig_abrt_monitor.resume();
+  CPPUNIT_ASSERT ( eloop.run() == 0 );
+}
+
+//----------------------------------------------------------------------
+void EventloopMonitorTest::TimerMonitorTest()
+{
+  finalcut::EventLoop eloop{};
+  finalcut::TimerMonitor timer_monitor{&eloop};
+  int num{0};
+  auto callback_handler = [&eloop, &num] (const finalcut::Monitor*, short)
+  {
+    num++;
+    std::cout << "TimerMonitor callback handle (" << num << ")\n";
+
+    if ( num == 3 )
+      eloop.leave();
+  };
+  timer_monitor.init (callback_handler, nullptr);
+  timer_monitor.setInterval ( std::chrono::nanoseconds{ 500'000'000 }
+                            , std::chrono::nanoseconds{ 1'000'000'000 } );
+  std::cout << "\n";
+  timer_monitor.resume();
+  auto start = high_resolution_clock::now();
+  CPPUNIT_ASSERT ( eloop.run() == 0 );
+  auto end = high_resolution_clock::now();
+  auto duration_ms = int(duration_cast<milliseconds>(end - start).count());
+  CPPUNIT_ASSERT ( num == 3 );
+  CPPUNIT_ASSERT ( duration_ms >= 2500 );
+  CPPUNIT_ASSERT ( duration_ms < 2510 );
+
+  timer_monitor.setInterval ( std::chrono::nanoseconds{ 100'000'000 }
+                            , std::chrono::nanoseconds{ 100'000'000 } );
+  num = 0;
+  start = high_resolution_clock::now();
+  CPPUNIT_ASSERT ( eloop.run() == 0 );
+  end = high_resolution_clock::now();
+  duration_ms = int(duration_cast<milliseconds>(end - start).count());
+  CPPUNIT_ASSERT ( num == 3 );
+  CPPUNIT_ASSERT ( duration_ms >= 300 );
+  CPPUNIT_ASSERT ( duration_ms < 310 );
+}
+
+//----------------------------------------------------------------------
 void EventloopMonitorTest::exceptionTest()
 {
   CPPUNIT_ASSERT_THROW ( getException()
                        , finalcut::monitor_error );
   CPPUNIT_ASSERT_NO_THROW ( getNoException() );
 }
+
+//----------------------------------------------------------------------
+void EventloopMonitorTest::keyboard_input (std::string s)
+{
+  // Simulates keystrokes
+
+  const char EOT = 0x04;  // End of Transmission
+  auto stdin_no = finalcut::FTermios::getStdIn();
+  fflush(stdout);
+
+  std::string::const_iterator iter;
+  iter = s.begin();
+
+  while ( iter != s.end() )
+  {
+    char c = *iter;
+
+    if ( ioctl (stdin_no, TIOCSTI, &c) < 0 )
+      break;
+
+    ++iter;
+  }
+
+  if ( ioctl (stdin_no, TIOCSTI, &EOT) < 0 )
+    return;
+
+  fflush(stdin);
+}
+
 
 // Put the test suite in the registry
 CPPUNIT_TEST_SUITE_REGISTRATION (EventloopMonitorTest);

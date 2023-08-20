@@ -64,7 +64,7 @@ class IoMonitor final : public Monitor
     ~IoMonitor() noexcept override;
 
     // Accessor
-    auto getClassName() const -> FString;
+    auto getClassName() const -> FString override;
 
     // Method
     void init (int, short, handler_t, void*);

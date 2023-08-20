@@ -23,6 +23,7 @@
 #include <unistd.h>
 
 #include <iostream>
+#include <thread>
 
 #include "final/eventloop/eventloop.h"
 
@@ -41,7 +42,8 @@ auto EventLoop::run() -> int
 
   while ( running )
   {
-    processNextEvents();
+    if ( ! processNextEvents() )
+      nonPollWaiting();
   }
 
   return 0;
@@ -50,7 +52,14 @@ auto EventLoop::run() -> int
 
 // private methods of EventLoop
 //----------------------------------------------------------------------
-inline void EventLoop::processNextEvents()
+inline void EventLoop::nonPollWaiting()
+{
+  // Saves cpu time when polling fails
+  std::this_thread::sleep_for(std::chrono::milliseconds(1));  // Wait 1 ms
+}
+
+//----------------------------------------------------------------------
+inline auto EventLoop::processNextEvents() -> bool
 {
   nfds_t fd_count = 0;
   monitors_changed = false;
@@ -68,6 +77,9 @@ inline void EventLoop::processNextEvents()
       break;
   }
 
+  if ( fd_count == 0 )
+    return false;
+
   int poll_result{};
 
   while ( true )
@@ -79,10 +91,11 @@ inline void EventLoop::processNextEvents()
   }
 
   if ( poll_result <= 0 )
-    return;
+    return false;
 
   // Dispatch events waiting in fds
   dispatcher(fd_count, poll_result);
+  return true;
 }
 
 //----------------------------------------------------------------------

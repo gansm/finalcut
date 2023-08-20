@@ -96,7 +96,7 @@ class Monitor
     virtual ~Monitor();
 
     // Accessors
-    auto getClassName() const -> FString;
+    virtual auto getClassName() const -> FString;
     auto getEvents() const -> short;
     auto getFileDescriptor() const -> int;
     auto getUserContext() const -> void*;

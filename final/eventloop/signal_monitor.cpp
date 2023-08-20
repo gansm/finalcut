@@ -122,7 +122,7 @@ void SignalMonitor::init (int sn, handler_t hdl, void* uc)
   setHandler (std::move(hdl));
   setUserContext (uc);
 
-  // SIGALRM is handled by the timer monitor
+  // SIGALRM is handled by the posix timer monitor
   if ( SIGALRM == sn )
     throw std::invalid_argument{"signal_number must not be SIGALRM."};
 

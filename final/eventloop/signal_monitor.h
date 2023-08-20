@@ -68,7 +68,7 @@ class SignalMonitor final : public Monitor
     ~SignalMonitor() noexcept override;
 
     // Accessor
-    auto getClassName() const -> FString;
+    auto getClassName() const -> FString override;
 
     // Methods
     void init (int, handler_t, void*);

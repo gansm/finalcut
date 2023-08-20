@@ -204,7 +204,15 @@ class TimerMonitor final : public TimerClass::type
 
     // Disable move assignment operator (=)
     auto operator = (TimerMonitor&&) noexcept -> TimerMonitor& = delete;
+
+    // Accessor
+    auto getClassName() const -> FString override;
 };
+
+// TimerMonitor inline functions
+//----------------------------------------------------------------------
+inline auto TimerMonitor::getClassName() const -> FString
+{ return "TimerMonitor"; }
 
 }  // namespace finalcut
 
