@@ -52,7 +52,7 @@ auto EventLoop::run() -> int
 
 // private methods of EventLoop
 //----------------------------------------------------------------------
-inline void EventLoop::nonPollWaiting()
+inline void EventLoop::nonPollWaiting() const
 {
   // Saves cpu time when polling fails
   std::this_thread::sleep_for(std::chrono::milliseconds(1));  // Wait 1 ms

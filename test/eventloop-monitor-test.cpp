@@ -176,19 +176,10 @@ void EventloopMonitorTest::classNameTest()
 {
   finalcut::EventLoop eloop{};
   const finalcut::Monitor monitor(&eloop);
-  const finalcut::IoMonitor io_monitor(&eloop);
-  const finalcut::SignalMonitor signal_monitor(&eloop);
-  const finalcut::TimerMonitor timer_monitor(&eloop);
   const finalcut::FString& eloop_classname = eloop.getClassName();
   const finalcut::FString& monitor_classname = monitor.getClassName();
-  const finalcut::FString& io_monitor_classname = io_monitor.getClassName();
-  const finalcut::FString& signal_monitor_classname = signal_monitor.getClassName();
-  const finalcut::FString& timer_monitor_classname = timer_monitor.getClassName();
   CPPUNIT_ASSERT ( eloop_classname == "EventLoop" );
   CPPUNIT_ASSERT ( monitor_classname == "Monitor" );
-  CPPUNIT_ASSERT ( io_monitor_classname == "IoMonitor" );
-  CPPUNIT_ASSERT ( signal_monitor_classname == "SignalMonitor" );
-  CPPUNIT_ASSERT ( timer_monitor_classname == "TimerMonitor" );
 }
 
 //----------------------------------------------------------------------
@@ -247,6 +238,8 @@ void EventloopMonitorTest::eventLoopTest()
   CPPUNIT_ASSERT ( mon.getFileDescriptor() == pipe_fd[0] );
   CPPUNIT_ASSERT ( mon.getUserContext() == nullptr );
   CPPUNIT_ASSERT ( mon.isActive() );
+  signal(SIGALRM, SIG_DFL);
+  signal_handler = [] (int) { };  // Do nothing
 }
 
 //----------------------------------------------------------------------
@@ -297,7 +290,9 @@ void EventloopMonitorTest::IoMonitorTest()
     keyboard_input("A");
   };
   signal(SIGALRM, sigHandler);  // Register signal handler
-  finalcut::IoMonitor stdin_monitor{&eloop};
+  finalcut::IoMonitor io_monitor{&eloop};
+  const finalcut::FString& io_monitor_classname = io_monitor.getClassName();
+  CPPUNIT_ASSERT ( io_monitor_classname == "IoMonitor" );
   auto callback_handler = [&eloop] (const finalcut::Monitor* mon, short)
   {
     std::cout << "\nIoMonitor callback handle";
@@ -307,11 +302,13 @@ void EventloopMonitorTest::IoMonitorTest()
     CPPUNIT_ASSERT ( buf == 'A' );
     eloop.leave();
   };
-  stdin_monitor.init (STDIN_FILENO, POLLIN, callback_handler, nullptr);
+  io_monitor.init (STDIN_FILENO, POLLIN, callback_handler, nullptr);
   std::cout << "\n";
   alarm(1);  // Schedule a alarm after 1 seconds
-  stdin_monitor.resume();
+  io_monitor.resume();
   CPPUNIT_ASSERT ( eloop.run() == 0 );
+  signal(SIGALRM, SIG_DFL);
+  signal_handler = [] (int) { };  // Do nothing
 }
 
 //----------------------------------------------------------------------
@@ -323,17 +320,21 @@ void EventloopMonitorTest::SignalMonitorTest()
     std::raise(SIGABRT);  // Send abort signal
   };
   signal(SIGALRM, sigHandler);  // Register signal handler
-  finalcut::SignalMonitor sig_abrt_monitor{&eloop};
+  finalcut::SignalMonitor signal_monitor{&eloop};
+  const finalcut::FString& signal_monitor_classname = signal_monitor.getClassName();
+  CPPUNIT_ASSERT ( signal_monitor_classname == "SignalMonitor" );
   auto callback_handler = [&eloop] (const finalcut::Monitor*, short)
   {
     std::cout << "SignalMonitor callback handle";
     eloop.leave();
   };
-  sig_abrt_monitor.init(SIGABRT, callback_handler, nullptr);
+  signal_monitor.init(SIGABRT, callback_handler, nullptr);
   std::cout << "\n";
   alarm(1);  // Schedule a alarm after 1 seconds
-  sig_abrt_monitor.resume();
+  signal_monitor.resume();
   CPPUNIT_ASSERT ( eloop.run() == 0 );
+  signal(SIGALRM, SIG_DFL);
+  signal_handler = [] (int) { };  // Do nothing
 }
 
 //----------------------------------------------------------------------
@@ -341,6 +342,8 @@ void EventloopMonitorTest::TimerMonitorTest()
 {
   finalcut::EventLoop eloop{};
   finalcut::TimerMonitor timer_monitor{&eloop};
+  const finalcut::FString& timer_monitor_classname = timer_monitor.getClassName();
+  CPPUNIT_ASSERT ( timer_monitor_classname == "TimerMonitor" );
   int num{0};
   auto callback_handler = [&eloop, &num] (const finalcut::Monitor*, short)
   {

@@ -64,7 +64,7 @@ class EventLoop
     static constexpr int WAIT_INDEFINITELY{-1};
 
     // Methods
-    void nonPollWaiting();
+    void nonPollWaiting() const;
     auto processNextEvents() -> bool;
     void dispatcher (nfds_t, int);
     void addMonitor (Monitor*);
