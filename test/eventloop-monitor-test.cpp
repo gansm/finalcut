@@ -298,6 +298,7 @@ void EventloopMonitorTest::IoMonitorTest()
     std::cout << "\nIoMonitor callback handle";
     uint8_t buf{0};
     const auto bytes = ::read(mon->getFileDescriptor(), &buf, 1);
+    std::cout << "\nBytes: " << bytes << " read \n";
     CPPUNIT_ASSERT ( bytes == 1 );
     CPPUNIT_ASSERT ( buf == 'A' );
     eloop.leave();
