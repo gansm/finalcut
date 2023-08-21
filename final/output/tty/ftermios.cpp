@@ -21,16 +21,14 @@
 ***********************************************************************/
 
 #if defined(__CYGWIN__)
-  #undef __STRICT_ANSI__  // need for fileno
   #define _POSIX_C_SOURCE 200809L
   #define _BSD_SOURCE
+  #ifndef __STRICT_ANSI__
+    #define __STRICT_ANSI__  // need for bits/c++config.h
+  #endif
 #endif
 
 #include <termios.h>
-
-#if defined(__CYGWIN__)
-  #define __STRICT_ANSI__  // need for bits/c++config.h
-#endif
 
 #include <system_error>
 #include <unordered_map>

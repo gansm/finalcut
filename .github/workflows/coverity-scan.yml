@@ -42,7 +42,6 @@ jobs:
 
     - name: Install dependencies via apt-get
       run: |
-        sudo add-apt-repository ppa:ubuntu-toolchain-r/test
         sudo apt-get update
         sudo apt-get -y install \
           ca-certificates \
