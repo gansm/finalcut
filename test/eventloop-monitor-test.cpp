@@ -284,6 +284,11 @@ void EventloopMonitorTest::setMonitorTest()
 //----------------------------------------------------------------------
 void EventloopMonitorTest::IoMonitorTest()
 {
+  finalcut::FTermios::init();
+  auto stdin_no = finalcut::FTermios::getStdIn();
+  auto stdin_status_flags = fcntl(stdin_no, F_GETFL);
+  stdin_status_flags |= O_NONBLOCK;
+  fcntl (stdin_no, F_SETFL, stdin_status_flags);
   finalcut::EventLoop eloop{};
   signal_handler = [this] (int)
   {
@@ -303,13 +308,15 @@ void EventloopMonitorTest::IoMonitorTest()
     CPPUNIT_ASSERT ( buf == 'A' );
     eloop.leave();
   };
-  io_monitor.init (STDIN_FILENO, POLLIN, callback_handler, nullptr);
+  io_monitor.init (stdin_no, POLLIN, callback_handler, nullptr);
   std::cout << "\n";
   alarm(1);  // Schedule a alarm after 1 seconds
   io_monitor.resume();
   CPPUNIT_ASSERT ( eloop.run() == 0 );
   signal(SIGALRM, SIG_DFL);
   signal_handler = [] (int) { };  // Do nothing
+  stdin_status_flags &= ~O_NONBLOCK;
+  fcntl (stdin_no, F_SETFL, stdin_status_flags);
 }
 
 //----------------------------------------------------------------------

@@ -70,8 +70,10 @@ auto main() -> int
   tcsetattr (STDIN_FILENO, TCSAFLUSH, &new_term_io_settings);
 
   // Set file descriptor of stdin to non-blocking mode
-  int stdin_flags{fcntl(STDIN_FILENO, F_GETFL, 0)};
-  (void)fcntl(STDIN_FILENO, F_SETFL, stdin_flags | O_NONBLOCK);
+  finalcut::FTermios::init();
+  auto stdin_no = finalcut::FTermios::getStdIn();
+  int stdin_flags{fcntl(stdin_no, F_GETFL, 0)};
+  (void)fcntl(stdin_no, F_SETFL, stdin_flags | O_NONBLOCK);
 
   // Configure monitors
   timer1.init ( [] (const finalcut::Monitor*, short)
