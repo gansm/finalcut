@@ -60,18 +60,18 @@ auto main() -> int
   finalcut::SignalMonitor sig_int_monitor{&loop};
   finalcut::SignalMonitor sig_abrt_monitor{&loop};
   finalcut::IoMonitor stdin_monitor{&loop};
+  finalcut::FTermios::init();
+  auto stdin_no = finalcut::FTermios::getStdIn();
 
   // Save terminal setting and set terminal to raw mode
   // (no echo, no line buffering).
-  tcgetattr (STDIN_FILENO, &Global::original_term_io_settings);
+  tcgetattr (stdin_no, &Global::original_term_io_settings);
   atexit (onExit);
   struct termios new_term_io_settings{Global::original_term_io_settings};
   new_term_io_settings.c_lflag &= uInt(~(ECHO | ICANON));
-  tcsetattr (STDIN_FILENO, TCSAFLUSH, &new_term_io_settings);
+  tcsetattr (stdin_no, TCSAFLUSH, &new_term_io_settings);
 
   // Set file descriptor of stdin to non-blocking mode
-  finalcut::FTermios::init();
-  auto stdin_no = finalcut::FTermios::getStdIn();
   int stdin_flags{fcntl(stdin_no, F_GETFL, 0)};
   (void)fcntl(stdin_no, F_SETFL, stdin_flags | O_NONBLOCK);
 
@@ -112,12 +112,12 @@ auto main() -> int
                           }
                         , nullptr );
 
-  stdin_monitor.init ( STDIN_FILENO
+  stdin_monitor.init ( stdin_no
                      , POLLIN
                      , [] (const finalcut::Monitor* monitor, short)
                        {
-                         uint8_t Char{0};
-                         const ssize_t bytes = ::read(monitor->getFileDescriptor(), &Char, 1);
+                         char Char{'\0'};
+                         const auto bytes = ::read(monitor->getFileDescriptor(), &Char, 1);
 
                          if ( bytes > 0 )
                            std::cout << "typed in: '" << Char << "'"

@@ -285,27 +285,38 @@ void EventloopMonitorTest::setMonitorTest()
 void EventloopMonitorTest::IoMonitorTest()
 {
   finalcut::FTermios::init();
+  finalcut::FTermios::storeTTYsettings();
+  //finalcut::FTermios::setRawMode();
   auto stdin_no = finalcut::FTermios::getStdIn();
   auto stdin_status_flags = fcntl(stdin_no, F_GETFL);
-  stdin_status_flags |= O_NONBLOCK;
-  fcntl (stdin_no, F_SETFL, stdin_status_flags);
+  // Keyboard interval timeout 75 ms
+  std::this_thread::sleep_for(std::chrono::milliseconds(75));
   finalcut::EventLoop eloop{};
   signal_handler = [this] (int)
   {
     keyboard_input("A");
+    // Keyboard interval timeout 75 ms
+    std::this_thread::sleep_for(std::chrono::milliseconds(75));
   };
   signal(SIGALRM, sigHandler);  // Register signal handler
   finalcut::IoMonitor io_monitor{&eloop};
   const finalcut::FString& io_monitor_classname = io_monitor.getClassName();
   CPPUNIT_ASSERT ( io_monitor_classname == "IoMonitor" );
-  auto callback_handler = [&eloop] (const finalcut::Monitor* mon, short)
+  auto callback_handler = [&stdin_status_flags, &stdin_no, &eloop] (const finalcut::Monitor* mon, short)
   {
-    std::cout << "\nIoMonitor callback handle";
-    uint8_t buf{0};
-    const auto bytes = ::read(mon->getFileDescriptor(), &buf, 1);
-    std::cout << "\nBytes: " << bytes << " read \n";
+    std::cout << "\nIoMonitor callback handle" << std::flush;
+    // Keyboard interval timeout 75 ms
+    std::this_thread::sleep_for(std::chrono::milliseconds(75));
+    stdin_status_flags |= O_NONBLOCK;
+    CPPUNIT_ASSERT ( fcntl(stdin_no, F_SETFL, stdin_status_flags) != -1 );
+    char read_character{'\0'};
+    CPPUNIT_ASSERT ( read_character == '\0' );
+    const auto bytes = ::read(mon->getFileDescriptor(), &read_character, 1);
+    stdin_status_flags &= ~O_NONBLOCK;
+    CPPUNIT_ASSERT ( fcntl(stdin_no, F_SETFL, stdin_status_flags) != -1 );
+    std::cout << "\nread " << bytes << " byte\n";
     CPPUNIT_ASSERT ( bytes == 1 );
-    CPPUNIT_ASSERT ( buf == 'A' );
+    CPPUNIT_ASSERT ( read_character == 'A' );
     eloop.leave();
   };
   io_monitor.init (stdin_no, POLLIN, callback_handler, nullptr);
@@ -315,8 +326,7 @@ void EventloopMonitorTest::IoMonitorTest()
   CPPUNIT_ASSERT ( eloop.run() == 0 );
   signal(SIGALRM, SIG_DFL);
   signal_handler = [] (int) { };  // Do nothing
-  stdin_status_flags &= ~O_NONBLOCK;
-  fcntl (stdin_no, F_SETFL, stdin_status_flags);
+  finalcut::FTermios::restoreTTYsettings();
 }
 
 //----------------------------------------------------------------------
