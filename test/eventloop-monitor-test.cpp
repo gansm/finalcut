@@ -292,13 +292,6 @@ void EventloopMonitorTest::IoMonitorTest()
   // Keyboard interval timeout 75 ms
   std::this_thread::sleep_for(std::chrono::milliseconds(75));
   finalcut::EventLoop eloop{};
-  signal_handler = [this] (int)
-  {
-    keyboard_input("A");
-    // Keyboard interval timeout 75 ms
-    std::this_thread::sleep_for(std::chrono::milliseconds(75));
-  };
-  signal(SIGALRM, sigHandler);  // Register signal handler
   finalcut::IoMonitor io_monitor{&eloop};
   const finalcut::FString& io_monitor_classname = io_monitor.getClassName();
   CPPUNIT_ASSERT ( io_monitor_classname == "IoMonitor" );
@@ -321,11 +314,11 @@ void EventloopMonitorTest::IoMonitorTest()
   };
   io_monitor.init (stdin_no, POLLIN, callback_handler, nullptr);
   std::cout << "\n";
-  alarm(1);  // Schedule a alarm after 1 seconds
   io_monitor.resume();
+  keyboard_input("A");
+  // Keyboard interval timeout 75 ms
+  std::this_thread::sleep_for(std::chrono::milliseconds(75));
   CPPUNIT_ASSERT ( eloop.run() == 0 );
-  signal(SIGALRM, SIG_DFL);
-  signal_handler = [] (int) { };  // Do nothing
   finalcut::FTermios::restoreTTYsettings();
 }
 
