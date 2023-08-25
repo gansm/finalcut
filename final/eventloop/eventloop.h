@@ -66,7 +66,7 @@ class EventLoop
     // Methods
     void nonPollWaiting() const;
     auto processNextEvents() -> bool;
-    void dispatcher (nfds_t, int);
+    void dispatcher (int, nfds_t);
     void addMonitor (Monitor*);
     void removeMonitor (Monitor*);
 

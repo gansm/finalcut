@@ -152,6 +152,7 @@ class EventloopMonitorTest : public CPPUNIT_NS::TestFixture
 
   private:
     void keyboard_input (std::string);
+    void clean_stdin();
 
     // Adds code needed to register the test suite
     CPPUNIT_TEST_SUITE (EventloopMonitorTest);
@@ -287,19 +288,15 @@ void EventloopMonitorTest::IoMonitorTest()
   finalcut::FTermios::init();
   finalcut::FTermios::storeTTYsettings();
   //finalcut::FTermios::setRawMode();
+  clean_stdin();
   auto stdin_no = finalcut::FTermios::getStdIn();
   auto stdin_status_flags = fcntl(stdin_no, F_GETFL);
-  // Keyboard interval timeout 75 ms
-  std::this_thread::sleep_for(std::chrono::milliseconds(75));
   finalcut::EventLoop eloop{};
   finalcut::IoMonitor io_monitor{&eloop};
   const finalcut::FString& io_monitor_classname = io_monitor.getClassName();
   CPPUNIT_ASSERT ( io_monitor_classname == "IoMonitor" );
   auto callback_handler = [&stdin_status_flags, &stdin_no, &eloop] (const finalcut::Monitor* mon, short)
   {
-    std::cout << "\nIoMonitor callback handle" << std::flush;
-    // Keyboard interval timeout 75 ms
-    std::this_thread::sleep_for(std::chrono::milliseconds(75));
     stdin_status_flags |= O_NONBLOCK;
     CPPUNIT_ASSERT ( fcntl(stdin_no, F_SETFL, stdin_status_flags) != -1 );
     char read_character{'\0'};
@@ -311,9 +308,11 @@ void EventloopMonitorTest::IoMonitorTest()
     CPPUNIT_ASSERT ( bytes == 1 );
     CPPUNIT_ASSERT ( read_character == 'A' );
     eloop.leave();
+
+    std::cout << "\nIoMonitor callback handle" << std::flush;
   };
   io_monitor.init (stdin_no, POLLIN, callback_handler, nullptr);
-  std::cout << "\n";
+  std::cout << "\n" << std::flush;
   io_monitor.resume();
   keyboard_input("A");
   // Keyboard interval timeout 75 ms
@@ -425,6 +424,15 @@ void EventloopMonitorTest::keyboard_input (std::string s)
   fflush(stdin);
 }
 
+//----------------------------------------------------------------------
+void EventloopMonitorTest::clean_stdin()
+{
+  auto stdin_no = finalcut::FTermios::getStdIn();
+  auto stdin_no2 = dup(stdin_no);
+  tcdrain (stdin_no2);
+  tcflush (stdin_no2, TCIFLUSH);
+  close(stdin_no2);
+}
 
 // Put the test suite in the registry
 CPPUNIT_TEST_SUITE_REGISTRATION (EventloopMonitorTest);

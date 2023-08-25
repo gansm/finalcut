@@ -99,7 +99,7 @@ inline auto EventLoop::processNextEvents() -> bool
 }
 
 //----------------------------------------------------------------------
-inline void EventLoop::dispatcher (nfds_t fd_count, int poll_result)
+inline void EventLoop::dispatcher (int poll_result, nfds_t fd_count)
 {
   // Dispatching events that are waiting in fds
   nfds_t processed_fds{0};
