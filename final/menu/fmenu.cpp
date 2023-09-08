@@ -206,7 +206,7 @@ void FMenu::onMouseDown (FMouseEvent* ev)
     redraw();
 
   // Open the sub menu to be opened
-  openSubMenu(shown_sub_menu);
+  openSubMenu (shown_sub_menu);
 }
 
 //----------------------------------------------------------------------

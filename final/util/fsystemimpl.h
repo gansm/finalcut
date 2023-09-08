@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2022 Markus Gans                                      *
+* Copyright 2019-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -108,19 +108,24 @@ class FSystemImpl : public FSystem
     { }
 #endif
 
-    inline auto isTTY (int fd) const -> int override
+    inline auto isTTY (int file_descriptor) const -> int override
     {
-      return ::isatty(fd);
+      return ::isatty(file_descriptor);
     }
 
-    inline auto ioctl (int fd, uLong request, ...) -> int override
+    inline auto ioctl (int file_descriptor, uLong request, ...) -> int override
     {
       va_list args{};
       va_start (args, request);
       void* argp = va_arg (args, void*);
-      int ret = ::ioctl (fd, request, argp);
+      int ret = ::ioctl (file_descriptor, request, argp);
       va_end (args);
       return ret;
+    }
+
+    inline auto pipe (int pipefd[2]) -> int override
+    {
+      return ::pipe(pipefd);
     }
 
     inline auto open (const char* pathname, int flags, ...) -> int override
@@ -133,9 +138,9 @@ class FSystemImpl : public FSystem
       return ret;
     }
 
-    inline auto close (int fildes) -> int override
+    inline auto close (int file_descriptor) -> int override
     {
-      return ::close(fildes);
+      return ::close(file_descriptor);
     }
 
     inline auto fopen (const char* path, const char* mode) -> FILE* override
@@ -143,9 +148,9 @@ class FSystemImpl : public FSystem
       return std::fopen (path, mode);
     }
 
-    inline auto fclose (FILE* fp) -> int override
+    inline auto fclose (FILE* file_ptr) -> int override
     {
-      return std::fclose (fp);
+      return std::fclose (file_ptr);
     }
 
     inline auto fputs (const char* str, FILE* stream) -> int override
@@ -161,6 +166,19 @@ class FSystemImpl : public FSystem
       return std::putchar(c);
 #endif
     }
+
+    auto sigaction ( int, const struct sigaction*
+                   , struct sigaction* ) -> int override;
+    auto timer_create ( clockid_t, struct sigevent*
+                      , timer_t* ) -> int override;
+    auto timer_settime ( timer_t, int
+                       , const struct itimerspec*
+                       , struct itimerspec* ) -> int override;
+    auto timer_delete (timer_t) -> int override;
+    auto kqueue() -> int override;
+    auto kevent ( int, const struct ::kevent*
+                , int, struct ::kevent*
+                , int, const struct timespec* ) -> int override;
 
     inline auto getuid() -> uid_t override
     {

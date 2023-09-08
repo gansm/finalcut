@@ -463,6 +463,11 @@ class FWidgetTest::FSystemTest : public finalcut::FSystem
       return ret_val;
     }
 
+    auto pipe (int[2]) -> int
+    {
+      return 0;
+    }
+
     auto open (const char*, int, ...) -> int override
     {
       return 0;
@@ -495,6 +500,40 @@ class FWidgetTest::FSystemTest : public finalcut::FSystem
 #else
       return std::putchar(c);
 #endif
+    }
+
+    auto sigaction (int, const struct sigaction*, struct sigaction*) -> int override
+    {
+      return 0;
+    }
+
+    auto timer_create (clockid_t, struct sigevent*, timer_t*) -> int override
+    {
+      return 0;
+    }
+
+    auto timer_settime ( timer_t, int
+                       , const struct itimerspec*
+                       , struct itimerspec* ) -> int override
+    {
+      return 0;
+    }
+
+    auto timer_delete (timer_t) -> int override
+    {
+      return 0;
+    }
+
+    auto kqueue() -> int override
+    {
+      return 0;
+    }
+
+    auto kevent ( int, const struct kevent*
+                , int, struct kevent*
+                , int, const struct timespec* ) -> int override
+    {
+      return 0;
     }
 
     auto getuid() -> uid_t override
@@ -1761,7 +1800,8 @@ void FWidgetTest::PosAndSizeTest()
   tcap.setPutStringFunction (nullptr);
   auto& fdata = finalcut::FTermData::getInstance();
   fdata.setTermType(finalcut::FTermType::xterm);
-  static_cast<FSystemTest*>(fsys.get())->setScreenSize(finalcut::FSize(132, 43));
+  auto fsys_ptr = static_cast<FSystemTest*>(finalcut::FSystem::getInstance().get());
+  fsys_ptr->setScreenSize(finalcut::FSize(132, 43));
   root_wdgt.setTerminalSize( finalcut::FSize(132, 43) );
   CPPUNIT_ASSERT ( root_wdgt.getWidth() == 132 );
   CPPUNIT_ASSERT ( root_wdgt.getHeight() == 43 );

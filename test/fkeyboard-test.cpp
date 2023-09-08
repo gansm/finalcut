@@ -3191,13 +3191,13 @@ void FKeyboardTest::input (std::string s)
   {
     char c = *iter;
 
-    if ( ioctl (stdin_no, TIOCSTI, &c) < 0 )
+    if ( ::ioctl (stdin_no, TIOCSTI, &c) < 0 )
       break;
 
     ++iter;
   }
 
-  if ( ioctl (stdin_no, TIOCSTI, &EOT) < 0 )
+  if ( ::ioctl (stdin_no, TIOCSTI, &EOT) < 0 )
     return;
 
   fflush(stdin);

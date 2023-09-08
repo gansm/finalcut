@@ -130,7 +130,7 @@ void SGRoptimizer::combineParameter()
 
     // Copy SGR parameter values
     std::size_t param_size = iter->end - iter->start;
-    std::memcpy(&seq[write_pos], &seq[iter->start], param_size);
+    std::memmove(&seq[write_pos], &seq[iter->start], param_size);
     write_pos += param_size;
     read_pos = iter->end + 1;
 
@@ -142,7 +142,7 @@ void SGRoptimizer::combineParameter()
   }
 
   // Copy remaining characters in the sequence
-  std::memcpy(&seq[write_pos], &seq[read_pos], seq.size() - read_pos);
+  std::memmove(&seq[write_pos], &seq[read_pos], seq.size() - read_pos);
   write_pos += seq.size() - read_pos;
 
   seq.resize(write_pos);

@@ -32,6 +32,9 @@
 #include <string>
 
 #include <final/final.h>
+#define USE_FINAL_H
+#include <final/eventloop/eventloop_functions.h>
+#undef USE_FINAL_H
 
 using std::chrono::duration_cast;
 using std::chrono::milliseconds;
@@ -130,6 +133,286 @@ void sigHandler (int num)
 
 }
 
+#if !defined(USE_KQUEUE_TIMER)
+  struct kevent
+  {
+  };
+#endif
+
+namespace test
+{
+
+//----------------------------------------------------------------------
+// class FSystemTest
+//----------------------------------------------------------------------
+
+class FSystemTest : public finalcut::FSystem
+{
+  public:
+    // Constructor
+    FSystemTest();
+
+    // Methods
+    auto inPortByte (uShort) -> uChar override;
+    void outPortByte (uChar, uShort) override;
+    auto isTTY (int) const -> int override;
+    auto ioctl (int, uLong, ...) -> int override;
+    auto pipe (int[2]) -> int override;
+    auto open (const char*, int, ...) -> int override;
+    auto close (int) -> int override;
+    auto fopen (const char*, const char*) -> FILE* override;
+    auto fputs (const char*, FILE*) -> int override;
+    auto fclose (FILE*) -> int override;
+    auto putchar (int) -> int override;
+    auto sigaction ( int, const struct sigaction*
+                   , struct sigaction*) -> int override;
+    auto timer_create ( clockid_t, struct sigevent*
+                      , timer_t* ) -> int override;
+    auto timer_settime ( timer_t, int
+                       , const struct itimerspec*
+                       , struct itimerspec* ) -> int override;
+    auto timer_delete (timer_t) -> int override;
+    auto kqueue() -> int override;
+    auto kevent ( int, const struct kevent*
+                , int, struct kevent*
+                , int, const struct timespec* ) -> int override;
+    auto getuid() -> uid_t override;
+    auto geteuid() -> uid_t override;
+    auto getpwuid_r ( uid_t, struct passwd*, char*
+                    , size_t, struct passwd** ) -> int override;
+    auto realpath (const char*, char*) -> char* override;
+    void setPipeReturnValue (int);
+    void setSigactionReturnValue (int);
+    void setTimerCreateReturnValue (int);
+    void setTimerSettimeReturnValue (int);
+    void setTimerDeleteReturnValue (int);
+    void setKqueueReturnValue (int);
+    void setKeventReturnValue (int);
+
+  private:
+    int pipe_ret_value{0};
+    int sigaction_ret_value{0};
+    int timer_create_ret_value{0};
+    int timer_settime_ret_value{0};
+    int timer_delete_ret_value{0};
+    int kqueue_ret_value{0};
+    int kevent_ret_value{0};
+};
+
+
+// constructors and destructor
+//----------------------------------------------------------------------
+FSystemTest::FSystemTest()  // constructor
+{ }
+
+
+// public methods of FSystemTest
+//----------------------------------------------------------------------
+inline auto FSystemTest::inPortByte (uShort) -> uChar
+{
+  return 0;
+}
+
+//----------------------------------------------------------------------
+inline void FSystemTest::outPortByte (uChar, uShort)
+{ }
+
+//----------------------------------------------------------------------
+inline auto FSystemTest::isTTY (int file_descriptor) const -> int
+{
+  std::cerr << "Call: isatty (file_descriptor=" << file_descriptor << ")\n";
+  return 1;
+}
+
+//----------------------------------------------------------------------
+inline auto FSystemTest::ioctl (int file_descriptor, uLong request, ...) -> int
+{
+  va_list args{};
+  void* argp{};
+  int ret_val{0};
+
+  va_start (args, request);
+  argp = va_arg (args, void*);
+  va_end (args);
+
+  std::cerr << "Call: ioctl (file_descriptor=" << file_descriptor
+            << ", request=0x" << std::hex << request
+            << ", argp=" << argp << std::dec << ")\n";
+  return ret_val;
+}
+
+//----------------------------------------------------------------------
+inline auto FSystemTest::pipe (int pipefd[2]) -> int
+{
+  std::cerr << "Call: pipe (pipefd={" << pipefd[0] << ", "
+            << pipefd[1] << "})\n";
+  return pipe_ret_value;
+}
+
+//----------------------------------------------------------------------
+inline auto FSystemTest::open (const char* pathname, int flags, ...) -> int
+{
+  va_list args{};
+  va_start (args, flags);
+  auto mode = static_cast<mode_t>(va_arg (args, int));
+  va_end (args);
+
+  std::cerr << "Call: open (pathname=\"" << pathname
+            << "\", flags=" << flags
+            << ", mode=" << mode << ")\n";
+
+  return 0;
+}
+
+//----------------------------------------------------------------------
+inline auto FSystemTest::close (int file_descriptor) -> int
+{
+  std::cerr << "Call: close (file_descriptor=" << file_descriptor << ")\n";
+  return 0;
+}
+
+//----------------------------------------------------------------------
+inline auto FSystemTest::fopen (const char* path, const char* mode) -> FILE*
+{
+  std::cerr << "Call: fopen (path=" << path
+            << ", mode=" << mode << ")\n";
+  return nullptr;
+}
+
+//----------------------------------------------------------------------
+inline auto FSystemTest::fclose (FILE* file_ptr) -> int
+{
+  std::cerr << "Call: fclose (file_ptr=" << file_ptr << ")\n";
+  return 0;
+}
+
+//----------------------------------------------------------------------
+inline auto FSystemTest::fputs (const char* str, FILE* stream) -> int
+{
+  return std::fputs(str, stream);
+}
+
+//----------------------------------------------------------------------
+inline auto FSystemTest::putchar (int c) -> int
+{
+#if defined(__sun) && defined(__SVR4)
+      return std::putchar(char(c));
+#else
+      return std::putchar(c);
+#endif
+}
+
+//----------------------------------------------------------------------
+inline auto FSystemTest::sigaction ( int, const struct sigaction*
+                                   , struct sigaction* ) -> int
+{
+  return sigaction_ret_value;
+}
+
+//----------------------------------------------------------------------
+inline auto FSystemTest::timer_create ( clockid_t, struct sigevent*
+                                      , timer_t* ) -> int
+{
+  return timer_create_ret_value;
+}
+
+//----------------------------------------------------------------------
+inline auto FSystemTest::timer_settime ( timer_t, int
+                                       , const struct itimerspec*
+                                       , struct itimerspec* ) -> int
+{
+  return timer_settime_ret_value;
+}
+
+//----------------------------------------------------------------------
+inline auto FSystemTest::timer_delete (timer_t) -> int
+{
+  return timer_delete_ret_value;
+}
+
+//----------------------------------------------------------------------
+inline auto FSystemTest::kqueue() -> int
+{
+  return kqueue_ret_value;
+}
+
+//----------------------------------------------------------------------
+inline auto FSystemTest::kevent ( int, const struct ::kevent*
+                                , int, struct ::kevent*
+                                , int, const struct timespec*) -> int
+{
+  return kevent_ret_value;
+}
+
+//----------------------------------------------------------------------
+inline auto FSystemTest::getuid() -> uid_t
+{
+  return 0;
+}
+
+//----------------------------------------------------------------------
+inline auto FSystemTest::geteuid() -> uid_t
+{
+  return 0;
+}
+
+//----------------------------------------------------------------------
+inline auto FSystemTest::getpwuid_r ( uid_t, struct passwd*, char*
+                                    , size_t, struct passwd** ) -> int
+{
+  return 0;
+}
+
+//----------------------------------------------------------------------
+inline auto FSystemTest::realpath (const char*, char*) -> char*
+{
+  return const_cast<char*>("");
+}
+
+//----------------------------------------------------------------------
+inline void FSystemTest::setPipeReturnValue (int ret_val)
+{
+  pipe_ret_value = ret_val;
+}
+
+//----------------------------------------------------------------------
+inline void FSystemTest::setSigactionReturnValue (int ret_val)
+{
+  sigaction_ret_value = ret_val;
+}
+
+//----------------------------------------------------------------------
+inline void FSystemTest::setTimerCreateReturnValue (int ret_val)
+{
+  timer_create_ret_value = ret_val;
+}
+
+//----------------------------------------------------------------------
+inline void FSystemTest::setTimerSettimeReturnValue (int ret_val)
+{
+  timer_settime_ret_value = ret_val;
+}
+
+//----------------------------------------------------------------------
+inline void FSystemTest::setTimerDeleteReturnValue (int ret_val)
+{
+  timer_delete_ret_value = ret_val;
+}
+
+//----------------------------------------------------------------------
+inline void FSystemTest::setKqueueReturnValue (int ret_val)
+{
+  kqueue_ret_value = ret_val;
+}
+
+//----------------------------------------------------------------------
+inline void FSystemTest::setKeventReturnValue (int ret_val)
+{
+  kevent_ret_value = ret_val;
+}
+
+}  // namespace test
+
 
 //----------------------------------------------------------------------
 // class EventloopMonitorTest
@@ -151,8 +434,8 @@ class EventloopMonitorTest : public CPPUNIT_NS::TestFixture
     void exceptionTest();
 
   private:
-    void keyboard_input (std::string);
-    void clean_stdin();
+    void keyboardInput (std::string);
+    void drainStdin();
 
     // Adds code needed to register the test suite
     CPPUNIT_TEST_SUITE (EventloopMonitorTest);
@@ -287,8 +570,7 @@ void EventloopMonitorTest::IoMonitorTest()
 {
   finalcut::FTermios::init();
   finalcut::FTermios::storeTTYsettings();
-  //finalcut::FTermios::setRawMode();
-  clean_stdin();
+  drainStdin();
   auto stdin_no = finalcut::FTermios::getStdIn();
   auto stdin_status_flags = fcntl(stdin_no, F_GETFL);
   finalcut::EventLoop eloop{};
@@ -297,24 +579,23 @@ void EventloopMonitorTest::IoMonitorTest()
   CPPUNIT_ASSERT ( io_monitor_classname == "IoMonitor" );
   auto callback_handler = [&stdin_status_flags, &stdin_no, &eloop] (const finalcut::Monitor* mon, short)
   {
-    stdin_status_flags |= O_NONBLOCK;
-    CPPUNIT_ASSERT ( fcntl(stdin_no, F_SETFL, stdin_status_flags) != -1 );
     char read_character{'\0'};
     CPPUNIT_ASSERT ( read_character == '\0' );
-    const auto bytes = ::read(mon->getFileDescriptor(), &read_character, 1);
-    stdin_status_flags &= ~O_NONBLOCK;
+    stdin_status_flags |= O_NONBLOCK;
     CPPUNIT_ASSERT ( fcntl(stdin_no, F_SETFL, stdin_status_flags) != -1 );
-    std::cout << "\nread " << bytes << " byte\n";
+    const auto bytes = ::read(mon->getFileDescriptor(), &read_character, 1);
     CPPUNIT_ASSERT ( bytes == 1 );
     CPPUNIT_ASSERT ( read_character == 'A' );
+    stdin_status_flags &= ~O_NONBLOCK;
+    CPPUNIT_ASSERT ( fcntl(stdin_no, F_SETFL, stdin_status_flags) != -1 );
     eloop.leave();
-
     std::cout << "\nIoMonitor callback handle" << std::flush;
   };
   io_monitor.init (stdin_no, POLLIN, callback_handler, nullptr);
   std::cout << "\n" << std::flush;
   io_monitor.resume();
-  keyboard_input("A");
+  // Enter 'A'
+  keyboardInput("A");
   // Keyboard interval timeout 75 ms
   std::this_thread::sleep_for(std::chrono::milliseconds(75));
   CPPUNIT_ASSERT ( eloop.run() == 0 );
@@ -391,13 +672,112 @@ void EventloopMonitorTest::TimerMonitorTest()
 //----------------------------------------------------------------------
 void EventloopMonitorTest::exceptionTest()
 {
-  CPPUNIT_ASSERT_THROW ( getException()
-                       , finalcut::monitor_error );
+  CPPUNIT_ASSERT_THROW ( getException(), finalcut::monitor_error );
   CPPUNIT_ASSERT_NO_THROW ( getNoException() );
+
+  // Bad file descriptor
+  auto max_fd = int(sysconf(_SC_OPEN_MAX));
+  CPPUNIT_ASSERT_THROW ( finalcut::drainPipe(max_fd), std::system_error );
+  CPPUNIT_ASSERT_THROW ( finalcut::drainPipe(-1), std::system_error);
+
+  // Signal monitor
+  //---------------
+
+  finalcut::EventLoop eloop{};
+  finalcut::SignalMonitor signal_monitor1{&eloop};
+  auto callback_handler = [] (finalcut::Monitor*, short) { };
+
+  // SIGALRM used
+  CPPUNIT_ASSERT_THROW ( signal_monitor1.init(SIGALRM, callback_handler, nullptr)
+                       , std::invalid_argument );
+
+  // No pipe could be established
+  std::unique_ptr<finalcut::FSystem> fsys = std::make_unique<test::FSystemTest>();
+  finalcut::FSystem::getInstance().swap(fsys);
+  auto fsys_ptr = static_cast<test::FSystemTest*>(finalcut::FSystem::getInstance().get());
+  fsys_ptr->setPipeReturnValue(-1);
+  std::cout << "\n";
+  CPPUNIT_ASSERT_THROW ( signal_monitor1.init(SIGTERM, callback_handler, nullptr)
+                       , finalcut::monitor_error );
+  fsys_ptr->setPipeReturnValue(0);
+
+  // Double monitor instance for one signal
+  CPPUNIT_ASSERT_NO_THROW ( signal_monitor1.init(SIGTERM, callback_handler, nullptr) );
+  finalcut::SignalMonitor signal_monitor2{&eloop};
+  CPPUNIT_ASSERT_THROW ( signal_monitor2.init(SIGTERM, callback_handler, nullptr)
+                       , std::invalid_argument );
+  CPPUNIT_ASSERT_NO_THROW ( signal_monitor2.init(SIGABRT, callback_handler, nullptr) );
+
+  // Already initialised
+  CPPUNIT_ASSERT_THROW ( signal_monitor1.init(SIGINT, callback_handler, nullptr)
+                       , finalcut::monitor_error );
+
+  // Sigaction error
+  fsys_ptr->setSigactionReturnValue(-1);
+  finalcut::SignalMonitor signal_monitor3{&eloop};
+  CPPUNIT_ASSERT_THROW ( signal_monitor3.init(SIGHUP, callback_handler, nullptr)
+                       , std::system_error );
+  fsys_ptr->setSigactionReturnValue(0);
+  CPPUNIT_ASSERT_NO_THROW ( signal_monitor3.init(SIGHUP, callback_handler, nullptr) );
+
+  // Posix timer monitor
+  //--------------------
+
+  // No pipe could be established
+  finalcut::PosixTimer posix_timer_monitor{&eloop};
+  fsys_ptr->setPipeReturnValue(-1);
+  CPPUNIT_ASSERT_THROW ( posix_timer_monitor.init(callback_handler, nullptr)
+                       , finalcut::monitor_error );
+  fsys_ptr->setPipeReturnValue(0);
+
+  // Posix timer cannot be created
+  fsys_ptr->setTimerCreateReturnValue(-1);
+  CPPUNIT_ASSERT_THROW ( posix_timer_monitor.init(callback_handler, nullptr)
+                       , finalcut::monitor_error );
+  fsys_ptr->setTimerCreateReturnValue(0);
+
+  CPPUNIT_ASSERT_NO_THROW ( posix_timer_monitor.init(callback_handler, nullptr) );
+
+  // Already initialised
+  CPPUNIT_ASSERT_THROW ( posix_timer_monitor.init(callback_handler, nullptr)
+                       , finalcut::monitor_error );
+
+  // Timer interval cannot be set
+  fsys_ptr->setTimerSettimeReturnValue(-1);
+  auto t1 = std::chrono::nanoseconds{ 500'000'000 };
+  auto t2 = std::chrono::nanoseconds{ 1'000'000'000 };
+  CPPUNIT_ASSERT_THROW ( posix_timer_monitor.setInterval(t1, t2)
+                       , std::system_error );
+  fsys_ptr->setTimerSettimeReturnValue(0);
+  CPPUNIT_ASSERT_NO_THROW ( posix_timer_monitor.setInterval(t1, t2) );
+
+  // Kqueue timer monitor
+  //---------------------
+
+  fsys_ptr->setKqueueReturnValue(-1);
+  CPPUNIT_ASSERT_THROW ( finalcut::KqueueTimer{&eloop}
+                       , std::system_error );
+  fsys_ptr->setKqueueReturnValue(0);
+  CPPUNIT_ASSERT_NO_THROW ( finalcut::KqueueTimer{&eloop} );
+  finalcut::KqueueTimer kqueue_timer_monitor{&eloop};
+
+  CPPUNIT_ASSERT_NO_THROW ( kqueue_timer_monitor.init(callback_handler, nullptr) );
+
+  // Already initialised
+  CPPUNIT_ASSERT_THROW ( kqueue_timer_monitor.init(callback_handler, nullptr)
+                       , finalcut::monitor_error );
+
+  // Event cannot be registered
+  fsys_ptr->setKeventReturnValue(-1);
+  CPPUNIT_ASSERT_THROW ( kqueue_timer_monitor.setInterval(t1, t2)
+                       , finalcut::monitor_error );
+  fsys_ptr->setKeventReturnValue(0);
+  CPPUNIT_ASSERT_NO_THROW ( kqueue_timer_monitor.setInterval(t1, t2) );
+
 }
 
 //----------------------------------------------------------------------
-void EventloopMonitorTest::keyboard_input (std::string s)
+void EventloopMonitorTest::keyboardInput (std::string s)
 {
   // Simulates keystrokes
 
@@ -412,26 +792,35 @@ void EventloopMonitorTest::keyboard_input (std::string s)
   {
     char c = *iter;
 
-    if ( ioctl (stdin_no, TIOCSTI, &c) < 0 )
+    if ( ::ioctl (stdin_no, TIOCSTI, &c) < 0 )
       break;
 
     ++iter;
   }
 
-  if ( ioctl (stdin_no, TIOCSTI, &EOT) < 0 )
+  if ( ::ioctl (stdin_no, TIOCSTI, &EOT) < 0 )
     return;
 
   fflush(stdin);
 }
 
 //----------------------------------------------------------------------
-void EventloopMonitorTest::clean_stdin()
+void EventloopMonitorTest::drainStdin()
 {
   auto stdin_no = finalcut::FTermios::getStdIn();
   auto stdin_no2 = dup(stdin_no);
-  tcdrain (stdin_no2);
-  tcflush (stdin_no2, TCIFLUSH);
-  close(stdin_no2);
+
+  if ( stdin_no2 < 0 )
+    return;
+
+  if ( tcdrain(stdin_no2) < 0 )
+    return;
+
+  if ( tcflush(stdin_no2, TCIFLUSH) < 0 )
+    return;
+
+  if ( ::close(stdin_no2) < 0 )
+    return;
 }
 
 // Put the test suite in the registry

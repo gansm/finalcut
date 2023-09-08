@@ -24,20 +24,82 @@
   #define USE_KQUEUE_TIMER
 #endif
 
-#if defined(USE_KQUEUE_TIMER)
+#if defined(USE_KQUEUE_TIMER) || defined(UNIT_TEST)
 
 #include <unistd.h>
 #include <fcntl.h>
 
-#include <sys/event.h>
-#include <sys/types.h>
+#if defined(UNIT_TEST)
+
+  #include <stdint.h>
+
+  using u_short = unsigned short;
+  using u_int = unsigned int;
+
+  struct kevent
+  {
+    uintptr_t ident;   // Identifier for this event
+    short     filter;  // Filter for event
+    u_short   flags;   // Action flags for kqueue
+    u_int     fflags;  // Filter flag value
+    int64_t   data;    // Filter data value
+    void*     udata;   // Opaque user data identifier
+  };
+
+  #define EV_SET(kevp, a, b, c, d, e, f) do  \
+          {                                  \
+            struct kevent* __kevp = (kevp);  \
+            (__kevp)->ident  = (a);          \
+            (__kevp)->filter = (b);          \
+            (__kevp)->flags  = (c);          \
+            (__kevp)->fflags = (d);          \
+            (__kevp)->data   = (e);          \
+            (__kevp)->udata  = (f);          \
+          } while(0)
+
+  // Event filter
+  #define EVFILT_READ    (-1)  // File descriptor read
+  #define EVFILT_WRITE   (-2)  // File descriptor write
+  #define EVFILT_AIO     (-3)  // Attached to aio requests
+  #define EVFILT_VNODE   (-4)  // Attached to vnodes
+  #define EVFILT_PROC    (-5)  // Attached to struct process
+  #define EVFILT_SIGNAL  (-6)  // Attached to struct process
+  #define EVFILT_TIMER   (-7)  // Timers
+  #define EVFILT_DEVICE  (-8)  // Devices
+  #define EVFILT_EXCEPT  (-9)  // Exceptional conditions
+
+  // Actions
+  #define EV_ADD       0x0001  // add event to kq (implies enable)
+  #define EV_DELETE    0x0002  // delete event from kq
+  #define EV_ENABLE    0x0004  // enable event
+  #define EV_DISABLE   0x0008  // disable event (not reported)
+
+  // Flags
+  #define EV_ONESHOT   0x0010  // only report one occurrence
+  #define EV_CLEAR     0x0020  // clear event state after reporting
+  #define EV_RECEIPT   0x0040  // force EV_ERROR on success, data=0
+  #define EV_DISPATCH  0x0080  // disable event after reporting
+
+  #define EV_SYSFLAGS  0xf800  // reserved by system
+  #define EV_FLAG1     0x2000  // filter-specific flag
+
+  // Returned values
+  #define EV_EOF       0x8000  // EOF detected
+  #define EV_ERROR     0x4000  // error, data contains errno
+
+#else
+
+  #include <sys/event.h>
+  #include <sys/types.h>
+
+#endif
 
 #include <algorithm>
 #include <mutex>
 
 #include "final/eventloop/eventloop.h"
 #include "final/eventloop/timer_monitor.h"
-
+#include "final/util/fsystem.h"
 
 namespace finalcut
 {
@@ -51,15 +113,25 @@ using KEventList = std::vector<struct kevent>;
 
 
 //----------------------------------------------------------------------
-static auto getKqueue() -> int
+#if defined(UNIT_TEST)
+static auto getKqueue() -> const int
 {
   // Creates a new kernel event queue
-  static const auto kq = ::kqueue();
+  static const auto& fsystem = FSystem::getInstance();
+  return fsystem->kqueue();
+}
+#else
+static auto getKqueue() -> const int&
+{
+  // Creates a new kernel event queue
+  static const auto& fsystem = FSystem::getInstance();
+  static const auto kq = fsystem->kqueue();
   return kq;
 }
+#endif
 
 //----------------------------------------------------------------------
-static auto getTimerID() -> int
+static auto getTimerID() -> int&
 {
   // Timer id generator (sequential number)
   static int timer_id = 0;
@@ -136,11 +208,12 @@ class KqueueHandler final
       std::lock_guard<std::mutex> lock_guard(timer_nodes_mutex);
 
       // Check active events in the event list
+      static const auto& fsystem = FSystem::getInstance();
       struct timespec timeout{0, 0};  // Do not wait
       auto& time_events = getKEvents();
       auto data = time_events.data();
       const auto size = time_events.size();
-      const auto n = ::kevent(getKqueue(), nullptr, 0, data, size, &timeout);
+      const auto n = fsystem->kevent(getKqueue(), nullptr, 0, data, size, &timeout);
 
       if ( n <= 0 )
         return;
@@ -176,7 +249,7 @@ class KqueueHandler final
           EV_SET(&ev_set, ident, EVFILT_TIMER, kq_flags, 0, ms, nullptr);
 
           // Register event with kqueue
-          if ( ::kevent(getKqueue(), &ev_set, 1, nullptr, 0, nullptr) != 0 )
+          if ( fsystem->kevent(getKqueue(), &ev_set, 1, nullptr, 0, nullptr) != 0 )
             throw monitor_error{"Cannot register event in kqueue."};
         }
 
@@ -213,7 +286,8 @@ struct KqueueHandlerInstaller final
   // destructor
   ~KqueueHandlerInstaller()
   {
-    ::close(getKqueue());
+    static const auto& fsystem = FSystem::getInstance();
+    fsystem->close(getKqueue());
   }
 };
 
@@ -291,6 +365,7 @@ void KqueueTimer::setInterval ( std::chrono::nanoseconds first,
                                 std::chrono::nanoseconds periodic )
 {
   struct kevent ev_set{};
+  static const auto& fsystem = FSystem::getInstance();
   timer_spec.first_ms  = durationToMilliseconds(first);
   timer_spec.period_ms = durationToMilliseconds(periodic);
   const auto kq_flags = EV_ADD | EV_ENABLE | EV_ONESHOT;
@@ -300,7 +375,7 @@ void KqueueTimer::setInterval ( std::chrono::nanoseconds first,
   EV_SET(&ev_set, timer_id, EVFILT_TIMER, kq_flags, 0, ms, nullptr);
 
   // Register event with kqueue
-  if ( ::kevent(getFileDescriptor(), &ev_set, 1, nullptr, 0, nullptr) != 0 )
+  if ( fsystem->kevent(getFileDescriptor(), &ev_set, 1, nullptr, 0, nullptr) != 0 )
     throw monitor_error{"Cannot register event in kqueue."};
 }
 
@@ -312,4 +387,4 @@ void KqueueTimer::trigger (short return_events)
 
 }  // namespace finalcut
 
-#endif  // defined(USE_KQUEUE_TIMER)
+#endif  // defined(USE_KQUEUE_TIMER) || defined(UNIT_TEST)

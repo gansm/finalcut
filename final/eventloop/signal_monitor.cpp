@@ -36,6 +36,7 @@
 #include "final/eventloop/eventloop_functions.h"
 #include "final/eventloop/eventloop.h"
 #include "final/eventloop/signal_monitor.h"
+#include "final/util/fsystem.h"
 
 // Fix warning with recursive macros 'sa_handler' and 'sa_sigaction'
 #if defined(__clang__)
@@ -102,7 +103,8 @@ SignalMonitor::SignalMonitor (EventLoop* eloop)
 SignalMonitor::~SignalMonitor() noexcept  // destructor
 {
   // Restore original signal handling.
-  sigaction (signal_number, getSigactionImpl()->getSigaction(), nullptr);
+  static const auto& fsystem = FSystem::getInstance();
+  fsystem->sigaction (signal_number, getSigactionImpl()->getSigaction(), nullptr);
 
   // Remove monitor instance from the assignment table.
   getSignalMonitorMap().erase(signal_number);
@@ -118,6 +120,7 @@ void SignalMonitor::init (int sn, handler_t hdl, void* uc)
 
   signal_number = sn;
   static auto& signal_monitors = getSignalMonitorMap();
+  static const auto& fsystem = FSystem::getInstance();
   setEvents (POLLIN);
   setHandler (std::move(hdl));
   setUserContext (uc);
@@ -126,7 +129,7 @@ void SignalMonitor::init (int sn, handler_t hdl, void* uc)
   if ( SIGALRM == sn )
     throw std::invalid_argument{"signal_number must not be SIGALRM."};
 
-  // Each signal may be managed by only one monitor instance at a time
+  // Each signal can only be managed by one monitor instance
   if ( signal_monitors.find(sn) != signal_monitors.end() )
   {
     throw std::invalid_argument
@@ -137,7 +140,7 @@ void SignalMonitor::init (int sn, handler_t hdl, void* uc)
   }
 
   // Set up pipe for notification
-  if ( ::pipe(signal_pipe_fd.data()) != 0 )
+  if ( fsystem->pipe(signal_pipe_fd.data()) != 0 )
   {
     throw monitor_error{"No pipe could be set up for the signal monitor."};
   }
@@ -150,11 +153,11 @@ void SignalMonitor::init (int sn, handler_t hdl, void* uc)
   sigemptyset(&sig_action.sa_mask);
   sig_action.sa_flags = 0;
 
-  if ( sigaction(sn, &sig_action, getSigactionImpl()->getSigaction()) != 0 )
+  if ( fsystem->sigaction(sn, &sig_action, getSigactionImpl()->getSigaction()) != 0 )
   {
     int Error = errno;
-    (void)::close(signal_pipe_fd[0]);
-    (void)::close(signal_pipe_fd[1]);
+    (void)fsystem->close(signal_pipe_fd[0]);
+    (void)fsystem->close(signal_pipe_fd[1]);
     std::error_code err_code{Error, std::generic_category()};
     std::system_error sys_err{err_code, strerror(Error)};
     throw sys_err;

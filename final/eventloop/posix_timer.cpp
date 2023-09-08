@@ -45,6 +45,7 @@
 #include "final/eventloop/eventloop_functions.h"
 #include "final/eventloop/eventloop.h"
 #include "final/eventloop/timer_monitor.h"
+#include "final/util/fsystem.h"
 
 // Fix warning with recursive macros 'sa_handler' and 'sa_sigaction'
 #if defined(__clang__)
@@ -170,12 +171,13 @@ class SigAlrmHandlerInstaller final
   public:
     SigAlrmHandlerInstaller()  // constructor
     {
+      static const auto& fsystem = FSystem::getInstance();
       struct sigaction signal_handle{};
       sigemptyset(&signal_handle.sa_mask);
       signal_handle.sa_sigaction = SigAlrmHandler();
       signal_handle.sa_flags = SA_SIGINFO;
 
-      if ( sigaction(SIGALRM, &signal_handle, &original_signal_handle) != -1 )
+      if ( fsystem->sigaction(SIGALRM, &signal_handle, &original_signal_handle) != -1 )
         return;
 
       const int error = errno;
@@ -186,7 +188,8 @@ class SigAlrmHandlerInstaller final
 
     ~SigAlrmHandlerInstaller()  // destructor
     {
-      sigaction (SIGALRM, &original_signal_handle, nullptr);
+      static const auto& fsystem = FSystem::getInstance();
+      fsystem->sigaction (SIGALRM, &original_signal_handle, nullptr);
     }
 
   private:
@@ -232,8 +235,9 @@ PosixTimer::PosixTimer (EventLoop* eloop)
 //----------------------------------------------------------------------
 PosixTimer::~PosixTimer() noexcept  // destructor
 {
-  ::close (alarm_pipe_fd[0]);
-  ::close (alarm_pipe_fd[1]);
+  static const auto& fsystem = FSystem::getInstance();
+  fsystem->close (alarm_pipe_fd[0]);
+  fsystem->close (alarm_pipe_fd[1]);
 
   if ( timer_id == timer_t{} )
     return;
@@ -243,9 +247,9 @@ PosixTimer::~PosixTimer() noexcept  // destructor
 
   while ( iter != timer_nodes.end() )
   {
-    if ( iter->timer_id == timer_id )
+    if ( iter->timer_id == timer_id
+      && fsystem->timer_delete(timer_id) == -1 )
     {
-      timer_delete(timer_id);
       timer_nodes.erase(iter);
       break;
     }
@@ -262,11 +266,12 @@ void PosixTimer::init (handler_t hdl, void* uc)
   if ( isInitialized() )
     throw monitor_error{"This instance has already been initialised."};
 
+  static const auto& fsystem = FSystem::getInstance();
   setEvents (POLLIN);
   setHandler (std::move(hdl));
   setUserContext (uc);
 
-  if ( ::pipe(alarm_pipe_fd.data()) != 0 )
+  if ( fsystem->pipe(alarm_pipe_fd.data()) != 0 )
     throw monitor_error{"No pipe could be set up for the timer."};
 
   setFileDescriptor(alarm_pipe_fd[0]);  // Read end of pipe
@@ -276,14 +281,14 @@ void PosixTimer::init (handler_t hdl, void* uc)
   sig_event.sigev_signo           = SIGALRM;
   sig_event.sigev_value.sival_ptr = &timer_id;
 
-  if ( timer_create(CLOCK_MONOTONIC, &sig_event, &timer_id) == 0 )
+  if ( fsystem->timer_create(CLOCK_MONOTONIC, &sig_event, &timer_id) == 0 )
   {
     getTimerNodes().emplace_back(timer_id, this, alarm_pipe_fd[1]);
   }
   else
   {
-    ::close (alarm_pipe_fd[0]);
-    ::close (alarm_pipe_fd[1]);
+    fsystem->close (alarm_pipe_fd[0]);
+    fsystem->close (alarm_pipe_fd[1]);
     throw monitor_error{"No POSIX timer could be reserved."};
   }
 
@@ -294,10 +299,11 @@ void PosixTimer::init (handler_t hdl, void* uc)
 void PosixTimer::setInterval ( std::chrono::nanoseconds first,
                                std::chrono::nanoseconds periodic )
 {
+  static const auto& fsystem = FSystem::getInstance();
   struct itimerspec timer_spec { durationToTimespec(periodic)
                                , durationToTimespec(first) };
 
-  if ( timer_settime(timer_id, 0, &timer_spec, nullptr) != -1 )
+  if ( fsystem->timer_settime(timer_id, 0, &timer_spec, nullptr) != -1 )
     return;
 
   const int error = errno;

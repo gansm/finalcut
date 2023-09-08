@@ -94,7 +94,7 @@ inline auto EventLoop::processNextEvents() -> bool
     return false;
 
   // Dispatch events waiting in fds
-  dispatcher(fd_count, poll_result);
+  dispatcher(poll_result, fd_count);
   return true;
 }
 

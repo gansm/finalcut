@@ -137,7 +137,7 @@ class KqueueTimer : public TimerMonitorImpl
                      , std::chrono::nanoseconds ) override;
     void trigger(short) override;
 
-#if defined(USE_KQUEUE_TIMER)
+#if defined(USE_KQUEUE_TIMER) || defined(UNIT_TEST)
   private:
     struct TimerSpec
     {
