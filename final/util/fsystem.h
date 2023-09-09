@@ -35,6 +35,10 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#ifdef __APPLE__
+  using timer_t = void*;
+#endif
+
 #include <memory>
 #include <pwd.h>
 
