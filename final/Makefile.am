@@ -20,6 +20,7 @@ libfinal_la_SOURCES = \
 	eventloop/io_monitor.cpp \
 	eventloop/kqueue_timer.cpp \
 	eventloop/monitor.cpp \
+	eventloop/pipedata.cpp \
 	eventloop/posix_timer.cpp \
 	eventloop/signal_monitor.cpp \
 	eventloop/timer_monitor.cpp \
@@ -118,6 +119,7 @@ finalcuteventloopinclude_HEADERS = \
 	eventloop/eventloop_functions.h \
 	eventloop/io_monitor.h \
 	eventloop/monitor.h \
+	eventloop/pipedata.h \
 	eventloop/signal_monitor.h \
 	eventloop/timer_monitor.h
 

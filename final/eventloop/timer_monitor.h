@@ -23,24 +23,24 @@
 /*  Inheritance diagram
  *  ═══════════════════
  *
- *          ▕▔▔▔▔▔▔▔▔▔▏
- *          ▕ Monitor ▏
- *          ▕▁▁▁▁▁▁▁▁▁▏
- *               ▲
- *               │
- *      ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
- *      ▕ TimerMonitorImpl ▏
- *      ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
- *        ▲              ▲
- *        │              │
- *  ▕▔▔▔▔▔▔▔▔▔▔▔▔▏ ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▏
- *  ▕ PosixTimer ▏ ▕ KqueueTimer ▏ (platform-specific)
- *  ▕▁▁▁▁▁▁▁▁▁▁▁▁▏ ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▏
- *           ▲         ▲
- *           │         │
- *         ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
- *         ▕ TimerMonitor ▏
- *         ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ *                          ▕▔▔▔▔▔▔▔▔▔▏
+ *                          ▕ Monitor ▏
+ *                          ▕▁▁▁▁▁▁▁▁▁▏
+ *                               ▲
+ *                               │
+ *                      ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *                      ▕ TimerMonitorImpl ▏
+ *                      ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ *                        ▲              ▲
+ *                        │              │
+ * ▕▔▔▔▔▔▔▔▔▔▔▏1   1▕▔▔▔▔▔▔▔▔▔▔▔▔▏ ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ * ▕ PipeData ▏- - -▕ PosixTimer ▏ ▕ KqueueTimer ▏ (platform-specific)
+ * ▕▁▁▁▁▁▁▁▁▁▁▏     ▕▁▁▁▁▁▁▁▁▁▁▁▁▏ ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ *                           ▲         ▲
+ *                           │         │
+ *                         ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *                         ▕ TimerMonitor ▏
+ *                         ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
  */
 
 #ifndef TIMER_MONITOR_H
@@ -62,6 +62,7 @@
 #include <vector>
 
 #include "final/eventloop/monitor.h"
+#include "final/eventloop/pipedata.h"
 #include "final/ftypes.h"
 
 namespace finalcut
@@ -112,7 +113,7 @@ class PosixTimer : public TimerMonitorImpl
   private:
     // Data members
     timer_t timer_id{};
-    std::array<int, 2> alarm_pipe_fd{NO_FILE_DESCRIPTOR, NO_FILE_DESCRIPTOR};
+    PipeData alarm_pipe{NO_FILE_DESCRIPTOR, NO_FILE_DESCRIPTOR};
     static SigAlrmHandlerInstaller* sig_alrm_handler_installer;
 #endif  // defined(USE_POSIX_TIMER)
 };

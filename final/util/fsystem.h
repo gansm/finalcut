@@ -71,7 +71,7 @@ class FSystem
     virtual void outPortByte (uChar, uShort) = 0;
     virtual auto isTTY (int) const -> int = 0;
     virtual auto ioctl (int, uLong, ...) -> int = 0;
-    virtual auto pipe (int[2]) -> int = 0;
+    virtual auto pipe (PipeData&) -> int = 0;
     virtual auto open (const char*, int, ...) -> int = 0;
     virtual auto close (int) -> int = 0;
     virtual auto fopen (const char*, const char*) -> FILE* = 0;

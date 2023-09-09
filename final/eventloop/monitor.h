@@ -69,8 +69,6 @@ class monitor_error : public std::runtime_error
     ~monitor_error() override;
 };
 
-
-
 // Using-declaration
 using handler_t = std::function<void(Monitor*, short)>;
 

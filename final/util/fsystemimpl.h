@@ -123,9 +123,9 @@ class FSystemImpl : public FSystem
       return ret;
     }
 
-    inline auto pipe (int pipefd[2]) -> int override
+    inline auto pipe (PipeData& pipe) -> int override
     {
-      return ::pipe(pipefd);
+      return ::pipe(pipe.getArrayData());
     }
 
     inline auto open (const char* pathname, int flags, ...) -> int override

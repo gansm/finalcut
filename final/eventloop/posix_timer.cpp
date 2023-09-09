@@ -236,8 +236,8 @@ PosixTimer::PosixTimer (EventLoop* eloop)
 PosixTimer::~PosixTimer() noexcept  // destructor
 {
   static const auto& fsystem = FSystem::getInstance();
-  fsystem->close (alarm_pipe_fd[0]);
-  fsystem->close (alarm_pipe_fd[1]);
+  fsystem->close (alarm_pipe.getReadFd());
+  fsystem->close (alarm_pipe.getWriteFd());
 
   if ( timer_id == timer_t{} )
     return;
@@ -271,10 +271,10 @@ void PosixTimer::init (handler_t hdl, void* uc)
   setHandler (std::move(hdl));
   setUserContext (uc);
 
-  if ( fsystem->pipe(alarm_pipe_fd.data()) != 0 )
+  if ( fsystem->pipe(alarm_pipe) != 0 )
     throw monitor_error{"No pipe could be set up for the timer."};
 
-  setFileDescriptor(alarm_pipe_fd[0]);  // Read end of pipe
+  setFileDescriptor(alarm_pipe.getReadFd());  // Read end of pipe
 
   struct sigevent sig_event{};
   sig_event.sigev_notify          = SIGEV_SIGNAL;
@@ -283,12 +283,12 @@ void PosixTimer::init (handler_t hdl, void* uc)
 
   if ( fsystem->timer_create(CLOCK_MONOTONIC, &sig_event, &timer_id) == 0 )
   {
-    getTimerNodes().emplace_back(timer_id, this, alarm_pipe_fd[1]);
+    getTimerNodes().emplace_back(timer_id, this, alarm_pipe.getWriteFd());
   }
   else
   {
-    fsystem->close (alarm_pipe_fd[0]);
-    fsystem->close (alarm_pipe_fd[1]);
+    fsystem->close (alarm_pipe.getReadFd());
+    fsystem->close (alarm_pipe.getWriteFd());
     throw monitor_error{"No POSIX timer could be reserved."};
   }
 

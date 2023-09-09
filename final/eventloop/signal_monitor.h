@@ -28,9 +28,9 @@
  *      ▕▁▁▁▁▁▁▁▁▁▏
  *           ▲
  *           │
- *   ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
- *   ▕ SignalMonitor ▏
- *   ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ *   ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏1       1▕▔▔▔▔▔▔▔▔▔▔▏
+ *   ▕ SignalMonitor ▏- - - - -▕ PipeData ▏
+ *   ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏         ▕▁▁▁▁▁▁▁▁▁▁▏
  */
 
 #ifndef SIGNAL_MONITOR_H
@@ -41,6 +41,7 @@
 #include <memory>
 
 #include "final/eventloop/monitor.h"
+#include "final/eventloop/pipedata.h"
 #include "final/util/fstring.h"
 
 namespace finalcut
@@ -91,7 +92,7 @@ class SignalMonitor final : public Monitor
 
     // Data members
     int signal_number{-1};
-    std::array<int, 2> signal_pipe_fd{{-1, -1}};
+    PipeData signal_pipe{NO_FILE_DESCRIPTOR, NO_FILE_DESCRIPTOR};
     std::unique_ptr<SigactionImpl> impl;
 };
 

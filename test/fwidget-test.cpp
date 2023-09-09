@@ -463,7 +463,7 @@ class FWidgetTest::FSystemTest : public finalcut::FSystem
       return ret_val;
     }
 
-    auto pipe (int[2]) -> int
+    auto pipe (finalcut::PipeData&) -> int
     {
       return 0;
     }

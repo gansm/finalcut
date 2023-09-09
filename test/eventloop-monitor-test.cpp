@@ -46,6 +46,7 @@ void getException()
 void getNoException()
 { }
 
+
 //----------------------------------------------------------------------
 // class FWidget_protected
 //----------------------------------------------------------------------
@@ -70,7 +71,7 @@ class Monitor_protected : public finalcut::Monitor
     auto p_isInitialized() const -> bool;
 
     // Methods
-    void p_trigger (short) ;
+    void p_trigger (short);
 };
 
 //----------------------------------------------------------------------
@@ -118,6 +119,34 @@ inline void Monitor_protected::p_trigger (short return_events)
   finalcut::Monitor::trigger(return_events);
 }
 
+
+//----------------------------------------------------------------------
+// class KqueueTimer_protected
+//----------------------------------------------------------------------
+
+class KqueueTimer_protected : public finalcut::KqueueTimer
+{
+  public:
+    // Using-declaration
+    using KqueueTimer::KqueueTimer;
+
+    // Destructor
+    ~KqueueTimer_protected() override;
+
+    // Methods
+    void p_trigger (short);
+};
+
+//----------------------------------------------------------------------
+inline KqueueTimer_protected::~KqueueTimer_protected() noexcept = default;  // destructor
+
+//----------------------------------------------------------------------
+inline void KqueueTimer_protected::p_trigger (short return_events)
+{
+  finalcut::Monitor::trigger(return_events);
+}
+
+
 namespace
 {
 
@@ -134,10 +163,31 @@ void sigHandler (int num)
 }
 
 #if !defined(USE_KQUEUE_TIMER)
+  using u_short = unsigned short;
+  using u_int = unsigned int;
+
   struct kevent
   {
+    uintptr_t ident;   // Identifier for this event
+    short     filter;  // Filter for event
+    u_short   flags;   // Action flags for kqueue
+    u_int     fflags;  // Filter flag value
+    int64_t   data;    // Filter data value
+    void*     udata;   // Opaque user data identifier
   };
+
+  // Event filter
+  #define EVFILT_READ    (-1)  // File descriptor read
+  #define EVFILT_WRITE   (-2)  // File descriptor write
+  #define EVFILT_AIO     (-3)  // Attached to aio requests
+  #define EVFILT_VNODE   (-4)  // Attached to vnodes
+  #define EVFILT_PROC    (-5)  // Attached to struct process
+  #define EVFILT_SIGNAL  (-6)  // Attached to struct process
+  #define EVFILT_TIMER   (-7)  // Timers
+  #define EVFILT_DEVICE  (-8)  // Devices
+  #define EVFILT_EXCEPT  (-9)  // Exceptional conditions
 #endif
+
 
 namespace test
 {
@@ -157,7 +207,7 @@ class FSystemTest : public finalcut::FSystem
     void outPortByte (uChar, uShort) override;
     auto isTTY (int) const -> int override;
     auto ioctl (int, uLong, ...) -> int override;
-    auto pipe (int[2]) -> int override;
+    auto pipe (finalcut::PipeData&) -> int override;
     auto open (const char*, int, ...) -> int override;
     auto close (int) -> int override;
     auto fopen (const char*, const char*) -> FILE* override;
@@ -242,10 +292,11 @@ inline auto FSystemTest::ioctl (int file_descriptor, uLong request, ...) -> int
 }
 
 //----------------------------------------------------------------------
-inline auto FSystemTest::pipe (int pipefd[2]) -> int
+inline auto FSystemTest::pipe (finalcut::PipeData& pipe) -> int
 {
-  std::cerr << "Call: pipe (pipefd={" << pipefd[0] << ", "
-            << pipefd[1] << "})\n";
+  std::cerr << "Call: pipe (pipefd={"
+            << pipe.getReadFd() << ", "
+            << pipe.getWriteFd() << "})\n";
   return pipe_ret_value;
 }
 
@@ -303,44 +354,76 @@ inline auto FSystemTest::putchar (int c) -> int
 }
 
 //----------------------------------------------------------------------
-inline auto FSystemTest::sigaction ( int, const struct sigaction*
-                                   , struct sigaction* ) -> int
+inline auto FSystemTest::sigaction ( int signum
+                                   , const struct sigaction* act
+                                   , struct sigaction* oldact ) -> int
 {
+  std::cerr << "Call: sigaction (signum=" << signum
+            << ", act=" << act
+            << ", oldact=" << oldact << ")\n";
   return sigaction_ret_value;
 }
 
 //----------------------------------------------------------------------
-inline auto FSystemTest::timer_create ( clockid_t, struct sigevent*
-                                      , timer_t* ) -> int
+inline auto FSystemTest::timer_create ( clockid_t clockid
+                                      , struct sigevent* sevp
+                                      , timer_t* timerid ) -> int
 {
+  std::cerr << "Call: timer_create (clockid=" << clockid
+            << ", sevp=" << sevp
+            << ", timerid=" << timerid << ")\n";
   return timer_create_ret_value;
 }
 
 //----------------------------------------------------------------------
-inline auto FSystemTest::timer_settime ( timer_t, int
-                                       , const struct itimerspec*
-                                       , struct itimerspec* ) -> int
+inline auto FSystemTest::timer_settime ( timer_t timer_id
+                                       , int flags
+                                       , const struct itimerspec* new_value
+                                       , struct itimerspec* old_value ) -> int
 {
+  std::cerr << "Call: timer_settime (timer_id=" << timer_id
+            << ", flags=" << flags
+            << ", new_value=" << new_value
+            << ", old_value=" << old_value << ")\n";
   return timer_settime_ret_value;
 }
 
 //----------------------------------------------------------------------
-inline auto FSystemTest::timer_delete (timer_t) -> int
+inline auto FSystemTest::timer_delete (timer_t timer_id) -> int
 {
+  std::cerr << "Call: timer_delete (timer_id=" << timer_id << ")\n";
   return timer_delete_ret_value;
 }
 
 //----------------------------------------------------------------------
 inline auto FSystemTest::kqueue() -> int
 {
+  std::cerr << "Call: kqueue()\n";
   return kqueue_ret_value;
 }
 
 //----------------------------------------------------------------------
-inline auto FSystemTest::kevent ( int, const struct ::kevent*
-                                , int, struct ::kevent*
-                                , int, const struct timespec*) -> int
+inline auto FSystemTest::kevent ( int kq, const struct ::kevent* changelist
+                                , int nchanges, struct ::kevent* eventlist
+                                , int nevents, const struct timespec* timeout) -> int
 {
+  std::cerr << "Call: kevent (kq=" << kq
+            << ", changelist=" << changelist
+            << ", nchanges=" << nchanges
+            << ", eventlist=" << eventlist
+            << ", nevents=" << nevents
+            << ", timeout=" << timeout << ")\n";
+
+  if ( ! changelist )
+  {
+    if ( eventlist && nevents )
+    {
+      eventlist[0].ident  = 1;
+      eventlist[0].filter = EVFILT_TIMER;
+    }
+    return 1;
+  }
+
   return kevent_ret_value;
 }
 
@@ -426,6 +509,7 @@ class EventloopMonitorTest : public CPPUNIT_NS::TestFixture
   protected:
     void classNameTest();
     void noArgumentTest();
+    void PipeDataTest();
     void eventLoopTest();
     void setMonitorTest();
     void IoMonitorTest();
@@ -443,6 +527,7 @@ class EventloopMonitorTest : public CPPUNIT_NS::TestFixture
     // Add a methods to the test suite
     CPPUNIT_TEST (classNameTest);
     CPPUNIT_TEST (noArgumentTest);
+    CPPUNIT_TEST (PipeDataTest);
     CPPUNIT_TEST (eventLoopTest);
     CPPUNIT_TEST (setMonitorTest);
     CPPUNIT_TEST (IoMonitorTest);
@@ -464,6 +549,9 @@ void EventloopMonitorTest::classNameTest()
   const finalcut::FString& monitor_classname = monitor.getClassName();
   CPPUNIT_ASSERT ( eloop_classname == "EventLoop" );
   CPPUNIT_ASSERT ( monitor_classname == "Monitor" );
+  const finalcut::PipeData pipedata;
+  const finalcut::FString& pipedata_classname = pipedata.getClassName();
+  CPPUNIT_ASSERT ( pipedata_classname == "PipeData" );
 }
 
 //----------------------------------------------------------------------
@@ -475,6 +563,32 @@ void EventloopMonitorTest::noArgumentTest()
   CPPUNIT_ASSERT ( m.getFileDescriptor() == -1 );  // No File Descriptor
   CPPUNIT_ASSERT ( m.getUserContext() == nullptr );
   CPPUNIT_ASSERT ( ! m.isActive() );
+
+  const finalcut::PipeData pipedata;
+  CPPUNIT_ASSERT ( pipedata.getReadFd() == 0 );
+  CPPUNIT_ASSERT ( pipedata.getWriteFd() == 0 );
+  CPPUNIT_ASSERT ( pipedata.getArrayData()[0] == 0 );
+  CPPUNIT_ASSERT ( pipedata.getArrayData()[1] == 0 );
+}
+
+//----------------------------------------------------------------------
+void EventloopMonitorTest::PipeDataTest()
+{
+  finalcut::PipeData pipedata1;
+  CPPUNIT_ASSERT ( pipedata1.getReadFd() == 0 );
+  CPPUNIT_ASSERT ( pipedata1.getWriteFd() == 0 );
+  CPPUNIT_ASSERT ( pipedata1.getArrayData()[0] == 0 );
+  CPPUNIT_ASSERT ( pipedata1.getArrayData()[1] == 0 );
+  pipedata1.getArrayData()[0] = 2;
+  pipedata1.getArrayData()[1] = 5;
+  CPPUNIT_ASSERT ( pipedata1.getArrayData()[0] == 2 );
+  CPPUNIT_ASSERT ( pipedata1.getArrayData()[1] == 5 );
+
+  finalcut::PipeData pipedata2{10, 11};
+  CPPUNIT_ASSERT ( pipedata2.getReadFd() == 10 );
+  CPPUNIT_ASSERT ( pipedata2.getWriteFd() == 11 );
+  CPPUNIT_ASSERT ( pipedata2.getArrayData()[0] == 10 );
+  CPPUNIT_ASSERT ( pipedata2.getArrayData()[1] == 11 );
 }
 
 //----------------------------------------------------------------------
@@ -759,7 +873,7 @@ void EventloopMonitorTest::exceptionTest()
                        , std::system_error );
   fsys_ptr->setKqueueReturnValue(0);
   CPPUNIT_ASSERT_NO_THROW ( finalcut::KqueueTimer{&eloop} );
-  finalcut::KqueueTimer kqueue_timer_monitor{&eloop};
+  KqueueTimer_protected kqueue_timer_monitor{&eloop};
 
   CPPUNIT_ASSERT_NO_THROW ( kqueue_timer_monitor.init(callback_handler, nullptr) );
 
@@ -774,6 +888,13 @@ void EventloopMonitorTest::exceptionTest()
   fsys_ptr->setKeventReturnValue(0);
   CPPUNIT_ASSERT_NO_THROW ( kqueue_timer_monitor.setInterval(t1, t2) );
 
+  // First timer event - cannot register event in kqueue
+  fsys_ptr->setKeventReturnValue(-1);
+  CPPUNIT_ASSERT_THROW ( kqueue_timer_monitor.p_trigger(5)
+                       , finalcut::monitor_error );
+
+  fsys_ptr->setKeventReturnValue(1);
+  CPPUNIT_ASSERT_NO_THROW ( kqueue_timer_monitor.p_trigger(5) );
 }
 
 //----------------------------------------------------------------------
@@ -814,10 +935,16 @@ void EventloopMonitorTest::drainStdin()
     return;
 
   if ( tcdrain(stdin_no2) < 0 )
+  {
+    ::close(stdin_no2);
     return;
+  }
 
   if ( tcflush(stdin_no2, TCIFLUSH) < 0 )
+  {
+    ::close(stdin_no2);
     return;
+  }
 
   if ( ::close(stdin_no2) < 0 )
     return;

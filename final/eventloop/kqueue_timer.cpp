@@ -69,19 +69,19 @@
   #define EVFILT_EXCEPT  (-9)  // Exceptional conditions
 
   // Actions
-  #define EV_ADD       0x0001  // add event to kq (implies enable)
-  #define EV_DELETE    0x0002  // delete event from kq
-  #define EV_ENABLE    0x0004  // enable event
-  #define EV_DISABLE   0x0008  // disable event (not reported)
+  #define EV_ADD       0x0001  // Add event to kq (implies enable)
+  #define EV_DELETE    0x0002  // Delete event from kq
+  #define EV_ENABLE    0x0004  // Enable event
+  #define EV_DISABLE   0x0008  // Disable event (not reported)
 
   // Flags
-  #define EV_ONESHOT   0x0010  // only report one occurrence
-  #define EV_CLEAR     0x0020  // clear event state after reporting
-  #define EV_RECEIPT   0x0040  // force EV_ERROR on success, data=0
-  #define EV_DISPATCH  0x0080  // disable event after reporting
+  #define EV_ONESHOT   0x0010  // Only report one occurrence
+  #define EV_CLEAR     0x0020  // Clear event state after reporting
+  #define EV_RECEIPT   0x0040  // Force EV_ERROR on success, data=0
+  #define EV_DISPATCH  0x0080  // Disable event after reporting
 
-  #define EV_SYSFLAGS  0xf800  // reserved by system
-  #define EV_FLAG1     0x2000  // filter-specific flag
+  #define EV_SYSFLAGS  0xf800  // Reserved by system
+  #define EV_FLAG1     0x2000  // Filter-specific flag
 
   // Returned values
   #define EV_EOF       0x8000  // EOF detected

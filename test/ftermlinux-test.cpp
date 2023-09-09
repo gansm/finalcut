@@ -115,7 +115,7 @@ class FSystemTest : public finalcut::FSystem
     void outPortByte (uChar, uShort) override;
     auto isTTY (int) const -> int override;
     auto ioctl (int, uLong, ...) -> int override;
-    auto pipe (int[2]) -> int override;
+    auto pipe (finalcut::PipeData&) -> int override;
     auto open (const char*, int, ...) -> int override;
     auto close (int) -> int override;
     auto fopen (const char*, const char*) -> FILE* override;
@@ -1854,10 +1854,11 @@ auto FSystemTest::ioctl (int file_descriptor, uLong request, ...) -> int
 }
 
 //----------------------------------------------------------------------
-auto FSystemTest::pipe (int pipefd[2]) -> int
+auto FSystemTest::pipe (finalcut::PipeData& pipe) -> int
 {
-  std::cerr << "Call: pipe (pipefd={" << pipefd[0] << ", "
-            << pipefd[1] << "})\n";
+  std::cerr << "Call: pipe (pipefd={"
+            << pipe.getReadFd() << ", "
+            << pipe.getWriteFd() << "})\n";
   return 0;
 }
 

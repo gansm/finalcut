@@ -140,12 +140,12 @@ void SignalMonitor::init (int sn, handler_t hdl, void* uc)
   }
 
   // Set up pipe for notification
-  if ( fsystem->pipe(signal_pipe_fd.data()) != 0 )
+  if ( fsystem->pipe(signal_pipe) != 0 )
   {
     throw monitor_error{"No pipe could be set up for the signal monitor."};
   }
 
-  setFileDescriptor(signal_pipe_fd[0]);  // Read end of pipe
+  setFileDescriptor(signal_pipe.getReadFd());  // Read end of pipe
 
   // Install signal handler
   struct sigaction sig_action{};
@@ -156,8 +156,8 @@ void SignalMonitor::init (int sn, handler_t hdl, void* uc)
   if ( fsystem->sigaction(sn, &sig_action, getSigactionImpl()->getSigaction()) != 0 )
   {
     int Error = errno;
-    (void)fsystem->close(signal_pipe_fd[0]);
-    (void)fsystem->close(signal_pipe_fd[1]);
+    (void)fsystem->close(signal_pipe.getReadFd());
+    (void)fsystem->close(signal_pipe.getWriteFd());
     std::error_code err_code{Error, std::generic_category()};
     std::system_error sys_err{err_code, strerror(Error)};
     throw sys_err;
@@ -184,7 +184,8 @@ void SignalMonitor::onSignal (int signal_number)
   {
     // The event loop is notified by write access to the pipe
     uint64_t buffer{1U};
-    auto successful = ::write (monitor->signal_pipe_fd[1], &buffer, sizeof(buffer)) > 0;
+    auto successful = ::write ( monitor->signal_pipe.getWriteFd()
+                              , &buffer, sizeof(buffer) ) > 0;
 
     if ( ! successful )
     {

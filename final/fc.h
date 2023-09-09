@@ -1367,7 +1367,6 @@ constexpr auto operator | (const FTermType& t1, FTermTypeT t2) noexcept -> FTerm
   return FTermTypeT(t1) | t2;
 }
 
-
 // Type of focus
 enum class FocusTypes
 {

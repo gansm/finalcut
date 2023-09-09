@@ -1,9 +1,9 @@
 /***********************************************************************
-* char_ringbuffer.cpp - Ring buffer for char elements                  *
+* pipedata.cpp - Provides a pipe array to hold the file descriptors    *
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2022-2023 Markus Gans                                      *
+* Copyright 2023 Markus Gans                                           *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -20,16 +20,19 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-
-#include "final/util/char_ringbuffer.h"
+#include "final/eventloop/pipedata.h"
+#include "final/util/fstring.h"
 
 namespace finalcut
 {
 
 //----------------------------------------------------------------------
-// class FRingBuffer
+// class PipeData
 //----------------------------------------------------------------------
 
+auto PipeData::getClassName() const -> FString
+{
+  return "PipeData";
+}
 
 }  // namespace finalcut
-

@@ -40,6 +40,8 @@
 #include <string>
 #include <utility>
 
+#include "final/eventloop/pipedata.h"
+
 #if (defined(__APPLE__) && defined(__MACH__)) || defined(__OpenBSD__)
   #define USE_KQUEUE_TIMER
 #endif
