@@ -67,7 +67,8 @@ class IoMonitor final : public Monitor
     auto getClassName() const -> FString override;
 
     // Method
-    void init (int, short, handler_t, void*);
+    template <typename T>
+    void init (int, short, handler_t, T&&);
     auto operator = (const IoMonitor&) -> IoMonitor& = delete;
     auto operator = (const IoMonitor&&) -> IoMonitor& = delete;
 };
@@ -76,6 +77,17 @@ class IoMonitor final : public Monitor
 //----------------------------------------------------------------------
 inline auto IoMonitor::getClassName() const -> FString
 { return "IoMonitor"; }
+
+//----------------------------------------------------------------------
+template <typename T>
+inline void IoMonitor::init ( int file_descriptor, short ev
+                            , handler_t hdl, T&& uc )
+{
+  setFileDescriptor (file_descriptor);
+  setEvents (ev);
+  setHandler (std::move(hdl));
+  setUserContext (std::move(uc));
+}
 
 }  // namespace finalcut
 

@@ -113,61 +113,14 @@ SignalMonitor::~SignalMonitor() noexcept  // destructor
 
 // public methods of SignalMonitor
 //----------------------------------------------------------------------
-void SignalMonitor::init (int sn, handler_t hdl, void* uc)
+void SignalMonitor::trigger (short return_events)
 {
-  if ( isInitialized() )
-    throw monitor_error{"This instance has already been initialised."};
-
-  signal_number = sn;
-  static auto& signal_monitors = getSignalMonitorMap();
-  static const auto& fsystem = FSystem::getInstance();
-  setEvents (POLLIN);
-  setHandler (std::move(hdl));
-  setUserContext (uc);
-
-  // SIGALRM is handled by the posix timer monitor
-  if ( SIGALRM == sn )
-    throw std::invalid_argument{"signal_number must not be SIGALRM."};
-
-  // Each signal can only be managed by one monitor instance
-  if ( signal_monitors.find(sn) != signal_monitors.end() )
-  {
-    throw std::invalid_argument
-    {
-      "The specified signal is already being handled by another "
-      "monitor instance."
-    };
-  }
-
-  // Set up pipe for notification
-  if ( fsystem->pipe(signal_pipe) != 0 )
-  {
-    throw monitor_error{"No pipe could be set up for the signal monitor."};
-  }
-
-  setFileDescriptor(signal_pipe.getReadFd());  // Read end of pipe
-
-  // Install signal handler
-  struct sigaction sig_action{};
-  sig_action.sa_handler = onSignal;
-  sigemptyset(&sig_action.sa_mask);
-  sig_action.sa_flags = 0;
-
-  if ( fsystem->sigaction(sn, &sig_action, getSigactionImpl()->getSigaction()) != 0 )
-  {
-    int Error = errno;
-    (void)fsystem->close(signal_pipe.getReadFd());
-    (void)fsystem->close(signal_pipe.getWriteFd());
-    std::error_code err_code{Error, std::generic_category()};
-    std::system_error sys_err{err_code, strerror(Error)};
-    throw sys_err;
-  }
-
-  // Enter the monitor instance in the assignment table
-  signal_monitors[sn] = this;
-  setInitialized();
+  drainPipe(getFileDescriptor());
+  Monitor::trigger(return_events);
 }
 
+
+// private methods of SignalMonitor
 //----------------------------------------------------------------------
 void SignalMonitor::onSignal (int signal_number)
 {
@@ -195,14 +148,56 @@ void SignalMonitor::onSignal (int signal_number)
 }
 
 //----------------------------------------------------------------------
-void SignalMonitor::trigger (short return_events)
+void SignalMonitor::init()
 {
-  drainPipe(getFileDescriptor());
-  Monitor::trigger(return_events);
+  static auto& signal_monitors = getSignalMonitorMap();
+  static const auto& fsystem = FSystem::getInstance();
+  setEvents (POLLIN);
+
+  // SIGALRM is handled by the posix timer monitor
+  if ( SIGALRM == signal_number )
+    throw std::invalid_argument{"signal_number must not be SIGALRM."};
+
+  // Each signal can only be managed by one monitor instance
+  if ( signal_monitors.find(signal_number) != signal_monitors.end() )
+  {
+    throw std::invalid_argument
+    {
+      "The specified signal is already being handled by another "
+      "monitor instance."
+    };
+  }
+
+  // Set up pipe for notification
+  if ( fsystem->pipe(signal_pipe) != 0 )
+  {
+    throw monitor_error{"No pipe could be set up for the signal monitor."};
+  }
+
+  setFileDescriptor(signal_pipe.getReadFd());  // Read end of pipe
+
+  // Install signal handler
+  struct sigaction sig_action{};
+  sig_action.sa_handler = onSignal;
+  sigemptyset(&sig_action.sa_mask);
+  sig_action.sa_flags = 0;
+
+  if ( fsystem->sigaction( signal_number, &sig_action
+                         , getSigactionImpl()->getSigaction() ) != 0 )
+  {
+    int Error = errno;
+    (void)fsystem->close(signal_pipe.getReadFd());
+    (void)fsystem->close(signal_pipe.getWriteFd());
+    std::error_code err_code{Error, std::generic_category()};
+    std::system_error sys_err{err_code, strerror(Error)};
+    throw sys_err;
+  }
+
+  // Enter the monitor instance in the assignment table
+  signal_monitors[signal_number] = this;
+  setInitialized();
 }
 
-
-// private methods of SignalMonitor
 //----------------------------------------------------------------------
 auto SignalMonitor::getSigactionImpl() const -> const SigactionImpl*
 {

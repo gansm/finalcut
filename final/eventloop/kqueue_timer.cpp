@@ -344,23 +344,6 @@ KqueueTimer::~KqueueTimer() noexcept  // destructor
 
 // public methods of KqueueTimer
 //----------------------------------------------------------------------
-void KqueueTimer::init (handler_t hdl, void* uc)
-{
-  if ( isInitialized() )
-    throw monitor_error{"This instance has already been initialised."};
-
-  setFileDescriptor (getKqueue());
-  setEvents (POLLIN);
-  setHandler (KqueueHandler());
-  setUserContext (uc);
-  timer_id = getTimerID();
-  timer_handler = std::move(hdl);
-  getKEvents().emplace_back();
-  getTimerNodes().emplace_back(timer_id, this);
-  setInitialized();
-}
-
-//----------------------------------------------------------------------
 void KqueueTimer::setInterval ( std::chrono::nanoseconds first,
                                 std::chrono::nanoseconds periodic )
 {
@@ -383,6 +366,19 @@ void KqueueTimer::setInterval ( std::chrono::nanoseconds first,
 void KqueueTimer::trigger (short return_events)
 {
   Monitor::trigger(return_events);
+}
+
+// private methods of KqueueTimer
+//----------------------------------------------------------------------
+void KqueueTimer::init()
+{
+  setFileDescriptor (getKqueue());
+  setEvents (POLLIN);
+  setHandler (KqueueHandler());
+  timer_id = getTimerID();
+  getKEvents().emplace_back();
+  getTimerNodes().emplace_back(timer_id, this);
+  setInitialized();
 }
 
 }  // namespace finalcut

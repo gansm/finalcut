@@ -35,6 +35,7 @@
 #include <stdexcept>
 #include <string>
 
+#include "final/util/fdata.h"
 #include "final/util/fstring.h"
 
 namespace finalcut
@@ -97,7 +98,8 @@ class Monitor
     virtual auto getClassName() const -> FString;
     auto getEvents() const -> short;
     auto getFileDescriptor() const -> int;
-    auto getUserContext() const -> void*;
+    template <typename T>
+    auto getUserContext() const -> clean_fdata_t<T>&;
 
     // Inquiry
     auto isActive() const -> bool;
@@ -120,7 +122,8 @@ class Monitor
     void         setFileDescriptor (int);
     void         setEvents (short);
     void         setHandler (handler_t&&);
-    void         setUserContext (void*);
+    template <typename T>
+    void         setUserContext (T&&);
     void         setInitialized();
 
     // Inquiry
@@ -130,14 +133,17 @@ class Monitor
     virtual void trigger (short);
 
   private:
+    // Using-declaration
+    using FDataAccessPtr = std::shared_ptr<FDataAccess>;
+
     // Data member
-    bool        active{false};
-    EventLoop*  eventloop{};
-    int         fd{NO_FILE_DESCRIPTOR};
-    short       events{0};
-    handler_t   handler{};
-    void*       user_context{nullptr};
-    bool        monitor_initialized{false};
+    bool           active{false};
+    EventLoop*     eventloop{};
+    int            fd{NO_FILE_DESCRIPTOR};
+    short          events{0};
+    handler_t      handler{};
+    FDataAccessPtr user_context{nullptr};
+    bool           monitor_initialized{false};
 
     // Friend classes
     friend class EventLoop;
@@ -156,10 +162,15 @@ inline auto Monitor::getEvents() const -> short
 inline auto Monitor::getFileDescriptor() const -> int
 { return fd; }
 
-
 //----------------------------------------------------------------------
-inline auto Monitor::getUserContext() const -> void*
-{ return user_context; }
+template <typename T>
+inline auto Monitor::getUserContext() const -> clean_fdata_t<T>&
+{
+  auto empty = static_cast<T>(0);
+  return user_context
+       ? static_cast<FData<clean_fdata_t<T>>&>(*user_context).get()
+       : empty;
+}
 
 //----------------------------------------------------------------------
 inline auto Monitor::isActive() const -> bool
@@ -193,8 +204,11 @@ inline void Monitor::setHandler (handler_t&& hdl)
 { handler = std::move(hdl); }
 
 //----------------------------------------------------------------------
-inline void Monitor::setUserContext (void* uc)
-{ user_context = uc; }
+template <typename T>
+inline void Monitor::setUserContext (T&& uc)
+{
+  user_context.reset(makeFData(std::forward<T>(uc)));
+}
 
 //----------------------------------------------------------------------
 inline void Monitor::setInitialized()

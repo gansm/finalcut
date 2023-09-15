@@ -72,7 +72,8 @@ class SignalMonitor final : public Monitor
     auto getClassName() const -> FString override;
 
     // Methods
-    void init (int, handler_t, void*);
+    template <typename T>
+    void init (int, handler_t, T&&);
     void trigger (short) override;
 
   private:
@@ -87,6 +88,7 @@ class SignalMonitor final : public Monitor
 
     // Methods
     static void onSignal (int);
+    void init();
     auto getSigactionImpl() const -> const SigactionImpl*;
     auto getSigactionImpl() -> SigactionImpl*;
 
@@ -100,6 +102,19 @@ class SignalMonitor final : public Monitor
 //----------------------------------------------------------------------
 inline auto SignalMonitor::getClassName() const -> FString
 { return "SignalMonitor"; }
+
+//----------------------------------------------------------------------
+template <typename T>
+inline void SignalMonitor::init (int sn, handler_t hdl, T&& uc)
+{
+  if ( isInitialized() )
+    throw monitor_error{"This instance has already been initialised."};
+
+  signal_number = sn;
+  setHandler (std::move(hdl));
+  setUserContext (std::move(uc));
+  init();
+}
 
 }  // namespace finalcut
 

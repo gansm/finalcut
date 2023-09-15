@@ -64,7 +64,9 @@ class Monitor_protected : public finalcut::Monitor
     void p_setFileDescriptor (int);
     void p_setEvents (short);
     void p_setHandler (finalcut::handler_t&&);
-    void p_setUserContext (void*);
+
+    template <typename T>
+    void p_setUserContext (T&&);
     void p_setInitialized();
 
     // Inquiry
@@ -96,9 +98,10 @@ inline void Monitor_protected::p_setHandler (finalcut::handler_t&& hdl)
 }
 
 //----------------------------------------------------------------------
-inline void Monitor_protected::p_setUserContext (void* uc)
+template <typename T>
+inline void Monitor_protected::p_setUserContext (T&& uc)
 {
-  finalcut::Monitor::setUserContext(uc);
+  finalcut::Monitor::setUserContext(std::move(uc));
 }
 
 //----------------------------------------------------------------------
@@ -561,7 +564,13 @@ void EventloopMonitorTest::noArgumentTest()
   const finalcut::Monitor m(&eloop);
   CPPUNIT_ASSERT ( m.getEvents() == 0 );
   CPPUNIT_ASSERT ( m.getFileDescriptor() == -1 );  // No File Descriptor
-  CPPUNIT_ASSERT ( m.getUserContext() == nullptr );
+  CPPUNIT_ASSERT ( m.getUserContext<void*>() == nullptr );
+  CPPUNIT_ASSERT ( m.getUserContext<int>() == 0 );
+  CPPUNIT_ASSERT ( m.getUserContext<int*>() == nullptr );
+  CPPUNIT_ASSERT ( m.getUserContext<long>() == 0 );
+  CPPUNIT_ASSERT ( m.getUserContext<long*>() == nullptr );
+  CPPUNIT_ASSERT ( m.getUserContext<std::size_t>() == 0 );
+  CPPUNIT_ASSERT ( m.getUserContext<std::size_t*>() == nullptr );
   CPPUNIT_ASSERT ( ! m.isActive() );
 
   const finalcut::PipeData pipedata;
@@ -609,7 +618,7 @@ void EventloopMonitorTest::eventLoopTest()
   Monitor_protected mon(&eloop);
   CPPUNIT_ASSERT ( mon.getEvents() == 0 );
   CPPUNIT_ASSERT ( mon.getFileDescriptor() == -1 );  // No File Descriptor
-  CPPUNIT_ASSERT ( mon.getUserContext() == nullptr );
+  CPPUNIT_ASSERT ( mon.getUserContext<void*>() == nullptr );
   CPPUNIT_ASSERT ( ! mon.isActive() );
   mon.p_setEvents (POLLIN);
   std::array<int, 2> pipe_fd{{-1, -1}};
@@ -634,7 +643,7 @@ void EventloopMonitorTest::eventLoopTest()
   CPPUNIT_ASSERT ( eloop.run() == 0 );
   CPPUNIT_ASSERT ( mon.getEvents() == POLLIN );
   CPPUNIT_ASSERT ( mon.getFileDescriptor() == pipe_fd[0] );
-  CPPUNIT_ASSERT ( mon.getUserContext() == nullptr );
+  CPPUNIT_ASSERT ( mon.getUserContext<void*>() == nullptr );
   CPPUNIT_ASSERT ( mon.isActive() );
   signal(SIGALRM, SIG_DFL);
   signal_handler = [] (int) { };  // Do nothing
@@ -647,7 +656,7 @@ void EventloopMonitorTest::setMonitorTest()
   Monitor_protected m(&eloop);
   CPPUNIT_ASSERT ( m.getEvents() == 0 );
   CPPUNIT_ASSERT ( m.getFileDescriptor() == -1 );  // No File Descriptor
-  CPPUNIT_ASSERT ( m.getUserContext() == nullptr );
+  CPPUNIT_ASSERT ( m.getUserContext<void*>() == nullptr );
   CPPUNIT_ASSERT ( ! m.p_isInitialized() );
   m.p_setInitialized();
   CPPUNIT_ASSERT ( m.p_isInitialized() );
@@ -673,9 +682,9 @@ void EventloopMonitorTest::setMonitorTest()
   CPPUNIT_ASSERT ( value == 8 );
   using Function = std::function<void()>;
   Function f = [&value] () { value *= 10; };
-  m.p_setUserContext (reinterpret_cast<void*>(&f));
+  m.p_setUserContext(f);
   CPPUNIT_ASSERT ( value == 8 );
-  (*reinterpret_cast<Function*>(m.getUserContext()))();
+  m.getUserContext<Function>()();
   CPPUNIT_ASSERT ( value == 80 );
 }
 

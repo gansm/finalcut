@@ -85,7 +85,6 @@ class TimerMonitorImpl : public Monitor
     ~TimerMonitorImpl() override;
 
     // Methods
-    virtual void init (handler_t, void*) = 0;
     virtual void setInterval ( std::chrono::nanoseconds
                              , std::chrono::nanoseconds ) = 0;
 };
@@ -104,13 +103,16 @@ class PosixTimer : public TimerMonitorImpl
     ~PosixTimer() noexcept override;
 
     // Methods
-    void init (handler_t, void*) override;
+    template <typename T>
+    void init (handler_t, T&&);
     void setInterval ( std::chrono::nanoseconds
                      , std::chrono::nanoseconds ) override;
     void trigger(short) override;
 
-#if defined(USE_POSIX_TIMER)
   private:
+    void init();
+
+#if defined(USE_POSIX_TIMER)
     // Data members
     timer_t timer_id{};
     PipeData alarm_pipe{NO_FILE_DESCRIPTOR, NO_FILE_DESCRIPTOR};
@@ -118,6 +120,19 @@ class PosixTimer : public TimerMonitorImpl
 #endif  // defined(USE_POSIX_TIMER)
 };
 
+#if defined(USE_POSIX_TIMER)
+//----------------------------------------------------------------------
+template <typename T>
+inline void PosixTimer::init (handler_t hdl, T&& uc)
+{
+  if ( isInitialized() )
+    throw monitor_error{"This instance has already been initialised."};
+
+  setHandler (std::move(hdl));
+  setUserContext (std::move(uc));
+  init();
+}
+#endif  // defined(USE_POSIX_TIMER)
 
 //----------------------------------------------------------------------
 // class KqueueTimer
@@ -133,13 +148,16 @@ class KqueueTimer : public TimerMonitorImpl
     ~KqueueTimer() noexcept override;
 
     // Methods
-    void init (handler_t, void*) override;
+    template <typename T>
+    void init (handler_t, T&&);
     void setInterval ( std::chrono::nanoseconds
                      , std::chrono::nanoseconds ) override;
     void trigger(short) override;
 
-#if defined(USE_KQUEUE_TIMER) || defined(UNIT_TEST)
   private:
+    void init();
+
+#if defined(USE_KQUEUE_TIMER) || defined(UNIT_TEST)
     struct TimerSpec
     {
       int period_ms{};
@@ -160,6 +178,20 @@ class KqueueTimer : public TimerMonitorImpl
     friend class KqueueHandler;
 #endif  // defined(USE_KQUEUE_TIMER)
 };
+
+#if defined(USE_KQUEUE_TIMER) || defined(UNIT_TEST)
+//----------------------------------------------------------------------
+template <typename T>
+inline void KqueueTimer::init (handler_t hdl, T&& uc)
+{
+  if ( isInitialized() )
+    throw monitor_error{"This instance has already been initialised."};
+
+  timer_handler = std::move(hdl);
+  setUserContext (std::move(uc));
+  init();
+}
+#endif  // defined(USE_KQUEUE_TIMER)
 
 
 //----------------------------------------------------------------------

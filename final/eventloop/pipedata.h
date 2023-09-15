@@ -48,8 +48,7 @@ class PipeData final
 {
   public:
     // Constructor
-    PipeData()
-    { }
+    PipeData() = default;
 
     explicit PipeData (int read_fd, int write_fd)
       : pipe_fd{{read_fd, write_fd}}

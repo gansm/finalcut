@@ -261,15 +261,35 @@ PosixTimer::~PosixTimer() noexcept  // destructor
 
 // public methods of PosixTimer
 //----------------------------------------------------------------------
-void PosixTimer::init (handler_t hdl, void* uc)
+void PosixTimer::setInterval ( std::chrono::nanoseconds first,
+                               std::chrono::nanoseconds periodic )
 {
-  if ( isInitialized() )
-    throw monitor_error{"This instance has already been initialised."};
+  static const auto& fsystem = FSystem::getInstance();
+  struct itimerspec timer_spec { durationToTimespec(periodic)
+                               , durationToTimespec(first) };
 
+  if ( fsystem->timer_settime(timer_id, 0, &timer_spec, nullptr) != -1 )
+    return;
+
+  const int error = errno;
+  std::error_code err_code{error, std::generic_category()};
+  std::system_error sys_err{err_code, strerror(error)};
+  throw sys_err;
+}
+
+//----------------------------------------------------------------------
+void PosixTimer::trigger (short return_events)
+{
+  drainPipe(getFileDescriptor());
+  Monitor::trigger(return_events);
+}
+
+// private methods of PosixTimer
+//----------------------------------------------------------------------
+void PosixTimer::init()
+{
   static const auto& fsystem = FSystem::getInstance();
   setEvents (POLLIN);
-  setHandler (std::move(hdl));
-  setUserContext (uc);
 
   if ( fsystem->pipe(alarm_pipe) != 0 )
     throw monitor_error{"No pipe could be set up for the timer."};
@@ -293,30 +313,6 @@ void PosixTimer::init (handler_t hdl, void* uc)
   }
 
   setInitialized();
-}
-
-//----------------------------------------------------------------------
-void PosixTimer::setInterval ( std::chrono::nanoseconds first,
-                               std::chrono::nanoseconds periodic )
-{
-  static const auto& fsystem = FSystem::getInstance();
-  struct itimerspec timer_spec { durationToTimespec(periodic)
-                               , durationToTimespec(first) };
-
-  if ( fsystem->timer_settime(timer_id, 0, &timer_spec, nullptr) != -1 )
-    return;
-
-  const int error = errno;
-  std::error_code err_code{error, std::generic_category()};
-  std::system_error sys_err{err_code, strerror(error)};
-  throw sys_err;
-}
-
-//----------------------------------------------------------------------
-void PosixTimer::trigger (short return_events)
-{
-  drainPipe(getFileDescriptor());
-  Monitor::trigger(return_events);
 }
 
 }  // namespace finalcut
