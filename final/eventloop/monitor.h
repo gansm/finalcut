@@ -164,12 +164,12 @@ inline auto Monitor::getFileDescriptor() const -> int
 
 //----------------------------------------------------------------------
 template <typename T>
-inline auto Monitor::getUserContext() const -> clean_fdata_t<T>&
+auto Monitor::getUserContext() const -> clean_fdata_t<T>&
 {
-  auto empty = static_cast<T>(0);
+  static T empty_lvalue = T{};
   return user_context
        ? static_cast<FData<clean_fdata_t<T>>&>(*user_context).get()
-       : empty;
+       : empty_lvalue;
 }
 
 //----------------------------------------------------------------------

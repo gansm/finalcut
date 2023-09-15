@@ -569,6 +569,11 @@ void EventloopMonitorTest::noArgumentTest()
   CPPUNIT_ASSERT ( m.getUserContext<int*>() == nullptr );
   CPPUNIT_ASSERT ( m.getUserContext<long>() == 0 );
   CPPUNIT_ASSERT ( m.getUserContext<long*>() == nullptr );
+  CPPUNIT_ASSERT ( m.getUserContext<double>() == 0.0 );
+  CPPUNIT_ASSERT ( m.getUserContext<double*>() == nullptr );
+  CPPUNIT_ASSERT ( m.getUserContext<finalcut::FPoint>() == finalcut::FPoint() );
+  CPPUNIT_ASSERT ( m.getUserContext<finalcut::FPoint>() == finalcut::FPoint(0, 0) );
+  CPPUNIT_ASSERT ( m.getUserContext<finalcut::FPoint>() != finalcut::FPoint(1, 2) );
   CPPUNIT_ASSERT ( m.getUserContext<std::size_t>() == 0 );
   CPPUNIT_ASSERT ( m.getUserContext<std::size_t*>() == nullptr );
   CPPUNIT_ASSERT ( ! m.isActive() );
