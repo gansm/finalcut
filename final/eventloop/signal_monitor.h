@@ -112,7 +112,7 @@ inline void SignalMonitor::init (int sn, handler_t hdl, T&& uc)
 
   signal_number = sn;
   setHandler (std::move(hdl));
-  setUserContext (std::move(uc));
+  setUserContext (std::forward<T>(uc));
   init();
 }
 

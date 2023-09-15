@@ -129,7 +129,7 @@ inline void PosixTimer::init (handler_t hdl, T&& uc)
     throw monitor_error{"This instance has already been initialised."};
 
   setHandler (std::move(hdl));
-  setUserContext (std::move(uc));
+  setUserContext (std::forward<T>(uc));
   init();
 }
 #endif  // defined(USE_POSIX_TIMER)
@@ -188,7 +188,7 @@ inline void KqueueTimer::init (handler_t hdl, T&& uc)
     throw monitor_error{"This instance has already been initialised."};
 
   timer_handler = std::move(hdl);
-  setUserContext (std::move(uc));
+  setUserContext (std::forward<T>(uc));
   init();
 }
 #endif  // defined(USE_KQUEUE_TIMER)

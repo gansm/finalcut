@@ -86,7 +86,7 @@ inline void IoMonitor::init ( int file_descriptor, short ev
   setFileDescriptor (file_descriptor);
   setEvents (ev);
   setHandler (std::move(hdl));
-  setUserContext (std::move(uc));
+  setUserContext (std::forward<T>(uc));
 }
 
 }  // namespace finalcut
