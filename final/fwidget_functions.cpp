@@ -54,13 +54,13 @@ uInt8 var::b1_print_trans_mask{};
 void initByte1PrintTransMask()
 {
   // Set bits that must not be reset
-  FAttribute mask{};
-  mask.bit.transparent = true;
-  mask.bit.color_overlay = true;
-  mask.bit.inherit_background = true;
-  mask.bit.no_changes = true;
-  mask.bit.printed = true;
-  internal::var::b1_print_trans_mask = getFAttributeByte(mask.bit, 1);
+  FCharAttribute mask{};
+  mask.transparent = true;
+  mask.color_overlay = true;
+  mask.inherit_background = true;
+  mask.no_changes = true;
+  mask.printed = true;
+  internal::var::b1_print_trans_mask = getFAttributeByte(mask, 1);
 }
 
 //----------------------------------------------------------------------

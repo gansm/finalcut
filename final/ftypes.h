@@ -283,27 +283,27 @@ struct FCharAttribute
   uInt8                    : 8;  // padding byte
 };
 
-constexpr auto getFAttributeByte ( const FCharAttribute& fchar
-                                 , std::size_t byte ) noexcept -> uInt8
+inline auto getFAttributeByte ( const FCharAttribute& fchar
+                              , std::size_t byte ) noexcept -> uInt8
 {
   using ByteArray = uInt8[4];
   return (*reinterpret_cast<const ByteArray*>(&fchar))[byte];
 }
 
-constexpr auto setFAttributeByte ( FCharAttribute& fchar
-                                 , std::size_t byte
-                                 , uInt8 value) noexcept
+inline auto setFAttributeByte ( FCharAttribute& fchar
+                              , std::size_t byte
+                              , uInt8 value ) noexcept
 {
   using ByteArray = uInt8[4];
   (*reinterpret_cast<ByteArray*>(&fchar))[byte] = value;
 }
 
-constexpr auto getFAttributeWord (const FCharAttribute& fchar) noexcept -> uInt32
+inline auto getFAttributeWord (const FCharAttribute& fchar) noexcept -> uInt32
 {
   return *reinterpret_cast<const uInt32*>(&fchar);
 }
 
-constexpr auto WordToFAttribute (uInt32 word) noexcept -> FCharAttribute
+inline auto WordToFAttribute (uInt32 word) noexcept -> FCharAttribute
 {
   FCharAttribute fchar{};
   memcpy(&fchar, &word, sizeof(fchar));
