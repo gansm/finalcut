@@ -28,6 +28,7 @@
 #endif
 
 #include <sys/types.h>
+#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -284,29 +285,32 @@ struct FCharAttribute
 };
 
 inline auto getFAttributeByte ( const FCharAttribute& fchar
-                              , std::size_t byte ) noexcept -> uInt8
+                              , std::size_t index ) noexcept -> uInt8
 {
-  using ByteArray = uInt8[4];
-  return (*reinterpret_cast<const ByteArray*>(&fchar))[byte];
+  uInt8 byte{};
+  std::memcpy (&byte, reinterpret_cast<const uInt8*>(&fchar) + index, sizeof(uInt8));
+  return byte;
 }
 
 inline auto setFAttributeByte ( FCharAttribute& fchar
-                              , std::size_t byte
+                              , std::size_t index
                               , uInt8 value ) noexcept
 {
-  using ByteArray = uInt8[4];
-  (*reinterpret_cast<ByteArray*>(&fchar))[byte] = value;
+  assert ( index < 4U );  
+  std::memcpy(reinterpret_cast<uInt8*>(&fchar) + index, &value, sizeof(uInt8));
 }
 
 inline auto getFAttributeWord (const FCharAttribute& fchar) noexcept -> uInt32
 {
-  return *reinterpret_cast<const uInt32*>(&fchar);
+  uInt32 word{};
+  std::memcpy(&word, &fchar, sizeof(word));
+  return word;
 }
 
 inline auto WordToFAttribute (uInt32 word) noexcept -> FCharAttribute
 {
   FCharAttribute fchar{};
-  memcpy(&fchar, &word, sizeof(fchar));
+  std::memcpy(&fchar, &word, sizeof(fchar));
   return fchar;
 }
 
