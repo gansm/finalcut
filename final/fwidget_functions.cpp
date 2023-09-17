@@ -60,7 +60,7 @@ void initByte1PrintTransMask()
   mask.bit.inherit_background = true;
   mask.bit.no_changes = true;
   mask.bit.printed = true;
-  internal::var::b1_print_trans_mask = mask.byte[1];
+  internal::var::b1_print_trans_mask = getFAttributeByte(mask.bit, 1);
 }
 
 //----------------------------------------------------------------------
