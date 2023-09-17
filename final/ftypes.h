@@ -305,7 +305,9 @@ constexpr auto getFAttributeWord (const FCharAttribute& fchar) noexcept -> uInt3
 
 constexpr auto WordToFAttribute (uInt32 word) noexcept -> FCharAttribute
 {
-  return *reinterpret_cast<FCharAttribute*>(&word);
+  FCharAttribute fchar{};
+  memcpy(&fchar, &word, sizeof(fchar));
+  return fchar;
 }
 
 union FAttribute
