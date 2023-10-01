@@ -559,10 +559,12 @@ auto FTermDetection::parseAnswerbackMsg (const FString& current_termtype) -> FSt
       new_termtype = "putty";
   }
 
+#if !defined(UNIT_TEST)
   // Some terminals like cygwin or the Windows terminal
   // have to delete the printed character '♣'
   std::fprintf (stdout, "\r " BS);
   std::fflush (stdout);
+#endif  // !defined(UNIT_TEST)
 
 #if DEBUG
   if ( ! new_termtype.isEmpty() )

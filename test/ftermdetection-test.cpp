@@ -129,16 +129,16 @@ void FTermDetectionTest::ansiTest()
   {
     // (gdb) set follow-fork-mode child
     setenv ("TERM", "ansi", 1);
-    unsetenv("TERMCAP");
-    unsetenv("COLORTERM");
-    unsetenv("COLORFGBG");
-    unsetenv("VTE_VERSION");
-    unsetenv("XTERM_VERSION");
-    unsetenv("ROXTERM_ID");
-    unsetenv("KONSOLE_DBUS_SESSION");
-    unsetenv("KONSOLE_DCOP");
-    unsetenv("TMUX");
-    unsetenv("KITTY_WINDOW_ID");
+    unsetenv ("TERMCAP");
+    unsetenv ("COLORTERM");
+    unsetenv ("COLORFGBG");
+    unsetenv ("VTE_VERSION");
+    unsetenv ("XTERM_VERSION");
+    unsetenv ("ROXTERM_ID");
+    unsetenv ("KONSOLE_DBUS_SESSION");
+    unsetenv ("KONSOLE_DCOP");
+    unsetenv ("TMUX");
+    unsetenv ("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::xterm) );
@@ -174,7 +174,7 @@ void FTermDetectionTest::ansiTest()
     CPPUNIT_ASSERT ( detect.getSecDAString() == "" );
 
     // Test fallback to vt100 without TERM environment variable
-    unsetenv("TERM");
+    unsetenv ("TERM");
     data.unsetTermType(finalcut::FTermType::ansi);
     detect.detect();
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::ansi) );
@@ -214,15 +214,15 @@ void FTermDetectionTest::xtermTest()
     // (gdb) set follow-fork-mode child
     setenv ("TERM", "xterm", 1);
     setenv ("XTERM_VERSION", "XTerm(312)", 1);
-    unsetenv("TERMCAP");
-    unsetenv("COLORTERM");
-    unsetenv("COLORFGBG");
-    unsetenv("VTE_VERSION");
-    unsetenv("ROXTERM_ID");
-    unsetenv("KONSOLE_DBUS_SESSION");
-    unsetenv("KONSOLE_DCOP");
-    unsetenv("TMUX");
-    unsetenv("KITTY_WINDOW_ID");
+    unsetenv ("TERMCAP");
+    unsetenv ("COLORTERM");
+    unsetenv ("COLORFGBG");
+    unsetenv ("VTE_VERSION");
+    unsetenv ("ROXTERM_ID");
+    unsetenv ("KONSOLE_DBUS_SESSION");
+    unsetenv ("KONSOLE_DCOP");
+    unsetenv ("TMUX");
+    unsetenv ("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::xterm) );
@@ -262,6 +262,8 @@ void FTermDetectionTest::xtermTest()
 
     printConEmuDebug();
     closeConEmuStdStreams();
+    unsetenv ("TERM");
+    unsetenv ("XTERM_VERSION");
     exit(EXIT_SUCCESS);
   }
   else  // Parent
@@ -294,14 +296,14 @@ void FTermDetectionTest::rxvtTest()
     setenv ("TERM", "rxvt-cygwin-native", 1);
     setenv ("COLORTERM", "rxvt-xpm", 1);
     setenv ("COLORFGBG", "default;default", 1);
-    unsetenv("TERMCAP");
-    unsetenv("VTE_VERSION");
-    unsetenv("XTERM_VERSION");
-    unsetenv("ROXTERM_ID");
-    unsetenv("KONSOLE_DBUS_SESSION");
-    unsetenv("KONSOLE_DCOP");
-    unsetenv("TMUX");
-    unsetenv("KITTY_WINDOW_ID");
+    unsetenv ("TERMCAP");
+    unsetenv ("VTE_VERSION");
+    unsetenv ("XTERM_VERSION");
+    unsetenv ("ROXTERM_ID");
+    unsetenv ("KONSOLE_DBUS_SESSION");
+    unsetenv ("KONSOLE_DCOP");
+    unsetenv ("TMUX");
+    unsetenv ("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::xterm) );
@@ -338,6 +340,9 @@ void FTermDetectionTest::rxvtTest()
 
     printConEmuDebug();
     closeConEmuStdStreams();
+    unsetenv ("TERM");
+    unsetenv ("COLORTERM");
+    unsetenv ("COLORFGBG");
     exit(EXIT_SUCCESS);
   }
   else  // Parent
@@ -370,14 +375,14 @@ void FTermDetectionTest::urxvtTest()
     setenv ("TERM", "rxvt-unicode-256color", 1);
     setenv ("COLORTERM", "rxvt-xpm", 1);
     setenv ("COLORFGBG", "default;default;0", 1);
-    unsetenv("TERMCAP");
-    unsetenv("VTE_VERSION");
-    unsetenv("XTERM_VERSION");
-    unsetenv("ROXTERM_ID");
-    unsetenv("KONSOLE_DBUS_SESSION");
-    unsetenv("KONSOLE_DCOP");
-    unsetenv("TMUX");
-    unsetenv("KITTY_WINDOW_ID");
+    unsetenv ("TERMCAP");
+    unsetenv ("VTE_VERSION");
+    unsetenv ("XTERM_VERSION");
+    unsetenv ("ROXTERM_ID");
+    unsetenv ("KONSOLE_DBUS_SESSION");
+    unsetenv ("KONSOLE_DCOP");
+    unsetenv ("TMUX");
+    unsetenv ("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::xterm) );
@@ -414,6 +419,9 @@ void FTermDetectionTest::urxvtTest()
 
     printConEmuDebug();
     closeConEmuStdStreams();
+    unsetenv ("TERM");
+    unsetenv ("COLORTERM");
+    unsetenv ("COLORFGBG");
     exit(EXIT_SUCCESS);
   }
   else  // Parent
@@ -447,13 +455,13 @@ void FTermDetectionTest::kdeKonsoleTest()
     setenv ("COLORTERM", "truecolor", 1);
     setenv ("KONSOLE_DBUS_SERVICE", "DCOPRef(konsole-11768,konsole)", 1);
     setenv ("KONSOLE_DCOP", ":1.77", 1);
-    unsetenv("COLORFGBG");
-    unsetenv("TERMCAP");
-    unsetenv("VTE_VERSION");
-    unsetenv("XTERM_VERSION");
-    unsetenv("ROXTERM_ID");
-    unsetenv("TMUX");
-    unsetenv("KITTY_WINDOW_ID");
+    unsetenv ("COLORFGBG");
+    unsetenv ("TERMCAP");
+    unsetenv ("VTE_VERSION");
+    unsetenv ("XTERM_VERSION");
+    unsetenv ("ROXTERM_ID");
+    unsetenv ("TMUX");
+    unsetenv ("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::xterm) );
@@ -490,6 +498,10 @@ void FTermDetectionTest::kdeKonsoleTest()
 
     printConEmuDebug();
     closeConEmuStdStreams();
+    unsetenv ("TERM");
+    unsetenv ("COLORTERM");
+    unsetenv ("KONSOLE_DBUS_SERVICE");
+    unsetenv ("KONSOLE_DCOP");
     exit(EXIT_SUCCESS);
   }
   else  // Parent
@@ -522,14 +534,14 @@ void FTermDetectionTest::gnomeTerminalTest()
     setenv ("TERM", "xterm-256color", 1);
     setenv ("COLORTERM", "truecolor", 1);
     setenv ("VTE_VERSION", "5202", 1);
-    unsetenv("COLORFGBG");
-    unsetenv("TERMCAP");
-    unsetenv("XTERM_VERSION");
-    unsetenv("ROXTERM_ID");
-    unsetenv("KONSOLE_DBUS_SESSION");
-    unsetenv("KONSOLE_DCOP");
-    unsetenv("TMUX");
-    unsetenv("KITTY_WINDOW_ID");
+    unsetenv ("COLORFGBG");
+    unsetenv ("TERMCAP");
+    unsetenv ("XTERM_VERSION");
+    unsetenv ("ROXTERM_ID");
+    unsetenv ("KONSOLE_DBUS_SESSION");
+    unsetenv ("KONSOLE_DCOP");
+    unsetenv ("TMUX");
+    unsetenv ("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::xterm) );
@@ -566,6 +578,9 @@ void FTermDetectionTest::gnomeTerminalTest()
 
     printConEmuDebug();
     closeConEmuStdStreams();
+    unsetenv ("TERM");
+    unsetenv ("COLORTERM");
+    unsetenv ("VTE_VERSION");
     exit(EXIT_SUCCESS);
   }
   else  // Parent
@@ -598,14 +613,14 @@ void FTermDetectionTest::newerVteTerminalTest()
     setenv ("TERM", "xterm-256color", 1);
     setenv ("COLORTERM", "truecolor", 1);
     setenv ("VTE_VERSION", "5300", 1);
-    unsetenv("COLORFGBG");
-    unsetenv("TERMCAP");
-    unsetenv("XTERM_VERSION");
-    unsetenv("ROXTERM_ID");
-    unsetenv("KONSOLE_DBUS_SESSION");
-    unsetenv("KONSOLE_DCOP");
-    unsetenv("TMUX");
-    unsetenv("KITTY_WINDOW_ID");
+    unsetenv ("COLORFGBG");
+    unsetenv ("TERMCAP");
+    unsetenv ("XTERM_VERSION");
+    unsetenv ("ROXTERM_ID");
+    unsetenv ("KONSOLE_DBUS_SESSION");
+    unsetenv ("KONSOLE_DCOP");
+    unsetenv ("TMUX");
+    unsetenv ("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::xterm) );
@@ -642,6 +657,9 @@ void FTermDetectionTest::newerVteTerminalTest()
 
     printConEmuDebug();
     closeConEmuStdStreams();
+    unsetenv ("TERM");
+    unsetenv ("COLORTERM");
+    unsetenv ("VTE_VERSION");
     exit(EXIT_SUCCESS);
   }
   else  // Parent
@@ -672,16 +690,16 @@ void FTermDetectionTest::puttyTest()
   {
     // (gdb) set follow-fork-mode child
     setenv ("TERM", "xterm", 1);
-    unsetenv("TERMCAP");
-    unsetenv("COLORTERM");
-    unsetenv("COLORFGBG");
-    unsetenv("VTE_VERSION");
-    unsetenv("XTERM_VERSION");
-    unsetenv("ROXTERM_ID");
-    unsetenv("KONSOLE_DBUS_SESSION");
-    unsetenv("KONSOLE_DCOP");
-    unsetenv("TMUX");
-    unsetenv("KITTY_WINDOW_ID");
+    unsetenv ("TERMCAP");
+    unsetenv ("COLORTERM");
+    unsetenv ("COLORFGBG");
+    unsetenv ("VTE_VERSION");
+    unsetenv ("XTERM_VERSION");
+    unsetenv ("ROXTERM_ID");
+    unsetenv ("KONSOLE_DBUS_SESSION");
+    unsetenv ("KONSOLE_DCOP");
+    unsetenv ("TMUX");
+    unsetenv ("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::xterm) );
@@ -719,6 +737,7 @@ void FTermDetectionTest::puttyTest()
     enableConEmuDebug(true);
     printConEmuDebug();
     closeConEmuStdStreams();
+    unsetenv ("TERM");
     exit(EXIT_SUCCESS);
   }
   else  // Parent
@@ -749,16 +768,16 @@ void FTermDetectionTest::windowsTerminalTest()
   {
     // (gdb) set follow-fork-mode child
     setenv ("TERM", "xterm-256color", 1);
-    unsetenv("TERMCAP");
-    unsetenv("COLORTERM");
-    unsetenv("COLORFGBG");
-    unsetenv("VTE_VERSION");
-    unsetenv("XTERM_VERSION");
-    unsetenv("ROXTERM_ID");
-    unsetenv("KONSOLE_DBUS_SESSION");
-    unsetenv("KONSOLE_DCOP");
-    unsetenv("TMUX");
-    unsetenv("KITTY_WINDOW_ID");
+    unsetenv ("TERMCAP");
+    unsetenv ("COLORTERM");
+    unsetenv ("COLORFGBG");
+    unsetenv ("VTE_VERSION");
+    unsetenv ("XTERM_VERSION");
+    unsetenv ("ROXTERM_ID");
+    unsetenv ("KONSOLE_DBUS_SESSION");
+    unsetenv ("KONSOLE_DCOP");
+    unsetenv ("TMUX");
+    unsetenv ("KITTY_WINDOW_ID");
     setenv ("WT_PROFILE_ID", "{61c54cbd-c2a6-5271-96e7-009a87ff44bf}", 1);
     setenv ("WT_SESSION", "4dc413a1-5ed9-46d4-b4e0-5a2fec7acb44", 1);
     detect.detect();
@@ -797,6 +816,9 @@ void FTermDetectionTest::windowsTerminalTest()
 
     printConEmuDebug();
     closeConEmuStdStreams();
+    unsetenv ("TERM");
+    unsetenv ("WT_PROFILE_ID");
+    unsetenv ("WT_SESSION");
     exit(EXIT_SUCCESS);
   }
   else  // Parent
@@ -827,16 +849,16 @@ void FTermDetectionTest::teraTermTest()
   {
     // (gdb) set follow-fork-mode child
     setenv ("TERM", "xterm", 1);
-    unsetenv("TERMCAP");
-    unsetenv("COLORTERM");
-    unsetenv("COLORFGBG");
-    unsetenv("VTE_VERSION");
-    unsetenv("XTERM_VERSION");
-    unsetenv("ROXTERM_ID");
-    unsetenv("KONSOLE_DBUS_SESSION");
-    unsetenv("KONSOLE_DCOP");
-    unsetenv("TMUX");
-    unsetenv("KITTY_WINDOW_ID");
+    unsetenv ("TERMCAP");
+    unsetenv ("COLORTERM");
+    unsetenv ("COLORFGBG");
+    unsetenv ("VTE_VERSION");
+    unsetenv ("XTERM_VERSION");
+    unsetenv ("ROXTERM_ID");
+    unsetenv ("KONSOLE_DBUS_SESSION");
+    unsetenv ("KONSOLE_DCOP");
+    unsetenv ("TMUX");
+    unsetenv ("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::xterm) );
@@ -873,6 +895,7 @@ void FTermDetectionTest::teraTermTest()
 
     printConEmuDebug();
     closeConEmuStdStreams();
+    unsetenv ("TERM");
     exit(EXIT_SUCCESS);
   }
   else  // Parent
@@ -903,16 +926,16 @@ void FTermDetectionTest::cygwinTest()
   {
     // (gdb) set follow-fork-mode child
     setenv ("TERM", "cygwin", 1);
-    unsetenv("TERMCAP");
-    unsetenv("COLORTERM");
-    unsetenv("COLORFGBG");
-    unsetenv("VTE_VERSION");
-    unsetenv("XTERM_VERSION");
-    unsetenv("ROXTERM_ID");
-    unsetenv("KONSOLE_DBUS_SESSION");
-    unsetenv("KONSOLE_DCOP");
-    unsetenv("TMUX");
-    unsetenv("KITTY_WINDOW_ID");
+    unsetenv ("TERMCAP");
+    unsetenv ("COLORTERM");
+    unsetenv ("COLORFGBG");
+    unsetenv ("VTE_VERSION");
+    unsetenv ("XTERM_VERSION");
+    unsetenv ("ROXTERM_ID");
+    unsetenv ("KONSOLE_DBUS_SESSION");
+    unsetenv ("KONSOLE_DCOP");
+    unsetenv ("TMUX");
+    unsetenv ("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::xterm) );
@@ -948,7 +971,7 @@ void FTermDetectionTest::cygwinTest()
     CPPUNIT_ASSERT ( detect.getSecDAString() == "" );
 
     // Use Sec DA without TERM environment variable
-    unsetenv("TERM");
+    unsetenv ("TERM");
     data.unsetTermType(finalcut::FTermType::cygwin);
     detect.detect();
     CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::cygwin) );
@@ -987,16 +1010,16 @@ void FTermDetectionTest::minttyTest()
   {
     // (gdb) set follow-fork-mode child
     setenv ("TERM", "xterm-256color", 1);
-    unsetenv("TERMCAP");
-    unsetenv("COLORTERM");
-    unsetenv("COLORFGBG");
-    unsetenv("VTE_VERSION");
-    unsetenv("XTERM_VERSION");
-    unsetenv("ROXTERM_ID");
-    unsetenv("KONSOLE_DBUS_SESSION");
-    unsetenv("KONSOLE_DCOP");
-    unsetenv("TMUX");
-    unsetenv("KITTY_WINDOW_ID");
+    unsetenv ("TERMCAP");
+    unsetenv ("COLORTERM");
+    unsetenv ("COLORFGBG");
+    unsetenv ("VTE_VERSION");
+    unsetenv ("XTERM_VERSION");
+    unsetenv ("ROXTERM_ID");
+    unsetenv ("KONSOLE_DBUS_SESSION");
+    unsetenv ("KONSOLE_DCOP");
+    unsetenv ("TMUX");
+    unsetenv ("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::xterm) );
@@ -1033,6 +1056,7 @@ void FTermDetectionTest::minttyTest()
 
     printConEmuDebug();
     closeConEmuStdStreams();
+    unsetenv ("TERM");
     exit(EXIT_SUCCESS);
   }
   else  // Parent
@@ -1063,16 +1087,16 @@ void FTermDetectionTest::sttermTest()
   {
     // (gdb) set follow-fork-mode child
     setenv ("TERM", "st-256color", 1);
-    unsetenv("TERMCAP");
-    unsetenv("COLORTERM");
-    unsetenv("COLORFGBG");
-    unsetenv("VTE_VERSION");
-    unsetenv("XTERM_VERSION");
-    unsetenv("ROXTERM_ID");
-    unsetenv("KONSOLE_DBUS_SESSION");
-    unsetenv("KONSOLE_DCOP");
-    unsetenv("TMUX");
-    unsetenv("KITTY_WINDOW_ID");
+    unsetenv ("TERMCAP");
+    unsetenv ("COLORTERM");
+    unsetenv ("COLORFGBG");
+    unsetenv ("VTE_VERSION");
+    unsetenv ("XTERM_VERSION");
+    unsetenv ("ROXTERM_ID");
+    unsetenv ("KONSOLE_DBUS_SESSION");
+    unsetenv ("KONSOLE_DCOP");
+    unsetenv ("TMUX");
+    unsetenv ("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::xterm) );
@@ -1109,6 +1133,7 @@ void FTermDetectionTest::sttermTest()
 
     printConEmuDebug();
     closeConEmuStdStreams();
+    unsetenv ("TERM");
     exit(EXIT_SUCCESS);
   }
   else  // Parent
@@ -1139,16 +1164,16 @@ void FTermDetectionTest::linuxTest()
   {
     // (gdb) set follow-fork-mode child
     setenv ("TERM", "linux", 1);
-    unsetenv("TERMCAP");
-    unsetenv("COLORTERM");
-    unsetenv("COLORFGBG");
-    unsetenv("VTE_VERSION");
-    unsetenv("XTERM_VERSION");
-    unsetenv("ROXTERM_ID");
-    unsetenv("KONSOLE_DBUS_SESSION");
-    unsetenv("KONSOLE_DCOP");
-    unsetenv("TMUX");
-    unsetenv("KITTY_WINDOW_ID");
+    unsetenv ("TERMCAP");
+    unsetenv ("COLORTERM");
+    unsetenv ("COLORFGBG");
+    unsetenv ("VTE_VERSION");
+    unsetenv ("XTERM_VERSION");
+    unsetenv ("ROXTERM_ID");
+    unsetenv ("KONSOLE_DBUS_SESSION");
+    unsetenv ("KONSOLE_DCOP");
+    unsetenv ("TMUX");
+    unsetenv ("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::xterm) );
@@ -1184,7 +1209,7 @@ void FTermDetectionTest::linuxTest()
     CPPUNIT_ASSERT ( detect.getSecDAString() == "" );
 
     // Test fallback to vt100 without TERM environment variable
-    unsetenv("TERM");
+    unsetenv ("TERM");
     data.unsetTermType(finalcut::FTermType::linux_con);
     detect.detect();
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::linux_con) );
@@ -1222,16 +1247,16 @@ void FTermDetectionTest::freebsdTest()
   {
     // (gdb) set follow-fork-mode child
     setenv ("TERM", "xterm", 1);
-    unsetenv("TERMCAP");
-    unsetenv("COLORTERM");
-    unsetenv("COLORFGBG");
-    unsetenv("VTE_VERSION");
-    unsetenv("XTERM_VERSION");
-    unsetenv("ROXTERM_ID");
-    unsetenv("KONSOLE_DBUS_SESSION");
-    unsetenv("KONSOLE_DCOP");
-    unsetenv("TMUX");
-    unsetenv("KITTY_WINDOW_ID");
+    unsetenv ("TERMCAP");
+    unsetenv ("COLORTERM");
+    unsetenv ("COLORFGBG");
+    unsetenv ("VTE_VERSION");
+    unsetenv ("XTERM_VERSION");
+    unsetenv ("ROXTERM_ID");
+    unsetenv ("KONSOLE_DBUS_SESSION");
+    unsetenv ("KONSOLE_DCOP");
+    unsetenv ("TMUX");
+    unsetenv ("KITTY_WINDOW_ID");
     detect.detect();
     data.setTermType(finalcut::FTermType::freebsd_con);  // Fake FreeBSD Console detection
 
@@ -1268,7 +1293,7 @@ void FTermDetectionTest::freebsdTest()
     CPPUNIT_ASSERT ( detect.getSecDAString() == "\033[>0;10;0c" );
 
     // Test fallback to vt100 without TERM environment variable
-    unsetenv("TERM");
+    unsetenv ("TERM");
     data.unsetTermType(finalcut::FTermType::xterm);
     data.unsetTermType(finalcut::FTermType::freebsd_con);
     detect.detect();
@@ -1308,16 +1333,16 @@ void FTermDetectionTest::netbsdTest()
   {
     // (gdb) set follow-fork-mode child
     setenv ("TERM", "wsvt25", 1);
-    unsetenv("TERMCAP");
-    unsetenv("COLORTERM");
-    unsetenv("COLORFGBG");
-    unsetenv("VTE_VERSION");
-    unsetenv("XTERM_VERSION");
-    unsetenv("ROXTERM_ID");
-    unsetenv("KONSOLE_DBUS_SESSION");
-    unsetenv("KONSOLE_DCOP");
-    unsetenv("TMUX");
-    unsetenv("KITTY_WINDOW_ID");
+    unsetenv ("TERMCAP");
+    unsetenv ("COLORTERM");
+    unsetenv ("COLORFGBG");
+    unsetenv ("VTE_VERSION");
+    unsetenv ("XTERM_VERSION");
+    unsetenv ("ROXTERM_ID");
+    unsetenv ("KONSOLE_DBUS_SESSION");
+    unsetenv ("KONSOLE_DCOP");
+    unsetenv ("TMUX");
+    unsetenv ("KITTY_WINDOW_ID");
     detect.detect();
     data.setTermType(finalcut::FTermType::netbsd_con);  // Fake NetBSD Console detection
 
@@ -1354,7 +1379,7 @@ void FTermDetectionTest::netbsdTest()
     CPPUNIT_ASSERT ( detect.getSecDAString() == "\033[>24;20;0c" );
 
     // Test fallback to vt100 without TERM environment variable
-    unsetenv("TERM");
+    unsetenv ("TERM");
     data.unsetTermType(finalcut::FTermType::netbsd_con);
     detect.detect();
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::freebsd_con) );
@@ -1392,16 +1417,16 @@ void FTermDetectionTest::openbsdTest()
   {
     // (gdb) set follow-fork-mode child
     setenv ("TERM", "vt220", 1);
-    unsetenv("TERMCAP");
-    unsetenv("COLORTERM");
-    unsetenv("COLORFGBG");
-    unsetenv("VTE_VERSION");
-    unsetenv("XTERM_VERSION");
-    unsetenv("ROXTERM_ID");
-    unsetenv("KONSOLE_DBUS_SESSION");
-    unsetenv("KONSOLE_DCOP");
-    unsetenv("TMUX");
-    unsetenv("KITTY_WINDOW_ID");
+    unsetenv ("TERMCAP");
+    unsetenv ("COLORTERM");
+    unsetenv ("COLORFGBG");
+    unsetenv ("VTE_VERSION");
+    unsetenv ("XTERM_VERSION");
+    unsetenv ("ROXTERM_ID");
+    unsetenv ("KONSOLE_DBUS_SESSION");
+    unsetenv ("KONSOLE_DCOP");
+    unsetenv ("TMUX");
+    unsetenv ("KITTY_WINDOW_ID");
     detect.detect();
     data.setTermType(finalcut::FTermType::openbsd_con);  // Fake OpenBSD Console detection
 
@@ -1438,7 +1463,7 @@ void FTermDetectionTest::openbsdTest()
     CPPUNIT_ASSERT ( detect.getSecDAString() == "\033[>24;20;0c" );
 
     // Test fallback to vt100 without TERM environment variable
-    unsetenv("TERM");
+    unsetenv ("TERM");
     data.unsetTermType(finalcut::FTermType::openbsd_con);
     detect.detect();
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::openbsd_con) );
@@ -1475,16 +1500,16 @@ void FTermDetectionTest::sunTest()
   {
     // (gdb) set follow-fork-mode child
     setenv ("TERM", "sun-color", 1);
-    unsetenv("TERMCAP");
-    unsetenv("COLORTERM");
-    unsetenv("COLORFGBG");
-    unsetenv("VTE_VERSION");
-    unsetenv("XTERM_VERSION");
-    unsetenv("ROXTERM_ID");
-    unsetenv("KONSOLE_DBUS_SESSION");
-    unsetenv("KONSOLE_DCOP");
-    unsetenv("TMUX");
-    unsetenv("KITTY_WINDOW_ID");
+    unsetenv ("TERMCAP");
+    unsetenv ("COLORTERM");
+    unsetenv ("COLORFGBG");
+    unsetenv ("VTE_VERSION");
+    unsetenv ("XTERM_VERSION");
+    unsetenv ("ROXTERM_ID");
+    unsetenv ("KONSOLE_DBUS_SESSION");
+    unsetenv ("KONSOLE_DCOP");
+    unsetenv ("TMUX");
+    unsetenv ("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::xterm) );
@@ -1520,7 +1545,7 @@ void FTermDetectionTest::sunTest()
     CPPUNIT_ASSERT ( detect.getSecDAString() == "" );
 
     // Test fallback to vt100 without TERM environment variable
-    unsetenv("TERM");
+    unsetenv ("TERM");
     data.unsetTermType(finalcut::FTermType::sun_con);
     detect.detect();
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::sun_con) );
@@ -1559,15 +1584,15 @@ void FTermDetectionTest::screenTest()
     // (gdb) set follow-fork-mode child
     setenv ("TERM", "screen", 1);
     setenv ("TERMCAP", "SC|screen|VT 100/ANSI X3.64 virtual terminal:...", 1);
-    unsetenv("COLORTERM");
-    unsetenv("COLORFGBG");
-    unsetenv("VTE_VERSION");
-    unsetenv("XTERM_VERSION");
-    unsetenv("ROXTERM_ID");
-    unsetenv("KONSOLE_DBUS_SESSION");
-    unsetenv("KONSOLE_DCOP");
-    unsetenv("TMUX");
-    unsetenv("KITTY_WINDOW_ID");
+    unsetenv ("COLORTERM");
+    unsetenv ("COLORFGBG");
+    unsetenv ("VTE_VERSION");
+    unsetenv ("XTERM_VERSION");
+    unsetenv ("ROXTERM_ID");
+    unsetenv ("KONSOLE_DBUS_SESSION");
+    unsetenv ("KONSOLE_DCOP");
+    unsetenv ("TMUX");
+    unsetenv ("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::xterm) );
@@ -1609,6 +1634,9 @@ void FTermDetectionTest::screenTest()
 
     printConEmuDebug();
     closeConEmuStdStreams();
+    unsetenv ("XTERM_VERSION");
+    unsetenv ("TERM");
+    unsetenv ("TERMCAP");
     exit(EXIT_SUCCESS);
   }
   else  // Parent
@@ -1641,15 +1669,15 @@ void FTermDetectionTest::tmuxTest()
     setenv ("TERM", "screen", 1);
     setenv ("TMUX", "/tmp/tmux-1000/default,7844,0", 1);
     setenv ("TMUX_PANE", "%0", 1);
-    unsetenv("TERMCAP");
-    unsetenv("COLORTERM");
-    unsetenv("COLORFGBG");
-    unsetenv("VTE_VERSION");
-    unsetenv("XTERM_VERSION");
-    unsetenv("ROXTERM_ID");
-    unsetenv("KONSOLE_DBUS_SESSION");
-    unsetenv("KONSOLE_DCOP");
-    unsetenv("KITTY_WINDOW_ID");
+    unsetenv ("TERMCAP");
+    unsetenv ("COLORTERM");
+    unsetenv ("COLORFGBG");
+    unsetenv ("VTE_VERSION");
+    unsetenv ("XTERM_VERSION");
+    unsetenv ("ROXTERM_ID");
+    unsetenv ("KONSOLE_DBUS_SESSION");
+    unsetenv ("KONSOLE_DCOP");
+    unsetenv ("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::xterm) );
@@ -1691,15 +1719,23 @@ void FTermDetectionTest::tmuxTest()
 
     printConEmuDebug();
     closeConEmuStdStreams();
+    unsetenv ("VTE_VERSION");
+    unsetenv ("TERM");
+    unsetenv ("TMUX");
+    unsetenv ("TMUX_PANE");
     exit(EXIT_SUCCESS);
   }
   else  // Parent
   {
     // Start the terminal simulation
     startConEmuTerminal (ConEmu::console::tmux);
+    int wstatus;
 
-    if ( waitpid(pid, nullptr, WUNTRACED) != pid )
+    if ( waitpid(pid, &wstatus, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
+
+    if ( WIFEXITED(wstatus) )
+      CPPUNIT_ASSERT ( WEXITSTATUS(wstatus) == 0 );
   }
 }
 
@@ -1717,16 +1753,16 @@ void FTermDetectionTest::ktermTest()
   {
     // (gdb) set follow-fork-mode child
     setenv ("TERM", "kterm", 1);
-    unsetenv("TERMCAP");
-    unsetenv("COLORTERM");
-    unsetenv("COLORFGBG");
-    unsetenv("VTE_VERSION");
-    unsetenv("XTERM_VERSION");
-    unsetenv("ROXTERM_ID");
-    unsetenv("KONSOLE_DBUS_SESSION");
-    unsetenv("KONSOLE_DCOP");
-    unsetenv("TMUX");
-    unsetenv("KITTY_WINDOW_ID");
+    unsetenv ("TERMCAP");
+    unsetenv ("COLORTERM");
+    unsetenv ("COLORFGBG");
+    unsetenv ("VTE_VERSION");
+    unsetenv ("XTERM_VERSION");
+    unsetenv ("ROXTERM_ID");
+    unsetenv ("KONSOLE_DBUS_SESSION");
+    unsetenv ("KONSOLE_DCOP");
+    unsetenv ("TMUX");
+    unsetenv ("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::xterm) );
@@ -1762,7 +1798,7 @@ void FTermDetectionTest::ktermTest()
     CPPUNIT_ASSERT ( detect.getSecDAString() == "" );
 
     // Test fallback to vt100 without TERM environment variable
-    unsetenv("TERM");
+    unsetenv ("TERM");
     data.unsetTermType(finalcut::FTermType::kterm);
     detect.detect();
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
@@ -1805,15 +1841,15 @@ void FTermDetectionTest::mltermTest()
     setenv ("TERM", "mlterm", 1);
     setenv ("MLTERM", "3.8.4", 1);
     setenv ("COLORFGBG", "default;default", 1);
-    unsetenv("TERMCAP");
-    unsetenv("COLORTERM");
-    unsetenv("VTE_VERSION");
-    unsetenv("XTERM_VERSION");
-    unsetenv("ROXTERM_ID");
-    unsetenv("KONSOLE_DBUS_SESSION");
-    unsetenv("KONSOLE_DCOP");
-    unsetenv("TMUX");
-    unsetenv("KITTY_WINDOW_ID");
+    unsetenv ("TERMCAP");
+    unsetenv ("COLORTERM");
+    unsetenv ("VTE_VERSION");
+    unsetenv ("XTERM_VERSION");
+    unsetenv ("ROXTERM_ID");
+    unsetenv ("KONSOLE_DBUS_SESSION");
+    unsetenv ("KONSOLE_DCOP");
+    unsetenv ("TMUX");
+    unsetenv ("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::xterm) );
@@ -1849,14 +1885,16 @@ void FTermDetectionTest::mltermTest()
     CPPUNIT_ASSERT ( detect.getSecDAString() == "\033[>24;279;0c" );
 
     setenv ("TERM", "mlterm", 1);
-    unsetenv("COLORFGBG");
+    unsetenv ("COLORFGBG");
     detect.detect();
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.getTermType() == "xterm-256color" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
+    unsetenv ("TERM");
     unsetenv ("MLTERM");
+    unsetenv ("COLORFGBG");
     exit(EXIT_SUCCESS);
   }
   else  // Parent
@@ -1889,13 +1927,13 @@ void FTermDetectionTest::kittyTest()
     setenv ("TERM", "xterm-kitty", 1);
     setenv ("KITTY_WINDOW_ID", "1", 1);
     setenv ("COLORTERM", "truecolor", 1);
-    unsetenv("TERMCAP");
-    unsetenv("VTE_VERSION");
-    unsetenv("XTERM_VERSION");
-    unsetenv("ROXTERM_ID");
-    unsetenv("KONSOLE_DBUS_SESSION");
-    unsetenv("KONSOLE_DCOP");
-    unsetenv("TMUX");
+    unsetenv ("TERMCAP");
+    unsetenv ("VTE_VERSION");
+    unsetenv ("XTERM_VERSION");
+    unsetenv ("ROXTERM_ID");
+    unsetenv ("KONSOLE_DBUS_SESSION");
+    unsetenv ("KONSOLE_DCOP");
+    unsetenv ("TMUX");
     detect.detect();
 
     CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::xterm) );
@@ -1936,6 +1974,9 @@ void FTermDetectionTest::kittyTest()
 
     printConEmuDebug();
     closeConEmuStdStreams();
+    unsetenv ("TERM");
+    unsetenv ("KITTY_WINDOW_ID");
+    unsetenv ("COLORTERM");
     exit(EXIT_SUCCESS);
   }
   else  // Parent
@@ -1999,17 +2040,17 @@ void FTermDetectionTest::ttytypeTest()
   if ( isConEmuChildProcess(pid) )
   {
     // (gdb) set follow-fork-mode child
-    unsetenv("TERM");
-    unsetenv("TERMCAP");
-    unsetenv("COLORTERM");
-    unsetenv("COLORFGBG");
-    unsetenv("VTE_VERSION");
-    unsetenv("XTERM_VERSION");
-    unsetenv("ROXTERM_ID");
-    unsetenv("KONSOLE_DBUS_SESSION");
-    unsetenv("KONSOLE_DCOP");
-    unsetenv("TMUX");
-    unsetenv("KITTY_WINDOW_ID");
+    unsetenv ("TERM");
+    unsetenv ("TERMCAP");
+    unsetenv ("COLORTERM");
+    unsetenv ("COLORFGBG");
+    unsetenv ("VTE_VERSION");
+    unsetenv ("XTERM_VERSION");
+    unsetenv ("ROXTERM_ID");
+    unsetenv ("KONSOLE_DBUS_SESSION");
+    unsetenv ("KONSOLE_DCOP");
+    unsetenv ("TMUX");
+    unsetenv ("KITTY_WINDOW_ID");
     auto& data = finalcut::FTermData::getInstance();
 
     // Test /dev/tty3 with linux

@@ -133,17 +133,17 @@ void SignalMonitor::onSignal (int signal_number)
 
   const SignalMonitor* monitor{iter->second};
 
-  if ( monitor->isActive() )
-  {
-    // The event loop is notified by write access to the pipe
-    uint64_t buffer{1U};
-    auto successful = ::write ( monitor->signal_pipe.getWriteFd()
-                              , &buffer, sizeof(buffer) ) > 0;
+  if ( ! monitor->isActive() )
+    return;
 
-    if ( ! successful )
-    {
-      // Possible error handling
-    }
+  // The event loop is notified by write access to the pipe
+  uint64_t buffer{1U};
+  auto successful = ::write ( monitor->signal_pipe.getWriteFd()
+                            , &buffer, sizeof(buffer) ) > 0;
+
+  if ( ! successful )
+  {
+    // Possible error handling
   }
 }
 

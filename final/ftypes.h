@@ -284,34 +284,34 @@ struct FCharAttribute
   uInt8                    : 8;  // padding byte
 };
 
-inline auto getFAttributeByte ( const FCharAttribute& fchar
+inline auto getFAttributeByte ( const FCharAttribute& fchar_attr
                               , std::size_t index ) noexcept -> uInt8
 {
   uInt8 byte{};
-  std::memcpy (&byte, reinterpret_cast<const uInt8*>(&fchar) + index, sizeof(uInt8));
+  std::memcpy (&byte, reinterpret_cast<const uInt8*>(&fchar_attr) + index, sizeof(uInt8));
   return byte;
 }
 
-inline auto setFAttributeByte ( FCharAttribute& fchar
+inline auto setFAttributeByte ( FCharAttribute& fchar_attr
                               , std::size_t index
                               , uInt8 value ) noexcept
 {
-  assert ( index < 4U );  
-  std::memcpy(reinterpret_cast<uInt8*>(&fchar) + index, &value, sizeof(uInt8));
+  assert ( index < sizeof(FCharAttribute) );
+  std::memcpy(reinterpret_cast<uInt8*>(&fchar_attr) + index, &value, sizeof(uInt8));
 }
 
-inline auto getFAttributeWord (const FCharAttribute& fchar) noexcept -> uInt32
+inline auto getFAttributeWord (const FCharAttribute& fchar_attr) noexcept -> uInt32
 {
   uInt32 word{};
-  std::memcpy(&word, &fchar, sizeof(word));
+  std::memcpy(&word, &fchar_attr, sizeof(word));
   return word;
 }
 
 inline auto WordToFAttribute (uInt32 word) noexcept -> FCharAttribute
 {
-  FCharAttribute fchar{};
-  std::memcpy(&fchar, &word, sizeof(fchar));
-  return fchar;
+  FCharAttribute fchar_attr{};
+  std::memcpy(&fchar_attr, &word, sizeof(fchar_attr));
+  return fchar_attr;
 }
 
 union FAttribute

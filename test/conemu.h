@@ -481,6 +481,8 @@ inline void ConEmu::printConEmuDebug()
         echo -e \"\\r\"; \
       done'";
   system(debug_command);
+  std::cout << std::flush;
+  std::fflush (stdout);
 }
 
 //----------------------------------------------------------------------

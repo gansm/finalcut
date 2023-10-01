@@ -1415,43 +1415,43 @@ auto FOptiAttr::getAttributeOffHandlers() -> const AttributeHandlers&
 //----------------------------------------------------------------------
 auto FOptiAttr::getByte0ReverseMask() -> uInt8
 {
-  FAttribute mask{};
-  mask.bit.reverse = true;
-  mask.bit.standout = true;
-  return mask.byte[0];
+  FCharAttribute mask{};
+  mask.reverse = true;
+  mask.standout = true;
+  return getFAttributeByte(mask, 0);
 }
 
 //----------------------------------------------------------------------
 auto FOptiAttr::getByte1Mask() -> uInt8
 {
-  FAttribute mask{};
-  mask.bit.protect = true;
-  mask.bit.crossed_out = true;
-  mask.bit.dbl_underline = true;
-  mask.bit.alt_charset = true;
-  mask.bit.pc_charset = true;
-  return mask.byte[1];
+  FCharAttribute mask{};
+  mask.protect = true;
+  mask.crossed_out = true;
+  mask.dbl_underline = true;
+  mask.alt_charset = true;
+  mask.pc_charset = true;
+  return getFAttributeByte(mask, 1);
 }
 
 //----------------------------------------------------------------------
 auto FOptiAttr::getByte1ResetMask() -> uInt8
 {
   // Set bits that must not be reset
-  FAttribute mask{};
-  mask.bit.transparent = true;
-  mask.bit.color_overlay = true;
-  mask.bit.inherit_background = true;
-  return mask.byte[1];
+  FCharAttribute mask{};
+  mask.transparent = true;
+  mask.color_overlay = true;
+  mask.inherit_background = true;
+  return getFAttributeByte(mask, 1);
 }
 
 //----------------------------------------------------------------------
 auto FOptiAttr::getByte2ResetMask() -> uInt8
 {
   // Set bits that must not be reset
-  FAttribute mask{};
-  mask.bit.no_changes = true;
-  mask.bit.printed = true;
-  return mask.byte[2];
+  FCharAttribute mask{};
+  mask.no_changes = true;
+  mask.printed = true;
+  return getFAttributeByte(mask, 2);
 }
 
 //----------------------------------------------------------------------
