@@ -76,7 +76,7 @@ class FLabel : public FWidget
     FLabel (FLabel&&) noexcept = delete;
 
     // Destructor
-    ~FLabel() override;
+    ~FLabel() noexcept override;
 
     // Disable copy assignment operator (=)
     auto operator = (const FLabel&) -> FLabel& = delete;

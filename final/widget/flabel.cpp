@@ -55,10 +55,8 @@ FLabel::FLabel (const FString& txt, FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FLabel::~FLabel()  // destructor
-{
-  delAccelerator();
-}
+FLabel::~FLabel() noexcept = default;  // destructor
+
 
 // FLabel operators
 //----------------------------------------------------------------------

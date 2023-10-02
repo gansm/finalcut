@@ -75,7 +75,7 @@ class FDialogListMenu : public FMenu
     explicit FDialogListMenu (FString&&, FWidget* = nullptr);
 
     // Destructor
-    ~FDialogListMenu() noexcept override;
+    ~FDialogListMenu() override;
 
     // Accessors
     auto getClassName() const -> FString override;

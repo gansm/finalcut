@@ -1,3 +1,6 @@
+2023-10-03  Markus Gans  <guru.mail@muenster.de>
+	* Eliminate undefined behavior on exit
+
 2023-09-17  Markus Gans  <guru.mail@muenster.de>
 	* Better direct access to FCharAttribute type
 

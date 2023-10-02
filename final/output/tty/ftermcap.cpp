@@ -125,7 +125,7 @@ inline auto getKeyEntry (FKey key) -> FKeyMap::KeyCapMap*
 inline void del2ndKeyIfDuplicate ( const FKeyMap::KeyCapMap* first
                                  , FKeyMap::KeyCapMap* second )
 {
-  if ( ! first || ! second )
+  if ( ! first || ! first->string || ! second || ! second->string )
     return;
 
   auto len = std::min(first->length, second->length);

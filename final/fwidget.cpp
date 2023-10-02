@@ -122,11 +122,12 @@ FWidget::~FWidget()  // destructor
     FApplication::setKeyboardWidget(nullptr);
 
   // unset the local window widget focus
-  if ( flags.focus.focus )
+  if ( flags.focus.focus && getMainWidget() != this )
   {
-    if ( auto window = FWindow::getWindowWidget(this) )
-      if ( window != this )
-        window->setWindowFocusWidget(nullptr);
+    auto window = FWindow::getWindowWidget(this);
+
+    if ( window && window != this )
+      window->setWindowFocusWidget(nullptr);
   }
 
   // unset the global widget focus
@@ -595,14 +596,15 @@ auto FWidget::setCursorPos (const FPoint& pos) -> bool
   if ( ! area->hasOwner() )
     return false;
 
-  const auto& area_owner = area->getOwner<FWidget*>();
-  int woffsetX = getTermX() - area_owner->getTermX();
-  int woffsetY = getTermY() - area_owner->getTermY();
+  const auto& area_owner = area->getOwner<FVTerm*>();
+  const auto& area_widget = static_cast<FWidget*>(area_owner);
+  int woffsetX = getTermX() - area_widget->getTermX();
+  int woffsetY = getTermY() - area_widget->getTermY();
 
   if ( isChildPrintArea() )
   {
-    woffsetX += (1 - area_owner->getLeftPadding());
-    woffsetY += (1 - area_owner->getTopPadding());
+    woffsetX += (1 - area_widget->getLeftPadding());
+    woffsetY += (1 - area_widget->getTopPadding());
   }
 
   bool visible = ! isCursorHideable() || flags.visibility.visible_cursor;
