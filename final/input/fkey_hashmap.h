@@ -191,7 +191,7 @@ auto createKeyMap() -> HashMap<BufferT>
 
   for (auto& item : fkey_table)
     if ( item.length != 0 )  // Note: item.string is an array and always allocated
-      fkey_map[{item.string, item.length}] = item.num;
+      fkey_map[{item.string.data(), item.length}] = item.num;
 
   return fkey_map;
 }

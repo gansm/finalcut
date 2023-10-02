@@ -390,8 +390,8 @@ void FTermcapQuirks::sunConsole()
       const std::string& tname = key.first;
       const std::string& string = key.second;
 
-      if ( std::memcmp(fkey_cap_table[i].tname, tname.c_str(), tname.size()) == 0
-        && stringLength(fkey_cap_table[i].tname) == tname.size() )
+      if ( std::memcmp(fkey_cap_table[i].tname.data(), tname.c_str(), tname.size()) == 0
+        && stringLength(fkey_cap_table[i].tname.data()) == tname.size() )
       {
         fkey_cap_table[i].string = string.c_str();
       }

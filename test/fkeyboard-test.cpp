@@ -429,7 +429,7 @@ void FKeyboardTest::noArgumentTest()
   // Check key map
   CPPUNIT_ASSERT ( test::fkey[0].num == finalcut::FKey::Backspace );
   CPPUNIT_ASSERT_CSTRING ( test::fkey[0].string, "\177" );
-  CPPUNIT_ASSERT_CSTRING ( test::fkey[0].tname, "kb" );
+  CPPUNIT_ASSERT_CSTRING ( test::fkey[0].tname.data(), "kb" );
 }
 
 //----------------------------------------------------------------------
@@ -446,7 +446,7 @@ void FKeyboardTest::KeyLengthTest()
   // Known key string length
   for (auto&& entry : finalcut::FKeyMap::getKeyMap())
   {
-    const char* key_str = entry.string;
+    const char* key_str = entry.string.data();
     const std::size_t len = finalcut::stringLength(key_str);
     CPPUNIT_ASSERT ( entry.length == len );
   }

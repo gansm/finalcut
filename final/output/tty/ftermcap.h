@@ -72,7 +72,8 @@ class FTermcap final
     struct TCapMap
     {
       const char* string;
-      char  tname[tname_size];
+      //char  tname[tname_size];
+      std::array<char, tname_size> tname;
     };
 
     // Using-declaration

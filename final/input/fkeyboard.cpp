@@ -111,7 +111,7 @@ auto FKeyboard::getKeyName (const FKey keynum) const -> FString
   );
 
   if ( found_key != fkeyname.end() )
-    return {found_key->string};
+    return {found_key->string.data()};
 
   if ( keynum > 32 && keynum < 127 )
     return {char(keynum)};

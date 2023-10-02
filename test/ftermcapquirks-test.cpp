@@ -674,92 +674,92 @@ void FTermcapQuirksTest::sunTest()
 
   for (std::size_t i = 0; fkey_cap_table[i].tname[0] != 0; i++)
   {
-    if ( std::memcmp(fkey_cap_table[i].tname, "K2", 2) == 0
-      && finalcut::stringLength(fkey_cap_table[i].tname) == 2 )  // center of keypad
+    if ( std::memcmp(fkey_cap_table[i].tname.data(), "K2", 2) == 0
+      && finalcut::stringLength(fkey_cap_table[i].tname.data()) == 2 )  // center of keypad
       CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "218z" );
 
-    if ( std::memcmp(fkey_cap_table[i].tname, "kb", 2) == 0 )  // backspace key
+    if ( std::memcmp(fkey_cap_table[i].tname.data(), "kb", 2) == 0 )  // backspace key
       CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , "\b" );
 
-    if ( std::memcmp(fkey_cap_table[i].tname, "kD", 2) == 0
-      && std::strlen(fkey_cap_table[i].tname) == 2 )  // delete-character key
+    if ( std::memcmp(fkey_cap_table[i].tname.data(), "kD", 2) == 0
+      && std::strlen(fkey_cap_table[i].tname.data()) == 2 )  // delete-character key
       CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , "\177" );
 
-    if ( std::memcmp(fkey_cap_table[i].tname, "@7", 2) == 0
-      && finalcut::stringLength(fkey_cap_table[i].tname) == 2 )  // end key
+    if ( std::memcmp(fkey_cap_table[i].tname.data(), "@7", 2) == 0
+      && finalcut::stringLength(fkey_cap_table[i].tname.data()) == 2 )  // end key
       CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "220z" );
 
-    if ( std::memcmp(fkey_cap_table[i].tname, "k;", 2) == 0 )  // F10 function key
+    if ( std::memcmp(fkey_cap_table[i].tname.data(), "k;", 2) == 0 )  // F10 function key
       CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "233z" );
 
-    if ( std::memcmp(fkey_cap_table[i].tname, "F1", 2) == 0 )  // F11 function key
+    if ( std::memcmp(fkey_cap_table[i].tname.data(), "F1", 2) == 0 )  // F11 function key
       CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "234z" );
 
-    if ( std::memcmp(fkey_cap_table[i].tname, "F2", 2) == 0 )  // F12 function key
+    if ( std::memcmp(fkey_cap_table[i].tname.data(), "F2", 2) == 0 )  // F12 function key
       CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "235z" );
-    if ( std::memcmp(fkey_cap_table[i].tname, "kh", 2) == 0
-      && finalcut::stringLength(fkey_cap_table[i].tname) == 2 )  // home key
+    if ( std::memcmp(fkey_cap_table[i].tname.data(), "kh", 2) == 0
+      && finalcut::stringLength(fkey_cap_table[i].tname.data()) == 2 )  // home key
       CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "214z" );
 
-    if ( std::memcmp(fkey_cap_table[i].tname, "kI", 2) == 0
-      && finalcut::stringLength(fkey_cap_table[i].tname) == 2 )  // insert-character key
+    if ( std::memcmp(fkey_cap_table[i].tname.data(), "kI", 2) == 0
+      && finalcut::stringLength(fkey_cap_table[i].tname.data()) == 2 )  // insert-character key
       CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "247z" );
 
-    if ( std::memcmp(fkey_cap_table[i].tname, "kN", 2) == 0 )  // next-page key
+    if ( std::memcmp(fkey_cap_table[i].tname.data(), "kN", 2) == 0 )  // next-page key
       CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "222z" );
 
-    if ( std::memcmp(fkey_cap_table[i].tname, "%7", 2) == 0 )  // options key
+    if ( std::memcmp(fkey_cap_table[i].tname.data(), "%7", 2) == 0 )  // options key
       CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "194z" );
 
-    if ( std::memcmp(fkey_cap_table[i].tname, "kP", 2) == 0 )  // prev-page key
+    if ( std::memcmp(fkey_cap_table[i].tname.data(), "kP", 2) == 0 )  // prev-page key
       CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "216z" );
 
-    if ( std::memcmp(fkey_cap_table[i].tname, "&5", 2) == 0 )  // resume key
+    if ( std::memcmp(fkey_cap_table[i].tname.data(), "&5", 2) == 0 )  // resume key
       CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "193z" );
 
-    if ( std::memcmp(fkey_cap_table[i].tname, "&8", 2) == 0 )  // undo key
+    if ( std::memcmp(fkey_cap_table[i].tname.data(), "&8", 2) == 0 )  // undo key
       CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "195z" );
 
-    if ( std::memcmp(fkey_cap_table[i].tname, "K2", 2) == 0
-      && finalcut::stringLength(fkey_cap_table[i].tname) == 2 )  // center of keypad
+    if ( std::memcmp(fkey_cap_table[i].tname.data(), "K2", 2) == 0
+      && finalcut::stringLength(fkey_cap_table[i].tname.data()) == 2 )  // center of keypad
       CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "218z" );
 
-    if ( std::memcmp(fkey_cap_table[i].tname, "kDx", 3) == 0 )  // keypad delete
+    if ( std::memcmp(fkey_cap_table[i].tname.data(), "kDx", 3) == 0 )  // keypad delete
       CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "249z" );
 
-    if ( std::memcmp(fkey_cap_table[i].tname, "@8x", 3) == 0 )  // enter/send key
+    if ( std::memcmp(fkey_cap_table[i].tname.data(), "@8x", 3) == 0 )  // enter/send key
       CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "250z" );
 
-    if ( std::memcmp(fkey_cap_table[i].tname, "KP1", 3) == 0 )  // keypad slash
+    if ( std::memcmp(fkey_cap_table[i].tname.data(), "KP1", 3) == 0 )  // keypad slash
       CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "212z" );
 
-    if ( std::memcmp(fkey_cap_table[i].tname, "KP2", 3) == 0 )  // keypad asterisk
+    if ( std::memcmp(fkey_cap_table[i].tname.data(), "KP2", 3) == 0 )  // keypad asterisk
       CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "213z" );
 
-    if ( std::memcmp(fkey_cap_table[i].tname, "KP3", 3) == 0 )  // keypad minus sign
+    if ( std::memcmp(fkey_cap_table[i].tname.data(), "KP3", 3) == 0 )  // keypad minus sign
       CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "254z" );
 
-    if ( std::memcmp(fkey_cap_table[i].tname, "KP4", 3) == 0 )  // keypad plus sign
+    if ( std::memcmp(fkey_cap_table[i].tname.data(), "KP4", 3) == 0 )  // keypad plus sign
       CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "253z" );
   }

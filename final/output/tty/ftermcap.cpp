@@ -450,7 +450,7 @@ void FTermcap::termcapStrings()
   // Read termcap output strings
 
   for (auto&& entry : strings)
-    entry.string = getString(entry.tname);
+    entry.string = getString(entry.tname.data());
 
   const auto& ho = TCAP(t_cursor_home);
 
@@ -476,7 +476,7 @@ void FTermcap::termcapKeys()
     if ( entry.string != nullptr )  // String is already set
       break;
 
-    entry.string = getString(entry.tname);
+    entry.string = getString(entry.tname.data());
     entry.length = entry.string ? uInt8(finalcut::stringLength(entry.string)) : 0;
   }
 
