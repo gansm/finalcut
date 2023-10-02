@@ -114,7 +114,7 @@ using KEventList = std::vector<struct kevent>;
 
 //----------------------------------------------------------------------
 #if defined(UNIT_TEST)
-static auto getKqueue() -> const int
+static auto getKqueue() -> int
 {
   // Creates a new kernel event queue
   static const auto& fsystem = FSystem::getInstance();
@@ -212,13 +212,13 @@ class KqueueHandler final
       struct timespec timeout{0, 0};  // Do not wait
       auto& time_events = getKEvents();
       auto data = time_events.data();
-      const auto size = time_events.size();
+      const auto size = int(time_events.size());
       const auto n = fsystem->kevent(getKqueue(), nullptr, 0, data, size, &timeout);
 
       if ( n <= 0 )
         return;
 
-      for (int i{0}; i < n; i++)
+      for (std::size_t i{0}; i < std::size_t(n); i++)
       {
         if ( time_events[i].filter != EVFILT_TIMER )
           continue;
@@ -246,7 +246,7 @@ class KqueueHandler final
           const auto ms = kqueue_timer_ptr->timer_spec.period_ms;
 
           // Filling the struct events with values
-          EV_SET(&ev_set, ident, EVFILT_TIMER, kq_flags, 0, ms, nullptr);
+          EV_SET(&ev_set, uintptr_t(ident), EVFILT_TIMER, kq_flags, 0, ms, nullptr);
 
           // Register event with kqueue
           if ( fsystem->kevent(getKqueue(), &ev_set, 1, nullptr, 0, nullptr) != 0 )
@@ -355,7 +355,7 @@ void KqueueTimer::setInterval ( std::chrono::nanoseconds first,
   const auto ms = timer_spec.first_ms;
 
   // Filling the struct events with values
-  EV_SET(&ev_set, timer_id, EVFILT_TIMER, kq_flags, 0, ms, nullptr);
+  EV_SET(&ev_set, uintptr_t(timer_id), EVFILT_TIMER, kq_flags, 0, ms, nullptr);
 
   // Register event with kqueue
   if ( fsystem->kevent(getFileDescriptor(), &ev_set, 1, nullptr, 0, nullptr) != 0 )

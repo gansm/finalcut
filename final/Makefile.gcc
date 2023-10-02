@@ -110,10 +110,11 @@ OBJS = \
 	eventloop/eventloop.o \
 	eventloop/eventloop_functions.o \
 	eventloop/io_monitor.o \
+	eventloop/kqueue_timer.o \
 	eventloop/monitor.o \
 	eventloop/pipedata.o \
-	eventloop/signal_monitor.o \
 	eventloop/posix_timer.o \
+	eventloop/signal_monitor.o \
 	eventloop/timer_monitor.o \
 	input/fkeyboard.o \
 	input/fkey_map.o \
@@ -213,7 +214,7 @@ debug:
 	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -Wall -Wextra -Wpedantic"
 
 unittest:
-	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -DUNIT_TEST -Wall -Wextra -Wpedantic"
+	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -D UNIT_TEST -Wall -Wextra -Wpedantic"
 
 profile:
 	$(MAKE) $(MAKEFILE) PROFILE="-pg"

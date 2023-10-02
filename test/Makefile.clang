@@ -11,7 +11,7 @@ SRCS = $(wildcard *.cpp)
 OBJS = $(SRCS:%.cpp=%)
 CCXFLAGS = $(OPTIMIZE) $(PROFILE) $(DEBUG) -std=c++14
 MAKEFILE = -f Makefile.clang
-LDFLAGS = -L../src -lfinal $(TERMCAP) -lcppunit -ldl
+LDFLAGS = -L../final -lfinal $(TERMCAP) -lcppunit -ldl
 INCLUDES = -I. -I.. -I/usr/include
 RM = rm -f
 
@@ -31,7 +31,7 @@ endif
 all: $(OBJS)
 
 unittest:
-	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -DUNIT_TEST -Wall -Wextra -Wpedantic -Wno-padded -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-implicit-fallthrough"
+	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -D UNIT_TEST -Wall -Wextra -Wpedantic -Wno-padded -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-implicit-fallthrough"
 
 check: test
 test: unittest

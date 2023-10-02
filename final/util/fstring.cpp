@@ -687,11 +687,9 @@ auto FString::setNumber (sInt64 num) -> FString&
 {
   std::array<wchar_t, 30> buf{};
   wchar_t* s = &buf[29];  // Pointer to the last character
-  auto abs_num = static_cast<uInt64>(num);
-
-  if ( num < 0 )
-    abs_num = static_cast<uInt64>(-num);
-
+  auto abs_num = ( num >= 0 )
+               ? static_cast<uInt64>(num)
+               : ~static_cast<uInt64>(num) + 1;
   *s = '\0';
 
   do

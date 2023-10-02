@@ -82,6 +82,9 @@ class ConEmu
     // Constructors
     ConEmu()
     {
+      // create timer instance
+      finalcut::FObjectTimer timer{};
+
       // Map shared memory
       void* ptr = mmap ( nullptr
                        , sizeof(*shared_state)

@@ -95,7 +95,11 @@ class FMouse_protected : public finalcut::FMouse
 class FMouseTest : public CPPUNIT_NS::TestFixture
 {
   public:
-    FMouseTest() = default;
+    FMouseTest()
+    {
+      // create timer instance
+      finalcut::FObjectTimer timer{};
+    }
 
   protected:
     void classNameTest();

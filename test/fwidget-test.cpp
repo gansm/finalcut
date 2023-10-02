@@ -463,7 +463,7 @@ class FWidgetTest::FSystemTest : public finalcut::FSystem
       return ret_val;
     }
 
-    auto pipe (finalcut::PipeData&) -> int
+    auto pipe (finalcut::PipeData&) -> int override
     {
       return 0;
     }
@@ -925,7 +925,7 @@ void FWidgetTest::resetColorsTest()
       ~TestWidget() override
       { }
 
-      void resetColors()
+      void resetColors() override
       {
         const auto& wc = getColorTheme();
         setForegroundColor (wc->dialog_fg);
@@ -2584,7 +2584,7 @@ void FWidgetTest::closeWidgetTest()
       ~TestWidget() override
       { }
 
-      void onClose (finalcut::FCloseEvent* ev)
+      void onClose (finalcut::FCloseEvent* ev) override
       {
         if ( confirmed )
           ev->accept();

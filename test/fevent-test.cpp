@@ -471,7 +471,7 @@ void FEventTest::fusereventTest()
   auto lambda = [] () { return 5; };
   auto&& fdata = finalcut::makeFData(std::move(lambda));
   event2.setFDataObject<decltype(*fdata)>(*fdata);
-  auto& lambda_from_event = event1.getData<decltype(lambda)>();
+  auto& lambda_from_event = event2.getData<decltype(lambda)>();
   CPPUNIT_ASSERT ( lambda_from_event() == 5 );
   auto&& fdata_obj2 = event2.getFDataObject<decltype(lambda)>();
   auto& lambda_from_fdata = fdata_obj2.get();

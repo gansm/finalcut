@@ -672,7 +672,7 @@ void FTermcapQuirksTest::sunTest()
                          , CSI "%p1%dD" );
   auto& fkey_cap_table = finalcut::FKeyMap::getInstance().getKeyCapMap();
 
-  for (std::size_t i = 0; fkey_cap_table[i].tname[0] != 0; i++)
+  for (std::size_t i = 0; i < fkey_cap_table.size(); i++)
   {
     if ( std::memcmp(fkey_cap_table[i].tname.data(), "K2", 2) == 0
       && finalcut::stringLength(fkey_cap_table[i].tname.data()) == 2 )  // center of keypad

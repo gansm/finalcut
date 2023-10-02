@@ -77,7 +77,7 @@ class Monitor_protected : public finalcut::Monitor
 };
 
 //----------------------------------------------------------------------
-inline Monitor_protected::~Monitor_protected() noexcept = default;  // destructor
+inline Monitor_protected::~Monitor_protected() = default;  // destructor
 
 //----------------------------------------------------------------------
 inline void Monitor_protected::p_setFileDescriptor (int file_descriptor)
@@ -141,7 +141,7 @@ class KqueueTimer_protected : public finalcut::KqueueTimer
 };
 
 //----------------------------------------------------------------------
-inline KqueueTimer_protected::~KqueueTimer_protected() noexcept = default;  // destructor
+inline KqueueTimer_protected::~KqueueTimer_protected() = default;  // destructor
 
 //----------------------------------------------------------------------
 inline void KqueueTimer_protected::p_trigger (short return_events)
@@ -610,7 +610,7 @@ void EventloopMonitorTest::eventLoopTest()
 {
   // Test without monitor
   finalcut::EventLoop eloop{};
-  signal_handler = [&eloop] (int num)
+  signal_handler = [&eloop] (int)
   {
     eloop.leave();
   };

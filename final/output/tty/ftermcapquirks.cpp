@@ -383,7 +383,7 @@ void FTermcapQuirks::sunConsole()
     {"KP4", CSI "253z"},  // keypad plus sign
   };
 
-  for (std::size_t i{0}; fkey_cap_table[i].tname[0] != 0; i++)
+  for (std::size_t i{0}; i < fkey_cap_table.size(); i++)
   {
     for (const auto& key : sun_console_keys)
     {
