@@ -51,7 +51,7 @@ BackendMonitor::~BackendMonitor() noexcept // destructor
 
 // public methods of BackendMonitor
 //----------------------------------------------------------------------
-void BackendMonitor::setEvent() noexcept
+void BackendMonitor::setEvent() const noexcept
 {
   // The event loop is notified by write access to the pipe
   uint64_t buffer{1U};
@@ -65,7 +65,7 @@ void BackendMonitor::setEvent() noexcept
 }
 
 //----------------------------------------------------------------------
-void BackendMonitor::clearEvent() noexcept
+void BackendMonitor::clearEvent() const
 {
   drainPipe(getFileDescriptor());
 }

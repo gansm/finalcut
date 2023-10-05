@@ -68,7 +68,7 @@ class BackendMonitor final : public Monitor
     auto getClassName() const -> FString override;
 
     // Mutator
-    void setEvent() noexcept;
+    void setEvent() const noexcept;
 
     // Methods
     template <typename T>
@@ -83,7 +83,7 @@ class BackendMonitor final : public Monitor
     auto operator = (BackendMonitor&&) noexcept -> BackendMonitor& = delete;
 
     // Mutator
-    void clearEvent() noexcept;
+    void clearEvent() const;
 
     // Methods
     void init();
