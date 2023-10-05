@@ -471,9 +471,9 @@ inline auto FVTerm::FTermArea::contains (const FPoint& pos) const noexcept -> bo
   const int x = pos.getX();
   const int y = pos.getY();
   return x >= offset_left
-      && x <= offset_left + width + right_shadow - 1
+      && x < offset_left + width + right_shadow
       && y >= offset_top
-      && y <= offset_top + current_height - 1;
+      && y < offset_top + current_height;
 }
 
 //----------------------------------------------------------------------

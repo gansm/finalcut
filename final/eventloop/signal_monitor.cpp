@@ -106,6 +106,10 @@ SignalMonitor::~SignalMonitor() noexcept  // destructor
   static const auto& fsystem = FSystem::getInstance();
   fsystem->sigaction (signal_number, getSigactionImpl()->getSigaction(), nullptr);
 
+  // Close pipe file descriptors
+  (void)fsystem->close(signal_pipe.getReadFd());
+  (void)fsystem->close(signal_pipe.getWriteFd());
+
   // Remove monitor instance from the assignment table.
   getSignalMonitorMap().erase(signal_number);
 }

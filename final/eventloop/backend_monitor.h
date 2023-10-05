@@ -1,9 +1,9 @@
 /***********************************************************************
-* signal_monitor.h - Signal monitoring object                          *
+* backend_monitor.h - Monitoring general objects                       *
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2023 Andreas Noe                                           *
+* Copyright 2023 Markus Gans                                           *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -28,16 +28,13 @@
  *      ▕▁▁▁▁▁▁▁▁▁▏
  *           ▲
  *           │
- *   ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏1       1▕▔▔▔▔▔▔▔▔▔▔▏
- *   ▕ SignalMonitor ▏- - - - -▕ PipeData ▏
- *   ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏         ▕▁▁▁▁▁▁▁▁▁▁▏
+ *   ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏1       1▕▔▔▔▔▔▔▔▔▔▔▏
+ *   ▕ BackendMonitor ▏- - - - -▕ PipeData ▏
+ *   ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏         ▕▁▁▁▁▁▁▁▁▁▁▏
  */
 
-#ifndef SIGNAL_MONITOR_H
-#define SIGNAL_MONITOR_H
-
-#include <map>
-#include <memory>
+#ifndef BACKEND_MONITOR_H
+#define BACKEND_MONITOR_H
 
 #include "final/eventloop/monitor.h"
 #include "final/eventloop/pipedata.h"
@@ -47,69 +44,66 @@ namespace finalcut
 {
 
 //----------------------------------------------------------------------
-// class SignalMonitor
+// class BackendMonitor
 //----------------------------------------------------------------------
 
-class SignalMonitor final : public Monitor
+class BackendMonitor final : public Monitor
 {
   public:
-    explicit SignalMonitor(EventLoop*);
+    explicit BackendMonitor (EventLoop*);
 
     // Disable default constructor
-    SignalMonitor() = delete;
+    BackendMonitor() = delete;
 
     // Disable copy constructor
-    SignalMonitor(const SignalMonitor&) = delete;
+    BackendMonitor(const BackendMonitor&) = delete;
 
     // Disable move constructor
-    SignalMonitor(const SignalMonitor&&) = delete;
+    BackendMonitor(const BackendMonitor&&) = delete;
 
     // Destructor
-    ~SignalMonitor() noexcept override;
+    ~BackendMonitor() noexcept override;
 
     // Accessor
     auto getClassName() const -> FString override;
 
+    // Mutator
+    void setEvent() noexcept;
+
     // Methods
     template <typename T>
-    void init (int, handler_t, T&&);
+    void init (handler_t, T&&);
     void trigger (short) override;
 
   private:
-    // class forward declaration
-    class SigactionImpl;
-
     // Disable copy assignment operator (=)
-    auto operator = (const SignalMonitor&) -> SignalMonitor& = delete;
+    auto operator = (const BackendMonitor&) -> BackendMonitor& = delete;
 
     // Disable move assignment operator (=)
-    auto operator = (SignalMonitor&&) noexcept -> SignalMonitor& = delete;
+    auto operator = (BackendMonitor&&) noexcept -> BackendMonitor& = delete;
+
+    // Mutator
+    void clearEvent() noexcept;
 
     // Methods
-    static void onSignal (int);
     void init();
-    auto getSigactionImpl() const -> const SigactionImpl*;
-    auto getSigactionImpl() -> SigactionImpl*;
 
     // Data members
-    int signal_number{-1};
-    PipeData signal_pipe{NO_FILE_DESCRIPTOR, NO_FILE_DESCRIPTOR};
-    std::unique_ptr<SigactionImpl> impl;
+    PipeData self_pipe{NO_FILE_DESCRIPTOR, NO_FILE_DESCRIPTOR};
 };
 
-// SignalMonitor inline functions
+// BackendMonitor inline functions
 //----------------------------------------------------------------------
-inline auto SignalMonitor::getClassName() const -> FString
-{ return "SignalMonitor"; }
+inline auto BackendMonitor::getClassName() const -> FString
+{ return "BackendMonitor"; }
 
 //----------------------------------------------------------------------
 template <typename T>
-inline void SignalMonitor::init (int sn, handler_t hdl, T&& uc)
+inline void BackendMonitor::init (handler_t hdl, T&& uc)
 {
   if ( isInitialized() )
     throw monitor_error{"This instance has already been initialised."};
 
-  signal_number = sn;
   setHandler (std::move(hdl));
   setUserContext (std::forward<T>(uc));
   init();
@@ -117,4 +111,4 @@ inline void SignalMonitor::init (int sn, handler_t hdl, T&& uc)
 
 }  // namespace finalcut
 
-#endif  // SIGNAL_MONITOR_H
+#endif  // BACKEND_MONITOR_H

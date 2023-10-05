@@ -15,6 +15,7 @@ libfinal_la_SOURCES = \
 	dialog/fdialog.cpp \
 	dialog/ffiledialog.cpp \
 	dialog/fmessagebox.cpp \
+	eventloop/backend_monitor.cpp \
 	eventloop/eventloop.cpp \
 	eventloop/eventloop_functions.cpp \
 	eventloop/io_monitor.cpp \
@@ -115,6 +116,7 @@ finalcutdialoginclude_HEADERS = \
 	dialog/fmessagebox.h
 
 finalcuteventloopinclude_HEADERS = \
+	eventloop/backend_monitor.h \
 	eventloop/eventloop.h \
 	eventloop/eventloop_functions.h \
 	eventloop/io_monitor.h \

@@ -12,6 +12,7 @@ INCLUDE_HEADERS = \
 	dialog/fdialog.h \
 	dialog/ffiledialog.h \
 	dialog/fmessagebox.h \
+	eventloop/backend_monitor.h \
 	eventloop/eventloop.h \
 	eventloop/eventloop_functions.h \
 	eventloop/io_monitor.h \
@@ -107,6 +108,7 @@ OBJS = \
 	dialog/fdialog.o \
 	dialog/ffiledialog.o \
 	dialog/fmessagebox.o \
+	eventloop/backend_monitor.o \
 	eventloop/eventloop.o \
 	eventloop/eventloop_functions.o \
 	eventloop/io_monitor.o \

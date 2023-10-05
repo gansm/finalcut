@@ -57,7 +57,6 @@
 
 #include <time.h>
 
-#include <array>
 #include <chrono>
 #include <vector>
 
@@ -96,11 +95,26 @@ class TimerMonitorImpl : public Monitor
 class PosixTimer : public TimerMonitorImpl
 {
   public:
+    // Using-declaration
+    using TimerMonitorImpl::TimerMonitorImpl;
+
     // Constructor
     explicit PosixTimer (EventLoop*);
 
+    // Disable copy constructor
+    PosixTimer (const PosixTimer&) = delete;
+
+    // Disable move constructor
+    PosixTimer (PosixTimer&&) noexcept = delete;
+
     // Destructor
     ~PosixTimer() noexcept override;
+
+    // Disable copy assignment operator (=)
+    auto operator = (const PosixTimer&) -> PosixTimer& = delete;
+
+    // Disable move assignment operator (=)
+    auto operator = (PosixTimer&&) noexcept -> PosixTimer& = delete;
 
     // Methods
     template <typename T>
@@ -141,11 +155,26 @@ inline void PosixTimer::init (handler_t hdl, T&& uc)
 class KqueueTimer : public TimerMonitorImpl
 {
   public:
+    // Using-declaration
+    using TimerMonitorImpl::TimerMonitorImpl;
+
     // Constructor
     explicit KqueueTimer (EventLoop*);
 
+    // Disable copy constructor
+    KqueueTimer (const KqueueTimer&) = delete;
+
+    // Disable move constructor
+    KqueueTimer (KqueueTimer&&) noexcept = delete;
+
     // Destructor
     ~KqueueTimer() noexcept override;
+
+    // Disable copy assignment operator (=)
+    auto operator = (const KqueueTimer&) -> KqueueTimer& = delete;
+
+    // Disable move assignment operator (=)
+    auto operator = (KqueueTimer&&) noexcept -> KqueueTimer& = delete;
 
     // Methods
     template <typename T>

@@ -94,6 +94,12 @@ class Monitor
     // Destructor
     virtual ~Monitor();
 
+    // Disable copy assignment operator (=)
+    auto operator = (const Monitor&) -> Monitor& = delete;
+
+    // Disable move assignment operator (=)
+    auto operator = (Monitor&&) noexcept -> Monitor& = delete;
+
     // Accessors
     virtual auto getClassName() const -> FString;
     auto getEvents() const -> short;
@@ -103,12 +109,6 @@ class Monitor
 
     // Inquiry
     auto isActive() const -> bool;
-
-    // Disable copy assignment operator (=)
-    auto operator = (const Monitor&) -> Monitor& = delete;
-
-    // Disable move assignment operator (=)
-    auto operator = (Monitor&&) noexcept -> Monitor& = delete;
 
     // Methods
     virtual void resume();

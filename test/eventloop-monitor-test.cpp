@@ -29,6 +29,7 @@
 #include <cppunit/TestRunner.h>
 
 #include <chrono>
+#include <queue>
 #include <string>
 
 #include <final/final.h>
@@ -497,6 +498,85 @@ inline void FSystemTest::setKeventReturnValue (int ret_val)
   kevent_ret_value = ret_val;
 }
 
+
+//----------------------------------------------------------------------
+// class StringParser
+//----------------------------------------------------------------------
+
+class StringParser
+{
+  public:
+    explicit StringParser (finalcut::EventLoop* eloop)
+      : queue_monitor(eloop)
+    {
+      auto callback = [this, eloop] (const finalcut::Monitor*, short)
+                      {
+                        std::cout << "BackendMonitor callback handle";
+                        processQueuedInput();
+                        eloop->leave();
+                      };
+      queue_monitor.init (callback, nullptr);
+      queue_monitor.resume();
+    }
+
+    // Disable default constructor
+    StringParser() = delete;
+
+    // Disable copy constructor
+    StringParser(const StringParser&) = delete;
+
+    // Disable move constructor
+    StringParser(const StringParser&&) = delete;
+
+    // Accessors
+    auto getQueue() const -> const std::deque<int>&
+    {
+      return number_queue;
+    }
+
+    // Mutator
+    void setString (const finalcut::FString& s)
+    {
+      data_string = s;
+    }
+
+    // Methods
+    void parseString();
+    void processQueuedInput();
+
+  private:
+    std::deque<int> number_queue{};
+    finalcut::FString data_string{};
+    finalcut::BackendMonitor queue_monitor;
+};
+
+//----------------------------------------------------------------------
+void StringParser::parseString()
+{
+  auto is_empty_before = number_queue.empty();
+  auto number_parts = data_string.split(",");
+
+  for (auto&& number_string : number_parts)
+    number_queue.push_back(number_string.toInt());
+
+  if ( is_empty_before && ! number_queue.empty() )
+    queue_monitor.setEvent();
+}
+
+//----------------------------------------------------------------------
+void StringParser::processQueuedInput()
+{
+  std::cout << "\nData in queue: ";
+
+  while ( ! number_queue.empty() )
+  {
+    std::cout << "<" << number_queue.front() << "> ";
+    number_queue.pop_front();
+  }
+
+  std::cout << "\n";
+}
+
 }  // namespace test
 
 
@@ -518,6 +598,7 @@ class EventloopMonitorTest : public CPPUNIT_NS::TestFixture
     void IoMonitorTest();
     void SignalMonitorTest();
     void TimerMonitorTest();
+    void BackendMonitorTest();
     void exceptionTest();
 
   private:
@@ -536,6 +617,7 @@ class EventloopMonitorTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (IoMonitorTest);
     CPPUNIT_TEST (SignalMonitorTest);
     CPPUNIT_TEST (TimerMonitorTest);
+    CPPUNIT_TEST (BackendMonitorTest);
     CPPUNIT_TEST (exceptionTest);
 
     // End of test suite definition
@@ -610,14 +692,15 @@ void EventloopMonitorTest::eventLoopTest()
 {
   // Test without monitor
   finalcut::EventLoop eloop{};
-  signal_handler = [&eloop] (int)
+  auto eloop_ptr = &eloop;
+  signal_handler = [eloop_ptr] (int)
   {
-    eloop.leave();
+    eloop_ptr->leave();
   };
   signal(SIGALRM, sigHandler);  // Register signal handler
   std::cout << "\n";
   alarm(1);  // Schedule a alarm after 1 seconds
-  CPPUNIT_ASSERT ( eloop.run() == 0 );
+  CPPUNIT_ASSERT ( eloop.run() == 0 );  // Run event loop
 
   // Test with one monitor
   Monitor_protected mon(&eloop);
@@ -627,13 +710,13 @@ void EventloopMonitorTest::eventLoopTest()
   CPPUNIT_ASSERT ( ! mon.isActive() );
   mon.p_setEvents (POLLIN);
   std::array<int, 2> pipe_fd{{-1, -1}};
-  auto callback_handler = [&pipe_fd, &eloop] (const finalcut::Monitor*, short)
+  auto callback_handler = [&pipe_fd, eloop_ptr] (const finalcut::Monitor*, short)
   {
     std::cout << "Callback handle";
     uint64_t buf{0};
     CPPUNIT_ASSERT ( ::read(pipe_fd[0], &buf, sizeof(buf)) == sizeof(buf) );
     CPPUNIT_ASSERT ( buf == std::numeric_limits<uint64_t>::max() );
-    eloop.leave();
+    eloop_ptr->leave();
   };
   mon.p_setHandler(callback_handler);
   CPPUNIT_ASSERT ( ::pipe(pipe_fd.data()) == 0 );
@@ -645,7 +728,7 @@ void EventloopMonitorTest::eventLoopTest()
     CPPUNIT_ASSERT ( ::write (pipe_fd[1], &buf, sizeof(buf)) > 0 );
   };
   alarm(1);  // Schedule a alarm after 1 seconds
-  CPPUNIT_ASSERT ( eloop.run() == 0 );
+  CPPUNIT_ASSERT ( eloop.run() == 0 );  // Run event loop
   CPPUNIT_ASSERT ( mon.getEvents() == POLLIN );
   CPPUNIT_ASSERT ( mon.getFileDescriptor() == pipe_fd[0] );
   CPPUNIT_ASSERT ( mon.getUserContext<void*>() == nullptr );
@@ -702,10 +785,11 @@ void EventloopMonitorTest::IoMonitorTest()
   auto stdin_no = finalcut::FTermios::getStdIn();
   auto stdin_status_flags = fcntl(stdin_no, F_GETFL);
   finalcut::EventLoop eloop{};
+  auto eloop_ptr = &eloop;
   finalcut::IoMonitor io_monitor{&eloop};
   const finalcut::FString& io_monitor_classname = io_monitor.getClassName();
   CPPUNIT_ASSERT ( io_monitor_classname == "IoMonitor" );
-  auto callback_handler = [&stdin_status_flags, &stdin_no, &eloop] (const finalcut::Monitor* mon, short)
+  auto callback_handler = [&stdin_status_flags, &stdin_no, eloop_ptr] (const finalcut::Monitor* mon, short)
   {
     char read_character{'\0'};
     CPPUNIT_ASSERT ( read_character == '\0' );
@@ -716,7 +800,7 @@ void EventloopMonitorTest::IoMonitorTest()
     CPPUNIT_ASSERT ( read_character == 'A' );
     stdin_status_flags &= ~O_NONBLOCK;
     CPPUNIT_ASSERT ( fcntl(stdin_no, F_SETFL, stdin_status_flags) != -1 );
-    eloop.leave();
+    eloop_ptr->leave();
     std::cout << "\nIoMonitor callback handle" << std::flush;
   };
   io_monitor.init (stdin_no, POLLIN, callback_handler, nullptr);
@@ -726,7 +810,7 @@ void EventloopMonitorTest::IoMonitorTest()
   keyboardInput("A");
   // Keyboard interval timeout 75 ms
   std::this_thread::sleep_for(std::chrono::milliseconds(75));
-  CPPUNIT_ASSERT ( eloop.run() == 0 );
+  CPPUNIT_ASSERT ( eloop.run() == 0 );  // Run event loop
   finalcut::FTermios::restoreTTYsettings();
 }
 
@@ -751,7 +835,7 @@ void EventloopMonitorTest::SignalMonitorTest()
   std::cout << "\n";
   alarm(1);  // Schedule a alarm after 1 seconds
   signal_monitor.resume();
-  CPPUNIT_ASSERT ( eloop.run() == 0 );
+  CPPUNIT_ASSERT ( eloop.run() == 0 );  // Run event loop
   signal(SIGALRM, SIG_DFL);
   signal_handler = [] (int) { };  // Do nothing
 }
@@ -760,17 +844,18 @@ void EventloopMonitorTest::SignalMonitorTest()
 void EventloopMonitorTest::TimerMonitorTest()
 {
   finalcut::EventLoop eloop{};
+  auto eloop_ptr = &eloop;
   finalcut::TimerMonitor timer_monitor{&eloop};
   const finalcut::FString& timer_monitor_classname = timer_monitor.getClassName();
   CPPUNIT_ASSERT ( timer_monitor_classname == "TimerMonitor" );
   int num{0};
-  auto callback_handler = [&eloop, &num] (const finalcut::Monitor*, short)
+  auto callback_handler = [eloop_ptr, &num] (const finalcut::Monitor*, short)
   {
     num++;
     std::cout << "TimerMonitor callback handle (" << num << ")\n";
 
     if ( num == 3 )
-      eloop.leave();
+      eloop_ptr->leave();
   };
   timer_monitor.init (callback_handler, nullptr);
   timer_monitor.setInterval ( std::chrono::nanoseconds{ 500'000'000 }
@@ -778,7 +863,7 @@ void EventloopMonitorTest::TimerMonitorTest()
   std::cout << "\n";
   timer_monitor.resume();
   auto start = high_resolution_clock::now();
-  CPPUNIT_ASSERT ( eloop.run() == 0 );
+  CPPUNIT_ASSERT ( eloop.run() == 0 );  // Run event loop
   auto end = high_resolution_clock::now();
   auto duration_ms = int(duration_cast<milliseconds>(end - start).count());
   CPPUNIT_ASSERT ( num == 3 );
@@ -789,12 +874,32 @@ void EventloopMonitorTest::TimerMonitorTest()
                             , std::chrono::nanoseconds{ 100'000'000 } );
   num = 0;
   start = high_resolution_clock::now();
-  CPPUNIT_ASSERT ( eloop.run() == 0 );
+  CPPUNIT_ASSERT ( eloop.run() == 0 );  // Run event loop
   end = high_resolution_clock::now();
   duration_ms = int(duration_cast<milliseconds>(end - start).count());
   CPPUNIT_ASSERT ( num == 3 );
   CPPUNIT_ASSERT ( duration_ms >= 300 );
   CPPUNIT_ASSERT ( duration_ms < 310 );
+}
+
+//----------------------------------------------------------------------
+void EventloopMonitorTest::BackendMonitorTest()
+{
+  finalcut::EventLoop eloop{};
+  finalcut::BackendMonitor backend_monitor{&eloop};
+  const finalcut::FString& backend_monitor_classname = backend_monitor.getClassName();
+  CPPUNIT_ASSERT ( backend_monitor_classname == "BackendMonitor" );
+
+  test::StringParser string_parser{&eloop};
+  string_parser.setString("59,7,99,34,71,38,24,56,4");
+  std::cout << "\n";
+  CPPUNIT_ASSERT ( string_parser.getQueue().empty() );
+  // The queue receives data and sends a backend event
+  string_parser.parseString();
+  CPPUNIT_ASSERT ( ! string_parser.getQueue().empty() );
+  CPPUNIT_ASSERT ( string_parser.getQueue().size() == 9 );
+  CPPUNIT_ASSERT ( eloop.run() == 0 );  // Run event loop
+  CPPUNIT_ASSERT ( string_parser.getQueue().empty() );
 }
 
 //----------------------------------------------------------------------
@@ -909,6 +1014,23 @@ void EventloopMonitorTest::exceptionTest()
 
   fsys_ptr->setKeventReturnValue(1);
   CPPUNIT_ASSERT_NO_THROW ( kqueue_timer_monitor.p_trigger(5) );
+
+  // Backend monitor
+  //----------------
+
+  finalcut::BackendMonitor backend_monitor{&eloop};
+
+  // No pipe could be established
+  fsys_ptr->setPipeReturnValue(-1);
+  CPPUNIT_ASSERT_THROW ( backend_monitor.init(callback_handler, nullptr)
+                       , finalcut::monitor_error );
+  fsys_ptr->setPipeReturnValue(0);
+
+  CPPUNIT_ASSERT_NO_THROW ( backend_monitor.init(callback_handler, nullptr) );
+
+  // Already initialised
+  CPPUNIT_ASSERT_THROW ( backend_monitor.init(callback_handler, nullptr)
+                       , finalcut::monitor_error );
 }
 
 //----------------------------------------------------------------------
