@@ -1,3 +1,6 @@
+2023-10-07  Markus Gans  <guru.mail@muenster.de>
+	* Bugfix: Bottom transparent shadow changes were registered in wrong row
+
 2023-10-03  Markus Gans  <guru.mail@muenster.de>
 	* Eliminate undefined behavior on exit
 

@@ -401,7 +401,7 @@ void drawTransparentShadow (FWidget* w)
     area_pos += shadow_width;
   }
 
-  for (std::size_t y{1}; y <= shadow_height; y++)  // Draw bottom shadow
+  for (std::size_t y{height}; y < height + shadow_height; y++)  // Draw bottom shadow
   {
     area_changes[y].xmin = 0;
     area_changes[y].xmax = width + shadow_width - 1;
