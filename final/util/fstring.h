@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2022 Markus Gans                                      *
+* Copyright 2012-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -253,7 +253,7 @@ class FString
 
     template <typename... Args>
     auto sprintf (const FString&, Args&&...) -> FString&;
-    auto clear() -> FString;
+    auto clear() -> FString&;
 
     auto wc_str() const -> const wchar_t*;
     auto wc_str() -> wchar_t*;
@@ -314,7 +314,8 @@ class FString
 
   private:
     // Constants
-    static constexpr uInt INPBUFFER = 200;
+    static constexpr auto INPBUFFER = uInt(200);
+    static constexpr auto MALFORMED_STRING = static_cast<std::size_t>(-1);
 
     // Methods
     void internal_assign (std::wstring);
@@ -671,8 +672,7 @@ inline auto FString::sprintf (const FString& format, Args&&... args) -> FString&
 
   std::swprintf ( buf.data(), buf.size(), format.wc_str()
                 , std::forward<Args>(args)... );
-  setString(buf.data());
-  return *this;
+  return setString(buf.data());
 }
 
 //----------------------------------------------------------------------

@@ -136,17 +136,17 @@ auto FApplication::getKeyboardWidget() -> FWidget*
 auto FApplication::getLog() -> FLogPtr&
 {
   // Global logger object
-  static auto logger_ptr = new FLogPtr();
+  static const auto& logger = std::make_unique<FLogPtr>();
 
-  if ( logger_ptr && *logger_ptr == nullptr )
+  if ( logger && *logger == nullptr )
   {
-    *logger_ptr = std::make_shared<FLogger>();
+    *logger = std::make_shared<FLogger>();
 
     // Set the logger as rdbuf of clog
-    std::clog.rdbuf(logger_ptr->get());
+    std::clog.rdbuf(logger->get());
   }
 
-  return *logger_ptr;
+  return *logger;
 }
 
 //----------------------------------------------------------------------
@@ -650,10 +650,6 @@ inline void FApplication::destroyLog()
   // Reset the rdbuf of clog
   std::clog << std::flush;
   std::clog.rdbuf(default_clog_rdbuf);
-
-  // Delete the logger
-  const FLogPtr* logger = &(getLog());
-  delete logger;
 }
 
 //----------------------------------------------------------------------

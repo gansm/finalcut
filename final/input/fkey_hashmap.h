@@ -151,11 +151,11 @@ using HashMap = std::unordered_map<KeySequence<BufferT>
 template <typename BufferT>
 auto createKeyCapMap() -> HashMap<BufferT>
 {
-  auto& fkey_cap_table = FKeyMap::getKeyCapMap();
+  const auto& fkey_cap_table = FKeyMap::getKeyCapMap();
   HashMap<BufferT> fkey_cap_map;
   fkey_cap_map.reserve(fkey_cap_table.size());
 
-  for (auto& item : fkey_cap_table)
+  for (const auto& item : fkey_cap_table)
     if ( item.string && item.length != 0 )
       fkey_cap_map[{item.string, item.length}] = item.num;
 

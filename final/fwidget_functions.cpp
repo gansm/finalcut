@@ -285,7 +285,7 @@ void setWidgetFocus (FWidget* widget)
 }
 
 //----------------------------------------------------------------------
-auto setWidgetShadow (FWidget* w, bool enable) -> bool
+void setWidgetShadow (FWidget* w, bool enable)
 {
   if ( enable
     && FVTerm::getFOutput()->getEncoding() != Encoding::VT100
@@ -299,8 +299,6 @@ auto setWidgetShadow (FWidget* w, bool enable) -> bool
     w->setFlags().shadow.shadow = false;
     w->setShadowSize(FSize{0, 0});
   }
-
-  return w->getFlags().shadow.shadow;
 }
 
 //----------------------------------------------------------------------

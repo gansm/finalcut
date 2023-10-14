@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2022 Markus Gans                                           *
+* Copyright 2022-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -1124,10 +1124,7 @@ void XpmImage::parseXPM3 (XPMdataT& raw_xpm)
 {
   std::vector<std::string> xpm{};
   xpm.reserve(getArraySize(xpm));
-
-  for (const auto& line : raw_xpm)
-    xpm.emplace_back(line);
-
+  std::copy (raw_xpm.begin(), raw_xpm.end(), std::back_inserter(xpm));
   parseXPM3 (xpm);
 }
 

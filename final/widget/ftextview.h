@@ -332,7 +332,7 @@ inline void FTextView::scrollTo (const FPoint& pos)
 template <typename T>
 void FTextView::append (const std::initializer_list<T>& list)
 {
-  for (auto& str : list)
+  for (const auto& str : list)
     insert(str, -1);
 }
 
@@ -340,7 +340,7 @@ void FTextView::append (const std::initializer_list<T>& list)
 template <typename T>
 void FTextView::insert (const std::initializer_list<T>& list, int pos)
 {
-  for (auto& str : list)
+  for (const auto& str : list)
   {
     insert(str, pos);
     pos++;

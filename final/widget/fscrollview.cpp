@@ -302,9 +302,9 @@ void FScrollView::setText (const FString& txt)
 }
 
 //----------------------------------------------------------------------
-auto FScrollView::setViewportPrint (bool enable) -> bool
+void FScrollView::setViewportPrint (bool enable)
 {
-  return (use_own_print_area = ! enable);
+  use_own_print_area = ! enable;
 }
 
 //----------------------------------------------------------------------
@@ -317,9 +317,9 @@ void FScrollView::resetColors()
 }
 
 //----------------------------------------------------------------------
-auto FScrollView::setBorder (bool enable) -> bool
+void FScrollView::setBorder (bool enable)
 {
-  return (setFlags().feature.no_border = ! enable);
+  setFlags().feature.no_border = ! enable;
 }
 
 //----------------------------------------------------------------------
@@ -344,7 +344,7 @@ void FScrollView::setVerticalScrollBarMode (ScrollBarMode mode)
 void FScrollView::clearArea (wchar_t fillchar)
 {
   if ( viewport )
-    clearArea (viewport.get(), fillchar);
+    FScrollView::clearArea (viewport.get(), fillchar);
 }
 
 //----------------------------------------------------------------------
@@ -607,11 +607,11 @@ void FScrollView::onChildFocusOut (FFocusEvent* out_ev)
 {
   // Change the focus away from FScrollView to another widget
 
-  const auto& focus = FWidget::getFocusWidget();
+  const auto* focus = FWidget::getFocusWidget();
 
   if ( out_ev->getFocusType() == FocusTypes::NextWidget )
   {
-    const auto& last_widget = getLastFocusableWidget(getChildren());
+    const auto* last_widget = getLastFocusableWidget(getChildren());
 
     if ( focus != last_widget )
       return;
@@ -621,7 +621,7 @@ void FScrollView::onChildFocusOut (FFocusEvent* out_ev)
   }
   else if ( out_ev->getFocusType() == FocusTypes::PreviousWidget )
   {
-    const auto& first_widget = getFirstFocusableWidget(getChildren());
+    const auto* first_widget = getFirstFocusableWidget(getChildren());
 
     if ( focus != first_widget )
       return;
@@ -819,7 +819,7 @@ inline void FScrollView::createViewport (const FSize& size) noexcept
   scroll_geometry.setSize(size);
   viewport = createArea(scroll_geometry);
   setColor();
-  clearArea();
+  FScrollView::clearArea();
 }
 
 //----------------------------------------------------------------------

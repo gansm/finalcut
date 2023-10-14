@@ -946,8 +946,8 @@ void FListView::remove (FListViewItem* item)
     return;
 
   auto parent = item->getParent();
-  const auto& current_item = static_cast<FListViewItem*>(*current_iter);
-  const auto& first_item = itemlist.front();
+  const auto* current_item = static_cast<FListViewItem*>(*current_iter);
+  const auto* first_item = itemlist.front();
   auto end_iter = static_cast<FListViewIterator>(itemlist.end());
   const auto& last_item = *(--end_iter);
   const bool is_current_line( item == current_item );

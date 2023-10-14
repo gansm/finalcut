@@ -148,6 +148,7 @@ inline void PosixTimer::init (handler_t hdl, T&& uc)
 }
 #endif  // defined(USE_POSIX_TIMER)
 
+
 //----------------------------------------------------------------------
 // class KqueueTimer
 //----------------------------------------------------------------------

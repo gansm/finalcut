@@ -101,7 +101,7 @@ class FMenuItem : public FWidget
     auto getText() const -> FString;
 
     // Mutators
-    auto setEnable (bool = true) -> bool override;
+    void setEnable (bool = true) override;
     void setSelected();
     void unsetSelected();
     void setSeparator();

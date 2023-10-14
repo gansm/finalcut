@@ -127,8 +127,8 @@ class FKeyboard final
     static void  setKeypressTimeout (const uInt64) noexcept;
     static void  setReadBlockingTime (const uInt64) noexcept;
     static void  setNonBlockingInputSupport (bool = true) noexcept;
-    auto  setNonBlockingInput (bool = true) -> bool;
-    auto  unsetNonBlockingInput() noexcept -> bool;
+    void  setNonBlockingInput (bool = true);
+    void  unsetNonBlockingInput() noexcept;
     void  enableUTF8() noexcept;
     void  disableUTF8() noexcept;
     void  enableMouseSequences() noexcept;
@@ -270,8 +270,8 @@ inline void FKeyboard::setNonBlockingInputSupport (bool enable) noexcept
 { non_blocking_input_support = enable; }
 
 //----------------------------------------------------------------------
-inline auto FKeyboard::unsetNonBlockingInput() noexcept -> bool
-{ return setNonBlockingInput(false); }
+inline void FKeyboard::unsetNonBlockingInput() noexcept
+{ setNonBlockingInput(false); }
 
 //----------------------------------------------------------------------
 inline auto FKeyboard::hasPendingInput() const noexcept -> bool

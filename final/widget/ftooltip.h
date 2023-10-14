@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2022 Markus Gans                                      *
+* Copyright 2016-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -82,8 +82,8 @@ class FToolTip : public FWindow
     void enableAutoTrim();
     void disableAutoTrim();
     void resetColors() override;
-    auto setBorder (bool = true) -> bool;
-    auto unsetBorder() -> bool;
+    void setBorder (bool = true);
+    void unsetBorder();
 
     // Inquiries
     auto hasBorder() const -> bool;
@@ -129,8 +129,8 @@ inline void FToolTip::disableAutoTrim()
 { text_auto_trim = false; }
 
 //----------------------------------------------------------------------
-inline auto FToolTip::unsetBorder() -> bool
-{ return setBorder(false); }
+inline void FToolTip::unsetBorder()
+{ setBorder(false); }
 
 //----------------------------------------------------------------------
 inline auto FToolTip::hasBorder() const -> bool

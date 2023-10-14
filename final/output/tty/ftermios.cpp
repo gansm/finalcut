@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2022 Markus Gans                                      *
+* Copyright 2018-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -172,11 +172,11 @@ void FTermios::unsetCaptureSendCharacters()
 }
 
 //----------------------------------------------------------------------
-auto FTermios::setRawMode (bool enable) -> bool
+void FTermios::setRawMode (bool enable)
 {
   // set + unset flags for raw mode
   if ( raw_mode == enable )
-    return raw_mode;
+    return;
 
   // Info under: man 3 termios
   struct termios t{};
@@ -215,8 +215,6 @@ auto FTermios::setRawMode (bool enable) -> bool
     setTTY (t);
     raw_mode = false;
   }
-
-  return raw_mode;
 }
 
 //----------------------------------------------------------------------

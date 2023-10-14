@@ -952,12 +952,10 @@ void MyDialog::cb_showProgressBar()
 //----------------------------------------------------------------------
 void MyDialog::cb_updateNumber()
 {
-  int select_num = 0;
-
-  for (const auto& item : myList.getData() )
-    if ( item.isSelected() )
-      select_num++;
-
+  auto is_selected = [] (auto item) { return item.isSelected(); };
+  auto select_num = std::count_if ( std::begin(myList.getData())
+                                  , std::end(myList.getData())
+                                  , is_selected );
   tagged_count.clear();
   tagged_count << select_num;
   tagged_count.redraw();

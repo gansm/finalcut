@@ -181,15 +181,14 @@ void FFileDialog::setFilter (const FString& filter)
 }
 
 //----------------------------------------------------------------------
-auto FFileDialog::setShowHiddenFiles (bool enable) -> bool
+void FFileDialog::setShowHiddenFiles (bool enable)
 {
   if ( show_hidden == enable )
-    return show_hidden;
+    return;
 
   show_hidden = enable;
   readDir();
   filebrowser.redraw();
-  return show_hidden;
 }
 
 //----------------------------------------------------------------------

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2022 Markus Gans                                      *
+* Copyright 2012-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -198,8 +198,8 @@ class FTerm final
     static void redefineDefaultColors (bool = true);
     static void setDblclickInterval (const uInt64);
     static void useAlternateScreen (bool = true);
-    static auto setUTF8 (bool = true) -> bool;
-    static auto unsetUTF8() -> bool;
+    static void setUTF8 (bool = true);
+    static void unsetUTF8();
 
     // Methods
     static auto setVGAFont() -> bool;
@@ -308,25 +308,29 @@ inline void FTerm::setFSystem (std::unique_ptr<FSystem>& fsystem)
 
 //----------------------------------------------------------------------
 inline void FTerm::unsetInsertCursor()
-{ return setInsertCursor(false); }
+{ setInsertCursor(false); }
 
 //----------------------------------------------------------------------
-inline auto FTerm::unsetUTF8() -> bool
-{ return setUTF8(false); }
+inline void FTerm::unsetUTF8()
+{ setUTF8(false); }
 
 //----------------------------------------------------------------------
 template <typename... Args>
 inline void FTerm::paddingPrintf (const std::string& format, Args&&... args)
 {
-  const int size = std::snprintf (nullptr, 0, format.data(), args...) + 1;
+  const int size = std::snprintf (nullptr, 0, format.data(), args...);
 
   if ( size <= 0 )
     return;
 
-  const auto count = std::size_t(size);
-  std::vector<char> buf(count);
-  std::snprintf (&buf[0], count, format.data(), std::forward<Args>(args)...);
-  paddingPrint (std::string(&buf[0]), 1);
+  std::string buffer{};
+  auto buffer_size = std::size_t(size + 1);
+  buffer.resize(buffer_size);
+  std::snprintf ( const_cast<char*>(buffer.data()), buffer_size
+                , format.data(), std::forward<Args>(args)... );
+  buffer_size--;
+  buffer.resize(buffer_size);
+  paddingPrint (buffer, 1);
 }
 
 //----------------------------------------------------------------------

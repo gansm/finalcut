@@ -307,20 +307,18 @@ void FTerm::useAlternateScreen (bool enable)
 }
 
 //----------------------------------------------------------------------
-auto FTerm::setUTF8 (bool enable) -> bool  // UTF-8 (Unicode)
+void FTerm::setUTF8 (bool enable)  // UTF-8 (Unicode)
 {
   static auto& data = FTermData::getInstance();
 
   if ( data.isUTF8() == enable )
-    return enable;
+    return;
 
   data.setUTF8(enable);
 
 #if defined(__linux__)
   FTermLinux::getInstance().setUTF8 (enable);
 #endif
-
-  return data.isUTF8();
 }
 
 //----------------------------------------------------------------------

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2022 Markus Gans                                      *
+* Copyright 2020-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -406,12 +406,6 @@ void FLoggerTest::applicationObjectTest()
 
   // Reset to the default rdbuf of clog
   std::clog.rdbuf(default_clog_rdbuf);
-
-  // Delete the global FApplication logger object
-  auto logger = &(finalcut::FApplication::getLog());
-
-  if ( logger )
-    delete logger;
 }
 
 

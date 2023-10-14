@@ -141,13 +141,13 @@ class FLineEdit : public FWidget
     void setSize (const FSize&, bool = true) override;
     void setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
-    auto setEnable (bool = true) -> bool override;
-    auto unsetEnable() -> bool override;
-    auto setDisable() -> bool override;
-    auto setShadow (bool = true) -> bool;
-    auto unsetShadow() -> bool;
-    auto setReadOnly (bool = true) -> bool;
-    auto unsetReadOnly() -> bool;
+    void setEnable (bool = true) override;
+    void unsetEnable() override;
+    void setDisable() override;
+    void setShadow (bool = true);
+    void unsetShadow();
+    void setReadOnly (bool = true);
+    void unsetReadOnly();
 
     // Inquiry
     auto hasShadow() const -> bool;
@@ -290,20 +290,20 @@ inline void FLineEdit::setLabelAssociatedWidget (FWidget* w)
 { label_associated_widget = w; }
 
 //----------------------------------------------------------------------
-inline auto FLineEdit::unsetEnable() -> bool
-{ return setEnable(false); }
+inline void FLineEdit::unsetEnable()
+{ setEnable(false); }
 
 //----------------------------------------------------------------------
-inline auto FLineEdit::setDisable() -> bool
-{ return setEnable(false); }
+inline void FLineEdit::setDisable()
+{ setEnable(false); }
 
 //----------------------------------------------------------------------
-inline auto FLineEdit::unsetShadow() -> bool
-{ return setShadow(false); }
+inline void FLineEdit::unsetShadow()
+{ setShadow(false); }
 
 //----------------------------------------------------------------------
-inline auto FLineEdit::unsetReadOnly() -> bool
-{ return setReadOnly(true); }
+inline void FLineEdit::unsetReadOnly()
+{ setReadOnly(true); }
 
 //----------------------------------------------------------------------
 inline auto FLineEdit::hasShadow() const -> bool

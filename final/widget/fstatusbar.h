@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2022 Markus Gans                                      *
+* Copyright 2014-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -102,8 +102,8 @@ class FStatusKey : public FWidget
     void setText (const FString&);
     void setActive();
     void unsetActive() noexcept;
-    auto setMouseFocus (bool = true) -> bool;
-    auto unsetMouseFocus() -> bool;
+    void setMouseFocus (bool = true);
+    void unsetMouseFocus();
 
     // Inquiry
     auto isActivated() const noexcept -> bool;
@@ -157,8 +157,8 @@ inline void FStatusKey::unsetActive() noexcept
 { active = false; }
 
 //----------------------------------------------------------------------
-inline auto FStatusKey::unsetMouseFocus() -> bool
-{ return setMouseFocus(false); }
+inline void FStatusKey::unsetMouseFocus()
+{ setMouseFocus(false); }
 
 //----------------------------------------------------------------------
 inline auto FStatusKey::isActivated() const noexcept -> bool

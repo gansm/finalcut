@@ -89,12 +89,12 @@ void FStatusKey::setActive()
 }
 
 //----------------------------------------------------------------------
-auto FStatusKey::setMouseFocus(bool enable) -> bool
+void FStatusKey::setMouseFocus (bool enable)
 {
   if ( mouse_focus == enable )
-    return true;
+    return;
 
-  return (mouse_focus = enable);
+  mouse_focus = enable;
 }
 
 

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2022 Markus Gans                                      *
+* Copyright 2018-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -73,9 +73,9 @@ class FTermios final
     static void  unsetHardwareEcho();
     static void  setCaptureSendCharacters();
     static void  unsetCaptureSendCharacters();
-    static auto  setRawMode (bool = true) -> bool;
-    static auto  unsetRawMode() -> bool;
-    static auto  setCookedMode() -> bool;
+    static void  setRawMode (bool = true);
+    static void  unsetRawMode();
+    static void  setCookedMode();
     static auto  getBaudRate() -> uInt;
 
   private:
@@ -110,12 +110,12 @@ inline auto FTermios::isRaw() noexcept -> bool
 { return raw_mode; }
 
 //----------------------------------------------------------------------
-inline auto FTermios::unsetRawMode() -> bool
-{ return setRawMode(false); }
+inline void FTermios::unsetRawMode()
+{ setRawMode(false); }
 
 //----------------------------------------------------------------------
-inline auto FTermios::setCookedMode() -> bool
-{ return setRawMode(false); }
+inline void FTermios::setCookedMode()
+{ setRawMode(false); }
 
 }  // namespace finalcut
 

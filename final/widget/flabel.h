@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2022 Markus Gans                                      *
+* Copyright 2014-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -101,12 +101,12 @@ class FLabel : public FWidget
     // Mutators
     void setAccelWidget (FWidget* = nullptr);
     void setAlignment (Align) noexcept;
-    auto setEmphasis (bool = true) noexcept -> bool;
-    auto unsetEmphasis() noexcept -> bool;
+    void setEmphasis (bool = true) noexcept;
+    void unsetEmphasis() noexcept;
     void resetColors() override;
-    auto setReverseMode (bool = true) noexcept -> bool;
-    auto unsetReverseMode() noexcept -> bool;
-    auto setEnable (bool = true) -> bool override;
+    void setReverseMode (bool = true) noexcept;
+    void unsetReverseMode() noexcept;
+    void setEnable (bool = true) override;
     void setNumber (uLong);
     void setNumber (long);
     void setNumber (float, int = FLT_DIG);
@@ -187,20 +187,20 @@ inline auto FLabel::getText() & -> FString&
 { return text; }
 
 //----------------------------------------------------------------------
-inline auto FLabel::setEmphasis (bool enable) noexcept -> bool
-{ return (emphasis = enable); }
+inline void FLabel::setEmphasis (bool enable) noexcept
+{ emphasis = enable; }
 
 //----------------------------------------------------------------------
-inline auto FLabel::unsetEmphasis() noexcept -> bool
-{ return setEmphasis(false); }
+inline void FLabel::unsetEmphasis() noexcept
+{ setEmphasis(false); }
 
 //----------------------------------------------------------------------
-inline auto FLabel::setReverseMode (bool enable) noexcept -> bool
-{ return (reverse_mode = enable); }
+inline void FLabel::setReverseMode (bool enable) noexcept
+{ reverse_mode = enable; }
 
 //----------------------------------------------------------------------
-inline auto FLabel::unsetReverseMode() noexcept -> bool
-{ return setReverseMode(false); }
+inline void FLabel::unsetReverseMode() noexcept
+{ setReverseMode(false); }
 
 //----------------------------------------------------------------------
 inline void FLabel::setNumber (uLong num)

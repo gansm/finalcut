@@ -226,20 +226,20 @@ void FWidget::setMainWidget (FWidget* obj)
 }
 
 //----------------------------------------------------------------------
-auto FWidget::setVisible (bool enable) -> bool
+void FWidget::setVisible (bool enable)
 {
-  return (flags.visibility.visible = enable);
+  flags.visibility.visible = enable;
 }
 
 //----------------------------------------------------------------------
-auto FWidget::setEnable (bool enable) -> bool
+void FWidget::setEnable (bool enable)
 {
   if ( enable )
     emitCallback("enable");
   else
     emitCallback("disable");
 
-  return (flags.feature.active = enable);
+  flags.feature.active = enable;
 }
 
 //----------------------------------------------------------------------
@@ -719,11 +719,11 @@ auto FWidget::numOfFocusableChildren() & -> int
 
   int num{0};
 
-  for (auto* child : getChildren())
+  for (const auto* child : getChildren())
   {
     if ( child->isWidget() )
     {
-      const auto& widget = static_cast<FWidget*>(child);
+      const auto& widget = static_cast<const FWidget*>(child);
 
       if ( widget->isEnabled()
         && widget->isShown()

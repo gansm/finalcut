@@ -357,8 +357,8 @@ class FListView : public FWidget
     void hideSortIndicator (bool = true);
     void showColumn (int);
     void hideColumn (int);
-    auto setTreeView (bool = true) -> bool;
-    auto unsetTreeView() -> bool;
+    void setTreeView (bool = true);
+    void unsetTreeView();
 
     // Inquiries
     auto isColumnHidden (int) const -> bool;
@@ -613,12 +613,12 @@ inline void FListView::hideSortIndicator (bool hide)
 { hide_sort_indicator = hide; }
 
 //----------------------------------------------------------------------
-inline auto FListView::setTreeView (bool enable) -> bool
-{ return (tree_view = enable); }
+inline void FListView::setTreeView (bool enable)
+{ tree_view = enable; }
 
 //----------------------------------------------------------------------
-inline auto FListView::unsetTreeView() -> bool
-{ return setTreeView(false); }
+inline void FListView::unsetTreeView()
+{ setTreeView(false); }
 
 //----------------------------------------------------------------------
 inline auto FListView::insert (FListViewItem* item) -> FObject::iterator

@@ -49,7 +49,7 @@ auto FCharMap::getCharacter ( const CharEncodeMap& char_enc
 auto FCharMap::setCharacter ( CharEncodeMap& char_enc
                             , const Encoding& enc ) -> wchar_t&
 {
-  const auto array = reinterpret_cast<wchar_t*>(&char_enc);
+  auto* array = reinterpret_cast<wchar_t*>(&char_enc);
   return array[std::size_t(enc)];
 }
 

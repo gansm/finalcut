@@ -85,11 +85,11 @@ class FSpinBox : public FWidget
     // Mutators
     void setSize (const FSize&, bool = true) override;
     void setGeometry (const FPoint&, const FSize&, bool = true) override;
-    auto setEnable (bool = true) -> bool override;
-    auto unsetEnable() -> bool override;
-    auto setDisable() -> bool override;
-    auto setShadow (bool = true) -> bool;
-    auto unsetShadow() -> bool;
+    void setEnable (bool = true) override;
+    void unsetEnable() override;
+    void setDisable() override;
+    void setShadow (bool = true);
+    void unsetShadow();
     void setValue (sInt64);
     void setMinValue (sInt64);
     void setMaxValue (sInt64);
@@ -173,16 +173,16 @@ inline auto FSpinBox::getLabelOrientation() const -> FLineEdit::LabelOrientation
 { return input_field.getLabelOrientation(); }
 
 //----------------------------------------------------------------------
-inline auto FSpinBox::unsetEnable() -> bool
-{ return setEnable(false); }
+inline void FSpinBox::unsetEnable()
+{ setEnable(false); }
 
 //----------------------------------------------------------------------
-inline auto FSpinBox::setDisable() -> bool
-{ return setEnable(false); }
+inline void FSpinBox::setDisable()
+{ setEnable(false); }
 
 //----------------------------------------------------------------------
-inline auto FSpinBox::unsetShadow() -> bool
-{ return setShadow(false); }
+inline void FSpinBox::unsetShadow()
+{ setShadow(false); }
 
 //----------------------------------------------------------------------
 inline auto FSpinBox::hasShadow() const -> bool

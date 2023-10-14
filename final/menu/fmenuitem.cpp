@@ -86,7 +86,7 @@ FMenuItem::~FMenuItem()  // destructor
 
 // public methods of FMenuItem
 //----------------------------------------------------------------------
-auto FMenuItem::setEnable (bool enable) -> bool
+void FMenuItem::setEnable (bool enable)
 {
   FWidget::setEnable(enable);
   auto super = getSuperMenu();
@@ -105,8 +105,6 @@ auto FMenuItem::setEnable (bool enable) -> bool
     if ( super && isMenuBar(super) )
       super->delAccelerator (this);
   }
-
-  return enable;
 }
 
 //----------------------------------------------------------------------
@@ -218,13 +216,10 @@ void FMenuItem::onKeyPress (FKeyEvent* ev)
   {
     auto mbar = static_cast<FMenuBar*>(super_menu);
 
-    if ( mbar )
-    {
-      if ( mbar->hotkeyMenu(ev) )
-        return;
+    if ( mbar->hotkeyMenu(ev) )
+      return;
 
-      mbar->onKeyPress(ev);
-    }
+    mbar->onKeyPress(ev);
   }
 }
 
@@ -710,7 +705,7 @@ void FMenuItem::cb_switchToDialog (FDialog* win) const
 //----------------------------------------------------------------------
 void FMenuItem::cb_destroyDialog (FDialog* win)
 {
-  const auto& fapp = FApplication::getApplicationObject();
+  const auto* fapp = FApplication::getApplicationObject();
 
   if ( ! win || ! fapp )
     return;

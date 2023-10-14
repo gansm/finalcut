@@ -99,7 +99,7 @@ auto FButtonGroup::getCheckedButton() const -> FToggleButton*
 }
 
 //----------------------------------------------------------------------
-auto FButtonGroup::setEnable (bool enable) -> bool
+void FButtonGroup::setEnable (bool enable)
 {
   FWidget::setEnable(enable);
 
@@ -107,8 +107,6 @@ auto FButtonGroup::setEnable (bool enable) -> bool
     setHotkeyAccelerator();
   else
     delAccelerator();
-
-  return enable;
 }
 
 //----------------------------------------------------------------------
@@ -465,7 +463,7 @@ void FButtonGroup::cb_buttonToggled (const FToggleButton* button) const
 
 // FToggleButton friend function definition
 //----------------------------------------------------------------------
-auto getGroup (FToggleButton& toggle_btn) -> FButtonGroup*
+auto getGroup (const FToggleButton& toggle_btn) -> FButtonGroup*
 {
   return toggle_btn.button_group;
 }

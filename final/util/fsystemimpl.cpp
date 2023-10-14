@@ -24,10 +24,6 @@
   #define USE_KQUEUE_TIMER
 #endif
 
-#if !(defined(__APPLE__) && defined(__MACH__)) && !(defined(__OpenBSD__))
-  #define USE_POSIX_TIMER
-#endif
-
 #if defined(USE_KQUEUE_TIMER)
   #include <unistd.h>
   #include <sys/event.h>

@@ -1,6 +1,6 @@
 #ifndef _FINAL_FCONFIG_H
 #define _FINAL_FCONFIG_H 1
- 
+
 /* final/fconfig.h. Generated automatically at end of configure. */
 /* config.h.  Generated from config.h.in by configure.  */
 /* config.h.in.  Generated from configure.ac by autoheader.  */
@@ -154,10 +154,14 @@
 #endif
 
 /* Define to 1 if you have the `timer_create' function. */
-/* #undef HAVE_TIMER_CREATE */
+#ifndef F_HAVE_TIMER_CREATE
+#define F_HAVE_TIMER_CREATE 1
+#endif
 
 /* Define to 1 if you have the `timer_settime' function. */
-/* #undef HAVE_TIMER_SETTIME */
+#ifndef F_HAVE_TIMER_SETTIME
+#define F_HAVE_TIMER_SETTIME 1
+#endif
 
 /* Define to 1 if you have the <ttyent.h> header file. */
 #ifndef F_HAVE_TTYENT_H
@@ -263,6 +267,6 @@
 
 /* Define to 1 if you need to in order for `stat' and other things to work. */
 /* #undef _POSIX_SOURCE */
- 
+
 /* once: _FINAL_FCONFIG_H */
 #endif

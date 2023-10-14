@@ -207,13 +207,13 @@ class FWidget : public FVTerm
     static void  setColorTheme();
     auto  setAcceleratorList() & -> FAcceleratorList&;
     virtual void setStatusbarMessage (const FString&);
-    auto  setVisible (bool = true) -> bool;
-    auto  unsetVisible() -> bool;
-    virtual auto setEnable (bool = true) -> bool;
-    virtual auto unsetEnable() -> bool;
-    virtual auto setDisable() -> bool;
-    virtual auto setVisibleCursor (bool = true) -> bool;  // input cursor visibility
-    virtual auto unsetVisibleCursor() -> bool;            // for the widget
+    void  setVisible (bool = true);
+    void  unsetVisible();
+    virtual void setEnable (bool = true);
+    virtual void unsetEnable();
+    virtual void setDisable();
+    virtual void setVisibleCursor (bool = true);  // input cursor visibility
+    virtual void unsetVisibleCursor();            // for the widget
     virtual auto setFocus ( bool = true
                           , FocusTypes = FocusTypes::DefiniteWidget) -> bool;
     virtual auto unsetFocus() -> bool;
@@ -756,24 +756,24 @@ inline void FWidget::setStatusbarMessage (const FString& msg)
 { statusbar_message = msg; }
 
 //----------------------------------------------------------------------
-inline auto FWidget::unsetVisible() -> bool
-{ return setVisible(false); }
+inline void FWidget::unsetVisible()
+{ setVisible(false); }
 
 //----------------------------------------------------------------------
-inline auto FWidget::unsetEnable() -> bool
-{ return setEnable(false); }
+inline void FWidget::unsetEnable()
+{ setEnable(false); }
 
 //----------------------------------------------------------------------
-inline auto FWidget::setDisable() -> bool
-{ return setEnable(false); }
+inline void FWidget::setDisable()
+{ setEnable(false); }
 
 //----------------------------------------------------------------------
-inline auto FWidget::setVisibleCursor (bool enable) -> bool
-{ return (flags.visibility.visible_cursor = enable); }
+inline void FWidget::setVisibleCursor (bool enable)
+{ flags.visibility.visible_cursor = enable; }
 
 //----------------------------------------------------------------------
-inline auto FWidget::unsetVisibleCursor() -> bool
-{ return setVisibleCursor(false); }
+inline void FWidget::unsetVisibleCursor()
+{ setVisibleCursor(false); }
 
 //----------------------------------------------------------------------
 inline auto FWidget::unsetFocus() -> bool

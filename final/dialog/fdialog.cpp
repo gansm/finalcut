@@ -82,10 +82,10 @@ FDialog::~FDialog()  // destructor
 
 // public methods of FDialog
 //----------------------------------------------------------------------
-auto FDialog::setDialogWidget (bool enable) -> bool
+void FDialog::setDialogWidget (bool enable)
 {
   if ( isDialogWidget() == enable )
-    return true;
+    return;
 
   setFlags().type.dialog_widget = enable;
 
@@ -93,15 +93,13 @@ auto FDialog::setDialogWidget (bool enable) -> bool
     setTermOffsetWithPadding();
   else
     setParentOffset();
-
-  return enable;
 }
 
 //----------------------------------------------------------------------
-auto FDialog::setModal (bool enable) -> bool
+void FDialog::setModal (bool enable)
 {
   if ( isModal() == enable )
-    return true;
+    return;
 
   setFlags().visibility.modal = enable;
 
@@ -113,12 +111,10 @@ auto FDialog::setModal (bool enable) -> bool
   }
   else
     setModalDialogCounter()--;
-
-  return enable;
 }
 
 //----------------------------------------------------------------------
-auto FDialog::setBorder (bool enable) -> bool
+void FDialog::setBorder (bool enable)
 {
   if ( enable )
   {
@@ -134,8 +130,6 @@ auto FDialog::setBorder (bool enable) -> bool
     setBottomPadding(0);
     setRightPadding(0);
   }
-
-  return ( setFlags().feature.no_border = (! enable) );
 }
 
 //----------------------------------------------------------------------
@@ -148,7 +142,7 @@ void FDialog::resetColors()
 }
 
 //----------------------------------------------------------------------
-auto FDialog::setResizeable (bool enable) -> bool
+void FDialog::setResizeable (bool enable)
 {
   FWindow::setResizeable (enable);
 
@@ -156,12 +150,10 @@ auto FDialog::setResizeable (bool enable) -> bool
     zoom_item->setEnable();
   else
     zoom_item->setDisable();
-
-  return enable;
 }
 
 //----------------------------------------------------------------------
-auto FDialog::setMinimizable (bool enable) -> bool
+void FDialog::setMinimizable (bool enable)
 {
   FWindow::setMinimizable (enable);
 
@@ -169,8 +161,6 @@ auto FDialog::setMinimizable (bool enable) -> bool
     minimize_item->setEnable();
   else
     minimize_item->setDisable();
-
-  return enable;
 }
 
 //----------------------------------------------------------------------
@@ -580,10 +570,6 @@ void FDialog::onMouseDoubleClick (FMouseEvent* ev)
 
   if ( ev->getButton() != MouseButton::Left )
     return;
-
-  const int x = getTermX();
-  const int y = getTermY();
-  const FRect title_button{x, y, 3, 1};
 
   if ( isMouseOverMenuButton(ms) )
   {
@@ -1430,11 +1416,8 @@ inline void FDialog::deactivateMinimizeButton()
 inline void FDialog::leaveMinimizeButton (const MouseStates& ms)
 {
   bool minimize_button_pressed_before = minimize_button_pressed;
-
-  if ( isMouseOverMinimizeButton(ms) && minimize_button_active )
-    minimize_button_pressed = true;
-  else if ( minimize_button_pressed )
-    minimize_button_pressed = false;
+  minimize_button_pressed = isMouseOverMinimizeButton(ms)
+                         && minimize_button_active;
 
   if ( minimize_button_pressed_before != minimize_button_pressed )
     drawTitleBar();
@@ -1480,11 +1463,7 @@ inline void FDialog::deactivateZoomButton()
 inline void FDialog::leaveZoomButton (const MouseStates& ms)
 {
   bool zoom_button_pressed_before = zoom_button_pressed;
-
-  if ( isMouseOverZoomButton(ms) && zoom_button_active )
-    zoom_button_pressed = true;
-  else if ( zoom_button_pressed )
-    zoom_button_pressed = false;
+  zoom_button_pressed = isMouseOverZoomButton(ms) && zoom_button_active;
 
   if ( zoom_button_pressed_before != zoom_button_pressed )
     drawTitleBar();

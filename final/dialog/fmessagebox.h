@@ -111,8 +111,8 @@ class FMessageBox : public FDialog
     // Mutator
     void setTitlebarText (const FString&);
     void setHeadline (const FString&);
-    auto setCenterText (bool = true) -> bool;
-    auto unsetCenterText() -> bool;
+    void setCenterText (bool = true);
+    void unsetCenterText();
     void setText (const FString&) override;
 
     // Methods
@@ -197,12 +197,12 @@ inline void FMessageBox::setTitlebarText (const FString& txt)
 { return FDialog::setText(txt); }
 
 //----------------------------------------------------------------------
-inline auto FMessageBox::setCenterText(bool enable) -> bool
-{ return (center_text = enable); }
+inline void FMessageBox::setCenterText (bool enable)
+{ center_text = enable; }
 
 //----------------------------------------------------------------------
-inline auto FMessageBox::unsetCenterText() -> bool
-{ return setCenterText(false); }
+inline void FMessageBox::unsetCenterText()
+{ setCenterText(false); }
 
 //----------------------------------------------------------------------
 template <typename messageType>
