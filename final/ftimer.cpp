@@ -37,7 +37,7 @@ static auto getInstance() -> FTimer<FObject>*
   return fobject_timer.get();
 }
 
-std::mutex timer_var::mutex{};
+std::shared_timed_mutex timer_var::mutex{};
 
 }  // namespace internal
 

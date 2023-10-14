@@ -1124,7 +1124,7 @@ void XpmImage::parseXPM3 (XPMdataT& raw_xpm)
 {
   std::vector<std::string> xpm{};
   xpm.reserve(getArraySize(xpm));
-  std::copy (raw_xpm.begin(), raw_xpm.end(), std::back_inserter(xpm));
+  std::copy (std::begin(raw_xpm), std::end(raw_xpm), std::back_inserter(xpm));
   parseXPM3 (xpm);
 }
 
