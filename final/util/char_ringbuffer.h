@@ -68,12 +68,15 @@ class FRingBuffer
     //------------------------------------------------------------------
 
     template <typename Type, std::size_t N>
-    class ring_iterator : public std::iterator<std::forward_iterator_tag, Type>
+    class ring_iterator
     {
       public:
         // Using-declarations
-        using pointer = Type*;
-        using reference = Type&;
+        using iterator_category = std::forward_iterator_tag;
+        using value_type        = Type;
+        using difference_type   = std::ptrdiff_t;
+        using pointer           = Type*;
+        using reference         = Type&;
 
         explicit ring_iterator (pointer p, std::size_t start, std::size_t pos)
           : ptr{p}

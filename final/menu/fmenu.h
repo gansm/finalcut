@@ -105,13 +105,13 @@ class FMenu : public FWindow
     auto getItem() -> FMenuItem*;
 
     // Mutators
-    auto setEnable (bool = true) -> bool override;
-    auto unsetEnable() -> bool override;
-    auto setDisable() -> bool override;
+    void setEnable (bool = true) override;
+    void unsetEnable() override;
+    void setDisable() override;
     void setSelected();
     void unsetSelected();
-    auto setMenuWidget (bool = true) -> bool;
-    auto unsetMenuWidget() -> bool;
+    void setMenuWidget (bool = true);
+    void unsetMenuWidget();
     void setStatusbarMessage (const FString&) override;
     void setMenu (FMenu*);
     void setText (const FString&);
@@ -270,16 +270,16 @@ inline auto FMenu::getItem() -> FMenuItem*
 { return &menuitem; }
 
 //----------------------------------------------------------------------
-inline auto FMenu::setEnable (bool enable) -> bool
-{ return menuitem.setEnable(enable); }
+inline void FMenu::setEnable (bool enable)
+{ menuitem.setEnable(enable); }
 
 //----------------------------------------------------------------------
-inline auto FMenu::unsetEnable() -> bool
-{ return menuitem.unsetEnable(); }
+inline void FMenu::unsetEnable()
+{ menuitem.unsetEnable(); }
 
 //----------------------------------------------------------------------
-inline auto FMenu::setDisable() -> bool
-{ return menuitem.setDisable(); }
+inline void FMenu::setDisable()
+{ menuitem.setDisable(); }
 
 //----------------------------------------------------------------------
 inline void FMenu::setSelected()
@@ -290,8 +290,8 @@ inline void FMenu::unsetSelected()
 { menuitem.unsetSelected(); }
 
 //----------------------------------------------------------------------
-inline auto FMenu::unsetMenuWidget() -> bool
-{ return setMenuWidget(false); }
+inline void FMenu::unsetMenuWidget()
+{ setMenuWidget(false); }
 
 //----------------------------------------------------------------------
 inline void FMenu::setMenu (FMenu* m)

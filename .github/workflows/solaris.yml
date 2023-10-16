@@ -20,7 +20,12 @@ jobs:
       uses: vmactions/solaris-vm@v0
       with:
         prepare: |
-          pkg install gcc-7
+          pkg publisher solaris
+          beadm list
+          pkg info entire
+          pkg list -af entire
+          pkg list -af gcc-7
+          pkg install -v --accept developer/gcc-7@7.3.0-11.4.0.0.1.14.0
           pkgutil -y -i automake autoconf autoconf_archive libtool pkgconfig libcppunit1_12_1 libcppunit_dev gsed ggrep
         mem: 4096
         run: |

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2022 Markus Gans                                      *
+* Copyright 2019-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -82,6 +82,9 @@ class ConEmu
     // Constructors
     ConEmu()
     {
+      // create timer instance
+      finalcut::FObjectTimer timer{};
+
       // Map shared memory
       void* ptr = mmap ( nullptr
                        , sizeof(*shared_state)
@@ -481,14 +484,16 @@ inline void ConEmu::printConEmuDebug()
         echo -e \"\\r\"; \
       done'";
   system(debug_command);
+  std::cout << std::flush;
+  std::fflush (stdout);
 }
 
 //----------------------------------------------------------------------
 inline void ConEmu::closeConEmuStdStreams()
 {
-  close(fd_stdin);   // stdin
-  close(fd_stdout);  // stdout
-  close(fd_stderr);  // stderr
+  ::close(fd_stdin);   // stdin
+  ::close(fd_stdout);  // stdout
+  ::close(fd_stderr);  // stderr
 }
 
 //----------------------------------------------------------------------
@@ -518,7 +523,7 @@ inline auto ConEmu::forkConEmu() -> pid_t
 
 #ifdef TIOCSCTTY
     // Set controlling tty
-    if ( ioctl(fd_slave, TIOCSCTTY, 0) == -1 )
+    if ( ::ioctl(fd_slave, TIOCSCTTY, 0) == -1 )
     {
       *shared_state = true;
       return -1;
@@ -542,7 +547,7 @@ inline auto ConEmu::forkConEmu() -> pid_t
     size.ws_row = 25;
     size.ws_col = 80;
 
-    if ( ioctl(fd_slave, TIOCSWINSZ, &size) == -1)
+    if ( ::ioctl(fd_slave, TIOCSWINSZ, &size) == -1)
     {
       *shared_state = true;
       return -1;
@@ -874,7 +879,7 @@ inline auto ConEmu::openSlavePTY() -> bool
     return false;
 
   // Open the slave PTY
-  fd_slave = open(pty_name, O_RDWR);
+  fd_slave = ::open(pty_name, O_RDWR);
 
   if ( fd_slave < 0 )
     return false;
@@ -888,7 +893,7 @@ inline void ConEmu::closeMasterPTY()
   if ( fd_master <= 0 )
     return;
 
-  close (fd_master);
+  ::close (fd_master);
   fd_master = -1;
 }
 
@@ -898,7 +903,7 @@ inline void ConEmu::closeSlavePTY()
   if ( fd_slave <= 0 )
     return;
 
-  close (fd_slave);
+  ::close (fd_slave);
   fd_slave = -1;
 }
 

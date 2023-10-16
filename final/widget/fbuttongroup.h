@@ -79,9 +79,9 @@ class FButtonGroup : public FScrollView
     auto getCount() const -> std::size_t;
 
     // Mutator
-    auto setEnable (bool = true) -> bool override;
-    auto unsetEnable() -> bool override;
-    auto setDisable() -> bool override;
+    void setEnable (bool = true) override;
+    void unsetEnable() override;
+    void setDisable() override;
 
     // Inquiries
     auto isChecked (int) const -> bool;
@@ -135,12 +135,12 @@ inline auto FButtonGroup::getClassName() const -> FString
 { return "FButtonGroup"; }
 
 //----------------------------------------------------------------------
-inline auto FButtonGroup::unsetEnable() -> bool
-{ return setEnable(false); }
+inline void FButtonGroup::unsetEnable()
+{ setEnable(false); }
 
 //----------------------------------------------------------------------
-inline auto FButtonGroup::setDisable() -> bool
-{ return setEnable(false); }
+inline void FButtonGroup::setDisable()
+{ setEnable(false); }
 
 //----------------------------------------------------------------------
 inline auto FButtonGroup::getCount() const -> std::size_t

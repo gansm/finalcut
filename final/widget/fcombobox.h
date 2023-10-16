@@ -145,13 +145,13 @@ class FComboBox : public FWidget
     // Mutators
     void setSize (const FSize&, bool = true) override;
     void setGeometry (const FPoint&, const FSize&, bool = true) override;
-    auto setEnable (bool = true) -> bool override;
-    auto unsetEnable() -> bool override;
-    auto setDisable() -> bool override;
-    auto setShadow (bool = true) -> bool;
-    auto unsetShadow() -> bool;
-    auto setEditable (bool = true) -> bool;
-    auto unsetEditable() -> bool;
+    void setEnable (bool = true) override;
+    void unsetEnable() override;
+    void setDisable() override;
+    void setShadow (bool = true);
+    void unsetShadow();
+    void setEditable (bool = true);
+    void unsetEditable();
     void setCurrentItem (std::size_t);
     void setMaxVisibleItems (std::size_t);
     void setText (const FString&);
@@ -244,20 +244,20 @@ inline auto FComboBox::getLabelOrientation() const -> FLineEdit::LabelOrientatio
 { return input_field.getLabelOrientation(); }
 
 //----------------------------------------------------------------------
-inline auto FComboBox::unsetEnable() -> bool
-{ return setEnable(false); }
+inline void FComboBox::unsetEnable()
+{ setEnable(false); }
 
 //----------------------------------------------------------------------
-inline auto FComboBox::setDisable() -> bool
-{ return setEnable(false); }
+inline void FComboBox::setDisable()
+{ setEnable(false); }
 
 //----------------------------------------------------------------------
-inline auto FComboBox::unsetShadow() -> bool
-{ return setShadow(false); }
+inline void FComboBox::unsetShadow()
+{ setShadow(false); }
 
 //----------------------------------------------------------------------
-inline auto FComboBox::unsetEditable() -> bool
-{ return setEditable(false); }
+inline void FComboBox::unsetEditable()
+{ setEditable(false); }
 
 //----------------------------------------------------------------------
 inline auto FComboBox::hasShadow() const -> bool
@@ -268,7 +268,7 @@ template <typename T
         , typename DT>
 void FComboBox::insert (const std::initializer_list<T>& list, DT&& d)
 {
-  for (auto& item : list)
+  for (const auto& item : list)
   {
     FListBoxItem listItem (FString() << item, std::forward<DT>(d));
     insert (listItem);

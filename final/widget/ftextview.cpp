@@ -418,6 +418,10 @@ void FTextView::onWheel (FWheelEvent* ev)
     scrollBy (0, -distance);
   else if ( wheel == MouseWheel::Down )
     scrollBy (0, distance);
+  else if ( wheel == MouseWheel::Left )
+    scrollBy (-distance, 0);
+  else if ( wheel == MouseWheel::Right )
+    scrollBy (distance, 0);
 
   if ( isShown() )
     drawText();
@@ -745,10 +749,12 @@ void FTextView::cb_vbarChange (const FWidget*)
       break;
 
     case FScrollbar::ScrollType::WheelUp:
+    case FScrollbar::ScrollType::WheelLeft:
       scrollBy (0, -wheel_distance);
       break;
 
     case FScrollbar::ScrollType::WheelDown:
+    case FScrollbar::ScrollType::WheelRight:
       scrollBy (0, wheel_distance);
       break;
 
@@ -792,10 +798,12 @@ void FTextView::cb_hbarChange (const FWidget*)
       break;
 
     case FScrollbar::ScrollType::WheelUp:
+    case FScrollbar::ScrollType::WheelLeft:
       scrollBy (-wheel_distance, 0);
       break;
 
     case FScrollbar::ScrollType::WheelDown:
+    case FScrollbar::ScrollType::WheelRight:
       scrollBy (wheel_distance, 0);
       break;
 

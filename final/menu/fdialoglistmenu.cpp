@@ -49,8 +49,13 @@ FDialogListMenu::FDialogListMenu (FString&& txt, FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FDialogListMenu::~FDialogListMenu() noexcept = default;  // destructor
+FDialogListMenu::~FDialogListMenu()  // destructor
+{
+  auto fapp = FApplication::getApplicationObject();
 
+  if ( fapp )
+    fapp->delCallback(this);
+}
 
 // private methods of FMenu
 //----------------------------------------------------------------------

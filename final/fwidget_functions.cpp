@@ -54,13 +54,13 @@ uInt8 var::b1_print_trans_mask{};
 void initByte1PrintTransMask()
 {
   // Set bits that must not be reset
-  FAttribute mask{};
-  mask.bit.transparent = true;
-  mask.bit.color_overlay = true;
-  mask.bit.inherit_background = true;
-  mask.bit.no_changes = true;
-  mask.bit.printed = true;
-  internal::var::b1_print_trans_mask = mask.byte[1];
+  FCharAttribute mask{};
+  mask.transparent = true;
+  mask.color_overlay = true;
+  mask.inherit_background = true;
+  mask.no_changes = true;
+  mask.printed = true;
+  internal::var::b1_print_trans_mask = getFAttributeByte(mask, 1);
 }
 
 //----------------------------------------------------------------------
@@ -285,7 +285,7 @@ void setWidgetFocus (FWidget* widget)
 }
 
 //----------------------------------------------------------------------
-auto setWidgetShadow (FWidget* w, bool enable) -> bool
+void setWidgetShadow (FWidget* w, bool enable)
 {
   if ( enable
     && FVTerm::getFOutput()->getEncoding() != Encoding::VT100
@@ -299,8 +299,6 @@ auto setWidgetShadow (FWidget* w, bool enable) -> bool
     w->setFlags().shadow.shadow = false;
     w->setShadowSize(FSize{0, 0});
   }
-
-  return w->getFlags().shadow.shadow;
 }
 
 //----------------------------------------------------------------------
@@ -401,7 +399,7 @@ void drawTransparentShadow (FWidget* w)
     area_pos += shadow_width;
   }
 
-  for (std::size_t y{1}; y <= shadow_height; y++)  // Draw bottom shadow
+  for (std::size_t y{height}; y < height + shadow_height; y++)  // Draw bottom shadow
   {
     area_changes[y].xmin = 0;
     area_changes[y].xmax = width + shadow_width - 1;

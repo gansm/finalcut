@@ -1,5 +1,5 @@
-#ifndef FINAL_FCONFIG_H
-#define FINAL_FCONFIG_H 1
+#ifndef _FINAL_FCONFIG_H
+#define _FINAL_FCONFIG_H 1
 
 /* final/fconfig.h. Generated automatically at end of configure. */
 /* config.h.  Generated from config.h.in by configure.  */
@@ -83,6 +83,11 @@
 #define F_HAVE_SELECT 1
 #endif
 
+/* Define to 1 if you have the `sigaction' function. */
+#ifndef F_HAVE_SIGACTION
+#define F_HAVE_SIGACTION 1
+#endif
+
 /* Define to 1 if you have the <stdint.h> header file. */
 #ifndef F_HAVE_STDINT_H
 #define F_HAVE_STDINT_H 1
@@ -146,6 +151,16 @@
 /* Define to 1 if you have the <term.h> header file. */
 #ifndef F_HAVE_TERM_H
 #define F_HAVE_TERM_H 1
+#endif
+
+/* Define to 1 if you have the `timer_create' function. */
+#ifndef F_HAVE_TIMER_CREATE
+#define F_HAVE_TIMER_CREATE 1
+#endif
+
+/* Define to 1 if you have the `timer_settime' function. */
+#ifndef F_HAVE_TIMER_SETTIME
+#define F_HAVE_TIMER_SETTIME 1
 #endif
 
 /* Define to 1 if you have the <ttyent.h> header file. */
@@ -253,5 +268,5 @@
 /* Define to 1 if you need to in order for `stat' and other things to work. */
 /* #undef _POSIX_SOURCE */
 
-/* once: FINAL_FCONFIG_H */
+/* once: _FINAL_FCONFIG_H */
 #endif

@@ -86,7 +86,10 @@ class FCheckMenuItem : public FMenuItem
 // FCheckMenuItem inline functions
 //----------------------------------------------------------------------
 inline auto FCheckMenuItem::getClassName() const -> FString
-{ return "FCheckMenuItem"; }
+{
+  auto name = FString(L"FCheckMenuItem");
+  return {};
+}
 
 }  // namespace finalcut
 

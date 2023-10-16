@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2022 Markus Gans                                      *
+* Copyright 2014-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -72,28 +72,12 @@ class FListBoxItem
 {
   public:
     // Constructors
-    FListBoxItem() = default;
     template <typename DT = std::nullptr_t>
-    explicit FListBoxItem (const FString&, DT&& = DT() );
-
-    // Copy constructor
-    FListBoxItem (const FListBoxItem&) = default;
-
-    // Move constructor
-    FListBoxItem (FListBoxItem&&) noexcept = default;
-
-    // Destructor
-    virtual ~FListBoxItem() noexcept;
-
-    // Copy assignment operator (=)
-    auto operator = (const FListBoxItem&) -> FListBoxItem& = default;
-
-    // Move assignment operator (=)
-    auto operator = (FListBoxItem&&) noexcept -> FListBoxItem& = default;
+    explicit FListBoxItem (const FString& = FString{}, DT&& = DT() );
 
     // Accessors
-    virtual auto getClassName() const -> FString;
-    virtual auto getText() const -> FString;
+    auto getClassName() const -> FString;
+    auto getText() const -> FString;
     template <typename DT>
     auto getData() const -> clean_fdata_t<DT>&;
 
@@ -243,7 +227,7 @@ class FListBox : public FWidget
     void setGeometry (const FPoint&, const FSize&, bool = true) override;
     void setMultiSelection (bool = true);
     void unsetMultiSelection ();
-    auto setDisable() -> bool override;
+    void setDisable() override;
     void setText (const FString&);
 
     // Inquiries
@@ -343,6 +327,8 @@ class FListBox : public FWidget
     void multiSelectionUpTo (std::size_t);
     void wheelUp (int);
     void wheelDown (int);
+    void wheelLeft (int);
+    void wheelRight (int);
     auto dragScrollUp() -> bool;
     auto dragScrollDown() -> bool;
     void dragUp (MouseButton);
@@ -534,8 +520,8 @@ inline void FListBox::unsetMultiSelection()
 { setMultiSelection(false); }
 
 //----------------------------------------------------------------------
-inline auto FListBox::setDisable() -> bool
-{ return setEnable(false); }
+inline void FListBox::setDisable()
+{ setEnable(false); }
 
 //----------------------------------------------------------------------
 inline auto FListBox::isSelected (std::size_t index) const -> bool
@@ -609,7 +595,7 @@ void FListBox::insert ( const std::initializer_list<T>& list
                       , bool s
                       , DT&& d )
 {
-  for (auto& item : list)
+  for (const auto& item : list)
   {
     FListBoxItem listItem (FString() << item, std::forward<DT>(d));
     listItem.brackets = b;
@@ -645,7 +631,8 @@ inline auto \
     FListBox::index2iterator (std::size_t index) -> FListBoxItems::iterator
 {
   auto iter = itemlist.begin();
-  std::advance (iter, index);
+  using distance_type = FListBoxItems::difference_type;
+  std::advance (iter, distance_type(index));
   return iter;
 }
 
@@ -654,7 +641,8 @@ inline auto \
     FListBox::index2iterator (std::size_t index) const -> FListBoxItems::const_iterator
 {
   auto iter = itemlist.begin();
-  std::advance (iter, index);
+  using distance_type = FListBoxItems::difference_type;
+  std::advance (iter, distance_type(index));
   return iter;
 }
 

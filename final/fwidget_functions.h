@@ -62,7 +62,7 @@ auto getHotkey (const FString&) -> FKey;
 auto getHotkeyPos (const FString& src, FString& dest) -> std::size_t;
 void setHotkeyViaString (FWidget*, const FString&);
 void setWidgetFocus (FWidget*);
-auto setWidgetShadow (FWidget*, bool) -> bool;
+void setWidgetShadow (FWidget*, bool);
 void passResizeCornerEventToDialog (const FWidget*, const FMouseEvent&);
 void drawShadow (FWidget*);
 void drawTransparentShadow (FWidget*);

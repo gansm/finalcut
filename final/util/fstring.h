@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2022 Markus Gans                                      *
+* Copyright 2012-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -253,7 +253,7 @@ class FString
 
     template <typename... Args>
     auto sprintf (const FString&, Args&&...) -> FString&;
-    auto clear() -> FString;
+    auto clear() -> FString&;
 
     auto wc_str() const -> const wchar_t*;
     auto wc_str() -> wchar_t*;
@@ -292,9 +292,9 @@ class FString
     auto setNumber (lDouble, int = int(getPrecision<lDouble>())) -> FString&;
 
     template <typename NumT>
-    auto setFormatedNumber (NumT, char = nl_langinfo(THOUSEP)[0]) -> FString&;
-    auto setFormatedNumber (sInt64, char = nl_langinfo(THOUSEP)[0]) -> FString&;
-    auto setFormatedNumber (uInt64, char = nl_langinfo(THOUSEP)[0]) -> FString&;
+    auto setFormatedNumber (NumT, FString&& = nl_langinfo(THOUSEP)) -> FString&;
+    auto setFormatedNumber (sInt64, FString = nl_langinfo(THOUSEP)) -> FString&;
+    auto setFormatedNumber (uInt64, FString = nl_langinfo(THOUSEP)) -> FString&;
 
     auto insert (const FString&, int) -> const FString&;
     auto insert (const FString&, std::size_t) -> const FString&;
@@ -314,7 +314,8 @@ class FString
 
   private:
     // Constants
-    static constexpr uInt INPBUFFER = 200;
+    static constexpr auto INPBUFFER = uInt(200);
+    static constexpr auto MALFORMED_STRING = static_cast<std::size_t>(-1);
 
     // Methods
     void internal_assign (std::wstring);
@@ -671,8 +672,7 @@ inline auto FString::sprintf (const FString& format, Args&&... args) -> FString&
 
   std::swprintf ( buf.data(), buf.size(), format.wc_str()
                 , std::forward<Args>(args)... );
-  setString(buf.data());
-  return *this;
+  return setString(buf.data());
 }
 
 //----------------------------------------------------------------------
@@ -690,12 +690,12 @@ inline auto FString::setNumber (NumT num, int precision) -> FString&
 
 //----------------------------------------------------------------------
 template <typename NumT>
-inline auto FString::setFormatedNumber (NumT num, char separator) -> FString&
+inline auto FString::setFormatedNumber (NumT num, FString&& separator) -> FString&
 {
   if ( isNegative(num) )
-    return setFormatedNumber (sInt64(num), separator);
+    return setFormatedNumber (sInt64(num), std::move(separator));
 
-  return setFormatedNumber (uInt64(num), separator);
+  return setFormatedNumber (uInt64(num), std::move(separator));
 }
 
 

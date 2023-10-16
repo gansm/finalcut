@@ -946,8 +946,8 @@ void FListView::remove (FListViewItem* item)
     return;
 
   auto parent = item->getParent();
-  const auto& current_item = static_cast<FListViewItem*>(*current_iter);
-  const auto& first_item = itemlist.front();
+  const auto* current_item = static_cast<FListViewItem*>(*current_iter);
+  const auto* first_item = itemlist.front();
   auto end_iter = static_cast<FListViewIterator>(itemlist.end());
   const auto& last_item = *(--end_iter);
   const bool is_current_line( item == current_item );
@@ -1280,15 +1280,20 @@ void FListView::onWheel (FWheelEvent* ev)
 {
   const int position_before = current_iter.getPosition();
   static constexpr int wheel_distance = 4;
+  const auto& wheel = ev->getWheel();
   first_line_position_before = first_visible_line.getPosition();
 
   if ( isDragging(drag_scroll) )
     stopDragScroll();
 
-  if ( ev->getWheel() == MouseWheel::Up )
+  if ( wheel == MouseWheel::Up )
     wheelUp (wheel_distance);
-  else if ( ev->getWheel() == MouseWheel::Down )
+  else if ( wheel == MouseWheel::Down )
     wheelDown (wheel_distance);
+  else if ( wheel == MouseWheel::Left )
+    wheelLeft (wheel_distance);
+  else if ( wheel == MouseWheel::Right )
+    wheelRight (wheel_distance);
 
   if ( position_before != current_iter.getPosition() )
     processRowChanged();
@@ -1997,7 +2002,8 @@ inline auto FListView::findHeaderStartPos (bool& left_trunc) -> FVTermBuffer::it
   }
 
   auto first = headerline.begin();
-  std::advance(first, offset);
+  using distance_type = FVTermBuffer::difference_type;
+  std::advance(first, distance_type(offset));
   return first;
 }
 
@@ -2034,7 +2040,8 @@ inline auto FListView::findHeaderEndPos ( FVTermBuffer::iterator first
   }
 
   last = first;
-  std::advance(last, character);
+  using distance_type = FVTermBuffer::difference_type;
+  std::advance(last, distance_type(character));
   return last;
 }
 
@@ -2341,6 +2348,30 @@ void FListView::wheelDown (int pagesize)
     last_visible_line += differenz;
     setRelativePosition(ry);
   }
+}
+
+//----------------------------------------------------------------------
+void FListView::wheelLeft (int pagesize)
+{
+  if ( isItemListEmpty() || xoffset == 0 )
+    return;
+
+  const int xoffset_before = xoffset;
+  scrollBy (-pagesize, 0);
+  const bool draw_hbar(xoffset_before != xoffset);
+  updateDrawing (false, draw_hbar);
+}
+
+//----------------------------------------------------------------------
+void FListView::wheelRight (int pagesize)
+{
+  if ( isItemListEmpty() )
+    return;
+
+  const int xoffset_before = xoffset;
+  scrollBy (pagesize, 0);
+  const bool draw_hbar(xoffset_before != xoffset);
+  updateDrawing (false, draw_hbar);
 }
 
 //----------------------------------------------------------------------
@@ -2920,10 +2951,12 @@ void FListView::cb_vbarChange (const FWidget*)
       break;
 
     case FScrollbar::ScrollType::WheelUp:
+    case FScrollbar::ScrollType::WheelLeft:
       wheelUp (wheel_distance);
       break;
 
     case FScrollbar::ScrollType::WheelDown:
+    case FScrollbar::ScrollType::WheelRight:
       wheelDown (wheel_distance);
       break;
 
@@ -2975,10 +3008,12 @@ void FListView::cb_hbarChange (const FWidget*)
       break;
 
     case FScrollbar::ScrollType::WheelUp:
+    case FScrollbar::ScrollType::WheelLeft:
       scrollBy (-wheel_distance, 0);
       break;
 
     case FScrollbar::ScrollType::WheelDown:
+    case FScrollbar::ScrollType::WheelRight:
       scrollBy (wheel_distance, 0);
       break;
 

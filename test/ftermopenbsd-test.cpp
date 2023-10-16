@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2022 Markus Gans                                      *
+* Copyright 2019-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -53,21 +53,34 @@ class FSystemTest : public finalcut::FSystem
     FSystemTest();
 
     // Methods
-    auto            inPortByte (uShort) -> uChar override;
-    void             outPortByte (uChar, uShort) override;
-    auto              isTTY (int) const -> int override;
-    auto              ioctl (int, uLong, ...) -> int override;
-    auto              open (const char*, int, ...) -> int override;
-    auto              close (int) -> int override;
-    auto            fopen (const char*, const char*) -> FILE* override;
-    auto              fputs (const char*, FILE*) -> int override;
-    auto              fclose (FILE*) -> int override;
-    auto              putchar (int) -> int override;
-    auto            getuid() -> uid_t override;
-    auto            geteuid() -> uid_t override;
-    auto              getpwuid_r (uid_t, struct passwd*, char*
-                                , size_t, struct passwd** ) -> int override;
-    auto            realpath (const char*, char*) -> char* override;
+    auto inPortByte (uShort) -> uChar override;
+    void outPortByte (uChar, uShort) override;
+    auto isTTY (int) const -> int override;
+    auto ioctl (int, uLong, ...) -> int override;
+    auto pipe (finalcut::PipeData&) -> int override;
+    auto open (const char*, int, ...) -> int override;
+    auto close (int) -> int override;
+    auto fopen (const char*, const char*) -> FILE* override;
+    auto fputs (const char*, FILE*) -> int override;
+    auto fclose (FILE*) -> int override;
+    auto putchar (int) -> int override;
+    auto sigaction ( int, const struct sigaction*
+                   , struct sigaction*) -> int override;
+    auto timer_create ( clockid_t, struct sigevent*
+                      , timer_t* ) -> int override;
+    auto timer_settime ( timer_t, int
+                       , const struct itimerspec*
+                       , struct itimerspec* ) -> int override;
+    auto timer_delete (timer_t) -> int override;
+    auto kqueue() -> int override;
+    auto kevent ( int, const struct kevent*
+                , int, struct kevent*
+                , int, const struct timespec* ) -> int override;
+    auto getuid() -> uid_t override;
+    auto geteuid() -> uid_t override;
+    auto getpwuid_r ( uid_t, struct passwd*, char*
+                    , size_t, struct passwd** ) -> int override;
+    auto realpath (const char*, char*) -> char* override;
     auto getBell() -> wskbd_bell_data&;
 
   private:
@@ -101,14 +114,14 @@ void FSystemTest::outPortByte (uChar, uShort)
 }
 
 //----------------------------------------------------------------------
-auto FSystemTest::isTTY (int fd) const -> int
+auto FSystemTest::isTTY (int file_descriptor) const -> int
 {
-  std::cerr << "Call: isatty (fd=" << fd << ")\n";
+  std::cerr << "Call: isatty (file_descriptor=" << file_descriptor << ")\n";
   return 1;
 }
 
 //----------------------------------------------------------------------
-auto FSystemTest::ioctl (int fd, uLong request, ...) -> int
+auto FSystemTest::ioctl (int file_descriptor, uLong request, ...) -> int
 {
   va_list args{};
   void* argp{};
@@ -186,11 +199,20 @@ auto FSystemTest::ioctl (int fd, uLong request, ...) -> int
 
   va_end (args);
 
-  std::cerr << "Call: ioctl (fd=" << fd
+  std::cerr << "Call: ioctl (file_descriptor=" << file_descriptor
             << ", request=" << req_string
             << "(0x" << std::hex << request << ")"
             << ", argp=" << argp << std::dec << ")\n";
   return ret_val;
+}
+
+//----------------------------------------------------------------------
+auto FSystemTest::pipe (finalcut::PipeData& pipe) -> int
+{
+  std::cerr << "Call: pipe (pipefd={"
+            << pipe.getReadFd() << ", "
+            << pipe.getWriteFd() << "})\n";
+  return 0;
 }
 
 //----------------------------------------------------------------------
@@ -209,9 +231,9 @@ auto FSystemTest::open (const char* pathname, int flags, ...) -> int
 }
 
 //----------------------------------------------------------------------
-auto FSystemTest::close (int fildes) -> int
+auto FSystemTest::close (int file_descriptor) -> int
 {
-  std::cerr << "Call: close (fildes=" << fildes << ")\n";
+  std::cerr << "Call: close (file_descriptor=" << file_descriptor << ")\n";
   return 0;
 }
 
@@ -224,9 +246,9 @@ auto FSystemTest::fopen (const char* path, const char* mode) -> FILE*
 }
 
 //----------------------------------------------------------------------
-auto FSystemTest::fclose (FILE* fp) -> int
+auto FSystemTest::fclose (FILE* file_ptr) -> int
 {
-  std::cerr << "Call: fclose (fp=" << fp << ")\n";
+  std::cerr << "Call: fclose (file_ptr=" << file_ptr << ")\n";
   return 0;
 }
 
@@ -244,6 +266,48 @@ auto FSystemTest::putchar (int c) -> int
 #else
       return std::putchar(c);
 #endif
+}
+
+//----------------------------------------------------------------------
+auto FSystemTest::sigaction ( int, const struct sigaction*
+                            , struct sigaction* ) -> int
+{
+  return 0;
+}
+
+//----------------------------------------------------------------------
+auto FSystemTest::timer_create ( clockid_t, struct sigevent*
+                               , timer_t* ) -> int
+{
+  return 0;
+}
+
+//----------------------------------------------------------------------
+auto FSystemTest::timer_settime ( timer_t, int
+                                , const struct itimerspec*
+                                , struct itimerspec* ) -> int
+{
+  return 0;
+}
+
+//----------------------------------------------------------------------
+auto FSystemTest::timer_delete (timer_t) -> int
+{
+  return 0;
+}
+
+//----------------------------------------------------------------------
+auto FSystemTest::kqueue() -> int
+{
+  return 0;
+}
+
+//----------------------------------------------------------------------
+auto FSystemTest::kevent ( int, const struct kevent*
+                         , int, struct kevent*
+                         , int, const struct timespec*) -> int
+{
+  return 0;
 }
 
 //----------------------------------------------------------------------
@@ -386,7 +450,7 @@ void ftermopenbsdTest::netbsdConsoleTest()
     CPPUNIT_ASSERT ( sec_da == "\033[>24;20;0c" );
 #endif
 
-    CPPUNIT_ASSERT ( isatty(0) == 1 );
+    CPPUNIT_ASSERT ( ::isatty(0) == 1 );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::openbsd_con) );
     CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::netbsd_con) );
     CPPUNIT_ASSERT ( data.getTerminalGeometry().getWidth() == 80 );
@@ -399,7 +463,7 @@ void ftermopenbsdTest::netbsdConsoleTest()
     netbsd.enableMetaSendsEscape();
     netbsd.init();
 
-    CPPUNIT_ASSERT ( isatty(0) == 1 );
+    CPPUNIT_ASSERT ( ::isatty(0) == 1 );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::openbsd_con) );
     CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::netbsd_con) );
     CPPUNIT_ASSERT ( data.getTerminalGeometry().getWidth() == 80 );
@@ -499,7 +563,7 @@ void ftermopenbsdTest::openbsdConsoleTest()
     CPPUNIT_ASSERT ( sec_da == "\033[>24;20;0c" );
 #endif
 
-    CPPUNIT_ASSERT ( isatty(0) == 1 );
+    CPPUNIT_ASSERT ( ::isatty(0) == 1 );
     CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::openbsd_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::netbsd_con) );
     CPPUNIT_ASSERT ( data.getTerminalGeometry().getWidth() == 80 );
@@ -513,7 +577,7 @@ void ftermopenbsdTest::openbsdConsoleTest()
     openbsd.enableMetaSendsEscape();
     openbsd.init();
 
-    CPPUNIT_ASSERT ( isatty(0) == 1 );
+    CPPUNIT_ASSERT ( ::isatty(0) == 1 );
     CPPUNIT_ASSERT ( data.isTermType(finalcut::FTermType::openbsd_con) );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::netbsd_con) );
     CPPUNIT_ASSERT ( data.getTerminalGeometry().getWidth() == 80 );

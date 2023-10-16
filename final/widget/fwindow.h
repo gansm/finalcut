@@ -97,23 +97,23 @@ class FWindow : public FWidget
     auto         getWindowFocusWidget() const -> FWidget*;
 
     // Mutators
-    auto         setWindowWidget (bool = true) -> bool;
-    auto         unsetWindowWidget() -> bool;
+    void         setWindowWidget (bool = true);
+    void         unsetWindowWidget();
     static void  setActiveWindow (FWindow*);
     void         setWindowFocusWidget (FWidget*);
     auto         activateWindow (bool = true) -> bool;
     void         unsetActiveWindow() const;
     auto         deactivateWindow() -> bool;
-    virtual auto setResizeable (bool = true) -> bool;
-    auto         unsetResizeable() -> bool;
-    virtual auto setMinimizable (bool = true) -> bool;
-    auto         unsetMinimizable() -> bool;
-    auto         setTransparentShadow (bool = true) -> bool;
-    auto         unsetTransparentShadow() -> bool;
-    auto         setShadow (bool = true) -> bool;
-    auto         unsetShadow() -> bool;
-    auto         setAlwaysOnTop (bool = true) -> bool;
-    auto         unsetAlwaysOnTop() -> bool;
+    virtual void setResizeable (bool = true);
+    void         unsetResizeable();
+    virtual void setMinimizable (bool = true);
+    void         unsetMinimizable();
+    void         setTransparentShadow (bool = true);
+    void         unsetTransparentShadow();
+    void         setShadow (bool = true);
+    void         unsetShadow();
+    void         setAlwaysOnTop (bool = true);
+    void         unsetAlwaysOnTop();
 
     // Inquiries
     auto         isZoomed() const noexcept -> bool;
@@ -215,32 +215,32 @@ inline auto FWindow::getWindowLayer (WidgetT* obj) -> int
 }
 
 //----------------------------------------------------------------------
-inline auto FWindow::unsetWindowWidget() -> bool
-{ return setWindowWidget(false); }
+inline void FWindow::unsetWindowWidget()
+{ setWindowWidget(false); }
 
 //----------------------------------------------------------------------
 inline auto FWindow::deactivateWindow() -> bool
 { return activateWindow(false); }
 
 //----------------------------------------------------------------------
-inline auto FWindow::unsetResizeable() -> bool
-{ return setResizeable(false); }
+inline void FWindow::unsetResizeable()
+{ setResizeable(false); }
 
 //----------------------------------------------------------------------
-inline auto FWindow::unsetMinimizable() -> bool
-{ return setMinimizable(false); }
+inline void FWindow::unsetMinimizable()
+{ setMinimizable(false); }
 
 //----------------------------------------------------------------------
-inline auto FWindow::unsetTransparentShadow() -> bool
-{ return setTransparentShadow(false); }
+inline void FWindow::unsetTransparentShadow()
+{ setTransparentShadow(false); }
 
 //----------------------------------------------------------------------
-inline auto FWindow::unsetShadow() -> bool
-{ return setShadow(false); }
+inline void FWindow::unsetShadow()
+{ setShadow(false); }
 
 //----------------------------------------------------------------------
-inline auto FWindow::unsetAlwaysOnTop() -> bool
-{ return setAlwaysOnTop(false); }
+inline void FWindow::unsetAlwaysOnTop()
+{ setAlwaysOnTop(false); }
 
 //----------------------------------------------------------------------
 inline auto FWindow::isZoomed() const noexcept -> bool

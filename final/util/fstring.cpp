@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2022 Markus Gans                                      *
+* Copyright 2012-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -82,9 +82,8 @@ FString::FString (const std::wstring& s)
 
 //----------------------------------------------------------------------
 FString::FString (std::wstring&& s)
-{
-  string = std::move(s);
-}
+  : string{std::move(s)}
+{ }
 
 //----------------------------------------------------------------------
 FString::FString (const wchar_t s[])
@@ -294,7 +293,7 @@ auto FString::operator () () const -> const FString&
 
 // public methods of FString
 //----------------------------------------------------------------------
-auto FString::clear() -> FString
+auto FString::clear() -> FString&
 {
   string.clear();
   return *this;
@@ -687,11 +686,9 @@ auto FString::setNumber (sInt64 num) -> FString&
 {
   std::array<wchar_t, 30> buf{};
   wchar_t* s = &buf[29];  // Pointer to the last character
-  auto abs_num = static_cast<uInt64>(num);
-
-  if ( num < 0 )
-    abs_num = static_cast<uInt64>(-num);
-
+  auto abs_num = ( num >= 0 )
+               ? static_cast<uInt64>(num)
+               : ~static_cast<uInt64>(num) + 1;
   *s = '\0';
 
   do
@@ -760,15 +757,15 @@ auto FString::setNumber (lDouble f_num, int precision) -> FString&
 }
 
 //----------------------------------------------------------------------
-auto FString::setFormatedNumber (sInt64 num, char separator) -> FString&
+auto FString::setFormatedNumber (sInt64 num, FString separator) -> FString&
 {
   int n{0};
   std::array<wchar_t, 30> buf{};
   wchar_t* s = &buf[29];  // Pointer to the last character
   auto abs_num = static_cast<uInt64>(num);
 
-  if ( separator == 0 )
-    separator = ' ';
+  if ( separator[0] == 0 )
+    separator = L" ";
 
   if ( num < 0 )
     abs_num = static_cast<uInt64>(-num);
@@ -782,7 +779,7 @@ auto FString::setFormatedNumber (sInt64 num, char separator) -> FString&
     n++;
 
     if ( abs_num && n % 3 == 0 )
-      *--s = separator;
+      *--s = separator[0];
   }
   while ( abs_num );
 
@@ -790,20 +787,20 @@ auto FString::setFormatedNumber (sInt64 num, char separator) -> FString&
     *--s = '-';
 
   std::wstring str{s};
-  internal_assign (str);
+  internal_assign (std::move(str));
   return *this;
 }
 
 //----------------------------------------------------------------------
-auto FString::setFormatedNumber (uInt64 num, char separator) -> FString&
+auto FString::setFormatedNumber (uInt64 num, FString separator) -> FString&
 {
   int n{0};
   std::array<wchar_t, 30> buf{};
   wchar_t* s = &buf[29];  // Pointer to the last character
   *s = L'\0';
 
-  if ( separator == 0 )
-    separator = ' ';
+  if ( separator[0] == 0 )
+    separator = L" ";
 
   do
   {
@@ -812,12 +809,12 @@ auto FString::setFormatedNumber (uInt64 num, char separator) -> FString&
     n++;
 
     if ( num && n % 3 == 0 )
-      *--s = separator;
+      *--s = separator[0];
   }
   while ( num );
 
   std::wstring str{s};
-  internal_assign (str);
+  internal_assign (std::move(str));
   return *this;
 }
 
@@ -1059,16 +1056,14 @@ auto FString::internal_toCharString (const std::wstring& s) const -> std::string
 
   auto src = s.c_str();
   auto state = std::mbstate_t();
-  const auto& size = std::wcsrtombs(nullptr, &src, 0, &state) + 1;
+  const auto size = std::wcsrtombs(nullptr, &src, 0, &state) + 1;
 
   std::vector<char> dest(size);
 
   const auto mblength = std::wcsrtombs (dest.data(), &src, size, &state);
 
-  if ( mblength == static_cast<std::size_t>(-1) && errno != EILSEQ )
-  {
+  if ( mblength == MALFORMED_STRING && errno != EILSEQ )
     return {};
-  }
 
   return dest.data();
 }
@@ -1081,21 +1076,17 @@ inline auto FString::internal_toWideString (const std::string& s) const -> std::
 
   auto src = s.c_str();
   auto state = std::mbstate_t();
-  const auto& size = std::mbsrtowcs(nullptr, &src, 0, &state) + 1;
+  auto size = std::mbsrtowcs(nullptr, &src, 0, &state);
 
-  if ( size == 0 )  // ...malformed UTF-8 string
+  if ( size == MALFORMED_STRING )
     return {};
 
+  size++;
   std::vector<wchar_t> dest(size);
-  const auto& wide_length = std::mbsrtowcs (dest.data(), &src, size, &state);
+  const auto wide_length = std::mbsrtowcs (dest.data(), &src, size, &state);
 
-  if ( wide_length == static_cast<std::size_t>(-1) )
-  {
-    if ( src != s.c_str() )
-      return dest.data();
-
+  if ( wide_length == MALFORMED_STRING )
     return {};
-  }
 
   if ( wide_length == size )
     dest[size - 1] = '\0';

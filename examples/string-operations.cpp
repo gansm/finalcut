@@ -532,7 +532,7 @@ void convertToNumberExample()
   try
   {
     const double double_num = \
-        finalcut::FString("2.718'281'828'459'045'235'3").toDouble();
+        finalcut::FString("2.7182818284590452353").toDouble();
     std::ios_base::fmtflags save_flags = std::cout.flags();
     std::cout << "  toDouble:  " << std::setprecision(11)
                                  << double_num << std::endl;
@@ -579,11 +579,11 @@ void formatedNumberExample()
   finalcut::FString fnum2{};
 #if defined(__LP64__) || defined(_LP64)
   // 64-bit architecture
-  fnum1.setFormatedNumber(0xffffffffffffffffU, '\'');
+  fnum1.setFormatedNumber(0xffffffffffffffffU, finalcut::C_STR("'"));
   fnum2.setFormatedNumber(-9223372036854775807);
 #else
   // 32-bit architecture
-  fnum1.setFormatedNumber(0xffffffffU, '\'');
+  fnum1.setFormatedNumber(0xffffffffU, finalcut::C_STR("'"));
   fnum2.setFormatedNumber(-2147483647);
 #endif
   std::cout << "setFormatedNumber: "

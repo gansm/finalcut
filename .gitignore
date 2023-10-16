@@ -42,6 +42,7 @@ examples/choice
 examples/.deps/
 examples/dialog
 examples/event-log
+examples/eventloop
 examples/fullwidth-character
 examples/hello
 examples/highlight-text
@@ -74,6 +75,10 @@ final/dialog/.depend
 final/dialog/.deps/
 final/dialog/.dirstamp
 final/dialog/.libs/
+final/eventloop/.depend
+final/eventloop/.deps/
+final/eventloop/.dirstamp
+final/eventloop/.libs/
 final/input/.depend
 final/input/.deps/
 final/input/.dirstamp
@@ -103,6 +108,7 @@ final/widget/.depend
 final/widget/.deps/
 final/widget/.dirstamp
 final/widget/.libs/
+m4/
 test/.deps/
 test/.libs/
 test/*_test

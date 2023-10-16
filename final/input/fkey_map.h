@@ -43,23 +43,23 @@ class FKeyMap final
   public:
     struct KeyCapMap
     {
-      FKey num;
-      const char* string;
-      uInt8 length;
-      char tname[4];
+      FKey num{};
+      const char* string{};
+      uInt8 length{};
+      std::array<char, 4> tname{};
     };
 
     struct KeyMap
     {
-      FKey num;
-      char string[8];
-      uInt8 length;
+      FKey num{};
+      std::array<char, 8> string{};
+      uInt8 length{};
     };
 
     struct KeyName
     {
-      FKey num;
-      char string[26];
+      FKey num{};
+      std::array<char, 26> string{};
     };
 
     // Using-declaration

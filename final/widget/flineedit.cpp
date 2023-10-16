@@ -64,8 +64,7 @@ FLineEdit::FLineEdit (const FString& txt, FWidget* parent)
 FLineEdit::~FLineEdit()  // destructor
 {
   if ( input_type == InputType::Password )  // Zero password in memory
-    for (auto&& ch : text)
-      ch = '\0';
+    std::fill (text.begin(), text.end(), '\0');
 
   if ( ! insert_mode )
     FVTerm::getFOutput()->setCursor(CursorMode::Insert);
@@ -103,28 +102,27 @@ auto FLineEdit::operator >> (FString& s) const -> const FLineEdit&
 
 // public methods of FLineEdit
 //----------------------------------------------------------------------
-auto FLineEdit::setEnable (bool enable) -> bool
+void FLineEdit::setEnable (bool enable)
 {
   FWidget::setEnable(enable);
   resetColors();
-  return enable;
 }
 
 //----------------------------------------------------------------------
-auto FLineEdit::setShadow (bool enable) -> bool
+void FLineEdit::setShadow (bool enable)
 {
-  return setWidgetShadow(this, enable);
+  setWidgetShadow(this, enable);
 }
 
 //----------------------------------------------------------------------
-auto FLineEdit::setReadOnly (bool enable) -> bool
+void FLineEdit::setReadOnly (bool enable)
 {
   if ( enable )
     unsetVisibleCursor();
   else
     setVisibleCursor();
 
-  return (read_only = enable);
+  read_only = enable;
 }
 
 //----------------------------------------------------------------------

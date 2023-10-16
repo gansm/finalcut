@@ -122,11 +122,12 @@ FWidget::~FWidget()  // destructor
     FApplication::setKeyboardWidget(nullptr);
 
   // unset the local window widget focus
-  if ( flags.focus.focus )
+  if ( flags.focus.focus && getMainWidget() != this )
   {
-    if ( auto window = FWindow::getWindowWidget(this) )
-      if ( window != this )
-        window->setWindowFocusWidget(nullptr);
+    auto window = FWindow::getWindowWidget(this);
+
+    if ( window && window != this )
+      window->setWindowFocusWidget(nullptr);
   }
 
   // unset the global widget focus
@@ -225,20 +226,20 @@ void FWidget::setMainWidget (FWidget* obj)
 }
 
 //----------------------------------------------------------------------
-auto FWidget::setVisible (bool enable) -> bool
+void FWidget::setVisible (bool enable)
 {
-  return (flags.visibility.visible = enable);
+  flags.visibility.visible = enable;
 }
 
 //----------------------------------------------------------------------
-auto FWidget::setEnable (bool enable) -> bool
+void FWidget::setEnable (bool enable)
 {
   if ( enable )
     emitCallback("enable");
   else
     emitCallback("disable");
 
-  return (flags.feature.active = enable);
+  flags.feature.active = enable;
 }
 
 //----------------------------------------------------------------------
@@ -595,14 +596,15 @@ auto FWidget::setCursorPos (const FPoint& pos) -> bool
   if ( ! area->hasOwner() )
     return false;
 
-  const auto& area_owner = area->getOwner<FWidget*>();
-  int woffsetX = getTermX() - area_owner->getTermX();
-  int woffsetY = getTermY() - area_owner->getTermY();
+  const auto& area_owner = area->getOwner<FVTerm*>();
+  const auto& area_widget = static_cast<FWidget*>(area_owner);
+  int woffsetX = getTermX() - area_widget->getTermX();
+  int woffsetY = getTermY() - area_widget->getTermY();
 
   if ( isChildPrintArea() )
   {
-    woffsetX += (1 - area_owner->getLeftPadding());
-    woffsetY += (1 - area_owner->getTopPadding());
+    woffsetX += (1 - area_widget->getLeftPadding());
+    woffsetY += (1 - area_widget->getTopPadding());
   }
 
   bool visible = ! isCursorHideable() || flags.visibility.visible_cursor;
@@ -717,11 +719,11 @@ auto FWidget::numOfFocusableChildren() & -> int
 
   int num{0};
 
-  for (auto* child : getChildren())
+  for (const auto* child : getChildren())
   {
     if ( child->isWidget() )
     {
-      const auto& widget = static_cast<FWidget*>(child);
+      const auto& widget = static_cast<const FWidget*>(child);
 
       if ( widget->isEnabled()
         && widget->isShown()

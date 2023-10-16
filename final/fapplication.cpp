@@ -136,17 +136,17 @@ auto FApplication::getKeyboardWidget() -> FWidget*
 auto FApplication::getLog() -> FLogPtr&
 {
   // Global logger object
-  static auto logger_ptr = new FLogPtr();
+  static const auto& logger = std::make_unique<FLogPtr>();
 
-  if ( logger_ptr && *logger_ptr == nullptr )
+  if ( logger && *logger == nullptr )
   {
-    *logger_ptr = std::make_shared<FLogger>();
+    *logger = std::make_shared<FLogger>();
 
     // Set the logger as rdbuf of clog
-    std::clog.rdbuf(logger_ptr->get());
+    std::clog.rdbuf(logger->get());
   }
 
-  return *logger_ptr;
+  return *logger;
 }
 
 //----------------------------------------------------------------------
@@ -650,10 +650,6 @@ inline void FApplication::destroyLog()
   // Reset the rdbuf of clog
   std::clog << std::flush;
   std::clog.rdbuf(default_clog_rdbuf);
-
-  // Delete the logger
-  const FLogPtr* logger = &(getLog());
-  delete logger;
 }
 
 //----------------------------------------------------------------------
@@ -894,11 +890,13 @@ inline void FApplication::processInput() const
   if ( quit_now || internal::var::exit_loop || has_terminal_resized )
     return;
 
+  // Keyboard and mouse raw data processing
   queuingKeyboardInput();
   queuingMouseInput();
 
   do
   {
+    // Processing of captured keyboard and mouse events
     processKeyboardEvent();
     processMouseEvent();
   }
@@ -1010,7 +1008,9 @@ void FApplication::determineClickedWidget (const FMouseData& md)
     && ! md.isRightButtonPressed()
     && ! md.isMiddleButtonPressed()
     && ! md.isWheelUp()
-    && ! md.isWheelDown() )
+    && ! md.isWheelDown()
+    && ! md.isWheelLeft()
+    && ! md.isWheelRight() )
     return;
 
   const auto& mouse_position = md.getPos();
@@ -1215,27 +1215,34 @@ void FApplication::sendWheelEvent ( const FMouseData& md
                                   , const FPoint& widgetMousePos
                                   , const FPoint& mouse_position ) const
 {
-  if ( md.isWheelUp() )
-  {
-    FWheelEvent wheel_ev ( Event::MouseWheel
-                         , widgetMousePos
-                         , mouse_position
-                         , MouseWheel::Up );
-    auto scroll_over_widget = clicked_widget;
-    setClickedWidget(nullptr);
-    sendEvent(scroll_over_widget, &wheel_ev);
-  }
+  if ( ! md.isWheelUp() && ! md.isWheelDown()
+    && ! md.isWheelLeft() && ! md.isWheelRight() )
+    return;
 
-  if ( md.isWheelDown() )
+  auto mouse_wheel = [&md] ()
   {
-    FWheelEvent wheel_ev ( Event::MouseWheel
-                         , widgetMousePos
-                         , mouse_position
-                         , MouseWheel::Down );
-    auto scroll_over_widget = clicked_widget;
-    setClickedWidget(nullptr);
-    sendEvent (scroll_over_widget, &wheel_ev);
-  }
+    if ( md.isWheelUp() )
+      return MouseWheel::Up;
+
+    if ( md.isWheelDown() )
+      return MouseWheel::Down;
+
+    if ( md.isWheelLeft() )
+      return MouseWheel::Left;
+
+    if ( md.isWheelRight() )
+      return MouseWheel::Right;
+
+    return MouseWheel::None;
+  }();
+
+  FWheelEvent wheel_ev ( Event::MouseWheel
+                       , widgetMousePos
+                       , mouse_position
+                       , mouse_wheel );
+  auto scroll_over_widget = clicked_widget;
+  setClickedWidget(nullptr);
+  sendEvent (scroll_over_widget, &wheel_ev);
 }
 
 //----------------------------------------------------------------------
@@ -1319,12 +1326,12 @@ auto FApplication::processNextEvent() -> bool
     time_last_event = FObjectTimer::getCurrentTime();
     num_events += processTimerEvent();
     processInput();
-    processResizeEvent();
+    processResizeEvent();  // when the terminal size has changed
     processCloseWidget();
     sendQueuedEvents();
     processDialogResizeMove();
-    processTerminalUpdate();  // after terminal changes
-    flush();
+    processTerminalUpdate();  // for changed areas on the terminal
+    flush();  // Flush output buffer (via an instance of FOutput)
     processLogger();
   }
   else if ( isKeyPressed(next_event_wait) )

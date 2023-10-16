@@ -68,12 +68,12 @@ FMenu::~FMenu()  // destructor
 
 // public methods of FMenu
 //----------------------------------------------------------------------
-auto FMenu::setMenuWidget (bool enable) -> bool
+void FMenu::setMenuWidget (bool enable)
 {
   if ( isMenuWidget() == enable )
-    return true;
+    return;
 
-  return (setFlags().type.menu_widget = enable);
+  setFlags().type.menu_widget = enable;
 }
 
 //----------------------------------------------------------------------
@@ -206,7 +206,7 @@ void FMenu::onMouseDown (FMouseEvent* ev)
     redraw();
 
   // Open the sub menu to be opened
-  openSubMenu(shown_sub_menu);
+  openSubMenu (shown_sub_menu);
 }
 
 //----------------------------------------------------------------------

@@ -169,6 +169,18 @@ auto FMouseData::isWheelDown() const noexcept -> bool
 }
 
 //----------------------------------------------------------------------
+auto FMouseData::isWheelLeft() const noexcept -> bool
+{
+  return getButtonState().wheel_left;
+}
+
+//----------------------------------------------------------------------
+auto FMouseData::isWheelRight() const noexcept -> bool
+{
+  return getButtonState().wheel_right;
+}
+
+//----------------------------------------------------------------------
 auto FMouseData::isMoved() const noexcept -> bool
 {
   return getButtonState().mouse_moved;
@@ -185,6 +197,8 @@ void FMouseData::clearButtonState() noexcept
   b_state.meta_button    = false;
   b_state.wheel_up       = false;
   b_state.wheel_down     = false;
+  b_state.wheel_left     = false;
+  b_state.wheel_right    = false;
   b_state.mouse_moved    = false;
 }
 
@@ -417,6 +431,11 @@ void FMouseGPM::processEvent (const TimeValue&)
     else if ( gpm_ev.wdy < 0 )
       getButtonState().wheel_down = true;
 
+    if ( gpm_ev.wdx > 0 )
+      getButtonState().wheel_right = true;
+    else if ( gpm_ev.wdx < 0 )
+      getButtonState().wheel_left = true;
+
     switch ( gpm_ev.type & 0x0f )
     {
       case GPM_DOWN:
@@ -644,8 +663,8 @@ void FMouseX11::processEvent (const TimeValue& time)
   setButtonState (btn & button_mask, time);
 
   if ( mouse_position == getNewPos()
-    && ! isWheelUp()
-    && ! isWheelDown()
+    && ! isWheelUp() && ! isWheelDown()
+    && ! isWheelLeft() && ! isWheelRight()
     && x11_button_state == uChar(btn) )
   {
     clearEvent();
@@ -723,6 +742,16 @@ void FMouseX11::setButtonState (const int btn, const TimeValue& time) noexcept
     case button_down:
       resetMousePressedTime();
       getButtonState().wheel_down = true;
+      break;
+
+    case button_left:
+      resetMousePressedTime();
+      getButtonState().wheel_left = true;
+      break;
+
+    case button_right:
+      resetMousePressedTime();
+      getButtonState().wheel_right = true;
       break;
 
       default:
@@ -875,8 +904,8 @@ void FMouseSGR::processEvent (const TimeValue& time)
     setReleasedButtonState (btn & button_mask);
 
   if ( mouse_position == getNewPos()
-    && ! isWheelUp()
-    && ! isWheelDown()
+    && ! isWheelUp() && ! isWheelDown()
+    && ! isWheelLeft() && ! isWheelRight()
     && sgr_button_state == uChar(((*p & 0x20) << 2) + btn) )
   {
     clearEvent();
@@ -950,6 +979,16 @@ void FMouseSGR::setPressedButtonState ( const int btn
     case button_down:
       resetMousePressedTime();
       getButtonState().wheel_down = true;
+      break;
+
+    case button_left:
+      resetMousePressedTime();
+      getButtonState().wheel_left = true;
+      break;
+
+    case button_right:
+      resetMousePressedTime();
+      getButtonState().wheel_right = true;
       break;
 
     default:
@@ -1120,8 +1159,8 @@ void FMouseUrxvt::processEvent (const TimeValue& time)
   setButtonState (btn & button_mask, time);
 
   if ( mouse_position == getNewPos()
-    && ! isWheelUp()
-    && ! isWheelDown()
+    && ! isWheelUp() && ! isWheelDown()
+    && ! isWheelLeft() && ! isWheelRight()
     && urxvt_button_state == uChar(btn) )
   {
     clearEvent();
@@ -1211,6 +1250,16 @@ void FMouseUrxvt::setButtonState (const int btn, const TimeValue& time) noexcept
     case button_down:
       resetMousePressedTime();
       getButtonState().wheel_down = true;
+      break;
+
+    case button_left:
+      resetMousePressedTime();
+      getButtonState().wheel_left = true;
+      break;
+
+    case button_right:
+      resetMousePressedTime();
+      getButtonState().wheel_right = true;
       break;
 
       default:
@@ -1460,6 +1509,22 @@ auto FMouseControl::isWheelDown() -> bool
   auto iter = findMouseWithEvent();
   const bool found = (iter != mouse_protocol.end());
   return found ? (*iter)->isWheelDown() : false;
+}
+
+//----------------------------------------------------------------------
+auto FMouseControl::isWheelLeft() -> bool
+{
+  auto iter = findMouseWithEvent();
+  const bool found = (iter != mouse_protocol.end());
+  return found ? (*iter)->isWheelLeft() : false;
+}
+
+//----------------------------------------------------------------------
+auto FMouseControl::isWheelRight() -> bool
+{
+  auto iter = findMouseWithEvent();
+  const bool found = (iter != mouse_protocol.end());
+  return found ? (*iter)->isWheelRight() : false;
 }
 
 //----------------------------------------------------------------------

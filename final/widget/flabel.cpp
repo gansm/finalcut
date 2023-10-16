@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2022 Markus Gans                                      *
+* Copyright 2014-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -55,10 +55,8 @@ FLabel::FLabel (const FString& txt, FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FLabel::~FLabel()  // destructor
-{
-  delAccelerator();
-}
+FLabel::~FLabel() noexcept = default;  // destructor
+
 
 // FLabel operators
 //----------------------------------------------------------------------
@@ -125,7 +123,7 @@ void FLabel::resetColors()
 }
 
 //----------------------------------------------------------------------
-auto FLabel::setEnable (bool enable) -> bool
+void FLabel::setEnable (bool enable)
 {
   FWidget::setEnable(enable);
 
@@ -133,8 +131,6 @@ auto FLabel::setEnable (bool enable) -> bool
     setHotkeyAccelerator();
   else
     delAccelerator();
-
-  return enable;
 }
 
 //----------------------------------------------------------------------

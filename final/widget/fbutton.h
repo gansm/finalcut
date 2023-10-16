@@ -83,19 +83,19 @@ class FButton : public FWidget
     void setInactiveForegroundColor (FColor);
     void setInactiveBackgroundColor (FColor);
     void resetColors() override;
-    auto setNoUnderline (bool = true) -> bool;
-    auto unsetNoUnderline() -> bool;
-    auto setEnable (bool = true) -> bool override;
-    auto unsetEnable() -> bool override;
-    auto setDisable() -> bool override;
-    auto setFlat (bool = true) -> bool;
-    auto unsetFlat() -> bool;
-    auto setShadow (bool = true) -> bool;
-    auto unsetShadow() -> bool;
-    auto setDown (bool = true) -> bool;
-    auto setUp() -> bool;
-    auto setClickAnimation (bool = true) -> bool;
-    auto unsetClickAnimation() -> bool;
+    void setNoUnderline (bool = true);
+    void unsetNoUnderline();
+    void setEnable (bool = true) override;
+    void unsetEnable() override;
+    void setDisable() override;
+    void setFlat (bool = true);
+    void unsetFlat();
+    void setShadow (bool = true);
+    void unsetShadow();
+    void setDown (bool = true);
+    void setUp();
+    void setClickAnimation (bool = true);
+    void unsetClickAnimation();
     void setText (const FString&);
 
     // Inquiries
@@ -174,36 +174,36 @@ inline auto FButton::getText() const -> FString
 { return text; }
 
 //----------------------------------------------------------------------
-inline auto FButton::unsetNoUnderline() -> bool
-{ return setNoUnderline(false); }
+inline void FButton::unsetNoUnderline()
+{ setNoUnderline(false); }
 
 //----------------------------------------------------------------------
-inline auto FButton::unsetEnable() -> bool
-{ return setEnable(false); }
+inline void FButton::unsetEnable()
+{ setEnable(false); }
 
 //----------------------------------------------------------------------
-inline auto FButton::setDisable() -> bool
-{ return setEnable(false); }
+inline void FButton::setDisable()
+{ setEnable(false); }
 
 //----------------------------------------------------------------------
-inline auto FButton::unsetFlat() -> bool
-{ return setFlat(false); }
+inline void FButton::unsetFlat()
+{ setFlat(false); }
 
 //----------------------------------------------------------------------
-inline auto FButton::unsetShadow() -> bool
-{ return setShadow(false); }
+inline void FButton::unsetShadow()
+{ setShadow(false); }
 
 //----------------------------------------------------------------------
-inline auto FButton::setUp() -> bool
-{ return setDown(false); }
+inline void FButton::setUp()
+{ setDown(false); }
 
 //----------------------------------------------------------------------
-inline auto FButton::setClickAnimation(bool enable) -> bool
-{ return (click_animation = enable); }
+inline void FButton::setClickAnimation(bool enable)
+{ click_animation = enable; }
 
 //----------------------------------------------------------------------
-inline auto FButton::unsetClickAnimation() -> bool
-{ return setClickAnimation(false); }
+inline void FButton::unsetClickAnimation()
+{ setClickAnimation(false); }
 
 //----------------------------------------------------------------------
 inline auto FButton::isFlat() const -> bool

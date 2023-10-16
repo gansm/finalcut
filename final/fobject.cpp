@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2022 Markus Gans                                      *
+* Copyright 2015-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -134,9 +134,9 @@ void FObject::delChild (FObject* obj) &
 
   obj->parent_obj = nullptr;
   obj->has_parent = false;
-  auto end = children_list.end();
-  auto last = std::remove (children_list.begin(), end, obj);
-  children_list.erase(last, end);
+  auto list_end = children_list.end();
+  auto last = std::remove (children_list.begin(), list_end, obj);
+  children_list.erase(last, list_end);
 }
 
 //----------------------------------------------------------------------

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2022 Markus Gans                                      *
+* Copyright 2014-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -115,8 +115,8 @@ class FFileDialog : public FDialog
     // Mutators
     void setPath (const FString&);
     void setFilter (const FString&);
-    auto setShowHiddenFiles (bool = true) -> bool;
-    auto unsetShowHiddenFiles() -> bool;
+    void setShowHiddenFiles (bool = true);
+    void unsetShowHiddenFiles();
 
     // Event handler
     void onKeyPress (FKeyEvent*) override;
@@ -226,8 +226,8 @@ inline auto FFileDialog::getFilter() const -> FString
 { return filter_pattern; }
 
 //----------------------------------------------------------------------
-inline auto FFileDialog::unsetShowHiddenFiles() -> bool
-{ return setShowHiddenFiles(false); }
+inline void FFileDialog::unsetShowHiddenFiles()
+{ setShowHiddenFiles(false); }
 
 //----------------------------------------------------------------------
 inline auto FFileDialog::getShowHiddenFiles() const noexcept -> bool

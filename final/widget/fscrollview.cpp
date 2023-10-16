@@ -302,9 +302,9 @@ void FScrollView::setText (const FString& txt)
 }
 
 //----------------------------------------------------------------------
-auto FScrollView::setViewportPrint (bool enable) -> bool
+void FScrollView::setViewportPrint (bool enable)
 {
-  return (use_own_print_area = ! enable);
+  use_own_print_area = ! enable;
 }
 
 //----------------------------------------------------------------------
@@ -317,9 +317,9 @@ void FScrollView::resetColors()
 }
 
 //----------------------------------------------------------------------
-auto FScrollView::setBorder (bool enable) -> bool
+void FScrollView::setBorder (bool enable)
 {
-  return (setFlags().feature.no_border = ! enable);
+  setFlags().feature.no_border = ! enable;
 }
 
 //----------------------------------------------------------------------
@@ -344,7 +344,7 @@ void FScrollView::setVerticalScrollBarMode (ScrollBarMode mode)
 void FScrollView::clearArea (wchar_t fillchar)
 {
   if ( viewport )
-    clearArea (viewport.get(), fillchar);
+    FScrollView::clearArea (viewport.get(), fillchar);
 }
 
 //----------------------------------------------------------------------
@@ -540,6 +540,14 @@ void FScrollView::onWheel (FWheelEvent* ev)
   {
     scrollBy (0, distance);
   }
+  else if ( ev->getWheel() == MouseWheel::Left )
+  {
+    scrollBy (-distance, 0);
+  }
+  else if ( ev->getWheel() == MouseWheel::Right )
+  {
+    scrollBy (distance, 0);
+  }
 }
 
 //----------------------------------------------------------------------
@@ -599,11 +607,11 @@ void FScrollView::onChildFocusOut (FFocusEvent* out_ev)
 {
   // Change the focus away from FScrollView to another widget
 
-  const auto& focus = FWidget::getFocusWidget();
+  const auto* focus = FWidget::getFocusWidget();
 
   if ( out_ev->getFocusType() == FocusTypes::NextWidget )
   {
-    const auto& last_widget = getLastFocusableWidget(getChildren());
+    const auto* last_widget = getLastFocusableWidget(getChildren());
 
     if ( focus != last_widget )
       return;
@@ -613,7 +621,7 @@ void FScrollView::onChildFocusOut (FFocusEvent* out_ev)
   }
   else if ( out_ev->getFocusType() == FocusTypes::PreviousWidget )
   {
-    const auto& first_widget = getFirstFocusableWidget(getChildren());
+    const auto* first_widget = getFirstFocusableWidget(getChildren());
 
     if ( focus != first_widget )
       return;
@@ -811,7 +819,7 @@ inline void FScrollView::createViewport (const FSize& size) noexcept
   scroll_geometry.setSize(size);
   viewport = createArea(scroll_geometry);
   setColor();
-  clearArea();
+  FScrollView::clearArea();
 }
 
 //----------------------------------------------------------------------
@@ -1055,10 +1063,12 @@ void FScrollView::cb_vbarChange (const FWidget*)
       break;
 
     case FScrollbar::ScrollType::WheelUp:
+    case FScrollbar::ScrollType::WheelLeft:
       scrollBy (0, -wheel_distance);
       break;
 
     case FScrollbar::ScrollType::WheelDown:
+    case FScrollbar::ScrollType::WheelRight:
       scrollBy (0, wheel_distance);
       break;
 
@@ -1106,10 +1116,12 @@ void FScrollView::cb_hbarChange (const FWidget*)
       break;
 
     case FScrollbar::ScrollType::WheelUp:
+    case FScrollbar::ScrollType::WheelLeft:
       scrollBy (-wheel_distance, 0);
       break;
 
     case FScrollbar::ScrollType::WheelDown:
+    case FScrollbar::ScrollType::WheelRight:
       scrollBy (wheel_distance, 0);
       break;
 

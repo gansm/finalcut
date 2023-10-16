@@ -144,13 +144,13 @@ void FButton::resetColors()
 }
 
 //----------------------------------------------------------------------
-auto FButton::setNoUnderline (bool enable) -> bool
+void FButton::setNoUnderline (bool enable)
 {
-  return (setFlags().feature.no_underline = enable);
+  setFlags().feature.no_underline = enable;
 }
 
 //----------------------------------------------------------------------
-auto FButton::setEnable (bool enable) -> bool
+void FButton::setEnable (bool enable)
 {
   FWidget::setEnable(enable);
 
@@ -160,31 +160,28 @@ auto FButton::setEnable (bool enable) -> bool
     delAccelerator();
 
   updateButtonColor();
-  return enable;
 }
 
 //----------------------------------------------------------------------
-auto FButton::setFlat (bool enable) -> bool
+void FButton::setFlat (bool enable)
 {
-  return (setFlags().feature.flat = enable);
+  setFlags().feature.flat = enable;
 }
 
 //----------------------------------------------------------------------
-auto FButton::setShadow (bool enable) -> bool
+void FButton::setShadow (bool enable)
 {
-  return setWidgetShadow(this, enable);
+  setWidgetShadow(this, enable);
 }
 
 //----------------------------------------------------------------------
-auto FButton::setDown (bool enable) -> bool
+void FButton::setDown (bool enable)
 {
-  if ( button_down != enable )
-  {
-    button_down = enable;
-    redraw();
-  }
+  if ( button_down == enable )
+    return;
 
-  return enable;
+  button_down = enable;
+  redraw();
 }
 
 //----------------------------------------------------------------------

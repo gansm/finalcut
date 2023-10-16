@@ -39,6 +39,7 @@
 #include <array>
 #include <string>
 #include <thread>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -71,13 +72,13 @@ class FTermcap final
     struct TCapMap
     {
       const char* string;
-      char  tname[tname_size];
+      std::array<char, tname_size> tname;
     };
 
     // Using-declaration
     using TCapMapType = std::array<TCapMap, 85>;
-    using PutCharFunc = int (*)(int);
-    using PutStringFunc = int (*)(const std::string&);
+    using PutCharFunc = std::decay_t<int(int)>;
+    using PutStringFunc = std::decay_t<int(const std::string&)>;
 
     // Constructors
     FTermcap() = default;

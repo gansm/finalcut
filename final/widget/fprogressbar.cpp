@@ -84,9 +84,9 @@ void FProgressbar::setGeometry ( const FPoint& pos, const FSize& size
 }
 
 //----------------------------------------------------------------------
-auto FProgressbar::setShadow (bool enable) -> bool
+void FProgressbar::setShadow (bool enable)
 {
-  return setWidgetShadow(this, enable);
+  setWidgetShadow(this, enable);
 }
 
 //----------------------------------------------------------------------

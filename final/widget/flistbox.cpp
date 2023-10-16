@@ -35,15 +35,6 @@ namespace finalcut
 {
 
 //----------------------------------------------------------------------
-// class FListBoxItem
-//----------------------------------------------------------------------
-
-// constructor and destructor
-//----------------------------------------------------------------------
-FListBoxItem::~FListBoxItem() noexcept = default;  // destructor
-
-
-//----------------------------------------------------------------------
 // class FListBox
 //----------------------------------------------------------------------
 
@@ -468,6 +459,10 @@ void FListBox::onWheel (FWheelEvent* ev)
     wheelUp (wheel_distance);
   else if ( wheel == MouseWheel::Down )
     wheelDown (wheel_distance);
+  else if ( wheel == MouseWheel::Left )
+    wheelLeft (wheel_distance);
+  else if ( wheel == MouseWheel::Right )
+    wheelRight (wheel_distance);
 
   if ( current_before != current )
   {
@@ -1181,6 +1176,30 @@ void FListBox::wheelDown (int pagesize)
 }
 
 //----------------------------------------------------------------------
+void FListBox::wheelLeft (int pagesize)
+{
+  if ( getCount() == 0 || xoffset == 0 )
+    return;
+
+  const int xoffset_before = xoffset;
+  scrollLeft (pagesize);
+  const bool draw_hbar(xoffset_before != xoffset);
+  updateDrawing (false, draw_hbar);
+}
+
+//----------------------------------------------------------------------
+void FListBox::wheelRight (int pagesize)
+{
+  if ( getCount() == 0 )
+    return;
+
+  const int xoffset_before = xoffset;
+  scrollRight (pagesize);
+  const bool draw_hbar(xoffset_before != xoffset);
+  updateDrawing (false, draw_hbar);
+}
+
+//----------------------------------------------------------------------
 auto FListBox::dragScrollUp() -> bool
 {
   if ( current == 1 )
@@ -1703,10 +1722,12 @@ void FListBox::cb_vbarChange (const FWidget*)
       break;
 
     case FScrollbar::ScrollType::WheelUp:
+    case FScrollbar::ScrollType::WheelLeft:
       wheelUp (wheel_distance);
       break;
 
     case FScrollbar::ScrollType::WheelDown:
+    case FScrollbar::ScrollType::WheelRight:
       wheelDown (wheel_distance);
       break;
 
@@ -1764,10 +1785,12 @@ void FListBox::cb_hbarChange (const FWidget*)
       break;
 
     case FScrollbar::ScrollType::WheelUp:
+    case FScrollbar::ScrollType::WheelLeft:
       scrollLeft (wheel_distance);
       break;
 
     case FScrollbar::ScrollType::WheelDown:
+    case FScrollbar::ScrollType::WheelRight:
       scrollRight (wheel_distance);
       break;
 

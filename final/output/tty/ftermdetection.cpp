@@ -159,15 +159,15 @@ auto FTermDetection::getTTYtype() -> bool
   else
     term_basename++;
 
-  std::FILE* fp{};
+  std::FILE* file_ptr{};
   std::array<char, BUFSIZ> str{};
   static const auto& fsystem = FSystem::getInstance();
 
-  if ( (fp = fsystem->fopen(ttytypename.c_str(), "r")) == nullptr )
+  if ( (file_ptr = fsystem->fopen(ttytypename.c_str(), "r")) == nullptr )
     return false;
 
   // Read and parse the file
-  while ( fgets(str.data(), str.size() - 1, fp) != nullptr )
+  while ( fgets(str.data(), str.size() - 1, file_ptr) != nullptr )
   {
     const char* type{nullptr};  // nullptr == not found
     const char* name{nullptr};
@@ -189,12 +189,12 @@ auto FTermDetection::getTTYtype() -> bool
     {
       // Save name in termtype
       termtype = type;
-      fsystem->fclose(fp);
+      fsystem->fclose(file_ptr);
       return true;
     }
   }
 
-  fsystem->fclose(fp);
+  fsystem->fclose(file_ptr);
   return false;
 }
 
@@ -559,10 +559,12 @@ auto FTermDetection::parseAnswerbackMsg (const FString& current_termtype) -> FSt
       new_termtype = "putty";
   }
 
+#if !defined(UNIT_TEST)
   // Some terminals like cygwin or the Windows terminal
   // have to delete the printed character '♣'
   std::fprintf (stdout, "\r " BS);
   std::fflush (stdout);
+#endif  // !defined(UNIT_TEST)
 
 #if DEBUG
   if ( ! new_termtype.isEmpty() )

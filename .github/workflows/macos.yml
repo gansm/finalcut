@@ -30,7 +30,7 @@ jobs:
         brew install autoconf-archive
         brew install pkg-config
 
-    - name: Build
+    - name: Test on macOS
       run: |
         autoreconf -v --install --force
         ./configure --prefix=/usr

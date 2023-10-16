@@ -104,16 +104,16 @@ class FDialog : public FWindow
     virtual auto getText() const -> FString;
 
     // Mutators
-    auto setDialogWidget (bool = true) -> bool;
-    auto unsetDialogWidget() -> bool;
-    auto setModal (bool = true) -> bool;
-    auto unsetModal() -> bool;
-    auto setResizeable (bool = true) -> bool override;
-    auto setMinimizable (bool = true) -> bool override;
-    auto setTitlebarButtonVisibility (bool = true) -> bool;
-    auto unsetTitlebarButtonVisibility() -> bool;
-    auto setBorder (bool = true) -> bool;
-    auto unsetBorder() -> bool;
+    void setDialogWidget (bool = true);
+    void unsetDialogWidget();
+    void setModal (bool = true);
+    void unsetModal();
+    void setResizeable (bool = true) override;
+    void setMinimizable (bool = true) override;
+    void setTitlebarButtonVisibility (bool = true);
+    void unsetTitlebarButtonVisibility();
+    void setBorder (bool = true);
+    void unsetBorder();
     void resetColors() override;
     virtual void setText (const FString&);
 
@@ -287,24 +287,24 @@ inline auto FDialog::getText() const -> FString
 { return tb_text; }
 
 //----------------------------------------------------------------------
-inline auto FDialog::unsetDialogWidget() -> bool
-{ return setDialogWidget(false); }
+inline void FDialog::unsetDialogWidget()
+{ setDialogWidget(false); }
 
 //----------------------------------------------------------------------
-inline auto FDialog::unsetModal() -> bool
-{ return setModal(false); }
+inline void FDialog::unsetModal()
+{ setModal(false); }
 
 //----------------------------------------------------------------------
-inline auto FDialog::setTitlebarButtonVisibility (bool enable) -> bool
-{  return (titlebar_buttons = enable); }
+inline void FDialog::setTitlebarButtonVisibility (bool enable)
+{  titlebar_buttons = enable; }
 
 //----------------------------------------------------------------------
-inline auto FDialog::unsetTitlebarButtonVisibility() -> bool
-{ return setTitlebarButtonVisibility(false); }
+inline void FDialog::unsetTitlebarButtonVisibility()
+{ setTitlebarButtonVisibility(false); }
 
 //----------------------------------------------------------------------
-inline auto FDialog::unsetBorder() -> bool
-{ return setBorder(false); }
+inline void FDialog::unsetBorder()
+{ setBorder(false); }
 
 //----------------------------------------------------------------------
 inline void FDialog::setText (const FString& txt)

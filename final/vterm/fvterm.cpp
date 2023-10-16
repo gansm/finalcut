@@ -1289,7 +1289,7 @@ void FVTerm::updateVTerm() const
 
   if ( hasPendingUpdates(vdesktop.get()) )
   {
-    addLayer(vdesktop.get());
+    addLayer(vdesktop.get());  // Add vdesktop changes to vterm
     vdesktop->has_changes = false;
   }
 
@@ -1306,7 +1306,7 @@ void FVTerm::updateVTerm() const
     if ( hasPendingUpdates(v_win) )
     {
       passChangesToOverlap(v_win);
-      addLayer(v_win);
+      addLayer(v_win);  // Add v_win changes to vterm
       v_win->has_changes = false;
     }
     else if ( hasChildAreaChanges(v_win) )
@@ -1440,11 +1440,11 @@ inline auto FVTerm::isTransparentInvisible (const FChar& fchar) const -> bool
 //----------------------------------------------------------------------
 void FVTerm::defineByte1TransparentMask()
 {
-  FAttribute mask{};
-  mask.bit.transparent = true;
-  mask.bit.color_overlay = true;
-  mask.bit.inherit_background = true;
-  internal::var::b1_transparent_mask = mask.byte[1];
+  FCharAttribute mask{};
+  mask.transparent = true;
+  mask.color_overlay = true;
+  mask.inherit_background = true;
+  internal::var::b1_transparent_mask = getFAttributeByte(mask, 1);
 }
 
 //----------------------------------------------------------------------
@@ -1764,13 +1764,13 @@ inline auto FVTerm::printWrap (FTermArea* area) const -> bool
 auto FVTerm::getByte1PrintTransMask() const -> uInt8
 {
   // Set bits that must not be reset
-  FAttribute mask{};
-  mask.bit.transparent = true;
-  mask.bit.color_overlay = true;
-  mask.bit.inherit_background = true;
-  mask.bit.no_changes = true;
-  mask.bit.printed = true;
-  return mask.byte[1];
+  FCharAttribute mask{};
+  mask.transparent = true;
+  mask.color_overlay = true;
+  mask.inherit_background = true;
+  mask.no_changes = true;
+  mask.printed = true;
+  return getFAttributeByte(mask, 1);
 }
 
 //----------------------------------------------------------------------

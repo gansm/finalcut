@@ -15,6 +15,16 @@ libfinal_la_SOURCES = \
 	dialog/fdialog.cpp \
 	dialog/ffiledialog.cpp \
 	dialog/fmessagebox.cpp \
+	eventloop/backend_monitor.cpp \
+	eventloop/eventloop.cpp \
+	eventloop/eventloop_functions.cpp \
+	eventloop/io_monitor.cpp \
+	eventloop/kqueue_timer.cpp \
+	eventloop/monitor.cpp \
+	eventloop/pipedata.cpp \
+	eventloop/posix_timer.cpp \
+	eventloop/signal_monitor.cpp \
+	eventloop/timer_monitor.cpp \
 	input/fkeyboard.cpp \
 	input/fkey_map.cpp \
 	input/fmouse.cpp \
@@ -91,6 +101,7 @@ libfinal_la_LDFLAGS = -no-undefined -version-info @SO_VERSION@
 
 finalcutincludedir = $(includedir)/final
 finalcutdialogincludedir = $(includedir)/final/dialog
+finalcuteventloopincludedir = $(includedir)/final/eventloop
 finalcutinputincludedir = $(includedir)/final/input
 finalcutmenuincludedir = $(includedir)/final/menu
 finalcutoutputincludedir = $(includedir)/final/output
@@ -103,6 +114,16 @@ finalcutdialoginclude_HEADERS = \
 	dialog/fdialog.h \
 	dialog/ffiledialog.h \
 	dialog/fmessagebox.h
+
+finalcuteventloopinclude_HEADERS = \
+	eventloop/backend_monitor.h \
+	eventloop/eventloop.h \
+	eventloop/eventloop_functions.h \
+	eventloop/io_monitor.h \
+	eventloop/monitor.h \
+	eventloop/pipedata.h \
+	eventloop/signal_monitor.h \
+	eventloop/timer_monitor.h
 
 finalcutinputinclude_HEADERS = \
 	input/fkeyboard.h \
@@ -207,6 +228,7 @@ clean-local:
 
 uninstall-hook:
 	if test -d ${finalcutdialogincludedir}; then rmdir ${finalcutdialogincludedir}; fi
+	if test -d ${finalcuteventloopincludedir}; then rmdir ${finalcuteventloopincludedir}; fi
 	if test -d ${finalcutinputincludedir}; then rmdir ${finalcutinputincludedir}; fi
 	if test -d ${finalcutmenuincludedir}; then rmdir ${finalcutmenuincludedir}; fi
 	if test -d ${finalcutoutputttyincludedir}; then rmdir ${finalcutoutputttyincludedir}; fi

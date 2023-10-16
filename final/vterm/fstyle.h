@@ -68,23 +68,31 @@ class FStyle
     inline void setStyle (Style attr) noexcept
     { attribute = attr & Style(ATTRIBUTE_MASK); }
 
+    auto toFCharAttribute() const noexcept -> FCharAttribute
+    {
+      FCharAttribute fchar_attr{};
+      fchar_attr.bold               = (attribute & Style::Bold) != Style::None;
+      fchar_attr.dim                = (attribute & Style::Dim) != Style::None;
+      fchar_attr.italic             = (attribute & Style::Italic) != Style::None;
+      fchar_attr.underline          = (attribute & Style::Underline) != Style::None;
+      fchar_attr.blink              = (attribute & Style::Blink) != Style::None;
+      fchar_attr.reverse            = (attribute & Style::Reverse) != Style::None;
+      fchar_attr.standout           = (attribute & Style::Standout) != Style::None;
+      fchar_attr.invisible          = (attribute & Style::Invisible) != Style::None;
+      fchar_attr.protect            = (attribute & Style::Protected) != Style::None;
+      fchar_attr.crossed_out        = (attribute & Style::CrossedOut) != Style::None;
+      fchar_attr.dbl_underline      = (attribute & Style::DoubleUnderline) != Style::None;
+      fchar_attr.transparent        = (attribute & Style::Transparent) != Style::None;
+      fchar_attr.color_overlay      = (attribute & Style::ColorOverlay) != Style::None;
+      fchar_attr.inherit_background = (attribute & Style::InheritBackground) != Style::None;
+      return fchar_attr;
+    }
+
     auto toFAttribute() const noexcept -> FAttribute
     {
+      FCharAttribute fchar_attr{toFCharAttribute()};
       FAttribute fattr{};
-      fattr.bit.bold               = (attribute & Style::Bold) != Style::None;
-      fattr.bit.dim                = (attribute & Style::Dim) != Style::None;
-      fattr.bit.italic             = (attribute & Style::Italic) != Style::None;
-      fattr.bit.underline          = (attribute & Style::Underline) != Style::None;
-      fattr.bit.blink              = (attribute & Style::Blink) != Style::None;
-      fattr.bit.reverse            = (attribute & Style::Reverse) != Style::None;
-      fattr.bit.standout           = (attribute & Style::Standout) != Style::None;
-      fattr.bit.invisible          = (attribute & Style::Invisible) != Style::None;
-      fattr.bit.protect            = (attribute & Style::Protected) != Style::None;
-      fattr.bit.crossed_out        = (attribute & Style::CrossedOut) != Style::None;
-      fattr.bit.dbl_underline      = (attribute & Style::DoubleUnderline) != Style::None;
-      fattr.bit.transparent        = (attribute & Style::Transparent) != Style::None;
-      fattr.bit.color_overlay      = (attribute & Style::ColorOverlay) != Style::None;
-      fattr.bit.inherit_background = (attribute & Style::InheritBackground) != Style::None;
+      std::memcpy(&fattr, &fchar_attr, sizeof(fattr));
       return fattr;
     }
 

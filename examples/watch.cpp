@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2022 Markus Gans                                      *
+* Copyright 2015-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -71,7 +71,8 @@ Watch::Watch (FWidget* parent)
   time_label.setEmphasis();
 
   // Switch
-  sec = seconds_sw.setChecked();
+  seconds_sw.setChecked();
+  sec = seconds_sw.isChecked();
 
   // Connect switch signal "toggled" with a callback member function
   clock_sw.addCallback
@@ -146,10 +147,7 @@ void Watch::cb_clock()
 //----------------------------------------------------------------------
 void Watch::cb_seconds()
 {
-  if ( seconds_sw.isChecked() )
-    sec = true;
-  else
-    sec = false;
+  sec = seconds_sw.isChecked();
 
   if ( clock_sw.isChecked() )
     printTime();

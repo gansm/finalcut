@@ -20,12 +20,13 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-/*  Base class
- *  ══════════
+/*  Standalone class    Base class
+ *  ════════════════    ══════════
  *
- * ▕▔▔▔▔▔▔▔▔▏
- * ▕ FTimer ▏
- * ▕▁▁▁▁▁▁▁▁▏
+ *     ▕▔▔▔▔▔▔▔▔▏    ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *     ▕ FTimer ▏    ▕ FObjectTimer ▏
+ *     ▕▁▁▁▁▁▁▁▁▏    ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ *
  */
 
 #ifndef FTIMER_H
@@ -38,7 +39,7 @@
 #include <algorithm>
 #include <chrono>
 #include <memory>
-#include <mutex>
+#include <shared_mutex>
 #include <vector>
 
 #include "final/fevent.h"
@@ -52,7 +53,7 @@ namespace internal
 
 struct timer_var
 {
-  static std::mutex mutex;
+  static std::shared_timed_mutex mutex;
 };
 
 }  // namespace internal
@@ -95,7 +96,7 @@ class FTimer
     // Methods
     auto  addTimer (ObjectT*, int) & -> int;
     auto  delTimer (int) const & -> bool;
-    auto  delOwnTimers(const ObjectT*) const & -> bool;
+    auto  delOwnTimers (const ObjectT*) const & -> bool;
     auto  delAllTimers() const & -> bool;
 
   protected:
@@ -157,7 +158,7 @@ auto FTimer<ObjectT>::addTimer (ObjectT* object, int interval) & -> int
   // Create a timer and returns the timer identifier number
   // (interval in ms)
 
-  std::lock_guard<std::mutex> lock_guard(internal::timer_var::mutex);
+  std::lock_guard<std::shared_timed_mutex> lock_guard(internal::timer_var::mutex);
   auto& timer_list = globalTimerList();
   int id = getNextId();
   const auto time_interval = milliseconds(interval);
@@ -186,7 +187,7 @@ auto FTimer<ObjectT>::delTimer (int id) const & -> bool
   if ( id <= 0 )
     return false;
 
-  std::lock_guard<std::mutex> lock_guard(internal::timer_var::mutex);
+  std::lock_guard<std::shared_timed_mutex> lock_guard(internal::timer_var::mutex);
   auto& timer_list = globalTimerList();
 
   if ( ! timer_list || timer_list->empty() )
@@ -213,7 +214,7 @@ auto FTimer<ObjectT>::delOwnTimers(const ObjectT* object) const & -> bool
 {
   // Deletes all timers of this object
 
-  std::lock_guard<std::mutex> lock_guard(internal::timer_var::mutex);
+  std::lock_guard<std::shared_timed_mutex> lock_guard(internal::timer_var::mutex);
   auto& timer_list = globalTimerList();
 
   if ( ! timer_list || timer_list->empty() )
@@ -225,7 +226,8 @@ auto FTimer<ObjectT>::delOwnTimers(const ObjectT* object) const & -> bool
                                       {
                                         return timer.object == object;
                                       }
-                                    ), timer_list->end() );
+                                    )
+                    , timer_list->end() );
   return true;
 }
 
@@ -235,7 +237,7 @@ auto FTimer<ObjectT>::delAllTimers() const & -> bool
 {
   // Deletes all timers of all objects
 
-  std::lock_guard<std::mutex> lock_guard(internal::timer_var::mutex);
+  std::lock_guard<std::shared_timed_mutex> lock_guard(internal::timer_var::mutex);
   auto& timer_list = globalTimerList();
 
   if ( ! timer_list || timer_list->empty() )
@@ -253,8 +255,8 @@ template <typename CallbackT>
 auto FTimer<ObjectT>::processTimerEvent (CallbackT callback) -> uInt
 {
   uInt activated{0};
-  std::unique_lock<std::mutex> lock ( internal::timer_var::mutex
-                                    , std::defer_lock );
+  std::shared_lock<std::shared_timed_mutex> lock ( internal::timer_var::mutex
+                                                 , std::defer_lock );
 
   if ( ! lock.try_lock() )
     return 0;

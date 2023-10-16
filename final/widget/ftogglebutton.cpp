@@ -139,13 +139,13 @@ void FToggleButton::resetColors()
 }
 
 //----------------------------------------------------------------------
-auto FToggleButton::setNoUnderline (bool enable) -> bool
+void FToggleButton::setNoUnderline (bool enable)
 {
-  return (setFlags().feature.no_underline = enable);
+  setFlags().feature.no_underline = enable;
 }
 
 //----------------------------------------------------------------------
-auto FToggleButton::setEnable (bool enable) -> bool
+void FToggleButton::setEnable (bool enable)
 {
   FWidget::setEnable(enable);
   resetColors();
@@ -154,20 +154,16 @@ auto FToggleButton::setEnable (bool enable) -> bool
     setHotkeyAccelerator();
   else
     delAccelerator();
-
-  return enable;
 }
 
 //----------------------------------------------------------------------
-auto FToggleButton::setChecked (bool enable) -> bool
+void FToggleButton::setChecked (bool enable)
 {
-  if ( checked != enable )
-  {
-    checked = enable;
-    processToggle();
-  }
+  if ( checked == enable )
+    return;
 
-  return checked;
+  checked = enable;
+  processToggle();
 }
 
 //----------------------------------------------------------------------

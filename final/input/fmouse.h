@@ -104,7 +104,7 @@ class FMouseData
     // Destructor
     virtual ~FMouseData() noexcept;
 
-    // copy assignment operator (=)
+    // Copy assignment operator (=)
     auto operator = (const FMouseData&) -> FMouseData& = default;
 
     // Move assignment operator (=)
@@ -127,6 +127,8 @@ class FMouseData
     auto isMetaKeyPressed() const noexcept -> bool;
     auto isWheelUp() const noexcept -> bool;
     auto isWheelDown() const noexcept -> bool;
+    auto isWheelLeft() const noexcept -> bool;
+    auto isWheelRight() const noexcept -> bool;
     auto isMoved() const noexcept -> bool;
 
     // Methods
@@ -152,6 +154,8 @@ class FMouseData
       bool  meta_button{};
       bool  wheel_up{};
       bool  wheel_down{};
+      bool  wheel_left{};
+      bool  wheel_right{};
       bool  mouse_moved{};
     };
 
@@ -293,7 +297,7 @@ class FMouseGPM final : public FMouse
     };
 
     // Method
-    auto         gpmEvent (bool = true) const -> gpmEventType;
+    auto gpmEvent (bool = true) const -> gpmEventType;
 
     // Data member
     Gpm_Event gpm_ev{};
@@ -352,10 +356,10 @@ class FMouseX11 final : public FMouse
       button2_pressed_move = 0x41,
       button3_pressed_move = 0x42,
       button_mask          = 0x63,
-      button_up            = 0x60,
-      button_down          = 0x61,
-      button_up_move       = 0x60,
-      button_down_move     = 0x61
+      button_up            = 0x60,  // Mouse wheel scrolls up
+      button_down          = 0x61,  // Mouse wheel scrolls down
+      button_left          = 0x62,  // Mouse wheel left tilt
+      button_right         = 0x63   // Mouse wheel right tilt
     };
 
     // Constant
@@ -408,9 +412,11 @@ class FMouseSGR final : public FMouse
       button1_move    = 0x20,
       button2_move    = 0x21,
       button3_move    = 0x22,
-      button_mask     = 0x63,
-      button_up       = 0x40,
-      button_down     = 0x41,
+      button_mask     = 0xe3,
+      button_up       = 0x40,  // Mouse wheel scrolls up
+      button_down     = 0x41,  // Mouse wheel scrolls down
+      button_left     = 0x42,  // Mouse wheel left tilt
+      button_right    = 0x43,  // Mouse wheel right tilt
       pressed         = 'M',
       released        = 'm'
     };
@@ -466,11 +472,11 @@ class FMouseUrxvt final : public FMouse
       button1_pressed_move = 0x40,
       button2_pressed_move = 0x41,
       button3_pressed_move = 0x42,
-      button_mask          = 0x63,
-      button_up            = 0x60,
-      button_down          = 0x61,
-      button_up_move       = 0x60,
-      button_down_move     = 0x61
+      button_mask          = 0xe3,
+      button_up            = 0x60,  // Mouse wheel scrolls up
+      button_down          = 0x61,  // Mouse wheel scrolls down
+      button_left          = 0x62,  // Mouse wheel left tilt
+      button_right         = 0x63   // Mouse wheel right tilt
     };
 
     // Constant
@@ -561,6 +567,8 @@ class FMouseControl
     auto  isMetaKeyPressed() -> bool;
     auto  isWheelUp() -> bool;
     auto  isWheelDown() -> bool;
+    auto  isWheelLeft() -> bool;
+    auto  isWheelRight() -> bool;
     auto  isMoved() -> bool;
     auto  hasUnprocessedInput() const -> bool;
     auto  hasDataInQueue() const -> bool;

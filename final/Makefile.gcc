@@ -12,6 +12,14 @@ INCLUDE_HEADERS = \
 	dialog/fdialog.h \
 	dialog/ffiledialog.h \
 	dialog/fmessagebox.h \
+	eventloop/backend_monitor.h \
+	eventloop/eventloop.h \
+	eventloop/eventloop_functions.h \
+	eventloop/io_monitor.h \
+	eventloop/monitor.h \
+	eventloop/pipedata.h \
+	eventloop/signal_monitor.h \
+	eventloop/timer_monitor.h \
 	input/fkeyboard.h \
 	input/fmouse.h \
 	menu/fcheckmenuitem.h \
@@ -90,7 +98,7 @@ INCLUDE_HEADERS = \
 CXX = g++
 CCXFLAGS = $(OPTIMIZE) $(PROFILE) -DCOMPILE_FINAL_CUT $(DEBUG) $(VER) $(GPM) -fexceptions -std=c++14
 MAKEFILE = -f Makefile.gcc
-LDFLAGS = $(TERMCAP) -lgpm
+LDFLAGS = $(TERMCAP) -lrt -lgpm
 INCLUDES = -I..
 GPM = -D F_HAVE_LIBGPM
 VER = -D F_VERSION=\"$(VERSION)\"
@@ -100,6 +108,16 @@ OBJS = \
 	dialog/fdialog.o \
 	dialog/ffiledialog.o \
 	dialog/fmessagebox.o \
+	eventloop/backend_monitor.o \
+	eventloop/eventloop.o \
+	eventloop/eventloop_functions.o \
+	eventloop/io_monitor.o \
+	eventloop/kqueue_timer.o \
+	eventloop/monitor.o \
+	eventloop/pipedata.o \
+	eventloop/posix_timer.o \
+	eventloop/signal_monitor.o \
+	eventloop/timer_monitor.o \
 	input/fkeyboard.o \
 	input/fkey_map.o \
 	input/fmouse.o \
@@ -198,7 +216,7 @@ debug:
 	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -Wall -Wextra -Wpedantic"
 
 unittest:
-	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -DUNIT_TEST -Wall -Wextra -Wpedantic"
+	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -D UNIT_TEST -Wall -Wextra -Wpedantic"
 
 profile:
 	$(MAKE) $(MAKEFILE) PROFILE="-pg"

@@ -111,7 +111,7 @@ auto FKeyboard::getKeyName (const FKey keynum) const -> FString
   );
 
   if ( found_key != fkeyname.end() )
-    return {found_key->string};
+    return {found_key->string.data()};
 
   if ( keynum > 32 && keynum < 127 )
     return {char(keynum)};
@@ -120,10 +120,10 @@ auto FKeyboard::getKeyName (const FKey keynum) const -> FString
 }
 
 //----------------------------------------------------------------------
-auto FKeyboard::setNonBlockingInput (bool enable) -> bool
+void FKeyboard::setNonBlockingInput (bool enable)
 {
   if ( enable == non_blocking_stdin )
-    return non_blocking_stdin;
+    return;
 
   if ( enable )  // make stdin non-blocking
   {
@@ -139,8 +139,6 @@ auto FKeyboard::setNonBlockingInput (bool enable) -> bool
     if ( fcntl (FTermios::getStdIn(), F_SETFL, stdin_status_flags) != -1 )
       non_blocking_stdin = false;
   }
-
-  return non_blocking_stdin;
 }
 
 //----------------------------------------------------------------------
@@ -263,11 +261,11 @@ inline auto FKeyboard::getMouseProtocolKey() const -> FKey
     return NOT_SET;
 
   // x11 mouse tracking
-  if ( fifo_buf[1] == '[' && fifo_buf[2] == 'M' )
+  if ( fifo_buf[2] == 'M' )
     return ( buf_len < 6 ) ? FKey::Incomplete : FKey::X11mouse;
 
   // SGR mouse tracking
-  if ( fifo_buf[1] == '[' && fifo_buf[2] == '<' )
+  if ( fifo_buf[2] == '<' )
   {
     if ( buf_len < 9 || (fifo_buf[buf_len - 1] != 'M' && fifo_buf[buf_len - 1] != 'm') )
       return FKey::Incomplete;  // Incomplete mouse sequence
@@ -276,7 +274,7 @@ inline auto FKeyboard::getMouseProtocolKey() const -> FKey
   }
 
   // urxvt mouse tracking
-  if ( fifo_buf[1] == '[' && fifo_buf[2] >= '1' && fifo_buf[2] <= '9'
+  if ( fifo_buf[2] >= '1' && fifo_buf[2] <= '9'
     && std::isdigit(fifo_buf[3]) && buf_len >= 9
     && fifo_buf[buf_len - 1] == 'M' )
     return FKey::Urxvt_mouse;

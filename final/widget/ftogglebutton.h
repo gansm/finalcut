@@ -91,13 +91,13 @@ class FToggleButton : public FWidget
     void setSize (const FSize&, bool = true) override;
     void setGeometry (const FPoint&, const FSize&, bool = true) override;
     void resetColors() override;
-    auto setNoUnderline (bool = true) -> bool;
-    auto unsetNoUnderline() -> bool;
-    auto setEnable (bool = true) -> bool override;
-    auto unsetEnable() -> bool override;
-    auto setDisable() -> bool override;
-    auto setChecked (bool = true) -> bool;
-    auto unsetChecked() -> bool;
+    void setNoUnderline (bool = true);
+    void unsetNoUnderline();
+    void setEnable (bool = true) override;
+    void unsetEnable() override;
+    void setDisable() override;
+    void setChecked (bool = true);
+    void unsetChecked();
     virtual void setText (const FString&);
 
     // Inquiries
@@ -118,7 +118,7 @@ class FToggleButton : public FWidget
   protected:
     // Accessor
     auto getGroup() const -> FButtonGroup*;
-    friend auto getGroup (FToggleButton& toggle_btn) -> FButtonGroup*;
+    friend auto getGroup (const FToggleButton& toggle_btn) -> FButtonGroup*;
 
     // Mutator
     void setHotkeyAccelerator();
@@ -172,19 +172,20 @@ inline auto FToggleButton::getText() & -> FString&
 { return text; }
 
 //----------------------------------------------------------------------
-inline auto FToggleButton::unsetNoUnderline() -> bool
-{ return setNoUnderline(false); }
-//----------------------------------------------------------------------
-inline auto FToggleButton::unsetEnable() -> bool
-{ return setEnable(false); }
+inline void FToggleButton::unsetNoUnderline()
+{ setNoUnderline(false); }
 
 //----------------------------------------------------------------------
-inline auto FToggleButton::setDisable() -> bool
-{ return setEnable(false); }
+inline void FToggleButton::unsetEnable()
+{ setEnable(false); }
 
 //----------------------------------------------------------------------
-inline auto FToggleButton::unsetChecked() -> bool
-{ return setChecked(false); }
+inline void FToggleButton::setDisable()
+{ setEnable(false); }
+
+//----------------------------------------------------------------------
+inline void FToggleButton::unsetChecked()
+{ setChecked(false); }
 
 //----------------------------------------------------------------------
 inline auto FToggleButton::isChecked() const noexcept -> bool

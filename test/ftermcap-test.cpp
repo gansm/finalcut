@@ -193,10 +193,9 @@ void FTermcapTest::getNumberTest()
   CPPUNIT_ASSERT ( fterm_data.getTermType() == "xterm" );
 
   CPPUNIT_ASSERT ( tcap.getNumber("Co") == 8 );   // Colors
+  CPPUNIT_ASSERT ( tcap.getNumber("pa") == 64 );  // Pairs
   CPPUNIT_ASSERT ( tcap.getNumber("it") == 8 );   // Tab stop
   CPPUNIT_ASSERT ( tcap.getNumber("NC") == NA );  // Attr. without color
-  CPPUNIT_ASSERT ( tcap.getNumber("co") == 80 );  // Columns
-  CPPUNIT_ASSERT ( tcap.getNumber("li") == 24 );  // Lines
 }
 
 //----------------------------------------------------------------------

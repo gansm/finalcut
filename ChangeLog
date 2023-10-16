@@ -1,3 +1,23 @@
+2023-10-14  Markus Gans  <guru.mail@muenster.de>
+	* Switch to a readers-writer lock for the timer list
+
+2023-10-07  Markus Gans  <guru.mail@muenster.de>
+	* Bugfix: Bottom transparent shadow changes were registered in wrong row
+
+2023-10-03  Markus Gans  <guru.mail@muenster.de>
+	* Eliminate undefined behavior on exit
+
+2023-09-17  Markus Gans  <guru.mail@muenster.de>
+	* Better direct access to FCharAttribute type
+
+2023-06-04  Markus Gans  <guru.mail@muenster.de>
+	* Added support for a tiltable scroll wheel. This allows you to scroll 
+	  the context of widgets left and right in an xterm
+
+2023-05-31  Markus Gans  <guru.mail@muenster.de>
+	* Fix setFormatedNumber() in FString for separator > 127 
+	  (e.g. non-breaking space)
+
 2023-05-18  Markus Gans  <guru.mail@muenster.de>
 	* Version 0.9.0
 

@@ -117,11 +117,11 @@ class FScrollView : public FWidget
     auto setCursorPos (const FPoint&) -> bool override;
     void setPrintPos (const FPoint&) override;
     void setText (const FString&);
-    auto setViewportPrint (bool = true) -> bool;
-    auto unsetViewportPrint() -> bool;
+    void setViewportPrint (bool = true);
+    void unsetViewportPrint();
     void resetColors() override;
-    auto setBorder (bool = true) -> bool;
-    auto unsetBorder() -> bool;
+    void setBorder (bool = true);
+    void unsetBorder();
     void setHorizontalScrollBarMode (ScrollBarMode);
     void setVerticalScrollBarMode (ScrollBarMode);
 
@@ -260,12 +260,12 @@ inline auto FScrollView::getScrollY() const -> int
 { return viewport_geometry.getY(); }
 
 //----------------------------------------------------------------------
-inline auto FScrollView::unsetViewportPrint() -> bool
-{ return setViewportPrint(false); }
+inline void FScrollView::unsetViewportPrint()
+{ setViewportPrint(false); }
 
 //----------------------------------------------------------------------
-inline auto FScrollView::unsetBorder() -> bool
-{ return setBorder(false); }
+inline void FScrollView::unsetBorder()
+{ setBorder(false); }
 
 //----------------------------------------------------------------------
 inline auto FScrollView::hasBorder() const -> bool

@@ -28,6 +28,7 @@
 #endif
 
 #include <sys/types.h>
+#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -39,6 +40,16 @@
 #include <memory>
 #include <string>
 #include <utility>
+
+#include "final/eventloop/pipedata.h"
+
+#if (defined(__APPLE__) && defined(__MACH__)) || defined(__OpenBSD__)
+  #define USE_KQUEUE_TIMER
+#endif
+
+#if !(defined(__APPLE__) && defined(__MACH__)) && !(defined(__OpenBSD__))
+  #define USE_POSIX_TIMER
+#endif
 
 #define null nullptr
 
@@ -272,6 +283,36 @@ struct FCharAttribute
   // Attribute byte #3
   uInt8                    : 8;  // padding byte
 };
+
+inline auto getFAttributeByte ( const FCharAttribute& fchar_attr
+                              , std::size_t index ) noexcept -> uInt8
+{
+  uInt8 byte{};
+  std::memcpy (&byte, reinterpret_cast<const uInt8*>(&fchar_attr) + index, sizeof(uInt8));
+  return byte;
+}
+
+inline auto setFAttributeByte ( FCharAttribute& fchar_attr
+                              , std::size_t index
+                              , uInt8 value ) noexcept
+{
+  assert ( index < sizeof(FCharAttribute) );
+  std::memcpy(reinterpret_cast<uInt8*>(&fchar_attr) + index, &value, sizeof(uInt8));
+}
+
+inline auto getFAttributeWord (const FCharAttribute& fchar_attr) noexcept -> uInt32
+{
+  uInt32 word{};
+  std::memcpy(&word, &fchar_attr, sizeof(word));
+  return word;
+}
+
+inline auto WordToFAttribute (uInt32 word) noexcept -> FCharAttribute
+{
+  FCharAttribute fchar_attr{};
+  std::memcpy(&fchar_attr, &word, sizeof(fchar_attr));
+  return fchar_attr;
+}
 
 union FAttribute
 {
