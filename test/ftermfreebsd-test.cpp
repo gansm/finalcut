@@ -21,7 +21,10 @@
 ***********************************************************************/
 
 #include <term.h>
-#undef buttons  // from term.h
+#undef buttons      // from term.h
+#undef orig_pair    // from term.h
+#undef orig_colors  // from term.h
+
 #include <unistd.h>
 
 #include <limits>

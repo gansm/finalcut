@@ -229,8 +229,8 @@ class FTerm final
     static auto scrollTermForward() -> bool;
     static auto scrollTermReverse() -> bool;
 
-    template <typename StringT, typename... Args>
-    static void paddingPrintf (StringT&&, Args&&...);
+    template <typename... Args>
+    static void paddingPrintf (Args&&...);
     static void paddingPrint (const std::string&, int = 1);
     static void stringPrint (const std::string&);
 
@@ -315,19 +315,18 @@ inline void FTerm::unsetUTF8()
 { setUTF8(false); }
 
 //----------------------------------------------------------------------
-template <typename StringT, typename... Args>
-inline void FTerm::paddingPrintf (StringT&& format, Args&&... args)
+template <typename... Args>
+inline void FTerm::paddingPrintf (Args&&... args)
 {
-  const int size = std::snprintf (nullptr, 0, format, args...);
+  const int size = std::snprintf (nullptr, 0, args...);
 
   if ( size <= 0 )
     return;
 
   std::string buffer{};
-  auto buffer_size = std::size_t(size + 1);
+  auto buffer_size = std::size_t(size) + 1;
   buffer.resize(buffer_size);
   std::snprintf ( &*buffer.begin(), buffer_size
-                , std::forward<StringT>(format)
                 , std::forward<Args>(args)... );
   buffer_size--;
   buffer.resize(buffer_size);

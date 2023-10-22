@@ -139,6 +139,9 @@ class FMenu : public FWindow
     void cb_menuitemToggled (const FMenuItem*) const;
 
   private:
+    // Enumeration
+    enum class SelectItem { No, Yes };
+
     struct MouseStates
     {
       uChar focus_changed        : 1;
@@ -159,7 +162,6 @@ class FMenu : public FWindow
 
     // Constants
     static constexpr auto NOT_SET = static_cast<std::size_t>(-1);
-    static constexpr bool SELECT_ITEM = true;
 
     // Accessors
     auto getSuperMenu() const -> FWidget*;
@@ -185,7 +187,7 @@ class FMenu : public FWindow
     void calculateDimensions();
     void adjustItems() const;
     auto adjustX(int) const -> int;
-    void openSubMenu (FMenu*, bool = false);
+    void openSubMenu (FMenu*, SelectItem);
     void closeOpenedSubMenu();
     void hideSubMenus();
     void hideSuperMenus() const;

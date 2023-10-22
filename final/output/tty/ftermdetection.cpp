@@ -284,7 +284,7 @@ void FTermDetection::termtypeAnalysis()
   if ( termtype.left(12) == "rxvt-unicode" )
     fterm_data.setTermType (FTermType::urxvt);
 
-  // screen/tmux
+  // screen or tmux with termtype screen
   if ( termtype.left(6) == "screen" )
   {
     fterm_data.setTermType (FTermType::screen);
@@ -292,6 +292,13 @@ void FTermDetection::termtypeAnalysis()
 
     if ( tmux && tmux[0] != '\0' )
       fterm_data.setTermType (FTermType::tmux);
+  }
+
+  // tmux
+  if ( termtype.left(4) == "tmux" )
+  {
+    fterm_data.setTermType (FTermType::screen);
+    fterm_data.setTermType (FTermType::tmux);
   }
 
   // Linux console

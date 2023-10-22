@@ -43,9 +43,10 @@ AC_CHECK_HEADERS( \
 
 # Checks for library functions.
 AC_CHECK_FUNCS( \
-		getuid \
 		geteuid \
 		getttynam \
+		getuid \
+		pthread_rwlock_wrlock \
 		select \
 		sigaction \
 		strdup \
@@ -54,15 +55,16 @@ AC_CHECK_FUNCS( \
 		timer_settime \
 		vsnprintf \
 		wcwidth )
-
 # Checks for 'tgetent'
 AC_SEARCH_LIBS([tgetent], [terminfo mytinfo termlib termcap tinfo ncurses curses])
 # Checks for 'tparm'
 AC_SEARCH_LIBS([tparm], [terminfo mytinfo termlib termcap tinfo ncurses curses])
 # Checks for 'timer_create'
 AC_SEARCH_LIBS([timer_create], [rt])
-# Checks for 'timer_create'
+# Checks for 'timer_settime'
 AC_SEARCH_LIBS([timer_settime], [rt])
+# Checks for 'pthread_rwlock_wrlock'
+AC_SEARCH_LIBS([pthread_rwlock_wrlock], [pthread])
 
 AC_SUBST([FINAL_LIBS])
 AC_SUBST([TERMCAP_LIB])

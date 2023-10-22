@@ -1,3 +1,6 @@
+2023-10-23  Markus Gans  <guru.mail@muenster.de>
+	* Reorganize the data structure of FOptiAttr
+
 2023-10-14  Markus Gans  <guru.mail@muenster.de>
 	* Switch to a readers-writer lock for the timer list
 

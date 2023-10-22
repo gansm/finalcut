@@ -206,7 +206,7 @@ void FMenu::onMouseDown (FMouseEvent* ev)
     redraw();
 
   // Open the sub menu to be opened
-  openSubMenu (shown_sub_menu);
+  openSubMenu (shown_sub_menu, SelectItem::No);
 }
 
 //----------------------------------------------------------------------
@@ -287,7 +287,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
   if ( shown_sub_menu )
   {
     closeOpenedSubMenu();
-    openSubMenu (shown_sub_menu);
+    openSubMenu (shown_sub_menu, SelectItem::No);
   }
   else if ( ms.hide_sub_menu )
   {
@@ -550,14 +550,14 @@ auto FMenu::adjustX (int x_pos) const -> int
 }
 
 //----------------------------------------------------------------------
-void FMenu::openSubMenu (FMenu* sub_menu, bool select)
+void FMenu::openSubMenu (FMenu* sub_menu, SelectItem select)
 {
   // open sub menu
 
   if ( ! sub_menu || sub_menu->isShown() )
     return;
 
-  if ( select )
+  if ( select == SelectItem::Yes )
   {
     sub_menu->selectFirstItem();
 
@@ -728,7 +728,7 @@ auto FMenu::mouseUpOverList (const FPoint& mouse_pos) -> bool
     auto sub_menu = sel_item->getMenu();
 
     if ( ! sub_menu->isShown() )
-      openSubMenu (sub_menu, SELECT_ITEM);
+      openSubMenu (sub_menu, SelectItem::Yes);
     else if ( opened_sub_menu )
     {
       opened_sub_menu->selectFirstItem();
@@ -953,7 +953,7 @@ auto FMenu::hotkeyMenu (FKeyEvent* ev) -> bool
   auto try_to_open_submenu = [this] (const auto& sub_menu)
   {
     if ( ! sub_menu->isShown() )
-      openSubMenu (sub_menu, SELECT_ITEM);
+      openSubMenu (sub_menu, SelectItem::Yes);
 
     sub_menu->redraw();
   };
@@ -1331,7 +1331,7 @@ inline void FMenu::selectNextMenu (FKeyEvent* ev)
     auto sub_menu = getSelectedItem()->getMenu();
 
     if ( ! sub_menu->isShown() )
-      openSubMenu (sub_menu, SELECT_ITEM);
+      openSubMenu (sub_menu, SelectItem::Yes);
     else
       keypressMenuBar(ev);  // select next menu
   }
@@ -1348,7 +1348,7 @@ inline void FMenu::acceptSelection()
   auto sel_item = getSelectedItem();
 
   if ( sel_item->hasMenu() )
-    openSubMenu (sel_item->getMenu(), SELECT_ITEM);
+    openSubMenu (sel_item->getMenu(), SelectItem::Yes);
   else
   {
     unselectItem();

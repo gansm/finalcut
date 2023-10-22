@@ -22,6 +22,7 @@
 
 #include <cstring>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -59,49 +60,27 @@ constexpr void setTCapStringIfNotSet (CapabilityT& cap, StringT&& string)
 void FTermcapQuirks::terminalFixup()
 {
   static const auto& fterm_data = FTermData::getInstance();
-
-  if ( fterm_data.isTermType(FTermType::cygwin) )
+  using HandlerMap = std::unordered_map<FTermType, std::function<void()>> ;
+  HandlerMap term_handlers =
   {
-    cygwin();
-  }
-  else if ( fterm_data.isTermType(FTermType::linux_con) )
-  {
-    linux();
-  }
-  else if ( fterm_data.isTermType(FTermType::rxvt) )
-  {
-    rxvt();
-  }
-  else if ( fterm_data.isTermType(FTermType::gnome_terminal) )
-  {
-    vte();
-  }
-  else if ( fterm_data.isTermType(FTermType::kitty) )
-  {
-    kitty();
-  }
-  else if ( fterm_data.isTermType(FTermType::tera_term) )
-  {
-    teraterm();
-  }
-  else if ( fterm_data.isTermType(FTermType::sun_con) )
-  {
-    sunConsole();
-  }
-  else if ( fterm_data.isTermType(FTermType::putty) )
-  {
-    putty();
-  }
-  else if ( fterm_data.isTermType(FTermType::screen) )
-  {
-    screen();
-  }
+    { FTermType::cygwin         , &FTermcapQuirks::cygwin },
+    { FTermType::linux_con      , &FTermcapQuirks::linux },
+    { FTermType::rxvt           , &FTermcapQuirks::rxvt },
+    { FTermType::gnome_terminal , &FTermcapQuirks::vte },
+    { FTermType::kitty          , &FTermcapQuirks::kitty },
+    { FTermType::tera_term      , &FTermcapQuirks::teraterm },
+    { FTermType::sun_con        , &FTermcapQuirks::sunConsole },
+    { FTermType::putty          , &FTermcapQuirks::putty },
+    { FTermType::screen         , &FTermcapQuirks::screen }
 #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-  else if ( fterm_data.isTermType(FTermType::freebsd_con) )
-  {
-    freebsd();
-  }
-#endif  // defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
+    ,
+    { FTermType::freebsd_con    , &FTermcapQuirks::freebsd }
+#endif
+  };
+
+  for (const auto& handler : term_handlers)
+    if ( fterm_data.isTermType(handler.first) )
+      handler.second();
 
   // xterm and compatible terminals
   if ( fterm_data.isTermType(FTermType::xterm)

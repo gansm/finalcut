@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2022 Markus Gans                                      *
+* Copyright 2018-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -178,7 +178,7 @@ void FOptiAttrTest::sgrOptimizerTest()
   oa.set_background_color (nullptr);
   oa.set_term_color_pair (nullptr);
   oa.set_orig_pair (CSI "39;49m");
-  oa.set_orig_orig_colors (nullptr);
+  oa.set_orig_colors (nullptr);
   oa.initialize();
 
   finalcut::FChar from{};
@@ -387,7 +387,7 @@ void FOptiAttrTest::fakeReverseTest()
   oa.set_background_color (nullptr);
   oa.set_term_color_pair (nullptr);
   oa.set_orig_pair (nullptr);
-  oa.set_orig_orig_colors (nullptr);
+  oa.set_orig_colors (nullptr);
   oa.initialize();
 
   finalcut::FChar from{};
@@ -480,7 +480,7 @@ void FOptiAttrTest::ansiTest()
   oa.set_background_color (nullptr);
   oa.set_term_color_pair (nullptr);
   oa.set_orig_pair (CSI "39;49m");
-  oa.set_orig_orig_colors (nullptr);
+  oa.set_orig_colors (nullptr);
   oa.initialize();
 
   finalcut::FChar from{};
@@ -943,7 +943,7 @@ void FOptiAttrTest::vt100Test()
   oa.set_background_color (nullptr);
   oa.set_term_color_pair (nullptr);
   oa.set_orig_pair (nullptr);
-  oa.set_orig_orig_colors (nullptr);
+  oa.set_orig_colors (nullptr);
   oa.initialize();
 
   finalcut::FChar from{};
@@ -1409,7 +1409,7 @@ void FOptiAttrTest::xtermTest()
   oa.set_background_color (nullptr);
   oa.set_term_color_pair (nullptr);
   oa.set_orig_pair (CSI "39;49m");
-  oa.set_orig_orig_colors (nullptr);
+  oa.set_orig_colors (nullptr);
   oa.initialize();
 
   finalcut::FChar from{};
@@ -1878,7 +1878,7 @@ void FOptiAttrTest::rxvtTest()
   oa.set_background_color (nullptr);
   oa.set_term_color_pair (nullptr);
   oa.set_orig_pair (CSI "39;49m");
-  oa.set_orig_orig_colors (nullptr);
+  oa.set_orig_colors (nullptr);
   oa.initialize();
 
   finalcut::FChar from{};
@@ -2348,7 +2348,7 @@ void FOptiAttrTest::linuxTest()
   oa.set_background_color (nullptr);
   oa.set_term_color_pair (nullptr);
   oa.set_orig_pair (CSI "39;49;25m");
-  oa.set_orig_orig_colors (OSC "R");
+  oa.set_orig_colors (OSC "R");
   oa.initialize();
 
   finalcut::FChar from{};
@@ -2822,7 +2822,7 @@ void FOptiAttrTest::puttyTest()
   oa.set_background_color (nullptr);
   oa.set_term_color_pair (nullptr);
   oa.set_orig_pair (CSI "39;49m");
-  oa.set_orig_orig_colors (OSC "R");
+  oa.set_orig_colors (OSC "R");
   oa.initialize();
 
 
@@ -3292,7 +3292,7 @@ void FOptiAttrTest::teratermTest()
   oa.set_background_color (nullptr);
   oa.set_term_color_pair (nullptr);
   oa.set_orig_pair (CSI "39;49m");
-  oa.set_orig_orig_colors (nullptr);
+  oa.set_orig_colors (nullptr);
   oa.initialize();
 
 
@@ -3763,9 +3763,8 @@ void FOptiAttrTest::ibmColorTest()
                                "%e%p1%{7}%=%t107m%;");
   oa.set_term_color_pair (nullptr);
   oa.set_orig_pair (CSI "32;40m");
-  oa.set_orig_orig_colors (nullptr);
+  oa.set_orig_colors (nullptr);
   oa.initialize();
-
 
   finalcut::FChar from{};
   finalcut::FChar to{};

@@ -78,7 +78,7 @@ void FDialogListMenu::init()
     "last-dialog-closed",
     this,
     &FDialogListMenu::cb_switchState,
-    false
+    Enable::No
   );
 
   fapp->addCallback
@@ -86,19 +86,19 @@ void FDialogListMenu::init()
     "first-dialog-opened",
     this,
     &FDialogListMenu::cb_switchState,
-    true
+    Enable::Yes
   );
 }
 
 //----------------------------------------------------------------------
-void FDialogListMenu::cb_switchState (bool enable)
+void FDialogListMenu::cb_switchState (Enable enable)
 {
   auto m_item = getItem();
 
   if ( ! m_item )
     return;
 
-  m_item->setFlags().feature.active = enable;
+  m_item->setFlags().feature.active = enable == Enable::Yes ? true : false;
   auto super = m_item->getSuperMenu();
 
   if ( ! super )

@@ -677,7 +677,7 @@ inline void FApplication::findKeyboardWidget() const
 }
 
 //----------------------------------------------------------------------
-inline auto FApplication::isKeyPressed(uInt64 ms) const -> bool
+inline auto FApplication::isKeyPressed (uInt64 ms) const -> bool
 {
   static auto& mouse = FMouseControl::getInstance();
   static auto& keyboard = FKeyboard::getInstance();

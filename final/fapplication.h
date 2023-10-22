@@ -178,7 +178,7 @@ class FApplication : public FWidget
     static void  showParameterUsage();
     void         destroyLog();
     void         findKeyboardWidget() const;
-    auto         isKeyPressed(uInt64 = 0U) const -> bool;
+    auto         isKeyPressed (uInt64 = 0U) const -> bool;
     void         keyPressed();
     void         keyReleased() const;
     void         escapeKeyPressed() const;
