@@ -398,12 +398,12 @@ struct FVTerm::FTermArea  // Define virtual terminal character properties
 
   inline auto getFChar (int x, int y) const noexcept -> const FChar&
   {
-    return data[unsigned(y) * unsigned(width + right_shadow) + unsigned(x)];
+    return data[unsigned(y) * unsigned(size.width + shadow.width) + unsigned(x)];
   }
 
   inline auto getFChar (int x, int y) noexcept -> FChar&
   {
-    return data[unsigned(y) * unsigned(width + right_shadow) + unsigned(x)];
+    return data[unsigned(y) * unsigned(size.width + shadow.width) + unsigned(x)];
   }
 
   inline auto getFChar (const FPoint& pos) const noexcept -> const FChar&
@@ -418,14 +418,14 @@ struct FVTerm::FTermArea  // Define virtual terminal character properties
 
   inline void setCursorPos (int x, int y) noexcept
   {
-    cursor_x = x;
-    cursor_y = y;
+    cursor.x = x;
+    cursor.y = y;
   }
 
   inline void setInputCursorPos (int x, int y) noexcept
   {
-    input_cursor_x = x;
-    input_cursor_y = y;
+    input_cursor.x = x;
+    input_cursor.y = y;
   }
 
   template <typename T>
@@ -438,28 +438,34 @@ struct FVTerm::FTermArea  // Define virtual terminal character properties
   }
 
   // Data members
-  int             offset_left{0};      // Distance from left terminal side
-  int             offset_top{0};       // Distance from top of the terminal
-  int             width{-1};           // Window width
-  int             height{-1};          // Window height
-  int             min_width{-1};       // Minimized window width
-  int             min_height{-1};      // Minimized window height
-  int             right_shadow{0};     // Right window shadow
-  int             bottom_shadow{0};    // Bottom window shadow
-  int             cursor_x{0};         // X-position for the next write operation
-  int             cursor_y{0};         // Y-position for the next write operation
-  int             input_cursor_x{-1};  // X-position input cursor
-  int             input_cursor_y{-1};  // Y-position input cursor
+  struct Coordinate
+  {
+    int x{};
+    int y{};
+  };
+
+  struct Dimension
+  {
+    int width{};
+    int height{};
+  };
+
+  Coordinate      position{0, 0};        // Distance from left and top of terminal edge
+  Dimension       size{-1, -1};          // Window width and height
+  Dimension       shadow{0, 0};          // Right and bottom window shadow
+  Dimension       min_size{-1, -1};      // Minimized window width and height
+  Coordinate      cursor{0, 0};          // Position for the next write operation
+  Coordinate      input_cursor{-1, -1};  // Position of visible input cursor
   int             layer{-1};
   Encoding        encoding{Encoding::Unknown};
   bool            input_cursor_visible{false};
   bool            has_changes{false};
   bool            visible{false};
   bool            minimized{false};
-  FDataAccessPtr  owner{nullptr};      // Object that owns this FTermArea
+  FDataAccessPtr  owner{nullptr};        // Object that owns this FTermArea
   FPreprocVector  preproc_list{};
   FLineChangesPtr changes{};
-  FCharPtr        data{};              // FChar data of the drawing area
+  FCharPtr        data{};                // FChar data of the drawing area
 };
 
 //----------------------------------------------------------------------
@@ -467,24 +473,24 @@ inline auto FVTerm::FTermArea::contains (const FPoint& pos) const noexcept -> bo
 {
   // Is the terminal position (pos) located on my area?
 
-  const int current_height = minimized ? min_height : height + bottom_shadow;
+  const int current_height = minimized ? min_size.height : size.height + shadow.height;
   const int x = pos.getX();
   const int y = pos.getY();
-  return x >= offset_left
-      && x < offset_left + width + right_shadow
-      && y >= offset_top
-      && y < offset_top + current_height;
+  return x >= position.x
+      && x < position.x + size.width + shadow.width
+      && y >= position.y
+      && y < position.y + current_height;
 }
 
 //----------------------------------------------------------------------
 inline auto FVTerm::FTermArea::isOverlapped (const FRect& box) const noexcept -> bool
 {
-  const int current_height = minimized ? min_height
-                                       : height + bottom_shadow;
-  const int x1 = offset_left;
-  const int x2 = offset_left + width + right_shadow - 1;
-  const int y1 = offset_top;
-  const int y2 = offset_top + current_height - 1;
+  const int current_height = minimized ? min_size.height
+                                       : size.height + shadow.height;
+  const int x1 = position.x;
+  const int x2 = position.x + size.width + shadow.width - 1;
+  const int y1 = position.y;
+  const int y2 = position.y + current_height - 1;
 
   return ( std::max(x1, box.getX1() - 1) <= std::min(x2, box.getX2() - 1)
         && std::max(y1, box.getY1() - 1) <= std::min(y2, box.getY2() - 1) );
@@ -493,19 +499,19 @@ inline auto FVTerm::FTermArea::isOverlapped (const FRect& box) const noexcept ->
 //----------------------------------------------------------------------
 inline auto FVTerm::FTermArea::isOverlapped (const FTermArea* area) const noexcept -> bool
 {
-  const int current_height = minimized ? min_height
-                                       : height + bottom_shadow;
-  const int x1 = offset_left;
-  const int x2 = offset_left + width + right_shadow - 1;
-  const int y1 = offset_top;
-  const int y2 = offset_top + current_height - 1;
+  const int current_height = minimized ? min_size.height
+                                       : size.height + shadow.height;
+  const int x1 = position.x;
+  const int x2 = position.x + size.width + shadow.width - 1;
+  const int y1 = position.y;
+  const int y2 = position.y + current_height - 1;
 
-  const int area_current_height = area->minimized ? area->min_height
-                                                  : area->height + area->bottom_shadow;
-  const int area_x1 = area->offset_left;
-  const int area_x2 = area->offset_left + area->width + area->right_shadow - 1;
-  const int area_y1 = area->offset_top;
-  const int area_y2 = area->offset_top + area_current_height - 1;
+  const int area_current_height = area->minimized ? area->min_size.height
+                                                  : area->size.height + area->shadow.height;
+  const int area_x1 = area->position.x;
+  const int area_x2 = area->position.x + area->size.width + area->shadow.width - 1;
+  const int area_y1 = area->position.y;
+  const int area_y2 = area->position.y + area_current_height - 1;
 
   return ( std::max(x1, area_x1) <= std::min(x2, area_x2)
         && std::max(y1, area_y1) <= std::min(y2, area_y2) );
@@ -514,10 +520,10 @@ inline auto FVTerm::FTermArea::isOverlapped (const FTermArea* area) const noexce
 //----------------------------------------------------------------------
 inline auto FVTerm::FTermArea::checkPrintPos() const noexcept -> bool
 {
-  return cursor_x > 0
-      && cursor_y > 0
-      && cursor_x <= width + right_shadow
-      && cursor_y <= height + bottom_shadow;
+  return cursor.x > 0
+      && cursor.y > 0
+      && cursor.x <= size.width + shadow.width
+      && cursor.y <= size.height + shadow.height;
 }
 
 
@@ -536,18 +542,18 @@ inline auto FVTerm::FTermArea::reprint (const FRect& box, const FSize& term_size
     return false;
 
   has_changes = true;
-  const int y_start = std::max(0, std::max(y_pos, offset_top)) - offset_top;
+  const int y_start = std::max(0, std::max(y_pos, position.y)) - position.y;
   const int box_y2 = y_pos + h - 1;
-  const int current_height = minimized ? min_height : height + bottom_shadow;
-  const int y2 = offset_top + current_height - 1;
-  const int y_end = std::min(int(term_size.getHeight()) - 1, std::min(box_y2, y2)) - offset_top;
+  const int current_height = minimized ? min_size.height : size.height + shadow.height;
+  const int y2 = position.y + current_height - 1;
+  const int y_end = std::min(int(term_size.getHeight()) - 1, std::min(box_y2, y2)) - position.y;
 
   for (auto y{y_start}; y <= y_end; y++)  // Line loop
   {
-    const int x_start = std::max(0, std::max(x_pos, offset_left)) - offset_left;
+    const int x_start = std::max(0, std::max(x_pos, position.x)) - position.x;
     const int box_x2 = x_pos + w - 1;
-    const int x2 = offset_left + width + right_shadow - 1;
-    const int x_end = std::min(int(term_size.getWidth()) - 1 , std::min(box_x2, x2)) - offset_left;
+    const int x2 = position.x + size.width + shadow.width - 1;
+    const int x_end = std::min(int(term_size.getWidth()) - 1 , std::min(box_x2, x2)) - position.x;
     auto& line_changes = changes[std::size_t(y)];
     line_changes.xmin = uInt(std::min(int(line_changes.xmin), x_start));
     line_changes.xmax = uInt(std::max(int(line_changes.xmax), x_end));

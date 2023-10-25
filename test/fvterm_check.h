@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2022 Markus Gans                                           *
+* Copyright 2022-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -122,8 +122,8 @@ auto getAreaSize (finalcut::FVTerm::FTermArea* area) -> std::size_t
   if ( ! area )
     return 0;
 
-  const auto full_width = std::size_t(area->width) + std::size_t(area->right_shadow);
-  const auto full_height = std::size_t(area->height) + std::size_t(area->bottom_shadow);
+  const auto full_width = std::size_t(area->size.width) + std::size_t(area->shadow.width);
+  const auto full_height = std::size_t(area->size.height) + std::size_t(area->shadow.height);
   return full_width * full_height;
 }
 
@@ -138,10 +138,10 @@ auto isAreaEqual ( finalcut::FVTerm::FTermArea* area1
   auto size2 = getAreaSize(area2);
 
   if ( size1 != size2
-    || area1->width != area2->width
-    || area1->right_shadow != area2->right_shadow
-    || area1->height != area2->height
-    || area1->bottom_shadow != area2->bottom_shadow )
+    || area1->size.width != area2->size.width
+    || area1->shadow.width != area2->shadow.width
+    || area1->size.height != area2->size.height
+    || area1->shadow.height != area2->shadow.height )
     return false;
 
   for (std::size_t i{0U}; i < size1; i++)
@@ -182,16 +182,16 @@ template < typename FCharT
 void printOnArea ( finalcut::FVTerm::FTermArea* area
                  , const FCharT& fchar )
 {
-  if ( area->cursor_x < 1 )
-    area->cursor_x = 1;
+  if ( area->cursor.x < 1 )
+    area->cursor.x = 1;
 
-  if ( area->cursor_y < 1 )
-    area->cursor_y = 1;
+  if ( area->cursor.y < 1 )
+    area->cursor.y = 1;
 
-  int ax = area->cursor_x - 1;
-  int ay = area->cursor_y - 1;
-  const int line_length = area->width + area->right_shadow;
-  const int line_height = area->height + area->bottom_shadow;
+  int ax = area->cursor.x - 1;
+  int ay = area->cursor.y - 1;
+  const int line_length = area->size.width + area->shadow.width;
+  const int line_height = area->size.height + area->shadow.height;
   const int size = line_length * line_height;
 
   if ( ay * line_length + ax > size )
@@ -199,17 +199,17 @@ void printOnArea ( finalcut::FVTerm::FTermArea* area
     auto tmp = ay * line_length + ax % size;
     ax = tmp % line_length;
     ay = tmp / line_height;
-    area->cursor_x = ax + 1;
-    area->cursor_y = ay + 1;
+    area->cursor.x = ax + 1;
+    area->cursor.y = ay + 1;
   }
 
   auto& ac = area->data[ay * line_length + ax];  // area character
   std::memcpy (&ac, &fchar, sizeof(ac));  // copy character to area
-  area->cursor_x = ((ax + 1) % line_length) + 1;
-  area->cursor_y = ((ax + 1) / line_length) + area->cursor_y;
+  area->cursor.x = ((ax + 1) % line_length) + 1;
+  area->cursor.y = ((ax + 1) / line_length) + area->cursor.y;
 
-  if ( area->cursor_y > line_height )
-    area->cursor_y = ((area->cursor_y - 1) % line_height) + 1;
+  if ( area->cursor.y > line_height )
+    area->cursor.y = ((area->cursor.y - 1) % line_height) + 1;
 }
 
 //----------------------------------------------------------------------
@@ -255,8 +255,8 @@ void printOnArea ( finalcut::FVTerm::FTermArea* area
 //----------------------------------------------------------------------
 void printArea ( finalcut::FVTerm::FTermArea* area )
 {
-  auto width = area->width + area->right_shadow;
-  auto height = area->height + area->bottom_shadow;
+  auto width = area->size.width + area->shadow.width;
+  auto height = area->size.height + area->shadow.height;
   auto size = getAreaSize(area);
   std::wcout << L'┌' << std::wstring(width, L'─') << L"┐\n";
 
@@ -305,8 +305,8 @@ void moveArea ( finalcut::FVTerm::FTermArea* area
   if ( ! area )
     return;
 
-  area->offset_left = pos.getX();
-  area->offset_top = pos.getY();
+  area->position.x = pos.getX();
+  area->position.y = pos.getY();
 }
 
 }  // namespace test

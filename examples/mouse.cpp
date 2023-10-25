@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2022 Markus Gans                                      *
+* Copyright 2017-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -385,11 +385,11 @@ void MouseDraw::setGeometry ( const FPoint& p, const FSize& s, bool adjust)
     return;
 
   const FSize no_shadow{0, 0};
-  const int old_w = canvas->width;
-  const int old_h = canvas->height;
+  const int old_w = canvas->size.width;
+  const int old_h = canvas->size.height;
   resizeArea (scroll_geometry, no_shadow, canvas.get());
 
-  if ( old_w != canvas->width || old_h != canvas->height )
+  if ( old_w != canvas->size.width || old_h != canvas->size.height )
   {
     setColor(getForegroundColor(), getBackgroundColor());
     clearArea (canvas.get(), ' ');
@@ -466,8 +466,8 @@ void MouseDraw::drawBrush (int x, int y, bool swap_color)
       setColor (c_chooser.getForeground(), c_chooser.getBackground());
 
     // set canvas print cursor position
-    canvas->setCursorPos ( x - canvas->offset_left - 10
-                         , y - canvas->offset_top - 2 );
+    canvas->setCursorPos ( x - canvas->position.x - 10
+                         , y - canvas->position.y - 2 );
     // print on canvas
     canvas->print (brush.getBrush());
 
@@ -490,10 +490,10 @@ void MouseDraw::drawCanvas()
     return;
 
   auto printarea = getCurrentPrintArea();
-  const int ax = 9 + getTermX() - printarea->offset_left;
-  const int ay = 1 + getTermY() - printarea->offset_top;
-  const int y_end = canvas->height;
-  const int x_end = canvas->width;
+  const int ax = 9 + getTermX() - printarea->position.x;
+  const int ay = 1 + getTermY() - printarea->position.y;
+  const int y_end = canvas->size.height;
+  const int x_end = canvas->size.width;
 
   for (auto y{0}; y < y_end; y++)  // line loop
   {

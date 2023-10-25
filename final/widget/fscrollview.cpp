@@ -170,8 +170,8 @@ void FScrollView::setX (int x, bool adjust)
 
   if ( viewport )
   {
-    viewport->offset_left = scroll_geometry.getX();
-    viewport->offset_top = scroll_geometry.getY();
+    viewport->position.x = scroll_geometry.getX();
+    viewport->position.y = scroll_geometry.getY();
   }
 }
 
@@ -187,8 +187,8 @@ void FScrollView::setY (int y, bool adjust)
 
   if ( viewport )
   {
-    viewport->offset_left = scroll_geometry.getX();
-    viewport->offset_top = scroll_geometry.getY();
+    viewport->position.x = scroll_geometry.getX();
+    viewport->position.y = scroll_geometry.getY();
   }
 }
 
@@ -202,8 +202,8 @@ void FScrollView::setPos (const FPoint& p, bool adjust)
   if ( adjust || ! viewport )
     return;
 
-  viewport->offset_left = scroll_geometry.getX();
-  viewport->offset_top = scroll_geometry.getY();
+  viewport->position.x = scroll_geometry.getX();
+  viewport->position.y = scroll_geometry.getY();
 }
 
 //----------------------------------------------------------------------
@@ -698,8 +698,8 @@ void FScrollView::adjustSize()
 
   if ( viewport )
   {
-    viewport->offset_left = scroll_geometry.getX();
-    viewport->offset_top = scroll_geometry.getY();
+    viewport->position.x = scroll_geometry.getX();
+    viewport->position.y = scroll_geometry.getY();
   }
 
   vbar->setMaximum (int(getScrollHeight() - getViewportHeight()));
@@ -732,20 +732,20 @@ void FScrollView::copy2area()
     return;
 
   auto printarea = getCurrentPrintArea();
-  const int ax = getTermX() - printarea->offset_left;
-  const int ay = getTermY() - printarea->offset_top;
+  const int ax = getTermX() - printarea->position.x;
+  const int ay = getTermY() - printarea->position.y;
   const int dx = viewport_geometry.getX();
   const int dy = viewport_geometry.getY();
   auto y_end = int(getViewportHeight());
   auto x_end = int(getViewportWidth());
 
   // viewport width does not fit into the printarea
-  if ( printarea->width <= ax + x_end )
-    x_end = printarea->width - ax;
+  if ( printarea->size.width <= ax + x_end )
+    x_end = printarea->size.width - ax;
 
   // viewport height does not fit into the printarea
-  if ( printarea->height <= ay + y_end )
-    y_end = printarea->height - ay;
+  if ( printarea->size.height <= ay + y_end )
+    y_end = printarea->size.height - ay;
 
   for (auto y{0}; y < y_end; y++)  // line loop
   {
@@ -775,9 +775,9 @@ inline auto FScrollView::getViewportCursorPos() -> FPoint
   {
     const int widget_offsetX = getTermX() - window->getTermX();
     const int widget_offsetY = getTermY() - window->getTermY();
-    const int x = widget_offsetX + viewport->input_cursor_x
+    const int x = widget_offsetX + viewport->input_cursor.x
                 - viewport_geometry.getX();
-    const int y = widget_offsetY + viewport->input_cursor_y
+    const int y = widget_offsetY + viewport->input_cursor.y
                 - viewport_geometry.getY();
     return { x, y };
   }
@@ -929,8 +929,8 @@ void FScrollView::changeSize (const FSize& size, bool adjust)
   }
   else if ( ! adjust && viewport )
   {
-    viewport->offset_left = scroll_geometry.getX();
-    viewport->offset_top = scroll_geometry.getY();
+    viewport->position.x = scroll_geometry.getX();
+    viewport->position.y = scroll_geometry.getY();
   }
 
   if ( ! viewport )
@@ -1012,8 +1012,8 @@ void FScrollView::setViewportCursor()
   if ( ! isChild(getFocusWidget()) )
     return;
 
-  const FPoint cursor_pos { viewport->input_cursor_x - 1
-                          , viewport->input_cursor_y - 1 };
+  const FPoint cursor_pos { viewport->input_cursor.x - 1
+                          , viewport->input_cursor.y - 1 };
   const FPoint window_cursor_pos{ getViewportCursorPos() };
   auto printarea = getCurrentPrintArea();
   printarea->setInputCursorPos ( window_cursor_pos.getX()

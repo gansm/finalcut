@@ -331,7 +331,7 @@ auto FTermOutput::updateTerminal() -> bool
 
   std::size_t changedlines = 0;
 
-  for (uInt y{0}; y < uInt(vterm->height); y++)
+  for (uInt y{0}; y < uInt(vterm->size.height); y++)
   {
     FVTerm::reduceTerminalLineUpdates(y);
 
@@ -502,8 +502,8 @@ inline auto FTermOutput::isInputCursorInsideTerminal() const -> bool
   if ( ! vterm || ! vterm->input_cursor_visible )
     return false;
 
-  const int x = vterm->input_cursor_x;
-  const int y = vterm->input_cursor_y;
+  const int x = vterm->input_cursor.x;
+  const int y = vterm->input_cursor.y;
   return ( x >= 0 && x < int(getColumnNumber())
         && y >= 0 && y < int(getLineNumber()) );
 }
@@ -632,7 +632,7 @@ auto FTermOutput::canClearToEOL (uInt xmin, uInt y) const -> bool
   const auto& ut = FTermcap::background_color_erase;
   const auto* ch = min_char + 1;
 
-  for (int x{int(xmin) + 1}; x < vterm->width; x++)
+  for (int x{int(xmin) + 1}; x < vterm->size.width; x++)
   {
     if ( *min_char == *ch )
       beginning_whitespace++;
@@ -642,7 +642,7 @@ auto FTermOutput::canClearToEOL (uInt xmin, uInt y) const -> bool
     ++ch;
   }
 
-  return ( beginning_whitespace == uInt(vterm->width) - xmin
+  return ( beginning_whitespace == uInt(vterm->size.width) - xmin
         && (ut || normal)
         && clr_eol_length < beginning_whitespace );
 }
@@ -664,7 +664,7 @@ auto FTermOutput::canClearLeadingWS (uInt& xmin, uInt y) const -> bool
   const auto& ut = FTermcap::background_color_erase;
   const auto* ch = first_char + 1;
 
-  for (int x{1}; x < vterm->width; x++)
+  for (int x{1}; x < vterm->size.width; x++)
   {
     if ( *first_char == *ch )
       leading_whitespace++;
@@ -691,7 +691,7 @@ auto FTermOutput::canClearTrailingWS (uInt& xmax, uInt y) const -> bool
   // => clear from xmax to end of line
 
   const auto& ce = TCAP(t_clr_eol);
-  const auto* last_char = &vterm->getFChar(vterm->width - 1, int(y));
+  const auto* last_char = &vterm->getFChar(vterm->size.width - 1, int(y));
 
   if ( ! ce || last_char->ch[0] != L' ' )
     return false;
@@ -701,7 +701,7 @@ auto FTermOutput::canClearTrailingWS (uInt& xmax, uInt y) const -> bool
   const auto& ut = FTermcap::background_color_erase;
   const auto* ch = last_char;
 
-  for (int x{vterm->width - 1}; x > 0 ; x--)
+  for (int x{vterm->size.width - 1}; x > 0 ; x--)
   {
     if ( *last_char == *ch )
       trailing_whitespace++;
@@ -711,10 +711,10 @@ auto FTermOutput::canClearTrailingWS (uInt& xmax, uInt y) const -> bool
     --ch;
   }
 
-  if ( trailing_whitespace > uInt(vterm->width) - xmax && (ut || normal)
+  if ( trailing_whitespace > uInt(vterm->size.width) - xmax && (ut || normal)
     && clr_bol_length < trailing_whitespace )
   {
-    xmax = uInt(vterm->width) - trailing_whitespace;
+    xmax = uInt(vterm->size.width) - trailing_whitespace;
     return true;
   }
 
@@ -811,7 +811,7 @@ inline void FTermOutput::replaceNonPrintableFullwidth ( uInt x
     print_char.ch[1] = L'\0';
     print_char.attr.bit.fullwidth_padding = false;
   }
-  else if ( x == uInt(vterm->width - 1) && isFullWidthChar(print_char) )
+  else if ( x == uInt(vterm->size.width - 1) && isFullWidthChar(print_char) )
   {
     print_char.ch[0] = wchar_t(UniChar::SingleRightAngleQuotationMark);  // ›
     print_char.ch[1] = L'\0';
@@ -825,11 +825,11 @@ void FTermOutput::printCharacter ( uInt& x, uInt y, bool min_and_not_max
 {
   // General character output on terminal
 
-  if ( x < uInt(vterm->width - 1) && isFullWidthChar(print_char) )
+  if ( x < uInt(vterm->size.width - 1) && isFullWidthChar(print_char) )
   {
     printFullWidthCharacter (x, y, print_char);
   }
-  else if ( x > 0 && x < uInt(vterm->width - 1)
+  else if ( x > 0 && x < uInt(vterm->size.width - 1)
          && isFullWidthPaddingChar(print_char)  )
   {
     printFullWidthPaddingCharacter (x, y, print_char);
@@ -1121,10 +1121,10 @@ void FTermOutput::cursorWrap() const
 {
   // Wrap the cursor
 
-  if ( term_pos->getX() < vterm->width )
+  if ( term_pos->getX() < vterm->size.width )
     return;
 
-  if ( term_pos->getY() == vterm->height - 1 )
+  if ( term_pos->getY() == vterm->size.height - 1 )
   {
     term_pos->x_ref()--;
   }
@@ -1163,7 +1163,7 @@ inline auto FTermOutput::updateTerminalLine (uInt y) -> bool
     auto& min_char = vterm->getFChar(int(xmin), int(y));
     appendAttributes (min_char);
     appendOutputBuffer (FTermControl{TCAP(t_clr_eol)});
-    markAsPrinted (xmin, uInt(vterm->width - 1), y);
+    markAsPrinted (xmin, uInt(vterm->size.width - 1), y);
   }
   else
   {
@@ -1183,15 +1183,15 @@ inline auto FTermOutput::updateTerminalLine (uInt y) -> bool
 
     if ( draw_trailing_ws )
     {
-      auto& last_char = vterm->getFChar(vterm->width - 1, int(y));
+      auto& last_char = vterm->getFChar(vterm->size.width - 1, int(y));
       appendAttributes (last_char);
       appendOutputBuffer (FTermControl{TCAP(t_clr_eol)});
-      markAsPrinted (xmax + 1, uInt(vterm->width - 1), y);
+      markAsPrinted (xmax + 1, uInt(vterm->size.width - 1), y);
     }
   }
 
   // Reset line changes and wrap the cursor
-  xmin = uInt(vterm->width);
+  xmin = uInt(vterm->size.width);
   xmax = 0;
   cursorWrap();
   return true;
@@ -1204,7 +1204,7 @@ auto FTermOutput::updateTerminalCursor() -> bool
 
   if ( isInputCursorInsideTerminal() )
   {
-    setCursor (FPoint{vterm->input_cursor_x, vterm->input_cursor_y});
+    setCursor (FPoint{vterm->input_cursor.x, vterm->input_cursor.y});
     showCursor();
     return true;
   }
@@ -1356,8 +1356,8 @@ inline void FTermOutput::charsetChanges (FChar& next_char) const
 //----------------------------------------------------------------------
 inline void FTermOutput::appendCharacter (FChar& next_char)
 {
-  const int term_width = vterm->width - 1;
-  const int term_height = vterm->height - 1;
+  const int term_width = vterm->size.width - 1;
+  const int term_height = vterm->size.height - 1;
 
   if ( term_pos->getX() == term_width
     && term_pos->getY() == term_height )

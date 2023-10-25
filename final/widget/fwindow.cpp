@@ -328,7 +328,7 @@ void FWindow::setX (int x, bool adjust)
   FWidget::setX (x, adjust);
 
   if ( isVirtualWindow() )
-    getVWin()->offset_left = getTermX() - 1;
+    getVWin()->position.x = getTermX() - 1;
 }
 
 //----------------------------------------------------------------------
@@ -340,7 +340,7 @@ void FWindow::setY (int y, bool adjust)
   FWidget::setY (y, adjust);
 
   if ( isVirtualWindow() )
-    getVWin()->offset_top = getTermY() - 1;
+    getVWin()->position.y = getTermY() - 1;
 }
 
 //----------------------------------------------------------------------
@@ -356,8 +356,8 @@ void FWindow::setPos (const FPoint& p, bool adjust)
   if ( isVirtualWindow() )
   {
     auto virtual_win = getVWin();
-    virtual_win->offset_left = getTermX() - 1;
-    virtual_win->offset_top = getTermY() - 1;
+    virtual_win->position.x = getTermX() - 1;
+    virtual_win->position.y = getTermY() - 1;
   }
 }
 
@@ -430,10 +430,10 @@ void FWindow::setGeometry ( const FPoint& p, const FSize& size, bool adjust)
   else
   {
     if ( getX() != old_x )
-      getVWin()->offset_left = getTermX() - 1;
+      getVWin()->position.x = getTermX() - 1;
 
     if ( getY() != old_y )
-      getVWin()->offset_top = getTermY() - 1;
+      getVWin()->position.y = getTermY() - 1;
   }
 }
 
@@ -445,8 +445,8 @@ void FWindow::move (const FPoint& pos)
   if ( isVirtualWindow() )
   {
     auto virtual_win = getVWin();
-    virtual_win->offset_left = getTermX() - 1;
-    virtual_win->offset_top = getTermY() - 1;
+    virtual_win->position.x = getTermX() - 1;
+    virtual_win->position.y = getTermY() - 1;
   }
 }
 
@@ -748,10 +748,10 @@ void FWindow::adjustSize()
   else if ( isVirtualWindow() )
   {
     if ( getTermX() != old_x )
-      getVWin()->offset_left = getTermX() - 1;
+      getVWin()->position.x = getTermX() - 1;
 
     if ( getTermY() != old_y )
-      getVWin()->offset_top = getTermY() - 1;
+      getVWin()->position.y = getTermY() - 1;
   }
 }
 
@@ -830,7 +830,7 @@ inline auto FWindow::getVisibleTermGeometry (FWindow* win) -> FRect
   if ( win->isMinimized() )
   {
     FRect minimized_term_geometry(term_geometry);
-    auto min_height = std::size_t(win->getVWin()->min_height);
+    auto min_height = std::size_t(win->getVWin()->min_size.height);
     minimized_term_geometry.setHeight(min_height);
     return minimized_term_geometry;
   }

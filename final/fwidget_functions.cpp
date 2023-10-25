@@ -353,10 +353,10 @@ void drawTransparentShadow (FWidget* w)
     return;
 
   auto& area = *w->getPrintArea();
-  const auto width = uInt(area.width);
-  const auto height = uInt(area.height);
-  const auto shadow_width = uInt(area.right_shadow);
-  const auto shadow_height = uInt(area.bottom_shadow);
+  const auto width = uInt(area.size.width);
+  const auto height = uInt(area.size.height);
+  const auto shadow_width = uInt(area.shadow.width);
+  const auto shadow_height = uInt(area.shadow.height);
   const auto& wc = FWidget::getColorTheme();
 
   const FChar transparent_char
@@ -517,12 +517,12 @@ void drawGenericBlockShadow ( FWidget* w
 
   auto& area = *w->getPrintArea();
   const bool is_window = w->isWindowWidget();
-  const auto width = is_window ? uInt(area.width) : uInt(w->getWidth());
-  const auto height = is_window ? uInt(area.height) : uInt(w->getHeight());
-  const auto shadow_width = uInt(area.right_shadow);
-  const auto shadow_height = uInt(area.bottom_shadow);
-  const auto x_offset = uInt(w->woffset.getX1() + w->getX() - area.offset_left - 1);
-  const auto y_offset = uInt(w->woffset.getY1() + w->getY() - area.offset_top - 1);
+  const auto width = is_window ? uInt(area.size.width) : uInt(w->getWidth());
+  const auto height = is_window ? uInt(area.size.height) : uInt(w->getHeight());
+  const auto shadow_width = uInt(area.shadow.width);
+  const auto shadow_height = uInt(area.shadow.height);
+  const auto x_offset = uInt(w->woffset.getX1() + w->getX() - area.position.x - 1);
+  const auto y_offset = uInt(w->woffset.getY1() + w->getY() - area.position.y - 1);
 
   if ( is_window && (shadow_width < 1 || shadow_height < 1) )
     return;
@@ -815,8 +815,8 @@ void drawGenericBox ( FWidget* w, const FRect& r
   // Adjust box position to match print area
   auto box = r;
   box.move (-1, -1);
-  const auto x_offset = uInt(w->woffset.getX1() + w->getX() - area.offset_left - 1);
-  const auto y_offset = uInt(w->woffset.getY1() + w->getY() - area.offset_top - 1);
+  const auto x_offset = uInt(w->woffset.getX1() + w->getX() - area.position.x - 1);
+  const auto y_offset = uInt(w->woffset.getY1() + w->getY() - area.position.y - 1);
 
   // Draw the top line of the box
   auto* area_pos = &area.getFChar(int(x_offset) + box.getX1(), int(y_offset) + box.getY1());

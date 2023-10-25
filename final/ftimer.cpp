@@ -44,6 +44,7 @@ std::shared_timed_mutex timer_var::mutex{};
 // Static class attribute
 FTimer<FObject>* FObjectTimer::timer{nullptr};
 
+
 //----------------------------------------------------------------------
 // class FObjectTimer
 //----------------------------------------------------------------------

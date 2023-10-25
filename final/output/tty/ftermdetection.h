@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2022 Markus Gans                                      *
+* Copyright 2018-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -107,6 +107,8 @@ class FTermDetection final
 #if F_HAVE_GETTTYNAM
     auto  getTTYSFileEntry() -> bool;
 #endif
+    template<typename StringT>
+    bool  startsWithTermType (StringT&&) const;
     void  termtypeAnalysis();
     void  detectTerminal();
     auto  init_256colorTerminal() -> FString;
@@ -190,6 +192,13 @@ inline auto FTermDetection::hasTerminalDetection() const noexcept -> bool
 //----------------------------------------------------------------------
 inline void FTermDetection::setTerminalDetection (bool enable) noexcept
 { terminal_detection = enable; }
+
+//----------------------------------------------------------------------
+template<typename StringT>
+inline bool FTermDetection::startsWithTermType (StringT&& prefix) const
+{
+  return termtype.toWString().find(std::forward<StringT>(prefix)) == 0;
+}
 
 }  // namespace finalcut
 
