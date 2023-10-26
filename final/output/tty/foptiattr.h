@@ -178,6 +178,12 @@ class FOptiAttr final
       bool         ansi_default_color{false};
     };
 
+    struct AttributeChanges
+    {
+      FChar on{};
+      FChar off{};
+    };
+
     // Using-declarations
     using SetFunctionCall = std::function<bool(FOptiAttr*, FChar&)>;
 
@@ -295,28 +301,27 @@ class FOptiAttr final
     auto        append_sequence (const std::string&) -> bool;
 
     // Data members
-    TextStyle    F_bold{};
-    TextStyle    F_dim{};
-    TextStyle    F_italics{};
-    TextStyle    F_underline{};
-    TextStyle    F_blink{};
-    TextStyle    F_reverse{};
-    TextStyle    F_standout{};
-    TextStyle    F_secure{};
-    TextStyle    F_protected{};
-    TextStyle    F_crossed_out{};
-    TextStyle    F_dbl_underline{};
-    TextStyle    F_attributes{};
-    TextStyle    F_alt_charset{};
-    TextStyle    F_pc_charset{};
-    ColorStyle   F_color{};
+    TextStyle        F_bold{};
+    TextStyle        F_dim{};
+    TextStyle        F_italics{};
+    TextStyle        F_underline{};
+    TextStyle        F_blink{};
+    TextStyle        F_reverse{};
+    TextStyle        F_standout{};
+    TextStyle        F_secure{};
+    TextStyle        F_protected{};
+    TextStyle        F_crossed_out{};
+    TextStyle        F_dbl_underline{};
+    TextStyle        F_attributes{};
+    TextStyle        F_alt_charset{};
+    TextStyle        F_pc_charset{};
+    ColorStyle       F_color{};
 
-    FChar        on{};
-    FChar        off{};
-    std::string  attr_buf{};
-    SGRoptimizer sgr_optimizer{attr_buf};
-    bool         alt_equal_pc_charset{false};
-    bool         fake_reverse{false};
+    AttributeChanges changes{};
+    std::string      attr_buf{};
+    SGRoptimizer     sgr_optimizer{attr_buf};
+    bool             alt_equal_pc_charset{false};
+    bool             fake_reverse{false};
 };
 
 

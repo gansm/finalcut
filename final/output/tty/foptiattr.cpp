@@ -940,14 +940,14 @@ auto FOptiAttr::setTermDefaultColor (FChar& term) -> bool
 void FOptiAttr::setAttributesOn (FChar& term)
 {
   static const auto& attribute_on_handlers = getAttributeOnHandlers();
-  setAttributes (on.attr, attribute_on_handlers, term);
+  setAttributes (changes.on.attr, attribute_on_handlers, term);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::setAttributesOff (FChar& term)
 {
   static const auto& attribute_off_handlers = getAttributeOffHandlers();
-  setAttributes (off.attr, attribute_off_handlers, term);
+  setAttributes (changes.off.attr, attribute_off_handlers, term);
 }
 
 //----------------------------------------------------------------------
@@ -1003,8 +1003,8 @@ inline auto FOptiAttr::hasColorChanged ( const FChar& term
                                        , const FChar& next ) const -> bool
 {
   const auto& b0_reverse_mask = internal::var::b0_reverse_mask;
-  const bool frev ( ( (on.attr.byte[0] & b0_reverse_mask)
-                   || (off.attr.byte[0] & b0_reverse_mask) ) && fake_reverse );
+  const bool frev ( ( (changes.on.attr.byte[0] & b0_reverse_mask)
+                   || (changes.off.attr.byte[0] & b0_reverse_mask) ) && fake_reverse );
   return frev
       || term.fg_color != next.fg_color
       || term.bg_color != next.bg_color;
@@ -1088,12 +1088,12 @@ inline void FOptiAttr::deactivateAttributes (FChar& term, FChar& next)
   {
     if ( F_attributes.off.cap )
     {
-      if ( off.attr.bit.alt_charset )  // Required for rxvt terminals
+      if ( changes.off.attr.bit.alt_charset )  // Required for rxvt terminals
         unsetTermAltCharset(term);
 
       unsetTermAttributes(term);
 
-      if ( off.attr.bit.pc_charset )
+      if ( changes.off.attr.bit.pc_charset )
         unsetTermPCcharset(term);
     }
     else
@@ -1126,11 +1126,11 @@ inline void FOptiAttr::changeAttributeSGR (FChar& term, FChar& next)
     && next.attr.bit.alt_charset )
   {
     term.attr.bit.pc_charset = next.attr.bit.pc_charset;
-    off.attr.bit.pc_charset = false;
+    changes.off.attr.bit.pc_charset = false;
     pc_charset_usable = false;
   }
 
-  if ( off.attr.bit.pc_charset )
+  if ( changes.off.attr.bit.pc_charset )
     unsetTermPCcharset(term);
 
   if ( ! term.attr.bit.italic && next.attr.bit.italic )
@@ -1251,7 +1251,7 @@ inline void FOptiAttr::change_current_color ( const FChar& term
   const auto& Sb = F_color.background.cap;
   const auto& sp = F_color.color_pair.cap;
   const auto& b0_reverse_mask = internal::var::b0_reverse_mask;
-  const bool frev ( ( (off.attr.byte[0] & b0_reverse_mask)
+  const bool frev ( ( (changes.off.attr.byte[0] & b0_reverse_mask)
                    || (term.attr.byte[0] & b0_reverse_mask) ) && fake_reverse );
 
   if ( AF && AB )
@@ -1461,8 +1461,8 @@ inline void FOptiAttr::detectSwitchOn (const FChar& term, const FChar& next)
   // and store the result in "on"
 
   const auto& mask = internal::var::b1_mask;
-  on.attr.byte[0] = ~(term.attr.byte[0]) & next.attr.byte[0];
-  on.attr.byte[1] = ~(term.attr.byte[1]) & next.attr.byte[1] & mask;
+  changes.on.attr.byte[0] = ~(term.attr.byte[0]) & next.attr.byte[0];
+  changes.on.attr.byte[1] = ~(term.attr.byte[1]) & next.attr.byte[1] & mask;
 }
 
 //----------------------------------------------------------------------
@@ -1472,20 +1472,20 @@ inline void FOptiAttr::detectSwitchOff (const FChar& term, const FChar& next)
   // and store the result in "on"
 
   const auto& mask = internal::var::b1_mask;
-  off.attr.byte[0] = term.attr.byte[0] & ~(next.attr.byte[0]);
-  off.attr.byte[1] = term.attr.byte[1] & ~(next.attr.byte[1]) & mask;
+  changes.off.attr.byte[0] = term.attr.byte[0] & ~(next.attr.byte[0]);
+  changes.off.attr.byte[1] = term.attr.byte[1] & ~(next.attr.byte[1]) & mask;
 }
 
 //----------------------------------------------------------------------
 inline auto FOptiAttr::switchOn() const -> bool
 {
-  return hasAttribute(on);
+  return hasAttribute(changes.on);
 }
 
 //----------------------------------------------------------------------
 inline auto FOptiAttr::switchOff() const -> bool
 {
-  return hasAttribute(off);
+  return hasAttribute(changes.off);
 }
 
 //----------------------------------------------------------------------

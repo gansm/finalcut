@@ -1167,26 +1167,32 @@ void FTerm::init_optiMove()
 
   const FOptiMove::TermEnv optimove_env =
   {
-    TCAP(t_cursor_home),
-    TCAP(t_carriage_return),
-    TCAP(t_cursor_to_ll),
-    TCAP(t_tab),
-    TCAP(t_back_tab),
-    TCAP(t_cursor_up),
-    TCAP(t_cursor_down),
-    TCAP(t_cursor_left),
-    TCAP(t_cursor_right),
-    TCAP(t_cursor_address),
-    TCAP(t_column_address),
-    TCAP(t_row_address),
-    TCAP(t_parm_up_cursor),
-    TCAP(t_parm_down_cursor),
-    TCAP(t_parm_left_cursor),
-    TCAP(t_parm_right_cursor),
-    TCAP(t_erase_chars),
-    TCAP(t_repeat_char),
-    TCAP(t_clr_bol),
-    TCAP(t_clr_eol),
+    {
+      TCAP(t_cursor_up),
+      TCAP(t_cursor_down),
+      TCAP(t_cursor_left),
+      TCAP(t_cursor_right),
+      TCAP(t_cursor_home),
+      TCAP(t_cursor_to_ll),
+      TCAP(t_carriage_return),
+      TCAP(t_tab),
+      TCAP(t_back_tab)
+    },
+    {
+      TCAP(t_parm_up_cursor),
+      TCAP(t_parm_down_cursor),
+      TCAP(t_parm_left_cursor),
+      TCAP(t_parm_right_cursor),
+      TCAP(t_cursor_address),
+      TCAP(t_column_address),
+      TCAP(t_row_address)
+    },
+    {
+      TCAP(t_erase_chars),
+      TCAP(t_repeat_char),
+      TCAP(t_clr_bol),
+      TCAP(t_clr_eol)
+    },
     FTermcap::tabstop,
     FTermcap::automatic_left_margin,
     FTermcap::eat_nl_glitch

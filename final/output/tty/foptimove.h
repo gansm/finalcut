@@ -58,31 +58,46 @@ namespace finalcut
 class FOptiMove final
 {
   public:
-    struct TermEnv
+    struct TermEnvCursor
     {
-      const char* t_cursor_home;
-      const char* t_carriage_return;
-      const char* t_cursor_to_ll;
-      const char* t_tab;
-      const char* t_back_tab;
       const char* t_cursor_up;
       const char* t_cursor_down;
       const char* t_cursor_left;
       const char* t_cursor_right;
-      const char* t_cursor_address;
-      const char* t_column_address;
-      const char* t_row_address;
+      const char* t_cursor_home;
+      const char* t_cursor_to_ll;
+      const char* t_carriage_return;
+      const char* t_tab;
+      const char* t_back_tab;
+    };
+
+    struct TermEnvParamCursor
+    {
       const char* t_parm_up_cursor;
       const char* t_parm_down_cursor;
       const char* t_parm_left_cursor;
       const char* t_parm_right_cursor;
+      const char* t_cursor_address;
+      const char* t_column_address;
+      const char* t_row_address;
+    };
+
+    struct TermEnvEdit
+    {
       const char* t_erase_chars;
       const char* t_repeat_char;
       const char* t_clr_bol;
       const char* t_clr_eol;
-      int   tabstop;
-      bool  automatic_left_margin;
-      bool  eat_nl_glitch;
+    };
+
+    struct TermEnv
+    {
+      TermEnvCursor cursor;
+      TermEnvParamCursor param_cursor;
+      TermEnvEdit edit;
+      int tabstop;
+      bool automatic_left_margin;
+      bool eat_nl_glitch;
     };
 
     // Constructor
@@ -152,6 +167,44 @@ class FOptiMove final
       int length;
     };
 
+    struct Cursor
+    {
+      Capability  up{};
+      Capability  down{};
+      Capability  left{};
+      Capability  right{};
+      Capability  home{};
+      Capability  to_ll{};
+      Capability  carriage_return{};
+      Capability  tab{};
+      Capability  back_tab{};
+    };
+
+    struct ParamCursor
+    {
+      Capability  up{};
+      Capability  down{};
+      Capability  left{};
+      Capability  right{};
+      Capability  column_address{};
+      Capability  row_address{};
+      Capability  address{};
+    };
+
+    struct Edit
+    {
+      Capability  erase_chars{};
+      Capability  repeat_char{};
+      Capability  clr_bol{};
+      Capability  clr_eol{};
+    };
+
+    struct Dimension
+    {
+      std::size_t width{};
+      std::size_t height{};
+    };
+
     // Constant
     static constexpr std::string::size_type BUF_SIZE{512u};
 
@@ -188,29 +241,10 @@ class FOptiMove final
     void  moveByMethod (int, int, int, int, int);
 
     // Data members
-    Capability  F_cursor_home{};
-    Capability  F_carriage_return{};
-    Capability  F_cursor_to_ll{};
-    Capability  F_tab{};
-    Capability  F_back_tab{};
-    Capability  F_cursor_up{};
-    Capability  F_cursor_down{};
-    Capability  F_cursor_left{};
-    Capability  F_cursor_right{};
-    Capability  F_cursor_address{};
-    Capability  F_column_address{};
-    Capability  F_row_address{};
-    Capability  F_parm_up_cursor{};
-    Capability  F_parm_down_cursor{};
-    Capability  F_parm_left_cursor{};
-    Capability  F_parm_right_cursor{};
-    Capability  F_erase_chars{};
-    Capability  F_repeat_char{};
-    Capability  F_clr_bol{};
-    Capability  F_clr_eol{};
-
-    std::size_t screen_width{80};
-    std::size_t screen_height{24};
+    Cursor      cursor;
+    ParamCursor parm_cursor;
+    Edit        edit;
+    Dimension   screen{80, 24};
     int         char_duration{1};
     int         baudrate{9600};
     int         tabstop{0};
@@ -231,83 +265,83 @@ inline auto FOptiMove::getClassName() const -> FString
 
 //----------------------------------------------------------------------
 inline auto FOptiMove::getCursorHomeLength() const -> uInt
-{ return static_cast<uInt>(F_cursor_home.length); }
+{ return static_cast<uInt>(cursor.home.length); }
 
 //----------------------------------------------------------------------
 inline auto FOptiMove::getCarriageReturnLength() const -> uInt
-{ return static_cast<uInt>(F_carriage_return.length); }
+{ return static_cast<uInt>(cursor.carriage_return.length); }
 
 //----------------------------------------------------------------------
 inline auto FOptiMove::getCursorToLLLength() const -> uInt
-{ return static_cast<uInt>(F_cursor_to_ll.length); }
+{ return static_cast<uInt>(cursor.to_ll.length); }
 
 //----------------------------------------------------------------------
 inline auto FOptiMove::getTabLength() const -> uInt
-{ return static_cast<uInt>(F_tab.length); }
+{ return static_cast<uInt>(cursor.tab.length); }
 
 //----------------------------------------------------------------------
 inline auto FOptiMove::getBackTabLength() const -> uInt
-{ return static_cast<uInt>(F_back_tab.length); }
+{ return static_cast<uInt>(cursor.back_tab.length); }
 
 //----------------------------------------------------------------------
 inline auto FOptiMove::getCursorUpLength() const -> uInt
-{ return static_cast<uInt>(F_cursor_up.length); }
+{ return static_cast<uInt>(cursor.up.length); }
 
 //----------------------------------------------------------------------
 inline auto FOptiMove::getCursorDownLength() const -> uInt
-{ return static_cast<uInt>(F_cursor_down.length); }
+{ return static_cast<uInt>(cursor.down.length); }
 
 //----------------------------------------------------------------------
 inline auto FOptiMove::getCursorLeftLength() const -> uInt
-{ return static_cast<uInt>(F_cursor_left.length); }
+{ return static_cast<uInt>(cursor.left.length); }
 
 //----------------------------------------------------------------------
 inline auto FOptiMove::getCursorRightLength() const -> uInt
-{ return static_cast<uInt>(F_cursor_right.length); }
+{ return static_cast<uInt>(cursor.right.length); }
 
 //----------------------------------------------------------------------
 inline auto FOptiMove::getCursorAddressLength() const -> uInt
-{ return static_cast<uInt>(F_cursor_address.length); }
+{ return static_cast<uInt>(parm_cursor.address.length); }
 
 //----------------------------------------------------------------------
 inline auto FOptiMove::getColumnAddressLength() const -> uInt
-{ return static_cast<uInt>(F_column_address.length); }
+{ return static_cast<uInt>(parm_cursor.column_address.length); }
 
 //----------------------------------------------------------------------
 inline auto FOptiMove::getRowAddressLength() const -> uInt
-{ return static_cast<uInt>(F_row_address.length); }
+{ return static_cast<uInt>(parm_cursor.row_address.length); }
 
 //----------------------------------------------------------------------
 inline auto FOptiMove::getParmUpCursorLength() const -> uInt
-{ return static_cast<uInt>(F_parm_up_cursor.length); }
+{ return static_cast<uInt>(parm_cursor.up.length); }
 
 //----------------------------------------------------------------------
 inline auto FOptiMove::getParmDownCursorLength() const -> uInt
-{ return static_cast<uInt>(F_parm_down_cursor.length); }
+{ return static_cast<uInt>(parm_cursor.down.length); }
 
 //----------------------------------------------------------------------
 inline auto FOptiMove::getParmLeftCursorLength() const -> uInt
-{ return static_cast<uInt>(F_parm_left_cursor.length); }
+{ return static_cast<uInt>(parm_cursor.left.length); }
 
 //----------------------------------------------------------------------
 inline auto FOptiMove::getParmRightCursorLength() const -> uInt
-{ return static_cast<uInt>(F_parm_right_cursor.length); }
+{ return static_cast<uInt>(parm_cursor.right.length); }
 
 //----------------------------------------------------------------------
 inline auto FOptiMove::getEraseCharsLength() const -> uInt
-{ return static_cast<uInt>(F_erase_chars.length); }
+{ return static_cast<uInt>(edit.erase_chars.length); }
 
 //----------------------------------------------------------------------
 inline auto FOptiMove::getRepeatCharLength() const -> uInt
-{ return static_cast<uInt>(F_repeat_char.length); }
+{ return static_cast<uInt>(edit.repeat_char.length); }
 
 //----------------------------------------------------------------------
 inline auto FOptiMove::getClrBolLength() const -> uInt
-{ return static_cast<uInt>(F_clr_bol.length); }
+{ return static_cast<uInt>(edit.clr_bol.length); }
 
 //----------------------------------------------------------------------
 inline auto FOptiMove::getClrEolLength() const -> uInt
-{ return static_cast<uInt>(F_clr_eol.length); }
+{ return static_cast<uInt>(edit.clr_eol.length); }
 
 //----------------------------------------------------------------------
 inline void FOptiMove::set_auto_left_margin (bool bcap) noexcept

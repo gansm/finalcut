@@ -718,29 +718,35 @@ void FOptiMoveTest::teratermTest()
 
   finalcut::FOptiMove::TermEnv optimove_env =
   {
-    CSI "H",               // Cursor home
-    "\r",                  // Carriage return
-    nullptr,               // Cursor to ll
-    "\t",                  // Tabular
-    nullptr,               // Back tabular
-    CSI "A",               // Cursor up
-    "\n",                  // Cursor down
-    "\b",                  // Cursor left
-    CSI "C",               // Cursor right
-    CSI "%i%p1%d;%p2%dH",  // Cursor address
-    CSI "%i%p1%dG",        // Column address
-    CSI "%i%p1%dd",        // Row address
-    CSI "%p1%dA",          // Parm up cursor
-    CSI "%p1%dB",          // Parm down cursor
-    CSI "%p1%dD",          // Parm left cursor
-    CSI "%p1%dC",          // Parm right cursor
-    CSI "%p1%dX",          // Erase characters
-    nullptr,               // Repeat character
-    CSI "1K",              // Clear to beginning of line
-    CSI "K",               // Clear to end of line
-    8,                     // Tab stop
-    false,                 // Automatic left margin
-    true                   // Eat newline glitch
+    {
+      CSI "A",               // Cursor up
+      "\n",                  // Cursor down
+      "\b",                  // Cursor left
+      CSI "C",               // Cursor right
+      CSI "H",               // Cursor home
+      nullptr,               // Cursor to ll
+      "\r",                  // Carriage return
+      "\t",                  // Tabular
+      nullptr                // Back tabular
+    },
+    {
+      CSI "%p1%dA",          // Parm up cursor
+      CSI "%p1%dB",          // Parm down cursor
+      CSI "%p1%dD",          // Parm left cursor
+      CSI "%p1%dC",          // Parm right cursor
+      CSI "%i%p1%d;%p2%dH",  // Cursor address
+      CSI "%i%p1%dG",        // Column address
+      CSI "%i%p1%dd"         // Row address
+    },
+    {
+      CSI "%p1%dX",          // Erase characters
+      nullptr,               // Repeat character
+      CSI "1K",              // Clear to beginning of line
+      CSI "K"                // Clear to end of line
+    },
+    8,                       // Tab stop
+    false,                   // Automatic left margin
+    true                     // Eat newline glitch
   };
 
   om.setTermEnvironment(optimove_env);
