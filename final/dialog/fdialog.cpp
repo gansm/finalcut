@@ -62,8 +62,8 @@ FDialog::FDialog (FString&& txt, FWidget* parent)
 //----------------------------------------------------------------------
 FDialog::~FDialog()  // destructor
 {
-  delete dialog_menu;
-  dgl_menuitem = nullptr;
+  delete dialog_menu.menu;
+  dialog_menu.menuitem = nullptr;
 
   if ( isModal() )
     unsetModal();
@@ -147,9 +147,9 @@ void FDialog::setResizeable (bool enable)
   FWindow::setResizeable (enable);
 
   if ( enable )
-    zoom_item->setEnable();
+    dialog_menu.zoom_item->setEnable();
   else
-    zoom_item->setDisable();
+    dialog_menu.zoom_item->setDisable();
 }
 
 //----------------------------------------------------------------------
@@ -158,9 +158,9 @@ void FDialog::setMinimizable (bool enable)
   FWindow::setMinimizable (enable);
 
   if ( enable )
-    minimize_item->setEnable();
+    dialog_menu.minimize_item->setEnable();
   else
-    minimize_item->setDisable();
+    dialog_menu.minimize_item->setDisable();
 }
 
 //----------------------------------------------------------------------
@@ -205,14 +205,14 @@ auto FDialog::exec() -> ResultCode
 //----------------------------------------------------------------------
 void FDialog::setPos (const FPoint& pos, bool)
 {
-  setPos_error = false;
+  error_flags.setPos_error = false;
 
   // Avoid to move widget completely outside the terminal
   // or moving a zoomed dialog or a motionless dialog
   if ( isOutsideTerminal(pos) || isZoomed() || getPos() == pos )
   {
-    setPos_error = true;
-    new_pos.setPoint (getPos());
+    error_flags.setPos_error = true;
+    position_data.new_pos.setPoint (getPos());
     return;
   }
 
@@ -222,7 +222,7 @@ void FDialog::setPos (const FPoint& pos, bool)
 
   // Move to the new position
   FWindow::setPos (pos, false);
-  new_pos.setPoint (getPos());
+  position_data.new_pos.setPoint (getPos());
 
   // Copy dialog to virtual terminal
   putArea (getTermPos(), getVWin());
@@ -252,14 +252,14 @@ inline auto FDialog::moveUp (int n) -> bool
   else
     move ({0, -n});
 
-  return ! setPos_error;
+  return ! error_flags.setPos_error;
 }
 
 //----------------------------------------------------------------------
 inline auto FDialog::moveDown (int n) -> bool
 {
   move ({0, n});
-  return ! setPos_error;
+  return ! error_flags.setPos_error;
 }
 
 //----------------------------------------------------------------------
@@ -274,25 +274,25 @@ inline auto FDialog::moveLeft (int n) -> bool
   else
     move ({-n, 0});
 
-  return ! setPos_error;
+  return ! error_flags.setPos_error;
 }
 
 //----------------------------------------------------------------------
 inline auto FDialog::moveRight (int n) -> bool
 {
   move ({n, 0});
-  return ! setPos_error;
+  return ! error_flags.setPos_error;
 }
 
 //----------------------------------------------------------------------
 void FDialog::setSize (const FSize& size, bool adjust)
 {
-  setSize_error = false;
+  error_flags.setSize_error = false;
 
   if ( getSize() == size || size.isEmpty() || isZoomed() )
   {
-    setSize_error = true;
-    new_size.setSize (getSize());
+    error_flags.setSize_error = true;
+    size_data.new_size.setSize (getSize());
     return;
   }
 
@@ -305,7 +305,7 @@ void FDialog::setSize (const FSize& size, bool adjust)
   const std::size_t old_width = getWidth() + shadow.getWidth();
   const std::size_t old_height = getHeight() + shadow.getHeight();
   FWindow::setSize (size, false);
-  new_size.setSize (getSize());
+  size_data.new_size.setSize (getSize());
 
   // get adjust width and height with shadow
   const std::size_t width = getWidth() + shadow.getWidth();
@@ -347,7 +347,7 @@ auto FDialog::reduceHeight (int n) -> bool
     return false;
 
   setSize (FSize{getWidth(), getHeight() - std::size_t(n)});
-  return ! setSize_error;
+  return ! error_flags.setSize_error;
 }
 
 //----------------------------------------------------------------------
@@ -357,7 +357,7 @@ auto FDialog::expandHeight (int n) -> bool
     return false;
 
   setSize (FSize{getWidth(), getHeight() + std::size_t(n)});
-  return ! setSize_error;
+  return ! error_flags.setSize_error;
 }
 
 //----------------------------------------------------------------------
@@ -367,7 +367,7 @@ auto FDialog::reduceWidth (int n) -> bool
     return false;
 
   setSize (FSize{getWidth() - std::size_t(n), getHeight()});
-  return ! setSize_error;
+  return ! error_flags.setSize_error;
 }
 
 //----------------------------------------------------------------------
@@ -377,7 +377,7 @@ auto FDialog::expandWidth (int n) -> bool
     return false;
 
   setSize (FSize{getWidth() + std::size_t(n), getHeight()});
-  return ! setSize_error;
+  return ! error_flags.setSize_error;
 }
 
 //----------------------------------------------------------------------
@@ -399,11 +399,11 @@ auto FDialog::minimizeWindow() -> bool
 //----------------------------------------------------------------------
 void FDialog::flushChanges()
 {
-  if ( getSize() != new_size )
-    setSize (new_size);
+  if ( getSize() != size_data.new_size )
+    setSize (size_data.new_size);
 
-  if ( getPos() != new_pos )
-    setPos(new_pos);
+  if ( getPos() != position_data.new_pos )
+    setPos(position_data.new_pos);
 }
 
 //----------------------------------------------------------------------
@@ -447,7 +447,7 @@ void FDialog::onKeyPress (FKeyEvent* ev)
   cancelMouseResize();
   const auto key = ev->key();
 
-  if ( titlebar_buttons && isDialogMenuKey(key) )
+  if ( titlebar.buttons && isDialogMenuKey(key) )
   {
     ev->accept();
     // open the titlebar menu
@@ -499,24 +499,24 @@ void FDialog::onMouseUp (FMouseEvent* ev)
 
   if ( ev->getButton() == MouseButton::Left )
   {
-    const int titlebar_x = titlebar_click_pos.getX();
-    const int titlebar_y = titlebar_click_pos.getY();
+    const int titlebar_x = position_data.titlebar_click_pos.getX();
+    const int titlebar_y = position_data.titlebar_click_pos.getY();
 
-    if ( ! titlebar_click_pos.isOrigin()
+    if ( ! position_data.titlebar_click_pos.isOrigin()
       && titlebar_x > getTermX() + int(ms.menu_btn)
       && titlebar_x < getTermX() + int(getWidth())
       && titlebar_y == getTermY() )
     {
-      const FPoint deltaPos{ms.termPos - titlebar_click_pos};
+      const FPoint deltaPos{ms.termPos - position_data.titlebar_click_pos};
       move (deltaPos);
-      titlebar_click_pos = ms.termPos;
+      position_data.titlebar_click_pos = ms.termPos;
       ev->setPos(ev->getPos() - deltaPos);
     }
 
     // Click on titlebar menu button
-    if ( titlebar_buttons && isMouseOverMenuButton(ms)
-      && dialog_menu->isShown()
-      && ! dialog_menu->hasSelectedItem() )
+    if ( titlebar.buttons && isMouseOverMenuButton(ms)
+      && dialog_menu.menu->isShown()
+      && ! dialog_menu.menu->hasSelectedItem() )
     {
       // Sets focus to the first item
       selectFirstMenuItem();
@@ -546,11 +546,11 @@ void FDialog::onMouseMove (FMouseEvent* ev)
   if ( ev->getButton() != MouseButton::Left )
     return;
 
-  if ( ! titlebar_click_pos.isOrigin() )
+  if ( ! position_data.titlebar_click_pos.isOrigin() )
   {
-    const FPoint deltaPos{ms.termPos - titlebar_click_pos};
-    new_pos.setPoint (new_pos + deltaPos);
-    titlebar_click_pos = ms.termPos;
+    const FPoint deltaPos{ms.termPos - position_data.titlebar_click_pos};
+    position_data.new_pos.setPoint (position_data.new_pos + deltaPos);
+    position_data.titlebar_click_pos = ms.termPos;
     ev->setPos(ev->getPos() - deltaPos);
   }
 
@@ -574,8 +574,8 @@ void FDialog::onMouseDoubleClick (FMouseEvent* ev)
   if ( isMouseOverMenuButton(ms) )
   {
     // Double click on title button
-    dialog_menu->unselectItem();
-    dialog_menu->hide();
+    dialog_menu.menu->unselectItem();
+    dialog_menu.menu->hide();
     activateWindow();
     raiseWindow();
     auto window_focus_widget = getWindowFocusWidget();
@@ -648,7 +648,7 @@ void FDialog::onWindowActive (FEvent*)
 //----------------------------------------------------------------------
 void FDialog::onWindowInactive (FEvent*)
 {
-  if ( dialog_menu && ! dialog_menu->isShown() )
+  if ( dialog_menu.menu && ! dialog_menu.menu->isShown() )
     FWindow::setPreviousWindow(this);
 
   if ( isShown() && isEnabled() )
@@ -696,8 +696,8 @@ void FDialog::onWindowLowered (FEvent*)
 void FDialog::adjustSize()
 {
   FWindow::adjustSize();
-  new_pos.setPoint (getPos());
-  new_size.setSize (getSize());
+  position_data.new_pos.setPoint (getPos());
+  size_data.new_size.setSize (getSize());
 }
 
 //----------------------------------------------------------------------
@@ -789,7 +789,7 @@ void FDialog::initDialogMenu()
 
   try
   {
-    dialog_menu = new FMenu ("-", this);
+    dialog_menu.menu = new FMenu ("-", this);
   }
   catch (const std::bad_alloc&)
   {
@@ -799,14 +799,14 @@ void FDialog::initDialogMenu()
 
   FPoint p{getPos()};
   p.y_ref()++;
-  dialog_menu->setPos(p);
-  dgl_menuitem = dialog_menu->getItem();
-  dgl_menuitem->ignorePadding();
-  dgl_menuitem->unsetFocusable();
-  initMoveSizeMenuItem (dialog_menu);  // Add the move/size menu item
-  initZoomMenuItem (dialog_menu);      // Add the zoom menu item
-  initMinimizeMenuItem (dialog_menu);  // Add the minimize menu item
-  initCloseMenuItem (dialog_menu);     // Add the close menu item
+  dialog_menu.menu->setPos(p);
+  dialog_menu.menuitem = dialog_menu.menu->getItem();
+  dialog_menu.menuitem->ignorePadding();
+  dialog_menu.menuitem->unsetFocusable();
+  initMoveSizeMenuItem (dialog_menu.menu);  // Add the move/size menu item
+  initZoomMenuItem (dialog_menu.menu);      // Add the zoom menu item
+  initMinimizeMenuItem (dialog_menu.menu);  // Add the minimize menu item
+  initCloseMenuItem (dialog_menu.menu);     // Add the close menu item
 }
 
 //----------------------------------------------------------------------
@@ -814,7 +814,7 @@ void FDialog::initMoveSizeMenuItem (FMenu* menu)
 {
   try
   {
-    move_size_item = new FMenuItem (menu);
+    dialog_menu.move_size_item = new FMenuItem (menu);
   }
   catch (const std::bad_alloc&)
   {
@@ -822,9 +822,9 @@ void FDialog::initMoveSizeMenuItem (FMenu* menu)
     return;
   }
 
-  move_size_item->setText ("&Move/Size");
-  move_size_item->setStatusbarMessage ("Move or change the size of the window");
-  move_size_item->addCallback
+  dialog_menu.move_size_item->setText ("&Move/Size");
+  dialog_menu.move_size_item->setStatusbarMessage ("Move or change the size of the window");
+  dialog_menu.move_size_item->addCallback
   (
     "clicked",
     this,
@@ -837,7 +837,7 @@ void FDialog::initZoomMenuItem (FMenu* menu)
 {
   try
   {
-    zoom_item = new FMenuItem (menu);
+    dialog_menu.zoom_item = new FMenuItem (menu);
   }
   catch (const std::bad_alloc&)
   {
@@ -846,9 +846,9 @@ void FDialog::initZoomMenuItem (FMenu* menu)
   }
 
   setZoomItem();
-  zoom_item->setDisable();
+  dialog_menu.zoom_item->setDisable();
 
-  zoom_item->addCallback
+  dialog_menu.zoom_item->addCallback
   (
     "clicked",
     this,
@@ -861,7 +861,7 @@ void FDialog::initMinimizeMenuItem (FMenu* menu)
 {
   try
   {
-    minimize_item = new FMenuItem (menu);
+    dialog_menu.minimize_item = new FMenuItem (menu);
   }
   catch (const std::bad_alloc&)
   {
@@ -870,9 +870,9 @@ void FDialog::initMinimizeMenuItem (FMenu* menu)
   }
 
   setMinimizeItem();
-  minimize_item->setDisable();
+  dialog_menu.minimize_item->setDisable();
 
-  minimize_item->addCallback
+  dialog_menu.minimize_item->addCallback
   (
     "clicked",
     this,
@@ -885,7 +885,7 @@ void FDialog::initCloseMenuItem (FMenu* menu)
 {
   try
   {
-    close_item = new FMenuItem ("&Close", menu);
+    dialog_menu.close_item = new FMenuItem ("&Close", menu);
   }
   catch (const std::bad_alloc&)
   {
@@ -893,9 +893,9 @@ void FDialog::initCloseMenuItem (FMenu* menu)
     return;
   }
 
-  close_item->setStatusbarMessage ("Close this window");
+  dialog_menu.close_item->setStatusbarMessage ("Close this window");
 
-  close_item->addCallback
+  dialog_menu.close_item->addCallback
   (
     "clicked",
     this,
@@ -989,7 +989,7 @@ void FDialog::drawBorder()
   if ( ! hasBorder() )
     return;
 
-  if ( (getMoveResizeWidget() == this || ! resize_click_pos.isOrigin() )
+  if ( (getMoveResizeWidget() == this || ! position_data.resize_click_pos.isOrigin())
     && ! isZoomed() )
   {
     const auto& wc = getColorTheme();
@@ -1020,7 +1020,7 @@ void FDialog::drawTitleBar()
       setReverse(true);
   }
 
-  if ( titlebar_buttons )
+  if ( titlebar.buttons )
   {
     drawBarButton();       // Draw the title button
     drawTextBar();         // Print the text bar
@@ -1049,7 +1049,7 @@ void FDialog::drawBarButton()
   // Print the title button
   const auto& wc = getColorTheme();
 
-  if ( dialog_menu && dialog_menu->isShown() )
+  if ( dialog_menu.menu && dialog_menu.menu->isShown() )
     setColor (wc->titlebar_button_focus_fg, wc->titlebar_button_focus_bg);
   else
     setColor (wc->titlebar_button_fg, wc->titlebar_button_bg);
@@ -1062,8 +1062,8 @@ void FDialog::drawBarButton()
   {
     print ('[');
 
-    if ( dgl_menuitem )
-      print (dgl_menuitem->getText());
+    if ( dialog_menu.menuitem )
+      print (dialog_menu.menuitem->getText());
     else
       print ('-');
 
@@ -1073,8 +1073,8 @@ void FDialog::drawBarButton()
   {
     print (' ');
 
-    if ( dgl_menuitem )
-      print (dgl_menuitem->getText());
+    if ( dialog_menu.menuitem )
+      print (dialog_menu.menuitem->getText());
     else
       print ('-');
 
@@ -1092,7 +1092,7 @@ void FDialog::drawZoomButton()
 
   const auto& wc = getColorTheme();
 
-  if ( zoom_button_pressed )
+  if ( titlebar.zoom_button_pressed )
     setColor (wc->titlebar_button_focus_fg, wc->titlebar_button_focus_bg);
   else
     setColor (wc->titlebar_button_fg, wc->titlebar_button_bg);
@@ -1113,7 +1113,7 @@ void FDialog::drawMinimizeButton()
 
   const auto& wc = getColorTheme();
 
-  if ( minimize_button_pressed )
+  if ( titlebar.minimize_button_pressed )
     setColor (wc->titlebar_button_focus_fg, wc->titlebar_button_focus_bg);
   else
     setColor (wc->titlebar_button_fg, wc->titlebar_button_bg);
@@ -1203,7 +1203,7 @@ void FDialog::drawTextBar()
 
   const auto& wc = getColorTheme();
 
-  if ( isWindowActive() || (dialog_menu && dialog_menu->isShown()) )
+  if ( isWindowActive() || (dialog_menu.menu && dialog_menu.menu->isShown()) )
     setColor (wc->titlebar_active_fg, wc->titlebar_active_bg);
   else
     setColor (wc->titlebar_inactive_fg, wc->titlebar_inactive_bg);
@@ -1276,8 +1276,8 @@ void FDialog::setCursorToFocusWidget()
 //----------------------------------------------------------------------
 void FDialog::leaveMenu()
 {
-  dialog_menu->unselectItem();
-  dialog_menu->hide();
+  dialog_menu.menu->unselectItem();
+  dialog_menu.menu->hide();
   activateWindow();
   raiseWindow();
 
@@ -1292,10 +1292,10 @@ void FDialog::leaveMenu()
 void FDialog::openMenu()
 {
   // Open the titlebar menu
-  if ( ! dialog_menu )
+  if ( ! dialog_menu.menu )
     return;
 
-  if ( dialog_menu->isShown() )
+  if ( dialog_menu.menu->isShown() )
   {
     leaveMenu();
     drawTitleBar();
@@ -1303,14 +1303,14 @@ void FDialog::openMenu()
   else
   {
     finalcut::closeOpenComboBox();
-    setOpenMenu(dialog_menu);
+    setOpenMenu(dialog_menu.menu);
     FPoint pos{getPos()};
     pos.y_ref()++;
-    dialog_menu->setPos (pos);
-    dialog_menu->setVisible();
-    dialog_menu->show();
-    dialog_menu->raiseWindow();
-    dialog_menu->redraw();
+    dialog_menu.menu->setPos (pos);
+    dialog_menu.menu->setVisible();
+    dialog_menu.menu->show();
+    dialog_menu.menu->raiseWindow();
+    dialog_menu.menu->redraw();
     drawTitleBar();
   }
 }
@@ -1319,13 +1319,13 @@ void FDialog::openMenu()
 void FDialog::selectFirstMenuItem()
 {
   // Focus to the first enabled menu item
-  dialog_menu->selectFirstItem();
-  auto first_item = dialog_menu->getSelectedItem();
+  dialog_menu.menu->selectFirstItem();
+  auto first_item = dialog_menu.menu->getSelectedItem();
 
   if ( first_item )
     first_item->setFocus();
 
-  dialog_menu->redraw();
+  dialog_menu.menu->redraw();
   drawStatusBarMessage();
 }
 
@@ -1334,13 +1334,13 @@ void FDialog::setMinimizeItem()
 {
   if ( isMinimized() )
   {
-    minimize_item->setText ("&Unminimize");
-    minimize_item->setStatusbarMessage ("Restore the original window size");
+    dialog_menu.minimize_item->setText ("&Unminimize");
+    dialog_menu.minimize_item->setStatusbarMessage ("Restore the original window size");
   }
   else
   {
-    minimize_item->setText ("&Minimize");
-    minimize_item->setStatusbarMessage ("Minimizes the window");
+    dialog_menu.minimize_item->setText ("&Minimize");
+    dialog_menu.minimize_item->setStatusbarMessage ("Minimizes the window");
   }
 
   if ( getFlags().shadow.shadow )
@@ -1352,28 +1352,28 @@ void FDialog::setZoomItem()
 {
   if ( isZoomed() )
   {
-    zoom_item->setText ("&Unzoom");
-    zoom_item->setStatusbarMessage ("Restore the window size");
-    move_size_item->setDisable();
+    dialog_menu.zoom_item->setText ("&Unzoom");
+    dialog_menu.zoom_item->setStatusbarMessage ("Restore the window size");
+    dialog_menu.move_size_item->setDisable();
   }
   else
   {
-    zoom_item->setText ("&Zoom");
-    zoom_item->setStatusbarMessage ("Enlarge the window to the entire desktop");
-    move_size_item->setEnable();
+    dialog_menu.zoom_item->setText ("&Zoom");
+    dialog_menu.zoom_item->setStatusbarMessage ("Enlarge the window to the entire desktop");
+    dialog_menu.move_size_item->setEnable();
   }
 }
 
 //----------------------------------------------------------------------
 inline auto FDialog::getMenuButtonWidth() const -> std::size_t
 {
-  return titlebar_buttons ? 3 : 0;
+  return titlebar.buttons ? 3 : 0;
 }
 
 //----------------------------------------------------------------------
 inline auto FDialog::getZoomButtonWidth() const -> std::size_t
 {
-  if ( titlebar_buttons && isResizeable() )
+  if ( titlebar.buttons && isResizeable() )
     return FVTerm::getFOutput()->isNewFont() ? 2 : 3;
 
   return 0;
@@ -1382,7 +1382,7 @@ inline auto FDialog::getZoomButtonWidth() const -> std::size_t
 //----------------------------------------------------------------------
 inline auto FDialog::getMinimizeButtonWidth() const -> std::size_t
 {
-  if ( titlebar_buttons && isMinimizable() )
+  if ( titlebar.buttons && isMinimizable() )
     return FVTerm::getFOutput()->isNewFont() ? 2 : 3;
 
   return 0;
@@ -1394,45 +1394,46 @@ inline void FDialog::activateMinimizeButton (const MouseStates& ms)
   if ( ! isMouseOverMinimizeButton(ms) )
     return;
 
-  minimize_button_pressed = true;
-  minimize_button_active = true;
-  zoom_button_pressed = false;
-  zoom_button_active = false;
+  titlebar.minimize_button_pressed = true;
+  titlebar.minimize_button_active = true;
+  titlebar.zoom_button_pressed = false;
+  titlebar.zoom_button_active = false;
   drawTitleBar();
 }
 
 //----------------------------------------------------------------------
 inline void FDialog::deactivateMinimizeButton()
 {
-  if ( ! minimize_button_pressed && ! minimize_button_active )
+  if ( ! titlebar.minimize_button_pressed
+    && ! titlebar.minimize_button_active )
     return;
 
-  minimize_button_pressed = false;
-  minimize_button_active = false;
+  titlebar.minimize_button_pressed = false;
+  titlebar.minimize_button_active = false;
   drawTitleBar();
 }
 
 //----------------------------------------------------------------------
 inline void FDialog::leaveMinimizeButton (const MouseStates& ms)
 {
-  bool minimize_button_pressed_before = minimize_button_pressed;
-  minimize_button_pressed = isMouseOverMinimizeButton(ms)
-                         && minimize_button_active;
+  bool minimize_button_pressed_before = titlebar.minimize_button_pressed;
+  titlebar.minimize_button_pressed = isMouseOverMinimizeButton(ms)
+                                  && titlebar.minimize_button_active;
 
-  if ( minimize_button_pressed_before != minimize_button_pressed )
+  if ( minimize_button_pressed_before != titlebar.minimize_button_pressed )
     drawTitleBar();
 }
 
 //----------------------------------------------------------------------
 void FDialog::pressMinimizeButton (const MouseStates& ms)
 {
-  if ( ! isMouseOverMinimizeButton(ms) || ! minimize_button_pressed )
+  if ( ! isMouseOverMinimizeButton(ms) || ! titlebar.minimize_button_pressed )
     return;
 
   // Zoom to maximum or restore the window size
   minimizeWindow();
   setMinimizeItem();
-  minimize_button_active = false;
+  titlebar.minimize_button_active = false;
 }
 
 //----------------------------------------------------------------------
@@ -1441,52 +1442,52 @@ inline void FDialog::activateZoomButton (const MouseStates& ms)
   if ( ! isMouseOverZoomButton(ms) )
     return;
 
-  minimize_button_pressed = false;
-  minimize_button_active = false;
-  zoom_button_pressed = true;
-  zoom_button_active = true;
+  titlebar.minimize_button_pressed = false;
+  titlebar.minimize_button_active = false;
+  titlebar.zoom_button_pressed = true;
+  titlebar.zoom_button_active = true;
   drawTitleBar();
 }
 
 //----------------------------------------------------------------------
 inline void FDialog::deactivateZoomButton()
 {
-  if ( ! zoom_button_pressed && ! zoom_button_active )
+  if ( ! titlebar.zoom_button_pressed && ! titlebar.zoom_button_active )
     return;
 
-  zoom_button_pressed = false;
-  zoom_button_active = false;
+  titlebar.zoom_button_pressed = false;
+  titlebar.zoom_button_active = false;
   drawTitleBar();
 }
 
 //----------------------------------------------------------------------
 inline void FDialog::leaveZoomButton (const MouseStates& ms)
 {
-  bool zoom_button_pressed_before = zoom_button_pressed;
-  zoom_button_pressed = isMouseOverZoomButton(ms) && zoom_button_active;
+  bool zoom_button_pressed_before = titlebar.zoom_button_pressed;
+  titlebar.zoom_button_pressed = isMouseOverZoomButton(ms) && titlebar.zoom_button_active;
 
-  if ( zoom_button_pressed_before != zoom_button_pressed )
+  if ( zoom_button_pressed_before != titlebar.zoom_button_pressed )
     drawTitleBar();
 }
 
 //----------------------------------------------------------------------
 void FDialog::pressZoomButton (const MouseStates& ms)
 {
-  if ( ! isMouseOverZoomButton(ms) || ! zoom_button_pressed )
+  if ( ! isMouseOverZoomButton(ms) || ! titlebar.zoom_button_pressed )
     return;
 
   // Zoom to maximum or restore the window size
   zoomWindow();
   setZoomItem();
-  zoom_button_active = false;
+  titlebar.zoom_button_active = false;
 }
 
 //----------------------------------------------------------------------
 inline auto FDialog::isMouseOverMenu (const FPoint& termpos) const -> bool
 {
-  auto menu_geometry = dialog_menu->getTermGeometry();
+  auto menu_geometry = dialog_menu.menu->getTermGeometry();
 
-  return ( dialog_menu->getCount() > 0
+  return ( dialog_menu.menu->getCount() > 0
         && menu_geometry.contains(termpos) );
 }
 
@@ -1527,17 +1528,17 @@ inline void FDialog::passEventToSubMenu ( const MouseStates& ms
                                         , const FMouseEvent& ev )
 {
   // Mouse event handover to the dialog menu
-  if ( ! ms.mouse_over_menu || ! dialog_menu->isShown() )
+  if ( ! ms.mouse_over_menu || ! dialog_menu.menu->isShown() )
     return;
 
   const auto& g = ms.termPos;
-  const auto& p = dialog_menu->termToWidgetPos(g);
+  const auto& p = dialog_menu.menu->termToWidgetPos(g);
   const auto b = ev.getButton();
   const auto& new_ev = \
       std::make_shared<FMouseEvent>(Event::MouseMove, p, g, b);
-  dialog_menu->mouse_down = true;
-  setClickedWidget(dialog_menu);
-  dialog_menu->onMouseMove(new_ev.get());
+  dialog_menu.menu->mouse_down = true;
+  setClickedWidget(dialog_menu.menu);
+  dialog_menu.menu->onMouseMove(new_ev.get());
 }
 
 //----------------------------------------------------------------------
@@ -1548,11 +1549,11 @@ inline void FDialog::handleLeftMouseDown (const MouseStates& ms)
 
   if ( isMouseOverTitlebar(ms) )
   {
-    titlebar_click_pos.setPoint (ms.termPos);
-    new_pos.setPoint (getPos());
+    position_data.titlebar_click_pos.setPoint (ms.termPos);
+    position_data.new_pos.setPoint (getPos());
   }
   else
-    titlebar_click_pos.setPoint (0, 0);
+    position_data.titlebar_click_pos.setPoint (0, 0);
 
   // Click on titlebar menu button
   if ( isMouseOverMenuButton(ms) )
@@ -1572,7 +1573,7 @@ inline void FDialog::handleRightAndMiddleMouseDown ( const MouseButton& button
                                                    , const MouseStates& ms )
 {
   // Click on titlebar menu button
-  if ( isMouseOverMenuButton(ms) && dialog_menu->isShown() )
+  if ( isMouseOverMenuButton(ms) && dialog_menu.menu->isShown() )
     leaveMenu();  // close menu
 
   cancelMouseResize();  // Cancel resize
@@ -1682,7 +1683,7 @@ void FDialog::resizeMouseDown (const MouseStates& ms)
 
   if ( isResizeable() && isLowerRightResizeCorner(ms) )
   {
-    resize_click_pos = ms.termPos;
+    position_data.resize_click_pos = ms.termPos;
     const FPoint lower_right_pos{getTermGeometry().getLowerRightPos()};
 
     if ( ms.termPos != lower_right_pos )
@@ -1697,7 +1698,7 @@ void FDialog::resizeMouseDown (const MouseStates& ms)
       redraw();  // with border color change
   }
   else
-    resize_click_pos.setPoint (0, 0);
+    position_data.resize_click_pos.setPoint (0, 0);
 }
 
 //----------------------------------------------------------------------
@@ -1705,13 +1706,13 @@ void FDialog::resizeMouseUpMove (const MouseStates& ms, bool mouse_up)
 {
   // Resize dialog on mouse button up or on mouse movements
 
-  if ( ! isResizeable() || resize_click_pos.isOrigin() )
+  if ( ! isResizeable() || position_data.resize_click_pos.isOrigin() )
     return;
 
   const auto& r = getRootWidget();
-  resize_click_pos = ms.termPos;
-  const int x2 = resize_click_pos.getX();
-  const int y2 = resize_click_pos.getY();
+  position_data.resize_click_pos = ms.termPos;
+  const int x2 = position_data.resize_click_pos.getX();
+  const int y2 = position_data.resize_click_pos.getY();
   int x2_offset{0};
   int y2_offset{0};
 
@@ -1725,28 +1726,28 @@ void FDialog::resizeMouseUpMove (const MouseStates& ms, bool mouse_up)
   {
     int w{};
     int h{};
-    const FPoint deltaPos{ms.termPos - resize_click_pos};
+    const FPoint deltaPos{ms.termPos - position_data.resize_click_pos};
 
     if ( x2 - x2_offset <= int(getMaxWidth()) )
-      w = resize_click_pos.getX() + deltaPos.getX() - getTermX() + 1;
+      w = position_data.resize_click_pos.getX() + deltaPos.getX() - getTermX() + 1;
     else
       w = int(getMaxWidth()) - getTermX() + x2_offset + 1;
 
     if ( y2 - y2_offset <= int(getMaxHeight()) )
-      h = resize_click_pos.getY() + deltaPos.getY() - getTermY() + 1;
+      h = position_data.resize_click_pos.getY() + deltaPos.getY() - getTermY() + 1;
     else
       h = int(getMaxHeight()) - getTermY() + y2_offset + 1;
 
     const FSize size ( ( w >= 0) ? std::size_t(w) : 0
                      , ( h >= 0) ? std::size_t(h) : 0 );
-    new_size.setSize (size);
-    resize_click_pos = ms.termPos;
+    size_data.new_size.setSize (size);
+    position_data.resize_click_pos = ms.termPos;
   }
 
   if ( mouse_up )
   {
     // Reset the border color
-    resize_click_pos.setPoint (0, 0);
+    position_data.resize_click_pos.setPoint (0, 0);
 
     // redraw() is required to draw the standard (black) border
     // and client objects with ignorePadding() option.
@@ -1759,10 +1760,10 @@ void FDialog::cancelMouseResize()
 {
   // Cancel resize by mouse
 
-  if ( resize_click_pos.isOrigin() )
+  if ( position_data.resize_click_pos.isOrigin() )
     return;
 
-  resize_click_pos.setPoint (0, 0);
+  position_data.resize_click_pos.setPoint (0, 0);
   drawBorder();
 }
 
@@ -1781,10 +1782,10 @@ inline void FDialog::cancelMoveSize()
   setMoveSizeWidget(nullptr);
   delete tooltip;
   tooltip = nullptr;
-  setPos (save_geometry.getPos());
+  setPos (size_data.save_geometry.getPos());
 
   if ( isResizeable() )
-    setSize (save_geometry.getSize());
+    setSize (size_data.save_geometry.getSize());
 
   redraw();
 }
@@ -1846,7 +1847,7 @@ void FDialog::cb_move()
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
 
-  save_geometry = getGeometry();
+  size_data.save_geometry = getGeometry();
 
   try
   {
@@ -1884,8 +1885,8 @@ void FDialog::cb_move()
 //----------------------------------------------------------------------
 void FDialog::cb_minimize()
 {
-  dialog_menu->unselectItem();
-  dialog_menu->hide();
+  dialog_menu.menu->unselectItem();
+  dialog_menu.menu->hide();
   setClickedWidget(nullptr);
   drawTitleBar();
   minimizeWindow();
@@ -1895,8 +1896,8 @@ void FDialog::cb_minimize()
 //----------------------------------------------------------------------
 void FDialog::cb_zoom()
 {
-  dialog_menu->unselectItem();
-  dialog_menu->hide();
+  dialog_menu.menu->unselectItem();
+  dialog_menu.menu->hide();
   setClickedWidget(nullptr);
   drawTitleBar();
   zoomWindow();
@@ -1906,8 +1907,8 @@ void FDialog::cb_zoom()
 //----------------------------------------------------------------------
 void FDialog::cb_close()
 {
-  dialog_menu->unselectItem();
-  dialog_menu->hide();
+  dialog_menu.menu->unselectItem();
+  dialog_menu.menu->hide();
   setClickedWidget(nullptr);
   drawTitleBar();
   clearStatusBar();

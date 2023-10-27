@@ -238,7 +238,7 @@ auto FTermDetection::getTTYSFileEntry() -> bool
 void FTermDetection::termtypeAnalysis()
 {
   static auto& fterm_data = FTermData::getInstance();
-  static const std::vector<std::pair<std::wstring, FTermType>> termTypeMap =
+  const std::vector<std::pair<std::wstring, FTermType>> termTypeMap =
   {
     // Cygwin console
     { L"cygwin"             , FTermType::cygwin },

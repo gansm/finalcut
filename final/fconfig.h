@@ -1,6 +1,6 @@
 #ifndef _FINAL_FCONFIG_H
 #define _FINAL_FCONFIG_H 1
- 
+
 /* final/fconfig.h. Generated automatically at end of configure. */
 /* config.h.  Generated from config.h.in by configure.  */
 /* config.h.in.  Generated from configure.ac by autoheader.  */
@@ -338,6 +338,6 @@
 #ifndef F_VERSION
 #define F_VERSION "0.9.0"
 #endif
- 
+
 /* once: _FINAL_FCONFIG_H */
 #endif

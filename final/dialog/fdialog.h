@@ -175,6 +175,44 @@ class FDialog : public FWindow
       bool        mouse_over_menu;
     };
 
+    struct TitleBarFlags
+    {
+      bool buttons{true};
+      bool zoom_button_pressed{false};
+      bool zoom_button_active{false};
+      bool minimize_button_pressed{false};
+      bool minimize_button_active{false};
+    };
+
+    struct ErrorFlags
+    {
+      bool setPos_error{false};
+      bool setSize_error{false};
+    };
+
+    struct PositionData
+    {
+      FPoint titlebar_click_pos{};
+      FPoint resize_click_pos{};
+      FPoint new_pos{};
+    };
+
+    struct SizeData
+    {
+      FSize new_size{};
+      FRect save_geometry{};  // required by keyboard move/size
+    };
+
+    struct DialogMenu
+    {
+      FMenu*     menu{nullptr};
+      FMenuItem* menuitem{nullptr};
+      FMenuItem* move_size_item{nullptr};
+      FMenuItem* zoom_item{nullptr};
+      FMenuItem* minimize_item{nullptr};
+      FMenuItem* close_item{nullptr};
+    };
+
     // Using-declaration
     using KeyMap = std::unordered_map<FKey, std::function<void()>, EnumHash<FKey>>;
 
@@ -250,28 +288,15 @@ class FDialog : public FWindow
     void cb_close();
 
     // Data members
-    FString     tb_text{};  // title bar text
-    ResultCode  result_code{ResultCode::Reject};
-    bool        titlebar_buttons{true};
-    bool        zoom_button_pressed{false};
-    bool        zoom_button_active{false};
-    bool        minimize_button_pressed{false};
-    bool        minimize_button_active{false};
-    bool        setPos_error{false};
-    bool        setSize_error{false};
-    FPoint      titlebar_click_pos{};
-    FPoint      resize_click_pos{};
-    FPoint      new_pos{};
-    FSize       new_size{};
-    FRect       save_geometry{};  // required by keyboard move/size
-    FMenu*      dialog_menu{nullptr};
-    FMenuItem*  dgl_menuitem{nullptr};
-    FMenuItem*  move_size_item{nullptr};
-    FMenuItem*  zoom_item{nullptr};
-    FMenuItem*  minimize_item{nullptr};
-    FMenuItem*  close_item{nullptr};
-    FToolTip*   tooltip{nullptr};
-    KeyMap      key_map{};
+    TitleBarFlags titlebar{};
+    ErrorFlags    error_flags{false, false};
+    PositionData  position_data{};
+    SizeData      size_data{};
+    DialogMenu    dialog_menu{};
+    FToolTip*     tooltip{nullptr};
+    KeyMap        key_map{};
+    FString       tb_text{};  // title bar text
+    ResultCode    result_code{ResultCode::Reject};
 
     // Friend function from FMenu
     friend void FMenu::hideSuperMenus() const;
@@ -296,7 +321,7 @@ inline void FDialog::unsetModal()
 
 //----------------------------------------------------------------------
 inline void FDialog::setTitlebarButtonVisibility (bool enable)
-{  titlebar_buttons = enable; }
+{  titlebar.buttons = enable; }
 
 //----------------------------------------------------------------------
 inline void FDialog::unsetTitlebarButtonVisibility()
