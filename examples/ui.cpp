@@ -246,6 +246,96 @@ class MyDialog final : public finalcut::FDialog
     explicit MyDialog (finalcut::FWidget* = nullptr);
 
   private:
+    struct FileMenuItems
+    {
+      explicit FileMenuItems (finalcut::FMenu& menu)
+        : super_menu{menu}
+      { }
+
+      // "File" menu items
+      finalcut::FMenu& super_menu;
+      finalcut::FMenuItem Open{"&Open...", &super_menu};
+      finalcut::FMenu Recent{"&System files", &super_menu};
+      finalcut::FMenuItem Line1{&super_menu};
+      finalcut::FMenuItem Quit{"&Quit", &super_menu};
+      // "Recent" menu items
+      finalcut::FMenuItem File1{"/etc/services", &Recent};
+      finalcut::FMenuItem File2{"/etc/fstab", &Recent};
+      finalcut::FMenuItem File3{"/etc/passwd", &Recent};
+    };
+
+    struct EditMenuItems
+    {
+      explicit EditMenuItems (finalcut::FMenu& menu)
+        : super_menu{menu}
+      { }
+
+      // "Edit" menu items
+      finalcut::FMenu& super_menu;
+      finalcut::FMenuItem Undo{FKey::Ctrl_z, "Undo", &super_menu};
+      finalcut::FMenuItem Redo{FKey::Ctrl_y, "Redo", &super_menu};
+      finalcut::FMenuItem Line2{&super_menu};
+      finalcut::FMenuItem Cut{FKey::Ctrl_x, "Cu&t", &super_menu};
+      finalcut::FMenuItem Copy{FKey::Ctrl_c, "&Copy", &super_menu};
+      finalcut::FMenuItem Paste{FKey::Ctrl_v, "&Paste", &super_menu};
+      finalcut::FMenuItem Clear{FKey::Del_char, "C&lear", &super_menu};
+    };
+
+    struct ViewMenuItems
+    {
+      explicit ViewMenuItems (finalcut::FMenu& menu)
+        : super_menu{menu}
+      { }
+
+      // "View" menu items
+      finalcut::FMenu& super_menu;
+      finalcut::FMenuItem Env{"&Terminal...", &super_menu};
+      finalcut::FMenuItem Drive{"&Drive symbols...", &super_menu};
+      finalcut::FMenuItem Line3{&super_menu};
+      finalcut::FCheckMenuItem Theme{"Dark &mode", &super_menu};
+    };
+
+    struct StatusBarItems
+    {
+      explicit StatusBarItems (finalcut::FStatusBar& sbar)
+        : statusbar{sbar}
+      { }
+
+      // Statusbar items
+      finalcut::FStatusBar& statusbar;
+      finalcut::FStatusKey key_F1{FKey::F1, "About", &statusbar};
+      finalcut::FStatusKey key_F2{FKey::F2, "View", &statusbar};
+      finalcut::FStatusKey key_F3{FKey::F3, "Quit", &statusbar};
+    };
+
+    struct DialogWidgets
+    {
+      explicit DialogWidgets (MyDialog& dgl)
+        : dialog{dgl}
+      { }
+
+      MyDialog& dialog;
+      finalcut::FButton MyButton1{&dialog};
+      finalcut::FButton MyButton2{&dialog};
+      finalcut::FButton MyButton3{&dialog};
+      finalcut::FButtonGroup radioButtonGroup{"Button", &dialog};
+      finalcut::FRadioButton radio1{"E&nable", &radioButtonGroup};
+      finalcut::FRadioButton radio2{&radioButtonGroup};
+      finalcut::FButtonGroup checkButtonGroup{"Options", &dialog};
+      finalcut::FCheckBox check1{"&Bitmode", &checkButtonGroup};
+      finalcut::FCheckBox check2{"&8-Bit", &checkButtonGroup};
+      finalcut::FLineEdit myLineEdit{&dialog};
+      finalcut::FButton MyButton4{&dialog};
+      finalcut::FButton MyButton5{&dialog};
+      finalcut::FButton MyButton6{&dialog};
+      finalcut::FListBox myList{&dialog};
+      finalcut::FLabel headline{&dialog};
+      finalcut::FLabel tagged{L"Tagged:", &dialog};
+      finalcut::FLabel tagged_count{&dialog};
+      finalcut::FLabel sum{L"Sum:", &dialog};
+      finalcut::FLabel sum_count{&dialog};
+    };
+
     // Methods
     void init();
     void initMenu();
@@ -297,53 +387,15 @@ class MyDialog final : public finalcut::FDialog
     finalcut::FMenuItem       Options{"&Options", &Menubar};
     finalcut::FDialogListMenu Window{"&Window", &Menubar};
     finalcut::FMenuItem       Help{"&Help", &Menubar};
-    // "File" menu items
-    finalcut::FMenuItem       Open{"&Open...", &File};
-    finalcut::FMenu           Recent{"&System files", &File};
-    finalcut::FMenuItem       Line1{&File};
-    finalcut::FMenuItem       Quit{"&Quit", &File};
-    // "Recent" menu items
-    finalcut::FMenuItem       File1{"/etc/services", &Recent};
-    finalcut::FMenuItem       File2{"/etc/fstab", &Recent};
-    finalcut::FMenuItem       File3{"/etc/passwd", &Recent};
-    // "Edit" menu items
-    finalcut::FMenuItem       Undo{FKey::Ctrl_z, "Undo", &Edit};
-    finalcut::FMenuItem       Redo{FKey::Ctrl_y, "Redo", &Edit};
-    finalcut::FMenuItem       Line2{&Edit};
-    finalcut::FMenuItem       Cut{FKey::Ctrl_x, "Cu&t", &Edit};
-    finalcut::FMenuItem       Copy{FKey::Ctrl_c, "&Copy", &Edit};
-    finalcut::FMenuItem       Paste{FKey::Ctrl_v, "&Paste", &Edit};
-    finalcut::FMenuItem       Clear{FKey::Del_char, "C&lear", &Edit};
-    // "View" menu items
-    finalcut::FMenuItem       Env{"&Terminal...", &View};
-    finalcut::FMenuItem       Drive{"&Drive symbols...", &View};
-    finalcut::FMenuItem       Line3{&View};
-    finalcut::FCheckMenuItem  Theme{"Dark &mode", &View};
+    // Menus
+    FileMenuItems             file_menu{File};
+    EditMenuItems             edit_menu{Edit};
+    ViewMenuItems             view_menu{View};
     // Statusbar
     finalcut::FStatusBar      Statusbar{this};
-    finalcut::FStatusKey      key_F1{FKey::F1, "About", &Statusbar};
-    finalcut::FStatusKey      key_F2{FKey::F2, "View", &Statusbar};
-    finalcut::FStatusKey      key_F3{FKey::F3, "Quit", &Statusbar};
+    StatusBarItems            statusbar_items{Statusbar};
     // Dialog widgets
-    finalcut::FButton         MyButton1{this};
-    finalcut::FButton         MyButton2{this};
-    finalcut::FButton         MyButton3{this};
-    finalcut::FButtonGroup    radioButtonGroup{"Button", this};
-    finalcut::FRadioButton    radio1{"E&nable", &radioButtonGroup};
-    finalcut::FRadioButton    radio2{&radioButtonGroup};
-    finalcut::FButtonGroup    checkButtonGroup{"Options", this};
-    finalcut::FCheckBox       check1{"&Bitmode", &checkButtonGroup};
-    finalcut::FCheckBox       check2{"&8-Bit", &checkButtonGroup};
-    finalcut::FLineEdit       myLineEdit{this};
-    finalcut::FButton         MyButton4{this};
-    finalcut::FButton         MyButton5{this};
-    finalcut::FButton         MyButton6{this};
-    finalcut::FListBox        myList{this};
-    finalcut::FLabel          headline{this};
-    finalcut::FLabel          tagged{L"Tagged:", this};
-    finalcut::FLabel          tagged_count{this};
-    finalcut::FLabel          sum{L"Sum:", this};
-    finalcut::FLabel          sum_count{this};
+    DialogWidgets             dialog_widgets{*this};
     finalcut::FString         clipboard{};
 };
 
@@ -378,30 +430,30 @@ void MyDialog::initMenu()
   Help.setStatusbarMessage ("Show version and copyright information");
 
   // "File" menu items
-  Open.addAccelerator (FKey::Ctrl_o);  // Ctrl + O
-  Open.setStatusbarMessage ("Locate and open a text file");
-  Recent.setStatusbarMessage ("View text file");
-  Line1.setSeparator();
-  Quit.addAccelerator (FKey::Meta_x);  // Meta/Alt + X
-  Quit.setStatusbarMessage ("Exit the program");
+  file_menu.Open.addAccelerator (FKey::Ctrl_o);  // Ctrl + O
+  file_menu.Open.setStatusbarMessage ("Locate and open a text file");
+  file_menu.Recent.setStatusbarMessage ("View text file");
+  file_menu.Line1.setSeparator();
+  file_menu.Quit.addAccelerator (FKey::Meta_x);  // Meta/Alt + X
+  file_menu.Quit.setStatusbarMessage ("Exit the program");
 
   // "Edit" menu items
-  Undo.setDisable();
-  Redo.setDisable();
-  Line2.setSeparator();
-  Cut.setStatusbarMessage ( "Remove the input text"
-                            " and put it in the clipboard" );
-  Copy.setStatusbarMessage ("Copy the input text into the clipboad");
-  Paste.setStatusbarMessage ("Insert text form clipboard");
-  Clear.setStatusbarMessage ("Delete input text");
+  edit_menu.Undo.setDisable();
+  edit_menu.Redo.setDisable();
+  edit_menu.Line2.setSeparator();
+  edit_menu.Cut.setStatusbarMessage ( "Remove the input text"
+                                      " and put it in the clipboard" );
+  edit_menu.Copy.setStatusbarMessage ("Copy the input text into the clipboad");
+  edit_menu.Paste.setStatusbarMessage ("Insert text form clipboard");
+  edit_menu.Clear.setStatusbarMessage ("Delete input text");
 
   // "View" menu items
-  Env.setStatusbarMessage ("Informations about this terminal");
-  Drive.setStatusbarMessage ("Show drive symbols");
-  Line3.setSeparator();
+  view_menu.Env.setStatusbarMessage ("Informations about this terminal");
+  view_menu.Drive.setStatusbarMessage ("Show drive symbols");
+  view_menu.Line3.setSeparator();
 
   if ( finalcut::FStartOptions::getInstance().dark_theme )
-    Theme.setChecked();
+    view_menu.Theme.setChecked();
 }
 
 //----------------------------------------------------------------------
@@ -418,14 +470,14 @@ void MyDialog::initMenuCallbacks()
 void MyDialog::initFileMenuCallbacks()
 {
   // File menu
-  Open.addCallback
+  file_menu.Open.addCallback
   (
     "clicked",
     this, &MyDialog::cb_view,
     nullptr
   );
 
-  Quit.addCallback
+  file_menu.Quit.addCallback
   (
     "clicked",
     finalcut::getFApplication(),
@@ -434,25 +486,25 @@ void MyDialog::initFileMenuCallbacks()
   );
 
   // System files submenu
-  File1.addCallback
+  file_menu.File1.addCallback
   (
     "clicked",
     this, &MyDialog::cb_view,
-    &File1
+    &file_menu.File1
   );
 
-  File2.addCallback
+  file_menu.File2.addCallback
   (
     "clicked",
     this, &MyDialog::cb_view,
-    &File2
+    &file_menu.File2
   );
 
-  File3.addCallback
+  file_menu.File3.addCallback
   (
     "clicked",
     this, &MyDialog::cb_view,
-    &File3
+    &file_menu.File3
   );
 }
 
@@ -460,25 +512,25 @@ void MyDialog::initFileMenuCallbacks()
 void MyDialog::initEditMenuCallbacks()
 {
   // Edit menu
-  Cut.addCallback
+  edit_menu.Cut.addCallback
   (
     "clicked",
     this, &MyDialog::cb_cutClipboard
   );
 
-  Copy.addCallback
+  edit_menu.Copy.addCallback
   (
     "clicked",
     this, &MyDialog::cb_copyClipboard
   );
 
-  Paste.addCallback
+  edit_menu.Paste.addCallback
   (
     "clicked",
     this, &MyDialog::cb_pasteClipboard
   );
 
-  Clear.addCallback
+  edit_menu.Clear.addCallback
   (
     "clicked",
     this, &MyDialog::cb_clearInput
@@ -489,23 +541,23 @@ void MyDialog::initEditMenuCallbacks()
 void MyDialog::initViewMenuCallbacks()
 {
   // View menu
-  Env.addCallback
+  view_menu.Env.addCallback
   (
     "clicked",
     this, &MyDialog::cb_terminfo
   );
 
-  Drive.addCallback
+  view_menu.Drive.addCallback
   (
     "clicked",
     this, &MyDialog::cb_drives
   );
 
-  Theme.addCallback
+  view_menu.Theme.addCallback
   (
     "clicked",
     this, &MyDialog::cb_switchTheme,
-    &Theme
+    &view_menu.Theme
   );
 }
 
@@ -524,20 +576,20 @@ void MyDialog::initStatusBarCallbacks()
 {
   // Add statusbar function callbacks
 
-  key_F1.addCallback
+  statusbar_items.key_F1.addCallback
   (
     "activate",
     this, &MyDialog::cb_about
   );
 
-  key_F2.addCallback
+  statusbar_items.key_F2.addCallback
   (
     "activate",
     this, &MyDialog::cb_view,
     nullptr
   );
 
-  key_F3.addCallback
+  statusbar_items.key_F3.addCallback
   (
     "activate",
     finalcut::getFApplication(),
@@ -556,22 +608,22 @@ void MyDialog::initWidgets()
   initToggleButtons();
 
   // A text input field
-  myLineEdit.setLabelText (L"&Input");
-  myLineEdit.setStatusbarMessage ("Press Enter to set the title");
-  myLineEdit << finalcut::FString{"EnTry"}.toLower();
+  dialog_widgets.myLineEdit.setLabelText (L"&Input");
+  dialog_widgets.myLineEdit.setStatusbarMessage ("Press Enter to set the title");
+  dialog_widgets.myLineEdit << finalcut::FString{"EnTry"}.toLower();
 
   // Buttons
   initButtons();
 
   // A multiple selection listbox
 
-  myList.setText ("Items");
-  myList.setStatusbarMessage ("99 items in a list");
-  myList.setMultiSelection();
-  myList.reserve(100);
+  dialog_widgets.myList.setText ("Items");
+  dialog_widgets.myList.setStatusbarMessage ("99 items in a list");
+  dialog_widgets.myList.setMultiSelection();
+  dialog_widgets.myList.reserve(100);
 
   for (auto z{1}; z < 100; z++)
-    myList.insert (finalcut::FString{} << z << L" placeholder");
+    dialog_widgets.myList.insert (finalcut::FString{} << z << L" placeholder");
 
   // Text labels
   initLabels();
@@ -581,41 +633,41 @@ void MyDialog::initWidgets()
 void MyDialog::initFlatButtons()
 {
   // Flat buttons
-  MyButton1.setText (L"&SIN");
-  MyButton1.setStatusbarMessage ("Sine function");
-  MyButton1.setNoUnderline();
-  MyButton1.setFlat();
+  dialog_widgets.MyButton1.setText (L"&SIN");
+  dialog_widgets.MyButton1.setStatusbarMessage ("Sine function");
+  dialog_widgets.MyButton1.setNoUnderline();
+  dialog_widgets.MyButton1.setFlat();
 
-  MyButton2.setText (L"&COS");
-  MyButton2.setStatusbarMessage ("Cosine function");
-  MyButton2.setNoUnderline();
-  MyButton2.setFlat();
+  dialog_widgets.MyButton2.setText (L"&COS");
+  dialog_widgets.MyButton2.setStatusbarMessage ("Cosine function");
+  dialog_widgets.MyButton2.setNoUnderline();
+  dialog_widgets.MyButton2.setFlat();
 
-  MyButton3.setText (L"&=");
-  MyButton3.setStatusbarMessage ("Equal");
-  MyButton3.setNoUnderline();
-  MyButton3.setFlat();
+  dialog_widgets.MyButton3.setText (L"&=");
+  dialog_widgets.MyButton3.setStatusbarMessage ("Equal");
+  dialog_widgets.MyButton3.setNoUnderline();
+  dialog_widgets.MyButton3.setFlat();
 
   // Add button callback functions
-  MyButton1.addCallback
+  dialog_widgets.MyButton1.addCallback
   (
     "clicked",
     this, &MyDialog::cb_noFunctionMsg,
-    std::ref(MyButton1)
+    std::ref(dialog_widgets.MyButton1)
   );
 
-  MyButton2.addCallback
+  dialog_widgets.MyButton2.addCallback
   (
     "clicked",
     this, &MyDialog::cb_noFunctionMsg,
-    std::ref(MyButton2)
+    std::ref(dialog_widgets.MyButton2)
   );
 
-  MyButton3.addCallback
+  dialog_widgets.MyButton3.addCallback
   (
     "clicked",
     this, &MyDialog::cb_noFunctionMsg,
-    std::ref(MyButton3)
+    std::ref(dialog_widgets.MyButton3)
   );
 }
 
@@ -624,17 +676,17 @@ void MyDialog::initToggleButtons()
 {
   // Radio buttons in a group
 
-  //radioButtonGroup->unsetBorder();
-  radio1.setStatusbarMessage ("Enable button Test");
-  radio2.setText ("&Disable");
-  radio2.setStatusbarMessage ("Disable button Test");
-  radio2.setChecked();
-  //radio2.setDisable();
+  //dialog_widgets.radioButtonGroup->unsetBorder();
+  dialog_widgets.radio1.setStatusbarMessage ("Enable button Test");
+  dialog_widgets.radio2.setText ("&Disable");
+  dialog_widgets.radio2.setStatusbarMessage ("Disable button Test");
+  dialog_widgets.radio2.setChecked();
+  //dialog_widgets.radio2.setDisable();
 
   // Checkboxes in a group
-  check1.setNoUnderline();
-  check2.setChecked();
-  check2.setNoUnderline();
+  dialog_widgets.check1.setNoUnderline();
+  dialog_widgets.check2.setChecked();
+  dialog_widgets.check2.setNoUnderline();
 }
 
 //----------------------------------------------------------------------
@@ -642,33 +694,34 @@ void MyDialog::initButtons()
 {
   // Buttons
 
-  MyButton4.setText (L"&Get input");
-  MyButton4.setStatusbarMessage ("Take text from input field");
-  MyButton4.setFocus();
+  dialog_widgets.MyButton4.setText (L"&Get input");
+  dialog_widgets.MyButton4.setStatusbarMessage ("Take text from input field");
+  dialog_widgets.MyButton4.setFocus();
 
-  MyButton5.setText (L"&Test");
-  MyButton5.setStatusbarMessage ("Progressbar testing dialog");
-  MyButton5.setDisable();
+  dialog_widgets.MyButton5.setText (L"&Test");
+  dialog_widgets.MyButton5.setStatusbarMessage ("Progressbar testing dialog");
+  dialog_widgets.MyButton5.setDisable();
 
-  MyButton6.setText (L"&Quit");
-  MyButton6.setStatusbarMessage ("Exit the program");
-  MyButton6.addAccelerator(FKey('x'));
+  dialog_widgets.MyButton6.setText (L"&Quit");
+  dialog_widgets.MyButton6.setStatusbarMessage ("Exit the program");
+  dialog_widgets.MyButton6.addAccelerator(FKey('x'));
 
   // Add button callback functions
-  MyButton4.addCallback
+  dialog_widgets.MyButton4.addCallback
   (
     "clicked",
     this, &MyDialog::cb_input2buttonText,
-    std::ref(MyButton4), std::cref(myLineEdit)
+    std::ref(dialog_widgets.MyButton4),
+    std::cref(dialog_widgets.myLineEdit)
   );
 
-  MyButton5.addCallback
+  dialog_widgets.MyButton5.addCallback
   (
     "clicked",
     this, &MyDialog::cb_showProgressBar
   );
 
-  MyButton6.addCallback
+  dialog_widgets.MyButton6.addCallback
   (
     "clicked",
     finalcut::getFApplication(),
@@ -682,12 +735,12 @@ void MyDialog::initLabels()
 {
   // Text labels
 
-  headline.setEmphasis();
-  headline.setAlignment (finalcut::Align::Center);
-  headline = L"List items";
-  tagged_count << 0;
-  sum.setAlignment (finalcut::Align::Right);
-  sum_count << myList.getCount();
+  dialog_widgets.headline.setEmphasis();
+  dialog_widgets.headline.setAlignment (finalcut::Align::Center);
+  dialog_widgets.headline = L"List items";
+  dialog_widgets.tagged_count << 0;
+  dialog_widgets.sum.setAlignment (finalcut::Align::Right);
+  dialog_widgets.sum_count << dialog_widgets.myList.getCount();
 }
 
 //----------------------------------------------------------------------
@@ -695,28 +748,30 @@ void MyDialog::initWidgetsCallbacks()
 {
   // Add some function callbacks
 
-  myLineEdit.addCallback
+  dialog_widgets.myLineEdit.addCallback
   (
     "activate",  // e.g. on <Enter>
     this, &MyDialog::cb_setTitlebar,
-    std::ref(myLineEdit)
+    std::ref(dialog_widgets.myLineEdit)
   );
 
-  radio1.addCallback
+  dialog_widgets.radio1.addCallback
   (
     "toggled",
     this, &MyDialog::cb_activateButton,
-    std::ref(radio1), std::ref(MyButton5)
+    std::ref(dialog_widgets.radio1),
+    std::ref(dialog_widgets.MyButton5)
   );
 
-  myList.addCallback
+  dialog_widgets.myList.addCallback
   (
     "clicked",
     this, &MyDialog::cb_setInput,
-    std::ref(myList), std::ref(myLineEdit)
+    std::ref(dialog_widgets.myList),
+    std::ref(dialog_widgets.myLineEdit)
   );
 
-  myList.addCallback
+  dialog_widgets.myList.addCallback
   (
     "row-selected",
     this, &MyDialog::cb_updateNumber
@@ -726,27 +781,27 @@ void MyDialog::initWidgetsCallbacks()
 //----------------------------------------------------------------------
 void MyDialog::initLayout()
 {
-  MyButton1.setGeometry(FPoint{3, 3}, FSize{5, 1});
-  MyButton1.setDoubleFlatLine (finalcut::Side::Bottom);
-  MyButton2.setGeometry(FPoint{3, 5}, FSize{5, 1});
-  MyButton2.setDoubleFlatLine (finalcut::Side::Top);
-  MyButton3.setGeometry(FPoint{10, 3}, FSize{5, 3});
-  MyButton4.setGeometry(FPoint{20, 8}, FSize{12, 1});
-  MyButton5.setGeometry(FPoint{20, 11}, FSize{12, 1});
-  MyButton6.setGeometry(FPoint{20, 14}, FSize{12, 1});
-  radioButtonGroup.setGeometry(FPoint{3, 8}, FSize{14, 4});
-  radio1.setGeometry(FPoint{1, 1}, FSize{10, 1});
-  radio2.setGeometry(FPoint{1, 2}, FSize{11, 1});
-  checkButtonGroup.setGeometry(FPoint{3, 12}, FSize{14, 4});
-  check1.setGeometry(FPoint{1, 1}, FSize{11, 1});
-  check2.setGeometry(FPoint{1, 2}, FSize{9, 1});
-  headline.setGeometry(FPoint{21, 3}, FSize{10, 1});
-  tagged.setGeometry(FPoint{21, 4}, FSize{7, 1});
-  tagged_count.setGeometry(FPoint{29, 4}, FSize{5, 1});
-  sum.setGeometry(FPoint{21, 5}, FSize{7, 3});
-  sum_count.setGeometry(FPoint{29, 5}, FSize{5, 3});
-  myLineEdit.setGeometry(FPoint{22, 1}, FSize{10, 1});
-  myList.setGeometry(FPoint{38, 1}, FSize{14, 17});
+  dialog_widgets.MyButton1.setGeometry(FPoint{3, 3}, FSize{5, 1});
+  dialog_widgets.MyButton1.setDoubleFlatLine (finalcut::Side::Bottom);
+  dialog_widgets.MyButton2.setGeometry(FPoint{3, 5}, FSize{5, 1});
+  dialog_widgets.MyButton2.setDoubleFlatLine (finalcut::Side::Top);
+  dialog_widgets.MyButton3.setGeometry(FPoint{10, 3}, FSize{5, 3});
+  dialog_widgets.MyButton4.setGeometry(FPoint{20, 8}, FSize{12, 1});
+  dialog_widgets.MyButton5.setGeometry(FPoint{20, 11}, FSize{12, 1});
+  dialog_widgets.MyButton6.setGeometry(FPoint{20, 14}, FSize{12, 1});
+  dialog_widgets.radioButtonGroup.setGeometry(FPoint{3, 8}, FSize{14, 4});
+  dialog_widgets.radio1.setGeometry(FPoint{1, 1}, FSize{10, 1});
+  dialog_widgets.radio2.setGeometry(FPoint{1, 2}, FSize{11, 1});
+  dialog_widgets.checkButtonGroup.setGeometry(FPoint{3, 12}, FSize{14, 4});
+  dialog_widgets.check1.setGeometry(FPoint{1, 1}, FSize{11, 1});
+  dialog_widgets.check2.setGeometry(FPoint{1, 2}, FSize{9, 1});
+  dialog_widgets.headline.setGeometry(FPoint{21, 3}, FSize{10, 1});
+  dialog_widgets.tagged.setGeometry(FPoint{21, 4}, FSize{7, 1});
+  dialog_widgets.tagged_count.setGeometry(FPoint{29, 4}, FSize{5, 1});
+  dialog_widgets.sum.setGeometry(FPoint{21, 5}, FSize{7, 3});
+  dialog_widgets.sum_count.setGeometry(FPoint{29, 5}, FSize{5, 3});
+  dialog_widgets.myLineEdit.setGeometry(FPoint{22, 1}, FSize{10, 1});
+  dialog_widgets.myList.setGeometry(FPoint{38, 1}, FSize{14, 17});
   FDialog::initLayout();
 }
 
@@ -768,7 +823,7 @@ void MyDialog::adjustSize()
   setPos (FPoint{x, 2}, false);
 
   if ( initialized && h > 3 )
-    myList.setHeight (h - 3, true);
+    dialog_widgets.myList.setHeight (h - 3, true);
 }
 
 //----------------------------------------------------------------------
@@ -885,30 +940,30 @@ void MyDialog::cb_drives()
 //----------------------------------------------------------------------
 void MyDialog::cb_cutClipboard()
 {
-  clipboard = myLineEdit.getText();
-  myLineEdit.clear();
-  myLineEdit.redraw();
+  clipboard = dialog_widgets.myLineEdit.getText();
+  dialog_widgets.myLineEdit.clear();
+  dialog_widgets.myLineEdit.redraw();
 }
 
 //----------------------------------------------------------------------
 void MyDialog::cb_copyClipboard()
 {
-  clipboard = myLineEdit.getText();
+  clipboard = dialog_widgets.myLineEdit.getText();
 }
 
 //----------------------------------------------------------------------
 void MyDialog::cb_pasteClipboard()
 {
-  myLineEdit = clipboard;
-  myLineEdit.redraw();
+  dialog_widgets.myLineEdit = clipboard;
+  dialog_widgets.myLineEdit.redraw();
 }
 
 //----------------------------------------------------------------------
 void MyDialog::cb_clearInput()
 {
   clipboard.clear();
-  myLineEdit.clear();
-  myLineEdit.redraw();
+  dialog_widgets.myLineEdit.clear();
+  dialog_widgets.myLineEdit.redraw();
 }
 
 //----------------------------------------------------------------------
@@ -953,12 +1008,12 @@ void MyDialog::cb_showProgressBar()
 void MyDialog::cb_updateNumber()
 {
   auto is_selected = [] (auto item) { return item.isSelected(); };
-  auto select_num = std::count_if ( std::begin(myList.getData())
-                                  , std::end(myList.getData())
+  auto select_num = std::count_if ( std::begin(dialog_widgets.myList.getData())
+                                  , std::end(dialog_widgets.myList.getData())
                                   , is_selected );
-  tagged_count.clear();
-  tagged_count << select_num;
-  tagged_count.redraw();
+  dialog_widgets.tagged_count.clear();
+  dialog_widgets.tagged_count << select_num;
+  dialog_widgets.tagged_count.redraw();
 }
 
 //----------------------------------------------------------------------

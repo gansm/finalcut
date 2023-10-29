@@ -406,7 +406,7 @@ class FListBox : public FWidget
     std::size_t     nf_offset{0};
     std::size_t     max_line_width{0};
     ListBoxData     data{};
-    ScrollingState  scroll;
+    ScrollingState  scroll{};
     SelectionState  selection{};
     ConvertType     conv_type{ConvertType::None};
     DragScrollMode  drag_scroll{DragScrollMode::None};

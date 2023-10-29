@@ -278,12 +278,12 @@ void FListViewItem::setText (int column, const FString& text)
   {
     auto listview = static_cast<FListView*>(parent);
 
-    if ( ! listview->header[index].fixed_width )
+    if ( ! listview->data.header[index].fixed_width )
     {
       const auto column_width = int(getColumnWidth(text));
 
-      if ( column_width > listview->header[index].width )
-        listview->header[index].width = column_width;
+      if ( column_width > listview->data.header[index].width )
+        listview->data.header[index].width = column_width;
     }
   }
 
@@ -630,6 +630,29 @@ void FListViewIterator::parentElement()
     prevElement(node);
 }
 
+// FListViewIterator non-member operators
+//----------------------------------------------------------------------
+auto operator + (const FListViewIterator& lhs, int n) -> FListViewIterator
+{
+  auto tmp = lhs;
+
+  for (int i = n; i > 0 ; i--)
+    tmp.nextElement(tmp.node);
+
+  return tmp;
+}
+
+//----------------------------------------------------------------------
+auto operator - (const FListViewIterator& lhs, int n) -> FListViewIterator
+{
+  auto tmp = lhs;
+
+  for (int i = n; i > 0 ; i--)
+    tmp.prevElement(tmp.node);
+
+  return tmp;
+}
+
 
 //----------------------------------------------------------------------
 // class FListView
@@ -655,7 +678,7 @@ auto FListView::getCount() const -> std::size_t
 {
   int n{0};
 
-  for (auto&& item : itemlist)
+  for (auto&& item : data.itemlist)
   {
     const auto& listitem = static_cast<FListViewItem*>(item);
     n += listitem->getVisibleLines();
@@ -674,7 +697,7 @@ auto FListView::getColumnAlignment (int column) const -> Align
 
   // Convert column position to address offset (index)
   const auto index = std::size_t(column - 1);
-  return header[index].alignment;
+  return data.header[index].alignment;
 }
 
 //----------------------------------------------------------------------
@@ -687,7 +710,7 @@ auto FListView::getColumnText (int column) const -> FString
 
   // Convert column position to address offset (index)
   const auto index = std::size_t(column - 1);
-  return header[index].name;
+  return data.header[index].name;
 }
 
 //----------------------------------------------------------------------
@@ -698,7 +721,7 @@ auto FListView::getColumnSortType (int column) const -> SortType
 
   try
   {
-    s_type = sort_type.at(col);
+    s_type = sorting.type.at(col);
   }
   catch (const std::out_of_range&)
   {
@@ -733,7 +756,7 @@ void FListView::setColumnAlignment (int column, Align align)
 
   // Convert column position to address offset (index)
   const auto index = std::size_t(column - 1);
-  header[index].alignment = align;
+  data.header[index].alignment = align;
 }
 
 //----------------------------------------------------------------------
@@ -747,15 +770,15 @@ void FListView::setColumnText (int column, const FString& label)
   // Convert column position to address offset (index)
   auto index = std::size_t(column - 1);
 
-  if ( ! header[index].fixed_width )
+  if ( ! data.header[index].fixed_width )
   {
     const auto column_width = int(getColumnWidth(label));
 
-    if ( column_width > header[index].width )
-      header[index].width = column_width;
+    if ( column_width > data.header[index].width )
+      data.header[index].width = column_width;
   }
 
-  header[index].name = label;
+  data.header[index].name = label;
 }
 
 //----------------------------------------------------------------------
@@ -768,10 +791,10 @@ void FListView::setColumnSortType (int column, SortType type)
 
   const std::size_t size = std::size_t(column) + 1;
 
-  if ( sort_type.empty() || sort_type.size() < size )
-    sort_type.resize(size);
+  if ( sorting.type.empty() || sorting.type.size() < size )
+    sorting.type.resize(size);
 
-  sort_type[uInt(column)] = type;
+  sorting.type[uInt(column)] = type;
 }
 
 //----------------------------------------------------------------------
@@ -782,8 +805,8 @@ void FListView::setColumnSort (int column, SortOrder order)
   if ( isColumnIndexInvalid(column) )
     column = -1;
 
-  sort_column = column;
-  sort_order = order;
+  sorting.column = column;
+  sorting.order = order;
 }
 
 //----------------------------------------------------------------------
@@ -796,7 +819,7 @@ void FListView::showColumn (int column)
 
   // Convert column position to address offset (index)
   const auto index = std::size_t(column - 1);
-  header[index].visible = true;
+  data.header[index].visible = true;
   // Update and redraw the layout of the list view
   updateLayout();
 }
@@ -811,7 +834,7 @@ void FListView::hideColumn (int column)
 
   // Convert column position to address offset (index)
   const auto index = std::size_t(column - 1);
-  header[index].visible = false;
+  data.header[index].visible = false;
   // Update and redraw the layout of the list view
   updateLayout();
 }
@@ -824,7 +847,7 @@ auto FListView::isColumnHidden (int column) const -> bool
 
   // Convert column position to address offset (index)
   const auto index = std::size_t(column - 1);
-  return ! header[index].visible;
+  return ! data.header[index].visible;
 }
 
 //----------------------------------------------------------------------
@@ -839,8 +862,8 @@ auto FListView::addColumn (const FString& label, int width) -> int
   else
     new_column.fixed_width = true;
 
-  header.push_back (new_column);
-  return int(header.size());
+  data.header.push_back (new_column);
+  return int(data.header.size());
 }
 
 //----------------------------------------------------------------------
@@ -849,20 +872,20 @@ auto FListView::removeColumn (int column) -> int
   // Deletes a column from the list and empties it if all columns are gone
 
   if ( isColumnIndexInvalid(column) )
-    return int(header.size());
+    return int(data.header.size());
 
-  if ( header.size() == 1 )
+  if ( data.header.size() == 1 )
   {
-    header.clear();
+    data.header.clear();
     clear();
     return 0;
   }
 
-  header.erase (header.begin() + column - 1);
+  data.header.erase (data.header.begin() + column - 1);
   max_line_width = 0;
-  auto iter = itemlist.begin();
+  auto iter = data.itemlist.begin();
 
-  while ( iter != itemlist.end() )
+  while ( iter != data.itemlist.end() )
   {
     const auto& item = static_cast<FListViewItem*>(*iter);
     item->column_list.erase (item->column_list.begin() + column - 1);
@@ -871,15 +894,15 @@ auto FListView::removeColumn (int column) -> int
     ++iter;
   }
 
-  current_iter = itemlist.begin();
-  first_visible_line = itemlist.begin();
+  selection.current_iter = data.itemlist.begin();
+  scroll.first_visible_line = data.itemlist.begin();
   adjustScrollbars(getCount());
   drawList();
   drawBorder();
   drawHeadlines();
   drawScrollbars();
   processChanged();
-  return int(header.size());
+  return int(data.header.size());
 }
 
 //----------------------------------------------------------------------
@@ -889,7 +912,7 @@ void FListView::removeAllColumns()
 
   max_line_width = 0;
   adjustScrollbars(0);
-  header.clear();
+  data.header.clear();
   clear();
 }
 
@@ -911,7 +934,7 @@ auto FListView::insert ( FListViewItem* item
 
   beforeInsertion(item);  // preprocessing
 
-  if ( parent_iter == root )
+  if ( parent_iter == data.root )
   {
     item_iter = appendItem (item);
   }
@@ -946,9 +969,9 @@ void FListView::remove (FListViewItem* item)
     return;
 
   auto parent = item->getParent();
-  const auto* current_item = static_cast<FListViewItem*>(*current_iter);
-  const auto* first_item = itemlist.front();
-  auto end_iter = static_cast<FListViewIterator>(itemlist.end());
+  const auto* current_item = static_cast<FListViewItem*>(*selection.current_iter);
+  const auto* first_item = data.itemlist.front();
+  auto end_iter = static_cast<FListViewIterator>(data.itemlist.end());
   const auto& last_item = *(--end_iter);
   const bool is_current_line( item == current_item );
   const bool is_first_line( item == first_item );
@@ -956,7 +979,7 @@ void FListView::remove (FListViewItem* item)
 
   if ( is_current_line )
   {
-    if ( is_last_line || current_item == itemlist.back() )
+    if ( is_last_line || current_item == data.itemlist.back() )
       stepBackward();
     else
     {
@@ -966,23 +989,23 @@ void FListView::remove (FListViewItem* item)
   }
 
   if ( is_first_line )
-    ++first_visible_line;
+    ++scroll.first_visible_line;
 
   if ( parent )
   {
     if ( this == parent )
     {
-      auto last = std::remove (itemlist.begin(), itemlist.end(), item);
-      itemlist.erase(last, itemlist.end());
+      auto last = std::remove (data.itemlist.begin(), data.itemlist.end(), item);
+      data.itemlist.erase(last, data.itemlist.end());
       delChild(item);
-      current_iter.getPosition()--;
+      selection.current_iter.getPosition()--;
     }
     else
     {
       parent->delChild(item);
       auto parent_item = static_cast<FListViewItem*>(parent);
       parent_item->visible_lines--;
-      current_iter.getPosition()--;
+      selection.current_iter.getPosition()--;
 
       if ( ! parent_item->hasChildren() )
       {
@@ -997,9 +1020,9 @@ void FListView::remove (FListViewItem* item)
 
   if ( isItemListEmpty() )
   {
-    current_iter = getNullIterator();
-    first_visible_line = getNullIterator();
-    last_visible_line = getNullIterator();
+    selection.current_iter = getNullIterator();
+    scroll.first_visible_line = getNullIterator();
+    scroll.last_visible_line = getNullIterator();
     clearList();
   }
   else
@@ -1016,16 +1039,16 @@ void FListView::remove (FListViewItem* item)
 //----------------------------------------------------------------------
 void FListView::clear()
 {
-  itemlist.clear();
-  current_iter = getNullIterator();
-  first_visible_line = getNullIterator();
-  last_visible_line = getNullIterator();
+  data.itemlist.clear();
+  selection.current_iter = getNullIterator();
+  scroll.first_visible_line = getNullIterator();
+  scroll.last_visible_line = getNullIterator();
   recalculateVerticalBar (0);
-  first_line_position_before = -1;
-  xoffset = 0;
-  vbar->setMinimum(0);
-  vbar->setValue(0);
-  vbar->hide();
+  scroll.first_line_position_before = -1;
+  scroll.xoffset = 0;
+  scroll.vbar->setMinimum(0);
+  scroll.vbar->setValue(0);
+  scroll.vbar->hide();
   clearList();
   processChanged();
 }
@@ -1035,29 +1058,29 @@ void FListView::sort()
 {
   // Sorts the list view according to the specified setting
 
-  if ( sort_column < 1 || sort_column > int(header.size()) )
+  if ( sorting.column < 1 || sorting.column > int(data.header.size()) )
     return;
 
-  SortType column_sort_type = getColumnSortType(sort_column);
+  SortType column_sort_type = getColumnSortType(sorting.column);
   std::function<bool(const FObject*, const FObject*)> comparator;
 
   switch ( column_sort_type )
   {
     case SortType::Unknown:
     case SortType::Name:
-      comparator = ( sort_order == SortOrder::Ascending )
+      comparator = ( sorting.order == SortOrder::Ascending )
                  ? sortAscendingByName
                  : sortDescendingByName;
       break;
 
     case SortType::Number:
-      comparator = ( sort_order == SortOrder::Ascending )
+      comparator = ( sorting.order == SortOrder::Ascending )
                  ? sortAscendingByNumber
                  : sortDescendingByNumber;
       break;
 
     case SortType::UserDefined:
-      comparator = ( sort_order == SortOrder::Ascending )
+      comparator = ( sorting.order == SortOrder::Ascending )
                  ? user_defined_ascending
                  : user_defined_descending;
       break;
@@ -1067,28 +1090,28 @@ void FListView::sort()
   }
 
   sort(comparator);
-  current_iter = itemlist.begin();
-  first_visible_line = itemlist.begin();
+  selection.current_iter = data.itemlist.begin();
+  scroll.first_visible_line = data.itemlist.begin();
   processChanged();
 }
 
 //----------------------------------------------------------------------
 void FListView::onKeyPress (FKeyEvent* ev)
 {
-  const int position_before = current_iter.getPosition();
-  const int xoffset_before = xoffset;
-  first_line_position_before = first_visible_line.getPosition();
-  clicked_expander_pos.setPoint(-1, -1);
+  const int position_before = selection.current_iter.getPosition();
+  const int xoffset_before = scroll.xoffset;
+  scroll.first_line_position_before = scroll.first_visible_line.getPosition();
+  selection.clicked_expander_pos.setPoint(-1, -1);
   processKeyAction(ev);  // Process the keystrokes
 
-  if ( position_before != current_iter.getPosition() )
+  if ( position_before != selection.current_iter.getPosition() )
     processRowChanged();
 
   if ( ev->isAccepted() )
   {
-    const bool draw_vbar( first_line_position_before
-                       != first_visible_line.getPosition() );
-    const bool draw_hbar(xoffset_before != xoffset);
+    const bool draw_vbar( scroll.first_line_position_before
+                       != scroll.first_visible_line.getPosition() );
+    const bool draw_hbar(xoffset_before != scroll.xoffset);
     updateDrawing (draw_vbar, draw_hbar);
   }
 }
@@ -1098,16 +1121,16 @@ void FListView::onMouseDown (FMouseEvent* ev)
 {
   if ( ev->getButton() != MouseButton::Left )
   {
-    clicked_expander_pos.setPoint(-1, -1);
+    selection.clicked_expander_pos.setPoint(-1, -1);
     return;
   }
 
   setWidgetFocus(this);
-  first_line_position_before = first_visible_line.getPosition();
+  scroll.first_line_position_before = scroll.first_visible_line.getPosition();
 
   if ( isWithinHeaderBounds(ev->getPos()) )
   {
-    clicked_header_pos = ev->getPos();  // Handle events in the header
+    selection.clicked_header_pos = ev->getPos();  // Handle events in the header
   }
   else if ( isWithinListBounds(ev->getPos()) && ! isItemListEmpty() )
   {
@@ -1128,7 +1151,7 @@ void FListView::onMouseUp (FMouseEvent* ev)
   }
 
   if ( isWithinHeaderBounds(ev->getPos())
-    && clicked_header_pos == ev->getPos() )  // Header
+    && selection.clicked_header_pos == ev->getPos() )  // Header
   {
     mouseHeaderClicked();
     return;
@@ -1151,7 +1174,7 @@ void FListView::onMouseUp (FMouseEvent* ev)
     indent = int(item->getDepth() << 1u);  // indent = 2 * depth
 
     if ( item->isExpandable()
-      && clicked_expander_pos == ev->getPos() )
+      && selection.clicked_expander_pos == ev->getPos() )
     {
       toggleItemExpandState(item);
       adjustScrollbars (getCount());
@@ -1161,7 +1184,7 @@ void FListView::onMouseUp (FMouseEvent* ev)
     }
   }
 
-  if ( hasCheckableItems() && clicked_checkbox_item == item
+  if ( hasCheckableItems() && selection.clicked_checkbox_item == item
     && isCheckboxClicked(ev->getX(), indent) )
   {
     toggleItemCheckState(item);
@@ -1179,16 +1202,16 @@ void FListView::onMouseMove (FMouseEvent* ev)
 {
   if ( ev->getButton() != MouseButton::Left )
   {
-    clicked_expander_pos.setPoint(-1, -1);
+    selection.clicked_expander_pos.setPoint(-1, -1);
     return;
   }
 
   const int mouse_y = ev->getY();
-  first_line_position_before = first_visible_line.getPosition();
+  scroll.first_line_position_before = scroll.first_visible_line.getPosition();
 
   if ( isWithinListBounds(ev->getPos()) )
   {
-    const int new_pos = first_visible_line.getPosition() + mouse_y - 2;
+    const int new_pos = scroll.first_visible_line.getPosition() + mouse_y - 2;
 
     if ( new_pos < int(getCount()) )
       setRelativePosition (mouse_y - 2);
@@ -1196,10 +1219,10 @@ void FListView::onMouseMove (FMouseEvent* ev)
     if ( isShown() )
       drawList();
 
-    vbar->setValue (first_visible_line.getPosition());
+    scroll.vbar->setValue (scroll.first_visible_line.getPosition());
 
-    if ( first_line_position_before != first_visible_line.getPosition() )
-      vbar->drawBar();
+    if ( scroll.first_line_position_before != scroll.first_visible_line.getPosition() )
+      scroll.vbar->drawBar();
 
     forceTerminalUpdate();
   }
@@ -1221,7 +1244,7 @@ void FListView::onMouseDoubleClick (FMouseEvent* ev)
 
   if ( isWithinListBounds(ev->getPos()) )
   {
-    if ( first_visible_line.getPosition() + ev->getY() - 1 > int(getCount()) )
+    if ( scroll.first_visible_line.getPosition() + ev->getY() - 1 > int(getCount()) )
       return;
 
     if ( isItemListEmpty() )
@@ -1241,14 +1264,14 @@ void FListView::onMouseDoubleClick (FMouseEvent* ev)
     processClick();
   }
 
-  clicked_expander_pos.setPoint(-1, -1);
+  selection.clicked_expander_pos.setPoint(-1, -1);
 }
 
 //----------------------------------------------------------------------
 void FListView::onTimer (FTimerEvent*)
 {
-  const int position_before = current_iter.getPosition();
-  first_line_position_before = first_visible_line.getPosition();
+  const int position_before = selection.current_iter.getPosition();
+  scroll.first_line_position_before = scroll.first_visible_line.getPosition();
 
   if ( ( drag_scroll == DragScrollMode::Upward
       || drag_scroll == DragScrollMode::SelectUpward )
@@ -1267,10 +1290,10 @@ void FListView::onTimer (FTimerEvent*)
   if ( isShown() )
     drawList();
 
-  vbar->setValue (first_visible_line.getPosition());
+  scroll.vbar->setValue (scroll.first_visible_line.getPosition());
 
-  if ( first_line_position_before != first_visible_line.getPosition() )
-    vbar->drawBar();
+  if ( scroll.first_line_position_before != scroll.first_visible_line.getPosition() )
+    scroll.vbar->drawBar();
 
   forceTerminalUpdate();
 }
@@ -1278,10 +1301,10 @@ void FListView::onTimer (FTimerEvent*)
 //----------------------------------------------------------------------
 void FListView::onWheel (FWheelEvent* ev)
 {
-  const int position_before = current_iter.getPosition();
+  const int position_before = selection.current_iter.getPosition();
   static constexpr int wheel_distance = 4;
   const auto& wheel = ev->getWheel();
-  first_line_position_before = first_visible_line.getPosition();
+  scroll.first_line_position_before = scroll.first_visible_line.getPosition();
 
   if ( isDragging(drag_scroll) )
     stopDragScroll();
@@ -1295,16 +1318,16 @@ void FListView::onWheel (FWheelEvent* ev)
   else if ( wheel == MouseWheel::Right )
     wheelRight (wheel_distance);
 
-  if ( position_before != current_iter.getPosition() )
+  if ( position_before != selection.current_iter.getPosition() )
     processRowChanged();
 
   if ( isShown() )
     drawList();
 
-  vbar->setValue (first_visible_line.getPosition());
+  scroll.vbar->setValue (scroll.first_visible_line.getPosition());
 
-  if ( first_line_position_before != first_visible_line.getPosition() )
-    vbar->drawBar();
+  if ( scroll.first_line_position_before != scroll.first_visible_line.getPosition() )
+    scroll.vbar->drawBar();
 
   forceTerminalUpdate();
 }
@@ -1338,34 +1361,30 @@ void FListView::adjustViewport (const int element_count)
 
   if ( element_count < height )
   {
-    first_visible_line = itemlist.begin();
-    last_visible_line = first_visible_line;
-    last_visible_line += element_count - 1;
+    scroll.first_visible_line = data.itemlist.begin();
+    scroll.last_visible_line = scroll.first_visible_line + element_count - 1;
   }
 
-  if ( first_visible_line.getPosition() > element_count - height  )
+  if ( scroll.first_visible_line.getPosition() > element_count - height  )
   {
-    const int difference = first_visible_line.getPosition()
+    const int difference = scroll.first_visible_line.getPosition()
                          - (element_count - height);
 
-    if ( first_visible_line.getPosition() >= difference )
+    if ( scroll.first_visible_line.getPosition() >= difference )
     {
-      first_visible_line -= difference;
-      last_visible_line -= difference;
+      scroll.first_visible_line -= difference;
+      scroll.last_visible_line -= difference;
     }
   }
 
-  const int after_last_visible_line = first_visible_line.getPosition()
+  const int after_last_visible_line = scroll.first_visible_line.getPosition()
                                     + height;
 
-  if ( last_visible_line.getPosition() >= after_last_visible_line )
-  {
-    last_visible_line = first_visible_line;
-    last_visible_line += height - 1;
-  }
+  if ( scroll.last_visible_line.getPosition() >= after_last_visible_line )
+    scroll.last_visible_line = scroll.first_visible_line + height - 1;
 
-  if ( current_iter.getPosition() > last_visible_line.getPosition() )
-    current_iter = last_visible_line;
+  if ( selection.current_iter.getPosition() > scroll.last_visible_line.getPosition() )
+    selection.current_iter = scroll.last_visible_line;
 }
 
 //----------------------------------------------------------------------
@@ -1376,30 +1395,30 @@ void FListView::adjustScrollbars (const std::size_t element_count) const
   const int vmax = ( element_count > height )
                    ? int(element_count - height)
                    : 0;
-  vbar->setMaximum (vmax);
-  vbar->setPageSize (int(element_count), int(height));
-  vbar->setX (int(getWidth()));
-  vbar->setHeight (height, false);
-  vbar->resize();
+  scroll.vbar->setMaximum (vmax);
+  scroll.vbar->setPageSize (int(element_count), int(height));
+  scroll.vbar->setX (int(getWidth()));
+  scroll.vbar->setHeight (height, false);
+  scroll.vbar->resize();
 
   const int hmax = ( max_line_width > width )
                    ? int(max_line_width - width)
                    : 0;
-  hbar->setMaximum (hmax);
-  hbar->setPageSize (int(max_line_width), int(width));
-  hbar->setY (int(getHeight()));
-  hbar->setWidth (width, false);
-  hbar->resize();
+  scroll.hbar->setMaximum (hmax);
+  scroll.hbar->setPageSize (int(max_line_width), int(width));
+  scroll.hbar->setY (int(getHeight()));
+  scroll.hbar->setWidth (width, false);
+  scroll.hbar->resize();
 
   if ( isHorizontallyScrollable() )
-    hbar->show();
+    scroll.hbar->show();
   else
-    hbar->hide();
+    scroll.hbar->hide();
 
   if ( isVerticallyScrollable() )
-    vbar->show();
+    scroll.vbar->show();
   else
-    vbar->hide();
+    scroll.vbar->hide();
 }
 
 //----------------------------------------------------------------------
@@ -1429,11 +1448,11 @@ void FListView::setNullIterator (const iterator& null_iter)
 //----------------------------------------------------------------------
 void FListView::init()
 {
-  initScrollbar (vbar, Orientation::Vertical, this, &FListView::cb_vbarChange);
-  initScrollbar (hbar, Orientation::Horizontal, this, &FListView::cb_hbarChange);
-  selflist.push_back(this);
-  root = selflist.begin();
-  getNullIterator() = selflist.end();
+  initScrollbar (scroll.vbar, Orientation::Vertical, this, &FListView::cb_vbarChange);
+  initScrollbar (scroll.hbar, Orientation::Horizontal, this, &FListView::cb_hbarChange);
+  data.selflist.push_back(this);
+  data.root = data.selflist.begin();
+  getNullIterator() = data.selflist.end();
   FListView::setGeometry (FPoint{1, 1}, FSize{5, 4}, false);  // initialize geometry values
   mapKeyFunctions();
 }
@@ -1441,7 +1460,7 @@ void FListView::init()
 //----------------------------------------------------------------------
 inline void FListView::mapKeyFunctions()
 {
-  key_map =
+  data.key_map =
   {
     { FKey::Return    , [this] { processClick(); } },
     { FKey::Enter     , [this] { processClick(); } },
@@ -1456,7 +1475,7 @@ inline void FListView::mapKeyFunctions()
     { FKey::End       , [this] { lastPos(); } }
   };
 
-  key_map_result =
+  data.key_map_result =
   {
     { FKey('+'), [this] { return expandSubtree(); } },
     { FKey('-'), [this] { return collapseSubtree(); } }
@@ -1467,18 +1486,18 @@ inline void FListView::mapKeyFunctions()
 void FListView::processKeyAction (FKeyEvent* ev)
 {
   const auto idx = ev->key();
-  const auto& iter = key_map.find(idx);
+  const auto& iter = data.key_map.find(idx);
 
-  if ( iter != key_map.end() )
+  if ( iter != data.key_map.end() )
   {
     iter->second();
     ev->accept();
     return;
   }
 
-  const auto& iter_result = key_map_result.find(idx);
+  const auto& iter_result = data.key_map_result.find(idx);
 
-  if ( iter_result != key_map_result.end() )
+  if ( iter_result != data.key_map_result.end() )
   {
     if ( iter_result->second() )
       ev->accept();
@@ -1494,10 +1513,10 @@ template <typename Compare>
 void FListView::sort (Compare cmp)
 {
   // Sort the top level
-  std::sort(itemlist.begin(), itemlist.end(), cmp);
+  std::sort(data.itemlist.begin(), data.itemlist.end(), cmp);
 
   // Sort the sublevels
-  for (auto&& item : itemlist)
+  for (auto&& item : data.itemlist)
     static_cast<FListViewItem*>(item)->sort(cmp);
 }
 
@@ -1528,7 +1547,7 @@ auto FListView::getListEnd (const FListViewItem* item) -> FObject::iterator
     return getNullIterator();
 
   if ( this == parent )
-    return itemlist.end();
+    return data.itemlist.end();
 
   if ( parent->isInstanceOf("FListViewItem") )
     return static_cast<FListViewItem*>(parent)->end();
@@ -1539,8 +1558,8 @@ auto FListView::getListEnd (const FListViewItem* item) -> FObject::iterator
 //----------------------------------------------------------------------
 void FListView::draw()
 {
-  if ( current_iter.getPosition() < 1 )
-    current_iter = itemlist.begin();
+  if ( selection.current_iter.getPosition() < 1 )
+    selection.current_iter = data.itemlist.begin();
 
   useParentWidgetColor();
 
@@ -1549,7 +1568,7 @@ void FListView::draw()
 
   drawBorder();
 
-  if ( FVTerm::getFOutput()->isNewFont() && ! vbar->isShown() )
+  if ( FVTerm::getFOutput()->isNewFont() && ! scroll.vbar->isShown() )
   {
     setColor();
 
@@ -1580,33 +1599,33 @@ void FListView::drawBorder()
 //----------------------------------------------------------------------
 void FListView::drawScrollbars() const
 {
-  if ( ! hbar->isShown() && isHorizontallyScrollable() )
-    hbar->show();
+  if ( ! scroll.hbar->isShown() && isHorizontallyScrollable() )
+    scroll.hbar->show();
   else
-    hbar->redraw();
+    scroll.hbar->redraw();
 
-  if ( ! vbar->isShown() && isVerticallyScrollable() )
-    vbar->show();
+  if ( ! scroll.vbar->isShown() && isVerticallyScrollable() )
+    scroll.vbar->show();
   else
-    vbar->redraw();
+    scroll.vbar->redraw();
 }
 
 //----------------------------------------------------------------------
 void FListView::drawHeadlines()
 {
-  if ( header.empty()
+  if ( data.header.empty()
     || getHeight() <= 2
     || getWidth() <= 4
     || max_line_width < 1 )
     return;
 
-  auto iter = header.cbegin();
-  headerline.clear();
+  auto iter = data.header.cbegin();
+  data.headerline.clear();
 
   if ( hasCheckableItems() )
     drawHeaderBorder(4);  // Draw into FVTermBuffer object
 
-  while ( iter != header.cend() )
+  while ( iter != data.header.cend() )
   {
     if ( iter->visible && ! iter->name.isEmpty() )
       drawHeadlineLabel(iter);  // Draw into FVTermBuffer object
@@ -1626,13 +1645,13 @@ void FListView::drawList()
 
   int y{0};
   const auto page_height = int(getHeight()) - 2;
-  const auto& itemlist_end = itemlist.end();
+  const auto& itemlist_end = data.itemlist.end();
   auto path_end = itemlist_end;
-  auto iter = first_visible_line;
+  auto iter = scroll.first_visible_line;
 
   while ( iter != path_end && iter != itemlist_end && y < page_height )
   {
-    const bool is_current_line( iter == current_iter );
+    const bool is_current_line( iter == selection.current_iter );
     const auto& item = static_cast<FListViewItem*>(*iter);
     const int tree_offset = isTreeView() ? int(item->getDepth() << 1u) + 1 : 0;
     const int checkbox_offset = item->isCheckable() ? 1 : 0;
@@ -1644,7 +1663,7 @@ void FListView::drawList()
 
     if ( getFlags().focus.focus && is_current_line )
     {
-      int xpos = 3 + tree_offset + checkbox_offset - xoffset;
+      int xpos = 3 + tree_offset + checkbox_offset - scroll.xoffset;
 
       if ( xpos < 2 )  // Hide the cursor
         xpos = -9999;  // by moving it outside the visible area
@@ -1653,7 +1672,7 @@ void FListView::drawList()
       setCursorPos ({xpos, 2 + y});  // first character
     }
 
-    last_visible_line = iter;
+    scroll.last_visible_line = iter;
     y++;
     ++iter;
   }
@@ -1701,7 +1720,7 @@ void FListView::drawListLine ( const FListViewItem* item
   {
     for (std::size_t col{0}; col < item->column_list.size(); )
     {
-      if ( ! header[col].visible )
+      if ( ! data.header[col].visible )
       {
         col++;
         continue;
@@ -1709,7 +1728,7 @@ void FListView::drawListLine ( const FListViewItem* item
 
       static constexpr std::size_t ellipsis_length = 2;
       const auto& text = item->column_list[col];
-      auto width = std::size_t(header[col].width);
+      auto width = std::size_t(data.header[col].width);
       const std::size_t column_width = getColumnWidth(text);
       // Increment the value of col for the column position
       // and the next iteration
@@ -1750,7 +1769,7 @@ void FListView::drawListLine ( const FListViewItem* item
   }
 
   const std::size_t width = getWidth() - nf_offset - 2;
-  line = getColumnSubString ( line, std::size_t(xoffset) + 1, width );
+  line = getColumnSubString ( line, std::size_t(scroll.xoffset) + 1, width );
   const std::size_t len = line.getLength();
   std::size_t char_width{0};
 
@@ -1905,15 +1924,15 @@ inline void FListView::drawSortIndicator ( std::size_t& length
   setColor();
   length++;
 
-  if ( sort_order == SortOrder::Ascending )
-    headerline << UniChar::BlackUpPointingTriangle;    // ▲
-  else if ( sort_order == SortOrder::Descending )
-    headerline << UniChar::BlackDownPointingTriangle;  // ▼
+  if ( sorting.order == SortOrder::Ascending )
+    data.headerline << UniChar::BlackUpPointingTriangle;    // ▲
+  else if ( sorting.order == SortOrder::Descending )
+    data.headerline << UniChar::BlackDownPointingTriangle;  // ▼
 
   if ( length < column_max  )
   {
     length++;
-    headerline << ' ';
+    data.headerline << ' ';
   }
 }
 
@@ -1922,7 +1941,7 @@ inline void FListView::drawHeaderBorder (std::size_t length)
 {
   setColor();
   const FString line {length, UniChar::BoxDrawingsHorizontal};
-  headerline << line;  // horizontal line
+  data.headerline << line;  // horizontal line
 }
 
 
@@ -1936,9 +1955,9 @@ void FListView::drawHeadlineLabel (const HeaderItems::const_iterator& iter)
   const auto width = std::size_t(iter->width);
   std::size_t column_width = getColumnWidth(txt);
   const std::size_t column_max = leading_space + width;
-  const auto first = header.cbegin();
+  const auto first = data.header.cbegin();
   const auto column = int(std::distance(first, iter)) + 1;
-  const bool has_sort_indicator( sort_column == column && ! hide_sort_indicator );
+  const bool has_sort_indicator( sorting.column == column && ! sorting.hide_sort_indicator );
   const auto& wc = getColorTheme();
 
   if ( isEnabled() )
@@ -1954,12 +1973,12 @@ void FListView::drawHeadlineLabel (const HeaderItems::const_iterator& iter)
 
   if ( column_width <= column_max )
   {
-    headerline << txt;
+    data.headerline << txt;
 
     if ( column_width < column_max )
     {
       column_width++;
-      headerline << ' ';  // trailing space
+      data.headerline << ' ';  // trailing space
     }
 
     if ( has_sort_indicator )
@@ -1979,21 +1998,21 @@ inline auto FListView::findHeaderStartPos (bool& left_trunc) -> FVTermBuffer::it
   std::size_t offset{0};
   bool stop = false;
 
-  for (const auto& term_char : headerline)
+  for (const auto& term_char : data.headerline)
   {
     if ( stop )
       break;
 
-    if ( xoffset == 0 )
+    if ( scroll.xoffset == 0 )
       stop = true;
     else
     {
       column_offset += getColumnWidth(term_char);
       offset++;
 
-      if ( column_offset == std::size_t(xoffset) )
+      if ( column_offset == std::size_t(scroll.xoffset) )
         stop = true;
-      else if ( column_offset > std::size_t(xoffset) && column_offset >= 2 )
+      else if ( column_offset > std::size_t(scroll.xoffset) && column_offset >= 2 )
       {
         left_trunc = true;
         stop = true;
@@ -2001,7 +2020,7 @@ inline auto FListView::findHeaderStartPos (bool& left_trunc) -> FVTermBuffer::it
     }
   }
 
-  auto first = headerline.begin();
+  auto first = data.headerline.begin();
   using distance_type = FVTermBuffer::difference_type;
   std::advance(first, distance_type(offset));
   return first;
@@ -2014,9 +2033,9 @@ inline auto FListView::findHeaderEndPos ( FVTermBuffer::iterator first
 {
   std::size_t character{0};
   std::size_t column_width{0};
-  auto last = headerline.end();
+  auto last = data.headerline.end();
 
-  if ( getColumnWidth(headerline) <= getClientWidth() )
+  if ( getColumnWidth(data.headerline) <= getClientWidth() )
     return last;
 
   if ( left_trunc )
@@ -2050,7 +2069,7 @@ void FListView::drawBufferedHeadline()
 {
   // Print the FVTermBuffer object
 
-  if ( headerline.isEmpty() )
+  if ( data.headerline.isEmpty() )
     return;
 
   bool left_trunc{false};  // left truncated full-width
@@ -2073,7 +2092,7 @@ void FListView::drawBufferedHeadline()
   if ( right_trunc )
     print (UniChar::SingleRightAngleQuotationMark);  // ›
 
-  for ( std::size_t column_width = getColumnWidth(headerline);
+  for ( std::size_t column_width = getColumnWidth(data.headerline);
         column_width < getClientWidth();
         column_width++ )
   {
@@ -2091,21 +2110,21 @@ void FListView::drawColumnEllipsis ( const HeaderItems::const_iterator& iter
   const int width = iter->width;
   const auto& wc = getColorTheme();
 
-  headerline << ' '
-             << getColumnSubString (text, 1, uInt(width - ellipsis_length))
-             << FColorPair {wc->label_ellipsis_fg, wc->label_bg}
-             << "..";
+  data.headerline << ' '
+                  << getColumnSubString (text, 1, uInt(width - ellipsis_length))
+                  << FColorPair {wc->label_ellipsis_fg, wc->label_bg}
+                  << "..";
 
-  if ( iter == header.cend() - 1 )  // Last element
-    headerline << ' ';
+  if ( iter == data.header.cend() - 1 )  // Last element
+    data.headerline << ' ';
 }
 
 //----------------------------------------------------------------------
 void FListView::updateLayout()
 {
   max_line_width = 0;
-  std::for_each ( itemlist.begin()
-                , itemlist.end()
+  std::for_each ( data.itemlist.begin()
+                , data.itemlist.end()
                 , [this] (FObject* obj_item)
                   {
                     const auto& item = static_cast<FListViewItem*>(obj_item);
@@ -2126,15 +2145,15 @@ void FListView::updateDrawing (bool draw_vbar, bool draw_hbar)
   if ( isShown() )
     draw();
 
-  vbar->setValue (first_visible_line.getPosition());
+  scroll.vbar->setValue (scroll.first_visible_line.getPosition());
 
   if ( draw_vbar )
-    vbar->drawBar();
+    scroll.vbar->drawBar();
 
-  hbar->setValue (xoffset);
+  scroll.hbar->setValue (scroll.xoffset);
 
   if ( draw_hbar )
-    hbar->drawBar();
+    scroll.hbar->drawBar();
 
   forceTerminalUpdate();
 }
@@ -2150,7 +2169,7 @@ auto FListView::determineLineWidth (FListViewItem* item) -> std::size_t
   if ( hasCheckableItems() )
     line_width += checkbox_space;
 
-  for (auto&& header_item : header)
+  for (auto&& header_item : data.header)
   {
     const auto width = std::size_t(header_item.width);
     const bool fixed_width = header_item.fixed_width;
@@ -2166,7 +2185,7 @@ auto FListView::determineLineWidth (FListViewItem* item) -> std::size_t
         header_item.width = int(len);
     }
 
-    if ( &header_item == &header.back() )  // Last column
+    if ( &header_item == &data.header.back() )  // Last column
       padding_space = 0;
 
     // width + trailing space
@@ -2189,11 +2208,11 @@ inline void FListView::beforeInsertion (FListViewItem* item)
 //----------------------------------------------------------------------
 inline void FListView::afterInsertion()
 {
-  if ( itemlist.size() == 1 )  // Select first item on insert
-    current_iter = itemlist.begin();
+  if ( data.itemlist.size() == 1 )  // Select first item on insert
+    selection.current_iter = data.itemlist.begin();
 
   // The visible area of the list begins with the first element
-  first_visible_line = itemlist.begin();
+  scroll.first_visible_line = data.itemlist.begin();
 
   // Sort list by a column (only if activated)
   sort();
@@ -2216,17 +2235,17 @@ void FListView::recalculateHorizontalBar (std::size_t len)
     const int hmax = ( max_line_width > getWidth() - nf_offset - 4 )
                      ? int(max_line_width - getWidth() + nf_offset + 4)
                      : 0;
-    hbar->setMaximum (hmax);
-    hbar->setPageSize (int(max_line_width), int(getWidth() - nf_offset) - 4);
-    hbar->calculateSliderValues();
+    scroll.hbar->setMaximum (hmax);
+    scroll.hbar->setPageSize (int(max_line_width), int(getWidth() - nf_offset) - 4);
+    scroll.hbar->calculateSliderValues();
 
     if ( ! isShown() )
       return;
 
     if ( isHorizontallyScrollable() )
-      hbar->show();
+      scroll.hbar->show();
     else
-      hbar->hide();
+      scroll.hbar->hide();
   }
 }
 
@@ -2237,16 +2256,16 @@ void FListView::recalculateVerticalBar (std::size_t element_count) const
   const int vmax = ( element_count > height )
                    ? int(element_count - height)
                    : 0;
-  vbar->setMaximum (vmax);
-  vbar->setPageSize (int(element_count), int(height));
-  vbar->calculateSliderValues();
+  scroll.vbar->setMaximum (vmax);
+  scroll.vbar->setPageSize (int(element_count), int(height));
+  scroll.vbar->calculateSliderValues();
 
   if ( isShown() )
   {
     if ( isVerticallyScrollable() )
-      vbar->show();
+      scroll.vbar->show();
     else
-      vbar->hide();
+      scroll.vbar->hide();
   }
 }
 
@@ -2255,10 +2274,10 @@ void FListView::mouseHeaderClicked()
 {
   int column{1};
   const int checkbox_offset = ( hasCheckableItems() ) ? checkbox_space : 0;
-  const int header_pos = clicked_header_pos.getX() + xoffset;
+  const int header_pos = selection.clicked_header_pos.getX() + scroll.xoffset;
   int header_start = 2 + checkbox_offset;
 
-  for (const auto& item : header)
+  for (const auto& item : data.header)
   {
     if ( isColumnHidden(column) )
     {
@@ -2267,7 +2286,7 @@ void FListView::mouseHeaderClicked()
     }
 
     static constexpr int leading_space = 1;
-    const bool has_sort_indicator( column == sort_column );
+    const bool has_sort_indicator( column == sorting.column );
     auto click_width = int(getColumnWidth(item.name));
 
     if ( has_sort_indicator )
@@ -2279,7 +2298,7 @@ void FListView::mouseHeaderClicked()
     if ( header_pos > header_start
       && header_pos <= header_start + click_width )
     {
-      if ( has_sort_indicator && sort_order == SortOrder::Ascending )
+      if ( has_sort_indicator && sorting.order == SortOrder::Ascending )
         setColumnSort (column, SortOrder::Descending);
       else
         setColumnSort (column, SortOrder::Ascending);
@@ -2300,23 +2319,23 @@ void FListView::mouseHeaderClicked()
 //----------------------------------------------------------------------
 void FListView::wheelUp (int pagesize)
 {
-  if ( isItemListEmpty() || current_iter.getPosition() == 0 )
+  if ( isItemListEmpty() || selection.current_iter.getPosition() == 0 )
     return;
 
-  if ( first_visible_line.getPosition() >= pagesize )
+  if ( scroll.first_visible_line.getPosition() >= pagesize )
   {
-    current_iter -= pagesize;
-    first_visible_line -= pagesize;
-    last_visible_line -= pagesize;
+    selection.current_iter -= pagesize;
+    scroll.first_visible_line -= pagesize;
+    scroll.last_visible_line -= pagesize;
   }
   else
   {
     // Save relative position from the first line
-    const int ry = current_iter.getPosition() - first_visible_line.getPosition();
+    const int ry = selection.current_iter.getPosition() - scroll.first_visible_line.getPosition();
     // Save difference from top
-    const int difference = first_visible_line.getPosition();
-    first_visible_line -= difference;
-    last_visible_line -= difference;
+    const int difference = scroll.first_visible_line.getPosition();
+    scroll.first_visible_line -= difference;
+    scroll.last_visible_line -= difference;
     setRelativePosition(ry);
   }
 }
@@ -2329,23 +2348,23 @@ void FListView::wheelDown (int pagesize)
 
   const auto element_count = int(getCount());
 
-  if ( current_iter.getPosition() + 1 == element_count )
+  if ( selection.current_iter.getPosition() + 1 == element_count )
     return;
 
-  if ( last_visible_line.getPosition() < element_count - pagesize )
+  if ( scroll.last_visible_line.getPosition() < element_count - pagesize )
   {
-    current_iter += pagesize;
-    first_visible_line += pagesize;
-    last_visible_line += pagesize;
+    selection.current_iter += pagesize;
+    scroll.first_visible_line += pagesize;
+    scroll.last_visible_line += pagesize;
   }
   else
   {
     // Save relative position from the first line
-    const int ry = current_iter.getPosition() - first_visible_line.getPosition();
+    const int ry = selection.current_iter.getPosition() - scroll.first_visible_line.getPosition();
     // Save difference from bottom
-    const int differenz = element_count - last_visible_line.getPosition() - 1;
-    first_visible_line += differenz;
-    last_visible_line += differenz;
+    const int differenz = element_count - scroll.last_visible_line.getPosition() - 1;
+    scroll.first_visible_line += differenz;
+    scroll.last_visible_line += differenz;
     setRelativePosition(ry);
   }
 }
@@ -2353,12 +2372,12 @@ void FListView::wheelDown (int pagesize)
 //----------------------------------------------------------------------
 void FListView::wheelLeft (int pagesize)
 {
-  if ( isItemListEmpty() || xoffset == 0 )
+  if ( isItemListEmpty() || scroll.xoffset == 0 )
     return;
 
-  const int xoffset_before = xoffset;
+  const int xoffset_before = scroll.xoffset;
   scrollBy (-pagesize, 0);
-  const bool draw_hbar(xoffset_before != xoffset);
+  const bool draw_hbar(xoffset_before != scroll.xoffset);
   updateDrawing (false, draw_hbar);
 }
 
@@ -2368,9 +2387,9 @@ void FListView::wheelRight (int pagesize)
   if ( isItemListEmpty() )
     return;
 
-  const int xoffset_before = xoffset;
+  const int xoffset_before = scroll.xoffset;
   scrollBy (pagesize, 0);
-  const bool draw_hbar(xoffset_before != xoffset);
+  const bool draw_hbar(xoffset_before != scroll.xoffset);
   updateDrawing (false, draw_hbar);
 }
 
@@ -2383,7 +2402,7 @@ auto FListView::dragScrollUp (int position_before) -> bool
     return false;
   }
 
-  stepBackward(scroll_distance);
+  stepBackward(scroll.distance);
   return true;
 }
 
@@ -2398,7 +2417,7 @@ auto FListView::dragScrollDown (int position_before) -> bool
     return false;
   }
 
-  stepForward(scroll_distance);
+  stepForward(scroll.distance);
   return true;
 }
 
@@ -2406,13 +2425,13 @@ auto FListView::dragScrollDown (int position_before) -> bool
 void FListView::dragUp (MouseButton mouse_button)
 {
   if ( isDragging(drag_scroll)
-    && scroll_distance < int(getClientHeight()) )
-    scroll_distance++;
+    && scroll.distance < int(getClientHeight()) )
+    scroll.distance++;
 
-  if ( ! scroll_timer && current_iter.getPosition() > 0 )
+  if ( ! scroll.timer && selection.current_iter.getPosition() > 0 )
   {
-    scroll_timer = true;
-    addTimer(scroll_repeat);
+    scroll.timer = true;
+    addTimer(scroll.repeat);
 
     if ( mouse_button == MouseButton::Right )
       drag_scroll = DragScrollMode::SelectUpward;
@@ -2420,7 +2439,7 @@ void FListView::dragUp (MouseButton mouse_button)
       drag_scroll = DragScrollMode::Upward;
   }
 
-  if ( current_iter.getPosition() == 0 )
+  if ( selection.current_iter.getPosition() == 0 )
   {
     delOwnTimers();
     drag_scroll = DragScrollMode::None;
@@ -2431,13 +2450,13 @@ void FListView::dragUp (MouseButton mouse_button)
 void FListView::dragDown (MouseButton mouse_button)
 {
   if ( isDragging(drag_scroll)
-    && scroll_distance < int(getClientHeight()) )
-    scroll_distance++;
+    && scroll.distance < int(getClientHeight()) )
+    scroll.distance++;
 
-  if ( ! scroll_timer && current_iter.getPosition() <= int(getCount()) )
+  if ( ! scroll.timer && selection.current_iter.getPosition() <= int(getCount()) )
   {
-    scroll_timer = true;
-    addTimer(scroll_repeat);
+    scroll.timer = true;
+    addTimer(scroll.repeat);
 
     if ( mouse_button == MouseButton::Right )
       drag_scroll = DragScrollMode::SelectDownward;
@@ -2445,7 +2464,7 @@ void FListView::dragDown (MouseButton mouse_button)
       drag_scroll = DragScrollMode::Downward;
   }
 
-  if ( current_iter.getPosition() - 1 == int(getCount()) )
+  if ( selection.current_iter.getPosition() - 1 == int(getCount()) )
   {
     delOwnTimers();
     drag_scroll = DragScrollMode::None;
@@ -2456,8 +2475,8 @@ void FListView::dragDown (MouseButton mouse_button)
 inline void FListView::stopDragScroll()
 {
   delOwnTimers();
-  scroll_timer = false;
-  scroll_distance = 1;
+  scroll.timer = false;
+  scroll.distance = 1;
   drag_scroll = DragScrollMode::None;
 }
 
@@ -2476,16 +2495,16 @@ inline auto FListView::isCheckboxClicked (int mouse_x, int indent) const -> bool
   if ( isTreeView() )
     indent++;  // Plus one space
 
-  return mouse_x >= 3 + indent - xoffset
-      && mouse_x <= 5 + indent - xoffset;
+  return mouse_x >= 3 + indent - scroll.xoffset
+      && mouse_x <= 5 + indent - scroll.xoffset;
 }
 
 //----------------------------------------------------------------------
 inline void FListView::resetClickedPositions()
 {
-  clicked_expander_pos.setPoint(-1, -1);
-  clicked_header_pos.setPoint(-1, -1);
-  clicked_checkbox_item = nullptr;
+  selection.clicked_expander_pos.setPoint(-1, -1);
+  selection.clicked_header_pos.setPoint(-1, -1);
+  selection.clicked_checkbox_item = nullptr;
 }
 
 //----------------------------------------------------------------------
@@ -2508,17 +2527,17 @@ auto FListView::isWithinListBounds (const FPoint& pos) const -> bool
 //----------------------------------------------------------------------
 auto FListView::appendItem (FListViewItem* item) -> FObject::iterator
 {
-  item->root = root;
+  item->root = data.root;
   addChild (item);
-  itemlist.push_back (item);
-  return --itemlist.end();
+  data.itemlist.push_back (item);
+  return --data.itemlist.end();
 }
 
 //----------------------------------------------------------------------
 void FListView::handleListEvent (const FMouseEvent* ev)
 {
   int indent = 0;
-  const int new_pos = first_visible_line.getPosition() + ev->getY() - 2;
+  const int new_pos = scroll.first_visible_line.getPosition() + ev->getY() - 2;
 
   if ( new_pos < int(getCount()) )
     setRelativePosition (ev->getY() - 2);
@@ -2529,8 +2548,8 @@ void FListView::handleListEvent (const FMouseEvent* ev)
   {
     indent = int(item->getDepth() << 1u);  // indent = 2 * depth
 
-    if ( item->isExpandable() && ev->getX() - 2 == indent - xoffset )
-      clicked_expander_pos = ev->getPos();
+    if ( item->isExpandable() && ev->getX() - 2 == indent - scroll.xoffset )
+      selection.clicked_expander_pos = ev->getPos();
   }
 
   if ( hasCheckableItems() )  // Handle checkable item events
@@ -2540,7 +2559,7 @@ void FListView::handleListEvent (const FMouseEvent* ev)
 
     if ( item->isCheckable() && isCheckboxClicked(ev->getX(), indent) )
     {
-      clicked_checkbox_item = item;
+      selection.clicked_checkbox_item = item;
     }
   }
 
@@ -2548,10 +2567,10 @@ void FListView::handleListEvent (const FMouseEvent* ev)
   if ( isShown() )
     drawList();
 
-  vbar->setValue (first_visible_line.getPosition());
+  scroll.vbar->setValue (scroll.first_visible_line.getPosition());
 
-  if ( first_line_position_before != first_visible_line.getPosition() )
-    vbar->drawBar();
+  if ( scroll.first_line_position_before != scroll.first_visible_line.getPosition() )
+    scroll.vbar->drawBar();
 
   forceTerminalUpdate();
 }
@@ -2582,13 +2601,13 @@ void FListView::changeOnResize() const
 {
   if ( FVTerm::getFOutput()->isNewFont() )
   {
-    vbar->setGeometry (FPoint{int(getWidth()), 2}, FSize{2, getHeight() - 2});
-    hbar->setGeometry (FPoint{1, int(getHeight())}, FSize{getWidth() - 2, 1});
+    scroll.vbar->setGeometry (FPoint{int(getWidth()), 2}, FSize{2, getHeight() - 2});
+    scroll.hbar->setGeometry (FPoint{1, int(getHeight())}, FSize{getWidth() - 2, 1});
   }
   else
   {
-    vbar->setGeometry (FPoint{int(getWidth()), 2}, FSize{1, getHeight() - 2});
-    hbar->setGeometry (FPoint{2, int(getHeight())}, FSize{getWidth() - 2, 1});
+    scroll.vbar->setGeometry (FPoint{int(getWidth()), 2}, FSize{1, getHeight() - 2});
+    scroll.hbar->setGeometry (FPoint{2, int(getHeight())}, FSize{getWidth() - 2, 1});
   }
 }
 
@@ -2607,13 +2626,13 @@ inline void FListView::toggleCheckbox()
 //----------------------------------------------------------------------
 inline void FListView::collapseAndScrollLeft()
 {
-  const int position_before = current_iter.getPosition();
+  const int position_before = selection.current_iter.getPosition();
   auto item = getCurrentItem();
 
-  if ( xoffset != 0 || ! item || isItemListEmpty() )
+  if ( scroll.xoffset != 0 || ! item || isItemListEmpty() )
   {
-    if ( xoffset > 0 )  // Scroll left
-      xoffset--;
+    if ( scroll.xoffset > 0 )  // Scroll left
+      scroll.xoffset--;
 
     return;
   }
@@ -2623,9 +2642,9 @@ inline void FListView::collapseAndScrollLeft()
     // Collapse element
     item->collapse();
     adjustSize();
-    vbar->calculateSliderValues();
+    scroll.vbar->calculateSliderValues();
     // Force vertical scrollbar redraw
-    first_line_position_before = -1;
+    scroll.first_line_position_before = -1;
     return;
   }
 
@@ -2637,22 +2656,22 @@ inline void FListView::collapseAndScrollLeft()
 
   if ( parent->isInstanceOf("FListViewItem") )
   {
-    current_iter.parentElement();
+    selection.current_iter.parentElement();
 
-    if ( current_iter.getPosition() < first_line_position_before )
+    if ( selection.current_iter.getPosition() < scroll.first_line_position_before )
     {
-      const int difference = position_before - current_iter.getPosition();
+      const int difference = position_before - selection.current_iter.getPosition();
 
-      if ( first_visible_line.getPosition() - difference >= 0 )
+      if ( scroll.first_visible_line.getPosition() - difference >= 0 )
       {
-        first_visible_line -= difference;
-        last_visible_line -= difference;
+        scroll.first_visible_line -= difference;
+        scroll.last_visible_line -= difference;
       }
       else
       {
-        const int d = first_visible_line.getPosition();
-        first_visible_line -= d;
-        last_visible_line -= d;
+        const int d = scroll.first_visible_line.getPosition();
+        scroll.first_visible_line -= d;
+        scroll.last_visible_line -= d;
       }
     }
   }
@@ -2671,16 +2690,16 @@ inline void FListView::expandAndScrollRight()
     item->expand();
     adjustScrollbars (getCount());
     // Force vertical scrollbar redraw
-    first_line_position_before = -1;
+    scroll.first_line_position_before = -1;
   }
   else
   {
     // Scroll right
-    if ( xoffset < xoffset_end )
-      xoffset++;
+    if ( scroll.xoffset < xoffset_end )
+      scroll.xoffset++;
 
-    if ( xoffset < 0 )
-      xoffset = 0;
+    if ( scroll.xoffset < 0 )
+      scroll.xoffset = 0;
   }
 }
 
@@ -2690,10 +2709,10 @@ inline void FListView::firstPos()
   if ( isItemListEmpty() )
     return;
 
-  current_iter -= current_iter.getPosition();
-  const int difference = first_visible_line.getPosition();
-  first_visible_line -= difference;
-  last_visible_line -= difference;
+  selection.current_iter -= selection.current_iter.getPosition();
+  const int difference = scroll.first_visible_line.getPosition();
+  scroll.first_visible_line -= difference;
+  scroll.last_visible_line -= difference;
 }
 
 //----------------------------------------------------------------------
@@ -2703,10 +2722,10 @@ inline void FListView::lastPos()
     return;
 
   const auto element_count = int(getCount());
-  current_iter += element_count - current_iter.getPosition() - 1;
-  const int difference = element_count - last_visible_line.getPosition() - 1;
-  first_visible_line += difference;
-  last_visible_line += difference;
+  selection.current_iter += element_count - selection.current_iter.getPosition() - 1;
+  const int difference = element_count - scroll.last_visible_line.getPosition() - 1;
+  scroll.first_visible_line += difference;
+  scroll.last_visible_line += difference;
 }
 
 //----------------------------------------------------------------------
@@ -2748,8 +2767,8 @@ inline auto FListView::collapseSubtree() -> bool
 //----------------------------------------------------------------------
 void FListView::setRelativePosition (int ry)
 {
-  current_iter = first_visible_line;
-  current_iter += ry;
+  selection.current_iter = scroll.first_visible_line;
+  selection.current_iter += ry;
 }
 
 //----------------------------------------------------------------------
@@ -2758,20 +2777,20 @@ void FListView::stepForward()
   if ( isItemListEmpty() )
     return;
 
-  if ( current_iter == last_visible_line )
+  if ( selection.current_iter == scroll.last_visible_line )
   {
-    ++last_visible_line;
+    ++scroll.last_visible_line;
 
-    if ( last_visible_line == itemlist.end() )
-      --last_visible_line;
+    if ( scroll.last_visible_line == data.itemlist.end() )
+      --scroll.last_visible_line;
     else
-      ++first_visible_line;
+      ++scroll.first_visible_line;
   }
 
-  ++current_iter;
+  ++selection.current_iter;
 
-  if ( current_iter == itemlist.end() )
-    --current_iter;
+  if ( selection.current_iter == data.itemlist.end() )
+    --selection.current_iter;
 }
 
 //----------------------------------------------------------------------
@@ -2780,15 +2799,15 @@ void FListView::stepBackward()
   if ( isItemListEmpty() )
     return;
 
-  if ( current_iter == first_visible_line
-    && current_iter != itemlist.begin() )
+  if ( selection.current_iter == scroll.first_visible_line
+    && selection.current_iter != data.itemlist.begin() )
   {
-    --first_visible_line;
-    --last_visible_line;
+    --scroll.first_visible_line;
+    --scroll.last_visible_line;
   }
 
-  if ( current_iter != itemlist.begin() )
-    --current_iter;
+  if ( selection.current_iter != data.itemlist.begin() )
+    --selection.current_iter;
 }
 
 //----------------------------------------------------------------------
@@ -2799,30 +2818,30 @@ void FListView::stepForward (int distance)
 
   const auto element_count = int(getCount());
 
-  if ( current_iter.getPosition() + 1 == element_count )
+  if ( selection.current_iter.getPosition() + 1 == element_count )
     return;
 
-  if ( current_iter.getPosition() + distance < element_count )
+  if ( selection.current_iter.getPosition() + distance < element_count )
   {
-    current_iter += distance;
+    selection.current_iter += distance;
   }
   else
   {
-    current_iter += element_count - current_iter.getPosition() - 1;
+    selection.current_iter += element_count - selection.current_iter.getPosition() - 1;
   }
 
-  if ( current_iter.getPosition() > last_visible_line.getPosition() )
+  if ( selection.current_iter.getPosition() > scroll.last_visible_line.getPosition() )
   {
-    if ( last_visible_line.getPosition() + distance < element_count )
+    if ( scroll.last_visible_line.getPosition() + distance < element_count )
     {
-      first_visible_line += distance;
-      last_visible_line += distance;
+      scroll.first_visible_line += distance;
+      scroll.last_visible_line += distance;
     }
     else
     {
-      const int differenz = element_count - last_visible_line.getPosition() - 1;
-      first_visible_line += differenz;
-      last_visible_line += differenz;
+      const int differenz = element_count - scroll.last_visible_line.getPosition() - 1;
+      scroll.first_visible_line += differenz;
+      scroll.last_visible_line += differenz;
     }
   }
 }
@@ -2830,30 +2849,30 @@ void FListView::stepForward (int distance)
 //----------------------------------------------------------------------
 void FListView::stepBackward (int distance)
 {
-  if ( isItemListEmpty() || current_iter.getPosition() == 0 )
+  if ( isItemListEmpty() || selection.current_iter.getPosition() == 0 )
     return;
 
-  if ( current_iter.getPosition() - distance >= 0 )
+  if ( selection.current_iter.getPosition() - distance >= 0 )
   {
-    current_iter -= distance;
+    selection.current_iter -= distance;
   }
   else
   {
-    current_iter -= current_iter.getPosition();
+    selection.current_iter -= selection.current_iter.getPosition();
   }
 
-  if ( current_iter.getPosition() < first_visible_line.getPosition() )
+  if ( selection.current_iter.getPosition() < scroll.first_visible_line.getPosition() )
   {
-    if ( first_visible_line.getPosition() - distance >= 0 )
+    if ( scroll.first_visible_line.getPosition() - distance >= 0 )
     {
-      first_visible_line -= distance;
-      last_visible_line -= distance;
+      scroll.first_visible_line -= distance;
+      scroll.last_visible_line -= distance;
     }
     else
     {
-      const int difference = first_visible_line.getPosition();
-      first_visible_line -= difference;
-      last_visible_line -= difference;
+      const int difference = scroll.first_visible_line.getPosition();
+      scroll.first_visible_line -= difference;
+      scroll.last_visible_line -= difference;
     }
   }
 }
@@ -2861,17 +2880,17 @@ void FListView::stepBackward (int distance)
 //----------------------------------------------------------------------
 void FListView::scrollToX (int x)
 {
-  if ( xoffset == x )
+  if ( scroll.xoffset == x )
     return;
 
-  xoffset = x;
+  scroll.xoffset = x;
   const int xoffset_end = int(max_line_width) - int(getClientWidth());
 
-  if ( xoffset > xoffset_end )
-    xoffset = xoffset_end;
+  if ( scroll.xoffset > xoffset_end )
+    scroll.xoffset = xoffset_end;
 
-  if ( xoffset < 0 )
-    xoffset = 0;
+  if ( scroll.xoffset < 0 )
+    scroll.xoffset = 0;
 }
 
 //----------------------------------------------------------------------
@@ -2880,26 +2899,24 @@ void FListView::scrollToY (int y)
   const int pagesize = int(getClientHeight()) - 1;
   const auto element_count = int(getCount());
 
-  if ( first_visible_line.getPosition() == y )
+  if ( scroll.first_visible_line.getPosition() == y )
     return;
 
   // Save relative position from the top line
-  const int ry = current_iter.getPosition() - first_visible_line.getPosition();
+  const int ry = selection.current_iter.getPosition() - scroll.first_visible_line.getPosition();
 
   if ( y + pagesize <= element_count )
   {
-    first_visible_line = itemlist.begin();
-    first_visible_line += y;
+    scroll.first_visible_line = data.itemlist.begin() + y;
     setRelativePosition (ry);
-    last_visible_line = first_visible_line;
-    last_visible_line += pagesize;
+    scroll.last_visible_line = scroll.first_visible_line + pagesize;
   }
   else
   {
-    const int differenz = element_count - last_visible_line.getPosition() - 1;
-    current_iter += differenz;
-    first_visible_line += differenz;
-    last_visible_line += differenz;
+    const int differenz = element_count - scroll.last_visible_line.getPosition() - 1;
+    selection.current_iter += differenz;
+    scroll.first_visible_line += differenz;
+    scroll.last_visible_line += differenz;
   }
 }
 
@@ -2913,7 +2930,7 @@ void FListView::scrollTo (int x, int y)
 //----------------------------------------------------------------------
 void FListView::scrollBy (int dx, int dy)
 {
-  scrollToX(xoffset + dx);
+  scrollToX(scroll.xoffset + dx);
 
   if ( dy > 0 )
     stepForward(dy);
@@ -2925,10 +2942,10 @@ void FListView::scrollBy (int dx, int dy)
 //----------------------------------------------------------------------
 void FListView::cb_vbarChange (const FWidget*)
 {
-  const FScrollbar::ScrollType scroll_type = vbar->getScrollType();
+  const FScrollbar::ScrollType scroll_type = scroll.vbar->getScrollType();
   static constexpr int wheel_distance = 4;
   int distance{1};
-  first_line_position_before = first_visible_line.getPosition();
+  scroll.first_line_position_before = scroll.first_visible_line.getPosition();
 
   switch ( scroll_type )
   {
@@ -2947,7 +2964,7 @@ void FListView::cb_vbarChange (const FWidget*)
       break;
 
     case FScrollbar::ScrollType::Jump:
-      scrollToY (vbar->getValue());
+      scrollToY (scroll.vbar->getValue());
       break;
 
     case FScrollbar::ScrollType::WheelUp:
@@ -2970,10 +2987,10 @@ void FListView::cb_vbarChange (const FWidget*)
   if ( scroll_type >= FScrollbar::ScrollType::StepBackward
     && scroll_type <= FScrollbar::ScrollType::PageForward )
   {
-    vbar->setValue (first_visible_line.getPosition());
+    scroll.vbar->setValue (scroll.first_visible_line.getPosition());
 
-    if ( first_line_position_before != first_visible_line.getPosition() )
-      vbar->drawBar();
+    if ( scroll.first_line_position_before != scroll.first_visible_line.getPosition() )
+      scroll.vbar->drawBar();
 
     forceTerminalUpdate();
   }
@@ -2982,10 +2999,10 @@ void FListView::cb_vbarChange (const FWidget*)
 //----------------------------------------------------------------------
 void FListView::cb_hbarChange (const FWidget*)
 {
-  const FScrollbar::ScrollType scroll_type = hbar->getScrollType();
+  const FScrollbar::ScrollType scroll_type = scroll.hbar->getScrollType();
   static constexpr int wheel_distance = 4;
   int distance{1};
-  const int xoffset_before = xoffset;
+  const int xoffset_before = scroll.xoffset;
 
   switch ( scroll_type )
   {
@@ -3004,7 +3021,7 @@ void FListView::cb_hbarChange (const FWidget*)
       break;
 
     case FScrollbar::ScrollType::Jump:
-      scrollToX (hbar->getValue());
+      scrollToX (scroll.hbar->getValue());
       break;
 
     case FScrollbar::ScrollType::WheelUp:
@@ -3029,10 +3046,10 @@ void FListView::cb_hbarChange (const FWidget*)
 
   if ( scroll_type >= FScrollbar::ScrollType::StepBackward )
   {
-    hbar->setValue (xoffset);
+    scroll.hbar->setValue (scroll.xoffset);
 
-    if ( xoffset_before != xoffset )
-      hbar->drawBar();
+    if ( xoffset_before != scroll.xoffset )
+      scroll.hbar->drawBar();
 
     forceTerminalUpdate();
   }
