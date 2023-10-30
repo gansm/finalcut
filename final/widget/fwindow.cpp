@@ -61,6 +61,10 @@ FWindow::FWindow(FWidget* parent)
   if ( ! internal::var::fwindow_init_flag )
   {
     auto app_object = FApplication::getApplicationObject();
+
+    if ( ! app_object )
+      return;
+
     app_object->registerMouseHandler (closeDropDownMouseHandler);
     app_object->registerMouseHandler (unselectMenubarItemsMouseHandler);
     internal::var::fwindow_init_flag = true;
