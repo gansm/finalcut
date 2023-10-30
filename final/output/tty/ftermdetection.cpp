@@ -94,9 +94,6 @@ void FTermDetection::setTtyTypeFileName (const FString& ttytype_filename)
 //----------------------------------------------------------------------
 void FTermDetection::detect()
 {
-  // Reset terminal_detection for the 2nd detectio run
-  terminal_detection = true;
-
   // Set the variable 'termtype' to the predefined type of the terminal
   getSystemTermType();
 

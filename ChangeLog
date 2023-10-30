@@ -1,3 +1,8 @@
+2023-10-30  Markus Gans  <guru.mail@muenster.de>
+	* Terminal detection can be turned off again
+	* The missing null pointer check has been added to the constructor 
+	  of FWindow
+
 2023-10-26  Markus Gans  <guru.mail@muenster.de>
 	* Reorganize the data structure of FOptiMove
 
