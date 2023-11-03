@@ -59,8 +59,8 @@ FMenuBar::~FMenuBar()  // destructor
 void FMenuBar::resetColors()
 {
   const auto& wc = getColorTheme();
-  setForegroundColor (wc->menu_active_fg);
-  setBackgroundColor (wc->menu_active_bg);
+  setForegroundColor (wc->menu.fg);
+  setBackgroundColor (wc->menu.bg);
   FWidget::resetColors();
 }
 
@@ -75,8 +75,8 @@ void FMenuBar::resetMenu()
 void FMenuBar::hide()
 {
   const auto& wc = getColorTheme();
-  const auto& fg = wc->term_fg;
-  const auto& bg = wc->term_bg;
+  const auto& fg = wc->term.fg;
+  const auto& bg = wc->term.bg;
   setColor (fg, bg);
   print() << FPoint{1, 1} << FString{getDesktopWidth(), L' '};
   FWindow::hide();
@@ -396,7 +396,7 @@ inline void FMenuBar::drawItem (FMenuItem* menuitem, std::size_t& x)
   drawTrailingSpace (x);
 
   const auto& wc = getColorTheme();
-  setColor (wc->menu_active_fg, wc->menu_active_bg);
+  setColor (wc->menu.fg, wc->menu.bg);
 
   if ( FVTerm::getFOutput()->isMonochron() && is_enabled && is_selected )
     setReverse(true);
@@ -416,19 +416,19 @@ inline void FMenuBar::setLineAttributes (const FMenuItem* menuitem)
       if ( FVTerm::getFOutput()->isMonochron() )
         setReverse(false);
 
-      setForegroundColor (wc->menu_active_focus_fg);
-      setBackgroundColor (wc->menu_active_focus_bg);
+      setForegroundColor (wc->menu.focus_fg);
+      setBackgroundColor (wc->menu.focus_bg);
     }
     else
     {
-      setForegroundColor (wc->menu_active_fg);
-      setBackgroundColor (wc->menu_active_bg);
+      setForegroundColor (wc->menu.fg);
+      setBackgroundColor (wc->menu.bg);
     }
   }
   else
   {
-    setForegroundColor (wc->menu_inactive_fg);
-    setBackgroundColor (wc->menu_inactive_bg);
+    setForegroundColor (wc->menu.inactive_fg);
+    setBackgroundColor (wc->menu.inactive_bg);
   }
 
   setColor();
@@ -474,7 +474,7 @@ inline void FMenuBar::drawMenuText (menuText& data)
     if ( z == data.hotkeypos )
     {
       const auto& wc = getColorTheme();
-      setColor (wc->menu_hotkey_fg, wc->menu_hotkey_bg);
+      setColor (wc->menu.hotkey_fg, wc->menu.hotkey_bg);
 
       if ( ! data.no_underline )
         setUnderline();

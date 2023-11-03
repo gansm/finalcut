@@ -163,7 +163,7 @@ class FMessageBox : public FDialog
     FStringList   text_components{};
     FButtons      button{};
     std::size_t   max_line_width{0};
-    FColor        emphasis_color{getColorTheme()->dialog_emphasis_fg};
+    FColor        emphasis_color{getColorTheme()->dialog.emphasis_fg};
     ButtonType    result_code{ButtonType::Reject};
     FButtonsDigit button_digit{};
     std::size_t   num_buttons{0};
@@ -239,9 +239,9 @@ auto FMessageBox::error ( FWidget* parent
   mbox.setHeadline("Warning:");
   mbox.setCenterText();
   const auto& wc = getColorTheme();
-  mbox.setForegroundColor(wc->error_box_fg);
-  mbox.setBackgroundColor(wc->error_box_bg);
-  mbox.emphasis_color = wc->error_box_emphasis_fg;
+  mbox.setForegroundColor(wc->error_box.fg);
+  mbox.setBackgroundColor(wc->error_box.bg);
+  mbox.emphasis_color = wc->error_box.emphasis_fg;
   const ButtonType reply = mbox.exec();
   return reply;
 }

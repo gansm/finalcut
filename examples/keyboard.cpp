@@ -46,8 +46,8 @@ class Keyboard final : public finalcut::FWidget
 Keyboard::Keyboard (finalcut::FWidget* parent)
   : finalcut::FWidget{parent}
 {
-  getColorTheme()->term_fg = finalcut::FColor::Default;
-  getColorTheme()->term_bg = finalcut::FColor::Default;
+  getColorTheme()->term.fg = finalcut::FColor::Default;
+  getColorTheme()->term.bg = finalcut::FColor::Default;
 }
 
 //----------------------------------------------------------------------

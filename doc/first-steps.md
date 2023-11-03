@@ -1407,11 +1407,11 @@ class dialogWidget : public FDialog
       scrollview.setScrollSize(FSize{60, 27});
       // Attention: getColorTheme() requires an initialized terminal
       const auto& wc = getColorTheme();
-      setColor (wc->label_inactive_fg, wc->dialog_bg);
+      setColor (wc->label.inactive_fg, wc->dialog.bg);
       scrollview.clearArea();
-      FColorPair red (FColor::LightRed, wc->dialog_bg);
-      FColorPair black (FColor::Black, wc->dialog_bg);
-      FColorPair cyan (FColor::Cyan, wc->dialog_bg);
+      FColorPair red (FColor::LightRed, wc->dialog.bg);
+      FColorPair black (FColor::Black, wc->dialog.bg);
+      FColorPair cyan (FColor::Cyan, wc->dialog.bg);
 
       static std::vector<direction> d
       {

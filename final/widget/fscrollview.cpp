@@ -311,8 +311,8 @@ void FScrollView::setViewportPrint (bool enable)
 void FScrollView::resetColors()
 {
   const auto& wc = getColorTheme();
-  setForegroundColor (wc->dialog_fg);
-  setBackgroundColor (wc->dialog_bg);
+  setForegroundColor (wc->dialog.fg);
+  setBackgroundColor (wc->dialog.bg);
   FWidget::resetColors();
 }
 
@@ -843,15 +843,15 @@ void FScrollView::drawText ( const FString& label_text
     setReverse(true);
 
   if ( isEnabled() )
-    setColor(wc->label_emphasis_fg, wc->label_bg);
+    setColor(wc->label.emphasis_fg, wc->label.bg);
   else
-    setColor(wc->label_inactive_fg, wc->label_inactive_bg);
+    setColor(wc->label.inactive_fg, wc->label.inactive_bg);
 
   for (std::size_t z{0}; z < length; z++)
   {
     if ( (z == hotkeypos) && getFlags().feature.active )
     {
-      setColor (wc->label_hotkey_fg, wc->label_hotkey_bg);
+      setColor (wc->label.hotkey_fg, wc->label.hotkey_bg);
 
       if ( ! getFlags().feature.no_underline )
         setUnderline();
@@ -861,14 +861,14 @@ void FScrollView::drawText ( const FString& label_text
       if ( ! getFlags().feature.no_underline )
         unsetUnderline();
 
-      setColor (wc->label_emphasis_fg, wc->label_bg);
+      setColor (wc->label.emphasis_fg, wc->label.bg);
     }
     else
       print (label_text[z]);
   }
 
   if ( ellipsis )  // Print ellipsis
-    print() << FColorPair {wc->label_ellipsis_fg, wc->label_bg} << "..";
+    print() << FColorPair {wc->label.ellipsis_fg, wc->label.bg} << "..";
 
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);

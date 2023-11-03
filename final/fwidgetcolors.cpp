@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2021 Markus Gans                                      *
+* Copyright 2018-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -57,92 +57,155 @@ default8ColorTheme::~default8ColorTheme() noexcept = default;
 //----------------------------------------------------------------------
 void default8ColorTheme::setColorTheme()
 {
-  term_fg                           = FColor::Black;
-  term_bg                           = FColor::Blue;
-  list_fg                           = FColor::Black;
-  list_bg                           = FColor::LightGray;
-  selected_list_fg                  = FColor::Blue;
-  selected_list_bg                  = FColor::LightGray;
-  dialog_fg                         = FColor::Black;
-  dialog_resize_fg                  = FColor::Red;
-  dialog_emphasis_fg                = FColor::Blue;
-  dialog_bg                         = FColor::LightGray;
-  error_box_fg                      = FColor::Black;
-  error_box_emphasis_fg             = FColor::Red;
-  error_box_bg                      = FColor::LightGray;
-  tooltip_fg                        = FColor::Black;
-  tooltip_bg                        = FColor::Cyan;
-  shadow_fg                         = FColor::Black;
-  shadow_bg                         = FColor::LightGray;  // only for transparent shadow
-  current_element_focus_fg          = FColor::LightGray;
-  current_element_focus_bg          = FColor::Red;
-  current_element_fg                = FColor::LightGray;
-  current_element_bg                = FColor::Blue;
-  current_inc_search_element_fg     = FColor::Brown;
-  selected_current_element_focus_fg = FColor::Blue;
-  selected_current_element_focus_bg = FColor::Red;
-  selected_current_element_fg       = FColor::Cyan;
-  selected_current_element_bg       = FColor::Blue;
-  label_fg                          = FColor::Black;
-  label_bg                          = FColor::LightGray;
-  label_inactive_fg                 = FColor::Cyan;
-  label_inactive_bg                 = FColor::LightGray;
-  label_hotkey_fg                   = FColor::Red;
-  label_hotkey_bg                   = FColor::LightGray;
-  label_emphasis_fg                 = FColor::Blue;
-  label_ellipsis_fg                 = FColor::Black;
-  inputfield_active_focus_fg        = FColor::LightGray;
-  inputfield_active_focus_bg        = FColor::Blue;
-  inputfield_active_fg              = FColor::Black;
-  inputfield_active_bg              = FColor::Cyan;
-  inputfield_inactive_fg            = FColor::Black;
-  inputfield_inactive_bg            = FColor::LightGray;
-  toggle_button_active_focus_fg     = FColor::Black;
-  toggle_button_active_focus_bg     = FColor::Cyan;
-  toggle_button_active_fg           = FColor::Black;
-  toggle_button_active_bg           = FColor::LightGray;
-  toggle_button_inactive_fg         = FColor::Cyan;
-  toggle_button_inactive_bg         = FColor::LightGray;
-  button_active_focus_fg            = FColor::LightGray;
-  button_active_focus_bg            = FColor::Red;
-  button_active_fg                  = FColor::LightGray;
-  button_active_bg                  = FColor::Blue;
-  button_inactive_fg                = FColor::Black;
-  button_inactive_bg                = FColor::Blue;
-  button_hotkey_fg                  = FColor::LightGray;
-  titlebar_active_fg                = FColor::LightGray;
-  titlebar_active_bg                = FColor::Red;
-  titlebar_inactive_fg              = FColor::Black;
-  titlebar_inactive_bg              = FColor::LightGray;
-  titlebar_button_fg                = FColor::Black;
-  titlebar_button_bg                = FColor::LightGray;
-  titlebar_button_focus_fg          = FColor::LightGray;
-  titlebar_button_focus_bg          = FColor::Black;
-  menu_active_focus_fg              = FColor::LightGray;
-  menu_active_focus_bg              = FColor::Blue;
-  menu_active_fg                    = FColor::Black;
-  menu_active_bg                    = FColor::LightGray;
-  menu_inactive_fg                  = FColor::Cyan;
-  menu_inactive_bg                  = FColor::LightGray;
-  menu_hotkey_fg                    = FColor::Red;
-  menu_hotkey_bg                    = FColor::LightGray;
-  statusbar_fg                      = FColor::Black;
-  statusbar_bg                      = FColor::LightGray;
-  statusbar_hotkey_fg               = FColor::Red;
-  statusbar_hotkey_bg               = FColor::LightGray;
-  statusbar_separator_fg            = FColor::Black;
-  statusbar_active_fg               = FColor::LightGray;
-  statusbar_active_bg               = FColor::Black;
-  statusbar_active_hotkey_fg        = FColor::Red;
-  statusbar_active_hotkey_bg        = FColor::Black;
-  scrollbar_fg                      = FColor::Black;
-  scrollbar_bg                      = FColor::LightGray;
-  scrollbar_button_fg               = FColor::Black;
-  scrollbar_button_bg               = FColor::LightGray;
-  scrollbar_button_inactive_fg      = FColor::Cyan;
-  scrollbar_button_inactive_bg      = FColor::LightGray;
-  progressbar_fg                    = FColor::Blue;
-  progressbar_bg                    = FColor::LightGray;
+  term =
+  {
+    FColor::LightGray,  // Foreground
+    FColor::Blue        // Background
+  };
+
+  dialog =
+  {
+    FColor::Black,      // Foreground
+    FColor::LightGray,  // Background
+    FColor::Red,        // Resize foreground
+    FColor::Blue        // Emphasis foreground
+  };
+
+  error_box =
+  {
+    FColor::Black,      // Foreground
+    FColor::LightGray,  // Background
+    FColor::Red         // Emphasis foreground
+  };
+
+  tooltip =
+  {
+    FColor::Black,      // Foreground
+    FColor::Cyan        // Background
+  };
+
+  shadow =
+  {
+    FColor::LightGray,  // Foreground (only for transparent shadow)
+    FColor::Black       // Background
+  };
+
+  current_element =
+  {
+    FColor::LightGray,  // Foreground
+    FColor::Blue,       // Background
+    FColor::LightGray,  // Focused foreground
+    FColor::Red,        // Focused background
+    FColor::Brown,      // Incremental search foreground
+    FColor::Cyan,       // Selected foreground
+    FColor::Blue,       // Selected background
+    FColor::Blue,       // Selected focused foreground
+    FColor::Red         // Selected focused background
+  };
+
+  list =
+  {
+    FColor::Black,      // Foreground
+    FColor::LightGray,  // Background
+    FColor::Blue,       // Selected foreground
+    FColor::LightGray   // Selected background
+  };
+
+  label =
+  {
+    FColor::Black,      // Foreground
+    FColor::LightGray,  // Background
+    FColor::Cyan,       // Inactive foreground
+    FColor::LightGray,  // Inactive background
+    FColor::Red,        // Hotkey foreground
+    FColor::LightGray,  // Hotkey background
+    FColor::Blue,       // Emphasis foreground
+    FColor::Black       // Ellipsis foreground
+  };
+
+  input_field =
+  {
+    FColor::Black,      // Foreground
+    FColor::Cyan,       // Background
+    FColor::LightGray,  // Focused foreground
+    FColor::Blue,       // Focused background
+    FColor::Black,      // Inactive foreground
+    FColor::LightGray   // Inactive background
+  };
+
+  toggle_button =
+  {
+    FColor::Black,      // Foreground
+    FColor::LightGray,  // Background
+    FColor::Black,      // Focused foreground
+    FColor::Cyan,       // Focused background
+    FColor::Cyan,       // Inactive foreground
+    FColor::LightGray   // Inactive background
+  };
+
+  button =
+  {
+    FColor::LightGray,  // Foreground
+    FColor::Blue,       // Background
+    FColor::LightGray,  // Focused foreground
+    FColor::Red,        // Focused background
+    FColor::Black,      // Inactive foreground
+    FColor::Blue,       // Inactive background
+    FColor::LightGray   // Hotkey foreground
+  };
+
+  titlebar =
+  {
+    FColor::LightGray,  // Foreground
+    FColor::Red,        // Background
+    FColor::Black,      // Inactive foreground
+    FColor::LightGray,  // Inactive background
+    FColor::Black,      // Button foreground
+    FColor::LightGray,  // Button background
+    FColor::LightGray,  // Focused button foreground
+    FColor::Black       // Focused button background
+  };
+
+  menu =
+  {
+    FColor::Black,      // Foreground
+    FColor::LightGray,  // Background
+    FColor::LightGray,  // Focused foreground
+    FColor::Blue,       // Focused background
+    FColor::Cyan,       // Inactive foreground
+    FColor::LightGray,  // Inactive background
+    FColor::Red,        // Hotkey foreground
+    FColor::LightGray   // Hotkey background
+  };
+
+  statusbar =
+  {
+    FColor::Black,      // Foreground
+    FColor::LightGray,  // Background
+    FColor::LightGray,  // Focused foreground
+    FColor::Black,      // Focused background
+    FColor::Black,      // Separator foreground
+    FColor::Red,        // Hotkey foreground
+    FColor::LightGray,  // Hotkey background
+    FColor::Red,        // Focused hotkey foreground
+    FColor::Black       // Focused hotkey background
+  };
+
+  scrollbar =
+  {
+    FColor::Black,      // Foreground
+    FColor::LightGray,  // Background
+    FColor::Black,      // Button foreground
+    FColor::LightGray,  // Button background
+    FColor::Cyan,       // Inactive button foreground
+    FColor::LightGray   // Inactive button background
+  };
+
+  progressbar =
+  {
+    FColor::Blue,       // Foreground
+    FColor::LightGray   // Background
+  };
 }
 
 
@@ -165,96 +228,159 @@ default16ColorTheme::~default16ColorTheme() noexcept = default;
 //----------------------------------------------------------------------
 void default16ColorTheme::setColorTheme()
 {
-  term_fg                           = FColor::Black;
-  term_bg                           = FColor::LightBlue;
-  list_fg                           = FColor::Black;
-  list_bg                           = FColor::White;
-  selected_list_fg                  = FColor::Cyan;
-  selected_list_bg                  = FColor::White;
-  dialog_fg                         = FColor::Black;
-  dialog_resize_fg                  = FColor::Cyan;
-  dialog_emphasis_fg                = FColor::Blue;
-  dialog_bg                         = FColor::White;
-  error_box_fg                      = FColor::White;
-  error_box_emphasis_fg             = FColor::Yellow;
-  error_box_bg                      = FColor::LightRed;
-  tooltip_fg                        = FColor::Black;
-  tooltip_bg                        = FColor::Yellow;
-  shadow_fg                         = FColor::Black;
-  shadow_bg                         = FColor::LightGray;  // only for transparent shadow
-  current_element_focus_fg          = FColor::White;
-  current_element_focus_bg          = FColor::Blue;
-  current_element_fg                = FColor::LightGray;
-  current_element_bg                = FColor::Blue;
-  current_inc_search_element_fg     = FColor::LightRed;
-  selected_current_element_focus_fg = FColor::LightCyan;
-  selected_current_element_focus_bg = FColor::Blue;
-  selected_current_element_fg       = FColor::LightBlue;
-  selected_current_element_bg       = FColor::Blue;
-  label_fg                          = FColor::Black;
-  label_bg                          = FColor::White;
-  label_inactive_fg                 = FColor::LightGray;
-  label_inactive_bg                 = FColor::White;
-  label_hotkey_fg                   = FColor::Red;
-  label_hotkey_bg                   = FColor::White;
-  label_emphasis_fg                 = FColor::Blue;
-  label_ellipsis_fg                 = FColor::DarkGray;
-  inputfield_active_focus_fg        = FColor::White;
-  inputfield_active_focus_bg        = FColor::Cyan;
-  inputfield_active_fg              = FColor::Black;
-  inputfield_active_bg              = FColor::LightGray;
-  inputfield_inactive_fg            = FColor::DarkGray;
-  inputfield_inactive_bg            = FColor::LightGray;
-  toggle_button_active_focus_fg     = FColor::White;
-  toggle_button_active_focus_bg     = FColor::Cyan;
-  toggle_button_active_fg           = FColor::Black;
-  toggle_button_active_bg           = FColor::White;
-  toggle_button_inactive_fg         = FColor::LightGray;
-  toggle_button_inactive_bg         = FColor::White;
-  button_active_focus_fg            = FColor::LightGray;
-  button_active_focus_bg            = FColor::Blue;
-  button_active_fg                  = FColor::LightGray;
-  button_active_bg                  = FColor::DarkGray;
-  button_inactive_fg                = FColor::DarkGray;
-  button_inactive_bg                = FColor::LightGray;
-  button_hotkey_fg                  = FColor::White;
-  titlebar_active_fg                = FColor::White;
-  titlebar_active_bg                = FColor::Blue;
-  titlebar_inactive_fg              = FColor::LightGray;
-  titlebar_inactive_bg              = FColor::DarkGray;
-  titlebar_button_fg                = FColor::DarkGray;
-  titlebar_button_bg                = FColor::LightGray;
-  titlebar_button_focus_fg          = FColor::LightGray;
-  titlebar_button_focus_bg          = FColor::Black;
-  menu_active_focus_fg              = FColor::White;
-  menu_active_focus_bg              = FColor::Blue;
-  menu_active_fg                    = FColor::Black;
-  menu_active_bg                    = FColor::White;
-  menu_inactive_fg                  = FColor::LightGray;
-  menu_inactive_bg                  = FColor::White;
-  menu_hotkey_fg                    = FColor::Red;
-  menu_hotkey_bg                    = FColor::White;
-  statusbar_fg                      = FColor::White;
-  statusbar_bg                      = FColor::Blue;
-  statusbar_hotkey_fg               = FColor::LightRed;
-  statusbar_hotkey_bg               = FColor::Blue;
-  statusbar_separator_fg            = FColor::Black;
-  statusbar_active_fg               = FColor::Blue;
-  statusbar_active_bg               = FColor::White;
-  statusbar_active_hotkey_fg        = FColor::DarkGray;
-  statusbar_active_hotkey_bg        = FColor::White;
-  scrollbar_fg                      = FColor::DarkGray;
-  scrollbar_bg                      = FColor::LightBlue;
-  scrollbar_button_fg               = FColor::Black;
-  scrollbar_button_bg               = FColor::LightGray;
-  scrollbar_button_inactive_fg      = FColor::DarkGray;
-  scrollbar_button_inactive_bg      = FColor::LightGray;
-  progressbar_fg                    = FColor::DarkGray;
-  progressbar_bg                    = FColor::LightBlue;
+  term =
+  {
+    FColor::Black,      // Foreground
+    FColor::LightBlue   // Background
+  };
+
+  dialog =
+  {
+    FColor::Black,      // Foreground
+    FColor::White,      // Background
+    FColor::Cyan,       // Resize foreground
+    FColor::Blue        // Emphasis foreground
+  };
+
+  error_box =
+  {
+    FColor::White,      // Foreground
+    FColor::LightRed,   // Background
+    FColor::Yellow      // Emphasis foreground
+  };
+
+  tooltip =
+  {
+    FColor::Black,      // Foreground
+    FColor::Yellow      // Background
+  };
+
+  shadow =
+  {
+    FColor::LightGray,  // Foreground (only for transparent shadow)
+    FColor::Black       // Background
+  };
+
+  current_element =
+  {
+    FColor::LightGray,  // Foreground
+    FColor::Blue,       // Background
+    FColor::White,      // Focused foreground
+    FColor::Blue,       // Focused background
+    FColor::LightRed,   // Incremental search foreground
+    FColor::LightBlue,  // Selected foreground
+    FColor::Blue,       // Selected background
+    FColor::LightCyan,  // Selected focused foreground
+    FColor::Blue        // Selected focused background
+  };
+
+  list =
+  {
+    FColor::Black,      // Foreground
+    FColor::White,      // Background
+    FColor::Cyan,       // Selected foreground
+    FColor::White       // Selected background
+  };
+
+  label =
+  {
+    FColor::Black,      // Foreground
+    FColor::White,      // Background
+    FColor::LightGray,  // Inactive foreground
+    FColor::White,      // Inactive background
+    FColor::Red,        // Hotkey foreground
+    FColor::White,      // Hotkey background
+    FColor::Blue,       // Emphasis foreground
+    FColor::DarkGray    // Ellipsis foreground
+  };
+
+  input_field =
+  {
+    FColor::Black,      // Foreground
+    FColor::LightGray,  // Background
+    FColor::White,      // Focused foreground
+    FColor::Cyan,       // Focused background
+    FColor::DarkGray,   // Inactive foreground
+    FColor::LightGray   // Inactive background
+  };
+
+  toggle_button =
+  {
+    FColor::Black,      // Foreground
+    FColor::White,      // Background
+    FColor::White,      // Focused foreground
+    FColor::Cyan,       // Focused background
+    FColor::LightGray,  // Inactive foreground
+    FColor::White       // Inactive background
+  };
+
+  button =
+  {
+    FColor::LightGray,  // Foreground
+    FColor::DarkGray,   // Background
+    FColor::LightGray,  // Focused foreground
+    FColor::Blue,       // Focused background
+    FColor::DarkGray,   // Inactive foreground
+    FColor::LightGray,  // Inactive background
+    FColor::White       // Hotkey foreground
+  };
+
+  titlebar =
+  {
+    FColor::White,      // Foreground
+    FColor::Blue,       // Background
+    FColor::LightGray,  // Inactive foreground
+    FColor::DarkGray,   // Inactive background
+    FColor::DarkGray,   // Button foreground
+    FColor::LightGray,  // Button background
+    FColor::LightGray,  // Focused button foreground
+    FColor::Black       // Focused button background
+  };
+
+  menu =
+  {
+    FColor::Black,      // Foreground
+    FColor::White,      // Background
+    FColor::White,      // Focused foreground
+    FColor::Blue,       // Focused background
+    FColor::LightGray,  // Inactive foreground
+    FColor::White,      // Inactive background
+    FColor::Red,        // Hotkey foreground
+    FColor::White       // Hotkey background
+  };
+
+  statusbar =
+  {
+    FColor::White,      // Foreground
+    FColor::Blue,       // Background
+    FColor::Blue,       // Focused foreground
+    FColor::White,      // Focused background
+    FColor::Black,      // Separator foreground
+    FColor::LightRed,   // Hotkey foreground
+    FColor::Blue,       // Hotkey background
+    FColor::DarkGray,   // Focused hotkey foreground
+    FColor::White       // Focused hotkey background
+  };
+
+  scrollbar =
+  {
+    FColor::DarkGray,   // Foreground
+    FColor::LightBlue,  // Background
+    FColor::Black,      // Button foreground
+    FColor::LightGray,  // Button background
+    FColor::DarkGray,   // Inactive button foreground
+    FColor::LightGray   // Inactive button background
+  };
+
+  progressbar =
+  {
+    FColor::DarkGray,   // Foreground
+    FColor::LightBlue   // Background
+  };
 
   if ( ! FVTerm::getFOutput()->canChangeColorPalette()
     && FVTerm::getFOutput()->getMaxColor() > 16 )
-    term_bg = FColor::SkyBlue2;
+    term.bg = FColor::SkyBlue2;
 }
 
 //----------------------------------------------------------------------
@@ -276,92 +402,155 @@ default8ColorDarkTheme::~default8ColorDarkTheme() noexcept = default;
 //----------------------------------------------------------------------
 void default8ColorDarkTheme::setColorTheme()
 {
-  term_fg                           = FColor::LightGray;
-  term_bg                           = FColor::Cyan;
-  list_fg                           = FColor::Black;
-  list_bg                           = FColor::LightGray;
-  selected_list_fg                  = FColor::Cyan;
-  selected_list_bg                  = FColor::LightGray;
-  dialog_fg                         = FColor::Black;
-  dialog_resize_fg                  = FColor::Blue;
-  dialog_emphasis_fg                = FColor::Blue;
-  dialog_bg                         = FColor::LightGray;
-  error_box_fg                      = FColor::LightGray;
-  error_box_emphasis_fg             = FColor::Black;
-  error_box_bg                      = FColor::Red;
-  tooltip_fg                        = FColor::LightGray;
-  tooltip_bg                        = FColor::Black;
-  shadow_fg                         = FColor::Black;
-  shadow_bg                         = FColor::LightGray;  // only for transparent shadow
-  current_element_focus_fg          = FColor::LightGray;
-  current_element_focus_bg          = FColor::Cyan;
-  current_element_fg                = FColor::Black;
-  current_element_bg                = FColor::Cyan;
-  current_inc_search_element_fg     = FColor::Red;
-  selected_current_element_focus_fg = FColor::Cyan;
-  selected_current_element_focus_bg = FColor::Cyan;
-  selected_current_element_fg       = FColor::Blue;
-  selected_current_element_bg       = FColor::Cyan;
-  label_fg                          = FColor::Black;
-  label_bg                          = FColor::LightGray;
-  label_inactive_fg                 = FColor::Cyan;
-  label_inactive_bg                 = FColor::LightGray;
-  label_hotkey_fg                   = FColor::Red;
-  label_hotkey_bg                   = FColor::LightGray;
-  label_emphasis_fg                 = FColor::Blue;
-  label_ellipsis_fg                 = FColor::Cyan;
-  inputfield_active_focus_fg        = FColor::LightGray;
-  inputfield_active_focus_bg        = FColor::Cyan;
-  inputfield_active_fg              = FColor::LightGray;
-  inputfield_active_bg              = FColor::Cyan;
-  inputfield_inactive_fg            = FColor::Cyan;
-  inputfield_inactive_bg            = FColor::LightGray;
-  toggle_button_active_focus_fg     = FColor::LightGray;
-  toggle_button_active_focus_bg     = FColor::Cyan;
-  toggle_button_active_fg           = FColor::Black;
-  toggle_button_active_bg           = FColor::LightGray;
-  toggle_button_inactive_fg         = FColor::Cyan;
-  toggle_button_inactive_bg         = FColor::LightGray;
-  button_active_focus_fg            = FColor::LightGray;
-  button_active_focus_bg            = FColor::Cyan;
-  button_active_fg                  = FColor::LightGray;
-  button_active_bg                  = FColor::Black;
-  button_inactive_fg                = FColor::Black;
-  button_inactive_bg                = FColor::Cyan;
-  button_hotkey_fg                  = FColor::LightGray;
-  titlebar_active_fg                = FColor::LightGray;
-  titlebar_active_bg                = FColor::Black;
-  titlebar_inactive_fg              = FColor::Black;
-  titlebar_inactive_bg              = FColor::LightGray;
-  titlebar_button_fg                = FColor::Black;
-  titlebar_button_bg                = FColor::LightGray;
-  titlebar_button_focus_fg          = FColor::LightGray;
-  titlebar_button_focus_bg          = FColor::Black;
-  menu_active_focus_fg              = FColor::LightGray;
-  menu_active_focus_bg              = FColor::Blue;
-  menu_active_fg                    = FColor::LightGray;
-  menu_active_bg                    = FColor::Black;
-  menu_inactive_fg                  = FColor::LightGray;
-  menu_inactive_bg                  = FColor::Black;
-  menu_hotkey_fg                    = FColor::Red;
-  menu_hotkey_bg                    = FColor::Black;
-  statusbar_fg                      = FColor::LightGray;
-  statusbar_bg                      = FColor::Black;
-  statusbar_hotkey_fg               = FColor::Red;
-  statusbar_hotkey_bg               = FColor::Black;
-  statusbar_separator_fg            = FColor::LightGray;
-  statusbar_active_fg               = FColor::LightGray;
-  statusbar_active_bg               = FColor::Blue;
-  statusbar_active_hotkey_fg        = FColor::Red;
-  statusbar_active_hotkey_bg        = FColor::Blue;
-  scrollbar_fg                      = FColor::Cyan;
-  scrollbar_bg                      = FColor::LightGray;
-  scrollbar_button_fg               = FColor::Black;
-  scrollbar_button_bg               = FColor::LightGray;
-  scrollbar_button_inactive_fg      = FColor::Cyan;
-  scrollbar_button_inactive_bg      = FColor::LightGray;
-  progressbar_fg                    = FColor::Cyan;
-  progressbar_bg                    = FColor::LightGray;
+  term =
+  {
+    FColor::LightGray,  // Foreground
+    FColor::Cyan        // Background
+  };
+
+  dialog =
+  {
+    FColor::Black,      // Foreground
+    FColor::LightGray,  // Background
+    FColor::Blue,       // Resize foreground
+    FColor::Blue        // Emphasis foreground
+  };
+
+  error_box =
+  {
+    FColor::LightGray,  // Foreground
+    FColor::Red,        // Background
+    FColor::Black       // Emphasis foreground
+  };
+
+  tooltip =
+  {
+    FColor::LightGray,  // Foreground
+    FColor::Black       // Background
+  };
+
+  shadow =
+  {
+    FColor::LightGray,  // Foreground (only for transparent shadow)
+    FColor::Black       // Background
+  };
+
+  current_element =
+  {
+    FColor::Black,      // Foreground
+    FColor::Cyan,       // Background
+    FColor::LightGray,  // Focused foreground
+    FColor::Cyan,       // Focused background
+    FColor::Red,        // Incremental search foreground
+    FColor::Blue,       // Selected foreground
+    FColor::Cyan,       // Selected background
+    FColor::Blue,       // Selected focused foreground
+    FColor::Cyan        // Selected focused background
+  };
+
+  list =
+  {
+    FColor::Black,      // Foreground
+    FColor::LightGray,  // Background
+    FColor::Cyan,       // Selected foreground
+    FColor::LightGray   // Selected background
+  };
+
+  label =
+  {
+    FColor::Black,      // Foreground
+    FColor::LightGray,  // Background
+    FColor::Cyan,       // Inactive foreground
+    FColor::LightGray,  // Inactive background
+    FColor::Red,        // Hotkey foreground
+    FColor::LightGray,  // Hotkey background
+    FColor::Blue,       // Emphasis foreground
+    FColor::Cyan        // Ellipsis foreground
+  };
+
+  input_field =
+  {
+    FColor::LightGray,  // Foreground
+    FColor::Cyan,       // Background
+    FColor::LightGray,  // Focused foreground
+    FColor::Cyan,       // Focused background
+    FColor::Cyan,       // Inactive foreground
+    FColor::LightGray   // Inactive background
+  };
+
+  toggle_button =
+  {
+    FColor::Black,      // Foreground
+    FColor::LightGray,  // Background
+    FColor::LightGray,  // Focused foreground
+    FColor::Cyan,       // Focused background
+    FColor::Cyan,       // Inactive foreground
+    FColor::LightGray   // Inactive background
+  };
+
+  button =
+  {
+    FColor::LightGray,  // Foreground
+    FColor::Black,      // Background
+    FColor::LightGray,  // Focused foreground
+    FColor::Cyan,       // Focused background
+    FColor::Black,      // Inactive foreground
+    FColor::Cyan,       // Inactive background
+    FColor::LightGray   // Hotkey foreground
+  };
+
+  titlebar =
+  {
+    FColor::LightGray,  // Foreground
+    FColor::Black,      // Background
+    FColor::Black,      // Inactive foreground
+    FColor::LightGray,  // Inactive background
+    FColor::Black,      // Button foreground
+    FColor::LightGray,  // Button background
+    FColor::LightGray,  // Focused button foreground
+    FColor::Black       // Focused button background
+  };
+
+  menu =
+  {
+    FColor::LightGray,  // Foreground
+    FColor::Black,      // Background
+    FColor::LightGray,  // Focused foreground
+    FColor::Blue,       // Focused background
+    FColor::LightGray,  // Inactive foreground
+    FColor::Black,      // Inactive background
+    FColor::Red,        // Hotkey foreground
+    FColor::Black       // Hotkey background
+  };
+
+  statusbar =
+  {
+    FColor::LightGray,  // Foreground
+    FColor::Black,      // Background
+    FColor::LightGray,  // Focused foreground
+    FColor::Blue,       // Focused background
+    FColor::LightGray,  // Separator foreground
+    FColor::Red,        // Hotkey foreground
+    FColor::Black,      // Hotkey background
+    FColor::Red,        // Focused hotkey foreground
+    FColor::Blue        // Focused hotkey background
+  };
+
+  scrollbar =
+  {
+    FColor::Cyan,       // Foreground
+    FColor::LightGray,  // Background
+    FColor::Black,      // Button foreground
+    FColor::LightGray,  // Button background
+    FColor::Cyan,       // Inactive button foreground
+    FColor::LightGray   // Inactive button background
+  };
+
+  progressbar =
+  {
+    FColor::Cyan,       // Foreground
+    FColor::LightGray   // Background
+  };
 }
 
 
@@ -384,92 +573,155 @@ default16ColorDarkTheme::~default16ColorDarkTheme() noexcept = default;
 //----------------------------------------------------------------------
 void default16ColorDarkTheme::setColorTheme()
 {
-  term_fg                           = FColor::White;
-  term_bg                           = FColor::Cyan;
-  list_fg                           = FColor::Black;
-  list_bg                           = FColor::LightGray;
-  selected_list_fg                  = FColor::Red;
-  selected_list_bg                  = FColor::LightGray;
-  dialog_fg                         = FColor::Black;
-  dialog_resize_fg                  = FColor::LightBlue;
-  dialog_emphasis_fg                = FColor::Blue;
-  dialog_bg                         = FColor::LightGray;
-  error_box_fg                      = FColor::White;
-  error_box_emphasis_fg             = FColor::Yellow;
-  error_box_bg                      = FColor::Red;
-  tooltip_fg                        = FColor::White;
-  tooltip_bg                        = FColor::Black;
-  shadow_fg                         = FColor::Black;
-  shadow_bg                         = FColor::LightGray;  // only for transparent shadow
-  current_element_focus_fg          = FColor::White;
-  current_element_focus_bg          = FColor::Cyan;
-  current_element_fg                = FColor::LightBlue;
-  current_element_bg                = FColor::Cyan;
-  current_inc_search_element_fg     = FColor::LightRed;
-  selected_current_element_focus_fg = FColor::LightRed;
-  selected_current_element_focus_bg = FColor::Cyan;
-  selected_current_element_fg       = FColor::Red;
-  selected_current_element_bg       = FColor::Cyan;
-  label_fg                          = FColor::Black;
-  label_bg                          = FColor::LightGray;
-  label_inactive_fg                 = FColor::DarkGray;
-  label_inactive_bg                 = FColor::LightGray;
-  label_hotkey_fg                   = FColor::Red;
-  label_hotkey_bg                   = FColor::LightGray;
-  label_emphasis_fg                 = FColor::Blue;
-  label_ellipsis_fg                 = FColor::DarkGray;
-  inputfield_active_focus_fg        = FColor::White;
-  inputfield_active_focus_bg        = FColor::Cyan;
-  inputfield_active_fg              = FColor::White;
-  inputfield_active_bg              = FColor::DarkGray;
-  inputfield_inactive_fg            = FColor::DarkGray;
-  inputfield_inactive_bg            = FColor::LightGray;
-  toggle_button_active_focus_fg     = FColor::White;
-  toggle_button_active_focus_bg     = FColor::Cyan;
-  toggle_button_active_fg           = FColor::Black;
-  toggle_button_active_bg           = FColor::LightGray;
-  toggle_button_inactive_fg         = FColor::DarkGray;
-  toggle_button_inactive_bg         = FColor::LightGray;
-  button_active_focus_fg            = FColor::LightGray;
-  button_active_focus_bg            = FColor::Cyan;
-  button_active_fg                  = FColor::LightGray;
-  button_active_bg                  = FColor::DarkGray;
-  button_inactive_fg                = FColor::DarkGray;
-  button_inactive_bg                = FColor::LightBlue;
-  button_hotkey_fg                  = FColor::White;
-  titlebar_active_fg                = FColor::White;
-  titlebar_active_bg                = FColor::DarkGray;
-  titlebar_inactive_fg              = FColor::DarkGray;
-  titlebar_inactive_bg              = FColor::LightBlue;
-  titlebar_button_fg                = FColor::DarkGray;
-  titlebar_button_bg                = FColor::LightBlue;
-  titlebar_button_focus_fg          = FColor::LightGray;
-  titlebar_button_focus_bg          = FColor::Black;
-  menu_active_focus_fg              = FColor::White;
-  menu_active_focus_bg              = FColor::Blue;
-  menu_active_fg                    = FColor::White;
-  menu_active_bg                    = FColor::DarkGray;
-  menu_inactive_fg                  = FColor::LightGray;
-  menu_inactive_bg                  = FColor::DarkGray;
-  menu_hotkey_fg                    = FColor::LightRed;
-  menu_hotkey_bg                    = FColor::DarkGray;
-  statusbar_fg                      = FColor::White;
-  statusbar_bg                      = FColor::DarkGray;
-  statusbar_hotkey_fg               = FColor::LightRed;
-  statusbar_hotkey_bg               = FColor::DarkGray;
-  statusbar_separator_fg            = FColor::LightGray;
-  statusbar_active_fg               = FColor::White;
-  statusbar_active_bg               = FColor::Blue;
-  statusbar_active_hotkey_fg        = FColor::LightRed;
-  statusbar_active_hotkey_bg        = FColor::Blue;
-  scrollbar_fg                      = FColor::DarkGray;
-  scrollbar_bg                      = FColor::LightBlue;
-  scrollbar_button_fg               = FColor::Black;
-  scrollbar_button_bg               = FColor::LightBlue;
-  scrollbar_button_inactive_fg      = FColor::DarkGray;
-  scrollbar_button_inactive_bg      = FColor::LightGray;
-  progressbar_fg                    = FColor::DarkGray;
-  progressbar_bg                    = FColor::LightBlue;
+  term =
+  {
+    FColor::White,      // Foreground
+    FColor::Cyan        // Background
+  };
+
+  dialog =
+  {
+    FColor::Black,      // Foreground
+    FColor::LightGray,  // Background
+    FColor::LightBlue,  // Resize foreground
+    FColor::Blue        // Emphasis foreground
+  };
+
+  error_box =
+  {
+    FColor::White,      // Foreground
+    FColor::Red,        // Background
+    FColor::Yellow      // Emphasis foreground
+  };
+
+  tooltip =
+  {
+    FColor::White,      // Foreground
+    FColor::Black       // Background
+  };
+
+  shadow =
+  {
+    FColor::LightGray,  // Foreground (only for transparent shadow)
+    FColor::Black       // Background
+  };
+
+  current_element =
+  {
+    FColor::LightBlue,  // Foreground
+    FColor::Cyan,       // Background
+    FColor::White,      // Focused foreground
+    FColor::Cyan,       // Focused background
+    FColor::LightRed,   // Incremental search foreground
+    FColor::Red,        // Selected foreground
+    FColor::Cyan,       // Selected background
+    FColor::LightRed,   // Selected focused foreground
+    FColor::Cyan        // Selected focused background
+  };
+
+  list =
+  {
+    FColor::Black,      // Foreground
+    FColor::LightGray,  // Background
+    FColor::Red,        // Selected foreground
+    FColor::LightGray   // Selected background
+  };
+
+  label =
+  {
+    FColor::Black,      // Foreground
+    FColor::LightGray,  // Background
+    FColor::DarkGray,   // Inactive foreground
+    FColor::LightGray,  // Inactive background
+    FColor::Red,        // Hotkey foreground
+    FColor::LightGray,  // Hotkey background
+    FColor::Blue,       // Emphasis foreground
+    FColor::DarkGray    // Ellipsis foreground
+  };
+
+  input_field =
+  {
+    FColor::White,      // Foreground
+    FColor::DarkGray,   // Background
+    FColor::White,      // Focused foreground
+    FColor::Cyan,       // Focused background
+    FColor::DarkGray,   // Inactive foreground
+    FColor::LightGray   // Inactive background
+  };
+
+  toggle_button =
+  {
+    FColor::Black,      // Foreground
+    FColor::LightGray,  // Background
+    FColor::White,      // Focused foreground
+    FColor::Cyan,       // Focused background
+    FColor::DarkGray,   // Inactive foreground
+    FColor::LightGray   // Inactive background
+  };
+
+  button =
+  {
+    FColor::LightGray,  // Foreground
+    FColor::DarkGray,   // Background
+    FColor::LightGray,  // Focused foreground
+    FColor::Cyan,       // Focused background
+    FColor::DarkGray,   // Inactive foreground
+    FColor::LightBlue,  // Inactive background
+    FColor::White       // Hotkey foreground
+  };
+
+  titlebar =
+  {
+    FColor::White,      // Foreground
+    FColor::DarkGray,   // Background
+    FColor::DarkGray,   // Inactive foreground
+    FColor::LightBlue,  // Inactive background
+    FColor::DarkGray,   // Button foreground
+    FColor::LightBlue,  // Button background
+    FColor::LightGray,  // Focused button foreground
+    FColor::Black       // Focused button background
+  };
+
+  menu =
+  {
+    FColor::White,      // Foreground
+    FColor::DarkGray,   // Background
+    FColor::White,      // Focused foreground
+    FColor::Blue,       // Focused background
+    FColor::LightGray,  // Inactive foreground
+    FColor::DarkGray,   // Inactive background
+    FColor::LightRed,   // Hotkey foreground
+    FColor::DarkGray    // Hotkey background
+  };
+
+  statusbar =
+  {
+    FColor::White,      // Foreground
+    FColor::DarkGray,   // Background
+    FColor::White,      // Focused foreground
+    FColor::Blue,       // Focused background
+    FColor::LightGray,  // Separator foreground
+    FColor::LightRed,   // Hotkey foreground
+    FColor::DarkGray,   // Hotkey background
+    FColor::LightRed,   // Focused hotkey foreground
+    FColor::Blue        // Focused hotkey background
+  };
+
+  scrollbar =
+  {
+    FColor::DarkGray,   // Foreground
+    FColor::LightBlue,  // Background
+    FColor::Black,      // Button foreground
+    FColor::LightBlue,  // Button background
+    FColor::DarkGray,   // Inactive button foreground
+    FColor::LightGray   // Inactive button background
+  };
+
+  progressbar =
+  {
+    FColor::DarkGray,   // Foreground
+    FColor::LightBlue   // Background
+  };
 }
 
 }  // namespace finalcut

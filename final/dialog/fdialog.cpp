@@ -136,8 +136,8 @@ void FDialog::setBorder (bool enable)
 void FDialog::resetColors()
 {
   const auto& wc = getColorTheme();
-  setForegroundColor (wc->dialog_fg);
-  setBackgroundColor (wc->dialog_bg);
+  setForegroundColor (wc->dialog.fg);
+  setBackgroundColor (wc->dialog.bg);
   FWidget::resetColors();
 }
 
@@ -993,7 +993,7 @@ void FDialog::drawBorder()
     && ! isZoomed() )
   {
     const auto& wc = getColorTheme();
-    setColor (wc->dialog_resize_fg, getBackgroundColor());
+    setColor (wc->dialog.resize_fg, getBackgroundColor());
   }
   else
     setColor();
@@ -1050,9 +1050,9 @@ void FDialog::drawBarButton()
   const auto& wc = getColorTheme();
 
   if ( dialog_menu.menu && dialog_menu.menu->isShown() )
-    setColor (wc->titlebar_button_focus_fg, wc->titlebar_button_focus_bg);
+    setColor (wc->titlebar.button_focus_fg, wc->titlebar.button_focus_bg);
   else
-    setColor (wc->titlebar_button_fg, wc->titlebar_button_bg);
+    setColor (wc->titlebar.button_fg, wc->titlebar.button_bg);
 
   if ( FVTerm::getFOutput()->isNewFont() )
   {
@@ -1093,9 +1093,9 @@ void FDialog::drawZoomButton()
   const auto& wc = getColorTheme();
 
   if ( titlebar.zoom_button_pressed )
-    setColor (wc->titlebar_button_focus_fg, wc->titlebar_button_focus_bg);
+    setColor (wc->titlebar.button_focus_fg, wc->titlebar.button_focus_bg);
   else
-    setColor (wc->titlebar_button_fg, wc->titlebar_button_bg);
+    setColor (wc->titlebar.button_fg, wc->titlebar.button_bg);
 
   if ( isZoomed() )
     printRestoreSizeButton();
@@ -1114,9 +1114,9 @@ void FDialog::drawMinimizeButton()
   const auto& wc = getColorTheme();
 
   if ( titlebar.minimize_button_pressed )
-    setColor (wc->titlebar_button_focus_fg, wc->titlebar_button_focus_bg);
+    setColor (wc->titlebar.button_focus_fg, wc->titlebar.button_focus_bg);
   else
-    setColor (wc->titlebar_button_fg, wc->titlebar_button_bg);
+    setColor (wc->titlebar.button_fg, wc->titlebar.button_bg);
 
   printMinimizeButton();
 }
@@ -1204,9 +1204,9 @@ void FDialog::drawTextBar()
   const auto& wc = getColorTheme();
 
   if ( isWindowActive() || (dialog_menu.menu && dialog_menu.menu->isShown()) )
-    setColor (wc->titlebar_active_fg, wc->titlebar_active_bg);
+    setColor (wc->titlebar.fg, wc->titlebar.bg);
   else
-    setColor (wc->titlebar_inactive_fg, wc->titlebar_inactive_bg);
+    setColor (wc->titlebar.inactive_fg, wc->titlebar.inactive_bg);
 
   const auto width = getWidth();
   const auto menu_btn = getMenuButtonWidth();

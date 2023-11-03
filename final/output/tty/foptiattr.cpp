@@ -1314,31 +1314,20 @@ auto FOptiAttr::caused_reset_attributes (const char cap[], uChar test) const -> 
 {
   // test if "cap" reset all attributes
 
-  if ( cap )
-  {
-    const auto& ue = F_underline.off.cap;
-    const auto& se = F_standout.off.cap;
-    const auto& me = F_attributes.off.cap;
+  if ( ! cap )
+    return false;
 
-    if ( (test & test_ansi_reset) && std::memcmp (cap, CSI "m", 3) == 0 )
-      return true;
+  const auto& ue = F_underline.off.cap;
+  const auto& se = F_standout.off.cap;
+  const auto& me = F_attributes.off.cap;
 
-    if ( (test & test_adm3_reset) && std::memcmp (cap, ESC "G0", 3) == 0 )
-      return true;
-
-    if ( (test & same_like_ue) && ue && std::strcmp (cap, ue) == 0
-       && std::memcmp (cap, CSI "24m", 5) != 0)
-      return true;
-
-    if ( (test & same_like_se) && se && std::strcmp (cap, se) == 0
-       && std::memcmp (cap, CSI "27m", 5) != 0 )
-      return true;
-
-    if ( (test & same_like_me) && me && std::strcmp (cap, me) == 0 )
-      return true;
-  }
-
-  return false;
+  return ( (test & test_ansi_reset) && std::memcmp (cap, CSI "m", 3) == 0 )
+      || ( (test & test_adm3_reset) && std::memcmp (cap, ESC "G0", 3) == 0 )
+      || ( (test & same_like_ue) && ue && std::strcmp (cap, ue) == 0
+                                 && std::memcmp (cap, CSI "24m", 5) != 0 )
+      || ( (test & same_like_se) && se && std::strcmp (cap, se) == 0
+                                 && std::memcmp (cap, CSI "27m", 5) != 0 )
+      || ( (test & same_like_me) && me && std::strcmp (cap, me) == 0 );
 }
 
 //----------------------------------------------------------------------
@@ -1351,13 +1340,8 @@ inline auto FOptiAttr::hasCharsetEquivalence() const -> bool
   const auto& pc_on   = F_pc_charset.on.cap;
   const auto& pc_off  = F_pc_charset.off.cap;
 
-  if ( alt_on && pc_on && std::strcmp (alt_on, pc_on) == 0 )
-    return true;
-
-  if ( alt_off && pc_off && std::strcmp (alt_off, pc_off) == 0 )
-    return true;
-
-  return false;
+  return ( alt_on && pc_on && std::strcmp (alt_on, pc_on) == 0 )
+      || ( alt_off && pc_off && std::strcmp (alt_off, pc_off) == 0 );
 }
 
 //----------------------------------------------------------------------

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2021 Markus Gans                                      *
+* Copyright 2015-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -147,18 +147,18 @@ inline void FSwitch::drawChecked()
     else if ( FVTerm::getFOutput()->getMaxColor() < 16 )
     {
       setBold(true);
-      setColor (wc->button_active_focus_fg, wc->button_active_focus_bg);
+      setColor (wc->button.focus_fg, wc->button.focus_bg);
     }
     else
-      setColor (wc->button_hotkey_fg, wc->button_active_focus_bg);
+      setColor (wc->button.hotkey_fg, wc->button.focus_bg);
   }
   else
   {
     if ( FVTerm::getFOutput()->isMonochron()
       || FVTerm::getFOutput()->getMaxColor() < 16 )
-      setColor (wc->button_active_focus_fg, wc->button_active_bg);
+      setColor (wc->button.focus_fg, wc->button.bg);
     else
-      setColor (wc->button_hotkey_fg, wc->button_active_bg);
+      setColor (wc->button.hotkey_fg, wc->button.bg);
   }
 
   if ( FVTerm::getFOutput()->isMonochron() )
@@ -173,7 +173,7 @@ inline void FSwitch::drawChecked()
     || FVTerm::getFOutput()->getMaxColor() < 16 )
     setBold(false);
 
-  print() << FColorPair{wc->button_inactive_fg, wc->button_inactive_bg}
+  print() << FColorPair{wc->button.inactive_fg, wc->button.inactive_bg}
           << off;
 
   if ( FVTerm::getFOutput()->isMonochron() )
@@ -189,7 +189,7 @@ inline void FSwitch::drawUnchecked()
   FString off{L" Off "};
 
   const auto& wc = getColorTheme();
-  setColor (wc->button_inactive_fg, wc->button_inactive_bg);
+  setColor (wc->button.inactive_fg, wc->button.inactive_bg);
 
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
@@ -206,18 +206,18 @@ inline void FSwitch::drawUnchecked()
     else if ( FVTerm::getFOutput()->getMaxColor() < 16 )
     {
       setBold(true);
-      setColor (wc->button_active_focus_fg, wc->button_active_focus_bg);
+      setColor (wc->button.focus_fg, wc->button.focus_bg);
     }
     else
-      setColor (wc->button_hotkey_fg, wc->button_active_focus_bg);
+      setColor (wc->button.hotkey_fg, wc->button.focus_bg);
   }
   else
   {
     if ( FVTerm::getFOutput()->isMonochron()
       || FVTerm::getFOutput()->getMaxColor() < 16 )
-      setColor (wc->button_active_focus_fg, wc->button_active_bg);
+      setColor (wc->button.focus_fg, wc->button.bg);
     else
-      setColor (wc->button_hotkey_fg, wc->button_active_bg);
+      setColor (wc->button.hotkey_fg, wc->button.bg);
   }
 
   if ( FVTerm::getFOutput()->isMonochron() )

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2022 Markus Gans                                      *
+* Copyright 2016-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -85,9 +85,9 @@ void Button::setChecked (bool enable)
   else
   {
     const auto& wc = getColorTheme();
-    setBackgroundColor(wc->button_active_bg);
-    setFocusForegroundColor(wc->button_active_focus_fg);
-    setFocusBackgroundColor(wc->button_active_focus_bg);
+    setBackgroundColor(wc->button.bg);
+    setFocusForegroundColor(wc->button.focus_fg);
+    setFocusBackgroundColor(wc->button.focus_bg);
   }
 
   redraw();
@@ -413,7 +413,7 @@ void Calc::drawDispay()
   const auto& wc = getColorTheme();
   print() << FColorPair{FColor::Black, FColor::LightGray}
           << FPoint{3, 3} << display << ' '
-          << FColorPair{wc->dialog_fg, wc->dialog_bg};
+          << FColorPair{wc->dialog.fg, wc->dialog.bg};
 
   if ( finalcut::FVTerm::getFOutput()->isMonochron() )
     setReverse(true);

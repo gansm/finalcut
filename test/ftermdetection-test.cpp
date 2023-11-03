@@ -1801,7 +1801,7 @@ void FTermDetectionTest::ktermTest()
     unsetenv ("TERM");
     data.unsetTermType(finalcut::FTermType::kterm);
     detect.detect();
-    CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
+    CPPUNIT_ASSERT ( ! detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! data.isTermType(finalcut::FTermType::kterm) );
     CPPUNIT_ASSERT ( detect.getTermType() == "vt100" );
     // kterm sends an incorrect secondary DA ("\033[?1;2c")

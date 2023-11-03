@@ -372,8 +372,8 @@ void drawTransparentShadow (FWidget* w)
   {
     { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
     { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
-    wc->shadow_bg,
-    wc->shadow_fg,
+    wc->shadow.fg,
+    wc->shadow.bg,
     { { 0x00, 0x40, 0x00, 0x00} }  // byte 0..3 (byte 1 = 0x64 = color_overlay)
   };
 
@@ -431,34 +431,34 @@ void drawBlockShadow (FWidget* w)
     {
       { { wchar_t(UniChar::LowerHalfBlock),  L'\0', L'\0', L'\0', L'\0' } },  // ▄
       { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
-      wc->shadow_fg,
-      wc->shadow_bg,
+      wc->shadow.bg,
+      FColor::Default,
       { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3 (byte 2 = 0x08 = char_width 1)
     },
     {
       { { wchar_t(UniChar::FullBlock),  L'\0', L'\0', L'\0', L'\0' } },  // █
       { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
-      wc->shadow_fg,
-      wc->shadow_bg,
+      wc->shadow.bg,
+      FColor::Default,
       { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3 (byte 2 = 0x08 = char_width 1)
     },
     {
       { { L' ',  L'\0', L'\0', L'\0', L'\0' } },  // ' '
       { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
-      wc->shadow_fg,
-      wc->shadow_bg,
+      FColor::Default,
+      FColor::Default,
       { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3 (byte 2 = 0x08 = char_width 1)
     },
     {
       { { wchar_t(UniChar::UpperHalfBlock),  L'\0', L'\0', L'\0', L'\0' } },  // ▄
       { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
-      wc->shadow_fg,
-      wc->shadow_bg,
+      wc->shadow.bg,
+      FColor::Default,
       { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3 (byte 2 = 0x08 = char_width 1)
     }
   }};
 
-  if (  w->isWindowWidget() )
+  if ( w->isWindowWidget() )
   {
     shadow_char[0].attr.bit.inherit_background = true;
     shadow_char[1].attr.bit.inherit_background = true;
@@ -482,18 +482,16 @@ void clearBlockShadow (FWidget* w)
   if ( ! w || ! FVTerm::getFOutput()->hasShadowCharacter() )
     return;
 
-  const auto& wc = FWidget::getColorTheme();
-
   FChar spacer_char
   {
     { { L' ',  L'\0', L'\0', L'\0', L'\0' } },  // ' '
     { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
-    wc->shadow_fg,
-    wc->shadow_bg,
+    FColor::Default,
+    FColor::Default,
     { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3 (byte 2 = 0x08 = char_width 1)
   };
 
-  if (  w->isWindowWidget() )
+  if ( w->isWindowWidget() )
     spacer_char.attr.bit.transparent = true;
   else if ( auto p = w->getParentWidget() )
     spacer_char.bg_color = p->getBackgroundColor();
@@ -564,9 +562,9 @@ void drawFlatBorder (FWidget* w)
   const auto& wc = FWidget::getColorTheme();
 
   if ( auto p = w->getParentWidget() )
-    w->setColor (wc->dialog_fg, p->getBackgroundColor());
+    w->setColor (wc->dialog.fg, p->getBackgroundColor());
   else
-    w->setColor (wc->dialog_fg, wc->dialog_bg);
+    w->setColor (wc->dialog.fg, wc->dialog.bg);
 
   for (std::size_t y{0}; y < height; y++)
   {
@@ -625,9 +623,9 @@ void clearFlatBorder (FWidget* w)
   const auto& wc = FWidget::getColorTheme();
 
   if ( auto p = w->getParentWidget() )
-    w->setColor (wc->dialog_fg, p->getBackgroundColor());
+    w->setColor (wc->dialog.fg, p->getBackgroundColor());
   else
-    w->setColor (wc->dialog_fg, wc->dialog_bg);
+    w->setColor (wc->dialog.fg, wc->dialog.bg);
 
   for (std::size_t y{0}; y < height; y++)
   {

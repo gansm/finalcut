@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2022 Markus Gans                                      *
+* Copyright 2016-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -67,27 +67,27 @@ SmallWindow::SmallWindow (finalcut::FWidget* parent)
   const auto arrow_down = finalcut::UniChar::BlackDownPointingTriangle;
 
   left_arrow = arrow_up;
-  left_arrow.setForegroundColor (wc->label_inactive_fg);
+  left_arrow.setForegroundColor (wc->label.inactive_fg);
   left_arrow.setEmphasis();
   left_arrow.ignorePadding();
 
   right_arrow_1 = arrow_up;
-  right_arrow_1.setForegroundColor (wc->label_inactive_fg);
+  right_arrow_1.setForegroundColor (wc->label.inactive_fg);
   right_arrow_1.setEmphasis();
   right_arrow_1.ignorePadding();
 
   right_arrow_2 = arrow_up;
-  right_arrow_2.setForegroundColor (wc->label_inactive_fg);
+  right_arrow_2.setForegroundColor (wc->label.inactive_fg);
   right_arrow_2.setEmphasis();
   right_arrow_2.ignorePadding();
 
   top_left_label.setText("menu");
-  top_left_label.setForegroundColor (wc->label_inactive_fg);
+  top_left_label.setForegroundColor (wc->label.inactive_fg);
   top_left_label.setEmphasis();
 
   top_right_label.setText("minimize/zoom");
   top_right_label.setAlignment (finalcut::Align::Right);
-  top_right_label.setForegroundColor (wc->label_inactive_fg);
+  top_right_label.setForegroundColor (wc->label.inactive_fg);
   top_right_label.setEmphasis();
 
   finalcut::FString bottom_label_text { "resize\n"
@@ -95,7 +95,7 @@ SmallWindow::SmallWindow (finalcut::FWidget* parent)
   bottom_label_text += arrow_down;
   bottom_label = bottom_label_text;
   bottom_label.setAlignment (finalcut::Align::Right);
-  bottom_label.setForegroundColor (wc->label_inactive_fg);
+  bottom_label.setForegroundColor (wc->label.inactive_fg);
   bottom_label.setEmphasis();
 }
 

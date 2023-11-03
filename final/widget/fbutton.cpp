@@ -133,13 +133,13 @@ void FButton::setInactiveBackgroundColor (FColor color)
 void FButton::resetColors()
 {
   const auto& wc = getColorTheme();
-  FButton::setForegroundColor (wc->button_active_fg);
-  FButton::setBackgroundColor (wc->button_active_bg);
-  FButton::setHotkeyForegroundColor (wc->button_hotkey_fg);
-  FButton::setFocusForegroundColor (wc->button_active_focus_fg);
-  FButton::setFocusBackgroundColor (wc->button_active_focus_bg);
-  FButton::setInactiveForegroundColor (wc->button_inactive_fg);
-  FButton::setInactiveBackgroundColor (wc->button_inactive_bg);
+  FButton::setForegroundColor (wc->button.fg);
+  FButton::setBackgroundColor (wc->button.bg);
+  FButton::setHotkeyForegroundColor (wc->button.hotkey_fg);
+  FButton::setFocusForegroundColor (wc->button.focus_fg);
+  FButton::setFocusBackgroundColor (wc->button.focus_bg);
+  FButton::setInactiveForegroundColor (wc->button.inactive_fg);
+  FButton::setInactiveBackgroundColor (wc->button.inactive_bg);
   FWidget::resetColors();
 }
 
@@ -206,8 +206,8 @@ void FButton::hide()
   else
   {
     const auto& wc = getColorTheme();
-    FColor fg = wc->dialog_fg;
-    FColor bg = wc->dialog_bg;
+    FColor fg = wc->dialog.fg;
+    FColor bg = wc->dialog.bg;
     setColor (fg, bg);
   }
 
@@ -360,8 +360,8 @@ void FButton::onFocusOut (FFocusEvent* out_ev)
 void FButton::init()
 {
   const auto& wc = getColorTheme();
-  button_fg = wc->button_active_fg;
-  button_bg = wc->button_active_bg;
+  button_fg = wc->button.fg;
+  button_bg = wc->button.bg;
   FButton::resetColors();
   setShadow();
 

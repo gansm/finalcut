@@ -877,8 +877,8 @@ void FWidgetTest::colorThemeTest()
     const auto& color_theme = root_wdgt.getColorTheme();
     CPPUNIT_ASSERT ( finalcut::FVTerm::getFOutput()->getMaxColor() == 1 );
     // Less than 16 colors -> default8ColorTheme
-    CPPUNIT_ASSERT ( color_theme->term_fg == finalcut::FColor::Black );
-    CPPUNIT_ASSERT ( color_theme->term_bg == finalcut::FColor::Blue );
+    CPPUNIT_ASSERT ( color_theme->term.fg == finalcut::FColor::LightGray );
+    CPPUNIT_ASSERT ( color_theme->term.bg == finalcut::FColor::Blue );
   }
 
   {
@@ -889,8 +889,8 @@ void FWidgetTest::colorThemeTest()
     const auto& color_theme = root_wdgt.getColorTheme();
     CPPUNIT_ASSERT ( finalcut::FVTerm::getFOutput()->getMaxColor() == 8 );
     // Less than 16 colors -> default8ColorTheme
-    CPPUNIT_ASSERT ( color_theme->term_fg == finalcut::FColor::Black );
-    CPPUNIT_ASSERT ( color_theme->term_bg == finalcut::FColor::Blue );
+    CPPUNIT_ASSERT ( color_theme->term.fg == finalcut::FColor::LightGray );
+    CPPUNIT_ASSERT ( color_theme->term.bg == finalcut::FColor::Blue );
   }
 
   {
@@ -901,8 +901,8 @@ void FWidgetTest::colorThemeTest()
     const auto& color_theme = root_wdgt.getColorTheme();
     CPPUNIT_ASSERT ( finalcut::FVTerm::getFOutput()->getMaxColor() == 16 );
     // At least 16 colors or more -> default16ColorTheme
-    CPPUNIT_ASSERT ( color_theme->term_fg == finalcut::FColor::Black );
-    CPPUNIT_ASSERT ( color_theme->term_bg == finalcut::FColor::LightBlue );
+    CPPUNIT_ASSERT ( color_theme->term.fg == finalcut::FColor::Black );
+    CPPUNIT_ASSERT ( color_theme->term.bg == finalcut::FColor::LightBlue );
   }
 }
 
@@ -928,8 +928,8 @@ void FWidgetTest::resetColorsTest()
       void resetColors() override
       {
         const auto& wc = getColorTheme();
-        setForegroundColor (wc->dialog_fg);
-        setBackgroundColor (wc->dialog_bg);
+        setForegroundColor (wc->dialog.fg);
+        setBackgroundColor (wc->dialog.bg);
         FWidget::resetColors();
       }
   };

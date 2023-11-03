@@ -157,8 +157,8 @@ void FButtonGroup::hide()
   else
   {
     const auto& wc = getColorTheme();
-    FColor fg = wc->dialog_fg;
-    FColor bg = wc->dialog_bg;
+    FColor fg = wc->dialog.fg;
+    FColor bg = wc->dialog.bg;
     setColor (fg, bg);
   }
 

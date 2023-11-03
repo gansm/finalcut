@@ -108,8 +108,8 @@ void FTextView::setGeometry ( const FPoint& pos, const FSize& size
 void FTextView::resetColors()
 {
   const auto& wc = getColorTheme();
-  setForegroundColor (wc->dialog_fg);
-  setBackgroundColor (wc->dialog_bg);
+  setForegroundColor (wc->dialog.fg);
+  setBackgroundColor (wc->dialog.bg);
   FWidget::resetColors();
 }
 

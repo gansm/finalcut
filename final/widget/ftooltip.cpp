@@ -77,8 +77,8 @@ void FToolTip::setText (const FString& txt)
 void FToolTip::resetColors()
 {
   const auto& wc = getColorTheme();
-  setForegroundColor (wc->tooltip_fg);
-  setBackgroundColor (wc->tooltip_bg);
+  setForegroundColor (wc->tooltip.fg);
+  setBackgroundColor (wc->tooltip.bg);
   FWidget::resetColors();
 }
 

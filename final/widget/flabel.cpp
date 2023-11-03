@@ -118,8 +118,8 @@ void FLabel::resetColors()
 {
   useParentWidgetColor();
   const auto& wc = getColorTheme();
-  emphasis_color = wc->label_emphasis_fg;
-  ellipsis_color = wc->label_ellipsis_fg;
+  emphasis_color = wc->label.emphasis_fg;
+  ellipsis_color = wc->label.ellipsis_fg;
 }
 
 //----------------------------------------------------------------------
@@ -314,7 +314,7 @@ void FLabel::drawSingleLine()
 void FLabel::printHotkeyChar (wchar_t ch)
 {
   const auto& wc = getColorTheme();
-  setColor (wc->label_hotkey_fg, wc->label_hotkey_bg);
+  setColor (wc->label.hotkey_fg, wc->label.hotkey_bg);
 
   if ( ! getFlags().feature.no_underline )
     setUnderline();

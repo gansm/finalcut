@@ -1796,7 +1796,7 @@ void FListView::clearList()
   // Clear list from terminal screen
 
   const auto& wc = getColorTheme();
-  setColor (wc->list_fg, wc->list_bg);
+  setColor (wc->list.fg, wc->list.bg);
   const std::size_t size = getWidth() - 2;
   drawBorder();
   drawHeadlines();
@@ -1817,7 +1817,7 @@ inline void FListView::setLineAttributes ( bool is_current
                                          , bool is_focus ) const
 {
   const auto& wc = getColorTheme();
-  setColor (wc->list_fg, wc->list_bg);
+  setColor (wc->list.fg, wc->list.bg);
 
   if ( is_current )
   {
@@ -1829,12 +1829,12 @@ inline void FListView::setLineAttributes ( bool is_current
 
     if ( is_focus )
     {
-      setColor ( wc->current_element_focus_fg
-               , wc->current_element_focus_bg );
+      setColor ( wc->current_element.focus_fg
+               , wc->current_element.focus_bg );
     }
     else
-      setColor ( wc->current_element_fg
-               , wc->current_element_bg );
+      setColor ( wc->current_element.fg
+               , wc->current_element.bg );
 
     if ( FVTerm::getFOutput()->isMonochron() )
       setReverse(false);
@@ -1961,9 +1961,9 @@ void FListView::drawHeadlineLabel (const HeaderItems::const_iterator& iter)
   const auto& wc = getColorTheme();
 
   if ( isEnabled() )
-    setColor (wc->label_emphasis_fg, wc->label_bg);
+    setColor (wc->label.emphasis_fg, wc->label.bg);
   else
-    setColor (wc->label_inactive_fg, wc->label_inactive_bg);
+    setColor (wc->label.inactive_fg, wc->label.inactive_bg);
 
   if ( has_sort_indicator && column_width >= column_max - 1 && column_width > 1 )
   {
@@ -2112,7 +2112,7 @@ void FListView::drawColumnEllipsis ( const HeaderItems::const_iterator& iter
 
   data.headerline << ' '
                   << getColumnSubString (text, 1, uInt(width - ellipsis_length))
-                  << FColorPair {wc->label_ellipsis_fg, wc->label_bg}
+                  << FColorPair {wc->label.ellipsis_fg, wc->label.bg}
                   << "..";
 
   if ( iter == data.header.cend() - 1 )  // Last element

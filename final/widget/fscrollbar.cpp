@@ -470,7 +470,7 @@ void FScrollbar::draw()
 void FScrollbar::drawVerticalBar()
 {
   const auto& wc = getColorTheme();
-  setColor (wc->scrollbar_fg, wc->scrollbar_bg);
+  setColor (wc->scrollbar.fg, wc->scrollbar.bg);
 
   for (auto z{1}; z <= slider_pos; z++)
   {
@@ -478,7 +478,7 @@ void FScrollbar::drawVerticalBar()
     drawVerticalBackgroundLine();
   }
 
-  setColor (wc->scrollbar_bg, wc->scrollbar_fg);
+  setColor (wc->scrollbar.bg, wc->scrollbar.fg);
 
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
@@ -496,7 +496,7 @@ void FScrollbar::drawVerticalBar()
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
-  setColor (wc->scrollbar_fg, wc->scrollbar_bg);
+  setColor (wc->scrollbar.fg, wc->scrollbar.bg);
 
   for (auto z = slider_pos + int(slider_length) + 1; z <= int(bar_length); z++)
   {
@@ -531,7 +531,7 @@ inline void FScrollbar::drawVerticalBackgroundLine()
 void FScrollbar::drawHorizontalBar()
 {
   const auto& wc = getColorTheme();
-  setColor (wc->scrollbar_fg, wc->scrollbar_bg);
+  setColor (wc->scrollbar.fg, wc->scrollbar.bg);
 
   if ( FVTerm::getFOutput()->isNewFont() )
     print() << FPoint{3, 1};
@@ -541,7 +541,7 @@ void FScrollbar::drawHorizontalBar()
   for (auto z{0}; z < slider_pos; z++)
     drawHorizontalBackgroundColumn();
 
-  setColor (wc->scrollbar_bg, wc->scrollbar_fg);
+  setColor (wc->scrollbar.bg, wc->scrollbar.fg);
 
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
@@ -552,7 +552,7 @@ void FScrollbar::drawHorizontalBar()
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
-  setColor (wc->scrollbar_fg, wc->scrollbar_bg);
+  setColor (wc->scrollbar.fg, wc->scrollbar.bg);
   int z = slider_pos + int(slider_length) + 1;
 
   for (; z <= int(bar_length); z++)
@@ -577,7 +577,7 @@ inline void FScrollbar::drawHorizontalBackgroundColumn()
 void FScrollbar::drawButtons()
 {
   const auto& wc = getColorTheme();
-  setColor (wc->scrollbar_button_fg, wc->scrollbar_button_bg);
+  setColor (wc->scrollbar.button_fg, wc->scrollbar.button_bg);
 
   if ( FVTerm::getFOutput()->isNewFont() )
   {
