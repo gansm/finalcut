@@ -368,6 +368,10 @@ class FMouseX11 final : public FMouse
     // Methods
     void setKeyState (int) noexcept;
     void setMoveState (const FPoint&, int) noexcept;
+    bool isMouseClickButton (const int) const noexcept;
+    bool isMouseWheelButton (const int) const noexcept;
+    void handleMouseClickButton (int, const TimeValue&) noexcept;
+    void handleMouseWheelButton (int) noexcept;
     void setButtonState (const int, const TimeValue&) noexcept;
     void handleButton1Pressed (const TimeValue& time) noexcept;
     void handleButtonRelease() noexcept;
@@ -427,6 +431,10 @@ class FMouseSGR final : public FMouse
     // Methods
     void setKeyState (int) noexcept;
     void setMoveState (const FPoint&, int) noexcept;
+    bool isMouseClickButton (const int) const noexcept;
+    bool isMouseWheelButton (const int) const noexcept;
+    void handleMouseClickButton (int, const TimeValue&) noexcept;
+    void handleMouseWheelButton (int) noexcept;
     void setPressedButtonState (const int, const TimeValue&) noexcept;
     void handleButton1Pressed (const TimeValue& time) noexcept;
     void setReleasedButtonState (const int) noexcept;
@@ -485,8 +493,12 @@ class FMouseUrxvt final : public FMouse
     // Methods
     void setKeyState (int) noexcept;
     void setMoveState (const FPoint&, int) noexcept;
-    void setButtonState (const int, const TimeValue&) noexcept;
+    bool isMouseClickButton (const int) const noexcept;
+    bool isMouseWheelButton (const int) const noexcept;
+    void handleMouseClickButton (int, const TimeValue&) noexcept;
     void handleButtonRelease() noexcept;
+    void handleMouseWheelButton (int) noexcept;
+    void setButtonState (const int, const TimeValue&) noexcept;
 
     // Data members
     std::array<char, MOUSE_BUF_SIZE>  urxvt_mouse{};

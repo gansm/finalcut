@@ -707,10 +707,29 @@ void FMouseX11::setMoveState (const FPoint& mouse_position, int btn) noexcept
 }
 
 //----------------------------------------------------------------------
-void FMouseX11::setButtonState (const int btn, const TimeValue& time) noexcept
+bool FMouseX11::isMouseClickButton (const int btn) const noexcept
 {
-  // Get the x11 mouse button state
+  return btn == button1_pressed
+      || btn == button2_pressed
+      || btn == button3_pressed
+      || btn == button1_pressed_move
+      || btn == button2_pressed_move
+      || btn == button3_pressed_move;
+}
 
+//----------------------------------------------------------------------
+bool FMouseX11::isMouseWheelButton (const int btn) const noexcept
+{
+  return btn == button_up
+      || btn == button_down
+      || btn == button_left
+      || btn == button_right;
+}
+
+//----------------------------------------------------------------------
+void FMouseX11::handleMouseClickButton ( int btn
+                                       , const TimeValue& time) noexcept
+{
   switch ( btn )
   {
     case button1_pressed:
@@ -730,32 +749,55 @@ void FMouseX11::setButtonState (const int btn, const TimeValue& time) noexcept
       getButtonState().right_button = State::Pressed;
       break;
 
-    case all_buttons_released:
-      handleButtonRelease();
-      break;
+      default:
+        break;
+  }
+}
 
+//----------------------------------------------------------------------
+void FMouseX11::handleMouseWheelButton (int btn) noexcept
+{
+  resetMousePressedTime();
+
+  switch ( btn )
+  {
     case button_up:
-      resetMousePressedTime();
       getButtonState().wheel_up = true;
       break;
 
     case button_down:
-      resetMousePressedTime();
       getButtonState().wheel_down = true;
       break;
 
     case button_left:
-      resetMousePressedTime();
       getButtonState().wheel_left = true;
       break;
 
     case button_right:
-      resetMousePressedTime();
       getButtonState().wheel_right = true;
       break;
 
       default:
         break;
+  }
+}
+
+//----------------------------------------------------------------------
+void FMouseX11::setButtonState (const int btn, const TimeValue& time) noexcept
+{
+  // Get the x11 mouse button state
+
+  if ( isMouseClickButton(btn) )
+  {
+    handleMouseClickButton (btn, time);
+  }
+  else if ( btn == all_buttons_released )
+  {
+    handleButtonRelease();
+  }
+  else if ( isMouseWheelButton(btn) )
+  {
+    handleMouseWheelButton(btn);
   }
 }
 
@@ -947,11 +989,29 @@ void FMouseSGR::setMoveState (const FPoint& mouse_position, int btn) noexcept
 }
 
 //----------------------------------------------------------------------
-void FMouseSGR::setPressedButtonState ( const int btn
-                                      , const TimeValue& time ) noexcept
+bool FMouseSGR::isMouseClickButton (const int btn) const noexcept
 {
-  // Gets the extended x11 mouse mode (SGR) status for pressed buttons
+  return btn == button1
+      || btn == button2
+      || btn == button3
+      || btn == button1_move
+      || btn == button2_move
+      || btn == button3_move;
+}
 
+//----------------------------------------------------------------------
+bool FMouseSGR::isMouseWheelButton (const int btn) const noexcept
+{
+  return btn == button_up
+      || btn == button_down
+      || btn == button_left
+      || btn == button_right;
+}
+
+//----------------------------------------------------------------------
+void FMouseSGR::handleMouseClickButton ( int btn
+                                       , const TimeValue& time) noexcept
+{
   switch ( btn )
   {
     case button1:
@@ -971,28 +1031,52 @@ void FMouseSGR::setPressedButtonState ( const int btn
       getButtonState().right_button = State::Pressed;
       break;
 
+    default:
+      break;
+  }
+}
+
+//----------------------------------------------------------------------
+void FMouseSGR::handleMouseWheelButton (int btn) noexcept
+{
+  resetMousePressedTime();
+
+  switch ( btn )
+  {
     case button_up:
-      resetMousePressedTime();
       getButtonState().wheel_up = true;
       break;
 
     case button_down:
-      resetMousePressedTime();
       getButtonState().wheel_down = true;
       break;
 
     case button_left:
-      resetMousePressedTime();
       getButtonState().wheel_left = true;
       break;
 
     case button_right:
-      resetMousePressedTime();
       getButtonState().wheel_right = true;
       break;
 
     default:
       break;
+  }
+}
+
+//----------------------------------------------------------------------
+void FMouseSGR::setPressedButtonState ( const int btn
+                                      , const TimeValue& time ) noexcept
+{
+  // Gets the extended x11 mouse mode (SGR) status for pressed buttons
+
+  if ( isMouseClickButton(btn) )
+  {
+    handleMouseClickButton (btn, time);
+  }
+  else if ( isMouseWheelButton(btn) )
+  {
+    handleMouseWheelButton(btn);
   }
 }
 
@@ -1202,68 +1286,55 @@ void FMouseUrxvt::setMoveState (const FPoint& mouse_position, int btn) noexcept
 }
 
 //----------------------------------------------------------------------
-void FMouseUrxvt::setButtonState (const int btn, const TimeValue& time) noexcept
+bool FMouseUrxvt::isMouseClickButton (const int btn) const noexcept
 {
-  // Get the urxvt mouse button state
+  return btn == button1_pressed
+      || btn == button2_pressed
+      || btn == button3_pressed
+      || btn == button1_pressed_move
+      || btn == button2_pressed_move
+      || btn == button3_pressed_move;
+}
 
+//----------------------------------------------------------------------
+bool FMouseUrxvt::isMouseWheelButton (const int btn) const noexcept
+{
+  return btn == button_up
+      || btn == button_down
+      || btn == button_left
+      || btn == button_right;
+}
+
+//----------------------------------------------------------------------
+void FMouseUrxvt::handleMouseClickButton ( int btn
+                                         , const TimeValue& time) noexcept
+{
   const auto& mouse_position = getPos();
 
-  switch ( btn )
+  if ( btn == button1_pressed || btn == button1_pressed_move )
   {
-    case button1_pressed:
-    case button1_pressed_move:
-      if ( mouse_position == getNewPos()
-        && urxvt_button_state == all_buttons_released
-        && ! isDblclickTimeout(getMousePressedTime()) )
-      {
-        resetMousePressedTime();
-        getButtonState().left_button = State::DoubleClick;
-      }
-      else
-      {
-        setMousePressedTime (time);  // save click time
-        getButtonState().left_button = State::Pressed;
-      }
-      break;
-
-    case button2_pressed:
-    case button2_pressed_move:
+    if ( mouse_position == getNewPos()
+      && urxvt_button_state == all_buttons_released
+      && ! isDblclickTimeout(getMousePressedTime()) )
+    {
       resetMousePressedTime();
-      getButtonState().middle_button = State::Pressed;
-      break;
-
-    case button3_pressed:
-    case button3_pressed_move:
-      resetMousePressedTime();
-      getButtonState().right_button = State::Pressed;
-      break;
-
-    case all_buttons_released:
-      handleButtonRelease();
-      break;
-
-    case button_up:
-      resetMousePressedTime();
-      getButtonState().wheel_up = true;
-      break;
-
-    case button_down:
-      resetMousePressedTime();
-      getButtonState().wheel_down = true;
-      break;
-
-    case button_left:
-      resetMousePressedTime();
-      getButtonState().wheel_left = true;
-      break;
-
-    case button_right:
-      resetMousePressedTime();
-      getButtonState().wheel_right = true;
-      break;
-
-      default:
-        break;
+      getButtonState().left_button = State::DoubleClick;
+    }
+    else
+    {
+      setMousePressedTime(time); // save click time
+      getButtonState().left_button = State::Pressed;
+    }
+  }
+  else if ( btn == button2_pressed || btn == button2_pressed_move )
+  {
+    resetMousePressedTime();
+    getButtonState().middle_button = State::Pressed;
+  }
+  else if ( btn == button3_pressed || btn == button3_pressed_move )
+  {
+    resetMousePressedTime();
+    getButtonState().right_button = State::Pressed;
   }
 }
 
@@ -1289,6 +1360,53 @@ void FMouseUrxvt::handleButtonRelease() noexcept
 
     default:
       break;
+  }
+}
+
+//----------------------------------------------------------------------
+void FMouseUrxvt::handleMouseWheelButton (int btn) noexcept
+{
+  resetMousePressedTime();
+
+  switch ( btn )
+  {
+    case button_up:
+      getButtonState().wheel_up = true;
+      break;
+
+    case button_down:
+      getButtonState().wheel_down = true;
+      break;
+
+    case button_left:
+      getButtonState().wheel_left = true;
+      break;
+
+    case button_right:
+      getButtonState().wheel_right = true;
+      break;
+
+    default:
+      break;
+  }
+}
+
+//----------------------------------------------------------------------
+void FMouseUrxvt::setButtonState (const int btn, const TimeValue& time) noexcept
+{
+  // Get the urxvt mouse button state
+
+  if ( isMouseClickButton(btn) )
+  {
+    handleMouseClickButton (btn, time);
+  }
+  else if ( btn == all_buttons_released )
+  {
+    handleButtonRelease();
+  }
+  else if ( isMouseWheelButton(btn) )
+  {
+    handleMouseWheelButton(btn);
   }
 }
 
