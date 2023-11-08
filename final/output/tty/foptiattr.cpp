@@ -1083,7 +1083,7 @@ inline void FOptiAttr::prevent_no_color_video_attributes ( FChar& attr
     if ( ! bit )
       continue;
 
-    auto handler = no_color_video_handlers[ffs(bit)];
+    const auto& handler = no_color_video_handlers[ffs(bit)];
 
     if ( handler )
       handler(this, attr);
