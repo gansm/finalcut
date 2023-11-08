@@ -25,8 +25,10 @@
 #endif
 
 #include <array>
+#include <functional>
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 #include "final/fapplication.h"
 #include "final/fc.h"
@@ -688,78 +690,52 @@ auto FTermDetection::getSecDA() const -> FString
 auto FTermDetection::secDA_Analysis (const FString& current_termtype) -> FString
 {
   FString new_termtype{current_termtype};
+  int terminal_id_type = secondary_da.terminal_id_type;
 
-  switch ( secondary_da.terminal_id_type )
+  // Define a map that associates terminal ID types with functions
+  std::unordered_map<int, std::function<FString(const FString&)>> analysis_functions =
   {
-    case 0:  // DEC VT100
-      new_termtype = secDA_Analysis_0(current_termtype);
-      break;
+    // DEC VT100
+    { 0, [this] (const auto& s) { return secDA_Analysis_0(s); } },
+    // DEC VT220
+    { 1, [this] (const auto& s) { return secDA_Analysis_1(s); } },
+    // DEC VT240
+    { 2, [this] (const auto& s) { return secDA_Analysis_24(s); } },
+    // DEC VT330
+    { 18, [this] (const auto& s) { return secDA_Analysis_24(s); } },
+    // DEC VT340
+    { 19, [this] (const auto& s) { return secDA_Analysis_24(s); } },
+    // DEC VT320
+    { 24, [this] (const auto& s) { return secDA_Analysis_24(s); } },
+    // Tera Term
+    { 32, [this] (const auto&) { return secDA_Analysis_32(); } },
+    // DEC VT420
+    { 41, [] (const auto& s) { return s; } },
+    // DEC VT510
+    { 61, [] (const auto& s) { return s; } },
+    // DEC VT520
+    { 64, [] (const auto& s) { return s; } },
+    // DEC VT525
+    { 65, [this] (const auto& s) { return secDA_Analysis_65(s); } },
+    // Cygwin
+    { 67, [this] (const auto&) { return secDA_Analysis_67(); } },
+    // mintty
+    { 77, [this] (const auto&) { return secDA_Analysis_77(); } },
+    // rxvt
+    { 82, [this] (const auto&) { return secDA_Analysis_82(); } },
+    // screen
+    { 83, [this] (const auto& s) { return secDA_Analysis_83(s); } },
+    // tmux
+    { 84, [this] (const auto& s) { return secDA_Analysis_84(s); } },
+    // rxvt-unicode
+    { 85, [this] (const auto&) { return secDA_Analysis_85(); } }
+  };
 
-    case 1:  // DEC VT220
-      new_termtype = secDA_Analysis_1(current_termtype);
-      break;
+  // Check if the terminal ID type is in the map
+  if ( analysis_functions.find(terminal_id_type) != analysis_functions.end() )
+    new_termtype = analysis_functions[terminal_id_type](current_termtype);
 
-    case 2:   // DEC VT240
-    case 18:  // DEC VT330
-    case 19:  // DEC VT340
-
-    case 24:  // DEC VT320
-      new_termtype = secDA_Analysis_24(current_termtype);
-      break;
-
-    case 32:  // Tera Term
-      new_termtype = secDA_Analysis_32();
-      break;
-
-    case 41:  // DEC VT420
-    case 61:  // DEC VT510
-    case 64:  // DEC VT520
-      break;
-
-    case 65:  // DEC VT525
-      new_termtype = secDA_Analysis_65(current_termtype);
-      break;
-
-    case 67:  // Cygwin
-      new_termtype = secDA_Analysis_67();
-      break;
-
-    case 77:  // mintty
-      new_termtype = secDA_Analysis_77();
-      break;
-
-    case 82:  // rxvt
-      new_termtype = secDA_Analysis_82();
-      break;
-
-    case 83:  // screen
-      new_termtype = secDA_Analysis_83(current_termtype);
-      break;
-
-    case 84:  // tmux
-      new_termtype = secDA_Analysis_84(current_termtype);
-      break;
-
-    case 85:  // rxvt-unicode
-      new_termtype = secDA_Analysis_85();
-      break;
-
-    default:
-      break;
-  }
-
-  // Correct false assumptions
-  auto& fterm_data = FTermData::getInstance();
-
-  if ( fterm_data.isTermType(FTermType::gnome_terminal)
-    && secondary_da.terminal_id_type != 1
-    && secondary_da.terminal_id_type != 65 )
-    fterm_data.unsetTermType (FTermType::gnome_terminal);
-
-  if ( fterm_data.isTermType(FTermType::kde_konsole)
-    && secondary_da.terminal_id_type != 0 )
-    fterm_data.unsetTermType (FTermType::kde_konsole);
-
+  correctFalseAssumptions(terminal_id_type);
   return new_termtype;
 }
 
@@ -979,6 +955,22 @@ inline auto FTermDetection::secDA_Analysis_kitty (const FString& current_termtyp
   }
 
   return new_termtype;
+}
+
+//----------------------------------------------------------------------
+inline void FTermDetection::correctFalseAssumptions (int terminal_id_type)
+{
+  // Correct false assumptions
+  auto& fterm_data = FTermData::getInstance();
+
+  if ( fterm_data.isTermType(FTermType::gnome_terminal)
+    && terminal_id_type != 1
+    && terminal_id_type != 65 )
+    fterm_data.unsetTermType (FTermType::gnome_terminal);
+
+  if ( fterm_data.isTermType(FTermType::kde_konsole)
+    && terminal_id_type != 0 )
+    fterm_data.unsetTermType (FTermType::kde_konsole);
 }
 
 }  // namespace finalcut

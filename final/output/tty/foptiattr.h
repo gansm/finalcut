@@ -194,6 +194,8 @@ class FOptiAttr final
     };
 
     using AttributeHandlers = std::array<AttributeHandlerEntry, 13>;
+    using NoColorVideoHandler = std::function<void(FOptiAttr*, FChar&)>;
+    using NoColorVideoHandlerTable = std::array<NoColorVideoHandler, 18>;
 
     // Enumerations
     enum init_reset_tests
@@ -205,27 +207,6 @@ class FOptiAttr final
       same_like_se    = 0x08,
       same_like_me    = 0x10,
       all_tests       = 0x1f
-    };
-
-    enum attr_modes
-    {
-      standout_mode    = 1,
-      underline_mode   = 2,
-      reverse_mode     = 4,
-      blink_mode       = 8,
-      dim_mode         = 16,
-      bold_mode        = 32,
-      invisible_mode   = 64,
-      protected_mode   = 128,
-      alt_charset_mode = 256,
-      horizontal_mode  = 512,
-      left_mode        = 1024,
-      low_mode         = 2048,
-      right_mode       = 4096,
-      top_mode         = 8192,
-      vertical_mode    = 16384,
-      italic_mode      = 32768,
-      no_mode          = 65536
     };
 
     // Mutators
@@ -267,9 +248,14 @@ class FOptiAttr final
     static auto hasColor (const FChar&) -> bool;
     static auto hasAttribute (const FChar&) -> bool;
     static auto hasNoAttribute (const FChar&) -> bool;
+    auto        isItalicsUsed (const FChar&, const FChar&) const -> bool;
+    auto        isCrossedOutUsed (const FChar&, const FChar&) const -> bool;
+    auto        isDoubleUnderlineUsed (const FChar&, const FChar&) const -> bool;
+    auto        isPCcharsetUsed (const FChar&, const FChar&) const -> bool;
+    auto        isPCcharsetUsable (FChar&, const FChar&) -> bool;
+    auto        hasColorChanged (const FChar&, const FChar&) const -> bool;
 
     // Methods
-    auto        hasColorChanged (const FChar&, const FChar&) const -> bool;
     void        resetColor (FChar&) const;
     void        prevent_no_color_video_attributes (FChar&, bool = false);
     void        deactivateAttributes (FChar&, FChar&);
@@ -282,6 +268,7 @@ class FOptiAttr final
     void        reset (FChar&) const;
     auto        caused_reset_attributes (const char[], uChar = all_tests) const -> bool;
     auto        hasCharsetEquivalence() const -> bool;
+    static auto getNoColorVideoHandlerTable() -> const NoColorVideoHandlerTable&;
     static auto getAttributeOnHandlers() -> const AttributeHandlers&;
     static auto getAttributeOffHandlers() -> const AttributeHandlers&;
     static auto getByte0ReverseMask() -> uInt8;

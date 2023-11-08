@@ -135,6 +135,7 @@ class FTermDetection final
     auto  secDA_Analysis_85 () const -> FString;
     auto  secDA_Analysis_vte (const FString&) -> FString;
     auto  secDA_Analysis_kitty (const FString&) -> FString;
+    void  correctFalseAssumptions (int);
 
     // Data members
 #if DEBUG

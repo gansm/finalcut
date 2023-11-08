@@ -999,6 +999,50 @@ auto FOptiAttr::hasNoAttribute (const FChar& attr) -> bool
 }
 
 //----------------------------------------------------------------------
+inline auto FOptiAttr::isItalicsUsed ( const FChar& term
+                                     , const FChar& next ) const -> bool
+{
+  return ! term.attr.bit.italic && next.attr.bit.italic;
+}
+
+//----------------------------------------------------------------------
+inline auto FOptiAttr::isCrossedOutUsed ( const FChar& term
+                                        , const FChar& next ) const -> bool
+{
+  return ! term.attr.bit.crossed_out && next.attr.bit.crossed_out;
+}
+
+//----------------------------------------------------------------------
+inline auto FOptiAttr::isDoubleUnderlineUsed ( const FChar& term
+                                             , const FChar& next ) const -> bool
+{
+  return ! term.attr.bit.dbl_underline && next.attr.bit.dbl_underline;
+}
+
+//----------------------------------------------------------------------
+inline auto FOptiAttr::isPCcharsetUsed ( const FChar& term
+                                       , const FChar& next ) const -> bool
+{
+  return ! term.attr.bit.pc_charset && next.attr.bit.pc_charset;
+}
+
+//----------------------------------------------------------------------
+inline auto FOptiAttr::isPCcharsetUsable ( FChar& term
+                                         , const FChar& next ) -> bool
+{
+  if ( alt_equal_pc_charset
+    && F_pc_charset.on.cap
+    && next.attr.bit.alt_charset )
+  {
+    term.attr.bit.pc_charset = next.attr.bit.pc_charset;
+    changes.off.attr.bit.pc_charset = false;
+    return false;
+  }
+
+  return true;
+}
+
+//----------------------------------------------------------------------
 inline auto FOptiAttr::hasColorChanged ( const FChar& term
                                        , const FChar& next ) const -> bool
 {
@@ -1021,11 +1065,12 @@ inline void FOptiAttr::resetColor (FChar& attr) const
 inline void FOptiAttr::prevent_no_color_video_attributes ( FChar& attr
                                                          , bool next_has_color )
 {
-  // Ignore attributes which can not combined with a color
+  // Ignore video attributes which can not combined with a color
 
   if ( ! (hasColor(attr) || next_has_color) || F_color.attr_without_color <= 0 )
     return;
 
+  static const auto& no_color_video_handlers = getNoColorVideoHandlerTable();
   auto set_bits = uInt(F_color.attr_without_color);
 
   while ( set_bits )
@@ -1033,51 +1078,8 @@ inline void FOptiAttr::prevent_no_color_video_attributes ( FChar& attr
     uInt bit = set_bits & (~set_bits + 1);  // Get rightmost set bit
     set_bits &= ~bit;  // Clear rightmost set bit
 
-    switch ( bit )
-    {
-      case standout_mode:
-        attr.attr.bit.standout = false;
-        break;
-
-      case underline_mode:
-        attr.attr.bit.underline = false;
-        break;
-
-      case reverse_mode:
-        fake_reverse = true;
-        break;
-
-      case blink_mode:
-        attr.attr.bit.blink = false;
-        break;
-
-      case dim_mode:
-        attr.attr.bit.dim = false;
-        break;
-
-      case bold_mode:
-        attr.attr.bit.bold = false;
-        break;
-
-      case invisible_mode:
-        attr.attr.bit.invisible = false;
-        break;
-
-      case protected_mode:
-        attr.attr.bit.protect = false;
-        break;
-
-      case alt_charset_mode:
-        attr.attr.bit.alt_charset = false;
-        break;
-
-      case italic_mode:
-        attr.attr.bit.italic = false;
-        break;
-
-      default:
-        break;  // Unknown attribute mode
-    }
+    if ( bit )
+      no_color_video_handlers[ffs(bit)](this, attr);
   }
 }
 
@@ -1107,8 +1109,6 @@ inline void FOptiAttr::deactivateAttributes (FChar& term, FChar& next)
 //----------------------------------------------------------------------
 inline void FOptiAttr::changeAttributeSGR (FChar& term, FChar& next)
 {
-  bool pc_charset_usable{true};
-
   if ( switchOn() || switchOff() )
     setTermAttributes ( term
                       , { next.attr.bit.standout
@@ -1121,29 +1121,21 @@ inline void FOptiAttr::changeAttributeSGR (FChar& term, FChar& next)
                         , next.attr.bit.protect
                         , next.attr.bit.alt_charset } );
 
-  if ( alt_equal_pc_charset
-    && F_pc_charset.on.cap
-    && next.attr.bit.alt_charset )
-  {
-    term.attr.bit.pc_charset = next.attr.bit.pc_charset;
-    changes.off.attr.bit.pc_charset = false;
-    pc_charset_usable = false;
-  }
+  auto pc_charset_usable = isPCcharsetUsable(term, next);
 
   if ( changes.off.attr.bit.pc_charset )
     unsetTermPCcharset(term);
 
-  if ( ! term.attr.bit.italic && next.attr.bit.italic )
+  if ( isItalicsUsed(term, next) )
     setTermItalic(term);
 
-  if ( ! term.attr.bit.crossed_out && next.attr.bit.crossed_out )
+  if ( isCrossedOutUsed(term, next) )
     setTermCrossedOut(term);
 
-  if ( ! term.attr.bit.dbl_underline && next.attr.bit.dbl_underline )
+  if ( isDoubleUnderlineUsed(term, next) )
     setTermDoubleUnderline(term);
 
-  if ( ! term.attr.bit.pc_charset && next.attr.bit.pc_charset
-    && pc_charset_usable )
+  if ( isPCcharsetUsed(term, next) && pc_charset_usable )
     setTermPCcharset(term);
 
   if ( hasColorChanged(term, next) )
@@ -1342,6 +1334,37 @@ inline auto FOptiAttr::hasCharsetEquivalence() const -> bool
 
   return ( alt_on && pc_on && std::strcmp (alt_on, pc_on) == 0 )
       || ( alt_off && pc_off && std::strcmp (alt_off, pc_off) == 0 );
+}
+
+//----------------------------------------------------------------------
+auto FOptiAttr::getNoColorVideoHandlerTable() -> const NoColorVideoHandlerTable&
+{
+  static const auto& no_color_video_handlers = std::make_unique<NoColorVideoHandlerTable>
+  (
+    NoColorVideoHandlerTable
+    {{
+      [] (FOptiAttr*, FChar&) {},                                             // No bit set (0)
+      [] (FOptiAttr*, FChar& fchar) { fchar.attr.bit.standout = false; },     // Standout mode (1)
+      [] (FOptiAttr*, FChar& fchar) { fchar.attr.bit.underline = false; },    // Underline mode (2)
+      [] (FOptiAttr* obj, FChar&)   { obj->fake_reverse = true; },            // Reverse mode (4)
+      [] (FOptiAttr*, FChar& fchar) { fchar.attr.bit.blink = false; },        // Blink mode (8)
+      [] (FOptiAttr*, FChar& fchar) { fchar.attr.bit.dim = false; },          // Dim mode (16)
+      [] (FOptiAttr*, FChar& fchar) { fchar.attr.bit.bold = false; },         // Bold mode (32)
+      [] (FOptiAttr*, FChar& fchar) { fchar.attr.bit.invisible = false; },    // Invisible mode (64)
+      [] (FOptiAttr*, FChar& fchar) { fchar.attr.bit.protect = false; },      // Protected mode (128)
+      [] (FOptiAttr*, FChar& fchar) { fchar.attr.bit.alt_charset = false; },  // Alt_charset mode (256)
+      [] (FOptiAttr*, FChar&) {},                                             // Horizontal mode (512)
+      [] (FOptiAttr*, FChar&) {},                                             // Left mode (1024)
+      [] (FOptiAttr*, FChar&) {},                                             // Low mode (2048)
+      [] (FOptiAttr*, FChar&) {},                                             // Right mode (4096)
+      [] (FOptiAttr*, FChar&) {},                                             // Top mode (8192)
+      [] (FOptiAttr*, FChar&) {},                                             // Vertical mode (1638)
+      [] (FOptiAttr*, FChar& fchar) { fchar.attr.bit.italic = false; },       // Italic mode (32768)
+      [] (FOptiAttr*, FChar&) {}                                              // No mode (65536)
+    }}
+  );
+
+  return *no_color_video_handlers;
 }
 
 //----------------------------------------------------------------------
