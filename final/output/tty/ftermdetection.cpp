@@ -958,7 +958,7 @@ inline auto FTermDetection::secDA_Analysis_kitty (const FString& current_termtyp
 }
 
 //----------------------------------------------------------------------
-inline void FTermDetection::correctFalseAssumptions (int terminal_id_type)
+inline void FTermDetection::correctFalseAssumptions (int terminal_id_type) const
 {
   // Correct false assumptions
   auto& fterm_data = FTermData::getInstance();

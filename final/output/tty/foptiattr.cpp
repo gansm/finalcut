@@ -20,6 +20,8 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <strings.h>  // need for fss()
+
 #include <array>
 #include <cstring>
 #include <functional>
@@ -1078,8 +1080,13 @@ inline void FOptiAttr::prevent_no_color_video_attributes ( FChar& attr
     uInt bit = set_bits & (~set_bits + 1);  // Get rightmost set bit
     set_bits &= ~bit;  // Clear rightmost set bit
 
-    if ( bit )
-      no_color_video_handlers[ffs(bit)](this, attr);
+    if ( ! bit )
+      continue;
+
+    auto handler = no_color_video_handlers[ffs(bit)];
+
+    if ( handler )
+      handler(this, attr);
   }
 }
 
@@ -1343,24 +1350,24 @@ auto FOptiAttr::getNoColorVideoHandlerTable() -> const NoColorVideoHandlerTable&
   (
     NoColorVideoHandlerTable
     {{
-      [] (FOptiAttr*, FChar&) {},                                             // No bit set (0)
-      [] (FOptiAttr*, FChar& fchar) { fchar.attr.bit.standout = false; },     // Standout mode (1)
-      [] (FOptiAttr*, FChar& fchar) { fchar.attr.bit.underline = false; },    // Underline mode (2)
-      [] (FOptiAttr* obj, FChar&)   { obj->fake_reverse = true; },            // Reverse mode (4)
-      [] (FOptiAttr*, FChar& fchar) { fchar.attr.bit.blink = false; },        // Blink mode (8)
-      [] (FOptiAttr*, FChar& fchar) { fchar.attr.bit.dim = false; },          // Dim mode (16)
-      [] (FOptiAttr*, FChar& fchar) { fchar.attr.bit.bold = false; },         // Bold mode (32)
-      [] (FOptiAttr*, FChar& fchar) { fchar.attr.bit.invisible = false; },    // Invisible mode (64)
-      [] (FOptiAttr*, FChar& fchar) { fchar.attr.bit.protect = false; },      // Protected mode (128)
-      [] (FOptiAttr*, FChar& fchar) { fchar.attr.bit.alt_charset = false; },  // Alt_charset mode (256)
-      [] (FOptiAttr*, FChar&) {},                                             // Horizontal mode (512)
-      [] (FOptiAttr*, FChar&) {},                                             // Left mode (1024)
-      [] (FOptiAttr*, FChar&) {},                                             // Low mode (2048)
-      [] (FOptiAttr*, FChar&) {},                                             // Right mode (4096)
-      [] (FOptiAttr*, FChar&) {},                                             // Top mode (8192)
-      [] (FOptiAttr*, FChar&) {},                                             // Vertical mode (1638)
-      [] (FOptiAttr*, FChar& fchar) { fchar.attr.bit.italic = false; },       // Italic mode (32768)
-      [] (FOptiAttr*, FChar&) {}                                              // No mode (65536)
+      nullptr,                                                                      // No bit set (0)
+      [] (const FOptiAttr*, FChar& fchar) { fchar.attr.bit.standout = false; },     // Standout mode (1)
+      [] (const FOptiAttr*, FChar& fchar) { fchar.attr.bit.underline = false; },    // Underline mode (2)
+      [] (FOptiAttr* obj, const FChar&)   { obj->fake_reverse = true; },            // Reverse mode (4)
+      [] (const FOptiAttr*, FChar& fchar) { fchar.attr.bit.blink = false; },        // Blink mode (8)
+      [] (const FOptiAttr*, FChar& fchar) { fchar.attr.bit.dim = false; },          // Dim mode (16)
+      [] (const FOptiAttr*, FChar& fchar) { fchar.attr.bit.bold = false; },         // Bold mode (32)
+      [] (const FOptiAttr*, FChar& fchar) { fchar.attr.bit.invisible = false; },    // Invisible mode (64)
+      [] (const FOptiAttr*, FChar& fchar) { fchar.attr.bit.protect = false; },      // Protected mode (128)
+      [] (const FOptiAttr*, FChar& fchar) { fchar.attr.bit.alt_charset = false; },  // Alt_charset mode (256)
+      nullptr,                                                                      // Horizontal mode (512)
+      nullptr,                                                                      // Left mode (1024)
+      nullptr,                                                                      // Low mode (2048)
+      nullptr,                                                                      // Right mode (4096)
+      nullptr,                                                                      // Top mode (8192)
+      nullptr,                                                                      // Vertical mode (1638)
+      [] (const FOptiAttr*, FChar& fchar) { fchar.attr.bit.italic = false; },       // Italic mode (32768)
+      nullptr                                                                       // No mode (65536)
     }}
   );
 
