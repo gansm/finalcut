@@ -565,8 +565,7 @@ auto getColumnWidth (const FString& s, std::size_t end_pos) -> std::size_t
     }
     catch (const std::out_of_range& ex)
     {
-      std::clog << FLog::LogLevel::Error
-                << "Out of Range error: " << ex.what() << std::endl;
+      handleOutOfRangeError(ex);
     }
   }
 

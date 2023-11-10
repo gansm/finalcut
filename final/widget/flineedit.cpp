@@ -808,6 +808,36 @@ inline auto FLineEdit::isPasswordField() const -> bool
 }
 
 //----------------------------------------------------------------------
+inline auto FLineEdit::isFullwidthChar (std::size_t pos) const -> bool
+{
+  try
+  {
+    return getColumnWidth(print_text[pos]) == 2;  // pos is always > 0
+  }
+  catch (const std::out_of_range& ex)
+  {
+    handleOutOfRangeError(ex);
+    return false;
+  }
+}
+
+//----------------------------------------------------------------------
+inline auto FLineEdit::getColumnWidthWithErrorHandling
+                       ( FString::const_reference cref_string
+                       , std::size_t fallback_size ) const -> std::size_t
+{
+  try
+  {
+    return getColumnWidth(cref_string);
+  }
+  catch (const std::out_of_range& ex)
+  {
+    handleOutOfRangeError(ex);
+    return fallback_size;
+  }
+}
+
+//----------------------------------------------------------------------
 inline auto FLineEdit::endPosToOffset (std::size_t pos) -> offsetPair
 {
   std::size_t input_width = getWidth() - 2;
@@ -819,17 +849,8 @@ inline auto FLineEdit::endPosToOffset (std::size_t pos) -> offsetPair
 
   while ( pos > 0 && input_width > 0 )
   {
-    std::size_t char_width{};
-
-    try
-    {
-      char_width = getColumnWidth(print_text[pos]);
-    }
-    catch (const std::out_of_range& ex)
-    {
-      std::clog << FLog::LogLevel::Error
-                << "Out of Range error: " << ex.what() << std::endl;
-    }
+    std::size_t char_width = \
+        getColumnWidthWithErrorHandling (print_text[pos]);
 
     if ( input_width >= char_width )
       input_width -= char_width;
@@ -839,21 +860,10 @@ inline auto FLineEdit::endPosToOffset (std::size_t pos) -> offsetPair
 
     if ( input_width == 1)
     {
-      if ( char_width == 1 )
+      if ( char_width == 1 && isFullwidthChar(pos - 1) )
       {
-        try
-        {
-          if ( getColumnWidth(print_text[pos - 1]) == 2 )  // pos is always > 0
-          {
-            fullwidth_char_offset = 1;
-            break;
-          }
-        }
-        catch (const std::out_of_range& ex)
-        {
-          std::clog << FLog::LogLevel::Error
-                    << "Out of Range error: " << ex.what() << std::endl;
-        }
+        fullwidth_char_offset = 1;
+        break;
       }
 
       if ( char_width == 2 )
@@ -879,18 +889,8 @@ auto FLineEdit::clickPosToCursorPos (std::size_t pos) -> std::size_t
 
   while ( click_width < pos && idx < len )
   {
-    std::size_t char_width{};
-
-    try
-    {
-      char_width = getColumnWidth(print_text[idx]);
-    }
-    catch (const std::out_of_range& ex)
-    {
-      std::clog << FLog::LogLevel::Error
-                << "Out of Range error: " << ex.what() << std::endl;
-    }
-
+    std::size_t char_width = \
+        getColumnWidthWithErrorHandling (print_text[idx]);
     idx++;
     click_width += char_width;
 
@@ -915,28 +915,14 @@ void FLineEdit::adjustTextOffset()
 
   if ( cursor_pos < len )
   {
-    try
-    {
-      cursor_char_width = getColumnWidth(print_text[cursor_pos]);
-    }
-    catch (const std::out_of_range& ex)
-    {
-      std::clog << FLog::LogLevel::Error
-                << "Out of Range error: " << ex.what() << std::endl;
-    }
+    cursor_char_width = \
+        getColumnWidthWithErrorHandling (print_text[cursor_pos], 1);
   }
 
   if ( len > 0 )
   {
-    try
-    {
-      first_char_width = getColumnWidth(print_text[0]);
-    }
-    catch (const std::out_of_range& ex)
-    {
-      std::clog << FLog::LogLevel::Error
-                << "Out of Range error: " << ex.what() << std::endl;
-    }
+    first_char_width = \
+        getColumnWidthWithErrorHandling (print_text[0]);
   }
 
   // Text alignment right for long lines

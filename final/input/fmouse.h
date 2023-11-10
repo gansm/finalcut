@@ -370,6 +370,7 @@ class FMouseX11 final : public FMouse
     void setMoveState (const FPoint&, int) noexcept;
     bool isMouseClickButton (const int) const noexcept;
     bool isMouseWheelButton (const int) const noexcept;
+    auto noChanges (const FPoint&, uChar) const noexcept -> bool;
     void handleMouseClickButton (int, const TimeValue&) noexcept;
     void handleMouseWheelButton (int) noexcept;
     void setButtonState (const int, const TimeValue&) noexcept;
@@ -403,6 +404,14 @@ class FMouseSGR final : public FMouse
     void processEvent (const TimeValue&) override;
 
   private:
+    struct Tokens
+    {
+      sInt16  x{0};
+      sInt16  y{0};
+      int     btn{0};
+      const char* p{nullptr};  // Current read position
+    };
+
     // Enumeration
     enum x11_ext_btn_states
     {
@@ -433,6 +442,8 @@ class FMouseSGR final : public FMouse
     void setMoveState (const FPoint&, int) noexcept;
     bool isMouseClickButton (const int) const noexcept;
     bool isMouseWheelButton (const int) const noexcept;
+    bool parseSGRMouseString (Tokens&) const noexcept;
+    auto noChanges (const FPoint&, uChar) const noexcept -> bool;
     void handleMouseClickButton (int, const TimeValue&) noexcept;
     void handleMouseWheelButton (int) noexcept;
     void setPressedButtonState (const int, const TimeValue&) noexcept;
@@ -466,6 +477,16 @@ class FMouseUrxvt final : public FMouse
     void processEvent (const TimeValue&) override;
 
   private:
+    struct Tokens
+    {
+      sInt16      x{0};
+      sInt16      y{0};
+      int         btn{0};
+      bool        x_neg{false};
+      bool        y_neg{false};
+      const char* p{nullptr};  // Current read position
+    };
+
     // Enumeration
     enum urxvt_btn_states
     {
@@ -495,6 +516,9 @@ class FMouseUrxvt final : public FMouse
     void setMoveState (const FPoint&, int) noexcept;
     bool isMouseClickButton (const int) const noexcept;
     bool isMouseWheelButton (const int) const noexcept;
+    bool parseUrxvtMouseString (Tokens&) const noexcept;
+    void adjustAndSetPosition (Tokens&);
+    auto noChanges (const FPoint&, uChar) const noexcept -> bool;
     void handleMouseClickButton (int, const TimeValue&) noexcept;
     void handleButtonRelease() noexcept;
     void handleMouseWheelButton (int) noexcept;

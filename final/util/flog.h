@@ -116,6 +116,10 @@ class FLog : public std::stringbuf
     friend auto operator << (std::ostream&, LogLevel) -> std::ostream&;
 };
 
+// non-member function forward declarations
+//----------------------------------------------------------------------
+void handleOutOfRangeError (const std::out_of_range& ex);
+
 // FLog inline functions
 //----------------------------------------------------------------------
 template <typename T>

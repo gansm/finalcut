@@ -83,4 +83,13 @@ auto FLog::sync() -> int
   return 0;
 }
 
+
+// FLog non-member operators
+//----------------------------------------------------------------------
+void handleOutOfRangeError (const std::out_of_range& ex)
+{
+  std::clog << FLog::LogLevel::Error
+            << "Out of Range error: " << ex.what() << std::endl;
+}
+
 }  // namespace finalcut

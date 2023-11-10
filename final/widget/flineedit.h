@@ -194,6 +194,9 @@ class FLineEdit : public FWidget
     auto getCursorColumnPos() const -> std::size_t;
     auto getPasswordText() const -> FString;
     auto isPasswordField() const -> bool;
+    auto isFullwidthChar (std::size_t) const -> bool;
+    auto getColumnWidthWithErrorHandling ( FString::const_reference
+                                         , std::size_t = 0 ) const ->std::size_t;
     auto endPosToOffset (std::size_t) -> offsetPair;
     auto clickPosToCursorPos (std::size_t) -> std::size_t;
     void adjustTextOffset();
