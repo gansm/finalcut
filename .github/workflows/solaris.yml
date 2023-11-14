@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-12
+    runs-on: ubuntu-22.04
 
     steps:
     - name: Repository checkout
@@ -27,7 +27,7 @@ jobs:
           pkg list -af gcc-7
           pkg install -v --accept developer/gcc-7@7.3.0-11.4.0.0.1.14.0
           pkgutil -y -i automake autoconf autoconf_archive libtool pkgconfig libcppunit1_12_1 libcppunit_dev gsed ggrep
-        mem: 4096
+        mem: 6144
         run: |
           uname -a
           whoami

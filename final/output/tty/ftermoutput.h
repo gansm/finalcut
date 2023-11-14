@@ -142,6 +142,8 @@ class FTermOutput final : public FOutput
       Control
     };
 
+    enum class CursorMoved { No, Yes };
+
     struct OutputData
     {
       OutputData() = default;
@@ -180,18 +182,23 @@ class FTermOutput final : public FOutput
     auto canClearLeadingWS (uInt&, uInt) const -> bool;
     auto canClearTrailingWS (uInt&, uInt) const -> bool;
     auto skipUnchangedCharacters (uInt&, uInt, uInt) -> bool;
-    void printRange (uInt, uInt, uInt, bool);
+    void printRange (uInt, uInt, uInt);
     void replaceNonPrintableFullwidth (uInt, FChar&) const;
     void printCharacter (uInt&, uInt, bool, FChar&);
     void printFullWidthCharacter (uInt&, uInt, FChar&);
     void printFullWidthPaddingCharacter (uInt&, uInt, FChar&);
     void printHalfCovertFullWidthCharacter (uInt&, uInt, FChar&);
+    void printEllipsis (uInt, uInt, FChar&);
     void skipPaddingCharacter (uInt&, uInt, const FChar&) const;
-    auto eraseCharacters (uInt&, uInt, uInt, bool) -> PrintState;
+    auto eraseCharacters (uInt&, uInt, uInt) -> PrintState;
     auto repeatCharacter (uInt&, uInt, uInt) -> PrintState;
+    auto countRepetitions (const FChar*, uInt, uInt) const -> uInt;
+    auto canUseEraseCharacters (const FChar*, uInt) const -> bool;
+    auto canUseCharacterRepetitions (const FChar*, uInt) const -> bool;
     auto isFullWidthChar (const FChar&) const -> bool;
     auto isFullWidthPaddingChar (const FChar&) const -> bool;
     void cursorWrap() const;
+    void adjustCursorPosition (FPoint&) const;
     auto updateTerminalLine (uInt) -> bool;
     auto updateTerminalCursor() -> bool;
     void flushTimeAdjustment();
@@ -200,10 +207,12 @@ class FTermOutput final : public FOutput
     void newFontChanges (FChar&) const;
     void charsetChanges (FChar&) const;
     void appendCharacter (FChar&);
+    void appendCharacter_n (FChar&, uInt);
     void appendChar (FChar&);
     void appendAttributes (FChar&);
     void appendLowerRight (FChar&);
     void characterFilter (FChar&);
+    auto moveCursorLeft() -> CursorMoved;
     void checkFreeBufferSize();
     void appendOutputBuffer (const FTermControl&);
     void appendOutputBuffer (const UniChar&);

@@ -107,6 +107,7 @@ class FTermDetection final
 #if F_HAVE_GETTTYNAM
     auto  getTTYSFileEntry() -> bool;
 #endif
+    auto  getTermBasename() -> const char*;
     template<typename StringT>
     bool  startsWithTermType (StringT&&) const;
     void  termtypeAnalysis();

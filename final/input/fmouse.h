@@ -297,6 +297,12 @@ class FMouseGPM final : public FMouse
     };
 
     // Method
+    void handleMouseEvent();
+    void resetMouseState();
+    void handleMouseMovement();
+    void handleMouseWheel();
+    void interpretMouseEvent();
+    void updateMousePosition();
     auto gpmEvent (bool = true) const -> gpmEventType;
 
     // Data member
@@ -368,8 +374,8 @@ class FMouseX11 final : public FMouse
     // Methods
     void setKeyState (int) noexcept;
     void setMoveState (const FPoint&, int) noexcept;
-    bool isMouseClickButton (const int) const noexcept;
-    bool isMouseWheelButton (const int) const noexcept;
+    auto isMouseClickButton (const int) const noexcept -> bool;
+    auto isMouseWheelButton (const int) const noexcept -> bool;
     auto noChanges (const FPoint&, uChar) const noexcept -> bool;
     void handleMouseClickButton (int, const TimeValue&) noexcept;
     void handleMouseWheelButton (int) noexcept;
@@ -412,7 +418,9 @@ class FMouseSGR final : public FMouse
       const char* p{nullptr};  // Current read position
     };
 
-    // Enumeration
+    // Enumerations
+    enum class ParseError { No, Yes };
+
     enum x11_ext_btn_states
     {
       key_shift       = 0x04,
@@ -440,9 +448,9 @@ class FMouseSGR final : public FMouse
     // Methods
     void setKeyState (int) noexcept;
     void setMoveState (const FPoint&, int) noexcept;
-    bool isMouseClickButton (const int) const noexcept;
-    bool isMouseWheelButton (const int) const noexcept;
-    bool parseSGRMouseString (Tokens&) const noexcept;
+    auto isMouseClickButton (const int) const noexcept -> bool;
+    auto isMouseWheelButton (const int) const noexcept -> bool;
+    auto parseSGRMouseString (Tokens&) const noexcept -> ParseError;
     auto noChanges (const FPoint&, uChar) const noexcept -> bool;
     void handleMouseClickButton (int, const TimeValue&) noexcept;
     void handleMouseWheelButton (int) noexcept;
@@ -487,7 +495,9 @@ class FMouseUrxvt final : public FMouse
       const char* p{nullptr};  // Current read position
     };
 
-    // Enumeration
+    // Enumerations
+    enum class ParseError { No, Yes };
+
     enum urxvt_btn_states
     {
       key_shift            = 0x04,
@@ -514,9 +524,9 @@ class FMouseUrxvt final : public FMouse
     // Methods
     void setKeyState (int) noexcept;
     void setMoveState (const FPoint&, int) noexcept;
-    bool isMouseClickButton (const int) const noexcept;
-    bool isMouseWheelButton (const int) const noexcept;
-    bool parseUrxvtMouseString (Tokens&) const noexcept;
+    auto isMouseClickButton (const int) const noexcept -> bool;
+    auto isMouseWheelButton (const int) const noexcept -> bool;
+    auto parseUrxvtMouseString (Tokens&) const noexcept -> ParseError;
     void adjustAndSetPosition (Tokens&);
     auto noChanges (const FPoint&, uChar) const noexcept -> bool;
     void handleMouseClickButton (int, const TimeValue&) noexcept;

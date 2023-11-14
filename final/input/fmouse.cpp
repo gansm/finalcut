@@ -413,60 +413,26 @@ void FMouseGPM::processEvent (const TimeValue&)
 
   if ( Gpm_GetEvent(&gpm_ev) == 1 )
   {
-    Gpm_FitEvent (&gpm_ev);
-    GPM_DRAWPOINTER(&gpm_ev);
+    handleMouseEvent();
 
     if ( ! hasSignificantEvents() )
     {
-      has_gpm_mouse_data = false;
-      clearEvent();
+      resetMouseState();
       return;
     }
 
-    if ( gpm_ev.type & GPM_DRAG && gpm_ev.wdx == 0 && gpm_ev.wdy == 0 )
-      getButtonState().mouse_moved = true;
-
-    if ( gpm_ev.wdy > 0 )
-      getButtonState().wheel_up = true;
-    else if ( gpm_ev.wdy < 0 )
-      getButtonState().wheel_down = true;
-
-    if ( gpm_ev.wdx > 0 )
-      getButtonState().wheel_right = true;
-    else if ( gpm_ev.wdx < 0 )
-      getButtonState().wheel_left = true;
-
-    switch ( gpm_ev.type & 0x0f )
-    {
-      case GPM_DOWN:
-      case GPM_DRAG:
-        interpretKeyDown();
-        break;
-
-      case GPM_UP:
-        interpretKeyUp();
-        break;
-
-      default:
-        break;
-    }
-
-    setPos (FPoint{ std::max(gpm_ev.x, sInt16(1))
-                  , std::max(gpm_ev.y, sInt16(1)) });
-
-    if ( gpmEvent(false) == gpmEventType::Mouse )
-      setPending(true);
-    else
-      setPending(false);
-
+    handleMouseMovement();
+    handleMouseWheel();
+    interpretMouseEvent();
+    updateMousePosition();
+    setPending ( gpmEvent(false) == gpmEventType::Mouse );
     has_gpm_mouse_data = false;
     setEvent();
     return;
   }
 
   gpm_fd = -1;
-  has_gpm_mouse_data = false;
-  clearEvent();
+  resetMouseState();
 }
 
 //----------------------------------------------------------------------
@@ -574,6 +540,68 @@ void FMouseGPM::drawPointer() const
 {
   if ( isGpmMouseEnabled() && gpm_ev.x != -1 )
     GPM_DRAWPOINTER(&gpm_ev);
+}
+
+// private methods of FMouseGPM
+//----------------------------------------------------------------------
+inline void FMouseGPM::handleMouseEvent()
+{
+  Gpm_FitEvent(&gpm_ev);
+  GPM_DRAWPOINTER(&gpm_ev);
+}
+
+//----------------------------------------------------------------------
+inline void FMouseGPM::resetMouseState()
+{
+  has_gpm_mouse_data = false;
+  clearEvent();
+}
+
+//----------------------------------------------------------------------
+inline void FMouseGPM::handleMouseMovement()
+{
+  if ( gpm_ev.type & GPM_DRAG && gpm_ev.wdx == 0 && gpm_ev.wdy == 0 )
+    getButtonState().mouse_moved = true;
+}
+
+//----------------------------------------------------------------------
+inline void FMouseGPM::handleMouseWheel()
+{
+  if ( gpm_ev.wdy > 0 )
+    getButtonState().wheel_up = true;
+  else if ( gpm_ev.wdy < 0 )
+    getButtonState().wheel_down = true;
+
+  if ( gpm_ev.wdx > 0 )
+    getButtonState().wheel_right = true;
+  else if ( gpm_ev.wdx < 0 )
+    getButtonState().wheel_left = true;
+}
+
+//----------------------------------------------------------------------
+inline void FMouseGPM::interpretMouseEvent()
+{
+  switch ( gpm_ev.type & 0x0f )
+  {
+    case GPM_DOWN:
+    case GPM_DRAG:
+      interpretKeyDown();
+      break;
+
+    case GPM_UP:
+      interpretKeyUp();
+      break;
+
+    default:
+      break;
+    }
+}
+
+//----------------------------------------------------------------------
+inline void FMouseGPM::updateMousePosition()
+{
+  setPos (FPoint{ std::max(gpm_ev.x, sInt16(1))
+                , std::max(gpm_ev.y, sInt16(1)) });
 }
 
 //----------------------------------------------------------------------
@@ -704,7 +732,7 @@ void FMouseX11::setMoveState (const FPoint& mouse_position, int btn) noexcept
 }
 
 //----------------------------------------------------------------------
-inline bool FMouseX11::isMouseClickButton (const int btn) const noexcept
+inline auto FMouseX11::isMouseClickButton (const int btn) const noexcept -> bool
 {
   return btn == button1_pressed
       || btn == button2_pressed
@@ -715,7 +743,7 @@ inline bool FMouseX11::isMouseClickButton (const int btn) const noexcept
 }
 
 //----------------------------------------------------------------------
-inline bool FMouseX11::isMouseWheelButton (const int btn) const noexcept
+inline auto FMouseX11::isMouseWheelButton (const int btn) const noexcept -> bool
 {
   return btn == button_up
       || btn == button_down
@@ -910,7 +938,7 @@ void FMouseSGR::processEvent (const TimeValue& time)
   const auto& mouse_position = getPos();
   Tokens token{};
 
-  if ( parseSGRMouseString(token) )
+  if ( parseSGRMouseString(token) == ParseError::Yes )
   {
     clearEvent();
     sgr_mouse[0] = '\0';  // Delete already interpreted data
@@ -968,7 +996,7 @@ void FMouseSGR::setMoveState (const FPoint& mouse_position, int btn) noexcept
 }
 
 //----------------------------------------------------------------------
-inline bool FMouseSGR::isMouseClickButton (const int btn) const noexcept
+inline auto FMouseSGR::isMouseClickButton (const int btn) const noexcept -> bool
 {
   return btn == button1
       || btn == button2
@@ -979,7 +1007,7 @@ inline bool FMouseSGR::isMouseClickButton (const int btn) const noexcept
 }
 
 //----------------------------------------------------------------------
-inline bool FMouseSGR::isMouseWheelButton (const int btn) const noexcept
+inline auto FMouseSGR::isMouseWheelButton (const int btn) const noexcept -> bool
 {
   return btn == button_up
       || btn == button_down
@@ -988,27 +1016,30 @@ inline bool FMouseSGR::isMouseWheelButton (const int btn) const noexcept
 }
 
 //----------------------------------------------------------------------
-inline bool FMouseSGR::parseSGRMouseString (FMouseSGR::Tokens& token) const noexcept
+inline auto FMouseSGR::parseSGRMouseString (FMouseSGR::Tokens& token) const noexcept -> ParseError
 {
   // Parse the SGR mouse string
   token.p = sgr_mouse.data();
 
   // Parse button
   if ( ! parseNumberIf (token.p, token.btn, [] (char ch) { return ch != ';'; }) )
-    return true;
+    return ParseError::Yes;
 
   if ( *token.p )
     token.p++;  // ship one character after the number
 
   // Parse x-value
   if ( ! parseNumberIf (token.p, token.x, [] (char ch) { return ch != ';'; }) )
-    return  true;
+    return ParseError::Yes;
 
   if ( *token.p )
     token.p++;  // ship one character after the number
 
   // Parse y-value
-  return ! parseNumberIf (token.p, token.y, [] (char ch) { return ch != 'M' && ch != 'm'; });
+  if ( ! parseNumberIf (token.p, token.y, [] (char ch) { return ch != 'M' && ch != 'm'; }) )
+    return ParseError::Yes;
+
+  return ParseError::No;
 }
 
 //----------------------------------------------------------------------
@@ -1199,7 +1230,7 @@ void FMouseUrxvt::processEvent (const TimeValue& time)
   const auto& mouse_position = getPos();
   Tokens token{};
 
-  if ( parseUrxvtMouseString(token) )
+  if ( parseUrxvtMouseString(token) == ParseError::Yes )
   {
     clearEvent();
     urxvt_mouse[0] = '\0';  // Delete already interpreted data
@@ -1253,7 +1284,7 @@ void FMouseUrxvt::setMoveState (const FPoint& mouse_position, int btn) noexcept
 }
 
 //----------------------------------------------------------------------
-inline bool FMouseUrxvt::isMouseClickButton (const int btn) const noexcept
+inline auto FMouseUrxvt::isMouseClickButton (const int btn) const noexcept -> bool
 {
   return btn == button1_pressed
       || btn == button2_pressed
@@ -1264,7 +1295,7 @@ inline bool FMouseUrxvt::isMouseClickButton (const int btn) const noexcept
 }
 
 //----------------------------------------------------------------------
-inline bool FMouseUrxvt::isMouseWheelButton (const int btn) const noexcept
+inline auto FMouseUrxvt::isMouseWheelButton (const int btn) const noexcept -> bool
 {
   return btn == button_up
       || btn == button_down
@@ -1273,15 +1304,14 @@ inline bool FMouseUrxvt::isMouseWheelButton (const int btn) const noexcept
 }
 
 //----------------------------------------------------------------------
-inline bool FMouseUrxvt::parseUrxvtMouseString (FMouseUrxvt::Tokens& token) const noexcept
+inline auto FMouseUrxvt::parseUrxvtMouseString (FMouseUrxvt::Tokens& token) const noexcept -> ParseError
 {
-
   // Parse the Urxvt mouse string
   token.p = urxvt_mouse.data();
 
   // Parse button
   if ( ! parseNumberIf (token.p, token.btn, [] (char ch) { return ch != ';'; }) )
-    return true;
+    return ParseError::Yes;
 
   if ( *++token.p == '-' )
   {
@@ -1291,7 +1321,7 @@ inline bool FMouseUrxvt::parseUrxvtMouseString (FMouseUrxvt::Tokens& token) cons
 
   // Parse x-value
   if ( ! parseNumberIf (token.p, token.x, [] (char ch) { return ch != ';'; }) )
-    return true;
+    return ParseError::Yes;
 
   if ( *++token.p == '-' )
   {
@@ -1300,7 +1330,10 @@ inline bool FMouseUrxvt::parseUrxvtMouseString (FMouseUrxvt::Tokens& token) cons
   }
 
   // Parse y-value
-  return ! parseNumberIf (token.p, token.y, [] (char ch) { return ch != 'M'; });
+  if ( ! parseNumberIf (token.p, token.y, [] (char ch) { return ch != 'M'; }) )
+    return ParseError::Yes;
+
+  return ParseError::No;
 }
 
 //----------------------------------------------------------------------

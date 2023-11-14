@@ -181,36 +181,22 @@ void FTermOutput::setCursor (FPoint p)
 {
   // Sets the hardware cursor to the given (x,y) position
 
-  auto x = p.getX();
-  auto y = p.getY();
-  auto tpos = term_pos.get();
+  auto& tpos = *term_pos.get();
 
-  if ( tpos->getX() == x && tpos->getY() == y )
+  if ( p == tpos )  // Check if cursor position is unchanged
     return;
 
-  const auto term_width = int(getColumnNumber());
-  const auto term_height = int(getLineNumber());
-
-  if ( x >= term_width && term_width > 0 )
-  {
-    y += x / term_width;
-    x %= term_width;
-  }
-
-  if ( tpos->getY() >= term_height )
-    tpos->setY(term_height - 1);
-
-  if ( y >= term_height )
-    y = term_height - 1;
-
-  const auto term_x = tpos->getX();
-  const auto term_y = tpos->getY();
+  adjustCursorPosition(p);
+  const auto term_x = tpos.getX();
+  const auto term_y = tpos.getY();
+  const auto x = p.getX();
+  const auto y = p.getY();
   const auto& move_str = FTerm::moveCursorString (term_x, term_y, x, y);
 
   if ( ! move_str.empty() )
     appendOutputBuffer (FTermControl{move_str});
 
-  tpos->setPoint(x, y);
+  tpos.setPoint(x, y);
 }
 
 //----------------------------------------------------------------------
@@ -756,8 +742,7 @@ auto FTermOutput::skipUnchangedCharacters (uInt& x, uInt xmax, uInt y) -> bool
 }
 
 //----------------------------------------------------------------------
-void FTermOutput::printRange ( uInt xmin, uInt xmax, uInt y
-                             , bool draw_trailing_ws )
+void FTermOutput::printRange (uInt xmin, uInt xmax, uInt y)
 {
   const auto& ec = TCAP(t_erase_chars);
   const auto& rp = TCAP(t_repeat_char);
@@ -780,7 +765,7 @@ void FTermOutput::printRange ( uInt xmin, uInt xmax, uInt y
     // Erase character
     if ( ec && print_char->ch[0] == L' ' )
     {
-      if ( eraseCharacters(x, xmax, y, draw_trailing_ws) \
+      if ( eraseCharacters(x, xmax, y) \
            == PrintState::LineCompletelyPrinted )
         break;
     }
@@ -867,19 +852,13 @@ void FTermOutput::printFullWidthCharacter ( uInt& x, uInt y
   else
   {
     // Print ellipses for the 1st full-width character column
-    appendAttributes (print_char);
-    appendOutputBuffer (UniChar::HorizontalEllipsis);  // …
-    term_pos->x_ref()++;
-    markAsPrinted (x, y);
+    printEllipsis (x, y, print_char);
 
     if ( isFullWidthPaddingChar(next_char) )
     {
       // Print ellipses for the 2nd full-width character column
       x++;
-      appendAttributes (next_char);
-      appendOutputBuffer (UniChar::HorizontalEllipsis);  // …
-      term_pos->x_ref()++;
-      markAsPrinted (x, y);
+      printEllipsis (x, y, next_char);
     }
   }
 }
@@ -897,15 +876,7 @@ void FTermOutput::printFullWidthPaddingCharacter ( uInt& x, uInt y
     && isFullWidthChar(prev_char)
     && isFullWidthPaddingChar(print_char) )
   {
-    // Move cursor one character to the left
-    const auto& le = TCAP(t_cursor_left);
-    const auto& LE = TCAP(t_parm_left_cursor);
-
-    if ( le )
-      appendOutputBuffer (FTermControl{le});
-    else if ( LE )
-      appendOutputBuffer (FTermControl{FTermcap::encodeParameter(LE, 1)});
-    else
+    if ( moveCursorLeft() == CursorMoved::No )
     {
       skipPaddingCharacter (x, y, prev_char);
       return;
@@ -921,10 +892,7 @@ void FTermOutput::printFullWidthPaddingCharacter ( uInt& x, uInt y
   else
   {
     // Print ellipses for the 1st full-width character column
-    appendAttributes (print_char);
-    appendOutputBuffer (UniChar::HorizontalEllipsis);  // …
-    term_pos->x_ref()++;
-    markAsPrinted (x, y);
+    printEllipsis (x, y, print_char);
   }
 }
 
@@ -936,30 +904,26 @@ void FTermOutput::printHalfCovertFullWidthCharacter ( uInt& x, uInt y
 
   if ( isFullWidthChar(prev_char) && ! isFullWidthPaddingChar(print_char) )
   {
-    // Move cursor one character to the left
-    const auto& le = TCAP(t_cursor_left);
-    const auto& LE = TCAP(t_parm_left_cursor);
-
-    if ( le )
-      appendOutputBuffer (FTermControl{le});
-    else if ( LE )
-      appendOutputBuffer (FTermControl{FTermcap::encodeParameter(LE, 1)});
-
-    if ( le || LE )
+    if ( moveCursorLeft() == CursorMoved::Yes )
     {
       // Print ellipses for the 1st full-width character column
-      x--;
       term_pos->x_ref()--;
-      appendAttributes (prev_char);
-      appendOutputBuffer (UniChar::HorizontalEllipsis);  // …
-      term_pos->x_ref()++;
-      markAsPrinted (x, y);
-      x++;
+      printEllipsis (x - 1, y, prev_char);
     }
   }
 
   // Print a half-width character
   appendCharacter (print_char);
+  markAsPrinted (x, y);
+}
+
+//----------------------------------------------------------------------
+inline void FTermOutput::printEllipsis (uInt x, uInt y, FChar& fchar)
+{
+  // Printing ellipses with color and attributes from fchar
+  appendAttributes (fchar);
+  appendOutputBuffer (UniChar::HorizontalEllipsis);  // …
+  term_pos->x_ref()++;
   markAsPrinted (x, y);
 }
 
@@ -976,8 +940,7 @@ inline void FTermOutput::skipPaddingCharacter ( uInt& x, uInt y
 }
 
 //----------------------------------------------------------------------
-auto FTermOutput::eraseCharacters ( uInt& x, uInt xmax, uInt y
-                                  , bool draw_trailing_ws ) -> PrintState
+auto FTermOutput::eraseCharacters (uInt& x, uInt xmax, uInt y) -> PrintState
 {
   // Erase a number of characters to draw simple whitespaces
 
@@ -987,18 +950,7 @@ auto FTermOutput::eraseCharacters ( uInt& x, uInt xmax, uInt y
   if ( ! ec || print_char->ch[0] != L' ' )
     return PrintState::NothingPrinted;
 
-  uInt whitespace{1};
-  const auto* ch = print_char + 1;
-
-  for (uInt i{x + 1}; i <= xmax; i++)
-  {
-    if ( *print_char == *ch )
-      whitespace++;
-    else
-      break;
-
-    ++ch;
-  }
+  uInt whitespace = countRepetitions(print_char, x, xmax);
 
   if ( whitespace == 1 )
   {
@@ -1008,34 +960,23 @@ auto FTermOutput::eraseCharacters ( uInt& x, uInt xmax, uInt y
   else
   {
     const uInt start_pos = x;
-    const auto& normal = FOptiAttr::isNormal(*print_char);
-    const auto& ut = FTermcap::background_color_erase;
+    const uInt end_pos = x + whitespace - 1;
 
-    if ( whitespace > erase_char_length + cursor_address_length
-      && (ut || normal) )
+    if ( canUseEraseCharacters(print_char, whitespace) )
     {
       appendAttributes (*print_char);
       appendOutputBuffer (FTermControl{FTermcap::encodeParameter(ec, whitespace)});
 
-      if ( x + whitespace - 1 < xmax || draw_trailing_ws )
+      if ( end_pos <= xmax )
         setCursor (FPoint{int(x + whitespace), int(y)});
       else
         return PrintState::LineCompletelyPrinted;
-
-      x = x + whitespace - 1;
     }
     else
-    {
-      x--;
+      appendCharacter_n (*print_char, whitespace);
 
-      for (uInt i{0}; i < whitespace; i++)
-      {
-        appendCharacter (*print_char);
-        x++;
-      }
-    }
-
-    markAsPrinted (start_pos, x, y);
+    markAsPrinted (start_pos, end_pos, y);
+    x = end_pos;
   }
 
   return PrintState::WhitespacesPrinted;
@@ -1052,18 +993,7 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y) -> PrintState
   if ( ! rp )
     return PrintState::NothingPrinted;
 
-  uInt repetitions{1};
-  const auto* ch = print_char + 1;
-
-  for (uInt i{x + 1}; i <= xmax; i++)
-  {
-    if ( *print_char == *ch )
-      repetitions++;
-    else
-      break;
-
-    ++ch;
-  }
+  uInt repetitions = countRepetitions(print_char, x, xmax);
 
   if ( repetitions == 1 )
   {
@@ -1076,32 +1006,63 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y) -> PrintState
     // character, so that two or more consecutive full-width characters
     // cannot repeat in their byte sequence
     const uInt start_pos = x;
+    const uInt end_pos = x + repetitions - 1;
 
-    if ( repetitions > repeat_char_length
-      && is7bit(print_char->ch[0]) && print_char->ch[1] == L'\0' )
+    if ( canUseCharacterRepetitions(print_char, repetitions) )
     {
       newFontChanges (*print_char);
       charsetChanges (*print_char);
       appendAttributes (*print_char);
       appendOutputBuffer (FTermControl{FTermcap::encodeParameter(rp, print_char->ch[0], repetitions)});
       term_pos->x_ref() += int(repetitions);
-      x = x + repetitions - 1;
     }
     else
-    {
-      x--;
+      appendCharacter_n (*print_char, repetitions);
 
-      for (uInt i{0}; i < repetitions; i++)
-      {
-        appendCharacter (*print_char);
-        x++;
-      }
-    }
-
-    markAsPrinted (start_pos, x, y);
+    markAsPrinted (start_pos, end_pos, y);
+    x = end_pos;
   }
 
   return PrintState::RepeatCharacterPrinted;
+}
+
+//----------------------------------------------------------------------
+inline auto FTermOutput::countRepetitions ( const FChar* print_char
+                                          , uInt from, uInt to ) const -> uInt
+{
+  uInt repetitions{1};
+  const auto* ch = print_char + 1;
+
+  for (uInt i{from + 1}; i <= to; i++)
+  {
+    if ( *print_char == *ch )
+      repetitions++;
+    else
+      break;
+
+    ++ch;
+  }
+
+  return repetitions;
+}
+
+//----------------------------------------------------------------------
+inline auto FTermOutput::canUseEraseCharacters ( const FChar* print_char
+                                               , uInt whitespace ) const -> bool
+{
+  const auto& normal = FOptiAttr::isNormal(*print_char);
+  const auto& ut = FTermcap::background_color_erase;
+
+  return whitespace > erase_char_length + cursor_address_length
+      && (ut || normal);
+}
+
+//----------------------------------------------------------------------
+inline auto FTermOutput::canUseCharacterRepetitions ( const FChar* print_char
+                                                    , uInt repetitions ) const -> bool
+{
+  return repetitions > repeat_char_length
+      && is7bit(print_char->ch[0]) && print_char->ch[1] == L'\0';
 }
 
 //----------------------------------------------------------------------
@@ -1142,6 +1103,28 @@ void FTermOutput::cursorWrap() const
 }
 
 //----------------------------------------------------------------------
+inline void FTermOutput::adjustCursorPosition (FPoint& p) const
+{
+  const auto term_width = int(getColumnNumber());
+  const auto term_height = int(getLineNumber());
+  auto& tpos = *term_pos.get();
+  auto& x = p.x_ref();
+  auto& y = p.y_ref();
+
+  if ( x >= term_width && term_width > 0 )
+  {
+    y += x / term_width;
+    x %= term_width;
+  }
+
+  if ( tpos.getY() >= term_height )
+    tpos.setY(term_height - 1);
+
+  if ( y >= term_height )
+    y = term_height - 1;
+}
+
+//----------------------------------------------------------------------
 inline auto FTermOutput::updateTerminalLine (uInt y) -> bool
 {
   // Updates pending changes from line y to the terminal
@@ -1179,7 +1162,7 @@ inline auto FTermOutput::updateTerminalLine (uInt y) -> bool
       markAsPrinted (0, xmin, y);
     }
 
-    printRange (xmin, xmax, y, draw_trailing_ws);
+    printRange (xmin, xmax, y);
 
     if ( draw_trailing_ws )
     {
@@ -1369,6 +1352,13 @@ inline void FTermOutput::appendCharacter (FChar& next_char)
 }
 
 //----------------------------------------------------------------------
+inline void FTermOutput::appendCharacter_n (FChar& next_char, uInt number)
+{
+  for (uInt n{0}; n < number; n++)
+    appendCharacter (next_char);
+}
+
+//----------------------------------------------------------------------
 inline void FTermOutput::appendChar (FChar& next_char)
 {
   newFontChanges (next_char);
@@ -1474,6 +1464,23 @@ inline void FTermOutput::characterFilter (FChar& next_char)
 
   if ( entry )
     first_enc_char = entry;
+}
+
+//----------------------------------------------------------------------
+inline auto FTermOutput::moveCursorLeft() -> CursorMoved
+{
+  // Move cursor one character to the left
+  const auto& le = TCAP(t_cursor_left);
+  const auto& LE = TCAP(t_parm_left_cursor);
+
+  if ( le )
+    appendOutputBuffer (FTermControl{le});
+  else if ( LE )
+    appendOutputBuffer (FTermControl{FTermcap::encodeParameter(LE, 1)});
+  else
+    return CursorMoved::No;  // Cursor could not be moved
+
+  return CursorMoved::Yes;  // Cursor has moved
 }
 
 //----------------------------------------------------------------------

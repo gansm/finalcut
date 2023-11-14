@@ -149,15 +149,7 @@ auto FTermDetection::getTTYtype() -> bool
   // linux  tty1
   // vt100  ttys0
 
-  // Get term basename
-  const auto& termfilename = FTermData::getInstance().getTermFileName();
-  const char* term_basename = std::strrchr(termfilename.data(), '/');
-
-  if ( term_basename == nullptr )
-    term_basename = termfilename.data();
-  else
-    term_basename++;
-
+  auto* term_basename = getTermBasename();
   std::FILE* file_ptr{};
   std::array<char, BUFSIZ> str{};
   static const auto& fsystem = FSystem::getInstance();
@@ -203,15 +195,7 @@ auto FTermDetection::getTTYSFileEntry() -> bool
 {
   // Analyse /etc/ttys and get the term name (used in BSD Unix)
 
-  // get term basename
-  const auto& termfilename = FTermData::getInstance().getTermFileName();
-  const char* term_basename = std::strrchr(termfilename.data(), '/');
-
-  if ( term_basename == nullptr )
-    term_basename = termfilename.data();
-  else
-    term_basename++;
-
+  auto* term_basename = getTermBasename();
   const struct ttyent* ttys_entryt;
   ttys_entryt = getttynam(term_basename);
 
@@ -232,6 +216,21 @@ auto FTermDetection::getTTYSFileEntry() -> bool
   return false;
 }
 #endif  // F_HAVE_GETTTYNAM
+
+//----------------------------------------------------------------------
+auto FTermDetection::getTermBasename() -> const char*
+{
+  // Get the terminal basename
+  const auto& termfilename = FTermData::getInstance().getTermFileName();
+  const char* term_basename = std::strrchr(termfilename.data(), '/');
+
+  if ( term_basename == nullptr )
+    term_basename = termfilename.data();
+  else
+    term_basename++;
+
+  return term_basename;
+}
 
 //----------------------------------------------------------------------
 void FTermDetection::termtypeAnalysis()
