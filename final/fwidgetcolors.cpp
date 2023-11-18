@@ -57,12 +57,37 @@ default8ColorTheme::~default8ColorTheme() noexcept = default;
 //----------------------------------------------------------------------
 void default8ColorTheme::setColorTheme()
 {
+  setTermColors();
+  setDialogColors();
+  setErrorBoxColors();
+  setTooltipColors();
+  setShadowColors();
+  setCurrentElementColors();
+  setListColors();
+  setLabelColors();
+  setInputFieldColors();
+  setToggleButtonColors();
+  setButtonColors();
+  setTitlebarColors();
+  setMenuColors();
+  setStatusbarColors();
+  setScrollbarColors();
+  setProgressbarColors();
+}
+
+// private methods of default8ColorTheme
+//----------------------------------------------------------------------
+inline void default8ColorTheme::setTermColors()
+{
   term =
   {
     FColor::LightGray,  // Foreground
     FColor::Blue        // Background
   };
+}
 
+inline void default8ColorTheme::setDialogColors()
+{
   dialog =
   {
     FColor::Black,      // Foreground
@@ -70,26 +95,38 @@ void default8ColorTheme::setColorTheme()
     FColor::Red,        // Resize foreground
     FColor::Blue        // Emphasis foreground
   };
+}
 
+inline void default8ColorTheme::setErrorBoxColors()
+{
   error_box =
   {
     FColor::Black,      // Foreground
     FColor::LightGray,  // Background
     FColor::Red         // Emphasis foreground
   };
+}
 
+inline void default8ColorTheme::setTooltipColors()
+{
   tooltip =
   {
     FColor::Black,      // Foreground
     FColor::Cyan        // Background
   };
+}
 
+inline void default8ColorTheme::setShadowColors()
+{
   shadow =
   {
     FColor::LightGray,  // Foreground (only for transparent shadow)
     FColor::Black       // Background
   };
+}
 
+inline void default8ColorTheme::setCurrentElementColors()
+{
   current_element =
   {
     FColor::LightGray,  // Foreground
@@ -102,7 +139,10 @@ void default8ColorTheme::setColorTheme()
     FColor::Blue,       // Selected focused foreground
     FColor::Red         // Selected focused background
   };
+}
 
+inline void default8ColorTheme::setListColors()
+{
   list =
   {
     FColor::Black,      // Foreground
@@ -110,7 +150,10 @@ void default8ColorTheme::setColorTheme()
     FColor::Blue,       // Selected foreground
     FColor::LightGray   // Selected background
   };
+}
 
+inline void default8ColorTheme::setLabelColors()
+{
   label =
   {
     FColor::Black,      // Foreground
@@ -122,7 +165,10 @@ void default8ColorTheme::setColorTheme()
     FColor::Blue,       // Emphasis foreground
     FColor::Black       // Ellipsis foreground
   };
+}
 
+inline void default8ColorTheme::setInputFieldColors()
+{
   input_field =
   {
     FColor::Black,      // Foreground
@@ -132,7 +178,10 @@ void default8ColorTheme::setColorTheme()
     FColor::Black,      // Inactive foreground
     FColor::LightGray   // Inactive background
   };
+}
 
+inline void default8ColorTheme::setToggleButtonColors()
+{
   toggle_button =
   {
     FColor::Black,      // Foreground
@@ -142,7 +191,10 @@ void default8ColorTheme::setColorTheme()
     FColor::Cyan,       // Inactive foreground
     FColor::LightGray   // Inactive background
   };
+}
 
+inline void default8ColorTheme::setButtonColors()
+{
   button =
   {
     FColor::LightGray,  // Foreground
@@ -153,7 +205,10 @@ void default8ColorTheme::setColorTheme()
     FColor::Blue,       // Inactive background
     FColor::LightGray   // Hotkey foreground
   };
+}
 
+inline void default8ColorTheme::setTitlebarColors()
+{
   titlebar =
   {
     FColor::LightGray,  // Foreground
@@ -165,7 +220,10 @@ void default8ColorTheme::setColorTheme()
     FColor::LightGray,  // Focused button foreground
     FColor::Black       // Focused button background
   };
+}
 
+inline void default8ColorTheme::setMenuColors()
+{
   menu =
   {
     FColor::Black,      // Foreground
@@ -177,7 +235,10 @@ void default8ColorTheme::setColorTheme()
     FColor::Red,        // Hotkey foreground
     FColor::LightGray   // Hotkey background
   };
+}
 
+inline void default8ColorTheme::setStatusbarColors()
+{
   statusbar =
   {
     FColor::Black,      // Foreground
@@ -190,7 +251,10 @@ void default8ColorTheme::setColorTheme()
     FColor::Red,        // Focused hotkey foreground
     FColor::Black       // Focused hotkey background
   };
+}
 
+inline void default8ColorTheme::setScrollbarColors()
+{
   scrollbar =
   {
     FColor::Black,      // Foreground
@@ -200,7 +264,10 @@ void default8ColorTheme::setColorTheme()
     FColor::Cyan,       // Inactive button foreground
     FColor::LightGray   // Inactive button background
   };
+}
 
+inline void default8ColorTheme::setProgressbarColors()
+{
   progressbar =
   {
     FColor::Blue,       // Foreground
@@ -228,12 +295,41 @@ default16ColorTheme::~default16ColorTheme() noexcept = default;
 //----------------------------------------------------------------------
 void default16ColorTheme::setColorTheme()
 {
+  setTermColors();
+  setDialogColors();
+  setErrorBoxColors();
+  setTooltipColors();
+  setShadowColors();
+  setCurrentElementColors();
+  setListColors();
+  setLabelColors();
+  setInputFieldColors();
+  setToggleButtonColors();
+  setButtonColors();
+  setTitlebarColors();
+  setMenuColors();
+  setStatusbarColors();
+  setScrollbarColors();
+  setProgressbarColors();
+
+  if ( ! FVTerm::getFOutput()->canChangeColorPalette()
+    && FVTerm::getFOutput()->getMaxColor() > 16 )
+    term.bg = FColor::SkyBlue2;
+}
+
+// private methods of default16ColorTheme
+//----------------------------------------------------------------------
+inline void default16ColorTheme::setTermColors()
+{
   term =
   {
     FColor::Black,      // Foreground
     FColor::LightBlue   // Background
   };
+}
 
+inline void default16ColorTheme::setDialogColors()
+{
   dialog =
   {
     FColor::Black,      // Foreground
@@ -241,26 +337,38 @@ void default16ColorTheme::setColorTheme()
     FColor::Cyan,       // Resize foreground
     FColor::Blue        // Emphasis foreground
   };
+}
 
+inline void default16ColorTheme::setErrorBoxColors()
+{
   error_box =
   {
     FColor::White,      // Foreground
     FColor::LightRed,   // Background
     FColor::Yellow      // Emphasis foreground
   };
+}
 
+inline void default16ColorTheme::setTooltipColors()
+{
   tooltip =
   {
     FColor::Black,      // Foreground
     FColor::Yellow      // Background
   };
+}
 
+inline void default16ColorTheme::setShadowColors()
+{
   shadow =
   {
     FColor::LightGray,  // Foreground (only for transparent shadow)
     FColor::Black       // Background
   };
+}
 
+inline void default16ColorTheme::setCurrentElementColors()
+{
   current_element =
   {
     FColor::LightGray,  // Foreground
@@ -273,7 +381,10 @@ void default16ColorTheme::setColorTheme()
     FColor::LightCyan,  // Selected focused foreground
     FColor::Blue        // Selected focused background
   };
+}
 
+inline void default16ColorTheme::setListColors()
+{
   list =
   {
     FColor::Black,      // Foreground
@@ -281,7 +392,10 @@ void default16ColorTheme::setColorTheme()
     FColor::Cyan,       // Selected foreground
     FColor::White       // Selected background
   };
+}
 
+inline void default16ColorTheme::setLabelColors()
+{
   label =
   {
     FColor::Black,      // Foreground
@@ -293,7 +407,10 @@ void default16ColorTheme::setColorTheme()
     FColor::Blue,       // Emphasis foreground
     FColor::DarkGray    // Ellipsis foreground
   };
+}
 
+inline void default16ColorTheme::setInputFieldColors()
+{
   input_field =
   {
     FColor::Black,      // Foreground
@@ -303,7 +420,10 @@ void default16ColorTheme::setColorTheme()
     FColor::DarkGray,   // Inactive foreground
     FColor::LightGray   // Inactive background
   };
+}
 
+inline void default16ColorTheme::setToggleButtonColors()
+{
   toggle_button =
   {
     FColor::Black,      // Foreground
@@ -313,7 +433,10 @@ void default16ColorTheme::setColorTheme()
     FColor::LightGray,  // Inactive foreground
     FColor::White       // Inactive background
   };
+}
 
+inline void default16ColorTheme::setButtonColors()
+{
   button =
   {
     FColor::LightGray,  // Foreground
@@ -324,7 +447,10 @@ void default16ColorTheme::setColorTheme()
     FColor::LightGray,  // Inactive background
     FColor::White       // Hotkey foreground
   };
+}
 
+inline void default16ColorTheme::setTitlebarColors()
+{
   titlebar =
   {
     FColor::White,      // Foreground
@@ -336,7 +462,10 @@ void default16ColorTheme::setColorTheme()
     FColor::LightGray,  // Focused button foreground
     FColor::Black       // Focused button background
   };
+}
 
+inline void default16ColorTheme::setMenuColors()
+{
   menu =
   {
     FColor::Black,      // Foreground
@@ -348,7 +477,10 @@ void default16ColorTheme::setColorTheme()
     FColor::Red,        // Hotkey foreground
     FColor::White       // Hotkey background
   };
+}
 
+inline void default16ColorTheme::setStatusbarColors()
+{
   statusbar =
   {
     FColor::White,      // Foreground
@@ -361,7 +493,10 @@ void default16ColorTheme::setColorTheme()
     FColor::DarkGray,   // Focused hotkey foreground
     FColor::White       // Focused hotkey background
   };
+}
 
+inline void default16ColorTheme::setScrollbarColors()
+{
   scrollbar =
   {
     FColor::DarkGray,   // Foreground
@@ -371,17 +506,17 @@ void default16ColorTheme::setColorTheme()
     FColor::DarkGray,   // Inactive button foreground
     FColor::LightGray   // Inactive button background
   };
+}
 
+inline void default16ColorTheme::setProgressbarColors()
+{
   progressbar =
   {
     FColor::DarkGray,   // Foreground
     FColor::LightBlue   // Background
   };
-
-  if ( ! FVTerm::getFOutput()->canChangeColorPalette()
-    && FVTerm::getFOutput()->getMaxColor() > 16 )
-    term.bg = FColor::SkyBlue2;
 }
+
 
 //----------------------------------------------------------------------
 // class default8ColorDarkTheme
@@ -402,12 +537,37 @@ default8ColorDarkTheme::~default8ColorDarkTheme() noexcept = default;
 //----------------------------------------------------------------------
 void default8ColorDarkTheme::setColorTheme()
 {
+  setTermColors();
+  setDialogColors();
+  setErrorBoxColors();
+  setTooltipColors();
+  setShadowColors();
+  setCurrentElementColors();
+  setListColors();
+  setLabelColors();
+  setInputFieldColors();
+  setToggleButtonColors();
+  setButtonColors();
+  setTitlebarColors();
+  setMenuColors();
+  setStatusbarColors();
+  setScrollbarColors();
+  setProgressbarColors();
+}
+
+// private methods of default8ColorDarkTheme
+//----------------------------------------------------------------------
+inline void default8ColorDarkTheme::setTermColors()
+{
   term =
   {
     FColor::LightGray,  // Foreground
     FColor::Cyan        // Background
   };
+}
 
+inline void default8ColorDarkTheme::setDialogColors()
+{
   dialog =
   {
     FColor::Black,      // Foreground
@@ -415,26 +575,38 @@ void default8ColorDarkTheme::setColorTheme()
     FColor::Blue,       // Resize foreground
     FColor::Blue        // Emphasis foreground
   };
+}
 
+inline void default8ColorDarkTheme::setErrorBoxColors()
+{
   error_box =
   {
     FColor::LightGray,  // Foreground
     FColor::Red,        // Background
     FColor::Black       // Emphasis foreground
   };
+}
 
+inline void default8ColorDarkTheme::setTooltipColors()
+{
   tooltip =
   {
     FColor::LightGray,  // Foreground
     FColor::Black       // Background
   };
+}
 
+inline void default8ColorDarkTheme::setShadowColors()
+{
   shadow =
   {
     FColor::LightGray,  // Foreground (only for transparent shadow)
     FColor::Black       // Background
   };
+}
 
+inline void default8ColorDarkTheme::setCurrentElementColors()
+{
   current_element =
   {
     FColor::Black,      // Foreground
@@ -447,7 +619,10 @@ void default8ColorDarkTheme::setColorTheme()
     FColor::Blue,       // Selected focused foreground
     FColor::Cyan        // Selected focused background
   };
+}
 
+inline void default8ColorDarkTheme::setListColors()
+{
   list =
   {
     FColor::Black,      // Foreground
@@ -455,7 +630,10 @@ void default8ColorDarkTheme::setColorTheme()
     FColor::Cyan,       // Selected foreground
     FColor::LightGray   // Selected background
   };
+}
 
+inline void default8ColorDarkTheme::setLabelColors()
+{
   label =
   {
     FColor::Black,      // Foreground
@@ -467,7 +645,10 @@ void default8ColorDarkTheme::setColorTheme()
     FColor::Blue,       // Emphasis foreground
     FColor::Cyan        // Ellipsis foreground
   };
+}
 
+inline void default8ColorDarkTheme::setInputFieldColors()
+{
   input_field =
   {
     FColor::LightGray,  // Foreground
@@ -477,7 +658,10 @@ void default8ColorDarkTheme::setColorTheme()
     FColor::Cyan,       // Inactive foreground
     FColor::LightGray   // Inactive background
   };
+}
 
+inline void default8ColorDarkTheme::setToggleButtonColors()
+{
   toggle_button =
   {
     FColor::Black,      // Foreground
@@ -487,7 +671,10 @@ void default8ColorDarkTheme::setColorTheme()
     FColor::Cyan,       // Inactive foreground
     FColor::LightGray   // Inactive background
   };
+}
 
+inline void default8ColorDarkTheme::setButtonColors()
+{
   button =
   {
     FColor::LightGray,  // Foreground
@@ -498,7 +685,10 @@ void default8ColorDarkTheme::setColorTheme()
     FColor::Cyan,       // Inactive background
     FColor::LightGray   // Hotkey foreground
   };
+}
 
+inline void default8ColorDarkTheme::setTitlebarColors()
+{
   titlebar =
   {
     FColor::LightGray,  // Foreground
@@ -510,7 +700,10 @@ void default8ColorDarkTheme::setColorTheme()
     FColor::LightGray,  // Focused button foreground
     FColor::Black       // Focused button background
   };
+}
 
+inline void default8ColorDarkTheme::setMenuColors()
+{
   menu =
   {
     FColor::LightGray,  // Foreground
@@ -522,7 +715,10 @@ void default8ColorDarkTheme::setColorTheme()
     FColor::Red,        // Hotkey foreground
     FColor::Black       // Hotkey background
   };
+}
 
+inline void default8ColorDarkTheme::setStatusbarColors()
+{
   statusbar =
   {
     FColor::LightGray,  // Foreground
@@ -535,7 +731,10 @@ void default8ColorDarkTheme::setColorTheme()
     FColor::Red,        // Focused hotkey foreground
     FColor::Blue        // Focused hotkey background
   };
+}
 
+inline void default8ColorDarkTheme::setScrollbarColors()
+{
   scrollbar =
   {
     FColor::Cyan,       // Foreground
@@ -545,7 +744,10 @@ void default8ColorDarkTheme::setColorTheme()
     FColor::Cyan,       // Inactive button foreground
     FColor::LightGray   // Inactive button background
   };
+}
 
+inline void default8ColorDarkTheme::setProgressbarColors()
+{
   progressbar =
   {
     FColor::Cyan,       // Foreground
@@ -573,12 +775,37 @@ default16ColorDarkTheme::~default16ColorDarkTheme() noexcept = default;
 //----------------------------------------------------------------------
 void default16ColorDarkTheme::setColorTheme()
 {
+  setTermColors();
+  setDialogColors();
+  setErrorBoxColors();
+  setTooltipColors();
+  setShadowColors();
+  setCurrentElementColors();
+  setListColors();
+  setLabelColors();
+  setInputFieldColors();
+  setToggleButtonColors();
+  setButtonColors();
+  setTitlebarColors();
+  setMenuColors();
+  setStatusbarColors();
+  setScrollbarColors();
+  setProgressbarColors();
+}
+
+// private methods of default16ColorDarkTheme
+//----------------------------------------------------------------------
+inline void default16ColorDarkTheme::setTermColors()
+{
   term =
   {
     FColor::White,      // Foreground
     FColor::Cyan        // Background
   };
+}
 
+inline void default16ColorDarkTheme::setDialogColors()
+{
   dialog =
   {
     FColor::Black,      // Foreground
@@ -586,26 +813,38 @@ void default16ColorDarkTheme::setColorTheme()
     FColor::LightBlue,  // Resize foreground
     FColor::Blue        // Emphasis foreground
   };
+}
 
+inline void default16ColorDarkTheme::setErrorBoxColors()
+{
   error_box =
   {
     FColor::White,      // Foreground
     FColor::Red,        // Background
     FColor::Yellow      // Emphasis foreground
   };
+}
 
+inline void default16ColorDarkTheme::setTooltipColors()
+{
   tooltip =
   {
     FColor::White,      // Foreground
     FColor::Black       // Background
   };
+}
 
+inline void default16ColorDarkTheme::setShadowColors()
+{
   shadow =
   {
     FColor::LightGray,  // Foreground (only for transparent shadow)
     FColor::Black       // Background
   };
+}
 
+inline void default16ColorDarkTheme::setCurrentElementColors()
+{
   current_element =
   {
     FColor::LightBlue,  // Foreground
@@ -618,7 +857,10 @@ void default16ColorDarkTheme::setColorTheme()
     FColor::LightRed,   // Selected focused foreground
     FColor::Cyan        // Selected focused background
   };
+}
 
+inline void default16ColorDarkTheme::setListColors()
+{
   list =
   {
     FColor::Black,      // Foreground
@@ -626,7 +868,10 @@ void default16ColorDarkTheme::setColorTheme()
     FColor::Red,        // Selected foreground
     FColor::LightGray   // Selected background
   };
+}
 
+inline void default16ColorDarkTheme::setLabelColors()
+{
   label =
   {
     FColor::Black,      // Foreground
@@ -638,7 +883,10 @@ void default16ColorDarkTheme::setColorTheme()
     FColor::Blue,       // Emphasis foreground
     FColor::DarkGray    // Ellipsis foreground
   };
+}
 
+inline void default16ColorDarkTheme::setInputFieldColors()
+{
   input_field =
   {
     FColor::White,      // Foreground
@@ -648,7 +896,10 @@ void default16ColorDarkTheme::setColorTheme()
     FColor::DarkGray,   // Inactive foreground
     FColor::LightGray   // Inactive background
   };
+}
 
+inline void default16ColorDarkTheme::setToggleButtonColors()
+{
   toggle_button =
   {
     FColor::Black,      // Foreground
@@ -658,7 +909,10 @@ void default16ColorDarkTheme::setColorTheme()
     FColor::DarkGray,   // Inactive foreground
     FColor::LightGray   // Inactive background
   };
+}
 
+inline void default16ColorDarkTheme::setButtonColors()
+{
   button =
   {
     FColor::LightGray,  // Foreground
@@ -669,7 +923,10 @@ void default16ColorDarkTheme::setColorTheme()
     FColor::LightBlue,  // Inactive background
     FColor::White       // Hotkey foreground
   };
+}
 
+inline void default16ColorDarkTheme::setTitlebarColors()
+{
   titlebar =
   {
     FColor::White,      // Foreground
@@ -681,7 +938,10 @@ void default16ColorDarkTheme::setColorTheme()
     FColor::LightGray,  // Focused button foreground
     FColor::Black       // Focused button background
   };
+}
 
+inline void default16ColorDarkTheme::setMenuColors()
+{
   menu =
   {
     FColor::White,      // Foreground
@@ -693,7 +953,10 @@ void default16ColorDarkTheme::setColorTheme()
     FColor::LightRed,   // Hotkey foreground
     FColor::DarkGray    // Hotkey background
   };
+}
 
+inline void default16ColorDarkTheme::setStatusbarColors()
+{
   statusbar =
   {
     FColor::White,      // Foreground
@@ -706,7 +969,10 @@ void default16ColorDarkTheme::setColorTheme()
     FColor::LightRed,   // Focused hotkey foreground
     FColor::Blue        // Focused hotkey background
   };
+}
 
+inline void default16ColorDarkTheme::setScrollbarColors()
+{
   scrollbar =
   {
     FColor::DarkGray,   // Foreground
@@ -716,7 +982,10 @@ void default16ColorDarkTheme::setColorTheme()
     FColor::DarkGray,   // Inactive button foreground
     FColor::LightGray   // Inactive button background
   };
+}
 
+inline void default16ColorDarkTheme::setProgressbarColors()
+{
   progressbar =
   {
     FColor::DarkGray,   // Foreground

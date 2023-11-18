@@ -11,6 +11,7 @@ find ../final/ \
      ../final/output/tty/ \
      ../examples/ \
      ../test/ \
+     -path ../final/fconfig.h -prune -o \
      -regextype posix-egrep \
      -regex ".*\\.(cpp|h)$" \
      -exec sed -i 's/ *$//' "{}" \;

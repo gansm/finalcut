@@ -244,6 +244,24 @@ class default8ColorTheme final : public FWidgetColors
     // Method
     auto getClassName() const -> FString override;
     void setColorTheme() override;
+
+  private:
+    void setTermColors();
+    void setDialogColors();
+    void setErrorBoxColors();
+    void setTooltipColors();
+    void setShadowColors();
+    void setCurrentElementColors();
+    void setListColors();
+    void setLabelColors();
+    void setInputFieldColors();
+    void setToggleButtonColors();
+    void setButtonColors();
+    void setTitlebarColors();
+    void setMenuColors();
+    void setStatusbarColors();
+    void setScrollbarColors();
+    void setProgressbarColors();
 };
 
 // default8ColorTheme inline functions
@@ -281,6 +299,24 @@ class default16ColorTheme final : public FWidgetColors
     // Method
     auto getClassName() const -> FString override;
     void setColorTheme() override;
+
+  private:
+    void setTermColors();
+    void setDialogColors();
+    void setErrorBoxColors();
+    void setTooltipColors();
+    void setShadowColors();
+    void setCurrentElementColors();
+    void setListColors();
+    void setLabelColors();
+    void setInputFieldColors();
+    void setToggleButtonColors();
+    void setButtonColors();
+    void setTitlebarColors();
+    void setMenuColors();
+    void setStatusbarColors();
+    void setScrollbarColors();
+    void setProgressbarColors();
 };
 
 // default16ColorTheme inline functions
@@ -318,6 +354,24 @@ class default8ColorDarkTheme final : public FWidgetColors
     // Method
     auto getClassName() const -> FString override;
     void setColorTheme() override;
+
+  private:
+    void setTermColors();
+    void setDialogColors();
+    void setErrorBoxColors();
+    void setTooltipColors();
+    void setShadowColors();
+    void setCurrentElementColors();
+    void setListColors();
+    void setLabelColors();
+    void setInputFieldColors();
+    void setToggleButtonColors();
+    void setButtonColors();
+    void setTitlebarColors();
+    void setMenuColors();
+    void setStatusbarColors();
+    void setScrollbarColors();
+    void setProgressbarColors();
 };
 
 // default8ColorDarkTheme inline functions
@@ -355,6 +409,24 @@ class default16ColorDarkTheme final : public FWidgetColors
     // Method
     auto getClassName() const -> FString override;
     void setColorTheme() override;
+
+  private:
+    void setTermColors();
+    void setDialogColors();
+    void setErrorBoxColors();
+    void setTooltipColors();
+    void setShadowColors();
+    void setCurrentElementColors();
+    void setListColors();
+    void setLabelColors();
+    void setInputFieldColors();
+    void setToggleButtonColors();
+    void setButtonColors();
+    void setTitlebarColors();
+    void setMenuColors();
+    void setStatusbarColors();
+    void setScrollbarColors();
+    void setProgressbarColors();
 };
 
 // default16ColorDarkTheme inline functions

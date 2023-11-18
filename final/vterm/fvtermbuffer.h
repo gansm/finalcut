@@ -308,7 +308,9 @@ inline auto FVTermBuffer::back() const -> const_reference
 template <typename Iterator>
 inline void FVTermBuffer::assign (Iterator first, Iterator last)
 {
-  assert ( first < last );
+  if ( first >= last )
+    return;
+
   checkCapacity (data, std::size_t(last - first));
   data.assign(first, last);
 }

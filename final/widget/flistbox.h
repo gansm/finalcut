@@ -287,6 +287,7 @@ class FListBox : public FWidget
     using KeyMap = std::unordered_map<FKey, std::function<void()>, EnumHash<FKey>>;
     using KeyMapResult = std::unordered_map<FKey, std::function<bool()>, EnumHash<FKey>>;
     using LazyInsert = std::function<void(FListBoxItem&, FDataAccess*, std::size_t)>;
+    using MultiSelectionFunction = std::function<void(std::size_t)>;
 
     struct ListBoxData
     {
@@ -334,6 +335,7 @@ class FListBox : public FWidget
     // Inquiry
     auto isHorizontallyScrollable() const -> bool;
     auto isVerticallyScrollable() const -> bool;
+    auto isCurrentLine (int) -> bool;
 
     // Methods
     void init();
@@ -348,6 +350,10 @@ class FListBox : public FWidget
     void printLeftBracket (BracketType);
     void printRightBracket (BracketType);
     void drawListBracketsLine (int, FListBoxItems::iterator, bool);
+    auto getMaxWidth() const ->  std::size_t;
+    void printLeftCurrentLineArrow (int);
+    void printRightCurrentLineArrow (int);
+    void printRemainingSpacesFromPos (std::size_t);
     void setInitialLineAttributes (bool) const;
     void setCurrentLineAttributes (int, bool, bool, bool&);
     void setLineAttributes (int, bool, bool, bool&);
@@ -382,6 +388,9 @@ class FListBox : public FWidget
     void lastPos();
     auto isWithinListBounds (const FPoint&) const -> bool;
     auto skipIncrementalSearch() -> bool;
+    auto isNonSelectMouseButtonPressed (FMouseEvent*) const -> bool;
+    void handleMouseWithinListBounds (FMouseEvent*, MultiSelectionFunction);
+    void handleMouseDragging (FMouseEvent*);
     void acceptSelection();
     auto spacebarProcessing() -> bool;
     auto changeSelectionAndPosition() -> bool;
@@ -640,6 +649,14 @@ inline auto FListBox::isHorizontallyScrollable() const -> bool
 //----------------------------------------------------------------------
 inline auto FListBox::isVerticallyScrollable() const -> bool
 { return getCount() > getClientHeight(); }
+
+//----------------------------------------------------------------------
+inline auto FListBox::isCurrentLine (int y) -> bool
+{ return y + scroll.yoffset + 1 == int(selection.current); }
+
+//----------------------------------------------------------------------
+inline auto FListBox::getMaxWidth() const ->  std::size_t
+{ return getWidth() - nf_offset - 4; }
 
 //----------------------------------------------------------------------
 inline auto \

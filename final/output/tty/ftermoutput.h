@@ -187,7 +187,7 @@ class FTermOutput final : public FOutput
     void printCharacter (uInt&, uInt, bool, FChar&);
     void printFullWidthCharacter (uInt&, uInt, FChar&);
     void printFullWidthPaddingCharacter (uInt&, uInt, FChar&);
-    void printHalfCovertFullWidthCharacter (uInt&, uInt, FChar&);
+    void printHalfCovertFullWidthCharacter (uInt, uInt, FChar&);
     void printEllipsis (uInt, uInt, FChar&);
     void skipPaddingCharacter (uInt&, uInt, const FChar&) const;
     auto eraseCharacters (uInt&, uInt, uInt) -> PrintState;

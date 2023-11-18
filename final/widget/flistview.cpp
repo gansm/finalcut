@@ -1711,65 +1711,80 @@ void FListView::drawListLine ( const FListViewItem* item
   // Set line color and attributes
   setLineAttributes (is_current, is_focus);
 
+  // Create a string that contains the columns
+  FString line = createColumnsString(item);
+
   // Print the entry
+  printColumnsString (std::move(line));
+}
+
+//----------------------------------------------------------------------
+auto FListView::createColumnsString (const FListViewItem* item) -> FString
+{
+  if ( item->column_list.empty() )
+    return {};
+
+  // Get prefix
   const std::size_t indent = item->getDepth() << 1u;  // indent = 2 * depth
   FString line{getLinePrefix (item, indent)};
 
-  // Print columns
-  if ( ! item->column_list.empty() )
+  for (std::size_t col{0}; col < item->column_list.size(); )
   {
-    for (std::size_t col{0}; col < item->column_list.size(); )
+    if ( ! data.header[col].visible )
     {
-      if ( ! data.header[col].visible )
-      {
-        col++;
-        continue;
-      }
-
-      static constexpr std::size_t ellipsis_length = 2;
-      const auto& text = item->column_list[col];
-      auto width = std::size_t(data.header[col].width);
-      const std::size_t column_width = getColumnWidth(text);
-      // Increment the value of col for the column position
-      // and the next iteration
       col++;
-      const auto align = getColumnAlignment(int(col));
-      const std::size_t align_offset = getAlignOffset (align, column_width, width);
+      continue;
+    }
 
-      if ( isTreeView() && col == 1 )
-        adjustWidthForTreeView (width, indent, item->isCheckable());
+    static constexpr std::size_t ellipsis_length = 2;
+    const auto& text = item->column_list[col];
+    auto width = std::size_t(data.header[col].width);
+    const std::size_t column_width = getColumnWidth(text);
+    // Increment the value of col for the column position
+    // and the next iteration
+    col++;
+    const auto align = getColumnAlignment(int(col));
+    const std::size_t align_offset = getAlignOffset (align, column_width, width);
 
-      // Insert alignment spaces
-      if ( align_offset > 0 )
-        line += FString{align_offset, L' '};
+    if ( isTreeView() && col == 1 )
+      adjustWidthForTreeView (width, indent, item->isCheckable());
 
-      if ( align_offset + column_width <= width )
-      {
-        // Insert text and trailing space
-        static constexpr std::size_t leading_space = 1;
-        line += getColumnSubString (text, 1, width);
-        line += FString { leading_space + width
-                        - align_offset - column_width, L' '};
-      }
-      else if ( align == Align::Right )
-      {
-        // Ellipse right align text
-        const std::size_t first = getColumnWidth(text) + 1 - width;
-        line += FString {L".."};
-        line += getColumnSubString (text, first, width - ellipsis_length);
-        line += L' ';
-      }
-      else
-      {
-        // Ellipse left align text and center text
-        line += getColumnSubString (text, 1, width - ellipsis_length);
-        line += FString {L".. "};
-      }
+    // Insert alignment spaces
+    if ( align_offset > 0 )
+      line += FString{align_offset, L' '};
+
+    if ( align_offset + column_width <= width )
+    {
+      // Insert text and trailing space
+      static constexpr std::size_t leading_space = 1;
+      line += getColumnSubString (text, 1, width);
+      line += FString { leading_space + width
+                      - align_offset - column_width, L' '};
+    }
+    else if ( align == Align::Right )
+    {
+      // Ellipse right align text
+      const std::size_t first = getColumnWidth(text) + 1 - width;
+      line += FString {L".."};
+      line += getColumnSubString (text, first, width - ellipsis_length);
+      line += L' ';
+    }
+    else
+    {
+      // Ellipse left align text and center text
+      line += getColumnSubString (text, 1, width - ellipsis_length);
+      line += FString {L".. "};
     }
   }
 
+  return line;
+}
+
+//----------------------------------------------------------------------
+void FListView::printColumnsString (FString&& line)
+{
   const std::size_t width = getWidth() - nf_offset - 2;
-  line = getColumnSubString ( line, std::size_t(scroll.xoffset) + 1, width );
+  line = getColumnSubString (line, std::size_t(scroll.xoffset) + 1, width);
   const std::size_t len = line.getLength();
   std::size_t char_width{0};
 
@@ -1816,6 +1831,8 @@ void FListView::clearList()
 inline void FListView::setLineAttributes ( bool is_current
                                          , bool is_focus ) const
 {
+  // Set line color and attributes
+
   const auto& wc = getColorTheme();
   setColor (wc->list.fg, wc->list.bg);
 

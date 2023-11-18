@@ -897,19 +897,18 @@ void FTermOutput::printFullWidthPaddingCharacter ( uInt& x, uInt y
 }
 
 //----------------------------------------------------------------------
-void FTermOutput::printHalfCovertFullWidthCharacter ( uInt& x, uInt y
+void FTermOutput::printHalfCovertFullWidthCharacter ( uInt x, uInt y
                                                     , FChar& print_char )
 {
   auto& prev_char = vterm->getFChar(int(x - 1), int(y));
 
-  if ( isFullWidthChar(prev_char) && ! isFullWidthPaddingChar(print_char) )
+  if ( isFullWidthChar(prev_char)
+    && ! isFullWidthPaddingChar(print_char)
+    && moveCursorLeft() == CursorMoved::Yes )
   {
-    if ( moveCursorLeft() == CursorMoved::Yes )
-    {
-      // Print ellipses for the 1st full-width character column
-      term_pos->x_ref()--;
-      printEllipsis (x - 1, y, prev_char);
-    }
+    // Print ellipses for the 1st full-width character column
+    term_pos->x_ref()--;
+    printEllipsis (x - 1, y, prev_char);
   }
 
   // Print a half-width character

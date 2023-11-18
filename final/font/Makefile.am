@@ -22,7 +22,7 @@ EXTRA_DIST = \
 
 docdir = ${datadir}/doc/${PACKAGE}
 doc_DATA = \
-	newfont.txt 
+	newfont.txt
 
 fontdir = ${datadir}/fonts/X11/misc/${PACKAGE}
 font_DATA = \

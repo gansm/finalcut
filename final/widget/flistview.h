@@ -501,6 +501,8 @@ class FListView : public FWidget
     void drawList();
     void adjustWidthForTreeView (std::size_t&, std::size_t, bool) const;
     void drawListLine (const FListViewItem*, bool, bool);
+    auto createColumnsString (const FListViewItem*) -> FString;
+    void printColumnsString (FString&&);
     void clearList();
     void setLineAttributes (bool, bool) const;
     auto getCheckBox (const FListViewItem* item) const -> FString;

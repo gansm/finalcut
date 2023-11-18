@@ -218,7 +218,7 @@ auto FTermDetection::getTTYSFileEntry() -> bool
 #endif  // F_HAVE_GETTTYNAM
 
 //----------------------------------------------------------------------
-auto FTermDetection::getTermBasename() -> const char*
+auto FTermDetection::getTermBasename() const -> const char*
 {
   // Get the terminal basename
   const auto& termfilename = FTermData::getInstance().getTermFileName();

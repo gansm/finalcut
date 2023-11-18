@@ -47,7 +47,7 @@ sed -n "1,/^CHARS /p" "$FONT2"
 # Get glyphs
 sed -n "/^STARTCHAR /,/^ENDCHAR/p" "$FONT1" \
 | sed -e "s/^ENDCHAR/ENDCHAR$DELIMITER/" \
-| while read -r -d "$DELIMITER" GLYPH 
+| while read -r -d "$DELIMITER" GLYPH
 do
   CODE=$(getCode "$GLYPH")
 
