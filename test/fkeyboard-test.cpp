@@ -3170,7 +3170,10 @@ void FKeyboardTest::init()
 
   // Copy the section with the fixed escape sequences
   auto& fkey_cap_table = finalcut::FKeyMap::getInstance().getKeyCapMap();
-  std::copy ( &fkey_cap_table[150].num, &fkey_cap_table[190].num, &test::fkey[150].num);
+  std::size_t first = 150;
+  std::size_t last = fkey_cap_table.size();
+  assert ( last > first );
+  std::copy ( &fkey_cap_table[first].num, &fkey_cap_table[last].num, &test::fkey[first].num);
 
   // Use test::fkey as new termcap map
   keyboard->setTermcapMap (test::fkey);

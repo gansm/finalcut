@@ -14,7 +14,7 @@ jobs:
 
     steps:
     - name: Repository checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Test on Solaris 11.4
       uses: vmactions/solaris-vm@v0

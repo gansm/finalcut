@@ -968,71 +968,9 @@ void FListView::remove (FListViewItem* item)
   if ( ! item || isItemListEmpty() )
     return;
 
-  auto parent = item->getParent();
-  const auto* current_item = static_cast<FListViewItem*>(*selection.current_iter);
-  const auto* first_item = data.itemlist.front();
-  auto end_iter = static_cast<FListViewIterator>(data.itemlist.end());
-  const auto& last_item = *(--end_iter);
-  const bool is_current_line( item == current_item );
-  const bool is_first_line( item == first_item );
-  const bool is_last_line( item == last_item );
-
-  if ( is_current_line )
-  {
-    if ( is_last_line || current_item == data.itemlist.back() )
-      stepBackward();
-    else
-    {
-      collapseSubtree();
-      stepForward();
-    }
-  }
-
-  if ( is_first_line )
-    ++scroll.first_visible_line;
-
-  if ( parent )
-  {
-    if ( this == parent )
-    {
-      auto last = std::remove (data.itemlist.begin(), data.itemlist.end(), item);
-      data.itemlist.erase(last, data.itemlist.end());
-      delChild(item);
-      selection.current_iter.getPosition()--;
-    }
-    else
-    {
-      parent->delChild(item);
-      auto parent_item = static_cast<FListViewItem*>(parent);
-      parent_item->visible_lines--;
-      selection.current_iter.getPosition()--;
-
-      if ( ! parent_item->hasChildren() )
-      {
-        parent_item->expandable = false;
-        parent_item->is_expand = false;
-      }
-    }
-  }
-
-  const std::size_t element_count = getCount();
-  recalculateVerticalBar (element_count);
-
-  if ( isItemListEmpty() )
-  {
-    selection.current_iter = getNullIterator();
-    scroll.first_visible_line = getNullIterator();
-    scroll.last_visible_line = getNullIterator();
-    clearList();
-  }
-  else
-  {
-    drawList();
-    drawBorder();
-    drawHeadlines();
-    drawScrollbars();
-  }
-
+  adjustListBeforeRemoval (item);
+  removeItemFromParent (item);
+  updateListAfterRemoval();
   processChanged();
 }
 
@@ -1715,7 +1653,7 @@ void FListView::drawListLine ( const FListViewItem* item
   FString line = createColumnsString(item);
 
   // Print the entry
-  printColumnsString (std::move(line));
+  printColumnsString (line);
 }
 
 //----------------------------------------------------------------------
@@ -1781,7 +1719,7 @@ auto FListView::createColumnsString (const FListViewItem* item) -> FString
 }
 
 //----------------------------------------------------------------------
-void FListView::printColumnsString (FString&& line)
+void FListView::printColumnsString (FString& line)
 {
   const std::size_t width = getWidth() - nf_offset - 2;
   line = getColumnSubString (line, std::size_t(scroll.xoffset) + 1, width);
@@ -2140,6 +2078,7 @@ void FListView::drawColumnEllipsis ( const HeaderItems::const_iterator& iter
 void FListView::updateLayout()
 {
   max_line_width = 0;
+  scroll.xoffset = 0;
   std::for_each ( data.itemlist.begin()
                 , data.itemlist.end()
                 , [this] (FObject* obj_item)
@@ -2237,6 +2176,83 @@ inline void FListView::afterInsertion()
   const std::size_t element_count = getCount();
   recalculateVerticalBar (element_count);
   processChanged();
+}
+
+//----------------------------------------------------------------------
+void FListView::adjustListBeforeRemoval (FListViewItem* item)
+{
+  const auto* current_item = static_cast<FListViewItem*>(*selection.current_iter);
+  const auto* first_item = data.itemlist.front();
+  auto end_iter = static_cast<FListViewIterator>(data.itemlist.end());
+  const auto& last_item = *(--end_iter);
+  const bool is_current_line( item == current_item );
+  const bool is_first_line( item == first_item );
+  const bool is_last_line( item == last_item );
+
+  if ( is_current_line )
+  {
+    if ( is_last_line || current_item == data.itemlist.back() )
+      stepBackward();
+    else
+    {
+      collapseSubtree();
+      stepForward();
+    }
+  }
+
+  if ( is_first_line )
+    ++scroll.first_visible_line;
+}
+
+//----------------------------------------------------------------------
+void FListView::removeItemFromParent (FListViewItem* item)
+{
+  auto parent = item->getParent();
+
+  if ( ! parent )
+    return;
+
+  if ( this == parent )
+  {
+    auto last = std::remove (data.itemlist.begin(), data.itemlist.end(), item);
+    data.itemlist.erase(last, data.itemlist.end());
+    delChild(item);
+    selection.current_iter.getPosition()--;
+    return;
+  }
+
+  parent->delChild(item);
+  auto parent_item = static_cast<FListViewItem*>(parent);
+  parent_item->visible_lines--;
+  selection.current_iter.getPosition()--;
+
+  if ( parent_item->hasChildren() )
+    return;
+
+  parent_item->expandable = false;
+  parent_item->is_expand = false;
+}
+
+//----------------------------------------------------------------------
+void FListView::updateListAfterRemoval()
+{
+  const std::size_t element_count = getCount();
+  recalculateVerticalBar (element_count);
+
+  if ( isItemListEmpty() )
+  {
+    selection.current_iter = getNullIterator();
+    scroll.first_visible_line = getNullIterator();
+    scroll.last_visible_line = getNullIterator();
+    clearList();
+  }
+  else
+  {
+    drawList();
+    drawBorder();
+    drawHeadlines();
+    drawScrollbars();
+  }
 }
 
 //----------------------------------------------------------------------

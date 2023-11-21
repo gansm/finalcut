@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2022 Markus Gans                                      *
+* Copyright 2020-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -106,8 +106,14 @@ void FLogger::printLogLine (const std::string& msg)
 
   const auto& prefix = [this, &log_level] ()
   {
-    if ( timestamp )
-      return getTimeString() + " [" + log_level + "] ";
+    {
+      std::lock_guard<std::mutex> lock_guard(print_mutex);
+
+      if ( timestamp )
+        return getTimeString() + " [" + log_level + "] ";
+
+      // Release mutex at end of scope
+    }
 
     return "[" + log_level + "] ";
   }();

@@ -1419,7 +1419,7 @@ inline auto FListBox::skipIncrementalSearch() -> bool
 }
 
 //----------------------------------------------------------------------
-auto FListBox::isNonSelectMouseButtonPressed (FMouseEvent* ev) const -> bool
+auto FListBox::isNonSelectMouseButtonPressed (const FMouseEvent* ev) const -> bool
 {
   if ( ev->getButton() != MouseButton::Left
     && ev->getButton() != MouseButton::Right )
@@ -1432,8 +1432,9 @@ auto FListBox::isNonSelectMouseButtonPressed (FMouseEvent* ev) const -> bool
 }
 
 //----------------------------------------------------------------------
-void FListBox::handleMouseWithinListBounds ( FMouseEvent* ev,
-                                             MultiSelectionFunction multi_selection )
+template <typename MultiSelectionFunction>
+void FListBox::handleMouseWithinListBounds ( const FMouseEvent* ev,
+                                             const MultiSelectionFunction& multi_selection )
 {
   const std::size_t current_before = selection.current;
   const int yoffset_before = scroll.yoffset;
@@ -1469,7 +1470,7 @@ void FListBox::handleMouseWithinListBounds ( FMouseEvent* ev,
 }
 
 //----------------------------------------------------------------------
-void FListBox::handleMouseDragging (FMouseEvent* ev)
+void FListBox::handleMouseDragging (const FMouseEvent* ev)
 {
   const int mouse_y = ev->getY();
 

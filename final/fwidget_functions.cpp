@@ -49,6 +49,30 @@ uInt8 var::b1_print_trans_mask{};
 
 }  // namespace internal
 
+//----------------------------------------------------------------------
+struct TransparentShadowData
+{
+  // Using-declaration
+  using FTermArea = FVTerm::FTermArea;
+
+  // Data members
+  FTermArea& area;
+  uInt       width{};
+  uInt       height{};
+  uInt       shadow_width{};
+  uInt       shadow_height{};
+  FChar      transparent_char{};
+  FChar      color_overlay_char{};
+  FChar*     area_pos{};
+};
+
+
+// Function forward declarations
+//----------------------------------------------------------------------
+void drawRightShadow (TransparentShadowData&);
+void drawBottomShadow (TransparentShadowData&);
+
+
 // FWidget non-member functions
 //----------------------------------------------------------------------
 void initByte1PrintTransMask()
@@ -353,67 +377,76 @@ void drawTransparentShadow (FWidget* w)
     return;
 
   auto& area = *w->getPrintArea();
-  const auto width = uInt(area.size.width);
-  const auto height = uInt(area.size.height);
-  const auto shadow_width = uInt(area.shadow.width);
-  const auto shadow_height = uInt(area.shadow.height);
   const auto& wc = FWidget::getColorTheme();
 
-  const FChar transparent_char
+  TransparentShadowData data
   {
-    { { L'\0',  L'\0', L'\0', L'\0', L'\0' } },
-    { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
-    FColor::Default,
-    FColor::Default,
-    { { 0x00, 0x20, 0x00, 0x00} }  // byte 0..3 (byte 1 = 0x32 = transparent)
-  };
-
-  const FChar color_overlay_char
-  {
-    { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
-    { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
-    wc->shadow.fg,
-    wc->shadow.bg,
-    { { 0x00, 0x40, 0x00, 0x00} }  // byte 0..3 (byte 1 = 0x64 = color_overlay)
-  };
-
-  auto* area_pos = &area.getFChar(int(width), 0);
-  auto& area_changes = area.changes;
-
-  if ( shadow_width > 0 )  // Draw right shadow
-  {
-    std::fill (area_pos, area_pos + shadow_width, transparent_char);
-    area_changes[0].xmin = std::min(area_changes[0].xmin, width);
-    area_changes[0].xmax = width + shadow_width - 1;
-    area_changes[0].trans_count += shadow_width;
-
-    for (std::size_t y{1}; y < height; y++)
+    area,
+    uInt(area.size.width),
+    uInt(area.size.height),
+    uInt(area.shadow.width),
+    uInt(area.shadow.height),
     {
-      area_pos += shadow_width + width;
-      area_changes[y].xmin = std::min(area_changes[y].xmin, width);
-      area_changes[y].xmax = width + shadow_width - 1;
-      area_changes[y].trans_count += shadow_width;
-      std::fill (area_pos, area_pos + shadow_width, color_overlay_char);
-    }
+      { { L'\0',  L'\0', L'\0', L'\0', L'\0' } },
+      { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
+      FColor::Default,
+      FColor::Default,
+      { { 0x00, 0x20, 0x00, 0x00} }  // byte 0..3 (byte 1 = 0x32 = transparent)
+    },
+    {
+      { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
+      { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
+      wc->shadow.fg,
+      wc->shadow.bg,
+      { { 0x00, 0x40, 0x00, 0x00} }  // byte 0..3 (byte 1 = 0x64 = color_overlay)
+    },
+    &area.getFChar(area.size.width, 0)
+  };
 
-    area_pos += shadow_width;
-  }
-
-  for (std::size_t y{height}; y < height + shadow_height; y++)  // Draw bottom shadow
-  {
-    area_changes[y].xmin = 0;
-    area_changes[y].xmax = width + shadow_width - 1;
-    area_changes[y].trans_count += width + shadow_width;
-    std::fill (area_pos, area_pos + shadow_width, transparent_char);
-    area_pos += shadow_width;
-    std::fill (area_pos, area_pos + width, color_overlay_char);
-    area_pos += width;
-  }
-
+  drawRightShadow(data);
+  drawBottomShadow(data);
   area.has_changes = true;
 
   if ( FVTerm::getFOutput()->isMonochron() )
     w->setReverse(false);
+}
+
+//----------------------------------------------------------------------
+inline void drawRightShadow (TransparentShadowData& d)
+{
+  if ( d.shadow_width > 0 )  // Draw right shadow
+  {
+    std::fill (d.area_pos, d.area_pos + d.shadow_width, d.transparent_char);
+    d.area.changes[0].xmin = std::min(d.area.changes[0].xmin, d.width);
+    d.area.changes[0].xmax = d.width + d.shadow_width - 1;
+    d.area.changes[0].trans_count += d.shadow_width;
+
+    for (std::size_t y{1}; y < d.height; y++)
+    {
+      d.area_pos += d.shadow_width + d.width;
+      d.area.changes[y].xmin = std::min(d.area.changes[y].xmin, d.width);
+      d.area.changes[y].xmax = d.width + d.shadow_width - 1;
+      d.area.changes[y].trans_count += d.shadow_width;
+      std::fill (d.area_pos, d.area_pos + d.shadow_width, d.color_overlay_char);
+    }
+
+    d.area_pos += d.shadow_width;
+  }
+}
+
+//----------------------------------------------------------------------
+inline void drawBottomShadow (TransparentShadowData& d)
+{
+  for (std::size_t y{d.height}; y < d.height + d.shadow_height; y++)  // Draw bottom shadow
+  {
+    d.area.changes[y].xmin = 0;
+    d.area.changes[y].xmax = d.width + d.shadow_width - 1;
+    d.area.changes[y].trans_count += d.width + d.shadow_width;
+    std::fill (d.area_pos, d.area_pos + d.shadow_width, d.transparent_char);
+    d.area_pos += d.shadow_width;
+    std::fill (d.area_pos, d.area_pos + d.width, d.color_overlay_char);
+    d.area_pos += d.width;
+  }
 }
 
 //----------------------------------------------------------------------

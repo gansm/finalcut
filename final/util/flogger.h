@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2022 Markus Gans                                      *
+* Copyright 2020-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -104,32 +104,44 @@ inline auto FLogger::getClassName() const -> FString
 //----------------------------------------------------------------------
 inline void FLogger::info (const std::string& msg)
 {
-  std::lock_guard<std::mutex> lock_guard(print_mutex);
-  setLevel() = LogLevel::Info;
+  {
+    std::lock_guard<std::mutex> lock_guard(print_mutex);
+    setLevel() = LogLevel::Info;
+    // Release mutex at end of scope
+  }
   printLogLine (msg);
 }
 
 //----------------------------------------------------------------------
 inline void FLogger::warn (const std::string& msg)
 {
-  std::lock_guard<std::mutex> lock_guard(print_mutex);
-  setLevel() = LogLevel::Warn;
+  {
+    std::lock_guard<std::mutex> lock_guard(print_mutex);
+    setLevel() = LogLevel::Warn;
+    // Release mutex at end of scope
+  }
   printLogLine (msg);
 }
 
 //----------------------------------------------------------------------
 inline void FLogger::error (const std::string& msg)
 {
-  std::lock_guard<std::mutex> lock_guard(print_mutex);
-  setLevel() = LogLevel::Error;
+  {
+    std::lock_guard<std::mutex> lock_guard(print_mutex);
+    setLevel() = LogLevel::Error;
+    // Release mutex at end of scope
+  }
   printLogLine (msg);
 }
 
 //----------------------------------------------------------------------
 inline void FLogger::debug (const std::string& msg)
 {
-  std::lock_guard<std::mutex> lock_guard(print_mutex);
-  setLevel() = LogLevel::Debug;
+  {
+    std::lock_guard<std::mutex> lock_guard(print_mutex);
+    setLevel() = LogLevel::Debug;
+    // Release mutex at end of scope
+  }
   printLogLine (msg);
 }
 

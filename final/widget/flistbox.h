@@ -287,7 +287,6 @@ class FListBox : public FWidget
     using KeyMap = std::unordered_map<FKey, std::function<void()>, EnumHash<FKey>>;
     using KeyMapResult = std::unordered_map<FKey, std::function<bool()>, EnumHash<FKey>>;
     using LazyInsert = std::function<void(FListBoxItem&, FDataAccess*, std::size_t)>;
-    using MultiSelectionFunction = std::function<void(std::size_t)>;
 
     struct ListBoxData
     {
@@ -335,7 +334,7 @@ class FListBox : public FWidget
     // Inquiry
     auto isHorizontallyScrollable() const -> bool;
     auto isVerticallyScrollable() const -> bool;
-    auto isCurrentLine (int) -> bool;
+    auto isCurrentLine (int) const -> bool;
 
     // Methods
     void init();
@@ -388,9 +387,10 @@ class FListBox : public FWidget
     void lastPos();
     auto isWithinListBounds (const FPoint&) const -> bool;
     auto skipIncrementalSearch() -> bool;
-    auto isNonSelectMouseButtonPressed (FMouseEvent*) const -> bool;
-    void handleMouseWithinListBounds (FMouseEvent*, MultiSelectionFunction);
-    void handleMouseDragging (FMouseEvent*);
+    auto isNonSelectMouseButtonPressed (const FMouseEvent*) const -> bool;
+    template <typename MultiSelectionFunction>
+    void handleMouseWithinListBounds (const FMouseEvent*, const MultiSelectionFunction&);
+    void handleMouseDragging (const FMouseEvent*);
     void acceptSelection();
     auto spacebarProcessing() -> bool;
     auto changeSelectionAndPosition() -> bool;
@@ -651,7 +651,7 @@ inline auto FListBox::isVerticallyScrollable() const -> bool
 { return getCount() > getClientHeight(); }
 
 //----------------------------------------------------------------------
-inline auto FListBox::isCurrentLine (int y) -> bool
+inline auto FListBox::isCurrentLine (int y) const -> bool
 { return y + scroll.yoffset + 1 == int(selection.current); }
 
 //----------------------------------------------------------------------
