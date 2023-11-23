@@ -1027,7 +1027,7 @@ void FListView::sort()
       throw std::invalid_argument{"Invalid sort type"};
   }
 
-  sort(comparator);
+  sort(std::move(comparator));
   selection.current_iter = data.itemlist.begin();
   scroll.first_visible_line = data.itemlist.begin();
   processChanged();

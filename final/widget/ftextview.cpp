@@ -656,9 +656,8 @@ inline void FTextView::processLine (FString&& line, int pos)
              .removeDel()
              .replaceControlCodes()
              .rtrim();
-
-  data.emplace (data.cbegin() + pos, std::move(line));
   updateHorizontalScrollBar (getColumnWidth(line));
+  data.emplace (data.cbegin() + pos, std::move(line));
 }
 
 //----------------------------------------------------------------------

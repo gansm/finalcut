@@ -677,7 +677,7 @@ auto FString::split (const FString& delimiter) const -> FStringList
 auto FString::setString (const FString& s) -> FString&
 {
   std::wstring str{s.string};
-  internal_assign (str);
+  internal_assign (std::move(str));
   return *this;
 }
 
@@ -702,7 +702,7 @@ auto FString::setNumber (sInt64 num) -> FString&
     *--s = '-';
 
   std::wstring str{s};
-  internal_assign (str);
+  internal_assign (std::move(str));
   return *this;
 }
 
@@ -721,7 +721,7 @@ auto FString::setNumber (uInt64 num) -> FString&
   while ( num );
 
   std::wstring str{s};
-  internal_assign (str);
+  internal_assign (std::move(str));
   return *this;
 }
 
@@ -1133,7 +1133,7 @@ auto operator >> (std::istream& instr, FString& s) -> std::istream&
 
   if ( ! wide_string.empty() )
   {
-    s.internal_assign (wide_string);
+    s.internal_assign (std::move(wide_string));
   }
 
   return instr;
@@ -1163,7 +1163,7 @@ auto operator >> (std::wistream& instr, FString& s) -> std::wistream&
   std::array<wchar_t, FString::INPBUFFER + 1> buf{};
   instr.getline (buf.data(), FString::INPBUFFER);
   std::wstring str(buf.data());
-  s.internal_assign (str);
+  s.internal_assign (std::move(str));
   return instr;
 }
 

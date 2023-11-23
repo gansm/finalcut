@@ -1379,7 +1379,7 @@ void FVTerm::callPreprocessingHandler (const FTermArea* area) const
   for (auto&& pcall : area->preproc_list)
   {
     // call the preprocessing handler
-    auto preprocessingHandler = pcall->function;
+    const auto& preprocessingHandler = pcall->function;
     preprocessingHandler();
   }
 }

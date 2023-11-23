@@ -986,7 +986,7 @@ void FWidgetTest::acceleratorTest()
   root_wdgt.delAccelerator();
   CPPUNIT_ASSERT ( accelerator_list.size() == 0 );
   CPPUNIT_ASSERT ( wdgt.getAcceleratorList().size() == 0 );
-  wdgt.setAcceleratorList() = new_accelerator_list;
+  wdgt.setAcceleratorList() = std::move(new_accelerator_list);
   CPPUNIT_ASSERT ( wdgt.getAcceleratorList().size() == 1 );
   wdgt.delAccelerator();
   CPPUNIT_ASSERT ( wdgt.getAcceleratorList().size() == 1 );

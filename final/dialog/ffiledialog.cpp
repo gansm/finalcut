@@ -170,7 +170,7 @@ void FFileDialog::setPath (const FString& dir)
   if ( r_dir[r_dir.getLength() - 1] != '/' )
     directory = r_dir + "/";
   else
-    directory = r_dir;
+    directory = std::move(r_dir);
 }
 
 //----------------------------------------------------------------------

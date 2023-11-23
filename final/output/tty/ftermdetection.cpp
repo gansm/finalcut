@@ -350,7 +350,7 @@ void FTermDetection::detectTerminal()
   if ( new_termtype )
   {
     setenv("TERM", new_termtype.c_str(), 1);
-    termtype = new_termtype;
+    termtype = std::move(new_termtype);
   }
 
 #if defined(__CYGWIN__)
@@ -856,13 +856,10 @@ inline auto FTermDetection::secDA_Analysis_82() const -> FString
   auto& fterm_data = FTermData::getInstance();
   fterm_data.setTermType (FTermType::rxvt);
 
-  return [this] ()
-  {
-    if ( termtype == "rxvt-cygwin-native" )
-      return  FString("rxvt-16color");
+  if ( termtype == "rxvt-cygwin-native" )
+    return FString("rxvt-16color");
 
-    return  FString("rxvt");
-  }();
+  return FString("rxvt");
 }
 
 //----------------------------------------------------------------------

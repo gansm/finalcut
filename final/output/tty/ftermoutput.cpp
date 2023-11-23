@@ -223,7 +223,7 @@ void FTermOutput::hideCursor (bool enable)
   if ( visibility_str.empty() )  // Exit the function if the string is empty
     return;
 
-  appendOutputBuffer (FTermControl{visibility_str});
+  appendOutputBuffer (FTermControl{std::move(visibility_str)});
   flush();
 }
 

@@ -665,7 +665,7 @@ auto FOptiMove::relativeMove ( std::string& move
     if ( ! move.empty() )
       move.append(hmove);
     else
-      move = hmove;
+      move = std::move(hmove);
   }
 
   return vtime + htime;
@@ -794,7 +794,7 @@ inline void FOptiMove::moveWithRightCursor ( std::string& hmove, int& htime
 
   if ( htime_r < htime )
   {
-    hmove = str;
+    hmove = std::move(str);
     htime = htime_r;
   }
 }
@@ -856,7 +856,7 @@ inline void FOptiMove::moveWithLeftCursor ( std::string& hmove, int& htime
 
   if ( htime_l < htime )
   {
-    hmove = str;
+    hmove = std::move(str);
     htime = htime_l;
   }
 }
