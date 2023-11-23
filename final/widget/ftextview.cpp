@@ -662,7 +662,7 @@ inline void FTextView::processLine (FString&& line, int pos)
 }
 
 //----------------------------------------------------------------------
-inline void FTextView::updateVerticalScrollBar()
+inline void FTextView::updateVerticalScrollBar() const
 {
   const int vmax = ( getRows() > getTextHeight() )
                    ? int(getRows()) - int(getTextHeight())

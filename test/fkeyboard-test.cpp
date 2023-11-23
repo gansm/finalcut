@@ -3172,8 +3172,11 @@ void FKeyboardTest::init()
   auto& fkey_cap_table = finalcut::FKeyMap::getInstance().getKeyCapMap();
   std::size_t first = 150;
   std::size_t last = fkey_cap_table.size() - 1;
-  assert ( last > first );
-  std::copy ( &fkey_cap_table[first].num, &fkey_cap_table[last].num, &test::fkey[first].num);
+  const auto from_begin =  &fkey_cap_table[first];
+  const auto from_end = &fkey_cap_table[last] + 1;
+  auto to_begin = &test::fkey[first];
+  assert ( from_end > from_begin );
+  std::copy (from_begin, from_end, to_begin);
 
   // Use test::fkey as new termcap map
   keyboard->setTermcapMap (test::fkey);

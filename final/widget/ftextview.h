@@ -244,7 +244,7 @@ class FTextView : public FWidget
     auto isPrintable (wchar_t) const -> bool;
     auto splitTextLines (const FString&) const -> FStringList;
     void processLine (FString&&, int);
-    void updateVerticalScrollBar();
+    void updateVerticalScrollBar() const;
     void updateHorizontalScrollBar (std::size_t);
     void processChanged() const;
     void changeOnResize() const;
