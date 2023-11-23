@@ -279,67 +279,13 @@ void FTextView::insert (const FString& str, int pos)
   if ( pos < 0 || pos >= int(getRows()) )
     pos = int(getRows());
 
-  auto showHorizontallyScrollable = [this] ()
+  for (auto&& line : splitTextLines(str))  // Line loop
   {
-    if ( isShown() && isHorizontallyScrollable() )
-      hbar->show();
-  };
-
-  auto&& text_split = \
-      [&str] ()
-      {
-        if ( str.isEmpty() )
-        {
-          FStringList list{};
-          list.emplace_back("");
-          return list;
-        }
-
-        const auto& string = str.rtrim().expandTabs(getFOutput()->getTabstop());
-        return string.split("\n");
-      }();
-
-  for (auto&& line : text_split)  // Line loop
-  {
-    line = line.removeBackspaces()
-               .removeDel()
-               .replaceControlCodes()
-               .rtrim();
-    const auto column_width = getColumnWidth(line);
-
-    if ( column_width > max_line_width )
-    {
-      max_line_width = column_width;
-
-      if ( column_width > getTextWidth() )
-      {
-        const int hmax = ( max_line_width > getTextWidth() )
-                         ? int(max_line_width) - int(getTextWidth())
-                         : 0;
-        hbar->setMaximum (hmax);
-        hbar->setPageSize (int(max_line_width), int(getTextWidth()));
-        hbar->calculateSliderValues();
-        showHorizontallyScrollable();
-      }
-    }
-
-    data.emplace (data.cbegin() + pos, std::move(line));
+    processLine(std::move(line), pos);
     pos++;
   }
 
-  const int vmax = ( getRows() > getTextHeight() )
-                   ? int(getRows()) - int(getTextHeight())
-                   : 0;
-  vbar->setMaximum (vmax);
-  vbar->setPageSize (int(getRows()), int(getTextHeight()));
-  vbar->calculateSliderValues();
-
-  if ( isShown() && ! vbar->isShown() && isVerticallyScrollable() )
-    vbar->show();
-
-  if ( isShown() && vbar->isShown() && ! isVerticallyScrollable() )
-    vbar->hide();
-
+  updateVerticalScrollBar();
   processChanged();
 }
 
@@ -687,6 +633,71 @@ inline auto FTextView::isPrintable (wchar_t ch) const -> bool
   const bool utf8 = (FVTerm::getFOutput()->getEncoding() == Encoding::UTF8);
   return ( (utf8 && std::iswprint(std::wint_t(ch)))
         || (! utf8 && std::isprint(char(ch))) );
+}
+
+//----------------------------------------------------------------------
+inline auto FTextView::splitTextLines (const FString& str) const -> FStringList
+{
+  if ( str.isEmpty() )
+  {
+    FStringList list{};
+    list.emplace_back("");
+    return list;
+  }
+
+  const auto& string = str.rtrim().expandTabs(getFOutput()->getTabstop());
+  return string.split("\n");
+}
+
+//----------------------------------------------------------------------
+inline void FTextView::processLine (FString&& line, int pos)
+{
+  line = line.removeBackspaces()
+             .removeDel()
+             .replaceControlCodes()
+             .rtrim();
+
+  data.emplace (data.cbegin() + pos, std::move(line));
+  updateHorizontalScrollBar (getColumnWidth(line));
+}
+
+//----------------------------------------------------------------------
+inline void FTextView::updateVerticalScrollBar()
+{
+  const int vmax = ( getRows() > getTextHeight() )
+                   ? int(getRows()) - int(getTextHeight())
+                   : 0;
+  vbar->setMaximum (vmax);
+  vbar->setPageSize (int(getRows()), int(getTextHeight()));
+  vbar->calculateSliderValues();
+
+  if ( isShown() && ! vbar->isShown() && isVerticallyScrollable() )
+    vbar->show();
+
+  if ( isShown() && vbar->isShown() && ! isVerticallyScrollable() )
+    vbar->hide();
+}
+
+//----------------------------------------------------------------------
+inline void FTextView::updateHorizontalScrollBar (std::size_t column_width)
+{
+  if ( column_width <= max_line_width )
+    return;
+
+  max_line_width = column_width;
+
+  if ( column_width <= getTextWidth() )
+    return;
+
+  const int hmax = ( max_line_width > getTextWidth() )
+                   ? int(max_line_width) - int(getTextWidth())
+                   : 0;
+  hbar->setMaximum (hmax);
+  hbar->setPageSize (int(max_line_width), int(getTextWidth()));
+  hbar->calculateSliderValues();
+
+  if ( isShown() && isHorizontallyScrollable() )
+    hbar->show();
 }
 
 //----------------------------------------------------------------------

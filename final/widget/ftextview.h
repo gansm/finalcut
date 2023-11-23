@@ -242,6 +242,10 @@ class FTextView : public FWidget
                           , const std::vector<FTextHighlight>& );
     auto useFDialogBorder() const -> bool;
     auto isPrintable (wchar_t) const -> bool;
+    auto splitTextLines (const FString&) const -> FStringList;
+    void processLine (FString&&, int);
+    void updateVerticalScrollBar();
+    void updateHorizontalScrollBar (std::size_t);
     void processChanged() const;
     void changeOnResize() const;
 

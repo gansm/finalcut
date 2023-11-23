@@ -3171,7 +3171,7 @@ void FKeyboardTest::init()
   // Copy the section with the fixed escape sequences
   auto& fkey_cap_table = finalcut::FKeyMap::getInstance().getKeyCapMap();
   std::size_t first = 150;
-  std::size_t last = fkey_cap_table.size();
+  std::size_t last = fkey_cap_table.size() - 1;
   assert ( last > first );
   std::copy ( &fkey_cap_table[first].num, &fkey_cap_table[last].num, &test::fkey[first].num);
 

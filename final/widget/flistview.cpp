@@ -2179,7 +2179,7 @@ inline void FListView::afterInsertion()
 }
 
 //----------------------------------------------------------------------
-void FListView::adjustListBeforeRemoval (FListViewItem* item)
+void FListView::adjustListBeforeRemoval (const FListViewItem* item)
 {
   const auto* current_item = static_cast<FListViewItem*>(*selection.current_iter);
   const auto* first_item = data.itemlist.front();

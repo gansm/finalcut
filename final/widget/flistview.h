@@ -520,7 +520,7 @@ class FListView : public FWidget
     auto determineLineWidth (FListViewItem*) -> std::size_t;
     void beforeInsertion (FListViewItem*);
     void afterInsertion();
-    void adjustListBeforeRemoval (FListViewItem*);
+    void adjustListBeforeRemoval (const FListViewItem*);
     void removeItemFromParent (FListViewItem*);
     void updateListAfterRemoval();
     void recalculateHorizontalBar (std::size_t);
