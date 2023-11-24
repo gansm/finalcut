@@ -142,6 +142,9 @@ class FScrollbar : public FWidget
     void avoidScrollOvershoot();
     void processScroll();
     void changeOnResize();
+    void handleWidgetFocus() const;
+    void handleSliderClick (int, int);
+    void handleTrackClick (int, int);
 
     // Data members
     ScrollType   scroll_type{ScrollType::None};

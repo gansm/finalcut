@@ -247,10 +247,7 @@ void FScrollbar::onMouseDown (FMouseEvent* ev)
     && ev->getButton() != MouseButton::Middle )
     return;
 
-  const auto& parent_widget = getParentWidget();
-
-  if ( parent_widget && ! parent_widget->isInstanceOf("FScrollView") )
-    setWidgetFocus(parent_widget);
+  handleWidgetFocus();
 
   if ( min == max )
     return;
@@ -265,39 +262,11 @@ void FScrollbar::onMouseDown (FMouseEvent* ev)
   }
 
   // Process left mouse button
-  scroll_type = getClickedScrollType(mouse_x, mouse_y);
+  scroll_type = getClickedScrollType (mouse_x, mouse_y);
+  handleSliderClick (mouse_x, mouse_y);
+  handleTrackClick (mouse_x, mouse_y);
 
-  if ( scroll_type == ScrollType::None )
-  {
-    slider_click_pos = getSliderClickPos (mouse_x, mouse_y);
 
-    if ( slider_click_pos > 0 )
-      scroll_type = ScrollType::Jump;
-  }
-
-  if ( scroll_type == ScrollType::PageBackward
-    || scroll_type == ScrollType::PageForward )
-  {
-    if ( bar_orientation == Orientation::Vertical )
-      slider_click_stop_pos = mouse_y - 2;
-    else
-    {
-      if ( FVTerm::getFOutput()->isNewFont() )
-        slider_click_stop_pos = mouse_x - 3;
-      else
-        slider_click_stop_pos = mouse_x - 2;
-    }
-  }
-  else
-    slider_click_stop_pos = -1;
-
-  if ( scroll_type >= ScrollType::StepBackward
-    && scroll_type <= ScrollType::PageForward )
-  {
-    processScroll();
-    threshold_reached = false;
-    addTimer(threshold_time);
-  }
 }
 
 //----------------------------------------------------------------------
@@ -805,6 +774,55 @@ void FScrollbar::changeOnResize()
   }
 
   calculateSliderValues();
+}
+
+//----------------------------------------------------------------------
+inline void FScrollbar::handleWidgetFocus() const
+{
+  const auto& parent_widget = getParentWidget();
+
+  if ( parent_widget && ! parent_widget->isInstanceOf("FScrollView") )
+    setWidgetFocus(parent_widget);
+}
+
+//----------------------------------------------------------------------
+inline void FScrollbar::handleSliderClick (int mouse_x, int mouse_y)
+{
+  if ( scroll_type != ScrollType::None )
+    return;
+
+  slider_click_pos = getSliderClickPos (mouse_x, mouse_y);
+
+  if ( slider_click_pos > 0 )
+    scroll_type = ScrollType::Jump;
+}
+
+//----------------------------------------------------------------------
+inline void FScrollbar::handleTrackClick (int mouse_x, int mouse_y)
+{
+  if ( scroll_type == ScrollType::PageBackward
+    || scroll_type == ScrollType::PageForward )
+  {
+    if ( bar_orientation == Orientation::Vertical )
+      slider_click_stop_pos = mouse_y - 2;
+    else
+    {
+      if ( FVTerm::getFOutput()->isNewFont() )
+        slider_click_stop_pos = mouse_x - 3;
+      else
+        slider_click_stop_pos = mouse_x - 2;
+    }
+  }
+  else
+    slider_click_stop_pos = -1;
+
+  if ( scroll_type >= ScrollType::StepBackward
+    && scroll_type <= ScrollType::PageForward )
+  {
+    processScroll();
+    threshold_reached = false;
+    addTimer(threshold_time);
+  }
 }
 
 }  // namespace finalcut
