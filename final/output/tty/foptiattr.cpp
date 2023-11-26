@@ -55,8 +55,8 @@ uInt8 var::b2_reset_mask{};
 }  // namespace internal
 
 // Function prototypes
-bool has_background_changes (const FChar&, const FColor, bool);
 bool has_foreground_changes (const FChar&, const FColor, bool);
+bool has_background_changes (const FChar&, const FColor, bool);
 
 
 //----------------------------------------------------------------------
@@ -1282,9 +1282,9 @@ inline void FOptiAttr::change_current_color ( const FChar& term
   }
   else if ( sp )
   {
-    const auto encoded_fg = uInt16(vga2ansi(fg));
-    const auto encoded_bg = uInt16(vga2ansi(bg));
-    const auto& color_str = FTermcap::encodeParameter(sp, encoded_fg, encoded_bg);
+    const auto ansi_fg = uInt16(vga2ansi(fg));
+    const auto ansi_bg = uInt16(vga2ansi(bg));
+    const auto& color_str = FTermcap::encodeParameter(sp, ansi_fg, ansi_bg);
     append_sequence (color_str);
   }
 }
@@ -1511,13 +1511,13 @@ inline auto FOptiAttr::append_sequence (const std::string& seq) -> bool
 
 // non-member functions
 //----------------------------------------------------------------------
-inline bool has_background_changes (const FChar& term, const FColor fg, bool frev)
+inline bool has_foreground_changes (const FChar& term, const FColor fg, bool frev)
 {
   return term.fg_color != fg || frev;
 }
 
 //----------------------------------------------------------------------
-inline bool has_foreground_changes (const FChar& term, const FColor bg, bool frev)
+inline bool has_background_changes (const FChar& term, const FColor bg, bool frev)
 {
   return term.bg_color != bg || frev;
 }

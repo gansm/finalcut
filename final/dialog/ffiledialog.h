@@ -180,10 +180,10 @@ class FFileDialog : public FDialog
     auto openDirectory() -> DIR*;
     auto closeDirectory (DIR*) -> CloseDir;
     void readDirEntries (DIR*);
-    auto isCurrentDirectory (const struct dirent*) -> bool;
-    auto isParentDirectory (const struct dirent*) -> bool;
-    auto isHiddenEntry (const struct dirent*) -> bool;
-    auto isRootDirectory (const char* const) -> bool;
+    auto isCurrentDirectory (const struct dirent*) const -> bool;
+    auto isParentDirectory (const struct dirent*) const -> bool;
+    auto isHiddenEntry (const struct dirent*) const -> bool;
+    auto isRootDirectory (const char* const) const -> bool;
     void dirEntriesToList();
     void selectDirectoryEntry (const std::string&);
     auto changeDir (const FString&) -> int;

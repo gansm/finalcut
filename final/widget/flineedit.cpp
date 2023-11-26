@@ -848,7 +848,7 @@ auto FLineEdit::clickPosToCursorPos (std::size_t pos) -> std::size_t
 }
 
 //----------------------------------------------------------------------
-void FLineEdit::setCursorPositionByMouseClick (FMouseEvent* ev)
+void FLineEdit::setCursorPositionByMouseClick (const FMouseEvent* ev)
 {
   const std::size_t len = print_text.getLength();
   const int mouse_x = ev->getX();
@@ -868,7 +868,7 @@ void FLineEdit::setCursorPositionByMouseClick (FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FLineEdit::handleAutoScroll (FMouseEvent* ev)
+void FLineEdit::handleAutoScroll (const FMouseEvent* ev)
 {
   // auto-scrolling when dragging mouse outside the widget
 

@@ -546,10 +546,10 @@ void calculateColumnRange (RangeData& d, const FString& str, std::size_t& col_po
       {
         d.last_ch = right_quotation_mark;  // ›
         d.num++;
-        break;
+        return;
       }
       else
-        break;
+        return;
     }
   }
 }

@@ -572,7 +572,7 @@ void FFileDialog::readDirEntries (DIR* directory_stream)
 }
 
 //----------------------------------------------------------------------
-auto FFileDialog::isCurrentDirectory (const struct dirent* entry) -> bool
+auto FFileDialog::isCurrentDirectory (const struct dirent* entry) const -> bool
 {
   // name = "." (current directory)
   return entry->d_name[0] == '.'
@@ -580,7 +580,7 @@ auto FFileDialog::isCurrentDirectory (const struct dirent* entry) -> bool
 }
 
 //----------------------------------------------------------------------
-auto FFileDialog::isParentDirectory (const struct dirent* entry) -> bool
+auto FFileDialog::isParentDirectory (const struct dirent* entry) const -> bool
 {
   // name = ".." (parent directory)
   return entry->d_name[0] == '.'
@@ -589,7 +589,7 @@ auto FFileDialog::isParentDirectory (const struct dirent* entry) -> bool
 }
 
 //----------------------------------------------------------------------
-auto FFileDialog::isHiddenEntry (const struct dirent* entry) -> bool
+auto FFileDialog::isHiddenEntry (const struct dirent* entry) const -> bool
 {
   // name = "." + one or more character
   return entry->d_name[0] == '.'
@@ -598,7 +598,7 @@ auto FFileDialog::isHiddenEntry (const struct dirent* entry) -> bool
 }
 
 //----------------------------------------------------------------------
-auto FFileDialog::isRootDirectory (const char* const dir) -> bool
+auto FFileDialog::isRootDirectory (const char* const dir) const -> bool
 {
   return dir[0] == '/'
       && dir[1] == '\0';
