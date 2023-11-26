@@ -46,7 +46,8 @@ namespace finalcut
 {
 
 // Using-declaration
-using char_map = std::array<wchar_t, 2>;
+using CharMap = std::array<wchar_t, 2>;
+using CharWidthCache = std::unordered_map<wchar_t, std::size_t>;
 
 // Enumeration
 enum class FullWidthSupport
@@ -58,9 +59,26 @@ enum class FullWidthSupport
 
 // Constant
 constexpr std::size_t NOT_FOUND = static_cast<std::size_t>(-1);
+constexpr wchar_t left_quotation_mark{wchar_t(UniChar::SingleLeftAngleQuotationMark)};  // ‹
+constexpr wchar_t right_quotation_mark{wchar_t(UniChar::SingleRightAngleQuotationMark)};  // ›
+
+//----------------------------------------------------------------------
+struct RangeData
+{
+  std::size_t col_first{1};
+  std::size_t col_num{0};
+  std::size_t first{0};
+  std::size_t num{0};
+  wchar_t     first_ch{'\0'};
+  wchar_t     last_ch{'\0'};
+};
 
 // Function prototypes
 auto hasAmbiguousWidth (wchar_t) -> bool;
+static auto getCharWidthCacheInstance() -> CharWidthCache&;
+void updateFirstAndLastCharacters (FString&, wchar_t, wchar_t);
+auto getColumnWidthImpl (const wchar_t) -> std::size_t;
+void calculateColumnRange (RangeData&, const FString&, std::size_t&, std::size_t);
 
 // Data array
 const wchar_t ambiguous_width_list[] =
@@ -270,6 +288,13 @@ inline auto hasAmbiguousWidth (wchar_t wchar) -> bool
 }
 
 //----------------------------------------------------------------------
+static auto getCharWidthCacheInstance() -> CharWidthCache&
+{
+  static const auto& width_cache = std::make_unique<CharWidthCache>();
+  return *width_cache;
+}
+
+//----------------------------------------------------------------------
 inline auto hasFullWidthSupportsImpl() -> bool
 {
   // Checks if the terminal has full-width character support
@@ -314,7 +339,7 @@ auto cp437_to_unicode (uChar c) -> wchar_t
   wchar_t ucs = c;
   const auto& found = std::find_if ( cp437_ucs.cbegin()
                                    , cp437_ucs.cend()
-                                   , [&ucs] (const char_map& entry)
+                                   , [&ucs] (const CharMap& entry)
                                      {
                                        return entry[CP437] == ucs;
                                      } );
@@ -334,7 +359,7 @@ auto unicode_to_cp437 (wchar_t ucs) -> uChar
   uChar c{'?'};
   const auto& found = std::find_if ( cp437_ucs.cbegin()
                                    , cp437_ucs.cend()
-                                   , [&ucs] (const char_map& entry)
+                                   , [&ucs] (const CharMap& entry)
                                      {
                                        return entry[UNICODE] == ucs;
                                      } );
@@ -408,7 +433,7 @@ auto getFullWidth (const FString& str) -> FString
         constexpr std::size_t FULL = 1;
         const auto& found = std::find_if ( halfwidth_fullwidth.cbegin()
                                          , halfwidth_fullwidth.cend()
-                                         , [&c] (const char_map& entry)
+                                         , [&c] (const CharMap& entry)
                                            {
                                              return entry[HALF] == c;
                                            } );
@@ -443,7 +468,7 @@ auto getHalfWidth (const FString& str) -> FString
         constexpr std::size_t FULL = 1;
         const auto& found = std::find_if ( halfwidth_fullwidth.cbegin()
                                          , halfwidth_fullwidth.cend()
-                                         , [&c] (const char_map& entry)
+                                         , [&c] (const CharMap& entry)
                                            {
                                              return entry[FULL] == c;
                                            } );
@@ -468,62 +493,77 @@ auto getColumnSubString ( const FString& str
                         , std::size_t col_pos
                         , std::size_t col_len ) -> FString
 {
-  FString s{str};
-  std::size_t col_first{1};
-  std::size_t col_num{0};
-  std::size_t first{1};
-  std::size_t num{0};
-
-  if ( col_len == 0 || s.isEmpty() )
-    return {L""};
+  if ( col_len == 0 )
+    return {};
 
   if ( col_pos == 0 )
     col_pos = 1;
 
-  for (auto&& ch : s)
-  {
-    const auto& width = getColumnWidth(ch);
+  RangeData data { 1U, 0U, 0U, 0U, L'\0', L'\0' };
+  calculateColumnRange(data, str, col_pos, col_len);
 
-    if ( col_first < col_pos )
+  if ( data.col_first < col_pos )  // String length < col_pos
+    return {};
+
+  FString result{str.toWString().substr(data.first, data.num)};
+  updateFirstAndLastCharacters (result, data.first_ch, data.last_ch);
+  return result;
+}
+
+//----------------------------------------------------------------------
+void calculateColumnRange (RangeData& d, const FString& str, std::size_t& col_pos, std::size_t col_len)
+{
+  for (const auto& ch : str)
+  {
+    const auto width = getColumnWidth(ch);
+
+    if ( d.col_first < col_pos )
     {
-      if ( col_first + width <= col_pos )
+      if ( d.col_first + width <= col_pos )
       {
-        col_first += width;
-        first++;
+        d.col_first += width;
+        d.first++;
       }
       else
       {
-        ch = wchar_t(UniChar::SingleLeftAngleQuotationMark);  // ‹
-        num = col_num = 1;
-        col_pos = col_first;
+        d.first_ch = left_quotation_mark;  // ‹
+        d.num = d.col_num = 1;
+        col_pos = d.col_first;
       }
     }
     else
     {
-      if ( col_first == col_pos && width == 0 && num == 0 )
+      if ( d.col_first == col_pos && width == 0 && d.num == 0 )
       {
-        first++;
+        d.first++;
       }
-      else if ( col_num + width <= col_len )
+      else if ( d.col_num + width <= col_len )
       {
-        col_num += width;
-        num++;
+        d.col_num += width;
+        d.num++;
       }
-      else if ( col_num < col_len )
+      else if ( d.col_num < col_len )
       {
-        ch = wchar_t(UniChar::SingleRightAngleQuotationMark);  // ›
-        num++;
+        d.last_ch = right_quotation_mark;  // ›
+        d.num++;
         break;
       }
       else
         break;
     }
   }
+}
 
-  if ( col_first < col_pos )  // String length < col_pos
-    return {L""};
+//----------------------------------------------------------------------
+inline void updateFirstAndLastCharacters ( FString& string
+                                         , wchar_t first_ch
+                                         , wchar_t last_ch )
+{
+  if ( first_ch )
+    string.front() = first_ch;
 
-  return s.mid(first, num);
+  if ( last_ch )
+    string.back() = last_ch;
 }
 
 //----------------------------------------------------------------------
@@ -588,6 +628,27 @@ auto getColumnWidth (const FString& s) -> std::size_t
 
 //----------------------------------------------------------------------
 auto getColumnWidth (const wchar_t wchar) -> std::size_t
+{
+  // Implements the column width cache
+
+  static auto& char_width_cache = getCharWidthCacheInstance();
+  static const auto& fterm_data = FTermData::getInstance();
+
+  if ( fterm_data.getTerminalEncoding() != Encoding::UTF8 && wchar != L'\0' )
+    return 1U;
+
+  const auto iter = char_width_cache.find(wchar);
+
+  if ( iter != char_width_cache.end() )  // Found
+    return iter->second;
+
+  const std::size_t width = getColumnWidthImpl(wchar);  // Not found
+  char_width_cache[wchar] = width;
+  return width;
+};
+
+//----------------------------------------------------------------------
+auto getColumnWidthImpl (const wchar_t wchar) -> std::size_t
 {
   int column_width{};
 

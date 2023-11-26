@@ -720,8 +720,24 @@ auto FTermOutput::skipUnchangedCharacters (uInt& x, uInt xmax, uInt y) -> bool
 
   uInt count{1};
   const auto* ch = print_char + 1;
+  const auto* end = print_char + xmax - x + 1;
 
-  for (uInt i{x + 1}; i <= xmax; i++)
+  // Unroll the loop for better performance
+  while ( ch + 4 <= end )
+  {
+    if ( ch[0].attr.bit.no_changes && ch[1].attr.bit.no_changes
+      && ch[2].attr.bit.no_changes && ch[3].attr.bit.no_changes )
+    {
+      count += 4;
+    }
+    else
+      break;
+
+    ch += 4;
+  }
+
+  // Handle the remaining elements
+  while ( ch < end )
   {
     if ( ch->attr.bit.no_changes )
       count++;
@@ -747,12 +763,15 @@ void FTermOutput::printRange (uInt xmin, uInt xmax, uInt y)
   const auto& ec = TCAP(t_erase_chars);
   const auto& rp = TCAP(t_repeat_char);
   uInt x = xmin;
+  uInt x_last = x;
   auto* min_char = &vterm->getFChar(int(x), int(y));
+  auto* print_char = min_char;
 
   while ( x <= xmax )
   {
-    auto* print_char = min_char + (x - xmin);
+    print_char += x - x_last;
     print_char->attr.bit.printed = true;
+    x_last = x;
     replaceNonPrintableFullwidth (x, *print_char);
 
     // skip character with no changes
@@ -955,29 +974,27 @@ auto FTermOutput::eraseCharacters (uInt& x, uInt xmax, uInt y) -> PrintState
   {
     appendCharacter (*print_char);
     markAsPrinted (x, y);
+    return PrintState::WhitespacesPrinted;
+  }
+
+  const uInt start_pos = x;
+  const uInt end_pos = x + whitespace - 1;
+
+  if ( canUseEraseCharacters(print_char, whitespace) )
+  {
+    appendAttributes (*print_char);
+    appendOutputBuffer (FTermControl{FTermcap::encodeParameter(ec, whitespace)});
+
+    if ( end_pos <= xmax )
+      setCursor (FPoint{int(x + whitespace), int(y)});
+    else
+      return PrintState::LineCompletelyPrinted;
   }
   else
-  {
-    const uInt start_pos = x;
-    const uInt end_pos = x + whitespace - 1;
+    appendCharacter_n (*print_char, whitespace);
 
-    if ( canUseEraseCharacters(print_char, whitespace) )
-    {
-      appendAttributes (*print_char);
-      appendOutputBuffer (FTermControl{FTermcap::encodeParameter(ec, whitespace)});
-
-      if ( end_pos <= xmax )
-        setCursor (FPoint{int(x + whitespace), int(y)});
-      else
-        return PrintState::LineCompletelyPrinted;
-    }
-    else
-      appendCharacter_n (*print_char, whitespace);
-
-    markAsPrinted (start_pos, end_pos, y);
-    x = end_pos;
-  }
-
+  markAsPrinted (start_pos, end_pos, y);
+  x = end_pos;
   return PrintState::WhitespacesPrinted;
 }
 
@@ -998,30 +1015,28 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y) -> PrintState
   {
     bool min_and_not_max( x != xmax );
     printCharacter (x, y, min_and_not_max, *print_char);
+    return PrintState::RepeatCharacterPrinted;
+  }
+
+  // Every full-width character is always followed by a padding
+  // character, so that two or more consecutive full-width characters
+  // cannot repeat in their byte sequence
+  const uInt start_pos = x;
+  const uInt end_pos = x + repetitions - 1;
+
+  if ( canUseCharacterRepetitions(print_char, repetitions) )
+  {
+    newFontChanges (*print_char);
+    charsetChanges (*print_char);
+    appendAttributes (*print_char);
+    appendOutputBuffer (FTermControl{FTermcap::encodeParameter(rp, print_char->ch[0], repetitions)});
+    term_pos->x_ref() += int(repetitions);
   }
   else
-  {
-    // Every full-width character is always followed by a padding
-    // character, so that two or more consecutive full-width characters
-    // cannot repeat in their byte sequence
-    const uInt start_pos = x;
-    const uInt end_pos = x + repetitions - 1;
+    appendCharacter_n (*print_char, repetitions);
 
-    if ( canUseCharacterRepetitions(print_char, repetitions) )
-    {
-      newFontChanges (*print_char);
-      charsetChanges (*print_char);
-      appendAttributes (*print_char);
-      appendOutputBuffer (FTermControl{FTermcap::encodeParameter(rp, print_char->ch[0], repetitions)});
-      term_pos->x_ref() += int(repetitions);
-    }
-    else
-      appendCharacter_n (*print_char, repetitions);
-
-    markAsPrinted (start_pos, end_pos, y);
-    x = end_pos;
-  }
-
+  markAsPrinted (start_pos, end_pos, y);
+  x = end_pos;
   return PrintState::RepeatCharacterPrinted;
 }
 
@@ -1049,11 +1064,12 @@ inline auto FTermOutput::countRepetitions ( const FChar* print_char
 inline auto FTermOutput::canUseEraseCharacters ( const FChar* print_char
                                                , uInt whitespace ) const -> bool
 {
-  const auto& normal = FOptiAttr::isNormal(*print_char);
-  const auto& ut = FTermcap::background_color_erase;
+  const auto normal = FOptiAttr::isNormal(*print_char);
+  const auto ut = FTermcap::background_color_erase;
+  const uInt total_length_required = erase_char_length
+                                   + cursor_address_length;
 
-  return whitespace > erase_char_length + cursor_address_length
-      && (ut || normal);
+  return whitespace > total_length_required && (ut || normal);
 }
 
 //----------------------------------------------------------------------
@@ -1252,6 +1268,17 @@ inline void FTermOutput::markAsPrinted (uInt from, uInt to, uInt y) const
   auto* ch = &vterm->getFChar(int(from), int(y));
   const auto* end = ch + to - from + 1;
 
+  // Unroll the loop for better performance
+  while (ch + 4 <= end)
+  {
+    ch[0].attr.bit.printed = true;
+    ch[1].attr.bit.printed = true;
+    ch[2].attr.bit.printed = true;
+    ch[3].attr.bit.printed = true;
+    ch += 4;
+  }
+
+  // Handle the remaining elements
   while ( ch < end )
   {
     ch->attr.bit.printed = true;
@@ -1282,13 +1309,9 @@ inline void FTermOutput::charsetChanges (FChar& next_char) const
   auto iter_ch = next_char.ch.cbegin();
   auto end_ch = next_char.ch.cend();
 
-  while ( iter_ch < end_ch )
+  while ( iter_ch < end_ch && *iter_ch != L'\0' )
   {
     *iter_enc_ch = *iter_ch;
-
-    if ( *iter_ch == L'\0' )
-      break;
-
     ++iter_ch;
     ++iter_enc_ch;
   }
