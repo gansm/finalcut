@@ -389,20 +389,20 @@ void FLineEdit::onMouseDown (FMouseEvent* ev)
   const int mouse_y = ev->getY();
   const int xmin = 2 + int(char_width_offset);
 
-  if ( mouse_x >= xmin && mouse_x <= int(getWidth()) && mouse_y == 1 )
-  {
-    const std::size_t len = print_text.getLength();
-    cursor_pos = clickPosToCursorPos (std::size_t(mouse_x) - 2);
+  if ( mouse_x < xmin || mouse_x > int(getWidth()) || mouse_y != 1 )
+    return;
 
-    if ( cursor_pos >= len )
-      cursor_pos = len;
+  const std::size_t len = print_text.getLength();
+  cursor_pos = clickPosToCursorPos (std::size_t(mouse_x) - 2);
 
-    if ( mouse_x == int(getWidth()) )
-      adjustTextOffset();
+  if ( cursor_pos >= len )
+    cursor_pos = len;
 
-    drawInputField();
-    forceTerminalUpdate();
-  }
+  if ( mouse_x == int(getWidth()) )
+    adjustTextOffset();
+
+  drawInputField();
+  forceTerminalUpdate();
 }
 
 //----------------------------------------------------------------------
@@ -422,62 +422,8 @@ void FLineEdit::onMouseMove (FMouseEvent* ev)
   if ( ev->getButton() != MouseButton::Left || isReadOnly() )
     return;
 
-  const std::size_t len = print_text.getLength();
-  const int mouse_x = ev->getX();
-  const int mouse_y = ev->getY();
-
-  if ( mouse_x >= 2 && mouse_x <= int(getWidth()) && mouse_y == 1 )
-  {
-    cursor_pos = clickPosToCursorPos (std::size_t(mouse_x) - 2);
-
-    if ( cursor_pos >= len )
-      cursor_pos = len;
-
-    adjustTextOffset();
-    drawInputField();
-    forceTerminalUpdate();
-  }
-
-  // auto-scrolling when dragging mouse outside the widget
-  if ( mouse_x < 2 )
-  {
-    // drag left
-    if ( ! scroll_timer && text_offset > 0 )
-    {
-      scroll_timer = true;
-      addTimer(scroll_repeat);
-      drag_scroll = DragScrollMode::Leftward;
-    }
-
-    if ( text_offset == 0 )
-    {
-      delOwnTimers();
-      drag_scroll = DragScrollMode::None;
-    }
-  }
-  else if ( mouse_x >= int(getWidth()) )
-  {
-    // drag right
-    if ( ! scroll_timer && cursor_pos < len )
-    {
-      scroll_timer = true;
-      addTimer(scroll_repeat);
-      drag_scroll = DragScrollMode::Rightward;
-    }
-
-    if ( cursor_pos == len )
-    {
-      delOwnTimers();
-      drag_scroll = DragScrollMode::None;
-    }
-  }
-  else
-  {
-    // no dragging
-    delOwnTimers();
-    scroll_timer = false;
-    drag_scroll = DragScrollMode::None;
-  }
+  setCursorPositionByMouseClick(ev);
+  handleAutoScroll(ev);
 }
 
 //----------------------------------------------------------------------
@@ -899,6 +845,86 @@ auto FLineEdit::clickPosToCursorPos (std::size_t pos) -> std::size_t
   }
 
   return idx;
+}
+
+//----------------------------------------------------------------------
+void FLineEdit::setCursorPositionByMouseClick (FMouseEvent* ev)
+{
+  const std::size_t len = print_text.getLength();
+  const int mouse_x = ev->getX();
+  const int mouse_y = ev->getY();
+
+  if ( mouse_x < 2 || mouse_x > int(getWidth()) || mouse_y != 1 )
+    return;
+
+  cursor_pos = clickPosToCursorPos (std::size_t(mouse_x) - 2);
+
+  if ( cursor_pos >= len )
+    cursor_pos = len;
+
+  adjustTextOffset();
+  drawInputField();
+  forceTerminalUpdate();
+}
+
+//----------------------------------------------------------------------
+void FLineEdit::handleAutoScroll (FMouseEvent* ev)
+{
+  // auto-scrolling when dragging mouse outside the widget
+
+  const int mouse_x = ev->getX();
+
+  if ( mouse_x < 2 )  // drag left
+  {
+    handleLeftDragScroll();
+  }
+  else if ( mouse_x >= int(getWidth()) )  // drag right
+  {
+    handleRightDragScroll();
+  }
+  else
+  {
+    // no dragging
+    delOwnTimers();
+    scroll_timer = false;
+    drag_scroll = DragScrollMode::None;
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FLineEdit::handleLeftDragScroll()
+{
+  if ( ! scroll_timer && text_offset > 0 )
+  {
+    scroll_timer = true;
+    addTimer(scroll_repeat);
+    drag_scroll = DragScrollMode::Leftward;
+  }
+
+  if ( text_offset == 0 )
+  {
+    delOwnTimers();
+    drag_scroll = DragScrollMode::None;
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FLineEdit::handleRightDragScroll()
+{
+  const std::size_t len = print_text.getLength();
+
+  if ( ! scroll_timer && cursor_pos < len )
+  {
+    scroll_timer = true;
+    addTimer(scroll_repeat);
+    drag_scroll = DragScrollMode::Rightward;
+  }
+
+  if ( cursor_pos == len )
+  {
+    delOwnTimers();
+    drag_scroll = DragScrollMode::None;
+  }
 }
 
 //----------------------------------------------------------------------

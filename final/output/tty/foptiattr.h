@@ -263,7 +263,7 @@ class FOptiAttr final
     void        changeAttributeSeparately (FChar&, FChar&);
     void        change_color (FChar&, FChar&);
     void        change_to_default_color (FChar&, FChar&, FColor&, FColor&);
-    void        change_current_color (const FChar&, FColor, FColor);
+    void        change_current_color (const FChar&, const FColor, const FColor);
     void        resetAttribute (FChar&) const;
     void        reset (FChar&) const;
     auto        caused_reset_attributes (const char[], uChar = all_tests) const -> bool;

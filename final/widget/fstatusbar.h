@@ -236,6 +236,11 @@ class FStatusBar : public FWindow
     void drawKeys();
     void drawKey (FKeyList::const_iterator);
     void drawActiveKey (FKeyList::const_iterator);
+    auto canDrawMessage() const -> bool;
+    auto isLastActiveFocus() const -> bool;
+    void setStatusBarColor() const;
+    void printMessageWithEllipsis (std::size_t);
+    void printPaddingSpaces (int);
 
     // Data members
     FKeyList     key_list{};

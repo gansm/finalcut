@@ -163,9 +163,7 @@ void FStatusBar::setMessage (const FString& mgs)
 //----------------------------------------------------------------------
 void FStatusBar::resetColors()
 {
-  const auto& wc = getColorTheme();
-  setForegroundColor (wc->statusbar.fg);
-  setBackgroundColor (wc->statusbar.bg);
+  setStatusBarColor();
   FWidget::resetColors();
 }
 
@@ -196,68 +194,38 @@ void FStatusBar::hide()
 //----------------------------------------------------------------------
 void FStatusBar::drawMessage()
 {
-  if ( ! (isVisible() ) )
-    return;
-
-  if ( x < 0 || x_msg < 0 )
+  if ( ! canDrawMessage() )
     return;
 
   x = x_msg;
-  int space_offset{1};
-  bool isLastActiveFocus{false};
-  const bool hasKeys( ! key_list.empty() );
-  const std::size_t termWidth = getDesktopWidth();
-
-  if ( hasKeys )
-  {
-    const auto& iter = key_list.cend();
-    isLastActiveFocus = bool ( (*(iter - 1))->isActivated()
-                            || (*(iter - 1))->hasMouseFocus() );
-  }
-  else
-    isLastActiveFocus = false;
-
-  if ( isLastActiveFocus )
-    space_offset = 0;
-
-  const auto& wc = getColorTheme();
-  setColor (wc->statusbar.fg, wc->statusbar.bg);
+  setStatusBarColor();
   setPrintPos ({x, 1});
+  auto is_last_active_focus = isLastActiveFocus();
+  int space_offset = is_last_active_focus ? 0 : 1;
+  const std::size_t term_width = getDesktopWidth();
 
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
-  if ( x + space_offset + 3 < int(termWidth) && text )
+  if ( x + space_offset + 3 < int(term_width) && text )
   {
-    if ( ! isLastActiveFocus )
+    if ( ! is_last_active_focus )
     {
       x++;
       print (' ');
     }
 
-    if ( hasKeys )
+    if ( ! key_list.empty() )
     {
       x += 2;
       print (UniChar::BoxDrawingsVertical);  // │
       print (' ');
     }
 
-    const auto msg_length = getColumnWidth(getMessage());
-    x += int(msg_length);
-
-    if ( x - 1 <= int(termWidth) )
-      print (getMessage());
-    else
-    {
-      // Print ellipsis
-      const std::size_t len = msg_length + termWidth - uInt(x) - 1;
-      print() << getColumnSubString ( getMessage(), 1, len)
-              << "..";
-    }
+    printMessageWithEllipsis (term_width);
   }
 
-  for (auto i = x; i <= int(termWidth); i++)
-    print (' ');
+  printPaddingSpaces (int(term_width));
 
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
@@ -575,8 +543,7 @@ void FStatusBar::drawKeys()
     }
     else
     {
-      const auto& wc = getColorTheme();
-      setColor (wc->statusbar.fg, wc->statusbar.bg);
+      setStatusBarColor();
 
       for (; x <= int(screenWidth); x++)
         print (' ');
@@ -695,6 +662,54 @@ void FStatusBar::drawActiveKey (FKeyList::const_iterator iter)
 
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
+}
+
+//----------------------------------------------------------------------
+inline auto FStatusBar::canDrawMessage() const -> bool
+{
+  return isVisible() && x >= 0 && x_msg >= 0;
+}
+
+//----------------------------------------------------------------------
+auto FStatusBar::isLastActiveFocus() const -> bool
+{
+  if ( key_list.empty() )
+    return false;
+
+  const auto& iter = key_list.cend();
+  return (*(iter - 1))->isActivated()
+      || (*(iter - 1))->hasMouseFocus();
+}
+
+//----------------------------------------------------------------------
+void FStatusBar::setStatusBarColor() const
+{
+  const auto& wc = getColorTheme();
+  setColor (wc->statusbar.fg, wc->statusbar.bg);
+}
+
+//----------------------------------------------------------------------
+void FStatusBar::printMessageWithEllipsis (std::size_t term_width)
+{
+  const auto msg_length = getColumnWidth(getMessage());
+  x += int(msg_length);
+
+  if ( x - 1 <= int(term_width) )
+    print (getMessage());
+  else
+  {
+    // Print ellipsis
+    const std::size_t len = msg_length + term_width - uInt(x) - 1;
+    print() << getColumnSubString ( getMessage(), 1, len)
+            << "..";
+  }
+}
+
+//----------------------------------------------------------------------
+void FStatusBar::printPaddingSpaces (int end)
+{
+  for (auto i = x; i <= end; i++)
+    print (' ');
 }
 
 }  // namespace finalcut

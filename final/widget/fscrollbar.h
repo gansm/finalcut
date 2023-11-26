@@ -136,6 +136,8 @@ class FScrollbar : public FWidget
     auto getClickedScrollType (int, int) const -> ScrollType;
     auto getVerticalClickedScrollType (int) const -> ScrollType;
     auto getHorizontalClickedScrollType (int) const -> ScrollType;
+    auto getNewFontHorizontalScrollType (int) const -> ScrollType;
+    auto getHorizontalScrollType (int) const -> ScrollType;
     auto getSliderClickPos (int, int) const -> int;
     void jumpToClickPos (int, int);
     void jumpToClickPos (int);

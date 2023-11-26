@@ -433,62 +433,21 @@ void FFileDialog::sortDir()
 //----------------------------------------------------------------------
 auto FFileDialog::readDir() -> int
 {
-  const auto& dir = directory.c_str();
-  auto directory_stream = opendir(dir);
+  auto directory_stream = openDirectory();
 
   if ( ! directory_stream )
-  {
-    FMessageBox::error (this, "Can't open directory\n" + directory);
     return -1;
-  }
 
   clear();
+  readDirEntries (directory_stream);
 
-  while ( true )
-  {
-    errno = 0;
-    const struct dirent* next = readdir(directory_stream);
-
-    if ( next )
-    {
-      // Continue if name = "." (current directory)
-      if ( next->d_name[0] == '.' && next->d_name[1] == '\0' )
-        continue;
-
-      // Skip hidden entries
-      if ( ! show_hidden
-        && next->d_name[0] == '.'
-        && next->d_name[1] != '\0'
-        && next->d_name[1] != '.' )
-        continue;
-
-      // Skip ".." for the root directory
-      if ( dir[0] == '/' && dir[1] == '\0'
-        && std::memcmp(next->d_name, "..", 2) == 0  )
-        continue;
-
-      getEntry(dir, next);
-    }
-    else
-    {
-      if ( errno != 0 )
-        FMessageBox::error (this, "Reading directory\n" + directory);
-
-      break;
-    }
-  }  // end while
-
-  if ( closedir(directory_stream) != 0 )
-  {
-    FMessageBox::error (this, "Closing directory\n" + directory);
+  if ( closeDirectory (directory_stream) == CloseDir::error )
     return -2;
-  }
 
   sortDir();
 
   // Insert directory entries into the list
   dirEntriesToList();
-
   return 0;
 }
 
@@ -549,6 +508,100 @@ void FFileDialog::followSymLink (const char* const dir, FDirEntry& entry) const
 
   if ( S_ISDIR(sb.st_mode) )
     entry.directory = true;
+}
+
+//----------------------------------------------------------------------
+auto FFileDialog::openDirectory() -> DIR*
+{
+  const auto& dir = directory.c_str();
+  auto directory_stream = opendir(dir);
+
+  if ( ! directory_stream )
+  {
+    FMessageBox::error (this, "Can't open directory\n" + directory);
+  }
+
+  return directory_stream;
+}
+
+//----------------------------------------------------------------------
+auto FFileDialog::closeDirectory (DIR* directory_stream) -> CloseDir
+{
+  auto ret = closedir(directory_stream);
+
+  if ( ret )
+  {
+    FMessageBox::error (this, "Closing directory\n" + directory);
+    return CloseDir::error;
+  }
+
+  return CloseDir::success;
+}
+
+//----------------------------------------------------------------------
+void FFileDialog::readDirEntries (DIR* directory_stream)
+{
+  const auto& dir = directory.c_str();
+
+  while ( true )
+  {
+    errno = 0;
+    const struct dirent* next = readdir(directory_stream);
+
+    if ( next )
+    {
+      if ( isCurrentDirectory(next) )
+        continue;  // Skip name = "."
+
+      if ( ! show_hidden && isHiddenEntry(next) )
+        continue;  // Skip hidden entries
+
+      if ( isRootDirectory(dir) && isParentDirectory(next) )
+        continue;  // Skip ".." for the root directory
+
+      getEntry(dir, next);
+    }
+    else
+    {
+      if ( errno != 0 )
+        FMessageBox::error (this, "Reading directory\n" + directory);
+
+      break;
+    }
+  }  // end while
+}
+
+//----------------------------------------------------------------------
+auto FFileDialog::isCurrentDirectory (const struct dirent* entry) -> bool
+{
+  // name = "." (current directory)
+  return entry->d_name[0] == '.'
+      && entry->d_name[1] == '\0';
+}
+
+//----------------------------------------------------------------------
+auto FFileDialog::isParentDirectory (const struct dirent* entry) -> bool
+{
+  // name = ".." (parent directory)
+  return entry->d_name[0] == '.'
+      && entry->d_name[1] == '.'
+      && entry->d_name[3] == '\0';
+}
+
+//----------------------------------------------------------------------
+auto FFileDialog::isHiddenEntry (const struct dirent* entry) -> bool
+{
+  // name = "." + one or more character
+  return entry->d_name[0] == '.'
+      && entry->d_name[1] != '\0'
+      && entry->d_name[1] != '.';
+}
+
+//----------------------------------------------------------------------
+auto FFileDialog::isRootDirectory (const char* const dir) -> bool
+{
+  return dir[0] == '/'
+      && dir[1] == '\0';
 }
 
 //----------------------------------------------------------------------

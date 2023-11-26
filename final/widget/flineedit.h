@@ -199,6 +199,10 @@ class FLineEdit : public FWidget
                                          , std::size_t = 0 ) const ->std::size_t;
     auto endPosToOffset (std::size_t) -> offsetPair;
     auto clickPosToCursorPos (std::size_t) -> std::size_t;
+    void setCursorPositionByMouseClick (FMouseEvent*);
+    void handleAutoScroll (FMouseEvent*);
+    void handleLeftDragScroll();
+    void handleRightDragScroll();
     void adjustTextOffset();
     void cursorLeft();
     void cursorRight();

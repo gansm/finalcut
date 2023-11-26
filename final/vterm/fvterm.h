@@ -347,6 +347,7 @@ class FVTerm : public FVTermAttribute
 
     // Friend function
     friend void setPrintArea (FWidget&, FTermArea*);
+    friend auto getColumnWidth (const wchar_t wchar) -> std::size_t;
 };
 
 

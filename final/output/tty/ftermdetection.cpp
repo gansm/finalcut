@@ -892,18 +892,13 @@ inline auto FTermDetection::secDA_Analysis_85() const -> FString
   fterm_data.setTermType (FTermType::rxvt);
   fterm_data.setTermType (FTermType::urxvt);
 
-  return [this] ()
-  {
-    if ( startsWithTermType(L"rxvt-") )
-    {
-      if ( color256 )
-        return FString("rxvt-256color");
-
-      return FString("rxvt");
-    }
-
+  if ( ! startsWithTermType(L"rxvt-") )
     return termtype;
-  }();
+
+  if ( color256 )
+    return FString("rxvt-256color");
+
+  return FString("rxvt");
 }
 
 //----------------------------------------------------------------------

@@ -54,6 +54,10 @@ uInt8 var::b2_reset_mask{};
 
 }  // namespace internal
 
+// Function prototypes
+bool has_background_changes (const FChar&, const FColor, bool);
+bool has_foreground_changes (const FChar&, const FColor, bool);
+
 
 //----------------------------------------------------------------------
 // class FOptiAttr
@@ -1083,7 +1087,8 @@ inline void FOptiAttr::prevent_no_color_video_attributes ( FChar& attr
     if ( ! bit )
       continue;
 
-    const auto& handler = no_color_video_handlers[ffs(bit)];
+    const auto mode_index = unsigned(ffs(int(bit)));
+    const auto& handler = no_color_video_handlers[mode_index];
 
     if ( handler )
       handler(this, attr);
@@ -1242,7 +1247,7 @@ inline void FOptiAttr::change_to_default_color ( FChar& term, FChar& next
 
 //----------------------------------------------------------------------
 inline void FOptiAttr::change_current_color ( const FChar& term
-                                            , FColor fg, FColor bg )
+                                            , const FColor fg, const FColor bg )
 {
   const auto& AF = F_color.a_foreground.cap;
   const auto& AB = F_color.a_background.cap;
@@ -1253,42 +1258,33 @@ inline void FOptiAttr::change_current_color ( const FChar& term
   const bool frev ( ( (changes.off.attr.byte[0] & b0_reverse_mask)
                    || (term.attr.byte[0] & b0_reverse_mask) ) && fake_reverse );
 
+  auto append_color_sequence = [this] (const auto& cap, const uInt16 value)
+  {
+    const auto& color_str = FTermcap::encodeParameter(cap, value);
+    append_sequence(color_str);
+  };
+
   if ( AF && AB )
   {
-    const auto& ansi_fg = vga2ansi(fg);
-    const auto& ansi_bg = vga2ansi(bg);
+    if ( has_foreground_changes(term, fg, frev) )
+      append_color_sequence(AF, uInt16(vga2ansi(fg)));
 
-    if ( term.fg_color != fg || frev )
-    {
-      const auto& color_str = FTermcap::encodeParameter(AF, uInt16(ansi_fg));
-      append_sequence (color_str);
-    }
-
-    if ( term.bg_color != bg || frev )
-    {
-      const auto& color_str = FTermcap::encodeParameter(AB, uInt16(ansi_bg));
-      append_sequence (color_str);
-    }
+    if ( has_background_changes(term, bg, frev) )
+      append_color_sequence(AB, uInt16(vga2ansi(bg)));
   }
   else if ( Sf && Sb )
   {
-    if ( term.fg_color != fg || frev )
-    {
-      const auto& color_str = FTermcap::encodeParameter(Sf, uInt16(fg));
-      append_sequence (color_str);
-    }
+    if ( has_foreground_changes(term, fg, frev) )
+      append_color_sequence(Sf, uInt16(fg));
 
-    if ( term.bg_color != bg || frev )
-    {
-      const auto& color_str = FTermcap::encodeParameter(Sb, uInt16(bg));
-      append_sequence (color_str);
-    }
+    if ( has_background_changes(term, bg, frev) )
+      append_color_sequence(Sb, uInt16(bg));
   }
   else if ( sp )
   {
-    fg = vga2ansi(fg);
-    bg = vga2ansi(bg);
-    const auto& color_str = FTermcap::encodeParameter(sp, uInt16(fg), uInt16(bg));
+    const auto encoded_fg = uInt16(vga2ansi(fg));
+    const auto encoded_bg = uInt16(vga2ansi(bg));
+    const auto& color_str = FTermcap::encodeParameter(sp, encoded_fg, encoded_bg);
     append_sequence (color_str);
   }
 }
@@ -1510,6 +1506,20 @@ inline auto FOptiAttr::append_sequence (const std::string& seq) -> bool
 
   attr_buf.append(seq);
   return true;
+}
+
+
+// non-member functions
+//----------------------------------------------------------------------
+inline bool has_background_changes (const FChar& term, const FColor fg, bool frev)
+{
+  return term.fg_color != fg || frev;
+}
+
+//----------------------------------------------------------------------
+inline bool has_foreground_changes (const FChar& term, const FColor bg, bool frev)
+{
+  return term.bg_color != bg || frev;
 }
 
 }  // namespace finalcut

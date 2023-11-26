@@ -265,8 +265,6 @@ void FScrollbar::onMouseDown (FMouseEvent* ev)
   scroll_type = getClickedScrollType (mouse_x, mouse_y);
   handleSliderClick (mouse_x, mouse_y);
   handleTrackClick (mouse_x, mouse_y);
-
-
 }
 
 //----------------------------------------------------------------------
@@ -620,23 +618,32 @@ auto FScrollbar::getVerticalClickedScrollType (int y) const -> ScrollType
 //----------------------------------------------------------------------
 auto FScrollbar::getHorizontalClickedScrollType (int x) const -> ScrollType
 {
-  if ( FVTerm::getFOutput()->isNewFont() )
-  {
-    if ( x == 1 || x == 2 )
-      return ScrollType::StepBackward;  // decrement button
+  return FVTerm::getFOutput()->isNewFont()
+       ? getNewFontHorizontalScrollType (x)
+       : getHorizontalScrollType (x);
+}
 
-    if ( x > 2 && x <= slider_pos + 2 )
-      return ScrollType::PageBackward;  // before slider
+//----------------------------------------------------------------------
+auto FScrollbar::getNewFontHorizontalScrollType (int x) const -> ScrollType
+{
+  if ( x == 1 || x == 2 )
+    return ScrollType::StepBackward;  // decrement button
 
-    if ( x > slider_pos + int(slider_length) + 2 && x < int(getWidth()) - 1 )
-      return ScrollType::PageForward;  // after slider
+  if ( x > 2 && x <= slider_pos + 2 )
+    return ScrollType::PageBackward;  // before slider
 
-    if ( x == int(getWidth()) - 1 || x == int(getWidth()) )
-      return ScrollType::StepForward;  // increment button
+  if ( x > slider_pos + int(slider_length) + 2 && x < int(getWidth()) - 1 )
+    return ScrollType::PageForward;  // after slider
 
-    return ScrollType::None;
-  }
+  if ( x == int(getWidth()) - 1 || x == int(getWidth()) )
+    return ScrollType::StepForward;  // increment button
 
+  return ScrollType::None;
+}
+
+//----------------------------------------------------------------------
+auto FScrollbar::getHorizontalScrollType (int x) const -> ScrollType
+{
   if ( x == 1 )
     return ScrollType::StepBackward;  // decrement button
 

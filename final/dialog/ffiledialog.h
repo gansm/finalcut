@@ -134,6 +134,9 @@ class FFileDialog : public FDialog
     void adjustSize() override;
 
   private:
+    // Enumeration
+    enum class CloseDir { success, error };
+
     struct FDirEntry
     {
       // Constructor
@@ -174,6 +177,13 @@ class FFileDialog : public FDialog
     auto readDir() -> int;
     void getEntry (const char* const, const struct dirent*);
     void followSymLink (const char* const, FDirEntry&) const;
+    auto openDirectory() -> DIR*;
+    auto closeDirectory (DIR*) -> CloseDir;
+    void readDirEntries (DIR*);
+    auto isCurrentDirectory (const struct dirent*) -> bool;
+    auto isParentDirectory (const struct dirent*) -> bool;
+    auto isHiddenEntry (const struct dirent*) -> bool;
+    auto isRootDirectory (const char* const) -> bool;
     void dirEntriesToList();
     void selectDirectoryEntry (const std::string&);
     auto changeDir (const FString&) -> int;
