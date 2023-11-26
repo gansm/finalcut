@@ -38,6 +38,7 @@
 #include "final/menu/fmenu.h"
 #include "final/output/tty/ftermdata.h"
 #include "final/output/tty/ftermios.h"
+#include "final/output/tty/ftermxterminal.h"
 #include "final/util/flogger.h"
 #include "final/util/flog.h"
 #include "final/widget/fstatusbar.h"
@@ -432,9 +433,15 @@ void FApplication::init()
 
   // Initialize mouse control
   static auto& mouse = FMouseControl::getInstance();
-  auto cmd = [this] (const auto& md) { this->mouseEvent(md); };
-  FMouseCommand mouse_cmd (cmd);
-  mouse.setEventCommand (mouse_cmd);
+  auto cmd5 = [this] (const auto& md) { this->mouseEvent(md); };
+  auto cmd6 = [] () { FTermXTerminal::setMouseSupport(true); };
+  auto cmd7 = [] () { FTermXTerminal::setMouseSupport(false); };
+  FMouseCommand mouse_event_cmd (cmd5);
+  FMouseCommand enable_xterm_mouse_cmd (cmd6);
+  FMouseCommand disable_xterm_mouse_cmd (cmd7);
+  mouse.setEventCommand (mouse_event_cmd);
+  mouse.setEnableXTermMouseCommand (enable_xterm_mouse_cmd);
+  mouse.setDisableXTermMouseCommand (disable_xterm_mouse_cmd);
   // Set stdin number for a gpm-mouse
   mouse.setStdinNo (FTermios::getStdIn());
   // Set the default double click interval

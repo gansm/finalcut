@@ -40,7 +40,6 @@
 #include "final/input/fmouse.h"
 #include "final/output/tty/fterm.h"
 #include "final/output/tty/ftermlinux.h"
-#include "final/output/tty/ftermxterminal.h"
 
 namespace finalcut
 {
@@ -1906,7 +1905,10 @@ void FMouseControl::xtermMouse (bool enable) const
   if ( ! use_xterm_mouse )
     return;
 
-  FTermXTerminal::setMouseSupport (enable);
+  if ( enable )
+    enable_xterm_mouse_cmd.execute();
+  else
+    disable_xterm_mouse_cmd.execute();
 }
 
 //----------------------------------------------------------------------

@@ -549,20 +549,31 @@ class FMouseCommand final
   public:
     // Constructors
     FMouseCommand() = default;
+
+    explicit FMouseCommand (std::function<void()>&& fn)
+      : handler1(std::move(fn))
+    { }
+
     explicit FMouseCommand (std::function<void(const FMouseData&)>&& fn)
-      : handler(std::move(fn))
+      : handler2(std::move(fn))
     { }
 
     // Method
+    inline void execute() const
+    {
+      handler1();
+    }
+
     template <typename T>
     inline void execute(T&& arg) const
     {
-      handler(std::forward<T>(arg));
+      handler2(std::forward<T>(arg));
     }
 
   private:
     // Data members
-    std::function<void(const FMouseData&)> handler{};
+    std::function<void()> handler1{};
+    std::function<void(const FMouseData&)> handler2{};
 };
 
 
@@ -595,6 +606,8 @@ class FMouseControl
     void  setMaxHeight (uInt16);
     void  setDblclickInterval (const uInt64) const;
     void  setEventCommand (const FMouseCommand&);
+    void  setEnableXTermMouseCommand (const FMouseCommand&);
+    void  setDisableXTermMouseCommand (const FMouseCommand&);
     void  useGpmMouse (bool = true);
     void  useXtermMouse (bool = true);
 
@@ -654,6 +667,8 @@ class FMouseControl
     // Data member
     FMouseProtocol  mouse_protocol{};
     FMouseCommand   event_cmd{};
+    FMouseCommand   enable_xterm_mouse_cmd{};
+    FMouseCommand   disable_xterm_mouse_cmd{};
     MouseQueue      fmousedata_queue{};
     FPoint          zero_point{0, 0};
     bool            use_gpm_mouse{false};
@@ -668,6 +683,14 @@ inline auto FMouseControl::getClassName() const -> FString
 //----------------------------------------------------------------------
 inline void FMouseControl::setEventCommand (const FMouseCommand& cmd)
 { event_cmd = cmd; }
+
+//----------------------------------------------------------------------
+inline void FMouseControl::setEnableXTermMouseCommand (const FMouseCommand& cmd)
+{ enable_xterm_mouse_cmd = cmd; }
+
+//----------------------------------------------------------------------
+inline void FMouseControl::setDisableXTermMouseCommand (const FMouseCommand& cmd)
+{ disable_xterm_mouse_cmd = cmd; }
 
 //----------------------------------------------------------------------
 inline auto FMouseControl::hasDataInQueue() const -> bool
