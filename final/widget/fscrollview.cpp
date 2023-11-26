@@ -732,8 +732,10 @@ void FScrollView::copy2area()
     return;
 
   auto printarea = getCurrentPrintArea();
-  const int ax = getTermX() - printarea->position.x;
-  const int ay = getTermY() - printarea->position.y;
+  const auto& area_owner = printarea->getOwner<FVTerm*>();
+  const auto& area_widget = static_cast<FWidget*>(area_owner);
+  const int ax = area_widget->getLeftPadding() + getX();
+  const int ay = area_widget->getTopPadding() + getY();
   const int dx = viewport_geometry.getX();
   const int dy = viewport_geometry.getY();
   auto y_end = int(getViewportHeight());
