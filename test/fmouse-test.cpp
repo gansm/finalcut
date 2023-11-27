@@ -1364,8 +1364,9 @@ void FMouseTest::mouseControlTest()
                 right_pressed = md.isRightButtonPressed();
                 has_current_mouse_event = mouse_control.getCurrentMouseEvent() != nullptr;
               };
-  auto cmd2 = [] () { finalcut::FTermXTerminal::setMouseSupport(true); };
-  auto cmd3 = [] () { finalcut::FTermXTerminal::setMouseSupport(false); };
+  static auto& xterm = finalcut::FTermXTerminal::getInstance();
+  auto cmd2 = [] () { xterm.setMouseSupport(true); };
+  auto cmd3 = [] () { xterm.setMouseSupport(false); };
   finalcut::FMouseCommand mouse_cmd (cmd1);
   finalcut::FMouseCommand enable_xterm_mouse_cmd (cmd2);
   finalcut::FMouseCommand disable_xterm_mouse_cmd (cmd3);

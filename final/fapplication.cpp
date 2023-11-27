@@ -433,9 +433,10 @@ void FApplication::init()
 
   // Initialize mouse control
   static auto& mouse = FMouseControl::getInstance();
+  static auto& xterm = FTermXTerminal::getInstance();
   auto cmd5 = [this] (const auto& md) { this->mouseEvent(md); };
-  auto cmd6 = [] () { FTermXTerminal::setMouseSupport(true); };
-  auto cmd7 = [] () { FTermXTerminal::setMouseSupport(false); };
+  auto cmd6 = [] () { xterm.setMouseSupport(true); };
+  auto cmd7 = [] () { xterm.setMouseSupport(false); };
   FMouseCommand mouse_event_cmd (cmd5);
   FMouseCommand enable_xterm_mouse_cmd (cmd6);
   FMouseCommand disable_xterm_mouse_cmd (cmd7);

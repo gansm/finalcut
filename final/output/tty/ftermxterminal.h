@@ -65,8 +65,8 @@ class FTermXTerminal final
     void  setMouseForeground (const FString&);
     void  setMouseBackground (const FString&);
     void  setHighlightBackground (const FString&);
-    static void  setMouseSupport (bool = true);
-    static void  unsetMouseSupport();
+    void  setMouseSupport (bool = true);
+    void  unsetMouseSupport();
     void  setFocusSupport (bool enable = true);
     void  unsetFocusSupport();
     void  metaSendsESC (bool = true);
@@ -130,15 +130,15 @@ class FTermXTerminal final
     void  oscPostfix() const;
     auto  captureXTermFont() const -> FString;
     auto  captureXTermTitle() const -> FString;
-    static void enableXTermMouse();
-    static void disableXTermMouse();
+    void  enableXTermMouse();
+    void  disableXTermMouse();
     void  enableXTermFocus();
     void  disableXTermFocus();
     void  enableXTermMetaSendsESC();
     void  disableXTermMetaSendsESC();
 
     // Data members
-    static bool       mouse_support;
+    bool              mouse_support{false};
     bool              focus_support{false};
     bool              meta_sends_esc{false};
     bool              xterm_default_colors{false};
