@@ -1353,19 +1353,26 @@ void FMouseTest::mouseControlTest()
   bool middle_pressed{false};
   bool right_pressed{false};
   bool has_current_mouse_event{false};
-  auto cmd = [ &left_pressed
-             , &middle_pressed
-             , &right_pressed
-             , &has_current_mouse_event
-             , &mouse_control ] (const finalcut::FMouseData& md)
-             {
-               left_pressed = md.isLeftButtonPressed();
-               middle_pressed = md.isMiddleButtonPressed();
-               right_pressed = md.isRightButtonPressed();
-               has_current_mouse_event = mouse_control.getCurrentMouseEvent() != nullptr;
-             };
-  finalcut::FMouseCommand mouse_cmd (cmd);
+  auto cmd1 = [ &left_pressed
+              , &middle_pressed
+              , &right_pressed
+              , &has_current_mouse_event
+              , &mouse_control ] (const finalcut::FMouseData& md)
+              {
+                left_pressed = md.isLeftButtonPressed();
+                middle_pressed = md.isMiddleButtonPressed();
+                right_pressed = md.isRightButtonPressed();
+                has_current_mouse_event = mouse_control.getCurrentMouseEvent() != nullptr;
+              };
+  auto cmd2 = [] () { finalcut::FTermXTerminal::setMouseSupport(true); };
+  auto cmd3 = [] () { finalcut::FTermXTerminal::setMouseSupport(false); };
+  finalcut::FMouseCommand mouse_cmd (cmd1);
+  finalcut::FMouseCommand enable_xterm_mouse_cmd (cmd2);
+  finalcut::FMouseCommand disable_xterm_mouse_cmd (cmd3);
   mouse_control.setEventCommand (mouse_cmd);
+  mouse_control.setEnableXTermMouseCommand (enable_xterm_mouse_cmd);
+  mouse_control.setDisableXTermMouseCommand (disable_xterm_mouse_cmd);
+  
   mouse_control.setStdinNo(fileno(stdin));
   mouse_control.setMaxWidth(100);
   mouse_control.setMaxHeight(40);
