@@ -387,7 +387,7 @@ void MouseDraw::setGeometry ( const FPoint& p, const FSize& s, bool adjust)
   const FSize no_shadow{0, 0};
   const int old_w = canvas->size.width;
   const int old_h = canvas->size.height;
-  resizeArea (scroll_geometry, no_shadow, canvas.get());
+  resizeArea ({scroll_geometry, no_shadow}, canvas.get());
 
   if ( old_w != canvas->size.width || old_h != canvas->size.height )
   {

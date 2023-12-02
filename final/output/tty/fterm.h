@@ -248,6 +248,8 @@ class FTerm final
     static void init_alt_charset();
     static void init_pc_charset();
     static void init_cygwin_charmap();
+    static void updatePCEncodingForCygwin();
+    static void updateCharMappingForCygwin();
     static void init_teraterm_charmap();
     static void init_fixed_max_color();
     static void init_termcap();
@@ -256,6 +258,11 @@ class FTerm final
     static void init_optiAttr();
     static auto init_font() -> bool;
     static void init_locale();
+    static auto init_xterm_locale (const char*) ->  const char*;
+    static auto init_tera_term_locale (const char*) ->  const char*;
+    static auto init_kterm_locale (const char*) ->  const char*;
+    static auto init_sun_locale (const char*) ->  const char*;
+    static auto init_locale_if_not_found (const char*) ->  const char*;
     static void init_encoding();
     static void init_encoding_set();
     static void init_term_encoding();

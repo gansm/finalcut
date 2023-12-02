@@ -101,6 +101,9 @@ class FTermDetection final
       int terminal_id_hardware{-1};
     };
 
+    // Using-declaration
+    using TermTypeMap = std::vector<std::pair<std::wstring, FTermType>>;
+
     // Methods
     void  getSystemTermType();
     auto  getTTYtype() -> bool;
@@ -111,6 +114,9 @@ class FTermDetection final
     template<typename StringT>
     bool  startsWithTermType (StringT&&) const;
     void  termtypeAnalysis();
+    auto  findMatchingTerm (const TermTypeMap&) -> TermTypeMap::const_iterator;
+    auto  isTerminalWithoutDetection() -> bool;
+    void  handleScreenAndTmux();
     void  detectTerminal();
     auto  init_256colorTerminal() -> FString;
     auto  get256colorEnvString() -> bool;

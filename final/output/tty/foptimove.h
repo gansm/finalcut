@@ -239,6 +239,10 @@ class FOptiMove final
     auto  isMethod4Faster (int&, int, int) -> bool;
     auto  isMethod5Faster (int&, int, int, int) -> bool;
     void  moveByMethod (int, int, int, int, int);
+    void  moveWithCarriageReturn (int, int, int);
+    void  moveWithHome (int, int);
+    void  moveWithToLL (int, int);
+    void  moveWithCRAndWrapToLeft (int, int, int, int);
 
     // Data members
     Cursor      cursor;

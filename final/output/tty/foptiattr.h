@@ -262,11 +262,17 @@ class FOptiAttr final
     void        changeAttributeSGR (FChar&, FChar&);
     void        changeAttributeSeparately (FChar&, FChar&);
     void        change_color (FChar&, FChar&);
+    void        normalizeColor (FColor&) noexcept;
+    void        handleDefaultColors (FChar&, FChar&, FColor&, FColor&);
     void        change_to_default_color (FChar&, FChar&, FColor&, FColor&);
+    void        setDefaultForeground (FChar&);
+    void        setDefaultBackground (FChar&);
     void        change_current_color (const FChar&, const FColor, const FColor);
     void        resetAttribute (FChar&) const;
     void        reset (FChar&) const;
     auto        caused_reset_attributes (const char[], uChar = all_tests) const -> bool;
+    void        init_reset_attribute (Capability&, uChar = all_tests);
+    auto        fake_reverse_color_change (const FChar& term) const -> bool;
     auto        hasCharsetEquivalence() const -> bool;
     static auto getNoColorVideoHandlerTable() -> const NoColorVideoHandlerTable&;
     static auto getAttributeOnHandlers() -> const AttributeHandlers&;

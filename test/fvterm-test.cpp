@@ -475,9 +475,9 @@ class FVTerm_protected : public finalcut::FVTerm
     auto p_isCursorHideable() const -> bool;
 
     // Methods
-    auto p_createArea (const finalcut::FRect&, const finalcut::FSize&) -> std::unique_ptr<finalcut::FVTerm::FTermArea>;
+    auto p_createArea (const finalcut::FVTerm::FShadowBox&) -> std::unique_ptr<finalcut::FVTerm::FTermArea>;
     auto p_createArea (const finalcut::FRect&) -> std::unique_ptr<finalcut::FVTerm::FTermArea>;
-    void p_resizeArea (const finalcut::FRect&, const finalcut::FSize&, FTermArea*) const;
+    void p_resizeArea (const finalcut::FVTerm::FShadowBox&, FTermArea*) const;
     void p_resizeArea (const finalcut::FRect&, FTermArea*) const;
     void p_restoreVTerm (const finalcut::FRect&) const;
     auto p_updateVTermCursor (const FTermArea*) const -> bool;
@@ -634,9 +634,9 @@ inline auto FVTerm_protected::p_isCursorHideable() const -> bool
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm_protected::p_createArea (const finalcut::FRect& box, const finalcut::FSize& shadow) -> std::unique_ptr<finalcut::FVTerm::FTermArea>
+inline auto FVTerm_protected::p_createArea (const finalcut::FVTerm::FShadowBox& shadowbox) -> std::unique_ptr<finalcut::FVTerm::FTermArea>
 {
-  return finalcut::FVTerm::createArea (box, shadow);
+  return finalcut::FVTerm::createArea ({shadowbox.box, shadowbox.shadow});
 }
 
 //----------------------------------------------------------------------
@@ -646,9 +646,9 @@ inline auto FVTerm_protected::p_createArea (const finalcut::FRect& box) -> std::
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm_protected::p_resizeArea (const finalcut::FRect& box, const finalcut::FSize& shadow, FTermArea* area) const
+inline void FVTerm_protected::p_resizeArea (const finalcut::FVTerm::FShadowBox& shadowbox, FTermArea* area) const
 {
-  finalcut::FVTerm::resizeArea (box, shadow, area);
+  finalcut::FVTerm::resizeArea ({shadowbox.box, shadowbox.shadow}, area);
 }
 
 //----------------------------------------------------------------------
@@ -906,7 +906,7 @@ void FVTermTest::FVTermBasesTest()
   // Create and check a virtual window for the p_fvterm object
   finalcut::FRect geometry {finalcut::FPoint{5, 5}, finalcut::FSize{20, 20}};
   finalcut::FSize Shadow(2, 1);
-  auto vwin_ptr = p_fvterm.p_createArea (geometry, Shadow);
+  auto vwin_ptr = p_fvterm.p_createArea ({geometry, Shadow});
   vwin = vwin_ptr.get();
   p_fvterm.setVWin(std::move(vwin_ptr));
 
@@ -1201,7 +1201,7 @@ void FVTermTest::FVTermBasesTest()
 
   // Create a vwin comparison area
   finalcut::FVTerm::FTermArea* test_vwin_area{};
-  auto test_vwin_area_ptr = p_fvterm.p_createArea (geometry, Shadow);
+  auto test_vwin_area_ptr = p_fvterm.p_createArea ({geometry, Shadow});
   test_vwin_area = test_vwin_area_ptr.get();
 
   //                             .-------------------------- 20 line repetitions
@@ -1464,7 +1464,7 @@ void FVTermTest::FVTermPrintTest()
 
     finalcut::FRect geometry {finalcut::FPoint{0, 0}, finalcut::FSize{15, 10}};
     finalcut::FSize Shadow(1, 1);
-    auto vwin_ptr = p_fvterm.p_createArea (geometry, Shadow);
+    auto vwin_ptr = p_fvterm.p_createArea ({geometry, Shadow});
     vwin = vwin_ptr.get();
     p_fvterm.setVWin(std::move(vwin_ptr));
     const finalcut::FVTerm::FTermArea* const_vwin = p_fvterm.getVWin();
@@ -1489,7 +1489,7 @@ void FVTermTest::FVTermPrintTest()
 
     auto move_geometry = finalcut::FRect ( finalcut::FPoint{12, 37}
                                          , finalcut::FSize{15, 10} );
-    p_fvterm.p_resizeArea (move_geometry, Shadow, vwin);
+    p_fvterm.p_resizeArea ({move_geometry, Shadow}, vwin);
     CPPUNIT_ASSERT ( vwin->position.x == 12 );
     CPPUNIT_ASSERT ( vwin->position.y == 37 );
 
@@ -1507,7 +1507,7 @@ void FVTermTest::FVTermPrintTest()
 
     // Create a vwin comparison area
     finalcut::FVTerm::FTermArea* test_vwin_area{};
-    auto test_vwin_area_ptr = p_fvterm.p_createArea (geometry, Shadow);
+    auto test_vwin_area_ptr = p_fvterm.p_createArea ({geometry, Shadow});
     test_vwin_area = test_vwin_area_ptr.get();
 
     CPPUNIT_ASSERT ( p_fvterm.getPrintArea() == vwin );

@@ -75,10 +75,7 @@ auto FVTermBuffer::print (const FString& string) -> int
 {
   checkCapacity(data, data.size() + string.getLength());
   getNextCharacterAttribute();
-  const auto last = string.cend();
-  auto cbegin = string.cbegin();
-  auto iter = cbegin;
-  int char_width{0};
+  UnicodeBoundary ucb{string.cbegin(), string.cend(), string.cbegin(), 0};
 
   for (auto&& ch : string)
   {
@@ -87,26 +84,26 @@ auto FVTermBuffer::print (const FString& string) -> int
 
     if ( width == 0 && ! ctrl_char )  // zero-width character
     {
-      if ( iter == cbegin )
-        ++cbegin;
+      if ( ucb.iter == ucb.cbegin )
+        ++ucb.cbegin;
 
-      ++iter;
+      ++ucb.iter;
     }
-    else if ( iter != cbegin )
-      add(cbegin, iter, char_width);
+    else if ( ucb.iter != ucb.cbegin )
+      add(ucb);
 
-    if ( iter == cbegin && (width > 0 || is7bit(ch)) )  // 1st char
-      ++iter;
+    if ( ucb.iter == ucb.cbegin && (width > 0 || is7bit(ch)) )  // 1st char
+      ++ucb.iter;
 
     if ( width > 0 )
-      char_width += width;
+      ucb.char_width += width;
 
     if ( ctrl_char )
-      add(cbegin, iter, char_width);
+      add(ucb);
   }
 
-  if ( iter == last )
-    add(cbegin, iter, char_width);
+  if ( ucb.iter == ucb.cend )
+    add(ucb);
 
   return int(string.getLength());
 }
@@ -151,16 +148,14 @@ inline void FVTermBuffer::getNextCharacterAttribute()
 }
 
 //----------------------------------------------------------------------
-void FVTermBuffer::add ( FString::const_iterator& cbegin
-                       , const FString::const_iterator& cend
-                       , int& char_width )
+void FVTermBuffer::add (UnicodeBoundary& ucb)
 {
   static const auto& fterm_data = FTermData::getInstance();
 
-  if ( cbegin == cend )
+  if ( ucb.cbegin == ucb.iter )
     return;
 
-  if ( char_width == 2
+  if ( ucb.char_width == 2
     && fterm_data.getTerminalEncoding() != Encoding::UTF8 )
   {
     nc.ch[0] = L'.';
@@ -169,18 +164,18 @@ void FVTermBuffer::add ( FString::const_iterator& cbegin
   }
   else
   {
-    const auto end = std::min(cend, cbegin + UNICODE_MAX);
-    std::copy(cbegin, end, nc.ch.begin());
-    nc.attr.bit.char_width = uInt8(char_width) & 0x03;
-    const auto idx = std::size_t(end - cbegin);
+    const auto end = std::min(ucb.iter, ucb.cbegin + UNICODE_MAX);
+    std::copy(ucb.cbegin, end, nc.ch.begin());
+    nc.attr.bit.char_width = uInt8(ucb.char_width) & 0x03;
+    const auto idx = std::size_t(end - ucb.cbegin);
 
     if ( idx < UNICODE_MAX )
       nc.ch[idx] = L'\0';
   }
 
   data.emplace_back(nc);
-  cbegin = cend;
-  char_width = 0;  // reset char width
+  ucb.cbegin = ucb.iter;
+  ucb.char_width = 0;  // reset char width
 }
 
 

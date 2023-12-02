@@ -236,7 +236,7 @@ auto FTermDetection::getTermBasename() const -> const char*
 void FTermDetection::termtypeAnalysis()
 {
   static auto& fterm_data = FTermData::getInstance();
-  const std::vector<std::pair<std::wstring, FTermType>> termTypeMap =
+  const TermTypeMap term_type_map =
   {
     // Cygwin console
     { L"cygwin"             , FTermType::cygwin },
@@ -271,23 +271,44 @@ void FTermDetection::termtypeAnalysis()
     { L"alacritty"          , FTermType::xterm }
   };
 
-  auto search_predicate = [this] (const auto& pair)
-  {
-    return startsWithTermType(pair.first);
-  };
-  auto iter = std::find_if ( termTypeMap.begin()
-                           , termTypeMap.end()
-                           , search_predicate );
+  auto iter = findMatchingTerm(term_type_map);
 
-  if ( iter == termTypeMap.end() )  // not found
+  if ( iter == term_type_map.end() )  // not found
     return;
 
   fterm_data.setTermType (iter->second);
 
-  if ( fterm_data.isTermType(FTermType::ansi)
-    || fterm_data.isTermType(FTermType::sun_con)
-    || fterm_data.isTermType(FTermType::kterm) )
+  if ( isTerminalWithoutDetection() )
     terminal_detection = false;
+
+  handleScreenAndTmux();
+}
+
+//----------------------------------------------------------------------
+auto FTermDetection::findMatchingTerm (const TermTypeMap& map) -> TermTypeMap::const_iterator
+{
+  auto search_predicate = [this] (const auto& pair)
+  {
+    return startsWithTermType(pair.first);
+  };
+
+  return std::find_if (map.begin(), map.end(), search_predicate);
+}
+
+//----------------------------------------------------------------------
+inline auto FTermDetection::isTerminalWithoutDetection() -> bool
+{
+  static auto& fterm_data = FTermData::getInstance();
+
+  return fterm_data.isTermType(FTermType::ansi)
+      || fterm_data.isTermType(FTermType::sun_con)
+      || fterm_data.isTermType(FTermType::kterm);
+}
+
+//----------------------------------------------------------------------
+inline void FTermDetection::handleScreenAndTmux()
+{
+  static auto& fterm_data = FTermData::getInstance();
 
   if ( fterm_data.isTermType(FTermType::screen) )
   {

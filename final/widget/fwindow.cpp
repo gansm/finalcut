@@ -375,7 +375,7 @@ void FWindow::setWidth (std::size_t w, bool adjust)
   {
     FRect geometry {getTermGeometry()};
     geometry.move(-1, -1);
-    resizeArea (geometry, getShadow(), getVWin());
+    resizeArea ({geometry, getShadow()}, getVWin());
   }
 }
 
@@ -389,7 +389,7 @@ void FWindow::setHeight (std::size_t h, bool adjust)
   {
     FRect geometry {getTermGeometry()};
     geometry.move(-1, -1);
-    resizeArea (geometry, getShadow(), getVWin());
+    resizeArea ({geometry, getShadow()}, getVWin());
   }
 }
 
@@ -403,7 +403,7 @@ void FWindow::setSize (const FSize& size, bool adjust)
   {
     FRect geometry {getTermGeometry()};
     geometry.move(-1, -1);
-    resizeArea (geometry, getShadow(), getVWin());
+    resizeArea ({geometry, getShadow()}, getVWin());
   }
 }
 
@@ -429,7 +429,7 @@ void FWindow::setGeometry ( const FPoint& p, const FSize& size, bool adjust)
   {
     FRect geometry {getTermGeometry()};
     geometry.move(-1, -1);
-    resizeArea (geometry, getShadow(), getVWin());
+    resizeArea ({geometry, getShadow()}, getVWin());
   }
   else
   {
@@ -734,7 +734,7 @@ void FWindow::setShadowSize (const FSize& size)
   {
     auto geometry = getTermGeometry();
     geometry.move(-1, -1);
-    resizeArea (geometry, getShadow(), getVWin());
+    resizeArea ({geometry, getShadow()}, getVWin());
   }
 }
 
@@ -823,7 +823,7 @@ inline void FWindow::createVWin() noexcept
 
   FRect geometry {getTermGeometry()};
   geometry.move(-1, -1);
-  setVWin(createArea(geometry, getShadow()));
+  setVWin(createArea({geometry, getShadow()}));
 }
 
 //----------------------------------------------------------------------

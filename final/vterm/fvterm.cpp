@@ -513,14 +513,14 @@ auto FVTerm::getPrintArea() -> FTermArea*
 }
 
 //----------------------------------------------------------------------
-auto FVTerm::createArea (const FRect& box, const FSize& shadow) -> std::unique_ptr<FTermArea>
+auto FVTerm::createArea (const FShadowBox& shadowbox) -> std::unique_ptr<FTermArea>
 {
   // initialize virtual window
 
   auto area = std::make_unique<FTermArea>();
   area->setOwner<FVTerm*>(this);
   area->encoding = foutput->getEncoding();
-  resizeArea (box, shadow, area.get());
+  resizeArea (shadowbox, area.get());
   return area;
 }
 
@@ -530,22 +530,21 @@ auto FVTerm::createArea (const FRect& box) -> std::unique_ptr<FTermArea>
   // initialize virtual window
 
   const auto no_shadow = FSize(0, 0);
-  return createArea (box, no_shadow);
+  return createArea ({box, no_shadow});
 }
 
 //----------------------------------------------------------------------
-void FVTerm::resizeArea ( const FRect& box
-                        , const FSize& shadow
+void FVTerm::resizeArea ( const FShadowBox& shadowbox
                         , FTermArea* area ) const
 {
   // Resize the virtual window to a new size
 
-  const auto position_x = box.getX();
-  const auto position_y = box.getY();
-  const auto width = int(box.getWidth());
-  const auto height = int(box.getHeight());
-  const auto rsw = int(shadow.getWidth());
-  const auto bsh = int(shadow.getHeight());
+  const auto position_x = shadowbox.box.getX();
+  const auto position_y = shadowbox.box.getY();
+  const auto width = int(shadowbox.box.getWidth());
+  const auto height = int(shadowbox.box.getHeight());
+  const auto rsw = int(shadowbox.shadow.getWidth());
+  const auto bsh = int(shadowbox.shadow.getHeight());
 
   assert ( position_y >= 0 && width > 0 && height > 0
         && rsw >= 0 && bsh >= 0 );
@@ -602,7 +601,7 @@ void FVTerm::resizeArea (const FRect& box, FTermArea* area) const
   // Resize the virtual window to a new size
 
   const auto no_shadow = FSize(0, 0);
-  resizeArea (box, no_shadow, area);
+  resizeArea ({box, no_shadow}, area);
 }
 
 //----------------------------------------------------------------------

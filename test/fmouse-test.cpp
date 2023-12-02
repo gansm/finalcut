@@ -1373,7 +1373,7 @@ void FMouseTest::mouseControlTest()
   mouse_control.setEventCommand (mouse_cmd);
   mouse_control.setEnableXTermMouseCommand (enable_xterm_mouse_cmd);
   mouse_control.setDisableXTermMouseCommand (disable_xterm_mouse_cmd);
-  
+
   mouse_control.setStdinNo(fileno(stdin));
   mouse_control.setMaxWidth(100);
   mouse_control.setMaxHeight(40);

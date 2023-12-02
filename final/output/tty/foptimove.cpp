@@ -1037,50 +1037,70 @@ void FOptiMove::moveByMethod ( int method
       break;
 
     case 2:
-      if ( cursor.carriage_return.cap )
-      {
-        move_buf = cursor.carriage_return.cap;
-        relativeMove (temp_result, 0, yold, xnew, ynew);
-        move_buf.append(temp_result);
-      }
+      moveWithCarriageReturn (yold, xnew, ynew);
       break;
 
     case 3:
-      move_buf = cursor.home.cap;
-      {
-        relativeMove (temp_result, 0, 0, xnew, ynew);
-        move_buf.append(temp_result);
-      }
+      moveWithHome (xnew, ynew);
       break;
 
     case 4:
-      move_buf = cursor.to_ll.cap;
-      {
-        int down = int(screen.height) - 1;
-        relativeMove (temp_result, 0, down, xnew, ynew);
-        move_buf.append(temp_result);
-      }
+      moveWithToLL (xnew, ynew);
       break;
 
     case 5:
-      if ( xold >= 0 )
-        move_buf = cursor.carriage_return.cap;
-      else
-        move_buf.clear();
-
-      move_buf.append(cursor.left.cap);
-      {
-        int x = int(screen.width) - 1;
-        int y = yold - 1;
-        relativeMove (temp_result, x, y, xnew, ynew);
-        move_buf.append(temp_result);
-      }
+      moveWithCRAndWrapToLeft (xold, yold, xnew, ynew);
       break;
 
     default:
       throw std::invalid_argument{"Invalid cursor movement method"};
   }
 }
+
+//----------------------------------------------------------------------
+inline void FOptiMove::moveWithCarriageReturn (int yold, int xnew, int ynew)
+{
+  if ( ! cursor.carriage_return.cap )
+    return;
+
+  move_buf = cursor.carriage_return.cap;
+  relativeMove (temp_result, 0, yold, xnew, ynew);
+  move_buf.append(temp_result);
+}
+
+//----------------------------------------------------------------------
+inline void FOptiMove::moveWithHome (int xnew, int ynew)
+{
+  move_buf = cursor.home.cap;
+  relativeMove (temp_result, 0, 0, xnew, ynew);
+  move_buf.append(temp_result);
+}
+
+//----------------------------------------------------------------------
+inline void FOptiMove::moveWithToLL (int xnew, int ynew)
+{
+  move_buf = cursor.to_ll.cap;
+  int down = int(screen.height) - 1;
+  relativeMove (temp_result, 0, down, xnew, ynew);
+  move_buf.append(temp_result);
+}
+
+//----------------------------------------------------------------------
+inline void FOptiMove::moveWithCRAndWrapToLeft ( int xold, int yold
+                                               , int xnew, int ynew )
+{
+  if ( xold >= 0 )
+    move_buf = cursor.carriage_return.cap;
+  else
+    move_buf.clear();
+
+  move_buf.append(cursor.left.cap);
+  int x = int(screen.width) - 1;
+  int y = yold - 1;
+  relativeMove (temp_result, x, y, xnew, ynew);
+  move_buf.append(temp_result);
+}
+
 
 // FOptiMove non-member function
 //----------------------------------------------------------------------

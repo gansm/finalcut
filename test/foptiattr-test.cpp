@@ -192,6 +192,9 @@ void FOptiAttrTest::sgrOptimizerTest()
   to.attr.bit.dim = true;
   to.attr.bit.italic = true;
   CPPUNIT_ASSERT ( from != to );
+//std::cerr << "--->"
+//          << printSequence(oa.changeAttribute(from, to))
+//          << "<---\n";
   CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                         , CSI "0;10;2;1;3;34;47m" );
   CPPUNIT_ASSERT ( from == to );
@@ -228,6 +231,9 @@ void FOptiAttrTest::sgrOptimizerTest()
   buffer = CSI "m" CSI "34m";
   CPPUNIT_ASSERT ( buffer.length() == 8 );
   sgr_optimizer.optimize();
+//std::cerr << "--->"
+//          << printSequence(buffer)
+//          << "<---\n";
   CPPUNIT_ASSERT ( buffer.length() == 7 );
   CPPUNIT_ASSERT_STRING ( buffer, CSI "0;34m" );
 

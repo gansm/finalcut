@@ -1081,28 +1081,51 @@ void FTerm::init_cygwin_charmap()
   if ( ! data.isTermType(FTermType::cygwin) )
     return;
 
+  updatePCEncodingForCygwin();
+  updateCharMappingForCygwin();
+}
+
+//----------------------------------------------------------------------
+void FTerm::updatePCEncodingForCygwin()
+{
   // PC encoding changes
+
   for (auto&& entry : FCharMap::getCharEncodeMap())
   {
-    if ( entry.unicode == UniChar::BlackUpPointingTriangle )  // ▲
-      entry.pc = 0x18;
+    switch ( UniChar(entry.unicode) )
+    {
+      case UniChar::BlackUpPointingTriangle:    // ▲
+        entry.pc = 0x18;
+        break;
 
-    if ( entry.unicode == UniChar::BlackDownPointingTriangle )  // ▼
-      entry.pc = 0x19;
+      case UniChar::BlackDownPointingTriangle:  // ▼
+        entry.pc = 0x19;
+        break;
 
-    if ( entry.unicode == UniChar::InverseBullet  // ◘
-      || entry.unicode == UniChar::InverseWhiteCircle  // ◙
-      || entry.unicode == UniChar::UpDownArrow  // ↕
-      || entry.unicode == UniChar::LeftRightArrow  // ↔
-      || entry.unicode == UniChar::DoubleExclamationMark  // ‼
-      || entry.unicode == UniChar::BlackRectangle  // ▬
-      || entry.unicode == UniChar::RightwardsArrow  // →
-      || entry.unicode == UniChar::Section  // §
-      || entry.unicode == UniChar::SquareRoot )  // SquareRoot √
-      entry.pc = entry.ascii;
+      case UniChar::InverseBullet:              // ◘
+      case UniChar::InverseWhiteCircle:         // ◙
+      case UniChar::UpDownArrow:                // ↕
+      case UniChar::LeftRightArrow:             // ↔
+      case UniChar::DoubleExclamationMark:      // ‼
+      case UniChar::BlackRectangle:             // ▬
+      case UniChar::RightwardsArrow:            // →
+      case UniChar::Section:                    // §
+      case UniChar::SquareRoot:                 // SquareRoot √
+        entry.pc = entry.ascii;
+        break;
+
+      default:
+        return;
+    }
   }
+}
 
+//----------------------------------------------------------------------
+void FTerm::updateCharMappingForCygwin()
+{
   // General encoding changes
+
+  static auto& data = FTermData::getInstance();
   auto& sub_map = data.getCharSubstitutionMap();
   sub_map.setCharMapping({L'•', L'*'});
   sub_map.setCharMapping({L'●', L'*'});
@@ -1262,50 +1285,17 @@ auto FTerm::init_font() -> bool
 //----------------------------------------------------------------------
 void FTerm::init_locale()
 {
-  // Init current locale
+  // Initialize current locale
 
-  static const auto& data = FTermData::getInstance();
-  const auto& termtype = data.getTermType();
   const char* locale_name = std::setlocale (LC_ALL, "");
   std::setlocale (LC_NUMERIC, "");
 
-  // Get XTERM_LOCALE
-  const char* locale_xterm = std::getenv("XTERM_LOCALE");
-
-  // set LC_ALL to XTERM_LOCALE
-  if ( locale_xterm )
-    locale_name = std::setlocale (LC_ALL, locale_xterm);
-
-  // TeraTerm can not show UTF-8 character
-  if ( data.isTermType(FTermType::tera_term)
-    && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
-    locale_name = std::setlocale (LC_ALL, "C");
-
-  // Kterm
-  if ( data.isTermType(FTermType::kterm)
-    && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
-    locale_name = std::setlocale (LC_ALL, "C");
-
-  // Sun (color) workstation console can't show UTF-8 character
-  if ( termtype.substr(0, 3) == "sun"
-    && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
-    locale_name = std::setlocale (LC_ALL, "C");
-
-  // Try to found a meaningful content for locale_name
-  if ( locale_name )
-    locale_name = std::setlocale (LC_CTYPE, nullptr);
-  else
-  {
-    locale_name = std::getenv("LC_ALL");
-
-    if ( ! locale_name )
-    {
-      locale_name = std::getenv("LC_CTYPE");
-
-      if ( ! locale_name )
-        locale_name = std::getenv("LANG");
-    }
-  }
+  // Initialize special terminal locales
+  locale_name = init_xterm_locale (locale_name);
+  locale_name = init_tera_term_locale (locale_name);
+  locale_name = init_kterm_locale (locale_name);
+  locale_name = init_sun_locale (locale_name);
+  locale_name = init_locale_if_not_found (locale_name);
 
   // Fallback to C
   if ( ! locale_name )
@@ -1313,9 +1303,89 @@ void FTerm::init_locale()
 }
 
 //----------------------------------------------------------------------
+auto FTerm::init_xterm_locale (const char* locale_name) ->  const char*
+{
+  // Get XTERM_LOCALE
+  const char* locale_xterm = std::getenv("XTERM_LOCALE");
+
+  // set LC_ALL to XTERM_LOCALE
+  if ( locale_xterm )
+    locale_name = std::setlocale (LC_ALL, locale_xterm);
+
+  return locale_name;
+}
+
+//----------------------------------------------------------------------
+auto FTerm::init_tera_term_locale (const char* locale_name) ->  const char*
+{
+  // TeraTerm can not display UTF-8 characters
+
+  static const auto& data = FTermData::getInstance();
+
+  if ( data.isTermType(FTermType::tera_term)
+    && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
+    locale_name = std::setlocale (LC_ALL, "C");
+
+  return locale_name;
+}
+
+//----------------------------------------------------------------------
+auto FTerm::init_kterm_locale (const char* locale_name) ->  const char*
+{
+  // Kterm can not display UTF-8 characters
+
+  static const auto& data = FTermData::getInstance();
+
+  if ( data.isTermType(FTermType::kterm)
+    && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
+    locale_name = std::setlocale (LC_ALL, "C");
+
+  return locale_name;
+}
+
+//----------------------------------------------------------------------
+auto FTerm::init_sun_locale (const char* locale_name) ->  const char*
+{
+  // The Sun (color) workstation console can not display UTF-8 characters
+
+  static const auto& data = FTermData::getInstance();
+  const auto& termtype = data.getTermType();
+
+  if ( termtype.substr(0, 3) == "sun"
+    && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
+    locale_name = std::setlocale (LC_ALL, "C");
+
+  return locale_name;
+}
+
+//----------------------------------------------------------------------
+auto FTerm::init_locale_if_not_found (const char* locale_name) ->  const char*
+{
+  // Try to found a meaningful content for locale_name
+
+  if ( locale_name )
+  {
+    locale_name = std::setlocale (LC_CTYPE, nullptr);
+    return locale_name;
+  }
+
+  locale_name = std::getenv("LC_ALL");
+
+  if ( locale_name )
+    return locale_name;
+
+  locale_name = std::getenv("LC_CTYPE");
+
+  if ( ! locale_name )
+    locale_name = std::getenv("LANG");
+
+  return locale_name;
+}
+
+//----------------------------------------------------------------------
 void FTerm::init_encoding()
 {
-  // detect encoding
+  // Detect encoding
 
   bool force_vt100{false};  // VT100 line drawing (G1 character set)
   init_encoding_set();

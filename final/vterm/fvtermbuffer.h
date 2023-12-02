@@ -123,10 +123,16 @@ class FVTermBuffer
     auto print () -> FVTermBuffer&;
 
   private:
+    struct UnicodeBoundary
+    {
+      FString::const_iterator cbegin{};
+      FString::const_iterator cend{};
+      FString::const_iterator iter{};
+      int char_width{0};
+    };
+
     void getNextCharacterAttribute();
-    void add ( FString::const_iterator&
-             , const FString::const_iterator&
-             , int& );
+    void add (UnicodeBoundary&);
 
     // Data member
     FCharVector data{};

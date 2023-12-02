@@ -114,14 +114,7 @@ class FVTerm : public FVTermAttribute
     using FPreprocVector = std::vector<std::unique_ptr<FVTermPreprocessing>>;
     using FVTermList = std::vector<FVTerm*>;
 
-    // Enumerations
-    enum class CoveredState
-    {
-      None,
-      Half,
-      Full
-    };
-
+    // Enumeration
     enum class TerminalUpdate
     {
       Stop,      // No terminal refresh
@@ -225,6 +218,12 @@ class FVTerm : public FVTermAttribute
     void  flush() const;
 
   protected:
+    struct FShadowBox
+    {
+      FRect box{};
+      FSize shadow{};
+    };
+
     // Accessor
     virtual auto getPrintArea() -> FTermArea*;
     auto  getChildPrintArea() const -> FTermArea*;
@@ -245,9 +244,9 @@ class FVTerm : public FVTermAttribute
     auto  isCursorHideable() const -> bool;
 
     // Methods
-    auto  createArea (const FRect&, const FSize&) -> std::unique_ptr<FTermArea>;
+    auto  createArea (const FShadowBox&) -> std::unique_ptr<FTermArea>;
     auto  createArea (const FRect&) -> std::unique_ptr<FTermArea>;
-    void  resizeArea (const FRect&, const FSize&, FTermArea*) const;
+    void  resizeArea (const FShadowBox&, FTermArea*) const;
     void  resizeArea (const FRect&, FTermArea*) const;
     void  restoreVTerm (const FRect&) const noexcept;
     auto  updateVTermCursor (const FTermArea*) const noexcept -> bool;
@@ -273,11 +272,12 @@ class FVTerm : public FVTermAttribute
     // Constants
     static constexpr int DEFAULT_MINIMIZED_HEIGHT = 1;
 
-    // Enumerations
-    enum class CharacterType
+    // Enumeration
+    enum class CoveredState
     {
-      Overlapped,
-      Covered
+      None,
+      Half,
+      Full
     };
 
     // Methods

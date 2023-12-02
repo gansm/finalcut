@@ -492,41 +492,17 @@ auto FOptiAttr::isNormal (const FChar& ch) -> bool
 void FOptiAttr::initialize()
 {
   F_color.monochron = F_color.max_color < 8;
-
-  if ( caused_reset_attributes(F_bold.off.cap) )
-    F_bold.off.caused_reset = true;
-
-  if ( caused_reset_attributes(F_dim.off.cap) )
-    F_dim.off.caused_reset = true;
-
-  if ( caused_reset_attributes(F_italics.off.cap) )
-    F_italics.off.caused_reset = true;
-
-  if ( caused_reset_attributes(F_blink.off.cap) )
-    F_blink.off.caused_reset = true;
-
-  if ( caused_reset_attributes ( F_underline.off.cap
-                               , all_tests & ~same_like_ue) )
-    F_underline.off.caused_reset = true;
-
-  if ( caused_reset_attributes(F_reverse.off.cap) )
-    F_reverse.off.caused_reset = true;
-
-  if ( caused_reset_attributes(F_secure.off.cap) )
-    F_secure.off.caused_reset = true;
-
-  if ( caused_reset_attributes(F_protected.off.cap) )
-    F_protected.off.caused_reset = true;
-
-  if ( caused_reset_attributes(F_crossed_out.off.cap) )
-    F_crossed_out.off.caused_reset = true;
-
-  if ( caused_reset_attributes(F_dbl_underline.off.cap) )
-    F_dbl_underline.off.caused_reset = true;
-
-  if ( caused_reset_attributes ( F_standout.off.cap
-                               , all_tests & ~same_like_se) )
-    F_standout.off.caused_reset = true;
+  init_reset_attribute (F_bold.off);
+  init_reset_attribute (F_dim.off);
+  init_reset_attribute (F_italics.off);
+  init_reset_attribute (F_blink.off);
+  init_reset_attribute (F_underline.off, all_tests & ~same_like_ue);
+  init_reset_attribute (F_reverse.off);
+  init_reset_attribute (F_secure.off);
+  init_reset_attribute (F_protected.off);
+  init_reset_attribute (F_crossed_out.off);
+  init_reset_attribute (F_dbl_underline.off);
+  init_reset_attribute (F_standout.off, all_tests & ~same_like_se);
 
   if ( hasCharsetEquivalence() )
     alt_equal_pc_charset = true;
@@ -1176,34 +1152,39 @@ void FOptiAttr::change_color (FChar& term, FChar& next)
     return;
   }
 
-  if ( next.fg_color != FColor::Default )
-    next.fg_color %= uInt16(F_color.max_color);
-
-  if ( next.bg_color != FColor::Default )
-    next.bg_color %= uInt16(F_color.max_color);
-
+  normalizeColor (next.fg_color);
+  normalizeColor (next.bg_color);
   FColor fg = next.fg_color;
   FColor bg = next.bg_color;
-
-  if ( fg == FColor::Default || bg == FColor::Default )
-    change_to_default_color (term, next, fg, bg);
+  handleDefaultColors (term, next, fg, bg);
 
   if ( fake_reverse && fg == FColor::Default && bg == FColor::Default )
     return;
 
-  if ( fake_reverse
-    && (next.attr.bit.reverse || next.attr.bit.standout) )
+  if ( fake_reverse && (next.attr.bit.reverse || next.attr.bit.standout) )
   {
     std::swap (fg, bg);
-
-    if ( fg == FColor::Default || bg == FColor::Default )
-      setTermDefaultColor(term);
+    handleDefaultColors (term, next, fg, bg);
   }
 
   change_current_color (term, fg, bg);
-
   term.fg_color = next.fg_color;
   term.bg_color = next.bg_color;
+}
+
+//----------------------------------------------------------------------
+inline void FOptiAttr::normalizeColor (FColor& color) noexcept
+{
+  if ( color != FColor::Default )
+    color %= uInt16(F_color.max_color);
+}
+
+//----------------------------------------------------------------------
+inline void FOptiAttr::handleDefaultColors ( FChar& term, FChar& next
+                                           , FColor& fg, FColor& bg )
+{
+  if ( fg == FColor::Default || bg == FColor::Default )
+    change_to_default_color(term, next, fg, bg);
 }
 
 //----------------------------------------------------------------------
@@ -1212,30 +1193,15 @@ inline void FOptiAttr::change_to_default_color ( FChar& term, FChar& next
 {
   if ( F_color.ansi_default_color )
   {
-    if ( fg == FColor::Default && term.fg_color != FColor::Default
-      && bg == FColor::Default && term.bg_color != FColor::Default )
-    {
+    auto set_default_fg = fg == FColor::Default && term.fg_color != FColor::Default;
+    auto set_default_bg = bg == FColor::Default && term.bg_color != FColor::Default;
+
+    if ( set_default_fg && set_default_bg )
       setTermDefaultColor(term);
-    }
-    else if ( fg == FColor::Default && term.fg_color != FColor::Default )
-    {
-      std::string sgr_39{CSI "39m"};
-      append_sequence (sgr_39);
-      term.fg_color = FColor::Default;
-    }
-    else if ( bg == FColor::Default && term.bg_color != FColor::Default )
-    {
-      const char* sgr_49;
-      const auto& op = F_color.orig_pair.cap;
-
-      if ( op && std::memcmp (op, CSI "39;49;25m", 11) == 0 )
-        sgr_49 = CSI "49;25m";
-      else
-        sgr_49 = CSI "49m";
-
-      append_sequence (sgr_49);
-      term.bg_color = FColor::Default;
-    }
+    else if ( set_default_fg )
+      setDefaultForeground(term);
+    else if ( set_default_bg )
+      setDefaultBackground(term);
   }
   else if ( ! setTermDefaultColor(term) )
   {
@@ -1243,6 +1209,29 @@ inline void FOptiAttr::change_to_default_color ( FChar& term, FChar& next
     fg = next.fg_color = FColor::LightGray;
     bg = next.bg_color = FColor::Black;
   }
+}
+
+//----------------------------------------------------------------------
+inline void FOptiAttr::setDefaultForeground (FChar& term)
+{
+  std::string sgr_39{CSI "39m"};
+  append_sequence (sgr_39);
+  term.fg_color = FColor::Default;
+}
+
+//----------------------------------------------------------------------
+inline void FOptiAttr::setDefaultBackground (FChar& term)
+{
+  const char* sgr_49;
+  const auto& op = F_color.orig_pair.cap;
+
+  if ( op && std::memcmp (op, CSI "39;49;25m", 11) == 0 )
+    sgr_49 = CSI "49;25m";
+  else
+    sgr_49 = CSI "49m";
+
+  append_sequence (sgr_49);
+  term.bg_color = FColor::Default;
 }
 
 //----------------------------------------------------------------------
@@ -1254,39 +1243,38 @@ inline void FOptiAttr::change_current_color ( const FChar& term
   const auto& Sf = F_color.foreground.cap;
   const auto& Sb = F_color.background.cap;
   const auto& sp = F_color.color_pair.cap;
-  const auto& b0_reverse_mask = internal::var::b0_reverse_mask;
-  const bool frev ( ( (changes.off.attr.byte[0] & b0_reverse_mask)
-                   || (term.attr.byte[0] & b0_reverse_mask) ) && fake_reverse );
+  const bool frev = fake_reverse_color_change(term);
+  constexpr auto ANSI = 0;
+  constexpr auto VGA = 1;
 
-  auto append_color_sequence = [this] (const auto& cap, const uInt16 value)
+  auto apply_color_change = [this, &term, &fg, &bg, &frev] ( const char* fg_cap
+                                                           , const char* bg_cap
+                                                           , int cm )
   {
-    const auto& color_str = FTermcap::encodeParameter(cap, value);
-    append_sequence(color_str);
+    if ( ! fg_cap || ! bg_cap )
+      return false;
+
+    const auto fg_value = ( cm == VGA ) ? uInt16(vga2ansi(fg)) : uInt16(fg);
+    const auto bg_value = ( cm == VGA ) ? uInt16(vga2ansi(bg)) : uInt16(bg);
+
+    if ( has_foreground_changes(term, fg, frev) )
+      append_sequence(FTermcap::encodeParameter(fg_cap, fg_value));
+
+    if ( has_background_changes(term, bg, frev) )
+      append_sequence(FTermcap::encodeParameter(bg_cap, bg_value));
+
+    return true;
   };
 
-  if ( AF && AB )
-  {
-    if ( has_foreground_changes(term, fg, frev) )
-      append_color_sequence(AF, uInt16(vga2ansi(fg)));
+  const auto& apply_AF_AB = apply_color_change(AF, AB, VGA);
+  const auto& apply_Sf_Sb = apply_color_change(Sf, Sb, ANSI);
 
-    if ( has_background_changes(term, bg, frev) )
-      append_color_sequence(AB, uInt16(vga2ansi(bg)));
-  }
-  else if ( Sf && Sb )
-  {
-    if ( has_foreground_changes(term, fg, frev) )
-      append_color_sequence(Sf, uInt16(fg));
+  if ( apply_AF_AB || apply_Sf_Sb || ! sp )
+    return;
 
-    if ( has_background_changes(term, bg, frev) )
-      append_color_sequence(Sb, uInt16(bg));
-  }
-  else if ( sp )
-  {
-    const auto ansi_fg = uInt16(vga2ansi(fg));
-    const auto ansi_bg = uInt16(vga2ansi(bg));
-    const auto& color_str = FTermcap::encodeParameter(sp, ansi_fg, ansi_bg);
-    append_sequence (color_str);
-  }
+  const auto fg_value = uInt16(vga2ansi(fg));
+  const auto bg_value = uInt16(vga2ansi(bg));
+  append_sequence (FTermcap::encodeParameter(sp, fg_value, bg_value));
 }
 
 //----------------------------------------------------------------------
@@ -1323,6 +1311,21 @@ auto FOptiAttr::caused_reset_attributes (const char cap[], uChar test) const -> 
       || ( (test & same_like_se) && se && std::strcmp (cap, se) == 0
                                  && std::memcmp (cap, CSI "27m", 5) != 0 )
       || ( (test & same_like_me) && me && std::strcmp (cap, me) == 0 );
+}
+
+//----------------------------------------------------------------------
+void FOptiAttr::init_reset_attribute (Capability& off, uChar test)
+{
+  if ( caused_reset_attributes(off.cap, test) )
+    off.caused_reset = true;
+}
+
+//----------------------------------------------------------------------
+inline auto FOptiAttr::fake_reverse_color_change (const FChar& term) const -> bool
+{
+  const auto& b0_reverse_mask = internal::var::b0_reverse_mask;
+  return ( (changes.off.attr.byte[0] & b0_reverse_mask)
+        || (term.attr.byte[0] & b0_reverse_mask) ) && fake_reverse;
 }
 
 //----------------------------------------------------------------------

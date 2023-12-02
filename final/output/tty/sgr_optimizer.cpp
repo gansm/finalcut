@@ -59,45 +59,42 @@ void SGRoptimizer::findParameter()
 {
   // Find ANSI X3.64 terminal SGR (Select Graphic Rendition) strings
 
+  std::size_t start{NOT_SET};
   csi_parameter.clear();
+  const std::size_t seq_length = seq.length();
 
-  if ( seq.length() < 6 )
+  if ( seq_length < 6 )
     return;
 
-  std::size_t start{NOT_SET};
-  bool esc{false};
-  bool csi{false};
-
   // Find SGR parameter
-  for (std::size_t index{0}; index < seq.length(); ++index)
+  for (std::size_t index{0}; index < seq_length; ++index)
   {
     char ch = seq[index];
 
-    if ( csi )
+    if ( isSGRStart(index) )  // Esc [
+      start = index;
+
+    if ( std::isdigit(ch) || ch == ';' )
+      continue;
+
+    if ( start != NOT_SET && ch == 'm' )
     {
-      if ( start == NOT_SET )
-        start = index;
-
-      if ( std::isdigit(ch) || ch == ';' )
-        continue;
-
-      if ( ch == 'm')
-        csi_parameter.push_back({start, index});
-
-      esc = csi = false;
+      csi_parameter.push_back({start, index});
       start = NOT_SET;
     }
 
     // Other content
     if ( ! csi_parameter.empty() && index > csi_parameter.back().end + 2 )
       break;
-
-    if ( esc && ch == '[' )  // Esc [
-      csi = true;
-
-    if ( ch == ESC[0] )  // Esc
-      esc = true;
   }
+}
+
+//----------------------------------------------------------------------
+inline auto SGRoptimizer::isSGRStart (std::size_t index) -> bool
+{
+  return index > 1
+      && seq[index - 2] == ESC[0]
+      && seq[index - 1] == '[';
 }
 
 //----------------------------------------------------------------------
