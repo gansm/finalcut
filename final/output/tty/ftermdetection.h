@@ -115,8 +115,8 @@ class FTermDetection final
     bool  startsWithTermType (StringT&&) const;
     void  termtypeAnalysis();
     auto  findMatchingTerm (const TermTypeMap&) -> TermTypeMap::const_iterator;
-    auto  isTerminalWithoutDetection() -> bool;
-    void  handleScreenAndTmux();
+    auto  isTerminalWithoutDetection() const -> bool;
+    void  handleScreenAndTmux() const;
     void  detectTerminal();
     auto  init_256colorTerminal() -> FString;
     auto  get256colorEnvString() -> bool;

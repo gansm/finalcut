@@ -285,7 +285,7 @@ void FTermDetection::termtypeAnalysis()
 }
 
 //----------------------------------------------------------------------
-auto FTermDetection::findMatchingTerm (const TermTypeMap& map) -> TermTypeMap::const_iterator
+inline auto FTermDetection::findMatchingTerm (const TermTypeMap& map) -> TermTypeMap::const_iterator
 {
   auto search_predicate = [this] (const auto& pair)
   {
@@ -296,9 +296,9 @@ auto FTermDetection::findMatchingTerm (const TermTypeMap& map) -> TermTypeMap::c
 }
 
 //----------------------------------------------------------------------
-inline auto FTermDetection::isTerminalWithoutDetection() -> bool
+inline auto FTermDetection::isTerminalWithoutDetection() const -> bool
 {
-  static auto& fterm_data = FTermData::getInstance();
+  static const auto& fterm_data = FTermData::getInstance();
 
   return fterm_data.isTermType(FTermType::ansi)
       || fterm_data.isTermType(FTermType::sun_con)
@@ -306,7 +306,7 @@ inline auto FTermDetection::isTerminalWithoutDetection() -> bool
 }
 
 //----------------------------------------------------------------------
-inline void FTermDetection::handleScreenAndTmux()
+inline void FTermDetection::handleScreenAndTmux() const
 {
   static auto& fterm_data = FTermData::getInstance();
 

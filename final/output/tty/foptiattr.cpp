@@ -1173,7 +1173,7 @@ void FOptiAttr::change_color (FChar& term, FChar& next)
 }
 
 //----------------------------------------------------------------------
-inline void FOptiAttr::normalizeColor (FColor& color) noexcept
+inline void FOptiAttr::normalizeColor (FColor& color) const noexcept
 {
   if ( color != FColor::Default )
     color %= uInt16(F_color.max_color);
@@ -1314,7 +1314,7 @@ auto FOptiAttr::caused_reset_attributes (const char cap[], uChar test) const -> 
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::init_reset_attribute (Capability& off, uChar test)
+void FOptiAttr::init_reset_attribute (Capability& off, uChar test) const
 {
   if ( caused_reset_attributes(off.cap, test) )
     off.caused_reset = true;

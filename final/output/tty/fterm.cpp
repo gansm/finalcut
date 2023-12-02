@@ -1076,7 +1076,7 @@ void FTerm::init_cygwin_charmap()
 {
   // Replace don't printable PC charset characters in a Cygwin terminal
 
-  static auto& data = FTermData::getInstance();
+  static const auto& data = FTermData::getInstance();
 
   if ( ! data.isTermType(FTermType::cygwin) )
     return;
