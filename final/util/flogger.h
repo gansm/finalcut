@@ -88,6 +88,8 @@ class FLogger : public FLog
     auto getTimeString() const -> std::string;
     auto getEOL() const -> std::string;
     void printLogLine (const std::string&);
+    auto getLogLevelString() const -> std::string;
+    auto getPrefixString (const std::string&) -> std::string;
 
     // Data member
     bool         timestamp{false};

@@ -32,6 +32,10 @@
 namespace finalcut
 {
 
+// Function forward declarations
+std::size_t readFromPipe (int, uint64_t&, std::size_t);
+
+
 // Event loop non-member functions
 //----------------------------------------------------------------------
 void drainPipe (int fd)
@@ -45,20 +49,24 @@ void drainPipe (int fd)
   // Ensure that the correct number of bytes are read from the pipe
   while ( bytes_read < buffer_size )
   {
-    auto current_bytes_read = ::read(fd, &buffer, buffer_size - bytes_read);
-
-    if ( current_bytes_read == -1 )
-    {
-      int error{errno};
-      std::error_code err_code{error, std::generic_category()};
-      std::system_error sys_err{err_code, strerror(error)};
-      throw sys_err;
-    }
-    else
-    {
-      bytes_read += static_cast<std::size_t>(current_bytes_read);
-    }
+     bytes_read += readFromPipe (fd, buffer, buffer_size - bytes_read);
   }
+}
+
+//----------------------------------------------------------------------
+inline std::size_t readFromPipe (int fd, uint64_t& buffer, std::size_t bytes_to_read)
+{
+  auto current_bytes_read = ::read(fd, &buffer, bytes_to_read);
+
+  if ( current_bytes_read == -1 )
+  {
+    int error{errno};
+    std::error_code err_code{error, std::generic_category()};
+    std::system_error sys_err{err_code, strerror(error)};
+    throw sys_err;
+  }
+
+  return static_cast<std::size_t>(current_bytes_read);
 }
 
 }  // namespace finalcut

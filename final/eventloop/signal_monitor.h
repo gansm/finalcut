@@ -88,6 +88,11 @@ class SignalMonitor final : public Monitor
     // Methods
     static void onSignal (int);
     void init();
+    void handledAlarmSignal() const;
+    void ensureSignalIsUnmonitored() const;
+    void createPipe();
+    void installSignalHandler();
+    void enterMonitorInstanceInTable();
     auto getSigactionImpl() const -> const SigactionImpl*;
     auto getSigactionImpl() -> SigactionImpl*;
 

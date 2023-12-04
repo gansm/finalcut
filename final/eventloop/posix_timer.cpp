@@ -288,14 +288,27 @@ void PosixTimer::trigger (short return_events)
 //----------------------------------------------------------------------
 void PosixTimer::init()
 {
-  static const auto& fsystem = FSystem::getInstance();
   setEvents (POLLIN);
+  createAlarmPipe();
+  installTime();
+  setInitialized();
+}
+
+//----------------------------------------------------------------------
+void PosixTimer::createAlarmPipe()
+{
+  static const auto& fsystem = FSystem::getInstance();
 
   if ( fsystem->pipe(alarm_pipe) != 0 )
     throw monitor_error{"No pipe could be set up for the timer."};
 
   setFileDescriptor(alarm_pipe.getReadFd());  // Read end of pipe
+}
 
+//----------------------------------------------------------------------
+void PosixTimer::installTime()
+{
+  static const auto& fsystem = FSystem::getInstance();
   struct sigevent sig_event{};
   sig_event.sigev_notify          = SIGEV_SIGNAL;
   sig_event.sigev_signo           = SIGALRM;
@@ -311,8 +324,6 @@ void PosixTimer::init()
     fsystem->close (alarm_pipe.getWriteFd());
     throw monitor_error{"No POSIX timer could be reserved."};
   }
-
-  setInitialized();
 }
 
 }  // namespace finalcut

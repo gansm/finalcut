@@ -125,6 +125,8 @@ class PosixTimer : public TimerMonitorImpl
 
   private:
     void init();
+    void createAlarmPipe();
+    void installTime();
 
 #if defined(USE_POSIX_TIMER)
     // Data members

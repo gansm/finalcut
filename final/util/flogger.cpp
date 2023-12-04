@@ -84,46 +84,50 @@ auto FLogger::getEOL() const -> std::string
 //----------------------------------------------------------------------
 void FLogger::printLogLine (const std::string& msg)
 {
-  const auto& log_level = [this] ()
-  {
-    switch ( getLevel() )
-    {
-      case LogLevel::Info:
-        return std::string("INFO");
-
-      case LogLevel::Warn:
-        return std::string("WARNING");
-
-      case LogLevel::Error:
-        return std::string("ERROR");
-
-      case LogLevel::Debug:
-        return std::string("DEBUG");
-    }
-
-    return std::string("");
-  }();
-
-  const auto& prefix = [this, &log_level] ()
-  {
-    {
-      std::lock_guard<std::mutex> lock_guard(print_mutex);
-
-      if ( timestamp )
-        return getTimeString() + " [" + log_level + "] ";
-
-      // Release mutex at end of scope
-    }
-
-    return "[" + log_level + "] ";
-  }();
-
+  const auto& log_level = getLogLevelString();
+  const auto& prefix = getPrefixString(log_level);
   std::string message{msg};
   const auto& eol = getEOL();
   const auto replace_str = eol + prefix;
   newlineReplace (message, replace_str);
   std::lock_guard<std::mutex> lock_guard(output_mutex);
   output << prefix << message << eol;
+}
+
+//----------------------------------------------------------------------
+inline auto FLogger::getLogLevelString() const -> std::string
+{
+  switch ( getLevel() )
+  {
+    case LogLevel::Info:
+      return {"INFO"};
+
+    case LogLevel::Warn:
+      return {"WARNING"};
+
+    case LogLevel::Error:
+      return {"ERROR"};
+
+    case LogLevel::Debug:
+      return {"DEBUG"};
+  }
+
+  return {""};
+}
+
+//----------------------------------------------------------------------
+inline auto FLogger::getPrefixString (const std::string& log_level) -> std::string
+{
+  {
+    std::lock_guard<std::mutex> lock_guard(print_mutex);
+
+    if ( timestamp )
+      return getTimeString() + " [" + log_level + "] ";
+
+    // Release mutex at end of scope
+  }
+
+  return "[" + log_level + "] ";
 }
 
 }  // namespace finalcut

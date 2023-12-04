@@ -10,14 +10,14 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
     - name: Repository checkout
       uses: actions/checkout@v4
 
     - name: Test on Solaris 11.4
-      uses: vmactions/solaris-vm@v0
+      uses: vmactions/solaris-vm@v1
       with:
         prepare: |
           pkg publisher solaris

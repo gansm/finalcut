@@ -339,21 +339,21 @@ void FTermcapQuirks::sunConsole()
   // Sun Microsystems workstation console keys
   std::vector<std::pair<std::string, std::string>> sun_console_keys = \
   {
-    {"K2", CSI "218z"},  // center of keypad
-    {"kb", "\b"},  // backspace key
-    {"kD", "\177"},  // delete-character key
-    {"@7", CSI "220z"},  // end key
-    {"k;", CSI "233z"},  // F10 function key
-    {"F1", CSI "234z"},  // F11 function key
-    {"F2", CSI "235z"},  // F12 function key
-    {"kh", CSI "214z"},  // home key
-    {"kI", CSI "247z"},  // insert-character key
-    {"kN", CSI "222z"},  // next-page key
-    {"%7", CSI "194z"},  // options key
-    {"kP", CSI "216z"},  // prev-page key
-    {"&5", CSI "193z"},  // resume key
-    {"&8", CSI "195z"},  // undo key
-    {"K2", CSI "218z"},  // center of keypad
+    {"K2", CSI "218z"},   // center of keypad
+    {"kb", "\b"},         // backspace key
+    {"kD", "\177"},       // delete-character key
+    {"@7", CSI "220z"},   // end key
+    {"k;", CSI "233z"},   // F10 function key
+    {"F1", CSI "234z"},   // F11 function key
+    {"F2", CSI "235z"},   // F12 function key
+    {"kh", CSI "214z"},   // home key
+    {"kI", CSI "247z"},   // insert-character key
+    {"kN", CSI "222z"},   // next-page key
+    {"%7", CSI "194z"},   // options key
+    {"kP", CSI "216z"},   // prev-page key
+    {"&5", CSI "193z"},   // resume key
+    {"&8", CSI "195z"},   // undo key
+    {"K2", CSI "218z"},   // center of keypad
     {"kDx", CSI "249z"},  // keypad delete
     {"@8x", CSI "250z"},  // enter/send key
     {"KP1", CSI "212z"},  // keypad slash
