@@ -289,6 +289,12 @@ class FVTerm : public FVTermAttribute
     auto  resizeTextArea (FTermArea*, std::size_t, std::size_t ) const -> bool;
     auto  resizeTextArea (FTermArea*, std::size_t) const -> bool;
     auto  isCovered (const FPoint&, const FTermArea*) const noexcept -> CoveredState;
+    auto  isAreaValid (const FShadowBox&) const -> bool;
+    auto  isSizeEqual (const FTermArea*, const FShadowBox&) const -> bool;
+    constexpr auto  needsHeightResize (const FTermArea*, const std::size_t) const noexcept -> bool;
+    constexpr auto  needsWidthResize (const FTermArea*, const std::size_t) const noexcept -> bool;
+    bool  tryResizeArea (FTermArea*, const std::size_t, const std::size_t) const;
+    void  updateAreaProperties (FTermArea*, const FShadowBox&) const;
     constexpr auto  getFullAreaWidth (const FTermArea*) const noexcept -> int;
     constexpr auto  getFullAreaHeight (const FTermArea*) const noexcept -> int;
     void  passChangesToOverlap (const FTermArea*) const;

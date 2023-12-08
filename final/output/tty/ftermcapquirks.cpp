@@ -36,6 +36,46 @@
 namespace finalcut
 {
 
+// Using-declaration
+using KeyMapType = std::pair<std::string, std::string>;
+using SunConsoleKeysMap = std::vector<KeyMapType>;
+
+//----------------------------------------------------------------------
+inline auto getSunConsoleKeys() -> SunConsoleKeysMap&
+{
+  // Sun Microsystems workstation console keys
+
+  static const auto& sun_console_keys = std::make_unique<SunConsoleKeysMap>
+  (
+    std::initializer_list<KeyMapType>
+    ({
+      {"K2", CSI "218z"},   // center of keypad
+      {"kb", "\b"},         // backspace key
+      {"kD", "\177"},       // delete-character key
+      {"@7", CSI "220z"},   // end key
+      {"k;", CSI "233z"},   // F10 function key
+      {"F1", CSI "234z"},   // F11 function key
+      {"F2", CSI "235z"},   // F12 function key
+      {"kh", CSI "214z"},   // home key
+      {"kI", CSI "247z"},   // insert-character key
+      {"kN", CSI "222z"},   // next-page key
+      {"%7", CSI "194z"},   // options key
+      {"kP", CSI "216z"},   // prev-page key
+      {"&5", CSI "193z"},   // resume key
+      {"&8", CSI "195z"},   // undo key
+      {"K2", CSI "218z"},   // center of keypad
+      {"kDx", CSI "249z"},  // keypad delete
+      {"@8x", CSI "250z"},  // enter/send key
+      {"KP1", CSI "212z"},  // keypad slash
+      {"KP2", CSI "213z"},  // keypad asterisk
+      {"KP3", CSI "254z"},  // keypad minus sign
+      {"KP4", CSI "253z"},  // keypad plus sign
+    })
+  );
+
+  return *sun_console_keys;
+}
+  
 //----------------------------------------------------------------------
 template <typename CapabilityT, typename StringT>
 constexpr void setTCapString (CapabilityT& cap, StringT&& string)
@@ -337,30 +377,7 @@ void FTermcapQuirks::sunConsole()
   auto& fkey_cap_table = FKeyMap::getKeyCapMap();
 
   // Sun Microsystems workstation console keys
-  std::vector<std::pair<std::string, std::string>> sun_console_keys = \
-  {
-    {"K2", CSI "218z"},   // center of keypad
-    {"kb", "\b"},         // backspace key
-    {"kD", "\177"},       // delete-character key
-    {"@7", CSI "220z"},   // end key
-    {"k;", CSI "233z"},   // F10 function key
-    {"F1", CSI "234z"},   // F11 function key
-    {"F2", CSI "235z"},   // F12 function key
-    {"kh", CSI "214z"},   // home key
-    {"kI", CSI "247z"},   // insert-character key
-    {"kN", CSI "222z"},   // next-page key
-    {"%7", CSI "194z"},   // options key
-    {"kP", CSI "216z"},   // prev-page key
-    {"&5", CSI "193z"},   // resume key
-    {"&8", CSI "195z"},   // undo key
-    {"K2", CSI "218z"},   // center of keypad
-    {"kDx", CSI "249z"},  // keypad delete
-    {"@8x", CSI "250z"},  // enter/send key
-    {"KP1", CSI "212z"},  // keypad slash
-    {"KP2", CSI "213z"},  // keypad asterisk
-    {"KP3", CSI "254z"},  // keypad minus sign
-    {"KP4", CSI "253z"},  // keypad plus sign
-  };
+  static const auto& sun_console_keys = getSunConsoleKeys();
 
   for (std::size_t i{0}; i < fkey_cap_table.size(); i++)
   {
@@ -368,9 +385,10 @@ void FTermcapQuirks::sunConsole()
     {
       const std::string& tname = key.first;
       const std::string& string = key.second;
+      const auto& cap_name = fkey_cap_table[i].tname.data();
 
-      if ( std::memcmp(fkey_cap_table[i].tname.data(), tname.c_str(), tname.size()) == 0
-        && stringLength(fkey_cap_table[i].tname.data()) == tname.size() )
+      if ( std::memcmp(cap_name, tname.c_str(), tname.size()) == 0
+        && stringLength(cap_name) == tname.size() )
       {
         fkey_cap_table[i].string = string.c_str();
       }

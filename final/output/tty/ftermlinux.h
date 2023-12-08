@@ -193,6 +193,8 @@ class FTermLinux final
 
     // Using-declaration
     using KeyMap = std::unordered_map<Pair, FKey, PairHash, PairEqual>;
+    using FontData = std::vector<uChar>;
+    using UnicodeEntries = std::vector<struct unipair>;
 
     // Accessors
     auto  getFramebuffer_bpp() const -> int;
@@ -248,6 +250,8 @@ class FTermLinux final
     CursorStyle      linux_console_cursor_style{};
     console_font_op  screen_font{};
     unimapdesc       screen_unicode_map{};
+    FontData         font_data{};
+    UnicodeEntries   unicode_entries{};
     ColorMap         saved_color_map{};
     ColorMap         cmap{};
     KeyMap           key_map{};

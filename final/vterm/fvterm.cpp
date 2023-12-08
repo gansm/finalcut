@@ -539,60 +539,29 @@ void FVTerm::resizeArea ( const FShadowBox& shadowbox
 {
   // Resize the virtual window to a new size
 
-  const auto position_x = shadowbox.box.getX();
-  const auto position_y = shadowbox.box.getY();
-  const auto width = int(shadowbox.box.getWidth());
-  const auto height = int(shadowbox.box.getHeight());
-  const auto rsw = int(shadowbox.shadow.getWidth());
-  const auto bsh = int(shadowbox.shadow.getHeight());
-
-  assert ( position_y >= 0 && width > 0 && height > 0
-        && rsw >= 0 && bsh >= 0 );
+  assert ( isAreaValid(shadowbox) );
 
   if ( ! area )
     return;
 
-  if ( width == area->size.width
-    && height == area->size.height
-    && rsw == area->shadow.width
-    && bsh == area->shadow.height )
+  if ( isSizeEqual(area, shadowbox) )
   {
-    area->position.x = position_x;
-    area->position.y = position_y;
+    area->position.x = shadowbox.box.getX();
+    area->position.y = shadowbox.box.getY();
     return;  // Move only
   }
 
-  bool realloc_success{false};
-  const std::size_t full_width = std::size_t(width) + std::size_t(rsw);
-  const std::size_t full_height = std::size_t(height) + std::size_t(bsh);
-  const std::size_t area_size = full_width * full_height;
+  const auto full_width  = shadowbox.box.getWidth()
+                         + shadowbox.shadow.getWidth();
+  const auto full_height = shadowbox.box.getHeight()
+                         + shadowbox.shadow.getHeight();
 
-  if ( getFullAreaHeight(area) != int(full_height) )
-  {
-    realloc_success = resizeTextArea (area, full_height, area_size);
-  }
-  else if ( getFullAreaWidth(area) != int(full_width) )
-  {
-    realloc_success = resizeTextArea (area, area_size);
-  }
-  else
+  if ( ! tryResizeArea(area, full_width, full_height) )
     return;
 
-  if ( ! realloc_success )
-    return;
-
-  area->position.x      = position_x;
-  area->position.y      = position_y;
-  area->size.width      = width;
-  area->size.height     = height;
-  area->min_size.width  = width;
-  area->min_size.height = DEFAULT_MINIMIZED_HEIGHT;
-  area->shadow.width    = rsw;
-  area->shadow.height   = bsh;
-  area->has_changes     = false;
-
-  const FSize size{full_width, full_height};
-  resetTextAreaToDefault (area, size);  // Set default FChar in area
+  updateAreaProperties (area, shadowbox);
+  // Set default FChar in area
+  resetTextAreaToDefault (area, {full_width, full_height});
 }
 
 //----------------------------------------------------------------------
@@ -1200,6 +1169,64 @@ auto FVTerm::isCovered (const FPoint& pos, const FTermArea* area) const noexcept
   }
 
   return is_covered;
+}
+
+//----------------------------------------------------------------------
+inline auto FVTerm::isAreaValid (const FShadowBox& shadowbox) const -> bool
+{
+  return shadowbox.box.getY() >= 0
+      && shadowbox.box.getWidth() > 0
+      && shadowbox.box.getHeight() > 0;
+}
+
+//----------------------------------------------------------------------
+inline auto FVTerm::isSizeEqual (const FTermArea* area, const FShadowBox& shadowbox) const -> bool
+{
+  return area->size.width == int(shadowbox.box.getWidth())
+      && area->size.height == int(shadowbox.box.getHeight())
+      && area->shadow.width == int(shadowbox.shadow.getWidth())
+      && area->shadow.height == int(shadowbox.shadow.getHeight());
+}
+
+//----------------------------------------------------------------------
+constexpr auto FVTerm::needsHeightResize ( const FTermArea* area
+                                         , const std::size_t full_height ) const noexcept -> bool
+{
+  return getFullAreaHeight(area) != int(full_height);
+}
+
+//----------------------------------------------------------------------
+constexpr auto FVTerm::needsWidthResize ( const FTermArea* area
+                                        , const std::size_t full_width ) const noexcept -> bool
+{
+  return getFullAreaWidth(area) != int(full_width);
+}
+
+//----------------------------------------------------------------------
+inline bool FVTerm::tryResizeArea ( FTermArea* area
+                                  , const std::size_t width
+                                  , const std::size_t height ) const
+{
+  if ( needsHeightResize(area, height) )
+    return resizeTextArea(area, height, width * height);
+  else if ( needsWidthResize(area, width) )
+    return resizeTextArea(area, width * height);
+  
+  return false;
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::updateAreaProperties (FTermArea* area, const FShadowBox& shadowbox) const
+{
+  area->position.x      = shadowbox.box.getX();
+  area->position.y      = shadowbox.box.getY();
+  area->size.width      = int(shadowbox.box.getWidth());
+  area->size.height     = int(shadowbox.box.getHeight());
+  area->min_size.width  = area->size.width;
+  area->min_size.height = DEFAULT_MINIMIZED_HEIGHT;
+  area->shadow.width    = int(shadowbox.shadow.getWidth());
+  area->shadow.height   = int(shadowbox.shadow.getHeight());
+  area->has_changes     = false;
 }
 
 //----------------------------------------------------------------------

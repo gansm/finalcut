@@ -506,16 +506,9 @@ auto FTermLinux::getScreenFont() -> bool
   font.charcount = 512;
 
   // Initialize with 0
-  try
-  {
-    static constexpr std::size_t data_size = 4 * 32 * 512;
-    font.data = new uChar[data_size]();
-  }
-  catch (const std::bad_alloc&)
-  {
-    badAllocOutput ("FString");
-    return false;
-  }
+  static constexpr std::size_t data_size = 4 * 32 * 512;
+  font_data.resize(data_size);
+  font.data = font_data.data();
 
   // Font operation
   static const auto& fsystem = FSystem::getInstance();
@@ -557,15 +550,8 @@ auto FTermLinux::getUnicodeMap() -> bool
     if ( errno != ENOMEM || count == 0 )
       return false;
 
-    try
-    {
-      screen_unicode_map.entries = new struct unipair[count]();
-    }
-    catch (const std::bad_alloc&)
-    {
-      badAllocOutput ("unipair[count]");
-      return false;
-    }
+    unicode_entries.resize(count);
+    screen_unicode_map.entries = unicode_entries.data();
 
     // Get unicode-to-font mapping from kernel
     ret = fsystem->ioctl (fd_tty, GIO_UNIMAP, &screen_unicode_map);
@@ -642,16 +628,8 @@ auto FTermLinux::setScreenFont ( const uChar fontdata[], uInt count
   {
     const std::size_t bytes_per_line = font.width / 8;
     const std::size_t data_size = bytes_per_line * 32 * font.charcount;
-
-    try
-    {
-      font.data = new uChar[data_size]();  // Initialize with 0
-    }
-    catch (const std::bad_alloc&)
-    {
-      badAllocOutput ("uChar[data_size]");
-      return -1;
-    }
+    font_data.resize(data_size);  // Initialize with 0
+    font.data = font_data.data();
 
     for (std::size_t i{0}; i < count; i++)
       std::memcpy ( font.data + bytes_per_line * 32 * i
@@ -1168,14 +1146,14 @@ auto FTermLinux::getFontPos (wchar_t ucs) const -> sInt16
 //----------------------------------------------------------------------
 inline void FTermLinux::deleteFontData (console_font_op& font)
 {
-  delete[] font.data;
+  font_data.clear();
   font.data = nullptr;
 }
 
 //----------------------------------------------------------------------
 inline void FTermLinux::deleteUnicodeMapEntries (unimapdesc& unicode_map)
 {
-  delete[] unicode_map.entries;
+  unicode_entries.clear();
   unicode_map.entries = nullptr;
 }
 
