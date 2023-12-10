@@ -251,6 +251,7 @@ class FTermLinux final
     console_font_op  screen_font{};
     unimapdesc       screen_unicode_map{};
     FontData         font_data{};
+    FontData         screen_font_data{};
     UnicodeEntries   unicode_entries{};
     ColorMap         saved_color_map{};
     ColorMap         cmap{};

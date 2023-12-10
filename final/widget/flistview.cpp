@@ -42,8 +42,10 @@ namespace finalcut
 
 // Function prototypes
 auto firstNumberFromString (const FString&) -> uInt64;
+auto sortByName (const FObject*, const FObject*) -> int;
 auto sortAscendingByName (const FObject*, const FObject*) -> bool;
 auto sortDescendingByName (const FObject*, const FObject*) -> bool;
+auto sortByNumber (const FObject* lhs, const FObject* rhs) -> int;
 auto sortAscendingByNumber (const FObject*, const FObject*) -> bool;
 auto sortDescendingByNumber (const FObject*, const FObject*) -> bool;
 
@@ -110,7 +112,7 @@ auto firstNumberFromString (const FString& str) -> uInt64
 }
 
 //----------------------------------------------------------------------
-auto sortAscendingByName (const FObject* lhs, const FObject* rhs) -> bool
+auto sortByName (const FObject* lhs, const FObject* rhs) -> int
 {
   const auto& l_item = static_cast<const FListViewItem*>(lhs);
   const auto& r_item = static_cast<const FListViewItem*>(rhs);
@@ -118,47 +120,49 @@ auto sortAscendingByName (const FObject* lhs, const FObject* rhs) -> bool
   const auto& l_string = l_item->getText(column);
   const auto& r_string = r_item->getText(column);
 
+  // Compare lhs with rhs
+  return FStringCaseCompare(l_string, r_string);
+}
+
+//----------------------------------------------------------------------
+auto sortAscendingByName (const FObject* lhs, const FObject* rhs) -> bool
+{
   // lhs < rhs
-  return FStringCaseCompare(l_string, r_string) < 0;
+  return sortByName(lhs, rhs) < 0;
 }
 
 //----------------------------------------------------------------------
 auto sortDescendingByName (const FObject* lhs, const FObject* rhs) -> bool
 {
+  // lhs > rhs
+  return sortByName(lhs, rhs) > 0;
+}
+
+//----------------------------------------------------------------------
+auto sortByNumber (const FObject* lhs, const FObject* rhs) -> int
+{
   const auto& l_item = static_cast<const FListViewItem*>(lhs);
   const auto& r_item = static_cast<const FListViewItem*>(rhs);
   const int column = l_item->getSortColumn();
-  const auto& l_string = l_item->getText(column);
-  const auto& r_string = r_item->getText(column);
+  const auto& l_number = firstNumberFromString(l_item->getText(column));
+  const auto& r_number = firstNumberFromString(r_item->getText(column));
 
-  // lhs > rhs
-  return FStringCaseCompare(l_string, r_string) > 0;
+  // Compare lhs with rhs
+  return l_number < r_number ? -1 : l_number == r_number ? 0 : 1;
 }
 
 //----------------------------------------------------------------------
 auto sortAscendingByNumber (const FObject* lhs, const FObject* rhs) -> bool
 {
-  const auto& l_item = static_cast<const FListViewItem*>(lhs);
-  const auto& r_item = static_cast<const FListViewItem*>(rhs);
-  const int column = l_item->getSortColumn();
-  const auto& l_number = firstNumberFromString(l_item->getText(column));
-  const auto& r_number = firstNumberFromString(r_item->getText(column));
-
   // lhs < rhs
-  return l_number < r_number;
+  return sortByNumber(lhs, rhs) < 0;
 }
 
 //----------------------------------------------------------------------
 auto sortDescendingByNumber (const FObject* lhs, const FObject* rhs) -> bool
 {
-  const auto& l_item = static_cast<const FListViewItem*>(lhs);
-  const auto& r_item = static_cast<const FListViewItem*>(rhs);
-  const int column = l_item->getSortColumn();
-  const auto& l_number = firstNumberFromString(l_item->getText(column));
-  const auto& r_number = firstNumberFromString(r_item->getText(column));
-
   // lhs > rhs
-  return l_number > r_number;
+  return sortByNumber(lhs, rhs) > 0;
 }
 
 

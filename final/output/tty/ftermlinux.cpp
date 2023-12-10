@@ -505,9 +505,9 @@ auto FTermLinux::getScreenFont() -> bool
   font.height = 32;
   font.charcount = 512;
 
-  // Initialize with 0
   static constexpr std::size_t data_size = 4 * 32 * 512;
   font_data.resize(data_size);
+  std::fill(font_data.begin(), font_data.end(), 0);  // Initialize with 0
   font.data = font_data.data();
 
   // Font operation
@@ -523,7 +523,8 @@ auto FTermLinux::getScreenFont() -> bool
   screen_font.width = font.width;
   screen_font.height = font.height;
   screen_font.charcount = font.charcount;
-  screen_font.data = font.data;
+  screen_font_data = std::move(font_data);
+  screen_font.data = screen_font_data.data();
   return true;
 }
 
@@ -628,7 +629,8 @@ auto FTermLinux::setScreenFont ( const uChar fontdata[], uInt count
   {
     const std::size_t bytes_per_line = font.width / 8;
     const std::size_t data_size = bytes_per_line * 32 * font.charcount;
-    font_data.resize(data_size);  // Initialize with 0
+    font_data.resize(data_size);
+    std::fill(font_data.begin(), font_data.end(), 0);  // Initialize with 0
     font.data = font_data.data();
 
     for (std::size_t i{0}; i < count; i++)
