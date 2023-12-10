@@ -174,8 +174,6 @@ void FMessageBox::cb_processClick (ButtonType reply)
 //----------------------------------------------------------------------
 void FMessageBox::init()
 {
-  calculateDimensions();
-
   if ( (button_digit[2] != ButtonType::Reject && button_digit[1] == ButtonType::Reject)
     || (button_digit[1] != ButtonType::Reject && button_digit[0] == ButtonType::Reject) )
   {
@@ -184,17 +182,18 @@ void FMessageBox::init()
                     = ButtonType::Reject;
   }
 
-  if ( button_digit[0] == ButtonType::Reject )
-    button_digit[0] = ButtonType::Ok;
+  if ( button_digit[0] != ButtonType::Reject )
+  {
+    if ( button_digit[1] == ButtonType::Reject
+      && button_digit[2] == ButtonType::Reject )
+      num_buttons = 1;
+    else if ( button_digit[2] == ButtonType::Reject )
+      num_buttons = 2;
+    else
+      num_buttons = 3;
+  }
 
-  if ( button_digit[1] == ButtonType::Reject
-    && button_digit[2] == ButtonType::Reject )
-    num_buttons = 1;
-  else if ( button_digit[2] == ButtonType::Reject )
-    num_buttons = 2;
-  else
-    num_buttons = 3;
-
+  calculateDimensions();
   allocation();
   resizeButtons();
   adjustButtons();
@@ -207,12 +206,15 @@ inline void FMessageBox::allocation()
 {
   try
   {
-    button[0] = std::make_unique<FButton>(this);
-    button[0]->setText(button_text[std::size_t(button_digit[0])]);
-    button[0]->setPos(FPoint{3, int(getHeight()) - 4}, false);
-    button[0]->setWidth(1, false);
-    button[0]->setHeight(1, false);
-    button[0]->setFocus();
+    if ( button_digit[0] > ButtonType::Reject )
+    {
+      button[0] = std::make_unique<FButton>(this);
+      button[0]->setText(button_text[std::size_t(button_digit[0])]);
+      button[0]->setPos(FPoint{3, int(getHeight()) - 4}, false);
+      button[0]->setWidth(1, false);
+      button[0]->setHeight(1, false);
+      button[0]->setFocus();
+    }
 
     if ( button_digit[1] > ButtonType::Reject )
     {
@@ -295,12 +297,13 @@ void FMessageBox::calculateDimensions()
                 );
 
   const std::size_t headline_height = headline_text.isEmpty() ? 0 : 2;
+  const std::size_t button_height = num_buttons == 0 ? 0 : 3;
   const std::size_t headline_width = getColumnWidth(headline_text);
 
   if ( headline_width > max_line_width )
     max_line_width = headline_width;
 
-  FSize size{ max_line_width + 4, text_num_lines + 8 + headline_height };
+  FSize size{ max_line_width + 4, text_num_lines + 5 + button_height + headline_height };
 
   if ( size.getWidth() < 20 )
     size.setWidth(20);
@@ -369,11 +372,10 @@ void FMessageBox::resizeButtons() const
       len[n]--;
   }
 
-  if ( num_buttons == 1 )
+  if ( num_buttons < 2 )
     max_size = len[0];
   else
   {
-    assert ( num_buttons > 1 );
     max_size = std::max(len[0], len[1]);
 
     if ( num_buttons == 3 )

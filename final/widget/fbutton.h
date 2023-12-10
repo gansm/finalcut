@@ -140,6 +140,12 @@ class FButton : public FWidget
     void printTrailingSpaces (std::size_t);
     void drawButtonTextLine (const FString&);
     void draw() override;
+    void initializeDrawing();
+    void finalizingDrawing() const;
+    auto getSpaceChar() const -> wchar_t;
+    void handleMonochronBackground() const;
+    void drawFlatBorder();
+    void drawShadow();
     void updateButtonColor();
     void processClick() const;
 

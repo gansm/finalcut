@@ -611,30 +611,21 @@ inline void FButton::drawButtonTextLine (const FString& button_text)
 //----------------------------------------------------------------------
 void FButton::draw()
 {
-  FString button_text{};
-  const auto& parent_widget = getParentWidget();
-  column_width = getColumnWidth(text);
-  space_char = L' ';
-  active_focus = getFlags().feature.active && getFlags().focus.focus;
-
-  if ( FVTerm::getFOutput()->isMonochron() )
-    setReverse(true);  // Light background
+  initializeDrawing();
 
   // Click animation preprocessing
-  indent = clickAnimationIndent (parent_widget);
+  indent = clickAnimationIndent (getParentWidget());
 
   // Clear right margin after animation
-  clearRightMargin (parent_widget);
+  clearRightMargin (getParentWidget());
 
-  if ( ! getFlags().feature.active && FVTerm::getFOutput()->isMonochron() )
-    space_char = wchar_t(UniChar::MediumShade);  // ▒ simulates greyed out at Monochron
+  // Disable reverse text mode for an active or focused button
+  handleMonochronBackground();
 
-  if ( FVTerm::getFOutput()->isMonochron() && (getFlags().feature.active || getFlags().focus.focus) )
-    setReverse(false);  // Dark background
+  // Draw a flat border with the newfont
+  drawFlatBorder();
 
-  if ( getFlags().feature.flat && ! button_down )
-    drawFlatBorder(this);
-
+  FString button_text{};
   hotkeypos = finalcut::getHotkeyPos(text, button_text);
 
   if ( hotkeypos != NOT_SET )
@@ -655,13 +646,64 @@ void FButton::draw()
   drawTopBottomBackground();
 
   // Draw button shadow
-  if ( ! getFlags().feature.flat && getFlags().shadow.shadow && ! button_down )
-    drawShadow(this);
+  drawShadow();
+
+  finalizingDrawing();
+  updateStatusbar (this);
+}
+
+//----------------------------------------------------------------------
+inline void FButton::initializeDrawing()
+{
+  column_width = getColumnWidth(text);
+  space_char = getSpaceChar();
+  active_focus = getFlags().feature.active && getFlags().focus.focus;
 
   if ( FVTerm::getFOutput()->isMonochron() )
-    setReverse(false);  // Dark background
+    setReverse(true);  // Light background
+}
 
-  updateStatusbar (this);
+//----------------------------------------------------------------------
+inline void FButton::finalizingDrawing() const
+{
+  if ( FVTerm::getFOutput()->isMonochron() )
+    setReverse(false);  // Dark background  
+}
+
+//----------------------------------------------------------------------
+inline auto FButton::getSpaceChar() const -> wchar_t
+{
+  if ( FVTerm::getFOutput()->isMonochron()
+    && ! getFlags().feature.active )
+    return wchar_t(UniChar::MediumShade);  // ▒ simulates greyed out at Monochron
+
+  return L' ';
+}
+
+//----------------------------------------------------------------------
+inline void FButton::handleMonochronBackground() const
+{
+  if ( FVTerm::getFOutput()->isMonochron()
+    && (getFlags().feature.active || getFlags().focus.focus) )
+    setReverse(false);  // Dark background
+}
+
+//----------------------------------------------------------------------
+inline void FButton::drawFlatBorder()
+{
+  if ( getFlags().feature.flat && ! button_down )
+    finalcut::drawFlatBorder(this);
+}
+
+//----------------------------------------------------------------------
+inline void FButton::drawShadow()
+{
+  if ( getFlags().shadow.shadow
+    && ! getFlags().feature.flat
+    && ! button_down )
+  {
+    finalcut::drawShadow(this);
+  }
 }
 
 //----------------------------------------------------------------------
