@@ -646,7 +646,7 @@ auto getColumnWidth (const wchar_t wchar) -> std::size_t
   const std::size_t width = getColumnWidthImpl(wchar);  // Not found
   char_width_cache[wchar] = width;
   return width;
-};
+}
 
 //----------------------------------------------------------------------
 auto getColumnWidthImpl (const wchar_t wchar) -> std::size_t

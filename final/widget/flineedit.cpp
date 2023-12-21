@@ -627,7 +627,28 @@ void FLineEdit::draw()
 //----------------------------------------------------------------------
 void FLineEdit::drawInputField()
 {
-  const bool isActiveFocus = getFlags().feature.active && getFlags().focus.focus;
+  initializeDrawing();
+  std::size_t text_offset_column;
+  std::size_t x_pos;
+  std::tie(text_offset_column, x_pos) = choosePrintMethod();
+  printTrailingSpaces (x_pos);
+  finalizingDrawing();
+  drawShadow();
+
+  // set the cursor to the insert pos.
+  const auto cursor_pos_column = getCursorColumnPos();
+  const auto xpos = int(2 + align_offset
+                          + cursor_pos_column
+                          - text_offset_column
+                          + char_width_offset);
+  setCursorPos ({xpos, 1});
+}
+
+//----------------------------------------------------------------------
+inline void FLineEdit::initializeDrawing()
+{
+  const bool isActiveFocus = getFlags().feature.active
+                          && getFlags().focus.focus;
   print() << FPoint{1, 1};
 
   if ( FVTerm::getFOutput()->isMonochron() )
@@ -648,49 +669,48 @@ void FLineEdit::drawInputField()
 
   if ( isActiveFocus && FVTerm::getFOutput()->getMaxColor() < 16 )
     setBold();
+}
 
-  std::size_t text_offset_column;
-  std::size_t x_pos;
-  std::tie(text_offset_column, x_pos) = [this] ()
-  {
-    switch ( input_type )
-    {
-      case InputType::Textfield:
-        return printTextField();
-
-      case InputType::Password:
-        return printPassword();
-
-      default:
-        throw std::invalid_argument{"Invalid input type"};
-    }
-  }();
-
-  if ( x_pos + align_offset + 1 < getWidth() )
-  {
-    const auto trailing_spaces = getWidth() - x_pos - align_offset - 1;
-    print(FString{trailing_spaces, L' '});
-  }
+//----------------------------------------------------------------------
+inline void FLineEdit::finalizingDrawing() const
+{
+  const bool isActiveFocus = getFlags().feature.active
+                          && getFlags().focus.focus;
 
   if ( isActiveFocus && FVTerm::getFOutput()->getMaxColor() < 16 )
     unsetBold();
 
-  if ( FVTerm::getFOutput()->isMonochron() )
+  if ( ! FVTerm::getFOutput()->isMonochron() )
+    return;
+
+  setReverse(false);
+  setUnderline(false);
+}
+
+//----------------------------------------------------------------------
+inline void FLineEdit::printTrailingSpaces (std::size_t x_pos)
+{
+  if ( x_pos + align_offset + 1 >= getWidth() )
+    return;
+
+  const auto trailing_spaces = getWidth() - x_pos - align_offset - 1;
+  print(FString{trailing_spaces, L' '});
+}
+
+//----------------------------------------------------------------------
+inline auto FLineEdit::choosePrintMethod() -> std::tuple<std::size_t, std::size_t>
+{
+  switch ( input_type )
   {
-    setReverse(false);
-    setUnderline(false);
+    case InputType::Textfield:
+      return printTextField();
+
+    case InputType::Password:
+      return printPassword();
+
+    default:
+      throw std::invalid_argument{"Invalid input type"};
   }
-
-  if ( getFlags().shadow.shadow )
-    drawShadow(this);
-
-  // set the cursor to the insert pos.
-  const auto cursor_pos_column = getCursorColumnPos();
-  const auto xpos = int(2 + align_offset
-                          + cursor_pos_column
-                          - text_offset_column
-                          + char_width_offset);
-  setCursorPos ({xpos, 1});
 }
 
 //----------------------------------------------------------------------
@@ -727,6 +747,13 @@ inline auto FLineEdit::printPassword() -> std::tuple<std::size_t, std::size_t>
     print() << FString{x_pos, UniChar::Bullet};  // •
 
   return std::make_tuple (text_offset_column, x_pos);
+}
+
+//----------------------------------------------------------------------
+inline void FLineEdit::drawShadow()
+{
+  if ( getFlags().shadow.shadow )
+    finalcut::drawShadow(this);
 }
 
 //----------------------------------------------------------------------

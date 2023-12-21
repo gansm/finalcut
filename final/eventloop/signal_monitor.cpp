@@ -195,7 +195,7 @@ inline void SignalMonitor::createPipe()
   // Set up pipe for notification
 
   static const auto& fsystem = FSystem::getInstance();
-  
+
   if ( fsystem->pipe(signal_pipe) != 0 )
   {
     throw monitor_error{"No pipe could be set up for the signal monitor."};

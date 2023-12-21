@@ -148,7 +148,10 @@ auto sortByNumber (const FObject* lhs, const FObject* rhs) -> int
   const auto& r_number = firstNumberFromString(r_item->getText(column));
 
   // Compare lhs with rhs
-  return l_number < r_number ? -1 : l_number == r_number ? 0 : 1;
+  if ( l_number < r_number )
+    return -1;
+
+  return l_number == r_number ? 0 : 1;
 }
 
 //----------------------------------------------------------------------

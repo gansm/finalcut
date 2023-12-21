@@ -243,36 +243,17 @@ void FMenu::onMouseMove (FMouseEvent* ev)
   if ( !  mouse_down || getItemList().empty() )
     return;
 
-  MouseStates ms =
-  {
-    false,  // focus_changed
-    false,  // hide_sub_menu
-    isMouseOverMenu (ev->getTermPos()),
-    isMouseOverSubMenu (ev->getTermPos()),
-    isMouseOverSuperMenu (ev->getTermPos()),
-    isMouseOverMenuBar (ev->getTermPos())
-  };
+  MouseStates ms = initializeMouseStates(ev);
 
   shown_sub_menu = nullptr;
 
   // Mouse pointer over an entry in the menu list
   mouseMoveOverList (ev->getPos(), ms);
 
-  if ( ms.mouse_over_submenu )
+  if ( handleSubMenuEvent(ms, *ev)    // Event handover to sub-menu
+    || handleSuperMenuEvent(ms, *ev)  // Event handover to super-menu
+    || handleMenuBarEvent(ms, *ev) )  // Event handover to the menu bar
   {
-    passEventToSubMenu(*ev);  // Event handover to sub-menu
-    return;
-  }
-
-  if ( ! ms.mouse_over_menu && ms.mouse_over_supermenu )
-  {
-    passEventToSuperMenu(*ev);  // Event handover to super-menu
-    return;
-  }
-
-  if ( ms.mouse_over_menubar )
-  {
-    passEventToMenuBar(*ev);  // Event handover to the menu bar
     return;
   }
 
@@ -284,16 +265,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
   if ( ms.focus_changed )
     redraw();
 
-  if ( shown_sub_menu )
-  {
-    closeOpenedSubMenu();
-    openSubMenu (shown_sub_menu, SelectItem::No);
-  }
-  else if ( ms.hide_sub_menu )
-  {
-    closeOpenedSubMenu();
-    forceTerminalUpdate();
-  }
+  handleCloseSubMenu(ms);
 }
 
 //----------------------------------------------------------------------
@@ -751,6 +723,35 @@ auto FMenu::mouseUpOverList (const FPoint& mouse_pos) -> bool
 }
 
 //----------------------------------------------------------------------
+inline auto FMenu::initializeMouseStates (FMouseEvent* ev) -> MouseStates
+{
+  return
+  {
+    false,                                    // focus_changed
+    false,                                    // hide_sub_menu
+    isMouseOverMenu (ev->getTermPos()),       // mouse_over_menu
+    isMouseOverSubMenu (ev->getTermPos()),    // mouse_over_submenu
+    isMouseOverSuperMenu (ev->getTermPos()),  // mouse_over_supermenu
+    isMouseOverMenuBar (ev->getTermPos())     // mouse_over_menubar
+  };
+}
+
+//----------------------------------------------------------------------
+inline void FMenu::handleCloseSubMenu (const MouseStates& ms)
+{
+  if ( shown_sub_menu )
+  {
+    closeOpenedSubMenu();
+    openSubMenu (shown_sub_menu, SelectItem::No);
+  }
+  else if ( ms.hide_sub_menu )
+  {
+    closeOpenedSubMenu();
+    forceTerminalUpdate();
+  }
+}
+
+//----------------------------------------------------------------------
 void FMenu::mouseMoveOverList (const FPoint& mouse_pos, MouseStates& ms)
 {
   for (auto&& item : getItemList())
@@ -835,11 +836,37 @@ void FMenu::mouseMoveOverBorder (MouseStates& ms) const
 }
 
 //----------------------------------------------------------------------
+inline auto FMenu::handleSubMenuEvent ( const MouseStates& ms
+                                      , const FMouseEvent& ev ) const -> bool
+{
+  if ( ms.mouse_over_submenu )
+  {
+    passEventToSubMenu(ev);  // Event handover to sub-menu
+    return true;
+  }
+
+  return false;
+}
+
+//----------------------------------------------------------------------
 void FMenu::passEventToSubMenu (const FMouseEvent& ev) const
 {
   // Mouse event handover to sub-menu
 
   passEventToWidget (opened_sub_menu, ev);
+}
+
+//----------------------------------------------------------------------
+inline auto FMenu::handleSuperMenuEvent ( const MouseStates& ms
+                                        , const FMouseEvent& ev ) -> bool
+{
+  if ( ! ms.mouse_over_menu && ms.mouse_over_supermenu )
+  {
+    passEventToSuperMenu(ev);  // Event handover to super-menu
+    return true;
+  }
+
+  return false;
 }
 
 //----------------------------------------------------------------------
@@ -849,6 +876,19 @@ void FMenu::passEventToSuperMenu (const FMouseEvent& ev)
 
   auto smenu = superMenuAt (ev.getTermPos());
   passEventToWidget (smenu, ev);
+}
+
+//----------------------------------------------------------------------
+inline auto FMenu::handleMenuBarEvent ( const MouseStates& ms
+                                      , const FMouseEvent& ev ) const -> bool
+{
+  if ( ms.mouse_over_menubar )
+  {
+    passEventToMenuBar(ev);  // Event handover to the menu bar
+    return true;
+  }
+
+  return false;
 }
 
 //----------------------------------------------------------------------

@@ -300,49 +300,19 @@ void FScrollbar::onMouseMove (FMouseEvent* ev)
   }
 
   // Process left mouse button
-  const auto new_scroll_type = getClickedScrollType(mouse_x, mouse_y);
+  const auto scroll_type_changed = \
+      bool( scroll_type != getClickedScrollType(mouse_x, mouse_y) );
 
   if ( scroll_type == ScrollType::Jump )
-  {
-    int new_val{};
+    handleJumpScroll(mouse_x, mouse_y);
 
-    if ( bar_orientation == Orientation::Vertical )
-    {
-      const int dy = mouse_y - slider_click_pos;
-      slider_click_pos = mouse_y;
-      new_val = int( round ( double((max - min) * (slider_pos + dy))
-                           / double(bar_length - slider_length) ) );
-    }
-    else  // horizontal
-    {
-      const int dx = mouse_x - slider_click_pos;
-      slider_click_pos = mouse_x;
-      new_val = int( round ( double((max - min) * (slider_pos + dx))
-                           / double(bar_length - slider_length) ) );
-    }
-
-    if ( new_val != val )
-    {
-      setValue(new_val);
-      drawBar();
-      processScroll();
-    }
-  }
-
-  if ( mouse_x < 1 || mouse_x > int(getWidth())
-    || mouse_y < 1 || mouse_y > int(getHeight()) )
-  {
+  if ( isMouseOutsideScrollbar(mouse_x, mouse_y) )
     delOwnTimers();
-  }
   else if ( scroll_type != ScrollType::Jump )
-  {
     addTimer(repeat_time);
-  }
 
-  if ( scroll_type != new_scroll_type )
-  {
+  if ( scroll_type_changed )
     delOwnTimers();
-  }
 }
 
 //----------------------------------------------------------------------
@@ -690,6 +660,16 @@ auto FScrollbar::getSliderClickPos (int mouse_x, int mouse_y) const -> int
 }
 
 //----------------------------------------------------------------------
+inline auto FScrollbar::isMouseOutsideScrollbar ( int mouse_x
+                                                , int mouse_y ) -> bool
+{
+  return mouse_x < 1
+      || mouse_x > int(getWidth())
+      || mouse_y < 1
+      || mouse_y > int(getHeight());
+}
+
+//----------------------------------------------------------------------
 void FScrollbar::jumpToClickPos (int x, int y)
 {
   int new_val{};
@@ -738,6 +718,34 @@ void FScrollbar::jumpToClickPos (int pos)
     else
       jumpToClickPos (pos + 2, 0);
   }
+}
+
+//----------------------------------------------------------------------
+inline void FScrollbar::handleJumpScroll (int mouse_x, int mouse_y)
+{
+  int new_val{};
+
+  if ( bar_orientation == Orientation::Vertical )
+  {
+    const int dy = mouse_y - slider_click_pos;
+    slider_click_pos = mouse_y;
+    new_val = int( round ( double((max - min) * (slider_pos + dy))
+                         / double(bar_length - slider_length) ) );
+  }
+  else  // horizontal
+  {
+    const int dx = mouse_x - slider_click_pos;
+    slider_click_pos = mouse_x;
+    new_val = int( round ( double((max - min) * (slider_pos + dx))
+                         / double(bar_length - slider_length) ) );
+  }
+
+  if ( new_val == val )
+    return;
+
+  setValue(new_val);
+  drawBar();
+  processScroll();
 }
 
 //----------------------------------------------------------------------

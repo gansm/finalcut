@@ -294,7 +294,6 @@ void FStatusBar::adjustSize()
 }
 
 //----------------------------------------------------------------------
-
 void FStatusBar::onMouseDown (FMouseEvent* ev)
 {
   if ( hasActivatedKey() )
@@ -302,57 +301,14 @@ void FStatusBar::onMouseDown (FMouseEvent* ev)
 
   if ( ev->getButton() != MouseButton::Left )
   {
-    mouse_down = false;
-
-    if ( ! key_list.empty() )
-    {
-      auto iter = key_list.cbegin();
-      const auto& last = key_list.cend();
-
-      while ( iter != last )
-      {
-        (*iter)->unsetMouseFocus();
-        ++iter;
-      }
-    }
-
-    redraw();
+    nonLeftButtonClick();
     return;
   }
 
   if ( mouse_down )
     return;
 
-  mouse_down = true;
-
-  if ( ! key_list.empty() )
-  {
-    int X{1};
-    auto iter = key_list.cbegin();
-    const auto& last = key_list.cend();
-
-    while ( iter != last )
-    {
-      const int x1 = X;
-      const int kname_len = getKeyNameWidth(*iter);
-      const int txt_length = getKeyTextWidth(*iter);
-      const int x2 = x1 + kname_len + txt_length + 1;
-      const int mouse_x = ev->getX();
-      const int mouse_y = ev->getY();
-
-      if ( mouse_x >= x1
-        && mouse_x <= x2
-        && mouse_y == 1
-        && ! (*iter)->hasMouseFocus() )
-      {
-        (*iter)->setMouseFocus();
-        redraw();
-      }
-
-      X = x2 + 2;
-      ++iter;
-    }
-  }
+  leftButtonClick(ev);
 }
 
 //----------------------------------------------------------------------
@@ -366,32 +322,27 @@ void FStatusBar::onMouseUp (FMouseEvent* ev)
 
   mouse_down = false;
   int X{1};
-  auto iter = key_list.cbegin();
-  const auto& last = key_list.cend();
 
-  while ( iter != last )
+  for (const auto& key : key_list)
   {
     const int x1 = X;
-    const int kname_len = getKeyNameWidth(*iter);
-    const int txt_length = getKeyTextWidth(*iter);
+    const int kname_len = getKeyNameWidth(key);
+    const int txt_length = getKeyTextWidth(key);
     const int x2 = x1 + kname_len + txt_length + 1;
 
-    if ( (*iter)->hasMouseFocus() )
+    if ( key->hasMouseFocus() )
     {
-      (*iter)->unsetMouseFocus();
-      const int mouse_x = ev->getX();
-      const int mouse_y = ev->getY();
+      key->unsetMouseFocus();
 
-      if ( mouse_x >= x1 && mouse_x <= x2 && mouse_y == 1 )
-        (*iter)->setActive();
+      if ( isClickInsideRange(ev, x1, x2) )
+        key->setActive();
 
       // unset after get back from callback
-      (*iter)->unsetActive();
+      key->unsetActive();
       redraw();
     }
 
     X = x2 + 2;
-    ++iter;
   }
 }
 
@@ -406,39 +357,29 @@ void FStatusBar::onMouseMove (FMouseEvent* ev)
 
   bool focus_changed{false};
   int X{1};
-  auto iter = key_list.cbegin();
-  const auto& last = key_list.cend();
 
-  while ( iter != last )
+  for (const auto& key : key_list)
   {
     const int x1 = X;
-    const int kname_len = getKeyNameWidth(*iter);
-    const int txt_length = getKeyTextWidth(*iter);
+    const int kname_len = getKeyNameWidth(key);
+    const int txt_length = getKeyTextWidth(key);
     const int x2 = x1 + kname_len + txt_length + 1;
-    const int mouse_x = ev->getX();
-    const int mouse_y = ev->getY();
 
-    if ( mouse_x >= x1
-      && mouse_x <= x2
-      && mouse_y == 1 )
+    if ( isClickInsideRange(ev, x1, x2) )
     {
-      if ( ! (*iter)->hasMouseFocus() )
+      if ( ! key->hasMouseFocus() )
       {
-        (*iter)->setMouseFocus();
+        key->setMouseFocus();
         focus_changed = true;
       }
     }
-    else
+    else if ( key->hasMouseFocus() )
     {
-      if ( (*iter)->hasMouseFocus() )
-      {
-        (*iter)->unsetMouseFocus();
-        focus_changed = true;
-      }
+      key->unsetMouseFocus();
+      focus_changed = true;
     }
 
     X = x2 + 2;
-    ++iter;
   }
 
   if ( focus_changed )
@@ -453,14 +394,10 @@ void FStatusBar::cb_statuskey_activated (const FStatusKey* statuskey)
 
   if ( ! key_list.empty() )
   {
-    auto iter = key_list.cbegin();
-    const auto& last = key_list.cend();
-
-    while ( iter != last )
+    for (const auto& key : key_list)
     {
-      if ( (*iter) != statuskey && (*iter)->isActivated() )
-        (*iter)->unsetActive();
-      ++iter;
+      if ( key != statuskey && key->isActivated() )
+        key->unsetActive();
     }
   }
 
@@ -682,10 +619,64 @@ auto FStatusBar::isLastActiveFocus() const -> bool
 }
 
 //----------------------------------------------------------------------
+inline auto FStatusBar::isClickInsideRange ( FMouseEvent* ev
+                                           , const int x1
+                                           , const int x2 ) const -> bool
+{
+  const int mouse_x = ev->getX();
+  const int mouse_y = ev->getY();
+
+  return mouse_x >= x1
+      && mouse_x <= x2
+      && mouse_y == 1;
+}
+
+//----------------------------------------------------------------------
 void FStatusBar::setStatusBarColor() const
 {
   const auto& wc = getColorTheme();
   setColor (wc->statusbar.fg, wc->statusbar.bg);
+}
+
+//----------------------------------------------------------------------
+inline void FStatusBar::nonLeftButtonClick()
+{
+  mouse_down = false;
+
+  if ( key_list.empty() )
+    return;
+
+  for (const auto& key : key_list)
+    key->unsetMouseFocus();
+
+  redraw();
+}
+
+//----------------------------------------------------------------------
+inline void FStatusBar::leftButtonClick (FMouseEvent* ev)
+{
+  mouse_down = true;
+
+  if ( key_list.empty() )
+    return;
+
+  int X{1};
+
+  for (const auto& key : key_list)
+  {
+    const int x1 = X;
+    const int kname_len = getKeyNameWidth(key);
+    const int txt_length = getKeyTextWidth(key);
+    const int x2 = x1 + kname_len + txt_length + 1;
+
+    if ( isClickInsideRange (ev, x1, x2) && ! key->hasMouseFocus() )
+    {
+      key->setMouseFocus();
+      redraw();
+    }
+
+    X = x2 + 2;
+  }
 }
 
 //----------------------------------------------------------------------

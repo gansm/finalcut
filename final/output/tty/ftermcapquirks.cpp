@@ -75,7 +75,7 @@ inline auto getSunConsoleKeys() -> SunConsoleKeysMap&
 
   return *sun_console_keys;
 }
-  
+
 //----------------------------------------------------------------------
 template <typename CapabilityT, typename StringT>
 constexpr void setTCapString (CapabilityT& cap, StringT&& string)

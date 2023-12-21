@@ -189,8 +189,13 @@ class FLineEdit : public FWidget
     auto getAlignOffset (const std::size_t) const -> std::size_t;
     void draw() override;
     void drawInputField();
+    void initializeDrawing();
+    void finalizingDrawing() const;
+    void printTrailingSpaces (std::size_t x_pos);
+    auto choosePrintMethod() -> std::tuple<std::size_t, std::size_t>;
     auto printTextField() -> std::tuple<std::size_t, std::size_t>;
     auto printPassword() -> std::tuple<std::size_t, std::size_t>;
+    void drawShadow();
     auto getCursorColumnPos() const -> std::size_t;
     auto getPasswordText() const -> FString;
     auto isPasswordField() const -> bool;

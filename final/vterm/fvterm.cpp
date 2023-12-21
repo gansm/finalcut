@@ -1211,7 +1211,7 @@ inline bool FVTerm::tryResizeArea ( FTermArea* area
     return resizeTextArea(area, height, width * height);
   else if ( needsWidthResize(area, width) )
     return resizeTextArea(area, width * height);
-  
+
   return false;
 }
 

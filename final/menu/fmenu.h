@@ -196,13 +196,18 @@ class FMenu : public FWindow
     void mouseDownSubmenu (const FMenuItem*);
     void mouseDownSelection (FMenuItem*, bool&);
     auto mouseUpOverList (const FPoint&) -> bool;
+    auto initializeMouseStates (FMouseEvent*) -> MouseStates;
+    void handleCloseSubMenu (const MouseStates& ms);
     void mouseMoveOverList (const FPoint&, MouseStates&);
     void mouseMoveSelection (FMenuItem*, MouseStates&);
     void mouseMoveDeselection (FMenuItem*, MouseStates&);
     void mouseUpOverBorder();
     void mouseMoveOverBorder (MouseStates&) const;
+    auto handleSubMenuEvent (const MouseStates&, const FMouseEvent&) const -> bool;
     void passEventToSubMenu (const FMouseEvent&) const;
+    auto handleSuperMenuEvent (const MouseStates&, const FMouseEvent&) -> bool;
     void passEventToSuperMenu (const FMouseEvent&);
+    auto handleMenuBarEvent (const MouseStates&, const FMouseEvent&) const -> bool;
     void passEventToMenuBar (const FMouseEvent&) const;
     template <typename WidgetT>
     void passEventToWidget (WidgetT, const FMouseEvent&) const;

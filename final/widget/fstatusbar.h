@@ -238,7 +238,10 @@ class FStatusBar : public FWindow
     void drawActiveKey (FKeyList::const_iterator);
     auto canDrawMessage() const -> bool;
     auto isLastActiveFocus() const -> bool;
+    auto isClickInsideRange (FMouseEvent*, const int, const int) const -> bool;
     void setStatusBarColor() const;
+    void nonLeftButtonClick();
+    void leftButtonClick (FMouseEvent*);
     void printMessageWithEllipsis (std::size_t);
     void printPaddingSpaces (int);
 

@@ -667,7 +667,7 @@ inline void FButton::initializeDrawing()
 inline void FButton::finalizingDrawing() const
 {
   if ( FVTerm::getFOutput()->isMonochron() )
-    setReverse(false);  // Dark background  
+    setReverse(false);  // Dark background
 }
 
 //----------------------------------------------------------------------
