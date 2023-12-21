@@ -1,3 +1,6 @@
+2023-12-21  Markus Gans  <guru.mail@muenster.de>
+	* FListBox now has a findItem method
+
 2023-12-10  Markus Gans  <guru.mail@muenster.de>
 	* Permit message box without buttons
 

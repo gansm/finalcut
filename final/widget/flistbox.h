@@ -262,6 +262,7 @@ class FListBox : public FWidget
                 , bool = false
                 , DT&& = DT() );
     void remove (std::size_t);
+    auto findItem (const FString&) -> FListBoxItems::iterator;
     void reserve (std::size_t);
     void clear();
 
@@ -404,6 +405,10 @@ class FListBox : public FWidget
     void lazyConvert (FListBoxItems::iterator, std::size_t);
     auto index2iterator (std::size_t) -> FListBoxItems::iterator;
     auto index2iterator (std::size_t index) const -> FListBoxItems::const_iterator;
+    void handleSelectionChange (const std::size_t);
+    void handleXOffsetChange (const int);
+    void handleVerticalScrollBarUpdate (const FScrollbar::ScrollType, const int);
+    void handleHorizontalScrollBarUpdate (const FScrollbar::ScrollType, const int);
     // Callback methods
     void cb_vbarChange (const FWidget*);
     void cb_hbarChange (const FWidget*);

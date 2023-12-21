@@ -190,6 +190,12 @@ class FFileDialog : public FDialog
     void printPath (const FString&);
     void setTitelbarText();
     static auto getHomeDir() -> FString;
+    auto isFilterInput() const -> bool;
+    auto isDirectoryInput() const -> bool;
+    void activateNewFilter();
+    void activateDefaultFilter();
+    void findItem (const FString&);
+    void changeIntoSubDir();
 
     // Callback methods
     void cb_processActivate();

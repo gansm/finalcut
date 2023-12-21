@@ -754,54 +754,93 @@ auto FFileDialog::getHomeDir() -> FString
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::cb_processActivate()
+inline auto FFileDialog::isFilterInput() const -> bool
 {
-  if ( filename.getText().includes('*')
-    || filename.getText().includes('?') )
+  return filename.getText().includes('*')
+      || filename.getText().includes('?');
+}
+
+//----------------------------------------------------------------------
+inline auto FFileDialog::isDirectoryInput() const -> bool
+{
+  return filename.getText().trim() == FString{".."}
+      || filename.getText().includes('/')
+      || filename.getText().includes('~');
+}
+
+//----------------------------------------------------------------------
+inline void FFileDialog::activateNewFilter()
+{
+  setFilter(filename.getText());
+  redraw();  // Show new filter in title bar
+  readDir();
+  filebrowser.redraw();
+}
+
+//----------------------------------------------------------------------
+inline void FFileDialog::activateDefaultFilter()
+{
+  setFilter("*");
+  redraw();  // Delete filter from title bar
+  readDir();
+  filebrowser.redraw();
+}
+
+//----------------------------------------------------------------------
+inline void FFileDialog::findItem (const FString& search_text)
+{
+  auto iter = filebrowser.findItem(search_text);
+
+  if ( iter != filebrowser.getData().end() )
   {
-    setFilter(filename.getText());
-    redraw();  // Show new filter in title bar
-    readDir();
-    filebrowser.redraw();
-  }
-  else if ( filename.getText().getLength() == 0 )
-  {
-    setFilter("*");
-    redraw();  // Delete filter from title bar
-    readDir();
-    filebrowser.redraw();
-  }
-  else if ( filename.getText().trim() == FString{".."}
-         || filename.getText().includes('/')
-         || filename.getText().includes('~') )
-  {
-    changeDir(filename.getText().trim());
+    filebrowser.setCurrentItem(iter);
+    done (ResultCode::Accept);
   }
   else
+    done (ResultCode::Reject);
+}
+
+//----------------------------------------------------------------------
+inline void FFileDialog::changeIntoSubDir()
+{
+  bool found{false};
+  const auto& input = filename.getText().trim();
+
+  if ( dir_entries.empty() )
+    done (ResultCode::Reject);
+
+  found = std::any_of ( std::begin(dir_entries)
+                      , std::end(dir_entries)
+                      , [&input] (auto& entry)
+                        {
+                          return ! entry.name.empty()
+                              && input
+                              && ! input.isEmpty()
+                              && entry.name == input.toString()
+                              && entry.directory;
+                        }
+                      );
+
+  if ( found )
   {
-    bool found{false};
-    const auto& input = filename.getText().trim();
-
-    if ( ! dir_entries.empty() )
-    {
-      found = std::any_of ( std::begin(dir_entries)
-                          , std::end(dir_entries)
-                          , [&input] (const auto& entry)
-                            {
-                              return ! entry.name.empty()
-                                  && input
-                                  && ! input.isEmpty()
-                                  && entry.name == input.toString()
-                                  && entry.directory;
-                            }
-                          );
-    }
-
-    if ( found )
-      changeDir(input);
-    else
-      done (ResultCode::Accept);
+    changeDir(input);
+    return;
   }
+
+  findItem(input);
+}
+
+//----------------------------------------------------------------------
+void FFileDialog::cb_processActivate()
+{
+  if ( isFilterInput() )
+    activateNewFilter();
+  else if ( filename.getText().getLength() == 0 )
+    activateDefaultFilter();
+  else if ( isDirectoryInput() )
+    changeDir(filename.getText().trim());
+  else
+    changeIntoSubDir();
 }
 
 //----------------------------------------------------------------------

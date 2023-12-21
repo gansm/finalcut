@@ -213,6 +213,22 @@ void FListBox::remove (std::size_t item)
 }
 
 //----------------------------------------------------------------------
+auto FListBox::findItem (const FString& search_text) -> FListBoxItems::iterator
+{
+  auto iter = data.itemlist.begin();
+
+  while ( iter != data.itemlist.end() )
+  {
+    if ( search_text == iter->getText() )
+      break;
+
+    ++iter;
+  }
+
+  return iter;
+}
+
+//----------------------------------------------------------------------
 void FListBox::clear()
 {
   data.itemlist.clear();
@@ -1685,12 +1701,61 @@ void FListBox::lazyConvert(FListBoxItems::iterator iter, std::size_t y)
 }
 
 //----------------------------------------------------------------------
+inline void FListBox::handleSelectionChange (const std::size_t current_before)
+{
+  if ( current_before == selection.current )
+    return;
+
+  data.inc_search.clear();
+  processRowChanged();
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::handleXOffsetChange (const int xoffset_before)
+{
+  if ( xoffset_before == scroll.xoffset )
+    return;
+
+  data.inc_search.clear();
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::handleVerticalScrollBarUpdate ( const FScrollbar::ScrollType scroll_type
+                                                    , const int yoffset_before )
+{
+  if ( scroll_type < FScrollbar::ScrollType::StepBackward )
+    return;
+
+  scroll.vbar->setValue (scroll.yoffset);
+
+  if ( yoffset_before != scroll.yoffset )
+    scroll.vbar->drawBar();
+
+  forceTerminalUpdate();
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::handleHorizontalScrollBarUpdate ( const FScrollbar::ScrollType scroll_type
+                                                      , const int xoffset_before )
+{
+  if ( scroll_type < FScrollbar::ScrollType::StepBackward )
+    return;
+
+  scroll.hbar->setValue (scroll.xoffset);
+
+  if ( xoffset_before != scroll.xoffset )
+    scroll.hbar->drawBar();
+
+  forceTerminalUpdate();
+}
+
+//----------------------------------------------------------------------
 void FListBox::cb_vbarChange (const FWidget*)
 {
   const auto scroll_type = scroll.vbar->getScrollType();
   static constexpr int wheel_distance = 4;
   const std::size_t current_before = selection.current;
-  int distance{1};
+  int distance{1}; // Default value
   const int yoffset_before = scroll.yoffset;
 
   switch ( scroll_type )
@@ -1727,24 +1792,12 @@ void FListBox::cb_vbarChange (const FWidget*)
       throw std::invalid_argument{"Invalid scroll type"};
   }
 
-  if ( current_before != selection.current )
-  {
-    data.inc_search.clear();
-    processRowChanged();
-  }
+  handleSelectionChange(current_before);
 
   if ( isShown() )
     drawList();
 
-  if ( scroll_type >= FScrollbar::ScrollType::StepBackward )
-  {
-    scroll.vbar->setValue (scroll.yoffset);
-
-    if ( yoffset_before != scroll.yoffset )
-      scroll.vbar->drawBar();
-
-    forceTerminalUpdate();
-  }
+  handleVerticalScrollBarUpdate(scroll_type, yoffset_before);
 }
 
 //----------------------------------------------------------------------
@@ -1790,22 +1843,12 @@ void FListBox::cb_hbarChange (const FWidget*)
       throw std::invalid_argument{"Invalid scroll type"};
   }
 
-  if ( xoffset_before != scroll.xoffset )
-    data.inc_search.clear();
+  handleXOffsetChange(xoffset_before);
 
   if ( isShown() )
     drawList();
 
-
-  if ( scroll_type >= FScrollbar::ScrollType::StepBackward )
-  {
-    scroll.hbar->setValue (scroll.xoffset);
-
-    if ( xoffset_before != scroll.xoffset )
-      scroll.hbar->drawBar();
-
-    forceTerminalUpdate();
-  }
+  handleHorizontalScrollBarUpdate(scroll_type, xoffset_before);
 }
 
 }  // namespace finalcut
