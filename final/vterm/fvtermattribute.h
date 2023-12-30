@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021-2022 Markus Gans                                      *
+* Copyright 2021-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -37,6 +37,7 @@
 
 #include "final/ftypes.h"
 #include "final/util/fstring.h"
+#include "final/vterm/fcolorpair.h"
 
 namespace finalcut
 {
@@ -78,6 +79,7 @@ class FVTermAttribute
 
     // Mutators
     static void  setColor (FColor, FColor);
+    static void  setColor (const FColorPair&);
     static void  setNormal();
     static void  setBold (bool = true);
     static void  unsetBold();
@@ -164,6 +166,12 @@ inline void FVTermAttribute::setColor (FColor fg, FColor bg)
   // Changes colors
   next_attribute.fg_color = fg;
   next_attribute.bg_color = bg;
+}
+
+//----------------------------------------------------------------------
+inline void FVTermAttribute::setColor (const FColorPair& pair)
+{
+  setColor (pair.getForegroundColor(), pair.getBackgroundColor());
 }
 
 //----------------------------------------------------------------------

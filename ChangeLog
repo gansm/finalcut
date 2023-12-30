@@ -1,3 +1,6 @@
+2023-12-30  Markus Gans  <guru.mail@muenster.de>
+	* FColorPair can now be used as input for FVTermAttribute::setColor
+
 2023-12-21  Markus Gans  <guru.mail@muenster.de>
 	* FListBox now has a findItem method
 
