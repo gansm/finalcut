@@ -112,7 +112,7 @@ class FTermDetection final
 #endif
     auto  getTermBasename() const -> const char*;
     template<typename StringT>
-    bool  startsWithTermType (StringT&&) const;
+    auto  startsWithTermType (StringT&&) const -> bool;
     void  termtypeAnalysis();
     auto  findMatchingTerm (const TermTypeMap&) -> TermTypeMap::const_iterator;
     auto  isTerminalWithoutDetection() const -> bool;
@@ -203,7 +203,7 @@ inline void FTermDetection::setTerminalDetection (bool enable) noexcept
 
 //----------------------------------------------------------------------
 template<typename StringT>
-inline bool FTermDetection::startsWithTermType (StringT&& prefix) const
+inline auto FTermDetection::startsWithTermType (StringT&& prefix) const -> bool
 {
   return termtype.toWString().find(std::forward<StringT>(prefix)) == 0;
 }

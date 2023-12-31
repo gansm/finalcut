@@ -128,7 +128,7 @@ class FVTermBuffer
       FString::const_iterator cbegin{};
       FString::const_iterator cend{};
       FString::const_iterator iter{};
-      int char_width{0};
+      std::size_t char_width{0};
     };
 
     void getNextCharacterAttribute();

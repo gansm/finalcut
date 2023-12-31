@@ -104,7 +104,7 @@ void Dialog::initLayout()
 //                               main part
 //----------------------------------------------------------------------
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   MyApplication app(argc, argv);
   Dialog dialog(&app);

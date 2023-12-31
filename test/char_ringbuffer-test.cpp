@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2022 Markus Gans                                           *
+* Copyright 2022-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -593,9 +593,9 @@ void CharRingBufferTest::emplaceTest()
 
     Data2() = default;
 
-    Data2 (long l, const std::string& s)
+    Data2 (long l, std::string s)
       : number{l}
-      , string{s}
+      , string{std::move(s)}
     { }
 
     auto operator == (const Data2& rhs) const -> bool

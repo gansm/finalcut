@@ -505,7 +505,7 @@ auto FTermLinux::getScreenFont() -> bool
   font.height = 32;
   font.charcount = 512;
 
-  static constexpr std::size_t data_size = 4 * 32 * 512;
+  static constexpr auto data_size = static_cast<std::size_t>(4 * 32 * 512);
   font_data.resize(data_size);
   std::fill(font_data.begin(), font_data.end(), 0);  // Initialize with 0
   font.data = font_data.data();

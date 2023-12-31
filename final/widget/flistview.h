@@ -483,6 +483,7 @@ class FListView : public FWidget
     // Inquiry
     auto isHorizontallyScrollable() const -> bool;
     auto isVerticallyScrollable() const -> bool;
+    auto canSkipListDrawing() const -> bool;
 
     // Methods
     void init();
@@ -499,6 +500,8 @@ class FListView : public FWidget
     void drawScrollbars() const;
     void drawHeadlines();
     void drawList();
+    void setInputCursor (const FListViewItem*, int, bool);
+    void finalizeListDrawing (int);
     void adjustWidthForTreeView (std::size_t&, std::size_t, bool) const;
     void drawListLine (const FListViewItem*, bool, bool);
     auto createColumnsString (const FListViewItem*) -> FString;
@@ -526,6 +529,8 @@ class FListView : public FWidget
     void recalculateHorizontalBar (std::size_t);
     void recalculateVerticalBar (std::size_t) const;
     void mouseHeaderClicked();
+    void handleTreeExpanderClick (const FMouseEvent*);
+    void handleCheckboxClick (const FMouseEvent*);
     void wheelUp (int);
     void wheelDown (int);
     void wheelLeft (int);
@@ -568,6 +573,8 @@ class FListView : public FWidget
     auto isTreeView() const -> bool;
     auto isColumnIndexInvalid (int) const -> bool;
     auto hasCheckableItems() const -> bool;
+    void updateViewAfterVBarChange (const FScrollbar::ScrollType);
+    void updateViewAfterHBarChange (const FScrollbar::ScrollType, const int);
 
     // Callback methods
     void cb_vbarChange (const FWidget*);
@@ -789,6 +796,10 @@ inline auto FListView::isHorizontallyScrollable() const -> bool
 //----------------------------------------------------------------------
 inline auto FListView::isVerticallyScrollable() const -> bool
 { return getCount() > getClientHeight(); }
+
+//----------------------------------------------------------------------
+inline auto FListView::canSkipListDrawing() const -> bool
+{ return isItemListEmpty() || getHeight() <= 2 || getWidth() <= 4; }
 
 //----------------------------------------------------------------------
 inline auto FListView::getColumnCount() const -> std::size_t

@@ -1208,10 +1208,13 @@ void FWidget::setTermOffset()
 void FWidget::setTermOffsetWithPadding()
 {
   const auto& r = getRootWidget();
-  woffset.setCoordinates ( r->getLeftPadding()
-                         , r->getTopPadding()
-                         , int(r->getWidth()) - 1 - r->getRightPadding()
-                         , int(r->getHeight()) - 1 - r->getBottomPadding() );
+  woffset.setCoordinates
+  (
+    r->getLeftPadding(),
+    r->getTopPadding(),
+    int(r->getWidth()) - 1 - r->getRightPadding(),
+    int(r->getHeight()) - 1 - r->getBottomPadding()
+  );
 }
 
 //----------------------------------------------------------------------
@@ -1267,52 +1270,18 @@ void FWidget::initLayout()
 //----------------------------------------------------------------------
 void FWidget::adjustSize()
 {
-  if ( ! isRootWidget() )
-  {
-    const auto& p = getParentWidget();
-
-    if ( isWindowWidget() )
-    {
-      if ( flags.feature.ignore_padding && ! isDialogWidget() )
-        setTermOffset();
-      else
-        woffset = internal::var::root_widget->wclient_offset;
-    }
-    else if ( flags.feature.ignore_padding && p )
-    {
-      woffset.setCoordinates ( p->getTermX() - 1
-                             , p->getTermY() - 1
-                             , p->getTermX() + int(p->getWidth()) - 2
-                             , p->getTermY() + int(p->getHeight()) - 2 );
-    }
-    else if ( p )
-      woffset = p->wclient_offset;
-
-    adjust_wsize = wsize;
-  }
+  // Adjust widget size and position
+  adjustWidget();
 
   // Move and shrink in case of lack of space
   if ( ! hasChildPrintArea() )
     insufficientSpaceAdjust();
 
-  wclient_offset.setCoordinates
-  (
-    getTermX() - 1 + padding.left,
-    getTermY() - 1 + padding.top,
-    getTermX() - 2 + int(getWidth()) - padding.right,
-    getTermY() - 2 + int(getHeight()) - padding.bottom
-  );
+  // Set the size of the client area
+  setClientOffset();
 
-  if ( hasChildren() )
-  {
-    for (auto* child : getChildren())
-    {
-      auto widget = static_cast<FWidget*>(child);
-
-      if ( child->isWidget() && ! widget->isWindowWidget() )
-        widget->adjustSize();
-    }
-  }
+  // Recursively adjusts child widget sizes
+  adjustChildWidgetSizes();
 }
 
 //----------------------------------------------------------------------
@@ -2139,6 +2108,85 @@ void FWidget::drawChildren()
         widget->redraw();
     }
   }
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::adjustWidget()
+{
+  if ( isRootWidget() )
+    return;
+
+  const auto& p = getParentWidget();
+
+  if ( isWindowWidget() )
+    setWindowOffset();
+  else
+    setWidgetOffset(p);
+
+  adjust_wsize = wsize;
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::adjustChildWidgetSizes()
+{
+  // This method is called only by adjustSize() and recursively adjusts
+  // the sizes of child widgets if they are not window widgets
+
+  if ( ! hasChildren() )
+    return;
+
+  for (auto* child : getChildren())
+  {
+    auto widget = static_cast<FWidget*>(child);
+
+    if ( child->isWidget() && ! widget->isWindowWidget() )
+      widget->adjustSize();
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::setWindowOffset()
+{
+  if ( flags.feature.ignore_padding && ! isDialogWidget() )
+    setTermOffset();
+  else
+    woffset = internal::var::root_widget->wclient_offset;
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::setWidgetOffset (const FWidget* parent)
+{
+  // Set the widget offset
+
+  if ( ! parent )
+    return;
+
+  if ( flags.feature.ignore_padding )
+  {
+    woffset.setCoordinates
+    (
+      parent->getTermX() - 1,
+      parent->getTermY() - 1,
+      parent->getTermX() + int(parent->getWidth()) - 2,
+      parent->getTermY() + int(parent->getHeight()) - 2
+    );
+  }
+  else
+    woffset = parent->wclient_offset;
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::setClientOffset()
+{
+  // Set the offset of the widget client area
+
+  wclient_offset.setCoordinates
+  (
+    getTermX() - 1 + padding.left,
+    getTermY() - 1 + padding.top,
+    getTermX() - 2 + int(getWidth()) - padding.right,
+    getTermY() - 2 + int(getHeight()) - padding.bottom
+  );
 }
 
 //----------------------------------------------------------------------

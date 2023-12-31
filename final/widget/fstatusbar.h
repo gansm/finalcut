@@ -235,10 +235,14 @@ class FStatusBar : public FWindow
     void draw() override;
     void drawKeys();
     void drawKey (FKeyList::const_iterator);
+    void drawKeySeparator (FKeyList::const_iterator);
     void drawActiveKey (FKeyList::const_iterator);
+    void drawHotKeyName (FKeyList::const_iterator, const FColorPair);
+    auto canPrintLeftActiveKeySeparator (FKeyList::const_iterator) const -> bool;
+    auto canPrintKeySeparator (FKeyList::const_iterator) const -> bool;
     auto canDrawMessage() const -> bool;
     auto isLastActiveFocus() const -> bool;
-    auto isClickInsideRange (FMouseEvent*, const int, const int) const -> bool;
+    auto isClickInsideRange (const FMouseEvent*, const int, const int) const -> bool;
     void setStatusBarColor() const;
     void nonLeftButtonClick();
     void leftButtonClick (FMouseEvent*);

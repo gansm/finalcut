@@ -661,7 +661,7 @@ auto FScrollbar::getSliderClickPos (int mouse_x, int mouse_y) const -> int
 
 //----------------------------------------------------------------------
 inline auto FScrollbar::isMouseOutsideScrollbar ( int mouse_x
-                                                , int mouse_y ) -> bool
+                                                , int mouse_y ) const -> bool
 {
   return mouse_x < 1
       || mouse_x > int(getWidth())

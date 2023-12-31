@@ -174,9 +174,7 @@ void FListBox::remove (std::size_t item)
   for (const auto& listbox_item : data.itemlist)
   {
     const auto column_width = getColumnWidth(listbox_item.getText());
-
-    if ( column_width > max_line_width )
-      max_line_width = column_width;
+    max_line_width = std::max(column_width, max_line_width);
   }
 
   const int hmax = ( max_line_width > getMaxWidth() )
@@ -200,15 +198,9 @@ void FListBox::remove (std::size_t item)
   if ( selection.current >= item && selection.current > 1 )
     selection.current--;
 
-  if ( selection.current > element_count )
-    selection.current = element_count;
-
-  if ( scroll.yoffset > int(element_count - getHeight()) + 2 )
-    scroll.yoffset = int(element_count - getHeight()) + 2;
-
-  if ( scroll.yoffset < 0 )
-    scroll.yoffset = 0;
-
+  selection.current = std::min(selection.current, element_count);
+  scroll.yoffset = std::min(scroll.yoffset, int(element_count - getHeight()) + 2);
+  scroll.yoffset = std::max(scroll.yoffset, 0);
   processChanged();
 }
 
@@ -1721,7 +1713,7 @@ inline void FListBox::handleXOffsetChange (const int xoffset_before)
 
 //----------------------------------------------------------------------
 inline void FListBox::handleVerticalScrollBarUpdate ( const FScrollbar::ScrollType scroll_type
-                                                    , const int yoffset_before )
+                                                    , const int yoffset_before ) const
 {
   if ( scroll_type < FScrollbar::ScrollType::StepBackward )
     return;
@@ -1736,7 +1728,7 @@ inline void FListBox::handleVerticalScrollBarUpdate ( const FScrollbar::ScrollTy
 
 //----------------------------------------------------------------------
 inline void FListBox::handleHorizontalScrollBarUpdate ( const FScrollbar::ScrollType scroll_type
-                                                      , const int xoffset_before )
+                                                      , const int xoffset_before ) const
 {
   if ( scroll_type < FScrollbar::ScrollType::StepBackward )
     return;

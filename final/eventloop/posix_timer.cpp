@@ -30,11 +30,11 @@
   #define _XOPEN_SOURCE 700
 #endif
 
-#include <time.h>
 #include <unistd.h>
 
 #include <csignal>
 #include <cstring>
+#include <ctime>
 #include <ctime>
 #include <list>
 #include <mutex>
@@ -186,25 +186,25 @@ class SigAlrmHandlerInstaller final
       throw sys_err;
     }
 
-    ~SigAlrmHandlerInstaller()  // destructor
-    {
-      static const auto& fsystem = FSystem::getInstance();
-      fsystem->sigaction (SIGALRM, &original_signal_handle, nullptr);
-    }
-
-  private:
     // Disable copy constructor
     SigAlrmHandlerInstaller (const SigAlrmHandlerInstaller&) = delete;
 
     // Disable move constructor
     SigAlrmHandlerInstaller (SigAlrmHandlerInstaller&&) noexcept = delete;
 
-      // Disable copy assignment operator (=)
+    ~SigAlrmHandlerInstaller()  // destructor
+    {
+      static const auto& fsystem = FSystem::getInstance();
+      fsystem->sigaction (SIGALRM, &original_signal_handle, nullptr);
+    }
+
+    // Disable copy assignment operator (=)
     auto operator = (const SigAlrmHandlerInstaller&) -> SigAlrmHandlerInstaller& = delete;
 
     // Disable move assignment operator (=)
     auto operator = (SigAlrmHandlerInstaller&&) noexcept -> SigAlrmHandlerInstaller& = delete;
 
+  private:
     // Data member
     struct sigaction original_signal_handle{};
 };

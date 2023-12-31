@@ -196,7 +196,7 @@ class FMenu : public FWindow
     void mouseDownSubmenu (const FMenuItem*);
     void mouseDownSelection (FMenuItem*, bool&);
     auto mouseUpOverList (const FPoint&) -> bool;
-    auto initializeMouseStates (FMouseEvent*) -> MouseStates;
+    auto initializeMouseStates (const FMouseEvent*) -> MouseStates;
     void handleCloseSubMenu (const MouseStates& ms);
     void mouseMoveOverList (const FPoint&, MouseStates&);
     void mouseMoveSelection (FMenuItem*, MouseStates&);

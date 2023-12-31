@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2022 Markus Gans                                      *
+* Copyright 2015-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -83,11 +83,18 @@ class FSwitch : public FToggleButton
     void onMouseUp (FMouseEvent*) override;
 
   private:
+    // Inquiries
+    auto isMonoFocus() const -> bool;
+
     // Methods
     void draw() override;
     void drawCheckButton();
     void drawChecked();
     void drawUnchecked();
+    void SetStyleForOn();
+    void SetStyleForOff();
+    auto createOnText() const -> FString;
+    auto createOffText() const -> FString;
 
     // Data members
     std::size_t  switch_offset_pos{0};

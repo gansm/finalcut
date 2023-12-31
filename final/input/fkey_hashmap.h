@@ -103,7 +103,8 @@ struct KeySequenceHash
   {
     if ( key.string && ! key.buffer )
       return hash_function (key.string, key.string + key.length);
-    else if ( key.buffer )
+
+    if ( key.buffer )
       return hash_function (*key.buffer);
 
     return hash_function(std::string("unknown"));

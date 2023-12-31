@@ -55,7 +55,7 @@
   #define USE_POSIX_TIMER
 #endif
 
-#include <time.h>
+#include <ctime>
 
 #include <chrono>
 #include <vector>

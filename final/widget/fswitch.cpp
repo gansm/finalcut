@@ -109,6 +109,14 @@ void FSwitch::onMouseUp (FMouseEvent* ev)
 
 // private methods of FSwitch
 //----------------------------------------------------------------------
+inline auto FSwitch::isMonoFocus() const -> bool
+{
+  return hasFocus()
+      && ! button_pressed
+      && FVTerm::getFOutput()->isMonochron();
+}
+
+//----------------------------------------------------------------------
 void FSwitch::draw()
 {
   if ( ! isVisible() )
@@ -128,108 +136,103 @@ void FSwitch::drawCheckButton()
     drawChecked();
   else
     drawUnchecked();
+
+  setReverse(false);
+  setBold(false);
+  setCursorPos ({3 + int(switch_offset_pos), 1});
 }
 
 //----------------------------------------------------------------------
 inline void FSwitch::drawChecked()
 {
-  FString on{L"  On "};
-  const FString off{L" Off "};
-  const auto& wc = getColorTheme();
+  const FString onText{createOnText()};
+  const FString offText{createOffText()};
 
-  if ( hasFocus() && ! button_pressed )
-  {
-    if ( FVTerm::getFOutput()->isMonochron() )
-    {
-      on.setString(L" <On>");
-      setBold(true);
-    }
-    else if ( FVTerm::getFOutput()->getMaxColor() < 16 )
-    {
-      setBold(true);
-      setColor (wc->button.focus_fg, wc->button.focus_bg);
-    }
-    else
-      setColor (wc->button.hotkey_fg, wc->button.focus_bg);
-  }
-  else
-  {
-    if ( FVTerm::getFOutput()->isMonochron()
-      || FVTerm::getFOutput()->getMaxColor() < 16 )
-      setColor (wc->button.focus_fg, wc->button.bg);
-    else
-      setColor (wc->button.hotkey_fg, wc->button.bg);
-  }
-
-  if ( FVTerm::getFOutput()->isMonochron() )
-    setReverse(false);
-
-  print (on);
-
-  if ( FVTerm::getFOutput()->isMonochron() )
-    setReverse(true);
-
-  if ( FVTerm::getFOutput()->isMonochron()
-    || FVTerm::getFOutput()->getMaxColor() < 16 )
-    setBold(false);
-
-  print() << FColorPair{wc->button.inactive_fg, wc->button.inactive_bg}
-          << off;
-
-  if ( FVTerm::getFOutput()->isMonochron() )
-    setReverse(false);
-
-  setCursorPos ({3 + int(switch_offset_pos), 1});
+  SetStyleForOn();
+  print (onText);
+  SetStyleForOff();
+  print(offText);
 }
 
 //----------------------------------------------------------------------
 inline void FSwitch::drawUnchecked()
 {
-  const FString on{L"  On "};
-  FString off{L" Off "};
+  const FString onText{createOnText()};
+  const FString offText{createOffText()};
 
+  SetStyleForOn();
+  print (onText);
+  SetStyleForOff();
+  print (offText);
+}
+
+//----------------------------------------------------------------------
+inline void FSwitch::SetStyleForOn()
+{
   const auto& wc = getColorTheme();
-  setColor (wc->button.inactive_fg, wc->button.inactive_bg);
+  const auto& output = FVTerm::getFOutput();
+  bool is_mono = output->isMonochron();
+  bool less_than_16_colors = output->getMaxColor() < 16;
+  auto fg = less_than_16_colors ? wc->button.focus_fg : wc->button.hotkey_fg;
 
-  if ( FVTerm::getFOutput()->isMonochron() )
-    setReverse(true);
-
-  print (on);
-
-  if ( hasFocus() && ! button_pressed )
+  if ( isChecked() )
   {
-    if ( FVTerm::getFOutput()->isMonochron() )
+    if ( hasFocus() && ! button_pressed )
     {
-      off.setString(L"<Off>");
-      setBold(true);
-    }
-    else if ( FVTerm::getFOutput()->getMaxColor() < 16 )
-    {
-      setBold(true);
-      setColor (wc->button.focus_fg, wc->button.focus_bg);
+      setBold (is_mono || less_than_16_colors);
+      setColor (fg, wc->button.focus_bg);
     }
     else
-      setColor (wc->button.hotkey_fg, wc->button.focus_bg);
+      setColor (fg, wc->button.bg);
+
+    setReverse(false);
   }
   else
   {
-    if ( FVTerm::getFOutput()->isMonochron()
-      || FVTerm::getFOutput()->getMaxColor() < 16 )
-      setColor (wc->button.focus_fg, wc->button.bg);
-    else
-      setColor (wc->button.hotkey_fg, wc->button.bg);
+    setColor(wc->button.inactive_fg, wc->button.inactive_bg);
+    setReverse(is_mono);
   }
+}
 
-  if ( FVTerm::getFOutput()->isMonochron() )
+//----------------------------------------------------------------------
+inline void FSwitch::SetStyleForOff()
+{
+  const auto& wc = getColorTheme();
+  const auto& output = FVTerm::getFOutput();
+  bool is_mono = output->isMonochron();
+  bool less_than_16_colors = output->getMaxColor() < 16;
+  auto fg = less_than_16_colors ? wc->button.focus_fg : wc->button.hotkey_fg;
+
+  if ( isChecked() )
+  {
+    setReverse(is_mono);
+    setBold (! is_mono && ! less_than_16_colors);
+    setColor (wc->button.inactive_fg, wc->button.inactive_bg);
+  }
+  else
+  {
+    if ( hasFocus() && ! button_pressed )
+    {
+      setBold (is_mono || less_than_16_colors);
+      setColor (fg, wc->button.focus_bg);
+    }
+    else
+      setColor (fg, wc->button.bg);
+
     setReverse(false);
+  }
+}
 
-  print (off);
+//----------------------------------------------------------------------
+inline auto FSwitch::createOnText() const -> FString
+{
+  return ( isChecked() && isMonoFocus() ) ? L" <On>" : L"  On ";
+}
 
-  if ( FVTerm::getFOutput()->isMonochron()
-    || FVTerm::getFOutput()->getMaxColor() < 16 )
-    setBold(false);
-
-  setCursorPos ({7 + int(switch_offset_pos), 1});
+//----------------------------------------------------------------------
+inline auto FSwitch::createOffText() const -> FString
+{
+  return ( ! isChecked() && isMonoFocus() ) ? L"<Off>" : L" Off ";
 }
 
 }  // namespace finalcut

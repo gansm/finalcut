@@ -55,8 +55,8 @@ uInt8 var::b2_reset_mask{};
 }  // namespace internal
 
 // Function prototypes
-bool has_foreground_changes (const FChar&, const FColor, bool);
-bool has_background_changes (const FChar&, const FColor, bool);
+auto has_foreground_changes (const FChar&, const FColor, bool) -> bool;
+auto has_background_changes (const FChar&, const FColor, bool) -> bool;
 
 
 //----------------------------------------------------------------------
@@ -1514,13 +1514,13 @@ inline auto FOptiAttr::append_sequence (const std::string& seq) -> bool
 
 // non-member functions
 //----------------------------------------------------------------------
-inline bool has_foreground_changes (const FChar& term, const FColor fg, bool frev)
+inline auto has_foreground_changes (const FChar& term, const FColor fg, bool frev) -> bool
 {
   return term.fg_color != fg || frev;
 }
 
 //----------------------------------------------------------------------
-inline bool has_background_changes (const FChar& term, const FColor bg, bool frev)
+inline auto has_background_changes (const FChar& term, const FColor bg, bool frev) -> bool
 {
   return term.bg_color != bg || frev;
 }

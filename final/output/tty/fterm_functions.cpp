@@ -615,7 +615,7 @@ auto getColumnWidth (const FString& s, std::size_t end_pos) -> std::size_t
 //----------------------------------------------------------------------
 auto getColumnWidth (const FString& s) -> std::size_t
 {
-  int column_width{0};
+  std::size_t column_width{0};
 
   if ( s.isEmpty() )
     return 0;
@@ -623,7 +623,7 @@ auto getColumnWidth (const FString& s) -> std::size_t
   for (const auto& wchar : s)
     column_width += getColumnWidth(wchar);
 
-  return ( column_width == -1 ) ? 0 : std::size_t(column_width);
+  return column_width;
 }
 
 //----------------------------------------------------------------------

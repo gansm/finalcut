@@ -181,9 +181,19 @@ class FScrollView : public FWidget
     void init();
     void createViewport (const FSize&) noexcept;
     void drawText (const FString&, std::size_t);
+    auto getDisplayedTextLength (const FString&, const std::size_t) -> std::size_t;
+    void setLabelStyle();
+    void printLabel (const FString&, std::size_t);
+    void printEllipsis (const FString&);
     void directFocus();
     void mapKeyFunctions();
     void changeSize (const FSize&, bool);
+    void adjustOffsets (int, int, int, int);
+    auto isChangePosition (const int, const int) -> bool;
+    auto isChangeXPosition (const int) -> bool;
+    auto isChangeYPosition (const int) -> bool;
+    void changeX (const std::size_t, const int);
+    void changeY (const std::size_t, const int);
     void calculateScrollbarPos() const;
     template <typename Callback>
     void initScrollbar (FScrollbarPtr&, Orientation, Callback);

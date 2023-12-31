@@ -407,8 +407,8 @@ class FListBox : public FWidget
     auto index2iterator (std::size_t index) const -> FListBoxItems::const_iterator;
     void handleSelectionChange (const std::size_t);
     void handleXOffsetChange (const int);
-    void handleVerticalScrollBarUpdate (const FScrollbar::ScrollType, const int);
-    void handleHorizontalScrollBarUpdate (const FScrollbar::ScrollType, const int);
+    void handleVerticalScrollBarUpdate (const FScrollbar::ScrollType, const int) const;
+    void handleHorizontalScrollBarUpdate (const FScrollbar::ScrollType, const int) const;
     // Callback methods
     void cb_vbarChange (const FWidget*);
     void cb_hbarChange (const FWidget*);

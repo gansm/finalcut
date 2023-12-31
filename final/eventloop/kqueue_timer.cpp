@@ -31,7 +31,7 @@
 
 #if defined(UNIT_TEST)
 
-  #include <stdint.h>
+  #include <cstdint>
 
   using u_short = unsigned short;
   using u_int = unsigned int;

@@ -1203,13 +1203,14 @@ constexpr auto FVTerm::needsWidthResize ( const FTermArea* area
 }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::tryResizeArea ( FTermArea* area
+inline auto FVTerm::tryResizeArea ( FTermArea* area
                                   , const std::size_t width
-                                  , const std::size_t height ) const
+                                  , const std::size_t height ) const -> bool
 {
   if ( needsHeightResize(area, height) )
     return resizeTextArea(area, height, width * height);
-  else if ( needsWidthResize(area, width) )
+
+  if ( needsWidthResize(area, width) )
     return resizeTextArea(area, width * height);
 
   return false;

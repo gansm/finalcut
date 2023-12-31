@@ -181,14 +181,12 @@ void FTermOutput::setCursor (FPoint p)
 {
   // Sets the hardware cursor to the given (x,y) position
 
-  auto& tpos = *term_pos.get();
-
-  if ( p == tpos )  // Check if cursor position is unchanged
+  if ( p == *term_pos )  // Check if cursor position is unchanged
     return;
 
   adjustCursorPosition(p);
-  const auto term_x = tpos.getX();
-  const auto term_y = tpos.getY();
+  const auto term_x = term_pos->getX();
+  const auto term_y = term_pos->getY();
   const auto x = p.getX();
   const auto y = p.getY();
   const auto& move_str = FTerm::moveCursorString (term_x, term_y, x, y);
@@ -196,7 +194,7 @@ void FTermOutput::setCursor (FPoint p)
   if ( ! move_str.empty() )
     appendOutputBuffer (FTermControl{move_str});
 
-  tpos.setPoint(x, y);
+  term_pos->setPoint(x, y);
 }
 
 //----------------------------------------------------------------------
@@ -1106,7 +1104,7 @@ void FTermOutput::cursorWrap() const
   }
   else if ( FTermcap::eat_nl_glitch )
   {
-      term_pos->setPoint(-1, -1);
+    term_pos->setPoint(-1, -1);
   }
   else if ( FTermcap::automatic_right_margin )
   {
@@ -1122,7 +1120,6 @@ inline void FTermOutput::adjustCursorPosition (FPoint& p) const
 {
   const auto term_width = int(getColumnNumber());
   const auto term_height = int(getLineNumber());
-  auto& tpos = *term_pos.get();
   auto& x = p.x_ref();
   auto& y = p.y_ref();
 
@@ -1132,8 +1129,8 @@ inline void FTermOutput::adjustCursorPosition (FPoint& p) const
     x %= term_width;
   }
 
-  if ( tpos.getY() >= term_height )
-    tpos.setY(term_height - 1);
+  if ( term_pos->getY() >= term_height )
+    term_pos->setY(term_height - 1);
 
   if ( y >= term_height )
     y = term_height - 1;

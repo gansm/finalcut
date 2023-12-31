@@ -293,7 +293,7 @@ class FVTerm : public FVTermAttribute
     auto  isSizeEqual (const FTermArea*, const FShadowBox&) const -> bool;
     constexpr auto  needsHeightResize (const FTermArea*, const std::size_t) const noexcept -> bool;
     constexpr auto  needsWidthResize (const FTermArea*, const std::size_t) const noexcept -> bool;
-    bool  tryResizeArea (FTermArea*, const std::size_t, const std::size_t) const;
+    auto  tryResizeArea (FTermArea*, const std::size_t, const std::size_t) const -> bool;
     void  updateAreaProperties (FTermArea*, const FShadowBox&) const;
     constexpr auto  getFullAreaWidth (const FTermArea*) const noexcept -> int;
     constexpr auto  getFullAreaHeight (const FTermArea*) const noexcept -> int;

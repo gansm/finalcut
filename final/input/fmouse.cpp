@@ -373,7 +373,6 @@ auto FMouse::isDblclickTimeout (const TimeValue& time) const -> bool
 // constructors and destructor
 //----------------------------------------------------------------------
 FMouseGPM::FMouseGPM()
-  : FMouse{}
 {
   gpm_ev.x = -1;
   setMouseTypeID (FMouse::MouseType::Gpm);

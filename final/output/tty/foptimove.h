@@ -245,9 +245,9 @@ class FOptiMove final
     void  moveWithCRAndWrapToLeft (int, int, int, int);
 
     // Data members
-    Cursor      cursor;
-    ParamCursor parm_cursor;
-    Edit        edit;
+    Cursor      cursor{};
+    ParamCursor parm_cursor{};
+    Edit        edit{};
     Dimension   screen{80, 24};
     int         char_duration{1};
     int         baudrate{9600};

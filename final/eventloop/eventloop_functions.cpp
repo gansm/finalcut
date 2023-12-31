@@ -33,7 +33,7 @@ namespace finalcut
 {
 
 // Function forward declarations
-std::size_t readFromPipe (int, uint64_t&, std::size_t);
+auto readFromPipe (int, uint64_t&, std::size_t) -> std::size_t;
 
 
 // Event loop non-member functions
@@ -54,7 +54,7 @@ void drainPipe (int fd)
 }
 
 //----------------------------------------------------------------------
-inline std::size_t readFromPipe (int fd, uint64_t& buffer, std::size_t bytes_to_read)
+inline auto readFromPipe (int fd, uint64_t& buffer, std::size_t bytes_to_read) -> std::size_t
 {
   auto current_bytes_read = ::read(fd, &buffer, bytes_to_read);
 

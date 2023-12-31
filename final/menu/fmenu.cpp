@@ -723,7 +723,7 @@ auto FMenu::mouseUpOverList (const FPoint& mouse_pos) -> bool
 }
 
 //----------------------------------------------------------------------
-inline auto FMenu::initializeMouseStates (FMouseEvent* ev) -> MouseStates
+inline auto FMenu::initializeMouseStates (const FMouseEvent* ev) -> MouseStates
 {
   return
   {

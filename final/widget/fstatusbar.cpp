@@ -217,6 +217,7 @@ void FStatusBar::drawMessage()
 
     if ( ! key_list.empty() )
     {
+      // Print key and message separators
       x += 2;
       print (UniChar::BoxDrawingsVertical);  // │
       print (' ');
@@ -500,16 +501,11 @@ void FStatusBar::drawKey (FKeyList::const_iterator iter)
 {
   // Draw not active key
 
-  const auto& item = *iter;
   const auto& wc = getColorTheme();
-  setColor (wc->statusbar.hotkey_fg, wc->statusbar.hotkey_bg);
-  x++;
-  print (' ');
-  x += keyname_len;
-  print (FVTerm::getFOutput()->getKeyName(item->getKey()));
-  setColor (wc->statusbar.fg, wc->statusbar.bg);
-  x++;
-  print ('-');
+  const FColorPair key_color{wc->statusbar.fg, wc->statusbar.bg};
+  setColor (wc->statusbar.hotkey_fg, wc->statusbar.hotkey_bg);  // Hotkey color
+  drawHotKeyName(iter, key_color);
+  const auto& item = *iter;
   const auto column_width = getColumnWidth (item->getText());
   x += int(column_width);
 
@@ -523,9 +519,15 @@ void FStatusBar::drawKey (FKeyList::const_iterator iter)
             << "..";
   }
 
-  if ( iter + 1 != key_list.cend()
-    && ( (*(iter + 1))->isActivated() || (*(iter + 1))->hasMouseFocus() )
-    && x + getKeyNameWidth(*(iter + 1)) + 3 < int(screenWidth) )
+  drawKeySeparator(iter);
+}
+
+//----------------------------------------------------------------------
+void FStatusBar::drawKeySeparator (FKeyList::const_iterator iter)
+{
+  const auto& wc = getColorTheme();
+
+  if ( canPrintLeftActiveKeySeparator(iter) )
   {
     // Next element is active
     if ( FVTerm::getFOutput()->isMonochron() )
@@ -544,7 +546,7 @@ void FStatusBar::drawKey (FKeyList::const_iterator iter)
     if ( FVTerm::getFOutput()->isMonochron() )
       setReverse(true);
   }
-  else if ( iter + 1 != key_list.cend() && x < int(screenWidth) )
+  else if ( canPrintKeySeparator(iter) )
   {
     // Not the last element
     setColor (wc->statusbar.separator_fg, wc->statusbar.bg);
@@ -558,21 +560,14 @@ void FStatusBar::drawActiveKey (FKeyList::const_iterator iter)
 {
   // Draw active key
 
-  const auto& item = *iter;
-
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
 
   const auto& wc = getColorTheme();
-  setColor ( wc->statusbar.focus_hotkey_fg
-           , wc->statusbar.focus_hotkey_bg );
-  x++;
-  print (' ');
-  x += keyname_len;
-  print (FVTerm::getFOutput()->getKeyName(item->getKey()));
-  setColor (wc->statusbar.focus_fg, wc->statusbar.focus_bg);
-  x++;
-  print ('-');
+  const FColorPair active_key_color (wc->statusbar.focus_hotkey_fg, wc->statusbar.focus_hotkey_bg);
+  setColor (wc->statusbar.focus_hotkey_fg, wc->statusbar.focus_hotkey_bg);  // Hotkey color
+  drawHotKeyName(iter, active_key_color);
+  const auto& item = *iter;
   const auto column_width = getColumnWidth (item->getText());
   x += int(column_width);
 
@@ -583,6 +578,7 @@ void FStatusBar::drawActiveKey (FKeyList::const_iterator iter)
 
     if ( FVTerm::getFOutput()->hasHalfBlockCharacter() )
     {
+      // Print right active key separator
       setColor (wc->statusbar.bg, wc->statusbar.focus_hotkey_bg);
       print (UniChar::RightHalfBlock);  // ▌
     }
@@ -599,6 +595,38 @@ void FStatusBar::drawActiveKey (FKeyList::const_iterator iter)
 
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
+}
+
+//----------------------------------------------------------------------
+inline void FStatusBar::drawHotKeyName ( FKeyList::const_iterator iter
+                                       , const FColorPair color )
+{
+  x++;
+  print (' ');
+  x += keyname_len;
+  const auto& item = *iter;
+  print (FVTerm::getFOutput()->getKeyName(item->getKey()));
+  setColor(color);
+  x++;
+  print ('-');
+}
+
+//----------------------------------------------------------------------
+inline auto FStatusBar::canPrintLeftActiveKeySeparator (FKeyList::const_iterator iter) const -> bool
+{
+  const auto next_iter = iter + 1;
+  const auto next_key = *next_iter;
+  return next_iter != key_list.cend()
+      && ( next_key->isActivated() || next_key->hasMouseFocus() )
+      && x + getKeyNameWidth(next_key) + 3 < int(screenWidth);
+}
+
+//----------------------------------------------------------------------
+inline auto FStatusBar::canPrintKeySeparator (FKeyList::const_iterator iter) const -> bool
+{
+  const auto next_iter = iter + 1;
+  return next_iter != key_list.cend()
+      && x < int(screenWidth);
 }
 
 //----------------------------------------------------------------------
@@ -619,7 +647,7 @@ auto FStatusBar::isLastActiveFocus() const -> bool
 }
 
 //----------------------------------------------------------------------
-inline auto FStatusBar::isClickInsideRange ( FMouseEvent* ev
+inline auto FStatusBar::isClickInsideRange ( const FMouseEvent* ev
                                            , const int x1
                                            , const int x2 ) const -> bool
 {

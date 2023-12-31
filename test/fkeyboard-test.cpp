@@ -403,28 +403,28 @@ void FKeyboardTest::noArgumentTest()
   CPPUNIT_ASSERT ( keyboard->getKey() == finalcut::FKey::None );
 
   // Keypress timeout
-  CPPUNIT_ASSERT ( keyboard->getKeypressTimeout() == 100 * 1000 );
+  CPPUNIT_ASSERT ( keyboard->getKeypressTimeout() == static_cast<uInt64>(100 * 1000) );
 
   keyboard->setKeypressTimeout(0);  // 0 ms
   CPPUNIT_ASSERT ( keyboard->getKeypressTimeout() == 0 );
 
   keyboard->setKeypressTimeout(100000);  // 100 ms
-  CPPUNIT_ASSERT ( keyboard->getKeypressTimeout() == 100 * 1000 );
+  CPPUNIT_ASSERT ( keyboard->getKeypressTimeout() == static_cast<uInt64>(100 * 1000) );
 
   // Read blocking time
-  CPPUNIT_ASSERT ( keyboard->getReadBlockingTime() == 100 * 1000 );
+  CPPUNIT_ASSERT ( keyboard->getReadBlockingTime() == static_cast<uInt64>(100 * 1000) );
 
   keyboard->setReadBlockingTime(1000000);  // 1000 ms
-  CPPUNIT_ASSERT ( keyboard->getReadBlockingTime() == 1000 * 1000 );
+  CPPUNIT_ASSERT ( keyboard->getReadBlockingTime() == static_cast<uInt64>(1000 * 1000) );
 
   keyboard->setReadBlockingTime(0);  // 0 ms
   CPPUNIT_ASSERT ( keyboard->getReadBlockingTime() == 0 );
 
   keyboard->setReadBlockingTime(50000);  // 50 ms
-  CPPUNIT_ASSERT ( keyboard->getReadBlockingTime() == 50 * 1000 );
+  CPPUNIT_ASSERT ( keyboard->getReadBlockingTime() == static_cast<uInt64>(50 * 1000) );
 
   keyboard->setReadBlockingTime(100000);  // 100 ms
-  CPPUNIT_ASSERT ( keyboard->getReadBlockingTime() == 100 * 1000 );
+  CPPUNIT_ASSERT ( keyboard->getReadBlockingTime() == static_cast<uInt64>(100 * 1000) );
 
   // Check key map
   CPPUNIT_ASSERT ( test::fkey[0].num == finalcut::FKey::Backspace );
@@ -3115,7 +3115,7 @@ void FKeyboardTest::utf8Test()
   key_pressed = finalcut::FKey(0xffffffff);
   input("\377");
   processInput();
-  static constexpr finalcut::FKey NOT_SET = static_cast<finalcut::FKey>(-2);
+  static constexpr auto NOT_SET = static_cast<finalcut::FKey>(-2);
   CPPUNIT_ASSERT ( key_pressed == NOT_SET );
 
   // Without UTF-8 support

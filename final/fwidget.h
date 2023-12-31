@@ -459,6 +459,11 @@ class FWidget : public FVTerm
     virtual void draw();
     void  drawWindows() const;
     void  drawChildren();
+    void  adjustWidget();
+    void  adjustChildWidgetSizes();
+    void  setWindowOffset();
+    void  setWidgetOffset (const FWidget*);
+    void  setClientOffset();
     static auto  isDefaultTheme() -> bool;
     static void  initColorTheme();
     void  removeQueuedEvent() const;

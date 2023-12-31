@@ -68,7 +68,7 @@ void FScrollView::setScrollWidth (std::size_t width)
     scroll_geometry.setWidth (width);
     resizeArea (scroll_geometry, viewport.get());
     setColor();
-    clearArea();
+    FScrollView::clearArea();
     addPreprocessingHandler
     (
       F_PREPROC_HANDLER (this, &FScrollView::copy2area)
@@ -362,10 +362,8 @@ void FScrollView::scrollToY (int y)
 //----------------------------------------------------------------------
 void FScrollView::scrollTo (int x, int y)
 {
-  int& xoffset = viewport_geometry.x1_ref();
-  int& yoffset = viewport_geometry.y1_ref();
-  const int xoffset_before = xoffset;
-  const int yoffset_before = yoffset;
+  const int xoffset_before = viewport_geometry.getX1();
+  const int yoffset_before = viewport_geometry.getY1();
   const auto xoffset_end = int(getScrollWidth() - getViewportWidth());
   const auto yoffset_end = int(getScrollHeight() - getViewportHeight());
   const std::size_t save_width = viewport_geometry.getWidth();
@@ -373,44 +371,21 @@ void FScrollView::scrollTo (int x, int y)
   x--;
   y--;
 
-  if ( xoffset == x && yoffset == y )
+  if ( ! isChangePosition(x, y) )
     return;
 
-  xoffset = std::max(x, 0);
-  xoffset = std::min(xoffset, xoffset_end);
-  yoffset = std::max(y, 0);
-  yoffset = std::min(yoffset, yoffset_end);
-  const bool changeX( xoffset_before != xoffset );
-  const bool changeY( yoffset_before != yoffset );
+  adjustOffsets(x, y, xoffset_end, yoffset_end);
+  const bool change_x = isChangeXPosition(xoffset_before);
+  const bool change_y = isChangeYPosition(yoffset_before);
 
-  if ( ! isShown() || ! viewport || ! (changeX || changeY) )
+  if ( ! isShown() || ! viewport || ! (change_x || change_y) )
     return;
 
-  if ( changeX )
-  {
-    viewport_geometry.setWidth(save_width);
-    setLeftPadding (1 - xoffset);
-    setRightPadding (1 - (xoffset_end - xoffset) + int(nf_offset));
+  if ( change_x )
+    changeX (save_width, xoffset_end);
 
-    if ( update_scrollbar )
-    {
-      hbar->setValue (xoffset);
-      hbar->drawBar();
-    }
-  }
-
-  if ( changeY )
-  {
-    viewport_geometry.setHeight(save_height);
-    setTopPadding (1 - yoffset);
-    setBottomPadding (1 - (yoffset_end - yoffset));
-
-    if ( update_scrollbar )
-    {
-      vbar->setValue (yoffset);
-      vbar->drawBar();
-    }
-  }
+  if ( change_y )
+    changeY (save_height, yoffset_end);
 
   viewport->has_changes = true;
   copy2area();
@@ -756,7 +731,7 @@ void FScrollView::copy2area()
     // area character
     auto& ac = printarea->getFChar(ax, ay + y);
     std::memcpy (&ac, &vc, sizeof(FChar) * unsigned(x_end));
-    auto& line_changes = printarea->changes[std::size_t(ay + y)];
+    auto& line_changes = printarea->changes[unsigned(ay + y)];
     line_changes.xmin = std::min(line_changes.xmin, uInt(ax));
     line_changes.xmax = std::max(line_changes.xmax, uInt(ax + x_end - 1));
   }
@@ -828,39 +803,58 @@ inline void FScrollView::createViewport (const FSize& size) noexcept
 void FScrollView::drawText ( const FString& label_text
                            , std::size_t hotkeypos )
 {
-  const auto& wc = getColorTheme();
-  const std::size_t column_width = getColumnWidth(label_text);
-  std::size_t length = label_text.getLength();
-  bool ellipsis{false};
+  setLabelStyle();
+  printLabel (label_text, hotkeypos);
+  printEllipsis (label_text);
+}
 
-  if ( column_width > getClientWidth() )
-  {
-    const std::size_t len = getClientWidth() - 3;
-    const FString s = finalcut::getColumnSubString (label_text, 1, len);
-    length = s.getLength();
-    ellipsis = true;
-  }
+//----------------------------------------------------------------------
+inline auto FScrollView::getDisplayedTextLength ( const FString& label_text
+                                                , const std::size_t column_width ) -> std::size_t
+{
+  if ( column_width <= getClientWidth() )
+    return label_text.getLength();
 
+  const std::size_t len = getClientWidth() - 3;
+  const FString s = finalcut::getColumnSubString (label_text, 1, len);
+  return s.getLength();
+}
+
+//----------------------------------------------------------------------
+void FScrollView::setLabelStyle()
+{
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
+
+  const auto& wc = getColorTheme();
 
   if ( isEnabled() )
     setColor(wc->label.emphasis_fg, wc->label.bg);
   else
     setColor(wc->label.inactive_fg, wc->label.inactive_bg);
+}
+
+//----------------------------------------------------------------------
+void FScrollView::printLabel ( const FString& label_text,
+                               std::size_t hotkeypos )
+{
+  const auto& wc = getColorTheme();
+  const std::size_t column_width = getColumnWidth(label_text);
+  std::size_t length = getDisplayedTextLength (label_text, column_width);
+  const auto underline = ! getFlags().feature.no_underline;
 
   for (std::size_t z{0}; z < length; z++)
   {
-    if ( (z == hotkeypos) && getFlags().feature.active )
+    if ( z == hotkeypos && getFlags().feature.active )
     {
       setColor (wc->label.hotkey_fg, wc->label.hotkey_bg);
 
-      if ( ! getFlags().feature.no_underline )
+      if ( underline )
         setUnderline();
 
       print (label_text[z]);
 
-      if ( ! getFlags().feature.no_underline )
+      if ( underline )
         unsetUnderline();
 
       setColor (wc->label.emphasis_fg, wc->label.bg);
@@ -868,6 +862,14 @@ void FScrollView::drawText ( const FString& label_text
     else
       print (label_text[z]);
   }
+}
+
+//----------------------------------------------------------------------
+void FScrollView::printEllipsis (const FString& label_text)
+{
+  const auto& wc = getColorTheme();
+  const std::size_t column_width = getColumnWidth(label_text);
+  const bool ellipsis{column_width > getClientWidth()};
 
   if ( ellipsis )  // Print ellipsis
     print() << FColorPair {wc->label.ellipsis_fg, wc->label.bg} << "..";
@@ -945,6 +947,69 @@ void FScrollView::changeSize (const FSize& size, bool adjust)
   viewport_geometry.y1_ref() = \
       std::min ( int(getScrollHeight() - getViewportHeight())
                , viewport_geometry.getY1() );
+}
+
+//----------------------------------------------------------------------
+inline void FScrollView::adjustOffsets ( int x, int y
+                                       , int xoffset_end
+                                       , int yoffset_end )
+{
+  int& xoffset = viewport_geometry.x1_ref();
+  int& yoffset = viewport_geometry.y1_ref();
+  xoffset = std::max(x, 0);
+  xoffset = std::min(xoffset, xoffset_end);
+  yoffset = std::max(y, 0);
+  yoffset = std::min(yoffset, yoffset_end);
+}
+
+//----------------------------------------------------------------------
+inline auto FScrollView::isChangePosition (const int x, const int y) -> bool
+{
+  return isChangeXPosition(x) || isChangeYPosition(y);
+}
+
+//----------------------------------------------------------------------
+inline auto FScrollView::isChangeXPosition (const int x) -> bool
+{
+  int& xoffset = viewport_geometry.x1_ref();
+  return xoffset != x;
+}
+
+//----------------------------------------------------------------------
+inline auto FScrollView::isChangeYPosition (const int y) -> bool
+{
+  int& yoffset = viewport_geometry.y1_ref();
+  return yoffset != y;
+}
+
+//----------------------------------------------------------------------
+inline void FScrollView::changeX (const std::size_t width, const int xoffset_end)
+{
+  int& xoffset = viewport_geometry.x1_ref();
+  viewport_geometry.setWidth(width);
+  setLeftPadding (1 - xoffset);
+  setRightPadding (1 - (xoffset_end - xoffset) + int(nf_offset));
+
+  if ( ! update_scrollbar )
+    return;
+
+  hbar->setValue (xoffset);
+  hbar->drawBar();
+}
+
+//----------------------------------------------------------------------
+inline void FScrollView::changeY (const std::size_t height, const int yoffset_end)
+{
+  int& yoffset = viewport_geometry.y1_ref();
+  viewport_geometry.setHeight(height);
+  setTopPadding (1 - yoffset);
+  setBottomPadding (1 - (yoffset_end - yoffset));
+
+  if ( ! update_scrollbar )
+    return;
+
+  vbar->setValue (yoffset);
+  vbar->drawBar();
 }
 
 //----------------------------------------------------------------------

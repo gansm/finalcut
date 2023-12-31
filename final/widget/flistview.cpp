@@ -559,6 +559,9 @@ void FListViewIterator::nextElement (Iterator& iter)
 {
   const auto& item = static_cast<FListViewItem*>(*iter);
 
+  if ( ! item )
+    return;
+
   if ( item->isExpandable() && item->isExpand() )
   {
     iter_path.push(iter);
@@ -683,7 +686,7 @@ FListView::~FListView()  // destructor
 //----------------------------------------------------------------------
 auto FListView::getCount() const -> std::size_t
 {
-  int n{0};
+  std::size_t n{0};
 
   for (auto&& item : data.itemlist)
   {
@@ -691,7 +694,7 @@ auto FListView::getCount() const -> std::size_t
     n += listitem->getVisibleLines();
   }
 
-  return std::size_t(n);
+  return n;
 }
 
 //----------------------------------------------------------------------
@@ -1111,33 +1114,8 @@ void FListView::onMouseUp (FMouseEvent* ev)
   if ( isItemListEmpty() )
     return;
 
-  int indent{0};
-  const auto& item = getCurrentItem();
-
-  if ( isTreeView() )
-  {
-    indent = int(item->getDepth() << 1u);  // indent = 2 * depth
-
-    if ( item->isExpandable()
-      && selection.clicked_expander_pos == ev->getPos() )
-    {
-      toggleItemExpandState(item);
-      adjustScrollbars (getCount());
-
-      if ( isShown() )
-        draw();
-    }
-  }
-
-  if ( hasCheckableItems() && selection.clicked_checkbox_item == item
-    && isCheckboxClicked(ev->getX(), indent) )
-  {
-    toggleItemCheckState(item);
-
-    if ( isShown() )
-      draw();
-  }
-
+  handleTreeExpanderClick(ev);
+  handleCheckboxClick(ev);
   processRowChanged();
   resetClickedPositions();
 }
@@ -1585,7 +1563,7 @@ void FListView::drawHeadlines()
 //----------------------------------------------------------------------
 void FListView::drawList()
 {
-  if ( isItemListEmpty() || getHeight() <= 2 || getWidth() <= 4 )
+  if ( canSkipListDrawing() )
     return;
 
   int y{0};
@@ -1596,32 +1574,46 @@ void FListView::drawList()
 
   while ( iter != path_end && iter != itemlist_end && y < page_height )
   {
-    const bool is_current_line( iter == selection.current_iter );
+    const auto is_current_line = bool( iter == selection.current_iter );
     const auto& item = static_cast<FListViewItem*>(*iter);
-    const int tree_offset = isTreeView() ? int(item->getDepth() << 1u) + 1 : 0;
-    const int checkbox_offset = item->isCheckable() ? 1 : 0;
     path_end = getListEnd(item);
     print() << FPoint{2, 2 + y};
 
     // Draw one FListViewItem
     drawListLine (item, getFlags().focus.focus, is_current_line);
 
-    if ( getFlags().focus.focus && is_current_line )
-    {
-      int xpos = 3 + tree_offset + checkbox_offset - scroll.xoffset;
-
-      if ( xpos < 2 )  // Hide the cursor
-        xpos = -9999;  // by moving it outside the visible area
-
-      setVisibleCursor (item->isCheckable());
-      setCursorPos ({xpos, 2 + y});  // first character
-    }
+    // Place the input cursor at the beginning of the line
+    setInputCursor (item, y, is_current_line);
 
     scroll.last_visible_line = iter;
     y++;
     ++iter;
   }
 
+  finalizeListDrawing(y);
+}
+
+//----------------------------------------------------------------------
+inline void FListView::setInputCursor ( const FListViewItem* item
+                                      , int y, bool is_current_line )
+{
+  if ( ! (getFlags().focus.focus && is_current_line) )
+    return;
+
+  const int tree_offset = isTreeView() ? int(item->getDepth() << 1u) + 1 : 0;
+  const int checkbox_offset = item->isCheckable() ? 1 : 0;
+  int xpos = 3 + tree_offset + checkbox_offset - scroll.xoffset;
+
+  if ( xpos < 2 )  // Hide the cursor
+    xpos = -9999;  // by moving it outside the visible area
+
+  setVisibleCursor (item->isCheckable());
+  setCursorPos ({xpos, 2 + y});  // first character
+}
+
+//----------------------------------------------------------------------
+inline void FListView::finalizeListDrawing (int y)
+{
   // Reset color
   setColor();
 
@@ -2300,13 +2292,13 @@ void FListView::recalculateVerticalBar (std::size_t element_count) const
   scroll.vbar->setPageSize (int(element_count), int(height));
   scroll.vbar->calculateSliderValues();
 
-  if ( isShown() )
-  {
-    if ( isVerticallyScrollable() )
-      scroll.vbar->show();
-    else
-      scroll.vbar->hide();
-  }
+  if ( ! isShown() )
+    return;
+
+  if ( isVerticallyScrollable() )
+    scroll.vbar->show();
+  else
+    scroll.vbar->hide();
 }
 
 //----------------------------------------------------------------------
@@ -2354,6 +2346,41 @@ void FListView::mouseHeaderClicked()
     header_start += leading_space + item.width;
     column++;
   }
+}
+
+//----------------------------------------------------------------------
+void FListView::handleTreeExpanderClick (const FMouseEvent* ev)
+{
+  const auto& item = getCurrentItem();
+
+  if ( ! isTreeView()
+    || ! item->isExpandable()
+    || selection.clicked_expander_pos != ev->getPos() )
+    return;
+
+  toggleItemExpandState(item);
+  adjustScrollbars (getCount());
+
+  if ( isShown() )
+    draw();
+}
+
+//----------------------------------------------------------------------
+void FListView::handleCheckboxClick (const FMouseEvent* ev)
+{
+  const auto& item = getCurrentItem();
+  int indent = isTreeView() ? int(item->getDepth() << 1u)  // indent = 2 * depth
+                            : 0;
+
+  if ( ! ( hasCheckableItems()
+        && selection.clicked_checkbox_item == item
+        && isCheckboxClicked(ev->getX(), indent) ) )
+    return;
+
+  toggleItemCheckState(item);
+
+  if ( isShown() )
+    draw();
 }
 
 //----------------------------------------------------------------------
@@ -2807,8 +2834,7 @@ inline auto FListView::collapseSubtree() -> bool
 //----------------------------------------------------------------------
 void FListView::setRelativePosition (int ry)
 {
-  selection.current_iter = scroll.first_visible_line;
-  selection.current_iter += ry;
+  selection.current_iter = scroll.first_visible_line + ry;
 }
 
 //----------------------------------------------------------------------
@@ -2947,7 +2973,7 @@ void FListView::scrollToY (int y)
 
   if ( y + pagesize <= element_count )
   {
-    scroll.first_visible_line = data.itemlist.begin() + y;
+    scroll.first_visible_line = FListViewIterator(data.itemlist.begin()) + y;
     setRelativePosition (ry);
     scroll.last_visible_line = scroll.first_visible_line + pagesize;
   }
@@ -2977,6 +3003,45 @@ void FListView::scrollBy (int dx, int dy)
 
   if ( dy < 0 )
     stepBackward(-dy);
+}
+
+//----------------------------------------------------------------------
+inline void FListView::updateViewAfterVBarChange (const FScrollbar::ScrollType scroll_type)
+{
+  if ( isShown() )
+    drawList();
+
+  if ( scroll_type >= FScrollbar::ScrollType::StepBackward
+    && scroll_type <= FScrollbar::ScrollType::PageForward )
+  {
+    scroll.vbar->setValue (scroll.first_visible_line.getPosition());
+
+    if ( scroll.first_line_position_before != scroll.first_visible_line.getPosition() )
+      scroll.vbar->drawBar();
+
+    forceTerminalUpdate();
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FListView::updateViewAfterHBarChange ( const FScrollbar::ScrollType scroll_type
+                                                 , const int xoffset_before )
+{
+  if ( isShown() )
+  {
+    drawHeadlines();
+    drawList();
+  }
+
+  if ( scroll_type >= FScrollbar::ScrollType::StepBackward )
+  {
+    scroll.hbar->setValue (scroll.xoffset);
+
+    if ( xoffset_before != scroll.xoffset )
+      scroll.hbar->drawBar();
+
+    forceTerminalUpdate();
+  }
 }
 
 //----------------------------------------------------------------------
@@ -3021,19 +3086,7 @@ void FListView::cb_vbarChange (const FWidget*)
       throw std::invalid_argument{"Invalid scroll type"};
   }
 
-  if ( isShown() )
-    drawList();
-
-  if ( scroll_type >= FScrollbar::ScrollType::StepBackward
-    && scroll_type <= FScrollbar::ScrollType::PageForward )
-  {
-    scroll.vbar->setValue (scroll.first_visible_line.getPosition());
-
-    if ( scroll.first_line_position_before != scroll.first_visible_line.getPosition() )
-      scroll.vbar->drawBar();
-
-    forceTerminalUpdate();
-  }
+  updateViewAfterVBarChange (scroll_type);
 }
 
 //----------------------------------------------------------------------
@@ -3078,21 +3131,7 @@ void FListView::cb_hbarChange (const FWidget*)
       throw std::invalid_argument{"Invalid scroll type"};
   }
 
-  if ( isShown() )
-  {
-    drawHeadlines();
-    drawList();
-  }
-
-  if ( scroll_type >= FScrollbar::ScrollType::StepBackward )
-  {
-    scroll.hbar->setValue (scroll.xoffset);
-
-    if ( xoffset_before != scroll.xoffset )
-      scroll.hbar->drawBar();
-
-    forceTerminalUpdate();
-  }
+  updateViewAfterHBarChange (scroll_type, xoffset_before);
 }
 
 }  // namespace finalcut

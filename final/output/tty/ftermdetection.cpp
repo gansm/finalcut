@@ -878,9 +878,9 @@ inline auto FTermDetection::secDA_Analysis_82() const -> FString
   fterm_data.setTermType (FTermType::rxvt);
 
   if ( termtype == "rxvt-cygwin-native" )
-    return FString("rxvt-16color");
+    return "rxvt-16color";
 
-  return FString("rxvt");
+  return "rxvt";
 }
 
 //----------------------------------------------------------------------
@@ -917,9 +917,9 @@ inline auto FTermDetection::secDA_Analysis_85() const -> FString
     return termtype;
 
   if ( color256 )
-    return FString("rxvt-256color");
+    return "rxvt-256color";
 
-  return FString("rxvt");
+  return "rxvt";
 }
 
 //----------------------------------------------------------------------

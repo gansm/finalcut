@@ -64,6 +64,12 @@ class BackendMonitor final : public Monitor
     // Destructor
     ~BackendMonitor() noexcept override;
 
+    // Disable copy assignment operator (=)
+    auto operator = (const BackendMonitor&) -> BackendMonitor& = delete;
+
+    // Disable move assignment operator (=)
+    auto operator = (BackendMonitor&&) noexcept -> BackendMonitor& = delete;
+
     // Accessor
     auto getClassName() const -> FString override;
 
@@ -76,12 +82,6 @@ class BackendMonitor final : public Monitor
     void trigger (short) override;
 
   private:
-    // Disable copy assignment operator (=)
-    auto operator = (const BackendMonitor&) -> BackendMonitor& = delete;
-
-    // Disable move assignment operator (=)
-    auto operator = (BackendMonitor&&) noexcept -> BackendMonitor& = delete;
-
     // Mutator
     void clearEvent() const;
 
