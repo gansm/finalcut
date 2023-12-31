@@ -681,7 +681,7 @@ inline void FStatusBar::nonLeftButtonClick()
 }
 
 //----------------------------------------------------------------------
-inline void FStatusBar::leftButtonClick (FMouseEvent* ev)
+inline void FStatusBar::leftButtonClick (const FMouseEvent* ev)
 {
   mouse_down = true;
 

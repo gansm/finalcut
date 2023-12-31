@@ -245,7 +245,7 @@ class FStatusBar : public FWindow
     auto isClickInsideRange (const FMouseEvent*, const int, const int) const -> bool;
     void setStatusBarColor() const;
     void nonLeftButtonClick();
-    void leftButtonClick (FMouseEvent*);
+    void leftButtonClick (const FMouseEvent*);
     void printMessageWithEllipsis (std::size_t);
     void printPaddingSpaces (int);
 

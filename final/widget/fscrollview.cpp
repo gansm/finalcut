@@ -810,7 +810,7 @@ void FScrollView::drawText ( const FString& label_text
 
 //----------------------------------------------------------------------
 inline auto FScrollView::getDisplayedTextLength ( const FString& label_text
-                                                , const std::size_t column_width ) -> std::size_t
+                                                , const std::size_t column_width ) const -> std::size_t
 {
   if ( column_width <= getClientWidth() )
     return label_text.getLength();
@@ -821,7 +821,7 @@ inline auto FScrollView::getDisplayedTextLength ( const FString& label_text
 }
 
 //----------------------------------------------------------------------
-void FScrollView::setLabelStyle()
+void FScrollView::setLabelStyle() const
 {
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
@@ -963,29 +963,27 @@ inline void FScrollView::adjustOffsets ( int x, int y
 }
 
 //----------------------------------------------------------------------
-inline auto FScrollView::isChangePosition (const int x, const int y) -> bool
+inline auto FScrollView::isChangePosition (const int x, const int y) const -> bool
 {
   return isChangeXPosition(x) || isChangeYPosition(y);
 }
 
 //----------------------------------------------------------------------
-inline auto FScrollView::isChangeXPosition (const int x) -> bool
+inline auto FScrollView::isChangeXPosition (const int x) const -> bool
 {
-  int& xoffset = viewport_geometry.x1_ref();
-  return xoffset != x;
+  return viewport_geometry.getX1() != x;
 }
 
 //----------------------------------------------------------------------
-inline auto FScrollView::isChangeYPosition (const int y) -> bool
+inline auto FScrollView::isChangeYPosition (const int y) const -> bool
 {
-  int& yoffset = viewport_geometry.y1_ref();
-  return yoffset != y;
+  return viewport_geometry.getY1() != y;
 }
 
 //----------------------------------------------------------------------
 inline void FScrollView::changeX (const std::size_t width, const int xoffset_end)
 {
-  int& xoffset = viewport_geometry.x1_ref();
+  const int xoffset = viewport_geometry.getX1();
   viewport_geometry.setWidth(width);
   setLeftPadding (1 - xoffset);
   setRightPadding (1 - (xoffset_end - xoffset) + int(nf_offset));
@@ -1000,7 +998,7 @@ inline void FScrollView::changeX (const std::size_t width, const int xoffset_end
 //----------------------------------------------------------------------
 inline void FScrollView::changeY (const std::size_t height, const int yoffset_end)
 {
-  int& yoffset = viewport_geometry.y1_ref();
+  const int yoffset = viewport_geometry.getY1();
   viewport_geometry.setHeight(height);
   setTopPadding (1 - yoffset);
   setBottomPadding (1 - (yoffset_end - yoffset));

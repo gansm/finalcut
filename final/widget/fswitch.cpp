@@ -167,7 +167,7 @@ inline void FSwitch::drawUnchecked()
 }
 
 //----------------------------------------------------------------------
-inline void FSwitch::SetStyleForOn()
+inline void FSwitch::SetStyleForOn() const
 {
   const auto& wc = getColorTheme();
   const auto& output = FVTerm::getFOutput();
@@ -195,7 +195,7 @@ inline void FSwitch::SetStyleForOn()
 }
 
 //----------------------------------------------------------------------
-inline void FSwitch::SetStyleForOff()
+inline void FSwitch::SetStyleForOff() const
 {
   const auto& wc = getColorTheme();
   const auto& output = FVTerm::getFOutput();

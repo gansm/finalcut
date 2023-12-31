@@ -91,8 +91,8 @@ class FSwitch : public FToggleButton
     void drawCheckButton();
     void drawChecked();
     void drawUnchecked();
-    void SetStyleForOn();
-    void SetStyleForOff();
+    void SetStyleForOn() const;
+    void SetStyleForOff() const;
     auto createOnText() const -> FString;
     auto createOffText() const -> FString;
 
