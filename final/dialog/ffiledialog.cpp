@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2023 Markus Gans                                      *
+* Copyright 2014-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -232,30 +232,13 @@ auto FFileDialog::fileSaveChooser ( FWidget* parent
 //----------------------------------------------------------------------
 void FFileDialog::adjustSize()
 {
-  std::size_t max_width{};
-  std::size_t max_height{};
   const auto& root_widget = getRootWidget();
-
-  if ( root_widget )
-  {
-    max_width = root_widget->getClientWidth();
-    max_height = root_widget->getClientHeight();
-  }
-  else
-  {
-    // fallback to xterm default size
-    max_width = 80;
-    max_height = 24;
-  }
-
+  // Set maximum values with fallback to xterm default size
+  auto max_width = root_widget ? root_widget->getClientWidth() : 80;
+  auto max_height = root_widget ? root_widget->getClientHeight() : 24;
   std::size_t h = max_height - 6;
-
-  if ( h < 15 )  // minimum
-    h = 15;
-
-  if ( h > 30 )  // maximum
-    h = 30;
-
+  h = std::max(h, std::size_t(15));  // minimum 15
+  h = std::min(h, std::size_t(30));  // maximum 30
   setHeight (h, false);
   const int X = 1 + int((max_width - getWidth()) / 2);
   const int Y = 1 + int((max_height - getHeight()) / 3);
@@ -275,20 +258,10 @@ void FFileDialog::init()
 {
   static constexpr std::size_t w = 42;
   static constexpr std::size_t h = 15;
-  int x{};
-  int y{};
-
   FWindow::setGeometry(FPoint{1, 1}, FSize{w, h}, false);
   const auto& parent_widget = getParentWidget();
-
-  if ( parent_widget )
-  {
-    x = 1 + int((parent_widget->getWidth() - w) / 2);
-    y = 1 + int((parent_widget->getHeight() - h) / 3);
-  }
-  else
-    x = y = 1;
-
+  int x = parent_widget ? 1 + int((parent_widget->getWidth() - w) / 2) : 1;
+  int y = parent_widget ? 1 + int((parent_widget->getHeight() - h) / 3) : 1;
   setTitelbarText();
   widgetSettings (FPoint{x, y});  // Create widgets
   initCallbacks();
@@ -410,11 +383,7 @@ auto FFileDialog::numOfDirs() -> sInt64
 //----------------------------------------------------------------------
 void FFileDialog::sortDir()
 {
-  sInt64 start{0};
-
-  if ( dir_entries.cbegin()->name == ".." )
-    start = 1;
-
+  const sInt64 start = dir_entries.cbegin()->name == ".." ? 1 : 0;
   const sInt64 dir_num = numOfDirs();
   // directories first
   std::sort ( dir_entries.begin() + start
@@ -723,18 +692,18 @@ void FFileDialog::printPath (const FString& txt)
 //----------------------------------------------------------------------
 void FFileDialog::setTitelbarText()
 {
-  auto suffix = [this] ()
+  const auto suffix = [this] ()
   {
     if ( ! filter_pattern.isEmpty() && filter_pattern != L"*" )
       return FString(L" (") + filter_pattern + L")";
 
     return FString{};
-  }();
+  };
 
   if ( dlg_type == DialogType::Save )
-    FDialog::setText("Save file" + suffix);
+    FDialog::setText("Save file" + suffix());
   else
-    FDialog::setText("Open file" + suffix);
+    FDialog::setText("Open file" + suffix());
 }
 
 //----------------------------------------------------------------------

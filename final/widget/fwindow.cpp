@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2023 Markus Gans                                      *
+* Copyright 2015-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -338,9 +338,7 @@ void FWindow::setX (int x, bool adjust)
 //----------------------------------------------------------------------
 void FWindow::setY (int y, bool adjust)
 {
-  if ( y < 1 )
-    y = 1;
-
+  y = std::max(y, 1);
   FWidget::setY (y, adjust);
 
   if ( isVirtualWindow() )
@@ -351,10 +349,7 @@ void FWindow::setY (int y, bool adjust)
 void FWindow::setPos (const FPoint& p, bool adjust)
 {
   FPoint pos{p};
-
-  if ( pos.getY() < 1 )
-    pos.setY(1);
-
+  pos.y_ref() = std::max(pos.y_ref(), 1);
   FWidget::setPos (pos, adjust);
 
   if ( isVirtualWindow() )
@@ -416,10 +411,7 @@ void FWindow::setGeometry ( const FPoint& p, const FSize& size, bool adjust)
   const int old_y = getY();
   FPoint pos{p};
   const FSize old_size{getSize()};
-
-  if ( pos.getY() < 1 )
-    pos.setY(1);
-
+  pos.y_ref() = std::max(pos.y_ref(), 1);
   FWidget::setGeometry (pos, size, adjust);
 
   if ( ! isVirtualWindow() )

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2023 Markus Gans                                      *
+* Copyright 2012-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -86,23 +86,14 @@ void FScrollbar::setRange (int minimum, int maximum)
 //----------------------------------------------------------------------
 void FScrollbar::setValue (int value)
 {
-  if ( value < min )
-    val = min;
-  else if ( value > max )
-    val = max;
-  else
-    val = value;
-
+  val = std::max(min, std::min(value, max));
   calculateSliderValues();
 }
 
 //----------------------------------------------------------------------
 void FScrollbar::setSteps (double st)
 {
-  if ( st <= 0.0 )
-    steps = 1.0;
-  else
-    steps = st;
+  steps = (st <= 0.0) ? 1.0 : st;
 
   if ( pagesize == 0 )
     pagesize = int(double(max)/steps);
@@ -185,17 +176,14 @@ void FScrollbar::redraw()
 //----------------------------------------------------------------------
 void FScrollbar::calculateSliderValues()
 {
-  if ( FVTerm::getFOutput()->isNewFont() && bar_orientation == Orientation::Horizontal )
+  if ( FVTerm::getFOutput()->isNewFont()
+    && bar_orientation == Orientation::Horizontal )
     bar_length = ( length > 2 ) ? length - 4 : 1;
   else
     bar_length = ( length > 2 ) ? length - 2 : 1;
 
   slider_length = std::size_t(double(bar_length) / steps);
-
-  if ( slider_length < 1 )
-    slider_length = 1;
-  else if ( slider_length > bar_length )
-    slider_length = bar_length;
+  slider_length = std::max(std::size_t(1), std::min(slider_length, bar_length));
 
   if ( val == min )
   {
@@ -217,8 +205,7 @@ void FScrollbar::calculateSliderValues()
     slider_pos = int( round ( double((bar_length - slider_length) * v)
                             / double(max - min) ) );
 
-  if ( slider_pos > int(bar_length - slider_length) )
-    slider_pos = int(bar_length - slider_length);
+  slider_pos = std::min(slider_pos, int(bar_length - slider_length));
 }
 
 

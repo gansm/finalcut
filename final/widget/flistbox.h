@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2023 Markus Gans                                      *
+* Copyright 2014-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -402,6 +402,10 @@ class FListBox : public FWidget
     void processRowChanged() const;
     void processChanged() const;
     void changeOnResize() const;
+    void updateScrollBarAfterRemoval (std::size_t);
+    auto getScrollBarMaxHorizontal() const noexcept -> int;
+    auto getScrollBarMaxVertical() const noexcept -> int;
+    void recalculateMaximumLineWidth();
     void lazyConvert (FListBoxItems::iterator, std::size_t);
     auto index2iterator (std::size_t) -> FListBoxItems::iterator;
     auto index2iterator (std::size_t index) const -> FListBoxItems::const_iterator;

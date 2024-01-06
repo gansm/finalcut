@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2023 Markus Gans                                      *
+* Copyright 2016-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -151,26 +151,15 @@ void FToolTip::calculateDimensions()
   for (const auto& line : text_components)
   {
     std::size_t column_width = getColumnWidth(line);
-
-    if ( column_width > max_line_width )
-      max_line_width = column_width;
+    max_line_width = std::max(column_width, max_line_width);
   }
 
-  int x{};
-  int y{};
   bool border = hasBorder();
   const std::size_t h = border ? text_num_lines + 2 : text_num_lines;
   const std::size_t w = border ? max_line_width + 4 : max_line_width + 2;
   const auto& r = getRootWidget();
-
-  if ( r )
-  {
-    x = 1 + int((r->getWidth() - w) / 2);
-    y = 1 + int((r->getHeight() - h) / 2);
-  }
-  else
-    x = y = 1;
-
+  int x = r ? 1 + int((r->getWidth() - w) / 2) : 1;
+  int y = r ? 1 + int((r->getHeight() - h) / 2) : 1;
   setGeometry (FPoint{x, y}, FSize{w, h});
 }
 

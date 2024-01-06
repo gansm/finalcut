@@ -4,7 +4,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2023 Markus Gans                                      *
+* Copyright 2017-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -57,8 +57,7 @@ FScrollView::~FScrollView()  // destructor
 //----------------------------------------------------------------------
 void FScrollView::setScrollWidth (std::size_t width)
 {
-  if ( width < getViewportWidth() )
-    width = getViewportWidth();
+  width = std::max(width, getViewportWidth());
 
   if ( getScrollWidth() == width )
     return;
@@ -87,8 +86,7 @@ void FScrollView::setScrollWidth (std::size_t width)
 //----------------------------------------------------------------------
 void FScrollView::setScrollHeight (std::size_t height)
 {
-  if ( height < getViewportHeight() )
-    height = getViewportHeight();
+  height = std::max(height, getViewportHeight());
 
   if ( getScrollHeight() == height )
     return;

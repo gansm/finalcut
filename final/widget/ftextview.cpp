@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2023 Markus Gans                                      *
+* Copyright 2014-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -159,46 +159,27 @@ void FTextView::scrollBy (int dx, int dy)
 //----------------------------------------------------------------------
 void FTextView::scrollTo (int x, int y)
 {
+  const auto xoffset_end = int(max_line_width - getTextWidth());
+  const auto yoffset_end = int(getRows() - getTextHeight());
   const bool changeX( x != xoffset );
   const bool changeY( y != yoffset );
 
   if ( ! isShown() || ! (changeX || changeY) )
     return;
 
-  if ( changeX && isHorizontallyScrollable() )
+  xoffset = std::max(0, std::min(x, xoffset_end));
+  yoffset = std::max(0, std::min(y, yoffset_end));
+
+  if ( update_scrollbar && changeX && isHorizontallyScrollable() )
   {
-    const auto xoffset_end = int(max_line_width - getTextWidth());
-    xoffset = x;
-
-    if ( xoffset < 0 )
-      xoffset = 0;
-
-    if ( xoffset > xoffset_end )
-      xoffset = xoffset_end;
-
-    if ( update_scrollbar )
-    {
-      hbar->setValue (xoffset);
-      hbar->drawBar();
-    }
+    hbar->setValue(xoffset);
+    hbar->drawBar();
   }
 
-  if ( changeY && isVerticallyScrollable() )
+  if ( update_scrollbar && changeY && isVerticallyScrollable() )
   {
-    const auto yoffset_end = int(getRows() - getTextHeight());
-    yoffset = y;
-
-    if ( yoffset < 0 )
-      yoffset = 0;
-
-    if ( yoffset > yoffset_end )
-      yoffset = yoffset_end;
-
-    if ( update_scrollbar )
-    {
-      vbar->setValue (yoffset);
-      vbar->drawBar();
-    }
+    vbar->setValue(yoffset);
+    vbar->drawBar();
   }
 
   drawText();
@@ -390,9 +371,7 @@ void FTextView::initLayout()
   for (const auto& line : data)
   {
     const auto column_width = getColumnWidth(line.text);
-
-    if ( column_width > max_line_width )
-      max_line_width = column_width;
+    max_line_width = std::max(column_width, max_line_width);
   }
 }
 
@@ -404,26 +383,15 @@ void FTextView::adjustSize()
   const std::size_t height = getHeight();
   const auto last_line = int(getRows());
   const auto max_width = int(max_line_width);
-
-  if ( xoffset >= max_width - int(width) - nf_offset )
-    xoffset = max_width - int(width) - nf_offset - 1;
-
-  if ( xoffset < 0 )
-    xoffset = 0;
-
-  if ( yoffset > last_line - int(height) - nf_offset + 2 )
-    yoffset = last_line - int(height) - nf_offset + 2;
-
-  if ( yoffset < 0 )
-    yoffset = 0;
+  const auto xoffset_end = max_width - int(width) - nf_offset - 1;
+  const auto yoffset_end = last_line - int(height) - nf_offset + 2;
+  xoffset = std::max(0, std::min(xoffset, xoffset_end));
+  yoffset = std::max(0, std::min(yoffset, yoffset_end));
 
   if ( height < 3 )
     return;
 
-  const int vmax = ( last_line > int(height) - 2 + nf_offset )
-                   ? last_line - int(height) + 2 - nf_offset
-                   : 0;
-  vbar->setMaximum (vmax);
+  vbar->setMaximum (getScrollBarMaxVertical());
   vbar->setPageSize (last_line, int(height) - 2 + nf_offset);
   vbar->setX (int(width));
   vbar->setHeight (height - 2 + std::size_t(nf_offset), false);
@@ -433,10 +401,7 @@ void FTextView::adjustSize()
   if ( width < 3 )
     return;
 
-  const int hmax = ( max_width >= int(width) - nf_offset - 1 )
-                   ? max_width - int(width) + nf_offset + 2
-                   : 0;
-  hbar->setMaximum (hmax);
+  hbar->setMaximum (getScrollBarMaxHorizontal());
   hbar->setPageSize (max_width, int(width) - nf_offset - 2);
   hbar->setY (int(height));
   hbar->setWidth (width - 2, false);
@@ -661,12 +626,29 @@ inline void FTextView::processLine (FString&& line, int pos)
 }
 
 //----------------------------------------------------------------------
+inline auto FTextView::getScrollBarMaxHorizontal() const noexcept -> int
+{
+  const auto max_width = int(max_line_width);
+  const auto width = int(getWidth());
+  return max_width >= width - nf_offset - 1
+         ? max_width - width + nf_offset + 2
+         : 0;
+}
+
+//----------------------------------------------------------------------
+inline auto FTextView::getScrollBarMaxVertical() const noexcept -> int
+{
+  const auto last_line = int(getRows());
+  const auto height = int(getHeight());
+  return last_line > height - 2 + nf_offset
+         ? last_line - height + 2 - nf_offset
+         : 0;
+}
+
+//----------------------------------------------------------------------
 inline void FTextView::updateVerticalScrollBar() const
 {
-  const int vmax = ( getRows() > getTextHeight() )
-                   ? int(getRows()) - int(getTextHeight())
-                   : 0;
-  vbar->setMaximum (vmax);
+  vbar->setMaximum (getScrollBarMaxVertical());
   vbar->setPageSize (int(getRows()), int(getTextHeight()));
   vbar->calculateSliderValues();
 
@@ -688,10 +670,7 @@ inline void FTextView::updateHorizontalScrollBar (std::size_t column_width)
   if ( column_width <= getTextWidth() )
     return;
 
-  const int hmax = ( max_line_width > getTextWidth() )
-                   ? int(max_line_width) - int(getTextWidth())
-                   : 0;
-  hbar->setMaximum (hmax);
+  hbar->setMaximum (getScrollBarMaxHorizontal());
   hbar->setPageSize (int(max_line_width), int(getTextWidth()));
   hbar->calculateSliderValues();
 

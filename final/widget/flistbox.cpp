@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2023 Markus Gans                                      *
+* Copyright 2014-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -97,22 +97,19 @@ void FListBox::showInsideBrackets ( const std::size_t index
 
   const auto column_width = getColumnWidth(iter->getText()) + 2;
 
-  if ( column_width > max_line_width )
+  if ( column_width <= max_line_width )
+    return;
+
+  max_line_width = column_width;
+
+  if ( column_width >= getWidth() - nf_offset - 3 )
   {
-    max_line_width = column_width;
+    scroll.hbar->setMaximum (getScrollBarMaxHorizontal());
+    scroll.hbar->setPageSize (int(max_line_width), int(getMaxWidth()));
+    scroll.hbar->setValue (scroll.xoffset);
 
-    if ( column_width >= getWidth() - nf_offset - 3 )
-    {
-      const int hmax = ( max_line_width > getMaxWidth() )
-                       ? int(max_line_width - getMaxWidth())
-                       : 0;
-      scroll.hbar->setMaximum (hmax);
-      scroll.hbar->setPageSize (int(max_line_width), int(getMaxWidth()));
-      scroll.hbar->setValue (scroll.xoffset);
-
-      if ( ! scroll.hbar->isShown() )
-        scroll.hbar->show();
-    }
+    if ( ! scroll.hbar->isShown() )
+      scroll.hbar->show();
   }
 }
 
@@ -156,8 +153,7 @@ void FListBox::insert (const FListBoxItem& listItem)
   if ( selection.current == 0 )
     selection.current = 1;
 
-  auto element_count = getCount();
-  recalculateVerticalBar (element_count);
+  recalculateVerticalBar (getCount());
   processChanged();
 }
 
@@ -168,39 +164,9 @@ void FListBox::remove (std::size_t item)
     return;
 
   data.itemlist.erase (data.itemlist.cbegin() + int(item) - 1);
-  const std::size_t element_count = getCount();
-  max_line_width = 0;
 
-  for (const auto& listbox_item : data.itemlist)
-  {
-    const auto column_width = getColumnWidth(listbox_item.getText());
-    max_line_width = std::max(column_width, max_line_width);
-  }
-
-  const int hmax = ( max_line_width > getMaxWidth() )
-                   ? int(max_line_width - getMaxWidth())
-                   : 0;
-  scroll.hbar->setMaximum (hmax);
-  scroll.hbar->setPageSize (int(max_line_width), int(getMaxWidth()));
-
-  if ( scroll.hbar->isShown() && isHorizontallyScrollable() )
-    scroll.hbar->hide();
-
-  const int vmax = ( element_count + 2 > getHeight() )
-                   ? int(element_count - getHeight()) + 2
-                   : 0;
-  scroll.vbar->setMaximum (vmax);
-  scroll.vbar->setPageSize (int(element_count), int(getHeight()) - 2);
-
-  if ( scroll.vbar->isShown() && isVerticallyScrollable() )
-    scroll.vbar->hide();
-
-  if ( selection.current >= item && selection.current > 1 )
-    selection.current--;
-
-  selection.current = std::min(selection.current, element_count);
-  scroll.yoffset = std::min(scroll.yoffset, int(element_count - getHeight()) + 2);
-  scroll.yoffset = std::max(scroll.yoffset, 0);
+  recalculateMaximumLineWidth();
+  updateScrollBarAfterRemoval (item);
   processChanged();
 }
 
@@ -465,22 +431,13 @@ void FListBox::adjustSize()
   const std::size_t element_count = getCount();
   const std::size_t width = getClientWidth();
   const std::size_t height = getClientHeight();
-
   adjustYOffset (element_count);
-
-  const int vmax = ( element_count > height )
-                   ? int(element_count - height)
-                   : 0;
-  scroll.vbar->setMaximum (vmax);
+  scroll.vbar->setMaximum (getScrollBarMaxVertical());
   scroll.vbar->setPageSize (int(element_count), int(height));
   scroll.vbar->setX (int(getWidth()));
   scroll.vbar->setHeight (height, false);
   scroll.vbar->resize();
-
-  const int hmax = ( max_line_width + 2 > width )
-                   ? int(max_line_width - width + 2)
-                   : 0;
-  scroll.hbar->setMaximum (hmax);
+  scroll.hbar->setMaximum (getScrollBarMaxHorizontal());
   scroll.hbar->setPageSize (int(max_line_width), int(width) - 2);
   scroll.hbar->setY (int(getHeight()));
   scroll.hbar->setWidth (width, false);
@@ -971,10 +928,7 @@ void FListBox::recalculateHorizontalBar (std::size_t len, bool has_brackets)
 
   if ( len >= getWidth() - nf_offset - 3 )
   {
-    const int hmax = ( max_line_width > getMaxWidth() )
-                     ? int(max_line_width - getMaxWidth())
-                     : 0;
-    scroll.hbar->setMaximum (hmax);
+    scroll.hbar->setMaximum (getScrollBarMaxHorizontal());
     scroll.hbar->setPageSize (int(max_line_width), int(getWidth() - nf_offset) - 4);
     scroll.hbar->calculateSliderValues();
 
@@ -991,10 +945,7 @@ void FListBox::recalculateHorizontalBar (std::size_t len, bool has_brackets)
 //----------------------------------------------------------------------
 void FListBox::recalculateVerticalBar (std::size_t element_count) const
 {
-  const int vmax = ( element_count + 2 > getHeight() )
-                   ? int(element_count - getHeight() + 2)
-                   : 0;
-  scroll.vbar->setMaximum (vmax);
+  scroll.vbar->setMaximum (getScrollBarMaxVertical());
   scroll.vbar->setPageSize (int(element_count), int(getHeight()) - 2);
   scroll.vbar->calculateSliderValues();
 
@@ -1675,6 +1626,59 @@ void FListBox::changeOnResize() const
   {
     scroll.vbar->setGeometry (FPoint{int(getWidth()), 2}, FSize{1, getHeight() - 2});
     scroll.hbar->setGeometry (FPoint{2, int(getHeight())}, FSize{getWidth() - 2, 1});
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::updateScrollBarAfterRemoval (std::size_t item)
+{
+  scroll.hbar->setMaximum (getScrollBarMaxHorizontal());
+  scroll.hbar->setPageSize (int(max_line_width), int(getMaxWidth()));
+
+  if ( scroll.hbar->isShown() && isHorizontallyScrollable() )
+    scroll.hbar->hide();
+
+  const std::size_t element_count = getCount();
+  scroll.vbar->setMaximum (getScrollBarMaxVertical());
+  scroll.vbar->setPageSize (int(element_count), int(getHeight()) - 2);
+
+  if ( scroll.vbar->isShown() && isVerticallyScrollable() )
+    scroll.vbar->hide();
+
+  if ( selection.current >= item && selection.current > 1 )
+    selection.current--;
+
+  selection.current = std::min(selection.current, element_count);
+  scroll.yoffset = std::min(scroll.yoffset, int(element_count - getHeight()) + 2);
+  scroll.yoffset = std::max(scroll.yoffset, 0);
+}
+
+//----------------------------------------------------------------------
+inline auto FListBox::getScrollBarMaxHorizontal() const noexcept -> int
+{
+  return max_line_width > getMaxWidth()
+         ? int(max_line_width - getMaxWidth())
+         : 0;
+}
+
+//----------------------------------------------------------------------
+inline auto FListBox::getScrollBarMaxVertical() const noexcept -> int
+{
+  const auto element_count = getCount();
+  return element_count + 2 > getHeight()
+         ? int(element_count - getHeight()) + 2
+         : 0;
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::recalculateMaximumLineWidth()
+{
+  max_line_width = 0;
+
+  for (const auto& listbox_item : data.itemlist)
+  {
+    const auto column_width = getColumnWidth(listbox_item.getText());
+    max_line_width = std::max(column_width, max_line_width);
   }
 }
 

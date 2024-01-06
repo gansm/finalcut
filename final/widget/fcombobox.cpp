@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2023 Markus Gans                                      *
+* Copyright 2019-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -230,10 +230,7 @@ void FComboBox::setEditable (bool enable)
 //----------------------------------------------------------------------
 void FComboBox::setCurrentItem (std::size_t index)
 {
-  if ( index > getCount() )
-    index = getCount();
-  else if ( index < 1 )
-    index = 1;
+  index = std::max(std::size_t(1), std::min(index, getCount()));
 
   if ( index == list_window.list.currentItem() )
     return;
@@ -249,10 +246,7 @@ void FComboBox::setMaxVisibleItems (std::size_t items)
 {
   // Sets the maximum height of the combo box in elements
 
-  if ( items > getCount() )
-    max_items = getCount();
-  else
-    max_items = items;
+  max_items = std::min(items, getCount());
 }
 
 //----------------------------------------------------------------------

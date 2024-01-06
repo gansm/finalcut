@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2023 Markus Gans                                      *
+* Copyright 2017-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -1315,19 +1315,13 @@ void FListView::adjustScrollbars (const std::size_t element_count) const
 {
   const std::size_t width = getClientWidth();
   const std::size_t height = getClientHeight();
-  const int vmax = ( element_count > height )
-                   ? int(element_count - height)
-                   : 0;
-  scroll.vbar->setMaximum (vmax);
+  scroll.vbar->setMaximum (getScrollBarMaxVertical(element_count));
   scroll.vbar->setPageSize (int(element_count), int(height));
   scroll.vbar->setX (int(getWidth()));
   scroll.vbar->setHeight (height, false);
   scroll.vbar->resize();
 
-  const int hmax = ( max_line_width > width )
-                   ? int(max_line_width - width)
-                   : 0;
-  scroll.hbar->setMaximum (hmax);
+  scroll.hbar->setMaximum (getScrollBarMaxHorizontal());
   scroll.hbar->setPageSize (int(max_line_width), int(width));
   scroll.hbar->setY (int(getHeight()));
   scroll.hbar->setWidth (width, false);
@@ -2264,10 +2258,7 @@ void FListView::recalculateHorizontalBar (std::size_t len)
 
   if ( len >= getWidth() - nf_offset - 3 )
   {
-    const int hmax = ( max_line_width > getWidth() - nf_offset - 4 )
-                     ? int(max_line_width - getWidth() + nf_offset + 4)
-                     : 0;
-    scroll.hbar->setMaximum (hmax);
+    scroll.hbar->setMaximum (getScrollBarMaxHorizontal());
     scroll.hbar->setPageSize (int(max_line_width), int(getWidth() - nf_offset) - 4);
     scroll.hbar->calculateSliderValues();
 
@@ -2285,10 +2276,7 @@ void FListView::recalculateHorizontalBar (std::size_t len)
 void FListView::recalculateVerticalBar (std::size_t element_count) const
 {
   const std::size_t height = getClientHeight();
-  const int vmax = ( element_count > height )
-                   ? int(element_count - height)
-                   : 0;
-  scroll.vbar->setMaximum (vmax);
+  scroll.vbar->setMaximum (getScrollBarMaxVertical(element_count));
   scroll.vbar->setPageSize (int(element_count), int(height));
   scroll.vbar->calculateSliderValues();
 
@@ -2951,12 +2939,7 @@ void FListView::scrollToX (int x)
 
   scroll.xoffset = x;
   const int xoffset_end = int(max_line_width) - int(getClientWidth());
-
-  if ( scroll.xoffset > xoffset_end )
-    scroll.xoffset = xoffset_end;
-
-  if ( scroll.xoffset < 0 )
-    scroll.xoffset = 0;
+  scroll.xoffset = std::max(0, std::min(scroll.xoffset, xoffset_end));
 }
 
 //----------------------------------------------------------------------
@@ -3003,6 +2986,24 @@ void FListView::scrollBy (int dx, int dy)
 
   if ( dy < 0 )
     stepBackward(-dy);
+}
+
+//----------------------------------------------------------------------
+inline auto FListView::getScrollBarMaxHorizontal() const noexcept -> int
+{
+  const std::size_t width = getClientWidth();
+  return max_line_width > width
+         ? int(max_line_width - width)
+         : 0;
+}
+
+//----------------------------------------------------------------------
+inline auto FListView::getScrollBarMaxVertical (const std::size_t element_count) const noexcept -> int
+{
+  const std::size_t height = getClientHeight();
+  return element_count > height
+         ? int(element_count - height)
+         : 0;
 }
 
 //----------------------------------------------------------------------

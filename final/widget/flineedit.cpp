@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2023 Markus Gans                                      *
+* Copyright 2012-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -213,13 +213,8 @@ void FLineEdit::setCursorPosition (std::size_t pos)
   if ( isReadOnly() )
     return;
 
-  if ( pos == 0 )
-    cursor_pos = 1;
-  else
-    cursor_pos = pos - 1;
-
-  if ( cursor_pos > text.getLength() )
-    cursor_pos = text.getLength();
+  cursor_pos = ( pos != 0 ) ? pos - 1 : 1;
+  cursor_pos = std::min(cursor_pos, text.getLength());
 
   if ( isShown() )
     adjustTextOffset();
@@ -394,9 +389,7 @@ void FLineEdit::onMouseDown (FMouseEvent* ev)
 
   const std::size_t len = print_text.getLength();
   cursor_pos = clickPosToCursorPos (std::size_t(mouse_x) - 2);
-
-  if ( cursor_pos >= len )
-    cursor_pos = len;
+  cursor_pos = std::min(cursor_pos, len);
 
   if ( mouse_x == int(getWidth()) )
     adjustTextOffset();
