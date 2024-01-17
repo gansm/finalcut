@@ -31,7 +31,7 @@ jobs:
           sudo -E pkgin update
           # https://ftp.netbsd.org/pub/pkgsrc/current/pkgsrc/index-all.html
           sudo -E pkgin -y install gcc13 automake autoconf autoconf-archive libtool pkgconf cppunit
-          export CXX=/usr/pkg/gcc10/bin/g++
+          export CXX=/usr/pkg/gcc13/bin/g++
           $CXX --version
           autoreconf -v --install --force
           ./configure --prefix=/usr

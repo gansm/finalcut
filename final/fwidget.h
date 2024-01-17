@@ -436,10 +436,10 @@ class FWidget : public FVTerm
     void  mapWidgetEvents();
     void  initRootWidget();
     void  initWidgetLayout();
-    void  initDesktopOnShown();
+    void  initDesktopOnShown() const;
     void  finish();
     void  startShow();
-    void  finalizeShow();
+    void  finalizeShow() const;
     void  showChildWidgets();
     void  moveLeftIfNotEnoughSpace();
     void  moveUpIfNotEnoughSpace();

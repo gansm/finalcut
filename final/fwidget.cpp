@@ -1715,7 +1715,7 @@ void FWidget::initWidgetLayout()
 }
 
 //----------------------------------------------------------------------
-inline void FWidget::initDesktopOnShown()
+inline void FWidget::initDesktopOnShown() const
 {
   // Initialize desktop on first call
 
@@ -1748,7 +1748,7 @@ inline void FWidget::startShow()
 }
 
 //----------------------------------------------------------------------
-inline void FWidget::finalizeShow()
+inline void FWidget::finalizeShow() const
 {
   if ( ! first_shown_widget || first_shown_widget != this )
     return ;
