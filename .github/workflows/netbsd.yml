@@ -16,21 +16,21 @@ jobs:
     - name: Repository checkout
       uses: actions/checkout@v3
 
-    - name: Test on NetBSD 9.2
-      uses: cross-platform-actions/action@v0.10.0
+    - name: Test on NetBSD 9.3
+      uses: cross-platform-actions/action@v0.22.0
       with:
         operating_system: netbsd
-        version: '9.2'
+        version: '9.3'
         shell: bash
         run: |
           uname -a
           whoami
           pwd
-          export PKG_REPOS="http://cdn.NetBSD.org/pub/pkgsrc/packages/NetBSD/$(uname -p)/.9.0_current/All/"
+          export PKG_REPOS="http://cdn.NetBSD.org/pub/pkgsrc/packages/NetBSD/$(uname -p)/$(uname -r)/All/"
           sudo -E pkgin clean
           sudo -E pkgin update
           # https://ftp.netbsd.org/pub/pkgsrc/current/pkgsrc/index-all.html
-          sudo -E pkgin -y install gcc10 automake autoconf autoconf-archive libtool pkgconf cppunit
+          sudo -E pkgin -y install gcc13 automake autoconf autoconf-archive libtool pkgconf cppunit
           export CXX=/usr/pkg/gcc10/bin/g++
           $CXX --version
           autoreconf -v --install --force
