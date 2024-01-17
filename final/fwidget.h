@@ -436,7 +436,11 @@ class FWidget : public FVTerm
     void  mapWidgetEvents();
     void  initRootWidget();
     void  initWidgetLayout();
+    void  initDesktopOnShown();
     void  finish();
+    void  startShow();
+    void  finalizeShow();
+    void  showChildWidgets();
     void  moveLeftIfNotEnoughSpace();
     void  moveUpIfNotEnoughSpace();
     void  reduceWidthIfNotEnoughSpace();
@@ -450,6 +454,7 @@ class FWidget : public FVTerm
                                  , const FWidget*) const  -> FObjectList::const_iterator;
     auto  searchBackwardsForWidget ( const FWidget*
                                    , const FWidget* ) const -> FObjectList::const_reverse_iterator;
+    auto  isViewable() const -> bool;
     auto  canReceiveFocus (const FWidget*) const -> bool;
     void  setFocusOnThisWidget (FocusTypes);
     auto  sendFailAtChildFocusEvent (FWidget*, FocusTypes) const -> bool;
@@ -505,7 +510,7 @@ class FWidget : public FVTerm
     static FWidget*      clicked_widget;
     static FWidget*      open_menu;
     static FWidget*      move_resize_widget;
-    static FWidget*      show_root_widget;
+    static FWidget*      first_shown_widget;
     static FWidget*      redraw_root_widget;
     static FWidgetList*  dialog_list;
     static FWidgetList*  always_on_top_list;

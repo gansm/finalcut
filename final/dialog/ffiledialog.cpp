@@ -49,11 +49,10 @@ auto sortByName ( const FFileDialog::FDirEntry& lhs
 }
 
 //----------------------------------------------------------------------
-auto sortDirFirst ( const FFileDialog::FDirEntry& lhs
-                  , const FFileDialog::FDirEntry& rhs ) -> bool
+auto sortDirFirst (const FFileDialog::FDirEntry& entry) -> bool
 {
   // sort directories first
-  return ( lhs.directory && ! rhs.directory );
+  return entry.directory;
 }
 
 //----------------------------------------------------------------------
@@ -386,9 +385,9 @@ void FFileDialog::sortDir()
   const sInt64 start = dir_entries.cbegin()->name == ".." ? 1 : 0;
   const sInt64 dir_num = numOfDirs();
   // directories first
-  std::sort ( dir_entries.begin() + start
-            , dir_entries.end()
-            , sortDirFirst );
+  std::partition ( dir_entries.begin() + start
+                 , dir_entries.end()
+                 , sortDirFirst );
   // sort directories by name
   std::sort ( dir_entries.begin() + start
             , dir_entries.begin() + dir_num

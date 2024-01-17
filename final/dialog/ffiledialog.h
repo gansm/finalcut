@@ -220,8 +220,7 @@ class FFileDialog : public FDialog
     // Friend functions
     friend auto sortByName ( const FFileDialog::FDirEntry&
                            , const FFileDialog::FDirEntry& ) -> bool;
-    friend auto sortDirFirst ( const FFileDialog::FDirEntry&
-                             , const FFileDialog::FDirEntry& ) -> bool;
+    friend auto sortDirFirst (const FFileDialog::FDirEntry&) -> bool;
     friend auto fileChooser ( FWidget*
                             , const FString&
                             , const FString&

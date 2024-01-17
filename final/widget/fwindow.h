@@ -176,6 +176,8 @@ class FWindow : public FWidget
     static void  processAlwaysOnTop();
     static auto  getWindowWidgetImpl (FWidget*) -> FWindow*;
     static auto  getWindowLayerImpl (FWidget*) -> int;
+    static void  activateTopWindow (const FWindow*);
+    static auto  isWindowActivatable (const FWindow*, const FWindow*) -> bool;
     static void  reactivateWindow (FWindow*);
 
     // Data members

@@ -661,33 +661,12 @@ void FWindow::switchToPrevWindow (const FWidget* widget)
     widget->setTerminalUpdates (FVTerm::TerminalUpdate::Stop);
 
   const bool is_activated = activatePrevWindow();
-  auto active_win = static_cast<FWindow*>(getActiveWindow());
+  auto current_active_win = static_cast<FWindow*>(getActiveWindow());
 
-  if ( ! is_activated && getWindowList() && getWindowList()->size() > 1 )
-  {
-    // no previous window -> looking for another window
-    auto iter = getWindowList()->cend();
-    const auto begin = getWindowList()->cbegin();
+  if ( ! is_activated )
+    activateTopWindow(current_active_win);
 
-    do
-    {
-      --iter;
-      auto w = static_cast<FWindow*>(*iter);
-
-      if ( w
-        && w != active_win
-        && ! (w->isWindowHidden() || w->isWindowActive())
-        && w != static_cast<FWindow*>(getStatusBar())
-        && w != static_cast<FWindow*>(getMenuBar()) )
-      {
-        FWindow::setActiveWindow(w);
-        break;
-      }
-    }
-    while ( iter != begin );
-  }
-
-  reactivateWindow (active_win);
+  reactivateWindow (current_active_win);
 
   // Enable terminal updates again
   if ( widget )
@@ -698,16 +677,16 @@ void FWindow::switchToPrevWindow (const FWidget* widget)
 auto FWindow::activatePrevWindow() -> bool
 {
   // activate the previous window
-  const auto& w = previous_window;
+  const auto& p_win = previous_window;
 
-  if ( w )
+  if ( p_win )
   {
-    if ( w->isWindowActive() )
+    if ( p_win->isWindowActive() )
       return true;
 
-    if ( ! w->isWindowHidden() )
+    if ( ! p_win->isWindowHidden() )
     {
-      FWindow::setActiveWindow(w);
+      FWindow::setActiveWindow(p_win);
       return true;
     }
   }
@@ -914,6 +893,43 @@ auto FWindow::getWindowLayerImpl (FWidget* obj) -> int
     window = obj;
 
   return FVTerm::getLayer(*window);
+}
+
+//----------------------------------------------------------------------
+void FWindow::activateTopWindow (const FWindow* current_active_window)
+{
+  auto window_list = getWindowList();
+
+  if ( ! window_list || window_list->size() < 2 )
+    return;
+
+  // no previous window -> looking for another window
+  auto iter = window_list->cend();
+  const auto begin = window_list->cbegin();
+
+  do
+  {
+    --iter;
+    const auto window = static_cast<FWindow*>(*iter);
+
+    if ( isWindowActivatable(window, current_active_window) )
+    {
+      FWindow::setActiveWindow(window);
+      break;
+    }
+  }
+  while ( iter != begin );
+}
+
+//----------------------------------------------------------------------
+auto FWindow::isWindowActivatable ( const FWindow* window
+                                  , const FWindow* current_active_window ) -> bool
+{
+  return window
+      && window != current_active_window
+      && ! (window->isWindowHidden() || window->isWindowActive())
+      && window != static_cast<FWindow*>(getStatusBar())
+      && window != static_cast<FWindow*>(getMenuBar());
 }
 
 //----------------------------------------------------------------------

@@ -298,6 +298,10 @@ class FVTerm : public FVTermAttribute
     constexpr auto  getFullAreaWidth (const FTermArea*) const noexcept -> int;
     constexpr auto  getFullAreaHeight (const FTermArea*) const noexcept -> int;
     void  passChangesToOverlap (const FTermArea*) const;
+    void  passChangesToOverlappingWindow (FTermArea*, const FTermArea*) const;
+    void  passChangesToOverlappingWindowLine (FTermArea*, int, const FTermArea*) const;
+    int   calculateStartCoordinate (int, int) const noexcept;
+    int   calculateEndCoordinate (int, int, int, int) const noexcept;
     void  restoreOverlaidWindows (const FTermArea* area) const noexcept;
     void  updateVTerm() const;
     void  scrollTerminalForward() const;

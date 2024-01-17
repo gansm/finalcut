@@ -53,7 +53,7 @@ FWidget* var::root_widget{nullptr};
 // static class attributes
 FStatusBar*           FWidget::statusbar{nullptr};
 FMenuBar*             FWidget::menubar{nullptr};
-FWidget*              FWidget::show_root_widget{nullptr};
+FWidget*              FWidget::first_shown_widget{nullptr};
 FWidget*              FWidget::redraw_root_widget{nullptr};
 FWidget::FWidgetList* FWidget::dialog_list{nullptr};
 FWidget::FWidgetList* FWidget::always_on_top_list{nullptr};
@@ -875,42 +875,18 @@ void FWidget::show()
 {
   // Make the widget visible and draw it
 
-  if ( ! isVisible() || isShown() || FApplication::isQuit() )
+  if ( ! isViewable() )
     return;
 
-  // Initialize desktop on first call
-  if ( ! init_desktop && internal::var::root_widget )
-    internal::var::root_widget->initDesktop();
-
-  if ( ! show_root_widget )
-  {
-    startDrawing();
-    show_root_widget = this;
-  }
-
-  initWidgetLayout();  // Makes initial layout settings
-  adjustSize();        // Alignment before drawing
-  draw();              // Draw the widget
+  initDesktopOnShown();  // Initialize desktop on first call
+  startShow();
+  initWidgetLayout();    // Makes initial layout settings
+  adjustSize();          // Alignment before drawing
+  draw();                // Draw the widget
   flags.visibility.hidden = false;
   flags.visibility.shown = true;
-
-  if ( hasChildren() )
-  {
-    for (auto* child : getChildren())
-    {
-      auto child_widget = static_cast<FWidget*>(child);
-
-      if ( child->isWidget() && ! child_widget->flags.visibility.hidden )
-        child_widget->show();
-    }
-  }
-
-  if ( show_root_widget && show_root_widget == this )
-  {
-    finishDrawing();
-    forceTerminalUpdate();
-    show_root_widget = nullptr;
-  }
+  showChildWidgets();
+  finalizeShow();
 
   FShowEvent show_ev (Event::Show);
   FApplication::sendEvent(this, &show_ev);
@@ -1711,7 +1687,7 @@ void FWidget::initRootWidget()
   // Root widget basic initialization
   internal::var::root_widget = this;
   finalcut::initByte1PrintTransMask();  // FWidget helper functions
-  show_root_widget = nullptr;
+  first_shown_widget = nullptr;
   redraw_root_widget = nullptr;
   modal_dialog_counter = 0;
   statusbar = nullptr;
@@ -1739,6 +1715,17 @@ void FWidget::initWidgetLayout()
 }
 
 //----------------------------------------------------------------------
+inline void FWidget::initDesktopOnShown()
+{
+  // Initialize desktop on first call
+
+  if ( init_desktop || ! internal::var::root_widget )
+    return;
+
+  internal::var::root_widget->initDesktop();
+}
+
+//----------------------------------------------------------------------
 void FWidget::finish()
 {
   delete close_widget_list;
@@ -1748,6 +1735,42 @@ void FWidget::finish()
   delete always_on_top_list;
   always_on_top_list = nullptr;
   internal::var::root_widget = nullptr;
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::startShow()
+{
+  if ( first_shown_widget )
+    return;
+
+  startDrawing();
+  first_shown_widget = this;
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::finalizeShow()
+{
+  if ( ! first_shown_widget || first_shown_widget != this )
+    return ;
+
+  finishDrawing();
+  forceTerminalUpdate();
+  first_shown_widget = nullptr;
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::showChildWidgets()
+{
+  if ( ! hasChildren() )
+    return;
+
+  for (auto* child : getChildren())
+  {
+    auto child_widget = static_cast<FWidget*>(child);
+
+    if ( child->isWidget() && ! child_widget->flags.visibility.hidden )
+      child_widget->show();
+  }
 }
 
 //----------------------------------------------------------------------
@@ -1951,6 +1974,14 @@ inline auto FWidget::searchBackwardsForWidget ( const FWidget* parent
   }
 
   return iter;
+}
+
+//----------------------------------------------------------------------
+inline auto FWidget::isViewable() const -> bool
+{
+  return isVisible()
+      && ! isShown()
+      && ! FApplication::isQuit();
 }
 
 //----------------------------------------------------------------------

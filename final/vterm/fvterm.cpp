@@ -1257,33 +1257,60 @@ void FVTerm::passChangesToOverlap (const FTermArea* area) const
 
     if ( found && win && win->visible && win->isOverlapped(area) )
     {
-      // Pass the changes to the overlapping window
-
-      win->has_changes = true;
-      const int win_position_y = win->position.y;
-      const int y_start = std::max(0, std::max(area->position.y, win_position_y)) - win_position_y;
-      const int area_height = area->minimized ? area->min_size.height : getFullAreaHeight(area);
-      const int win_height = win->minimized ? win->min_size.height : getFullAreaHeight(win);
-      const int area_y2 = area->position.y + area_height - 1;
-      const int win_y2 = win_position_y + win_height - 1;
-      const int y_end = std::min(vterm->size.height - 1, std::min(area_y2, win_y2)) - win_position_y;
-
-      for (auto y{y_start}; y <= y_end; y++)  // Line loop
-      {
-        const int win_position_x = win->position.x;
-        const int x_start = std::max(0, std::max(area->position.x, win_position_x)) - win_position_x;
-        const int area_x2 = area->position.x + area->size.width + area->shadow.width - 1;
-        const int win_x2 = win_position_x + win->size.width + win->shadow.width - 1;
-        const int x_end = std::min(vterm->size.width - 1, std::min(area_x2, win_x2)) - win_position_x;
-        auto& line_changes = win->changes[unsigned(y)];
-        line_changes.xmin = uInt(std::min(int(line_changes.xmin), x_start));
-        line_changes.xmax = uInt(std::max(int(line_changes.xmax), x_end));
-      }
+      // Pass changes to the found window
+      passChangesToOverlappingWindow (win, area);
     }
 
     if ( win == area )
       found = true;
   }
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::passChangesToOverlappingWindow (FTermArea* win, const FTermArea* area) const
+{
+  win->has_changes = true;
+  const int win_y_min = win->position.y;
+  const int y_start = calculateStartCoordinate (area->position.y, win_y_min);
+  const int area_height = area->minimized ? area->min_size.height : getFullAreaHeight(area);
+  const int win_height = win->minimized ? win->min_size.height : getFullAreaHeight(win);
+  const int area_y_max = area->position.y + area_height - 1;
+  const int win_y_max = win_y_min + win_height - 1;
+  const int vterm_y_max = vterm->size.height - 1;
+  const int y_end = calculateEndCoordinate (vterm_y_max, area_y_max, win_y_min, win_y_max);
+
+  for (auto y{y_start}; y <= y_end; y++)  // Line loop
+  {
+    passChangesToOverlappingWindowLine (win, y, area);
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::passChangesToOverlappingWindowLine (FTermArea* win, int y, const FTermArea* area) const
+{
+  const int win_x_min = win->position.x;
+  const int x_start = calculateStartCoordinate (area->position.x, win_x_min);
+  const int area_x_max = area->position.x + area->size.width + area->shadow.width - 1;
+  const int win_x_max = win_x_min + win->size.width + win->shadow.width - 1;
+  const int vterm_x_max = vterm->size.width - 1;
+  const int x_end = calculateEndCoordinate (vterm_x_max, area_x_max, win_x_min, win_x_max);
+
+  // Sets the new change boundaries
+  auto& line_changes = win->changes[unsigned(y)];
+  line_changes.xmin = uInt(std::min(int(line_changes.xmin), x_start));
+  line_changes.xmax = uInt(std::max(int(line_changes.xmax), x_end));
+}
+
+//----------------------------------------------------------------------
+inline int FVTerm::calculateStartCoordinate (int area_min, int win_min) const noexcept
+{
+  return std::max(0, std::max(area_min, win_min)) - win_min;
+}
+
+//----------------------------------------------------------------------
+inline int FVTerm::calculateEndCoordinate (int vterm_max, int area_max, int win_min, int win_max) const noexcept
+{
+  return std::min(vterm_max, std::min(area_max, win_max)) - win_min;
 }
 
 //----------------------------------------------------------------------
