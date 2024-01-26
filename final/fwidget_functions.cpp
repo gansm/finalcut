@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2023 Markus Gans                                      *
+* Copyright 2019-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -123,6 +123,22 @@ auto isEscapeKey (const FKey key) -> bool
 {
   return ( key == FKey::Escape
         || key == FKey::Escape_mintty );
+}
+
+//----------------------------------------------------------------------
+auto isExpandComboBoxKey (const FKey key) -> bool
+{
+  return ( key == FKey::F4
+        || key == FKey::Meta_down
+        || key == FKey::Ctrl_down );
+}
+
+//----------------------------------------------------------------------
+auto isCollapseComboBoxKey (const FKey key) -> bool
+{
+  return ( key == FKey::Meta_up
+        || key == FKey::Ctrl_up
+        || isEscapeKey(key) );
 }
 
 //----------------------------------------------------------------------

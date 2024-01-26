@@ -502,51 +502,60 @@ void FTextView::drawScrollbars() const
 //----------------------------------------------------------------------
 void FTextView::drawText()
 {
-  if ( data.empty() || getHeight() <= 2 || getWidth() <= 2 )
+  if ( canSkipDrawing() )
     return;
-
-  auto num = getTextHeight();
-
-  if ( num > getRows() )
-    num = getRows();
 
   setColor();
 
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
+  auto num = std::min(getTextHeight(), getRows());
+
   for (std::size_t y{0}; y < num; y++)  // Line loop
-  {
-    const std::size_t n = std::size_t(yoffset) + y;
-    const std::size_t pos = std::size_t(xoffset) + 1;
-    const auto text_width = getTextWidth();
-    const FString line(getColumnSubString(data[n].text, pos, text_width));
-    print() << FPoint{2, 2 - nf_offset + int(y)};
-    FVTermBuffer line_buffer{};
-    line_buffer.print(line);
-
-    for (auto&& fchar : line_buffer)  // Column loop
-      if ( ! isPrintable(fchar.ch[0]) )
-        fchar.ch[0] = L'.';
-
-    const auto column_width = getColumnWidth(line);
-
-    if ( column_width <= text_width )
-    {
-      auto trailing_whitespace = text_width - column_width;
-      line_buffer.print() << FString{trailing_whitespace, L' '};
-    }
-
-    printHighlighted (line_buffer, data[n].highlight);
-  }
+    printLine (y);
 
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
 }
 
 //----------------------------------------------------------------------
-void FTextView::printHighlighted ( FVTermBuffer& line_buffer
-                                 , const std::vector<FTextHighlight>& highlight )
+inline auto FTextView::canSkipDrawing() const -> bool
+{
+  return data.empty()
+      || getHeight() < 3
+      || getWidth() < 3;
+}
+
+//----------------------------------------------------------------------
+inline void FTextView::printLine (std::size_t y)
+{
+  const std::size_t n = std::size_t(yoffset) + y;
+  const std::size_t pos = std::size_t(xoffset) + 1;
+  const auto text_width = getTextWidth();
+  const FString line(getColumnSubString(data[n].text, pos, text_width));
+  print() << FPoint{2, 2 - nf_offset + int(y)};
+  FVTermBuffer line_buffer{};
+  line_buffer.print(line);
+
+  for (auto&& fchar : line_buffer)  // Column loop
+    if ( ! isPrintable(fchar.ch[0]) )
+      fchar.ch[0] = L'.';
+
+  const auto column_width = getColumnWidth(line);
+
+  if ( column_width <= text_width )
+  {
+    auto trailing_whitespace = text_width - column_width;
+    line_buffer.print() << FString{trailing_whitespace, L' '};
+  }
+
+  printHighlighted (line_buffer, data[n].highlight);
+}
+
+//----------------------------------------------------------------------
+inline void FTextView::printHighlighted ( FVTermBuffer& line_buffer
+                                        , const std::vector<FTextHighlight>& highlight )
 {
   for (auto&& hgl : highlight)
   {

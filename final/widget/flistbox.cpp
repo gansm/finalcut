@@ -299,22 +299,11 @@ void FListBox::onMouseDoubleClick (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FListBox::onTimer (FTimerEvent*)
 {
+  if ( canSkipDragScrolling() )
+    return;
+
   const std::size_t current_before = selection.current;
   const int yoffset_before = scroll.yoffset;
-
-  if ( ( drag_scroll == DragScrollMode::Upward
-      || drag_scroll == DragScrollMode::SelectUpward )
-      && ! dragScrollUp() )
-  {
-    return;
-  }
-
-  if ( ( drag_scroll == DragScrollMode::Downward
-      || drag_scroll == DragScrollMode::SelectDownward )
-      && ! dragScrollDown() )
-  {
-    return;
-  }
 
   if ( current_before != selection.current )
   {
@@ -322,8 +311,7 @@ void FListBox::onTimer (FTimerEvent*)
     processRowChanged();
 
     // Handle multiple selections
-    if ( drag_scroll == DragScrollMode::SelectUpward
-      || drag_scroll == DragScrollMode::SelectDownward )
+    if ( isDragSelect() )
       multiSelectionUpTo(selection.current);
   }
 
@@ -460,6 +448,24 @@ void FListBox::adjustSize()
 inline auto FListBox::getString (FListBoxItems::iterator iter) -> FString
 {
   return iter->getText();
+}
+
+//----------------------------------------------------------------------
+inline auto FListBox::isDragSelect() const -> bool
+{
+  return drag_scroll == DragScrollMode::SelectUpward
+      || drag_scroll == DragScrollMode::SelectDownward;
+}
+
+//----------------------------------------------------------------------
+inline auto FListBox::canSkipDragScrolling() -> bool
+{
+  bool is_upward_scroll ( drag_scroll == DragScrollMode::Upward
+                       || drag_scroll == DragScrollMode::SelectUpward );
+  bool is_downward_scroll ( drag_scroll == DragScrollMode::Downward
+                         || drag_scroll == DragScrollMode::SelectDownward );
+  return ( is_upward_scroll && ! dragScrollUp() )
+      || ( is_downward_scroll && ! dragScrollDown() );
 }
 
 //----------------------------------------------------------------------

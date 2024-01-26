@@ -2672,7 +2672,7 @@ inline void FListView::toggleCheckbox()
   if ( isItemListEmpty() )
     return;
 
-  auto item = getCurrentItem();
+  const auto item = getCurrentItem();
 
   if ( item->isCheckable() )
     toggleItemCheckState(item);
@@ -2681,8 +2681,7 @@ inline void FListView::toggleCheckbox()
 //----------------------------------------------------------------------
 inline void FListView::collapseAndScrollLeft()
 {
-  const int position_before = selection.current_iter.getPosition();
-  auto item = getCurrentItem();
+  const auto item = getCurrentItem();
 
   if ( scroll.xoffset != 0 || ! item || isItemListEmpty() )
   {
@@ -2703,32 +2702,34 @@ inline void FListView::collapseAndScrollLeft()
     return;
   }
 
-  if ( ! item->hasParent() )
+  jumpToParentElement(item);
+}
+
+//----------------------------------------------------------------------
+inline void FListView::jumpToParentElement (const FListViewItem* item)
+{
+  if ( ! item->hasParent()
+    || ! item->getParent()->isInstanceOf("FListViewItem") )
     return;
 
-  // Jump to parent element
-  const auto& parent = item->getParent();
+  const int position_before = selection.current_iter.getPosition();
+  selection.current_iter.parentElement();  // Set the iterator to the parent
 
-  if ( parent->isInstanceOf("FListViewItem") )
+  if ( selection.current_iter.getPosition() >= scroll.first_line_position_before )
+    return;
+
+  const int difference = position_before - selection.current_iter.getPosition();
+
+  if ( scroll.first_visible_line.getPosition() - difference >= 0 )
   {
-    selection.current_iter.parentElement();
-
-    if ( selection.current_iter.getPosition() < scroll.first_line_position_before )
-    {
-      const int difference = position_before - selection.current_iter.getPosition();
-
-      if ( scroll.first_visible_line.getPosition() - difference >= 0 )
-      {
-        scroll.first_visible_line -= difference;
-        scroll.last_visible_line -= difference;
-      }
-      else
-      {
-        const int d = scroll.first_visible_line.getPosition();
-        scroll.first_visible_line -= d;
-        scroll.last_visible_line -= d;
-      }
-    }
+    scroll.first_visible_line -= difference;
+    scroll.last_visible_line -= difference;
+  }
+  else
+  {
+    const int d = scroll.first_visible_line.getPosition();
+    scroll.first_visible_line -= d;
+    scroll.last_visible_line -= d;
   }
 }
 
@@ -2736,7 +2737,7 @@ inline void FListView::collapseAndScrollLeft()
 inline void FListView::expandAndScrollRight()
 {
   const int xoffset_end = int(max_line_width) - int(getClientWidth());
-  auto item = getCurrentItem();
+  const auto item = getCurrentItem();
 
   if ( isTreeView() && ! isItemListEmpty() && item
     && item->isExpandable() && ! item->isExpand() )

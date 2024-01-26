@@ -238,6 +238,8 @@ class FTextView : public FWidget
     void drawBorder() override;
     void drawScrollbars() const;
     void drawText();
+    auto canSkipDrawing() const -> bool;
+    void printLine (std::size_t);
     void printHighlighted ( FVTermBuffer&
                           , const std::vector<FTextHighlight>& );
     auto useFDialogBorder() const -> bool;

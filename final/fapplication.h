@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2013-2023 Markus Gans                                      *
+* Copyright 2013-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -201,6 +201,7 @@ class FApplication : public FWidget
     auto         processAccelerator (const FWidget&) const -> bool;
     void         processTerminalFocus (const FKey&);
     static void  determineClickedWidget (const FMouseData&);
+    static auto  isNonActivatingMouseEvent (const FMouseData&) -> bool;
     static void  unsetMoveResizeMode (const FMouseData&);
     void         sendMouseEvent (const FMouseData&) const;
     void         sendMouseMoveEvent ( const FMouseData&

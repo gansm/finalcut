@@ -345,16 +345,12 @@ void FComboBox::onKeyPress (FKeyEvent* ev)
     onePosDown();
     ev->accept();
   }
-  else if ( key == FKey::Meta_up
-         || key == FKey::Ctrl_up
-         || isEscapeKey(key) )
+  else if ( isCollapseComboBoxKey(key) )
   {
     hideDropDown();
     ev->accept();
   }
-  else if ( key == FKey::F4
-         || key == FKey::Meta_down
-         || key == FKey::Ctrl_down )
+  else if ( isExpandComboBoxKey(key) )
   {
     showDropDown();
     ev->accept();

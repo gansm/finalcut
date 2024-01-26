@@ -554,6 +554,7 @@ class FListView : public FWidget
     void changeOnResize() const;
     void toggleCheckbox();
     void collapseAndScrollLeft();
+    void jumpToParentElement (const FListViewItem*);
     void expandAndScrollRight();
     void firstPos();
     void lastPos();

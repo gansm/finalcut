@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2023 Markus Gans                                      *
+* Copyright 2015-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -670,6 +670,19 @@ void FMenuBar::unselectMenuItem (FMenuItem* item)
 }
 
 //----------------------------------------------------------------------
+inline auto FMenuBar::isClickOnMenuEntry ( const FMouseEvent* ev
+                                         , const FMenuItem* item ) const -> bool
+{
+  const int mouse_x = ev->getX();
+  const int mouse_y = ev->getY();
+  const int x1 = item->getX();
+  const int x2 = item->getX() + int(item->getWidth());
+  return mouse_x >= x1
+      && mouse_x < x2
+      && mouse_y == 1;
+}
+
+//----------------------------------------------------------------------
 void FMenuBar::mouseDownOverList (const FMouseEvent* ev)
 {
   const auto& list = getItemList();
@@ -678,17 +691,12 @@ void FMenuBar::mouseDownOverList (const FMouseEvent* ev)
     return;
 
   focus_changed = false;
-  int mouse_x = ev->getX();
-  int mouse_y = ev->getY();
 
   for (auto&& item : list)
   {
-    int x1 = item->getX();
-    int x2 = item->getX() + int(item->getWidth());
-
-    if ( mouse_y == 1 )
+    if ( ev->getY() == 1 )
     {
-      if ( mouse_x >= x1 && mouse_x < x2 )
+      if ( isClickOnMenuEntry(ev, item) )
         selectMenuItem (item);  // Mouse pointer over item
       else
         unselectMenuItem (item);
@@ -715,17 +723,9 @@ void FMenuBar::mouseUpOverList (const FMouseEvent* ev)
   if ( list.empty() )
     return;
 
-  int mouse_x = ev->getX();
-  int mouse_y = ev->getY();
-
   for (auto&& item : list)
   {
-    int x1 = item->getX();
-    int x2 = item->getX() + int(item->getWidth());
-
-    if ( mouse_y == 1
-      && mouse_x >= x1
-      && mouse_x < x2
+    if ( isClickOnMenuEntry(ev, item)
       && item->isEnabled()
       && item->isSelected() )
     {
@@ -754,20 +754,13 @@ void FMenuBar::mouseMoveOverList (const FMouseEvent& ev)
 
   focus_changed = false;
   bool mouse_over_menubar{false};
-  int mouse_x = ev.getX();
-  int mouse_y = ev.getY();
 
   if ( getTermGeometry().contains(ev.getTermPos()) )
     mouse_over_menubar = true;
 
   for (auto&& item : list)
   {
-    int x1 = item->getX();
-    int x2 = item->getX() + int(item->getWidth());
-
-    if ( mouse_x >= x1
-      && mouse_x < x2
-      && mouse_y == 1 )
+    if ( isClickOnMenuEntry(&ev, item) )
     {
       // Mouse pointer over item
       selectMenuItem(item);

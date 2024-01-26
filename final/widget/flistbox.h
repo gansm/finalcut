@@ -336,6 +336,8 @@ class FListBox : public FWidget
     auto isHorizontallyScrollable() const -> bool;
     auto isVerticallyScrollable() const -> bool;
     auto isCurrentLine (int) const -> bool;
+    auto isDragSelect() const -> bool;
+    auto canSkipDragScrolling() -> bool;
 
     // Methods
     void init();

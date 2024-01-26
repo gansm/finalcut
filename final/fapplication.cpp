@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2013-2023 Markus Gans                                      *
+* Copyright 2013-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -1008,17 +1008,9 @@ void FApplication::determineClickedWidget (const FMouseData& md)
 {
   clicked_widget = FWidget::getClickedWidget();
 
-  if ( clicked_widget )
-    return;  // The clicked widget was already found
-
-  if ( ! md.isLeftButtonPressed()
-    && ! md.isLeftButtonDoubleClick()
-    && ! md.isRightButtonPressed()
-    && ! md.isMiddleButtonPressed()
-    && ! md.isWheelUp()
-    && ! md.isWheelDown()
-    && ! md.isWheelLeft()
-    && ! md.isWheelRight() )
+  // Check if the clicked widget has already been found
+  // or if the mouse has a non-press or wheel event
+  if ( clicked_widget || isNonActivatingMouseEvent(md) )
     return;
 
   const auto& mouse_position = md.getPos();
@@ -1033,6 +1025,18 @@ void FApplication::determineClickedWidget (const FMouseData& md)
   auto child = window->childWidgetAt(mouse_position);
   clicked_widget = ( child != nullptr ) ? child : window;
   setClickedWidget (clicked_widget);
+}
+
+//----------------------------------------------------------------------
+auto FApplication::isNonActivatingMouseEvent (const FMouseData& md) -> bool
+{
+  return md.isLeftButtonReleased()
+      || md.isRightButtonReleased()
+      || md.isMiddleButtonReleased()
+      || md.isShiftKeyPressed()
+      || md.isControlKeyPressed()
+      || md.isMetaKeyPressed()
+      || md.isMoved();
 }
 
 //----------------------------------------------------------------------

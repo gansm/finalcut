@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2022 Markus Gans                                      *
+* Copyright 2015-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -131,6 +131,7 @@ class FMenuBar : public FWindow
     auto clickItem (FMenuItem*) -> bool;
     void unselectMenuItem (FMenuItem*);
     void selectMenuItem (FMenuItem*);
+    auto isClickOnMenuEntry (const FMouseEvent*, const FMenuItem*) const -> bool;
     void mouseDownOverList (const FMouseEvent*);
     void mouseUpOverList (const FMouseEvent*);
     void mouseMoveOverList (const FMouseEvent&);
