@@ -448,7 +448,7 @@ void FSpinBox::cb_inputFieldChange (const FLineEdit& lineedit)
       value = 0;
   }
 
-  std::max(min, std::min(value, max));
+  value = std::max(min, std::min(value, max));
   updateInputField();
   processChanged();
 }

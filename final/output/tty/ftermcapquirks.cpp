@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2023 Markus Gans                                      *
+* Copyright 2018-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -129,6 +129,8 @@ void FTermcapQuirks::terminalFixup()
 
   // Fixes general quirks
   general();
+  // Repeat utf-8 character
+  repeatLastChar();
   // ECMA-48 (ANSI X3.64) compatible terminal
   ecma48();
 }
@@ -479,6 +481,19 @@ inline void FTermcapQuirks::caModeExtension()
     // and restore xterm icon and window title from stack
     setTCapString (TCAP(t_exit_ca_mode), CSI "?1049l" CSI "23;0;0t");
   }
+}
+
+//----------------------------------------------------------------------
+void FTermcapQuirks::repeatLastChar()
+{
+  // UTF-8 characters can be repeated with repeat_last_char, unlike
+  // repeat_char which can only repeat 7-bit ASCII characters
+
+  if ( ! TCAP(t_repeat_char)
+    || std::memcmp(TCAP(t_repeat_char), "%p1%c\033[%p2%{1}%-%db", 19) != 0 )
+    return;
+
+  setTCapString (TCAP(t_repeat_last_char), "\033[%p1%{1}%-%db");
 }
 
 //----------------------------------------------------------------------

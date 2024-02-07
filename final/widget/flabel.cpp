@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2023 Markus Gans                                      *
+* Copyright 2014-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -335,7 +335,7 @@ void FLabel::printLineContent (FString& line, std::size_t to_char)
 {
   for (std::size_t z{0}; z < to_char; z++)
   {
-    if ( ! std::iswprint(std::wint_t(line[z]))
+    if ( ! isPrintable(line[z])
       && ! FVTerm::getFOutput()->isNewFont()
       && ( line[z] < UniChar::NF_rev_left_arrow2
         || line[z] > UniChar::NF_check_mark ) )

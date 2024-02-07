@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2023 Markus Gans                                      *
+* Copyright 2017-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -32,6 +32,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <cwctype>
 
 #include <array>
 #include <chrono>
@@ -116,6 +117,16 @@ constexpr auto is7bit (CharT ch) noexcept -> bool
   return static_cast<char_type>(ch) < 128;
 }
 
+// Printable character verification
+constexpr auto isPrintable (char ch) noexcept -> bool
+{
+  return std::isprint(ch);
+}
+
+constexpr auto isPrintable (wchar_t ch) noexcept -> bool
+{
+  return std::iswprint(std::wint_t(ch));
+}
 
 // Typecast to c-string
 template <typename StringT>

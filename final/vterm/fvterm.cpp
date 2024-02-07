@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2023 Markus Gans                                      *
+* Copyright 2016-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -1480,6 +1480,12 @@ auto FVTerm::isInsideArea (const FPoint& pos, const FTermArea* area) const -> bo
 }
 
 //----------------------------------------------------------------------
+inline auto FVTerm::isFCharTransparent (const FChar& fchar) const -> bool
+{
+  return (fchar.attr.byte[1] & internal::var::b1_transparent_mask) != 0;
+}
+
+//----------------------------------------------------------------------
 inline auto FVTerm::isTransparentInvisible (const FChar& fchar) const -> bool
 {
   const auto& fist_char = fchar.ch[0];
@@ -1565,24 +1571,12 @@ inline void FVTerm::putAreaLineWithTransparency ( const FChar* src_char
   // Line has one or more transparent characters
   while ( pos.getX() < end_char )  // column loop
   {
-    const auto isTransparent = \
-        bool((src_char->attr.byte[1] & internal::var::b1_transparent_mask) != 0);
+    const auto is_transparent = isFCharTransparent(*src_char);
 
-    if ( isTransparent && non_trans_count != 0 )
+    if ( is_transparent )
     {
-      putAreaLine (*start_char, *dst_char, non_trans_count);
-      dst_char += non_trans_count;  // dst character
-      non_trans_count = 0;
-    }
-    else if ( ! isTransparent && trans_count != 0 )
-    {
-      putTransparentAreaLine (pos, trans_count);
-      dst_char += trans_count;  // dst character
-      trans_count = 0;
-    }
+      putNonTransparent(non_trans_count, start_char, dst_char);
 
-    if ( isTransparent )
-    {
       if ( trans_count == 0 )
         start_char = src_char;
 
@@ -1590,6 +1584,8 @@ inline void FVTerm::putAreaLineWithTransparency ( const FChar* src_char
     }
     else
     {
+      putTransparent(trans_count, pos, dst_char);
+
       if ( non_trans_count == 0 )
         start_char = src_char;
 
@@ -1635,24 +1631,12 @@ inline void FVTerm::addAreaLineWithTransparency ( const FChar* src_char
 
   while ( src_char < end_char )  // column loop
   {
-    const auto isTransparent = \
-        bool((src_char->attr.byte[1] & internal::var::b1_transparent_mask) != 0);
+    const auto is_transparent = isFCharTransparent(*src_char);
 
-    if ( isTransparent && non_trans_count != 0 )
+    if ( is_transparent )
     {
-      putAreaLine (*start_char, *dst_char, non_trans_count);
-      dst_char += non_trans_count;  // dst character
-      non_trans_count = 0;
-    }
-    else if ( ! isTransparent && trans_count != 0 )
-    {
-      addTransparentAreaLine (*start_char, *dst_char, trans_count);
-      dst_char += trans_count;  // dst character
-      trans_count = 0;
-    }
+      putNonTransparent(non_trans_count, start_char, dst_char);
 
-    if ( isTransparent )
-    {
       if ( trans_count == 0 )
         start_char = src_char;
 
@@ -1660,6 +1644,8 @@ inline void FVTerm::addAreaLineWithTransparency ( const FChar* src_char
     }
     else
     {
+      addTransparent(trans_count, start_char, dst_char);
+
       if ( non_trans_count == 0 )
         start_char = src_char;
 
@@ -1913,6 +1899,42 @@ inline void FVTerm::printPaddingCharacter (FTermArea* area, const FChar& term_ch
 
   // Print the padding-character
   print (area, pc);
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::putNonTransparent ( std::size_t& non_trans_count
+                                      , const FChar* start_char, FChar*& dst_char ) const
+{
+  if ( non_trans_count == 0 )
+    return;
+
+  putAreaLine(*start_char, *dst_char, non_trans_count);
+  dst_char += non_trans_count;  // dst character
+  non_trans_count = 0;
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::addTransparent ( std::size_t& trans_count
+                                   , const FChar* start_char, FChar*& dst_char ) const
+{
+  if ( trans_count == 0 )
+    return;
+
+  addTransparentAreaLine (*start_char, *dst_char, trans_count);
+  dst_char += trans_count;  // dst character
+  trans_count = 0;
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::putTransparent ( std::size_t& trans_count
+                                   , const FPoint& pos, FChar*& dst_char ) const
+{
+  if ( trans_count == 0 )
+    return;
+
+  putTransparentAreaLine(pos, trans_count);
+  dst_char += trans_count;  // dst character
+  trans_count = 0;
 }
 
 //----------------------------------------------------------------------

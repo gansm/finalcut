@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2023 Markus Gans                                      *
+* Copyright 2015-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -110,6 +110,7 @@ void FOptiMove::setTermEnvironment (const TermEnv& term_env)
   set_parm_right_cursor (term_env.param_cursor.t_parm_right_cursor);
   set_erase_chars (term_env.edit.t_erase_chars);
   set_repeat_char (term_env.edit.t_repeat_char);
+  set_repeat_last_char (term_env.edit.t_repeat_last_char);
   set_clr_bol (term_env.edit.t_clr_bol);
   set_clr_eol (term_env.edit.t_clr_eol);
   setTabStop (term_env.tabstop);
@@ -419,7 +420,7 @@ void FOptiMove::set_repeat_char (const char cap[])
 {
   if ( cap && FTermcap::isInitialized() )
   {
-    const auto& temp = FTermcap::encodeParameter(cap, ' ');
+    const auto& temp = FTermcap::encodeParameter(cap, ' ', 23);
     edit.repeat_char.cap = cap;
     edit.repeat_char.duration = capDuration (temp.data(), 1);
     edit.repeat_char.length = capDurationToLength (edit.repeat_char.duration);
@@ -429,6 +430,24 @@ void FOptiMove::set_repeat_char (const char cap[])
     edit.repeat_char.cap = nullptr;
     edit.repeat_char.duration = \
     edit.repeat_char.length   = LONG_DURATION;
+  }
+}
+
+//----------------------------------------------------------------------
+void FOptiMove::set_repeat_last_char (const char cap[])
+{
+  if ( cap && FTermcap::isInitialized() )
+  {
+    const auto& temp = FTermcap::encodeParameter(cap, 23);
+    edit.repeat_last_char.cap = cap;
+    edit.repeat_last_char.duration = capDuration (temp.data(), 1);
+    edit.repeat_last_char.length = capDurationToLength (edit.repeat_last_char.duration);
+  }
+  else
+  {
+    edit.repeat_last_char.cap = nullptr;
+    edit.repeat_last_char.duration = \
+    edit.repeat_last_char.length   = LONG_DURATION;
   }
 }
 

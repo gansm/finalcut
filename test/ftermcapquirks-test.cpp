@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2022 Markus Gans                                      *
+* Copyright 2018-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -76,6 +76,7 @@ static tcap_map tcap[] =
   { nullptr, "ic" },  // insert_character
   { nullptr, "IC" },  // parm_ich
   { nullptr, "rp" },  // repeat_char
+  { nullptr, "lr" },  // repeat_last_char
   { nullptr, "Ic" },  // initialize_color
   { nullptr, "Ip" },  // initialize_pair
   { nullptr, "AF" },  // set_a_foreground
@@ -162,6 +163,7 @@ class FTermcapQuirksTest : public CPPUNIT_NS::TestFixture
   protected:
     void classNameTest();
     void generalTest();
+    void repeatLastChar();
     void xtermTest();
 #if defined(__FreeBSD__) || defined(__DragonFly__)
     void freebsdTest();
@@ -185,6 +187,7 @@ class FTermcapQuirksTest : public CPPUNIT_NS::TestFixture
     // Add a methods to the test suite
     CPPUNIT_TEST (classNameTest);
     CPPUNIT_TEST (generalTest);
+    CPPUNIT_TEST (repeatLastChar);
     CPPUNIT_TEST (xtermTest);
 #if defined(__FreeBSD__) || defined(__DragonFly__)
     CPPUNIT_TEST (freebsdTest);
@@ -272,6 +275,24 @@ void FTermcapQuirksTest::generalTest()
                          , CSI "29m" );
   CPPUNIT_ASSERT_CSTRING ( printSequence(caps[int(finalcut::Termcap::t_enter_ca_mode)].string).c_str()
                          , "Esc 7 Esc [ ? 4 7 h " );
+}
+
+//----------------------------------------------------------------------
+void FTermcapQuirksTest::repeatLastChar()
+{
+  auto& caps = finalcut::FTermcap::strings;
+  finalcut::FTermcapQuirks quirks;
+  constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
+
+  for (std::size_t i = 0; i < last_item; i++)
+    memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
+
+  caps[int(finalcut::Termcap::t_repeat_char)].string = "%p1%c\033[%p2%{1}%-%db";
+  CPPUNIT_ASSERT ( ! caps[int(finalcut::Termcap::t_repeat_last_char)].string );
+  quirks.terminalFixup();
+  CPPUNIT_ASSERT ( caps[int(finalcut::Termcap::t_repeat_last_char)].string );
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_repeat_last_char)].string
+                         , "\033[%p1%{1}%-%db" );
 }
 
 //----------------------------------------------------------------------

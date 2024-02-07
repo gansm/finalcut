@@ -463,7 +463,7 @@ inline void FMenuBar::drawMenuText (menuText& data)
     if ( data.startpos > screenWidth - z )
       break;
 
-    if ( ! std::iswprint(std::wint_t(data.text[z]))
+    if ( ! isPrintable(data.text[z])
       && ! FVTerm::getFOutput()->isNewFont()
       && ( data.text[z] < UniChar::NF_rev_left_arrow2
         || data.text[z] > UniChar::NF_check_mark ) )

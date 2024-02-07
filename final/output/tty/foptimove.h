@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2023 Markus Gans                                      *
+* Copyright 2015-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -86,6 +86,7 @@ class FOptiMove final
     {
       const char* t_erase_chars;
       const char* t_repeat_char;
+      const char* t_repeat_last_char;
       const char* t_clr_bol;
       const char* t_clr_eol;
     };
@@ -150,6 +151,7 @@ class FOptiMove final
     void  set_parm_right_cursor (const char[]);
     void  set_erase_chars (const char[]);
     void  set_repeat_char (const char[]);
+    void  set_repeat_last_char (const char[]);
     void  set_clr_bol (const char[]);
     void  set_clr_eol (const char[]);
     void  set_auto_left_margin (bool = true) noexcept;
@@ -195,6 +197,7 @@ class FOptiMove final
     {
       Capability  erase_chars{};
       Capability  repeat_char{};
+      Capability  repeat_last_char{};
       Capability  clr_bol{};
       Capability  clr_eol{};
     };

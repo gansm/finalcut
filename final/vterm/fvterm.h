@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2023 Markus Gans                                      *
+* Copyright 2016-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -310,6 +310,7 @@ class FVTerm : public FVTermAttribute
     auto  hasChildAreaChanges (const FTermArea*) const -> bool;
     void  clearChildAreaChanges (const FTermArea*) const;
     auto  isInsideArea (const FPoint&, const FTermArea*) const -> bool;
+    auto  isFCharTransparent (const FChar&) const -> bool;
     auto  isTransparentInvisible (const FChar&) const -> bool;
     static void defineByte1TransparentMask();
     template <typename FOutputType>
@@ -332,6 +333,9 @@ class FVTerm : public FVTermAttribute
     auto  printCharacterOnCoordinate ( FTermArea*
                                      , const FChar&) const noexcept -> std::size_t;
     void  printPaddingCharacter (FTermArea*, const FChar&) const;
+    void  putNonTransparent (std::size_t&, const FChar*, FChar*&) const;
+    void  addTransparent (std::size_t&, const FChar*, FChar*&) const;
+    void  putTransparent (std::size_t&, const FPoint&, FChar*&) const;
     auto  isInsideTerminal (const FPoint&) const noexcept -> bool;
     auto  canUpdateTerminalNow() const -> bool;
     static auto hasPendingUpdates (const FTermArea*) noexcept -> bool;

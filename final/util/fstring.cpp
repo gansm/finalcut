@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2023 Markus Gans                                      *
+* Copyright 2012-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -909,8 +909,7 @@ auto FString::replaceControlCodes() const -> FString
     {
       c = L'\x2421';
     }
-    else if ( (c >= L'\x80' && c <= L'\x9f')
-           || ! std::iswprint(std::wint_t(c)) )
+    else if ( (c >= L'\x80' && c <= L'\x9f') || ! isPrintable(c) )
       c = L' ';
   }
 

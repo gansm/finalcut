@@ -642,17 +642,17 @@ void FListBox::drawList()
   for (std::size_t y = start; y < num && iter != data.itemlist.end() ; y++)
   {
     bool serach_mark{false};
-    const bool lineHasBrackets = hasBrackets(iter);
+    const bool line_has_brackets = hasBrackets(iter);
 
     // Import data via lazy conversion
     lazyConvert (iter, y);
 
     // Set screen position and attributes
-    setLineAttributes ( int(y), isSelected(iter), lineHasBrackets
+    setLineAttributes ( int(y), isSelected(iter), line_has_brackets
                       , serach_mark );
 
     // print the entry
-    if ( lineHasBrackets )
+    if ( line_has_brackets )
     {
       drawListBracketsLine (int(y), iter, serach_mark);
     }
@@ -796,11 +796,11 @@ void FListBox::printRemainingSpacesFromPos (std::size_t  x)
 }
 
 //----------------------------------------------------------------------
-inline void FListBox::setInitialLineAttributes (bool isLineSelected) const
+inline void FListBox::setInitialLineAttributes (bool is_line_selected) const
 {
   const auto& wc = getColorTheme();
 
-  if ( isLineSelected )
+  if ( is_line_selected )
   {
     if ( FVTerm::getFOutput()->isMonochron() )
       setBold();
@@ -818,40 +818,43 @@ inline void FListBox::setInitialLineAttributes (bool isLineSelected) const
 
 //----------------------------------------------------------------------
 inline void FListBox::setCurrentLineAttributes ( int y
-                                               , bool isLineSelected
-                                               , bool lineHasBrackets
+                                               , bool is_line_selected
+                                               , bool line_has_brackets
                                                , bool& serach_mark )
 {
   const auto& wc = getColorTheme();
+  const auto& flags = getFlags();
+  const auto& output = FVTerm::getFOutput();
+  const auto& current_element = wc->current_element;
   const std::size_t inc_len = data.inc_search.getLength();
   const std::size_t inc_width = getColumnWidth(data.inc_search);
 
-  if ( getFlags().focus.focus && FVTerm::getFOutput()->getMaxColor() < 16 )
+  if ( flags.focus.focus && output->getMaxColor() < 16 )
     setBold();
 
-  if ( isLineSelected )
+  if ( is_line_selected )
   {
-    if ( FVTerm::getFOutput()->isMonochron() )
+    if ( output->isMonochron() )
       setBold();
-    else if ( getFlags().focus.focus )
-      setColor ( wc->current_element.selected_focus_fg
-               , wc->current_element.selected_focus_bg );
+    else if ( flags.focus.focus )
+      setColor ( current_element.selected_focus_fg
+               , current_element.selected_focus_bg );
     else
-      setColor ( wc->current_element.selected_fg
-               , wc->current_element.selected_bg );
+      setColor ( current_element.selected_fg
+               , current_element.selected_bg );
 
     setCursorPos ({3, 2 + y});  // first character
   }
   else
   {
-    if ( FVTerm::getFOutput()->isMonochron() )
+    if ( output->isMonochron() )
       unsetBold();
 
-    if ( getFlags().focus.focus )
+    if ( flags.focus.focus )
     {
-      setColor ( wc->current_element.focus_fg
-               , wc->current_element.focus_bg );
-      const int b = lineHasBrackets ? 1 : 0;
+      setColor ( current_element.focus_fg
+               , current_element.focus_bg );
+      const int b = line_has_brackets ? 1 : 0;
 
       if ( inc_len > 0 )  // incremental search
       {
@@ -863,26 +866,26 @@ inline void FListBox::setCurrentLineAttributes ( int y
         setCursorPos ({3 + b, 2 + y});  // first character
     }
     else
-      setColor ( wc->current_element.fg
-               , wc->current_element.bg );
+      setColor ( current_element.fg
+               , current_element.bg );
   }
 
-  if ( FVTerm::getFOutput()->isMonochron() )
+  if ( output->isMonochron() )
     setReverse(false);
 }
 
 //----------------------------------------------------------------------
 inline void FListBox::setLineAttributes ( int y
-                                        , bool isLineSelected
-                                        , bool lineHasBrackets
+                                        , bool is_line_selected
+                                        , bool line_has_brackets
                                         , bool& serach_mark )
 {
   print() << FPoint{2, 2 + y};
-  setInitialLineAttributes(isLineSelected);
+  setInitialLineAttributes(is_line_selected);
 
   if ( isCurrentLine(y) )
   {
-    setCurrentLineAttributes(y, isLineSelected, lineHasBrackets, serach_mark);
+    setCurrentLineAttributes(y, is_line_selected, line_has_brackets, serach_mark);
   }
   else
   {

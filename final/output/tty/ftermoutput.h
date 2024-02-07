@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021-2023 Markus Gans                                      *
+* Copyright 2021-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -136,6 +136,13 @@ class FTermOutput final : public FOutput
       LineCompletelyPrinted
     };
 
+    enum class Repetition
+    {
+      ASCII,
+      UTF8,
+      NotOptimized
+    };
+
     enum class OutputType : uInt8  // Output data type of the terminal
     {
       String,
@@ -195,6 +202,7 @@ class FTermOutput final : public FOutput
     auto countRepetitions (const FChar*, uInt, uInt) const -> uInt;
     auto canUseEraseCharacters (const FChar*, uInt) const -> bool;
     auto canUseCharacterRepetitions (const FChar*, uInt) const -> bool;
+    auto getRepetitionType (const FChar*, uInt) const -> Repetition;
     auto isFullWidthChar (const FChar&) const -> bool;
     auto isFullWidthPaddingChar (const FChar&) const -> bool;
     void cursorWrap() const;

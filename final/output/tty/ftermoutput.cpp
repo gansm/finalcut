@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021-2023 Markus Gans                                      *
+* Copyright 2021-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -1002,9 +1002,10 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y) -> PrintState
   // Repeat one character n-fold
 
   const auto& rp = TCAP(t_repeat_char);
+  const auto& lr = TCAP(t_repeat_last_char);
   auto* print_char = &vterm->getFChar(int(x), int(y));
 
-  if ( ! rp )
+  if ( ! rp && ! lr )
     return PrintState::NothingPrinted;
 
   uInt repetitions = countRepetitions(print_char, x, xmax);
@@ -1021,14 +1022,21 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y) -> PrintState
   // cannot repeat in their byte sequence
   const uInt start_pos = x;
   const uInt end_pos = x + repetitions - 1;
+  const auto repetition_type = getRepetitionType(print_char, repetitions);
 
-  if ( canUseCharacterRepetitions(print_char, repetitions) )
+  if ( repetition_type == Repetition::ASCII )
   {
     newFontChanges (*print_char);
     charsetChanges (*print_char);
     appendAttributes (*print_char);
     appendOutputBuffer (FTermControl{FTermcap::encodeParameter(rp, print_char->ch[0], repetitions)});
-    term_pos->x_ref() += int(repetitions);
+    term_pos->x_ref() += static_cast<int>(repetitions);
+  }
+  else if ( repetition_type == Repetition::UTF8 )
+  {
+    appendChar (*print_char);
+    appendOutputBuffer (FTermControl{FTermcap::encodeParameter(lr, repetitions)});
+    term_pos->x_ref() += static_cast<int>(repetitions);
   }
   else
     appendCharacter_n (*print_char, repetitions);
@@ -1075,7 +1083,23 @@ inline auto FTermOutput::canUseCharacterRepetitions ( const FChar* print_char
                                                     , uInt repetitions ) const -> bool
 {
   return repetitions > repeat_char_length
-      && is7bit(print_char->ch[0]) && print_char->ch[1] == L'\0';
+      && print_char->ch[0] != L'\0' && print_char->ch[1] == L'\0';
+}
+
+//----------------------------------------------------------------------
+inline auto FTermOutput::getRepetitionType ( const FChar* print_char
+                                           , uInt repetitions ) const -> Repetition
+{
+  if ( canUseCharacterRepetitions(print_char, repetitions) )
+  {
+    if ( is7bit(print_char->ch[0]) )
+      return Repetition::ASCII;
+
+    if ( isPrintable(print_char->ch[0]) )
+      return Repetition::UTF8;
+  }
+
+  return Repetition::NotOptimized;
 }
 
 //----------------------------------------------------------------------

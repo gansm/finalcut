@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2022 Markus Gans                                      *
+* Copyright 2015-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -30,7 +30,21 @@ auto main (int argc, char* argv[]) -> int
 
   // Create a simple dialog box
   finalcut::FMessageBox mbox{&app};
-  mbox.setText("Hello, World!");
+
+  // New line
+  const auto nl = finalcut::FString('\n');
+
+  // Border spacing
+  const auto spacing = finalcut::FString(5, ' ');
+
+  // Line with unicode character "─" (U+2500/Box drawings horizontal)
+  const auto line = finalcut::FString(13, L'\U00002500');
+
+  // Set the message box text
+  mbox.setText(nl + spacing + "Hello, World!" + spacing + nl + line);
+
+  // Center the text in the message box
+  mbox.setCenterText();
 
   // Start the application
   mbox.exec();

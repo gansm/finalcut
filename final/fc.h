@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2023 Markus Gans                                      *
+* Copyright 2015-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -1514,6 +1514,7 @@ enum class Termcap
   t_insert_character,
   t_parm_ich,
   t_repeat_char,
+  t_repeat_last_char,
   t_initialize_color,
   t_initialize_pair,
   t_set_a_foreground,

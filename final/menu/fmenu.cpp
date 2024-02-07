@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2023 Markus Gans                                      *
+* Copyright 2015-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -1200,7 +1200,7 @@ inline void FMenu::drawMenuText (MenuText& data)
 
   for (std::size_t z{0}; z < data.text.getLength(); z++)
   {
-    if ( ! std::iswprint(std::wint_t(data.text[z]))
+    if ( ! isPrintable(data.text[z])
       && ! FVTerm::getFOutput()->isNewFont()
       && ( data.text[z] < UniChar::NF_rev_left_arrow2
         || data.text[z] > UniChar::NF_check_mark )

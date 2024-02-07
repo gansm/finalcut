@@ -36,7 +36,7 @@ AC_CHECK_HEADERS( \
 		 cmath \
 		 csignal \
 		 cstdlib \
-                 list \
+		 list \
 		 map \
 		 queue \
 		 vector )
