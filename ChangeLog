@@ -1,3 +1,6 @@
+2023-02-14  Markus Gans  <guru.mail@muenster.de>
+	* Optimize FChar operations and processing
+
 2023-02-07  Markus Gans  <guru.mail@muenster.de>
 	* Escape sequences can now be used to repeat UTF-8 characters, which 
 	  increases the display speed

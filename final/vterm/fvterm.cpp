@@ -22,6 +22,7 @@
 
 #include <numeric>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 #include "final/fapplication.h"
@@ -63,6 +64,27 @@ FVTerm::FTermArea*   FVTerm::active_area{nullptr};
 uInt8                FVTerm::b1_print_trans_mask{};
 int                  FVTerm::tabstop{8};
 
+using TransparentInvisibleLookupMap = std::unordered_set<wchar_t>;
+
+//----------------------------------------------------------------------
+static auto getTransparentInvisibleLookupMap() -> TransparentInvisibleLookupMap
+{
+  // Encapsulate global unordered_map object
+  static const auto& trans_inv_lookup = std::make_unique<TransparentInvisibleLookupMap>
+  (
+    std::initializer_list<wchar_t>
+    ({
+      wchar_t(UniChar::LowerHalfBlock),
+      wchar_t(UniChar::UpperHalfBlock),
+      wchar_t(UniChar::LeftHalfBlock),
+      wchar_t(UniChar::RightHalfBlock),
+      wchar_t(UniChar::MediumShade),
+      wchar_t(UniChar::FullBlock)
+    })
+  );
+
+  return *trans_inv_lookup;
+}
 
 //----------------------------------------------------------------------
 // class FVTerm
@@ -1488,13 +1510,9 @@ inline auto FVTerm::isFCharTransparent (const FChar& fchar) const -> bool
 //----------------------------------------------------------------------
 inline auto FVTerm::isTransparentInvisible (const FChar& fchar) const -> bool
 {
+  static const auto& trans_inv_chars = getTransparentInvisibleLookupMap();
   const auto& fist_char = fchar.ch[0];
-  return ( fist_char == UniChar::LowerHalfBlock
-        || fist_char == UniChar::UpperHalfBlock
-        || fist_char == UniChar::LeftHalfBlock
-        || fist_char == UniChar::RightHalfBlock
-        || fist_char == UniChar::MediumShade
-        || fist_char == UniChar::FullBlock );
+  return trans_inv_chars.find(fist_char) != trans_inv_chars.end();
 }
 
 //----------------------------------------------------------------------

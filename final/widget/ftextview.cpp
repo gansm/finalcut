@@ -605,8 +605,8 @@ inline auto FTextView::isPrintable (wchar_t ch) const -> bool
   // Check for printable characters
 
   const bool utf8 = (FVTerm::getFOutput()->getEncoding() == Encoding::UTF8);
-  return ( (utf8 && isPrintable(ch))
-        || (! utf8 && isPrintable(char(ch))) );
+  return ( (utf8 && finalcut::isPrintable(ch))
+        || (! utf8 && finalcut::isPrintable(char(ch))) );
 }
 
 //----------------------------------------------------------------------

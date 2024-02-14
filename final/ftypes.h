@@ -54,6 +54,12 @@
 
 #define null nullptr
 
+#ifdef __has_builtin
+  #define HAVE_BUILTIN(x) __has_builtin(x)
+#else
+  #define HAVE_BUILTIN(x) 0
+#endif
+
 #define badAllocOutput(object_name)              \
     std::clog << FLog::LogLevel::Error           \
               << __FILE__  << ":" << __LINE__    \
@@ -120,7 +126,7 @@ constexpr auto is7bit (CharT ch) noexcept -> bool
 // Printable character verification
 constexpr auto isPrintable (char ch) noexcept -> bool
 {
-  return std::isprint(ch);
+  return std::isprint(int(ch));
 }
 
 constexpr auto isPrintable (wchar_t ch) noexcept -> bool
@@ -295,6 +301,13 @@ struct FCharAttribute
   uInt8                    : 8;  // padding byte
 };
 
+#if HAVE_BUILTIN(__builtin_bit_cast)
+constexpr auto getFAttributeByte ( const FCharAttribute& fchar_attr
+                                 , std::size_t index ) noexcept -> uInt8
+{
+  return (__builtin_bit_cast(uInt32, fchar_attr) >> (index << 3)) & 0xff;
+}
+#else
 inline auto getFAttributeByte ( const FCharAttribute& fchar_attr
                               , std::size_t index ) noexcept -> uInt8
 {
@@ -302,7 +315,21 @@ inline auto getFAttributeByte ( const FCharAttribute& fchar_attr
   std::memcpy (&byte, reinterpret_cast<const uInt8*>(&fchar_attr) + index, sizeof(uInt8));
   return byte;
 }
+#endif
 
+#if HAVE_BUILTIN(__builtin_bit_cast)
+constexpr auto setFAttributeByte ( FCharAttribute& fchar_attr
+                                 , const std::size_t index
+                                 , const uInt8 value ) noexcept
+{
+  if ( index >= sizeof(FCharAttribute) )
+    return;  // index out of bounds
+
+  const auto clear_value = __builtin_bit_cast(uInt32, fchar_attr) & ~(uInt32(0xff) << (index << 3));
+  const auto ret = clear_value | (uInt32(value) << (index << 3));
+  fchar_attr = __builtin_bit_cast(FCharAttribute, ret);
+}
+#else
 inline auto setFAttributeByte ( FCharAttribute& fchar_attr
                               , std::size_t index
                               , uInt8 value ) noexcept
@@ -310,20 +337,35 @@ inline auto setFAttributeByte ( FCharAttribute& fchar_attr
   assert ( index < sizeof(FCharAttribute) );
   std::memcpy(reinterpret_cast<uInt8*>(&fchar_attr) + index, &value, sizeof(uInt8));
 }
+#endif
 
+#if HAVE_BUILTIN(__builtin_bit_cast)
+constexpr auto getFAttributeWord (const FCharAttribute& fchar_attr) noexcept -> uInt32
+{
+  return __builtin_bit_cast(uInt32, fchar_attr);
+}
+#else
 inline auto getFAttributeWord (const FCharAttribute& fchar_attr) noexcept -> uInt32
 {
   uInt32 word{};
   std::memcpy(&word, &fchar_attr, sizeof(word));
   return word;
 }
+#endif
 
+#if HAVE_BUILTIN(__builtin_bit_cast)
+constexpr auto WordToFAttribute (uInt32 word) noexcept -> FCharAttribute
+{
+  return __builtin_bit_cast(FCharAttribute, word);
+}
+#else
 inline auto WordToFAttribute (uInt32 word) noexcept -> FCharAttribute
 {
   FCharAttribute fchar_attr{};
   std::memcpy(&fchar_attr, &word, sizeof(fchar_attr));
   return fchar_attr;
 }
+#endif
 
 union FAttribute
 {
@@ -349,35 +391,70 @@ struct FChar
 
 // FChar operator functions
 //----------------------------------------------------------------------
+#if HAVE_BUILTIN(__builtin_bit_cast)
 constexpr auto isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool
 {
-  const auto* l_iter = std::cbegin(lhs);
-  const auto* r_iter = std::cbegin(rhs);
-  const auto* const l_last = std::cend(lhs);
+  // Check sizes first for early exit if sizes don't match
+  if ( lhs.size() != rhs.size() )
+    return false;
 
-  while ( *l_iter == *r_iter && *l_iter != L'\0' && l_iter != l_last )
-  {
-    ++l_iter;
-    ++r_iter;
-  }
-
-  return *l_iter == *r_iter;
+  // Perform a byte-wise comparison
+  return std::memcmp(lhs.data(), rhs.data(), lhs.size() * sizeof(wchar_t)) == 0;
 }
-
-//----------------------------------------------------------------------
-constexpr auto operator == (const FChar& lhs, const FChar& rhs) noexcept -> bool
+#else
+inline auto isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool
 {
-  return isFUnicodeEqual(lhs.ch, rhs.ch)
-      && lhs.fg_color     == rhs.fg_color
-      && lhs.bg_color     == rhs.bg_color
-      && lhs.attr.byte[0] == rhs.attr.byte[0]
-      && lhs.attr.byte[1] == rhs.attr.byte[1]
-      && lhs.attr.bit.fullwidth_padding \
-                          == rhs.attr.bit.fullwidth_padding;
+  static_assert ( lhs.size() == rhs.size() , "Both sides are different sizes.");
+  // Perform a byte-wise comparison
+  return std::memcmp(lhs.data(), rhs.data(), lhs.size() * sizeof(wchar_t)) == 0;
+}
+#endif
+
+//----------------------------------------------------------------------
+#if HAVE_BUILTIN(__builtin_bit_cast)
+constexpr auto getCompareBitMask() noexcept -> uInt32
+{
+  constexpr const FAttribute mask {{ 0xff, 0xff, 0x04, 0x00 }};
+  return __builtin_bit_cast(uInt32, mask.byte);
+}
+#else
+inline auto getCompareBitMask() noexcept -> uInt32
+{
+  const FAttribute mask {{ 0xff, 0xff, 0x04, 0x00 }};
+  uInt32 word{};
+  std::memcpy(&word, &mask, sizeof(word));
+  return word;
+}
+#endif
+
+//----------------------------------------------------------------------
+#if HAVE_BUILTIN(__builtin_bit_cast)
+constexpr
+#else
+inline
+#endif
+auto operator == (const FChar& lhs, const FChar& rhs) noexcept -> bool
+{
+  if ( ! isFUnicodeEqual(lhs.ch, rhs.ch)
+    || lhs.fg_color != rhs.fg_color
+    || lhs.bg_color != rhs.bg_color )
+    return false;
+
+  const auto mask = getCompareBitMask();
+
+  if ( (lhs.attr.word & mask) != (rhs.attr.word & mask) )
+    return false;
+
+  return true;
 }
 
 //----------------------------------------------------------------------
-constexpr auto operator != (const FChar& lhs, const FChar& rhs) noexcept -> bool
+#if HAVE_BUILTIN(__builtin_bit_cast)
+constexpr
+#else
+inline
+#endif
+auto operator != (const FChar& lhs, const FChar& rhs) noexcept -> bool
 {
   return ! ( lhs == rhs );
 }

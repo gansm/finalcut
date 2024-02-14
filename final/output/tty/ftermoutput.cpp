@@ -966,7 +966,7 @@ auto FTermOutput::eraseCharacters (uInt& x, uInt xmax, uInt y) -> PrintState
   if ( ! ec || print_char->ch[0] != L' ' )
     return PrintState::NothingPrinted;
 
-  uInt whitespace = countRepetitions(print_char, x, xmax);
+  auto whitespace = countRepetitions(print_char, x, xmax);
 
   if ( whitespace == 1 )
   {
@@ -1008,7 +1008,7 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y) -> PrintState
   if ( ! rp && ! lr )
     return PrintState::NothingPrinted;
 
-  uInt repetitions = countRepetitions(print_char, x, xmax);
+  auto repetitions = countRepetitions(print_char, x, xmax);
 
   if ( repetitions == 1 )
   {
@@ -1024,7 +1024,7 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y) -> PrintState
   const uInt end_pos = x + repetitions - 1;
   const auto repetition_type = getRepetitionType(print_char, repetitions);
 
-  if ( repetition_type == Repetition::ASCII )
+  if ( rp && repetition_type == Repetition::ASCII )
   {
     newFontChanges (*print_char);
     charsetChanges (*print_char);
@@ -1032,7 +1032,7 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y) -> PrintState
     appendOutputBuffer (FTermControl{FTermcap::encodeParameter(rp, print_char->ch[0], repetitions)});
     term_pos->x_ref() += static_cast<int>(repetitions);
   }
-  else if ( repetition_type == Repetition::UTF8 )
+  else if ( lr && repetition_type == Repetition::UTF8 )
   {
     appendChar (*print_char);
     appendOutputBuffer (FTermControl{FTermcap::encodeParameter(lr, repetitions)});
