@@ -124,12 +124,12 @@ constexpr auto is7bit (CharT ch) noexcept -> bool
 }
 
 // Printable character verification
-constexpr auto isPrintable (char ch) noexcept -> bool
+inline auto isPrintable (char ch) noexcept -> bool
 {
-  return std::isprint(int(ch));
+  return std::isprint(static_cast<unsigned char>(ch));
 }
 
-constexpr auto isPrintable (wchar_t ch) noexcept -> bool
+inline auto isPrintable (wchar_t ch) noexcept -> bool
 {
   return std::iswprint(std::wint_t(ch));
 }
@@ -404,7 +404,7 @@ constexpr auto isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexce
 #else
 inline auto isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool
 {
-  static_assert ( lhs.size() == rhs.size() , "Both sides are different sizes.");
+  static_assert ( sizeof(lhs) == sizeof(rhs) , "Both sides are different sizes.");
   // Perform a byte-wise comparison
   return std::memcmp(lhs.data(), rhs.data(), lhs.size() * sizeof(wchar_t)) == 0;
 }
