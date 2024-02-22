@@ -399,14 +399,14 @@ constexpr auto isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexce
     return false;
 
   // Perform a byte-wise comparison
-  return std::memcmp(lhs.data(), rhs.data(), lhs.size() * sizeof(wchar_t)) == 0;
+  return std::wmemcmp(lhs.data(), rhs.data(), lhs.size()) == 0;
 }
 #else
 inline auto isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool
 {
   static_assert ( sizeof(lhs) == sizeof(rhs) , "Both sides are different sizes.");
   // Perform a byte-wise comparison
-  return std::memcmp(lhs.data(), rhs.data(), lhs.size() * sizeof(wchar_t)) == 0;
+  return std::wmemcmp(lhs.data(), rhs.data(), lhs.size()) == 0;
 }
 #endif
 

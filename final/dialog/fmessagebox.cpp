@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2023 Markus Gans                                      *
+* Copyright 2014-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -356,10 +356,9 @@ void FMessageBox::draw()
 }
 
 //----------------------------------------------------------------------
-void FMessageBox::resizeButtons() const
+inline auto FMessageBox::getButtonLengthArray() const -> std::array<std::size_t, MAX_BUTTONS>
 {
   std::array<std::size_t, MAX_BUTTONS> len{};
-  std::size_t max_size{};
 
   for (std::size_t n{0}; n < num_buttons && n < MAX_BUTTONS; n++)
   {
@@ -371,6 +370,15 @@ void FMessageBox::resizeButtons() const
     if ( button[n]->getText().includes('&') )
       len[n]--;
   }
+
+  return len;
+}
+
+//----------------------------------------------------------------------
+inline auto FMessageBox::calculateMaxButtonSize() const -> std::size_t
+{
+  std::size_t max_size{};
+  auto len = getButtonLengthArray();
 
   if ( num_buttons < 2 )
     max_size = len[0];
@@ -384,6 +392,14 @@ void FMessageBox::resizeButtons() const
 
   if ( max_size < 7 )
     max_size = 7;
+
+  return max_size;
+}
+
+//----------------------------------------------------------------------
+void FMessageBox::resizeButtons() const
+{
+  auto max_size = calculateMaxButtonSize();
 
   for (std::size_t n{0}; n < num_buttons && n < MAX_BUTTONS; n++)
     if ( button[n] )

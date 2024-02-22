@@ -358,6 +358,8 @@ class FListBox : public FWidget
     void printRemainingSpacesFromPos (std::size_t);
     void setInitialLineAttributes (bool) const;
     void setCurrentLineAttributes (int, bool, bool, bool&);
+    void setSelectedCurrentLineAttributes (int);
+    void setUnselectedCurrentLineAttributes (int, bool, bool&);
     void setLineAttributes (int, bool, bool, bool&);
     void unsetAttributes() const;
     void updateDrawing (bool, bool);

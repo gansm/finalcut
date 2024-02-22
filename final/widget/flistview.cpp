@@ -1193,22 +1193,10 @@ void FListView::onMouseDoubleClick (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FListView::onTimer (FTimerEvent*)
 {
-  const int position_before = selection.current_iter.getPosition();
   scroll.first_line_position_before = scroll.first_visible_line.getPosition();
 
-  if ( ( drag_scroll == DragScrollMode::Upward
-      || drag_scroll == DragScrollMode::SelectUpward )
-      && ! dragScrollUp(position_before) )
-  {
+  if ( canSkipDragScrolling() )
     return;
-  }
-
-  if ( ( drag_scroll == DragScrollMode::Downward
-      || drag_scroll == DragScrollMode::SelectDownward )
-      && ! dragScrollDown(position_before) )
-  {
-    return;
-  }
 
   if ( isShown() )
     drawList();
@@ -1360,6 +1348,18 @@ auto FListView::getNullIterator() -> FObject::iterator&
 void FListView::setNullIterator (const iterator& null_iter)
 {
   getNullIterator() = null_iter;
+}
+
+//----------------------------------------------------------------------
+inline auto FListView::canSkipDragScrolling() -> bool
+{
+  const int position_before = selection.current_iter.getPosition();
+  bool is_upward_scroll ( drag_scroll == DragScrollMode::Upward
+                       || drag_scroll == DragScrollMode::SelectUpward );
+  bool is_downward_scroll ( drag_scroll == DragScrollMode::Downward
+                         || drag_scroll == DragScrollMode::SelectDownward );
+  return ( is_upward_scroll && ! dragScrollUp(position_before) )
+      || ( is_downward_scroll && ! dragScrollDown(position_before) );
 }
 
 //----------------------------------------------------------------------

@@ -299,11 +299,11 @@ void FListBox::onMouseDoubleClick (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FListBox::onTimer (FTimerEvent*)
 {
-  if ( canSkipDragScrolling() )
-    return;
-
   const std::size_t current_before = selection.current;
   const int yoffset_before = scroll.yoffset;
+
+  if ( canSkipDragScrolling() )
+    return;
 
   if ( current_before != selection.current )
   {
@@ -820,58 +820,77 @@ inline void FListBox::setInitialLineAttributes (bool is_line_selected) const
 inline void FListBox::setCurrentLineAttributes ( int y
                                                , bool is_line_selected
                                                , bool line_has_brackets
-                                               , bool& serach_mark )
+                                               , bool& search_mark )
 {
-  const auto& wc = getColorTheme();
   const auto& flags = getFlags();
   const auto& output = FVTerm::getFOutput();
-  const auto& current_element = wc->current_element;
-  const std::size_t inc_len = data.inc_search.getLength();
-  const std::size_t inc_width = getColumnWidth(data.inc_search);
 
   if ( flags.focus.focus && output->getMaxColor() < 16 )
     setBold();
 
   if ( is_line_selected )
-  {
-    if ( output->isMonochron() )
-      setBold();
-    else if ( flags.focus.focus )
-      setColor ( current_element.selected_focus_fg
-               , current_element.selected_focus_bg );
-    else
-      setColor ( current_element.selected_fg
-               , current_element.selected_bg );
-
-    setCursorPos ({3, 2 + y});  // first character
-  }
+    setSelectedCurrentLineAttributes (y);
   else
-  {
-    if ( output->isMonochron() )
-      unsetBold();
-
-    if ( flags.focus.focus )
-    {
-      setColor ( current_element.focus_fg
-               , current_element.focus_bg );
-      const int b = line_has_brackets ? 1 : 0;
-
-      if ( inc_len > 0 )  // incremental search
-      {
-        serach_mark = true;
-        // Place the cursor on the last found character
-        setCursorPos ({2 + b + int(inc_width), 2 + y});
-      }
-      else  // only highlighted
-        setCursorPos ({3 + b, 2 + y});  // first character
-    }
-    else
-      setColor ( current_element.fg
-               , current_element.bg );
-  }
+    setUnselectedCurrentLineAttributes (y, line_has_brackets, search_mark);
 
   if ( output->isMonochron() )
     setReverse(false);
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::setSelectedCurrentLineAttributes (int y)
+{
+  const auto& wc = getColorTheme();
+  const auto& flags = getFlags();
+  const auto& output = FVTerm::getFOutput();
+  const auto& current_element = wc->current_element;
+
+  if ( output->isMonochron() )
+    setBold();
+  else if ( flags.focus.focus )
+    setColor ( current_element.selected_focus_fg
+             , current_element.selected_focus_bg );
+  else
+    setColor ( current_element.selected_fg
+             , current_element.selected_bg );
+
+  setCursorPos ({3, 2 + y});  // first character
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::setUnselectedCurrentLineAttributes ( int y
+                                                         , bool line_has_brackets
+                                                         , bool& search_mark )
+{
+  const auto& wc = getColorTheme();
+  const auto& flags = getFlags();
+  const auto& output = FVTerm::getFOutput();
+  const std::size_t inc_len = data.inc_search.getLength();
+  const std::size_t inc_width = getColumnWidth(data.inc_search);
+  const auto& current_element = wc->current_element;
+
+  if ( output->isMonochron() )
+    unsetBold();
+
+  if ( ! flags.focus.focus )
+  {
+     setColor ( current_element.fg
+              , current_element.bg );
+     return;
+  }
+
+  setColor ( current_element.focus_fg
+           , current_element.focus_bg );
+  const int b = line_has_brackets ? 1 : 0;
+
+  if ( inc_len > 0 )  // incremental search
+  {
+    search_mark = true;
+    // Place the cursor on the last found character
+    setCursorPos ({2 + b + int(inc_width), 2 + y});
+  }
+  else  // only highlighted
+    setCursorPos ({3 + b, 2 + y});  // first character
 }
 
 //----------------------------------------------------------------------

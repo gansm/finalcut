@@ -484,6 +484,7 @@ class FListView : public FWidget
     auto isHorizontallyScrollable() const -> bool;
     auto isVerticallyScrollable() const -> bool;
     auto canSkipListDrawing() const -> bool;
+    auto canSkipDragScrolling() -> bool;
 
     // Methods
     void init();

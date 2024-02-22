@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2023 Markus Gans                                      *
+* Copyright 2012-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -1569,6 +1569,13 @@ inline void FDialog::handleLeftMouseDown (const MouseStates& ms)
 }
 
 //----------------------------------------------------------------------
+inline auto FDialog::isClickOnTitleBar ( const MouseStates& ms
+                                       , int first, int width ) const -> bool
+{
+  return ms.mouse_x >= first && ms.mouse_x <= width && ms.mouse_y == 1;
+}
+
+//----------------------------------------------------------------------
 inline void FDialog::handleRightAndMiddleMouseDown ( const MouseButton& button
                                                    , const MouseStates& ms )
 {
@@ -1581,14 +1588,12 @@ inline void FDialog::handleRightAndMiddleMouseDown ( const MouseButton& button
   const auto first = int(getMenuButtonWidth() + 1);
 
   // Click on titlebar: just activate
-  if ( button == MouseButton::Right
-    && ms.mouse_x >= first && ms.mouse_x <= width && ms.mouse_y == 1 )
-      activateDialog();
+  if ( button == MouseButton::Right && isClickOnTitleBar(ms, first, width) )
+    activateDialog();
 
   // Click on titlebar: lower + activate
-  if ( button == MouseButton::Middle
-    && ms.mouse_x >= first && ms.mouse_x <= width && ms.mouse_y == 1 )
-      lowerActivateDialog();
+  if ( button == MouseButton::Middle && isClickOnTitleBar(ms, first, width) )
+    lowerActivateDialog();
 }
 
 //----------------------------------------------------------------------

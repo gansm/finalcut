@@ -961,16 +961,16 @@ auto FTermOutput::eraseCharacters (uInt& x, uInt xmax, uInt y) -> PrintState
   // Erase a number of characters to draw simple whitespaces
 
   const auto& ec = TCAP(t_erase_chars);
-  auto* print_char = &vterm->getFChar(int(x), int(y));
+  auto& print_char = vterm->getFChar(static_cast<int>(x), static_cast<int>(y));
 
-  if ( ! ec || print_char->ch[0] != L' ' )
+  if ( ! ec || print_char.ch[0] != L' ' )
     return PrintState::NothingPrinted;
 
-  auto whitespace = countRepetitions(print_char, x, xmax);
+  const auto whitespace = countRepetitions(&print_char, x, xmax);
 
   if ( whitespace == 1 )
   {
-    appendCharacter (*print_char);
+    appendCharacter (print_char);
     markAsPrinted (x, y);
     return PrintState::WhitespacesPrinted;
   }
@@ -980,16 +980,16 @@ auto FTermOutput::eraseCharacters (uInt& x, uInt xmax, uInt y) -> PrintState
 
   if ( canUseEraseCharacters(print_char, whitespace) )
   {
-    appendAttributes (*print_char);
+    appendAttributes (print_char);
     appendOutputBuffer (FTermControl{FTermcap::encodeParameter(ec, whitespace)});
 
     if ( end_pos <= xmax )
-      setCursor (FPoint{int(x + whitespace), int(y)});
+      setCursor (FPoint{static_cast<int>(x + whitespace), static_cast<int>(y)});
     else
       return PrintState::LineCompletelyPrinted;
   }
   else
-    appendCharacter_n (*print_char, whitespace);
+    appendCharacter_n (print_char, whitespace);
 
   markAsPrinted (start_pos, end_pos, y);
   x = end_pos;
@@ -1003,44 +1003,44 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y) -> PrintState
 
   const auto& rp = TCAP(t_repeat_char);
   const auto& lr = TCAP(t_repeat_last_char);
-  auto* print_char = &vterm->getFChar(int(x), int(y));
+  auto& print_char = vterm->getFChar(static_cast<int>(x), static_cast<int>(y));
 
   if ( ! rp && ! lr )
     return PrintState::NothingPrinted;
 
-  auto repetitions = countRepetitions(print_char, x, xmax);
+  const auto repetitions = countRepetitions(&print_char, x, xmax);
 
   if ( repetitions == 1 )
   {
     bool min_and_not_max( x != xmax );
-    printCharacter (x, y, min_and_not_max, *print_char);
+    printCharacter (x, y, min_and_not_max, print_char);
     return PrintState::RepeatCharacterPrinted;
   }
 
   // Every full-width character is always followed by a padding
   // character, so that two or more consecutive full-width characters
   // cannot repeat in their byte sequence
-  const uInt start_pos = x;
-  const uInt end_pos = x + repetitions - 1;
   const auto repetition_type = getRepetitionType(print_char, repetitions);
 
   if ( rp && repetition_type == Repetition::ASCII )
   {
-    newFontChanges (*print_char);
-    charsetChanges (*print_char);
-    appendAttributes (*print_char);
-    appendOutputBuffer (FTermControl{FTermcap::encodeParameter(rp, print_char->ch[0], repetitions)});
+    newFontChanges (print_char);
+    charsetChanges (print_char);
+    appendAttributes (print_char);
+    appendOutputBuffer (FTermControl{FTermcap::encodeParameter(rp, print_char.ch[0], repetitions)});
     term_pos->x_ref() += static_cast<int>(repetitions);
   }
   else if ( lr && repetition_type == Repetition::UTF8 )
   {
-    appendChar (*print_char);
+    appendChar (print_char);
     appendOutputBuffer (FTermControl{FTermcap::encodeParameter(lr, repetitions)});
     term_pos->x_ref() += static_cast<int>(repetitions);
   }
   else
-    appendCharacter_n (*print_char, repetitions);
+    appendCharacter_n (print_char, repetitions);
 
+  const uInt start_pos = x;
+  const uInt end_pos = x + repetitions - 1;
   markAsPrinted (start_pos, end_pos, y);
   x = end_pos;
   return PrintState::RepeatCharacterPrinted;
@@ -1051,26 +1051,27 @@ inline auto FTermOutput::countRepetitions ( const FChar* print_char
                                           , uInt from, uInt to ) const -> uInt
 {
   uInt repetitions{1};
-  const auto* ch = print_char + 1;
+  auto first = print_char + 1;
+  auto last = print_char + to - from + 1;
 
-  for (uInt i{from + 1}; i <= to; i++)
+  while ( first != last )
   {
-    if ( *print_char == *ch )
+    if ( *first == *print_char )
       repetitions++;
     else
       break;
 
-    ++ch;
+    ++first;
   }
 
   return repetitions;
 }
 
 //----------------------------------------------------------------------
-inline auto FTermOutput::canUseEraseCharacters ( const FChar* print_char
+inline auto FTermOutput::canUseEraseCharacters ( const FChar& print_char
                                                , uInt whitespace ) const -> bool
 {
-  const auto normal = FOptiAttr::isNormal(*print_char);
+  const auto normal = FOptiAttr::isNormal(print_char);
   const auto ut = FTermcap::background_color_erase;
   const uInt total_length_required = erase_char_length
                                    + cursor_address_length;
@@ -1079,23 +1080,23 @@ inline auto FTermOutput::canUseEraseCharacters ( const FChar* print_char
 }
 
 //----------------------------------------------------------------------
-inline auto FTermOutput::canUseCharacterRepetitions ( const FChar* print_char
+inline auto FTermOutput::canUseCharacterRepetitions ( const FChar& print_char
                                                     , uInt repetitions ) const -> bool
 {
   return repetitions > repeat_char_length
-      && print_char->ch[0] != L'\0' && print_char->ch[1] == L'\0';
+      && print_char.ch[0] != L'\0' && print_char.ch[1] == L'\0';
 }
 
 //----------------------------------------------------------------------
-inline auto FTermOutput::getRepetitionType ( const FChar* print_char
+inline auto FTermOutput::getRepetitionType ( const FChar& print_char
                                            , uInt repetitions ) const -> Repetition
 {
   if ( canUseCharacterRepetitions(print_char, repetitions) )
   {
-    if ( is7bit(print_char->ch[0]) )
+    if ( is7bit(print_char.ch[0]) )
       return Repetition::ASCII;
 
-    if ( isPrintable(print_char->ch[0]) )
+    if ( isPrintable(print_char.ch[0]) )
       return Repetition::UTF8;
   }
 
@@ -1290,7 +1291,7 @@ inline void FTermOutput::markAsPrinted (uInt from, uInt to, uInt y) const
   const auto* end = ch + to - from + 1;
 
   // Unroll the loop for better performance
-  while (ch + 4 <= end)
+  while ( ch + 4 <= end )
   {
     ch[0].attr.bit.printed = true;
     ch[1].attr.bit.printed = true;

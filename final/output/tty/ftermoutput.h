@@ -200,9 +200,9 @@ class FTermOutput final : public FOutput
     auto eraseCharacters (uInt&, uInt, uInt) -> PrintState;
     auto repeatCharacter (uInt&, uInt, uInt) -> PrintState;
     auto countRepetitions (const FChar*, uInt, uInt) const -> uInt;
-    auto canUseEraseCharacters (const FChar*, uInt) const -> bool;
-    auto canUseCharacterRepetitions (const FChar*, uInt) const -> bool;
-    auto getRepetitionType (const FChar*, uInt) const -> Repetition;
+    auto canUseEraseCharacters (const FChar&, uInt) const -> bool;
+    auto canUseCharacterRepetitions (const FChar&, uInt) const -> bool;
+    auto getRepetitionType (const FChar&, uInt) const -> Repetition;
     auto isFullWidthChar (const FChar&) const -> bool;
     auto isFullWidthPaddingChar (const FChar&) const -> bool;
     void cursorWrap() const;
