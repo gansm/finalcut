@@ -693,9 +693,9 @@ void FMouseX11::processEvent (const TimeValue& time)
 //----------------------------------------------------------------------
 void FMouseX11::setKeyState (int btn) noexcept
 {
-  getButtonState().shift_button   = bool(btn & key_shift) == key_shift);
-  getButtonState().meta_button    = bool(btn & key_meta)  == key_meta);
-  getButtonState().control_button = bool(btn & key_ctrl)  == key_ctrl);
+  getButtonState().shift_button   = bool((btn & key_shift) == key_shift);
+  getButtonState().meta_button    = bool((btn & key_meta)  == key_meta);
+  getButtonState().control_button = bool((btn & key_ctrl)  == key_ctrl);
 }
 
 //----------------------------------------------------------------------
@@ -952,9 +952,9 @@ void FMouseSGR::processEvent (const TimeValue& time)
 //----------------------------------------------------------------------
 void FMouseSGR::setKeyState (int btn) noexcept
 {
-  getButtonState().shift_button   = bool(btn & key_shift) == key_shift);
-  getButtonState().meta_button    = bool(btn & key_meta)  == key_meta);
-  getButtonState().control_button = bool(btn & key_ctrl)  == key_ctrl);
+  getButtonState().shift_button   = bool((btn & key_shift) == key_shift);
+  getButtonState().meta_button    = bool((btn & key_meta)  == key_meta);
+  getButtonState().control_button = bool((btn & key_ctrl)  == key_ctrl);
 }
 
 //----------------------------------------------------------------------
