@@ -332,10 +332,7 @@ auto FTerm::setVGAFont() -> bool
   if ( hasNoFontSettingOption() )
     return false;
 
-  if ( data.isTermType ( FTermType::xterm
-                       | FTermType::screen
-                       | FTermType::urxvt )
-    || FTermcap::osc_support )
+  if ( canSetTerminalFont() )
   {
     data.setVGAFont(true);
     // Set font in xterm to vga
@@ -373,10 +370,7 @@ auto FTerm::setNewFont() -> bool
   if ( hasNoFontSettingOption() )
     return false;
 
-  if ( data.isTermType ( FTermType::xterm
-                       | FTermType::screen
-                       | FTermType::urxvt )
-    || FTermcap::osc_support )
+  if ( canSetTerminalFont() )
   {
     data.setNewFont(true);
     // Set font in xterm to 8x16graph
@@ -1547,6 +1541,16 @@ inline auto FTerm::hasNoFontSettingOption() -> bool
                            | FTermType::tera_term
                            | FTermType::cygwin
                            | FTermType::mintty ) );
+}
+
+//----------------------------------------------------------------------
+inline auto FTerm::canSetTerminalFont() -> bool
+{
+  static const auto& data = FTermData::getInstance();
+  return FTermcap::osc_support
+      || data.isTermType ( FTermType::xterm
+                         | FTermType::screen
+                         | FTermType::urxvt );
 }
 
 //----------------------------------------------------------------------

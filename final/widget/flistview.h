@@ -579,6 +579,8 @@ class FListView : public FWidget
     auto getScrollBarMaxVertical (const std::size_t) const noexcept -> int;
     void updateViewAfterVBarChange (const FScrollbar::ScrollType);
     void updateViewAfterHBarChange (const FScrollbar::ScrollType, const int);
+    auto getVerticalScrollDistance (const FScrollbar::ScrollType) const -> int;
+    auto getHorizontalScrollDistance (const FScrollbar::ScrollType) const -> int;
 
     // Callback methods
     void cb_vbarChange (const FWidget*);

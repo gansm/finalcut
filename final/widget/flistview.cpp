@@ -3047,25 +3047,45 @@ inline void FListView::updateViewAfterHBarChange ( const FScrollbar::ScrollType 
 }
 
 //----------------------------------------------------------------------
+inline auto FListView::getVerticalScrollDistance (const FScrollbar::ScrollType scroll_type) const -> int
+{
+  if ( scroll_type == FScrollbar::ScrollType::PageBackward
+    || scroll_type == FScrollbar::ScrollType::PageForward )
+  {
+    return int(getClientHeight());
+  }
+
+  return 1;
+}
+
+//----------------------------------------------------------------------
+inline auto FListView::getHorizontalScrollDistance (const FScrollbar::ScrollType scroll_type) const -> int
+{
+  if ( scroll_type == FScrollbar::ScrollType::PageBackward
+    || scroll_type == FScrollbar::ScrollType::PageForward )
+  {
+    return int(getClientWidth());
+  }
+
+  return 1;
+}
+
+//----------------------------------------------------------------------
 void FListView::cb_vbarChange (const FWidget*)
 {
   const FScrollbar::ScrollType scroll_type = scroll.vbar->getScrollType();
   static constexpr int wheel_distance = 4;
-  int distance{1};
   scroll.first_line_position_before = scroll.first_visible_line.getPosition();
+  int distance = getVerticalScrollDistance(scroll_type);
 
   switch ( scroll_type )
   {
     case FScrollbar::ScrollType::PageBackward:
-      distance = int(getClientHeight());
-      // fall through
     case FScrollbar::ScrollType::StepBackward:
       stepBackward(distance);
       break;
 
     case FScrollbar::ScrollType::PageForward:
-      distance = int(getClientHeight());
-      // fall through
     case FScrollbar::ScrollType::StepForward:
       stepForward(distance);
       break;
@@ -3096,21 +3116,17 @@ void FListView::cb_hbarChange (const FWidget*)
 {
   const FScrollbar::ScrollType scroll_type = scroll.hbar->getScrollType();
   static constexpr int wheel_distance = 4;
-  int distance{1};
   const int xoffset_before = scroll.xoffset;
+  int distance = getHorizontalScrollDistance(scroll_type);
 
   switch ( scroll_type )
   {
     case FScrollbar::ScrollType::PageBackward:
-      distance = int(getClientWidth());
-      // fall through
     case FScrollbar::ScrollType::StepBackward:
       scrollBy (-distance, 0);
       break;
 
     case FScrollbar::ScrollType::PageForward:
-      distance = int(getClientWidth());
-      // fall through
     case FScrollbar::ScrollType::StepForward:
       scrollBy (distance, 0);
       break;

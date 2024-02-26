@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2023 Markus Gans                                      *
+* Copyright 2018-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -488,21 +488,13 @@ void FMouseGPM::interpretKeyDown() noexcept
   if ( gpm_ev.buttons & GPM_B_RIGHT )
     getButtonState().right_button = State::Pressed;
 
-  if ( gpm_ev.buttons & GPM_B_UP )
-    getButtonState().wheel_up = true;
-
-  if ( gpm_ev.buttons & GPM_B_DOWN )
-    getButtonState().wheel_down = true;
+  getButtonState().wheel_up = bool(gpm_ev.buttons & GPM_B_UP);
+  getButtonState().wheel_down = bool(gpm_ev.buttons & GPM_B_DOWN);
 
   // Keyboard modifiers
-  if ( gpm_ev.modifiers & (1 << KG_SHIFT) )
-    getButtonState().shift_button = true;
-
-  if ( gpm_ev.modifiers & ((1 << KG_ALT) | (1 << KG_ALTGR)) )
-    getButtonState().meta_button = true;
-
-  if ( gpm_ev.modifiers & (1 << KG_CTRL) )
-    getButtonState().control_button = true;
+  getButtonState().shift_button = bool(gpm_ev.modifiers & (1 << KG_SHIFT));
+  getButtonState().meta_button = bool(gpm_ev.modifiers & ((1 << KG_ALT) | (1 << KG_ALTGR)));
+  getButtonState().control_button = bool(gpm_ev.modifiers & (1 << KG_CTRL));
 }
 
 //----------------------------------------------------------------------
@@ -522,12 +514,10 @@ void FMouseGPM::interpretKeyUp() noexcept
 auto FMouseGPM::getGpmKeyPressed (bool is_pending) -> bool
 {
   setPending(is_pending);
-  has_gpm_mouse_data = false;
   const auto type = gpmEvent();
+  has_gpm_mouse_data = bool( type == gpmEventType::Mouse );
 
-  if ( type == gpmEventType::Mouse )
-    has_gpm_mouse_data = true;
-  else if ( type == gpmEventType::Keyboard )
+  if ( type == gpmEventType::Keyboard )
     return true;
 
   return false;
@@ -565,15 +555,10 @@ inline void FMouseGPM::handleMouseMovement()
 //----------------------------------------------------------------------
 inline void FMouseGPM::handleMouseWheel()
 {
-  if ( gpm_ev.wdy > 0 )
-    getButtonState().wheel_up = true;
-  else if ( gpm_ev.wdy < 0 )
-    getButtonState().wheel_down = true;
-
-  if ( gpm_ev.wdx > 0 )
-    getButtonState().wheel_right = true;
-  else if ( gpm_ev.wdx < 0 )
-    getButtonState().wheel_left = true;
+  getButtonState().wheel_up    = bool( gpm_ev.wdy > 0 );
+  getButtonState().wheel_down  = bool( gpm_ev.wdy < 0 );
+  getButtonState().wheel_right = bool( gpm_ev.wdx > 0 );
+  getButtonState().wheel_left  = bool( gpm_ev.wdx < 0 );
 }
 
 //----------------------------------------------------------------------
@@ -708,14 +693,9 @@ void FMouseX11::processEvent (const TimeValue& time)
 //----------------------------------------------------------------------
 void FMouseX11::setKeyState (int btn) noexcept
 {
-  if ( (btn & key_shift) == key_shift )
-    getButtonState().shift_button = true;
-
-  if ( (btn & key_meta) == key_meta )
-    getButtonState().meta_button = true;
-
-  if ( (btn & key_ctrl) == key_ctrl )
-    getButtonState().control_button = true;
+  getButtonState().shift_button   = bool(btn & key_shift) == key_shift);
+  getButtonState().meta_button    = bool(btn & key_meta)  == key_meta);
+  getButtonState().control_button = bool(btn & key_ctrl)  == key_ctrl);
 }
 
 //----------------------------------------------------------------------
@@ -972,14 +952,9 @@ void FMouseSGR::processEvent (const TimeValue& time)
 //----------------------------------------------------------------------
 void FMouseSGR::setKeyState (int btn) noexcept
 {
-  if ( (btn & key_shift) == key_shift )
-    getButtonState().shift_button = true;
-
-  if ( (btn & key_meta) == key_meta )
-    getButtonState().meta_button = true;
-
-  if ( (btn & key_ctrl) == key_ctrl )
-    getButtonState().control_button = true;
+  getButtonState().shift_button   = bool(btn & key_shift) == key_shift);
+  getButtonState().meta_button    = bool(btn & key_meta)  == key_meta);
+  getButtonState().control_button = bool(btn & key_ctrl)  == key_ctrl);
 }
 
 //----------------------------------------------------------------------
@@ -1260,14 +1235,9 @@ void FMouseUrxvt::processEvent (const TimeValue& time)
 //----------------------------------------------------------------------
 void FMouseUrxvt::setKeyState (int btn) noexcept
 {
-  if ( (btn & key_shift) == key_shift )
-    getButtonState().shift_button = true;
-
-  if ( (btn & key_meta) == key_meta )
-    getButtonState().meta_button = true;
-
-  if ( (btn & key_ctrl) == key_ctrl )
-    getButtonState().control_button = true;
+  getButtonState().shift_button   = bool((btn & key_shift) == key_shift);
+  getButtonState().meta_button    = bool((btn & key_meta)  == key_meta);
+  getButtonState().control_button = bool((btn & key_ctrl)  == key_ctrl);
 }
 
 //----------------------------------------------------------------------

@@ -437,7 +437,7 @@ void FTermXTerminal::setXTermFont()
 }
 
 //----------------------------------------------------------------------
-inline auto FTermXTerminal::canSetXTermForeground() const -> bool
+inline auto FTermXTerminal::canSetXTermColor() const -> bool
 {
   static const auto& fterm_data = FTermData::getInstance();
   return FTermcap::osc_support
@@ -445,6 +445,12 @@ inline auto FTermXTerminal::canSetXTermForeground() const -> bool
                                | FTermType::screen
                                | FTermType::mintty
                                | FTermType::mlterm );
+}
+
+//----------------------------------------------------------------------
+inline auto FTermXTerminal::canSetXTermForeground() const -> bool
+{
+  return canSetXTermColor();
 }
 
 //----------------------------------------------------------------------
@@ -464,12 +470,7 @@ void FTermXTerminal::setXTermForeground()
 //----------------------------------------------------------------------
 inline auto FTermXTerminal::canSetXTermBackground() const -> bool
 {
-  static const auto& fterm_data = FTermData::getInstance();
-  return FTermcap::osc_support
-      || fterm_data.isTermType ( FTermType::xterm
-                               | FTermType::screen
-                               | FTermType::mintty
-                               | FTermType::mlterm );
+  return canSetXTermColor();
 }
 
 //----------------------------------------------------------------------

@@ -325,8 +325,7 @@ void FTermcap::termcap()
     status = tgetent(term_buffer.data(), termtype.data());
 #endif
 
-    if ( status == success )
-      initialized = true;
+    initialized = bool( status == success );
 
     if ( status == success || ! term_detection.hasTerminalDetection() )
       break;

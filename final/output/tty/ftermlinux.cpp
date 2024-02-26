@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2023 Markus Gans                                      *
+* Copyright 2018-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -579,17 +579,10 @@ auto FTermLinux::getModifierKey() & -> ModifierKey&
   // TIOCLINUX, subcode = 6 (TIOCL_GETSHIFTSTATE)
   if ( fsystem->ioctl(0, TIOCLINUX, &subcode) >= 0 )
   {
-    if ( uChar(subcode) & (1u << KG_SHIFT) )
-      mod_key.shift = true;
-
-    if ( uChar(subcode) & (1u << KG_ALTGR) )
-      mod_key.alt_gr = true;
-
-    if ( uChar(subcode) & (1u << KG_CTRL) )
-      mod_key.ctrl = true;
-
-    if ( uChar(subcode) & (1u << KG_ALT) )
-      mod_key.alt = true;
+    mod_key.shift  = bool(uChar(subcode) & (1u << KG_SHIFT));
+    mod_key.alt_gr = bool(uChar(subcode) & (1u << KG_ALTGR));
+    mod_key.ctrl   = bool(uChar(subcode) & (1u << KG_CTRL));
+    mod_key.alt    = bool(uChar(subcode) & (1u << KG_ALT));
   }
 
   return mod_key;
@@ -909,12 +902,8 @@ auto FTermLinux::saveVGAPalette() -> bool
   // Save the current vga color map
 
   static const auto& fsystem = FSystem::getInstance();
-
-  if ( fsystem->ioctl(0, GIO_CMAP, saved_color_map.color.data()) == 0 )
-    has_saved_palette = true;
-  else
-    has_saved_palette = false;
-
+  has_saved_palette = \
+      bool( fsystem->ioctl(0, GIO_CMAP, saved_color_map.color.data()) == 0 );
   return has_saved_palette;
 }
 

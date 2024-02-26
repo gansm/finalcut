@@ -347,6 +347,11 @@ class FListBox : public FWidget
     void drawBorder() override;
     void drawScrollbars() const;
     void drawHeadline();
+    auto canSkipDrawing() const -> bool;
+    auto calculateNumberItemsToDraw() const -> std::size_t;
+    auto canRedrawPartialList() const -> bool;
+    void updateRedrawParameters (std::size_t&, std::size_t&) const;
+    void finalizeDrawing();
     void drawList();
     void drawListLine (int, FListBoxItems::iterator, bool);
     void printLeftBracket (BracketType);
@@ -417,6 +422,9 @@ class FListBox : public FWidget
     void handleXOffsetChange (const int);
     void handleVerticalScrollBarUpdate (const FScrollbar::ScrollType, const int) const;
     void handleHorizontalScrollBarUpdate (const FScrollbar::ScrollType, const int) const;
+    auto getVerticalScrollDistance (const FScrollbar::ScrollType) const -> int;
+    auto getHorizontalScrollDistance (const FScrollbar::ScrollType) const -> int;
+
     // Callback methods
     void cb_vbarChange (const FWidget*);
     void cb_hbarChange (const FWidget*);

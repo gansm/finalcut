@@ -4,7 +4,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2023 Markus Gans                                      *
+* Copyright 2017-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -200,6 +200,9 @@ class FScrollView : public FWidget
     void setHorizontalScrollBarVisibility() const;
     void setVerticalScrollBarVisibility() const;
     void setViewportCursor();
+    auto shouldUpdateScrollbar (FScrollbar::ScrollType) const -> bool;
+    auto getVerticalScrollDistance (const FScrollbar::ScrollType) const -> int;
+    auto getHorizontalScrollDistance (const FScrollbar::ScrollType) const -> int;
 
     // Callback methods
     void cb_vbarChange (const FWidget*);

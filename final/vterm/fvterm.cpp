@@ -1186,8 +1186,7 @@ auto FVTerm::isCovered (const FPoint& pos, const FTermArea* area) const noexcept
       }
     }
 
-    if ( area == win )
-      found = true;
+    found = bool( area == win );
   }
 
   return is_covered;
@@ -1283,8 +1282,7 @@ void FVTerm::passChangesToOverlap (const FTermArea* area) const
       passChangesToOverlappingWindow (win, area);
     }
 
-    if ( win == area )
-      found = true;
+    found = bool( win == area );
   }
 }
 
@@ -1353,8 +1351,8 @@ void FVTerm::restoreOverlaidWindows (const FTermArea* area) const noexcept
 
     if ( overlaid && win && win->visible && win->isOverlapped(area) )
       copyArea (vterm.get(), FPoint{win->position.x + 1, win->position.y + 1}, win);
-    else if ( getVWin() == win )
-      overlaid = true;
+    else
+      overlaid = bool( getVWin() == win );
   }
 }
 

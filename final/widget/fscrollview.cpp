@@ -1090,33 +1090,51 @@ void FScrollView::setViewportCursor()
 }
 
 //----------------------------------------------------------------------
+inline auto FScrollView::shouldUpdateScrollbar (FScrollbar::ScrollType scroll_type) const -> bool
+{
+  return scroll_type >= FScrollbar::ScrollType::StepBackward;
+}
+
+//----------------------------------------------------------------------
+inline auto FScrollView::getVerticalScrollDistance (const FScrollbar::ScrollType scroll_type) const -> int
+{
+  if ( scroll_type == FScrollbar::ScrollType::PageBackward
+    || scroll_type == FScrollbar::ScrollType::PageForward )
+  {
+    return int(getViewportHeight());
+  }
+
+  return 1;
+}
+
+//----------------------------------------------------------------------
+inline auto FScrollView::getHorizontalScrollDistance (const FScrollbar::ScrollType scroll_type) const -> int
+{
+  if ( scroll_type == FScrollbar::ScrollType::PageBackward
+    || scroll_type == FScrollbar::ScrollType::PageForward )
+  {
+    return int(getViewportWidth());
+  }
+
+  return 1;
+}
+
+//----------------------------------------------------------------------
 void FScrollView::cb_vbarChange (const FWidget*)
 {
   auto scroll_type = vbar->getScrollType();
+  update_scrollbar = shouldUpdateScrollbar(scroll_type);
   static constexpr int wheel_distance = 4;
-  int distance{1};
-
-  if ( scroll_type >= FScrollbar::ScrollType::StepBackward )
-  {
-    update_scrollbar = true;
-  }
-  else
-  {
-    update_scrollbar = false;
-  }
+  int distance = getVerticalScrollDistance(scroll_type);
 
   switch ( scroll_type )
   {
     case FScrollbar::ScrollType::PageBackward:
-      distance = int(getViewportHeight());
-      // fall through
     case FScrollbar::ScrollType::StepBackward:
       scrollBy (0, -distance);
       break;
 
     case FScrollbar::ScrollType::PageForward:
-      distance = int(getViewportHeight());
-      // fall through
     case FScrollbar::ScrollType::StepForward:
       scrollBy (0, distance);
       break;
@@ -1146,30 +1164,18 @@ void FScrollView::cb_vbarChange (const FWidget*)
 void FScrollView::cb_hbarChange (const FWidget*)
 {
   auto scroll_type = hbar->getScrollType();
+  update_scrollbar = shouldUpdateScrollbar(scroll_type);
   static constexpr int wheel_distance = 4;
-  int distance{1};
-
-  if ( scroll_type >= FScrollbar::ScrollType::StepBackward )
-  {
-    update_scrollbar = true;
-  }
-  else
-  {
-    update_scrollbar = false;
-  }
+  int distance = getHorizontalScrollDistance(scroll_type);
 
   switch ( scroll_type )
   {
     case FScrollbar::ScrollType::PageBackward:
-      distance = int(getViewportWidth());
-      // fall through
     case FScrollbar::ScrollType::StepBackward:
       scrollBy (-distance, 0);
       break;
 
     case FScrollbar::ScrollType::PageForward:
-      distance = int(getViewportWidth());
-      // fall through
     case FScrollbar::ScrollType::StepForward:
       scrollBy (distance, 0);
       break;

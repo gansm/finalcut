@@ -791,8 +791,8 @@ void FMenu::mouseMoveSelection (FMenuItem* m_item, MouseStates& ms)
     if ( ! sub_menu->isShown() )
       shown_sub_menu = sub_menu;
   }
-  else if ( opened_sub_menu )
-    ms.hide_sub_menu = true;
+  else
+    ms.hide_sub_menu = bool(opened_sub_menu);
 }
 
 //----------------------------------------------------------------------
@@ -830,9 +830,7 @@ void FMenu::mouseMoveOverBorder (MouseStates& ms) const
   // Mouse is moved over border or separator line
 
   updateStatusbar (this, false);
-
-  if ( opened_sub_menu )
-    ms.hide_sub_menu = true;
+  ms.hide_sub_menu = bool(opened_sub_menu);
 }
 
 //----------------------------------------------------------------------
@@ -1459,9 +1457,7 @@ auto closeOpenMenus ( FMenu* menu
     return tuple;
   }
 
-  if ( menu->isDialogMenu() )
-    is_dialog_menu = true;
-
+  is_dialog_menu = menu->isDialogMenu();
   menu->unselectItem();
   menu->hide();
   menu->hideSubMenus();

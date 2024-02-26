@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2023 Markus Gans                                      *
+* Copyright 2012-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -272,6 +272,7 @@ class FTerm final
     static void init_tab_quirks();
     static void init_captureFontAndTitle();
     static auto hasNoFontSettingOption() -> bool;
+    static auto canSetTerminalFont() -> bool;
     static void setInsertCursorStyle();
     static void setOverwriteCursorStyle();
     static auto enableCursorString() -> std::string;

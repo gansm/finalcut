@@ -615,27 +615,55 @@ void FListBox::drawHeadline()
 }
 
 //----------------------------------------------------------------------
+inline auto FListBox::canSkipDrawing() const -> bool
+{
+  return data.itemlist.empty() || getHeight() <= 2 || getWidth() <= 4;
+}
+
+//----------------------------------------------------------------------
+inline auto FListBox::calculateNumberItemsToDraw() const -> std::size_t
+{
+  std::size_t num{getHeight() - 2};
+  return std::min(num, getCount());
+}
+
+//----------------------------------------------------------------------
+inline auto FListBox::canRedrawPartialList() const -> bool
+{
+  return scroll.last_yoffset >= 0
+      && scroll.last_yoffset == scroll.yoffset
+      && selection.last_current != int(selection.current);
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::updateRedrawParameters (std::size_t& start, std::size_t& num) const
+{
+  // speed up: redraw only the changed rows
+  const auto last_pos = selection.current - std::size_t(scroll.yoffset) - 1;
+  const auto current_pos = std::size_t(selection.last_current - scroll.yoffset) - 1;
+  start = std::min(last_pos, current_pos);
+  num = std::max(last_pos, current_pos) + 1;
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::finalizeDrawing()
+{
+  unsetAttributes();
+  scroll.last_yoffset = scroll.yoffset;
+  selection.last_current = int(selection.current);
+}
+
+//----------------------------------------------------------------------
 void FListBox::drawList()
 {
-  if ( data.itemlist.empty() || getHeight() <= 2 || getWidth() <= 4 )
+  if ( canSkipDrawing() )
     return;
 
   std::size_t start{};
-  std::size_t num(getHeight() - 2);
+  std::size_t num = calculateNumberItemsToDraw();
 
-  if ( num > getCount() )
-    num = getCount();
-
-  if ( scroll.last_yoffset >= 0
-    && scroll.last_yoffset == scroll.yoffset
-    && selection.last_current != int(selection.current) )
-  {
-    // speed up: redraw only the changed rows
-    const auto last_pos = selection.current - std::size_t(scroll.yoffset) - 1;
-    const auto current_pos = std::size_t(selection.last_current - scroll.yoffset) - 1;
-    start = std::min(last_pos, current_pos);
-    num = std::max(last_pos, current_pos) + 1;
-  }
+  if ( canRedrawPartialList() )
+    updateRedrawParameters(start, num);
 
   auto iter = index2iterator(start + std::size_t(scroll.yoffset));
 
@@ -664,9 +692,7 @@ void FListBox::drawList()
     ++iter;
   }
 
-  unsetAttributes();
-  scroll.last_yoffset = scroll.yoffset;
-  selection.last_current = int(selection.current);
+  finalizeDrawing();
 }
 
 //----------------------------------------------------------------------
@@ -720,35 +746,34 @@ inline void FListBox::drawListBracketsLine ( int y
                                            , bool serach_mark )
 {
   printLeftCurrentLineArrow(y);
-  std::size_t bracket_space{0};
+  // Required bracket space
+  std::size_t bracket_space = (scroll.xoffset == 0) ? 1 : 0;
 
   if ( scroll.xoffset == 0 )
-  {
-    bracket_space = 1;  // Required bracket space
     printLeftBracket (iter->brackets);
-  }
 
   const auto first = std::size_t(scroll.xoffset);
   const std::size_t max_width = getMaxWidth() - bracket_space;
   const FString element(getColumnSubString (getString(iter), first, max_width));
-  auto column_width = getColumnWidth(element);
-  const std::size_t text_width = getColumnWidth(getString(iter));
   const std::size_t inc_len = data.inc_search.getLength();
-  std::size_t i{0};
   const auto& wc = getColorTheme();
 
-  for (; i < element.getLength(); i++)
+  for (std::size_t i{0}; i < element.getLength(); i++)
   {
-    if ( serach_mark && i == 0 )
-      setColor ( wc->current_element.inc_search_fg
-               , wc->current_element.focus_bg );
-
-    if ( serach_mark && i == inc_len )
-      setColor ( wc->current_element.focus_fg
-               , wc->current_element.focus_bg );
+    if ( serach_mark && (i == 0 || i == inc_len) )
+    {
+      const auto& current_color = (i == 0)
+                                ? wc->current_element.inc_search_fg
+                                : wc->current_element.focus_fg;
+      setColor (current_color, wc->current_element.focus_bg);
+    }
 
     print (element[i]);
   }
+
+  const std::size_t text_width = getColumnWidth(getString(iter));
+  auto column_width = getColumnWidth(element);
+  std::size_t i = element.getLength();
 
   if ( bracket_space + column_width < getMaxWidth()
     && std::size_t(scroll.xoffset) <= text_width )
@@ -1774,26 +1799,47 @@ inline void FListBox::handleHorizontalScrollBarUpdate ( const FScrollbar::Scroll
 }
 
 //----------------------------------------------------------------------
+inline auto FListBox::getVerticalScrollDistance (const FScrollbar::ScrollType scroll_type) const -> int
+{
+  if ( scroll_type == FScrollbar::ScrollType::PageBackward
+    || scroll_type == FScrollbar::ScrollType::PageForward )
+  {
+    return int(getClientHeight());
+  }
+
+  return 1;
+}
+
+//----------------------------------------------------------------------
+inline auto FListBox::getHorizontalScrollDistance (const FScrollbar::ScrollType scroll_type) const -> int
+{
+  if ( scroll_type == FScrollbar::ScrollType::PageBackward
+    || scroll_type == FScrollbar::ScrollType::PageForward )
+  {
+    static constexpr int padding_space = 2;  // 1 leading space + 1 trailing space
+    return int(getClientWidth()) - padding_space;
+  }
+
+  return 1;
+}
+
+//----------------------------------------------------------------------
 void FListBox::cb_vbarChange (const FWidget*)
 {
   const auto scroll_type = scroll.vbar->getScrollType();
   static constexpr int wheel_distance = 4;
   const std::size_t current_before = selection.current;
-  int distance{1}; // Default value
   const int yoffset_before = scroll.yoffset;
+  int distance = getVerticalScrollDistance(scroll_type);
 
   switch ( scroll_type )
   {
     case FScrollbar::ScrollType::PageBackward:
-      distance = int(getClientHeight());
-      // fall through
     case FScrollbar::ScrollType::StepBackward:
       prevListItem (distance);
       break;
 
     case FScrollbar::ScrollType::PageForward:
-      distance = int(getClientHeight());
-      // fall through
     case FScrollbar::ScrollType::StepForward:
       nextListItem (distance);
       break;
@@ -1829,22 +1875,17 @@ void FListBox::cb_hbarChange (const FWidget*)
 {
   const auto scroll_type = scroll.hbar->getScrollType();
   static constexpr int wheel_distance = 4;
-  static constexpr int padding_space = 2;  // 1 leading space + 1 trailing space
-  int distance{1};
   const int xoffset_before = scroll.xoffset;
+  int distance = getHorizontalScrollDistance(scroll_type);
 
   switch ( scroll_type )
   {
     case FScrollbar::ScrollType::PageBackward:
-      distance = int(getClientWidth()) - padding_space;
-      // fall through
     case FScrollbar::ScrollType::StepBackward:
       scrollLeft (distance);
       break;
 
     case FScrollbar::ScrollType::PageForward:
-      distance = int(getClientWidth()) - padding_space;
-      // fall through
     case FScrollbar::ScrollType::StepForward:
       scrollRight (distance);
       break;

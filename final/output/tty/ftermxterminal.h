@@ -114,6 +114,7 @@ class FTermXTerminal final
     void  setXTermSize() const;
     auto  canSetXTermFont() const -> bool;
     void  setXTermFont();
+    auto  canSetXTermColor() const -> bool;
     auto  canSetXTermForeground() const -> bool;
     void  setXTermForeground();
     auto  canSetXTermBackground() const -> bool;

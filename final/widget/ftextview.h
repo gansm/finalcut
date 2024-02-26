@@ -252,6 +252,9 @@ class FTextView : public FWidget
     void updateHorizontalScrollBar (std::size_t);
     void processChanged() const;
     void changeOnResize() const;
+    auto shouldUpdateScrollbar (FScrollbar::ScrollType) const -> bool;
+    auto getVerticalScrollDistance (const FScrollbar::ScrollType) const -> int;
+    auto getHorizontalScrollDistance (const FScrollbar::ScrollType) const -> int;
 
     // Callback methods
     void cb_vbarChange (const FWidget*);

@@ -138,11 +138,7 @@ void FLabel::setText (const FString& txt)
 {
   text.setString(txt);
   multiline_text = text.split("\n");
-
-  if ( int(multiline_text.size()) > 1 )
-    multiline = true;
-  else
-    multiline = false;
+  multiline =  bool( int(multiline_text.size()) > 1 );
 
   if ( isEnabled() )
   {

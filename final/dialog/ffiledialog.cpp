@@ -474,8 +474,7 @@ void FFileDialog::followSymLink (const char* const dir, FDirEntry& entry) const
   if ( lstat(resolved_path.data(), &sb) == -1 )
     return;  // Cannot get file status
 
-  if ( S_ISDIR(sb.st_mode) )
-    entry.directory = true;
+  entry.directory = S_ISDIR(sb.st_mode);
 }
 
 //----------------------------------------------------------------------

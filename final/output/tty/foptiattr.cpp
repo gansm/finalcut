@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2023 Markus Gans                                      *
+* Copyright 2016-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -503,9 +503,7 @@ void FOptiAttr::initialize()
   init_reset_attribute (F_crossed_out.off);
   init_reset_attribute (F_dbl_underline.off);
   init_reset_attribute (F_standout.off, all_tests & ~same_like_se);
-
-  if ( hasCharsetEquivalence() )
-    alt_equal_pc_charset = true;
+  alt_equal_pc_charset = hasCharsetEquivalence();
 }
 
 //----------------------------------------------------------------------
