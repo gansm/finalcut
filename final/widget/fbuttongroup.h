@@ -120,6 +120,7 @@ class FButtonGroup : public FScrollView
     auto getCheckedRadioButton() -> FToggleButton*;
     template <typename UnaryPredicate>
     auto findButtonIf (UnaryPredicate) const -> FToggleButton*;
+    auto needToUncheck (const FToggleButton*, const FToggleButton*) const -> bool;
 
     // Callback method
     void cb_buttonToggled (const FToggleButton*) const;

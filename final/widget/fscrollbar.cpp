@@ -338,28 +338,9 @@ void FScrollbar::onTimer (FTimerEvent*)
     addTimer(repeat_time);
   }
 
-  // Timer stop condition
-  if ( ( scroll_type == ScrollType::PageBackward
-      && slider_pos == slider_click_stop_pos )
-    || ( scroll_type == ScrollType::PageForward
-      && slider_pos == slider_click_stop_pos ) )
+  if ( shouldStopTimer() )  // Timer stop condition
   {
-    const auto max_slider_pos = int(bar_length - slider_length);
-
-    if ( scroll_type == ScrollType::PageBackward
-      && slider_pos == 0 )
-    {
-      jumpToClickPos(0);  // Scroll to the start
-      processScroll();
-    }
-    else if ( scroll_type == ScrollType::PageForward
-           && slider_pos == max_slider_pos )
-    {
-      jumpToClickPos (max_slider_pos);  // Scroll to the end
-      processScroll();
-    }
-
-    delOwnTimers();
+    stopTimer();
     return;
   }
 
@@ -657,6 +638,15 @@ inline auto FScrollbar::isMouseOutsideScrollbar ( int mouse_x
 }
 
 //----------------------------------------------------------------------
+inline auto FScrollbar::shouldStopTimer() const -> bool
+{
+  return ( scroll_type == ScrollType::PageBackward
+        && slider_pos == slider_click_stop_pos )
+      || ( scroll_type == ScrollType::PageForward
+        && slider_pos == slider_click_stop_pos );
+}
+
+//----------------------------------------------------------------------
 void FScrollbar::jumpToClickPos (int x, int y)
 {
   int new_val{};
@@ -733,6 +723,27 @@ inline void FScrollbar::handleJumpScroll (int mouse_x, int mouse_y)
   setValue(new_val);
   drawBar();
   processScroll();
+}
+
+//----------------------------------------------------------------------
+void FScrollbar::stopTimer()
+{
+  const auto max_slider_pos = int(bar_length - slider_length);
+
+  if ( scroll_type == ScrollType::PageBackward
+    && slider_pos == 0 )
+  {
+    jumpToClickPos(0);  // Scroll to the start
+    processScroll();
+  }
+  else if ( scroll_type == ScrollType::PageForward
+         && slider_pos == max_slider_pos )
+  {
+    jumpToClickPos (max_slider_pos);  // Scroll to the end
+    processScroll();
+  }
+
+  delOwnTimers();
 }
 
 //----------------------------------------------------------------------

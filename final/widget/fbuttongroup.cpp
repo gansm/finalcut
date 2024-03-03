@@ -439,6 +439,16 @@ inline auto FButtonGroup::findButtonIf (UnaryPredicate p) const -> FToggleButton
 }
 
 //----------------------------------------------------------------------
+inline auto FButtonGroup::needToUncheck ( const FToggleButton* toggle_button
+                                        , const FToggleButton* button ) const -> bool
+{
+  return toggle_button
+      && toggle_button != button
+      && toggle_button->isChecked()
+      && isRadioButton(toggle_button);
+}
+
+//----------------------------------------------------------------------
 void FButtonGroup::cb_buttonToggled (const FToggleButton* button) const
 {
   if ( (button && ! button->isChecked()) || buttonlist.empty() )
@@ -448,10 +458,7 @@ void FButtonGroup::cb_buttonToggled (const FToggleButton* button) const
   {
     auto toggle_button = static_cast<FToggleButton*>(item);
 
-    if ( toggle_button
-      && toggle_button != button
-      && toggle_button->isChecked()
-      && isRadioButton(toggle_button) )
+    if ( needToUncheck(toggle_button, button) )
     {
       toggle_button->unsetChecked();
 
