@@ -69,17 +69,58 @@ auto FTextView::getText() const -> FString
 
   for (auto&& line : data)
   {
-    if ( ! line.text.isEmpty() )
-    {
-      if ( iter != s.begin() )
-      {
-        *iter = '\n';
-        ++iter;
-      }
+    if ( line.text.isEmpty() )
+      continue;
 
-      std::copy (line.text.begin(), line.text.end(), iter);
-      iter += std::distance(line.text.begin(), line.text.end());
+    if ( iter != s.begin() )
+    {
+      *iter = '\n';  // Add newline character
+      ++iter;
     }
+
+    std::copy (line.text.begin(), line.text.end(), iter);
+    iter += std::distance(line.text.begin(), line.text.end());
+  }
+
+  return s;
+}
+
+//----------------------------------------------------------------------
+auto FTextView::getSelectedText() const -> FString
+{
+  bool wrong_column_order = false;
+
+  if ( selection_start.row == selection_end.row )
+  {
+    if ( selection_start.column == selection_end.column )
+      return {};
+
+    if ( selection_start.column > selection_end.column )
+      wrong_column_order = true;
+  }
+
+  const auto start_row = std::min(selection_start.row, selection_end.row);
+  const auto end_row = std::max(selection_start.row, selection_end.row);
+  const auto start_col = wrong_column_order ? selection_end.column
+                                            : selection_start.column;
+  const auto end_col = wrong_column_order ? selection_start.column
+                                          : selection_end.column;
+  const auto first = &getLine(start_row);
+  const auto last = &getLine(end_row);
+  const auto end = last + 1;
+  auto iter = first;
+  FString s{};
+
+  while ( iter != end )
+  {
+    if ( iter == first )
+      s = FString(iter->text.toWString().substr(start_col)) + '\n';
+    else if ( iter == last )
+      s += iter->text.left(end_col + 1) + '\n';
+    else
+      s += iter->text + '\n';  // Add newline character
+
+    ++iter;
   }
 
   return s;

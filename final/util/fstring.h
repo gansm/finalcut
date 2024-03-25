@@ -80,11 +80,12 @@ class FString
 {
   public:
     // Using-declarations
+    using size_type       = std::wstring::size_type;
+    using difference_type = std::wstring::difference_type;
     using iterator        = std::wstring::iterator;
     using const_iterator  = std::wstring::const_iterator;
     using reference       = std::wstring::reference;
     using const_reference = std::wstring::const_reference;
-    using difference_type = std::wstring::difference_type;
 
     // Constructors
     FString () = default;

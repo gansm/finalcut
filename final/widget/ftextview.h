@@ -156,6 +156,12 @@ class FTextView : public FWidget
     using FTextViewList = std::vector<FTextViewLine>;
     using FWidget::setGeometry;
 
+    struct FTextPosition
+    {
+      FTextViewList::size_type row{};
+      FString::size_type       column{};
+    };
+
     // Constructor
     explicit FTextView (FWidget* = nullptr);
 
@@ -176,7 +182,11 @@ class FTextView : public FWidget
     auto getScrollPos() const -> FPoint;
     auto getTextVisibleSize() const -> FSize;
     auto getText() const -> FString;
+    auto getSelectedText() const -> FString;
+    auto getSelectionStart() -> FTextPosition;
+    auto getSelectionEnd() -> FTextPosition;
     auto getLine (FTextViewList::size_type) -> FTextViewLine&;
+    auto getLine (FTextViewList::size_type) const -> const FTextViewLine&;
     auto getLines() const & -> const FTextViewList&;
 
     // Mutators
@@ -186,6 +196,9 @@ class FTextView : public FWidget
     void setText (const FString&);
     void addHighlight (std::size_t, const FTextHighlight&);
     void resetHighlight (std::size_t);
+    void setSelectionStart (const FTextViewList::size_type, const FString::size_type);
+    void setSelectionEnd (const FTextViewList::size_type, const FString::size_type);
+    void resetSelection();
     void scrollToX (int);
     void scrollToY (int);
     void scrollTo (const FPoint&);
@@ -264,6 +277,8 @@ class FTextView : public FWidget
     FTextViewList  data{};
     FScrollbarPtr  vbar{nullptr};
     FScrollbarPtr  hbar{nullptr};
+    FTextPosition  selection_start{};
+    FTextPosition  selection_end{};
     KeyMap         key_map{};
     bool           update_scrollbar{true};
     int            xoffset{0};
@@ -328,12 +343,41 @@ inline auto FTextView::getTextVisibleSize() const -> FSize
 { return {getTextWidth(), getTextHeight()}; }
 
 //----------------------------------------------------------------------
+inline auto FTextView::getSelectionStart() -> FTextPosition
+{ return selection_start; }
+
+//----------------------------------------------------------------------
+inline auto FTextView::getSelectionEnd() -> FTextPosition
+{ return selection_end; }
+
+//----------------------------------------------------------------------
 inline auto FTextView::getLine (FTextViewList::size_type line) -> FTextViewLine&
+{ return data.at(line); }
+
+//----------------------------------------------------------------------
+inline auto FTextView::getLine (FTextViewList::size_type line) const -> const FTextViewLine&
 { return data.at(line); }
 
 //----------------------------------------------------------------------
 inline auto FTextView::getLines() const & -> const FTextViewList&
 { return data; }
+
+//----------------------------------------------------------------------
+inline void FTextView::setSelectionStart ( const FTextViewList::size_type row
+                                         , const FString::size_type col )
+{ selection_start = {row, col}; }
+
+//----------------------------------------------------------------------
+inline void FTextView::setSelectionEnd ( const FTextViewList::size_type row
+                                       , const FString::size_type col )
+{ selection_end = {row, col}; }
+
+//----------------------------------------------------------------------
+inline void FTextView::resetSelection()
+{
+  selection_start = {0U, 0U};
+  selection_end = {0U, 0U};
+}
 
 //----------------------------------------------------------------------
 inline void FTextView::scrollTo (const FPoint& pos)
