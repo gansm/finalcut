@@ -89,6 +89,16 @@ class BeeColorTheme final : public finalcut::FWidgetColors
         finalcut::FColor::Blue        // Emphasis foreground
       };
 
+      text =
+      {
+        finalcut::FColor::Black,      // Foreground
+        finalcut::FColor::LightGray,  // Background
+        finalcut::FColor::White,      // Selected foreground
+        finalcut::FColor::Blue,       // Selected background
+        finalcut::FColor::White,      // Selected focused foreground
+        finalcut::FColor::Cyan        // Selected focused background
+      };
+
       error_box =
       {
         finalcut::FColor::Black,      // Foreground

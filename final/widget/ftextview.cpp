@@ -149,8 +149,8 @@ void FTextView::setGeometry ( const FPoint& pos, const FSize& size
 void FTextView::resetColors()
 {
   const auto& wc = getColorTheme();
-  setForegroundColor (wc->dialog.fg);
-  setBackgroundColor (wc->dialog.bg);
+  setForegroundColor (wc->text.fg);
+  setBackgroundColor (wc->text.bg);
   FWidget::resetColors();
 }
 
@@ -591,12 +591,14 @@ inline void FTextView::printLine (std::size_t y)
     line_buffer.print() << FString{trailing_whitespace, L' '};
   }
 
-  printHighlighted (line_buffer, data[n].highlight);
+  addHighlighting (line_buffer, data[n].highlight);
+  addSelection (line_buffer, n);
+  print(line_buffer);
 }
 
 //----------------------------------------------------------------------
-inline void FTextView::printHighlighted ( FVTermBuffer& line_buffer
-                                        , const std::vector<FTextHighlight>& highlight )
+inline void FTextView::addHighlighting ( FVTermBuffer& line_buffer
+                                       , const std::vector<FTextHighlight>& highlight )
 {
   for (auto&& hgl : highlight)
   {
@@ -616,8 +618,38 @@ inline void FTextView::printHighlighted ( FVTermBuffer& line_buffer
       fchar.attr = hgl.attributes.attr;
     }
   }
+}
 
-  print(line_buffer);
+//----------------------------------------------------------------------
+inline void FTextView::addSelection (FVTermBuffer& line_buffer, std::size_t n)
+{
+  if ( ! hasSelectedText() || n < selection_start.row || n > selection_end.row )
+    return;
+
+  const std::size_t pos = static_cast<std::size_t>(xoffset) + 1;
+  const std::size_t start_col = (selection_start.column > pos)
+                              ? selection_start.column - pos : 0U;
+  const std::size_t end_col = (selection_end.column >= pos)
+                            ? selection_end.column - pos + 1 : 0U;
+  const auto& wc = getColorTheme();
+  const auto has_focus = hasFocus();
+  const auto& selected_fg = has_focus
+                          ? wc->text.selected_focus_fg
+                          : wc->text.selected_fg;
+  const auto& selected_bg = has_focus
+                          ? wc->text.selected_focus_bg
+                          : wc->text.selected_bg;
+  const std::size_t start_index = (n == selection_start.row) ? start_col : 0U;
+  const std::size_t end_index = (n == selection_end.row)
+                              ? std::min(end_col, line_buffer.getLength())
+                              : line_buffer.getLength();
+  auto select = [&selected_fg, &selected_bg] (auto& fchar)
+  {
+    fchar.fg_color = selected_fg;
+    fchar.bg_color = selected_bg;
+  };
+
+  std::for_each (&line_buffer[start_index], &line_buffer[end_index], select);
 }
 
 //----------------------------------------------------------------------

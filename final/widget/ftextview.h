@@ -183,8 +183,8 @@ class FTextView : public FWidget
     auto getTextVisibleSize() const -> FSize;
     auto getText() const -> FString;
     auto getSelectedText() const -> FString;
-    auto getSelectionStart() -> FTextPosition;
-    auto getSelectionEnd() -> FTextPosition;
+    auto getSelectionStart() const -> FTextPosition;
+    auto getSelectionEnd() const -> FTextPosition;
     auto getLine (FTextViewList::size_type) -> FTextViewLine&;
     auto getLine (FTextViewList::size_type) const -> const FTextViewLine&;
     auto getLines() const & -> const FTextViewList&;
@@ -206,6 +206,9 @@ class FTextView : public FWidget
     void scrollToBegin();
     void scrollToEnd();
     void scrollBy (int, int);
+
+    // Inquiry
+    auto hasSelectedText() const -> bool;
 
     // Methods
     void hide() override;
@@ -253,8 +256,9 @@ class FTextView : public FWidget
     void drawText();
     auto canSkipDrawing() const -> bool;
     void printLine (std::size_t);
-    void printHighlighted ( FVTermBuffer&
-                          , const std::vector<FTextHighlight>& );
+    void addHighlighting ( FVTermBuffer&
+                         , const std::vector<FTextHighlight>& );
+    void addSelection (FVTermBuffer&, std::size_t);
     auto useFDialogBorder() const -> bool;
     auto isPrintable (wchar_t) const -> bool;
     auto splitTextLines (const FString&) const -> FStringList;
@@ -343,11 +347,11 @@ inline auto FTextView::getTextVisibleSize() const -> FSize
 { return {getTextWidth(), getTextHeight()}; }
 
 //----------------------------------------------------------------------
-inline auto FTextView::getSelectionStart() -> FTextPosition
+inline auto FTextView::getSelectionStart() const -> FTextPosition
 { return selection_start; }
 
 //----------------------------------------------------------------------
-inline auto FTextView::getSelectionEnd() -> FTextPosition
+inline auto FTextView::getSelectionEnd() const -> FTextPosition
 { return selection_end; }
 
 //----------------------------------------------------------------------
@@ -382,6 +386,13 @@ inline void FTextView::resetSelection()
 //----------------------------------------------------------------------
 inline void FTextView::scrollTo (const FPoint& pos)
 { scrollTo(pos.getX(), pos.getY()); }
+
+//---------------------------------------------------------------
+inline auto FTextView::hasSelectedText() const -> bool
+{
+  return selection_start.row != selection_end.row
+      || selection_start.column != selection_end.column;
+}
 
 //----------------------------------------------------------------------
 template <typename T>

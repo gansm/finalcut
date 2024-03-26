@@ -72,6 +72,16 @@ class FWidgetColors
       FColor emphasis_fg{FColor::Default};
     };
 
+    struct TextColors
+    {
+      FColor fg{FColor::Default};
+      FColor bg{FColor::Default};
+      FColor selected_fg{FColor::Default};
+      FColor selected_bg{FColor::Default};
+      FColor selected_focus_fg{FColor::Default};
+      FColor selected_focus_bg{FColor::Default};
+    };
+
     struct ErrorBoxColors
     {
       FColor fg{FColor::Default};
@@ -193,6 +203,7 @@ class FWidgetColors
     // Data members
     NonContextualColors  term{};
     DialogColors         dialog{};
+    TextColors           text{};
     ErrorBoxColors       error_box{};
     NonContextualColors  tooltip{};
     NonContextualColors  shadow{};
@@ -248,6 +259,7 @@ class default8ColorTheme final : public FWidgetColors
   private:
     void setTermColors();
     void setDialogColors();
+    void setTextColors();
     void setErrorBoxColors();
     void setTooltipColors();
     void setShadowColors();
@@ -303,6 +315,7 @@ class default16ColorTheme final : public FWidgetColors
   private:
     void setTermColors();
     void setDialogColors();
+    void setTextColors();
     void setErrorBoxColors();
     void setTooltipColors();
     void setShadowColors();
@@ -358,6 +371,7 @@ class default8ColorDarkTheme final : public FWidgetColors
   private:
     void setTermColors();
     void setDialogColors();
+    void setTextColors();
     void setErrorBoxColors();
     void setTooltipColors();
     void setShadowColors();
@@ -413,6 +427,7 @@ class default16ColorDarkTheme final : public FWidgetColors
   private:
     void setTermColors();
     void setDialogColors();
+    void setTextColors();
     void setErrorBoxColors();
     void setTooltipColors();
     void setShadowColors();

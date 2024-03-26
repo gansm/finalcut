@@ -59,6 +59,7 @@ void default8ColorTheme::setColorTheme()
 {
   setTermColors();
   setDialogColors();
+  setTextColors();
   setErrorBoxColors();
   setTooltipColors();
   setShadowColors();
@@ -94,6 +95,19 @@ inline void default8ColorTheme::setDialogColors()
     FColor::LightGray,  // Background
     FColor::Red,        // Resize foreground
     FColor::Blue        // Emphasis foreground
+  };
+}
+
+inline void default8ColorTheme::setTextColors()
+{
+  text =
+  {
+    FColor::Black,      // Foreground
+    FColor::LightGray,  // Background
+    FColor::LightGray,  // Selected foreground
+    FColor::Black,      // Selected background
+    FColor::LightGray,  // Selected focused foreground
+    FColor::Blue        // Selected focused background
   };
 }
 
@@ -297,6 +311,7 @@ void default16ColorTheme::setColorTheme()
 {
   setTermColors();
   setDialogColors();
+  setTextColors();
   setErrorBoxColors();
   setTooltipColors();
   setShadowColors();
@@ -336,6 +351,19 @@ inline void default16ColorTheme::setDialogColors()
     FColor::White,      // Background
     FColor::Cyan,       // Resize foreground
     FColor::Blue        // Emphasis foreground
+  };
+}
+
+inline void default16ColorTheme::setTextColors()
+{
+  text =
+  {
+    FColor::Black,      // Foreground
+    FColor::White,      // Background
+    FColor::White,      // Selected foreground
+    FColor::DarkGray,   // Selected background
+    FColor::White,      // Selected focused foreground
+    FColor::Blue        // Selected focused background
   };
 }
 
@@ -539,6 +567,7 @@ void default8ColorDarkTheme::setColorTheme()
 {
   setTermColors();
   setDialogColors();
+  setTextColors();
   setErrorBoxColors();
   setTooltipColors();
   setShadowColors();
@@ -574,6 +603,19 @@ inline void default8ColorDarkTheme::setDialogColors()
     FColor::LightGray,  // Background
     FColor::Blue,       // Resize foreground
     FColor::Blue        // Emphasis foreground
+  };
+}
+
+inline void default8ColorDarkTheme::setTextColors()
+{
+  text =
+  {
+    FColor::Black,      // Foreground
+    FColor::LightGray,  // Background
+    FColor::LightGray,  // Selected foreground
+    FColor::Black,      // Selected background
+    FColor::LightGray,  // Selected focused foreground
+    FColor::Blue        // Selected focused background
   };
 }
 
@@ -777,6 +819,7 @@ void default16ColorDarkTheme::setColorTheme()
 {
   setTermColors();
   setDialogColors();
+  setTextColors();
   setErrorBoxColors();
   setTooltipColors();
   setShadowColors();
@@ -812,6 +855,19 @@ inline void default16ColorDarkTheme::setDialogColors()
     FColor::LightGray,  // Background
     FColor::LightBlue,  // Resize foreground
     FColor::Blue        // Emphasis foreground
+  };
+}
+
+inline void default16ColorDarkTheme::setTextColors()
+{
+  text =
+  {
+    FColor::Black,      // Foreground
+    FColor::LightGray,  // Background
+    FColor::LightGray,  // Selected foreground
+    FColor::DarkGray,   // Selected background
+    FColor::LightGray,  // Selected focused foreground
+    FColor::Blue        // Selected focused background
   };
 }
 
