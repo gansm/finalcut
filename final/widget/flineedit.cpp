@@ -890,7 +890,7 @@ void FLineEdit::setCursorPositionByMouseClick (const FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FLineEdit::handleAutoScroll (const FMouseEvent* ev)
 {
-  // auto-scrolling when dragging mouse outside the widget
+  // Auto-scrolling when dragging mouse outside the widget
 
   const int mouse_x = ev->getX();
 

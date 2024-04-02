@@ -67,6 +67,7 @@ FWidget*  FWidget::active_window        {nullptr};  // the active window
 FWidget*  FWidget::focus_widget         {nullptr};  // has keyboard input focus
 FWidget*  FWidget::clicked_widget       {nullptr};  // is focused by click
 FWidget*  FApplication::clicked_widget  {nullptr};  // is focused by click
+FWidget*  FApplication::wheel_widget    {nullptr};  // is focused on wheel
 FWidget*  FWidget::open_menu            {nullptr};  // currently open menu
 FWidget*  FWidget::move_resize_widget   {nullptr};  // move or resize by keyboard
 FWidget*  FApplication::keyboard_widget {nullptr};  // has the keyboard focus
@@ -450,6 +451,7 @@ void FApplication::init()
 
   // Restister mouse handler callbacks
   registerMouseHandler (FApplication::determineClickedWidget);
+  registerMouseHandler (FApplication::determineWheelWidget);
   registerMouseHandler (FApplication::unsetMoveResizeMode);
 
   // Initialize logging
@@ -776,6 +778,7 @@ void FApplication::mouseEvent (const FMouseData& md) const
     mouse_handler(md);  // Execute mouse handler
 
   sendMouseEvent (md);
+  sendMouseWheelEvent (md);
 }
 
 //----------------------------------------------------------------------
@@ -1006,6 +1009,9 @@ void FApplication::processTerminalFocus (const FKey& key)
 //----------------------------------------------------------------------
 void FApplication::determineClickedWidget (const FMouseData& md)
 {
+  if ( isWheelEvent(md) )
+    return;
+
   clicked_widget = FWidget::getClickedWidget();
 
   // Check if the clicked widget has already been found
@@ -1028,6 +1034,25 @@ void FApplication::determineClickedWidget (const FMouseData& md)
 }
 
 //----------------------------------------------------------------------
+void FApplication::determineWheelWidget (const FMouseData& md)
+{
+  if ( ! isWheelEvent(md) )
+    return;
+
+  const auto& mouse_position = md.getPos();
+
+  // Determine the window object on the current click position
+  auto window = FWindow::getWindowWidgetAt (mouse_position);
+
+  if ( ! window )
+    return;
+
+  // Determine the widget at the current click position
+  auto child = window->childWidgetAt(mouse_position);
+  wheel_widget = ( child != nullptr ) ? child : window;
+}
+
+//----------------------------------------------------------------------
 auto FApplication::isNonActivatingMouseEvent (const FMouseData& md) -> bool
 {
   return md.isLeftButtonReleased()
@@ -1038,6 +1063,15 @@ auto FApplication::isNonActivatingMouseEvent (const FMouseData& md) -> bool
       || md.isMetaKeyPressed()
       || md.isMoved();
 }
+
+//----------------------------------------------------------------------
+auto FApplication::isWheelEvent (const FMouseData& md) -> bool
+{
+  return md.isWheelUp()
+      || md.isWheelDown()
+      || md.isWheelLeft()
+      || md.isWheelRight();
+};
 
 //----------------------------------------------------------------------
 void FApplication::unsetMoveResizeMode (const FMouseData&)
@@ -1057,7 +1091,7 @@ void FApplication::unsetMoveResizeMode (const FMouseData&)
 //----------------------------------------------------------------------
 void FApplication::sendMouseEvent (const FMouseData& md) const
 {
-  if ( ! FWidget::getClickedWidget() )  // No widget was clicked
+  if ( ! FWidget::getClickedWidget() || wheel_widget )  // No widget was clicked
     return;
 
   const auto& mouse_position = md.getPos();
@@ -1072,32 +1106,41 @@ void FApplication::sendMouseEvent (const FMouseData& md) const
   if ( md.isMetaKeyPressed() )
     key_state |= MouseButton::Meta;
 
-  const auto& widgetMousePos = clicked_widget->termToWidgetPos(mouse_position);
+  const auto& widget_mouse_pos = clicked_widget->termToWidgetPos(mouse_position);
 
   if ( md.isMoved() )
   {
-    sendMouseMoveEvent (md, widgetMousePos, mouse_position, key_state);
+    sendMouseMoveEvent (md, widget_mouse_pos, mouse_position, key_state);
   }
   else
   {
-    sendMouseLeftClickEvent (md, widgetMousePos, mouse_position, key_state);
-    sendMouseRightClickEvent (md, widgetMousePos, mouse_position, key_state);
-    sendMouseMiddleClickEvent (md, widgetMousePos, mouse_position, key_state);
+    sendMouseLeftClickEvent (md, widget_mouse_pos, mouse_position, key_state);
+    sendMouseRightClickEvent (md, widget_mouse_pos, mouse_position, key_state);
+    sendMouseMiddleClickEvent (md, widget_mouse_pos, mouse_position, key_state);
   }
+}
 
-  sendWheelEvent (md, widgetMousePos, mouse_position);
+//----------------------------------------------------------------------
+void FApplication::sendMouseWheelEvent (const FMouseData& md)const
+{
+  if ( ! wheel_widget )  // No widget under the mouse pointer
+    return;
+
+  const auto& mouse_position = md.getPos();
+  const auto& widget_mouse_pos = wheel_widget->termToWidgetPos(mouse_position);
+  sendWheelEvent (md, widget_mouse_pos, mouse_position);
 }
 
 //----------------------------------------------------------------------
 void FApplication::sendMouseMoveEvent ( const FMouseData& md
-                                      , const FPoint& widgetMousePos
+                                      , const FPoint& widget_mouse_pos
                                       , const FPoint& mouse_position
                                       , MouseButton key_state ) const
 {
   if ( md.isLeftButtonPressed() )
   {
     FMouseEvent m_down_ev ( Event::MouseMove
-                          , widgetMousePos
+                          , widget_mouse_pos
                           , mouse_position
                           , MouseButton::Left | key_state );
     sendEvent (clicked_widget, &m_down_ev);
@@ -1106,7 +1149,7 @@ void FApplication::sendMouseMoveEvent ( const FMouseData& md
   if ( md.isRightButtonPressed() )
   {
     FMouseEvent m_down_ev ( Event::MouseMove
-                          , widgetMousePos
+                          , widget_mouse_pos
                           , mouse_position
                           , MouseButton::Right | key_state );
     sendEvent (clicked_widget, &m_down_ev);
@@ -1115,7 +1158,7 @@ void FApplication::sendMouseMoveEvent ( const FMouseData& md
   if ( md.isMiddleButtonPressed() )
   {
     FMouseEvent m_down_ev ( Event::MouseMove
-                          , widgetMousePos
+                          , widget_mouse_pos
                           , mouse_position
                           , MouseButton::Middle | key_state );
     sendEvent (clicked_widget, &m_down_ev);
@@ -1124,14 +1167,14 @@ void FApplication::sendMouseMoveEvent ( const FMouseData& md
 
 //----------------------------------------------------------------------
 void FApplication::sendMouseLeftClickEvent ( const FMouseData& md
-                                           , const FPoint& widgetMousePos
+                                           , const FPoint& widget_mouse_pos
                                            , const FPoint& mouse_position
                                            , MouseButton key_state ) const
 {
   if ( md.isLeftButtonDoubleClick() )
   {
     FMouseEvent m_dblclick_ev ( Event::MouseDoubleClick
-                              , widgetMousePos
+                              , widget_mouse_pos
                               , mouse_position
                               , MouseButton::Left | key_state );
     sendEvent (clicked_widget, &m_dblclick_ev);
@@ -1139,7 +1182,7 @@ void FApplication::sendMouseLeftClickEvent ( const FMouseData& md
   else if ( md.isLeftButtonPressed() )
   {
     FMouseEvent m_down_ev ( Event::MouseDown
-                          , widgetMousePos
+                          , widget_mouse_pos
                           , mouse_position
                           , MouseButton::Left | key_state );
     sendEvent (clicked_widget, &m_down_ev);
@@ -1147,7 +1190,7 @@ void FApplication::sendMouseLeftClickEvent ( const FMouseData& md
   else if ( md.isLeftButtonReleased() )
   {
     FMouseEvent m_up_ev ( Event::MouseUp
-                        , widgetMousePos
+                        , widget_mouse_pos
                         , mouse_position
                         , MouseButton::Left | key_state );
     auto released_widget = clicked_widget;
@@ -1162,14 +1205,14 @@ void FApplication::sendMouseLeftClickEvent ( const FMouseData& md
 
 //----------------------------------------------------------------------
 void FApplication::sendMouseRightClickEvent ( const FMouseData& md
-                                            , const FPoint& widgetMousePos
+                                            , const FPoint& widget_mouse_pos
                                             , const FPoint& mouse_position
                                             , MouseButton key_state ) const
 {
   if ( md.isRightButtonPressed() )
   {
     FMouseEvent m_down_ev ( Event::MouseDown
-                          , widgetMousePos
+                          , widget_mouse_pos
                           , mouse_position
                           , MouseButton::Right | key_state );
     sendEvent (clicked_widget, &m_down_ev);
@@ -1177,7 +1220,7 @@ void FApplication::sendMouseRightClickEvent ( const FMouseData& md
   else if ( md.isRightButtonReleased() )
   {
     FMouseEvent m_up_ev ( Event::MouseUp
-                        , widgetMousePos
+                        , widget_mouse_pos
                         , mouse_position
                         , MouseButton::Right | key_state );
     auto released_widget = clicked_widget;
@@ -1192,14 +1235,14 @@ void FApplication::sendMouseRightClickEvent ( const FMouseData& md
 
 //----------------------------------------------------------------------
 void FApplication::sendMouseMiddleClickEvent ( const FMouseData& md
-                                             , const FPoint& widgetMousePos
+                                             , const FPoint& widget_mouse_pos
                                              , const FPoint& mouse_position
                                              , MouseButton key_state ) const
 {
   if ( md.isMiddleButtonPressed() )
   {
     FMouseEvent m_down_ev ( Event::MouseDown
-                          , widgetMousePos
+                          , widget_mouse_pos
                           , mouse_position
                           , MouseButton::Middle | key_state );
     sendEvent (clicked_widget, &m_down_ev);
@@ -1207,7 +1250,7 @@ void FApplication::sendMouseMiddleClickEvent ( const FMouseData& md
   else if ( md.isMiddleButtonReleased() )
   {
     FMouseEvent m_up_ev ( Event::MouseUp
-                        , widgetMousePos
+                        , widget_mouse_pos
                         , mouse_position
                         , MouseButton::Middle | key_state );
     auto released_widget = clicked_widget;
@@ -1224,11 +1267,10 @@ void FApplication::sendMouseMiddleClickEvent ( const FMouseData& md
 
 //----------------------------------------------------------------------
 void FApplication::sendWheelEvent ( const FMouseData& md
-                                  , const FPoint& widgetMousePos
+                                  , const FPoint& widget_mouse_pos
                                   , const FPoint& mouse_position ) const
 {
-  if ( ! md.isWheelUp() && ! md.isWheelDown()
-    && ! md.isWheelLeft() && ! md.isWheelRight() )
+  if ( ! isWheelEvent(md) )
     return;
 
   auto mouse_wheel = [&md] ()
@@ -1249,12 +1291,12 @@ void FApplication::sendWheelEvent ( const FMouseData& md
   }();
 
   FWheelEvent wheel_ev ( Event::MouseWheel
-                       , widgetMousePos
+                       , widget_mouse_pos
                        , mouse_position
                        , mouse_wheel );
-  auto scroll_over_widget = clicked_widget;
-  setClickedWidget(nullptr);
+  auto scroll_over_widget = wheel_widget;
   sendEvent (scroll_over_widget, &wheel_ev);
+  wheel_widget = nullptr;
 }
 
 //----------------------------------------------------------------------

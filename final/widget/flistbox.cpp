@@ -847,10 +847,10 @@ inline void FListBox::setCurrentLineAttributes ( int y
                                                , bool line_has_brackets
                                                , bool& search_mark )
 {
-  const auto& flags = getFlags();
+  const auto& widget_flags = getFlags();
   const auto& output = FVTerm::getFOutput();
 
-  if ( flags.focus.focus && output->getMaxColor() < 16 )
+  if ( widget_flags.focus.focus && output->getMaxColor() < 16 )
     setBold();
 
   if ( is_line_selected )
@@ -866,13 +866,13 @@ inline void FListBox::setCurrentLineAttributes ( int y
 inline void FListBox::setSelectedCurrentLineAttributes (int y)
 {
   const auto& wc = getColorTheme();
-  const auto& flags = getFlags();
+  const auto& widget_flags = getFlags();
   const auto& output = FVTerm::getFOutput();
   const auto& current_element = wc->current_element;
 
   if ( output->isMonochron() )
     setBold();
-  else if ( flags.focus.focus )
+  else if ( widget_flags.focus.focus )
     setColor ( current_element.selected_focus_fg
              , current_element.selected_focus_bg );
   else
@@ -888,7 +888,7 @@ inline void FListBox::setUnselectedCurrentLineAttributes ( int y
                                                          , bool& search_mark )
 {
   const auto& wc = getColorTheme();
-  const auto& flags = getFlags();
+  const auto& widget_flags = getFlags();
   const auto& output = FVTerm::getFOutput();
   const std::size_t inc_len = data.inc_search.getLength();
   const std::size_t inc_width = getColumnWidth(data.inc_search);
@@ -897,7 +897,7 @@ inline void FListBox::setUnselectedCurrentLineAttributes ( int y
   if ( output->isMonochron() )
     unsetBold();
 
-  if ( ! flags.focus.focus )
+  if ( ! widget_flags.focus.focus )
   {
      setColor ( current_element.fg
               , current_element.bg );

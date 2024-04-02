@@ -450,9 +450,9 @@ void FDialog::onKeyPress (FKeyEvent* ev)
   if ( titlebar.buttons && isDialogMenuKey(key) )
   {
     ev->accept();
-    // open the titlebar menu
+    // Open the titlebar menu
     openMenu();
-    // focus to the first enabled item
+    // Focus to the first enabled item
     selectFirstMenuItem();
   }
 
@@ -1427,7 +1427,8 @@ inline void FDialog::leaveMinimizeButton (const MouseStates& ms)
 //----------------------------------------------------------------------
 void FDialog::pressMinimizeButton (const MouseStates& ms)
 {
-  if ( ! isMouseOverMinimizeButton(ms) || ! titlebar.minimize_button_pressed )
+  if ( ! isMouseOverMinimizeButton(ms)
+    || ! titlebar.minimize_button_pressed )
     return;
 
   // Zoom to maximum or restore the window size

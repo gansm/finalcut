@@ -201,9 +201,12 @@ class FApplication : public FWidget
     auto         processAccelerator (const FWidget&) const -> bool;
     void         processTerminalFocus (const FKey&);
     static void  determineClickedWidget (const FMouseData&);
+    static void  determineWheelWidget (const FMouseData&);
     static auto  isNonActivatingMouseEvent (const FMouseData&) -> bool;
+    static auto  isWheelEvent (const FMouseData&) -> bool;
     static void  unsetMoveResizeMode (const FMouseData&);
     void         sendMouseEvent (const FMouseData&) const;
+    void         sendMouseWheelEvent (const FMouseData&) const;
     void         sendMouseMoveEvent ( const FMouseData&
                                     , const FPoint&
                                     , const FPoint&
@@ -248,6 +251,7 @@ class FApplication : public FWidget
     static int        quit_code;
     static bool       quit_now;
     static FWidget*   clicked_widget;
+    static FWidget*   wheel_widget;
     static FWidget*   keyboard_widget;
 };
 

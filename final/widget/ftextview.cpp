@@ -88,42 +88,46 @@ auto FTextView::getText() const -> FString
 //----------------------------------------------------------------------
 auto FTextView::getSelectedText() const -> FString
 {
-  bool wrong_column_order = false;
-
-  if ( selection_start.row == selection_end.row )
-  {
-    if ( selection_start.column == selection_end.column )
-      return {};
-
-    if ( selection_start.column > selection_end.column )
-      wrong_column_order = true;
-  }
+  if ( ! hasSelectedText() )
+    return {};
 
   const auto start_row = std::min(selection_start.row, selection_end.row);
   const auto end_row = std::max(selection_start.row, selection_end.row);
-  const auto start_col = wrong_column_order ? selection_end.column
-                                            : selection_start.column;
-  const auto end_col = wrong_column_order ? selection_start.column
-                                          : selection_end.column;
+  const bool wrong_order = hasWrongSelectionOrder();
+  const auto start_col = wrong_order ? selection_end.column
+                                     : selection_start.column;
+  const auto end_col = wrong_order ? selection_start.column
+                                   : selection_end.column;
   const auto first = &getLine(start_row);
   const auto last = &getLine(end_row);
   const auto end = last + 1;
   auto iter = first;
-  FString s{};
+  FString selected_text{};
+  std::wstring line{};
 
   while ( iter != end )
   {
     if ( iter == first )
-      s = FString(iter->text.toWString().substr(start_col)) + '\n';
-    else if ( iter == last )
-      s += iter->text.left(end_col + 1) + '\n';
-    else
-      s += iter->text + '\n';  // Add newline character
+    {
+      if ( start_col >= iter->text.getLength() )
+      {
+        ++iter;
+        continue;
+      }
 
+      line = iter->text.toWString().substr(start_col);
+    }
+    else
+      line = iter->text.toWString();
+
+    if ( iter == last )
+      line = line.substr(0, end_col + 1);
+
+    selected_text += FString(line) + L'\n';  // Add newline character
     ++iter;
   }
 
-  return s;
+  return selected_text;
 }
 
 //----------------------------------------------------------------------
@@ -355,25 +359,126 @@ void FTextView::onMouseDown (FMouseEvent* ev)
     return;
 
   setWidgetFocus(this);
-  // Event handover to parent dialog
-  passResizeCornerEventToDialog(this, *ev);
+
+  if ( isLowerRightResizeCorner(ev->getPos()) )
+  {
+    // Event handover to parent dialog
+    passResizeCornerEventToDialog(this, *ev);
+    select_click_pos.setPoint(-1, -1);  // Reset click position
+    pass_to_dialog = true;
+    return;
+  }
+
+  pass_to_dialog = false;
+
+  if ( isSelectable() && isWithinTextBounds(ev->getPos()) )
+  {
+    select_click_pos.setPoint (convertMouse2TextPos(ev->getPos()));
+
+    if ( isShown() )
+      drawText();
+  }
 }
 
 //----------------------------------------------------------------------
 void FTextView::onMouseUp (FMouseEvent* ev)
 {
-  // Event handover to parent dialog
-  passResizeCornerEventToDialog(this, *ev);
+  if ( isDragging(drag_scroll) )
+    stopDragScroll();
 
+  if ( pass_to_dialog )
+  {
+    // Event handover to parent dialog
+    passResizeCornerEventToDialog(this, *ev);
+    select_click_pos.setPoint(-1, -1);  // Reset click position
+    pass_to_dialog = false;
+    return;
+  }
+
+  // Handle text selection
+  if ( ev->getButton() == MouseButton::Left )
+    handleMouseWithinListBounds (ev->getPos());
+
+  FPoint select_end_click_pos = convertMouse2TextPos(ev->getPos());
+
+  if ( selection_start.row == static_cast<FTextViewList::size_type>(select_end_click_pos.getY())
+    && selection_start.column == static_cast<FString::size_type>(select_end_click_pos.getX()) )
+    resetSelection();
+
+  select_click_pos.setPoint(-1, -1);  // Reset click position
   vbar->redraw();
   hbar->redraw();
+
+  if ( isShown() )
+    drawText();
 }
 
 //----------------------------------------------------------------------
 void FTextView::onMouseMove (FMouseEvent* ev)
 {
-  // Event handover to parent dialog
-  passResizeCornerEventToDialog(this, *ev);
+  if ( pass_to_dialog )
+  {
+    stopDragScroll();
+    // Event handover to parent dialog
+    passResizeCornerEventToDialog(this, *ev);
+    select_click_pos.setPoint(-1, -1);  // Reset click position
+    return;
+  }
+
+  // Handle text selection
+  if ( ev->getButton() == MouseButton::Left )
+    handleMouseWithinListBounds (ev->getPos());
+
+  // Auto-scrolling when dragging mouse outside the widget
+  handleMouseDragging (ev);
+
+  if ( isShown() )
+    drawText();
+}
+
+//----------------------------------------------------------------------
+void FTextView::onMouseDoubleClick (FMouseEvent* ev)
+{
+  using size_type = std::wstring::size_type;
+
+  // Word selection exclusion characters
+  const std::wstring select_exclusion_chars = L" !\"#$%&'()*+,@~:;=^<>`|[]{}\\";
+
+  if ( ! isSelectable()
+    || ! isWithinTextBounds(ev->getPos())
+    || ev->getButton() != MouseButton::Left )
+    return;
+
+  FPoint click_pos = convertMouse2TextPos(ev->getPos());
+  setSelectionStartInt (click_pos.getY(), click_pos.getX());
+  setSelectionEndInt (click_pos.getY(), click_pos.getX());
+
+  if ( selection_start.row >= getRows()
+    || selection_start.column >= data[selection_start.row].text.getLength() )
+  {
+    resetSelection();
+    return;
+  }
+
+  const auto& string = data[selection_start.row].text.toWString();
+  auto start_pos = string.find_last_of( select_exclusion_chars
+                                      , selection_start.column );
+
+  if ( start_pos == string.npos )
+    start_pos = 0;
+  else if ( start_pos != selection_start.column )
+    start_pos++;
+
+  auto end_pos = string.find_first_of(select_exclusion_chars, start_pos);
+
+  if ( end_pos == string.npos )
+    end_pos = string.length();
+
+  selection_start.column = start_pos;
+  selection_end.column = std::max(static_cast<size_type>(0), end_pos - 1);
+
+  if ( isShown() )
+    drawText();
 }
 
 //----------------------------------------------------------------------
@@ -391,8 +496,34 @@ void FTextView::onWheel (FWheelEvent* ev)
   else if ( wheel == MouseWheel::Right )
     scrollBy (distance, 0);
 
+  // Handle text selection
+  handleMouseWithinListBounds (ev->getPos());
+
   if ( isShown() )
     drawText();
+}
+
+//----------------------------------------------------------------------
+void FTextView::onTimer (FTimerEvent*)
+{
+  if ( drag_scroll == DragScrollMode::Leftward )
+    dragLeft();
+  else if ( drag_scroll == DragScrollMode::Rightward )
+    dragRight();
+  else if ( drag_scroll == DragScrollMode::Upward )
+    dragUp();
+  else if ( drag_scroll == DragScrollMode::Downward )
+    dragDown();
+
+  hbar->setValue(xoffset);
+  vbar->setValue(yoffset);
+
+  if ( isShown() )
+  {
+    drawScrollbars();
+    drawText();
+    forceTerminalUpdate();
+  }
 }
 
 
@@ -475,6 +606,36 @@ auto FTextView::getTextWidth() const -> std::size_t
 }
 
 //----------------------------------------------------------------------
+inline auto FTextView::isWithinTextBounds (const FPoint& pos) const -> bool
+{
+  return pos.getX() > 1
+      && pos.getX() < int(getWidth())
+      && pos.getY() > 1
+      && pos.getY() < int(getHeight());
+}
+
+//----------------------------------------------------------------------
+inline auto FTextView::isLowerRightResizeCorner (const FPoint& mouse_pos) const -> bool
+{
+  // 3 characters in the lower right corner  |
+  //                                         x
+  //                                   -----xx
+
+  return ( (mouse_pos.getX() == int(getWidth()) && mouse_pos.getY() == int(getHeight()) - 1)
+        || ( ( mouse_pos.getX() == int(getWidth()) - 1
+            || mouse_pos.getX() == int(getWidth()) ) && mouse_pos.getY() == int(getHeight()) ) );
+}
+
+//----------------------------------------------------------------------
+inline auto FTextView::hasWrongSelectionOrder() const -> bool
+{
+  bool wrong_column_order = selection_start.row == selection_end.row
+                         && selection_start.column > selection_end.column;
+  bool wrong_row_order = selection_start.row > selection_end.row;
+  return wrong_column_order || wrong_row_order;
+}
+
+//----------------------------------------------------------------------
 void FTextView::init()
 {
   initScrollbar (vbar, Orientation::Vertical, this, &FTextView::cb_vbarChange);
@@ -513,17 +674,17 @@ void FTextView::draw()
 //----------------------------------------------------------------------
 void FTextView::drawBorder()
 {
-  if ( ! useFDialogBorder() )
-  {
-    if ( FVTerm::getFOutput()->isMonochron() )
-      setReverse(true);
+  if ( useFDialogBorder() )
+    return;
 
-    const FRect box{FPoint{1, 1}, getSize()};
-    finalcut::drawListBorder (this, box);
+  if ( FVTerm::getFOutput()->isMonochron() )
+    setReverse(true);
 
-    if ( FVTerm::getFOutput()->isMonochron() )
-      setReverse(false);
-  }
+  const FRect box{FPoint{1, 1}, getSize()};
+  finalcut::drawListBorder (this, box);
+
+  if ( FVTerm::getFOutput()->isMonochron() )
+    setReverse(false);
 }
 
 //----------------------------------------------------------------------
@@ -598,7 +759,7 @@ inline void FTextView::printLine (std::size_t y)
 
 //----------------------------------------------------------------------
 inline void FTextView::addHighlighting ( FVTermBuffer& line_buffer
-                                       , const std::vector<FTextHighlight>& highlight )
+                                       , const std::vector<FTextHighlight>& highlight ) const
 {
   for (auto&& hgl : highlight)
   {
@@ -621,16 +782,24 @@ inline void FTextView::addHighlighting ( FVTermBuffer& line_buffer
 }
 
 //----------------------------------------------------------------------
-inline void FTextView::addSelection (FVTermBuffer& line_buffer, std::size_t n)
+inline void FTextView::addSelection (FVTermBuffer& line_buffer, std::size_t n) const
 {
-  if ( ! hasSelectedText() || n < selection_start.row || n > selection_end.row )
+  const auto start_row = std::min(selection_start.row, selection_end.row);
+  const auto end_row = std::max(selection_start.row, selection_end.row);
+
+  if ( ! hasSelectedText() || n < start_row || n > end_row )
     return;
 
-  const std::size_t pos = static_cast<std::size_t>(xoffset) + 1;
-  const std::size_t start_col = (selection_start.column > pos)
-                              ? selection_start.column - pos : 0U;
-  const std::size_t end_col = (selection_end.column >= pos)
-                            ? selection_end.column - pos + 1 : 0U;
+  const bool wrong_order = hasWrongSelectionOrder();
+  const auto start_column = wrong_order ? selection_end.column
+                                        : selection_start.column;
+  const auto end_column = wrong_order ? selection_start.column
+                                      : selection_end.column;
+  const auto col_pos = static_cast<std::size_t>(xoffset);
+  const std::size_t start_col = (start_column > col_pos)
+                              ? start_column - col_pos : 0U;
+  const std::size_t end_col = (end_column >= col_pos)
+                            ? end_column - col_pos + 1 : 0U;
   const auto& wc = getColorTheme();
   const auto has_focus = hasFocus();
   const auto& selected_fg = has_focus
@@ -639,10 +808,11 @@ inline void FTextView::addSelection (FVTermBuffer& line_buffer, std::size_t n)
   const auto& selected_bg = has_focus
                           ? wc->text.selected_focus_bg
                           : wc->text.selected_bg;
-  const std::size_t start_index = (n == selection_start.row) ? start_col : 0U;
-  const std::size_t end_index = (n == selection_end.row)
+  const std::size_t start_index = (n == start_row) ? start_col : 0U;
+  const std::size_t end_index = (n == end_row)
                               ? std::min(end_col, line_buffer.getLength())
                               : line_buffer.getLength();
+
   auto select = [&selected_fg, &selected_bg] (auto& fchar)
   {
     fchar.fg_color = selected_fg;
@@ -758,6 +928,226 @@ inline void FTextView::updateHorizontalScrollBar (std::size_t column_width)
 
   if ( isShown() && isHorizontallyScrollable() )
     hbar->show();
+}
+
+//----------------------------------------------------------------------
+inline auto FTextView::convertMouse2TextPos (const FPoint& pos) const -> FPoint
+{
+  const FPoint point_delta{ xoffset - getLeftPadding() - 1
+                          , yoffset - getTopPadding() - 1 };
+  return pos + point_delta;
+}
+
+//----------------------------------------------------------------------
+void FTextView::handleMouseWithinListBounds (const FPoint& pos)
+{
+  if ( isSelectable()
+    && select_click_pos != FPoint(-1, -1)
+    && isWithinTextBounds(pos) )
+  {
+    FPoint select_end_click_pos = convertMouse2TextPos(pos);
+
+    if ( select_end_click_pos == select_click_pos )
+    {
+      setSelectionStartInt (select_click_pos.getY(), select_click_pos.getX());
+      setSelectionEndInt (select_end_click_pos.getY(), select_end_click_pos.getX());
+    }
+    else
+    {
+      const bool wrong_order = select_click_pos.getY() > select_end_click_pos.getY()
+                            || select_click_pos.getX() > select_end_click_pos.getX();
+      const auto start_column = wrong_order ? select_click_pos.getX() - 1
+                                            : select_click_pos.getX();
+      const auto end_column = wrong_order ? select_end_click_pos.getX()
+                                          : select_end_click_pos.getX() - 1;
+      setSelectionStartInt (select_click_pos.getY(), start_column);
+      setSelectionEndInt (select_end_click_pos.getY(), end_column);
+    }
+
+    if ( isDragging(drag_scroll) )
+      stopDragScroll();
+  }
+}
+
+//----------------------------------------------------------------------
+void FTextView::handleMouseDragging (const FMouseEvent* ev)
+{
+  // Auto-scrolling when dragging mouse outside the widget
+
+  if ( ! isSelectable()
+    || select_click_pos == FPoint(-1, -1)
+    || isWithinTextBounds(ev->getPos())
+    || ev->getButton() != MouseButton::Left )
+  return;
+
+  const int mouse_x = ev->getX();
+  const int mouse_y = ev->getY();
+
+  if ( mouse_x < 2 )  // drag left
+    handleLeftDragScroll();
+  else if ( mouse_x >= int(getWidth()) )  // drag right
+    handleRightDragScroll();
+  else if ( mouse_y < 2 )  // drag up
+    handleUpDragScroll();
+  else if ( mouse_y >= int(getHeight()) )  // drag down
+    handleDownDragScroll();
+  else
+    stopDragScroll();  // no dragging
+}
+
+//----------------------------------------------------------------------
+inline void FTextView::handleLeftDragScroll()
+{
+  if ( xoffset > 0 )
+  {
+    drag_scroll = DragScrollMode::Leftward;
+    delOwnTimers();
+    addTimer(scroll_repeat);
+  }
+
+  if ( xoffset == 0 )
+  {
+    delOwnTimers();
+    drag_scroll = DragScrollMode::None;
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FTextView::handleRightDragScroll()
+{
+  const auto xoffset_end = int(max_line_width - getTextWidth());
+
+  if ( xoffset < xoffset_end )
+  {
+    drag_scroll = DragScrollMode::Rightward;
+    delOwnTimers();
+    addTimer(scroll_repeat);
+  }
+
+  if ( xoffset == xoffset_end )
+  {
+    delOwnTimers();
+    drag_scroll = DragScrollMode::None;
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FTextView::handleUpDragScroll()
+{
+  if ( yoffset > 0 )
+  {
+    drag_scroll = DragScrollMode::Upward;
+    delOwnTimers();
+    addTimer(scroll_repeat);
+  }
+
+  if ( yoffset == 0 )
+  {
+    delOwnTimers();
+    drag_scroll = DragScrollMode::None;
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FTextView::handleDownDragScroll()
+{
+  const auto yoffset_end = int(getRows() - getTextHeight());
+
+  if ( yoffset < yoffset_end )
+  {
+    drag_scroll = DragScrollMode::Downward;
+    delOwnTimers();
+    addTimer(scroll_repeat);
+  }
+
+  if ( yoffset == yoffset_end )
+  {
+    delOwnTimers();
+    drag_scroll = DragScrollMode::None;
+  }
+}
+
+//----------------------------------------------------------------------
+void FTextView::dragLeft()
+{
+  if ( xoffset > 0 )
+  {
+    xoffset--;
+    selection_end.column--;
+  }
+
+  if ( xoffset == 0 )
+  {
+    drag_scroll = DragScrollMode::None;
+    stopDragScroll();
+    return;
+  }
+}
+
+//----------------------------------------------------------------------
+void FTextView::dragRight()
+{
+  const auto xoffset_end = int(max_line_width - getTextWidth());
+
+  if ( xoffset < xoffset_end )
+  {
+    xoffset++;
+    selection_end.column++;
+  }
+
+  if ( xoffset == xoffset_end )
+  {
+    drag_scroll = DragScrollMode::None;
+    stopDragScroll();
+    return;
+  }
+}
+
+//----------------------------------------------------------------------
+void FTextView::dragUp()
+{
+  if ( yoffset > 0 )
+  {
+    yoffset--;
+    const std::size_t start_row = std::size_t(yoffset);
+    setSelectionEnd (start_row, 0);
+  }
+
+  if ( yoffset == 0 )
+  {
+    drag_scroll = DragScrollMode::None;
+    stopDragScroll();
+    return;
+  }
+}
+
+//----------------------------------------------------------------------
+void FTextView::dragDown()
+{
+  const auto yoffset_end = int(getRows() - getTextHeight());
+
+  if ( yoffset < yoffset_end )
+  {
+    yoffset++;
+    const auto end_column = max_line_width - 1;
+    const std::size_t end_row = std::size_t(yoffset)
+                              + std::min(getTextHeight(), getRows()) - 1;
+    setSelectionEnd (end_row, end_column);
+  }
+
+  if ( yoffset == yoffset_end )
+  {
+    drag_scroll = DragScrollMode::None;
+    stopDragScroll();
+    return;
+  }
+}
+
+//----------------------------------------------------------------------
+void FTextView::stopDragScroll()
+{
+  delOwnTimers();
+  drag_scroll = DragScrollMode::None;
 }
 
 //----------------------------------------------------------------------
