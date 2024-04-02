@@ -1,6 +1,7 @@
 2023-04-02  Markus Gans  <guru.mail@muenster.de>
 	* Implementation of the mouse selection in the FTextView. Can be 
 	  activated by setSelectable()
+	* Add a setLines() method to FTextView
 
 2023-03-26  Markus Gans  <guru.mail@muenster.de>
 	* Visual highlighting of the selected text in FTextView

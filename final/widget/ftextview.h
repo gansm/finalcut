@@ -199,6 +199,8 @@ class FTextView : public FWidget
     void setSelectionStart (const FTextViewList::size_type, const FString::size_type);
     void setSelectionEnd (const FTextViewList::size_type, const FString::size_type);
     void resetSelection();
+    template <typename T>
+    void setLines (T&&);
     void setSelectable (bool = true);
     void unsetSelectable();
     void scrollToX (int);
@@ -414,6 +416,16 @@ inline void FTextView::resetSelection()
 {
   selection_start = {UNINITIALIZED_ROW, UNINITIALIZED_COLUMN};
   selection_end = {UNINITIALIZED_ROW, UNINITIALIZED_COLUMN};
+}
+
+//----------------------------------------------------------------------
+template <typename T>
+inline void FTextView::setLines (T&& list)
+{
+  clear();
+  data = std::forward<T>(list);
+  updateVerticalScrollBar();
+  processChanged();
 }
 
 //----------------------------------------------------------------------

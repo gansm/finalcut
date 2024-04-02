@@ -442,7 +442,7 @@ void FTextView::onMouseDoubleClick (FMouseEvent* ev)
   using size_type = std::wstring::size_type;
 
   // Word selection exclusion characters
-  const std::wstring select_exclusion_chars = L" !\"#$%&'()*+,@~:;=^<>`|[]{}\\";
+  const std::wstring select_exclusion_chars = LR"( !"#$%&'()*+,@~:;=^<>`|[]{}\)";
 
   if ( ! isSelectable()
     || ! isWithinTextBounds(ev->getPos())
@@ -464,14 +464,14 @@ void FTextView::onMouseDoubleClick (FMouseEvent* ev)
   auto start_pos = string.find_last_of( select_exclusion_chars
                                       , selection_start.column );
 
-  if ( start_pos == string.npos )
+  if ( start_pos == std::wstring::npos )
     start_pos = 0;
   else if ( start_pos != selection_start.column )
     start_pos++;
 
   auto end_pos = string.find_first_of(select_exclusion_chars, start_pos);
 
-  if ( end_pos == string.npos )
+  if ( end_pos == std::wstring::npos )
     end_pos = string.length();
 
   selection_start.column = start_pos;
@@ -978,7 +978,7 @@ void FTextView::handleMouseDragging (const FMouseEvent* ev)
     || select_click_pos == FPoint(-1, -1)
     || isWithinTextBounds(ev->getPos())
     || ev->getButton() != MouseButton::Left )
-  return;
+    return;
 
   const int mouse_x = ev->getX();
   const int mouse_y = ev->getY();
@@ -1109,7 +1109,7 @@ void FTextView::dragUp()
   if ( yoffset > 0 )
   {
     yoffset--;
-    const std::size_t start_row = std::size_t(yoffset);
+    const auto start_row = std::size_t(yoffset);
     setSelectionEnd (start_row, 0);
   }
 
