@@ -763,8 +763,10 @@ void FScrollbar::avoidScrollOvershoot()
 //----------------------------------------------------------------------
 void FScrollbar::processScroll()
 {
+  startDrawing();  // Avoid printing an overshoot on the emit callback
   emitCallback("change-value");
   avoidScrollOvershoot();
+  finishDrawing();
 }
 
 //----------------------------------------------------------------------

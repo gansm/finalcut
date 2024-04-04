@@ -121,7 +121,7 @@ auto FTextView::getSelectedText() const -> FString
       line = iter->text.toWString();
 
     if ( iter == last )
-      line = line.substr(0, end_col + 1);
+      line.resize(end_col + 1);
 
     selected_text += FString(line) + L'\n';  // Add newline character
     ++iter;

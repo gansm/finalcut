@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2023 Markus Gans                                      *
+* Copyright 2018-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -330,7 +330,8 @@ class FKeyboardTest : public CPPUNIT_NS::TestFixture
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
     void init();
-    void input (std::string);
+    template<typename CharT>
+    void input (CharT&&);
     void processInput();
     void clear();
     void keyPressed();
@@ -3183,7 +3184,8 @@ void FKeyboardTest::init()
 }
 
 //----------------------------------------------------------------------
-void FKeyboardTest::input (std::string s)
+template<typename CharT>
+void FKeyboardTest::input (CharT&& string)
 {
   // Simulates keystrokes
 
@@ -3191,6 +3193,7 @@ void FKeyboardTest::input (std::string s)
   auto stdin_no = finalcut::FTermios::getStdIn();
   fflush(stdout);
 
+  std::string s = std::forward<CharT>(string);
   std::string::const_iterator iter;
   iter = s.begin();
 
