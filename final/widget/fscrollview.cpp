@@ -716,11 +716,11 @@ void FScrollView::copy2area()
 
   // viewport width does not fit into the printarea
   if ( printarea->size.width <= ax + x_end )
-    x_end = printarea->size.width - ax;
+    x_end = std::max(0, printarea->size.width - ax);
 
   // viewport height does not fit into the printarea
   if ( printarea->size.height <= ay + y_end )
-    y_end = printarea->size.height - ay;
+    y_end = std::max(0, printarea->size.height - ay);
 
   for (auto y{0}; y < y_end; y++)  // line loop
   {
@@ -774,8 +774,8 @@ void FScrollView::init()
   FScrollView::resetColors();
   FScrollView::setGeometry (FPoint{1, 1}, FSize{4, 4});
   setMinimumSize (FSize{4, 4});
-  std::size_t width = std::max(getViewportWidth(), std::size_t(1));
-  std::size_t height = std::max(getViewportHeight(), std::size_t(1));
+  std::size_t width = std::max(std::size_t(1), getViewportWidth());
+  std::size_t height = std::max(std::size_t(1), getViewportHeight());
   createViewport({width, height});
   addPreprocessingHandler
   (

@@ -640,6 +640,7 @@ void FTextView::init()
 {
   initScrollbar (vbar, Orientation::Vertical, this, &FTextView::cb_vbarChange);
   initScrollbar (hbar, Orientation::Horizontal, this, &FTextView::cb_hbarChange);
+  setMinimumSize (FSize{3, 3});
   FTextView::resetColors();
   mapKeyFunctions();
 }
@@ -679,7 +680,7 @@ void FTextView::drawBorder()
 
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
-
+assert ( getHeight() < 10000 );
   const FRect box{FPoint{1, 1}, getSize()};
   finalcut::drawListBorder (this, box);
 

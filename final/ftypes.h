@@ -399,7 +399,7 @@ constexpr auto isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexce
     return false;
 
   // Perform a byte-wise comparison
-  return std::wmemcmp(lhs.data(), rhs.data(), lhs.size()) == 0;
+  return std::memcmp(&lhs[0], &rhs[0], lhs.size() * sizeof(wchar_t)) == 0;
 }
 #else
 inline auto isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool

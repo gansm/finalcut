@@ -110,9 +110,10 @@ inline auto FLogger::getLogLevelString() const -> std::string
 
     case LogLevel::Debug:
       return {"DEBUG"};
-  }
 
-  return {""};
+    default:
+      return {""};
+  }
 }
 
 //----------------------------------------------------------------------

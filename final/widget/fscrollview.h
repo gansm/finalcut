@@ -236,13 +236,22 @@ inline auto FScrollView::getClassName() const -> FString
 inline auto FScrollView::getViewportWidth() const -> std::size_t
 {
   return ( getScrollHeight() > getViewportHeight() )
-       ? getWidth() - vertical_border_spacing - std::size_t(nf_offset)
-       : getWidth() - vertical_border_spacing;
+         ? static_cast<std::size_t>(std::max (1, getGeometry().getX2() -
+                                                 (getGeometry().getX1() - 1) -
+                                                 static_cast<int>(vertical_border_spacing) -
+                                                 static_cast<int>(nf_offset)))
+         : static_cast<std::size_t>(std::max (1, getGeometry().getX2() -
+                                                 (getGeometry().getX1() - 1) -
+                                                 static_cast<int>(vertical_border_spacing)));
 }
 
 //----------------------------------------------------------------------
 inline auto FScrollView::getViewportHeight() const -> std::size_t
-{ return getHeight() - horizontal_border_spacing; }
+{
+  return static_cast<std::size_t>(std::max (1, getGeometry().getY2() -
+                                               (getGeometry().getY1() - 1) -
+                                               static_cast<int>(horizontal_border_spacing)));
+}
 
 //----------------------------------------------------------------------
 inline auto FScrollView::getViewportSize() const -> FSize

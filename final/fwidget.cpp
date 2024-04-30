@@ -561,6 +561,7 @@ void FWidget::setGeometry (const FPoint& p, const FSize& s, bool adjust)
     wsize.setY(std::max(y, 1));
   }
 
+  // A width or a height can never be narrower than 1 character
   wsize.setSize ( std::max(w, std::size_t(1u))
                 , std::max(h, std::size_t(1u)) );
   adjust_wsize = wsize;
@@ -1248,6 +1249,7 @@ void FWidget::adjustSize()
 {
   // Adjust widget size and position
   adjustWidget();
+  adjustSizeWithinArea(adjust_wsize);
 
   // Move and shrink in case of lack of space
   if ( ! hasChildPrintArea() )
@@ -2155,6 +2157,23 @@ inline void FWidget::adjustWidget()
     setWidgetOffset(p);
 
   adjust_wsize = wsize;
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::adjustSizeWithinArea (FRect& box) const
+{
+  const FRect uninitialized(FPoint{0, 0}, FPoint{-1, -1});
+
+  if ( ! init_desktop || ! init_terminal || box == uninitialized )
+    return;
+
+  const auto w = box.getWidth();
+  const auto h = box.getHeight();
+
+  // A width or a height can never be narrower than 1 character
+  // and wider than the client width or height of its parent
+  box.setSize( std::max(std::min(w, woffset.getWidth()), std::size_t(1u)),
+               std::max(std::min(h, woffset.getHeight()), std::size_t(1u)) );
 }
 
 //----------------------------------------------------------------------

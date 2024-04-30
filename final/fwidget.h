@@ -465,6 +465,7 @@ class FWidget : public FVTerm
     void  drawWindows() const;
     void  drawChildren();
     void  adjustWidget();
+    void  adjustSizeWithinArea (FRect&) const;
     void  adjustChildWidgetSizes();
     void  setWindowOffset();
     void  setWidgetOffset (const FWidget*);

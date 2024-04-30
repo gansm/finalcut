@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2023 Markus Gans                                      *
+* Copyright 2015-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -131,19 +131,14 @@ void FSwitch::draw()
 void FSwitch::drawCheckButton()
 {
   print() << FPoint{1 + int(switch_offset_pos), 1};
-
-  if ( isChecked() )
-    drawChecked();
-  else
-    drawUnchecked();
-
+  drawSwitch();
   setReverse(false);
   setBold(false);
   setCursorPos ({3 + int(switch_offset_pos), 1});
 }
 
 //----------------------------------------------------------------------
-inline void FSwitch::drawChecked()
+inline void FSwitch::drawSwitch()
 {
   const FString onText{createOnText()};
   const FString offText{createOffText()};
@@ -152,18 +147,6 @@ inline void FSwitch::drawChecked()
   print (onText);
   SetStyleForOff();
   print(offText);
-}
-
-//----------------------------------------------------------------------
-inline void FSwitch::drawUnchecked()
-{
-  const FString onText{createOnText()};
-  const FString offText{createOffText()};
-
-  SetStyleForOn();
-  print (onText);
-  SetStyleForOff();
-  print (offText);
 }
 
 //----------------------------------------------------------------------

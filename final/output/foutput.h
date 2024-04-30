@@ -127,7 +127,7 @@ class FOutput : public std::enable_shared_from_this<FOutput>
     virtual auto getFSetPaletteRef() const & -> const FSetPalette& = 0;
 
     // Methods
-    virtual auto isDefaultPaletteTheme() -> bool = 0;
+    virtual auto isDefaultPaletteTheme() const -> bool = 0;
     virtual void redefineColorPalette() = 0;
     virtual void restoreColorPalette() = 0;
 

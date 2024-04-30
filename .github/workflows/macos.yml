@@ -26,8 +26,10 @@ jobs:
     - name: Install dependencies via homebrew
       run: |
         brew update
-        brew install automake
+        brew install autgen
         brew install autoconf-archive
+        brew install automake
+        brew install libtool
         brew install pkg-config
 
     - name: Test on macOS

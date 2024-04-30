@@ -180,7 +180,7 @@ class FTermOutput final : public FOutput
     // Methods
     auto getStartOptions() & -> FStartOptions&;
     auto isInputCursorInsideTerminal() const -> bool;
-    auto isDefaultPaletteTheme() -> bool override;
+    auto isDefaultPaletteTheme() const -> bool override;
     void redefineColorPalette() override;
     void restoreColorPalette() override;
     void init_characterLengths();
