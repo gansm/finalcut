@@ -26,7 +26,6 @@ jobs:
     - name: Install dependencies via homebrew
       run: |
         brew update
-        brew install autgen
         brew install autoconf-archive
         brew install automake
         brew install libtool
