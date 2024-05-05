@@ -1744,8 +1744,8 @@ void FDialog::resizeMouseUpMove (const MouseStates& ms, bool mouse_up)
     else
       h = int(getMaxHeight()) - getTermY() + y2_offset + 1;
 
-    const FSize size ( ( w >= 0) ? std::size_t(w) : 0
-                     , ( h >= 0) ? std::size_t(h) : 0 );
+    const FSize size ( w > 0 ? w : 0
+                     , h > 0 ? h : 0 );
     size_data.new_size.setSize (size);
     position_data.resize_click_pos = ms.termPos;
   }

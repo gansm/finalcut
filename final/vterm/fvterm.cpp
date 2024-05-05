@@ -583,7 +583,7 @@ void FVTerm::resizeArea ( const FShadowBox& shadowbox
 
   updateAreaProperties (area, shadowbox);
   // Set default FChar in area
-  resetTextAreaToDefault (area, {full_width, full_height});
+  resetTextAreaToDefault (area, { FSize{full_width, full_height} });
 }
 
 //----------------------------------------------------------------------

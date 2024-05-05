@@ -206,7 +206,7 @@ inline auto FRect::getHeight() const noexcept -> std::size_t
 
 //----------------------------------------------------------------------
 inline auto FRect::getSize() const noexcept -> FSize
-{ return { getWidth(), getHeight() }; }
+{ return { FSize{getWidth(), getHeight()} }; }
 
 //----------------------------------------------------------------------
 inline void FRect::setX1 (int n) noexcept

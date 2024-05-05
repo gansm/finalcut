@@ -678,14 +678,14 @@ void FScrollView::adjustSize()
   vbar->setMaximum (int(getScrollHeight() - getViewportHeight()));
   vbar->setPageSize (int(getScrollHeight()), int(getViewportHeight()));
   vbar->setX (int(width));
-  vbar->setHeight (height - 2, false);
+  vbar->setHeight (height > 3 ? height - 2 : 1, false);
   vbar->setValue (yoffset);
   vbar->resize();
 
   hbar->setMaximum (int(getScrollWidth() - getViewportWidth()));
   hbar->setPageSize (int(getScrollWidth()), int(getViewportWidth()));
   hbar->setY (int(height));
-  hbar->setWidth (width - 2, false);
+  hbar->setWidth (width > 3 ? width - 2 : 1, false);
   hbar->setValue (xoffset);
   hbar->resize();
 
@@ -776,7 +776,7 @@ void FScrollView::init()
   setMinimumSize (FSize{4, 4});
   std::size_t width = std::max(std::size_t(1), getViewportWidth());
   std::size_t height = std::max(std::size_t(1), getViewportHeight());
-  createViewport({width, height});
+  createViewport({ FSize{width, height} });
   addPreprocessingHandler
   (
     F_PREPROC_HANDLER (this, &FScrollView::copy2area)
@@ -1011,8 +1011,8 @@ inline void FScrollView::changeY (const std::size_t height, const int yoffset_en
 //----------------------------------------------------------------------
 void FScrollView::calculateScrollbarPos() const
 {
-  const std::size_t width  = getWidth();
-  const std::size_t height = getHeight();
+  const std::size_t width  = std::max(std::size_t(3), getWidth());
+  const std::size_t height = std::max(std::size_t(3), getHeight());
 
   if ( nf_offset )
   {

@@ -57,7 +57,8 @@ class FSize
   public:
     // Constructors
     FSize () noexcept = default;
-    FSize (std::size_t, std::size_t) noexcept;
+    template<typename WidthT, typename HeightT>
+    FSize (WidthT, HeightT) noexcept;
 
     // Overloaded operators
     auto operator += (const FSize&) -> FSize&;
@@ -105,9 +106,10 @@ class FSize
 
 // FSize inline functions
 //----------------------------------------------------------------------
-inline FSize::FSize (std::size_t w, std::size_t h) noexcept
-  : width{w}
-  , height{h}
+template<typename WidthT, typename HeightT>
+inline FSize::FSize (WidthT w, HeightT h) noexcept
+  : width{static_cast<std::size_t>(w > 0 ? w : 0)}
+  , height{static_cast<std::size_t>(h > 0 ? h : 0)}
 { }
 
 //----------------------------------------------------------------------
@@ -192,7 +194,7 @@ inline auto operator + (const FSize& s1, const FSize& s2) -> FSize
   constexpr std::size_t max = std::numeric_limits<std::size_t>::max();
   const std::size_t w = ( s1.width < max - s2.width) ? s1.width + s2.width : max;
   const std::size_t h = ( s1.height < max - s2.height) ? s1.height + s2.height : max;
-  return {w, h};
+  return { FSize{w, h} };
 }
 
 //----------------------------------------------------------------------
@@ -200,7 +202,7 @@ inline auto operator - (const FSize& s1, const FSize& s2) -> FSize
 {
   const std::size_t w = ( s1.width >= s2.width ) ? s1.width - s2.width : 0;
   const std::size_t h = ( s1.height >= s2.height ) ? s1.height - s2.height : 0;
-  return {w, h};
+  return { FSize{w, h} };
 }
 
 }  // namespace finalcut

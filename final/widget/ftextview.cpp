@@ -144,7 +144,6 @@ void FTextView::setGeometry ( const FPoint& pos, const FSize& size
                             , bool adjust)
 {
   // Sets the text view geometry
-
   FWidget::setGeometry(pos, size, adjust);
   changeOnResize();
 }
@@ -680,7 +679,7 @@ void FTextView::drawBorder()
 
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
-assert ( getHeight() < 10000 );
+
   const FRect box{FPoint{1, 1}, getSize()};
   finalcut::drawListBorder (this, box);
 

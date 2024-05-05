@@ -125,7 +125,7 @@ class FTermOutputTest : public finalcut::FOutput
     auto getFSetPaletteRef() const & -> const FSetPalette& override;
 
     // Methods
-    auto isDefaultPaletteTheme() -> bool override;
+    auto isDefaultPaletteTheme() const -> bool override;
     void redefineColorPalette() override;
     void restoreColorPalette() override;
 
@@ -407,7 +407,7 @@ inline auto FTermOutputTest::getFSetPaletteRef() const & -> const FSetPalette&
 }
 
 //----------------------------------------------------------------------
-inline auto FTermOutputTest::isDefaultPaletteTheme() -> bool
+inline auto FTermOutputTest::isDefaultPaletteTheme() const -> bool
 {
   return true;
 }

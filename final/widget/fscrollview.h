@@ -255,7 +255,7 @@ inline auto FScrollView::getViewportHeight() const -> std::size_t
 
 //----------------------------------------------------------------------
 inline auto FScrollView::getViewportSize() const -> FSize
-{ return {getViewportWidth(), getViewportHeight()}; }
+{ return { FSize{getViewportWidth(), getViewportHeight()} }; }
 
 //----------------------------------------------------------------------
 inline auto FScrollView::getScrollWidth() const -> std::size_t

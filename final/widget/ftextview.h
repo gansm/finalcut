@@ -379,7 +379,7 @@ inline auto FTextView::getScrollPos() const -> FPoint
 
 //----------------------------------------------------------------------
 inline auto FTextView::getTextVisibleSize() const -> FSize
-{ return {getTextWidth(), getTextHeight()}; }
+{ return { FSize{getTextWidth(), getTextHeight()} }; }
 
 //----------------------------------------------------------------------
 inline auto FTextView::getSelectionStart() const -> FTextPosition
