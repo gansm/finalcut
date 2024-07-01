@@ -806,11 +806,11 @@ inline auto FLineEdit::getColumnWidthWithErrorHandling
 //----------------------------------------------------------------------
 inline auto FLineEdit::endPosToOffset (std::size_t pos) -> offsetPair
 {
-  std::size_t input_width = getWidth() - 2;
+  std::size_t input_width =  ( getWidth() > 2 ) ? getWidth() - 2 : 0;
   std::size_t fullwidth_char_offset{0};
   const std::size_t len = print_text.getLength();
 
-  if ( pos >= len )
+  if ( pos >= len && len > 0 )
     pos = len - 1;
 
   while ( pos > 0 && input_width > 0 )
@@ -818,8 +818,10 @@ inline auto FLineEdit::endPosToOffset (std::size_t pos) -> offsetPair
     std::size_t char_width = \
         getColumnWidthWithErrorHandling (print_text[pos]);
 
-    if ( input_width >= char_width )
-      input_width -= char_width;
+    if ( input_width < char_width )
+      break;
+
+    input_width -= char_width;
 
     if ( input_width == 0 )
       break;

@@ -602,7 +602,7 @@ class EventloopMonitorTest : public CPPUNIT_NS::TestFixture
     void exceptionTest();
 
   private:
-    void keyboardInput (std::string);
+    void keyboardInput (const std::string);
     void drainStdin();
 
     // Adds code needed to register the test suite
@@ -1034,7 +1034,7 @@ void EventloopMonitorTest::exceptionTest()
 }
 
 //----------------------------------------------------------------------
-void EventloopMonitorTest::keyboardInput (std::string s)
+void EventloopMonitorTest::keyboardInput (const std::string s)
 {
   // Simulates keystrokes
 
@@ -1043,9 +1043,9 @@ void EventloopMonitorTest::keyboardInput (std::string s)
   fflush(stdout);
 
   std::string::const_iterator iter;
-  iter = s.begin();
+  iter = s.cbegin();
 
-  while ( iter != s.end() )
+  while ( iter != s.cend() )
   {
     char c = *iter;
 

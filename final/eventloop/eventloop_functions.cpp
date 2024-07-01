@@ -58,7 +58,7 @@ inline auto readFromPipe (int fd, uint64_t& buffer, std::size_t bytes_to_read) -
 {
   auto current_bytes_read = ::read(fd, &buffer, bytes_to_read);
 
-  if ( current_bytes_read == -1 )
+  if ( current_bytes_read < 0 )  // Underflow safe for all negative numbers
   {
     int error{errno};
     std::error_code err_code{error, std::generic_category()};

@@ -1055,11 +1055,13 @@ auto FString::internal_toCharString (const std::wstring& s) const -> std::string
 
   auto src = s.c_str();
   auto state = std::mbstate_t();
-  const auto size = std::wcsrtombs(nullptr, &src, 0, &state) + 1;
+  const auto size = std::wcsrtombs(nullptr, &src, 0, &state);
 
-  std::vector<char> dest(size);
+  if ( size == MALFORMED_STRING )
+    return {};
 
-  const auto mblength = std::wcsrtombs (dest.data(), &src, size, &state);
+  std::vector<char> dest(size + 1);  // Contains terminator "\0"
+  const auto mblength = std::wcsrtombs (dest.data(), &src, dest.size(), &state);
 
   if ( mblength == MALFORMED_STRING && errno != EILSEQ )
     return {};

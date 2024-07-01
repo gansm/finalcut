@@ -220,7 +220,7 @@ void FButton::hide()
 
   for (std::size_t y{0}; y < getHeight() + s + (f << 1u); y++)
   {
-    print() << FPoint{1 - int(f), 1 + int(y - f)}
+    print() << FPoint{1 - int(f), 1 + int(y) - int(f)}
             << FString{size, L' '};
   }
 }
