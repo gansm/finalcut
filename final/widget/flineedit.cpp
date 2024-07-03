@@ -818,12 +818,9 @@ inline auto FLineEdit::endPosToOffset (std::size_t pos) -> offsetPair
     std::size_t char_width = \
         getColumnWidthWithErrorHandling (print_text[pos]);
 
-    if ( input_width < char_width )
-      break;
-
-    input_width -= char_width;
-
-    if ( input_width == 0 )
+    if ( input_width > char_width )
+      input_width -= char_width;
+    else
       break;
 
     if ( input_width == 1)
