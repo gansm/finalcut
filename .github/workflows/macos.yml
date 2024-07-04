@@ -35,6 +35,6 @@ jobs:
     - name: Test on macOS
       run: |
         autoreconf -v --install --force
-        ./configure --prefix=/usr
+        ./configure --prefix=/usr CPPFLAGS=-I/opt/homebrew/opt/ncurses/include
         make -j10
 

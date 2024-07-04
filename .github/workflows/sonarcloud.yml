@@ -55,7 +55,7 @@ jobs:
                          | grep "tag_name" \
                          | cut -d\" -f4)
         wget -q "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${LATEST_VERSION}-linux-x64.zip"
-        unzip -q "sonar-scanner-cli-${LATEST_VERSION}-linux.zip" -d "/tmp" || echo
+        unzip -q "sonar-scanner-cli-${LATEST_VERSION}-linux-x64.zip" -d "/tmp" || echo
         echo "sonar.host.url=https://sonarcloud.io" >> /tmp/sonar-scanner-*/conf/sonar-scanner.properties
         mkdir /tmp/sonar-cache
         chmod +x /tmp/sonar-scanner-${LATEST_VERSION}-linux/jre/lib/jexec
