@@ -131,6 +131,8 @@ class FDialog : public FWindow
     auto moveDown (int) -> bool;
     auto moveLeft (int) -> bool;
     auto moveRight (int) -> bool;
+    void setWidth (std::size_t, bool = true) override;
+    void setHeight (std::size_t, bool = true) override;
     void setSize (const FSize&, bool = true) override;
     auto reduceHeight (int) -> bool;
     auto expandHeight (int) -> bool;

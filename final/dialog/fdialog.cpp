@@ -285,6 +285,18 @@ inline auto FDialog::moveRight (int n) -> bool
 }
 
 //----------------------------------------------------------------------
+void FDialog::setWidth (std::size_t w, bool adjust)
+{
+  setSize (FSize{w, getHeight()}, adjust);
+}
+
+//----------------------------------------------------------------------
+void FDialog::setHeight (std::size_t h, bool adjust)
+{
+  setSize (FSize{getWidth(), h}, adjust);
+}
+
+//----------------------------------------------------------------------
 void FDialog::setSize (const FSize& size, bool adjust)
 {
   error_flags.setSize_error = false;

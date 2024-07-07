@@ -1,3 +1,8 @@
+2023-07-07  Markus Gans  <guru.mail@muenster.de>
+	* Avoid left overflows in area changes for smaller dialogs 
+	  in drawGenericBox() and FScrollView::copy2area()
+	* Add a setWidth() and setHeight() method to FDialog
+
 2023-04-04  Markus Gans  <guru.mail@muenster.de>
 	* Avoid printing scrollbar overrun on emit callback
 

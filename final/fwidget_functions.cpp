@@ -878,8 +878,11 @@ void drawGenericBox ( FWidget* w, const FRect& r
 
   // Update area_changes for the top line
   auto y = y_offset + uInt(box.getY1());
+  auto max_width = uInt(area.size.width) - 1;
   area_changes[y].xmin = std::min(area_changes[y].xmin, x_offset + uInt(box.getX1()));
+  area_changes[y].xmin = std::min(area_changes[y].xmin, max_width);
   area_changes[y].xmax = std::max(area_changes[y].xmax, x_offset + uInt(box.getX2()));
+  area_changes[y].xmax = std::min(area_changes[y].xmax, max_width);
   area_changes[y].trans_count += uInt(is_transparent) * box.getWidth();
 
   // Draw the sides of the box
@@ -893,7 +896,9 @@ void drawGenericBox ( FWidget* w, const FRect& r
     *area_pos = fchar;
     // Update area_changes for the sides
     area_changes[y].xmin = std::min(area_changes[y].xmin, x_offset + uInt(box.getX1()));
+    area_changes[y].xmin = std::min(area_changes[y].xmin, max_width);
     area_changes[y].xmax = std::max(area_changes[y].xmax, x_offset + uInt(box.getX2()));
+    area_changes[y].xmax = std::min(area_changes[y].xmax, max_width);
     area_changes[y].trans_count += uInt(is_transparent) * box.getWidth();
   }
 
@@ -911,7 +916,9 @@ void drawGenericBox ( FWidget* w, const FRect& r
   // Update area_changes for the bottom line
   y = y_offset + uInt(box.getY2());
   area_changes[y].xmin = std::min(area_changes[y].xmin, x_offset + uInt(box.getX1()));
+  area_changes[y].xmin = std::min(area_changes[y].xmin, max_width);
   area_changes[y].xmax = std::max(area_changes[y].xmax, x_offset + uInt(box.getX2()));
+  area_changes[y].xmax = std::min(area_changes[y].xmax, max_width);
   area_changes[y].trans_count += uInt(is_transparent) * box.getWidth();
   area.has_changes = true;
 }

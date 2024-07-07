@@ -711,16 +711,18 @@ void FScrollView::copy2area()
   const int ay = area_widget->getTopPadding() + getY();
   const int dx = viewport_geometry.getX();
   const int dy = viewport_geometry.getY();
+  const int width = printarea->size.width;
+  const int height = printarea->size.height;
   auto y_end = int(getViewportHeight());
   auto x_end = int(getViewportWidth());
 
   // viewport width does not fit into the printarea
-  if ( printarea->size.width <= ax + x_end )
-    x_end = std::max(0, printarea->size.width - ax);
+  if ( width <= ax + x_end )
+    x_end = std::max(0, width - ax);
 
   // viewport height does not fit into the printarea
-  if ( printarea->size.height <= ay + y_end )
-    y_end = std::max(0, printarea->size.height - ay);
+  if ( height <= ay + y_end )
+    y_end = std::max(0, height - ay);
 
   for (auto y{0}; y < y_end; y++)  // line loop
   {
@@ -731,7 +733,9 @@ void FScrollView::copy2area()
     std::memcpy (&ac, &vc, sizeof(FChar) * unsigned(x_end));
     auto& line_changes = printarea->changes[unsigned(ay + y)];
     line_changes.xmin = std::min(line_changes.xmin, uInt(ax));
+    line_changes.xmin = std::min(line_changes.xmin, uInt(width - 1));
     line_changes.xmax = std::max(line_changes.xmax, uInt(ax + x_end - 1));
+    line_changes.xmax = std::min(line_changes.xmax, uInt(width - 1));
   }
 
   setViewportCursor();
