@@ -713,6 +713,7 @@ void FScrollView::copy2area()
   const int dy = viewport_geometry.getY();
   const int width = printarea->size.width;
   const int height = printarea->size.height;
+  const int rsh = printarea->shadow.width;
   auto y_end = int(getViewportHeight());
   auto x_end = int(getViewportWidth());
 
@@ -733,9 +734,9 @@ void FScrollView::copy2area()
     std::memcpy (&ac, &vc, sizeof(FChar) * unsigned(x_end));
     auto& line_changes = printarea->changes[unsigned(ay + y)];
     line_changes.xmin = std::min(line_changes.xmin, uInt(ax));
-    line_changes.xmin = std::min(line_changes.xmin, uInt(width - 1));
+    line_changes.xmin = std::min(line_changes.xmin, uInt(width + rsh - 1));
     line_changes.xmax = std::max(line_changes.xmax, uInt(ax + x_end - 1));
-    line_changes.xmax = std::min(line_changes.xmax, uInt(width - 1));
+    line_changes.xmax = std::min(line_changes.xmax, uInt(width + rsh - 1));
   }
 
   setViewportCursor();

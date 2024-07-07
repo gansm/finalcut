@@ -878,7 +878,7 @@ void drawGenericBox ( FWidget* w, const FRect& r
 
   // Update area_changes for the top line
   auto y = y_offset + uInt(box.getY1());
-  auto max_width = uInt(area.size.width) - 1;
+  auto max_width = uInt(area.size.width + area.shadow.width) - 1;
   area_changes[y].xmin = std::min(area_changes[y].xmin, x_offset + uInt(box.getX1()));
   area_changes[y].xmin = std::min(area_changes[y].xmin, max_width);
   area_changes[y].xmax = std::max(area_changes[y].xmax, x_offset + uInt(box.getX2()));
