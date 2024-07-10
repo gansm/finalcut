@@ -380,14 +380,6 @@ using FUnicode = std::array<wchar_t, UNICODE_MAX>;
 
 enum class FColor : uInt16;   // forward declaration
 
-struct FChar
-{
-  FUnicode   ch{};            // Character code
-  FUnicode   encoded_char{};  // Encoded output character
-  FColor     fg_color{};      // Foreground color
-  FColor     bg_color{};      // Background color
-  FAttribute attr{};          // Attributes
-};
 
 // FChar operator functions
 //----------------------------------------------------------------------
@@ -428,36 +420,44 @@ inline auto getCompareBitMask() noexcept -> uInt32
 #endif
 
 //----------------------------------------------------------------------
-#if HAVE_BUILTIN(__builtin_bit_cast)
-constexpr
-#else
-inline
-#endif
-auto operator == (const FChar& lhs, const FChar& rhs) noexcept -> bool
+struct FChar
 {
-  if ( ! isFUnicodeEqual(lhs.ch, rhs.ch)
-    || lhs.fg_color != rhs.fg_color
-    || lhs.bg_color != rhs.bg_color )
-    return false;
+  FUnicode   ch{};            // Character code
+  FUnicode   encoded_char{};  // Encoded output character
+  FColor     fg_color{};      // Foreground color
+  FColor     bg_color{};      // Background color
+  FAttribute attr{};          // Attributes
 
-  const auto mask = getCompareBitMask();
-
-  if ( (lhs.attr.word & mask) != (rhs.attr.word & mask) )
-    return false;
-
-  return true;
-}
-
-//----------------------------------------------------------------------
 #if HAVE_BUILTIN(__builtin_bit_cast)
-constexpr
+  friend constexpr
 #else
-inline
+  friend inline
 #endif
-auto operator != (const FChar& lhs, const FChar& rhs) noexcept -> bool
-{
-  return ! ( lhs == rhs );
-}
+  auto operator == (const FChar& lhs, const FChar& rhs) noexcept -> bool
+  {
+    if ( ! isFUnicodeEqual(lhs.ch, rhs.ch)
+      || lhs.fg_color != rhs.fg_color
+      || lhs.bg_color != rhs.bg_color )
+      return false;
+
+    const auto mask = getCompareBitMask();
+
+    if ( (lhs.attr.word & mask) != (rhs.attr.word & mask) )
+      return false;
+
+    return true;
+  }
+
+#if HAVE_BUILTIN(__builtin_bit_cast)
+  friend constexpr
+#else
+  friend inline
+#endif
+  auto operator != (const FChar& lhs, const FChar& rhs) noexcept -> bool
+  {
+    return ! ( lhs == rhs );
+  }
+};
 
 }  // namespace finalcut
 

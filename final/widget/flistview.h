@@ -244,10 +244,30 @@ class FListViewIterator
     auto operator -= (int) -> FListViewIterator&;
     auto operator * () const -> FObject*&;
     auto operator -> () const -> FObject*;
-    auto operator == (const FListViewIterator&) const -> bool;
-    auto operator != (const FListViewIterator&) const -> bool;
-    auto operator == (Iterator) const -> bool;
-    auto operator != (Iterator) const -> bool;
+
+    friend inline auto operator == ( const FListViewIterator& lhs
+                                   , const FListViewIterator& rhs ) -> bool
+    {
+      return lhs.node == rhs.node;
+    }
+
+    friend inline auto operator != ( const FListViewIterator& lhs
+                                   , const FListViewIterator& rhs ) -> bool
+    {
+      return lhs.node != rhs.node;
+    }
+
+    friend inline auto operator == ( const FListViewIterator& listview_iter
+                                   , const Iterator& iter) -> bool
+    {
+      return listview_iter.node == iter;
+    }
+
+    friend inline auto operator != ( const FListViewIterator& listview_iter
+                                   , const Iterator& iter) -> bool
+    {
+      return listview_iter.node != iter;
+    }
 
     // Accessor
     auto getClassName() const -> FString;
@@ -257,8 +277,25 @@ class FListViewIterator
     void parentElement();
 
     // Friend Non-member operator functions
-   friend auto operator + (const FListViewIterator&, int) -> FListViewIterator;
-   friend auto operator - (const FListViewIterator&, int) -> FListViewIterator;
+    friend auto operator + (const FListViewIterator& lhs, int n) -> FListViewIterator
+    {
+      auto tmp = lhs;
+
+      for (int i = n; i > 0 ; i--)
+        tmp.nextElement(tmp.node);
+
+      return tmp;
+    }
+
+    friend auto operator - (const FListViewIterator& lhs, int n) -> FListViewIterator
+    {
+      auto tmp = lhs;
+
+      for (int i = n; i > 0 ; i--)
+        tmp.prevElement(tmp.node);
+
+      return tmp;
+    }
 
   private:
     // Methods
@@ -280,22 +317,6 @@ inline auto FListViewIterator::operator * () const -> FObject*&
 //----------------------------------------------------------------------
 inline auto FListViewIterator::operator -> () const -> FObject*
 { return *node; }
-
-//----------------------------------------------------------------------
-inline auto FListViewIterator::operator == (const FListViewIterator& rhs) const -> bool
-{ return node == rhs.node; }
-
-//----------------------------------------------------------------------
-inline auto FListViewIterator::operator != (const FListViewIterator& rhs) const -> bool
-{ return node != rhs.node; }
-
-//----------------------------------------------------------------------
-inline auto FListViewIterator::operator == (Iterator iter) const -> bool
-{ return node == iter; }
-
-//----------------------------------------------------------------------
-inline auto FListViewIterator::operator != (Iterator iter) const -> bool
-{ return node != iter; }
 
 //----------------------------------------------------------------------
 inline auto FListViewIterator::getClassName() const -> FString

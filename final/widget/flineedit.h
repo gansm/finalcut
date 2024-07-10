@@ -108,7 +108,12 @@ class FLineEdit : public FWidget
     auto operator << (const typeT&) -> FLineEdit&;
     auto operator << (UniChar) -> FLineEdit&;
     auto operator << (const wchar_t) -> FLineEdit&;
-    auto operator >> (FString&) const -> const FLineEdit&;
+
+    friend auto operator >> (const FLineEdit& lhs, FString& rhs) -> const FLineEdit&
+    {
+      rhs += lhs.text;
+      return lhs;
+    }
 
     // Accessors
     auto getClassName() const -> FString override;

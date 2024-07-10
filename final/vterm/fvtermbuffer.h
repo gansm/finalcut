@@ -139,8 +139,14 @@ class FVTermBuffer
     FChar       nc{};  // next character
 
     // Non-member operators
-    friend auto operator << ( FCharVector&
-                            , const FVTermBuffer& ) -> FCharVector&;
+    friend auto operator << ( FVTermBuffer::FCharVector& term_string
+                            , const FVTermBuffer& buf ) -> FVTermBuffer::FCharVector&
+    {
+      if ( ! buf.data.empty() )
+        term_string.assign(buf.data.cbegin(), buf.data.cend());
+
+      return term_string;
+    }
 };
 
 // non-member function forward declarations

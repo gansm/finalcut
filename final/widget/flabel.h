@@ -90,7 +90,12 @@ class FLabel : public FWidget
     auto operator << (const typeT&) -> FLabel&;
     auto operator << (UniChar) -> FLabel&;
     auto operator << (const wchar_t) -> FLabel&;
-    auto operator >> (FString&) const -> const FLabel&;
+
+    friend inline auto operator >> (const FLabel& lhs, FString& rhs) -> const FLabel&
+    {
+      rhs += lhs.text;
+      return lhs;
+    }
 
     // Accessors
     auto getClassName() const -> FString override;

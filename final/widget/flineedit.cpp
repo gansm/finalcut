@@ -92,13 +92,6 @@ auto FLineEdit::operator << (const wchar_t c) -> FLineEdit&
   return *this;
 }
 
-//----------------------------------------------------------------------
-auto FLineEdit::operator >> (FString& s) const -> const FLineEdit&
-{
-  s += text;
-  return *this;
-}
-
 
 // public methods of FLineEdit
 //----------------------------------------------------------------------

@@ -48,22 +48,4 @@ auto FPoint::operator -= (const FPoint& p) -> FPoint&
   return *this;
 }
 
-//----------------------------------------------------------------------
-auto operator << (std::ostream& outstr, const FPoint& p) -> std::ostream&
-{
-  outstr << p.xpos << " " << p.ypos;
-  return outstr;
-}
-
-//----------------------------------------------------------------------
-auto operator >> (std::istream& instr, FPoint& p) -> std::istream&
-{
-  int x{};
-  int y{};
-  instr >> x;
-  instr >> y;
-  p.setPoint (x, y);
-  return instr;
-}
-
 }  // namespace finalcut

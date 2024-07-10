@@ -126,19 +126,83 @@ class FString
                               , int> = 0 >
     auto operator << (const NumT) -> FString&;
 
-    auto operator >> (FString&) const -> const FString&;
-    auto operator >> (std::wstring&) const -> const FString&;
-    auto operator >> (std::string&) const -> const FString&;
-    auto operator >> (wchar_t&) const -> const FString&;
-    auto operator >> (char&) const -> const FString&;
-    auto operator >> (sInt16&) const -> const FString&;
-    auto operator >> (uInt16&) const -> const FString&;
-    auto operator >> (sInt32&) const -> const FString&;
-    auto operator >> (uInt32&) const -> const FString&;
-    auto operator >> (sInt64&) const -> const FString&;
-    auto operator >> (uInt64&) const -> const FString&;
-    auto operator >> (double&) const -> const FString&;
-    auto operator >> (float&) const -> const FString&;
+    friend inline auto operator >> (const FString& lhs, FString& rhs) -> const FString&
+    {
+      rhs.string.append(lhs.toWString());
+      return lhs;
+    }
+
+    friend inline auto operator >> (const FString& lhs, std::wstring& rhs) -> const FString&
+    {
+      rhs.append(lhs.toWString());
+      return lhs;
+    }
+
+    friend inline auto operator >> (const FString& lhs, std::string& rhs) -> const FString&
+    {
+      rhs.append(lhs.toString());
+      return lhs;
+    }
+
+    friend inline auto operator >> (const FString& lhs, wchar_t& rhs) -> const FString&
+    {
+      rhs = ( ! lhs.isEmpty() ) ? lhs.string[0] : L'\0';
+      return lhs;
+    }
+
+    friend inline auto operator >> (const FString& lhs, char& rhs) -> const FString&
+    {
+      rhs = ( ! lhs.isEmpty() ) ? char(uChar(lhs.string[0])) : '\0';
+      return lhs;
+    }
+
+    friend inline auto operator >> (const FString& lhs, sInt16& rhs) -> const FString&
+    {
+      rhs = lhs.toShort();
+      return lhs;
+    }
+
+    friend inline auto operator >> (const FString& lhs, uInt16& rhs) -> const FString&
+    {
+      rhs = lhs.toUShort();
+      return lhs;
+    }
+
+    friend inline auto operator >> (const FString& lhs, sInt32& rhs) -> const FString&
+    {
+      rhs = lhs.toInt();
+      return lhs;
+    }
+
+    friend inline auto operator >> (const FString& lhs, uInt32& rhs) -> const FString&
+    {
+      rhs = lhs.toUInt();
+      return lhs;
+    }
+
+    friend inline auto operator >> (const FString& lhs, sInt64& rhs) -> const FString&
+    {
+      rhs = lhs.toLong();
+      return lhs;
+    }
+
+    friend inline auto operator >> (const FString& lhs, uInt64& rhs) -> const FString&
+    {
+      rhs = lhs.toULong();
+      return lhs;
+    }
+
+    friend inline auto operator >> (const FString& lhs, double& rhs) -> const FString&
+    {
+      rhs = lhs.toDouble();
+      return lhs;
+    }
+
+    friend inline auto operator >> (const FString& lhs, float& rhs) -> const FString&
+    {
+      rhs = lhs.toFloat();
+      return lhs;
+    }
 
     template <typename IndexT>
     constexpr auto operator [] (const IndexT) -> reference;
@@ -147,89 +211,215 @@ class FString
     explicit operator bool () const;
     auto operator () () const -> const FString&;
 
-    auto operator < (const FString&) const -> bool;
-    template <typename CharT
-            , enable_if_char_ptr_t<CharT> = nullptr>
-    auto operator < (const CharT&) const -> bool;
-    template <typename CharT
-            , enable_if_char_array_t<CharT> = nullptr>
-    auto operator < (const CharT&) const -> bool;
-    template <typename CharT
-            , enable_if_wchar_ptr_t<CharT> = nullptr>
-    auto operator < (const CharT&) const -> bool;
-    template <typename CharT
-            , enable_if_wchar_array_t<CharT> = nullptr>
-    auto operator < (const CharT&) const -> bool;
+    friend inline auto operator < (const FString& lhs, const FString& rhs) -> bool
+    {
+      return lhs.string < rhs.string;
+    }
 
-    auto operator <= (const FString&) const -> bool;
     template <typename CharT
             , enable_if_char_ptr_t<CharT> = nullptr>
-    auto operator <= (const CharT&) const -> bool;
-    template <typename CharT
-            , enable_if_char_array_t<CharT> = nullptr>
-    auto operator <= (const CharT&) const -> bool;
-    template <typename CharT
-            , enable_if_wchar_ptr_t<CharT> = nullptr>
-    auto operator <= (const CharT&) const -> bool;
-    template <typename CharT
-            , enable_if_wchar_array_t<CharT> = nullptr>
-    auto operator <= (const CharT&) const -> bool;
+    friend inline auto operator < (const FString& lhs, const CharT& rhs) -> bool
+    {
+      lhs.char_string = lhs.internal_toCharString(lhs.string);
+      return rhs ? lhs.char_string.compare(rhs) < 0 : lhs.char_string.compare("") < 0;
+    }
 
-    auto operator == (const FString&) const -> bool;
-    template <typename CharT
-            , enable_if_char_ptr_t<CharT> = nullptr>
-    auto operator == (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_char_array_t<CharT> = nullptr>
-    auto operator == (const CharT&) const -> bool;
-    template <typename CharT
-            , enable_if_wchar_ptr_t<CharT> = nullptr>
-    auto operator == (const CharT&) const -> bool;
-    template <typename CharT
-            , enable_if_wchar_array_t<CharT> = nullptr>
-    auto operator == (const CharT&) const -> bool;
+    friend inline auto operator < (const FString& lhs, const CharT& rhs) -> bool
+    {
+      lhs.char_string = lhs.internal_toCharString(lhs.string);
+      return lhs.char_string.compare(rhs) < 0;
+    }
 
-    auto operator != (const FString&) const -> bool;
-    template <typename CharT
-            , enable_if_char_ptr_t<CharT> = nullptr>
-    auto operator != (const CharT&) const -> bool;
-    template <typename CharT
-            , enable_if_char_array_t<CharT> = nullptr>
-    auto operator != (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_wchar_ptr_t<CharT> = nullptr>
-    auto operator != (const CharT&) const -> bool;
-    template <typename CharT
-            , enable_if_wchar_array_t<CharT> = nullptr>
-    auto operator != (const CharT&) const -> bool;
+    friend inline auto operator < (const FString& lhs, const CharT& rhs) -> bool
+    {
+      return rhs ? lhs.string.compare(rhs) < 0 : lhs.string.compare(L"") < 0;
+    }
 
-    auto operator >= (const FString&) const -> bool;
-    template <typename CharT
-            , enable_if_char_ptr_t<CharT> = nullptr>
-    auto operator >= (const CharT&) const -> bool;
-    template <typename CharT
-            , enable_if_char_array_t<CharT> = nullptr>
-    auto operator >= (const CharT&) const -> bool;
-    template <typename CharT
-            , enable_if_wchar_ptr_t<CharT> = nullptr>
-    auto operator >= (const CharT&) const -> bool;
     template <typename CharT
             , enable_if_wchar_array_t<CharT> = nullptr>
-    auto operator >= (const CharT&) const -> bool;
+    friend inline auto operator < (const FString& lhs, const CharT& rhs) -> bool
+    {
+      return lhs.string.compare(rhs) < 0;
+    }
 
-    auto operator > (const FString&) const -> bool;
+    friend inline auto operator <= (const FString& lhs, const FString& rhs) -> bool
+    {
+      return lhs.string <= rhs.string;
+    }
+
     template <typename CharT
             , enable_if_char_ptr_t<CharT> = nullptr>
-    auto operator > (const CharT&) const -> bool;
+    friend inline auto operator <= (const FString& lhs, const CharT& rhs) -> bool
+    {
+      lhs.char_string = lhs.internal_toCharString(lhs.string);
+      return rhs ? lhs.char_string.compare(rhs) <= 0 : lhs.char_string.compare("") <= 0;
+    }
+
     template <typename CharT
             , enable_if_char_array_t<CharT> = nullptr>
-    auto operator > (const CharT&) const -> bool;
+    friend inline auto operator <= (const FString& lhs, const CharT& rhs) -> bool
+    {
+      lhs.char_string = lhs.internal_toCharString(lhs.string);
+      return lhs.char_string.compare(rhs) <= 0;
+    }
+
     template <typename CharT
             , enable_if_wchar_ptr_t<CharT> = nullptr>
-    auto operator > (const CharT&) const -> bool;
+    friend inline auto operator <= (const FString& lhs, const CharT& rhs) -> bool
+    {
+      return rhs ? lhs.string.compare(rhs) <= 0 : lhs.string.compare(L"") <= 0;
+    }
+
     template <typename CharT
             , enable_if_wchar_array_t<CharT> = nullptr>
-    auto operator > (const CharT&) const -> bool;
+    friend inline auto operator <= (const FString& lhs, const CharT& rhs) -> bool
+    {
+      return lhs.string.compare(rhs) <= 0;
+    }
+
+    friend inline auto operator == (const FString& lhs, const FString& rhs) -> bool
+    {
+      return lhs.string == rhs.string;
+    }
+
+    template <typename CharT
+            , enable_if_char_ptr_t<CharT> = nullptr>
+    friend inline auto operator == (const FString& lhs, const CharT& rhs) -> bool
+    {
+      lhs.char_string = lhs.internal_toCharString(lhs.string);
+      return rhs ? lhs.char_string.compare(rhs) == 0 : lhs.char_string.compare("") == 0;
+    }
+
+    template <typename CharT
+            , enable_if_char_array_t<CharT> = nullptr>
+    friend inline auto operator == (const FString& lhs, const CharT& rhs) -> bool
+    {
+      lhs.char_string = lhs.internal_toCharString(lhs.string);
+      return lhs.char_string.compare(rhs) == 0;
+    }
+
+    template <typename CharT
+            , enable_if_wchar_ptr_t<CharT> = nullptr>
+    friend inline auto operator == (const FString& lhs, const CharT& rhs) -> bool
+    {
+      return rhs ? lhs.string.compare(rhs) == 0 : lhs.string.compare(L"") == 0;
+    }
+
+    template <typename CharT
+            , enable_if_wchar_array_t<CharT> = nullptr>
+    friend inline auto operator == (const FString& lhs, const CharT& rhs) -> bool
+    {
+      return lhs.string.compare(rhs) == 0;
+    }
+
+    friend inline auto operator != (const FString& lhs, const FString& rhs) -> bool
+    {
+      return ! ( lhs == rhs );
+    }
+
+    template <typename CharT
+            , enable_if_char_ptr_t<CharT> = nullptr>
+    friend inline auto operator != (const FString& lhs, const CharT& rhs) -> bool
+    {
+      lhs.char_string = lhs.internal_toCharString(lhs.string);
+      return rhs ? lhs.char_string.compare(rhs) != 0 : lhs.char_string.compare("") != 0;
+    }
+
+    template <typename CharT
+            , enable_if_char_array_t<CharT> = nullptr>
+    friend inline auto operator != (const FString& lhs, const CharT& rhs) -> bool
+    {
+      lhs.char_string = lhs.internal_toCharString(lhs.string);
+      return lhs.char_string.compare(rhs) != 0;
+    }
+
+    template <typename CharT
+            , enable_if_wchar_ptr_t<CharT> = nullptr>
+    friend inline auto operator != (const FString& lhs, const CharT& rhs) -> bool
+    {
+      return rhs ? lhs.string.compare(rhs) != 0 : lhs.string.compare(L"") != 0;
+    }
+
+    template <typename CharT
+            , enable_if_wchar_array_t<CharT> = nullptr>
+    friend inline auto operator != (const FString& lhs, const CharT& rhs) -> bool
+    {
+      return lhs.string.compare(rhs) != 0;
+    }
+
+    friend inline auto operator >= (const FString& lhs, const FString& rhs) -> bool
+    {
+      return lhs.string >= rhs.string;
+    }
+
+    template <typename CharT
+            , enable_if_char_ptr_t<CharT> = nullptr>
+    friend inline auto operator >= (const FString& lhs, const CharT& rhs) -> bool
+    {
+      lhs.char_string = lhs.internal_toCharString(lhs.string);
+      return rhs ? lhs.char_string.compare(rhs) >= 0 : lhs.char_string.compare("") >= 0;
+    }
+
+    template <typename CharT
+            , enable_if_char_array_t<CharT> = nullptr>
+    friend inline auto operator >= (const FString& lhs, const CharT& rhs)  -> bool
+    {
+      lhs.char_string = lhs.internal_toCharString(lhs.string);
+      return lhs.char_string.compare(rhs) >= 0;
+    }
+
+    template <typename CharT
+            , enable_if_wchar_ptr_t<CharT> = nullptr>
+    friend inline auto operator >= (const FString& lhs, const CharT& rhs) -> bool
+    {
+      return rhs ? lhs.string.compare(rhs) >= 0 : lhs.string.compare(L"") >= 0;
+    }
+
+    template <typename CharT
+            , enable_if_wchar_array_t<CharT> = nullptr>
+    friend inline auto operator >= (const FString& lhs, const CharT& rhs) -> bool
+    {
+      return lhs.string.compare(rhs) >= 0;
+    }
+
+    friend inline auto operator > (const FString& lhs, const FString& rhs) -> bool
+    {
+      return lhs.string > rhs.string;
+    }
+
+    template <typename CharT
+            , enable_if_char_ptr_t<CharT> = nullptr>
+    friend inline auto operator > (const FString& lhs, const CharT& rhs) -> bool
+    {
+      lhs.char_string = lhs.internal_toCharString(lhs.string);
+      return rhs ? lhs.char_string.compare(rhs) > 0 : lhs.char_string.compare("") > 0;
+    }
+
+    template <typename CharT
+            , enable_if_char_array_t<CharT> = nullptr>
+    friend inline auto operator > (const FString& lhs, const CharT& rhs) -> bool
+    {
+      lhs.char_string = lhs.internal_toCharString(lhs.string);
+      return lhs.char_string.compare(rhs) > 0;
+    }
+
+    template <typename CharT
+            , enable_if_wchar_ptr_t<CharT> = nullptr>
+    friend inline auto operator > (const FString& lhs, const CharT& rhs) -> bool
+    {
+      return rhs ? lhs.string.compare(rhs) > 0 : lhs.string.compare(L"") > 0;
+    }
+
+    template <typename CharT
+            , enable_if_wchar_array_t<CharT> = nullptr>
+    friend inline auto operator > (const FString& lhs, const CharT& rhs) -> bool
+    {
+      return lhs.string.compare(rhs) > 0;
+    }
 
     // Accessor
     virtual auto getClassName() const -> FString;
@@ -330,12 +520,68 @@ class FString
     static const wchar_t const_null_char;
 
     // Friend Non-member operator functions
-    friend auto operator + (const FString&, const FString&) -> FString;
+    friend auto operator + (const FString& s1, const FString& s2) -> FString
+    {
+      const auto& tmp = s1.string + s2.string;
+      return tmp;
+    }
 
-    friend auto operator << (std::ostream&, const FString&) -> std::ostream&;
-    friend auto operator >> (std::istream&, FString& s) -> std::istream&;
-    friend auto operator << (std::wostream&, const FString&) -> std::wostream&;
-    friend auto operator >> (std::wistream&, FString&) -> std::wistream&;
+    friend auto operator << (std::ostream& outstr, const FString& s) -> std::ostream&
+    {
+      const auto& width = std::size_t(outstr.width());
+
+      if ( s.string.length() > 0 )
+      {
+        outstr << s.internal_toCharString(s.string);
+      }
+      else if ( width > 0 )
+      {
+        const std::string fill_str(width, outstr.fill());
+        outstr << fill_str;
+      }
+
+      return outstr;
+    }
+
+    friend auto operator >> (std::istream& instr, FString& s) -> std::istream&
+    {
+      std::array<char, FString::INPBUFFER + 1> buf{};
+      instr.getline (buf.data(), FString::INPBUFFER);
+      auto wide_string = s.internal_toWideString(buf.data());
+
+      if ( ! wide_string.empty() )
+      {
+        s.internal_assign (std::move(wide_string));
+      }
+
+      return instr;
+    }
+
+    friend auto operator << (std::wostream& outstr, const FString& s) -> std::wostream&
+    {
+      const auto& width = std::size_t(outstr.width());
+
+      if ( s.string.length() > 0 )
+      {
+        outstr << s.string;
+      }
+      else if ( width > 0 )
+      {
+        const std::wstring fill_str(width, outstr.fill());
+        outstr << fill_str;
+      }
+
+      return outstr;
+    }
+
+    friend auto operator >> (std::wistream& instr, FString& s) -> std::wistream&
+    {
+      std::array<wchar_t, FString::INPBUFFER + 1> buf{};
+      instr.getline (buf.data(), FString::INPBUFFER);
+      std::wstring str(buf.data());
+      s.internal_assign (std::move(str));
+      return instr;
+    }
 
     // Friend struct
     friend struct std::hash<finalcut::FString>;
@@ -385,210 +631,6 @@ constexpr auto FString::operator [] (const IndexT pos) const -> const_reference
     return const_null_char;
 
   return string[std::size_t(pos)];
-}
-
-//----------------------------------------------------------------------
-template <typename CharT
-        , enable_if_char_ptr_t<CharT>>
-inline auto FString::operator < (const CharT& s) const -> bool
-{
-  char_string = internal_toCharString(string);
-  return s ? char_string.compare(s) < 0 : char_string.compare("") < 0;
-}
-
-//----------------------------------------------------------------------
-template <typename CharT
-        , enable_if_char_array_t<CharT>>
-inline auto FString::operator < (const CharT& s) const-> bool
-{
-  char_string = internal_toCharString(string);
-  return char_string.compare(s) < 0;
-}
-
-//----------------------------------------------------------------------
-template <typename CharT
-        , enable_if_wchar_ptr_t<CharT>>
-inline auto FString::operator < (const CharT& s) const -> bool
-{
-  return s ? string.compare(s) < 0 : string.compare(L"") < 0;
-}
-
-//----------------------------------------------------------------------
-template <typename CharT
-        , enable_if_wchar_array_t<CharT>>
-inline auto FString::operator < (const CharT& s) const -> bool
-{
-  return string.compare(s) < 0;
-}
-
-//----------------------------------------------------------------------
-template <typename CharT
-        , enable_if_char_ptr_t<CharT>>
-inline auto FString::operator <= (const CharT& s) const -> bool
-{
-  char_string = internal_toCharString(string);
-  return s ? char_string.compare(s) <= 0 : char_string.compare("") <= 0;
-}
-
-//----------------------------------------------------------------------
-template <typename CharT
-        , enable_if_char_array_t<CharT>>
-inline auto FString::operator <= (const CharT& s) const -> bool
-{
-  char_string = internal_toCharString(string);
-  return char_string.compare(s) <= 0;
-}
-
-//----------------------------------------------------------------------
-template <typename CharT
-        , enable_if_wchar_ptr_t<CharT>>
-inline auto FString::operator <= (const CharT& s) const -> bool
-{
-  return s ? string.compare(s) <= 0 : string.compare(L"") <= 0;
-}
-
-//----------------------------------------------------------------------
-template <typename CharT
-        , enable_if_wchar_array_t<CharT>>
-inline auto FString::operator <= (const CharT& s) const -> bool
-{
-  return string.compare(s) <= 0;
-}
-
-//----------------------------------------------------------------------
-template <typename CharT
-        , enable_if_char_ptr_t<CharT>>
-inline auto FString::operator == (const CharT& s) const -> bool
-{
-  char_string = internal_toCharString(string);
-  return s ? char_string.compare(s) == 0 : char_string.compare("") == 0;
-}
-
-//----------------------------------------------------------------------
-template <typename CharT
-        , enable_if_char_array_t<CharT>>
-inline auto FString::operator == (const CharT& s) const -> bool
-{
-  char_string = internal_toCharString(string);
-  return char_string.compare(s) == 0;
-}
-
-//----------------------------------------------------------------------
-template <typename CharT
-        , enable_if_wchar_ptr_t<CharT>>
-inline auto FString::operator == (const CharT& s) const -> bool
-{
-  return s ? string.compare(s) == 0 : string.compare(L"") == 0;
-}
-
-//----------------------------------------------------------------------
-template <typename CharT
-        , enable_if_wchar_array_t<CharT>>
-inline auto FString::operator == (const CharT& s) const -> bool
-{
-  return string.compare(s) == 0;
-}
-
-//----------------------------------------------------------------------
-template <typename CharT
-        , enable_if_char_ptr_t<CharT>>
-inline auto FString::operator != (const CharT& s) const -> bool
-{
-  char_string = internal_toCharString(string);
-  return s ? char_string.compare(s) != 0 : char_string.compare("") != 0;
-}
-
-//----------------------------------------------------------------------
-template <typename CharT
-        , enable_if_char_array_t<CharT>>
-inline auto FString::operator != (const CharT& s) const -> bool
-{
-  char_string = internal_toCharString(string);
-  return char_string.compare(s) != 0;
-}
-
-//----------------------------------------------------------------------
-template <typename CharT
-        , enable_if_wchar_ptr_t<CharT>>
-inline auto FString::operator != (const CharT& s) const -> bool
-{
-  return s ? string.compare(s) != 0 : string.compare(L"") != 0;
-}
-
-//----------------------------------------------------------------------
-template <typename CharT
-        , enable_if_wchar_array_t<CharT>>
-inline auto FString::operator != (const CharT& s) const -> bool
-{
-  return string.compare(s) != 0;
-}
-
-//----------------------------------------------------------------------
-template <typename CharT
-        , enable_if_char_ptr_t<CharT>>
-inline auto FString::operator >= (const CharT& s) const -> bool
-{
-  char_string = internal_toCharString(string);
-  return s ? char_string.compare(s) >= 0 : char_string.compare("") >= 0;
-}
-
-//----------------------------------------------------------------------
-template <typename CharT
-        , enable_if_char_array_t<CharT>>
-inline auto FString::operator >= (const CharT& s) const -> bool
-{
-  char_string = internal_toCharString(string);
-  return char_string.compare(s) >= 0;
-}
-
-//----------------------------------------------------------------------
-template <typename CharT
-        , enable_if_wchar_ptr_t<CharT>>
-inline auto FString::operator >= (const CharT& s) const -> bool
-{
-  return s ? string.compare(s) >= 0 : string.compare(L"") >= 0;
-}
-
-//----------------------------------------------------------------------
-template <typename CharT
-        , enable_if_wchar_array_t<CharT>>
-inline auto FString::operator >= (const CharT& s) const -> bool
-{
-  return string.compare(s) >= 0;
-}
-
-//----------------------------------------------------------------------
-template <typename CharT
-        , enable_if_char_ptr_t<CharT>>
-inline auto FString::operator > (const CharT& s) const -> bool
-{
-  char_string = internal_toCharString(string);
-  return s ? char_string.compare(s) > 0 : char_string.compare("") > 0;
-}
-
-//----------------------------------------------------------------------
-template <typename CharT
-        , enable_if_char_array_t<CharT>>
-inline auto FString::operator > (const CharT& s) const -> bool
-{
-  char_string = internal_toCharString(string);
-  return char_string.compare(s) > 0;
-}
-
-//----------------------------------------------------------------------
-template <typename CharT
-        , enable_if_wchar_ptr_t<CharT>>
-inline auto FString::operator > (const CharT& s) const -> bool
-{
-  return s ? string.compare(s) > 0 : string.compare(L"") > 0;
-}
-
-//----------------------------------------------------------------------
-template <typename CharT
-        , enable_if_wchar_array_t<CharT>>
-inline auto FString::operator > (const CharT& s) const -> bool
-{
-  return string.compare(s) > 0;
 }
 
 //----------------------------------------------------------------------

@@ -80,13 +80,6 @@ auto FLabel::operator << (const wchar_t c) -> FLabel&
   return *this;
 }
 
-//----------------------------------------------------------------------
-auto FLabel::operator >> (FString& s) const -> const FLabel&
-{
-  s += text;
-  return *this;
-}
-
 
 // public methods of FLabel
 //----------------------------------------------------------------------

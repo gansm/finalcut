@@ -79,23 +79,4 @@ void FSize::scaleBy (const FPoint& d) noexcept
   scaleBy (d.getX(), d.getY());
 }
 
-// FSize non-member operators
-//----------------------------------------------------------------------
-auto operator << (std::ostream& outstr, const FSize& s) -> std::ostream&
-{
-  outstr << s.width << " " << s.height;
-  return outstr;
-}
-
-//----------------------------------------------------------------------
-auto operator >> (std::istream& instr, FSize& s) -> std::istream&
-{
-  std::size_t w;
-  std::size_t h;
-  instr >> w;
-  instr >> h;
-  s.setSize (w, h);
-  return instr;
-}
-
 }  // namespace finalcut

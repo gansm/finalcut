@@ -178,16 +178,4 @@ void FVTermBuffer::add (UnicodeBoundary& ucb)
   ucb.char_width = 0;  // reset char width
 }
 
-
-// FVTermBuffer non-member operators
-//----------------------------------------------------------------------
-auto operator << ( FVTermBuffer::FCharVector& term_string
-                 , const FVTermBuffer& buf ) -> FVTermBuffer::FCharVector&
-{
-  if ( ! buf.data.empty() )
-    term_string.assign(buf.data.cbegin(), buf.data.cend());
-
-  return term_string;
-}
-
 }  // namespace finalcut

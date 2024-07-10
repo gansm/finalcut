@@ -640,29 +640,6 @@ void FListViewIterator::parentElement()
     prevElement(node);
 }
 
-// FListViewIterator non-member operators
-//----------------------------------------------------------------------
-auto operator + (const FListViewIterator& lhs, int n) -> FListViewIterator
-{
-  auto tmp = lhs;
-
-  for (int i = n; i > 0 ; i--)
-    tmp.nextElement(tmp.node);
-
-  return tmp;
-}
-
-//----------------------------------------------------------------------
-auto operator - (const FListViewIterator& lhs, int n) -> FListViewIterator
-{
-  auto tmp = lhs;
-
-  for (int i = n; i > 0 ; i--)
-    tmp.prevElement(tmp.node);
-
-  return tmp;
-}
-
 
 //----------------------------------------------------------------------
 // class FListView

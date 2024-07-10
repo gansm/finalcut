@@ -91,17 +91,66 @@ class FSize
     std::size_t height{0};
 
     // Friend operator functions
-    friend auto operator <  (const FSize&, const FSize&) -> bool;
-    friend auto operator <= (const FSize&, const FSize&) -> bool;
-    friend auto operator == (const FSize&, const FSize&) -> bool;
-    friend auto operator != (const FSize&, const FSize&) -> bool;
-    friend auto operator >= (const FSize&, const FSize&) -> bool;
-    friend auto operator >  (const FSize&, const FSize&) -> bool;
-    friend auto operator + (const FSize&, const FSize&) -> FSize;
-    friend auto operator - (const FSize&, const FSize&) -> FSize;
+    friend inline auto operator < (const FSize& s1, const FSize& s2) -> bool
+    {
+      return s1.width < s2.width && s1.height < s2.height;
+    }
 
-    friend auto operator << (std::ostream&, const FSize&) -> std::ostream&;
-    friend auto operator >> (std::istream&, FSize&) -> std::istream&;
+    friend inline auto operator <= (const FSize& s1, const FSize& s2) -> bool
+    {
+      return s1.width <= s2.width && s1.height <= s2.height;
+    }
+
+    friend inline auto operator == (const FSize& s1, const FSize& s2) -> bool
+    {
+      return s1.width == s2.width && s1.height == s2.height;
+    }
+
+    friend inline auto operator != (const FSize& s1, const FSize& s2) -> bool
+    {
+      return s1.width != s2.width || s1.height != s2.height;
+    }
+
+    friend inline auto operator >= (const FSize& s1, const FSize& s2) -> bool
+    {
+      return s1.width >= s2.width && s1.height >= s2.height;
+    }
+
+    friend inline auto operator > (const FSize& s1, const FSize& s2) -> bool
+    {
+      return s1.width > s2.width && s1.height > s2.height;
+    }
+
+    friend inline auto operator + (const FSize& s1, const FSize& s2) -> FSize
+    {
+      constexpr std::size_t max = std::numeric_limits<std::size_t>::max();
+      const std::size_t w = ( s1.width < max - s2.width) ? s1.width + s2.width : max;
+      const std::size_t h = ( s1.height < max - s2.height) ? s1.height + s2.height : max;
+      return { FSize{w, h} };
+    }
+
+    friend inline auto operator - (const FSize& s1, const FSize& s2) -> FSize
+    {
+      const std::size_t w = ( s1.width >= s2.width ) ? s1.width - s2.width : 0;
+      const std::size_t h = ( s1.height >= s2.height ) ? s1.height - s2.height : 0;
+      return { FSize{w, h} };
+    }
+
+    friend inline auto operator << (std::ostream& outstr, const FSize& s) -> std::ostream&
+    {
+      outstr << s.width << " " << s.height;
+      return outstr;
+    }
+
+    friend inline auto operator >> (std::istream& instr, FSize& s) -> std::istream&
+    {
+      std::size_t w;
+      std::size_t h;
+      instr >> w;
+      instr >> h;
+      s.setSize (w, h);
+      return instr;
+    }
 };
 
 // FSize inline functions
@@ -161,49 +210,6 @@ inline auto FSize::width_ref() & noexcept -> std::size_t&
 //----------------------------------------------------------------------
 inline auto FSize::height_ref() & noexcept -> std::size_t&
 { return height; }
-
-
-// FSize non-member operators
-//----------------------------------------------------------------------
-inline auto operator < (const FSize& s1, const FSize& s2) -> bool
-{ return s1.width < s2.width && s1.height < s2.height; }
-
-//----------------------------------------------------------------------
-inline auto operator <= (const FSize& s1, const FSize& s2) -> bool
-{ return s1.width <= s2.width && s1.height <= s2.height; }
-
-//----------------------------------------------------------------------
-inline auto operator == (const FSize& s1, const FSize& s2) -> bool
-{ return s1.width == s2.width && s1.height == s2.height; }
-
-//----------------------------------------------------------------------
-inline auto operator != (const FSize& s1, const FSize& s2) -> bool
-{ return s1.width != s2.width || s1.height != s2.height; }
-
-//----------------------------------------------------------------------
-inline auto operator >= (const FSize& s1, const FSize& s2) -> bool
-{ return s1.width >= s2.width && s1.height >= s2.height; }
-
-//----------------------------------------------------------------------
-inline auto operator > (const FSize& s1, const FSize& s2) -> bool
-{ return s1.width > s2.width && s1.height > s2.height; }
-
-//----------------------------------------------------------------------
-inline auto operator + (const FSize& s1, const FSize& s2) -> FSize
-{
-  constexpr std::size_t max = std::numeric_limits<std::size_t>::max();
-  const std::size_t w = ( s1.width < max - s2.width) ? s1.width + s2.width : max;
-  const std::size_t h = ( s1.height < max - s2.height) ? s1.height + s2.height : max;
-  return { FSize{w, h} };
-}
-
-//----------------------------------------------------------------------
-inline auto operator - (const FSize& s1, const FSize& s2) -> FSize
-{
-  const std::size_t w = ( s1.width >= s2.width ) ? s1.width - s2.width : 0;
-  const std::size_t h = ( s1.height >= s2.height ) ? s1.height - s2.height : 0;
-  return { FSize{w, h} };
-}
 
 }  // namespace finalcut
 
