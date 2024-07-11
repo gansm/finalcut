@@ -915,12 +915,6 @@ auto FString::includes (const FString& s) const -> bool
 
 // private methods of FString
 //----------------------------------------------------------------------
-inline void FString::internal_assign (std::wstring s)
-{
-  s.swap(string);
-}
-
-//----------------------------------------------------------------------
 auto FString::internal_toCharString (const std::wstring& s) const -> std::string
 {
   if ( s.empty() )
@@ -943,7 +937,7 @@ auto FString::internal_toCharString (const std::wstring& s) const -> std::string
 }
 
 //----------------------------------------------------------------------
-inline auto FString::internal_toWideString (const std::string& s) const -> std::wstring
+auto FString::internal_toWideString (const std::string& s) const -> std::wstring
 {
   if ( s.empty() )
     return {};

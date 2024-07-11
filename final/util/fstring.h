@@ -702,6 +702,12 @@ inline auto FString::back() const -> const_reference
 }
 
 //----------------------------------------------------------------------
+inline void FString::internal_assign (std::wstring s)
+{
+  s.swap(string);
+}
+
+//----------------------------------------------------------------------
 template <typename... Args>
 inline auto FString::sprintf (const FString& format, Args&&... args) -> FString&
 {
