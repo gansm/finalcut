@@ -496,7 +496,7 @@ void FMenuItem::init()
   setSuperMenu (parent);
 
   if ( accel_key != FKey::None )
-    addAccelerator (accel_key);
+    FMenuItem::addAccelerator (accel_key);
 
   auto menu_list = getFMenuList(*parent);
 

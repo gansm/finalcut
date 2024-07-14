@@ -782,7 +782,7 @@ void FScrollView::init()
   std::size_t width = std::max(std::size_t(1), getViewportWidth());
   std::size_t height = std::max(std::size_t(1), getViewportHeight());
   createViewport({ FSize{width, height} });
-  addPreprocessingHandler
+  FWidget::addPreprocessingHandler
   (
     F_PREPROC_HANDLER (this, &FScrollView::copy2area)
   );

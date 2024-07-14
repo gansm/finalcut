@@ -152,8 +152,8 @@ void FTextView::setGeometry ( const FPoint& pos, const FSize& size
 void FTextView::resetColors()
 {
   const auto& wc = getColorTheme();
-  setForegroundColor (wc->text.fg);
-  setBackgroundColor (wc->text.bg);
+  FWidget::setForegroundColor (wc->text.fg);
+  FWidget::setBackgroundColor (wc->text.bg);
   FWidget::resetColors();
 }
 

@@ -779,13 +779,13 @@ void FScrollbar::changeOnResize()
 
   if ( bar_orientation == Orientation::Vertical )
   {
-    setWidth(FVTerm::getFOutput()->isNewFont() ? 2 : 1);
-    setHeight(length);
+    FWidget::setWidth(FVTerm::getFOutput()->isNewFont() ? 2 : 1);
+    FWidget::setHeight(length);
   }
   else  // horizontal
   {
-    setWidth(length);
-    setHeight(1);
+    FWidget::setWidth(length);
+    FWidget::setHeight(1);
   }
 
   calculateSliderValues();

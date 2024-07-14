@@ -225,7 +225,7 @@ void FMenuBar::init()
   // initialize geometry values
   FWindow::setGeometry (FPoint{1, 1}, FSize{w, 1}, false);
   setAlwaysOnTop();
-  setMenuBar(this);
+  FWidget::setMenuBar(this);
   ignorePadding();
 
   if ( getRootWidget() )

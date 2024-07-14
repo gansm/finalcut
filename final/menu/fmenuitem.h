@@ -125,8 +125,8 @@ class FMenuItem : public FWidget
     auto hasMenu() const -> bool;
 
     // Methods
-    void addAccelerator (FKey, FWidget*) & override;
-    void delAccelerator (FWidget*) & override;
+    void addAccelerator (FKey, FWidget*) & final;
+    void delAccelerator (FWidget*) & final;
     void openMenu() const;
 
     // Event handlers

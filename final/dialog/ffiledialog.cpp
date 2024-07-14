@@ -291,7 +291,7 @@ inline void FFileDialog::widgetSettings (const FPoint& pos)
     open_btn.setText ("&Open");
 
   open_btn.setGeometry(FPoint{30, 10}, FSize{9, 1});
-  setGeometry (pos, getSize());
+  FWindow::setGeometry (pos, getSize());
 }
 
 //----------------------------------------------------------------------

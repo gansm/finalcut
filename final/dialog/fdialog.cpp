@@ -786,7 +786,7 @@ void FDialog::init()
 
   if ( old_focus )
   {
-    setFocus();
+    FWidget::setFocus();
     old_focus->redraw();
   }
 

@@ -72,7 +72,7 @@ FToggleButton::FToggleButton (const FString& txt, FWidget* parent)
 //----------------------------------------------------------------------
 FToggleButton::~FToggleButton()  // destructor
 {
-  delAccelerator();
+  FWidget::delAccelerator();
 
   if ( hasGroup() )
     getGroup()->remove(this);
@@ -120,19 +120,19 @@ void FToggleButton::resetColors()
   {
     if ( hasFocus() )
     {
-      setForegroundColor (wc->toggle_button.focus_fg);
-      setBackgroundColor (wc->toggle_button.focus_bg);
+      FWidget::setForegroundColor (wc->toggle_button.focus_fg);
+      FWidget::setBackgroundColor (wc->toggle_button.focus_bg);
     }
     else
     {
-      setForegroundColor (wc->toggle_button.fg);
-      setBackgroundColor (wc->toggle_button.bg);
+      FWidget::setForegroundColor (wc->toggle_button.fg);
+      FWidget::setBackgroundColor (wc->toggle_button.bg);
     }
   }
   else  // inactive
   {
-    setForegroundColor (wc->label.inactive_fg);
-    setBackgroundColor (wc->label.inactive_bg);
+    FWidget::setForegroundColor (wc->label.inactive_fg);
+    FWidget::setBackgroundColor (wc->label.inactive_bg);
   }
 
   FWidget::resetColors();
@@ -172,7 +172,7 @@ void FToggleButton::setText (const FString& txt)
   text.setString(txt);
   std::size_t hotkey_mark = ( getHotkey(text) != FKey::None ) ? 1 : 0;
   std::size_t column_width = getColumnWidth(text);
-  setWidth(button_width + column_width - hotkey_mark);
+  FWidget::setWidth(button_width + column_width - hotkey_mark);
 
   if ( isEnabled() )
   {

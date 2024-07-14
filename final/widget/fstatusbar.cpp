@@ -57,7 +57,7 @@ FStatusKey::~FStatusKey()  // destructor
   if ( getConnectedStatusbar() )
     getConnectedStatusbar()->remove(this);
 
-  delAccelerator();
+  FWidget::delAccelerator();
 }
 
 
@@ -416,7 +416,7 @@ void FStatusBar::init()
   // initialize geometry values
   FWindow::setGeometry (FPoint{1, h}, FSize{w, 1}, false);
   setAlwaysOnTop();
-  setStatusBar(this);
+  FWidget::setStatusBar(this);
   ignorePadding();
   mouse_down = false;
 

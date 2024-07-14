@@ -457,7 +457,7 @@ void FComboBox::init()
   label->setBackgroundColor (parent_widget->getBackgroundColor());
   input_field.setLabelAssociatedWidget(this);
   input_field.unsetShadow();
-  adjustSize();
+  FWidget::adjustSize();
   initCallbacks();
 
   if ( FVTerm::getFOutput()->isNewFont() )

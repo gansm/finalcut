@@ -54,7 +54,7 @@ FButton::FButton (FString&& txt, FWidget* parent)
 //----------------------------------------------------------------------
 FButton::~FButton()  // destructor
 {
-  delAccelerator();
+  FWidget::delAccelerator();
   delOwnTimers();
 }
 
@@ -380,7 +380,7 @@ inline void FButton::detectHotkey()
 {
   if ( isEnabled() )
   {
-    delAccelerator();
+    FWidget::delAccelerator();
     setHotkeyAccelerator();
   }
 }
