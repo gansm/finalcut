@@ -336,7 +336,8 @@ void FDialog::setSize (const FSize& size, bool adjust)
   redraw();
 
   // Copy dialog to virtual terminal
-  putArea (getTermPos(), getVWin());
+  if ( isShown() )
+    putArea (getTermPos(), getVWin());
 
   // restoring the non-covered terminal areas
   if ( dw > 0 )
