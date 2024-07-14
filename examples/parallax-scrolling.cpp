@@ -143,13 +143,19 @@ struct restoreOverlaid : public fc::FVTerm
       return;
 
     bool overlaid{false};
+    const auto& window_list = *getWindowList();
 
-    for (auto&& window : *getWindowList())
+    for (const auto& window : window_list)
     {
-      const auto win = static_cast<fc::FWidget*>(window);
+      const auto* win = static_cast<fc::FWidget*>(window);
 
-      if ( overlaid && win->getVWin()->visible )
-        putArea (win->getTermPos(), win->getVWin());
+      if ( overlaid )
+      {
+        if ( win->getVWin()->visible )
+          putArea (win->getTermPos(), win->getVWin());
+
+        continue;
+      }
 
       overlaid = bool( obj.getVWin() == win->getVWin() );
     }
