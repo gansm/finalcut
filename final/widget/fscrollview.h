@@ -69,6 +69,7 @@ class FScrollView : public FWidget
   public:
     // Using-declaration
     using FWidget::setGeometry;
+    using FWidget::delAccelerator;
     using FWidget::print;
 
     // Constructor

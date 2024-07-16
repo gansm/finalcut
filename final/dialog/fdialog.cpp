@@ -136,8 +136,8 @@ void FDialog::setBorder (bool enable)
 void FDialog::resetColors()
 {
   const auto& wc = getColorTheme();
-  setForegroundColor (wc->dialog.fg);
-  setBackgroundColor (wc->dialog.bg);
+  FWidget::setForegroundColor (wc->dialog.fg);
+  FWidget::setBackgroundColor (wc->dialog.bg);
   FWidget::resetColors();
 }
 

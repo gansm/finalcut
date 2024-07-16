@@ -461,8 +461,8 @@ void FMenu::calculateDimensions()
   const int adjust_X = adjustX(getX());
 
   // set widget geometry
-  setGeometry ( FPoint{adjust_X, getY()}
-              , FSize{max_item_width + 2, getCount() + 2} );
+  FWindow::setGeometry ( FPoint{adjust_X, getY()}
+                       , FSize{max_item_width + 2, getCount() + 2} );
 
   // set geometry of all items
   const int item_X = 1;

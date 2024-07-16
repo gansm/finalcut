@@ -160,7 +160,7 @@ void FToolTip::calculateDimensions()
   const auto& r = getRootWidget();
   int x = r ? 1 + int((r->getWidth() - w) / 2) : 1;
   int y = r ? 1 + int((r->getHeight() - h) / 2) : 1;
-  setGeometry (FPoint{x, y}, FSize{w, h});
+  FWidget::setGeometry (FPoint{x, y}, FSize{w, h});
 }
 
 //----------------------------------------------------------------------

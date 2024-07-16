@@ -429,7 +429,7 @@ void FMessageBox::adjustButtons()
     const auto& root_widget = getRootWidget();
     FDialog::setWidth(btn_width + 5);
     max_width = root_widget ? root_widget->getClientWidth() : 80;
-    setX (int((max_width - getWidth()) / 2));
+    FWindow::setX (int((max_width - getWidth()) / 2));
   }
 
   const auto btn_x = int((getWidth() - btn_width) / 2);

@@ -274,19 +274,19 @@ void FLineEdit::resetColors()
   {
     if ( hasFocus() )
     {
-      setForegroundColor (wc->input_field.focus_fg);
-      setBackgroundColor (wc->input_field.focus_bg);
+      FWidget::setForegroundColor (wc->input_field.focus_fg);
+      FWidget::setBackgroundColor (wc->input_field.focus_bg);
     }
     else
     {
-      setForegroundColor (wc->input_field.fg);
-      setBackgroundColor (wc->input_field.bg);
+      FWidget::setForegroundColor (wc->input_field.fg);
+      FWidget::setBackgroundColor (wc->input_field.bg);
     }
   }
   else  // inactive
   {
-    setForegroundColor (wc->input_field.inactive_fg);
-    setBackgroundColor (wc->input_field.inactive_bg);
+    FWidget::setForegroundColor (wc->input_field.inactive_fg);
+    FWidget::setBackgroundColor (wc->input_field.inactive_bg);
   }
 
   FWidget::resetColors();

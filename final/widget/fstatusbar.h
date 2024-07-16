@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2023 Markus Gans                                      *
+* Copyright 2014-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -73,6 +73,9 @@ class FStatusBar;
 class FStatusKey : public FWidget
 {
   public:
+    // Using-declaration
+    using FWidget::delAccelerator;
+
     // Constructors
     explicit FStatusKey (FWidget* = nullptr);
     FStatusKey (FKey, FString&&, FWidget* = nullptr);
@@ -184,6 +187,9 @@ inline void FStatusKey::setConnectedStatusbar (FStatusBar* sb)
 class FStatusBar : public FWindow
 {
   public:
+    // Using-declaration
+    using FWidget::delAccelerator;
+
     // Constructor
     explicit FStatusBar (FWidget* = nullptr);
 

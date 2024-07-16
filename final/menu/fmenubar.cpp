@@ -59,8 +59,8 @@ FMenuBar::~FMenuBar()  // destructor
 void FMenuBar::resetColors()
 {
   const auto& wc = getColorTheme();
-  setForegroundColor (wc->menu.fg);
-  setBackgroundColor (wc->menu.bg);
+  FWidget::setForegroundColor (wc->menu.fg);
+  FWidget::setBackgroundColor (wc->menu.bg);
   FWidget::resetColors();
 }
 
