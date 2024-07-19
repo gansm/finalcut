@@ -559,9 +559,9 @@ void FLineEdit::init()
   mapKeyFunctions();
 
   if ( isReadOnly() )
-    FWidget::unsetVisibleCursor();
+    FLineEdit::unsetVisibleCursor();
   else
-    FWidget::setVisibleCursor();
+    FLineEdit::setVisibleCursor();
 }
 
 //----------------------------------------------------------------------

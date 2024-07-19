@@ -69,6 +69,8 @@ class FLineEdit : public FWidget
   public:
     // Using-declaration
     using FWidget::setGeometry;
+    using FWidget::setVisibleCursor;
+    using FWidget::unsetVisibleCursor;
 
     // Enumerations
     enum class LabelOrientation

@@ -57,7 +57,7 @@ FStatusKey::~FStatusKey()  // destructor
   if ( getConnectedStatusbar() )
     getConnectedStatusbar()->remove(this);
 
-  FWidget::delAccelerator();
+  FStatusKey::delAccelerator();
 }
 
 
@@ -144,7 +144,7 @@ FStatusBar::~FStatusBar()  // destructor
     while ( iter != key_list.cend() )
     {
       (*iter)->setConnectedStatusbar(nullptr);
-      FWidget::delAccelerator (*iter);
+      FStatusBar::delAccelerator (*iter);
       iter = key_list.erase(iter);
     }
   }

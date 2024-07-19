@@ -68,9 +68,9 @@ class FScrollView : public FWidget
 {
   public:
     // Using-declaration
-    using FWidget::setGeometry;
     using FWidget::delAccelerator;
     using FWidget::print;
+    using FWidget::setGeometry;
 
     // Constructor
     explicit FScrollView (FWidget* = nullptr);
@@ -318,7 +318,7 @@ inline void FScrollView::initScrollbar ( FScrollbarPtr& bar
                                        , Callback cb_handler )
 {
   finalcut::initScrollbar (bar, o, this, cb_handler);
-  FTermArea* area = getPrintArea();
+  FTermArea* area = FScrollView::getPrintArea();
   finalcut::setPrintArea (*bar, area);
 }
 

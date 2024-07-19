@@ -63,8 +63,8 @@ class FToggleButton : public FWidget
 {
   public:
     // Using-declaration
-    using FWidget::setGeometry;
     using FWidget::delAccelerator;
+    using FWidget::setGeometry;
 
     // Constructors
     explicit FToggleButton (FWidget* = nullptr);

@@ -71,6 +71,9 @@ class FMenuBar : public FWindow
                , public FMenuList
 {
   public:
+    // Using-declaration
+    using FWidget::addAccelerator;
+
     // Constructor
     explicit FMenuBar (FWidget* = nullptr);
 
