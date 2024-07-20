@@ -135,7 +135,7 @@ void FLabel::setText (const FString& txt)
 
   if ( isEnabled() )
   {
-    FWidget::delAccelerator();
+    FWidget::delAccelerator(this);
     setHotkeyAccelerator();
   }
 }

@@ -231,9 +231,9 @@ void FMenuBar::init()
   if ( getRootWidget() )
     getRootWidget()->setTopPadding(1, true);
 
-  addAccelerator (FKey::F10);
-  addAccelerator (FKey::Ctrl_space);
-  addAccelerator (FKey::Menu);
+  FMenuBar::addAccelerator (FKey::F10);
+  FMenuBar::addAccelerator (FKey::Ctrl_space);
+  FMenuBar::addAccelerator (FKey::Menu);
   FMenuBar::resetColors();
   unsetFocusable();
 }

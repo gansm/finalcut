@@ -57,7 +57,7 @@ FStatusKey::~FStatusKey()  // destructor
   if ( getConnectedStatusbar() )
     getConnectedStatusbar()->remove(this);
 
-  FStatusKey::delAccelerator();
+  FStatusKey::delAccelerator(this);
 }
 
 

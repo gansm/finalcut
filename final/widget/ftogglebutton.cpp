@@ -72,7 +72,7 @@ FToggleButton::FToggleButton (const FString& txt, FWidget* parent)
 //----------------------------------------------------------------------
 FToggleButton::~FToggleButton()  // destructor
 {
-  FToggleButton::delAccelerator();
+  FToggleButton::delAccelerator(this);
 
   if ( hasGroup() )
     getGroup()->remove(this);
@@ -176,7 +176,7 @@ void FToggleButton::setText (const FString& txt)
 
   if ( isEnabled() )
   {
-    FToggleButton::delAccelerator();
+    FToggleButton::delAccelerator(this);
     setHotkeyAccelerator();
   }
 }
