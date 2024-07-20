@@ -127,7 +127,7 @@ void FScrollView::setScrollSize (const FSize& size)
     resizeArea (scroll_geometry, viewport.get());
     setColor();
     FScrollView::clearArea();
-    addPreprocessingHandler
+    FWidget::addPreprocessingHandler
     (
       F_PREPROC_HANDLER (this, &FScrollView::copy2area)
     );
