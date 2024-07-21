@@ -180,7 +180,7 @@ class FScrollView : public FWidget
 
     // Methods
     void init();
-    void addPreprocessingHandler();
+    void addLocalPreprocessingHandler();
     void createViewport (const FSize&) noexcept;
     void drawText (const FString&, std::size_t);
     auto getDisplayedTextLength (const FString&, const std::size_t) const -> std::size_t;
