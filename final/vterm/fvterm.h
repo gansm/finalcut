@@ -186,6 +186,7 @@ class FVTerm : public FVTermAttribute
     static auto  isTerminalUpdateForced() noexcept -> bool;
     static auto  areTerminalUpdatesPaused() noexcept -> bool;
     static auto  hasPendingTerminalUpdates() noexcept -> bool;
+    auto hasPreprocessingHandler (const FVTerm*) noexcept -> bool;
 
     // Methods
     virtual void clearArea (wchar_t = L' ');

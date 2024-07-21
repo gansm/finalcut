@@ -174,6 +174,28 @@ void FVTerm::setNonBlockingRead (bool enable)
 }
 
 //----------------------------------------------------------------------
+auto FVTerm::hasPreprocessingHandler (const FVTerm* instance) noexcept -> bool
+{
+  if ( ! print_area )
+    getPrintArea();
+
+  if ( ! instance || ! print_area || print_area->preproc_list.empty() )
+    return false;
+
+  auto iter = print_area->preproc_list.cbegin();
+
+  while ( iter != print_area->preproc_list.cend() )
+  {
+    if ( iter->get()->instance.get() == instance )
+      return true;
+    else
+      ++iter;
+  }
+
+  return false;
+}
+
+//----------------------------------------------------------------------
 void FVTerm::clearArea (wchar_t fillchar)
 {
   clearArea (vwin.get(), fillchar);

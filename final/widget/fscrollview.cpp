@@ -68,10 +68,7 @@ void FScrollView::setScrollWidth (std::size_t width)
     resizeArea (scroll_geometry, viewport.get());
     setColor();
     FScrollView::clearArea();
-    addPreprocessingHandler
-    (
-      F_PREPROC_HANDLER (this, &FScrollView::copy2area)
-    );
+    addPreprocessingHandler();
     setChildPrintArea (viewport.get());
   }
 
@@ -97,10 +94,7 @@ void FScrollView::setScrollHeight (std::size_t height)
     resizeArea (scroll_geometry, viewport.get());
     setColor();
     clearArea();
-    addPreprocessingHandler
-    (
-      F_PREPROC_HANDLER (this, &FScrollView::copy2area)
-    );
+    addPreprocessingHandler();
     setChildPrintArea (viewport.get());
   }
 
@@ -127,10 +121,7 @@ void FScrollView::setScrollSize (const FSize& size)
     resizeArea (scroll_geometry, viewport.get());
     setColor();
     FScrollView::clearArea();
-    FWidget::addPreprocessingHandler
-    (
-      F_PREPROC_HANDLER (this, &FScrollView::copy2area)
-    );
+    addPreprocessingHandler();
     setChildPrintArea (viewport.get());
   }
 
@@ -782,13 +773,21 @@ void FScrollView::init()
   std::size_t width = std::max(std::size_t(1), getViewportWidth());
   std::size_t height = std::max(std::size_t(1), getViewportHeight());
   createViewport({ FSize{width, height} });
+
+  if ( hasPreprocessingHandler(this) )
+    addPreprocessingHandler();
+
+  if ( viewport )
+    setChildPrintArea (viewport.get());
+}
+
+//----------------------------------------------------------------------
+inline void FScrollView::addPreprocessingHandler()
+{
   FWidget::addPreprocessingHandler
   (
     F_PREPROC_HANDLER (this, &FScrollView::copy2area)
   );
-
-  if ( viewport )
-    setChildPrintArea (viewport.get());
 }
 
 //----------------------------------------------------------------------

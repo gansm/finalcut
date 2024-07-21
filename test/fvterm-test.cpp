@@ -1994,12 +1994,14 @@ void FVTermTest::FVTermChildAreaPrintTest()
   CPPUNIT_ASSERT ( p_fvterm.p_getChildPrintArea() != nullptr );
   CPPUNIT_ASSERT ( p_fvterm.p_getChildPrintArea() == child_print_area );
 
+  CPPUNIT_ASSERT ( ! p_fvterm.hasPreprocessingHandler(&p_fvterm) );;
   CPPUNIT_ASSERT ( p_fvterm.value_ref() == 0 );
   p_fvterm.addPreprocessingHandler
   (
     F_PREPROC_HANDLER (&p_fvterm, &FVTerm_protected::Preprocessing)
   );
 
+  CPPUNIT_ASSERT ( p_fvterm.hasPreprocessingHandler(&p_fvterm) );
   CPPUNIT_ASSERT ( p_fvterm.value_ref() == 0 );
   CPPUNIT_ASSERT ( vwin );
 
