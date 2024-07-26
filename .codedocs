@@ -1,4 +1,4 @@
-PROJECT_NAME = "The Final Cut"
-EXCLUDE = debian, doc, icon, logo, m4, scripts, examples
+PROJECT_NAME = "FINAL CUT"
+EXCLUDE = doc, misc, m4, scripts, examples
 EXCLUDE_PATTERNS = */test/*
 

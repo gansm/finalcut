@@ -1,26 +1,40 @@
-![FINAL CUT](logo/svg/finalcut-logo.svg)
-============================================
+![FINAL CUT](misc/logo/svg/finalcut-logo.svg)
 
-### Building and code analysis
-*Latest release:*<br />
-&#160;&#160;&#160;&#160;&#160;[![Latest Release](https://img.shields.io/github/release/gansm/finalcut.svg)](https://github.com/gansm/finalcut/releases) <br />
-*Travis CI:*<br />
-&#160;&#160;&#160;&#160;&#160;[![Build Status](https://travis-ci.org/gansm/finalcut.svg?branch=master)](https://travis-ci.org/gansm/finalcut) <br />
-*Coverity Scan:*<br />
-&#160;&#160;&#160;&#160;&#160;[![Coverity Scan Status](https://scan.coverity.com/projects/6508/badge.svg)](https://scan.coverity.com/projects/6508) <br />
-*LGTM:*<br />
-&#160;&#160;&#160;&#160;&#160;[![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/gansm/finalcut.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/gansm/finalcut/context:cpp) <br />
-*Class Reference:*<br />
-&#160;&#160;&#160;&#160;&#160;[![documented](https://codedocs.xyz/gansm/finalcut.svg)](https://codedocs.xyz/gansm/finalcut/hierarchy.html)
+# Library for creating terminal applications with text-based widgets
 
-### Description
-The FINAL CUT is a C++ class library and widget toolkit with full mouse support for creating a [text-based user interface](https://en.wikipedia.org/wiki/Text-based_user_interface). The library supports the programmer to develop an application for the text console. It allows the simultaneous handling of multiple text windows on the screen.
+FINAL CUT is a C++ class library and widget toolkit that enables developers to create [text-based user interfaces](https://en.wikipedia.org/wiki/Text-based_user_interface). FINAL CUT is a standalone library that interacts directly with the terminal without relying on external libraries such as [ncurses](https://invisible-island.net/ncurses/ncurses.html) or [termbox](https://code.google.com/archive/p/termbox/).
 
-The structure of the Qt framework was originally the inspiration for the C++ class design of FINAL CUT. It provides common controls like dialog boxes, push buttons, check boxes, radio buttons, input lines, list boxes, status bars and so on.
+FINAL CUT provides full [mouse](doc/mouse-control.md#title-bar-actions-on-mouse-clicks) support, [UTF-8](https://en.wikipedia.org/wiki/UTF-8) character encoding, [full-width character](https://en.wikipedia.org/wiki/Halfwidth_and_fullwidth_forms) support, and the ability to display [combined Unicode characters](https://en.wikipedia.org/wiki/Combining_character). The library helps the programmer to create a text console application. It allows handling multiple text windows on the screen.
 
-### Installation
+The design of the C++ class structure of FINAL CUT was inspired by the Qt framework. It provides a variety of common controls, including dialog boxes, push buttons, check boxes, radio buttons, input lines, list boxes, and status bars. With FINAL CUT, developers can create text-based user interfaces that are both functional and visually appealing.
+
+## Building and code analysis
+
+|                    | Badge |
+|-------------------:|:------|
+| *Latest release*   | [![Latest Release](https://img.shields.io/github/release/gansm/finalcut.svg)](https://github.com/gansm/finalcut/releases) |
+| *License*          | [![LGPL v3](https://img.shields.io/badge/License-LGPL_v3-blue.svg)](LICENSE) |
+| *Class Reference*  | [![documented](https://codedocs.xyz/gansm/finalcut.svg)](https://codedocs.xyz/gansm/finalcut/hierarchy.html) |
+| *ARM build*        | [![ARM build](https://github.com/gansm/finalcut/actions/workflows/arm.yml/badge.svg)](https://github.com/gansm/finalcut/actions/workflows/arm.yml) |
+| *FreeBSD build*    | [![FreeBSD build](https://github.com/gansm/finalcut/actions/workflows/freebsd.yml/badge.svg)](https://github.com/gansm/finalcut/actions/workflows/freebsd.yml) |
+| *NetBSD build*     | [![NetBSD build](https://github.com/gansm/finalcut/actions/workflows/netbsd.yml/badge.svg)](https://github.com/gansm/finalcut/actions/workflows/netbsd.yml) |
+| *OpenBSD build*    | [![OpenBSD build](https://github.com/gansm/finalcut/actions/workflows/openbsd.yml/badge.svg)](https://github.com/gansm/finalcut/actions/workflows/openbsd.yml) |
+| *macOS build*      | [![macOS build](https://github.com/gansm/finalcut/actions/workflows/macos.yml/badge.svg)](https://github.com/gansm/finalcut/actions/workflows/macos.yml) |
+| *Cygwin build*     | [![Cygwin build](https://github.com/gansm/finalcut/actions/workflows/cygwin.yml/badge.svg)](https://github.com/gansm/finalcut/actions/workflows/cygwin.yml) |
+| *Solaris build*    | [![Solaris build](https://github.com/gansm/finalcut/actions/workflows/solaris.yml/badge.svg)](https://github.com/gansm/finalcut/actions/workflows/solaris.yml) |
+| *CodeQL analysis*  | [![CodeQL analysis](https://github.com/gansm/finalcut/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/gansm/finalcut/security/code-scanning) |
+| *Coverity Scan*    | [![Coverity Scan Status](https://img.shields.io/coverity/scan/6508.svg)](https://scan.coverity.com/projects/6508 ) |
+| *SonarCloud*       | [![Quality gate](https://sonarcloud.io/api/project_badges/measure?project=gansm_finalcut&metric=alert_status)](https://sonarcloud.io/dashboard?id=gansm_finalcut) |
+| *CodeFactor*       | [![CodeFactor](https://www.codefactor.io/repository/github/gansm/finalcut/badge)](https://www.codefactor.io/repository/github/gansm/finalcut) |
+| *SIGRID*       | [![sigrid-publish](https://github.com/gansm/finalcut/actions/workflows/sigrid-publish.yml/badge.svg?branch=main)](https://github.com/gansm/finalcut/actions/workflows/sigrid-publish.yml) |
+
+
+## Installation
+
+Before installing FINAL CUT, check if your computer meets the requirements. You can find these in the FAQ section under "[What do I need to build this library?](doc/faq.md#what-do-i-need-to-build-this-library)".
+
 ```bash
-> git clone git://github.com/gansm/finalcut.git
+> git clone https://github.com/gansm/finalcut.git
 > cd finalcut
 > autoreconf --install --force
 > ./configure --prefix=/usr
@@ -28,237 +42,250 @@ The structure of the Qt framework was originally the inspiration for the C++ cla
 > su -c "make install"
 ```
 
-### Supported platforms
+## Supported platforms
+
+If your platform is not listed here, it may still be compatible with FINAL CUT. I welcome any [help](Contributing.md) to make this software available on more platforms.
+
+FINAL CUT currently works on the following platforms:
+
 * Linux
 * FreeBSD
 * NetBSD
 * OpenBSD
 * macOS
 * Cygwin
+* GNU Hurd
 * Solaris
 
-### First steps
+## Documentation
 
-[How to use the library](doc/first-steps.md#first-steps-with-the-final-cut-widget-toolkit)
+See the [first steps documentation](doc/first-steps.md#first-steps-with-the-final-cut-widget-toolkit) for information on how to use the library.
 
-### Screenshots
+## Frequently Asked Questions
 
-The FFileDialog widget:
+For general questions about FINAL CUT, likely the answer is already included in the [FAQ](doc/faq.md#frequently-asked-questions).
+
+## Screenshots
+
+The FFileDialog widget with incremental file name search:
 
 ![FFileDialog](doc/fileopen-dialog.png)
 
-
-The Final Cut FProgressbar widget:
+The FINAL CUT FProgressbar widget:
 
 ![FProgressbar](doc/progress-bar.png)
 
-
 Scrollable text in the FTextView widget:
 
- ![FTextView](doc/textview.png)
-
+![FTextView](doc/textview.png)
 
 The Mandelbrot set example:
 
- ![Mandelbrot set](doc/Mandelbrot.png)
+![Mandelbrot set](doc/Mandelbrot.png)
 
+## FINAL CUT newfont
 
-newfont
--------
-A [graphical text font](fonts/) for X11 and the Linux console.
+A [graphical text font](final/font/) for X11 and the Linux console.
 
 ![ui example in newfont mode](doc/newfont1.png)
-
 
 Newfont drive symbols:
 
 ![drive symbols](doc/newfont2.png)
 
-
 The calculator example in newfont mode:
 
 ![calculator](doc/calculator.png)
 
+## Benchmark
 
-Virtual terminal
-----------------
-It uses a virtual terminal to print the character via an update method on the screen.
-The virtual windows are an overlying layer to realizing window movements.
-The update method transmits only the changes to the virtual terminal or the screen.
+Here you can find a test for [measuring the character speed](doc/benchmark.md#benchmark) in the terminal.
+
+## Virtual terminal
+
+FINAL CUT uses a virtual terminal to print character via an update method on the screen. It provides (as an overlying layer) virtual windows for the realization of window movements. The update methods only transfer differences to the virtual terminal or physical screen.
 
 <pre style="line-height: 1 !important;">
  print(...)
 printf(...)
   │
-  │           ╔═════════════════════════[ vterm ]═════════════════════════╗
-  │           ║createVTerm()                                              ║
-  │           ║                                 ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐ ║
-  │           ║                                                           ║
-  │           ║                                 │ restoreVTerm(x,y,w,h) │ ║
-  │           ║                                                           ║
-  │           ║                                 └ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘ ║
-  │           ║                                                           ║
-  │   ┌───────╨─────[ vwin ]─────────────┐                                ║
-  │   │createArea(area)                  │                                ║
-  │   │                                  │                                ║
-  │   │                                  │                                ║
-  └───┼─────────────►     ──────► updateVTerm(area) ────►                 ║
-      │                                  │                                ║
-      │                           putArea(x,y,area)                       ║
-      │                         ────────────────────►                     ║
-      │                           getArea(x,y,area)                       ║
-      │                        ◄────────────────────                      ║
-      │                                  │                                ║
-      │                                  │                                ║
-      │                  resizeArea(area)│                                ║
-      └───────╥──────────────────────────┘                                ║
-              ║                                                           ║
-              ║                                                           ║
-              ║                                                           ║
-              ║   │                                          resizeVTerm()║
-              ╚═══▼═══════════════════════════════════════════════════════╝
-                  │
-                  │    putVTerm()
-                  └──────────────────► updateTerminalLine(y)
-                    updateTerminal()             │
-                                                 ▼
-                                         ┌───────────────┐
-                                         │ output_buffer │
-                                         └───────────────┘
-                                                 │
-                                                 │ flush_out()
-                                                 │     +
-                                                 │ Fputchar(char)
-                                                 │
-                                                 ▼
-                                         ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
-                                         ▌               ▐
-                                         ▌    screen     ▐
-                                         ▌ ───────────── ▐
-                                         ▌ real terminal ▐
-                                         ▌               ▐
-                                         ▀▀▀▀▀▀▀███▀▀▀▀▀▀▀
-                                                ███
-                                             ▀▀▀▀▀▀▀▀▀
+  │          ╔════════════════════════[ vterm ]════════════════════════╗
+  │          ║createVTerm()                                            ║
+  │          ║                               ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐ ║
+  │          ║                                                         ║
+  │          ║                               │ restoreVTerm(x,y,w,h) │ ║
+  │  ┌───────╨────[ vwin ]────────────┐                                ║
+  │  │createArea(area)                │      └ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘ ║
+  │  │                                │                                ║
+  │  │                                │                                ║
+  └──┼────────►                  putArea(area) ────►                   ║
+     │                                │                                ║
+     │                         putArea(x,y,area) ────►                 ║
+     │                                │                                ║
+     │                   ◄──── getArea(x,y,area)                       ║
+     │                                │                                ║
+     │                                │                                ║
+     │                                │                                ║
+     │                resizeArea(area)│                                ║
+     └───────╥────────────────────────┘                                ║
+             ║                                                         ║
+             ║       │                                    resizeVTerm()║
+             ╚═══════▼═════════════════════════════════════════════════╝
+                     │
+                     │   putVTerm()
+                     └──────────────────► updateTerminalLine(y)
+                       updateTerminal()            │
+                                                   ▼
+                                           ┌───────────────┐
+                                           │ output_buffer │
+                                           └───────────────┘
+                                                   │
+                                                   │ flushOutputBuffer()
+                                                   │ and putchar(char)
+                                                   ▼
+                                           ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+                                           ▌               ▐
+                                           ▌    screen     ▐
+                                           ▌ ───────────── ▐
+                                           ▌ real terminal ▐
+                                           ▌               ▐
+                                           ▀▀▀▀▀▀▀███▀▀▀▀▀▀▀
+                                                  ███
+                                               ▀▀▀▀▀▀▀▀▀
 </pre>
 
-
-Class digramm
--------------
+## Class digramm
 
 <pre style="line-height: 1 !important;">
-              1┌──────────────┐
-   ┌-----------┤ FTermFreeBSD │
-   :           └──────────────┘
-   :          1┌──────────────┐         ┌───────────┐
-   ┌-----------┤ FTermOpenBSD │    ┌────┤ FKeyEvent │
-   :           └──────────────┘    │    └───────────┘
-   :          1┌────────────────┐  │    ┌─────────────┐
-   ┌-----------┤ FTermDetection │  ├────┤ FMouseEvent │
-   :           └────────────────┘  │    └─────────────┘
-   :          1┌────────────────┐  │    ┌─────────────┐
-   ┌-----------┤ FTermcapQuirks │  ├────┤ FWheelEvent │
-   :           └────────────────┘  │    └─────────────┘
-   :          1┌────────────────┐  │    ┌─────────────┐
-   ┌-----------┤ FTermXTerminal │  ├────┤ FFocusEvent │
-   :           └────────────────┘  │    └─────────────┘
-   :          1┌──────────┐        │    ┌─────────────┐
-   ┌-----------┤ FTermcap │        ├────┤ FAccelEvent │
-   :           └──────────┘        │    └─────────────┘
-   :          1┌──────────┐        │    ┌──────────────┐
-   ┌-----------┤ FTermios │        ├────┤ FResizeEvent │
-   :           └──────────┘        │    └──────────────┘
-   :          1┌───────────────┐   │    ┌────────────┐
-   ┌-----------┤ FColorPalette │   ├────┤ FShowEvent │
-   :           └───────────────┘   │    └────────────┘
-   :          1┌───────────┐       │    ┌────────────┐
-   ┌-----------┤ FOptiMove │       ├────┤ FHideEvent │
-   :           └───────────┘       │    └────────────┘
-   :          1┌───────────┐       │    ┌─────────────┐
-   ┌-----------┤ FOptiAttr │       ├────┤ FCloseEvent │
-   :           └───────────┘       │    └─────────────┘
-   :          1┌───────────┐       │    ┌─────────────┐
-   ┌-----------┤ FKeyboard │       ├────┤ FTimerEvent │
-   :           └───────────┘       │    └─────────────┘
-   :          1┌───────────────┐   │
-   ┌-----------┤ FMouseControl │   │       ┌──────────────┐
-   :           └───────────────┘   │  ┌────┤ FApplication │
-   :          *┌─────────┐         │  │    └──────────────┘
-   :  ┌--------┤ FString │         │  │    ┌─────────┐
-   :  :        └─────────┘         │  ├────┤ FButton │
-   :  :       *┌────────┐          │  │    └─────────┘
-   :  ┌--------┤ FPoint │          │  │    ┌────────┐
-   :  :        └────────┘          │  ├────┤ FLabel │
-   :  :       *┌───────┐           │  │    └────────┘
-   :  ┌--------┤ FRect │           │  │    ┌───────────┐
-   :  :        └───────┘           │  ├────┤ FLineEdit │
-   :1 :1                           │  │    └───────────┘
- ┌─┴──┴──┐                         │  │    ┌──────────────┐      ┌──────────────┐
- │ FTerm │                         │  ├────┤ FButtonGroup │   ┌──┤ FRadioButton │
- └───┬───┘         ┌────────┐      │  │    └──────────────┘   │  └──────────────┘
-     :1            │ FEvent │◄─────┘  │    ┌───────────────┐  │  ┌───────────┐
- ┌───┴────┐        └────┬───┘         ├────┤ FToggleButton │◄─┼──┤ FCheckBox │
- │ FVTerm │◄──┐         :1            │    └───────────────┘  │  └───────────┘
- └────────┘   │    ┌────┴────┐        │    ┌──────────────┐   │  ┌─────────┐
-              ├────┤ FWidget │◄───────┼────┤ FProgressbar │   └──┤ FSwitch │
-┌─────────┐   │    └─────────┘        │    └──────────────┘      └─────────┘
-│ FObject │◄──┘                       │    ┌────────────┐
-└─────────┘                           ├────┤ FScrollbar │
-                                      │    └────────────┘
-                                      │    ┌───────────┐
-                                      ├────┤ FTextView │
-                                      │    └───────────┘
-                                      │    ┌──────────┐1     *┌──────────────┐
-                                      ├────┤ FListBox ├-------┤ FListBoxItem │
-                                      │    └──────────┘       └──────────────┘
- ┌─────────────┐1                     │   1┌───────────┐1    *┌───────────────┐
- │ FTermBuffer ├----------------------├────┤ FListView ├------┤ FListViewItem │
- └─────────────┘                      │    └───────────┘      └───────────────┘
-                                      │    ┌─────────────┐
-                                      ├────┤ FScrollView │
-                                      │    └─────────────┘
-                                      │    ┌────────────┐1   *┌────────────┐
-                                      │ ┌──┤ FStatusBar ├-----┤ FStatusKey │
-                                      │ │  └────────────┘     └────────────┘
-                                      │ │
-                                      │ ▼                       ┌─────────────┐
-                                  ┌───┴─┴───┐  ┌─────────┐   ┌──┤ FFileDialog │
-                                  │ FWindow │◄─┤ FDialog │◄──┤  └─────────────┘
-                                  └──┬──┬───┘  └─────────┘   │  ┌─────────────┐
-                                     ▲  ▲                    └──┤ FMessageBox │
-                                     │  │                       └─────────────┘
-                                     │  │      ┌──────────┐
-                                     │  └──────┤ FToolTip │
-                                     │         └──────────┘
-                                     └───────────────┐          ┌──────────┐
-                                                     │      ┌───┤ FMenuBar │
-                                    ┌───────────┐    └──────┤   └──────────┘
-                                    │ FMenuList │◄──────────┤   ┌───────┐
-                                    └────┬──────┘           └───┤ FMenu │◄──┐
-                                         :1                     └───────┘   │
-                                         :            ┌─────────────────┐   │
-                                         :            │ FDialogListMenu ├───┘
-                                         :            └─────────────────┘
-                                         └--------------------------------┐
-                                         :*          ┌────────────────┐*  :
-                                    ┌────┴─────┐  ┌──┤ FCheckMenuItem ├---┘
-                                    │FMenuItem │◄─┤  └────────────────┘   :
-                                    └──────────┘  │  ┌────────────────┐*  :
-                                                  └──┤ FRadioMenuItem ├---┘
-                                                     └────────────────┘
+    ┌────────────┐1
+    │ FTermLinux ├------┐
+    └────────────┘      :
+  ┌──────────────┐1     :
+  │ FTermFreeBSD ├------┐
+  └──────────────┘      :
+  ┌──────────────┐1     :
+  │ FTermOpenBSD ├------┐
+  └──────────────┘      :
+┌────────────────┐1     :
+│ FTermDetection ├------┐
+└────────────────┘      :
+┌────────────────┐1     :
+│ FTermcapQuirks ├------┐
+└────────────────┘      :            ┌───────────┐
+┌────────────────┐1     :       ┌────┤ FKeyEvent │
+│ FTermXTerminal ├------┐       │    └───────────┘
+└────────────────┘      :       │    ┌─────────────┐
+      ┌──────────┐1     :       ├────┤ FMouseEvent │
+      │ FTermcap ├------┐       │    └─────────────┘
+      └──────────┘      :       │    ┌─────────────┐
+      ┌──────────┐1     :       ├────┤ FWheelEvent │
+      │ FTermios ├------┐       │    └─────────────┘
+      └──────────┘      :       │    ┌─────────────┐
+ ┌───────────────┐1     :       ├────┤ FFocusEvent │
+ │ FColorPalette ├------┐       │    └─────────────┘
+ └───────────────┘      :       │    ┌─────────────┐
+     ┌───────────┐1     :       ├────┤ FAccelEvent │
+     │ FOptiMove ├------┐       │    └─────────────┘
+     └───────────┘      :       │    ┌──────────────┐
+     ┌───────────┐1     :       ├────┤ FResizeEvent │
+     │ FOptiAttr ├------┐       │    └──────────────┘
+     └───────────┘      :       │    ┌────────────┐
+     ┌───────────┐1     :       ├────┤ FShowEvent │
+     │ FKeyboard ├------┐       │    └────────────┘
+     └───────────┘      :       │    ┌────────────┐
+ ┌───────────────┐1     :       ├────┤ FHideEvent │
+ │ FMouseControl ├------┐       │    └────────────┘
+ └───────────────┘      :       │    ┌─────────────┐
+       ┌─────────┐1     :       ├────┤ FCloseEvent │
+       │ FSystem ├------┐       │    └─────────────┘
+       └─────────┘      :       │    ┌─────────────┐
+       ┌─────────┐*     :       ├────┤ FTimerEvent │
+       │ FString ├---┐  :       │    └─────────────┘
+       └─────────┘   :  :       │    ┌────────────┐1    1┌───────┐
+ ┌───────────────┐*  :  :       ├────┤ FUserEvent ├------┤ FData │
+ │ FStringStream ├---┐  :       │    └────────────┘      └───────┘
+ └───────────────┘   :  :       │        ┌──────┐   ┌─────────┐
+        ┌────────┐*  :  :       │        │ FLog │◄──┤ FLogger │
+        │ FPoint ├---┐  :       │        └──┬───┘   └─────────┘
+        └────────┘   :  :       │           :1
+         ┌───────┐*  :  :       │        ┌──┴───────────┐
+         │ FRect ├---┐  :       │   ┌────┤ FApplication │
+         └───────┘   :  :       │   │    └──────────────┘
+         ┌───────┐*  :  :       │   │    ┌────────┐
+         │ FSize ├---┐  :       │   ├────┤ FLabel │
+         └───────┘   :  :       │   │    └────────┘
+                     :1 :1      │   │    ┌───────────┐
+                 ┌───┴──┴┐      │   ├────┤ FLineEdit │
+                 │ FTerm │      │   │    └───────────┘
+                 └───┬───┘      │   │    ┌──────────┐
+                     :1         │   ├────┤ FSpinBox │
+┌─────────┐   ┌──────┴──────┐   │   │    └──────────┘
+│ FOutput │◄──┤ FTermOutput │   │   │    ┌─────────┐
+└────┬────┘   └─────────────┘   │   ├────┤ FButton │
+     :             ┌────────┐   │   │    └─────────┘
+     :1            │ FEvent │◄──┘   │    ┌──────────────┐      ┌──────────────┐
+ ┌───┴────┐        └────┬───┘       ├────┤ FButtonGroup │   ┌──┤ FRadioButton │
+ │ FVTerm │◄──┐         :1          │    └──────────────┘   │  └──────────────┘
+ └────────┘   │    ┌────┴────┐      │    ┌───────────────┐  │  ┌───────────┐
+              ├────┤ FWidget │◄─────┼────┤ FToggleButton │◄─┼──┤ FCheckBox │
+┌─────────┐   │    └────┬────┘      │    └───────────────┘  │  └───────────┘
+│ FObject │◄──┘         :1          │    ┌──────────────┐   │  ┌─────────┐
+└────┬────┘      ┌──────┴────────┐  ├────┤ FProgressbar │   └──┤ FSwitch │
+     ▼           │ FWidgetColors │  │    └──────────────┘      └─────────┘
+ ┌───┴────┐      └───────────────┘  │    ┌────────────┐
+ │ FTimer │                         ├────┤ FScrollbar │
+ └────────┘                         │    └────────────┘
+                                    │    ┌───────────┐
+                                    ├────┤ FTextView │
+                                    │    └───────────┘
+                                    │    ┌───────────┐1    1┌──────────────────┐
+                                    ├────┤ FComboBox ├------┤ FDropDownListBox │
+                                    │    └───────────┘      └──────────────────┘
+ ┌──────────────┐1                  │    ┌──────────┐1     *┌──────────────┐1
+ │ FVTermBuffer ├-------------------├────┤ FListBox ├-------┤ FListBoxItem ├--┐
+ └──────────────┘                   │    └──────────┘       └──────────────┘  :
+                                    │   1┌───────────┐1    *┌───────────────┐ :
+                                    ├────┤ FListView ├------┤ FListViewItem │ :
+                                    │    └───────────┘      └────────┬──────┘ :
+                                    │    ┌─────────────┐             :1       :
+                                    ├────┤ FScrollView │         ┌───┴───┐1   :
+                                    │    └─────────────┘         │ FData ├----┘
+                                    │                            └───────┘
+                                    │    ┌────────────┐1   *┌────────────┐
+                                    │ ┌──┤ FStatusBar ├-----┤ FStatusKey │
+                                    │ │  └────────────┘     └────────────┘
+                                    │ │
+                                    │ ▼                       ┌─────────────┐
+                                ┌───┴─┴───┐  ┌─────────┐   ┌──┤ FFileDialog │
+                                │ FWindow │◄─┤ FDialog │◄──┤  └─────────────┘
+                                └──┬──┬───┘  └─────────┘   │  ┌─────────────┐
+                                   ▲  ▲                    └──┤ FMessageBox │
+                                   │  │                       └─────────────┘
+                                   │  │      ┌──────────┐  ┌────────────────┐
+                                   │  └──────┤ FToolTip │◄─┤ FBusyIndicator │
+                                   │         └──────────┘  └────────────────┘
+                                   └───────────────┐          ┌──────────┐
+                                                   │      ┌───┤ FMenuBar │
+                                  ┌───────────┐    └──────┤   └──────────┘
+                                  │ FMenuList │◄──────────┤   ┌───────┐
+                                  └────┬──────┘           └───┤ FMenu │◄──┐
+                                       :1                     └───────┘   │
+                                       :            ┌─────────────────┐   │
+                                       :            │ FDialogListMenu ├───┘
+                                       :            └─────────────────┘
+                                       └--------------------------------┐
+                                       :*          ┌────────────────┐*  :
+                                  ┌────┴─────┐  ┌──┤ FCheckMenuItem ├---┘
+                                  │FMenuItem │◄─┤  └────────────────┘   :
+                                  └──────────┘  │  ┌────────────────┐*  :
+                                                └──┤ FRadioMenuItem ├---┘
+                                                   └────────────────┘
 </pre>
 
-License
--------
-GNU Lesser General Public License Version 3
+## Please send bug reports to
 
-Frequently Asked Questions
---------------------------
-If you have any problems, please read the
-[FAQ](doc/faq.md#frequently-asked-questions)
-before you give up.
-
-Please send bug reports to
---------------------------
 https://github.com/gansm/finalcut/issues
 
+## License
+
+Licensed under the [GNU Lesser General Public License, Version 3.0](LICENSE) <a href="https://www.gnu.org/licenses/lgpl-3.0-standalone.html"><img width="200" align="right" src="https://camo.githubusercontent.com/726b87cc2ebaf8c40716842ff509c5f874381c8e/68747470733a2f2f75706c6f61642e77696b696d656469612e6f72672f77696b6970656469612f636f6d6d6f6e732f332f33622f4c47504c76335f4c6f676f2e737667" alt="LGPLv3" data-canonical-src="https://upload.wikimedia.org/wikipedia/commons/3/3b/LGPLv3_Logo.svg"></a>

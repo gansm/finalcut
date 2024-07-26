@@ -1,7 +1,7 @@
 Framebuffer
 ===========
 
-The Final Cut determines the used number of bits per pixel (bpp) 
+FINAL CUT determines the used number of bits per pixel (bpp) 
 for Linux framebuffer console to determine whether 16 (or more) 
 different background colors can be displayed. Therefore your user
 needs read-access to the framebuffer device (/dev/fb0 or /dev/fb/0).

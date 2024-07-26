@@ -1,5 +1,5 @@
 #-----------------------------------------------------------------------------
-# Makefile for Final Cut
+# Makefile for FINAL CUT
 #-----------------------------------------------------------------------------
 
 # This is where make install will install the executable
@@ -9,30 +9,32 @@ BINDIR = /usr/local/bin
 CXX = g++
 SRCS = $(wildcard *.cpp)
 OBJS = $(SRCS:%.cpp=%)
-CCXFLAGS = $(OPTIMIZE) $(PROFILE) $(DEBUG)
+CCXFLAGS = $(OPTIMIZE) $(PROFILE) $(DEBUG) -std=c++14
 MAKEFILE = -f Makefile.gcc
-LDFLAGS = -L../src -lfinal -lcppunit -ldl
-INCLUDES = -I. -I../src/include -I/usr/include/final
+LDFLAGS = -L../src -lfinal $(TERMCAP) -lcppunit -ldl
+INCLUDES = -I. -I.. -I/usr/include
 RM = rm -f
+
+TERMCAP := $(shell test -n "$$(ldd {/usr,}/lib64/libncursesw.so.5 2>/dev/null | grep libtinfo)" && echo "-ltinfo" || echo "-lncurses")
 
 ifdef DEBUG
   OPTIMIZE = -O0
 else
-  OPTIMIZE = -O2
+  OPTIMIZE = -O3
 endif
 
 # $@ = name of the targets
 # $^ = all dependency (without double entries)
 .cpp:
-	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o $@ $^
+	$(CXX) $^ -o $@ $(CCXFLAGS) $(INCLUDES) $(LDFLAGS)
 
 all: $(OBJS)
 
-debug:
-	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -Wall -Wextra -Wpedantic"
+unittest:
+	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -DUNIT_TEST -Wall -Wextra -Wpedantic"
 
 check: test
-test: debug
+test: unittest
 	$(OBJS) | sed -e "s/ OK/\x1b[32m OK\x1b[0m/g" -e "s/ failed/\x1b[31m failed\x1b[0m/g"
 
 profile:

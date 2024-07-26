@@ -1,17 +1,17 @@
 /***********************************************************************
 * mandelbrot.cpp - Shows a ASCII based Mandelbrot set                  *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2022 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -22,104 +22,116 @@
 
 #include <final/final.h>
 
+using finalcut::FColor;
+using finalcut::FPoint;
+using finalcut::FSize;
+
 
 //----------------------------------------------------------------------
 // class Mandelbrot
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
-class Mandelbrot : public finalcut::FDialog
+class Mandelbrot final : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit Mandelbrot (finalcut::FWidget* = 0);
-
-    // Destructor
-    ~Mandelbrot();
+    explicit Mandelbrot (finalcut::FWidget* = nullptr);
 
     // Event handlers
-    virtual void onAccel (finalcut::FAccelEvent*);
-    virtual void onClose (finalcut::FCloseEvent*);
+    void onKeyPress (finalcut::FKeyEvent*) override;
+    void onClose (finalcut::FCloseEvent*) override;
 
   private:
     // Methods
-    virtual void draw();
-    virtual void adjustSize();
+    void initLayout() override;
+    void draw() override;
+    void adjustSize() override;
 };
-#pragma pack(pop)
+
 
 //----------------------------------------------------------------------
 Mandelbrot::Mandelbrot (finalcut::FWidget* parent)
-  : finalcut::FDialog(parent)
-{
-  setText ("Mandelbrot set");
-}
+  : finalcut::FDialog{parent}
+{ }
 
 //----------------------------------------------------------------------
-Mandelbrot::~Mandelbrot()
-{ }
+void Mandelbrot::initLayout()
+{
+  FDialog::setText ("Mandelbrot set");
+  FDialog::setGeometry (FPoint{6, 1}, FSize{70, 23});
+  FDialog::initLayout();
+}
 
 //----------------------------------------------------------------------
 void Mandelbrot::draw()
 {
-  int iter, max_iter;
-  int Cols, Lines, xoffset, yoffset, current_line;
-  double x, y, xtemp, x0, y0, dX, dY;
-  double x_min, x_max, y_min, y_max;
-
   finalcut::FDialog::draw();
 
-  x_min = -2.20;
-  x_max =  1.00;
-  y_min = -1.05;
-  y_max =  1.05;
-  max_iter = 99;
+  const double x_min{-2.20};
+  const double x_max{+1.00};
+  const double y_min{-1.05};
+  const double y_max{+1.05};
+  const int max_iter{99};
 
-  xoffset = 2;
-  yoffset = 2;
-  current_line = 0;
-  Cols  = int(getClientWidth());
-  Lines = int(getClientHeight());
+  const int xoffset{2};
+  const int yoffset{2};
+  const auto& Cols = int(getClientWidth());
+  const auto& Lines = int(getClientHeight());
+  int current_line{0};
 
-  dX = (x_max - x_min) / (Cols - 1);
-  dY = (y_max - y_min) / Lines;
+  if ( Cols < 2 || Lines < 2 )
+    return;
 
-  for (y0 = y_min; y0 < y_max && current_line < Lines; y0 += dY)
+  const double dX = (x_max - x_min) / (Cols - 1);
+  const double dY = (y_max - y_min) / Lines;
+  double y0 = y_min;
+
+  while ( y0 < y_max && current_line < Lines )
   {
     current_line++;
-    setPrintPos (xoffset, yoffset + current_line);
+    print() << FPoint{xoffset, yoffset + current_line};
+    double x0 = x_min;
 
-    for (x0 = x_min; x0 < x_max; x0 += dX)
+    while ( x0 < x_max )
     {
-      x = 0.0;
-      y = 0.0;
-      iter = 0;
+      double x{0.0};
+      double y{0.0};
+      int iter{0};
 
       while ( x * x + y * y < 4 && iter < max_iter )
       {
-        xtemp = x * x - y * y + x0;
+        const double xtemp = x * x - y * y + x0;
         y = 2 * x * y + y0;
         x = xtemp;
         iter++;
       }
 
       if ( iter < max_iter )
-        setColor(finalcut::fc::Black, iter % 16);
+        setColor(FColor::Black, FColor(iter % 16));
       else
-        setColor(finalcut::fc::Black, 0);
+        setColor(FColor::Black, FColor::Black);
 
       print(' ');
+      x0 += dX;
     }
+
+    y0 += dY;
   }
 }
 
 //----------------------------------------------------------------------
-void Mandelbrot::onAccel (finalcut::FAccelEvent* ev)
+void Mandelbrot::onKeyPress (finalcut::FKeyEvent* ev)
 {
-  close();
-  ev->accept();
+  if ( ! ev )
+    return;
+
+  if ( ev->key() == finalcut::FKey('q') )
+  {
+    close();
+    ev->accept();
+  }
+  else
+    finalcut::FDialog::onKeyPress(ev);
 }
 
 //----------------------------------------------------------------------
@@ -131,28 +143,33 @@ void Mandelbrot::onClose (finalcut::FCloseEvent* ev)
 //----------------------------------------------------------------------
 void Mandelbrot::adjustSize()
 {
-  std::size_t h = getParentWidget()->getHeight() - 1;
-  std::size_t w = getParentWidget()->getWidth() - 10;
-  setGeometry(6, 1, w, h, false);
+  std::size_t h = getDesktopHeight();
+  std::size_t w = getDesktopWidth();
+
+  if ( h > 1 )
+    h--;
+
+  if ( w > 10 )
+    w -= 10;
+
+  setGeometry(FPoint{6, 1}, FSize{w, h}, false);
   finalcut::FDialog::adjustSize();
 }
 
 //----------------------------------------------------------------------
 //                               main part
 //----------------------------------------------------------------------
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   // Create the application object
-  finalcut::FApplication app(argc, argv);
+  finalcut::FApplication app{argc, argv};
 
   // Create a simple dialog box
-  Mandelbrot mb(&app);
-  mb.setGeometry (6, 1, 70, 23);
-  mb.addAccelerator('q');  // press 'q' to quit
-  mb.setShadow();
+  Mandelbrot mb{&app};
+  mb.setShadow();  // Instead of the transparent window shadow
 
   // Set the mandelbrot object as main widget
-  app.setMainWidget(&mb);
+  finalcut::FWidget::setMainWidget(&mb);
 
   // Show and start the application
   mb.show();

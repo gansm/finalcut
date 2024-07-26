@@ -1,62 +1,85 @@
 #----------------------------------------------------------------------
-# Makefile.am  -  The Final Cut example programs
+# Makefile.am  -  FINAL CUT example programs
 #----------------------------------------------------------------------
+
+LIBS = -lfinal
 
 if ! CPPUNIT_TEST
 
-AM_LDFLAGS = -L$(top_builddir)/src/.libs -lfinal
-AM_CPPFLAGS = -I$(top_srcdir)/src/include -Wall -Werror
+AM_LDFLAGS = -L$(top_builddir)/final/.libs
+AM_CPPFLAGS = -I$(top_srcdir)/final -Wall -Werror -std=c++14
 
 noinst_PROGRAMS = \
-	hello \
-	dialog \
-	input-dialog \
+	7segment \
+	background-color \
+	busy \
+	calculator \
+	checklist \
 	choice \
+	dialog \
+	event-log \
+	fullwidth-character \
+	hello \
+	highlight-text \
+	input-dialog \
+	keyboard \
 	listbox \
 	listview \
-	checklist \
-	treeview \
-	opti-move \
-	termcap \
-	string-operations \
 	mandelbrot \
-	calculator \
-	watch \
-	term-attributes \
-	transparent \
-	keyboard \
-	mouse \
-	timer \
-	scrollview \
-	windows \
 	menu \
-	ui
+	mouse \
+	opti-move \
+	parallax-scrolling \
+	rotozoomer \
+	scrollview \
+	string-operations \
+	term-attributes \
+	termcap \
+	terminal-focus \
+	timer \
+	transparent \
+	treeview \
+	ui \
+	watch \
+	windows \
+	xpmview
 
-hello_SOURCES = hello.cpp
-dialog_SOURCES = dialog.cpp
-input_dialog_SOURCES = input-dialog.cpp
+7segment_SOURCES = 7segment.cpp
+background_color_SOURCES = background-color.cpp
+busy_SOURCES = busy.cpp
+calculator_SOURCES = calculator.cpp
+checklist_SOURCES = checklist.cpp
 choice_SOURCES = choice.cpp
+dialog_SOURCES = dialog.cpp
+event_log_SOURCES = event-log.cpp
+fullwidth_character_SOURCES = fullwidth-character.cpp
+hello_SOURCES = hello.cpp
+highlight_text_SOURCES = highlight-text.cpp
+input_dialog_SOURCES = input-dialog.cpp
+keyboard_SOURCES = keyboard.cpp
 listbox_SOURCES = listbox.cpp
 listview_SOURCES = listview.cpp
-checklist_SOURCES = checklist.cpp
-treeview_SOURCES = treeview.cpp
-opti_move_SOURCES = opti-move.cpp
-string_operations_SOURCES = string-operations.cpp
 mandelbrot_SOURCES = mandelbrot.cpp
-calculator_SOURCES = calculator.cpp
-watch_SOURCES = watch.cpp
+menu_SOURCES = menu.cpp
+mouse_SOURCES = mouse.cpp
+opti_move_SOURCES = opti-move.cpp
+parallax_scrolling_SOURCES = parallax-scrolling.cpp
+rotozoomer_SOURCES = rotozoomer.cpp
+scrollview_SOURCES = scrollview.cpp
+string_operations_SOURCES = string-operations.cpp
 term_attributes_SOURCES = term-attributes.cpp
 termcap_SOURCES = termcap.cpp
-transparent_SOURCES = transparent.cpp
-keyboard_SOURCES = keyboard.cpp
-mouse_SOURCES = mouse.cpp
+terminal_focus_SOURCES = terminal-focus.cpp
 timer_SOURCES = timer.cpp
-scrollview_SOURCES = scrollview.cpp
-windows_SOURCES = windows.cpp
-menu_SOURCES = menu.cpp
+transparent_SOURCES = transparent.cpp
+treeview_SOURCES = treeview.cpp
 ui_SOURCES = ui.cpp
+watch_SOURCES = watch.cpp
+windows_SOURCES = windows.cpp
+xpmview_SOURCES = xpmview.cpp
 
 endif
 
 clean-local:
 	-find . \( -name "*.gcda" -o -name "*.gcno" -o -name "*.gcov" \) -delete
+	-rm -rf .deps

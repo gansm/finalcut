@@ -1,17 +1,17 @@
 /***********************************************************************
 * keyboard.cpp - Shows typed-in key name                               *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2023 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -26,46 +26,57 @@
 // class Keyboard
 //----------------------------------------------------------------------
 
-class Keyboard : public finalcut::FWidget
+class Keyboard final : public finalcut::FWidget
 {
   public:
     // Constructor
-    explicit Keyboard (finalcut::FWidget* = 0);
+    explicit Keyboard (finalcut::FWidget* = nullptr);
 
   protected:
     // Event handlers
-    virtual void onKeyPress (finalcut::FKeyEvent*);
-    virtual void onAccel (finalcut::FAccelEvent*);
+    void onKeyPress (finalcut::FKeyEvent*) override;
+    void onAccel (finalcut::FAccelEvent*) override;
 
   private:
     // Methods
-    virtual void draw();
+    void draw() override;
 };
 
 //----------------------------------------------------------------------
 Keyboard::Keyboard (finalcut::FWidget* parent)
-  : finalcut::FWidget(parent)
+  : finalcut::FWidget{parent}
 {
-  wc.term_fg = finalcut::fc::Default;
-  wc.term_bg = finalcut::fc::Default;
+  getColorTheme()->term_fg = finalcut::FColor::Default;
+  getColorTheme()->term_bg = finalcut::FColor::Default;
 }
 
 //----------------------------------------------------------------------
 void Keyboard::onKeyPress (finalcut::FKeyEvent* ev)
 {
-  FKey key_id = ev->key();
-  bool is_last_line = false;
+  const auto key_id = ev->key();
+  auto key_name = finalcut::FVTerm::getFOutput()->getKeyName(key_id);
+  bool is_last_line{false};
+
+  if ( key_name.isEmpty() )
+    key_name = wchar_t(key_id);
 
   if ( getPrintPos().getY() == int(getDesktopHeight()) )
     is_last_line = true;
 
-  print() << "Key " << getKeyName(key_id).c_str()
-          << " (id " << key_id << ")\n";
-
   if ( is_last_line )
-    scrollAreaForward (vdesktop);
+  {
+    scrollAreaForward (getVirtualDesktop());
+    print() << '\r';
+  }
+  else
+    print() << '\n';
 
-  setAreaCursor (1, getPrintPos().getY(), true, vdesktop);
+  finalcut::FStringStream fss;
+  fss << "Key " << key_name << " (id 0x" << std::setfill(L'0')
+      << std::setw(2) << std::hex << uInt32(key_id) << ")" ;
+  print (fss.str());
+  setAreaCursor (getPrintPos(), true, getVirtualDesktop());
+  forceTerminalUpdate();
 }
 
 //----------------------------------------------------------------------
@@ -78,29 +89,32 @@ void Keyboard::onAccel (finalcut::FAccelEvent* ev)
 //----------------------------------------------------------------------
 void Keyboard::draw()
 {
-  setPrintPos (1, 1);
-  print() << "---------------\n"
+  print() << finalcut::FPoint{1, 1}
+          << "---------------\n"
           << "Press Q to quit\n"
-          << "---------------\n";
-  setAreaCursor (1, 4, true, vdesktop);
+          << "---------------";
+  setAreaCursor ({1, 4}, true, getVirtualDesktop());
 }
 
 //----------------------------------------------------------------------
 //                               main part
 //----------------------------------------------------------------------
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   // Create the application object
-  finalcut::FApplication app(argc, argv);
-  app.setForegroundColor(finalcut::fc::Default);
-  app.setBackgroundColor(finalcut::fc::Default);
+  finalcut::FApplication app{argc, argv};
+
+  // Force terminal initialization without calling show()
+  app.initTerminal();
+  app.setForegroundColor(finalcut::FColor::Default);
+  app.setBackgroundColor(finalcut::FColor::Default);
 
   // Create a keyboard object
-  Keyboard key(&app);
-  key.addAccelerator('q');
+  Keyboard key{&app};
+  key.addAccelerator(finalcut::FKey('q'));
 
   // Set the keyboard object as main widget
-  app.setMainWidget(&key);
+  finalcut::FWidget::setMainWidget(&key);
 
   // Show and start the application
   key.show();

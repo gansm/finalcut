@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   height="74.630997mm"
+   viewBox="0 0 101.5 74.630997"
+   width="101.5mm"
+   version="1.1"
+   id="svg61"
+   sodipodi:docname="final-cut-application-structure.svg"
+   inkscape:version="0.92.1 r15371">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="3840"
+     inkscape:window-height="1984"
+     id="namedview35"
+     showgrid="false"
+     inkscape:zoom="2.8893731"
+     inkscape:cx="331.13905"
+     inkscape:cy="54.29145"
+     inkscape:window-x="0"
+     inkscape:window-y="55"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g23" />
+  <metadata
+     id="metadata67">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs65" />
+  <linearGradient
+     id="a"
+     gradientUnits="userSpaceOnUse"
+     x1="33.698196"
+     x2="34.111275"
+     y1="296.49637"
+     y2="222.78156">
+    <stop
+       offset="0"
+       stop-color="#dbdbdc"
+       id="stop2"
+       style="stop-color:#e8a7a7;stop-opacity:1" />
+    <stop
+       offset="1"
+       stop-color="#fff"
+       id="stop4" />
+  </linearGradient>
+  <g
+     transform="translate(0,-222.36897)"
+     id="g59">
+    <g
+       id="g23"
+       style="stroke:#000000;fill:none"
+       transform="translate(-0.00447221)">
+      <rect
+         height="74.20752"
+         ry="2.5604739"
+         stroke-miterlimit="1.5"
+         width="65.967117"
+         x="0.2115"
+         y="222.58098"
+         id="rect7"
+         style="fill:#f6f8fa;fill-opacity:1;stroke-width:0.42300001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5" />
+      <path
+         d="M 7.8726193,233.11525 H 66.187848"
+         id="path9"
+         inkscape:connector-curvature="0"
+         style="fill:none;stroke-width:0.42300001;stroke-linecap:square;stroke-linejoin:bevel" />
+      <path
+         d="M 7.8726193,243.73006 H 66.187848"
+         id="path11"
+         inkscape:connector-curvature="0"
+         style="fill:none;stroke-width:0.42300001" />
+      <path
+         d="M 7.8726193,254.34488 H 66.187848"
+         id="path13"
+         inkscape:connector-curvature="0"
+         style="fill:none;stroke-width:0.42300001" />
+      <path
+         d="M 7.8726193,264.95969 H 66.187848"
+         id="path15"
+         inkscape:connector-curvature="0"
+         style="fill:none;stroke-width:0.42300001" />
+      <path
+         d="M 0.19656226,275.5745 H 66.187852"
+         id="path17"
+         inkscape:connector-curvature="0"
+         style="fill:none;stroke-width:0.42300001" />
+      <path
+         d="M 0.19656226,286.18931 H 66.187852"
+         id="path19"
+         inkscape:connector-curvature="0"
+         style="fill:none;stroke-width:0.42300001" />
+      <path
+         d="M 7.9427453,275.5745 V 233.11525"
+         id="path21"
+         inkscape:connector-curvature="0"
+         style="fill:none;stroke-width:0.42300001;stroke-linecap:square;stroke-linejoin:bevel" />
+    </g>
+    <text
+       style="font-weight:bold;font-size:4.93888903px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;letter-spacing:0;word-spacing:0;text-anchor:middle;stroke-width:0.26458299;stroke-opacity:0"
+       x="33.420082"
+       y="229.02936"
+       id="text27">
+      <tspan
+         style="font-weight:bold;font-size:4.93888903px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;text-anchor:middle;stroke-width:0.26458299;stroke-opacity:0"
+         x="33.420082"
+         y="229.02936"
+         id="tspan25">Application</tspan>
+    </text>
+    <text
+       style="font-weight:bold;font-size:4.93888903px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;letter-spacing:0;word-spacing:0;text-anchor:middle;fill:#052867;fill-opacity:1;stroke-width:0.42300001;stroke-opacity:0"
+       x="33.219879"
+       y="282.35825"
+       id="text31">
+      <tspan
+         style="font-weight:bold;font-size:4.93888903px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;text-anchor:middle;fill:#052867;fill-opacity:1;stroke-width:0.42300001;stroke-opacity:0"
+         x="33.219879"
+         y="282.35825"
+         id="tspan29">Standard C/C++ Library</tspan>
+    </text>
+    <text
+       style="font-weight:bold;font-size:4.93888903px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;letter-spacing:0;word-spacing:0;text-anchor:middle;fill:#052867;fill-opacity:1;stroke-width:0.42300001;stroke-opacity:0"
+       x="33.220379"
+       y="293.15323"
+       id="text35">
+      <tspan
+         style="font-weight:bold;font-size:4.93888903px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;text-anchor:middle;fill:#052867;fill-opacity:1;stroke-width:0.42300001;stroke-opacity:0"
+         x="33.220379"
+         y="293.15323"
+         id="tspan33">Operating System</tspan>
+    </text>
+    <text
+       style="font-weight:bold;font-size:4.93888903px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;letter-spacing:0;word-spacing:0;text-anchor:middle;fill:#083c99;stroke-width:0.42300001;stroke-opacity:0"
+       x="37.113426"
+       y="240.10773"
+       id="text39">
+      <tspan
+         style="font-weight:bold;font-size:4.93888903px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;text-anchor:middle;fill:#083c99;stroke-width:0.42300001;stroke-opacity:0"
+         x="37.113426"
+         y="240.10773"
+         id="tspan37">Widgets</tspan>
+    </text>
+    <text
+       style="font-weight:bold;font-size:4.93888903px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;letter-spacing:0;word-spacing:0;text-anchor:middle;fill:#083c99;stroke-width:0.42300001;stroke-opacity:0"
+       x="37.113487"
+       y="250.53276"
+       id="text43">
+      <tspan
+         style="font-weight:bold;font-size:4.93888903px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;text-anchor:middle;fill:#083c99;stroke-width:0.42300001;stroke-opacity:0"
+         x="37.113487"
+         y="250.53276"
+         id="tspan41">Virtual Terminal</tspan>
+    </text>
+    <text
+       style="font-weight:bold;font-size:4.93888903px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;letter-spacing:0;word-spacing:0;text-anchor:middle;stroke-width:0.42300001;stroke-opacity:0"
+       x="37.113487"
+       y="261.55215"
+       id="text47">
+      <tspan
+         style="font-weight:bold;font-size:4.93888903px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;text-anchor:middle;stroke-width:0.42300001;stroke-opacity:0"
+         x="37.113487"
+         y="261.55215"
+         id="tspan45">Termcap</tspan>
+    </text>
+    <text
+       style="font-weight:bold;font-size:4.93888903px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;letter-spacing:0;word-spacing:0;text-anchor:middle;fill-opacity:0.99858398;stroke-width:0.42300001;stroke-opacity:0"
+       x="37.11351"
+       y="271.62482"
+       id="text51">
+      <tspan
+         style="font-weight:bold;font-size:4.93888903px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;text-anchor:middle;fill-opacity:0.99858398;stroke-width:0.42300001;stroke-opacity:0"
+         x="37.11351"
+         y="271.62482"
+         id="tspan49">Terminal</tspan>
+    </text>
+    <text
+       style="font-weight:bold;font-size:4.93888903px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;letter-spacing:0;word-spacing:0;text-anchor:middle;fill:#083c99;stroke-width:0.26458299;stroke-opacity:0"
+       x="86.416771"
+       y="245.48337"
+       id="text55">
+      <tspan
+         style="font-weight:bold;font-size:4.93888903px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;text-anchor:middle;fill:#083c99;stroke-width:0.26458299;stroke-opacity:0"
+         x="86.416771"
+         y="245.48337"
+         id="tspan53">FINAL CUT</tspan>
+    </text>
+    <g
+       aria-label="}"
+       transform="scale(0.99731046,1.0026968)"
+       style="font-style:normal;font-variant:normal;font-weight:200;font-stretch:condensed;font-size:22.67463493px;line-height:125%;font-family:'Fira Sans Condensed';-inkscape-font-specification:'Fira Sans Condensed, Ultra-Light Condensed';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458329px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       id="text4545">
+      <path
+         d="m 68.105817,232.32133 v 0.56687 c 1.22443,0 1.655248,0.61222 1.655248,1.90467 v 6.21285 c 0,1.4285 0.476168,1.83665 1.496526,2.06339 -1.020358,0.22675 -1.496526,0.63489 -1.496526,2.06339 v 6.21285 c 0,1.29246 -0.430818,1.90467 -1.655248,1.90467 v 0.56687 c 1.473851,0 2.312813,-0.74826 2.312813,-2.47154 v -6.30355 c 0,-1.20175 0.521516,-1.60989 1.541875,-1.60989 v -0.72559 c -1.020359,0 -1.541875,-0.40815 -1.541875,-1.6099 v -6.30355 c 0,-1.72327 -0.838962,-2.47154 -2.312813,-2.47154 z"
+         style="font-style:normal;font-variant:normal;font-weight:200;font-stretch:condensed;font-size:22.67463493px;font-family:'Fira Sans Condensed';-inkscape-font-specification:'Fira Sans Condensed, Ultra-Light Condensed';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.26458329px"
+         id="path4547"
+         inkscape:connector-curvature="0" />
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,36 @@
+name: "FreeBSD build"
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 7 * * 2'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Repository checkout
+      uses: actions/checkout@v3
+
+    - name: Test on FreeBSD 13.1
+      uses: cross-platform-actions/action@v0.10.0
+      with:
+        operating_system: freebsd
+        version: '13.1'
+        shell: bash
+        run: |
+          uname -a
+          freebsd-version
+          whoami
+          pwd
+          sudo env IGNORE_OSVERSION=yes pkg update -f
+          sudo pkg install -y lang/gcc devel/autotools autotools automake autoconf autoconf-archive libtool pkgconf devel/ncurses devel/cppunit cppunit
+          g++ --version
+          autoreconf -v --install --force
+          ./configure --prefix=/usr
+          make -j10
+

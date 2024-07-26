@@ -1,0 +1,14 @@
+---
+engines:
+  duplication:
+    enabled: true
+    exclude_paths:
+      - 'final/font/**'
+      - 'test/**'
+exclude_paths:
+  - 'debian/**'
+  - 'doc/**'
+  - 'misc/**'
+  - 'm4/**'
+  - 'scripts/**'
+

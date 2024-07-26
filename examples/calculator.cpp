@@ -1,17 +1,17 @@
 /***********************************************************************
 * calculator.cpp - A simple calculator with trigonometric functions    *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2018 Markus Gans                                      *
+* Copyright 2016-2022 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -23,65 +23,71 @@
 #include <cfloat>
 #include <cmath>
 #include <cstdlib>
+#include <array>
 #include <limits>
 #include <map>
+#include <memory>
 #include <stack>
 
 #include <final/final.h>
 
-const lDouble PI = 3.141592653589793238L;
+using FKey = finalcut::FKey;
+using finalcut::FColorPair;
+using finalcut::FColor;
+using finalcut::FPoint;
+using finalcut::FRect;
+using finalcut::FSize;
+
+template <typename T>
+constexpr T pi_value = T{3.141'592'653'589'793'238L};
 
 
 //----------------------------------------------------------------------
 // class Button
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
-class Button : public finalcut::FButton
+class Button final : public finalcut::FButton
 {
   public:
     // Constructor
-    explicit Button (FWidget* = 0);
+    explicit Button (FWidget* = nullptr);
 
     // Method
     void setChecked(bool);
 
     // Event handler
-    virtual void onKeyPress (finalcut::FKeyEvent*);
+    void onKeyPress (finalcut::FKeyEvent*) override;
 
   private:
-    // Data Member
-    bool checked;
+    // Data member
+    bool checked{false};
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 Button::Button (finalcut::FWidget* parent)
-  : finalcut::FButton(parent)
-  , checked(false)
+  : finalcut::FButton{parent}
 { }
 
 //----------------------------------------------------------------------
-void Button::setChecked (bool on)
+void Button::setChecked (bool enable)
 {
-  if ( checked == on )
+  if ( checked == enable )
     return;
 
-  checked = on;
+  checked = enable;
 
   if ( checked )
   {
-    setBackgroundColor(finalcut::fc::Cyan);
-    setFocusForegroundColor(finalcut::fc::White);
-    setFocusBackgroundColor(finalcut::fc::Cyan);
+    setBackgroundColor(FColor::Cyan);
+    setFocusForegroundColor(FColor::White);
+    setFocusBackgroundColor(FColor::Cyan);
   }
   else
   {
-    setBackgroundColor(wc.button_active_bg);
-    setFocusForegroundColor(wc.button_active_focus_fg);
-    setFocusBackgroundColor(wc.button_active_focus_bg);
+    const auto& wc = getColorTheme();
+    setBackgroundColor(wc->button_active_bg);
+    setFocusForegroundColor(wc->button_active_focus_fg);
+    setFocusBackgroundColor(wc->button_active_focus_bg);
   }
 
   redraw();
@@ -90,11 +96,10 @@ void Button::setChecked (bool on)
 //----------------------------------------------------------------------
 void Button::onKeyPress (finalcut::FKeyEvent* ev)
 {
-  FKey key = ev->key();
+  const FKey key = ev->key();
 
   // catch the enter key
-  if ( key == finalcut::fc::Fkey_return
-    || key == finalcut::fc::Fkey_enter )
+  if ( isEnterKey(key) )
     return;
 
   finalcut::FButton::onKeyPress(ev);
@@ -105,31 +110,17 @@ void Button::onKeyPress (finalcut::FKeyEvent* ev)
 // class Calc
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
-class Calc : public finalcut::FDialog
+class Calc final : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit Calc (finalcut::FWidget* parent = 0);
-
-    // Destructor
-    ~Calc();
-
-    // Event handlers
-    virtual void   onKeyPress (finalcut::FKeyEvent*);
-    virtual void   onAccel (finalcut::FAccelEvent*);
-    virtual void   onClose (finalcut::FCloseEvent*);
-
-    // Callback method
-    void           cb_buttonClicked (finalcut::FWidget*, data_ptr);
+    explicit Calc (finalcut::FWidget* parent = nullptr);
 
   private:
     // Typedef and Enumeration
-    typedef void (Calc::*keyFunction)(lDouble&);  // Method pointer
+    using keyFunction = std::function<void(lDouble&)>;  // Member function
 
-    enum button
+    enum class ButtonName
     {
       Sine,
       Cosine,
@@ -169,161 +160,233 @@ class Calc : public finalcut::FDialog
     };
 
     // Methods
-    void           drawDispay();
-    virtual void   draw();
-    void           clear (lDouble&);
-    void           zero (lDouble&);
-    void           one (lDouble&);
-    void           two (lDouble&);
-    void           three (lDouble&);
-    void           four (lDouble&);
-    void           five (lDouble&);
-    void           six (lDouble&);
-    void           seven (lDouble&);
-    void           eight (lDouble&);
-    void           nine (lDouble&);
-    void           add (lDouble&);
-    void           subtract (lDouble&);
-    void           multiply (lDouble&);
-    void           divide (lDouble&);
-    void           equals (lDouble&);
-    void           change_sign (lDouble&);
-    void           radix_point(lDouble&);
-    void           reciprocal (lDouble&);
-    void           percent (lDouble&);
-    void           pi (lDouble&);
-    void           open_bracket (lDouble&);
-    void           close_bracket (lDouble&);
-    void           log_e (lDouble&);
-    void           power_e (lDouble&);
-    void           log_10 (lDouble&);
-    void           power_10 (lDouble&);
-    void           power (lDouble&);
-    void           square_root (lDouble&);
-    void           hyperbolic (lDouble&);
-    void           arcus (lDouble&);
-    void           sine (lDouble&);
-    void           cosine (lDouble&);
-    void           tangent (lDouble&);
-    bool           isDataEntryKey (int);
-    bool           isOperatorKey (int);
-    lDouble&       getValue();
-    void           setDisplay (lDouble);
-    void           setInfixOperator (char);
-    void           clearInfixOperator();
-    void           calcInfixOperator();
-    virtual void   adjustSize();
-    const wchar_t* getButtonText (int);
-    void           mapKeyFunctions();
+    void drawDispay();
+    void draw() override;
+    void sendOnButtonAccelerator();
+    void clear (const lDouble&);
+    void zero (const lDouble&);
+    void one (const lDouble&);
+    void two (const lDouble&);
+    void three (const lDouble&);
+    void four (const lDouble&);
+    void five (const lDouble&);
+    void six (const lDouble&);
+    void seven (const lDouble&);
+    void eight (const lDouble&);
+    void nine (const lDouble&);
+    void add (const lDouble&);
+    void subtract (const lDouble&);
+    void multiply (const lDouble&);
+    void divide (const lDouble&);
+    void equals (const lDouble&);
+    void change_sign (lDouble&);
+    void radix_point(const lDouble&);
+    void reciprocal (lDouble&);
+    void percent (lDouble&);
+    void pi (lDouble&);
+    void open_bracket (const lDouble&);
+    void close_bracket (const lDouble&);
+    void log_e (lDouble&);
+    void power_e (lDouble&);
+    void log_10 (lDouble&);
+    void power_10 (lDouble&);
+    void power (const lDouble&);
+    void square_root (lDouble&);
+    void hyperbolic (const lDouble&);
+    void arcus (const lDouble&);
+    void sine (lDouble&);
+    void cosine (lDouble&);
+    void tangent (lDouble&);
+    auto isDataEntryKey (const ButtonName&) const -> bool;
+    auto isOperatorKey (const ButtonName&) const -> bool;
+    auto getValue() -> lDouble&;
+    void setDisplay (lDouble);
+    void setInfixOperator (char);
+    void clearInfixOperator();
+    void calcMultiplication();
+    void calcDivision();
+    void calcAddition();
+    void calcSubtraction();
+    void calcExponentiation();
+    void calcInfixOperator();
+    void initLayout() override;
+    void adjustSize() override;
+    auto getButtonText (const ButtonName&) const -> const wchar_t*;
+    void mapKeyFunctions();
 
-    // Data Members
-    bool              error;
-    bool              arcus_mode;
-    bool              hyperbolic_mode;
-    lDouble           a, b;
-    lDouble           infinity;
-    uInt              max_char;
-    int               last_key;
-    char              infix_operator;
-    char              last_infix_operator;
-    finalcut::FString input;
-    int               button_no[Calc::NUM_OF_BUTTONS];
+    // Event handlers
+    void onKeyPress (finalcut::FKeyEvent*) override;
+    void onShow (finalcut::FShowEvent*) override;
+    void onClose (finalcut::FCloseEvent*) override;
 
-    struct stack_data
+    // Callback method
+    void           cb_buttonClicked (ButtonName);
+
+    // Overloaded operators
+    friend auto operator <  (const ButtonName& c, const int n) noexcept -> bool;
+    friend auto operator <= (const ButtonName& c, const int n) noexcept -> bool;
+    friend auto operator +  (const ButtonName& c, const int n) noexcept -> ButtonName;
+    friend auto operator ++ (ButtonName& c) noexcept -> ButtonName&;  // prefix
+    friend auto operator ++ (ButtonName& c, int) noexcept -> ButtonName;  // postfix
+
+    // Data members
+    bool              error{false};
+    bool              arcus_mode{false};
+    bool              hyperbolic_mode{false};
+    lDouble           a{0.0L};
+    lDouble           b{0.0L};
+    lDouble           infinity{std::numeric_limits<lDouble>::infinity()};
+    uInt              max_char{33};
+    ButtonName        last_key{ButtonName(-1)};
+    char              infix_operator{'\0'};
+    char              last_infix_operator{'\0'};
+    finalcut::FString input{""};
+    std::array<ButtonName, std::size_t(ButtonName::NUM_OF_BUTTONS)> button_no{};
+
+    struct StackData
     {
       lDouble term;
       char infix_operator;
     };
 
-    std::stack<stack_data> bracket_stack;
-    std::map<Calc::button, Button*> calculator_buttons;
-    std::map<Calc::button, keyFunction> key_map;
+    std::stack<StackData> bracket_stack{};
+    std::map<ButtonName, std::shared_ptr<Button> > calculator_buttons{};
+    std::map<ButtonName, keyFunction> key_map{};
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 Calc::Calc (FWidget* parent)
-  : finalcut::FDialog(parent)
-  , error(false)
-  , arcus_mode(false)
-  , hyperbolic_mode(false)
-  , a(0.0L)
-  , b(0.0L)
-  , infinity(std::numeric_limits<lDouble>::infinity())
-  , max_char(33)
-  , last_key(-1)
-  , infix_operator('\0')
-  , last_infix_operator('\0')
-  , input("")
-  , bracket_stack()
-  , calculator_buttons()
-  , key_map()
+  : finalcut::FDialog{parent}
 {
   mapKeyFunctions();
   clearInfixOperator();
-  std::setlocale(LC_NUMERIC, "C");
-  setText ("Calculator");
-  setGeometry (19, 6, 37, 18);
-  addAccelerator('q');  // Press 'q' to quit
 
-  for (int key = 0; key < Calc::NUM_OF_BUTTONS; key++)
+  for (ButtonName key{ButtonName::Sine}; key < ButtonName::NUM_OF_BUTTONS; key++)
   {
-    Button* btn = new Button(this);
-    button_no[key] = key;
-
-    if ( key == Equals )
-      btn->setGeometry(30, 15, 5, 3);
-    else
-    {
-      int x, y, n;
-      ( key <= Three ) ? n = 0 : n = 1;
-      x = (key + n) % 5 * 7 + 2;
-      y = (key + n) / 5 * 2 + 3;
-      btn->setGeometry(x, y, 5, 1);
-    }
-
+    auto btn = std::make_shared<Button>(this);
+    auto index = std::size_t(key);
+    button_no[index] = key;
     btn->setFlat();
     btn->setNoUnderline();
     btn->setText(getButtonText(key));
-    btn->setDoubleFlatLine(finalcut::fc::top);
-    btn->setDoubleFlatLine(finalcut::fc::bottom);
 
-    if ( isNewFont() )
+    if ( finalcut::FVTerm::getFOutput()->isNewFont() )
       btn->unsetClickAnimation();
 
     btn->addCallback
     (
       "clicked",
-      F_METHOD_CALLBACK (this, &Calc::cb_buttonClicked),
-      &button_no[key]
+      this, &Calc::cb_buttonClicked,
+      button_no[index]
     );
 
-    calculator_buttons[button(key)] = btn;
+    calculator_buttons[ButtonName(key)] = btn;
   }
 
-  calculator_buttons[On]->addAccelerator(finalcut::fc::Fkey_dc);  // Del key
-  calculator_buttons[On]->setFocus();
-  calculator_buttons[Pi]->addAccelerator('p');
-  calculator_buttons[Power]->addAccelerator('^');
-  calculator_buttons[Divide]->addAccelerator('/');
-  calculator_buttons[Powers_of_ten]->addAccelerator('d');
-  calculator_buttons[Multiply]->addAccelerator('*');
-  calculator_buttons[Decimal_point]->addAccelerator(',');
-  calculator_buttons[Change_sign]->addAccelerator('#');
-  calculator_buttons[Equals]->addAccelerator(finalcut::fc::Fkey_return);
-  calculator_buttons[Equals]->addAccelerator(finalcut::fc::Fkey_enter);
+  calculator_buttons[ButtonName::On]->addAccelerator(FKey::Del_char);
+  calculator_buttons[ButtonName::On]->setFocus();
+  calculator_buttons[ButtonName::Pi]->addAccelerator(FKey('p'));
+  calculator_buttons[ButtonName::Power]->addAccelerator(FKey('^'));
+  calculator_buttons[ButtonName::Divide]->addAccelerator(FKey('/'));
+  calculator_buttons[ButtonName::Powers_of_ten]->addAccelerator(FKey('d'));
+  calculator_buttons[ButtonName::Multiply]->addAccelerator(FKey('*'));
+  calculator_buttons[ButtonName::Decimal_point]->addAccelerator(FKey(','));
+  calculator_buttons[ButtonName::Change_sign]->addAccelerator(FKey('#'));
+  calculator_buttons[ButtonName::Equals]->addAccelerator(FKey::Return);
+  calculator_buttons[ButtonName::Equals]->addAccelerator(FKey::Enter);
 }
 
 //----------------------------------------------------------------------
-Calc::~Calc()
-{ }
+void Calc::onKeyPress (finalcut::FKeyEvent* ev)
+{
+  const std::size_t len = input.getLength();
+  const FKey key = ev->key();
+
+  if ( key == FKey::Erase || key == FKey::Backspace )
+  {
+    if ( len > 0 )
+    {
+      lDouble& x = getValue();
+
+      if ( len == 1 )
+      {
+        input = "";
+        x = 0.0L;
+      }
+      else
+      {
+        input = input.left(input.getLength() - 1);
+        x = std::strtold(input.c_str(), nullptr);
+      }
+
+      drawDispay();
+    }
+
+    ev->accept();
+  }
+  else if ( isEscapeKey(key) )
+  {
+    sendOnButtonAccelerator();
+    ev->accept();
+  }
+  else if ( key == FKey('q') )
+  {
+    close();
+    ev->accept();
+  }
+  else
+    finalcut::FDialog::onKeyPress(ev);
+}
+
+//----------------------------------------------------------------------
+void Calc::onShow (finalcut::FShowEvent*)
+{
+  // Overwrites the initialized value of LC_NUMERIC
+  std::setlocale(LC_NUMERIC, "C");
+}
+
+//----------------------------------------------------------------------
+void Calc::onClose (finalcut::FCloseEvent* ev)
+{
+  finalcut::FApplication::closeConfirmationDialog (this, ev);
+}
+
+//----------------------------------------------------------------------
+void Calc::cb_buttonClicked (ButtonName key)
+{
+  lDouble& x = getValue();
+
+  // Call the key function
+  key_map[key](x);
+
+  if ( ! input.isEmpty() )
+  {
+    if ( isDataEntryKey(key) )
+      x = lDouble(input.toDouble());
+    else
+    {
+      // Remove trailing zeros
+      while ( ! input.includes(L'e')
+           && input.includes(L'.')
+           && input.back() == L'0' )
+        input = input.left(input.getLength() - 1);
+    }
+  }
+
+  drawDispay();
+
+  if ( infix_operator && ! isDataEntryKey(key) )
+    input = "";
+
+  last_key = key;
+}
 
 //----------------------------------------------------------------------
 void Calc::drawDispay()
 {
-  finalcut::FString display = input;
+  finalcut::FString display{input};
 
-  if ( display.isNull() || display.isEmpty()  )
+  if ( display.isEmpty() )
     display = L'0';
 
   if ( display.right(3) == L"-0." )
@@ -333,7 +396,7 @@ void Calc::drawDispay()
     display = display.left(display.getLength() - 1);
 
   if ( ! display.isEmpty() && display.getLength() < max_char )
-    display.insert(finalcut::FString(max_char - display.getLength(), L' '), 0);
+    display.insert(finalcut::FString{max_char - display.getLength(), L' '}, 0);
 
   if ( display.getLength() > max_char )
     display = display.left(max_char);
@@ -344,35 +407,30 @@ void Calc::drawDispay()
   if ( error )
     display = " Error                          ";
 
-  setColor(finalcut::fc::Black, finalcut::fc::LightGray);
-
-  if ( isMonochron() )
+  if ( finalcut::FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
 
-  setPrintPos (3, 3);
-  print(display);
-  print(L' ');
-  setColor(wc.dialog_fg, wc.dialog_bg);
+  const auto& wc = getColorTheme();
+  print() << FColorPair{FColor::Black, FColor::LightGray}
+          << FPoint{3, 3} << display << ' '
+          << FColorPair{wc->dialog_fg, wc->dialog_bg};
 
-  if ( isMonochron() )
+  if ( finalcut::FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
-  if ( isNewFont() )
+  if ( finalcut::FVTerm::getFOutput()->isNewFont() )
   {
-    wchar_t bottom_line     = wchar_t(finalcut::fc::NF_border_line_bottom);
-    wchar_t top_bottom_line = wchar_t(finalcut::fc::NF_border_line_up_and_down);
-    wchar_t top_line        = wchar_t(finalcut::fc::NF_border_line_upper);
-    wchar_t right_line      = wchar_t(finalcut::fc::NF_rev_border_line_right);
-    wchar_t left_line       = wchar_t(finalcut::fc::NF_border_line_left);
-    setPrintPos (3, 2);
-    print (finalcut::FString(33, bottom_line));
-    setPrintPos (2, 3);
-    print (right_line);
-    setPrintPos (36, 3);
-    print (left_line);
-    setPrintPos (3, 4);
-    finalcut::FString top_bottom_line_5 (5, top_bottom_line);
-    finalcut::FString top_line_2 (2, top_line);
+    const auto bottom_line     {finalcut::UniChar::NF_border_line_bottom};
+    const auto top_bottom_line {finalcut::UniChar::NF_border_line_up_and_down};
+    const auto top_line        {finalcut::UniChar::NF_border_line_upper};
+    const auto right_line      {finalcut::UniChar::NF_rev_border_line_right};
+    const auto left_line       {finalcut::UniChar::NF_border_line_left};
+    print() << FPoint{3, 2} << finalcut::FString{33, bottom_line};
+    print() << FPoint{2, 3} << right_line;
+    print() << FPoint{36, 3} << left_line;
+    print() << FPoint{3, 4};
+    const finalcut::FString top_bottom_line_5 {5, top_bottom_line};
+    const finalcut::FString top_line_2 {2, top_line};
     print ( top_bottom_line_5 + top_line_2
           + top_bottom_line_5 + top_line_2
           + top_bottom_line_5 + top_line_2
@@ -381,25 +439,31 @@ void Calc::drawDispay()
   }
   else
   {
-    wchar_t vertical_and_right  = wchar_t(finalcut::fc::BoxDrawingsVerticalAndRight);
-    wchar_t horizontal          = wchar_t(finalcut::fc::BoxDrawingsHorizontal);
-    wchar_t vertical_and_left   = wchar_t(finalcut::fc::BoxDrawingsVerticalAndLeft);
-    finalcut::FString separator = finalcut::FString(vertical_and_right)
-                                + finalcut::FString(35, horizontal)
-                                + finalcut::FString(vertical_and_left);
-    setPrintPos (1, 4);
-    print(separator);
+    const auto vertical_and_right {finalcut::UniChar::BoxDrawingsVerticalAndRight};
+    const auto horizontal         {finalcut::UniChar::BoxDrawingsHorizontal};
+    const auto vertical_and_left  {finalcut::UniChar::BoxDrawingsVerticalAndLeft};
+    finalcut::FString separator ( finalcut::FString{vertical_and_right}
+                                + finalcut::FString{35, horizontal}
+                                + finalcut::FString{vertical_and_left} );
+    print() << FPoint{1, 4} << separator;
   }
 }
 
 //----------------------------------------------------------------------
-void Calc::clear (lDouble&)
+inline void Calc::sendOnButtonAccelerator()
+{
+  finalcut::FAccelEvent a_ev(finalcut::Event::Accelerator, getFocusWidget());
+  calculator_buttons[ButtonName::On]->onAccel(&a_ev);
+}
+
+//----------------------------------------------------------------------
+void Calc::clear (const lDouble&)
 {
   error = false;
   arcus_mode = false;
   hyperbolic_mode = false;
-  calculator_buttons[Arcus]->setChecked(false);
-  calculator_buttons[Hyperbolic]->setChecked(false);
+  calculator_buttons[ButtonName::Arcus]->setChecked(false);
+  calculator_buttons[ButtonName::Hyperbolic]->setChecked(false);
   input = "";
   clearInfixOperator();
   last_infix_operator = '\0';
@@ -407,7 +471,7 @@ void Calc::clear (lDouble&)
 }
 
 //----------------------------------------------------------------------
-void Calc::zero (lDouble&)
+void Calc::zero (const lDouble&)
 {
   if ( input.getLength() >= max_char )
     return;
@@ -419,7 +483,7 @@ void Calc::zero (lDouble&)
 }
 
 //----------------------------------------------------------------------
-void Calc::one (lDouble&)
+void Calc::one (const lDouble&)
 {
   if ( input.getLength() >= max_char )
     return;
@@ -431,7 +495,7 @@ void Calc::one (lDouble&)
 }
 
 //----------------------------------------------------------------------
-void Calc::two (lDouble&)
+void Calc::two (const lDouble&)
 {
   if ( input.getLength() >= max_char )
     return;
@@ -443,7 +507,7 @@ void Calc::two (lDouble&)
 }
 
 //----------------------------------------------------------------------
-void Calc::three (lDouble&)
+void Calc::three (const lDouble&)
 {
   if ( input.getLength() >= max_char )
     return;
@@ -455,7 +519,7 @@ void Calc::three (lDouble&)
 }
 
 //----------------------------------------------------------------------
-void Calc::four (lDouble&)
+void Calc::four (const lDouble&)
 {
   if ( input.getLength() >= max_char )
     return;
@@ -467,7 +531,7 @@ void Calc::four (lDouble&)
 }
 
 //----------------------------------------------------------------------
-void Calc::five (lDouble&)
+void Calc::five (const lDouble&)
 {
   if ( input.getLength() >= max_char )
     return;
@@ -479,7 +543,7 @@ void Calc::five (lDouble&)
 }
 
 //----------------------------------------------------------------------
-void Calc::six (lDouble&)
+void Calc::six (const lDouble&)
 {
   if ( input.getLength() >= max_char )
     return;
@@ -491,7 +555,7 @@ void Calc::six (lDouble&)
 }
 
 //----------------------------------------------------------------------
-void Calc::seven (lDouble&)
+void Calc::seven (const lDouble&)
 {
   if ( input.getLength() >= max_char )
     return;
@@ -503,7 +567,7 @@ void Calc::seven (lDouble&)
 }
 
 //----------------------------------------------------------------------
-void Calc::eight (lDouble&)
+void Calc::eight (const lDouble&)
 {
   if ( input.getLength() >= max_char )
     return;
@@ -515,7 +579,7 @@ void Calc::eight (lDouble&)
 }
 
 //----------------------------------------------------------------------
-void Calc::nine (lDouble&)
+void Calc::nine (const lDouble&)
 {
   if ( input.getLength() >= max_char )
     return;
@@ -527,7 +591,7 @@ void Calc::nine (lDouble&)
 }
 
 //----------------------------------------------------------------------
-void Calc::add (lDouble&)
+void Calc::add (const lDouble&)
 {
   if ( ! isOperatorKey(last_key) )
     calcInfixOperator();
@@ -537,7 +601,7 @@ void Calc::add (lDouble&)
 }
 
 //----------------------------------------------------------------------
-void Calc::subtract (lDouble&)
+void Calc::subtract (const lDouble&)
 {
   if ( ! isOperatorKey(last_key) )
     calcInfixOperator();
@@ -547,7 +611,7 @@ void Calc::subtract (lDouble&)
 }
 
 //----------------------------------------------------------------------
-void Calc::multiply (lDouble&)
+void Calc::multiply (const lDouble&)
 {
   if ( ! isOperatorKey(last_key) )
     calcInfixOperator();
@@ -557,7 +621,7 @@ void Calc::multiply (lDouble&)
 }
 
 //----------------------------------------------------------------------
-void Calc::divide (lDouble&)
+void Calc::divide (const lDouble&)
 {
   if ( ! isOperatorKey(last_key) )
     calcInfixOperator();
@@ -567,7 +631,7 @@ void Calc::divide (lDouble&)
 }
 
 //----------------------------------------------------------------------
-void Calc::equals (lDouble&)
+void Calc::equals (const lDouble&)
 {
   infix_operator = last_infix_operator;
   calcInfixOperator();
@@ -582,13 +646,12 @@ void Calc::change_sign (lDouble& x)
 }
 
 //----------------------------------------------------------------------
-void Calc::radix_point (lDouble&)
+void Calc::radix_point (const lDouble&)
 {
   if ( input.getLength() >= max_char )
     return;
 
   if ( isDataEntryKey(last_key)
-    && ! input.isNull()
     && ! input.isEmpty()
     && ! input.includes('.') )
     input += '.';
@@ -619,14 +682,14 @@ void Calc::percent (lDouble& x)
 //----------------------------------------------------------------------
 void Calc::pi (lDouble& x)
 {
-  x = PI;
+  x = pi_value<lDouble>;
   setDisplay(x);
 }
 
 //----------------------------------------------------------------------
-void Calc::open_bracket (lDouble&)
+void Calc::open_bracket (const lDouble&)
 {
-  stack_data d = { a, infix_operator };
+  const StackData d{ a, infix_operator };
   bracket_stack.push(d);
   clearInfixOperator();
   input = "";
@@ -635,14 +698,14 @@ void Calc::open_bracket (lDouble&)
 }
 
 //----------------------------------------------------------------------
-void Calc::close_bracket (lDouble&)
+void Calc::close_bracket (const lDouble&)
 {
   if ( bracket_stack.empty() )
     return;
 
   calcInfixOperator();
   setDisplay(a);
-  stack_data d = bracket_stack.top();
+  const StackData d = bracket_stack.top();
   bracket_stack.pop();
   b = d.term;
   infix_operator = d.infix_operator;
@@ -694,7 +757,7 @@ void Calc::power_10 (lDouble& x)
 }
 
 //----------------------------------------------------------------------
-void Calc::power (lDouble& x)
+void Calc::power (const lDouble& x)
 {
   if ( ! isOperatorKey(last_key) )
     calcInfixOperator();
@@ -715,18 +778,18 @@ void Calc::square_root (lDouble& x)
 }
 
 //----------------------------------------------------------------------
-void Calc::hyperbolic (lDouble& x)
+void Calc::hyperbolic (const lDouble& x)
 {
   hyperbolic_mode = ! hyperbolic_mode;
-  calculator_buttons[Hyperbolic]->setChecked(hyperbolic_mode);
+  calculator_buttons[ButtonName::Hyperbolic]->setChecked(hyperbolic_mode);
   setDisplay(x);
 }
 
 //----------------------------------------------------------------------
-void Calc::arcus (lDouble& x)
+void Calc::arcus (const lDouble& x)
 {
   arcus_mode = ! arcus_mode;
-  calculator_buttons[Arcus]->setChecked(arcus_mode);
+  calculator_buttons[ButtonName::Arcus]->setChecked(arcus_mode);
   setDisplay(x);
 }
 
@@ -751,11 +814,11 @@ void Calc::sine (lDouble& x)
   else
   {
     if ( arcus_mode )
-      x = std::asin(x) * 180.0L / PI;
+      x = std::asin(x) * 180.0L / pi_value<lDouble>;
     else if ( std::fabs(std::fmod(x, 180.0L)) < LDBL_EPSILON )  // x / 180 = 0
       x = 0.0L;
     else
-      x = std::sin(x * PI / 180.0L);
+      x = std::sin(x * pi_value<lDouble> / 180.0L);
   }
 
   if ( errno == EDOM )
@@ -764,8 +827,8 @@ void Calc::sine (lDouble& x)
   setDisplay(x);
   arcus_mode = false;
   hyperbolic_mode = false;
-  calculator_buttons[Arcus]->setChecked(false);
-  calculator_buttons[Hyperbolic]->setChecked(false);
+  calculator_buttons[ButtonName::Arcus]->setChecked(false);
+  calculator_buttons[ButtonName::Hyperbolic]->setChecked(false);
 }
 
 //----------------------------------------------------------------------
@@ -789,11 +852,11 @@ void Calc::cosine (lDouble& x)
   else
   {
     if ( arcus_mode )
-      x = std::acos(x) * 180.0L / PI;
+      x = std::acos(x) * 180.0L / pi_value<lDouble>;
     else if ( std::fabs(std::fmod(x - 90.0L, 180.0L)) < LDBL_EPSILON )  // (x - 90) / 180 == 0
       x = 0.0L;
     else
-      x = std::cos(x * PI / 180.0L);
+      x = std::cos(x * pi_value<lDouble> / 180.0L);
   }
 
   if ( errno == EDOM )
@@ -802,8 +865,8 @@ void Calc::cosine (lDouble& x)
   setDisplay(x);
   arcus_mode = false;
   hyperbolic_mode = false;
-  calculator_buttons[Arcus]->setChecked(false);
-  calculator_buttons[Hyperbolic]->setChecked(false);
+  calculator_buttons[ButtonName::Arcus]->setChecked(false);
+  calculator_buttons[ButtonName::Hyperbolic]->setChecked(false);
 }
 
 //----------------------------------------------------------------------
@@ -815,9 +878,6 @@ void Calc::tangent (lDouble& x)
       if ( x < 1 )
       {
         x = 0.5L * std::log((1 + x) / (1 - x));
-
-        if ( errno == EDOM || errno == ERANGE )
-          error = true;
       }
       else
         error = true;
@@ -827,7 +887,7 @@ void Calc::tangent (lDouble& x)
   else
   {
     if ( arcus_mode )
-      x = std::atan(x) * 180.0L / PI;
+      x = std::atan(x) * 180.0L / pi_value<lDouble>;
     else
     {
       // Test if (x / 180) != 0 and x / 90 == 0
@@ -837,95 +897,93 @@ void Calc::tangent (lDouble& x)
       else if ( std::fabs(std::fmod(x, 180.0L)) < LDBL_EPSILON )  // x / 180 == 0
         x = 0.0L;
       else
-        x = std::tan(x * PI / 180.0L);
+        x = std::tan(x * pi_value<lDouble> / 180.0L);
     }
   }
 
-  if ( errno == EDOM )
+  if ( errno == EDOM || errno == ERANGE )
     error = true;
 
   setDisplay(x);
   arcus_mode = false;
   hyperbolic_mode = false;
-  calculator_buttons[Arcus]->setChecked(false);
-  calculator_buttons[Hyperbolic]->setChecked(false);
+  calculator_buttons[ButtonName::Arcus]->setChecked(false);
+  calculator_buttons[ButtonName::Hyperbolic]->setChecked(false);
 }
 
 //----------------------------------------------------------------------
 void Calc::draw()
 {
   setBold();
-  setColor (finalcut::fc::Blue, finalcut::fc::Cyan);
-  clearArea (vdesktop, finalcut::fc::MediumShade);
+  setColor (FColor::LightBlue, FColor::Cyan);
+  clearArea (getVirtualDesktop(), wchar_t(finalcut::UniChar::MediumShade));
   unsetBold();
   finalcut::FDialog::draw();
   drawDispay();
 }
 
 //----------------------------------------------------------------------
-bool Calc::isDataEntryKey (int key)
+auto Calc::isDataEntryKey (const ButtonName& key) const -> bool
 {
   // Test if key is in {'.', '0'..'9'}
-  int data_entry_keys[] =
-  {
-    Decimal_point,
-    Zero,
-    One,
-    Two,
-    Three,
-    Four,
-    Five,
-    Six,
-    Seven,
-    Eight,
-    Nine
-  };
+  constexpr std::array<ButtonName, 11> key_list =
+  {{
+    ButtonName::Decimal_point,
+    ButtonName::Zero,
+    ButtonName::One,
+    ButtonName::Two,
+    ButtonName::Three,
+    ButtonName::Four,
+    ButtonName::Five,
+    ButtonName::Six,
+    ButtonName::Seven,
+    ButtonName::Eight,
+    ButtonName::Nine
+  }};
 
-  int* iter = std::find (data_entry_keys, data_entry_keys + 11, key);
+  const auto& iter = std::find (key_list.begin(), key_list.end(), key);
 
-  if ( iter != data_entry_keys + 11 )
+  if ( iter != key_list.end() )
     return true;
-  else
-    return false;
+
+  return false;
 }
 
 //----------------------------------------------------------------------
-bool Calc::isOperatorKey(int key)
+auto Calc::isOperatorKey(const ButtonName& key) const -> bool
 {
   // Test if key is in {'*', '/', '+', '-', '^', '='}
-  int operators[] =
-  {
-    Multiply,
-    Divide,
-    Add,
-    Subtract,
-    Power,
-    Equals
-  };
+  constexpr std::array<ButtonName, 6> operators =
+  {{
+    ButtonName::Multiply,
+    ButtonName::Divide,
+    ButtonName::Add,
+    ButtonName::Subtract,
+    ButtonName::Power,
+    ButtonName::Equals
+  }};
 
-  int* iter = std::find (operators, operators + 6, key);
+  const auto& iter = std::find (operators.begin(), operators.end(), key);
 
-  if ( iter != operators + 6 )
+  if ( iter != operators.end() )
     return true;
-  else
-    return false;
+
+  return false;
 }
 
 //----------------------------------------------------------------------
-lDouble& Calc::getValue()
+auto Calc::getValue() -> lDouble&
 {
   if ( infix_operator )
     return b;
-  else
-    return a;
+
+  return a;
 }
 
 //----------------------------------------------------------------------
 void Calc::setDisplay (lDouble d)
 {
-  char buffer[33];
-  snprintf (buffer, sizeof(buffer), "%32.11Lg", d);
-  input = buffer;
+  input.sprintf("%32.11Lg", d);
 }
 
 //----------------------------------------------------------------------
@@ -942,176 +1000,145 @@ inline void Calc::clearInfixOperator()
 }
 
 //----------------------------------------------------------------------
+inline void Calc::calcMultiplication()
+{
+  if ( std::fabs(a) > LDBL_EPSILON )  // a != 0.0L
+  {
+    // ln(a * b) = ln(a) + ln(b)
+    if ( std::log(std::abs(a)) + std::log(std::abs(b)) <= std::log(LDBL_MAX) )
+      a *= b;
+    else
+      error = true;
+  }
+  else
+    b = 0.0L;
+}
+
+//----------------------------------------------------------------------
+inline void Calc::calcDivision()
+{
+  if ( std::fabs(b) > LDBL_EPSILON )  // b != 0.0L
+    a /= b;
+  else
+    error = true;
+}
+
+//----------------------------------------------------------------------
+inline void Calc::calcAddition()
+{
+  if ( std::fabs(a) > LDBL_EPSILON )  // a != 0.0L
+  {
+    if ( std::log(std::abs(a)) + std::log(std::abs(1 + b / a)) <= std::log(LDBL_MAX) )
+      a += b;
+    else
+      error = true;
+  }
+  else
+    a = b;
+}
+
+//----------------------------------------------------------------------
+inline void Calc::calcSubtraction()
+{
+  if ( std::fabs(b) > LDBL_EPSILON )  // b != 0.0L
+  {
+    if ( std::log(std::abs(a)) + std::log(std::abs(1 - b / a)) <= std::log(LDBL_MAX) )
+      a -= b;
+    else
+      error = true;
+  }
+  else
+    a = b * (-1.0L);
+}
+
+//----------------------------------------------------------------------
+inline void Calc::calcExponentiation()
+{
+  a = std::pow(a, b);
+
+  if ( errno == EDOM || errno == ERANGE )
+    error = true;
+}
+
+//----------------------------------------------------------------------
 void Calc::calcInfixOperator()
 {
   switch ( infix_operator )
   {
+    case '\0':  // The infix operator has not been set yet
+      return;
+
     case '*':
-      if ( std::fabs(a) > LDBL_EPSILON )  // a != 0.0L
-      {
-        // ln(a * b) = ln(a) + ln(b)
-        if ( std::log(std::abs(a)) + std::log(std::abs(b)) <= std::log(LDBL_MAX) )
-          a *= b;
-        else
-          error = true;
-      }
-      else
-        b = 0.0L;
+      calcMultiplication();
       break;
 
     case '/':
-      if ( std::fabs(b) > LDBL_EPSILON )  // b != 0.0L
-        a /= b;
-      else
-        error = true;
+      calcDivision();
       break;
 
     case '+':
-      if ( std::fabs(a) > LDBL_EPSILON )  // a != 0.0L
-      {
-        if ( std::log(std::abs(a)) + std::log(std::abs(1 + b / a)) <= std::log(LDBL_MAX) )
-          a += b;
-        else
-          error = true;
-      }
-      else
-        a = b;
+      calcAddition();
       break;
 
     case '-':
-      if ( std::fabs(b) > LDBL_EPSILON )  // b != 0.0L
-      {
-        if ( std::log(std::abs(a)) + std::log(std::abs(1 - b / a)) <= std::log(LDBL_MAX) )
-          a -= b;
-        else
-          error = true;
-      }
-      else
-        a = b * (-1.0L);
+      calcSubtraction();
       break;
 
     case '^':
-      a = std::pow(a, b);
-
-      if ( errno == EDOM || errno == ERANGE )
-        error = true;
+      calcExponentiation();
       break;
 
     default:
-      break;
+      throw std::invalid_argument{"Invalid infix operator"};
   }
 
   clearInfixOperator();
 }
 
 //----------------------------------------------------------------------
-void Calc::onKeyPress (finalcut::FKeyEvent* ev)
+void Calc::initLayout()
 {
-  std::size_t len = input.getLength();
-  FKey key = ev->key();
+  // Dialog settings
+  FDialog::setText ("Calculator");
+  FDialog::setGeometry (FPoint{19, 6}, FSize{37, 18});
 
-  switch ( key )
+  for (ButtonName key{ButtonName::Sine}; key < ButtonName::NUM_OF_BUTTONS; key++)
   {
-    case finalcut::fc::Fkey_erase:
-    case finalcut::fc::Fkey_backspace:
-      if ( len > 0 )
-      {
-        lDouble& x = getValue();
+    auto btn = calculator_buttons[ButtonName(key)];
 
-        if ( len == 1 )
-        {
-          input = "";
-          x = 0.0L;
-        }
-        else
-        {
-          input = input.left(input.getLength() - 1);
-          x = lDouble(std::atof(input.c_str()));
-        }
-
-        drawDispay();
-        updateTerminal();
-      }
-
-      ev->accept();
-      break;
-
-    case finalcut::fc::Fkey_escape:
-    case finalcut::fc::Fkey_escape_mintty:
-      {
-        finalcut::FAccelEvent a_ev( finalcut::fc::Accelerator_Event
-                                  , getFocusWidget() );
-        calculator_buttons[On]->onAccel(&a_ev);
-      }
-      ev->accept();
-      break;
-
-    default:
-      finalcut::FDialog::onKeyPress(ev);
-      break;
-  }
-}
-
-//----------------------------------------------------------------------
-void Calc::onAccel (finalcut::FAccelEvent* ev)
-{
-  close();
-  ev->accept();
-}
-
-//----------------------------------------------------------------------
-void Calc::onClose (finalcut::FCloseEvent* ev)
-{
-  finalcut::FApplication::closeConfirmationDialog (this, ev);
-}
-
-//----------------------------------------------------------------------
-void Calc::cb_buttonClicked (finalcut::FWidget*, data_ptr data)
-{
-  lDouble& x = getValue();
-  Calc::button key = *(static_cast<Calc::button*>(data));
-
-  // Call the key function
-  (this->*key_map[key])(x);
-
-  if ( ! input.isEmpty() )
-  {
-    if ( isDataEntryKey(key) )
-      x = lDouble(input.toDouble());
+    if ( key == ButtonName::Equals )
+      btn->setGeometry(FPoint{30, 15}, FSize{5, 3});
     else
     {
-      // Remove trailing zeros
-      while ( ! input.includes(L'e')
-           && input.includes(L'.')
-           && input.back() == L'0' )
-        input = input.left(input.getLength() - 1);
+      const int n = ( key <= ButtonName::Three ) ? 0 : 1;
+      const int x = (int(key) + n) % 5 * 7 + 2;
+      const int y = (int(key) + n) / 5 * 2 + 3;
+      btn->setGeometry(FPoint{x, y}, FSize{5, 1});
     }
+
+    btn->setDoubleFlatLine(finalcut::Side::Top);
+    btn->setDoubleFlatLine(finalcut::Side::Bottom);
   }
 
-  drawDispay();
-  updateTerminal();
-
-  if ( infix_operator && ! isDataEntryKey(key) )
-    input = "";
-
-  last_key = key;
+  FDialog::initLayout();
 }
 
 //----------------------------------------------------------------------
 void Calc::adjustSize()
 {
-  std::size_t pw = getParentWidget()->getWidth();
-  std::size_t ph = getParentWidget()->getHeight();
+  const std::size_t pw = getDesktopWidth();
+  const std::size_t ph = getDesktopHeight();
   setX (1 + int(pw - getWidth()) / 2, false);
   setY (1 + int(ph - getHeight()) / 2, false);
   finalcut::FDialog::adjustSize();
 }
 
 //----------------------------------------------------------------------
-const wchar_t* Calc::getButtonText (int key)
+auto Calc::getButtonText (const ButtonName& key) const -> const wchar_t*
 {
-  static const wchar_t* const button_text[Calc::NUM_OF_BUTTONS] =
-  {
+  constexpr auto num_of_buttons = std::size_t(ButtonName::NUM_OF_BUTTONS);
+  constexpr std::array<const wchar_t*, num_of_buttons> button_text =
+  {{
     L"&Sin",
     L"&Cos",
     L"&Tan",
@@ -1146,55 +1173,93 @@ const wchar_t* Calc::getButtonText (int key)
     L"&.",
     L"&±",
     L"&="
-  };
+  }};
 
-  return button_text[key];
+  return button_text[std::size_t(key)];
 }
 
 //----------------------------------------------------------------------
 void Calc::mapKeyFunctions()
 {
-  key_map[Sine] = &Calc::sine;                   // sin
-  key_map[Cosine] = &Calc::cosine;               // cos
-  key_map[Tangent] = &Calc::tangent;             // tan
-  key_map[Reciprocal] = &Calc::reciprocal;       // 1/x
-  key_map[On] = &Calc::clear;                    // On
-  key_map[Natural_logarithm] = &Calc::log_e;     // ln
-  key_map[Powers_of_e] = &Calc::power_e;         // eˣ
-  key_map[Power] = &Calc::power;                 // yˣ
-  key_map[Square_root] = &Calc::square_root;     // sqrt
-  key_map[Divide] = &Calc::divide;               // ÷
-  key_map[Common_logarithm] = &Calc::log_10;     // lg
-  key_map[Powers_of_ten] = &Calc::power_10;      // 10ˣ
-  key_map[Parenthese_l] = &Calc::open_bracket;   // (
-  key_map[Parenthese_r] = &Calc::close_bracket;  // )
-  key_map[Multiply] = &Calc::multiply;           // *
-  key_map[Hyperbolic] = &Calc::hyperbolic;       // hyp
-  key_map[Seven] = &Calc::seven;                 // 7
-  key_map[Eight] = &Calc::eight;                 // 8
-  key_map[Nine] = &Calc::nine;                   // 9
-  key_map[Subtract] = &Calc::subtract;           // -
-  key_map[Arcus] = &Calc::arcus;                 // arc
-  key_map[Four] = &Calc::four;                   // 4
-  key_map[Five] = &Calc::five;                   // 5
-  key_map[Six] = &Calc::six;                     // 6
-  key_map[Add] = &Calc::add;                     // +
-  key_map[Pi] = &Calc::pi;                       // π
-  key_map[One] = &Calc::one;                     // 1
-  key_map[Two] = &Calc::two;                     // 2
-  key_map[Three] = &Calc::three;                 // 3
-  key_map[Percent] = &Calc::percent;             // %
-  key_map[Zero] = &Calc::zero;                   // 0
-  key_map[Decimal_point] = &Calc::radix_point;   // .
-  key_map[Change_sign] = &Calc::change_sign;     // ±
-  key_map[Equals] = &Calc::equals;               // =
+  #define B(f) std::bind((f), this, std::placeholders::_1)  // Bind macro
+  key_map =
+  {
+    { ButtonName::Sine, B(&Calc::sine) },                   // sin
+    { ButtonName::Cosine, B(&Calc::cosine) },               // cos
+    { ButtonName::Tangent, B(&Calc::tangent) },             // tan
+    { ButtonName::Reciprocal, B(&Calc::reciprocal) },       // 1/x
+    { ButtonName::On, B(&Calc::clear) },                    // On
+    { ButtonName::Natural_logarithm, B(&Calc::log_e) },     // ln
+    { ButtonName::Powers_of_e, B(&Calc::power_e) },         // eˣ
+    { ButtonName::Power, B(&Calc::power) },                 // yˣ
+    { ButtonName::Square_root, B(&Calc::square_root) },     // sqrt
+    { ButtonName::Divide, B(&Calc::divide) },               // ÷
+    { ButtonName::Common_logarithm, B(&Calc::log_10) },     // lg
+    { ButtonName::Powers_of_ten, B(&Calc::power_10) },      // 10ˣ
+    { ButtonName::Parenthese_l, B(&Calc::open_bracket) },   // (
+    { ButtonName::Parenthese_r, B(&Calc::close_bracket) },  // )
+    { ButtonName::Multiply, B(&Calc::multiply) },           // *
+    { ButtonName::Hyperbolic, B(&Calc::hyperbolic) },       // hyp
+    { ButtonName::Seven, B(&Calc::seven) },                 // 7
+    { ButtonName::Eight, B(&Calc::eight) },                 // 8
+    { ButtonName::Nine, B(&Calc::nine) },                   // 9
+    { ButtonName::Subtract, B(&Calc::subtract) },           // -
+    { ButtonName::Arcus, B(&Calc::arcus) },                 // arc
+    { ButtonName::Four, B(&Calc::four) },                   // 4
+    { ButtonName::Five, B(&Calc::five) },                   // 5
+    { ButtonName::Six, B(&Calc::six) },                     // 6
+    { ButtonName::Add, B(&Calc::add) },                     // +
+    { ButtonName::Pi, B(&Calc::pi) },                       // π
+    { ButtonName::One, B(&Calc::one) },                     // 1
+    { ButtonName::Two, B(&Calc::two) },                     // 2
+    { ButtonName::Three, B(&Calc::three) },                 // 3
+    { ButtonName::Percent, B(&Calc::percent) },             // %
+    { ButtonName::Zero, B(&Calc::zero) },                   // 0
+    { ButtonName::Decimal_point, B(&Calc::radix_point) },   // .
+    { ButtonName::Change_sign, B(&Calc::change_sign) },     // ±
+    { ButtonName::Equals, B(&Calc::equals) }                // =
+  };
+}
+
+// Overloaded operators
+//----------------------------------------------------------------------
+inline auto operator < (const Calc::ButtonName& c, const int n) noexcept -> bool
+{
+  return int(c) < n;
+}
+
+//----------------------------------------------------------------------
+inline auto operator <= (const Calc::ButtonName& c, const int n) noexcept -> bool
+{
+  return int(c) <= n;
+}
+
+//----------------------------------------------------------------------
+inline auto operator + (const Calc::ButtonName& c, const int n) noexcept -> Calc::ButtonName
+{
+  return Calc::ButtonName(int(c) + n);
+}
+
+//----------------------------------------------------------------------
+inline auto operator ++ (Calc::ButtonName& c) noexcept -> Calc::ButtonName&  // prefix
+{
+  c = ( c < Calc::ButtonName::NUM_OF_BUTTONS ) ? Calc::ButtonName(int(c) + 1) : Calc::ButtonName::Equals;
+  return c;
+}
+
+//----------------------------------------------------------------------
+inline auto operator ++ (Calc::ButtonName& c, int) noexcept -> Calc::ButtonName  // postfix
+{
+  Calc::ButtonName tmp = c;
+  ++c;
+  return tmp;
 }
 
 
 //----------------------------------------------------------------------
 //                               main part
 //----------------------------------------------------------------------
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   // Create the application object
   finalcut::FApplication app(argc, argv);
@@ -1203,7 +1268,7 @@ int main (int argc, char* argv[])
   Calc calculator(&app);
 
   // Set calculator object as main widget
-  app.setMainWidget(&calculator);
+  finalcut::FWidget::setMainWidget(&calculator);
 
   // Show and start the application
   calculator.show();

@@ -1,17 +1,17 @@
 /***********************************************************************
 * scrollview.cpp - Shows client widgets in a scroll area               *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2018 Markus Gans                                      *
+* Copyright 2017-2022 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -22,136 +22,126 @@
 
 #include <final/final.h>
 
+using finalcut::FPoint;
+using finalcut::FSize;
+
 
 //----------------------------------------------------------------------
 // class Scrollview
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
-class Scrollview : public finalcut::FScrollView
+class Scrollview final : public finalcut::FScrollView
 {
   public:
     // Constructor
-    explicit Scrollview (finalcut::FWidget* = 0);
-
-    // Destructor
-    ~Scrollview  ();
+    explicit Scrollview (finalcut::FWidget* = nullptr);
 
     // Mutator
-    void setScrollSize (std::size_t, std::size_t);
+    void setScrollSize (const FSize&) override;
 
   private:
-    // Disable copy constructor
-    Scrollview (const Scrollview&);
-    // Disable assignment operator (=)
-    Scrollview& operator = (const Scrollview&);
-
-    // Method
-    virtual void draw();
+    // Methods
+    void initLayout() override;
+    void draw() override;
 
     // Callback methods
-    void cb_go_east (finalcut::FWidget*, data_ptr);
-    void cb_go_south (finalcut::FWidget*, data_ptr);
-    void cb_go_west (finalcut::FWidget*, data_ptr);
-    void cb_go_north (finalcut::FWidget*, data_ptr);
+    void cb_goEast();
+    void cb_goSouth();
+    void cb_goWest();
+    void cb_goNorth();
 
-    // Data Members
-    wchar_t pointer_right;
-    wchar_t pointer_down;
-    wchar_t pointer_left;
-    wchar_t pointer_up;
-    finalcut::FButton go_east;
-    finalcut::FButton go_south;
-    finalcut::FButton go_west;
-    finalcut::FButton go_north;
+    // Data members
+    finalcut::UniChar pointer_right{finalcut::UniChar::BlackRightPointingPointer};
+    finalcut::UniChar pointer_down{finalcut::UniChar::BlackDownPointingTriangle};
+    finalcut::UniChar pointer_left{finalcut::UniChar::BlackLeftPointingPointer};
+    finalcut::UniChar pointer_up{finalcut::UniChar::BlackUpPointingTriangle};
+    finalcut::FButton go_east{pointer_right, this};
+    finalcut::FButton go_south{pointer_down, this};
+    finalcut::FButton go_west{pointer_left, this};
+    finalcut::FButton go_north{pointer_up, this};
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 Scrollview::Scrollview (finalcut::FWidget* parent)
-  : finalcut::FScrollView(parent)
-  , pointer_right(wchar_t(finalcut::fc::BlackRightPointingPointer))
-  , pointer_down(wchar_t(finalcut::fc::BlackDownPointingTriangle))
-  , pointer_left(wchar_t(finalcut::fc::BlackLeftPointingPointer))
-  , pointer_up(wchar_t(finalcut::fc::BlackUpPointingTriangle))
-  , go_east(pointer_right, this)
-  , go_south(pointer_down, this)
-  , go_west(pointer_left, this)
-  , go_north(pointer_up, this)
+  : finalcut::FScrollView{parent}
 {
-  // Sets the navigation button geometry
-  go_east.setGeometry (1, 1, 5, 1);
-  go_south.setGeometry (int(getScrollWidth()) - 5, 1, 5, 1);
-  go_west.setGeometry ( int(getScrollWidth()) - 5
-                      , int(getScrollHeight()) - 2, 5, 1);
-  go_north.setGeometry (1, int(getScrollHeight()) - 2, 5, 1);
-
   // Add scroll function callbacks to the buttons
   go_east.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &Scrollview::cb_go_east)
+    this, &Scrollview::cb_goEast
   );
 
   go_south.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &Scrollview::cb_go_south)
+    this, &Scrollview::cb_goSouth
   );
 
   go_west.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &Scrollview::cb_go_west)
+    this, &Scrollview::cb_goWest
   );
 
   go_north.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &Scrollview::cb_go_north)
+    this, &Scrollview::cb_goNorth
   );
 }
 
 //----------------------------------------------------------------------
-Scrollview::~Scrollview()
-{ }
+void Scrollview::initLayout()
+{
+  // Sets the navigation button geometry
+  go_east.setGeometry (FPoint{1, 1}, FSize{5, 1});
+  go_south.setGeometry ( FPoint{int(getScrollWidth()) - 5, 1}
+                       , FSize{5, 1} );
+  go_west.setGeometry ( FPoint{ int(getScrollWidth()) - 5
+                              , int(getScrollHeight()) - 2 }
+                      , FSize{5, 1} );
+  go_north.setGeometry ( FPoint{1, int(getScrollHeight()) - 2}
+                       , FSize{5, 1} );
+  FScrollView::initLayout();
+}
 
 //----------------------------------------------------------------------
-void Scrollview::setScrollSize (std::size_t width, std::size_t height)
+void Scrollview::setScrollSize (const FSize& size)
 {
-  FScrollView::setScrollSize (width, height);
-  go_south.setPos (int(width) - 5, 1);
-  go_west.setPos (int(width) - 5, int(height) - 1);
-  go_north.setPos (1, int(height) - 1);
+  FScrollView::setScrollSize (size);
+  const auto width = int(size.getWidth());
+  const auto height = int(size.getHeight());
+  go_south.setPos (FPoint{width - 5, 1});
+  go_west.setPos (FPoint{width - 5, height - 1});
+  go_north.setPos (FPoint{1, height - 1});
 }
 
 //----------------------------------------------------------------------
 void Scrollview::draw()
 {
-  if ( isMonochron() )
+  if ( finalcut::FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
-  setColor (wc.label_inactive_fg, wc.dialog_bg);
+  const auto& wc = getColorTheme();
+  setColor (wc->label_inactive_fg, wc->dialog_bg);
+  setPrintPos (FPoint{1, 1});
   clearArea();
 
-  for (int y = 0; y < int(getScrollHeight()); y++)
+  for (auto y{0}; y < int(getScrollHeight()); y++)
   {
-    setPrintPos (1, 1 + y);
-
-    for (int x = 0; x < int(getScrollWidth()); x++)
+    for (auto x{0}; x < int(getScrollWidth()); x++)
       print (32 + ((x + y) % 0x5f));
   }
 
-  if ( isMonochron() )
+  if ( finalcut::FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
 
   FScrollView::draw();
 }
 
 //----------------------------------------------------------------------
-void Scrollview::cb_go_east (finalcut::FWidget*, data_ptr)
+void Scrollview::cb_goEast()
 {
   scrollToX (int(getScrollWidth() - getViewportWidth()) + 1);
   go_south.setFocus();
@@ -160,7 +150,7 @@ void Scrollview::cb_go_east (finalcut::FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void Scrollview::cb_go_south (finalcut::FWidget*, data_ptr)
+void Scrollview::cb_goSouth()
 {
   scrollToY (int(getScrollHeight() - getViewportHeight()) + 1);
   go_west.setFocus();
@@ -169,7 +159,7 @@ void Scrollview::cb_go_south (finalcut::FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void Scrollview::cb_go_west (finalcut::FWidget*, data_ptr)
+void Scrollview::cb_goWest()
 {
   scrollToX (1);
   go_north.setFocus();
@@ -178,7 +168,7 @@ void Scrollview::cb_go_west (finalcut::FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void Scrollview::cb_go_north (finalcut::FWidget*, data_ptr)
+void Scrollview::cb_goNorth()
 {
   scrollToY (1);
   go_east.setFocus();
@@ -191,70 +181,60 @@ void Scrollview::cb_go_north (finalcut::FWidget*, data_ptr)
 // class Scrollviewdemo
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
-class Scrollviewdemo : public finalcut::FDialog
+class Scrollviewdemo final : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit Scrollviewdemo (finalcut::FWidget* = 0);
+    explicit Scrollviewdemo (finalcut::FWidget* = nullptr);
 
-    // Destructor
-    ~Scrollviewdemo();
+  private:
+    // Method
+    void initLayout() override;
 
     // Event handler
-    virtual void onClose (finalcut::FCloseEvent*);
+    void onClose (finalcut::FCloseEvent*) override;
 
     // Callback method
-    void cb_quit (finalcut::FWidget* = 0, data_ptr = 0);
+    void cb_quit();
 
-    // Data Members
-    Scrollview sview;
-    finalcut::FButton quit_btn;
-    finalcut::FLabel label;
+    // Data members
+    Scrollview sview{this};
+    finalcut::FButton quit_btn{"&Quit", this};
+    finalcut::FLabel label{this};
 };
-#pragma pack(pop)
 
 
 //----------------------------------------------------------------------
 Scrollviewdemo::Scrollviewdemo (finalcut::FWidget* parent)
-  : finalcut::FDialog(parent)
-  , sview(this)
-  , quit_btn("&Quit", this)
-  , label(this)
+  : finalcut::FDialog{parent}
 {
-  setGeometry (16, 3, 50, 19);
-  setText ("Scrolling viewport example");
-
-  // The scrolling viewport widget
-  sview.setGeometry(3, 2, 44, 12);
-  sview.setScrollSize(188, 124);
-
   // Quit button
-  quit_btn.setGeometry(37, 15, 10, 1);
+  quit_btn.setGeometry(FPoint{37, 15}, FSize{10, 1});
 
   // Add function callback
   quit_btn.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &Scrollviewdemo::cb_quit)
+    this,
+    &Scrollviewdemo::cb_quit
   );
 
   // Text label
-  label.setGeometry(2, 1, 46, 1);
+  label.setGeometry(FPoint{2, 1}, FSize{46, 1});
   label.setEmphasis();
   label << L"Use scrollbars to change the viewport position";
 }
 
 //----------------------------------------------------------------------
-Scrollviewdemo::~Scrollviewdemo()
-{ }
-
-//----------------------------------------------------------------------
-void Scrollviewdemo::cb_quit (finalcut::FWidget*, data_ptr)
+void Scrollviewdemo::initLayout()
 {
-  close();
+  FDialog::setGeometry (FPoint{16, 3}, FSize{50, 19});
+  FDialog::setText ("Scrolling viewport example");
+
+  // The scrolling viewport widget
+  sview.setGeometry(FPoint{3, 2}, FSize{44, 12});
+  sview.setScrollSize(FSize{188, 124});
+  FDialog::initLayout();
 }
 
 //----------------------------------------------------------------------
@@ -263,20 +243,27 @@ void Scrollviewdemo::onClose (finalcut::FCloseEvent* ev)
   finalcut::FApplication::closeConfirmationDialog (this, ev);
 }
 
+//----------------------------------------------------------------------
+void Scrollviewdemo::cb_quit()
+{
+  close();
+}
+
 
 //----------------------------------------------------------------------
 //                               main part
 //----------------------------------------------------------------------
-int main (int argc, char* argv[])
+
+auto main (int argc, char* argv[]) -> int
 {
   // Create the application object
-  finalcut::FApplication app(argc, argv);
+  finalcut::FApplication app{argc, argv};
 
   // Create a simple dialog box
-  Scrollviewdemo svdemo(&app);
+  Scrollviewdemo svdemo{&app};
 
   // Set dialog main_dlg as main widget
-  app.setMainWidget(&svdemo);
+  finalcut::FWidget::setMainWidget(&svdemo);
 
   // Show and start the application
   svdemo.show();

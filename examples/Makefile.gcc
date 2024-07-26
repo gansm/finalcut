@@ -1,5 +1,5 @@
 #-----------------------------------------------------------------------------
-# Makefile for Final Cut
+# Makefile for FINAL CUT
 #-----------------------------------------------------------------------------
 
 # This is where make install will install the executable
@@ -9,22 +9,22 @@ BINDIR = /usr/local/bin
 CXX = g++
 SRCS = $(wildcard *.cpp)
 OBJS = $(SRCS:%.cpp=%)
-CCXFLAGS = $(OPTIMIZE) $(PROFILE) $(DEBUG)
+CCXFLAGS = $(OPTIMIZE) $(PROFILE) $(DEBUG) -std=c++14
 MAKEFILE = -f Makefile.gcc
-LDFLAGS = -L../src -lfinal
-INCLUDES = -I../src/include -I/usr/include/final
+LDFLAGS = -L../final -lfinal
+INCLUDES = -I.. -I/usr/include
 RM = rm -f
 
 ifdef DEBUG
   OPTIMIZE = -O0
 else
-  OPTIMIZE = -O2
+  OPTIMIZE = -O3
 endif
 
 # $@ = name of the targets
 # $^ = all dependency (without double entries)
 .cpp:
-	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o $@ $^
+	$(CXX) $^ -o $@ $(CCXFLAGS) $(INCLUDES) $(LDFLAGS)
 
 all: $(OBJS)
 

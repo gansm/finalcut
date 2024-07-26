@@ -1,17 +1,17 @@
 /***********************************************************************
 * checklist.cpp - Example for FListView widget with checkboxes         *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2018 Markus Gans                                      *
+* Copyright 2017-2022 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -20,75 +20,64 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <array>
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <vector>
 
 #include <final/final.h>
+
+using finalcut::FPoint;
+using finalcut::FSize;
 
 
 //----------------------------------------------------------------------
 // class CheckList
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
-class CheckList : public finalcut::FDialog
+class CheckList final : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit CheckList (finalcut::FWidget* = 0);
-    // Destructor
-    ~CheckList();
+    explicit CheckList (finalcut::FWidget* = nullptr);
 
   private:
-    // Disable copy constructor
-    CheckList (const CheckList&);
-    // Disable assignment operator (=)
-    CheckList& operator = (const CheckList&);
-
     // Method
     void populate();
+    void initLayout() override;
+    void adjustSize() override;
 
     // Event handlers
-    virtual void onKeyPress (finalcut::FKeyEvent*);
-    virtual void onClose (finalcut::FCloseEvent*);
+    void onKeyPress (finalcut::FKeyEvent*) override;
+    void onClose (finalcut::FCloseEvent*) override;
 
     // Callback method
-    void cb_showList (finalcut::FWidget*, data_ptr);
+    void cb_showList();
 
-    // Data Members
-    finalcut::FListView  listView;
-    finalcut::FStatusBar status_bar;
+    // Data members
+    finalcut::FListView  listview{this};
+    finalcut::FStatusBar status_bar{this};
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 CheckList::CheckList (finalcut::FWidget* parent)
-  : finalcut::FDialog(parent)
-  , listView(this)
-  , status_bar(this)
+  : finalcut::FDialog{parent}
 {
-  setText (L"Shopping list");
-  setShadow();
-  setGeometry (int(1 + (parent->getWidth() - 30) / 2), 5, 30, 13);
-  listView.ignorePadding();
-  listView.setGeometry (1, 2, getWidth(), getHeight() - 1);
+  setShadow();  // Instead of the transparent window shadow
+  listview.ignorePadding();
 
   // Add columns to the view
-  listView.addColumn ("Item");
-  listView.addColumn ("Priority", 12);
+  listview.addColumn ("Item");
+  listview.addColumn ("Priority", 9);
 
   // Set the type of sorting
-  listView.setColumnSortType (1, finalcut::fc::by_name);
-  listView.setColumnSortType (2, finalcut::fc::by_name);
+  listview.setColumnSortType (1, finalcut::SortType::Name);
+  listview.setColumnSortType (2, finalcut::SortType::Name);
 
   // Statusbar at the bottom
-  finalcut::FString separator;
-  separator << ' ' << wchar_t(finalcut::fc::BoxDrawingsVertical) << ' ';
-  listView.setStatusbarMessage ( finalcut::FString()
+  finalcut::FString separator{};
+  separator << ' ' << finalcut::UniChar::BoxDrawingsVertical << ' ';
+  listview.setStatusbarMessage ( finalcut::FString{}
                                  << "<Q> exit" << separator
                                  << "<Space> select an item" << separator
                                  << "<Enter> see your pick list");
@@ -97,44 +86,57 @@ CheckList::CheckList (finalcut::FWidget* parent)
   populate();
 
   // Add callback method
-  listView.addCallback
-  (
-    "clicked",
-    F_METHOD_CALLBACK (this, &CheckList::cb_showList)
-  );
+  listview.addCallback("clicked", this, &CheckList::cb_showList);
 }
-
-//----------------------------------------------------------------------
-CheckList::~CheckList()  // destructor
-{ }
 
 //----------------------------------------------------------------------
 void CheckList::populate()
 {
-  std::string list[][2] =
-  {
-    { "Milk", "Highest" },
-    { "Cheese", "High" },
-    { "Yoghurt", "Medium" },
-    { "Bread", "Low" },
-    { "Eggs", "High" },
-    { "Toothpaste", "Medium" },
-    { "Apples", "Lowest" },
-    { "Bananas", "Medium" },
-    { "Fish", "Medium" },
-    { "Lemons", "Low" }
-  };
+  constexpr std::array<std::array<const char*, 2>, 10> list =
+  {{
+    {{ "Milk", "Highest" }},
+    {{ "Cheese", "High" }},
+    {{ "Yoghurt", "Medium" }},
+    {{ "Bread", "Low" }},
+    {{ "Eggs", "High" }},
+    {{ "Toothpaste", "Medium" }},
+    {{ "Apples", "Lowest" }},
+    {{ "Bananas", "Medium" }},
+    {{ "Fish", "Medium" }},
+    {{ "Lemons", "Low" }}
+  }};
 
-  const int lastItem = int(sizeof(list) / sizeof(list[0])) - 1;
-
-  for (int i = 0; i <= lastItem; i++)
+  for (const auto& line : list)
   {
-    const finalcut::FStringList line (&list[i][0], &list[i][0] + 2);
-    finalcut::FObject::FObjectIterator iter = listView.insert (line);
-    finalcut::FListViewItem* item = \
-        static_cast<finalcut::FListViewItem*>(*iter);
+    const finalcut::FStringList string_line (line.cbegin(), line.cend());
+    auto iter = listview.insert (string_line);
+    auto item = static_cast<finalcut::FListViewItem*>(*iter);
     item->setCheckable(true);
   }
+}
+
+//----------------------------------------------------------------------
+void CheckList::initLayout()
+{
+  finalcut::FDialog::setText (L"Shopping list");
+  const auto is_newfont = finalcut::FVTerm::getFOutput()->isNewFont();
+  const std::size_t nf_offset = is_newfont ? 1 : 0;
+  listview.setGeometry ( FPoint{1 + int(nf_offset), 2}
+                       , FSize{getWidth() - nf_offset, getHeight() - 1} );
+  finalcut::FDialog::initLayout();
+}
+
+//----------------------------------------------------------------------
+void CheckList::adjustSize()
+{
+  const auto is_newfont = finalcut::FVTerm::getFOutput()->isNewFont();
+  const std::size_t nf_offset = is_newfont ? 1 : 0;
+  const std::size_t w{28 + nf_offset};
+  const std::size_t h{13};
+  const int x = 1 + int((getDesktopWidth() - getWidth()) / 2);
+  const int y = 5;
+  setGeometry (FPoint{x, y}, FSize{w, h}, false);
+  finalcut::FDialog::adjustSize();
 }
 
 //----------------------------------------------------------------------
@@ -143,9 +145,7 @@ void CheckList::onKeyPress (finalcut::FKeyEvent* ev)
   if ( ! ev )
     return;
 
-  if ( ev->key() == 'q'
-    || ev->key() == finalcut::fc::Fkey_escape
-    || ev->key() == finalcut::fc::Fkey_escape_mintty )
+  if ( ev->key() == finalcut::FKey('q') || isEscapeKey(ev->key()) )
   {
     close();
     ev->accept();
@@ -161,21 +161,14 @@ void CheckList::onClose (finalcut::FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void CheckList::cb_showList (finalcut::FWidget*, data_ptr)
+void CheckList::cb_showList()
 {
-  finalcut::FListViewIterator iter = listView.beginOfList();
-  finalcut::FString shopping_list;
+  finalcut::FString shopping_list{};
 
-  while ( iter != listView.endOfList() )
+  for (const auto& item : listview.getData())
   {
-    const finalcut::FListViewItem* item = \
-        static_cast<finalcut::FListViewItem*>(*iter);
-
     if ( item->isChecked() )
-      shopping_list << wchar_t(finalcut::fc::Bullet) << ' '
-                    << item->getText(1) << '\n';
-
-    ++iter;
+      shopping_list << finalcut::UniChar::Bullet << ' ' << item->getText(1) << '\n';
   }
 
   if ( shopping_list.isEmpty() )
@@ -193,7 +186,7 @@ void CheckList::cb_showList (finalcut::FWidget*, data_ptr)
 //                               main part
 //----------------------------------------------------------------------
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   // Create the application object
   finalcut::FApplication app(argc, argv);
@@ -202,7 +195,7 @@ int main (int argc, char* argv[])
   CheckList d(&app);
 
   // Set dialog d as main widget
-  app.setMainWidget(&d);
+  finalcut::FWidget::setMainWidget(&d);
 
   // Show and start the application
   d.show();

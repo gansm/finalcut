@@ -1,17 +1,17 @@
 /***********************************************************************
 * frect-test.cpp - FRect unit tests                                    *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018 Markus Gans                                           *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -28,25 +28,23 @@
 #include <cppunit/TestResultCollector.h>
 #include <cppunit/TestRunner.h>
 
+#include <utility>
 #include <final/final.h>
 
 //----------------------------------------------------------------------
 // class FRectTest
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FRectTest : public CPPUNIT_NS::TestFixture
 {
   public:
-    FRectTest()
-    { }
+    FRectTest() = default;
 
   protected:
     void classNameTest();
     void noArgumentTest();
     void copyConstructorTest();
+    void moveConstructorTest();
     void assignmentTest();
     void equalTest();
     void notEqualTest();
@@ -54,6 +52,7 @@ class FRectTest : public CPPUNIT_NS::TestFixture
     void subtractionTest();
     void referenceTest();
     void moveTest();
+    void scaleTest();
     void containsTest();
     void overlapTest();
     void intersectTest();
@@ -69,6 +68,7 @@ class FRectTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (classNameTest);
     CPPUNIT_TEST (noArgumentTest);
     CPPUNIT_TEST (copyConstructorTest);
+    CPPUNIT_TEST (moveConstructorTest);
     CPPUNIT_TEST (assignmentTest);
     CPPUNIT_TEST (equalTest);
     CPPUNIT_TEST (notEqualTest);
@@ -76,6 +76,7 @@ class FRectTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (subtractionTest);
     CPPUNIT_TEST (referenceTest);
     CPPUNIT_TEST (moveTest);
+    CPPUNIT_TEST (scaleTest);
     CPPUNIT_TEST (containsTest);
     CPPUNIT_TEST (overlapTest);
     CPPUNIT_TEST (intersectTest);
@@ -86,27 +87,28 @@ class FRectTest : public CPPUNIT_NS::TestFixture
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
 };
-#pragma pack(pop)
+
 
 //----------------------------------------------------------------------
 void FRectTest::classNameTest()
 {
   finalcut::FRect r;
-  const char* const classname = r.getClassName();
-  CPPUNIT_ASSERT ( std::strcmp(classname, "FRect") == 0 );
+  const finalcut::FString& classname = r.getClassName();
+  CPPUNIT_ASSERT ( classname == "FRect" );
 }
 
 //----------------------------------------------------------------------
 void FRectTest::noArgumentTest()
 {
-  const finalcut::FRect rectangle;
+  const finalcut::FRect rectangle{};
   CPPUNIT_ASSERT ( rectangle.getX1() == 0 );
   CPPUNIT_ASSERT ( rectangle.getY1() == 0 );
   CPPUNIT_ASSERT ( rectangle.getX2() == -1 );
   CPPUNIT_ASSERT ( rectangle.getY2() == -1 );
-  CPPUNIT_ASSERT ( rectangle.isNull() );
+  CPPUNIT_ASSERT ( rectangle.isEmpty() );
   CPPUNIT_ASSERT ( rectangle.getWidth() == 0 );
   CPPUNIT_ASSERT ( rectangle.getHeight() == 0 );
+  CPPUNIT_ASSERT ( rectangle.getSize() == finalcut::FSize(0, 0) );
   CPPUNIT_ASSERT ( rectangle.getPos() == finalcut::FPoint(0, 0) );
   CPPUNIT_ASSERT ( rectangle.getUpperLeftPos() == finalcut::FPoint(0, 0) );
   CPPUNIT_ASSERT ( rectangle.getUpperRightPos() == finalcut::FPoint(-1, 0) );
@@ -121,9 +123,26 @@ void FRectTest::copyConstructorTest()
   const finalcut::FRect r2 (r1);
   CPPUNIT_ASSERT ( r2.getX() == 1 );
   CPPUNIT_ASSERT ( r2.getY() == 1 );
-  CPPUNIT_ASSERT ( ! r2.isNull() );
+  CPPUNIT_ASSERT ( ! r2.isEmpty() );
   CPPUNIT_ASSERT ( r2.getWidth() == 20 );
   CPPUNIT_ASSERT ( r2.getHeight() == 10 );
+}
+
+//----------------------------------------------------------------------
+void FRectTest::moveConstructorTest()
+{
+  finalcut::FRect r1(3, 3, 15, 7);
+  const finalcut::FRect r2 (std::move(r1));
+  CPPUNIT_ASSERT ( r1.getX() == 3 );       // r1 is used after move
+  CPPUNIT_ASSERT ( r1.getY() == 3 );       // r1 is used after move
+  CPPUNIT_ASSERT ( ! r1.isEmpty() );       // r1 is used after move
+  CPPUNIT_ASSERT ( r1.getWidth() == 15 );  // r1 is used after move
+  CPPUNIT_ASSERT ( r1.getHeight() == 7 );  // r1 is used after move
+  CPPUNIT_ASSERT ( r2.getX() == 3 );
+  CPPUNIT_ASSERT ( r2.getY() == 3 );
+  CPPUNIT_ASSERT ( ! r2.isEmpty() );
+  CPPUNIT_ASSERT ( r2.getWidth() == 15 );
+  CPPUNIT_ASSERT ( r2.getHeight() == 7 );
 }
 
 //----------------------------------------------------------------------
@@ -136,6 +155,7 @@ void FRectTest::assignmentTest()
   CPPUNIT_ASSERT ( r1.getY2() == 18 );
   CPPUNIT_ASSERT ( r1.getWidth() == 45 );
   CPPUNIT_ASSERT ( r1.getHeight() == 14 );
+  CPPUNIT_ASSERT ( r1.getSize() == finalcut::FSize(45, 14) );
 
   finalcut::FRect r2 (r1);
   CPPUNIT_ASSERT ( r2 == r1 );
@@ -145,6 +165,7 @@ void FRectTest::assignmentTest()
   CPPUNIT_ASSERT ( r2.getY2() == 18 );
   CPPUNIT_ASSERT ( r2.getWidth() == 45 );
   CPPUNIT_ASSERT ( r2.getHeight() == 14 );
+  CPPUNIT_ASSERT ( r2.getSize() == finalcut::FSize(45, 14) );
 
   finalcut::FRect r3(3, 3, 10, 10);
   r3 = r2;
@@ -155,6 +176,7 @@ void FRectTest::assignmentTest()
   CPPUNIT_ASSERT ( r3.getY2() == 18 );
   CPPUNIT_ASSERT ( r3.getWidth() == 45 );
   CPPUNIT_ASSERT ( r3.getHeight() == 14 );
+  CPPUNIT_ASSERT ( r3.getSize() == finalcut::FSize(45, 14) );
 
   r3.setPos(finalcut::FPoint(1, 1));
   CPPUNIT_ASSERT ( r3 != r2 );
@@ -164,6 +186,7 @@ void FRectTest::assignmentTest()
   CPPUNIT_ASSERT ( r3.getY2() == 14 );
   CPPUNIT_ASSERT ( r3.getWidth() == 45 );
   CPPUNIT_ASSERT ( r3.getHeight() == 14 );
+  CPPUNIT_ASSERT ( r3.getSize() == finalcut::FSize(45, 14) );
 
   r3.setPos(-5, -5);
   CPPUNIT_ASSERT ( r3 != r2 );
@@ -173,6 +196,7 @@ void FRectTest::assignmentTest()
   CPPUNIT_ASSERT ( r3.getY2() == 8 );
   CPPUNIT_ASSERT ( r3.getWidth() == 45 );
   CPPUNIT_ASSERT ( r3.getHeight() == 14 );
+  CPPUNIT_ASSERT ( r3.getSize() == finalcut::FSize(45, 14) );
 
   r3.setRect(-3, -3, 6, 6);
   CPPUNIT_ASSERT ( r3.getX1() == -3 );
@@ -181,6 +205,16 @@ void FRectTest::assignmentTest()
   CPPUNIT_ASSERT ( r3.getY2() == 2 );
   CPPUNIT_ASSERT ( r3.getWidth() == 6 );
   CPPUNIT_ASSERT ( r3.getHeight() == 6 );
+  CPPUNIT_ASSERT ( r3.getSize() == finalcut::FSize(6, 6) );
+
+  r3.setRect(finalcut::FPoint(34, 8), finalcut::FSize(40, 12));
+  CPPUNIT_ASSERT ( r3.getX1() == 34 );
+  CPPUNIT_ASSERT ( r3.getY1() == 8 );
+  CPPUNIT_ASSERT ( r3.getX2() == 73 );
+  CPPUNIT_ASSERT ( r3.getY2() == 19 );
+  CPPUNIT_ASSERT ( r3.getWidth() == 40 );
+  CPPUNIT_ASSERT ( r3.getHeight() == 12 );
+  CPPUNIT_ASSERT ( r3.getSize() == finalcut::FSize(40, 12) );
 
   r3.setRect(r1);
   CPPUNIT_ASSERT ( r3 == r1 );
@@ -190,6 +224,7 @@ void FRectTest::assignmentTest()
   CPPUNIT_ASSERT ( r3.getY2() == 18 );
   CPPUNIT_ASSERT ( r3.getWidth() == 45 );
   CPPUNIT_ASSERT ( r3.getHeight() == 14 );
+  CPPUNIT_ASSERT ( r3.getSize() == finalcut::FSize(45, 14) );
 
   r3.setX1(1);
   CPPUNIT_ASSERT ( r3 != r1 );
@@ -199,6 +234,7 @@ void FRectTest::assignmentTest()
   CPPUNIT_ASSERT ( r3.getY2() == 18 );
   CPPUNIT_ASSERT ( r3.getWidth() == 47 );
   CPPUNIT_ASSERT ( r3.getHeight() == 14 );
+  CPPUNIT_ASSERT ( r3.getSize() == finalcut::FSize(47, 14) );
 
   r3.setY1(1);
   CPPUNIT_ASSERT ( r3.getX1() == 1 );
@@ -207,6 +243,7 @@ void FRectTest::assignmentTest()
   CPPUNIT_ASSERT ( r3.getY2() == 18 );
   CPPUNIT_ASSERT ( r3.getWidth() == 47 );
   CPPUNIT_ASSERT ( r3.getHeight() == 18 );
+  CPPUNIT_ASSERT ( r3.getSize() == finalcut::FSize(47, 18) );
 
   r3.setX2(10);
   CPPUNIT_ASSERT ( r3.getX1() == 1 );
@@ -215,6 +252,7 @@ void FRectTest::assignmentTest()
   CPPUNIT_ASSERT ( r3.getY2() == 18 );
   CPPUNIT_ASSERT ( r3.getWidth() == 10 );
   CPPUNIT_ASSERT ( r3.getHeight() == 18 );
+  CPPUNIT_ASSERT ( r3.getSize() == finalcut::FSize(10, 18) );
 
   r3.setY2(10);
   CPPUNIT_ASSERT ( r3.getX1() == 1 );
@@ -223,6 +261,7 @@ void FRectTest::assignmentTest()
   CPPUNIT_ASSERT ( r3.getY2() == 10 );
   CPPUNIT_ASSERT ( r3.getWidth() == 10 );
   CPPUNIT_ASSERT ( r3.getHeight() == 10 );
+  CPPUNIT_ASSERT ( r3.getSize() == finalcut::FSize(10, 10) );
 
   r3.setX(2);
   CPPUNIT_ASSERT ( r3.getX1() == 2 );
@@ -231,6 +270,7 @@ void FRectTest::assignmentTest()
   CPPUNIT_ASSERT ( r3.getY2() == 10 );
   CPPUNIT_ASSERT ( r3.getWidth() == 10 );
   CPPUNIT_ASSERT ( r3.getHeight() == 10 );
+  CPPUNIT_ASSERT ( r3.getSize() == finalcut::FSize(10, 10) );
 
   r3.setY(2);
   CPPUNIT_ASSERT ( r3.getX1() == 2 );
@@ -239,6 +279,7 @@ void FRectTest::assignmentTest()
   CPPUNIT_ASSERT ( r3.getY2() == 11 );
   CPPUNIT_ASSERT ( r3.getWidth() == 10 );
   CPPUNIT_ASSERT ( r3.getHeight() == 10 );
+  CPPUNIT_ASSERT ( r3.getSize() == finalcut::FSize(10, 10) );
 
   r3.setWidth(8);
   CPPUNIT_ASSERT ( r3.getX1() == 2 );
@@ -247,6 +288,7 @@ void FRectTest::assignmentTest()
   CPPUNIT_ASSERT ( r3.getY2() == 11 );
   CPPUNIT_ASSERT ( r3.getWidth() == 8 );
   CPPUNIT_ASSERT ( r3.getHeight() == 10 );
+  CPPUNIT_ASSERT ( r3.getSize() == finalcut::FSize(8, 10) );
 
   r3.setHeight(8);
   CPPUNIT_ASSERT ( r3.getX1() == 2 );
@@ -255,6 +297,7 @@ void FRectTest::assignmentTest()
   CPPUNIT_ASSERT ( r3.getY2() == 9 );
   CPPUNIT_ASSERT ( r3.getWidth() == 8 );
   CPPUNIT_ASSERT ( r3.getHeight() == 8 );
+  CPPUNIT_ASSERT ( r3.getSize() == finalcut::FSize(8, 8) );
 
   r3.setSize(5, 5);
   CPPUNIT_ASSERT ( r3.getX1() == 2 );
@@ -263,6 +306,17 @@ void FRectTest::assignmentTest()
   CPPUNIT_ASSERT ( r3.getY2() == 6 );
   CPPUNIT_ASSERT ( r3.getWidth() == 5 );
   CPPUNIT_ASSERT ( r3.getHeight() == 5 );
+  CPPUNIT_ASSERT ( r3.getSize() == finalcut::FSize(5, 5) );
+
+  const finalcut::FSize s(6, 6);
+  r3.setSize(s);
+  CPPUNIT_ASSERT ( r3.getX1() == 2 );
+  CPPUNIT_ASSERT ( r3.getY1() == 2 );
+  CPPUNIT_ASSERT ( r3.getX2() == 7 );
+  CPPUNIT_ASSERT ( r3.getY2() == 7 );
+  CPPUNIT_ASSERT ( r3.getWidth() == 6 );
+  CPPUNIT_ASSERT ( r3.getHeight() == 6 );
+  CPPUNIT_ASSERT ( r3.getSize() == finalcut::FSize(6, 6) );
 
   const finalcut::FPoint p1(3, 3);
   const finalcut::FPoint p2(30, 10);
@@ -273,6 +327,7 @@ void FRectTest::assignmentTest()
   CPPUNIT_ASSERT ( r3.getY2() == 10 );
   CPPUNIT_ASSERT ( r3.getWidth() == 28 );
   CPPUNIT_ASSERT ( r3.getHeight() == 8 );
+  CPPUNIT_ASSERT ( r3.getSize() == finalcut::FSize(28, 8) );
 
   r3.setCoordinates (10, 12, 40, 50);
   CPPUNIT_ASSERT ( r3.getX1() == 10 );
@@ -281,6 +336,7 @@ void FRectTest::assignmentTest()
   CPPUNIT_ASSERT ( r3.getY2() == 50 );
   CPPUNIT_ASSERT ( r3.getWidth() == 31 );
   CPPUNIT_ASSERT ( r3.getHeight() == 39 );
+  CPPUNIT_ASSERT ( r3.getSize() == finalcut::FSize(31, 39) );
 
   finalcut::FRect r4(p1, p2);
   CPPUNIT_ASSERT ( r4.getX1() == 3 );
@@ -289,6 +345,35 @@ void FRectTest::assignmentTest()
   CPPUNIT_ASSERT ( r4.getY2() == 10 );
   CPPUNIT_ASSERT ( r4.getWidth() == 28 );
   CPPUNIT_ASSERT ( r4.getHeight() == 8 );
+  CPPUNIT_ASSERT ( r4.getSize() == finalcut::FSize(28, 8) );
+
+  finalcut::FRect r5(finalcut::FPoint(2, 9), finalcut::FSize(10, 10));
+  CPPUNIT_ASSERT ( r5.getX1() == 2 );
+  CPPUNIT_ASSERT ( r5.getY1() == 9 );
+  CPPUNIT_ASSERT ( r5.getX2() == 11 );
+  CPPUNIT_ASSERT ( r5.getY2() == 18 );
+  CPPUNIT_ASSERT ( r5.getWidth() == 10 );
+  CPPUNIT_ASSERT ( r5.getHeight() == 10 );
+  CPPUNIT_ASSERT ( r5.getSize() == finalcut::FSize(10, 10) );
+
+  finalcut::FRect r6;
+  r6 = std::move(r5);  // Move assignment operator
+  CPPUNIT_ASSERT ( r5.getX1() == 2 );                          // r5 is used after move
+  CPPUNIT_ASSERT ( r5.getY1() == 9 );                          // r5 is used after move
+  CPPUNIT_ASSERT ( r5.getX2() == 11 );                         // r5 is used after move
+  CPPUNIT_ASSERT ( r5.getY2() == 18 );                         // r5 is used after move
+  CPPUNIT_ASSERT ( ! r5.isEmpty() );                           // r5 is used after move
+  CPPUNIT_ASSERT ( r5.getWidth() == 10 );                      // r5 is used after move
+  CPPUNIT_ASSERT ( r5.getHeight() == 10 );                     // r5 is used after move
+  CPPUNIT_ASSERT ( r5.getSize() == finalcut::FSize(10, 10) );  // r5 is used after move
+  CPPUNIT_ASSERT ( r5.getPos() == finalcut::FPoint(2, 9) );    // r5 is used after move
+  CPPUNIT_ASSERT ( r6.getX1() == 2 );
+  CPPUNIT_ASSERT ( r6.getY1() == 9 );
+  CPPUNIT_ASSERT ( r6.getX2() == 11 );
+  CPPUNIT_ASSERT ( r6.getY2() == 18 );
+  CPPUNIT_ASSERT ( r6.getWidth() == 10 );
+  CPPUNIT_ASSERT ( r6.getHeight() == 10 );
+  CPPUNIT_ASSERT ( r6.getSize() == finalcut::FSize(10, 10) );
 }
 
 //----------------------------------------------------------------------
@@ -299,8 +384,8 @@ void FRectTest::equalTest()
   CPPUNIT_ASSERT ( r1 == r2 );
   CPPUNIT_ASSERT ( finalcut::FRect(1, 2, 10, 20) == r2 );
   CPPUNIT_ASSERT ( r1 == finalcut::FRect(1, 2, 10, 20) );
-  const finalcut::FRect r3;
-  const finalcut::FRect r4;
+  const finalcut::FRect r3{};
+  const finalcut::FRect r4{};
   CPPUNIT_ASSERT ( r3 == r4 );
 }
 
@@ -320,28 +405,30 @@ void FRectTest::notEqualTest()
 void FRectTest::additionTest()
 {
   const finalcut::FRect r1 (1, 2, 10, 10);
-  const finalcut::FPoint p (3, 5);
-  const finalcut::FRect r2 = r1 + p;
+  const finalcut::FSize s (3, 5);
+  const finalcut::FRect r2 = r1 + s;
   CPPUNIT_ASSERT ( r2.getX1() == 1 );
   CPPUNIT_ASSERT ( r2.getY1() == 2 );
   CPPUNIT_ASSERT ( r2.getX2() == 13 );
   CPPUNIT_ASSERT ( r2.getY2() == 16 );
   CPPUNIT_ASSERT ( r2.getWidth() == 13 );
   CPPUNIT_ASSERT ( r2.getHeight() == 15 );
+  CPPUNIT_ASSERT ( r2.getSize() == finalcut::FSize(13, 15) );
 }
 
 //----------------------------------------------------------------------
 void FRectTest::subtractionTest()
 {
   const finalcut::FRect r1 (2, 2, 12, 12);
-  const finalcut::FPoint p (5, 5);
-  const finalcut::FRect r2 = r1 - p;
+  const finalcut::FSize s (5, 5);
+  const finalcut::FRect r2 = r1 - s;
   CPPUNIT_ASSERT ( r2.getX1() == 2 );
   CPPUNIT_ASSERT ( r2.getY1() == 2 );
   CPPUNIT_ASSERT ( r2.getX2() == 8 );
   CPPUNIT_ASSERT ( r2.getY2() == 8 );
   CPPUNIT_ASSERT ( r2.getWidth() == 7 );
   CPPUNIT_ASSERT ( r2.getHeight() == 7 );
+  CPPUNIT_ASSERT ( r2.getSize() == finalcut::FSize(7, 7) );
 }
 
 //----------------------------------------------------------------------
@@ -385,15 +472,17 @@ void FRectTest::moveTest()
   CPPUNIT_ASSERT ( r1.getY() == 2 );
   CPPUNIT_ASSERT ( r1.getWidth() == 10 );
   CPPUNIT_ASSERT ( r1.getHeight() == 20 );
+  CPPUNIT_ASSERT ( r1.getSize() == finalcut::FSize(10, 20) );
   CPPUNIT_ASSERT ( r1.getX2() == 10 );
   CPPUNIT_ASSERT ( r1.getY2() == 21 );
 
-  const finalcut::FPoint p1 (2,3);
+  const finalcut::FPoint p1 (2, 3);
   r1.move(p1);
   CPPUNIT_ASSERT ( r1.getX() == 3 );
   CPPUNIT_ASSERT ( r1.getY() == 5 );
   CPPUNIT_ASSERT ( r1.getWidth() == 10 );
   CPPUNIT_ASSERT ( r1.getHeight() == 20 );
+  CPPUNIT_ASSERT ( r1.getSize() == finalcut::FSize(10, 20) );
   CPPUNIT_ASSERT ( r1.getX2() == 12 );
   CPPUNIT_ASSERT ( r1.getY2() == 24 );
 
@@ -402,8 +491,41 @@ void FRectTest::moveTest()
   CPPUNIT_ASSERT ( r1.getY() == 0 );
   CPPUNIT_ASSERT ( r1.getWidth() == 10 );
   CPPUNIT_ASSERT ( r1.getHeight() == 20 );
+  CPPUNIT_ASSERT ( r1.getSize() == finalcut::FSize(10, 20) );
   CPPUNIT_ASSERT ( r1.getX2() == 7 );
   CPPUNIT_ASSERT ( r1.getY2() == 19 );
+}
+
+//----------------------------------------------------------------------
+void FRectTest::scaleTest()
+{
+  finalcut::FRect r1 (finalcut::FPoint(5, 5), finalcut::FSize(15, 15));
+  CPPUNIT_ASSERT ( r1.getX() == 5 );
+  CPPUNIT_ASSERT ( r1.getY() == 5 );
+  CPPUNIT_ASSERT ( r1.getWidth() == 15 );
+  CPPUNIT_ASSERT ( r1.getHeight() == 15 );
+  CPPUNIT_ASSERT ( r1.getSize() == finalcut::FSize(15, 15) );
+  CPPUNIT_ASSERT ( r1.getX2() == 19 );
+  CPPUNIT_ASSERT ( r1.getY2() == 19 );
+
+  const finalcut::FPoint p1 (-2, -3);
+  r1.scaleBy(p1);
+  CPPUNIT_ASSERT ( r1.getX() == 5 );
+  CPPUNIT_ASSERT ( r1.getY() == 5 );
+  CPPUNIT_ASSERT ( r1.getWidth() == 13 );
+  CPPUNIT_ASSERT ( r1.getHeight() == 12 );
+  CPPUNIT_ASSERT ( r1.getSize() == finalcut::FSize(13, 12) );
+  CPPUNIT_ASSERT ( r1.getX2() == 17 );
+  CPPUNIT_ASSERT ( r1.getY2() == 16 );
+
+  r1.scaleBy(1, -1);
+  CPPUNIT_ASSERT ( r1.getX() == 5 );
+  CPPUNIT_ASSERT ( r1.getY() == 5 );
+  CPPUNIT_ASSERT ( r1.getWidth() == 14 );
+  CPPUNIT_ASSERT ( r1.getHeight() == 11 );
+  CPPUNIT_ASSERT ( r1.getSize() == finalcut::FSize(14, 11) );
+  CPPUNIT_ASSERT ( r1.getX2() == 18 );
+  CPPUNIT_ASSERT ( r1.getY2() == 15 );
 }
 
 //----------------------------------------------------------------------
@@ -450,6 +572,7 @@ void FRectTest::intersectTest()
   CPPUNIT_ASSERT ( r3.getY() == 2 );
   CPPUNIT_ASSERT ( r3.getWidth() == 5 );
   CPPUNIT_ASSERT ( r3.getHeight() == 5 );
+  CPPUNIT_ASSERT ( r3.getSize() == finalcut::FSize(5, 5) );
   CPPUNIT_ASSERT ( r3.getX2() == 5 );
   CPPUNIT_ASSERT ( r3.getY2() == 6 );
 
@@ -459,6 +582,7 @@ void FRectTest::intersectTest()
   CPPUNIT_ASSERT ( r3.getY() == 2 );
   CPPUNIT_ASSERT ( r3.getWidth() == 2 );
   CPPUNIT_ASSERT ( r3.getHeight() == 5 );
+  CPPUNIT_ASSERT ( r3.getSize() == finalcut::FSize(2, 5) );
   CPPUNIT_ASSERT ( r3.getX2() == 5 );
   CPPUNIT_ASSERT ( r3.getY2() == 6 );
 }
@@ -473,6 +597,7 @@ void FRectTest::combinedTest()
   CPPUNIT_ASSERT ( r3.getY() == 2 );
   CPPUNIT_ASSERT ( r3.getWidth() == 5 );
   CPPUNIT_ASSERT ( r3.getHeight() == 5 );
+  CPPUNIT_ASSERT ( r3.getSize() == finalcut::FSize(5, 5) );
   CPPUNIT_ASSERT ( r3.getX2() == 5 );
   CPPUNIT_ASSERT ( r3.getY2() == 6 );
 
@@ -482,6 +607,7 @@ void FRectTest::combinedTest()
   CPPUNIT_ASSERT ( r3.getY() == 2 );
   CPPUNIT_ASSERT ( r3.getWidth() == 8 );
   CPPUNIT_ASSERT ( r3.getHeight() == 6 );
+  CPPUNIT_ASSERT ( r3.getSize() == finalcut::FSize(8, 6) );
   CPPUNIT_ASSERT ( r3.getX2() == 8 );
   CPPUNIT_ASSERT ( r3.getY2() == 7 );
 }

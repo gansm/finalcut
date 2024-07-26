@@ -1,17 +1,17 @@
 /***********************************************************************
-* input-dialog.cpp - an input field example                            *
+* input-dialog.cpp - An input field example                            *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2022 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -22,114 +22,120 @@
 
 #include <final/final.h>
 
+using finalcut::FPoint;
+using finalcut::FSize;
 
 // function prototypes
-void cb_quit (finalcut::FWidget*, finalcut::FWidget::data_ptr);
-void cb_publish (finalcut::FWidget*, finalcut::FWidget::data_ptr);
+void cb_quit (const finalcut::FApplication&);
+void cb_publish (const finalcut::FCheckBox&, finalcut::FCheckBox&);
+
 
 //----------------------------------------------------------------------
 // callback functions
 //----------------------------------------------------------------------
-void cb_quit (finalcut::FWidget*, finalcut::FWidget::data_ptr data)
+void cb_quit (const finalcut::FApplication& app)
 {
-  finalcut::FApplication* app = static_cast<finalcut::FApplication*>(data);
-  app->quit();
+  app.quit();
 }
 
-void cb_publish (finalcut::FWidget* widget, finalcut::FWidget::data_ptr data)
+//----------------------------------------------------------------------
+void cb_publish ( const finalcut::FCheckBox& cbox1
+                , finalcut::FCheckBox& cbox2 )
 {
-  finalcut::FCheckBox* cbox1 = static_cast<finalcut::FCheckBox*>(widget);
-  finalcut::FCheckBox* cbox2 = static_cast<finalcut::FCheckBox*>(data);
-
-  if ( cbox1->isChecked() )
-    cbox2->setEnable();
+  if ( cbox1.isChecked() )
+    cbox2.setEnable();
   else
   {
-    cbox2->unsetChecked();
-    cbox2->setDisable();
+    cbox2.unsetChecked();
+    cbox2.setDisable();
   }
-  cbox2->redraw();
+
+  cbox2.redraw();
 }
 
 //----------------------------------------------------------------------
 //                               main part
 //----------------------------------------------------------------------
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   // Create the application object
-  finalcut::FApplication app(argc, argv);
+  finalcut::FApplication app{argc, argv};
 
   // Create a simple dialog box
-  finalcut::FDialog dgl(&app);
+  finalcut::FDialog dgl{&app};
   dgl.setText ("Data input");
-  dgl.setGeometry (4, 2, 37, 22);
-  dgl.setShadow();
+  dgl.setGeometry (FPoint{4, 2}, FSize{37, 22});
+  dgl.setShadow();  // Instead of the transparent window shadow
 
   // Create input fields
-  finalcut::FLineEdit name_field (&dgl);
-  finalcut::FLineEdit email_field (&dgl);
-  finalcut::FLineEdit org_field (&dgl);
-  finalcut::FLineEdit city_field (&dgl);
-  finalcut::FLineEdit st_field (&dgl);
-  finalcut::FLineEdit c_field (&dgl);
+  finalcut::FLineEdit name_field {&dgl};
+  finalcut::FLineEdit pw_field {&dgl};
+  finalcut::FLineEdit email_field {&dgl};
+  finalcut::FLineEdit city_field {&dgl};
+  finalcut::FLineEdit st_field {&dgl};
+  finalcut::FLineEdit c_field {&dgl};
+
+  // Set input type to password
+  pw_field.setInputType (finalcut::FLineEdit::InputType::Password);
 
   name_field.setLabelText (L"&Name");
+  pw_field.setLabelText (L"&Password");
   email_field.setLabelText (L"&Email");
-  org_field.setLabelText (L"Or&ganization");
   city_field.setLabelText (L"&City");
   st_field.setLabelText (L"&State");
   c_field.setLabelText (L"&Country");
 
-  name_field.setGeometry (15, 1, 19, 1);
-  email_field.setGeometry (15, 3, 19, 1);
-  org_field.setGeometry (15, 5, 19, 1);
-  city_field.setGeometry (15, 7, 19, 1);
-  st_field.setGeometry (15, 9, 19, 1);
-  c_field.setGeometry (15, 11, 4, 1);
+  name_field.setGeometry (FPoint{11, 1}, FSize{23, 1});
+  pw_field.setGeometry (FPoint{11, 3}, FSize{23, 1});
+  email_field.setGeometry (FPoint{11, 5}, FSize{23, 1});
+  city_field.setGeometry (FPoint{11, 7}, FSize{23, 1});
+  st_field.setGeometry (FPoint{11, 9}, FSize{23, 1});
+  c_field.setGeometry (FPoint{11, 11}, FSize{4, 1});
 
   // Create the button group
-  finalcut::FButtonGroup radioButtonGroup ("Sex", &dgl);
-  radioButtonGroup.setGeometry(2, 13, 13, 4);
+  finalcut::FButtonGroup radiobutton_group {"Sex", &dgl};
+  radiobutton_group.setGeometry(FPoint{2, 13}, FSize{13, 4});
 
   // Create radio buttons
-  finalcut::FRadioButton male ("&Male", &radioButtonGroup);
-  finalcut::FRadioButton female ("&Female", &radioButtonGroup);
-  male.setGeometry (1, 1, 8, 1);
-  female.setGeometry (1, 2, 10, 1);
+  finalcut::FRadioButton male {"&Male", &radiobutton_group};
+  finalcut::FRadioButton female {"&Female", &radiobutton_group};
+  male.setGeometry (FPoint{1, 1}, FSize{8, 1});
+  female.setGeometry (FPoint{1, 2}, FSize{10, 1});
 
   // Create another button group
-  finalcut::FButtonGroup checkButtonGroup ("&Data options", &dgl);
-  checkButtonGroup.setGeometry(16, 13, 19, 4);
+  finalcut::FButtonGroup checkbutton_group {"&Data options", &dgl};
+  checkbutton_group.setGeometry(FPoint{16, 13}, FSize{19, 4});
 
   // Create checkbox buttons
-  finalcut::FCheckBox check1 ("Save data", &checkButtonGroup);
-  finalcut::FCheckBox check2 ("Encrypt data", &checkButtonGroup);
-  check1.setGeometry (1, 1, 13, 1);
-  check2.setGeometry (1, 2, 16, 1);
+  finalcut::FCheckBox check1 {"Save data", &checkbutton_group};
+  finalcut::FCheckBox check2 {"Encrypt data", &checkbutton_group};
+  check1.setGeometry (FPoint{1, 1}, FSize{13, 1});
+  check2.setGeometry (FPoint{1, 2}, FSize{16, 1});
   check2.setDisable();
 
   // Create a OK button
-  finalcut::FButton btn("&OK", &dgl);
-  btn.setGeometry (24, 18, 10, 1);
+  finalcut::FButton btn {"&OK", &dgl};
+  btn.setGeometry (FPoint{24, 18}, FSize{10, 1});
 
   // Connect checkbox signal "clicked" with a callback function
   check1.addCallback
   (
     "clicked",
-    F_FUNCTION_CALLBACK (&cb_publish),
-    &check2
+    &cb_publish,
+    std::ref(check1),
+    std::ref(check2)
   );
 
   // Connect the button signal "clicked" with the callback function
   btn.addCallback
   (
     "clicked",
-    F_FUNCTION_CALLBACK (&cb_quit),
-    &app
+    &cb_quit,
+    std::ref(app)
   );
 
   // Set dialog object as main widget
-  app.setMainWidget(&dgl);
+  finalcut::FWidget::setMainWidget(&dgl);
 
   // Show and start the application
   dgl.show();

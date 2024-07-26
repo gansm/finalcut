@@ -1,17 +1,17 @@
 /***********************************************************************
 * timer.cpp - Using timer events                                       *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2018 Markus Gans                                      *
+* Copyright 2014-2022 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -27,61 +27,66 @@
 // class Timer
 //----------------------------------------------------------------------
 
-class Timer : public finalcut::FWidget
+class Timer final : public finalcut::FWidget
 {
   public:
     // Constructor
-    explicit Timer (finalcut::FWidget* = 0);
+    explicit Timer (finalcut::FWidget* = nullptr);
 
-  protected:
+  private:
     // Method
-    virtual void draw();
+    void draw() override;
 
     // Event handlers
-    virtual void onTimer (finalcut::FTimerEvent*);
-    virtual void onAccel (finalcut::FAccelEvent*);
+    void onTimer (finalcut::FTimerEvent*) override;
+    void onAccel (finalcut::FAccelEvent*) override;
 };
 
 //----------------------------------------------------------------------
 Timer::Timer (finalcut::FWidget* parent)
-  : finalcut::FWidget(parent)
+  : finalcut::FWidget{parent}
 {
-  addTimer (60000);        // 1-minute timer
-  int id = addTimer (50);  // 50-millisecond timer
-  addTimer (1000);         // 1-second timer
+  addTimer (60000);              // 1-minute timer
+  addTimer (250);                // 250-millisecond timer
+  addTimer (1000);               // 1-second timer
+  const int id = addTimer (50);  // 50-millisecond timer
   delTimer (id);
-  addTimer (250);          // 250-millisecond timer
 
-  wc.term_fg = finalcut::fc::Default;
-  wc.term_bg = finalcut::fc::Default;
+  getColorTheme()->term_fg = finalcut::FColor::Default;
+  getColorTheme()->term_bg = finalcut::FColor::Default;
 }
 
 //----------------------------------------------------------------------
 void Timer::draw()
 {
-  setPrintPos (1, 1);
-  print() << "---------------\n"
+  print() << finalcut::FPoint{1, 1}
+          << "---------------\n"
           << "Press Q to quit\n"
-          << "---------------\n";
-  setAreaCursor (1, 4, true, vdesktop);
+          << "---------------";
+  setAreaCursor ({1, 4}, true, getVirtualDesktop());
 }
 
 //----------------------------------------------------------------------
 void Timer::onTimer (finalcut::FTimerEvent* ev)
 {
-  bool is_last_line = false;
-  int timer_id = ev->timerId();
+  bool is_last_line{false};
+  const int timer_id = ev->getTimerId();
 
   if ( getPrintPos().getY() == int(getDesktopHeight()) )
     is_last_line = true;
 
-  setColor (FColor(1 + timer_id), finalcut::fc::Default);
-  print() << "Timer event, id " << timer_id << '\n';
-
   if ( is_last_line )
-    scrollAreaForward (vdesktop);
+  {
+    scrollAreaForward (getVirtualDesktop());
+    print() << '\r';
+  }
+  else
+    print() << '\n';
 
-  setAreaCursor (1, getPrintPos().getY(), true, vdesktop);
+  print() << finalcut::FColorPair {finalcut::FColor(1 + timer_id)}
+          << "Timer event, id " << timer_id;
+  setAreaCursor (getPrintPos(), true, getVirtualDesktop());
+  forceTerminalUpdate();
 }
 
 //----------------------------------------------------------------------
@@ -95,19 +100,23 @@ void Timer::onAccel (finalcut::FAccelEvent* ev)
 //----------------------------------------------------------------------
 //                               main part
 //----------------------------------------------------------------------
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   // Create the application object
-  finalcut::FApplication app(argc, argv);
-  app.setForegroundColor(finalcut::fc::Default);
-  app.setBackgroundColor(finalcut::fc::Default);
+  finalcut::FApplication app{argc, argv};
+  finalcut::FVTerm::setNonBlockingRead();
+
+  // Force terminal initialization without calling show()
+  app.initTerminal();
+  app.setForegroundColor(finalcut::FColor::Default);
+  app.setBackgroundColor(finalcut::FColor::Default);
 
   // Create a timer object t
-  Timer t(&app);
-  t.addAccelerator('q');
+  Timer t{&app};
+  t.addAccelerator(finalcut::FKey('q'));
 
   // Set the timer object t as main widget
-  app.setMainWidget(&t);
+  finalcut::FWidget::setMainWidget(&t);
 
   // Show and start the application
   t.show();

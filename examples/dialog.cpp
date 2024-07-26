@@ -1,17 +1,17 @@
 /***********************************************************************
 * dialog.cpp - A FDialog example                                       *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2022 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -22,63 +22,65 @@
 
 #include <final/final.h>
 
+using finalcut::FPoint;
+using finalcut::FSize;
+
 // function prototype
-void cb_quit (finalcut::FWidget*, finalcut::FWidget::data_ptr);
+void cb_quit (const finalcut::FApplication&);
 
 
 //----------------------------------------------------------------------
 // callback function
 //----------------------------------------------------------------------
-void cb_quit (finalcut::FWidget*, finalcut::FWidget::data_ptr data)
+void cb_quit (const finalcut::FApplication& app)
 {
-  finalcut::FApplication* app = static_cast<finalcut::FApplication*>(data);
-  app->quit();
+  app.quit();
 }
 
 
 //----------------------------------------------------------------------
 //                               main part
 //----------------------------------------------------------------------
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   // Create the application object
-  finalcut::FApplication app(argc, argv);
+  finalcut::FApplication app{argc, argv};
 
   // Create a simple dialog box
-  finalcut::FDialog dgl(&app);
+  finalcut::FDialog dgl{&app};
   dgl.setText ("FDialog");
-  dgl.setGeometry (4, 3, 41, 11);
+  dgl.setGeometry (FPoint{4, 3}, FSize{41, 11});
 
   // Create text labels
-  finalcut::FLabel label_1(&dgl);
-  finalcut::FLabel label_2(&dgl);
+  finalcut::FLabel label_1{&dgl};
+  finalcut::FLabel label_2{&dgl};
 
-  label_1 << wchar_t(finalcut::fc::BlackUpPointingTriangle)
-          << std::wstring(L"\n")
-          << wchar_t(finalcut::fc::BoxDrawingsUpAndRight)
-          << finalcut::FString(2, wchar_t(finalcut::fc::BoxDrawingsHorizontal))
+  label_1 << finalcut::UniChar::BlackUpPointingTriangle
+          << std::wstring{L"\n"}
+          << finalcut::UniChar::BoxDrawingsUpAndRight
+          << finalcut::FString{2, finalcut::UniChar::BoxDrawingsHorizontal}
           << " Double click the title bar button,";
   label_2 << "press Q on the keyboard,\n"
           << "or push the button below to exit\n"
           << "the program.";
 
-  label_1.setGeometry (1, 1, 38, 2);
-  label_2.setGeometry (5, 3, 34, 3);
+  label_1.setGeometry (FPoint{1, 1}, FSize{38, 2});
+  label_2.setGeometry (FPoint{5, 3}, FSize{34, 3});
 
   // Create the quit button
-  finalcut::FButton btn("&Quit", &dgl);
-  btn.setGeometry (16, 7, 9, 1);
+  finalcut::FButton btn{"&Quit", &dgl};
+  btn.setGeometry (FPoint{16, 7}, FSize{9, 1});
 
   // Connect the button signal "clicked" with the callback function
   btn.addCallback
   (
     "clicked",
-    F_FUNCTION_CALLBACK (&cb_quit),
-    &app
+    &cb_quit,
+    std::ref(app)
   );
 
   // Set dialog object as main widget
-  app.setMainWidget(&dgl);
+  finalcut::FWidget::setMainWidget(&dgl);
 
   // Show and start the application
   dgl.show();

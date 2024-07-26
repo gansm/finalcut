@@ -1,17 +1,17 @@
 /***********************************************************************
 * string-operations.cpp - Demonstrates the functionality of FString    *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2018 Markus Gans                                      *
+* Copyright 2012-2022 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -101,7 +101,7 @@ void inputStreamExample()
 void outputStreamExample()
 {
   // Test: output stream (operator <<)
-  const finalcut::FString& out = L"A test string for 0 \x20ac";
+  const finalcut::FString out{L"A test string for 0 \x20ac"};
   std::cout << " outstream << " << out << std::endl;
 }
 
@@ -122,7 +122,9 @@ void streamingIntoFStringExample()
 
   // ...from wide string
   finalcut::FString streamer3;
-  streamer3 << const_cast<wchar_t*>(L"wchar_t*");
+  const wchar_t wchar_str[] = L"wchar_t*";
+  const wchar_t* wchar_str_ptr = wchar_str;
+  streamer3 << wchar_str_ptr;
   std::cout << " stream in: " << streamer3 << std::endl;
 
   // ...from c++ string
@@ -132,7 +134,9 @@ void streamingIntoFStringExample()
 
   // ...from c-string
   finalcut::FString streamer5;
-  streamer5 << const_cast<char*>("char*");
+  const char char_str[] = "char*";
+  const char* char_str_ptr = char_str;
+  streamer5 << char_str_ptr;
   std::cout << " stream in: " << streamer5 << std::endl;
 
   // ...from wide character
@@ -147,27 +151,27 @@ void streamingIntoFStringExample()
 
   // ...from interger
   finalcut::FString streamer8;
-  streamer8 << int(-12345);
+  streamer8 << int(-12'345);
   std::cout << " stream in: " << streamer8 << std::endl;
 
   // ...from unsigned interger
   finalcut::FString streamer9;
-  streamer9 << uInt(54321);
+  streamer9 << uInt(54'321);
   std::cout << " stream in: " << streamer9 << std::endl;
 
   // ...from long double
   finalcut::FString streamer10;
-  streamer10 << lDouble(0.333333333333333333L);
+  streamer10 << lDouble(0.333'333'333'333'333'333L);
   std::cout << " stream in: " << streamer10 << std::endl;
 
   // ...from double
   finalcut::FString streamer11;
-  streamer11 << double(0.11111111111);
+  streamer11 << double(0.111'111'111'11);
   std::cout << " stream in: " << streamer11 << std::endl;
 
   // ...from float
   finalcut::FString streamer12;
-  streamer12 << float(0.22222222);
+  streamer12 << float(0.222'222'22);
   std::cout << " stream in: " << streamer12 << std::endl;
 }
 
@@ -187,7 +191,7 @@ void streamingFromFStringExample()
   std::wcout << "stream out: " << stream_wstring << std::endl;
 
   // ...to wide character
-  wchar_t stream_wchar_t = 0;
+  wchar_t stream_wchar_t{L'\0'};
   finalcut::FString("w") >> stream_wchar_t;
   std::wcout << "stream out: " << stream_wchar_t << std::endl;
 
@@ -220,17 +224,17 @@ void streamToInterger()
     finalcut::FString("-321") >> stream_int;
     std::cout << "stream out: " << stream_int << std::endl;
   }
-  catch (const std::invalid_argument& ex)
+  catch (const std::underflow_error&)
   {
-    std::cerr << "Invalid argument: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Underflow");
   }
-  catch (const std::overflow_error& ex)
+  catch (const std::overflow_error&)
   {
-    std::cerr << "overflow: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Overflow");
   }
-  catch (const std::exception& ex)
+  catch (const std::invalid_argument&)
   {
-    std::cerr << "Arithmetic error: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Arithmetic error");
   }
 }
 
@@ -244,17 +248,17 @@ void streamToUnsignedInterger()
     finalcut::FString("123") >> stream_uint;
     std::cout << "stream out: " << stream_uint << std::endl;
   }
-  catch (const std::invalid_argument& ex)
+  catch (const std::underflow_error&)
   {
-    std::cerr << "Invalid argument: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Underflow");
   }
-  catch (const std::overflow_error& ex)
+  catch (const std::overflow_error&)
   {
-    std::cerr << "overflow: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Overflow");
   }
-  catch (const std::exception& ex)
+  catch (const std::invalid_argument&)
   {
-    std::cerr << "Arithmetic error: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Arithmetic error");
   }
 }
 
@@ -268,13 +272,17 @@ void streamToDouble()
     finalcut::FString("0.123456e+2") >> stream_double;
     std::cout << "stream out: " << stream_double << std::endl;
   }
-  catch (const std::invalid_argument& ex)
+  catch (const std::underflow_error&)
   {
-    std::cerr << "Invalid argument: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Underflow");
   }
-  catch (const std::exception& ex)
+  catch (const std::overflow_error&)
   {
-    std::cerr << "Arithmetic error: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Overflow");
+  }
+  catch (const std::invalid_argument&)
+  {
+    finalcut::FApplication::getLog()->error("Arithmetic error");
   }
 }
 
@@ -288,13 +296,17 @@ void streamToFloat()
     finalcut::FString("0.123e-3") >> stream_float;
     std::cout << "stream out: " << stream_float << std::endl;
   }
-  catch (const std::invalid_argument& ex)
+  catch (const std::underflow_error&)
   {
-    std::cerr << "Invalid argument: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Underflow");
   }
-  catch (const std::exception& ex)
+  catch (const std::overflow_error&)
   {
-    std::cerr << "Arithmetic error: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Overflow");
+  }
+  catch (const std::invalid_argument&)
+  {
+    finalcut::FApplication::getLog()->error("Arithmetic error");
   }
 }
 
@@ -302,7 +314,7 @@ void streamToFloat()
 void CStringOutputExample()
 {
   // Test: c-string output
-  const finalcut::FString& out = L"A test string for 0 \x20ac";
+  const finalcut::FString out{L"A test string for 0 \x20ac"};
   printf ("     c_str:  \"%s\"\n", out.c_str());
 }
 
@@ -326,7 +338,7 @@ void copyIntoFString()
 void utf8StringOutputExample()
 {
   // Test: utf-8 string
-  const finalcut::FString& len = "длина́";
+  const finalcut::FString len{"длина́"};
   std::cout << "    length: \"" << len << "\" has "
             << len.getLength() << " characters" << std::endl;
 }
@@ -335,11 +347,11 @@ void utf8StringOutputExample()
 void letterCaseExample()
 {
   // Test: convert uppercase letter to lowercase
-  const finalcut::FString& lower = finalcut::FString(L"InPut").toLower();
+  const finalcut::FString lower{finalcut::FString(L"InPut").toLower()};
   std::wcout << L"   toLower: " << lower << std::endl;
 
   // Test: convert lowercase letter to uppercase
-  const finalcut::FString& upper = finalcut::FString("inPut").toUpper();
+  const finalcut::FString upper{finalcut::FString("inPut").toUpper()};
   std::cout << "   toUpper: " << upper << std::endl;
 }
 
@@ -358,7 +370,7 @@ void stringConcatenationExample()
 
   // Test: concatenate a FString and a wide string (operator +)
   const finalcut::FString& add3 = finalcut::FString("FString + ")
-                                + const_cast<wchar_t*>(L"wchar_t*");
+                                + L"wchar_t*";
   std::cout << "       add: " << add3 << std::endl;
 
   // Test: concatenate a FString and a c++ string (operator +)
@@ -390,7 +402,7 @@ void stringConcatenationExample()
   std::cout << "       add: " << add9 << std::endl;
 
   // Test: concatenate a c-string and a FString (operator +)
-  const finalcut::FString& add10 = const_cast<char*>("char*")
+  const finalcut::FString& add10 = "char*"
                                  + finalcut::FString(" + FString");
   std::cout << "       add: " << add10 << std::endl;
 
@@ -400,7 +412,7 @@ void stringConcatenationExample()
   std::cout << "       add: " << add11 << std::endl;
 
   // Test: concatenate a wide string and a FString (operator +)
-  const finalcut::FString& add12 = const_cast<wchar_t*>(L"wchar_t*")
+  const finalcut::FString& add12 = L"wchar_t*"
                                  + finalcut::FString(" + FString");
   std::cout << "       add: " << add12 << std::endl;
 
@@ -414,7 +426,7 @@ void stringConcatenationExample()
 void stringCompareExample()
 {
   // Test: compare operators ==, <=, <, >=, >, !=
-  const finalcut::FString& cmp = "compare";
+  const finalcut::FString cmp{"compare"};
 
   if ( cmp == finalcut::FString("compare") )
     std::cout << "       cmp: == Ok" << std::endl;
@@ -451,14 +463,13 @@ void stringCompareExample()
 void stringSplittingExample()
 {
   // Test: split a string with a delimiter and returns a vector (array)
-  finalcut::FString split_str = "a,b,c,d";
+  finalcut::FString split_str{"a,b,c,d"};
   std::cout << "     split: \""
             << split_str << "\" into substrings ->";
-  finalcut::FStringList parts = split_str.split(",");
-  finalcut::FStringList::iterator it, end;
-  end = parts.end();
+  finalcut::FStringList parts{ split_str.split(",") };
+  auto end = parts.end();
 
-  for (it = parts.begin(); it != end; ++it)
+  for (auto it = parts.begin(); it != end; ++it)
     std::cout << " \"" << (*it) << "\"";
 
   std::cout << std::endl;
@@ -468,9 +479,9 @@ void stringSplittingExample()
 void fromatStringExample()
 {
   // Test: format a string with sprintf
-  finalcut::FString formatStr = "";
+  finalcut::FString format_str{""};
   std::cout << " formatted: "
-            << formatStr.sprintf("sqrt(%d) = %d", 16, 4)
+            << format_str.sprintf("sqrt(%d) = %d", 16, 4)
             << std::endl;
 }
 
@@ -483,13 +494,17 @@ void convertToNumberExample()
     const uLong ulong_num = finalcut::FString("123456789").toULong();
     std::cout << "   toULong:  " << ulong_num << std::endl;
   }
-  catch (const std::invalid_argument& ex)
+  catch (const std::underflow_error&)
   {
-    std::cerr << "Invalid argument: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Underflow");
   }
-  catch (const std::exception& ex)
+  catch (const std::overflow_error&)
   {
-    std::cerr << "Arithmetic error: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Overflow");
+  }
+  catch (const std::invalid_argument&)
+  {
+    finalcut::FApplication::getLog()->error("Arithmetic error");
   }
 
   // Test: convert a string to a signed long interger
@@ -498,13 +513,17 @@ void convertToNumberExample()
     const long long_num = finalcut::FString("-9876543210").toLong();
     std::cout << "    toLong:  " << long_num << std::endl;
   }
-  catch (const std::invalid_argument& ex)
+  catch (const std::underflow_error&)
   {
-    std::cerr << "Invalid argument: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Underflow");
   }
-  catch (const std::exception& ex)
+  catch (const std::overflow_error&)
   {
-    std::cerr << "Arithmetic error: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Overflow");
+  }
+  catch (const std::invalid_argument&)
+  {
+    finalcut::FApplication::getLog()->error("Arithmetic error");
   }
 
   // Test: convert a string to a double value
@@ -513,19 +532,23 @@ void convertToNumberExample()
   try
   {
     const double double_num = \
-        finalcut::FString("2.7182818284590452353").toDouble();
+        finalcut::FString("2.718'281'828'459'045'235'3").toDouble();
     std::ios_base::fmtflags save_flags = std::cout.flags();
     std::cout << "  toDouble:  " << std::setprecision(11)
                                  << double_num << std::endl;
     std::cout.flags(save_flags);
   }
-  catch (const std::invalid_argument& ex)
+  catch (const std::underflow_error&)
   {
-    std::cerr << "Invalid argument: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Underflow");
   }
-  catch (const std::exception& ex)
+  catch (const std::overflow_error&)
   {
-    std::cerr << "Arithmetic error: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Overflow");
+  }
+  catch (const std::invalid_argument&)
+  {
+    finalcut::FApplication::getLog()->error("Arithmetic error");
   }
 }
 
@@ -533,10 +556,12 @@ void convertToNumberExample()
 void convertNumberToStringExample()
 {
   // Test: convert integer and double value to a string
-  finalcut::FString num1, num2, num3;
-  num1.setNumber(137);
+  finalcut::FString num1{};
+  finalcut::FString num2{};
+  finalcut::FString num3{};
+  num1.setNumber(137U);
   num2.setNumber(-512);
-  num3.setNumber(3.141592653589793238L, 12);
+  num3.setNumber(3.141'592'653'589'793'238L, 12);
   std::cout << " setNumber:  "
             << num1 << " (unsigned)"    << std::endl;
   std::cout << " setNumber: "
@@ -550,14 +575,15 @@ void formatedNumberExample()
 {
   // Test: convert and format a integer number with thousand separator
   std::setlocale (LC_NUMERIC, "");
-  finalcut::FString fnum1, fnum2;
+  finalcut::FString fnum1{};
+  finalcut::FString fnum2{};
 #if defined(__LP64__) || defined(_LP64)
   // 64-bit architecture
-  fnum1.setFormatedNumber(0xffffffffffffffff, '\'');
+  fnum1.setFormatedNumber(0xffffffffffffffffU, '\'');
   fnum2.setFormatedNumber(-9223372036854775807);
 #else
   // 32-bit architecture
-  fnum1.setFormatedNumber(0xffffffff, '\'');
+  fnum1.setFormatedNumber(0xffffffffU, '\'');
   fnum2.setFormatedNumber(-2147483647);
 #endif
   std::cout << "setFormatedNumber: "
@@ -570,7 +596,7 @@ void formatedNumberExample()
 void trimExample()
 {
   // Test: remove whitespace from the end of a string
-  const finalcut::FString& trim_str = "  A string \t";
+  const finalcut::FString& trim_str{"  A string \t"};
   std::wcout << "    rtrim: \""
              << trim_str.rtrim() << "\"" << std::endl;
 
@@ -587,8 +613,8 @@ void trimExample()
 void substringExample()
 {
   // Test: 11 characters from the left of the string
-  const finalcut::FString& alphabet = "a b c d e f g h i j k l m "
-                                      "n o p q r s t u v w x y z";
+  const finalcut::FString alphabet{ "a b c d e f g h i j k l m "
+                                    "n o p q r s t u v w x y z" };
   std::cout << "     left: \""
             << alphabet.left(11)   << "\"" << std::endl;
 
@@ -605,16 +631,16 @@ void substringExample()
 void insertExample()
 {
   // Test: insert a string at index position 7
-  finalcut::FString insert_str = "I am a string";
+  finalcut::FString insert_str{"I am a string"};
 
   try
   {
     std::cout << "   insert: "
               << insert_str.insert("changed ", 7) << std::endl;
   }
-  catch (const std::out_of_range& ex)
+  catch (const std::out_of_range&)
   {
-    std::cerr << "Out of Range error: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Out of Range");
   }
 }
 
@@ -622,19 +648,19 @@ void insertExample()
 void indexExample()
 {
   // Test: get character access at a specified index position
-  finalcut::FString index(5);  // string with five characters
-  index = "index";
+  finalcut::FString index{5};  // string with five characters
+  index.setString("index");
 
   try
   {
-    index[0] = L'I';  // write a wide character at position 0
+    index[0] = L'I';  // Write a wide character at position 0
     printf ( "    index: [0] = %c ; [4] = %c\n"
            , char(index[0])
            , char(index[4]) );
   }
-  catch (const std::out_of_range& ex)
+  catch (const std::out_of_range&)
   {
-    std::cerr << "Out of Range error: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Out of Range");
   }
 }
 
@@ -642,8 +668,8 @@ void indexExample()
 void iteratorExample()
 {
   // Test: character access with std::iterator
-  const finalcut::FString& stringIterator = "iterator";
-  finalcut::FString::iterator iter;
+  const finalcut::FString stringIterator{"iterator"};
+  finalcut::FString::const_iterator iter;
   iter = stringIterator.begin();
   std::cout << " " << stringIterator << ": ";
 
@@ -662,7 +688,7 @@ void iteratorExample()
 void overwriteExample()
 {
   // Test: overwrite string at position 10 with "for t"
-  finalcut::FString overwrite_std = "Overwrite the rest";
+  finalcut::FString overwrite_std{"Overwrite the rest"};
   std::cout << "overwrite: "
             << overwrite_std.overwrite("for t", 10) << std::endl;
 }
@@ -671,7 +697,7 @@ void overwriteExample()
 void removeExample()
 {
   // Test: remove 2 characters at position 7
-  finalcut::FString remove_std = "A fast remove";
+  finalcut::FString remove_std{"A fast remove"};
   std::cout << "   remove: "
             << remove_std.remove(7, 2) << std::endl;
 }
@@ -680,25 +706,25 @@ void removeExample()
 void substringIncludeExample()
 {
   // Test: includes a substring (positive test)
-  finalcut::FString include_std = "string";
+  finalcut::FString include_std{"string"};
 
   if ( include_std.includes("ring") )
-    std::cout << " includes: \""
-              << include_std << "\" includes \"ring\" "
+    std::cout << R"( includes: ")"
+              << include_std << R"(" includes "ring" )"
               << std::endl;
   else
-    std::cout << " includes: \""
-              << include_std << "\" includes no \"ring\" "
+    std::cout << R"( includes: ")"
+              << include_std << R"(" includes no "ring" )"
               << std::endl;
 
   // Test: includes a substring (negativ test)
   if ( include_std.includes("data") )
-    std::cout << " includes: \""
-              << include_std << "\" includes \"data\" "
+    std::cout << R"( includes: ")"
+              << include_std << R"(" includes "data" )"
               << std::endl;
   else
-    std::cout << " includes: \""
-              << include_std << "\" includes no \"data\" "
+    std::cout << R"( includes: ")"
+              << include_std << R"(" includes no "data" )"
               << std::endl;
 }
 
@@ -706,7 +732,7 @@ void substringIncludeExample()
 void replaceExample()
 {
   // Test: find and replace a substring
-  finalcut::FString source_str = "computer and software";
+  finalcut::FString source_str{"computer and software"};
   const finalcut::FString& replace_str = \
       source_str.replace("computer", "hard-");
   std::cout << "  replace: "
@@ -717,7 +743,7 @@ void replaceExample()
 void tabToSpaceExample()
 {
   // Test: convert tabs to spaces
-  const finalcut::FString& tab_str = "1234\t5678";
+  const finalcut::FString tab_str{"1234\t5678"};
   std::cout << "      tab: "
             << tab_str.expandTabs() << std::endl;
 }
@@ -726,7 +752,7 @@ void tabToSpaceExample()
 void backspaceControlCharacterExample()
 {
   // Test: backspaces remove characters in the string
-  const finalcut::FString& bs_str = "t\b\bTesT\bt";
+  const finalcut::FString bs_str{"t\b\bTesT\bt"};
   std::cout << "backspace: "
             << bs_str.removeBackspaces() << std::endl;
 }
@@ -735,7 +761,7 @@ void backspaceControlCharacterExample()
 void deleteControlCharacterExample()
 {
   // Test: delete characters remove characters in the string
-  const finalcut::FString& del_str = "apple \177\177\177pietree";
+  const finalcut::FString del_str{"apple \177\177\177pietree"};
   std::cout << "   delete: "
             << del_str.removeDel() << std::endl;
 }
@@ -743,7 +769,7 @@ void deleteControlCharacterExample()
 //----------------------------------------------------------------------
 //                               main part
 //----------------------------------------------------------------------
-int main (int, char**)
+auto main (int, char**) -> int
 {
   init();
 

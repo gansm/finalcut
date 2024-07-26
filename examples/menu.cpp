@@ -1,17 +1,17 @@
 /***********************************************************************
 * menu.cpp - A menu example                                            *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2022 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -22,30 +22,22 @@
 
 #include <final/final.h>
 
+using FKey = finalcut::FKey;
+using finalcut::FPoint;
+using finalcut::FSize;
+
 
 //----------------------------------------------------------------------
 // class Menu
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
-class Menu : public finalcut::FDialog
+class Menu final : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit Menu (finalcut::FWidget* = 0);
-
-    // Destructor
-    ~Menu();
+    explicit Menu (finalcut::FWidget* = nullptr);
 
   private:
-    // Disable copy constructor
-    Menu (const Menu&);
-
-    // Disable assignment operator (=)
-    Menu& operator = (const Menu&);
-
     // Methods
     void configureFileMenuItems();
     void configureEditMenuItems();
@@ -53,120 +45,71 @@ class Menu : public finalcut::FDialog
     void configureColorMenuItems();
     void configureStyleMenuItems();
     void configureBorderMenuItems();
-    void defaultCallback (finalcut::FMenuList*);
-    virtual void adjustSize();
+    void defaultCallback (const finalcut::FMenuList*);
+    void initLayout() override;
+    void adjustSize() override;
 
     // Event handler
-    virtual void onClose (finalcut::FCloseEvent*);
+    void onClose (finalcut::FCloseEvent*) override;
 
     // Callback method
-    void cb_message (finalcut::FWidget*, data_ptr);
+    void cb_message (const finalcut::FMenuItem*);
 
-    // Data Members
-    finalcut::FString        line;
-    finalcut::FMenuBar       Menubar;
-    finalcut::FMenu          File;
-    finalcut::FMenu          Edit;
-    finalcut::FMenu          Choice;
-    finalcut::FMenuItem      Window;
-    finalcut::FMenuItem      Help;
-    finalcut::FMenuItem      New;
-    finalcut::FMenuItem      Open;
-    finalcut::FMenuItem      Save;
-    finalcut::FMenuItem      SaveAs;
-    finalcut::FMenuItem      Close;
-    finalcut::FMenuItem      Line1;
-    finalcut::FMenuItem      Print;
-    finalcut::FMenuItem      Line2;
-    finalcut::FMenuItem      Quit;
-    finalcut::FMenuItem      Undo;
-    finalcut::FMenuItem      Redo;
-    finalcut::FMenuItem      Line3;
-    finalcut::FMenuItem      Cut;
-    finalcut::FMenuItem      Copy;
-    finalcut::FMenuItem      Paste;
-    finalcut::FMenuItem      Line4;
-    finalcut::FMenuItem      Search;
-    finalcut::FMenuItem      Next;
-    finalcut::FMenuItem      Line5;
-    finalcut::FMenuItem      SelectAll;
-    finalcut::FMenu          Color;
-    finalcut::FMenu          Style;
-    finalcut::FMenu          Border;
-    finalcut::FRadioMenuItem Color1;
-    finalcut::FRadioMenuItem Color2;
-    finalcut::FRadioMenuItem Color3;
-    finalcut::FRadioMenuItem Color4;
-    finalcut::FRadioMenuItem Color5;
-    finalcut::FCheckMenuItem Bold;
-    finalcut::FCheckMenuItem Italic;
-    finalcut::FMenu          BColor;
-    finalcut::FMenu          BStyle;
-    finalcut::FRadioMenuItem BColor1;
-    finalcut::FRadioMenuItem BColor2;
-    finalcut::FRadioMenuItem BStyle1;
-    finalcut::FRadioMenuItem BStyle2;
-    finalcut::FRadioMenuItem BStyle3;
-    finalcut::FRadioMenuItem BStyle4;
-    finalcut::FStatusBar     Statusbar;
-    finalcut::FLabel         Headline1;
-    finalcut::FLabel         Headline2;
-    finalcut::FLabel         Info;
+    // Data members
+    finalcut::FString        line{13, finalcut::UniChar::BoxDrawingsHorizontal};
+    finalcut::FMenuBar       Menubar{this};
+    finalcut::FMenu          File{"&File", &Menubar};
+    finalcut::FMenu          Edit{"&Edit", &Menubar};
+    finalcut::FMenu          Choice{"&Choice", &Menubar};
+    finalcut::FMenuItem      Window{"&Window", &Menubar};
+    finalcut::FMenuItem      Help{"&Help", &Menubar};
+    finalcut::FMenuItem      New{"&New", &File};
+    finalcut::FMenuItem      Open{"&Open...", &File};
+    finalcut::FMenuItem      Save{"&Save", &File};
+    finalcut::FMenuItem      SaveAs{"&Save as...", &File};
+    finalcut::FMenuItem      Close{"&Close", &File};
+    finalcut::FMenuItem      Line1{&File};
+    finalcut::FMenuItem      Print{"&Print", &File};
+    finalcut::FMenuItem      Line2{&File};
+    finalcut::FMenuItem      Quit{"&Quit", &File};
+    finalcut::FMenuItem      Undo{FKey::Ctrl_z, "&Undo", &Edit};
+    finalcut::FMenuItem      Redo{FKey::Ctrl_y, "&Redo", &Edit};
+    finalcut::FMenuItem      Line3{&Edit};
+    finalcut::FMenuItem      Cut{FKey::Ctrl_x, "Cu&t", &Edit};
+    finalcut::FMenuItem      Copy{FKey::Ctrl_c, "&Copy", &Edit};
+    finalcut::FMenuItem      Paste{FKey::Ctrl_v, "&Paste", &Edit};
+    finalcut::FMenuItem      Line4{&Edit};
+    finalcut::FMenuItem      Search{FKey::Ctrl_f, "&Search", &Edit};
+    finalcut::FMenuItem      Next{FKey::F3, "Search &next", &Edit};
+    finalcut::FMenuItem      Line5{&Edit};
+    finalcut::FMenuItem      SelectAll{FKey::Ctrl_a, "Select &all", &Edit};
+    finalcut::FMenu          Color{"&Color", &Choice};
+    finalcut::FMenu          Style{"&Style", &Choice};
+    finalcut::FMenu          Border{"&Border", &Choice};
+    finalcut::FRadioMenuItem Color1{"Red", &Color};
+    finalcut::FRadioMenuItem Color2{"Green", &Color};
+    finalcut::FRadioMenuItem Color3{"Yellow", &Color};
+    finalcut::FRadioMenuItem Color4{"Brue", &Color};
+    finalcut::FRadioMenuItem Color5{"Black", &Color};
+    finalcut::FCheckMenuItem Bold{"Bold", &Style};
+    finalcut::FCheckMenuItem Italic{"Italic", &Style};
+    finalcut::FMenu          BColor{"&Color", &Border};
+    finalcut::FMenu          BStyle{"&Style", &Border};
+    finalcut::FRadioMenuItem BColor1{"Red", &BColor};
+    finalcut::FRadioMenuItem BColor2{"Blue", &BColor};
+    finalcut::FRadioMenuItem BStyle1{std::move(line), &BStyle};
+    finalcut::FRadioMenuItem BStyle2{"-------------", &BStyle};
+    finalcut::FRadioMenuItem BStyle3{"- - - - - - -", &BStyle};
+    finalcut::FRadioMenuItem BStyle4{"-  -  -  -  -", &BStyle};
+    finalcut::FStatusBar     Statusbar{this};
+    finalcut::FLabel         Headline1{this};
+    finalcut::FLabel         Headline2{this};
+    finalcut::FLabel         Info{this};
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 Menu::Menu (finalcut::FWidget* parent)
-  : finalcut::FDialog(parent)
-  , line(13, wchar_t(finalcut::fc::BoxDrawingsHorizontal))
-  , Menubar(this)
-  , File("&File", &Menubar)
-  , Edit("&Edit", &Menubar)
-  , Choice("&Choice", &Menubar)
-  , Window("&Window", &Menubar)
-  , Help("&Help", &Menubar)
-  , New("&New", &File)
-  , Open("&Open...", &File)
-  , Save("&Save", &File)
-  , SaveAs("&Save as...", &File)
-  , Close("&Close", &File)
-  , Line1(&File)
-  , Print("&Print", &File)
-  , Line2(&File)
-  , Quit("&Quit", &File)
-  , Undo(finalcut::fc::Fckey_z, "&Undo", &Edit)
-  , Redo(finalcut::fc::Fckey_y, "&Redo", &Edit)
-  , Line3(&Edit)
-  , Cut(finalcut::fc::Fckey_x, "Cu&t", &Edit)
-  , Copy(finalcut::fc::Fckey_c, "&Copy", &Edit)
-  , Paste(finalcut::fc::Fckey_v, "&Paste", &Edit)
-  , Line4(&Edit)
-  , Search(finalcut::fc::Fckey_f, "&Search", &Edit)
-  , Next(finalcut::fc::Fkey_f3, "Search &next", &Edit)
-  , Line5(&Edit)
-  , SelectAll(finalcut::fc::Fckey_a, "Select &all", &Edit)
-  , Color("&Color", &Choice)
-  , Style("&Style", &Choice)
-  , Border("&Border", &Choice)
-  , Color1("Red", &Color)
-  , Color2("Green", &Color)
-  , Color3("Yellow", &Color)
-  , Color4("Brue", &Color)
-  , Color5("Black", &Color)
-  , Bold("Bold", &Style)
-  , Italic("Italic", &Style)
-  , BColor("&Color", &Border)
-  , BStyle("&Style", &Border)
-  , BColor1("Red", &BColor)
-  , BColor2("Blue", &BColor)
-  , BStyle1(line, &BStyle)
-  , BStyle2("-------------", &BStyle)
-  , BStyle3("- - - - - - -", &BStyle)
-  , BStyle4("-  -  -  -  -", &BStyle)
-  , Statusbar(this)
-  , Headline1(this)
-  , Headline2(this)
-  , Info(this)
+  : finalcut::FDialog{parent}
 {
   // Menu bar itms
   File.setStatusbarMessage ("File management commands");
@@ -189,50 +132,47 @@ Menu::Menu (finalcut::FWidget* parent)
   // Headline labels
   Headline1 << " Key ";
   Headline1.ignorePadding();
-  Headline1.setGeometry(3, 2, 5, 1);
   Headline1.setEmphasis();
 
   Headline2 << " Function ";
   Headline2.ignorePadding();
-  Headline2.setGeometry(19, 2, 10, 1);
   Headline2.setEmphasis();
 
   // Info label
   Info << "<F10>            Activate menu bar\n"
        << "<Ctrl>+<Space>   Activate menu bar\n"
+       << "<Menu>           Activate menu bar\n"
+       << "<Shift>+<Menu>   Open dialog menu\n"
        << "<Meta>+<X>       Exit";
-  Info.setGeometry(2, 1, 36, 3);
 }
-
-//----------------------------------------------------------------------
-Menu::~Menu()
-{ }
 
 //----------------------------------------------------------------------
 void Menu::configureFileMenuItems()
 {
   // "File" menu items
-  New.addAccelerator (finalcut::fc::Fckey_n);  // Ctrl + N
+  New.addAccelerator (FKey::Ctrl_n);  // Ctrl + N
   New.setStatusbarMessage ("Create a new file");
-  Open.addAccelerator (finalcut::fc::Fckey_o);  // Ctrl + O
+  Open.addAccelerator (FKey::Ctrl_o);  // Ctrl + O
   Open.setStatusbarMessage ("Locate and open a text file");
-  Save.addAccelerator (finalcut::fc::Fckey_s);  // Ctrl + S
+  Save.addAccelerator (FKey::Ctrl_s);  // Ctrl + S
   Save.setStatusbarMessage ("Save the file");
   SaveAs.setStatusbarMessage ("Save the current file under a different name");
-  Close.addAccelerator (finalcut::fc::Fckey_w);  // Ctrl + W
+  Close.addAccelerator (FKey::Ctrl_w);  // Ctrl + W
   Close.setStatusbarMessage ("Close the current file");
   Line1.setSeparator();
-  Print.addAccelerator (finalcut::fc::Fckey_p);  // Ctrl + P
+  Print.addAccelerator (FKey::Ctrl_p);  // Ctrl + P
   Print.setStatusbarMessage ("Print the current file");
   Line2.setSeparator();
-  Quit.addAccelerator (finalcut::fc::Fmkey_x);  // Meta/Alt + X
+  Quit.addAccelerator (FKey::Meta_x);  // Meta/Alt + X
   Quit.setStatusbarMessage ("Exit the program");
 
   // Add quit menu item callback
   Quit.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &finalcut::FApplication::cb_exitApp)
+    finalcut::getFApplication(),
+    &finalcut::FApplication::cb_exitApp,
+    this
   );
 }
 
@@ -243,8 +183,8 @@ void Menu::configureEditMenuItems()
   Undo.setStatusbarMessage ("Undo the previous operation");
   Redo.setDisable();
   Line3.setSeparator();
-  Cut.setStatusbarMessage ( "Remove the input text "
-                            "and put it in the clipboard" );
+  Cut.setStatusbarMessage ("Remove the input text "
+                           "and put it in the clipboard");
   Copy.setStatusbarMessage ("Copy the input text into the clipboad");
   Paste.setStatusbarMessage ("Insert text form clipboard");
   Line4.setSeparator();
@@ -307,11 +247,11 @@ void Menu::configureBorderMenuItems()
 }
 
 //----------------------------------------------------------------------
-void Menu::defaultCallback (finalcut::FMenuList* mb)
+void Menu::defaultCallback (const finalcut::FMenuList* mb)
 {
-  for (uInt i = 1; i <= mb->getCount(); i++)
+  for (std::size_t i{1}; i <= mb->getCount(); i++)
   {
-    finalcut::FMenuItem* item = mb->getItem(int(i));
+    auto item = mb->getItem(int(i));
 
     if ( item
       && item->isEnabled()
@@ -324,7 +264,8 @@ void Menu::defaultCallback (finalcut::FMenuList* mb)
       item->addCallback
       (
         "clicked",
-        F_METHOD_CALLBACK (this, &Menu::cb_message)
+        this, &Menu::cb_message,
+        item
       );
 
       // Call sub-menu
@@ -335,10 +276,19 @@ void Menu::defaultCallback (finalcut::FMenuList* mb)
 }
 
 //----------------------------------------------------------------------
+void Menu::initLayout()
+{
+  Headline1.setGeometry (FPoint{3, 2}, FSize{5, 1});
+  Headline2.setGeometry (FPoint{19, 2}, FSize{10, 1});
+  Info.setGeometry(FPoint{2, 1}, FSize{36, 5});
+  FDialog::initLayout();
+}
+
+//----------------------------------------------------------------------
 void Menu::adjustSize()
 {
-  int pw = int(getParentWidget()->getWidth());
-  int ph = int(getParentWidget()->getHeight());
+  const auto pw = int(getDesktopWidth());
+  const auto ph = int(getDesktopHeight());
   setX (1 + (pw - int(getWidth())) / 2, false);
   setY (1 + (ph - int(getHeight())) / 4, false);
   finalcut::FDialog::adjustSize();
@@ -351,11 +301,9 @@ void Menu::onClose (finalcut::FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void Menu::cb_message (finalcut::FWidget* widget, data_ptr)
+void Menu::cb_message (const finalcut::FMenuItem* menuitem)
 {
-  finalcut::FMenuItem* menuitem = \
-      static_cast<finalcut::FMenuItem*>(widget);
-  finalcut::FString text = menuitem->getText();
+  auto text = menuitem->getText();
   text = text.replace('&', "");
   finalcut::FMessageBox::info ( this
                               , "Info"
@@ -367,19 +315,19 @@ void Menu::cb_message (finalcut::FWidget* widget, data_ptr)
 //                               main part
 //----------------------------------------------------------------------
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   // Create the application object
-  finalcut::FApplication app (argc, argv);
+  finalcut::FApplication app {argc, argv};
 
   // Create main dialog object
-  Menu main_dlg (&app);
+  Menu main_dlg {&app};
   main_dlg.setText ("Menu example");
-  main_dlg.setGeometry (int(1 + (app.getWidth() - 40) / 2), 2, 40, 6);
+  main_dlg.setSize ({40, 8});
   main_dlg.setShadow();
 
   // Set dialog main_dlg as main widget
-  app.setMainWidget (&main_dlg);
+  finalcut::FWidget::setMainWidget (&main_dlg);
 
   // Show and start the application
   main_dlg.show();
