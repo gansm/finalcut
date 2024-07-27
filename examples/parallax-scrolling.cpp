@@ -143,9 +143,9 @@ struct restoreOverlaid : public fc::FVTerm
       return;
 
     bool overlaid{false};
-    const auto& window_list = *getWindowList();
+    const auto& win_list = *getWindowList();
 
-    for (const auto& window : window_list)
+    for (const auto& window : win_list)
     {
       const auto* win = static_cast<fc::FWidget*>(window);
 
