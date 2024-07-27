@@ -4,7 +4,7 @@
 
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT([finalcut], [0.9.0])
+AC_INIT([finalcut], [0.9.1])
 AC_CONFIG_HEADERS([config.h])
 AX_PREFIX_CONFIG_H([final/fconfig.h], [F])
 AC_CONFIG_SRCDIR([final/fobject.cpp])
@@ -75,7 +75,7 @@ LT_OUTPUT
 ### This defines the version number of the installed .so files
 ### Update this value for every release!  (A:B:C will map to foo.so.(A-C).C.B)
 ### using libtool's versioning system.
-AC_SUBST(SO_VERSION, ["9:0:9"])
+AC_SUBST(SO_VERSION, ["9:1:9"])
 
 AC_SUBST([LIBTOOL_DEPS])
 

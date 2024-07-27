@@ -1,3 +1,7 @@
+2024-07-26  Markus Gans  <guru.mail@muenster.de>
+	* Version 0.9.1
+	* Code fix to compile FINAL CUT with gcc 14
+
 2023-05-18  Markus Gans  <guru.mail@muenster.de>
 	* Version 0.9.0
 

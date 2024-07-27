@@ -509,18 +509,18 @@ inline auto FTermOutput::isInputCursorInsideTerminal() const -> bool
 }
 
 //----------------------------------------------------------------------
-inline auto FTermOutput::isDefaultPaletteTheme() -> bool
+inline auto FTermOutput::isDefaultPaletteTheme() const -> bool
 {
-  FStringList default_themes
+  const FStringList default_themes
   {
     "default8ColorPalette",
     "default16ColorPalette",
     "default16DarkColorPalette"
   };
 
-  const auto& iter = std::find ( default_themes.cbegin()
-                               , default_themes.cend()
-                               , FColorPalette::getInstance()->getClassName() );
+  const auto iter = std::find ( default_themes.cbegin()
+                              , default_themes.cend()
+                              , FColorPalette::getInstance()->getClassName() );
   return iter != default_themes.cend();  // Default theme found
 }
 
