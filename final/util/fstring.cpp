@@ -100,6 +100,15 @@ FString::FString (const std::string& s)
 }
 
 //----------------------------------------------------------------------
+#if __cplusplus >= 201703L
+FString::FString (const std::string_view& s)
+{
+  if ( ! s.empty() )
+    internal_assign(internal_toWideString(s));
+}
+#endif
+
+//----------------------------------------------------------------------
 FString::FString (const char s[])
 {
   if ( s )
@@ -937,12 +946,8 @@ auto FString::internal_toCharString (const std::wstring& s) const -> std::string
 }
 
 //----------------------------------------------------------------------
-auto FString::internal_toWideString (const std::string& s) const -> std::wstring
+auto FString::internal_toWideString (const char* src) const -> std::wstring
 {
-  if ( s.empty() )
-    return {};
-
-  auto src = s.c_str();
   auto state = std::mbstate_t();
   auto size = std::mbsrtowcs(nullptr, &src, 0, &state);
 
@@ -965,6 +970,26 @@ auto FString::internal_toWideString (const std::string& s) const -> std::wstring
   return {};
 }
 
+//----------------------------------------------------------------------
+auto FString::internal_toWideString (const std::string& s) const -> std::wstring
+{
+    if ( s.empty() )
+        return {};
+
+    return internal_toWideString(s.c_str());
+}
+
+//----------------------------------------------------------------------
+#if __cplusplus >= 201703L
+auto FString::internal_toWideString (const std::string_view& s) const -> std::wstring
+{
+    if ( s.empty() )
+        return {};
+
+    auto src = s.begin();
+    return internal_toWideString(src);
+}
+#endif
 
 // FString non-member operators
 //----------------------------------------------------------------------
