@@ -242,6 +242,14 @@ class FTextView : public FWidget
     void initLayout() override;
     void adjustSize() override;
 
+    // Inquiry
+    auto isHorizontallyScrollable() const -> bool;
+    auto isVerticallyScrollable() const -> bool;
+
+    // Accessors
+    auto getTextHeight() const -> std::size_t;
+    auto getTextWidth() const -> std::size_t;
+
   private:
     // Constants
     static constexpr auto UNINITIALIZED_ROW = static_cast<FTextViewList::size_type>(-1);
@@ -250,13 +258,7 @@ class FTextView : public FWidget
     // Using-declaration
     using KeyMap = std::unordered_map<FKey, std::function<void()>, EnumHash<FKey>>;
 
-    // Accessors
-    auto getTextHeight() const -> std::size_t;
-    auto getTextWidth() const -> std::size_t;
-
     // Inquiry
-    auto isHorizontallyScrollable() const -> bool;
-    auto isVerticallyScrollable() const -> bool;
     auto isWithinTextBounds (const FPoint&) const -> bool;
     auto isLowerRightResizeCorner (const FPoint&) const -> bool;
     auto hasWrongSelectionOrder() const -> bool;
@@ -371,7 +373,7 @@ inline auto FTextView::getColumns() const noexcept -> std::size_t
 
 //----------------------------------------------------------------------
 inline auto FTextView::getRows() const -> std::size_t
-{ return std::size_t(data.size()); }
+{ return data.size(); }
 
 //----------------------------------------------------------------------
 inline auto FTextView::getScrollPos() const -> FPoint
