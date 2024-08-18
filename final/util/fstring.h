@@ -93,19 +93,22 @@ class FString
     explicit FString (std::size_t);
     FString (std::size_t, wchar_t);
     FString (std::size_t, const UniChar&);
-    FString (const FString&);        // copy constructor
-    FString (FString&&) noexcept;    // move constructor
-    FString (const std::wstring&);   // implicit conversion constructor
-    FString (std::wstring&&);        // implicit conversion constructor
-    FString (const wchar_t[]);       // implicit conversion constructor
-    FString (const std::string&);    // implicit conversion constructor
+    FString (const FString&);            // copy constructor
+    FString (FString&&) noexcept;        // move constructor
+    FString (const std::wstring&);       // implicit conversion constructor
 #if __cplusplus >= 201703L
-    FString (const std::string_view&);    // implicit conversion constructor
+    FString (const std::wstring_view&);  // implicit conversion constructor
 #endif
-    FString (const char[]);          // implicit conversion constructor
-    FString (const UniChar&);        // implicit conversion constructor
-    FString (const wchar_t);         // implicit conversion constructor
-    FString (const char);            // implicit conversion constructor
+    FString (std::wstring&&);            // implicit conversion constructor
+    FString (const wchar_t[]);           // implicit conversion constructor
+    FString (const std::string&);        // implicit conversion constructor
+#if __cplusplus >= 201703L
+    FString (const std::string_view&);  // implicit conversion constructor
+#endif
+    FString (const char[]);             // implicit conversion constructor
+    FString (const UniChar&);           // implicit conversion constructor
+    FString (const wchar_t);            // implicit conversion constructor
+    FString (const char);               // implicit conversion constructor
 
     // Destructor
     virtual ~FString ();
@@ -514,11 +517,7 @@ class FString
     // Methods
     void internal_assign (std::wstring);
     auto internal_toCharString (const std::wstring&) const -> std::string;
-    auto internal_toWideString (const char*) const -> std::wstring;
-    auto internal_toWideString (const std::string&) const -> std::wstring;
-#if __cplusplus >= 201703L
-    auto internal_toWideString (const std::string_view&) const -> std::wstring;
-#endif
+    auto internal_toWideString (const char[]) const -> std::wstring;
 
     // Data members
     std::wstring         string{};
