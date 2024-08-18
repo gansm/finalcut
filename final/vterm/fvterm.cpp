@@ -234,6 +234,8 @@ void FVTerm::resizeVTerm (const FSize& size) const noexcept
 //----------------------------------------------------------------------
 void FVTerm::putVTerm() const
 {
+  // Update the entire terminal screen
+
   for (auto i{0}; i < vterm->size.height; i++)
   {
     auto& vterm_changes = vterm->changes[unsigned(i)];
