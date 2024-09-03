@@ -602,7 +602,7 @@ class EventloopMonitorTest : public CPPUNIT_NS::TestFixture
     void exceptionTest();
 
   private:
-    void keyboardInput (const std::string);
+    void keyboardInput (std::string&&);
     void drainStdin();
 
     // Adds code needed to register the test suite
@@ -1034,18 +1034,18 @@ void EventloopMonitorTest::exceptionTest()
 }
 
 //----------------------------------------------------------------------
-void EventloopMonitorTest::keyboardInput (const std::string s)
+void EventloopMonitorTest::keyboardInput (std::string&& s)
 {
   // Simulates keystrokes
 
+  const auto input = std::move(s);
   const char EOT = 0x04;  // End of Transmission
-  auto stdin_no = finalcut::FTermios::getStdIn();
+  const auto stdin_no = finalcut::FTermios::getStdIn();
+
   fflush(stdout);
+  std::string::const_iterator iter = input.cbegin();
 
-  std::string::const_iterator iter;
-  iter = s.cbegin();
-
-  while ( iter != s.cend() )
+  while ( iter != input.cend() )
   {
     char c = *iter;
 

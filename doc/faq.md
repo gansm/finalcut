@@ -154,3 +154,13 @@ With Ctrl-L you can clear and redraw all information on the terminal screen.
 This may be necessary if a background program overwrites the displayed 
 widgets with other characters.
 
+
+How to disable mouse tracking and the non-scrollable alternate screen buffer in the GNU Debugger (GDB)
+------------------------------------------------------------------------------------------------------
+
+If you are using an xterm-compatible terminal, you can disable mouse tracking and re-enable the terminal scroll buffer by resetting the terminal settings. You can use the following command in the GNU Debugger to do this:
+
+```
+(gdb) printf "%s\n", "\033c\033]104\007"
+```
+
