@@ -45,7 +45,7 @@ jobs:
       run: sudo gem install coveralls-lcov
 
     - name: Build with with gcov
-      run: script -e -c "./build.sh coverage"
+      run: script -q -e -c './build.sh coverage'
 
     - name: Generate lcov.info and publish to coveralls.io
       run: |
@@ -66,5 +66,5 @@ jobs:
         gpgv codecov.SHA256SUM.sig codecov.SHA256SUM
         shasum -a 256 -c codecov.SHA256SUM
         chmod +x codecov
-        ./codecov
+        ./codecov -t ${{ secrets.CODECOV_TOKEN }}
 

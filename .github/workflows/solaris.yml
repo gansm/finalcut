@@ -17,8 +17,9 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Test on Solaris 11.4
-      uses: vmactions/solaris-vm@v1
+      uses: vmactions/solaris-vm@v1  # see https://github.com/vmactions/solaris-vm
       with:
+        release: "11.4-gcc"
         prepare: |
           pkg publisher solaris
           beadm list

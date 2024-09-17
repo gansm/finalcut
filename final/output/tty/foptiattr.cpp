@@ -1264,8 +1264,8 @@ inline void FOptiAttr::change_current_color ( const FChar& term
     return true;
   };
 
-  const auto& apply_AF_AB = apply_color_change(AF, AB, VGA);
-  const auto& apply_Sf_Sb = apply_color_change(Sf, Sb, ANSI);
+  const bool apply_AF_AB = apply_color_change(AF, AB, VGA);
+  const bool apply_Sf_Sb = apply_color_change(Sf, Sb, ANSI);
 
   if ( apply_AF_AB || apply_Sf_Sb || ! sp )
     return;

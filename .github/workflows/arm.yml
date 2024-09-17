@@ -26,7 +26,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Test on ARM architecture
-      uses: uraimo/run-on-arch-action@v2
+      uses: uraimo/run-on-arch-action@v2  # see https://github.com/uraimo/run-on-arch-action
       id: runcmd
       with:
         arch: ${{ matrix.arch }}

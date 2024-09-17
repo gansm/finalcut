@@ -76,7 +76,7 @@ jobs:
 
     - name: Make unit test
       run: |
-        script -e -c "make check" && RET=$? || RET=$?
+        script -q -e -c 'make check' && RET=$? || RET=$?
         cat test/*.log || echo
         echo "Exit status: $RET"
         exit "$RET"

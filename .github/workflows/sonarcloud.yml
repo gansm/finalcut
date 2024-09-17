@@ -64,4 +64,3 @@ jobs:
         ./configure --prefix=/usr
         /tmp/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir bw-output make all
         /tmp/sonar-scanner-${LATEST_VERSION}-linux-x64/bin/sonar-scanner
-

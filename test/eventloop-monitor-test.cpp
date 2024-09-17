@@ -511,6 +511,10 @@ class StringParser
     {
       auto callback = [this, eloop] (const finalcut::Monitor*, short)
                       {
+                        // After a backend event is triggered, this event
+                        // handling code is called by the dispatcher
+                        // of the event loop. Immediately before this call,
+                        // the triggering event has already been destroyed.
                         std::cout << "BackendMonitor callback handle";
                         processQueuedInput();
                         eloop->leave();
@@ -560,7 +564,7 @@ void StringParser::parseString()
     number_queue.push_back(number_string.toInt());
 
   if ( is_empty_before && ! number_queue.empty() )
-    queue_monitor.setEvent();
+    queue_monitor.setEvent();  // This line creates the event
 }
 
 //----------------------------------------------------------------------
@@ -895,7 +899,7 @@ void EventloopMonitorTest::BackendMonitorTest()
   std::cout << "\n";
   CPPUNIT_ASSERT ( string_parser.getQueue().empty() );
   // The queue receives data and sends a backend event
-  string_parser.parseString();
+  string_parser.parseString();  // Create a backend event in the self-pipe
   CPPUNIT_ASSERT ( ! string_parser.getQueue().empty() );
   CPPUNIT_ASSERT ( string_parser.getQueue().size() == 9 );
   CPPUNIT_ASSERT ( eloop.run() == 0 );  // Run event loop
