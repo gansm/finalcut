@@ -17,7 +17,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Test on OpenBSD 7.2
-      uses: cross-platform-actions/action@v0  # see https://github.com/cross-platform-actions/action
+      uses: cross-platform-actions/action@v0.25.0  # see https://github.com/cross-platform-actions/action
       with:
         operating_system: openbsd
         version: '7.2'
