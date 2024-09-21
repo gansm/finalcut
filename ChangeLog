@@ -1,3 +1,6 @@
+2024-09-21  Markus Gans  <guru.mail@muenster.de>
+	* Change the widget color theme for non-focused list items
+
 2024-07-21  Markus Gans  <guru.mail@muenster.de>
 	* The hasPreprocessingHandler() method has been added to FVTerm
 
