@@ -148,7 +148,6 @@ auto main() -> int
   sig_abrt_monitor.resume();
   stdin_monitor.resume();
   backend_monitor.resume();
-  backend_thread.detach();
 
   // Monitoring
   return loop.run();

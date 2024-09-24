@@ -45,7 +45,7 @@ jobs:
       run: sudo gem install coveralls-lcov
 
     - name: Build with with gcov
-      run: script -q -e -c './build.sh coverage'
+      run: script -q -E always -e -c './build.sh coverage'
 
     - name: Generate lcov.info and publish to coveralls.io
       run: |

@@ -53,6 +53,7 @@ checklist_SOURCES = checklist.cpp
 choice_SOURCES = choice.cpp
 dialog_SOURCES = dialog.cpp
 event_log_SOURCES = event-log.cpp
+eventloop_LDADD = -lpthread
 eventloop_SOURCES = eventloop.cpp
 fullwidth_character_SOURCES = fullwidth-character.cpp
 hello_SOURCES = hello.cpp

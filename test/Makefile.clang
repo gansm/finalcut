@@ -11,7 +11,7 @@ SRCS = $(wildcard *.cpp)
 OBJS = $(SRCS:%.cpp=%)
 CCXFLAGS = $(OPTIMIZE) $(PROFILE) $(DEBUG) -std=c++14
 MAKEFILE = -f Makefile.clang
-LDFLAGS = -L../final -lfinal $(TERMCAP) -lcppunit -ldl
+LDFLAGS = -L../final -lfinal $(TERMCAP) -lpthread -lcppunit -ldl
 INCLUDES = -I. -I.. -I/usr/include
 RM = rm -f
 
