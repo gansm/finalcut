@@ -26,6 +26,7 @@
 
 #include <cstdio>
 #include <iostream>
+#include <thread>
 
 #include <final/final.h>
 
@@ -47,6 +48,13 @@ static void onExit()
   std::cout << "Bye!" << std::endl;
 }
 
+//----------------------------------------------------------------------
+void wait_5_seconds (const finalcut::BackendMonitor* mon)
+{
+  std::this_thread::sleep_for(std::chrono::seconds(5));
+  mon->setEvent();  // Generates the event
+}
+
 
 //----------------------------------------------------------------------
 //                               main part
@@ -60,8 +68,10 @@ auto main() -> int
   finalcut::SignalMonitor sig_int_monitor{&loop};
   finalcut::SignalMonitor sig_abrt_monitor{&loop};
   finalcut::IoMonitor stdin_monitor{&loop};
+  finalcut::BackendMonitor backend_monitor{&loop};
   finalcut::FTermios::init();
   auto stdin_no = finalcut::FTermios::getStdIn();
+  std::thread backend_thread(wait_5_seconds, &backend_monitor);
 
   // Save terminal setting and set terminal to raw mode
   // (no echo, no line buffering).
@@ -125,12 +135,20 @@ auto main() -> int
                        }
                      , nullptr );
 
+  backend_monitor.init ( [] (const finalcut::Monitor*, short)
+                         {
+                           std::cout << "A backend event has occurred." << std::endl;
+                         }
+                         , nullptr );
+
   // Start monitors
   timer1.resume();
   timer2.resume();
   sig_int_monitor.resume();
   sig_abrt_monitor.resume();
   stdin_monitor.resume();
+  backend_monitor.resume();
+  backend_thread.detach();
 
   // Monitoring
   return loop.run();

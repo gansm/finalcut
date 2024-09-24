@@ -1071,7 +1071,7 @@ auto FApplication::isWheelEvent (const FMouseData& md) -> bool
       || md.isWheelDown()
       || md.isWheelLeft()
       || md.isWheelRight();
-};
+}
 
 //----------------------------------------------------------------------
 void FApplication::unsetMoveResizeMode (const FMouseData&)
