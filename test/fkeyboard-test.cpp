@@ -330,6 +330,7 @@ class FKeyboardTest : public CPPUNIT_NS::TestFixture
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
     void init();
+    void enableFakingInput();
     template<typename CharT>
     void input (CharT&&);
     void processInput();
@@ -349,6 +350,7 @@ class FKeyboardTest : public CPPUNIT_NS::TestFixture
 //----------------------------------------------------------------------
 FKeyboardTest::FKeyboardTest()
 {
+  enableFakingInput();
   init();
 }
 
@@ -3181,6 +3183,29 @@ void FKeyboardTest::init()
 
   // Use test::fkey as new termcap map
   keyboard->setTermcapMap (test::fkey);
+}
+
+//----------------------------------------------------------------------
+void FKeyboardTest::enableFakingInput()
+{
+  //--------------------------------------------------------------------
+  // Note: The dev.tty.legacy_tiocsti sysctl variable must be set
+  //       to true to perform the TIOCSTI (faking input) operation
+  //       in Linux 6.2 or later.
+  //--------------------------------------------------------------------
+
+  // Open the sysctl variable "dev.tty.legacy_tiocsti"
+  int fd = open("/proc/sys/dev/tty/legacy_tiocsti", O_WRONLY);
+
+  if ( fd < 0 )  // Cannot open file descriptor
+    return;
+
+  // Set dev.tty.legacy_tiocsti to true
+  if ( dprintf(fd, "%d", 1) < 1 )
+    std::cerr << "-> Unable to modify dev.tty.legacy_tiocsti\n";
+
+  if ( close(fd) < 0 )
+    std::cerr << "-> Cannot close file descriptor\n";
 }
 
 //----------------------------------------------------------------------

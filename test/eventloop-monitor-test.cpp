@@ -591,7 +591,7 @@ void StringParser::processQueuedInput()
 class EventloopMonitorTest : public CPPUNIT_NS::TestFixture
 {
   public:
-    EventloopMonitorTest() = default;
+    EventloopMonitorTest();
 
   protected:
     void classNameTest();
@@ -608,6 +608,7 @@ class EventloopMonitorTest : public CPPUNIT_NS::TestFixture
   private:
     void keyboardInput (std::string&&);
     void drainStdin();
+    void enableFakingInput();
 
     // Adds code needed to register the test suite
     CPPUNIT_TEST_SUITE (EventloopMonitorTest);
@@ -628,6 +629,13 @@ class EventloopMonitorTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST_SUITE_END();
 };
 
+
+// constructors and destructor
+//----------------------------------------------------------------------
+EventloopMonitorTest::EventloopMonitorTest()
+{
+  enableFakingInput();
+}
 
 //----------------------------------------------------------------------
 void EventloopMonitorTest::classNameTest()
@@ -1088,6 +1096,29 @@ void EventloopMonitorTest::drainStdin()
 
   if ( ::close(stdin_no2) < 0 )
     return;
+}
+
+//----------------------------------------------------------------------
+void EventloopMonitorTest::enableFakingInput()
+{
+  //--------------------------------------------------------------------
+  // Note: The dev.tty.legacy_tiocsti sysctl variable must be set
+  //       to true to perform the TIOCSTI (faking input) operation
+  //       in Linux 6.2 or later.
+  //--------------------------------------------------------------------
+
+  // Open the sysctl variable "dev.tty.legacy_tiocsti"
+  int fd = open("/proc/sys/dev/tty/legacy_tiocsti", O_WRONLY);
+
+  if ( fd < 0 )  // Cannot open file descriptor
+    return;
+
+  // Set dev.tty.legacy_tiocsti to true
+  if ( dprintf(fd, "%d", 1) < 1 )
+    std::cerr << "-> Unable to modify dev.tty.legacy_tiocsti\n";
+
+  if ( close(fd) < 0 )
+    std::cerr << "-> Cannot close file descriptor\n";
 }
 
 // Put the test suite in the registry

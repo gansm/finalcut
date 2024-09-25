@@ -104,6 +104,9 @@ case "$1" in
       echo "${RED}Configure failed!${NORMAL}" 1>&2
       exit 255
     fi
+
+    # Required for Linux 6.2 or later to perform TIOCSTI (faking input)
+    echo "1" > /proc/sys/dev/tty/legacy_tiocsti 2>/dev/null
     ;;
 
   "--coverage"|"coverage")

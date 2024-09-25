@@ -1,0 +1,168 @@
+Script started on 2024-09-25 03:00:19+02:00 [COMMAND="export TERM=xterm; infocmp; make check" TERM="xterm-256color" TTY="/dev/pts/4" COLUMNS="87" LINES="27"]
+#	Reconstructed via infocmp from file: /lib/terminfo/x/xterm
+xterm|xterm-debian|xterm terminal emulator (X Window System),
+	am, bce, km, mc5i, mir, msgr, npc, xenl,
+	colors#8, cols#80, it#8, lines#24, pairs#64,
+	acsc=``aaffggiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz{{||}}~~,
+	bel=^G, blink=\E[5m, bold=\E[1m, cbt=\E[Z, civis=\E[?25l,
+	clear=\E[H\E[2J, cnorm=\E[?12l\E[?25h, cr=\r,
+	csr=\E[%i%p1%d;%p2%dr, cub=\E[%p1%dD, cub1=^H,
+	cud=\E[%p1%dB, cud1=\n, cuf=\E[%p1%dC, cuf1=\E[C,
+	cup=\E[%i%p1%d;%p2%dH, cuu=\E[%p1%dA, cuu1=\E[A,
+	cvvis=\E[?12;25h, dch=\E[%p1%dP, dch1=\E[P, dim=\E[2m,
+	dl=\E[%p1%dM, dl1=\E[M, ech=\E[%p1%dX, ed=\E[J, el=\E[K,
+	el1=\E[1K, flash=\E[?5h$<100/>\E[?5l, home=\E[H,
+	hpa=\E[%i%p1%dG, ht=^I, hts=\EH, ich=\E[%p1%d@,
+	il=\E[%p1%dL, il1=\E[L, ind=\n, indn=\E[%p1%dS,
+	invis=\E[8m, is2=\E[!p\E[?3;4l\E[4l\E>, kDC=\E[3;2~,
+	kEND=\E[1;2F, kHOM=\E[1;2H, kIC=\E[2;2~, kLFT=\E[1;2D,
+	kNXT=\E[6;2~, kPRV=\E[5;2~, kRIT=\E[1;2C, ka1=\EOw,
+	ka3=\EOy, kb2=\EOu, kbeg=\EOE, kbs=^?, kc1=\EOq, kc3=\EOs,
+	kcbt=\E[Z, kcub1=\EOD, kcud1=\EOB, kcuf1=\EOC, kcuu1=\EOA,
+	kdch1=\E[3~, kend=\EOF, kent=\EOM, kf1=\EOP, kf10=\E[21~,
+	kf11=\E[23~, kf12=\E[24~, kf13=\E[1;2P, kf14=\E[1;2Q,
+	kf15=\E[1;2R, kf16=\E[1;2S, kf17=\E[15;2~, kf18=\E[17;2~,
+	kf19=\E[18;2~, kf2=\EOQ, kf20=\E[19;2~, kf21=\E[20;2~,
+	kf22=\E[21;2~, kf23=\E[23;2~, kf24=\E[24;2~,
+	kf25=\E[1;5P, kf26=\E[1;5Q, kf27=\E[1;5R, kf28=\E[1;5S,
+	kf29=\E[15;5~, kf3=\EOR, kf30=\E[17;5~, kf31=\E[18;5~,
+	kf32=\E[19;5~, kf33=\E[20;5~, kf34=\E[21;5~,
+	kf35=\E[23;5~, kf36=\E[24;5~, kf37=\E[1;6P, kf38=\E[1;6Q,
+	kf39=\E[1;6R, kf4=\EOS, kf40=\E[1;6S, kf41=\E[15;6~,
+	kf42=\E[17;6~, kf43=\E[18;6~, kf44=\E[19;6~,
+	kf45=\E[20;6~, kf46=\E[21;6~, kf47=\E[23;6~,
+	kf48=\E[24;6~, kf49=\E[1;3P, kf5=\E[15~, kf50=\E[1;3Q,
+	kf51=\E[1;3R, kf52=\E[1;3S, kf53=\E[15;3~, kf54=\E[17;3~,
+	kf55=\E[18;3~, kf56=\E[19;3~, kf57=\E[20;3~,
+	kf58=\E[21;3~, kf59=\E[23;3~, kf6=\E[17~, kf60=\E[24;3~,
+	kf61=\E[1;4P, kf62=\E[1;4Q, kf63=\E[1;4R, kf7=\E[18~,
+	kf8=\E[19~, kf9=\E[20~, khome=\EOH, kich1=\E[2~,
+	kind=\E[1;2B, kmous=\E[<, knp=\E[6~, kpp=\E[5~,
+	kri=\E[1;2A, mc0=\E[i, mc4=\E[4i, mc5=\E[5i, meml=\El,
+	memu=\Em, mgc=\E[?69l, nel=\EE, op=\E[39;49m, rc=\E8,
+	rep=%p1%c\E[%p2%{1}%-%db, rev=\E[7m, ri=\EM,
+	rin=\E[%p1%dT, ritm=\E[23m, rmacs=\E(B, rmam=\E[?7l,
+	rmcup=\E[?1049l\E[23;0;0t, rmir=\E[4l, rmkx=\E[?1l\E>,
+	rmm=\E[?1034l, rmso=\E[27m, rmul=\E[24m, rs1=\Ec,
+	rs2=\E[!p\E[?3;4l\E[4l\E>, sc=\E7, setab=\E[4%p1%dm,
+	setaf=\E[3%p1%dm,
+	setb=\E[4%?%p1%{1}%=%t4%e%p1%{3}%=%t6%e%p1%{4}%=%t1%e%p1%{6}%=%t3%e%p1%d%;m,
+	setf=\E[3%?%p1%{1}%=%t4%e%p1%{3}%=%t6%e%p1%{4}%=%t1%e%p1%{6}%=%t3%e%p1%d%;m,
+	sgr=%?%p9%t\E(0%e\E(B%;\E[0%?%p6%t;1%;%?%p5%t;2%;%?%p2%t;4%;%?%p1%p3%|%t;7%;%?%p4%t;5%;%?%p7%t;8%;m,
+	sgr0=\E(B\E[m, sitm=\E[3m, smacs=\E(0, smam=\E[?7h,
+	smcup=\E[?1049h\E[22;0;0t, smglp=\E[?69h\E[%i%p1%ds,
+	smglr=\E[?69h\E[%i%p1%d;%p2%ds,
+	smgrp=\E[?69h\E[%i;%p1%ds, smir=\E[4h, smkx=\E[?1h\E=,
+	smm=\E[?1034h, smso=\E[7m, smul=\E[4m, tbc=\E[3g,
+	u6=\E[%i%d;%dR, u7=\E[6n, u8=\E[?%[;0123456789]c,
+	u9=\E[c, vpa=\E[%i%p1%dd,
+Making check in final
+make[1]: Verzeichnis „/usr/local/src/guru/finalcut/final“ wird betreten
+Making check in .
+make[2]: Verzeichnis „/usr/local/src/guru/finalcut/final“ wird betreten
+make[2]: Für das Ziel „check-am“ ist nichts zu tun.
+make[2]: Verzeichnis „/usr/local/src/guru/finalcut/final“ wird verlassen
+Making check in font
+make[2]: Verzeichnis „/usr/local/src/guru/finalcut/final/font“ wird betreten
+make[2]: Für das Ziel „check“ ist nichts zu tun.
+make[2]: Verzeichnis „/usr/local/src/guru/finalcut/final/font“ wird verlassen
+make[1]: Verzeichnis „/usr/local/src/guru/finalcut/final“ wird verlassen
+Making check in doc
+make[1]: Verzeichnis „/usr/local/src/guru/finalcut/doc“ wird betreten
+make[1]: Für das Ziel „check“ ist nichts zu tun.
+make[1]: Verzeichnis „/usr/local/src/guru/finalcut/doc“ wird verlassen
+Making check in examples
+make[1]: Verzeichnis „/usr/local/src/guru/finalcut/examples“ wird betreten
+make[1]: Für das Ziel „check“ ist nichts zu tun.
+make[1]: Verzeichnis „/usr/local/src/guru/finalcut/examples“ wird verlassen
+Making check in test
+make[1]: Verzeichnis „/usr/local/src/guru/finalcut/test“ wird betreten
+make  char_ringbuffer_test eventloop_monitor_test fcallback_test fcolorpair_test fdata_test fevent_test fkeyboard_test flogger_test fmouse_test fobject_test foptiattr_test foptimove_test fpoint_test frect_test fsize_test fstring_test fstringstream_test fstyle_test fterm_functions_test ftermcap_test ftermcapquirks_test ftermdata_test ftermdetection_test ftermfreebsd_test ftermlinux_test ftermopenbsd_test ftimer_test fvterm_test fvtermattribute_test fvtermbuffer_test fwidget_test
+make[2]: Verzeichnis „/usr/local/src/guru/finalcut/test“ wird betreten
+make[2]: „char_ringbuffer_test“ ist bereits aktuell.
+make[2]: „eventloop_monitor_test“ ist bereits aktuell.
+make[2]: „fcallback_test“ ist bereits aktuell.
+make[2]: „fcolorpair_test“ ist bereits aktuell.
+make[2]: „fdata_test“ ist bereits aktuell.
+make[2]: „fevent_test“ ist bereits aktuell.
+make[2]: „fkeyboard_test“ ist bereits aktuell.
+make[2]: „flogger_test“ ist bereits aktuell.
+make[2]: „fmouse_test“ ist bereits aktuell.
+make[2]: „fobject_test“ ist bereits aktuell.
+make[2]: „foptiattr_test“ ist bereits aktuell.
+make[2]: „foptimove_test“ ist bereits aktuell.
+make[2]: „fpoint_test“ ist bereits aktuell.
+make[2]: „frect_test“ ist bereits aktuell.
+make[2]: „fsize_test“ ist bereits aktuell.
+make[2]: „fstring_test“ ist bereits aktuell.
+make[2]: „fstringstream_test“ ist bereits aktuell.
+make[2]: „fstyle_test“ ist bereits aktuell.
+make[2]: „fterm_functions_test“ ist bereits aktuell.
+make[2]: „ftermcap_test“ ist bereits aktuell.
+make[2]: „ftermcapquirks_test“ ist bereits aktuell.
+make[2]: „ftermdata_test“ ist bereits aktuell.
+make[2]: „ftermdetection_test“ ist bereits aktuell.
+make[2]: „ftermfreebsd_test“ ist bereits aktuell.
+make[2]: „ftermlinux_test“ ist bereits aktuell.
+make[2]: „ftermopenbsd_test“ ist bereits aktuell.
+make[2]: „ftimer_test“ ist bereits aktuell.
+make[2]: „fvterm_test“ ist bereits aktuell.
+make[2]: „fvtermattribute_test“ ist bereits aktuell.
+make[2]: „fvtermbuffer_test“ ist bereits aktuell.
+make[2]: „fwidget_test“ ist bereits aktuell.
+make[2]: Verzeichnis „/usr/local/src/guru/finalcut/test“ wird verlassen
+make  check-TESTS
+make[2]: Verzeichnis „/usr/local/src/guru/finalcut/test“ wird betreten
+make[3]: Verzeichnis „/usr/local/src/guru/finalcut/test“ wird betreten
+[0;32mPASS[m: char_ringbuffer_test
+A[0;32mPASS[m: eventloop_monitor_test
+[0;32mPASS[m: fcallback_test
+[0;32mPASS[m: fcolorpair_test
+[0;32mPASS[m: fdata_test
+[0;32mPASS[m: fevent_test
+^[O[^[^[^[[BAB^[[11~^[[12~^[[13~^[OP^[[11~^[OQ^[[12~^[OR^[[13~^[OS^[[14~^[[15~^[[17~^[[18~^[[19~^[[20~^[[21~^[[23~^[[24~^[O1;2P^[O1;2Q^[O1;2R^[O1;2S^[[15;2~^[[17;2~^[[18;2~^[[19;2~^[[20;2~^[[21;2~^[[23;2~^[[24;2~^[O1;5P^[O1;5Q^[O1;5R^[O1;5S^[[15;5~^[[17;5~^[[18;5~^[[19;5~^[[20;5~^[[21;5~^[[23;5~^[[24;5~^[O1;6P^[O1;6Q^[O1;6R^[O1;6S^[[15;6~^[[17;6~^[[18;6~^[[19;6~^[[20;6~^[[21;6~^[[23;6~^[[24;6~^[O1;3P^[O1;3Q^[O1;3R^[O1;3S^[[15;3~^[[17;3~^[[18;3~^[[19;3~^[[20;3~^[[21;3~^[[23;3~^[[24;3~^[O1;4P^[O1;4Q^[O1;4R^[[2;3~^[^[[2~^[[3;3~^[^[[3~^[[1;3H^[^[[1~^[[1;3F^[^[[4~^[[5;3~^[^[[5~^[[6;3~^[^[[6~^[[1;3P^[^[[11~^[[1;3Q^[^[[12~^[[1;3R^[^[[13~^[[1;3S^[^[[14~^[^[[15~^[^[[17~^[^[[18~^[^[[19~^[^[[20~^[^[[21~^[^[[23~^[^[[24~^[[1;3A^[^[[A^[[1;3B^[^[[B^[[1;3C^[^[[C^[[1;3D^[^[[D^[[2;4~^[[3;4~^[[1;4H^[[1;4F^[[5;4~^[[6;4~^[[1;4P^[[1;4Q^[[1;4R^[[1;4S^[[15;4~^[[17;4~^[[18;4~^[[19;4~^[[20;4~^[[21;4~^[[23;4~^[[24;4~^[[1;4A^[[1;4B^[[1;4C^[[1;4D^[[2;5~^[[3;5~^[[1;5H^[[1;5F^[[5;5~^[[6;5~^[[1;5A^[[1;5B^[[1;5C^[[1;5D^[[2;6~^[[3;6~^[[1;6H^[[1;6F^[[5;6~^[[6;6~^[[1;6A^[[1;6B^[[1;6C^[[1;6D^[[2;7~^[[3;7~^[[1;7H^[[1;7F^[[5;7~^[[6;7~^[[1;7A^[[1;7B^[[1;7C^[[1;7D^[[2;8~^[[3;8~^[[1;8H^[[1;8F^[[5;8~^[[6;8~^[[1;8P^[[1;8Q^[[1;8R^[[1;8S^[[15;8~^[[17;8~^[[18;8~^[[19;8~^[[20;8~^[[21;8~^[[23;8~^[[24;8~^[[1;8A^[[1;8B^[[1;8C^[[1;8D^[[29~^[[29$^[[29;2~^[[29^^[[29;5~^[[29@^[[29;6~^[[29;3~^[[29;4~^[[29;7~^[[I^[[O^[[29;8~^[	^[
+^[
+^[ ^[!^["^[#^[$^[%^[&^['^[(^[)^[*^[+^[,^[-^[.^[/^[0^[1^[2^[3^[4^[5^[6^[7^[8^[9^[:^[;^[<^[=^[>^[?^[@^[A^[B^[C^[D^[E^[F^[G^[H^[I^[J^[K^[L^[M^[N^[O^[P^[Q^[R^[S^[T^[U^[V^[W^[X^[Y^[Z^[[^[\^[]^[^^[_^[`^[a^[b^[c^[d^[e^[f^[g^[h^[i^[j^[k^[l^[m^[n^[o^[p^[q^[r^[s^[t^[u^[v^[w^[x^[y^[z^[{^[|^[}^[~^[[3~^[OA^[[A^[OB^[[B^[OC^[[C^[OD^[OD^[[7~^[OH^[[H^[[8~^[OF^[[F^[[K^[[6~^[[5~^[[2~^[[1;2B^[[a^[[1;2A^[[b^[[E^[[Z^[[1~^[[4~^[[3;2~^[[1;2F^[[1;2H^[[2;2~^[[1;2D^[[6;2~^[[5;2~^[[1;2C^[Oo^[Oj^[Om^[Ok^[Op^[On^[Ot^[Ov^[Ox^[Or^[Ow^[Oy^[Ou^[Oq^[Os^[[M Z2^[[<0;11;7M^[[32;11;7M^[[M Z2^[[<0;11;7M^[[32;11;7M𐀀€ü@�𐀀^[[_.[0;32mPASS[m: fkeyboard_test
+[0;32mPASS[m: flogger_test
+[0;32mPASS[m: fmouse_test
+[0;32mPASS[m: fobject_test
+[0;32mPASS[m: foptiattr_test
+[0;32mPASS[m: foptimove_test
+[0;32mPASS[m: fpoint_test
+[0;32mPASS[m: frect_test
+[0;32mPASS[m: fsize_test
+[0;32mPASS[m: fstring_test
+[0;32mPASS[m: fstringstream_test
+[0;32mPASS[m: fstyle_test
+[0;32mPASS[m: fterm_functions_test
+[>c[0;32mPASS[m: ftermcap_test
+[0;32mPASS[m: ftermcapquirks_test
+[0;32mPASS[m: ftermdata_test
+[0;32mPASS[m: ftermdetection_test
+[0;32mPASS[m: ftermfreebsd_test
+[0;32mPASS[m: ftermlinux_test
+[0;32mPASS[m: ftermopenbsd_test
+[0;32mPASS[m: ftimer_test
+[0;32mPASS[m: fvterm_test
+[0;32mPASS[m: fvtermattribute_test
+[0;32mPASS[m: fvtermbuffer_test
+[0;32mPASS[m: fwidget_test
+[0;32m============================================================================[m
+[0;32mTestsuite summary for finalcut 0.9.2[m
+[0;32m============================================================================[m
+[1m# TOTAL: 31[m
+[0;32m# PASS:  31[m
+# SKIP:  0
+# XFAIL: 0
+# FAIL:  0
+# XPASS: 0
+# ERROR: 0
+[0;32m============================================================================[m
+make[3]: Verzeichnis „/usr/local/src/guru/finalcut/test“ wird verlassen
+make[2]: Verzeichnis „/usr/local/src/guru/finalcut/test“ wird verlassen
+make[1]: Verzeichnis „/usr/local/src/guru/finalcut/test“ wird verlassen
+make[1]: Verzeichnis „/usr/local/src/guru/finalcut“ wird betreten
+make[1]: Für das Ziel „check-am“ ist nichts zu tun.
+make[1]: Verzeichnis „/usr/local/src/guru/finalcut“ wird verlassen
+
+Script done on 2024-09-25 03:01:24+02:00 [COMMAND_EXIT_CODE="0"]
