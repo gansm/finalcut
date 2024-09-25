@@ -24,6 +24,7 @@
 #include <termios.h>
 #include <unistd.h>
 
+#include <atomic>
 #include <cstdio>
 #include <iostream>
 #include <thread>
@@ -34,10 +35,12 @@
 struct Global
 {
   static struct termios original_term_io_settings;  // global termios object
+  static std::atomic<bool> wait;
 };
 
 // static class attribute
 struct termios Global::original_term_io_settings{};
+std::atomic<bool> Global::wait{true};
 
 
 //----------------------------------------------------------------------
@@ -51,7 +54,14 @@ static void onExit()
 //----------------------------------------------------------------------
 void wait_5_seconds (const finalcut::BackendMonitor* mon)
 {
-  std::this_thread::sleep_for(std::chrono::seconds(5));
+  int wait = 50;  // Wait 50 times for 100 ms
+
+  while ( wait && Global::wait )
+  {
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    wait--;
+  }
+
   mon->setEvent();  // Generates the event
 }
 
@@ -105,20 +115,24 @@ auto main() -> int
                      , std::chrono::nanoseconds{ 1'000'000'000 } );
 
   sig_int_monitor.init ( SIGINT
-                       , [&loop] (const finalcut::Monitor*, short)
+                       , [&loop, &backend_thread] (const finalcut::Monitor*, short)
                          {
                            std::cout << "Signal SIGINT received."
                                      << std::endl;
                            loop.leave();
+                           Global::wait = false;
+                           backend_thread.join();  // Wait to finish thread
                          }
                        , nullptr );
 
   sig_abrt_monitor.init ( SIGABRT
-                        , [&loop] (const finalcut::Monitor*, short)
+                        , [&loop, &backend_thread] (const finalcut::Monitor*, short)
                           {
                             std::cout << "Signal SIGABRT received."
                                       << std::endl;
                             loop.leave();
+                            Global::wait = false;
+                            backend_thread.join();  // Wait to finish thread
                           }
                         , nullptr );
 
