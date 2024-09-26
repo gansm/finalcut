@@ -3191,11 +3191,22 @@ void FKeyboardTest::enableFakingInput()
   //--------------------------------------------------------------------
   // Note: The dev.tty.legacy_tiocsti sysctl variable must be set
   //       to true to perform the TIOCSTI (faking input) operation
-  //       in Linux 6.2 or later.
+  //       in Linux 6.2.0 or later.
   //--------------------------------------------------------------------
 
+  static const auto& fsystem = finalcut::FSystem::getInstance();
+  struct stat buffer{};
+
+  // Check for root privileges
+  if ( fsystem->getuid() != 0 )
+    return;
+
+  // Check if /proc/sys/dev/tty/legacy_tiocsti exists
+  if ( ::stat("/proc/sys/dev/tty/legacy_tiocsti", &buffer) != 0)
+    return;
+
   // Open the sysctl variable "dev.tty.legacy_tiocsti"
-  int fd = open("/proc/sys/dev/tty/legacy_tiocsti", O_WRONLY);
+  int fd = ::open("/proc/sys/dev/tty/legacy_tiocsti", O_WRONLY);
 
   if ( fd < 0 )  // Cannot open file descriptor
     return;
@@ -3204,7 +3215,7 @@ void FKeyboardTest::enableFakingInput()
   if ( dprintf(fd, "%d", 1) < 1 )
     std::cerr << "-> Unable to modify dev.tty.legacy_tiocsti\n";
 
-  if ( close(fd) < 0 )
+  if ( ::close(fd) < 0 )
     std::cerr << "-> Cannot close file descriptor\n";
 }
 

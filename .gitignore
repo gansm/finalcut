@@ -16,6 +16,7 @@
 *.trs
 Makefile
 Makefile.in
+typescript
 /aclocal.m4
 /ar-lib
 /autom4te.cache

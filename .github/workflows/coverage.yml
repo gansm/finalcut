@@ -45,7 +45,13 @@ jobs:
       run: sudo gem install coveralls-lcov
 
     - name: Build with with gcov
-      run: script -q -e -c 'ls -al "/proc/$$/fd/"; echo "----"; tty; echo "----"; stty -a; echo "----"; infocmp; echo "----"; ./build.sh coverage'
+      run: |
+        ls -al /proc/sys/dev/tty/legacy_tiocsti
+        echo "1" > /proc/sys/dev/tty/legacy_tiocsti 2>/dev/null || true # Required for Linux 6.2.0 or later
+        echo "/proc/sys/dev/tty/legacy_tiocsti"
+        cat /proc/sys/dev/tty/legacy_tiocsti
+        sysctl -w dev.tty.legacy_tiocsti=1
+        script -q -e -c './build.sh coverage'
 
     - name: Generate lcov.info and publish to coveralls.io
       run: |
