@@ -46,11 +46,9 @@ jobs:
 
     - name: Build with with gcov
       run: |
-        ls -al /proc/sys/dev/tty/legacy_tiocsti
-        echo "1" > /proc/sys/dev/tty/legacy_tiocsti 2>/dev/null || true # Required for Linux 6.2.0 or later
+        sudo sysctl -w dev.tty.legacy_tiocsti=1  # Required for Linux 6.2.0 or later
         echo "/proc/sys/dev/tty/legacy_tiocsti"
         cat /proc/sys/dev/tty/legacy_tiocsti
-        sysctl -w dev.tty.legacy_tiocsti=1
         script -q -e -c './build.sh coverage'
 
     - name: Generate lcov.info and publish to coveralls.io

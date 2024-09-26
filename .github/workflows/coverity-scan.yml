@@ -76,9 +76,7 @@ jobs:
 
     - name: Make unit test
       run: |
-	setcap cap_sys_admin+ep test/.libs/eventloop_monitor_test
-	getcap test/.libs/eventloop_monitor_test
-        echo "1" > /proc/sys/dev/tty/legacy_tiocsti 2>/dev/null || true # Required for Linux 6.2 or later
+        sudo sysctl -w dev.tty.legacy_tiocsti=1  # Required for Linux 6.2.0 or later
         script -q -e -c 'make check' && RET=$? || RET=$?
         cat test/*.log || echo
         echo "Exit status: $RET"
