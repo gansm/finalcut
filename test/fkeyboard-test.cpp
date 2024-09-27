@@ -3195,14 +3195,9 @@ void FKeyboardTest::enableFakingInput()
   //--------------------------------------------------------------------
 
   static const auto& fsystem = finalcut::FSystem::getInstance();
-  struct stat buffer{};
 
   // Check for root privileges
   if ( fsystem->getuid() != 0 )
-    return;
-
-  // Check if /proc/sys/dev/tty/legacy_tiocsti exists
-  if ( ::stat("/proc/sys/dev/tty/legacy_tiocsti", &buffer) != 0)
     return;
 
   // Open the sysctl variable "dev.tty.legacy_tiocsti"

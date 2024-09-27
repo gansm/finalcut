@@ -121,7 +121,7 @@ auto main() -> int
                                      << std::endl;
                            loop.leave();
                            Global::wait = false;
-                           backend_thread.join();  // Wait to finish thread
+                           backend_thread.join();  // Wait for end of thread
                          }
                        , nullptr );
 
@@ -132,7 +132,7 @@ auto main() -> int
                                       << std::endl;
                             loop.leave();
                             Global::wait = false;
-                            backend_thread.join();  // Wait to finish thread
+                            backend_thread.join();  // Wait for end of thread
                           }
                         , nullptr );
 
