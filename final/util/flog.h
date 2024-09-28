@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2022 Markus Gans                                      *
+* Copyright 2020-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -81,7 +81,7 @@ class FLog : public std::stringbuf
     ~FLog() override;
 
     template <typename T>
-    auto operator << (const T& s) -> FLog&;
+    auto operator << (const T&) -> FLog&;
     auto operator << (IOManip) -> FLog&;
     auto operator << (LogLevel) -> FLog&;
 
@@ -115,6 +115,10 @@ class FLog : public std::stringbuf
     // Friend Non-member operator functions
     friend auto operator << (std::ostream&, LogLevel) -> std::ostream&;
 };
+
+// non-member function forward declarations
+//----------------------------------------------------------------------
+void handleOutOfRangeError (const std::out_of_range& ex);
 
 // FLog inline functions
 //----------------------------------------------------------------------

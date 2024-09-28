@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2023 Markus Gans                                      *
+* Copyright 2019-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -48,6 +48,30 @@ struct var
 uInt8 var::b1_print_trans_mask{};
 
 }  // namespace internal
+
+//----------------------------------------------------------------------
+struct TransparentShadowData
+{
+  // Using-declaration
+  using FTermArea = FVTerm::FTermArea;
+
+  // Data members
+  FTermArea& area;
+  uInt       width{};
+  uInt       height{};
+  uInt       shadow_width{};
+  uInt       shadow_height{};
+  FChar      transparent_char{};
+  FChar      color_overlay_char{};
+  FChar*     area_pos{};
+};
+
+
+// Function forward declarations
+//----------------------------------------------------------------------
+void drawRightShadow (TransparentShadowData&);
+void drawBottomShadow (TransparentShadowData&);
+
 
 // FWidget non-member functions
 //----------------------------------------------------------------------
@@ -99,6 +123,22 @@ auto isEscapeKey (const FKey key) -> bool
 {
   return ( key == FKey::Escape
         || key == FKey::Escape_mintty );
+}
+
+//----------------------------------------------------------------------
+auto isExpandComboBoxKey (const FKey key) -> bool
+{
+  return ( key == FKey::F4
+        || key == FKey::Meta_down
+        || key == FKey::Ctrl_down );
+}
+
+//----------------------------------------------------------------------
+auto isCollapseComboBoxKey (const FKey key) -> bool
+{
+  return ( key == FKey::Meta_up
+        || key == FKey::Ctrl_up
+        || isEscapeKey(key) );
 }
 
 //----------------------------------------------------------------------
@@ -353,67 +393,76 @@ void drawTransparentShadow (FWidget* w)
     return;
 
   auto& area = *w->getPrintArea();
-  const auto width = uInt(area.width);
-  const auto height = uInt(area.height);
-  const auto shadow_width = uInt(area.right_shadow);
-  const auto shadow_height = uInt(area.bottom_shadow);
   const auto& wc = FWidget::getColorTheme();
 
-  const FChar transparent_char
+  TransparentShadowData data
   {
-    { { L'\0',  L'\0', L'\0', L'\0', L'\0' } },
-    { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
-    FColor::Default,
-    FColor::Default,
-    { { 0x00, 0x20, 0x00, 0x00} }  // byte 0..3 (byte 1 = 0x32 = transparent)
-  };
-
-  const FChar color_overlay_char
-  {
-    { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
-    { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
-    wc->shadow_bg,
-    wc->shadow_fg,
-    { { 0x00, 0x40, 0x00, 0x00} }  // byte 0..3 (byte 1 = 0x64 = color_overlay)
-  };
-
-  auto* area_pos = &area.getFChar(int(width), 0);
-  auto& area_changes = area.changes;
-
-  if ( shadow_width > 0 )  // Draw right shadow
-  {
-    std::fill (area_pos, area_pos + shadow_width, transparent_char);
-    area_changes[0].xmin = std::min(area_changes[0].xmin, width);
-    area_changes[0].xmax = width + shadow_width - 1;
-    area_changes[0].trans_count += shadow_width;
-
-    for (std::size_t y{1}; y < height; y++)
+    area,
+    uInt(area.size.width),
+    uInt(area.size.height),
+    uInt(area.shadow.width),
+    uInt(area.shadow.height),
     {
-      area_pos += shadow_width + width;
-      area_changes[y].xmin = std::min(area_changes[y].xmin, width);
-      area_changes[y].xmax = width + shadow_width - 1;
-      area_changes[y].trans_count += shadow_width;
-      std::fill (area_pos, area_pos + shadow_width, color_overlay_char);
-    }
+      { { L'\0',  L'\0', L'\0', L'\0', L'\0' } },
+      { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
+      FColor::Default,
+      FColor::Default,
+      { { 0x00, 0x20, 0x00, 0x00} }  // byte 0..3 (byte 1 = 0x32 = transparent)
+    },
+    {
+      { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
+      { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
+      wc->shadow.fg,
+      wc->shadow.bg,
+      { { 0x00, 0x40, 0x00, 0x00} }  // byte 0..3 (byte 1 = 0x64 = color_overlay)
+    },
+    &area.getFChar(area.size.width, 0)
+  };
 
-    area_pos += shadow_width;
-  }
-
-  for (std::size_t y{height}; y < height + shadow_height; y++)  // Draw bottom shadow
-  {
-    area_changes[y].xmin = 0;
-    area_changes[y].xmax = width + shadow_width - 1;
-    area_changes[y].trans_count += width + shadow_width;
-    std::fill (area_pos, area_pos + shadow_width, transparent_char);
-    area_pos += shadow_width;
-    std::fill (area_pos, area_pos + width, color_overlay_char);
-    area_pos += width;
-  }
-
+  drawRightShadow(data);
+  drawBottomShadow(data);
   area.has_changes = true;
 
   if ( FVTerm::getFOutput()->isMonochron() )
     w->setReverse(false);
+}
+
+//----------------------------------------------------------------------
+inline void drawRightShadow (TransparentShadowData& d)
+{
+  if ( d.shadow_width > 0 )  // Draw right shadow
+  {
+    std::fill (d.area_pos, d.area_pos + d.shadow_width, d.transparent_char);
+    d.area.changes[0].xmin = std::min(d.area.changes[0].xmin, d.width);
+    d.area.changes[0].xmax = d.width + d.shadow_width - 1;
+    d.area.changes[0].trans_count += d.shadow_width;
+
+    for (std::size_t y{1}; y < d.height; y++)
+    {
+      d.area_pos += d.shadow_width + d.width;
+      d.area.changes[y].xmin = std::min(d.area.changes[y].xmin, d.width);
+      d.area.changes[y].xmax = d.width + d.shadow_width - 1;
+      d.area.changes[y].trans_count += d.shadow_width;
+      std::fill (d.area_pos, d.area_pos + d.shadow_width, d.color_overlay_char);
+    }
+
+    d.area_pos += d.shadow_width;
+  }
+}
+
+//----------------------------------------------------------------------
+inline void drawBottomShadow (TransparentShadowData& d)
+{
+  for (std::size_t y{d.height}; y < d.height + d.shadow_height; y++)  // Draw bottom shadow
+  {
+    d.area.changes[y].xmin = 0;
+    d.area.changes[y].xmax = d.width + d.shadow_width - 1;
+    d.area.changes[y].trans_count += d.width + d.shadow_width;
+    std::fill (d.area_pos, d.area_pos + d.shadow_width, d.transparent_char);
+    d.area_pos += d.shadow_width;
+    std::fill (d.area_pos, d.area_pos + d.width, d.color_overlay_char);
+    d.area_pos += d.width;
+  }
 }
 
 //----------------------------------------------------------------------
@@ -431,34 +480,34 @@ void drawBlockShadow (FWidget* w)
     {
       { { wchar_t(UniChar::LowerHalfBlock),  L'\0', L'\0', L'\0', L'\0' } },  // ▄
       { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
-      wc->shadow_fg,
-      wc->shadow_bg,
+      wc->shadow.bg,
+      FColor::Default,
       { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3 (byte 2 = 0x08 = char_width 1)
     },
     {
       { { wchar_t(UniChar::FullBlock),  L'\0', L'\0', L'\0', L'\0' } },  // █
       { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
-      wc->shadow_fg,
-      wc->shadow_bg,
+      wc->shadow.bg,
+      FColor::Default,
       { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3 (byte 2 = 0x08 = char_width 1)
     },
     {
       { { L' ',  L'\0', L'\0', L'\0', L'\0' } },  // ' '
       { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
-      wc->shadow_fg,
-      wc->shadow_bg,
+      FColor::Default,
+      FColor::Default,
       { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3 (byte 2 = 0x08 = char_width 1)
     },
     {
       { { wchar_t(UniChar::UpperHalfBlock),  L'\0', L'\0', L'\0', L'\0' } },  // ▄
       { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
-      wc->shadow_fg,
-      wc->shadow_bg,
+      wc->shadow.bg,
+      FColor::Default,
       { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3 (byte 2 = 0x08 = char_width 1)
     }
   }};
 
-  if (  w->isWindowWidget() )
+  if ( w->isWindowWidget() )
   {
     shadow_char[0].attr.bit.inherit_background = true;
     shadow_char[1].attr.bit.inherit_background = true;
@@ -482,18 +531,16 @@ void clearBlockShadow (FWidget* w)
   if ( ! w || ! FVTerm::getFOutput()->hasShadowCharacter() )
     return;
 
-  const auto& wc = FWidget::getColorTheme();
-
   FChar spacer_char
   {
     { { L' ',  L'\0', L'\0', L'\0', L'\0' } },  // ' '
     { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
-    wc->shadow_fg,
-    wc->shadow_bg,
+    FColor::Default,
+    FColor::Default,
     { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3 (byte 2 = 0x08 = char_width 1)
   };
 
-  if (  w->isWindowWidget() )
+  if ( w->isWindowWidget() )
     spacer_char.attr.bit.transparent = true;
   else if ( auto p = w->getParentWidget() )
     spacer_char.bg_color = p->getBackgroundColor();
@@ -517,12 +564,12 @@ void drawGenericBlockShadow ( FWidget* w
 
   auto& area = *w->getPrintArea();
   const bool is_window = w->isWindowWidget();
-  const auto width = is_window ? uInt(area.width) : uInt(w->getWidth());
-  const auto height = is_window ? uInt(area.height) : uInt(w->getHeight());
-  const auto shadow_width = uInt(area.right_shadow);
-  const auto shadow_height = uInt(area.bottom_shadow);
-  const auto x_offset = uInt(w->woffset.getX1() + w->getX() - area.offset_left - 1);
-  const auto y_offset = uInt(w->woffset.getY1() + w->getY() - area.offset_top - 1);
+  const auto width = is_window ? uInt(area.size.width) : uInt(w->getWidth());
+  const auto height = is_window ? uInt(area.size.height) : uInt(w->getHeight());
+  const auto shadow_width = uInt(area.shadow.width);
+  const auto shadow_height = uInt(area.shadow.height);
+  const auto x_offset = uInt(w->woffset.getX1() + w->getX() - area.position.x - 1);
+  const auto y_offset = uInt(w->woffset.getY1() + w->getY() - area.position.y - 1);
 
   if ( is_window && (shadow_width < 1 || shadow_height < 1) )
     return;
@@ -564,9 +611,9 @@ void drawFlatBorder (FWidget* w)
   const auto& wc = FWidget::getColorTheme();
 
   if ( auto p = w->getParentWidget() )
-    w->setColor (wc->dialog_fg, p->getBackgroundColor());
+    w->setColor (wc->dialog.fg, p->getBackgroundColor());
   else
-    w->setColor (wc->dialog_fg, wc->dialog_bg);
+    w->setColor (wc->dialog.fg, wc->dialog.bg);
 
   for (std::size_t y{0}; y < height; y++)
   {
@@ -625,9 +672,9 @@ void clearFlatBorder (FWidget* w)
   const auto& wc = FWidget::getColorTheme();
 
   if ( auto p = w->getParentWidget() )
-    w->setColor (wc->dialog_fg, p->getBackgroundColor());
+    w->setColor (wc->dialog.fg, p->getBackgroundColor());
   else
-    w->setColor (wc->dialog_fg, wc->dialog_bg);
+    w->setColor (wc->dialog.fg, wc->dialog.bg);
 
   for (std::size_t y{0}; y < height; y++)
   {
@@ -815,8 +862,8 @@ void drawGenericBox ( FWidget* w, const FRect& r
   // Adjust box position to match print area
   auto box = r;
   box.move (-1, -1);
-  const auto x_offset = uInt(w->woffset.getX1() + w->getX() - area.offset_left - 1);
-  const auto y_offset = uInt(w->woffset.getY1() + w->getY() - area.offset_top - 1);
+  const auto x_offset = uInt(w->woffset.getX1() + w->getX() - area.position.x - 1);
+  const auto y_offset = uInt(w->woffset.getY1() + w->getY() - area.position.y - 1);
 
   // Draw the top line of the box
   auto* area_pos = &area.getFChar(int(x_offset) + box.getX1(), int(y_offset) + box.getY1());
@@ -831,8 +878,11 @@ void drawGenericBox ( FWidget* w, const FRect& r
 
   // Update area_changes for the top line
   auto y = y_offset + uInt(box.getY1());
+  auto max_width = uInt(area.size.width + area.shadow.width) - 1;
   area_changes[y].xmin = std::min(area_changes[y].xmin, x_offset + uInt(box.getX1()));
+  area_changes[y].xmin = std::min(area_changes[y].xmin, max_width);
   area_changes[y].xmax = std::max(area_changes[y].xmax, x_offset + uInt(box.getX2()));
+  area_changes[y].xmax = std::min(area_changes[y].xmax, max_width);
   area_changes[y].trans_count += uInt(is_transparent) * box.getWidth();
 
   // Draw the sides of the box
@@ -846,7 +896,9 @@ void drawGenericBox ( FWidget* w, const FRect& r
     *area_pos = fchar;
     // Update area_changes for the sides
     area_changes[y].xmin = std::min(area_changes[y].xmin, x_offset + uInt(box.getX1()));
+    area_changes[y].xmin = std::min(area_changes[y].xmin, max_width);
     area_changes[y].xmax = std::max(area_changes[y].xmax, x_offset + uInt(box.getX2()));
+    area_changes[y].xmax = std::min(area_changes[y].xmax, max_width);
     area_changes[y].trans_count += uInt(is_transparent) * box.getWidth();
   }
 
@@ -864,7 +916,9 @@ void drawGenericBox ( FWidget* w, const FRect& r
   // Update area_changes for the bottom line
   y = y_offset + uInt(box.getY2());
   area_changes[y].xmin = std::min(area_changes[y].xmin, x_offset + uInt(box.getX1()));
+  area_changes[y].xmin = std::min(area_changes[y].xmin, max_width);
   area_changes[y].xmax = std::max(area_changes[y].xmax, x_offset + uInt(box.getX2()));
+  area_changes[y].xmax = std::min(area_changes[y].xmax, max_width);
   area_changes[y].trans_count += uInt(is_transparent) * box.getWidth();
   area.has_changes = true;
 }

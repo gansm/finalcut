@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2023 Markus Gans                                      *
+* Copyright 2017-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -244,10 +244,30 @@ class FListViewIterator
     auto operator -= (int) -> FListViewIterator&;
     auto operator * () const -> FObject*&;
     auto operator -> () const -> FObject*;
-    auto operator == (const FListViewIterator&) const -> bool;
-    auto operator != (const FListViewIterator&) const -> bool;
-    auto operator == (Iterator) const -> bool;
-    auto operator != (Iterator) const -> bool;
+
+    friend inline auto operator == ( const FListViewIterator& lhs
+                                   , const FListViewIterator& rhs ) -> bool
+    {
+      return lhs.node == rhs.node;
+    }
+
+    friend inline auto operator != ( const FListViewIterator& lhs
+                                   , const FListViewIterator& rhs ) -> bool
+    {
+      return lhs.node != rhs.node;
+    }
+
+    friend inline auto operator == ( const FListViewIterator& listview_iter
+                                   , const Iterator& iter) -> bool
+    {
+      return listview_iter.node == iter;
+    }
+
+    friend inline auto operator != ( const FListViewIterator& listview_iter
+                                   , const Iterator& iter) -> bool
+    {
+      return listview_iter.node != iter;
+    }
 
     // Accessor
     auto getClassName() const -> FString;
@@ -255,6 +275,27 @@ class FListViewIterator
 
     // Methods
     void parentElement();
+
+    // Friend Non-member operator functions
+    friend auto operator + (const FListViewIterator& lhs, int n) -> FListViewIterator
+    {
+      auto tmp = lhs;
+
+      for (int i = n; i > 0 ; i--)
+        tmp.nextElement(tmp.node);
+
+      return tmp;
+    }
+
+    friend auto operator - (const FListViewIterator& lhs, int n) -> FListViewIterator
+    {
+      auto tmp = lhs;
+
+      for (int i = n; i > 0 ; i--)
+        tmp.prevElement(tmp.node);
+
+      return tmp;
+    }
 
   private:
     // Methods
@@ -276,22 +317,6 @@ inline auto FListViewIterator::operator * () const -> FObject*&
 //----------------------------------------------------------------------
 inline auto FListViewIterator::operator -> () const -> FObject*
 { return *node; }
-
-//----------------------------------------------------------------------
-inline auto FListViewIterator::operator == (const FListViewIterator& rhs) const -> bool
-{ return node == rhs.node; }
-
-//----------------------------------------------------------------------
-inline auto FListViewIterator::operator != (const FListViewIterator& rhs) const -> bool
-{ return node != rhs.node; }
-
-//----------------------------------------------------------------------
-inline auto FListViewIterator::operator == (Iterator iter) const -> bool
-{ return node == iter; }
-
-//----------------------------------------------------------------------
-inline auto FListViewIterator::operator != (Iterator iter) const -> bool
-{ return node != iter; }
 
 //----------------------------------------------------------------------
 inline auto FListViewIterator::getClassName() const -> FString
@@ -424,6 +449,46 @@ class FListView : public FWidget
     using HeaderItems = std::vector<Header>;
     using SortTypes = std::vector<SortType>;
 
+    struct ListViewData
+    {
+      iterator      root{};
+      FObjectList   selflist{};
+      FObjectList   itemlist{};
+      HeaderItems   header;  // GitHub issues #122
+      FVTermBuffer  headerline{};
+      KeyMap        key_map{};
+      KeyMapResult  key_map_result{};
+    };
+
+    struct SelectionState
+    {
+      FListViewIterator     current_iter{};
+      const FListViewItem*  clicked_checkbox_item{nullptr};
+      FPoint                clicked_expander_pos{-1, -1};
+      FPoint                clicked_header_pos{-1, -1};
+    };
+
+    struct SortState
+    {
+      int        column{-1};
+      SortTypes  type{};
+      SortOrder  order{SortOrder::Unsorted};
+      bool       hide_sort_indicator{false};
+    };
+
+    struct ScrollingState
+    {
+      FScrollbarPtr      vbar{nullptr};
+      FScrollbarPtr      hbar{nullptr};
+      FListViewIterator  first_visible_line{};
+      FListViewIterator  last_visible_line{};
+      int                first_line_position_before{-1};
+      int                xoffset{0};
+      bool               timer{false};
+      int                repeat{100};
+      int                distance{1};
+    };
+
     // Constants
     static constexpr std::size_t checkbox_space = 4;
 
@@ -439,6 +504,8 @@ class FListView : public FWidget
     // Inquiry
     auto isHorizontallyScrollable() const -> bool;
     auto isVerticallyScrollable() const -> bool;
+    auto canSkipListDrawing() const -> bool;
+    auto canSkipDragScrolling() -> bool;
 
     // Methods
     void init();
@@ -455,8 +522,12 @@ class FListView : public FWidget
     void drawScrollbars() const;
     void drawHeadlines();
     void drawList();
+    void setInputCursor (const FListViewItem*, int, bool);
+    void finalizeListDrawing (int);
     void adjustWidthForTreeView (std::size_t&, std::size_t, bool) const;
     void drawListLine (const FListViewItem*, bool, bool);
+    auto createColumnsString (const FListViewItem*) -> FString;
+    void printColumnsString (FString&);
     void clearList();
     void setLineAttributes (bool, bool) const;
     auto getCheckBox (const FListViewItem* item) const -> FString;
@@ -474,9 +545,14 @@ class FListView : public FWidget
     auto determineLineWidth (FListViewItem*) -> std::size_t;
     void beforeInsertion (FListViewItem*);
     void afterInsertion();
+    void adjustListBeforeRemoval (const FListViewItem*);
+    void removeItemFromParent (FListViewItem*);
+    void updateListAfterRemoval();
     void recalculateHorizontalBar (std::size_t);
     void recalculateVerticalBar (std::size_t) const;
     void mouseHeaderClicked();
+    void handleTreeExpanderClick (const FMouseEvent*);
+    void handleCheckboxClick (const FMouseEvent*);
     void wheelUp (int);
     void wheelDown (int);
     void wheelLeft (int);
@@ -500,6 +576,7 @@ class FListView : public FWidget
     void changeOnResize() const;
     void toggleCheckbox();
     void collapseAndScrollLeft();
+    void jumpToParentElement (const FListViewItem*);
     void expandAndScrollRight();
     void firstPos();
     void lastPos();
@@ -519,41 +596,27 @@ class FListView : public FWidget
     auto isTreeView() const -> bool;
     auto isColumnIndexInvalid (int) const -> bool;
     auto hasCheckableItems() const -> bool;
+    auto getScrollBarMaxHorizontal() const noexcept -> int;
+    auto getScrollBarMaxVertical (const std::size_t) const noexcept -> int;
+    void updateViewAfterVBarChange (const FScrollbar::ScrollType);
+    void updateViewAfterHBarChange (const FScrollbar::ScrollType, const int);
+    auto getVerticalScrollDistance (const FScrollbar::ScrollType) const -> int;
+    auto getHorizontalScrollDistance (const FScrollbar::ScrollType) const -> int;
 
     // Callback methods
     void cb_vbarChange (const FWidget*);
     void cb_hbarChange (const FWidget*);
 
     // Data members
-    iterator              root{};
-    FObjectList           selflist{};
-    FObjectList           itemlist{};
-    FListViewIterator     current_iter{};
-    FListViewIterator     first_visible_line{};
-    FListViewIterator     last_visible_line{};
-    HeaderItems           header;  // GitHub issues #122
-    FVTermBuffer          headerline{};
-    FScrollbarPtr         vbar{nullptr};
-    FScrollbarPtr         hbar{nullptr};
-    SortTypes             sort_type{};
-    FPoint                clicked_expander_pos{-1, -1};
-    FPoint                clicked_header_pos{-1, -1};
-    KeyMap                key_map{};
-    KeyMapResult          key_map_result{};
-    const FListViewItem*  clicked_checkbox_item{nullptr};
-    std::size_t           nf_offset{0};
-    std::size_t           max_line_width{1};
-    DragScrollMode        drag_scroll{DragScrollMode::None};
-    int                   first_line_position_before{-1};
-    int                   scroll_repeat{100};
-    int                   scroll_distance{1};
-    int                   xoffset{0};
-    int                   sort_column{-1};
-    SortOrder             sort_order{SortOrder::Unsorted};
-    bool                  scroll_timer{false};
-    bool                  tree_view{false};
-    bool                  hide_sort_indicator{false};
-    bool                  has_checkable_items{false};
+    std::size_t     nf_offset{0};
+    std::size_t     max_line_width{1};
+    bool            tree_view{false};
+    bool            has_checkable_items{false};
+    ListViewData    data{};
+    SortState       sorting{};
+    ScrollingState  scroll{};
+    SelectionState  selection{};
+    DragScrollMode  drag_scroll{DragScrollMode::None};
 
     // Function Pointer
     bool (*user_defined_ascending) (const FObject*, const FObject*){nullptr};
@@ -588,15 +651,15 @@ inline auto FListView::getClassName() const -> FString
 
 //----------------------------------------------------------------------
 inline auto FListView::getSortOrder() const -> SortOrder
-{ return sort_order; }
+{ return sorting.order; }
 
 //----------------------------------------------------------------------
 inline auto FListView::getSortColumn() const -> int
-{ return sort_column; }
+{ return sorting.column; }
 
 //----------------------------------------------------------------------
 inline auto FListView::getCurrentItem() -> FListViewItem*
-{ return static_cast<FListViewItem*>(*current_iter); }
+{ return static_cast<FListViewItem*>(*selection.current_iter); }
 
 //----------------------------------------------------------------------
 template <typename Compare>
@@ -610,7 +673,7 @@ inline void FListView::setUserDescendingCompare (Compare cmp)
 
 //----------------------------------------------------------------------
 inline void FListView::hideSortIndicator (bool hide)
-{ hide_sort_indicator = hide; }
+{ sorting.hide_sort_indicator = hide; }
 
 //----------------------------------------------------------------------
 inline void FListView::setTreeView (bool enable)
@@ -622,13 +685,13 @@ inline void FListView::unsetTreeView()
 
 //----------------------------------------------------------------------
 inline auto FListView::insert (FListViewItem* item) -> FObject::iterator
-{ return insert (item, root); }
+{ return insert (item, data.root); }
 
 //----------------------------------------------------------------------
 template <typename DT>
 inline auto
     FListView::insert (const FStringList& cols, DT&& d) -> FObject::iterator
-{ return insert (cols, std::forward<DT>(d), root); }
+{ return insert (cols, std::forward<DT>(d), data.root); }
 
 //----------------------------------------------------------------------
 inline auto
@@ -648,7 +711,7 @@ inline auto FListView::insert ( const FStringList& cols
     return getNullIterator();
 
   if ( ! *parent_iter )
-    parent_iter = root;
+    parent_iter = data.root;
 
   try
   {
@@ -669,7 +732,7 @@ template <typename T
         , typename DT>
 inline auto
     FListView::insert (const std::initializer_list<T>& list, DT&& d) -> FObject::iterator
-{ return insert (list, std::forward<DT>(d), root); }
+{ return insert (list, std::forward<DT>(d), data.root); }
 
 //----------------------------------------------------------------------
 template <typename T>
@@ -706,7 +769,7 @@ template <typename ColT
         , typename DT>
 inline auto
     FListView::insert (const std::vector<ColT>& cols, DT&& d) -> FObject::iterator
-{ return insert (cols, std::forward<DT>(d), root); }
+{ return insert (cols, std::forward<DT>(d), data.root); }
 
 //----------------------------------------------------------------------
 template <typename ColT>
@@ -742,14 +805,14 @@ auto
 //----------------------------------------------------------------------
 inline auto FListView::getData() & -> FListViewItems&
 {
-  FObjectList* ptr = &itemlist;
+  FObjectList* ptr = &data.itemlist;
   return *static_cast<FListViewItems*>(static_cast<void*>(ptr));
 }
 
 //----------------------------------------------------------------------
 inline auto FListView::getData() const & -> const FListViewItems&
 {
-  const FObjectList* ptr = &itemlist;
+  const FObjectList* ptr = &data.itemlist;
   return *static_cast<const FListViewItems*>(static_cast<const void*>(ptr));
 }
 
@@ -762,8 +825,12 @@ inline auto FListView::isVerticallyScrollable() const -> bool
 { return getCount() > getClientHeight(); }
 
 //----------------------------------------------------------------------
+inline auto FListView::canSkipListDrawing() const -> bool
+{ return isItemListEmpty() || getHeight() <= 2 || getWidth() <= 4; }
+
+//----------------------------------------------------------------------
 inline auto FListView::getColumnCount() const -> std::size_t
-{ return header.size(); }
+{ return data.header.size(); }
 
 //----------------------------------------------------------------------
 inline void FListView::toggleItemCheckState (FListViewItem* item) const
@@ -775,7 +842,7 @@ inline void FListView::scrollTo (const FPoint& pos)
 
 //----------------------------------------------------------------------
 inline auto FListView::isItemListEmpty() const -> bool
-{ return itemlist.empty(); }
+{ return data.itemlist.empty(); }
 
 //----------------------------------------------------------------------
 inline auto FListView::isTreeView() const -> bool
@@ -784,7 +851,7 @@ inline auto FListView::isTreeView() const -> bool
 //----------------------------------------------------------------------
 inline auto FListView::isColumnIndexInvalid (int column) const -> bool
 {
-  return column < 1 || header.empty() || column > int(header.size());
+  return column < 1 || data.header.empty() || column > int(data.header.size());
 }
 
 //----------------------------------------------------------------------

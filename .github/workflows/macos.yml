@@ -26,13 +26,15 @@ jobs:
     - name: Install dependencies via homebrew
       run: |
         brew update
-        brew install automake
+        brew install ncurses
         brew install autoconf-archive
+        brew install automake
+        brew install libtool
         brew install pkg-config
 
     - name: Test on macOS
       run: |
         autoreconf -v --install --force
-        ./configure --prefix=/usr
+        ./configure --prefix=/usr CPPFLAGS=-I/opt/homebrew/opt/ncurses/include
         make -j10
 

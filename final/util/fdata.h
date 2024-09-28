@@ -55,14 +55,23 @@ class FData;  // Class forward declaration
 namespace internal
 {
 
+// Enumerations
+enum class IsArray { No, Yes };
+enum class IsFunction { No, Yes };
+
+// Define the clean condition
 template <typename T
-        , bool isArray = std::is_array<T>::value
-        , bool isFunction = std::is_function<T>::value>
+        , IsArray is_array = std::is_array<T>::value
+                           ? IsArray::Yes
+                           : IsArray::No
+        , IsFunction is_function = std::is_function<T>::value
+                                 ? IsFunction::Yes
+                                 : IsFunction::No>
 struct cleanCondition;
 
 //----------------------------------------------------------------------
 template <typename T>
-struct cleanCondition<T, false, false>
+struct cleanCondition<T, IsArray::No, IsFunction::No>
 {
   // Leave the type untouched
   using type = T;
@@ -70,7 +79,7 @@ struct cleanCondition<T, false, false>
 
 //----------------------------------------------------------------------
 template <typename T>
-struct cleanCondition<T, true, false>
+struct cleanCondition<T, IsArray::Yes, IsFunction::No>
 {
   // Array to pointer
   using type = std::remove_extent_t<T>*;
@@ -78,7 +87,7 @@ struct cleanCondition<T, true, false>
 
 //----------------------------------------------------------------------
 template <typename T>
-struct cleanCondition<T, false, true>
+struct cleanCondition<T, IsArray::No, IsFunction::Yes>
 {
   // Add pointer to function
   using type = std::add_pointer_t<T>;

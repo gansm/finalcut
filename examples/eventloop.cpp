@@ -24,8 +24,10 @@
 #include <termios.h>
 #include <unistd.h>
 
+#include <atomic>
 #include <cstdio>
 #include <iostream>
+#include <thread>
 
 #include <final/final.h>
 
@@ -33,10 +35,12 @@
 struct Global
 {
   static struct termios original_term_io_settings;  // global termios object
+  static std::atomic<bool> wait;
 };
 
 // static class attribute
 struct termios Global::original_term_io_settings{};
+std::atomic<bool> Global::wait{true};
 
 
 //----------------------------------------------------------------------
@@ -45,6 +49,20 @@ static void onExit()
   // Restore terminal control
   tcsetattr (STDIN_FILENO, TCSAFLUSH, &Global::original_term_io_settings);
   std::cout << "Bye!" << std::endl;
+}
+
+//----------------------------------------------------------------------
+void wait_5_seconds (const finalcut::BackendMonitor* mon)
+{
+  int wait = 50;  // Wait 50 times for 100 ms
+
+  while ( wait && Global::wait )
+  {
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    wait--;
+  }
+
+  mon->setEvent();  // Generates the event
 }
 
 
@@ -60,8 +78,10 @@ auto main() -> int
   finalcut::SignalMonitor sig_int_monitor{&loop};
   finalcut::SignalMonitor sig_abrt_monitor{&loop};
   finalcut::IoMonitor stdin_monitor{&loop};
+  finalcut::BackendMonitor backend_monitor{&loop};
   finalcut::FTermios::init();
   auto stdin_no = finalcut::FTermios::getStdIn();
+  std::thread backend_thread(wait_5_seconds, &backend_monitor);
 
   // Save terminal setting and set terminal to raw mode
   // (no echo, no line buffering).
@@ -95,20 +115,24 @@ auto main() -> int
                      , std::chrono::nanoseconds{ 1'000'000'000 } );
 
   sig_int_monitor.init ( SIGINT
-                       , [&loop] (const finalcut::Monitor*, short)
+                       , [&loop, &backend_thread] (const finalcut::Monitor*, short)
                          {
                            std::cout << "Signal SIGINT received."
                                      << std::endl;
                            loop.leave();
+                           Global::wait = false;
+                           backend_thread.join();  // Wait for end of thread
                          }
                        , nullptr );
 
   sig_abrt_monitor.init ( SIGABRT
-                        , [&loop] (const finalcut::Monitor*, short)
+                        , [&loop, &backend_thread] (const finalcut::Monitor*, short)
                           {
                             std::cout << "Signal SIGABRT received."
                                       << std::endl;
                             loop.leave();
+                            Global::wait = false;
+                            backend_thread.join();  // Wait for end of thread
                           }
                         , nullptr );
 
@@ -125,12 +149,19 @@ auto main() -> int
                        }
                      , nullptr );
 
+  backend_monitor.init ( [] (const finalcut::Monitor*, short)
+                         {
+                           std::cout << "A backend event has occurred." << std::endl;
+                         }
+                         , nullptr );
+
   // Start monitors
   timer1.resume();
   timer2.resume();
   sig_int_monitor.resume();
   sig_abrt_monitor.resume();
   stdin_monitor.resume();
+  backend_monitor.resume();
 
   // Monitoring
   return loop.run();

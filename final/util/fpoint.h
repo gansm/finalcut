@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2023 Markus Gans                                      *
+* Copyright 2014-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -84,13 +84,46 @@ class FPoint
     int ypos{0};
 
     // Friend operator functions
-    friend auto operator == (const FPoint&, const FPoint&) -> bool;
-    friend auto operator != (const FPoint&, const FPoint&) -> bool;
-    friend auto operator + (const FPoint&, const FPoint&) -> FPoint;
-    friend auto operator - (const FPoint&, const FPoint&) -> FPoint;
-    friend auto operator - (const FPoint&) -> FPoint;
-    friend auto operator << (std::ostream&, const FPoint&) -> std::ostream&;
-    friend auto operator >> (std::istream&, FPoint&) -> std::istream&;
+    friend inline auto operator == (const FPoint& p1, const FPoint& p2) -> bool
+    {
+      return p1.xpos == p2.xpos && p1.ypos == p2.ypos;
+    }
+
+    friend inline auto operator != (const FPoint& p1, const FPoint& p2) -> bool
+    {
+      return p1.xpos != p2.xpos || p1.ypos != p2.ypos;
+    }
+
+    friend inline auto operator + (const FPoint& p1, const FPoint& p2) -> FPoint
+    {
+      return {p1.xpos + p2.xpos, p1.ypos + p2.ypos};
+    }
+
+    friend inline auto operator - (const FPoint& p1, const FPoint& p2) -> FPoint
+    {
+      return {p1.xpos - p2.xpos, p1.ypos - p2.ypos};
+    }
+
+    friend inline auto operator - (const FPoint& p) -> FPoint
+    {
+      return {-p.xpos, -p.ypos};
+    }
+
+    friend inline auto operator << (std::ostream& outstr, const FPoint& p) -> std::ostream&
+    {
+      outstr << p.xpos << " " << p.ypos;
+      return outstr;
+    }
+
+    friend inline auto operator >> (std::istream& instr, FPoint& p) -> std::istream&
+    {
+      int x{};
+      int y{};
+      instr >> x;
+      instr >> y;
+      p.setPoint (x, y);
+      return instr;
+    }
 };
 
 
@@ -157,27 +190,6 @@ inline void FPoint::move (const FPoint& d) noexcept
   xpos += d.getX();
   ypos += d.getY();
 }
-
-// FPoint non-member operators
-//----------------------------------------------------------------------
-inline auto operator == (const FPoint& p1, const FPoint& p2) -> bool
-{ return p1.xpos == p2.xpos && p1.ypos == p2.ypos; }
-
-//----------------------------------------------------------------------
-inline auto operator != (const FPoint& p1, const FPoint& p2) -> bool
-{ return p1.xpos != p2.xpos || p1.ypos != p2.ypos; }
-
-//----------------------------------------------------------------------
-inline auto operator + (const FPoint& p1, const FPoint& p2) -> FPoint
-{ return {p1.xpos + p2.xpos, p1.ypos + p2.ypos}; }
-
-//----------------------------------------------------------------------
-inline auto operator - (const FPoint& p1, const FPoint& p2) -> FPoint
-{ return {p1.xpos - p2.xpos, p1.ypos - p2.ypos}; }
-
-//----------------------------------------------------------------------
-inline auto operator - (const FPoint& p) -> FPoint
-{ return {-p.xpos, -p.ypos}; }
 
 }  // namespace finalcut
 

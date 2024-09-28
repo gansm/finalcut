@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2023 Markus Gans                                      *
+* Copyright 2015-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -87,8 +87,8 @@ void FMenu::setStatusbarMessage (const FString& msg)
 void FMenu::resetColors()
 {
   const auto& wc = getColorTheme();
-  setForegroundColor (wc->menu_active_fg);
-  setBackgroundColor (wc->menu_active_bg);
+  FWidget::setForegroundColor (wc->menu.fg);
+  FWidget::setBackgroundColor (wc->menu.bg);
   FWidget::resetColors();
 }
 
@@ -206,7 +206,7 @@ void FMenu::onMouseDown (FMouseEvent* ev)
     redraw();
 
   // Open the sub menu to be opened
-  openSubMenu (shown_sub_menu);
+  openSubMenu (shown_sub_menu, SelectItem::No);
 }
 
 //----------------------------------------------------------------------
@@ -243,36 +243,17 @@ void FMenu::onMouseMove (FMouseEvent* ev)
   if ( !  mouse_down || getItemList().empty() )
     return;
 
-  MouseStates ms =
-  {
-    false,  // focus_changed
-    false,  // hide_sub_menu
-    isMouseOverMenu (ev->getTermPos()),
-    isMouseOverSubMenu (ev->getTermPos()),
-    isMouseOverSuperMenu (ev->getTermPos()),
-    isMouseOverMenuBar (ev->getTermPos())
-  };
+  MouseStates ms = initializeMouseStates(ev);
 
   shown_sub_menu = nullptr;
 
   // Mouse pointer over an entry in the menu list
   mouseMoveOverList (ev->getPos(), ms);
 
-  if ( ms.mouse_over_submenu )
+  if ( handleSubMenuEvent(ms, *ev)    // Event handover to sub-menu
+    || handleSuperMenuEvent(ms, *ev)  // Event handover to super-menu
+    || handleMenuBarEvent(ms, *ev) )  // Event handover to the menu bar
   {
-    passEventToSubMenu(*ev);  // Event handover to sub-menu
-    return;
-  }
-
-  if ( ! ms.mouse_over_menu && ms.mouse_over_supermenu )
-  {
-    passEventToSuperMenu(*ev);  // Event handover to super-menu
-    return;
-  }
-
-  if ( ms.mouse_over_menubar )
-  {
-    passEventToMenuBar(*ev);  // Event handover to the menu bar
     return;
   }
 
@@ -284,16 +265,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
   if ( ms.focus_changed )
     redraw();
 
-  if ( shown_sub_menu )
-  {
-    closeOpenedSubMenu();
-    openSubMenu (shown_sub_menu);
-  }
-  else if ( ms.hide_sub_menu )
-  {
-    closeOpenedSubMenu();
-    forceTerminalUpdate();
-  }
+  handleCloseSubMenu(ms);
 }
 
 //----------------------------------------------------------------------
@@ -489,8 +461,8 @@ void FMenu::calculateDimensions()
   const int adjust_X = adjustX(getX());
 
   // set widget geometry
-  setGeometry ( FPoint{adjust_X, getY()}
-              , FSize{max_item_width + 2, getCount() + 2} );
+  FWindow::setGeometry ( FPoint{adjust_X, getY()}
+                       , FSize{max_item_width + 2, getCount() + 2} );
 
   // set geometry of all items
   const int item_X = 1;
@@ -550,14 +522,14 @@ auto FMenu::adjustX (int x_pos) const -> int
 }
 
 //----------------------------------------------------------------------
-void FMenu::openSubMenu (FMenu* sub_menu, bool select)
+void FMenu::openSubMenu (FMenu* sub_menu, SelectItem select)
 {
   // open sub menu
 
   if ( ! sub_menu || sub_menu->isShown() )
     return;
 
-  if ( select )
+  if ( select == SelectItem::Yes )
   {
     sub_menu->selectFirstItem();
 
@@ -728,7 +700,7 @@ auto FMenu::mouseUpOverList (const FPoint& mouse_pos) -> bool
     auto sub_menu = sel_item->getMenu();
 
     if ( ! sub_menu->isShown() )
-      openSubMenu (sub_menu, SELECT_ITEM);
+      openSubMenu (sub_menu, SelectItem::Yes);
     else if ( opened_sub_menu )
     {
       opened_sub_menu->selectFirstItem();
@@ -748,6 +720,35 @@ auto FMenu::mouseUpOverList (const FPoint& mouse_pos) -> bool
   hideSuperMenus();
   sel_item->processClicked();
   return true;
+}
+
+//----------------------------------------------------------------------
+inline auto FMenu::initializeMouseStates (const FMouseEvent* ev) -> MouseStates
+{
+  return
+  {
+    false,                                    // focus_changed
+    false,                                    // hide_sub_menu
+    isMouseOverMenu (ev->getTermPos()),       // mouse_over_menu
+    isMouseOverSubMenu (ev->getTermPos()),    // mouse_over_submenu
+    isMouseOverSuperMenu (ev->getTermPos()),  // mouse_over_supermenu
+    isMouseOverMenuBar (ev->getTermPos())     // mouse_over_menubar
+  };
+}
+
+//----------------------------------------------------------------------
+inline void FMenu::handleCloseSubMenu (const MouseStates& ms)
+{
+  if ( shown_sub_menu )
+  {
+    closeOpenedSubMenu();
+    openSubMenu (shown_sub_menu, SelectItem::No);
+  }
+  else if ( ms.hide_sub_menu )
+  {
+    closeOpenedSubMenu();
+    forceTerminalUpdate();
+  }
 }
 
 //----------------------------------------------------------------------
@@ -790,8 +791,8 @@ void FMenu::mouseMoveSelection (FMenuItem* m_item, MouseStates& ms)
     if ( ! sub_menu->isShown() )
       shown_sub_menu = sub_menu;
   }
-  else if ( opened_sub_menu )
-    ms.hide_sub_menu = true;
+  else
+    ms.hide_sub_menu = bool(opened_sub_menu);
 }
 
 //----------------------------------------------------------------------
@@ -829,9 +830,20 @@ void FMenu::mouseMoveOverBorder (MouseStates& ms) const
   // Mouse is moved over border or separator line
 
   updateStatusbar (this, false);
+  ms.hide_sub_menu = bool(opened_sub_menu);
+}
 
-  if ( opened_sub_menu )
-    ms.hide_sub_menu = true;
+//----------------------------------------------------------------------
+inline auto FMenu::handleSubMenuEvent ( const MouseStates& ms
+                                      , const FMouseEvent& ev ) const -> bool
+{
+  if ( ms.mouse_over_submenu )
+  {
+    passEventToSubMenu(ev);  // Event handover to sub-menu
+    return true;
+  }
+
+  return false;
 }
 
 //----------------------------------------------------------------------
@@ -843,12 +855,38 @@ void FMenu::passEventToSubMenu (const FMouseEvent& ev) const
 }
 
 //----------------------------------------------------------------------
+inline auto FMenu::handleSuperMenuEvent ( const MouseStates& ms
+                                        , const FMouseEvent& ev ) -> bool
+{
+  if ( ! ms.mouse_over_menu && ms.mouse_over_supermenu )
+  {
+    passEventToSuperMenu(ev);  // Event handover to super-menu
+    return true;
+  }
+
+  return false;
+}
+
+//----------------------------------------------------------------------
 void FMenu::passEventToSuperMenu (const FMouseEvent& ev)
 {
   // Mouse event handover to super-menu
 
   auto smenu = superMenuAt (ev.getTermPos());
   passEventToWidget (smenu, ev);
+}
+
+//----------------------------------------------------------------------
+inline auto FMenu::handleMenuBarEvent ( const MouseStates& ms
+                                      , const FMouseEvent& ev ) const -> bool
+{
+  if ( ms.mouse_over_menubar )
+  {
+    passEventToMenuBar(ev);  // Event handover to the menu bar
+    return true;
+  }
+
+  return false;
 }
 
 //----------------------------------------------------------------------
@@ -953,7 +991,7 @@ auto FMenu::hotkeyMenu (FKeyEvent* ev) -> bool
   auto try_to_open_submenu = [this] (const auto& sub_menu)
   {
     if ( ! sub_menu->isShown() )
-      openSubMenu (sub_menu, SELECT_ITEM);
+      openSubMenu (sub_menu, SelectItem::Yes);
 
     sub_menu->redraw();
   };
@@ -993,7 +1031,7 @@ void FMenu::draw()
 {
   // Fill the background
   const auto& wc = getColorTheme();
-  setColor (wc->menu_active_fg, wc->menu_active_bg);
+  setColor (wc->menu.fg, wc->menu.bg);
 
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
@@ -1028,7 +1066,7 @@ inline void FMenu::drawSeparator (int y)
 {
   const auto& wc = getColorTheme();
   print() << FPoint{1, 2 + y}
-          << FColorPair{wc->menu_active_fg, wc->menu_active_bg};
+          << FColorPair{wc->menu.fg, wc->menu.bg};
 
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
@@ -1139,7 +1177,7 @@ inline void FMenu::drawCheckMarkPrefix (const FMenuItem* m_item)
     else
     {
       const auto& wc = getColorTheme();
-      setColor (wc->menu_inactive_fg, getBackgroundColor());
+      setColor (wc->menu.inactive_fg, getBackgroundColor());
 
       if ( FVTerm::getFOutput()->getEncoding() == Encoding::ASCII )
         print ('-');
@@ -1160,7 +1198,7 @@ inline void FMenu::drawMenuText (MenuText& data)
 
   for (std::size_t z{0}; z < data.text.getLength(); z++)
   {
-    if ( ! std::iswprint(std::wint_t(data.text[z]))
+    if ( ! isPrintable(data.text[z])
       && ! FVTerm::getFOutput()->isNewFont()
       && ( data.text[z] < UniChar::NF_rev_left_arrow2
         || data.text[z] > UniChar::NF_check_mark )
@@ -1172,7 +1210,7 @@ inline void FMenu::drawMenuText (MenuText& data)
     if ( z == data.hotkeypos )
     {
       const auto& wc = getColorTheme();
-      setColor (wc->menu_hotkey_fg, wc->menu_hotkey_bg);
+      setColor (wc->menu.hotkey_fg, wc->menu.hotkey_bg);
 
       if ( ! data.no_underline )
         setUnderline();
@@ -1244,16 +1282,16 @@ inline void FMenu::setLineAttributes (const FMenuItem* m_item, int y)
   {
     if ( is_selected )
     {
-      setForegroundColor (wc->menu_active_focus_fg);
-      setBackgroundColor (wc->menu_active_focus_bg);
+      setForegroundColor (wc->menu.focus_fg);
+      setBackgroundColor (wc->menu.focus_bg);
 
       if ( FVTerm::getFOutput()->isMonochron() )
         setReverse(false);
     }
     else
     {
-      setForegroundColor (wc->menu_active_fg);
-      setBackgroundColor (wc->menu_active_bg);
+      setForegroundColor (wc->menu.fg);
+      setBackgroundColor (wc->menu.bg);
 
       if ( FVTerm::getFOutput()->isMonochron() )
         setReverse(true);
@@ -1261,8 +1299,8 @@ inline void FMenu::setLineAttributes (const FMenuItem* m_item, int y)
   }
   else
   {
-    setForegroundColor (wc->menu_inactive_fg);
-    setBackgroundColor (wc->menu_inactive_bg);
+    setForegroundColor (wc->menu.inactive_fg);
+    setBackgroundColor (wc->menu.inactive_bg);
 
     if ( FVTerm::getFOutput()->isMonochron() )
       setReverse(true);
@@ -1331,7 +1369,7 @@ inline void FMenu::selectNextMenu (FKeyEvent* ev)
     auto sub_menu = getSelectedItem()->getMenu();
 
     if ( ! sub_menu->isShown() )
-      openSubMenu (sub_menu, SELECT_ITEM);
+      openSubMenu (sub_menu, SelectItem::Yes);
     else
       keypressMenuBar(ev);  // select next menu
   }
@@ -1348,7 +1386,7 @@ inline void FMenu::acceptSelection()
   auto sel_item = getSelectedItem();
 
   if ( sel_item->hasMenu() )
-    openSubMenu (sel_item->getMenu(), SELECT_ITEM);
+    openSubMenu (sel_item->getMenu(), SelectItem::Yes);
   else
   {
     unselectItem();
@@ -1419,9 +1457,7 @@ auto closeOpenMenus ( FMenu* menu
     return tuple;
   }
 
-  if ( menu->isDialogMenu() )
-    is_dialog_menu = true;
-
+  is_dialog_menu = menu->isDialogMenu();
   menu->unselectItem();
   menu->hide();
   menu->hideSubMenus();

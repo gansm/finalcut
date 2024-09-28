@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2023 Markus Gans                                      *
+* Copyright 2012-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -332,10 +332,7 @@ auto FTerm::setVGAFont() -> bool
   if ( hasNoFontSettingOption() )
     return false;
 
-  if ( data.isTermType ( FTermType::xterm
-                       | FTermType::screen
-                       | FTermType::urxvt )
-    || FTermcap::osc_support )
+  if ( canSetTerminalFont() )
   {
     data.setVGAFont(true);
     // Set font in xterm to vga
@@ -373,10 +370,7 @@ auto FTerm::setNewFont() -> bool
   if ( hasNoFontSettingOption() )
     return false;
 
-  if ( data.isTermType ( FTermType::xterm
-                       | FTermType::screen
-                       | FTermType::urxvt )
-    || FTermcap::osc_support )
+  if ( canSetTerminalFont() )
   {
     data.setNewFont(true);
     // Set font in xterm to 8x16graph
@@ -1076,33 +1070,56 @@ void FTerm::init_cygwin_charmap()
 {
   // Replace don't printable PC charset characters in a Cygwin terminal
 
-  static auto& data = FTermData::getInstance();
+  static const auto& data = FTermData::getInstance();
 
   if ( ! data.isTermType(FTermType::cygwin) )
     return;
 
+  updatePCEncodingForCygwin();
+  updateCharMappingForCygwin();
+}
+
+//----------------------------------------------------------------------
+void FTerm::updatePCEncodingForCygwin()
+{
   // PC encoding changes
+
   for (auto&& entry : FCharMap::getCharEncodeMap())
   {
-    if ( entry.unicode == UniChar::BlackUpPointingTriangle )  // ▲
-      entry.pc = 0x18;
+    switch ( UniChar(entry.unicode) )
+    {
+      case UniChar::BlackUpPointingTriangle:    // ▲
+        entry.pc = 0x18;
+        break;
 
-    if ( entry.unicode == UniChar::BlackDownPointingTriangle )  // ▼
-      entry.pc = 0x19;
+      case UniChar::BlackDownPointingTriangle:  // ▼
+        entry.pc = 0x19;
+        break;
 
-    if ( entry.unicode == UniChar::InverseBullet  // ◘
-      || entry.unicode == UniChar::InverseWhiteCircle  // ◙
-      || entry.unicode == UniChar::UpDownArrow  // ↕
-      || entry.unicode == UniChar::LeftRightArrow  // ↔
-      || entry.unicode == UniChar::DoubleExclamationMark  // ‼
-      || entry.unicode == UniChar::BlackRectangle  // ▬
-      || entry.unicode == UniChar::RightwardsArrow  // →
-      || entry.unicode == UniChar::Section  // §
-      || entry.unicode == UniChar::SquareRoot )  // SquareRoot √
-      entry.pc = entry.ascii;
+      case UniChar::InverseBullet:              // ◘
+      case UniChar::InverseWhiteCircle:         // ◙
+      case UniChar::UpDownArrow:                // ↕
+      case UniChar::LeftRightArrow:             // ↔
+      case UniChar::DoubleExclamationMark:      // ‼
+      case UniChar::BlackRectangle:             // ▬
+      case UniChar::RightwardsArrow:            // →
+      case UniChar::Section:                    // §
+      case UniChar::SquareRoot:                 // SquareRoot √
+        entry.pc = entry.ascii;
+        break;
+
+      default:
+        return;
+    }
   }
+}
 
+//----------------------------------------------------------------------
+void FTerm::updateCharMappingForCygwin()
+{
   // General encoding changes
+
+  static auto& data = FTermData::getInstance();
   auto& sub_map = data.getCharSubstitutionMap();
   sub_map.setCharMapping({L'•', L'*'});
   sub_map.setCharMapping({L'●', L'*'});
@@ -1167,26 +1184,33 @@ void FTerm::init_optiMove()
 
   const FOptiMove::TermEnv optimove_env =
   {
-    TCAP(t_cursor_home),
-    TCAP(t_carriage_return),
-    TCAP(t_cursor_to_ll),
-    TCAP(t_tab),
-    TCAP(t_back_tab),
-    TCAP(t_cursor_up),
-    TCAP(t_cursor_down),
-    TCAP(t_cursor_left),
-    TCAP(t_cursor_right),
-    TCAP(t_cursor_address),
-    TCAP(t_column_address),
-    TCAP(t_row_address),
-    TCAP(t_parm_up_cursor),
-    TCAP(t_parm_down_cursor),
-    TCAP(t_parm_left_cursor),
-    TCAP(t_parm_right_cursor),
-    TCAP(t_erase_chars),
-    TCAP(t_repeat_char),
-    TCAP(t_clr_bol),
-    TCAP(t_clr_eol),
+    {
+      TCAP(t_cursor_up),
+      TCAP(t_cursor_down),
+      TCAP(t_cursor_left),
+      TCAP(t_cursor_right),
+      TCAP(t_cursor_home),
+      TCAP(t_cursor_to_ll),
+      TCAP(t_carriage_return),
+      TCAP(t_tab),
+      TCAP(t_back_tab)
+    },
+    {
+      TCAP(t_parm_up_cursor),
+      TCAP(t_parm_down_cursor),
+      TCAP(t_parm_left_cursor),
+      TCAP(t_parm_right_cursor),
+      TCAP(t_cursor_address),
+      TCAP(t_column_address),
+      TCAP(t_row_address)
+    },
+    {
+      TCAP(t_erase_chars),
+      TCAP(t_repeat_char),
+      TCAP(t_repeat_last_char),
+      TCAP(t_clr_bol),
+      TCAP(t_clr_eol)
+    },
     FTermcap::tabstop,
     FTermcap::automatic_left_margin,
     FTermcap::eat_nl_glitch
@@ -1203,44 +1227,32 @@ void FTerm::init_optiAttr()
 
   const FOptiAttr::TermEnv optiattr_env =
   {
-    TCAP(t_enter_bold_mode),
-    TCAP(t_exit_bold_mode),
-    TCAP(t_enter_dim_mode),
-    TCAP(t_exit_dim_mode),
-    TCAP(t_enter_italics_mode),
-    TCAP(t_exit_italics_mode),
-    TCAP(t_enter_underline_mode),
-    TCAP(t_exit_underline_mode),
-    TCAP(t_enter_blink_mode),
-    TCAP(t_exit_blink_mode),
-    TCAP(t_enter_reverse_mode),
-    TCAP(t_exit_reverse_mode),
-    TCAP(t_enter_standout_mode),
-    TCAP(t_exit_standout_mode),
-    TCAP(t_enter_secure_mode),
-    TCAP(t_exit_secure_mode),
-    TCAP(t_enter_protected_mode),
-    TCAP(t_exit_protected_mode),
-    TCAP(t_enter_crossed_out_mode),
-    TCAP(t_exit_crossed_out_mode),
-    TCAP(t_enter_dbl_underline_mode),
-    TCAP(t_exit_dbl_underline_mode),
-    TCAP(t_set_attributes),
-    TCAP(t_exit_attribute_mode),
-    TCAP(t_enter_alt_charset_mode),
-    TCAP(t_exit_alt_charset_mode),
-    TCAP(t_enter_pc_charset_mode),
-    TCAP(t_exit_pc_charset_mode),
-    TCAP(t_set_a_foreground),
-    TCAP(t_set_a_background),
-    TCAP(t_set_foreground),
-    TCAP(t_set_background),
-    TCAP(t_orig_pair),
-    TCAP(t_orig_pair),
-    TCAP(t_orig_colors),
-    FTermcap::max_color,
-    FTermcap::attr_without_color,
-    FTermcap::ansi_default_color
+    { TCAP(t_enter_bold_mode)          , TCAP(t_exit_bold_mode) },
+    { TCAP(t_enter_dim_mode)           , TCAP(t_exit_dim_mode) },
+    { TCAP(t_enter_italics_mode)       , TCAP(t_exit_italics_mode) },
+    { TCAP(t_enter_underline_mode)     , TCAP(t_exit_underline_mode) },
+    { TCAP(t_enter_blink_mode)         , TCAP(t_exit_blink_mode) },
+    { TCAP(t_enter_reverse_mode)       , TCAP(t_exit_reverse_mode) },
+    { TCAP(t_enter_standout_mode)      , TCAP(t_exit_standout_mode) },
+    { TCAP(t_enter_secure_mode)        , TCAP(t_exit_secure_mode) },
+    { TCAP(t_enter_protected_mode)     , TCAP(t_exit_protected_mode) },
+    { TCAP(t_enter_crossed_out_mode)   , TCAP(t_exit_crossed_out_mode) },
+    { TCAP(t_enter_dbl_underline_mode) , TCAP(t_exit_dbl_underline_mode) },
+    { TCAP(t_set_attributes)           , TCAP(t_exit_attribute_mode) },
+    { TCAP(t_enter_alt_charset_mode)   , TCAP(t_exit_alt_charset_mode) },
+    { TCAP(t_enter_pc_charset_mode)    , TCAP(t_exit_pc_charset_mode) },
+    {
+      TCAP(t_set_a_foreground),
+      TCAP(t_set_a_background),
+      TCAP(t_set_foreground),
+      TCAP(t_set_background),
+      TCAP(t_set_color_pair),
+      TCAP(t_orig_pair),
+      TCAP(t_orig_colors),
+      FTermcap::max_color,
+      FTermcap::attr_without_color,
+      FTermcap::ansi_default_color
+    }
   };
 
   static auto& opti_attr = FOptiAttr::getInstance();
@@ -1268,50 +1280,17 @@ auto FTerm::init_font() -> bool
 //----------------------------------------------------------------------
 void FTerm::init_locale()
 {
-  // Init current locale
+  // Initialize current locale
 
-  static const auto& data = FTermData::getInstance();
-  const auto& termtype = data.getTermType();
   const char* locale_name = std::setlocale (LC_ALL, "");
   std::setlocale (LC_NUMERIC, "");
 
-  // Get XTERM_LOCALE
-  const char* locale_xterm = std::getenv("XTERM_LOCALE");
-
-  // set LC_ALL to XTERM_LOCALE
-  if ( locale_xterm )
-    locale_name = std::setlocale (LC_ALL, locale_xterm);
-
-  // TeraTerm can not show UTF-8 character
-  if ( data.isTermType(FTermType::tera_term)
-    && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
-    locale_name = std::setlocale (LC_ALL, "C");
-
-  // Kterm
-  if ( data.isTermType(FTermType::kterm)
-    && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
-    locale_name = std::setlocale (LC_ALL, "C");
-
-  // Sun (color) workstation console can't show UTF-8 character
-  if ( termtype.substr(0, 3) == "sun"
-    && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
-    locale_name = std::setlocale (LC_ALL, "C");
-
-  // Try to found a meaningful content for locale_name
-  if ( locale_name )
-    locale_name = std::setlocale (LC_CTYPE, nullptr);
-  else
-  {
-    locale_name = std::getenv("LC_ALL");
-
-    if ( ! locale_name )
-    {
-      locale_name = std::getenv("LC_CTYPE");
-
-      if ( ! locale_name )
-        locale_name = std::getenv("LANG");
-    }
-  }
+  // Initialize special terminal locales
+  locale_name = init_xterm_locale (locale_name);
+  locale_name = init_tera_term_locale (locale_name);
+  locale_name = init_kterm_locale (locale_name);
+  locale_name = init_sun_locale (locale_name);
+  locale_name = init_locale_if_not_found (locale_name);
 
   // Fallback to C
   if ( ! locale_name )
@@ -1319,9 +1298,89 @@ void FTerm::init_locale()
 }
 
 //----------------------------------------------------------------------
+auto FTerm::init_xterm_locale (const char* locale_name) ->  const char*
+{
+  // Get XTERM_LOCALE
+  const char* locale_xterm = std::getenv("XTERM_LOCALE");
+
+  // set LC_ALL to XTERM_LOCALE
+  if ( locale_xterm )
+    locale_name = std::setlocale (LC_ALL, locale_xterm);
+
+  return locale_name;
+}
+
+//----------------------------------------------------------------------
+auto FTerm::init_tera_term_locale (const char* locale_name) ->  const char*
+{
+  // TeraTerm can not display UTF-8 characters
+
+  static const auto& data = FTermData::getInstance();
+
+  if ( data.isTermType(FTermType::tera_term)
+    && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
+    locale_name = std::setlocale (LC_ALL, "C");
+
+  return locale_name;
+}
+
+//----------------------------------------------------------------------
+auto FTerm::init_kterm_locale (const char* locale_name) ->  const char*
+{
+  // Kterm can not display UTF-8 characters
+
+  static const auto& data = FTermData::getInstance();
+
+  if ( data.isTermType(FTermType::kterm)
+    && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
+    locale_name = std::setlocale (LC_ALL, "C");
+
+  return locale_name;
+}
+
+//----------------------------------------------------------------------
+auto FTerm::init_sun_locale (const char* locale_name) ->  const char*
+{
+  // The Sun (color) workstation console can not display UTF-8 characters
+
+  static const auto& data = FTermData::getInstance();
+  const auto& termtype = data.getTermType();
+
+  if ( termtype.substr(0, 3) == "sun"
+    && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
+    locale_name = std::setlocale (LC_ALL, "C");
+
+  return locale_name;
+}
+
+//----------------------------------------------------------------------
+auto FTerm::init_locale_if_not_found (const char* locale_name) ->  const char*
+{
+  // Try to found a meaningful content for locale_name
+
+  if ( locale_name )
+  {
+    locale_name = std::setlocale (LC_CTYPE, nullptr);
+    return locale_name;
+  }
+
+  locale_name = std::getenv("LC_ALL");
+
+  if ( locale_name )
+    return locale_name;
+
+  locale_name = std::getenv("LC_CTYPE");
+
+  if ( ! locale_name )
+    locale_name = std::getenv("LANG");
+
+  return locale_name;
+}
+
+//----------------------------------------------------------------------
 void FTerm::init_encoding()
 {
-  // detect encoding
+  // Detect encoding
 
   bool force_vt100{false};  // VT100 line drawing (G1 character set)
   init_encoding_set();
@@ -1482,6 +1541,16 @@ inline auto FTerm::hasNoFontSettingOption() -> bool
                            | FTermType::tera_term
                            | FTermType::cygwin
                            | FTermType::mintty ) );
+}
+
+//----------------------------------------------------------------------
+inline auto FTerm::canSetTerminalFont() -> bool
+{
+  static const auto& data = FTermData::getInstance();
+  return FTermcap::osc_support
+      || data.isTermType ( FTermType::xterm
+                         | FTermType::screen
+                         | FTermType::urxvt );
 }
 
 //----------------------------------------------------------------------

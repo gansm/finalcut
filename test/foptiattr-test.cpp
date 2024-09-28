@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2022 Markus Gans                                      *
+* Copyright 2018-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -178,7 +178,7 @@ void FOptiAttrTest::sgrOptimizerTest()
   oa.set_background_color (nullptr);
   oa.set_term_color_pair (nullptr);
   oa.set_orig_pair (CSI "39;49m");
-  oa.set_orig_orig_colors (nullptr);
+  oa.set_orig_colors (nullptr);
   oa.initialize();
 
   finalcut::FChar from{};
@@ -192,6 +192,7 @@ void FOptiAttrTest::sgrOptimizerTest()
   to.attr.bit.dim = true;
   to.attr.bit.italic = true;
   CPPUNIT_ASSERT ( from != to );
+
   CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                         , CSI "0;10;2;1;3;34;47m" );
   CPPUNIT_ASSERT ( from == to );
@@ -228,6 +229,9 @@ void FOptiAttrTest::sgrOptimizerTest()
   buffer = CSI "m" CSI "34m";
   CPPUNIT_ASSERT ( buffer.length() == 8 );
   sgr_optimizer.optimize();
+//std::cerr << "--->"
+//          << printSequence(buffer)
+//          << "<---\n";
   CPPUNIT_ASSERT ( buffer.length() == 7 );
   CPPUNIT_ASSERT_STRING ( buffer, CSI "0;34m" );
 
@@ -387,7 +391,7 @@ void FOptiAttrTest::fakeReverseTest()
   oa.set_background_color (nullptr);
   oa.set_term_color_pair (nullptr);
   oa.set_orig_pair (nullptr);
-  oa.set_orig_orig_colors (nullptr);
+  oa.set_orig_colors (nullptr);
   oa.initialize();
 
   finalcut::FChar from{};
@@ -480,7 +484,7 @@ void FOptiAttrTest::ansiTest()
   oa.set_background_color (nullptr);
   oa.set_term_color_pair (nullptr);
   oa.set_orig_pair (CSI "39;49m");
-  oa.set_orig_orig_colors (nullptr);
+  oa.set_orig_colors (nullptr);
   oa.initialize();
 
   finalcut::FChar from{};
@@ -943,7 +947,7 @@ void FOptiAttrTest::vt100Test()
   oa.set_background_color (nullptr);
   oa.set_term_color_pair (nullptr);
   oa.set_orig_pair (nullptr);
-  oa.set_orig_orig_colors (nullptr);
+  oa.set_orig_colors (nullptr);
   oa.initialize();
 
   finalcut::FChar from{};
@@ -1409,7 +1413,7 @@ void FOptiAttrTest::xtermTest()
   oa.set_background_color (nullptr);
   oa.set_term_color_pair (nullptr);
   oa.set_orig_pair (CSI "39;49m");
-  oa.set_orig_orig_colors (nullptr);
+  oa.set_orig_colors (nullptr);
   oa.initialize();
 
   finalcut::FChar from{};
@@ -1878,7 +1882,7 @@ void FOptiAttrTest::rxvtTest()
   oa.set_background_color (nullptr);
   oa.set_term_color_pair (nullptr);
   oa.set_orig_pair (CSI "39;49m");
-  oa.set_orig_orig_colors (nullptr);
+  oa.set_orig_colors (nullptr);
   oa.initialize();
 
   finalcut::FChar from{};
@@ -2348,7 +2352,7 @@ void FOptiAttrTest::linuxTest()
   oa.set_background_color (nullptr);
   oa.set_term_color_pair (nullptr);
   oa.set_orig_pair (CSI "39;49;25m");
-  oa.set_orig_orig_colors (OSC "R");
+  oa.set_orig_colors (OSC "R");
   oa.initialize();
 
   finalcut::FChar from{};
@@ -2822,7 +2826,7 @@ void FOptiAttrTest::puttyTest()
   oa.set_background_color (nullptr);
   oa.set_term_color_pair (nullptr);
   oa.set_orig_pair (CSI "39;49m");
-  oa.set_orig_orig_colors (OSC "R");
+  oa.set_orig_colors (OSC "R");
   oa.initialize();
 
 
@@ -3292,7 +3296,7 @@ void FOptiAttrTest::teratermTest()
   oa.set_background_color (nullptr);
   oa.set_term_color_pair (nullptr);
   oa.set_orig_pair (CSI "39;49m");
-  oa.set_orig_orig_colors (nullptr);
+  oa.set_orig_colors (nullptr);
   oa.initialize();
 
 
@@ -3763,9 +3767,8 @@ void FOptiAttrTest::ibmColorTest()
                                "%e%p1%{7}%=%t107m%;");
   oa.set_term_color_pair (nullptr);
   oa.set_orig_pair (CSI "32;40m");
-  oa.set_orig_orig_colors (nullptr);
+  oa.set_orig_colors (nullptr);
   oa.initialize();
-
 
   finalcut::FChar from{};
   finalcut::FChar to{};
@@ -4150,58 +4153,88 @@ void FOptiAttrTest::wyse50Test()
   finalcut::FOptiAttr oa;
   finalcut::FOptiAttr::TermEnv optiattr_env =
   {
-    nullptr,                     // Enter bold
-    ESC "("  ESC "H\003"
-    ESC "G0" ESC "cD",           // Exit bold
-    ESC "Gp",                    // Enter dim
-    ESC "("  ESC "H\003"
-    ESC "G0" ESC "cD",           // Exit dim
-    nullptr,                     // Enter italics
-    nullptr,                     // Exit italics
-    ESC "G8",                    // Enter underline
-    ESC "G0",                    // Exit underline
-    ESC "G2",                    // Enter blink
-    ESC "("  ESC "H\003"
-    ESC "G0" ESC "cD",           // Exit blink
-    ESC "G2",                    // Enter reverse
-    ESC "("  ESC "H\003"
-    ESC "G0" ESC "cD",           // Exit reverse
-    ESC "Gt",                    // Enter standout
-    ESC "G0",                    // Exit standout
-    ESC "G1",                    // Enter secure
-    ESC "("  ESC "H\003"
-    ESC "G0" ESC "cD",           // Exit secure
-    ESC ")",                     // Enter protected
-    ESC "("  ESC "H\003"
-    ESC "G0" ESC "cD",           // Exit protected
-    nullptr,                     // Enter crossed out
-    ESC "("  ESC "H\003"
-    ESC "G0" ESC "cD",           // Exit crossed out
-    nullptr,                     // Enter double underline
-    nullptr,                     // Exit double underline
-    "%?%p8%t\033)%e\033(%;"
-    "%?%p9%t\033cE%e\033cD%;\033G%'0'"
-    "%?%p2%t%{8}%|%;"
-    "%?%p1%p3%|%p6%|%t%{4}%|%;"
-    "%?%p4%t%{2}%|%;"
-    "%?%p1%p5%|%t%'@'%|%;"
-    "%?%p7%t%{1}%|%;%c",         // Set attributes
-    ESC "("  ESC "H\003"
-    ESC "G0" ESC "cD",           // Exit attribute
-    ESC "cE",                    // Enter alt charset
-    ESC "cD",                    // Exit alt charset
-    nullptr,                     // Enter pc charset
-    nullptr,                     // Exit pc charset
-    nullptr,                     // Ansi foreground color
-    nullptr,                     // Ansi background color
-    nullptr,                     // Foreground color
-    nullptr,                     // Background color
-    nullptr,                     // Term color pair
-    nullptr,                     // Orig pair
-    nullptr,                     // Orig orig colors
-    1,                           // Max color
-    0,                           // No color video
-    false                        // No ANSI default color
+    {
+      nullptr,                     // Enter bold
+      ESC "("  ESC "H\003"
+      ESC "G0" ESC "cD"            // Exit bold
+    },
+    {
+      ESC "Gp",                    // Enter dim
+      ESC "("  ESC "H\003"
+      ESC "G0" ESC "cD"            // Exit dim
+    },
+    {
+      nullptr,                     // Enter italics
+      nullptr                      // Exit italics
+    },
+    {
+      ESC "G8",                    // Enter underline
+      ESC "G0"                     // Exit underline
+    },
+    {
+      ESC "G2",                    // Enter blink
+      ESC "("  ESC "H\003"
+      ESC "G0" ESC "cD"            // Exit blink
+    },
+    {
+      ESC "G2",                    // Enter reverse
+      ESC "("  ESC "H\003"
+      ESC "G0" ESC "cD"            // Exit reverse
+    },
+    {
+      ESC "Gt",                    // Enter standout
+      ESC "G0"                     // Exit standout
+    },
+    {
+      ESC "G1",                    // Enter secure
+      ESC "("  ESC "H\003"
+      ESC "G0" ESC "cD"            // Exit secure
+    },
+    {
+      ESC ")",                     // Enter protected
+      ESC "("  ESC "H\003"
+      ESC "G0" ESC "cD"            // Exit protected
+    },
+    {
+      nullptr,                     // Enter crossed out
+      ESC "("  ESC "H\003"
+      ESC "G0" ESC "cD"            // Exit crossed out
+    },
+    {
+      nullptr,                     // Enter double underline
+      nullptr                      // Exit double underline
+    },
+    {
+      "%?%p8%t\033)%e\033(%;"
+      "%?%p9%t\033cE%e\033cD%;\033G%'0'"
+      "%?%p2%t%{8}%|%;"
+      "%?%p1%p3%|%p6%|%t%{4}%|%;"
+      "%?%p4%t%{2}%|%;"
+      "%?%p1%p5%|%t%'@'%|%;"
+      "%?%p7%t%{1}%|%;%c",         // Set attributes
+      ESC "("  ESC "H\003"
+      ESC "G0" ESC "cD"            // Exit attribute
+    },
+    {
+      ESC "cE",                    // Enter alt charset
+      ESC "cD"                     // Exit alt charset
+    },
+    {
+      nullptr,                     // Enter pc charset
+      nullptr                      // Exit pc charset
+    },
+    {
+      nullptr,                     // Ansi foreground color
+      nullptr,                     // Ansi background color
+      nullptr,                     // Foreground color
+      nullptr,                     // Background color
+      nullptr,                     // Term color pair
+      nullptr,                     // Orig pair
+      nullptr,                     // Orig orig colors
+      1,                           // Max color
+      0,                           // No color video
+      false                        // No ANSI default color
+    }
   };
 
   oa.setTermEnvironment(optiattr_env);

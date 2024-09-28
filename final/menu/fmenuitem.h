@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2023 Markus Gans                                      *
+* Copyright 2015-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -125,8 +125,8 @@ class FMenuItem : public FWidget
     auto hasMenu() const -> bool;
 
     // Methods
-    void addAccelerator (FKey, FWidget*) & override;
-    void delAccelerator (FWidget*) & override;
+    void addAccelerator (FKey, FWidget*) & final;
+    void delAccelerator (FWidget*) & final;
     void openMenu() const;
 
     // Event handlers

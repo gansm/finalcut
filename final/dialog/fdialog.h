@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2023 Markus Gans                                      *
+* Copyright 2012-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -131,6 +131,8 @@ class FDialog : public FWindow
     auto moveDown (int) -> bool;
     auto moveLeft (int) -> bool;
     auto moveRight (int) -> bool;
+    void setWidth (std::size_t, bool = true) override;
+    void setHeight (std::size_t, bool = true) override;
     void setSize (const FSize&, bool = true) override;
     auto reduceHeight (int) -> bool;
     auto expandHeight (int) -> bool;
@@ -173,6 +175,44 @@ class FDialog : public FWindow
       std::size_t minimize_btn;
       std::size_t zoom_btn;
       bool        mouse_over_menu;
+    };
+
+    struct TitleBarFlags
+    {
+      bool buttons{true};
+      bool zoom_button_pressed{false};
+      bool zoom_button_active{false};
+      bool minimize_button_pressed{false};
+      bool minimize_button_active{false};
+    };
+
+    struct ErrorFlags
+    {
+      bool setPos_error{false};
+      bool setSize_error{false};
+    };
+
+    struct PositionData
+    {
+      FPoint titlebar_click_pos{};
+      FPoint resize_click_pos{};
+      FPoint new_pos{};
+    };
+
+    struct SizeData
+    {
+      FSize new_size{};
+      FRect save_geometry{};  // required by keyboard move/size
+    };
+
+    struct DialogMenu
+    {
+      FMenu*     menu{nullptr};
+      FMenuItem* menuitem{nullptr};
+      FMenuItem* move_size_item{nullptr};
+      FMenuItem* zoom_item{nullptr};
+      FMenuItem* minimize_item{nullptr};
+      FMenuItem* close_item{nullptr};
     };
 
     // Using-declaration
@@ -226,6 +266,7 @@ class FDialog : public FWindow
     void passEventToSubMenu ( const MouseStates&
                             , const FMouseEvent& );
     void handleLeftMouseDown (const MouseStates&);
+    auto isClickOnTitleBar (const MouseStates&, int, int) const -> bool;
     void handleRightAndMiddleMouseDown (const MouseButton&, const MouseStates&);
     void moveSizeKey (FKeyEvent*);
     void raiseActivateDialog();
@@ -250,28 +291,15 @@ class FDialog : public FWindow
     void cb_close();
 
     // Data members
-    FString     tb_text{};  // title bar text
-    ResultCode  result_code{ResultCode::Reject};
-    bool        titlebar_buttons{true};
-    bool        zoom_button_pressed{false};
-    bool        zoom_button_active{false};
-    bool        minimize_button_pressed{false};
-    bool        minimize_button_active{false};
-    bool        setPos_error{false};
-    bool        setSize_error{false};
-    FPoint      titlebar_click_pos{};
-    FPoint      resize_click_pos{};
-    FPoint      new_pos{};
-    FSize       new_size{};
-    FRect       save_geometry{};  // required by keyboard move/size
-    FMenu*      dialog_menu{nullptr};
-    FMenuItem*  dgl_menuitem{nullptr};
-    FMenuItem*  move_size_item{nullptr};
-    FMenuItem*  zoom_item{nullptr};
-    FMenuItem*  minimize_item{nullptr};
-    FMenuItem*  close_item{nullptr};
-    FToolTip*   tooltip{nullptr};
-    KeyMap      key_map{};
+    TitleBarFlags titlebar{};
+    ErrorFlags    error_flags{false, false};
+    PositionData  position_data{};
+    SizeData      size_data{};
+    DialogMenu    dialog_menu{};
+    FToolTip*     tooltip{nullptr};
+    KeyMap        key_map{};
+    FString       tb_text{};  // title bar text
+    ResultCode    result_code{ResultCode::Reject};
 
     // Friend function from FMenu
     friend void FMenu::hideSuperMenus() const;
@@ -296,7 +324,7 @@ inline void FDialog::unsetModal()
 
 //----------------------------------------------------------------------
 inline void FDialog::setTitlebarButtonVisibility (bool enable)
-{  titlebar_buttons = enable; }
+{  titlebar.buttons = enable; }
 
 //----------------------------------------------------------------------
 inline void FDialog::unsetTitlebarButtonVisibility()

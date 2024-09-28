@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2022 Markus Gans                                      *
+* Copyright 2020-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -81,6 +81,15 @@ auto FLog::sync() -> int
   }
 
   return 0;
+}
+
+
+// FLog non-member operators
+//----------------------------------------------------------------------
+void handleOutOfRangeError (const std::out_of_range& ex)
+{
+  std::clog << FLog::LogLevel::Error
+            << "Out of Range error: " << ex.what() << std::endl;
 }
 
 }  // namespace finalcut

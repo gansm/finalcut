@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021-2022 Markus Gans                                      *
+* Copyright 2021-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -143,16 +143,21 @@ struct restoreOverlaid : public fc::FVTerm
       return;
 
     bool overlaid{false};
+    const auto& win_list = *getWindowList();
 
-    for (auto&& window : *getWindowList())
+    for (const auto& window : win_list)
     {
-      const auto win = static_cast<fc::FWidget*>(window);
+      const auto* win = static_cast<fc::FWidget*>(window);
 
-      if ( overlaid && win->getVWin()->visible )
-        putArea (win->getTermPos(), win->getVWin());
+      if ( overlaid )
+      {
+        if ( win->getVWin()->visible )
+          putArea (win->getTermPos(), win->getVWin());
 
-      if ( obj.getVWin() == win->getVWin() )
-        overlaid = true;
+        continue;
+      }
+
+      overlaid = bool( obj.getVWin() == win->getVWin() );
     }
   }
 };
@@ -404,8 +409,8 @@ ParallaxScrolling::ParallaxScrolling (fc::FWidget* parent)
   timer1 = addTimer (300);  // 300 ms (3.3 cps)
   timer2 = addTimer (150);  // 150 ms (6.6 cps)
   timer3 = addTimer (100);  // 100 ms (10 cps)
-  getColorTheme()->term_fg = fc::FColor::LightGray;
-  getColorTheme()->term_bg = fc::FColor::Black;
+  getColorTheme()->term.fg = fc::FColor::LightGray;
+  getColorTheme()->term.bg = fc::FColor::Black;
   setForegroundColor(fc::FColor::LightGray);
   setBackgroundColor(fc::FColor::Black);
 }

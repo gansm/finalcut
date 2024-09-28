@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2013-2023 Markus Gans                                      *
+* Copyright 2013-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -178,7 +178,7 @@ class FApplication : public FWidget
     static void  showParameterUsage();
     void         destroyLog();
     void         findKeyboardWidget() const;
-    auto         isKeyPressed(uInt64 = 0U) const -> bool;
+    auto         isKeyPressed (uInt64 = 0U) const -> bool;
     void         keyPressed();
     void         keyReleased() const;
     void         escapeKeyPressed() const;
@@ -201,8 +201,12 @@ class FApplication : public FWidget
     auto         processAccelerator (const FWidget&) const -> bool;
     void         processTerminalFocus (const FKey&);
     static void  determineClickedWidget (const FMouseData&);
+    static void  determineWheelWidget (const FMouseData&);
+    static auto  isNonActivatingMouseEvent (const FMouseData&) -> bool;
+    static auto  isWheelEvent (const FMouseData&) -> bool;
     static void  unsetMoveResizeMode (const FMouseData&);
     void         sendMouseEvent (const FMouseData&) const;
+    void         sendMouseWheelEvent (const FMouseData&) const;
     void         sendMouseMoveEvent ( const FMouseData&
                                     , const FPoint&
                                     , const FPoint&
@@ -247,6 +251,7 @@ class FApplication : public FWidget
     static int        quit_code;
     static bool       quit_now;
     static FWidget*   clicked_widget;
+    static FWidget*   wheel_widget;
     static FWidget*   keyboard_widget;
 };
 

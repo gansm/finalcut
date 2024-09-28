@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2022 Markus Gans                                      *
+* Copyright 2018-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -193,6 +193,8 @@ class FTermLinux final
 
     // Using-declaration
     using KeyMap = std::unordered_map<Pair, FKey, PairHash, PairEqual>;
+    using FontData = std::vector<uChar>;
+    using UnicodeEntries = std::vector<struct unipair>;
 
     // Accessors
     auto  getFramebuffer_bpp() const -> int;
@@ -248,6 +250,9 @@ class FTermLinux final
     CursorStyle      linux_console_cursor_style{};
     console_font_op  screen_font{};
     unimapdesc       screen_unicode_map{};
+    FontData         font_data{};
+    FontData         screen_font_data{};
+    UnicodeEntries   unicode_entries{};
     ColorMap         saved_color_map{};
     ColorMap         cmap{};
     KeyMap           key_map{};

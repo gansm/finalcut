@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2023 Markus Gans                                      *
+* Copyright 2014-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -80,13 +80,6 @@ auto FLabel::operator << (const wchar_t c) -> FLabel&
   return *this;
 }
 
-//----------------------------------------------------------------------
-auto FLabel::operator >> (FString& s) const -> const FLabel&
-{
-  s += text;
-  return *this;
-}
-
 
 // public methods of FLabel
 //----------------------------------------------------------------------
@@ -118,8 +111,8 @@ void FLabel::resetColors()
 {
   useParentWidgetColor();
   const auto& wc = getColorTheme();
-  emphasis_color = wc->label_emphasis_fg;
-  ellipsis_color = wc->label_ellipsis_fg;
+  emphasis_color = wc->label.emphasis_fg;
+  ellipsis_color = wc->label.ellipsis_fg;
 }
 
 //----------------------------------------------------------------------
@@ -138,15 +131,11 @@ void FLabel::setText (const FString& txt)
 {
   text.setString(txt);
   multiline_text = text.split("\n");
-
-  if ( int(multiline_text.size()) > 1 )
-    multiline = true;
-  else
-    multiline = false;
+  multiline =  bool( int(multiline_text.size()) > 1 );
 
   if ( isEnabled() )
   {
-    delAccelerator();
+    FWidget::delAccelerator(this);
     setHotkeyAccelerator();
   }
 }
@@ -314,7 +303,7 @@ void FLabel::drawSingleLine()
 void FLabel::printHotkeyChar (wchar_t ch)
 {
   const auto& wc = getColorTheme();
-  setColor (wc->label_hotkey_fg, wc->label_hotkey_bg);
+  setColor (wc->label.hotkey_fg, wc->label.hotkey_bg);
 
   if ( ! getFlags().feature.no_underline )
     setUnderline();
@@ -335,7 +324,7 @@ void FLabel::printLineContent (FString& line, std::size_t to_char)
 {
   for (std::size_t z{0}; z < to_char; z++)
   {
-    if ( ! std::iswprint(std::wint_t(line[z]))
+    if ( ! isPrintable(line[z])
       && ! FVTerm::getFOutput()->isNewFont()
       && ( line[z] < UniChar::NF_rev_left_arrow2
         || line[z] > UniChar::NF_check_mark ) )

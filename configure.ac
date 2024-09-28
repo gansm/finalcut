@@ -4,7 +4,7 @@
 
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT([finalcut], [0.9.0])
+AC_INIT([finalcut], [0.9.2])
 AC_CONFIG_HEADERS([config.h])
 AX_PREFIX_CONFIG_H([final/fconfig.h], [F])
 AC_CONFIG_SRCDIR([final/fobject.cpp])
@@ -36,16 +36,17 @@ AC_CHECK_HEADERS( \
 		 cmath \
 		 csignal \
 		 cstdlib \
-                 list \
+		 list \
 		 map \
 		 queue \
 		 vector )
 
 # Checks for library functions.
 AC_CHECK_FUNCS( \
-		getuid \
 		geteuid \
 		getttynam \
+		getuid \
+		pthread_rwlock_wrlock \
 		select \
 		sigaction \
 		strdup \
@@ -55,14 +56,20 @@ AC_CHECK_FUNCS( \
 		vsnprintf \
 		wcwidth )
 
-# Checks for 'tgetent'
-AC_SEARCH_LIBS([tgetent], [terminfo mytinfo termlib termcap tinfo ncurses curses])
-# Checks for 'tparm'
-AC_SEARCH_LIBS([tparm], [terminfo mytinfo termlib termcap tinfo ncurses curses])
+# Checks for 'pthread_rwlock_wrlock'
+AC_SEARCH_LIBS([pthread_rwlock_wrlock], [pthread])
+
 # Checks for 'timer_create'
 AC_SEARCH_LIBS([timer_create], [rt])
-# Checks for 'timer_create'
+
+# Checks for 'timer_settime'
 AC_SEARCH_LIBS([timer_settime], [rt])
+
+# Checks for 'tgetent'
+AC_SEARCH_LIBS([tgetent], [terminfo mytinfo termlib termcap tinfo ncurses curses])
+
+# Checks for 'tparm'
+AC_SEARCH_LIBS([tparm], [terminfo mytinfo termlib termcap tinfo ncurses curses])
 
 AC_SUBST([FINAL_LIBS])
 AC_SUBST([TERMCAP_LIB])
@@ -81,7 +88,7 @@ LT_OUTPUT
 ### This defines the version number of the installed .so files
 ### Update this value for every release!  (A:B:C will map to foo.so.(A-C).C.B)
 ### using libtool's versioning system.
-AC_SUBST(SO_VERSION, ["9:0:9"])
+AC_SUBST(SO_VERSION, ["9:2:9"])
 
 AC_SUBST([LIBTOOL_DEPS])
 

@@ -46,7 +46,7 @@ class MyApplication : public finalcut::FApplication
 void MyApplication::onTermFocusIn (finalcut::FFocusEvent*)
 {
   auto color_theme = getColorTheme();
-  color_theme->term_bg = finalcut::FColor::LightBlue;
+  color_theme->term.bg = finalcut::FColor::LightBlue;
   redraw();
 }
 
@@ -54,7 +54,7 @@ void MyApplication::onTermFocusIn (finalcut::FFocusEvent*)
 void MyApplication::onTermFocusOut (finalcut::FFocusEvent*)
 {
   auto color_theme = getColorTheme();
-  color_theme->term_bg = finalcut::FColor::LightGray;
+  color_theme->term.bg = finalcut::FColor::LightGray;
   redraw();
 }
 
@@ -104,7 +104,7 @@ void Dialog::initLayout()
 //                               main part
 //----------------------------------------------------------------------
 
-int main (int argc, char* argv[])
+auto main (int argc, char* argv[]) -> int
 {
   MyApplication app(argc, argv);
   Dialog dialog(&app);

@@ -3,7 +3,7 @@
 #-----------------------------------------------------------------------------
 
 # This is where make install will install the library
-VERSION = "0.9.0"
+VERSION = "0.9.2"
 MAJOR := $(shell echo ${VERSION} | cut -d. -f1)
 LIBDIR = /usr/local/lib
 INCLUDEDIR1 = .
@@ -98,7 +98,7 @@ INCLUDE_HEADERS = \
 CXX = g++
 CCXFLAGS = $(OPTIMIZE) $(PROFILE) -DCOMPILE_FINAL_CUT $(DEBUG) $(VER) $(GPM) -fexceptions -std=c++14
 MAKEFILE = -f Makefile.gcc
-LDFLAGS = $(TERMCAP) -lrt -lgpm
+LDFLAGS = $(TERMCAP) -lpthread -lrt -lgpm
 INCLUDES = -I..
 GPM = -D F_HAVE_LIBGPM
 VER = -D F_VERSION=\"$(VERSION)\"

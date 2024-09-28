@@ -111,25 +111,23 @@ printf(...)
   │
   │          ╔════════════════════════[ vterm ]════════════════════════╗
   │          ║createVTerm()                                            ║
-  │          ║                               ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐ ║
+  │          ║                                   ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐ ║
   │          ║                                                         ║
-  │          ║                               │ restoreVTerm(x,y,w,h) │ ║
+  │          ║                                   │ restoreVTerm(box) │ ║
   │  ┌───────╨────[ vwin ]────────────┐                                ║
-  │  │createArea(area)                │      └ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘ ║
+  │  │createArea(size)                │          └ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘ ║
   │  │                                │                                ║
   │  │                                │                                ║
-  └──┼────────►                  putArea(area) ────►                   ║
+  └──┼────────►                putArea(pos,area) ────►                 ║
      │                                │                                ║
-     │                         putArea(x,y,area) ────►                 ║
-     │                                │                                ║
-     │                   ◄──── getArea(x,y,area)                       ║
+     │                   ◄──── getArea(pos,area)                       ║
      │                                │                                ║
      │                                │                                ║
      │                                │                                ║
-     │                resizeArea(area)│                                ║
+     │          resizeArea(size, area)│                                ║
      └───────╥────────────────────────┘                                ║
              ║                                                         ║
-             ║       │                                    resizeVTerm()║
+             ║       │                                resizeVTerm(size)║
              ╚═══════▼═════════════════════════════════════════════════╝
                      │
                      │   putVTerm()
@@ -140,8 +138,8 @@ printf(...)
                                            │ output_buffer │
                                            └───────────────┘
                                                    │
-                                                   │ flushOutputBuffer()
-                                                   │ and putchar(char)
+                                                   │ flush()
+                                                   │
                                                    ▼
                                            ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
                                            ▌               ▐
@@ -288,4 +286,4 @@ https://github.com/gansm/finalcut/issues
 
 ## License
 
-Licensed under the [GNU Lesser General Public License, Version 3.0](LICENSE) <a href="https://www.gnu.org/licenses/lgpl-3.0-standalone.html"><img width="200" align="right" src="https://camo.githubusercontent.com/726b87cc2ebaf8c40716842ff509c5f874381c8e/68747470733a2f2f75706c6f61642e77696b696d656469612e6f72672f77696b6970656469612f636f6d6d6f6e732f332f33622f4c47504c76335f4c6f676f2e737667" alt="LGPLv3" data-canonical-src="https://upload.wikimedia.org/wikipedia/commons/3/3b/LGPLv3_Logo.svg"></a>
+Licensed under the [GNU Lesser General Public License, Version 3.0](LICENSE) <a href="https://www.gnu.org/licenses/lgpl-3.0-standalone.html"><img width="200" align="right" src="https://upload.wikimedia.org/wikipedia/commons/3/3b/LGPLv3_Logo.svg" alt="LGPLv3" data-canonical-src="https://upload.wikimedia.org/wikipedia/commons/3/3b/LGPLv3_Logo.svg"></a>

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2023 Markus Gans                                      *
+* Copyright 2018-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -65,8 +65,8 @@ class FTermXTerminal final
     void  setMouseForeground (const FString&);
     void  setMouseBackground (const FString&);
     void  setHighlightBackground (const FString&);
-    static void  setMouseSupport (bool = true);
-    static void  unsetMouseSupport();
+    void  setMouseSupport (bool = true);
+    void  unsetMouseSupport();
     void  setFocusSupport (bool enable = true);
     void  unsetFocusSupport();
     void  metaSendsESC (bool = true);
@@ -104,20 +104,37 @@ class FTermXTerminal final
   private:
     // Methods
     void  warnNotInitialized() const;
+    auto  canResetDefaults() const -> bool;
+    auto  canCaptureFontAndTitle() const -> bool;
+    auto  canSetXTermCursorStyle() const -> bool;
     void  setXTermCursorStyle();
-    void  setXTermFont();
+    auto  canSetXTermTitle() const -> bool;
     void  setXTermTitle();
+    auto  canSetXTermSize() const -> bool;
     void  setXTermSize() const;
+    auto  canSetXTermFont() const -> bool;
+    void  setXTermFont();
+    auto  canSetXTermColor() const -> bool;
+    auto  canSetXTermForeground() const -> bool;
     void  setXTermForeground();
+    auto  canSetXTermBackground() const -> bool;
     void  setXTermBackground();
+    auto  canSetXTermCursorColor() const -> bool;
     void  setXTermCursorColor();
+    auto  canSetXTermMouseForeground() const -> bool;
     void  setXTermMouseForeground();
+    auto  canSetXTermMouseBackground() const -> bool;
     void  setXTermMouseBackground();
+    auto  canSetXTermHighlightBackground() const -> bool;
     void  setXTermHighlightBackground();
+    auto  canSetXTermColors() const -> bool;
     void  setXTerm8ColorDefaults();
     void  setXTerm16ColorDefaults();
+    auto  canSetXTermDefaultsMouseCursor() const -> bool;
     void  setXTermDefaultsMouseCursor();
-    auto  canSetXTermBackground() const -> bool;
+    auto  needsFullReset() const -> bool;
+    auto  canOnlyResetColorSeparately() const -> bool;
+    auto  canResetColor() const -> bool;
     void  resetXTermColorMap() const;
     void  resetXTermForeground() const;
     void  resetXTermBackground() const;
@@ -125,20 +142,22 @@ class FTermXTerminal final
     void  resetXTermMouseForeground() const;
     void  resetXTermMouseBackground() const;
     void  resetXTermHighlightBackground() const;
-    auto  canResetColor() const -> bool;
     void  oscPrefix() const;
     void  oscPostfix() const;
+    auto  canCaptureXTermFont() const -> bool;
     auto  captureXTermFont() const -> FString;
+    auto  canCaptureXTermTitle() const -> bool;
     auto  captureXTermTitle() const -> FString;
-    static void enableXTermMouse();
-    static void disableXTermMouse();
+    void  enableXTermMouse();
+    void  disableXTermMouse();
     void  enableXTermFocus();
     void  disableXTermFocus();
+    auto  canUseXTermMetaSendsESC() const -> bool;
     void  enableXTermMetaSendsESC();
     void  disableXTermMetaSendsESC();
 
     // Data members
-    static bool       mouse_support;
+    bool              mouse_support{false};
     bool              focus_support{false};
     bool              meta_sends_esc{false};
     bool              xterm_default_colors{false};

@@ -75,92 +75,165 @@ class BeeColorTheme final : public finalcut::FWidgetColors
 
     void setColorTheme() override
     {
-      term_fg                           = finalcut::FColor::Black;
-      term_bg                           = finalcut::FColor::LightBlue;
-      list_fg                           = finalcut::FColor::Black;
-      list_bg                           = finalcut::FColor::LightGray;
-      selected_list_fg                  = finalcut::FColor::LightRed;
-      selected_list_bg                  = finalcut::FColor::LightGray;
-      dialog_fg                         = finalcut::FColor::Black;
-      dialog_resize_fg                  = finalcut::FColor::Red;
-      dialog_emphasis_fg                = finalcut::FColor::Blue;
-      dialog_bg                         = finalcut::FColor::LightGray;
-      error_box_fg                      = finalcut::FColor::Black;
-      error_box_emphasis_fg             = finalcut::FColor::Red;
-      error_box_bg                      = finalcut::FColor::Yellow;
-      tooltip_fg                        = finalcut::FColor::Black;
-      tooltip_bg                        = finalcut::FColor::Yellow;
-      shadow_fg                         = finalcut::FColor::Black;
-      shadow_bg                         = finalcut::FColor::LightGray;
-      current_element_focus_fg          = finalcut::FColor::White;
-      current_element_focus_bg          = finalcut::FColor::Green;
-      current_element_fg                = finalcut::FColor::LightGray;
-      current_element_bg                = finalcut::FColor::DarkGray;
-      current_inc_search_element_fg     = finalcut::FColor::Brown;
-      selected_current_element_focus_fg = finalcut::FColor::LightRed;
-      selected_current_element_focus_bg = finalcut::FColor::Green;
-      selected_current_element_fg       = finalcut::FColor::LightRed;
-      selected_current_element_bg       = finalcut::FColor::DarkGray;
-      label_fg                          = finalcut::FColor::Black;
-      label_bg                          = finalcut::FColor::LightGray;
-      label_inactive_fg                 = finalcut::FColor::LightGray;
-      label_inactive_bg                 = finalcut::FColor::DarkGray;
-      label_hotkey_fg                   = finalcut::FColor::Red;
-      label_hotkey_bg                   = finalcut::FColor::LightGray;
-      label_emphasis_fg                 = finalcut::FColor::Blue;
-      label_ellipsis_fg                 = finalcut::FColor::DarkGray;
-      inputfield_active_focus_fg        = finalcut::FColor::LightGray;
-      inputfield_active_focus_bg        = finalcut::FColor::Green;
-      inputfield_active_fg              = finalcut::FColor::Black;
-      inputfield_active_bg              = finalcut::FColor::Cyan ;
-      inputfield_inactive_fg            = finalcut::FColor::Black;
-      inputfield_inactive_bg            = finalcut::FColor::LightGray;
-      toggle_button_active_focus_fg     = finalcut::FColor::White;
-      toggle_button_active_focus_bg     = finalcut::FColor::Green;
-      toggle_button_active_fg           = finalcut::FColor::Black;
-      toggle_button_active_bg           = finalcut::FColor::LightGray;
-      toggle_button_inactive_fg         = finalcut::FColor::DarkGray;
-      toggle_button_inactive_bg         = finalcut::FColor::LightGray;
-      button_active_focus_fg            = finalcut::FColor::White;
-      button_active_focus_bg            = finalcut::FColor::Green;
-      button_active_fg                  = finalcut::FColor::Black;
-      button_active_bg                  = finalcut::FColor::Cyan;
-      button_inactive_fg                = finalcut::FColor::Cyan;
-      button_inactive_bg                = finalcut::FColor::LightGray;
-      button_hotkey_fg                  = finalcut::FColor::Red;
-      titlebar_active_fg                = finalcut::FColor::White;
-      titlebar_active_bg                = finalcut::FColor::Blue;
-      titlebar_inactive_fg              = finalcut::FColor::LightGray;
-      titlebar_inactive_bg              = finalcut::FColor::DarkGray;
-      titlebar_button_fg                = finalcut::FColor::Black;
-      titlebar_button_bg                = finalcut::FColor::LightGray;
-      titlebar_button_focus_fg          = finalcut::FColor::LightGray;
-      titlebar_button_focus_bg          = finalcut::FColor::Black;
-      menu_active_focus_fg              = finalcut::FColor::White;
-      menu_active_focus_bg              = finalcut::FColor::Blue;
-      menu_active_fg                    = finalcut::FColor::Black;
-      menu_active_bg                    = finalcut::FColor::Yellow;
-      menu_inactive_fg                  = finalcut::FColor::Cyan;
-      menu_inactive_bg                  = finalcut::FColor::Yellow;
-      menu_hotkey_fg                    = finalcut::FColor::Red;
-      menu_hotkey_bg                    = finalcut::FColor::Yellow;
-      statusbar_fg                      = finalcut::FColor::White;
-      statusbar_bg                      = finalcut::FColor::DarkGray;
-      statusbar_hotkey_fg               = finalcut::FColor::LightRed;
-      statusbar_hotkey_bg               = finalcut::FColor::DarkGray;
-      statusbar_separator_fg            = finalcut::FColor::Black;
-      statusbar_active_fg               = finalcut::FColor::White;
-      statusbar_active_bg               = finalcut::FColor::Green;
-      statusbar_active_hotkey_fg        = finalcut::FColor::LightRed;
-      statusbar_active_hotkey_bg        = finalcut::FColor::Green;
-      scrollbar_fg                      = finalcut::FColor::Black;
-      scrollbar_bg                      = finalcut::FColor::Green;
-      scrollbar_button_fg               = finalcut::FColor::Black;
-      scrollbar_button_bg               = finalcut::FColor::Green;
-      scrollbar_button_inactive_fg      = finalcut::FColor::Cyan;
-      scrollbar_button_inactive_bg      = finalcut::FColor::LightGray;
-      progressbar_fg                    = finalcut::FColor::Green;
-      progressbar_bg                    = finalcut::FColor::DarkGray;
+      term =
+      {
+        finalcut::FColor::Black,      // Foreground
+        finalcut::FColor::LightBlue   // Background
+      };
+
+      dialog =
+      {
+        finalcut::FColor::Black,      // Foreground
+        finalcut::FColor::LightGray,  // Background
+        finalcut::FColor::Red,        // Resize foreground
+        finalcut::FColor::Blue        // Emphasis foreground
+      };
+
+      text =
+      {
+        finalcut::FColor::Black,      // Foreground
+        finalcut::FColor::LightGray,  // Background
+        finalcut::FColor::White,      // Selected foreground
+        finalcut::FColor::Blue,       // Selected background
+        finalcut::FColor::White,      // Selected focused foreground
+        finalcut::FColor::Cyan        // Selected focused background
+      };
+
+      error_box =
+      {
+        finalcut::FColor::Black,      // Foreground
+        finalcut::FColor::Yellow,     // Background
+        finalcut::FColor::Red         // Emphasis foreground
+      };
+
+      tooltip =
+      {
+        finalcut::FColor::Black,      // Foreground
+        finalcut::FColor::Yellow      // Background
+      };
+
+      shadow =
+      {
+        finalcut::FColor::LightGray,  // Foreground (only for transparent shadow)
+        finalcut::FColor::Black       // Background
+      };
+
+      current_element =
+      {
+        finalcut::FColor::White,      // Foreground
+        finalcut::FColor::Green,      // Background
+        finalcut::FColor::LightGray,  // Focused foreground
+        finalcut::FColor::DarkGray,   // Focused background
+        finalcut::FColor::Brown,      // Incremental search foreground
+        finalcut::FColor::LightRed,   // Selected foreground
+        finalcut::FColor::Green,      // Selected background
+        finalcut::FColor::LightRed,   // Selected focused foreground
+        finalcut::FColor::DarkGray    // Selected focused background
+      };
+
+      list =
+      {
+        finalcut::FColor::Black,      // Foreground
+        finalcut::FColor::LightGray,  // Background
+        finalcut::FColor::LightRed,   // Selected foreground
+        finalcut::FColor::LightGray   // Selected background
+      };
+
+      label =
+      {
+        finalcut::FColor::Black,      // Foreground
+        finalcut::FColor::LightGray,  // Background
+        finalcut::FColor::LightGray,  // Inactive foreground
+        finalcut::FColor::DarkGray,   // Inactive background
+        finalcut::FColor::Red,        // Hotkey foreground
+        finalcut::FColor::LightGray,  // Hotkey background
+        finalcut::FColor::Blue,       // Emphasis foreground
+        finalcut::FColor::DarkGray    // Ellipsis foreground
+      };
+
+      input_field =
+      {
+        finalcut::FColor::Black,      // Foreground
+        finalcut::FColor::Cyan,       // Background
+        finalcut::FColor::LightGray,  // Focused foreground
+        finalcut::FColor::Green,      // Focused background
+        finalcut::FColor::Black,      // Inactive foreground
+        finalcut::FColor::LightGray   // Inactive background
+      };
+    
+      toggle_button =
+      {
+       finalcut::FColor::Black,       // Foreground
+       finalcut::FColor::LightGray,   // Background
+       finalcut::FColor::White,       // Focused foreground
+       finalcut::FColor::Green,       // Focused background
+       finalcut::FColor::DarkGray,    // Inactive foreground
+       finalcut::FColor::LightGray    // Inactive background
+      };
+
+      button =
+      {
+        finalcut::FColor::Black,      // Foreground
+        finalcut::FColor::Cyan,       // Background
+        finalcut::FColor::White,      // Focused foreground
+        finalcut::FColor::Green,      // Focused background
+        finalcut::FColor::Cyan,       // Inactive foreground
+        finalcut::FColor::LightGray,  // Inactive background
+        finalcut::FColor::Red         // Hotkey foreground
+      };
+
+      titlebar =
+      {
+        finalcut::FColor::White,      // Foreground
+        finalcut::FColor::Blue,       // Background
+        finalcut::FColor::LightGray,  // Inactive foreground
+        finalcut::FColor::DarkGray,   // Inactive background
+        finalcut::FColor::Black,      // Button foreground
+        finalcut::FColor::LightGray,  // Button background
+        finalcut::FColor::LightGray,  // Focused button foreground
+        finalcut::FColor::Black       // Focused button background
+      };
+
+      menu =
+      {
+        finalcut::FColor::Black,      // Foreground
+        finalcut::FColor::Yellow,     // Background
+        finalcut::FColor::White,      // Focused foreground
+        finalcut::FColor::Blue,       // Focused background
+        finalcut::FColor::Cyan,       // Inactive foreground
+        finalcut::FColor::Yellow,     // Inactive background
+        finalcut::FColor::Red,        // Hotkey foreground
+        finalcut::FColor::Yellow      // Hotkey background
+      };
+
+      statusbar =
+      {
+        finalcut::FColor::White,      // Foreground
+        finalcut::FColor::DarkGray,   // Background
+        finalcut::FColor::White,      // Focused foreground
+        finalcut::FColor::Green,      // Focused background
+        finalcut::FColor::Black,      // Separator foreground
+        finalcut::FColor::LightRed,   // Hotkey foreground
+        finalcut::FColor::DarkGray,   // Hotkey background
+        finalcut::FColor::LightRed,   // Focused hotkey foreground
+        finalcut::FColor::Green       // Focused hotkey background
+      };
+
+      scrollbar =
+      {
+        finalcut::FColor::Black,      // Foreground
+        finalcut::FColor::Green,      // Background
+        finalcut::FColor::Black,      // Button foreground
+        finalcut::FColor::Green,      // Button background
+        finalcut::FColor::Cyan,       // Inactive button foreground
+        finalcut::FColor::LightGray   // Inactive button background
+      };
+
+      progressbar =
+      {
+        finalcut::FColor::Green,      // Foreground
+        finalcut::FColor::DarkGray    // Background
+      };
     }
 };
 

@@ -297,6 +297,12 @@ class FMouseGPM final : public FMouse
     };
 
     // Method
+    void handleMouseEvent();
+    void resetMouseState();
+    void handleMouseMovement();
+    void handleMouseWheel();
+    void interpretMouseEvent();
+    void updateMousePosition();
     auto gpmEvent (bool = true) const -> gpmEventType;
 
     // Data member
@@ -368,6 +374,11 @@ class FMouseX11 final : public FMouse
     // Methods
     void setKeyState (int) noexcept;
     void setMoveState (const FPoint&, int) noexcept;
+    auto isMouseClickButton (const int) const noexcept -> bool;
+    auto isMouseWheelButton (const int) const noexcept -> bool;
+    auto noChanges (const FPoint&, uChar) const noexcept -> bool;
+    void handleMouseClickButton (int, const TimeValue&) noexcept;
+    void handleMouseWheelButton (int) noexcept;
     void setButtonState (const int, const TimeValue&) noexcept;
     void handleButton1Pressed (const TimeValue& time) noexcept;
     void handleButtonRelease() noexcept;
@@ -399,7 +410,17 @@ class FMouseSGR final : public FMouse
     void processEvent (const TimeValue&) override;
 
   private:
-    // Enumeration
+    struct Tokens
+    {
+      sInt16  x{0};
+      sInt16  y{0};
+      int     btn{0};
+      const char* p{nullptr};  // Current read position
+    };
+
+    // Enumerations
+    enum class ParseError { No, Yes };
+
     enum x11_ext_btn_states
     {
       key_shift       = 0x04,
@@ -427,6 +448,12 @@ class FMouseSGR final : public FMouse
     // Methods
     void setKeyState (int) noexcept;
     void setMoveState (const FPoint&, int) noexcept;
+    auto isMouseClickButton (const int) const noexcept -> bool;
+    auto isMouseWheelButton (const int) const noexcept -> bool;
+    auto parseSGRMouseString (Tokens&) const noexcept -> ParseError;
+    auto noChanges (const FPoint&, uChar) const noexcept -> bool;
+    void handleMouseClickButton (int, const TimeValue&) noexcept;
+    void handleMouseWheelButton (int) noexcept;
     void setPressedButtonState (const int, const TimeValue&) noexcept;
     void handleButton1Pressed (const TimeValue& time) noexcept;
     void setReleasedButtonState (const int) noexcept;
@@ -458,7 +485,19 @@ class FMouseUrxvt final : public FMouse
     void processEvent (const TimeValue&) override;
 
   private:
-    // Enumeration
+    struct Tokens
+    {
+      sInt16      x{0};
+      sInt16      y{0};
+      int         btn{0};
+      bool        x_neg{false};
+      bool        y_neg{false};
+      const char* p{nullptr};  // Current read position
+    };
+
+    // Enumerations
+    enum class ParseError { No, Yes };
+
     enum urxvt_btn_states
     {
       key_shift            = 0x04,
@@ -485,8 +524,15 @@ class FMouseUrxvt final : public FMouse
     // Methods
     void setKeyState (int) noexcept;
     void setMoveState (const FPoint&, int) noexcept;
-    void setButtonState (const int, const TimeValue&) noexcept;
+    auto isMouseClickButton (const int) const noexcept -> bool;
+    auto isMouseWheelButton (const int) const noexcept -> bool;
+    auto parseUrxvtMouseString (Tokens&) const noexcept -> ParseError;
+    void adjustAndSetPosition (Tokens&);
+    auto noChanges (const FPoint&, uChar) const noexcept -> bool;
+    void handleMouseClickButton (int, const TimeValue&) noexcept;
     void handleButtonRelease() noexcept;
+    void handleMouseWheelButton (int) noexcept;
+    void setButtonState (const int, const TimeValue&) noexcept;
 
     // Data members
     std::array<char, MOUSE_BUF_SIZE>  urxvt_mouse{};
@@ -503,20 +549,31 @@ class FMouseCommand final
   public:
     // Constructors
     FMouseCommand() = default;
+
+    explicit FMouseCommand (std::function<void()>&& fn)
+      : handler1(std::move(fn))
+    { }
+
     explicit FMouseCommand (std::function<void(const FMouseData&)>&& fn)
-      : handler(std::move(fn))
+      : handler2(std::move(fn))
     { }
 
     // Method
+    inline void execute() const
+    {
+      handler1();
+    }
+
     template <typename T>
     inline void execute(T&& arg) const
     {
-      handler(std::forward<T>(arg));
+      handler2(std::forward<T>(arg));
     }
 
   private:
     // Data members
-    std::function<void(const FMouseData&)> handler{};
+    std::function<void()> handler1{};
+    std::function<void(const FMouseData&)> handler2{};
 };
 
 
@@ -549,6 +606,8 @@ class FMouseControl
     void  setMaxHeight (uInt16);
     void  setDblclickInterval (const uInt64) const;
     void  setEventCommand (const FMouseCommand&);
+    void  setEnableXTermMouseCommand (const FMouseCommand&);
+    void  setDisableXTermMouseCommand (const FMouseCommand&);
     void  useGpmMouse (bool = true);
     void  useXtermMouse (bool = true);
 
@@ -608,6 +667,8 @@ class FMouseControl
     // Data member
     FMouseProtocol  mouse_protocol{};
     FMouseCommand   event_cmd{};
+    FMouseCommand   enable_xterm_mouse_cmd{};
+    FMouseCommand   disable_xterm_mouse_cmd{};
     MouseQueue      fmousedata_queue{};
     FPoint          zero_point{0, 0};
     bool            use_gpm_mouse{false};
@@ -622,6 +683,14 @@ inline auto FMouseControl::getClassName() const -> FString
 //----------------------------------------------------------------------
 inline void FMouseControl::setEventCommand (const FMouseCommand& cmd)
 { event_cmd = cmd; }
+
+//----------------------------------------------------------------------
+inline void FMouseControl::setEnableXTermMouseCommand (const FMouseCommand& cmd)
+{ enable_xterm_mouse_cmd = cmd; }
+
+//----------------------------------------------------------------------
+inline void FMouseControl::setDisableXTermMouseCommand (const FMouseCommand& cmd)
+{ disable_xterm_mouse_cmd = cmd; }
 
 //----------------------------------------------------------------------
 inline auto FMouseControl::hasDataInQueue() const -> bool

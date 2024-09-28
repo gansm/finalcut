@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2022 Markus Gans                                      *
+* Copyright 2018-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -101,13 +101,22 @@ class FTermDetection final
       int terminal_id_hardware{-1};
     };
 
+    // Using-declaration
+    using TermTypeMap = std::vector<std::pair<std::wstring, FTermType>>;
+
     // Methods
     void  getSystemTermType();
     auto  getTTYtype() -> bool;
 #if F_HAVE_GETTTYNAM
     auto  getTTYSFileEntry() -> bool;
 #endif
+    auto  getTermBasename() const -> const char*;
+    template<typename StringT>
+    auto  startsWithTermType (StringT&&) const -> bool;
     void  termtypeAnalysis();
+    auto  findMatchingTerm (const TermTypeMap&) -> TermTypeMap::const_iterator;
+    auto  isTerminalWithoutDetection() const -> bool;
+    void  handleScreenAndTmux() const;
     void  detectTerminal();
     auto  init_256colorTerminal() -> FString;
     auto  get256colorEnvString() -> bool;
@@ -133,6 +142,7 @@ class FTermDetection final
     auto  secDA_Analysis_85 () const -> FString;
     auto  secDA_Analysis_vte (const FString&) -> FString;
     auto  secDA_Analysis_kitty (const FString&) -> FString;
+    void  correctFalseAssumptions (int) const;
 
     // Data members
 #if DEBUG
@@ -190,6 +200,13 @@ inline auto FTermDetection::hasTerminalDetection() const noexcept -> bool
 //----------------------------------------------------------------------
 inline void FTermDetection::setTerminalDetection (bool enable) noexcept
 { terminal_detection = enable; }
+
+//----------------------------------------------------------------------
+template<typename StringT>
+inline auto FTermDetection::startsWithTermType (StringT&& prefix) const -> bool
+{
+  return termtype.toWString().find(std::forward<StringT>(prefix)) == 0;
+}
 
 }  // namespace finalcut
 

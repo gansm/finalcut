@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2023 Markus Gans                                      *
+* Copyright 2015-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -436,7 +436,11 @@ class FWidget : public FVTerm
     void  mapWidgetEvents();
     void  initRootWidget();
     void  initWidgetLayout();
+    void  initDesktopOnShown() const;
     void  finish();
+    void  startShow();
+    void  finalizeShow() const;
+    void  showChildWidgets();
     void  moveLeftIfNotEnoughSpace();
     void  moveUpIfNotEnoughSpace();
     void  reduceWidthIfNotEnoughSpace();
@@ -450,6 +454,7 @@ class FWidget : public FVTerm
                                  , const FWidget*) const  -> FObjectList::const_iterator;
     auto  searchBackwardsForWidget ( const FWidget*
                                    , const FWidget* ) const -> FObjectList::const_reverse_iterator;
+    auto  isViewable() const -> bool;
     auto  canReceiveFocus (const FWidget*) const -> bool;
     void  setFocusOnThisWidget (FocusTypes);
     auto  sendFailAtChildFocusEvent (FWidget*, FocusTypes) const -> bool;
@@ -459,6 +464,12 @@ class FWidget : public FVTerm
     virtual void draw();
     void  drawWindows() const;
     void  drawChildren();
+    void  adjustWidget();
+    void  adjustSizeWithinArea (FRect&) const;
+    void  adjustChildWidgetSizes();
+    void  setWindowOffset();
+    void  setWidgetOffset (const FWidget*);
+    void  setClientOffset();
     static auto  isDefaultTheme() -> bool;
     static void  initColorTheme();
     void  removeQueuedEvent() const;
@@ -500,7 +511,7 @@ class FWidget : public FVTerm
     static FWidget*      clicked_widget;
     static FWidget*      open_menu;
     static FWidget*      move_resize_widget;
-    static FWidget*      show_root_widget;
+    static FWidget*      first_shown_widget;
     static FWidget*      redraw_root_widget;
     static FWidgetList*  dialog_list;
     static FWidgetList*  always_on_top_list;

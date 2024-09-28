@@ -55,7 +55,7 @@
   #define USE_POSIX_TIMER
 #endif
 
-#include <time.h>
+#include <ctime>
 
 #include <chrono>
 #include <vector>
@@ -125,6 +125,8 @@ class PosixTimer : public TimerMonitorImpl
 
   private:
     void init();
+    void createAlarmPipe();
+    void installTime();
 
 #if defined(USE_POSIX_TIMER)
     // Data members

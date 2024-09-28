@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2023 Markus Gans                                      *
+* Copyright 2015-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -53,7 +53,7 @@ FWidget* var::root_widget{nullptr};
 // static class attributes
 FStatusBar*           FWidget::statusbar{nullptr};
 FMenuBar*             FWidget::menubar{nullptr};
-FWidget*              FWidget::show_root_widget{nullptr};
+FWidget*              FWidget::first_shown_widget{nullptr};
 FWidget*              FWidget::redraw_root_widget{nullptr};
 FWidget::FWidgetList* FWidget::dialog_list{nullptr};
 FWidget::FWidgetList* FWidget::always_on_top_list{nullptr};
@@ -293,8 +293,8 @@ void FWidget::useParentWidgetColor()
   else  // Fallback
   {
     const auto& wc = getColorTheme();
-    setForegroundColor (wc->dialog_fg);
-    setBackgroundColor (wc->dialog_bg);
+    setForegroundColor (wc->dialog.fg);
+    setBackgroundColor (wc->dialog.bg);
   }
 
   setColor();
@@ -561,6 +561,7 @@ void FWidget::setGeometry (const FPoint& p, const FSize& s, bool adjust)
     wsize.setY(std::max(y, 1));
   }
 
+  // A width or a height can never be narrower than 1 character
   wsize.setSize ( std::max(w, std::size_t(1u))
                 , std::max(h, std::size_t(1u)) );
   adjust_wsize = wsize;
@@ -819,7 +820,7 @@ void FWidget::redraw()
     startDrawing();
     // clean desktop
     auto color_theme = getColorTheme();
-    setColor (color_theme->term_fg, color_theme->term_bg);
+    setColor (color_theme->term.fg, color_theme->term.bg);
     clearArea (getVirtualDesktop());
   }
   else if ( ! isShown() )
@@ -858,7 +859,7 @@ void FWidget::resize()
       return;
 
     resizeVTerm (term_geometry.getSize());
-    resizeArea (term_geometry, getShadow(), getVirtualDesktop());
+    resizeArea ({term_geometry, getShadow()}, getVirtualDesktop());
     startDrawing();  // Avoid flickering - no update during adjustment
     adjustSizeGlobal();
     finishDrawing();
@@ -875,42 +876,18 @@ void FWidget::show()
 {
   // Make the widget visible and draw it
 
-  if ( ! isVisible() || isShown() || FApplication::isQuit() )
+  if ( ! isViewable() )
     return;
 
-  // Initialize desktop on first call
-  if ( ! init_desktop && internal::var::root_widget )
-    internal::var::root_widget->initDesktop();
-
-  if ( ! show_root_widget )
-  {
-    startDrawing();
-    show_root_widget = this;
-  }
-
-  initWidgetLayout();  // Makes initial layout settings
-  adjustSize();        // Alignment before drawing
-  draw();              // Draw the widget
+  initDesktopOnShown();  // Initialize desktop on first call
+  startShow();
+  initWidgetLayout();    // Makes initial layout settings
+  adjustSize();          // Alignment before drawing
+  draw();                // Draw the widget
   flags.visibility.hidden = false;
   flags.visibility.shown = true;
-
-  if ( hasChildren() )
-  {
-    for (auto* child : getChildren())
-    {
-      auto child_widget = static_cast<FWidget*>(child);
-
-      if ( child->isWidget() && ! child_widget->flags.visibility.hidden )
-        child_widget->show();
-    }
-  }
-
-  if ( show_root_widget && show_root_widget == this )
-  {
-    finishDrawing();
-    forceTerminalUpdate();
-    show_root_widget = nullptr;
-  }
+  showChildWidgets();
+  finalizeShow();
 
   FShowEvent show_ev (Event::Show);
   FApplication::sendEvent(this, &show_ev);
@@ -1208,10 +1185,13 @@ void FWidget::setTermOffset()
 void FWidget::setTermOffsetWithPadding()
 {
   const auto& r = getRootWidget();
-  woffset.setCoordinates ( r->getLeftPadding()
-                         , r->getTopPadding()
-                         , int(r->getWidth()) - 1 - r->getRightPadding()
-                         , int(r->getHeight()) - 1 - r->getBottomPadding() );
+  woffset.setCoordinates
+  (
+    r->getLeftPadding(),
+    r->getTopPadding(),
+    int(r->getWidth()) - 1 - r->getRightPadding(),
+    int(r->getHeight()) - 1 - r->getBottomPadding()
+  );
 }
 
 //----------------------------------------------------------------------
@@ -1228,8 +1208,8 @@ void FWidget::initTerminal()
 
   // Set default foreground and background color of the desktop/terminal
   auto color_theme = getColorTheme();
-  internal::var::root_widget->foreground_color = color_theme->term_fg;
-  internal::var::root_widget->background_color = color_theme->term_bg;
+  internal::var::root_widget->foreground_color = color_theme->term.fg;
+  internal::var::root_widget->background_color = color_theme->term.bg;
   resetColors();
 
   // The terminal is now initialized
@@ -1267,52 +1247,19 @@ void FWidget::initLayout()
 //----------------------------------------------------------------------
 void FWidget::adjustSize()
 {
-  if ( ! isRootWidget() )
-  {
-    const auto& p = getParentWidget();
-
-    if ( isWindowWidget() )
-    {
-      if ( flags.feature.ignore_padding && ! isDialogWidget() )
-        setTermOffset();
-      else
-        woffset = internal::var::root_widget->wclient_offset;
-    }
-    else if ( flags.feature.ignore_padding && p )
-    {
-      woffset.setCoordinates ( p->getTermX() - 1
-                             , p->getTermY() - 1
-                             , p->getTermX() + int(p->getWidth()) - 2
-                             , p->getTermY() + int(p->getHeight()) - 2 );
-    }
-    else if ( p )
-      woffset = p->wclient_offset;
-
-    adjust_wsize = wsize;
-  }
+  // Adjust widget size and position
+  adjustWidget();
+  adjustSizeWithinArea(adjust_wsize);
 
   // Move and shrink in case of lack of space
   if ( ! hasChildPrintArea() )
     insufficientSpaceAdjust();
 
-  wclient_offset.setCoordinates
-  (
-    getTermX() - 1 + padding.left,
-    getTermY() - 1 + padding.top,
-    getTermX() - 2 + int(getWidth()) - padding.right,
-    getTermY() - 2 + int(getHeight()) - padding.bottom
-  );
+  // Set the size of the client area
+  setClientOffset();
 
-  if ( hasChildren() )
-  {
-    for (auto* child : getChildren())
-    {
-      auto widget = static_cast<FWidget*>(child);
-
-      if ( child->isWidget() && ! widget->isWindowWidget() )
-        widget->adjustSize();
-    }
-  }
+  // Recursively adjusts child widget sizes
+  adjustChildWidgetSizes();
 }
 
 //----------------------------------------------------------------------
@@ -1350,8 +1297,8 @@ void FWidget::hideArea (const FSize& size)
   else
   {
     auto color_theme = getColorTheme();
-    FColor fg = color_theme->dialog_fg;
-    FColor bg = color_theme->dialog_bg;
+    FColor fg = color_theme->dialog.fg;
+    FColor bg = color_theme->dialog.bg;
     setColor (fg, bg);
   }
 
@@ -1742,7 +1689,7 @@ void FWidget::initRootWidget()
   // Root widget basic initialization
   internal::var::root_widget = this;
   finalcut::initByte1PrintTransMask();  // FWidget helper functions
-  show_root_widget = nullptr;
+  first_shown_widget = nullptr;
   redraw_root_widget = nullptr;
   modal_dialog_counter = 0;
   statusbar = nullptr;
@@ -1770,6 +1717,17 @@ void FWidget::initWidgetLayout()
 }
 
 //----------------------------------------------------------------------
+inline void FWidget::initDesktopOnShown() const
+{
+  // Initialize desktop on first call
+
+  if ( init_desktop || ! internal::var::root_widget )
+    return;
+
+  internal::var::root_widget->initDesktop();
+}
+
+//----------------------------------------------------------------------
 void FWidget::finish()
 {
   delete close_widget_list;
@@ -1779,6 +1737,42 @@ void FWidget::finish()
   delete always_on_top_list;
   always_on_top_list = nullptr;
   internal::var::root_widget = nullptr;
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::startShow()
+{
+  if ( first_shown_widget )
+    return;
+
+  startDrawing();
+  first_shown_widget = this;
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::finalizeShow() const
+{
+  if ( ! first_shown_widget || first_shown_widget != this )
+    return ;
+
+  finishDrawing();
+  forceTerminalUpdate();
+  first_shown_widget = nullptr;
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::showChildWidgets()
+{
+  if ( ! hasChildren() )
+    return;
+
+  for (auto* child : getChildren())
+  {
+    auto child_widget = static_cast<FWidget*>(child);
+
+    if ( child->isWidget() && ! child_widget->flags.visibility.hidden )
+      child_widget->show();
+  }
 }
 
 //----------------------------------------------------------------------
@@ -1985,6 +1979,14 @@ inline auto FWidget::searchBackwardsForWidget ( const FWidget* parent
 }
 
 //----------------------------------------------------------------------
+inline auto FWidget::isViewable() const -> bool
+{
+  return isVisible()
+      && ! isShown()
+      && ! FApplication::isQuit();
+}
+
+//----------------------------------------------------------------------
 inline auto FWidget::canReceiveFocus (const FWidget* widget) const -> bool
 {
   return ! widget
@@ -2139,6 +2141,102 @@ void FWidget::drawChildren()
         widget->redraw();
     }
   }
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::adjustWidget()
+{
+  if ( isRootWidget() )
+    return;
+
+  const auto& p = getParentWidget();
+
+  if ( isWindowWidget() )
+    setWindowOffset();
+  else
+    setWidgetOffset(p);
+
+  adjust_wsize = wsize;
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::adjustSizeWithinArea (FRect& box) const
+{
+  const FRect uninitialized(FPoint{0, 0}, FPoint{-1, -1});
+
+  if ( ! init_desktop || ! init_terminal || box == uninitialized )
+    return;
+
+  const auto w = box.getWidth();
+  const auto h = box.getHeight();
+
+  // A width or a height can never be narrower than 1 character
+  // and wider than the client width or height of its parent
+  box.setSize( std::max(std::min(w, woffset.getWidth()), std::size_t(1u)),
+               std::max(std::min(h, woffset.getHeight()), std::size_t(1u)) );
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::adjustChildWidgetSizes()
+{
+  // This method is called only by adjustSize() and recursively adjusts
+  // the sizes of child widgets if they are not window widgets
+
+  if ( ! hasChildren() )
+    return;
+
+  for (auto* child : getChildren())
+  {
+    auto widget = static_cast<FWidget*>(child);
+
+    if ( child->isWidget() && ! widget->isWindowWidget() )
+      widget->adjustSize();
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::setWindowOffset()
+{
+  if ( flags.feature.ignore_padding && ! isDialogWidget() )
+    setTermOffset();
+  else
+    woffset = internal::var::root_widget->wclient_offset;
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::setWidgetOffset (const FWidget* parent)
+{
+  // Set the widget offset
+
+  if ( ! parent )
+    return;
+
+  if ( flags.feature.ignore_padding )
+  {
+    woffset.setCoordinates
+    (
+      parent->getTermX() - 1,
+      parent->getTermY() - 1,
+      parent->getTermX() + int(parent->getWidth()) - 2,
+      parent->getTermY() + int(parent->getHeight()) - 2
+    );
+  }
+  else
+    woffset = parent->wclient_offset;
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::setClientOffset()
+{
+  // Set the offset of the widget client area
+
+  wclient_offset.setCoordinates
+  (
+    getTermX() - 1 + padding.left,
+    getTermY() - 1 + padding.top,
+    getTermX() - 2 + int(getWidth()) - padding.right,
+    getTermY() - 2 + int(getHeight()) - padding.bottom
+  );
 }
 
 //----------------------------------------------------------------------

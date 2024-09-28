@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2023 Markus Gans                                      *
+* Copyright 2012-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -229,8 +229,8 @@ class FTerm final
     static auto scrollTermForward() -> bool;
     static auto scrollTermReverse() -> bool;
 
-    template <typename StringT, typename... Args>
-    static void paddingPrintf (StringT&&, Args&&...);
+    template <typename... Args>
+    static void paddingPrintf (Args&&...);
     static void paddingPrint (const std::string&, int = 1);
     static void stringPrint (const std::string&);
 
@@ -248,6 +248,8 @@ class FTerm final
     static void init_alt_charset();
     static void init_pc_charset();
     static void init_cygwin_charmap();
+    static void updatePCEncodingForCygwin();
+    static void updateCharMappingForCygwin();
     static void init_teraterm_charmap();
     static void init_fixed_max_color();
     static void init_termcap();
@@ -256,6 +258,11 @@ class FTerm final
     static void init_optiAttr();
     static auto init_font() -> bool;
     static void init_locale();
+    static auto init_xterm_locale (const char*) ->  const char*;
+    static auto init_tera_term_locale (const char*) ->  const char*;
+    static auto init_kterm_locale (const char*) ->  const char*;
+    static auto init_sun_locale (const char*) ->  const char*;
+    static auto init_locale_if_not_found (const char*) ->  const char*;
     static void init_encoding();
     static void init_encoding_set();
     static void init_term_encoding();
@@ -265,6 +272,7 @@ class FTerm final
     static void init_tab_quirks();
     static void init_captureFontAndTitle();
     static auto hasNoFontSettingOption() -> bool;
+    static auto canSetTerminalFont() -> bool;
     static void setInsertCursorStyle();
     static void setOverwriteCursorStyle();
     static auto enableCursorString() -> std::string;
@@ -315,19 +323,18 @@ inline void FTerm::unsetUTF8()
 { setUTF8(false); }
 
 //----------------------------------------------------------------------
-template <typename StringT, typename... Args>
-inline void FTerm::paddingPrintf (StringT&& format, Args&&... args)
+template <typename... Args>
+inline void FTerm::paddingPrintf (Args&&... args)
 {
-  const int size = std::snprintf (nullptr, 0, format, args...);
+  const int size = std::snprintf (nullptr, 0, args...);
 
   if ( size <= 0 )
     return;
 
   std::string buffer{};
-  auto buffer_size = std::size_t(size + 1);
+  auto buffer_size = std::size_t(size) + 1;
   buffer.resize(buffer_size);
   std::snprintf ( &*buffer.begin(), buffer_size
-                , std::forward<StringT>(format)
                 , std::forward<Args>(args)... );
   buffer_size--;
   buffer.resize(buffer_size);

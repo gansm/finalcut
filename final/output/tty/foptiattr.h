@@ -54,46 +54,43 @@ namespace finalcut
 class FOptiAttr final
 {
   public:
+    struct TermEnvTextStyle
+    {
+      const char* on;
+      const char* off;
+    };
+
+    struct TermEnvColorStyle
+    {
+      const char* a_foreground;
+      const char* a_background;
+      const char* foreground;
+      const char* background;
+      const char* color_pair;
+      const char* orig_pair;
+      const char* orig_colors;
+      int         max_color;
+      int         attr_without_color;
+      bool        ansi_default_color;
+    };
+
     struct TermEnv
     {
-      const char* t_enter_bold_mode;
-      const char* t_exit_bold_mode;
-      const char* t_enter_dim_mode;
-      const char* t_exit_dim_mode;
-      const char* t_enter_italics_mode;
-      const char* t_exit_italics_mode;
-      const char* t_enter_underline_mode;
-      const char* t_exit_underline_mode;
-      const char* t_enter_blink_mode;
-      const char* t_exit_blink_mode;
-      const char* t_enter_reverse_mode;
-      const char* t_exit_reverse_mode;
-      const char* t_enter_standout_mode;
-      const char* t_exit_standout_mode;
-      const char* t_enter_secure_mode;
-      const char* t_exit_secure_mode;
-      const char* t_enter_protected_mode;
-      const char* t_exit_protected_mode;
-      const char* t_enter_crossed_out_mode;
-      const char* t_exit_crossed_out_mode;
-      const char* t_enter_dbl_underline_mode;
-      const char* t_exit_dbl_underline_mode;
-      const char* t_set_attributes;
-      const char* t_exit_attribute_mode;
-      const char* t_enter_alt_charset_mode;
-      const char* t_exit_alt_charset_mode;
-      const char* t_enter_pc_charset_mode;
-      const char* t_exit_pc_charset_mode;
-      const char* t_set_a_foreground;
-      const char* t_set_a_background;
-      const char* t_set_foreground;
-      const char* t_set_background;
-      const char* t_set_color_pair;
-      const char* t_orig_pair;
-      const char* t_orig_colors;
-      int   max_color;
-      int   attr_without_color;
-      bool  ansi_default_color;
+      TermEnvTextStyle  t_set_bold;
+      TermEnvTextStyle  t_set_dim;
+      TermEnvTextStyle  t_set_italics;
+      TermEnvTextStyle  t_set_underline;
+      TermEnvTextStyle  t_set_blink;
+      TermEnvTextStyle  t_set_reverse;
+      TermEnvTextStyle  t_set_standout;
+      TermEnvTextStyle  t_set_secure;
+      TermEnvTextStyle  t_set_protected;
+      TermEnvTextStyle  t_set_crossed_out;
+      TermEnvTextStyle  t_set_dbl_underline;
+      TermEnvTextStyle  t_set_attributes;
+      TermEnvTextStyle  t_set_alt_charset;
+      TermEnvTextStyle  t_set_pc_charset;
+      TermEnvColorStyle t_set_color;
     };
 
     // Constructor
@@ -143,7 +140,7 @@ class FOptiAttr final
     void        set_background_color (const char[]);
     void        set_term_color_pair (const char[]);
     void        set_orig_pair (const char[]);
-    void        set_orig_orig_colors (const char[]);
+    void        set_orig_colors (const char[]);
 
     // Inquiry
     static auto isNormal (const FChar&) -> bool;
@@ -156,8 +153,35 @@ class FOptiAttr final
   private:
     struct Capability
     {
-      const char* cap;
-      bool  caused_reset;
+      const char* cap{};
+      bool  caused_reset{};
+    };
+
+    struct TextStyle
+    {
+      Capability on{};
+      Capability off{};
+    };
+
+    struct ColorStyle
+    {
+      Capability   a_foreground{};
+      Capability   a_background{};
+      Capability   foreground{};
+      Capability   background{};
+      Capability   color_pair{};
+      Capability   orig_pair{};
+      Capability   orig_colors{};
+      int          attr_without_color{0};
+      int          max_color{1};
+      bool         monochron{true};
+      bool         ansi_default_color{false};
+    };
+
+    struct AttributeChanges
+    {
+      FChar on{};
+      FChar off{};
     };
 
     // Using-declarations
@@ -170,6 +194,8 @@ class FOptiAttr final
     };
 
     using AttributeHandlers = std::array<AttributeHandlerEntry, 13>;
+    using NoColorVideoHandler = std::function<void(FOptiAttr*, FChar&)>;
+    using NoColorVideoHandlerTable = std::array<NoColorVideoHandler, 18>;
 
     // Enumerations
     enum init_reset_tests
@@ -181,27 +207,6 @@ class FOptiAttr final
       same_like_se    = 0x08,
       same_like_me    = 0x10,
       all_tests       = 0x1f
-    };
-
-    enum attr_modes
-    {
-      standout_mode    = 1,
-      underline_mode   = 2,
-      reverse_mode     = 4,
-      blink_mode       = 8,
-      dim_mode         = 16,
-      bold_mode        = 32,
-      invisible_mode   = 64,
-      protected_mode   = 128,
-      alt_charset_mode = 256,
-      horizontal_mode  = 512,
-      left_mode        = 1024,
-      low_mode         = 2048,
-      right_mode       = 4096,
-      top_mode         = 8192,
-      vertical_mode    = 16384,
-      italic_mode      = 32768,
-      no_mode          = 65536
     };
 
     // Mutators
@@ -243,21 +248,33 @@ class FOptiAttr final
     static auto hasColor (const FChar&) -> bool;
     static auto hasAttribute (const FChar&) -> bool;
     static auto hasNoAttribute (const FChar&) -> bool;
+    auto        isItalicsUsed (const FChar&, const FChar&) const -> bool;
+    auto        isCrossedOutUsed (const FChar&, const FChar&) const -> bool;
+    auto        isDoubleUnderlineUsed (const FChar&, const FChar&) const -> bool;
+    auto        isPCcharsetUsed (const FChar&, const FChar&) const -> bool;
+    auto        isPCcharsetUsable (FChar&, const FChar&) -> bool;
+    auto        hasColorChanged (const FChar&, const FChar&) const -> bool;
 
     // Methods
-    auto        hasColorChanged (const FChar&, const FChar&) const -> bool;
     void        resetColor (FChar&) const;
     void        prevent_no_color_video_attributes (FChar&, bool = false);
     void        deactivateAttributes (FChar&, FChar&);
     void        changeAttributeSGR (FChar&, FChar&);
     void        changeAttributeSeparately (FChar&, FChar&);
     void        change_color (FChar&, FChar&);
+    void        normalizeColor (FColor&) const noexcept;
+    void        handleDefaultColors (FChar&, FChar&, FColor&, FColor&);
     void        change_to_default_color (FChar&, FChar&, FColor&, FColor&);
-    void        change_current_color (const FChar&, FColor, FColor);
+    void        setDefaultForeground (FChar&);
+    void        setDefaultBackground (FChar&);
+    void        change_current_color (const FChar&, const FColor, const FColor);
     void        resetAttribute (FChar&) const;
     void        reset (FChar&) const;
     auto        caused_reset_attributes (const char[], uChar = all_tests) const -> bool;
+    void        init_reset_attribute (Capability&, uChar = all_tests) const;
+    auto        fake_reverse_color_change (const FChar& term) const -> bool;
     auto        hasCharsetEquivalence() const -> bool;
+    static auto getNoColorVideoHandlerTable() -> const NoColorVideoHandlerTable&;
     static auto getAttributeOnHandlers() -> const AttributeHandlers&;
     static auto getAttributeOffHandlers() -> const AttributeHandlers&;
     static auto getByte0ReverseMask() -> uInt8;
@@ -277,52 +294,27 @@ class FOptiAttr final
     auto        append_sequence (const std::string&) -> bool;
 
     // Data members
-    Capability   F_enter_bold_mode{};
-    Capability   F_exit_bold_mode{};
-    Capability   F_enter_dim_mode{};
-    Capability   F_exit_dim_mode{};
-    Capability   F_enter_italics_mode{};
-    Capability   F_exit_italics_mode{};
-    Capability   F_enter_underline_mode{};
-    Capability   F_exit_underline_mode{};
-    Capability   F_enter_blink_mode{};
-    Capability   F_exit_blink_mode{};
-    Capability   F_enter_reverse_mode{};
-    Capability   F_exit_reverse_mode{};
-    Capability   F_enter_standout_mode{};
-    Capability   F_exit_standout_mode{};
-    Capability   F_enter_secure_mode{};
-    Capability   F_exit_secure_mode{};
-    Capability   F_enter_protected_mode{};
-    Capability   F_exit_protected_mode{};
-    Capability   F_enter_crossed_out_mode{};
-    Capability   F_exit_crossed_out_mode{};
-    Capability   F_enter_dbl_underline_mode{};
-    Capability   F_exit_dbl_underline_mode{};
-    Capability   F_set_attributes{};
-    Capability   F_exit_attribute_mode{};
-    Capability   F_enter_alt_charset_mode{};
-    Capability   F_exit_alt_charset_mode{};
-    Capability   F_enter_pc_charset_mode{};
-    Capability   F_exit_pc_charset_mode{};
-    Capability   F_set_a_foreground{};
-    Capability   F_set_a_background{};
-    Capability   F_set_foreground{};
-    Capability   F_set_background{};
-    Capability   F_set_color_pair{};
-    Capability   F_orig_pair{};
-    Capability   F_orig_colors{};
+    TextStyle        F_bold{};
+    TextStyle        F_dim{};
+    TextStyle        F_italics{};
+    TextStyle        F_underline{};
+    TextStyle        F_blink{};
+    TextStyle        F_reverse{};
+    TextStyle        F_standout{};
+    TextStyle        F_secure{};
+    TextStyle        F_protected{};
+    TextStyle        F_crossed_out{};
+    TextStyle        F_dbl_underline{};
+    TextStyle        F_attributes{};
+    TextStyle        F_alt_charset{};
+    TextStyle        F_pc_charset{};
+    ColorStyle       F_color{};
 
-    FChar        on{};
-    FChar        off{};
-    std::string  attr_buf{};
-    SGRoptimizer sgr_optimizer{attr_buf};
-    int          max_color{1};
-    int          attr_without_color{0};
-    bool         ansi_default_color{false};
-    bool         alt_equal_pc_charset{false};
-    bool         monochron{true};
-    bool         fake_reverse{false};
+    AttributeChanges changes{};
+    std::string      attr_buf{};
+    SGRoptimizer     sgr_optimizer{attr_buf};
+    bool             alt_equal_pc_charset{false};
+    bool             fake_reverse{false};
 };
 
 
@@ -333,19 +325,19 @@ inline auto FOptiAttr::getClassName() const -> FString
 
 //----------------------------------------------------------------------
 inline void FOptiAttr::setMaxColor (const int& c) noexcept
-{ max_color = c; }
+{ F_color.max_color = c; }
 
 //----------------------------------------------------------------------
 inline void FOptiAttr::setNoColorVideo (int attr) noexcept
-{ attr_without_color = attr; }
+{ F_color.attr_without_color = attr; }
 
 //----------------------------------------------------------------------
 inline void FOptiAttr::setDefaultColorSupport() noexcept
-{ ansi_default_color = true; }
+{ F_color.ansi_default_color = true; }
 
 //----------------------------------------------------------------------
 inline void FOptiAttr::unsetDefaultColorSupport() noexcept
-{ ansi_default_color = false; }
+{ F_color.ansi_default_color = false; }
 
 //----------------------------------------------------------------------
 template <typename CharT

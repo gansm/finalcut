@@ -70,6 +70,7 @@ class SGRoptimizer final
 
     // Methods
     void findParameter();
+    auto isSGRStart (std::size_t) -> bool;
     void combineParameter();
     void handleSGRterminating ( const std::vector<parameter>::const_iterator, std::size_t&
                               , std::size_t, std::size_t );

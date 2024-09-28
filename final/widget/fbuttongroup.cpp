@@ -4,7 +4,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2023 Markus Gans                                      *
+* Copyright 2014-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -157,8 +157,8 @@ void FButtonGroup::hide()
   else
   {
     const auto& wc = getColorTheme();
-    FColor fg = wc->dialog_fg;
-    FColor bg = wc->dialog_bg;
+    FColor fg = wc->dialog.fg;
+    FColor bg = wc->dialog.bg;
     setColor (fg, bg);
   }
 
@@ -439,6 +439,16 @@ inline auto FButtonGroup::findButtonIf (UnaryPredicate p) const -> FToggleButton
 }
 
 //----------------------------------------------------------------------
+inline auto FButtonGroup::needToUncheck ( const FToggleButton* toggle_button
+                                        , const FToggleButton* button ) const -> bool
+{
+  return toggle_button
+      && toggle_button != button
+      && toggle_button->isChecked()
+      && isRadioButton(toggle_button);
+}
+
+//----------------------------------------------------------------------
 void FButtonGroup::cb_buttonToggled (const FToggleButton* button) const
 {
   if ( (button && ! button->isChecked()) || buttonlist.empty() )
@@ -448,10 +458,7 @@ void FButtonGroup::cb_buttonToggled (const FToggleButton* button) const
   {
     auto toggle_button = static_cast<FToggleButton*>(item);
 
-    if ( toggle_button
-      && toggle_button != button
-      && toggle_button->isChecked()
-      && isRadioButton(toggle_button) )
+    if ( needToUncheck(toggle_button, button) )
     {
       toggle_button->unsetChecked();
 

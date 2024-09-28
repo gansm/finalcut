@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2023 Markus Gans                                           *
+* Copyright 2023-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -511,6 +511,10 @@ class StringParser
     {
       auto callback = [this, eloop] (const finalcut::Monitor*, short)
                       {
+                        // After a backend event is triggered, this event
+                        // handling code is called by the dispatcher
+                        // of the event loop. Immediately before this call,
+                        // the triggering event has already been destroyed.
                         std::cout << "BackendMonitor callback handle";
                         processQueuedInput();
                         eloop->leave();
@@ -560,7 +564,7 @@ void StringParser::parseString()
     number_queue.push_back(number_string.toInt());
 
   if ( is_empty_before && ! number_queue.empty() )
-    queue_monitor.setEvent();
+    queue_monitor.setEvent();  // This line creates the event
 }
 
 //----------------------------------------------------------------------
@@ -587,7 +591,7 @@ void StringParser::processQueuedInput()
 class EventloopMonitorTest : public CPPUNIT_NS::TestFixture
 {
   public:
-    EventloopMonitorTest() = default;
+    EventloopMonitorTest();
 
   protected:
     void classNameTest();
@@ -602,8 +606,9 @@ class EventloopMonitorTest : public CPPUNIT_NS::TestFixture
     void exceptionTest();
 
   private:
-    void keyboardInput (std::string);
+    void keyboardInput (std::string&&);
     void drainStdin();
+    void enableFakingInput();
 
     // Adds code needed to register the test suite
     CPPUNIT_TEST_SUITE (EventloopMonitorTest);
@@ -624,6 +629,13 @@ class EventloopMonitorTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST_SUITE_END();
 };
 
+
+// constructors and destructor
+//----------------------------------------------------------------------
+EventloopMonitorTest::EventloopMonitorTest()
+{
+  enableFakingInput();
+}
 
 //----------------------------------------------------------------------
 void EventloopMonitorTest::classNameTest()
@@ -808,6 +820,7 @@ void EventloopMonitorTest::IoMonitorTest()
   io_monitor.resume();
   // Enter 'A'
   keyboardInput("A");
+
   // Keyboard interval timeout 75 ms
   std::this_thread::sleep_for(std::chrono::milliseconds(75));
   CPPUNIT_ASSERT ( eloop.run() == 0 );  // Run event loop
@@ -895,7 +908,7 @@ void EventloopMonitorTest::BackendMonitorTest()
   std::cout << "\n";
   CPPUNIT_ASSERT ( string_parser.getQueue().empty() );
   // The queue receives data and sends a backend event
-  string_parser.parseString();
+  string_parser.parseString();  // Create a backend event in the self-pipe
   CPPUNIT_ASSERT ( ! string_parser.getQueue().empty() );
   CPPUNIT_ASSERT ( string_parser.getQueue().size() == 9 );
   CPPUNIT_ASSERT ( eloop.run() == 0 );  // Run event loop
@@ -1034,18 +1047,18 @@ void EventloopMonitorTest::exceptionTest()
 }
 
 //----------------------------------------------------------------------
-void EventloopMonitorTest::keyboardInput (std::string s)
+void EventloopMonitorTest::keyboardInput (std::string&& s)
 {
   // Simulates keystrokes
 
+  const auto input = std::move(s);
   const char EOT = 0x04;  // End of Transmission
-  auto stdin_no = finalcut::FTermios::getStdIn();
+  const auto stdin_no = finalcut::FTermios::getStdIn();
+
   fflush(stdout);
+  std::string::const_iterator iter = input.cbegin();
 
-  std::string::const_iterator iter;
-  iter = s.begin();
-
-  while ( iter != s.end() )
+  while ( iter != input.cend() )
   {
     char c = *iter;
 
@@ -1084,6 +1097,35 @@ void EventloopMonitorTest::drainStdin()
 
   if ( ::close(stdin_no2) < 0 )
     return;
+}
+
+//----------------------------------------------------------------------
+void EventloopMonitorTest::enableFakingInput()
+{
+  //--------------------------------------------------------------------
+  // Note: The dev.tty.legacy_tiocsti sysctl variable must be set
+  //       to true to perform the TIOCSTI (faking input) operation
+  //       in Linux 6.2.0 or later.
+  //--------------------------------------------------------------------
+
+  static const auto& fsystem = finalcut::FSystem::getInstance();
+
+  // Check for root privileges
+  if ( fsystem->getuid() != 0 )
+    return;
+
+  // Open the sysctl variable "dev.tty.legacy_tiocsti"
+  int fd = ::open("/proc/sys/dev/tty/legacy_tiocsti", O_WRONLY);
+
+  if ( fd < 0 )  // Cannot open file descriptor
+    return;
+
+  // Set dev.tty.legacy_tiocsti to true
+  if ( dprintf(fd, "%d", 1) < 1 )
+    std::cerr << "-> Unable to modify dev.tty.legacy_tiocsti\n";
+
+  if ( ::close(fd) < 0 )
+    std::cerr << "-> Cannot close file descriptor\n";
 }
 
 // Put the test suite in the registry

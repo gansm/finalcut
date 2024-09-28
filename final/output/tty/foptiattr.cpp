@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2023 Markus Gans                                      *
+* Copyright 2016-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -19,6 +19,8 @@
 * License along with this program.  If not, see                        *
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
+
+#include <strings.h>  // need for fss()
 
 #include <array>
 #include <cstring>
@@ -52,6 +54,10 @@ uInt8 var::b2_reset_mask{};
 
 }  // namespace internal
 
+// Function prototypes
+auto has_foreground_changes (const FChar&, const FColor, bool) -> bool;
+auto has_background_changes (const FChar&, const FColor, bool) -> bool;
+
 
 //----------------------------------------------------------------------
 // class FOptiAttr
@@ -83,45 +89,45 @@ void FOptiAttr::setTermEnvironment (const TermEnv& term_env)
   // Set all required termcap values at once
   // and initialize the FOptiAttr environment
 
-  set_enter_bold_mode (term_env.t_enter_bold_mode);
-  set_exit_bold_mode (term_env.t_exit_bold_mode);
-  set_enter_dim_mode (term_env.t_enter_dim_mode);
-  set_exit_dim_mode (term_env.t_exit_dim_mode);
-  set_enter_italics_mode (term_env.t_enter_italics_mode);
-  set_exit_italics_mode (term_env.t_exit_italics_mode);
-  set_enter_underline_mode (term_env.t_enter_underline_mode);
-  set_exit_underline_mode (term_env.t_exit_underline_mode);
-  set_enter_blink_mode (term_env.t_enter_blink_mode);
-  set_exit_blink_mode (term_env.t_exit_blink_mode);
-  set_enter_reverse_mode (term_env.t_enter_reverse_mode);
-  set_exit_reverse_mode (term_env.t_exit_reverse_mode);
-  set_enter_standout_mode (term_env.t_enter_standout_mode);
-  set_exit_standout_mode (term_env.t_exit_standout_mode);
-  set_enter_secure_mode (term_env.t_enter_secure_mode);
-  set_exit_secure_mode (term_env.t_exit_secure_mode);
-  set_enter_protected_mode (term_env.t_enter_protected_mode);
-  set_exit_protected_mode (term_env.t_exit_protected_mode);
-  set_enter_crossed_out_mode (term_env.t_enter_crossed_out_mode);
-  set_exit_crossed_out_mode (term_env.t_exit_crossed_out_mode);
-  set_enter_dbl_underline_mode (term_env.t_enter_dbl_underline_mode);
-  set_exit_dbl_underline_mode (term_env.t_exit_dbl_underline_mode);
-  set_set_attributes (term_env.t_set_attributes);
-  set_exit_attribute_mode (term_env.t_exit_attribute_mode);
-  set_enter_alt_charset_mode (term_env.t_enter_alt_charset_mode);
-  set_exit_alt_charset_mode (term_env.t_exit_alt_charset_mode);
-  set_enter_pc_charset_mode (term_env.t_enter_pc_charset_mode);
-  set_exit_pc_charset_mode (term_env.t_exit_pc_charset_mode);
-  set_a_foreground_color (term_env.t_set_a_foreground);
-  set_a_background_color (term_env.t_set_a_background);
-  set_foreground_color (term_env.t_set_foreground);
-  set_background_color (term_env.t_set_background);
-  set_term_color_pair (term_env.t_set_color_pair);
-  set_orig_pair (term_env.t_orig_pair);
-  set_orig_orig_colors (term_env.t_orig_colors);
+  set_enter_bold_mode (term_env.t_set_bold.on);
+  set_exit_bold_mode (term_env.t_set_bold.off);
+  set_enter_dim_mode (term_env.t_set_dim.on);
+  set_exit_dim_mode (term_env.t_set_dim.off);
+  set_enter_italics_mode (term_env.t_set_italics.on);
+  set_exit_italics_mode (term_env.t_set_italics.off);
+  set_enter_underline_mode (term_env.t_set_underline.on);
+  set_exit_underline_mode (term_env.t_set_underline.off);
+  set_enter_blink_mode (term_env.t_set_blink.on);
+  set_exit_blink_mode (term_env.t_set_blink.off);
+  set_enter_reverse_mode (term_env.t_set_reverse.on);
+  set_exit_reverse_mode (term_env.t_set_reverse.off);
+  set_enter_standout_mode (term_env.t_set_standout.on);
+  set_exit_standout_mode (term_env.t_set_standout.off);
+  set_enter_secure_mode (term_env.t_set_secure.on);
+  set_exit_secure_mode (term_env.t_set_secure.off);
+  set_enter_protected_mode (term_env.t_set_protected.on);
+  set_exit_protected_mode (term_env.t_set_protected.off);
+  set_enter_crossed_out_mode (term_env.t_set_crossed_out.on);
+  set_exit_crossed_out_mode (term_env.t_set_crossed_out.off);
+  set_enter_dbl_underline_mode (term_env.t_set_dbl_underline.on);
+  set_exit_dbl_underline_mode (term_env.t_set_dbl_underline.off);
+  set_set_attributes (term_env.t_set_attributes.on);
+  set_exit_attribute_mode (term_env.t_set_attributes.off);
+  set_enter_alt_charset_mode (term_env.t_set_alt_charset.on);
+  set_exit_alt_charset_mode (term_env.t_set_alt_charset.off);
+  set_enter_pc_charset_mode (term_env.t_set_pc_charset.on);
+  set_exit_pc_charset_mode (term_env.t_set_pc_charset.off);
+  set_a_foreground_color (term_env.t_set_color.a_foreground);
+  set_a_background_color (term_env.t_set_color.a_background);
+  set_foreground_color (term_env.t_set_color.foreground);
+  set_background_color (term_env.t_set_color.background);
+  set_term_color_pair (term_env.t_set_color.color_pair);
+  set_orig_pair (term_env.t_set_color.orig_pair);
+  set_orig_colors (term_env.t_set_color.orig_colors);
 
-  max_color = term_env.max_color;
-  attr_without_color = term_env.attr_without_color;
-  ansi_default_color = term_env.ansi_default_color;
+  F_color.max_color = term_env.t_set_color.max_color;
+  F_color.attr_without_color = term_env.t_set_color.attr_without_color;
+  F_color.ansi_default_color = term_env.t_set_color.ansi_default_color;
 
   initialize();
 }
@@ -131,8 +137,8 @@ void FOptiAttr::set_enter_bold_mode (const char cap[])
 {
   if ( cap )
   {
-    F_enter_bold_mode.cap = cap;
-    F_enter_bold_mode.caused_reset = false;
+    F_bold.on.cap = cap;
+    F_bold.on.caused_reset = false;
   }
 }
 
@@ -141,8 +147,8 @@ void FOptiAttr::set_exit_bold_mode (const char cap[])
 {
   if ( cap )
   {
-    F_exit_bold_mode.cap = cap;
-    F_exit_bold_mode.caused_reset = false;
+    F_bold.off.cap = cap;
+    F_bold.off.caused_reset = false;
   }
 }
 
@@ -151,8 +157,8 @@ void FOptiAttr::set_enter_dim_mode (const char cap[])
 {
   if ( cap )
   {
-    F_enter_dim_mode.cap = cap;
-    F_enter_dim_mode.caused_reset = false;
+    F_dim.on.cap = cap;
+    F_dim.on.caused_reset = false;
   }
 }
 
@@ -161,8 +167,8 @@ void FOptiAttr::set_exit_dim_mode (const char cap[])
 {
   if ( cap )
   {
-    F_exit_dim_mode.cap = cap;
-    F_exit_dim_mode.caused_reset = false;
+    F_dim.off.cap = cap;
+    F_dim.off.caused_reset = false;
   }
 }
 
@@ -171,8 +177,8 @@ void FOptiAttr::set_enter_italics_mode (const char cap[])
 {
   if ( cap )
   {
-    F_enter_italics_mode.cap = cap;
-    F_enter_italics_mode.caused_reset = false;
+    F_italics.on.cap = cap;
+    F_italics.on.caused_reset = false;
   }
 }
 
@@ -181,8 +187,8 @@ void FOptiAttr::set_exit_italics_mode (const char cap[])
 {
   if ( cap )
   {
-    F_exit_italics_mode.cap = cap;
-    F_exit_italics_mode.caused_reset = false;
+    F_italics.off.cap = cap;
+    F_italics.off.caused_reset = false;
   }
 }
 
@@ -191,8 +197,8 @@ void FOptiAttr::set_enter_underline_mode (const char cap[])
 {
   if ( cap )
   {
-    F_enter_underline_mode.cap = cap;
-    F_enter_underline_mode.caused_reset = false;
+    F_underline.on.cap = cap;
+    F_underline.on.caused_reset = false;
   }
 }
 
@@ -201,8 +207,8 @@ void FOptiAttr::set_exit_underline_mode (const char cap[])
 {
   if ( cap )
   {
-    F_exit_underline_mode.cap = cap;
-    F_exit_underline_mode.caused_reset = false;
+    F_underline.off.cap = cap;
+    F_underline.off.caused_reset = false;
   }
 }
 
@@ -211,8 +217,8 @@ void FOptiAttr::set_enter_blink_mode (const char cap[])
 {
   if ( cap )
   {
-    F_enter_blink_mode.cap = cap;
-    F_enter_blink_mode.caused_reset = false;
+    F_blink.on.cap = cap;
+    F_blink.on.caused_reset = false;
   }
 }
 
@@ -221,8 +227,8 @@ void FOptiAttr::set_exit_blink_mode (const char cap[])
 {
   if ( cap )
   {
-    F_exit_blink_mode.cap = cap;
-    F_exit_blink_mode.caused_reset = false;
+    F_blink.off.cap = cap;
+    F_blink.off.caused_reset = false;
   }
 }
 
@@ -231,8 +237,8 @@ void FOptiAttr::set_enter_reverse_mode (const char cap[])
 {
   if ( cap )
   {
-    F_enter_reverse_mode.cap = cap;
-    F_enter_reverse_mode.caused_reset = false;
+    F_reverse.on.cap = cap;
+    F_reverse.on.caused_reset = false;
   }
 }
 
@@ -241,8 +247,8 @@ void FOptiAttr::set_exit_reverse_mode (const char cap[])
 {
   if ( cap )
   {
-    F_exit_reverse_mode.cap = cap;
-    F_exit_reverse_mode.caused_reset = false;
+    F_reverse.off.cap = cap;
+    F_reverse.off.caused_reset = false;
   }
 }
 
@@ -251,8 +257,8 @@ void FOptiAttr::set_enter_secure_mode (const char cap[])
 {
   if ( cap )
   {
-    F_enter_secure_mode.cap = cap;
-    F_enter_secure_mode.caused_reset = false;
+    F_secure.on.cap = cap;
+    F_secure.on.caused_reset = false;
   }
 }
 
@@ -261,8 +267,8 @@ void FOptiAttr::set_exit_secure_mode (const char cap[])
 {
   if ( cap )
   {
-    F_exit_secure_mode.cap = cap;
-    F_exit_secure_mode.caused_reset = false;
+    F_secure.off.cap = cap;
+    F_secure.off.caused_reset = false;
   }
 }
 
@@ -271,8 +277,8 @@ void FOptiAttr::set_enter_protected_mode (const char cap[])
 {
   if ( cap )
   {
-    F_enter_protected_mode.cap = cap;
-    F_enter_protected_mode.caused_reset = false;
+    F_protected.on.cap = cap;
+    F_protected.on.caused_reset = false;
   }
 }
 
@@ -281,8 +287,8 @@ void FOptiAttr::set_exit_protected_mode (const char cap[])
 {
   if ( cap )
   {
-    F_exit_protected_mode.cap = cap;
-    F_exit_protected_mode.caused_reset = false;
+    F_protected.off.cap = cap;
+    F_protected.off.caused_reset = false;
   }
 }
 
@@ -291,8 +297,8 @@ void FOptiAttr::set_enter_crossed_out_mode (const char cap[])
 {
   if ( cap )
   {
-    F_enter_crossed_out_mode.cap = cap;
-    F_enter_crossed_out_mode.caused_reset = false;
+    F_crossed_out.on.cap = cap;
+    F_crossed_out.on.caused_reset = false;
   }
 }
 
@@ -301,8 +307,8 @@ void FOptiAttr::set_exit_crossed_out_mode (const char cap[])
 {
   if ( cap )
   {
-    F_exit_crossed_out_mode.cap = cap;
-    F_exit_crossed_out_mode.caused_reset = false;
+    F_crossed_out.off.cap = cap;
+    F_crossed_out.off.caused_reset = false;
   }
 }
 
@@ -311,8 +317,8 @@ void FOptiAttr::set_enter_dbl_underline_mode (const char cap[])
 {
   if ( cap )
   {
-    F_enter_dbl_underline_mode.cap = cap;
-    F_enter_dbl_underline_mode.caused_reset = false;
+    F_dbl_underline.on.cap = cap;
+    F_dbl_underline.on.caused_reset = false;
   }
 }
 
@@ -321,8 +327,8 @@ void FOptiAttr::set_exit_dbl_underline_mode (const char cap[])
 {
   if ( cap )
   {
-    F_exit_dbl_underline_mode.cap = cap;
-    F_exit_dbl_underline_mode.caused_reset = false;
+    F_dbl_underline.off.cap = cap;
+    F_dbl_underline.off.caused_reset = false;
   }
 }
 
@@ -331,8 +337,8 @@ void FOptiAttr::set_enter_standout_mode (const char cap[])
 {
   if ( cap )
   {
-    F_enter_standout_mode.cap = cap;
-    F_enter_standout_mode.caused_reset = false;
+    F_standout.on.cap = cap;
+    F_standout.on.caused_reset = false;
   }
 }
 
@@ -341,8 +347,8 @@ void FOptiAttr::set_exit_standout_mode (const char cap[])
 {
   if ( cap )
   {
-    F_exit_standout_mode.cap = cap;
-    F_exit_standout_mode.caused_reset = false;
+    F_standout.off.cap = cap;
+    F_standout.off.caused_reset = false;
   }
 }
 
@@ -351,8 +357,8 @@ void FOptiAttr::set_set_attributes (const char cap[])
 {
   if ( cap )
   {
-    F_set_attributes.cap = cap;
-    F_set_attributes.caused_reset = true;
+    F_attributes.on.cap = cap;
+    F_attributes.on.caused_reset = true;
   }
 }
 
@@ -361,8 +367,8 @@ void FOptiAttr::set_exit_attribute_mode (const char cap[])
 {
   if ( cap )
   {
-    F_exit_attribute_mode.cap = cap;
-    F_exit_attribute_mode.caused_reset = true;
+    F_attributes.off.cap = cap;
+    F_attributes.off.caused_reset = true;
   }
 }
 
@@ -371,8 +377,8 @@ void FOptiAttr::set_enter_alt_charset_mode (const char cap[])
 {
   if ( cap )
   {
-    F_enter_alt_charset_mode.cap = cap;
-    F_enter_alt_charset_mode.caused_reset = false;
+    F_alt_charset.on.cap = cap;
+    F_alt_charset.on.caused_reset = false;
   }
 }
 
@@ -381,8 +387,8 @@ void FOptiAttr::set_exit_alt_charset_mode (const char cap[])
 {
   if ( cap )
   {
-    F_exit_alt_charset_mode.cap = cap;
-    F_exit_alt_charset_mode.caused_reset = false;
+    F_alt_charset.off.cap = cap;
+    F_alt_charset.off.caused_reset = false;
   }
 }
 
@@ -391,8 +397,8 @@ void FOptiAttr::set_enter_pc_charset_mode (const char cap[])
 {
   if ( cap )
   {
-    F_enter_pc_charset_mode.cap = cap;
-    F_enter_pc_charset_mode.caused_reset = false;
+    F_pc_charset.on.cap = cap;
+    F_pc_charset.on.caused_reset = false;
   }
 }
 
@@ -401,8 +407,8 @@ void FOptiAttr::set_exit_pc_charset_mode (const char cap[])
 {
   if ( cap )
   {
-    F_exit_pc_charset_mode.cap = cap;
-    F_exit_pc_charset_mode.caused_reset = false;
+    F_pc_charset.off.cap = cap;
+    F_pc_charset.off.caused_reset = false;
   }
 }
 
@@ -411,8 +417,8 @@ void FOptiAttr::set_a_foreground_color (const char cap[])
 {
   if ( cap )
   {
-    F_set_a_foreground.cap = cap;
-    F_set_a_foreground.caused_reset = false;
+    F_color.a_foreground.cap = cap;
+    F_color.a_foreground.caused_reset = false;
   }
 }
 
@@ -421,8 +427,8 @@ void FOptiAttr::set_a_background_color (const char cap[])
 {
   if ( cap )
   {
-    F_set_a_background.cap = cap;
-    F_set_a_background.caused_reset = false;
+    F_color.a_background.cap = cap;
+    F_color.a_background.caused_reset = false;
   }
 }
 
@@ -431,8 +437,8 @@ void FOptiAttr::set_foreground_color (const char cap[])
 {
   if ( cap )
   {
-    F_set_foreground.cap = cap;
-    F_set_foreground.caused_reset = false;
+    F_color.foreground.cap = cap;
+    F_color.foreground.caused_reset = false;
   }
 }
 
@@ -441,8 +447,8 @@ void FOptiAttr::set_background_color (const char cap[])
 {
   if ( cap )
   {
-    F_set_background.cap = cap;
-    F_set_background.caused_reset = false;
+    F_color.background.cap = cap;
+    F_color.background.caused_reset = false;
   }
 }
 
@@ -451,8 +457,8 @@ void FOptiAttr::set_term_color_pair (const char cap[])
 {
   if ( cap )
   {
-    F_set_color_pair.cap = cap;
-    F_set_color_pair.caused_reset = false;
+    F_color.color_pair.cap = cap;
+    F_color.color_pair.caused_reset = false;
   }
 }
 
@@ -461,18 +467,18 @@ void FOptiAttr::set_orig_pair (const char cap[])
 {
   if ( cap )
   {
-    F_orig_pair.cap = cap;
-    F_orig_pair.caused_reset = false;
+    F_color.orig_pair.cap = cap;
+    F_color.orig_pair.caused_reset = false;
   }
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_orig_orig_colors (const char cap[])
+void FOptiAttr::set_orig_colors (const char cap[])
 {
   if ( cap )
   {
-    F_orig_colors.cap = cap;
-    F_orig_colors.caused_reset = false;
+    F_color.orig_colors.cap = cap;
+    F_color.orig_colors.caused_reset = false;
   }
 }
 
@@ -485,45 +491,19 @@ auto FOptiAttr::isNormal (const FChar& ch) -> bool
 //----------------------------------------------------------------------
 void FOptiAttr::initialize()
 {
-  monochron = max_color < 8;
-
-  if ( caused_reset_attributes(F_exit_bold_mode.cap) )
-    F_exit_bold_mode.caused_reset = true;
-
-  if ( caused_reset_attributes(F_exit_dim_mode.cap) )
-    F_exit_dim_mode.caused_reset = true;
-
-  if ( caused_reset_attributes(F_exit_italics_mode.cap) )
-    F_exit_italics_mode.caused_reset = true;
-
-  if ( caused_reset_attributes(F_exit_blink_mode.cap) )
-    F_exit_blink_mode.caused_reset = true;
-
-  if ( caused_reset_attributes ( F_exit_underline_mode.cap
-                               , all_tests & ~same_like_ue) )
-    F_exit_underline_mode.caused_reset = true;
-
-  if ( caused_reset_attributes(F_exit_reverse_mode.cap) )
-    F_exit_reverse_mode.caused_reset = true;
-
-  if ( caused_reset_attributes(F_exit_secure_mode.cap) )
-    F_exit_secure_mode.caused_reset = true;
-
-  if ( caused_reset_attributes(F_exit_protected_mode.cap) )
-    F_exit_protected_mode.caused_reset = true;
-
-  if ( caused_reset_attributes(F_exit_crossed_out_mode.cap) )
-    F_exit_crossed_out_mode.caused_reset = true;
-
-  if ( caused_reset_attributes(F_exit_dbl_underline_mode.cap) )
-    F_exit_dbl_underline_mode.caused_reset = true;
-
-  if ( caused_reset_attributes ( F_exit_standout_mode.cap
-                               , all_tests & ~same_like_se) )
-    F_exit_standout_mode.caused_reset = true;
-
-  if ( hasCharsetEquivalence() )
-    alt_equal_pc_charset = true;
+  F_color.monochron = F_color.max_color < 8;
+  init_reset_attribute (F_bold.off);
+  init_reset_attribute (F_dim.off);
+  init_reset_attribute (F_italics.off);
+  init_reset_attribute (F_blink.off);
+  init_reset_attribute (F_underline.off, all_tests & ~same_like_ue);
+  init_reset_attribute (F_reverse.off);
+  init_reset_attribute (F_secure.off);
+  init_reset_attribute (F_protected.off);
+  init_reset_attribute (F_crossed_out.off);
+  init_reset_attribute (F_dbl_underline.off);
+  init_reset_attribute (F_standout.off, all_tests & ~same_like_se);
+  alt_equal_pc_charset = hasCharsetEquivalence();
 }
 
 //----------------------------------------------------------------------
@@ -579,7 +559,7 @@ auto FOptiAttr::changeAttribute (FChar& term, FChar& next) -> std::string
   detectSwitchOff (term, next);
 
   // Simulate invisible characters
-  if ( ! F_enter_secure_mode.cap && next.attr.bit.invisible )
+  if ( ! F_secure.on.cap && next.attr.bit.invisible )
     next.encoded_char[0] = ' ';
 
   // Look for no changes
@@ -590,7 +570,7 @@ auto FOptiAttr::changeAttribute (FChar& term, FChar& next) -> std::string
   {
     deactivateAttributes (term, next);
   }
-  else if ( F_set_attributes.cap
+  else if ( F_attributes.on.cap
          && (! term.attr.bit.pc_charset || alt_equal_pc_charset) )
   {
     changeAttributeSGR (term, next);
@@ -614,7 +594,7 @@ auto FOptiAttr::changeAttribute (FChar& term, FChar& next) -> std::string
 inline auto FOptiAttr::setTermBold (FChar& term) -> bool
 {
   term.attr.bit.bold = true;
-  return append_sequence(F_enter_bold_mode.cap);
+  return append_sequence(F_bold.on.cap);
 }
 
 //----------------------------------------------------------------------
@@ -622,7 +602,7 @@ inline auto FOptiAttr::unsetTermBold (FChar& term) -> bool
 {
   // Back to normal intensity (turns off bold + dim)
 
-  if ( F_exit_bold_mode.caused_reset )
+  if ( F_bold.off.caused_reset )
     reset(term);
   else
   {
@@ -630,14 +610,14 @@ inline auto FOptiAttr::unsetTermBold (FChar& term) -> bool
     term.attr.bit.dim = false;
   }
 
-  return append_sequence(F_exit_bold_mode.cap);
+  return append_sequence(F_bold.off.cap);
 }
 
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermDim (FChar& term) -> bool
 {
   term.attr.bit.dim = true;
-  return append_sequence(F_enter_dim_mode.cap);
+  return append_sequence(F_dim.on.cap);
 }
 
 //----------------------------------------------------------------------
@@ -645,7 +625,7 @@ inline auto FOptiAttr::unsetTermDim (FChar& term) -> bool
 {
   // Back to normal intensity (turns off bold + dim)
 
-  if ( F_exit_dim_mode.caused_reset )
+  if ( F_dim.off.caused_reset )
     reset(term);
   else
   {
@@ -653,32 +633,32 @@ inline auto FOptiAttr::unsetTermDim (FChar& term) -> bool
     term.attr.bit.dim = false;
   }
 
-  return append_sequence(F_exit_dim_mode.cap);
+  return append_sequence(F_dim.off.cap);
 }
 
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermItalic (FChar& term) -> bool
 {
   term.attr.bit.italic = true;
-  return append_sequence(F_enter_italics_mode.cap);
+  return append_sequence(F_italics.on.cap);
 }
 
 //----------------------------------------------------------------------
 inline auto FOptiAttr::unsetTermItalic (FChar& term) -> bool
 {
-  if ( F_exit_italics_mode.caused_reset )
+  if ( F_italics.off.caused_reset )
     reset(term);
   else
     term.attr.bit.italic = false;
 
-  return append_sequence(F_exit_italics_mode.cap);
+  return append_sequence(F_italics.off.cap);
 }
 
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermUnderline (FChar& term) -> bool
 {
   term.attr.bit.underline = true;
-  return append_sequence(F_enter_underline_mode.cap);
+  return append_sequence(F_underline.on.cap);
 }
 
 //----------------------------------------------------------------------
@@ -686,7 +666,7 @@ inline auto FOptiAttr::unsetTermUnderline (FChar& term) -> bool
 {
   // Turns off every underlining
 
-  if ( F_exit_underline_mode.caused_reset )
+  if ( F_underline.off.caused_reset )
     reset(term);
   else
   {
@@ -694,43 +674,43 @@ inline auto FOptiAttr::unsetTermUnderline (FChar& term) -> bool
     term.attr.bit.dbl_underline = false;
   }
 
-  return append_sequence(F_exit_underline_mode.cap);
+  return append_sequence(F_underline.off.cap);
 }
 
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermBlink (FChar& term) -> bool
 {
   term.attr.bit.blink = true;
-  return append_sequence(F_enter_blink_mode.cap);
+  return append_sequence(F_blink.on.cap);
 }
 
 //----------------------------------------------------------------------
 inline auto FOptiAttr::unsetTermBlink (FChar& term) -> bool
 {
-  if ( F_exit_blink_mode.caused_reset )
+  if ( F_blink.off.caused_reset )
     reset(term);
   else
     term.attr.bit.blink = false;
 
-  return append_sequence(F_exit_blink_mode.cap);
+  return append_sequence(F_blink.off.cap);
 }
 
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermReverse (FChar& term) -> bool
 {
   term.attr.bit.reverse = true;
-  return ( ! fake_reverse && append_sequence(F_enter_reverse_mode.cap) );
+  return ( ! fake_reverse && append_sequence(F_reverse.on.cap) );
 }
 
 //----------------------------------------------------------------------
 inline auto FOptiAttr::unsetTermReverse (FChar& term) -> bool
 {
-  if ( F_exit_reverse_mode.caused_reset )
+  if ( F_reverse.off.caused_reset )
     reset(term);
   else
     term.attr.bit.reverse = false;
 
-  return ( ! fake_reverse && append_sequence(F_exit_reverse_mode.cap) );
+  return ( ! fake_reverse && append_sequence(F_reverse.off.cap) );
 }
 
 //----------------------------------------------------------------------
@@ -738,79 +718,79 @@ inline auto FOptiAttr::setTermStandout (FChar& term) -> bool
 {
   term.attr.bit.standout = true;
 
-  return ( ! fake_reverse && append_sequence(F_enter_standout_mode.cap) );
+  return ( ! fake_reverse && append_sequence(F_standout.on.cap) );
 }
 
 //----------------------------------------------------------------------
 inline auto FOptiAttr::unsetTermStandout (FChar& term) -> bool
 {
-  if ( F_exit_standout_mode.caused_reset )
+  if ( F_standout.off.caused_reset )
     reset(term);
   else
     term.attr.bit.standout = false;
 
-  return ( ! fake_reverse && append_sequence(F_exit_standout_mode.cap) );
+  return ( ! fake_reverse && append_sequence(F_standout.off.cap) );
 }
 
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermInvisible (FChar& term) -> bool
 {
   term.attr.bit.invisible = true;
-  return append_sequence(F_enter_secure_mode.cap);
+  return append_sequence(F_secure.on.cap);
 }
 
 //----------------------------------------------------------------------
 inline auto FOptiAttr::unsetTermInvisible (FChar& term) -> bool
 {
-  if ( F_exit_secure_mode.caused_reset )
+  if ( F_secure.off.caused_reset )
     reset(term);
   else
     term.attr.bit.invisible = false;
 
-  return append_sequence(F_exit_secure_mode.cap);
+  return append_sequence(F_secure.off.cap);
 }
 
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermProtected (FChar& term) -> bool
 {
   term.attr.bit.protect = true;
-  return append_sequence(F_enter_protected_mode.cap);
+  return append_sequence(F_protected.on.cap);
 }
 
 //----------------------------------------------------------------------
 inline auto FOptiAttr::unsetTermProtected (FChar& term) -> bool
 {
-  if ( F_exit_protected_mode.caused_reset )
+  if ( F_protected.off.caused_reset )
     reset(term);
   else
     term.attr.bit.protect = false;
 
-  return append_sequence(F_exit_protected_mode.cap);
+  return append_sequence(F_protected.off.cap);
 }
 
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermCrossedOut (FChar& term) -> bool
 {
   term.attr.bit.crossed_out = true;
-  return append_sequence(F_enter_crossed_out_mode.cap);
+  return append_sequence(F_crossed_out.on.cap);
 }
 
 //----------------------------------------------------------------------
 inline auto FOptiAttr::unsetTermCrossedOut (FChar& term) -> bool
 {
-  if ( F_exit_crossed_out_mode.caused_reset )
+  if ( F_crossed_out.off.caused_reset )
     reset(term);
   else
     term.attr.bit.crossed_out = false;
 
-  return append_sequence(F_exit_crossed_out_mode.cap);
+  return append_sequence(F_crossed_out.off.cap);
 }
 
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermDoubleUnderline (FChar& term) -> bool
 {
   term.attr.bit.dbl_underline = true;
-  return append_sequence(F_enter_dbl_underline_mode.cap);
+  return append_sequence(F_dbl_underline.on.cap);
 }
 
 //----------------------------------------------------------------------
@@ -818,7 +798,7 @@ inline auto FOptiAttr::unsetTermDoubleUnderline (FChar& term) -> bool
 {
   // Turns off every underlining
 
-  if ( F_exit_dbl_underline_mode.caused_reset )
+  if ( F_dbl_underline.off.caused_reset )
     reset(term);
   else
   {
@@ -826,15 +806,15 @@ inline auto FOptiAttr::unsetTermDoubleUnderline (FChar& term) -> bool
     term.attr.bit.dbl_underline = false;
   }
 
-  return append_sequence(F_exit_dbl_underline_mode.cap);
+  return append_sequence(F_dbl_underline.off.cap);
 }
 
 //----------------------------------------------------------------------
 auto FOptiAttr::setTermAttributes (FChar& term, const TCapAttributes& attr) -> bool
 {
-  if ( F_set_attributes.cap )
+  if ( F_attributes.on.cap )
   {
-    const auto sgr = FTermcap::encodeParameter ( F_set_attributes.cap
+    const auto sgr = FTermcap::encodeParameter ( F_attributes.on.cap
                                                , attr.p1 && ! fake_reverse
                                                , attr.p2
                                                , attr.p3 && ! fake_reverse
@@ -869,7 +849,7 @@ auto FOptiAttr::setTermAttributes (FChar& term, const TCapAttributes& attr) -> b
 inline auto FOptiAttr::unsetTermAttributes (FChar& term) -> bool
 {
   reset(term);
-  return append_sequence(F_exit_attribute_mode.cap);
+  return append_sequence(F_attributes.off.cap);
 }
 
 //----------------------------------------------------------------------
@@ -880,7 +860,7 @@ inline auto FOptiAttr::setTermAltCharset (FChar& term) -> bool
   if ( alt_equal_pc_charset && term.attr.bit.pc_charset )
     return false;
 
-  return append_sequence(F_enter_alt_charset_mode.cap);
+  return append_sequence(F_alt_charset.on.cap);
 }
 
 //----------------------------------------------------------------------
@@ -891,7 +871,7 @@ inline auto FOptiAttr::unsetTermAltCharset (FChar& term) -> bool
   if ( alt_equal_pc_charset && term.attr.bit.pc_charset )
     return false;
 
-  return append_sequence(F_exit_alt_charset_mode.cap);
+  return append_sequence(F_alt_charset.off.cap);
 }
 
 //----------------------------------------------------------------------
@@ -902,7 +882,7 @@ inline auto FOptiAttr::setTermPCcharset (FChar& term) -> bool
   if ( alt_equal_pc_charset && term.attr.bit.alt_charset )
     return false;
 
-  return append_sequence(F_enter_pc_charset_mode.cap);
+  return append_sequence(F_pc_charset.on.cap);
 }
 
 //----------------------------------------------------------------------
@@ -913,7 +893,7 @@ inline auto FOptiAttr::unsetTermPCcharset (FChar& term) -> bool
   if ( alt_equal_pc_charset && term.attr.bit.alt_charset )
     return false;
 
-  return append_sequence(F_exit_pc_charset_mode.cap);
+  return append_sequence(F_pc_charset.off.cap);
 }
 
 //----------------------------------------------------------------------
@@ -922,11 +902,11 @@ auto FOptiAttr::setTermDefaultColor (FChar& term) -> bool
   term.fg_color = FColor::Default;
   term.bg_color = FColor::Default;
 
-  if ( append_sequence(F_orig_pair.cap)
-    || append_sequence(F_orig_colors.cap) )
+  if ( append_sequence(F_color.orig_pair.cap)
+    || append_sequence(F_color.orig_colors.cap) )
     return true;
 
-  if ( ansi_default_color )
+  if ( F_color.ansi_default_color )
   {
     std::string sgr_39_49{CSI "39;49m"};
     append_sequence (sgr_39_49);
@@ -940,14 +920,14 @@ auto FOptiAttr::setTermDefaultColor (FChar& term) -> bool
 void FOptiAttr::setAttributesOn (FChar& term)
 {
   static const auto& attribute_on_handlers = getAttributeOnHandlers();
-  setAttributes (on.attr, attribute_on_handlers, term);
+  setAttributes (changes.on.attr, attribute_on_handlers, term);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::setAttributesOff (FChar& term)
 {
   static const auto& attribute_off_handlers = getAttributeOffHandlers();
-  setAttributes (off.attr, attribute_off_handlers, term);
+  setAttributes (changes.off.attr, attribute_off_handlers, term);
 }
 
 //----------------------------------------------------------------------
@@ -999,12 +979,56 @@ auto FOptiAttr::hasNoAttribute (const FChar& attr) -> bool
 }
 
 //----------------------------------------------------------------------
+inline auto FOptiAttr::isItalicsUsed ( const FChar& term
+                                     , const FChar& next ) const -> bool
+{
+  return ! term.attr.bit.italic && next.attr.bit.italic;
+}
+
+//----------------------------------------------------------------------
+inline auto FOptiAttr::isCrossedOutUsed ( const FChar& term
+                                        , const FChar& next ) const -> bool
+{
+  return ! term.attr.bit.crossed_out && next.attr.bit.crossed_out;
+}
+
+//----------------------------------------------------------------------
+inline auto FOptiAttr::isDoubleUnderlineUsed ( const FChar& term
+                                             , const FChar& next ) const -> bool
+{
+  return ! term.attr.bit.dbl_underline && next.attr.bit.dbl_underline;
+}
+
+//----------------------------------------------------------------------
+inline auto FOptiAttr::isPCcharsetUsed ( const FChar& term
+                                       , const FChar& next ) const -> bool
+{
+  return ! term.attr.bit.pc_charset && next.attr.bit.pc_charset;
+}
+
+//----------------------------------------------------------------------
+inline auto FOptiAttr::isPCcharsetUsable ( FChar& term
+                                         , const FChar& next ) -> bool
+{
+  if ( alt_equal_pc_charset
+    && F_pc_charset.on.cap
+    && next.attr.bit.alt_charset )
+  {
+    term.attr.bit.pc_charset = next.attr.bit.pc_charset;
+    changes.off.attr.bit.pc_charset = false;
+    return false;
+  }
+
+  return true;
+}
+
+//----------------------------------------------------------------------
 inline auto FOptiAttr::hasColorChanged ( const FChar& term
                                        , const FChar& next ) const -> bool
 {
   const auto& b0_reverse_mask = internal::var::b0_reverse_mask;
-  const bool frev ( ( (on.attr.byte[0] & b0_reverse_mask)
-                   || (off.attr.byte[0] & b0_reverse_mask) ) && fake_reverse );
+  const bool frev ( ( (changes.on.attr.byte[0] & b0_reverse_mask)
+                   || (changes.off.attr.byte[0] & b0_reverse_mask) ) && fake_reverse );
   return frev
       || term.fg_color != next.fg_color
       || term.bg_color != next.bg_color;
@@ -1021,63 +1045,27 @@ inline void FOptiAttr::resetColor (FChar& attr) const
 inline void FOptiAttr::prevent_no_color_video_attributes ( FChar& attr
                                                          , bool next_has_color )
 {
-  // Ignore attributes which can not combined with a color
+  // Ignore video attributes which can not combined with a color
 
-  if ( ! (hasColor(attr) || next_has_color) || attr_without_color <= 0 )
+  if ( ! (hasColor(attr) || next_has_color) || F_color.attr_without_color <= 0 )
     return;
 
-  auto set_bits = uInt(attr_without_color);
+  static const auto& no_color_video_handlers = getNoColorVideoHandlerTable();
+  auto set_bits = uInt(F_color.attr_without_color);
 
   while ( set_bits )
   {
     uInt bit = set_bits & (~set_bits + 1);  // Get rightmost set bit
     set_bits &= ~bit;  // Clear rightmost set bit
 
-    switch ( bit )
-    {
-      case standout_mode:
-        attr.attr.bit.standout = false;
-        break;
+    if ( ! bit )
+      continue;
 
-      case underline_mode:
-        attr.attr.bit.underline = false;
-        break;
+    const auto mode_index = unsigned(ffs(int(bit)));
+    const auto& handler = no_color_video_handlers[mode_index];
 
-      case reverse_mode:
-        fake_reverse = true;
-        break;
-
-      case blink_mode:
-        attr.attr.bit.blink = false;
-        break;
-
-      case dim_mode:
-        attr.attr.bit.dim = false;
-        break;
-
-      case bold_mode:
-        attr.attr.bit.bold = false;
-        break;
-
-      case invisible_mode:
-        attr.attr.bit.invisible = false;
-        break;
-
-      case protected_mode:
-        attr.attr.bit.protect = false;
-        break;
-
-      case alt_charset_mode:
-        attr.attr.bit.alt_charset = false;
-        break;
-
-      case italic_mode:
-        attr.attr.bit.italic = false;
-        break;
-
-      default:
-        break;  // Unknown attribute mode
-    }
+    if ( handler )
+      handler(this, attr);
   }
 }
 
@@ -1086,14 +1074,14 @@ inline void FOptiAttr::deactivateAttributes (FChar& term, FChar& next)
 {
   if ( hasAttribute(term) )
   {
-    if ( F_exit_attribute_mode.cap )
+    if ( F_attributes.off.cap )
     {
-      if ( off.attr.bit.alt_charset )  // Required for rxvt terminals
+      if ( changes.off.attr.bit.alt_charset )  // Required for rxvt terminals
         unsetTermAltCharset(term);
 
       unsetTermAttributes(term);
 
-      if ( off.attr.bit.pc_charset )
+      if ( changes.off.attr.bit.pc_charset )
         unsetTermPCcharset(term);
     }
     else
@@ -1107,8 +1095,6 @@ inline void FOptiAttr::deactivateAttributes (FChar& term, FChar& next)
 //----------------------------------------------------------------------
 inline void FOptiAttr::changeAttributeSGR (FChar& term, FChar& next)
 {
-  bool pc_charset_usable{true};
-
   if ( switchOn() || switchOff() )
     setTermAttributes ( term
                       , { next.attr.bit.standout
@@ -1121,29 +1107,21 @@ inline void FOptiAttr::changeAttributeSGR (FChar& term, FChar& next)
                         , next.attr.bit.protect
                         , next.attr.bit.alt_charset } );
 
-  if ( alt_equal_pc_charset
-    && F_enter_pc_charset_mode.cap
-    && next.attr.bit.alt_charset )
-  {
-    term.attr.bit.pc_charset = next.attr.bit.pc_charset;
-    off.attr.bit.pc_charset = false;
-    pc_charset_usable = false;
-  }
+  auto pc_charset_usable = isPCcharsetUsable(term, next);
 
-  if ( off.attr.bit.pc_charset )
+  if ( changes.off.attr.bit.pc_charset )
     unsetTermPCcharset(term);
 
-  if ( ! term.attr.bit.italic && next.attr.bit.italic )
+  if ( isItalicsUsed(term, next) )
     setTermItalic(term);
 
-  if ( ! term.attr.bit.crossed_out && next.attr.bit.crossed_out )
+  if ( isCrossedOutUsed(term, next) )
     setTermCrossedOut(term);
 
-  if ( ! term.attr.bit.dbl_underline && next.attr.bit.dbl_underline )
+  if ( isDoubleUnderlineUsed(term, next) )
     setTermDoubleUnderline(term);
 
-  if ( ! term.attr.bit.pc_charset && next.attr.bit.pc_charset
-    && pc_charset_usable )
+  if ( isPCcharsetUsed(term, next) && pc_charset_usable )
     setTermPCcharset(term);
 
   if ( hasColorChanged(term, next) )
@@ -1165,73 +1143,63 @@ inline void FOptiAttr::changeAttributeSeparately (FChar& term, FChar& next)
 //----------------------------------------------------------------------
 void FOptiAttr::change_color (FChar& term, FChar& next)
 {
-  if ( monochron )
+  if ( F_color.monochron )
   {
     next.fg_color = FColor::Default;
     next.bg_color = FColor::Default;
     return;
   }
 
-  if ( next.fg_color != FColor::Default )
-    next.fg_color %= uInt16(max_color);
-
-  if ( next.bg_color != FColor::Default )
-    next.bg_color %= uInt16(max_color);
-
+  normalizeColor (next.fg_color);
+  normalizeColor (next.bg_color);
   FColor fg = next.fg_color;
   FColor bg = next.bg_color;
-
-  if ( fg == FColor::Default || bg == FColor::Default )
-    change_to_default_color (term, next, fg, bg);
+  handleDefaultColors (term, next, fg, bg);
 
   if ( fake_reverse && fg == FColor::Default && bg == FColor::Default )
     return;
 
-  if ( fake_reverse
-    && (next.attr.bit.reverse || next.attr.bit.standout) )
+  if ( fake_reverse && (next.attr.bit.reverse || next.attr.bit.standout) )
   {
     std::swap (fg, bg);
-
-    if ( fg == FColor::Default || bg == FColor::Default )
-      setTermDefaultColor(term);
+    handleDefaultColors (term, next, fg, bg);
   }
 
   change_current_color (term, fg, bg);
-
   term.fg_color = next.fg_color;
   term.bg_color = next.bg_color;
+}
+
+//----------------------------------------------------------------------
+inline void FOptiAttr::normalizeColor (FColor& color) const noexcept
+{
+  if ( color != FColor::Default )
+    color %= uInt16(F_color.max_color);
+}
+
+//----------------------------------------------------------------------
+inline void FOptiAttr::handleDefaultColors ( FChar& term, FChar& next
+                                           , FColor& fg, FColor& bg )
+{
+  if ( fg == FColor::Default || bg == FColor::Default )
+    change_to_default_color(term, next, fg, bg);
 }
 
 //----------------------------------------------------------------------
 inline void FOptiAttr::change_to_default_color ( FChar& term, FChar& next
                                                , FColor& fg, FColor& bg )
 {
-  if ( ansi_default_color )
+  if ( F_color.ansi_default_color )
   {
-    if ( fg == FColor::Default && term.fg_color != FColor::Default
-      && bg == FColor::Default && term.bg_color != FColor::Default )
-    {
+    auto set_default_fg = fg == FColor::Default && term.fg_color != FColor::Default;
+    auto set_default_bg = bg == FColor::Default && term.bg_color != FColor::Default;
+
+    if ( set_default_fg && set_default_bg )
       setTermDefaultColor(term);
-    }
-    else if ( fg == FColor::Default && term.fg_color != FColor::Default )
-    {
-      std::string sgr_39{CSI "39m"};
-      append_sequence (sgr_39);
-      term.fg_color = FColor::Default;
-    }
-    else if ( bg == FColor::Default && term.bg_color != FColor::Default )
-    {
-      const char* sgr_49;
-      const auto& op = F_orig_pair.cap;
-
-      if ( op && std::memcmp (op, CSI "39;49;25m", 11) == 0 )
-        sgr_49 = CSI "49;25m";
-      else
-        sgr_49 = CSI "49m";
-
-      append_sequence (sgr_49);
-      term.bg_color = FColor::Default;
-    }
+    else if ( set_default_fg )
+      setDefaultForeground(term);
+    else if ( set_default_bg )
+      setDefaultBackground(term);
   }
   else if ( ! setTermDefaultColor(term) )
   {
@@ -1242,56 +1210,69 @@ inline void FOptiAttr::change_to_default_color ( FChar& term, FChar& next
 }
 
 //----------------------------------------------------------------------
-inline void FOptiAttr::change_current_color ( const FChar& term
-                                            , FColor fg, FColor bg )
+inline void FOptiAttr::setDefaultForeground (FChar& term)
 {
-  const auto& AF = F_set_a_foreground.cap;
-  const auto& AB = F_set_a_background.cap;
-  const auto& Sf = F_set_foreground.cap;
-  const auto& Sb = F_set_background.cap;
-  const auto& sp = F_set_color_pair.cap;
-  const auto& b0_reverse_mask = internal::var::b0_reverse_mask;
-  const bool frev ( ( (off.attr.byte[0] & b0_reverse_mask)
-                   || (term.attr.byte[0] & b0_reverse_mask) ) && fake_reverse );
+  std::string sgr_39{CSI "39m"};
+  append_sequence (sgr_39);
+  term.fg_color = FColor::Default;
+}
 
-  if ( AF && AB )
+//----------------------------------------------------------------------
+inline void FOptiAttr::setDefaultBackground (FChar& term)
+{
+  const char* sgr_49;
+  const auto& op = F_color.orig_pair.cap;
+
+  if ( op && std::memcmp (op, CSI "39;49;25m", 11) == 0 )
+    sgr_49 = CSI "49;25m";
+  else
+    sgr_49 = CSI "49m";
+
+  append_sequence (sgr_49);
+  term.bg_color = FColor::Default;
+}
+
+//----------------------------------------------------------------------
+inline void FOptiAttr::change_current_color ( const FChar& term
+                                            , const FColor fg, const FColor bg )
+{
+  const auto& AF = F_color.a_foreground.cap;
+  const auto& AB = F_color.a_background.cap;
+  const auto& Sf = F_color.foreground.cap;
+  const auto& Sb = F_color.background.cap;
+  const auto& sp = F_color.color_pair.cap;
+  const bool frev = fake_reverse_color_change(term);
+  constexpr auto ANSI = 0;
+  constexpr auto VGA = 1;
+
+  auto apply_color_change = [this, &term, &fg, &bg, &frev] ( const char* fg_cap
+                                                           , const char* bg_cap
+                                                           , int cm )
   {
-    const auto& ansi_fg = vga2ansi(fg);
-    const auto& ansi_bg = vga2ansi(bg);
+    if ( ! fg_cap || ! bg_cap )
+      return false;
 
-    if ( term.fg_color != fg || frev )
-    {
-      const auto& color_str = FTermcap::encodeParameter(AF, uInt16(ansi_fg));
-      append_sequence (color_str);
-    }
+    const auto fg_value = ( cm == VGA ) ? uInt16(vga2ansi(fg)) : uInt16(fg);
+    const auto bg_value = ( cm == VGA ) ? uInt16(vga2ansi(bg)) : uInt16(bg);
 
-    if ( term.bg_color != bg || frev )
-    {
-      const auto& color_str = FTermcap::encodeParameter(AB, uInt16(ansi_bg));
-      append_sequence (color_str);
-    }
-  }
-  else if ( Sf && Sb )
-  {
-    if ( term.fg_color != fg || frev )
-    {
-      const auto& color_str = FTermcap::encodeParameter(Sf, uInt16(fg));
-      append_sequence (color_str);
-    }
+    if ( has_foreground_changes(term, fg, frev) )
+      append_sequence(FTermcap::encodeParameter(fg_cap, fg_value));
 
-    if ( term.bg_color != bg || frev )
-    {
-      const auto& color_str = FTermcap::encodeParameter(Sb, uInt16(bg));
-      append_sequence (color_str);
-    }
-  }
-  else if ( sp )
-  {
-    fg = vga2ansi(fg);
-    bg = vga2ansi(bg);
-    const auto& color_str = FTermcap::encodeParameter(sp, uInt16(fg), uInt16(bg));
-    append_sequence (color_str);
-  }
+    if ( has_background_changes(term, bg, frev) )
+      append_sequence(FTermcap::encodeParameter(bg_cap, bg_value));
+
+    return true;
+  };
+
+  const bool apply_AF_AB = apply_color_change(AF, AB, VGA);
+  const bool apply_Sf_Sb = apply_color_change(Sf, Sb, ANSI);
+
+  if ( apply_AF_AB || apply_Sf_Sb || ! sp )
+    return;
+
+  const auto fg_value = uInt16(vga2ansi(fg));
+  const auto bg_value = uInt16(vga2ansi(bg));
+  append_sequence (FTermcap::encodeParameter(sp, fg_value, bg_value));
 }
 
 //----------------------------------------------------------------------
@@ -1314,31 +1295,35 @@ auto FOptiAttr::caused_reset_attributes (const char cap[], uChar test) const -> 
 {
   // test if "cap" reset all attributes
 
-  if ( cap )
-  {
-    const auto& ue = F_exit_underline_mode.cap;
-    const auto& se = F_exit_standout_mode.cap;
-    const auto& me = F_exit_attribute_mode.cap;
+  if ( ! cap )
+    return false;
 
-    if ( (test & test_ansi_reset) && std::memcmp (cap, CSI "m", 3) == 0 )
-      return true;
+  const auto& ue = F_underline.off.cap;
+  const auto& se = F_standout.off.cap;
+  const auto& me = F_attributes.off.cap;
 
-    if ( (test & test_adm3_reset) && std::memcmp (cap, ESC "G0", 3) == 0 )
-      return true;
+  return ( (test & test_ansi_reset) && std::memcmp (cap, CSI "m", 3) == 0 )
+      || ( (test & test_adm3_reset) && std::memcmp (cap, ESC "G0", 3) == 0 )
+      || ( (test & same_like_ue) && ue && std::strcmp (cap, ue) == 0
+                                 && std::memcmp (cap, CSI "24m", 5) != 0 )
+      || ( (test & same_like_se) && se && std::strcmp (cap, se) == 0
+                                 && std::memcmp (cap, CSI "27m", 5) != 0 )
+      || ( (test & same_like_me) && me && std::strcmp (cap, me) == 0 );
+}
 
-    if ( (test & same_like_ue) && ue && std::strcmp (cap, ue) == 0
-       && std::memcmp (cap, CSI "24m", 5) != 0)
-      return true;
+//----------------------------------------------------------------------
+void FOptiAttr::init_reset_attribute (Capability& off, uChar test) const
+{
+  if ( caused_reset_attributes(off.cap, test) )
+    off.caused_reset = true;
+}
 
-    if ( (test & same_like_se) && se && std::strcmp (cap, se) == 0
-       && std::memcmp (cap, CSI "27m", 5) != 0 )
-      return true;
-
-    if ( (test & same_like_me) && me && std::strcmp (cap, me) == 0 )
-      return true;
-  }
-
-  return false;
+//----------------------------------------------------------------------
+inline auto FOptiAttr::fake_reverse_color_change (const FChar& term) const -> bool
+{
+  const auto& b0_reverse_mask = internal::var::b0_reverse_mask;
+  return ( (changes.off.attr.byte[0] & b0_reverse_mask)
+        || (term.attr.byte[0] & b0_reverse_mask) ) && fake_reverse;
 }
 
 //----------------------------------------------------------------------
@@ -1346,18 +1331,44 @@ inline auto FOptiAttr::hasCharsetEquivalence() const -> bool
 {
   // Detect if alt charset and pc charset are the same sequences
 
-  const auto& alt_on  = F_enter_alt_charset_mode.cap;
-  const auto& alt_off = F_enter_pc_charset_mode.cap;
-  const auto& pc_on   = F_enter_pc_charset_mode.cap;
-  const auto& pc_off  = F_exit_pc_charset_mode.cap;
+  const auto& alt_on  = F_alt_charset.on.cap;
+  const auto& alt_off = F_alt_charset.off.cap;
+  const auto& pc_on   = F_pc_charset.on.cap;
+  const auto& pc_off  = F_pc_charset.off.cap;
 
-  if ( alt_on && pc_on && std::strcmp (alt_on, pc_on) == 0 )
-    return true;
+  return ( alt_on && pc_on && std::strcmp (alt_on, pc_on) == 0 )
+      || ( alt_off && pc_off && std::strcmp (alt_off, pc_off) == 0 );
+}
 
-  if ( alt_off && pc_off && std::strcmp (alt_off, pc_off) == 0 )
-    return true;
+//----------------------------------------------------------------------
+auto FOptiAttr::getNoColorVideoHandlerTable() -> const NoColorVideoHandlerTable&
+{
+  static const auto& no_color_video_handlers = std::make_unique<NoColorVideoHandlerTable>
+  (
+    NoColorVideoHandlerTable
+    {{
+      nullptr,                                                                      // No bit set (0)
+      [] (const FOptiAttr*, FChar& fchar) { fchar.attr.bit.standout = false; },     // Standout mode (1)
+      [] (const FOptiAttr*, FChar& fchar) { fchar.attr.bit.underline = false; },    // Underline mode (2)
+      [] (FOptiAttr* obj, const FChar&)   { obj->fake_reverse = true; },            // Reverse mode (4)
+      [] (const FOptiAttr*, FChar& fchar) { fchar.attr.bit.blink = false; },        // Blink mode (8)
+      [] (const FOptiAttr*, FChar& fchar) { fchar.attr.bit.dim = false; },          // Dim mode (16)
+      [] (const FOptiAttr*, FChar& fchar) { fchar.attr.bit.bold = false; },         // Bold mode (32)
+      [] (const FOptiAttr*, FChar& fchar) { fchar.attr.bit.invisible = false; },    // Invisible mode (64)
+      [] (const FOptiAttr*, FChar& fchar) { fchar.attr.bit.protect = false; },      // Protected mode (128)
+      [] (const FOptiAttr*, FChar& fchar) { fchar.attr.bit.alt_charset = false; },  // Alt_charset mode (256)
+      nullptr,                                                                      // Horizontal mode (512)
+      nullptr,                                                                      // Left mode (1024)
+      nullptr,                                                                      // Low mode (2048)
+      nullptr,                                                                      // Right mode (4096)
+      nullptr,                                                                      // Top mode (8192)
+      nullptr,                                                                      // Vertical mode (1638)
+      [] (const FOptiAttr*, FChar& fchar) { fchar.attr.bit.italic = false; },       // Italic mode (32768)
+      nullptr                                                                       // No mode (65536)
+    }}
+  );
 
-  return false;
+  return *no_color_video_handlers;
 }
 
 //----------------------------------------------------------------------
@@ -1461,8 +1472,8 @@ inline void FOptiAttr::detectSwitchOn (const FChar& term, const FChar& next)
   // and store the result in "on"
 
   const auto& mask = internal::var::b1_mask;
-  on.attr.byte[0] = ~(term.attr.byte[0]) & next.attr.byte[0];
-  on.attr.byte[1] = ~(term.attr.byte[1]) & next.attr.byte[1] & mask;
+  changes.on.attr.byte[0] = ~(term.attr.byte[0]) & next.attr.byte[0];
+  changes.on.attr.byte[1] = ~(term.attr.byte[1]) & next.attr.byte[1] & mask;
 }
 
 //----------------------------------------------------------------------
@@ -1472,20 +1483,20 @@ inline void FOptiAttr::detectSwitchOff (const FChar& term, const FChar& next)
   // and store the result in "on"
 
   const auto& mask = internal::var::b1_mask;
-  off.attr.byte[0] = term.attr.byte[0] & ~(next.attr.byte[0]);
-  off.attr.byte[1] = term.attr.byte[1] & ~(next.attr.byte[1]) & mask;
+  changes.off.attr.byte[0] = term.attr.byte[0] & ~(next.attr.byte[0]);
+  changes.off.attr.byte[1] = term.attr.byte[1] & ~(next.attr.byte[1]) & mask;
 }
 
 //----------------------------------------------------------------------
 inline auto FOptiAttr::switchOn() const -> bool
 {
-  return hasAttribute(on);
+  return hasAttribute(changes.on);
 }
 
 //----------------------------------------------------------------------
 inline auto FOptiAttr::switchOff() const -> bool
 {
-  return hasAttribute(off);
+  return hasAttribute(changes.off);
 }
 
 //----------------------------------------------------------------------
@@ -1496,6 +1507,20 @@ inline auto FOptiAttr::append_sequence (const std::string& seq) -> bool
 
   attr_buf.append(seq);
   return true;
+}
+
+
+// non-member functions
+//----------------------------------------------------------------------
+inline auto has_foreground_changes (const FChar& term, const FColor fg, bool frev) -> bool
+{
+  return term.fg_color != fg || frev;
+}
+
+//----------------------------------------------------------------------
+inline auto has_background_changes (const FChar& term, const FColor bg, bool frev) -> bool
+{
+  return term.bg_color != bg || frev;
 }
 
 }  // namespace finalcut

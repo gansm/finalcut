@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2023 Markus Gans                                      *
+* Copyright 2012-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -69,6 +69,8 @@ class FLineEdit : public FWidget
   public:
     // Using-declaration
     using FWidget::setGeometry;
+    using FWidget::setVisibleCursor;
+    using FWidget::unsetVisibleCursor;
 
     // Enumerations
     enum class LabelOrientation
@@ -108,7 +110,12 @@ class FLineEdit : public FWidget
     auto operator << (const typeT&) -> FLineEdit&;
     auto operator << (UniChar) -> FLineEdit&;
     auto operator << (const wchar_t) -> FLineEdit&;
-    auto operator >> (FString&) const -> const FLineEdit&;
+
+    friend auto operator >> (const FLineEdit& lhs, FString& rhs) -> const FLineEdit&
+    {
+      rhs += lhs.text;
+      return lhs;
+    }
 
     // Accessors
     auto getClassName() const -> FString override;
@@ -189,13 +196,25 @@ class FLineEdit : public FWidget
     auto getAlignOffset (const std::size_t) const -> std::size_t;
     void draw() override;
     void drawInputField();
+    void initializeDrawing();
+    void finalizingDrawing() const;
+    void printTrailingSpaces (std::size_t x_pos);
+    auto choosePrintMethod() -> std::tuple<std::size_t, std::size_t>;
     auto printTextField() -> std::tuple<std::size_t, std::size_t>;
     auto printPassword() -> std::tuple<std::size_t, std::size_t>;
+    void drawShadow();
     auto getCursorColumnPos() const -> std::size_t;
     auto getPasswordText() const -> FString;
     auto isPasswordField() const -> bool;
+    auto isFullwidthChar (std::size_t) const -> bool;
+    auto getColumnWidthWithErrorHandling ( FString::const_reference
+                                         , std::size_t = 0 ) const ->std::size_t;
     auto endPosToOffset (std::size_t) -> offsetPair;
     auto clickPosToCursorPos (std::size_t) -> std::size_t;
+    void setCursorPositionByMouseClick (const FMouseEvent*);
+    void handleAutoScroll (const FMouseEvent*);
+    void handleLeftDragScroll();
+    void handleRightDragScroll();
     void adjustTextOffset();
     void cursorLeft();
     void cursorRight();

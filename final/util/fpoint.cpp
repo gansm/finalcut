@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2022 Markus Gans                                      *
+* Copyright 2014-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -46,24 +46,6 @@ auto FPoint::operator -= (const FPoint& p) -> FPoint&
   xpos -= p.xpos;
   ypos -= p.ypos;
   return *this;
-}
-
-//----------------------------------------------------------------------
-auto operator << (std::ostream& outstr, const FPoint& p) -> std::ostream&
-{
-  outstr << p.xpos << " " << p.ypos;
-  return outstr;
-}
-
-//----------------------------------------------------------------------
-auto operator >> (std::istream& instr, FPoint& p) -> std::istream&
-{
-  int x{};
-  int y{};
-  instr >> x;
-  instr >> y;
-  p.setPoint (x, y);
-  return instr;
 }
 
 }  // namespace finalcut

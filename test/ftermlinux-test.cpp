@@ -21,7 +21,18 @@
 ***********************************************************************/
 
 #include <term.h>
-#undef buttons  // from term.h
+#undef back_tab         // from term.h
+#undef buttons          // from term.h
+#undef carriage_return  // from term.h
+#undef clr_bol          // from term.h
+#undef clr_eol          // from term.h
+#undef column_address   // from term.h
+#undef erase_chars      // from term.h
+#undef orig_colors      // from term.h
+#undef orig_pair        // from term.h
+#undef repeat_char      // from term.h
+#undef row_address      // from term.h
+#undef tab              // from term.h
 
 #include <limits>
 #include <string>
@@ -1761,7 +1772,6 @@ auto FSystemTest::ioctl (int file_descriptor, uLong request, ...) -> int
       req_string = "PIO_UNIMAP";
       auto umap = static_cast<unimapdesc*>(argp);
       std::size_t pairs = umap->entry_ct;
-      std::size_t pairs_size = pairs * sizeof(unipair);
       terminal_unicode_map.entry_ct = umap->entry_ct;
 
       if ( terminal_unicode_map.entries )
@@ -1781,6 +1791,7 @@ auto FSystemTest::ioctl (int file_descriptor, uLong request, ...) -> int
 
       if ( umap->entries )
       {
+        std::size_t pairs_size = pairs * sizeof(unipair);
         std::memcpy (terminal_unicode_map.entries, umap->entries, pairs_size);
         errno = 0;
         ret_val = 0;

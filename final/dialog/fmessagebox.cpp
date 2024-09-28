@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2023 Markus Gans                                      *
+* Copyright 2014-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -174,8 +174,6 @@ void FMessageBox::cb_processClick (ButtonType reply)
 //----------------------------------------------------------------------
 void FMessageBox::init()
 {
-  calculateDimensions();
-
   if ( (button_digit[2] != ButtonType::Reject && button_digit[1] == ButtonType::Reject)
     || (button_digit[1] != ButtonType::Reject && button_digit[0] == ButtonType::Reject) )
   {
@@ -184,17 +182,18 @@ void FMessageBox::init()
                     = ButtonType::Reject;
   }
 
-  if ( button_digit[0] == ButtonType::Reject )
-    button_digit[0] = ButtonType::Ok;
+  if ( button_digit[0] != ButtonType::Reject )
+  {
+    if ( button_digit[1] == ButtonType::Reject
+      && button_digit[2] == ButtonType::Reject )
+      num_buttons = 1;
+    else if ( button_digit[2] == ButtonType::Reject )
+      num_buttons = 2;
+    else
+      num_buttons = 3;
+  }
 
-  if ( button_digit[1] == ButtonType::Reject
-    && button_digit[2] == ButtonType::Reject )
-    num_buttons = 1;
-  else if ( button_digit[2] == ButtonType::Reject )
-    num_buttons = 2;
-  else
-    num_buttons = 3;
-
+  calculateDimensions();
   allocation();
   resizeButtons();
   adjustButtons();
@@ -207,12 +206,15 @@ inline void FMessageBox::allocation()
 {
   try
   {
-    button[0] = std::make_unique<FButton>(this);
-    button[0]->setText(button_text[std::size_t(button_digit[0])]);
-    button[0]->setPos(FPoint{3, int(getHeight()) - 4}, false);
-    button[0]->setWidth(1, false);
-    button[0]->setHeight(1, false);
-    button[0]->setFocus();
+    if ( button_digit[0] > ButtonType::Reject )
+    {
+      button[0] = std::make_unique<FButton>(this);
+      button[0]->setText(button_text[std::size_t(button_digit[0])]);
+      button[0]->setPos(FPoint{3, int(getHeight()) - 4}, false);
+      button[0]->setWidth(1, false);
+      button[0]->setHeight(1, false);
+      button[0]->setFocus();
+    }
 
     if ( button_digit[1] > ButtonType::Reject )
     {
@@ -295,12 +297,13 @@ void FMessageBox::calculateDimensions()
                 );
 
   const std::size_t headline_height = headline_text.isEmpty() ? 0 : 2;
+  const std::size_t button_height = num_buttons == 0 ? 0 : 3;
   const std::size_t headline_width = getColumnWidth(headline_text);
 
   if ( headline_width > max_line_width )
     max_line_width = headline_width;
 
-  FSize size{ max_line_width + 4, text_num_lines + 8 + headline_height };
+  FSize size{ max_line_width + 4, text_num_lines + 5 + button_height + headline_height };
 
   if ( size.getWidth() < 20 )
     size.setWidth(20);
@@ -353,10 +356,9 @@ void FMessageBox::draw()
 }
 
 //----------------------------------------------------------------------
-void FMessageBox::resizeButtons() const
+inline auto FMessageBox::getButtonLengthArray() const -> std::array<std::size_t, MAX_BUTTONS>
 {
   std::array<std::size_t, MAX_BUTTONS> len{};
-  std::size_t max_size{};
 
   for (std::size_t n{0}; n < num_buttons && n < MAX_BUTTONS; n++)
   {
@@ -369,11 +371,19 @@ void FMessageBox::resizeButtons() const
       len[n]--;
   }
 
-  if ( num_buttons == 1 )
+  return len;
+}
+
+//----------------------------------------------------------------------
+inline auto FMessageBox::calculateMaxButtonSize() const -> std::size_t
+{
+  std::size_t max_size{};
+  auto len = getButtonLengthArray();
+
+  if ( num_buttons < 2 )
     max_size = len[0];
   else
   {
-    assert ( num_buttons > 1 );
     max_size = std::max(len[0], len[1]);
 
     if ( num_buttons == 3 )
@@ -382,6 +392,14 @@ void FMessageBox::resizeButtons() const
 
   if ( max_size < 7 )
     max_size = 7;
+
+  return max_size;
+}
+
+//----------------------------------------------------------------------
+void FMessageBox::resizeButtons() const
+{
+  auto max_size = calculateMaxButtonSize();
 
   for (std::size_t n{0}; n < num_buttons && n < MAX_BUTTONS; n++)
     if ( button[n] )
@@ -409,9 +427,9 @@ void FMessageBox::adjustButtons()
   {
     std::size_t max_width;
     const auto& root_widget = getRootWidget();
-    setWidth(btn_width + 5);
+    FDialog::setWidth(btn_width + 5);
     max_width = root_widget ? root_widget->getClientWidth() : 80;
-    setX (int((max_width - getWidth()) / 2));
+    FWindow::setX (int((max_width - getWidth()) / 2));
   }
 
   const auto btn_x = int((getWidth() - btn_width) / 2);

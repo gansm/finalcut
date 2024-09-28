@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2023 Markus Gans                                      *
+* Copyright 2015-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -325,8 +325,7 @@ void FTermcap::termcap()
     status = tgetent(term_buffer.data(), termtype.data());
 #endif
 
-    if ( status == success )
-      initialized = true;
+    initialized = bool( status == success );
 
     if ( status == success || ! term_detection.hasTerminalDetection() )
       break;
@@ -595,8 +594,8 @@ inline void FTermcap::asteriskSlash ( string_iterator& iter
 FTermcap::TCapMapType FTermcap::strings =
 {{
 //  .------------- term string
-//  |    .-------- Tcap-code
-//  |    |      // variable name                -> description
+//  |          .-------- Tcap-code
+//  |          |        // variable name          -> description
 //------------------------------------------------------------------------------
   { nullptr, {"bl"} },  // bell                   -> audible signal (bell) (P)
   { nullptr, {"vb"} },  // flash_screen           -> visible bell (may not move cursor)
@@ -615,6 +614,7 @@ FTermcap::TCapMapType FTermcap::strings =
   { nullptr, {"ic"} },  // insert_character       -> insert character (P)
   { nullptr, {"IC"} },  // parm_ich               -> insert #1 characters (P*)
   { nullptr, {"rp"} },  // repeat_char            -> repeat char #1 #2 times (P*)
+  { nullptr, {"lr"} },  // repeat_last_char       -> repeat last char #1 times (P*)
   { nullptr, {"Ic"} },  // initialize_color       -> initialize color #1 to (#2,#3,#4)
   { nullptr, {"Ip"} },  // initialize_pair        -> Initialize color pair #1 to
                         //                           fg=(#2,#3,#4), bg=(#5,#6,#7)

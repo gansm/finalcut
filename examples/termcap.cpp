@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2023 Markus Gans                                      *
+* Copyright 2017-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -51,13 +51,13 @@ struct Data
     const Termcap cap;
   };
 
-  static std::array<TermcapString, 85> strings;
+  static std::array<TermcapString, 86> strings;
 };
 
 //----------------------------------------------------------------------
 // struct data - string data array
 //----------------------------------------------------------------------
-std::array<Data::TermcapString, 85> Data::strings =
+std::array<Data::TermcapString, 86> Data::strings =
 {{
   { "t_bell", Termcap::t_bell },
   { "t_flash_screen", Termcap::t_flash_screen },
@@ -76,6 +76,7 @@ std::array<Data::TermcapString, 85> Data::strings =
   { "t_insert_character", Termcap::t_insert_character },
   { "t_parm_ich", Termcap::t_parm_ich },
   { "t_repeat_char", Termcap::t_repeat_char },
+  { "t_repeat_last_char", Termcap::t_repeat_last_char },
   { "t_initialize_color", Termcap::t_initialize_color },
   { "t_initialize_pair", Termcap::t_initialize_pair },
   { "t_set_a_foreground", Termcap::t_set_a_foreground },

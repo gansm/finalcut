@@ -286,8 +286,8 @@ inline auto FObject::isInstanceOf (const FString& classname) const -> bool
 { return classname == getClassName(); }
 
 //----------------------------------------------------------------------
-inline void FObject::setWidgetProperty (bool property)
-{ widget_object = property; }
+inline void FObject::setWidgetProperty (bool is_widget)
+{ widget_object = is_widget; }
 
 }  // namespace finalcut
 

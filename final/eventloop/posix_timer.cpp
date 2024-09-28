@@ -30,11 +30,11 @@
   #define _XOPEN_SOURCE 700
 #endif
 
-#include <time.h>
 #include <unistd.h>
 
 #include <csignal>
 #include <cstring>
+#include <ctime>
 #include <ctime>
 #include <list>
 #include <mutex>
@@ -186,25 +186,25 @@ class SigAlrmHandlerInstaller final
       throw sys_err;
     }
 
-    ~SigAlrmHandlerInstaller()  // destructor
-    {
-      static const auto& fsystem = FSystem::getInstance();
-      fsystem->sigaction (SIGALRM, &original_signal_handle, nullptr);
-    }
-
-  private:
     // Disable copy constructor
     SigAlrmHandlerInstaller (const SigAlrmHandlerInstaller&) = delete;
 
     // Disable move constructor
     SigAlrmHandlerInstaller (SigAlrmHandlerInstaller&&) noexcept = delete;
 
-      // Disable copy assignment operator (=)
+    ~SigAlrmHandlerInstaller()  // destructor
+    {
+      static const auto& fsystem = FSystem::getInstance();
+      fsystem->sigaction (SIGALRM, &original_signal_handle, nullptr);
+    }
+
+    // Disable copy assignment operator (=)
     auto operator = (const SigAlrmHandlerInstaller&) -> SigAlrmHandlerInstaller& = delete;
 
     // Disable move assignment operator (=)
     auto operator = (SigAlrmHandlerInstaller&&) noexcept -> SigAlrmHandlerInstaller& = delete;
 
+  private:
     // Data member
     struct sigaction original_signal_handle{};
 };
@@ -288,14 +288,27 @@ void PosixTimer::trigger (short return_events)
 //----------------------------------------------------------------------
 void PosixTimer::init()
 {
-  static const auto& fsystem = FSystem::getInstance();
   setEvents (POLLIN);
+  createAlarmPipe();
+  installTime();
+  setInitialized();
+}
+
+//----------------------------------------------------------------------
+void PosixTimer::createAlarmPipe()
+{
+  static const auto& fsystem = FSystem::getInstance();
 
   if ( fsystem->pipe(alarm_pipe) != 0 )
     throw monitor_error{"No pipe could be set up for the timer."};
 
   setFileDescriptor(alarm_pipe.getReadFd());  // Read end of pipe
+}
 
+//----------------------------------------------------------------------
+void PosixTimer::installTime()
+{
+  static const auto& fsystem = FSystem::getInstance();
   struct sigevent sig_event{};
   sig_event.sigev_notify          = SIGEV_SIGNAL;
   sig_event.sigev_signo           = SIGALRM;
@@ -311,8 +324,6 @@ void PosixTimer::init()
     fsystem->close (alarm_pipe.getWriteFd());
     throw monitor_error{"No POSIX timer could be reserved."};
   }
-
-  setInitialized();
 }
 
 }  // namespace finalcut

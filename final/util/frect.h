@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2022 Markus Gans                                      *
+* Copyright 2014-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -127,12 +127,60 @@ class FRect
     int Y2{-1};
 
     // Friend operator functions
-    friend auto operator + (const FRect&, const FSize&) -> FRect;
-    friend auto operator - (const FRect&, const FSize&) -> FRect;
-    friend auto operator == (const FRect&, const FRect&) -> bool;
-    friend auto operator != (const FRect&, const FRect&) -> bool;
-    friend auto operator << (std::ostream&, const FRect&) -> std::ostream&;
-    friend auto operator >> (std::istream&, FRect&) -> std::istream&;
+    friend inline auto operator + (const FRect& r, const FSize& s) -> FRect
+    {
+      return { r.X1
+             , r.Y1
+             , std::size_t(r.X2 - r.X1) + 1 + s.getWidth()
+             , std::size_t(r.Y2 - r.Y1) + 1 + s.getHeight() };
+    }
+
+    friend inline auto operator - (const FRect& r, const FSize& s) -> FRect
+    {
+      return { r.X1
+             , r.Y1
+             , std::size_t(r.X2 - r.X1) + 1 - s.getWidth()
+             , std::size_t(r.Y2 - r.Y1) + 1 - s.getHeight() };
+    }
+
+    friend inline auto operator == (const FRect& r1, const FRect& r2) -> bool
+    {
+      return r1.X1 == r2.X1
+          && r1.Y1 == r2.Y1
+          && r1.X2 == r2.X2
+          && r1.Y2 == r2.Y2;
+    }
+
+    friend inline auto operator != (const FRect& r1, const FRect& r2) -> bool
+    {
+      return r1.X1 != r2.X1
+          || r1.Y1 != r2.Y1
+          || r1.X2 != r2.X2
+          || r1.Y2 != r2.Y2;
+    }
+
+    friend inline auto operator << (std::ostream& outstr, const FRect& r) -> std::ostream&
+    {
+      outstr << r.X1 << " "
+             << r.Y1 << " "
+             << r.X2 << " "
+             << r.Y2;
+      return outstr;
+    }
+
+    friend inline auto operator >> (std::istream& instr, FRect& r) -> std::istream&
+    {
+      int x1{};
+      int y1{};
+      int x2{};
+      int y2{};
+      instr >> x1;
+      instr >> y1;
+      instr >> x2;
+      instr >> y2;
+      r.setCoordinates (x1, y1, x2, y2);
+      return instr;
+    }
 };
 
 // FRect inline functions
@@ -206,7 +254,7 @@ inline auto FRect::getHeight() const noexcept -> std::size_t
 
 //----------------------------------------------------------------------
 inline auto FRect::getSize() const noexcept -> FSize
-{ return { getWidth(), getHeight() }; }
+{ return { FSize{getWidth(), getHeight()} }; }
 
 //----------------------------------------------------------------------
 inline void FRect::setX1 (int n) noexcept

@@ -4,7 +4,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2023 Markus Gans                                      *
+* Copyright 2017-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -57,8 +57,7 @@ FScrollView::~FScrollView()  // destructor
 //----------------------------------------------------------------------
 void FScrollView::setScrollWidth (std::size_t width)
 {
-  if ( width < getViewportWidth() )
-    width = getViewportWidth();
+  width = std::max(width, getViewportWidth());
 
   if ( getScrollWidth() == width )
     return;
@@ -68,11 +67,8 @@ void FScrollView::setScrollWidth (std::size_t width)
     scroll_geometry.setWidth (width);
     resizeArea (scroll_geometry, viewport.get());
     setColor();
-    clearArea();
-    addPreprocessingHandler
-    (
-      F_PREPROC_HANDLER (this, &FScrollView::copy2area)
-    );
+    FScrollView::clearArea();
+    addLocalPreprocessingHandler();
     setChildPrintArea (viewport.get());
   }
 
@@ -87,8 +83,7 @@ void FScrollView::setScrollWidth (std::size_t width)
 //----------------------------------------------------------------------
 void FScrollView::setScrollHeight (std::size_t height)
 {
-  if ( height < getViewportHeight() )
-    height = getViewportHeight();
+  height = std::max(height, getViewportHeight());
 
   if ( getScrollHeight() == height )
     return;
@@ -99,10 +94,7 @@ void FScrollView::setScrollHeight (std::size_t height)
     resizeArea (scroll_geometry, viewport.get());
     setColor();
     clearArea();
-    addPreprocessingHandler
-    (
-      F_PREPROC_HANDLER (this, &FScrollView::copy2area)
-    );
+    addLocalPreprocessingHandler();
     setChildPrintArea (viewport.get());
   }
 
@@ -128,11 +120,8 @@ void FScrollView::setScrollSize (const FSize& size)
     scroll_geometry.setSize (width, height);
     resizeArea (scroll_geometry, viewport.get());
     setColor();
-    clearArea();
-    addPreprocessingHandler
-    (
-      F_PREPROC_HANDLER (this, &FScrollView::copy2area)
-    );
+    FScrollView::clearArea();
+    addLocalPreprocessingHandler();
     setChildPrintArea (viewport.get());
   }
 
@@ -170,8 +159,8 @@ void FScrollView::setX (int x, bool adjust)
 
   if ( viewport )
   {
-    viewport->offset_left = scroll_geometry.getX();
-    viewport->offset_top = scroll_geometry.getY();
+    viewport->position.x = scroll_geometry.getX();
+    viewport->position.y = scroll_geometry.getY();
   }
 }
 
@@ -187,8 +176,8 @@ void FScrollView::setY (int y, bool adjust)
 
   if ( viewport )
   {
-    viewport->offset_left = scroll_geometry.getX();
-    viewport->offset_top = scroll_geometry.getY();
+    viewport->position.x = scroll_geometry.getX();
+    viewport->position.y = scroll_geometry.getY();
   }
 }
 
@@ -202,8 +191,8 @@ void FScrollView::setPos (const FPoint& p, bool adjust)
   if ( adjust || ! viewport )
     return;
 
-  viewport->offset_left = scroll_geometry.getX();
-  viewport->offset_top = scroll_geometry.getY();
+  viewport->position.x = scroll_geometry.getX();
+  viewport->position.y = scroll_geometry.getY();
 }
 
 //----------------------------------------------------------------------
@@ -311,8 +300,8 @@ void FScrollView::setViewportPrint (bool enable)
 void FScrollView::resetColors()
 {
   const auto& wc = getColorTheme();
-  setForegroundColor (wc->dialog_fg);
-  setBackgroundColor (wc->dialog_bg);
+  FWidget::setForegroundColor (wc->dialog.fg);
+  FWidget::setBackgroundColor (wc->dialog.bg);
   FWidget::resetColors();
 }
 
@@ -362,10 +351,8 @@ void FScrollView::scrollToY (int y)
 //----------------------------------------------------------------------
 void FScrollView::scrollTo (int x, int y)
 {
-  int& xoffset = viewport_geometry.x1_ref();
-  int& yoffset = viewport_geometry.y1_ref();
-  const int xoffset_before = xoffset;
-  const int yoffset_before = yoffset;
+  const int xoffset_before = viewport_geometry.getX1();
+  const int yoffset_before = viewport_geometry.getY1();
   const auto xoffset_end = int(getScrollWidth() - getViewportWidth());
   const auto yoffset_end = int(getScrollHeight() - getViewportHeight());
   const std::size_t save_width = viewport_geometry.getWidth();
@@ -373,44 +360,21 @@ void FScrollView::scrollTo (int x, int y)
   x--;
   y--;
 
-  if ( xoffset == x && yoffset == y )
+  if ( ! isChangePosition(x, y) )
     return;
 
-  xoffset = std::max(x, 0);
-  xoffset = std::min(xoffset, xoffset_end);
-  yoffset = std::max(y, 0);
-  yoffset = std::min(yoffset, yoffset_end);
-  const bool changeX( xoffset_before != xoffset );
-  const bool changeY( yoffset_before != yoffset );
+  adjustOffsets(x, y, xoffset_end, yoffset_end);
+  const bool change_x = isChangeXPosition(xoffset_before);
+  const bool change_y = isChangeYPosition(yoffset_before);
 
-  if ( ! isShown() || ! viewport || ! (changeX || changeY) )
+  if ( ! isShown() || ! viewport || ! (change_x || change_y) )
     return;
 
-  if ( changeX )
-  {
-    viewport_geometry.setWidth(save_width);
-    setLeftPadding (1 - xoffset);
-    setRightPadding (1 - (xoffset_end - xoffset) + int(nf_offset));
+  if ( change_x )
+    changeX (save_width, xoffset_end);
 
-    if ( update_scrollbar )
-    {
-      hbar->setValue (xoffset);
-      hbar->drawBar();
-    }
-  }
-
-  if ( changeY )
-  {
-    viewport_geometry.setHeight(save_height);
-    setTopPadding (1 - yoffset);
-    setBottomPadding (1 - (yoffset_end - yoffset));
-
-    if ( update_scrollbar )
-    {
-      vbar->setValue (yoffset);
-      vbar->drawBar();
-    }
-  }
+  if ( change_y )
+    changeY (save_height, yoffset_end);
 
   viewport->has_changes = true;
   copy2area();
@@ -698,21 +662,21 @@ void FScrollView::adjustSize()
 
   if ( viewport )
   {
-    viewport->offset_left = scroll_geometry.getX();
-    viewport->offset_top = scroll_geometry.getY();
+    viewport->position.x = scroll_geometry.getX();
+    viewport->position.y = scroll_geometry.getY();
   }
 
   vbar->setMaximum (int(getScrollHeight() - getViewportHeight()));
   vbar->setPageSize (int(getScrollHeight()), int(getViewportHeight()));
   vbar->setX (int(width));
-  vbar->setHeight (height - 2, false);
+  vbar->setHeight (height > 3 ? height - 2 : 1, false);
   vbar->setValue (yoffset);
   vbar->resize();
 
   hbar->setMaximum (int(getScrollWidth() - getViewportWidth()));
   hbar->setPageSize (int(getScrollWidth()), int(getViewportWidth()));
   hbar->setY (int(height));
-  hbar->setWidth (width - 2, false);
+  hbar->setWidth (width > 3 ? width - 2 : 1, false);
   hbar->setValue (xoffset);
   hbar->resize();
 
@@ -732,20 +696,25 @@ void FScrollView::copy2area()
     return;
 
   auto printarea = getCurrentPrintArea();
-  const int ax = getTermX() - printarea->offset_left;
-  const int ay = getTermY() - printarea->offset_top;
+  const auto& area_owner = printarea->getOwner<FVTerm*>();
+  const auto& area_widget = static_cast<FWidget*>(area_owner);
+  const int ax = area_widget->getLeftPadding() + getX();
+  const int ay = area_widget->getTopPadding() + getY();
   const int dx = viewport_geometry.getX();
   const int dy = viewport_geometry.getY();
+  const int width = printarea->size.width;
+  const int height = printarea->size.height;
+  const int rsh = printarea->shadow.width;
   auto y_end = int(getViewportHeight());
   auto x_end = int(getViewportWidth());
 
   // viewport width does not fit into the printarea
-  if ( printarea->width <= ax + x_end )
-    x_end = printarea->width - ax;
+  if ( width <= ax + x_end )
+    x_end = std::max(0, width - ax);
 
   // viewport height does not fit into the printarea
-  if ( printarea->height <= ay + y_end )
-    y_end = printarea->height - ay;
+  if ( height <= ay + y_end )
+    y_end = std::max(0, height - ay);
 
   for (auto y{0}; y < y_end; y++)  // line loop
   {
@@ -754,9 +723,11 @@ void FScrollView::copy2area()
     // area character
     auto& ac = printarea->getFChar(ax, ay + y);
     std::memcpy (&ac, &vc, sizeof(FChar) * unsigned(x_end));
-    auto& line_changes = printarea->changes[std::size_t(ay + y)];
+    auto& line_changes = printarea->changes[unsigned(ay + y)];
     line_changes.xmin = std::min(line_changes.xmin, uInt(ax));
+    line_changes.xmin = std::min(line_changes.xmin, uInt(width + rsh - 1));
     line_changes.xmax = std::max(line_changes.xmax, uInt(ax + x_end - 1));
+    line_changes.xmax = std::min(line_changes.xmax, uInt(width + rsh - 1));
   }
 
   setViewportCursor();
@@ -775,9 +746,9 @@ inline auto FScrollView::getViewportCursorPos() -> FPoint
   {
     const int widget_offsetX = getTermX() - window->getTermX();
     const int widget_offsetY = getTermY() - window->getTermY();
-    const int x = widget_offsetX + viewport->input_cursor_x
+    const int x = widget_offsetX + viewport->input_cursor.x
                 - viewport_geometry.getX();
-    const int y = widget_offsetY + viewport->input_cursor_y
+    const int y = widget_offsetY + viewport->input_cursor.y
                 - viewport_geometry.getY();
     return { x, y };
   }
@@ -799,16 +770,24 @@ void FScrollView::init()
   FScrollView::resetColors();
   FScrollView::setGeometry (FPoint{1, 1}, FSize{4, 4});
   setMinimumSize (FSize{4, 4});
-  std::size_t width = std::max(getViewportWidth(), std::size_t(1));
-  std::size_t height = std::max(getViewportHeight(), std::size_t(1));
-  createViewport({width, height});
-  addPreprocessingHandler
-  (
-    F_PREPROC_HANDLER (this, &FScrollView::copy2area)
-  );
+  std::size_t width = std::max(std::size_t(1), getViewportWidth());
+  std::size_t height = std::max(std::size_t(1), getViewportHeight());
+  createViewport({ FSize{width, height} });
+
+  if ( hasPreprocessingHandler(this) )
+    addLocalPreprocessingHandler();
 
   if ( viewport )
     setChildPrintArea (viewport.get());
+}
+
+//----------------------------------------------------------------------
+inline void FScrollView::addLocalPreprocessingHandler()
+{
+  FWidget::addPreprocessingHandler
+  (
+    F_PREPROC_HANDLER (this, &FScrollView::copy2area)
+  );
 }
 
 //----------------------------------------------------------------------
@@ -826,49 +805,76 @@ inline void FScrollView::createViewport (const FSize& size) noexcept
 void FScrollView::drawText ( const FString& label_text
                            , std::size_t hotkeypos )
 {
-  const auto& wc = getColorTheme();
-  const std::size_t column_width = getColumnWidth(label_text);
-  std::size_t length = label_text.getLength();
-  bool ellipsis{false};
+  setLabelStyle();
+  printLabel (label_text, hotkeypos);
+  printEllipsis (label_text);
+}
 
-  if ( column_width > getClientWidth() )
-  {
-    const std::size_t len = getClientWidth() - 3;
-    const FString s = finalcut::getColumnSubString (label_text, 1, len);
-    length = s.getLength();
-    ellipsis = true;
-  }
+//----------------------------------------------------------------------
+inline auto FScrollView::getDisplayedTextLength ( const FString& label_text
+                                                , const std::size_t column_width ) const -> std::size_t
+{
+  if ( column_width <= getClientWidth() )
+    return label_text.getLength();
 
+  const std::size_t len = getClientWidth() - 3;
+  const FString s = finalcut::getColumnSubString (label_text, 1, len);
+  return s.getLength();
+}
+
+//----------------------------------------------------------------------
+void FScrollView::setLabelStyle() const
+{
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
+  const auto& wc = getColorTheme();
+
   if ( isEnabled() )
-    setColor(wc->label_emphasis_fg, wc->label_bg);
+    setColor(wc->label.emphasis_fg, wc->label.bg);
   else
-    setColor(wc->label_inactive_fg, wc->label_inactive_bg);
+    setColor(wc->label.inactive_fg, wc->label.inactive_bg);
+}
+
+//----------------------------------------------------------------------
+void FScrollView::printLabel ( const FString& label_text,
+                               std::size_t hotkeypos )
+{
+  const auto& wc = getColorTheme();
+  const std::size_t column_width = getColumnWidth(label_text);
+  std::size_t length = getDisplayedTextLength (label_text, column_width);
+  const auto underline = ! getFlags().feature.no_underline;
 
   for (std::size_t z{0}; z < length; z++)
   {
-    if ( (z == hotkeypos) && getFlags().feature.active )
+    if ( z == hotkeypos && getFlags().feature.active )
     {
-      setColor (wc->label_hotkey_fg, wc->label_hotkey_bg);
+      setColor (wc->label.hotkey_fg, wc->label.hotkey_bg);
 
-      if ( ! getFlags().feature.no_underline )
+      if ( underline )
         setUnderline();
 
       print (label_text[z]);
 
-      if ( ! getFlags().feature.no_underline )
+      if ( underline )
         unsetUnderline();
 
-      setColor (wc->label_emphasis_fg, wc->label_bg);
+      setColor (wc->label.emphasis_fg, wc->label.bg);
     }
     else
       print (label_text[z]);
   }
+}
+
+//----------------------------------------------------------------------
+void FScrollView::printEllipsis (const FString& label_text)
+{
+  const auto& wc = getColorTheme();
+  const std::size_t column_width = getColumnWidth(label_text);
+  const bool ellipsis{column_width > getClientWidth()};
 
   if ( ellipsis )  // Print ellipsis
-    print() << FColorPair {wc->label_ellipsis_fg, wc->label_bg} << "..";
+    print() << FColorPair {wc->label.ellipsis_fg, wc->label.bg} << "..";
 
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
@@ -929,8 +935,8 @@ void FScrollView::changeSize (const FSize& size, bool adjust)
   }
   else if ( ! adjust && viewport )
   {
-    viewport->offset_left = scroll_geometry.getX();
-    viewport->offset_top = scroll_geometry.getY();
+    viewport->position.x = scroll_geometry.getX();
+    viewport->position.y = scroll_geometry.getY();
   }
 
   if ( ! viewport )
@@ -946,10 +952,71 @@ void FScrollView::changeSize (const FSize& size, bool adjust)
 }
 
 //----------------------------------------------------------------------
+inline void FScrollView::adjustOffsets ( int x, int y
+                                       , int xoffset_end
+                                       , int yoffset_end )
+{
+  int& xoffset = viewport_geometry.x1_ref();
+  int& yoffset = viewport_geometry.y1_ref();
+  xoffset = std::max(x, 0);
+  xoffset = std::min(xoffset, xoffset_end);
+  yoffset = std::max(y, 0);
+  yoffset = std::min(yoffset, yoffset_end);
+}
+
+//----------------------------------------------------------------------
+inline auto FScrollView::isChangePosition (const int x, const int y) const -> bool
+{
+  return isChangeXPosition(x) || isChangeYPosition(y);
+}
+
+//----------------------------------------------------------------------
+inline auto FScrollView::isChangeXPosition (const int x) const -> bool
+{
+  return viewport_geometry.getX1() != x;
+}
+
+//----------------------------------------------------------------------
+inline auto FScrollView::isChangeYPosition (const int y) const -> bool
+{
+  return viewport_geometry.getY1() != y;
+}
+
+//----------------------------------------------------------------------
+inline void FScrollView::changeX (const std::size_t width, const int xoffset_end)
+{
+  const int xoffset = viewport_geometry.getX1();
+  viewport_geometry.setWidth(width);
+  setLeftPadding (1 - xoffset);
+  setRightPadding (1 - (xoffset_end - xoffset) + int(nf_offset));
+
+  if ( ! update_scrollbar )
+    return;
+
+  hbar->setValue (xoffset);
+  hbar->drawBar();
+}
+
+//----------------------------------------------------------------------
+inline void FScrollView::changeY (const std::size_t height, const int yoffset_end)
+{
+  const int yoffset = viewport_geometry.getY1();
+  viewport_geometry.setHeight(height);
+  setTopPadding (1 - yoffset);
+  setBottomPadding (1 - (yoffset_end - yoffset));
+
+  if ( ! update_scrollbar )
+    return;
+
+  vbar->setValue (yoffset);
+  vbar->drawBar();
+}
+
+//----------------------------------------------------------------------
 void FScrollView::calculateScrollbarPos() const
 {
-  const std::size_t width  = getWidth();
-  const std::size_t height = getHeight();
+  const std::size_t width  = std::max(std::size_t(3), getWidth());
+  const std::size_t height = std::max(std::size_t(3), getHeight());
 
   if ( nf_offset )
   {
@@ -1012,8 +1079,8 @@ void FScrollView::setViewportCursor()
   if ( ! isChild(getFocusWidget()) )
     return;
 
-  const FPoint cursor_pos { viewport->input_cursor_x - 1
-                          , viewport->input_cursor_y - 1 };
+  const FPoint cursor_pos { viewport->input_cursor.x - 1
+                          , viewport->input_cursor.y - 1 };
   const FPoint window_cursor_pos{ getViewportCursorPos() };
   auto printarea = getCurrentPrintArea();
   printarea->setInputCursorPos ( window_cursor_pos.getX()
@@ -1027,33 +1094,51 @@ void FScrollView::setViewportCursor()
 }
 
 //----------------------------------------------------------------------
+inline auto FScrollView::shouldUpdateScrollbar (FScrollbar::ScrollType scroll_type) const -> bool
+{
+  return scroll_type >= FScrollbar::ScrollType::StepBackward;
+}
+
+//----------------------------------------------------------------------
+inline auto FScrollView::getVerticalScrollDistance (const FScrollbar::ScrollType scroll_type) const -> int
+{
+  if ( scroll_type == FScrollbar::ScrollType::PageBackward
+    || scroll_type == FScrollbar::ScrollType::PageForward )
+  {
+    return int(getViewportHeight());
+  }
+
+  return 1;
+}
+
+//----------------------------------------------------------------------
+inline auto FScrollView::getHorizontalScrollDistance (const FScrollbar::ScrollType scroll_type) const -> int
+{
+  if ( scroll_type == FScrollbar::ScrollType::PageBackward
+    || scroll_type == FScrollbar::ScrollType::PageForward )
+  {
+    return int(getViewportWidth());
+  }
+
+  return 1;
+}
+
+//----------------------------------------------------------------------
 void FScrollView::cb_vbarChange (const FWidget*)
 {
   auto scroll_type = vbar->getScrollType();
+  update_scrollbar = shouldUpdateScrollbar(scroll_type);
   static constexpr int wheel_distance = 4;
-  int distance{1};
-
-  if ( scroll_type >= FScrollbar::ScrollType::StepBackward )
-  {
-    update_scrollbar = true;
-  }
-  else
-  {
-    update_scrollbar = false;
-  }
+  int distance = getVerticalScrollDistance(scroll_type);
 
   switch ( scroll_type )
   {
     case FScrollbar::ScrollType::PageBackward:
-      distance = int(getViewportHeight());
-      // fall through
     case FScrollbar::ScrollType::StepBackward:
       scrollBy (0, -distance);
       break;
 
     case FScrollbar::ScrollType::PageForward:
-      distance = int(getViewportHeight());
-      // fall through
     case FScrollbar::ScrollType::StepForward:
       scrollBy (0, distance);
       break;
@@ -1083,30 +1168,18 @@ void FScrollView::cb_vbarChange (const FWidget*)
 void FScrollView::cb_hbarChange (const FWidget*)
 {
   auto scroll_type = hbar->getScrollType();
+  update_scrollbar = shouldUpdateScrollbar(scroll_type);
   static constexpr int wheel_distance = 4;
-  int distance{1};
-
-  if ( scroll_type >= FScrollbar::ScrollType::StepBackward )
-  {
-    update_scrollbar = true;
-  }
-  else
-  {
-    update_scrollbar = false;
-  }
+  int distance = getHorizontalScrollDistance(scroll_type);
 
   switch ( scroll_type )
   {
     case FScrollbar::ScrollType::PageBackward:
-      distance = int(getViewportWidth());
-      // fall through
     case FScrollbar::ScrollType::StepBackward:
       scrollBy (-distance, 0);
       break;
 
     case FScrollbar::ScrollType::PageForward:
-      distance = int(getViewportWidth());
-      // fall through
     case FScrollbar::ScrollType::StepForward:
       scrollBy (distance, 0);
       break;

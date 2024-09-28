@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021-2023 Markus Gans                                      *
+* Copyright 2021-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -136,11 +136,20 @@ class FTermOutput final : public FOutput
       LineCompletelyPrinted
     };
 
+    enum class Repetition
+    {
+      ASCII,
+      UTF8,
+      NotOptimized
+    };
+
     enum class OutputType : uInt8  // Output data type of the terminal
     {
       String,
       Control
     };
+
+    enum class CursorMoved { No, Yes };
 
     struct OutputData
     {
@@ -171,7 +180,7 @@ class FTermOutput final : public FOutput
     // Methods
     auto getStartOptions() & -> FStartOptions&;
     auto isInputCursorInsideTerminal() const -> bool;
-    auto isDefaultPaletteTheme() -> bool override;
+    auto isDefaultPaletteTheme() const -> bool override;
     void redefineColorPalette() override;
     void restoreColorPalette() override;
     void init_characterLengths();
@@ -180,18 +189,24 @@ class FTermOutput final : public FOutput
     auto canClearLeadingWS (uInt&, uInt) const -> bool;
     auto canClearTrailingWS (uInt&, uInt) const -> bool;
     auto skipUnchangedCharacters (uInt&, uInt, uInt) -> bool;
-    void printRange (uInt, uInt, uInt, bool);
+    void printRange (uInt, uInt, uInt);
     void replaceNonPrintableFullwidth (uInt, FChar&) const;
     void printCharacter (uInt&, uInt, bool, FChar&);
     void printFullWidthCharacter (uInt&, uInt, FChar&);
     void printFullWidthPaddingCharacter (uInt&, uInt, FChar&);
-    void printHalfCovertFullWidthCharacter (uInt&, uInt, FChar&);
+    void printHalfCovertFullWidthCharacter (uInt, uInt, FChar&);
+    void printEllipsis (uInt, uInt, FChar&);
     void skipPaddingCharacter (uInt&, uInt, const FChar&) const;
-    auto eraseCharacters (uInt&, uInt, uInt, bool) -> PrintState;
+    auto eraseCharacters (uInt&, uInt, uInt) -> PrintState;
     auto repeatCharacter (uInt&, uInt, uInt) -> PrintState;
+    auto countRepetitions (const FChar*, uInt, uInt) const -> uInt;
+    auto canUseEraseCharacters (const FChar&, uInt) const -> bool;
+    auto canUseCharacterRepetitions (const FChar&, uInt) const -> bool;
+    auto getRepetitionType (const FChar&, uInt) const -> Repetition;
     auto isFullWidthChar (const FChar&) const -> bool;
     auto isFullWidthPaddingChar (const FChar&) const -> bool;
     void cursorWrap() const;
+    void adjustCursorPosition (FPoint&) const;
     auto updateTerminalLine (uInt) -> bool;
     auto updateTerminalCursor() -> bool;
     void flushTimeAdjustment();
@@ -200,10 +215,12 @@ class FTermOutput final : public FOutput
     void newFontChanges (FChar&) const;
     void charsetChanges (FChar&) const;
     void appendCharacter (FChar&);
+    void appendCharacter_n (FChar&, uInt);
     void appendChar (FChar&);
     void appendAttributes (FChar&);
     void appendLowerRight (FChar&);
     void characterFilter (FChar&);
+    auto moveCursorLeft() -> CursorMoved;
     void checkFreeBufferSize();
     void appendOutputBuffer (const FTermControl&);
     void appendOutputBuffer (const UniChar&);

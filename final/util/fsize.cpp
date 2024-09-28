@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2023 Markus Gans                                      *
+* Copyright 2014-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -77,25 +77,6 @@ void FSize::scaleBy (int dx, int dy) noexcept
 void FSize::scaleBy (const FPoint& d) noexcept
 {
   scaleBy (d.getX(), d.getY());
-}
-
-// FSize non-member operators
-//----------------------------------------------------------------------
-auto operator << (std::ostream& outstr, const FSize& s) -> std::ostream&
-{
-  outstr << s.width << " " << s.height;
-  return outstr;
-}
-
-//----------------------------------------------------------------------
-auto operator >> (std::istream& instr, FSize& s) -> std::istream&
-{
-  std::size_t w;
-  std::size_t h;
-  instr >> w;
-  instr >> h;
-  s.setSize (w, h);
-  return instr;
 }
 
 }  // namespace finalcut

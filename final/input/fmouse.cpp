@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2023 Markus Gans                                      *
+* Copyright 2018-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -40,7 +40,6 @@
 #include "final/input/fmouse.h"
 #include "final/output/tty/fterm.h"
 #include "final/output/tty/ftermlinux.h"
-#include "final/output/tty/ftermxterminal.h"
 
 namespace finalcut
 {
@@ -374,7 +373,6 @@ auto FMouse::isDblclickTimeout (const TimeValue& time) const -> bool
 // constructors and destructor
 //----------------------------------------------------------------------
 FMouseGPM::FMouseGPM()
-  : FMouse{}
 {
   gpm_ev.x = -1;
   setMouseTypeID (FMouse::MouseType::Gpm);
@@ -413,60 +411,26 @@ void FMouseGPM::processEvent (const TimeValue&)
 
   if ( Gpm_GetEvent(&gpm_ev) == 1 )
   {
-    Gpm_FitEvent (&gpm_ev);
-    GPM_DRAWPOINTER(&gpm_ev);
+    handleMouseEvent();
 
     if ( ! hasSignificantEvents() )
     {
-      has_gpm_mouse_data = false;
-      clearEvent();
+      resetMouseState();
       return;
     }
 
-    if ( gpm_ev.type & GPM_DRAG && gpm_ev.wdx == 0 && gpm_ev.wdy == 0 )
-      getButtonState().mouse_moved = true;
-
-    if ( gpm_ev.wdy > 0 )
-      getButtonState().wheel_up = true;
-    else if ( gpm_ev.wdy < 0 )
-      getButtonState().wheel_down = true;
-
-    if ( gpm_ev.wdx > 0 )
-      getButtonState().wheel_right = true;
-    else if ( gpm_ev.wdx < 0 )
-      getButtonState().wheel_left = true;
-
-    switch ( gpm_ev.type & 0x0f )
-    {
-      case GPM_DOWN:
-      case GPM_DRAG:
-        interpretKeyDown();
-        break;
-
-      case GPM_UP:
-        interpretKeyUp();
-        break;
-
-      default:
-        break;
-    }
-
-    setPos (FPoint{ std::max(gpm_ev.x, sInt16(1))
-                  , std::max(gpm_ev.y, sInt16(1)) });
-
-    if ( gpmEvent(false) == gpmEventType::Mouse )
-      setPending(true);
-    else
-      setPending(false);
-
+    handleMouseMovement();
+    handleMouseWheel();
+    interpretMouseEvent();
+    updateMousePosition();
+    setPending ( gpmEvent(false) == gpmEventType::Mouse );
     has_gpm_mouse_data = false;
     setEvent();
     return;
   }
 
   gpm_fd = -1;
-  has_gpm_mouse_data = false;
-  clearEvent();
+  resetMouseState();
 }
 
 //----------------------------------------------------------------------
@@ -524,21 +488,13 @@ void FMouseGPM::interpretKeyDown() noexcept
   if ( gpm_ev.buttons & GPM_B_RIGHT )
     getButtonState().right_button = State::Pressed;
 
-  if ( gpm_ev.buttons & GPM_B_UP )
-    getButtonState().wheel_up = true;
-
-  if ( gpm_ev.buttons & GPM_B_DOWN )
-    getButtonState().wheel_down = true;
+  getButtonState().wheel_up = bool(gpm_ev.buttons & GPM_B_UP);
+  getButtonState().wheel_down = bool(gpm_ev.buttons & GPM_B_DOWN);
 
   // Keyboard modifiers
-  if ( gpm_ev.modifiers & (1 << KG_SHIFT) )
-    getButtonState().shift_button = true;
-
-  if ( gpm_ev.modifiers & ((1 << KG_ALT) | (1 << KG_ALTGR)) )
-    getButtonState().meta_button = true;
-
-  if ( gpm_ev.modifiers & (1 << KG_CTRL) )
-    getButtonState().control_button = true;
+  getButtonState().shift_button = bool(gpm_ev.modifiers & (1 << KG_SHIFT));
+  getButtonState().meta_button = bool(gpm_ev.modifiers & ((1 << KG_ALT) | (1 << KG_ALTGR)));
+  getButtonState().control_button = bool(gpm_ev.modifiers & (1 << KG_CTRL));
 }
 
 //----------------------------------------------------------------------
@@ -558,12 +514,10 @@ void FMouseGPM::interpretKeyUp() noexcept
 auto FMouseGPM::getGpmKeyPressed (bool is_pending) -> bool
 {
   setPending(is_pending);
-  has_gpm_mouse_data = false;
   const auto type = gpmEvent();
+  has_gpm_mouse_data = bool( type == gpmEventType::Mouse );
 
-  if ( type == gpmEventType::Mouse )
-    has_gpm_mouse_data = true;
-  else if ( type == gpmEventType::Keyboard )
+  if ( type == gpmEventType::Keyboard )
     return true;
 
   return false;
@@ -574,6 +528,63 @@ void FMouseGPM::drawPointer() const
 {
   if ( isGpmMouseEnabled() && gpm_ev.x != -1 )
     GPM_DRAWPOINTER(&gpm_ev);
+}
+
+// private methods of FMouseGPM
+//----------------------------------------------------------------------
+inline void FMouseGPM::handleMouseEvent()
+{
+  Gpm_FitEvent(&gpm_ev);
+  GPM_DRAWPOINTER(&gpm_ev);
+}
+
+//----------------------------------------------------------------------
+inline void FMouseGPM::resetMouseState()
+{
+  has_gpm_mouse_data = false;
+  clearEvent();
+}
+
+//----------------------------------------------------------------------
+inline void FMouseGPM::handleMouseMovement()
+{
+  if ( gpm_ev.type & GPM_DRAG && gpm_ev.wdx == 0 && gpm_ev.wdy == 0 )
+    getButtonState().mouse_moved = true;
+}
+
+//----------------------------------------------------------------------
+inline void FMouseGPM::handleMouseWheel()
+{
+  getButtonState().wheel_up    = bool( gpm_ev.wdy > 0 );
+  getButtonState().wheel_down  = bool( gpm_ev.wdy < 0 );
+  getButtonState().wheel_right = bool( gpm_ev.wdx > 0 );
+  getButtonState().wheel_left  = bool( gpm_ev.wdx < 0 );
+}
+
+//----------------------------------------------------------------------
+inline void FMouseGPM::interpretMouseEvent()
+{
+  switch ( gpm_ev.type & 0x0f )
+  {
+    case GPM_DOWN:
+    case GPM_DRAG:
+      interpretKeyDown();
+      break;
+
+    case GPM_UP:
+      interpretKeyUp();
+      break;
+
+    default:
+      break;
+    }
+}
+
+//----------------------------------------------------------------------
+inline void FMouseGPM::updateMousePosition()
+{
+  setPos (FPoint{ std::max(gpm_ev.x, sInt16(1))
+                , std::max(gpm_ev.y, sInt16(1)) });
 }
 
 //----------------------------------------------------------------------
@@ -662,10 +673,7 @@ void FMouseX11::processEvent (const TimeValue& time)
   setMoveState (mouse_position, btn);
   setButtonState (btn & button_mask, time);
 
-  if ( mouse_position == getNewPos()
-    && ! isWheelUp() && ! isWheelDown()
-    && ! isWheelLeft() && ! isWheelRight()
-    && x11_button_state == uChar(btn) )
+  if ( noChanges(mouse_position, uChar(btn)) )
   {
     clearEvent();
     x11_mouse[0] = '\0';  // Delete already interpreted data
@@ -685,14 +693,9 @@ void FMouseX11::processEvent (const TimeValue& time)
 //----------------------------------------------------------------------
 void FMouseX11::setKeyState (int btn) noexcept
 {
-  if ( (btn & key_shift) == key_shift )
-    getButtonState().shift_button = true;
-
-  if ( (btn & key_meta) == key_meta )
-    getButtonState().meta_button = true;
-
-  if ( (btn & key_ctrl) == key_ctrl )
-    getButtonState().control_button = true;
+  getButtonState().shift_button   = bool((btn & key_shift) == key_shift);
+  getButtonState().meta_button    = bool((btn & key_meta)  == key_meta);
+  getButtonState().control_button = bool((btn & key_ctrl)  == key_ctrl);
 }
 
 //----------------------------------------------------------------------
@@ -707,10 +710,40 @@ void FMouseX11::setMoveState (const FPoint& mouse_position, int btn) noexcept
 }
 
 //----------------------------------------------------------------------
-void FMouseX11::setButtonState (const int btn, const TimeValue& time) noexcept
+inline auto FMouseX11::isMouseClickButton (const int btn) const noexcept -> bool
 {
-  // Get the x11 mouse button state
+  return btn == button1_pressed
+      || btn == button2_pressed
+      || btn == button3_pressed
+      || btn == button1_pressed_move
+      || btn == button2_pressed_move
+      || btn == button3_pressed_move;
+}
 
+//----------------------------------------------------------------------
+inline auto FMouseX11::isMouseWheelButton (const int btn) const noexcept -> bool
+{
+  return btn == button_up
+      || btn == button_down
+      || btn == button_left
+      || btn == button_right;
+}
+
+//----------------------------------------------------------------------
+inline auto FMouseX11::noChanges (const FPoint& mouse_position, uChar btn) const noexcept -> bool
+{
+  return mouse_position == getNewPos()
+    && ! isWheelUp()
+    && ! isWheelDown()
+    && ! isWheelLeft()
+    && ! isWheelRight()
+    && btn == x11_button_state;
+}
+
+//----------------------------------------------------------------------
+void FMouseX11::handleMouseClickButton ( int btn
+                                       , const TimeValue& time) noexcept
+{
   switch ( btn )
   {
     case button1_pressed:
@@ -730,32 +763,55 @@ void FMouseX11::setButtonState (const int btn, const TimeValue& time) noexcept
       getButtonState().right_button = State::Pressed;
       break;
 
-    case all_buttons_released:
-      handleButtonRelease();
-      break;
+      default:
+        break;
+  }
+}
 
+//----------------------------------------------------------------------
+void FMouseX11::handleMouseWheelButton (int btn) noexcept
+{
+  resetMousePressedTime();
+
+  switch ( btn )
+  {
     case button_up:
-      resetMousePressedTime();
       getButtonState().wheel_up = true;
       break;
 
     case button_down:
-      resetMousePressedTime();
       getButtonState().wheel_down = true;
       break;
 
     case button_left:
-      resetMousePressedTime();
       getButtonState().wheel_left = true;
       break;
 
     case button_right:
-      resetMousePressedTime();
       getButtonState().wheel_right = true;
       break;
 
       default:
         break;
+  }
+}
+
+//----------------------------------------------------------------------
+void FMouseX11::setButtonState (const int btn, const TimeValue& time) noexcept
+{
+  // Get the x11 mouse button state
+
+  if ( isMouseClickButton(btn) )
+  {
+    handleMouseClickButton (btn, time);
+  }
+  else if ( btn == all_buttons_released )
+  {
+    handleButtonRelease();
+  }
+  else if ( isMouseWheelButton(btn) )
+  {
+    handleMouseWheelButton(btn);
   }
 }
 
@@ -858,55 +914,26 @@ void FMouseSGR::setRawData (FKeyboard::keybuffer& fifo_buf) noexcept
 void FMouseSGR::processEvent (const TimeValue& time)
 {
   const auto& mouse_position = getPos();
-  sInt16 x{0};
-  sInt16 y{0};
-  int btn{0};
+  Tokens token{};
 
-  // Parse the SGR mouse string
-  const char* p = sgr_mouse.data();
-
-  // Parse button
-  if ( ! parseNumberIf (p, btn, [] (char ch) { return ch != ';'; }) )
+  if ( parseSGRMouseString(token) == ParseError::Yes )
   {
     clearEvent();
     sgr_mouse[0] = '\0';  // Delete already interpreted data
     return;
   }
 
-  if ( *p ) p++;  // ship one character after the number
-
-  // Parse x-value
-  if ( ! parseNumberIf (p, x, [] (char ch) { return ch != ';'; }) )
-  {
-    clearEvent();
-    sgr_mouse[0] = '\0';  // Delete already interpreted data
-    return;
-  }
-
-  if ( *p ) p++;  // ship one character after the number
-
-  // Parse y-value
-  if ( ! parseNumberIf (p, y, [] (char ch) { return ch != 'M' && ch != 'm'; }) )
-  {
-    clearEvent();
-    sgr_mouse[0] = '\0';  // Delete already interpreted data
-    return;
-  }
-
-  setNewPos (x, y);  // Update the mouse state
+  setNewPos (token.x, token.y);  // Update the mouse state
   clearButtonState();
-  setKeyState (btn);
-  setMoveState (mouse_position, btn);
+  setKeyState (token.btn);
+  setMoveState (mouse_position, token.btn);
 
-  if ( *p == pressed )
-    setPressedButtonState (btn & button_mask, time);
-  else  // *p == released
-    setReleasedButtonState (btn & button_mask);
+  if ( *token.p == pressed )
+    setPressedButtonState (token.btn & button_mask, time);
+  else  // *token.p == released
+    setReleasedButtonState (token.btn & button_mask);
 
-  if ( mouse_position == getNewPos()
-    && ! isWheelUp() && ! isWheelDown()
-    && ! isWheelLeft() && ! isWheelRight()
-    && sgr_button_state == uChar(((*p & 0x20) << 2) + btn) )
+  if ( noChanges(mouse_position, uChar(((*token.p & 0x20) << 2) + token.btn)) )
   {
     clearEvent();
     sgr_mouse[0] = '\0';  // Delete already interpreted data
@@ -916,7 +943,7 @@ void FMouseSGR::processEvent (const TimeValue& time)
   setEvent();
   useNewPos();
   // Get the button state from string
-  sgr_button_state = uChar(((*p & 0x20) << 2) + btn);
+  sgr_button_state = uChar(((*token.p & 0x20) << 2) + token.btn);
   // Delete already interpreted data
   sgr_mouse[0] = '\0';
 }
@@ -925,14 +952,9 @@ void FMouseSGR::processEvent (const TimeValue& time)
 //----------------------------------------------------------------------
 void FMouseSGR::setKeyState (int btn) noexcept
 {
-  if ( (btn & key_shift) == key_shift )
-    getButtonState().shift_button = true;
-
-  if ( (btn & key_meta) == key_meta )
-    getButtonState().meta_button = true;
-
-  if ( (btn & key_ctrl) == key_ctrl )
-    getButtonState().control_button = true;
+  getButtonState().shift_button   = bool((btn & key_shift) == key_shift);
+  getButtonState().meta_button    = bool((btn & key_meta)  == key_meta);
+  getButtonState().control_button = bool((btn & key_ctrl)  == key_ctrl);
 }
 
 //----------------------------------------------------------------------
@@ -947,11 +969,67 @@ void FMouseSGR::setMoveState (const FPoint& mouse_position, int btn) noexcept
 }
 
 //----------------------------------------------------------------------
-void FMouseSGR::setPressedButtonState ( const int btn
-                                      , const TimeValue& time ) noexcept
+inline auto FMouseSGR::isMouseClickButton (const int btn) const noexcept -> bool
 {
-  // Gets the extended x11 mouse mode (SGR) status for pressed buttons
+  return btn == button1
+      || btn == button2
+      || btn == button3
+      || btn == button1_move
+      || btn == button2_move
+      || btn == button3_move;
+}
 
+//----------------------------------------------------------------------
+inline auto FMouseSGR::isMouseWheelButton (const int btn) const noexcept -> bool
+{
+  return btn == button_up
+      || btn == button_down
+      || btn == button_left
+      || btn == button_right;
+}
+
+//----------------------------------------------------------------------
+inline auto FMouseSGR::parseSGRMouseString (FMouseSGR::Tokens& token) const noexcept -> ParseError
+{
+  // Parse the SGR mouse string
+  token.p = sgr_mouse.data();
+
+  // Parse button
+  if ( ! parseNumberIf (token.p, token.btn, [] (char ch) { return ch != ';'; }) )
+    return ParseError::Yes;
+
+  if ( *token.p )
+    token.p++;  // ship one character after the number
+
+  // Parse x-value
+  if ( ! parseNumberIf (token.p, token.x, [] (char ch) { return ch != ';'; }) )
+    return ParseError::Yes;
+
+  if ( *token.p )
+    token.p++;  // ship one character after the number
+
+  // Parse y-value
+  if ( ! parseNumberIf (token.p, token.y, [] (char ch) { return ch != 'M' && ch != 'm'; }) )
+    return ParseError::Yes;
+
+  return ParseError::No;
+}
+
+//----------------------------------------------------------------------
+inline auto FMouseSGR::noChanges (const FPoint& mouse_position, uChar btn) const noexcept -> bool
+{
+  return mouse_position == getNewPos()
+    && ! isWheelUp()
+    && ! isWheelDown()
+    && ! isWheelLeft()
+    && ! isWheelRight()
+    && btn == sgr_button_state;
+}
+
+//----------------------------------------------------------------------
+void FMouseSGR::handleMouseClickButton ( int btn
+                                       , const TimeValue& time) noexcept
+{
   switch ( btn )
   {
     case button1:
@@ -971,28 +1049,52 @@ void FMouseSGR::setPressedButtonState ( const int btn
       getButtonState().right_button = State::Pressed;
       break;
 
+    default:
+      break;
+  }
+}
+
+//----------------------------------------------------------------------
+void FMouseSGR::handleMouseWheelButton (int btn) noexcept
+{
+  resetMousePressedTime();
+
+  switch ( btn )
+  {
     case button_up:
-      resetMousePressedTime();
       getButtonState().wheel_up = true;
       break;
 
     case button_down:
-      resetMousePressedTime();
       getButtonState().wheel_down = true;
       break;
 
     case button_left:
-      resetMousePressedTime();
       getButtonState().wheel_left = true;
       break;
 
     case button_right:
-      resetMousePressedTime();
       getButtonState().wheel_right = true;
       break;
 
     default:
       break;
+  }
+}
+
+//----------------------------------------------------------------------
+void FMouseSGR::setPressedButtonState ( const int btn
+                                      , const TimeValue& time ) noexcept
+{
+  // Gets the extended x11 mouse mode (SGR) status for pressed buttons
+
+  if ( isMouseClickButton(btn) )
+  {
+    handleMouseClickButton (btn, time);
+  }
+  else if ( isMouseWheelButton(btn) )
+  {
+    handleMouseWheelButton(btn);
   }
 }
 
@@ -1099,69 +1201,22 @@ void FMouseUrxvt::processEvent (const TimeValue& time)
   // Parse and interpret the X11 xterm mouse string (Urxvt-Mode)
 
   const auto& mouse_position = getPos();
-  sInt16 x{0};
-  sInt16 y{0};
-  int btn{0};
+  Tokens token{};
 
-  // Parse the Urxvt mouse string
-  const char* p = urxvt_mouse.data();
-  bool x_neg{false};
-  bool y_neg{false};
-
-  // Parse button
-  if ( ! parseNumberIf (p, btn, [] (char ch) { return ch != ';'; }) )
+  if ( parseUrxvtMouseString(token) == ParseError::Yes )
   {
     clearEvent();
     urxvt_mouse[0] = '\0';  // Delete already interpreted data
     return;
   }
 
-  if ( *++p == '-' )
-  {
-    p++;
-    x_neg = true;
-  }
-
-  // Parse x-value
-  if ( ! parseNumberIf (p, x, [] (char ch) { return ch != ';'; }) )
-  {
-    clearEvent();
-    urxvt_mouse[0] = '\0';  // Delete already interpreted data
-    return;
-  }
-
-  if ( *++p == '-' )
-  {
-    p++;
-    y_neg = true;
-  }
-
-  // Parse y-value
-  if ( ! parseNumberIf (p, y, [] (char ch) { return ch != 'M'; }) )
-  {
-    clearEvent();
-    urxvt_mouse[0] = '\0';  // Delete already interpreted data
-    return;
-  }
-
-  if ( x_neg || x == 0 )
-    x = 1;
-
-  if ( y_neg || y == 0 )
-    y = 1;
-
-  x = std::min(x, sInt16(getMaxWidth()));
-  y = std::min(y, sInt16(getMaxHeight()));
-  setNewPos (x, y);
+  adjustAndSetPosition (token);
   clearButtonState();
-  setKeyState (btn);
-  setMoveState (mouse_position, btn);
-  setButtonState (btn & button_mask, time);
+  setKeyState (token.btn);
+  setMoveState (mouse_position, token.btn);
+  setButtonState (token.btn & button_mask, time);
 
-  if ( mouse_position == getNewPos()
-    && ! isWheelUp() && ! isWheelDown()
-    && ! isWheelLeft() && ! isWheelRight()
-    && urxvt_button_state == uChar(btn) )
+  if ( noChanges(mouse_position, uChar(token.btn)) )
   {
     clearEvent();
     urxvt_mouse[0] = '\0';  // Delete already interpreted data
@@ -1170,7 +1225,7 @@ void FMouseUrxvt::processEvent (const TimeValue& time)
 
   setEvent();
   useNewPos();
-  urxvt_button_state = uChar(btn);
+  urxvt_button_state = uChar(token.btn);
   // Delete already interpreted data
   urxvt_mouse[0] = '\0';
 }
@@ -1180,14 +1235,9 @@ void FMouseUrxvt::processEvent (const TimeValue& time)
 //----------------------------------------------------------------------
 void FMouseUrxvt::setKeyState (int btn) noexcept
 {
-  if ( (btn & key_shift) == key_shift )
-    getButtonState().shift_button = true;
-
-  if ( (btn & key_meta) == key_meta )
-    getButtonState().meta_button = true;
-
-  if ( (btn & key_ctrl) == key_ctrl )
-    getButtonState().control_button = true;
+  getButtonState().shift_button   = bool((btn & key_shift) == key_shift);
+  getButtonState().meta_button    = bool((btn & key_meta)  == key_meta);
+  getButtonState().control_button = bool((btn & key_ctrl)  == key_ctrl);
 }
 
 //----------------------------------------------------------------------
@@ -1202,68 +1252,113 @@ void FMouseUrxvt::setMoveState (const FPoint& mouse_position, int btn) noexcept
 }
 
 //----------------------------------------------------------------------
-void FMouseUrxvt::setButtonState (const int btn, const TimeValue& time) noexcept
+inline auto FMouseUrxvt::isMouseClickButton (const int btn) const noexcept -> bool
 {
-  // Get the urxvt mouse button state
+  return btn == button1_pressed
+      || btn == button2_pressed
+      || btn == button3_pressed
+      || btn == button1_pressed_move
+      || btn == button2_pressed_move
+      || btn == button3_pressed_move;
+}
 
+//----------------------------------------------------------------------
+inline auto FMouseUrxvt::isMouseWheelButton (const int btn) const noexcept -> bool
+{
+  return btn == button_up
+      || btn == button_down
+      || btn == button_left
+      || btn == button_right;
+}
+
+//----------------------------------------------------------------------
+inline auto FMouseUrxvt::parseUrxvtMouseString (FMouseUrxvt::Tokens& token) const noexcept -> ParseError
+{
+  // Parse the Urxvt mouse string
+  token.p = urxvt_mouse.data();
+
+  // Parse button
+  if ( ! parseNumberIf (token.p, token.btn, [] (char ch) { return ch != ';'; }) )
+    return ParseError::Yes;
+
+  if ( *++token.p == '-' )
+  {
+    token.p++;
+    token.x_neg = true;
+  }
+
+  // Parse x-value
+  if ( ! parseNumberIf (token.p, token.x, [] (char ch) { return ch != ';'; }) )
+    return ParseError::Yes;
+
+  if ( *++token.p == '-' )
+  {
+    token.p++;
+    token.y_neg = true;
+  }
+
+  // Parse y-value
+  if ( ! parseNumberIf (token.p, token.y, [] (char ch) { return ch != 'M'; }) )
+    return ParseError::Yes;
+
+  return ParseError::No;
+}
+
+//----------------------------------------------------------------------
+inline void FMouseUrxvt::adjustAndSetPosition (FMouseUrxvt::Tokens& token)
+{
+  if ( token.x_neg || token.x == 0 )
+    token.x = 1;
+
+  if ( token.y_neg || token.y == 0 )
+    token.y = 1;
+
+  token.x = std::min(token.x, sInt16(getMaxWidth()));
+  token.y = std::min(token.y, sInt16(getMaxHeight()));
+  setNewPos(token.x, token.y);
+}
+
+//----------------------------------------------------------------------
+inline auto FMouseUrxvt::noChanges (const FPoint& mouse_position, uChar btn) const noexcept -> bool
+{
+  return mouse_position == getNewPos()
+      && ! isWheelUp()
+      && ! isWheelDown()
+      && ! isWheelLeft()
+      && ! isWheelRight()
+      && urxvt_button_state == uChar(btn);
+}
+
+//----------------------------------------------------------------------
+void FMouseUrxvt::handleMouseClickButton ( int btn
+                                         , const TimeValue& time) noexcept
+{
   const auto& mouse_position = getPos();
 
-  switch ( btn )
+  if ( btn == button1_pressed || btn == button1_pressed_move )
   {
-    case button1_pressed:
-    case button1_pressed_move:
-      if ( mouse_position == getNewPos()
-        && urxvt_button_state == all_buttons_released
-        && ! isDblclickTimeout(getMousePressedTime()) )
-      {
-        resetMousePressedTime();
-        getButtonState().left_button = State::DoubleClick;
-      }
-      else
-      {
-        setMousePressedTime (time);  // save click time
-        getButtonState().left_button = State::Pressed;
-      }
-      break;
-
-    case button2_pressed:
-    case button2_pressed_move:
+    if ( mouse_position == getNewPos()
+      && urxvt_button_state == all_buttons_released
+      && ! isDblclickTimeout(getMousePressedTime()) )
+    {
       resetMousePressedTime();
-      getButtonState().middle_button = State::Pressed;
-      break;
-
-    case button3_pressed:
-    case button3_pressed_move:
-      resetMousePressedTime();
-      getButtonState().right_button = State::Pressed;
-      break;
-
-    case all_buttons_released:
-      handleButtonRelease();
-      break;
-
-    case button_up:
-      resetMousePressedTime();
-      getButtonState().wheel_up = true;
-      break;
-
-    case button_down:
-      resetMousePressedTime();
-      getButtonState().wheel_down = true;
-      break;
-
-    case button_left:
-      resetMousePressedTime();
-      getButtonState().wheel_left = true;
-      break;
-
-    case button_right:
-      resetMousePressedTime();
-      getButtonState().wheel_right = true;
-      break;
-
-      default:
-        break;
+      getButtonState().left_button = State::DoubleClick;
+    }
+    else
+    {
+      setMousePressedTime(time); // save click time
+      getButtonState().left_button = State::Pressed;
+    }
+  }
+  else if ( btn == button2_pressed || btn == button2_pressed_move )
+  {
+    resetMousePressedTime();
+    getButtonState().middle_button = State::Pressed;
+  }
+  else if ( btn == button3_pressed || btn == button3_pressed_move )
+  {
+    resetMousePressedTime();
+    getButtonState().right_button = State::Pressed;
   }
 }
 
@@ -1289,6 +1384,53 @@ void FMouseUrxvt::handleButtonRelease() noexcept
 
     default:
       break;
+  }
+}
+
+//----------------------------------------------------------------------
+void FMouseUrxvt::handleMouseWheelButton (int btn) noexcept
+{
+  resetMousePressedTime();
+
+  switch ( btn )
+  {
+    case button_up:
+      getButtonState().wheel_up = true;
+      break;
+
+    case button_down:
+      getButtonState().wheel_down = true;
+      break;
+
+    case button_left:
+      getButtonState().wheel_left = true;
+      break;
+
+    case button_right:
+      getButtonState().wheel_right = true;
+      break;
+
+    default:
+      break;
+  }
+}
+
+//----------------------------------------------------------------------
+void FMouseUrxvt::setButtonState (const int btn, const TimeValue& time) noexcept
+{
+  // Get the urxvt mouse button state
+
+  if ( isMouseClickButton(btn) )
+  {
+    handleMouseClickButton (btn, time);
+  }
+  else if ( btn == all_buttons_released )
+  {
+    handleButtonRelease();
+  }
+  else if ( isMouseWheelButton(btn) )
+  {
+    handleMouseWheelButton(btn);
   }
 }
 
@@ -1732,7 +1874,10 @@ void FMouseControl::xtermMouse (bool enable) const
   if ( ! use_xterm_mouse )
     return;
 
-  FTermXTerminal::setMouseSupport (enable);
+  if ( enable )
+    enable_xterm_mouse_cmd.execute();
+  else
+    disable_xterm_mouse_cmd.execute();
 }
 
 //----------------------------------------------------------------------

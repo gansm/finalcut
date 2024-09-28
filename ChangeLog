@@ -1,3 +1,70 @@
+2024-09-21  Markus Gans  <guru.mail@muenster.de>
+	* Change the widget color theme for non-focused list items
+
+2024-07-21  Markus Gans  <guru.mail@muenster.de>
+	* The hasPreprocessingHandler() method has been added to FVTerm
+
+2024-07-07  Markus Gans  <guru.mail@muenster.de>
+	* Avoid left overflows in area changes for smaller dialogs 
+	  in drawGenericBox() and FScrollView::copy2area()
+	* Add a setWidth() and setHeight() method to FDialog
+
+2024-04-04  Markus Gans  <guru.mail@muenster.de>
+	* Avoid printing scrollbar overrun on emit callback
+
+2024-04-02  Markus Gans  <guru.mail@muenster.de>
+	* Implementation of the mouse selection in the FTextView. Can be 
+	  activated by setSelectable()
+	* Add a setLines() method to FTextView
+
+2024-03-26  Markus Gans  <guru.mail@muenster.de>
+	* Visual highlighting of the selected text in FTextView
+
+2024-03-25  Markus Gans  <guru.mail@muenster.de>
+	* FTextView gets the ability to select text between a start and 
+	  end position
+
+2024-02-14  Markus Gans  <guru.mail@muenster.de>
+	* Optimize FChar operations and processing
+
+2024-02-07  Markus Gans  <guru.mail@muenster.de>
+	* Escape sequences can now be used to repeat UTF-8 characters, which 
+	  increases the display speed
+
+2023-12-30  Markus Gans  <guru.mail@muenster.de>
+	* FColorPair can now be used as input for FVTermAttribute::setColor
+
+2023-12-21  Markus Gans  <guru.mail@muenster.de>
+	* FListBox now has a findItem method
+
+2023-12-10  Markus Gans  <guru.mail@muenster.de>
+	* Permit message box without buttons
+
+2023-11-26  Markus Gans  <guru.mail@muenster.de>
+	* Fix incorrectly calculated coordinates in FScrollView 
+	  on position changes
+	* Minor speed improvements in the terminal display
+
+2023-11-11  Markus Gans  <guru.mail@muenster.de>
+	* Optimized mouse string parser
+
+2023-11-03  Markus Gans  <guru.mail@muenster.de>
+	* Reorganize the data structure of widget color theme
+
+2023-10-30  Markus Gans  <guru.mail@muenster.de>
+	* Terminal detection can be turned off again
+	* The missing null pointer check has been added to the constructor 
+	  of FWindow
+
+2023-10-26  Markus Gans  <guru.mail@muenster.de>
+	* Reorganize the data structure of FOptiMove
+
+2023-10-25  Markus Gans  <guru.mail@muenster.de>
+	* Reorganize the data structure of FVTerm::FTermArea
+
+2023-10-23  Markus Gans  <guru.mail@muenster.de>
+	* Reorganize the data structure of FOptiAttr
+
 2023-10-14  Markus Gans  <guru.mail@muenster.de>
 	* Switch to a readers-writer lock for the timer list
 

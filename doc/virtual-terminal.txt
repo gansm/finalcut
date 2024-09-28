@@ -13,25 +13,23 @@ printf(...)
   │
   │          ╔════════════════════════[ vterm ]════════════════════════╗
   │          ║createVTerm()                                            ║
-  │          ║                               ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐ ║
+  │          ║                                   ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐ ║
   │          ║                                                         ║
-  │          ║                               │ restoreVTerm(x,y,w,h) │ ║
+  │          ║                                   │ restoreVTerm(box) │ ║
   │  ┌───────╨────[ vwin ]────────────┐                                ║
-  │  │createArea(area)                │      └ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘ ║
+  │  │createArea(size)                │          └ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘ ║
   │  │                                │                                ║
   │  │                                │                                ║
-  └──┼────────►                  putArea(area) ────►                   ║
+  └──┼────────►                putArea(pos,area) ────►                 ║
      │                                │                                ║
-     │                         putArea(x,y,area) ────►                 ║
-     │                                │                                ║
-     │                   ◄──── getArea(x,y,area)                       ║
+     │                   ◄──── getArea(pos,area)                       ║
      │                                │                                ║
      │                                │                                ║
      │                                │                                ║
-     │                resizeArea(area)│                                ║
+     │          resizeArea(size, area)│                                ║
      └───────╥────────────────────────┘                                ║
              ║                                                         ║
-             ║       │                                    resizeVTerm()║
+             ║       │                                resizeVTerm(size)║
              ╚═══════▼═════════════════════════════════════════════════╝
                      │
                      │   putVTerm()
@@ -42,8 +40,8 @@ printf(...)
                                            │ output_buffer │
                                            └───────────────┘
                                                    │
-                                                   │ flushOutputBuffer()
-                                                   │ and putchar(char)
+                                                   │ flush()
+                                                   │
                                                    ▼
                                            ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
                                            ▌               ▐

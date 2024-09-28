@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2021 Markus Gans                                      *
+* Copyright 2020-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -31,8 +31,8 @@ namespace finalcut
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FColorPalette::FColorPalette (const FSetPalette& f)
-  : set_palette{f}
+FColorPalette::FColorPalette (FSetPalette f)
+  : set_palette{std::move(f)}
 { }
 
 //----------------------------------------------------------------------
@@ -82,8 +82,8 @@ void FColorPalette::setVGAdefaultPalette() const
 
 // constructors and destructor
 //----------------------------------------------------------------------
-default8ColorPalette::default8ColorPalette (const FSetPalette& f)
-  : FColorPalette(f)
+default8ColorPalette::default8ColorPalette (FSetPalette f)
+  : FColorPalette(std::move(f))
 { }
 
 //----------------------------------------------------------------------
@@ -126,8 +126,8 @@ void default8ColorPalette::resetColorPalette()
 
 // constructors and destructor
 //----------------------------------------------------------------------
-default16ColorPalette::default16ColorPalette (const FSetPalette& f)
-  : FColorPalette(f)
+default16ColorPalette::default16ColorPalette (FSetPalette f)
+  : FColorPalette(std::move(f))
 { }
 
 //----------------------------------------------------------------------
@@ -169,8 +169,8 @@ void default16ColorPalette::resetColorPalette()
 
 // constructors and destructor
 //----------------------------------------------------------------------
-default16DarkColorPalette::default16DarkColorPalette (const FSetPalette& f)
-  : FColorPalette(f)
+default16DarkColorPalette::default16DarkColorPalette (FSetPalette f)
+  : FColorPalette(std::move(f))
 { }
 
 //----------------------------------------------------------------------

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2023 Markus Gans                                      *
+* Copyright 2012-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -136,12 +136,21 @@ class FScrollbar : public FWidget
     auto getClickedScrollType (int, int) const -> ScrollType;
     auto getVerticalClickedScrollType (int) const -> ScrollType;
     auto getHorizontalClickedScrollType (int) const -> ScrollType;
+    auto getNewFontHorizontalScrollType (int) const -> ScrollType;
+    auto getHorizontalScrollType (int) const -> ScrollType;
     auto getSliderClickPos (int, int) const -> int;
+    auto isMouseOutsideScrollbar (int, int) const -> bool;
+    auto shouldStopTimer() const -> bool;
     void jumpToClickPos (int, int);
     void jumpToClickPos (int);
+    void handleJumpScroll (int, int);
+    void stopTimer();
     void avoidScrollOvershoot();
     void processScroll();
     void changeOnResize();
+    void handleWidgetFocus() const;
+    void handleSliderClick (int, int);
+    void handleTrackClick (int, int);
 
     // Data members
     ScrollType   scroll_type{ScrollType::None};

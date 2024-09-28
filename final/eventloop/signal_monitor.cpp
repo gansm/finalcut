@@ -154,37 +154,65 @@ void SignalMonitor::onSignal (int signal_number)
 //----------------------------------------------------------------------
 void SignalMonitor::init()
 {
-  static auto& signal_monitors = getSignalMonitorMap();
-  static const auto& fsystem = FSystem::getInstance();
   setEvents (POLLIN);
+  handledAlarmSignal();
+  ensureSignalIsUnmonitored();
+  createPipe();
+  installSignalHandler();
+  enterMonitorInstanceInTable();
+  setInitialized();
+}
 
+//----------------------------------------------------------------------
+inline void SignalMonitor::handledAlarmSignal() const
+{
   // SIGALRM is handled by the posix timer monitor
+
   if ( SIGALRM == signal_number )
     throw std::invalid_argument{"signal_number must not be SIGALRM."};
+}
 
+//----------------------------------------------------------------------
+inline void SignalMonitor::ensureSignalIsUnmonitored() const
+{
   // Each signal can only be managed by one monitor instance
-  if ( signal_monitors.find(signal_number) != signal_monitors.end() )
-  {
-    throw std::invalid_argument
-    {
-      "The specified signal is already being handled by another "
-      "monitor instance."
-    };
-  }
 
+  static auto& signal_monitors = getSignalMonitorMap();
+
+  if ( signal_monitors.find(signal_number) == signal_monitors.end() )
+    return;  // Not found
+
+  throw std::invalid_argument
+  {
+    "The specified signal is already being handled by another "
+    "monitor instance."
+  };
+}
+
+//----------------------------------------------------------------------
+inline void SignalMonitor::createPipe()
+{
   // Set up pipe for notification
+
+  static const auto& fsystem = FSystem::getInstance();
+
   if ( fsystem->pipe(signal_pipe) != 0 )
   {
     throw monitor_error{"No pipe could be set up for the signal monitor."};
   }
 
   setFileDescriptor(signal_pipe.getReadFd());  // Read end of pipe
+}
 
+//----------------------------------------------------------------------
+inline void SignalMonitor::installSignalHandler()
+{
   // Install signal handler
   struct sigaction sig_action{};
   sig_action.sa_handler = onSignal;
   sigemptyset(&sig_action.sa_mask);
   sig_action.sa_flags = 0;
+  static const auto& fsystem = FSystem::getInstance();
 
   if ( fsystem->sigaction( signal_number, &sig_action
                          , getSigactionImpl()->getSigaction() ) != 0 )
@@ -196,10 +224,15 @@ void SignalMonitor::init()
     std::system_error sys_err{err_code, strerror(Error)};
     throw sys_err;
   }
+}
 
+//----------------------------------------------------------------------
+inline void SignalMonitor::enterMonitorInstanceInTable()
+{
   // Enter the monitor instance in the assignment table
+
+  static auto& signal_monitors = getSignalMonitorMap();
   signal_monitors[signal_number] = this;
-  setInitialized();
 }
 
 //----------------------------------------------------------------------

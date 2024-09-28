@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2023 Markus Gans                                      *
+* Copyright 2015-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -59,8 +59,8 @@ FMenuBar::~FMenuBar()  // destructor
 void FMenuBar::resetColors()
 {
   const auto& wc = getColorTheme();
-  setForegroundColor (wc->menu_active_fg);
-  setBackgroundColor (wc->menu_active_bg);
+  FWidget::setForegroundColor (wc->menu.fg);
+  FWidget::setBackgroundColor (wc->menu.bg);
   FWidget::resetColors();
 }
 
@@ -75,8 +75,8 @@ void FMenuBar::resetMenu()
 void FMenuBar::hide()
 {
   const auto& wc = getColorTheme();
-  const auto& fg = wc->term_fg;
-  const auto& bg = wc->term_bg;
+  const auto& fg = wc->term.fg;
+  const auto& bg = wc->term.bg;
   setColor (fg, bg);
   print() << FPoint{1, 1} << FString{getDesktopWidth(), L' '};
   FWindow::hide();
@@ -225,15 +225,15 @@ void FMenuBar::init()
   // initialize geometry values
   FWindow::setGeometry (FPoint{1, 1}, FSize{w, 1}, false);
   setAlwaysOnTop();
-  setMenuBar(this);
+  FWidget::setMenuBar(this);
   ignorePadding();
 
   if ( getRootWidget() )
     getRootWidget()->setTopPadding(1, true);
 
-  addAccelerator (FKey::F10);
-  addAccelerator (FKey::Ctrl_space);
-  addAccelerator (FKey::Menu);
+  FMenuBar::addAccelerator (FKey::F10, this);
+  FMenuBar::addAccelerator (FKey::Ctrl_space, this);
+  FMenuBar::addAccelerator (FKey::Menu, this);
   FMenuBar::resetColors();
   unsetFocusable();
 }
@@ -396,7 +396,7 @@ inline void FMenuBar::drawItem (FMenuItem* menuitem, std::size_t& x)
   drawTrailingSpace (x);
 
   const auto& wc = getColorTheme();
-  setColor (wc->menu_active_fg, wc->menu_active_bg);
+  setColor (wc->menu.fg, wc->menu.bg);
 
   if ( FVTerm::getFOutput()->isMonochron() && is_enabled && is_selected )
     setReverse(true);
@@ -416,19 +416,19 @@ inline void FMenuBar::setLineAttributes (const FMenuItem* menuitem)
       if ( FVTerm::getFOutput()->isMonochron() )
         setReverse(false);
 
-      setForegroundColor (wc->menu_active_focus_fg);
-      setBackgroundColor (wc->menu_active_focus_bg);
+      setForegroundColor (wc->menu.focus_fg);
+      setBackgroundColor (wc->menu.focus_bg);
     }
     else
     {
-      setForegroundColor (wc->menu_active_fg);
-      setBackgroundColor (wc->menu_active_bg);
+      setForegroundColor (wc->menu.fg);
+      setBackgroundColor (wc->menu.bg);
     }
   }
   else
   {
-    setForegroundColor (wc->menu_inactive_fg);
-    setBackgroundColor (wc->menu_inactive_bg);
+    setForegroundColor (wc->menu.inactive_fg);
+    setBackgroundColor (wc->menu.inactive_bg);
   }
 
   setColor();
@@ -463,7 +463,7 @@ inline void FMenuBar::drawMenuText (menuText& data)
     if ( data.startpos > screenWidth - z )
       break;
 
-    if ( ! std::iswprint(std::wint_t(data.text[z]))
+    if ( ! isPrintable(data.text[z])
       && ! FVTerm::getFOutput()->isNewFont()
       && ( data.text[z] < UniChar::NF_rev_left_arrow2
         || data.text[z] > UniChar::NF_check_mark ) )
@@ -474,7 +474,7 @@ inline void FMenuBar::drawMenuText (menuText& data)
     if ( z == data.hotkeypos )
     {
       const auto& wc = getColorTheme();
-      setColor (wc->menu_hotkey_fg, wc->menu_hotkey_bg);
+      setColor (wc->menu.hotkey_fg, wc->menu.hotkey_bg);
 
       if ( ! data.no_underline )
         setUnderline();
@@ -670,6 +670,19 @@ void FMenuBar::unselectMenuItem (FMenuItem* item)
 }
 
 //----------------------------------------------------------------------
+inline auto FMenuBar::isClickOnMenuEntry ( const FMouseEvent* ev
+                                         , const FMenuItem* item ) const -> bool
+{
+  const int mouse_x = ev->getX();
+  const int mouse_y = ev->getY();
+  const int x1 = item->getX();
+  const int x2 = item->getX() + int(item->getWidth());
+  return mouse_x >= x1
+      && mouse_x < x2
+      && mouse_y == 1;
+}
+
+//----------------------------------------------------------------------
 void FMenuBar::mouseDownOverList (const FMouseEvent* ev)
 {
   const auto& list = getItemList();
@@ -678,17 +691,12 @@ void FMenuBar::mouseDownOverList (const FMouseEvent* ev)
     return;
 
   focus_changed = false;
-  int mouse_x = ev->getX();
-  int mouse_y = ev->getY();
 
   for (auto&& item : list)
   {
-    int x1 = item->getX();
-    int x2 = item->getX() + int(item->getWidth());
-
-    if ( mouse_y == 1 )
+    if ( ev->getY() == 1 )
     {
-      if ( mouse_x >= x1 && mouse_x < x2 )
+      if ( isClickOnMenuEntry(ev, item) )
         selectMenuItem (item);  // Mouse pointer over item
       else
         unselectMenuItem (item);
@@ -715,17 +723,9 @@ void FMenuBar::mouseUpOverList (const FMouseEvent* ev)
   if ( list.empty() )
     return;
 
-  int mouse_x = ev->getX();
-  int mouse_y = ev->getY();
-
   for (auto&& item : list)
   {
-    int x1 = item->getX();
-    int x2 = item->getX() + int(item->getWidth());
-
-    if ( mouse_y == 1
-      && mouse_x >= x1
-      && mouse_x < x2
+    if ( isClickOnMenuEntry(ev, item)
       && item->isEnabled()
       && item->isSelected() )
     {
@@ -754,20 +754,13 @@ void FMenuBar::mouseMoveOverList (const FMouseEvent& ev)
 
   focus_changed = false;
   bool mouse_over_menubar{false};
-  int mouse_x = ev.getX();
-  int mouse_y = ev.getY();
 
   if ( getTermGeometry().contains(ev.getTermPos()) )
     mouse_over_menubar = true;
 
   for (auto&& item : list)
   {
-    int x1 = item->getX();
-    int x2 = item->getX() + int(item->getWidth());
-
-    if ( mouse_x >= x1
-      && mouse_x < x2
-      && mouse_y == 1 )
+    if ( isClickOnMenuEntry(&ev, item) )
     {
       // Mouse pointer over item
       selectMenuItem(item);

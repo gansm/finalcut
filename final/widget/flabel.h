@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2023 Markus Gans                                      *
+* Copyright 2014-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -64,6 +64,7 @@ class FLabel : public FWidget
   public:
     // Using-declaration
     using FWidget::setEnable;
+    using FWidget::delAccelerator;
 
     // Constructor
     explicit FLabel (FWidget* = nullptr);
@@ -90,7 +91,12 @@ class FLabel : public FWidget
     auto operator << (const typeT&) -> FLabel&;
     auto operator << (UniChar) -> FLabel&;
     auto operator << (const wchar_t) -> FLabel&;
-    auto operator >> (FString&) const -> const FLabel&;
+
+    friend inline auto operator >> (const FLabel& lhs, FString& rhs) -> const FLabel&
+    {
+      rhs += lhs.text;
+      return lhs;
+    }
 
     // Accessors
     auto getClassName() const -> FString override;

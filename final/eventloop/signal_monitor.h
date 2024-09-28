@@ -67,6 +67,12 @@ class SignalMonitor final : public Monitor
     // Destructor
     ~SignalMonitor() noexcept override;
 
+    // Disable copy assignment operator (=)
+    auto operator = (const SignalMonitor&) -> SignalMonitor& = delete;
+
+    // Disable move assignment operator (=)
+    auto operator = (SignalMonitor&&) noexcept -> SignalMonitor& = delete;
+
     // Accessor
     auto getClassName() const -> FString override;
 
@@ -79,15 +85,14 @@ class SignalMonitor final : public Monitor
     // class forward declaration
     class SigactionImpl;
 
-    // Disable copy assignment operator (=)
-    auto operator = (const SignalMonitor&) -> SignalMonitor& = delete;
-
-    // Disable move assignment operator (=)
-    auto operator = (SignalMonitor&&) noexcept -> SignalMonitor& = delete;
-
     // Methods
     static void onSignal (int);
     void init();
+    void handledAlarmSignal() const;
+    void ensureSignalIsUnmonitored() const;
+    void createPipe();
+    void installSignalHandler();
+    void enterMonitorInstanceInTable();
     auto getSigactionImpl() const -> const SigactionImpl*;
     auto getSigactionImpl() -> SigactionImpl*;
 

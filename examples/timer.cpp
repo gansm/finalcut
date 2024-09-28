@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2022 Markus Gans                                      *
+* Copyright 2014-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -52,8 +52,8 @@ Timer::Timer (finalcut::FWidget* parent)
   const int id = addTimer (50);  // 50-millisecond timer
   delTimer (id);
 
-  getColorTheme()->term_fg = finalcut::FColor::Default;
-  getColorTheme()->term_bg = finalcut::FColor::Default;
+  getColorTheme()->term.fg = finalcut::FColor::Default;
+  getColorTheme()->term.bg = finalcut::FColor::Default;
 }
 
 //----------------------------------------------------------------------

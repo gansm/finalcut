@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021-2023 Markus Gans                                      *
+* Copyright 2021-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -54,6 +54,8 @@ auto isFocusPrevKey (const FKey) -> bool;
 auto isDialogMenuKey (const FKey) -> bool;
 auto isEnterKey (const FKey) -> bool;
 auto isEscapeKey (const FKey) -> bool;
+auto isExpandComboBoxKey (const FKey) -> bool;
+auto isCollapseComboBoxKey (const FKey) -> bool;
 auto getFirstFocusableWidget (const FObjectList&) -> FWidget*;
 auto getLastFocusableWidget (const FObjectList&) -> FWidget*;
 auto isInFWidgetList (const FWidgetList*, const FWidget*) -> bool;

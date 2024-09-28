@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021 Markus Gans                                           *
+* Copyright 2021-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -132,6 +132,11 @@ void FVTermAttributeTest::setAttributeTest()
   CPPUNIT_ASSERT ( attribute.getAttribute().attr.byte[1] == uInt8(0) );
   CPPUNIT_ASSERT ( attribute.getAttribute().attr.byte[2] == uInt8(0) );
   CPPUNIT_ASSERT ( attribute.getAttribute().attr.byte[3] == uInt8(0) );
+  // Set color (light red text on black background)
+  const finalcut::FColorPair color_pair (finalcut::FColor::LightRed, finalcut::FColor::Black);
+  attribute.setColor(color_pair);
+  CPPUNIT_ASSERT ( attribute.getAttribute().fg_color == finalcut::FColor::LightRed );
+  CPPUNIT_ASSERT ( attribute.getAttribute().bg_color == finalcut::FColor::Black );
 
   // Data that will never be modified by this class
   attribute.getAttribute().attr.bit.printed = true;

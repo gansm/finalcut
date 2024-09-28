@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2023 Markus Gans                                           *
+* Copyright 2023-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -32,6 +32,10 @@
 namespace finalcut
 {
 
+// Function forward declarations
+auto readFromPipe (int, uint64_t&, std::size_t) -> std::size_t;
+
+
 // Event loop non-member functions
 //----------------------------------------------------------------------
 void drainPipe (int fd)
@@ -45,20 +49,24 @@ void drainPipe (int fd)
   // Ensure that the correct number of bytes are read from the pipe
   while ( bytes_read < buffer_size )
   {
-    auto current_bytes_read = ::read(fd, &buffer, buffer_size - bytes_read);
-
-    if ( current_bytes_read == -1 )
-    {
-      int error{errno};
-      std::error_code err_code{error, std::generic_category()};
-      std::system_error sys_err{err_code, strerror(error)};
-      throw sys_err;
-    }
-    else
-    {
-      bytes_read += static_cast<std::size_t>(current_bytes_read);
-    }
+     bytes_read += readFromPipe (fd, buffer, buffer_size - bytes_read);
   }
+}
+
+//----------------------------------------------------------------------
+inline auto readFromPipe (int fd, uint64_t& buffer, std::size_t bytes_to_read) -> std::size_t
+{
+  auto current_bytes_read = ::read(fd, &buffer, bytes_to_read);
+
+  if ( current_bytes_read < 0 )  // Underflow safe for all negative numbers
+  {
+    int error{errno};
+    std::error_code err_code{error, std::generic_category()};
+    std::system_error sys_err{err_code, strerror(error)};
+    throw sys_err;
+  }
+
+  return static_cast<std::size_t>(current_bytes_read);
 }
 
 }  // namespace finalcut

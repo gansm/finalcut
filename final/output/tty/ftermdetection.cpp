@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2023 Markus Gans                                      *
+* Copyright 2018-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -25,8 +25,10 @@
 #endif
 
 #include <array>
+#include <functional>
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 #include "final/fapplication.h"
 #include "final/fc.h"
@@ -94,9 +96,6 @@ void FTermDetection::setTtyTypeFileName (const FString& ttytype_filename)
 //----------------------------------------------------------------------
 void FTermDetection::detect()
 {
-  // Reset terminal_detection for the 2nd detectio run
-  terminal_detection = true;
-
   // Set the variable 'termtype' to the predefined type of the terminal
   getSystemTermType();
 
@@ -150,15 +149,7 @@ auto FTermDetection::getTTYtype() -> bool
   // linux  tty1
   // vt100  ttys0
 
-  // Get term basename
-  const auto& termfilename = FTermData::getInstance().getTermFileName();
-  const char* term_basename = std::strrchr(termfilename.data(), '/');
-
-  if ( term_basename == nullptr )
-    term_basename = termfilename.data();
-  else
-    term_basename++;
-
+  auto* term_basename = getTermBasename();
   std::FILE* file_ptr{};
   std::array<char, BUFSIZ> str{};
   static const auto& fsystem = FSystem::getInstance();
@@ -204,15 +195,7 @@ auto FTermDetection::getTTYSFileEntry() -> bool
 {
   // Analyse /etc/ttys and get the term name (used in BSD Unix)
 
-  // get term basename
-  const auto& termfilename = FTermData::getInstance().getTermFileName();
-  const char* term_basename = std::strrchr(termfilename.data(), '/');
-
-  if ( term_basename == nullptr )
-    term_basename = termfilename.data();
-  else
-    term_basename++;
-
+  auto* term_basename = getTermBasename();
   const struct ttyent* ttys_entryt;
   ttys_entryt = getttynam(term_basename);
 
@@ -235,80 +218,107 @@ auto FTermDetection::getTTYSFileEntry() -> bool
 #endif  // F_HAVE_GETTTYNAM
 
 //----------------------------------------------------------------------
+auto FTermDetection::getTermBasename() const -> const char*
+{
+  // Get the terminal basename
+  const auto& termfilename = FTermData::getInstance().getTermFileName();
+  const char* term_basename = std::strrchr(termfilename.data(), '/');
+
+  if ( term_basename == nullptr )
+    term_basename = termfilename.data();
+  else
+    term_basename++;
+
+  return term_basename;
+}
+
+//----------------------------------------------------------------------
 void FTermDetection::termtypeAnalysis()
 {
   static auto& fterm_data = FTermData::getInstance();
-
-  // Cygwin console
-  if ( termtype.left(6) == "cygwin" )
-    fterm_data.setTermType (FTermType::cygwin);
-
-  // rxvt terminal emulator (native MS Window System port) on cygwin
-  if ( termtype == "rxvt-cygwin-native" )
-    fterm_data.setTermType (FTermType::rxvt);
-
-  // ANSI X3.64 terminal
-  if ( termtype.left(4) == "ansi" )
+  const TermTypeMap term_type_map =
   {
+    // Cygwin console
+    { L"cygwin"             , FTermType::cygwin },
+    // rxvt terminal emulator (native MS Window System port) on cygwin
+    { L"rxvt-cygwin-native" , FTermType::rxvt },
+    // ANSI X3.64 terminal
+    { L"ansi"               , FTermType::ansi },
+    // Sun Microsystems workstation console
+    { L"sun"                , FTermType::sun_con },
+    // Kterm
+    { L"kterm"              , FTermType::kterm },
+    // mlterm
+    { L"mlterm"             , FTermType::mlterm },
+    // st - simple terminal
+    { L"st-256color"        , FTermType::stterm },
+    // rxvt
+    { L"rxvt"               , FTermType::rxvt },
+    // urxvt
+    { L"rxvt-unicode"       , FTermType::urxvt },
+    // screen or tmux with termtype screen
+    { L"screen"             , FTermType::screen },
+    // tmux
+    { L"tmux"               , FTermType::tmux },
+    // Linux console
+    { L"linux"              , FTermType::linux_con },
+    { L"con"                , FTermType::linux_con },
+    // NetBSD workstation console
+    { L"wsvt25"             , FTermType::netbsd_con },
+    // kitty
+    { L"xterm-kitty"        , FTermType::kitty },
+    // alacritty
+    { L"alacritty"          , FTermType::xterm }
+  };
+
+  auto iter = findMatchingTerm(term_type_map);
+
+  if ( iter == term_type_map.end() )  // not found
+    return;
+
+  fterm_data.setTermType (iter->second);
+
+  if ( isTerminalWithoutDetection() )
     terminal_detection = false;
-    fterm_data.setTermType (FTermType::ansi);
-  }
 
-  // Sun Microsystems workstation console
-  if ( termtype.left(3) == "sun" )
+  handleScreenAndTmux();
+}
+
+//----------------------------------------------------------------------
+inline auto FTermDetection::findMatchingTerm (const TermTypeMap& map) -> TermTypeMap::const_iterator
+{
+  auto search_predicate = [this] (const auto& pair)
   {
-    terminal_detection = false;
-    fterm_data.setTermType (FTermType::sun_con);
-  }
+    return startsWithTermType(pair.first);
+  };
 
-  // Kterm
-  if ( termtype.left(5) == "kterm" )
+  return std::find_if (map.begin(), map.end(), search_predicate);
+}
+
+//----------------------------------------------------------------------
+inline auto FTermDetection::isTerminalWithoutDetection() const -> bool
+{
+  static const auto& fterm_data = FTermData::getInstance();
+
+  return fterm_data.isTermType(FTermType::ansi)
+      || fterm_data.isTermType(FTermType::sun_con)
+      || fterm_data.isTermType(FTermType::kterm);
+}
+
+//----------------------------------------------------------------------
+inline void FTermDetection::handleScreenAndTmux() const
+{
+  static auto& fterm_data = FTermData::getInstance();
+
+  if ( fterm_data.isTermType(FTermType::screen) )
   {
-    terminal_detection = false;
-    fterm_data.setTermType (FTermType::kterm);
-  }
-
-  // mlterm
-  if ( termtype.left(6) == "mlterm" )
-    fterm_data.setTermType (FTermType::mlterm);
-
-  // st - simple terminal
-  if ( termtype.left(11) == "st-256color" )
-    fterm_data.setTermType (FTermType::stterm);
-
-  // rxvt
-  if ( termtype.left(4) == "rxvt" )
-    fterm_data.setTermType (FTermType::rxvt);
-
-  // urxvt
-  if ( termtype.left(12) == "rxvt-unicode" )
-    fterm_data.setTermType (FTermType::urxvt);
-
-  // screen/tmux
-  if ( termtype.left(6) == "screen" )
-  {
-    fterm_data.setTermType (FTermType::screen);
     auto tmux = std::getenv("TMUX");
 
     if ( tmux && tmux[0] != '\0' )
       fterm_data.setTermType (FTermType::tmux);
   }
-
-  // Linux console
-  if ( termtype.left(5) == "linux" || termtype.left(3) == "con" )
-    fterm_data.setTermType (FTermType::linux_con);
-
-  // NetBSD workstation console
-  if ( termtype.left(6) == "wsvt25" )
-    fterm_data.setTermType (FTermType::netbsd_con);
-
-  // kitty
-  if ( termtype.left(11) == "xterm-kitty" )
-    fterm_data.setTermType (FTermType::kitty);
-
-  // alacritty
-  if ( termtype.left(9) == "alacritty" )
-    fterm_data.setTermType (FTermType::xterm);
+  else if ( fterm_data.isTermType(FTermType::tmux) )
+    fterm_data.setTermType (FTermType::screen);
 }
 
 //----------------------------------------------------------------------
@@ -346,7 +356,7 @@ void FTermDetection::detectTerminal()
   static auto& fterm_data = FTermData::getInstance();
 
   // Test if the terminal is a xterm
-  if ( termtype.left(5) == "xterm" || termtype.left(5) == "Eterm" )
+  if ( startsWithTermType(L"xterm") || startsWithTermType(L"Eterm") )
   {
     fterm_data.setTermType (FTermType::xterm);
 
@@ -354,14 +364,14 @@ void FTermDetection::detectTerminal()
     if ( ! new_termtype && termtype.getLength() == 5 )
       new_termtype = "xterm-16color";
   }
-  else if ( termtype.left(4) == "ansi" )  // ANSI detection
+  else if ( startsWithTermType(L"ansi") )  // ANSI detection
     fterm_data.setTermType (FTermType::ansi);
 
   // set the new environment variable TERM
   if ( new_termtype )
   {
     setenv("TERM", new_termtype.c_str(), 1);
-    termtype = new_termtype;
+    termtype = std::move(new_termtype);
   }
 
 #if defined(__CYGWIN__)
@@ -376,11 +386,8 @@ void FTermDetection::detectTerminal()
 //----------------------------------------------------------------------
 auto FTermDetection::init_256colorTerminal() -> FString
 {
-  if ( get256colorEnvString() || termtype.includes("256color") )
-    color256 = true;
-  else
-    color256 = false;
-
+  color256 = \
+      bool( get256colorEnvString() || termtype.includes("256color") );
   FString new_termtype = termtype_256color_quirks();
 
 #if DEBUG
@@ -436,19 +443,19 @@ auto FTermDetection::termtype_256color_quirks() -> FString
   if ( ! color256 )
     return new_termtype;
 
-  if ( termtype.left(5) == "xterm" )
+  if ( startsWithTermType(L"xterm") )
     new_termtype = "xterm-256color";
 
-  if ( termtype.left(6) == "screen" )
+  if ( startsWithTermType(L"screen") )
     new_termtype = "screen-256color";
 
-  if ( termtype.left(5) == "Eterm" )
+  if ( startsWithTermType(L"Eterm") )
     new_termtype = "Eterm-256color";
 
-  if ( termtype.left(6) == "mlterm" )
+  if ( startsWithTermType(L"mlterm") )
     new_termtype = "mlterm-256color";
 
-  if ( termtype.left(4) == "rxvt"
+  if ( startsWithTermType(L"rxvt")
     && color_env.string1.left(8) == "rxvt-xpm" )
   {
     new_termtype = "rxvt-256color";
@@ -700,78 +707,52 @@ auto FTermDetection::getSecDA() const -> FString
 auto FTermDetection::secDA_Analysis (const FString& current_termtype) -> FString
 {
   FString new_termtype{current_termtype};
+  int terminal_id_type = secondary_da.terminal_id_type;
 
-  switch ( secondary_da.terminal_id_type )
+  // Define a map that associates terminal ID types with functions
+  std::unordered_map<int, std::function<FString(const FString&)>> analysis_functions =
   {
-    case 0:  // DEC VT100
-      new_termtype = secDA_Analysis_0(current_termtype);
-      break;
+    // DEC VT100
+    { 0, [this] (const auto& s) { return secDA_Analysis_0(s); } },
+    // DEC VT220
+    { 1, [this] (const auto& s) { return secDA_Analysis_1(s); } },
+    // DEC VT240
+    { 2, [this] (const auto& s) { return secDA_Analysis_24(s); } },
+    // DEC VT330
+    { 18, [this] (const auto& s) { return secDA_Analysis_24(s); } },
+    // DEC VT340
+    { 19, [this] (const auto& s) { return secDA_Analysis_24(s); } },
+    // DEC VT320
+    { 24, [this] (const auto& s) { return secDA_Analysis_24(s); } },
+    // Tera Term
+    { 32, [this] (const auto&) { return secDA_Analysis_32(); } },
+    // DEC VT420
+    { 41, [] (const auto& s) { return s; } },
+    // DEC VT510
+    { 61, [] (const auto& s) { return s; } },
+    // DEC VT520
+    { 64, [] (const auto& s) { return s; } },
+    // DEC VT525
+    { 65, [this] (const auto& s) { return secDA_Analysis_65(s); } },
+    // Cygwin
+    { 67, [this] (const auto&) { return secDA_Analysis_67(); } },
+    // mintty
+    { 77, [this] (const auto&) { return secDA_Analysis_77(); } },
+    // rxvt
+    { 82, [this] (const auto&) { return secDA_Analysis_82(); } },
+    // screen
+    { 83, [this] (const auto& s) { return secDA_Analysis_83(s); } },
+    // tmux
+    { 84, [this] (const auto& s) { return secDA_Analysis_84(s); } },
+    // rxvt-unicode
+    { 85, [this] (const auto&) { return secDA_Analysis_85(); } }
+  };
 
-    case 1:  // DEC VT220
-      new_termtype = secDA_Analysis_1(current_termtype);
-      break;
+  // Check if the terminal ID type is in the map
+  if ( analysis_functions.find(terminal_id_type) != analysis_functions.end() )
+    new_termtype = analysis_functions[terminal_id_type](current_termtype);
 
-    case 2:   // DEC VT240
-    case 18:  // DEC VT330
-    case 19:  // DEC VT340
-
-    case 24:  // DEC VT320
-      new_termtype = secDA_Analysis_24(current_termtype);
-      break;
-
-    case 32:  // Tera Term
-      new_termtype = secDA_Analysis_32();
-      break;
-
-    case 41:  // DEC VT420
-    case 61:  // DEC VT510
-    case 64:  // DEC VT520
-      break;
-
-    case 65:  // DEC VT525
-      new_termtype = secDA_Analysis_65(current_termtype);
-      break;
-
-    case 67:  // Cygwin
-      new_termtype = secDA_Analysis_67();
-      break;
-
-    case 77:  // mintty
-      new_termtype = secDA_Analysis_77();
-      break;
-
-    case 82:  // rxvt
-      new_termtype = secDA_Analysis_82();
-      break;
-
-    case 83:  // screen
-      new_termtype = secDA_Analysis_83(current_termtype);
-      break;
-
-    case 84:  // tmux
-      new_termtype = secDA_Analysis_84(current_termtype);
-      break;
-
-    case 85:  // rxvt-unicode
-      new_termtype = secDA_Analysis_85();
-      break;
-
-    default:
-      break;
-  }
-
-  // Correct false assumptions
-  auto& fterm_data = FTermData::getInstance();
-
-  if ( fterm_data.isTermType(FTermType::gnome_terminal)
-    && secondary_da.terminal_id_type != 1
-    && secondary_da.terminal_id_type != 65 )
-    fterm_data.unsetTermType (FTermType::gnome_terminal);
-
-  if ( fterm_data.isTermType(FTermType::kde_konsole)
-    && secondary_da.terminal_id_type != 0 )
-    fterm_data.unsetTermType (FTermType::kde_konsole);
-
+  correctFalseAssumptions(terminal_id_type);
   return new_termtype;
 }
 
@@ -830,9 +811,9 @@ inline auto FTermDetection::secDA_Analysis_24 (const FString& current_termtype) 
     // NetBSD/OpenBSD workstation console
     auto& fterm_data = FTermData::getInstance();
 
-    if ( termtype.left(6) == "wsvt25" )
+    if ( startsWithTermType(L"wsvt25") )
       fterm_data.setTermType (FTermType::netbsd_con);
-    else if ( termtype.left(5) == "vt220" )
+    else if ( startsWithTermType(L"vt220") )
     {
       fterm_data.setTermType (FTermType::openbsd_con);
       new_termtype = "pccon";
@@ -893,13 +874,10 @@ inline auto FTermDetection::secDA_Analysis_82() const -> FString
   auto& fterm_data = FTermData::getInstance();
   fterm_data.setTermType (FTermType::rxvt);
 
-  return [this] ()
-  {
-    if ( termtype == "rxvt-cygwin-native" )
-      return  FString("rxvt-16color");
+  if ( termtype == "rxvt-cygwin-native" )
+    return "rxvt-16color";
 
-    return  FString("rxvt");
-  }();
+  return "rxvt";
 }
 
 //----------------------------------------------------------------------
@@ -932,18 +910,13 @@ inline auto FTermDetection::secDA_Analysis_85() const -> FString
   fterm_data.setTermType (FTermType::rxvt);
   fterm_data.setTermType (FTermType::urxvt);
 
-  return [this] ()
-  {
-    if ( termtype.left(5) == "rxvt-" )
-    {
-      if ( color256 )
-        return FString("rxvt-256color");
-
-      return FString("rxvt");
-    }
-
+  if ( ! startsWithTermType(L"rxvt-") )
     return termtype;
-  }();
+
+  if ( color256 )
+    return "rxvt-256color";
+
+  return "rxvt";
 }
 
 //----------------------------------------------------------------------
@@ -991,6 +964,22 @@ inline auto FTermDetection::secDA_Analysis_kitty (const FString& current_termtyp
   }
 
   return new_termtype;
+}
+
+//----------------------------------------------------------------------
+inline void FTermDetection::correctFalseAssumptions (int terminal_id_type) const
+{
+  // Correct false assumptions
+  auto& fterm_data = FTermData::getInstance();
+
+  if ( fterm_data.isTermType(FTermType::gnome_terminal)
+    && terminal_id_type != 1
+    && terminal_id_type != 65 )
+    fterm_data.unsetTermType (FTermType::gnome_terminal);
+
+  if ( fterm_data.isTermType(FTermType::kde_konsole)
+    && terminal_id_type != 0 )
+    fterm_data.unsetTermType (FTermType::kde_konsole);
 }
 
 }  // namespace finalcut

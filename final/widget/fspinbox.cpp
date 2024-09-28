@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2023 Markus Gans                                      *
+* Copyright 2019-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -339,21 +339,21 @@ void FSpinBox::draw()
   const FColorPair inc_button_color = [this, &wc] ()
   {
     if ( value == max )
-      return FColorPair { wc->scrollbar_button_inactive_fg
-                        , wc->scrollbar_button_inactive_bg };
+      return FColorPair { wc->scrollbar.button_inactive_fg
+                        , wc->scrollbar.button_inactive_bg };
 
-    return FColorPair { wc->scrollbar_button_fg
-                      , wc->scrollbar_button_bg };
+    return FColorPair { wc->scrollbar.button_fg
+                      , wc->scrollbar.button_bg };
   }();
 
   const FColorPair dec_button_color = [this, &wc] ()
   {
     if ( value == min )
-      return FColorPair { wc->scrollbar_button_inactive_fg
-                        , wc->scrollbar_button_inactive_bg };
+      return FColorPair { wc->scrollbar.button_inactive_fg
+                        , wc->scrollbar.button_inactive_bg };
 
-    return FColorPair { wc->scrollbar_button_fg
-                      , wc->scrollbar_button_bg };
+    return FColorPair { wc->scrollbar.button_fg
+                      , wc->scrollbar.button_bg };
   }();
 
   print() << FPoint{int(getWidth()) - 1, 1}
@@ -448,11 +448,7 @@ void FSpinBox::cb_inputFieldChange (const FLineEdit& lineedit)
       value = 0;
   }
 
-  if ( value > max )
-    value = max;
-  else if ( value < min )
-    value = min;
-
+  value = std::max(min, std::min(value, max));
   updateInputField();
   processChanged();
 }

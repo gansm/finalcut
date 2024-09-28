@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2022 Markus Gans                                      *
+* Copyright 2016-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -85,9 +85,9 @@ void Button::setChecked (bool enable)
   else
   {
     const auto& wc = getColorTheme();
-    setBackgroundColor(wc->button_active_bg);
-    setFocusForegroundColor(wc->button_active_focus_fg);
-    setFocusBackgroundColor(wc->button_active_focus_bg);
+    setBackgroundColor(wc->button.bg);
+    setFocusForegroundColor(wc->button.focus_fg);
+    setFocusBackgroundColor(wc->button.focus_bg);
   }
 
   redraw();
@@ -413,7 +413,7 @@ void Calc::drawDispay()
   const auto& wc = getColorTheme();
   print() << FColorPair{FColor::Black, FColor::LightGray}
           << FPoint{3, 3} << display << ' '
-          << FColorPair{wc->dialog_fg, wc->dialog_bg};
+          << FColorPair{wc->dialog.fg, wc->dialog.bg};
 
   if ( finalcut::FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
@@ -716,10 +716,7 @@ void Calc::close_bracket (const lDouble&)
 void Calc::log_e (lDouble& x)
 {
   x = std::log(x);
-
-  if ( errno == EDOM || errno == ERANGE )
-    error = true;
-
+  error = bool( errno == EDOM || errno == ERANGE );
   setDisplay(x);
 }
 
@@ -727,10 +724,7 @@ void Calc::log_e (lDouble& x)
 void Calc::power_e (lDouble& x)
 {
   x = std::exp(x);
-
-  if ( errno == ERANGE )
-    error = true;
-
+  error = bool( errno == ERANGE );
   setDisplay(x);
 }
 
@@ -738,10 +732,7 @@ void Calc::power_e (lDouble& x)
 void Calc::log_10 (lDouble& x)
 {
   x = std::log10(x);
-
-  if ( errno == EDOM || errno == ERANGE )
-    error = true;
-
+  error = bool( errno == EDOM || errno == ERANGE );
   setDisplay(x);
 }
 
@@ -749,10 +740,7 @@ void Calc::log_10 (lDouble& x)
 void Calc::power_10 (lDouble& x)
 {
   x = std::pow(10, x);
-
-  if ( errno == EDOM || errno == ERANGE )
-    error = true;
-
+  error = bool( errno == EDOM || errno == ERANGE );
   setDisplay(x);
 }
 
@@ -770,10 +758,7 @@ void Calc::power (const lDouble& x)
 void Calc::square_root (lDouble& x)
 {
   x = std::sqrt(x);
-
-  if ( errno == EDOM || errno == ERANGE )
-    error = true;
-
+  error = bool( errno == EDOM || errno == ERANGE );
   setDisplay(x);
 }
 
@@ -801,12 +786,9 @@ void Calc::sine (lDouble& x)
     if ( arcus_mode )
     {
       x = std::log(x + std::sqrt(x * x + 1));
-
-      if ( errno == EDOM || errno == ERANGE )
-        error = true;
-
-      if ( std::fabs(x - infinity) < LDBL_EPSILON )  // x = ∞
-        error = true;
+      error = bool( errno == EDOM
+                 || errno == ERANGE
+                 || std::fabs(x - infinity) < LDBL_EPSILON );  // x = ∞
     }
     else
       x = std::sinh(x);
@@ -821,9 +803,7 @@ void Calc::sine (lDouble& x)
       x = std::sin(x * pi_value<lDouble> / 180.0L);
   }
 
-  if ( errno == EDOM )
-    error = true;
-
+  error = bool( errno == EDOM );
   setDisplay(x);
   arcus_mode = false;
   hyperbolic_mode = false;
@@ -839,12 +819,9 @@ void Calc::cosine (lDouble& x)
     if ( arcus_mode )
     {
       x = std::log(x + std::sqrt(x * x - 1));
-
-      if ( errno == EDOM || errno == ERANGE )
-        error = true;
-
-      if ( std::fabs(x - infinity) < LDBL_EPSILON )  // x = ∞
-        error = true;
+      error = bool( errno == EDOM
+                 || errno == ERANGE
+                 || std::fabs(x - infinity) < LDBL_EPSILON );  // x = ∞
     }
     else
       x = std::cosh(x);
@@ -859,9 +836,7 @@ void Calc::cosine (lDouble& x)
       x = std::cos(x * pi_value<lDouble> / 180.0L);
   }
 
-  if ( errno == EDOM )
-    error = true;
-
+  error = bool( errno == EDOM );
   setDisplay(x);
   arcus_mode = false;
   hyperbolic_mode = false;
@@ -901,9 +876,7 @@ void Calc::tangent (lDouble& x)
     }
   }
 
-  if ( errno == EDOM || errno == ERANGE )
-    error = true;
-
+  error = bool( errno == EDOM || errno == ERANGE );
   setDisplay(x);
   arcus_mode = false;
   hyperbolic_mode = false;
@@ -1055,9 +1028,7 @@ inline void Calc::calcSubtraction()
 inline void Calc::calcExponentiation()
 {
   a = std::pow(a, b);
-
-  if ( errno == EDOM || errno == ERANGE )
-    error = true;
+  error = bool( errno == EDOM || errno == ERANGE );
 }
 
 //----------------------------------------------------------------------

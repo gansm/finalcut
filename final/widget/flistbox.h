@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2023 Markus Gans                                      *
+* Copyright 2014-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -262,6 +262,7 @@ class FListBox : public FWidget
                 , bool = false
                 , DT&& = DT() );
     void remove (std::size_t);
+    auto findItem (const FString&) -> FListBoxItems::iterator;
     void reserve (std::size_t);
     void clear();
 
@@ -288,6 +289,38 @@ class FListBox : public FWidget
     using KeyMapResult = std::unordered_map<FKey, std::function<bool()>, EnumHash<FKey>>;
     using LazyInsert = std::function<void(FListBoxItem&, FDataAccess*, std::size_t)>;
 
+    struct ListBoxData
+    {
+      FListBoxItems  itemlist{};
+      FDataAccess*   source_container{nullptr};
+      FString        text{};
+      FString        inc_search{};
+      KeyMap         key_map{};
+      KeyMapResult   key_map_result{};
+    };
+
+    struct SelectionState
+    {
+      std::size_t current{0};
+      int         last_current{-1};
+      int         select_from_item{-1};
+      bool        multi_select{false};
+      bool        mouse_select{false};
+      bool        click_on_list{false};
+    };
+
+    struct ScrollingState
+    {
+      FScrollbarPtr  vbar{nullptr};
+      FScrollbarPtr  hbar{nullptr};
+      int            xoffset{0};
+      int            yoffset{0};
+      int            last_yoffset{-1};
+      int            repeat{100};
+      int            distance{1};
+      bool           timer{false};
+    };
+
     // Enumeration
     enum class ConvertType
     {
@@ -302,6 +335,9 @@ class FListBox : public FWidget
     // Inquiry
     auto isHorizontallyScrollable() const -> bool;
     auto isVerticallyScrollable() const -> bool;
+    auto isCurrentLine (int) const -> bool;
+    auto isDragSelect() const -> bool;
+    auto canSkipDragScrolling() -> bool;
 
     // Methods
     void init();
@@ -311,13 +347,24 @@ class FListBox : public FWidget
     void drawBorder() override;
     void drawScrollbars() const;
     void drawHeadline();
+    auto canSkipDrawing() const -> bool;
+    auto calculateNumberItemsToDraw() const -> std::size_t;
+    auto canRedrawPartialList() const -> bool;
+    void updateRedrawParameters (std::size_t&, std::size_t&) const;
+    void finalizeDrawing();
     void drawList();
     void drawListLine (int, FListBoxItems::iterator, bool);
     void printLeftBracket (BracketType);
     void printRightBracket (BracketType);
     void drawListBracketsLine (int, FListBoxItems::iterator, bool);
+    auto getMaxWidth() const ->  std::size_t;
+    void printLeftCurrentLineArrow (int);
+    void printRightCurrentLineArrow (int);
+    void printRemainingSpacesFromPos (std::size_t);
     void setInitialLineAttributes (bool) const;
     void setCurrentLineAttributes (int, bool, bool, bool&);
+    void setSelectedCurrentLineAttributes (int);
+    void setUnselectedCurrentLineAttributes (int, bool, bool&);
     void setLineAttributes (int, bool, bool, bool&);
     void unsetAttributes() const;
     void updateDrawing (bool, bool);
@@ -350,6 +397,10 @@ class FListBox : public FWidget
     void lastPos();
     auto isWithinListBounds (const FPoint&) const -> bool;
     auto skipIncrementalSearch() -> bool;
+    auto isNonSelectMouseButtonPressed (const FMouseEvent*) const -> bool;
+    template <typename MultiSelectionFunction>
+    void handleMouseWithinListBounds (const FMouseEvent*, const MultiSelectionFunction&);
+    void handleMouseDragging (const FMouseEvent*);
     void acceptSelection();
     auto spacebarProcessing() -> bool;
     auto changeSelectionAndPosition() -> bool;
@@ -360,9 +411,20 @@ class FListBox : public FWidget
     void processRowChanged() const;
     void processChanged() const;
     void changeOnResize() const;
+    void updateScrollBarAfterRemoval (std::size_t);
+    auto getScrollBarMaxHorizontal() const noexcept -> int;
+    auto getScrollBarMaxVertical() const noexcept -> int;
+    void recalculateMaximumLineWidth();
     void lazyConvert (FListBoxItems::iterator, std::size_t);
     auto index2iterator (std::size_t) -> FListBoxItems::iterator;
     auto index2iterator (std::size_t index) const -> FListBoxItems::const_iterator;
+    void handleSelectionChange (const std::size_t);
+    void handleXOffsetChange (const int);
+    void handleVerticalScrollBarUpdate (const FScrollbar::ScrollType, const int) const;
+    void handleHorizontalScrollBarUpdate (const FScrollbar::ScrollType, const int) const;
+    auto getVerticalScrollDistance (const FScrollbar::ScrollType) const -> int;
+    auto getHorizontalScrollDistance (const FScrollbar::ScrollType) const -> int;
+
     // Callback methods
     void cb_vbarChange (const FWidget*);
     void cb_hbarChange (const FWidget*);
@@ -371,30 +433,13 @@ class FListBox : public FWidget
     LazyInsert      lazy_inserter{};
 
     // Data members
-    FListBoxItems   itemlist{};
-    FDataAccess*    source_container{nullptr};
-    FScrollbarPtr   vbar{nullptr};
-    FScrollbarPtr   hbar{nullptr};
-    FString         text{};
-    FString         inc_search{};
-    KeyMap          key_map{};
-    KeyMapResult    key_map_result{};
-    ConvertType     conv_type{ConvertType::None};
-    DragScrollMode  drag_scroll{DragScrollMode::None};
-    int             scroll_repeat{100};
-    int             scroll_distance{1};
-    int             last_current{-1};
-    int             secect_from_item{-1};
-    int             xoffset{0};
-    int             yoffset{0};
-    int             last_yoffset{-1};
-    std::size_t     current{0};
     std::size_t     nf_offset{0};
     std::size_t     max_line_width{0};
-    bool            multi_select{false};
-    bool            mouse_select{false};
-    bool            scroll_timer{false};
-    bool            click_on_list{false};
+    ListBoxData     data{};
+    ScrollingState  scroll{};
+    SelectionState  selection{};
+    ConvertType     conv_type{ConvertType::None};
+    DragScrollMode  drag_scroll{DragScrollMode::None};
 };
 
 // non-member function
@@ -447,7 +492,7 @@ inline auto FListBox::getClassName() const -> FString
 
 //----------------------------------------------------------------------
 inline auto FListBox::getCount() const -> std::size_t
-{ return itemlist.size(); }
+{ return data.itemlist.size(); }
 
 //----------------------------------------------------------------------
 inline auto FListBox::getItem (std::size_t index) & -> FListBoxItem&
@@ -473,19 +518,19 @@ inline auto FListBox::getItem (FListBoxItems::const_iterator iter) const & -> co
 
 //----------------------------------------------------------------------
 inline auto FListBox::currentItem() const noexcept -> std::size_t
-{ return current; }
+{ return selection.current; }
 
 //----------------------------------------------------------------------
 inline auto FListBox::getData() & -> FListBoxItems&
-{ return itemlist; }
+{ return data.itemlist; }
 
 //----------------------------------------------------------------------
 inline auto FListBox::getData() const & -> const FListBoxItems&
-{ return itemlist; }
+{ return data.itemlist; }
 
 //----------------------------------------------------------------------
 inline auto FListBox::getText() & -> FString&
-{ return text; }
+{ return data.text; }
 
 //----------------------------------------------------------------------
 inline void FListBox::selectItem (std::size_t index)
@@ -513,7 +558,7 @@ inline void FListBox::showNoBrackets (FListBoxItems::iterator iter) const
 
 //----------------------------------------------------------------------
 inline void FListBox::setMultiSelection (bool enable)
-{ multi_select = enable; }
+{ selection.multi_select = enable; }
 
 //----------------------------------------------------------------------
 inline void FListBox::unsetMultiSelection()
@@ -533,7 +578,7 @@ inline auto FListBox::isSelected (FListBoxItems::iterator iter) const -> bool
 
 //----------------------------------------------------------------------
 inline auto FListBox::isMultiSelection() const -> bool
-{ return multi_select; }
+{ return selection.multi_select; }
 
 //----------------------------------------------------------------------
 inline auto FListBox::hasBrackets(std::size_t index) const -> bool
@@ -545,7 +590,7 @@ inline auto FListBox::hasBrackets(FListBoxItems::iterator iter) const -> bool
 
 //----------------------------------------------------------------------
 inline void FListBox::reserve (std::size_t new_cap)
-{ itemlist.reserve(new_cap); }
+{ data.itemlist.reserve(new_cap); }
 
 //----------------------------------------------------------------------
 template <typename Iterator
@@ -569,12 +614,12 @@ template <typename Container
 void FListBox::insert (const Container& container, LazyConverter&& converter)
 {
   conv_type = ConvertType::Lazy;
-  source_container = makeFData(container);
+  data.source_container = makeFData(container);
   lazy_inserter = std::forward<LazyConverter>(converter);
   const std::size_t size = container.size();
 
   if ( size > 0 )
-    itemlist.resize(size);
+    data.itemlist.resize(size);
 
   recalculateVerticalBar(size);
 }
@@ -627,10 +672,18 @@ inline auto FListBox::isVerticallyScrollable() const -> bool
 { return getCount() > getClientHeight(); }
 
 //----------------------------------------------------------------------
+inline auto FListBox::isCurrentLine (int y) const -> bool
+{ return y + scroll.yoffset + 1 == int(selection.current); }
+
+//----------------------------------------------------------------------
+inline auto FListBox::getMaxWidth() const ->  std::size_t
+{ return getWidth() - nf_offset - 4; }
+
+//----------------------------------------------------------------------
 inline auto \
     FListBox::index2iterator (std::size_t index) -> FListBoxItems::iterator
 {
-  auto iter = itemlist.begin();
+  auto iter = data.itemlist.begin();
   using distance_type = FListBoxItems::difference_type;
   std::advance (iter, distance_type(index));
   return iter;
@@ -640,7 +693,7 @@ inline auto \
 inline auto \
     FListBox::index2iterator (std::size_t index) const -> FListBoxItems::const_iterator
 {
-  auto iter = itemlist.begin();
+  auto iter = data.itemlist.begin();
   using distance_type = FListBoxItems::difference_type;
   std::advance (iter, distance_type(index));
   return iter;

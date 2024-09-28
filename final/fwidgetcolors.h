@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2022 Markus Gans                                      *
+* Copyright 2018-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -58,93 +58,166 @@ class FWidgetColors
     virtual auto getClassName() const -> FString;
     virtual void setColorTheme() = 0;
 
+    struct NonContextualColors
+    {
+      FColor fg{FColor::Default};
+      FColor bg{FColor::Default};
+    };
+
+    struct DialogColors
+    {
+      FColor fg{FColor::Default};
+      FColor bg{FColor::Default};
+      FColor resize_fg{FColor::Default};
+      FColor emphasis_fg{FColor::Default};
+    };
+
+    struct TextColors
+    {
+      FColor fg{FColor::Default};
+      FColor bg{FColor::Default};
+      FColor selected_fg{FColor::Default};
+      FColor selected_bg{FColor::Default};
+      FColor selected_focus_fg{FColor::Default};
+      FColor selected_focus_bg{FColor::Default};
+    };
+
+    struct ErrorBoxColors
+    {
+      FColor fg{FColor::Default};
+      FColor bg{FColor::Default};
+      FColor emphasis_fg{FColor::Default};
+    };
+
+    struct CurrentElementColors
+    {
+      FColor fg{FColor::Default};
+      FColor bg{FColor::Default};
+      FColor focus_fg{FColor::Default};
+      FColor focus_bg{FColor::Default};
+      FColor inc_search_fg{FColor::Default};
+      FColor selected_fg{FColor::Default};
+      FColor selected_bg{FColor::Default};
+      FColor selected_focus_fg{FColor::Default};
+      FColor selected_focus_bg{FColor::Default};
+    };
+
+    struct ListColors
+    {
+      FColor fg{FColor::Default};
+      FColor bg{FColor::Default};
+      FColor selected_fg{FColor::Default};
+      FColor selected_bg{FColor::Default};
+    };
+
+    struct LabelColors
+    {
+      FColor fg{FColor::Default};
+      FColor bg{FColor::Default};
+      FColor inactive_fg{FColor::Default};
+      FColor inactive_bg{FColor::Default};
+      FColor hotkey_fg{FColor::Default};
+      FColor hotkey_bg{FColor::Default};
+      FColor emphasis_fg{FColor::Default};
+      FColor ellipsis_fg{FColor::Default};
+    };
+
+    struct InputFieldColors
+    {
+      FColor fg{FColor::Default};
+      FColor bg{FColor::Default};
+      FColor focus_fg{FColor::Default};
+      FColor focus_bg{FColor::Default};
+      FColor inactive_fg{FColor::Default};
+      FColor inactive_bg{FColor::Default};
+    };
+
+    struct ToggleButtonColors
+    {
+      FColor fg{FColor::Default};
+      FColor bg{FColor::Default};
+      FColor focus_fg{FColor::Default};
+      FColor focus_bg{FColor::Default};
+      FColor inactive_fg{FColor::Default};
+      FColor inactive_bg{FColor::Default};
+    };
+
+    struct ButtonColors
+    {
+      FColor fg{FColor::Default};
+      FColor bg{FColor::Default};
+      FColor focus_fg{FColor::Default};
+      FColor focus_bg{FColor::Default};
+      FColor inactive_fg{FColor::Default};
+      FColor inactive_bg{FColor::Default};
+      FColor hotkey_fg{FColor::Default};
+    };
+
+    struct TitlebarColors
+    {
+      FColor fg{FColor::Default};
+      FColor bg{FColor::Default};
+      FColor inactive_fg{FColor::Default};
+      FColor inactive_bg{FColor::Default};
+      FColor button_fg{FColor::Default};
+      FColor button_bg{FColor::Default};
+      FColor button_focus_fg{FColor::Default};
+      FColor button_focus_bg{FColor::Default};
+    };
+
+    struct MenuColors
+    {
+      FColor fg{FColor::Default};
+      FColor bg{FColor::Default};
+      FColor focus_fg{FColor::Default};
+      FColor focus_bg{FColor::Default};
+      FColor inactive_fg{FColor::Default};
+      FColor inactive_bg{FColor::Default};
+      FColor hotkey_fg{FColor::Default};
+      FColor hotkey_bg{FColor::Default};
+    };
+
+    struct StatusbarColors
+    {
+      FColor fg{FColor::Default};
+      FColor bg{FColor::Default};
+      FColor focus_fg{FColor::Default};
+      FColor focus_bg{FColor::Default};
+      FColor separator_fg{FColor::Default};
+      FColor hotkey_fg{FColor::Default};
+      FColor hotkey_bg{FColor::Default};
+      FColor focus_hotkey_fg{FColor::Default};
+      FColor focus_hotkey_bg{FColor::Default};
+    };
+
+    struct ScrollbarColors
+    {
+      FColor fg{FColor::Default};
+      FColor bg{FColor::Default};
+      FColor button_fg{FColor::Default};
+      FColor button_bg{FColor::Default};
+      FColor button_inactive_fg{FColor::Default};
+      FColor button_inactive_bg{FColor::Default};
+    };
+
     // Data members
-    FColor term_fg{FColor::Default};
-    FColor term_bg{FColor::Default};
-    FColor list_fg{FColor::Default};
-    FColor list_bg{FColor::Default};
-    FColor selected_list_fg{FColor::Default};
-    FColor selected_list_bg{FColor::Default};
-    FColor current_element_focus_fg{FColor::Default};
-    FColor current_element_focus_bg{FColor::Default};
-    FColor current_element_fg{FColor::Default};
-    FColor current_element_bg{FColor::Default};
-    FColor current_inc_search_element_fg{FColor::Default};
-    FColor selected_current_element_focus_fg{FColor::Default};
-    FColor selected_current_element_focus_bg{FColor::Default};
-    FColor selected_current_element_fg{FColor::Default};
-    FColor selected_current_element_bg{FColor::Default};
-    FColor label_fg{FColor::Default};
-    FColor label_bg{FColor::Default};
-    FColor label_inactive_fg{FColor::Default};
-    FColor label_inactive_bg{FColor::Default};
-    FColor label_hotkey_fg{FColor::Default};
-    FColor label_hotkey_bg{FColor::Default};
-    FColor label_emphasis_fg{FColor::Default};
-    FColor label_ellipsis_fg{FColor::Default};
-    FColor inputfield_active_focus_fg{FColor::Default};
-    FColor inputfield_active_focus_bg{FColor::Default};
-    FColor inputfield_active_fg{FColor::Default};
-    FColor inputfield_active_bg{FColor::Default};
-    FColor inputfield_inactive_fg{FColor::Default};
-    FColor inputfield_inactive_bg{FColor::Default};
-    FColor dialog_fg{FColor::Default};
-    FColor dialog_resize_fg{FColor::Default};
-    FColor dialog_emphasis_fg{FColor::Default};
-    FColor dialog_bg{FColor::Default};
-    FColor error_box_fg{FColor::Default};
-    FColor error_box_emphasis_fg{FColor::Default};
-    FColor error_box_bg{FColor::Default};
-    FColor tooltip_fg{FColor::Default};
-    FColor tooltip_bg{FColor::Default};
-    FColor shadow_fg{FColor::Default};
-    FColor shadow_bg{FColor::Default};
-    FColor toggle_button_active_focus_fg{FColor::Default};
-    FColor toggle_button_active_focus_bg{FColor::Default};
-    FColor toggle_button_active_fg{FColor::Default};
-    FColor toggle_button_active_bg{FColor::Default};
-    FColor toggle_button_inactive_fg{FColor::Default};
-    FColor toggle_button_inactive_bg{FColor::Default};
-    FColor button_active_focus_fg{FColor::Default};
-    FColor button_active_focus_bg{FColor::Default};
-    FColor button_active_fg{FColor::Default};
-    FColor button_active_bg{FColor::Default};
-    FColor button_inactive_fg{FColor::Default};
-    FColor button_inactive_bg{FColor::Default};
-    FColor button_hotkey_fg{FColor::Default};
-    FColor titlebar_active_fg{FColor::Default};
-    FColor titlebar_active_bg{FColor::Default};
-    FColor titlebar_inactive_fg{FColor::Default};
-    FColor titlebar_inactive_bg{FColor::Default};
-    FColor titlebar_button_fg{FColor::Default};
-    FColor titlebar_button_bg{FColor::Default};
-    FColor titlebar_button_focus_fg{FColor::Default};
-    FColor titlebar_button_focus_bg{FColor::Default};
-    FColor menu_active_focus_fg{FColor::Default};
-    FColor menu_active_focus_bg{FColor::Default};
-    FColor menu_active_fg{FColor::Default};
-    FColor menu_active_bg{FColor::Default};
-    FColor menu_inactive_fg{FColor::Default};
-    FColor menu_inactive_bg{FColor::Default};
-    FColor menu_hotkey_fg{FColor::Default};
-    FColor menu_hotkey_bg{FColor::Default};
-    FColor statusbar_fg{FColor::Default};
-    FColor statusbar_bg{FColor::Default};
-    FColor statusbar_hotkey_fg{FColor::Default};
-    FColor statusbar_hotkey_bg{FColor::Default};
-    FColor statusbar_separator_fg{FColor::Default};
-    FColor statusbar_active_fg{FColor::Default};
-    FColor statusbar_active_bg{FColor::Default};
-    FColor statusbar_active_hotkey_fg{FColor::Default};
-    FColor statusbar_active_hotkey_bg{FColor::Default};
-    FColor scrollbar_fg{FColor::Default};
-    FColor scrollbar_bg{FColor::Default};
-    FColor scrollbar_button_fg{FColor::Default};
-    FColor scrollbar_button_bg{FColor::Default};
-    FColor scrollbar_button_inactive_fg{FColor::Default};
-    FColor scrollbar_button_inactive_bg{FColor::Default};
-    FColor progressbar_fg{FColor::Default};
-    FColor progressbar_bg{FColor::Default};
+    NonContextualColors  term{};
+    DialogColors         dialog{};
+    TextColors           text{};
+    ErrorBoxColors       error_box{};
+    NonContextualColors  tooltip{};
+    NonContextualColors  shadow{};
+    CurrentElementColors current_element{};
+    ListColors           list{};
+    LabelColors          label{};
+    InputFieldColors     input_field{};
+    ToggleButtonColors   toggle_button{};
+    ButtonColors         button{};
+    TitlebarColors       titlebar{};
+    MenuColors           menu{};
+    StatusbarColors      statusbar{};
+    ScrollbarColors      scrollbar{};
+    NonContextualColors  progressbar{};
 };
 
 // FWidgetColors inline functions
@@ -182,6 +255,25 @@ class default8ColorTheme final : public FWidgetColors
     // Method
     auto getClassName() const -> FString override;
     void setColorTheme() override;
+
+  private:
+    void setTermColors();
+    void setDialogColors();
+    void setTextColors();
+    void setErrorBoxColors();
+    void setTooltipColors();
+    void setShadowColors();
+    void setCurrentElementColors();
+    void setListColors();
+    void setLabelColors();
+    void setInputFieldColors();
+    void setToggleButtonColors();
+    void setButtonColors();
+    void setTitlebarColors();
+    void setMenuColors();
+    void setStatusbarColors();
+    void setScrollbarColors();
+    void setProgressbarColors();
 };
 
 // default8ColorTheme inline functions
@@ -219,6 +311,25 @@ class default16ColorTheme final : public FWidgetColors
     // Method
     auto getClassName() const -> FString override;
     void setColorTheme() override;
+
+  private:
+    void setTermColors();
+    void setDialogColors();
+    void setTextColors();
+    void setErrorBoxColors();
+    void setTooltipColors();
+    void setShadowColors();
+    void setCurrentElementColors();
+    void setListColors();
+    void setLabelColors();
+    void setInputFieldColors();
+    void setToggleButtonColors();
+    void setButtonColors();
+    void setTitlebarColors();
+    void setMenuColors();
+    void setStatusbarColors();
+    void setScrollbarColors();
+    void setProgressbarColors();
 };
 
 // default16ColorTheme inline functions
@@ -256,6 +367,25 @@ class default8ColorDarkTheme final : public FWidgetColors
     // Method
     auto getClassName() const -> FString override;
     void setColorTheme() override;
+
+  private:
+    void setTermColors();
+    void setDialogColors();
+    void setTextColors();
+    void setErrorBoxColors();
+    void setTooltipColors();
+    void setShadowColors();
+    void setCurrentElementColors();
+    void setListColors();
+    void setLabelColors();
+    void setInputFieldColors();
+    void setToggleButtonColors();
+    void setButtonColors();
+    void setTitlebarColors();
+    void setMenuColors();
+    void setStatusbarColors();
+    void setScrollbarColors();
+    void setProgressbarColors();
 };
 
 // default8ColorDarkTheme inline functions
@@ -293,6 +423,25 @@ class default16ColorDarkTheme final : public FWidgetColors
     // Method
     auto getClassName() const -> FString override;
     void setColorTheme() override;
+
+  private:
+    void setTermColors();
+    void setDialogColors();
+    void setTextColors();
+    void setErrorBoxColors();
+    void setTooltipColors();
+    void setShadowColors();
+    void setCurrentElementColors();
+    void setListColors();
+    void setLabelColors();
+    void setInputFieldColors();
+    void setToggleButtonColors();
+    void setButtonColors();
+    void setTitlebarColors();
+    void setMenuColors();
+    void setStatusbarColors();
+    void setScrollbarColors();
+    void setProgressbarColors();
 };
 
 // default16ColorDarkTheme inline functions

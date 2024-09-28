@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2023 Markus Gans                                      *
+* Copyright 2017-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -123,18 +123,30 @@ class FVTermBuffer
     auto print () -> FVTermBuffer&;
 
   private:
+    struct UnicodeBoundary
+    {
+      FString::const_iterator cbegin{};
+      FString::const_iterator cend{};
+      FString::const_iterator iter{};
+      std::size_t char_width{0};
+    };
+
     void getNextCharacterAttribute();
-    void add ( FString::const_iterator&
-             , const FString::const_iterator&
-             , int& );
+    void add (UnicodeBoundary&);
 
     // Data member
     FCharVector data{};
     FChar       nc{};  // next character
 
     // Non-member operators
-    friend auto operator << ( FCharVector&
-                            , const FVTermBuffer& ) -> FCharVector&;
+    friend auto operator << ( FVTermBuffer::FCharVector& term_string
+                            , const FVTermBuffer& buf ) -> FVTermBuffer::FCharVector&
+    {
+      if ( ! buf.data.empty() )
+        term_string.assign(buf.data.cbegin(), buf.data.cend());
+
+      return term_string;
+    }
 };
 
 // non-member function forward declarations
@@ -308,7 +320,9 @@ inline auto FVTermBuffer::back() const -> const_reference
 template <typename Iterator>
 inline void FVTermBuffer::assign (Iterator first, Iterator last)
 {
-  assert ( first < last );
+  if ( first >= last )
+    return;
+
   checkCapacity (data, std::size_t(last - first));
   data.assign(first, last);
 }

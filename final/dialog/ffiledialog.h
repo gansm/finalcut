@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2023 Markus Gans                                      *
+* Copyright 2014-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -134,6 +134,9 @@ class FFileDialog : public FDialog
     void adjustSize() override;
 
   private:
+    // Enumeration
+    enum class CloseDir { success, error };
+
     struct FDirEntry
     {
       // Constructor
@@ -174,12 +177,25 @@ class FFileDialog : public FDialog
     auto readDir() -> int;
     void getEntry (const char* const, const struct dirent*);
     void followSymLink (const char* const, FDirEntry&) const;
+    auto openDirectory() -> DIR*;
+    auto closeDirectory (DIR*) -> CloseDir;
+    void readDirEntries (DIR*);
+    auto isCurrentDirectory (const struct dirent*) const -> bool;
+    auto isParentDirectory (const struct dirent*) const -> bool;
+    auto isHiddenEntry (const struct dirent*) const -> bool;
+    auto isRootDirectory (const char* const) const -> bool;
     void dirEntriesToList();
     void selectDirectoryEntry (const std::string&);
     auto changeDir (const FString&) -> int;
     void printPath (const FString&);
     void setTitelbarText();
     static auto getHomeDir() -> FString;
+    auto isFilterInput() const -> bool;
+    auto isDirectoryInput() const -> bool;
+    void activateNewFilter();
+    void activateDefaultFilter();
+    void findItem (const FString&);
+    void changeIntoSubDir();
 
     // Callback methods
     void cb_processActivate();
@@ -204,8 +220,7 @@ class FFileDialog : public FDialog
     // Friend functions
     friend auto sortByName ( const FFileDialog::FDirEntry&
                            , const FFileDialog::FDirEntry& ) -> bool;
-    friend auto sortDirFirst ( const FFileDialog::FDirEntry&
-                             , const FFileDialog::FDirEntry& ) -> bool;
+    friend auto sortDirFirst (const FFileDialog::FDirEntry&) -> bool;
     friend auto fileChooser ( FWidget*
                             , const FString&
                             , const FString&

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2021 Markus Gans                                      *
+* Copyright 2018-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -360,9 +360,21 @@ void FStringTest::assignmentTest()
   CPPUNIT_ASSERT ( ! s1 );
   CPPUNIT_ASSERT ( s1.isEmpty() );
 
+#if __cplusplus >= 201703L
+  s1 = std::wstring_view();
+  CPPUNIT_ASSERT ( ! s1 );
+  CPPUNIT_ASSERT ( s1.isEmpty() );
+#endif
+
   s1 = std::string();
   CPPUNIT_ASSERT ( ! s1 );
   CPPUNIT_ASSERT ( s1.isEmpty() );
+
+#if __cplusplus >= 201703L
+  s1 = std::string_view();
+  CPPUNIT_ASSERT ( ! s1 );
+  CPPUNIT_ASSERT ( s1.isEmpty() );
+#endif
 
   s1 = static_cast<wchar_t*>(nullptr);
   CPPUNIT_ASSERT ( ! s1 );
@@ -398,36 +410,54 @@ void FStringTest::assignmentTest()
   CPPUNIT_ASSERT ( s1.getLength() == 3 );
   CPPUNIT_ASSERT ( s1.capacity() >= 3 );
 
-  const std::string s4("ghi");
+#if __cplusplus >= 201703L
+  const std::wstring_view s4(L"wsv");
   s1 = s4;
+  CPPUNIT_ASSERT ( s1 );
+  CPPUNIT_ASSERT ( s1 == L"wsv" );
+  CPPUNIT_ASSERT ( s1.getLength() == 3 );
+  CPPUNIT_ASSERT ( s1.capacity() >= 3 );
+#endif
+
+  const std::string s5("ghi");
+  s1 = s5;
   CPPUNIT_ASSERT ( s1 );
   CPPUNIT_ASSERT ( s1 == L"ghi" );
   CPPUNIT_ASSERT ( s1.getLength() == 3 );
   CPPUNIT_ASSERT ( s1.capacity() >= 3 );
 
-  constexpr wchar_t s5[] = L"abc";
-  s1 = s5;
+#if __cplusplus >= 201703L
+  const std::string_view s6("svi");
+  s1 = s6;
+  CPPUNIT_ASSERT ( s1 );
+  CPPUNIT_ASSERT ( s1 == L"svi" );
+  CPPUNIT_ASSERT ( s1.getLength() == 3 );
+  CPPUNIT_ASSERT ( s1.capacity() >= 3 );
+#endif
+
+  constexpr wchar_t s7[] = L"abc";
+  s1 = s7;
   CPPUNIT_ASSERT ( s1 );
   CPPUNIT_ASSERT ( s1 == L"abc" );
   CPPUNIT_ASSERT ( s1.getLength() == 3 );
   CPPUNIT_ASSERT ( s1.capacity() >= 3 );
 
-  constexpr char s6[] = "def";
-  s1 = s6;
+  constexpr char s8[] = "def";
+  s1 = s8;
   CPPUNIT_ASSERT ( s1 );
   CPPUNIT_ASSERT ( s1 == L"def" );
   CPPUNIT_ASSERT ( s1.getLength() == 3 );
   CPPUNIT_ASSERT ( s1.capacity() >= 3 );
 
-  constexpr wchar_t s7 = L'#';
-  s1 = s7;
+  constexpr wchar_t s9 = L'#';
+  s1 = s9;
   CPPUNIT_ASSERT ( s1 );
   CPPUNIT_ASSERT ( s1 == L"#" );
   CPPUNIT_ASSERT ( s1.getLength() == 1 );
   CPPUNIT_ASSERT ( s1.capacity() >= 1 );
 
-  constexpr char s8 = '%';
-  s1 = s8;
+  constexpr char s10 = '%';
+  s1 = s10;
   CPPUNIT_ASSERT ( s1 );
   CPPUNIT_ASSERT ( s1 == L"%" );
   CPPUNIT_ASSERT ( s1.getLength() == 1 );
@@ -480,19 +510,19 @@ void FStringTest::assignmentTest()
 
   // Move assignment operator
   auto empty = finalcut::FString(0);
-  const finalcut::FString s9 = std::move(empty);
-  CPPUNIT_ASSERT ( ! s9 );
-  CPPUNIT_ASSERT ( s9.isEmpty() );
+  const finalcut::FString s11 = std::move(empty);
+  CPPUNIT_ASSERT ( ! s11 );
+  CPPUNIT_ASSERT ( s11.isEmpty() );
 
-  finalcut::FString s10("abc");
-  const finalcut::FString s11 = std::move(s10);
-  CPPUNIT_ASSERT ( s11 );
-  CPPUNIT_ASSERT ( s11 == L"abc" );
-  CPPUNIT_ASSERT ( s11.getLength() == 3 );
-  CPPUNIT_ASSERT ( s11.capacity() >= 3 );
-  CPPUNIT_ASSERT ( s10.isEmpty() );                               // s10 is used after move
-  CPPUNIT_ASSERT ( s10.getLength() == 0 );                        // s10 is used after move
-  CPPUNIT_ASSERT ( s10.capacity() < std::wstring().max_size() );  // s10 is used after move
+  finalcut::FString s12("abc");
+  const finalcut::FString s13 = std::move(s12);
+  CPPUNIT_ASSERT ( s13 );
+  CPPUNIT_ASSERT ( s13 == L"abc" );
+  CPPUNIT_ASSERT ( s13.getLength() == 3 );
+  CPPUNIT_ASSERT ( s13.capacity() >= 3 );
+  CPPUNIT_ASSERT ( s12.isEmpty() );                               // s11 is used after move
+  CPPUNIT_ASSERT ( s12.getLength() == 0 );                        // s11 is used after move
+  CPPUNIT_ASSERT ( s12.capacity() < std::wstring().max_size() );  // s11 is used after move
 }
 
 //----------------------------------------------------------------------
@@ -522,10 +552,32 @@ void FStringTest::additionAssignmentTest()
   CPPUNIT_ASSERT ( s1 == L"abcdef" );
 
   s1.clear();
+  s1 += std::wstring(L"abc");
+  CPPUNIT_ASSERT ( s1 == L"abc" );
+  s1 += std::wstring(L"def");
+  CPPUNIT_ASSERT ( s1 == L"abcdef" );
+
+#if __cplusplus >= 201703L
+  s1.clear();
+  s1 += std::wstring_view(L"abc");
+  CPPUNIT_ASSERT ( s1 == L"abc" );
+  s1 += std::wstring_view(L"def");
+  CPPUNIT_ASSERT ( s1 == L"abcdef" );
+#endif
+
+  s1.clear();
   s1 += std::string("abc");
   CPPUNIT_ASSERT ( s1 == L"abc" );
   s1 += std::string("def");
   CPPUNIT_ASSERT ( s1 == L"abcdef" );
+
+#if __cplusplus >= 201703L
+  s1.clear();
+  s1 += std::string_view("abc");
+  CPPUNIT_ASSERT ( s1 == L"abc" );
+  s1 += std::string_view("def");
+  CPPUNIT_ASSERT ( s1 == L"abcdef" );
+#endif
 
   s1.clear();
   s1 += const_cast<char*>("abc");
@@ -556,8 +608,14 @@ void FStringTest::additionTest()
   CPPUNIT_ASSERT ( *(s1.wc_str() + s1.getLength()) == L'\0' );
   CPPUNIT_ASSERT ( s1 + finalcut::FString("def") == L"abcdef" );
   CPPUNIT_ASSERT ( s1 + std::wstring(L"def") == L"abcdef" );
+#if __cplusplus >= 201703L
+  CPPUNIT_ASSERT ( s1 + std::wstring_view(L"def") == L"abcdef" );
+#endif
   CPPUNIT_ASSERT ( s1 + const_cast<wchar_t*>(L"def") == L"abcdef" );
   CPPUNIT_ASSERT ( s1 + std::string("def") == L"abcdef" );
+#if __cplusplus >= 201703L
+  CPPUNIT_ASSERT ( s1 + std::string_view("def") == L"abcdef" );
+#endif
   CPPUNIT_ASSERT ( s1 + const_cast<char*>("def") == L"abcdef" );
   CPPUNIT_ASSERT ( s1 + wchar_t(L'd') == L"abcd" );
   CPPUNIT_ASSERT ( s1 + char('d') == L"abcd" );
@@ -569,8 +627,14 @@ void FStringTest::additionTest()
   CPPUNIT_ASSERT ( *(s2.wc_str() + s2.getLength()) == L'\0' );
   CPPUNIT_ASSERT ( s2 + finalcut::FString("def") == L"abcdef" );
   CPPUNIT_ASSERT ( s2 + std::wstring(L"def") == L"abcdef" );
+#if __cplusplus >= 201703L
+  CPPUNIT_ASSERT ( s2 + std::wstring_view(L"def") == L"abcdef" );
+#endif
   CPPUNIT_ASSERT ( s2 + const_cast<wchar_t*>(L"def") == L"abcdef" );
   CPPUNIT_ASSERT ( s2 + std::string("def") == L"abcdef" );
+#if __cplusplus >= 201703L
+  CPPUNIT_ASSERT ( s2 + std::string_view("def") == L"abcdef" );
+#endif
   CPPUNIT_ASSERT ( s2 + const_cast<char*>("def") == L"abcdef" );
   CPPUNIT_ASSERT ( s2 + wchar_t(L'd') == L"abcd" );
   CPPUNIT_ASSERT ( s2 + char('d') == L"abcd" );
@@ -582,8 +646,14 @@ void FStringTest::additionTest()
   CPPUNIT_ASSERT ( s3.wc_str()[0] == L'\0' );
   CPPUNIT_ASSERT ( s3 + finalcut::FString("def") == L"def" );
   CPPUNIT_ASSERT ( s3 + std::wstring(L"def") == L"def" );
+#if __cplusplus >= 201703L
+  CPPUNIT_ASSERT ( s3 + std::wstring_view(L"def") == L"def" );
+#endif
   CPPUNIT_ASSERT ( s3 + const_cast<wchar_t*>(L"def") == L"def" );
   CPPUNIT_ASSERT ( s3 + std::string("def") == L"def" );
+#if __cplusplus >= 201703L
+  CPPUNIT_ASSERT ( s3 + std::string_view("def") == L"def" );
+#endif
   CPPUNIT_ASSERT ( s3 + const_cast<char*>("def") == L"def" );
   CPPUNIT_ASSERT ( s3 + wchar_t(L'd') == L"d" );
   CPPUNIT_ASSERT ( s3 + char('d') == L"d" );
@@ -595,8 +665,14 @@ void FStringTest::additionTest()
   CPPUNIT_ASSERT ( s4.wc_str()[0] == L'\0' );
   CPPUNIT_ASSERT ( s4 + finalcut::FString("def") == L"def" );
   CPPUNIT_ASSERT ( s4 + std::wstring(L"def") == L"def" );
+#if __cplusplus >= 201703L
+  CPPUNIT_ASSERT ( s4 + std::wstring_view(L"def") == L"def" );
+#endif
   CPPUNIT_ASSERT ( s4 + const_cast<wchar_t*>(L"def") == L"def" );
   CPPUNIT_ASSERT ( s4 + std::string("def") == L"def" );
+#if __cplusplus >= 201703L
+  CPPUNIT_ASSERT ( s4 + std::string_view("def") == L"def" );
+#endif
   CPPUNIT_ASSERT ( s4 + const_cast<char*>("def") == L"def" );
   CPPUNIT_ASSERT ( s4 + wchar_t(L'd') == L"d" );
   CPPUNIT_ASSERT ( s4 + char('d') == L"d" );
@@ -611,8 +687,15 @@ void FStringTest::additionTest()
   const std::string& s7 = "abc";
   CPPUNIT_ASSERT ( s7 + finalcut::FString("def") == L"abcdef" );
 
-  constexpr char s8[] = "abc";
+#if __cplusplus >= 201703L
+  const std::string_view& s8 = "abc";
+  const std::wstring_view& s9 = L"abc";
   CPPUNIT_ASSERT ( s8 + finalcut::FString("def") == L"abcdef" );
+  CPPUNIT_ASSERT ( s9 + finalcut::FString("def") == L"abcdef" );
+#endif
+
+  constexpr char s10[] = "abc";
+  CPPUNIT_ASSERT ( s10 + finalcut::FString("def") == L"abcdef" );
 
   constexpr wchar_t c1 = L'a';
   CPPUNIT_ASSERT ( c1 + s5 == L"aabc" );
@@ -626,7 +709,11 @@ void FStringTest::additionTest()
   CPPUNIT_ASSERT ( s5 + s3 == L"abc" );
   CPPUNIT_ASSERT ( s6 + s3 == L"abc" );
   CPPUNIT_ASSERT ( s7 + s3 == L"abc" );
+#if __cplusplus >= 201703L
   CPPUNIT_ASSERT ( s8 + s3 == L"abc" );
+  CPPUNIT_ASSERT ( s9 + s3 == L"abc" );
+#endif
+  CPPUNIT_ASSERT ( s10 + s3 == L"abc" );
   CPPUNIT_ASSERT ( c1 + s3 == L"a" );
   CPPUNIT_ASSERT ( c1 + s3 == L"a" );
   CPPUNIT_ASSERT ( c2 + s3 == "a" );
@@ -635,7 +722,11 @@ void FStringTest::additionTest()
   CPPUNIT_ASSERT ( s5 + s4 == L"abc" );
   CPPUNIT_ASSERT ( s6 + s4 == L"abc" );
   CPPUNIT_ASSERT ( s7 + s4 == L"abc" );
+#if __cplusplus >= 201703L
   CPPUNIT_ASSERT ( s8 + s4 == L"abc" );
+  CPPUNIT_ASSERT ( s9 + s4 == L"abc" );
+#endif
+  CPPUNIT_ASSERT ( s10 + s4 == L"abc" );
   CPPUNIT_ASSERT ( c1 + s4 == L"a" );
   CPPUNIT_ASSERT ( c1 + s4 == L"a" );
   CPPUNIT_ASSERT ( c2 + s4 == "a" );
@@ -658,15 +749,28 @@ void FStringTest::equalTest()
   const std::string s1 = "string";
   finalcut::FString fs = s1;
   const std::string s2 = fs.toString();
+#if __cplusplus >= 201703L
+  const std::string_view s3 = fs.toString();
+  const std::string_view s4 = fs.toString();
+#endif
   CPPUNIT_ASSERT ( s1 == s2 );
   CPPUNIT_ASSERT_CSTRING ( s1.c_str(), s2.c_str() );
   CPPUNIT_ASSERT ( s1.size() == 6 );
   CPPUNIT_ASSERT ( *(s1.c_str() + s1.size()) == '\0' );
+#if __cplusplus >= 201703L
+  CPPUNIT_ASSERT ( s1 == s3 );
+  CPPUNIT_ASSERT ( s1 == s4 );
+#endif
+  CPPUNIT_ASSERT_CSTRING ( s1.c_str(), s2.data() );
 
   // finalcut::FString == std::string, char[], char* wchar_t[], wchar_t*
   CPPUNIT_ASSERT ( fs == s1 );
   CPPUNIT_ASSERT ( fs == "string" );
   CPPUNIT_ASSERT ( fs == L"string" );
+#if __cplusplus >= 201703L
+  CPPUNIT_ASSERT ( fs == s3 );
+  CPPUNIT_ASSERT ( fs == s4 );
+#endif
   const char* cstring = "string";
   const wchar_t* wcstring = L"string";
   CPPUNIT_ASSERT ( fs == cstring );
@@ -717,9 +821,19 @@ void FStringTest::equalTest()
   const std::string st = "abc";
   CPPUNIT_ASSERT ( str == st );
 
+#if __cplusplus >= 201703L
+  const std::string_view stv = "abc";
+  CPPUNIT_ASSERT ( str == stv );
+#endif
+
   const std::wstring wst = L"abc";
   CPPUNIT_ASSERT ( str == wst );
   CPPUNIT_ASSERT_WCSTRING ( str.wc_str(), wst.c_str() );
+
+#if __cplusplus >= 201703L
+  const std::wstring_view wstv = L"abc";
+  CPPUNIT_ASSERT ( str == wstv );
+#endif
 
   const finalcut::FString null_str1{};
   const finalcut::FString null_str2{};
@@ -752,6 +866,10 @@ void FStringTest::notEqualTest()
   CPPUNIT_ASSERT ( one_char != std::string("!") );
   CPPUNIT_ASSERT ( one_char != "!" );
   CPPUNIT_ASSERT ( one_char != L"!" );
+#if __cplusplus >= 201703L
+  CPPUNIT_ASSERT ( one_char != std::string_view("!") );
+  CPPUNIT_ASSERT ( one_char != std::wstring_view(L"!") );
+#endif
   const char* cstring = "!";
   const wchar_t* wcstring = L"!";
   CPPUNIT_ASSERT ( one_char != cstring );
@@ -783,6 +901,13 @@ void FStringTest::notEqualTest()
   CPPUNIT_ASSERT ( s1 != wcstr );
   CPPUNIT_ASSERT ( wcsncmp(wcstr, s1.wc_str(), 3) != 0 );
 
+#if __cplusplus >= 201703L
+  const std::string_view stv = "abc";
+  const std::wstring_view wstv = L"abc";
+  CPPUNIT_ASSERT ( s1 != stv );
+  CPPUNIT_ASSERT ( s1 != wstv );
+#endif
+
   const std::string st = "abc";
   CPPUNIT_ASSERT ( s1 != st );
 
@@ -810,6 +935,12 @@ void FStringTest::lessEqualTest()
   // finalcut::FString <= std::string, char[], char* wchar_t[], wchar_t*
   CPPUNIT_ASSERT ( one_char <= std::string("x") );
   CPPUNIT_ASSERT ( one_char <= std::string("y") );
+#if __cplusplus >= 201703L
+  CPPUNIT_ASSERT ( one_char <= std::wstring_view(L"x") );
+  CPPUNIT_ASSERT ( one_char <= std::wstring_view(L"y") );
+  CPPUNIT_ASSERT ( one_char <= std::string_view("x") );
+  CPPUNIT_ASSERT ( one_char <= std::string_view("y") );
+#endif
   CPPUNIT_ASSERT ( one_char <= "x" );
   CPPUNIT_ASSERT ( one_char <= "y" );
   CPPUNIT_ASSERT ( one_char <= L"x" );
@@ -848,6 +979,17 @@ void FStringTest::lessEqualTest()
   CPPUNIT_ASSERT ( s1 <= st1 && s1 == st1 );
   CPPUNIT_ASSERT ( s1 <= st2 && s1 != st2 );
 
+#if __cplusplus >= 201703L
+  const std::string_view stv1 = "xyz";
+  const std::string_view stv2 = "xzz";
+  const std::wstring_view wstv1 = L"xyz";
+  const std::wstring_view wstv2 = L"xzz";
+  CPPUNIT_ASSERT ( s1 <= stv1 && s1 == stv1 );
+  CPPUNIT_ASSERT ( s1 <= stv2 && s1 != stv2 );
+  CPPUNIT_ASSERT ( s1 <= wstv1 && s1 == wstv1 );
+  CPPUNIT_ASSERT ( s1 <= wstv2 && s1 != wstv2 );
+#endif
+
   const std::wstring wst1 = L"xyz";
   const std::wstring wst2 = L"xzz";
   CPPUNIT_ASSERT ( s1 <= wst1 && s1 == wst1 );
@@ -873,6 +1015,10 @@ void FStringTest::lessTest()
   CPPUNIT_ASSERT ( one_char < wch );
   // finalcut::FString < std::string, char[], char* wchar_t[], wchar_t*
   CPPUNIT_ASSERT ( one_char < std::string("y") );
+#if __cplusplus >= 201703L
+  CPPUNIT_ASSERT ( one_char < std::wstring_view(L"y") );
+  CPPUNIT_ASSERT ( one_char < std::string_view("y") );
+#endif
   CPPUNIT_ASSERT ( one_char < "y" );
   CPPUNIT_ASSERT ( one_char < L"y" );
   const char* cstring = "y";
@@ -893,6 +1039,13 @@ void FStringTest::lessTest()
 
   constexpr wchar_t wcstr[] = L"xzz";
   CPPUNIT_ASSERT ( s1 < wcstr );
+
+#if __cplusplus >= 201703L
+  const std::string_view stv = "xzz";
+  const std::wstring_view wstv = L"xzz";
+  CPPUNIT_ASSERT ( s1 < stv  );
+  CPPUNIT_ASSERT ( s1 < wstv  );
+#endif
 
   const std::string st = "xzz";
   CPPUNIT_ASSERT ( s1 < st  );
@@ -919,6 +1072,12 @@ void FStringTest::greaterEqualTest()
   // finalcut::FString >= std::string, char[], char* wchar_t[], wchar_t*
   CPPUNIT_ASSERT ( one_char >= std::string("w") );
   CPPUNIT_ASSERT ( one_char >= std::string("x") );
+#if __cplusplus >= 201703L
+  CPPUNIT_ASSERT ( one_char >= std::wstring_view(L"w") );
+  CPPUNIT_ASSERT ( one_char >= std::wstring_view(L"x") );
+  CPPUNIT_ASSERT ( one_char >= std::string_view("w") );
+  CPPUNIT_ASSERT ( one_char >= std::string_view("x") );
+#endif
   CPPUNIT_ASSERT ( one_char >= "w" );
   CPPUNIT_ASSERT ( one_char >= "x" );
   CPPUNIT_ASSERT ( one_char >= L"w" );
@@ -952,6 +1111,17 @@ void FStringTest::greaterEqualTest()
   CPPUNIT_ASSERT ( s1 >= wcstr1 && s1 == wcstr1 );
   CPPUNIT_ASSERT ( s1 >= wcstr2 && s1 != wcstr2 );
 
+#if __cplusplus >= 201703L
+  const std::string_view stv1 = "xyz";
+  const std::string_view stv2 = "xxz";
+  const std::wstring_view wstv1 = L"xyz";
+  const std::wstring_view wstv2 = L"xxz";
+  CPPUNIT_ASSERT ( s1 >= stv1 && s1 == stv1 );
+  CPPUNIT_ASSERT ( s1 >= stv2 && s1 != stv2 );
+  CPPUNIT_ASSERT ( s1 >= wstv1 && s1 == wstv1 );
+  CPPUNIT_ASSERT ( s1 >= wstv2 && s1 != wstv2 );
+#endif
+
   const std::string st1 = "xyz";
   const std::string st2 = "xxz";
   CPPUNIT_ASSERT ( s1 >= st1 && s1 == st1 );
@@ -982,6 +1152,10 @@ void FStringTest::greaterTest()
   CPPUNIT_ASSERT ( one_char > wch );
   // finalcut::FString > std::string, char[], char* wchar_t[], wchar_t*
   CPPUNIT_ASSERT ( one_char > std::string("w") );
+#if __cplusplus >= 201703L
+  CPPUNIT_ASSERT ( one_char > std::wstring_view(L"w") );
+  CPPUNIT_ASSERT ( one_char > std::string_view("w") );
+#endif
   CPPUNIT_ASSERT ( one_char > "w" );
   CPPUNIT_ASSERT ( one_char > L"w" );
   const char* cstring = "w";
@@ -1002,6 +1176,13 @@ void FStringTest::greaterTest()
 
   constexpr wchar_t wcstr[] = L"xww";
   CPPUNIT_ASSERT ( s1 > wcstr );
+
+#if __cplusplus >= 201703L
+  const std::string_view stv = "xww";
+  const std::wstring_view wstv = L"xww";
+  CPPUNIT_ASSERT ( s1 > stv );
+  CPPUNIT_ASSERT ( s1 > wstv );
+#endif
 
   const std::string st = "xww";
   CPPUNIT_ASSERT ( s1 > st  );
@@ -1030,9 +1211,21 @@ void FStringTest::streamInsertionTest()
   out << std::string("ABC");
   CPPUNIT_ASSERT ( out == L"ABC" );
 
+#if __cplusplus >= 201703L
+  out.clear();
+  out << std::string_view("ABC");
+  CPPUNIT_ASSERT ( out == L"ABC" );
+#endif
+
   out.clear();
   out << std::wstring(L"ABC");
   CPPUNIT_ASSERT ( out == L"ABC" );
+
+#if __cplusplus >= 201703L
+  out.clear();
+  out << std::wstring_view(L"ABC");
+  CPPUNIT_ASSERT ( out == L"ABC" );
+#endif
 
   out.clear();
   out << const_cast<wchar_t*>(L"ABC");
@@ -1923,17 +2116,29 @@ void FStringTest::replaceTest()
   const finalcut::FString from1   = "three";
   const std::wstring      from2   = L"three";
   constexpr wchar_t       from3[] = L"three";
-  const std::string       from4   = "three";
-  constexpr char          from5[] = "three";
-  constexpr wchar_t       from6   = L',';
-  constexpr char          from7   = ',';
+#if __cplusplus >= 201703L
+  const std::wstring_view from4   = L"three";
+#endif
+  const std::string       from5   = "three";
+#if __cplusplus >= 201703L
+  const std::string_view  from6   = "three";
+#endif
+  constexpr char          from7[] = "three";
+  constexpr wchar_t       from8   = L',';
+  constexpr char          from9   = ',';
   const finalcut::FString to1     = L'3';
   const std::wstring      to2     = L"3";
   constexpr wchar_t       to3[]   = L"3";
-  const std::string       to4     = "3";
-  constexpr char          to5[]   = "3";
-  constexpr wchar_t       to6     = '3';
-  constexpr char          to7     = '3';
+#if __cplusplus >= 201703L
+  const std::wstring_view to4     = L"3";
+#endif
+  const std::string       to5     = "3";
+#if __cplusplus >= 201703L
+  const std::string_view  to6     = "3";
+#endif
+  constexpr char          to7[]   = "3";
+  constexpr wchar_t       to8     = '3';
+  constexpr char          to9     = '3';
 
   CPPUNIT_ASSERT ( s1.replace(from1, to1)
                    == "Look behind you, a 3-headed monkey!" );
@@ -1943,17 +2148,27 @@ void FStringTest::replaceTest()
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from1, to3)
                    == "Look behind you, a 3-headed monkey!" );
+#if __cplusplus >= 201703L
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from1, to4)
                    == "Look behind you, a 3-headed monkey!" );
+#endif
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from1, to5)
                    == "Look behind you, a 3-headed monkey!" );
+#if __cplusplus >= 201703L
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from1, to6)
                    == "Look behind you, a 3-headed monkey!" );
+#endif
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from1, to7)
+                   == "Look behind you, a 3-headed monkey!" );
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from1, to8)
+                   == "Look behind you, a 3-headed monkey!" );
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from1, to9)
                    == "Look behind you, a 3-headed monkey!" );
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from2, to1)
@@ -1964,17 +2179,27 @@ void FStringTest::replaceTest()
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from2, to3)
                    == "Look behind you, a 3-headed monkey!" );
+#if __cplusplus >= 201703L
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from2, to4)
                    == "Look behind you, a 3-headed monkey!" );
+#endif
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from2, to5)
                    == "Look behind you, a 3-headed monkey!" );
+#if __cplusplus >= 201703L
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from2, to6)
                    == "Look behind you, a 3-headed monkey!" );
+#endif
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from2, to7)
+                   == "Look behind you, a 3-headed monkey!" );
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from2, to8)
+                   == "Look behind you, a 3-headed monkey!" );
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from2, to9)
                    == "Look behind you, a 3-headed monkey!" );
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from3, to1)
@@ -1985,18 +2210,29 @@ void FStringTest::replaceTest()
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from3, to3)
                    == "Look behind you, a 3-headed monkey!" );
+#if __cplusplus >= 201703L
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from3, to4)
                    == "Look behind you, a 3-headed monkey!" );
+#endif
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from3, to5)
                    == "Look behind you, a 3-headed monkey!" );
+#if __cplusplus >= 201703L
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from3, to6)
                    == "Look behind you, a 3-headed monkey!" );
+#endif
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from3, to7)
                    == "Look behind you, a 3-headed monkey!" );
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from3, to8)
+                   == "Look behind you, a 3-headed monkey!" );
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from3, to9)
+                   == "Look behind you, a 3-headed monkey!" );
+#if __cplusplus >= 201703L
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from4, to1)
                    == "Look behind you, a 3-headed monkey!" );
@@ -2019,6 +2255,13 @@ void FStringTest::replaceTest()
   CPPUNIT_ASSERT ( s1.replace(from4, to7)
                    == "Look behind you, a 3-headed monkey!" );
   s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from4, to8)
+                   == "Look behind you, a 3-headed monkey!" );
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from4, to9)
+                   == "Look behind you, a 3-headed monkey!" );
+#endif
+  s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from5, to1)
                    == "Look behind you, a 3-headed monkey!" );
   s1 = str;
@@ -2027,59 +2270,149 @@ void FStringTest::replaceTest()
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from5, to3)
                    == "Look behind you, a 3-headed monkey!" );
+#if __cplusplus >= 201703L
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from5, to4)
                    == "Look behind you, a 3-headed monkey!" );
+#endif
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from5, to5)
                    == "Look behind you, a 3-headed monkey!" );
+#if __cplusplus >= 201703L
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from5, to6)
                    == "Look behind you, a 3-headed monkey!" );
+#endif
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from5, to7)
                    == "Look behind you, a 3-headed monkey!" );
   s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from5, to8)
+                   == "Look behind you, a 3-headed monkey!" );
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from5, to9)
+                   == "Look behind you, a 3-headed monkey!" );
+#if __cplusplus >= 201703L
+  s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from6, to1)
-                   == "Look behind you3 a three-headed monkey!" );
+                   == "Look behind you, a 3-headed monkey!" );
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from6, to2)
-                   == "Look behind you3 a three-headed monkey!" );
+                   == "Look behind you, a 3-headed monkey!" );
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from6, to3)
-                   == "Look behind you3 a three-headed monkey!" );
+                   == "Look behind you, a 3-headed monkey!" );
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from6, to4)
-                   == "Look behind you3 a three-headed monkey!" );
+                   == "Look behind you, a 3-headed monkey!" );
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from6, to5)
-                   == "Look behind you3 a three-headed monkey!" );
+                   == "Look behind you, a 3-headed monkey!" );
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from6, to6)
-                   == "Look behind you3 a three-headed monkey!" );
+                   == "Look behind you, a 3-headed monkey!" );
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from6, to7)
-                   == "Look behind you3 a three-headed monkey!" );
+                   == "Look behind you, a 3-headed monkey!" );
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from6, to8)
+                   == "Look behind you, a 3-headed monkey!" );
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from6, to9)
+                   == "Look behind you, a 3-headed monkey!" );
+#endif
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from7, to1)
-                   == "Look behind you3 a three-headed monkey!" );
+                   == "Look behind you, a 3-headed monkey!" );
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from7, to2)
-                   == "Look behind you3 a three-headed monkey!" );
+                   == "Look behind you, a 3-headed monkey!" );
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from7, to3)
-                   == "Look behind you3 a three-headed monkey!" );
+                   == "Look behind you, a 3-headed monkey!" );
+#if __cplusplus >= 201703L
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from7, to4)
-                   == "Look behind you3 a three-headed monkey!" );
+                   == "Look behind you, a 3-headed monkey!" );
+#endif
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from7, to5)
-                   == "Look behind you3 a three-headed monkey!" );
+                   == "Look behind you, a 3-headed monkey!" );
+#if __cplusplus >= 201703L
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from7, to6)
-                   == "Look behind you3 a three-headed monkey!" );
+                   == "Look behind you, a 3-headed monkey!" );
+#endif
   s1 = str;
   CPPUNIT_ASSERT ( s1.replace(from7, to7)
+                   == "Look behind you, a 3-headed monkey!" );
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from7, to8)
+                   == "Look behind you, a 3-headed monkey!" );
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from7, to9)
+                   == "Look behind you, a 3-headed monkey!" );
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from8, to1)
+                   == "Look behind you3 a three-headed monkey!" );
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from8, to2)
+                   == "Look behind you3 a three-headed monkey!" );
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from8, to3)
+                   == "Look behind you3 a three-headed monkey!" );
+#if __cplusplus >= 201703L
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from8, to4)
+                   == "Look behind you3 a three-headed monkey!" );
+#endif
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from8, to5)
+                   == "Look behind you3 a three-headed monkey!" );
+#if __cplusplus >= 201703L
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from8, to6)
+                   == "Look behind you3 a three-headed monkey!" );
+#endif
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from8, to7)
+                   == "Look behind you3 a three-headed monkey!" );
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from8, to8)
+                   == "Look behind you3 a three-headed monkey!" );
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from8, to9)
+                   == "Look behind you3 a three-headed monkey!" );
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from9, to1)
+                   == "Look behind you3 a three-headed monkey!" );
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from9, to2)
+                   == "Look behind you3 a three-headed monkey!" );
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from9, to3)
+                   == "Look behind you3 a three-headed monkey!" );
+#if __cplusplus >= 201703L
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from9, to4)
+                   == "Look behind you3 a three-headed monkey!" );
+#endif
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from9, to5)
+                   == "Look behind you3 a three-headed monkey!" );
+#if __cplusplus >= 201703L
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from9, to6)
+                   == "Look behind you3 a three-headed monkey!" );
+#endif
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from9, to7)
+                   == "Look behind you3 a three-headed monkey!" );
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from9, to8)
+                   == "Look behind you3 a three-headed monkey!" );
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from9, to9)
                    == "Look behind you3 a three-headed monkey!" );
 
   s1 = "A big ball and a small ball";
@@ -2098,32 +2431,40 @@ void FStringTest::replaceTest()
   CPPUNIT_ASSERT ( s1.replace('B', "").getLength() == 2 );
   CPPUNIT_ASSERT ( s1.replace(L'B', "") == "AC" );
   CPPUNIT_ASSERT ( s1.replace(L'B', "").getLength() == 2 );
-  CPPUNIT_ASSERT ( s1.replace(from3, empty) == "ABC" );
-  CPPUNIT_ASSERT ( s1.replace(from3, empty).getLength() == 3 );
   CPPUNIT_ASSERT ( s1.replace(from1, empty) == "ABC" );
   CPPUNIT_ASSERT ( s1.replace(from1, empty).getLength() == 3 );
   CPPUNIT_ASSERT ( s1.replace(from3, empty) == "ABC" );
   CPPUNIT_ASSERT ( s1.replace(from3, empty).getLength() == 3 );
-  CPPUNIT_ASSERT ( s1.replace(from5, to5) == "ABC" );
-  CPPUNIT_ASSERT ( s1.replace(from5, to5).getLength() == 3 );
+#if __cplusplus >= 201703L
+  CPPUNIT_ASSERT ( s1.replace(from4, empty) == "ABC" );
+  CPPUNIT_ASSERT ( s1.replace(from4, empty).getLength() == 3 );
+  CPPUNIT_ASSERT ( s1.replace(from6, empty) == "ABC" );
+  CPPUNIT_ASSERT ( s1.replace(from6, empty).getLength() == 3 );
+#endif
+  CPPUNIT_ASSERT ( s1.replace(from7, to7) == "ABC" );
+  CPPUNIT_ASSERT ( s1.replace(from7, to7).getLength() == 3 );
   CPPUNIT_ASSERT ( s1.replace(empty, to1) == "ABC" );
   CPPUNIT_ASSERT ( s1.replace(empty, to1).getLength() == 3 );
-  CPPUNIT_ASSERT ( s1.replace(from6, empty) == "ABC"  );
-  CPPUNIT_ASSERT ( s1.replace(from6, empty).getLength() == 3 );
+  CPPUNIT_ASSERT ( s1.replace(from8, empty) == "ABC"  );
+  CPPUNIT_ASSERT ( s1.replace(from8, empty).getLength() == 3 );
 
   empty = "";
   CPPUNIT_ASSERT ( s1.replace(from1, empty) == "ABC" );
   CPPUNIT_ASSERT ( s1.replace(from3, empty) == "ABC" );
-  CPPUNIT_ASSERT ( s1.replace(from5, to5) == "ABC" );
+#if __cplusplus >= 201703L
+  CPPUNIT_ASSERT ( s1.replace(from4, to4) == "ABC" );
+  CPPUNIT_ASSERT ( s1.replace(from6, to6) == "ABC" );
+#endif
+  CPPUNIT_ASSERT ( s1.replace(from7, to7) == "ABC" );
   CPPUNIT_ASSERT ( s1.replace(empty, to1) == "ABC" );
-  CPPUNIT_ASSERT ( s1.replace(from6, empty) == "ABC"  );
+  CPPUNIT_ASSERT ( s1.replace(from8, empty) == "ABC"  );
 
   s1.clear();
   CPPUNIT_ASSERT ( s1.replace(from1, to1).isEmpty() );
-  CPPUNIT_ASSERT ( s1.replace(from6, to1).isEmpty() );
+  CPPUNIT_ASSERT ( s1.replace(from8, to1).isEmpty() );
 
-  CPPUNIT_ASSERT ( s1.replace(from5, to5).isEmpty() );
   CPPUNIT_ASSERT ( s1.replace(from7, to7).isEmpty() );
+  CPPUNIT_ASSERT ( s1.replace(from9, to9).isEmpty() );
 }
 
 //----------------------------------------------------------------------

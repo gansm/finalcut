@@ -4,7 +4,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2023 Markus Gans                                      *
+* Copyright 2017-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -68,8 +68,9 @@ class FScrollView : public FWidget
 {
   public:
     // Using-declaration
-    using FWidget::setGeometry;
+    using FWidget::delAccelerator;
     using FWidget::print;
+    using FWidget::setGeometry;
 
     // Constructor
     explicit FScrollView (FWidget* = nullptr);
@@ -179,17 +180,31 @@ class FScrollView : public FWidget
 
     // Methods
     void init();
+    void addLocalPreprocessingHandler();
     void createViewport (const FSize&) noexcept;
     void drawText (const FString&, std::size_t);
+    auto getDisplayedTextLength (const FString&, const std::size_t) const -> std::size_t;
+    void setLabelStyle() const;
+    void printLabel (const FString&, std::size_t);
+    void printEllipsis (const FString&);
     void directFocus();
     void mapKeyFunctions();
     void changeSize (const FSize&, bool);
+    void adjustOffsets (int, int, int, int);
+    auto isChangePosition (const int, const int) const -> bool;
+    auto isChangeXPosition (const int) const -> bool;
+    auto isChangeYPosition (const int) const -> bool;
+    void changeX (const std::size_t, const int);
+    void changeY (const std::size_t, const int);
     void calculateScrollbarPos() const;
     template <typename Callback>
     void initScrollbar (FScrollbarPtr&, Orientation, Callback);
     void setHorizontalScrollBarVisibility() const;
     void setVerticalScrollBarVisibility() const;
     void setViewportCursor();
+    auto shouldUpdateScrollbar (FScrollbar::ScrollType) const -> bool;
+    auto getVerticalScrollDistance (const FScrollbar::ScrollType) const -> int;
+    auto getHorizontalScrollDistance (const FScrollbar::ScrollType) const -> int;
 
     // Callback methods
     void cb_vbarChange (const FWidget*);
@@ -223,17 +238,26 @@ inline auto FScrollView::getClassName() const -> FString
 inline auto FScrollView::getViewportWidth() const -> std::size_t
 {
   return ( getScrollHeight() > getViewportHeight() )
-       ? getWidth() - vertical_border_spacing - std::size_t(nf_offset)
-       : getWidth() - vertical_border_spacing;
+         ? static_cast<std::size_t>(std::max (1, getGeometry().getX2() -
+                                                 (getGeometry().getX1() - 1) -
+                                                 static_cast<int>(vertical_border_spacing) -
+                                                 static_cast<int>(nf_offset)))
+         : static_cast<std::size_t>(std::max (1, getGeometry().getX2() -
+                                                 (getGeometry().getX1() - 1) -
+                                                 static_cast<int>(vertical_border_spacing)));
 }
 
 //----------------------------------------------------------------------
 inline auto FScrollView::getViewportHeight() const -> std::size_t
-{ return getHeight() - horizontal_border_spacing; }
+{
+  return static_cast<std::size_t>(std::max (1, getGeometry().getY2() -
+                                               (getGeometry().getY1() - 1) -
+                                               static_cast<int>(horizontal_border_spacing)));
+}
 
 //----------------------------------------------------------------------
 inline auto FScrollView::getViewportSize() const -> FSize
-{ return {getViewportWidth(), getViewportHeight()}; }
+{ return { FSize{getViewportWidth(), getViewportHeight()} }; }
 
 //----------------------------------------------------------------------
 inline auto FScrollView::getScrollWidth() const -> std::size_t
@@ -295,7 +319,7 @@ inline void FScrollView::initScrollbar ( FScrollbarPtr& bar
                                        , Callback cb_handler )
 {
   finalcut::initScrollbar (bar, o, this, cb_handler);
-  FTermArea* area = getPrintArea();
+  FTermArea* area = FScrollView::getPrintArea();
   finalcut::setPrintArea (*bar, area);
 }
 

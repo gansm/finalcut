@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2023 Markus Gans                                      *
+* Copyright 2018-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -330,7 +330,9 @@ class FKeyboardTest : public CPPUNIT_NS::TestFixture
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
     void init();
-    void input (std::string);
+    void enableFakingInput();
+    template<typename CharT>
+    void input (CharT&&);
     void processInput();
     void clear();
     void keyPressed();
@@ -348,6 +350,7 @@ class FKeyboardTest : public CPPUNIT_NS::TestFixture
 //----------------------------------------------------------------------
 FKeyboardTest::FKeyboardTest()
 {
+  enableFakingInput();
   init();
 }
 
@@ -403,28 +406,28 @@ void FKeyboardTest::noArgumentTest()
   CPPUNIT_ASSERT ( keyboard->getKey() == finalcut::FKey::None );
 
   // Keypress timeout
-  CPPUNIT_ASSERT ( keyboard->getKeypressTimeout() == 100 * 1000 );
+  CPPUNIT_ASSERT ( keyboard->getKeypressTimeout() == static_cast<uInt64>(100 * 1000) );
 
   keyboard->setKeypressTimeout(0);  // 0 ms
   CPPUNIT_ASSERT ( keyboard->getKeypressTimeout() == 0 );
 
   keyboard->setKeypressTimeout(100000);  // 100 ms
-  CPPUNIT_ASSERT ( keyboard->getKeypressTimeout() == 100 * 1000 );
+  CPPUNIT_ASSERT ( keyboard->getKeypressTimeout() == static_cast<uInt64>(100 * 1000) );
 
   // Read blocking time
-  CPPUNIT_ASSERT ( keyboard->getReadBlockingTime() == 100 * 1000 );
+  CPPUNIT_ASSERT ( keyboard->getReadBlockingTime() == static_cast<uInt64>(100 * 1000) );
 
   keyboard->setReadBlockingTime(1000000);  // 1000 ms
-  CPPUNIT_ASSERT ( keyboard->getReadBlockingTime() == 1000 * 1000 );
+  CPPUNIT_ASSERT ( keyboard->getReadBlockingTime() == static_cast<uInt64>(1000 * 1000) );
 
   keyboard->setReadBlockingTime(0);  // 0 ms
   CPPUNIT_ASSERT ( keyboard->getReadBlockingTime() == 0 );
 
   keyboard->setReadBlockingTime(50000);  // 50 ms
-  CPPUNIT_ASSERT ( keyboard->getReadBlockingTime() == 50 * 1000 );
+  CPPUNIT_ASSERT ( keyboard->getReadBlockingTime() == static_cast<uInt64>(50 * 1000) );
 
   keyboard->setReadBlockingTime(100000);  // 100 ms
-  CPPUNIT_ASSERT ( keyboard->getReadBlockingTime() == 100 * 1000 );
+  CPPUNIT_ASSERT ( keyboard->getReadBlockingTime() == static_cast<uInt64>(100 * 1000) );
 
   // Check key map
   CPPUNIT_ASSERT ( test::fkey[0].num == finalcut::FKey::Backspace );
@@ -3115,7 +3118,7 @@ void FKeyboardTest::utf8Test()
   key_pressed = finalcut::FKey(0xffffffff);
   input("\377");
   processInput();
-  static constexpr finalcut::FKey NOT_SET = static_cast<finalcut::FKey>(-2);
+  static constexpr auto NOT_SET = static_cast<finalcut::FKey>(-2);
   CPPUNIT_ASSERT ( key_pressed == NOT_SET );
 
   // Without UTF-8 support
@@ -3170,14 +3173,50 @@ void FKeyboardTest::init()
 
   // Copy the section with the fixed escape sequences
   auto& fkey_cap_table = finalcut::FKeyMap::getInstance().getKeyCapMap();
-  std::copy ( &fkey_cap_table[150].num, &fkey_cap_table[190].num, &test::fkey[150].num);
+  std::size_t first = 150;
+  std::size_t last = fkey_cap_table.size() - 1;
+  const auto from_begin =  &fkey_cap_table[first];
+  const auto from_end = &fkey_cap_table[last] + 1;
+  auto to_begin = &test::fkey[first];
+  assert ( from_end > from_begin );
+  std::copy (from_begin, from_end, to_begin);
 
   // Use test::fkey as new termcap map
   keyboard->setTermcapMap (test::fkey);
 }
 
 //----------------------------------------------------------------------
-void FKeyboardTest::input (std::string s)
+void FKeyboardTest::enableFakingInput()
+{
+  //--------------------------------------------------------------------
+  // Note: The dev.tty.legacy_tiocsti sysctl variable must be set
+  //       to true to perform the TIOCSTI (faking input) operation
+  //       in Linux 6.2.0 or later.
+  //--------------------------------------------------------------------
+
+  static const auto& fsystem = finalcut::FSystem::getInstance();
+
+  // Check for root privileges
+  if ( fsystem->getuid() != 0 )
+    return;
+
+  // Open the sysctl variable "dev.tty.legacy_tiocsti"
+  int fd = ::open("/proc/sys/dev/tty/legacy_tiocsti", O_WRONLY);
+
+  if ( fd < 0 )  // Cannot open file descriptor
+    return;
+
+  // Set dev.tty.legacy_tiocsti to true
+  if ( dprintf(fd, "%d", 1) < 1 )
+    std::cerr << "-> Unable to modify dev.tty.legacy_tiocsti\n";
+
+  if ( ::close(fd) < 0 )
+    std::cerr << "-> Cannot close file descriptor\n";
+}
+
+//----------------------------------------------------------------------
+template<typename CharT>
+void FKeyboardTest::input (CharT&& string)
 {
   // Simulates keystrokes
 
@@ -3185,6 +3224,7 @@ void FKeyboardTest::input (std::string s)
   auto stdin_no = finalcut::FTermios::getStdIn();
   fflush(stdout);
 
+  std::string s = std::forward<CharT>(string);
   std::string::const_iterator iter;
   iter = s.begin();
 

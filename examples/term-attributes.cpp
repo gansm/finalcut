@@ -194,7 +194,7 @@ void AttribDlg::draw()
     if ( finalcut::FVTerm::getFOutput()->isMonochron() )
       bgcolor = FColor::Default;
     else
-      bgcolor = getColorTheme()->label_bg;
+      bgcolor = getColorTheme()->label.bg;
 
     // Get the terminal type after the terminal detection in show()
     FDialog::setText ( "A terminal attributes test ("
@@ -273,7 +273,7 @@ void AttribDemo::printAltCharset()
   const auto& parent = static_cast<AttribDlg*>(getParent());
 
   if ( ! finalcut::FVTerm::getFOutput()->isMonochron() )
-    setColor (wc->label_fg, wc->label_bg);
+    setColor (wc->label.fg, wc->label.bg);
 
   print() << FPoint{1, 1} << "Alternate charset: ";
 
@@ -452,14 +452,14 @@ void AttribDemo::draw()
     print() << FPoint{1, 2 + int(y)};
 
     if ( ! finalcut::FVTerm::getFOutput()->isMonochron() )
-      setColor (wc->label_fg, wc->label_bg);
+      setColor (wc->label.fg, wc->label.bg);
 
     if ( y < effect.size() )
       effect[y]();
   }
 
   if ( ! finalcut::FVTerm::getFOutput()->isMonochron() )
-    setColor(wc->label_fg, wc->label_bg);
+    setColor(wc->label.fg, wc->label.bg);
 
   print() << FPoint{1, 15};
   const FColor bg = static_cast<AttribDlg*>(getParent())->getBGColor();

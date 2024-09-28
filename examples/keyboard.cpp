@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2023 Markus Gans                                      *
+* Copyright 2015-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -46,8 +46,8 @@ class Keyboard final : public finalcut::FWidget
 Keyboard::Keyboard (finalcut::FWidget* parent)
   : finalcut::FWidget{parent}
 {
-  getColorTheme()->term_fg = finalcut::FColor::Default;
-  getColorTheme()->term_bg = finalcut::FColor::Default;
+  getColorTheme()->term.fg = finalcut::FColor::Default;
+  getColorTheme()->term.bg = finalcut::FColor::Default;
 }
 
 //----------------------------------------------------------------------
@@ -55,13 +55,11 @@ void Keyboard::onKeyPress (finalcut::FKeyEvent* ev)
 {
   const auto key_id = ev->key();
   auto key_name = finalcut::FVTerm::getFOutput()->getKeyName(key_id);
-  bool is_last_line{false};
 
   if ( key_name.isEmpty() )
     key_name = wchar_t(key_id);
 
-  if ( getPrintPos().getY() == int(getDesktopHeight()) )
-    is_last_line = true;
+  auto is_last_line = bool( getPrintPos().getY() == int(getDesktopHeight()) );
 
   if ( is_last_line )
   {

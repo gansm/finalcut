@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2023 Markus Gans                                      *
+* Copyright 2016-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -76,7 +76,7 @@ class FTermcap final
     };
 
     // Using-declaration
-    using TCapMapType = std::array<TCapMap, 85>;
+    using TCapMapType = std::array<TCapMap, 86>;
     using PutCharFunc = std::decay_t<int(int)>;
     using PutStringFunc = std::decay_t<int(const std::string&)>;
 

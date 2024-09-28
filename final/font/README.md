@@ -6,16 +6,21 @@
 
 Simply start your program with the parameter `--newfont`.
 
+* [newfont-9x16](../../doc/newfont-9x16.txt)
+* [newfont-8x16](../../doc/newfont-8x16.txt)
+
+
 ### How can I use the new graphical font under X11?
 
 The use of the new graphical font under X11 is only possible with
-the terminal emulators 
+the terminal emulators
 [xterm](http://invisible-island.net/xterm/xterm.html)
-or 
+or
 [urxvt](http://software.schmorp.de/pkg/rxvt-unicode.html),
 because only these terminal emulators can change the font by
 using an escape sequence.  For an xterm, the "[Allow Font Ops](../../doc/xterm.txt)"
 option must be set.
+
 
 #### Install the gzip compressed X11 pcf bitmap font 8x16graph.pcf.gz on your xserver:
 

@@ -23,7 +23,6 @@
 #include <functional>
 #include <unordered_map>
 
-#include "final/vterm/fcolorpair.h"
 #include "final/vterm/fstyle.h"
 #include "final/vterm/fvtermattribute.h"
 
@@ -121,7 +120,7 @@ void FVTermAttribute::print (const FStyle& style)
 //----------------------------------------------------------------------
 void FVTermAttribute::print (const FColorPair& pair)
 {
-  setColor (pair.getForegroundColor(), pair.getBackgroundColor());
+  setColor (pair);
 }
 
 }  // namespace finalcut

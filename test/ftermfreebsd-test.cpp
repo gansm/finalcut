@@ -21,7 +21,19 @@
 ***********************************************************************/
 
 #include <term.h>
-#undef buttons  // from term.h
+#undef back_tab         // from term.h
+#undef buttons          // from term.h
+#undef carriage_return  // from term.h
+#undef clr_bol          // from term.h
+#undef clr_eol          // from term.h
+#undef column_address   // from term.h
+#undef erase_chars      // from term.h
+#undef orig_colors      // from term.h
+#undef orig_pair        // from term.h
+#undef repeat_char      // from term.h
+#undef row_address      // from term.h
+#undef tab              // from term.h
+
 #include <unistd.h>
 
 #include <limits>

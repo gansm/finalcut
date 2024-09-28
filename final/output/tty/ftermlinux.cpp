@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2023 Markus Gans                                      *
+* Copyright 2018-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -505,17 +505,10 @@ auto FTermLinux::getScreenFont() -> bool
   font.height = 32;
   font.charcount = 512;
 
-  // Initialize with 0
-  try
-  {
-    static constexpr std::size_t data_size = 4 * 32 * 512;
-    font.data = new uChar[data_size]();
-  }
-  catch (const std::bad_alloc&)
-  {
-    badAllocOutput ("FString");
-    return false;
-  }
+  static constexpr auto data_size = static_cast<std::size_t>(4 * 32 * 512);
+  font_data.resize(data_size);
+  std::fill(font_data.begin(), font_data.end(), 0);  // Initialize with 0
+  font.data = font_data.data();
 
   // Font operation
   static const auto& fsystem = FSystem::getInstance();
@@ -530,7 +523,8 @@ auto FTermLinux::getScreenFont() -> bool
   screen_font.width = font.width;
   screen_font.height = font.height;
   screen_font.charcount = font.charcount;
-  screen_font.data = font.data;
+  screen_font_data = std::move(font_data);
+  screen_font.data = screen_font_data.data();
   return true;
 }
 
@@ -557,15 +551,8 @@ auto FTermLinux::getUnicodeMap() -> bool
     if ( errno != ENOMEM || count == 0 )
       return false;
 
-    try
-    {
-      screen_unicode_map.entries = new struct unipair[count]();
-    }
-    catch (const std::bad_alloc&)
-    {
-      badAllocOutput ("unipair[count]");
-      return false;
-    }
+    unicode_entries.resize(count);
+    screen_unicode_map.entries = unicode_entries.data();
 
     // Get unicode-to-font mapping from kernel
     ret = fsystem->ioctl (fd_tty, GIO_UNIMAP, &screen_unicode_map);
@@ -592,17 +579,10 @@ auto FTermLinux::getModifierKey() & -> ModifierKey&
   // TIOCLINUX, subcode = 6 (TIOCL_GETSHIFTSTATE)
   if ( fsystem->ioctl(0, TIOCLINUX, &subcode) >= 0 )
   {
-    if ( uChar(subcode) & (1u << KG_SHIFT) )
-      mod_key.shift = true;
-
-    if ( uChar(subcode) & (1u << KG_ALTGR) )
-      mod_key.alt_gr = true;
-
-    if ( uChar(subcode) & (1u << KG_CTRL) )
-      mod_key.ctrl = true;
-
-    if ( uChar(subcode) & (1u << KG_ALT) )
-      mod_key.alt = true;
+    mod_key.shift  = bool(uChar(subcode) & (1u << KG_SHIFT));
+    mod_key.alt_gr = bool(uChar(subcode) & (1u << KG_ALTGR));
+    mod_key.ctrl   = bool(uChar(subcode) & (1u << KG_CTRL));
+    mod_key.alt    = bool(uChar(subcode) & (1u << KG_ALT));
   }
 
   return mod_key;
@@ -642,16 +622,9 @@ auto FTermLinux::setScreenFont ( const uChar fontdata[], uInt count
   {
     const std::size_t bytes_per_line = font.width / 8;
     const std::size_t data_size = bytes_per_line * 32 * font.charcount;
-
-    try
-    {
-      font.data = new uChar[data_size]();  // Initialize with 0
-    }
-    catch (const std::bad_alloc&)
-    {
-      badAllocOutput ("uChar[data_size]");
-      return -1;
-    }
+    font_data.resize(data_size);
+    std::fill(font_data.begin(), font_data.end(), 0);  // Initialize with 0
+    font.data = font_data.data();
 
     for (std::size_t i{0}; i < count; i++)
       std::memcpy ( font.data + bytes_per_line * 32 * i
@@ -929,12 +902,8 @@ auto FTermLinux::saveVGAPalette() -> bool
   // Save the current vga color map
 
   static const auto& fsystem = FSystem::getInstance();
-
-  if ( fsystem->ioctl(0, GIO_CMAP, saved_color_map.color.data()) == 0 )
-    has_saved_palette = true;
-  else
-    has_saved_palette = false;
-
+  has_saved_palette = \
+      bool( fsystem->ioctl(0, GIO_CMAP, saved_color_map.color.data()) == 0 );
   return has_saved_palette;
 }
 
@@ -1168,14 +1137,14 @@ auto FTermLinux::getFontPos (wchar_t ucs) const -> sInt16
 //----------------------------------------------------------------------
 inline void FTermLinux::deleteFontData (console_font_op& font)
 {
-  delete[] font.data;
+  font_data.clear();
   font.data = nullptr;
 }
 
 //----------------------------------------------------------------------
 inline void FTermLinux::deleteUnicodeMapEntries (unimapdesc& unicode_map)
 {
-  delete[] unicode_map.entries;
+  unicode_entries.clear();
   unicode_map.entries = nullptr;
 }
 

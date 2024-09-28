@@ -76,7 +76,8 @@ jobs:
 
     - name: Make unit test
       run: |
-        script -e -c "make check" && RET=$? || RET=$?
+        sudo sysctl -w dev.tty.legacy_tiocsti=1  # Required for Linux 6.2.0 or later
+        script -q -e -c 'make check' && RET=$? || RET=$?
         cat test/*.log || echo
         echo "Exit status: $RET"
         exit "$RET"

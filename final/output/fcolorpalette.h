@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2022 Markus Gans                                      *
+* Copyright 2018-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -54,7 +54,7 @@ class FColorPalette
     using FSetPalette = std::function<void(FColor, int, int, int)>;
 
     // Constructor
-    explicit FColorPalette (const FSetPalette&);
+    explicit FColorPalette (FSetPalette);
 
     // Destructor
     virtual ~FColorPalette() noexcept;
@@ -103,7 +103,7 @@ class default8ColorPalette final : public FColorPalette
 {
   public:
     // Constructor
-    explicit default8ColorPalette (const FSetPalette&);
+    explicit default8ColorPalette (FSetPalette);
 
     // Destructor
     ~default8ColorPalette() noexcept override;
@@ -143,7 +143,7 @@ class default16ColorPalette final : public FColorPalette
 {
   public:
     // Constructor
-    explicit default16ColorPalette (const FSetPalette&);
+    explicit default16ColorPalette (FSetPalette);
 
     // Destructor
     ~default16ColorPalette() noexcept override;
@@ -182,7 +182,7 @@ class default16DarkColorPalette final : public FColorPalette
 {
   public:
     // Constructor
-    explicit default16DarkColorPalette (const FSetPalette&);
+    explicit default16DarkColorPalette (FSetPalette);
 
     // Destructor
     ~default16DarkColorPalette() noexcept override;

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2023 Markus Gans                                      *
+* Copyright 2014-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -100,8 +100,8 @@ class FTextView : public FWidget
         , length{l}
       {
         auto wc = getColorTheme();
-        attributes.fg_color = wc->dialog_fg;
-        attributes.bg_color = wc->dialog_bg;
+        attributes.fg_color = wc->dialog.fg;
+        attributes.bg_color = wc->dialog.bg;
         attributes.attr = s.toFAttribute();
       }
 
@@ -114,7 +114,7 @@ class FTextView : public FWidget
         , length{l}
       {
         attributes.fg_color = c;
-        attributes.bg_color = getColorTheme()->dialog_bg;
+        attributes.bg_color = getColorTheme()->dialog.bg;
         attributes.attr = s.toFAttribute();
       }
 
@@ -156,6 +156,12 @@ class FTextView : public FWidget
     using FTextViewList = std::vector<FTextViewLine>;
     using FWidget::setGeometry;
 
+    struct FTextPosition
+    {
+      FTextViewList::size_type row{UNINITIALIZED_ROW};
+      FString::size_type       column{UNINITIALIZED_COLUMN};
+    };
+
     // Constructor
     explicit FTextView (FWidget* = nullptr);
 
@@ -176,7 +182,11 @@ class FTextView : public FWidget
     auto getScrollPos() const -> FPoint;
     auto getTextVisibleSize() const -> FSize;
     auto getText() const -> FString;
+    auto getSelectedText() const -> FString;
+    auto getSelectionStart() const -> FTextPosition;
+    auto getSelectionEnd() const -> FTextPosition;
     auto getLine (FTextViewList::size_type) -> FTextViewLine&;
+    auto getLine (FTextViewList::size_type) const -> const FTextViewLine&;
     auto getLines() const & -> const FTextViewList&;
 
     // Mutators
@@ -186,6 +196,13 @@ class FTextView : public FWidget
     void setText (const FString&);
     void addHighlight (std::size_t, const FTextHighlight&);
     void resetHighlight (std::size_t);
+    void setSelectionStart (const FTextViewList::size_type, const FString::size_type);
+    void setSelectionEnd (const FTextViewList::size_type, const FString::size_type);
+    void resetSelection();
+    template <typename T>
+    void setLines (T&&);
+    void setSelectable (bool = true);
+    void unsetSelectable();
     void scrollToX (int);
     void scrollToY (int);
     void scrollTo (const FPoint&);
@@ -193,6 +210,10 @@ class FTextView : public FWidget
     void scrollToBegin();
     void scrollToEnd();
     void scrollBy (int, int);
+
+    // Inquiry
+    auto hasSelectedText() const -> bool;
+    auto isSelectable() const -> bool;
 
     // Methods
     void hide() override;
@@ -212,24 +233,35 @@ class FTextView : public FWidget
     void onMouseDown (FMouseEvent*) override;
     void onMouseUp (FMouseEvent*) override;
     void onMouseMove (FMouseEvent*) override;
+    void onMouseDoubleClick (FMouseEvent*) override;
     void onWheel (FWheelEvent*) override;
+    void onTimer (FTimerEvent*) override;
 
   protected:
     // Method
     void initLayout() override;
     void adjustSize() override;
 
-  private:
-    // Using-declaration
-    using KeyMap = std::unordered_map<FKey, std::function<void()>, EnumHash<FKey>>;
+    // Inquiry
+    auto isHorizontallyScrollable() const -> bool;
+    auto isVerticallyScrollable() const -> bool;
 
     // Accessors
     auto getTextHeight() const -> std::size_t;
     auto getTextWidth() const -> std::size_t;
 
+  private:
+    // Constants
+    static constexpr auto UNINITIALIZED_ROW = static_cast<FTextViewList::size_type>(-1);
+    static constexpr auto UNINITIALIZED_COLUMN = static_cast<FString::size_type>(-1);
+
+    // Using-declaration
+    using KeyMap = std::unordered_map<FKey, std::function<void()>, EnumHash<FKey>>;
+
     // Inquiry
-    auto isHorizontallyScrollable() const -> bool;
-    auto isVerticallyScrollable() const -> bool;
+    auto isWithinTextBounds (const FPoint&) const -> bool;
+    auto isLowerRightResizeCorner (const FPoint&) const -> bool;
+    auto hasWrongSelectionOrder() const -> bool;
 
     // Methods
     void init();
@@ -238,27 +270,62 @@ class FTextView : public FWidget
     void drawBorder() override;
     void drawScrollbars() const;
     void drawText();
-    void printHighlighted ( FVTermBuffer&
-                          , const std::vector<FTextHighlight>& );
+    auto canSkipDrawing() const -> bool;
+    void printLine (std::size_t);
+    void addHighlighting ( FVTermBuffer&
+                         , const std::vector<FTextHighlight>& ) const;
+    void addSelection (FVTermBuffer&, std::size_t) const;
     auto useFDialogBorder() const -> bool;
     auto isPrintable (wchar_t) const -> bool;
+    auto splitTextLines (const FString&) const -> FStringList;
+    void processLine (FString&&, int);
+    template<typename T1, typename T2>
+    void setSelectionStartInt (T1&&, T2&&);
+    template<typename T1, typename T2>
+    void setSelectionEndInt (T1&&, T2&&);
+    auto getScrollBarMaxHorizontal() const noexcept -> int;
+    auto getScrollBarMaxVertical() const noexcept -> int;
+    void updateVerticalScrollBar() const;
+    void updateHorizontalScrollBar (std::size_t);
+    auto convertMouse2TextPos (const FPoint&) const -> FPoint;
+    void handleMouseWithinListBounds (const FPoint&);
+    void handleMouseDragging (const FMouseEvent*);
+    void handleLeftDragScroll();
+    void handleRightDragScroll();
+    void handleUpDragScroll();
+    void handleDownDragScroll();
+    void dragLeft();
+    void dragRight();
+    void dragUp();
+    void dragDown();
+    void stopDragScroll();
     void processChanged() const;
     void changeOnResize() const;
+    auto shouldUpdateScrollbar (FScrollbar::ScrollType) const -> bool;
+    auto getVerticalScrollDistance (const FScrollbar::ScrollType) const -> int;
+    auto getHorizontalScrollDistance (const FScrollbar::ScrollType) const -> int;
 
     // Callback methods
     void cb_vbarChange (const FWidget*);
     void cb_hbarChange (const FWidget*);
 
     // Data members
-    FTextViewList  data{};
-    FScrollbarPtr  vbar{nullptr};
-    FScrollbarPtr  hbar{nullptr};
-    KeyMap         key_map{};
-    bool           update_scrollbar{true};
-    int            xoffset{0};
-    int            yoffset{0};
-    int            nf_offset{0};
-    std::size_t    max_line_width{0};
+    FTextViewList   data{};
+    FScrollbarPtr   vbar{nullptr};
+    FScrollbarPtr   hbar{nullptr};
+    FTextPosition   selection_start{};
+    FTextPosition   selection_end{};
+    FPoint          select_click_pos{-1, -1};
+    KeyMap          key_map{};
+    DragScrollMode  drag_scroll{DragScrollMode::None};
+    bool            update_scrollbar{true};
+    bool            pass_to_dialog{false};
+    bool            selectable{false};
+    int             scroll_repeat{100};
+    int             xoffset{0};
+    int             yoffset{0};
+    int             nf_offset{0};
+    std::size_t     max_line_width{0};
 };
 
 // FListBox inline functions
@@ -306,7 +373,7 @@ inline auto FTextView::getColumns() const noexcept -> std::size_t
 
 //----------------------------------------------------------------------
 inline auto FTextView::getRows() const -> std::size_t
-{ return std::size_t(data.size()); }
+{ return data.size(); }
 
 //----------------------------------------------------------------------
 inline auto FTextView::getScrollPos() const -> FPoint
@@ -314,10 +381,22 @@ inline auto FTextView::getScrollPos() const -> FPoint
 
 //----------------------------------------------------------------------
 inline auto FTextView::getTextVisibleSize() const -> FSize
-{ return {getTextWidth(), getTextHeight()}; }
+{ return { FSize{getTextWidth(), getTextHeight()} }; }
+
+//----------------------------------------------------------------------
+inline auto FTextView::getSelectionStart() const -> FTextPosition
+{ return selection_start; }
+
+//----------------------------------------------------------------------
+inline auto FTextView::getSelectionEnd() const -> FTextPosition
+{ return selection_end; }
 
 //----------------------------------------------------------------------
 inline auto FTextView::getLine (FTextViewList::size_type line) -> FTextViewLine&
+{ return data.at(line); }
+
+//----------------------------------------------------------------------
+inline auto FTextView::getLine (FTextViewList::size_type line) const -> const FTextViewLine&
 { return data.at(line); }
 
 //----------------------------------------------------------------------
@@ -325,8 +404,56 @@ inline auto FTextView::getLines() const & -> const FTextViewList&
 { return data; }
 
 //----------------------------------------------------------------------
+inline void FTextView::setSelectionStart ( const FTextViewList::size_type row
+                                         , const FString::size_type col )
+{ selection_start = {row, col}; }
+
+//----------------------------------------------------------------------
+inline void FTextView::setSelectionEnd ( const FTextViewList::size_type row
+                                       , const FString::size_type col )
+{ selection_end = {row, col}; }
+
+//----------------------------------------------------------------------
+inline void FTextView::resetSelection()
+{
+  selection_start = {UNINITIALIZED_ROW, UNINITIALIZED_COLUMN};
+  selection_end = {UNINITIALIZED_ROW, UNINITIALIZED_COLUMN};
+}
+
+//----------------------------------------------------------------------
+template <typename T>
+inline void FTextView::setLines (T&& list)
+{
+  clear();
+  data = std::forward<T>(list);
+  updateVerticalScrollBar();
+  processChanged();
+}
+
+//----------------------------------------------------------------------
+inline void FTextView::setSelectable (bool enable)
+{ selectable = enable; }
+
+//----------------------------------------------------------------------
+inline void FTextView::unsetSelectable()
+{ selectable = false; }
+
+//----------------------------------------------------------------------
 inline void FTextView::scrollTo (const FPoint& pos)
 { scrollTo(pos.getX(), pos.getY()); }
+
+//---------------------------------------------------------------
+inline auto FTextView::hasSelectedText() const -> bool
+{
+  return selection_start.row != UNINITIALIZED_ROW
+      && selection_end.row != UNINITIALIZED_ROW
+      && selection_start.column != UNINITIALIZED_COLUMN
+      && selection_end.column != UNINITIALIZED_COLUMN;
+}
+
+//----------------------------------------------------------------------
+inline auto FTextView::isSelectable() const -> bool
+{ return selectable; }
 
 //----------------------------------------------------------------------
 template <typename T>
@@ -358,6 +485,22 @@ inline auto FTextView::isHorizontallyScrollable() const -> bool
 //----------------------------------------------------------------------
 inline auto FTextView::isVerticallyScrollable() const -> bool
 { return getRows() > getTextHeight(); }
+
+//----------------------------------------------------------------------
+template<typename T1, typename T2>
+inline void FTextView::setSelectionStartInt (T1&& row, T2&& col)
+{
+  selection_start = { static_cast<const FTextViewList::size_type>(std::forward<T1>(row))
+                    , static_cast<const FString::size_type>(std::forward<T2>(col)) };
+}
+
+//----------------------------------------------------------------------
+template<typename T1, typename T2>
+inline void FTextView::setSelectionEndInt (T1&& row, T2&& col)
+{
+  selection_end = { static_cast<const FTextViewList::size_type>(std::forward<T1>(row))
+                  , static_cast<const FString::size_type>(std::forward<T2>(col)) };
+}
 
 }  // namespace finalcut
 

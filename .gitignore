@@ -1,3 +1,6 @@
+*~
+*.swp
+*.swo
 *.a
 *.gcda
 *.gch
@@ -13,6 +16,7 @@
 *.trs
 Makefile
 Makefile.in
+typescript
 /aclocal.m4
 /ar-lib
 /autom4te.cache
@@ -25,6 +29,7 @@ Makefile.in
 /config.status
 /config.sub
 /configure
+/configure~
 /depcomp
 /finalcut.pc
 /install-sh

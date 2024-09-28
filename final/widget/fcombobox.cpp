@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2023 Markus Gans                                      *
+* Copyright 2019-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -125,8 +125,8 @@ void FDropDownListBox::draw()
   // Fill the background
 
   const auto& wc = getColorTheme();
-  setForegroundColor (wc->list_fg);
-  setBackgroundColor (wc->list_bg);
+  setForegroundColor (wc->list.fg);
+  setBackgroundColor (wc->list.bg);
   setColor();
 
   if ( FVTerm::getFOutput()->isMonochron() )
@@ -144,7 +144,7 @@ void FDropDownListBox::drawShadow()
 {
   const auto& wc = getColorTheme();
   finalcut::drawShadow(this);
-  setColor (wc->shadow_fg, wc->shadow_bg);
+  setColor (wc->shadow.bg, FColor::Default);
   print() << FPoint{int(getWidth()) + 1, 1} << UniChar::FullBlock;  // █
 }
 
@@ -230,10 +230,7 @@ void FComboBox::setEditable (bool enable)
 //----------------------------------------------------------------------
 void FComboBox::setCurrentItem (std::size_t index)
 {
-  if ( index > getCount() )
-    index = getCount();
-  else if ( index < 1 )
-    index = 1;
+  index = std::max(std::size_t(1), std::min(index, getCount()));
 
   if ( index == list_window.list.currentItem() )
     return;
@@ -249,10 +246,7 @@ void FComboBox::setMaxVisibleItems (std::size_t items)
 {
   // Sets the maximum height of the combo box in elements
 
-  if ( items > getCount() )
-    max_items = getCount();
-  else
-    max_items = items;
+  max_items = std::min(items, getCount());
 }
 
 //----------------------------------------------------------------------
@@ -351,16 +345,12 @@ void FComboBox::onKeyPress (FKeyEvent* ev)
     onePosDown();
     ev->accept();
   }
-  else if ( key == FKey::Meta_up
-         || key == FKey::Ctrl_up
-         || isEscapeKey(key) )
+  else if ( isCollapseComboBoxKey(key) )
   {
     hideDropDown();
     ev->accept();
   }
-  else if ( key == FKey::F4
-         || key == FKey::Meta_down
-         || key == FKey::Ctrl_down )
+  else if ( isExpandComboBoxKey(key) )
   {
     showDropDown();
     ev->accept();
@@ -467,7 +457,7 @@ void FComboBox::init()
   label->setBackgroundColor (parent_widget->getBackgroundColor());
   input_field.setLabelAssociatedWidget(this);
   input_field.unsetShadow();
-  adjustSize();
+  FWidget::adjustSize();
   initCallbacks();
 
   if ( FVTerm::getFOutput()->isNewFont() )
@@ -513,11 +503,11 @@ void FComboBox::draw()
   const FColorPair button_color = [this, &wc] ()
   {
     if ( list_window.isEmpty() )
-      return FColorPair { wc->scrollbar_button_inactive_fg
-                        , wc->scrollbar_button_inactive_bg };
+      return FColorPair { wc->scrollbar.button_inactive_fg
+                        , wc->scrollbar.button_inactive_bg };
 
-    return FColorPair { wc->scrollbar_button_fg
-                      , wc->scrollbar_button_bg };
+    return FColorPair { wc->scrollbar.button_fg
+                      , wc->scrollbar.button_bg };
   }();
 
   print() << FPoint{int(getWidth()) - nf, 1}

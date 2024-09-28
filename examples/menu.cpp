@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2022 Markus Gans                                      *
+* Copyright 2015-2023 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -38,6 +38,108 @@ class Menu final : public finalcut::FDialog
     explicit Menu (finalcut::FWidget* = nullptr);
 
   private:
+    struct FileMenu
+    {
+      explicit FileMenu (finalcut::FMenuBar& menubar)
+        : File{"&File", &menubar}
+      { }
+
+      finalcut::FMenu      File{};
+      finalcut::FMenuItem  New{"&New", &File};
+      finalcut::FMenuItem  Open{"&Open...", &File};
+      finalcut::FMenuItem  Save{"&Save", &File};
+      finalcut::FMenuItem  SaveAs{"&Save as...", &File};
+      finalcut::FMenuItem  Close{"&Close", &File};
+      finalcut::FMenuItem  Line1{&File};
+      finalcut::FMenuItem  Print{"&Print", &File};
+      finalcut::FMenuItem  Line2{&File};
+      finalcut::FMenuItem  Quit{"&Quit", &File};
+    };
+
+    struct EditMenu
+    {
+      explicit EditMenu (finalcut::FMenuBar& menubar)
+        : Edit{"&Edit", &menubar}
+      { }
+
+      finalcut::FMenu      Edit{};
+      finalcut::FMenuItem  Undo{FKey::Ctrl_z, "&Undo", &Edit};
+      finalcut::FMenuItem  Redo{FKey::Ctrl_y, "&Redo", &Edit};
+      finalcut::FMenuItem  Line3{&Edit};
+      finalcut::FMenuItem  Cut{FKey::Ctrl_x, "Cu&t", &Edit};
+      finalcut::FMenuItem  Copy{FKey::Ctrl_c, "&Copy", &Edit};
+      finalcut::FMenuItem  Paste{FKey::Ctrl_v, "&Paste", &Edit};
+      finalcut::FMenuItem  Line4{&Edit};
+      finalcut::FMenuItem  Search{FKey::Ctrl_f, "&Search", &Edit};
+      finalcut::FMenuItem  Next{FKey::F3, "Search &next", &Edit};
+      finalcut::FMenuItem  Line5{&Edit};
+      finalcut::FMenuItem  SelectAll{FKey::Ctrl_a, "Select &all", &Edit};
+    };
+
+    struct ChoiceMenu
+    {
+      explicit ChoiceMenu (finalcut::FMenuBar& menubar)
+        : Choice{"&Choice", &menubar}
+      { }
+
+      finalcut::FMenu  Choice{};
+      finalcut::FMenu  Color{"&Color", &Choice};
+      finalcut::FMenu  Style{"&Style", &Choice};
+      finalcut::FMenu  Border{"&Border", &Choice};
+    };
+
+    struct ColorMenu
+    {
+      explicit ColorMenu (finalcut::FMenu& Color)
+        : Color1{"Red", &Color}
+        , Color2{"Green", &Color}
+        , Color3{"Yellow", &Color}
+        , Color4{"Brue", &Color}
+        , Color5{"Black", &Color}
+      { }
+
+      finalcut::FRadioMenuItem Color1{};
+      finalcut::FRadioMenuItem Color2{};
+      finalcut::FRadioMenuItem Color3{};
+      finalcut::FRadioMenuItem Color4{};
+      finalcut::FRadioMenuItem Color5{};
+    };
+
+    struct StyleMenu
+    {
+      explicit StyleMenu (finalcut::FMenu& Style)
+        : Bold{"Bold", &Style}
+        , Italic{"Italic", &Style}
+      { }
+
+      finalcut::FCheckMenuItem Bold{};
+      finalcut::FCheckMenuItem Italic{};
+    };
+
+    struct BorderMenu
+    {
+      explicit BorderMenu (finalcut::FMenu& Border)
+        : BColor{"&Color", &Border}
+        , BStyle{"&Style", &Border}
+        , BColor1{"Red", &BColor}
+        , BColor2{"Blue", &BColor}
+        , BStyle1{std::move(line), &BStyle}
+        , BStyle2{"-------------", &BStyle}
+        , BStyle3{"- - - - - - -", &BStyle}
+        , BStyle4{"-  -  -  -  -", &BStyle}
+      { }
+
+      finalcut::FString        line{13, finalcut::UniChar::BoxDrawingsHorizontal};
+      finalcut::FMenu          BColor{};
+      finalcut::FMenu          BStyle{};
+      finalcut::FRadioMenuItem BColor1{};
+      finalcut::FRadioMenuItem BColor2{};
+      finalcut::FRadioMenuItem BStyle1{};
+      finalcut::FRadioMenuItem BStyle2{};
+      finalcut::FRadioMenuItem BStyle3{};
+      finalcut::FRadioMenuItem BStyle4{};
+    };
+
     // Methods
     void configureFileMenuItems();
     void configureEditMenuItems();
@@ -56,55 +158,19 @@ class Menu final : public finalcut::FDialog
     void cb_message (const finalcut::FMenuItem*);
 
     // Data members
-    finalcut::FString        line{13, finalcut::UniChar::BoxDrawingsHorizontal};
-    finalcut::FMenuBar       Menubar{this};
-    finalcut::FMenu          File{"&File", &Menubar};
-    finalcut::FMenu          Edit{"&Edit", &Menubar};
-    finalcut::FMenu          Choice{"&Choice", &Menubar};
-    finalcut::FMenuItem      Window{"&Window", &Menubar};
-    finalcut::FMenuItem      Help{"&Help", &Menubar};
-    finalcut::FMenuItem      New{"&New", &File};
-    finalcut::FMenuItem      Open{"&Open...", &File};
-    finalcut::FMenuItem      Save{"&Save", &File};
-    finalcut::FMenuItem      SaveAs{"&Save as...", &File};
-    finalcut::FMenuItem      Close{"&Close", &File};
-    finalcut::FMenuItem      Line1{&File};
-    finalcut::FMenuItem      Print{"&Print", &File};
-    finalcut::FMenuItem      Line2{&File};
-    finalcut::FMenuItem      Quit{"&Quit", &File};
-    finalcut::FMenuItem      Undo{FKey::Ctrl_z, "&Undo", &Edit};
-    finalcut::FMenuItem      Redo{FKey::Ctrl_y, "&Redo", &Edit};
-    finalcut::FMenuItem      Line3{&Edit};
-    finalcut::FMenuItem      Cut{FKey::Ctrl_x, "Cu&t", &Edit};
-    finalcut::FMenuItem      Copy{FKey::Ctrl_c, "&Copy", &Edit};
-    finalcut::FMenuItem      Paste{FKey::Ctrl_v, "&Paste", &Edit};
-    finalcut::FMenuItem      Line4{&Edit};
-    finalcut::FMenuItem      Search{FKey::Ctrl_f, "&Search", &Edit};
-    finalcut::FMenuItem      Next{FKey::F3, "Search &next", &Edit};
-    finalcut::FMenuItem      Line5{&Edit};
-    finalcut::FMenuItem      SelectAll{FKey::Ctrl_a, "Select &all", &Edit};
-    finalcut::FMenu          Color{"&Color", &Choice};
-    finalcut::FMenu          Style{"&Style", &Choice};
-    finalcut::FMenu          Border{"&Border", &Choice};
-    finalcut::FRadioMenuItem Color1{"Red", &Color};
-    finalcut::FRadioMenuItem Color2{"Green", &Color};
-    finalcut::FRadioMenuItem Color3{"Yellow", &Color};
-    finalcut::FRadioMenuItem Color4{"Brue", &Color};
-    finalcut::FRadioMenuItem Color5{"Black", &Color};
-    finalcut::FCheckMenuItem Bold{"Bold", &Style};
-    finalcut::FCheckMenuItem Italic{"Italic", &Style};
-    finalcut::FMenu          BColor{"&Color", &Border};
-    finalcut::FMenu          BStyle{"&Style", &Border};
-    finalcut::FRadioMenuItem BColor1{"Red", &BColor};
-    finalcut::FRadioMenuItem BColor2{"Blue", &BColor};
-    finalcut::FRadioMenuItem BStyle1{std::move(line), &BStyle};
-    finalcut::FRadioMenuItem BStyle2{"-------------", &BStyle};
-    finalcut::FRadioMenuItem BStyle3{"- - - - - - -", &BStyle};
-    finalcut::FRadioMenuItem BStyle4{"-  -  -  -  -", &BStyle};
-    finalcut::FStatusBar     Statusbar{this};
-    finalcut::FLabel         Headline1{this};
-    finalcut::FLabel         Headline2{this};
-    finalcut::FLabel         Info{this};
+    finalcut::FMenuBar    Menubar{this};
+    FileMenu              file_menu{Menubar};
+    EditMenu              edit_menu{Menubar};
+    ChoiceMenu            choice_menu{Menubar};
+    ColorMenu             color_menu{choice_menu.Color};
+    StyleMenu             style_menu{choice_menu.Style};
+    BorderMenu            border_menu{choice_menu.Border};
+    finalcut::FMenuItem   Window{"&Window", &Menubar};
+    finalcut::FMenuItem   Help{"&Help", &Menubar};
+    finalcut::FStatusBar  Statusbar{this};
+    finalcut::FLabel      Headline1{this};
+    finalcut::FLabel      Headline2{this};
+    finalcut::FLabel      Info{this};
 };
 
 //----------------------------------------------------------------------
@@ -112,9 +178,9 @@ Menu::Menu (finalcut::FWidget* parent)
   : finalcut::FDialog{parent}
 {
   // Menu bar itms
-  File.setStatusbarMessage ("File management commands");
-  Edit.setStatusbarMessage ("Cut-and-paste editing commands");
-  Choice.setStatusbarMessage ("Choice menu");
+  file_menu.File.setStatusbarMessage ("File management commands");
+  edit_menu.Edit.setStatusbarMessage ("Cut-and-paste editing commands");
+  choice_menu.Choice.setStatusbarMessage ("Choice menu");
   Window.setDisable();
   Help.setStatusbarMessage ("Show version and copyright information");
 
@@ -150,24 +216,24 @@ Menu::Menu (finalcut::FWidget* parent)
 void Menu::configureFileMenuItems()
 {
   // "File" menu items
-  New.addAccelerator (FKey::Ctrl_n);  // Ctrl + N
-  New.setStatusbarMessage ("Create a new file");
-  Open.addAccelerator (FKey::Ctrl_o);  // Ctrl + O
-  Open.setStatusbarMessage ("Locate and open a text file");
-  Save.addAccelerator (FKey::Ctrl_s);  // Ctrl + S
-  Save.setStatusbarMessage ("Save the file");
-  SaveAs.setStatusbarMessage ("Save the current file under a different name");
-  Close.addAccelerator (FKey::Ctrl_w);  // Ctrl + W
-  Close.setStatusbarMessage ("Close the current file");
-  Line1.setSeparator();
-  Print.addAccelerator (FKey::Ctrl_p);  // Ctrl + P
-  Print.setStatusbarMessage ("Print the current file");
-  Line2.setSeparator();
-  Quit.addAccelerator (FKey::Meta_x);  // Meta/Alt + X
-  Quit.setStatusbarMessage ("Exit the program");
+  file_menu.New.addAccelerator (FKey::Ctrl_n);  // Ctrl + N
+  file_menu.New.setStatusbarMessage ("Create a new file");
+  file_menu.Open.addAccelerator (FKey::Ctrl_o);  // Ctrl + O
+  file_menu.Open.setStatusbarMessage ("Locate and open a text file");
+  file_menu.Save.addAccelerator (FKey::Ctrl_s);  // Ctrl + S
+  file_menu.Save.setStatusbarMessage ("Save the file");
+  file_menu.SaveAs.setStatusbarMessage ("Save the current file under a different name");
+  file_menu.Close.addAccelerator (FKey::Ctrl_w);  // Ctrl + W
+  file_menu.Close.setStatusbarMessage ("Close the current file");
+  file_menu.Line1.setSeparator();
+  file_menu.Print.addAccelerator (FKey::Ctrl_p);  // Ctrl + P
+  file_menu.Print.setStatusbarMessage ("Print the current file");
+  file_menu.Line2.setSeparator();
+  file_menu.Quit.addAccelerator (FKey::Meta_x);  // Meta/Alt + X
+  file_menu.Quit.setStatusbarMessage ("Exit the program");
 
   // Add quit menu item callback
-  Quit.addCallback
+  file_menu.Quit.addCallback
   (
     "clicked",
     finalcut::getFApplication(),
@@ -180,27 +246,27 @@ void Menu::configureFileMenuItems()
 void Menu::configureEditMenuItems()
 {
   // "Edit" menu items
-  Undo.setStatusbarMessage ("Undo the previous operation");
-  Redo.setDisable();
-  Line3.setSeparator();
-  Cut.setStatusbarMessage ("Remove the input text "
-                           "and put it in the clipboard");
-  Copy.setStatusbarMessage ("Copy the input text into the clipboad");
-  Paste.setStatusbarMessage ("Insert text form clipboard");
-  Line4.setSeparator();
-  Search.setStatusbarMessage ("Search for text");
-  Next.setStatusbarMessage ("Repeat the last search command");
-  Line5.setSeparator();
-  SelectAll.setStatusbarMessage ("Select the whole text");
+  edit_menu.Undo.setStatusbarMessage ("Undo the previous operation");
+  edit_menu.Redo.setDisable();
+  edit_menu.Line3.setSeparator();
+  edit_menu.Cut.setStatusbarMessage ("Remove the input text "
+                                     "and put it in the clipboard");
+  edit_menu.Copy.setStatusbarMessage ("Copy the input text into the clipboad");
+  edit_menu.Paste.setStatusbarMessage ("Insert text form clipboard");
+  edit_menu.Line4.setSeparator();
+  edit_menu.Search.setStatusbarMessage ("Search for text");
+  edit_menu.Next.setStatusbarMessage ("Repeat the last search command");
+  edit_menu.Line5.setSeparator();
+  edit_menu.SelectAll.setStatusbarMessage ("Select the whole text");
 }
 
 //----------------------------------------------------------------------
 void Menu::configureChoiceMenuItems()
 {
   // "Choice" menu items
-  Color.setStatusbarMessage ("Choose a color");
-  Style.setStatusbarMessage ("Choose a Style");
-  Border.setStatusbarMessage ("Choose Border");
+  choice_menu.Color.setStatusbarMessage ("Choose a color");
+  choice_menu.Style.setStatusbarMessage ("Choose a Style");
+  choice_menu.Border.setStatusbarMessage ("Choose Border");
 
   configureColorMenuItems();
   configureStyleMenuItems();
@@ -211,39 +277,39 @@ void Menu::configureChoiceMenuItems()
 void Menu::configureColorMenuItems()
 {
   // "Color" menu items
-  Color1.setStatusbarMessage ("Set text red");
-  Color2.setStatusbarMessage ("Set text green");
-  Color3.setStatusbarMessage ("Set text yellow");
-  Color4.setStatusbarMessage ("Set text brue");
-  Color5.setStatusbarMessage ("Set text black");
-  Color5.setChecked();
+  color_menu.Color1.setStatusbarMessage ("Set text red");
+  color_menu.Color2.setStatusbarMessage ("Set text green");
+  color_menu.Color3.setStatusbarMessage ("Set text yellow");
+  color_menu.Color4.setStatusbarMessage ("Set text brue");
+  color_menu.Color5.setStatusbarMessage ("Set text black");
+  color_menu.Color5.setChecked();
 }
 
 //----------------------------------------------------------------------
 void Menu::configureStyleMenuItems()
 {
   // "Style" menu items
-  Bold.setStatusbarMessage ("Set text bold");
-  Italic.setStatusbarMessage ("Set text italic");
+  style_menu.Bold.setStatusbarMessage ("Set text bold");
+  style_menu.Italic.setStatusbarMessage ("Set text italic");
 }
 
 //----------------------------------------------------------------------
 void Menu::configureBorderMenuItems()
 {
   // "Border" menu items
-  BColor.setStatusbarMessage ("Choose the border color");
-  BStyle.setStatusbarMessage ("Choose the border Style");
+  border_menu.BColor.setStatusbarMessage ("Choose the border color");
+  border_menu.BStyle.setStatusbarMessage ("Choose the border Style");
 
   // "BColor" menu items
-  BColor1.setStatusbarMessage ("Set red border");
-  BColor2.setStatusbarMessage ("Set blue border");
+  border_menu.BColor1.setStatusbarMessage ("Set red border");
+  border_menu.BColor2.setStatusbarMessage ("Set blue border");
 
   // "BStyle" menu items
-  BStyle1.setChecked();
-  BStyle1.setStatusbarMessage ("Set border 1");
-  BStyle2.setStatusbarMessage ("Set border 2");
-  BStyle3.setStatusbarMessage ("Set border 3");
-  BStyle4.setStatusbarMessage ("Set border 4");
+  border_menu.BStyle1.setChecked();
+  border_menu.BStyle1.setStatusbarMessage ("Set border 1");
+  border_menu.BStyle2.setStatusbarMessage ("Set border 2");
+  border_menu.BStyle3.setStatusbarMessage ("Set border 3");
+  border_menu.BStyle4.setStatusbarMessage ("Set border 4");
 }
 
 //----------------------------------------------------------------------

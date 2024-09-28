@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2023 Markus Gans                                      *
+* Copyright 2015-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -61,6 +61,10 @@ FWindow::FWindow(FWidget* parent)
   if ( ! internal::var::fwindow_init_flag )
   {
     auto app_object = FApplication::getApplicationObject();
+
+    if ( ! app_object )
+      return;
+
     app_object->registerMouseHandler (closeDropDownMouseHandler);
     app_object->registerMouseHandler (unselectMenubarItemsMouseHandler);
     internal::var::fwindow_init_flag = true;
@@ -328,36 +332,31 @@ void FWindow::setX (int x, bool adjust)
   FWidget::setX (x, adjust);
 
   if ( isVirtualWindow() )
-    getVWin()->offset_left = getTermX() - 1;
+    getVWin()->position.x = getTermX() - 1;
 }
 
 //----------------------------------------------------------------------
 void FWindow::setY (int y, bool adjust)
 {
-  if ( y < 1 )
-    y = 1;
-
+  y = std::max(y, 1);
   FWidget::setY (y, adjust);
 
   if ( isVirtualWindow() )
-    getVWin()->offset_top = getTermY() - 1;
+    getVWin()->position.y = getTermY() - 1;
 }
 
 //----------------------------------------------------------------------
 void FWindow::setPos (const FPoint& p, bool adjust)
 {
   FPoint pos{p};
-
-  if ( pos.getY() < 1 )
-    pos.setY(1);
-
+  pos.y_ref() = std::max(pos.y_ref(), 1);
   FWidget::setPos (pos, adjust);
 
   if ( isVirtualWindow() )
   {
     auto virtual_win = getVWin();
-    virtual_win->offset_left = getTermX() - 1;
-    virtual_win->offset_top = getTermY() - 1;
+    virtual_win->position.x = getTermX() - 1;
+    virtual_win->position.y = getTermY() - 1;
   }
 }
 
@@ -371,7 +370,7 @@ void FWindow::setWidth (std::size_t w, bool adjust)
   {
     FRect geometry {getTermGeometry()};
     geometry.move(-1, -1);
-    resizeArea (geometry, getShadow(), getVWin());
+    resizeArea ({geometry, getShadow()}, getVWin());
   }
 }
 
@@ -385,7 +384,7 @@ void FWindow::setHeight (std::size_t h, bool adjust)
   {
     FRect geometry {getTermGeometry()};
     geometry.move(-1, -1);
-    resizeArea (geometry, getShadow(), getVWin());
+    resizeArea ({geometry, getShadow()}, getVWin());
   }
 }
 
@@ -399,7 +398,7 @@ void FWindow::setSize (const FSize& size, bool adjust)
   {
     FRect geometry {getTermGeometry()};
     geometry.move(-1, -1);
-    resizeArea (geometry, getShadow(), getVWin());
+    resizeArea ({geometry, getShadow()}, getVWin());
   }
 }
 
@@ -412,10 +411,7 @@ void FWindow::setGeometry ( const FPoint& p, const FSize& size, bool adjust)
   const int old_y = getY();
   FPoint pos{p};
   const FSize old_size{getSize()};
-
-  if ( pos.getY() < 1 )
-    pos.setY(1);
-
+  pos.y_ref() = std::max(pos.y_ref(), 1);
   FWidget::setGeometry (pos, size, adjust);
 
   if ( ! isVirtualWindow() )
@@ -425,15 +421,15 @@ void FWindow::setGeometry ( const FPoint& p, const FSize& size, bool adjust)
   {
     FRect geometry {getTermGeometry()};
     geometry.move(-1, -1);
-    resizeArea (geometry, getShadow(), getVWin());
+    resizeArea ({geometry, getShadow()}, getVWin());
   }
   else
   {
     if ( getX() != old_x )
-      getVWin()->offset_left = getTermX() - 1;
+      getVWin()->position.x = getTermX() - 1;
 
     if ( getY() != old_y )
-      getVWin()->offset_top = getTermY() - 1;
+      getVWin()->position.y = getTermY() - 1;
   }
 }
 
@@ -445,8 +441,8 @@ void FWindow::move (const FPoint& pos)
   if ( isVirtualWindow() )
   {
     auto virtual_win = getVWin();
-    virtual_win->offset_left = getTermX() - 1;
-    virtual_win->offset_top = getTermY() - 1;
+    virtual_win->position.x = getTermX() - 1;
+    virtual_win->position.y = getTermY() - 1;
   }
 }
 
@@ -665,33 +661,12 @@ void FWindow::switchToPrevWindow (const FWidget* widget)
     widget->setTerminalUpdates (FVTerm::TerminalUpdate::Stop);
 
   const bool is_activated = activatePrevWindow();
-  auto active_win = static_cast<FWindow*>(getActiveWindow());
+  auto current_active_win = static_cast<FWindow*>(getActiveWindow());
 
-  if ( ! is_activated && getWindowList() && getWindowList()->size() > 1 )
-  {
-    // no previous window -> looking for another window
-    auto iter = getWindowList()->cend();
-    const auto begin = getWindowList()->cbegin();
+  if ( ! is_activated )
+    activateTopWindow(current_active_win);
 
-    do
-    {
-      --iter;
-      auto w = static_cast<FWindow*>(*iter);
-
-      if ( w
-        && w != active_win
-        && ! (w->isWindowHidden() || w->isWindowActive())
-        && w != static_cast<FWindow*>(getStatusBar())
-        && w != static_cast<FWindow*>(getMenuBar()) )
-      {
-        FWindow::setActiveWindow(w);
-        break;
-      }
-    }
-    while ( iter != begin );
-  }
-
-  reactivateWindow (active_win);
+  reactivateWindow (current_active_win);
 
   // Enable terminal updates again
   if ( widget )
@@ -702,16 +677,16 @@ void FWindow::switchToPrevWindow (const FWidget* widget)
 auto FWindow::activatePrevWindow() -> bool
 {
   // activate the previous window
-  const auto& w = previous_window;
+  const auto& p_win = previous_window;
 
-  if ( w )
+  if ( p_win )
   {
-    if ( w->isWindowActive() )
+    if ( p_win->isWindowActive() )
       return true;
 
-    if ( ! w->isWindowHidden() )
+    if ( ! p_win->isWindowHidden() )
     {
-      FWindow::setActiveWindow(w);
+      FWindow::setActiveWindow(p_win);
       return true;
     }
   }
@@ -730,7 +705,7 @@ void FWindow::setShadowSize (const FSize& size)
   {
     auto geometry = getTermGeometry();
     geometry.move(-1, -1);
-    resizeArea (geometry, getShadow(), getVWin());
+    resizeArea ({geometry, getShadow()}, getVWin());
   }
 }
 
@@ -748,10 +723,10 @@ void FWindow::adjustSize()
   else if ( isVirtualWindow() )
   {
     if ( getTermX() != old_x )
-      getVWin()->offset_left = getTermX() - 1;
+      getVWin()->position.x = getTermX() - 1;
 
     if ( getTermY() != old_y )
-      getVWin()->offset_top = getTermY() - 1;
+      getVWin()->position.y = getTermY() - 1;
   }
 }
 
@@ -819,7 +794,7 @@ inline void FWindow::createVWin() noexcept
 
   FRect geometry {getTermGeometry()};
   geometry.move(-1, -1);
-  setVWin(createArea(geometry, getShadow()));
+  setVWin(createArea({geometry, getShadow()}));
 }
 
 //----------------------------------------------------------------------
@@ -830,7 +805,7 @@ inline auto FWindow::getVisibleTermGeometry (FWindow* win) -> FRect
   if ( win->isMinimized() )
   {
     FRect minimized_term_geometry(term_geometry);
-    auto min_height = std::size_t(win->getVWin()->min_height);
+    auto min_height = std::size_t(win->getVWin()->min_size.height);
     minimized_term_geometry.setHeight(min_height);
     return minimized_term_geometry;
   }
@@ -918,6 +893,43 @@ auto FWindow::getWindowLayerImpl (FWidget* obj) -> int
     window = obj;
 
   return FVTerm::getLayer(*window);
+}
+
+//----------------------------------------------------------------------
+void FWindow::activateTopWindow (const FWindow* current_active_window)
+{
+  auto window_list = getWindowList();
+
+  if ( ! window_list || window_list->size() < 2 )
+    return;
+
+  // no previous window -> looking for another window
+  auto iter = window_list->cend();
+  const auto begin = window_list->cbegin();
+
+  do
+  {
+    --iter;
+    const auto window = static_cast<FWindow*>(*iter);
+
+    if ( isWindowActivatable(window, current_active_window) )
+    {
+      FWindow::setActiveWindow(window);
+      break;
+    }
+  }
+  while ( iter != begin );
+}
+
+//----------------------------------------------------------------------
+auto FWindow::isWindowActivatable ( const FWindow* window
+                                  , const FWindow* current_active_window ) -> bool
+{
+  return window
+      && window != current_active_window
+      && ! (window->isWindowHidden() || window->isWindowActive())
+      && window != static_cast<FWindow*>(getStatusBar())
+      && window != static_cast<FWindow*>(getMenuBar());
 }
 
 //----------------------------------------------------------------------
