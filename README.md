@@ -8,6 +8,9 @@ FINAL CUT provides full [mouse](doc/mouse-control.md#title-bar-actions-on-mouse-
 
 The design of the C++ class structure of FINAL CUT was inspired by the Qt framework. It provides a variety of common controls, including dialog boxes, push buttons, check boxes, radio buttons, input lines, list boxes, and status bars. With FINAL CUT, developers can create text-based user interfaces that are both functional and visually appealing.
 
+![Architecture of the sub-systems of a FINAL CUT application](doc/subsystem-architecture.svg)
+
+
 ## Building and code analysis
 
 |                    | Badge |

@@ -313,7 +313,7 @@ auto FTermOutput::updateTerminal() -> bool
 {
   // Updates pending changes to the terminal
 
-  std::size_t changedlines = 0;
+  int changedlines{0};
 
   for (uInt y{0}; y < uInt(vterm->size.height); y++)
   {
