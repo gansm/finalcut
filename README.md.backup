@@ -74,18 +74,18 @@ Explore the power of FINAL CUT with these examples:
 
 ![FFileDialog](doc/fileopen-dialog.png)
 
-*FFileDialog Widget with Incremental Search*
+<br \> *FFileDialog Widget with Incremental Search*
 
 ![FProgressbar](doc/progress-bar.png)
-
+<br \>
 *FProgressbar Widget*
 
 ![FTextView](doc/textview.png)
-
+<br \>
 *Scrollable Text in an FTextView Widget*
 
 ![Mandelbrot set](doc/Mandelbrot.png)
-
+<br \>
 *Mandelbrot Set Example*
 
 ## FINAL CUT newfont
@@ -93,15 +93,15 @@ Explore the power of FINAL CUT with these examples:
 This project contains [NewFont](final/font/), a graphical text font for X11 and the Linux console:
 
 ![ui example in newfont mode](doc/newfont1.png)
-
+<br \>
 *UI Example in NewFont Mode*
 
 ![drive symbols](doc/newfont2.png)
-
+<br \>
 *Drive Symbols*
 
 ![calculator](doc/calculator.png)
-
+<br \>
 *Calculator Example in NewFont Mode*
 
 ## Benchmark

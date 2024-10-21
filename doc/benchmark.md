@@ -9,8 +9,8 @@ measured time and frame rate is strongly dependent on the hardware used.
 [![rotozoomer-benchmark](https://asciinema.org/a/316531.svg)](https://asciinema.org/a/316531?size=medium&autoplay=1)
 
 
-Speed tests
------------
+Speed tests on an old PC
+------------------------
 
 | Terminal           | Size  | Time    | Loops | Frame rate |
 |--------------------|-------|---------|-------|------------|
