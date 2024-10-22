@@ -2,11 +2,11 @@
 
 # Library for creating terminal applications with text-based widgets
 
-FINAL CUT is a C++ class library and widget toolkit that enables developers to create [text-based user interfaces](https://en.wikipedia.org/wiki/Text-based_user_interface). FINAL CUT is a standalone library that interacts directly with the terminal without relying on external libraries such as [ncurses](https://invisible-island.net/ncurses/ncurses.html) or [termbox](https://code.google.com/archive/p/termbox/).
+FINAL CUT is a powerful and lightweight C++ library for creating [terminal-based applications](https://en.wikipedia.org/wiki/Text-based_user_interface) with numerous text-based widgets. FINAL CUT is designed for simplicity and does not require the functionality of external libraries (such as [ncurses](https://invisible-island.net/ncurses/ncurses.html) or [termbox](https://code.google.com/archive/p/termbox/) but still offers full [mouse](doc/mouse-control.md#title-bar-actions-on-mouse-clicks) support, Unicode compatibility, and versatile widget functions.
 
-FINAL CUT provides full [mouse](doc/mouse-control.md#title-bar-actions-on-mouse-clicks) support, [UTF-8](https://en.wikipedia.org/wiki/UTF-8) character encoding, [full-width character](https://en.wikipedia.org/wiki/Halfwidth_and_fullwidth_forms) support, and the ability to display [combined Unicode characters](https://en.wikipedia.org/wiki/Combining_character). The library helps the programmer to create a text console application. It allows handling multiple text windows on the screen.
+It provides [UTF-8](https://en.wikipedia.org/wiki/UTF-8) character encoding, [full-width character](https://en.wikipedia.org/wiki/Halfwidth_and_fullwidth_forms) support, and the ability to display [combined Unicode characters](https://en.wikipedia.org/wiki/Combining_character). The library helps the developer to create an easy-to-use text console application and allows handling multiple text windows on the screen.
 
-The design of the C++ class structure of FINAL CUT was inspired by the Qt framework. It provides a variety of common controls, including dialog boxes, push buttons, check boxes, radio buttons, input lines, list boxes, and status bars. With FINAL CUT, developers can create text-based user interfaces that are both functional and visually appealing.
+The design of FINAL CUT's C++ class structure was inspired by the Qt framework. It provides a variety of common controls, including dialog boxes, push buttons, check boxes, radio buttons, input lines, list boxes, and status bars.
 
 ![Architecture of the sub-systems of a FINAL CUT application](doc/subsystem-architecture.svg)
 
