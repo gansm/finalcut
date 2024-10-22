@@ -73,29 +73,29 @@ Check out the FINAL CUT [FAQ](doc/faq.md#frequently-asked-questions) for common 
 Explore the power of FINAL CUT with these examples:
 
 ![FFileDialog](doc/fileopen-dialog.png)
-<br />*FFileDialog Widget with Incremental Search*<br /><br />
+<br />*FFileDialog widget with incremental search*<br /><br />
 
 ![FProgressbar](doc/progress-bar.png)
-<br />*FProgressbar Widget*<br /><br />
+<br />*FProgressbar widget*<br /><br />
 
 ![FTextView](doc/textview.png)
-<br />*Scrollable Text in an FTextView Widget*<br /><br />
+<br />*Scrollable text in an FTextView widget*<br /><br />
 
 ![Mandelbrot set](doc/Mandelbrot.png)
-<br />*Mandelbrot Set Example*<br /><br />
+<br />*Mandelbrot set example*<br /><br />
 
 ## FINAL CUT newfont
 
 This project contains [NewFont](final/font/), a graphical text font for X11 and the Linux console:
 
 ![ui example in newfont mode](doc/newfont1.png)
-<br />*UI Example in NewFont Mode*<br /><br />
+<br />*UI example in NewFont mode*<br /><br />
 
 ![drive symbols](doc/newfont2.png)
-<br />*Drive Symbols*<br /><br />
+<br />*Drive symbols*<br /><br />
 
 ![calculator](doc/calculator.png)
-<br />*Calculator Example in NewFont Mode*<br /><br />
+<br />*Calculator example in NewFont mode*<br /><br />
 
 ## Benchmark
 
