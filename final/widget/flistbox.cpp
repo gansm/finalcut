@@ -735,7 +735,7 @@ inline void FListBox::printRightBracket (BracketType bracket_type)
 }
 
 //----------------------------------------------------------------------
-void FListBox::setCurrentFocusedElementColor()
+void FListBox::setCurrentFocusedElementColor() const
 {
   const auto& wc_current_element = getColorTheme()->current_element;
   setColor (wc_current_element.focus_fg, wc_current_element.focus_bg);
@@ -794,7 +794,7 @@ void FListBox::printElement (const ElementData& elem)
 }
 
 //----------------------------------------------------------------------
-auto FListBox::shouldPrintRightBracket (const ElementData& elem, std::size_t first) -> bool
+auto FListBox::shouldPrintRightBracket (const ElementData& elem, std::size_t first) const -> bool
 {
   return elem.bracket_space + elem.column_width < getMaxWidth()
       && first <= elem.text_width;

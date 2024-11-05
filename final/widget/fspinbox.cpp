@@ -312,8 +312,8 @@ inline void FSpinBox::mapKeyFunctions()
 {
   key_map =
   {
-    { FKey::Tab             , [this] (FKeyEvent*)    { focusNextChild(); } },
-    { FKey::Back_tab        , [this] (FKeyEvent*)    { focusPrevChild(); } },
+    { FKey::Tab             , [this] (const FKeyEvent*) { focusNextChild(); } },
+    { FKey::Back_tab        , [this] (const FKeyEvent*) { focusPrevChild(); } },
     { FKey::Up              , [this] (FKeyEvent* ev) { increaseValue();
                                                        ev->accept(); } },
     { FKey::Scroll_backward , [this] (FKeyEvent* ev) { increaseValue();

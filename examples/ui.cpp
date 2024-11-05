@@ -366,7 +366,7 @@ class MyDialog final : public finalcut::FDialog
     void cb_copyClipboard();
     void cb_pasteClipboard();
     void cb_clearInput();
-    void cb_switchTheme (const finalcut::FCheckMenuItem*);
+    void cb_switchTheme (const finalcut::FCheckMenuItem*) const;
     void cb_input2buttonText ( finalcut::FButton&
                              , const finalcut::FLineEdit& ) const;
     void cb_setTitlebar (const finalcut::FLineEdit&);
@@ -967,7 +967,7 @@ void MyDialog::cb_clearInput()
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_switchTheme (const finalcut::FCheckMenuItem* check_menu)
+void MyDialog::cb_switchTheme (const finalcut::FCheckMenuItem* check_menu) const
 {
   if ( check_menu->isChecked() )
     finalcut::FApplication::setDarkTheme();

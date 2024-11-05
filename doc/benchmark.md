@@ -8,6 +8,7 @@ is strongly dependent on the hardware used.
 
 
 See the Rotozoomer benchmark in action:
+
 [![rotozoomer-benchmark](https://asciinema.org/a/316531.svg)](https://asciinema.org/a/316531?size=medium&autoplay=1)
 
 

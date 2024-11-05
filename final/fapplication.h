@@ -190,7 +190,7 @@ class FApplication : public FWidget
     auto         sendKeyDownEvent (FWidget*) const -> bool;
     auto         sendKeyPressEvent (FWidget*) const -> bool;
     auto         sendKeyUpEvent (FWidget*) const -> bool;
-    void         sendKeyboardAccelerator();
+    void         sendKeyboardAccelerator() const;
     auto         hasDataInQueue() const -> bool;
     void         queuingKeyboardInput() const;
     void         queuingMouseInput() const;
@@ -199,7 +199,7 @@ class FApplication : public FWidget
     void         processInput() const;
     auto         processDialogSwitchAccelerator() const -> bool;
     auto         processAccelerator (const FWidget&) const -> bool;
-    void         processTerminalFocus (const FKey&);
+    void         processTerminalFocus (const FKey&) const;
     static void  determineClickedWidget (const FMouseData&);
     static void  determineWheelWidget (const FMouseData&);
     static auto  isNonActivatingMouseEvent (const FMouseData&) -> bool;

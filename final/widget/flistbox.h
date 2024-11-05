@@ -371,10 +371,10 @@ class FListBox : public FWidget
     void printRightBracket (BracketType);
     template<class UnaryPred>
     void printRightBracket_if (BracketType, ElementData&, UnaryPred);
-    void setCurrentFocusedElementColor();
+    void setCurrentFocusedElementColor() const;
     void drawListBracketsLine (int, FListBoxItems::iterator, bool);
     void printElement (const ElementData&);
-    auto shouldPrintRightBracket (const ElementData&, std::size_t) -> bool;
+    auto shouldPrintRightBracket (const ElementData&, std::size_t) const -> bool;
     void printLeftCurrentLineArrow (int);
     void printRightCurrentLineArrow (int);
     void printRemainingSpacesFromPos (std::size_t);
