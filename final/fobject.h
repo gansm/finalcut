@@ -112,6 +112,7 @@ class FObject : public FObjectTimer
 
     // Accessors
     auto  getClassName() const -> FString override;
+    auto  getSelf() const & -> FObject*;
     auto  getParent() const & -> FObject*;
     auto  getChild (int) const & -> FObject*;
     auto  getChildren() & -> FObjectList&;
@@ -166,6 +167,7 @@ class FObject : public FObjectTimer
   private:
     // Data members
     FObject*     parent_obj{nullptr};
+    FObject*     self_obj{this};
     FObjectList  children_list{};  // no children yet
     std::size_t  max_children{UNLIMITED};
     bool         has_parent{false};
@@ -176,6 +178,10 @@ class FObject : public FObjectTimer
 //----------------------------------------------------------------------
 inline auto FObject::getClassName() const -> FString
 { return "FObject"; }
+
+//----------------------------------------------------------------------
+inline auto FObject::getSelf() const & -> FObject*
+{ return self_obj; }
 
 //----------------------------------------------------------------------
 inline auto FObject::getParent() const & -> FObject*

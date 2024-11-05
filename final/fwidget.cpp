@@ -153,7 +153,7 @@ FWidget::~FWidget()  // destructor
 //----------------------------------------------------------------------
 auto FWidget::getRootWidget() const -> FWidget*
 {
-  auto obj = const_cast<FWidget*>(this);
+  auto obj = static_cast<FWidget*>(getSelf());
   auto p_obj = getParentWidget();
 
   while ( ! obj->isRootWidget() && p_obj )

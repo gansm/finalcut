@@ -196,6 +196,9 @@ void FObjectTest::noArgumentTest()
   finalcut::FObject o1;
   finalcut::FObject o2;
   CPPUNIT_ASSERT ( ! o1.hasParent() );
+  CPPUNIT_ASSERT ( o1.getSelf() == &o1 );
+  CPPUNIT_ASSERT ( o1.getSelf() != &o2 );
+  CPPUNIT_ASSERT ( o2.getSelf() == &o2 );
   CPPUNIT_ASSERT ( o1.getParent() == nullptr );
   CPPUNIT_ASSERT ( ! o1.hasChildren() );
   CPPUNIT_ASSERT ( o1.getChild(0) == nullptr );
@@ -244,6 +247,15 @@ void FObjectTest::childObjectTest()
   CPPUNIT_ASSERT ( obj.getChild(0) == nullptr );
   CPPUNIT_ASSERT ( obj.getChild(1) != nullptr );
   CPPUNIT_ASSERT ( obj.numOfChildren() == 4 );
+
+  CPPUNIT_ASSERT ( obj.getSelf() == &obj );
+  CPPUNIT_ASSERT ( c1->getSelf() == c1 );
+  CPPUNIT_ASSERT ( c2->getSelf() == c2 );
+  CPPUNIT_ASSERT ( c3->getSelf() == c3 );
+  CPPUNIT_ASSERT ( c4->getSelf() == c4 );
+  CPPUNIT_ASSERT ( c5->getSelf() == c5 );
+  CPPUNIT_ASSERT ( c6->getSelf() == c6 );
+  CPPUNIT_ASSERT ( c7->getSelf() == c7 );
 
   CPPUNIT_ASSERT ( obj.isChild(c1) );
   CPPUNIT_ASSERT ( obj.isChild(c2) );
@@ -303,9 +315,11 @@ void FObjectTest::removeParentTest()
   CPPUNIT_ASSERT ( obj->hasChildren() );
   CPPUNIT_ASSERT ( obj->numOfChildren() == 1 );
   CPPUNIT_ASSERT ( obj->isChild(child) );
+  CPPUNIT_ASSERT ( obj->getSelf() == obj );
 
   CPPUNIT_ASSERT ( child->hasParent() );
   CPPUNIT_ASSERT ( child->getParent() == obj );
+  CPPUNIT_ASSERT ( child->getSelf() == child );
 
   child->removeParent();
   CPPUNIT_ASSERT ( ! obj->hasChildren() );
@@ -332,9 +346,11 @@ void FObjectTest::setParentTest()
   CPPUNIT_ASSERT ( obj->numOfChildren() == 1 );
   CPPUNIT_ASSERT ( obj->isChild(child) );
   CPPUNIT_ASSERT ( obj->isDirectChild(child) );
+  CPPUNIT_ASSERT ( obj->getSelf() == obj );
 
   CPPUNIT_ASSERT ( child->hasParent() );
   CPPUNIT_ASSERT ( child->getParent() == obj );
+  CPPUNIT_ASSERT ( child->getSelf() == child );
 
   auto newobj =  new finalcut::FObject();
 
@@ -342,6 +358,9 @@ void FObjectTest::setParentTest()
   CPPUNIT_ASSERT ( newobj->numOfChildren() == 0 );
   CPPUNIT_ASSERT ( ! newobj->isChild(child) );
   CPPUNIT_ASSERT ( ! newobj->isDirectChild(child) );
+  CPPUNIT_ASSERT ( newobj->getSelf() != obj );
+  CPPUNIT_ASSERT ( newobj->getSelf() != child );
+  CPPUNIT_ASSERT ( newobj->getSelf() == newobj );
 
   child->setParent(newobj);
 
@@ -375,9 +394,13 @@ void FObjectTest::addTest()
   CPPUNIT_ASSERT ( ! obj1->hasChildren() );
   CPPUNIT_ASSERT ( obj1->numOfChildren() == 0 );
   CPPUNIT_ASSERT ( ! obj1->isChild(child) );
+  CPPUNIT_ASSERT ( obj1->getSelf() == obj1 );
+  CPPUNIT_ASSERT ( obj1->getSelf() != child );
 
   CPPUNIT_ASSERT ( ! child->hasParent() );
   CPPUNIT_ASSERT ( child->getParent() != obj1 );
+  CPPUNIT_ASSERT ( child->getSelf() != obj1 );
+  CPPUNIT_ASSERT ( child->getSelf() == child );
 
   obj1->addChild(child);
   CPPUNIT_ASSERT ( obj1->hasChildren() );
@@ -398,6 +421,7 @@ void FObjectTest::addTest()
   CPPUNIT_ASSERT ( obj2->hasChildren() );
   CPPUNIT_ASSERT ( obj2->numOfChildren() == 1 );
   CPPUNIT_ASSERT ( obj2->isChild(child) );
+  CPPUNIT_ASSERT ( obj2->getSelf() == obj2 );
   CPPUNIT_ASSERT ( child->getParent() == obj2 );
 
   // Are the maximum number of child objects reached?
@@ -415,6 +439,7 @@ void FObjectTest::addTest()
   CPPUNIT_ASSERT ( obj2->getMaxChildren() == 2 );
   obj2->addChild(child2);
   CPPUNIT_ASSERT ( child2->hasParent() );
+  CPPUNIT_ASSERT ( child2->getSelf() == child2 );
   CPPUNIT_ASSERT ( obj2->hasChildren() );
   CPPUNIT_ASSERT ( obj2->numOfChildren() == 2 );
 
@@ -433,9 +458,13 @@ void FObjectTest::delTest()
   CPPUNIT_ASSERT ( obj->hasChildren() );
   CPPUNIT_ASSERT ( obj->numOfChildren() == 1 );
   CPPUNIT_ASSERT ( obj->isChild(child) );
+  CPPUNIT_ASSERT ( obj->getSelf() == obj );
 
   CPPUNIT_ASSERT ( child->hasParent() );
   CPPUNIT_ASSERT ( child->getParent() == obj );
+  CPPUNIT_ASSERT ( child->getParent() == obj->getSelf() );
+  CPPUNIT_ASSERT ( child->getSelf() != obj );
+  CPPUNIT_ASSERT ( child->getSelf() == child );
 
   obj->delChild(child);
   CPPUNIT_ASSERT ( ! obj->hasChildren() );
@@ -464,6 +493,13 @@ void FObjectTest::elementAccessTest()
   auto child3 = new finalcut::FObject(obj);
   auto child4 = new finalcut::FObject(obj);
   auto child5 = new finalcut::FObject(obj);
+
+  CPPUNIT_ASSERT ( obj->getSelf() == obj );
+  CPPUNIT_ASSERT ( child1->getSelf() == child1 );
+  CPPUNIT_ASSERT ( child2->getSelf() == child2 );
+  CPPUNIT_ASSERT ( child3->getSelf() == child3 );
+  CPPUNIT_ASSERT ( child4->getSelf() == child4 );
+  CPPUNIT_ASSERT ( child5->getSelf() == child5 );
 
   CPPUNIT_ASSERT ( child1->getParent() == obj );
   CPPUNIT_ASSERT ( child2->getParent() == obj );
@@ -505,6 +541,11 @@ void FObjectTest::iteratorTest()
   auto child1 = new finalcut::FObject(obj);
   auto child2 = new finalcut::FObject(obj);
   auto child3 = new finalcut::FObject(obj);
+
+  CPPUNIT_ASSERT ( obj->getSelf() == obj );
+  CPPUNIT_ASSERT ( child1->getSelf() == child1 );
+  CPPUNIT_ASSERT ( child2->getSelf() == child2 );
+  CPPUNIT_ASSERT ( child3->getSelf() == child3 );
 
   CPPUNIT_ASSERT ( child1->getParent() == obj );
   CPPUNIT_ASSERT ( child2->getParent() == obj );
