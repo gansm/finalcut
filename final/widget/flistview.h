@@ -551,6 +551,9 @@ class FListView : public FWidget
     void recalculateHorizontalBar (std::size_t);
     void recalculateVerticalBar (std::size_t) const;
     void mouseHeaderClicked();
+    auto getHeaderClickWidth (const Header&, int) const -> int;
+    auto isPositionWithinHeader (int, int, int) const -> bool;
+    void handleColumnSort (int);
     void handleTreeExpanderClick (const FMouseEvent*);
     void handleCheckboxClick (const FMouseEvent*);
     void wheelUp (int);

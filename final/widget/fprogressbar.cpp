@@ -170,10 +170,10 @@ auto FProgressbar::drawProgressIndicator() -> std::size_t
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
-  const auto& wc = getColorTheme();
+  const auto& wc_progressbar = getColorTheme()->progressbar;
   const double length = double(bar_length * percentage) / 100;
   auto len = std::size_t(trunc(length));
-  print() << FColorPair {wc->progressbar.fg, wc->progressbar.fg}
+  print() << FColorPair {wc_progressbar.fg, wc_progressbar.fg}
           << FString {len, UniChar::FullBlock};  // █
 
   if ( len >= bar_length )
@@ -191,7 +191,7 @@ auto FProgressbar::drawProgressIndicator() -> std::size_t
   }
   else
   {
-    print() << FColorPair{wc->progressbar.fg, wc->progressbar.bg}
+    print() << FColorPair{wc_progressbar.fg, wc_progressbar.bg}
             << UniChar::LeftHalfBlock;  // ▌
   }
 
@@ -205,8 +205,8 @@ void FProgressbar::drawProgressBackground (std::size_t len)
   // Draw the progress background
 
   const std::size_t bg_len = bar_length - len;
-  const auto& wc = getColorTheme();
-  setColor (wc->progressbar.fg, wc->progressbar.bg);
+  const auto& wc_progressbar = getColorTheme()->progressbar;
+  setColor (wc_progressbar.fg, wc_progressbar.bg);
 
   if ( FVTerm::getFOutput()->getMaxColor() < 16 )
     print() << FString {bg_len, UniChar::MediumShade};  // ▒

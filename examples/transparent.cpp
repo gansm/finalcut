@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2023 Markus Gans                                      *
+* Copyright 2016-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -87,8 +87,8 @@ void Transparent::draw()
 
   if ( type == Type::Shadow )
   {
-    const auto& wc = getColorTheme();
-    print() << FColorPair {wc->shadow.fg, wc->shadow.bg}
+    const auto& wc_shadow = getColorTheme()->shadow;
+    print() << FColorPair {wc_shadow.fg, wc_shadow.bg}
             << FStyle {finalcut::Style::ColorOverlay};
   }
   else if ( type == Type::InheritBackground )

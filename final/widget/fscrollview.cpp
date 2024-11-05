@@ -299,9 +299,9 @@ void FScrollView::setViewportPrint (bool enable)
 //----------------------------------------------------------------------
 void FScrollView::resetColors()
 {
-  const auto& wc = getColorTheme();
-  FWidget::setForegroundColor (wc->dialog.fg);
-  FWidget::setBackgroundColor (wc->dialog.bg);
+  const auto& wc_dialog = getColorTheme()->dialog;
+  FWidget::setForegroundColor (wc_dialog.fg);
+  FWidget::setBackgroundColor (wc_dialog.bg);
   FWidget::resetColors();
 }
 
@@ -828,19 +828,19 @@ void FScrollView::setLabelStyle() const
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
-  const auto& wc = getColorTheme();
+  const auto& wc_label = getColorTheme()->label;
 
   if ( isEnabled() )
-    setColor(wc->label.emphasis_fg, wc->label.bg);
+    setColor(wc_label.emphasis_fg, wc_label.bg);
   else
-    setColor(wc->label.inactive_fg, wc->label.inactive_bg);
+    setColor(wc_label.inactive_fg, wc_label.inactive_bg);
 }
 
 //----------------------------------------------------------------------
 void FScrollView::printLabel ( const FString& label_text,
                                std::size_t hotkeypos )
 {
-  const auto& wc = getColorTheme();
+  const auto& wc_label = getColorTheme()->label;
   const std::size_t column_width = getColumnWidth(label_text);
   std::size_t length = getDisplayedTextLength (label_text, column_width);
   const auto underline = ! getFlags().feature.no_underline;
@@ -849,7 +849,7 @@ void FScrollView::printLabel ( const FString& label_text,
   {
     if ( z == hotkeypos && getFlags().feature.active )
     {
-      setColor (wc->label.hotkey_fg, wc->label.hotkey_bg);
+      setColor (wc_label.hotkey_fg, wc_label.hotkey_bg);
 
       if ( underline )
         setUnderline();
@@ -859,7 +859,7 @@ void FScrollView::printLabel ( const FString& label_text,
       if ( underline )
         unsetUnderline();
 
-      setColor (wc->label.emphasis_fg, wc->label.bg);
+      setColor (wc_label.emphasis_fg, wc_label.bg);
     }
     else
       print (label_text[z]);
@@ -869,12 +869,12 @@ void FScrollView::printLabel ( const FString& label_text,
 //----------------------------------------------------------------------
 void FScrollView::printEllipsis (const FString& label_text)
 {
-  const auto& wc = getColorTheme();
+  const auto& wc_label = getColorTheme()->label;
   const std::size_t column_width = getColumnWidth(label_text);
   const bool ellipsis{column_width > getClientWidth()};
 
   if ( ellipsis )  // Print ellipsis
-    print() << FColorPair {wc->label.ellipsis_fg, wc->label.bg} << "..";
+    print() << FColorPair {wc_label.ellipsis_fg, wc_label.bg} << "..";
 
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);

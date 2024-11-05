@@ -393,7 +393,7 @@ void drawTransparentShadow (FWidget* w)
     return;
 
   auto& area = *w->getPrintArea();
-  const auto& wc = FWidget::getColorTheme();
+  const auto& wc_shadow = FWidget::getColorTheme()->shadow;
 
   TransparentShadowData data
   {
@@ -412,8 +412,8 @@ void drawTransparentShadow (FWidget* w)
     {
       { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
       { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
-      wc->shadow.fg,
-      wc->shadow.bg,
+      wc_shadow.fg,
+      wc_shadow.bg,
       { { 0x00, 0x40, 0x00, 0x00} }  // byte 0..3 (byte 1 = 0x64 = color_overlay)
     },
     &area.getFChar(area.size.width, 0)
@@ -473,21 +473,21 @@ void drawBlockShadow (FWidget* w)
   if ( ! w || ! FVTerm::getFOutput()->hasShadowCharacter() )
     return;
 
-  const auto& wc = FWidget::getColorTheme();
+  const auto& wc_shadow = FWidget::getColorTheme()->shadow;
 
   std::array<FChar, 4> shadow_char
   {{
     {
       { { wchar_t(UniChar::LowerHalfBlock),  L'\0', L'\0', L'\0', L'\0' } },  // ▄
       { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
-      wc->shadow.bg,
+      wc_shadow.bg,
       FColor::Default,
       { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3 (byte 2 = 0x08 = char_width 1)
     },
     {
       { { wchar_t(UniChar::FullBlock),  L'\0', L'\0', L'\0', L'\0' } },  // █
       { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
-      wc->shadow.bg,
+      wc_shadow.bg,
       FColor::Default,
       { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3 (byte 2 = 0x08 = char_width 1)
     },
@@ -501,7 +501,7 @@ void drawBlockShadow (FWidget* w)
     {
       { { wchar_t(UniChar::UpperHalfBlock),  L'\0', L'\0', L'\0', L'\0' } },  // ▄
       { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
-      wc->shadow.bg,
+      wc_shadow.bg,
       FColor::Default,
       { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3 (byte 2 = 0x08 = char_width 1)
     }
@@ -608,12 +608,12 @@ void drawFlatBorder (FWidget* w)
 
   const std::size_t width = w->getWidth();
   const std::size_t height = w->getHeight();
-  const auto& wc = FWidget::getColorTheme();
+  const auto& wc_dialog = FWidget::getColorTheme()->dialog;
 
   if ( auto p = w->getParentWidget() )
-    w->setColor (wc->dialog.fg, p->getBackgroundColor());
+    w->setColor (wc_dialog.fg, p->getBackgroundColor());
   else
-    w->setColor (wc->dialog.fg, wc->dialog.bg);
+    w->setColor (wc_dialog.fg, wc_dialog.bg);
 
   for (std::size_t y{0}; y < height; y++)
   {
@@ -669,12 +669,12 @@ void clearFlatBorder (FWidget* w)
 
   const std::size_t width = w->getWidth();
   const std::size_t height = w->getHeight();
-  const auto& wc = FWidget::getColorTheme();
+  const auto& wc_dialog = FWidget::getColorTheme()->dialog;
 
   if ( auto p = w->getParentWidget() )
-    w->setColor (wc->dialog.fg, p->getBackgroundColor());
+    w->setColor (wc_dialog.fg, p->getBackgroundColor());
   else
-    w->setColor (wc->dialog.fg, wc->dialog.bg);
+    w->setColor (wc_dialog.fg, wc_dialog.bg);
 
   for (std::size_t y{0}; y < height; y++)
   {

@@ -76,9 +76,9 @@ void FToolTip::setText (const FString& txt)
 //----------------------------------------------------------------------
 void FToolTip::resetColors()
 {
-  const auto& wc = getColorTheme();
-  FWidget::setForegroundColor (wc->tooltip.fg);
-  FWidget::setBackgroundColor (wc->tooltip.bg);
+  const auto& wc_tooltip = getColorTheme()->tooltip;
+  FWidget::setForegroundColor (wc_tooltip.fg);
+  FWidget::setBackgroundColor (wc_tooltip.bg);
   FWidget::resetColors();
 }
 
@@ -154,13 +154,27 @@ void FToolTip::calculateDimensions()
     max_line_width = std::max(column_width, max_line_width);
   }
 
-  bool border = hasBorder();
+  const auto size = getCalculatedSize();
+  const auto pos = getCalculatedPosition(size);
+  FWindow::setGeometry (pos, size);
+}
+
+//----------------------------------------------------------------------
+inline auto FToolTip::getCalculatedSize() const -> FSize
+{
+  const bool border = hasBorder();
   const std::size_t h = border ? text_num_lines + 2 : text_num_lines;
   const std::size_t w = border ? max_line_width + 4 : max_line_width + 2;
+  return {w , h};
+}
+
+//----------------------------------------------------------------------
+inline auto FToolTip::getCalculatedPosition (FSize size) const -> FPoint
+{
   const auto& r = getRootWidget();
-  int x = r ? 1 + int((r->getWidth() - w) / 2) : 1;
-  int y = r ? 1 + int((r->getHeight() - h) / 2) : 1;
-  FWindow::setGeometry (FPoint{x, y}, FSize{w, h});
+  const int x = r ? 1 + int((r->getWidth() - size.getWidth()) / 2) : 1;
+  const int y = r ? 1 + int((r->getHeight() - size.getHeight()) / 2) : 1;
+  return {x , y};
 }
 
 //----------------------------------------------------------------------

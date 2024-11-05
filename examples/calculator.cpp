@@ -84,10 +84,10 @@ void Button::setChecked (bool enable)
   }
   else
   {
-    const auto& wc = getColorTheme();
-    setBackgroundColor(wc->button.bg);
-    setFocusForegroundColor(wc->button.focus_fg);
-    setFocusBackgroundColor(wc->button.focus_bg);
+    const auto& wc_button = getColorTheme()->button;
+    setBackgroundColor(wc_button.bg);
+    setFocusForegroundColor(wc_button.focus_fg);
+    setFocusBackgroundColor(wc_button.focus_bg);
   }
 
   redraw();
@@ -410,10 +410,10 @@ void Calc::drawDispay()
   if ( finalcut::FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
 
-  const auto& wc = getColorTheme();
+  const auto& wc_dialog = getColorTheme()->dialog;
   print() << FColorPair{FColor::Black, FColor::LightGray}
           << FPoint{3, 3} << display << ' '
-          << FColorPair{wc->dialog.fg, wc->dialog.bg};
+          << FColorPair{wc_dialog.fg, wc_dialog.bg};
 
   if ( finalcut::FVTerm::getFOutput()->isMonochron() )
     setReverse(true);

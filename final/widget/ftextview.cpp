@@ -151,9 +151,9 @@ void FTextView::setGeometry ( const FPoint& pos, const FSize& size
 //----------------------------------------------------------------------
 void FTextView::resetColors()
 {
-  const auto& wc = getColorTheme();
-  FWidget::setForegroundColor (wc->text.fg);
-  FWidget::setBackgroundColor (wc->text.bg);
+  const auto& wc_text = getColorTheme()->text;
+  FWidget::setForegroundColor (wc_text.fg);
+  FWidget::setBackgroundColor (wc_text.bg);
   FWidget::resetColors();
 }
 
@@ -800,14 +800,14 @@ inline void FTextView::addSelection (FVTermBuffer& line_buffer, std::size_t n) c
                               ? start_column - col_pos : 0U;
   const std::size_t end_col = (end_column >= col_pos)
                             ? end_column - col_pos + 1 : 0U;
-  const auto& wc = getColorTheme();
+  const auto& wc_text = getColorTheme()->text;
   const auto has_focus = hasFocus();
   const auto& selected_fg = has_focus
-                          ? wc->text.selected_focus_fg
-                          : wc->text.selected_fg;
+                          ? wc_text.selected_focus_fg
+                          : wc_text.selected_fg;
   const auto& selected_bg = has_focus
-                          ? wc->text.selected_focus_bg
-                          : wc->text.selected_bg;
+                          ? wc_text.selected_focus_bg
+                          : wc_text.selected_bg;
   const std::size_t start_index = (n == start_row) ? start_col : 0U;
   const std::size_t end_index = (n == end_row)
                               ? std::min(end_col, line_buffer.getLength())

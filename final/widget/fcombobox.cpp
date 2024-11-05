@@ -124,9 +124,9 @@ void FDropDownListBox::draw()
 {
   // Fill the background
 
-  const auto& wc = getColorTheme();
-  setForegroundColor (wc->list.fg);
-  setBackgroundColor (wc->list.bg);
+  const auto& wc_list = getColorTheme()->list;
+  setForegroundColor (wc_list.fg);
+  setBackgroundColor (wc_list.bg);
   setColor();
 
   if ( FVTerm::getFOutput()->isMonochron() )
@@ -142,9 +142,9 @@ void FDropDownListBox::draw()
 //----------------------------------------------------------------------
 void FDropDownListBox::drawShadow()
 {
-  const auto& wc = getColorTheme();
+  const auto& wc_shadow_bg = getColorTheme()->shadow.bg;
   finalcut::drawShadow(this);
-  setColor (wc->shadow.bg, FColor::Default);
+  setColor (wc_shadow_bg, FColor::Default);
   print() << FPoint{int(getWidth()) + 1, 1} << UniChar::FullBlock;  // █
 }
 
@@ -498,16 +498,16 @@ void FComboBox::initCallbacks()
 //----------------------------------------------------------------------
 void FComboBox::draw()
 {
-  const auto& wc = getColorTheme();
+  const auto& wc_scrollbar = getColorTheme()->scrollbar;
 
-  const FColorPair button_color = [this, &wc] ()
+  const FColorPair button_color = [this, &wc_scrollbar] ()
   {
     if ( list_window.isEmpty() )
-      return FColorPair { wc->scrollbar.button_inactive_fg
-                        , wc->scrollbar.button_inactive_bg };
+      return FColorPair { wc_scrollbar.button_inactive_fg
+                        , wc_scrollbar.button_inactive_bg };
 
-    return FColorPair { wc->scrollbar.button_fg
-                      , wc->scrollbar.button_bg };
+    return FColorPair { wc_scrollbar.button_fg
+                      , wc_scrollbar.button_bg };
   }();
 
   print() << FPoint{int(getWidth()) - nf, 1}

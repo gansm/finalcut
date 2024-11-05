@@ -150,7 +150,7 @@ class FWidget : public FVTerm
 
     // Accessors
     auto  getClassName() const -> FString override;
-    auto  getRootWidget() -> FWidget*;
+    auto  getRootWidget() const -> FWidget*;
     auto  getParentWidget() const -> FWidget*;
     static auto  getMainWidget() -> FWidget*&;
     static auto  getActiveWindow() -> FWidget*&;

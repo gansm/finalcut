@@ -114,25 +114,26 @@ void FToggleButton::setGeometry ( const FPoint& pos, const FSize& s
 //----------------------------------------------------------------------
 void FToggleButton::resetColors()
 {
-  const auto& wc = getColorTheme();
-
   if ( isEnabled() )  // active
   {
+    const auto& wc_toggle_button = getColorTheme()->toggle_button;
+
     if ( hasFocus() )
     {
-      FWidget::setForegroundColor (wc->toggle_button.focus_fg);
-      FWidget::setBackgroundColor (wc->toggle_button.focus_bg);
+      FWidget::setForegroundColor (wc_toggle_button.focus_fg);
+      FWidget::setBackgroundColor (wc_toggle_button.focus_bg);
     }
     else
     {
-      FWidget::setForegroundColor (wc->toggle_button.fg);
-      FWidget::setBackgroundColor (wc->toggle_button.bg);
+      FWidget::setForegroundColor (wc_toggle_button.fg);
+      FWidget::setBackgroundColor (wc_toggle_button.bg);
     }
   }
   else  // inactive
   {
-    FWidget::setForegroundColor (wc->label.inactive_fg);
-    FWidget::setBackgroundColor (wc->label.inactive_bg);
+    const auto& wc_label = getColorTheme()->label;
+    FWidget::setForegroundColor (wc_label.inactive_fg);
+    FWidget::setBackgroundColor (wc_label.inactive_bg);
   }
 
   FWidget::resetColors();
@@ -372,18 +373,18 @@ void FToggleButton::drawText (const FString& label_text, std::size_t hotkeypos)
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
-  const auto& wc = getColorTheme();
+  const auto& wc_label = getColorTheme()->label;
 
   if ( isEnabled() )
-    setColor (wc->label.fg, wc->label.bg);
+    setColor (wc_label.fg, wc_label.bg);
   else
-    setColor (wc->label.inactive_fg, wc->label.inactive_bg);
+    setColor (wc_label.inactive_fg, wc_label.inactive_bg);
 
   for (std::size_t z{0}; z < label_text.getLength(); z++)
   {
     if ( (z == hotkeypos) && getFlags().feature.active )
     {
-      setColor (wc->label.hotkey_fg, wc->label.hotkey_bg);
+      setColor (wc_label.hotkey_fg, wc_label.hotkey_bg);
 
       if ( ! getFlags().feature.no_underline )
         setUnderline();
@@ -393,7 +394,7 @@ void FToggleButton::drawText (const FString& label_text, std::size_t hotkeypos)
       if ( ! getFlags().feature.no_underline )
         unsetUnderline();
 
-      setColor (wc->label.fg, wc->label.bg);
+      setColor (wc_label.fg, wc_label.bg);
     }
     else
       print (label_text[z]);

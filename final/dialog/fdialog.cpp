@@ -135,9 +135,9 @@ void FDialog::setBorder (bool enable)
 //----------------------------------------------------------------------
 void FDialog::resetColors()
 {
-  const auto& wc = getColorTheme();
-  FWidget::setForegroundColor (wc->dialog.fg);
-  FWidget::setBackgroundColor (wc->dialog.bg);
+  const auto& wc_dialog = getColorTheme()->dialog;
+  FWidget::setForegroundColor (wc_dialog.fg);
+  FWidget::setBackgroundColor (wc_dialog.bg);
   FWidget::resetColors();
 }
 
@@ -1005,8 +1005,8 @@ void FDialog::drawBorder()
   if ( (getMoveResizeWidget() == this || ! position_data.resize_click_pos.isOrigin())
     && ! isZoomed() )
   {
-    const auto& wc = getColorTheme();
-    setColor (wc->dialog.resize_fg, getBackgroundColor());
+    const auto& wc_dialog = getColorTheme()->dialog;
+    setColor (wc_dialog.resize_fg, getBackgroundColor());
   }
   else
     setColor();
@@ -1060,12 +1060,12 @@ void FDialog::drawTitleBar()
 void FDialog::drawBarButton()
 {
   // Print the title button
-  const auto& wc = getColorTheme();
+  const auto& wc_titlebar = getColorTheme()->titlebar;
 
   if ( dialog_menu.menu && dialog_menu.menu->isShown() )
-    setColor (wc->titlebar.button_focus_fg, wc->titlebar.button_focus_bg);
+    setColor (wc_titlebar.button_focus_fg, wc_titlebar.button_focus_bg);
   else
-    setColor (wc->titlebar.button_fg, wc->titlebar.button_bg);
+    setColor (wc_titlebar.button_fg, wc_titlebar.button_bg);
 
   if ( FVTerm::getFOutput()->isNewFont() )
   {
@@ -1103,12 +1103,12 @@ void FDialog::drawZoomButton()
   if ( ! isResizeable() )
     return;
 
-  const auto& wc = getColorTheme();
+  const auto& wc_titlebar = getColorTheme()->titlebar;
 
   if ( titlebar.zoom_button_pressed )
-    setColor (wc->titlebar.button_focus_fg, wc->titlebar.button_focus_bg);
+    setColor (wc_titlebar.button_focus_fg, wc_titlebar.button_focus_bg);
   else
-    setColor (wc->titlebar.button_fg, wc->titlebar.button_bg);
+    setColor (wc_titlebar.button_fg, wc_titlebar.button_bg);
 
   if ( isZoomed() )
     printRestoreSizeButton();
@@ -1124,12 +1124,12 @@ void FDialog::drawMinimizeButton()
   if ( ! isMinimizable() )
     return;
 
-  const auto& wc = getColorTheme();
+  const auto& wc_titlebar = getColorTheme()->titlebar;
 
   if ( titlebar.minimize_button_pressed )
-    setColor (wc->titlebar.button_focus_fg, wc->titlebar.button_focus_bg);
+    setColor (wc_titlebar.button_focus_fg, wc_titlebar.button_focus_bg);
   else
-    setColor (wc->titlebar.button_fg, wc->titlebar.button_bg);
+    setColor (wc_titlebar.button_fg, wc_titlebar.button_bg);
 
   printMinimizeButton();
 }
@@ -1214,12 +1214,12 @@ void FDialog::drawTextBar()
   if ( FVTerm::getFOutput()->getMaxColor() < 16 )
     setBold();
 
-  const auto& wc = getColorTheme();
+  const auto& wc_titlebar = getColorTheme()->titlebar;
 
   if ( isWindowActive() || (dialog_menu.menu && dialog_menu.menu->isShown()) )
-    setColor (wc->titlebar.fg, wc->titlebar.bg);
+    setColor (wc_titlebar.fg, wc_titlebar.bg);
   else
-    setColor (wc->titlebar.inactive_fg, wc->titlebar.inactive_bg);
+    setColor (wc_titlebar.inactive_fg, wc_titlebar.inactive_bg);
 
   const auto width = getWidth();
   const auto menu_btn = getMenuButtonWidth();

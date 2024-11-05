@@ -2,7 +2,7 @@
 
 # Library for creating terminal applications with text-based widgets
 
-FINAL CUT is a powerful and lightweight C++ library for creating [terminal-based applications](https://en.wikipedia.org/wiki/Text-based_user_interface) with numerous text-based widgets. FINAL CUT is designed for simplicity and does not require the functionality of external libraries (such as [ncurses](https://invisible-island.net/ncurses/ncurses.html) or [termbox](https://code.google.com/archive/p/termbox/) but still offers full [mouse](doc/mouse-control.md#title-bar-actions-on-mouse-clicks) support, Unicode compatibility, and versatile widget functions.
+FINAL CUT is a powerful and lightweight C++ library for creating [terminal-based applications](https://en.wikipedia.org/wiki/Text-based_user_interface) with numerous text-based widgets. FINAL CUT is designed for simplicity and does not require the functionality of external libraries (such as [ncurses](https://invisible-island.net/ncurses/ncurses.html) or [termbox](https://code.google.com/archive/p/termbox/)) but still offers full [mouse](doc/mouse-control.md#title-bar-actions-on-mouse-clicks) support, Unicode compatibility, and versatile widget functions.
 
 It provides [UTF-8](https://en.wikipedia.org/wiki/UTF-8) character encoding, [full-width character](https://en.wikipedia.org/wiki/Halfwidth_and_fullwidth_forms) support, and the ability to display [combined Unicode characters](https://en.wikipedia.org/wiki/Combining_character). The library helps the developer to create an easy-to-use text console application and allows handling multiple text windows on the screen.
 

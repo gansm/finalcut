@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2023 Markus Gans                                      *
+* Copyright 2019-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -115,6 +115,9 @@ class FSpinBox : public FWidget
     void onFailAtChildFocus (FFocusEvent*) override;
 
   private:
+    // Using-declaration
+    using KeyMap = std::unordered_map<FKey, std::function<void(FKeyEvent*)>, EnumHash<FKey>>;
+
     // Enumeration
     enum class SpiningState
     {
@@ -125,6 +128,7 @@ class FSpinBox : public FWidget
 
     // Methods
     void init();
+    void mapKeyFunctions();
     void draw() override;
     void updateInputField();
     void increaseValue (sInt64 = 1);
@@ -138,6 +142,7 @@ class FSpinBox : public FWidget
     void cb_inputFieldChange (const FLineEdit&);
 
     // Data members
+    KeyMap        key_map{};
     FLineEdit     input_field{this};
     sInt64        value{0};
     sInt64        min{std::numeric_limits<sInt64>::min()};

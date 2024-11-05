@@ -150,36 +150,11 @@ void FSpinBox::onKeyPress (FKeyEvent* ev)
   if ( ! isEnabled() )
     return;
 
-  const FKey key = ev->key();
+  const auto key = ev->key();
+  const auto& iter = key_map.find(key);
 
-  if ( key == FKey::Tab )
-  {
-    focusNextChild();
-  }
-  else if ( key == FKey::Back_tab )
-  {
-    focusPrevChild();
-  }
-  else if ( key == FKey::Up || key == FKey::Scroll_backward )
-  {
-    increaseValue();
-    ev->accept();
-  }
-  else if ( key == FKey::Down || key == FKey::Scroll_forward )
-  {
-    decreaseValue();
-    ev->accept();
-  }
-  else if ( key == FKey::Page_up )
-  {
-    increaseValue(10);
-    ev->accept();
-  }
-  else if ( key == FKey::Page_down )
-  {
-    decreaseValue(10);
-    ev->accept();
-  }
+  if ( iter != key_map.end() )
+    iter->second(ev);
 
   if ( ev->isAccepted() )
     updateInputField();
@@ -307,6 +282,7 @@ void FSpinBox::onFailAtChildFocus (FFocusEvent* fail_ev)
 //----------------------------------------------------------------------
 void FSpinBox::init()
 {
+  mapKeyFunctions();
   setShadow();
   auto parent_widget = getParentWidget();
   auto label = input_field.getLabelObject();
@@ -332,28 +308,50 @@ void FSpinBox::init()
 }
 
 //----------------------------------------------------------------------
+inline void FSpinBox::mapKeyFunctions()
+{
+  key_map =
+  {
+    { FKey::Tab             , [this] (FKeyEvent*)    { focusNextChild(); } },
+    { FKey::Back_tab        , [this] (FKeyEvent*)    { focusPrevChild(); } },
+    { FKey::Up              , [this] (FKeyEvent* ev) { increaseValue();
+                                                       ev->accept(); } },
+    { FKey::Scroll_backward , [this] (FKeyEvent* ev) { increaseValue();
+                                                       ev->accept(); } },
+    { FKey::Down            , [this] (FKeyEvent* ev) { decreaseValue();
+                                                       ev->accept(); } },
+    { FKey::Scroll_forward  , [this] (FKeyEvent* ev) { decreaseValue();
+                                                       ev->accept(); } },
+    { FKey::Page_up         , [this] (FKeyEvent* ev) { increaseValue(10);
+                                                       ev->accept(); } },
+    { FKey::Page_down       , [this] (FKeyEvent* ev) { decreaseValue(10);
+                                                       ev->accept(); } }
+  };
+}
+
+//----------------------------------------------------------------------
 void FSpinBox::draw()
 {
-  const auto& wc = getColorTheme();
+  const auto& wc_scrollbar = getColorTheme()->scrollbar;
 
-  const FColorPair inc_button_color = [this, &wc] ()
+  const FColorPair inc_button_color = [this, &wc_scrollbar] ()
   {
     if ( value == max )
-      return FColorPair { wc->scrollbar.button_inactive_fg
-                        , wc->scrollbar.button_inactive_bg };
+      return FColorPair { wc_scrollbar.button_inactive_fg
+                        , wc_scrollbar.button_inactive_bg };
 
-    return FColorPair { wc->scrollbar.button_fg
-                      , wc->scrollbar.button_bg };
+    return FColorPair { wc_scrollbar.button_fg
+                      , wc_scrollbar.button_bg };
   }();
 
-  const FColorPair dec_button_color = [this, &wc] ()
+  const FColorPair dec_button_color = [this, &wc_scrollbar] ()
   {
     if ( value == min )
-      return FColorPair { wc->scrollbar.button_inactive_fg
-                        , wc->scrollbar.button_inactive_bg };
+      return FColorPair { wc_scrollbar.button_inactive_fg
+                        , wc_scrollbar.button_inactive_bg };
 
-    return FColorPair { wc->scrollbar.button_fg
-                      , wc->scrollbar.button_bg };
+    return FColorPair { wc_scrollbar.button_fg
+                      , wc_scrollbar.button_bg };
   }();
 
   print() << FPoint{int(getWidth()) - 1, 1}

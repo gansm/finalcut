@@ -152,27 +152,27 @@ inline void FSwitch::drawSwitch()
 //----------------------------------------------------------------------
 inline void FSwitch::SetStyleForOn() const
 {
-  const auto& wc = getColorTheme();
+  const auto& wc_button = getColorTheme()->button;
   const auto& output = FVTerm::getFOutput();
   bool is_mono = output->isMonochron();
   bool less_than_16_colors = output->getMaxColor() < 16;
-  auto fg = less_than_16_colors ? wc->button.focus_fg : wc->button.hotkey_fg;
+  auto fg = less_than_16_colors ? wc_button.focus_fg : wc_button.hotkey_fg;
 
   if ( isChecked() )
   {
     if ( hasFocus() && ! button_pressed )
     {
       setBold (is_mono || less_than_16_colors);
-      setColor (fg, wc->button.focus_bg);
+      setColor (fg, wc_button.focus_bg);
     }
     else
-      setColor (fg, wc->button.bg);
+      setColor (fg, wc_button.bg);
 
     setReverse(false);
   }
   else
   {
-    setColor(wc->button.inactive_fg, wc->button.inactive_bg);
+    setColor(wc_button.inactive_fg, wc_button.inactive_bg);
     setReverse(is_mono);
   }
 }
@@ -180,27 +180,27 @@ inline void FSwitch::SetStyleForOn() const
 //----------------------------------------------------------------------
 inline void FSwitch::SetStyleForOff() const
 {
-  const auto& wc = getColorTheme();
+  const auto& wc_button = getColorTheme()->button;
   const auto& output = FVTerm::getFOutput();
   bool is_mono = output->isMonochron();
   bool less_than_16_colors = output->getMaxColor() < 16;
-  auto fg = less_than_16_colors ? wc->button.focus_fg : wc->button.hotkey_fg;
+  auto fg = less_than_16_colors ? wc_button.focus_fg : wc_button.hotkey_fg;
 
   if ( isChecked() )
   {
     setReverse(is_mono);
     setBold (! is_mono && ! less_than_16_colors);
-    setColor (wc->button.inactive_fg, wc->button.inactive_bg);
+    setColor (wc_button.inactive_fg, wc_button.inactive_bg);
   }
   else
   {
     if ( hasFocus() && ! button_pressed )
     {
       setBold (is_mono || less_than_16_colors);
-      setColor (fg, wc->button.focus_bg);
+      setColor (fg, wc_button.focus_bg);
     }
     else
-      setColor (fg, wc->button.bg);
+      setColor (fg, wc_button.bg);
 
     setReverse(false);
   }

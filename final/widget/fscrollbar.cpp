@@ -374,8 +374,8 @@ void FScrollbar::draw()
 //----------------------------------------------------------------------
 void FScrollbar::drawVerticalBar()
 {
-  const auto& wc = getColorTheme();
-  setColor (wc->scrollbar.fg, wc->scrollbar.bg);
+  const auto& wc_scrollbar = getColorTheme()->scrollbar;
+  setColor (wc_scrollbar.fg, wc_scrollbar.bg);
 
   for (auto z{1}; z <= slider_pos; z++)
   {
@@ -383,7 +383,7 @@ void FScrollbar::drawVerticalBar()
     drawVerticalBackgroundLine();
   }
 
-  setColor (wc->scrollbar.bg, wc->scrollbar.fg);
+  setColor (wc_scrollbar.bg, wc_scrollbar.fg);
 
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
@@ -401,7 +401,7 @@ void FScrollbar::drawVerticalBar()
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
-  setColor (wc->scrollbar.fg, wc->scrollbar.bg);
+  setColor (wc_scrollbar.fg, wc_scrollbar.bg);
 
   for (auto z = slider_pos + int(slider_length) + 1; z <= int(bar_length); z++)
   {
@@ -435,8 +435,8 @@ inline void FScrollbar::drawVerticalBackgroundLine()
 //----------------------------------------------------------------------
 void FScrollbar::drawHorizontalBar()
 {
-  const auto& wc = getColorTheme();
-  setColor (wc->scrollbar.fg, wc->scrollbar.bg);
+  const auto& wc_scrollbar = getColorTheme()->scrollbar;
+  setColor (wc_scrollbar.fg, wc_scrollbar.bg);
 
   if ( FVTerm::getFOutput()->isNewFont() )
     print() << FPoint{3, 1};
@@ -446,7 +446,7 @@ void FScrollbar::drawHorizontalBar()
   for (auto z{0}; z < slider_pos; z++)
     drawHorizontalBackgroundColumn();
 
-  setColor (wc->scrollbar.bg, wc->scrollbar.fg);
+  setColor (wc_scrollbar.bg, wc_scrollbar.fg);
 
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
@@ -457,7 +457,7 @@ void FScrollbar::drawHorizontalBar()
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
-  setColor (wc->scrollbar.fg, wc->scrollbar.bg);
+  setColor (wc_scrollbar.fg, wc_scrollbar.bg);
   int z = slider_pos + int(slider_length) + 1;
 
   for (; z <= int(bar_length); z++)
@@ -481,8 +481,8 @@ inline void FScrollbar::drawHorizontalBackgroundColumn()
 //----------------------------------------------------------------------
 void FScrollbar::drawButtons()
 {
-  const auto& wc = getColorTheme();
-  setColor (wc->scrollbar.button_fg, wc->scrollbar.button_bg);
+  const auto& wc_scrollbar = getColorTheme()->scrollbar;
+  setColor (wc_scrollbar.button_fg, wc_scrollbar.button_bg);
 
   if ( FVTerm::getFOutput()->isNewFont() )
   {

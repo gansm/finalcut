@@ -132,8 +132,9 @@ auto main (int argc, char* argv[]) -> int
 </figure>
 <br /><br />
 
-*(Note: You can close the dialog with the mouse, 
-<kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
+> [!NOTE]
+> You can close the dialog with the mouse, 
+> <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>
 
 
 After entering the source code in *dialog.cpp* you can compile
@@ -181,7 +182,10 @@ dialog.setGeometry (position, size);
 ```
 The dialog window gets a width of 30 and a height of 10 characters.
 The position of the window in the terminal is at x=25 and
-y=5 (note: x=1 and y=1 represents the upper left corner).
+y=5.
+
+> [!NOTE]
+> x=1 and y=1 represents the upper left corner.
 
 ```cpp
 finalcut::FWidget::setMainWidget(&dialog);
@@ -279,8 +283,9 @@ auto main (int argc, char* argv[]) -> int
 </figure>
 <br /><br />
 
-*(Note: You can close the window with the mouse, 
-<kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
+> [!NOTE]
+> You can close the dialog with the mouse, 
+> <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>
 
 
 After entering the source code in *memory.cpp* you can compile
@@ -427,8 +432,9 @@ auto main (int argc, char* argv[]) -> int
 </figure>
 <br /><br />
 
-*(Note: You can close the window with the mouse, 
-<kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
+> [!NOTE]
+> You can close the dialog with the mouse, 
+> <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>
 
 
 After entering the source code in *timer.cpp* you can compile
@@ -543,8 +549,9 @@ auto main (int argc, char* argv[]) -> int
 </figure>
 <br /><br />
 
-*(Note: You can close the window with the mouse, 
-<kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
+> [!NOTE]
+> You can close the dialog with the mouse, 
+> <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>
 
 
 After entering the source code in *user-event.cpp* you can compile
@@ -817,8 +824,9 @@ auto main (int argc, char* argv[]) -> int
 </figure>
 <br /><br />
 
-*(Note: You can close the dialog with the mouse, 
-<kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
+> [!NOTE]
+> You can close the dialog with the mouse, 
+> <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>
 
 
 After entering the source code in *callback-function.cpp* you can compile
@@ -880,8 +888,9 @@ auto main (int argc, char* argv[]) -> int
 </figure>
 <br /><br />
 
-*(Note: You can close the dialog with the mouse, 
-<kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
+> [!NOTE]
+> You can close the dialog with the mouse, 
+> <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>
 
 
 After entering the source code in *callback-lambda.cpp* you can compile
@@ -943,8 +952,9 @@ auto main (int argc, char* argv[]) -> int
 </figure>
 <br /><br />
 
-*(Note: You can close the window with the mouse, 
-<kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
+> [!NOTE]
+> You can close the dialog with the mouse, 
+> <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>
 
 
 After entering the source code in *callback-method.cpp* you can compile
@@ -1069,8 +1079,9 @@ auto main (int argc, char* argv[]) -> int
 </figure>
 <br /><br />
 
-*(Note: You can close the window with the mouse, 
-<kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
+> [!NOTE]
+> You can close the dialog with the mouse, 
+> <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>
 
 
 After entering the source code in *emit-signal.cpp* you can compile
@@ -1344,8 +1355,9 @@ auto main (int argc, char* argv[]) -> int
 </figure>
 <br /><br />
 
-*(Note: You can close the window with the mouse, 
-<kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
+> [!NOTE]
+> You can close the dialog with the mouse, 
+> <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>
 
 
 After entering the source code in *size-adjustment.cpp* you can compile
@@ -1477,8 +1489,9 @@ auto main (int argc, char* argv[]) -> int
 </figure>
 <br /><br />
 
-*(Note: You can close the window with the mouse, 
-<kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
+> [!NOTE]
+> You can close the dialog with the mouse, 
+> <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>
 
 
 After entering the source code in *scrollview.cpp* you can compile

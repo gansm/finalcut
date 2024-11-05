@@ -151,9 +151,9 @@ FWidget::~FWidget()  // destructor
 
 // public methods of FWidget
 //----------------------------------------------------------------------
-auto FWidget::getRootWidget() -> FWidget*
+auto FWidget::getRootWidget() const -> FWidget*
 {
-  FWidget* obj = this;
+  auto obj = const_cast<FWidget*>(this);
   auto p_obj = getParentWidget();
 
   while ( ! obj->isRootWidget() && p_obj )
@@ -292,9 +292,9 @@ void FWidget::useParentWidgetColor()
   }
   else  // Fallback
   {
-    const auto& wc = getColorTheme();
-    setForegroundColor (wc->dialog.fg);
-    setBackgroundColor (wc->dialog.bg);
+    const auto& wc_dialog = getColorTheme()->dialog;
+    setForegroundColor (wc_dialog.fg);
+    setBackgroundColor (wc_dialog.bg);
   }
 
   setColor();
@@ -819,8 +819,8 @@ void FWidget::redraw()
   {
     startDrawing();
     // clean desktop
-    auto color_theme = getColorTheme();
-    setColor (color_theme->term.fg, color_theme->term.bg);
+    auto color_theme_term = getColorTheme()->term;
+    setColor (color_theme_term.fg, color_theme_term.bg);
     clearArea (getVirtualDesktop());
   }
   else if ( ! isShown() )
@@ -1207,9 +1207,9 @@ void FWidget::initTerminal()
   initColorTheme();
 
   // Set default foreground and background color of the desktop/terminal
-  auto color_theme = getColorTheme();
-  internal::var::root_widget->foreground_color = color_theme->term.fg;
-  internal::var::root_widget->background_color = color_theme->term.bg;
+  auto color_theme_term = getColorTheme()->term;
+  internal::var::root_widget->foreground_color = color_theme_term.fg;
+  internal::var::root_widget->background_color = color_theme_term.bg;
   resetColors();
 
   // The terminal is now initialized
@@ -1296,9 +1296,9 @@ void FWidget::hideArea (const FSize& size)
   }
   else
   {
-    auto color_theme = getColorTheme();
-    FColor fg = color_theme->dialog.fg;
-    FColor bg = color_theme->dialog.bg;
+    auto color_theme_dialog = getColorTheme()->dialog;
+    FColor fg = color_theme_dialog.fg;
+    FColor bg = color_theme_dialog.bg;
     setColor (fg, bg);
   }
 

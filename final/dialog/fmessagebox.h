@@ -240,10 +240,10 @@ auto FMessageBox::error ( FWidget* parent
   FVTerm::getFOutput()->beep();
   mbox.setHeadline("Warning:");
   mbox.setCenterText();
-  const auto& wc = getColorTheme();
-  mbox.setForegroundColor(wc->error_box.fg);
-  mbox.setBackgroundColor(wc->error_box.bg);
-  mbox.emphasis_color = wc->error_box.emphasis_fg;
+  const auto& wc_error_box = getColorTheme()->error_box;
+  mbox.setForegroundColor(wc_error_box.fg);
+  mbox.setBackgroundColor(wc_error_box.bg);
+  mbox.emphasis_color = wc_error_box.emphasis_fg;
   const ButtonType reply = mbox.exec();
   return reply;
 }

@@ -268,25 +268,25 @@ void FLineEdit::setLabelOrientation (const LabelOrientation o)
 //----------------------------------------------------------------------
 void FLineEdit::resetColors()
 {
-  const auto& wc = getColorTheme();
+  const auto& wc_input_field = getColorTheme()->input_field;
 
   if ( isEnabled() )  // active
   {
     if ( hasFocus() )
     {
-      FWidget::setForegroundColor (wc->input_field.focus_fg);
-      FWidget::setBackgroundColor (wc->input_field.focus_bg);
+      FWidget::setForegroundColor (wc_input_field.focus_fg);
+      FWidget::setBackgroundColor (wc_input_field.focus_bg);
     }
     else
     {
-      FWidget::setForegroundColor (wc->input_field.fg);
-      FWidget::setBackgroundColor (wc->input_field.bg);
+      FWidget::setForegroundColor (wc_input_field.fg);
+      FWidget::setBackgroundColor (wc_input_field.bg);
     }
   }
   else  // inactive
   {
-    FWidget::setForegroundColor (wc->input_field.inactive_fg);
-    FWidget::setBackgroundColor (wc->input_field.inactive_bg);
+    FWidget::setForegroundColor (wc_input_field.inactive_fg);
+    FWidget::setBackgroundColor (wc_input_field.inactive_bg);
   }
 
   FWidget::resetColors();

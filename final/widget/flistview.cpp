@@ -1718,8 +1718,8 @@ void FListView::clearList()
 {
   // Clear list from terminal screen
 
-  const auto& wc = getColorTheme();
-  setColor (wc->list.fg, wc->list.bg);
+  const auto& wc_list = getColorTheme()->list;
+  setColor (wc_list.fg, wc_list.bg);
   const std::size_t size = getWidth() - 2;
   drawBorder();
   drawHeadlines();
@@ -1742,7 +1742,9 @@ inline void FListView::setLineAttributes ( bool is_current
   // Set line color and attributes
 
   const auto& wc = getColorTheme();
-  setColor (wc->list.fg, wc->list.bg);
+  const auto& wc_list = wc->list;
+  const auto& wc_current_element = wc->current_element;
+  setColor (wc_list.fg, wc_list.bg);
 
   if ( is_current )
   {
@@ -1754,12 +1756,10 @@ inline void FListView::setLineAttributes ( bool is_current
 
     if ( is_focus )
     {
-      setColor ( wc->current_element.focus_fg
-               , wc->current_element.focus_bg );
+      setColor (wc_current_element.focus_fg, wc_current_element.focus_bg);
     }
     else
-      setColor ( wc->current_element.fg
-               , wc->current_element.bg );
+      setColor (wc_current_element.fg, wc_current_element.bg);
 
     if ( FVTerm::getFOutput()->isMonochron() )
       setReverse(false);
@@ -1883,12 +1883,12 @@ void FListView::drawHeadlineLabel (const HeaderItems::const_iterator& iter)
   const auto first = data.header.cbegin();
   const auto column = int(std::distance(first, iter)) + 1;
   const bool has_sort_indicator( sorting.column == column && ! sorting.hide_sort_indicator );
-  const auto& wc = getColorTheme();
+  const auto& wc_label = getColorTheme()->label;
 
   if ( isEnabled() )
-    setColor (wc->label.emphasis_fg, wc->label.bg);
+    setColor (wc_label.emphasis_fg, wc_label.bg);
   else
-    setColor (wc->label.inactive_fg, wc->label.inactive_bg);
+    setColor (wc_label.inactive_fg, wc_label.inactive_bg);
 
   if ( has_sort_indicator && column_width >= column_max - 1 && column_width > 1 )
   {
@@ -2033,11 +2033,11 @@ void FListView::drawColumnEllipsis ( const HeaderItems::const_iterator& iter
   // Print label ellipsis
   static constexpr int ellipsis_length = 2;
   const int width = iter->width;
-  const auto& wc = getColorTheme();
+  const auto& wc_label = getColorTheme()->label;
 
   data.headerline << ' '
                   << getColumnSubString (text, 1, uInt(width - ellipsis_length))
-                  << FColorPair {wc->label.ellipsis_fg, wc->label.bg}
+                  << FColorPair {wc_label.ellipsis_fg, wc_label.bg}
                   << "..";
 
   if ( iter == data.header.cend() - 1 )  // Last element
@@ -2282,35 +2282,56 @@ void FListView::mouseHeaderClicked()
       continue;
     }
 
-    static constexpr int leading_space = 1;
-    const bool has_sort_indicator( column == sorting.column );
-    auto click_width = int(getColumnWidth(item.name));
+    const auto click_width = getHeaderClickWidth (item, column);
 
-    if ( has_sort_indicator )
-      click_width += 2;
-
-    if ( click_width > item.width )
-      click_width = item.width;
-
-    if ( header_pos > header_start
-      && header_pos <= header_start + click_width )
+    if ( isPositionWithinHeader(header_start, click_width, header_pos) )
     {
-      if ( has_sort_indicator && sorting.order == SortOrder::Ascending )
-        setColumnSort (column, SortOrder::Descending);
-      else
-        setColumnSort (column, SortOrder::Ascending);
-
-      sort();
-
-      if ( isShown() )
-        updateDrawing (true, false);
-
+      handleColumnSort(column);
       break;
     }
 
+    static constexpr int leading_space = 1;
     header_start += leading_space + item.width;
     column++;
   }
+}
+
+//----------------------------------------------------------------------
+inline auto FListView::getHeaderClickWidth (const Header& item, int column) const -> int
+{
+  const bool has_sort_indicator( column == sorting.column );
+  auto click_width = int(getColumnWidth(item.name));
+
+  if ( has_sort_indicator )
+    click_width += 2;
+
+  if ( click_width > item.width )
+    return item.width;
+
+  return click_width;
+}
+
+//----------------------------------------------------------------------
+inline auto FListView::isPositionWithinHeader (int start, int width, int pos) const -> bool
+{
+  const int end = start + width;
+  return pos > start && pos <= end;
+}
+
+//----------------------------------------------------------------------
+void FListView::handleColumnSort (int column)
+{
+  const bool has_sort_indicator( column == sorting.column );
+
+  if ( has_sort_indicator && sorting.order == SortOrder::Ascending )
+    setColumnSort (column, SortOrder::Descending);
+  else
+    setColumnSort (column, SortOrder::Ascending);
+
+  sort();
+
+  if ( isShown() )
+    updateDrawing (true, false);
 }
 
 //----------------------------------------------------------------------

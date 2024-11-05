@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2023 Markus Gans                                      *
+* Copyright 2015-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -269,11 +269,11 @@ void AttribDemo::printColorLine()
 //----------------------------------------------------------------------
 void AttribDemo::printAltCharset()
 {
-  const auto& wc = getColorTheme();
+  const auto& wc_label = getColorTheme()->label;
   const auto& parent = static_cast<AttribDlg*>(getParent());
 
   if ( ! finalcut::FVTerm::getFOutput()->isMonochron() )
-    setColor (wc->label.fg, wc->label.bg);
+    setColor (wc_label.fg, wc_label.bg);
 
   print() << FPoint{1, 1} << "Alternate charset: ";
 
@@ -419,7 +419,7 @@ void AttribDemo::printProtected()
 //----------------------------------------------------------------------
 void AttribDemo::draw()
 {
-  const auto& wc = getColorTheme();
+  const auto& wc_label = getColorTheme()->label;
   last_color = FColor(finalcut::FVTerm::getFOutput()->getMaxColor());
 
   if ( finalcut::FVTerm::getFOutput()->isMonochron() )
@@ -452,14 +452,14 @@ void AttribDemo::draw()
     print() << FPoint{1, 2 + int(y)};
 
     if ( ! finalcut::FVTerm::getFOutput()->isMonochron() )
-      setColor (wc->label.fg, wc->label.bg);
+      setColor (wc_label.fg, wc_label.bg);
 
     if ( y < effect.size() )
       effect[y]();
   }
 
   if ( ! finalcut::FVTerm::getFOutput()->isMonochron() )
-    setColor(wc->label.fg, wc->label.bg);
+    setColor(wc_label.fg, wc_label.bg);
 
   print() << FPoint{1, 15};
   const FColor bg = static_cast<AttribDlg*>(getParent())->getBGColor();

@@ -99,9 +99,9 @@ class FTextView : public FWidget
         : index{i}
         , length{l}
       {
-        auto wc = getColorTheme();
-        attributes.fg_color = wc->dialog.fg;
-        attributes.bg_color = wc->dialog.bg;
+        auto wc_dialog = getColorTheme()->dialog;
+        attributes.fg_color = wc_dialog.fg;
+        attributes.bg_color = wc_dialog.bg;
         attributes.attr = s.toFAttribute();
       }
 

@@ -97,7 +97,7 @@ class FListBoxItem
     using FDataAccessPtr = std::shared_ptr<FDataAccess>;
 
     // Methods
-    auto stringFilter(const FString&) const -> FString;
+    auto stringFilter (const FString&) const -> FString;
 
     // Data members
     FString         text{};
@@ -288,6 +288,7 @@ class FListBox : public FWidget
     using KeyMap = std::unordered_map<FKey, std::function<void()>, EnumHash<FKey>>;
     using KeyMapResult = std::unordered_map<FKey, std::function<bool()>, EnumHash<FKey>>;
     using LazyInsert = std::function<void(FListBoxItem&, FDataAccess*, std::size_t)>;
+    using FWidgetColorsptr = std::shared_ptr<FWidgetColors>;
 
     struct ListBoxData
     {
@@ -301,12 +302,12 @@ class FListBox : public FWidget
 
     struct SelectionState
     {
-      std::size_t current{0};
-      int         last_current{-1};
-      int         select_from_item{-1};
-      bool        multi_select{false};
-      bool        mouse_select{false};
-      bool        click_on_list{false};
+      std::size_t  current{0};
+      int          last_current{-1};
+      int          select_from_item{-1};
+      bool         multi_select{false};
+      bool         mouse_select{false};
+      bool         click_on_list{false};
     };
 
     struct ScrollingState
@@ -319,6 +320,16 @@ class FListBox : public FWidget
       int            repeat{100};
       int            distance{1};
       bool           timer{false};
+    };
+
+    struct ElementData
+    {
+      bool&        search_mark;
+      std::size_t  bracket_space{0};
+      std::size_t  inc_len{0};
+      FString      text{};
+      std::size_t  text_width{0};
+      std::size_t  column_width{0};
     };
 
     // Enumeration
@@ -355,9 +366,15 @@ class FListBox : public FWidget
     void drawList();
     void drawListLine (int, FListBoxItems::iterator, bool);
     void printLeftBracket (BracketType);
+    template<class UnaryPred>
+    void printLeftBracket_if (BracketType, UnaryPred);
     void printRightBracket (BracketType);
+    template<class UnaryPred>
+    void printRightBracket_if (BracketType, ElementData&, UnaryPred);
+    void setCurrentFocusedElementColor();
     void drawListBracketsLine (int, FListBoxItems::iterator, bool);
-    auto getMaxWidth() const ->  std::size_t;
+    void printElement (const ElementData&);
+    auto shouldPrintRightBracket (const ElementData&, std::size_t) -> bool;
     void printLeftCurrentLineArrow (int);
     void printRightCurrentLineArrow (int);
     void printRemainingSpacesFromPos (std::size_t);
@@ -366,6 +383,7 @@ class FListBox : public FWidget
     void setSelectedCurrentLineAttributes (int);
     void setUnselectedCurrentLineAttributes (int, bool, bool&);
     void setLineAttributes (int, bool, bool, bool&);
+    auto getMaxWidth() const ->  std::size_t;
     void unsetAttributes() const;
     void updateDrawing (bool, bool);
     void recalculateHorizontalBar (std::size_t, bool);
@@ -674,6 +692,31 @@ inline auto FListBox::isVerticallyScrollable() const -> bool
 //----------------------------------------------------------------------
 inline auto FListBox::isCurrentLine (int y) const -> bool
 { return y + scroll.yoffset + 1 == int(selection.current); }
+
+//----------------------------------------------------------------------
+template<class UnaryPred>
+inline void FListBox::printLeftBracket_if ( BracketType bracket_type
+                                          , UnaryPred p )
+{
+  if ( p )
+    printLeftBracket(bracket_type);
+}
+
+//----------------------------------------------------------------------
+template<class UnaryPred>
+inline void FListBox::printRightBracket_if ( BracketType bracket_type
+                                           , ElementData& elem
+                                           , UnaryPred p )
+{
+  if ( ! p )
+    return;
+
+  if ( elem.search_mark && elem.text.getLength() == elem.inc_len )
+    setCurrentFocusedElementColor();
+
+  printRightBracket (bracket_type);
+  elem.column_width++;
+}
 
 //----------------------------------------------------------------------
 inline auto FListBox::getMaxWidth() const ->  std::size_t

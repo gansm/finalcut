@@ -207,8 +207,8 @@ void FListBox::clear()
   scroll.hbar->hide();
 
   // clear list from screen
-  const auto& wc = getColorTheme();
-  setColor (wc->list.fg, wc->list.bg);
+  const auto& wc_list = getColorTheme()->list;
+  setColor (wc_list.fg, wc_list.bg);
   const std::size_t size = getWidth() - 2;
   drawBorder();
   drawHeadline();
@@ -597,12 +597,12 @@ void FListBox::drawHeadline()
   const FString txt{" " + data.text + " "};
   const auto column_width = getColumnWidth(txt);
   print() << FPoint{2, 1};
-  const auto& wc = getColorTheme();
+  const auto& wc_label = getColorTheme()->label;
 
   if ( isEnabled() )
-    setColor(wc->label.emphasis_fg, wc->label.bg);
+    setColor(wc_label.emphasis_fg, wc_label.bg);
   else
-    setColor(wc->label.inactive_fg, wc->label.inactive_bg);
+    setColor(wc_label.inactive_fg, wc_label.inactive_bg);
 
   if ( column_width <= getClientWidth() )
     print (txt);
@@ -610,7 +610,7 @@ void FListBox::drawHeadline()
   {
     // Print ellipsis
     print() << getColumnSubString (data.text, 1, getClientWidth() - 2)
-            << FColorPair {wc->label.ellipsis_fg, wc->label.bg} << "..";
+            << FColorPair {wc_label.ellipsis_fg, wc_label.bg} << "..";
   }
 }
 
@@ -700,30 +700,24 @@ inline void FListBox::drawListLine ( int y
                                    , FListBoxItems::iterator iter
                                    , bool serach_mark )
 {
-  const std::size_t inc_len = data.inc_search.getLength();
-  const auto& wc = getColorTheme();
   const std::size_t first = std::size_t(scroll.xoffset) + 1;
   const std::size_t max_width = getMaxWidth();
   const FString element(getColumnSubString (getString(iter), first, max_width));
-  auto column_width = getColumnWidth(element);
-  printLeftCurrentLineArrow(y);
-
-  if ( serach_mark )
-    setColor ( wc->current_element.inc_search_fg
-             , wc->current_element.focus_bg );
-
-  for (std::size_t i{0}; i < element.getLength(); i++)
+  ElementData line_data
   {
-    if ( serach_mark && i == inc_len && getFlags().focus.focus  )
-      setColor ( wc->current_element.focus_fg
-               , wc->current_element.focus_bg );
+    serach_mark,
+    0,
+    data.inc_search.getLength(),
+    element,
+    getColumnWidth(getString(iter)),
+    getColumnWidth(element)
+  };
 
-    print (element[i]);
-  }
-
+  printLeftCurrentLineArrow(y);
+  printElement (line_data);
   printRightCurrentLineArrow(y);
-  column_width++;
-  printRemainingSpacesFromPos (column_width);
+  line_data.column_width++;
+  printRemainingSpacesFromPos (line_data.column_width);
 }
 
 //----------------------------------------------------------------------
@@ -741,54 +735,69 @@ inline void FListBox::printRightBracket (BracketType bracket_type)
 }
 
 //----------------------------------------------------------------------
+void FListBox::setCurrentFocusedElementColor()
+{
+  const auto& wc_current_element = getColorTheme()->current_element;
+  setColor (wc_current_element.focus_fg, wc_current_element.focus_bg);
+}
+
+//----------------------------------------------------------------------
 inline void FListBox::drawListBracketsLine ( int y
                                            , FListBoxItems::iterator iter
                                            , bool serach_mark )
 {
-  printLeftCurrentLineArrow(y);
-  // Required bracket space
-  std::size_t bracket_space = (scroll.xoffset == 0) ? 1 : 0;
-
-  if ( scroll.xoffset == 0 )
-    printLeftBracket (iter->brackets);
-
-  const auto first = std::size_t(scroll.xoffset);
+  // Calculate bracket space
+  const std::size_t bracket_space = (scroll.xoffset == 0) ? 1 : 0;
   const std::size_t max_width = getMaxWidth() - bracket_space;
+  const auto first = std::size_t(scroll.xoffset);
   const FString element(getColumnSubString (getString(iter), first, max_width));
-  const std::size_t inc_len = data.inc_search.getLength();
-  const auto& wc = getColorTheme();
+  auto has_no_xoffset = [] (std::size_t x) { return x == 0; };
 
-  for (std::size_t i{0}; i < element.getLength(); i++)
+  ElementData line_data
   {
-    if ( serach_mark && (i == 0 || i == inc_len) )
+    serach_mark,
+    bracket_space,
+    data.inc_search.getLength(),
+    element,
+    getColumnWidth(getString(iter)),
+    getColumnWidth(element)
+  };
+
+  printLeftCurrentLineArrow(y);
+  printLeftBracket_if (iter->brackets, has_no_xoffset(first) );
+  printElement (line_data);
+  printRightBracket_if ( iter->brackets
+                       , line_data
+                       , shouldPrintRightBracket(line_data, first) );
+  printRightCurrentLineArrow(y);
+  line_data.column_width++;
+  printRemainingSpacesFromPos (bracket_space + line_data.column_width);
+}
+
+//----------------------------------------------------------------------
+void FListBox::printElement (const ElementData& elem)
+{
+  const auto& wc_current_element = getColorTheme()->current_element;
+
+  for (std::size_t i{0}; i < elem.text.getLength(); i++)
+  {
+    if ( elem.search_mark && (i == 0 || i == elem.inc_len) )
     {
       const auto& current_color = (i == 0)
-                                ? wc->current_element.inc_search_fg
-                                : wc->current_element.focus_fg;
-      setColor (current_color, wc->current_element.focus_bg);
+                                ? wc_current_element.inc_search_fg
+                                : wc_current_element.focus_fg;
+      setColor (current_color, wc_current_element.focus_bg);
     }
 
-    print (element[i]);
+    print (elem.text[i]);
   }
+}
 
-  const std::size_t text_width = getColumnWidth(getString(iter));
-  auto column_width = getColumnWidth(element);
-  std::size_t i = element.getLength();
-
-  if ( bracket_space + column_width < getMaxWidth()
-    && std::size_t(scroll.xoffset) <= text_width )
-  {
-    if ( serach_mark && i == inc_len )
-      setColor ( wc->current_element.focus_fg
-               , wc->current_element.focus_bg );
-
-    printRightBracket (iter->brackets);
-    column_width++;
-  }
-
-  printRightCurrentLineArrow(y);
-  column_width++;
-  printRemainingSpacesFromPos (bracket_space + column_width);
+//----------------------------------------------------------------------
+auto FListBox::shouldPrintRightBracket (const ElementData& elem, std::size_t first) -> bool
+{
+  return elem.bracket_space + elem.column_width < getMaxWidth()
+      && first <= elem.text_width;
 }
 
 //----------------------------------------------------------------------
@@ -823,21 +832,21 @@ void FListBox::printRemainingSpacesFromPos (std::size_t  x)
 //----------------------------------------------------------------------
 inline void FListBox::setInitialLineAttributes (bool is_line_selected) const
 {
-  const auto& wc = getColorTheme();
+  const auto& wc_list = getColorTheme()->list;
 
   if ( is_line_selected )
   {
     if ( FVTerm::getFOutput()->isMonochron() )
       setBold();
     else
-      setColor (wc->list.selected_fg, wc->list.selected_bg);
+      setColor (wc_list.selected_fg, wc_list.selected_bg);
   }
   else
   {
     if ( FVTerm::getFOutput()->isMonochron() )
       unsetBold();
     else
-      setColor (wc->list.fg, wc->list.bg);
+      setColor (wc_list.fg, wc_list.bg);
   }
 }
 
@@ -865,19 +874,18 @@ inline void FListBox::setCurrentLineAttributes ( int y
 //----------------------------------------------------------------------
 inline void FListBox::setSelectedCurrentLineAttributes (int y)
 {
-  const auto& wc = getColorTheme();
   const auto& widget_flags = getFlags();
   const auto& output = FVTerm::getFOutput();
-  const auto& current_element = wc->current_element;
+  const auto& wc_current_element = getColorTheme()->current_element;
 
   if ( output->isMonochron() )
     setBold();
   else if ( widget_flags.focus.focus )
-    setColor ( current_element.selected_focus_fg
-             , current_element.selected_focus_bg );
+    setColor ( wc_current_element.selected_focus_fg
+             , wc_current_element.selected_focus_bg );
   else
-    setColor ( current_element.selected_fg
-             , current_element.selected_bg );
+    setColor ( wc_current_element.selected_fg
+             , wc_current_element.selected_bg );
 
   setCursorPos ({3, 2 + y});  // first character
 }
@@ -887,25 +895,22 @@ inline void FListBox::setUnselectedCurrentLineAttributes ( int y
                                                          , bool line_has_brackets
                                                          , bool& search_mark )
 {
-  const auto& wc = getColorTheme();
   const auto& widget_flags = getFlags();
   const auto& output = FVTerm::getFOutput();
   const std::size_t inc_len = data.inc_search.getLength();
   const std::size_t inc_width = getColumnWidth(data.inc_search);
-  const auto& current_element = wc->current_element;
+  const auto& wc_current_element = getColorTheme()->current_element;
 
   if ( output->isMonochron() )
     unsetBold();
 
   if ( ! widget_flags.focus.focus )
   {
-     setColor ( current_element.fg
-              , current_element.bg );
+     setColor (wc_current_element.fg, wc_current_element.bg);
      return;
   }
 
-  setColor ( current_element.focus_fg
-           , current_element.focus_bg );
+  setColor (wc_current_element.focus_fg, wc_current_element.focus_bg);
   const int b = line_has_brackets ? 1 : 0;
 
   if ( inc_len > 0 )  // incremental search
