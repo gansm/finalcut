@@ -219,6 +219,8 @@ void FComboBox::setEditable (bool enable)
   if ( is_editable == enable )
     return;
 
+  is_editable = enable;
+
   if ( enable )
     unsetVisibleCursor();
   else
@@ -350,7 +352,8 @@ void FComboBox::onKeyPress (FKeyEvent* ev)
     hideDropDown();
     ev->accept();
   }
-  else if ( isExpandComboBoxKey(key) )
+  else if ( isExpandComboBoxKey(key)
+         || (! is_editable && isEnterKey(key)) )
   {
     showDropDown();
     ev->accept();

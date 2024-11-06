@@ -1,3 +1,6 @@
+2024-11-06  Markus Gans  <guru.mail@muenster.de>
+	* Fix FComboBox widget list expansion
+
 2024-11-05  Markus Gans  <guru.mail@muenster.de>
 	* Added the getSelf() method to FObject
 
