@@ -409,43 +409,55 @@ void FMessageBox::resizeButtons() const
 //----------------------------------------------------------------------
 void FMessageBox::adjustButtons()
 {
-  static constexpr std::size_t gap = 4;
-  std::size_t btn_width{0};
+  std::size_t total_width = calculateTotalButtonWidth();
+  adjustWindowSize (total_width);
+  setButtonPositions (total_width);
+}
+
+//----------------------------------------------------------------------
+inline auto FMessageBox::calculateTotalButtonWidth() const -> std::size_t
+{
+  std::size_t total_width{0};
 
   for (std::size_t n{0}; n < num_buttons && n < MAX_BUTTONS; n++)
   {
     if ( ! button[n] )
       continue;
 
-    if ( n == num_buttons - 1 )
-      btn_width += button[n]->getWidth();
-    else
-      btn_width += button[n]->getWidth() + gap;
+    total_width += button[n]->getWidth();
+
+    if ( n < num_buttons - 1 )
+      total_width += GAP;
   }
 
-  if ( btn_width + 4 >= getWidth() )
-  {
-    std::size_t max_width;
-    const auto& root_widget = getRootWidget();
-    FDialog::setWidth(btn_width + 5);
-    max_width = root_widget ? root_widget->getClientWidth() : 80;
-    FWindow::setX (int((max_width - getWidth()) / 2));
-  }
+  return total_width;
+}
 
-  const auto btn_x = int((getWidth() - btn_width) / 2);
+//----------------------------------------------------------------------
+inline void FMessageBox::adjustWindowSize (std::size_t total_button_width)
+{
+  if ( total_button_width + PADDING < getWidth() )
+    return;
+
+  FDialog::setWidth (total_button_width + PADDING);
+  const auto& root_widget = getRootWidget();
+  std::size_t max_width = root_widget ? root_widget->getClientWidth() : 80;
+  FWindow::setX (int((max_width - getWidth()) / 2));
+}
+
+//----------------------------------------------------------------------
+inline void FMessageBox::setButtonPositions (std::size_t total_button_width)
+{
+  auto btn_x = int((getWidth() - total_button_width) / 2);
 
   for (std::size_t n{0}; n < num_buttons && n < MAX_BUTTONS; n++)
   {
     if ( ! button[n] )
       continue;
 
-    if ( n == 0 )
-      button[n]->setX(btn_x);
-    else
-    {
-      const auto btn_size = int(button[n]->getWidth());
-      button[n]->setX(btn_x + int(n) * (btn_size + int(gap)));
-    }
+    button[n]->setX(btn_x);
+    const auto btn_size = int(button[n]->getWidth());
+    btn_x += btn_size + int(n < num_buttons - 1 ? GAP : 0);
   }
 }
 

@@ -1292,12 +1292,20 @@ constexpr auto FVTerm::getFullAreaHeight (const FTermArea* area) const noexcept 
 void FVTerm::passChangesToOverlap (const FTermArea* area) const
 {
   const auto& win_list = getWindowList();
-  bool found{false};
 
   if ( ! area || ! win_list || win_list->empty() )
     return;
 
-  for (auto&& win_obj : *win_list)
+  processOverlappingWindows (area, *win_list);
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::processOverlappingWindows ( const FTermArea* area
+                                              , const FVTermList& win_list ) const
+{
+  bool found{false};
+
+  for (auto&& win_obj : win_list)
   {
     const auto& win = win_obj->getVWin();
 

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2022 Markus Gans                                           *
+* Copyright 2022-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -223,7 +223,7 @@ class TextWindow final : public finalcut::FDialog
     void initLayout() override;
     void adjustSize() override;
     auto find_matches ( const finalcut::FString&
-                           , const finalcut::FString& ) const -> MatchList;
+                      , const finalcut::FString& ) const -> MatchList;
     template <typename... Args>
     void highlight ( std::size_t
                    , const finalcut::FString&

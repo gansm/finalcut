@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2023 Markus Gans                                      *
+* Copyright 2015-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -139,6 +139,9 @@ class FMenu : public FWindow
     void cb_menuitemToggled (const FMenuItem*) const;
 
   private:
+    // Using-declaration
+    using KeyMap = std::unordered_map<FKey, std::function<void(FKeyEvent*)>, EnumHash<FKey>>;
+
     // Enumeration
     enum class SelectItem { No, Yes };
 
@@ -180,10 +183,13 @@ class FMenu : public FWindow
     auto isMouseOverSubMenu (const FPoint&) -> bool;
     auto isMouseOverSuperMenu (const FPoint&) -> bool;
     auto isMouseOverMenuBar (const FPoint&) const -> bool;
+    auto isMetaNumberKey (const FKey&) const -> bool;
 
     // Methods
     void init();
+    void handleParentWidget();
     void initCallbacks();
+    void mapKeyFunctions();
     void calculateDimensions();
     void adjustItems() const;
     auto adjustX(int) const -> int;
@@ -237,6 +243,7 @@ class FMenu : public FWindow
     void processActivate() const;
 
     // Data members
+    KeyMap       key_map{};
     FMenuItem    menuitem{};
     FWidget*     super_menu{nullptr};
     FMenu*       opened_sub_menu{nullptr};

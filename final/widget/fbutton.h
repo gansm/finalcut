@@ -138,6 +138,9 @@ class FButton : public FWidget
     void setCursorPositionOnButton();
     void modifyStyle() const;
     void printButtonText (const FString&, std::size_t&);
+    auto hasMoreCharacter (std::size_t, std::size_t) -> bool;
+    void setHotkeyStyle();
+    void resetHotkeyStyle();
     void printEllipsis();
     void resetStyle() const;
     void printTrailingSpaces (std::size_t);

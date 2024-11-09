@@ -142,7 +142,9 @@ class FMessageBox : public FDialog
 
   private:
     // Constants
+    static constexpr std::size_t GAP = 4;
     static constexpr std::size_t MAX_BUTTONS = 3;
+    static constexpr std::size_t PADDING = 5;
 
     // Using-declaration
     using FButtons = std::array<std::unique_ptr<FButton>, MAX_BUTTONS>;
@@ -158,6 +160,9 @@ class FMessageBox : public FDialog
     auto calculateMaxButtonSize() const -> std::size_t;
     void resizeButtons() const;
     void adjustButtons();
+    auto calculateTotalButtonWidth() const -> std::size_t;
+    void adjustWindowSize (std::size_t);
+    void setButtonPositions (std::size_t);
 
     // Data members
     FString       headline_text{};

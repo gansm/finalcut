@@ -140,27 +140,15 @@ void FMenu::onKeyPress (FKeyEvent* ev)
   const auto key = ev->key();
   // Ignore these keys:
   //   Dialog Switch Accelerator Handling in FApplication
-  std::array<FKey, 9> ignore_list =  //  Meta-1..9
-  {{
-    FKey::Meta_1, FKey::Meta_2, FKey::Meta_3,
-    FKey::Meta_4, FKey::Meta_5, FKey::Meta_6,
-    FKey::Meta_7, FKey::Meta_8, FKey::Meta_9
-  }};
-
-  if ( std::any_of( std::cbegin(ignore_list)
-                  , std::cend(ignore_list)
-                  , [&key] (const auto& k) { return key == k; } ) )
+  if ( isMetaNumberKey(key) )
     return;
 
-  if ( key == FKey::Up )
-    selectPrevItem();
-  else if ( key == FKey::Down )
-    selectNextItem();
-  else if ( key == FKey::Left )
-    selectPrevMenu(ev);
-  else if ( key == FKey::Right )
-    selectNextMenu(ev);
-  else if ( isEnterKey(key) )
+  const auto& iter = key_map.find(key);
+
+  if ( iter != key_map.end() )
+    iter->second(ev);
+
+  if ( isEnterKey(key) )
     acceptSelection();
   else if ( isEscapeKey(key) )
     closeMenu();
@@ -379,6 +367,21 @@ auto FMenu::isMouseOverMenuBar (const FPoint& termpos) const -> bool
 }
 
 //----------------------------------------------------------------------
+inline auto FMenu::isMetaNumberKey (const FKey& key) const -> bool
+{
+  std::array<FKey, 9> key_list =  //  Meta-1..9
+  {{
+    FKey::Meta_1, FKey::Meta_2, FKey::Meta_3,
+    FKey::Meta_4, FKey::Meta_5, FKey::Meta_6,
+    FKey::Meta_7, FKey::Meta_8, FKey::Meta_9
+  }};
+
+  return std::any_of ( std::cbegin(key_list)
+                     , std::cend(key_list)
+                     , [&key] (const auto& k) { return key == k; } );
+}
+
+//----------------------------------------------------------------------
 void FMenu::init()
 {
   setTopPadding(1);
@@ -391,26 +394,32 @@ void FMenu::init()
   FMenu::hide();
   FMenu::resetColors();
   menuitem.setMenu(this);
+  handleParentWidget();
+  initCallbacks();
+  mapKeyFunctions();
+  calculateDimensions();
+}
+
+//----------------------------------------------------------------------
+inline void FMenu::handleParentWidget()
+{
   const auto& parent = getParentWidget();
 
-  if ( parent )
-  {
-    if ( isMenuBar(parent) )
-    {
-      auto mbar = static_cast<FMenuBar*>(parent);
-      mbar->calculateDimensions();
-    }
-    else if ( isMenu(parent) )
-    {
-      auto smenu = static_cast<FMenu*>(parent);
-      smenu->calculateDimensions();
-    }
+  if ( ! parent )
+    return;
 
-    setSuperMenu(parent);
+  if ( isMenuBar(parent) )
+  {
+    auto mbar = static_cast<FMenuBar*>(parent);
+    mbar->calculateDimensions();
+  }
+  else if ( isMenu(parent) )
+  {
+    auto smenu = static_cast<FMenu*>(parent);
+    smenu->calculateDimensions();
   }
 
-  initCallbacks();
-  calculateDimensions();
+  setSuperMenu(parent);
 }
 
 //----------------------------------------------------------------------
@@ -427,6 +436,18 @@ void FMenu::initCallbacks()
     "disable",
     this, &FMenu::cb_menuitemDisabled
   );
+}
+
+//----------------------------------------------------------------------
+inline void FMenu::mapKeyFunctions()
+{
+  key_map =
+  {
+    { FKey::Up    , [this] (FKeyEvent*)    { selectPrevItem(); } },
+    { FKey::Down  , [this] (FKeyEvent*)    { selectNextItem(); } },
+    { FKey::Left  , [this] (FKeyEvent* ev) { selectPrevMenu(ev); } },
+    { FKey::Right , [this] (FKeyEvent* ev) { selectNextMenu(ev); } }
+  };
 }
 
 //----------------------------------------------------------------------
@@ -1313,33 +1334,14 @@ inline void FMenu::setLineAttributes (const FMenuItem* m_item, int y)
 //----------------------------------------------------------------------
 inline void FMenu::setCursorToHotkeyPosition (FMenuItem* m_item) const
 {
-  const bool is_checkable = m_item->checkable;
-  const bool is_selected  = m_item->isSelected();
+  if ( ! m_item->isSelected() )
+    return;
 
-  if ( hotkeypos == NOT_SET )
-  {
-    // set cursor to the first character
-    if ( is_selected )
-    {
-      if ( is_checkable )
-        m_item->setCursorPos({3, 1});
-      else
-        m_item->setCursorPos({2, 1});
-    }
-  }
-  else
-  {
-    if ( is_selected )
-    {
-      // set cursor to the hotkey position
-      const auto x = getColumnWidth (m_item->getText(), hotkeypos);
-
-      if ( is_checkable )
-        m_item->setCursorPos({3 + int(x), 1});
-      else
-        m_item->setCursorPos({2 + int(x), 1});
-    }
-  }
+  const int first_character_pos = 0;
+  const int hotkey_pos = int(getColumnWidth(m_item->getText(), hotkeypos));
+  const int x = ( hotkeypos == NOT_SET ) ? first_character_pos : hotkey_pos;
+  const int c = has_checkable_items ? 1 : 0;
+  m_item->setCursorPos({2 + c + x, 1});
 }
 
 //----------------------------------------------------------------------
