@@ -553,14 +553,14 @@ inline void FButton::printButtonText ( const FString& button_text
 }
 
 //----------------------------------------------------------------------
-inline auto FButton::hasMoreCharacter (std::size_t pos, std::size_t columns) -> bool
+inline auto FButton::hasMoreCharacter (std::size_t pos, std::size_t columns) const -> bool
 {
   return pos < center_offset + column_width
       && columns + 2 < getWidth();
 }
 
 //----------------------------------------------------------------------
-inline void FButton::setHotkeyStyle()
+inline void FButton::setHotkeyStyle() const
 {
   // Modify colors and style on the hotkey position
   setColor (button_hotkey_fg, button_bg);
@@ -573,7 +573,7 @@ inline void FButton::setHotkeyStyle()
 }
 
 //----------------------------------------------------------------------
-inline void FButton::resetHotkeyStyle()
+inline void FButton::resetHotkeyStyle() const
 {
   // Reset style and color after the hotkey position
   if ( ! active_focus && FVTerm::getFOutput()->getMaxColor() < 16 )

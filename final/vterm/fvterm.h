@@ -306,6 +306,8 @@ class FVTerm : public FVTermAttribute
     int   calculateEndCoordinate (int, int, int, int) const noexcept;
     void  restoreOverlaidWindows (const FTermArea*) const noexcept;
     void  updateVTerm() const;
+    void  updateVTermDesktop() const;
+    void  updateVTermWindow (FTermArea*) const;
     void  scrollTerminalForward() const;
     void  scrollTerminalReverse() const;
     void  callPreprocessingHandler (const FTermArea*) const;

@@ -2589,7 +2589,6 @@ auto FListView::appendItem (FListViewItem* item) -> FObject::iterator
 //----------------------------------------------------------------------
 void FListView::handleListEvent (const FMouseEvent* ev)
 {
-  int indent = 0;
   const int new_pos = scroll.first_visible_line.getPosition() + ev->getY() - 2;
 
   if ( new_pos < int(getCount()) )
@@ -2597,24 +2596,9 @@ void FListView::handleListEvent (const FMouseEvent* ev)
 
   const auto& item = getCurrentItem();
 
-  if ( isTreeView() )  // Handle tree view events
-  {
-    indent = int(item->getDepth() << 1u);  // indent = 2 * depth
-
-    if ( item->isExpandable() && ev->getX() - 2 == indent - scroll.xoffset )
-      selection.clicked_expander_pos = ev->getPos();
-  }
-
-  if ( hasCheckableItems() )  // Handle checkable item events
-  {
-    if ( isTreeView() )
-      indent++;  // Plus one space
-
-    if ( item->isCheckable() && isCheckboxClicked(ev->getX(), indent) )
-    {
-      selection.clicked_checkbox_item = item;
-    }
-  }
+  // Handle specialized events
+  handleTreeViewEvents(ev, item);
+  handleCheckableItemsEvents(ev, item);
 
   // Redraw the list and update the vertical scrollbar
   if ( isShown() )
@@ -2626,6 +2610,35 @@ void FListView::handleListEvent (const FMouseEvent* ev)
     scroll.vbar->drawBar();
 
   forceTerminalUpdate();
+}
+
+//----------------------------------------------------------------------
+void FListView::handleTreeViewEvents (const FMouseEvent* ev, const FListViewItem* item)
+{
+  if ( ! isTreeView() )
+    return;
+
+  const auto indent = int(item->getDepth() << 1u);  // indent = 2 * depth
+
+  if ( item->isExpandable() && ev->getX() - 2 == indent - scroll.xoffset )
+    selection.clicked_expander_pos = ev->getPos();
+}
+
+//----------------------------------------------------------------------
+void FListView::handleCheckableItemsEvents (const FMouseEvent* ev, const FListViewItem* item)
+{
+  if ( ! hasCheckableItems() )
+    return;
+
+  auto indent = int(item->getDepth() << 1u);  // indent = 2 * depth
+
+  if ( isTreeView() )
+    indent++;  // Plus one space
+
+  if ( item->isCheckable() && isCheckboxClicked(ev->getX(), indent) )
+  {
+    selection.clicked_checkbox_item = item;
+  }
 }
 
 //----------------------------------------------------------------------

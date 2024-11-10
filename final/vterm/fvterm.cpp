@@ -1305,6 +1305,9 @@ inline void FVTerm::processOverlappingWindows ( const FTermArea* area
 {
   bool found{false};
 
+  if ( ! area )
+    return;
+
   for (auto&& win_obj : win_list)
   {
     const auto& win = win_obj->getVWin();
@@ -1395,11 +1398,7 @@ void FVTerm::updateVTerm() const
 {
   // Updates the character data from all areas to VTerm
 
-  if ( hasPendingUpdates(vdesktop.get()) )
-  {
-    addLayer(vdesktop.get());  // Add vdesktop changes to vterm
-    vdesktop->has_changes = false;
-  }
+  updateVTermDesktop();
 
   if ( ! window_list || window_list->empty() )
     return;
@@ -1411,18 +1410,34 @@ void FVTerm::updateVTerm() const
     if ( ! (v_win && v_win->visible && v_win->layer > 0) )
       continue;
 
-    if ( hasPendingUpdates(v_win) )
-    {
-      passChangesToOverlap(v_win);
-      addLayer(v_win);  // Add v_win changes to vterm
-      v_win->has_changes = false;
-    }
-    else if ( hasChildAreaChanges(v_win) )
-    {
-      passChangesToOverlap(v_win);
-      addLayer(v_win);  // and call the child area processing handler there
-      clearChildAreaChanges(v_win);
-    }
+    updateVTermWindow(v_win);
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::updateVTermDesktop() const
+{
+  if ( ! hasPendingUpdates(vdesktop.get()) )
+    return;
+
+  addLayer(vdesktop.get());  // Add vdesktop changes to vterm
+  vdesktop->has_changes = false;
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::updateVTermWindow (FTermArea* v_win) const
+{
+  if ( hasPendingUpdates(v_win) )
+  {
+    passChangesToOverlap(v_win);
+    addLayer(v_win);  // Add v_win changes to vterm
+    v_win->has_changes = false;
+  }
+  else if ( hasChildAreaChanges(v_win) )
+  {
+    passChangesToOverlap(v_win);
+    addLayer(v_win);  // and call the child area processing handler there
+    clearChildAreaChanges(v_win);
   }
 }
 

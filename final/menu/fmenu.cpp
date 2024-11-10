@@ -443,10 +443,10 @@ inline void FMenu::mapKeyFunctions()
 {
   key_map =
   {
-    { FKey::Up    , [this] (FKeyEvent*)    { selectPrevItem(); } },
-    { FKey::Down  , [this] (FKeyEvent*)    { selectNextItem(); } },
-    { FKey::Left  , [this] (FKeyEvent* ev) { selectPrevMenu(ev); } },
-    { FKey::Right , [this] (FKeyEvent* ev) { selectNextMenu(ev); } }
+    { FKey::Up    , [this] (const FKeyEvent*) { selectPrevItem(); } },
+    { FKey::Down  , [this] (const FKeyEvent*) { selectNextItem(); } },
+    { FKey::Left  , [this] (FKeyEvent* ev)    { selectPrevMenu(ev); } },
+    { FKey::Right , [this] (FKeyEvent* ev)    { selectNextMenu(ev); } }
   };
 }
 
@@ -1338,7 +1338,7 @@ inline void FMenu::setCursorToHotkeyPosition (FMenuItem* m_item) const
     return;
 
   const int first_character_pos = 0;
-  const int hotkey_pos = int(getColumnWidth(m_item->getText(), hotkeypos));
+  const auto hotkey_pos = int(getColumnWidth(m_item->getText(), hotkeypos));
   const int x = ( hotkeypos == NOT_SET ) ? first_character_pos : hotkey_pos;
   const int c = has_checkable_items ? 1 : 0;
   m_item->setCursorPos({2 + c + x, 1});
