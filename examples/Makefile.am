@@ -42,6 +42,7 @@ noinst_PROGRAMS = \
 	treeview \
 	ui \
 	watch \
+	widget-colors \
 	windows \
 	xpmview
 
@@ -78,6 +79,7 @@ transparent_SOURCES = transparent.cpp
 treeview_SOURCES = treeview.cpp
 ui_SOURCES = ui.cpp
 watch_SOURCES = watch.cpp
+widget_colors_SOURCES = widget-colors.cpp
 windows_SOURCES = windows.cpp
 xpmview_SOURCES = xpmview.cpp
 

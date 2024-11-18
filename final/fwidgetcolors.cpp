@@ -404,8 +404,8 @@ inline void default16ColorTheme::setCurrentElementColors()
     FColor::White,      // Focused foreground
     FColor::Blue,       // Focused background
     FColor::LightRed,   // Incremental search foreground
-    FColor::LightBlue,  // Selected foreground
-    FColor::Blue,       // Selected background
+    FColor::LightCyan,  // Selected foreground
+    FColor::DarkGray,   // Selected background
     FColor::LightCyan,  // Selected focused foreground
     FColor::Blue        // Selected focused background
   };

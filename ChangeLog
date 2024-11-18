@@ -1,3 +1,7 @@
+2024-11-18  Markus Gans  <guru.mail@muenster.de>
+	* Added examples/widget-colors to show the internal predefined 
+	  colors of the widgets
+
 2024-11-06  Markus Gans  <guru.mail@muenster.de>
 	* Fix FComboBox widget list expansion
 

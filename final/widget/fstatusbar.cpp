@@ -564,7 +564,7 @@ void FStatusBar::drawActiveKey (FKeyList::const_iterator iter)
     setReverse(false);
 
   const auto& wc_statusbar = getColorTheme()->statusbar;
-  const FColorPair active_key_color (wc_statusbar.focus_hotkey_fg, wc_statusbar.focus_hotkey_bg);
+  const FColorPair active_key_color (wc_statusbar.focus_fg, wc_statusbar.focus_bg);
   setColor (wc_statusbar.focus_hotkey_fg, wc_statusbar.focus_hotkey_bg);  // Hotkey color
   drawHotKeyName(iter, active_key_color);
   const auto& item = *iter;
