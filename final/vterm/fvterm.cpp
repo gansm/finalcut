@@ -1597,7 +1597,8 @@ void FVTerm::initSettings()
 //----------------------------------------------------------------------
 void FVTerm::finish() const
 {
-  // Resetting the terminal
+  // Reset the FINAL CUT terminal settings and
+  // return to the normal terminal mode
   setNormal();
   foutput->finishTerminal();
   forceTerminalUpdate();

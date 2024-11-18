@@ -474,6 +474,33 @@ auto FMenuItem::getFMenuList (FWidget& widget) -> FMenuList*
 //----------------------------------------------------------------------
 void FMenuItem::init()
 {
+  initTextProperties();
+  FWidget::setGeometry (FPoint{1, 1}, FSize{text_width + 2, 1}, false);
+  const auto& parent = getParentWidget();
+
+  if ( ! parent )
+    return;
+
+  setSuperMenu (parent);
+  initAccelerator();
+  auto menu_list = getFMenuList(*parent);
+
+  if ( menu_list )
+    menu_list->insert(this);
+
+  if ( isMenuBar(parent) )  // Parent is menubar
+  {
+    initMenuBar(*static_cast<FMenuBar*>(parent));
+  }
+  else if ( isMenu(parent) )  // Parent is menu
+  {
+    initMenu (*static_cast<FMenu*>(parent));
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FMenuItem::initTextProperties()
+{
   text_length = text.getLength();
   text_width = getColumnWidth(text);
   hotkey = finalcut::getHotkey(text);
@@ -486,44 +513,36 @@ void FMenuItem::init()
     text_length--;
     text_width--;
   }
+}
 
-  FWidget::setGeometry (FPoint{1, 1}, FSize{text_width + 2, 1}, false);
-  const auto& parent = getParentWidget();
-
-  if ( ! parent )
-    return;
-
-  setSuperMenu (parent);
-
+//----------------------------------------------------------------------
+inline void FMenuItem::initAccelerator()
+{
   if ( accel_key != FKey::None )
     FMenuItem::addAccelerator (accel_key);
+}
 
-  auto menu_list = getFMenuList(*parent);
+//----------------------------------------------------------------------
+inline void FMenuItem::initMenuBar (FMenuBar& menubar)
+{
+  menubar.calculateDimensions();
 
-  if ( menu_list )
-    menu_list->insert(this);
+  if ( hotkey != FKey::None )  // Meta + hotkey
+    menubar.addAccelerator ( FKey::Meta_offset + FKey(std::tolower(int(hotkey)))
+                           , this );
 
-  if ( isMenuBar(parent) )  // Parent is menubar
-  {
-    auto& menubar_widget = *static_cast<FMenuBar*>(parent);
-    menubar_widget.calculateDimensions();
+  addCallback  // for this element
+  (
+    "deactivate",
+    &menubar, &FMenuBar::cb_itemDeactivated,
+    this
+  );
+}
 
-    if ( hotkey != FKey::None )  // Meta + hotkey
-      menubar_widget.addAccelerator ( FKey::Meta_offset + FKey(std::tolower(int(hotkey)))
-                                    , this );
-
-    addCallback  // for this element
-    (
-      "deactivate",
-      &menubar_widget, &FMenuBar::cb_itemDeactivated,
-      this
-    );
-  }
-  else if ( isMenu(parent) )  // Parent is menu
-  {
-    auto menu_ptr = static_cast<FMenu*>(parent);
-    menu_ptr->calculateDimensions();
-  }
+//----------------------------------------------------------------------
+inline void FMenuItem::initMenu (FMenu& menu)
+{
+  menu.calculateDimensions();
 }
 
 //----------------------------------------------------------------------
@@ -594,55 +613,74 @@ void FMenuItem::createDialogList (FMenu* winmenu) const
 {
   winmenu->clear();
 
-  if ( getDialogList() && ! getDialogList()->empty() )
+  if ( ! getDialogList() || getDialogList()->empty() )
+    return;
+
+  const auto& dialog_list = *getDialogList();
+  const auto& first = dialog_list.cbegin();
+  auto iter = first;
+
+  while ( iter != dialog_list.cend() && *iter )
   {
-    const auto& first = getDialogList()->cbegin();
-    auto iter = first;
-
-    while ( iter != getDialogList()->cend() && *iter )
+    auto dialog = static_cast<FDialog*>(*iter);
+    DialogItemData item_data
     {
-      auto win = static_cast<FDialog*>(*iter);
-      FMenuItem* win_item{};
-      const auto n = uInt32(std::distance(first, iter));
-      const auto& name = win->getText();  // get the dialog title
-      FString state = ( win->isMinimized() ) ? L" (minimized)" : L"";
+      dialog,
+      dialog->getText(),  // Get the dialog title
+      dialog->isMinimized() ? L" (minimized)" : L"",
+      uInt32(std::distance(first, iter))
+    };
 
-      try
-      {
-        // create a new dialog list item
-        win_item = new FMenuItem (name + state, winmenu);
-      }
-      catch (const std::bad_alloc&)
-      {
-        badAllocOutput ("FMenuItem");
-        return;
-      }
-
-      if ( n < 9 )
-        win_item->addAccelerator (FKey::Meta_1 + n);  // Meta + 1..9
-
-      win_item->addCallback
-      (
-        "clicked",
-        static_cast<std::remove_reference_t<decltype(win_item)>>(win_item),
-        &FMenuItem::cb_switchToDialog,
-        win
-      );
-
-      win->addCallback
-      (
-        "destroy",
-        static_cast<std::remove_reference_t<decltype(win_item)>>(win_item),
-        &FMenuItem::cb_destroyDialog,
-        win
-      );
-
-      win_item->associated_window = win;
-      ++iter;
-    }
+    createDialogItem(winmenu, item_data);
+    ++iter;
   }
 
   winmenu->calculateDimensions();
+}
+
+//----------------------------------------------------------------------
+void FMenuItem::createDialogItem (FMenu* winmenu, const DialogItemData& item_data) const
+{
+  FMenuItem* win_item{};
+
+  try
+  {
+    // Create a new dialog list item
+    win_item = new FMenuItem (item_data.name + item_data.state, winmenu);
+  }
+  catch (const std::bad_alloc&)
+  {
+    badAllocOutput ("FMenuItem");
+    return;
+  }
+
+  configDialogItem (win_item, item_data);
+}
+
+//----------------------------------------------------------------------
+void FMenuItem::configDialogItem ( FMenuItem* win_item
+                                 , const DialogItemData& item_data ) const
+{
+  if ( item_data.index < 9 )
+    win_item->addAccelerator (FKey::Meta_1 + item_data.index);  // Meta + 1..9
+
+  win_item->addCallback
+  (
+    "clicked",
+    static_cast<std::remove_reference_t<decltype(win_item)>>(win_item),
+    &FMenuItem::cb_switchToDialog,
+    item_data.dialog
+  );
+
+  item_data.dialog->addCallback
+  (
+    "destroy",
+    static_cast<std::remove_reference_t<decltype(win_item)>>(win_item),
+    &FMenuItem::cb_destroyDialog,
+    item_data.dialog
+  );
+
+  win_item->associated_window = item_data.dialog;
 }
 
 //----------------------------------------------------------------------

@@ -231,29 +231,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
   if ( !  mouse_down || getItemList().empty() )
     return;
 
-  MouseStates ms = initializeMouseStates(ev);
-
-  shown_sub_menu = nullptr;
-
-  // Mouse pointer over an entry in the menu list
-  mouseMoveOverList (ev->getPos(), ms);
-
-  if ( handleSubMenuEvent(ms, *ev)    // Event handover to sub-menu
-    || handleSuperMenuEvent(ms, *ev)  // Event handover to super-menu
-    || handleMenuBarEvent(ms, *ev) )  // Event handover to the menu bar
-  {
-    return;
-  }
-
-  if ( ! hasSelectedItem() && ms.mouse_over_menu )
-  {
-    mouseMoveOverBorder(ms);  // Mouse is over border or separator
-  }
-
-  if ( ms.focus_changed )
-    redraw();
-
-  handleCloseSubMenu(ms);
+  handleMouseMoveEvent(ev);
 }
 
 //----------------------------------------------------------------------
@@ -773,7 +751,27 @@ inline void FMenu::handleCloseSubMenu (const MouseStates& ms)
 }
 
 //----------------------------------------------------------------------
-void FMenu::mouseMoveOverList (const FPoint& mouse_pos, MouseStates& ms)
+void FMenu::handleMouseMoveEvent (FMouseEvent* ev)
+{
+  MouseStates ms = initializeMouseStates(ev);
+  shown_sub_menu = nullptr;
+
+  // Mouse pointer over an entry in the menu list
+  mouseMoveOverList (ev->getPos(), ms);
+
+  if ( handleMenuHierarchyEvents(ms, ev) )
+    return;
+
+  processMenuBorderEvents(ms);
+
+  if ( ms.focus_changed )
+    redraw();
+
+  handleCloseSubMenu(ms);
+}
+
+//----------------------------------------------------------------------
+inline void FMenu::mouseMoveOverList (const FPoint& mouse_pos, MouseStates& ms)
 {
   for (auto&& item : getItemList())
   {
@@ -782,6 +780,23 @@ void FMenu::mouseMoveOverList (const FPoint& mouse_pos, MouseStates& ms)
     else
       mouseMoveDeselection (item, ms);
   }
+}
+
+//----------------------------------------------------------------------
+inline auto FMenu::handleMenuHierarchyEvents (MouseStates& ms, FMouseEvent* ev) -> bool
+{
+  return handleSubMenuEvent(ms, *ev)    // Event handover to sub-menu
+      || handleSuperMenuEvent(ms, *ev)  // Event handover to super-menu
+      || handleMenuBarEvent(ms, *ev);   // Event handover to the menu bar
+}
+
+//----------------------------------------------------------------------
+inline void FMenu::processMenuBorderEvents (MouseStates& ms)
+{
+  if ( hasSelectedItem() || ! ms.mouse_over_menu )
+    return;
+
+  mouseMoveOverBorder(ms);  // Mouse is over border or separator
 }
 
 //----------------------------------------------------------------------
@@ -1170,82 +1185,102 @@ inline void FMenu::drawCheckMarkPrefix (const FMenuItem* m_item)
   if ( ! has_checkable_items )
     return;
 
-  auto print_bullet = [this] ()
-  {
-    if ( FVTerm::getFOutput()->isNewFont() )
-      print (UniChar::NF_Bullet);      // NF_Bullet ●
-    else
-      print (UniChar::BlackCircle);    // BlackCircle ●
-  };
-
-  auto print_check_mark = [this] ()
-  {
-    if ( FVTerm::getFOutput()->isNewFont() )
-      print (UniChar::NF_check_mark);  // NF_check_mark ✓
-    else
-      print (UniChar::SquareRoot);     // SquareRoot √
-  };
-
   if ( is_checkable )
   {
     if ( is_checked )
-    {
-      if ( is_radio_btn )
-        print_bullet();
-      else
-        print_check_mark();
-    }
+      printChecked(is_radio_btn);
     else
-    {
-      const auto& wc_menu_inactive_fg = getColorTheme()->menu.inactive_fg;
-      setColor (wc_menu_inactive_fg, getBackgroundColor());
-
-      if ( FVTerm::getFOutput()->getEncoding() == Encoding::ASCII )
-        print ('-');
-      else
-        print (UniChar::SmallBullet);  // ·
-
-      setColor();
-    }
+      printUnchecked();
   }
   else
     print (' ');
 }
 
 //----------------------------------------------------------------------
+inline void FMenu::printChecked (bool is_radio_btn)
+{
+  if ( is_radio_btn )
+    printBullet();
+  else
+    printCheckMark();
+}
+
+//----------------------------------------------------------------------
+inline void FMenu::printUnchecked()
+{
+  const auto& wc_menu_inactive_fg = getColorTheme()->menu.inactive_fg;
+  setColor (wc_menu_inactive_fg, getBackgroundColor());
+
+  if ( FVTerm::getFOutput()->getEncoding() == Encoding::ASCII )
+    print ('-');
+  else
+    print (UniChar::SmallBullet);  // ·
+
+  setColor();
+}
+
+//----------------------------------------------------------------------
+inline void FMenu::printBullet()
+{
+  if ( FVTerm::getFOutput()->isNewFont() )
+    print (UniChar::NF_Bullet);      // NF_Bullet ●
+  else
+    print (UniChar::BlackCircle);    // BlackCircle ●
+};
+
+//----------------------------------------------------------------------
+inline void FMenu::printCheckMark()
+{
+  if ( FVTerm::getFOutput()->isNewFont() )
+    print (UniChar::NF_check_mark);  // NF_check_mark ✓
+  else
+    print (UniChar::SquareRoot);     // SquareRoot √
+};
+
+//----------------------------------------------------------------------
 inline void FMenu::drawMenuText (MenuText& data)
 {
   // Print menu text
 
-  for (std::size_t z{0}; z < data.text.getLength(); z++)
+  for (std::size_t pos{0}; pos < data.text.getLength(); pos++)
   {
-    if ( ! isPrintable(data.text[z])
-      && ! FVTerm::getFOutput()->isNewFont()
-      && ( data.text[z] < UniChar::NF_rev_left_arrow2
-        || data.text[z] > UniChar::NF_check_mark )
-      && ! FVTerm::getFOutput()->isEncodable(wchar_t(data.text[z])) )
-    {
-      data.text[z] = L' ';
-    }
+    wchar_t ch = data.text[pos];
 
-    if ( z == data.hotkeypos )
-    {
-      const auto& wc_menu = getColorTheme()->menu;
-      setColor (wc_menu.hotkey_fg, wc_menu.hotkey_bg);
+    if ( isCharacterInvalid(ch) )
+      ch = L' ';
 
-      if ( ! data.no_underline )
-        setUnderline();
-
-      print (data.text[z]);
-
-      if ( ! data.no_underline )
-        unsetUnderline();
-
-      setColor();
-    }
+    if ( pos == data.hotkeypos )
+      printHotkey (data, ch);
     else
-      print (data.text[z]);
+      print (ch);
   }
+}
+
+//----------------------------------------------------------------------
+inline auto FMenu::isCharacterInvalid (wchar_t ch) -> bool
+{
+  return ! isPrintable(ch)
+      && ! FVTerm::getFOutput()->isNewFont()
+      && ( ch < UniChar::NF_rev_left_arrow2
+        || ch > UniChar::NF_check_mark )
+      && ! FVTerm::getFOutput()->isEncodable(ch);
+}
+
+//----------------------------------------------------------------------
+inline void FMenu::printHotkey (const MenuText& data, wchar_t ch)
+{
+  const auto& wc_menu = getColorTheme()->menu;
+  setColor (wc_menu.hotkey_fg, wc_menu.hotkey_bg);
+
+  if ( ! data.no_underline )
+    setUnderline();
+
+  print (ch);
+
+  if ( ! data.no_underline )
+    unsetUnderline();
+
+  setColor();
 }
 
 //----------------------------------------------------------------------

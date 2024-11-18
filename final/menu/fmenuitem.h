@@ -155,11 +155,23 @@ class FMenuItem : public FWidget
     void initLayout() override;
 
   private:
+    struct DialogItemData
+    {
+      FDialog*       dialog;
+      const FString& name;
+      FString        state;
+      uInt32         index;
+    };
+
     // Accessor
     auto getFMenuList (FWidget&) -> FMenuList*;
 
     // Methods
     void init();
+    void initTextProperties();
+    void initAccelerator();
+    void initMenuBar (FMenuBar&);
+    void initMenu (FMenu&);
     void calculateTextDimensions();
     void updateSuperMenuDimensions();
     void updateMenubarDimensions() const;
@@ -168,6 +180,8 @@ class FMenuItem : public FWidget
     void processActivate() const;
     void processDeactivate() const;
     void createDialogList (FMenu*) const;
+    void createDialogItem (FMenu*, const DialogItemData&) const;
+    void configDialogItem (FMenuItem*, const DialogItemData&) const;
     template <typename T>
     void passMouseEvent (T, const FMouseEvent*, Event) const;
     void resetSelectedItem (const FMenuList*) const;
