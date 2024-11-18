@@ -206,8 +206,8 @@ class FMenu : public FWindow
     void handleCloseSubMenu (const MouseStates&);
     void handleMouseMoveEvent (FMouseEvent*);
     void mouseMoveOverList (const FPoint&, MouseStates&);
-    auto handleMenuHierarchyEvents (MouseStates&, FMouseEvent*) -> bool;
-    void processMenuBorderEvents (MouseStates&);
+    auto handleMenuHierarchyEvents (const MouseStates&, const FMouseEvent*) -> bool;
+    void processMenuBorderEvents (MouseStates&) const;
     void mouseMoveSelection (FMenuItem*, MouseStates&);
     void mouseMoveDeselection (FMenuItem*, MouseStates&);
     void mouseUpOverBorder();
@@ -238,7 +238,7 @@ class FMenu : public FWindow
     void printBullet();
     void printCheckMark();
     void drawMenuText (MenuText&);
-    auto isCharacterInvalid (wchar_t) -> bool;
+    auto isCharacterInvalid (wchar_t) const -> bool;
     void printHotkey (const MenuText&, wchar_t);
     void drawSubMenuIndicator (std::size_t&);
     void drawAcceleratorKey (std::size_t&, FKey);

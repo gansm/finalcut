@@ -783,7 +783,7 @@ inline void FMenu::mouseMoveOverList (const FPoint& mouse_pos, MouseStates& ms)
 }
 
 //----------------------------------------------------------------------
-inline auto FMenu::handleMenuHierarchyEvents (MouseStates& ms, FMouseEvent* ev) -> bool
+inline auto FMenu::handleMenuHierarchyEvents (const MouseStates& ms, const FMouseEvent* ev) -> bool
 {
   return handleSubMenuEvent(ms, *ev)    // Event handover to sub-menu
       || handleSuperMenuEvent(ms, *ev)  // Event handover to super-menu
@@ -791,7 +791,7 @@ inline auto FMenu::handleMenuHierarchyEvents (MouseStates& ms, FMouseEvent* ev) 
 }
 
 //----------------------------------------------------------------------
-inline void FMenu::processMenuBorderEvents (MouseStates& ms)
+inline void FMenu::processMenuBorderEvents (MouseStates& ms) const
 {
   if ( hasSelectedItem() || ! ms.mouse_over_menu )
     return;
@@ -1257,7 +1257,7 @@ inline void FMenu::drawMenuText (MenuText& data)
 }
 
 //----------------------------------------------------------------------
-inline auto FMenu::isCharacterInvalid (wchar_t ch) -> bool
+inline auto FMenu::isCharacterInvalid (wchar_t ch) const -> bool
 {
   return ! isPrintable(ch)
       && ! FVTerm::getFOutput()->isNewFont()

@@ -494,7 +494,7 @@ void FMenuItem::init()
   }
   else if ( isMenu(parent) )  // Parent is menu
   {
-    initMenu (*static_cast<FMenu*>(parent));
+    initMenu(*static_cast<FMenu*>(parent));
   }
 }
 
@@ -523,26 +523,28 @@ inline void FMenuItem::initAccelerator()
 }
 
 //----------------------------------------------------------------------
-inline void FMenuItem::initMenuBar (FMenuBar& menubar)
+inline void FMenuItem::initMenuBar (FMenuBar& menubar_widget)
 {
-  menubar.calculateDimensions();
+  menubar_widget.calculateDimensions();
 
   if ( hotkey != FKey::None )  // Meta + hotkey
-    menubar.addAccelerator ( FKey::Meta_offset + FKey(std::tolower(int(hotkey)))
-                           , this );
+  {
+    auto key = FKey::Meta_offset + FKey(std::tolower(int(hotkey)));
+    menubar_widget.addAccelerator(key, this);
+  }
 
   addCallback  // for this element
   (
     "deactivate",
-    &menubar, &FMenuBar::cb_itemDeactivated,
+    &menubar_widget, &FMenuBar::cb_itemDeactivated,
     this
   );
 }
 
 //----------------------------------------------------------------------
-inline void FMenuItem::initMenu (FMenu& menu)
+inline void FMenuItem::initMenu (FMenu& menu_widget) const
 {
-  menu.calculateDimensions();
+  menu_widget.calculateDimensions();
 }
 
 //----------------------------------------------------------------------

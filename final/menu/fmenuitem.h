@@ -171,7 +171,7 @@ class FMenuItem : public FWidget
     void initTextProperties();
     void initAccelerator();
     void initMenuBar (FMenuBar&);
-    void initMenu (FMenu&);
+    void initMenu (FMenu&) const;
     void calculateTextDimensions();
     void updateSuperMenuDimensions();
     void updateMenubarDimensions() const;
