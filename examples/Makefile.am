@@ -14,6 +14,7 @@ noinst_PROGRAMS = \
 	background-color \
 	busy \
 	calculator \
+	cartesian_graph \
 	checklist \
 	choice \
 	dialog \
@@ -50,6 +51,7 @@ noinst_PROGRAMS = \
 background_color_SOURCES = background-color.cpp
 busy_SOURCES = busy.cpp
 calculator_SOURCES = calculator.cpp
+cartesian_graph_SOURCES = cartesian_graph.cpp
 checklist_SOURCES = checklist.cpp
 choice_SOURCES = choice.cpp
 dialog_SOURCES = dialog.cpp
