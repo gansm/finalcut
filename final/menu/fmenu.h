@@ -204,7 +204,7 @@ class FMenu : public FWindow
     auto mouseUpOverList (const FPoint&) -> bool;
     auto initializeMouseStates (const FMouseEvent*) -> MouseStates;
     void handleCloseSubMenu (const MouseStates&);
-    void handleMouseMoveEvent (FMouseEvent*);
+    void handleMouseMoveEvent (const FMouseEvent*);
     void mouseMoveOverList (const FPoint&, MouseStates&);
     auto handleMenuHierarchyEvents (const MouseStates&, const FMouseEvent*) -> bool;
     void processMenuBorderEvents (MouseStates&) const;

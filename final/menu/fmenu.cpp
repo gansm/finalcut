@@ -751,7 +751,7 @@ inline void FMenu::handleCloseSubMenu (const MouseStates& ms)
 }
 
 //----------------------------------------------------------------------
-void FMenu::handleMouseMoveEvent (FMouseEvent* ev)
+void FMenu::handleMouseMoveEvent (const FMouseEvent* ev)
 {
   MouseStates ms = initializeMouseStates(ev);
   shown_sub_menu = nullptr;
