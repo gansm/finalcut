@@ -21,7 +21,7 @@
 ***********************************************************************/
 
 #if defined(__CYGWIN__)
-  #define _USE_MATH_DEFINES
+  #define _XOPEN_SOURCE 700
 #endif
 
 #include <cmath>
