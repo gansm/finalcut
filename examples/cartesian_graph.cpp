@@ -34,6 +34,12 @@ using finalcut::FColor;
 using finalcut::UniChar;
 using finalcut::FVTerm;
 
+template <typename T>
+struct point
+{
+  T x{};
+  T y{};
+};
 
 //----------------------------------------------------------------------
 // class GraphWindow
@@ -43,95 +49,117 @@ class GraphWindow final : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit GraphWindow (finalcut::FWidget* = nullptr, double = -10, double = 10, double = -10, double = 10);
+    explicit GraphWindow ( finalcut::FWidget* = nullptr
+                         , point<double> = {-10.0, -10.0}
+                         , point<double> = { 10.0,  10.0} );
+
+    // Disable copy constructor
     GraphWindow (const GraphWindow&) = delete;
+
+    // Disable move constructor
     GraphWindow (GraphWindow&&) noexcept = delete;
+
+    // Destructor
     ~GraphWindow() noexcept override = default;
+
+    // Disable copy assignment operator (=)
     auto operator = (const GraphWindow&) -> GraphWindow& = delete;
+
+    // Disable move assignment operator (=)
     auto operator = (GraphWindow&&) noexcept -> GraphWindow& = delete;
-    void add_point(double, double);  // Add a new point to the graph
-    void add_realtime_point (double, double = 1);
-    void draw_line (double, double, double, double, FColor);
-    void draw_line (double, double magnitude, FColor);
+
+    // Methods
+    void addPoint (point<double>);
+    void addRealtimePoint (double, double = 1);
+    void drawLine (point<double>, point<double>, FColor);
+    void drawLine (double, double, FColor);
 
   private:
+    // Methods
     void draw() override;
-    FPoint transform_to_screen (double, double) const;
+    void drawLineImpl (const FPoint&, const FPoint&, FColor);
+    FPoint transformToScreen (point<double>) const;
 
     // Event handlers
     void onTimer (finalcut::FTimerEvent*) override;
     void onClose (finalcut::FCloseEvent*) override;
 
     // Data members
-    std::deque<std::pair<double, double>> _points{};
-    std::size_t _maxPoints{40};
-    double _xMin{};
-    double _xMax{};
-    double _yMin{};
-    double _yMax{};
+    std::deque<point<double>> points{};
+    std::size_t max_points{40};
+    point<double> min{};
+    point<double> max{};
 };
 
 //----------------------------------------------------------------------
-GraphWindow::GraphWindow(finalcut::FWidget* parent, double xMin, double xMax, double yMin, double yMax)
+GraphWindow::GraphWindow ( finalcut::FWidget* parent
+                         , point<double> min_value
+                         , point<double> max_value )
   : FDialog(parent)
-  , _xMin(xMin)
-  , _xMax(xMax)
-  , _yMin(yMin)
-  , _yMax(yMax)
+  , min(min_value)
+  , max(max_value)
 {
   addTimer(200);
 }
 
 //----------------------------------------------------------------------
-void GraphWindow::add_point (double x, double y)
+void GraphWindow::addPoint (point<double> pos)
 {
-  if ( _points.size() >= _maxPoints )
-    _points.pop_front();
+  // Add a new point to the graph
 
-  _points.emplace_back(x, y);
+  if ( points.size() >= max_points )
+    points.pop_front();
+
+  points.emplace_back(pos);
   redraw();
 }
 
 //----------------------------------------------------------------------
-void GraphWindow::add_realtime_point (double val, double interval)
+void GraphWindow::addRealtimePoint (double val, double interval)
 {
-  static double x = _xMin;
-  add_point(x, val);
+  static double x = min.x;
+  addPoint({x, val});
   x += interval;
 
-  if ( x > _xMax )
-    x = _xMin;
+  if ( x > max.x )
+    x = min.x;
 
   redraw();
   flush();
 }
 
 //----------------------------------------------------------------------
-FPoint GraphWindow::transform_to_screen (double x, double y) const
+FPoint GraphWindow::transformToScreen (point<double> p) const
 {
-  auto client_width = int(getClientWidth());
-  auto client_height = int(getClientHeight());
-  auto screenX = static_cast<int>(((x - _xMin) / (_xMax - _xMin)) * (client_width - 1));
-  auto screenY = static_cast<int>(client_height - 1 - ((y - _yMin) / (_yMax - _yMin)) * (client_height - 1));
-  return { 1 + getLeftPadding() + screenX
-         , 1 + getTopPadding() + screenY };
+  const auto client_width = int(getClientWidth());
+  const auto client_height = int(getClientHeight());
+  const auto screen_x = static_cast<int>( (p.x - min.x) /
+      (max.x - min.x) * (client_width - 1) );
+  const auto screen_y = static_cast<int>( client_height - 1 -
+      ((p.y - min.y) / (max.y - min.y)) * (client_height - 1) );
+  return { 1 + getLeftPadding() + screen_x
+         , 1 + getTopPadding() + screen_y };
 }
 
 //----------------------------------------------------------------------
 void GraphWindow::onTimer (finalcut::FTimerEvent*)
 {
-  static double x = _xMin;
-  static const double interval = 10;  // Adjust this for the smoothness of the sine wave
-  static const double amplitude = (_yMax - _yMin) / 4.0;  // Adjust amplitude (height of the wave)
-  static const double frequency = 1.0;  // Frequency of the sine wave (number of cycles)
-  double y = amplitude * std::sin(2 * M_PI * frequency * (x - _xMin) / (_xMax - _xMin));
-  add_realtime_point(y, interval);
+  static double x = min.x;
+  // Adjust this for the smoothness of the sine wave
+  constexpr double interval = 10;
+  // Frequency of the sine wave (number of cycles)
+  constexpr double frequency = 1.0;
+  // Adjust amplitude (height of the wave)
+  const double amplitude = (max.y - min.y) / 4.0;
+  const double y = amplitude *
+      std::sin(2 * M_PI * frequency * (x - min.x) / (max.x - min.x));
+  addRealtimePoint(y, interval);
 
   // Increment x for the next point
   x += interval;
 
-  if ( x > _xMax )
-    x = _xMin;
+  if ( x > max.x )
+    x = min.x;
 }
 
 //----------------------------------------------------------------------
@@ -139,75 +167,98 @@ void GraphWindow::draw()
 {
   finalcut::FDialog::draw();
   setColor(FColor::Black, FColor::White);
-  auto client_width = int(getClientWidth());
-  auto client_height = int(getClientHeight());
-  auto zeroY = transform_to_screen(0.0, 0.0).getY();
-  auto zeroX = transform_to_screen(0.0, 0.0).getX();
-  auto xStep = static_cast<int>((_xMax - _xMin) / 10);
-  auto yStep = static_cast<int>((_yMax - _yMin) / 10);
-  auto border_top = getTopPadding();
-  auto border_left = getLeftPadding();
-  auto border_right = 1 + border_left + client_width;
-  auto border_bottom = 1 + getTopPadding() + client_height;
+  const auto client_width = int(getClientWidth());
+  const auto client_height = int(getClientHeight());
+  const auto zero = transformToScreen({0.0, 0.0});
+  const auto x_step = static_cast<int>((max.x - min.x) / 10);
+  const auto y_step = static_cast<int>((max.y - min.y) / 10);
+  const auto border_top = getTopPadding();
+  const auto border_left = getLeftPadding();
+  const auto border_right = 1 + border_left + client_width;
+  const auto border_bottom = 1 + getTopPadding() + client_height;
 
   for (int x{0}; x <= client_width; ++x)
-    print() << FPoint{1 + border_left + x, zeroY}
+    print() << FPoint{1 + border_left + x, zero.getY()}
             << UniChar::BoxDrawingsHorizontal;  // ─
 
   for (int y{0}; y < client_height; ++y)
-    print() << FPoint{zeroX, 1 + border_top + y}
+    print() << FPoint{zero.getX(), 1 + border_top + y}
             << UniChar::BoxDrawingsVertical;  // │
 
-  for (auto x{int(_xMin)}; x <= int(_xMax); x += xStep)
+  for (auto x{int(min.x)}; x <= int(max.x); x += x_step)
   {
-    auto screenPoint = transform_to_screen(double(x), 0.0);
-    auto x_as_string = std::to_string(x);
-    FPoint number_pos( std::min(screenPoint.getX(), border_right - int(x_as_string.length()))
-                     , screenPoint.getY() + 1 );
-    print() << screenPoint
+    const auto screen_point = transformToScreen({double(x), 0.0});
+    const auto x_as_string = std::to_string(x);
+    const FPoint number_pos
+    (
+      std::min(screen_point.getX(), border_right - int(x_as_string.length())),
+      screen_point.getY() + 1
+    );
+    print() << screen_point
             << UniChar::BoxDrawingsCross  // ┼
             << number_pos
             << x_as_string;
   }
 
-  for (auto y{int(_yMin)}; y <= int(_yMax); y += yStep)
+  for (auto y{int(min.y)}; y <= int(max.y); y += y_step)
   {
-    auto screenPoint = transform_to_screen(0.0, double(y));
-    auto y_as_string = std::to_string(y);
-    FPoint number_pos(zeroX - 1 - int(y_as_string.length()), screenPoint.getY());
-    print() << screenPoint
+    const auto screen_point = transformToScreen({0.0, double(y)});
+    const auto y_as_string = std::to_string(y);
+    const FPoint number_pos
+    (
+      zero.getX() - 1 - int(y_as_string.length()),
+      screen_point.getY()
+    );
+    print() << screen_point
             << UniChar::BoxDrawingsCross  // ┼
             << number_pos
             << y_as_string;
   }
 
-  for (const auto& point : _points)
+  for (const auto& p : points)
   {
-    auto x = point.first;
-    auto y = point.second;
-    print() << transform_to_screen(x, y)
+    print() << transformToScreen(p)
             << UniChar::BlackCircle;
   }
 
-  print() << FPoint(zeroX, border_top)
+  print() << FPoint(zero.getX(), border_top)
           << UniChar::BoxDrawingsDownAndHorizontal  // ┬
-          << FPoint(border_right, zeroY)
+          << FPoint(border_right, zero.getY())
           << UniChar::BoxDrawingsVerticalAndLeft    // ┤
-          << FPoint(zeroX, border_bottom)
+          << FPoint(zero.getX(), border_bottom)
           << UniChar::BoxDrawingsUpAndHorizontal    // ┴
-          << FPoint(getLeftPadding(), zeroY)
+          << FPoint(getLeftPadding(), zero.getY())
           << UniChar::BoxDrawingsVerticalAndRight;  // ├
 }
 
 //----------------------------------------------------------------------
-void GraphWindow::draw_line (double x1, double y1, double x2, double y2, FColor color)
+void GraphWindow::drawLine (point<double> p1, point<double> p2, FColor color)
 {
-  auto start = transform_to_screen(x1, y1);
-  auto end = transform_to_screen(x2, y2);
-  int dx = std::abs(end.getX() - start.getX());
-  int dy = std::abs(end.getY() - start.getY());
-  int sx = (start.getX() < end.getX()) ? 1 : -1;
-  int sy = (start.getY() < end.getY()) ? 1 : -1;
+  auto start = transformToScreen(p1);
+  auto end = transformToScreen(p2);
+  drawLineImpl (start, end, color);
+}
+
+//----------------------------------------------------------------------
+void GraphWindow::drawLine (double angle, double magnitude, FColor color)
+{
+  const double radians = angle * (M_PI / 180.0);
+  const point<double> end_pos = { magnitude * std::cos(radians)
+                                , magnitude * std::sin(radians) };
+  const auto start = transformToScreen({0.0, 0.0});
+  const auto end = transformToScreen(end_pos);
+  drawLineImpl (start, end, color);
+}
+
+//----------------------------------------------------------------------
+inline void GraphWindow::drawLineImpl ( const FPoint& start
+                                      , const FPoint& end
+                                      , FColor color )
+{
+  const int dx = std::abs(end.getX() - start.getX());
+  const int dy = std::abs(end.getY() - start.getY());
+  const int sx = start.getX() < end.getX() ? 1 : -1;
+  const int sy = start.getY() < end.getY() ? 1 : -1;
   int err = dx - dy;
   int x = start.getX();
   int y = start.getY();
@@ -220,7 +271,7 @@ void GraphWindow::draw_line (double x1, double y1, double x2, double y2, FColor 
     if ( x == end.getX() && y == end.getY() )
       break;
 
-    int e2 = 2 * err;
+    const int e2 = 2 * err;
 
     if ( e2 > -dy )
     {
@@ -229,46 +280,6 @@ void GraphWindow::draw_line (double x1, double y1, double x2, double y2, FColor 
     }
 
     if ( e2 < dx )
-    {
-      err += dx;
-      y += sy;
-    }
-  }
-}
-
-//----------------------------------------------------------------------
-void GraphWindow::draw_line (double angle, double magnitude, FColor color)
-{
-  const double radians = angle * (M_PI / 180.0);
-  double xEnd = magnitude * std::cos(radians);
-  double yEnd = magnitude * std::sin(radians);
-  auto start = transform_to_screen(0.0, 0.0);
-  auto end = transform_to_screen(xEnd, yEnd);
-  int dx = std::abs(end.getX() - start.getX());
-  int dy = std::abs(end.getY() - start.getY());
-  int sx = (start.getX() < end.getX()) ? 1 : -1;
-  int sy = (start.getY() < end.getY()) ? 1 : -1;
-  int err = dx - dy;
-  int x = start.getX();
-  int y = start.getY();
-  setForegroundColor(color);
-
-  while ( true )
-  {
-    print() << FPoint{x, y} << UniChar::BlackCircle;
-
-    if (x == end.getX() && y == end.getY())
-      break;
-
-    int e2 = 2 * err;
-
-    if (e2 > -dy)
-    {
-      err -= dy;
-      x += sx;
-    }
-
-    if (e2 < dx)
     {
       err += dx;
       y += sy;
@@ -286,10 +297,10 @@ void GraphWindow::onClose (finalcut::FCloseEvent* ev)
 auto main (int argc, char* argv[]) -> int
 {
   finalcut::FApplication app{argc, argv};
-  GraphWindow graph{&app, -200, 200, -200, 200};
+  GraphWindow graph{&app, {-200, -200}, {200, 200}};
   graph.setText ("Sinusoidal wave");
-  auto graph_size = FSize { FVTerm::getFOutput()->getColumnNumber() - 1
-                          , FVTerm::getFOutput()->getLineNumber() - 1 };
+  const auto graph_size = FSize { FVTerm::getFOutput()->getColumnNumber() - 1
+                                , FVTerm::getFOutput()->getLineNumber() - 1 };
   graph.setGeometry (FPoint{1, 1}, graph_size);
   graph.setMinimumSize (FSize{30, 15});
   graph.setResizeable();
