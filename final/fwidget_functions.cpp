@@ -601,19 +601,21 @@ void drawGenericBlockShadow ( FWidget* w
 }
 
 //----------------------------------------------------------------------
-void drawFlatBorder (FWidget* w)
+inline void setWidgetColors (FWidget* w)
 {
-  if ( ! FVTerm::getFOutput()->isNewFont() )
-    return;
-
-  const std::size_t width = w->getWidth();
-  const std::size_t height = w->getHeight();
   const auto& wc_dialog = FWidget::getColorTheme()->dialog;
 
   if ( auto p = w->getParentWidget() )
     w->setColor (wc_dialog.fg, p->getBackgroundColor());
   else
     w->setColor (wc_dialog.fg, wc_dialog.bg);
+}
+
+//----------------------------------------------------------------------
+inline void drawVerticalFlatBorder (FWidget* w)
+{
+  const std::size_t width = w->getWidth();
+  const std::size_t height = w->getHeight();
 
   for (std::size_t y{0}; y < height; y++)
   {
@@ -635,7 +637,13 @@ void drawFlatBorder (FWidget* w)
       // left line (on right side)
       w->print (UniChar::NF_border_line_left);
   }
+}
 
+//----------------------------------------------------------------------
+inline void drawHorizontalFlatBorder (FWidget* w)
+{
+  const std::size_t width = w->getWidth();
+  const std::size_t height = w->getHeight();
   w->print() << FPoint {1, 0};
 
   for (std::size_t x{0}; x < width; x++)
@@ -662,19 +670,21 @@ void drawFlatBorder (FWidget* w)
 }
 
 //----------------------------------------------------------------------
-void clearFlatBorder (FWidget* w)
+void drawFlatBorder (FWidget* w)
 {
   if ( ! FVTerm::getFOutput()->isNewFont() )
     return;
 
+  setWidgetColors(w);
+  drawVerticalFlatBorder(w);
+  drawHorizontalFlatBorder(w);
+}
+
+//----------------------------------------------------------------------
+inline void clearVerticalFlatBorder (FWidget* w)
+{
   const std::size_t width = w->getWidth();
   const std::size_t height = w->getHeight();
-  const auto& wc_dialog = FWidget::getColorTheme()->dialog;
-
-  if ( auto p = w->getParentWidget() )
-    w->setColor (wc_dialog.fg, p->getBackgroundColor());
-  else
-    w->setColor (wc_dialog.fg, wc_dialog.bg);
 
   for (std::size_t y{0}; y < height; y++)
   {
@@ -694,6 +704,13 @@ void clearFlatBorder (FWidget* w)
     else
       w->print (' ');
   }
+}
+
+//----------------------------------------------------------------------
+inline void clearHorizontalFlatBorder (FWidget* w)
+{
+  const std::size_t width = w->getWidth();
+  const std::size_t height = w->getHeight();
 
   // clear at top
   w->print() << FPoint {1, 0};
@@ -716,6 +733,17 @@ void clearFlatBorder (FWidget* w)
     else
       w->print (' ');
   }
+}
+
+//----------------------------------------------------------------------
+void clearFlatBorder (FWidget* w)
+{
+  if ( ! FVTerm::getFOutput()->isNewFont() )
+    return;
+
+  setWidgetColors(w);
+  clearVerticalFlatBorder(w);
+  clearHorizontalFlatBorder(w);
 }
 
 //----------------------------------------------------------------------

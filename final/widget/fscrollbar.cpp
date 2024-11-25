@@ -483,47 +483,52 @@ void FScrollbar::drawButtons()
 {
   const auto& wc_scrollbar = getColorTheme()->scrollbar;
   setColor (wc_scrollbar.button_fg, wc_scrollbar.button_bg);
+  print() << FPoint{1, 1};  // Set cursor position for printing
 
   if ( FVTerm::getFOutput()->isNewFont() )
-  {
-    print() << FPoint{1, 1};
-
-    if ( bar_orientation == Orientation::Vertical )
-    {
-      print() << NF_button_arrow_up
-              << FPoint{1, int(length)}
-              << NF_button_arrow_down;
-    }
-    else  // horizontal
-    {
-      print() << NF_button_arrow_left
-              << FPoint{int(length) - 1, 1}
-              << NF_button_arrow_right;
-    }
-  }
+    drawNewFontButtons();
   else
+    drawDefaultButtons();
+}
+
+//----------------------------------------------------------------------
+inline void FScrollbar::drawNewFontButtons()
+{
+  if ( bar_orientation == Orientation::Vertical )
   {
-    print() << FPoint{1, 1};
-
-    if ( FVTerm::getFOutput()->isMonochron() )
-      setReverse(true);
-
-    if ( bar_orientation == Orientation::Vertical )
-    {
-      print() << UniChar::BlackUpPointingTriangle     // ▲
-              << FPoint{1, int(length)}
-              << UniChar::BlackDownPointingTriangle;  // ▼
-    }
-    else  // horizontal
-    {
-      print() << UniChar::BlackLeftPointingPointer    // ◄
-              << FPoint{int(length), 1}
-              << UniChar::BlackRightPointingPointer;  // ►
-    }
-
-    if ( FVTerm::getFOutput()->isMonochron() )
-      setReverse(false);
+    print() << NF_button_arrow_up
+            << FPoint{1, int(length)}
+            << NF_button_arrow_down;
   }
+  else  // horizontal
+  {
+    print() << NF_button_arrow_left
+            << FPoint{int(length) - 1, 1}
+            << NF_button_arrow_right;
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FScrollbar::drawDefaultButtons()
+{
+  if ( FVTerm::getFOutput()->isMonochron() )
+    setReverse(true);
+
+  if ( bar_orientation == Orientation::Vertical )
+  {
+    print() << UniChar::BlackUpPointingTriangle     // ▲
+            << FPoint{1, int(length)}
+            << UniChar::BlackDownPointingTriangle;  // ▼
+  }
+  else  // horizontal
+  {
+    print() << UniChar::BlackLeftPointingPointer    // ◄
+            << FPoint{int(length), 1}
+            << UniChar::BlackRightPointingPointer;  // ►
+  }
+
+  if ( FVTerm::getFOutput()->isMonochron() )
+    setReverse(false);
 }
 
 //----------------------------------------------------------------------

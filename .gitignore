@@ -38,13 +38,15 @@ typescript
 /missing
 /stamp-h1
 /test-driver
+examples/.deps/
+examples/.libs/
 examples/7segment
 examples/background-color
 examples/busy
 examples/calculator
+examples/cartesian_graph
 examples/checklist
 examples/choice
-examples/.deps/
 examples/dialog
 examples/event-log
 examples/eventloop
@@ -53,7 +55,6 @@ examples/hello
 examples/highlight-text
 examples/input-dialog
 examples/keyboard
-examples/.libs/
 examples/listbox
 examples/listview
 examples/mandelbrot

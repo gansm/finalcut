@@ -247,6 +247,8 @@ class FTerm final
     static void oscPostfix();
     static void init_alt_charset();
     static void init_pc_charset();
+    static auto configEnterPcCharsetMode() -> bool;
+    static auto configExitPcCharsetMode() -> bool;
     static void init_cygwin_charmap();
     static void updatePCEncodingForCygwin();
     static void updateCharMappingForCygwin();

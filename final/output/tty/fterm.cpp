@@ -1022,47 +1022,64 @@ void FTerm::init_pc_charset()
   if ( data.isTermType ( FTermType::gnome_terminal
                        | FTermType::linux_con ) )
   {
-    // Fallback if tcap "S2" is not found
-    if ( ! TCAP(t_enter_pc_charset_mode) )
-    {
-      if ( data.hasUTF8Console() )
-      {
-        // Select iso8859-1 + null mapping
-        TCAP(t_enter_pc_charset_mode) = ESC "%@" ESC "(U";
-      }
-      else
-      {
-        // Select null mapping
-        TCAP(t_enter_pc_charset_mode) = ESC "(U";
-      }
-
-      opti_attr.set_enter_pc_charset_mode \
-        (TCAP(t_enter_pc_charset_mode));
-      reinit = true;
-    }
-
-    // Fallback if tcap "S3" is not found
-    if ( ! TCAP(t_exit_pc_charset_mode) )
-    {
-      if ( data.hasUTF8Console() )
-      {
-        // Select ascii mapping + utf8
-        TCAP(t_exit_pc_charset_mode) = ESC "(B" ESC "%G";
-      }
-      else
-      {
-        // Select ascii mapping
-        TCAP(t_enter_pc_charset_mode) = ESC "(B";
-      }
-
-      opti_attr.set_exit_pc_charset_mode \
-          (TCAP(t_exit_pc_charset_mode));
-      reinit = true;
-    }
+    reinit |= configEnterPcCharsetMode();
+    reinit |= configExitPcCharsetMode();
   }
 
   if ( reinit )
     opti_attr.initialize();
+}
+
+//----------------------------------------------------------------------
+inline auto FTerm::configEnterPcCharsetMode() -> bool
+{
+  // Fallback if tcap "S2" is not found
+  if ( TCAP(t_enter_pc_charset_mode) )
+    return false;
+
+  static const auto& data = FTermData::getInstance();
+
+  if ( data.hasUTF8Console() )
+  {
+    // Select iso8859-1 + null mapping
+    TCAP(t_enter_pc_charset_mode) = ESC "%@" ESC "(U";
+  }
+  else
+  {
+    // Select null mapping
+    TCAP(t_enter_pc_charset_mode) = ESC "(U";
+  }
+
+  static auto& opti_attr = FOptiAttr::getInstance();
+  opti_attr.set_enter_pc_charset_mode \
+    (TCAP(t_enter_pc_charset_mode));
+  return true;
+}
+
+//----------------------------------------------------------------------
+inline auto FTerm::configExitPcCharsetMode() -> bool
+{
+  // Fallback if tcap "S3" is not found
+  if ( TCAP(t_exit_pc_charset_mode) )
+    return false;
+
+  static const auto& data = FTermData::getInstance();
+
+  if ( data.hasUTF8Console() )
+  {
+    // Select ascii mapping + utf8
+    TCAP(t_exit_pc_charset_mode) = ESC "(B" ESC "%G";
+  }
+  else
+  {
+    // Select ascii mapping
+    TCAP(t_enter_pc_charset_mode) = ESC "(B";
+  }
+
+  static auto& opti_attr = FOptiAttr::getInstance();
+  opti_attr.set_exit_pc_charset_mode \
+      (TCAP(t_exit_pc_charset_mode));
+  return true;
 }
 
 //----------------------------------------------------------------------

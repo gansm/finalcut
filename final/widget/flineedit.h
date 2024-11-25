@@ -216,6 +216,9 @@ class FLineEdit : public FWidget
     void handleLeftDragScroll();
     void handleRightDragScroll();
     void adjustTextOffset();
+    auto isRightCursorOverflow (std::size_t, std::size_t) const -> bool;
+    auto isRightFullWidthCursorOverflow (std::size_t, std::size_t, std::size_t) const -> bool;
+    auto isLeftCursorUnderflow() const -> bool;
     void cursorLeft();
     void cursorRight();
     void cursorHome();

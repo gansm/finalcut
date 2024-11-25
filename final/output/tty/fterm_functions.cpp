@@ -57,6 +57,8 @@ enum class FullWidthSupport
   Yes = 1
 };
 
+enum class IsDetermined { No, Yes };
+
 // Constant
 constexpr std::size_t NOT_FOUND = static_cast<std::size_t>(-1);
 constexpr wchar_t left_quotation_mark{wchar_t(UniChar::SingleLeftAngleQuotationMark)};  // ‹
@@ -67,8 +69,11 @@ struct RangeData
 {
   std::size_t col_first{1};
   std::size_t col_num{0};
+  std::size_t col_pos{1};
+  std::size_t col_len{0};
   std::size_t first{0};
   std::size_t num{0};
+  std::size_t ch_width{0};
   wchar_t     first_ch{'\0'};
   wchar_t     last_ch{'\0'};
 };
@@ -78,7 +83,9 @@ auto hasAmbiguousWidth (wchar_t) -> bool;
 static auto getCharWidthCacheInstance() -> CharWidthCache&;
 void updateFirstAndLastCharacters (FString&, wchar_t, wchar_t);
 auto getColumnWidthImpl (const wchar_t) -> std::size_t;
-void calculateColumnRange (RangeData&, const FString&, std::size_t&, std::size_t);
+void calculateColumnRange (RangeData&, const FString&);
+auto determinesFirstColumn (RangeData&) -> IsDetermined;
+auto determinesNumberOfCharacters (RangeData&) -> IsDetermined;
 
 // Data array
 const wchar_t ambiguous_width_list[] =
@@ -499,10 +506,10 @@ auto getColumnSubString ( const FString& str
   if ( col_pos == 0 )
     col_pos = 1;
 
-  RangeData data { 1U, 0U, 0U, 0U, L'\0', L'\0' };
-  calculateColumnRange(data, str, col_pos, col_len);
+  RangeData data { 1U,  0U, col_pos, col_len, 0U, 0U, 0U, L'\0', L'\0' };
+  calculateColumnRange(data, str);
 
-  if ( data.col_first < col_pos )  // String length < col_pos
+  if ( data.col_first < data.col_pos )  // String length < column position
     return {};
 
   FString result{str.toWString().substr(data.first, data.num)};
@@ -511,47 +518,77 @@ auto getColumnSubString ( const FString& str
 }
 
 //----------------------------------------------------------------------
-void calculateColumnRange (RangeData& d, const FString& str, std::size_t& col_pos, std::size_t col_len)
+void calculateColumnRange (RangeData& d, const FString& str)
 {
+  bool found_1st_char{false};
+
   for (const auto& ch : str)
   {
-    const auto width = getColumnWidth(ch);
+    d.ch_width = getColumnWidth(ch);
 
-    if ( d.col_first < col_pos )
-    {
-      if ( d.col_first + width <= col_pos )
-      {
-        d.col_first += width;
-        d.first++;
-      }
-      else
-      {
-        d.first_ch = left_quotation_mark;  // ‹
-        d.num = d.col_num = 1;
-        col_pos = d.col_first;
-      }
-    }
-    else
-    {
-      if ( d.col_first == col_pos && width == 0 && d.num == 0 )
-      {
-        d.first++;
-      }
-      else if ( d.col_num + width <= col_len )
-      {
-        d.col_num += width;
-        d.num++;
-      }
-      else if ( d.col_num < col_len )
-      {
-        d.last_ch = right_quotation_mark;  // ›
-        d.num++;
-        return;
-      }
-      else
-        return;
-    }
+    // Step 1: Determines the position of the first column in the string
+    //         until the first character is found
+    if ( ! found_1st_char && determinesFirstColumn(d) == IsDetermined::No )
+      continue;
+
+    found_1st_char = true;
+
+    // Step 2: Determines the number of characters to display
+    if ( determinesNumberOfCharacters(d) == IsDetermined::Yes )
+      return;
   }
+}
+
+//----------------------------------------------------------------------
+inline auto determinesFirstColumn (RangeData& d) -> IsDetermined
+{
+  if ( d.col_first >= d.col_pos )
+  {
+    if ( d.col_first == d.col_pos && d.ch_width == 0 && d.num == 0 )
+    {
+      // Skip zero-width characters at beginning of string
+      d.first++;
+      return IsDetermined::No;
+    }
+
+    return IsDetermined::Yes;  // First column determined
+  }
+
+  if ( d.col_first + d.ch_width <= d.col_pos )
+  {
+    d.col_first += d.ch_width;
+    d.first++;
+  }
+  else
+  {
+    // Only half a full-width character found at first position
+    d.first_ch = left_quotation_mark;  // Replace with '‹'
+    d.num = d.col_num = 1;
+    d.col_pos = d.col_first;
+  }
+
+  return IsDetermined::No;  // First column not yet determined
+}
+
+//----------------------------------------------------------------------
+inline auto determinesNumberOfCharacters (RangeData& d) -> IsDetermined
+{
+  if ( d.col_num + d.ch_width <= d.col_len )
+  {
+    d.col_num += d.ch_width;
+    d.num++;
+  }
+  else if ( d.col_num < d.col_len )
+  {
+    // Only half a full-width character found at last position
+    d.last_ch = right_quotation_mark;  // Replace with '›'
+    d.num++;
+    return IsDetermined::Yes;  // Stop processing
+  }
+  else
+    return IsDetermined::Yes; // Stop processing
+
+  return IsDetermined::No;
 }
 
 //----------------------------------------------------------------------

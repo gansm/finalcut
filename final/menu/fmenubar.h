@@ -134,12 +134,18 @@ class FMenuBar : public FWindow
     auto clickItem (FMenuItem*) -> bool;
     void unselectMenuItem (FMenuItem*);
     void selectMenuItem (FMenuItem*);
+    auto handleActivateKey (FKeyEvent*) -> bool;
+    auto handleNavigationKey (FKeyEvent*) -> bool;
     auto isClickOnMenuEntry (const FMouseEvent*, const FMenuItem*) const -> bool;
+    auto isMouseOverMenuBar (const FMouseEvent&) -> bool;
+    auto isMouseOverMenu (FMenu*, const FMouseEvent&) const -> bool;
     void mouseDownOverList (const FMouseEvent*);
     void mouseUpOverList (const FMouseEvent*);
     void mouseMoveOverList (const FMouseEvent&);
     void passEventToMenu (const FMouseEvent&) const;
+    void handleFocusChange();
     void leaveMenuBar();
+    void updateStatusBar();
 
     // Data members
     std::size_t  screenWidth{80};

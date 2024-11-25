@@ -1787,6 +1787,58 @@ void FDialog::cancelMouseResize()
 }
 
 //----------------------------------------------------------------------
+void FDialog::prepareToMove()
+{
+  setMoveSizeWidget(this);
+
+  if ( FVTerm::getFOutput()->isMonochron() )
+    setReverse(true);
+
+  drawBorder();
+
+  if ( FVTerm::getFOutput()->isMonochron() )
+    setReverse(false);
+
+  size_data.save_geometry = getGeometry();
+}
+
+//----------------------------------------------------------------------
+void FDialog::handleTooltipDisplay()
+{
+  try
+  {
+    tooltip = new FToolTip(this);
+  }
+  catch (const std::bad_alloc&)
+  {
+    badAllocOutput ("FToolTip");
+    return;
+  }
+
+  if ( isResizeable() )
+  {
+    if ( FVTerm::getFOutput()->areMetaAndArrowKeysSupported() )
+      tooltip->setText ( "       Arrow keys: Move\n"
+                         "Meta + Arrow keys: Resize\n"
+                         "            Enter: Done\n"
+                         "              Esc: Cancel" );
+    else
+      tooltip->setText ( "        Arrow keys: Move\n"
+                         "Shift + Arrow keys: Resize\n"
+                         "             Enter: Done\n"
+                         "               Esc: Cancel" );
+  }
+  else
+  {
+    tooltip->setText ( "Arrow keys: Move\n"
+                       "     Enter: Done\n"
+                       "       Esc: Cancel" );
+  }
+
+  tooltip->show();
+}
+
+//----------------------------------------------------------------------
 inline void FDialog::acceptMoveSize()
 {
   setMoveSizeWidget(nullptr);
@@ -1856,49 +1908,8 @@ void FDialog::cb_move()
   if ( isZoomed() )
     return;
 
-  setMoveSizeWidget(this);
-
-  if ( FVTerm::getFOutput()->isMonochron() )
-    setReverse(true);
-
-  drawBorder();
-
-  if ( FVTerm::getFOutput()->isMonochron() )
-    setReverse(false);
-
-  size_data.save_geometry = getGeometry();
-
-  try
-  {
-    tooltip = new FToolTip(this);
-  }
-  catch (const std::bad_alloc&)
-  {
-    badAllocOutput ("FToolTip");
-    return;
-  }
-
-  if ( isResizeable() )
-  {
-    if ( FVTerm::getFOutput()->areMetaAndArrowKeysSupported() )
-      tooltip->setText ( "       Arrow keys: Move\n"
-                         "Meta + Arrow keys: Resize\n"
-                         "            Enter: Done\n"
-                         "              Esc: Cancel" );
-    else
-      tooltip->setText ( "        Arrow keys: Move\n"
-                         "Shift + Arrow keys: Resize\n"
-                         "             Enter: Done\n"
-                         "               Esc: Cancel" );
-  }
-  else
-  {
-    tooltip->setText ( "Arrow keys: Move\n"
-                       "     Enter: Done\n"
-                       "       Esc: Cancel" );
-  }
-
-  tooltip->show();
+  prepareToMove();
+  handleTooltipDisplay();
 }
 
 //----------------------------------------------------------------------

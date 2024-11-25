@@ -279,6 +279,8 @@ class FDialog : public FWindow
     void resizeMouseDown (const MouseStates&);
     void resizeMouseUpMove (const MouseStates&, bool = false);
     void cancelMouseResize();
+    void prepareToMove();
+    void handleTooltipDisplay();
     void acceptMoveSize();
     void cancelMoveSize();
     static void addDialog (FWidget*);

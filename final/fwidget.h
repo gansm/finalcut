@@ -526,8 +526,10 @@ class FWidget : public FVTerm
     friend void  drawTransparentShadow (FWidget*);
     friend void  drawGenericBox (FWidget*, const FRect&, const std::array<wchar_t, 8>&);
     friend void  drawGenericBlockShadow (FWidget*, const std::array<FChar, 4>&);
-    friend void  drawFlatBorder (FWidget*);
-    friend void  clearFlatBorder (FWidget*);
+    friend void  drawVerticalFlatBorder (FWidget*);
+    friend void  drawHorizontalFlatBorder (FWidget*);
+    friend void  clearVerticalFlatBorder (FWidget*);
+    friend void  clearHorizontalFlatBorder (FWidget*);
 };
 
 
