@@ -431,16 +431,32 @@ inline void FMenu::mapKeyFunctions()
 //----------------------------------------------------------------------
 void FMenu::calculateDimensions()
 {
-  max_item_width = 10;  // minimum width
+  max_item_width = calculateMaxItemWidth();
+  const int adjust_X = adjustX(getX());
+
+  // Set widget geometry
+  FWindow::setGeometry
+  (
+    FPoint{adjust_X, getY()},
+    FSize{max_item_width + 2, getCount() + 2}
+  );
+
+  // Position items and submenus
+  setPositionsOfAllItems();
+}
+
+//----------------------------------------------------------------------
+auto FMenu::calculateMaxItemWidth() -> std::size_t
+{
+  std::size_t max_width = 10;  // minimum width
 
   // find the maximum item width
   for (auto&& item : getItemList())
   {
     std::size_t item_width = item->getTextWidth() + 2;
     const auto& accel_key = item->accel_key;
-    const bool has_menu = item->hasMenu();
 
-    if ( has_menu )
+    if ( item->hasMenu() )
     {
       item_width += 3;
     }
@@ -453,33 +469,31 @@ void FMenu::calculateDimensions()
     if ( has_checkable_items )
       item_width++;
 
-    if ( item_width > max_item_width )
-      max_item_width = item_width;
+    max_width = std::max(max_width, item_width);
   }
 
-  const int adjust_X = adjustX(getX());
+  return max_width;
+}
 
-  // set widget geometry
-  FWindow::setGeometry ( FPoint{adjust_X, getY()}
-                       , FSize{max_item_width + 2, getCount() + 2} );
-
-  // set geometry of all items
+//----------------------------------------------------------------------
+void FMenu::setPositionsOfAllItems()
+{
+  // Set geometry of all items
   const int item_X = 1;
   int item_Y = 1;
 
   for (auto&& item : getItemList())
   {
     item->setGeometry (FPoint{item_X, item_Y}, FSize{max_item_width, 1});
+    item_Y++;
 
     if ( item->hasMenu() )
     {
       const int menu_X = getTermX() + int(max_item_width) + 1;
       const int menu_Y = item->getTermY() - 2;
-      // set sub-menu position
+      // Set sub-menu position
       item->getMenu()->setPos (FPoint{menu_X, menu_Y}, false);
     }
-
-    item_Y++;
   }
 }
 

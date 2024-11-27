@@ -191,6 +191,8 @@ class FMenu : public FWindow
     void initCallbacks();
     void mapKeyFunctions();
     void calculateDimensions();
+    auto calculateMaxItemWidth() -> std::size_t;
+    void setPositionsOfAllItems();
     void adjustItems() const;
     auto adjustX(int) const -> int;
     void openSubMenu (FMenu*, SelectItem);

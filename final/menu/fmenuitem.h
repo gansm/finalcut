@@ -175,6 +175,9 @@ class FMenuItem : public FWidget
     void calculateTextDimensions();
     void updateSuperMenuDimensions();
     void updateMenubarDimensions() const;
+    void handleMenuSelection (FMenuBar*, FAccelEvent*);
+    void updateMenuSelection (FAccelEvent*) const;
+    void handleMenuBarSelection (FMenuBar*);
     void processEnable() const;
     void processDisable() const;
     void processActivate() const;
@@ -280,7 +283,7 @@ inline void FMenuItem::unsetRadioButton() noexcept
 { radio_button = false; }
 
 //----------------------------------------------------------------------
-inline void FMenuItem::setMenu(FMenu* m)
+inline void FMenuItem::setMenu (FMenu* m)
 { menu = m; }
 
 //----------------------------------------------------------------------

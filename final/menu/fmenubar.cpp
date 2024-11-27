@@ -853,7 +853,7 @@ void FMenuBar::leaveMenuBar()
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::updateStatusBar()
+void FMenuBar::updateStatusBar() const
 {
   if ( ! getStatusBar() )
     return;

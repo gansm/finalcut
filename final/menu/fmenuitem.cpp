@@ -338,34 +338,9 @@ void FMenuItem::onAccel (FAccelEvent* ev)
   auto mbar = static_cast<FMenuBar*>(super_menu);
 
   if ( menu )
-  {
-    resetSelectedItem(mbar);
-    setSelected();
-    mbar->setSelectedItem(this);
-    openMenu();
-    auto focused_widget = ev->focusedWidget();
-    menu->unselectItem();
-    menu->selectFirstItem();
-
-    if ( menu->getSelectedItem() )
-      menu->getSelectedItem()->setFocus();
-
-    if ( focused_widget && focused_widget->isWidget() )
-      focused_widget->redraw();
-
-    menu->redraw();
-    drawStatusBarMessage();
-    mbar->redraw();
-    mbar->drop_down = true;
-  }
+    handleMenuSelection (mbar, ev);
   else
-  {
-    unsetSelected();
-    mbar->unsetSelectedItem();
-    mbar->redraw();
-    processClicked();
-    mbar->drop_down = false;
-  }
+    handleMenuBarSelection (mbar);
 
   forceTerminalUpdate();
   ev->accept();
@@ -584,6 +559,45 @@ void FMenuItem::updateMenubarDimensions() const
 
   auto menubar_ptr = static_cast<FMenuBar*>(parent);
   menubar_ptr->calculateDimensions();
+}
+
+//----------------------------------------------------------------------
+void FMenuItem::handleMenuSelection (FMenuBar* mbar, FAccelEvent* ev)
+{
+  resetSelectedItem(mbar);
+  setSelected();
+  mbar->setSelectedItem(this);
+  openMenu();
+  updateMenuSelection (ev);
+  drawStatusBarMessage();
+  mbar->redraw();
+  mbar->drop_down = true;
+}
+
+//----------------------------------------------------------------------
+void FMenuItem::updateMenuSelection (FAccelEvent* ev) const
+{
+  auto focused_widget = ev->focusedWidget();
+  menu->unselectItem();
+  menu->selectFirstItem();
+
+  if ( menu->getSelectedItem() )
+    menu->getSelectedItem()->setFocus();
+
+  if ( focused_widget && focused_widget->isWidget() )
+    focused_widget->redraw();
+
+  menu->redraw();
+}
+
+//----------------------------------------------------------------------
+void FMenuItem::handleMenuBarSelection (FMenuBar* mbar)
+{
+  unsetSelected();
+  mbar->unsetSelectedItem();
+  mbar->redraw();
+  processClicked();
+  mbar->drop_down = false;
 }
 
 //----------------------------------------------------------------------

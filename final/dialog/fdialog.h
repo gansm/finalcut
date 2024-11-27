@@ -170,7 +170,7 @@ class FDialog : public FWindow
     {
       int         mouse_x;
       int         mouse_y;
-      FPoint      termPos;
+      FPoint      term_pos;
       std::size_t menu_btn;
       std::size_t minimize_btn;
       std::size_t zoom_btn;
@@ -240,6 +240,9 @@ class FDialog : public FWindow
     void printZoomedButton();
     void printMinimizeButton();
     void drawTextBar();
+    void setTextBarColors();
+    void printSpace (std::size_t);
+    void printTitleBarText (std::size_t&, std::size_t);
     void clearStatusBar() const;
     void setCursorToFocusWidget();
     void leaveMenu();
@@ -278,6 +281,7 @@ class FDialog : public FWindow
     auto noVisibleDialog() const -> bool;
     void resizeMouseDown (const MouseStates&);
     void resizeMouseUpMove (const MouseStates&, bool = false);
+    auto calculateNewSize (const MouseStates&) const -> FSize;
     void cancelMouseResize();
     void prepareToMove();
     void handleTooltipDisplay();

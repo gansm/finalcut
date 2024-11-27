@@ -145,7 +145,7 @@ class FMenuBar : public FWindow
     void passEventToMenu (const FMouseEvent&) const;
     void handleFocusChange();
     void leaveMenuBar();
-    void updateStatusBar();
+    void updateStatusBar() const;
 
     // Data members
     std::size_t  screenWidth{80};

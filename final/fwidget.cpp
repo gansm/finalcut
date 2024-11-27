@@ -2164,7 +2164,10 @@ inline void FWidget::adjustSizeWithinArea (FRect& box) const
 {
   const FRect uninitialized(FPoint{0, 0}, FPoint{-1, -1});
 
-  if ( ! init_desktop || ! init_terminal || box == uninitialized )
+  if ( ! init_desktop
+    || ! init_terminal
+    || isWindowWidget()
+    || box == uninitialized )
     return;
 
   const auto w = box.getWidth();

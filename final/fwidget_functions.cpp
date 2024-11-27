@@ -601,7 +601,7 @@ void drawGenericBlockShadow ( FWidget* w
 }
 
 //----------------------------------------------------------------------
-inline void setWidgetColors (FWidget* w)
+inline void setWidgetColors (const FWidget* w)
 {
   const auto& wc_dialog = FWidget::getColorTheme()->dialog;
 
