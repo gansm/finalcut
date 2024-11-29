@@ -575,7 +575,7 @@ void FMenuItem::handleMenuSelection (FMenuBar* mbar, FAccelEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::updateMenuSelection (FAccelEvent* ev) const
+void FMenuItem::updateMenuSelection (const FAccelEvent* ev) const
 {
   auto focused_widget = ev->focusedWidget();
   menu->unselectItem();

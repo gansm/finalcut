@@ -1237,7 +1237,7 @@ void FDialog::drawTextBar()
 }
 
 //----------------------------------------------------------------------
-inline void FDialog::setTextBarColors()
+inline void FDialog::setTextBarColors() const
 {
   const auto& wc_titlebar = getColorTheme()->titlebar;
 
@@ -1776,8 +1776,8 @@ auto FDialog::calculateNewSize (const MouseStates& ms) const -> FSize
   const int term_y = getTermY();
   const int x2 = resize_pos.getX();
   const int y2 = resize_pos.getY();
-  const int max_width = static_cast<int>(getMaxWidth());
-  const int max_height = static_cast<int>(getMaxHeight());
+  const auto max_width = static_cast<int>(getMaxWidth());
+  const auto max_height = static_cast<int>(getMaxHeight());
 
   const int width = \
       std::max( std::min( x2 + delta_pos.getX() - term_x + 1

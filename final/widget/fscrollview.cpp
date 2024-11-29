@@ -695,39 +695,46 @@ void FScrollView::copy2area()
   if ( ! (hasPrintArea() && viewport && viewport->has_changes) )
     return;
 
-  auto printarea = getCurrentPrintArea();
-  const auto& area_owner = printarea->getOwner<FVTerm*>();
-  const auto& area_widget = static_cast<FWidget*>(area_owner);
-  const int ax = area_widget->getLeftPadding() + getX();
-  const int ay = area_widget->getTopPadding() + getY();
+  auto* printarea = getCurrentPrintArea();
+  auto* area_owner = printarea->getOwner<FVTerm*>();
+  auto* area_widget = static_cast<FWidget*>(area_owner);
+
+  const bool ignore_padding = getFlags().feature.ignore_padding;
+  const int xoffset = ignore_padding ? 0 : area_widget->getLeftPadding();
+  const int yoffset = ignore_padding ? 0 : area_widget->getTopPadding();
+  const int ax = xoffset + getX();
+  const int ay = yoffset + getY();
   const int dx = viewport_geometry.getX();
   const int dy = viewport_geometry.getY();
+  const int rsh = printarea->shadow.width;
   const int width = printarea->size.width;
   const int height = printarea->size.height;
-  const int rsh = printarea->shadow.width;
-  auto y_end = int(getViewportHeight());
-  auto x_end = int(getViewportWidth());
+  const auto viewport_width = int(getViewportWidth());
+  const auto viewport_height = int(getViewportHeight());
 
-  // viewport width does not fit into the printarea
-  if ( width <= ax + x_end )
-    x_end = std::max(0, width - ax);
+  // Calculate effective viewport dimensions within the printarea
+  const int x_end = std::min(viewport_width, std::max(0, width - ax));
+  const int y_end = std::min(viewport_height, std::max(0, height - ay));
 
-  // viewport height does not fit into the printarea
-  if ( height <= ay + y_end )
-    y_end = std::max(0, height - ay);
+  if ( x_end <= 0 || y_end <= 0 )
+    return;  // Early exit if nothing needs copying
 
   for (auto y{0}; y < y_end; y++)  // line loop
   {
-    // viewport character
-    const auto& vc = viewport->getFChar(dx, dy + y);
-    // area character
-    auto& ac = printarea->getFChar(ax, ay + y);
-    std::memcpy (&ac, &vc, sizeof(FChar) * unsigned(x_end));
+    // Direct access to viewport and area characters
+    const auto* vc = &viewport->getFChar(dx, dy + y);  // Viewport character
+    auto* ac = &printarea->getFChar(ax, ay + y);       // Area character
+
+    // Copy a line of characters in one operation
+    std::memcpy (ac, vc, sizeof(FChar) * unsigned(x_end));
+
+    // Update line changes
     auto& line_changes = printarea->changes[unsigned(ay + y)];
-    line_changes.xmin = std::min(line_changes.xmin, uInt(ax));
-    line_changes.xmin = std::min(line_changes.xmin, uInt(width + rsh - 1));
-    line_changes.xmax = std::max(line_changes.xmax, uInt(ax + x_end - 1));
-    line_changes.xmax = std::min(line_changes.xmax, uInt(width + rsh - 1));
+    const auto line_start = uInt(ax);
+    const auto line_end = uInt(ax + x_end - 1);
+    const auto max_limit = uInt(width + rsh - 1);
+    line_changes.xmin = std::min({line_changes.xmin, line_start, max_limit});
+    line_changes.xmax = std::min(std::max(line_changes.xmax, line_end), max_limit);
   }
 
   setViewportCursor();

@@ -240,7 +240,7 @@ class FDialog : public FWindow
     void printZoomedButton();
     void printMinimizeButton();
     void drawTextBar();
-    void setTextBarColors();
+    void setTextBarColors() const;
     void printSpace (std::size_t);
     void printTitleBarText (std::size_t&, std::size_t);
     void clearStatusBar() const;

@@ -446,7 +446,7 @@ void FMenu::calculateDimensions()
 }
 
 //----------------------------------------------------------------------
-auto FMenu::calculateMaxItemWidth() -> std::size_t
+auto FMenu::calculateMaxItemWidth() const -> std::size_t
 {
   std::size_t max_width = 10;  // minimum width
 
@@ -476,7 +476,7 @@ auto FMenu::calculateMaxItemWidth() -> std::size_t
 }
 
 //----------------------------------------------------------------------
-void FMenu::setPositionsOfAllItems()
+void FMenu::setPositionsOfAllItems() const
 {
   // Set geometry of all items
   const int item_X = 1;
