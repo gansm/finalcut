@@ -227,7 +227,7 @@ inline auto FTermXTerminal::hasFont() const -> bool
 
 //----------------------------------------------------------------------
 inline auto FTermXTerminal::hasTitle() const -> bool
-{ return xterm_title.getLength() > 0; }
+{ return ! xterm_title.isEmpty(); }
 
 //----------------------------------------------------------------------
 inline void FTermXTerminal::unsetMouseSupport()

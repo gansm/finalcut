@@ -149,7 +149,7 @@ auto FTermDetection::getTTYtype() -> bool
   // linux  tty1
   // vt100  ttys0
 
-  auto* term_basename = getTermBasename();
+  const auto& term_basename = getTermBasename();
   std::FILE* file_ptr{};
   std::array<char, BUFSIZ> str{};
   static const auto& fsystem = FSystem::getInstance();
@@ -176,7 +176,7 @@ auto FTermDetection::getTTYtype() -> bool
       p++;
     }
 
-    if ( type != nullptr && name != nullptr && ! std::strcmp(name, term_basename) )
+    if ( type != nullptr && name != nullptr && term_basename == name )
     {
       // Save name in termtype
       termtype = type;
@@ -195,9 +195,9 @@ auto FTermDetection::getTTYSFileEntry() -> bool
 {
   // Analyse /etc/ttys and get the term name (used in BSD Unix)
 
-  auto* term_basename = getTermBasename();
+  const auto& term_basename = getTermBasename();
   const struct ttyent* ttys_entryt;
-  ttys_entryt = getttynam(term_basename);
+  ttys_entryt = getttynam(term_basename.data());
 
   if ( ttys_entryt )
   {
@@ -218,18 +218,16 @@ auto FTermDetection::getTTYSFileEntry() -> bool
 #endif  // F_HAVE_GETTTYNAM
 
 //----------------------------------------------------------------------
-auto FTermDetection::getTermBasename() const -> const char*
+auto FTermDetection::getTermBasename() const -> std::string
 {
   // Get the terminal basename
   const auto& termfilename = FTermData::getInstance().getTermFileName();
-  const char* term_basename = std::strrchr(termfilename.data(), '/');
+  const auto found = termfilename.rfind('/');
 
-  if ( term_basename == nullptr )
-    term_basename = termfilename.data();
-  else
-    term_basename++;
+  if ( found != std::string::npos )
+    return std::string(termfilename, found + 1);
 
-  return term_basename;
+  return termfilename;
 }
 
 //----------------------------------------------------------------------
@@ -462,14 +460,14 @@ auto FTermDetection::termtype_256color_quirks() -> FString
     fterm_data.setTermType (FTermType::rxvt);
   }
 
-  if ( color_env.string5.getLength() > 0
-    || color_env.string6.getLength() > 0 )
+  if ( ! color_env.string5.isEmpty()
+    || ! color_env.string6.isEmpty() )
   {
     fterm_data.setTermType (FTermType::kde_konsole);
     new_termtype = "konsole-256color";
   }
 
-  if ( color_env.string3.getLength() > 0 )
+  if ( ! color_env.string3.isEmpty() )
     decscusr_support = true;
 
   return new_termtype;

@@ -564,40 +564,54 @@ void drawGenericBlockShadow ( FWidget* w
 
   auto& area = *w->getPrintArea();
   const bool is_window = w->isWindowWidget();
+
+  // Dimensions and offsets
   const auto width = is_window ? uInt(area.size.width) : uInt(w->getWidth());
   const auto height = is_window ? uInt(area.size.height) : uInt(w->getHeight());
   const auto shadow_width = uInt(area.shadow.width);
   const auto shadow_height = uInt(area.shadow.height);
-  const auto x_offset = uInt(w->woffset.getX1() + w->getX() - area.position.x - 1);
-  const auto y_offset = uInt(w->woffset.getY1() + w->getY() - area.position.y - 1);
 
   if ( is_window && (shadow_width < 1 || shadow_height < 1) )
     return;
 
-  auto y = y_offset;
+  const auto x_offset = uInt(w->woffset.getX1() + w->getX() - area.position.x - 1);
+  const auto y_offset = uInt(w->woffset.getY1() + w->getY() - area.position.y - 1);
   auto& area_changes = area.changes;
-  auto* area_pos = &area.getFChar(int(x_offset + width), int(y_offset));
-  *area_pos = shadow_char[0];  // ▄
-  area_changes[y].xmin = std::min(area_changes[y].xmin, x_offset + width);
-  area_changes[y].xmax = std::max(area_changes[y].xmax, x_offset + width);
-  area_changes[y].trans_count++;
+  const auto shadow_x = x_offset + width;   // Shadow column (right)
+  const auto shadow_y = y_offset + height;  // Shadow row (bottom)
 
-  for (y = y_offset + 1; y < y_offset + height; y++)
+  // Draw the top-right shadow
   {
-    area_pos = &area.getFChar(int(x_offset + width), int(y));
-    *area_pos = shadow_char[1];  // █
-    area_changes[y].xmin = std::min(area_changes[y].xmin, x_offset + width);
-    area_changes[y].xmax = std::max(area_changes[y].xmax, x_offset + width);
-    area_changes[y].trans_count++;
+    auto* area_pos = &area.getFChar(int(shadow_x), int(y_offset));
+    *area_pos = shadow_char[0];  // ▄ (top-right corner)
+    auto& top_line_changes = area_changes[y_offset];
+    top_line_changes.xmin = std::min(top_line_changes.xmin, shadow_x);
+    top_line_changes.xmax = std::max(top_line_changes.xmax, shadow_x);
+    top_line_changes.trans_count++;
   }
 
-  area_pos = &area.getFChar(int(x_offset), int(y_offset + height));
-  *area_pos = shadow_char[2];  // ' '
-  ++area_pos;
-  std::fill (area_pos, area_pos + width, shadow_char[3]);  // ▀
-  area_changes[y].xmin = std::min(area_changes[y].xmin, uInt(x_offset));
-  area_changes[y].xmax = std::max(area_changes[y].xmax, x_offset + width);
-  area_changes[y].trans_count += width + 1;
+  // Draw the right-side shadow
+  for (auto y = y_offset + 1; y < shadow_y; y++)
+  {
+    auto* area_pos = &area.getFChar(int(shadow_x), int(y));
+    *area_pos = shadow_char[1];  // █
+    auto& line_changes = area_changes[y];
+    line_changes.xmin = std::min(line_changes.xmin, shadow_x);
+    line_changes.xmax = std::max(line_changes.xmax, shadow_x);
+    line_changes.trans_count++;
+  }
+
+  // Draw the bottom shadow
+  {
+    auto* area_pos = &area.getFChar(int(x_offset), int(shadow_y));
+    *area_pos = shadow_char[2];  // ' ' (bottom-left corner)
+    // Fill the horizontal shadow
+    std::fill_n (area_pos + 1, width, shadow_char[3]);  // ▀
+    auto& bottom_line_changes = area_changes[shadow_y];
+    bottom_line_changes.xmin = std::min(bottom_line_changes.xmin, x_offset);
+    bottom_line_changes.xmax = std::max(bottom_line_changes.xmax, shadow_x);
+    bottom_line_changes.trans_count += width + 1;
+  }
 }
 
 //----------------------------------------------------------------------
@@ -878,77 +892,99 @@ void drawGenericBox ( FWidget* w, const FRect& r
 
   // Get references to frequently accessed variables
   auto& area = *w->getPrintArea();
-  auto& area_changes = area.changes;
   auto fchar = FVTermAttribute::getAttribute();
 
   // Prepare the first character to draw the box
   fchar.attr.bit.char_width = 1;
-  fchar.ch[0] = box_char[0];
   fchar.ch[1] = L'\0';
-  const auto is_transparent = (fchar.attr.byte[1] & internal::var::b1_print_trans_mask) != 0;
+
+  // Calculate offsets
+  const auto x_offset = uInt(w->woffset.getX1() + w->getX() - area.position.x - 1);
+  const auto y_offset = uInt(w->woffset.getY1() + w->getY() - area.position.y - 1);
 
   // Adjust box position to match print area
   auto box = r;
   box.move (-1, -1);
-  const auto x_offset = uInt(w->woffset.getX1() + w->getX() - area.position.x - 1);
-  const auto y_offset = uInt(w->woffset.getY1() + w->getY() - area.position.y - 1);
+
+  // Cache frequently accessed box dimensions
+  const auto x1 = box.getX1();
+  const auto y1 = box.getY1();
+  const auto x2 = box.getX2();
+  const auto y2 = box.getY2();
+  const auto max_width = uInt(area.size.width + area.shadow.width - 1);
+  const auto width = box.getWidth();
+  const auto line_length = width - 2;
+
+  // Cache transparency check
+  const auto is_transparent = (fchar.attr.byte[1] & internal::var::b1_print_trans_mask) != 0;
+  const auto trans_count_increment = uInt(is_transparent) * width;
+
+  auto updateChanges = [&trans_count_increment, &max_width, &area] (int y, uInt xmin, uInt xmax)
+  {
+    auto& changes = area.changes[y];
+    changes.xmin = std::min(changes.xmin, xmin);
+    changes.xmax = std::min(max_width, std::max(changes.xmax, xmax));
+    changes.trans_count += trans_count_increment;
+  };
 
   // Draw the top line of the box
-  auto* area_pos = &area.getFChar(int(x_offset) + box.getX1(), int(y_offset) + box.getY1());
-  *area_pos = fchar;
-  ++area_pos;
-  fchar.ch[0] = box_char[1];
-  const auto line_length = box.getWidth() - 2;
-  std::fill (area_pos, area_pos + line_length, fchar);
-  area_pos += line_length;
-  fchar.ch[0] = box_char[2];
-  *area_pos = fchar;
+  {
+    auto* area_pos = &area.getFChar(int(x_offset) + x1, int(y_offset) + y1);
+    fchar.ch[0] = box_char[0];
+    *area_pos = fchar;
 
-  // Update area_changes for the top line
-  auto y = y_offset + uInt(box.getY1());
-  auto max_width = uInt(area.size.width + area.shadow.width) - 1;
-  area_changes[y].xmin = std::min(area_changes[y].xmin, x_offset + uInt(box.getX1()));
-  area_changes[y].xmin = std::min(area_changes[y].xmin, max_width);
-  area_changes[y].xmax = std::max(area_changes[y].xmax, x_offset + uInt(box.getX2()));
-  area_changes[y].xmax = std::min(area_changes[y].xmax, max_width);
-  area_changes[y].trans_count += uInt(is_transparent) * box.getWidth();
+    fchar.ch[0] = box_char[1];
+    ++area_pos;
+    std::fill (area_pos, area_pos + line_length, fchar);
+
+    fchar.ch[0] = box_char[2];
+    area_pos += line_length;
+    *area_pos = fchar;
+
+    // Update area_changes for the top line
+    const auto xmin = x_offset + uInt(x1);
+    const auto xmax = x_offset + uInt(x2);
+    updateChanges(y_offset + y1, xmin, xmax);
+  }
 
   // Draw the sides of the box
-  for (y = y_offset + uInt(box.getY1()) + 1; y < y_offset + uInt(box.getY2()); y++)
+  for (auto y{y_offset + uInt(y1) + 1}; y < y_offset + uInt(y2); y++)
   {
-    area_pos = &area.getFChar(int(x_offset) + box.getX1(), int(y));
+    auto* left = &area.getFChar(int(x_offset) + x1, int(y));
+    auto* right = left + width - 1;
     fchar.ch[0] = box_char[3];
-    *area_pos = fchar;
-    area_pos += box.getWidth() - 1;
+    *left = fchar;
+
     fchar.ch[0] = box_char[4];
-    *area_pos = fchar;
+    *right = fchar;
+
     // Update area_changes for the sides
-    area_changes[y].xmin = std::min(area_changes[y].xmin, x_offset + uInt(box.getX1()));
-    area_changes[y].xmin = std::min(area_changes[y].xmin, max_width);
-    area_changes[y].xmax = std::max(area_changes[y].xmax, x_offset + uInt(box.getX2()));
-    area_changes[y].xmax = std::min(area_changes[y].xmax, max_width);
-    area_changes[y].trans_count += uInt(is_transparent) * box.getWidth();
+    const auto xmin = x_offset + uInt(x1);
+    const auto xmax = x_offset + uInt(x2);
+    updateChanges(y_offset + y1, xmin, xmax);
   }
 
   // Draw the bottom line of the box
-  area_pos = &area.getFChar(int(x_offset) + box.getX1(), int(y));
-  fchar.ch[0] = box_char[5];
-  *area_pos = fchar;
-  ++area_pos;
-  fchar.ch[0] = box_char[6];
-  std::fill (area_pos, area_pos + line_length, fchar);
-  area_pos += line_length;
-  fchar.ch[0] = box_char[7];
-  *area_pos = fchar;
+  {
+    auto* area_pos = &area.getFChar(int(x_offset) + x1, int(y_offset) + y2);
+    fchar.ch[0] = box_char[5];
+    *area_pos = fchar;
 
-  // Update area_changes for the bottom line
-  y = y_offset + uInt(box.getY2());
-  area_changes[y].xmin = std::min(area_changes[y].xmin, x_offset + uInt(box.getX1()));
-  area_changes[y].xmin = std::min(area_changes[y].xmin, max_width);
-  area_changes[y].xmax = std::max(area_changes[y].xmax, x_offset + uInt(box.getX2()));
-  area_changes[y].xmax = std::min(area_changes[y].xmax, max_width);
-  area_changes[y].trans_count += uInt(is_transparent) * box.getWidth();
-  area.has_changes = true;
+    fchar.ch[0] = box_char[6];
+    ++area_pos;
+    std::fill (area_pos, area_pos + line_length, fchar);
+
+    fchar.ch[0] = box_char[7];
+    area_pos += line_length;
+    *area_pos = fchar;
+
+    // Update area_changes for the bottom line
+    const auto xmin = x_offset + uInt(x1);
+    const auto xmax = x_offset + uInt(x2);
+    updateChanges(y_offset + y1, xmin, xmax);
+  }
+
+  area.has_changes = true;  // Mark area as having changes
 }
 
 //----------------------------------------------------------------------

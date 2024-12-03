@@ -1110,7 +1110,7 @@ inline void FLineEdit::deletePreviousCharacter()
 {
   // Backspace functionality
 
-  if ( text.getLength() == 0 || cursor_pos == 0 )
+  if ( text.isEmpty() || cursor_pos == 0 )
     return;
 
   cursorLeft();

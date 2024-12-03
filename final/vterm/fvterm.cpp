@@ -769,6 +769,7 @@ void FVTerm::addLayer (FTermArea* area) const noexcept
   const int ay = area->position.y;
   const int width = getFullAreaWidth(area);
   const int height = area->minimized ? area->min_size.height : getFullAreaHeight(area);
+  const int vterm_width = vterm->size.width;
   const int y_end = std::min(vterm->size.height - ay, height);
 
   // Call the preprocessing handler methods (child area change handling)
@@ -777,26 +778,24 @@ void FVTerm::addLayer (FTermArea* area) const noexcept
   for (auto y{0}; y < y_end; y++)  // Line loop
   {
     auto& line_changes = area->changes[unsigned(y)];
-    auto line_xmin = int(line_changes.xmin);
-    auto line_xmax = int(line_changes.xmax);
-    line_xmin = std::max(line_xmin, ol);
-    line_xmax = std::min(line_xmax, vterm->size.width + ol - ax - 1);
+    const auto line_xmin = std::max( int(line_changes.xmin)
+                                   , ol );
+    const auto line_xmax = std::min( int(line_changes.xmax)
+                                   , vterm_width + ol - ax - 1 );
 
     if ( line_xmin > line_xmax )
       continue;
 
-    const std::size_t length = unsigned(line_xmax - line_xmin + 1);
-    const int tx = ax - ol;  // Global terminal positions for x
-    const int ty = ay + y;  // Global terminal positions for y
+    const int line_offset = ax + line_xmin;
+    const int tx = line_offset - ol;  // Global terminal positions for x
+    const int ty = ay + y;            // Global terminal positions for y
 
-    if ( ax + line_xmin >= vterm->size.width || tx + line_xmin + ol < 0 || ty < 0 )
+    if ( line_offset >= vterm_width || line_offset < 0 || ty < 0 )
       continue;
 
-    // Area character
-    const auto& ac = area->getFChar(line_xmin, y);
-
-    // Terminal character
-    auto& tc = vterm->getFChar(tx + line_xmin, ty);
+    const std::size_t length = unsigned(line_xmax - line_xmin + 1);
+    const auto& ac = area->getFChar(line_xmin, y);   // Area character
+    auto& tc = vterm->getFChar(tx, ty);  // Terminal character
 
     if ( line_changes.trans_count > 0 )
     {
@@ -809,12 +808,10 @@ void FVTerm::addLayer (FTermArea* area) const noexcept
       putAreaLine (ac, tc, length);
     }
 
-    int new_xmin = ax + line_xmin - ol;
-    int new_xmax = ax + line_xmax;
     auto& vterm_changes = vterm->changes[unsigned(ty)];
-    vterm_changes.xmin = std::min(vterm_changes.xmin, uInt(new_xmin));
-    new_xmax = std::min(new_xmax, vterm->size.width - 1);
-    vterm_changes.xmax = std::max (vterm_changes.xmax, uInt(new_xmax));
+    vterm_changes.xmin = std::min(vterm_changes.xmin, uInt(tx));
+    vterm_changes.xmax = std::max ( vterm_changes.xmax
+                                  , uInt(std::min(ax + line_xmax, vterm_width - 1)));
     line_changes.xmin = uInt(width);
     line_changes.xmax = 0;
   }
@@ -1737,8 +1734,8 @@ inline void FVTerm::addTransparentAreaLine ( const FChar& src_char
                                            , FChar& dst_char
                                            , const std::size_t length ) const
 {
-  auto src = &src_char;
-  auto dst = &dst_char;
+  const auto* src = &src_char;
+  auto* dst = &dst_char;
   const auto end = src + length;
 
   for (; src < end; ++src)  // column loop

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2023 Markus Gans                                      *
+* Copyright 2018-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -110,7 +110,7 @@ class FTermDetection final
 #if F_HAVE_GETTTYNAM
     auto  getTTYSFileEntry() -> bool;
 #endif
-    auto  getTermBasename() const -> const char*;
+    auto  getTermBasename() const -> std::string;
     template<typename StringT>
     auto  startsWithTermType (StringT&&) const -> bool;
     void  termtypeAnalysis();

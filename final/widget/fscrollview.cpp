@@ -697,7 +697,7 @@ void FScrollView::copy2area()
 
   auto* printarea = getCurrentPrintArea();
   auto* area_owner = printarea->getOwner<FVTerm*>();
-  auto* area_widget = static_cast<FWidget*>(area_owner);
+  const auto* area_widget = static_cast<const FWidget*>(area_owner);
 
   const bool ignore_padding = getFlags().feature.ignore_padding;
   const int xoffset = ignore_padding ? 0 : area_widget->getLeftPadding();
@@ -707,19 +707,23 @@ void FScrollView::copy2area()
   const int dx = viewport_geometry.getX();
   const int dy = viewport_geometry.getY();
   const int rsh = printarea->shadow.width;
-  const int width = printarea->size.width;
-  const int height = printarea->size.height;
+  const int area_width = printarea->size.width;
+  const int area_height = printarea->size.height;
   const auto viewport_width = int(getViewportWidth());
   const auto viewport_height = int(getViewportHeight());
 
   // Calculate effective viewport dimensions within the printarea
-  const int x_end = std::min(viewport_width, std::max(0, width - ax));
-  const int y_end = std::min(viewport_height, std::max(0, height - ay));
+  const int x_end = std::min(viewport_width, std::max(0, area_width - ax));
+  const int y_end = std::min(viewport_height, std::max(0, area_height - ay));
 
   if ( x_end <= 0 || y_end <= 0 )
     return;  // Early exit if nothing needs copying
 
-  for (auto y{0}; y < y_end; y++)  // line loop
+  const auto line_start = uInt(ax);
+  const auto line_end = uInt(ax + x_end - 1);
+  const auto max_limit = uInt(area_width + rsh - 1);
+
+  for (int y{0}; y < y_end; y++)  // line loop
   {
     // Direct access to viewport and area characters
     const auto* vc = &viewport->getFChar(dx, dy + y);  // Viewport character
@@ -730,9 +734,6 @@ void FScrollView::copy2area()
 
     // Update line changes
     auto& line_changes = printarea->changes[unsigned(ay + y)];
-    const auto line_start = uInt(ax);
-    const auto line_end = uInt(ax + x_end - 1);
-    const auto max_limit = uInt(width + rsh - 1);
     line_changes.xmin = std::min({line_changes.xmin, line_start, max_limit});
     line_changes.xmax = std::min(std::max(line_changes.xmax, line_end), max_limit);
   }

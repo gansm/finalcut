@@ -802,7 +802,7 @@ void FFileDialog::cb_processActivate()
 {
   if ( isFilterInput() )
     activateNewFilter();
-  else if ( filename.getText().getLength() == 0 )
+  else if ( filename.getText().isEmpty() )
     activateDefaultFilter();
   else if ( isDirectoryInput() )
     changeDir(filename.getText().trim());

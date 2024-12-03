@@ -1426,7 +1426,7 @@ inline auto FListBox::isWithinListBounds (const FPoint& pos) const -> bool
 //----------------------------------------------------------------------
 inline auto FListBox::skipIncrementalSearch() -> bool
 {
-  if ( data.inc_search.getLength() > 0 )
+  if ( ! data.inc_search.isEmpty() )
   {
     data.inc_search.clear();
     return true;
@@ -1616,7 +1616,7 @@ inline auto FListBox::keyIncSearchInput (FKey key) -> bool
     return false;
 
   // incremental search
-  if ( data.inc_search.getLength() == 0 )
+  if ( data.inc_search.isEmpty() )
     data.inc_search = wchar_t(key);
   else
     data.inc_search += wchar_t(key);

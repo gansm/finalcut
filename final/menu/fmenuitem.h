@@ -175,7 +175,7 @@ class FMenuItem : public FWidget
     void calculateTextDimensions();
     void updateSuperMenuDimensions();
     void updateMenubarDimensions() const;
-    void handleMenuSelection (FMenuBar*, FAccelEvent*);
+    void handleMenuSelection (FMenuBar*, const FAccelEvent*);
     void updateMenuSelection (const FAccelEvent*) const;
     void handleMenuBarSelection (FMenuBar*);
     void processEnable() const;

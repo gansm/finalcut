@@ -562,7 +562,7 @@ void FMenuItem::updateMenubarDimensions() const
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::handleMenuSelection (FMenuBar* mbar, FAccelEvent* ev)
+void FMenuItem::handleMenuSelection (FMenuBar* mbar, const FAccelEvent* ev)
 {
   resetSelectedItem(mbar);
   setSelected();

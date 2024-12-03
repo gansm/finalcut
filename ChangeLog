@@ -1,3 +1,6 @@
+2024-11-29  Markus Gans  <guru.mail@muenster.de>
+	* Fix misaligned FScrollView viewport when using ignorePadding()
+
 2024-11-18  Markus Gans  <guru.mail@muenster.de>
 	* Added examples/widget-colors to show the internal predefined 
 	  colors of the widgets

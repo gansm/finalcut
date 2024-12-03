@@ -760,10 +760,9 @@ void FTermOutput::printRange (uInt xmin, uInt xmax, uInt y)
 {
   const auto& ec = TCAP(t_erase_chars);
   const auto& rp = TCAP(t_repeat_char);
+  auto* print_char = &vterm->getFChar(int(xmin), int(y));
   uInt x = xmin;
-  uInt x_last = x;
-  auto* min_char = &vterm->getFChar(int(x), int(y));
-  auto* print_char = min_char;
+  uInt x_last = xmin;
 
   while ( x <= xmax )
   {
@@ -963,7 +962,7 @@ auto FTermOutput::eraseCharacters (uInt& x, uInt xmax, uInt y) -> PrintState
   const auto& ec = TCAP(t_erase_chars);
   auto& print_char = vterm->getFChar(static_cast<int>(x), static_cast<int>(y));
 
-  if ( ! ec || print_char.ch[0] != L' ' )
+  if ( ! (ec && print_char.ch[0] == L' ') )
     return PrintState::NothingPrinted;
 
   const auto whitespace = countRepetitions(&print_char, x, xmax);
@@ -975,7 +974,6 @@ auto FTermOutput::eraseCharacters (uInt& x, uInt xmax, uInt y) -> PrintState
     return PrintState::WhitespacesPrinted;
   }
 
-  const uInt start_pos = x;
   const uInt end_pos = x + whitespace - 1;
 
   if ( canUseEraseCharacters(print_char, whitespace) )
@@ -991,7 +989,7 @@ auto FTermOutput::eraseCharacters (uInt& x, uInt xmax, uInt y) -> PrintState
   else
     appendCharacter_n (print_char, whitespace);
 
-  markAsPrinted (start_pos, end_pos, y);
+  markAsPrinted (x, end_pos, y);
   x = end_pos;
   return PrintState::WhitespacesPrinted;
 }
@@ -1005,15 +1003,14 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y) -> PrintState
   const auto& lr = TCAP(t_repeat_last_char);
   auto& print_char = vterm->getFChar(static_cast<int>(x), static_cast<int>(y));
 
-  if ( ! rp && ! lr )
+  if ( ! (rp || lr) )
     return PrintState::NothingPrinted;
 
   const auto repetitions = countRepetitions(&print_char, x, xmax);
 
   if ( repetitions == 1 )
   {
-    bool min_and_not_max( x != xmax );
-    printCharacter (x, y, min_and_not_max, print_char);
+    printCharacter (x, y, x != xmax, print_char);
     return PrintState::RepeatCharacterPrinted;
   }
 
@@ -1039,9 +1036,8 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y) -> PrintState
   else
     appendCharacter_n (print_char, repetitions);
 
-  const uInt start_pos = x;
   const uInt end_pos = x + repetitions - 1;
-  markAsPrinted (start_pos, end_pos, y);
+  markAsPrinted (x, end_pos, y);
   x = end_pos;
   return PrintState::RepeatCharacterPrinted;
 }
@@ -1050,21 +1046,16 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y) -> PrintState
 inline auto FTermOutput::countRepetitions ( const FChar* print_char
                                           , uInt from, uInt to ) const -> uInt
 {
-  uInt repetitions{1};
-  auto first = print_char + 1;
-  auto last = print_char + to - from + 1;
+  const auto* start = print_char + 1;
+  const auto* end = print_char + (to - from + 1);
 
-  while ( first != last )
+  auto char_is_not_equal = [first_char = *print_char] (const FChar& ch)
   {
-    if ( *first == *print_char )
-      repetitions++;
-    else
-      break;
+    return ch != first_char;
+  };
 
-    ++first;
-  }
-
-  return repetitions;
+  auto match = std::find_if(start, end, char_is_not_equal);
+  return static_cast<uInt>(match - print_char);
 }
 
 //----------------------------------------------------------------------
