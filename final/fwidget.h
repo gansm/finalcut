@@ -521,6 +521,8 @@ class FWidget : public FVTerm
     static bool          init_desktop;
 
     // Friend functions
+    friend struct GenericBoxData;
+    friend struct GenericBlockShadowData;
     friend void  detectTerminalSize();
     friend void  drawShadow (FWidget*);
     friend void  drawTransparentShadow (FWidget*);

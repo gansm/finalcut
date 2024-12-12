@@ -80,7 +80,7 @@ void drawBox (FWidget*, const FRect&);
 void drawNewFontBox (FWidget*, const FRect&);
 void drawNewFontUShapedBox (FWidget*, const FRect&);
 void drawNewFontListBox (FWidget*, const FRect&);
-void drawGenericBox (FWidget*, const FRect&, const std::array<wchar_t, 8>&);
+void drawGenericBox (FWidget*, const FRect&, std::array<wchar_t, 8>&&);
 void updateStatusbar (const FWidget* w, bool = true);
 void drawStatusBarMessage();
 

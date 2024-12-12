@@ -696,7 +696,7 @@ void FScrollView::copy2area()
     return;
 
   auto* printarea = getCurrentPrintArea();
-  auto* area_owner = printarea->getOwner<FVTerm*>();
+  const auto* area_owner = printarea->getOwner<const FVTerm*>();
   const auto* area_widget = static_cast<const FWidget*>(area_owner);
 
   const bool ignore_padding = getFlags().feature.ignore_padding;
