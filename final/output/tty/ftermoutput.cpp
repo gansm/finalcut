@@ -706,7 +706,8 @@ auto FTermOutput::canClearTrailingWS (uInt& xmax, uInt y) const -> bool
 }
 
 //----------------------------------------------------------------------
-auto FTermOutput::skipUnchangedCharacters (uInt& x, uInt xmax, uInt y, FChar* print_char) -> bool
+auto FTermOutput::skipUnchangedCharacters ( uInt& x, uInt xmax, uInt y
+                                          , const FChar* print_char ) -> bool
 {
   // Skip characters without changes if it is faster than redrawing
 
@@ -730,7 +731,7 @@ auto FTermOutput::skipUnchangedCharacters (uInt& x, uInt xmax, uInt y, FChar* pr
     std::advance(ch, 1);
   }
 
-  uInt count = uInt(ch - print_char);  // Number of unchanged characters
+  auto count = uInt(ch - print_char);  // Number of unchanged characters
 
   if ( count > cursor_address_length )
   {
@@ -1103,19 +1104,24 @@ void FTermOutput::cursorWrap() const
 
   if ( term_pos->getY() == vterm->size.height - 1 )
   {
-    term_pos->x_ref()--;
+    term_pos->x_ref()--;  // Prevent wrapping at the bottom-right
+    return;
   }
-  else if ( FTermcap::eat_nl_glitch )
+
+  if ( FTermcap::eat_nl_glitch )
   {
-    term_pos->setPoint(-1, -1);
+    term_pos->setPoint(-1, -1);  // Reset position
+    return;
   }
-  else if ( FTermcap::automatic_right_margin )
+
+  if ( FTermcap::automatic_right_margin )
   {
-    term_pos->setX(0);
+    term_pos->setX(0);  // Wrap to the next line
     term_pos->y_ref()++;
+    return;
   }
-  else
-    term_pos->x_ref()--;
+
+  term_pos->x_ref()--;  // Default case: Move cursor left
 }
 
 //----------------------------------------------------------------------

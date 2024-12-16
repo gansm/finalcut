@@ -296,16 +296,40 @@ struct FCharAttribute
   uInt8 printed            : 1;  // is printed to VTerm
   uInt8 fullwidth_padding  : 1;  // padding char (after a full-width char)
   uInt8 char_width         : 2;  // number of character cells on screen
-  uInt8 padding1           : 3;  // padding bits
+  uInt8                    : 3;  // padding bits
   // Attribute byte #3
-  uInt8 padding2           : 8;  // padding byte
+  uInt8                    : 8;  // padding byte
 };
 
 #if HAVE_BUILTIN(__builtin_bit_cast)
+constexpr auto FCharAttribute_to_uInt32 (const finalcut::FCharAttribute& fchar_attr) -> uInt32
+{
+  return uInt32(fchar_attr.bold)               << 0U
+       | uInt32(fchar_attr.dim)                << 1U
+       | uInt32(fchar_attr.italic)             << 2U
+       | uInt32(fchar_attr.underline)          << 3U
+       | uInt32(fchar_attr.blink)              << 4U
+       | uInt32(fchar_attr.reverse)            << 5U
+       | uInt32(fchar_attr.standout)           << 6U
+       | uInt32(fchar_attr.invisible)          << 7U
+       | uInt32(fchar_attr.protect)            << 8U
+       | uInt32(fchar_attr.crossed_out)        << 9U
+       | uInt32(fchar_attr.dbl_underline)      << 10U
+       | uInt32(fchar_attr.alt_charset)        << 11U
+       | uInt32(fchar_attr.pc_charset)         << 12U
+       | uInt32(fchar_attr.transparent)        << 13U
+       | uInt32(fchar_attr.color_overlay)      << 14U
+       | uInt32(fchar_attr.inherit_background) << 15U
+       | uInt32(fchar_attr.no_changes)         << 16U
+       | uInt32(fchar_attr.printed)            << 17U
+       | uInt32(fchar_attr.fullwidth_padding)  << 18U
+       | uInt32(fchar_attr.char_width)         << 19U;
+}
+
 constexpr auto getFAttributeByte ( const FCharAttribute& fchar_attr
                                  , std::size_t index ) noexcept -> uInt8
 {
-  return (__builtin_bit_cast(uInt32, fchar_attr) >> (index << 3)) & 0xff;
+  return (FCharAttribute_to_uInt32(fchar_attr) >> (index << 3)) & 0xff;
 }
 #else
 inline auto getFAttributeByte ( const FCharAttribute& fchar_attr
@@ -342,7 +366,7 @@ inline auto setFAttributeByte ( FCharAttribute& fchar_attr
 #if HAVE_BUILTIN(__builtin_bit_cast)
 constexpr auto getFAttributeWord (const FCharAttribute& fchar_attr) noexcept -> uInt32
 {
-  return __builtin_bit_cast(uInt32, fchar_attr);
+  return FCharAttribute_to_uInt32(fchar_attr);
 }
 #else
 inline auto getFAttributeWord (const FCharAttribute& fchar_attr) noexcept -> uInt32
@@ -407,7 +431,7 @@ inline auto isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexcept 
 constexpr auto getCompareBitMask() noexcept -> uInt32
 {
   constexpr const FAttribute mask {{ 0xff, 0xff, 0x04, 0x00 }};
-  return __builtin_bit_cast(uInt32, mask.byte);
+  return FCharAttribute_to_uInt32(mask.bit);
 }
 #else
 inline auto getCompareBitMask() noexcept -> uInt32

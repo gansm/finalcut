@@ -681,7 +681,8 @@ inline auto FMenuBar::handleNavigationKey (FKeyEvent* ev) -> bool
     ev->accept();
     return true;
   }
-  else if ( isFocusPrevKey(key) )
+
+  if ( isFocusPrevKey(key) )
   {
     selectPrevItem();
     ev->accept();

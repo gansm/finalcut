@@ -20,7 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-#include <strings.h>  // need for fss()
+#include <strings.h>  // need for ffs()
 
 #include <array>
 #include <cstring>
@@ -164,34 +164,6 @@ void FOptiAttr::setTermEnvironment (const TermEnv& term_env)
   F_color.ansi_default_color = term_env.t_set_color.ansi_default_color;
 
   initialize();
-}
-
-//----------------------------------------------------------------------
-inline void FOptiAttr::set_mode ( Capability& capability
-                                , const char cap[]
-                                , bool caused_reset )
-{
-  if ( cap )
-  {
-    capability.cap = cap;
-    capability.caused_reset = caused_reset;
-  }
-}
-
-//----------------------------------------------------------------------
-inline void FOptiAttr::set_mode_on ( TextStyle& style
-                                   , const char cap[]
-                                   , bool caused_reset )
-{
-  set_mode (style.on, cap, caused_reset);
-}
-
-//----------------------------------------------------------------------
-inline void FOptiAttr::set_mode_off ( TextStyle& style
-                                    , const char cap[]
-                                    , bool caused_reset )
-{
-  set_mode (style.off, cap, caused_reset);
 }
 
 //----------------------------------------------------------------------
@@ -512,6 +484,34 @@ auto FOptiAttr::changeAttribute (FChar& term, FChar& next) -> std::string
 
 
 // private methods of FOptiAttr
+//----------------------------------------------------------------------
+inline void FOptiAttr::set_mode ( Capability& capability
+                                , const char cap[]
+                                , bool caused_reset ) const
+{
+  if ( cap )
+  {
+    capability.cap = cap;
+    capability.caused_reset = caused_reset;
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FOptiAttr::set_mode_on ( TextStyle& style
+                                   , const char cap[]
+                                   , bool caused_reset ) const
+{
+  set_mode (style.on, cap, caused_reset);
+}
+
+//----------------------------------------------------------------------
+inline void FOptiAttr::set_mode_off ( TextStyle& style
+                                    , const char cap[]
+                                    , bool caused_reset ) const
+{
+  set_mode (style.off, cap, caused_reset);
+}
+
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermBold (FChar& term) -> bool
 {

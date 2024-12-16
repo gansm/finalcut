@@ -102,7 +102,7 @@ inline void Monitor_protected::p_setHandler (finalcut::handler_t&& hdl)
 template <typename T>
 inline void Monitor_protected::p_setUserContext (T&& uc)
 {
-  finalcut::Monitor::setUserContext(std::move(uc));
+  finalcut::Monitor::setUserContext(std::forward<T>(uc));
 }
 
 //----------------------------------------------------------------------

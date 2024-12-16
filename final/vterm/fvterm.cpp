@@ -212,8 +212,8 @@ auto FVTerm::hasPreprocessingHandler (const FVTerm* instance) noexcept -> bool
   {
     if ( iter->get()->instance.get() == instance )
       return true;
-    else
-      ++iter;
+
+    ++iter;
   }
 
   return false;
@@ -1378,13 +1378,13 @@ inline void FVTerm::passChangesToOverlappingWindowLine (FTermArea* win, int y, c
 }
 
 //----------------------------------------------------------------------
-inline int FVTerm::calculateStartCoordinate (int area_min, int win_min) const noexcept
+inline auto FVTerm::calculateStartCoordinate (int area_min, int win_min) const noexcept -> int
 {
   return std::max(0, std::max(area_min, win_min)) - win_min;
 }
 
 //----------------------------------------------------------------------
-inline int FVTerm::calculateEndCoordinate (int vterm_max, int area_max, int win_min, int win_max) const noexcept
+inline auto FVTerm::calculateEndCoordinate (int vterm_max, int area_max, int win_min, int win_max) const noexcept -> int
 {
   return std::min(vterm_max, std::min(area_max, win_max)) - win_min;
 }

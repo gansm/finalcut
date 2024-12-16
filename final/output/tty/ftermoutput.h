@@ -188,7 +188,7 @@ class FTermOutput final : public FOutput
     auto canClearToEOL (uInt, uInt) const -> bool;
     auto canClearLeadingWS (uInt&, uInt) const -> bool;
     auto canClearTrailingWS (uInt&, uInt) const -> bool;
-    auto skipUnchangedCharacters (uInt&, uInt, uInt, FChar*) -> bool;
+    auto skipUnchangedCharacters (uInt&, uInt, uInt, const FChar*) -> bool;
     void printRange (uInt, uInt, uInt);
     void replaceNonPrintableFullwidth (uInt, uInt, FChar&) const;
     void printCharacter (uInt&, uInt, bool, FChar&);

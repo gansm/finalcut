@@ -53,33 +53,33 @@ constexpr char fc_release[] = F_VERSION;
 // Event types
 enum class Event
 {
-  None,              // invalid event
-  KeyPress,          // key pressed
-  KeyUp,             // key released
-  KeyDown,           // key pressed
-  MouseDown,         // mouse button pressed
-  MouseUp,           // mouse button released
-  MouseDoubleClick,  // mouse button double click
-  MouseWheel,        // mouse wheel rolled
-  MouseMove,         // mouse move
-  FocusIn,           // focus in
-  FocusOut,          // focus out
-  ChildFocusIn,      // child focus in
-  ChildFocusOut,     // child focus out
+  None,              // Invalid event
+  KeyPress,          // Key pressed
+  KeyUp,             // Key released
+  KeyDown,           // Key pressed
+  MouseDown,         // Mouse button pressed
+  MouseUp,           // Mouse button released
+  MouseDoubleClick,  // Mouse button double click
+  MouseWheel,        // Mouse wheel rolled
+  MouseMove,         // Mouse move
+  FocusIn,           // Focus in
+  FocusOut,          // Focus out
+  ChildFocusIn,      // Child focus in
+  ChildFocusOut,     // Child focus out
   FailAtChildFocus,  // No further focusable child widgets
-  TerminalFocusIn,   // terminal focus in
-  TerminalFocusOut,  // terminal focus out
-  WindowActive,      // activate window
-  WindowInactive,    // deactivate window
-  WindowRaised,      // raise window
-  WindowLowered,     // lower window
-  Accelerator,       // keyboard accelerator
-  Resize,            // terminal resize
-  Show,              // widget is shown
-  Hide,              // widget is hidden
-  Close,             // widget close
-  Timer,             // timer event occur
-  User               // user defined event
+  TerminalFocusIn,   // Terminal focus in
+  TerminalFocusOut,  // Terminal focus out
+  WindowActive,      // Activate window
+  WindowInactive,    // Deactivate window
+  WindowRaised,      // Raise window
+  WindowLowered,     // Lower window
+  Accelerator,       // Keyboard accelerator
+  Resize,            // Terminal resize
+  Show,              // Widget is shown
+  Hide,              // Widget is hidden
+  Close,             // Widget close
+  Timer,             // Timer event occur
+  User               // User defined event
 };
 
 // Internal character encoding
@@ -89,51 +89,51 @@ enum class Encoding
   VT100,
   PC,
   ASCII,
-  NUM_OF_ENCODINGS,  // number of items
+  NUM_OF_ENCODINGS,  // Number of items
   Unknown
 };
 
 // VT100 line graphic keys
 enum class VT100Key : char
 {
-  rarrow    = '+',   // ►  -  arrow pointing right
-  larrow    = ',',   // ◄  -  arrow pointing left
-  uarrow    = '-',   // ▲  -  arrow pointing up
-  darrow    = '.',   // ▼  -  arrow pointing down
-  block     = '0',   // █  -  solid square block
-  nsup      = 'I',   // ⁿ  -  superscript letter n
-  blackrect = '_',   // ▮  -  black vertical rectangle
-  diamond   = '`',   // ◆  -  diamond
-  ckboard   = 'a',   // ▒  -  checker board (stipple)
-  htab      = 'b',   // ␉  -  horizontal tab symbol
-  ff        = 'c',   // ␌  -  form feed symbol
-  cr        = 'd',   // ␍  -  carriage return symbol
-  lf        = 'e',   // ␊  -  line feed symbol
-  degree    = 'f',   // °  -  degree symbol
-  plminus   = 'g',   // ±  -  plus/minus
-  board     = 'h',   // ␤  -  board of squares
-  lantern   = 'i',   // ␋  -  lantern symbol
-  lrcorner  = 'j',   // ┘  -  lower right corner
-  urcorner  = 'k',   // ┐  -  upper right corner
-  ulcorner  = 'l',   // ┌  -  upper left corner
-  llcorner  = 'm',   // └  -  lower left corner
-  plus      = 'n',   // ┼  -  large plus or crossover
-  s1        = 'o',   // ⎺  -  scan line 1
-  s3        = 'p',   // ⎻  -  scan line 3
-  hline     = 'q',   // ─  -  horizontal line
-  s7        = 'r',   // ⎼  -  scan line 7
-  s9        = 's',   // ⎽  -  scan line 9
-  ltee      = 't',   // ├  -  tee pointing right
-  rtee      = 'u',   // ┤  -  tee pointing left
-  btee      = 'v',   // ┴  -  tee pointing up
-  ttee      = 'w',   // ┬  -  tee pointing down
-  vline     = 'x',   // │  -  vertical line
-  lequal    = 'y',   // ≤  -  less-than-or-equal-to
-  gequal    = 'z',   // ≥  -  greater-than-or-equal-to
-  pi        = '{',   // π  -  greek pi
-  nequal    = '|',   // ≠  -  not-equal
+  rarrow    = '+',   // ►  -  Arrow pointing right
+  larrow    = ',',   // ◄  -  Arrow pointing left
+  uarrow    = '-',   // ▲  -  Arrow pointing up
+  darrow    = '.',   // ▼  -  Arrow pointing down
+  block     = '0',   // █  -  Solid square block
+  nsup      = 'I',   // ⁿ  -  Superscript letter n
+  blackrect = '_',   // ▮  -  Black vertical rectangle
+  diamond   = '`',   // ◆  -  Diamond
+  ckboard   = 'a',   // ▒  -  Checker board (stipple)
+  htab      = 'b',   // ␉  -  Horizontal tab symbol
+  ff        = 'c',   // ␌  -  Form feed symbol
+  cr        = 'd',   // ␍  -  Carriage return symbol
+  lf        = 'e',   // ␊  -  Line feed symbol
+  degree    = 'f',   // °  -  Degree symbol
+  plminus   = 'g',   // ±  -  Plus/minus
+  board     = 'h',   // ␤  -  Board of squares
+  lantern   = 'i',   // ␋  -  Lantern symbol
+  lrcorner  = 'j',   // ┘  -  Lower right corner
+  urcorner  = 'k',   // ┐  -  Upper right corner
+  ulcorner  = 'l',   // ┌  -  Upper left corner
+  llcorner  = 'm',   // └  -  Lower left corner
+  plus      = 'n',   // ┼  -  Large plus or crossover
+  s1        = 'o',   // ⎺  -  Scan line 1
+  s3        = 'p',   // ⎻  -  Scan line 3
+  hline     = 'q',   // ─  -  Horizontal line
+  s7        = 'r',   // ⎼  -  Scan line 7
+  s9        = 's',   // ⎽  -  Scan line 9
+  ltee      = 't',   // ├  -  Tee pointing right
+  rtee      = 'u',   // ┤  -  Tee pointing left
+  btee      = 'v',   // ┴  -  Tee pointing up
+  ttee      = 'w',   // ┬  -  Tee pointing down
+  vline     = 'x',   // │  -  Vertical line
+  lequal    = 'y',   // ≤  -  Less-than-or-equal-to
+  gequal    = 'z',   // ≥  -  Greater-than-or-equal-to
+  pi        = '{',   // π  -  Greek pi
+  nequal    = '|',   // ≠  -  Not-equal
   sterling  = '}',   // £  -  UK pound sign
-  bullet    = '~'    // ·  -  bullet
+  bullet    = '~'    // ·  -  Bullet
 };
 
 // Unicode characters
@@ -310,45 +310,45 @@ constexpr auto operator == (const UniChar& c1, const wchar_t c2) noexcept -> boo
 }
 
 
-// keyboard - single keys and modifier key combinations
+// Keyboard - single keys and modifier key combinations
 enum class FKey : uInt32
 {
-  None                       = 0x00000000,  // no key
-  Ctrl_a                     = 0x00000001,  // control-a
-  Ctrl_b                     = 0x00000002,  // control-b
-  Ctrl_c                     = 0x00000003,  // control-c
-  Ctrl_d                     = 0x00000004,  // control-d
-  Ctrl_e                     = 0x00000005,  // control-e
-  Ctrl_f                     = 0x00000006,  // control-f
-  Ctrl_g                     = 0x00000007,  // control-g
-  Ctrl_h                     = 0x00000008,  // control-h
-  Erase                      = Ctrl_h,      // erase
-  Ctrl_i                     = 0x00000009,  // control-i
-  Tab                        = Ctrl_i,      // tabulator
-  Ctrl_j                     = 0x0000000a,  // control-j
-  Ctrl_k                     = 0x0000000b,  // control-k
-  Ctrl_l                     = 0x0000000c,  // control-l
-  Ctrl_m                     = 0x0000000d,  // control-m
-  Return                     = Ctrl_m,      // return
-  Ctrl_n                     = 0x0000000e,  // control-n
-  Ctrl_o                     = 0x0000000f,  // control-o
-  Ctrl_p                     = 0x00000010,  // control-p
-  Ctrl_q                     = 0x00000011,  // control-q
-  Ctrl_r                     = 0x00000012,  // control-r
-  Ctrl_s                     = 0x00000013,  // control-s
-  Ctrl_t                     = 0x00000014,  // control-t
-  Ctrl_u                     = 0x00000015,  // control-u
-  Ctrl_v                     = 0x00000016,  // control-v
-  Ctrl_w                     = 0x00000017,  // control-w
-  Ctrl_x                     = 0x00000018,  // control-x
-  Ctrl_y                     = 0x00000019,  // control-y
-  Ctrl_z                     = 0x0000001a,  // control-t
-  Escape                     = 0x0000001b,  // control-[
-  Ctrl_backslash             = 0x0000001c,  // control-'\'
-  Ctrl_right_square_bracket  = 0x0000001d,  // control-]
-  Ctrl_caret                 = 0x0000001e,  // control-^
-  Ctrl_underscore            = 0x0000001f,  // control-_
-  Space                      = 0x00000020,  // space
+  None                       = 0x00000000,  // No key
+  Ctrl_a                     = 0x00000001,  // Control-a
+  Ctrl_b                     = 0x00000002,  // Control-b
+  Ctrl_c                     = 0x00000003,  // Control-c
+  Ctrl_d                     = 0x00000004,  // Control-d
+  Ctrl_e                     = 0x00000005,  // Control-e
+  Ctrl_f                     = 0x00000006,  // Control-f
+  Ctrl_g                     = 0x00000007,  // Control-g
+  Ctrl_h                     = 0x00000008,  // Control-h
+  Erase                      = Ctrl_h,      // Erase
+  Ctrl_i                     = 0x00000009,  // Control-i
+  Tab                        = Ctrl_i,      // Tabulator
+  Ctrl_j                     = 0x0000000a,  // Control-j
+  Ctrl_k                     = 0x0000000b,  // Control-k
+  Ctrl_l                     = 0x0000000c,  // Control-l
+  Ctrl_m                     = 0x0000000d,  // Control-m
+  Return                     = Ctrl_m,      // Return
+  Ctrl_n                     = 0x0000000e,  // Control-n
+  Ctrl_o                     = 0x0000000f,  // Control-o
+  Ctrl_p                     = 0x00000010,  // Control-p
+  Ctrl_q                     = 0x00000011,  // Control-q
+  Ctrl_r                     = 0x00000012,  // Control-r
+  Ctrl_s                     = 0x00000013,  // Control-s
+  Ctrl_t                     = 0x00000014,  // Control-t
+  Ctrl_u                     = 0x00000015,  // Control-u
+  Ctrl_v                     = 0x00000016,  // Control-v
+  Ctrl_w                     = 0x00000017,  // Control-w
+  Ctrl_x                     = 0x00000018,  // Control-x
+  Ctrl_y                     = 0x00000019,  // Control-y
+  Ctrl_z                     = 0x0000001a,  // Control-t
+  Escape                     = 0x0000001b,  // Control-[
+  Ctrl_backslash             = 0x0000001c,  // Control-'\'
+  Ctrl_right_square_bracket  = 0x0000001d,  // Control-]
+  Ctrl_caret                 = 0x0000001e,  // Control-^
+  Ctrl_underscore            = 0x0000001f,  // Control-_
+  Space                      = 0x00000020,  // Space
   Exclamation_mark           = 0x00000021,  // !
   Quotation_mark             = 0x00000022,  // "
   Number_sign                = 0x00000023,  // #
@@ -443,7 +443,7 @@ enum class FKey : uInt32
   Vertical_bar               = 0x0000007c,  // |
   Right_curly_bracket        = 0x0000007d,  // }
   Tilde                      = 0x0000007e,  // ~
-  Ctrl_space                 = 0x01000020,  // control-space
+  Ctrl_space                 = 0x01000020,  // Control-space
   Backspace                  = 0x01000100,
   Clear_all_tabs             = 0x01000101,
   Clear                      = 0x01000102,
@@ -466,7 +466,7 @@ enum class FKey : uInt32
   F9                         = 0x01000113,
   F10                        = 0x01000114,
   Home                       = 0x01000115,
-  Insert                     = 0x01000116,  // insert key
+  Insert                     = 0x01000116,  // Insert key
   Insert_line                = 0x01000117,
   Left                       = 0x01000118,
   Home_down                  = 0x01000119,
@@ -617,95 +617,95 @@ enum class FKey : uInt32
   Meta_down                  = 0x01500113,  // M-Down
   Meta_right                 = 0x01500114,  // M-Right
   Meta_left                  = 0x01500115,  // M-Left
-  Shift_Meta_insert          = 0x01500116,  // shifted M-Insert
-  Shift_Meta_del_char        = 0x01500117,  // shifted M-Delete
-  Shift_Meta_home            = 0x01500118,  // shifted M-Home
-  Shift_Meta_end             = 0x01500119,  // shifted M-End
-  Shift_Meta_page_up         = 0x0150011a,  // shifted M-Page-up
-  Shift_Meta_page_down       = 0x0150011b,  // shifted M-Page-down
-  Shift_Meta_f1              = 0x0150011c,  // shifted M-F1
-  Shift_Meta_f2              = 0x0150011d,  // shifted M-F2
-  Shift_Meta_f3              = 0x0150011e,  // shifted M-F3
-  Shift_Meta_f4              = 0x0150011f,  // shifted M-F4
-  Shift_Meta_f5              = 0x01500120,  // shifted M-F5
-  Shift_Meta_f6              = 0x01500121,  // shifted M-F6
-  Shift_Meta_f7              = 0x01500122,  // shifted M-F7
-  Shift_Meta_f8              = 0x01500123,  // shifted M-F8
-  Shift_Meta_f9              = 0x01500124,  // shifted M-F9
-  Shift_Meta_f10             = 0x01500125,  // shifted M-F10
-  Shift_Meta_f11             = 0x01500126,  // shifted M-F11
-  Shift_Meta_f12             = 0x01500127,  // shifted M-F12
-  Shift_Meta_up              = 0x01500128,  // shifted M-Up
-  Shift_Meta_down            = 0x01500129,  // shifted M-Down
-  Shift_Meta_right           = 0x0150012a,  // shifted M-Right
-  Shift_Meta_left            = 0x0150012b,  // shifted M-Left
-  Ctrl_insert                = 0x0150012c,  // control-Insert
-  Ctrl_del_char              = 0x0150012d,  // control-Delete
-  Ctrl_home                  = 0x0150012e,  // control-Home
-  Ctrl_end                   = 0x0150012f,  // control-End
-  Ctrl_page_up               = 0x01500130,  // control-Page-up
-  Ctrl_page_down             = 0x01500131,  // control-Page-down
-  Ctrl_up                    = 0x01500132,  // control-Up
-  Ctrl_down                  = 0x01500133,  // control-Down
-  Ctrl_right                 = 0x01500134,  // control-Right
-  Ctrl_left                  = 0x01500135,  // control-Left
-  Shift_Ctrl_insert          = 0x01500136,  // shifted control-Insert
-  Shift_Ctrl_del_char        = 0x01500137,  // shifted control-Delete
-  Shift_Ctrl_home            = 0x01500138,  // shifted control-Home
-  Shift_Ctrl_end             = 0x01500139,  // shifted control-End
-  Shift_Ctrl_page_up         = 0x0150013a,  // shifted control-Page-up
-  Shift_Ctrl_page_down       = 0x0150013b,  // shifted control-Page-down
-  Shift_Ctrl_up              = 0x0150013c,  // shifted control-Up
-  Shift_Ctrl_down            = 0x0150013d,  // shifted control-Down
-  Shift_Ctrl_right           = 0x0150013e,  // shifted control-Right
-  Shift_Ctrl_left            = 0x0150013f,  // shifted control-Left
-  Ctrl_Meta_insert           = 0x01500140,  // control-M-Insert
-  Ctrl_Meta_del_char         = 0x01500141,  // control-M-Delete
-  Ctrl_Meta_home             = 0x01500142,  // control-M-Home
-  Ctrl_Meta_end              = 0x01500143,  // control-M-End
-  Ctrl_Meta_page_up          = 0x01500144,  // control-M-Page-up
-  Ctrl_Meta_page_down        = 0x01500145,  // control-M-Page-down
-  Ctrl_Meta_up               = 0x01500146,  // control-M-Up
-  Ctrl_Meta_down             = 0x01500147,  // control-M-Down
-  Ctrl_Meta_right            = 0x01500148,  // control-M-Right
-  Ctrl_Meta_left             = 0x01500149,  // control-M-Left
-  Shift_Ctrl_Meta_insert     = 0x0150014a,  // shifted control-M-Insert
-  Shift_Ctrl_Meta_del_char   = 0x0150014b,  // shifted control-M-Delete
-  Shift_Ctrl_Meta_home       = 0x0150014c,  // shifted control-M-Home
-  Shift_Ctrl_Meta_end        = 0x0150014d,  // shifted control-M-End
-  Shift_Ctrl_Meta_page_up    = 0x0150014e,  // shifted control-M-Page-up
-  Shift_Ctrl_Meta_page_down  = 0x0150014f,  // shifted control-M-Page-down
-  Shift_Ctrl_Meta_f1         = 0x01500150,  // shifted control-M-F1
-  Shift_Ctrl_Meta_f2         = 0x01500151,  // shifted control-M-F2
-  Shift_Ctrl_Meta_f3         = 0x01500152,  // shifted control-M-F3
-  Shift_Ctrl_Meta_f4         = 0x01500153,  // shifted control-M-F4
-  Shift_Ctrl_Meta_f5         = 0x01500154,  // shifted control-M-F5
-  Shift_Ctrl_Meta_f6         = 0x01500155,  // shifted control-M-F6
-  Shift_Ctrl_Meta_f7         = 0x01500156,  // shifted control-M-F7
-  Shift_Ctrl_Meta_f8         = 0x01500157,  // shifted control-M-F8
-  Shift_Ctrl_Meta_f9         = 0x01500158,  // shifted control-M-F9
-  Shift_Ctrl_Meta_f10        = 0x01500159,  // shifted control-M-F10
-  Shift_Ctrl_Meta_f11        = 0x0150015a,  // shifted control-M-F11
-  Shift_Ctrl_Meta_f12        = 0x0150015b,  // shifted control-M-F12
-  Shift_Ctrl_Meta_up         = 0x0150015c,  // shifted control-M-Up
-  Shift_Ctrl_Meta_down       = 0x0150015d,  // shifted control-M-Down
-  Shift_Ctrl_Meta_right      = 0x0150015e,  // shifted control-M-Right
-  Shift_Ctrl_Meta_left       = 0x0150015f,  // shifted control-M-Left
-  Menu                       = 0x01600000,  // menu
-  Shift_menu                 = 0x01600001,  // shifted menu
-  Ctrl_menu                  = 0x01600002,  // control-menu
-  Shift_Ctrl_menu            = 0x01600003,  // shifted control-menu
+  Shift_Meta_insert          = 0x01500116,  // Shifted M-Insert
+  Shift_Meta_del_char        = 0x01500117,  // Shifted M-Delete
+  Shift_Meta_home            = 0x01500118,  // Shifted M-Home
+  Shift_Meta_end             = 0x01500119,  // Shifted M-End
+  Shift_Meta_page_up         = 0x0150011a,  // Shifted M-Page-up
+  Shift_Meta_page_down       = 0x0150011b,  // Shifted M-Page-down
+  Shift_Meta_f1              = 0x0150011c,  // Shifted M-F1
+  Shift_Meta_f2              = 0x0150011d,  // Shifted M-F2
+  Shift_Meta_f3              = 0x0150011e,  // Shifted M-F3
+  Shift_Meta_f4              = 0x0150011f,  // Shifted M-F4
+  Shift_Meta_f5              = 0x01500120,  // Shifted M-F5
+  Shift_Meta_f6              = 0x01500121,  // Shifted M-F6
+  Shift_Meta_f7              = 0x01500122,  // Shifted M-F7
+  Shift_Meta_f8              = 0x01500123,  // Shifted M-F8
+  Shift_Meta_f9              = 0x01500124,  // Shifted M-F9
+  Shift_Meta_f10             = 0x01500125,  // Shifted M-F10
+  Shift_Meta_f11             = 0x01500126,  // Shifted M-F11
+  Shift_Meta_f12             = 0x01500127,  // Shifted M-F12
+  Shift_Meta_up              = 0x01500128,  // Shifted M-Up
+  Shift_Meta_down            = 0x01500129,  // Shifted M-Down
+  Shift_Meta_right           = 0x0150012a,  // Shifted M-Right
+  Shift_Meta_left            = 0x0150012b,  // Shifted M-Left
+  Ctrl_insert                = 0x0150012c,  // Control-Insert
+  Ctrl_del_char              = 0x0150012d,  // Control-Delete
+  Ctrl_home                  = 0x0150012e,  // Control-Home
+  Ctrl_end                   = 0x0150012f,  // Control-End
+  Ctrl_page_up               = 0x01500130,  // Control-Page-up
+  Ctrl_page_down             = 0x01500131,  // Control-Page-down
+  Ctrl_up                    = 0x01500132,  // Control-Up
+  Ctrl_down                  = 0x01500133,  // Control-Down
+  Ctrl_right                 = 0x01500134,  // Control-Right
+  Ctrl_left                  = 0x01500135,  // Control-Left
+  Shift_Ctrl_insert          = 0x01500136,  // Shifted Control-Insert
+  Shift_Ctrl_del_char        = 0x01500137,  // Shifted Control-Delete
+  Shift_Ctrl_home            = 0x01500138,  // Shifted Control-Home
+  Shift_Ctrl_end             = 0x01500139,  // Shifted Control-End
+  Shift_Ctrl_page_up         = 0x0150013a,  // Shifted Control-Page-up
+  Shift_Ctrl_page_down       = 0x0150013b,  // Shifted Control-Page-down
+  Shift_Ctrl_up              = 0x0150013c,  // Shifted Control-Up
+  Shift_Ctrl_down            = 0x0150013d,  // Shifted Control-Down
+  Shift_Ctrl_right           = 0x0150013e,  // Shifted Control-Right
+  Shift_Ctrl_left            = 0x0150013f,  // Shifted Control-Left
+  Ctrl_Meta_insert           = 0x01500140,  // Control-M-Insert
+  Ctrl_Meta_del_char         = 0x01500141,  // Control-M-Delete
+  Ctrl_Meta_home             = 0x01500142,  // Control-M-Home
+  Ctrl_Meta_end              = 0x01500143,  // Control-M-End
+  Ctrl_Meta_page_up          = 0x01500144,  // Control-M-Page-up
+  Ctrl_Meta_page_down        = 0x01500145,  // Control-M-Page-down
+  Ctrl_Meta_up               = 0x01500146,  // Control-M-Up
+  Ctrl_Meta_down             = 0x01500147,  // Control-M-Down
+  Ctrl_Meta_right            = 0x01500148,  // Control-M-Right
+  Ctrl_Meta_left             = 0x01500149,  // Control-M-Left
+  Shift_Ctrl_Meta_insert     = 0x0150014a,  // Shifted Control-M-Insert
+  Shift_Ctrl_Meta_del_char   = 0x0150014b,  // Shifted Control-M-Delete
+  Shift_Ctrl_Meta_home       = 0x0150014c,  // Shifted Control-M-Home
+  Shift_Ctrl_Meta_end        = 0x0150014d,  // Shifted Control-M-End
+  Shift_Ctrl_Meta_page_up    = 0x0150014e,  // Shifted Control-M-Page-up
+  Shift_Ctrl_Meta_page_down  = 0x0150014f,  // Shifted Control-M-Page-down
+  Shift_Ctrl_Meta_f1         = 0x01500150,  // Shifted Control-M-F1
+  Shift_Ctrl_Meta_f2         = 0x01500151,  // Shifted Control-M-F2
+  Shift_Ctrl_Meta_f3         = 0x01500152,  // Shifted Control-M-F3
+  Shift_Ctrl_Meta_f4         = 0x01500153,  // Shifted Control-M-F4
+  Shift_Ctrl_Meta_f5         = 0x01500154,  // Shifted Control-M-F5
+  Shift_Ctrl_Meta_f6         = 0x01500155,  // Shifted Control-M-F6
+  Shift_Ctrl_Meta_f7         = 0x01500156,  // Shifted Control-M-F7
+  Shift_Ctrl_Meta_f8         = 0x01500157,  // Shifted Control-M-F8
+  Shift_Ctrl_Meta_f9         = 0x01500158,  // Shifted Control-M-F9
+  Shift_Ctrl_Meta_f10        = 0x01500159,  // Shifted Control-M-F10
+  Shift_Ctrl_Meta_f11        = 0x0150015a,  // Shifted Control-M-F11
+  Shift_Ctrl_Meta_f12        = 0x0150015b,  // Shifted Control-M-F12
+  Shift_Ctrl_Meta_up         = 0x0150015c,  // Shifted Control-M-Up
+  Shift_Ctrl_Meta_down       = 0x0150015d,  // Shifted Control-M-Down
+  Shift_Ctrl_Meta_right      = 0x0150015e,  // Shifted Control-M-Right
+  Shift_Ctrl_Meta_left       = 0x0150015f,  // Shifted Control-M-Left
+  Menu                       = 0x01600000,  // Menu
+  Shift_menu                 = 0x01600001,  // Shifted Menu
+  Ctrl_menu                  = 0x01600002,  // Control-Menu
+  Shift_Ctrl_menu            = 0x01600003,  // Shifted Control-menu
   Meta_menu                  = 0x01600004,  // M-menu
-  Shift_Meta_menu            = 0x01600005,  // shifted M-menu
-  Ctrl_Meta_menu             = 0x01600006,  // control-M-menu
-  Shift_Ctrl_Meta_menu       = 0x01600007,  // shifted control-M-menu
+  Shift_Meta_menu            = 0x01600005,  // Shifted M-Menu
+  Ctrl_Meta_menu             = 0x01600006,  // Control-M-Menu
+  Shift_Ctrl_Meta_menu       = 0x01600007,  // Shifted control-M-Menu
   Term_Focus_In              = 0x01900000,  // Terminal focus-in event
   Term_Focus_Out             = 0x01900001,  // Terminal focus-out event
-  Escape_mintty              = 0x0200001b,  // mintty Esc
-  X11mouse                   = 0x02000020,  // xterm mouse
+  Escape_mintty              = 0x0200001b,  // Mintty Esc
+  X11mouse                   = 0x02000020,  // Xterm mouse
   Extended_mouse             = 0x02000021,  // SGR extended mouse
-  Urxvt_mouse                = 0x02000022,  // urxvt mouse extension
-  Meta_offset                = 0x020000e0,  // meta key offset
+  Urxvt_mouse                = 0x02000022,  // Urxvt mouse extension
+  Meta_offset                = 0x020000e0,  // Meta key offset
   Meta_tab                   = 0x020000e9,  // M-tab
   Meta_enter                 = 0x020000ea,  // M-enter
   Meta_space                 = 0x02000100,  // M-' '

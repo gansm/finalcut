@@ -210,9 +210,9 @@ class FOptiAttr final
     };
 
     // Mutators
-    void        set_mode (Capability&, const char[], bool);
-    void        set_mode_on (TextStyle&, const char[], bool);
-    void        set_mode_off (TextStyle&, const char[], bool);
+    void        set_mode (Capability&, const char[], bool) const;
+    void        set_mode_on (TextStyle&, const char[], bool) const;
+    void        set_mode_off (TextStyle&, const char[], bool) const;
     auto        setTermBold (FChar&) -> bool;
     auto        unsetTermBold (FChar&) -> bool;
     auto        setTermDim (FChar&) -> bool;

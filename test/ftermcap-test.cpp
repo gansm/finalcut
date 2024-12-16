@@ -607,7 +607,7 @@ auto FTermcapTest::putstring_test (const std::string& str) -> int
 {
   //std::cout << '"' << str << '"' << std::flush;
   output.append(str);
-  return str.length();
+  return int(str.length());
 }
 
 //----------------------------------------------------------------------

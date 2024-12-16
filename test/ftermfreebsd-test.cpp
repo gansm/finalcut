@@ -557,7 +557,7 @@ auto FSystemTest::fputs (const char* str, FILE* stream) -> int
 auto FSystemTest::putchar (int c) -> int
 {
   std::cerr << "Call: putchar (" << c << ")\n";
-  characters.push_back(c);
+  characters.push_back(char(c));
   return 1;
 }
 

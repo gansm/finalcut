@@ -302,8 +302,8 @@ class FVTerm : public FVTermAttribute
     void  processOverlappingWindows (const FTermArea*, const FVTermList&) const;
     void  passChangesToOverlappingWindow (FTermArea*, const FTermArea*) const;
     void  passChangesToOverlappingWindowLine (FTermArea*, int, const FTermArea*) const;
-    int   calculateStartCoordinate (int, int) const noexcept;
-    int   calculateEndCoordinate (int, int, int, int) const noexcept;
+    auto  calculateStartCoordinate (int, int) const noexcept -> int;
+    auto  calculateEndCoordinate (int, int, int, int) const noexcept -> int;
     void  restoreOverlaidWindows (const FTermArea*) const noexcept;
     void  updateVTerm() const;
     void  updateVTermDesktop() const;

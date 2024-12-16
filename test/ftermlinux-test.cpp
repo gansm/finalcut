@@ -1499,7 +1499,7 @@ FSystemTest::FSystemTest()  // constructor
   memset (&terminal_font, 0x00, sizeof(terminal_font));
   memset (&terminal_unicode_map, 0x00, sizeof(terminal_unicode_map));
 
-  constexpr std::size_t font_data_size = 4 * 32 * 512;
+  constexpr auto font_data_size = std::size_t(4 * 32 * 512);
   terminal_font.data = new uChar[font_data_size]{ };
 
   // init framebuffer
@@ -1611,7 +1611,7 @@ auto FSystemTest::ioctl (int file_descriptor, uLong request, ...) -> int
     case KDFONTOP:
     {
       req_string = "KDFONTOP";
-      constexpr std::size_t font_data_size = 4 * 32 * 512;
+      constexpr auto font_data_size = std::size_t (4 * 32 * 512);
       auto fn = static_cast<console_font_op*>(argp);
 
       if ( fn->op == KD_FONT_OP_GET )
@@ -1623,7 +1623,7 @@ auto FSystemTest::ioctl (int file_descriptor, uLong request, ...) -> int
         }
 
         // Set Default
-        if ( terminal_font.data[219 * 32] == 0 )
+        if ( terminal_font.data[static_cast<ptrdiff_t>(219 * 32)] == 0 )
         {
           terminal_font.width = 8;
           terminal_font.height = 16;
@@ -1934,7 +1934,7 @@ auto FSystemTest::fputs (const char* str, FILE* stream) -> int
 auto FSystemTest::putchar (int c) -> int
 {
   std::cerr << "Call: putchar (" << c << ")\n";
-  characters.push_back(c);
+  characters.push_back(char(c));
   return 1;
 }
 
@@ -2941,7 +2941,7 @@ void FTermLinuxTest::linuxFontTest()
 
     // Full block character test
     for (std::size_t i = 0; i < 16 ; i++)
-      CPPUNIT_ASSERT ( font.data && font.data[219 * 32 + i] == 0xff );
+      CPPUNIT_ASSERT ( font.data && font.data[static_cast<std::size_t>(219 * 32 + i)] == 0xff );
 
     linux.loadNewFont();
     CPPUNIT_ASSERT ( ! linux.isVGAFontUsed() );
@@ -2949,7 +2949,7 @@ void FTermLinuxTest::linuxFontTest()
 
     // Full block character test
     for (std::size_t i = 0; i < 16 ; i++)
-      CPPUNIT_ASSERT ( font.data[219 * 32 + i] == 0xff );
+      CPPUNIT_ASSERT ( font.data[static_cast<std::size_t>(219 * 32 + i)] == 0xff );
 
     // New font bullet
     CPPUNIT_ASSERT ( font.data[249 * 32 + 0] == 0x00 );
