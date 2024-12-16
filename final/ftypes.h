@@ -301,7 +301,7 @@ struct FCharAttribute
   uInt8                    : 8;  // padding byte
 };
 
-#if HAVE_BUILTIN(__builtin_bit_cast)
+
 constexpr auto FCharAttribute_to_uInt32 (const finalcut::FCharAttribute& fchar_attr) -> uInt32
 {
   return uInt32(fchar_attr.bold)               << 0U
@@ -331,15 +331,6 @@ constexpr auto getFAttributeByte ( const FCharAttribute& fchar_attr
 {
   return (FCharAttribute_to_uInt32(fchar_attr) >> (index << 3)) & 0xff;
 }
-#else
-inline auto getFAttributeByte ( const FCharAttribute& fchar_attr
-                              , std::size_t index ) noexcept -> uInt8
-{
-  uInt8 byte{};
-  std::memcpy (&byte, reinterpret_cast<const uInt8*>(&fchar_attr) + index, sizeof(uInt8));
-  return byte;
-}
-#endif
 
 #if HAVE_BUILTIN(__builtin_bit_cast)
 constexpr auto setFAttributeByte ( FCharAttribute& fchar_attr
@@ -431,7 +422,7 @@ inline auto isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexcept 
 constexpr auto getCompareBitMask() noexcept -> uInt32
 {
   constexpr const FAttribute mask {{ 0xff, 0xff, 0x04, 0x00 }};
-  return FCharAttribute_to_uInt32(mask.bit);
+  return __builtin_bit_cast(uInt32, mask.byte);
 }
 #else
 inline auto getCompareBitMask() noexcept -> uInt32
