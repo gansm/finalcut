@@ -316,7 +316,6 @@ class FVTerm : public FVTermAttribute
     auto  isInsideArea (const FPoint&, const FTermArea*) const -> bool;
     auto  isFCharTransparent (const FChar&) const -> bool;
     auto  isTransparentInvisible (const FChar&) const -> bool;
-    static void defineByte1TransparentMask();
     template <typename FOutputType>
     void  init();
     void  initSettings();
@@ -331,7 +330,6 @@ class FVTerm : public FVTermAttribute
     auto  clearFullArea (FTermArea*, FChar&) const -> bool;
     void  clearAreaWithShadow (FTermArea*, const FChar&) const noexcept;
     auto  printWrap (FTermArea*) const -> bool;
-    auto  getByte1PrintTransMask() const -> uInt8;
     auto  changedToTransparency (const FChar&, const FChar&) const -> bool;
     auto  changedFromTransparency (const FChar&, const FChar&) const -> bool;
     auto  printCharacterOnCoordinate ( FTermArea*
@@ -356,7 +354,6 @@ class FVTerm : public FVTermAttribute
     std::shared_ptr<FTermArea>   vterm_old{};                // Last virtual terminal
     std::shared_ptr<FTermArea>   vdesktop{};                 // Virtual desktop
     static FTermArea*            active_area;                // Active area
-    static uInt8                 b1_print_trans_mask;        // Transparency mask
     static int                   tabstop;
     static bool                  draw_completed;
     static bool                  skip_one_vterm_update;
@@ -848,8 +845,6 @@ inline void FVTerm::init()
   if ( ! isInitialized() )
   {
     setGlobalFVTermInstance(this);
-    defineByte1TransparentMask();
-    b1_print_trans_mask = getByte1PrintTransMask();
     foutput     = std::make_shared<FOutputType>(*this);
     window_list = std::make_shared<FVTermList>();
     initSettings();

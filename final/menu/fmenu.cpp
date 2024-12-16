@@ -1240,7 +1240,7 @@ inline void FMenu::printBullet()
     print (UniChar::NF_Bullet);      // NF_Bullet ●
   else
     print (UniChar::BlackCircle);    // BlackCircle ●
-};
+}
 
 //----------------------------------------------------------------------
 inline void FMenu::printCheckMark()
@@ -1249,7 +1249,7 @@ inline void FMenu::printCheckMark()
     print (UniChar::NF_check_mark);  // NF_check_mark ✓
   else
     print (UniChar::SquareRoot);     // SquareRoot √
-};
+}
 
 //----------------------------------------------------------------------
 inline void FMenu::drawMenuText (MenuText& data)

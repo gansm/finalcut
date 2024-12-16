@@ -706,49 +706,36 @@ auto FTermOutput::canClearTrailingWS (uInt& xmax, uInt y) const -> bool
 }
 
 //----------------------------------------------------------------------
-auto FTermOutput::skipUnchangedCharacters (uInt& x, uInt xmax, uInt y) -> bool
+auto FTermOutput::skipUnchangedCharacters (uInt& x, uInt xmax, uInt y, FChar* print_char) -> bool
 {
   // Skip characters without changes if it is faster than redrawing
-
-  auto* print_char = &vterm->getFChar(int(x), int(y));
-  print_char->attr.bit.printed = true;
 
   if ( ! print_char->attr.bit.no_changes )
     return false;
 
-  uInt count{1};
-  const auto* ch = print_char + 1;
-  const auto* end = print_char + xmax - x + 1;
+  const auto* ch = print_char + 1;  // Skip first unchanged character
+  const auto* end = ch + xmax - x;
 
   // Unroll the loop for better performance
-  while ( ch + 4 <= end )
+  while ( ch + 4 <= end
+       && ch[0].attr.bit.no_changes && ch[1].attr.bit.no_changes
+       && ch[2].attr.bit.no_changes && ch[3].attr.bit.no_changes )
   {
-    if ( ch[0].attr.bit.no_changes && ch[1].attr.bit.no_changes
-      && ch[2].attr.bit.no_changes && ch[3].attr.bit.no_changes )
-    {
-      count += 4;
-    }
-    else
-      break;
-
-    ch += 4;
+    std::advance(ch, 4);
   }
 
   // Handle the remaining elements
-  while ( ch < end )
+  while ( ch < end && ch->attr.bit.no_changes )
   {
-    if ( ch->attr.bit.no_changes )
-      count++;
-    else
-      break;
-
-    ++ch;
+    std::advance(ch, 1);
   }
+
+  uInt count = uInt(ch - print_char);  // Number of unchanged characters
 
   if ( count > cursor_address_length )
   {
-    setCursor (FPoint{int(x + count), int(y)});
-    x = x + count - 1;
+    x += count;  // Add unchanged number of characters to the pointer
+    setCursor (FPoint{int(x), int(y)});
     return true;
   }
 
@@ -760,47 +747,49 @@ void FTermOutput::printRange (uInt xmin, uInt xmax, uInt y)
 {
   const auto& ec = TCAP(t_erase_chars);
   const auto& rp = TCAP(t_repeat_char);
+  const auto& lr = TCAP(t_repeat_last_char);
+  const auto vterm_width = uInt(vterm->size.width - 1);
   auto* print_char = &vterm->getFChar(int(xmin), int(y));
   uInt x = xmin;
   uInt x_last = xmin;
 
   while ( x <= xmax )
   {
-    print_char += x - x_last;
+    // Update pointer and mark character as printed
+    std::advance(print_char, x - x_last);
     print_char->attr.bit.printed = true;
     x_last = x;
-    replaceNonPrintableFullwidth (x, *print_char);
 
-    // skip character with no changes
-    if ( skipUnchangedCharacters(x, xmax, y) )
-    {
-      x++;
+    // Handle non-printable full-width characters on terminal margins
+    replaceNonPrintableFullwidth (x, vterm_width, *print_char);
+
+    // Skip unchanged characters
+    if ( skipUnchangedCharacters(x, xmax, y, print_char) )
       continue;
-    }
 
     // Erase character
     if ( ec && print_char->ch[0] == L' ' )
     {
-      if ( eraseCharacters(x, xmax, y) \
+      if ( eraseCharacters(x, xmax, y, *print_char) \
            == PrintState::LineCompletelyPrinted )
         break;
     }
-    else if ( rp )  // Repeat one character n-fold
+    else if ( rp || lr )  // Repeat one character n-fold
     {
-      repeatCharacter(x, xmax, y);
+      repeatCharacter(x, xmax, y, *print_char);
     }
     else  // General character output
     {
-      bool min_and_not_max( x == xmin && xmin != xmax );
+      bool min_and_not_max{ x == xmin && xmin != xmax };
       printCharacter (x, y, min_and_not_max, *print_char);
     }
 
-    x++;
+    ++x;
   }
 }
 
 //----------------------------------------------------------------------
-inline void FTermOutput::replaceNonPrintableFullwidth ( uInt x
+inline void FTermOutput::replaceNonPrintableFullwidth ( uInt x, uInt vterm_width
                                                       , FChar& print_char ) const
 {
   // Replace non-printable full-width characters that are truncated
@@ -812,7 +801,7 @@ inline void FTermOutput::replaceNonPrintableFullwidth ( uInt x
     print_char.ch[1] = L'\0';
     print_char.attr.bit.fullwidth_padding = false;
   }
-  else if ( x == uInt(vterm->size.width - 1) && isFullWidthChar(print_char) )
+  else if ( x == vterm_width && isFullWidthChar(print_char) )
   {
     print_char.ch[0] = wchar_t(UniChar::SingleRightAngleQuotationMark);  // ›
     print_char.ch[1] = L'\0';
@@ -870,12 +859,12 @@ void FTermOutput::printFullWidthCharacter ( uInt& x, uInt y
     // Print ellipses for the 1st full-width character column
     printEllipsis (x, y, print_char);
 
-    if ( isFullWidthPaddingChar(next_char) )
-    {
-      // Print ellipses for the 2nd full-width character column
-      x++;
-      printEllipsis (x, y, next_char);
-    }
+    if ( ! isFullWidthPaddingChar(next_char) )
+      return;
+
+    // Print ellipses for the 2nd full-width character column
+    x++;
+    printEllipsis (x, y, next_char);
   }
 }
 
@@ -955,12 +944,11 @@ inline void FTermOutput::skipPaddingCharacter ( uInt& x, uInt y
 }
 
 //----------------------------------------------------------------------
-auto FTermOutput::eraseCharacters (uInt& x, uInt xmax, uInt y) -> PrintState
+auto FTermOutput::eraseCharacters (uInt& x, uInt xmax, uInt y, FChar& print_char) -> PrintState
 {
   // Erase a number of characters to draw simple whitespaces
 
   const auto& ec = TCAP(t_erase_chars);
-  auto& print_char = vterm->getFChar(static_cast<int>(x), static_cast<int>(y));
 
   if ( ! (ec && print_char.ch[0] == L' ') )
     return PrintState::NothingPrinted;
@@ -995,13 +983,12 @@ auto FTermOutput::eraseCharacters (uInt& x, uInt xmax, uInt y) -> PrintState
 }
 
 //----------------------------------------------------------------------
-auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y) -> PrintState
+auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y, FChar& print_char) -> PrintState
 {
   // Repeat one character n-fold
 
   const auto& rp = TCAP(t_repeat_char);
   const auto& lr = TCAP(t_repeat_last_char);
-  auto& print_char = vterm->getFChar(static_cast<int>(x), static_cast<int>(y));
 
   if ( ! (rp || lr) )
     return PrintState::NothingPrinted;
@@ -1046,8 +1033,8 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y) -> PrintState
 inline auto FTermOutput::countRepetitions ( const FChar* print_char
                                           , uInt from, uInt to ) const -> uInt
 {
-  const auto* start = print_char + 1;
-  const auto* end = print_char + (to - from + 1);
+  const auto* start = std::next(print_char);
+  const auto* end = std::next(start, to - from);
 
   auto char_is_not_equal = [first_char = *print_char] (const FChar& ch)
   {
@@ -1288,14 +1275,14 @@ inline void FTermOutput::markAsPrinted (uInt from, uInt to, uInt y) const
     ch[1].attr.bit.printed = true;
     ch[2].attr.bit.printed = true;
     ch[3].attr.bit.printed = true;
-    ch += 4;
+    std::advance(ch, 4);
   }
 
   // Handle the remaining elements
   while ( ch < end )
   {
     ch->attr.bit.printed = true;
-    ++ch;
+    std::advance(ch, 1);
   }
 }
 

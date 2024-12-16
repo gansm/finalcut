@@ -1688,7 +1688,6 @@ void FWidget::initRootWidget()
 
   // Root widget basic initialization
   internal::var::root_widget = this;
-  finalcut::initByte1PrintTransMask();  // FWidget helper functions
   first_shown_widget = nullptr;
   redraw_root_widget = nullptr;
   modal_dialog_counter = 0;

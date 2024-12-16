@@ -39,18 +39,56 @@ namespace finalcut
 namespace internal
 {
 
+constexpr auto getByte0ReverseMask() -> uInt8
+{
+  FCharAttribute mask{};
+  mask.reverse = true;
+  mask.standout = true;
+  return getFAttributeByte(mask, 0);
+}
+
+constexpr auto getByte1Mask() -> uInt8
+{
+  FCharAttribute mask{};
+  mask.protect = true;
+  mask.crossed_out = true;
+  mask.dbl_underline = true;
+  mask.alt_charset = true;
+  mask.pc_charset = true;
+  return getFAttributeByte(mask, 1);
+}
+
+constexpr auto getByte1ResetMask() -> uInt8
+{
+  // Set bits that must not be reset
+  FCharAttribute mask{};
+  mask.transparent = true;
+  mask.color_overlay = true;
+  mask.inherit_background = true;
+  return getFAttributeByte(mask, 1);
+}
+
+constexpr auto getByte2ResetMask() -> uInt8
+{
+  // Set bits that must not be reset
+  FCharAttribute mask{};
+  mask.no_changes = true;
+  mask.printed = true;
+  return getFAttributeByte(mask, 2);
+}
+
 struct var
 {
-  static uInt8 b0_reverse_mask;
-  static uInt8 b1_mask;
-  static uInt8 b1_reset_mask;
-  static uInt8 b2_reset_mask;
+  static constexpr auto b0_reverse_mask = getByte0ReverseMask();
+  static constexpr auto b1_mask         = getByte1Mask();
+  static constexpr auto b1_reset_mask   = getByte1ResetMask();
+  static constexpr auto b2_reset_mask   = getByte2ResetMask();
 };
 
-uInt8 var::b0_reverse_mask{};
-uInt8 var::b1_mask{};
-uInt8 var::b1_reset_mask{};
-uInt8 var::b2_reset_mask{};
+constexpr uInt8 var::b0_reverse_mask;
+constexpr uInt8 var::b1_mask;
+constexpr uInt8 var::b1_reset_mask;
+constexpr uInt8 var::b2_reset_mask;
 
 }  // namespace internal
 
@@ -68,10 +106,6 @@ auto has_background_changes (const FChar&, const FColor, bool) -> bool;
 FOptiAttr::FOptiAttr()
 {
   attr_buf.reserve(SGRoptimizer::ATTR_BUF_SIZE);
-  internal::var::b0_reverse_mask = getByte0ReverseMask();
-  internal::var::b1_mask = getByte1Mask();
-  internal::var::b1_reset_mask = getByte1ResetMask();
-  internal::var::b2_reset_mask = getByte2ResetMask();
 }
 
 
@@ -133,353 +167,241 @@ void FOptiAttr::setTermEnvironment (const TermEnv& term_env)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_bold_mode (const char cap[])
+inline void FOptiAttr::set_mode ( Capability& capability
+                                , const char cap[]
+                                , bool caused_reset )
 {
   if ( cap )
   {
-    F_bold.on.cap = cap;
-    F_bold.on.caused_reset = false;
+    capability.cap = cap;
+    capability.caused_reset = caused_reset;
   }
+}
+
+//----------------------------------------------------------------------
+inline void FOptiAttr::set_mode_on ( TextStyle& style
+                                   , const char cap[]
+                                   , bool caused_reset )
+{
+  set_mode (style.on, cap, caused_reset);
+}
+
+//----------------------------------------------------------------------
+inline void FOptiAttr::set_mode_off ( TextStyle& style
+                                    , const char cap[]
+                                    , bool caused_reset )
+{
+  set_mode (style.off, cap, caused_reset);
+}
+
+//----------------------------------------------------------------------
+void FOptiAttr::set_enter_bold_mode (const char cap[])
+{
+  set_mode_on (F_bold, cap, false);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_exit_bold_mode (const char cap[])
 {
-  if ( cap )
-  {
-    F_bold.off.cap = cap;
-    F_bold.off.caused_reset = false;
-  }
+  set_mode_off (F_bold, cap, false);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_enter_dim_mode (const char cap[])
 {
-  if ( cap )
-  {
-    F_dim.on.cap = cap;
-    F_dim.on.caused_reset = false;
-  }
+  set_mode_on (F_dim, cap, false);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_exit_dim_mode (const char cap[])
 {
-  if ( cap )
-  {
-    F_dim.off.cap = cap;
-    F_dim.off.caused_reset = false;
-  }
+  set_mode_off (F_dim, cap, false);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_enter_italics_mode (const char cap[])
 {
-  if ( cap )
-  {
-    F_italics.on.cap = cap;
-    F_italics.on.caused_reset = false;
-  }
+  set_mode_on (F_italics, cap, false);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_exit_italics_mode (const char cap[])
 {
-  if ( cap )
-  {
-    F_italics.off.cap = cap;
-    F_italics.off.caused_reset = false;
-  }
+  set_mode_off (F_italics, cap, false);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_enter_underline_mode (const char cap[])
 {
-  if ( cap )
-  {
-    F_underline.on.cap = cap;
-    F_underline.on.caused_reset = false;
-  }
+  set_mode_on (F_underline, cap, false);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_exit_underline_mode (const char cap[])
 {
-  if ( cap )
-  {
-    F_underline.off.cap = cap;
-    F_underline.off.caused_reset = false;
-  }
+  set_mode_off (F_underline, cap, false);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_enter_blink_mode (const char cap[])
 {
-  if ( cap )
-  {
-    F_blink.on.cap = cap;
-    F_blink.on.caused_reset = false;
-  }
+  set_mode_on (F_blink, cap, false);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_exit_blink_mode (const char cap[])
 {
-  if ( cap )
-  {
-    F_blink.off.cap = cap;
-    F_blink.off.caused_reset = false;
-  }
+  set_mode_off (F_blink, cap, false);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_enter_reverse_mode (const char cap[])
 {
-  if ( cap )
-  {
-    F_reverse.on.cap = cap;
-    F_reverse.on.caused_reset = false;
-  }
+  set_mode_on (F_reverse, cap, false);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_exit_reverse_mode (const char cap[])
 {
-  if ( cap )
-  {
-    F_reverse.off.cap = cap;
-    F_reverse.off.caused_reset = false;
-  }
+  set_mode_off (F_reverse, cap, false);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_enter_secure_mode (const char cap[])
 {
-  if ( cap )
-  {
-    F_secure.on.cap = cap;
-    F_secure.on.caused_reset = false;
-  }
+  set_mode_on (F_secure, cap, false);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_exit_secure_mode (const char cap[])
 {
-  if ( cap )
-  {
-    F_secure.off.cap = cap;
-    F_secure.off.caused_reset = false;
-  }
+  set_mode_off (F_secure, cap, false);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_enter_protected_mode (const char cap[])
 {
-  if ( cap )
-  {
-    F_protected.on.cap = cap;
-    F_protected.on.caused_reset = false;
-  }
+  set_mode_on (F_protected, cap, false);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_exit_protected_mode (const char cap[])
 {
-  if ( cap )
-  {
-    F_protected.off.cap = cap;
-    F_protected.off.caused_reset = false;
-  }
+  set_mode_off (F_protected, cap, false);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_enter_crossed_out_mode (const char cap[])
 {
-  if ( cap )
-  {
-    F_crossed_out.on.cap = cap;
-    F_crossed_out.on.caused_reset = false;
-  }
+  set_mode_on (F_crossed_out, cap, false);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_exit_crossed_out_mode (const char cap[])
 {
-  if ( cap )
-  {
-    F_crossed_out.off.cap = cap;
-    F_crossed_out.off.caused_reset = false;
-  }
+  set_mode_off (F_crossed_out, cap, false);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_enter_dbl_underline_mode (const char cap[])
 {
-  if ( cap )
-  {
-    F_dbl_underline.on.cap = cap;
-    F_dbl_underline.on.caused_reset = false;
-  }
+  set_mode_on (F_dbl_underline, cap, false);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_exit_dbl_underline_mode (const char cap[])
 {
-  if ( cap )
-  {
-    F_dbl_underline.off.cap = cap;
-    F_dbl_underline.off.caused_reset = false;
-  }
+  set_mode_off (F_dbl_underline, cap, false);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_enter_standout_mode (const char cap[])
 {
-  if ( cap )
-  {
-    F_standout.on.cap = cap;
-    F_standout.on.caused_reset = false;
-  }
+  set_mode_on (F_standout, cap, false);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_exit_standout_mode (const char cap[])
 {
-  if ( cap )
-  {
-    F_standout.off.cap = cap;
-    F_standout.off.caused_reset = false;
-  }
+  set_mode_off (F_standout, cap, false);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_set_attributes (const char cap[])
 {
-  if ( cap )
-  {
-    F_attributes.on.cap = cap;
-    F_attributes.on.caused_reset = true;
-  }
+  set_mode_on (F_attributes, cap, true);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_exit_attribute_mode (const char cap[])
 {
-  if ( cap )
-  {
-    F_attributes.off.cap = cap;
-    F_attributes.off.caused_reset = true;
-  }
+  set_mode_off (F_attributes, cap, true);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_enter_alt_charset_mode (const char cap[])
 {
-  if ( cap )
-  {
-    F_alt_charset.on.cap = cap;
-    F_alt_charset.on.caused_reset = false;
-  }
+  set_mode_on (F_alt_charset, cap, false);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_exit_alt_charset_mode (const char cap[])
 {
-  if ( cap )
-  {
-    F_alt_charset.off.cap = cap;
-    F_alt_charset.off.caused_reset = false;
-  }
+  set_mode_off (F_alt_charset, cap, false);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_enter_pc_charset_mode (const char cap[])
 {
-  if ( cap )
-  {
-    F_pc_charset.on.cap = cap;
-    F_pc_charset.on.caused_reset = false;
-  }
+  set_mode_on (F_pc_charset, cap, false);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_exit_pc_charset_mode (const char cap[])
 {
-  if ( cap )
-  {
-    F_pc_charset.off.cap = cap;
-    F_pc_charset.off.caused_reset = false;
-  }
+  set_mode_off (F_pc_charset, cap, false);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_a_foreground_color (const char cap[])
 {
-  if ( cap )
-  {
-    F_color.a_foreground.cap = cap;
-    F_color.a_foreground.caused_reset = false;
-  }
+  set_mode (F_color.a_foreground, cap, false);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_a_background_color (const char cap[])
 {
-  if ( cap )
-  {
-    F_color.a_background.cap = cap;
-    F_color.a_background.caused_reset = false;
-  }
+  set_mode (F_color.a_background, cap, false);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_foreground_color (const char cap[])
 {
-  if ( cap )
-  {
-    F_color.foreground.cap = cap;
-    F_color.foreground.caused_reset = false;
-  }
+  set_mode (F_color.foreground, cap, false);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_background_color (const char cap[])
 {
-  if ( cap )
-  {
-    F_color.background.cap = cap;
-    F_color.background.caused_reset = false;
-  }
+  set_mode (F_color.background, cap, false);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_term_color_pair (const char cap[])
 {
-  if ( cap )
-  {
-    F_color.color_pair.cap = cap;
-    F_color.color_pair.caused_reset = false;
-  }
+  set_mode (F_color.color_pair, cap, false);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_orig_pair (const char cap[])
 {
-  if ( cap )
-  {
-    F_color.orig_pair.cap = cap;
-    F_color.orig_pair.caused_reset = false;
-  }
+  set_mode (F_color.orig_pair, cap, false);
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::set_orig_colors (const char cap[])
 {
-  if ( cap )
-  {
-    F_color.orig_colors.cap = cap;
-    F_color.orig_colors.caused_reset = false;
-  }
+  set_mode (F_color.orig_colors, cap, false);
 }
 
 //----------------------------------------------------------------------
@@ -1156,13 +1078,16 @@ void FOptiAttr::change_color (FChar& term, FChar& next)
   FColor bg = next.bg_color;
   handleDefaultColors (term, next, fg, bg);
 
-  if ( fake_reverse && fg == FColor::Default && bg == FColor::Default )
-    return;
-
-  if ( fake_reverse && (next.attr.bit.reverse || next.attr.bit.standout) )
+  if ( fake_reverse )
   {
-    std::swap (fg, bg);
-    handleDefaultColors (term, next, fg, bg);
+    if ( fg == FColor::Default && bg == FColor::Default )
+      return;
+
+    if ( next.attr.bit.reverse || next.attr.bit.standout )
+    {
+      std::swap (fg, bg);
+      handleDefaultColors (term, next, fg, bg);
+    }
   }
 
   change_current_color (term, fg, bg);
@@ -1245,34 +1170,36 @@ inline void FOptiAttr::change_current_color ( const FChar& term
   constexpr auto ANSI = 0;
   constexpr auto VGA = 1;
 
-  auto apply_color_change = [this, &term, &fg, &bg, &frev] ( const char* fg_cap
-                                                           , const char* bg_cap
-                                                           , int cm )
+  auto apply_color_change = [this, &term, fg, bg, frev] ( const char* fg_cap
+                                                        , const char* bg_cap
+                                                        , int cm )
   {
     if ( ! fg_cap || ! bg_cap )
       return false;
 
-    const auto fg_value = ( cm == VGA ) ? uInt16(vga2ansi(fg)) : uInt16(fg);
-    const auto bg_value = ( cm == VGA ) ? uInt16(vga2ansi(bg)) : uInt16(bg);
-
     if ( has_foreground_changes(term, fg, frev) )
+    {
+      const auto fg_value = ( cm == VGA ) ? uInt16(vga2ansi(fg)) : uInt16(fg);
       append_sequence(FTermcap::encodeParameter(fg_cap, fg_value));
+    }
 
     if ( has_background_changes(term, bg, frev) )
+    {
+      const auto bg_value = ( cm == VGA ) ? uInt16(vga2ansi(bg)) : uInt16(bg);
       append_sequence(FTermcap::encodeParameter(bg_cap, bg_value));
+    }
 
     return true;
   };
 
-  const bool apply_AF_AB = apply_color_change(AF, AB, VGA);
-  const bool apply_Sf_Sb = apply_color_change(Sf, Sb, ANSI);
-
-  if ( apply_AF_AB || apply_Sf_Sb || ! sp )
-    return;
-
-  const auto fg_value = uInt16(vga2ansi(fg));
-  const auto bg_value = uInt16(vga2ansi(bg));
-  append_sequence (FTermcap::encodeParameter(sp, fg_value, bg_value));
+  if ( ! apply_color_change(AF, AB, VGA)
+    && ! apply_color_change(Sf, Sb, ANSI)
+    && sp )
+  {
+    const auto fg_value = uInt16(vga2ansi(fg));
+    const auto bg_value = uInt16(vga2ansi(bg));
+    append_sequence (FTermcap::encodeParameter(sp, fg_value, bg_value));
+  }
 }
 
 //----------------------------------------------------------------------
@@ -1421,48 +1348,6 @@ auto FOptiAttr::getAttributeOffHandlers() -> const AttributeHandlers&
   );
 
   return *attribute_off_handlers;
-}
-
-//----------------------------------------------------------------------
-auto FOptiAttr::getByte0ReverseMask() -> uInt8
-{
-  FCharAttribute mask{};
-  mask.reverse = true;
-  mask.standout = true;
-  return getFAttributeByte(mask, 0);
-}
-
-//----------------------------------------------------------------------
-auto FOptiAttr::getByte1Mask() -> uInt8
-{
-  FCharAttribute mask{};
-  mask.protect = true;
-  mask.crossed_out = true;
-  mask.dbl_underline = true;
-  mask.alt_charset = true;
-  mask.pc_charset = true;
-  return getFAttributeByte(mask, 1);
-}
-
-//----------------------------------------------------------------------
-auto FOptiAttr::getByte1ResetMask() -> uInt8
-{
-  // Set bits that must not be reset
-  FCharAttribute mask{};
-  mask.transparent = true;
-  mask.color_overlay = true;
-  mask.inherit_background = true;
-  return getFAttributeByte(mask, 1);
-}
-
-//----------------------------------------------------------------------
-auto FOptiAttr::getByte2ResetMask() -> uInt8
-{
-  // Set bits that must not be reset
-  FCharAttribute mask{};
-  mask.no_changes = true;
-  mask.printed = true;
-  return getFAttributeByte(mask, 2);
 }
 
 //----------------------------------------------------------------------

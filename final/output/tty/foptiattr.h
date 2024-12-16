@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2023 Markus Gans                                      *
+* Copyright 2016-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -210,6 +210,9 @@ class FOptiAttr final
     };
 
     // Mutators
+    void        set_mode (Capability&, const char[], bool);
+    void        set_mode_on (TextStyle&, const char[], bool);
+    void        set_mode_off (TextStyle&, const char[], bool);
     auto        setTermBold (FChar&) -> bool;
     auto        unsetTermBold (FChar&) -> bool;
     auto        setTermDim (FChar&) -> bool;
@@ -277,10 +280,6 @@ class FOptiAttr final
     static auto getNoColorVideoHandlerTable() -> const NoColorVideoHandlerTable&;
     static auto getAttributeOnHandlers() -> const AttributeHandlers&;
     static auto getAttributeOffHandlers() -> const AttributeHandlers&;
-    static auto getByte0ReverseMask() -> uInt8;
-    static auto getByte1Mask() -> uInt8;
-    static auto getByte1ResetMask() -> uInt8;
-    static auto getByte2ResetMask() -> uInt8;
     void        detectSwitchOn (const FChar&, const FChar&);
     void        detectSwitchOff (const FChar&, const FChar&);
     auto        switchOn() const -> bool;

@@ -496,9 +496,9 @@ void FTermcap::termcapKeys()
 auto FTermcap::encodeParams ( const std::string& cap
                             , const std::array<int, 9>& params ) -> std::string
 {
-  auto str = ::tparm ( C_STR(cap.data()), params[0], params[1]
-                     , params[2], params[3], params[4], params[5]
-                     , params[6], params[7], params[8] );
+  const auto str = ::tparm ( C_STR(cap.data()), params[0], params[1]
+                           , params[2], params[3], params[4], params[5]
+                           , params[6], params[7], params[8] );
   return str ? str : std::string();
 }
 

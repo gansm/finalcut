@@ -296,9 +296,9 @@ struct FCharAttribute
   uInt8 printed            : 1;  // is printed to VTerm
   uInt8 fullwidth_padding  : 1;  // padding char (after a full-width char)
   uInt8 char_width         : 2;  // number of character cells on screen
-  uInt8                    : 3;  // padding bits
+  uInt8 padding1           : 3;  // padding bits
   // Attribute byte #3
-  uInt8                    : 8;  // padding byte
+  uInt8 padding2           : 8;  // padding byte
 };
 
 #if HAVE_BUILTIN(__builtin_bit_cast)

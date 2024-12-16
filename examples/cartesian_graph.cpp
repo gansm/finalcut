@@ -28,11 +28,12 @@
 
 #include <final/final.h>
 
+using finalcut::FColor;
+using finalcut::FColorPair;
 using finalcut::FPoint;
 using finalcut::FSize;
-using finalcut::FColor;
-using finalcut::UniChar;
 using finalcut::FVTerm;
+using finalcut::UniChar;
 
 template <typename T>
 struct point
@@ -218,7 +219,9 @@ void GraphWindow::draw()
   for (const auto& p : points)
   {
     print() << transformToScreen(p)
-            << UniChar::BlackCircle;
+            << FColorPair(FColor::Red, FColor::White)
+            << UniChar::BlackCircle
+            << FColorPair(FColor::Black, FColor::White);
   }
 
   print() << FPoint(zero.getX(), border_top)

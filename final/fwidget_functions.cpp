@@ -40,12 +40,24 @@ namespace finalcut
 namespace internal
 {
 
+constexpr auto initByte1PrintTransMask() -> uInt8
+{
+  // Set bits that must not be reset
+  FCharAttribute mask{};
+  mask.transparent = true;
+  mask.color_overlay = true;
+  mask.inherit_background = true;
+  mask.no_changes = true;
+  mask.printed = true;
+  return getFAttributeByte(mask, 1);
+}
+
 struct var
 {
-  static uInt8 b1_print_trans_mask;
+  static constexpr auto b1_print_trans_mask = initByte1PrintTransMask();
 };
 
-uInt8 var::b1_print_trans_mask{};
+constexpr uInt8 var::b1_print_trans_mask;
 
 }  // namespace internal
 
@@ -74,19 +86,6 @@ void drawBottomShadow (TransparentShadowData&);
 
 
 // FWidget non-member functions
-//----------------------------------------------------------------------
-void initByte1PrintTransMask()
-{
-  // Set bits that must not be reset
-  FCharAttribute mask{};
-  mask.transparent = true;
-  mask.color_overlay = true;
-  mask.inherit_background = true;
-  mask.no_changes = true;
-  mask.printed = true;
-  internal::var::b1_print_trans_mask = getFAttributeByte(mask, 1);
-}
-
 //----------------------------------------------------------------------
 auto isFocusNextKey (const FKey key) -> bool
 {
@@ -906,7 +905,6 @@ struct GenericBoxData
   GenericBoxData ( FWidget* w, const FRect& r
                  , const std::array<wchar_t, 8>& chars )
     : box_char{chars}
-    , fchar{FVTermAttribute::getAttribute()}
     , area{*w->getPrintArea()}
     , x_offset{w->woffset.getX1() + w->getX() - area.position.x - 1}
     , y_offset{w->woffset.getY1() + w->getY() - area.position.y - 1}
@@ -935,7 +933,7 @@ struct GenericBoxData
 
   // Data members
   const std::array<wchar_t, 8>& box_char{};
-  FChar& fchar;
+  FChar& fchar{FVTermAttribute::getAttribute()};
   FVTerm::FTermArea& area;
   const int  x_offset{0};
   const int  y_offset{0};
