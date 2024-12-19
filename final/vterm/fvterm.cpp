@@ -646,21 +646,26 @@ void FVTerm::resizeArea (const FRect& box, FTermArea* area) const
 //----------------------------------------------------------------------
 void FVTerm::restoreVTerm (const FRect& box) const noexcept
 {
-  const auto& win_list = getWindowList();
-
-  if ( ! vterm || ! win_list || win_list->empty()
-    || box.getWidth() == 0 || box.getHeight() == 0 )
+  if ( ! vterm || box.getWidth() == 0 || box.getHeight() == 0 )
     return;
 
-  const FSize vterm_size{ std::size_t(vterm->size.width)
-                        , std::size_t(vterm->size.height) };
+  const auto* win_list = getWindowList();
+
+  if ( ! win_list || win_list->empty() )
+    return;
+
+  const FSize vterm_size{ static_cast<std::size_t>(vterm->size.width)
+                        , static_cast<std::size_t>(vterm->size.height) };
 
   if ( vdesktop && vdesktop->reprint(box, vterm_size) )
     addLayer(vdesktop.get());
 
   for (const auto& win_obj : *win_list)
   {
-    const auto& win = win_obj->getVWin();
+    if ( ! win_obj )
+      continue;
+
+    auto* win = win_obj->getVWin();
 
     if ( win && win->visible && win->layer > 0 && win->reprint(box, vterm_size) )
       addLayer(win);
@@ -788,13 +793,15 @@ void FVTerm::addLayer (FTermArea* area) const noexcept
   if ( ! area || ! area->visible )
     return;
 
-  const int ax = std::max(area->position.x, 0);
+  const int area_x = area->position.x;
+  const int ax = std::max(area_x, 0);
   const int ay = area->position.y;
-  const int ol = std::max(0, -area->position.x);  // Outside left
+  const int ol = std::max(0, -area_x);  // Outside left
   const int vterm_width = vterm->size.width;
   const int width = getFullAreaWidth(area);
   const int height = area->minimized ? area->min_size.height : getFullAreaHeight(area);
   const int y_end = std::min(vterm->size.height - ay, height);
+  const int xmax_inside_vterm = vterm_width - area_x - 1;
 
   // Call the preprocessing handler methods (child area change handling)
   callPreprocessingHandler(area);
@@ -802,22 +809,20 @@ void FVTerm::addLayer (FTermArea* area) const noexcept
   for (auto y{0}; y < y_end; y++)  // Line loop
   {
     auto& line_changes = area->changes[unsigned(y)];
-    const auto line_xmin = std::max( int(line_changes.xmin)
-                                   , ol );
-    const auto line_xmax = std::min( int(line_changes.xmax)
-                                   , vterm_width + ol - ax - 1 );
+    const auto line_xmin = std::max(int(line_changes.xmin), ol);
+    const auto line_xmax = std::min(int(line_changes.xmax), xmax_inside_vterm);
 
     if ( line_xmin > line_xmax )
       continue;
 
-    const int tx = ax + line_xmin - ol;  // Global terminal x-position
-    const int ty = ay + y;               // Global terminal y-position
+    const int tx = area_x + line_xmin;  // Global terminal x-position
+    const int ty = ay + y;              // Global terminal y-position
 
     if ( tx < 0 || tx >= vterm_width || ty < 0 )
       continue;
 
     const std::size_t length = unsigned(line_xmax - line_xmin + 1);
-    const auto& ac = area->getFChar(line_xmin, y);   // Area character
+    const auto& ac = area->getFChar(line_xmin, y);  // Area character
     auto& tc = vterm->getFChar(tx, ty);  // Terminal character
 
     if ( line_changes.trans_count > 0 )

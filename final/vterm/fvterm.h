@@ -374,8 +374,8 @@ struct FVTerm::FTermArea  // Define virtual terminal character properties
 {
   // Using-declaration
   using FDataAccessPtr  = std::shared_ptr<FDataAccess>;
-  using FLineChangesPtr = std::vector<FLineChanges>;
-  using FCharPtr        = std::vector<FChar>;
+  using FLineChangesVec = std::vector<FLineChanges>;
+  using FCharVec        = std::vector<FChar>;
 
   // Constructor
   FTermArea() = default;
@@ -480,8 +480,8 @@ struct FVTerm::FTermArea  // Define virtual terminal character properties
   bool            minimized{false};
   FDataAccessPtr  owner{nullptr};        // Object that owns this FTermArea
   FPreprocVector  preproc_list{};
-  FLineChangesPtr changes{};
-  FCharPtr        data{};                // FChar data of the drawing area
+  FLineChangesVec changes{};
+  FCharVec        data{};                // FChar data of the drawing area
 };
 
 //----------------------------------------------------------------------
@@ -489,13 +489,18 @@ inline auto FVTerm::FTermArea::contains (const FPoint& pos) const noexcept -> bo
 {
   // Is the terminal position (pos) located on my area?
 
-  const int current_height = minimized ? min_size.height : size.height + shadow.height;
+  const int current_height = minimized ? min_size.height
+                                       : size.height + shadow.height;
+  const int x_min = position.x;
+  const int x_max = x_min + size.width + shadow.width;
+  const int y_min = position.y;
+  const int y_max = y_min + current_height;
   const int x = pos.getX();
   const int y = pos.getY();
-  return x >= position.x
-      && x < position.x + size.width + shadow.width
-      && y >= position.y
-      && y < position.y + current_height;
+  return x >= x_min
+      && x < x_max
+      && y >= y_min
+      && y < y_max;
 }
 
 //----------------------------------------------------------------------
@@ -504,9 +509,9 @@ inline auto FVTerm::FTermArea::isOverlapped (const FRect& box) const noexcept ->
   const int current_height = minimized ? min_size.height
                                        : size.height + shadow.height;
   const int x1 = position.x;
-  const int x2 = position.x + size.width + shadow.width - 1;
+  const int x2 = x1 + size.width + shadow.width - 1;
   const int y1 = position.y;
-  const int y2 = position.y + current_height - 1;
+  const int y2 = y1 + current_height - 1;
 
   return ( std::max(x1, box.getX1() - 1) <= std::min(x2, box.getX2() - 1)
         && std::max(y1, box.getY1() - 1) <= std::min(y2, box.getY2() - 1) );
@@ -518,16 +523,16 @@ inline auto FVTerm::FTermArea::isOverlapped (const FTermArea* area) const noexce
   const int current_height = minimized ? min_size.height
                                        : size.height + shadow.height;
   const int x1 = position.x;
-  const int x2 = position.x + size.width + shadow.width - 1;
+  const int x2 = x1 + size.width + shadow.width - 1;
   const int y1 = position.y;
-  const int y2 = position.y + current_height - 1;
+  const int y2 = y1 + current_height - 1;
 
   const int area_current_height = area->minimized ? area->min_size.height
                                                   : area->size.height + area->shadow.height;
   const int area_x1 = area->position.x;
-  const int area_x2 = area->position.x + area->size.width + area->shadow.width - 1;
+  const int area_x2 = area_x1 + area->size.width + area->shadow.width - 1;
   const int area_y1 = area->position.y;
-  const int area_y2 = area->position.y + area_current_height - 1;
+  const int area_y2 = area_y1 + area_current_height - 1;
 
   return ( std::max(x1, area_x1) <= std::min(x2, area_x2)
         && std::max(y1, area_y1) <= std::min(y2, area_y2) );
@@ -558,18 +563,22 @@ inline auto FVTerm::FTermArea::reprint (const FRect& box, const FSize& term_size
     return false;
 
   has_changes = true;
-  const int y_start = std::max(0, std::max(y_pos, position.y)) - position.y;
-  const int box_y2 = y_pos + h - 1;
+
+  // Vertical boundaries
   const int current_height = minimized ? min_size.height : size.height + shadow.height;
-  const int y2 = position.y + current_height - 1;
-  const int y_end = std::min(int(term_size.getHeight()) - 1, std::min(box_y2, y2)) - position.y;
+  const int y_start = std::max({0, y_pos, position.y}) - position.y;
+  const int y_end = std::min({ int(term_size.getHeight()) - 1
+                             , y_pos + h - 1
+                             , position.y + current_height - 1 }) - position.y;
+
+  // Horizontal boundaries
+  const int x_start = std::max({0, x_pos, position.x}) - position.x;
+  const int x_end = std::min({ int(term_size.getWidth()) - 1
+                             , x_pos + w - 1
+                             , position.x + size.width + shadow.width - 1 }) - position.x;
 
   for (auto y{y_start}; y <= y_end; y++)  // Line loop
   {
-    const int x_start = std::max(0, std::max(x_pos, position.x)) - position.x;
-    const int box_x2 = x_pos + w - 1;
-    const int x2 = position.x + size.width + shadow.width - 1;
-    const int x_end = std::min(int(term_size.getWidth()) - 1 , std::min(box_x2, x2)) - position.x;
     auto& line_changes = changes[std::size_t(y)];
     line_changes.xmin = uInt(std::min(int(line_changes.xmin), x_start));
     line_changes.xmax = uInt(std::max(int(line_changes.xmax), x_end));
