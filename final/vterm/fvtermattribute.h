@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021-2023 Markus Gans                                      *
+* Copyright 2021-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -150,11 +150,11 @@ inline auto FVTermAttribute::getClassName() const -> FString
 
 //----------------------------------------------------------------------
 inline auto FVTermAttribute::getTermForegroundColor() -> FColor
-{ return next_attribute.fg_color; }
+{ return next_attribute.color.pair.fg; }
 
 //----------------------------------------------------------------------
 inline auto FVTermAttribute::getTermBackgroundColor() -> FColor
-{ return next_attribute.bg_color; }
+{ return next_attribute.color.pair.bg; }
 
 //----------------------------------------------------------------------
 inline auto FVTermAttribute::getAttribute() -> FChar&
@@ -164,8 +164,8 @@ inline auto FVTermAttribute::getAttribute() -> FChar&
 inline void FVTermAttribute::setColor (FColor fg, FColor bg)
 {
   // Changes colors
-  next_attribute.fg_color = fg;
-  next_attribute.bg_color = bg;
+  next_attribute.color.pair.fg = fg;
+  next_attribute.color.pair.bg = bg;
 }
 
 //----------------------------------------------------------------------
@@ -181,8 +181,8 @@ inline void FVTermAttribute::setNormal()
   next_attribute.attr.byte[0] = 0;
   next_attribute.attr.byte[1] = 0;
   next_attribute.attr.bit.no_changes = false;
-  next_attribute.fg_color = FColor::Default;
-  next_attribute.bg_color = FColor::Default;
+  next_attribute.color.pair.fg = FColor::Default;
+  next_attribute.color.pair.bg = FColor::Default;
 }
 
 //----------------------------------------------------------------------

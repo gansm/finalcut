@@ -139,8 +139,7 @@ void FVTermBuffer::print (const FColorPair& pair) const
 inline void FVTermBuffer::getNextCharacterAttribute()
 {
   static const auto& next_attribute = FVTermAttribute::getAttribute();
-  nc.fg_color     = next_attribute.fg_color;
-  nc.bg_color     = next_attribute.bg_color;
+  nc.color.data   = next_attribute.color.data;
   nc.attr.byte[0] = next_attribute.attr.byte[0];
   nc.attr.byte[1] = next_attribute.attr.byte[1];
   nc.attr.byte[2] = 0;

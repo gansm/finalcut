@@ -2101,9 +2101,9 @@ void FWidget::drawWindows() const
 {
   // redraw windows
   FChar default_char{};
-  default_char.ch[0]        = L' ';
-  default_char.fg_color     = FColor::Default;
-  default_char.bg_color     = FColor::Default;
+  default_char.ch[0] = L' ';
+  default_char.color.pair.fg = FColor::Default;
+  default_char.color.pair.bg = FColor::Default;
   default_char.attr.byte[0] = 0;
   default_char.attr.byte[1] = 0;
 

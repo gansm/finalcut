@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2022-2023 Markus Gans                                      *
+* Copyright 2022-2024 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -87,8 +87,8 @@ void showFCharData (const finalcut::FChar& fchar)
                           uInt32(fchar.encoded_char[2]) << L", " <<
                           uInt32(fchar.encoded_char[3]) << L", " <<
                           uInt32(fchar.encoded_char[4]) << L"}\n";
-  std::wcout << L"                   fg_color: " << int(fchar.fg_color) << L'\n';
-  std::wcout << L"                   bg_color: " << int(fchar.bg_color) << L'\n';
+  std::wcout << L"              color.pair.fg: " << int(fchar.color.pair.fg) << L'\n';
+  std::wcout << L"              color.pair.bg: " << int(fchar.color.pair.bg) << L'\n';
   std::wcout << L"                    attr[0]: " << int(fchar.attr.byte[0]) << L'\n';
   std::wcout << L"              attr.bit.bold: " << bool(fchar.attr.bit.bold) << L'\n';
   std::wcout << L"               attr.bit.dim: " << bool(fchar.attr.bit.dim) << L'\n';
@@ -168,8 +168,7 @@ auto isFCharEqual ( const finalcut::FChar& lhs
 
   return finalcut::isFUnicodeEqual(lhs.ch, rhs.ch)
       && finalcut::isFUnicodeEqual(lhs.encoded_char, rhs.encoded_char)
-      && lhs.fg_color     == rhs.fg_color
-      && lhs.bg_color     == rhs.bg_color
+      && lhs.color.data   == rhs.color.data
       && lhs.attr.byte[0] == rhs.attr.byte[0]
       && lhs.attr.byte[1] == rhs.attr.byte[1]
       && (~ attr.byte[2] & lhs.attr.byte[2]) == (~ attr.byte[2] & rhs.attr.byte[2])

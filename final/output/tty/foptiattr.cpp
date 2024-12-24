@@ -821,8 +821,8 @@ inline auto FOptiAttr::unsetTermPCcharset (FChar& term) -> bool
 //----------------------------------------------------------------------
 auto FOptiAttr::setTermDefaultColor (FChar& term) -> bool
 {
-  term.fg_color = FColor::Default;
-  term.bg_color = FColor::Default;
+  term.color.pair.fg = FColor::Default;
+  term.color.pair.bg = FColor::Default;
 
   if ( append_sequence(F_color.orig_pair.cap)
     || append_sequence(F_color.orig_colors.cap) )
@@ -859,7 +859,7 @@ void FOptiAttr::setAttributes ( const FAttribute& attribute
 {
   FAttribute attr{attribute};
 
-  if ( ! attr.word )
+  if ( ! attr.data )
     return;
 
   for (const auto& handler : attribute_handlers)
@@ -875,7 +875,7 @@ void FOptiAttr::setAttributes ( const FAttribute& attribute
       attr.byte[b] ^= mask.byte[b];  // Clear found bit
     }
 
-    if ( ! attr.word )
+    if ( ! attr.data )
       break;
   }
 }
@@ -883,8 +883,8 @@ void FOptiAttr::setAttributes ( const FAttribute& attribute
 //----------------------------------------------------------------------
 auto FOptiAttr::hasColor (const FChar& attr) -> bool
 {
-  return ( attr.fg_color != FColor::Default
-        || attr.bg_color != FColor::Default );
+  return ( attr.color.pair.fg != FColor::Default
+        || attr.color.pair.bg != FColor::Default );
 }
 
 //----------------------------------------------------------------------
@@ -952,15 +952,15 @@ inline auto FOptiAttr::hasColorChanged ( const FChar& term
   const bool frev ( ( (changes.on.attr.byte[0] & b0_reverse_mask)
                    || (changes.off.attr.byte[0] & b0_reverse_mask) ) && fake_reverse );
   return frev
-      || term.fg_color != next.fg_color
-      || term.bg_color != next.bg_color;
+      || term.color.pair.fg != next.color.pair.fg
+      || term.color.pair.bg != next.color.pair.bg;
 }
 
 //----------------------------------------------------------------------
 inline void FOptiAttr::resetColor (FChar& attr) const
 {
-  attr.fg_color = FColor::Default;
-  attr.bg_color = FColor::Default;
+  attr.color.pair.fg = FColor::Default;
+  attr.color.pair.bg = FColor::Default;
 }
 
 //----------------------------------------------------------------------
@@ -1067,15 +1067,15 @@ void FOptiAttr::change_color (FChar& term, FChar& next)
 {
   if ( F_color.monochron )
   {
-    next.fg_color = FColor::Default;
-    next.bg_color = FColor::Default;
+    next.color.pair.fg = FColor::Default;
+    next.color.pair.bg = FColor::Default;
     return;
   }
 
-  normalizeColor (next.fg_color);
-  normalizeColor (next.bg_color);
-  FColor fg = next.fg_color;
-  FColor bg = next.bg_color;
+  normalizeColor (next.color.pair.fg);
+  normalizeColor (next.color.pair.bg);
+  FColor fg = next.color.pair.fg;
+  FColor bg = next.color.pair.bg;
   handleDefaultColors (term, next, fg, bg);
 
   if ( fake_reverse )
@@ -1091,8 +1091,7 @@ void FOptiAttr::change_color (FChar& term, FChar& next)
   }
 
   change_current_color (term, fg, bg);
-  term.fg_color = next.fg_color;
-  term.bg_color = next.bg_color;
+  term.color.data = next.color.data;
 }
 
 //----------------------------------------------------------------------
@@ -1116,8 +1115,8 @@ inline void FOptiAttr::change_to_default_color ( FChar& term, FChar& next
 {
   if ( F_color.ansi_default_color )
   {
-    auto set_default_fg = fg == FColor::Default && term.fg_color != FColor::Default;
-    auto set_default_bg = bg == FColor::Default && term.bg_color != FColor::Default;
+    auto set_default_fg = fg == FColor::Default && term.color.pair.fg != FColor::Default;
+    auto set_default_bg = bg == FColor::Default && term.color.pair.bg != FColor::Default;
 
     if ( set_default_fg && set_default_bg )
       setTermDefaultColor(term);
@@ -1129,8 +1128,8 @@ inline void FOptiAttr::change_to_default_color ( FChar& term, FChar& next
   else if ( ! setTermDefaultColor(term) )
   {
     // Fallback to gray on black
-    fg = next.fg_color = FColor::LightGray;
-    bg = next.bg_color = FColor::Black;
+    fg = next.color.pair.fg = FColor::LightGray;
+    bg = next.color.pair.bg = FColor::Black;
   }
 }
 
@@ -1139,7 +1138,7 @@ inline void FOptiAttr::setDefaultForeground (FChar& term)
 {
   std::string sgr_39{CSI "39m"};
   append_sequence (sgr_39);
-  term.fg_color = FColor::Default;
+  term.color.pair.fg = FColor::Default;
 }
 
 //----------------------------------------------------------------------
@@ -1154,7 +1153,7 @@ inline void FOptiAttr::setDefaultBackground (FChar& term)
     sgr_49 = CSI "49m";
 
   append_sequence (sgr_49);
-  term.bg_color = FColor::Default;
+  term.color.pair.bg = FColor::Default;
 }
 
 //----------------------------------------------------------------------
@@ -1399,13 +1398,13 @@ inline auto FOptiAttr::append_sequence (const std::string& seq) -> bool
 //----------------------------------------------------------------------
 inline auto has_foreground_changes (const FChar& term, const FColor fg, bool frev) -> bool
 {
-  return term.fg_color != fg || frev;
+  return term.color.pair.fg != fg || frev;
 }
 
 //----------------------------------------------------------------------
 inline auto has_background_changes (const FChar& term, const FColor bg, bool frev) -> bool
 {
-  return term.bg_color != bg || frev;
+  return term.color.pair.bg != bg || frev;
 }
 
 }  // namespace finalcut

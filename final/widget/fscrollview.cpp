@@ -782,7 +782,7 @@ void FScrollView::init()
   std::size_t height = std::max(std::size_t(1), getViewportHeight());
   createViewport({ FSize{width, height} });
 
-  if ( hasPreprocessingHandler(this) )
+  if ( ! hasPreprocessingHandler(this) )
     addLocalPreprocessingHandler();
 
   if ( viewport )

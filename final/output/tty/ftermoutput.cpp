@@ -378,13 +378,10 @@ void FTermOutput::clearTerminalAttributes()
 void FTermOutput::clearTerminalState()
 {
   // term_attribute stores the current state of the terminal
-  term_attribute.ch           = {{ L'\0' }};
-  term_attribute.fg_color     = FColor::Undefined;
-  term_attribute.bg_color     = FColor::Undefined;
-  term_attribute.attr.byte[0] = 0;
-  term_attribute.attr.byte[1] = 0;
-  term_attribute.attr.byte[2] = 0;
-  term_attribute.attr.byte[3] = 0;
+  term_attribute.ch = {{ L'\0' }};
+  term_attribute.color.pair.fg = FColor::Undefined;
+  term_attribute.color.pair.bg = FColor::Undefined;
+  term_attribute.attr.data = 0;
 }
 
 //----------------------------------------------------------------------
@@ -845,8 +842,7 @@ void FTermOutput::printFullWidthCharacter ( uInt& x, uInt y
 
   if ( print_char.attr.byte[0] == next_char.attr.byte[0]
     && print_char.attr.byte[1] == next_char.attr.byte[1]
-    && print_char.fg_color == next_char.fg_color
-    && print_char.bg_color == next_char.bg_color
+    && print_char.color.data == next_char.color.data
     && isFullWidthChar(print_char)
     && isFullWidthPaddingChar(next_char) )
   {
@@ -877,8 +873,7 @@ void FTermOutput::printFullWidthPaddingCharacter ( uInt& x, uInt y
 
   if ( print_char.attr.byte[0] == prev_char.attr.byte[0]
     && print_char.attr.byte[1] == prev_char.attr.byte[1]
-    && print_char.fg_color == prev_char.fg_color
-    && print_char.bg_color == prev_char.bg_color
+    && print_char.color.data == prev_char.color.data
     && isFullWidthChar(prev_char)
     && isFullWidthPaddingChar(print_char) )
   {

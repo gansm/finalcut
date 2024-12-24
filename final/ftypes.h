@@ -355,29 +355,29 @@ inline auto setFAttributeByte ( FCharAttribute& fchar_attr
 #endif
 
 #if HAVE_BUILTIN(__builtin_bit_cast)
-constexpr auto getFAttributeWord (const FCharAttribute& fchar_attr) noexcept -> uInt32
+constexpr auto getFAttributeData (const FCharAttribute& fchar_attr) noexcept -> uInt32
 {
   return FCharAttribute_to_uInt32(fchar_attr);
 }
 #else
-inline auto getFAttributeWord (const FCharAttribute& fchar_attr) noexcept -> uInt32
+inline auto getFAttributeData (const FCharAttribute& fchar_attr) noexcept -> uInt32
 {
-  uInt32 word{};
-  std::memcpy(&word, &fchar_attr, sizeof(word));
-  return word;
+  uInt32 data{};
+  std::memcpy(&data, &fchar_attr, sizeof(data));
+  return data;
 }
 #endif
 
 #if HAVE_BUILTIN(__builtin_bit_cast)
-constexpr auto WordToFAttribute (uInt32 word) noexcept -> FCharAttribute
+constexpr auto WordToFAttribute (uInt32 data) noexcept -> FCharAttribute
 {
-  return __builtin_bit_cast(FCharAttribute, word);
+  return __builtin_bit_cast(FCharAttribute, data);
 }
 #else
-inline auto WordToFAttribute (uInt32 word) noexcept -> FCharAttribute
+inline auto DataToFAttribute (uInt32 data) noexcept -> FCharAttribute
 {
   FCharAttribute fchar_attr{};
-  std::memcpy(&fchar_attr, &word, sizeof(fchar_attr));
+  std::memcpy(&fchar_attr, &data, sizeof(fchar_attr));
   return fchar_attr;
 }
 #endif
@@ -385,7 +385,7 @@ inline auto WordToFAttribute (uInt32 word) noexcept -> FCharAttribute
 union FAttribute
 {
   uInt8 byte[4];
-  uInt32 word;
+  uInt32 data;
   FCharAttribute bit;
 };
 
@@ -393,8 +393,19 @@ static constexpr std::size_t UNICODE_MAX = 5;
 
 using FUnicode = std::array<wchar_t, UNICODE_MAX>;
 
-enum class FColor : uInt16;   // forward declaration
+enum class FColor : uInt16;  // forward declaration
 
+struct FColors
+{
+  FColor fg{};  // Foreground color
+  FColor bg{};  // Background color
+};
+
+union FCellColor
+{
+  FColors pair;  // Foreground and background color
+  uInt32  data;  // Color data
+};
 
 // FChar operator functions
 //----------------------------------------------------------------------
@@ -406,7 +417,7 @@ constexpr auto isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexce
     return false;
 
   // Perform a byte-wise comparison
-  return std::memcmp(&lhs[0], &rhs[0], lhs.size() * sizeof(wchar_t)) == 0;
+  return std::memcmp(lhs.cbegin(), rhs.cbegin(), lhs.size() * sizeof(wchar_t)) == 0;
 }
 #else
 inline auto isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool
@@ -428,19 +439,18 @@ constexpr auto getCompareBitMask() noexcept -> uInt32
 inline auto getCompareBitMask() noexcept -> uInt32
 {
   const FAttribute mask {{ 0xff, 0xff, 0x04, 0x00 }};
-  uInt32 word{};
-  std::memcpy(&word, &mask, sizeof(word));
-  return word;
+  uInt32 data{};
+  std::memcpy(&data, &mask, sizeof(data));
+  return data;
 }
 #endif
 
 //----------------------------------------------------------------------
-struct FChar
+struct alignas(std::max_align_t) FChar
 {
   FUnicode   ch{};            // Character code
   FUnicode   encoded_char{};  // Encoded output character
-  FColor     fg_color{};      // Foreground color
-  FColor     bg_color{};      // Background color
+  FCellColor color{};         // Foreground and background color
   FAttribute attr{};          // Attributes
 
 #if HAVE_BUILTIN(__builtin_bit_cast)
@@ -451,13 +461,12 @@ struct FChar
   auto operator == (const FChar& lhs, const FChar& rhs) noexcept -> bool
   {
     if ( ! isFUnicodeEqual(lhs.ch, rhs.ch)
-      || lhs.fg_color != rhs.fg_color
-      || lhs.bg_color != rhs.bg_color )
+      || lhs.color.data != rhs.color.data )
       return false;
 
-    const auto mask = getCompareBitMask();
+    constexpr auto mask = getCompareBitMask();
 
-    if ( (lhs.attr.word & mask) != (rhs.attr.word & mask) )
+    if ( (lhs.attr.data & mask) != (rhs.attr.data & mask) )
       return false;
 
     return true;

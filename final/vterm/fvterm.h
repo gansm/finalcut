@@ -349,7 +349,7 @@ class FVTerm : public FVTermAttribute
     FChar                        nc{};                       // next character
     std::unique_ptr<FTermArea>   vwin{};                     // Virtual window
     std::shared_ptr<FOutput>     foutput{};                  // Terminal output class
-    std::shared_ptr<FVTermList>  window_list{};              // List of all window owner
+    std::shared_ptr<FVTermList>  window_list{};              // List of all window owner in z-order
     std::shared_ptr<FTermArea>   vterm{};                    // Virtual terminal
     std::shared_ptr<FTermArea>   vterm_old{};                // Last virtual terminal
     std::shared_ptr<FTermArea>   vdesktop{};                 // Virtual desktop

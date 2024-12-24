@@ -515,10 +515,10 @@ void drawBlockShadow (FWidget* w)
   }
   else if ( auto p = w->getParentWidget() )
   {
-    shadow_char[0].bg_color = p->getBackgroundColor();
-    shadow_char[1].bg_color = p->getBackgroundColor();
-    shadow_char[2].bg_color = p->getBackgroundColor();
-    shadow_char[3].bg_color = p->getBackgroundColor();
+    shadow_char[0].color.pair.bg = p->getBackgroundColor();
+    shadow_char[1].color.pair.bg = p->getBackgroundColor();
+    shadow_char[2].color.pair.bg = p->getBackgroundColor();
+    shadow_char[3].color.pair.bg = p->getBackgroundColor();
   }
 
   drawGenericBlockShadow (w, shadow_char);
@@ -542,7 +542,7 @@ void clearBlockShadow (FWidget* w)
   if ( w->isWindowWidget() )
     spacer_char.attr.bit.transparent = true;
   else if ( auto p = w->getParentWidget() )
-    spacer_char.bg_color = p->getBackgroundColor();
+    spacer_char.color.pair.bg = p->getBackgroundColor();
 
   const std::array<FChar, 4> shadow_char
   {
