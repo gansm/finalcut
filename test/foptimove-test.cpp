@@ -741,6 +741,7 @@ void FOptiMoveTest::teratermTest()
     {
       CSI "%p1%dX",          // Erase characters
       nullptr,               // Repeat character
+      nullptr,               // Repeat character
       CSI "1K",              // Clear to beginning of line
       CSI "K"                // Clear to end of line
     },

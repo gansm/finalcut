@@ -865,8 +865,7 @@ void FVTermTest::OwnFunctionsTest()
   {
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
-    finalcut::FColor::Default,
-    finalcut::FColor::Default,
+    { { finalcut::FColor::Default, finalcut::FColor::Default } },
     { { 0x00, 0x00, 0x00, 0x00} }  // byte 0..3
   };
 
@@ -1151,8 +1150,7 @@ void FVTermTest::FVTermBasesTest()
   {
     { L'▒', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
-    finalcut::FColor::Default,
-    finalcut::FColor::Default,
+    { { finalcut::FColor::Default, finalcut::FColor::Default } },
     { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
   };
 
@@ -1173,8 +1171,7 @@ void FVTermTest::FVTermBasesTest()
   {
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
-    finalcut::FColor::Default,
-    finalcut::FColor::Default,
+    { { finalcut::FColor::Default, finalcut::FColor::Default } },
     { { 0x00, 0x00, 0x00, 0x00} }  // byte 0..3
   };
   shadow_char.attr.bit.transparent = true;
@@ -1495,8 +1492,7 @@ void FVTermTest::FVTermPrintTest()
     {
       { L' ', L'\0', L'\0', L'\0', L'\0' },
       { L'\0', L'\0', L'\0', L'\0', L'\0' },
-      finalcut::FColor::Default,
-      finalcut::FColor::Default,
+      { { finalcut::FColor::Default, finalcut::FColor::Default } },
       { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
     };
 
@@ -1673,8 +1669,7 @@ void FVTermTest::FVTermPrintTest()
     {
       { L'\0', L'\0', L'\0', L'\0', L'\0' },
       { L'\0', L'\0', L'\0', L'\0', L'\0' },
-      finalcut::FColor::Red,
-      finalcut::FColor::White,
+      { { finalcut::FColor::Red, finalcut::FColor::White } },
       { { 0x01, 0x00, 0x00, 0x00} }  // byte 0..3
     };
 
@@ -2077,8 +2072,7 @@ void FVTermTest::FVTermChildAreaPrintTest()
   {
     { L' ', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
-    finalcut::FColor::Default,
-    finalcut::FColor::Default,
+    { { finalcut::FColor::Default, finalcut::FColor::Default } },
     { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
   };
 
@@ -2086,8 +2080,7 @@ void FVTermTest::FVTermChildAreaPrintTest()
   {
     { L' ', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
-    finalcut::FColor::Red,
-    finalcut::FColor::White,
+    { { finalcut::FColor::Red, finalcut::FColor::White } },
     { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
   };
 
@@ -2095,8 +2088,7 @@ void FVTermTest::FVTermChildAreaPrintTest()
   {
     { L'=', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
-    finalcut::FColor::Red,
-    finalcut::FColor::White,
+    { { finalcut::FColor::Red, finalcut::FColor::White } },
     { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
   };
 
@@ -2150,8 +2142,7 @@ void FVTermTest::FVTermScrollTest()
   {
     { L'1', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
-    finalcut::FColor::Default,
-    finalcut::FColor::Default,
+    { { finalcut::FColor::Default, finalcut::FColor::Default } },
     { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
   };
 
@@ -2478,8 +2469,7 @@ void FVTermTest::FVTermOverlappingWindowsTest()
   {
     { L'.', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
-    finalcut::FColor::DarkGray,
-    finalcut::FColor::LightBlue,
+    { { finalcut::FColor::DarkGray, finalcut::FColor::LightBlue } },
     { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
   };
 
@@ -2492,8 +2482,7 @@ void FVTermTest::FVTermOverlappingWindowsTest()
   {
     { L'.', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
-    finalcut::FColor::Black,
-    finalcut::FColor::White,
+    { { finalcut::FColor::Black, finalcut::FColor::White } },
     { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
   };
 
@@ -2501,8 +2490,7 @@ void FVTermTest::FVTermOverlappingWindowsTest()
   {
     { L'▒', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
-    finalcut::FColor::Black,
-    finalcut::FColor::LightBlue,
+    { { finalcut::FColor::Black, finalcut::FColor::LightBlue } },
     { { 0x00, 0x80, 0x08, 0x00} }  // byte 0..3
   };
 
@@ -2510,8 +2498,7 @@ void FVTermTest::FVTermOverlappingWindowsTest()
   {
     { L'.', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
-    finalcut::FColor::DarkGray,
-    finalcut::FColor::LightBlue,
+    { { finalcut::FColor::DarkGray, finalcut::FColor::LightBlue } },
     { { 0x00, 0x00, 0x09, 0x00} }  // byte 0..3
   };
 
@@ -2519,8 +2506,7 @@ void FVTermTest::FVTermOverlappingWindowsTest()
   {
     { L'█', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
-    finalcut::FColor::Black,
-    finalcut::FColor::White,
+    { { finalcut::FColor::Black, finalcut::FColor::White } },
     { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
   };
 
@@ -2971,8 +2957,7 @@ void FVTermTest::getFVTermAreaTest()
   {
     { L' ', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
-    finalcut::FColor::Default,
-    finalcut::FColor::Default,
+    { { finalcut::FColor::Default, finalcut::FColor::Default } },
     { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
   };
 

@@ -1088,7 +1088,7 @@ void FVTerm::clearArea (FTermArea* area, wchar_t fillchar) noexcept
     ++line_changes;
   }
 
-  line_changes = &area->changes[area->size.height];
+  line_changes = &area->changes[unsigned(area->size.height)];
 
   for (auto i{0}; i < area->shadow.height; i++)
   {
@@ -1203,8 +1203,7 @@ inline void FVTerm::resetTextAreaToDefault ( FTermArea* area
   {
     { { L' ',  L'\0', L'\0', L'\0', L'\0' } },
     { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
-    FColor::Default,
-    FColor::Default,
+    { { FColor::Default, FColor::Default } },
     { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3 (byte 2 = 0x08 = char_width 1)
   };
   std::fill (area->data.begin(), area->data.end(), default_char);
@@ -1809,7 +1808,7 @@ inline void FVTerm::addTransparentAreaChar (const FChar& src_char, FChar& dst_ch
   {
     // Get covered character + add the current color
     dst_char.color.data = src_char.color.data;
-    dst_char.attr.data = src_char.attr.data & ~(internal::var::color_overlay_mask);
+    dst_char.attr.data = src_char.attr.data & ~internal::var::color_overlay_mask;
 
     if ( isTransparentInvisible(dst_char) )
       dst_char.ch[0] = L' ';
@@ -1823,7 +1822,7 @@ inline void FVTerm::addTransparentAreaChar (const FChar& src_char, FChar& dst_ch
     auto bg_color = dst_char.color.pair.bg;
     dst_char = src_char;
     dst_char.color.pair.bg = bg_color;
-    dst_char.attr.data &= ~(internal::var::print_reset_mask);
+    dst_char.attr.data &= ~internal::var::print_reset_mask;
     return;
   }
 

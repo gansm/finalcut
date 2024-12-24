@@ -404,15 +404,13 @@ void drawTransparentShadow (FWidget* w)
     {
       { { L'\0',  L'\0', L'\0', L'\0', L'\0' } },
       { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
-      FColor::Default,
-      FColor::Default,
+      { { FColor::Default, FColor::Default } },
       { { 0x00, 0x20, 0x00, 0x00} }  // byte 0..3 (byte 1 = 0x32 = transparent)
     },
     {
       { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
       { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
-      wc_shadow.fg,
-      wc_shadow.bg,
+      { { wc_shadow.fg, wc_shadow.bg } },
       { { 0x00, 0x40, 0x00, 0x00} }  // byte 0..3 (byte 1 = 0x64 = color_overlay)
     },
     &area.getFChar(area.size.width, 0)
@@ -479,29 +477,25 @@ void drawBlockShadow (FWidget* w)
     {
       { { wchar_t(UniChar::LowerHalfBlock),  L'\0', L'\0', L'\0', L'\0' } },  // ▄
       { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
-      wc_shadow.bg,
-      FColor::Default,
+      { { wc_shadow.bg, FColor::Default } },
       { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3 (byte 2 = 0x08 = char_width 1)
     },
     {
       { { wchar_t(UniChar::FullBlock),  L'\0', L'\0', L'\0', L'\0' } },  // █
       { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
-      wc_shadow.bg,
-      FColor::Default,
+      { { wc_shadow.bg, FColor::Default } },
       { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3 (byte 2 = 0x08 = char_width 1)
     },
     {
       { { L' ',  L'\0', L'\0', L'\0', L'\0' } },  // ' '
       { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
-      FColor::Default,
-      FColor::Default,
+      { { FColor::Default, FColor::Default } },
       { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3 (byte 2 = 0x08 = char_width 1)
     },
     {
       { { wchar_t(UniChar::UpperHalfBlock),  L'\0', L'\0', L'\0', L'\0' } },  // ▄
       { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
-      wc_shadow.bg,
-      FColor::Default,
+      { { wc_shadow.bg, FColor::Default } },
       { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3 (byte 2 = 0x08 = char_width 1)
     }
   }};
@@ -534,8 +528,7 @@ void clearBlockShadow (FWidget* w)
   {
     { { L' ',  L'\0', L'\0', L'\0', L'\0' } },  // ' '
     { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
-    FColor::Default,
-    FColor::Default,
+    { { FColor::Default, FColor::Default } },
     { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3 (byte 2 = 0x08 = char_width 1)
   };
 

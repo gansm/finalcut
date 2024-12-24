@@ -417,7 +417,11 @@ constexpr auto isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexce
     return false;
 
   // Perform a byte-wise comparison
+#if __cplusplus >= 201703L
   return std::memcmp(lhs.cbegin(), rhs.cbegin(), lhs.size() * sizeof(wchar_t)) == 0;
+#else
+  return std::memcmp(&lhs[0], &rhs[0], lhs.size() * sizeof(wchar_t)) == 0;
+#endif
 }
 #else
 inline auto isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool
@@ -464,7 +468,11 @@ struct alignas(std::max_align_t) FChar
       || lhs.color.data != rhs.color.data )
       return false;
 
+#if HAVE_BUILTIN(__builtin_bit_cast)
     constexpr auto mask = getCompareBitMask();
+#else
+    const auto mask = getCompareBitMask();
+#endif
 
     if ( (lhs.attr.data & mask) != (rhs.attr.data & mask) )
       return false;
