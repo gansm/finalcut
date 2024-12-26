@@ -337,7 +337,6 @@ class FVTerm : public FVTermAttribute
     void  printPaddingCharacter (FTermArea*, const FChar&) const;
     void  putNonTransparent (std::size_t&, const FChar*, FChar*&) const;
     void  addTransparent (std::size_t&, const FChar*, FChar*&) const;
-    void  putTransparent (std::size_t&, const FPoint&, FChar*&) const;
     auto  isInsideTerminal (const FPoint&) const noexcept -> bool;
     auto  canUpdateTerminalNow() const -> bool;
     static auto hasPendingUpdates (const FTermArea*) noexcept -> bool;
@@ -576,12 +575,14 @@ inline auto FVTerm::FTermArea::reprint (const FRect& box, const FSize& term_size
   const int x_end = std::min({ int(term_size.getWidth()) - 1
                              , x_pos + w - 1
                              , position.x + size.width + shadow.width - 1 }) - position.x;
+  auto* line_changes = &changes[unsigned(y_start)];
+  const auto* line_changes_end = &changes[unsigned(y_end + 1)];
 
-  for (auto y{y_start}; y <= y_end; y++)  // Line loop
+  while  ( line_changes < line_changes_end )  // Line loop
   {
-    auto& line_changes = changes[std::size_t(y)];
-    line_changes.xmin = uInt(std::min(int(line_changes.xmin), x_start));
-    line_changes.xmax = uInt(std::max(int(line_changes.xmax), x_end));
+    line_changes->xmin = uInt(std::min(int(line_changes->xmin), x_start));
+    line_changes->xmax = uInt(std::max(int(line_changes->xmax), x_end));
+    std::advance(line_changes, 1);
   }
 
   return true;

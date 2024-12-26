@@ -281,13 +281,14 @@ void FVTerm::putVTerm() const
 {
   // Update the entire terminal screen
 
-  for (auto i{0}; i < vterm->size.height; i++)
-  {
-    auto& vterm_changes = vterm->changes[unsigned(i)];
-    vterm_changes.xmin = 0;
-    vterm_changes.xmax = uInt(vterm->size.width - 1);
-  }
-
+  auto* vterm_changes = &vterm->changes[unsigned(0)];
+  std::for_each ( vterm_changes
+                , vterm_changes + unsigned(vterm->size.height)
+                , [this] (auto& vterm_changes_line)
+                  {
+                    vterm_changes_line.xmin = 0;
+                    vterm_changes_line.xmax = uInt(vterm->size.width - 1);
+                  } );
   updateTerminal();
 }
 
@@ -754,8 +755,8 @@ void FVTerm::getArea (const FPoint& pos, FTermArea* area) const noexcept
   if ( ax < 0 || ay < 0 )
     return;
 
-  int y_end  = std::min(vterm->size.height - ay, area->size.height);
-  int length = std::min(vterm->size.width - ax, area->size.width);
+  const int y_end  = std::min(vterm->size.height - ay, area->size.height);
+  const int length = std::min(vterm->size.width - ax, area->size.width);
   auto* line_changes = &area->changes[0];
 
   for (auto y{0}; y < y_end; y++)  // line loop
@@ -765,7 +766,7 @@ void FVTerm::getArea (const FPoint& pos, FTermArea* area) const noexcept
     putAreaLine (tc, ac, unsigned(length));
     line_changes->xmin = 0;
     line_changes->xmax = uInt(length - 1);
-    ++line_changes;
+    std::advance(line_changes, 1);
   }
 }
 
@@ -804,7 +805,7 @@ void FVTerm::getArea (const FRect& box, FTermArea* area) const noexcept
     putAreaLine (tc, ac, unsigned(length));
     line_changes->xmin = std::min(line_changes->xmin, uInt(dx));
     line_changes->xmax = std::max(line_changes->xmax, uInt(dx + length - 1));
-    ++line_changes;
+    std::advance(line_changes, 1);
   }
 }
 
@@ -837,7 +838,7 @@ void FVTerm::addLayer (FTermArea* area) const noexcept
 
     if ( line_xmin > line_xmax )
     {
-      ++line_changes;
+      std::advance(line_changes, 1);
       continue;
     }
 
@@ -846,7 +847,7 @@ void FVTerm::addLayer (FTermArea* area) const noexcept
 
     if ( tx < 0 || tx >= vterm_width || ty < 0 )
     {
-      ++line_changes;
+      std::advance(line_changes, 1);
       continue;
     }
 
@@ -871,7 +872,7 @@ void FVTerm::addLayer (FTermArea* area) const noexcept
                                   , uInt(std::min(ax + line_xmax, vterm_width - 1)));
     line_changes->xmin = uInt(width);
     line_changes->xmax = 0;
-    ++line_changes;
+    std::advance(line_changes, 1);
   }
 
   vterm->has_changes = true;
@@ -935,8 +936,8 @@ void FVTerm::copyArea (FTermArea* dst, const FPoint& pos, const FTermArea* const
 
     dst_changes->xmin = std::min(uInt(ax), dst_changes->xmin);
     dst_changes->xmax = std::max(uInt(ax + length - 1), dst_changes->xmax);
-    ++src_changes;
-    ++dst_changes;
+    std::advance(src_changes, 1);
+    std::advance(dst_changes, 1);
   }
 
   dst->has_changes = true;
@@ -982,7 +983,7 @@ void FVTerm::scrollAreaForward (FTermArea* area)
     putAreaLine (sc, dc, unsigned(area->size.width));
     line_changes->xmin = 0;
     line_changes->xmax = uInt(x_max);
-    ++line_changes;
+    std::advance(line_changes, 1);
   }
 
   // insert a new line below
@@ -1021,7 +1022,7 @@ void FVTerm::scrollAreaReverse (FTermArea* area)
     putAreaLine (sc, dc, unsigned(area->size.width));
     line_changes->xmin = 0;
     line_changes->xmax = uInt(x_max);
-    ++line_changes;
+    std::advance(line_changes, 1);
   }
 
   // insert a new line above
@@ -1085,7 +1086,7 @@ void FVTerm::clearArea (FTermArea* area, wchar_t fillchar) noexcept
     else
       line_changes->trans_count = 0;
 
-    ++line_changes;
+    std::advance(line_changes, 1);
   }
 
   line_changes = &area->changes[unsigned(area->size.height)];
@@ -1095,7 +1096,7 @@ void FVTerm::clearArea (FTermArea* area, wchar_t fillchar) noexcept
     line_changes->xmin = 0;
     line_changes->xmax = width - 1;
     line_changes->trans_count = width;
-    ++line_changes;
+    std::advance(line_changes, 1);
   }
 
   area->has_changes = true;
@@ -1525,14 +1526,16 @@ inline void FVTerm::scrollTerminalForward() const
   if ( ! foutput->scrollTerminalForward() )
     return;
 
-  const int y_max = vdesktop->size.height - 1;
+  // Avoid update lines from 0 to (height - 2)
+  auto* vdesktop_changes = &vdesktop->changes[0];
+  const auto* vdesktop_changes_end = vdesktop_changes
+                                   + unsigned(vdesktop->size.height - 1);
 
-  // avoid update lines from 0 to (y_max - 1)
-  for (auto y{0}; y < y_max; y++)
+  while ( vdesktop_changes < vdesktop_changes_end )
   {
-    auto& vdesktop_changes = vdesktop->changes[unsigned(y)];
-    vdesktop_changes.xmin = uInt(vdesktop->size.width - 1);
-    vdesktop_changes.xmax = 0;
+    vdesktop_changes->xmin = uInt(vdesktop->size.width - 1);
+    vdesktop_changes->xmax = 0;
+    std::advance(vdesktop_changes, 1);
   }
 
   putArea (FPoint{1, 1}, vdesktop.get());
@@ -1550,14 +1553,16 @@ inline void FVTerm::scrollTerminalReverse() const
   if ( ! foutput->scrollTerminalReverse() )
     return;
 
-  const int y_max = vdesktop->size.height - 1;
+  // avoid update lines from 1 to (height - 1)
+  auto* vdesktop_changes = &vdesktop->changes[1];
+  const auto* vdesktop_changes_end = vdesktop_changes
+                                   + unsigned(vdesktop->size.height);
 
-  // avoid update lines from 1 to y_max
-  for (auto y{0}; y < y_max; y++)
+  while ( vdesktop_changes < vdesktop_changes_end )
   {
-    auto& vdesktop_changes = vdesktop->changes[unsigned(y + 1)];
-    vdesktop_changes.xmin = uInt(vdesktop->size.width - 1);
-    vdesktop_changes.xmax = 0;
+    vdesktop_changes->xmin = uInt(vdesktop->size.width - 1);
+    vdesktop_changes->xmax = 0;
+    std::advance(vdesktop_changes, 1);
   }
 
   putArea (FPoint{1, 1}, vdesktop.get());
@@ -1696,62 +1701,22 @@ inline void FVTerm::putAreaLineWithTransparency ( const FChar* src_char
   if ( length < 1 )
     return;
 
-  const int end_x{pos.getX() + length};
-  const FChar* region_start{src_char};
-  std::size_t region_count{1};
-  bool is_region_transparent{isFCharTransparent(*src_char)};
-  ++src_char;
-  ++pos.x_ref();
-
-  while  ( pos.getX() < end_x )
+  const auto handle_region = \
+      [this, &pos, &dst_char] ( bool transparent
+                              , std::size_t count
+                              , const FChar* start )
   {
-    const bool is_current_char_transparent = isFCharTransparent(*src_char);
-
-    if ( is_current_char_transparent == is_region_transparent )
-      ++region_count;
+    if ( transparent )
+      putTransparentAreaLine (pos, count);
     else
-    {
-      if ( is_region_transparent )
-        putTransparentAreaLine (pos, region_count);
-      else
-        putAreaLine (*region_start, *dst_char, region_count);
+      putAreaLine (*start, *dst_char, count);
 
-      // Reset for the next region
-      is_region_transparent = is_current_char_transparent;
-      region_start = src_char;
-      dst_char += region_count;
-      region_count = 1;
-    }
-
-    ++src_char;
-    ++pos.x_ref();
-  }
-
-  // Handle the final region
-  if ( is_region_transparent )
-    putTransparentAreaLine (pos, region_count);
-  else
-    putAreaLine (*region_start, *dst_char, region_count);
-}
-
-//----------------------------------------------------------------------
-inline void FVTerm::putTransparentAreaLine ( const FPoint& pos
-                                           , const std::size_t length ) const
-{
-  FRect box(pos.getX() + 1 - int(length), pos.getY() + 1, length, 1);
-  restoreVTerm(box);
-}
-
-//----------------------------------------------------------------------
-inline void FVTerm::addAreaLineWithTransparency ( const FChar* src_char
-                                                , FChar* dst_char
-                                                , const std::size_t length ) const
-{
-  if ( length == 0 )
-    return;
+    pos.x_ref() += count;
+    std::advance(dst_char, count);
+  };
 
   const auto* end_char{src_char + length};
-  const FChar* region_start{src_char};
+  const auto* region_start{src_char};
   std::size_t region_count{1};
   bool is_region_transparent{isFCharTransparent(*src_char)};
 
@@ -1763,11 +1728,7 @@ inline void FVTerm::addAreaLineWithTransparency ( const FChar* src_char
       ++region_count;
     else
     {
-      if ( is_region_transparent )
-        addTransparent (region_count, region_start, dst_char);
-      else
-        putNonTransparent (region_count, region_start, dst_char);
-
+      handle_region (is_region_transparent, region_count, region_start);
       // Reset for the next region
       is_region_transparent = is_current_char_transparent;
       region_start = current_char;
@@ -1776,10 +1737,62 @@ inline void FVTerm::addAreaLineWithTransparency ( const FChar* src_char
   }
 
   // Handle the final region
-  if ( is_region_transparent )
-    addTransparent (region_count, region_start, dst_char);
-  else
-    putNonTransparent (region_count, region_start, dst_char);
+  handle_region (is_region_transparent, region_count, region_start);
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::putTransparentAreaLine ( const FPoint& pos
+                                           , const std::size_t length ) const
+{
+  if ( length == 0 )
+    return;
+
+  FRect box(pos.getX() + 1, pos.getY() + 1, length, 1);
+  restoreVTerm(box);
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::addAreaLineWithTransparency ( const FChar* src_char
+                                                , FChar* dst_char
+                                                , const std::size_t length ) const
+{
+  if ( length == 0 )
+    return;
+
+  const auto handle_region = \
+      [this, &dst_char] ( bool transparent
+                        , std::size_t count
+                        , const FChar* start )
+  {
+    if ( transparent )
+      addTransparent (count, start, dst_char);
+    else
+      putNonTransparent (count, start, dst_char);
+  };
+
+  const auto* end_char{src_char + length};
+  const auto* region_start{src_char};
+  std::size_t region_count{1};
+  bool is_region_transparent{isFCharTransparent(*src_char)};
+
+  for (const auto* current_char = src_char + 1; current_char < end_char; ++current_char)
+  {
+    const bool is_current_char_transparent = isFCharTransparent(*current_char);
+
+    if ( is_current_char_transparent == is_region_transparent )
+      ++region_count;
+    else
+    {
+      handle_region (is_region_transparent, region_count, region_start);
+      // Reset for the next region
+      is_region_transparent = is_current_char_transparent;
+      region_start = current_char;
+      region_count = 1;
+    }
+  }
+
+  // Handle the final region
+  handle_region (is_region_transparent, region_count, region_start);
 }
 
 //----------------------------------------------------------------------
@@ -1789,12 +1802,13 @@ inline void FVTerm::addTransparentAreaLine ( const FChar& src_char
 {
   const auto* src = &src_char;
   auto* dst = &dst_char;
-  const auto end = src + length;
+  const auto* end = src + length;
 
-  for (; src < end; ++src)  // column loop
+  while ( src < end )  // column loop
   {
     addTransparentAreaChar (*src, *dst);
-    ++dst;  // dst character
+    std::advance(src, 1);  // src character
+    std::advance(dst, 1);  // dst character
   }
 }
 
@@ -1848,12 +1862,16 @@ auto FVTerm::clearFullArea (FTermArea* area, FChar& fillchar) const -> bool
   }
   else
   {
-    for (auto i{0}; i < vdesktop->size.height; i++)
+    auto* vdesktop_changes = &vdesktop->changes[0];
+    const auto* vdesktop_changes_end = vdesktop_changes
+                                     + unsigned(vdesktop->size.height);
+
+    while ( vdesktop_changes < vdesktop_changes_end )
     {
-      auto& vdesktop_changes = vdesktop->changes[unsigned(i)];
-      vdesktop_changes.xmin = 0;
-      vdesktop_changes.xmax = uInt(vdesktop->size.width) - 1;
-      vdesktop_changes.trans_count = 0;
+      vdesktop_changes->xmin = 0;
+      vdesktop_changes->xmax = uInt(vdesktop->size.width) - 1;
+      vdesktop_changes->trans_count = 0;
+      std::advance(vdesktop_changes, 1);
     }
 
     vdesktop->has_changes = true;
@@ -2023,18 +2041,6 @@ inline void FVTerm::addTransparent ( std::size_t& trans_count
     return;
 
   addTransparentAreaLine (*start_char, *dst_char, trans_count);
-  dst_char += trans_count;  // dst character
-  trans_count = 0;
-}
-
-//----------------------------------------------------------------------
-inline void FVTerm::putTransparent ( std::size_t& trans_count
-                                   , const FPoint& pos, FChar*& dst_char ) const
-{
-  if ( trans_count == 0 )
-    return;
-
-  putTransparentAreaLine(pos, trans_count);
   dst_char += trans_count;  // dst character
   trans_count = 0;
 }

@@ -42,7 +42,6 @@ namespace internal
 
 constexpr auto initByte1PrintTransMask() -> uInt8
 {
-  // Set bits that must not be reset
   FCharAttribute mask{};
   mask.transparent = true;
   mask.color_overlay = true;

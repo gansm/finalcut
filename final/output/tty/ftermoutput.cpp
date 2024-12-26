@@ -46,12 +46,21 @@ namespace finalcut
 namespace internal
 {
 
+constexpr auto getByte2PrintedMask() -> uInt8
+{
+  FCharAttribute mask{};
+  mask.printed = true;
+  return getFAttributeByte(mask, 2);
+}
+
 struct var
 {
   static Encoding terminal_encoding;
+  static constexpr auto b2_printed_mask = getByte2PrintedMask();
 };
 
 Encoding var::terminal_encoding{Encoding::Unknown};
+constexpr uInt8 var::b2_printed_mask;
 
 }  // namespace internal
 
@@ -1258,7 +1267,7 @@ inline void FTermOutput::markAsPrinted (uInt x, uInt y) const
 {
   // Marks a character as printed
 
-  vterm->getFChar(int(x), int(y)).attr.bit.printed = true;
+  vterm->getFChar(int(x), int(y)).attr.byte[2] |= internal::var::b2_printed_mask;
 }
 
 //----------------------------------------------------------------------
@@ -1272,17 +1281,17 @@ inline void FTermOutput::markAsPrinted (uInt from, uInt to, uInt y) const
   // Unroll the loop for better performance
   while ( ch + 4 <= end )
   {
-    ch[0].attr.bit.printed = true;
-    ch[1].attr.bit.printed = true;
-    ch[2].attr.bit.printed = true;
-    ch[3].attr.bit.printed = true;
+    ch[0].attr.byte[2] |= internal::var::b2_printed_mask;
+    ch[1].attr.byte[2] |= internal::var::b2_printed_mask;
+    ch[2].attr.byte[2] |= internal::var::b2_printed_mask;
+    ch[3].attr.byte[2] |= internal::var::b2_printed_mask;
     std::advance(ch, 4);
   }
 
   // Handle the remaining elements
   while ( ch < end )
   {
-    ch->attr.bit.printed = true;
+    ch->attr.byte[2] |= internal::var::b2_printed_mask;
     std::advance(ch, 1);
   }
 }

@@ -50,7 +50,7 @@ FScrollView::FScrollView (FWidget* parent)
 FScrollView::~FScrollView()  // destructor
 {
   setChildPrintArea (viewport.get());
-  delPreprocessingHandler(this);
+  FWidget::delPreprocessingHandler(this);
 }
 
 
