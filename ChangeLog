@@ -1,3 +1,8 @@
+2025-02-09  Markus Gans  <guru.mail@muenster.de>
+	* Significant speed-up when using FVTerm::copyArea with multiple 
+	  overlapping and transparent layers. This reduces the CPU load 
+	  of the process by ⅔.
+
 2024-12-24  Markus Gans  <guru.mail@muenster.de>
 	* Better FChar color value direct access
 

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2024 Markus Gans                                      *
+* Copyright 2012-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -690,15 +690,14 @@ void FDialog::onWindowRaised (FEvent*)
 //----------------------------------------------------------------------
 void FDialog::onWindowLowered (FEvent*)
 {
-  if ( ! getWindowList() )
+  const auto* vterm_win_list = getWindowList();
+
+  if ( ! vterm_win_list || vterm_win_list->empty() )
     return;
 
-  if ( getWindowList()->empty() )
-    return;
-
-  for (auto&& window : *getWindowList())
+  for (auto&& vterm_obj : *vterm_win_list)
   {
-    const auto win = static_cast<FWidget*>(window);
+    const auto win = static_cast<FWidget*>(vterm_obj);
     putArea (win->getTermPos(), win->getVWin());
   }
 }

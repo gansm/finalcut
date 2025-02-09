@@ -78,6 +78,9 @@ Explore the power of FINAL CUT with these examples:
 ![FProgressbar](doc/progress-bar.png)
 <br />*FProgressbar widget*<br /><br />
 
+![XPM Viewer](doc/xpmview.png)
+<br />*X PixMap (XPM) viewer example*<br /><br />
+
 ![FTextView](doc/textview.png)
 <br />*Scrollable text in an FTextView widget*<br /><br />
 

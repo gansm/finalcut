@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2023 Markus Gans                                      *
+* Copyright 2018-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -242,7 +242,7 @@ void FMouseTest::doubleClickTest()
   tv = finalcut::FObjectTimer::getCurrentTime();
   CPPUNIT_ASSERT ( ! mouse.isDblclickTimeout(tv) );
 
-  auto tv_delta = std::chrono::microseconds(500000);
+  auto tv_delta = std::chrono::microseconds(750000);
   tv -= tv_delta;
   CPPUNIT_ASSERT ( ! mouse.isDblclickTimeout(tv) );
   tv -= tv_delta;

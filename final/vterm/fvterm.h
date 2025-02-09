@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2024 Markus Gans                                      *
+* Copyright 2016-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -99,13 +99,6 @@ class FVTerm : public FVTermAttribute
     struct FTermArea;             // forward declaration
     struct FVTermPreprocessing;   // forward declaration
 
-    struct FLineChanges
-    {
-      uInt xmin;           // X-position with the first change
-      uInt xmax;           // X-position with the last change
-      uInt trans_count;    // Number of transparent characters
-    };
-
     // Using-declarations
     using FVTermAttribute::print;
     using FCharVector = std::vector<FChar>;
@@ -113,6 +106,7 @@ class FVTerm : public FVTermAttribute
     using FPreprocessingFunction = std::function<void()>;
     using FPreprocVector = std::vector<std::unique_ptr<FVTermPreprocessing>>;
     using FVTermList = std::vector<FVTerm*>;
+    using FTermAreaList = std::vector<const FTermArea*>;
 
     // Enumeration
     enum class TerminalUpdate
@@ -256,8 +250,8 @@ class FVTerm : public FVTermAttribute
     void  getArea (const FPoint&, FTermArea*) const noexcept;
     void  getArea (const FRect&, FTermArea*) const noexcept;
     void  addLayer (FTermArea*) const noexcept;
-    void  putArea (const FPoint&, const FTermArea*) const noexcept;
-    void  copyArea (FTermArea*, const FPoint&, const FTermArea* const)  const noexcept;
+    void  putArea (const FPoint&, FTermArea*) const noexcept;
+    void  copyArea (FTermArea*, const FPoint&, FTermArea*)  const noexcept;
     static auto  getLayer (FVTerm&) noexcept -> int;
     static void  determineWindowLayers() noexcept;
     void  scrollAreaForward (FTermArea*);
@@ -274,12 +268,24 @@ class FVTerm : public FVTermAttribute
     static constexpr int DEFAULT_MINIMIZED_HEIGHT = 1;
 
     // Enumeration
-    enum class CoveredState
+    enum class CoveredState : uInt8
     {
       None,
       Half,
       Full
     };
+
+    enum class SearchState : uInt8  // Character search state
+    {
+      start,       // The overlaid characters are not parsed
+      printable,   // Search for a printable character
+      overlay,     // Search for the next printable character for color overlay
+      background,  // Search for the next printable character to inherit the background color
+      ready        // Overlaid character was fully printed
+    };
+
+    // Using-declaration
+    using FOverlaySearchBuffer = std::vector<SearchState>;
 
     // Methods
     static void setGlobalFVTermInstance (FVTerm*);
@@ -304,7 +310,6 @@ class FVTerm : public FVTermAttribute
     void  passChangesToOverlappingWindowLine (FTermArea*, int, const FTermArea*) const;
     auto  calculateStartCoordinate (int, int) const noexcept -> int;
     auto  calculateEndCoordinate (int, int, int, int) const noexcept -> int;
-    void  restoreOverlaidWindows (const FTermArea*) const noexcept;
     void  updateVTerm() const;
     void  updateVTermDesktop() const;
     void  updateVTermWindow (FTermArea*) const;
@@ -322,8 +327,10 @@ class FVTerm : public FVTermAttribute
     void  finish() const;
     void  saveCurrentVTerm() const;
     void  putAreaLine (const FChar&, FChar&, const std::size_t) const;
-    void  putAreaLineWithTransparency (const FChar*, FChar*, const int, FPoint) const;
-    void  putTransparentAreaLine (const FPoint&, const std::size_t) const;
+    void  applyColorOverlay (const FChar&, FChar&) const;
+    void  inheritBackground (const FChar&, FChar&) const;
+    void  putMultiLayerAreaLine (FChar*, const std::size_t, FPoint&) const noexcept;
+    void  putAreaLineWithTransparency (const FChar*, FChar*, const int, FPoint, bool) const;
     void  addAreaLineWithTransparency (const FChar*, FChar*, const std::size_t) const;
     void  addTransparentAreaLine (const FChar&, FChar&, const std::size_t) const;
     void  addTransparentAreaChar (const FChar&, FChar&) const;
@@ -335,8 +342,12 @@ class FVTerm : public FVTermAttribute
     auto  printCharacterOnCoordinate ( FTermArea*
                                      , const FChar&) const noexcept -> std::size_t;
     void  printPaddingCharacter (FTermArea*, const FChar&) const;
-    void  putNonTransparent (std::size_t&, const FChar*, FChar*&) const;
-    void  addTransparent (std::size_t&, const FChar*, FChar*&) const;
+    void  putNonTransparent (const FChar*, FChar*&, std::size_t&) const;
+    void  addTransparent (const FChar*, FChar*&, std::size_t&) const;
+    void  addVDesktopToListIfExists (FTermAreaList&) const;
+    void  determineCoveredAreas (FTermArea*) const;
+    void  resetLineCoveredState (FTermArea*) const;
+    void  determineLineCoveredState (const FTermArea* const, FTermArea*) const;
     auto  isInsideTerminal (const FPoint&) const noexcept -> bool;
     auto  canUpdateTerminalNow() const -> bool;
     static auto hasPendingUpdates (const FTermArea*) noexcept -> bool;
@@ -345,10 +356,12 @@ class FVTerm : public FVTermAttribute
     FTermArea*                   print_area{nullptr};        // Print area for this object
     FTermArea*                   child_print_area{nullptr};  // Print area for children
     FVTermBuffer                 vterm_buffer{};             // Print buffer
-    FChar                        nc{};                       // next character
+    mutable FOverlaySearchBuffer overlay_search_buffer{};    // Overlay search state buffer
+    mutable FTermAreaList        covered_areas_buffer{};     // Covered overlay areas buffer
+    FChar                        nc{};                       // Next character
     std::unique_ptr<FTermArea>   vwin{};                     // Virtual window
     std::shared_ptr<FOutput>     foutput{};                  // Terminal output class
-    std::shared_ptr<FVTermList>  window_list{};              // List of all window owner in z-order
+    std::shared_ptr<FVTermList>  vterm_window_list{};        // List of all window owner in z-order
     std::shared_ptr<FTermArea>   vterm{};                    // Virtual terminal
     std::shared_ptr<FTermArea>   vterm_old{};                // Last virtual terminal
     std::shared_ptr<FTermArea>   vdesktop{};                 // Virtual desktop
@@ -371,6 +384,14 @@ class FVTerm : public FVTermAttribute
 
 struct FVTerm::FTermArea  // Define virtual terminal character properties
 {
+  struct FLineChanges
+  {
+    uInt xmin;         // X-position with the first change
+    uInt xmax;         // X-position with the last change
+    uInt trans_count;  // Number of transparent characters
+    bool covered;      // Line cover state
+  };
+
   // Using-declaration
   using FDataAccessPtr  = std::shared_ptr<FDataAccess>;
   using FLineChangesVec = std::vector<FLineChanges>;
@@ -405,10 +426,16 @@ struct FVTerm::FTermArea  // Define virtual terminal character properties
     return owner.get() != nullptr;
   }
 
-  auto contains (const FPoint&) const noexcept -> bool;
+  auto contains (int, int) const noexcept -> bool;
+
+  inline auto contains (const FPoint& pos) const noexcept -> bool
+  {
+    return contains(pos.getX(), pos.getY());
+  }
+
   auto isOverlapped (const FRect&) const noexcept -> bool;
   auto isOverlapped (const FTermArea*) const noexcept -> bool;
-  auto checkPrintPos() const noexcept -> bool;
+  auto isPrintPositionInsideArea() const noexcept -> bool;
   auto reprint (const FRect&, const FSize&) noexcept -> bool;
 
   inline auto getFChar (int x, int y) const noexcept -> const FChar&
@@ -484,7 +511,7 @@ struct FVTerm::FTermArea  // Define virtual terminal character properties
 };
 
 //----------------------------------------------------------------------
-inline auto FVTerm::FTermArea::contains (const FPoint& pos) const noexcept -> bool
+inline auto FVTerm::FTermArea::contains (int x, int y) const noexcept -> bool
 {
   // Is the terminal position (pos) located on my area?
 
@@ -494,8 +521,6 @@ inline auto FVTerm::FTermArea::contains (const FPoint& pos) const noexcept -> bo
   const int x_max = x_min + size.width + shadow.width;
   const int y_min = position.y;
   const int y_max = y_min + current_height;
-  const int x = pos.getX();
-  const int y = pos.getY();
   return x >= x_min
       && x < x_max
       && y >= y_min
@@ -538,7 +563,7 @@ inline auto FVTerm::FTermArea::isOverlapped (const FTermArea* area) const noexce
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::FTermArea::checkPrintPos() const noexcept -> bool
+inline auto FVTerm::FTermArea::isPrintPositionInsideArea() const noexcept -> bool
 {
   return cursor.x > 0
       && cursor.y > 0
@@ -575,8 +600,8 @@ inline auto FVTerm::FTermArea::reprint (const FRect& box, const FSize& term_size
   const int x_end = std::min({ int(term_size.getWidth()) - 1
                              , x_pos + w - 1
                              , position.x + size.width + shadow.width - 1 }) - position.x;
-  auto* line_changes = &changes[unsigned(y_start)];
-  const auto* line_changes_end = &changes[unsigned(y_end + 1)];
+  auto* line_changes = &changes[unsigned(std::max(0, y_start))];
+  const auto* line_changes_end = &changes[unsigned(std::max(0, y_end + 1))];
 
   while  ( line_changes < line_changes_end )  // Line loop
   {
@@ -745,8 +770,8 @@ inline auto FVTerm::getVWin() const noexcept -> const FTermArea*
 inline auto FVTerm::getWindowList() -> FVTermList*
 {
   static const auto& init_object = getGlobalFVTermInstance();
-  return (isInitialized() && init_object->window_list)
-        ? init_object->window_list.get()
+  return ( isInitialized() && init_object->vterm_window_list )
+        ? init_object->vterm_window_list.get()
         : nullptr;
 }
 
@@ -855,18 +880,18 @@ inline void FVTerm::init()
   if ( ! isInitialized() )
   {
     setGlobalFVTermInstance(this);
-    foutput     = std::make_shared<FOutputType>(*this);
-    window_list = std::make_shared<FVTermList>();
+    foutput           = std::make_shared<FOutputType>(*this);
+    vterm_window_list = std::make_shared<FVTermList>();
     initSettings();
   }
   else
   {
     static const auto& init_object = getGlobalFVTermInstance();
-    foutput     = std::shared_ptr<FOutput>(init_object->foutput);
-    window_list = std::shared_ptr<FVTermList>(init_object->window_list);
-    vterm       = std::shared_ptr<FTermArea>(init_object->vterm);
-    vterm_old   = std::shared_ptr<FTermArea>(init_object->vterm_old);
-    vdesktop    = std::shared_ptr<FTermArea>(init_object->vdesktop);
+    foutput           = std::shared_ptr<FOutput>(init_object->foutput);
+    vterm_window_list = std::shared_ptr<FVTermList>(init_object->vterm_window_list);
+    vterm             = std::shared_ptr<FTermArea>(init_object->vterm);
+    vterm_old         = std::shared_ptr<FTermArea>(init_object->vterm_old);
+    vdesktop          = std::shared_ptr<FTermArea>(init_object->vdesktop);
   }
 }
 

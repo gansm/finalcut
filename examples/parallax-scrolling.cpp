@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021-2024 Markus Gans                                      *
+* Copyright 2021-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -133,34 +133,6 @@ constexpr std::array<const char*, 97> saturn_xpm = \
   "                    "
 }};
 
-struct restoreOverlaid : public fc::FVTerm
-{
-  ~restoreOverlaid() override;
-
-  void operator () (fc::FVTerm& obj) const
-  {
-    const auto* win_list = getWindowList();
-
-    if ( ! win_list || win_list->empty() )
-      return;
-
-    auto obj_vwin = obj.getVWin();
-    bool overlaid{false};
-
-    for (const auto* window : *win_list)
-    {
-      const auto* win = static_cast<const fc::FWidget*>(window);
-      const auto* win_vwin = win->getVWin();
-
-      if ( overlaid && win_vwin && win_vwin->visible )
-        putArea (win->getTermPos(), win_vwin);
-      else if ( obj_vwin == win_vwin )
-        overlaid = true;
-    }
-  }
-};
-
-restoreOverlaid::~restoreOverlaid() = default;
 
 template <>
 struct std::hash<fc::FPoint>
@@ -206,7 +178,6 @@ void TextWindow::setPos (const fc::FPoint& pos, bool)
 {
   fc::FWindow::setPos (pos, false);
   putArea (getTermPos(), getVWin());
-  restoreOverlaid{}(*this);
 }
 
 //----------------------------------------------------------------------
@@ -272,7 +243,6 @@ void SpaceWindow::setPos (const fc::FPoint& pos, bool)
 {
   fc::FWindow::setPos (pos, false);
   putArea (getTermPos(), getVWin());
-  restoreOverlaid{}(*this);
 }
 
 //----------------------------------------------------------------------
@@ -323,26 +293,42 @@ void SpaceWindow::adjustSize()
 //----------------------------------------------------------------------
 // class PictureSpaceWindow
 //----------------------------------------------------------------------
-class PictureSpaceWindow final : public SpaceWindow
+class PictureSpaceWindow final : public fc::FWindow
 {
   public:
     // Constructor
-    explicit PictureSpaceWindow (fc::FColor, fc::FColor, fc::FWidget* = nullptr);
+    explicit PictureSpaceWindow (fc::FWidget* = nullptr);
+    void setPos (const fc::FPoint&, bool = true) override;
 
   private:
     // Method
     void draw() override;
+    void initLayout() override;
+    void adjustSize() override;
 };
 
 //----------------------------------------------------------------------
-PictureSpaceWindow::PictureSpaceWindow (fc::FColor fg, fc::FColor bg, fc::FWidget* parent)
-  : SpaceWindow{fg, bg, parent}
-{ }
+PictureSpaceWindow::PictureSpaceWindow (fc::FWidget* parent)
+  : fc::FWindow{parent}
+{
+  fc::FWidget::setForegroundColor (fc::FColor::White);
+  fc::FWidget::setBackgroundColor (fc::FColor::Black);
+}
+
+//----------------------------------------------------------------------
+void PictureSpaceWindow::setPos (const fc::FPoint& pos, bool)
+{
+  fc::FWindow::setPos (pos, false);
+  putArea (getTermPos(), getVWin());
+}
 
 //----------------------------------------------------------------------
 void PictureSpaceWindow::draw()
 {
-  SpaceWindow::draw();
+  setColor();
+  setTransparent();
+  clearArea();
+  unsetTransparent();
 
   if ( fc::FVTerm::getFOutput()->getMaxColor() < 16 )
     return;
@@ -362,6 +348,20 @@ void PictureSpaceWindow::draw()
   copyArea (getVWin(), fc::FPoint(10, 10), planet.get());
 }
 
+//----------------------------------------------------------------------
+void PictureSpaceWindow::initLayout()
+{
+  auto term_size = fc::FSize({getDesktopWidth(), getDesktopHeight()});
+  setSize(term_size, false);
+  fc::FWidget::initLayout();
+}
+
+//----------------------------------------------------------------------
+void PictureSpaceWindow::adjustSize()
+{
+  fc::FWindow::adjustSize();
+  initLayout();
+}
 
 //----------------------------------------------------------------------
 // class ParallaxScrolling
@@ -385,13 +385,14 @@ class ParallaxScrolling final : public fc::FWidget
     void onClose (fc::FCloseEvent*) override;
 
     // Data members
-    TextWindow          text_layer{fc::FColor::Yellow, fc::FColor::Black, this};
     SpaceWindow         layer1_lhs{fc::FColor::DarkGray, fc::FColor::Black, this};
     SpaceWindow         layer1_rhs{fc::FColor::DarkGray, fc::FColor::Black, this};
     SpaceWindow         layer2_lhs{fc::FColor::LightGray, fc::FColor::Black, this};
     SpaceWindow         layer2_rhs{fc::FColor::LightGray, fc::FColor::Black, this};
     SpaceWindow         layer3_lhs{fc::FColor::White, fc::FColor::Black, this};
-    PictureSpaceWindow  layer3_rhs{fc::FColor::White, fc::FColor::Black, this};
+    SpaceWindow         layer3_rhs{fc::FColor::White, fc::FColor::Black, this};
+    PictureSpaceWindow  picture{this};
+    TextWindow          text_layer{fc::FColor::Yellow, fc::FColor::Black, this};
     int                 timer1{-1};
     int                 timer2{-1};
     int                 timer3{-1};
@@ -427,6 +428,7 @@ void ParallaxScrolling::initLayout()
   setGeometry({1, 1}, term_size, false);
   auto lhs_pos = fc::FPoint{1, 1};
   auto rhs_pos = fc::FPoint{int(getDesktopWidth() + 1), 1};
+  picture.setPos(rhs_pos, false);
   layer1_lhs.setPos(lhs_pos, false);
   layer2_lhs.setPos(lhs_pos, false);
   layer3_lhs.setPos(lhs_pos, false);
@@ -478,6 +480,7 @@ void ParallaxScrolling::onTimer (fc::FTimerEvent* ev)
   else if ( timer3 == timer_id )
   {
     scrollLeft (layer3_lhs, layer3_rhs);
+    picture.setPos (layer3_rhs.getPos());
   }
 
   forceTerminalUpdate();

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2023 Markus Gans                                      *
+* Copyright 2019-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -52,6 +52,7 @@ FStartOptions::FStartOptions()
 #endif
   , dark_theme{false}
   , color_change{true}
+  , is_being_initialized{false}
 { }
 
 
@@ -75,6 +76,7 @@ void FStartOptions::setDefault()
   encoding = Encoding::Unknown;
   dark_theme = false;
   terminal_focus_events = true;
+  is_being_initialized = false;
 
 #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
   meta_sends_escape = true;

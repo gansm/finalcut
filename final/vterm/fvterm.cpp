@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2024 Markus Gans                                      *
+* Copyright 2016-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -54,6 +54,27 @@ constexpr auto getByte1TransparentMask() -> uInt8
   return getFAttributeByte(mask, 1);
 }
 
+constexpr auto getByte1Transparent() -> uInt8
+{
+  FCharAttribute mask{};
+  mask.transparent = true;
+  return getFAttributeByte(mask, 1);
+}
+
+constexpr auto getByte1ColorOverlay() -> uInt8
+{
+  FCharAttribute mask{};
+  mask.color_overlay = true;
+  return getFAttributeByte(mask, 1);
+}
+
+constexpr auto getByte1InheritBackground() -> uInt8
+{
+  FCharAttribute mask{};
+  mask.inherit_background = true;
+  return getFAttributeByte(mask, 1);
+}
+
 constexpr auto getByte1PrintTransparentMask() -> uInt8
 {
   FCharAttribute mask{};
@@ -88,6 +109,9 @@ struct var
 {
   static bool fvterm_initialized;  // Global init state
   static constexpr auto b1_transparent_mask = getByte1TransparentMask();
+  static constexpr auto b1_transparent = getByte1Transparent();
+  static constexpr auto b1_color_overlay = getByte1ColorOverlay();
+  static constexpr auto b1_inherit_background = getByte1InheritBackground();
   static constexpr auto b1_print_transparent_mask = getByte1PrintTransparentMask();
   static constexpr auto print_reset_mask = getResetMask();
   static constexpr auto color_overlay_mask = getColorOverlayMask();
@@ -95,6 +119,7 @@ struct var
 
 bool             var::fvterm_initialized{false};
 constexpr uInt8  var::b1_transparent_mask;
+constexpr uInt8  var::b1_transparent;
 constexpr uInt8  var::b1_print_transparent_mask;
 constexpr uInt32 var::print_reset_mask;
 constexpr uInt32 var::color_overlay_mask;
@@ -175,7 +200,7 @@ auto FVTerm::getFOutput() -> std::shared_ptr<FOutput>
 //----------------------------------------------------------------------
 auto FVTerm::getPrintCursor() -> FPoint
 {
-  const auto& win = getPrintArea();
+  const auto* win = getPrintArea();
 
   if ( win )
     return { win->position.x + win->cursor.x
@@ -204,7 +229,7 @@ void FVTerm::setTerminalUpdates (TerminalUpdate refresh_state) const
 //----------------------------------------------------------------------
 void FVTerm::setCursor (const FPoint& pos) noexcept
 {
-  if ( auto win = getPrintArea() )
+  if ( auto* win = getPrintArea() )
   {
     win->setCursorPos ( pos.getX() - win->position.x
                       , pos.getY() - win->position.y );
@@ -463,7 +488,7 @@ auto FVTerm::print (FVTermBuffer& buffer) noexcept -> int
   if ( buffer.isEmpty() )
     return -1;
 
-  auto area = getPrintArea();
+  auto* area = getPrintArea();
   return area ? print (area, buffer) : -1;
 }
 
@@ -473,7 +498,7 @@ auto FVTerm::print (const FVTermBuffer& buffer) noexcept -> int
   if ( buffer.isEmpty() )
     return -1;
 
-  auto area = getPrintArea();
+  auto* area = getPrintArea();
   return area ? print (area, buffer) : -1;
 }
 
@@ -507,7 +532,7 @@ auto FVTerm::print (FTermArea* area, const FVTermBuffer& buffer) const noexcept 
 //----------------------------------------------------------------------
 auto FVTerm::print (wchar_t c) noexcept -> int
 {
-  auto area = getPrintArea();
+  auto* area = getPrintArea();
   return area ? print (area, c) : -1;
 }
 
@@ -531,7 +556,7 @@ auto FVTerm::print (FTermArea* area, wchar_t c) noexcept -> int
 //----------------------------------------------------------------------
 auto FVTerm::print (const FChar& term_char) noexcept -> int
 {
-  auto area = getPrintArea();
+  auto* area = getPrintArea();
   return area ? print (area, term_char) : -1;
 }
 
@@ -544,7 +569,7 @@ auto FVTerm::print (FTermArea* area, const FChar& term_char) const noexcept -> i
   if ( interpretControlCodes(area, term_char) )
     return 0;  // No printable character
 
-  if ( ! area->checkPrintPos() || printWrap(area) )
+  if ( ! area->isPrintPositionInsideArea() || printWrap(area) )
     return -1;  // Cursor position out of range or end of area reached
 
   // Printing term_char on area at the current cursor position
@@ -670,9 +695,9 @@ void FVTerm::restoreVTerm (const FRect& box) const noexcept
   if ( ! vterm || box.getWidth() == 0 || box.getHeight() == 0 )
     return;
 
-  const auto* win_list = getWindowList();
+  const auto* vterm_win_list = getWindowList();
 
-  if ( ! win_list || win_list->empty() )
+  if ( ! vterm_win_list || vterm_win_list->empty() )
     return;
 
   const FSize vterm_size{ static_cast<std::size_t>(vterm->size.width)
@@ -681,12 +706,12 @@ void FVTerm::restoreVTerm (const FRect& box) const noexcept
   if ( vdesktop && vdesktop->reprint(box, vterm_size) )
     addLayer(vdesktop.get());
 
-  for (const auto& win_obj : *win_list)
+  for (const auto& vterm_obj : *vterm_win_list)
   {
-    if ( ! win_obj )
+    if ( ! vterm_obj )
       continue;
 
-    auto* win = win_obj->getVWin();
+    auto* win = vterm_obj->getVWin();
 
     if ( win && win->visible && win->layer > 0 && win->reprint(box, vterm_size) )
       addLayer(win);
@@ -880,7 +905,7 @@ void FVTerm::addLayer (FTermArea* area) const noexcept
 }
 
 //----------------------------------------------------------------------
-void FVTerm::putArea (const FPoint& pos, const FTermArea* area) const noexcept
+void FVTerm::putArea (const FPoint& pos, FTermArea* area) const noexcept
 {
   // Copies the given area block to the virtual terminal position
 
@@ -888,11 +913,10 @@ void FVTerm::putArea (const FPoint& pos, const FTermArea* area) const noexcept
     return;
 
   copyArea (vterm.get(), pos, area);
-  restoreOverlaidWindows(area);
 }
 
 //----------------------------------------------------------------------
-void FVTerm::copyArea (FTermArea* dst, const FPoint& pos, const FTermArea* const src) const noexcept
+void FVTerm::copyArea (FTermArea* dst, const FPoint& pos, FTermArea* src) const noexcept
 {
   // Copies the src area to the dst area position
 
@@ -904,10 +928,10 @@ void FVTerm::copyArea (FTermArea* dst, const FPoint& pos, const FTermArea* const
 
   const int src_width = getFullAreaWidth(src);
   const int src_height = src->minimized ? src->min_size.height : getFullAreaHeight(src);
-  int ax = std::max(0, pos.getX() - 1);
-  int ay = std::max(0, pos.getY() - 1);
-  int ol = std::max(0, 1 - pos.getX());  // outside left
-  int ot = std::max(0, 1 - pos.getY());  // outside top
+  const int ax = std::max(0, pos.getX() - 1);
+  const int ay = std::max(0, pos.getY() - 1);
+  const int ol = std::max(0, 1 - pos.getX());  // outside left
+  const int ot = std::max(0, 1 - pos.getY());  // outside top
   const int y_end = std::min(dst->size.height - ay, src_height - ot);
   const int length = std::min(dst->size.width - ax, src_width - ol);
 
@@ -917,16 +941,19 @@ void FVTerm::copyArea (FTermArea* dst, const FPoint& pos, const FTermArea* const
   auto* src_changes = &src->changes[0];
   auto* dst_changes = &dst->changes[unsigned(ay)];
 
+  if ( skip_one_vterm_update )  // dst is the virtual terminal
+    determineCoveredAreas(src);
+
   for (int y{0}; y < y_end; y++)  // line loop
   {
     const int cy = ay + y;
     const auto* sc = &src->getFChar(ol, ot + y);  // src character ptr
     auto* dc = &dst->getFChar(ax, cy);  // dst character ptr
 
-    if ( src_changes->trans_count > 0 )
+    if ( skip_one_vterm_update && src_changes->trans_count > 0 )
     {
       // Line with hidden and transparent characters
-      putAreaLineWithTransparency (sc, dc, length, {ax, cy});
+      putAreaLineWithTransparency (sc, dc, length, {ax, cy}, src_changes->covered);
     }
     else
     {
@@ -948,13 +975,13 @@ void FVTerm::determineWindowLayers() noexcept
 {
   // Determination of the window layer for all virtual windows
 
-  const auto* win_list = getWindowList();
+  const auto* vterm_win_list = getWindowList();
 
-  if ( ! win_list || win_list->empty() )
+  if ( ! vterm_win_list || vterm_win_list->empty() )
     return;
 
-  const auto& begin = win_list->cbegin();
-  const auto& end = win_list->cend();
+  const auto& begin = vterm_win_list->cbegin();
+  const auto& end = vterm_win_list->cend();
   auto iter = begin;
 
   while ( iter != end )
@@ -1179,9 +1206,9 @@ void FVTerm::resetAreaEncoding() const
   vdesktop->encoding = encoding;
   vterm->encoding = encoding;
 
-  for (auto&& window : *window_list)
+  for (auto&& vterm_obj : *vterm_window_list)
   {
-    auto v_win = window->getVWin();
+    auto v_win = vterm_obj->getVWin();
 
     if ( ! v_win )
       continue;
@@ -1200,7 +1227,7 @@ void FVTerm::resetAreaEncoding() const
 inline void FVTerm::resetTextAreaToDefault ( FTermArea* area
                                            , const FSize& size ) const noexcept
 {
-  FChar default_char
+  constexpr FChar default_char
   {
     { { L' ',  L'\0', L'\0', L'\0', L'\0' } },
     { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
@@ -1209,7 +1236,8 @@ inline void FVTerm::resetTextAreaToDefault ( FTermArea* area
   };
   std::fill (area->data.begin(), area->data.end(), default_char);
 
-  FLineChanges unchanged { uInt(size.getWidth()), 0, 0 };
+  const FTermArea::FLineChanges unchanged { uInt(size.getWidth())
+                                          , 0, 0, false };
   std::fill (area->changes.begin(), area->changes.end(), unchanged);
 }
 
@@ -1240,10 +1268,10 @@ auto FVTerm::isCovered (const FPoint& pos, const FTermArea* area) const noexcept
 {
   // Determines the covered state for the given position
 
-  const auto* win_list{getWindowList()};
+  const auto* vterm_win_list{getWindowList()};
 
-  if ( ! area || ! win_list || win_list->empty()
-    || win_list->back()->getVWin() == area )
+  if ( ! area || ! vterm_win_list || vterm_win_list->empty()
+    || vterm_win_list->back()->getVWin() == area )
     return CoveredState::None;
 
   auto is_covered{CoveredState::None};  // Initial state: no coverage
@@ -1251,14 +1279,14 @@ auto FVTerm::isCovered (const FPoint& pos, const FTermArea* area) const noexcept
   const auto pos_x = pos.getX();
   const auto pos_y = pos.getY();
 
-  for (const auto& win_obj : *win_list)  // Iteration through window list
+  for (const auto& vterm_obj : *vterm_win_list)  // Iteration through window list
   {
-    const auto* win = win_obj->getVWin();
+    const auto* win = vterm_obj->getVWin();
 
     if ( ! win || ! win->visible )
       continue;
 
-    if ( found && win->contains(pos) )  // is covered
+    if ( found && win->contains(pos_x, pos_y) )  // is covered
     {
       // Reduce repetitive attribute access
       const auto delta_x = pos_x - win->position.x;
@@ -1356,26 +1384,26 @@ constexpr auto FVTerm::getFullAreaHeight (const FTermArea* area) const noexcept 
 //----------------------------------------------------------------------
 void FVTerm::passChangesToOverlap (const FTermArea* area) const
 {
-  const auto* win_list = getWindowList();
+  const auto* vterm_win_list = getWindowList();
 
-  if ( ! area || ! win_list || win_list->empty() )
+  if ( ! area || ! vterm_win_list || vterm_win_list->empty() )
     return;
 
-  processOverlappingWindows (area, *win_list);
+  processOverlappingWindows (area, *vterm_win_list);
 }
 
 //----------------------------------------------------------------------
 inline void FVTerm::processOverlappingWindows ( const FTermArea* area
-                                              , const FVTermList& win_list ) const
+                                              , const FVTermList& vterm_win_list ) const
 {
   bool found{false};
 
   if ( ! area )
     return;
 
-  for (auto&& win_obj : win_list)
+  for (auto&& vterm_obj : vterm_win_list)
   {
-    auto* win = win_obj->getVWin();
+    auto* win = vterm_obj->getVWin();
 
     if ( found && win && win->visible && win->isOverlapped(area) )
     {
@@ -1445,42 +1473,18 @@ inline auto FVTerm::calculateEndCoordinate (int vterm_max, int area_max, int win
 }
 
 //----------------------------------------------------------------------
-void FVTerm::restoreOverlaidWindows (const FTermArea* area) const noexcept
-{
-  // Restoring overlaid windows
-
-  const auto* win_list = getWindowList();
-
-  if ( ! win_list || win_list->empty() )
-    return;
-
-  auto own_virtual_window = getVWin();
-  bool overlaid{false};
-
-  for (auto&& win_obj : *win_list)
-  {
-    const auto* win = win_obj->getVWin();
-
-    if ( overlaid && win && win->visible && win->isOverlapped(area) )
-      copyArea (vterm.get(), FPoint{win->position.x + 1, win->position.y + 1}, win);
-    else if ( own_virtual_window == win )
-      overlaid = true;
-  }
-}
-
-//----------------------------------------------------------------------
 void FVTerm::updateVTerm() const
 {
   // Updates the character data from all areas to VTerm
 
   updateVTermDesktop();
 
-  if ( ! window_list || window_list->empty() )
+  if ( ! vterm_window_list || vterm_window_list->empty() )
     return;
 
-  for (auto&& window : *window_list)  // List from bottom to top
+  for (auto&& vterm_obj : *vterm_window_list)  // List from bottom to top
   {
-    auto v_win = window->getVWin();
+    auto v_win = vterm_obj->getVWin();
 
     if ( ! (v_win && v_win->visible && v_win->layer > 0) )
       continue;
@@ -1682,10 +1686,10 @@ inline void FVTerm::saveCurrentVTerm() const
   std::memcpy(vterm_old->data.data(), vterm->data.data(), vterm->data.size() * sizeof(FChar));
 }
 
-
-
 //----------------------------------------------------------------------
-inline void FVTerm::putAreaLine (const FChar& src_char, FChar& dst_char, const std::size_t length) const
+inline void FVTerm::putAreaLine ( const FChar& src_char
+                                , FChar& dst_char
+                                , const std::size_t length ) const
 {
   // copy "length" characters from area to terminal
 
@@ -1693,21 +1697,165 @@ inline void FVTerm::putAreaLine (const FChar& src_char, FChar& dst_char, const s
 }
 
 //----------------------------------------------------------------------
+inline void FVTerm::applyColorOverlay (const FChar& src_char, FChar& dst_char) const
+{
+  dst_char.ch = src_char.ch;  // Get covered character
+  dst_char.attr.data &= ~internal::var::color_overlay_mask;
+
+  if ( isTransparentInvisible(dst_char) )
+    dst_char.ch[0] = L' ';
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::inheritBackground (const FChar& src_char, FChar& dst_char) const
+{
+  // Add the covered background to this character
+  dst_char.color.pair.bg = src_char.color.pair.bg;
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::putMultiLayerAreaLine ( FChar* dst_char
+                                           , const std::size_t length
+                                           , FPoint& pos ) const noexcept
+{
+  if ( length == 0 )
+    return;
+
+  if ( overlay_search_buffer.size() < length )  // Resize only if needed
+    overlay_search_buffer.resize(length);
+
+  auto* search_buffer = overlay_search_buffer.data();
+  std::fill_n(search_buffer, length, SearchState::start);
+  const auto term_x = pos.getX();
+  const auto term_y = pos.getY();
+
+  for (const auto* win : covered_areas_buffer)
+  {
+    // Precalculate window boundaries
+    const int current_height = win->minimized ? win->min_size.height
+                                              : win->size.height + win->shadow.height;
+    const int x_min = win->position.x;
+    const int x_max = x_min + win->size.width + win->shadow.width;
+    const int y_min = win->position.y;
+    const int y_max = y_min + current_height;
+
+    // Early rejection if the line is completely outside the window
+    if ( term_y < y_min
+      || term_y >= y_max
+      || term_x >= x_max
+      || term_x + int(length) <= x_min )
+      continue;
+
+    // Precalculate array indexing values for getFChar
+    const auto x = term_x - win->position.x;
+    const auto y = term_y - win->position.y;
+    const auto width = win->size.width + win->shadow.width;
+    const auto index = unsigned(y) * unsigned(width) + unsigned(x);
+
+    // Calculate the intersection of the line with the window
+    const auto start_i = std::size_t(std::max(0, x_min - term_x));
+    const auto end_i = std::size_t(std::min(int(length), x_max - term_x));
+
+    // Cache frequently accessed data pointer
+    const auto* const win_data = win->data.data();
+
+    // Process only the intersecting part of the line
+    for (std::size_t i{start_i}; i < end_i; i++)
+    {
+      auto& char_search = search_buffer[i];
+
+      if ( char_search == SearchState::ready )
+        continue;
+
+      const auto& win_char = win_data[index + unsigned(i)];
+      auto& dst = dst_char[i];
+      const auto transparency = win_char.attr.byte[1]
+                              & internal::var::b1_transparent_mask;
+
+      switch ( transparency )
+      {
+        case internal::var::b1_transparent:  // Transparent
+          if ( char_search == SearchState::start )
+          {
+            char_search = SearchState::printable;
+            continue;
+          }
+          break;
+
+        case internal::var::b1_color_overlay:  // Color overlay
+          if ( char_search != SearchState::overlay )
+          {
+            if ( char_search == SearchState::background )
+            {
+              inheritBackground(win_char, dst);
+              char_search = SearchState::ready;
+              continue;
+            }
+
+            std::memcpy (&dst, &win_char, sizeof(FChar));
+            char_search = SearchState::overlay;
+            continue;
+          }
+          break;
+
+        case internal::var::b1_inherit_background:  // Inherit background color
+          if ( char_search != SearchState::background )
+          {
+            if ( char_search == SearchState::overlay )
+            {
+              applyColorOverlay(win_char, dst);
+              char_search = SearchState::ready;
+              continue;
+            }
+
+            std::memcpy (&dst, &win_char, sizeof(FChar));
+            char_search = SearchState::background;
+            continue;
+          }
+          break;
+
+        default:
+          // Color overlay
+          if ( char_search == SearchState::overlay )
+          {
+            applyColorOverlay(win_char, dst);
+            char_search = SearchState::ready;
+            continue;
+          }
+
+          // Inherit background color
+          if ( char_search == SearchState::background )
+          {
+            inheritBackground(win_char, dst);
+            char_search = SearchState::ready;
+            continue;
+          }
+
+          // Non-transparent
+          std::memcpy (&dst, &win_char, sizeof(FChar));
+          char_search = SearchState::ready;
+      }
+    }
+  }
+}
+
+//----------------------------------------------------------------------
 inline void FVTerm::putAreaLineWithTransparency ( const FChar* src_char
                                                 , FChar* dst_char
                                                 , const int length
-                                                , FPoint pos ) const
+                                                , FPoint pos
+                                                , bool line_covered) const
 {
   if ( length < 1 )
     return;
 
   const auto handle_region = \
-      [this, &pos, &dst_char] ( bool transparent
-                              , std::size_t count
-                              , const FChar* start )
+      [this, &pos, &dst_char, &line_covered] ( bool transparent
+                                             , std::size_t count
+                                             , const FChar* start )
   {
-    if ( transparent )
-      putTransparentAreaLine (pos, count);
+    if ( transparent || line_covered )
+      putMultiLayerAreaLine (dst_char, count, pos);
     else
       putAreaLine (*start, *dst_char, count);
 
@@ -1741,17 +1889,6 @@ inline void FVTerm::putAreaLineWithTransparency ( const FChar* src_char
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::putTransparentAreaLine ( const FPoint& pos
-                                           , const std::size_t length ) const
-{
-  if ( length == 0 )
-    return;
-
-  FRect box(pos.getX() + 1, pos.getY() + 1, length, 1);
-  restoreVTerm(box);
-}
-
-//----------------------------------------------------------------------
 inline void FVTerm::addAreaLineWithTransparency ( const FChar* src_char
                                                 , FChar* dst_char
                                                 , const std::size_t length ) const
@@ -1765,9 +1902,9 @@ inline void FVTerm::addAreaLineWithTransparency ( const FChar* src_char
                         , const FChar* start )
   {
     if ( transparent )
-      addTransparent (count, start, dst_char);
+      addTransparent (start, dst_char, count);
     else
-      putNonTransparent (count, start, dst_char);
+      putNonTransparent (start, dst_char, count);
   };
 
   const auto* end_char{src_char + length};
@@ -1892,17 +2029,17 @@ void FVTerm::clearAreaWithShadow (FTermArea* area, const FChar& fillchar) const 
   for (auto y{0}; y < area->size.height; y++)
   {
     // Clear area
-    const auto area_pos = &area->getFChar(0, y);
+    auto* area_pos = &area->getFChar(0, y);
     std::fill (area_pos, area_pos + area->size.width, fillchar);
     // Make right shadow transparent
-    const auto shadow_begin = &area->getFChar(area->size.width, y);
+    auto* shadow_begin = &area->getFChar(area->size.width, y);
     std::fill (shadow_begin, shadow_begin + area->shadow.width, t_char);
   }
 
   // Make bottom shadow transparent
   for (auto y{0}; y < area->shadow.height; y++)
   {
-    const auto area_pos = &area->getFChar(0, area->size.height + y);
+    auto* area_pos = &area->getFChar(0, area->size.height + y);
     std::fill (area_pos, area_pos + total_width, t_char);
   }
 }
@@ -1996,7 +2133,8 @@ inline auto FVTerm::printCharacterOnCoordinate ( FTermArea* area
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::printPaddingCharacter (FTermArea* area, const FChar& term_char) const
+inline void FVTerm::printPaddingCharacter ( FTermArea* area
+                                          , const FChar& term_char ) const
 {
   // Creates a padding-character from the current character (term_char)
   // and prints it. It is a placeholder for the column after
@@ -2022,8 +2160,9 @@ inline void FVTerm::printPaddingCharacter (FTermArea* area, const FChar& term_ch
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::putNonTransparent ( std::size_t& non_trans_count
-                                      , const FChar* start_char, FChar*& dst_char ) const
+inline void FVTerm::putNonTransparent ( const FChar* start_char
+                                      , FChar*& dst_char
+                                      , std::size_t& non_trans_count ) const
 {
   if ( non_trans_count == 0 )
     return;
@@ -2034,8 +2173,9 @@ inline void FVTerm::putNonTransparent ( std::size_t& non_trans_count
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::addTransparent ( std::size_t& trans_count
-                                   , const FChar* start_char, FChar*& dst_char ) const
+inline void FVTerm::addTransparent ( const FChar* start_char
+                                   , FChar*& dst_char
+                                   , std::size_t& trans_count ) const
 {
   if ( trans_count == 0 )
     return;
@@ -2043,6 +2183,84 @@ inline void FVTerm::addTransparent ( std::size_t& trans_count
   addTransparentAreaLine (*start_char, *dst_char, trans_count);
   dst_char += trans_count;  // dst character
   trans_count = 0;
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::addVDesktopToListIfExists (FTermAreaList& list) const
+{
+  // Adds the virtual desktop area, if it exists
+
+  if ( vdesktop )
+    list.push_back(vdesktop.get());
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::determineCoveredAreas (FTermArea* src) const
+{
+  const auto* vterm_win_list = getWindowList();
+  covered_areas_buffer.clear();
+  resetLineCoveredState(src);
+
+  if ( ! vterm_win_list || vterm_win_list->empty() )
+  {
+    addVDesktopToListIfExists(covered_areas_buffer);
+    return;
+  }
+
+  const auto end = vterm_win_list->crend();
+
+  // Areas from top to bottom
+  for (auto iter = vterm_win_list->crbegin(); iter < end; ++iter)
+  {
+    const auto& vterm_obj = *iter;
+
+    if ( ! vterm_obj )
+      continue;
+
+    const auto* win = vterm_obj->getVWin();
+
+    if ( ! win || ! win->visible || win->layer < 1
+      || ! win->isOverlapped(src) )
+      continue;
+
+    covered_areas_buffer.push_back(win);
+
+    if ( win->layer > src->layer )
+      determineLineCoveredState(win, src);
+  }
+
+  addVDesktopToListIfExists(covered_areas_buffer);
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::resetLineCoveredState (FTermArea* src) const
+{
+  std::for_each ( std::begin(src->changes)
+                , std::end(src->changes)
+                , [] (auto& changes) { changes.covered = false; } );
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::determineLineCoveredState ( const FTermArea* const win
+                                              , FTermArea* src ) const
+{
+  // Requirements: The two areas have been checked for overlap
+
+  const int win_current_height = win->minimized ? win->min_size.height
+                                                : win->size.height + win->shadow.height;
+  const int src_current_height = src->minimized ? src->min_size.height
+                                                : src->size.height + src->shadow.height;
+  const int win_y_min = win->position.y;
+  const int win_y_max = win_y_min + win_current_height;
+  const int src_y_min = src->position.y;
+  const int src_y_max = src_y_min + src_current_height;
+  const auto start = std::size_t(std::max(win_y_min, src_y_min) - src->position.y);
+  const auto end = std::size_t(std::min(win_y_max, src_y_max) - src->position.y);
+  auto* changes = src->changes.data() + start;
+  const auto* const changes_end = src->changes.data() + end;
+
+  for (; changes < changes_end; ++changes)
+    changes->covered = true;
 }
 
 //----------------------------------------------------------------------

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2013-2024 Markus Gans                                      *
+* Copyright 2013-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -62,20 +62,21 @@ bool           var::exit_loop  {false};
 }  // namespace internal
 
 // Static attributes
-FWidget*  FWidget::main_widget          {nullptr};  // main application widget
-FWidget*  FWidget::active_window        {nullptr};  // the active window
-FWidget*  FWidget::focus_widget         {nullptr};  // has keyboard input focus
-FWidget*  FWidget::clicked_widget       {nullptr};  // is focused by click
-FWidget*  FApplication::clicked_widget  {nullptr};  // is focused by click
-FWidget*  FApplication::wheel_widget    {nullptr};  // is focused on wheel
-FWidget*  FWidget::open_menu            {nullptr};  // currently open menu
-FWidget*  FWidget::move_resize_widget   {nullptr};  // move or resize by keyboard
-FWidget*  FApplication::keyboard_widget {nullptr};  // has the keyboard focus
-int       FApplication::loop_level      {0};        // event loop level
-int       FApplication::quit_code       {EXIT_SUCCESS};
-bool      FApplication::quit_now        {false};
-uInt64    FApplication::next_event_wait {5000};     // 5 ms (200 Hz)
-TimeValue FApplication::time_last_event {};
+FWidget*        FWidget::main_widget             {nullptr};  // main application widget
+FWidget*        FWidget::active_window           {nullptr};  // the active window
+FWidget*        FWidget::focus_widget            {nullptr};  // has keyboard input focus
+FWidget*        FWidget::clicked_widget          {nullptr};  // is focused by click
+FWidget*        FApplication::clicked_widget     {nullptr};  // is focused by click
+FWidget*        FApplication::wheel_widget       {nullptr};  // is focused on wheel
+FWidget*        FWidget::open_menu               {nullptr};  // currently open menu
+FWidget*        FWidget::move_resize_widget      {nullptr};  // move or resize by keyboard
+FWidget*        FApplication::keyboard_widget    {nullptr};  // has the keyboard focus
+int             FApplication::loop_level         {0};        // event loop level
+int             FApplication::quit_code          {EXIT_SUCCESS};
+bool            FApplication::quit_now           {false};
+uInt64          FApplication::next_event_wait    {5000};     // 5 ms (200 Hz)
+TimeValue       FApplication::time_last_event    {};
+std::streambuf* FApplication::default_clog_rdbuf {nullptr};
 
 // FEvent friend function forward declaration
 void setSend (FEvent&, bool = true);
@@ -117,7 +118,7 @@ FApplication::~FApplication()  // destructor
   if ( eventInQueue() )
     event_queue.clear();
 
-  destroyLog();
+  resetLog();
 }
 
 
@@ -140,7 +141,8 @@ auto FApplication::getLog() -> FLogPtr&
   // Global logger object
   static const auto& logger = std::make_unique<FLogPtr>();
 
-  if ( logger && *logger == nullptr )
+  if ( logger && *logger == nullptr
+    && ( ! isQuit() || getStartOptions().is_being_initialized) )
   {
     *logger = std::make_shared<FLogger>();
 
@@ -356,10 +358,14 @@ void FApplication::setLogFile (const FString& filename)
   if ( log_stream.is_open() )
   {
     // Get the global logger object
-    auto& log = *FApplication::getLog();
-    log.setOutputStream(log_stream);
-    log.enableTimestamp();
-    log.setLineEnding (FLog::LineEnding::LF);
+    auto& log = FApplication::getLog();
+
+    if ( ! log )
+      return;
+
+    log->setOutputStream(log_stream);
+    log->enableTimestamp();
+    log->setLineEnding (FLog::LineEnding::LF);
   }
   else
   {
@@ -655,7 +661,7 @@ void FApplication::showParameterUsage()
 }
 
 //----------------------------------------------------------------------
-inline void FApplication::destroyLog()
+inline void FApplication::resetLog()
 {
   // Reset the rdbuf of clog
   std::clog << std::flush;
@@ -1302,13 +1308,18 @@ void FApplication::sendWheelEvent ( const FMouseData& md
 //----------------------------------------------------------------------
 auto FApplication::processParameters (const Args& args) -> FWidget*
 {
+  // Save the default clog stream buffer
+  default_clog_rdbuf = std::clog.rdbuf();
+
   if ( args.size() > 1 && (args[1] == "--help" || args[1] == "-h") )
   {
     showParameterUsage();
     FApplication::exit(EXIT_SUCCESS);
   }
 
+  getStartOptions().is_being_initialized = true;
   cmdOptions (args);
+  getStartOptions().is_being_initialized = false;
   return nullptr;
 }
 
@@ -1362,7 +1373,10 @@ void FApplication::processLogger() const
 {
   // Synchronizing the stream buffer with the logging output
 
-  auto logger = getLog();
+  auto& logger = getLog();
+
+  if ( ! logger )
+    return;
 
   if ( ! logger->str().empty() )
     logger->pubsync();
@@ -1491,19 +1505,24 @@ void setQueued (FEvent& event, bool state)
 //----------------------------------------------------------------------
 auto operator << (std::ostream& outstr, FLog::LogLevel l) -> std::ostream&
 {
+  auto& output = FApplication::getLog();
+
+  if ( ! output )
+    return outstr;
+
   try
   {
-    *FApplication::getLog() << l;
+    *output << l;
   }
   catch (const std::invalid_argument&)
   {
     try
     {
-      *FApplication::getLog() << FLog::LogLevel::Info;
+      *output << FLog::LogLevel::Info;
     }
     catch (const std::invalid_argument&)  // Avoid being thrown again
     {
-      *FApplication::getLog();
+      *output;
     }
   }
 

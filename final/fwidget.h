@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2024 Markus Gans                                      *
+* Copyright 2015-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -517,6 +517,7 @@ class FWidget : public FVTerm
     static FWidgetList*  always_on_top_list;
     static FWidgetList*  close_widget_list;
     static uInt          modal_dialog_counter;
+    static bool          dont_raise_window;
     static bool          init_terminal;
     static bool          init_desktop;
 

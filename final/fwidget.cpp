@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2024 Markus Gans                                      *
+* Copyright 2015-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -58,6 +58,7 @@ FWidget*              FWidget::redraw_root_widget{nullptr};
 FWidget::FWidgetList* FWidget::dialog_list{nullptr};
 FWidget::FWidgetList* FWidget::always_on_top_list{nullptr};
 FWidget::FWidgetList* FWidget::close_widget_list{nullptr};
+bool                  FWidget::dont_raise_window{false};
 bool                  FWidget::init_terminal{false};
 bool                  FWidget::init_desktop{false};
 uInt                  FWidget::modal_dialog_counter{};
@@ -222,7 +223,11 @@ void FWidget::setMainWidget (FWidget* obj)
   auto app_object = FApplication::getApplicationObject();
 
   if ( obj && app_object && ! getFocusWidget() )
+  {
+    dont_raise_window = true;
     app_object->focusFirstChild();
+    dont_raise_window = false;
+  }
 }
 
 //----------------------------------------------------------------------
@@ -1272,11 +1277,12 @@ void FWidget::adjustSizeGlobal()
   }
 
   adjustSize();  // Root widget / FApplication object
+  const auto* vterm_win_list = getWindowList();
 
-  if ( getWindowList() && ! getWindowList()->empty() )
+  if ( vterm_win_list && ! vterm_win_list->empty() )
   {
-    for (auto&& window : *getWindowList())
-      static_cast<FWidget*>(window)->adjustSize();
+    for (auto&& vterm_obj : *vterm_win_list)
+      static_cast<FWidget*>(vterm_obj)->adjustSize();
   }
 }
 
@@ -1915,7 +1921,7 @@ void FWidget::setWindowFocus (bool enable)
   if ( ! window )
     return;
 
-  if ( ! window->isWindowActive() )
+  if ( ! (window->isWindowActive() || dont_raise_window) )
   {
     // Raise the window, set it active and redraw it
     bool has_raised = window->raiseWindow();
@@ -2099,20 +2105,21 @@ void FWidget::draw()
 //----------------------------------------------------------------------
 void FWidget::drawWindows() const
 {
-  // redraw windows
+  // Redraw windows
   FChar default_char{};
   default_char.ch[0] = L' ';
   default_char.color.pair.fg = FColor::Default;
   default_char.color.pair.bg = FColor::Default;
   default_char.attr.byte[0] = 0;
   default_char.attr.byte[1] = 0;
+  const auto* vterm_win_list = getWindowList();
 
-  if ( ! getWindowList() || getWindowList()->empty() )
+  if ( ! vterm_win_list || vterm_win_list->empty() )
     return;
 
-  for (auto&& window : *getWindowList())
+  for (auto&& vterm_obj : *vterm_win_list)
   {
-    const auto win = static_cast<FWidget*>(window);
+    const auto win = static_cast<FWidget*>(vterm_obj);
 
     if ( win->isShown() )
     {
@@ -2126,7 +2133,7 @@ void FWidget::drawWindows() const
 //----------------------------------------------------------------------
 void FWidget::drawChildren()
 {
-  // draw child elements
+  // Draw child elements
   if ( ! hasChildren() )
     return;
 

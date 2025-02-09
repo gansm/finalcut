@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021-2024 Markus Gans                                      *
+* Copyright 2021-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -483,7 +483,7 @@ class FVTerm_protected : public finalcut::FVTerm
     void p_getArea (const finalcut::FPoint&, FTermArea*) const;
     void p_getArea (const finalcut::FRect&, FTermArea*) const;
     void p_addLayer (FTermArea*) const;
-    void p_putArea (const finalcut::FPoint&, const FTermArea*) const;
+    void p_putArea (const finalcut::FPoint&, FTermArea*) const;
     static auto p_getLayer (FVTerm&) -> int;
     static void p_determineWindowLayers();
     void p_scrollAreaForward (FTermArea*);
@@ -697,7 +697,7 @@ inline void FVTerm_protected::p_addLayer (FTermArea* area) const
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm_protected::p_putArea (const finalcut::FPoint& pos, const FTermArea* area) const
+inline void FVTerm_protected::p_putArea (const finalcut::FPoint& pos, FTermArea* area) const
 {
   finalcut::FVTerm::putArea (pos, area);
 }
@@ -781,6 +781,7 @@ class FVTermTest : public CPPUNIT_NS::TestFixture
     void FVTermChildAreaPrintTest();
     void FVTermScrollTest();
     void FVTermOverlappingWindowsTest();
+    void FVTermTranparencyTest();
     void FVTermReduceUpdatesTest();
     void getFVTermAreaTest();
 
@@ -797,6 +798,7 @@ class FVTermTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (FVTermChildAreaPrintTest);
     CPPUNIT_TEST (FVTermScrollTest);
     CPPUNIT_TEST (FVTermOverlappingWindowsTest);
+    CPPUNIT_TEST (FVTermTranparencyTest);
     CPPUNIT_TEST (FVTermReduceUpdatesTest);
     CPPUNIT_TEST (getFVTermAreaTest);
 
@@ -955,13 +957,21 @@ void FVTermTest::FVTermBasesTest()
   CPPUNIT_ASSERT ( ! p_fvterm.p_isActive(vwin) );
   CPPUNIT_ASSERT ( test::getAreaSize(vwin) == 462 );
   CPPUNIT_ASSERT ( vwin->contains({5, 5}) );
+  CPPUNIT_ASSERT ( vwin->contains(5, 5) );
   CPPUNIT_ASSERT ( ! vwin->contains({4, 5}) );
+  CPPUNIT_ASSERT ( ! vwin->contains(4, 5) );
   CPPUNIT_ASSERT ( ! vwin->contains({5, 4}) );
+  CPPUNIT_ASSERT ( ! vwin->contains(5, 4) );
   CPPUNIT_ASSERT ( ! vwin->contains({4, 4}) );
+  CPPUNIT_ASSERT ( ! vwin->contains(4, 4) );
   CPPUNIT_ASSERT ( vwin->contains({26, 25}) );    // {5 + 20 + 2 - 1 = 26, 5 + 20 + 1 - 1 = 25}
+  CPPUNIT_ASSERT ( vwin->contains(26, 25) );    // {5 + 20 + 2 - 1 = 26, 5 + 20 + 1 - 1 = 25}
   CPPUNIT_ASSERT ( ! vwin->contains({27, 25}) );
+  CPPUNIT_ASSERT ( ! vwin->contains(27, 25) );
   CPPUNIT_ASSERT ( ! vwin->contains({26, 26}) );
+  CPPUNIT_ASSERT ( ! vwin->contains(26, 26) );
   CPPUNIT_ASSERT ( ! vwin->contains({27, 26}) );
+  CPPUNIT_ASSERT ( ! vwin->contains(27, 26) );
   vwin->minimized = true;
   CPPUNIT_ASSERT ( vwin->contains({5, 5}) );
   CPPUNIT_ASSERT ( ! vwin->contains({4, 5}) );
@@ -972,21 +982,21 @@ void FVTermTest::FVTermBasesTest()
   CPPUNIT_ASSERT ( ! vwin->contains({26, 6}) );
   CPPUNIT_ASSERT ( ! vwin->contains({27, 6}) );
   vwin->minimized = false;
-  CPPUNIT_ASSERT ( ! vwin->checkPrintPos() );
+  CPPUNIT_ASSERT ( ! vwin->isPrintPositionInsideArea() );
   vwin->setCursorPos(0, 1);
-  CPPUNIT_ASSERT ( ! vwin->checkPrintPos() );
+  CPPUNIT_ASSERT ( ! vwin->isPrintPositionInsideArea() );
   vwin->setCursorPos(1, 0);
-  CPPUNIT_ASSERT ( ! vwin->checkPrintPos() );
+  CPPUNIT_ASSERT ( ! vwin->isPrintPositionInsideArea() );
   vwin->setCursorPos(1, 1);
-  CPPUNIT_ASSERT ( vwin->checkPrintPos() );
+  CPPUNIT_ASSERT ( vwin->isPrintPositionInsideArea() );
   vwin->setCursorPos(22, 21);  // {20 + 2 = 22, 20 + 1 = 21}
-  CPPUNIT_ASSERT ( vwin->checkPrintPos() );
+  CPPUNIT_ASSERT ( vwin->isPrintPositionInsideArea() );
   vwin->setCursorPos(23, 21);
-  CPPUNIT_ASSERT ( ! vwin->checkPrintPos() );
+  CPPUNIT_ASSERT ( ! vwin->isPrintPositionInsideArea() );
   vwin->setCursorPos(22, 22);
-  CPPUNIT_ASSERT ( ! vwin->checkPrintPos() );
+  CPPUNIT_ASSERT ( ! vwin->isPrintPositionInsideArea() );
   vwin->setCursorPos(23, 22);
-  CPPUNIT_ASSERT ( ! vwin->checkPrintPos() );
+  CPPUNIT_ASSERT ( ! vwin->isPrintPositionInsideArea() );
   vwin->setCursorPos(0, 0);
 
   finalcut::FChar default_char;
@@ -2674,6 +2684,347 @@ void FVTermTest::FVTermOverlappingWindowsTest()
                                   {  1, { {5, vwin_4_1_char}, {1, vwin_2_1_char}, {5, vwin_2_char}, {69, bg_char} } },
                                   {  2, { {6, vwin_4_char}, {5, vwin_3_char}, {69, bg_char} } },
                                   { 19, { {80, bg_char} } } } );
+  CPPUNIT_ASSERT ( test::isAreaEqual(test_area, vterm) );
+}
+
+//----------------------------------------------------------------------
+void FVTermTest::FVTermTranparencyTest()
+{
+  //     1          2          3          4          5
+  // *********   *     *     *   *        │      ╲       ╱
+  // *       *  *********    *   *        │       ╲     ╱
+  // *       *   *     *   *********      │        ╲   ╱
+  // *********   *     *     *   *        │         ╲ ╱
+  // *       *  *********    *   *    ────┼────      ╳
+  // *       *   *     *   *********      │         ╱ ╲
+  // *********   *     *     *   *        │        ╱   ╲
+  // *       *  *********    *   *        │       ╱     ╲
+  // *       *   *     *   *********      │      ╱       ╲
+
+  FVTerm_protected p_fvterm_1(finalcut::outputClass<FTermOutputTest>{});
+  FVTerm_protected p_fvterm_2(finalcut::outputClass<FTermOutputTest>{});
+  FVTerm_protected p_fvterm_3(finalcut::outputClass<FTermOutputTest>{});
+  FVTerm_protected p_fvterm_4(finalcut::outputClass<FTermOutputTest>{});
+  FVTerm_protected p_fvterm_5(finalcut::outputClass<FTermOutputTest>{});
+
+  // unique virtual terminal
+  auto&& vterm = p_fvterm_1.p_getVirtualTerminal();
+
+  // virtual windows
+  auto vwin_1 = p_fvterm_1.getVWin();
+  auto vwin_2 = p_fvterm_2.getVWin();
+  auto vwin_3 = p_fvterm_3.getVWin();
+  auto vwin_4 = p_fvterm_4.getVWin();
+  auto vwin_5 = p_fvterm_5.getVWin();
+
+  // Create the virtual windows for the p_fvterm_1..5 objects
+  finalcut::FRect geometry_1 {finalcut::FPoint{0, 0}, finalcut::FSize{9, 9}};
+  finalcut::FRect geometry_2 {finalcut::FPoint{0, 0}, finalcut::FSize{9, 9}};
+  finalcut::FRect geometry_3 {finalcut::FPoint{0, 0}, finalcut::FSize{9, 9}};
+  finalcut::FRect geometry_4 {finalcut::FPoint{0, 0}, finalcut::FSize{9, 9}};
+  finalcut::FRect geometry_5 {finalcut::FPoint{0, 0}, finalcut::FSize{9, 9}};
+  auto vwin_1_ptr = p_fvterm_1.p_createArea (geometry_1);
+  auto vwin_2_ptr = p_fvterm_2.p_createArea (geometry_2);
+  auto vwin_3_ptr = p_fvterm_3.p_createArea (geometry_3);
+  auto vwin_4_ptr = p_fvterm_4.p_createArea (geometry_4);
+  auto vwin_5_ptr = p_fvterm_5.p_createArea (geometry_5);
+  vwin_1 = vwin_1_ptr.get();
+  vwin_2 = vwin_2_ptr.get();
+  vwin_3 = vwin_3_ptr.get();
+  vwin_4 = vwin_4_ptr.get();
+  vwin_5 = vwin_5_ptr.get();
+  p_fvterm_1.setVWin(std::move(vwin_1_ptr));
+  p_fvterm_2.setVWin(std::move(vwin_2_ptr));
+  p_fvterm_3.setVWin(std::move(vwin_3_ptr));
+  p_fvterm_4.setVWin(std::move(vwin_4_ptr));
+  p_fvterm_5.setVWin(std::move(vwin_5_ptr));
+
+  CPPUNIT_ASSERT ( p_fvterm_1.getWindowList()->empty() );
+  finalcut::FVTerm::getWindowList()->push_back(&p_fvterm_1);
+  finalcut::FVTerm::getWindowList()->push_back(&p_fvterm_2);
+  finalcut::FVTerm::getWindowList()->push_back(&p_fvterm_3);
+  finalcut::FVTerm::getWindowList()->push_back(&p_fvterm_4);
+  finalcut::FVTerm::getWindowList()->push_back(&p_fvterm_5);
+  CPPUNIT_ASSERT ( ! finalcut::FVTerm::getWindowList()->empty() );
+  CPPUNIT_ASSERT ( finalcut::FVTerm::getWindowList()->size() == 5U );
+
+  // Fill window with content
+  auto light_red_color = finalcut::FColorPair {finalcut::FColor::LightRed, finalcut::FColor::Black};
+  auto transparent = finalcut::FStyle {finalcut::Style::Transparent};
+  auto reset = finalcut::FStyle {finalcut::Style::None};
+  p_fvterm_1.print() << finalcut::FPoint{1, 1}
+                     << light_red_color
+                     << "*********"
+                     << "*" << transparent << "       " << reset << light_red_color << "*"
+                     << "*" << transparent << "       " << reset << light_red_color << "*"
+                     << "*********"
+                     << "*" << transparent << "       " << reset << light_red_color << "*"
+                     << "*" << transparent << "       " << reset << light_red_color << "*"
+                     << "*********"
+                     << "*" << transparent << "       " << reset << light_red_color << "*"
+                     << "*" << transparent << "       " << reset << light_red_color << "*"
+                     << reset;
+
+  auto light_green_color = finalcut::FColorPair {finalcut::FColor::LightGreen, finalcut::FColor::Black};
+  p_fvterm_2.print() << finalcut::FPoint{1, 1}
+                     << transparent << " " << reset << light_green_color << "*" << transparent << "     " << reset << light_green_color << "*" << transparent << " "
+                     << reset << light_green_color << "*********"
+                     << transparent << " " << reset << light_green_color << "*" << transparent << "     " << reset << light_green_color << "*" << transparent << " "
+                     << transparent << " " << reset << light_green_color << "*" << transparent << "     " << reset << light_green_color << "*" << transparent << " "
+                     << reset << light_green_color << "*********"
+                     << transparent << " " << reset << light_green_color << "*" << transparent << "     " << reset << light_green_color << "*" << transparent << " "
+                     << transparent << " " << reset << light_green_color << "*" << transparent << "     " << reset << light_green_color << "*" << transparent << " "
+                     << reset << light_green_color << "*********"
+                     << transparent << " " << reset << light_green_color << "*" << transparent << "     " << reset << light_green_color << "*" << transparent << " "
+                     << reset;
+
+  auto light_blue_color = finalcut::FColorPair {finalcut::FColor::LightBlue, finalcut::FColor::Black};
+  p_fvterm_3.print() << finalcut::FPoint{1, 1}
+                     << finalcut::FColorPair {finalcut::FColor::LightBlue, finalcut::FColor::Black}
+                     << transparent << "  " << reset << light_blue_color << "*" << transparent << "   " << reset << light_blue_color << "*" << transparent << "  "
+                     << transparent << "  " << reset << light_blue_color << "*" << transparent << "   " << reset << light_blue_color << "*" << transparent << "  "
+                     << reset << light_blue_color << "*********"
+                     << transparent << "  " << reset << light_blue_color << "*" << transparent << "   " << reset << light_blue_color << "*" << transparent << "  "
+                     << transparent << "  " << reset << light_blue_color << "*" << transparent << "   " << reset << light_blue_color << "*" << transparent << "  "
+                     << reset << light_blue_color << "*********"
+                     << transparent << "  " << reset << light_blue_color << "*" << transparent << "   " << reset << light_blue_color << "*" << transparent << "  "
+                     << transparent << "  " << reset << light_blue_color << "*" << transparent << "   " << reset << light_blue_color << "*" << transparent << "  "
+                     << reset << light_blue_color << "*********"
+                     << reset;
+
+    auto yellow_color = finalcut::FColorPair {finalcut::FColor::Yellow, finalcut::FColor::Black};
+    p_fvterm_4.print() << finalcut::FPoint{1, 1}
+                     << transparent << "    " << reset << yellow_color << "│"  << transparent <<"    "
+                     << transparent << "    " << reset << yellow_color << "│"  << transparent <<"    "
+                     << transparent << "    " << reset << yellow_color << "│"  << transparent <<"    "
+                     << transparent << "    " << reset << yellow_color << "│"  << transparent <<"    "
+                     << reset << yellow_color << "────┼────"
+                     << transparent << "    " << reset << yellow_color << "│"  << transparent <<"    "
+                     << transparent << "    " << reset << yellow_color << "│"  << transparent <<"    "
+                     << transparent << "    " << reset << yellow_color << "│"  << transparent <<"    "
+                     << transparent << "    " << reset << yellow_color << "│"  << transparent <<"    "
+                     << reset;
+
+  auto white_color = finalcut::FColorPair {finalcut::FColor::White, finalcut::FColor::Black};
+  p_fvterm_5.print() << finalcut::FPoint{1, 1}
+                     << white_color << "╲" << transparent << "       " << reset << white_color << "╱"
+                     << transparent << " " << reset << white_color << "╲" << transparent << "     " << reset << white_color << "╱" << transparent << " "
+                     << transparent << "  " << reset << white_color << "╲" << transparent << "   " << reset << white_color << "╱" << transparent << "  "
+                     << transparent << "   " << reset << white_color << "╲" << transparent << " " << reset << white_color << "╱" << transparent << "   "
+                     << transparent << "    " << reset << white_color << "╳" << transparent << "    "
+                     << transparent << "   " << reset << white_color << "╱" << transparent << " " << reset << white_color << "╲" << transparent << "   "
+                     << transparent << "  " << reset << white_color << "╱" << transparent << "   " << reset << white_color << "╲" << transparent << "  "
+                     << transparent << " " << reset << white_color << "╱"<< transparent << "     " << reset << white_color << "╲" << transparent << " "
+                     << reset << white_color << "╱" << transparent << "       " << reset << white_color << "╲"
+                     << reset;
+
+  test::printArea (vwin_1);
+  test::printArea (vwin_2);
+  test::printArea (vwin_3);
+  test::printArea (vwin_4);
+  test::printArea (vwin_5);
+  vwin_1->visible = true;
+  vwin_2->visible = false;
+  vwin_3->visible = false;
+  vwin_4->visible = false;
+  vwin_5->visible = false;
+
+  CPPUNIT_ASSERT ( vwin_1->layer == -1 );
+  CPPUNIT_ASSERT ( vwin_2->layer == -1 );
+  CPPUNIT_ASSERT ( vwin_3->layer == -1 );
+  CPPUNIT_ASSERT ( vwin_4->layer == -1 );
+  CPPUNIT_ASSERT ( vwin_5->layer == -1 );
+  p_fvterm_1.p_determineWindowLayers();
+  CPPUNIT_ASSERT ( vwin_1->layer == 1 );
+  CPPUNIT_ASSERT ( vwin_2->layer == 2 );
+  CPPUNIT_ASSERT ( vwin_3->layer == 3 );
+  CPPUNIT_ASSERT ( vwin_4->layer == 4 );
+  CPPUNIT_ASSERT ( vwin_5->layer == 5 );
+
+  CPPUNIT_ASSERT ( finalcut::FVTerm::getWindowList()->size() == 5U );
+
+  // virtual desktop
+  auto&& vdesktop = p_fvterm_1.p_getVirtualDesktop();
+  p_fvterm_1.setColor (finalcut::FColor::LightGray, finalcut::FColor::Black);
+  p_fvterm_1.p_clearArea (vdesktop);
+
+  // Write changes to the virtual terminal
+  p_fvterm_1.p_processTerminalUpdate();
+  test::printArea (vterm);
+
+  // Create a comparison area
+  finalcut::FVTerm::FTermArea* test_area{};
+  auto geometry = finalcut::FRect( finalcut::FPoint{0, 0}, finalcut::FSize{80, 24} );
+  auto test_area_ptr = p_fvterm_1.p_createArea (geometry);
+  test_area = test_area_ptr.get();
+
+  finalcut::FChar bg_char =
+  {
+    { L' ', L'\0', L'\0', L'\0', L'\0' },
+    { L'\0', L'\0', L'\0', L'\0', L'\0' },
+    { { finalcut::FColor::LightGray, finalcut::FColor::Black } },
+    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+  };
+
+  test::printOnArea (test_area, { 24, { {80, bg_char} } } );
+  CPPUNIT_ASSERT ( test::isAreaEqual(test_area, vdesktop) );
+
+  finalcut::FChar vwin_1_char =
+  {
+    { L'*', L'\0', L'\0', L'\0', L'\0' },
+    { L'\0', L'\0', L'\0', L'\0', L'\0' },
+    { { finalcut::FColor::LightRed, finalcut::FColor::Black } },
+    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+  };
+
+  test::printOnArea (test_area, { {  1, { {9, vwin_1_char}, {71, bg_char} } },
+                                  {  2, { {1, vwin_1_char}, {7, bg_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                  {  1, { {9, vwin_1_char}, {71, bg_char} } },
+                                  {  2, { {1, vwin_1_char}, {7, bg_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                  {  1, { {9, vwin_1_char}, {71, bg_char} } },
+                                  {  2, { {1, vwin_1_char}, {7, bg_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                  { 15, { {80, bg_char} } } } );
+
+  CPPUNIT_ASSERT ( test::isAreaEqual(test_area, vterm) );
+
+  vwin_2->visible = true;
+
+  // Write changes to the virtual terminal
+  p_fvterm_1.p_processTerminalUpdate();
+  test::printArea (vterm);
+
+  finalcut::FChar vwin_2_char =
+  {
+    { L'*', L'\0', L'\0', L'\0', L'\0' },
+    { L'\0', L'\0', L'\0', L'\0', L'\0' },
+    { { finalcut::FColor::LightGreen, finalcut::FColor::Black } },
+    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+  };
+
+  test::printOnArea (test_area, { {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {5, vwin_1_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                  {  1, { {9, vwin_2_char}, {71, bg_char} } },
+                                  {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {5, bg_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                  {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {5, vwin_1_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                  {  1, { {9, vwin_2_char}, {71, bg_char} } },
+                                  {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {5, bg_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                  {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {5, vwin_1_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                  {  1, { {9, vwin_2_char}, {71, bg_char} } },
+                                  {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {5, bg_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                  { 15, { {80, bg_char} } } } );
+
+  CPPUNIT_ASSERT ( test::isAreaEqual(test_area, vterm) );
+
+  vwin_3->visible = true;
+
+  // Write changes to the virtual terminal
+  p_fvterm_1.p_processTerminalUpdate();
+  test::printArea (vterm);
+
+  finalcut::FChar vwin_3_char =
+  {
+    { L'*', L'\0', L'\0', L'\0', L'\0' },
+    { L'\0', L'\0', L'\0', L'\0', L'\0' },
+    { { finalcut::FColor::LightBlue, finalcut::FColor::Black } },
+    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+  };
+
+  test::printOnArea (test_area, { {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {1, vwin_3_char}, {3, vwin_1_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                  {  1, { {2, vwin_2_char}, {1, vwin_3_char}, {3, vwin_2_char}, {1, vwin_3_char}, {2, vwin_2_char}, {71, bg_char} } },
+                                  {  1, { {9, vwin_3_char}, {71, bg_char} } },
+                                  {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {1, vwin_3_char}, {3, vwin_1_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                  {  1, { {2, vwin_2_char}, {1, vwin_3_char}, {3, vwin_2_char}, {1, vwin_3_char}, {2, vwin_2_char}, {71, bg_char} } },
+                                  {  1, { {9, vwin_3_char}, {71, bg_char} } },
+                                  {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {1, vwin_3_char}, {3, vwin_1_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                  {  1, { {2, vwin_2_char}, {1, vwin_3_char}, {3, vwin_2_char}, {1, vwin_3_char}, {2, vwin_2_char}, {71, bg_char} } },
+                                  {  1, { {9, vwin_3_char}, {71, bg_char} } },
+                                  { 15, { {80, bg_char} } } } );
+
+  CPPUNIT_ASSERT ( test::isAreaEqual(test_area, vterm) );
+
+  vwin_4->visible = true;
+
+  // Write changes to the virtual terminal
+  p_fvterm_1.p_processTerminalUpdate();
+  test::printArea (vterm);
+
+  finalcut::FChar vertical_line_char =  // │
+  {
+    { L'│', L'\0', L'\0', L'\0', L'\0' },
+    { L'\0', L'\0', L'\0', L'\0', L'\0' },
+    { { finalcut::FColor::Yellow, finalcut::FColor::Black } },
+    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+  };
+
+  finalcut::FChar horizontal_line_char =  // ─
+  {
+    { L'─', L'\0', L'\0', L'\0', L'\0' },
+    { L'\0', L'\0', L'\0', L'\0', L'\0' },
+    { { finalcut::FColor::Yellow, finalcut::FColor::Black } },
+    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+  };
+
+  finalcut::FChar plus_line_char =  // ┼
+  {
+    { L'┼', L'\0', L'\0', L'\0', L'\0' },
+    { L'\0', L'\0', L'\0', L'\0', L'\0' },
+    { { finalcut::FColor::Yellow, finalcut::FColor::Black } },
+    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+  };
+
+  test::printOnArea (test_area, { {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {1, vwin_3_char}, {1, vwin_1_char}, {1, vertical_line_char}, {1, vwin_1_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                  {  1, { {2, vwin_2_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vertical_line_char}, {1, vwin_2_char}, {1, vwin_3_char}, {2, vwin_2_char}, {71, bg_char} } },
+                                  {  1, { {4, vwin_3_char}, {1, vertical_line_char}, {4, vwin_3_char}, {71, bg_char} } },
+                                  {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {1, vwin_3_char}, {1, vwin_1_char}, {1, vertical_line_char}, {1, vwin_1_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                  {  1, { {4, horizontal_line_char}, {1, plus_line_char}, {4, horizontal_line_char},  {71, bg_char} } },
+                                  {  1, { {4, vwin_3_char}, {1, vertical_line_char}, {4, vwin_3_char}, {71, bg_char} } },
+                                  {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {1, vwin_3_char}, {1, vwin_1_char}, {1, vertical_line_char}, {1, vwin_1_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                  {  1, { {2, vwin_2_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vertical_line_char}, {1, vwin_2_char}, {1, vwin_3_char}, {2, vwin_2_char}, {71, bg_char} } },
+                                  {  1, { {4, vwin_3_char}, {1, vertical_line_char}, {4, vwin_3_char}, {71, bg_char} } },
+                                  { 15, { {80, bg_char} } } } );
+
+  CPPUNIT_ASSERT ( test::isAreaEqual(test_area, vterm) );
+
+  vwin_5->visible = true;
+
+  // Write changes to the virtual terminal
+  p_fvterm_1.p_processTerminalUpdate();
+  test::printArea (vterm);
+
+  finalcut::FChar diagonal_1_line_char =  // ╲
+  {
+    { L'╲', L'\0', L'\0', L'\0', L'\0' },
+    { L'\0', L'\0', L'\0', L'\0', L'\0' },
+    { { finalcut::FColor::White, finalcut::FColor::Black } },
+    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+  };
+
+  finalcut::FChar diagonal_2_line_char =  // ╱
+  {
+    { L'╱', L'\0', L'\0', L'\0', L'\0' },
+    { L'\0', L'\0', L'\0', L'\0', L'\0' },
+    { { finalcut::FColor::White, finalcut::FColor::Black } },
+    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+  };
+
+  finalcut::FChar cross_line_char =  // ╳
+  {
+    { L'╳', L'\0', L'\0', L'\0', L'\0' },
+    { L'\0', L'\0', L'\0', L'\0', L'\0' },
+    { { finalcut::FColor::White, finalcut::FColor::Black } },
+    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+  };
+
+  test::printOnArea (test_area, { {  1, { {1, diagonal_1_line_char}, {1, vwin_2_char}, {1, vwin_3_char}, {1, vwin_1_char}, {1, vertical_line_char}, {1, vwin_1_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, diagonal_2_line_char}, {71, bg_char} } },
+                                  {  1, { {1, vwin_2_char}, {1, diagonal_1_line_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vertical_line_char}, {1, vwin_2_char}, {1, vwin_3_char}, {1, diagonal_2_line_char}, {1, vwin_2_char}, {71, bg_char} } },
+                                  {  1, { {2, vwin_3_char}, {1, diagonal_1_line_char}, {1, vwin_3_char}, {1, vertical_line_char}, {1, vwin_3_char}, {1, diagonal_2_line_char}, {2, vwin_3_char}, {71, bg_char} } },
+                                  {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {1, vwin_3_char}, {1, diagonal_1_line_char}, {1, vertical_line_char}, {1, diagonal_2_line_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                  {  1, { {4, horizontal_line_char}, {1, cross_line_char}, {4, horizontal_line_char},  {71, bg_char} } },
+                                  {  1, { {3, vwin_3_char}, {1, diagonal_2_line_char}, {1, vertical_line_char}, {1, diagonal_1_line_char}, {3, vwin_3_char}, {71, bg_char} } },
+                                  {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {1, diagonal_2_line_char}, {1, vwin_1_char}, {1, vertical_line_char}, {1, vwin_1_char}, {1, diagonal_1_line_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                  {  1, { {1, vwin_2_char}, {1, diagonal_2_line_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vertical_line_char}, {1, vwin_2_char}, {1, vwin_3_char}, {1, diagonal_1_line_char}, {1, vwin_2_char}, {71, bg_char} } },
+                                  {  1, { {1, diagonal_2_line_char}, {3, vwin_3_char}, {1, vertical_line_char}, {3, vwin_3_char}, {1, diagonal_1_line_char}, {71, bg_char} } },
+                                  { 15, { {80, bg_char} } } } );
+
   CPPUNIT_ASSERT ( test::isAreaEqual(test_area, vterm) );
 }
 

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2013-2024 Markus Gans                                      *
+* Copyright 2013-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -167,6 +167,7 @@ class FApplication : public FWidget
     using FEventQueue = std::deque<EventPair>;
     using FMouseHandlerList = std::vector<FMouseHandler>;
     using CmdMap = std::unordered_map<int, std::function<void(char*)>>;
+    using rdbuf = std::streambuf*;
 
     // Methods
     void         init();
@@ -176,7 +177,7 @@ class FApplication : public FWidget
     static void  cmdOptions (const Args&);
     static auto  getStartOptions() -> FStartOptions&;
     static void  showParameterUsage();
-    void         destroyLog();
+    void         resetLog();
     void         findKeyboardWidget() const;
     auto         isKeyPressed (uInt64 = 0U) const -> bool;
     void         keyPressed();
@@ -241,12 +242,12 @@ class FApplication : public FWidget
     Args              app_args{};
     uInt64            key_timeout{100'000};        // 100 ms
     uInt64            dblclick_interval{500'000};  // 500 ms
-    std::streambuf*   default_clog_rdbuf{std::clog.rdbuf()};
     FEventQueue       event_queue{};
     FMouseHandlerList mouse_handler_list{};
     bool              has_terminal_resized{false};
     static uInt64     next_event_wait;
     static TimeValue  time_last_event;
+    static rdbuf      default_clog_rdbuf;
     static int        loop_level;
     static int        quit_code;
     static bool       quit_now;

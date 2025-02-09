@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2024 Markus Gans                                      *
+* Copyright 2015-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -84,7 +84,7 @@ FWindow::~FWindow()  // destructor
   if ( isAlwaysOnTop() )
     deleteFromAlwaysOnTopList (this);
 
-  // unset the global active window
+  // Unset the global active window
   if ( this == FWindow::getActiveWindow() )
     unsetActiveWindow();
 
@@ -102,7 +102,7 @@ FWindow::~FWindow()  // destructor
 //----------------------------------------------------------------------
 auto FWindow::getWindowFocusWidget() const -> FWidget*
 {
-  // returns the focused widget of this window
+  // Returns the focused widget of this window
   return win_focus_widget;
 }
 
@@ -123,14 +123,15 @@ void FWindow::setWindowWidget (bool enable)
 //----------------------------------------------------------------------
 void FWindow::setActiveWindow (FWindow* window)
 {
-  // activate FWindow object window
+  // Activate FWindow object window
+  const auto* vterm_win_list = getWindowList();
 
-  if ( ! getWindowList() || getWindowList()->empty() )
+  if ( ! vterm_win_list || vterm_win_list->empty() )
     return;
 
-  for (auto&& win : *getWindowList())
+  for (auto&& vterm_obj : *vterm_win_list)
   {
-    if ( win == window )
+    if ( vterm_obj == window )
     {
       if ( ! window->isWindowActive() )
       {
@@ -141,13 +142,13 @@ void FWindow::setActiveWindow (FWindow* window)
     }
     else
     {
-      auto w = static_cast<FWindow*>(win);
+      auto w = static_cast<FWindow*>(vterm_obj);
 
       if ( w->isWindowActive() )
       {
         w->deactivateWindow();
         FEvent ev(Event::WindowInactive);
-        FApplication::sendEvent(static_cast<FWidget*>(win), &ev);
+        FApplication::sendEvent(static_cast<FWidget*>(vterm_obj), &ev);
       }
     }
   }
@@ -156,14 +157,14 @@ void FWindow::setActiveWindow (FWindow* window)
 //----------------------------------------------------------------------
 void FWindow::setWindowFocusWidget (FWidget* obj)
 {
-  // set focus widget of this window
+  // Set focus widget of this window
   win_focus_widget = obj;
 }
 
 //----------------------------------------------------------------------
 auto FWindow::activateWindow (bool enable) -> bool
 {
-  // activate/deactivate this window
+  // Activate/deactivate this window
   if ( enable )
   {
     FWidget::setActiveWindow (this);
@@ -176,7 +177,7 @@ auto FWindow::activateWindow (bool enable) -> bool
 //----------------------------------------------------------------------
 void FWindow::unsetActiveWindow() const
 {
-  // unset the active FWindow object
+  // Unset the active FWindow object
   FWidget::setActiveWindow (nullptr);
 }
 
@@ -248,7 +249,7 @@ void FWindow::setAlwaysOnTop (bool enable)
 //----------------------------------------------------------------------
 auto FWindow::isMinimized() const -> bool
 {
-  // returns the window minimized state
+  // Returns the window minimized state
 
   if ( isVirtualWindow() )
     return getVWin()->minimized;
@@ -259,7 +260,7 @@ auto FWindow::isMinimized() const -> bool
 //----------------------------------------------------------------------
 auto FWindow::isWindowHidden() const -> bool
 {
-  // returns the window hidden state
+  // Returns the window hidden state
 
   if ( isVirtualWindow() )
     return ! getVWin()->visible;
@@ -449,13 +450,14 @@ void FWindow::move (const FPoint& pos)
 //----------------------------------------------------------------------
 auto FWindow::getWindowWidgetAt (int x, int y) -> FWindow*
 {
-  // returns the window object to the corresponding coordinates
+  // Returns the window object to the corresponding coordinates
+  const auto* vterm_win_list = getWindowList();
 
-  if ( ! getWindowList() || getWindowList()->empty() )
+  if ( ! vterm_win_list || vterm_win_list->empty() )
     return nullptr;
 
-  auto iter = getWindowList()->cend();
-  const auto begin = getWindowList()->cbegin();
+  auto iter = vterm_win_list->cend();
+  const auto begin = vterm_win_list->cbegin();
 
   do
   {
@@ -476,9 +478,11 @@ auto FWindow::getWindowWidgetAt (int x, int y) -> FWindow*
 //----------------------------------------------------------------------
 void FWindow::addWindow (FWidget* obj)
 {
-  // add the window object obj to the window list
-  if ( getWindowList() )
-    getWindowList()->push_back(obj);
+  // Add the window object obj to the window list
+  auto* vterm_win_list = getWindowList();
+
+  if ( vterm_win_list )
+    vterm_win_list->push_back(obj);
 
   processAlwaysOnTop();
 }
@@ -486,17 +490,19 @@ void FWindow::addWindow (FWidget* obj)
 //----------------------------------------------------------------------
 void FWindow::delWindow (const FWidget* obj)
 {
-  // delete the window object obj from the window list
-  if ( ! getWindowList() || getWindowList()->empty() )
+  // Delete the window object obj from the window list
+  auto* vterm_win_list = getWindowList();
+
+  if ( ! vterm_win_list || vterm_win_list->empty() )
     return;
 
-  auto iter = getWindowList()->cbegin();
+  auto iter = vterm_win_list->cbegin();
 
-  while ( iter != getWindowList()->cend() )
+  while ( iter != vterm_win_list->cend() )
   {
     if ( (*iter) == obj )
     {
-      getWindowList()->erase(iter);
+      vterm_win_list->erase(iter);
       determineWindowLayers();
       return;
     }
@@ -508,16 +514,18 @@ void FWindow::delWindow (const FWidget* obj)
 //----------------------------------------------------------------------
 void FWindow::swapWindow (const FWidget* obj1, const FWidget* obj2)
 {
-  // swaps the window layer between obj1 and obj2
+  // Swaps the window layer between obj1 and obj2
 
-  if ( ! getWindowList()
-    || getWindowList()->empty()
+  auto* vterm_win_list = getWindowList();
+
+  if ( ! vterm_win_list
+    || vterm_win_list->empty()
     || obj1->getFlags().visibility.modal
     || obj2->getFlags().visibility.modal )
     return;
 
-  auto iter = getWindowList()->cbegin();
-  const auto end = getWindowList()->cend();
+  auto iter = vterm_win_list->cbegin();
+  const auto end = vterm_win_list->cend();
   auto iter1 = end;
   auto iter2 = end;
 
@@ -541,26 +549,37 @@ void FWindow::swapWindow (const FWidget* obj1, const FWidget* obj2)
 //----------------------------------------------------------------------
 auto FWindow::raiseWindow (FWidget* obj) -> bool
 {
-  // raises the window widget obj to the top
+  // Raises the window widget obj to the top
 
-  if ( ! getWindowList()
-    || getWindowList()->empty()
+  auto* vterm_win_list = getWindowList();
+
+  if ( ! vterm_win_list
+    || vterm_win_list->empty()
     || ! obj->isWindowWidget() )
     return false;
 
-  const auto last = static_cast<FWidget*>(getWindowList()->back());
+  auto begin = vterm_win_list->rbegin();
+  const auto end = vterm_win_list->crend();
+  auto* last = static_cast<FWidget*>(*begin);
+
+  while ( begin != end && ( last->setFlags().visibility.always_on_top
+                         || ! last->setFlags().visibility.visible ) )
+  {
+    ++begin;
+    last = static_cast<FWidget*>(*begin);
+  }
 
   if ( last == obj || (last->getFlags().visibility.modal && ! obj->isMenuWidget()) )
     return false;
 
-  auto iter = getWindowList()->cbegin();
+  auto iter = vterm_win_list->cbegin();
 
-  while ( iter != getWindowList()->cend() )
+  while ( iter != vterm_win_list->cend() )
   {
     if ( static_cast<FWidget*>(*iter) == obj )
     {
-      getWindowList()->erase (iter);
-      getWindowList()->push_back (obj);
+      vterm_win_list->erase (iter);
+      vterm_win_list->push_back (obj);
       processAlwaysOnTop();
       FEvent ev(Event::WindowRaised);
       FApplication::sendEvent(obj, &ev);
@@ -576,23 +595,38 @@ auto FWindow::raiseWindow (FWidget* obj) -> bool
 //----------------------------------------------------------------------
 auto FWindow::lowerWindow (FWidget* obj) -> bool
 {
-  // lowers the window widget obj to the bottom
+  // Lowers the window widget obj to the bottom
 
-  if ( ! getWindowList()
-    || getWindowList()->empty()
+  auto* vterm_win_list = getWindowList();
+
+  if ( ! vterm_win_list
+    || vterm_win_list->empty()
     || ! obj->isWindowWidget()
-    || getWindowList()->front() == obj
     || obj->getFlags().visibility.modal )
     return false;
 
-  auto iter = getWindowList()->cbegin();
+  auto begin = vterm_win_list->begin();
+  const auto end = vterm_win_list->cend();
+  auto* first = static_cast<FWidget*>(*begin);
 
-  while ( iter != getWindowList()->cend() )
+  while ( begin != end && ( first->setFlags().visibility.always_on_top
+                         || ! first->setFlags().visibility.visible ) )
+  {
+    ++begin;
+    first = static_cast<FWidget*>(*begin);
+  }
+
+  if ( first == obj )
+    return false;
+
+  auto iter = vterm_win_list->cbegin();
+
+  while ( iter != vterm_win_list->cend() )
   {
     if ( *iter == obj )
     {
-      getWindowList()->erase (iter);
-      getWindowList()->insert (getWindowList()->cbegin(), obj);
+      vterm_win_list->erase (iter);
+      vterm_win_list->insert (vterm_win_list->cbegin(), obj);
       determineWindowLayers();
       FEvent ev(Event::WindowLowered);
       FApplication::sendEvent(obj, &ev);
@@ -619,10 +653,10 @@ auto FWindow::zoomWindow() -> bool
   else
   {
     if ( isMinimized() )
-      minimizeWindow();  // unminimize window
+      minimizeWindow();  // Unminimize window
 
     zoomed = true;
-    // save the current geometry
+    // Save the current geometry
     normalGeometry = getGeometry();
     const FRect oldGeometry (getTermGeometryWithShadow());
     setGeometry (FPoint{1, 1}, FSize{getMaxWidth(), getMaxHeight()});
@@ -640,7 +674,7 @@ auto FWindow::minimizeWindow() -> bool
     return false;
 
   if ( zoomed )
-    zoomWindow();  // unzoom window
+    zoomWindow();  // Unzoom window
 
   const auto& virtual_win = getVWin();
   virtual_win->minimized = bool( ! isMinimized() );
@@ -653,7 +687,7 @@ auto FWindow::minimizeWindow() -> bool
 //----------------------------------------------------------------------
 void FWindow::switchToPrevWindow (const FWidget* widget)
 {
-  // switch to previous window
+  // Switch to previous window
 
   // Disable terminal updates to avoid flickering
   // when redrawing the focused widget
@@ -676,7 +710,7 @@ void FWindow::switchToPrevWindow (const FWidget* widget)
 //----------------------------------------------------------------------
 auto FWindow::activatePrevWindow() -> bool
 {
-  // activate the previous window
+  // Activate the previous window
   const auto& p_win = previous_window;
 
   if ( p_win )
@@ -816,7 +850,7 @@ inline auto FWindow::getVisibleTermGeometry (FWindow* win) -> FRect
 //----------------------------------------------------------------------
 void FWindow::deleteFromAlwaysOnTopList (const FWidget* obj)
 {
-  // delete the window object obj from the always-on-top list
+  // Delete the window object obj from the always-on-top list
   if ( ! getAlwaysOnTopList() || getAlwaysOnTopList()->empty() )
     return;
 
@@ -862,7 +896,7 @@ void FWindow::processAlwaysOnTop()
 //----------------------------------------------------------------------
 auto FWindow::getWindowWidgetImpl (FWidget* obj) -> FWindow*
 {
-  // returns the window object to the given widget obj
+  // Returns the window object to the given widget obj
   auto p_obj = obj->getParentWidget();
 
   while ( ! obj->isWindowWidget() && p_obj )
@@ -880,7 +914,7 @@ auto FWindow::getWindowWidgetImpl (FWidget* obj) -> FWindow*
 //----------------------------------------------------------------------
 auto FWindow::getWindowLayerImpl (FWidget* obj) -> int
 {
-  // returns the window layer from the widget obj
+  // Returns the window layer from the widget obj
 
   FWidget* window;
 
@@ -898,14 +932,14 @@ auto FWindow::getWindowLayerImpl (FWidget* obj) -> int
 //----------------------------------------------------------------------
 void FWindow::activateTopWindow (const FWindow* current_active_window)
 {
-  auto window_list = getWindowList();
+  auto vterm_win_list = getWindowList();
 
-  if ( ! window_list || window_list->size() < 2 )
+  if ( ! vterm_win_list || vterm_win_list->size() < 2 )
     return;
 
-  // no previous window -> looking for another window
-  auto iter = window_list->cend();
-  const auto begin = window_list->cbegin();
+  // No previous window -> looking for another window
+  auto iter = vterm_win_list->cend();
+  const auto begin = vterm_win_list->cbegin();
 
   do
   {

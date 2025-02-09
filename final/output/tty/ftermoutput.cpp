@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021-2024 Markus Gans                                      *
+* Copyright 2021-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -894,7 +894,7 @@ void FTermOutput::printFullWidthPaddingCharacter ( uInt& x, uInt y
 
     // Print a full-width character
     x--;
-    term_pos->x_ref()--;
+    --(term_pos->x_ref());
     appendCharacter (prev_char);
     markAsPrinted (x, y);
     skipPaddingCharacter (x, y, prev_char);
@@ -917,7 +917,7 @@ void FTermOutput::printHalfCovertFullWidthCharacter ( uInt x, uInt y
     && moveCursorLeft() == CursorMoved::Yes )
   {
     // Print ellipses for the 1st full-width character column
-    term_pos->x_ref()--;
+    --(term_pos->x_ref());
     printEllipsis (x - 1, y, prev_char);
   }
 
@@ -932,7 +932,7 @@ inline void FTermOutput::printEllipsis (uInt x, uInt y, FChar& fchar)
   // Printing ellipses with color and attributes from fchar
   appendAttributes (fchar);
   appendOutputBuffer (UniChar::HorizontalEllipsis);  // …
-  term_pos->x_ref()++;
+  ++(term_pos->x_ref());
   markAsPrinted (x, y);
 }
 
@@ -943,7 +943,7 @@ inline void FTermOutput::skipPaddingCharacter ( uInt& x, uInt y
   if ( isFullWidthChar(print_char) )  // full-width character
   {
     x++;  // Skip the following padding character
-    term_pos->x_ref()++;
+    ++(term_pos->x_ref());
     markAsPrinted (x, y);
   }
 }
@@ -1108,7 +1108,7 @@ void FTermOutput::cursorWrap() const
 
   if ( term_pos->getY() == vterm->size.height - 1 )
   {
-    term_pos->x_ref()--;  // Prevent wrapping at the bottom-right
+    --(term_pos->x_ref());  // Prevent wrapping at the bottom-right
     return;
   }
 
@@ -1121,11 +1121,11 @@ void FTermOutput::cursorWrap() const
   if ( FTermcap::automatic_right_margin )
   {
     term_pos->setX(0);  // Wrap to the next line
-    term_pos->y_ref()++;
+    ++(term_pos->y_ref());
     return;
   }
 
-  term_pos->x_ref()--;  // Default case: Move cursor left
+  --(term_pos->x_ref());  // Default case: Move cursor left
 }
 
 //----------------------------------------------------------------------
@@ -1380,7 +1380,7 @@ inline void FTermOutput::appendCharacter (FChar& next_char)
   else
     appendChar (next_char);
 
-  term_pos->x_ref()++;
+  ++(term_pos->x_ref());
 }
 
 //----------------------------------------------------------------------
@@ -1452,7 +1452,7 @@ void FTermOutput::appendLowerRight (FChar& last_char)
     const int y = int(getLineNumber()) - 1;
     setCursor (FPoint{x, y});
     appendChar (last_char);
-    term_pos->x_ref()++;
+    ++(term_pos->x_ref());
 
     setCursor (FPoint{x, y});
     FChar& second_last = *(&last_char - 1);

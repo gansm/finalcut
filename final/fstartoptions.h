@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2023 Markus Gans                                      *
+* Copyright 2019-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -83,7 +83,8 @@ class FStartOptions final
 
     uInt16 dark_theme           : 1;
     uInt16 color_change         : 1;
-    uInt16                      : 14;  // padding bits
+    uInt16 is_being_initialized : 1;
+    uInt16                      : 13;  // padding bits
 
     Encoding      encoding{Encoding::Unknown};
     std::ofstream logfile_stream{};
