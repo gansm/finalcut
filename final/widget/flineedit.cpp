@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2024 Markus Gans                                      *
+* Copyright 2012-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -310,6 +310,15 @@ void FLineEdit::setGeometry ( const FPoint& pos, const FSize& size
 
   if ( isShown() )
     adjustTextOffset();
+}
+
+//----------------------------------------------------------------------
+void FLineEdit::show()
+{
+  FWidget::show();
+
+  if ( label )
+    label->show();
 }
 
 //----------------------------------------------------------------------

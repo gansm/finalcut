@@ -1715,8 +1715,8 @@ inline void FVTerm::inheritBackground (const FChar& src_char, FChar& dst_char) c
 
 //----------------------------------------------------------------------
 inline void FVTerm::putMultiLayerAreaLine ( FChar* dst_char
-                                           , const std::size_t length
-                                           , FPoint& pos ) const noexcept
+                                          , const std::size_t length
+                                          , const FPoint& pos ) const noexcept
 {
   if ( length == 0 )
     return;

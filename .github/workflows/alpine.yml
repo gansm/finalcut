@@ -45,6 +45,8 @@ jobs:
         autoreconf --force --install --verbose --warnings=all
         automake --add-missing --copy
         ./configure --prefix=/usr
-        make -j10
+        CPU_COUNT="$( ( ( getconf _NPROCESSORS_ONLN 2>/dev/null || (getconf NPROCESSORS_ONLN 2>/dev/null) ) || nprocx 2>/dev/null ) || echo "1")"
+        JOBS="$(( $((CPU_COUNT / 2)) > 1 ? $((CPU_COUNT / 2)) : 1 ))"
+        make -j$JOBS
       shell: alpine.sh {0}
 

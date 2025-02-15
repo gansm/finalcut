@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2024 Markus Gans                                      *
+* Copyright 2014-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -175,7 +175,7 @@ void FLabel::onMouseDown (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FLabel::onAccel (FAccelEvent* ev)
 {
-  if ( ! (isEnabled() && accel_widget) )
+  if ( ! (isEnabled() && isShown() && accel_widget) )
     return;
 
   if ( ! accel_widget->hasFocus() )

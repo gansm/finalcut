@@ -482,8 +482,6 @@ void ParallaxScrolling::onTimer (fc::FTimerEvent* ev)
     scrollLeft (layer3_lhs, layer3_rhs);
     picture.setPos (layer3_rhs.getPos());
   }
-
-  forceTerminalUpdate();
 }
 
 //----------------------------------------------------------------------

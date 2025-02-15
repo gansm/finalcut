@@ -329,7 +329,7 @@ class FVTerm : public FVTermAttribute
     void  putAreaLine (const FChar&, FChar&, const std::size_t) const;
     void  applyColorOverlay (const FChar&, FChar&) const;
     void  inheritBackground (const FChar&, FChar&) const;
-    void  putMultiLayerAreaLine (FChar*, const std::size_t, FPoint&) const noexcept;
+    void  putMultiLayerAreaLine (FChar*, const std::size_t, const FPoint&) const noexcept;
     void  putAreaLineWithTransparency (const FChar*, FChar*, const int, FPoint, bool) const;
     void  addAreaLineWithTransparency (const FChar*, FChar*, const std::size_t) const;
     void  addTransparentAreaLine (const FChar&, FChar&, const std::size_t) const;

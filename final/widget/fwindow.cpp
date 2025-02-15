@@ -516,7 +516,7 @@ void FWindow::swapWindow (const FWidget* obj1, const FWidget* obj2)
 {
   // Swaps the window layer between obj1 and obj2
 
-  auto* vterm_win_list = getWindowList();
+  const auto* vterm_win_list = getWindowList();
 
   if ( ! vterm_win_list
     || vterm_win_list->empty()

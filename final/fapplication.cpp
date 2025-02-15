@@ -358,7 +358,7 @@ void FApplication::setLogFile (const FString& filename)
   if ( log_stream.is_open() )
   {
     // Get the global logger object
-    auto& log = FApplication::getLog();
+    const auto& log = FApplication::getLog();
 
     if ( ! log )
       return;
@@ -661,7 +661,7 @@ void FApplication::showParameterUsage()
 }
 
 //----------------------------------------------------------------------
-inline void FApplication::resetLog()
+inline void FApplication::resetLog() const
 {
   // Reset the rdbuf of clog
   std::clog << std::flush;
@@ -1373,7 +1373,7 @@ void FApplication::processLogger() const
 {
   // Synchronizing the stream buffer with the logging output
 
-  auto& logger = getLog();
+  const auto& logger = getLog();
 
   if ( ! logger )
     return;
@@ -1505,7 +1505,7 @@ void setQueued (FEvent& event, bool state)
 //----------------------------------------------------------------------
 auto operator << (std::ostream& outstr, FLog::LogLevel l) -> std::ostream&
 {
-  auto& output = FApplication::getLog();
+  const auto& output = FApplication::getLog();
 
   if ( ! output )
     return outstr;

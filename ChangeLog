@@ -1,3 +1,6 @@
+2025-02-15  Markus Gans  <guru.mail@muenster.de>
+	* Fixed FLineEdit label not shown again after hide() + show()
+
 2025-02-09  Markus Gans  <guru.mail@muenster.de>
 	* Significant speed-up when using FVTerm::copyArea with multiple 
 	  overlapping and transparent layers. This reduces the CPU load 

@@ -177,7 +177,7 @@ class FApplication : public FWidget
     static void  cmdOptions (const Args&);
     static auto  getStartOptions() -> FStartOptions&;
     static void  showParameterUsage();
-    void         resetLog();
+    void         resetLog() const;
     void         findKeyboardWidget() const;
     auto         isKeyPressed (uInt64 = 0U) const -> bool;
     void         keyPressed();
