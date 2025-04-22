@@ -23,14 +23,15 @@ jobs:
 
     steps:
     - name: Repository checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Test on ARM architecture
-      uses: uraimo/run-on-arch-action@v2  # see https://github.com/uraimo/run-on-arch-action
+      uses: uraimo/run-on-arch-action@v3  # see https://github.com/uraimo/run-on-arch-action
       id: runcmd
       with:
         arch: ${{ matrix.arch }}
-        distro: bullseye
+        distro: bookworm
+        githubToken: ${{ github.token }}
         run: |
           cat /etc/os-release
           uname -a
@@ -58,9 +59,7 @@ jobs:
           g++ --version
           autoreconf -v --install --force
           ./configure --prefix=/usr
-          CPU_COUNT="$( ( ( getconf _NPROCESSORS_ONLN 2>/dev/null || (getconf NPROCESSORS_ONLN 2>/dev/null) ) || nprocx 2>/dev/null ) || echo "1")"
-          JOBS="$(( $((CPU_COUNT / 2)) > 1 ? $((CPU_COUNT / 2)) : 1 ))"
-          make -j$JOBS
+          make
 
     - name: Get the output
       run: |
