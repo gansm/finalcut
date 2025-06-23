@@ -2657,7 +2657,7 @@ void FWidgetTest::adjustSizeTest()
   class TestWidget : public finalcut::FWidget
   {
     public:
-      TestWidget (finalcut::FWidget* parent = nullptr)
+      explicit TestWidget (finalcut::FWidget* parent = nullptr)
         : finalcut::FWidget{parent}
       { }
 
