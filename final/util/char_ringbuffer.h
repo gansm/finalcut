@@ -222,7 +222,8 @@ class FRingBuffer
         return empty_element;
 
       std::size_t index = (tail == 0) ? Capacity - 1 : tail - 1;
-      return buffer[index];
+      assert( index == last_index );
+      return buffer[last_index];
     }
 
     inline auto back() const noexcept -> const_reference
@@ -231,7 +232,8 @@ class FRingBuffer
         return empty_element;
 
       std::size_t index = (tail == 0) ? Capacity - 1 : tail - 1;
-      return buffer[index];
+      assert( index == last_index );
+      return buffer[last_index];
     }
 
     // Mutators
@@ -266,6 +268,7 @@ class FRingBuffer
 
       static_assert ( Capacity > 0, "Ring buffer has no memory" );
       buffer[tail] = item;
+      last_index = tail;
       tail = (tail + 1) % Capacity;
       elements++;
     }
@@ -283,6 +286,7 @@ class FRingBuffer
 
       static_assert ( Capacity > 0, "Ring buffer has no memory" );
       buffer[tail] = T(std::forward<Args>(args)...);
+      last_index = tail;
       tail = (tail + 1) % Capacity;
       elements++;
     }
@@ -325,6 +329,7 @@ class FRingBuffer
     value_type  empty_element{};
     std::size_t head{0U};
     std::size_t tail{0U};
+    std::size_t last_index{0U};
     std::size_t elements{0U};
 
     // Friend classes

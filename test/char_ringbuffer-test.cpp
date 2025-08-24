@@ -102,7 +102,9 @@ void CharRingBufferTest::BaseTest()
   CPPUNIT_ASSERT ( char_rbuf.getSize() == 0 );
   CPPUNIT_ASSERT ( char_rbuf.getCapacity() == 3 );
   CPPUNIT_ASSERT ( char_rbuf.front() == '\0' );
+  CPPUNIT_ASSERT ( &char_rbuf.front() != &physical_buffer[0] );  // Buffer is empty
   CPPUNIT_ASSERT ( char_rbuf.back() == '\0' );
+  CPPUNIT_ASSERT ( &char_rbuf.back() != &physical_buffer[0] );  // Buffer is empty
   CPPUNIT_ASSERT ( char_rbuf.begin() == char_rbuf.end() );
   CPPUNIT_ASSERT ( physical_buffer[0] == '\0' );  // Currently not in use
   CPPUNIT_ASSERT ( physical_buffer[1] == '\0' );  // Currently not in use
@@ -120,7 +122,9 @@ void CharRingBufferTest::BaseTest()
   CPPUNIT_ASSERT ( char_rbuf.getSize() == 1 );
   CPPUNIT_ASSERT ( char_rbuf.getCapacity() == 3 );
   CPPUNIT_ASSERT ( char_rbuf.front() == 'A' );
+  CPPUNIT_ASSERT ( &char_rbuf.front() == &physical_buffer[0] );  // 1st chararacter
   CPPUNIT_ASSERT ( char_rbuf.back() == 'A' );
+  CPPUNIT_ASSERT ( &char_rbuf.back() == &physical_buffer[0] );  // 1st chararacter
   CPPUNIT_ASSERT ( char_rbuf.begin() != char_rbuf.end() );
   CPPUNIT_ASSERT ( char_rbuf.begin() + 1 == char_rbuf.end() );
   CPPUNIT_ASSERT ( std::string(char_rbuf.begin(), char_rbuf.end()).compare("A") == 0 );
@@ -140,7 +144,9 @@ void CharRingBufferTest::BaseTest()
   CPPUNIT_ASSERT ( char_rbuf.getSize() == 2 );
   CPPUNIT_ASSERT ( char_rbuf.getCapacity() == 3 );
   CPPUNIT_ASSERT ( char_rbuf.front() == 'A' );
+  CPPUNIT_ASSERT ( &char_rbuf.front() == &physical_buffer[0] );  // 1st chararacter
   CPPUNIT_ASSERT ( char_rbuf.back() == 'B' );
+  CPPUNIT_ASSERT ( &char_rbuf.back() == &physical_buffer[1] );  // 2nd chararacter
   CPPUNIT_ASSERT ( char_rbuf.begin() != char_rbuf.end() );
   CPPUNIT_ASSERT ( char_rbuf.begin() + 2 == char_rbuf.end() );
   CPPUNIT_ASSERT ( std::string(char_rbuf.begin(), char_rbuf.end()).compare("AB") == 0 );
@@ -161,7 +167,9 @@ void CharRingBufferTest::BaseTest()
   CPPUNIT_ASSERT ( char_rbuf.getSize() == 3 );
   CPPUNIT_ASSERT ( char_rbuf.getCapacity() == 3 );
   CPPUNIT_ASSERT ( char_rbuf.front() == 'A' );
+  CPPUNIT_ASSERT ( &char_rbuf.front() == &physical_buffer[0] );  // 1st chararacter
   CPPUNIT_ASSERT ( char_rbuf.back() == 'C' );
+  CPPUNIT_ASSERT ( &char_rbuf.back() == &physical_buffer[2] );  // 3rd chararacter
   CPPUNIT_ASSERT ( char_rbuf.begin() != char_rbuf.end() );
   CPPUNIT_ASSERT ( char_rbuf.begin() + 3 == char_rbuf.end() );
   CPPUNIT_ASSERT ( std::string(char_rbuf.begin(), char_rbuf.end()).compare("ABC") == 0 );
@@ -183,7 +191,9 @@ void CharRingBufferTest::BaseTest()
   CPPUNIT_ASSERT ( char_rbuf.getSize() == 1 );
   CPPUNIT_ASSERT ( char_rbuf.getCapacity() == 3 );
   CPPUNIT_ASSERT ( char_rbuf.front() == 'C' );
+  CPPUNIT_ASSERT ( &char_rbuf.front() == &physical_buffer[2] );  // 3rd chararacter
   CPPUNIT_ASSERT ( char_rbuf.back() == 'C' );
+  CPPUNIT_ASSERT ( &char_rbuf.back() == &physical_buffer[2] );  // 3rd chararacter
   CPPUNIT_ASSERT ( char_rbuf.begin() != char_rbuf.end() );
   CPPUNIT_ASSERT ( char_rbuf.begin() + 1 == char_rbuf.end() );
   CPPUNIT_ASSERT ( std::string(char_rbuf.begin(), char_rbuf.end()).compare("C") == 0 );
@@ -203,7 +213,9 @@ void CharRingBufferTest::BaseTest()
   CPPUNIT_ASSERT ( char_rbuf.getSize() == 2 );
   CPPUNIT_ASSERT ( char_rbuf.getCapacity() == 3 );
   CPPUNIT_ASSERT ( char_rbuf.front() == 'C' );
+  CPPUNIT_ASSERT ( &char_rbuf.front() == &physical_buffer[2] );  // 3rd chararacter
   CPPUNIT_ASSERT ( char_rbuf.back() == 'D' );
+  CPPUNIT_ASSERT ( &char_rbuf.back() == &physical_buffer[0] );  // 1st chararacter
   CPPUNIT_ASSERT ( char_rbuf.begin() != char_rbuf.end() );
   CPPUNIT_ASSERT ( char_rbuf.begin() + 2 == char_rbuf.end() );
   CPPUNIT_ASSERT ( std::string(char_rbuf.begin(), char_rbuf.end()).compare("CD") == 0 );
@@ -232,7 +244,9 @@ void CharRingBufferTest::BaseTest()
   CPPUNIT_ASSERT ( char_rbuf.getSize() == 3 );
   CPPUNIT_ASSERT ( char_rbuf.getCapacity() == 3 );
   CPPUNIT_ASSERT ( char_rbuf.front() == 'C' );
+  CPPUNIT_ASSERT ( &char_rbuf.front() == &physical_buffer[2] );  // 3rd chararacter
   CPPUNIT_ASSERT ( char_rbuf.back() == 'E' );
+  CPPUNIT_ASSERT ( &char_rbuf.back() == &physical_buffer[1] );  // 2nd chararacter
   CPPUNIT_ASSERT ( char_rbuf.begin() != char_rbuf.end() );
   CPPUNIT_ASSERT ( char_rbuf.begin() + 3 == char_rbuf.end() );
   CPPUNIT_ASSERT ( std::string(char_rbuf.begin(), char_rbuf.end()).compare("CDE") == 0 );
@@ -254,7 +268,9 @@ void CharRingBufferTest::BaseTest()
   CPPUNIT_ASSERT ( char_rbuf.getSize() == 2 );
   CPPUNIT_ASSERT ( char_rbuf.getCapacity() == 3 );
   CPPUNIT_ASSERT ( char_rbuf.front() == 'D' );
+  CPPUNIT_ASSERT ( &char_rbuf.front() == &physical_buffer[0] );  // 1st chararacter
   CPPUNIT_ASSERT ( char_rbuf.back() == 'E' );
+  CPPUNIT_ASSERT ( &char_rbuf.back() == &physical_buffer[1] );  // 3rd chararacter
   CPPUNIT_ASSERT ( char_rbuf.begin() != char_rbuf.end() );
   CPPUNIT_ASSERT ( char_rbuf.begin() + 2 == char_rbuf.end() );
   CPPUNIT_ASSERT ( std::string(char_rbuf.begin(), char_rbuf.end()).compare("DE") == 0 );
@@ -275,7 +291,9 @@ void CharRingBufferTest::BaseTest()
   CPPUNIT_ASSERT ( char_rbuf.getSize() == 3 );
   CPPUNIT_ASSERT ( char_rbuf.getCapacity() == 3 );
   CPPUNIT_ASSERT ( char_rbuf.front() == 'D' );
+  CPPUNIT_ASSERT ( &char_rbuf.front() == &physical_buffer[0] );  // 1st chararacter
   CPPUNIT_ASSERT ( char_rbuf.back() == 'F' );
+  CPPUNIT_ASSERT ( &char_rbuf.back() == &physical_buffer[2] );  // 2nd chararacter
   CPPUNIT_ASSERT ( char_rbuf.begin() != char_rbuf.end() );
   CPPUNIT_ASSERT ( char_rbuf.begin() + 3 == char_rbuf.end() );
   CPPUNIT_ASSERT ( std::string(char_rbuf.begin(), char_rbuf.end()).compare("DEF") == 0 );
@@ -298,6 +316,7 @@ void CharRingBufferTest::BaseTest()
   CPPUNIT_ASSERT ( char_rbuf.getCapacity() == 3 );
   CPPUNIT_ASSERT ( char_rbuf.front() == 'E' );
   CPPUNIT_ASSERT ( char_rbuf.back() == 'F' );
+  CPPUNIT_ASSERT ( &char_rbuf.back() == &physical_buffer[2] );  // 2nd chararacter
   CPPUNIT_ASSERT ( char_rbuf.begin() != char_rbuf.end() );
   CPPUNIT_ASSERT ( char_rbuf.begin() + 2 == char_rbuf.end() );
   CPPUNIT_ASSERT ( std::string(char_rbuf.begin(), char_rbuf.end()).compare("EF") == 0 );
@@ -318,7 +337,9 @@ void CharRingBufferTest::BaseTest()
   CPPUNIT_ASSERT ( char_rbuf.getSize() == 3 );
   CPPUNIT_ASSERT ( char_rbuf.getCapacity() == 3 );
   CPPUNIT_ASSERT ( char_rbuf.front() == 'E' );
+  CPPUNIT_ASSERT ( &char_rbuf.front() == &physical_buffer[1] );  // 2nd chararacter
   CPPUNIT_ASSERT ( char_rbuf.back() == '*' );
+  CPPUNIT_ASSERT ( &char_rbuf.back() == &physical_buffer[0] );  // 1st chararacter
   CPPUNIT_ASSERT ( char_rbuf.begin() != char_rbuf.end() );
   CPPUNIT_ASSERT ( char_rbuf.begin() + 3 == char_rbuf.end() );
   CPPUNIT_ASSERT ( std::string(char_rbuf.begin(), char_rbuf.end()).compare("EF*") == 0 );
@@ -346,7 +367,9 @@ void CharRingBufferTest::BaseTest()
   CPPUNIT_ASSERT ( char_rbuf.getSize() == 2 );
   CPPUNIT_ASSERT ( char_rbuf.getCapacity() == 3 );
   CPPUNIT_ASSERT ( char_rbuf.front() == 'F' );
+  CPPUNIT_ASSERT ( &char_rbuf.front() == &physical_buffer[2] );  // 3rd chararacter
   CPPUNIT_ASSERT ( char_rbuf.back() == '~' );
+  CPPUNIT_ASSERT ( &char_rbuf.back() == &physical_buffer[0] );  // 1st chararacter
   CPPUNIT_ASSERT ( char_rbuf.begin() != char_rbuf.end() );
   CPPUNIT_ASSERT ( char_rbuf.begin() + 2 == char_rbuf.end() );
   CPPUNIT_ASSERT ( std::string(char_rbuf.begin(), char_rbuf.end()).compare("F~") == 0 );
@@ -367,7 +390,9 @@ void CharRingBufferTest::BaseTest()
   CPPUNIT_ASSERT ( char_rbuf.getSize() == 0 );
   CPPUNIT_ASSERT ( char_rbuf.getCapacity() == 3 );
   CPPUNIT_ASSERT ( char_rbuf.front() == '\0' );
+  CPPUNIT_ASSERT ( &char_rbuf.front() != &physical_buffer[0] );  // Buffer is empty
   CPPUNIT_ASSERT ( char_rbuf.back() == '\0' );
+  CPPUNIT_ASSERT ( &char_rbuf.back() != &physical_buffer[0] );  // Buffer is empty
   CPPUNIT_ASSERT ( char_rbuf.begin() == char_rbuf.end() );
   CPPUNIT_ASSERT ( physical_buffer[0] == '~' );  // Currently not in use
   CPPUNIT_ASSERT ( physical_buffer[1] == 'E' );  // Currently not in use
@@ -384,7 +409,9 @@ void CharRingBufferTest::BaseTest()
   CPPUNIT_ASSERT ( char_rbuf.getSize() == 0 );
   CPPUNIT_ASSERT ( char_rbuf.getCapacity() == 3 );
   CPPUNIT_ASSERT ( char_rbuf.front() == '\0' );
+  CPPUNIT_ASSERT ( &char_rbuf.front() != &physical_buffer[0] );  // Buffer is empty
   CPPUNIT_ASSERT ( char_rbuf.back() == '\0' );
+  CPPUNIT_ASSERT ( &char_rbuf.back() != &physical_buffer[0] );  // Buffer is empty
   CPPUNIT_ASSERT ( char_rbuf.begin() == char_rbuf.end() );
   CPPUNIT_ASSERT ( physical_buffer[0] == '~' );  // Currently not in use
   CPPUNIT_ASSERT ( physical_buffer[1] == 'E' );  // Currently not in use
@@ -401,7 +428,9 @@ void CharRingBufferTest::BaseTest()
   CPPUNIT_ASSERT ( char_rbuf.getSize() == 1 );
   CPPUNIT_ASSERT ( char_rbuf.getCapacity() == 3 );
   CPPUNIT_ASSERT ( char_rbuf.front() == 'H' );
+  CPPUNIT_ASSERT ( &char_rbuf.front() == &physical_buffer[0] );  // 1st chararacter
   CPPUNIT_ASSERT ( char_rbuf.back() == 'H' );
+  CPPUNIT_ASSERT ( &char_rbuf.back() == &physical_buffer[0] );  // 1st chararacter
   CPPUNIT_ASSERT ( char_rbuf.begin() != char_rbuf.end() );
   CPPUNIT_ASSERT ( char_rbuf.begin() + 1 == char_rbuf.end() );
   CPPUNIT_ASSERT ( std::string(char_rbuf.begin(), char_rbuf.end()).compare("H") == 0 );
@@ -421,7 +450,9 @@ void CharRingBufferTest::BaseTest()
   CPPUNIT_ASSERT ( char_rbuf.getSize() == 2 );
   CPPUNIT_ASSERT ( char_rbuf.getCapacity() == 3 );
   CPPUNIT_ASSERT ( char_rbuf.front() == 'H' );
+  CPPUNIT_ASSERT ( &char_rbuf.front() == &physical_buffer[0] );  // 1st chararacter
   CPPUNIT_ASSERT ( char_rbuf.back() == 'I' );
+  CPPUNIT_ASSERT ( &char_rbuf.back() == &physical_buffer[1] );  // 2nd chararacter
   CPPUNIT_ASSERT ( char_rbuf.begin() != char_rbuf.end() );
   CPPUNIT_ASSERT ( char_rbuf.begin() + 2 == char_rbuf.end() );
   CPPUNIT_ASSERT ( std::string(char_rbuf.begin(), char_rbuf.end()).compare("HI") == 0 );
