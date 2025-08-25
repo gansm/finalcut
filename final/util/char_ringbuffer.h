@@ -221,8 +221,6 @@ class FRingBuffer
       if ( isEmpty() )
         return empty_element;
 
-      std::size_t index = (tail == 0) ? Capacity - 1 : tail - 1;
-      assert( index == last_index );
       return buffer[last_index];
     }
 
@@ -231,8 +229,6 @@ class FRingBuffer
       if ( isEmpty() )
         return empty_element;
 
-      std::size_t index = (tail == 0) ? Capacity - 1 : tail - 1;
-      assert( index == last_index );
       return buffer[last_index];
     }
 
