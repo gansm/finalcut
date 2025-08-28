@@ -1,3 +1,6 @@
+2025-08-28  Markus Gans  <guru.mail@muenster.de>
+	* Further FRingBuffer optimizations
+
 2025-08-24  Markus Gans  <guru.mail@muenster.de>
 	* Performance for FRingBuffer::back() has been optimized
 

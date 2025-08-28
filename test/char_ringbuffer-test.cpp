@@ -43,6 +43,7 @@ class CharRingBufferTest : public CPPUNIT_NS::TestFixture
     void classNameTest();
     void noArgumentTest();
     void BaseTest();
+    void IndexTest();
     void IteratorTest();
     void emplaceTest();
     void KeyStringTest();
@@ -55,6 +56,7 @@ class CharRingBufferTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (classNameTest);
     CPPUNIT_TEST (noArgumentTest);
     CPPUNIT_TEST (BaseTest);
+    CPPUNIT_TEST (IndexTest);
     CPPUNIT_TEST (IteratorTest);
     CPPUNIT_TEST (emplaceTest);
     CPPUNIT_TEST (KeyStringTest);
@@ -465,6 +467,67 @@ void CharRingBufferTest::BaseTest()
   CPPUNIT_ASSERT ( char_rbuf.strncmp_front("H", 1) );
   CPPUNIT_ASSERT ( char_rbuf.strncmp_front("HI", 2) );
   CPPUNIT_ASSERT ( ! char_rbuf.strncmp_front("H!", 2) );
+}
+
+//----------------------------------------------------------------------
+void CharRingBufferTest::IndexTest()
+{
+  std::size_t head{0U};
+
+  CPPUNIT_ASSERT ( head == 0 );
+  head = finalcut::FRingBuffer<char, 0>::ring_index<1>::next(head);
+  CPPUNIT_ASSERT ( head == 0 );
+  head = finalcut::FRingBuffer<char, 0>::ring_index<1>::next(head);
+  CPPUNIT_ASSERT ( head == 0 );
+  head = finalcut::FRingBuffer<char, 0>::ring_index<2>::next(head);
+  CPPUNIT_ASSERT ( head == 1 );
+  head = finalcut::FRingBuffer<char, 0>::ring_index<3>::next(head);
+  CPPUNIT_ASSERT ( head == 2 );
+  head = finalcut::FRingBuffer<char, 0>::ring_index<4>::next(head);
+  CPPUNIT_ASSERT ( head == 3 );
+  head = finalcut::FRingBuffer<char, 0>::ring_index<8>::next(head);
+  CPPUNIT_ASSERT ( head == 4 );
+  head = finalcut::FRingBuffer<char, 0>::ring_index<16>::next(head);
+  CPPUNIT_ASSERT ( head == 5 );
+  head = finalcut::FRingBuffer<char, 0>::ring_index<32>::next(head);
+  CPPUNIT_ASSERT ( head == 6 );
+  head = finalcut::FRingBuffer<char, 0>::ring_index<128>::next(head);
+  CPPUNIT_ASSERT ( head == 7 );
+  head = finalcut::FRingBuffer<char, 0>::ring_index<255>::next(head);
+  CPPUNIT_ASSERT ( head == 8 );
+  head = finalcut::FRingBuffer<char, 0>::ring_index<256>::next(head);
+  CPPUNIT_ASSERT ( head == 9 );
+  head = finalcut::FRingBuffer<char, 0>::ring_index<512>::next(head);
+  CPPUNIT_ASSERT ( head == 10 );
+  head = finalcut::FRingBuffer<char, 0>::ring_index<1024>::next(head);
+  CPPUNIT_ASSERT ( head == 11 );
+
+  std::size_t index = finalcut::FRingBuffer<char, 0>::ring_index<1>::add(head, 0);
+  CPPUNIT_ASSERT ( index == 0 );
+  index = finalcut::FRingBuffer<char, 0>::ring_index<1>::add(head, 1);
+  CPPUNIT_ASSERT ( index == 0 );
+  index = finalcut::FRingBuffer<char, 0>::ring_index<2>::add(head, 5);
+  CPPUNIT_ASSERT ( index == 0 );
+  index = finalcut::FRingBuffer<char, 0>::ring_index<3>::add(head, 3);
+  CPPUNIT_ASSERT ( index == 2 );
+  index = finalcut::FRingBuffer<char, 0>::ring_index<4>::add(head, 3);
+  CPPUNIT_ASSERT ( index == 2 );
+  index = finalcut::FRingBuffer<char, 0>::ring_index<8>::add(head, 3);
+  CPPUNIT_ASSERT ( index == 6 );
+  index = finalcut::FRingBuffer<char, 0>::ring_index<16>::add(head, 13);
+  CPPUNIT_ASSERT ( index == 8 );
+  index = finalcut::FRingBuffer<char, 0>::ring_index<32>::add(head, 13);
+  CPPUNIT_ASSERT ( index == 24 );
+  index = finalcut::FRingBuffer<char, 0>::ring_index<128>::add(head, 123);
+  CPPUNIT_ASSERT ( index == 6 );
+  index = finalcut::FRingBuffer<char, 0>::ring_index<255>::add(head, 123);
+  CPPUNIT_ASSERT ( index == 134 );
+  index = finalcut::FRingBuffer<char, 0>::ring_index<256>::add(head, 123);
+  CPPUNIT_ASSERT ( index == 134 );
+  index = finalcut::FRingBuffer<char, 0>::ring_index<512>::add(head, 293);
+  CPPUNIT_ASSERT ( index == 304 );
+  index = finalcut::FRingBuffer<char, 0>::ring_index<1024>::add(head, 900);
+  CPPUNIT_ASSERT ( index == 911 );
 }
 
 //----------------------------------------------------------------------
