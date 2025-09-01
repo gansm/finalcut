@@ -46,11 +46,13 @@ namespace internal
 
 struct Const
 {
-  static auto getMaxHashSize() -> std::size_t
+  static constexpr auto getMaxHashSize() noexcept -> std::size_t
   {
-    static const auto size = std::max( FKeyMap::getKeyMap().size()
-                                     , FKeyMap::getKeyCapMap().size() ) * 2;
-    return size;
+    #define ARRAY_SIZE(a)  (sizeof(a) / sizeof(a::value_type))
+    constexpr std::size_t key_map_size = ARRAY_SIZE(FKeyMap::KeyMapType);
+    constexpr std::size_t keycap_map_size = ARRAY_SIZE(FKeyMap::KeyCapMapType);
+    #undef ARRAY_SIZE
+    return std::max(key_map_size, keycap_map_size) * 2;
   }
 };
 
@@ -58,12 +60,12 @@ struct Const
 template <typename BufferT>
 struct KeySequence
 {
-  KeySequence (const char* s, uInt8 l)
+  constexpr KeySequence (const char* s, uInt8 l)
     : string(s)
     , length(l)
   { }
 
-  explicit KeySequence (const BufferT& buf)
+  constexpr explicit KeySequence (const BufferT& buf)
     : buffer(&buf)
   { }
 
@@ -76,16 +78,20 @@ struct KeySequence
 template <typename IterT>
 constexpr auto hash_function (IterT iter, const IterT end) -> std::size_t
 {
-  std::size_t sum = 0;
+  // FNV-1a hash
+  constexpr std::size_t FNV_OFFSET_BASIS = 14695981039346656037ULL;
+  constexpr std::size_t FNV_PRIME = 1099511628211ULL;
+
+  std::size_t hash = FNV_OFFSET_BASIS;
 
   while ( iter != end )
   {
-    sum += std::size_t(*iter);
+    hash ^= static_cast<std::size_t>(*iter);
+    hash *= FNV_PRIME;
     ++iter;
-    sum += ( iter != end ) ? std::size_t(*iter) << 8 : 0;
   }
 
-  return sum % Const::getMaxHashSize();
+  return hash & (Const::getMaxHashSize() - 1);
 }
 
 //----------------------------------------------------------------------
@@ -107,7 +113,8 @@ struct KeySequenceHash
     if ( key.buffer )
       return hash_function (*key.buffer);
 
-    return hash_function(std::string("unknown"));
+    static constexpr char unknown_key[] = "unknown";
+    return hash_function(unknown_key, unknown_key + sizeof(unknown_key) - 1);
   }
 };
 
@@ -154,7 +161,9 @@ auto createKeyCapMap() -> HashMap<BufferT>
 {
   const auto& fkey_cap_table = FKeyMap::getKeyCapMap();
   HashMap<BufferT> fkey_cap_map;
-  fkey_cap_map.reserve(fkey_cap_table.size());
+
+  // Reserve more space to avoid rehashing during construction
+  fkey_cap_map.reserve(fkey_cap_table.size() * 1.25);
 
   for (const auto& item : fkey_cap_table)
     if ( item.string && item.length != 0 )
@@ -188,7 +197,9 @@ auto createKeyMap() -> HashMap<BufferT>
 {
   auto& fkey_table = FKeyMap::getKeyMap();
   HashMap<BufferT> fkey_map;
-  fkey_map.reserve(fkey_table.size());
+
+  // Reserve more space to avoid rehashing during construction
+  fkey_map.reserve(fkey_table.size() * 1.25);
 
   for (auto& item : fkey_table)
     if ( item.length != 0 )  // Note: item.string is an array and always allocated
