@@ -79,8 +79,10 @@ template <typename IterT>
 constexpr auto hash_function (IterT iter, const IterT end) -> std::size_t
 {
   // FNV-1a hash
-  constexpr std::size_t FNV_OFFSET_BASIS = 14695981039346656037ULL;
-  constexpr std::size_t FNV_PRIME = 1099511628211ULL;
+  constexpr std::size_t FNV_OFFSET_BASIS = ( std::numeric_limits<std::size_t>::digits == 64 )
+                                         ? 14695981039346656037ULL : 2166136261UL;
+  constexpr std::size_t FNV_PRIME = ( std::numeric_limits<unsigned int>::digits == 64 )
+                                  ? 1099511628211ULL : 16777619UL;
 
   std::size_t hash = FNV_OFFSET_BASIS;
 
@@ -163,7 +165,7 @@ auto createKeyCapMap() -> HashMap<BufferT>
   HashMap<BufferT> fkey_cap_map;
 
   // Reserve more space to avoid rehashing during construction
-  fkey_cap_map.reserve(fkey_cap_table.size() * 1.25);
+  fkey_cap_map.reserve(std::size_t(fkey_cap_table.size() * 1.25));
 
   for (const auto& item : fkey_cap_table)
     if ( item.string && item.length != 0 )
@@ -199,7 +201,7 @@ auto createKeyMap() -> HashMap<BufferT>
   HashMap<BufferT> fkey_map;
 
   // Reserve more space to avoid rehashing during construction
-  fkey_map.reserve(fkey_table.size() * 1.25);
+  fkey_map.reserve(std::size_t(fkey_table.size() * 1.25));
 
   for (auto& item : fkey_table)
     if ( item.length != 0 )  // Note: item.string is an array and always allocated
