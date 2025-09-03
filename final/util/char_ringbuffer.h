@@ -70,7 +70,6 @@ class FRingBuffer
     template<std::size_t N = Capacity>
     struct ring_index
     {
-
 #if __cplusplus > 1 && __cplusplus >= 201703L
 
       static constexpr bool is_pow2 = (N & (N - 1)) == 0;
@@ -106,7 +105,6 @@ class FRingBuffer
       }
 
 #endif
-
     };
 
     //------------------------------------------------------------------

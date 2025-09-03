@@ -164,8 +164,8 @@ auto createKeyCapMap() -> HashMap<BufferT>
   const auto& fkey_cap_table = FKeyMap::getKeyCapMap();
   HashMap<BufferT> fkey_cap_map;
 
-  // Reserve more space to avoid rehashing during construction
-  fkey_cap_map.reserve(std::size_t(fkey_cap_table.size() * 1.25));
+  // Reserve more space (1.25×) to avoid rehashing during construction
+  fkey_cap_map.reserve((fkey_cap_table.size() * 5) / 4);  // ⁵⁄₄ = 1.25
 
   for (const auto& item : fkey_cap_table)
     if ( item.string && item.length != 0 )
@@ -200,8 +200,8 @@ auto createKeyMap() -> HashMap<BufferT>
   auto& fkey_table = FKeyMap::getKeyMap();
   HashMap<BufferT> fkey_map;
 
-  // Reserve more space to avoid rehashing during construction
-  fkey_map.reserve(std::size_t(fkey_table.size() * 1.25));
+  // Reserve more space (1.25×) to avoid rehashing during construction
+  fkey_map.reserve((fkey_table.size() * 5) / 4);  // ⁵⁄₄ = 1.25
 
   for (auto& item : fkey_table)
     if ( item.length != 0 )  // Note: item.string is an array and always allocated
