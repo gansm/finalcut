@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2023 Andreas Noe                                           *
+* Copyright 2023-2025 Andreas Noe                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -31,12 +31,15 @@
 #ifndef EVENTLOOP_H
 #define EVENTLOOP_H
 
+#include <atomic>
 #include <list>
 #include <poll.h>
-#include <array>
+#include <thread>
 
 #include "final/eventloop/monitor.h"
 #include "final/util/fstring.h"
+
+using namespace std::chrono_literals;
 
 namespace finalcut
 {
@@ -48,34 +51,62 @@ namespace finalcut
 class EventLoop
 {
   public:
+    // Enumeration
+    enum class PollResult : uInt8 { Success, Timeout, Error, Interrupted };
+
     // Constructor
     EventLoop() = default;
+
+    // Disable copy constructor
+    EventLoop (const EventLoop&) = delete;
+
+    // Disable move constructor
+    EventLoop (EventLoop&&) = delete;
+
+    // Destructor
+    ~EventLoop() = default;
+
+    // Disable copy assignment operator (=)
+    auto operator = (const EventLoop&) -> EventLoop& = delete;
+
+    // Disable move assignment operator (=)
+    auto operator = (EventLoop&&) noexcept -> EventLoop& = delete;
 
     // Accessor
     auto getClassName() const -> FString;
 
     // Methods
     auto run() -> int;
-    void leave();
+    void leave() noexcept;
 
   private:
     // Constants
-    static constexpr nfds_t MAX_MONITORS{50};
-    static constexpr int WAIT_INDEFINITELY{-1};
+    static constexpr std::size_t DEFAULT_MONITOR_CAPACITY{64};
+    static constexpr auto WAIT_INDEFINITELY{static_cast<int>(-1)};
+    static constexpr int POLL_WAIT_MS{1};
+
+    // Inquiry
+    auto isRunning() const noexcept -> bool;
+    auto isChanged() const noexcept -> bool;
 
     // Methods
-    void nonPollWaiting() const;
+    void reserveInitialCapacity();
+    void nonPollWaiting() const noexcept;
+    void rebuildPollStructures();
     auto processNextEvents() -> bool;
+    auto processPoll (int&) -> PollResult;
     void dispatcher (int, nfds_t);
     void addMonitor (Monitor*);
     void removeMonitor (Monitor*);
 
     // Data members
-    bool running{false};
-    bool monitors_changed{false};
-    std::list<Monitor*>  monitors{};
-    std::array<struct pollfd, MAX_MONITORS> fds{};
-    std::array<Monitor*, MAX_MONITORS>      lookup_table{};
+    std::atomic<bool> running{false};
+    std::atomic<bool> monitors_changed{false};
+    std::vector<Monitor*> monitors{};
+
+    // Cached poll structures - rebuilt when monitors change
+    std::vector<struct pollfd> cached_fds{};
+    std::vector<Monitor*>      cached_lookup{};
 
     // Friend classes
     friend class Monitor;
@@ -87,8 +118,25 @@ inline auto EventLoop::getClassName() const -> FString
 { return "EventLoop"; }
 
 //----------------------------------------------------------------------
-inline void EventLoop::leave()
-{ running = false; }
+inline void EventLoop::leave() noexcept
+{ running.store(false, std::memory_order_relaxed); }
+
+//----------------------------------------------------------------------
+inline auto EventLoop::isRunning() const noexcept -> bool
+{ return running.load(std::memory_order_relaxed); }
+
+//----------------------------------------------------------------------
+inline auto EventLoop::isChanged() const noexcept -> bool
+{ return monitors_changed.load(std::memory_order_acquire); }
+
+//----------------------------------------------------------------------
+inline void EventLoop::reserveInitialCapacity()
+{
+  // Reserve initial capacity to avoid frequent reallocations
+  monitors.reserve(DEFAULT_MONITOR_CAPACITY);
+  cached_fds.reserve(DEFAULT_MONITOR_CAPACITY);
+  cached_lookup.reserve(DEFAULT_MONITOR_CAPACITY);
+}
 
 }  // namespace finalcut
 

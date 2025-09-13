@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2023 Markus Gans                                           *
+* Copyright 2023-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -95,7 +95,11 @@
 #endif
 
 #include <algorithm>
+#include <limits>
+#include <memory>
 #include <mutex>
+#include <system_error>
+#include <unordered_map>
 
 #include "final/eventloop/eventloop.h"
 #include "final/eventloop/timer_monitor.h"
@@ -104,14 +108,11 @@
 namespace finalcut
 {
 
-// struct forward declaration
-struct TimerNode;
-
 // Using-declaration
-using TimerNodesList = std::vector<TimerNode>;
+using TimerNodesList = std::unordered_map<int, KqueueTimer*>;
 using KEventList = std::vector<struct kevent>;
 
-
+// Helper functions
 //----------------------------------------------------------------------
 #if defined(UNIT_TEST)
 static auto getKqueue() -> int
@@ -135,8 +136,13 @@ static auto getTimerID() -> int&
 {
   // Timer id generator (sequential number)
   static int timer_id = 0;
-  constexpr auto max = std::numeric_limits<int>::max();
-  timer_id = ( timer_id > 0 && timer_id < max ) ? timer_id + 1 : 1;
+  static constexpr auto max = std::numeric_limits<int>::max();
+
+  if ( timer_id < max )
+    timer_id++;
+  else
+    timer_id = 1;
+
   return timer_id;
 }
 
@@ -164,25 +170,19 @@ static auto getKEvents() -> KEventList&
 
 
 //----------------------------------------------------------------------
-// struct TimerNode
+// TimerNode
 //----------------------------------------------------------------------
-struct TimerNode
+
+using TimerNode = std::pair<int, KqueueTimer*>;
+
+inline void validateTimer (const TimerNode& timer)
 {
-  public:
-    // Constructor
-    TimerNode (int tid, KqueueTimer* tmon_ptr)
-      : timer_id{tid}
-      , timer_monitor{tmon_ptr}
-    { }
+  if ( ! timer.second )
+    throw std::invalid_argument("Timer monitor pointer cannot be null");
 
-    // Constants
-    static constexpr int NO_TIMER_ID{-1};
-
-    // Data members
-    int             timer_id{NO_TIMER_ID};
-    KqueueTimer*    timer_monitor{};
-};
-
+  if ( timer.first < 0 )
+    throw std::invalid_argument("Timer ID must be >= 0");
+}
 
 //----------------------------------------------------------------------
 // class KqueueHandler
@@ -203,14 +203,16 @@ class KqueueHandler final
     { }
 
     // Overloaded operator
-    void operator () (Monitor* monitor, short revents)
+    void operator () (Monitor* monitor, short revents) const
     {
-      std::lock_guard<std::mutex> lock_guard(timer_nodes_mutex);
-
       // Check active events in the event list
       static const auto& fsystem = FSystem::getInstance();
       struct timespec timeout{0, 0};  // Do not wait
       auto& time_events = getKEvents();
+
+      if ( time_events.empty() )
+        return;
+
       auto data = time_events.data();
       const auto size = int(time_events.size());
       const auto n = fsystem->kevent(getKqueue(), nullptr, 0, data, size, &timeout);
@@ -218,25 +220,25 @@ class KqueueHandler final
       if ( n <= 0 )
         return;
 
-      for (std::size_t i{0}; i < std::size_t(n); i++)
+      static auto& timer_nodes = getTimerNodes();
+
+      for (const auto& time_event : time_events)
       {
-        if ( time_events[i].filter != EVFILT_TIMER )
+        if ( time_event.filter != EVFILT_TIMER )
           continue;
 
-        const auto ident = int(time_events[i].ident);
-        auto is_timer_id = [&ident] (const auto& item)
-                           {
-                             return item.timer_id == ident;
-                           };
-        static auto& timer_nodes = getTimerNodes();
-        const auto iter = std::find_if( timer_nodes.begin()
-                                      , timer_nodes.end()
-                                      , is_timer_id );
+        std::lock_guard<std::mutex> lock_guard(timer_nodes_mutex);
+
+        const auto event_ident = int(time_event.ident);
+        const auto iter = timer_nodes.find(event_ident);
 
         if ( iter == timer_nodes.end() )
           continue;
 
-        auto kqueue_timer_ptr = iter->timer_monitor;
+        auto kqueue_timer_ptr = iter->second;
+
+        if ( ! kqueue_timer_ptr )
+          continue;
 
         if ( kqueue_timer_ptr->first_interval )  // First timer event
         {
@@ -246,14 +248,15 @@ class KqueueHandler final
           const auto ms = kqueue_timer_ptr->timer_spec.period_ms;
 
           // Filling the struct events with values
-          EV_SET(&ev_set, uintptr_t(ident), EVFILT_TIMER, kq_flags, 0, ms, nullptr);
+          EV_SET(&ev_set, uintptr_t(event_ident), EVFILT_TIMER, kq_flags, 0, ms, nullptr);
 
           // Register event with kqueue
           if ( fsystem->kevent(getKqueue(), &ev_set, 1, nullptr, 0, nullptr) != 0 )
             throw monitor_error{"Cannot register event in kqueue."};
         }
 
-        kqueue_timer_ptr->timer_handler(monitor, revents);
+        if ( kqueue_timer_ptr->timer_handler )
+          kqueue_timer_ptr->timer_handler(monitor, revents);
       }
     }
 
@@ -278,8 +281,8 @@ struct KqueueHandlerInstaller final
 
     // Could not get kqueue
     const int error = errno;
-    std::error_code err_code{error, std::generic_category()};
-    std::system_error sys_err{err_code, strerror(error)};
+    const std::error_code err_code{error, std::generic_category()};
+    const std::system_error sys_err{err_code, strerror(error)};
     throw sys_err;
   }
 
@@ -317,28 +320,7 @@ KqueueTimer::KqueueTimer (EventLoop* eloop)
 //----------------------------------------------------------------------
 KqueueTimer::~KqueueTimer() noexcept  // destructor
 {
-  auto& timer_nodes{getTimerNodes()};
-  auto& time_events{getKEvents()};
-  auto iter{timer_nodes.begin()};
-
-  while ( iter != timer_nodes.end() )
-  {
-    if ( iter->timer_id == timer_id )
-    {
-      auto is_timer_id = [this] (const auto& timer_item)
-                         {
-                           return int(timer_item.ident) == timer_id;
-                         };
-      time_events.erase ( std::remove_if( time_events.begin()
-                                        , time_events.end()
-                                        , is_timer_id )
-                        , time_events.end() );
-      timer_nodes.erase(iter);
-      break;
-    }
-
-    ++iter;
-  }
+  cleanupResources();
 }
 
 
@@ -347,6 +329,9 @@ KqueueTimer::~KqueueTimer() noexcept  // destructor
 void KqueueTimer::setInterval ( std::chrono::nanoseconds first,
                                 std::chrono::nanoseconds periodic )
 {
+  // Input validation
+  validateIntervals (first, periodic);
+
   struct kevent ev_set{};
   static const auto& fsystem = FSystem::getInstance();
   timer_spec.first_ms  = durationToMilliseconds(first);
@@ -365,20 +350,74 @@ void KqueueTimer::setInterval ( std::chrono::nanoseconds first,
 //----------------------------------------------------------------------
 void KqueueTimer::trigger (short return_events)
 {
-  Monitor::trigger(return_events);
+  try
+  {
+    // Call base class trigger
+    Monitor::trigger(return_events);
+  }
+  catch (...)
+  {
+    throw;  // Re-throw other errors
+  }
 }
 
 // private methods of KqueueTimer
 //----------------------------------------------------------------------
 void KqueueTimer::init()
 {
-  setFileDescriptor (getKqueue());
-  setEvents (POLLIN);
-  setHandler (KqueueHandler());
-  timer_id = getTimerID();
-  getKEvents().emplace_back();
-  getTimerNodes().emplace_back(timer_id, this);
-  setInitialized();
+  try
+  {
+    setFileDescriptor (getKqueue());
+    setEvents (POLLIN);
+    setHandler (KqueueHandler());
+    timer_id = getTimerID();
+
+    // Add event
+    getKEvents().emplace_back();
+
+    // Add timer node
+    auto timer = std::make_pair(timer_id, this);
+    validateTimer(timer);
+    getTimerNodes().emplace(std::move(timer));
+
+    setInitialized();
+  }
+  catch (...)
+  {
+    cleanupResources();  // Clean up on failure
+    throw;  // Re-throw the original exception
+  }
+}
+//----------------------------------------------------------------------
+void KqueueTimer::cleanupResources() noexcept
+{
+  auto& timer_nodes{getTimerNodes()};
+  auto& time_events{getKEvents()};
+
+  // Remove timer node
+
+  const auto iter = timer_nodes.find(timer_id);
+
+  if ( iter != timer_nodes.end() )
+  {
+    // Remove corresponding events
+    auto is_timer_id = [this] (const auto& event)
+                       {
+                         return int(event.ident) == timer_id;
+                       };
+    time_events.erase ( std::remove_if ( time_events.begin()
+                                       , time_events.end()
+                                       , is_timer_id )
+                      , time_events.end() );
+    // Remove timer node
+    timer_nodes.erase(iter);
+  }
+
+  // Reset timer state
+  timer_id = NO_TIMER_ID;
+  first_interval = true;
+  timer_spec = TimerSpec{};
+  timer_handler = handler_t{};
 }
 
 }  // namespace finalcut

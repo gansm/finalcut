@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2023 Andreas Noe                                           *
+* Copyright 2023-2025 Andreas Noe                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -55,13 +55,19 @@ class IoMonitor final : public Monitor
     explicit IoMonitor (EventLoop*);
 
     // Disable copy constructor
-    IoMonitor(const IoMonitor&) = delete;
+    IoMonitor (const IoMonitor&) = delete;
 
     // Disable move constructor
-    IoMonitor(const IoMonitor&&) = delete;
+    IoMonitor (IoMonitor&&) = delete;
 
     // Destructor
     ~IoMonitor() noexcept override;
+
+    // Disable copy assignment operator (=)
+    auto operator = (const IoMonitor&) -> IoMonitor& = delete;
+
+    // Disable move assignment operator (=) - Fixed syntax
+    auto operator = (IoMonitor&&) -> IoMonitor& = delete;
 
     // Accessor
     auto getClassName() const -> FString override;
@@ -69,8 +75,9 @@ class IoMonitor final : public Monitor
     // Method
     template <typename T>
     void init (int, short, handler_t, T&&);
-    auto operator = (const IoMonitor&) -> IoMonitor& = delete;
-    auto operator = (const IoMonitor&&) -> IoMonitor& = delete;
+
+  private:
+    void validate (int, short, const handler_t&) const;
 };
 
 // IoMonitor inline functions
@@ -83,10 +90,41 @@ template <typename T>
 inline void IoMonitor::init ( int file_descriptor, short ev
                             , handler_t hdl, T&& uc )
 {
-  setFileDescriptor (file_descriptor);
-  setEvents (ev);
-  setHandler (std::move(hdl));
-  setUserContext (std::forward<T>(uc));
+  validate (file_descriptor, ev, hdl);
+
+  try
+  {
+    setFileDescriptor (file_descriptor);
+    setEvents (ev);
+    setHandler (std::move(hdl));
+    setUserContext (std::forward<T>(uc));
+  }
+  catch (...)
+  {
+    setFileDescriptor (NO_FILE_DESCRIPTOR);  // Clear file descriptor
+    setEvents (0);                           // Clear events
+    setHandler (handler_t{});                // Clear handler
+    clearUserContext();                      // Clear user context
+    deactivate();
+    throw;  // Re-throw the original exception
+  }
+}
+
+//----------------------------------------------------------------------
+inline void IoMonitor::validate ( int file_descriptor, short events
+                                , const handler_t& hdl ) const
+{
+  if ( isInitialized() )
+    throw monitor_error{"This instance has already been initialised."};
+
+  if ( file_descriptor < 0 )
+    throw monitor_error{"Invalid file descriptor: must be >= 0 (got " +
+                        std::to_string(file_descriptor) + ")"};
+  if ( events == 0 )
+    throw monitor_error{"Invalid events: must specify at least one event type"};
+
+  if ( ! hdl )
+    throw monitor_error{"Handler cannot be null."};
 }
 
 }  // namespace finalcut

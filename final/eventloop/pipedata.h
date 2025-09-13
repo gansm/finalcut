@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2023 Markus Gans                                           *
+* Copyright 2023-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -33,6 +33,7 @@
 
 #include <array>
 #include <type_traits>
+#include <stdexcept>
 
 namespace finalcut
 {
@@ -47,19 +48,46 @@ class FString;
 class PipeData final
 {
   public:
-    // Constructor
-    PipeData() = default;
+    // Constant
+    static constexpr int NO_FILE_DESCRIPTOR{-1};
 
-    explicit PipeData (int read_fd, int write_fd)
+    // Constructor
+    PipeData() noexcept
+      : pipe_fd{{NO_FILE_DESCRIPTOR, NO_FILE_DESCRIPTOR}}
+    { }
+
+    explicit PipeData (int read_fd, int write_fd) noexcept
       : pipe_fd{{read_fd, write_fd}}
     { }
 
+    // Copy constructor
+    PipeData (const PipeData&) = default;
+
+    // Move constructor
+    PipeData (PipeData&&) noexcept = default;
+
+    // Destructor
+    ~PipeData() = default;
+
+    // Copy assignment operator
+    auto operator = (const PipeData&) -> PipeData& = default;
+
+    // Move assignment operator
+    auto operator = (PipeData&&) noexcept -> PipeData& = default;
+
     // Accessors
     auto getClassName() const -> FString;
-    auto getArrayData() const -> const int*;
-    auto getArrayData() -> int*;
-    auto getReadFd() const -> int;
-    auto getWriteFd() const -> int;
+    auto getArrayData() const noexcept -> const int*;
+    auto getArrayData() noexcept -> int*;
+    auto getReadFd() const noexcept -> int;
+    auto getWriteFd() const noexcept -> int;
+
+    // Mutators
+    void setReadFd (int) noexcept;
+    void setWriteFd (int) noexcept;
+    void setPipe (int, int) noexcept;
+    void reset() noexcept;
+    void swap (PipeData&) noexcept;
 
   private:
     // Enumeration
@@ -72,34 +100,65 @@ class PipeData final
 
     // Using-declaration
     using ArrayT = std::underlying_type_t<Array>;
+    static constexpr auto PIPE_FD_COUNT = static_cast<ArrayT>(Array::Size);
+    using PipeDataType = std::array<int, PIPE_FD_COUNT>;
 
     // Data member
-    std::array<int, static_cast<ArrayT>(Array::Size)> pipe_fd{};
+    PipeDataType pipe_fd{};
 };
 
 //----------------------------------------------------------------------
-inline auto PipeData::getArrayData() const -> const int*
+inline auto PipeData::getArrayData() const noexcept -> const int*
 {
   return pipe_fd.data();
 }
 
 //----------------------------------------------------------------------
-inline auto PipeData::getArrayData() -> int*
+inline auto PipeData::getArrayData() noexcept -> int*
 {
   return pipe_fd.data();
 }
 
 //----------------------------------------------------------------------
-inline auto PipeData::getReadFd() const -> int
+inline auto PipeData::getReadFd() const noexcept -> int
 {
   return pipe_fd[static_cast<ArrayT>(Array::Read)];
 }
 
 //----------------------------------------------------------------------
-inline auto PipeData::getWriteFd() const -> int
+inline auto PipeData::getWriteFd() const noexcept -> int
 {
   return pipe_fd[static_cast<ArrayT>(Array::Write)];
 }
+//----------------------------------------------------------------------
+inline void PipeData::setReadFd(int fd) noexcept
+{
+    pipe_fd[static_cast<ArrayT>(Array::Read)] = fd;
+}
+
+//----------------------------------------------------------------------
+inline void PipeData::setWriteFd(int fd) noexcept
+{
+    pipe_fd[static_cast<ArrayT>(Array::Write)] = fd;
+}
+
+//----------------------------------------------------------------------
+inline void PipeData::setPipe(int read_fd, int write_fd) noexcept
+{
+    pipe_fd[static_cast<ArrayT>(Array::Read)] = read_fd;
+    pipe_fd[static_cast<ArrayT>(Array::Write)] = write_fd;
+}
+
+//----------------------------------------------------------------------
+inline void PipeData::reset() noexcept
+{
+  pipe_fd[static_cast<ArrayT>(Array::Read)] = NO_FILE_DESCRIPTOR;
+  pipe_fd[static_cast<ArrayT>(Array::Write)] = NO_FILE_DESCRIPTOR;
+}
+
+//----------------------------------------------------------------------
+inline void PipeData::swap (PipeData& other) noexcept
+{ pipe_fd.swap(other.pipe_fd); }
 
 }  // namespace finalcut
 

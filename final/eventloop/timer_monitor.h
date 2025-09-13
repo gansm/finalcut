@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2023 Andreas Noe                                           *
+* Copyright 2023-2025 Andreas Noe                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -81,12 +81,32 @@ class TimerMonitorImpl : public Monitor
     using Monitor::Monitor;
 
     // Destructor
-    ~TimerMonitorImpl() override;
+    ~TimerMonitorImpl() noexcept override;
 
     // Methods
     virtual void setInterval ( std::chrono::nanoseconds
                              , std::chrono::nanoseconds ) = 0;
+  protected:
+    void validateIntervals ( std::chrono::nanoseconds
+                           , std::chrono::nanoseconds ) const;
 };
+
+//----------------------------------------------------------------------
+inline void TimerMonitorImpl::validateIntervals ( std::chrono::nanoseconds first,
+                                                  std::chrono::nanoseconds periodic ) const
+{
+  if ( first.count() == 0 && periodic.count() == 0 )
+    throw monitor_error{"Invalid timer intervals: "
+                        "both first and periodic cannot be zero"};
+
+  if ( first.count() < 0 )
+    throw monitor_error{"Invalid first intervals: "
+                        "must be >= 0 nanoseconds"};
+
+  if ( periodic.count() < 0 )
+    throw monitor_error{"Invalid periodic intervals: "
+                        "must be >= 0 nanoseconds"};
+}
 
 
 //----------------------------------------------------------------------
@@ -125,8 +145,10 @@ class PosixTimer : public TimerMonitorImpl
 
   private:
     void init();
+    void validate (const handler_t& hdl) const;
     void createAlarmPipe();
     void installTime();
+    void cleanupResources() noexcept;
 
 #if defined(USE_POSIX_TIMER)
     // Data members
@@ -141,12 +163,30 @@ class PosixTimer : public TimerMonitorImpl
 template <typename T>
 inline void PosixTimer::init (handler_t hdl, T&& uc)
 {
+  validate (hdl);
+
+  try
+  {
+    setHandler (std::move(hdl));
+    setUserContext (std::forward<T>(uc));
+    init();
+  }
+  catch (...)
+  {
+    setHandler(handler_t{});  // Clear handler
+    clearUserContext();       // Clear user context
+    throw;  // Re-throw the original exception
+  }
+}
+
+//----------------------------------------------------------------------
+inline void PosixTimer::validate (const handler_t& hdl) const
+{
   if ( isInitialized() )
     throw monitor_error{"This instance has already been initialised."};
 
-  setHandler (std::move(hdl));
-  setUserContext (std::forward<T>(uc));
-  init();
+  if ( ! hdl )
+    throw monitor_error{"Handler cannot be null."};
 }
 #endif  // defined(USE_POSIX_TIMER)
 
@@ -188,6 +228,8 @@ class KqueueTimer : public TimerMonitorImpl
 
   private:
     void init();
+    void validate (const handler_t& hdl) const;
+    void cleanupResources() noexcept;
 
 #if defined(USE_KQUEUE_TIMER) || defined(UNIT_TEST)
     struct TimerSpec
@@ -216,12 +258,33 @@ class KqueueTimer : public TimerMonitorImpl
 template <typename T>
 inline void KqueueTimer::init (handler_t hdl, T&& uc)
 {
+  validate (hdl);
+
+  try
+  {
+    timer_handler = std::move(hdl);
+    setUserContext (std::forward<T>(uc));
+    init();
+  }
+  catch (...)
+  {
+    timer_handler = handler_t{};  // Clear handler
+    clearUserContext();           // Clear user context
+    throw;  // Re-throw the original exception
+  }
+}
+
+//----------------------------------------------------------------------
+inline void KqueueTimer::validate (const handler_t& hdl) const
+{
   if ( isInitialized() )
     throw monitor_error{"This instance has already been initialised."};
 
-  timer_handler = std::move(hdl);
-  setUserContext (std::forward<T>(uc));
-  init();
+  if ( ! hdl )
+    throw monitor_error{"Handler cannot be null."};
+
+  if ( timer_id != NO_TIMER_ID )
+    throw monitor_error{"Timer ID already assigned."};
 }
 #endif  // defined(USE_KQUEUE_TIMER)
 

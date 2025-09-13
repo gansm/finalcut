@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2023 Andreas Noe                                           *
+* Copyright 2023-2025 Andreas Noe                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -22,6 +22,7 @@
 
 #include <unistd.h>
 
+#include <algorithm>
 #include <iostream>
 #include <thread>
 
@@ -38,12 +39,21 @@ namespace finalcut
 //----------------------------------------------------------------------
 auto EventLoop::run() -> int
 {
-  running = true;
+  reserveInitialCapacity();
+  running.store(true, std::memory_order_relaxed);
 
-  while ( running )
+  try
   {
-    if ( ! processNextEvents() )
-      nonPollWaiting();
+    while ( isRunning() )
+    {
+      if ( ! processNextEvents() )
+        nonPollWaiting();
+    }
+  }
+  catch (const std::exception&)
+  {
+    running.store(false, std::memory_order_relaxed);
+    return -1;
   }
 
   return 0;
@@ -52,72 +62,135 @@ auto EventLoop::run() -> int
 
 // private methods of EventLoop
 //----------------------------------------------------------------------
-inline void EventLoop::nonPollWaiting() const
+inline void EventLoop::nonPollWaiting() const noexcept
 {
   // Saves cpu time when polling fails
-  std::this_thread::sleep_for(std::chrono::milliseconds(1));  // Wait 1 ms
+  static constexpr auto POLL_WAIT_TIME{std::chrono::milliseconds(POLL_WAIT_MS)};
+  std::this_thread::sleep_for(POLL_WAIT_TIME);
+}
+
+//----------------------------------------------------------------------
+void EventLoop::rebuildPollStructures()
+{
+  // Clear existing structures
+  cached_fds.clear();
+  cached_lookup.clear();
+
+  // Reserve space to avoid reallocations
+  cached_fds.reserve(monitors.size());
+  cached_lookup.reserve(monitors.size());
+
+  // Build poll structures from active monitors
+  for (Monitor* monitor : monitors)
+  {
+    if (monitor != nullptr && monitor->isActive())
+    {
+      cached_fds.push_back({ monitor->getFileDescriptor()  // file descriptor
+                           , monitor->getEvents()  // Requested events
+                           , 0  // The returned event is filled by poll()
+                           });
+      cached_lookup.push_back(monitor);
+    }
+  }
+
+  if ( cached_fds.capacity() > cached_fds.size() * 2 )
+  {
+    // Shrink containers to fit if they're much larger than needed
+    cached_fds.shrink_to_fit();
+    cached_lookup.shrink_to_fit();
+  }
 }
 
 //----------------------------------------------------------------------
 inline auto EventLoop::processNextEvents() -> bool
 {
-  nfds_t fd_count = 0;
-  monitors_changed = false;
-
-  for (Monitor* monitor : monitors)
+  if ( isChanged() )
   {
-    if ( monitor->isActive() )
-    {
-      fds[fd_count] = { monitor->getFileDescriptor(), monitor->getEvents(), 0 };
-      lookup_table[fd_count] = monitor;
-      fd_count++;
-    }
-
-    if ( fd_count >= MAX_MONITORS )
-      break;
+    rebuildPollStructures();
+    monitors_changed.store(false, std::memory_order_release);
   }
 
-  if ( fd_count == 0 )
+  if ( cached_fds.empty() )
     return false;
 
-  int poll_result{};
+  int num_of_events{0};
+  const auto poll_result = processPoll(num_of_events);
 
-  while ( true )
+  switch ( poll_result )
   {
-    poll_result = poll(fds.data(), fd_count, WAIT_INDEFINITELY);
+    case PollResult::Success:
+      // Dispatch events waiting in cached_fds
+     dispatcher (num_of_events, cached_fds.size());
+     return true;
 
-    if ( poll_result != -1 || errno != EINTR )
-      break;
+    case PollResult::Timeout:
+    case PollResult::Error:
+    case PollResult::Interrupted:
+    default:
+      return false;
   }
-
-  if ( poll_result <= 0 )
-    return false;
-
-  // Dispatch events waiting in fds
-  dispatcher(poll_result, fd_count);
-  return true;
 }
 
 //----------------------------------------------------------------------
-inline void EventLoop::dispatcher (int poll_result, nfds_t fd_count)
+auto EventLoop::processPoll (int& num_of_events) -> PollResult
 {
-  // Dispatching events that are waiting in fds
-  nfds_t processed_fds{0};
+  int poll_result{};
 
-  for (nfds_t index{0}; index < fd_count; index++)
+  while (true)
   {
-    const pollfd& current_fd = fds[index];
+    poll_result = poll( cached_fds.data()
+                      , static_cast<nfds_t>(cached_fds.size())
+                      , WAIT_INDEFINITELY );
 
+    if ( poll_result > 0 )
+    {
+      num_of_events = poll_result;
+      return PollResult::Success;
+    }
+
+    if ( poll_result == 0 )
+      return PollResult::Timeout;
+
+    // poll_result < 0, check errno
+    if ( errno == EINTR )
+    {
+      // Interrupted by signal, retry unless we should stop running
+      if ( ! isRunning() )
+        return PollResult::Interrupted;
+
+      continue; // Retry
+    }
+
+    // Other error occurred
+    return PollResult::Error;
+  }
+}
+
+//----------------------------------------------------------------------
+inline void EventLoop::dispatcher (int event_num, nfds_t fd_count)
+{
+  // Dispatching events that are waiting in cached_fds
+  nfds_t processed_fds{0};
+  const auto max_fds = std::min(fd_count, nfds_t(cached_fds.size()));
+
+  for (nfds_t index{0}; index < max_fds; index++)
+  {
+    const pollfd& current_fd = cached_fds[index];
+
+    // Check if this fd has events and they match what we're monitoring
     if ( current_fd.revents == 0
       || ! (current_fd.revents & current_fd.events) )
       continue;
 
-    // Call the event handler for current_fd
-    lookup_table[index]->trigger(current_fd.revents);
-    ++processed_fds;
+    if ( index < cached_lookup.size() && cached_lookup[index] != nullptr )
+    {
+      // Call the event handler for current_fd
+      cached_lookup[index]->trigger(current_fd.revents);
+      ++processed_fds;
+    }
 
-    if ( monitors_changed || ! running
-      || int(processed_fds) == poll_result )
+    // Early exit conditions
+    if ( isChanged() || ! isRunning() || int(processed_fds) >= event_num )
       break;
   }
 }
@@ -125,15 +198,27 @@ inline void EventLoop::dispatcher (int poll_result, nfds_t fd_count)
 //----------------------------------------------------------------------
 void EventLoop::addMonitor (Monitor* monitor)
 {
+  if ( ! monitor
+    || std::find(monitors.begin(), monitors.end(), monitor) != monitors.end() )
+    return;
+
   monitors.push_back(monitor);
-  monitors_changed = true;
+  monitors_changed.store(true, std::memory_order_release);
 }
 
 //----------------------------------------------------------------------
 void EventLoop::removeMonitor (Monitor* monitor)
 {
-  monitors.remove(monitor);
-  monitors_changed = true;
+  if ( ! monitor )
+    return;
+
+  auto iter = std::remove(monitors.begin(), monitors.end(), monitor);
+
+  if ( iter != monitors.end() )
+  {
+    monitors.erase(iter, monitors.end());
+    monitors_changed.store(true, std::memory_order_release);
+  }
 }
 
 }  // namespace finalcut

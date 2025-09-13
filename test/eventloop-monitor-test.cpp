@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2023-2024 Markus Gans                                      *
+* Copyright 2023-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -301,6 +301,8 @@ inline auto FSystemTest::pipe (finalcut::PipeData& pipe) -> int
   std::cerr << "Call: pipe (pipefd={"
             << pipe.getReadFd() << ", "
             << pipe.getWriteFd() << "})\n";
+  pipe.setReadFd(5);
+  pipe.setWriteFd(6);
   return pipe_ret_value;
 }
 
@@ -673,20 +675,20 @@ void EventloopMonitorTest::noArgumentTest()
   CPPUNIT_ASSERT ( ! m.isActive() );
 
   const finalcut::PipeData pipedata;
-  CPPUNIT_ASSERT ( pipedata.getReadFd() == 0 );
-  CPPUNIT_ASSERT ( pipedata.getWriteFd() == 0 );
-  CPPUNIT_ASSERT ( pipedata.getArrayData()[0] == 0 );
-  CPPUNIT_ASSERT ( pipedata.getArrayData()[1] == 0 );
+  CPPUNIT_ASSERT ( pipedata.getReadFd() == finalcut::PipeData::NO_FILE_DESCRIPTOR );
+  CPPUNIT_ASSERT ( pipedata.getWriteFd() == finalcut::PipeData::NO_FILE_DESCRIPTOR );
+  CPPUNIT_ASSERT ( pipedata.getArrayData()[0] == finalcut::PipeData::NO_FILE_DESCRIPTOR );
+  CPPUNIT_ASSERT ( pipedata.getArrayData()[1] == finalcut::PipeData::NO_FILE_DESCRIPTOR );
 }
 
 //----------------------------------------------------------------------
 void EventloopMonitorTest::PipeDataTest()
 {
   finalcut::PipeData pipedata1;
-  CPPUNIT_ASSERT ( pipedata1.getReadFd() == 0 );
-  CPPUNIT_ASSERT ( pipedata1.getWriteFd() == 0 );
-  CPPUNIT_ASSERT ( pipedata1.getArrayData()[0] == 0 );
-  CPPUNIT_ASSERT ( pipedata1.getArrayData()[1] == 0 );
+  CPPUNIT_ASSERT ( pipedata1.getReadFd() == finalcut::PipeData::NO_FILE_DESCRIPTOR );
+  CPPUNIT_ASSERT ( pipedata1.getWriteFd() == finalcut::PipeData::NO_FILE_DESCRIPTOR );
+  CPPUNIT_ASSERT ( pipedata1.getArrayData()[0] == finalcut::PipeData::NO_FILE_DESCRIPTOR );
+  CPPUNIT_ASSERT ( pipedata1.getArrayData()[1] == finalcut::PipeData::NO_FILE_DESCRIPTOR );
   pipedata1.getArrayData()[0] = 2;
   pipedata1.getArrayData()[1] = 5;
   CPPUNIT_ASSERT ( pipedata1.getArrayData()[0] == 2 );
@@ -1021,11 +1023,12 @@ void EventloopMonitorTest::exceptionTest()
   CPPUNIT_ASSERT_NO_THROW ( kqueue_timer_monitor.setInterval(t1, t2) );
 
   // First timer event - cannot register event in kqueue
+  kqueue_timer_monitor.resume();
   fsys_ptr->setKeventReturnValue(-1);
   CPPUNIT_ASSERT_THROW ( kqueue_timer_monitor.p_trigger(5)
                        , finalcut::monitor_error );
 
-  fsys_ptr->setKeventReturnValue(1);
+  fsys_ptr->setKeventReturnValue(0);
   CPPUNIT_ASSERT_NO_THROW ( kqueue_timer_monitor.p_trigger(5) );
 
   // Backend monitor

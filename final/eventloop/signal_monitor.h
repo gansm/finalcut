@@ -59,10 +59,10 @@ class SignalMonitor final : public Monitor
     SignalMonitor() = delete;
 
     // Disable copy constructor
-    SignalMonitor(const SignalMonitor&) = delete;
+    SignalMonitor (const SignalMonitor&) = delete;
 
     // Disable move constructor
-    SignalMonitor(const SignalMonitor&&) = delete;
+    SignalMonitor (SignalMonitor&&) = delete;
 
     // Destructor
     ~SignalMonitor() noexcept override;
@@ -85,19 +85,27 @@ class SignalMonitor final : public Monitor
     // class forward declaration
     class SigactionImpl;
 
+    // Constants
+    static constexpr int INVALID_SIGNAL{-1};
+    static constexpr std::uint64_t SIGNAL_NOTIFICATION{1U};
+
+    // Accessor
+    auto getSigactionImpl() const -> const SigactionImpl*;
+    auto getSigactionImpl() -> SigactionImpl*;
+
     // Methods
     static void onSignal (int);
     void init();
+    void validate (int, const handler_t&) const;
     void handledAlarmSignal() const;
     void ensureSignalIsUnmonitored() const;
     void createPipe();
     void installSignalHandler();
+    void cleanupResources() noexcept;
     void enterMonitorInstanceInTable();
-    auto getSigactionImpl() const -> const SigactionImpl*;
-    auto getSigactionImpl() -> SigactionImpl*;
 
     // Data members
-    int signal_number{-1};
+    int signal_number{INVALID_SIGNAL};
     PipeData signal_pipe{NO_FILE_DESCRIPTOR, NO_FILE_DESCRIPTOR};
     std::unique_ptr<SigactionImpl> impl;
 };
@@ -108,16 +116,47 @@ inline auto SignalMonitor::getClassName() const -> FString
 { return "SignalMonitor"; }
 
 //----------------------------------------------------------------------
+inline auto SignalMonitor::getSigactionImpl() const -> const SigactionImpl*
+{ return impl.get(); }
+
+//----------------------------------------------------------------------
+inline auto SignalMonitor::getSigactionImpl() -> SigactionImpl*
+{ return impl.get(); }
+
+//----------------------------------------------------------------------
 template <typename T>
 inline void SignalMonitor::init (int sn, handler_t hdl, T&& uc)
+{
+  try
+  {
+    validate(sn, hdl);
+    signal_number = sn;
+    setHandler (std::move(hdl));
+    setUserContext (std::forward<T>(uc));
+    init();
+  }
+  catch (...)
+  {
+    signal_number = INVALID_SIGNAL;  // Clear signal number
+    setHandler(handler_t{});         // Clear handler
+    clearUserContext();              // Clear user context
+    cleanupResources();
+    throw;  // Re-throw the original exception
+  }
+}
+
+//----------------------------------------------------------------------
+inline void SignalMonitor::validate (int sn, const handler_t& hdl) const
 {
   if ( isInitialized() )
     throw monitor_error{"This instance has already been initialised."};
 
-  signal_number = sn;
-  setHandler (std::move(hdl));
-  setUserContext (std::forward<T>(uc));
-  init();
+  if ( sn <= 0 || sn >= NSIG )
+    throw monitor_error{ "Invalid signal number: must be > 0 and < "
+                       + std::to_string(NSIG) };
+
+  if ( ! hdl )
+    throw monitor_error{"Handler cannot be null"};
 }
 
 }  // namespace finalcut

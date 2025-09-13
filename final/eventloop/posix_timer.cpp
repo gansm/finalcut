@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2023 Andreas Noe                                           *
+* Copyright 2023-2025 Andreas Noe                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -36,10 +36,12 @@
 #include <cstring>
 #include <ctime>
 #include <ctime>
-#include <list>
+
+#include <algorithm>
 #include <mutex>
 #include <stdexcept>
 #include <system_error>
+#include <unordered_map>
 #include <utility>
 
 #include "final/eventloop/eventloop_functions.h"
@@ -56,12 +58,30 @@
 namespace finalcut
 {
 
-// struct forward declaration
-struct TimerNode;
+//----------------------------------------------------------------------
+// TimerNode
+//----------------------------------------------------------------------
+
+struct Timer
+{
+  PosixTimer* timer_monitor{};
+  int         fd{-1};
+};
 
 // Using-declaration
-using TimerNodesList = std::list<TimerNode>;
+using TimerNode = std::pair<timer_t, Timer>;
 
+inline void validateTimer (const TimerNode& timer)
+{
+  if ( ! timer.second.timer_monitor )
+    throw std::invalid_argument("Timer monitor pointer cannot be null");
+
+  if ( timer.second.fd < 0 )
+    throw std::invalid_argument("File descriptor must be >= 0");
+}
+
+// Using-declaration
+using TimerNodesList = std::unordered_map<timer_t, Timer>;
 
 //----------------------------------------------------------------------
 #if __cplusplus > 1 && __cplusplus >= 201703L
@@ -85,28 +105,6 @@ static auto getTimerNodes() -> TimerNodesList&
   return *timer_nodes;
 }
 
-
-//----------------------------------------------------------------------
-// struct TimerNode
-//----------------------------------------------------------------------
-
-struct TimerNode final
-{
-  public:
-    // Constructor
-    TimerNode (timer_t tid, PosixTimer* tmon_ptr, int file_descriptor)
-      : timer_id{tid}
-      , timer_monitor{tmon_ptr}
-      , fd{file_descriptor}
-    { }
-
-    // Data members
-    timer_t     timer_id{};
-    PosixTimer* timer_monitor{};
-    int         fd{};
-};
-
-
 //----------------------------------------------------------------------
 // class SigAlrmHandler
 //----------------------------------------------------------------------
@@ -117,30 +115,39 @@ class SigAlrmHandler final
     // Using-declaration
     using HandlerReturnType = std::decay_t<void(int, siginfo_t*, void*)>;
 
+    // Constant
+    static constexpr std::uint64_t NOTIFICATION_MESSAGE{1U};
+
     // Overloaded operators
-    void operator () (int, siginfo_t* signal_info, void*)
+    void operator () (int, siginfo_t* signal_info, void*) const noexcept
     {
-      const auto& timer_id = *static_cast<const timer_t*>(signal_info->si_value.sival_ptr);
+      if ( ! signal_info || ! signal_info->si_value.sival_ptr )
+        return;
+
       std::lock_guard<std::mutex> lock_guard(timer_nodes_mutex);
 
-      for (const auto& timer_node : getTimerNodes())
+      auto& timer_nodes = getTimerNodes();
+      const auto& timer_id = *static_cast<const timer_t*>(signal_info->si_value.sival_ptr);
+      const auto iter = timer_nodes.find(timer_id);
+
+      if ( iter == timer_nodes.end() )
+        return;
+
+      const auto& timer_node = *iter;
+
+      if ( timer_node.second.timer_monitor
+        && timer_node.second.timer_monitor->isActive() )
       {
-        if ( timer_id != timer_node.timer_id )
-          continue;
+        // The event loop is notified by write access to the pipe
+        const std::uint64_t buffer{NOTIFICATION_MESSAGE};
+        const auto successful = ::write ( timer_node.second.fd
+                                        , &buffer
+                                        , sizeof(buffer) ) > 0;
 
-        if ( timer_node.timer_monitor->isActive() )
+        if ( ! successful )
         {
-          // The event loop is notified by write access to the pipe
-          uint64_t buffer{1U};
-          auto successful = ::write (timer_node.fd, &buffer, sizeof(buffer)) > 0;
-
-          if ( ! successful )
-          {
-            // Possible error handling
-          }
+          // Possible error handling
         }
-
-        break;
       }
     }
 
@@ -154,12 +161,15 @@ class SigAlrmHandler final
     // Method
     static void invoke (int, siginfo_t* signal_info, void*)
     {
-      return SigAlrmHandler{}.operator()(0, signal_info, nullptr);
+      SigAlrmHandler{}.operator()(0, signal_info, nullptr);
     }
 
     // Data members
-    std::mutex timer_nodes_mutex{};
+    static std::mutex timer_nodes_mutex;
 };
+
+// static class attribute
+std::mutex SigAlrmHandler::timer_nodes_mutex{};
 
 
 //----------------------------------------------------------------------
@@ -180,9 +190,9 @@ class SigAlrmHandlerInstaller final
       if ( fsystem->sigaction(SIGALRM, &signal_handle, &original_signal_handle) != -1 )
         return;
 
-      const int error = errno;
-      std::error_code err_code{error, std::generic_category()};
-      std::system_error sys_err{err_code, strerror(error)};
+      const int error_code = errno;
+      const std::error_code err_code{error_code, std::generic_category()};
+      const std::system_error sys_err{err_code, strerror(error_code)};
       throw sys_err;
     }
 
@@ -216,7 +226,7 @@ static auto startSigAlrmHandlerInstaller() -> SigAlrmHandlerInstaller*
   return sig_alrm_handler.get();
 }
 
-// static class attributes
+// static class attribute
 SigAlrmHandlerInstaller* PosixTimer::sig_alrm_handler_installer{};
 
 
@@ -235,27 +245,7 @@ PosixTimer::PosixTimer (EventLoop* eloop)
 //----------------------------------------------------------------------
 PosixTimer::~PosixTimer() noexcept  // destructor
 {
-  static const auto& fsystem = FSystem::getInstance();
-  fsystem->close (alarm_pipe.getReadFd());
-  fsystem->close (alarm_pipe.getWriteFd());
-
-  if ( timer_id == timer_t{} )
-    return;
-
-  static auto& timer_nodes = getTimerNodes();
-  auto iter = timer_nodes.begin();
-
-  while ( iter != timer_nodes.end() )
-  {
-    if ( iter->timer_id == timer_id
-      && fsystem->timer_delete(timer_id) == -1 )
-    {
-      timer_nodes.erase(iter);
-      break;
-    }
-
-    ++iter;
-  }
+  cleanupResources();  // Clean up on failure
 }
 
 
@@ -264,34 +254,57 @@ PosixTimer::~PosixTimer() noexcept  // destructor
 void PosixTimer::setInterval ( std::chrono::nanoseconds first,
                                std::chrono::nanoseconds periodic )
 {
+  // Input validation
+  validateIntervals (first, periodic);
+
   static const auto& fsystem = FSystem::getInstance();
-  struct itimerspec timer_spec { durationToTimespec(periodic)
-                               , durationToTimespec(first) };
+  const struct itimerspec timer_spec { durationToTimespec(periodic)
+                                     , durationToTimespec(first) };
 
   if ( fsystem->timer_settime(timer_id, 0, &timer_spec, nullptr) != -1 )
     return;
 
   const int error = errno;
-  std::error_code err_code{error, std::generic_category()};
-  std::system_error sys_err{err_code, strerror(error)};
+  const std::error_code err_code{error, std::generic_category()};
+  const std::system_error sys_err{err_code, strerror(error)};
   throw sys_err;
 }
 
 //----------------------------------------------------------------------
 void PosixTimer::trigger (short return_events)
 {
-  drainPipe(getFileDescriptor());
-  Monitor::trigger(return_events);
+  try
+  {
+    // Clear the pipe to reset timer signaling
+    drainPipe(getFileDescriptor());
+
+    // Call base class trigger
+    Monitor::trigger(return_events);
+  }
+  catch (...)
+  {
+    // Attempt to clear pipe even if trigger failed
+    drainPipe(getFileDescriptor());
+    throw;  // Re-throw other errors
+  }
 }
 
 // private methods of PosixTimer
 //----------------------------------------------------------------------
 void PosixTimer::init()
 {
-  setEvents (POLLIN);
-  createAlarmPipe();
-  installTime();
-  setInitialized();
+  try
+  {
+    setEvents (POLLIN);
+    createAlarmPipe();
+    installTime();
+    setInitialized();
+  }
+  catch (...)
+  {
+    cleanupResources();  // Clean up on failure
+    throw;  // Re-throw the original exception
+  }
 }
 
 //----------------------------------------------------------------------
@@ -302,7 +315,16 @@ void PosixTimer::createAlarmPipe()
   if ( fsystem->pipe(alarm_pipe) != 0 )
     throw monitor_error{"No pipe could be set up for the timer."};
 
-  setFileDescriptor(alarm_pipe.getReadFd());  // Read end of pipe
+  if ( alarm_pipe.getReadFd() == PipeData::NO_FILE_DESCRIPTOR
+    || alarm_pipe.getWriteFd() == PipeData::NO_FILE_DESCRIPTOR )
+  {
+    throw monitor_error{"Pipe creation succeeded but "
+                        "file descriptors are invalid"};
+  }
+
+  // Set the read end of the pipe as our file descriptor
+  setFileDescriptor(alarm_pipe.getReadFd());
+
 }
 
 //----------------------------------------------------------------------
@@ -310,20 +332,69 @@ void PosixTimer::installTime()
 {
   static const auto& fsystem = FSystem::getInstance();
   struct sigevent sig_event{};
-  sig_event.sigev_notify          = SIGEV_SIGNAL;
-  sig_event.sigev_signo           = SIGALRM;
+  sig_event.sigev_notify = SIGEV_SIGNAL;
+  sig_event.sigev_signo = SIGALRM;
   sig_event.sigev_value.sival_ptr = &timer_id;
 
   if ( fsystem->timer_create(CLOCK_MONOTONIC, &sig_event, &timer_id) == 0 )
   {
-    getTimerNodes().emplace_back(timer_id, this, alarm_pipe.getWriteFd());
+    try
+    {
+      auto timer = std::make_pair(timer_id, Timer{this, alarm_pipe.getWriteFd()});
+      validateTimer(timer);
+      getTimerNodes().emplace(std::move(timer));
+    }
+    catch (...)
+    {
+      // Clean up timer if node creation fails
+      fsystem->timer_delete(timer_id);
+      throw monitor_error{"Failed to register timer node"};
+    }
   }
   else
   {
-    fsystem->close (alarm_pipe.getReadFd());
-    fsystem->close (alarm_pipe.getWriteFd());
+    cleanupResources();
     throw monitor_error{"No POSIX timer could be reserved."};
   }
+}
+
+//----------------------------------------------------------------------
+void PosixTimer::cleanupResources() noexcept
+{
+  static const auto& fsystem = FSystem::getInstance();
+
+  // Close pipe file descriptors
+  if ( alarm_pipe.getReadFd() != PipeData::NO_FILE_DESCRIPTOR )
+  {
+    fsystem->close (alarm_pipe.getReadFd());
+    alarm_pipe.setReadFd(PipeData::NO_FILE_DESCRIPTOR);
+  }
+
+  if ( alarm_pipe.getWriteFd() != PipeData::NO_FILE_DESCRIPTOR )
+  {
+    fsystem->close (alarm_pipe.getWriteFd());
+    alarm_pipe.setWriteFd(PipeData::NO_FILE_DESCRIPTOR);
+  }
+
+  if ( timer_id == timer_t{} )
+    return;
+
+  // Delete timer and remove from timer nodes list
+  static auto& timer_nodes = getTimerNodes();
+  const auto iter = \
+      std::find_if ( timer_nodes.begin()
+                   , timer_nodes.end()
+                   , [this] (const TimerNode& node)
+                     {
+                       return node.first == timer_id;
+                     } );
+
+  if ( iter == timer_nodes.end() )  // Timer not found
+    return;
+
+  static_cast<void>(fsystem->timer_delete(timer_id));
+  timer_nodes.erase(iter);
+  timer_id = timer_t{};
 }
 
 }  // namespace finalcut

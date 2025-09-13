@@ -1,3 +1,7 @@
+2025-09-13  Markus Gans  <guru.mail@muenster.de>
+	* Classes in the event loop now have better safety and 
+	  input validation
+
 2025-08-31  Markus Gans  <guru.mail@muenster.de>
 	* The key hash algorithm now uses an FNV-1a hash
 

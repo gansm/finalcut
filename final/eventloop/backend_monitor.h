@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2023 Markus Gans                                           *
+* Copyright 2023-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -56,10 +56,10 @@ class BackendMonitor final : public Monitor
     BackendMonitor() = delete;
 
     // Disable copy constructor
-    BackendMonitor(const BackendMonitor&) = delete;
+    BackendMonitor (const BackendMonitor&) = delete;
 
     // Disable move constructor
-    BackendMonitor(const BackendMonitor&&) = delete;
+    BackendMonitor (BackendMonitor&&) = delete;
 
     // Destructor
     ~BackendMonitor() noexcept override;
@@ -82,11 +82,15 @@ class BackendMonitor final : public Monitor
     void trigger (short) override;
 
   private:
+    // Constants
+    static constexpr std::uint64_t SIGNAL_NOTIFICATION{1U};
+
     // Mutator
     void clearEvent() const;
 
     // Methods
     void init();
+    void validate (const handler_t&) const;
 
     // Data members
     PipeData self_pipe{NO_FILE_DESCRIPTOR, NO_FILE_DESCRIPTOR};
@@ -101,12 +105,30 @@ inline auto BackendMonitor::getClassName() const -> FString
 template <typename T>
 inline void BackendMonitor::init (handler_t hdl, T&& uc)
 {
+  validate (hdl);
+
+  try
+  {
+    setHandler (std::move(hdl));
+    setUserContext (std::forward<T>(uc));
+    init();
+  }
+  catch (...)
+  {
+    setHandler(handler_t{});  // Clear handler
+    clearUserContext();       // Clear user context
+    throw;  // Re-throw the original exception
+  }
+}
+
+//----------------------------------------------------------------------
+inline void BackendMonitor::validate (const handler_t& hdl) const
+{
   if ( isInitialized() )
     throw monitor_error{"This instance has already been initialised."};
 
-  setHandler (std::move(hdl));
-  setUserContext (std::forward<T>(uc));
-  init();
+  if ( ! hdl )
+    throw monitor_error{"Handler cannot be null."};
 }
 
 }  // namespace finalcut

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2023 Andreas Noe                                           *
+* Copyright 2023-2025 Andreas Noe                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -31,6 +31,7 @@
 #ifndef MONITOR_H
 #define MONITOR_H
 
+#include <atomic>
 #include <functional>
 #include <stdexcept>
 #include <string>
@@ -81,6 +82,9 @@ using handler_t = std::function<void(Monitor*, short)>;
 class Monitor
 {
   public:
+    // Enumeration
+    enum class State : uInt8 { Inactive, Active, Suspended };
+
     // Constructor
     explicit Monitor (EventLoop*);
     Monitor() = delete;
@@ -102,29 +106,35 @@ class Monitor
 
     // Accessors
     virtual auto getClassName() const -> FString;
-    auto getEvents() const -> short;
-    auto getFileDescriptor() const -> int;
+    auto getEvents() const noexcept -> short;
+    auto getFileDescriptor() const noexcept -> int;
     template <typename T>
     auto getUserContext() const -> clean_fdata_t<T>&;
 
     // Inquiry
-    auto isActive() const -> bool;
+    auto isActive() const noexcept -> bool;
+    auto isSuspended() const noexcept -> bool;
+    auto hasValidFileDescriptor() const noexcept -> bool;
+    auto hasHandler() const noexcept -> bool;
 
     // Methods
-    virtual void resume();
-    virtual void suspend();
+    virtual void resume() noexcept;
+    virtual void suspend() noexcept;
+    virtual void deactivate() noexcept;
 
   protected:
-    // Constants
+    // Constant
     static constexpr int NO_FILE_DESCRIPTOR{-1};
 
     // Mutators
-    void         setFileDescriptor (int);
-    void         setEvents (short);
-    void         setHandler (handler_t&&);
+    void         setFileDescriptor (int) noexcept;
+    void         setEvents (short) noexcept;
+    void         setHandler (handler_t&&) noexcept;
+    void         setHandler (const handler_t& handler);
     template <typename T>
-    void         setUserContext (T&&);
-    void         setInitialized();
+    void         setUserContext (T&&) noexcept;
+    void         clearUserContext() noexcept;
+    void         setInitialized() noexcept;
 
     // Inquiry
     auto         isInitialized() const -> bool;
@@ -136,14 +146,21 @@ class Monitor
     // Using-declaration
     using FDataAccessPtr = std::shared_ptr<FDataAccess>;
 
+    // Accessors
+    auto getState() const noexcept -> State;
+
+    // Methods
+    void validateEventLoop() const;
+    void setState (State) noexcept;
+
     // Data member
-    bool           active{false};
-    EventLoop*     eventloop{};
-    int            fd{NO_FILE_DESCRIPTOR};
-    short          events{0};
-    handler_t      handler{};
-    FDataAccessPtr user_context{nullptr};
-    bool           monitor_initialized{false};
+    EventLoop*          eventloop{};
+    std::atomic<State>  state{State::Inactive};
+    std::atomic<int>    fd{NO_FILE_DESCRIPTOR};
+    std::atomic<short>  events{0};
+    std::atomic<bool>   monitor_initialized{false};
+    handler_t           handler{};
+    FDataAccessPtr      user_context{nullptr};
 
     // Friend classes
     friend class EventLoop;
@@ -155,12 +172,12 @@ inline auto Monitor::getClassName() const -> FString
 { return "Monitor"; }
 
 //----------------------------------------------------------------------
-inline auto Monitor::getEvents() const -> short
-{ return events; }
+inline auto Monitor::getEvents() const noexcept -> short
+{ return events.load(std::memory_order_relaxed); }
 
 //----------------------------------------------------------------------
-inline auto Monitor::getFileDescriptor() const -> int
-{ return fd; }
+inline auto Monitor::getFileDescriptor() const noexcept -> int
+{ return fd.load(std::memory_order_relaxed); }
 
 //----------------------------------------------------------------------
 template <typename T>
@@ -173,50 +190,90 @@ auto Monitor::getUserContext() const -> clean_fdata_t<T>&
 }
 
 //----------------------------------------------------------------------
-inline auto Monitor::isActive() const -> bool
-{ return active; }
+inline auto Monitor::isActive() const noexcept -> bool
+{ return getState() == State::Active; }
 
 //----------------------------------------------------------------------
-inline void Monitor::resume()
-{ active = true; }
+inline auto Monitor::isSuspended() const noexcept -> bool
+{ return getState() == State::Suspended; }
 
 //----------------------------------------------------------------------
-inline void Monitor::suspend()
-{ active = false; }
+inline auto Monitor::hasValidFileDescriptor() const noexcept -> bool
+{ return fd.load(std::memory_order_relaxed) != NO_FILE_DESCRIPTOR; }
+
+//----------------------------------------------------------------------
+inline auto Monitor::hasHandler() const noexcept -> bool
+{ return static_cast<bool>(handler); }
+
+//----------------------------------------------------------------------
+inline void Monitor::resume() noexcept
+{ setState(State::Active); }
+
+//----------------------------------------------------------------------
+inline void Monitor::suspend() noexcept
+{ setState(State::Suspended); }
+
+//----------------------------------------------------------------------
+inline void Monitor::deactivate() noexcept
+{ setState(State::Inactive); }
 
 //----------------------------------------------------------------------
 inline void Monitor::trigger (short return_events)
 {
-  if ( handler )
+  if ( ! handler || ! isActive() )
+    return;
+
+  try
+  {
     handler (this, return_events);
+  }
+  catch (...)
+  {
+    suspend();
+    throw;  // Re-throw other errors
+  }
 }
 
 //----------------------------------------------------------------------
-inline void Monitor::setFileDescriptor (int file_descriptor)
-{ fd = file_descriptor; }
+inline void Monitor::setFileDescriptor (int file_descriptor) noexcept
+{ fd.store(file_descriptor, std::memory_order_relaxed); }
 
 //----------------------------------------------------------------------
-inline void Monitor::setEvents (short ev)
-{ events = ev; }
+inline void Monitor::setEvents (short ev) noexcept
+{ events.store(ev, std::memory_order_relaxed); }
 
 //----------------------------------------------------------------------
-inline void Monitor::setHandler (handler_t&& hdl)
+inline void Monitor::setHandler (handler_t&& hdl) noexcept
 { handler = std::move(hdl); }
 
 //----------------------------------------------------------------------
-template <typename T>
-inline void Monitor::setUserContext (T&& uc)
-{
-  user_context.reset(makeFData(std::forward<T>(uc)));
-}
+inline void Monitor::setHandler(const handler_t& hdl)
+{ handler = hdl; }
 
 //----------------------------------------------------------------------
-inline void Monitor::setInitialized()
-{ monitor_initialized = true; }
+template <typename T>
+inline void Monitor::setUserContext (T&& uc) noexcept
+{ user_context.reset(makeFData(std::forward<T>(uc))); }
+
+//----------------------------------------------------------------------
+inline void Monitor::clearUserContext() noexcept
+{ user_context.reset(); }
+
+//----------------------------------------------------------------------
+inline void Monitor::setInitialized() noexcept
+{ monitor_initialized.store(true, std::memory_order_relaxed); }
 
 //----------------------------------------------------------------------
 inline auto Monitor::isInitialized() const -> bool
-{ return monitor_initialized; }
+{ return monitor_initialized.load(std::memory_order_relaxed); }
+
+//----------------------------------------------------------------------
+inline auto Monitor::getState() const noexcept -> State
+{ return state.load(std::memory_order_relaxed); }
+
+//----------------------------------------------------------------------
+inline void Monitor::setState (State new_state) noexcept
+{ state.store(new_state, std::memory_order_relaxed); }
 
 }  // namespace finalcut
 

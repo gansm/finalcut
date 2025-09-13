@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2023 Andreas Noe                                           *
+* Copyright 2023-2025 Andreas Noe                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -42,14 +42,41 @@ monitor_error::~monitor_error() = default;
 Monitor::Monitor (EventLoop* eloop)
   : eventloop{eloop}
 {
-  eventloop->addMonitor(this);
+  validateEventLoop();
+
+  try
+  {
+    eventloop->addMonitor(this);
+  }
+  catch (const std::exception& e)
+  {
+    eventloop = nullptr;  // Clean up if adding to the event loop fails
+    auto err_msg{ std::string{"Failed to add monitor to event loop: "}
+                + e.what() };
+    throw monitor_error(err_msg);
+  }
 }
 
 //----------------------------------------------------------------------
 Monitor::~Monitor()  // destructor
 {
+  // Set state to inactive to prevent any new events
+  setState(State::Inactive);
+
+  // Clear handler to prevent any callbacks during destruction
+  handler = nullptr;
+
   if ( eventloop )
     eventloop->removeMonitor(this);
+
+  user_context.reset();  // Clear user context
+}
+
+//----------------------------------------------------------------------
+void Monitor::validateEventLoop() const
+{
+  if ( ! eventloop )
+    throw monitor_error{"EventLoop cannot be null"};
 }
 
 }  // namespace finalcut
