@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2023 Markus Gans                                      *
+* Copyright 2012-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -43,7 +43,7 @@ class SegmentView final : public finalcut::FDialog
     explicit SegmentView (finalcut::FWidget* = nullptr);
 
   private:
-    struct sevenSegment
+    struct SevenSegment
     {
       unsigned char a : 1;
       unsigned char b : 1;
@@ -62,7 +62,7 @@ class SegmentView final : public finalcut::FDialog
     void initLayout() override;
 
     // Data members
-    std::map<wchar_t, sevenSegment> code{};
+    std::map<wchar_t, SevenSegment> code{};
     std::array<finalcut::FString, 3> line{};
     finalcut::FLineEdit input{"0123", this};
     finalcut::FButton exit{"E&xit", this};
@@ -76,7 +76,6 @@ SegmentView::SegmentView (finalcut::FWidget* parent)
   hexEncoding();
 
   // Input field
-  input.setLabelText (L"&Hex value");
   input.setLabelText (L"&Hex-digits or (.) (:) (H) (L) (P) (U)");
   input.setLabelOrientation(finalcut::FLineEdit::LabelOrientation::Above);
   input.setMaxLength(9);
@@ -107,22 +106,22 @@ void SegmentView::hexEncoding()
 {
   code =
   {
-    { '0', sevenSegment{1, 1, 1, 1, 1, 1, 0} },
-    { '1', sevenSegment{0, 1, 1, 0, 0, 0, 0} },
-    { '2', sevenSegment{1, 1, 0, 1, 1, 0, 1} },
-    { '3', sevenSegment{1, 1, 1, 1, 0, 0, 1} },
-    { '4', sevenSegment{0, 1, 1, 0, 0, 1, 1} },
-    { '5', sevenSegment{1, 0, 1, 1, 0, 1, 1} },
-    { '6', sevenSegment{1, 0, 1, 1, 1, 1, 1} },
-    { '7', sevenSegment{1, 1, 1, 0, 0, 0, 0} },
-    { '8', sevenSegment{1, 1, 1, 1, 1, 1, 1} },
-    { '9', sevenSegment{1, 1, 1, 1, 0, 1, 1} },
-    { 'A', sevenSegment{1, 1, 1, 0, 1, 1, 1} },
-    { 'B', sevenSegment{0, 0, 1, 1, 1, 1, 1} },
-    { 'C', sevenSegment{1, 0, 0, 1, 1, 1, 0} },
-    { 'D', sevenSegment{0, 1, 1, 1, 1, 0, 1} },
-    { 'E', sevenSegment{1, 0, 0, 1, 1, 1, 1} },
-    { 'F', sevenSegment{1, 0, 0, 0, 1, 1, 1} }
+    { '0', SevenSegment{1, 1, 1, 1, 1, 1, 0} },
+    { '1', SevenSegment{0, 1, 1, 0, 0, 0, 0} },
+    { '2', SevenSegment{1, 1, 0, 1, 1, 0, 1} },
+    { '3', SevenSegment{1, 1, 1, 1, 0, 0, 1} },
+    { '4', SevenSegment{0, 1, 1, 0, 0, 1, 1} },
+    { '5', SevenSegment{1, 0, 1, 1, 0, 1, 1} },
+    { '6', SevenSegment{1, 0, 1, 1, 1, 1, 1} },
+    { '7', SevenSegment{1, 1, 1, 0, 0, 0, 0} },
+    { '8', SevenSegment{1, 1, 1, 1, 1, 1, 1} },
+    { '9', SevenSegment{1, 1, 1, 1, 0, 1, 1} },
+    { 'A', SevenSegment{1, 1, 1, 0, 1, 1, 1} },
+    { 'B', SevenSegment{0, 0, 1, 1, 1, 1, 1} },
+    { 'C', SevenSegment{1, 0, 0, 1, 1, 1, 0} },
+    { 'D', SevenSegment{0, 1, 1, 1, 1, 0, 1} },
+    { 'E', SevenSegment{1, 0, 0, 1, 1, 1, 1} },
+    { 'F', SevenSegment{1, 0, 0, 0, 1, 1, 1} }
   };
 }
 
@@ -174,9 +173,9 @@ void SegmentView::get7Segment (const wchar_t c)
       // Hexadecimal digit from 0 up to f
       if ( code.find(c) != code.end() )
       {
-        const sevenSegment& s = code[c];
-        constexpr std::array<char, 2> h{{' ', '_'}};
-        constexpr std::array<char, 2> v{{' ', '|'}};
+        const SevenSegment& s = code[c];
+        static constexpr std::array<char, 2> h{{' ', '_'}};
+        static constexpr std::array<char, 2> v{{' ', '|'}};
 
         line[0] <<   ' '  << h[s.a] <<   ' ';
         line[1] << v[s.f] << h[s.g] << v[s.b];

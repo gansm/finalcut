@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2024 Markus Gans                                      *
+* Copyright 2012-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -457,7 +457,7 @@ auto FTerm::openConsole() -> int
   if ( fd >= 0 )  // console is already opened
     return 0;
 
-  constexpr std::array<const char*, 6> terminal_devices =
+  static constexpr std::array<const char*, 6> terminal_devices =
   {{
     "/proc/self/fd/0",
     "/dev/tty",

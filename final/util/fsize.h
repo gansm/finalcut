@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2024 Markus Gans                                      *
+* Copyright 2014-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -123,7 +123,7 @@ class FSize
 
     friend inline auto operator + (const FSize& s1, const FSize& s2) -> FSize
     {
-      constexpr std::size_t max = std::numeric_limits<std::size_t>::max();
+      static constexpr std::size_t max = std::numeric_limits<std::size_t>::max();
       const std::size_t w = ( s1.width < max - s2.width) ? s1.width + s2.width : max;
       const std::size_t h = ( s1.height < max - s2.height) ? s1.height + s2.height : max;
       return { FSize{w, h} };

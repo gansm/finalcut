@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2024 Markus Gans                                      *
+* Copyright 2017-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -123,7 +123,7 @@ Listview::Listview (finalcut::FWidget* parent)
 //----------------------------------------------------------------------
 void Listview::populate()
 {
-  constexpr std::array<std::array<const char*, 5>, 41> weather =
+  static constexpr std::array<std::array<const char*, 5>, 41> weather =
   {{
     {{ "Alexandria", "Sunny", "31°C", "61%", "1006.4 mb" }},
     {{ "Amsterdam", "Cloudy", "21°C", "82%", "1021.3 mb" }},

@@ -945,7 +945,7 @@ auto FWidget::focusNextChild() -> bool
     return false;
 
   FWidget* next = nullptr;
-  constexpr auto ft = FocusTypes::NextWidget;
+  static constexpr auto ft = FocusTypes::NextWidget;
   auto iter = searchForwardForWidget(parent, this);
   auto iter_of_this_widget = iter;
 
@@ -986,7 +986,7 @@ auto FWidget::focusPrevChild() -> bool
     return false;
 
   FWidget* prev{nullptr};
-  constexpr auto ft = FocusTypes::PreviousWidget;
+  static constexpr auto ft = FocusTypes::PreviousWidget;
   auto iter = searchBackwardsForWidget(parent, this);
   auto iter_of_this_widget = iter;
 

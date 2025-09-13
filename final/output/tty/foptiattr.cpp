@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2024 Markus Gans                                      *
+* Copyright 2016-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -1166,8 +1166,8 @@ inline void FOptiAttr::change_current_color ( const FChar& term
   const auto& Sb = F_color.background.cap;
   const auto& sp = F_color.color_pair.cap;
   const bool frev = fake_reverse_color_change(term);
-  constexpr auto ANSI = 0;
-  constexpr auto VGA = 1;
+  static constexpr auto ANSI = 0;
+  static constexpr auto VGA = 1;
 
   auto apply_color_change = [this, &term, fg, bg, frev] ( const char* fg_cap
                                                         , const char* bg_cap

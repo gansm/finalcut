@@ -340,8 +340,8 @@ auto hasFullWidthSupports() -> bool
 //----------------------------------------------------------------------
 auto cp437_to_unicode (uChar c) -> wchar_t
 {
-  constexpr std::size_t CP437 = 0;
-  constexpr std::size_t UNICODE = 1;
+  static constexpr std::size_t CP437 = 0;
+  static constexpr std::size_t UNICODE = 1;
   const auto& cp437_ucs = FCharMap::getCP437UCSMap();
   wchar_t ucs = c;
   const auto& found = std::find_if ( cp437_ucs.cbegin()
@@ -360,8 +360,8 @@ auto cp437_to_unicode (uChar c) -> wchar_t
 //----------------------------------------------------------------------
 auto unicode_to_cp437 (wchar_t ucs) -> uChar
 {
-  constexpr std::size_t CP437 = 0;
-  constexpr std::size_t UNICODE = 1;
+  static constexpr std::size_t CP437 = 0;
+  static constexpr std::size_t UNICODE = 1;
   const auto& cp437_ucs = FCharMap::getCP437UCSMap();
   uChar c{'?'};
   const auto& found = std::find_if ( cp437_ucs.cbegin()
@@ -436,8 +436,8 @@ auto getFullWidth (const FString& str) -> FString
       [] (wchar_t& c)
       {
         const auto& halfwidth_fullwidth = FCharMap::getHalfFullWidthMap();
-        constexpr std::size_t HALF = 0;
-        constexpr std::size_t FULL = 1;
+        static constexpr std::size_t HALF = 0;
+        static constexpr std::size_t FULL = 1;
         const auto& found = std::find_if ( halfwidth_fullwidth.cbegin()
                                          , halfwidth_fullwidth.cend()
                                          , [&c] (const CharMap& entry)
@@ -471,8 +471,8 @@ auto getHalfWidth (const FString& str) -> FString
       [] (wchar_t& c)
       {
         const auto& halfwidth_fullwidth = FCharMap::getHalfFullWidthMap();
-        constexpr std::size_t HALF = 0;
-        constexpr std::size_t FULL = 1;
+        static constexpr std::size_t HALF = 0;
+        static constexpr std::size_t FULL = 1;
         const auto& found = std::find_if ( halfwidth_fullwidth.cbegin()
                                          , halfwidth_fullwidth.cend()
                                          , [&c] (const CharMap& entry)
@@ -880,7 +880,7 @@ auto readCursorPos() -> FPoint
 
   if ( pos > 4 )
   {
-    constexpr auto parse = "\033[%4d;%4dR";
+    static constexpr auto parse = "\033[%4d;%4dR";
     std::sscanf(temp.data(), parse, &y, &x );
   }
 

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2024 Markus Gans                                      *
+* Copyright 2017-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -442,7 +442,7 @@ constexpr auto getCompareBitMask() noexcept -> uInt32
 #else
 inline auto getCompareBitMask() noexcept -> uInt32
 {
-  const FAttribute mask {{ 0xff, 0xff, 0x04, 0x00 }};
+  static const FAttribute mask {{ 0xff, 0xff, 0x04, 0x00 }};
   uInt32 data{};
   std::memcpy(&data, &mask, sizeof(data));
   return data;
@@ -471,7 +471,7 @@ struct alignas(std::max_align_t) FChar
 #if HAVE_BUILTIN(__builtin_bit_cast)
     constexpr auto mask = getCompareBitMask();
 #else
-    const auto mask = getCompareBitMask();
+    static const auto mask = getCompareBitMask();
 #endif
 
     if ( (lhs.attr.data & mask) != (rhs.attr.data & mask) )

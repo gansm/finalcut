@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2023 Markus Gans                                      *
+* Copyright 2018-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -393,7 +393,7 @@ inline auto FKeyboard::isKeypressTimeout() -> bool
 auto FKeyboard::UTF8decode (const std::size_t len) const noexcept -> FKey
 {
   using distance_type = CharRingBuffer<FIFO_BUF_SIZE>::difference_type;
-  constexpr std::size_t max = 4U;
+  static constexpr std::size_t max = 4U;
   FKey ucs{FKey::None};  // Universal coded character
   const auto begin = std::begin(fifo_buf);
   const auto end = begin + static_cast<distance_type>(std::min(len, max));

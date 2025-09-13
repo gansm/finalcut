@@ -325,7 +325,7 @@ class TimerMonitor final : public TimerClass::type
     TimerMonitor (TimerMonitor&&) noexcept = delete;
 
     // Destructor
-    ~TimerMonitor() override;
+    ~TimerMonitor() noexcept override;
 
     // Disable copy assignment operator (=)
     auto operator = (const TimerMonitor&) -> TimerMonitor& = delete;

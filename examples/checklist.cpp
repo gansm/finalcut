@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2024 Markus Gans                                      *
+* Copyright 2017-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -92,7 +92,7 @@ CheckList::CheckList (finalcut::FWidget* parent)
 //----------------------------------------------------------------------
 void CheckList::populate()
 {
-  constexpr std::array<std::array<const char*, 2>, 10> list =
+  static constexpr std::array<std::array<const char*, 2>, 10> list =
   {{
     {{ "Milk", "Highest" }},
     {{ "Cheese", "High" }},

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2024 Markus Gans                                      *
+* Copyright 2018-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -218,7 +218,8 @@ void FTermcapQuirksTest::classNameTest()
 void FTermcapQuirksTest::generalTest()
 {
   auto& caps = finalcut::FTermcap::strings;
-  constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
+  static constexpr int last_item = int(sizeof(test::tcap)
+                                 / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
@@ -282,7 +283,8 @@ void FTermcapQuirksTest::repeatLastChar()
 {
   auto& caps = finalcut::FTermcap::strings;
   finalcut::FTermcapQuirks quirks;
-  constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
+  static constexpr int last_item = int(sizeof(test::tcap)
+                                 / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
@@ -299,7 +301,8 @@ void FTermcapQuirksTest::repeatLastChar()
 void FTermcapQuirksTest::xtermTest()
 {
   auto& caps = finalcut::FTermcap::strings;
-  constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
+  static constexpr int last_item = int(sizeof(test::tcap)
+                                 / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
@@ -329,7 +332,8 @@ void FTermcapQuirksTest::xtermTest()
 void FTermcapQuirksTest::freebsdTest()
 {
   auto& caps = finalcut::FTermcap::strings;
-  constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
+  static constexpr int last_item = int(sizeof(test::tcap)
+                                 / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
@@ -367,7 +371,8 @@ void FTermcapQuirksTest::freebsdTest()
 void FTermcapQuirksTest::cygwinTest()
 {
   auto& caps = finalcut::FTermcap::strings;
-  constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
+  static constexpr int last_item = int(sizeof(test::tcap)
+                                 / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
@@ -391,7 +396,8 @@ void FTermcapQuirksTest::cygwinTest()
 void FTermcapQuirksTest::linuxTest()
 {
   auto& caps = finalcut::FTermcap::strings;
-  constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
+  static constexpr int last_item = int(sizeof(test::tcap)
+                                 / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
@@ -462,7 +468,8 @@ void FTermcapQuirksTest::linuxTest()
 void FTermcapQuirksTest::rxvtTest()
 {
   auto& caps = finalcut::FTermcap::strings;
-  constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
+  static constexpr int last_item = int(sizeof(test::tcap)
+                                 / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
@@ -502,7 +509,8 @@ void FTermcapQuirksTest::rxvtTest()
 void FTermcapQuirksTest::vteTest()
 {
   auto& caps = finalcut::FTermcap::strings;
-  constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
+  static constexpr int last_item = int(sizeof(test::tcap)
+                                 / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
@@ -525,7 +533,8 @@ void FTermcapQuirksTest::vteTest()
 void FTermcapQuirksTest::kittyTest()
 {
   auto& caps = finalcut::FTermcap::strings;
-  constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
+  static constexpr int last_item = int(sizeof(test::tcap)
+                                 / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
@@ -550,7 +559,8 @@ void FTermcapQuirksTest::kittyTest()
 void FTermcapQuirksTest::puttyTest()
 {
   auto& caps = finalcut::FTermcap::strings;
-  constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
+  static constexpr int last_item = int(sizeof(test::tcap)
+                                 / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
@@ -639,7 +649,8 @@ void FTermcapQuirksTest::puttyTest()
 void FTermcapQuirksTest::teratermTest()
 {
   auto& caps = finalcut::FTermcap::strings;
-  constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
+  static constexpr int last_item = int(sizeof(test::tcap)
+                                 / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
@@ -668,7 +679,8 @@ void FTermcapQuirksTest::teratermTest()
 void FTermcapQuirksTest::sunTest()
 {
   auto& caps = finalcut::FTermcap::strings;
-  constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
+  static constexpr int last_item = int(sizeof(test::tcap)
+                                 / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
@@ -792,7 +804,8 @@ void FTermcapQuirksTest::sunTest()
 void FTermcapQuirksTest::screenTest()
 {
   auto& caps = finalcut::FTermcap::strings;
-  constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
+  static constexpr int last_item = int(sizeof(test::tcap)
+                                 / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2023 Markus Gans                                      *
+* Copyright 2020-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -303,7 +303,7 @@ auto main (int argc, char* argv[]) -> int
     finalcut::FVTerm::setNonBlockingRead();
 
     // Create a simple dialog box
-    constexpr int iterations = 314;
+    static constexpr int iterations = 314;
     RotoZoomer roto{&app, benchmark, iterations};
 
     if ( benchmark )

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2023 Markus Gans                                      *
+* Copyright 2019-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -473,7 +473,7 @@ inline void ConEmu::printConEmuDebug()
   std::cout << std::endl << line << std::endl;
 
   // Command line
-  constexpr char debug_command[] = "/bin/bash -c ' \
+  static constexpr char debug_command[] = "/bin/bash -c ' \
       for i in DSR CURSOR_POS DECID DA DA1 SEC_DA ANSWERBACK \
                TITLE COLOR16 COLOR88 COLOR256; \
       do \
@@ -567,7 +567,7 @@ inline auto ConEmu::forkConEmu() -> pid_t
   }
   else
   {
-    constexpr int timeout = 150; // 1.5 seconds
+    static constexpr int timeout = 150; // 1.5 seconds
     int i = 0;
 
     // Wait until the child process is ready for input

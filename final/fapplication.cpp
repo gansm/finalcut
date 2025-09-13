@@ -1445,7 +1445,7 @@ auto FApplication::isEventProcessable ( FObject* receiver
       && ! window->getFlags().visibility.modal
       && ! window->isMenuWidget() )
     {
-      constexpr std::array<const Event, 13> blocked_events
+      static constexpr std::array<const Event, 13> blocked_events
       {{
         Event::KeyPress,
         Event::KeyUp,

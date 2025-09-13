@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2023 Markus Gans                                      *
+* Copyright 2019-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -428,13 +428,13 @@ auto FSystemTest::ioctl (int file_descriptor, uLong request, ...) -> int
     case CONS_CURSORTYPE:
     {
       req_string = "CONS_CURSORTYPE";
-      constexpr int blink_cursor  = int(1 << 0);
-      constexpr int char_cursor   = int(1 << 1);
-      constexpr int hidden_cursor = int(1 << 2);
-      constexpr int reset_cursor  = int(1 << 30);
-      constexpr int cursor_attrs  = int( blink_cursor \
-                                       | char_cursor \
-                                       | hidden_cursor );
+      static constexpr int blink_cursor  = int(1 << 0);
+      static constexpr int char_cursor   = int(1 << 1);
+      static constexpr int hidden_cursor = int(1 << 2);
+      static constexpr int reset_cursor  = int(1 << 30);
+      static constexpr int cursor_attrs  = int( blink_cursor \
+                                              | char_cursor \
+                                              | hidden_cursor );
       int* cur_flags = static_cast<int*>(argp);
       *cur_flags = *cur_flags & cursor_attrs;
 

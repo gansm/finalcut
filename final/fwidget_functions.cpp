@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2024 Markus Gans                                      *
+* Copyright 2019-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -261,7 +261,7 @@ auto getHotkeyPos (const FString& src, FString& dest) -> std::size_t
   // Find hotkey position in string
   // + generate a new string without the '&'-sign
 
-  constexpr auto NOT_SET = static_cast<std::size_t>(-1);
+  static constexpr auto NOT_SET = static_cast<std::size_t>(-1);
   std::size_t hotkeypos{NOT_SET};
   std::size_t i{0};
 
@@ -817,7 +817,7 @@ inline void drawBox (FWidget* w, const FRect& r)
 {
   // Use box-drawing characters to draw a border
 
-  constexpr std::array<wchar_t, 8> box_char
+  static constexpr std::array<wchar_t, 8> box_char
   {{
     static_cast<wchar_t>(UniChar::BoxDrawingsDownAndRight),  // ┌
     static_cast<wchar_t>(UniChar::BoxDrawingsHorizontal),    // ─
@@ -837,7 +837,7 @@ inline void drawNewFontBox (FWidget* w, const FRect& r)
 {
   // Use new graphical font characters to draw a border
 
-  constexpr std::array<wchar_t, 8> box_char
+  static constexpr std::array<wchar_t, 8> box_char
   {{
     static_cast<wchar_t>(UniChar::NF_border_corner_middle_upper_left),   // ┌
     static_cast<wchar_t>(UniChar::NF_border_line_horizontal),            // ─
@@ -857,7 +857,7 @@ void drawNewFontUShapedBox (FWidget* w, const FRect& r)
 {
   // Draw a new graphical font U-shaped frame
 
-  constexpr std::array<wchar_t, 8> box_char
+  static constexpr std::array<wchar_t, 8> box_char
   {{
     static_cast<wchar_t>(UniChar::NF_border_line_left),              // border left ⎸
     L' ',                                                            // space ' '
@@ -875,7 +875,7 @@ void drawNewFontUShapedBox (FWidget* w, const FRect& r)
 //----------------------------------------------------------------------
 inline void drawNewFontListBox (FWidget* w, const FRect& r)
 {
-  constexpr std::array<wchar_t, 8> box_char
+  static constexpr std::array<wchar_t, 8> box_char
   {{
     static_cast<wchar_t>(UniChar::NF_border_line_middle_left_down),  // ┌
     static_cast<wchar_t>(UniChar::NF_border_line_horizontal),        // ─

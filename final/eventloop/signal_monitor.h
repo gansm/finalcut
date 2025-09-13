@@ -94,7 +94,7 @@ class SignalMonitor final : public Monitor
     auto getSigactionImpl() -> SigactionImpl*;
 
     // Methods
-    static void onSignal (int);
+    static void onSignal (int) noexcept;
     void init();
     void validate (int, const handler_t&) const;
     void handledAlarmSignal() const;

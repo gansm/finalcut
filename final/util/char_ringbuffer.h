@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2022-2024 Markus Gans                                      *
+* Copyright 2022-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -372,16 +372,12 @@ class FRingBuffer
     std::size_t tail{0U};
     std::size_t last_index{0U};
     std::size_t elements{0U};
-    static value_type empty_element;  // Fallback value
     std::array<value_type, Capacity> buffer;
+    value_type empty_element{};  // Fallback value
 
     // Friend classes
     friend class CharRingBuffer<Capacity>;
 };
-
-// static class attribute
-template <typename T, std::size_t Capacity>
-typename FRingBuffer<T, Capacity>::value_type FRingBuffer<T, Capacity>::empty_element{};
 
 
 //----------------------------------------------------------------------

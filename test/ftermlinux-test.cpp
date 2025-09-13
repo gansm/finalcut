@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2023 Markus Gans                                      *
+* Copyright 2019-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -1499,7 +1499,7 @@ FSystemTest::FSystemTest()  // constructor
   memset (&terminal_font, 0x00, sizeof(terminal_font));
   memset (&terminal_unicode_map, 0x00, sizeof(terminal_unicode_map));
 
-  constexpr auto font_data_size = std::size_t(4 * 32 * 512);
+  static constexpr auto font_data_size = std::size_t(4 * 32 * 512);
   terminal_font.data = new uChar[font_data_size]{ };
 
   // init framebuffer
@@ -1611,7 +1611,7 @@ auto FSystemTest::ioctl (int file_descriptor, uLong request, ...) -> int
     case KDFONTOP:
     {
       req_string = "KDFONTOP";
-      constexpr auto font_data_size = std::size_t (4 * 32 * 512);
+      static constexpr auto font_data_size = std::size_t (4 * 32 * 512);
       auto fn = static_cast<console_font_op*>(argp);
 
       if ( fn->op == KD_FONT_OP_GET )
@@ -1650,7 +1650,7 @@ auto FSystemTest::ioctl (int file_descriptor, uLong request, ...) -> int
         terminal_font.width      = fn->width;
         terminal_font.height     = fn->height;
         terminal_font.charcount  = fn->charcount;
-        constexpr int fix_height = 32;  // This value is identical for all fonts
+        static constexpr int fix_height = 32;  // This value is identical for all fonts
         auto size = fn->width / 8 * fix_height * fn->charcount;
 
         if ( ! terminal_font.data )  // If data is empty on a second run

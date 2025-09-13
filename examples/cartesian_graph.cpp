@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2024 Yusuf Bülbül                                          *
+* Copyright 2024-2025 Yusuf Bülbül                                     *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -147,9 +147,9 @@ void GraphWindow::onTimer (finalcut::FTimerEvent*)
 {
   static double x = min.x;
   // Adjust this for the smoothness of the sine wave
-  constexpr double interval = 10;
+  static constexpr double interval = 10;
   // Frequency of the sine wave (number of cycles)
-  constexpr double frequency = 1.0;
+  static constexpr double frequency = 1.0;
   // Adjust amplitude (height of the wave)
   const double amplitude = (max.y - min.y) / 4.0;
   const double y = amplitude *

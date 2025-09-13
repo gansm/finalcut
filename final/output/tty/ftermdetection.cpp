@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2024 Markus Gans                                      *
+* Copyright 2018-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -522,7 +522,7 @@ auto FTermDetection::getXTermColorName (FColor color) const -> FString
   std::fflush (stdout);
   std::array<char, 35> temp{};
   auto pos = captureTerminalInput(temp, 150'000);
-  constexpr auto parse = "\033]4;%10hu;%509[^\n]s";
+  static constexpr auto parse = "\033]4;%10hu;%509[^\n]s";
   std::array<char, 30> buf{};
 
   if ( pos > 4 && std::sscanf(temp.data(), parse, &index, buf.data()) == 2 )
@@ -652,7 +652,7 @@ auto FTermDetection::str2int (const FString& s) const -> int
   // It is only used in this class to convert the device attribute
   // parameters into numbers.
 
-  constexpr int ERROR = -1;
+  static constexpr int ERROR = -1;
 
   if ( s.isEmpty() )
     return ERROR;
@@ -689,7 +689,7 @@ auto FTermDetection::getSecDA() const -> FString
   std::array<char, 40> temp{};
   auto isWithout_c = [] (const auto& t) { return ! std::strchr(t.data(), 'c'); };
   auto pos = captureTerminalInput(temp, 600'000, isWithout_c);
-  constexpr auto parse = "\033[>%10d;%10d;%10dc";
+  static constexpr auto parse = "\033[>%10d;%10d;%10dc";
   FString sec_da_str{""};
   int a{0};
   int b{0};

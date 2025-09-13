@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2023 Markus Gans                                      *
+* Copyright 2015-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -79,10 +79,15 @@ template <typename IterT>
 constexpr auto hash_function (IterT iter, const IterT end) -> std::size_t
 {
   // FNV-1a hash
-  constexpr std::size_t FNV_OFFSET_BASIS = ( std::numeric_limits<std::size_t>::digits == 64 )
-                                         ? 14695981039346656037ULL : 2166136261UL;
-  constexpr std::size_t FNV_PRIME = ( std::numeric_limits<unsigned int>::digits == 64 )
-                                  ? 1099511628211ULL : 16777619UL;
+  constexpr std::size_t FNV_OFFSET_BASIS = \
+      ( std::numeric_limits<std::size_t>::digits == 64 )
+      ? 14695981039346656037ULL
+      : 2166136261UL;
+
+  constexpr std::size_t FNV_PRIME = \
+      ( std::numeric_limits<unsigned int>::digits == 64 )
+      ? 1099511628211ULL
+      : 16777619UL;
 
   std::size_t hash = FNV_OFFSET_BASIS;
 

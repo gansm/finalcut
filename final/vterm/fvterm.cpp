@@ -1227,7 +1227,7 @@ void FVTerm::resetAreaEncoding() const
 inline void FVTerm::resetTextAreaToDefault ( FTermArea* area
                                            , const FSize& size ) const noexcept
 {
-  constexpr FChar default_char
+  static constexpr FChar default_char
   {
     { { L' ',  L'\0', L'\0', L'\0', L'\0' } },
     { { L'\0', L'\0', L'\0', L'\0', L'\0' } },

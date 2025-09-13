@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2023 Markus Gans                                      *
+* Copyright 2018-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -104,7 +104,7 @@ void FTermFreeBSD::setBeep (int Hz, int ms)
   if ( ms < 0 || ms > 1999 )
     return;
 
-  constexpr int timer_frequency = 1193182;
+  static constexpr int timer_frequency = 1193182;
   int period = timer_frequency / Hz;
   ms /= 10;
   FTerm::paddingPrintf (CSI "=%d;%dB", period, ms);

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2024 Markus Gans                                      *
+* Copyright 2018-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -204,7 +204,7 @@ void FTermLinux::init()
 //----------------------------------------------------------------------
 void FTermLinux::initCharMap() const
 {
-  constexpr sInt16 NOT_FOUND = -1;
+  static constexpr sInt16 NOT_FOUND = -1;
 
   if ( new_font || vga_font )
     return;
@@ -856,7 +856,7 @@ void FTermLinux::getVGAPalette()
 //----------------------------------------------------------------------
 void FTermLinux::setVGADefaultPalette()
 {
-  constexpr std::array<RGB, 16> defaultColor =
+  static constexpr std::array<RGB, 16> defaultColor =
   {{
     {0x00, 0x00, 0x00}, {0xaa, 0x00, 0x00},
     {0x00, 0xaa, 0x00}, {0xaa, 0x55, 0x00},
@@ -1120,7 +1120,7 @@ inline void FTermLinux::initSpecialCharacter() const
 //----------------------------------------------------------------------
 auto FTermLinux::getFontPos (wchar_t ucs) const -> sInt16
 {
-  constexpr sInt16 NOT_FOUND = -1;
+  static constexpr sInt16 NOT_FOUND = -1;
   auto& count = screen_unicode_map.entry_ct;
   const auto& begin = &screen_unicode_map.entries[0];
   const auto& end = &screen_unicode_map.entries[count];
@@ -1155,7 +1155,7 @@ void FTermLinux::characterFallback ( wchar_t ucs
   if ( fallback.size() < 2 || ucs != fallback[0] )
     return;
 
-  constexpr sInt16 NOT_FOUND = -1;
+  static constexpr sInt16 NOT_FOUND = -1;
   static auto& fterm_data = FTermData::getInstance();
   auto& sub_map = fterm_data.getCharSubstitutionMap();
 

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2024 Markus Gans                                      *
+* Copyright 2016-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -899,7 +899,7 @@ void Calc::draw()
 auto Calc::isDataEntryKey (const ButtonName& key) const -> bool
 {
   // Test if key is in {'.', '0'..'9'}
-  constexpr std::array<ButtonName, 11> key_list =
+  static constexpr std::array<ButtonName, 11> key_list =
   {{
     ButtonName::Decimal_point,
     ButtonName::Zero,
@@ -926,7 +926,7 @@ auto Calc::isDataEntryKey (const ButtonName& key) const -> bool
 auto Calc::isOperatorKey(const ButtonName& key) const -> bool
 {
   // Test if key is in {'*', '/', '+', '-', '^', '='}
-  constexpr std::array<ButtonName, 6> operators =
+  static constexpr std::array<ButtonName, 6> operators =
   {{
     ButtonName::Multiply,
     ButtonName::Divide,
@@ -1107,8 +1107,8 @@ void Calc::adjustSize()
 //----------------------------------------------------------------------
 auto Calc::getButtonText (const ButtonName& key) const -> const wchar_t*
 {
-  constexpr auto num_of_buttons = std::size_t(ButtonName::NUM_OF_BUTTONS);
-  constexpr std::array<const wchar_t*, num_of_buttons> button_text =
+  static constexpr auto num_of_buttons = std::size_t(ButtonName::NUM_OF_BUTTONS);
+  static constexpr std::array<const wchar_t*, num_of_buttons> button_text =
   {{
     L"&Sin",
     L"&Cos",

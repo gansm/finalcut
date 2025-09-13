@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2024 Markus Gans                                      *
+* Copyright 2014-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -37,7 +37,7 @@ namespace finalcut
 //----------------------------------------------------------------------
 auto FSize::operator += (const FSize& s) -> FSize&
 {
-  constexpr std::size_t max = std::numeric_limits<std::size_t>::max();
+  static constexpr std::size_t max = std::numeric_limits<std::size_t>::max();
   width = ( width < max - s.width) ? width + s.width : max;
   height = ( height < max - s.height) ? height + s.height : max;
   return *this;

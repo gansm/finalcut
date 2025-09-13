@@ -46,15 +46,15 @@
     void*     udata;   // Opaque user data identifier
   };
 
-  #define EV_SET(kevp, a, b, c, d, e, f) do  \
-          {                                  \
-            struct kevent* __kevp = (kevp);  \
-            (__kevp)->ident  = (a);          \
-            (__kevp)->filter = (b);          \
-            (__kevp)->flags  = (c);          \
-            (__kevp)->fflags = (d);          \
-            (__kevp)->data   = (e);          \
-            (__kevp)->udata  = (f);          \
+  #define EV_SET(kevp, a, b, c, d, e, f) do   \
+          {                                   \
+            struct kevent* kev_ptr = (kevp);  \
+            (kev_ptr)->ident  = (a);          \
+            (kev_ptr)->filter = (b);          \
+            (kev_ptr)->flags  = (c);          \
+            (kev_ptr)->fflags = (d);          \
+            (kev_ptr)->data   = (e);          \
+            (kev_ptr)->udata  = (f);          \
           } while(0)
 
   // Event filter

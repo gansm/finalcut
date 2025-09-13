@@ -125,7 +125,7 @@ void SignalMonitor::trigger (short return_events)
 
 // private methods of SignalMonitor
 //----------------------------------------------------------------------
-void SignalMonitor::onSignal (int signal_number)
+void SignalMonitor::onSignal (int signal_number) noexcept
 {
   // Determine the signal monitor instance
   static auto& signal_monitors = getSignalMonitorMap();
@@ -145,7 +145,7 @@ void SignalMonitor::onSignal (int signal_number)
     return;
 
   // The event loop is notified by write access to the pipe
-  
+
   uint64_t buffer{SIGNAL_NOTIFICATION};
   auto successful = ::write ( monitor_signal_pipe.getWriteFd()
                             , &buffer, sizeof(buffer) ) > 0;
@@ -267,7 +267,7 @@ void SignalMonitor::cleanupResources() noexcept
 
   // Remove monitor instance from the assignment table.
   if ( signal_number != INVALID_SIGNAL )
-  {   
+  {
     static auto& signal_monitors = getSignalMonitorMap();
     const auto iter = signal_monitors.find(signal_number);
 
@@ -275,7 +275,7 @@ void SignalMonitor::cleanupResources() noexcept
     {
       signal_monitors.erase(iter);
     }
-       
+
     signal_number = INVALID_SIGNAL;
   }
 }
