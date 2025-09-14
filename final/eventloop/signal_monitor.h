@@ -89,6 +89,14 @@ class SignalMonitor final : public Monitor
     static constexpr int INVALID_SIGNAL{-1};
     static constexpr std::uint64_t SIGNAL_NOTIFICATION{1U};
 
+#if defined(NSIG) && (NSIG > 0)
+    static constexpr int NUMBER_OF_SIGNALS{NSIG};
+#elif defined(_NSIG) && (_NSIG > 0)
+    static constexpr int NUMBER_OF_SIGNALS{_NSIG};
+#else
+    static constexpr int NUMBER_OF_SIGNALS{65};  // Fallback value
+#endif
+
     // Accessor
     auto getSigactionImpl() const -> const SigactionImpl*;
     auto getSigactionImpl() -> SigactionImpl*;
@@ -151,9 +159,9 @@ inline void SignalMonitor::validate (int sn, const handler_t& hdl) const
   if ( isInitialized() )
     throw monitor_error{"This instance has already been initialised."};
 
-  if ( sn <= 0 || sn >= NSIG )
+  if ( sn <= 0 || sn >= NUMBER_OF_SIGNALS )
     throw monitor_error{ "Invalid signal number: must be > 0 and < "
-                       + std::to_string(NSIG) };
+                       + std::to_string(NUMBER_OF_SIGNALS) };
 
   if ( ! hdl )
     throw monitor_error{"Handler cannot be null"};
