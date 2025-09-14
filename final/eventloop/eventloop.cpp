@@ -50,7 +50,7 @@ auto EventLoop::run() -> int
         nonPollWaiting();
     }
   }
-  catch (const std::exception&)
+  catch (...)
   {
     running.store(false, std::memory_order_relaxed);
     return -1;
@@ -116,19 +116,14 @@ inline auto EventLoop::processNextEvents() -> bool
   int num_of_events{0};
   const auto poll_result = processPoll(num_of_events);
 
-  switch ( poll_result )
+  if ( poll_result == PollResult::Success )
   {
-    case PollResult::Success:
-      // Dispatch events waiting in cached_fds
-     dispatcher (num_of_events, cached_fds.size());
-     return true;
-
-    case PollResult::Timeout:
-    case PollResult::Error:
-    case PollResult::Interrupted:
-    default:
-      return false;
+    // Dispatch events waiting in cached_fds
+    dispatcher (num_of_events, cached_fds.size());
+    return true;
   }
+
+  return false;
 }
 
 //----------------------------------------------------------------------
@@ -139,7 +134,7 @@ auto EventLoop::processPoll (int& num_of_events) -> PollResult
   while (true)
   {
     poll_result = poll( cached_fds.data()
-                      , static_cast<nfds_t>(cached_fds.size())
+                      , cached_fds.size()
                       , WAIT_INDEFINITELY );
 
     if ( poll_result > 0 )

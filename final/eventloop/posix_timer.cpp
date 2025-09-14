@@ -119,7 +119,7 @@ class SigAlrmHandler final
     static constexpr std::uint64_t NOTIFICATION_MESSAGE{1U};
 
     // Overloaded operators
-    void operator () (int, siginfo_t* signal_info, void*) const noexcept
+    void operator () (const siginfo_t* signal_info) const noexcept
     {
       if ( ! signal_info || ! signal_info->si_value.sival_ptr )
         return;
@@ -161,7 +161,7 @@ class SigAlrmHandler final
     // Method
     static void invoke (int, siginfo_t* signal_info, void*)
     {
-      SigAlrmHandler{}.operator()(0, signal_info, nullptr);
+      SigAlrmHandler{}.operator()(signal_info);
     }
 
     // Data members

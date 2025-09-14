@@ -39,8 +39,6 @@
 #include "final/eventloop/monitor.h"
 #include "final/util/fstring.h"
 
-//using namespace std::chrono_literals;
-
 namespace finalcut
 {
 
@@ -82,7 +80,7 @@ class EventLoop
   private:
     // Constants
     static constexpr std::size_t DEFAULT_MONITOR_CAPACITY{64};
-    static constexpr auto WAIT_INDEFINITELY{static_cast<int>(-1)};
+    static constexpr auto WAIT_INDEFINITELY{-1};
     static constexpr int POLL_WAIT_MS{1};
 
     // Inquiry

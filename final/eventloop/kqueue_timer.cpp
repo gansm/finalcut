@@ -206,6 +206,10 @@ class KqueueHandler final
     void operator () (Monitor* monitor, short revents) const
     {
       // Check active events in the event list
+
+      if ( ! monitor )
+        return;
+
       static const auto& fsystem = FSystem::getInstance();
       struct timespec timeout{0, 0};  // Do not wait
       auto& time_events = getKEvents();
@@ -224,10 +228,10 @@ class KqueueHandler final
 
       for (const auto& time_event : time_events)
       {
+        std::lock_guard<std::mutex> lock_guard(timer_nodes_mutex);
+
         if ( time_event.filter != EVFILT_TIMER )
           continue;
-
-        std::lock_guard<std::mutex> lock_guard(timer_nodes_mutex);
 
         const auto event_ident = int(time_event.ident);
         const auto iter = timer_nodes.find(event_ident);

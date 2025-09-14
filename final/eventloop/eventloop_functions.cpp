@@ -41,9 +41,9 @@ using ByteCount = std::size_t;
 // Constants
 namespace
 {
-  static constexpr int MAX_DRAIN_ATTEMPTS = 5;  // Prevent infinite loops
-  static constexpr std::size_t PIPE_BUFFER_SIZE = sizeof(PipeBuffer);
-  static constexpr std::chrono::milliseconds RETRY_DELAY{1};
+  constexpr int MAX_DRAIN_ATTEMPTS{5};  // Prevent infinite loops
+  constexpr std::size_t PIPE_BUFFER_SIZE{sizeof(PipeBuffer)};
+  constexpr std::chrono::milliseconds RETRY_DELAY{1};
 }
 
 // Function forward declarations
