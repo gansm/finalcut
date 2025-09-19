@@ -71,6 +71,11 @@ namespace finalcut
 class SigAlrmHandlerInstaller;
 struct KqueueHandlerInstaller;
 
+#if defined(UNIT_TEST)
+auto useAlternativeKqueueTimerID() -> bool&;
+auto alternativeKqueueTimerID() -> int&;
+#endif  // defined(UNIT_TEST)
+
 //----------------------------------------------------------------------
 // class TimerMonitorImpl
 //----------------------------------------------------------------------
@@ -142,6 +147,10 @@ class PosixTimer : public TimerMonitorImpl
     void setInterval ( std::chrono::nanoseconds
                      , std::chrono::nanoseconds ) override;
     void trigger(short) override;
+
+#if defined(UNIT_TEST)
+    void ReinstallSigAlrmHandler();
+#endif  // defined(UNIT_TEST)
 
   private:
     void init();
@@ -224,7 +233,7 @@ class KqueueTimer : public TimerMonitorImpl
     void init (handler_t, T&&);
     void setInterval ( std::chrono::nanoseconds
                      , std::chrono::nanoseconds ) override;
-    void trigger(short) override;
+    void trigger (short) override;
 
   private:
     void init();
@@ -250,7 +259,7 @@ class KqueueTimer : public TimerMonitorImpl
 
     // Friend classes
     friend class KqueueHandler;
-#endif  // defined(USE_KQUEUE_TIMER)
+#endif  // defined(USE_KQUEUE_TIMER) || defined(UNIT_TEST)
 };
 
 #if defined(USE_KQUEUE_TIMER) || defined(UNIT_TEST)
@@ -286,7 +295,7 @@ inline void KqueueTimer::validate (const handler_t& hdl) const
   if ( timer_id != NO_TIMER_ID )
     throw monitor_error{"Timer ID already assigned."};
 }
-#endif  // defined(USE_KQUEUE_TIMER)
+#endif  // defined(USE_KQUEUE_TIMER) || defined(UNIT_TEST)
 
 
 //----------------------------------------------------------------------

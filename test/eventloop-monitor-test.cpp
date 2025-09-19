@@ -49,7 +49,7 @@ void getNoException()
 
 
 //----------------------------------------------------------------------
-// class FWidget_protected
+// class Monitor_protected
 //----------------------------------------------------------------------
 
 class Monitor_protected : public finalcut::Monitor
@@ -125,6 +125,42 @@ inline void Monitor_protected::p_trigger (short return_events)
 
 
 //----------------------------------------------------------------------
+// class PosixTimer_protected
+//----------------------------------------------------------------------
+
+class PosixTimer_protected : public finalcut::PosixTimer
+{
+  public:
+    // Using-declaration
+    using PosixTimer::PosixTimer;
+
+    // Destructor
+    ~PosixTimer_protected() override;
+
+    // Mutators
+    void p_setFileDescriptor (int);
+
+    // Methods
+    void p_trigger (short);
+};
+
+//----------------------------------------------------------------------
+inline PosixTimer_protected::~PosixTimer_protected() = default;  // destructor
+
+//----------------------------------------------------------------------
+inline void PosixTimer_protected::p_setFileDescriptor (int file_descriptor)
+{
+  finalcut::Monitor::setFileDescriptor(file_descriptor);
+}
+
+//----------------------------------------------------------------------
+inline void PosixTimer_protected::p_trigger (short return_events)
+{
+  finalcut::PosixTimer::trigger(return_events);
+}
+
+
+//----------------------------------------------------------------------
 // class KqueueTimer_protected
 //----------------------------------------------------------------------
 
@@ -147,7 +183,7 @@ inline KqueueTimer_protected::~KqueueTimer_protected() = default;  // destructor
 //----------------------------------------------------------------------
 inline void KqueueTimer_protected::p_trigger (short return_events)
 {
-  finalcut::Monitor::trigger(return_events);
+  finalcut::KqueueTimer::trigger(return_events);
 }
 
 
@@ -699,6 +735,40 @@ void EventloopMonitorTest::PipeDataTest()
   CPPUNIT_ASSERT ( pipedata2.getWriteFd() == 11 );
   CPPUNIT_ASSERT ( pipedata2.getArrayData()[0] == 10 );
   CPPUNIT_ASSERT ( pipedata2.getArrayData()[1] == 11 );
+
+  pipedata2.swap(pipedata1);
+  CPPUNIT_ASSERT ( pipedata2.getReadFd() == 2 );
+  CPPUNIT_ASSERT ( pipedata2.getWriteFd() == 5 );
+  CPPUNIT_ASSERT ( pipedata2.getArrayData()[0] == 2 );
+  CPPUNIT_ASSERT ( pipedata2.getArrayData()[1] == 5 );
+  CPPUNIT_ASSERT ( pipedata1.getReadFd() == 10 );
+  CPPUNIT_ASSERT ( pipedata1.getWriteFd() == 11 );
+  CPPUNIT_ASSERT ( pipedata1.getArrayData()[0] == 10 );
+  CPPUNIT_ASSERT ( pipedata1.getArrayData()[1] == 11 );
+
+  pipedata1.setReadFd(4);
+  CPPUNIT_ASSERT ( pipedata1.getReadFd() == 4 );
+  CPPUNIT_ASSERT ( pipedata1.getWriteFd() == 11 );
+  CPPUNIT_ASSERT ( pipedata1.getArrayData()[0] == 4 );
+  CPPUNIT_ASSERT ( pipedata1.getArrayData()[1] == 11 );
+
+  pipedata1.setWriteFd(7);
+  CPPUNIT_ASSERT ( pipedata1.getReadFd() == 4 );
+  CPPUNIT_ASSERT ( pipedata1.getWriteFd() == 7 );
+  CPPUNIT_ASSERT ( pipedata1.getArrayData()[0] == 4 );
+  CPPUNIT_ASSERT ( pipedata1.getArrayData()[1] == 7 );
+
+  pipedata1.setPipe(8, 9);
+  CPPUNIT_ASSERT ( pipedata1.getReadFd() == 8 );
+  CPPUNIT_ASSERT ( pipedata1.getWriteFd() == 9 );
+  CPPUNIT_ASSERT ( pipedata1.getArrayData()[0] == 8 );
+  CPPUNIT_ASSERT ( pipedata1.getArrayData()[1] == 9 );
+
+  pipedata1.reset();
+  CPPUNIT_ASSERT ( pipedata1.getReadFd() == finalcut::PipeData::NO_FILE_DESCRIPTOR );
+  CPPUNIT_ASSERT ( pipedata1.getWriteFd() == finalcut::PipeData::NO_FILE_DESCRIPTOR );
+  CPPUNIT_ASSERT ( pipedata1.getArrayData()[0] == finalcut::PipeData::NO_FILE_DESCRIPTOR );
+  CPPUNIT_ASSERT ( pipedata1.getArrayData()[1] == finalcut::PipeData::NO_FILE_DESCRIPTOR );
 }
 
 //----------------------------------------------------------------------
@@ -766,6 +836,10 @@ void EventloopMonitorTest::setMonitorTest()
   m.resume();
   CPPUNIT_ASSERT ( m.isActive() );
   m.suspend();
+  CPPUNIT_ASSERT ( ! m.isActive() );
+  m.resume();
+  CPPUNIT_ASSERT ( m.isActive() );
+  m.deactivate();
   CPPUNIT_ASSERT ( ! m.isActive() );
   m.resume();
   CPPUNIT_ASSERT ( m.isActive() );
@@ -928,10 +1002,20 @@ void EventloopMonitorTest::exceptionTest()
   CPPUNIT_ASSERT_THROW ( finalcut::drainPipe(max_fd), std::system_error );
   CPPUNIT_ASSERT_THROW ( finalcut::drainPipe(-1), std::system_error);
 
-  // Signal monitor
+  // Monitor
   //---------------
 
   finalcut::EventLoop eloop{};
+  CPPUNIT_ASSERT_THROW ( finalcut::Monitor(nullptr), finalcut::monitor_error );
+  CPPUNIT_ASSERT_NO_THROW ( finalcut::Monitor monitor(&eloop) );
+  finalcut::Monitor monitor1(&eloop);
+  // Call the constructor from monitor1 again.
+  CPPUNIT_ASSERT_THROW ( new (&monitor1) finalcut::Monitor(&eloop)
+                       , std::exception );
+
+  // Signal monitor
+  //---------------
+
   finalcut::SignalMonitor signal_monitor1{&eloop};
   auto callback_handler = [] (finalcut::Monitor*, short) { };
 
@@ -961,18 +1045,40 @@ void EventloopMonitorTest::exceptionTest()
                        , finalcut::monitor_error );
 
   // Sigaction error
+#if defined(NSIG) && (NSIG > 0)
+    static constexpr int NUMBER_OF_SIGNALS{NSIG};
+#elif defined(_NSIG) && (_NSIG > 0)
+    static constexpr int NUMBER_OF_SIGNALS{_NSIG};
+#else
+    static constexpr int NUMBER_OF_SIGNALS{65};  // Fallback value
+#endif
   fsys_ptr->setSigactionReturnValue(-1);
   finalcut::SignalMonitor signal_monitor3{&eloop};
   CPPUNIT_ASSERT_THROW ( signal_monitor3.init(SIGHUP, callback_handler, nullptr)
                        , std::system_error );
   fsys_ptr->setSigactionReturnValue(0);
+  CPPUNIT_ASSERT_THROW ( signal_monitor3.init(0, callback_handler, nullptr)
+                       , finalcut::monitor_error );
+  CPPUNIT_ASSERT_THROW ( signal_monitor3.init(NUMBER_OF_SIGNALS, callback_handler, nullptr)
+                       , finalcut::monitor_error );
+  CPPUNIT_ASSERT_THROW ( signal_monitor3.init(NUMBER_OF_SIGNALS, nullptr, nullptr)
+                       , finalcut::monitor_error );
   CPPUNIT_ASSERT_NO_THROW ( signal_monitor3.init(SIGHUP, callback_handler, nullptr) );
 
   // Posix timer monitor
   //--------------------
 
+  PosixTimer_protected posix_timer_monitor{&eloop};
+
+  // This (sigaction error) test only works on the initial call
+  // before the sig_alrm_handler_installer is set.
+  // This is simulated by calling ReinstallSigAlrmHandler()
+  fsys_ptr->setSigactionReturnValue(-1);
+  CPPUNIT_ASSERT_THROW ( posix_timer_monitor.ReinstallSigAlrmHandler()
+                       , std::system_error );
+  fsys_ptr->setSigactionReturnValue(0);
+
   // No pipe could be established
-  finalcut::PosixTimer posix_timer_monitor{&eloop};
   fsys_ptr->setPipeReturnValue(-1);
   CPPUNIT_ASSERT_THROW ( posix_timer_monitor.init(callback_handler, nullptr)
                        , finalcut::monitor_error );
@@ -983,6 +1089,9 @@ void EventloopMonitorTest::exceptionTest()
   CPPUNIT_ASSERT_THROW ( posix_timer_monitor.init(callback_handler, nullptr)
                        , finalcut::monitor_error );
   fsys_ptr->setTimerCreateReturnValue(0);
+
+  CPPUNIT_ASSERT_THROW ( posix_timer_monitor.init(nullptr, nullptr)
+                       , finalcut::monitor_error );
 
   CPPUNIT_ASSERT_NO_THROW ( posix_timer_monitor.init(callback_handler, nullptr) );
 
@@ -999,6 +1108,21 @@ void EventloopMonitorTest::exceptionTest()
   fsys_ptr->setTimerSettimeReturnValue(0);
   CPPUNIT_ASSERT_NO_THROW ( posix_timer_monitor.setInterval(t1, t2) );
 
+  auto t3 = std::chrono::nanoseconds{ 0 };
+  auto t4 = std::chrono::nanoseconds{ -100 };
+  CPPUNIT_ASSERT_THROW ( posix_timer_monitor.setInterval(t3, t3)
+                       , finalcut::monitor_error );
+  CPPUNIT_ASSERT_THROW ( posix_timer_monitor.setInterval(t4, t3)
+                       , finalcut::monitor_error );
+  CPPUNIT_ASSERT_THROW ( posix_timer_monitor.setInterval(t3, t4)
+                       , finalcut::monitor_error );
+  CPPUNIT_ASSERT_NO_THROW ( posix_timer_monitor.setInterval(t1, t3) );
+  CPPUNIT_ASSERT_NO_THROW ( posix_timer_monitor.setInterval(t3, t1) );
+
+  posix_timer_monitor.resume();
+  CPPUNIT_ASSERT_THROW ( posix_timer_monitor.p_trigger(555)
+                       , std::system_error );
+
   // Kqueue timer monitor
   //---------------------
 
@@ -1007,8 +1131,17 @@ void EventloopMonitorTest::exceptionTest()
                        , std::system_error );
   fsys_ptr->setKqueueReturnValue(0);
   CPPUNIT_ASSERT_NO_THROW ( finalcut::KqueueTimer{&eloop} );
-  KqueueTimer_protected kqueue_timer_monitor{&eloop};
 
+  KqueueTimer_protected kqueue_timer_monitor{&eloop};
+  CPPUNIT_ASSERT_THROW ( kqueue_timer_monitor.init(nullptr, nullptr)
+                       , finalcut::monitor_error );
+
+  finalcut::useAlternativeKqueueTimerID() = true;
+  finalcut::alternativeKqueueTimerID() = -999;
+  CPPUNIT_ASSERT_THROW ( kqueue_timer_monitor.init(callback_handler, nullptr)
+                       , std::invalid_argument );
+
+  finalcut::useAlternativeKqueueTimerID() = false;
   CPPUNIT_ASSERT_NO_THROW ( kqueue_timer_monitor.init(callback_handler, nullptr) );
 
   // Already initialised
@@ -1021,6 +1154,14 @@ void EventloopMonitorTest::exceptionTest()
                        , finalcut::monitor_error );
   fsys_ptr->setKeventReturnValue(0);
   CPPUNIT_ASSERT_NO_THROW ( kqueue_timer_monitor.setInterval(t1, t2) );
+  CPPUNIT_ASSERT_THROW ( kqueue_timer_monitor.setInterval(t3, t3)
+                       , finalcut::monitor_error );
+  CPPUNIT_ASSERT_THROW ( kqueue_timer_monitor.setInterval(t4, t3)
+                       , finalcut::monitor_error );
+  CPPUNIT_ASSERT_THROW ( kqueue_timer_monitor.setInterval(t3, t4)
+                       , finalcut::monitor_error );
+  CPPUNIT_ASSERT_NO_THROW ( kqueue_timer_monitor.setInterval(t1, t3) );
+  CPPUNIT_ASSERT_NO_THROW ( kqueue_timer_monitor.setInterval(t3, t1) );
 
   // First timer event - cannot register event in kqueue
   kqueue_timer_monitor.resume();
@@ -1043,10 +1184,16 @@ void EventloopMonitorTest::exceptionTest()
   fsys_ptr->setPipeReturnValue(0);
 
   CPPUNIT_ASSERT_NO_THROW ( backend_monitor.init(callback_handler, nullptr) );
+  CPPUNIT_ASSERT_THROW ( backend_monitor.init(nullptr, nullptr)
+                       , finalcut::monitor_error );
 
   // Already initialised
   CPPUNIT_ASSERT_THROW ( backend_monitor.init(callback_handler, nullptr)
                        , finalcut::monitor_error );
+
+  // Switch back to the default FSystem implementation
+  finalcut::FSystem::getInstance().swap(fsys);
+  posix_timer_monitor.ReinstallSigAlrmHandler();
 }
 
 //----------------------------------------------------------------------

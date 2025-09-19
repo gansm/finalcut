@@ -794,10 +794,7 @@ inline void FScrollView::addLocalPreprocessingHandler()
   if ( hasPreprocessingHandler(this) )
     return;
 
-  FWidget::addPreprocessingHandler
-  (
-    F_PREPROC_HANDLER (this, &FScrollView::copy2area)
-  );
+  FWidget::addPreprocessingHandler (this, [this] () { copy2area(); } );
 }
 
 //----------------------------------------------------------------------

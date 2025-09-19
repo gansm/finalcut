@@ -193,9 +193,11 @@ inline void EventLoop::dispatcher (int event_num, nfds_t fd_count)
 //----------------------------------------------------------------------
 void EventLoop::addMonitor (Monitor* monitor)
 {
-  if ( ! monitor
-    || std::find(monitors.begin(), monitors.end(), monitor) != monitors.end() )
-    return;
+  if ( ! monitor )
+    throw monitor_error{"Monitor cannot be null."};
+
+  if ( std::find(monitors.begin(), monitors.end(), monitor) != monitors.end() )
+    throw monitor_error{"The monitor is already part of the event loop."};
 
   monitors.push_back(monitor);
   monitors_changed.store(true, std::memory_order_release);
@@ -205,7 +207,7 @@ void EventLoop::addMonitor (Monitor* monitor)
 void EventLoop::removeMonitor (Monitor* monitor)
 {
   if ( ! monitor )
-    return;
+    throw monitor_error{"Monitor cannot be null."};
 
   auto iter = std::remove(monitors.begin(), monitors.end(), monitor);
 

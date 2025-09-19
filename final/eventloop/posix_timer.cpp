@@ -181,7 +181,7 @@ class SigAlrmHandlerInstaller final
   public:
     SigAlrmHandlerInstaller()  // constructor
     {
-      static const auto& fsystem = FSystem::getInstance();
+      const auto& fsystem = FSystem::getInstance();
       struct sigaction signal_handle{};
       sigemptyset(&signal_handle.sa_mask);
       signal_handle.sa_sigaction = SigAlrmHandler();
@@ -288,6 +288,19 @@ void PosixTimer::trigger (short return_events)
     throw;  // Re-throw other errors
   }
 }
+
+#if defined(UNIT_TEST)
+//----------------------------------------------------------------------
+void PosixTimer::ReinstallSigAlrmHandler()
+{
+  static std::unique_ptr<SigAlrmHandlerInstaller> sig_alrm_handler{};
+  cleanupResources();
+  auto new_handler = std::make_unique<SigAlrmHandlerInstaller>();
+  sig_alrm_handler.swap(new_handler);
+  sig_alrm_handler_installer = sig_alrm_handler.get();
+}
+#endif  // defined(UNIT_TEST)
+
 
 // private methods of PosixTimer
 //----------------------------------------------------------------------

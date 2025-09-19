@@ -121,7 +121,7 @@ inline void IoMonitor::validate ( int file_descriptor, short events
     throw monitor_error{"Invalid file descriptor: must be >= 0 (got " +
                         std::to_string(file_descriptor) + ")"};
   if ( events == 0 )
-    throw monitor_error{"Invalid events: must specify at least one event type"};
+    throw monitor_error{"Invalid events: must specify at least one event type."};
 
   if ( ! hdl )
     throw monitor_error{"Handler cannot be null."};

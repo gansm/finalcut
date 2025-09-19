@@ -233,16 +233,18 @@ inline void SignalMonitor::installSignalHandler()
   static const auto& fsystem = FSystem::getInstance();
 
   if ( fsystem->sigaction( signal_number, &sig_action
-                         , getSigactionImpl()->getSigaction() ) != 0 )
+                         , getSigactionImpl()->getSigaction() ) != -1 )
   {
-    const int Error = errno;
-    static_cast<void>(fsystem->close(signal_pipe.getReadFd()));
-    static_cast<void>(fsystem->close(signal_pipe.getWriteFd()));
-    signal_pipe.reset();
-    const std::error_code err_code{Error, std::generic_category()};
-    const std::system_error sys_err{err_code, strerror(Error)};
-    throw sys_err;
+    return;
   }
+
+  const int Error = errno;
+  static_cast<void>(fsystem->close(signal_pipe.getReadFd()));
+  static_cast<void>(fsystem->close(signal_pipe.getWriteFd()));
+  signal_pipe.reset();
+  const std::error_code err_code{Error, std::generic_category()};
+  const std::system_error sys_err{err_code, strerror(Error)};
+  throw sys_err;
 }
 
 //----------------------------------------------------------------------

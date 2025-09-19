@@ -132,11 +132,32 @@ static auto getKqueue() -> const int&
 #endif
 
 //----------------------------------------------------------------------
+#if defined(UNIT_TEST)
+auto useAlternativeKqueueTimerID() -> bool&
+{
+  static bool use_alternative_kqueue_timer_id{false};
+  return use_alternative_kqueue_timer_id;
+}
+
+//----------------------------------------------------------------------
+auto alternativeKqueueTimerID() -> int&
+{
+  static int timer_id = 1;
+  return timer_id;
+}
+#endif  // defined(UNIT_TEST)
+
+//----------------------------------------------------------------------
 static auto getTimerID() -> int&
 {
   // Timer id generator (sequential number)
   static int timer_id = 0;
   static constexpr auto max = std::numeric_limits<int>::max();
+
+#if defined(UNIT_TEST)
+  if ( useAlternativeKqueueTimerID() )
+    return alternativeKqueueTimerID();
+#endif  // defined(UNIT_TEST)
 
   if ( timer_id < max )
     timer_id++;
@@ -374,15 +395,17 @@ void KqueueTimer::init()
     setFileDescriptor (getKqueue());
     setEvents (POLLIN);
     setHandler (KqueueHandler());
+
+    // Check timer
     timer_id = getTimerID();
+    auto timer = std::make_pair(timer_id, this);
+    validateTimer(timer);
+
+    // Add timer node
+    getTimerNodes().emplace(std::move(timer));
 
     // Add event
     getKEvents().emplace_back();
-
-    // Add timer node
-    auto timer = std::make_pair(timer_id, this);
-    validateTimer(timer);
-    getTimerNodes().emplace(std::move(timer));
 
     setInitialized();
   }
@@ -392,6 +415,7 @@ void KqueueTimer::init()
     throw;  // Re-throw the original exception
   }
 }
+
 //----------------------------------------------------------------------
 void KqueueTimer::cleanupResources() noexcept
 {
@@ -422,6 +446,10 @@ void KqueueTimer::cleanupResources() noexcept
   first_interval = true;
   timer_spec = TimerSpec{};
   timer_handler = handler_t{};
+  // Reset base class state
+  setHandler (handler_t{});
+  setEvents (0);
+  setFileDescriptor (Monitor::NO_FILE_DESCRIPTOR);
 }
 
 }  // namespace finalcut

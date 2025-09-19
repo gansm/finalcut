@@ -95,7 +95,11 @@ void drainPipe (FileDescriptor fd)
 //----------------------------------------------------------------------
 inline auto isValidFileDescriptor (FileDescriptor fd) noexcept -> bool
 {
+#if defined(UNIT_TEST)
+  return fd >= 0;
+#else
   return fd >= 0 && ::fcntl(fd, F_GETFD) != -1;
+#endif  // defined(UNIT_TEST)
 }
 
 //----------------------------------------------------------------------
