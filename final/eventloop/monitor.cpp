@@ -72,9 +72,9 @@ Monitor::~Monitor()  // destructor
     {
       eventloop->removeMonitor(this);
     }
-    catch (const monitor_error&)
+    catch (const monitor_error& ex)
     {
-      // Possible error handling
+      std::clog << "Exception on removing monitor: " << ex.what();
     }
   }
 

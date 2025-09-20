@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2024 Markus Gans                                      *
+* Copyright 2018-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -343,9 +343,6 @@ void FStringTest::moveConstructorTest()
   CPPUNIT_ASSERT_WCSTRING ( s2.wc_str(), L"abc" );
   CPPUNIT_ASSERT ( s2.getLength() == 3 );
   CPPUNIT_ASSERT ( s2.capacity() >= 3 );
-  CPPUNIT_ASSERT ( s1.isEmpty() );                               // s1 is used after move
-  CPPUNIT_ASSERT ( s1.getLength() == 0 );                        // s1 is used after move
-  CPPUNIT_ASSERT ( s1.capacity() < std::wstring().max_size() );  // s1 is used after move
 }
 
 //----------------------------------------------------------------------
@@ -520,9 +517,6 @@ void FStringTest::assignmentTest()
   CPPUNIT_ASSERT ( s13 == L"abc" );
   CPPUNIT_ASSERT ( s13.getLength() == 3 );
   CPPUNIT_ASSERT ( s13.capacity() >= 3 );
-  CPPUNIT_ASSERT ( s12.isEmpty() );                               // s11 is used after move
-  CPPUNIT_ASSERT ( s12.getLength() == 0 );                        // s11 is used after move
-  CPPUNIT_ASSERT ( s12.capacity() < std::wstring().max_size() );  // s11 is used after move
 }
 
 //----------------------------------------------------------------------

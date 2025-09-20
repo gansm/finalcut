@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2023 Markus Gans                                      *
+* Copyright 2020-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -136,8 +136,6 @@ void FStringStreamTest::moveConstructorTest()
   const finalcut::FStringStream ss2{std::move(ss1)};
   CPPUNIT_ASSERT ( ss2.str() == L"abc" );
   CPPUNIT_ASSERT ( ss2.str().getLength() == 3 );
-  CPPUNIT_ASSERT ( ss1.str().isEmpty() );         // ss1 is used after move
-  CPPUNIT_ASSERT ( ss1.str().getLength() == 0 );  // ss1 is used after move
 }
 
 //----------------------------------------------------------------------
@@ -148,8 +146,6 @@ void FStringStreamTest::assignmentTest()
   ss2 = std::move(ss1);
   CPPUNIT_ASSERT ( ss2.str() == L"xyz" );
   CPPUNIT_ASSERT ( ss2.str().getLength() == 3 );
-  CPPUNIT_ASSERT ( ss1.str().isEmpty() );         // ss1 is used after move
-  CPPUNIT_ASSERT ( ss1.str().getLength() == 0 );  // ss1 is used after move
 }
 
 //----------------------------------------------------------------------

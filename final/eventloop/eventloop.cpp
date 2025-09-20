@@ -50,8 +50,10 @@ auto EventLoop::run() -> int
         nonPollWaiting();
     }
   }
-  catch (...)
+  catch (const std::exception& ex)
   {
+    std::clog << "Exception on starting event loop: " << ex.what();
+
     running.store(false, std::memory_order_relaxed);
     return -1;
   }
@@ -83,7 +85,7 @@ void EventLoop::rebuildPollStructures()
   // Build poll structures from active monitors
   for (Monitor* monitor : monitors)
   {
-    if (monitor != nullptr && monitor->isActive())
+    if ( monitor && monitor->isActive() )
     {
       cached_fds.push_back({ monitor->getFileDescriptor()  // file descriptor
                            , monitor->getEvents()  // Requested events
