@@ -337,7 +337,6 @@ void PosixTimer::createAlarmPipe()
 
   // Set the read end of the pipe as our file descriptor
   setFileDescriptor(alarm_pipe.getReadFd());
-
 }
 
 //----------------------------------------------------------------------

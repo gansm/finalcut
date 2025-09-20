@@ -750,7 +750,6 @@ void TextWindow::appendColorEntry (finalcut::FColor color, const finalcut::FStri
   scrolltext.append(" ██ " + item_name);
   FTextHighlight hgl{1, 2, color_pair };
   scrolltext.addHighlight (last_line_index, hgl);
-
 }
 
 //----------------------------------------------------------------------

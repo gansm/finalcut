@@ -67,7 +67,16 @@ Monitor::~Monitor()  // destructor
   handler = nullptr;
 
   if ( eventloop )
-    eventloop->removeMonitor(this);
+  {
+    try
+    {
+      eventloop->removeMonitor(this);
+    }
+    catch (const monitor_error&)
+    {
+      // Possible error handling
+    }
+  }
 
   user_context.reset();  // Clear user context
 }
