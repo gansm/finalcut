@@ -35,16 +35,16 @@ namespace finalcut
 
 // public methods of FSize
 //----------------------------------------------------------------------
-auto FSize::operator += (const FSize& s) -> FSize&
+auto FSize::operator += (const FSize& s) noexcept -> FSize&
 {
-  static constexpr std::size_t max = std::numeric_limits<std::size_t>::max();
+  static constexpr size_type max = std::numeric_limits<size_type>::max();
   width = ( width < max - s.width) ? width + s.width : max;
   height = ( height < max - s.height) ? height + s.height : max;
   return *this;
 }
 
 //----------------------------------------------------------------------
-auto FSize::operator -= (const FSize& s) -> FSize&
+auto FSize::operator -= (const FSize& s) noexcept -> FSize&
 {
   width = ( width >= s.width ) ? width - s.width : 0;
   height = ( height >= s.height ) ? height - s.height : 0;
@@ -56,21 +56,23 @@ void FSize::scaleBy (int dx, int dy) noexcept
 {
   if ( dx < 0 )
   {
-    width = ( std::size_t(-dx) < width )
-            ? width - std::size_t(-dx)
-            : std::size_t(-dx) - width;
+    const auto minus_dx = size_type(-dx);
+    width = ( minus_dx < width )
+            ? width - minus_dx
+            : minus_dx - width;
   }
   else
-    width += std::size_t(dx);
+    width += size_type(dx);
 
   if ( dy < 0 )
   {
-    height = ( std::size_t(-dy) < height )
-             ? height - std::size_t(-dy)
-             : std::size_t(-dy) - height;
+    const auto minus_dy = size_type(-dy);
+    height = ( minus_dy < height )
+             ? height - minus_dy
+             : minus_dy - height;
   }
   else
-    height += std::size_t(dy);
+    height += size_type(dy);
 }
 
 //----------------------------------------------------------------------

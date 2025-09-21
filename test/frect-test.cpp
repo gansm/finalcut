@@ -57,6 +57,7 @@ class FRectTest : public CPPUNIT_NS::TestFixture
     void overlapTest();
     void intersectTest();
     void combinedTest();
+    void swapTest();
     void streamInsertionTest();
     void streamExtractionTest();
 
@@ -81,6 +82,7 @@ class FRectTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (overlapTest);
     CPPUNIT_TEST (intersectTest);
     CPPUNIT_TEST (combinedTest);
+    CPPUNIT_TEST (swapTest);
     CPPUNIT_TEST (streamInsertionTest);
     CPPUNIT_TEST (streamExtractionTest);
 
@@ -596,6 +598,37 @@ void FRectTest::combinedTest()
   CPPUNIT_ASSERT ( r3.getSize() == finalcut::FSize(8, 6) );
   CPPUNIT_ASSERT ( r3.getX2() == 8 );
   CPPUNIT_ASSERT ( r3.getY2() == 7 );
+}
+
+//----------------------------------------------------------------------
+void FRectTest::swapTest()
+{
+  finalcut::FRect r1 (12, 16, 11, 12);
+  CPPUNIT_ASSERT ( r1.getX() == 12 );
+  CPPUNIT_ASSERT ( r1.getY() == 16 );
+  CPPUNIT_ASSERT ( r1.getWidth() == 11 );
+  CPPUNIT_ASSERT ( r1.getHeight() == 12 );
+
+  finalcut::FRect r2 (22, 33, 5, 6);
+  r1.swap(r2);
+  CPPUNIT_ASSERT ( r1.getX() == 22 );
+  CPPUNIT_ASSERT ( r1.getY() == 33 );
+  CPPUNIT_ASSERT ( r1.getWidth() == 5 );
+  CPPUNIT_ASSERT ( r1.getHeight() == 6 );
+  CPPUNIT_ASSERT ( r2.getX() == 12 );
+  CPPUNIT_ASSERT ( r2.getY() == 16 );
+  CPPUNIT_ASSERT ( r2.getWidth() == 11 );
+  CPPUNIT_ASSERT ( r2.getHeight() == 12 );
+
+  r2.swap (r1);
+  CPPUNIT_ASSERT ( r1.getX() == 12 );
+  CPPUNIT_ASSERT ( r1.getY() == 16 );
+  CPPUNIT_ASSERT ( r1.getWidth() == 11 );
+  CPPUNIT_ASSERT ( r1.getHeight() == 12 );
+  CPPUNIT_ASSERT ( r2.getX() == 22 );
+  CPPUNIT_ASSERT ( r2.getY() == 33 );
+  CPPUNIT_ASSERT ( r2.getWidth() == 5 );
+  CPPUNIT_ASSERT ( r2.getHeight() == 6 );
 }
 
 //----------------------------------------------------------------------

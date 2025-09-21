@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2024 Markus Gans                                      *
+* Copyright 2014-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -33,24 +33,6 @@ namespace finalcut
 //----------------------------------------------------------------------
 // class FRect
 //----------------------------------------------------------------------
-
-// constructor and destructor
-//----------------------------------------------------------------------
-FRect::FRect (const FPoint& p, const FSize& s) noexcept
-  : X1{p.getX()}
-  , Y1{p.getY()}
-  , X2{p.getX() + int(s.getWidth()) - 1}
-  , Y2{p.getY() + int(s.getHeight()) - 1}
-{ }
-
-//----------------------------------------------------------------------
-FRect::FRect (const FPoint& p1, const FPoint& p2) noexcept
-  : X1{p1.getX()}
-  , Y1{p1.getY()}
-  , X2{p2.getX()}
-  , Y2{p2.getY()}
-{ }
-
 
 // public methods of FRect
 //----------------------------------------------------------------------

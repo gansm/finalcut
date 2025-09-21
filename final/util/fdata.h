@@ -210,22 +210,22 @@ class FData : public FDataAccess
   public:
     // Using-declarations
     using value_type      = T;
-    using reference       = T&;
-    using const_reference = const T&;
+    using reference       = value_type&;
+    using const_reference = const value_type&;
     using T_nocv          = std::remove_cv_t<value_type>;
 
     // Static assertions for better error messages
-    static_assert ( ! std::is_void<T>::value
+    static_assert ( ! std::is_void<value_type>::value
                   , "FData cannot store void types") ;
-    static_assert ( ! std::is_reference<T>::value
+    static_assert ( ! std::is_reference<value_type>::value
                   , "FData cannot store reference types directly" );
 
     // Constructors
-    explicit FData (T& v)  // constructor
+    explicit FData (value_type& v)  // constructor
       : value_ref{v}
     { }
 
-    explicit FData (T&& v)  // constructor
+    explicit FData (value_type&& v)  // constructor
       : value{std::move(v)}
       , value_ref{value}
     { }
@@ -308,12 +308,12 @@ class FData : public FDataAccess
     }
 
     // Mutator
-    constexpr void set (const T& v)
+    constexpr void set (const value_type& v)
     {
       value_ref.get() = v;
     }
 
-    constexpr void set (T&& v)
+    constexpr void set (value_type&& v)
     {
       value_ref.get() = std::move(v);
     }

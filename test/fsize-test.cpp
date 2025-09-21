@@ -59,6 +59,7 @@ class FSizeTest : public CPPUNIT_NS::TestFixture
     void areaTest();
     void referenceTest();
     void scaleTest();
+    void swapTest();
     void streamInsertionTest();
     void streamExtractionTest();
 
@@ -83,6 +84,7 @@ class FSizeTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (areaTest);
     CPPUNIT_TEST (referenceTest);
     CPPUNIT_TEST (scaleTest);
+    CPPUNIT_TEST (swapTest);
     CPPUNIT_TEST (streamInsertionTest);
     CPPUNIT_TEST (streamExtractionTest);
 
@@ -403,6 +405,27 @@ void FSizeTest::scaleTest()
   CPPUNIT_ASSERT ( s1.getWidth() == 5 );
   CPPUNIT_ASSERT ( s1.getHeight() == 5 );
   CPPUNIT_ASSERT ( s1 == finalcut::FSize(5, 5) );
+}
+
+//----------------------------------------------------------------------
+void FSizeTest::swapTest()
+{
+  finalcut::FSize s1 (11, 12);
+  CPPUNIT_ASSERT ( s1.getWidth() == 11 );
+  CPPUNIT_ASSERT ( s1.getHeight() == 12 );
+
+  finalcut::FSize s2 (5, 6);
+  s1.swap(s2);
+  CPPUNIT_ASSERT ( s1.getWidth() == 5 );
+  CPPUNIT_ASSERT ( s1.getHeight() == 6 );
+  CPPUNIT_ASSERT ( s2.getWidth() == 11 );
+  CPPUNIT_ASSERT ( s2.getHeight() == 12 );
+
+  s2.swap (s1);
+  CPPUNIT_ASSERT ( s1.getWidth() == 11 );
+  CPPUNIT_ASSERT ( s1.getHeight() == 12 );
+  CPPUNIT_ASSERT ( s2.getWidth() == 5 );
+  CPPUNIT_ASSERT ( s2.getHeight() == 6 );
 }
 
 //----------------------------------------------------------------------

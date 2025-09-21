@@ -55,84 +55,110 @@ class FPoint;
 class FSize
 {
   public:
+    // Using-declarations
+    using size_type       = std::size_t;
+    using size_reference  = size_type&;
+    using area_type       = std::size_t;
+
     // Constructors
-    FSize () noexcept = default;
-    template<typename WidthT, typename HeightT>
-    FSize (WidthT, HeightT) noexcept;
+    constexpr FSize () noexcept = default;
+
+    template<typename WidthT, typename HeightT
+           , typename = std::enable_if_t< std::is_arithmetic<WidthT>::value
+                                       && std::is_arithmetic<HeightT>::value >>
+    constexpr FSize (WidthT, HeightT) noexcept;
+
+    // Copy constructor
+    constexpr FSize (const FSize&) noexcept = default;
+
+    // Move constructor
+    constexpr FSize (FSize&&) noexcept = default;
+
+    // Destructor
+    ~FSize() noexcept = default;
+
+    // Copy assignment operator (=)
+    constexpr auto operator = (const FSize&) noexcept -> FSize& = default;
+
+    // Move assignment operator (=)
+    constexpr auto operator = (FSize&&) noexcept -> FSize& = default;
 
     // Overloaded operators
-    auto operator += (const FSize&) -> FSize&;
-    auto operator -= (const FSize&) -> FSize&;
+    auto operator += (const FSize&) noexcept -> FSize&;
+    auto operator -= (const FSize&) noexcept -> FSize&;
 
     // Accessors
     auto getClassName() const -> FString;
-    auto getWidth() const noexcept -> std::size_t;
-    auto getHeight() const noexcept -> std::size_t;
-    auto getArea() const noexcept -> std::size_t;
-    void setWidth (std::size_t) noexcept;
-    void setHeight (std::size_t) noexcept;
-    void setSize (const FSize&) noexcept;
-    void setSize (std::size_t, std::size_t) noexcept;
+    constexpr auto getWidth() const noexcept -> size_type;
+    constexpr auto getHeight() const noexcept -> size_type;
+    constexpr auto getArea() const noexcept -> area_type;
+
+    // Mutators
+    constexpr void setWidth (size_type) noexcept;
+    constexpr void setHeight (size_type) noexcept;
+    constexpr void setSize (const FSize&) noexcept;
+    constexpr void setSize (size_type, size_type) noexcept;
 
     // Inquiry
-    auto isEmpty() const noexcept -> bool;
+    constexpr auto isEmpty() const noexcept -> bool;
 
     // Side references
-    auto width_ref() & noexcept -> std::size_t&;
-    auto height_ref() & noexcept -> std::size_t&;
+    constexpr auto width_ref() & noexcept -> size_reference;
+    constexpr auto height_ref() & noexcept -> size_reference;
 
     // Methods
     void scaleBy (int, int) noexcept;
     void scaleBy (const FPoint&) noexcept;
+    constexpr void swap (FSize&) noexcept;
 
   private:
     // Data members
-    std::size_t width{0};
-    std::size_t height{0};
+    size_type width{0};
+    size_type height{0};
 
     // Friend operator functions
-    friend inline auto operator < (const FSize& s1, const FSize& s2) -> bool
+    friend constexpr auto operator < (const FSize& s1, const FSize& s2) -> bool
     {
       return s1.width < s2.width && s1.height < s2.height;
     }
 
-    friend inline auto operator <= (const FSize& s1, const FSize& s2) -> bool
+    friend constexpr auto operator <= (const FSize& s1, const FSize& s2) -> bool
     {
       return s1.width <= s2.width && s1.height <= s2.height;
     }
 
-    friend inline auto operator == (const FSize& s1, const FSize& s2) -> bool
+    friend constexpr auto operator == (const FSize& s1, const FSize& s2) -> bool
     {
       return s1.width == s2.width && s1.height == s2.height;
     }
 
-    friend inline auto operator != (const FSize& s1, const FSize& s2) -> bool
+    friend constexpr auto operator != (const FSize& s1, const FSize& s2) -> bool
     {
       return s1.width != s2.width || s1.height != s2.height;
     }
 
-    friend inline auto operator >= (const FSize& s1, const FSize& s2) -> bool
+    friend constexpr auto operator >= (const FSize& s1, const FSize& s2) -> bool
     {
       return s1.width >= s2.width && s1.height >= s2.height;
     }
 
-    friend inline auto operator > (const FSize& s1, const FSize& s2) -> bool
+    friend constexpr auto operator > (const FSize& s1, const FSize& s2) -> bool
     {
       return s1.width > s2.width && s1.height > s2.height;
     }
 
-    friend inline auto operator + (const FSize& s1, const FSize& s2) -> FSize
+    friend constexpr auto operator + (const FSize& s1, const FSize& s2) -> FSize
     {
-      static constexpr std::size_t max = std::numeric_limits<std::size_t>::max();
-      const std::size_t w = ( s1.width < max - s2.width) ? s1.width + s2.width : max;
-      const std::size_t h = ( s1.height < max - s2.height) ? s1.height + s2.height : max;
+      constexpr size_type max = std::numeric_limits<size_type>::max();
+      const size_type w = ( s1.width < max - s2.width) ? s1.width + s2.width : max;
+      const size_type h = ( s1.height < max - s2.height) ? s1.height + s2.height : max;
       return { FSize{w, h} };
     }
 
-    friend inline auto operator - (const FSize& s1, const FSize& s2) -> FSize
+    friend constexpr auto operator - (const FSize& s1, const FSize& s2) -> FSize
     {
-      const std::size_t w = ( s1.width >= s2.width ) ? s1.width - s2.width : 0;
-      const std::size_t h = ( s1.height >= s2.height ) ? s1.height - s2.height : 0;
+      const size_type w = ( s1.width >= s2.width ) ? s1.width - s2.width : 0;
+      const size_type h = ( s1.height >= s2.height ) ? s1.height - s2.height : 0;
       return { FSize{w, h} };
     }
 
@@ -144,21 +170,22 @@ class FSize
 
     friend inline auto operator >> (std::istream& instr, FSize& s) -> std::istream&
     {
-      std::size_t w;
-      std::size_t h;
-      instr >> w;
-      instr >> h;
-      s.setSize (w, h);
+      size_type w{};
+      size_type h{};
+
+      if ( instr >> w >> h )
+        s.setSize (w, h);
+
       return instr;
     }
 };
 
 // FSize inline functions
 //----------------------------------------------------------------------
-template<typename WidthT, typename HeightT>
-inline FSize::FSize (WidthT w, HeightT h) noexcept
-  : width{static_cast<std::size_t>(w > 0 ? w : 0)}
-  , height{static_cast<std::size_t>(h > 0 ? h : 0)}
+template<typename WidthT, typename HeightT, typename>
+constexpr FSize::FSize (WidthT w, HeightT h) noexcept
+  : width{static_cast<size_type>(w > 0 ? w : 0)}
+  , height{static_cast<size_type>(h > 0 ? h : 0)}
 { }
 
 //----------------------------------------------------------------------
@@ -166,50 +193,61 @@ inline auto FSize::getClassName() const -> FString
 { return "FSize"; }
 
 //----------------------------------------------------------------------
-inline auto FSize::getWidth() const noexcept -> std::size_t
+constexpr auto FSize::getWidth() const noexcept -> size_type
 { return width; }
 
 //----------------------------------------------------------------------
-inline auto FSize::getHeight() const noexcept -> std::size_t
+constexpr auto FSize::getHeight() const noexcept -> size_type
 { return height; }
 
 //----------------------------------------------------------------------
-inline auto FSize::getArea() const noexcept -> std::size_t
+constexpr auto FSize::getArea() const noexcept -> area_type
 { return width * height; }
 
 //----------------------------------------------------------------------
-inline void FSize::setWidth (std::size_t w) noexcept
+constexpr void FSize::setWidth (size_type w) noexcept
 { width = w; }
 
 //----------------------------------------------------------------------
-inline void FSize::setHeight (std::size_t h) noexcept
+constexpr void FSize::setHeight (size_type h) noexcept
 { height = h; }
 
 //----------------------------------------------------------------------
-inline void FSize::setSize (const FSize& s) noexcept
+constexpr void FSize::setSize (const FSize& s) noexcept
 {
   width = s.width;
   height = s.height;
 }
 
 //----------------------------------------------------------------------
-inline void FSize::setSize (std::size_t w, std::size_t h) noexcept
+constexpr void FSize::setSize (size_type w, size_type h) noexcept
 {
   width = w;
   height = h;
 }
 
 //----------------------------------------------------------------------
-inline auto FSize::isEmpty() const noexcept -> bool
+constexpr auto FSize::isEmpty() const noexcept -> bool
 { return width == 0 && height == 0; }
 
 //----------------------------------------------------------------------
-inline auto FSize::width_ref() & noexcept -> std::size_t&
+constexpr auto FSize::width_ref() & noexcept -> size_reference
 { return width; }
 
 //----------------------------------------------------------------------
-inline auto FSize::height_ref() & noexcept -> std::size_t&
+constexpr auto FSize::height_ref() & noexcept -> size_reference
 { return height; }
+
+//----------------------------------------------------------------------
+constexpr void FSize::swap (FSize& s) noexcept
+{
+  size_type tmp_width{width};
+  size_type tmp_height{height};
+  width = s.width;
+  height = s.height;
+  s.width = tmp_width;
+  s.height = tmp_height;
+}
 
 }  // namespace finalcut
 

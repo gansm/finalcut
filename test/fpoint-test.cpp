@@ -56,6 +56,7 @@ class FPointTest : public CPPUNIT_NS::TestFixture
     void subtractionTest();
     void referenceTest();
     void moveTest();
+    void swapTest();
     void streamInsertionTest();
     void streamExtractionTest();
 
@@ -77,6 +78,7 @@ class FPointTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (subtractionTest);
     CPPUNIT_TEST (referenceTest);
     CPPUNIT_TEST (moveTest);
+    CPPUNIT_TEST (swapTest);
     CPPUNIT_TEST (streamInsertionTest);
     CPPUNIT_TEST (streamExtractionTest);
 
@@ -322,6 +324,27 @@ void FPointTest::moveTest()
   p1.move (-2, -7);
   CPPUNIT_ASSERT ( p1.getX() == 4 );
   CPPUNIT_ASSERT ( p1.getY() == -1 );
+}
+
+//----------------------------------------------------------------------
+void FPointTest::swapTest()
+{
+  finalcut::FPoint p1 (12, 16);
+  CPPUNIT_ASSERT ( p1.getX() == 12 );
+  CPPUNIT_ASSERT ( p1.getY() == 16 );
+
+  finalcut::FPoint p2 (22, 33);
+  p1.swap(p2);
+  CPPUNIT_ASSERT ( p1.getX() == 22 );
+  CPPUNIT_ASSERT ( p1.getY() == 33 );
+  CPPUNIT_ASSERT ( p2.getX() == 12 );
+  CPPUNIT_ASSERT ( p2.getY() == 16 );
+
+  p2.swap (p1);
+  CPPUNIT_ASSERT ( p1.getX() == 12 );
+  CPPUNIT_ASSERT ( p1.getY() == 16 );
+  CPPUNIT_ASSERT ( p2.getX() == 22 );
+  CPPUNIT_ASSERT ( p2.getY() == 33 );
 }
 
 //----------------------------------------------------------------------

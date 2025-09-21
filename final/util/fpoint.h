@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2024 Markus Gans                                      *
+* Copyright 2014-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -50,9 +50,28 @@ namespace finalcut
 class FPoint
 {
   public:
+    // Using-declarations
+    using coordinate_type      = int;
+    using coordinate_reference = coordinate_type&;
+
     // Constructors
-    FPoint () noexcept = default;
-    FPoint (int, int) noexcept;
+    constexpr FPoint () noexcept = default;
+    constexpr FPoint (coordinate_type, coordinate_type) noexcept;
+
+    // Copy constructor
+    constexpr FPoint (const FPoint&) noexcept = default;
+
+    // Move constructor
+    constexpr FPoint (FPoint&&) noexcept = default;
+
+    // Destructor
+    ~FPoint() noexcept = default;
+
+    // Copy assignment operator (=)
+    constexpr auto operator = (const FPoint&) noexcept -> FPoint& = default;
+
+    // Move assignment operator (=)
+    constexpr auto operator = (FPoint&&) noexcept -> FPoint& = default;
 
     // Overloaded operators
     auto operator += (const FPoint&) -> FPoint&;
@@ -60,51 +79,54 @@ class FPoint
 
     // Accessors
     auto getClassName() const -> FString;
-    auto getX() const noexcept -> int;
-    auto getY() const noexcept -> int;
-    void setX (int) noexcept;
-    void setY (int) noexcept;
-    void setPoint (const FPoint&) noexcept;
-    void setPoint (int, int) noexcept;
+    constexpr auto getX() const noexcept -> coordinate_type;
+    constexpr auto getY() const noexcept -> coordinate_type;
+
+    // Mutators
+    constexpr void setX (coordinate_type) noexcept;
+    constexpr void setY (coordinate_type) noexcept;
+    constexpr void setPoint (const FPoint&) noexcept;
+    constexpr void setPoint (coordinate_type, coordinate_type) noexcept;
 
     // Inquiry
-    auto isOrigin() const noexcept -> bool;
+    constexpr auto isOrigin() const noexcept -> bool;
 
     // Point references
-    auto x_ref() & noexcept -> int&;
-    auto y_ref() & noexcept -> int&;
+    constexpr auto x_ref() & noexcept -> coordinate_type&;
+    constexpr auto y_ref() & noexcept -> coordinate_type&;
 
     // Methods
-    void move (int, int) noexcept;
-    void move (const FPoint&) noexcept;
+    constexpr void move (coordinate_type, coordinate_type) noexcept;
+    constexpr void move (const FPoint&) noexcept;
+    constexpr void swap (FPoint&) noexcept;
 
   private:
     // Data members
-    int xpos{0};
-    int ypos{0};
+    coordinate_type xpos{0};
+    coordinate_type ypos{0};
 
     // Friend operator functions
-    friend inline auto operator == (const FPoint& p1, const FPoint& p2) -> bool
+    friend constexpr auto operator == (const FPoint& p1, const FPoint& p2) -> bool
     {
       return p1.xpos == p2.xpos && p1.ypos == p2.ypos;
     }
 
-    friend inline auto operator != (const FPoint& p1, const FPoint& p2) -> bool
+    friend constexpr auto operator != (const FPoint& p1, const FPoint& p2) -> bool
     {
-      return p1.xpos != p2.xpos || p1.ypos != p2.ypos;
+      return ! ( p1 == p2 );
     }
 
-    friend inline auto operator + (const FPoint& p1, const FPoint& p2) -> FPoint
+    friend constexpr auto operator + (const FPoint& p1, const FPoint& p2) -> FPoint
     {
       return {p1.xpos + p2.xpos, p1.ypos + p2.ypos};
     }
 
-    friend inline auto operator - (const FPoint& p1, const FPoint& p2) -> FPoint
+    friend constexpr auto operator - (const FPoint& p1, const FPoint& p2) -> FPoint
     {
       return {p1.xpos - p2.xpos, p1.ypos - p2.ypos};
     }
 
-    friend inline auto operator - (const FPoint& p) -> FPoint
+    friend constexpr auto operator - (const FPoint& p) -> FPoint
     {
       return {-p.xpos, -p.ypos};
     }
@@ -117,11 +139,12 @@ class FPoint
 
     friend inline auto operator >> (std::istream& instr, FPoint& p) -> std::istream&
     {
-      int x{};
-      int y{};
-      instr >> x;
-      instr >> y;
-      p.setPoint (x, y);
+      coordinate_type x{};
+      coordinate_type y{};
+
+      if ( instr >> x >> y )
+        p.setPoint (x, y);
+
       return instr;
     }
 };
@@ -129,7 +152,7 @@ class FPoint
 
 // FPoint inline functions
 //----------------------------------------------------------------------
-inline FPoint::FPoint (int x, int y) noexcept
+constexpr FPoint::FPoint (coordinate_type x, coordinate_type y) noexcept
   : xpos{x}
   , ypos{y}
 { }
@@ -139,56 +162,67 @@ inline auto FPoint::getClassName() const -> FString
 { return "FPoint"; }
 
 //----------------------------------------------------------------------
-inline auto FPoint::getX() const noexcept -> int
+constexpr auto FPoint::getX() const noexcept -> coordinate_type
 { return xpos; }
 
 //----------------------------------------------------------------------
-inline auto FPoint::getY() const noexcept -> int
+constexpr auto FPoint::getY() const noexcept -> coordinate_type
 { return ypos; }
 
 //----------------------------------------------------------------------
-inline void FPoint::setX (int x) noexcept
+constexpr void FPoint::setX (coordinate_type x) noexcept
 { xpos = x; }
 
 //----------------------------------------------------------------------
-inline void FPoint::setY (int y) noexcept
+constexpr void FPoint::setY (coordinate_type y) noexcept
 { ypos = y; }
 
 //----------------------------------------------------------------------
-inline void FPoint::setPoint (const FPoint& p) noexcept
+constexpr void FPoint::setPoint (const FPoint& p) noexcept
 { setPoint(p.xpos, p.ypos); }
 
 //----------------------------------------------------------------------
-inline void FPoint::setPoint (int x, int y) noexcept
+constexpr void FPoint::setPoint (coordinate_type x, coordinate_type y) noexcept
 {
   xpos = x;
   ypos = y;
 }
 
 //----------------------------------------------------------------------
-inline auto FPoint::isOrigin() const noexcept -> bool
+constexpr auto FPoint::isOrigin() const noexcept -> bool
 { return xpos == 0 && ypos == 0; }
 
 //----------------------------------------------------------------------
-inline auto FPoint::x_ref() & noexcept -> int&
+constexpr auto FPoint::x_ref() & noexcept -> coordinate_reference
 { return xpos; }
 
 //----------------------------------------------------------------------
-inline auto FPoint::y_ref() & noexcept -> int&
+constexpr auto FPoint::y_ref() & noexcept -> coordinate_reference
 { return ypos; }
 
 //----------------------------------------------------------------------
-inline void FPoint::move (int dx, int dy) noexcept
+constexpr void FPoint::move (coordinate_type dx, coordinate_type dy) noexcept
 {
   xpos += dx;
   ypos += dy;
 }
 
 //----------------------------------------------------------------------
-inline void FPoint::move (const FPoint& d) noexcept
+constexpr void FPoint::move (const FPoint& d) noexcept
 {
   xpos += d.getX();
   ypos += d.getY();
+}
+
+//----------------------------------------------------------------------
+constexpr void FPoint::swap (FPoint& p) noexcept
+{
+  coordinate_type tmp_x{xpos};
+  coordinate_type tmp_y{ypos};
+  xpos = p.xpos;
+  ypos = p.ypos;
+  p.xpos = tmp_x;
+  p.ypos = tmp_y;
 }
 
 }  // namespace finalcut
