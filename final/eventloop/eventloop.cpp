@@ -50,7 +50,7 @@ auto EventLoop::run() -> int
         nonPollWaiting();
     }
   }
-  catch (const std::exception& ex)
+  catch (const monitor_error& ex)
   {
     std::clog << "Exception on starting event loop: " << ex.what();
 

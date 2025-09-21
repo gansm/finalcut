@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2023 Markus Gans                                      *
+* Copyright 2020-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -40,6 +40,10 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <functional>
+#include <memory>
+#include <stdexcept>
+#include <type_traits>
 #include <utility>
 
 #include "final/util/fstring.h"
@@ -56,8 +60,8 @@ namespace internal
 {
 
 // Enumerations
-enum class IsArray { No, Yes };
-enum class IsFunction { No, Yes };
+enum class IsArray : bool { No, Yes };
+enum class IsFunction : bool { No, Yes };
 
 // Define the clean condition
 template <typename T
@@ -97,6 +101,19 @@ struct cleanCondition<T, IsArray::No, IsFunction::Yes>
 template<typename T>
 using cleanCondition_t = typename cleanCondition<T>::type;
 
+// Type trait helpers for better error messages
+//----------------------------------------------------------------------
+template<typename T>
+struct is_reference_wrapper : std::false_type
+{ };
+
+template<typename T>
+struct is_reference_wrapper<std::reference_wrapper<T>> : std::true_type
+{ };
+
+template<typename T>
+constexpr bool is_reference_wrapper_v = is_reference_wrapper<T>::value;
+
 }  // namespace internal
 
 //----------------------------------------------------------------------
@@ -109,6 +126,12 @@ class cleanFData
   public:
     // Similar to std::decay, but keeps const and volatile
     using type = internal::cleanCondition_t<remove_ref>;
+
+    // Static assertions for better error messages
+    static_assert ( ! std::is_void<remove_ref>::value
+                  , "FData cannot store void types" );
+    static_assert ( ! internal::is_reference_wrapper_v<remove_ref>
+                  , "FData cannot store reference_wrapper types directly" );
 };
 
 //----------------------------------------------------------------------
@@ -119,6 +142,10 @@ using clean_fdata_t = typename cleanFData<T>::type;
 template <typename T>
 constexpr auto makeFData (T&& data) -> FData<clean_fdata_t<T>>*
 {
+  using CleanT = clean_fdata_t<T>;
+  static_assert ( std::is_constructible<CleanT, T&&>::value
+                , "Cannot construct FData with the provided type" );
+
   return new FData<clean_fdata_t<T>>(std::forward<T>(data));
 }
 
@@ -145,7 +172,19 @@ class FDataAccess
     template<typename T>
     constexpr auto get() -> clean_fdata_t<T>&
     {
-      return static_cast<FData<clean_fdata_t<T>>&>(*this).get();
+      static_assert ( ! std::is_void<T>::value
+                    , "Cannot get void type from FDataAccess" );
+
+      return static_cast<FData<clean_fdata_t<T>>*>(this)->get();
+    }
+
+    template<typename T>
+    constexpr auto get() const -> const clean_fdata_t<T>&
+    {
+      static_assert ( ! std::is_void<T>::value
+                    , "Cannot get void type from FDataAccess" );
+
+      return static_cast<const FData<clean_fdata_t<T>>*>(this)->get();
     }
 
     // Mutator
@@ -153,7 +192,10 @@ class FDataAccess
             , typename V>
     constexpr void set (V&& data)
     {
-      static_cast<FData<T>&>(*this).set(std::forward<V>(data));
+      static_assert ( std::is_convertible<V&&, T>::value
+                    , "Type V must be convertible to type T" );
+
+      static_cast<FData<T>*>(this)->set(std::forward<V>(data));
     }
 };
 
@@ -166,7 +208,17 @@ template <typename T>
 class FData : public FDataAccess
 {
   public:
-    using T_nocv = std::remove_cv_t<T>;
+    // Using-declarations
+    using value_type      = T;
+    using reference       = T&;
+    using const_reference = const T&;
+    using T_nocv          = std::remove_cv_t<value_type>;
+
+    // Static assertions for better error messages
+    static_assert ( ! std::is_void<T>::value
+                  , "FData cannot store void types") ;
+    static_assert ( ! std::is_reference<T>::value
+                  , "FData cannot store reference types directly" );
 
     // Constructors
     explicit FData (T& v)  // constructor
@@ -190,8 +242,8 @@ class FData : public FDataAccess
       , value_ref{d.isInitializedCopy() ? std::ref(value) : std::move(d.value_ref)}
     { }
 
-    // Overloaded operators
-    auto operator = (const FData& d) -> FData&  // Copy assignment operator (=)
+    // Copy assignment operator (=)
+    auto operator = (const FData& d) -> FData&
     {
       if ( &d != this )
       {
@@ -206,7 +258,8 @@ class FData : public FDataAccess
       return *this;
     }
 
-    auto operator = (FData&& d) noexcept -> FData&  // Move assignment operator (=)
+    // Move assignment operator (=)
+    auto operator = (FData&& d) noexcept -> FData&
     {
       if ( &d != this )
       {
@@ -221,17 +274,18 @@ class FData : public FDataAccess
       return *this;
     }
 
-    constexpr auto operator () () const -> T
+    // Function call operator
+    constexpr auto operator () () const -> value_type
     {
       return value_ref;
     }
 
-    constexpr explicit operator T () const
+    constexpr explicit operator value_type () const
     {
       return value_ref;
     }
 
-    constexpr auto operator << (const T& v) -> FData&
+    constexpr auto operator << (const_reference v) -> FData&
     {
       value_ref.get() = v;
       return *this;
@@ -243,15 +297,25 @@ class FData : public FDataAccess
       return "FData";
     }
 
-    constexpr auto get() const -> T&
+    constexpr auto get() const noexcept -> const_reference
     {
-      return value_ref;
+      return value_ref.get();
+    }
+
+    constexpr auto get() noexcept -> reference
+    {
+      return value_ref.get();
     }
 
     // Mutator
     constexpr void set (const T& v)
     {
       value_ref.get() = v;
+    }
+
+    constexpr void set (T&& v)
+    {
+      value_ref.get() = std::move(v);
     }
 
     // Inquiries
@@ -276,8 +340,8 @@ class FData : public FDataAccess
 
   private:
     // Data members
-    T value{};
-    std::reference_wrapper<T> value_ref;
+    value_type value{};
+    std::reference_wrapper<value_type> value_ref;
 };
 
 }  // namespace finalcut

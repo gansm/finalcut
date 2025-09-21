@@ -358,7 +358,7 @@ void FDataTest::makeFDataTest()
 
   // Function
   data_pointer = finalcut::makeFData(my_function2);
-  const auto& func = static_cast<finalcut::FData<finalcut::clean_fdata_t<long int (*) (long int)>>&>(*data_pointer).get();
+  auto& func = static_cast<finalcut::FData<finalcut::clean_fdata_t<long int (*) (long int)>>&>(*data_pointer).get();
   CPPUNIT_ASSERT ( func(128) == 256 );
   data_pointer->set<long int (*) (long int)>(&my_function3);
   CPPUNIT_ASSERT ( func(128) == 384 );
