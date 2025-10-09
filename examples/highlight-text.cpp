@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2022-2024 Markus Gans                                      *
+* Copyright 2022-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -305,7 +305,7 @@ auto TextWindow::find_matches ( const finalcut::FString& string
 {
   MatchList matches{};
   const auto search_length = search.getLength();
-  StringPos end = std::wstring::npos;
+  const StringPos end = finalcut::FString::npos;
   StringPos first = 0;
   StringPos last;
 

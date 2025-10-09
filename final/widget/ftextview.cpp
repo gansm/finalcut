@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2024 Markus Gans                                      *
+* Copyright 2014-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -463,14 +463,14 @@ void FTextView::onMouseDoubleClick (FMouseEvent* ev)
   auto start_pos = string.find_last_of( select_exclusion_chars
                                       , selection_start.column );
 
-  if ( start_pos == std::wstring::npos )
+  if ( start_pos == FString::npos )
     start_pos = 0;
   else if ( start_pos != selection_start.column )
     start_pos++;
 
   auto end_pos = string.find_first_of(select_exclusion_chars, start_pos);
 
-  if ( end_pos == std::wstring::npos )
+  if ( end_pos == FString::npos )
     end_pos = string.length();
 
   selection_start.column = start_pos;

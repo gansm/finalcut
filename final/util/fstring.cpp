@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2024 Markus Gans                                      *
+* Copyright 2012-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -45,21 +45,21 @@ const wchar_t FString::const_null_char{L'\0'};
 FString::FString (int len)
 {
   if ( len > 0 )
-    string = std::wstring(std::size_t(len), L'\0');
+    string = std::wstring(size_type(len), L'\0');
 }
 
 //----------------------------------------------------------------------
-FString::FString (std::size_t len)
+FString::FString (size_type len)
   : string{std::wstring(len, L'\0')}
 { }
 
 //----------------------------------------------------------------------
-FString::FString (std::size_t len, wchar_t c)
+FString::FString (size_type len, wchar_t c)
   : string{std::wstring(len, c)}
 { }
 
 //----------------------------------------------------------------------
-FString::FString (std::size_t len, const UniChar& c)
+FString::FString (size_type len, const UniChar& c)
   : FString(len, wchar_t(c))
 { }
 
@@ -206,13 +206,13 @@ auto FString::operator << (const char c) -> FString&
 }
 
 //----------------------------------------------------------------------
-FString::operator bool () const
+FString::operator bool () const noexcept
 {
   return ! isEmpty();
 }
 
 //----------------------------------------------------------------------
-auto FString::operator () () const -> const FString&
+auto FString::operator () () const noexcept -> const FString&
 {
   return *this;
 }
@@ -220,14 +220,42 @@ auto FString::operator () () const -> const FString&
 
 // public methods of FString
 //----------------------------------------------------------------------
-auto FString::clear() -> FString&
+auto FString::clear() noexcept -> FString&
 {
   string.clear();
   return *this;
 }
 
 //----------------------------------------------------------------------
-auto FString::wc_str() const -> const wchar_t*
+auto FString::reserve (size_type new_capacity) -> FString&
+{
+  string.reserve(new_capacity);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+auto FString::shrink_to_fit() -> FString&
+{
+  string.shrink_to_fit();
+  return *this;
+}
+
+//----------------------------------------------------------------------
+auto FString::resize (size_type count) -> FString&
+{
+  string.resize(count);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+auto FString::resize (size_type count, wchar_t c) -> FString&
+{
+  string.resize(count, c);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+auto FString::wc_str() const noexcept -> const wchar_t*
 {
   // Returns a constant wide character string
 
@@ -235,7 +263,7 @@ auto FString::wc_str() const -> const wchar_t*
 }
 
 //----------------------------------------------------------------------
-auto FString::wc_str() -> wchar_t*
+auto FString::wc_str() noexcept -> wchar_t*
 {
   // Returns a wide character string
 
@@ -281,31 +309,47 @@ auto FString::toString() const -> std::string
 //----------------------------------------------------------------------
 auto FString::toLower() const -> FString
 {
-  FString s{*this};
+  FString str;
+  str.string.reserve(string.length());
+  constexpr wchar_t offset = L'a' - L'A';
 
-  auto to_lower = \
-      [] (auto& c)
-      {
-        c = wchar_t(std::towlower(std::wint_t(c)));
-      };
+  for (wchar_t c : string)
+  {
+    if ( c < 128 )  // Fast path for ASCII
+    {
+      const bool is_upper = (c >= L'A') & (c <= L'Z');
+      str.string.push_back(is_upper ? c + offset : c);
+    }
+    else  // Slow path for non-ASCII (uses locale)
+    {
+      str.string.push_back(wchar_t(std::towupper(std::wint_t(c))));
+    }
+  }
 
-  std::for_each (s.begin(), s.end(), to_lower);
-  return s;
+  return str;
 }
 
 //----------------------------------------------------------------------
 auto FString::toUpper() const -> FString
 {
-  FString s{*this};
+  FString str;
+  str.string.reserve(string.length());
+  constexpr wchar_t offset = L'a' - L'A';
 
-  auto to_upper = \
-      [] (auto& c)
-      {
-        c = wchar_t(std::towupper(std::wint_t(c)));
-      };
+  for (wchar_t c : string)
+  {
+    if ( c < 128 )  // Fast path for ASCII
+    {
+      const bool is_lower = (c >= L'a') & (c <= L'z');
+      str.string.push_back(is_lower ? c - offset : c);
+    }
+    else  // Slow path for non-ASCII (uses locale)
+    {
+      str.string.push_back(wchar_t(std::towupper(std::wint_t(c))));
+    }
+  }
 
-  std::for_each (s.begin(), s.end(), to_upper);
-  return s;
+  return str;
 }
 
 //----------------------------------------------------------------------
@@ -361,88 +405,122 @@ auto FString::toUInt() const -> uInt
 //----------------------------------------------------------------------
 auto FString::toLong() const -> long
 {
+  // Find actual start and end (skip whitespace)
+  const wchar_t* s_ptr{string.data()};
+  const wchar_t* end{s_ptr + string.length()};
+
+  // Skip leading whitespace
+  while ( s_ptr != end && std::iswspace(static_cast<std::wint_t>(*s_ptr)) )
+    ++s_ptr;
+
+  // Skip trailing whitespace
+  while ( end > s_ptr && std::iswspace(static_cast<std::wint_t>(*(end - 1))) )
+    --end;
+
+  if ( s_ptr == end )
+    throw std::invalid_argument("empty value");
+
   bool neg{false};
-  long num{0};
-  long tenth_limit{LONG_MAX / 10};
-  long tenth_limit_digit{LONG_MAX % 10};
-  const FString s{trim()};
-  auto iter = s.string.cbegin();
 
-  if ( s.isEmpty() )
-    throw std::invalid_argument ("empty value");
-
-  if ( *iter == L'-' )
+  if ( *s_ptr == L'-' )  // Handle '-' sign
   {
-    ++iter;
     neg = true;
-    tenth_limit = -(LONG_MIN / 10);
-    tenth_limit_digit += 1;
+    ++s_ptr;
   }
-  else if ( *iter == L'+' )
+  else if ( *s_ptr == L'+' )  // Handle '+' sign
   {
-    ++iter;
+    ++s_ptr;
   }
 
-  while ( std::iswdigit(std::wint_t(*iter)) )
-  {
-    const auto d = uChar(*iter - L'0');
-
-    if ( num > tenth_limit
-      || (num == tenth_limit && d > tenth_limit_digit) )
-    {
-      if ( neg )
-        throw std::underflow_error ("underflow");
-
-      throw std::overflow_error ("overflow");
-    }
-
-    num = (10 * num) + d;
-    ++iter;
-  }
-
-  if ( *iter != L'\0' && ! std::iswdigit(std::wint_t(*iter)) )
+  if ( s_ptr == end )
     throw std::invalid_argument ("no valid number");
 
-  if ( neg )
-    num = (~num) + 1u;
+  long num{0};
+  constexpr long pos_limit = LONG_MAX / 10;
+  constexpr long neg_limit = -(LONG_MIN / 10);
+  const long limit = neg ? neg_limit : pos_limit;
+  const long limit_digit = neg ? (-(LONG_MIN % 10) + 1) : (LONG_MAX % 10);
 
-  return num;
+  while ( s_ptr != end )
+  {
+    const wchar_t c{*s_ptr};
+
+    if ( c < L'0' || c > L'9' )  // Digit check
+      break;
+
+    const auto digit{long(c - L'0')};
+
+    if ( num > limit || (num == limit && digit > limit_digit) )
+    {
+      if ( neg )
+        throw std::underflow_error("underflow");
+
+      throw std::overflow_error("overflow");
+    }
+
+    num = (num * 10) + digit;
+    ++s_ptr;
+  }
+
+  if ( s_ptr != end )
+    throw std::invalid_argument("no valid number");
+
+  return neg ? (~num) + 1u : num;
 }
 
 //----------------------------------------------------------------------
 auto FString::toULong() const -> uLong
 {
-  uLong num{0};
-  const uLong tenth_limit{ULONG_MAX / 10};
-  const uLong tenth_limit_digit{ULONG_MAX % 10};
-  const FString s{trim()};
-  auto iter = s.string.cbegin();
+  // Find actual start and end (skip whitespace)
+  const wchar_t* s_ptr{string.data()};
+  const wchar_t* end{s_ptr + string.length()};
 
-  if ( s.isEmpty() )
-    throw std::invalid_argument ("empty value");
+  // Skip leading whitespace
+  while ( s_ptr != end && std::iswspace(static_cast<std::wint_t>(*s_ptr)) )
+    ++s_ptr;
 
-  if ( *iter == L'-' )
+  // Skip trailing whitespace
+  while ( end > s_ptr && std::iswspace(static_cast<std::wint_t>(*(end - 1))) )
+    --s_ptr;
+
+  if ( s_ptr == end )
+    throw std::invalid_argument("empty value");
+
+  if ( *s_ptr == L'-' )  // Handle '-' sign
     throw std::underflow_error ("underflow");
 
-  if ( *iter == L'+' )
-    ++iter;
+  if ( *s_ptr == L'+' )  // Handle '+' sign
+    ++s_ptr;
 
-  while ( std::iswdigit(std::wint_t(*iter)) )
+  if ( s_ptr == end  )
+    throw std::invalid_argument("no valid number");
+
+  uLong num{0};
+  constexpr uLong limit = ULONG_MAX / 10;
+  constexpr uLong limit_digit = ULONG_MAX % 10;
+
+  // Process digits without function call overhead
+  while ( s_ptr != end )
   {
-    const auto d = uChar(*iter - L'0');
+    const wchar_t c{*s_ptr};
 
-    if ( num > tenth_limit
-      || (num == tenth_limit && d > tenth_limit_digit) )
-    {
-      throw std::overflow_error ("overflow");
-    }
+    if ( c < L'0' || c > L'9' )  // Digit check
+      break;
 
-    num = (10 * num) + d;
-    ++iter;
+    const auto digit{uLong(c - L'0')};
+
+    if ( num > limit || (num == limit && digit > limit_digit) )
+      throw std::overflow_error("overflow");
+
+    num = (num * 10) + digit;
+    ++s_ptr;
   }
 
-  if ( *iter != L'\0' && ! std::iswdigit(std::wint_t(*iter)) )
-    throw std::invalid_argument ("no valid number");
+  if ( s_ptr == string.data() + ((*string.data() == L'+') ? 1 : 0) )
+    throw std::invalid_argument("no valid number");  // No digits parsed
+
+  if ( s_ptr != end )
+    throw std::invalid_argument("no valid number");  // Trailing non-digits
 
   return num;
 }
@@ -450,7 +528,7 @@ auto FString::toULong() const -> uLong
 //----------------------------------------------------------------------
 auto FString::toFloat() const -> float
 {
-  const double num = toDouble();
+  const double num{toDouble()};
 
   if ( num > double(FLT_MAX) || num < double(-FLT_MAX) )
     throw std::overflow_error ("overflow");
@@ -465,17 +543,21 @@ auto FString::toFloat() const -> float
 auto FString::toDouble() const -> double
 {
   if ( isEmpty() )
-    throw std::invalid_argument ("null value");
+    throw std::invalid_argument ("empty value");
 
-  wchar_t* p{};
+  errno = 0;
+  wchar_t* p{nullptr};
   const double ret = std::wcstod(string.c_str(), &p);
+
+  if ( p == string.c_str() )
+    throw std::invalid_argument("no valid floating point value");
 
   if ( p != nullptr && *p != L'\0' )
     throw std::invalid_argument ("no valid floating point value");
 
   if ( errno == ERANGE )
   {
-    if ( ret >= HUGE_VAL || ret <= -HUGE_VAL )
+    if ( ret == HUGE_VAL || ret == -HUGE_VAL )
       throw std::overflow_error ("overflow");
 
     if ( std::fabs(ret) < DBL_EPSILON )  // ret == 0.0l
@@ -488,55 +570,50 @@ auto FString::toDouble() const -> double
 //----------------------------------------------------------------------
 auto FString::ltrim() const -> FString
 {
-  // Handle empty string
-  if ( isEmpty() )
-    return *this;
+  if ( isEmpty() )  // Handle empty string
+    return {};
 
-  auto iter = string.cbegin();
-  const auto last = string.cend();
+  // Find last non-whitespace character
+  const auto pos = string.find_first_not_of(L" \t\n\r\f\v");
 
-  while ( iter != last && std::iswspace(std::wint_t(*iter)) )
-    ++iter;
+  if ( pos == npos )  // All whitespace
+    return {};
 
-  if ( iter != last )
-    return std::wstring(iter, last);
-
-  return {};
+  return string.substr(pos);
 }
 
 //----------------------------------------------------------------------
 auto FString::rtrim() const -> FString
 {
-  // Handle empty string
-  if ( isEmpty() )
-    return *this;
+  if ( isEmpty() )  // Handle empty string
+    return {};
 
-  const auto r_end = string.crend();
-  auto r_iter = string.crbegin();
+  // Find last non-whitespace character
+  const auto pos = string.find_last_not_of(L" \t\n\r\f\v");
 
-  while ( r_iter != r_end && std::iswspace(std::wint_t(*r_iter)) )
-    ++r_iter;
+  if ( pos == npos )  // All whitespace
+    return {};
 
-  if ( r_iter != r_end )
-    return std::wstring( std::make_reverse_iterator(r_end)
-                       , std::make_reverse_iterator(r_iter) );
-
-  return {};
+  return string.substr(0, pos + 1);
 }
 
 //----------------------------------------------------------------------
 auto FString::trim() const -> FString
 {
-  // Handle NULL and empty string
-  if ( isEmpty() )
-    return *this;
+  if ( isEmpty() )  // Handle empty string
+    return {};
 
-  const FString s{ltrim()};
-  return s.rtrim();
+  const auto first = string.find_first_not_of(L" \t\n\r\f\v");
+
+  if ( first == npos )  // All whitespace
+    return {};
+
+  const auto last = string.find_last_not_of(L" \t\n\r\f\v");
+  return string.substr(first, last - first + 1);
 }
 
 //----------------------------------------------------------------------
-auto FString::left (std::size_t len) const -> FString
+auto FString::left (size_type len) const -> FString
 {
   // Handle empty and too long strings
   if ( isEmpty() || len > getLength() )
@@ -546,7 +623,7 @@ auto FString::left (std::size_t len) const -> FString
 }
 
 //----------------------------------------------------------------------
-auto FString::right (std::size_t len) const -> FString
+auto FString::right (size_type len) const -> FString
 {
   // Handle empty and too long strings
   if ( isEmpty() || len > getLength() )
@@ -556,26 +633,26 @@ auto FString::right (std::size_t len) const -> FString
 }
 
 //----------------------------------------------------------------------
-auto FString::mid (std::size_t pos, std::size_t len) const -> FString
+auto FString::mid (size_type pos, size_type len) const -> FString
 {
   // Handle empty string
-  if ( isEmpty() )
-    return *this;
+  if ( isEmpty() || len == 0 )
+    return {};
 
   if ( pos == 0 )
     pos = 1;
 
-  const auto& length = string.length();
+  const size_type start_index{pos - 1};
+  const auto length{string.length()};
 
-  if ( pos <= length && pos + len > length )
-    len = length - pos + 1;
-
-  if ( pos > length || pos + len - 1 > length || len == 0 )
+  if ( start_index >= length )
     return {};
 
-  auto first = string.cbegin() + static_cast<difference_type>(pos) - 1;
-  auto last = first + static_cast<difference_type>(len);
-  return std::wstring(first, last);
+  FString str{};
+  len = std::min(len, length - start_index);
+  str.string.reserve (len);
+  str.string.assign (string, start_index, len);
+  return str;
 }
 
 //----------------------------------------------------------------------
@@ -584,19 +661,40 @@ auto FString::split (const FString& delimiter) const -> FStringList
   if ( isEmpty() )
     return {};
 
-  const FString s{*this};
-  FStringList string_list{};
-  const auto& delimiter_length = delimiter.getLength();
-  std::wstring::size_type first = 0;
-  std::wstring::size_type last;
+  if ( delimiter.isEmpty() )
+    return {*this};
 
-  while ( (last = s.string.find(delimiter.string, first)) != std::wstring::npos )
+  FStringList string_list{};
+  const auto delimiter_length{delimiter.getLength()};
+  std::wstring::size_type start{0};
+  std::wstring::size_type pos{0};
+
+  // Calculate result size and reserve
+  size_type count{1};
+
+  while ( (pos = string.find(delimiter.string, pos)) != npos )
   {
-    string_list.emplace_back(std::wstring(s.string, first, last - first));
-    first = last + delimiter_length;
+    count++;
+    pos += delimiter_length;
   }
 
-  string_list.emplace_back(std::wstring(s.string, first));
+  if ( count == 1 )  // 'delimiter' not found
+  {
+    string_list.emplace_back(std::wstring(string));
+    return string_list;
+  }
+
+  string_list.reserve(count);
+  pos = 0;
+
+  // Perform split
+  while ( (pos = string.find(delimiter.string, start)) != npos )
+  {
+    string_list.emplace_back(std::wstring(string, start, pos - start));
+    start = pos + delimiter_length;
+  }
+
+  string_list.emplace_back(std::wstring(string, start));
   return string_list;
 }
 
@@ -611,21 +709,20 @@ auto FString::setString (const FString& s) -> FString&
 //----------------------------------------------------------------------
 auto FString::setNumber (sInt64 num) -> FString&
 {
-  std::array<wchar_t, 30> buf{};
-  wchar_t* s = &buf[29];  // Pointer to the last character
-  auto abs_num = ( num >= 0 )
-               ? static_cast<uInt64>(num)
-               : ~static_cast<uInt64>(num) + 1;
+  std::array<wchar_t, NUMBER_BUFFER_SIZE> buf{};
+  wchar_t* s = &buf[NUMBER_BUFFER_LENGTH];  // Pointer to the last character
+  const auto is_negative{ bool( num < 0 ) };
+  auto abs_num = is_negative ? ~static_cast<uInt64>(num) + 1 : num;
   *s = '\0';
 
   do
   {
-    *--s = L"0123456789"[abs_num % 10];
+    *--s = L'0' + (abs_num % 10);
     abs_num /= 10;
   }
   while ( abs_num );
 
-  if ( num < 0 )
+  if ( is_negative )
     *--s = '-';
 
   std::wstring str{s};
@@ -636,13 +733,13 @@ auto FString::setNumber (sInt64 num) -> FString&
 //----------------------------------------------------------------------
 auto FString::setNumber (uInt64 num) -> FString&
 {
-  std::array<wchar_t, 30> buf{};
-  wchar_t* s = &buf[29];  // Pointer to the last character
+  std::array<wchar_t, NUMBER_BUFFER_SIZE> buf{};
+  wchar_t* s = &buf[NUMBER_BUFFER_LENGTH];  // Pointer to the last character
   *s = '\0';
 
   do
   {
-    *--s = L"0123456789"[num % 10];
+    *--s = L'0' + (num % 10);
     num /= 10;
   }
   while ( num );
@@ -655,14 +752,13 @@ auto FString::setNumber (uInt64 num) -> FString&
 //----------------------------------------------------------------------
 auto FString::setNumber (lDouble f_num, int precision) -> FString&
 {
-  std::array<wchar_t, 20> format{};  // = "%.<precision>Lg"
+  // The precision can not have more than 2 digits
+  precision = std::min(precision, 99);
+
+  std::array<wchar_t, 8> format{};  // = "%.<precision>Lg"
   wchar_t* s = &format[0];
   *s++ = L'%';
   *s++ = L'.';
-
-  // The precision can not have more than 2 digits
-  if ( precision > 99 )
-    precision = 99;
 
   if ( precision >= 10 )
   {
@@ -687,21 +783,21 @@ auto FString::setNumber (lDouble f_num, int precision) -> FString&
 auto FString::setFormatedNumber (sInt64 num, FString separator) -> FString&
 {
   int n{0};
-  std::array<wchar_t, 30> buf{};
-  wchar_t* s = &buf[29];  // Pointer to the last character
-  auto abs_num = static_cast<uInt64>(num);
+  std::array<wchar_t, NUMBER_BUFFER_SIZE> buf{};
+  wchar_t* s = &buf[NUMBER_BUFFER_LENGTH];  // Pointer to the last character
+  auto abs_num{uInt64(num)};
 
   if ( separator[0] == 0 )
     separator = L" ";
 
   if ( num < 0 )
-    abs_num = static_cast<uInt64>(-num);
+    abs_num = uInt64(-num);
 
   *s = L'\0';
 
   do
   {
-    *--s = L"0123456789"[abs_num % 10];
+    *--s = L'0' + (abs_num % 10);
     abs_num /= 10;
     n++;
 
@@ -722,8 +818,8 @@ auto FString::setFormatedNumber (sInt64 num, FString separator) -> FString&
 auto FString::setFormatedNumber (uInt64 num, FString separator) -> FString&
 {
   int n{0};
-  std::array<wchar_t, 30> buf{};
-  wchar_t* s = &buf[29];  // Pointer to the last character
+  std::array<wchar_t, NUMBER_BUFFER_SIZE> buf{};
+  wchar_t* s = &buf[NUMBER_BUFFER_LENGTH];  // Pointer to the last character
   *s = L'\0';
 
   if ( separator[0] == 0 )
@@ -731,7 +827,7 @@ auto FString::setFormatedNumber (uInt64 num, FString separator) -> FString&
 
   do
   {
-    *--s = L"0123456789"[num % 10];
+    *--s = L'0' + (num % 10);
     num /= 10;
     n++;
 
@@ -757,7 +853,7 @@ auto FString::insert (const FString& s, int pos) -> const FString&
 }
 
 //----------------------------------------------------------------------
-auto FString::insert (const FString& s, std::size_t pos) -> const FString&
+auto FString::insert (const FString& s, size_type pos) -> const FString&
 {
   if ( pos > string.length() )
     throw std::out_of_range("");
@@ -773,143 +869,174 @@ auto FString::replace (const FString& from, const FString& to) const -> FString
   if ( isEmpty() || from.isEmpty() )
     return *this;
 
-  FString s{*this};
-  std::wstring::size_type pos{};
+  // Count occurrences to reserve exact capacity
+  size_type count{0};
+  std::wstring::size_type pos{0};
 
-  while ( (pos = s.string.find(from.string, pos)) != std::wstring::npos )
+  while ( (pos = string.find(from.string, pos)) != npos )
   {
-     s.string.replace (pos, from.getLength(), to.string);
-     pos += to.getLength();
+    count++;
+    pos += from.getLength();
   }
 
-  return s;
+  if ( count == 0 )  //  String 'from' not found
+    return *this;
+
+  // Calculate result size and reserve
+  const size_type from_len{from.getLength()};
+  const size_type to_len{to.getLength()};
+  const size_type new_size{string.length() + count * (to_len - from_len)};
+
+  FString str{};
+  str.string.reserve(new_size);
+  size_type last_pos{0};
+  pos = 0;
+
+  while ( (pos = string.find(from.string, pos)) != npos )
+  {
+    str.string.append (string, last_pos, pos - last_pos);  // Before
+    str.string.append (to.string);  // The string replacement
+    pos += from_len;
+    last_pos = pos;
+  }
+
+  str.string.append (string, last_pos, npos);  // After
+  return str;
 }
 
 //----------------------------------------------------------------------
 auto FString::replaceControlCodes() const -> FString
 {
-  FString s{*this};
+  FString str{};
+  str.string.reserve(string.length());
 
-  for (auto&& c : s)
+  for (auto c : string)
   {
     if ( c <= L'\x1f' )
     {
-      c += L'\x2400';
+      str.string.push_back(c + L'\x2400');
     }
     else if ( c == L'\x7f' )
     {
-      c = L'\x2421';
+      str.string.push_back(L'\x2421');
     }
     else if ( (c >= L'\x80' && c <= L'\x9f') || ! isPrintable(c) )
-      c = L' ';
+    {
+      str.string.push_back(L' ');
+    }
+    else
+      str.string.push_back(c);
   }
 
-  return s;
+  return str;
 }
 
 //----------------------------------------------------------------------
 auto FString::expandTabs (int tabstop) const -> FString
 {
-  if ( tabstop <= 0 )
+  if (tabstop <= 0)
     return *this;
 
-  FString outstr{};
-  const auto& tab_split = split(L"\t");
-  const auto& last = tab_split.cend() - 1;
-  auto iter = tab_split.cbegin();
+  FString str{};
+  const auto tab_count{std::count(string.begin(), string.end(), L'\t')};
+  str.string.reserve(string.length() + (tab_count * tabstop));
+  size_type column{0};
 
-  while ( iter != tab_split.cend() )
+  for (wchar_t c : string)
   {
-    if ( iter != last )
+    if ( c == L'\t' )
     {
-      const auto& len = iter->getLength();
-      const auto& tab_len = std::size_t(tabstop);
-      outstr += *iter + std::wstring(tab_len - (len % tab_len), L' ');
+      // Calculate spaces needed to reach next tab stop
+      const size_type spaces{tabstop - (column % tabstop)};
+      str.string.append(spaces, L' ');
+      column += spaces;
+    }
+    else if ( c == L'\n' || c == L'\r' )
+    {
+      str.string.push_back(c);
+      column = 0;  // Reset column on newline
     }
     else
-      outstr += *iter;
-
-    ++iter;
+    {
+      str.string.push_back(c);
+      ++column;
+    }
   }
 
-  return outstr;
+  return str;
 }
 
 //----------------------------------------------------------------------
 auto FString::removeDel() const -> FString
 {
-  FString s{*this};
-  std::size_t i{0};
-  std::size_t count{0};
+  FString str{};
+  str.string.reserve(string.length());
+  size_type del_count{0};
 
-  for (const auto& c : s)
+  for (const auto c : string)
   {
-    if ( c == 0x7f )
+    if ( c == L'\x7f' )
     {
-      count++;
+      del_count++;
     }
-    else if ( count > 0 )
+    else if ( del_count > 0 )
     {
-      count--;
+      del_count--;
     }
-    else  // count == 0
+    else  // del_count == 0
     {
-      s.string[i] = c;
-      i++;
+      str.string.push_back(c);
     }
   }
 
-  s.string.erase(i);
-  return s;
+  return str;
 }
 
 
 //----------------------------------------------------------------------
 auto FString::removeBackspaces() const -> FString
 {
-  FString s{*this};
-  std::size_t i{0};
+  FString str{};
+  str.string.reserve(string.length());
 
-  for (const auto& c : s)
+  for (const auto c : string)
   {
     if ( c != L'\b' )
     {
-      s.string[i] = c;
-      i++;
+      str.string.push_back(c);
     }
-    else if ( i > 0 )
-    {
-      i--;
-    }
+    else if ( ! str.string.empty() )
+      str.string.pop_back();
   }
 
-  s.string.erase(i);
-  return s;
+  return str;
 }
 
 //----------------------------------------------------------------------
-auto FString::overwrite (const FString& s, int pos) -> const FString&
+auto FString::overwrite (const FString& s, int pos) -> FString&
 {
   if ( pos < 0 )
     return overwrite (s, 0);
 
-  return overwrite (s, std::size_t(pos));
+  return overwrite (s, size_type(pos));
 }
 
 //----------------------------------------------------------------------
-auto FString::overwrite (const FString& s, std::size_t pos) -> const FString&
+auto FString::overwrite (const FString& s, size_type pos) -> FString&
 {
-  if ( pos > string.length() )
-    pos = string.length();
+  const auto length{string.length()};
+
+  if ( pos > length )
+    pos = length;
 
   string.replace(pos, s.getLength(), s.string);
   return *this;
 }
 
 //----------------------------------------------------------------------
-auto FString::remove (std::size_t pos, std::size_t len) -> const FString&
+auto FString::remove (size_type pos, size_type len) -> FString&
 {
-  const auto& length = string.length();
+  const auto length{string.length()};
 
   if ( pos > length )
     return *this;
@@ -922,12 +1049,37 @@ auto FString::remove (std::size_t pos, std::size_t len) -> const FString&
 }
 
 //----------------------------------------------------------------------
-auto FString::includes (const FString& s) const -> bool
+auto FString::erase (size_type pos, size_type len) -> FString&
+{
+  string.erase (pos, len);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+auto FString::includes (const FString& s) const noexcept -> bool
 {
   if ( s.isEmpty() )
     return false;
 
-  return string.find(s.string) != std::wstring::npos;
+  return string.find(s.string) != npos;
+}
+
+//----------------------------------------------------------------------
+auto FString::contains (const FString& s) const noexcept -> bool
+{
+  return includes(s);
+}
+
+//----------------------------------------------------------------------
+auto FString::find (const FString& s, size_type pos) const noexcept -> size_type
+{
+  return string.find(s.string, pos);
+}
+
+//----------------------------------------------------------------------
+auto FString::rfind (const FString& s, size_type pos) const noexcept -> size_type
+{
+  return string.rfind(s.string, pos);
 }
 
 
@@ -938,45 +1090,44 @@ auto FString::internal_toCharString (const std::wstring& s) const -> std::string
   if ( s.empty() )
     return {};
 
-  auto src = s.c_str();
-  auto state = std::mbstate_t();
+  auto state{std::mbstate_t()};
+  const wchar_t* src = s.c_str();
   const auto size = std::wcsrtombs(nullptr, &src, 0, &state);
 
   if ( size == MALFORMED_STRING )
     return {};
 
-  std::vector<char> dest(size + 1);  // Contains terminator "\0"
-  const auto mblength = std::wcsrtombs (dest.data(), &src, dest.size(), &state);
+  std::string dest{};
+  dest.resize(size);
+  auto dest_data = const_cast<char*>(dest.data());
+  const auto mblength = std::wcsrtombs (dest_data, &src, size + 1, &state);
 
   if ( mblength == MALFORMED_STRING && errno != EILSEQ )
     return {};
 
-  return dest.data();
+  return dest;
 }
 
 //----------------------------------------------------------------------
 auto FString::internal_toWideString (const char src[]) const -> std::wstring
 {
-  auto state = std::mbstate_t();
+  if ( ! src || *src == '\0' )
+    return {};
+
+  auto state{std::mbstate_t()};
   auto size = std::mbsrtowcs(nullptr, &src, 0, &state);
 
   if ( size == MALFORMED_STRING )
     return {};
 
-  size++;
-  std::vector<wchar_t> dest(size);
-  const auto wide_length = std::mbsrtowcs (dest.data(), &src, size, &state);
+  std::wstring dest(size, L'\0');
+  auto dest_data = const_cast<wchar_t*>(dest.data());
+  const auto wide_length = std::mbsrtowcs (dest_data, &src, size + 1, &state);
 
   if ( wide_length == MALFORMED_STRING )
     return {};
 
-  if ( wide_length == size )
-    dest[size - 1] = '\0';
-
-  if ( wide_length != 0 )
-    return {dest.data(), wide_length};
-
-  return {};
+  return dest;
 }
 
 // FString non-member operators
@@ -988,25 +1139,36 @@ auto FStringCaseCompare (const FString& s1, const FString& s2) -> int
 
   auto iter1 = s1.cbegin();
   auto iter2 = s2.cbegin();
+  const auto end1 = s1.cend();
+  const auto end2 = s2.cend();
 
-  while ( iter1 != s1.cend() )
+  while ( iter1 != end1 && iter2 != end2 )
   {
-    if ( iter2 != s2.cend() )
-    {
-      int cmp = int(std::tolower(*iter1)) - int(std::tolower(*iter2));
+    auto c1 = *iter1;
+    auto c2 = *iter2;
 
-      if ( cmp != 0 )
-        return cmp;
+    // Convert to lowercase
+    if ( c1 >= L'A' && c1 <= L'Z' )
+      c1 += 32;
 
-      ++iter2;
-    }
-    else
-      return int(std::tolower(*iter1));
+    if ( c2 >= L'A' && c2 <= L'Z' )
+      c2 += 32;
+
+    if ( c1 != c2 )
+      return c1 - c2;
 
     ++iter1;
+    ++iter2;
   }
 
-  return -int(std::tolower(*iter2));
+  // Handle remaining characters
+  if ( iter1 != end1 )
+    return 1;  // s1 is longer
+
+  if ( iter2 != end2 )
+    return -1; // s2 is longer
+
+  return 0;    // Equal
 }
 
 

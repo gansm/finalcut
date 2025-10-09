@@ -1,3 +1,9 @@
+2025-10-09  Markus Gans  <guru.mail@muenster.de>
+	* Some speed optimizations were made to the methods 
+	  of the FString class
+	* Add some methods to FString to improve its compatibility 
+	  with the STL
+
 2025-09-21  Markus Gans  <guru.mail@muenster.de>
 	* The ConEmu, FPoint, FSize, and FRect classes have been refactored
 

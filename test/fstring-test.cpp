@@ -91,6 +91,7 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     void classNameTest();
     void noArgumentTest();
     void initLengthTest();
+    void capacityTest();
     void copyConstructorTest();
     void moveConstructorTest();
     void assignmentTest();
@@ -121,6 +122,7 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     void includesTest();
     void controlCodesTest();
     void caseCompareTest();
+    void swapTest();
     void hashTest();
 
   private:
@@ -133,6 +135,7 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (classNameTest);
     CPPUNIT_TEST (noArgumentTest);
     CPPUNIT_TEST (initLengthTest);
+    CPPUNIT_TEST (capacityTest);
     CPPUNIT_TEST (copyConstructorTest);
     CPPUNIT_TEST (moveConstructorTest);
     CPPUNIT_TEST (assignmentTest);
@@ -163,6 +166,7 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (includesTest);
     CPPUNIT_TEST (controlCodesTest);
     CPPUNIT_TEST (caseCompareTest);
+    CPPUNIT_TEST (swapTest);
     CPPUNIT_TEST (hashTest);
 
     // End of test suite definition
@@ -197,14 +201,20 @@ void FStringTest::noArgumentTest()
   finalcut::FString empty;
   CPPUNIT_ASSERT ( empty.isEmpty() );
   CPPUNIT_ASSERT ( empty.getLength() == 0 );
+  CPPUNIT_ASSERT ( empty.length() == 0 );
+  CPPUNIT_ASSERT ( empty.size() == 0 );
   CPPUNIT_ASSERT ( empty.capacity() < std::wstring().max_size() );
+  CPPUNIT_ASSERT ( empty.max_size() == std::wstring().max_size() );
   CPPUNIT_ASSERT ( empty.wc_str()[0] == L'\0' );
+  CPPUNIT_ASSERT ( empty.data()[0] == L'\0' );
   CPPUNIT_ASSERT ( empty.c_str()[0] == '\0' );
   CPPUNIT_ASSERT_EQUAL ( empty.toString(), std::string() );
   CPPUNIT_ASSERT ( strlen(finalcut::FString(99).c_str()) == 0 );
   CPPUNIT_ASSERT ( wcslen(finalcut::FString(99).wc_str()) == 0 );
+  CPPUNIT_ASSERT ( wcslen(finalcut::FString(99).data()) == 0 );
   CPPUNIT_ASSERT ( strlen(finalcut::FString("").c_str()) == 0 );
   CPPUNIT_ASSERT ( wcslen(finalcut::FString("").wc_str()) == 0 );
+  CPPUNIT_ASSERT ( wcslen(finalcut::FString("").data()) == 0 );
 
   char* cstr = empty.c_str();
   CPPUNIT_ASSERT ( cstr[0] == '\0' );
@@ -212,6 +222,9 @@ void FStringTest::noArgumentTest()
   wchar_t* wcstr = empty.wc_str();
   CPPUNIT_ASSERT_WCSTRING ( wcstr, L"" );
   CPPUNIT_ASSERT ( wcstr[0] == L'\0' );
+  const wchar_t* data = empty.data();
+  CPPUNIT_ASSERT_WCSTRING ( data, L"" );
+  CPPUNIT_ASSERT ( data[0] == L'\0' );
   std::string str = empty.toString();
   CPPUNIT_ASSERT ( str.length() == 0 );
   CPPUNIT_ASSERT ( str.size() == 0 );
@@ -254,70 +267,131 @@ void FStringTest::initLengthTest()
 {
   const finalcut::FString s1(0);
   CPPUNIT_ASSERT ( s1.getLength() == 0 );
+  CPPUNIT_ASSERT ( s1.size() == 0 );
+  CPPUNIT_ASSERT ( s1.length() == 0 );
   CPPUNIT_ASSERT ( s1.capacity() < std::wstring().max_size() );
+  CPPUNIT_ASSERT ( s1.max_size() == std::wstring().max_size() );
   CPPUNIT_ASSERT ( s1.isEmpty() );
 
   constexpr int         x1 = 10;
   constexpr std::size_t x2 = 10;
   const finalcut::FString s2(x1);
   CPPUNIT_ASSERT ( s2.getLength() == 10 );
+  CPPUNIT_ASSERT ( s2.size() == 10 );
+  CPPUNIT_ASSERT ( s2.length() == 10 );
   CPPUNIT_ASSERT ( s2.capacity() >= 10 );
+  CPPUNIT_ASSERT ( s2.max_size() == std::wstring().max_size() );
   CPPUNIT_ASSERT ( ! s2.isEmpty() );
 
   const finalcut::FString s3(x2);
   CPPUNIT_ASSERT ( s3.getLength() == 10 );
+  CPPUNIT_ASSERT ( s3.size() == 10 );
+  CPPUNIT_ASSERT ( s3.length() == 10 );
   CPPUNIT_ASSERT ( s3.capacity() >= 10 );
+  CPPUNIT_ASSERT ( s3.max_size() == std::wstring().max_size() );
   CPPUNIT_ASSERT ( ! s3.isEmpty() );
 
   const finalcut::FString s4(0, L'-');
   CPPUNIT_ASSERT ( s4.getLength() == 0 );
+  CPPUNIT_ASSERT ( s4.size() == 0 );
+  CPPUNIT_ASSERT ( s4.length() == 0 );
   CPPUNIT_ASSERT ( s4.capacity() < std::wstring().max_size() );
+  CPPUNIT_ASSERT ( s4.max_size() == std::wstring().max_size() );
   CPPUNIT_ASSERT ( s4.isEmpty() );
 
   const finalcut::FString s5(0, '-');
   CPPUNIT_ASSERT ( s5.getLength() == 0 );
+  CPPUNIT_ASSERT ( s5.size() == 0 );
+  CPPUNIT_ASSERT ( s5.length() == 0 );
   CPPUNIT_ASSERT ( s5.capacity() < std::wstring().max_size() );
+  CPPUNIT_ASSERT ( s5.max_size() == std::wstring().max_size() );
   CPPUNIT_ASSERT ( s5.isEmpty() );
 
   const finalcut::FString s6(0, char(0));
   CPPUNIT_ASSERT ( s6.getLength() == 0 );
+  CPPUNIT_ASSERT ( s6.size() == 0 );
+  CPPUNIT_ASSERT ( s6.length() == 0 );
   CPPUNIT_ASSERT ( s6.capacity() < std::wstring().max_size() );
+  CPPUNIT_ASSERT ( s6.max_size() == std::wstring().max_size() );
   CPPUNIT_ASSERT ( s6.isEmpty() );
 
   const finalcut::FString s7(x1, '-');
   CPPUNIT_ASSERT ( s7.getLength() == 10 );
+  CPPUNIT_ASSERT ( s7.size() == 10 );
+  CPPUNIT_ASSERT ( s7.length() == 10 );
   CPPUNIT_ASSERT ( s7.capacity() >= 10 );
+  CPPUNIT_ASSERT ( s7.max_size() == std::wstring().max_size() );
   CPPUNIT_ASSERT ( ! s7.isEmpty() );
 
   const finalcut::FString s8(x2, '-');
   CPPUNIT_ASSERT ( s8.getLength() == 10 );
+  CPPUNIT_ASSERT ( s8.size() == 10 );
+  CPPUNIT_ASSERT ( s8.length() == 10 );
   CPPUNIT_ASSERT ( s8.capacity() >= 10 );
+  CPPUNIT_ASSERT ( s8.max_size() == std::wstring().max_size() );
   CPPUNIT_ASSERT ( ! s8.isEmpty() );
 
   const finalcut::FString s9(x1, L'-');
   CPPUNIT_ASSERT ( s9.getLength() == 10 );
+  CPPUNIT_ASSERT ( s9.size() == 10 );
+  CPPUNIT_ASSERT ( s9.length() == 10 );
   CPPUNIT_ASSERT ( s9.capacity() >= 10 );
+  CPPUNIT_ASSERT ( s9.max_size() == std::wstring().max_size() );
   CPPUNIT_ASSERT ( ! s9.isEmpty() );
 
   const finalcut::FString s10(x2, L'-');
   CPPUNIT_ASSERT ( s10.getLength() == 10 );
+  CPPUNIT_ASSERT ( s10.size() == 10 );
+  CPPUNIT_ASSERT ( s10.length() == 10 );
   CPPUNIT_ASSERT ( s10.capacity() >= 10 );
+  CPPUNIT_ASSERT ( s10.max_size() == std::wstring().max_size() );
   CPPUNIT_ASSERT ( ! s10.isEmpty() );
 
   const finalcut::FString s11(x2, wchar_t(0));
   CPPUNIT_ASSERT ( s11.getLength() == 10 );
+  CPPUNIT_ASSERT ( s11.size() == 10 );
+  CPPUNIT_ASSERT ( s11.length() == 10 );
   CPPUNIT_ASSERT ( s11.capacity() >= 10 );
+  CPPUNIT_ASSERT ( s11.max_size() == std::wstring().max_size() );
   CPPUNIT_ASSERT ( ! s11.isEmpty() );
 
   const finalcut::FString s12(x1, finalcut::UniChar::Pound);
   CPPUNIT_ASSERT ( s12.getLength() == 10 );
+  CPPUNIT_ASSERT ( s12.size() == 10 );
+  CPPUNIT_ASSERT ( s12.length() == 10 );
   CPPUNIT_ASSERT ( s12.capacity() >= 10 );
+  CPPUNIT_ASSERT ( s12.max_size() == std::wstring().max_size() );
   CPPUNIT_ASSERT ( ! s12.isEmpty() );
 
   const finalcut::FString s13(x2, finalcut::UniChar::BlackDiamondSuit);
   CPPUNIT_ASSERT ( s13.getLength() == 10 );
+  CPPUNIT_ASSERT ( s13.size() == 10 );
+  CPPUNIT_ASSERT ( s13.length() == 10 );
   CPPUNIT_ASSERT ( s13.capacity() >= 10 );
+  CPPUNIT_ASSERT ( s13.max_size() == std::wstring().max_size() );
   CPPUNIT_ASSERT ( ! s13.isEmpty() );
+}
+
+//----------------------------------------------------------------------
+void FStringTest::capacityTest()
+{
+  finalcut::FString str{};
+  const std::string::size_type start_cap{101u};
+  str.reserve(start_cap);
+  CPPUNIT_ASSERT ( str.capacity() >= start_cap );
+
+  const auto temp_cap = str.capacity();
+  str.resize(1010u);
+  CPPUNIT_ASSERT ( str.capacity() >= start_cap );
+  CPPUNIT_ASSERT ( str.capacity() >= temp_cap );
+
+  str.resize(10u, L'🤔');
+  CPPUNIT_ASSERT ( str.capacity() >= start_cap );
+  CPPUNIT_ASSERT ( str.capacity() >= temp_cap );
+
+  str.shrink_to_fit();
+  CPPUNIT_ASSERT ( str.capacity() <= temp_cap );
+  CPPUNIT_ASSERT ( str.capacity() <= start_cap );
 }
 
 //----------------------------------------------------------------------
@@ -329,6 +403,7 @@ void FStringTest::copyConstructorTest()
   CPPUNIT_ASSERT ( s2 == L"abc" );
   CPPUNIT_ASSERT_CSTRING ( s2.c_str(), "abc" );
   CPPUNIT_ASSERT_WCSTRING ( s2.wc_str(), L"abc" );
+  CPPUNIT_ASSERT_WCSTRING ( s2.data(), L"abc" );
   CPPUNIT_ASSERT ( s2.getLength() == 3 );
   CPPUNIT_ASSERT ( s2.capacity() >= 3 );
 }
@@ -341,6 +416,7 @@ void FStringTest::moveConstructorTest()
   CPPUNIT_ASSERT ( s2 == L"abc" );
   CPPUNIT_ASSERT_CSTRING ( s2.c_str(), "abc" );
   CPPUNIT_ASSERT_WCSTRING ( s2.wc_str(), L"abc" );
+  CPPUNIT_ASSERT_WCSTRING ( s2.data(), L"abc" );
   CPPUNIT_ASSERT ( s2.getLength() == 3 );
   CPPUNIT_ASSERT ( s2.capacity() >= 3 );
 }
@@ -1428,6 +1504,10 @@ void FStringTest::subscriptOperatorTest()
   CPPUNIT_ASSERT ( s[1] == L'\0' );
   CPPUNIT_ASSERT ( s[2] == L'\0' );
   CPPUNIT_ASSERT ( s[3] == L'\0' );  // pos == size
+  CPPUNIT_ASSERT ( s.at(0) == L'\0' );
+  CPPUNIT_ASSERT ( s.at(1) == L'\0' );
+  CPPUNIT_ASSERT ( s.at(2) == L'\0' );
+
   s[0] = L'A';
   s[1] = L'B';
   s[2] = L'C';
@@ -1435,6 +1515,9 @@ void FStringTest::subscriptOperatorTest()
   CPPUNIT_ASSERT ( s[1] == L'B' );
   CPPUNIT_ASSERT ( s[2] == L'C' );
   CPPUNIT_ASSERT ( s[3] == L'\0' );  // pos == size
+  CPPUNIT_ASSERT ( s.at(0) == L'A' );
+  CPPUNIT_ASSERT ( s.at(1) == L'B' );
+  CPPUNIT_ASSERT ( s.at(2) == L'C' );
   CPPUNIT_ASSERT ( s == L"ABC" );
   CPPUNIT_ASSERT ( s.getLength() == 3 );
   CPPUNIT_ASSERT ( *(s.c_str() + s.getLength()) == '\0' );
@@ -1494,6 +1577,34 @@ void FStringTest::iteratorTest()
 
   CPPUNIT_ASSERT ( iter3 == str3.cend() );
   CPPUNIT_ASSERT ( std::distance(str3.cbegin(), iter3) == 5 );
+
+  finalcut::FString str4("012345");
+  CPPUNIT_ASSERT ( str4.front() == L'0' );
+  CPPUNIT_ASSERT ( str4.back() == L'5' );
+  finalcut::FString::reverse_iterator iter4 = str4.rbegin();
+
+  while ( iter4 != str4.rend() )
+  {
+    *iter4 += 1;
+    ++iter4;
+  }
+
+  CPPUNIT_ASSERT ( str4 == L"123456" );
+  CPPUNIT_ASSERT ( iter4 == str4.rend() );
+  CPPUNIT_ASSERT ( std::distance(str4.rbegin(), iter4) == 6 );
+
+  finalcut::FString str5(L"+-----+");
+  CPPUNIT_ASSERT ( str5.front() == L'+' );
+  CPPUNIT_ASSERT ( str5.back() == L'+' );
+  CPPUNIT_ASSERT ( str5.front() == str5.back() );
+  CPPUNIT_ASSERT ( &str5.front() != &str5.back() );
+  auto iter5 = str5.crbegin();
+
+  while ( iter5 != str5.crend() )
+    ++iter5;
+
+  CPPUNIT_ASSERT ( iter5 == str5.crend() );
+  CPPUNIT_ASSERT ( std::distance(str5.crbegin(), iter5) == 7 );
 }
 
 //----------------------------------------------------------------------
@@ -1726,12 +1837,24 @@ void FStringTest::exceptionTest()
   CPPUNIT_ASSERT_THROW ( finalcut::FString("abc")[-1]
                        , std::out_of_range );
 
+  CPPUNIT_ASSERT_THROW ( finalcut::FString("abc").at(4)
+                       , std::out_of_range );
+
+  CPPUNIT_ASSERT_THROW ( finalcut::FString("abc").at(-1)
+                       , std::out_of_range );
+
   const finalcut::FString const_fstring("const");
 
   CPPUNIT_ASSERT_THROW ( const_fstring[6]
                        , std::out_of_range );
 
   CPPUNIT_ASSERT_THROW ( const_fstring[-1]
+                       , std::out_of_range );
+
+  CPPUNIT_ASSERT_THROW ( const_fstring.at(6)
+                       , std::out_of_range );
+
+  CPPUNIT_ASSERT_THROW ( const_fstring.at(-1)
                        , std::out_of_range );
 
   CPPUNIT_ASSERT_THROW ( finalcut::FString("99999").toShort()
@@ -1944,6 +2067,14 @@ void FStringTest::subStringTest()
   CPPUNIT_ASSERT ( finalcut::FString("").mid(5, 0).isEmpty() );
   CPPUNIT_ASSERT ( str1.mid(5, 0).getLength() == 0 );
 
+  finalcut::FString mid_str{"ABCDE"};
+  CPPUNIT_ASSERT ( mid_str.mid(1, 2) == L"AB" );
+  CPPUNIT_ASSERT ( mid_str.mid(2, 3) == L"BCD" );
+  CPPUNIT_ASSERT ( mid_str.mid(3, 10) == L"CDE" );
+  CPPUNIT_ASSERT ( mid_str.mid(0, 2) == L"AB" );
+  CPPUNIT_ASSERT ( mid_str.mid(6, 2) == L"" );
+  CPPUNIT_ASSERT ( mid_str.mid(3, 0) == L"" );
+
   finalcut::FStringList string_parts = str1.split(" ");
   finalcut::FStringList string_list;
   string_list.push_back("Look");
@@ -1966,6 +2097,23 @@ void FStringTest::subStringTest()
   string_parts = finalcut::FString().split(':');
   CPPUNIT_ASSERT ( string_parts.empty() );
   CPPUNIT_ASSERT ( string_parts.size() == 0 );
+
+  finalcut::FString str2{};  // Empty string
+  string_parts = str2.split("x");
+  CPPUNIT_ASSERT ( str2.isEmpty() );
+  CPPUNIT_ASSERT ( string_parts.empty() );
+  CPPUNIT_ASSERT ( string_parts.size() == 0 );
+
+  str2 = "abcdefghijkl";
+  string_parts = str2.split("x");  // The delimiter does not exist
+  CPPUNIT_ASSERT ( ! str2.isEmpty() );
+  CPPUNIT_ASSERT ( ! string_parts.empty() );
+  CPPUNIT_ASSERT ( string_parts.size() == 1 );
+
+  string_parts = str2.split("");  // The delimiter is empty
+  CPPUNIT_ASSERT ( ! str2.isEmpty() );
+  CPPUNIT_ASSERT ( ! string_parts.empty() );
+  CPPUNIT_ASSERT ( string_parts.size() == 1 );
 }
 
 //----------------------------------------------------------------------
@@ -2552,6 +2700,37 @@ void FStringTest::removeTest()
   CPPUNIT_ASSERT ( str.getLength() == 2 );
   CPPUNIT_ASSERT ( *(str.c_str() + str.getLength()) == '\0' );
   CPPUNIT_ASSERT ( *(str.wc_str() + str.getLength()) == L'\0' );
+
+  // Erase
+  str = "ABCDE";
+  CPPUNIT_ASSERT ( str.erase(2, 2) == "ABE" );
+  CPPUNIT_ASSERT ( str.getLength() == 3 );
+  CPPUNIT_ASSERT ( *(str.c_str() + str.getLength()) == '\0' );
+  CPPUNIT_ASSERT ( *(str.wc_str() + str.getLength()) == L'\0' );
+
+  // Erase last character
+  CPPUNIT_ASSERT ( str.erase(2, 1) == "AB" );
+  CPPUNIT_ASSERT ( str.getLength() == 2 );
+  CPPUNIT_ASSERT ( *(str.c_str() + str.getLength()) == '\0' );
+  CPPUNIT_ASSERT ( *(str.wc_str() + str.getLength()) == L'\0' );
+
+  // Erase after the last character
+  CPPUNIT_ASSERT ( str.erase(2, 1) == "AB" );
+  CPPUNIT_ASSERT ( str.getLength() == 2 );
+  CPPUNIT_ASSERT ( *(str.c_str() + str.getLength()) == '\0' );
+  CPPUNIT_ASSERT ( *(str.wc_str() + str.getLength()) == L'\0' );
+
+  // Erase first character
+  CPPUNIT_ASSERT ( str.erase(0, 1) == "B" );
+  CPPUNIT_ASSERT ( str.getLength() == 1 );
+  CPPUNIT_ASSERT ( *(str.c_str() + str.getLength()) == '\0' );
+  CPPUNIT_ASSERT ( *(str.wc_str() + str.getLength()) == L'\0' );
+
+  // Erase all characters
+  CPPUNIT_ASSERT ( str.erase(0, finalcut::FString::npos) == "" );
+  CPPUNIT_ASSERT ( str.getLength() == 0 );
+  CPPUNIT_ASSERT ( *(str.c_str() + str.getLength()) == '\0' );
+  CPPUNIT_ASSERT ( *(str.wc_str() + str.getLength()) == L'\0' );
 }
 
 //----------------------------------------------------------------------
@@ -2595,10 +2774,22 @@ void FStringTest::includesTest()
   CPPUNIT_ASSERT ( ! str.includes(search8) );
   CPPUNIT_ASSERT ( ! empty1.includes(search7) );
 
-  CPPUNIT_ASSERT ( ! str.includes(char('\0')) );
-  CPPUNIT_ASSERT ( str.includes(search9) );
-  CPPUNIT_ASSERT ( ! str.includes(search10) );
-  CPPUNIT_ASSERT ( ! empty1.includes(search9) );
+  CPPUNIT_ASSERT ( ! str.contains(char('\0')) );
+  CPPUNIT_ASSERT ( str.contains(search9) );
+  CPPUNIT_ASSERT ( ! str.contains(search10) );
+  CPPUNIT_ASSERT ( ! empty1.contains(search9) );
+
+  CPPUNIT_ASSERT ( str.find("monkey", 0) == 32 );
+  CPPUNIT_ASSERT ( str.find("monkey", 32) == 32 );
+  CPPUNIT_ASSERT ( str.find("monkey", 33) == finalcut::FString::npos );
+  CPPUNIT_ASSERT ( str.find("MONKEY", 0) == finalcut::FString::npos );
+  CPPUNIT_ASSERT ( str.find("o", 3) == 13 );
+
+  CPPUNIT_ASSERT ( str.rfind("monkey", 38) == 32 );
+  CPPUNIT_ASSERT ( str.rfind("monkey", 32) == 32 );
+  CPPUNIT_ASSERT ( str.rfind("monkey", 31) == finalcut::FString::npos );
+  CPPUNIT_ASSERT ( str.rfind("me") == finalcut::FString::npos );
+  CPPUNIT_ASSERT ( str.rfind("o") == 33 );
 }
 
 //----------------------------------------------------------------------
@@ -2617,15 +2808,76 @@ void FStringTest::controlCodesTest()
   CPPUNIT_ASSERT ( bs_str.removeBackspaces().isEmpty() );
   CPPUNIT_ASSERT ( bs_str.removeBackspaces().getLength() == 0 );
 
+  bs_str = "abc\b";
+  CPPUNIT_ASSERT ( bs_str.removeBackspaces() == "ab" );
+  CPPUNIT_ASSERT ( ! bs_str.removeBackspaces().isEmpty() );
+  CPPUNIT_ASSERT ( bs_str.removeBackspaces().getLength() == 2 );
+
+  bs_str = "\babc";  // Ignore the backspaces at the beginning
+  CPPUNIT_ASSERT ( bs_str.removeBackspaces() == "abc" );
+  CPPUNIT_ASSERT ( ! bs_str.removeBackspaces().isEmpty() );
+  CPPUNIT_ASSERT ( bs_str.removeBackspaces().getLength() == 3 );
+
+  bs_str = "a\b\b";  // Backspace with nothing to delete
+  CPPUNIT_ASSERT ( bs_str.removeBackspaces() == "" );
+  CPPUNIT_ASSERT ( bs_str.removeBackspaces().isEmpty() );
+  CPPUNIT_ASSERT ( bs_str.removeBackspaces().getLength() == 0 );
+
+  bs_str = "ab\bcd";
+  CPPUNIT_ASSERT ( bs_str.removeBackspaces() == "acd" );
+  CPPUNIT_ASSERT ( ! bs_str.removeBackspaces().isEmpty() );
+  CPPUNIT_ASSERT ( bs_str.removeBackspaces().getLength() == 3 );
+
+  bs_str = "\b\b\b";  // Multiple backspaces at start
+  CPPUNIT_ASSERT ( bs_str.removeBackspaces() == "" );
+  CPPUNIT_ASSERT ( bs_str.removeBackspaces().isEmpty() );
+  CPPUNIT_ASSERT ( bs_str.removeBackspaces().getLength() == 0 );
+
+  bs_str = "";
+  CPPUNIT_ASSERT ( bs_str.removeBackspaces() == "" );
+  CPPUNIT_ASSERT ( bs_str.removeBackspaces().isEmpty() );
+  CPPUNIT_ASSERT ( bs_str.removeBackspaces().getLength() == 0 );
+
   finalcut::FString del_str = "apple \177\177\177pietree";
   CPPUNIT_ASSERT ( del_str.getLength() == 16 );
   CPPUNIT_ASSERT ( del_str.removeDel() == "apple tree" );
   CPPUNIT_ASSERT ( del_str.removeDel().getLength() == 10 );
+
   del_str = "\177\177\177\177ABC";
   CPPUNIT_ASSERT ( del_str.getLength() == 7 );
   CPPUNIT_ASSERT ( del_str.removeDel() == "" );
   CPPUNIT_ASSERT ( del_str.removeDel().isEmpty() );
   CPPUNIT_ASSERT ( del_str.removeDel().getLength() == 0 );
+
+  del_str = "abc\177";  // DEL at end, nothing to delete
+  CPPUNIT_ASSERT ( del_str.removeDel() == "abc" );
+  CPPUNIT_ASSERT ( ! del_str.removeDel().isEmpty() );
+  CPPUNIT_ASSERT ( del_str.removeDel().getLength() == 3 );
+
+  del_str = "ab\177c";  // DEL deletes 'c'
+  CPPUNIT_ASSERT ( del_str.removeDel() == "ab" );
+  CPPUNIT_ASSERT ( ! del_str.removeDel().isEmpty() );
+  CPPUNIT_ASSERT ( del_str.removeDel().getLength() == 2 );
+
+  del_str = "a\177\177bc";  // Two DELs delete 'b' and 'c'
+  CPPUNIT_ASSERT ( del_str.removeDel() == "a" );
+  CPPUNIT_ASSERT ( ! del_str.removeDel().isEmpty() );
+  CPPUNIT_ASSERT ( del_str.removeDel().getLength() == 1 );
+
+  del_str = "\177abc";  // DEL deletes 'a'
+  CPPUNIT_ASSERT ( del_str.removeDel() == "bc" );
+  CPPUNIT_ASSERT ( ! del_str.removeDel().isEmpty() );
+  CPPUNIT_ASSERT ( del_str.removeDel().getLength() == 2 );
+
+  del_str = "\177\177\177";  // DELs with nothing to delete
+  CPPUNIT_ASSERT ( del_str.removeDel() == "" );
+  CPPUNIT_ASSERT ( del_str.removeDel().isEmpty() );
+  CPPUNIT_ASSERT ( del_str.removeDel().getLength() == 0 );
+
+  del_str = "a\177b\177c";  // Each DEL deletes next char
+  CPPUNIT_ASSERT ( del_str.removeDel() == "a" );
+  CPPUNIT_ASSERT ( ! del_str.removeDel().isEmpty() );
+  CPPUNIT_ASSERT ( del_str.removeDel().getLength() == 1 );
 
   finalcut::FString tab_str = "one line";
   CPPUNIT_ASSERT ( tab_str.getLength() == 8 );
@@ -2730,6 +2982,31 @@ void FStringTest::controlCodesTest()
     c1[i] = i + 0x80;
 
   CPPUNIT_ASSERT ( c1.replaceControlCodes() == finalcut::FString(32, L' ') );
+
+  finalcut::FString ctrl_code_str = "\x01\x02";
+  CPPUNIT_ASSERT ( ctrl_code_str.replaceControlCodes() == "␁␂" );
+  CPPUNIT_ASSERT ( ! ctrl_code_str.replaceControlCodes().isEmpty() );
+  CPPUNIT_ASSERT ( ctrl_code_str.replaceControlCodes().getLength() == 2 );
+
+  ctrl_code_str = L"abc\x7f";
+  CPPUNIT_ASSERT ( ctrl_code_str.replaceControlCodes() == "abc␡" );
+  CPPUNIT_ASSERT ( ! ctrl_code_str.replaceControlCodes().isEmpty() );
+  CPPUNIT_ASSERT ( ctrl_code_str.replaceControlCodes().getLength() == 4 );
+
+  ctrl_code_str = L"test\200";
+  CPPUNIT_ASSERT ( ctrl_code_str.replaceControlCodes() == "test " );
+  CPPUNIT_ASSERT ( ! ctrl_code_str.replaceControlCodes().isEmpty() );
+  CPPUNIT_ASSERT ( ctrl_code_str.replaceControlCodes().getLength() == 5 );
+
+  ctrl_code_str = L"normal text";
+  CPPUNIT_ASSERT ( ctrl_code_str.replaceControlCodes() == "normal text" );
+  CPPUNIT_ASSERT ( ! ctrl_code_str.replaceControlCodes().isEmpty() );
+  CPPUNIT_ASSERT ( ctrl_code_str.replaceControlCodes().getLength() == 11 );
+
+  ctrl_code_str = L"";
+  CPPUNIT_ASSERT ( ctrl_code_str.replaceControlCodes() == "" );
+  CPPUNIT_ASSERT ( ctrl_code_str.replaceControlCodes().isEmpty() );
+  CPPUNIT_ASSERT ( ctrl_code_str.replaceControlCodes().getLength() == 0 );
 }
 
 //----------------------------------------------------------------------
@@ -2770,6 +3047,42 @@ void FStringTest::caseCompareTest()
   CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"🔥 Fire", L"🔥 fire") == 0 );
   CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"🔥🔥 Fire", L"🔥 fire") > 0 );
   CPPUNIT_ASSERT ( finalcut::FStringCaseCompare(L"🔥 Fire", L"🔥🔥 fire") < 0 );
+}
+
+//----------------------------------------------------------------------
+void FStringTest::swapTest()
+{
+  finalcut::FString s1 ("first string");
+  CPPUNIT_ASSERT ( s1.getLength() == 12 );
+  CPPUNIT_ASSERT ( ! s1.isEmpty() );
+  CPPUNIT_ASSERT_CSTRING ( s1.c_str(), "first string" );
+  CPPUNIT_ASSERT_WCSTRING ( s1.wc_str(), L"first string" );
+  CPPUNIT_ASSERT ( s1 == L"first string" );
+
+  finalcut::FString s2 ("second string");
+  s1.swap(s2);
+  CPPUNIT_ASSERT ( s1.getLength() == 13 );
+  CPPUNIT_ASSERT ( ! s1.isEmpty() );
+  CPPUNIT_ASSERT_CSTRING ( s1.c_str(), "second string" );
+  CPPUNIT_ASSERT_WCSTRING ( s1.wc_str(), L"second string" );
+  CPPUNIT_ASSERT ( s1 == L"second string" );
+  CPPUNIT_ASSERT ( s2.getLength() == 12 );
+  CPPUNIT_ASSERT ( ! s2.isEmpty() );
+  CPPUNIT_ASSERT_CSTRING ( s2.c_str(), "first string" );
+  CPPUNIT_ASSERT_WCSTRING ( s2.wc_str(), L"first string" );
+  CPPUNIT_ASSERT ( s2 == L"first string" );
+
+  s2.swap (s1);
+  CPPUNIT_ASSERT ( s1.getLength() == 12 );
+  CPPUNIT_ASSERT ( ! s1.isEmpty() );
+  CPPUNIT_ASSERT_CSTRING ( s1.c_str(), "first string" );
+  CPPUNIT_ASSERT_WCSTRING ( s1.wc_str(), L"first string" );
+  CPPUNIT_ASSERT ( s1 == L"first string" );
+  CPPUNIT_ASSERT ( s2.getLength() == 13 );
+  CPPUNIT_ASSERT ( ! s2.isEmpty() );
+  CPPUNIT_ASSERT_CSTRING ( s2.c_str(), "second string" );
+  CPPUNIT_ASSERT_WCSTRING ( s2.wc_str(), L"second string" );
+  CPPUNIT_ASSERT ( s2 == L"second string" );
 }
 
 //----------------------------------------------------------------------
