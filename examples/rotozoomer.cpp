@@ -50,8 +50,11 @@ using finalcut::FColor;
 class RotoZoomer final : public finalcut::FDialog
 {
   public:
+    // Constants
+    static constexpr int MAX_LOOPS{314};
+
     // Constructor
-    explicit RotoZoomer (finalcut::FWidget* = nullptr, bool = false, int = 314);
+    explicit RotoZoomer (finalcut::FWidget* = nullptr, bool = false, int = MAX_LOOPS);
 
     // Accessors
     auto getReport() const -> finalcut::FString;
@@ -63,22 +66,62 @@ class RotoZoomer final : public finalcut::FDialog
     void onClose (finalcut::FCloseEvent*) override;
 
   private:
+    static constexpr auto PHI_2     = 2.02358f;
+    static constexpr auto PHI_3     = -1.11701f;
+    static constexpr auto PHI_PI2   = float(M_PI_2);  // π/2
+    static constexpr auto idx_2     = int(PHI_2 * 50.0f) % MAX_LOOPS;
+    static constexpr auto idx_3     = int(PHI_3 * 50.0f) % MAX_LOOPS;
+    static constexpr auto idx_cos   = int(PHI_PI2 * 50.0f) % MAX_LOOPS;
+    static constexpr auto idx_2_cos = int((PHI_2 + PHI_PI2) * 50.0f) % MAX_LOOPS;
+    static constexpr auto idx_3_cos = int((PHI_3 + PHI_PI2) * 50.0f) % MAX_LOOPS;
+
     // Methods
+    auto getSine (int, int) -> float;
     void draw() override;
-    void rotozoomer (double, double, double, double);
+    void rotozoomer (float, float, float);
     void generateReport();
     void adjustSize() override;
 
     // Data member
-    bool                     benchmark{false};
-    int                      loops{0};
-    int                      path{0};
-    std::wstring             data{std::wstring(256, L'\0')};
-    finalcut::FString        report{};
-    time_point<system_clock> start{};
-    time_point<system_clock> end{};
+    bool  benchmark{false};
+    int  loops{0};
+    int  path{0};
+    finalcut::FString  report{};
+    time_point<system_clock>  start{};
+    time_point<system_clock>  end{};
+    static std::array<float, MAX_LOOPS>  sin_table;
+    static const std::array<wchar_t, 256>  data;
 };
 
+// static class attributes
+std::array<float, RotoZoomer::MAX_LOOPS> RotoZoomer::sin_table{};
+
+const std::array<wchar_t, 256> RotoZoomer::data = [] ()
+{
+  std::array<wchar_t, 256> arr{};
+  const std::array<wchar_t, 4> init_val{{L' ', L'+', L'x', L' '}};
+  std::size_t h{0};
+
+  for (int i{0}; i < 2; ++i)
+  {
+    for (int j{0}; j < 8; ++j)
+    {
+      for (int k{0}; k < 8; ++k)
+      {
+        arr[h] = init_val[unsigned(2 * i)];
+        ++h;
+      }
+
+      for (int k{0}; k < 8; ++k)
+      {
+        arr[h] = init_val[unsigned((2 * i) + 1)];
+        ++h;
+      }
+    }
+  }
+
+  return arr;
+}();
 
 //----------------------------------------------------------------------
 RotoZoomer::RotoZoomer (finalcut::FWidget* parent, bool is_benchmark, int num_loops)
@@ -86,27 +129,26 @@ RotoZoomer::RotoZoomer (finalcut::FWidget* parent, bool is_benchmark, int num_lo
   , benchmark{is_benchmark}
   , loops{num_loops}
 {
+  static bool tables_ready = false;
   FDialog::setText ("Rotozoomer effect");
-  const std::array<wchar_t, 4> init_val{{L' ', L'+', L'x', L' '}};
-  std::size_t h{0};
 
-  for (int i{0}; i < 2; i++)
+  if ( ! tables_ready )
   {
-    for (int j{0}; j < 8; j++)
+    for (int i{0}; i < MAX_LOOPS; ++i)
     {
-      for (int k{0}; k < 8; k++)
-      {
-        data[h] = init_val[unsigned(2 * i)];
-        h++;
-      }
-
-      for (int k{0}; k < 8; k++)
-      {
-        data[h] = init_val[unsigned((2 * i) + 1)];
-        h++;
-      }
+      const auto a = float(i) / 50.0f;
+      sin_table[i] = std::sin(a);
     }
+
+    tables_ready = true;
   }
+}
+
+//----------------------------------------------------------------------
+inline auto RotoZoomer::getSine (int i, int shift) -> float
+{
+  // Sine lookup
+  return sin_table[(i + shift + MAX_LOOPS) % MAX_LOOPS];
 }
 
 //----------------------------------------------------------------------
@@ -116,47 +158,64 @@ void RotoZoomer::draw()
     start = system_clock::now();
 
   finalcut::FDialog::draw();
-  auto a  = double(path) / 50.0;
-  auto r  = double(128.0 + 96.0 * std::cos(double(path) / 10.0));
-  auto cx = double(80.0 / 2.0 + (80.0 / 2.0 * std::sin(a)));
-  auto cy = double(23.0 + (23.0 * std::cos(a)));
-  rotozoomer (cx, cy, r, a);
+  const auto i1 = (path * 5) % MAX_LOOPS;
+  const auto r = 128.0f + (96.0f * getSine(i1, idx_cos));
+  const auto i2 = path % MAX_LOOPS;
+  const auto cx = 40.0f + (40.0f * getSine(i2, 0));
+  const auto cy = 23.0f + (23.0f * getSine(i2, idx_cos));
+  rotozoomer (cx, cy, r);
 }
 
 //----------------------------------------------------------------------
-inline void RotoZoomer::rotozoomer (double cx, double cy, double r, double a)
+inline void RotoZoomer::rotozoomer (float cx, float cy, float r)
 {
-  const auto& Cols = int(getClientWidth());
-  const auto& Lines = int(getClientHeight());
-  auto Ax   = int(4096.0 * (cx + r * std::cos(a)));
-  auto Ay   = int(4096.0 * (cy + r * std::sin(a)));
-  auto Bx   = int(4096.0 * (cx + r * std::cos(a + 2.02358)));
-  auto By   = int(4096.0 * (cy + r * std::sin(a + 2.02358)));
-  auto Cx   = int(4096.0 * (cx + r * std::cos(a - 1.11701)));
-  auto Cy   = int(4096.0 * (cy + r * std::sin(a - 1.11701)));
-  int  dxdx = (Bx - Ax) / 80;
-  int  dydx = (By - Ay) / 80;
-  int  dxdy = (Cx - Ax) / 23;
-  int  dydy = (Cy - Ay) / 23;
+  constexpr finalcut::FColorPair color_space { FColor::Black, FColor::White };
+  constexpr finalcut::FColorPair color_plus  { FColor::Black, FColor::Red   };
+  constexpr finalcut::FColorPair color_x     { FColor::Black, FColor::Cyan  };
 
-  for (auto y = 0; y < Lines; y++)
+  const auto& cols = int(getClientWidth());
+  const auto& lines = int(getClientHeight());
+
+  if ( cols <= 0 || lines <= 0 )
+    return;
+
+  constexpr auto SCALE = int{4096};
+  const auto i   = int(path % MAX_LOOPS);
+  const auto Ax0 = int(SCALE * (cx + r * getSine(i, idx_cos)));
+  const auto Ay0 = int(SCALE * (cy + r * getSine(i, 0)));
+  const auto Bx0 = int(SCALE * (cx + r * getSine(i, idx_2_cos)));
+  const auto By0 = int(SCALE * (cy + r * getSine(i, idx_2)));
+  const auto Cx0 = int(SCALE * (cx + r * getSine(i, idx_3_cos)));
+  const auto Cy0 = int(SCALE * (cy + r * getSine(i, idx_3)));
+  int dxdx = (Bx0 - Ax0) / cols;
+  int dydx = (By0 - Ay0) / cols;
+  int dxdy = (Cx0 - Ax0) / lines;
+  int dydy = (Cy0 - Ay0) / lines;
+
+  int Ax = Ax0;
+  int Ay = Ay0;
+  auto& out = print();
+
+  for (auto y{0}; y < lines; ++y)
   {
-    Cx = Ax;
-    Cy = Ay;
-    print() << FPoint{2, 3 + y};
+    int Cx = Ax;
+    int Cy = Ay;
+    out << FPoint{2, 3 + y};
 
-    for (auto x = 0; x < Cols; x++)
+    for (auto x{0}; x < cols; ++x)
     {
-      const auto& ch = data[((Cy >> 14) & 0xf) + ((Cx >> 10) & 0xf0)];
+      const unsigned index = unsigned((Cy >> 14) & 0xF)
+                           + unsigned((Cx >> 10) & 0xF0);
+      const auto ch = data[index];
 
       if ( ch == L'+' )
-        print() << finalcut::FColorPair{FColor::Black, FColor::Red};
+        out << color_plus;
       else if ( ch == L'x' )
-        print() << finalcut::FColorPair{FColor::Black, FColor::Cyan};
+        out << color_x;
       else
-        print() << finalcut::FColorPair{FColor::Black, FColor::White};
+        out << color_space;
 
-      print() << ch;
+      out << ch;
       Cx += dxdx;
       Cy += dydx;
     }
@@ -177,8 +236,8 @@ void RotoZoomer::generateReport()
   dimension_str << getDesktopWidth()
                 << "x" << getDesktopHeight();
   const auto elapsed_ms = int(duration_cast<milliseconds>(end - start).count());
-  time_str << double(elapsed_ms) / 1000 << "s";
-  fps_str << double(loops) * 1000.0 / double(elapsed_ms);
+  time_str << float(elapsed_ms) / 1000 << "s";
+  fps_str << float(loops) * 1000.0 / float(elapsed_ms);
 
   rep << finalcut::FString{55, '-'} << "\n"
       << "Terminal            Size    Time      Loops  Frame rate\n"
@@ -220,7 +279,7 @@ void RotoZoomer::onShow (finalcut::FShowEvent*)
 //----------------------------------------------------------------------
 void RotoZoomer::onTimer (finalcut::FTimerEvent*)
 {
-  if ( path >= 314 )  // More than 360 degrees
+  if ( path >= MAX_LOOPS )  // More than 360 degrees
     path = 0;
   else
     path++;
@@ -303,8 +362,7 @@ auto main (int argc, char* argv[]) -> int
     finalcut::FVTerm::setNonBlockingRead();
 
     // Create a simple dialog box
-    static constexpr int iterations = 314;
-    RotoZoomer roto{&app, benchmark, iterations};
+    RotoZoomer roto{&app, benchmark, RotoZoomer::MAX_LOOPS};
 
     if ( benchmark )
       roto.setGeometry (FPoint{1, 1}, FSize{80, 24});
