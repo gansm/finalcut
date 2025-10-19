@@ -88,7 +88,7 @@ class FStyle
       return fchar_attr;
     }
 
-    constexpr auto toFAttribute() const noexcept -> FAttribute
+    auto toFAttribute() const noexcept -> FAttribute
     {
       FCharAttribute fchar_attr{toFCharAttribute()};
       FAttribute fattr{};
