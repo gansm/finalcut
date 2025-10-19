@@ -145,7 +145,7 @@ FString::FString (const char c)
 }
 
 //----------------------------------------------------------------------
-FString::~FString() = default;  // destructor
+FString::~FString() noexcept = default;  // destructor
 
 
 // FString operators

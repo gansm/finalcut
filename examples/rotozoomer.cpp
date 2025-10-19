@@ -20,6 +20,10 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#if defined(__CYGWIN__)
+  #define _XOPEN_SOURCE 700
+#endif
+
 #include <cmath>
 
 #include <array>
