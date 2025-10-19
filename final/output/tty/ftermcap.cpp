@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2024 Markus Gans                                      *
+* Copyright 2015-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -68,7 +68,7 @@ namespace internal
 static constexpr std::size_t BUF_SIZE{2048};
 
 // Function
-static auto getStringBuffer() -> char*
+static auto getStringBuffer() noexcept -> char*
 {
   static std::array<char, BUF_SIZE> string_buf{};
   return string_buf.data();
@@ -104,7 +104,7 @@ FTermcap::PutCharFunc   FTermcap::outc                     {};
 FTermcap::PutStringFunc FTermcap::outs                     {};
 
 //----------------------------------------------------------------------
-inline auto getKeyEntry (FKey key) -> FKeyMap::KeyCapMap*
+inline auto getKeyEntry (FKey key) noexcept -> FKeyMap::KeyCapMap*
 {
   auto& fkey_cap_table = FKeyMap::getKeyCapMap();
   std::size_t i{0};
@@ -123,12 +123,12 @@ inline auto getKeyEntry (FKey key) -> FKeyMap::KeyCapMap*
 
 //----------------------------------------------------------------------
 inline void del2ndKeyIfDuplicate ( const FKeyMap::KeyCapMap* first
-                                 , FKeyMap::KeyCapMap* second )
+                                 , FKeyMap::KeyCapMap* second ) noexcept
 {
   if ( ! first || ! first->string || ! second || ! second->string )
     return;
 
-  auto len = std::min(first->length, second->length);
+  const auto len = std::min(first->length, second->length);
 
   if ( std::memcmp(first->string, second->string, len) == 0 )
   {
@@ -186,14 +186,14 @@ auto FTermcap::getNumber (const std::string& cap) -> int
 //----------------------------------------------------------------------
 auto FTermcap::getString (const std::string& cap) -> char*
 {
-  const auto& string = ::tgetstr(C_STR(cap.data()), buffer_addr);
+  const auto string = ::tgetstr(C_STR(cap.data()), buffer_addr);
   return ( string && string[0] != '\0' ) ? string : nullptr;
 }
 
 //----------------------------------------------------------------------
 auto FTermcap::encodeMotionParameter (const std::string& cap, int col, int row) -> std::string
 {
-  auto str = ::tgoto(C_STR(cap.data()), col, row);
+  const auto str = ::tgoto(C_STR(cap.data()), col, row);
   return str ? str : std::string();
 }
 
@@ -271,7 +271,7 @@ void FTermcap::init()
 void FTermcap::setDefaultPutCharFunction()
 {
   static const auto& fsys = FSystem::getInstance();
-  auto put_char = [] (int ch) { return fsys->putchar(ch); };
+  auto put_char = [] (int ch) noexcept { return fsys->putchar(ch); };
   outc = put_char;
 }
 
@@ -280,7 +280,7 @@ void FTermcap::setDefaultPutStringFunction()
 {
   static const auto& fsys = FSystem::getInstance();
   auto put_string = \
-      [] (const std::string& string)
+      [] (const std::string& string) noexcept
       {
         return fsys->fputs(string.c_str(), stdout);
       };
@@ -483,7 +483,7 @@ void FTermcap::termcapKeys()
 
   // Sort key map list by string length (string length 0 at end)
   std::sort ( cap_map.begin(), cap_map.end()
-            , [] (const auto& lhs, const auto& rhs)
+            , [] (const auto& lhs, const auto& rhs) noexcept
               {
                 if ( lhs.length == 0 && rhs.length > 0 ) return false;
                 if ( lhs.length > 0 && rhs.length == 0 ) return true;
@@ -503,7 +503,7 @@ auto FTermcap::encodeParams ( const std::string& cap
 }
 
 //----------------------------------------------------------------------
-inline auto FTermcap::hasDelay (const std::string& string) -> bool
+inline auto FTermcap::hasDelay (const std::string& string) noexcept -> bool
 {
   return (TCAP(t_bell) && string == std::string(TCAP(t_bell)))
       || (TCAP(t_flash_screen) && string == std::string(TCAP(t_flash_screen)))
@@ -513,7 +513,7 @@ inline auto FTermcap::hasDelay (const std::string& string) -> bool
 
 //----------------------------------------------------------------------
 inline auto FTermcap::readNumber ( string_iterator& iter, int affcnt
-                                 , bool& has_delay) -> int
+                                 , bool& has_delay) noexcept -> int
 {
   ++iter;
   const auto first_digit = iter;
@@ -536,7 +536,7 @@ inline auto FTermcap::readNumber ( string_iterator& iter, int affcnt
 }
 
 //----------------------------------------------------------------------
-inline void FTermcap::readDigits (string_iterator& iter, int& number)
+inline void FTermcap::readDigits (string_iterator& iter, int& number) noexcept
 {
   int digit{};
 
@@ -550,7 +550,7 @@ inline void FTermcap::readDigits (string_iterator& iter, int& number)
 }
 
 //----------------------------------------------------------------------
-inline void FTermcap::decimalPoint (string_iterator& iter, int& number)
+inline void FTermcap::decimalPoint (string_iterator& iter, int& number) noexcept
 {
   if ( *iter != '.' )
     return;
@@ -569,7 +569,7 @@ inline void FTermcap::decimalPoint (string_iterator& iter, int& number)
 
 //----------------------------------------------------------------------
 inline void FTermcap::asteriskSlash ( string_iterator& iter
-                                    , int& number, int affcnt, bool& has_delay )
+                                    , int& number, int affcnt, bool& has_delay ) noexcept
 {
   while ( *iter == '*' || *iter == '/' )
   {

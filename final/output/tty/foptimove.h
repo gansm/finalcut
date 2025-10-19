@@ -1,9 +1,9 @@
 /***********************************************************************
-* foptimove.cpp - Cursor movement optimization                         *
+* foptimove.h - Cursor movement optimization                           *
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2024 Markus Gans                                      *
+* Copyright 2015-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -107,26 +107,26 @@ class FOptiMove final
     // Accessors
     auto  getClassName() const -> FString;
     static auto  getInstance() -> FOptiMove&;
-    auto  getCursorHomeLength() const -> uInt;
-    auto  getCarriageReturnLength() const -> uInt;
-    auto  getCursorToLLLength() const -> uInt;
-    auto  getTabLength() const -> uInt;
-    auto  getBackTabLength() const -> uInt;
-    auto  getCursorUpLength() const -> uInt;
-    auto  getCursorDownLength() const -> uInt;
-    auto  getCursorLeftLength() const -> uInt;
-    auto  getCursorRightLength() const -> uInt;
-    auto  getCursorAddressLength() const -> uInt;
-    auto  getColumnAddressLength() const -> uInt;
-    auto  getRowAddressLength() const -> uInt;
-    auto  getParmUpCursorLength() const -> uInt;
-    auto  getParmDownCursorLength() const -> uInt;
-    auto  getParmLeftCursorLength() const -> uInt;
-    auto  getParmRightCursorLength() const -> uInt;
-    auto  getEraseCharsLength() const -> uInt;
-    auto  getRepeatCharLength() const -> uInt;
-    auto  getClrBolLength() const -> uInt;
-    auto  getClrEolLength() const -> uInt;
+    auto  getCursorHomeLength() const noexcept -> uInt;
+    auto  getCarriageReturnLength() const noexcept -> uInt;
+    auto  getCursorToLLLength() const noexcept -> uInt;
+    auto  getTabLength() const noexcept -> uInt;
+    auto  getBackTabLength() const noexcept -> uInt;
+    auto  getCursorUpLength() const noexcept -> uInt;
+    auto  getCursorDownLength() const noexcept -> uInt;
+    auto  getCursorLeftLength() const noexcept -> uInt;
+    auto  getCursorRightLength() const noexcept -> uInt;
+    auto  getCursorAddressLength() const noexcept -> uInt;
+    auto  getColumnAddressLength() const noexcept -> uInt;
+    auto  getRowAddressLength() const noexcept -> uInt;
+    auto  getParmUpCursorLength() const noexcept -> uInt;
+    auto  getParmDownCursorLength() const noexcept -> uInt;
+    auto  getParmLeftCursorLength() const noexcept -> uInt;
+    auto  getParmRightCursorLength() const noexcept -> uInt;
+    auto  getEraseCharsLength() const noexcept -> uInt;
+    auto  getRepeatCharLength() const noexcept -> uInt;
+    auto  getClrBolLength() const noexcept -> uInt;
+    auto  getClrEolLength() const noexcept -> uInt;
 
     // Mutators
     void  setBaudRate (int);
@@ -158,7 +158,7 @@ class FOptiMove final
     void  set_eat_newline_glitch (bool = true) noexcept;
 
     // Methods
-    void  check_boundaries (int&, int&, int&, int&) const;
+    void  check_boundaries (int&, int&, int&, int&) const noexcept;
     auto  moveCursor (int, int, int, int) -> std::string;
 
   private:
@@ -218,9 +218,9 @@ class FOptiMove final
     // maximum character distance to avoid direct cursor addressing
 
     // Methods
-    void  calculateCharDuration();
-    auto  capDuration (const char[], int) const -> int;
-    auto  capDurationToLength (int) const -> int;
+    void  calculateCharDuration() noexcept;
+    auto  capDuration (const char[], int) const noexcept -> int;
+    auto  capDurationToLength (int) const noexcept -> int;
     auto  repeatedAppend (std::string&, const Capability&, int) const -> int;
     auto  relativeMove (std::string&, int, int, int, int) const -> int;
     auto  verticalMove (std::string&, int, int) const -> int;
@@ -234,7 +234,7 @@ class FOptiMove final
     void  moveWithLeftCursor (std::string&, int&, int, int, int) const;
     void  leftMove (std::string&, int&, int, int) const;
 
-    auto  isWideMove (int, int, int, int) const -> bool;
+    auto  isWideMove (int, int, int, int) const noexcept -> bool;
     auto  isMethod0Faster (int&, int, int) -> bool;
     auto  isMethod1Faster (int&, int, int, int, int) -> bool;
     auto  isMethod2Faster (int&, int, int, int) -> bool;
@@ -271,83 +271,83 @@ inline auto FOptiMove::getClassName() const -> FString
 { return "FOptiMove"; }
 
 //----------------------------------------------------------------------
-inline auto FOptiMove::getCursorHomeLength() const -> uInt
+inline auto FOptiMove::getCursorHomeLength() const noexcept -> uInt
 { return static_cast<uInt>(cursor.home.length); }
 
 //----------------------------------------------------------------------
-inline auto FOptiMove::getCarriageReturnLength() const -> uInt
+inline auto FOptiMove::getCarriageReturnLength() const noexcept -> uInt
 { return static_cast<uInt>(cursor.carriage_return.length); }
 
 //----------------------------------------------------------------------
-inline auto FOptiMove::getCursorToLLLength() const -> uInt
+inline auto FOptiMove::getCursorToLLLength() const noexcept -> uInt
 { return static_cast<uInt>(cursor.to_ll.length); }
 
 //----------------------------------------------------------------------
-inline auto FOptiMove::getTabLength() const -> uInt
+inline auto FOptiMove::getTabLength() const noexcept -> uInt
 { return static_cast<uInt>(cursor.tab.length); }
 
 //----------------------------------------------------------------------
-inline auto FOptiMove::getBackTabLength() const -> uInt
+inline auto FOptiMove::getBackTabLength() const noexcept -> uInt
 { return static_cast<uInt>(cursor.back_tab.length); }
 
 //----------------------------------------------------------------------
-inline auto FOptiMove::getCursorUpLength() const -> uInt
+inline auto FOptiMove::getCursorUpLength() const noexcept -> uInt
 { return static_cast<uInt>(cursor.up.length); }
 
 //----------------------------------------------------------------------
-inline auto FOptiMove::getCursorDownLength() const -> uInt
+inline auto FOptiMove::getCursorDownLength() const noexcept -> uInt
 { return static_cast<uInt>(cursor.down.length); }
 
 //----------------------------------------------------------------------
-inline auto FOptiMove::getCursorLeftLength() const -> uInt
+inline auto FOptiMove::getCursorLeftLength() const noexcept -> uInt
 { return static_cast<uInt>(cursor.left.length); }
 
 //----------------------------------------------------------------------
-inline auto FOptiMove::getCursorRightLength() const -> uInt
+inline auto FOptiMove::getCursorRightLength() const noexcept -> uInt
 { return static_cast<uInt>(cursor.right.length); }
 
 //----------------------------------------------------------------------
-inline auto FOptiMove::getCursorAddressLength() const -> uInt
+inline auto FOptiMove::getCursorAddressLength() const noexcept -> uInt
 { return static_cast<uInt>(parm_cursor.address.length); }
 
 //----------------------------------------------------------------------
-inline auto FOptiMove::getColumnAddressLength() const -> uInt
+inline auto FOptiMove::getColumnAddressLength() const noexcept -> uInt
 { return static_cast<uInt>(parm_cursor.column_address.length); }
 
 //----------------------------------------------------------------------
-inline auto FOptiMove::getRowAddressLength() const -> uInt
+inline auto FOptiMove::getRowAddressLength() const noexcept -> uInt
 { return static_cast<uInt>(parm_cursor.row_address.length); }
 
 //----------------------------------------------------------------------
-inline auto FOptiMove::getParmUpCursorLength() const -> uInt
+inline auto FOptiMove::getParmUpCursorLength() const noexcept -> uInt
 { return static_cast<uInt>(parm_cursor.up.length); }
 
 //----------------------------------------------------------------------
-inline auto FOptiMove::getParmDownCursorLength() const -> uInt
+inline auto FOptiMove::getParmDownCursorLength() const noexcept -> uInt
 { return static_cast<uInt>(parm_cursor.down.length); }
 
 //----------------------------------------------------------------------
-inline auto FOptiMove::getParmLeftCursorLength() const -> uInt
+inline auto FOptiMove::getParmLeftCursorLength() const noexcept -> uInt
 { return static_cast<uInt>(parm_cursor.left.length); }
 
 //----------------------------------------------------------------------
-inline auto FOptiMove::getParmRightCursorLength() const -> uInt
+inline auto FOptiMove::getParmRightCursorLength() const noexcept -> uInt
 { return static_cast<uInt>(parm_cursor.right.length); }
 
 //----------------------------------------------------------------------
-inline auto FOptiMove::getEraseCharsLength() const -> uInt
+inline auto FOptiMove::getEraseCharsLength() const noexcept -> uInt
 { return static_cast<uInt>(edit.erase_chars.length); }
 
 //----------------------------------------------------------------------
-inline auto FOptiMove::getRepeatCharLength() const -> uInt
+inline auto FOptiMove::getRepeatCharLength() const noexcept -> uInt
 { return static_cast<uInt>(edit.repeat_char.length); }
 
 //----------------------------------------------------------------------
-inline auto FOptiMove::getClrBolLength() const -> uInt
+inline auto FOptiMove::getClrBolLength() const noexcept -> uInt
 { return static_cast<uInt>(edit.clr_bol.length); }
 
 //----------------------------------------------------------------------
-inline auto FOptiMove::getClrEolLength() const -> uInt
+inline auto FOptiMove::getClrEolLength() const noexcept -> uInt
 { return static_cast<uInt>(edit.clr_eol.length); }
 
 //----------------------------------------------------------------------

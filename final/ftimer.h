@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2022-2023 Markus Gans                                      *
+* Copyright 2022-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -85,19 +85,19 @@ class FTimer
       return "FTimer";
     }
 
-    inline auto getCurrentTime() const -> TimeValue
+    inline auto getCurrentTime() const noexcept -> TimeValue
     {
       return system_clock::now();  // Get the current time
     }
 
     // Inquiries
-    auto  isTimeout (const TimeValue&, uInt64) -> bool;
+    auto  isTimeout (const TimeValue&, uInt64) const noexcept -> bool;
 
     // Methods
-    auto  addTimer (ObjectT*, int) & -> int;
-    auto  delTimer (int) const & -> bool;
-    auto  delOwnTimers (const ObjectT*) const & -> bool;
-    auto  delAllTimers() const & -> bool;
+    auto  addTimer (ObjectT*, int) -> int;
+    auto  delTimer (int) const -> bool;
+    auto  delOwnTimers (const ObjectT*) const -> bool;
+    auto  delAllTimers() const -> bool;
 
   protected:
     struct FTimerData
@@ -113,7 +113,7 @@ class FTimer
     using FTimerListUniquePtr = std::unique_ptr<FTimerList>;
 
     // Accessor
-    auto getTimerList() const -> FTimerList*
+    auto getTimerList() const noexcept -> FTimerList*
     {
       return globalTimerList().get();
     }
@@ -124,7 +124,7 @@ class FTimer
 
   private:
     // Method
-    static auto globalTimerList() -> const FTimerListUniquePtr&;
+    static auto globalTimerList() noexcept -> const FTimerListUniquePtr&;
 
     // Friend classes
     friend class FObjectTimer;
@@ -137,39 +137,40 @@ auto getNextId() -> int;
 // public methods of FTimer
 //----------------------------------------------------------------------
 template <typename ObjectT>
-inline auto FTimer<ObjectT>::isTimeout (const TimeValue& time, uInt64 timeout) -> bool
+inline auto FTimer<ObjectT>::isTimeout ( const TimeValue& time
+                                       , uInt64 timeout_us ) const noexcept -> bool
 {
   // Checks whether the specified time span (timeout in µs) has elapsed
 
-  const auto& now = getCurrentTime();
+  const auto now = getCurrentTime();
 
   if ( now < time )
     return false;
 
   const auto diff = now - time;
-  const auto& diff_usec = uInt64(duration_cast<microseconds>(diff).count());
-  return diff_usec > timeout;
+  const auto diff_us = uInt64(duration_cast<microseconds>(diff).count());
+  return diff_us > timeout_us;
 }
 
 //----------------------------------------------------------------------
 template <typename ObjectT>
-auto FTimer<ObjectT>::addTimer (ObjectT* object, int interval) & -> int
+auto FTimer<ObjectT>::addTimer (ObjectT* object, int interval) -> int
 {
   // Create a timer and returns the timer identifier number
   // (interval in ms)
 
-  std::lock_guard<std::shared_timed_mutex> lock_guard(internal::timer_var::mutex);
+  const std::lock_guard<std::shared_timed_mutex> lock_guard(internal::timer_var::mutex);
   auto& timer_list = globalTimerList();
-  int id = getNextId();
+  const int id = getNextId();
   const auto time_interval = milliseconds(interval);
   const auto timeout = getCurrentTime() + time_interval;
-  FTimerData timedata{ id, time_interval, timeout, object };
+  const FTimerData timedata{ id, time_interval, timeout, object };
 
   // Insert in list sorted by timeout
   timer_list->insert( std::lower_bound( timer_list->cbegin()
                                       , timer_list->cend()
                                       , timedata
-                                      , [] (const auto& a, const auto& b)
+                                      , [] (const auto& a, const auto& b) noexcept
                                         {
                                           return a.timeout < b.timeout;
                                         }
@@ -180,26 +181,26 @@ auto FTimer<ObjectT>::addTimer (ObjectT* object, int interval) & -> int
 
 //----------------------------------------------------------------------
 template <typename ObjectT>
-auto FTimer<ObjectT>::delTimer (int id) const & -> bool
+auto FTimer<ObjectT>::delTimer (int id) const -> bool
 {
   // Deletes a timer by using the timer identifier number
 
   if ( id <= 0 )
     return false;
 
-  std::lock_guard<std::shared_timed_mutex> lock_guard(internal::timer_var::mutex);
-  auto& timer_list = globalTimerList();
+  const std::lock_guard<std::shared_timed_mutex> lock_guard(internal::timer_var::mutex);
+  const auto& timer_list = globalTimerList();
 
   if ( ! timer_list || timer_list->empty() )
     return false;
 
-  auto iter = std::find_if ( timer_list->cbegin()
-                           , timer_list->cend()
-                           , [id] (const auto& timer)
-                             {
-                               return timer.id == id;
-                             }
-                           );
+  const auto iter = std::find_if ( timer_list->cbegin()
+                                 , timer_list->cend()
+                                 , [id] (const auto& timer) noexcept
+                                   {
+                                     return timer.id == id;
+                                   }
+                                 );
 
   if ( iter == timer_list->cend() )
     return false;
@@ -210,19 +211,19 @@ auto FTimer<ObjectT>::delTimer (int id) const & -> bool
 
 //----------------------------------------------------------------------
 template <typename ObjectT>
-auto FTimer<ObjectT>::delOwnTimers(const ObjectT* object) const & -> bool
+auto FTimer<ObjectT>::delOwnTimers(const ObjectT* object) const -> bool
 {
   // Deletes all timers of this object
 
-  std::lock_guard<std::shared_timed_mutex> lock_guard(internal::timer_var::mutex);
-  auto& timer_list = globalTimerList();
+  const std::lock_guard<std::shared_timed_mutex> lock_guard(internal::timer_var::mutex);
+  const auto& timer_list = globalTimerList();
 
   if ( ! timer_list || timer_list->empty() )
     return false;
 
   timer_list->erase ( std::remove_if( timer_list->begin()
                                     , timer_list->end()
-                                    , [&object] (const auto& timer)
+                                    , [object] (const auto& timer) noexcept
                                       {
                                         return timer.object == object;
                                       }
@@ -233,12 +234,12 @@ auto FTimer<ObjectT>::delOwnTimers(const ObjectT* object) const & -> bool
 
 //----------------------------------------------------------------------
 template <typename ObjectT>
-auto FTimer<ObjectT>::delAllTimers() const & -> bool
+auto FTimer<ObjectT>::delAllTimers() const -> bool
 {
   // Deletes all timers of all objects
 
-  std::lock_guard<std::shared_timed_mutex> lock_guard(internal::timer_var::mutex);
-  auto& timer_list = globalTimerList();
+  const std::lock_guard<std::shared_timed_mutex> lock_guard(internal::timer_var::mutex);
+  const auto& timer_list = globalTimerList();
 
   if ( ! timer_list || timer_list->empty() )
     return false;
@@ -261,14 +262,14 @@ auto FTimer<ObjectT>::processTimerEvent (CallbackT callback) -> uInt
   if ( ! lock.try_lock() )
     return 0;
 
-  auto& timer_list = globalTimerList();
+  const auto& timer_list = globalTimerList();
 
   if ( ! timer_list || timer_list->empty() )
     return 0;
 
-  const auto& currentTime = getCurrentTime();
+  const auto currentTime = getCurrentTime();
 
-  for (auto&& timer : *timer_list)
+  for (auto& timer : *timer_list)
   {
     if ( ! timer.id
       || ! timer.object
@@ -295,7 +296,7 @@ auto FTimer<ObjectT>::processTimerEvent (CallbackT callback) -> uInt
 // private methods of FTimer
 //----------------------------------------------------------------------
 template <typename ObjectT>
-auto FTimer<ObjectT>::globalTimerList() -> const FTimerListUniquePtr&
+auto FTimer<ObjectT>::globalTimerList() noexcept -> const FTimerListUniquePtr&
 {
   static const auto& timer_list = std::make_unique<FTimerList>();
   return timer_list;
@@ -306,7 +307,7 @@ class FObject;
 
 // Specialization for FObject
 template <>
-auto FTimer<FObject>::globalTimerList() -> const FTimerListUniquePtr&;
+auto FTimer<FObject>::globalTimerList() noexcept -> const FTimerListUniquePtr&;
 
 
 //----------------------------------------------------------------------
@@ -326,13 +327,13 @@ class FObjectTimer
       return "FObjectTimer";
     }
 
-    static inline auto getCurrentTime() -> TimeValue
+    static inline auto getCurrentTime() noexcept -> TimeValue
     {
       return timer->getCurrentTime();
     }
 
     // Inquiries
-    static auto isTimeout (const TimeValue& time, uInt64 timeout) -> bool
+    static auto isTimeout (const TimeValue& time, uInt64 timeout) noexcept -> bool
     {
       return timer->isTimeout(time, timeout);
     }
@@ -359,7 +360,7 @@ class FObjectTimer
     }
 
   protected:
-    auto getTimerList() const -> FTimer<FObject>::FTimerList*
+    auto getTimerList() const noexcept -> FTimer<FObject>::FTimerList*
     {
       return timer->globalTimerList().get();
     }
@@ -385,7 +386,7 @@ class FObjectTimer
     }
 
     template <typename T>
-    inline auto selfPointer() const -> T
+    inline auto selfPointer() const noexcept -> T
     {
       return T(this);
     }

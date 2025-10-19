@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2023 Markus Gans                                      *
+* Copyright 2019-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -70,10 +70,10 @@ class SGRoptimizer final
 
     // Methods
     void findParameter();
-    auto isSGRStart (std::size_t) -> bool;
+    auto isSGRStart (std::size_t) const noexcept -> bool;
     void combineParameter();
-    void handleSGRterminating ( const std::vector<parameter>::const_iterator, std::size_t&
-                              , std::size_t, std::size_t );
+    void handleSGRterminating ( std::vector<parameter>::const_iterator, std::size_t&
+                              , std::size_t, std::size_t ) noexcept;
 
     // Data member
     std::string& seq;

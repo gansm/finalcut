@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2022 Markus Gans                                      *
+* Copyright 2019-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -50,7 +50,7 @@ class FColorPair
 {
   public:
     // Constructors
-    explicit FColorPair (FColor fg = FColor::Default, FColor bg = FColor::Default)
+    constexpr explicit FColorPair (FColor fg = FColor::Default, FColor bg = FColor::Default)
       : fg_color{fg}
       , bg_color{bg}
     { }
@@ -59,26 +59,26 @@ class FColorPair
     auto getClassName() const -> FString
     { return "FColorPair"; }
 
-    inline auto getForegroundColor() const noexcept -> FColor
+    constexpr auto getForegroundColor() const noexcept -> FColor
     { return fg_color; }
 
-    inline auto getBackgroundColor() const noexcept -> FColor
+    constexpr auto getBackgroundColor() const noexcept -> FColor
     { return bg_color; }
 
     // Mutators
-    inline void setForegroundColor (FColor color) noexcept
+    constexpr void setForegroundColor (FColor color) noexcept
     { fg_color = color; }
 
-    inline void setBackgroundColor (FColor color) noexcept
+    constexpr void setBackgroundColor (FColor color) noexcept
     { bg_color = color; }
 
-    inline void setColorPair (const FColorPair& pair) noexcept
+    constexpr void setColorPair (const FColorPair& pair) noexcept
     {
       fg_color = pair.fg_color;
       bg_color = pair.bg_color;
     }
 
-    inline void setColorPair (FColor fg, FColor bg) noexcept
+    constexpr void setColorPair (FColor fg, FColor bg) noexcept
     {
       fg_color = fg;
       bg_color = bg;
@@ -88,6 +88,17 @@ class FColorPair
     inline void swap() noexcept
     {
       std::swap (fg_color, bg_color);
+    }
+
+    friend constexpr auto operator == (const FColorPair& c1, const FColorPair& c2) noexcept -> bool
+    {
+      return c1.fg_color == c2.fg_color
+          && c1.bg_color == c2.bg_color;
+    }
+
+    friend constexpr auto operator != (const FColorPair& c1, const FColorPair& c2) noexcept -> bool
+    {
+      return ! (c1 == c2);
     }
 
   private:

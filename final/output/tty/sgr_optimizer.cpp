@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2023 Markus Gans                                      *
+* Copyright 2019-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -69,7 +69,7 @@ void SGRoptimizer::findParameter()
   // Find SGR parameter
   for (std::size_t index{0}; index < seq_length; ++index)
   {
-    char ch = seq[index];
+    const char ch = seq[index];
 
     if ( isSGRStart(index) )  // Esc [
       start = index;
@@ -90,7 +90,7 @@ void SGRoptimizer::findParameter()
 }
 
 //----------------------------------------------------------------------
-inline auto SGRoptimizer::isSGRStart (std::size_t index) -> bool
+inline auto SGRoptimizer::isSGRStart (std::size_t index) const noexcept -> bool
 {
   return index > 1
       && seq[index - 2] == ESC[0]
@@ -113,20 +113,20 @@ void SGRoptimizer::combineParameter()
   if ( first.start == first.end )  // Esc [ m
   {
     seq[write_pos] = '0';
-    write_pos++;
+    ++write_pos;
   }
 
   seq[write_pos] = ';';
-  write_pos++;
+  ++write_pos;
   auto iter = csi_parameter.cbegin() + 1;
   const auto end = csi_parameter.cend();
 
   while ( iter != end )
   {
-    count++;
+    ++count;
 
     // Copy SGR parameter values
-    std::size_t param_size = iter->end - iter->start;
+    const std::size_t param_size = iter->end - iter->start;
     std::memmove(&seq[write_pos], &seq[iter->start], param_size);
     write_pos += param_size;
     read_pos = iter->end + 1;
@@ -139,26 +139,27 @@ void SGRoptimizer::combineParameter()
   }
 
   // Copy remaining characters in the sequence
-  std::memmove(&seq[write_pos], &seq[read_pos], seq.size() - read_pos);
-  write_pos += seq.size() - read_pos;
+  const std::size_t num_of_chars = seq.size() - read_pos;
+  std::memmove(&seq[write_pos], &seq[read_pos], num_of_chars);
+  write_pos += num_of_chars;
 
   seq.resize(write_pos);
 }
 
 //----------------------------------------------------------------------
-inline void SGRoptimizer::handleSGRterminating ( const std::vector<parameter>::const_iterator iter
+inline void SGRoptimizer::handleSGRterminating ( std::vector<parameter>::const_iterator iter
                                                , std::size_t& write_pos
                                                , std::size_t count
-                                               , std::size_t size )
+                                               , std::size_t size ) noexcept
 {
   if ( iter->start == iter->end )  // Esc [ m
   {
     seq[write_pos] = '0';
-    write_pos++;
+    ++write_pos;
   }
 
   seq[write_pos] = count != size ? ';' : 'm';
-  write_pos++;
+  ++write_pos;
 }
 
 }  // namespace finalcut

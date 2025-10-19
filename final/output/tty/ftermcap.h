@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2024 Markus Gans                                      *
+* Copyright 2016-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -95,16 +95,16 @@ class FTermcap final
     static auto  stringPrint (const std::string&) -> Status;
 
     // Inquiry
-    static auto  isInitialized() -> bool;
+    static auto  isInitialized() noexcept -> bool;
 
     // Mutator
     template<typename PutChar>
-    static void  setPutCharFunction (const PutChar&);
+    static void  setPutCharFunction (const PutChar&) noexcept;
     static void  setDefaultPutCharFunction();
     template<typename PutString>
-    static void  setPutStringFunction (const PutString&);
+    static void  setPutStringFunction (const PutString&) noexcept;
     static void  setDefaultPutStringFunction();
-    static void  setBaudrate (int);
+    static void  setBaudrate (int) noexcept;
 
     // Methods
     static void  init();
@@ -141,12 +141,12 @@ class FTermcap final
     static void  termcapKeys();
     static auto  encodeParams ( const std::string&
                               , const std::array<int, 9>& ) -> std::string;
-    static auto  hasDelay (const std::string&) -> bool;
-    static void  delayOutput (int);
-    static auto  readNumber (string_iterator&, int, bool&) -> int;
-    static void  readDigits (string_iterator&, int&);
-    static void  decimalPoint (string_iterator&, int&);
-    static void  asteriskSlash (string_iterator&, int&, int, bool&);
+    static auto  hasDelay (const std::string&) noexcept -> bool;
+    static void  delayOutput (int) noexcept;
+    static auto  readNumber (string_iterator&, int, bool&) noexcept -> int;
+    static void  readDigits (string_iterator&, int&) noexcept;
+    static void  decimalPoint (string_iterator&, int&) noexcept;
+    static void  asteriskSlash (string_iterator&, int&, int, bool&) noexcept;
 
     // Data member
     static bool          initialized;
@@ -173,7 +173,7 @@ auto FTermcap::encodeParameter (const std::string& cap, Args&&... args) -> std::
 }
 
 //----------------------------------------------------------------------
-inline auto FTermcap::isInitialized() -> bool
+inline auto FTermcap::isInitialized() noexcept -> bool
 {
   // FTermcap is fully initialized when the termcap database has been
   // read and the function pointers outc and outs are set
@@ -182,22 +182,22 @@ inline auto FTermcap::isInitialized() -> bool
 
 //----------------------------------------------------------------------
 template<typename PutChar>
-inline void FTermcap::setPutCharFunction (const PutChar& put_char)
+inline void FTermcap::setPutCharFunction (const PutChar& put_char) noexcept
 { outc = put_char; }
 
 //----------------------------------------------------------------------
 template<typename PutString>
-inline void FTermcap::setPutStringFunction (const PutString& put_string)
+inline void FTermcap::setPutStringFunction (const PutString& put_string) noexcept
 { outs = put_string; }
 
 //----------------------------------------------------------------------
-inline void FTermcap::setBaudrate (int baud)
+inline void FTermcap::setBaudrate (int baud) noexcept
 {
   baudrate = baud;
 }
 
 //----------------------------------------------------------------------
-inline void FTermcap::delayOutput (int ms)
+inline void FTermcap::delayOutput (int ms) noexcept
 {
   if ( no_padding_char )
   {

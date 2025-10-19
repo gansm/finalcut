@@ -144,9 +144,15 @@ auto FTermOutput::isEncodable (const wchar_t& wide_char) const -> bool
 }
 
 //----------------------------------------------------------------------
-auto FTermOutput::isFlushTimeout() const -> bool
+auto FTermOutput::isFlushTimeout() const noexcept -> bool
 {
-  return FObjectTimer::isTimeout (time_last_flush, flush_wait);
+  const auto now_us = uInt64(duration_cast<microseconds>( clock::now()
+                                                         .time_since_epoch()).count() );
+  if ( now_us < time_last_flush_us )
+    return false;
+
+  const auto diff_us = now_us - time_last_flush_us;
+  return diff_us > flush_wait;
 }
 
 //----------------------------------------------------------------------
@@ -300,7 +306,7 @@ void FTermOutput::initTerminal (FVTerm::FTermArea* virtual_terminal)
   clearTerminalState();
 
   // Initialize the last flush time
-  time_last_flush = TimeValue{};
+  time_last_flush_us = 0;
 }
 
 //----------------------------------------------------------------------
@@ -469,7 +475,8 @@ void FTermOutput::flush()
   std::fflush(stdout);
   static auto& mouse = FMouseControl::getInstance();
   mouse.drawPointer();
-  time_last_flush = FObjectTimer::getCurrentTime();
+  time_last_flush_us = uInt64(duration_cast<microseconds>( clock::now()
+                                                          .time_since_epoch()).count() );
 }
 
 //----------------------------------------------------------------------
@@ -487,7 +494,7 @@ inline auto FTermOutput::getStartOptions() & -> FStartOptions&
 }
 
 //----------------------------------------------------------------------
-inline auto FTermOutput::isInputCursorInsideTerminal() const -> bool
+inline auto FTermOutput::isInputCursorInsideTerminal() const noexcept -> bool
 {
   if ( ! vterm || ! vterm->input_cursor_visible )
     return false;
@@ -728,13 +735,13 @@ auto FTermOutput::skipUnchangedCharacters ( uInt& x, uInt xmax, uInt y
        && ch[0].attr.bit.no_changes && ch[1].attr.bit.no_changes
        && ch[2].attr.bit.no_changes && ch[3].attr.bit.no_changes )
   {
-    std::advance(ch, 4);
+    ch += 4;
   }
 
   // Handle the remaining elements
   while ( ch < end && ch->attr.bit.no_changes )
   {
-    std::advance(ch, 1);
+    ++ch;
   }
 
   auto count = uInt(ch - print_char);  // Number of unchanged characters
@@ -763,7 +770,7 @@ void FTermOutput::printRange (uInt xmin, uInt xmax, uInt y)
   while ( x <= xmax )
   {
     // Update pointer and mark character as printed
-    std::advance(print_char, x - x_last);
+    print_char += (x - x_last);
     print_char->attr.bit.printed = true;
     x_last = x;
 
@@ -797,7 +804,7 @@ void FTermOutput::printRange (uInt xmin, uInt xmax, uInt y)
 
 //----------------------------------------------------------------------
 inline void FTermOutput::replaceNonPrintableFullwidth ( uInt x, uInt vterm_width
-                                                      , FChar& print_char ) const
+                                                      , FChar& print_char ) const noexcept
 {
   // Replace non-printable full-width characters that are truncated
   // from the right or left terminal side
@@ -938,7 +945,7 @@ inline void FTermOutput::printEllipsis (uInt x, uInt y, FChar& fchar)
 
 //----------------------------------------------------------------------
 inline void FTermOutput::skipPaddingCharacter ( uInt& x, uInt y
-                                              , const FChar& print_char ) const
+                                              , const FChar& print_char ) const noexcept
 {
   if ( isFullWidthChar(print_char) )  // full-width character
   {
@@ -1036,23 +1043,21 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y, FChar& print_char
 
 //----------------------------------------------------------------------
 inline auto FTermOutput::countRepetitions ( const FChar* print_char
-                                          , uInt from, uInt to ) const -> uInt
+                                          , uInt from, uInt to ) const noexcept -> uInt
 {
-  const auto* start = std::next(print_char);
-  const auto* end = std::next(start, to - from);
+  const FChar first = *print_char;
+  const FChar* p = print_char + 1;
+  const FChar* end = print_char + (to - from) + 1;
 
-  auto char_is_not_equal = [first_char = *print_char] (const FChar& ch)
-  {
-    return ch != first_char;
-  };
+  while ( p < end && *p == first )
+    ++p;
 
-  auto match = std::find_if(start, end, char_is_not_equal);
-  return static_cast<uInt>(match - print_char);
+  return static_cast<uInt>(p - print_char);
 }
 
 //----------------------------------------------------------------------
 inline auto FTermOutput::canUseEraseCharacters ( const FChar& print_char
-                                               , uInt whitespace ) const -> bool
+                                               , uInt whitespace ) const noexcept -> bool
 {
   const auto normal = FOptiAttr::isNormal(print_char);
   const auto ut = FTermcap::background_color_erase;
@@ -1064,7 +1069,7 @@ inline auto FTermOutput::canUseEraseCharacters ( const FChar& print_char
 
 //----------------------------------------------------------------------
 inline auto FTermOutput::canUseCharacterRepetitions ( const FChar& print_char
-                                                    , uInt repetitions ) const -> bool
+                                                    , uInt repetitions ) const noexcept -> bool
 {
   return repetitions > repeat_char_length
       && print_char.ch[0] != L'\0' && print_char.ch[1] == L'\0';
@@ -1072,7 +1077,7 @@ inline auto FTermOutput::canUseCharacterRepetitions ( const FChar& print_char
 
 //----------------------------------------------------------------------
 inline auto FTermOutput::getRepetitionType ( const FChar& print_char
-                                           , uInt repetitions ) const -> Repetition
+                                           , uInt repetitions ) const noexcept -> Repetition
 {
   if ( canUseCharacterRepetitions(print_char, repetitions) )
   {
@@ -1087,19 +1092,19 @@ inline auto FTermOutput::getRepetitionType ( const FChar& print_char
 }
 
 //----------------------------------------------------------------------
-inline auto FTermOutput::isFullWidthChar (const FChar& ch) const -> bool
+inline auto FTermOutput::isFullWidthChar (const FChar& ch) const noexcept -> bool
 {
   return ch.attr.bit.char_width == 2;
 }
 
 //----------------------------------------------------------------------
-inline auto FTermOutput::isFullWidthPaddingChar (const FChar& ch) const -> bool
+inline auto FTermOutput::isFullWidthPaddingChar (const FChar& ch) const noexcept -> bool
 {
   return ch.attr.bit.fullwidth_padding;
 }
 
 //----------------------------------------------------------------------
-void FTermOutput::cursorWrap() const
+void FTermOutput::cursorWrap() const noexcept
 {
   // Wrap the cursor
 
@@ -1129,7 +1134,7 @@ void FTermOutput::cursorWrap() const
 }
 
 //----------------------------------------------------------------------
-inline void FTermOutput::adjustCursorPosition (FPoint& p) const
+inline void FTermOutput::adjustCursorPosition (FPoint& p) const noexcept
 {
   const auto term_width = int(getColumnNumber());
   const auto term_height = int(getLineNumber());
@@ -1222,48 +1227,42 @@ auto FTermOutput::updateTerminalCursor() -> bool
 }
 
 //----------------------------------------------------------------------
-inline void FTermOutput::flushTimeAdjustment()
+inline void FTermOutput::flushTimeAdjustment() noexcept
 {
-  const auto now = FObjectTimer::getCurrentTime();
-  const auto diff = now - time_last_flush;
+  const auto now_us = uInt64(duration_cast<microseconds>( clock::now()
+                                                         .time_since_epoch()).count() );
+  const auto diff_us = now_us - time_last_flush_us;
 
-  if ( diff > milliseconds(400) )
+  if ( diff_us > RESET_THRESHOLD )
   {
-    flush_wait = MIN_FLUSH_WAIT;  // Reset to minimum values after 400 ms
+    flush_wait    = MIN_FLUSH_WAIT;  // Reset to minimum values after 400 ms
     flush_average = MIN_FLUSH_WAIT;
-    flush_median = MIN_FLUSH_WAIT;
+    flush_median  = MIN_FLUSH_WAIT;
+    return;
   }
-  else
-  {
-    auto usec = uInt64(duration_cast<microseconds>(diff).count());
-    usec = std::min(std::max(usec, MIN_FLUSH_WAIT), MAX_FLUSH_WAIT);
 
-    if ( usec >= flush_average )
-      flush_average += (usec - flush_average) / 10;
-    else
-    {
-      uInt64 delta = (flush_average - usec) / 10;
+  const uInt64 us =
+      ( diff_us < MIN_FLUSH_WAIT ) ? MIN_FLUSH_WAIT :
+      ( diff_us > MAX_FLUSH_WAIT ) ? MAX_FLUSH_WAIT : diff_us;
 
-      if ( flush_average >= delta )  // Avoid uInt64 underflow
-        flush_average -= delta;
-    }
-
-    if ( usec >= flush_median )
-      flush_median += flush_average / 5;
-    else
-    {
-      uInt64 delta = flush_average / 5;
-
-      if ( flush_median >= delta )  // Avoid uInt64 underflow
-        flush_median -= delta;
-    }
-
-    flush_wait = flush_median;
-  }
+  const uInt64 avg = flush_average;
+  const uInt64 delta_avg = ( us > avg ) ? (us - avg) / 10
+                                        : (avg - us) / 10;
+  flush_average =
+      ( us > avg ) ? avg + delta_avg
+                   : ( avg >= delta_avg ? avg - delta_avg  // Avoid uInt64 underflow
+                                        : MIN_FLUSH_WAIT );
+  const uInt64 med  = flush_median;
+  const uInt64 step = flush_average / 5;
+  flush_median =
+      ( us >= med ) ? med + step
+                    : ( med >= step ? med - step  // Avoid uInt64 underflow
+                                    : MIN_FLUSH_WAIT );
+  flush_wait = flush_median;
 }
 
 //----------------------------------------------------------------------
-inline void FTermOutput::markAsPrinted (uInt x, uInt y) const
+inline void FTermOutput::markAsPrinted (uInt x, uInt y) const noexcept
 {
   // Marks a character as printed
 
@@ -1271,7 +1270,7 @@ inline void FTermOutput::markAsPrinted (uInt x, uInt y) const
 }
 
 //----------------------------------------------------------------------
-inline void FTermOutput::markAsPrinted (uInt from, uInt to, uInt y) const
+inline void FTermOutput::markAsPrinted (uInt from, uInt to, uInt y) const noexcept
 {
   // Marks characters in the specified range [from .. to] as printed
 
@@ -1285,14 +1284,14 @@ inline void FTermOutput::markAsPrinted (uInt from, uInt to, uInt y) const
     ch[1].attr.byte[2] |= internal::var::b2_printed_mask;
     ch[2].attr.byte[2] |= internal::var::b2_printed_mask;
     ch[3].attr.byte[2] |= internal::var::b2_printed_mask;
-    std::advance(ch, 4);
+    ch += 4;
   }
 
   // Handle the remaining elements
   while ( ch < end )
   {
     ch->attr.byte[2] |= internal::var::b2_printed_mask;
-    std::advance(ch, 1);
+    ++ch;
   }
 }
 

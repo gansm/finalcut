@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2024 Markus Gans                                      *
+* Copyright 2017-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -95,17 +95,17 @@ class FVTermBuffer
 
     // Accessors
     auto getClassName() const -> FString;
-    auto getLength() const -> std::size_t;
-    auto getBuffer() const -> const FCharVector&;
+    auto getLength() const noexcept -> std::size_t;
+    auto getBuffer() const noexcept -> const FCharVector&;
 
     // Inquiry
-    auto isEmpty() const -> bool;
+    auto isEmpty() const noexcept -> bool;
 
     // Methods
-    auto begin() -> iterator;
-    auto end() -> iterator;
-    auto begin() const -> const_iterator;
-    auto end() const -> const_iterator;
+    auto begin() noexcept -> iterator;
+    auto end() noexcept -> iterator;
+    auto begin() const noexcept -> const_iterator;
+    auto end() const noexcept -> const_iterator;
     auto front() -> reference;
     auto back() -> reference;
     auto front() const -> const_reference;
@@ -113,14 +113,14 @@ class FVTermBuffer
     auto toString() const -> FString;
     template <typename Iterator>
     void assign (Iterator, Iterator);
-    void clear();
+    void clear() noexcept;
     template <typename... Args>
     auto printf (const FString&, Args&&...) -> int;
     auto print (const FString&) -> int;
     auto print (wchar_t) -> int;
     void print (const FStyle&) const;
-    void print (const FColorPair&) const;
-    auto print () -> FVTermBuffer&;
+    void print (const FColorPair&) const noexcept;
+    auto print () noexcept -> FVTermBuffer&;
 
   private:
     struct UnicodeBoundary
@@ -131,7 +131,7 @@ class FVTermBuffer
       std::size_t char_width{0};
     };
 
-    void getNextCharacterAttribute();
+    void getNextCharacterAttribute() noexcept;
     void add (UnicodeBoundary&);
 
     // Data member
@@ -273,31 +273,31 @@ inline auto FVTermBuffer::getClassName() const -> FString
 { return "FVTermBuffer"; }
 
 //----------------------------------------------------------------------
-inline auto FVTermBuffer::getLength() const -> std::size_t
+inline auto FVTermBuffer::getLength() const noexcept -> std::size_t
 { return data.size(); }
 
 //----------------------------------------------------------------------
-inline auto FVTermBuffer::getBuffer() const -> const FCharVector&
+inline auto FVTermBuffer::getBuffer() const noexcept -> const FCharVector&
 { return data; }
 
 //----------------------------------------------------------------------
-inline auto FVTermBuffer::isEmpty() const -> bool
+inline auto FVTermBuffer::isEmpty() const noexcept -> bool
 { return data.empty(); }
 
 //----------------------------------------------------------------------
-inline auto FVTermBuffer::begin() -> iterator
+inline auto FVTermBuffer::begin() noexcept -> iterator
 { return data.begin(); }
 
 //----------------------------------------------------------------------
-inline auto FVTermBuffer::end() -> iterator
+inline auto FVTermBuffer::end() noexcept -> iterator
 { return data.end(); }
 
 //----------------------------------------------------------------------
-inline auto FVTermBuffer::begin() const -> const_iterator
+inline auto FVTermBuffer::begin() const noexcept -> const_iterator
 { return data.begin(); }
 
 //----------------------------------------------------------------------
-inline auto FVTermBuffer::end() const -> const_iterator
+inline auto FVTermBuffer::end() const noexcept -> const_iterator
 { return data.end(); }
 
 //----------------------------------------------------------------------
@@ -328,7 +328,7 @@ inline void FVTermBuffer::assign (Iterator first, Iterator last)
 }
 
 //----------------------------------------------------------------------
-inline void FVTermBuffer::clear()
+inline void FVTermBuffer::clear() noexcept
 {
   data.clear();
 }
@@ -343,7 +343,7 @@ inline auto FVTermBuffer::printf (const FString& format, Args&&... args) -> int
 }
 
 //----------------------------------------------------------------------
-inline auto FVTermBuffer::print() -> FVTermBuffer&
+inline auto FVTermBuffer::print() noexcept -> FVTermBuffer&
 { return *this; }
 
 //----------------------------------------------------------------------
@@ -353,7 +353,7 @@ constexpr void checkCapacity (T& buffer, std::size_t size) noexcept
   if ( size <= buffer.capacity() )
     return;
 
-  const auto new_size = [&size] ()
+  const auto new_size = [size] () noexcept
   {
     return std::size_t(std::pow(2, std::ceil(std::log(size) / std::log(2.0))));
   }();

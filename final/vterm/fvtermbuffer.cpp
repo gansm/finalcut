@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2024 Markus Gans                                      *
+* Copyright 2017-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -58,7 +58,7 @@ auto FVTermBuffer::toString() const -> FString
                 , data.cend()
                 , [&wide_string] (const auto& fchar)
                   {
-                    for (auto&& ch : fchar.ch)
+                    for (const auto& ch : fchar.ch)
                     {
                       if ( ch == L'\0' )
                         return;
@@ -77,7 +77,7 @@ auto FVTermBuffer::print (const FString& string) -> int
   getNextCharacterAttribute();
   UnicodeBoundary ucb{string.cbegin(), string.cend(), string.cbegin(), 0};
 
-  for (auto&& ch : string)
+  for (const auto& ch : string)
   {
     auto width = getColumnWidth(ch);
     auto ctrl_char = std::iswcntrl(wint_t(ch));
@@ -127,7 +127,7 @@ void FVTermBuffer::print (const FStyle& style) const
 }
 
 //----------------------------------------------------------------------
-void FVTermBuffer::print (const FColorPair& pair) const
+void FVTermBuffer::print (const FColorPair& pair) const noexcept
 {
   FVTermAttribute::setColor( pair.getForegroundColor()
                            , pair.getBackgroundColor() );
@@ -136,7 +136,7 @@ void FVTermBuffer::print (const FColorPair& pair) const
 
 // private methods of FVTermBuffer
 //----------------------------------------------------------------------
-inline void FVTermBuffer::getNextCharacterAttribute()
+inline void FVTermBuffer::getNextCharacterAttribute() noexcept
 {
   static const auto& next_attribute = FVTermAttribute::getAttribute();
   nc.color.data   = next_attribute.color.data;

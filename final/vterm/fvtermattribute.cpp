@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021-2024 Markus Gans                                      *
+* Copyright 2021-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -81,7 +81,7 @@ FVTermAttribute::~FVTermAttribute() noexcept = default;
 
 // public methods of FVTermAttribute
 //----------------------------------------------------------------------
-void FVTermAttribute::initAttribute()
+void FVTermAttribute::initAttribute() noexcept
 {
   // next_attribute contains the state of the next printed character
   next_attribute.ch = {{ L'\0' }};
@@ -93,7 +93,7 @@ void FVTermAttribute::initAttribute()
 //----------------------------------------------------------------------
 void FVTermAttribute::print (const FStyle& style)
 {
-  Style attr = style.getStyle();
+  auto attr = style.getStyle();
   static const auto& attribute_lookup = getAttributeLookupMap();
 
   if ( attr == Style::None )
@@ -115,7 +115,7 @@ void FVTermAttribute::print (const FStyle& style)
 }
 
 //----------------------------------------------------------------------
-void FVTermAttribute::print (const FColorPair& pair)
+void FVTermAttribute::print (const FColorPair& pair) noexcept
 {
   setColor (pair);
 }

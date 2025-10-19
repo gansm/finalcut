@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2023 Markus Gans                                      *
+* Copyright 2015-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -39,8 +39,11 @@ namespace finalcut
 FObject::FObject (FObject* parent)
   : parent_obj{parent}
 {
-  if ( parent )  // add object to parent
+  if ( parent )  // Add object to parent
+  {
     parent->addChild(this);
+    has_parent = true;
+  }
 }
 
 //----------------------------------------------------------------------
@@ -49,11 +52,12 @@ FObject::~FObject()  // destructor
   delOwnTimers();  // Delete all timers of this object
 
   // Delete children objects
-  if ( hasChildren() )
+  if ( ! children_list.empty() )
   {
-    auto delete_list = children_list;
+    // Make a copy to avoid iterator invalidation during deletion
+    const auto delete_list = children_list;
 
-    for (auto&& obj : delete_list)
+    for (auto obj : delete_list)
       delete obj;
   }
 
@@ -65,14 +69,14 @@ FObject::~FObject()  // destructor
 
 // public methods of FObject
 //----------------------------------------------------------------------
-auto FObject::getChild (int index) const & -> FObject*
+auto FObject::getChild (int index) const -> FObject*
 {
   // returns the child for the index number
 
-  if ( ! hasChildren() )
+  if ( children_list.empty() )
     return nullptr;
 
-  if ( index <= 0 || index > int(numOfChildren()) )
+  if ( index <= 0 || index > int(children_list.size()) )
     return nullptr;
 
   auto iter = children_list.cbegin();
@@ -81,7 +85,7 @@ auto FObject::getChild (int index) const & -> FObject*
 }
 
 //----------------------------------------------------------------------
-auto FObject::isChild (const FObject* obj) const & -> bool
+auto FObject::isChild (const FObject* obj) const -> bool
 {
   // Find out if obj is a child object of mine
 
@@ -97,23 +101,23 @@ auto FObject::isChild (const FObject* obj) const & -> bool
 }
 
 //----------------------------------------------------------------------
-void FObject::removeParent() &
+void FObject::removeParent()
 {
-  if ( ! hasParent() )
+  if ( ! has_parent )
     return;
 
   getParent()->delChild(this);
 }
 
 //----------------------------------------------------------------------
-void FObject::addChild (FObject* obj) &
+void FObject::addChild (FObject* obj)
 {
   // Adds an object obj to the children list
 
   if ( ! obj )
     return;
 
-  if ( max_children != UNLIMITED && max_children <= numOfChildren() )
+  if ( max_children != UNLIMITED && children_list.size() >= max_children )
     throw std::length_error ("max. child objects reached");
 
   if ( obj->parent_obj )
@@ -125,22 +129,23 @@ void FObject::addChild (FObject* obj) &
 }
 
 //----------------------------------------------------------------------
-void FObject::delChild (FObject* obj) &
+void FObject::delChild (FObject* obj)
 {
   // Deletes the child object obj from children list
 
-  if ( ! (obj && hasChildren()) )
+  if ( ! obj || children_list.empty() )
     return;
 
   obj->parent_obj = nullptr;
   obj->has_parent = false;
-  auto list_end = children_list.end();
-  auto last = std::remove (children_list.begin(), list_end, obj);
+
+  const auto list_end = children_list.end();
+  const auto last = std::remove (children_list.begin(), list_end, obj);
   children_list.erase(last, list_end);
 }
 
 //----------------------------------------------------------------------
-void FObject::setParent (FObject* parent) &
+void FObject::setParent (FObject* parent)
 {
   // Sets a new parent object
 
@@ -158,18 +163,21 @@ auto FObject::event (FEvent* ev) -> bool
 {
   // Receives events on this object
 
-  if ( ev->getType() == Event::Timer )
+  const auto event_type = ev->getType();
+
+  if ( event_type == Event::Timer )
   {
     onTimer ( static_cast<FTimerEvent*>(ev) );
+    return true;
   }
-  else if ( ev->getType() == Event::User )
+
+  if ( event_type == Event::User )
   {
     onUserEvent ( static_cast<FUserEvent*>(ev) );
+    return true;
   }
-  else
-    return false;
 
-  return true;
+  return false;
 }
 
 

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2021 Markus Gans                                      *
+* Copyright 2019-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -46,6 +46,7 @@ class FColorPairTest : public CPPUNIT_NS::TestFixture
     void noArgumentTest();
     void copyConstructorTest();
     void assignmentTest();
+    void compareTest();
     void setColorTest();
     void swapTest();
 
@@ -58,6 +59,7 @@ class FColorPairTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (noArgumentTest);
     CPPUNIT_TEST (copyConstructorTest);
     CPPUNIT_TEST (assignmentTest);
+    CPPUNIT_TEST (compareTest);
     CPPUNIT_TEST (setColorTest);
     CPPUNIT_TEST (swapTest);
 
@@ -118,6 +120,19 @@ void FColorPairTest::assignmentTest()
   const finalcut::FColorPair p3b = p3a;
   CPPUNIT_ASSERT ( p3b.getForegroundColor() == finalcut::FColor::Red );
   CPPUNIT_ASSERT ( p3b.getBackgroundColor() == finalcut::FColor::Black );
+}
+
+//----------------------------------------------------------------------
+void FColorPairTest::compareTest()
+{
+  finalcut::FColorPair p1;
+  p1.setForegroundColor (finalcut::FColor::NavyBlue);
+  finalcut::FColorPair p2 (finalcut::FColor::NavyBlue);
+  p2.setBackgroundColor (finalcut::FColor::Default);
+  CPPUNIT_ASSERT ( p1 == p2 );
+
+  p2.setBackgroundColor (finalcut::FColor::MediumSpringGreen);
+  CPPUNIT_ASSERT ( p1 != p2 );
 }
 
 //----------------------------------------------------------------------

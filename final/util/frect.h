@@ -491,8 +491,7 @@ constexpr auto FRect::contains (const FRect& r) const noexcept -> bool
 //----------------------------------------------------------------------
 constexpr auto FRect::overlap (const FRect& r) const noexcept -> bool
 {
-  return ( std::max(X1, r.X1) <= std::min(X2, r.X2)
-        && std::max(Y1, r.Y1) <= std::min(Y2, r.Y2) );
+  return ! (X2 < r.X1 || X1 > r.X2 || Y2 < r.Y1 || Y1 > r.Y2);
 }
 
 //----------------------------------------------------------------------

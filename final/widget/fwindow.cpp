@@ -767,28 +767,33 @@ void FWindow::adjustSize()
 //----------------------------------------------------------------------
 auto FWindow::event (FEvent* ev) -> bool
 {
-  auto event_type = ev->getType();
+  const auto event_type = ev->getType();
 
   if ( event_type == Event::WindowActive )
   {
     onWindowActive (ev);
+    return true;
   }
-  else if ( event_type == Event::WindowInactive )
+
+  if ( event_type == Event::WindowInactive )
   {
     onWindowInactive (ev);
+    return true;
   }
-  else if ( event_type == Event::WindowRaised )
+
+  if ( event_type == Event::WindowRaised )
   {
     onWindowRaised (ev);
+    return true;
   }
-  else if ( event_type == Event::WindowLowered )
+
+  if ( event_type == Event::WindowLowered )
   {
     onWindowLowered (ev);
+    return true;
   }
-  else
-    return FWidget::event(ev);
 
-  return true;
+  return FWidget::event(ev);
 }
 
 //----------------------------------------------------------------------

@@ -302,7 +302,7 @@ struct FCharAttribute
 };
 
 
-constexpr auto FCharAttribute_to_uInt32 (const finalcut::FCharAttribute& fchar_attr) -> uInt32
+constexpr auto FCharAttribute_to_uInt32 (const finalcut::FCharAttribute& fchar_attr) noexcept -> uInt32
 {
   return uInt32(fchar_attr.bold)               << 0U
        | uInt32(fchar_attr.dim)                << 1U
