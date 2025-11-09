@@ -16,14 +16,16 @@ cd "$SRCDIR" || exit
 print_systeminfo ()
 {
   test -z "$CXX" && eval "$(grep '^CXX = ' "Makefile" | cut -d' ' -f1-3 | sed -e 's/ //g')"
-  CXX_VERSION="$($CXX -dumpfullversion -dumpversion || echo "unknown version")"
+  local CXX_VERSION="$($CXX -dumpfullversion -dumpversion || echo "unknown version")"
+  local BUILD_MODE="$1"
   echo "-------------------------"
   echo "      Platform: $PLATFORM"
   echo "  Architecture: $ARCH"
   echo "      Compiler: $CXX $CXX_VERSION"
-  echo "         Build: $1"
+  echo "         Build: $BUILD_MODE"
   echo "Number of jobs: $JOBS"
   echo "-------------------------"
+  return 0
 }
 
 # Get number of logical processor cores
@@ -32,29 +34,26 @@ then
   CPU_COUNT="$(getconf _NPROCESSORS_ONLN 2>/dev/null || getconf NPROCESSORS_ONLN 2>/dev/null)" || CPU_COUNT="0"
 fi
 
-if [ "$CPU_COUNT" -eq 0 ]
+if [ "$CPU_COUNT" -eq 0 \
+  && command -v nproc >/dev/null 2>&1 ]
 then
-  if command -v nproc >/dev/null 2>&1
-  then
-    CPU_COUNT="$(nproc 2>/dev/null)" || CPU_COUNT="0"
-  fi
+  CPU_COUNT="$(nproc 2>/dev/null)" || CPU_COUNT="0"
 fi
 
 test "$CPU_COUNT" -eq 0 && CPU_COUNT=1
 
-if [ -n "$1" ]
+if [ -n "$1" && ! -f ./configure ]
 then
-  if [ ! -f ./configure ]
+  if command -v autoreconf >/dev/null
   then
-    if command -v autoreconf >/dev/null
-    then
-      autoreconf --install --force
-    else
-      echo "Build failed, please install autoconf first"
-      exit 255
-    fi
+    autoreconf --install --force
+  else
+    echo "Build failed, please install autoconf first"
+    exit 255
   fi
 fi
+
+readonly DEBUG_SWITCH="-DDEBUG"
 
 # Build commands
 case "$1" in
@@ -67,7 +66,7 @@ case "$1" in
     ;;
 
   "--debug"|"debug")
-    if ! ./configure --prefix="$PREFIX" CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG -W -Wall -pedantic"
+    if ! ./configure --prefix="$PREFIX" CPPFLAGS="$DEBUG_SWITCH" CXXFLAGS="-g -O0 -DDEBUG -W -Wall -pedantic"
     then
       echo "${RED}Configure failed!${NORMAL}" 1>&2
       exit 255
@@ -75,7 +74,7 @@ case "$1" in
     ;;
 
   "--fulldebug"|"fulldebug")
-    if ! ./configure --prefix="$PREFIX" CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG -W -Wall -Wextra -Weffc++ -pedantic -pedantic-errors -Wformat-nonliteral -Wformat-security -Wformat-y2k -Wimport -Winit-self -Winvalid-pch -Wlong-long -Wmissing-braces -Wmissing-field-initializers -Wmissing-format-attribute -Wmissing-include-dirs -Wmissing-noreturn -Wpacked -Wparentheses -Wpointer-arith -Wredundant-decls -Wreturn-type -Wsequence-point -Wshadow -Wsign-compare -fstack-protector -Wstrict-aliasing -Wstrict-aliasing=3 -Wswitch -Wtrigraphs -Wuninitialized -Wunknown-pragmas -Wunreachable-code -Wunused -Wunused-function -Wunused-label -Wunused-parameter -Wunused-value -Wunused-variable -Wvariadic-macros -Wvolatile-register-var -Wwrite-strings -Wsign-promo -Woverloaded-virtual -Wstrict-null-sentinel -fext-numeric-literals -Wreorder -Wnoexcept -Wnarrowing -Wliteral-suffix -Wctor-dtor-privacy -ftree-loop-distribute-patterns -Wmemset-transposed-args -Wno-format-nonliteral"
+    if ! ./configure --prefix="$PREFIX" CPPFLAGS="$DEBUG_SWITCH" CXXFLAGS="-g -O0 -DDEBUG -W -Wall -Wextra -Weffc++ -pedantic -pedantic-errors -Wformat-nonliteral -Wformat-security -Wformat-y2k -Wimport -Winit-self -Winvalid-pch -Wlong-long -Wmissing-braces -Wmissing-field-initializers -Wmissing-format-attribute -Wmissing-include-dirs -Wmissing-noreturn -Wpacked -Wparentheses -Wpointer-arith -Wredundant-decls -Wreturn-type -Wsequence-point -Wshadow -Wsign-compare -fstack-protector -Wstrict-aliasing -Wstrict-aliasing=3 -Wswitch -Wtrigraphs -Wuninitialized -Wunknown-pragmas -Wunreachable-code -Wunused -Wunused-function -Wunused-label -Wunused-parameter -Wunused-value -Wunused-variable -Wvariadic-macros -Wvolatile-register-var -Wwrite-strings -Wsign-promo -Woverloaded-virtual -Wstrict-null-sentinel -fext-numeric-literals -Wreorder -Wnoexcept -Wnarrowing -Wliteral-suffix -Wctor-dtor-privacy -ftree-loop-distribute-patterns -Wmemset-transposed-args -Wno-format-nonliteral"
     then
       echo "${RED}Configure failed!${NORMAL}" 1>&2
       exit 255
@@ -83,7 +82,7 @@ case "$1" in
     ;;
 
   "--profile"|"profile")
-    if ! ./configure --prefix="$PREFIX" CPPFLAGS="-DDEBUG" CXXFLAGS="-g -pg -O0 -DDEBUG -W -Wall -pedantic"
+    if ! ./configure --prefix="$PREFIX" CPPFLAGS="$DEBUG_SWITCH" CXXFLAGS="-g -pg -O0 -DDEBUG -W -Wall -pedantic"
     then
       echo "${RED}Configure failed!${NORMAL}" 1>&2
       exit 255
@@ -99,7 +98,7 @@ case "$1" in
     ;;
 
   "--unit-test"|"unit-test")
-    if ! ./configure --prefix="$PREFIX" CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG -DUNIT_TEST" --with-unit-test
+    if ! ./configure --prefix="$PREFIX" CPPFLAGS="$DEBUG_SWITCH" CXXFLAGS="-g -O0 -DDEBUG -DUNIT_TEST" --with-unit-test
     then
       echo "${RED}Configure failed!${NORMAL}" 1>&2
       exit 255
@@ -110,7 +109,7 @@ case "$1" in
     ;;
 
   "--coverage"|"coverage")
-    if ! ./configure --prefix="$PREFIX" CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG -DUNIT_TEST" --with-unit-test --with-gcov
+    if ! ./configure --prefix="$PREFIX" CPPFLAGS="$DEBUG_SWITCH" CXXFLAGS="-g -O0 -DDEBUG -DUNIT_TEST" --with-unit-test --with-gcov
     then
       echo "${RED}Configure failed!${NORMAL}" 1>&2
       exit 255

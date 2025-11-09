@@ -1,8 +1,8 @@
 #!/bin/bash
 
-test -z "$EUID" && EUID=$(id -u)
+[[ -z "$EUID" ]] && EUID=$(id -u)
 
-if [ "$EUID" -ne 0 ]
+if [[ "$EUID" -ne 0 ]]
 then
   echo "You have to be root to run perf!"
   exit 1
