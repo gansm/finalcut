@@ -317,7 +317,7 @@ auto FString::toLower() const -> FString
   {
     if ( c < 128 )  // Fast path for ASCII
     {
-      const bool is_upper = (c >= L'A') & (c <= L'Z');
+      const bool is_upper = (c >= L'A') && (c <= L'Z');
       str.string.push_back(is_upper ? c + offset : c);
     }
     else  // Slow path for non-ASCII (uses locale)
@@ -340,7 +340,7 @@ auto FString::toUpper() const -> FString
   {
     if ( c < 128 )  // Fast path for ASCII
     {
-      const bool is_lower = (c >= L'a') & (c <= L'z');
+      const bool is_lower = (c >= L'a') && (c <= L'z');
       str.string.push_back(is_lower ? c - offset : c);
     }
     else  // Slow path for non-ASCII (uses locale)
@@ -685,7 +685,6 @@ auto FString::split (const FString& delimiter) const -> FStringList
   }
 
   string_list.reserve(count);
-  pos = 0;
 
   // Perform split
   while ( (pos = string.find(delimiter.string, start)) != npos )

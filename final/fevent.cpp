@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2022 Markus Gans                                      *
+* Copyright 2014-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -35,15 +35,15 @@ FEvent::FEvent (Event ev_type)  // constructor
 { }
 
 //----------------------------------------------------------------------
-auto FEvent::getType() const -> Event
+auto FEvent::getType() const noexcept -> Event
 { return t; }
 
 //----------------------------------------------------------------------
-auto FEvent::isQueued() const -> bool
+auto FEvent::isQueued() const noexcept -> bool
 { return queued; }
 
 //----------------------------------------------------------------------
-auto FEvent::wasSent() const -> bool
+auto FEvent::wasSent() const noexcept -> bool
 { return send; }
 
 
@@ -57,19 +57,19 @@ FKeyEvent::FKeyEvent (Event ev_type, FKey key_num)  // constructor
 { }
 
 //----------------------------------------------------------------------
-auto FKeyEvent::key() const -> FKey
+auto FKeyEvent::key() const noexcept -> FKey
 { return k; }
 
 //----------------------------------------------------------------------
-auto FKeyEvent::isAccepted() const -> bool
+auto FKeyEvent::isAccepted() const noexcept -> bool
 { return accpt; }
 
 //----------------------------------------------------------------------
-void FKeyEvent::accept()
+void FKeyEvent::accept() noexcept
 { accpt = true; }
 
 //----------------------------------------------------------------------
-void FKeyEvent::ignore()
+void FKeyEvent::ignore() noexcept
 { accpt = false; }
 
 
@@ -95,39 +95,39 @@ FMouseEvent::FMouseEvent ( Event ev_type  // constructor
 { }
 
 //----------------------------------------------------------------------
-auto FMouseEvent::getPos() const & -> const FPoint&
+auto FMouseEvent::getPos() const noexcept -> const FPoint&
 { return p; }
 
 //----------------------------------------------------------------------
-auto FMouseEvent::getTermPos() const & -> const FPoint&
+auto FMouseEvent::getTermPos() const noexcept -> const FPoint&
 { return tp; }
 
 //----------------------------------------------------------------------
-auto FMouseEvent::getX() const -> int
+auto FMouseEvent::getX() const noexcept -> int
 { return p.getX(); }
 
 //----------------------------------------------------------------------
-auto FMouseEvent::getY() const -> int
+auto FMouseEvent::getY() const noexcept -> int
 { return p.getY(); }
 
 //----------------------------------------------------------------------
-auto FMouseEvent::getTermX() const -> int
+auto FMouseEvent::getTermX() const noexcept -> int
 { return tp.getX(); }
 
 //----------------------------------------------------------------------
-auto FMouseEvent::getTermY() const -> int
+auto FMouseEvent::getTermY() const noexcept -> int
 { return tp.getY(); }
 
 //----------------------------------------------------------------------
-auto FMouseEvent::getButton() const -> MouseButton
+auto FMouseEvent::getButton() const noexcept -> MouseButton
 { return b; }
 
 //----------------------------------------------------------------------
-void FMouseEvent::setPos (const FPoint& pos)
+void FMouseEvent::setPos (const FPoint& pos) noexcept
 { p = pos; }
 
 //----------------------------------------------------------------------
-void FMouseEvent::setTermPos (const FPoint& termPos)
+void FMouseEvent::setTermPos (const FPoint& termPos) noexcept
 { tp = termPos; }
 
 
@@ -153,31 +153,31 @@ FWheelEvent::FWheelEvent ( Event ev_type  // constructor
 { }
 
 //----------------------------------------------------------------------
-auto FWheelEvent::getPos() const & -> const FPoint&
+auto FWheelEvent::getPos() const noexcept -> const FPoint&
 { return p; }
 
 //----------------------------------------------------------------------
-auto FWheelEvent::getTermPos() const & -> const FPoint&
+auto FWheelEvent::getTermPos() const noexcept -> const FPoint&
 { return tp; }
 
 //----------------------------------------------------------------------
-auto FWheelEvent::getX() const -> int
+auto FWheelEvent::getX() const noexcept -> int
 { return p.getX(); }
 
 //----------------------------------------------------------------------
-auto FWheelEvent::getY() const -> int
+auto FWheelEvent::getY() const noexcept -> int
 { return p.getY(); }
 
 //----------------------------------------------------------------------
-auto FWheelEvent::getTermX() const -> int
+auto FWheelEvent::getTermX() const noexcept -> int
 { return tp.getX(); }
 
 //----------------------------------------------------------------------
-auto FWheelEvent::getTermY() const -> int
+auto FWheelEvent::getTermY() const noexcept -> int
 { return tp.getY(); }
 
 //----------------------------------------------------------------------
-auto FWheelEvent::getWheel() const -> MouseWheel
+auto FWheelEvent::getWheel() const noexcept -> MouseWheel
 { return w; }
 
 
@@ -190,35 +190,35 @@ FFocusEvent::FFocusEvent (Event ev_type)  // constructor
 { }
 
 //----------------------------------------------------------------------
-auto FFocusEvent::gotFocus() const -> bool
+auto FFocusEvent::gotFocus() const noexcept -> bool
 {
   return getType() == Event::FocusIn;
 }
 
 //----------------------------------------------------------------------
-auto FFocusEvent::lostFocus() const -> bool
+auto FFocusEvent::lostFocus() const noexcept -> bool
 {
   return getType() == Event::FocusOut;
 }
 
 //----------------------------------------------------------------------
-auto FFocusEvent::getFocusType() const -> FocusTypes
+auto FFocusEvent::getFocusType() const noexcept -> FocusTypes
 { return focus_type; }
 
 //----------------------------------------------------------------------
-void FFocusEvent::setFocusType (FocusTypes ft)
+void FFocusEvent::setFocusType (FocusTypes ft) noexcept
 { focus_type = ft; }
 
 //----------------------------------------------------------------------
-auto FFocusEvent::isAccepted() const -> bool
+auto FFocusEvent::isAccepted() const noexcept -> bool
 { return accpt; }
 
 //----------------------------------------------------------------------
-void FFocusEvent::accept()
+void FFocusEvent::accept() noexcept
 { accpt = true; }
 
 //----------------------------------------------------------------------
-void FFocusEvent::ignore()
+void FFocusEvent::ignore() noexcept
 { accpt = false; }
 
 
@@ -232,19 +232,19 @@ FAccelEvent::FAccelEvent (Event ev_type, FWidget* focused)  // constructor
 { }
 
 //----------------------------------------------------------------------
-auto FAccelEvent::focusedWidget() const -> FWidget*
+auto FAccelEvent::focusedWidget() const noexcept -> FWidget*
 { return focus_widget; }
 
 //----------------------------------------------------------------------
-auto FAccelEvent::isAccepted() const -> bool
+auto FAccelEvent::isAccepted() const noexcept -> bool
 { return accpt; }
 
 //----------------------------------------------------------------------
-void FAccelEvent::accept()
+void FAccelEvent::accept() noexcept
 { accpt = true; }
 
 //----------------------------------------------------------------------
-void FAccelEvent::ignore()
+void FAccelEvent::ignore() noexcept
 { accpt = false; }
 
 
@@ -257,15 +257,15 @@ FResizeEvent::FResizeEvent (Event ev_type)  // constructor
 { }
 
 //----------------------------------------------------------------------
-auto FResizeEvent::isAccepted() const -> bool
+auto FResizeEvent::isAccepted() const noexcept -> bool
 { return accpt; }
 
 //----------------------------------------------------------------------
-void FResizeEvent::accept()
+void FResizeEvent::accept() noexcept
 { accpt = true; }
 
 //----------------------------------------------------------------------
-void FResizeEvent::ignore()
+void FResizeEvent::ignore() noexcept
 { accpt = false; }
 
 
@@ -296,15 +296,15 @@ FCloseEvent::FCloseEvent (Event ev_type)  // constructor
 { }
 
 //----------------------------------------------------------------------
-auto FCloseEvent::isAccepted() const -> bool
+auto FCloseEvent::isAccepted() const noexcept -> bool
 { return accpt; }
 
 //----------------------------------------------------------------------
-void FCloseEvent::accept()
+void FCloseEvent::accept() noexcept
 { accpt = true; }
 
 //----------------------------------------------------------------------
-void FCloseEvent::ignore()
+void FCloseEvent::ignore() noexcept
 { accpt = false; }
 
 
@@ -318,7 +318,7 @@ FTimerEvent::FTimerEvent (Event ev_type, int timer_id)  // constructor
 { }
 
 //----------------------------------------------------------------------
-auto FTimerEvent::getTimerId() const -> int
+auto FTimerEvent::getTimerId() const noexcept -> int
 { return id; }
 
 
@@ -332,7 +332,7 @@ FUserEvent::FUserEvent (Event ev_type, int user_event_id)  // constructor
 { }
 
 //----------------------------------------------------------------------
-auto FUserEvent::getUserId() const -> int
+auto FUserEvent::getUserId() const noexcept -> int
 { return uid; }
 
 }  // namespace finalcut

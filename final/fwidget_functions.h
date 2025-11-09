@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021-2024 Markus Gans                                      *
+* Copyright 2021-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -48,18 +48,18 @@ using FWidgetList = std::vector<FWidget*>;
 
 // non-member function forward declarations
 void detectTerminalSize();
-void initByte1PrintTransMask();
-auto isFocusNextKey (const FKey) -> bool;
-auto isFocusPrevKey (const FKey) -> bool;
-auto isDialogMenuKey (const FKey) -> bool;
-auto isEnterKey (const FKey) -> bool;
-auto isEscapeKey (const FKey) -> bool;
-auto isExpandComboBoxKey (const FKey) -> bool;
-auto isCollapseComboBoxKey (const FKey) -> bool;
+void initByte1PrintTransMask() noexcept;
+auto isFocusNextKey (const FKey) noexcept -> bool;
+auto isFocusPrevKey (const FKey) noexcept -> bool;
+auto isDialogMenuKey (const FKey) noexcept -> bool;
+auto isEnterKey (const FKey) noexcept -> bool;
+auto isEscapeKey (const FKey) noexcept -> bool;
+auto isExpandComboBoxKey (const FKey) noexcept -> bool;
+auto isCollapseComboBoxKey (const FKey) noexcept -> bool;
 auto getFirstFocusableWidget (const FObjectList&) -> FWidget*;
 auto getLastFocusableWidget (const FObjectList&) -> FWidget*;
 auto isInFWidgetList (const FWidgetList*, const FWidget*) -> bool;
-auto getAlignOffset (Align, const std::size_t, const std::size_t) -> std::size_t;
+auto getAlignOffset (Align, const std::size_t, const std::size_t) noexcept -> std::size_t;
 auto getHotkey (const FString&) -> FKey;
 auto getHotkeyPos (const FString& src, FString& dest) -> std::size_t;
 void setHotkeyViaString (FWidget*, const FString&);

@@ -713,7 +713,7 @@ auto getColumnWidthImpl (const wchar_t wchar) -> std::size_t
 }
 
 //----------------------------------------------------------------------
-auto getColumnWidth (const FChar& term_char) -> std::size_t
+auto getColumnWidth (const FChar& term_char) noexcept -> std::size_t
 {
   return std::size_t(term_char.attr.bit.char_width);
 }

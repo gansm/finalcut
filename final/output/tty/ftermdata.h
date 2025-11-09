@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2023 Markus Gans                                      *
+* Copyright 2018-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -64,9 +64,12 @@ class FCharSubstitution
       wchar_t to;
     };
 
-    auto getMappedChar (wchar_t) const -> wchar_t;
-    void setCharMapping (const Map&);
-    auto isEmpty() const -> bool;
+    // Constructor
+    FCharSubstitution();
+
+    auto getMappedChar (wchar_t) const noexcept -> wchar_t;
+    void setCharMapping (const Map&) noexcept;
+    auto isEmpty() const noexcept -> bool;
     void sort();
 
   private:
@@ -75,39 +78,45 @@ class FCharSubstitution
 
 // FTermData inline functions
 //----------------------------------------------------------------------
-inline auto FCharSubstitution::getMappedChar (wchar_t c) const -> wchar_t
+inline FCharSubstitution::FCharSubstitution()
 {
-  const auto& cend = sub_map.cend();
-  auto iter = std::find_if ( sub_map.cbegin(), cend,
-                             [&c] (const auto& map)
-                             {
-                               return map.from == c;
-                             } );
+  sub_map.reserve(16);
+}
 
-  if ( iter == cend )
+//----------------------------------------------------------------------
+inline auto FCharSubstitution::getMappedChar (wchar_t c) const noexcept -> wchar_t
+{
+  auto iter = std::lower_bound ( sub_map.begin(), sub_map.end()
+                               , c
+                               , [] (const Map& map, wchar_t value)
+                                 {
+                                   return map.from < value;
+                                 } );
+
+  if ( iter == sub_map.end() || iter->from != c )
     return L'\0';
 
   return iter->to;
 }
 
 //----------------------------------------------------------------------
-inline void FCharSubstitution::setCharMapping (const Map& m)
+inline void FCharSubstitution::setCharMapping (const Map& m) noexcept
 {
-  const auto& end = sub_map.end();
-  auto iter = std::find_if ( sub_map.begin(), end,
-                             [&m] (const auto& map)
-                             {
-                               return map.from == m.from;
-                             } );
+  auto iter = std::lower_bound ( sub_map.begin(), sub_map.end()
+                               , m.from
+                               , [] (const Map& map, wchar_t value)
+                                 {
+                                   return map.from < value;
+                                 } );
 
-  if ( iter == end )
-    sub_map.push_back(m);
+  if ( iter != sub_map.end() && iter->from == m.from )
+    iter->to = m.to;          // Update existing mapping
   else
-    iter->to = m.to;
+    sub_map.insert(iter, m);  // Insert in proper sorted position
 }
 
 //----------------------------------------------------------------------
-inline auto FCharSubstitution::isEmpty() const -> bool
+inline auto FCharSubstitution::isEmpty() const noexcept -> bool
 {
   return sub_map.empty();
 }
@@ -405,7 +414,7 @@ inline auto FTermData::isMonochron() const noexcept -> bool
 inline auto FTermData::hasTermResized() -> bool
 {
   std::lock_guard<std::mutex> resize_lock_guard(synchronization_state.resize_mutex);
-  return synchronization_state.resize_count.load() > 0;
+  return synchronization_state.resize_count.load(std::memory_order_acquire) > 0;
 }
 
 //----------------------------------------------------------------------

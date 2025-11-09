@@ -41,6 +41,7 @@ SGRoptimizer::SGRoptimizer (std::string& sequence)
   : seq{sequence}
 {
   seq.reserve(ATTR_BUF_SIZE);
+  csi_parameter.reserve(16);
 }
 
 
@@ -59,32 +60,34 @@ void SGRoptimizer::findParameter()
 {
   // Find ANSI X3.64 terminal SGR (Select Graphic Rendition) strings
 
-  std::size_t start{NOT_SET};
   csi_parameter.clear();
-  const std::size_t seq_length = seq.length();
+  const std::size_t len = seq.size();
 
-  if ( seq_length < 6 )
+  if ( len < 6 )
     return;
 
+  std::size_t start{NOT_SET};
+  std::size_t last_end{NOT_SET};
+
   // Find SGR parameter
-  for (std::size_t index{0}; index < seq_length; ++index)
+  for (std::size_t index{2}; index < len; ++index)
   {
     const char ch = seq[index];
 
     if ( isSGRStart(index) )  // Esc [
       start = index;
 
-    if ( std::isdigit(ch) || ch == ';' )
+    if ( (ch >= '0' && ch <= '9') || ch == ';' )
       continue;
 
     if ( start != NOT_SET && ch == 'm' )
     {
       csi_parameter.push_back({start, index});
+      last_end = index;
       start = NOT_SET;
     }
 
-    // Other content
-    if ( ! csi_parameter.empty() && index > csi_parameter.back().end + 2 )
+    if ( last_end != NOT_SET && index > last_end + 2 )
       break;
   }
 }
@@ -92,8 +95,7 @@ void SGRoptimizer::findParameter()
 //----------------------------------------------------------------------
 inline auto SGRoptimizer::isSGRStart (std::size_t index) const noexcept -> bool
 {
-  return index > 1
-      && seq[index - 2] == ESC[0]
+  return seq[index - 2] == ESC[0]
       && seq[index - 1] == '[';
 }
 
@@ -106,9 +108,9 @@ void SGRoptimizer::combineParameter()
     return;
 
   const auto& first = csi_parameter.front();
-  std::size_t count = 1;
-  std::size_t read_pos = 0;
   std::size_t write_pos = first.end;
+  std::size_t read_pos  = 0;
+  std::size_t count     = 1;
 
   if ( first.start == first.end )  // Esc [ m
   {
@@ -139,9 +141,9 @@ void SGRoptimizer::combineParameter()
   }
 
   // Copy remaining characters in the sequence
-  const std::size_t num_of_chars = seq.size() - read_pos;
-  std::memmove(&seq[write_pos], &seq[read_pos], num_of_chars);
-  write_pos += num_of_chars;
+  const std::size_t tail_size = seq.size() - read_pos;
+  std::memmove(&seq[write_pos], &seq[read_pos], tail_size);
+  write_pos += tail_size;
 
   seq.resize(write_pos);
 }

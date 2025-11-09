@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2022 Markus Gans                                      *
+* Copyright 2014-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -102,9 +102,9 @@ class FEvent  // event base class
 {
   public:
     explicit FEvent(Event);
-    auto getType() const -> Event;
-    auto isQueued() const -> bool;
-    auto wasSent() const -> bool;
+    auto getType() const noexcept -> Event;
+    auto isQueued() const noexcept -> bool;
+    auto wasSent() const noexcept -> bool;
 
   private:
     friend void setSend (FEvent&, bool);
@@ -126,10 +126,10 @@ class FKeyEvent : public FEvent  // keyboard event
   public:
     FKeyEvent (Event, FKey);
 
-    auto key() const -> FKey;
-    auto isAccepted() const -> bool;
-    void accept();
-    void ignore();
+    auto key() const noexcept -> FKey;
+    auto isAccepted() const noexcept -> bool;
+    void accept() noexcept;
+    void ignore() noexcept;
 
   private:
     FKey k{};
@@ -147,15 +147,15 @@ class FMouseEvent : public FEvent  // mouse event
     FMouseEvent (Event, const FPoint&, const FPoint&, MouseButton);
     FMouseEvent (Event, const FPoint&, MouseButton);
 
-    auto getPos() const & -> const FPoint&;
-    auto getTermPos() const & -> const FPoint&;
-    auto getX() const -> int;
-    auto getY() const -> int;
-    auto getTermX() const -> int;
-    auto getTermY() const -> int;
-    auto getButton() const -> MouseButton;
-    void setPos (const FPoint&);
-    void setTermPos (const FPoint&);
+    auto getPos() const noexcept -> const FPoint&;
+    auto getTermPos() const noexcept -> const FPoint&;
+    auto getX() const noexcept -> int;
+    auto getY() const noexcept -> int;
+    auto getTermX() const noexcept -> int;
+    auto getTermY() const noexcept -> int;
+    auto getButton() const noexcept -> MouseButton;
+    void setPos (const FPoint&) noexcept;
+    void setTermPos (const FPoint&) noexcept;
 
   private:
     FPoint      p{};
@@ -174,13 +174,13 @@ class FWheelEvent : public FEvent  // wheel event
     FWheelEvent (Event, const FPoint&, MouseWheel);
     FWheelEvent (Event, const FPoint&, const FPoint&, MouseWheel);
 
-    auto getPos() const & -> const FPoint&;
-    auto getTermPos() const & -> const FPoint&;
-    auto getX() const -> int;
-    auto getY() const -> int;
-    auto getTermX() const -> int;
-    auto getTermY() const -> int;
-    auto getWheel() const -> MouseWheel;
+    auto getPos() const noexcept -> const FPoint&;
+    auto getTermPos() const noexcept -> const FPoint&;
+    auto getX() const noexcept -> int;
+    auto getY() const noexcept -> int;
+    auto getTermX() const noexcept -> int;
+    auto getTermY() const noexcept -> int;
+    auto getWheel() const noexcept -> MouseWheel;
 
   private:
     FPoint     p{};
@@ -198,13 +198,13 @@ class FFocusEvent : public FEvent  // focus event
   public:
     explicit FFocusEvent (Event);
 
-    auto gotFocus()  const -> bool;
-    auto lostFocus() const -> bool;
-    auto getFocusType() const -> FocusTypes;
-    void setFocusType (FocusTypes);
-    auto isAccepted() const -> bool;
-    void accept();
-    void ignore();
+    auto gotFocus() const noexcept -> bool;
+    auto lostFocus() const noexcept -> bool;
+    auto getFocusType() const noexcept -> FocusTypes;
+    void setFocusType (FocusTypes) noexcept;
+    auto isAccepted() const noexcept -> bool;
+    void accept() noexcept;
+    void ignore() noexcept;
 
   private:
     bool       accpt{true};  // accept by default
@@ -224,10 +224,10 @@ class FAccelEvent : public FEvent  // focus event
     FAccelEvent (const FAccelEvent&) = delete;
     auto operator = (const FAccelEvent&) -> FAccelEvent& = delete;
 
-    auto focusedWidget() const -> FWidget*;
-    auto isAccepted() const -> bool;
-    void accept();
-    void ignore();
+    auto focusedWidget() const noexcept -> FWidget*;
+    auto isAccepted() const noexcept -> bool;
+    void accept() noexcept;
+    void ignore() noexcept;
 
   private:
     bool     accpt{false};  // reject by default
@@ -244,9 +244,9 @@ class FResizeEvent : public FEvent  // resize event
   public:
     explicit FResizeEvent (Event);
 
-    auto isAccepted() const -> bool;
-    void accept();
-    void ignore();
+    auto isAccepted() const noexcept -> bool;
+    void accept() noexcept;
+    void ignore() noexcept;
 
   private:
     bool accpt{false};  // reject by default
@@ -284,9 +284,9 @@ class FCloseEvent : public FEvent  // close event
   public:
     explicit FCloseEvent(Event);
 
-    auto isAccepted() const -> bool;
-    void accept();
-    void ignore();
+    auto isAccepted() const noexcept -> bool;
+    void accept() noexcept;
+    void ignore() noexcept;
 
   private:
     bool accpt{false};  // reject by default
@@ -302,7 +302,7 @@ class FTimerEvent : public FEvent  // timer event
   public:
     FTimerEvent (Event, int);
 
-    auto getTimerId() const -> int;
+    auto getTimerId() const noexcept -> int;
 
   private:
     int id{0};
@@ -318,15 +318,15 @@ class FUserEvent : public FEvent  // user event
   public:
     FUserEvent (Event, int);
 
-    auto getUserId() const -> int;
+    auto getUserId() const noexcept -> int;
     template <typename T>
-    auto getFDataObject() const -> FData<T>&&;
+    auto getFDataObject() const noexcept -> FData<T>&&;
     template <typename T>
-    auto getData() const -> clean_fdata_t<T>&;
+    auto getData() const noexcept -> clean_fdata_t<T>&;
     template <typename T>
-    void setFDataObject (T&&);
+    void setFDataObject (T&&) noexcept;
     template <typename T>
-    void setData (T&&);
+    void setData (T&&) noexcept;
 
   private:
     // Using-declaration
@@ -339,28 +339,28 @@ class FUserEvent : public FEvent  // user event
 
 //----------------------------------------------------------------------
 template <typename T>
-inline auto FUserEvent::getFDataObject() const -> FData<T>&&
+inline auto FUserEvent::getFDataObject() const noexcept -> FData<T>&&
 {
   return static_cast<FData<T>&&>(*data_pointer);
 }
 
 //----------------------------------------------------------------------
 template <typename T>
-inline auto FUserEvent::getData() const -> clean_fdata_t<T>&
+inline auto FUserEvent::getData() const noexcept -> clean_fdata_t<T>&
 {
   return static_cast<FData<clean_fdata_t<T>>&>(*data_pointer).get();
 }
 
 //----------------------------------------------------------------------
 template <typename T>
-inline void FUserEvent::setFDataObject (T&& fdata)
+inline void FUserEvent::setFDataObject (T&& fdata) noexcept
 {
   data_pointer.reset(&(std::forward<T>(fdata)));
 }
 
 //----------------------------------------------------------------------
 template <typename T>
-inline void FUserEvent::setData (T&& data)
+inline void FUserEvent::setData (T&& data) noexcept
 {
   data_pointer.reset(makeFData(std::forward<T>(data)));
 }

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2023 Markus Gans                                      *
+* Copyright 2017-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -504,7 +504,7 @@ void MouseDraw::drawCanvas()
     std::memcpy ( &winchar
                 , &canvaschar
                 , sizeof(finalcut::FChar) * unsigned(x_end) );
-    auto& line_changes = printarea->changes[unsigned(ay + y)];
+    auto& line_changes = printarea->changes_in_line[unsigned(ay + y)];
 
     if ( int(line_changes.xmin) > ax )
       line_changes.xmin = uInt(ax);
@@ -513,6 +513,7 @@ void MouseDraw::drawCanvas()
       line_changes.xmax = uInt(ax + x_end - 1);
   }
 
+  printarea->changes_in_row = {0, uInt(y_end - 1)};
   printarea->has_changes = true;
   forceTerminalUpdate();
 }

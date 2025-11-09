@@ -46,6 +46,24 @@ namespace finalcut
 namespace internal
 {
 
+template <typename T>
+constexpr T clampValue (T value, T minVal, T maxVal)
+{
+  return ( value < minVal ) ? minVal :
+         ( value > maxVal ) ? maxVal : value;
+}
+
+template <typename T>
+constexpr T adjustValue (T current, T reference, T delta, T minLimit)
+{
+  if ( current > reference )
+    return reference + delta;
+  else if ( reference >= delta )
+    return reference - delta;
+  else
+    return minLimit;  // Avoid underflow
+}
+
 constexpr auto getByte2PrintedMask() -> uInt8
 {
   FCharAttribute mask{};
@@ -329,8 +347,10 @@ auto FTermOutput::updateTerminal() -> bool
   // Updates pending changes to the terminal
 
   int changedlines{0};
+  const auto first_row = vterm->changes_in_row.ymin;
+  const auto last_row  = vterm->changes_in_row.ymax;
 
-  for (uInt y{0}; y < uInt(vterm->size.height); y++)
+  for (uInt y{first_row}; y <= last_row; y++)
   {
     FVTerm::reduceTerminalLineUpdates(y);
 
@@ -338,6 +358,7 @@ auto FTermOutput::updateTerminal() -> bool
       changedlines++;
   }
 
+  vterm->changes_in_row = {uInt(vterm->size.height), 0};  // Reset row changes
   vterm->has_changes = false;
 
   // sets the new input cursor position
@@ -1159,15 +1180,12 @@ inline auto FTermOutput::updateTerminalLine (uInt y) -> bool
 {
   // Updates pending changes from line y to the terminal
 
-  auto& vterm_changes = vterm->changes[y];
+  auto& vterm_changes = vterm->changes_in_line[y];
   uInt& xmin = vterm_changes.xmin;
   uInt& xmax = vterm_changes.xmax;
 
   if ( xmin > xmax )  // This line has no changes
-  {
-    cursorWrap();
     return false;
-  }
 
   // Clear rest of line
   if ( canClearToEOL (xmin, y) )
@@ -1241,23 +1259,14 @@ inline void FTermOutput::flushTimeAdjustment() noexcept
     return;
   }
 
-  const uInt64 us =
-      ( diff_us < MIN_FLUSH_WAIT ) ? MIN_FLUSH_WAIT :
-      ( diff_us > MAX_FLUSH_WAIT ) ? MAX_FLUSH_WAIT : diff_us;
-
+  const uInt64 us = internal::clampValue(diff_us, MIN_FLUSH_WAIT, MAX_FLUSH_WAIT);
   const uInt64 avg = flush_average;
   const uInt64 delta_avg = ( us > avg ) ? (us - avg) / 10
                                         : (avg - us) / 10;
-  flush_average =
-      ( us > avg ) ? avg + delta_avg
-                   : ( avg >= delta_avg ? avg - delta_avg  // Avoid uInt64 underflow
-                                        : MIN_FLUSH_WAIT );
+  flush_average = internal::adjustValue (us, avg, delta_avg, MIN_FLUSH_WAIT);
   const uInt64 med  = flush_median;
   const uInt64 step = flush_average / 5;
-  flush_median =
-      ( us >= med ) ? med + step
-                    : ( med >= step ? med - step  // Avoid uInt64 underflow
-                                    : MIN_FLUSH_WAIT );
+  flush_median  = internal::adjustValue (us, med, step, MIN_FLUSH_WAIT);
   flush_wait = flush_median;
 }
 

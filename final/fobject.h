@@ -171,7 +171,7 @@ class FObject : public FObjectTimer
     FObjectList  children_list{};  // no children yet
     std::size_t  max_children{UNLIMITED};
     bool         has_parent{false};
-    bool         widget_object{false};
+    bool         is_widget_object{false};
 };
 
 // FObject inline functions
@@ -285,7 +285,7 @@ inline auto FObject::isDirectChild (const FObject* obj) const noexcept -> bool
 
 //----------------------------------------------------------------------
 inline auto FObject::isWidget() const noexcept -> bool
-{ return widget_object; }
+{ return is_widget_object; }
 
 //----------------------------------------------------------------------
 inline auto FObject::isInstanceOf (const FString& classname) const -> bool
@@ -293,7 +293,7 @@ inline auto FObject::isInstanceOf (const FString& classname) const -> bool
 
 //----------------------------------------------------------------------
 inline void FObject::setWidgetProperty (bool is_widget) noexcept
-{ widget_object = is_widget; }
+{ is_widget_object = is_widget; }
 
 }  // namespace finalcut
 

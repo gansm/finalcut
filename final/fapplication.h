@@ -259,7 +259,7 @@ class FApplication : public FWidget
 // non-member function forward declarations
 // implemented in fwidget_functions.cpp
 //----------------------------------------------------------------------
-auto getFApplication() -> FApplication*;
+auto getFApplication() noexcept -> FApplication*;
 
 
 // FApplication inline functions

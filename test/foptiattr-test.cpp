@@ -192,7 +192,6 @@ void FOptiAttrTest::sgrOptimizerTest()
   to.attr.bit.dim = true;
   to.attr.bit.italic = true;
   CPPUNIT_ASSERT ( from != to );
-
   CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                         , CSI "0;10;2;1;3;34;47m" );
   CPPUNIT_ASSERT ( from == to );

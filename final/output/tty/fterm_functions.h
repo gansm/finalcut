@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021-2023 Markus Gans                                      *
+* Copyright 2021-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -70,7 +70,7 @@ auto getLengthFromColumnWidth (const FString&, std::size_t) -> std::size_t;
 auto getColumnWidth (const FString&, std::size_t) -> std::size_t;
 auto getColumnWidth (const FString&) -> std::size_t;
 auto getColumnWidth (const wchar_t) -> std::size_t;
-auto getColumnWidth (const FChar&) -> std::size_t;
+auto getColumnWidth (const FChar&) noexcept -> std::size_t;
 auto getColumnWidth (const FVTermBuffer&) -> std::size_t;
 void addColumnWidth (FChar&, std::size_t);
 auto getCharLength (const FString&, std::size_t) -> int;

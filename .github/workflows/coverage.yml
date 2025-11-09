@@ -14,6 +14,7 @@ jobs:
 
     env:
       COVERALLS_REPO_TOKEN: "${{ secrets.COVERALLS_REPO_TOKEN }}"
+      CODECOV_TOKEN: "${{ secrets.CODECOV_TOKEN }}"
 
     steps:
     - name: Repository checkout
@@ -57,7 +58,7 @@ jobs:
         lcov --remove lcov-all.info '/usr/include/*' './include/*' --ignore-errors unused,unused --output-file lcov.info
         lcov --list lcov.info
         rm -f lcov-all.info
-        coveralls-lcov --branch=${GITHUB_REF##*/} --repo-token "${{ secrets.COVERALLS_REPO_TOKEN }}" lcov.info
+        coveralls-lcov --branch=${GITHUB_REF##*/} --repo-token "$COVERALLS_REPO_TOKEN" lcov.info
 
     - name: Codecov
       run: |
@@ -70,5 +71,5 @@ jobs:
         gpgv codecov.SHA256SUM.sig codecov.SHA256SUM
         shasum -a 256 -c codecov.SHA256SUM
         chmod +x codecov
-        ./codecov -t ${{ secrets.CODECOV_TOKEN }}
+        ./codecov -t "$CODECOV_TOKEN"
 

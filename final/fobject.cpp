@@ -55,7 +55,7 @@ FObject::~FObject()  // destructor
   if ( ! children_list.empty() )
   {
     // Make a copy to avoid iterator invalidation during deletion
-    const auto delete_list = children_list;
+    auto delete_list = children_list;
 
     for (auto obj : delete_list)
       delete obj;

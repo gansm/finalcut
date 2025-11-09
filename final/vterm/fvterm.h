@@ -350,6 +350,7 @@ class FVTerm : public FVTermAttribute
     auto  isTransparentInvisible (const FChar&) const noexcept -> bool;
     template <typename FOutputType>
     void  init();
+    void  initFromGlobalInstance();
     void  initSettings();
     void  finish() const;
     void  saveCurrentVTerm() const;
@@ -418,6 +419,12 @@ struct FVTerm::FTermArea  // Define virtual terminal character properties
     bool covered;      // Line cover state
   };
 
+  struct FRowChanges
+  {
+    uInt ymin;         // Y-position with the first change
+    uInt ymax;         // Y-position with the last change
+  };
+
   // Using-declaration
   using FDataAccessPtr  = std::shared_ptr<FDataAccess>;
   using FLineChangesVec = std::vector<FLineChanges>;
@@ -462,7 +469,7 @@ struct FVTerm::FTermArea  // Define virtual terminal character properties
   constexpr auto isOverlapped (const FRect&) const noexcept -> bool;
   constexpr auto isOverlapped (const FTermArea*) const noexcept -> bool;
   constexpr auto isPrintPositionInsideArea() const noexcept -> bool;
-  constexpr auto reprint (const FRect&, const FSize&) noexcept -> bool;
+  inline auto reprint (const FRect&, const FSize&) noexcept -> bool;
 
   inline auto getFChar (int x, int y) const noexcept -> const FChar&
   {
@@ -505,6 +512,8 @@ struct FVTerm::FTermArea  // Define virtual terminal character properties
     return -1;
   }
 
+  inline void updateAreaChanges (uInt, uInt, uInt8) noexcept;
+
   // Data members
   struct Coordinate
   {
@@ -532,7 +541,8 @@ struct FVTerm::FTermArea  // Define virtual terminal character properties
   bool            minimized{false};
   FDataAccessPtr  owner{nullptr};        // Object that owns this FTermArea
   FPreprocVector  preproc_list{};
-  FLineChangesVec changes{};
+  FRowChanges     changes_in_row{};
+  FLineChangesVec changes_in_line{};
   FCharVec        data{};                // FChar data of the drawing area
 };
 
@@ -600,9 +610,8 @@ constexpr auto FVTerm::FTermArea::isPrintPositionInsideArea() const noexcept -> 
       && cursor.y <= size.height + shadow.height;
 }
 
-
 //----------------------------------------------------------------------
-constexpr auto FVTerm::FTermArea::reprint (const FRect& box, const FSize& term_size) noexcept -> bool
+inline auto FVTerm::FTermArea::reprint (const FRect& box, const FSize& term_size) noexcept -> bool
 {
   if ( ! isOverlapped(box) )
     return false;
@@ -622,7 +631,7 @@ constexpr auto FVTerm::FTermArea::reprint (const FRect& box, const FSize& term_s
   const int term_h = int(term_size.getHeight()) - 1;
   const int self_h = minimized ? min_size.height
                                : size.height + shadow.height;
-  const int self_w = size.width + shadow.width;
+  const int self_w  = size.width + shadow.width;
   const int self_x1 = position.x;
   const int self_y1 = position.y;
   const int self_x2 = self_x1 + self_w - 1;
@@ -639,22 +648,37 @@ constexpr auto FVTerm::FTermArea::reprint (const FRect& box, const FSize& term_s
   if ( y_end < y_start || x_end < x_start )  // Nothing visible
     return false;
 
-  auto* line_changes = &changes[unsigned(y_start)];
-  const auto* const line_changes_end = &changes[unsigned(std::max(0, y_end))];
+  auto first_row = unsigned(y_start);
+  auto last_row  = unsigned(std::max(0, y_end));
+  auto* line_changes = &changes_in_line[first_row];
+  const auto* const line_changes_end = &changes_in_line[last_row];
 
   while  ( line_changes <= line_changes_end )  // Line loop
   {
-    if ( x_start < int(line_changes->xmin) )
-      line_changes->xmin = uInt(x_start);
-
-    if ( x_end > int(line_changes->xmax) )
-      line_changes->xmax = uInt(x_end);
-
+    line_changes->xmin = std::min(line_changes->xmin, uInt(x_start));
+    line_changes->xmax = std::max(line_changes->xmax, uInt(x_end));
     ++line_changes;
   }
 
+  changes_in_row.ymin = std::min(changes_in_row.ymin, first_row);
+  changes_in_row.ymax = std::max(changes_in_row.ymax, last_row);
   return true;
 }
+
+//----------------------------------------------------------------------
+inline void FVTerm::FTermArea::updateAreaChanges ( uInt x, uInt y
+                                                 , uInt8 char_width ) noexcept
+{
+  auto& line_changes = changes_in_line[y];
+  const uInt x_end = x + uInt( char_width >> 1 );
+
+  line_changes.xmin = std::min(line_changes.xmin, x);
+  line_changes.xmax = std::max(line_changes.xmax, x_end);
+
+  changes_in_row.ymin = std::min(changes_in_row.ymin, y);
+  changes_in_row.ymax = std::max(changes_in_row.ymax, y);
+}
+
 
 //----------------------------------------------------------------------
 // struct FVTerm::FVTermPreprocessing
@@ -919,22 +943,32 @@ inline auto FVTerm::getLayer (FVTerm& obj) noexcept -> int
 template <typename FOutputType>
 inline void FVTerm::init()
 {
-  if ( ! isInitialized() )
+  if ( isInitialized() )
+  {
+    initFromGlobalInstance();
+  }
+  else
   {
     setGlobalFVTermInstance(this);
     foutput           = std::make_shared<FOutputType>(*this);
     vterm_window_list = std::make_shared<FVTermList>();
     initSettings();
   }
-  else
-  {
-    static const auto& init_object = getGlobalFVTermInstance();
-    foutput           = std::shared_ptr<FOutput>(init_object->foutput);
-    vterm_window_list = std::shared_ptr<FVTermList>(init_object->vterm_window_list);
-    vterm             = std::shared_ptr<FTermArea>(init_object->vterm);
-    vterm_old         = std::shared_ptr<FTermArea>(init_object->vterm_old);
-    vdesktop          = std::shared_ptr<FTermArea>(init_object->vdesktop);
-  }
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::initFromGlobalInstance()
+{
+  const auto& init_object = getGlobalFVTermInstance();
+
+  if ( ! init_object )
+    return;
+
+  foutput           = std::shared_ptr<FOutput>(init_object->foutput);
+  vterm_window_list = std::shared_ptr<FVTermList>(init_object->vterm_window_list);
+  vterm             = std::shared_ptr<FTermArea>(init_object->vterm);
+  vterm_old         = std::shared_ptr<FTermArea>(init_object->vterm_old);
+  vdesktop          = std::shared_ptr<FTermArea>(init_object->vdesktop);
 }
 
 }  // namespace finalcut

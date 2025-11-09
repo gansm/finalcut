@@ -1,9 +1,13 @@
+2025-11-09  Markus Gans  <guru.mail@muenster.de>
+	* The virtual terminal allows for faster tracking of changes by also 
+	  saving vertical adjustments
+
 2025-10-20  Markus Gans  <guru.mail@muenster.de>
 	* The rotozoomer example now uses a precomputed trigonometric lookup
 	  table
 
 2025-10-19  Markus Gans  <guru.mail@muenster.de>
-	* FVTerm's performance optimization reduces the number of CPU cycles
+	* FVTerm's performance optimization reduces CPU cycle count
 
 2025-10-09  Markus Gans  <guru.mail@muenster.de>
 	* Some speed optimizations were made to the methods 

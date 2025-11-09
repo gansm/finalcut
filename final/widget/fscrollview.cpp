@@ -4,7 +4,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2024 Markus Gans                                      *
+* Copyright 2017-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -734,11 +734,12 @@ void FScrollView::copy2area()
     std::memcpy (ac, vc, sizeof(FChar) * unsigned(x_end));
 
     // Update line changes
-    auto& line_changes = printarea->changes[unsigned(ay + y)];
+    auto& line_changes = printarea->changes_in_line[unsigned(ay + y)];
     line_changes.xmin = std::min({line_changes.xmin, line_start, max_limit});
     line_changes.xmax = std::min(std::max(line_changes.xmax, line_end), max_limit);
   }
 
+  printarea->changes_in_row = {0, uInt(y_end - 1)};
   setViewportCursor();
   viewport->has_changes = false;
   printarea->has_changes = true;

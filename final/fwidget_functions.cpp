@@ -40,7 +40,7 @@ namespace finalcut
 namespace internal
 {
 
-constexpr auto initByte1PrintTransMask() -> uInt8
+constexpr auto initByte1PrintTransMask() noexcept -> uInt8
 {
   FCharAttribute mask{};
   mask.transparent = true;
@@ -86,7 +86,7 @@ void drawBottomShadow (TransparentShadowData&);
 
 // FWidget non-member functions
 //----------------------------------------------------------------------
-auto isFocusNextKey (const FKey key) -> bool
+auto isFocusNextKey (const FKey key) noexcept -> bool
 {
   return ( key == FKey::Tab
         || key == FKey::Right
@@ -94,7 +94,7 @@ auto isFocusNextKey (const FKey key) -> bool
 }
 
 //----------------------------------------------------------------------
-auto isFocusPrevKey (const FKey key) -> bool
+auto isFocusPrevKey (const FKey key) noexcept -> bool
 {
   return ( key == FKey::Back_tab
         || key == FKey::Left
@@ -102,7 +102,7 @@ auto isFocusPrevKey (const FKey key) -> bool
 }
 
 //----------------------------------------------------------------------
-auto isDialogMenuKey (const FKey key) -> bool
+auto isDialogMenuKey (const FKey key) noexcept -> bool
 {
   return ( key == FKey::Ctrl_caret     // Ctrl+^ (Ctrl+6)
         || key == FKey::F22            // Shift+F10
@@ -110,21 +110,21 @@ auto isDialogMenuKey (const FKey key) -> bool
 }
 
 //----------------------------------------------------------------------
-auto isEnterKey (const FKey key) -> bool
+auto isEnterKey (const FKey key) noexcept -> bool
 {
   return ( key == FKey::Return
         || key == FKey::Enter );
 }
 
 //----------------------------------------------------------------------
-auto isEscapeKey (const FKey key) -> bool
+auto isEscapeKey (const FKey key) noexcept -> bool
 {
   return ( key == FKey::Escape
         || key == FKey::Escape_mintty );
 }
 
 //----------------------------------------------------------------------
-auto isExpandComboBoxKey (const FKey key) -> bool
+auto isExpandComboBoxKey (const FKey key) noexcept -> bool
 {
   return ( key == FKey::F4
         || key == FKey::Meta_down
@@ -132,7 +132,7 @@ auto isExpandComboBoxKey (const FKey key) -> bool
 }
 
 //----------------------------------------------------------------------
-auto isCollapseComboBoxKey (const FKey key) -> bool
+auto isCollapseComboBoxKey (const FKey key) noexcept -> bool
 {
   return ( key == FKey::Meta_up
         || key == FKey::Ctrl_up
@@ -199,7 +199,7 @@ auto isInFWidgetList (const FWidget::FWidgetList* list, const FWidget* obj) -> b
 }
 
 //----------------------------------------------------------------------
-auto getFApplication() -> FApplication*
+auto getFApplication() noexcept -> FApplication*
 {
   return FApplication::getApplicationObject();
 }
@@ -207,7 +207,7 @@ auto getFApplication() -> FApplication*
 //----------------------------------------------------------------------
 auto getAlignOffset ( Align alignment
                     , const std::size_t width
-                    , const std::size_t length ) -> std::size_t
+                    , const std::size_t length ) noexcept -> std::size_t
 {
   if ( alignment == Align::Center )
   {
@@ -418,6 +418,9 @@ void drawTransparentShadow (FWidget* w)
   drawRightShadow(data);
   drawBottomShadow(data);
   area.has_changes = true;
+  // Update row changes
+  auto last_row = uInt(data.height + data.shadow_height - 1);
+  area.changes_in_row = {uInt(0), last_row};
 
   if ( FVTerm::getFOutput()->isMonochron() )
     w->setReverse(false);
@@ -429,16 +432,16 @@ inline void drawRightShadow (TransparentShadowData& d)
   if ( d.shadow_width > 0 )  // Draw right shadow
   {
     std::fill (d.area_ptr, d.area_ptr + d.shadow_width, d.transparent_char);
-    d.area.changes[0].xmin = std::min(d.area.changes[0].xmin, d.width);
-    d.area.changes[0].xmax = d.width + d.shadow_width - 1;
-    d.area.changes[0].trans_count += d.shadow_width;
+    d.area.changes_in_line[0].xmin = std::min(d.area.changes_in_line[0].xmin, d.width);
+    d.area.changes_in_line[0].xmax = d.width + d.shadow_width - 1;
+    d.area.changes_in_line[0].trans_count += d.shadow_width;
 
     for (std::size_t y{1}; y < d.height; y++)
     {
       d.area_ptr += d.shadow_width + d.width;
-      d.area.changes[y].xmin = std::min(d.area.changes[y].xmin, d.width);
-      d.area.changes[y].xmax = d.width + d.shadow_width - 1;
-      d.area.changes[y].trans_count += d.shadow_width;
+      d.area.changes_in_line[y].xmin = std::min(d.area.changes_in_line[y].xmin, d.width);
+      d.area.changes_in_line[y].xmax = d.width + d.shadow_width - 1;
+      d.area.changes_in_line[y].trans_count += d.shadow_width;
       std::fill (d.area_ptr, d.area_ptr + d.shadow_width, d.color_overlay_char);
     }
 
@@ -451,9 +454,9 @@ inline void drawBottomShadow (TransparentShadowData& d)
 {
   for (std::size_t y{d.height}; y < d.height + d.shadow_height; y++)  // Draw bottom shadow
   {
-    d.area.changes[y].xmin = 0;
-    d.area.changes[y].xmax = d.width + d.shadow_width - 1;
-    d.area.changes[y].trans_count += d.width + d.shadow_width;
+    d.area.changes_in_line[y].xmin = 0;
+    d.area.changes_in_line[y].xmax = d.width + d.shadow_width - 1;
+    d.area.changes_in_line[y].trans_count += d.width + d.shadow_width;
     std::fill (d.area_ptr, d.area_ptr + d.shadow_width, d.transparent_char);
     d.area_ptr += d.shadow_width;
     std::fill (d.area_ptr, d.area_ptr + d.width, d.color_overlay_char);
@@ -564,7 +567,7 @@ struct GenericBlockShadowData
 
   inline void updateChanges (uInt y, uInt xmin, uInt xmax, uInt tc = 0)
   {
-    auto& changes = area.changes[y];
+    auto& changes = area.changes_in_line[y];
     changes.xmin = std::min(changes.xmin, xmin);
     changes.xmax = std::max(changes.xmax, xmax);
     changes.trans_count += tc + 1;
@@ -598,7 +601,6 @@ void drawGenericBlockShadow ( FWidget* w
   if ( bsd.is_window && (bsd.shadow_width < 1 || bsd.shadow_height < 1) )
     return;
 
-
   // Draw the top-right shadow
   auto* area_ptr = &bsd.area.getFChar(int(bsd.shadow_x), int(bsd.y_offset));
   *area_ptr = bsd.shadow_char[0];  // ▄ (top-right corner)
@@ -619,6 +621,10 @@ void drawGenericBlockShadow ( FWidget* w
   // Fill the horizontal shadow
   std::fill (area_ptr, area_ptr + bsd.width, bsd.shadow_char[3]);  // ▀
   bsd.updateChanges(bsd.shadow_y, bsd.x_offset, bsd.shadow_x, bsd.width);
+  // Update row changes
+  auto& changes_in_row = bsd.area.changes_in_row;
+  changes_in_row.ymin = std::min(changes_in_row.ymin, bsd.y_offset);
+  changes_in_row.ymax = std::max(changes_in_row.ymax, bsd.shadow_y);
 }
 
 //----------------------------------------------------------------------
@@ -917,7 +923,7 @@ struct GenericBoxData
 
   inline void updateChanges (uInt y, uInt xmin, uInt xmax)
   {
-    auto& changes = area.changes[y];
+    auto& changes = area.changes_in_line[y];
     changes.xmin = std::min(changes.xmin, xmin);
     changes.xmax = std::min(max_width, std::max(changes.xmax, xmax));
     changes.trans_count += trans_count_increment;
@@ -1013,8 +1019,11 @@ void drawGenericBox ( FWidget* w, const FRect& r
   drawBoxTopLine (box_data);
   drawBoxSides (box_data);
   drawBoxBottomLine (box_data);
-
   box_data.area.has_changes = true;  // Mark area as having changes
+  // Update row changes
+  auto& changes_in_row = box_data.area.changes_in_row;
+  changes_in_row.ymin = std::min(changes_in_row.ymin, uInt(box_data.y1));
+  changes_in_row.ymax = std::max(changes_in_row.ymax, uInt(box_data.y2));
 }
 
 //----------------------------------------------------------------------
