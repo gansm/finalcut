@@ -47,60 +47,24 @@ using finalcut::FColor;
 // http://bloerp.de/code/tempel/tempel-des-codes.html
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-//----------------------------------------------------------------------
-// class RotoZoomer
-//----------------------------------------------------------------------
+namespace {
 
-class RotoZoomer final : public finalcut::FDialog
+// Constants
+static constexpr int MAX_LOOPS{314};
+
+// Non-member functions
+constexpr auto generateSinTable() noexcept -> std::array<float, MAX_LOOPS>
 {
-  public:
-    // Constants
-    static constexpr int MAX_LOOPS{314};
+  std::array<float, MAX_LOOPS> table{};
 
-    // Constructor
-    explicit RotoZoomer (finalcut::FWidget* = nullptr, bool = false, int = MAX_LOOPS);
+  for (int i{0}; i < MAX_LOOPS; ++i)
+    table[i] = std::sin(float(i) / 50.0f);
 
-    // Accessors
-    auto getReport() const -> finalcut::FString;
+  return table;
+}
 
-    // Event handlers
-    void onShow (finalcut::FShowEvent*) override;
-    void onTimer (finalcut::FTimerEvent*) override;
-    void onKeyPress (finalcut::FKeyEvent*) override;
-    void onClose (finalcut::FCloseEvent*) override;
-
-  private:
-    static constexpr auto PHI_2     = 2.02358f;
-    static constexpr auto PHI_3     = -1.11701f;
-    static constexpr auto PHI_PI2   = float(M_PI_2);  // π/2
-    static constexpr auto idx_2     = int(PHI_2 * 50.0f) % MAX_LOOPS;
-    static constexpr auto idx_3     = int(PHI_3 * 50.0f) % MAX_LOOPS;
-    static constexpr auto idx_cos   = int(PHI_PI2 * 50.0f) % MAX_LOOPS;
-    static constexpr auto idx_2_cos = int((PHI_2 + PHI_PI2) * 50.0f) % MAX_LOOPS;
-    static constexpr auto idx_3_cos = int((PHI_3 + PHI_PI2) * 50.0f) % MAX_LOOPS;
-
-    // Methods
-    auto getSine (int, int) -> float;
-    void draw() override;
-    void rotozoomer (float, float, float);
-    void generateReport();
-    void adjustSize() override;
-
-    // Data member
-    bool  benchmark{false};
-    int  loops{0};
-    int  path{0};
-    finalcut::FString  report{};
-    time_point<system_clock>  start{};
-    time_point<system_clock>  end{};
-    static std::array<float, MAX_LOOPS>  sin_table;
-    static const std::array<wchar_t, 256>  data;
-};
-
-// static class attributes
-std::array<float, RotoZoomer::MAX_LOOPS> RotoZoomer::sin_table{};
-
-const std::array<wchar_t, 256> RotoZoomer::data = [] ()
+//----------------------------------------------------------------------
+constexpr auto generateDataPattern() noexcept -> std::array<wchar_t, 256>
 {
   std::array<wchar_t, 256> arr{};
   const std::array<wchar_t, 4> init_val{{L' ', L'+', L'x', L' '}};
@@ -125,7 +89,67 @@ const std::array<wchar_t, 256> RotoZoomer::data = [] ()
   }
 
   return arr;
-}();
+}
+
+} // namespace
+
+
+//----------------------------------------------------------------------
+// class RotoZoomer
+//----------------------------------------------------------------------
+
+class RotoZoomer final : public finalcut::FDialog
+{
+  public:
+    // Constructor
+    explicit RotoZoomer (finalcut::FWidget* = nullptr, bool = false, int = MAX_LOOPS);
+
+    // Accessors
+    auto getReport() const -> finalcut::FString;
+
+    // Event handlers
+    void onShow (finalcut::FShowEvent*) override;
+    void onTimer (finalcut::FTimerEvent*) override;
+    void onKeyPress (finalcut::FKeyEvent*) override;
+    void onClose (finalcut::FCloseEvent*) override;
+
+  private:
+    static constexpr auto color_space = finalcut::FColorPair{ FColor::Black, FColor::White };
+    static constexpr auto color_plus  = finalcut::FColorPair{ FColor::Black, FColor::Red   };
+    static constexpr auto color_x     = finalcut::FColorPair{ FColor::Black, FColor::Cyan  };
+    static constexpr auto PHI_2       = 2.02358f;
+    static constexpr auto PHI_3       = -1.11701f;
+    static constexpr auto PHI_PI2     = float(M_PI_2);  // π/2
+    static constexpr auto idx_2       = int(PHI_2 * 50.0f) % MAX_LOOPS;
+    static constexpr auto idx_3       = int(PHI_3 * 50.0f) % MAX_LOOPS;
+    static constexpr auto idx_cos     = int(PHI_PI2 * 50.0f) % MAX_LOOPS;
+    static constexpr auto idx_2_cos   = int((PHI_2 + PHI_PI2) * 50.0f) % MAX_LOOPS;
+    static constexpr auto idx_3_cos   = int((PHI_3 + PHI_PI2) * 50.0f) % MAX_LOOPS;
+
+    // Methods
+    auto getSine (int, int) const noexcept -> float;
+    void draw() override;
+    void rotozoomer (float, float, float);
+    void generateReport();
+    void adjustSize() override;
+
+    // Data member
+    bool  benchmark{false};
+    int  loops{0};
+    int  path{0};
+    finalcut::FString  report{};
+    time_point<system_clock>  start{};
+    time_point<system_clock>  end{};
+    static const std::array<float, MAX_LOOPS>  sin_table;
+    static const std::array<wchar_t, 256>  data;
+};
+
+// static class attributes
+constexpr finalcut::FColorPair RotoZoomer::color_space;
+constexpr finalcut::FColorPair RotoZoomer::color_plus;
+constexpr finalcut::FColorPair RotoZoomer::color_x;
+const std::array<float, MAX_LOOPS> RotoZoomer::sin_table = generateSinTable();
+const std::array<wchar_t, 256> RotoZoomer::data = generateDataPattern();
 
 //----------------------------------------------------------------------
 RotoZoomer::RotoZoomer (finalcut::FWidget* parent, bool is_benchmark, int num_loops)
@@ -133,23 +157,11 @@ RotoZoomer::RotoZoomer (finalcut::FWidget* parent, bool is_benchmark, int num_lo
   , benchmark{is_benchmark}
   , loops{num_loops}
 {
-  static bool tables_ready = false;
   FDialog::setText ("Rotozoomer effect");
-
-  if ( ! tables_ready )
-  {
-    for (int i{0}; i < MAX_LOOPS; ++i)
-    {
-      const auto a = float(i) / 50.0f;
-      sin_table[i] = std::sin(a);
-    }
-
-    tables_ready = true;
-  }
 }
 
 //----------------------------------------------------------------------
-inline auto RotoZoomer::getSine (int i, int shift) -> float
+inline auto RotoZoomer::getSine (int i, int shift) const noexcept -> float
 {
   // Sine lookup
   return sin_table[(i + shift + MAX_LOOPS) % MAX_LOOPS];
@@ -163,7 +175,7 @@ void RotoZoomer::draw()
 
   finalcut::FDialog::draw();
   const auto i1 = (path * 5) % MAX_LOOPS;
-  const auto r = 128.0f + (96.0f * getSine(i1, idx_cos));
+  const auto r  = 128.0f + (96.0f * getSine(i1, idx_cos));
   const auto i2 = path % MAX_LOOPS;
   const auto cx = 40.0f + (40.0f * getSine(i2, 0));
   const auto cy = 23.0f + (23.0f * getSine(i2, idx_cos));
@@ -173,10 +185,6 @@ void RotoZoomer::draw()
 //----------------------------------------------------------------------
 inline void RotoZoomer::rotozoomer (float cx, float cy, float r)
 {
-  constexpr finalcut::FColorPair color_space { FColor::Black, FColor::White };
-  constexpr finalcut::FColorPair color_plus  { FColor::Black, FColor::Red   };
-  constexpr finalcut::FColorPair color_x     { FColor::Black, FColor::Cyan  };
-
   const auto& cols = int(getClientWidth());
   const auto& lines = int(getClientHeight());
 
@@ -366,7 +374,7 @@ auto main (int argc, char* argv[]) -> int
     finalcut::FVTerm::setNonBlockingRead();
 
     // Create a simple dialog box
-    RotoZoomer roto{&app, benchmark, RotoZoomer::MAX_LOOPS};
+    RotoZoomer roto{&app, benchmark, MAX_LOOPS};
 
     if ( benchmark )
       roto.setGeometry (FPoint{1, 1}, FSize{80, 24});
