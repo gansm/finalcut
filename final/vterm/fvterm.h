@@ -469,7 +469,7 @@ struct FVTerm::FTermArea  // Define virtual terminal character properties
   constexpr auto isOverlapped (const FRect&) const noexcept -> bool;
   constexpr auto isOverlapped (const FTermArea*) const noexcept -> bool;
   constexpr auto isPrintPositionInsideArea() const noexcept -> bool;
-  inline auto reprint (const FRect&, const FSize&) noexcept -> bool;
+  auto reprint (const FRect&, const FSize&) noexcept -> bool;
 
   inline auto getFChar (int x, int y) const noexcept -> const FChar&
   {
@@ -512,7 +512,7 @@ struct FVTerm::FTermArea  // Define virtual terminal character properties
     return -1;
   }
 
-  inline void updateAreaChanges (uInt, uInt, uInt8) noexcept;
+  void updateAreaChanges (uInt, uInt, uInt8) noexcept;
 
   // Data members
   struct Coordinate

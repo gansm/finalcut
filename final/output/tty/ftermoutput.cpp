@@ -49,8 +49,10 @@ namespace internal
 template <typename T>
 constexpr T clampValue (T value, T minVal, T maxVal)
 {
-  return ( value < minVal ) ? minVal :
-         ( value > maxVal ) ? maxVal : value;
+  if ( value < minVal )
+    return minVal;
+  else
+    return ( value > maxVal ) ? maxVal : value;
 }
 
 template <typename T>

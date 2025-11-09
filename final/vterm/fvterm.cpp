@@ -311,7 +311,7 @@ void FVTerm::putVTerm() const
   auto vterm_changes = &vterm->changes_in_line[unsigned(0)];
   std::for_each ( vterm_changes
                 , vterm_changes + unsigned(vterm->size.height)
-                , [this, &xmax] (auto& vterm_changes_line) noexcept
+                , [&xmax] (auto& vterm_changes_line) noexcept
                   {
                     vterm_changes_line.xmin = 0;
                     vterm_changes_line.xmax = xmax;

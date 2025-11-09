@@ -50,7 +50,7 @@ using finalcut::FColor;
 namespace {
 
 // Constants
-static constexpr int MAX_LOOPS{314};
+constexpr int MAX_LOOPS{314};
 
 // Non-member functions
 constexpr auto generateSinTable() noexcept -> std::array<float, MAX_LOOPS>

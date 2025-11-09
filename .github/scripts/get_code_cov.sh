@@ -14,6 +14,8 @@ run_gcov ()
   then
     gcov -lp -o "./.libs/" "$FILENAME"
   fi
+
+  return 0
 }
 
 find "./test/" \

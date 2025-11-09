@@ -16,13 +16,13 @@ cd "$SRCDIR" || exit
 print_systeminfo ()
 {
   test -z "$CXX" && eval "$(grep '^CXX = ' "Makefile" | cut -d' ' -f1-3 | sed -e 's/ //g')"
-  local CXX_VERSION="$($CXX -dumpfullversion -dumpversion || echo "unknown version")"
-  local BUILD_MODE="$1"
+  local cxx_version="$($CXX -dumpfullversion -dumpversion || echo "unknown version")"
+  local build_mode="$1"
   echo "-------------------------"
   echo "      Platform: $PLATFORM"
   echo "  Architecture: $ARCH"
-  echo "      Compiler: $CXX $CXX_VERSION"
-  echo "         Build: $BUILD_MODE"
+  echo "      Compiler: $CXX $cxx_version"
+  echo "         Build: $build_mode"
   echo "Number of jobs: $JOBS"
   echo "-------------------------"
   return 0
@@ -34,15 +34,16 @@ then
   CPU_COUNT="$(getconf _NPROCESSORS_ONLN 2>/dev/null || getconf NPROCESSORS_ONLN 2>/dev/null)" || CPU_COUNT="0"
 fi
 
-if [ "$CPU_COUNT" -eq 0 \
-  && command -v nproc >/dev/null 2>&1 ]
+if [ "$CPU_COUNT" -eq 0 ] \
+&& command -v nproc >/dev/null 2>&1
 then
   CPU_COUNT="$(nproc 2>/dev/null)" || CPU_COUNT="0"
 fi
 
 test "$CPU_COUNT" -eq 0 && CPU_COUNT=1
 
-if [ -n "$1" && ! -f ./configure ]
+if [ -n "$1" ] \
+&& [ ! -f ./configure ]
 then
   if command -v autoreconf >/dev/null
   then

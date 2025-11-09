@@ -14,15 +14,13 @@ then
   CPU_COUNT="$(getconf _NPROCESSORS_ONLN 2>/dev/null || getconf NPROCESSORS_ONLN 2>/dev/null)" || CPU_COUNT="0"
 fi
 
-if [ "$CPU_COUNT" -eq 0 ]
+if [[ "$CPU_COUNT" -eq 0 ]] \
+&& command -v nproc >/dev/null 2>&1
 then
-  if command -v nproc >/dev/null 2>&1
-  then
-    CPU_COUNT="$(nproc 2>/dev/null)" || CPU_COUNT="0"
-  fi
+  CPU_COUNT="$(nproc 2>/dev/null)" || CPU_COUNT="0"
 fi
 
-test "$CPU_COUNT" -eq 0 && CPU_COUNT=1
+[[ "$CPU_COUNT" -eq 0 ]] && CPU_COUNT=1
 
 SAVE_DIR="$PWD"
 cd .. || exit
@@ -33,7 +31,7 @@ cd "$SAVE_DIR"
 
 echo 0 > /proc/sys/kernel/kptr_restrict
 
-if [ $# -gt 0 ]
+if [[ $# -gt 0 ]]
 then
   LD_LIBRARY_PATH="../final/.libs/" perf record -g "$@"
 else
