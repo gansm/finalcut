@@ -2250,8 +2250,6 @@ inline auto FVTerm::printCharacterOnCoordinate ( FTermArea* area
   if ( *ac == ch )  // compare with an overloaded operator
     return ac->attr.bit.char_width;
 
-  auto& line_changes = area->changes_in_line[ay];
-
   const bool trans_old =
       (ac->attr.byte[1] & internal::var::b1_print_transparent_mask) != 0;
   const bool trans_new =
@@ -2259,7 +2257,7 @@ inline auto FVTerm::printCharacterOnCoordinate ( FTermArea* area
   const auto trans_changed = int(trans_new) - int(trans_old);
 
   if ( trans_changed != 0 )
-    line_changes.trans_count += trans_changed;
+    area->changes_in_line[ay].trans_count += trans_changed;
 
   // copy character to area
   *ac = ch;

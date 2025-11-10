@@ -53,7 +53,11 @@ namespace {
 constexpr int MAX_LOOPS{314};
 
 // Non-member functions
+#if __cplusplus >= 201703L
 constexpr auto generateSinTable() noexcept -> std::array<float, MAX_LOOPS>
+#else
+auto generateSinTable() noexcept -> std::array<float, MAX_LOOPS>
+#endif
 {
   std::array<float, MAX_LOOPS> table{};
 
@@ -64,7 +68,11 @@ constexpr auto generateSinTable() noexcept -> std::array<float, MAX_LOOPS>
 }
 
 //----------------------------------------------------------------------
+#if __cplusplus >= 201703L
 constexpr auto generateDataPattern() noexcept -> std::array<wchar_t, 256>
+#else
+auto generateDataPattern() noexcept -> std::array<wchar_t, 256>
+#endif
 {
   std::array<wchar_t, 256> arr{};
   const std::array<wchar_t, 4> init_val{{L' ', L'+', L'x', L' '}};
