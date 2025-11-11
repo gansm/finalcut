@@ -205,11 +205,10 @@ void FStringStreamTest::fileTest()
   }
 
   std::ifstream file_stream{filename};
+  std::string line{};
 
-  if ( ! file_stream.eof() && file_stream.good() )
+  if ( std::getline(file_stream, line) )
   {
-    std::string line{};
-    getline(file_stream, line);
     CPPUNIT_ASSERT ( line == "FStringStream file test" );
   }
 

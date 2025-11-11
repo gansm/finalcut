@@ -1167,9 +1167,8 @@ auto XpmImage::xpmFileToVector (const std::string& filename) const -> std::vecto
   std::regex regex(R"gx("(.*)")gx");
   std::size_t num{0};
 
-  while ( ! infile.eof() && infile.good() )
+  while ( std::getline(infile, line) )
   {
-    getline(infile, line);
     std::smatch match;
 
     if ( (num == 0 && line.find("/* XPM */") == std::string::npos)

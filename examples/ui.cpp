@@ -1052,11 +1052,10 @@ void MyDialog::cb_view (const finalcut::FMenuItem* item)
   view->setResizeable();
   std::string line{};
   std::ifstream infile;
-  infile.open(file.c_str());
+  infile.open(file.c_str(), std::ios::in);
 
-  while ( ! infile.eof() && infile.good() )
+  while ( std::getline(infile, line) )
   {
-    getline(infile, line);
     view->append(line);
   }
 

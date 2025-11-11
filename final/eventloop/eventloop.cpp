@@ -131,13 +131,11 @@ inline auto EventLoop::processNextEvents() -> bool
 //----------------------------------------------------------------------
 auto EventLoop::processPoll (int& num_of_events) -> PollResult
 {
-  int poll_result{};
-
   while (true)
   {
-    poll_result = poll( cached_fds.data()
-                      , cached_fds.size()
-                      , WAIT_INDEFINITELY );
+    int poll_result = poll( cached_fds.data()
+                          , cached_fds.size()
+                          , WAIT_INDEFINITELY );
 
     if ( poll_result > 0 )
     {

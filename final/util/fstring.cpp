@@ -436,9 +436,7 @@ auto FString::toLong() const -> long
     throw std::invalid_argument ("no valid number");
 
   long num{0};
-  constexpr long pos_limit = LONG_MAX / 10;
-  constexpr long neg_limit = -(LONG_MIN / 10);
-  const long limit = neg ? neg_limit : pos_limit;
+  constexpr long limit = LONG_MAX / 10;
   const long limit_digit = neg ? (-(LONG_MIN % 10) + 1) : (LONG_MAX % 10);
 
   while ( s_ptr != end )

@@ -16,7 +16,8 @@ cd "$SRCDIR" || exit
 print_systeminfo ()
 {
   test -z "$CXX" && eval "$(grep '^CXX = ' "Makefile" | cut -d' ' -f1-3 | sed -e 's/ //g')"
-  local cxx_version="$($CXX -dumpfullversion -dumpversion || echo "unknown version")"
+  cxx_version="$($CXX -dumpfullversion -dumpversion || echo "unknown version")"
+  local cxx_version
   local build_mode="$1"
   echo "-------------------------"
   echo "      Platform: $PLATFORM"

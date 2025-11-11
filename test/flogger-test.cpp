@@ -303,9 +303,8 @@ void FLoggerTest::fileTest()
   std::ifstream file_stream{filename};
   std::size_t i{0};
 
-  while ( ! file_stream.eof() && file_stream.good() )
-  {
-    getline(file_stream, line);
+  while ( std::getline(file_stream, line) )
+  {  
     CPPUNIT_ASSERT ( line == strings[i] );
     i++;
   }
