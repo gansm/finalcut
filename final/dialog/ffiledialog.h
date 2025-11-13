@@ -180,6 +180,7 @@ class FFileDialog : public FDialog
     auto openDirectory() -> DIR*;
     auto closeDirectory (DIR*) -> CloseDir;
     void readDirEntries (DIR*);
+    auto getSelectedFilename() const -> std::string;
     auto isCurrentDirectory (const struct dirent*) const -> bool;
     auto isParentDirectory (const struct dirent*) const -> bool;
     auto isHiddenEntry (const struct dirent*) const -> bool;
@@ -221,6 +222,8 @@ class FFileDialog : public FDialog
     friend auto sortByName ( const FFileDialog::FDirEntry&
                            , const FFileDialog::FDirEntry& ) -> bool;
     friend auto sortDirFirst (const FFileDialog::FDirEntry&) -> bool;
+    friend auto isRegularFile (const std::string&) noexcept -> bool;
+
     friend auto fileChooser ( FWidget*
                             , const FString&
                             , const FString&

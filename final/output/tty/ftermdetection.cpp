@@ -225,7 +225,7 @@ auto FTermDetection::getTermBasename() const -> std::string
   const auto found = termfilename.rfind('/');
 
   if ( found != std::string::npos )
-    return std::string(termfilename, found + 1);
+    return {termfilename, found + 1};
 
   return termfilename;
 }

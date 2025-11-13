@@ -240,7 +240,7 @@ class FSystemTest : public finalcut::FSystem
 {
   public:
     // Constructor
-    FSystemTest();
+    FSystemTest() = default;
 
     // Methods
     auto inPortByte (uShort) -> uChar override;
@@ -288,12 +288,6 @@ class FSystemTest : public finalcut::FSystem
     int kqueue_ret_value{0};
     int kevent_ret_value{0};
 };
-
-
-// constructors and destructor
-//----------------------------------------------------------------------
-FSystemTest::FSystemTest()  // constructor
-{ }
 
 
 // public methods of FSystemTest

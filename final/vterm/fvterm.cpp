@@ -938,8 +938,8 @@ void FVTerm::addLayer (FTermArea* area) const noexcept
       const auto y = static_cast<unsigned>(line.ypos + i);
       line_changes = &area->changes_in_line[y];
       const auto ty = unsigned(area_y) + y;          // Global terminal y-position
-      const auto area_line_offset = y * width + line_xmin;
-      const auto vterm_line_offset = ty * vterm_width + tx;
+      const auto area_line_offset = y * unsigned(width) + line_xmin;
+      const auto vterm_line_offset = ty * unsigned(vterm_width) + tx;
       const auto* ac = &area->data[area_line_offset];  // Area character
       auto* tc = &vterm->data[vterm_line_offset];  // Terminal character
 
@@ -956,8 +956,8 @@ void FVTerm::addLayer (FTermArea* area) const noexcept
 
       auto& vterm_changes = vterm->changes_in_line[ty];
       const auto tx_start = uInt(tx);
-      const auto tx_end = uInt(std::min(ax + line_xmax, unsigned(vterm_width - 1)));
-
+      const auto tx_end   = uInt(std::min( unsigned(ax) + line_xmax
+                                         , unsigned(vterm_width - 1) ));
       vterm_changes.xmin = std::min(vterm_changes.xmin, tx_start);
       vterm_changes.xmax = std::max(vterm_changes.xmax, tx_end);
 
@@ -1989,7 +1989,7 @@ inline void FVTerm::putAreaLineWithTransparency ( const FChar* src_char
       continue;
     }
 
-    for (int i = 0; i < 4; ++i)
+    for (uInt i = 0; i < 4; ++i)
     {
       const bool is_current_char_transparent = trans_data[i];
 
@@ -2257,7 +2257,7 @@ inline auto FVTerm::printCharacterOnCoordinate ( FTermArea* area
   const auto trans_changed = int(trans_new) - int(trans_old);
 
   if ( trans_changed != 0 )
-    area->changes_in_line[ay].trans_count += trans_changed;
+    area->changes_in_line[ay].trans_count += uInt(trans_changed);
 
   // copy character to area
   *ac = ch;

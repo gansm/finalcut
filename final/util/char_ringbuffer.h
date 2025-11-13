@@ -74,7 +74,7 @@ class FRingBuffer
 
       static constexpr bool is_pow2 = (N & (N - 1)) == 0;
 
-      static constexpr std::size_t next (std::size_t current) noexcept
+      static constexpr auto next (std::size_t current) noexcept -> std::size_t
       {
         if constexpr ( is_pow2 )
           return (current + 1) & (N - 1);
@@ -82,8 +82,8 @@ class FRingBuffer
           return (current + 1) % N;
       }
 
-      static constexpr std::size_t add ( std::size_t current
-                                       , std::size_t offset ) noexcept
+      static constexpr auto add ( std::size_t current
+                                , std::size_t offset ) noexcept -> std::size_t
       {
         if constexpr ( is_pow2 )
           return (current + offset) & (N - 1);
@@ -93,13 +93,13 @@ class FRingBuffer
 
 #else
 
-      static constexpr std::size_t next (std::size_t current) noexcept
+      static constexpr auto next (std::size_t current) noexcept -> std::size_t
       {
         return (current + 1) % N;
       }
 
-      static constexpr std::size_t add ( std::size_t current
-                                       , std::size_t offset ) noexcept
+      static constexpr auto add ( std::size_t current
+                                , std::size_t offset ) noexcept -> std::size_t
       {
         return (current + offset) % N;
       }

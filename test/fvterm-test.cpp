@@ -1484,7 +1484,6 @@ void FVTermTest::FVTermPrintTest()
 
     FVTerm_protected p_fvterm(finalcut::outputClass<FTermOutputTest>{});
     p_fvterm.p_initTerminal();
-    auto vwin = p_fvterm.getVWin();
     auto child_print_area = p_fvterm.p_getChildPrintArea();
     CPPUNIT_ASSERT ( child_print_area == nullptr );
     CPPUNIT_ASSERT ( ! p_fvterm.p_isVirtualWindow() );
@@ -1492,7 +1491,7 @@ void FVTermTest::FVTermPrintTest()
     finalcut::FRect geometry {finalcut::FPoint{0, 0}, finalcut::FSize{15, 10}};
     finalcut::FSize Shadow(1, 1);
     auto vwin_ptr = p_fvterm.p_createArea ({geometry, Shadow});
-    vwin = vwin_ptr.get();
+    auto vwin = vwin_ptr.get();
     p_fvterm.setVWin(std::move(vwin_ptr));
     const finalcut::FVTerm::FTermArea* const_vwin = p_fvterm.getVWin();
     CPPUNIT_ASSERT ( p_fvterm.p_isVirtualWindow() );
@@ -2163,13 +2162,11 @@ void FVTermTest::FVTermScrollTest()
 {
   FVTerm_protected p_fvterm(finalcut::outputClass<FTermOutputTest>{});
 
-  // virtual window
-  auto vwin = p_fvterm.getVWin();
-
   // Create the virtual window for the p_fvterm object
   finalcut::FRect geometry {finalcut::FPoint{0, 0}, finalcut::FSize{5, 5}};
+  // virtual window
   auto vwin_ptr = p_fvterm.p_createArea (geometry);
-  vwin = vwin_ptr.get();
+  auto vwin = vwin_ptr.get();
   p_fvterm.setVWin(std::move(vwin_ptr));
 
   p_fvterm.print() << finalcut::FPoint{1, 1}
@@ -2418,25 +2415,20 @@ void FVTermTest::FVTermOverlappingWindowsTest()
   // unique virtual terminal
   auto&& vterm = p_fvterm_1.p_getVirtualTerminal();
 
-  // virtual windows
-  auto vwin_1 = p_fvterm_1.getVWin();
-  auto vwin_2 = p_fvterm_2.getVWin();
-  auto vwin_3 = p_fvterm_3.getVWin();
-  auto vwin_4 = p_fvterm_4.getVWin();
-
   // Create the virtual windows for the p_fvterm_1..4 objects
   finalcut::FRect geometry_1 {finalcut::FPoint{0, 0}, finalcut::FSize{6, 3}};
   finalcut::FRect geometry_2 {finalcut::FPoint{8, 0}, finalcut::FSize{6, 3}};
   finalcut::FRect geometry_3 {finalcut::FPoint{16, 0}, finalcut::FSize{6, 3}};
   finalcut::FRect geometry_4 {finalcut::FPoint{24, 0}, finalcut::FSize{6, 3}};
+  // virtual windows
   auto vwin_1_ptr = p_fvterm_1.p_createArea (geometry_1);
   auto vwin_2_ptr = p_fvterm_2.p_createArea (geometry_2);
   auto vwin_3_ptr = p_fvterm_3.p_createArea (geometry_3);
   auto vwin_4_ptr = p_fvterm_4.p_createArea (geometry_4);
-  vwin_1 = vwin_1_ptr.get();
-  vwin_2 = vwin_2_ptr.get();
-  vwin_3 = vwin_3_ptr.get();
-  vwin_4 = vwin_4_ptr.get();
+  auto vwin_1 = vwin_1_ptr.get();
+  auto vwin_2 = vwin_2_ptr.get();
+  auto vwin_3 = vwin_3_ptr.get();
+  auto vwin_4 = vwin_4_ptr.get();
   p_fvterm_1.setVWin(std::move(vwin_1_ptr));
   p_fvterm_2.setVWin(std::move(vwin_2_ptr));
   p_fvterm_3.setVWin(std::move(vwin_3_ptr));
@@ -2743,29 +2735,23 @@ void FVTermTest::FVTermTranparencyTest()
   // unique virtual terminal
   auto&& vterm = p_fvterm_1.p_getVirtualTerminal();
 
-  // virtual windows
-  auto vwin_1 = p_fvterm_1.getVWin();
-  auto vwin_2 = p_fvterm_2.getVWin();
-  auto vwin_3 = p_fvterm_3.getVWin();
-  auto vwin_4 = p_fvterm_4.getVWin();
-  auto vwin_5 = p_fvterm_5.getVWin();
-
   // Create the virtual windows for the p_fvterm_1..5 objects
   finalcut::FRect geometry_1 {finalcut::FPoint{0, 0}, finalcut::FSize{9, 9}};
   finalcut::FRect geometry_2 {finalcut::FPoint{0, 0}, finalcut::FSize{9, 9}};
   finalcut::FRect geometry_3 {finalcut::FPoint{0, 0}, finalcut::FSize{9, 9}};
   finalcut::FRect geometry_4 {finalcut::FPoint{0, 0}, finalcut::FSize{9, 9}};
   finalcut::FRect geometry_5 {finalcut::FPoint{0, 0}, finalcut::FSize{9, 9}};
+  // virtual windows
   auto vwin_1_ptr = p_fvterm_1.p_createArea (geometry_1);
   auto vwin_2_ptr = p_fvterm_2.p_createArea (geometry_2);
   auto vwin_3_ptr = p_fvterm_3.p_createArea (geometry_3);
   auto vwin_4_ptr = p_fvterm_4.p_createArea (geometry_4);
   auto vwin_5_ptr = p_fvterm_5.p_createArea (geometry_5);
-  vwin_1 = vwin_1_ptr.get();
-  vwin_2 = vwin_2_ptr.get();
-  vwin_3 = vwin_3_ptr.get();
-  vwin_4 = vwin_4_ptr.get();
-  vwin_5 = vwin_5_ptr.get();
+  auto vwin_1 = vwin_1_ptr.get();
+  auto vwin_2 = vwin_2_ptr.get();
+  auto vwin_3 = vwin_3_ptr.get();
+  auto vwin_4 = vwin_4_ptr.get();
+  auto vwin_5 = vwin_5_ptr.get();
   p_fvterm_1.setVWin(std::move(vwin_1_ptr));
   p_fvterm_2.setVWin(std::move(vwin_2_ptr));
   p_fvterm_3.setVWin(std::move(vwin_3_ptr));
@@ -3072,13 +3058,11 @@ void FVTermTest::FVTermReduceUpdatesTest()
   CPPUNIT_ASSERT ( vterm->changes_in_row.ymin == 24 );
   CPPUNIT_ASSERT ( vterm->changes_in_row.ymax == 0 );
 
-  // virtual windows
-  auto vwin = p_fvterm.getVWin();
-
   // Create the virtual windows for the p_fvterm objects
   finalcut::FRect geometry {finalcut::FPoint{0, 0}, finalcut::FSize{15, 15}};
+  // virtual windows
   auto vwin_ptr = p_fvterm.p_createArea (geometry);
-  vwin = vwin_ptr.get();
+  auto vwin = vwin_ptr.get();
   p_fvterm.setVWin(std::move(vwin_ptr));
 
   p_fvterm.print() << finalcut::FPoint{1, 1}
@@ -3293,13 +3277,11 @@ void FVTermTest::getFVTermAreaTest()
   // unique virtual terminal
   auto vterm = p_fvterm.p_getVirtualTerminal();
 
-  // virtual windows
-  auto vwin = p_fvterm.getVWin();
-
   // Create the virtual windows for the p_fvterm objects
   finalcut::FRect geometry {finalcut::FPoint{0, 0}, finalcut::FSize{80, 24}};
+  // virtual windows
   auto vwin_ptr = p_fvterm.p_createArea (geometry);
-  vwin = vwin_ptr.get();
+  auto vwin = vwin_ptr.get();
   p_fvterm.setVWin(std::move(vwin_ptr));
 
   p_fvterm.print() << finalcut::FPoint{1, 1}

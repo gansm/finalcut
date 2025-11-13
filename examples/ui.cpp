@@ -1042,8 +1042,17 @@ void MyDialog::cb_view (const finalcut::FMenuItem* item)
   if ( file.isEmpty() )
     return;
 
+  std::string path = file.toString();
+  std::ifstream infile(path, std::ios::in | std::ios::binary);
+
+  if ( ! infile )
+  {
+    finalcut::FMessageBox::error (this, "Cannot open file\n" + file);
+    return;
+  }
+
   const auto& view = new TextWindow(this);
-  finalcut::FString filename(basename(const_cast<char*>(file.c_str())));
+  finalcut::FString filename(basename(const_cast<char*>(path.c_str())));
   view->setText ("Viewer: " + filename);
   view->setGeometry ( FPoint { 1 + int((getRootWidget()->getWidth() - 60) / 2)
                              , int(getRootWidget()->getHeight() / 6) }
@@ -1051,17 +1060,13 @@ void MyDialog::cb_view (const finalcut::FMenuItem* item)
   view->setMinimizable();
   view->setResizeable();
   std::string line{};
-  std::ifstream infile;
-  infile.open(file.c_str(), std::ios::in);
 
   while ( std::getline(infile, line) )
   {
     view->append(line);
   }
 
-  if ( infile.is_open() )
-    infile.close();
-
+  infile.close();
   view->show();
 }
 

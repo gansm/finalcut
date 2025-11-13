@@ -32,6 +32,21 @@
 namespace finalcut
 {
 
+template <typename T>
+constexpr auto isExactlyEqual (T rhs, T lhs) noexcept -> bool
+{
+#if defined(__clang__)
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wfloat-equal"
+#endif
+
+  return rhs == lhs;
+
+#if defined(__clang__)
+  #pragma clang diagnostic pop
+#endif
+}
+
 // static class attributes
 wchar_t       FString::null_char{L'\0'};
 const wchar_t FString::const_null_char{L'\0'};
@@ -555,7 +570,7 @@ auto FString::toDouble() const -> double
 
   if ( errno == ERANGE )
   {
-    if ( ret == HUGE_VAL || ret == -HUGE_VAL )
+    if ( isExactlyEqual(ret, HUGE_VAL) || isExactlyEqual(ret, -HUGE_VAL) )
       throw std::overflow_error ("overflow");
 
     if ( std::fabs(ret) < DBL_EPSILON )  // ret == 0.0l
@@ -709,12 +724,13 @@ auto FString::setNumber (sInt64 num) -> FString&
   std::array<wchar_t, NUMBER_BUFFER_SIZE> buf{};
   wchar_t* s = &buf[NUMBER_BUFFER_LENGTH];  // Pointer to the last character
   const auto is_negative{ bool( num < 0 ) };
-  auto abs_num = is_negative ? ~static_cast<uInt64>(num) + 1 : num;
+  auto abs_num = is_negative ? ~static_cast<uInt64>(num) + 1
+                             : static_cast<uInt64>(num);
   *s = '\0';
 
   do
   {
-    *--s = L'0' + (abs_num % 10);
+    *--s = L'0' + wchar_t(abs_num % 10);
     abs_num /= 10;
   }
   while ( abs_num );
@@ -736,7 +752,7 @@ auto FString::setNumber (uInt64 num) -> FString&
 
   do
   {
-    *--s = L'0' + (num % 10);
+    *--s = L'0' + wchar_t(num % 10);
     num /= 10;
   }
   while ( num );
@@ -794,7 +810,7 @@ auto FString::setFormatedNumber (sInt64 num, FString separator) -> FString&
 
   do
   {
-    *--s = L'0' + (abs_num % 10);
+    *--s = L'0' + wchar_t(abs_num % 10);
     abs_num /= 10;
     n++;
 
@@ -824,7 +840,7 @@ auto FString::setFormatedNumber (uInt64 num, FString separator) -> FString&
 
   do
   {
-    *--s = L'0' + (num % 10);
+    *--s = L'0' + wchar_t(num % 10);
     num /= 10;
     n++;
 
@@ -935,8 +951,9 @@ auto FString::expandTabs (int tabstop) const -> FString
     return *this;
 
   FString str{};
-  const auto tab_count{std::count(string.begin(), string.end(), L'\t')};
-  str.string.reserve(string.length() + (tab_count * tabstop));
+  auto tab_stop = size_type(tabstop);
+  auto tab_count = size_type(std::count(string.begin(), string.end(), L'\t'));
+  str.string.reserve(string.length() + (tab_count * tab_stop));
   size_type column{0};
 
   for (wchar_t c : string)
@@ -944,7 +961,7 @@ auto FString::expandTabs (int tabstop) const -> FString
     if ( c == L'\t' )
     {
       // Calculate spaces needed to reach next tab stop
-      const size_type spaces{tabstop - (column % tabstop)};
+      const size_type spaces{tab_stop - (column % tab_stop)};
       str.string.append(spaces, L' ');
       column += spaces;
     }

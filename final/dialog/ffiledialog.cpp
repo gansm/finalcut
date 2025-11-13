@@ -56,12 +56,19 @@ auto sortDirFirst (const FFileDialog::FDirEntry& entry) -> bool
 }
 
 //----------------------------------------------------------------------
+auto isRegularFile (const std::string& path) noexcept -> bool
+{
+  struct stat sb{};
+  return stat(path.c_str(), &sb) == 0 && S_ISREG(sb.st_mode);
+}
+
+//----------------------------------------------------------------------
 auto fileChooser ( FWidget* parent
                  , const FString& dirname
                  , const FString& filter
                  , FFileDialog::DialogType type ) -> FString
 {
-  FString ret{};
+  std::string chosen_file{};
   FString path{dirname};
   FString file_filter{filter};
 
@@ -82,11 +89,16 @@ auto fileChooser ( FWidget* parent
                        , parent );
 
   if ( fileopen.exec() == FDialog::ResultCode::Accept )
-    ret = fileopen.getPath() + fileopen.getSelectedFile();
-  else
-    ret = FString{};
+    chosen_file = fileopen.getPath().toString()
+                + fileopen.getSelectedFilename();
 
-  return ret;
+  if ( ! isRegularFile(chosen_file) )
+  {
+    FMessageBox::error (&fileopen, chosen_file + "\nis not a file");
+    return {};
+  }
+
+  return chosen_file;
 }
 
 
@@ -125,12 +137,7 @@ FFileDialog::~FFileDialog() noexcept = default;  // destructor
 //----------------------------------------------------------------------
 auto FFileDialog::getSelectedFile() const -> FString
 {
-  const auto n = uLong(filebrowser.currentItem() - 1);
-
-  if ( dir_entries[n].directory )
-    return {""};
-
-  return {dir_entries[n].name};
+  return {getSelectedFilename()};
 }
 
 //----------------------------------------------------------------------
@@ -536,6 +543,17 @@ void FFileDialog::readDirEntries (DIR* directory_stream)
       break;
     }
   }  // end while
+}
+
+//----------------------------------------------------------------------
+auto FFileDialog::getSelectedFilename() const -> std::string
+{
+  const auto n = uLong(filebrowser.currentItem() - 1);
+
+  if ( dir_entries[n].directory )
+    return {""};
+
+  return dir_entries[n].name;
 }
 
 //----------------------------------------------------------------------

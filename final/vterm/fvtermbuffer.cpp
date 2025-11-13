@@ -67,7 +67,7 @@ auto FVTermBuffer::toString() const -> FString
                     }
                   }
                 );
-  return FString(std::move(wide_string));
+  return {std::move(wide_string)};
 }
 
 //----------------------------------------------------------------------

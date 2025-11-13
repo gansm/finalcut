@@ -423,8 +423,7 @@ class FWidgetTest::FSystemTest : public finalcut::FSystem
 {
   public:
     // Constructor
-    FSystemTest()
-    { }
+    FSystemTest() = default;
 
     // Methods
     auto inPortByte (uShort) -> uChar override
@@ -922,8 +921,7 @@ void FWidgetTest::resetColorsTest()
 
       TestWidget (TestWidget&&) noexcept = delete;
 
-      ~TestWidget() override
-      { }
+      ~TestWidget() override = default;
 
       void resetColors() override
       {
@@ -2581,8 +2579,7 @@ void FWidgetTest::closeWidgetTest()
 
       TestWidget (TestWidget&&) noexcept = delete;
 
-      ~TestWidget() override
-      { }
+      ~TestWidget() override = default;
 
       void onClose (finalcut::FCloseEvent* ev) override
       {
@@ -2665,8 +2662,7 @@ void FWidgetTest::adjustSizeTest()
 
       TestWidget (TestWidget&&) noexcept = delete;
 
-      ~TestWidget() override
-      { }
+      ~TestWidget() override = default;
 
       void p_adjustSize()
       {

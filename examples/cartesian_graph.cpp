@@ -79,7 +79,7 @@ class GraphWindow final : public finalcut::FDialog
     // Methods
     void draw() override;
     void drawLineImpl (const FPoint&, const FPoint&, FColor);
-    FPoint transformToScreen (point<double>) const;
+    auto transformToScreen (point<double>) const -> FPoint;
 
     // Event handlers
     void onTimer (finalcut::FTimerEvent*) override;
@@ -130,7 +130,7 @@ void GraphWindow::addRealtimePoint (double val, double interval)
 }
 
 //----------------------------------------------------------------------
-FPoint GraphWindow::transformToScreen (point<double> p) const
+auto GraphWindow::transformToScreen (point<double> p) const -> FPoint
 {
   const auto client_width = int(getClientWidth());
   const auto client_height = int(getClientHeight());

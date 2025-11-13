@@ -61,7 +61,7 @@ auto generateSinTable() noexcept -> std::array<float, MAX_LOOPS>
 {
   std::array<float, MAX_LOOPS> table{};
 
-  for (int i{0}; i < MAX_LOOPS; ++i)
+  for (uInt i{0}; i < uInt(MAX_LOOPS); ++i)
     table[i] = std::sin(float(i) / 50.0f);
 
   return table;
@@ -172,7 +172,7 @@ RotoZoomer::RotoZoomer (finalcut::FWidget* parent, bool is_benchmark, int num_lo
 inline auto RotoZoomer::getSine (int i, int shift) const noexcept -> float
 {
   // Sine lookup
-  return sin_table[(i + shift + MAX_LOOPS) % MAX_LOOPS];
+  return sin_table[unsigned((i + shift + MAX_LOOPS) % MAX_LOOPS)];
 }
 
 //----------------------------------------------------------------------
@@ -257,7 +257,7 @@ void RotoZoomer::generateReport()
                 << "x" << getDesktopHeight();
   const auto elapsed_ms = int(duration_cast<milliseconds>(end - start).count());
   time_str << float(elapsed_ms) / 1000 << "s";
-  fps_str << float(loops) * 1000.0 / float(elapsed_ms);
+  fps_str << float(loops) * 1000.0f / float(elapsed_ms);
 
   rep << finalcut::FString{55, '-'} << "\n"
       << "Terminal            Size    Time      Loops  Frame rate\n"

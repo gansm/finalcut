@@ -47,20 +47,21 @@ namespace internal
 {
 
 template <typename T>
-constexpr T clampValue (T value, T minVal, T maxVal)
+constexpr auto clampValue (T value, T minVal, T maxVal) -> T
 {
   if ( value < minVal )
     return minVal;
-  else
-    return ( value > maxVal ) ? maxVal : value;
+
+  return ( value > maxVal ) ? maxVal : value;
 }
 
 template <typename T>
-constexpr T adjustValue (T current, T reference, T delta, T minLimit)
+constexpr auto adjustValue (T current, T reference, T delta, T minLimit) -> T
 {
   if ( current > reference )
     return reference + delta;
-  else if ( reference >= delta )
+
+  if ( reference >= delta )
     return reference - delta;
   else
     return minLimit;  // Avoid underflow

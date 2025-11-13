@@ -605,7 +605,7 @@ void TextWindow::addMenuColors (const finalcut::FWidgetColors& widget_colors)
   auto menu_color = FColorPair{widget_colors.menu.fg, widget_colors.menu.bg};
   auto hotkey_menu_color = FColorPair{widget_colors.menu.hotkey_fg, widget_colors.menu.hotkey_bg};
   auto focus_menu_color = FColorPair{widget_colors.menu.focus_fg, widget_colors.menu.focus_bg};
-  auto inactive__menu_color = FColorPair{widget_colors.menu.inactive_fg, widget_colors.menu.inactive_bg};
+  auto inactive_menu_color = FColorPair{widget_colors.menu.inactive_fg, widget_colors.menu.inactive_bg};
 
   appendColorLine("  File  Options "
                  , FTextHighlight{1, 6, focus_menu_color}
@@ -623,7 +623,7 @@ void TextWindow::addMenuColors (const finalcut::FWidgetColors& widget_colors)
                  );
   appendColorLine(" │ Disabled        │"
                  , FTextHighlight{1, 1, widget_color}
-                 , FTextHighlight{2, 17, inactive__menu_color}
+                 , FTextHighlight{2, 17, inactive_menu_color}
                  , FTextHighlight{19, 1, widget_color}
                  );
   appendColorLine(" └─────────────────┘"

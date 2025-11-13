@@ -83,12 +83,16 @@ struct var
   static constexpr auto b1_mask         = getByte1Mask();
   static constexpr auto b1_reset_mask   = getByte1ResetMask();
   static constexpr auto b2_reset_mask   = getByte2ResetMask();
+  static constexpr char sgr_39[]        = {CSI "39m"};
+  static constexpr char sgr_39_49[]     = {CSI "39;49m"};
 };
 
 constexpr uInt8 var::b0_reverse_mask;
 constexpr uInt8 var::b1_mask;
 constexpr uInt8 var::b1_reset_mask;
 constexpr uInt8 var::b2_reset_mask;
+constexpr char  var::sgr_39[];
+constexpr char  var::sgr_39_49[];
 
 }  // namespace internal
 
@@ -830,8 +834,7 @@ auto FOptiAttr::setTermDefaultColor (FChar& term) -> bool
 
   if ( F_color.ansi_default_color )
   {
-    static const std::string sgr_39_49{CSI "39;49m"};
-    append_sequence (sgr_39_49);
+    append_sequence (internal::var::sgr_39_49);
     return true;
   }
 
@@ -1134,8 +1137,7 @@ inline void FOptiAttr::change_to_default_color ( FChar& term, FChar& next
 //----------------------------------------------------------------------
 inline void FOptiAttr::setDefaultForeground (FChar& term)
 {
-  static const std::string sgr_39{CSI "39m"};
-  append_sequence (sgr_39);
+  append_sequence (internal::var::sgr_39);
   term.color.pair.fg = FColor::Default;
 }
 

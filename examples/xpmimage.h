@@ -1160,10 +1160,13 @@ void XpmImage::parseXPM3 (const std::vector<std::string>& xpm)
 //----------------------------------------------------------------------
 auto XpmImage::xpmFileToVector (const std::string& filename) const -> std::vector<std::string>
 {
+  std::ifstream infile(filename, std::ios::in | std::ios::binary);
+
+  if ( ! infile )
+    return {};
+
   std::vector<std::string> xpm{};
   std::string line{};
-  std::ifstream infile;
-  infile.open(filename);
   std::regex regex(R"gx("(.*)")gx");
   std::size_t num{0};
 
@@ -1186,9 +1189,7 @@ auto XpmImage::xpmFileToVector (const std::string& filename) const -> std::vecto
     num++;
   }
 
-  if ( infile.is_open() )
-    infile.close();
-
+  infile.close();
   return xpm;
 }
 
