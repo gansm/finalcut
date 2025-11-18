@@ -1,3 +1,7 @@
+2025-11-18  Markus Gans  <guru.mail@muenster.de>
+	* The FVTerm::addLayer() method decreases the range of saved vertical 
+	  adjustments
+
 2025-11-09  Markus Gans  <guru.mail@muenster.de>
 	* The virtual terminal allows for faster tracking of changes by also 
 	  saving vertical adjustments

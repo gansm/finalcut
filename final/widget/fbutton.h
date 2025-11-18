@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2024 Markus Gans                                      *
+* Copyright 2012-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -143,7 +143,7 @@ class FButton : public FWidget
     void resetHotkeyStyle() const;
     void printEllipsis();
     void resetStyle() const;
-    void printTrailingSpaces (std::size_t);
+    void printTrailingSpaces();
     void drawButtonTextLine (const FString&);
     void draw() override;
     void initializeDrawing();

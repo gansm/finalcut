@@ -2000,7 +2000,7 @@ void FVTermTest::FVTermChildAreaPrintTest()
   auto&& vterm = p_fvterm.p_getVirtualTerminal();
   CPPUNIT_ASSERT ( vterm->changes_in_row.ymin == 24 );
   CPPUNIT_ASSERT ( vterm->changes_in_row.ymax == 0 );
-  
+
   // Create the virtual window for the p_fvterm object
   finalcut::FRect geometry {finalcut::FPoint{34, 1}, finalcut::FSize{12, 12}};
   auto vwin_ptr = p_fvterm.p_createArea (geometry);
@@ -2044,7 +2044,6 @@ void FVTermTest::FVTermChildAreaPrintTest()
   CPPUNIT_ASSERT ( vwin->visible );
   CPPUNIT_ASSERT ( ! vterm->has_changes );
   p_fvterm.p_addLayer(vwin);
-  CPPUNIT_ASSERT ( vterm->has_changes );
   CPPUNIT_ASSERT ( p_fvterm.value_ref() == 1 );
   p_fvterm.p_addLayer(vwin);
   CPPUNIT_ASSERT ( p_fvterm.value_ref() == 2 );
@@ -2064,9 +2063,6 @@ void FVTermTest::FVTermChildAreaPrintTest()
     CPPUNIT_ASSERT ( vterm->changes_in_line[i].trans_count == 0 );
   }
 
-  CPPUNIT_ASSERT ( vterm->changes_in_row.ymin == 1 );
-  CPPUNIT_ASSERT ( vterm->changes_in_row.ymax == 12 );
-
   CPPUNIT_ASSERT ( ! vwin->has_changes );
   p_fvterm.print() << finalcut::FColorPair(finalcut::FColor::Red, finalcut::FColor::White)
                    << finalcut::FPoint(36, 4)  << L"=========="
@@ -2077,14 +2073,20 @@ void FVTermTest::FVTermChildAreaPrintTest()
                    << finalcut::FPoint(36, 9)  << L"=        ="
                    << finalcut::FPoint(36, 10) << L"=        ="
                    << finalcut::FPoint(36, 11) << L"==========";
+  
   CPPUNIT_ASSERT ( vwin->has_changes );
   test::printArea (vwin);
 
   p_fvterm.p_addLayer(vwin);
+  CPPUNIT_ASSERT ( ! vterm->has_changes );
+  CPPUNIT_ASSERT ( vterm->changes_in_row.ymin == 24 );
+  CPPUNIT_ASSERT ( vterm->changes_in_row.ymax == 0 );
   vwin->visible = true;  // show()
   vterm->has_changes = false;
   p_fvterm.p_addLayer(vwin);
   CPPUNIT_ASSERT ( vterm->has_changes );
+  CPPUNIT_ASSERT ( vterm->changes_in_row.ymin == 3 );
+  CPPUNIT_ASSERT ( vterm->changes_in_row.ymax == 10 );
 
   for (auto i{0}; i < 3; i++)
   {
@@ -2107,8 +2109,8 @@ void FVTermTest::FVTermChildAreaPrintTest()
     CPPUNIT_ASSERT ( vterm->changes_in_line[i].trans_count == 0 );
   }
 
-  CPPUNIT_ASSERT ( vterm->changes_in_row.ymin == 1 );
-  CPPUNIT_ASSERT ( vterm->changes_in_row.ymax == 12 );
+  CPPUNIT_ASSERT ( vterm->changes_in_row.ymin == 3 );
+  CPPUNIT_ASSERT ( vterm->changes_in_row.ymax == 10 );
 
   finalcut::FChar space_char_1 =
   {
@@ -3106,7 +3108,7 @@ void FVTermTest::FVTermReduceUpdatesTest()
 
   CPPUNIT_ASSERT ( vterm->changes_in_row.ymin == 0 );
   CPPUNIT_ASSERT ( vterm->changes_in_row.ymax == 14 );
-  
+
   finalcut::FApplication::start();
   finalcut::FApplication fapp(0, nullptr);
   p_fvterm.p_finishDrawing();
@@ -3198,8 +3200,8 @@ void FVTermTest::FVTermReduceUpdatesTest()
     CPPUNIT_ASSERT ( vterm->changes_in_line[i].trans_count == 0 );
   }
 
-  CPPUNIT_ASSERT ( vterm->changes_in_row.ymin == 0 );
-  CPPUNIT_ASSERT ( vterm->changes_in_row.ymax == 14 );
+  CPPUNIT_ASSERT ( vterm->changes_in_row.ymin == 6 );
+  CPPUNIT_ASSERT ( vterm->changes_in_row.ymax == 11 );
 
   // Reset xmin and xmax values + reduceTerminalLineUpdates()
   for (auto i{0}; i < vterm->size.height; i++)

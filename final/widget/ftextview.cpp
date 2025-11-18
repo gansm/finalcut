@@ -323,7 +323,7 @@ void FTextView::replaceRange (const FString& str, int from, int to)
   }
   catch (const std::out_of_range&)
   {
-    throw std::out_of_range("");  // Invalid range
+    throw std::out_of_range("FTextView::replaceRange index out of range");  // Invalid range
   }
 
   insert(str, from);
@@ -333,7 +333,7 @@ void FTextView::replaceRange (const FString& str, int from, int to)
 void FTextView::deleteRange (int from, int to)
 {
   if ( from > to || from >= int(getRows()) || to >= int(getRows()) )
-    throw std::out_of_range("");  // Invalid range
+    throw std::out_of_range("FTextView::deleteRange index out of range");  // Invalid range
 
   auto iter = data.cbegin();
   data.erase (iter + from, iter + to + 1);

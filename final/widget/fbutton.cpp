@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2024 Markus Gans                                      *
+* Copyright 2012-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -601,9 +601,11 @@ inline void FButton::resetStyle() const
 }
 
 //----------------------------------------------------------------------
-inline void FButton::printTrailingSpaces (std::size_t pos)
+inline void FButton::printTrailingSpaces()
 {
-  for (pos = center_offset + column_width; pos < getWidth() - 2; pos++)
+  const auto start = center_offset + column_width;
+
+  for (std::size_t pos = start; pos < getWidth() - 2; pos++)
     print (space_char);  // █
 }
 
@@ -622,7 +624,7 @@ inline void FButton::drawButtonTextLine (const FString& button_text)
   printButtonText (button_text, pos);
   printEllipsis();  // Print ellipsis if necessary
   resetStyle();  // Reset style for monochrome or low color terminal
-  printTrailingSpaces (pos);
+  printTrailingSpaces();
 }
 
 //----------------------------------------------------------------------

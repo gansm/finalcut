@@ -924,6 +924,9 @@ void FVTerm::addLayer (FTermArea* area) const noexcept
     prev_has_no_trans = has_no_trans;
   }
 
+  if ( line_changes_batch.empty() )
+    return;
+
   for (const auto& line : line_changes_batch)
   {
     const auto line_xmin = static_cast<unsigned>(line.xmin);
@@ -967,8 +970,14 @@ void FVTerm::addLayer (FTermArea* area) const noexcept
     }
   }
 
-  vterm->changes_in_row.ymin = std::min(vterm->changes_in_row.ymin, uInt(area_y));
-  vterm->changes_in_row.ymax = std::max(vterm->changes_in_row.ymax, uInt(area_y + y_end - 1));
+  const auto& first = line_changes_batch.front();
+  const auto& last  = line_changes_batch.back();
+  const auto begin = uInt(area_y + first.ypos - y_start);
+  const auto end = uInt(area_y + last.ypos + last.count - 1 - y_start);
+
+  auto& changes_in_row = vterm->changes_in_row;
+  changes_in_row.ymin = std::min(changes_in_row.ymin, begin);
+  changes_in_row.ymax = std::max(changes_in_row.ymax, end);
   vterm->has_changes = true;
   updateVTermCursor(area);
 }

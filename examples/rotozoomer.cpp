@@ -172,7 +172,9 @@ RotoZoomer::RotoZoomer (finalcut::FWidget* parent, bool is_benchmark, int num_lo
 inline auto RotoZoomer::getSine (int i, int shift) const noexcept -> float
 {
   // Sine lookup
-  return sin_table[unsigned((i + shift + MAX_LOOPS) % MAX_LOOPS)];
+  const auto effective_index = i + shift;
+  const auto index = (effective_index % MAX_LOOPS + MAX_LOOPS) % MAX_LOOPS;
+  return sin_table[unsigned(index)];
 }
 
 //----------------------------------------------------------------------

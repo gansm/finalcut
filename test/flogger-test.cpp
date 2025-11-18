@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2023 Markus Gans                                      *
+* Copyright 2020-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -304,7 +304,7 @@ void FLoggerTest::fileTest()
   std::size_t i{0};
 
   while ( std::getline(file_stream, line) )
-  {  
+  {
     CPPUNIT_ASSERT ( line == strings[i] );
     i++;
   }

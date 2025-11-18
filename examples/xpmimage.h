@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2022-2023 Markus Gans                                      *
+* Copyright 2022-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -906,7 +906,7 @@ void XpmImage::getValues (const std::string& line)
     throw std::invalid_argument("less 4 numbers");
 
   if ( num_colors > 65535 || cpp > 15 )
-     throw std::out_of_range("values too high");
+     throw std::out_of_range("XpmImage::getValues values too high");
 }
 
 //----------------------------------------------------------------------

@@ -80,9 +80,8 @@ FString::FString (size_type len, const UniChar& c)
 
 //----------------------------------------------------------------------
 FString::FString (const FString& s)  // copy constructor
-{
-  internal_assign(std::wstring{s.string});
-}
+  : string{s.string}
+{ }
 
 //----------------------------------------------------------------------
 FString::FString (FString&& s) noexcept  // move constructor
@@ -859,7 +858,7 @@ auto FString::setFormatedNumber (uInt64 num, FString separator) -> FString&
 auto FString::insert (const FString& s, int pos) -> const FString&
 {
   if ( isNegative(pos) || uInt(pos) > string.length() )
-    throw std::out_of_range("");
+    throw std::out_of_range("FString::insert index out of range");
 
   string.insert(uInt(pos), s.string, 0, s.getLength());
   return *this;
