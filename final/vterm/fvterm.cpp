@@ -853,132 +853,28 @@ void FVTerm::addLayer (FTermArea* area) const noexcept
   if ( ! area || ! area->visible )
     return;
 
-  const int area_x = area->position.x;
-  const int area_y = area->position.y;
-  const int ol = std::max(0, -area_x);  // Outside left
-  const int vterm_width = vterm->size.width;
-  const int vterm_height = vterm->size.height;
-  const int ax = std::max(area_x, 0);
-  const int width = getFullAreaWidth(area);
-  const int height = area->minimized ? area->min_size.height : getFullAreaHeight(area);
-  const int xmax_inside_vterm = vterm_width - area_x - 1;
+  // Compute geometry and decide early whether to render
+  LayerGeometry geometry = computeLayerGeometry(area);
 
   // Early exit if area is completely outside vterm
-  if ( area_y >= vterm_height || ax >= vterm_width || area_y + height <= 0 )
+  if ( ! isLayerOutsideVTerm(geometry) )
     return;
-
-  // Calculate actual rendering range (clipped to vterm)
-  const int y_start = std::max(0, -area_y);
-  const int y_end = std::min(vterm_height - area_y, height);
 
   // Call the preprocessing handler methods (child area change handling)
   callPreprocessingHandler(area);
 
+  // Create a stack by combining identical rows in sequence
   line_changes_batch.clear();  // Clear buffer
-  int prev_xmin{-1};
-  int prev_xmax{-1};
-  NoTrans prev_has_no_trans{NoTrans::Undefined};
-
-  auto line_changes = &area->changes_in_line[unsigned(y_start)];
-
-  for (auto y{y_start}; y < y_end; y++)  // Line loop
-  {
-    const auto line_xmin_raw = int(line_changes->xmin);
-    const auto line_xmax_raw = int(line_changes->xmax);
-
-    if ( line_xmin_raw > line_xmax_raw )
-    {
-      ++line_changes;
-      prev_xmin = -1;
-      prev_xmax = -1;
-      prev_has_no_trans = NoTrans::Undefined;
-      continue;
-    }
-
-    const auto line_xmin = std::max(line_xmin_raw, ol);
-    const auto line_xmax = std::min(line_xmax_raw, xmax_inside_vterm);
-
-    if ( line_xmin > line_xmax )
-    {
-      ++line_changes;
-      prev_xmin = -1;
-      prev_xmax = -1;
-      prev_has_no_trans = NoTrans::Undefined;
-      continue;
-    }
-
-    const NoTrans has_no_trans = line_changes->trans_count == 0 ? NoTrans::Set : NoTrans::Unset;
-    ++line_changes;
-
-    if ( prev_xmin == line_xmin
-      && prev_xmax == line_xmax
-      && prev_has_no_trans == has_no_trans )
-    {
-      line_changes_batch.back().count++;
-      continue;
-    }
-
-    line_changes_batch.push_back({1, y, line_xmin, line_xmax, has_no_trans});
-    prev_xmin = line_xmin;
-    prev_xmax = line_xmax;
-    prev_has_no_trans = has_no_trans;
-  }
+  buildLineChangeBatch(area, geometry);
 
   if ( line_changes_batch.empty() )
     return;
 
-  for (const auto& line : line_changes_batch)
-  {
-    const auto line_xmin = static_cast<unsigned>(line.xmin);
-    const auto line_xmax = static_cast<unsigned>(line.xmax);
-    const auto has_no_trans = line.has_no_transparency == NoTrans::Set;
-    const auto tx = unsigned(area_x) + line_xmin;  // Global terminal x-position
-    const std::size_t length = line_xmax - line_xmin + 1;
+  // Apply the batches to vterm data
+  applyLineBatch(area, geometry);
 
-    // Process all lines in batch with same operation
-    for (int i = 0; i < line.count; ++i)
-    {
-      const auto y = static_cast<unsigned>(line.ypos + i);
-      line_changes = &area->changes_in_line[y];
-      const auto ty = unsigned(area_y) + y;          // Global terminal y-position
-      const auto area_line_offset = y * unsigned(width) + line_xmin;
-      const auto vterm_line_offset = ty * unsigned(vterm_width) + tx;
-      const auto* ac = &area->data[area_line_offset];  // Area character
-      auto* tc = &vterm->data[vterm_line_offset];  // Terminal character
-
-      if ( has_no_trans )
-      {
-        // Line has only covered characters
-        putAreaLine (*ac, *tc, length);
-      }
-      else
-      {
-        // Line with hidden and transparent characters
-        addAreaLineWithTransparency (ac, tc, length);
-      }
-
-      auto& vterm_changes = vterm->changes_in_line[ty];
-      const auto tx_start = uInt(tx);
-      const auto tx_end   = uInt(std::min( unsigned(ax) + line_xmax
-                                         , unsigned(vterm_width - 1) ));
-      vterm_changes.xmin = std::min(vterm_changes.xmin, tx_start);
-      vterm_changes.xmax = std::max(vterm_changes.xmax, tx_end);
-
-      line_changes->xmin = uInt(width);
-      line_changes->xmax = 0;
-      ++line_changes;
-    }
-  }
-
-  const auto& first = line_changes_batch.front();
-  const auto& last  = line_changes_batch.back();
-  const auto begin = uInt(area_y + first.ypos - y_start);
-  const auto end = uInt(area_y + last.ypos + last.count - 1 - y_start);
-
-  auto& changes_in_row = vterm->changes_in_row;
-  changes_in_row.ymin = std::min(changes_in_row.ymin, begin);
-  changes_in_row.ymax = std::max(changes_in_row.ymax, end);
-  vterm->has_changes = true;
+  // Update the range of changed rows and the cursor on vterm
+  updateVTermChangesFromBatch(geometry);
   updateVTermCursor(area);
 }
 
@@ -1620,6 +1516,164 @@ inline void FVTerm::updateVTermWindow (FTermArea* v_win) const
     addLayer(v_win);  // and call the child area processing handler there
     clearChildAreaChanges(v_win);
   }
+}
+//----------------------------------------------------------------------
+inline auto FVTerm::computeLayerGeometry (const FTermArea* area) const noexcept -> LayerGeometry
+{
+  // Compute the geometry values used throughout the rendering process
+
+  const auto area_x = area->position.x;
+  const auto area_y = area->position.y;
+  const auto vterm_width = unsigned(vterm->size.width);
+  const auto vterm_height = unsigned(vterm->size.height);
+  const auto height = area->minimized ? area->min_size.height : getFullAreaHeight(area);
+
+  return LayerGeometry
+  {
+    area_x,
+    area_y,
+    std::max(0, -area_x),
+    vterm_width,
+    vterm_height,
+    static_cast<unsigned>(std::max(area_x, 0)),
+    getFullAreaWidth(area),
+    height,
+    static_cast<int>(vterm_width) - area_x - 1,
+    // Calculate actual rendering range (clipped to vterm)
+    std::max(0, -area_y),
+    std::min(static_cast<int>(vterm_height) - area_y, height)
+  };
+}
+
+//----------------------------------------------------------------------
+inline auto FVTerm::isLayerOutsideVTerm (const LayerGeometry& geo) const noexcept -> bool
+{
+  if ( geo.area_y >= static_cast<int>(geo.vterm_height) )
+    return false;
+
+  if ( geo.ax >= geo.vterm_width )
+    return false;
+
+  if ( geo.area_y + geo.height <= 0 )
+    return false;
+
+  return true;
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::buildLineChangeBatch ( const FTermArea* area
+                                         , const LayerGeometry& geo ) const noexcept
+{
+  int prev_xmin{-1};
+  int prev_xmax{-1};
+  NoTrans prev_has_no_trans{NoTrans::Undefined};
+
+  auto line_changes = &area->changes_in_line[unsigned(geo.y_start)];
+
+  for (auto y{geo.y_start}; y < geo.y_end; y++)  // Line loop
+  {
+    const auto line_xmin_raw = int(line_changes->xmin);
+    const auto line_xmax_raw = int(line_changes->xmax);
+
+    if ( line_xmin_raw > line_xmax_raw )
+    {
+      ++line_changes;
+      prev_xmin = -1;
+      prev_xmax = -1;
+      prev_has_no_trans = NoTrans::Undefined;
+      continue;
+    }
+
+    const auto line_xmin = std::max(line_xmin_raw, geo.ol);
+    const auto line_xmax = std::min(line_xmax_raw, geo.xmax_inside_vterm);
+
+    if ( line_xmin > line_xmax )
+    {
+      ++line_changes;
+      prev_xmin = -1;
+      prev_xmax = -1;
+      prev_has_no_trans = NoTrans::Undefined;
+      continue;
+    }
+
+    const NoTrans has_no_trans = line_changes->trans_count == 0 ? NoTrans::Set : NoTrans::Unset;
+    ++line_changes;
+
+    if ( prev_xmin == line_xmin
+      && prev_xmax == line_xmax
+      && prev_has_no_trans == has_no_trans )
+    {
+      line_changes_batch.back().count++;
+      continue;
+    }
+
+    line_changes_batch.push_back({1, y, line_xmin, line_xmax, has_no_trans});
+    prev_xmin = line_xmin;
+    prev_xmax = line_xmax;
+    prev_has_no_trans = has_no_trans;
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::applyLineBatch ( FTermArea* area
+                                   , const LayerGeometry& geo ) const noexcept
+{
+  for (const auto& line : line_changes_batch)
+  {
+    const auto line_xmin = static_cast<unsigned>(line.xmin);
+    const auto line_xmax = static_cast<unsigned>(line.xmax);
+    const auto has_no_trans = line.has_no_transparency == NoTrans::Set;
+    const auto tx = unsigned(geo.area_x) + line_xmin;  // Global terminal x-position
+    const std::size_t length = line_xmax - line_xmin + 1;
+
+    // Process all lines in batch with same operation
+    for (int i = 0; i < line.count; ++i)
+    {
+      const auto y = static_cast<unsigned>(line.ypos + i);
+      auto line_changes = &area->changes_in_line[y];
+      const auto ty = unsigned(geo.area_y) + y;         // Global terminal y-position
+      const auto area_line_offset = y * unsigned(geo.width) + line_xmin;
+      const auto vterm_line_offset = ty * geo.vterm_width + tx;
+      const auto* ac = &area->data[area_line_offset];   // Area character
+      auto* tc = &vterm->data[vterm_line_offset];       // Terminal character
+
+      if ( has_no_trans )
+      {
+        // Line has only covered characters
+        putAreaLine (*ac, *tc, length);
+      }
+      else
+      {
+        // Line with hidden and transparent characters
+        addAreaLineWithTransparency (ac, tc, length);
+      }
+
+      auto& vterm_changes = vterm->changes_in_line[ty];
+      const auto tx_start = uInt(tx);
+      const auto tx_end   = uInt(std::min( geo.ax + line_xmax
+                                         , geo.vterm_width - 1 ));
+      vterm_changes.xmin = std::min(vterm_changes.xmin, tx_start);
+      vterm_changes.xmax = std::max(vterm_changes.xmax, tx_end);
+
+      line_changes->xmin = uInt(geo.width);
+      line_changes->xmax = 0;
+      ++line_changes;
+    }
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::updateVTermChangesFromBatch (const LayerGeometry& geo) const noexcept
+{
+  const auto& first = line_changes_batch.front();
+  const auto& last  = line_changes_batch.back();
+  const auto begin = uInt(geo.area_y + first.ypos - geo.y_start);
+  const auto end = uInt(geo.area_y + last.ypos + last.count - 1 - geo.y_start);
+
+  auto& changes_in_row = vterm->changes_in_row;
+  changes_in_row.ymin = std::min(changes_in_row.ymin, begin);
+  changes_in_row.ymax = std::max(changes_in_row.ymax, end);
+  vterm->has_changes = true;
 }
 
 //----------------------------------------------------------------------

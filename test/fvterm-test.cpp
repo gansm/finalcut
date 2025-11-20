@@ -2073,7 +2073,7 @@ void FVTermTest::FVTermChildAreaPrintTest()
                    << finalcut::FPoint(36, 9)  << L"=        ="
                    << finalcut::FPoint(36, 10) << L"=        ="
                    << finalcut::FPoint(36, 11) << L"==========";
-  
+
   CPPUNIT_ASSERT ( vwin->has_changes );
   test::printArea (vwin);
 

@@ -264,6 +264,21 @@ class FVTerm : public FVTermAttribute
     virtual void  initTerminal();
 
   private:
+    struct LayerGeometry
+    {
+      int area_x;
+      int area_y;
+      int ol;                  // Outside-left
+      unsigned vterm_width;
+      unsigned vterm_height;
+      unsigned ax;             // Clipped area x (>=0)
+      int width;               // Full area width
+      int height;              // Effective area height (minimized or full)
+      int xmax_inside_vterm;
+      int y_start;
+      int y_end;
+    };
+
     struct AreaLine
     {
       const FChar* data;       // Source drawing area line
@@ -339,6 +354,11 @@ class FVTerm : public FVTermAttribute
     void  updateVTerm() const;
     void  updateVTermDesktop() const;
     void  updateVTermWindow (FTermArea*) const;
+    auto  computeLayerGeometry (const FTermArea*) const noexcept -> LayerGeometry;
+    auto  isLayerOutsideVTerm (const LayerGeometry&) const noexcept -> bool;
+    void  buildLineChangeBatch (const FTermArea*, const LayerGeometry&) const noexcept;
+    void  applyLineBatch (FTermArea*, const LayerGeometry&) const noexcept;
+    void  updateVTermChangesFromBatch (const LayerGeometry&) const noexcept;
     void  scrollTerminalForward() const;
     void  scrollTerminalReverse() const;
     void  callPreprocessingHandler (const FTermArea*) const;
