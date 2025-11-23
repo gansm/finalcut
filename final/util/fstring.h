@@ -557,17 +557,32 @@ class FString
     void swap (FString&) noexcept;
 
   private:
+    // Enumeration
+    enum class Sign : bool { Negative, Positive };
+
     // Constants
     static constexpr auto INPBUFFER = size_type(256);
     static constexpr auto SPRINTF_BUFFER_SIZE = size_type(4096);
     static constexpr auto NUMBER_BUFFER_SIZE = size_type(30);
     static constexpr auto NUMBER_BUFFER_LENGTH = NUMBER_BUFFER_SIZE - 1;
     static constexpr auto MALFORMED_STRING = size_type(-1);
+    static constexpr auto LONG_LIMIT = long(LONG_MAX / 10);
+    static constexpr auto LONG_MIN_LIMIT_DIGIT = long(-(LONG_MIN % 10) + 1);
+    static constexpr auto LONG_MAX_LIMIT_DIGIT = long(LONG_MAX % 10);
+    static constexpr auto ULONG_LIMIT = uLong(ULONG_MAX / 10);
+    static constexpr auto ULONG_LIMIT_DIGIT = uLong(ULONG_MAX % 10);
 
     // Methods
     void internal_assign (std::wstring) noexcept;
     auto internal_toCharString (const std::wstring&) const -> std::string;
     auto internal_toWideString (const char[]) const -> std::wstring;
+    void internal_skipLeadingWs (const wchar_t*&, const wchar_t*) const noexcept;
+    void internal_skipTrailingWs (const wchar_t*, const wchar_t*&) const noexcept;
+    auto internal_parseSign (const wchar_t*&) const noexcept -> Sign;
+    auto internal_parseDigits (const wchar_t*&, const wchar_t*, Sign) const -> long;
+    auto internal_parseDigits (const wchar_t*&, const wchar_t*) const -> uLong;
+    auto internal_isOverflowed (Sign, long, long) const noexcept -> bool;
+    auto internal_isOverflowed (uLong, uLong) const noexcept -> bool;
 
     // Data members
     std::wstring         string{};
@@ -656,9 +671,9 @@ template <typename NumT
                          || ( std::is_floating_point<NumT>::value
                          && ! std::is_pointer<NumT>::value )
                           , int> >
-inline auto FString::operator << (NumT val) -> FString&
+inline auto FString::operator << (NumT value) -> FString&
 {
-  const FString numstr(FString().setNumber(val));
+  const FString numstr(FString().setNumber(value));
   string.append(numstr.string);
   return *this;
 }
@@ -826,25 +841,25 @@ inline auto FString::data() noexcept -> wchar_t*
 
 //----------------------------------------------------------------------
 template <typename NumT>
-inline auto FString::setNumber (NumT num, int precision) -> FString&
+inline auto FString::setNumber (NumT value, int precision) -> FString&
 {
   if ( std::is_floating_point<NumT>::value )
-    return setNumber (lDouble(num), precision);
+    return setNumber (lDouble(value), precision);
 
-  if ( isNegative(num) )
-    return setNumber (sInt64(num));
+  if ( isNegative(value) )
+    return setNumber (sInt64(value));
 
-  return setNumber (uInt64(num));
+  return setNumber (uInt64(value));
 }
 
 //----------------------------------------------------------------------
 template <typename NumT>
-inline auto FString::setFormatedNumber (NumT num, FString&& separator) -> FString&
+inline auto FString::setFormatedNumber (NumT value, FString&& separator) -> FString&
 {
-  if ( isNegative(num) )
-    return setFormatedNumber (sInt64(num), std::move(separator));
+  if ( isNegative(value) )
+    return setFormatedNumber (sInt64(value), std::move(separator));
 
-  return setFormatedNumber (uInt64(num), std::move(separator));
+  return setFormatedNumber (uInt64(value), std::move(separator));
 }
 
 //----------------------------------------------------------------------

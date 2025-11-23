@@ -32,6 +32,7 @@
 namespace finalcut
 {
 
+// Herper functions
 template <typename T>
 constexpr auto isExactlyEqual (T rhs, T lhs) noexcept -> bool
 {
@@ -369,51 +370,51 @@ auto FString::toUpper() const -> FString
 //----------------------------------------------------------------------
 auto FString::toShort() const -> sInt16
 {
-  const long num = toLong();
+  const long value = toLong();
 
-  if ( num > SHRT_MAX )
+  if ( value > SHRT_MAX )
     throw std::overflow_error ("overflow");
 
-  if ( num < SHRT_MIN )
+  if ( value < SHRT_MIN )
     throw std::underflow_error ("underflow");
 
-  return static_cast<sInt16>(num);
+  return static_cast<sInt16>(value);
 }
 
 //----------------------------------------------------------------------
 auto FString::toUShort() const -> uInt16
 {
-  const uLong num = toULong();
+  const uLong value = toULong();
 
-  if ( num > USHRT_MAX )
+  if ( value > USHRT_MAX )
     throw std::overflow_error ("overflow");
 
-  return static_cast<uInt16>(num);
+  return static_cast<uInt16>(value);
 }
 
 //----------------------------------------------------------------------
 auto FString::toInt() const -> int
 {
-  const long num = toLong();
+  const long value = toLong();
 
-  if ( num > INT_MAX )
+  if ( value > INT_MAX )
     throw std::overflow_error ("overflow");
 
-  if ( num < INT_MIN )
+  if ( value < INT_MIN )
     throw std::underflow_error ("underflow");
 
-  return static_cast<int>(num);
+  return static_cast<int>(value);
 }
 
 //----------------------------------------------------------------------
 auto FString::toUInt() const -> uInt
 {
-  const uLong num = toULong();
+  const uLong value = toULong();
 
-  if ( num > UINT_MAX )
+  if ( value > UINT_MAX )
     throw std::overflow_error ("overflow");
 
-  return static_cast<uInt>(num);
+  return static_cast<uInt>(value);
 }
 
 //----------------------------------------------------------------------
@@ -423,61 +424,23 @@ auto FString::toLong() const -> long
   const wchar_t* s_ptr{string.data()};
   const wchar_t* end{s_ptr + string.length()};
 
-  // Skip leading whitespace
-  while ( s_ptr != end && std::iswspace(static_cast<std::wint_t>(*s_ptr)) )
-    ++s_ptr;
-
-  // Skip trailing whitespace
-  while ( end > s_ptr && std::iswspace(static_cast<std::wint_t>(*(end - 1))) )
-    --end;
+  internal_skipLeadingWs(s_ptr, end);   // Skip leading whitespace
+  internal_skipTrailingWs(s_ptr, end);  // Skip trailing whitespace
 
   if ( s_ptr == end )
     throw std::invalid_argument("empty value");
 
-  bool neg{false};
-
-  if ( *s_ptr == L'-' )  // Handle '-' sign
-  {
-    neg = true;
-    ++s_ptr;
-  }
-  else if ( *s_ptr == L'+' )  // Handle '+' sign
-  {
-    ++s_ptr;
-  }
+  const Sign sign = internal_parseSign(s_ptr);
 
   if ( s_ptr == end )
     throw std::invalid_argument ("no valid number");
 
-  long num{0};
-  constexpr long limit = LONG_MAX / 10;
-  const long limit_digit = neg ? (-(LONG_MIN % 10) + 1) : (LONG_MAX % 10);
-
-  while ( s_ptr != end )
-  {
-    const wchar_t c{*s_ptr};
-
-    if ( c < L'0' || c > L'9' )  // Digit check
-      break;
-
-    const auto digit{long(c - L'0')};
-
-    if ( num > limit || (num == limit && digit > limit_digit) )
-    {
-      if ( neg )
-        throw std::underflow_error("underflow");
-
-      throw std::overflow_error("overflow");
-    }
-
-    num = (num * 10) + digit;
-    ++s_ptr;
-  }
+  const long value = internal_parseDigits(s_ptr, end, sign);
 
   if ( s_ptr != end )
     throw std::invalid_argument("no valid number");
 
-  return neg ? (~num) + 1u : num;
+  return sign == Sign::Negative ? (~value) + 1u : value;
 }
 
 //----------------------------------------------------------------------
@@ -487,46 +450,19 @@ auto FString::toULong() const -> uLong
   const wchar_t* s_ptr{string.data()};
   const wchar_t* end{s_ptr + string.length()};
 
-  // Skip leading whitespace
-  while ( s_ptr != end && std::iswspace(static_cast<std::wint_t>(*s_ptr)) )
-    ++s_ptr;
-
-  // Skip trailing whitespace
-  while ( end > s_ptr && std::iswspace(static_cast<std::wint_t>(*(end - 1))) )
-    --s_ptr;
+  internal_skipLeadingWs(s_ptr, end);   // Skip leading whitespace
+  internal_skipTrailingWs(s_ptr, end);  // Skip trailing whitespace
 
   if ( s_ptr == end )
     throw std::invalid_argument("empty value");
 
-  if ( *s_ptr == L'-' )  // Handle '-' sign
+  if ( internal_parseSign(s_ptr) == Sign::Negative )  // Handle '-' sign
     throw std::underflow_error ("underflow");
-
-  if ( *s_ptr == L'+' )  // Handle '+' sign
-    ++s_ptr;
 
   if ( s_ptr == end  )
     throw std::invalid_argument("no valid number");
 
-  uLong num{0};
-  constexpr uLong limit = ULONG_MAX / 10;
-  constexpr uLong limit_digit = ULONG_MAX % 10;
-
-  // Process digits without function call overhead
-  while ( s_ptr != end )
-  {
-    const wchar_t c{*s_ptr};
-
-    if ( c < L'0' || c > L'9' )  // Digit check
-      break;
-
-    const auto digit{uLong(c - L'0')};
-
-    if ( num > limit || (num == limit && digit > limit_digit) )
-      throw std::overflow_error("overflow");
-
-    num = (num * 10) + digit;
-    ++s_ptr;
-  }
+  const uLong value = internal_parseDigits(s_ptr, end);
 
   if ( s_ptr == string.data() + ((*string.data() == L'+') ? 1 : 0) )
     throw std::invalid_argument("no valid number");  // No digits parsed
@@ -534,21 +470,21 @@ auto FString::toULong() const -> uLong
   if ( s_ptr != end )
     throw std::invalid_argument("no valid number");  // Trailing non-digits
 
-  return num;
+  return value;
 }
 
 //----------------------------------------------------------------------
 auto FString::toFloat() const -> float
 {
-  const double num{toDouble()};
+  const double value{toDouble()};
 
-  if ( num > double(FLT_MAX) || num < double(-FLT_MAX) )
+  if ( value > double(FLT_MAX) || value < double(-FLT_MAX) )
     throw std::overflow_error ("overflow");
 
-  if ( std::fabs(num) < double(FLT_EPSILON) )  // num == 0.0f
+  if ( std::fabs(value) < double(FLT_EPSILON) )  // value == 0.0f
     throw std::underflow_error ("underflow");
 
-  return static_cast<float>(num);
+  return static_cast<float>(value);
 }
 
 //----------------------------------------------------------------------
@@ -718,21 +654,21 @@ auto FString::setString (const FString& s) -> FString&
 }
 
 //----------------------------------------------------------------------
-auto FString::setNumber (sInt64 num) -> FString&
+auto FString::setNumber (sInt64 value) -> FString&
 {
   std::array<wchar_t, NUMBER_BUFFER_SIZE> buf{};
   wchar_t* s = &buf[NUMBER_BUFFER_LENGTH];  // Pointer to the last character
-  const auto is_negative{ bool( num < 0 ) };
-  auto abs_num = is_negative ? ~static_cast<uInt64>(num) + 1
-                             : static_cast<uInt64>(num);
+  const auto is_negative{ bool( value < 0 ) };
+  auto abs_value = is_negative ? ~static_cast<uInt64>(value) + 1
+                               : static_cast<uInt64>(value);
   *s = '\0';
 
   do
   {
-    *--s = L'0' + wchar_t(abs_num % 10);
-    abs_num /= 10;
+    *--s = L'0' + wchar_t(abs_value % 10);
+    abs_value /= 10;
   }
-  while ( abs_num );
+  while ( abs_value );
 
   if ( is_negative )
     *--s = '-';
@@ -743,7 +679,7 @@ auto FString::setNumber (sInt64 num) -> FString&
 }
 
 //----------------------------------------------------------------------
-auto FString::setNumber (uInt64 num) -> FString&
+auto FString::setNumber (uInt64 value) -> FString&
 {
   std::array<wchar_t, NUMBER_BUFFER_SIZE> buf{};
   wchar_t* s = &buf[NUMBER_BUFFER_LENGTH];  // Pointer to the last character
@@ -751,10 +687,10 @@ auto FString::setNumber (uInt64 num) -> FString&
 
   do
   {
-    *--s = L'0' + wchar_t(num % 10);
-    num /= 10;
+    *--s = L'0' + wchar_t(value % 10);
+    value /= 10;
   }
-  while ( num );
+  while ( value );
 
   std::wstring str{s};
   internal_assign (std::move(str));
@@ -762,7 +698,7 @@ auto FString::setNumber (uInt64 num) -> FString&
 }
 
 //----------------------------------------------------------------------
-auto FString::setNumber (lDouble f_num, int precision) -> FString&
+auto FString::setNumber (lDouble f_value, int precision) -> FString&
 {
   // The precision can not have more than 2 digits
   precision = std::min(precision, 99);
@@ -788,37 +724,37 @@ auto FString::setNumber (lDouble f_num, int precision) -> FString&
   *s++ = L'g';
   *s = L'\0';
 
-  return sprintf(format.data(), f_num);
+  return sprintf(format.data(), f_value);
 }
 
 //----------------------------------------------------------------------
-auto FString::setFormatedNumber (sInt64 num, FString separator) -> FString&
+auto FString::setFormatedNumber (sInt64 value, FString separator) -> FString&
 {
   int n{0};
   std::array<wchar_t, NUMBER_BUFFER_SIZE> buf{};
   wchar_t* s = &buf[NUMBER_BUFFER_LENGTH];  // Pointer to the last character
-  auto abs_num{uInt64(num)};
+  auto abs_value{uInt64(value)};
 
   if ( separator[0] == 0 )
     separator = L" ";
 
-  if ( num < 0 )
-    abs_num = uInt64(-num);
+  if ( value < 0 )
+    abs_value = uInt64(-value);
 
   *s = L'\0';
 
   do
   {
-    *--s = L'0' + wchar_t(abs_num % 10);
-    abs_num /= 10;
+    *--s = L'0' + wchar_t(abs_value % 10);
+    abs_value /= 10;
     n++;
 
-    if ( abs_num && n % 3 == 0 )
+    if ( abs_value && n % 3 == 0 )
       *--s = separator[0];
   }
-  while ( abs_num );
+  while ( abs_value );
 
-  if ( num < 0 )
+  if ( value < 0 )
     *--s = '-';
 
   std::wstring str{s};
@@ -827,7 +763,7 @@ auto FString::setFormatedNumber (sInt64 num, FString separator) -> FString&
 }
 
 //----------------------------------------------------------------------
-auto FString::setFormatedNumber (uInt64 num, FString separator) -> FString&
+auto FString::setFormatedNumber (uInt64 value, FString separator) -> FString&
 {
   int n{0};
   std::array<wchar_t, NUMBER_BUFFER_SIZE> buf{};
@@ -839,14 +775,14 @@ auto FString::setFormatedNumber (uInt64 num, FString separator) -> FString&
 
   do
   {
-    *--s = L'0' + wchar_t(num % 10);
-    num /= 10;
+    *--s = L'0' + wchar_t(value % 10);
+    value /= 10;
     n++;
 
-    if ( num && n % 3 == 0 )
+    if ( value && n % 3 == 0 )
       *--s = separator[0];
   }
-  while ( num );
+  while ( value );
 
   std::wstring str{s};
   internal_assign (std::move(str));
@@ -1142,6 +1078,123 @@ auto FString::internal_toWideString (const char src[]) const -> std::wstring
 
   return dest;
 }
+
+//----------------------------------------------------------------------
+inline void FString::internal_skipLeadingWs ( const wchar_t*& p
+                                            , const wchar_t* end ) const noexcept
+{
+  // Skip over leading whitespace in a string
+
+  while ( p != end && std::iswspace(static_cast<std::wint_t>(*p)) )
+    ++p;
+}
+
+//----------------------------------------------------------------------
+inline void FString::internal_skipTrailingWs ( const wchar_t* begin
+                                             , const wchar_t*& p ) const noexcept
+{
+  // Skip over trailing whitespace in a string
+
+  while ( p > begin && std::iswspace(static_cast<std::wint_t>(*(p - 1))) )
+    --p;
+}
+
+//----------------------------------------------------------------------
+inline auto FString::internal_parseSign (const wchar_t*& s) const noexcept -> Sign
+{
+  // Extract sign and increment pointer
+
+  if ( *s == L'-' )  // Handle '-' sign
+  {
+    ++s;
+    return Sign::Negative;
+  }
+
+  if ( *s == L'+' )  // Handle '+' sign
+    ++s;
+
+  return Sign::Positive;
+}
+
+//----------------------------------------------------------------------
+inline auto FString::internal_parseDigits ( const wchar_t*& s_ptr
+                                          , const wchar_t* end
+                                          , Sign sign ) const -> long
+{
+  // Parse digits and detect overflow/underflow
+
+  long value{0};
+
+  while ( s_ptr != end )
+  {
+    const wchar_t c{*s_ptr};
+
+    if ( c < L'0' || c > L'9' )  // Digit check
+      break;
+
+    const auto digit{long(c - L'0')};
+
+    if ( internal_isOverflowed(sign, value, digit) )
+    {
+      if ( sign == Sign::Negative )
+        throw std::underflow_error("underflow");
+
+      throw std::overflow_error("overflow");
+    }
+
+    value = (value * 10) + digit;
+    ++s_ptr;
+  }
+
+  return value;
+}
+
+//----------------------------------------------------------------------
+inline auto FString::internal_parseDigits ( const wchar_t*& s_ptr
+                                          , const wchar_t* end ) const -> uLong
+{
+  // Parse digits and detect overflow/underflow
+
+  uLong value{0};
+
+  while ( s_ptr != end )
+  {
+    const wchar_t c{*s_ptr};
+
+    if ( c < L'0' || c > L'9' )  // Digit check
+      break;
+
+    const auto digit{uLong(c - L'0')};
+
+    if ( internal_isOverflowed(value, digit) )
+      throw std::overflow_error("overflow");
+
+    value = (value * 10) + digit;
+    ++s_ptr;
+  }
+
+  return value;
+}
+
+//----------------------------------------------------------------------
+inline auto FString::internal_isOverflowed ( Sign sign
+                                           , long value
+                                           , long digit ) const noexcept -> bool
+{
+  const long limit_digit = ( sign == Sign::Negative ) ? LONG_MIN_LIMIT_DIGIT
+                                                      : LONG_MAX_LIMIT_DIGIT;
+  return ( value > LONG_LIMIT )
+      || ( value == LONG_LIMIT && digit > limit_digit );
+};
+
+//----------------------------------------------------------------------
+inline auto FString::internal_isOverflowed ( uLong value
+                                           , uLong digit ) const noexcept -> bool
+{
+  return ( value > ULONG_LIMIT )
+      || ( value == ULONG_LIMIT && digit > ULONG_LIMIT_DIGIT );
+};
+
 
 // FString non-member operators
 //----------------------------------------------------------------------

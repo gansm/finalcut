@@ -1,3 +1,6 @@
+2025-11-23  Markus Gans  <guru.mail@muenster.de>
+	* Refactoring of FString::toLong() and FString::toULong()
+
 2025-11-18  Markus Gans  <guru.mail@muenster.de>
 	* The FVTerm::addLayer() method decreases the range of saved vertical 
 	  adjustments
