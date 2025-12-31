@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2023 Markus Gans                                      *
+* Copyright 2019-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -78,6 +78,7 @@ class FSystem
     virtual auto fclose (FILE*) -> int = 0;
     virtual auto fputs (const char*, FILE*) -> int = 0;
     virtual auto putchar (int) -> int = 0;
+    virtual auto putstring (const char* str, std::size_t len) noexcept -> int = 0;
     virtual auto sigaction ( int, const struct sigaction*
                            , struct sigaction* ) -> int = 0;
     virtual auto timer_create ( clockid_t, struct sigevent*

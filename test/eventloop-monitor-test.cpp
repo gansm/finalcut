@@ -243,41 +243,42 @@ class FSystemTest : public finalcut::FSystem
     FSystemTest() = default;
 
     // Methods
-    auto inPortByte (uShort) -> uChar override;
-    void outPortByte (uChar, uShort) override;
-    auto isTTY (int) const -> int override;
-    auto ioctl (int, uLong, ...) -> int override;
-    auto pipe (finalcut::PipeData&) -> int override;
-    auto open (const char*, int, ...) -> int override;
-    auto close (int) -> int override;
-    auto fopen (const char*, const char*) -> FILE* override;
-    auto fputs (const char*, FILE*) -> int override;
-    auto fclose (FILE*) -> int override;
-    auto putchar (int) -> int override;
+    auto inPortByte (uShort) noexcept -> uChar override;
+    void outPortByte (uChar, uShort) noexcept override;
+    auto isTTY (int) const noexcept -> int override;
+    auto ioctl (int, uLong, ...) noexcept -> int override;
+    auto pipe (finalcut::PipeData&) noexcept -> int override;
+    auto open (const char*, int, ...) noexcept -> int override;
+    auto close (int) noexcept -> int override;
+    auto fopen (const char*, const char*) noexcept -> FILE* override;
+    auto fputs (const char*, FILE*) noexcept -> int override;
+    auto fclose (FILE*) noexcept -> int override;
+    auto putchar (int) noexcept -> int override;
+    auto putstring (const char*, std::size_t) noexcept -> int override;
     auto sigaction ( int, const struct sigaction*
-                   , struct sigaction*) -> int override;
+                   , struct sigaction*) noexcept -> int override;
     auto timer_create ( clockid_t, struct sigevent*
-                      , timer_t* ) -> int override;
+                      , timer_t* ) noexcept -> int override;
     auto timer_settime ( timer_t, int
                        , const struct itimerspec*
-                       , struct itimerspec* ) -> int override;
-    auto timer_delete (timer_t) -> int override;
-    auto kqueue() -> int override;
+                       , struct itimerspec* ) noexcept -> int override;
+    auto timer_delete (timer_t) noexcept -> int override;
+    auto kqueue() noexcept -> int override;
     auto kevent ( int, const struct kevent*
                 , int, struct kevent*
-                , int, const struct timespec* ) -> int override;
-    auto getuid() -> uid_t override;
-    auto geteuid() -> uid_t override;
+                , int, const struct timespec* ) noexcept -> int override;
+    auto getuid() noexcept -> uid_t override;
+    auto geteuid() noexcept -> uid_t override;
     auto getpwuid_r ( uid_t, struct passwd*, char*
-                    , size_t, struct passwd** ) -> int override;
-    auto realpath (const char*, char*) -> char* override;
-    void setPipeReturnValue (int);
-    void setSigactionReturnValue (int);
-    void setTimerCreateReturnValue (int);
-    void setTimerSettimeReturnValue (int);
-    void setTimerDeleteReturnValue (int);
-    void setKqueueReturnValue (int);
-    void setKeventReturnValue (int);
+                    , size_t, struct passwd** ) noexcept -> int override;
+    auto realpath (const char*, char*) noexcept -> char* override;
+    void setPipeReturnValue (int) noexcept;
+    void setSigactionReturnValue (int) noexcept;
+    void setTimerCreateReturnValue (int) noexcept;
+    void setTimerSettimeReturnValue (int) noexcept;
+    void setTimerDeleteReturnValue (int) noexcept;
+    void setKqueueReturnValue (int) noexcept;
+    void setKeventReturnValue (int) noexcept;
 
   private:
     int pipe_ret_value{0};
@@ -292,24 +293,24 @@ class FSystemTest : public finalcut::FSystem
 
 // public methods of FSystemTest
 //----------------------------------------------------------------------
-inline auto FSystemTest::inPortByte (uShort) -> uChar
+inline auto FSystemTest::inPortByte (uShort) noexcept -> uChar
 {
   return 0;
 }
 
 //----------------------------------------------------------------------
-inline void FSystemTest::outPortByte (uChar, uShort)
+inline void FSystemTest::outPortByte (uChar, uShort) noexcept
 { }
 
 //----------------------------------------------------------------------
-inline auto FSystemTest::isTTY (int file_descriptor) const -> int
+inline auto FSystemTest::isTTY (int file_descriptor) const noexcept -> int
 {
   std::cerr << "Call: isatty (file_descriptor=" << file_descriptor << ")\n";
   return 1;
 }
 
 //----------------------------------------------------------------------
-inline auto FSystemTest::ioctl (int file_descriptor, uLong request, ...) -> int
+inline auto FSystemTest::ioctl (int file_descriptor, uLong request, ...) noexcept -> int
 {
   va_list args{};
   void* argp{};
@@ -326,7 +327,7 @@ inline auto FSystemTest::ioctl (int file_descriptor, uLong request, ...) -> int
 }
 
 //----------------------------------------------------------------------
-inline auto FSystemTest::pipe (finalcut::PipeData& pipe) -> int
+inline auto FSystemTest::pipe (finalcut::PipeData& pipe) noexcept -> int
 {
   std::cerr << "Call: pipe (pipefd={"
             << pipe.getReadFd() << ", "
@@ -337,7 +338,7 @@ inline auto FSystemTest::pipe (finalcut::PipeData& pipe) -> int
 }
 
 //----------------------------------------------------------------------
-inline auto FSystemTest::open (const char* pathname, int flags, ...) -> int
+inline auto FSystemTest::open (const char* pathname, int flags, ...) noexcept -> int
 {
   va_list args{};
   va_start (args, flags);
@@ -352,14 +353,14 @@ inline auto FSystemTest::open (const char* pathname, int flags, ...) -> int
 }
 
 //----------------------------------------------------------------------
-inline auto FSystemTest::close (int file_descriptor) -> int
+inline auto FSystemTest::close (int file_descriptor) noexcept -> int
 {
   std::cerr << "Call: close (file_descriptor=" << file_descriptor << ")\n";
   return 0;
 }
 
 //----------------------------------------------------------------------
-inline auto FSystemTest::fopen (const char* path, const char* mode) -> FILE*
+inline auto FSystemTest::fopen (const char* path, const char* mode) noexcept -> FILE*
 {
   std::cerr << "Call: fopen (path=" << path
             << ", mode=" << mode << ")\n";
@@ -367,32 +368,42 @@ inline auto FSystemTest::fopen (const char* path, const char* mode) -> FILE*
 }
 
 //----------------------------------------------------------------------
-inline auto FSystemTest::fclose (FILE* file_ptr) -> int
+inline auto FSystemTest::fclose (FILE* file_ptr) noexcept -> int
 {
   std::cerr << "Call: fclose (file_ptr=" << file_ptr << ")\n";
   return 0;
 }
 
 //----------------------------------------------------------------------
-inline auto FSystemTest::fputs (const char* str, FILE* stream) -> int
+inline auto FSystemTest::fputs (const char* str, FILE* stream) noexcept -> int
 {
   return std::fputs(str, stream);
 }
 
 //----------------------------------------------------------------------
-inline auto FSystemTest::putchar (int c) -> int
+inline auto FSystemTest::putchar (int c) noexcept -> int
 {
 #if defined(__sun) && defined(__SVR4)
-      return std::putchar(char(c));
+  return std::putchar(char(c));
 #else
-      return std::putchar(c);
+  return std::putchar(c);
 #endif
+}
+
+//----------------------------------------------------------------------
+inline auto FSystemTest::putstring (const char* str, std::size_t len) noexcept -> int
+{
+  for (std::size_t i{0}; i < len; ++i)
+    if ( FSystemTest::putchar(int(str[i])) == EOF )
+      return EOF;
+
+  return 1;
 }
 
 //----------------------------------------------------------------------
 inline auto FSystemTest::sigaction ( int signum
                                    , const struct sigaction* act
-                                   , struct sigaction* oldact ) -> int
+                                   , struct sigaction* oldact ) noexcept -> int
 {
   std::cerr << "Call: sigaction (signum=" << signum
             << ", act=" << act
@@ -403,7 +414,7 @@ inline auto FSystemTest::sigaction ( int signum
 //----------------------------------------------------------------------
 inline auto FSystemTest::timer_create ( clockid_t clockid
                                       , struct sigevent* sevp
-                                      , timer_t* timerid ) -> int
+                                      , timer_t* timerid ) noexcept -> int
 {
   std::cerr << "Call: timer_create (clockid=" << clockid
             << ", sevp=" << sevp
@@ -415,7 +426,7 @@ inline auto FSystemTest::timer_create ( clockid_t clockid
 inline auto FSystemTest::timer_settime ( timer_t timer_id
                                        , int flags
                                        , const struct itimerspec* new_value
-                                       , struct itimerspec* old_value ) -> int
+                                       , struct itimerspec* old_value ) noexcept -> int
 {
   std::cerr << "Call: timer_settime (timer_id=" << timer_id
             << ", flags=" << flags
@@ -425,14 +436,14 @@ inline auto FSystemTest::timer_settime ( timer_t timer_id
 }
 
 //----------------------------------------------------------------------
-inline auto FSystemTest::timer_delete (timer_t timer_id) -> int
+inline auto FSystemTest::timer_delete (timer_t timer_id) noexcept -> int
 {
   std::cerr << "Call: timer_delete (timer_id=" << timer_id << ")\n";
   return timer_delete_ret_value;
 }
 
 //----------------------------------------------------------------------
-inline auto FSystemTest::kqueue() -> int
+inline auto FSystemTest::kqueue() noexcept -> int
 {
   std::cerr << "Call: kqueue()\n";
   return kqueue_ret_value;
@@ -441,7 +452,7 @@ inline auto FSystemTest::kqueue() -> int
 //----------------------------------------------------------------------
 inline auto FSystemTest::kevent ( int kq, const struct ::kevent* changelist
                                 , int nchanges, struct ::kevent* eventlist
-                                , int nevents, const struct timespec* timeout) -> int
+                                , int nevents, const struct timespec* timeout) noexcept -> int
 {
   std::cerr << "Call: kevent (kq=" << kq
             << ", changelist=" << changelist
@@ -464,68 +475,68 @@ inline auto FSystemTest::kevent ( int kq, const struct ::kevent* changelist
 }
 
 //----------------------------------------------------------------------
-inline auto FSystemTest::getuid() -> uid_t
+inline auto FSystemTest::getuid() noexcept -> uid_t
 {
   return 0;
 }
 
 //----------------------------------------------------------------------
-inline auto FSystemTest::geteuid() -> uid_t
+inline auto FSystemTest::geteuid() noexcept -> uid_t
 {
   return 0;
 }
 
 //----------------------------------------------------------------------
 inline auto FSystemTest::getpwuid_r ( uid_t, struct passwd*, char*
-                                    , size_t, struct passwd** ) -> int
+                                    , size_t, struct passwd** ) noexcept -> int
 {
   return 0;
 }
 
 //----------------------------------------------------------------------
-inline auto FSystemTest::realpath (const char*, char*) -> char*
+inline auto FSystemTest::realpath (const char*, char*) noexcept -> char*
 {
   return const_cast<char*>("");
 }
 
 //----------------------------------------------------------------------
-inline void FSystemTest::setPipeReturnValue (int ret_val)
+inline void FSystemTest::setPipeReturnValue (int ret_val) noexcept
 {
   pipe_ret_value = ret_val;
 }
 
 //----------------------------------------------------------------------
-inline void FSystemTest::setSigactionReturnValue (int ret_val)
+inline void FSystemTest::setSigactionReturnValue (int ret_val) noexcept
 {
   sigaction_ret_value = ret_val;
 }
 
 //----------------------------------------------------------------------
-inline void FSystemTest::setTimerCreateReturnValue (int ret_val)
+inline void FSystemTest::setTimerCreateReturnValue (int ret_val) noexcept
 {
   timer_create_ret_value = ret_val;
 }
 
 //----------------------------------------------------------------------
-inline void FSystemTest::setTimerSettimeReturnValue (int ret_val)
+inline void FSystemTest::setTimerSettimeReturnValue (int ret_val) noexcept
 {
   timer_settime_ret_value = ret_val;
 }
 
 //----------------------------------------------------------------------
-inline void FSystemTest::setTimerDeleteReturnValue (int ret_val)
+inline void FSystemTest::setTimerDeleteReturnValue (int ret_val) noexcept
 {
   timer_delete_ret_value = ret_val;
 }
 
 //----------------------------------------------------------------------
-inline void FSystemTest::setKqueueReturnValue (int ret_val)
+inline void FSystemTest::setKqueueReturnValue (int ret_val) noexcept
 {
   kqueue_ret_value = ret_val;
 }
 
 //----------------------------------------------------------------------
-inline void FSystemTest::setKeventReturnValue (int ret_val)
+inline void FSystemTest::setKeventReturnValue (int ret_val) noexcept
 {
   kevent_ret_value = ret_val;
 }

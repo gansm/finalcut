@@ -693,7 +693,7 @@ void FTerm::setPalette (FColor index, int r, int g, int b)
 
     if ( ! color_str.empty() )
     {
-      paddingPrint (color_str);
+      paddingPrint (color_str.c_str(), uInt32(color_str.length()));
       state = true;
     }
   }
@@ -855,9 +855,9 @@ auto FTerm::scrollTermReverse() -> bool
 }
 
 //----------------------------------------------------------------------
-void FTerm::paddingPrint (const std::string& str, int affcnt)
+void FTerm::paddingPrint (const char* str, uInt32 len, int affcnt)
 {
-  auto status = FTermcap::paddingPrint (str, affcnt);
+  auto status = FTermcap::paddingPrint (str, len, affcnt);
 
   if ( status == FTermcap::Status::Error )
   {
@@ -866,9 +866,20 @@ void FTerm::paddingPrint (const std::string& str, int affcnt)
 }
 
 //----------------------------------------------------------------------
-void FTerm::stringPrint (const std::string& str)
+void FTerm::paddingPrint (const char* str, int affcnt)
 {
-  auto status = FTermcap::stringPrint (str);
+  auto status = FTermcap::paddingPrint (str, uInt32(stringLength(str)), affcnt);
+
+  if ( status == FTermcap::Status::Error )
+  {
+    // Possible error handling
+  }
+}
+
+//----------------------------------------------------------------------
+void FTerm::stringPrint (const char* str, uInt32 len)
+{
+  auto status = FTermcap::stringPrint (str, len);
 
   if ( status == FTermcap::Status::Error )
   {

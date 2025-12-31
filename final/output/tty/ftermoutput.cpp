@@ -310,7 +310,7 @@ void FTermOutput::initTerminal (FVTerm::FTermArea* virtual_terminal)
   redefineColorPalette();
 
   vterm         = virtual_terminal;
-  output_buffer = std::make_shared<OutputBuffer>();
+  output_buffer = std::make_shared<FOutputBuffer>();
   term_pos      = std::make_shared<FPoint>(-1, -1);
 
   // Hide the input cursor
@@ -482,20 +482,24 @@ void FTermOutput::flush()
     || ! (isFlushTimeout() || getFVTerm().isTerminalUpdateForced()) )
     return;
 
+  const char* data_ptr = output_buffer->data.data();  // Read pointer
+
   while ( ! output_buffer->isEmpty() )
   {
-    const auto& first = output_buffer->front();
+    const auto& first = output_buffer->slices.front();
     const auto& type = first.type;
-    const auto& data = first.data;
+    const auto& length = first.length;
 
-    if ( type == OutputType::String )
-      FTerm::stringPrint (data);
-    else if ( type == OutputType::Control )
-      FTerm::paddingPrint (data);
+    if ( type == FOutputBuffer::OutputType::String )
+      FTerm::stringPrint (data_ptr, length);
+    else if ( type == FOutputBuffer::OutputType::Control )
+      FTerm::paddingPrint (data_ptr, length);
 
-    output_buffer->pop();
+    data_ptr += length;
+    output_buffer->slices.pop();
   }
 
+  output_buffer->data.clear();
   std::fflush(stdout);
   static auto& mouse = FMouseControl::getInstance();
   mouse.drawPointer();
@@ -1416,7 +1420,7 @@ inline void FTermOutput::appendChar (FChar& next_char)
       if ( internal::var::terminal_encoding == Encoding::UTF8 )
         appendOutputBuffer (unicode_to_utf8(ch));
       else
-        appendOutputBuffer (std::string(1, char(uChar(ch))));
+        appendOutputBuffer (UTF8_Char({{char(uChar(ch)), '\0', '\0','\0'}, 1}));
     }
 
     if ( ! combined_char_support )
@@ -1428,11 +1432,18 @@ inline void FTermOutput::appendChar (FChar& next_char)
 inline void FTermOutput::appendAttributes (FChar& next_attr)
 {
   // generate attribute string for the next character
-  static auto& opti_attr = FOptiAttr::getInstance();
-  const auto& attr_str = opti_attr.changeAttribute (term_attribute, next_attr);
 
-  if ( ! attr_str.empty() )
-    appendOutputBuffer (FTermControl{attr_str});
+  if ( term_attribute.color.data == next_attr.color.data
+    && (term_attribute.attr.data & 0xffff) == (next_attr.attr.data & 0xffff) )
+    return;  // No changes
+
+  static auto& opti_attr = FOptiAttr::getInstance();
+  const auto attr_str = opti_attr.changeAttribute (term_attribute, next_attr);
+
+  if ( attr_str.empty() )
+    return;
+
+  appendOutputBuffer (FTermControl{attr_str});
 }
 
 //----------------------------------------------------------------------
@@ -1529,15 +1540,16 @@ inline auto FTermOutput::moveCursorLeft() -> CursorMoved
 //----------------------------------------------------------------------
 inline void FTermOutput::checkFreeBufferSize()
 {
-  if ( output_buffer->isFull() )
+  if ( output_buffer->slices.isFull() )
     flush();
 }
 
 //----------------------------------------------------------------------
 inline void FTermOutput::appendOutputBuffer (const FTermControl& ctrl)
 {
-  output_buffer->emplace(OutputType::Control, ctrl.string);
-  checkFreeBufferSize();
+  appendOutputBuffer ( FOutputBuffer::OutputType::Control
+                     , ctrl.string.c_str()
+                     , uInt32(ctrl.string.length()) );
 }
 
 //----------------------------------------------------------------------
@@ -1547,19 +1559,30 @@ inline void FTermOutput::appendOutputBuffer (const UniChar& ch)
 }
 
 //----------------------------------------------------------------------
-void FTermOutput::appendOutputBuffer (std::string&& string)
+inline void FTermOutput::appendOutputBuffer (const UTF8_Char& utf8_char)
 {
-  auto& last = output_buffer->back();
+  appendOutputBuffer ( FOutputBuffer::OutputType::String
+                     , &utf8_char.u8char[0]
+                     , uInt32(utf8_char.length) );
+}
 
-  if ( ! output_buffer->isEmpty() && last.type == OutputType::String )
+//----------------------------------------------------------------------
+void FTermOutput::appendOutputBuffer ( FOutputBuffer::OutputType type
+                                     , const char* data
+                                     , uInt32 length )
+{
+  auto& slices = output_buffer->slices;
+  auto& last = slices.back();
+
+  if ( ! slices.isEmpty() && last.type == type )
   {
-    // Append string data to the back element
-    auto& string_buf = last.data;
-    string_buf.append(string);
+    output_buffer->data.append(data, length);
+    last.length += length;
   }
   else
   {
-    output_buffer->emplace(OutputType::String, std::move(string));
+    slices.emplace(type, uInt32(length));
+    output_buffer->data.append(data, length);
     checkFreeBufferSize();
   }
 }

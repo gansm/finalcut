@@ -193,7 +193,6 @@ class FVTerm : public FVTermAttribute
     virtual void addPreprocessingHandler ( const FVTerm*
                                          , FPreprocessingFunction&& );
     virtual void delPreprocessingHandler (const FVTerm*);
-    auto  interpretControlCodes (FTermArea*, const FChar&) const noexcept -> bool;
     template <typename... Args>
     auto  printf (const FString&, Args&&...) -> int;
     auto  print (const FString&) noexcept -> int;
@@ -373,8 +372,8 @@ class FVTerm : public FVTermAttribute
     void  initFromGlobalInstance();
     void  initSettings();
     void  finish() const;
-    void  saveCurrentVTerm() const;
-    void  putAreaLine (const FChar&, FChar&, const std::size_t) const;
+    void  saveCurrentVTerm() const noexcept;
+    void  putAreaLine (const FChar&, FChar&, const std::size_t) const noexcept;
     void  applyColorOverlay (const FChar&, FChar&) const;
     void  inheritBackground (const FChar&, FChar&) const;
     void  putMultiLayerAreaLine (FChar*, const std::size_t, const FPoint&) const noexcept;
@@ -384,8 +383,11 @@ class FVTerm : public FVTermAttribute
     void  addTransparentAreaChar (const FChar&, FChar&) const;
     auto  clearFullArea (FTermArea*, FChar&) const -> bool;
     void  clearAreaWithShadow (FTermArea*, const FChar&) const noexcept;
-    auto  printWrap (FTermArea*) const -> bool;
+    auto  printWrap (FTermArea*, FChar*&) const -> bool;
+    auto  interpretControlCodes (FTermArea*, FChar*&, const FChar&) const noexcept -> bool;
+    auto  printCharacter (FTermArea*, FChar*&, const FChar&) const noexcept -> int;
     auto  printCharacterOnCoordinate ( FTermArea*
+                                     , FChar*&
                                      , const FChar&) const noexcept -> std::size_t;
     void  printPaddingCharacter (FTermArea*, const FChar&) const;
     void  putNonTransparent (const FChar*, FChar*&, std::size_t&) const;

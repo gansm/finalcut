@@ -47,6 +47,7 @@
 
 #include "final/output/foutput.h"
 #include "final/output/tty/fterm.h"
+#include "final/util/char_ringbuffer.h"
 
 namespace finalcut
 {
@@ -56,6 +57,57 @@ class FStartOptions;
 class FTermData;
 template <typename T, std::size_t Capacity>
 class FRingBuffer;
+
+
+//----------------------------------------------------------------------
+// struct FOutputBuffer
+//----------------------------------------------------------------------
+
+struct FOutputBuffer
+{
+  // Constant - output buffer size
+  static constexpr std::size_t BUFFER_SIZE = 32'768;   // 32 KB
+
+  // Enumerations
+  enum class OutputType : uInt8  // Output data type of the terminal
+  {
+    String,
+    Control
+  };
+
+  struct TypeSlice
+  {
+    OutputType type{OutputType::String};
+    uInt32 length{0};
+
+    TypeSlice() = default;
+
+    TypeSlice (OutputType t, uInt32 len)
+      : type{t}
+      , length{len}
+    { }
+  };
+
+  // Using-declaration
+  using TypeSliceBuffer = FRingBuffer<TypeSlice, BUFFER_SIZE>;
+
+  FOutputBuffer() = default;
+
+  FOutputBuffer (OutputType t, std::string str, uInt32 s)
+    : data{std::move(str)}
+  {
+    slices.push({t, s});
+  }
+
+  auto isEmpty() const noexcept -> bool
+  {
+    return slices.isEmpty();
+  }
+
+  TypeSliceBuffer slices{};
+  std::string data{};
+};
+
 
 //----------------------------------------------------------------------
 // class FTermOutput
@@ -143,37 +195,15 @@ class FTermOutput final : public FOutput
       NotOptimized
     };
 
-    enum class OutputType : uInt8  // Output data type of the terminal
-    {
-      String,
-      Control
-    };
-
     enum class CursorMoved { No, Yes };
-
-    struct OutputData
-    {
-      OutputData() = default;
-
-      OutputData (OutputType t, std::string s)
-        : type{t}
-        , data{std::move(s)}
-      { }
-
-      OutputType  type{OutputType::String};
-      std::string data{};
-    };
 
     // Constants
     //   Upper and lower flush limit
     static constexpr uInt64 MIN_FLUSH_WAIT   = 16'667;   //  16.6 ms = 60 Hz
     static constexpr uInt64 MAX_FLUSH_WAIT   = 200'000;  // 200.0 ms = 5 Hz
     static constexpr uInt64 RESET_THRESHOLD  = 400'000;  // 400.0 ms = 2.5 Hz
-    //   Output buffer size
-    static constexpr std::size_t BUFFER_SIZE = 32'768;   // 32 KB
 
     // Using-declaration
-    using OutputBuffer = FRingBuffer<OutputData, BUFFER_SIZE>;
     using clock = std::chrono::steady_clock;
 
     // Accessors
@@ -226,26 +256,27 @@ class FTermOutput final : public FOutput
     void checkFreeBufferSize();
     void appendOutputBuffer (const FTermControl&);
     void appendOutputBuffer (const UniChar&);
-    void appendOutputBuffer (std::string&&);
+    void appendOutputBuffer (const UTF8_Char&);
+    void appendOutputBuffer (FOutputBuffer::OutputType, const char*, uInt32);
 
     // Data members
-    FTerm                         fterm{};
-    static FVTerm::FTermArea*     vterm;
-    static FTermData*             fterm_data;
-    std::shared_ptr<OutputBuffer> output_buffer{};
-    std::shared_ptr<FPoint>       term_pos{};  // terminal cursor position
-    FChar                         term_attribute{};
-    bool                          cursor_hideable{false};
-    bool                          combined_char_support{false};
-    uInt                          erase_char_length{};
-    uInt                          repeat_char_length{};
-    uInt                          clr_bol_length{};
-    uInt                          clr_eol_length{};
-    uInt                          cursor_address_length{};
-    uInt64                        time_last_flush_us{};
-    uInt64                        flush_wait{MIN_FLUSH_WAIT};
-    uInt64                        flush_average{MIN_FLUSH_WAIT};
-    uInt64                        flush_median{MIN_FLUSH_WAIT};
+    FTerm                          fterm{};
+    static FVTerm::FTermArea*      vterm;
+    static FTermData*              fterm_data;
+    std::shared_ptr<FOutputBuffer> output_buffer{};
+    std::shared_ptr<FPoint>        term_pos{};  // terminal cursor position
+    FChar                          term_attribute{};
+    bool                           cursor_hideable{false};
+    bool                           combined_char_support{false};
+    uInt                           erase_char_length{};
+    uInt                           repeat_char_length{};
+    uInt                           clr_bol_length{};
+    uInt                           clr_eol_length{};
+    uInt                           cursor_address_length{};
+    uInt64                         time_last_flush_us{};
+    uInt64                         flush_wait{MIN_FLUSH_WAIT};
+    uInt64                         flush_average{MIN_FLUSH_WAIT};
+    uInt64                         flush_median{MIN_FLUSH_WAIT};
 };
 
 // FTermOutput inline functions

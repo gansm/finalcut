@@ -426,20 +426,20 @@ class FWidgetTest::FSystemTest : public finalcut::FSystem
     FSystemTest() = default;
 
     // Methods
-    auto inPortByte (uShort) -> uChar override
+    auto inPortByte (uShort) noexcept -> uChar override
     {
       return 0;
     }
 
-    void outPortByte (uChar, uShort) override
+    void outPortByte (uChar, uShort) noexcept override
     { }
 
-    auto isTTY (int) const -> int override
+    auto isTTY (int) const noexcept -> int override
     {
       return 1;
     }
 
-    auto ioctl (int, uLong request, ...) -> int override
+    auto ioctl (int, uLong request, ...) noexcept -> int override
     {
       va_list args{};
       void* argp{};
@@ -462,37 +462,37 @@ class FWidgetTest::FSystemTest : public finalcut::FSystem
       return ret_val;
     }
 
-    auto pipe (finalcut::PipeData&) -> int override
+    auto pipe (finalcut::PipeData&) noexcept -> int override
     {
       return 0;
     }
 
-    auto open (const char*, int, ...) -> int override
+    auto open (const char*, int, ...) noexcept -> int override
     {
       return 0;
     }
 
-    auto close (int) -> int override
+    auto close (int) noexcept -> int override
     {
       return 0;
     }
 
-    auto fopen (const char*, const char*) -> FILE* override
+    auto fopen (const char*, const char*) noexcept -> FILE* override
     {
       return nullptr;
     }
 
-    auto fputs (const char* str, FILE* stream) -> int override
+    auto fputs (const char* str, FILE* stream) noexcept -> int override
     {
       return std::fputs(str, stream);
     }
 
-    auto fclose (FILE*) -> int override
+    auto fclose (FILE*) noexcept -> int override
     {
       return 0;
     }
 
-    auto putchar (int c) -> int override
+    auto putchar (int c) noexcept -> int override
     {
 #if defined(__sun) && defined(__SVR4)
       return std::putchar(char(c));
@@ -501,62 +501,67 @@ class FWidgetTest::FSystemTest : public finalcut::FSystem
 #endif
     }
 
-    auto sigaction (int, const struct sigaction*, struct sigaction*) -> int override
+    auto putstring (const char* str, std::size_t len) noexcept -> int
+    {
+      return std::fwrite(str, 1, len, stdout);
+    }
+
+    auto sigaction (int, const struct sigaction*, struct sigaction*) noexcept -> int override
     {
       return 0;
     }
 
-    auto timer_create (clockid_t, struct sigevent*, timer_t*) -> int override
+    auto timer_create (clockid_t, struct sigevent*, timer_t*) noexcept -> int override
     {
       return 0;
     }
 
     auto timer_settime ( timer_t, int
                        , const struct itimerspec*
-                       , struct itimerspec* ) -> int override
+                       , struct itimerspec* ) noexcept -> int override
     {
       return 0;
     }
 
-    auto timer_delete (timer_t) -> int override
+    auto timer_delete (timer_t) noexcept -> int override
     {
       return 0;
     }
 
-    auto kqueue() -> int override
+    auto kqueue() noexcept -> int override
     {
       return 0;
     }
 
     auto kevent ( int, const struct kevent*
                 , int, struct kevent*
-                , int, const struct timespec* ) -> int override
+                , int, const struct timespec* ) noexcept -> int override
     {
       return 0;
     }
 
-    auto getuid() -> uid_t override
+    auto getuid() noexcept -> uid_t override
     {
       return 0;
     }
 
-    auto geteuid() -> uid_t override
+    auto geteuid() noexcept -> uid_t override
     {
       return 0;
     }
 
     auto getpwuid_r ( uid_t, struct passwd*, char*
-                   , size_t, struct passwd** ) -> int override
+                   , size_t, struct passwd** ) noexcept -> int override
     {
       return 0;
     }
 
-    auto realpath (const char*, char*) -> char* override
+    auto realpath (const char*, char*) noexcept -> char* override
     {
       return const_cast<char*>("");
     }
 
-    void setScreenSize (finalcut::FSize size)
+    void setScreenSize (finalcut::FSize size) noexcept
     {
       screen_size = size;
     }

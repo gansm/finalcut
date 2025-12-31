@@ -78,7 +78,7 @@ class FTermcap final
     // Using-declaration
     using TCapMapType = std::array<TCapMap, 86>;
     using PutCharFunc = std::decay_t<int(int)>;
-    using PutStringFunc = std::decay_t<int(const std::string&)>;
+    using PutStringFunc = std::decay_t<int(const char*, uInt32)>;
 
     // Constructors
     FTermcap() = default;
@@ -91,8 +91,8 @@ class FTermcap final
     static auto  encodeMotionParameter (const std::string&, int, int) -> std::string;
     template <typename... Args>
     static auto  encodeParameter (const std::string&, Args&&...) -> std::string;
-    static auto  paddingPrint (const std::string&, int) -> Status;
-    static auto  stringPrint (const std::string&) -> Status;
+    static auto  paddingPrint (const char*, uInt32, int) -> Status;
+    static auto  stringPrint (const char*, uInt32) -> Status;
 
     // Inquiry
     static auto  isInitialized() noexcept -> bool;
@@ -143,10 +143,10 @@ class FTermcap final
                               , const std::array<int, 9>& ) -> std::string;
     static auto  hasDelay (const std::string&) noexcept -> bool;
     static void  delayOutput (int) noexcept;
-    static auto  readNumber (string_iterator&, int, bool&) noexcept -> int;
-    static void  readDigits (string_iterator&, int&) noexcept;
-    static void  decimalPoint (string_iterator&, int&) noexcept;
-    static void  asteriskSlash (string_iterator&, int&, int, bool&) noexcept;
+    static auto  readNumber (char*&, int, bool&) noexcept -> int;
+    static void  readDigits (char*&, int&) noexcept;
+    static void  decimalPoint (char*&, int&) noexcept;
+    static void  asteriskSlash (char*&, int&, int, bool&) noexcept;
 
     // Data member
     static bool          initialized;

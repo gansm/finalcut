@@ -56,13 +56,8 @@ auto isReverseNewFontchar (wchar_t) -> bool;
 auto hasFullWidthSupports() -> bool;
 auto cp437_to_unicode (uChar) -> wchar_t;
 auto unicode_to_cp437 (wchar_t) -> uChar;
-
-#if defined(__CYGWIN__)
-  auto unicode_to_utf8 (wchar_t ucs) -> std::string;
-#else
-  auto unicode_to_utf8 (wchar_t ucs) -> std::string;
-#endif
-
+auto unicode_to_utf8 (wchar_t) -> UTF8_Char;
+auto unicode_to_utf8_string (wchar_t) -> std::string;
 auto getFullWidth (const FString&) -> FString;
 auto getHalfWidth (const FString&) -> FString;
 auto getColumnSubString (const FString&, std::size_t, std::size_t) -> FString;

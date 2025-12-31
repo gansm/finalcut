@@ -198,15 +198,16 @@ auto FTermcap::encodeMotionParameter (const std::string& cap, int col, int row) 
 }
 
 //----------------------------------------------------------------------
-auto FTermcap::paddingPrint (const std::string& string, int affcnt) -> Status
+auto FTermcap::paddingPrint (const char* string, uInt32 len, int affcnt) -> Status
 {
-  if ( string.empty() || ! outc )
+  if ( ! string || len == 0 || ! outc )
     return Status::Error;
 
   bool has_delay = hasDelay(string);
-  auto iter = string.cbegin();
+  auto iter = const_cast<char*>(string);
+  auto end = string + len;
 
-  while ( iter != string.cend() )
+  while ( iter != end )
   {
     if ( *iter != '$' )
     {
@@ -217,11 +218,11 @@ auto FTermcap::paddingPrint (const std::string& string, int affcnt) -> Status
 
     ++iter;
 
-    if ( iter == string.cend() || *iter != '<' )
+    if ( iter == end || *iter != '<' )
     {
       outc (int('$'));
 
-      if ( iter != string.cend() )
+      if ( iter != end )
         outc (int(*iter));
       else
         break;
@@ -249,12 +250,12 @@ auto FTermcap::paddingPrint (const std::string& string, int affcnt) -> Status
 }
 
 //----------------------------------------------------------------------
-auto FTermcap::stringPrint (const std::string& string) -> Status
+auto FTermcap::stringPrint (const char* string, uInt32 len) -> Status
 {
-  if ( string.empty() || ! outs )
+  if ( ! string || len == 0 || ! outs )
     return Status::Error;
 
-  return outs(string) >= 0 ? Status::OK : Status::Error;
+  return outs(string, len) >= 0 ? Status::OK : Status::Error;
 }
 
 //----------------------------------------------------------------------
@@ -280,9 +281,9 @@ void FTermcap::setDefaultPutStringFunction()
 {
   static const auto& fsys = FSystem::getInstance();
   auto put_string = \
-      [] (const std::string& string) noexcept
+      [] (const char* string, uInt32 len) noexcept
       {
-        return fsys->fputs(string.c_str(), stdout);
+        return fsys->putstring(string, len);
       };
   outs = put_string;
 }
@@ -512,7 +513,7 @@ inline auto FTermcap::hasDelay (const std::string& string) noexcept -> bool
 }
 
 //----------------------------------------------------------------------
-inline auto FTermcap::readNumber ( string_iterator& iter, int affcnt
+inline auto FTermcap::readNumber ( char*& iter, int affcnt
                                  , bool& has_delay) noexcept -> int
 {
   ++iter;
@@ -536,7 +537,7 @@ inline auto FTermcap::readNumber ( string_iterator& iter, int affcnt
 }
 
 //----------------------------------------------------------------------
-inline void FTermcap::readDigits (string_iterator& iter, int& number) noexcept
+inline void FTermcap::readDigits (char*& iter, int& number) noexcept
 {
   int digit{};
 
@@ -550,7 +551,7 @@ inline void FTermcap::readDigits (string_iterator& iter, int& number) noexcept
 }
 
 //----------------------------------------------------------------------
-inline void FTermcap::decimalPoint (string_iterator& iter, int& number) noexcept
+inline void FTermcap::decimalPoint (char*& iter, int& number) noexcept
 {
   if ( *iter != '.' )
     return;
@@ -568,7 +569,7 @@ inline void FTermcap::decimalPoint (string_iterator& iter, int& number) noexcept
 }
 
 //----------------------------------------------------------------------
-inline void FTermcap::asteriskSlash ( string_iterator& iter
+inline void FTermcap::asteriskSlash ( char*& iter
                                     , int& number, int affcnt, bool& has_delay ) noexcept
 {
   while ( *iter == '*' || *iter == '/' )

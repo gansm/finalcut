@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2023 Markus Gans                                      *
+* Copyright 2019-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -86,12 +86,12 @@ class FSystemImpl : public FSystem
 
     // Methods
 #if defined(ISA_SYSCTL_SUPPORT)
-    inline auto inPortByte (uShort port) -> uChar override
+    inline auto inPortByte (uShort port) noexcept -> uChar override
     {
       return ::inb (port);
     }
 #else
-    inline uChar inPortByte (uShort) override
+    inline uChar inPortByte (uShort) noexcept override
     {
       return 0;
     }
@@ -99,21 +99,21 @@ class FSystemImpl : public FSystem
 
 
 #if defined(ISA_SYSCTL_SUPPORT)
-    inline void outPortByte (uChar value, uShort port) override
+    inline void outPortByte (uChar value, uShort port) noexcept override
     {
       ::outb (value, port);
     }
 #else
-    inline void outPortByte (uChar, uShort) override
+    inline void outPortByte (uChar, uShort) noexcept override
     { }
 #endif
 
-    inline auto isTTY (int file_descriptor) const -> int override
+    inline auto isTTY (int file_descriptor) const noexcept -> int override
     {
       return ::isatty(file_descriptor);
     }
 
-    inline auto ioctl (int file_descriptor, uLong request, ...) -> int override
+    inline auto ioctl (int file_descriptor, uLong request, ...) noexcept -> int override
     {
       va_list args{};
       va_start (args, request);
@@ -123,12 +123,12 @@ class FSystemImpl : public FSystem
       return ret;
     }
 
-    inline auto pipe (PipeData& pipe) -> int override
+    inline auto pipe (PipeData& pipe) noexcept -> int override
     {
       return ::pipe(pipe.getArrayData());
     }
 
-    inline auto open (const char* pathname, int flags, ...) -> int override
+    inline auto open (const char* pathname, int flags, ...) noexcept -> int override
     {
       va_list args{};
       va_start (args, flags);
@@ -138,12 +138,12 @@ class FSystemImpl : public FSystem
       return ret;
     }
 
-    inline auto close (int file_descriptor) -> int override
+    inline auto close (int file_descriptor) noexcept -> int override
     {
       return ::close(file_descriptor);
     }
 
-    inline auto fopen (const char* path, const char* mode) -> FILE* override
+    inline auto fopen (const char* path, const char* mode) noexcept -> FILE* override
     {
       return std::fopen (path, mode);
     }
@@ -153,47 +153,52 @@ class FSystemImpl : public FSystem
       return std::fclose (file_ptr);
     }
 
-    inline auto fputs (const char* str, FILE* stream) -> int override
+    inline auto fputs (const char* str, FILE* stream) noexcept -> int override
     {
       return std::fputs (str, stream);
     }
 
-    inline auto putchar (int c) -> int override
+    inline auto putchar (int c) noexcept -> int override
     {
 #if defined(__sun) && defined(__SVR4)
       return std::putchar(char(c));
 #else
-      return std::putchar(c);
+      return std::putc(c, stdout);
 #endif
     }
 
+    inline auto putstring (const char* str, std::size_t len) noexcept -> int override
+    {
+      return std::fwrite(str, 1, len, stdout);
+    }
+
     auto sigaction ( int, const struct sigaction*
-                   , struct sigaction* ) -> int override;
+                   , struct sigaction* ) noexcept -> int override;
     auto timer_create ( clockid_t, struct sigevent*
-                      , timer_t* ) -> int override;
+                      , timer_t* ) noexcept -> int override;
     auto timer_settime ( timer_t, int
                        , const struct itimerspec*
-                       , struct itimerspec* ) -> int override;
-    auto timer_delete (timer_t) -> int override;
-    auto kqueue() -> int override;
+                       , struct itimerspec* ) noexcept -> int override;
+    auto timer_delete (timer_t) noexcept -> int override;
+    auto kqueue() noexcept -> int override;
     auto kevent ( int, const struct ::kevent*
                 , int, struct ::kevent*
-                , int, const struct timespec* ) -> int override;
+                , int, const struct timespec* ) noexcept -> int override;
 
-    inline auto getuid() -> uid_t override
+    inline auto getuid() noexcept -> uid_t override
     {
       return ::getuid();
     }
 
-    inline auto geteuid() -> uid_t override
+    inline auto geteuid() noexcept -> uid_t override
     {
       return ::geteuid();
     }
 
     auto getpwuid_r ( uid_t, struct passwd*, char*, size_t
-                    , struct passwd** ) -> int override;
+                    , struct passwd** ) noexcept -> int override;
 
-    auto realpath (const char*, char*) -> char* override;
+    auto realpath (const char*, char*) noexcept -> char* override;
 };
 
 }  // namespace finalcut

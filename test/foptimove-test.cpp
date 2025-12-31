@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2024 Markus Gans                                      *
+* Copyright 2018-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -170,7 +170,7 @@ FOptiMoveTest::FOptiMoveTest()
 {
   finalcut::FTermcap::init();
   finalcut::FTermcap::setPutCharFunction (::putchar);
-  auto putstr = [] (const std::string& s){ return ::fputs(s.c_str(), stdout); };
+  auto putstr = [] (const char* str, uInt32){ return ::fputs(str, stdout); };
   finalcut::FTermcap::setPutStringFunction (putstr);
 }
 

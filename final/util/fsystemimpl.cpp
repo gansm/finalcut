@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2023 Markus Gans                                      *
+* Copyright 2019-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -56,7 +56,7 @@ FSystemImpl::~FSystemImpl() noexcept = default;  // destructor
 
 auto FSystemImpl::sigaction ( int signum
                             , const struct sigaction* act
-                            , struct sigaction* oldact ) -> int
+                            , struct sigaction* oldact ) noexcept -> int
 {
   return ::sigaction (signum, act, oldact);
 }
@@ -66,7 +66,7 @@ auto FSystemImpl::sigaction ( int signum
 
 auto FSystemImpl::timer_create ( clockid_t clockid
                                , struct sigevent* sevp
-                               , timer_t* timerid ) -> int
+                               , timer_t* timerid ) noexcept -> int
 {
   return ::timer_create (clockid, sevp, timerid);
 }
@@ -75,7 +75,7 @@ auto FSystemImpl::timer_create ( clockid_t clockid
 
 auto FSystemImpl::timer_create ( clockid_t
                                , struct sigevent*
-                               , timer_t* ) -> int
+                               , timer_t* ) noexcept -> int
 {
   return 0;
 }
@@ -87,7 +87,7 @@ auto FSystemImpl::timer_create ( clockid_t
 
 auto FSystemImpl::timer_settime ( timer_t timer_id, int flags
                                 , const struct itimerspec* new_value
-                                , struct itimerspec* old_value ) -> int
+                                , struct itimerspec* old_value ) noexcept -> int
 {
   return ::timer_settime(timer_id, flags, new_value, old_value);
 }
@@ -96,7 +96,7 @@ auto FSystemImpl::timer_settime ( timer_t timer_id, int flags
 
 auto FSystemImpl::timer_settime ( timer_t, int
                                 , const struct itimerspec*
-                                , struct itimerspec* ) -> int
+                                , struct itimerspec* ) noexcept -> int
 {
   return 0;
 }
@@ -106,14 +106,14 @@ auto FSystemImpl::timer_settime ( timer_t, int
 //----------------------------------------------------------------------
 #if defined(USE_POSIX_TIMER)
 
-auto FSystemImpl::timer_delete (timer_t timer_id) -> int
+auto FSystemImpl::timer_delete (timer_t timer_id) noexcept -> int
 {
   return ::timer_delete (timer_id);
 }
 
 #else
 
-auto FSystemImpl::timer_delete (timer_t) -> int
+auto FSystemImpl::timer_delete (timer_t) noexcept -> int
 {
   return 0;
 }
@@ -124,14 +124,14 @@ auto FSystemImpl::timer_delete (timer_t) -> int
 
 #if defined(USE_KQUEUE_TIMER)
 
-auto FSystemImpl::kqueue() -> int
+auto FSystemImpl::kqueue() noexcept -> int
 {
   return ::kqueue();
 }
 
 #else
 
-auto FSystemImpl::kqueue() -> int
+auto FSystemImpl::kqueue() noexcept -> int
 {
   return 0;
 }
@@ -143,7 +143,7 @@ auto FSystemImpl::kqueue() -> int
 
 auto FSystemImpl::kevent ( int kq, const struct kevent* changelist
                          , int nchanges, struct kevent* eventlist
-                         , int nevents, const struct timespec* timeout) -> int
+                         , int nevents, const struct timespec* timeout) noexcept -> int
 {
   return ::kevent (kq, changelist, nchanges, eventlist, nevents, timeout);
 }
@@ -152,7 +152,7 @@ auto FSystemImpl::kevent ( int kq, const struct kevent* changelist
 
 auto FSystemImpl::kevent ( int, const struct kevent*
                          , int, struct kevent*
-                         , int, const struct timespec* ) -> int
+                         , int, const struct timespec* ) noexcept -> int
 {
   return 0;
 }
@@ -162,13 +162,13 @@ auto FSystemImpl::kevent ( int, const struct kevent*
 //----------------------------------------------------------------------
 auto FSystemImpl::getpwuid_r ( uid_t uid, struct passwd* pwd
                              , char* buf, size_t buflen
-                             , struct passwd** result ) -> int
+                             , struct passwd** result ) noexcept -> int
 {
   return ::getpwuid_r (uid, pwd, buf, buflen, result);
 }
 
 //----------------------------------------------------------------------
-auto FSystemImpl::realpath (const char* path, char* resolved_path) -> char*
+auto FSystemImpl::realpath (const char* path, char* resolved_path) noexcept -> char*
 {
   return ::realpath(path, resolved_path);
 }

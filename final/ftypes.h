@@ -53,8 +53,6 @@
   #define USE_POSIX_TIMER
 #endif
 
-#define null nullptr
-
 #ifdef __has_builtin
   #define HAVE_BUILTIN(x) __has_builtin(x)
 #else
@@ -258,6 +256,22 @@ using enable_if_arithmetic_without_char_t =
                  && ! std::is_same<char, NumT>::value
                  , std::nullptr_t>;
 
+struct UTF8_Char
+{
+  char u8char[4];
+  uInt32 length;
+};
+
+constexpr auto operator == (const UTF8_Char& lhs, const UTF8_Char& rhs) noexcept -> bool
+{
+  return std::memcmp(&lhs, &rhs, sizeof(UTF8_Char)) == 0;
+}
+
+constexpr auto operator != (const UTF8_Char& lhs, const UTF8_Char& rhs) noexcept -> bool
+{
+  return ! ( lhs == rhs );
+}
+
 struct TCapAttributes
 {
   uInt8 p1 : 1;  // Standout
@@ -413,10 +427,6 @@ union FCellColor
 #if HAVE_BUILTIN(__builtin_bit_cast)
 constexpr auto isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool
 {
-  // Check sizes first for early exit if sizes don't match
-  if ( lhs.size() != rhs.size() )
-    return false;
-
   // Perform a byte-wise comparison
 #if __cplusplus >= 201703L
   return std::memcmp(lhs.cbegin(), rhs.cbegin(), lhs.size() * sizeof(wchar_t)) == 0;
@@ -453,10 +463,10 @@ inline auto getCompareBitMask() noexcept -> uInt32
 //----------------------------------------------------------------------
 struct alignas(std::max_align_t) FChar
 {
-  FUnicode   ch{};            // Character code
-  FUnicode   encoded_char{};  // Encoded output character
-  FCellColor color{};         // Foreground and background color
-  FAttribute attr{};          // Attributes
+  alignas(16) FUnicode   ch{};            // Character code
+  alignas(16) FUnicode   encoded_char{};  // Encoded output character
+  FCellColor color{};                     // Foreground and background color
+  FAttribute attr{};                      // Attributes
 
 #if HAVE_BUILTIN(__builtin_bit_cast)
   friend constexpr

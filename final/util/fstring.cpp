@@ -1185,7 +1185,7 @@ inline auto FString::internal_isOverflowed ( Sign sign
                                                       : LONG_MAX_LIMIT_DIGIT;
   return ( value > LONG_LIMIT )
       || ( value == LONG_LIMIT && digit > limit_digit );
-};
+}
 
 //----------------------------------------------------------------------
 inline auto FString::internal_isOverflowed ( uLong value
@@ -1193,7 +1193,7 @@ inline auto FString::internal_isOverflowed ( uLong value
 {
   return ( value > ULONG_LIMIT )
       || ( value == ULONG_LIMIT && digit > ULONG_LIMIT_DIGIT );
-};
+}
 
 
 // FString non-member operators

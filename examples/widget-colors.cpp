@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2024 Markus Gans                                           *
+* Copyright 2024-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -759,7 +759,7 @@ void TextWindow::appendColorLine (T&& line, Args... args)
   auto last_line_index = scrolltext.getRows();
   scrolltext.append(std::forward<T>(line));
 
-  for (const auto hgl : {args...})
+  for (const auto& hgl : {args...})
   {
     scrolltext.addHighlight (last_line_index, hgl);
   }

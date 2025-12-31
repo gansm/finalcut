@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021-2022 Markus Gans                                      *
+* Copyright 2021-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -336,374 +336,741 @@ void FTermFunctionsTest::utf8Test()
   //-----------------
   // 1 byte character
   //-----------------
+
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'\0')
+                   == finalcut::UTF8_Char({{'\0', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'\0')
+                   != finalcut::UTF8_Char({{'\0', '\0', '\0', '\0'}, 4}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'\0')
+                   != finalcut::UTF8_Char({{'\0', '\0', '\0', '\1'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'\0')
                    == std::string({char(0x00)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'\b')
+                   == finalcut::UTF8_Char({{'\b', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'\b')
                    == std::string({char(0x08)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L' ')
+                   == finalcut::UTF8_Char({{' ', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L' ')
                    == std::string({char(0x20)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'!')
+                   == finalcut::UTF8_Char({{'!', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'!')
                    == std::string({char(0x21)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'"')
+                   == finalcut::UTF8_Char({{'"', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'"')
                    == std::string({char(0x22)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'#')
+                   == finalcut::UTF8_Char({{'#', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'#')
                    == std::string({char(0x23)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'$')
+                   == finalcut::UTF8_Char({{'$', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'$')
                    == std::string({char(0x24)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'%')
+                   == finalcut::UTF8_Char({{'%', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'%')
                    == std::string({char(0x25)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'&')
+                   == finalcut::UTF8_Char({{'&', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'&')
                    == std::string({char(0x26)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'\'')
+                   == finalcut::UTF8_Char({{'\'', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'\'')
                    == std::string({char(0x27)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'(')
+                   == finalcut::UTF8_Char({{'(', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'(')
                    == std::string({char(0x28)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L')')
+                   == finalcut::UTF8_Char({{')', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L')')
                    == std::string({char(0x29)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'*')
+                   == finalcut::UTF8_Char({{'*', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'*')
                    == std::string({char(0x2a)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'+')
+                   == finalcut::UTF8_Char({{'+', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'+')
                    == std::string({char(0x2b)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L',')
+                   == finalcut::UTF8_Char({{',', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L',')
                    == std::string({char(0x2c)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'-')
+                   == finalcut::UTF8_Char({{'-', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'-')
                    == std::string({char(0x2d)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'.')
+                   == finalcut::UTF8_Char({{'.', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'.')
                    == std::string({char(0x2e)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'/')
+                   == finalcut::UTF8_Char({{'/', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'/')
                    == std::string({char(0x2f)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'0')
+                   == finalcut::UTF8_Char({{'0', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'0')
                    == std::string({char(0x30)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'1')
+                   == finalcut::UTF8_Char({{'1', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'1')
                    == std::string({char(0x31)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'2')
+                   == finalcut::UTF8_Char({{'2', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'2')
                    == std::string({char(0x32)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'3')
+                   == finalcut::UTF8_Char({{'3', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'3')
                    == std::string({char(0x33)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'4')
+                   == finalcut::UTF8_Char({{'4', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'4')
                    == std::string({char(0x34)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'5')
+                   == finalcut::UTF8_Char({{'5', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'5')
                    == std::string({char(0x35)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'6')
+                   == finalcut::UTF8_Char({{'6', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'6')
                    == std::string({char(0x36)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'7')
+                   == finalcut::UTF8_Char({{'7', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'7')
                    == std::string({char(0x37)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'8')
+                   == finalcut::UTF8_Char({{'8', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'8')
                    == std::string({char(0x38)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'9')
+                   == finalcut::UTF8_Char({{'9', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'9')
                    == std::string({char(0x39)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L':')
+                   == finalcut::UTF8_Char({{':', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L':')
                    == std::string({char(0x3a)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L';')
+                   == finalcut::UTF8_Char({{';', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L';')
                    == std::string({char(0x3b)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'<')
+                   == finalcut::UTF8_Char({{'<', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'<')
                    == std::string({char(0x3c)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'=')
+                   == finalcut::UTF8_Char({{'=', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'=')
                    == std::string({char(0x3d)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'>')
+                   == finalcut::UTF8_Char({{'>', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'>')
                    == std::string({char(0x3e)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'?')
+                   == finalcut::UTF8_Char({{'?', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'?')
                    == std::string({char(0x3f)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'@')
+                   == finalcut::UTF8_Char({{'@', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'@')
                    == std::string({char(0x40)}) );
   // Last 1 byte character
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'\177')
+                   == finalcut::UTF8_Char({{'\177', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'\177')
                    == std::string({char(0x7f)}) );
 
   //-----------------
   // 2 byte character
   //-----------------
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'\200')
+                   == finalcut::UTF8_Char({{'\302', '\200', '\0', '\0'}, 2}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'\200')
+                   != finalcut::UTF8_Char({{'\200', '\0', '\0', '\0'}, 1}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'\200')
                    == std::string({char(0xc2), char(0x80)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'ö')
+                   == finalcut::UTF8_Char({{'\303', '\266', '\0', '\0'}, 2}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'ö')
                    == std::string({char(0xc3), char(0xb6)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'æ')
+                   == finalcut::UTF8_Char({{'\303', '\246', '\0', '\0'}, 2}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'æ')
                    == std::string({char(0xc3), char(0xa6)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'ç')
+                   == finalcut::UTF8_Char({{'\303', '\247', '\0', '\0'}, 2}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'ç')
                    == std::string({char(0xc3), char(0xa7)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'è')
+                   == finalcut::UTF8_Char({{'\303', '\250', '\0', '\0'}, 2}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'è')
                    == std::string({char(0xc3), char(0xa8)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'é')
+                   == finalcut::UTF8_Char({{'\303', '\251', '\0', '\0'}, 2}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'é')
                    == std::string({char(0xc3), char(0xa9)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'ê')
+                   == finalcut::UTF8_Char({{'\303', '\252', '\0', '\0'}, 2}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'ê')
                    == std::string({char(0xc3), char(0xaa)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'ë')
+                   == finalcut::UTF8_Char({{'\303', '\253', '\0', '\0'}, 2}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'ë')
                    == std::string({char(0xc3), char(0xab)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'ì')
+                   == finalcut::UTF8_Char({{'\303', '\254', '\0', '\0'}, 2}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'ì')
                    == std::string({char(0xc3), char(0xac)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'í')
+                   == finalcut::UTF8_Char({{'\303', '\255', '\0', '\0'}, 2}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'í')
                    == std::string({char(0xc3), char(0xad)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'î')
+                   == finalcut::UTF8_Char({{'\303', '\256', '\0', '\0'}, 2}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'î')
                    == std::string({char(0xc3), char(0xae)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'ï')
+                   == finalcut::UTF8_Char({{'\303', '\257', '\0', '\0'}, 2}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'ï')
                    == std::string({char(0xc3), char(0xaf)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'ð')
+                   == finalcut::UTF8_Char({{'\303', '\260', '\0', '\0'}, 2}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'ð')
                    == std::string({char(0xc3), char(0xb0)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'ñ')
+                   == finalcut::UTF8_Char({{'\303', '\261', '\0', '\0'}, 2}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'ñ')
                    == std::string({char(0xc3), char(0xb1)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'ò')
+                   == finalcut::UTF8_Char({{'\303', '\262', '\0', '\0'}, 2}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'ò')
                    == std::string({char(0xc3), char(0xb2)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'ó')
+                   == finalcut::UTF8_Char({{'\303', '\263', '\0', '\0'}, 2}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'ó')
                    == std::string({char(0xc3), char(0xb3)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'ô')
+                   == finalcut::UTF8_Char({{'\303', '\264', '\0', '\0'}, 2}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'ô')
                    == std::string({char(0xc3), char(0xb4)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'õ')
+                   == finalcut::UTF8_Char({{'\303', '\265', '\0', '\0'}, 2}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'õ')
                    == std::string({char(0xc3), char(0xb5)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'ö')
+                   == finalcut::UTF8_Char({{'\303', '\266', '\0', '\0'}, 2}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'ö')
                    == std::string({char(0xc3), char(0xb6)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(wchar_t(finalcut::UniChar::Pi))
+                   == finalcut::UTF8_Char({{'\317', '\200', '\0', '\0'}, 2}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(wchar_t(finalcut::UniChar::Pi))
                    == std::string({char(0xcf), char(0x80)}) );
   // Last 2 byte character
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'\U000007ff')
+                   == finalcut::UTF8_Char({{'\337', '\277', '\0', '\0'}, 2}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'\U000007ff')
                    == std::string({char(0xdf), char(0xbf)}) );
 
   //-----------------
   // 3 byte character
   //-----------------
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'\U00000800')
+                   == finalcut::UTF8_Char({{'\340', '\240', '\200', '\0'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'\U00000800')
+                   != finalcut::UTF8_Char({{'\340', '\200', '\200', '\0'}, 2}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'\U00000800')
                    == std::string({char(0xe0), char(0xa0), char(0x80)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'ࡔ')
+                   == finalcut::UTF8_Char({{'\340', '\241', '\224', '\0'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'ࡔ')
                    == std::string({char(0xe0), char(0xa1), char(0x94)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'←')
+                   == finalcut::UTF8_Char({{'\342', '\206', '\220', '\0'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'←')
                    == std::string({char(0xe2), char(0x86), char(0x90)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'↑')
+                   == finalcut::UTF8_Char({{'\342', '\206', '\221', '\0'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'↑')
                    == std::string({char(0xe2), char(0x86), char(0x91)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'→')
+                   == finalcut::UTF8_Char({{'\342', '\206', '\222', '\0'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'→')
                    == std::string({char(0xe2), char(0x86), char(0x92)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'↓')
+                   == finalcut::UTF8_Char({{'\342', '\206', '\223', '\0'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'↓')
                    == std::string({char(0xe2), char(0x86), char(0x93)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'↔')
+                   == finalcut::UTF8_Char({{'\342', '\206', '\224', '\0'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'↔')
                    == std::string({char(0xe2), char(0x86), char(0x94)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'↕')
+                   == finalcut::UTF8_Char({{'\342', '\206', '\225', '\0'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'↕')
                    == std::string({char(0xe2), char(0x86), char(0x95)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'↖')
+                   == finalcut::UTF8_Char({{'\342', '\206', '\226', '\0'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'↖')
                    == std::string({char(0xe2), char(0x86), char(0x96)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'↗')
+                   == finalcut::UTF8_Char({{'\342', '\206', '\227', '\0'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'↗')
                    == std::string({char(0xe2), char(0x86), char(0x97)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'↘')
+                   == finalcut::UTF8_Char({{'\342', '\206', '\230', '\0'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'↘')
                    == std::string({char(0xe2), char(0x86), char(0x98)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'↙')
+                   == finalcut::UTF8_Char({{'\342', '\206', '\231', '\0'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'↙')
                    == std::string({char(0xe2), char(0x86), char(0x99)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'↚')
+                   == finalcut::UTF8_Char({{'\342', '\206', '\232', '\0'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'↚')
                    == std::string({char(0xe2), char(0x86), char(0x9a)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'↛')
+                   == finalcut::UTF8_Char({{'\342', '\206', '\233', '\0'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'↛')
                    == std::string({char(0xe2), char(0x86), char(0x9b)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'↜')
+                   == finalcut::UTF8_Char({{'\342', '\206', '\234', '\0'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'↜')
                    == std::string({char(0xe2), char(0x86), char(0x9c)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'↝')
+                   == finalcut::UTF8_Char({{'\342', '\206', '\235', '\0'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'↝')
                    == std::string({char(0xe2), char(0x86), char(0x9d)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'↞')
+                   == finalcut::UTF8_Char({{'\342', '\206', '\236', '\0'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'↞')
                    == std::string({char(0xe2), char(0x86), char(0x9e)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'↟')
+                   == finalcut::UTF8_Char({{'\342', '\206', '\237', '\0'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'↟')
                    == std::string({char(0xe2), char(0x86), char(0x9f)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'↠')
+                   == finalcut::UTF8_Char({{'\342', '\206', '\240', '\0'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'↠')
                    == std::string({char(0xe2), char(0x86), char(0xa0)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'☕')
+                   == finalcut::UTF8_Char({{'\342', '\230', '\225', '\0'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'☕')
                    == std::string({char(0xe2), char(0x98), char(0x95)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'㉟')
+                   == finalcut::UTF8_Char({{'\343', '\211', '\237', '\0'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'㉟')
                    == std::string({char(0xe3), char(0x89), char(0x9f)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'䷀')
+                   == finalcut::UTF8_Char({{'\344', '\267', '\200', '\0'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'䷀')
                    == std::string({char(0xe4), char(0xb7), char(0x80)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'頉')
+                   == finalcut::UTF8_Char({{'\351', '\240', '\211', '\0'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'頉')
                    == std::string({char(0xe9), char(0xa0), char(0x89)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'ꫦ')
+                   == finalcut::UTF8_Char({{'\352', '\253', '\246', '\0'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'ꫦ')
                    == std::string({char(0xea), char(0xab), char(0xa6)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'')
+                   == finalcut::UTF8_Char({{'\356', '\200', '\200', '\0'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'')
                    == std::string({char(0xee), char(0x80), char(0x80)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(wchar_t(finalcut::UniChar::Euro))
+                   == finalcut::UTF8_Char({{'\342', '\202', '\254', '\0'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(wchar_t(finalcut::UniChar::Euro))
                    == std::string({char(0xe2), char(0x82), char(0xac)}) );
 
   // Private Use Area
   auto newfont_char_e1b3 = finalcut::UniChar::NF_border_line_vertical;
+
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(wchar_t(newfont_char_e1b3))
+                   == finalcut::UTF8_Char({{'\356', '\206', '\263', '\0'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(wchar_t(newfont_char_e1b3))
                    == std::string({char(0xee), char(0x86), char(0xb3)}) );
 
   auto newfont_char_e1f9 = finalcut::UniChar::NF_Bullet;
+
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(wchar_t(newfont_char_e1f9))
+                   == finalcut::UTF8_Char({{'\356', '\207', '\271', '\0'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(wchar_t(newfont_char_e1f9))
                    == std::string({char(0xee), char(0x87), char(0xb9)}) );
 
   auto newfont_char_e1fc = finalcut::UniChar::NF_x_superior;
+
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(wchar_t(newfont_char_e1fc))
+                   == finalcut::UTF8_Char({{'\356', '\207', '\274', '\0'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(wchar_t(newfont_char_e1fc))
                    == std::string({char(0xee), char(0x87), char(0xbc)}) );
 
   // Replacement character
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'�')
+                   == finalcut::UTF8_Char({{'\357', '\277', '\275', '\0'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'�')
                    == std::string({char(0xef), char(0xbf), char(0xbd)}) );
 
   // Last 3 byte character
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'\U0000ffff')
+                   == finalcut::UTF8_Char({{'\357', '\277', '\277', '\0'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'\U0000ffff')
                    == std::string({char(0xef), char(0xbf), char(0xbf)}) );
 
   //-----------------
   // 4 byte character
   //-----------------
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'\U00010000')
-                   == std::string({char(0xf0), char(0x90), char(0x80), char(0x80),}) );
+                   == finalcut::UTF8_Char({{'\360', '\220', '\200', '\200'}, 4}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'\U00010000')
+                   != finalcut::UTF8_Char({{'\360', '\200', '\200', '\200'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'\U00010000')
+                   == std::string({char(0xf0), char(0x90), char(0x80), char(0x80)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'𐎈')
-                   == std::string({char(0xf0), char(0x90), char(0x8e), char(0x88),}) );
+                   == finalcut::UTF8_Char({{'\360', '\220', '\216', '\210'}, 4}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'𐎈')
+                   == std::string({char(0xf0), char(0x90), char(0x8e), char(0x88)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'𖥕')
-                   == std::string({char(0xf0), char(0x96), char(0xa5), char(0x95),}) );
+                   == finalcut::UTF8_Char({{'\360', '\226', '\245', '\225'}, 4}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'𖥕')
+                   == std::string({char(0xf0), char(0x96), char(0xa5), char(0x95)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'𛊹')
-                   == std::string({char(0xf0), char(0x9b), char(0x8a), char(0xb9),}) );
+                   == finalcut::UTF8_Char({{'\360', '\233', '\212', '\271'}, 4}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'𛊹')
+                   == std::string({char(0xf0), char(0x9b), char(0x8a), char(0xb9)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'🂱')
-                   == std::string({char(0xf0), char(0x9f), char(0x82), char(0xb1),}) );
+                   == finalcut::UTF8_Char({{'\360', '\237', '\202', '\261'}, 4}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'🂱')
+                   == std::string({char(0xf0), char(0x9f), char(0x82), char(0xb1)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'😀')
-                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x80),}) );
+                   == finalcut::UTF8_Char({{'\360', '\237', '\230', '\200'}, 4}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'😀')
+                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x80)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'😁')
-                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x81),}) );
+                   == finalcut::UTF8_Char({{'\360', '\237', '\230', '\201'}, 4}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'😁')
+                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x81)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'😂')
-                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x82),}) );
+                   == finalcut::UTF8_Char({{'\360', '\237', '\230', '\202'}, 4}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'😂')
+                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x82)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'😃')
-                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x83),}) );
+                   == finalcut::UTF8_Char({{'\360', '\237', '\230', '\203'}, 4}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'😃')
+                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x83)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'😄')
-                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x84),}) );
+                   == finalcut::UTF8_Char({{'\360', '\237', '\230', '\204'}, 4}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'😄')
+                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x84)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'😅')
-                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x85),}) );
+                   == finalcut::UTF8_Char({{'\360', '\237', '\230', '\205'}, 4}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'😅')
+                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x85)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'😆')
-                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x86),}) );
+                   == finalcut::UTF8_Char({{'\360', '\237', '\230', '\206'}, 4}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'😆')
+                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x86)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'😇')
-                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x87),}) );
+                   == finalcut::UTF8_Char({{'\360', '\237', '\230', '\207'}, 4}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'😇')
+                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x87)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'😈')
-                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x88),}) );
+                   == finalcut::UTF8_Char({{'\360', '\237', '\230', '\210'}, 4}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'😈')
+                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x88)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'😉')
-                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x89),}) );
+                   == finalcut::UTF8_Char({{'\360', '\237', '\230', '\211'}, 4}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'😉')
+                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x89)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'😊')
-                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x8a),}) );
+                   == finalcut::UTF8_Char({{'\360', '\237', '\230', '\212'}, 4}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'😊')
+                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x8a)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'😋')
-                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x8b),}) );
+                   == finalcut::UTF8_Char({{'\360', '\237', '\230', '\213'}, 4}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'😋')
+                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x8b)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'😌')
-                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x8c),}) );
+                   == finalcut::UTF8_Char({{'\360', '\237', '\230', '\214'}, 4}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'😌')
+                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x8c)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'😍')
-                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x8d),}) );
+                   == finalcut::UTF8_Char({{'\360', '\237', '\230', '\215'}, 4}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'😍')
+                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x8d)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'😎')
-                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x8e),}) );
+                   == finalcut::UTF8_Char({{'\360', '\237', '\230', '\216'}, 4}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'😎')
+                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x8e)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'😏')
-                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x8f),}) );
+                   == finalcut::UTF8_Char({{'\360', '\237', '\230', '\217'}, 4}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'😏')
+                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x8f)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'😐')
-                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x90),}) );
+                   == finalcut::UTF8_Char({{'\360', '\237', '\230', '\220'}, 4}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'😐')
+                   == std::string({char(0xf0), char(0x9f), char(0x98), char(0x90)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'🦇')
-                   == std::string({char(0xf0), char(0x9f), char(0xa6), char(0x87),}) );
+                   == finalcut::UTF8_Char({{'\360', '\237', '\246', '\207'}, 4}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'🦇')
+                   == std::string({char(0xf0), char(0x9f), char(0xa6), char(0x87)}) );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'屮')
-                   == std::string({char(0xf0), char(0xaf), char(0xa1), char(0xb8),}) );
+                   == finalcut::UTF8_Char({{'\360', '\257', '\241', '\270'}, 4}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'屮')
+                   == std::string({char(0xf0), char(0xaf), char(0xa1), char(0xb8)}) );
 
   // Supplementary Private Use Area-A
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(L'\U000F0000')
-                   == std::string({char(0xf3), char(0xb0), char(0x80), char(0x80),}) );
+                   == finalcut::UTF8_Char({{'\363', '\260', '\200', '\200'}, 4}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(L'\U000F0000')
+                   == std::string({char(0xf3), char(0xb0), char(0x80), char(0x80)}) );
 
   // Last valid 4 byte character
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(wchar_t(0x1fffff))
-                   == std::string({char(0xf7), char(0xbf), char(0xbf), char(0xbf),}) );
+                   == finalcut::UTF8_Char({{'\367', '\277', '\277', '\277'}, 4}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(wchar_t(0x1fffff))
+                   == std::string({char(0xf7), char(0xbf), char(0xbf), char(0xbf)}) );
 
   // Invalid characters are mapped to the replacement character (U+FFFD)
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(wchar_t(0x200000))
+                   == finalcut::UTF8_Char({{'\357', '\277', '\275', '\0'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(wchar_t(0x200000))
                    == std::string({char(0xef), char(0xbf), char(0xbd)}) );
 
-  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(wchar_t(0x200000))
-                   == finalcut::unicode_to_utf8(L'�') );
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(wchar_t(0x200000))
+                   == finalcut::unicode_to_utf8_string(L'�') );
 
   CPPUNIT_ASSERT ( finalcut::unicode_to_utf8(wchar_t(INT_MAX))  // maximum 32-bit value
-                   == finalcut::unicode_to_utf8(L'�') );
+                   == finalcut::UTF8_Char({{'\357', '\277', '\275', '\0'}, 3}) );
+
+  CPPUNIT_ASSERT ( finalcut::unicode_to_utf8_string(wchar_t(INT_MAX))  // maximum 32-bit value
+                   == finalcut::unicode_to_utf8_string(L'�') );
 }
 
 //----------------------------------------------------------------------

@@ -64,37 +64,38 @@ class FSystemTest : public finalcut::FSystem
     FSystemTest() = default;
 
     // Methods
-    auto inPortByte (uShort) -> uChar override;
-    void outPortByte (uChar, uShort) override;
-    auto isTTY (int) const -> int override;
-    auto ioctl (int, uLong, ...) -> int override;
-    auto pipe (finalcut::PipeData&) -> int override;
-    auto open (const char*, int, ...) -> int override;
-    auto close (int) -> int override;
-    auto fopen (const char*, const char*) -> FILE* override;
-    auto fclose (FILE*) -> int override;
-    auto fputs (const char*, FILE*) -> int override;
-    auto putchar (int) -> int override;
+    auto inPortByte (uShort) noexcept -> uChar override;
+    void outPortByte (uChar, uShort) noexcept override;
+    auto isTTY (int) const noexcept -> int override;
+    auto ioctl (int, uLong, ...) noexcept -> int override;
+    auto pipe (finalcut::PipeData&) noexcept -> int override;
+    auto open (const char*, int, ...) noexcept -> int override;
+    auto close (int) noexcept -> int override;
+    auto fopen (const char*, const char*) noexcept -> FILE* override;
+    auto fclose (FILE*) noexcept -> int override;
+    auto fputs (const char*, FILE*) noexcept -> int override;
+    auto putchar (int) noexcept -> int override;
+    auto putstring (const char*, std::size_t) noexcept -> int override;
     auto sigaction ( int, const struct sigaction*
-                   , struct sigaction*) -> int override;
+                   , struct sigaction*) noexcept -> int override;
     auto timer_create ( clockid_t, struct sigevent*
-                      , timer_t* ) -> int override;
+                      , timer_t* ) noexcept -> int override;
     auto timer_settime ( timer_t, int
                        , const struct itimerspec*
-                       , struct itimerspec* ) -> int override;
-    auto timer_delete (timer_t) -> int override;
-    auto kqueue() -> int override;
+                       , struct itimerspec* ) noexcept -> int override;
+    auto timer_delete (timer_t) noexcept -> int override;
+    auto kqueue() noexcept -> int override;
     auto kevent ( int, const struct kevent*
                 , int, struct kevent*
-                , int, const struct timespec* ) -> int override;
-    auto getuid() -> uid_t override;
-    auto geteuid() -> uid_t override;
+                , int, const struct timespec* ) noexcept -> int override;
+    auto getuid() noexcept -> uid_t override;
+    auto geteuid() noexcept -> uid_t override;
     auto getpwuid_r ( uid_t, struct passwd*, char*
-                    , size_t, struct passwd** ) -> int override;
-    auto realpath (const char*, char*) -> char* override;
-    auto getCharacters() -> std::string&;
-    auto getCursorType() -> int&;
-    auto getTerminalKeymap() -> struct keymap_t&;
+                    , size_t, struct passwd** ) noexcept -> int override;
+    auto realpath (const char*, char*) noexcept -> char* override;
+    auto getCharacters() noexcept -> std::string&;
+    auto getCursorType() noexcept -> int&;
+    auto getTerminalKeymap() noexcept -> struct keymap_t&;
 
   private:
     // Data members
@@ -395,25 +396,25 @@ keymap_t FSystemTest::terminal_keymap{};
 
 // public methods of FSystemTest
 //----------------------------------------------------------------------
-auto FSystemTest::inPortByte (uShort) -> uChar
+auto FSystemTest::inPortByte (uShort) noexcept -> uChar
 {
   return 0;
 }
 
 //----------------------------------------------------------------------
-void FSystemTest::outPortByte (uChar, uShort)
+void FSystemTest::outPortByte (uChar, uShort) noexcept
 {
 }
 
 //----------------------------------------------------------------------
-auto FSystemTest::isTTY (int file_descriptor) const -> int
+auto FSystemTest::isTTY (int file_descriptor) const noexcept -> int
 {
   std::cerr << "Call: isatty (file_descriptor=" << file_descriptor << ")\n";
   return 1;
 }
 
 //----------------------------------------------------------------------
-auto FSystemTest::ioctl (int file_descriptor, uLong request, ...) -> int
+auto FSystemTest::ioctl (int file_descriptor, uLong request, ...) noexcept -> int
 {
   va_list args{};
   void* argp{};
@@ -493,7 +494,7 @@ auto FSystemTest::ioctl (int file_descriptor, uLong request, ...) -> int
 }
 
 //----------------------------------------------------------------------
-auto FSystemTest::pipe (finalcut::PipeData& pipe) -> int
+auto FSystemTest::pipe (finalcut::PipeData& pipe) noexcept -> int
 {
   std::cerr << "Call: pipe (pipefd={" << pipe.getReadFd() << ", "
             << pipe.getWriteFd() << "})\n";
@@ -501,7 +502,7 @@ auto FSystemTest::pipe (finalcut::PipeData& pipe) -> int
 }
 
 //----------------------------------------------------------------------
-auto FSystemTest::open (const char* pathname, int flags, ...) -> int
+auto FSystemTest::open (const char* pathname, int flags, ...) noexcept -> int
 {
   va_list args{};
   va_start (args, flags);
@@ -516,14 +517,14 @@ auto FSystemTest::open (const char* pathname, int flags, ...) -> int
 }
 
 //----------------------------------------------------------------------
-auto FSystemTest::close (int file_descriptor) -> int
+auto FSystemTest::close (int file_descriptor) noexcept -> int
 {
   std::cerr << "Call: close (file_descriptor=" << file_descriptor << ")\n";
   return 0;
 }
 
 //----------------------------------------------------------------------
-auto FSystemTest::fopen (const char* path, const char* mode) -> FILE*
+auto FSystemTest::fopen (const char* path, const char* mode) noexcept -> FILE*
 {
   std::cerr << "Call: fopen (path=" << path
             << ", mode=" << mode << ")\n";
@@ -531,14 +532,14 @@ auto FSystemTest::fopen (const char* path, const char* mode) -> FILE*
 }
 
 //----------------------------------------------------------------------
-auto FSystemTest::fclose (FILE* file_ptr) -> int
+auto FSystemTest::fclose (FILE* file_ptr) noexcept -> int
 {
   std::cerr << "Call: fclose (file_ptr=" << file_ptr << ")\n";
   return 0;
 }
 
 //----------------------------------------------------------------------
-auto FSystemTest::fputs (const char* str, FILE* stream) -> int
+auto FSystemTest::fputs (const char* str, FILE* stream) noexcept -> int
 {
   std::cerr << "Call: fputs (" << str << ", " << stream << ")\n";
   std::string string = str;
@@ -554,7 +555,7 @@ auto FSystemTest::fputs (const char* str, FILE* stream) -> int
 }
 
 //----------------------------------------------------------------------
-auto FSystemTest::putchar (int c) -> int
+auto FSystemTest::putchar (int c) noexcept -> int
 {
   std::cerr << "Call: putchar (" << c << ")\n";
   characters.push_back(char(c));
@@ -562,15 +563,21 @@ auto FSystemTest::putchar (int c) -> int
 }
 
 //----------------------------------------------------------------------
+auto FSystemTest::putstring (const char* str, std::size_t len) noexcept -> int
+{
+  return std::fwrite(str, 1, len, stdout);
+}
+
+//----------------------------------------------------------------------
 auto FSystemTest::sigaction ( int, const struct sigaction*
-                            , struct sigaction* ) -> int
+                            , struct sigaction* ) noexcept -> int
 {
   return 0;
 }
 
 //----------------------------------------------------------------------
 auto FSystemTest::timer_create ( clockid_t, struct sigevent*
-                               , timer_t* ) -> int
+                               , timer_t* ) noexcept -> int
 {
   return 0;
 }
@@ -578,19 +585,19 @@ auto FSystemTest::timer_create ( clockid_t, struct sigevent*
 //----------------------------------------------------------------------
 auto FSystemTest::timer_settime ( timer_t, int
                                 , const struct itimerspec*
-                                , struct itimerspec* ) -> int
+                                , struct itimerspec* ) noexcept -> int
 {
   return 0;
 }
 
 //----------------------------------------------------------------------
-auto FSystemTest::timer_delete (timer_t) -> int
+auto FSystemTest::timer_delete (timer_t) noexcept -> int
 {
   return 0;
 }
 
 //----------------------------------------------------------------------
-auto FSystemTest::kqueue() -> int
+auto FSystemTest::kqueue() noexcept -> int
 {
   return 0;
 }
@@ -598,50 +605,50 @@ auto FSystemTest::kqueue() -> int
 //----------------------------------------------------------------------
 auto FSystemTest::kevent ( int, const struct kevent*
                          , int, struct kevent*
-                         , int, const struct timespec*) -> int
+                         , int, const struct timespec*) noexcept -> int
 {
   return 0;
 }
 
 //----------------------------------------------------------------------
-auto FSystemTest::getuid() -> uid_t
+auto FSystemTest::getuid() noexcept -> uid_t
 {
   return 0;
 }
 
 //----------------------------------------------------------------------
-auto FSystemTest::geteuid() -> uid_t
+auto FSystemTest::geteuid() noexcept -> uid_t
 {
   return 0;
 }
 
 //----------------------------------------------------------------------
 auto FSystemTest::getpwuid_r ( uid_t, struct passwd*, char*
-                            , size_t, struct passwd** ) -> int
+                            , size_t, struct passwd** ) noexcept -> int
 {
   return 0;
 }
 
 //----------------------------------------------------------------------
-auto FSystemTest::realpath (const char*, char*) -> char*
+auto FSystemTest::realpath (const char*, char*) noexcept -> char*
 {
   return const_cast<char*>("");
 }
 
 //----------------------------------------------------------------------
-auto FSystemTest::getCharacters() -> std::string&
+auto FSystemTest::getCharacters() noexcept -> std::string&
 {
   return characters;
 }
 
 //----------------------------------------------------------------------
-auto FSystemTest::getCursorType() -> int&
+auto FSystemTest::getCursorType() noexcept -> int&
 {
   return cursor_type;
 }
 
 //----------------------------------------------------------------------
-auto FSystemTest::getTerminalKeymap() -> struct keymap_t&
+auto FSystemTest::getTerminalKeymap() noexcept -> struct keymap_t&
 {
   return terminal_keymap;
 }

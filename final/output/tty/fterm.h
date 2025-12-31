@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2024 Markus Gans                                      *
+* Copyright 2012-2025 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -231,8 +231,9 @@ class FTerm final
 
     template <typename... Args>
     static void paddingPrintf (Args&&...);
-    static void paddingPrint (const std::string&, int = 1);
-    static void stringPrint (const std::string&);
+    static void paddingPrint (const char*, uInt32, int = 1);
+    static void paddingPrint (const char*, int = 1);
+    static void stringPrint (const char*, uInt32);
 
     void initTerminal();
     static void initScreenSettings();
@@ -340,7 +341,7 @@ inline void FTerm::paddingPrintf (Args&&... args)
                 , std::forward<Args>(args)... );
   buffer_size--;
   buffer.resize(buffer_size);
-  paddingPrint (buffer, 1);
+  paddingPrint (buffer.c_str(), uInt32(size), 1);
 }
 
 //----------------------------------------------------------------------
@@ -355,7 +356,7 @@ inline auto operator << (std::ostream& os, finalcut::UniChar c) -> std::ostream&
   static const auto& data = finalcut::FTermData::getInstance();
 
   if ( data.getTerminalEncoding() == finalcut::Encoding::UTF8 )
-    return os << finalcut::unicode_to_utf8(wchar_t(c));
+    return os << finalcut::unicode_to_utf8_string(wchar_t(c));
 
   return os << static_cast<char>(uChar(c));
 }
