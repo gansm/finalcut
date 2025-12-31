@@ -1,4 +1,6 @@
 2025-12-31  Markus Gans  <guru.mail@muenster.de>
+	* The "FindFinalCut.cmake" file has been added to simplify the integration 
+	  of FINAL CUT into CMake projects
 	* The unicode_to_utf8 function now returns the fixed-size 
 	  struct UTF8_Char instead of an std::string object
 	* Pointers to strings are used more frequently in string processing 

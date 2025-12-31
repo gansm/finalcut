@@ -8,6 +8,11 @@ ACLOCAL_AMFLAGS = -I m4
 
 EXTRA_DIST = finalcut.pc
 
+if INSTALL_CMAKE_MODULES
+  cmakemodulesdir = @CMAKEMODULESDIR@
+  dist_cmakemodules_DATA = Findfinalcut.cmake
+endif
+
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = finalcut.pc
 

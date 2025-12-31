@@ -120,6 +120,22 @@ then
                 FINAL_LIBS="$FINAL_LIBS -lgpm"])
 fi
 
+# Check for the cmake executable
+AC_PATH_PROG([CMAKE],
+             [cmake])
+AM_CONDITIONAL([INSTALL_CMAKE_MODULES], [test -n "$CMAKE"])
+
+if test -n "$CMAKE"
+then
+  # Extract the module directory (e.g., /usr/share/cmake-3.25/Modules)
+  CMAKE_VERSION=`$CMAKE --version | sed -n 's/^cmake version \(.*\)/\1/p' | cut -d. -f1-2`
+  CMAKEMODULESDIR="/usr/share/cmake-$CMAKE_VERSION/Modules"
+else
+  CMAKEMODULESDIR=""
+fi
+
+AC_SUBST([CMAKEMODULESDIR])
+
 # profiling
 AC_ARG_WITH([profiler],
             [AS_HELP_STRING([--with-profiler], [build extra google profiler binaries])],
