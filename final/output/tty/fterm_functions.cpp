@@ -378,62 +378,10 @@ auto unicode_to_cp437 (wchar_t ucs) -> uChar
 }
 
 //----------------------------------------------------------------------
-#if defined(__CYGWIN__)
-auto unicode_to_utf8 (wchar_t ucs) -> UTF8_Char
-{
-  // 1 Byte (7-bit): 0xxxxxxx
-  if ( ucs < 0x80 )
-    return { {char(ucs), '\0', '\0', '\0'}, 1 };
-
-  // 2 byte (11-bit): 110xxxxx 10xxxxxx
-  if ( ucs < 0x800 )
-    return { { char(0xc0 | uChar(ucs >> 6u))
-             , char(0x80 | uChar(ucs & 0x3f))
-             , '\0', '\0' }, 2 };
-
-  // 3 byte (16-bit): 1110xxxx 10xxxxxx 10xxxxxx
-  return { { char(0xe0 | uChar(ucs >> 12u))
-           , char(0x80 | uChar((ucs >> 6u) & 0x3f))
-           , char(0x80 | uChar(ucs & 0x3f))
-           , '\0' }, 3 };
-}
-
-#else
-auto unicode_to_utf8 (wchar_t ucs) -> UTF8_Char
-{
-  // 1 Byte (7-bit): 0xxxxxxx
-  if ( ucs < 0x80 )
-    return { {char(ucs), '\0', '\0', '\0'}, 1 };
-
-  // 2 byte (11-bit): 110xxxxx 10xxxxxx
-  if ( ucs < 0x800 )
-    return { { char(0xc0 | uChar(ucs >> 6u))
-             , char(0x80 | uChar(ucs & 0x3f))
-             , '\0', '\0' }, 2 };
-
-  // 3 byte (16-bit): 1110xxxx 10xxxxxx 10xxxxxx
-  if ( ucs < 0x10000 )
-    return { { char(0xe0 | uChar(ucs >> 12u))
-             , char(0x80 | uChar((ucs >> 6u) & 0x3f))
-             , char(0x80 | uChar(ucs & 0x3f))
-             , '\0' }, 3 };
-
-  // 4 byte (21-bit): 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-  if ( ucs < 0x200000 )
-    return { { char(0xf0 | uChar(ucs >> 18u))
-             , char(0x80 | uChar((ucs >> 12u) & 0x3f))
-             , char(0x80 | uChar((ucs >> 6u) & 0x3f))
-             , char(0x80 | uChar(ucs & 0x3f)) }, 4 };
-
-  return unicode_to_utf8(L'�');  // Invalid character
-}
-#endif
-
-//----------------------------------------------------------------------
 auto unicode_to_utf8_string (wchar_t ucs) -> std::string
 {
   UTF8_Char ch = unicode_to_utf8(ucs);
-  return std::string(&ch.u8char[0], ch.length);
+  return std::string(&ch.u8.byte1, ch.length);
 }
 
 //----------------------------------------------------------------------

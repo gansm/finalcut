@@ -143,10 +143,10 @@ class FTermcap final
                               , const std::array<int, 9>& ) -> std::string;
     static auto  hasDelay (const std::string&) noexcept -> bool;
     static void  delayOutput (int) noexcept;
-    static auto  readNumber (char*&, int, bool&) noexcept -> int;
-    static void  readDigits (char*&, int&) noexcept;
-    static void  decimalPoint (char*&, int&) noexcept;
-    static void  asteriskSlash (char*&, int&, int, bool&) noexcept;
+    static auto  readNumber (const char*&, int, bool&) noexcept -> int;
+    static void  readDigits (const char*&, int&) noexcept;
+    static void  decimalPoint (const char*&, int&) noexcept;
+    static void  asteriskSlash (const char*&, int&, int, bool&) noexcept;
 
     // Data member
     static bool          initialized;

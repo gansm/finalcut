@@ -204,7 +204,7 @@ auto FTermcap::paddingPrint (const char* string, uInt32 len, int affcnt) -> Stat
     return Status::Error;
 
   bool has_delay = hasDelay(string);
-  auto iter = const_cast<char*>(string);
+  auto iter = string;
   auto end = string + len;
 
   while ( iter != end )
@@ -513,7 +513,7 @@ inline auto FTermcap::hasDelay (const std::string& string) noexcept -> bool
 }
 
 //----------------------------------------------------------------------
-inline auto FTermcap::readNumber ( char*& iter, int affcnt
+inline auto FTermcap::readNumber ( const char*& iter, int affcnt
                                  , bool& has_delay) noexcept -> int
 {
   ++iter;
@@ -537,7 +537,7 @@ inline auto FTermcap::readNumber ( char*& iter, int affcnt
 }
 
 //----------------------------------------------------------------------
-inline void FTermcap::readDigits (char*& iter, int& number) noexcept
+inline void FTermcap::readDigits (const char*& iter, int& number) noexcept
 {
   int digit{};
 
@@ -551,7 +551,7 @@ inline void FTermcap::readDigits (char*& iter, int& number) noexcept
 }
 
 //----------------------------------------------------------------------
-inline void FTermcap::decimalPoint (char*& iter, int& number) noexcept
+inline void FTermcap::decimalPoint (const char*& iter, int& number) noexcept
 {
   if ( *iter != '.' )
     return;
@@ -569,7 +569,7 @@ inline void FTermcap::decimalPoint (char*& iter, int& number) noexcept
 }
 
 //----------------------------------------------------------------------
-inline void FTermcap::asteriskSlash ( char*& iter
+inline void FTermcap::asteriskSlash ( const char*& iter
                                     , int& number, int affcnt, bool& has_delay ) noexcept
 {
   while ( *iter == '*' || *iter == '/' )

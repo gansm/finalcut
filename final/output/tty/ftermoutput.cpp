@@ -1562,14 +1562,14 @@ inline void FTermOutput::appendOutputBuffer (const UniChar& ch)
 inline void FTermOutput::appendOutputBuffer (const UTF8_Char& utf8_char)
 {
   appendOutputBuffer ( FOutputBuffer::OutputType::String
-                     , &utf8_char.u8char[0]
-                     , uInt32(utf8_char.length) );
+                     , &utf8_char.u8.byte1
+                     , utf8_char.length );
 }
 
 //----------------------------------------------------------------------
-void FTermOutput::appendOutputBuffer ( FOutputBuffer::OutputType type
-                                     , const char* data
-                                     , uInt32 length )
+inline void FTermOutput::appendOutputBuffer ( FOutputBuffer::OutputType type
+                                            , const char* data
+                                            , uInt32 length )
 {
   auto& slices = output_buffer->slices;
   auto& last = slices.back();

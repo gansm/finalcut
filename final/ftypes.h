@@ -256,21 +256,33 @@ using enable_if_arithmetic_without_char_t =
                  && ! std::is_same<char, NumT>::value
                  , std::nullptr_t>;
 
-struct UTF8_Char
+struct FourByteData
 {
-  char u8char[4];
-  uInt32 length;
+  char byte1;  // First character
+  char byte2;  // Second character
+  char byte3;  // Third character
+  char byte4;  // Fourth character
 };
 
-constexpr auto operator == (const UTF8_Char& lhs, const UTF8_Char& rhs) noexcept -> bool
+struct UTF8_Char
 {
-  return std::memcmp(&lhs, &rhs, sizeof(UTF8_Char)) == 0;
-}
+  FourByteData u8;
+  uInt32 length;
 
-constexpr auto operator != (const UTF8_Char& lhs, const UTF8_Char& rhs) noexcept -> bool
-{
-  return ! ( lhs == rhs );
-}
+  friend constexpr auto operator == (const UTF8_Char& lhs, const UTF8_Char& rhs) noexcept -> bool
+  {
+    return lhs.u8.byte1 == rhs.u8.byte1
+        && lhs.u8.byte2 == rhs.u8.byte2
+        && lhs.u8.byte3 == rhs.u8.byte3
+        && lhs.u8.byte4 == rhs.u8.byte4
+        && lhs.length   == rhs.length;
+  }
+
+  friend constexpr auto operator != (const UTF8_Char& lhs, const UTF8_Char& rhs) noexcept -> bool
+  {
+    return ! ( lhs == rhs );
+  }
+};
 
 struct TCapAttributes
 {
@@ -463,10 +475,10 @@ inline auto getCompareBitMask() noexcept -> uInt32
 //----------------------------------------------------------------------
 struct alignas(std::max_align_t) FChar
 {
-  alignas(16) FUnicode   ch{};            // Character code
-  alignas(16) FUnicode   encoded_char{};  // Encoded output character
-  FCellColor color{};                     // Foreground and background color
-  FAttribute attr{};                      // Attributes
+  FUnicode   ch{};            // Character code
+  FUnicode   encoded_char{};  // Encoded output character
+  FCellColor color{};         // Foreground and background color
+  FAttribute attr{};          // Attributes
 
 #if HAVE_BUILTIN(__builtin_bit_cast)
   friend constexpr

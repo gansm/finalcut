@@ -169,7 +169,7 @@ class FSystemImpl : public FSystem
 
     inline auto putstring (const char* str, std::size_t len) noexcept -> int override
     {
-      return std::fwrite(str, 1, len, stdout);
+      return int(std::fwrite(str, 1, len, stdout));
     }
 
     auto sigaction ( int, const struct sigaction*

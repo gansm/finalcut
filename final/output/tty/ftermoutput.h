@@ -99,7 +99,7 @@ struct FOutputBuffer
     slices.push({t, s});
   }
 
-  auto isEmpty() const noexcept -> bool
+  inline auto isEmpty() const noexcept -> bool
   {
     return slices.isEmpty();
   }
