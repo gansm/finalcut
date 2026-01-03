@@ -522,7 +522,7 @@ union FCellColor
 constexpr auto isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool
 {
   // Perform a byte-wise comparison
-  return std::memcmp(&lhs.char1, &rhs.char1, sizeof(FUnicode)) == 0;
+  return lhs == rhs;
 }
 #else
 inline auto isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool
