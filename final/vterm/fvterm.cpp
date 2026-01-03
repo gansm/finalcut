@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2025 Markus Gans                                      *
+* Copyright 2016-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -1168,8 +1168,8 @@ inline void FVTerm::resetTextAreaToDefault ( FTermArea* area
 {
   static constexpr FChar default_char
   {
-    { { L' ',  L'\0', L'\0', L'\0', L'\0' } },
-    { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
+    { L' ',  L'\0', L'\0', L'\0', L'\0' },
+    { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { { FColor::Default, FColor::Default } },
     { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3 (byte 2 = 0x08 = char_width 1)
   };
@@ -1770,7 +1770,7 @@ constexpr auto FVTerm::isFCharTransparent (const FChar& fchar) noexcept -> bool
 inline auto FVTerm::isTransparentInvisible (const FChar& fchar) const noexcept -> bool
 {
   static const auto& trans_inv_chars = getTransparentInvisibleLookupMap();
-  const auto& fist_char = fchar.ch[0];
+  const auto& fist_char = fchar.ch.char1;
   return trans_inv_chars.find(fist_char) != trans_inv_chars.end();
 }
 
@@ -2270,7 +2270,7 @@ inline auto FVTerm::interpretControlCodes ( FTermArea* area
                                           , FChar*& ac
                                           , const FChar& term_char ) const noexcept -> bool
 {
-  switch ( term_char.ch[0] )
+  switch ( term_char.ch.char1 )
   {
     case L'\n':
       area->cursor.y++;
@@ -2391,7 +2391,7 @@ inline void FVTerm::printPaddingCharacter ( FTermArea* area
 
   if ( area->encoding == Encoding::UTF8 )
   {
-    pc.ch = {{ L'\0' }};
+    pc.ch[0] = L'\0';
     pc.attr.bit.fullwidth_padding = true;
     pc.attr.bit.char_width = 0;
   }

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2024 Markus Gans                                      *
+* Copyright 2012-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -850,7 +850,7 @@ void MyDialog::cb_about()
   finalcut::FMessageBox info ( "About"
                              , line + L" FINAL CUT " + line + L"\n\n"
                                L"Version " + finalcut::fc_release + L"\n\n"
-                               L"(c) 2024 by Markus Gans"
+                               L"(c) 2026 by Markus Gans"
                              , finalcut::FMessageBox::ButtonType::Ok
                              , finalcut::FMessageBox::ButtonType::Reject
                              , finalcut::FMessageBox::ButtonType::Reject
@@ -1052,7 +1052,9 @@ void MyDialog::cb_view (const finalcut::FMenuItem* item)
   }
 
   const auto& view = new TextWindow(this);
-  finalcut::FString filename(basename(const_cast<char*>(path.c_str())));
+  std::vector<char> buffer(path.begin(), path.end());
+  buffer.push_back('\0'); // Ensure null-termination
+  finalcut::FString filename(basename(buffer.data()));
   view->setText ("Viewer: " + filename);
   view->setGeometry ( FPoint { 1 + int((getRootWidget()->getWidth() - 60) / 2)
                              , int(getRootWidget()->getHeight() / 6) }
@@ -1086,7 +1088,7 @@ void MyDialog::cb_setInput ( const finalcut::FListBox& listbox
 auto main (int argc, char* argv[]) -> int
 {
   const finalcut::FString title { "FINAL CUT "s + finalcut::fc_release
-                                + " (C) 2024 by Markus Gans" };
+                                + " (C) 2026 by Markus Gans" };
 
   // Create the application object app
   finalcut::FApplication app{argc, argv};

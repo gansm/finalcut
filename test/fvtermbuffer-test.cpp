@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021-2024 Markus Gans                                      *
+* Copyright 2021-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -180,14 +180,14 @@ void FVTermBufferTest::writeTest()
   CPPUNIT_ASSERT ( vterm_buf.getLength() == 8 );
   CPPUNIT_ASSERT ( vterm_buf.getBuffer().size() == 8 );
   CPPUNIT_ASSERT ( vterm_buf.begin() + 8 == vterm_buf.end() );
-  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[0].ch[0] == L'a' );
-  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[1].ch[0] == L'b' );
-  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[2].ch[0] == L'c' );
-  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[3].ch[0] == L'…' );
-  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[4].ch[0] == L' ' );
-  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[5].ch[0] == L'ｘ' );
-  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[6].ch[0] == L'ｙ' );
-  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[7].ch[0] == L'ｚ' );
+  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[0].ch.char1 == L'a' );
+  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[1].ch.char1 == L'b' );
+  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[2].ch.char1 == L'c' );
+  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[3].ch.char1 == L'…' );
+  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[4].ch.char1 == L' ' );
+  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[5].ch.char1 == L'ｘ' );
+  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[6].ch.char1 == L'ｙ' );
+  CPPUNIT_ASSERT ( vterm_buf.getBuffer()[7].ch.char1 == L'ｚ' );
   CPPUNIT_ASSERT ( vterm_buf.getBuffer()[0].attr.bit.char_width == 1 );
   CPPUNIT_ASSERT ( vterm_buf.getBuffer()[1].attr.bit.char_width == 1 );
   CPPUNIT_ASSERT ( vterm_buf.getBuffer()[2].attr.bit.char_width == 1 );
@@ -200,15 +200,15 @@ void FVTermBufferTest::writeTest()
 
   for (std::size_t i{0}; i < 7; i++)
   {
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].ch[1] == L'\0' );
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].ch[2] == L'\0' );
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].ch[3] == L'\0' );
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].ch[4] == L'\0' );
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char[0] == L'\0' );
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char[1] == L'\0' );
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char[2] == L'\0' );
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char[3] == L'\0' );
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char[4] == L'\0' );
+    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].ch.char2 == L'\0' );
+    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].ch.char3 == L'\0' );
+    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].ch.char4 == L'\0' );
+    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].ch.char5 == L'\0' );
+    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char.char1 == L'\0' );
+    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char.char2 == L'\0' );
+    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char.char3 == L'\0' );
+    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char.char4 == L'\0' );
+    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char.char5 == L'\0' );
     CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].color.pair.fg == finalcut::FColor::Default );
     CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].color.pair.bg == finalcut::FColor::Default );
     CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].attr.byte[0] == 0 );

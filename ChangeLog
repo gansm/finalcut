@@ -1,3 +1,6 @@
+2026-01-03  Markus Gans  <guru.mail@muenster.de>
+	* Replace the FUnicode data structure from an std::array to a flatter struct
+
 2025-12-31  Markus Gans  <guru.mail@muenster.de>
 	* The "FindFinalCut.cmake" file has been added to simplify the integration 
 	  of FINAL CUT into CMake projects

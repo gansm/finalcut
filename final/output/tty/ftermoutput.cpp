@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021-2025 Markus Gans                                      *
+* Copyright 2021-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -417,7 +417,7 @@ void FTermOutput::clearTerminalAttributes()
 void FTermOutput::clearTerminalState()
 {
   // term_attribute stores the current state of the terminal
-  term_attribute.ch = {{ L'\0' }};
+  term_attribute.ch = {L'\0', L'\0', L'\0', L'\0', L'\0'};
   term_attribute.color.pair.fg = FColor::Undefined;
   term_attribute.color.pair.bg = FColor::Undefined;
   term_attribute.attr.data = 0;
@@ -649,7 +649,7 @@ auto FTermOutput::canClearToEOL (uInt xmin, uInt y) const -> bool
   const auto& ce = TCAP(t_clr_eol);
   const auto* min_char = &vterm->getFChar(int(xmin), int(y));
 
-  if ( ! ce || min_char->ch[0] != L' ' )
+  if ( ! ce || min_char->ch.char1 != L' ' )
     return false;
 
   uInt beginning_whitespace = 1;
@@ -681,7 +681,7 @@ auto FTermOutput::canClearLeadingWS (uInt& xmin, uInt y) const -> bool
   const auto& cb = TCAP(t_clr_bol);
   const auto* first_char = &vterm->getFChar(0, int(y));
 
-  if ( ! cb || first_char->ch[0] != L' ' )
+  if ( ! cb || first_char->ch.char1 != L' ' )
     return false;
 
   uInt leading_whitespace = 1;
@@ -718,7 +718,7 @@ auto FTermOutput::canClearTrailingWS (uInt& xmax, uInt y) const -> bool
   const auto& ce = TCAP(t_clr_eol);
   const auto* last_char = &vterm->getFChar(vterm->size.width - 1, int(y));
 
-  if ( ! ce || last_char->ch[0] != L' ' )
+  if ( ! ce || last_char->ch.char1 != L' ' )
     return false;
 
   uInt trailing_whitespace = 1;
@@ -810,7 +810,7 @@ void FTermOutput::printRange (uInt xmin, uInt xmax, uInt y)
       continue;
 
     // Erase character
-    if ( ec && print_char->ch[0] == L' ' )
+    if ( ec && print_char->ch.char1 == L' ' )
     {
       if ( eraseCharacters(x, xmax, y, *print_char) \
            == PrintState::LineCompletelyPrinted )
@@ -839,14 +839,14 @@ inline void FTermOutput::replaceNonPrintableFullwidth ( uInt x, uInt vterm_width
 
   if ( x == 0 && isFullWidthPaddingChar(print_char) )
   {
-    print_char.ch[0] = wchar_t(UniChar::SingleLeftAngleQuotationMark);  // ‹
-    print_char.ch[1] = L'\0';
+    print_char.ch.char1 = wchar_t(UniChar::SingleLeftAngleQuotationMark);  // ‹
+    print_char.ch.char2 = L'\0';
     print_char.attr.bit.fullwidth_padding = false;
   }
   else if ( x == vterm_width && isFullWidthChar(print_char) )
   {
-    print_char.ch[0] = wchar_t(UniChar::SingleRightAngleQuotationMark);  // ›
-    print_char.ch[1] = L'\0';
+    print_char.ch.char1 = wchar_t(UniChar::SingleRightAngleQuotationMark);  // ›
+    print_char.ch.char2 = L'\0';
     print_char.attr.bit.char_width = 1;
   }
 }
@@ -990,7 +990,7 @@ auto FTermOutput::eraseCharacters (uInt& x, uInt xmax, uInt y, FChar& print_char
 
   const auto& ec = TCAP(t_erase_chars);
 
-  if ( ! (ec && print_char.ch[0] == L' ') )
+  if ( ! (ec && print_char.ch.char1 == L' ') )
     return PrintState::NothingPrinted;
 
   const auto whitespace = countRepetitions(&print_char, x, xmax);
@@ -1051,7 +1051,7 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y, FChar& print_char
     newFontChanges (print_char);
     charsetChanges (print_char);
     appendAttributes (print_char);
-    appendOutputBuffer (FTermControl{FTermcap::encodeParameter(rp, print_char.ch[0], repetitions)});
+    appendOutputBuffer (FTermControl{FTermcap::encodeParameter(rp, print_char.ch.char1, repetitions)});
     term_pos->x_ref() += static_cast<int>(repetitions);
   }
   else if ( lr && repetition_type == Repetition::UTF8 )
@@ -1100,7 +1100,8 @@ inline auto FTermOutput::canUseCharacterRepetitions ( const FChar& print_char
                                                     , uInt repetitions ) const noexcept -> bool
 {
   return repetitions > repeat_char_length
-      && print_char.ch[0] != L'\0' && print_char.ch[1] == L'\0';
+      && print_char.ch.char1 != L'\0'
+      && print_char.ch.char2 == L'\0';
 }
 
 //----------------------------------------------------------------------
@@ -1109,10 +1110,10 @@ inline auto FTermOutput::getRepetitionType ( const FChar& print_char
 {
   if ( canUseCharacterRepetitions(print_char, repetitions) )
   {
-    if ( is7bit(print_char.ch[0]) )
+    if ( is7bit(print_char.ch.char1) )
       return Repetition::ASCII;
 
-    if ( isPrintable(print_char.ch[0]) )
+    if ( isPrintable(print_char.ch.char1) )
       return Repetition::UTF8;
   }
 
@@ -1318,12 +1319,12 @@ inline void FTermOutput::newFontChanges (FChar& next_char) const
   if ( ! FTerm::isNewFont() )
     return;
 
-  if ( next_char.ch[0] == UniChar::LowerHalfBlock )
+  if ( next_char.ch.char1 == UniChar::LowerHalfBlock )
   {
-    next_char.ch[0] = wchar_t(UniChar::UpperHalfBlock);
+    next_char.ch.char1 = wchar_t(UniChar::UpperHalfBlock);
     next_char.attr.bit.reverse = true;
   }
-  else if ( isReverseNewFontchar(next_char.ch[0]) )
+  else if ( isReverseNewFontchar(next_char.ch.char1) )
     next_char.attr.bit.reverse = true;  // Show in reverse video
 }
 
@@ -1346,13 +1347,13 @@ inline void FTermOutput::charsetChanges (FChar& next_char) const
   if ( terminal_encoding == Encoding::UTF8 )
     return;
 
-  const auto& ch = next_char.ch[0];
+  const auto& ch = next_char.ch.char1;
   const auto& ch_enc = FTerm::charEncode(ch);
 
   if ( ch_enc == ch )
     return;
 
-  auto& first_enc_char = next_char.encoded_char[0];
+  auto& first_enc_char = next_char.encoded_char.char1;
 
   if ( ch_enc == 0 )
   {
@@ -1513,7 +1514,7 @@ inline void FTermOutput::characterFilter (FChar& next_char)
   if ( sub_map.isEmpty() )
     return;
 
-  auto& first_enc_char = next_char.encoded_char[0];
+  auto& first_enc_char = next_char.encoded_char.char1;
   const auto& entry = sub_map.getMappedChar(first_enc_char);
 
   if ( entry )

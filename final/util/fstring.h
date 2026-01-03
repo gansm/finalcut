@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2025 Markus Gans                                      *
+* Copyright 2012-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -458,8 +458,8 @@ class FString
     // Iterators
     auto begin() noexcept -> iterator;
     auto end() noexcept -> iterator;
-    auto begin() const -> const_iterator;
-    auto end() const -> const_iterator;
+    auto begin() const noexcept -> const_iterator;
+    auto end() const noexcept -> const_iterator;
     auto cbegin() const noexcept -> const_iterator;
     auto cend() const noexcept -> const_iterator;
     auto rbegin() noexcept -> reverse_iterator;
@@ -741,11 +741,11 @@ inline auto FString::end() noexcept -> iterator
 { return string.end(); }
 
 //----------------------------------------------------------------------
-inline auto FString::begin() const -> const_iterator
+inline auto FString::begin() const noexcept -> const_iterator
 { return this->string.begin(); }
 
 //----------------------------------------------------------------------
-inline auto FString::end() const -> const_iterator
+inline auto FString::end() const noexcept -> const_iterator
 { return this->string.end(); }
 
 //----------------------------------------------------------------------

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2025 Markus Gans                                      *
+* Copyright 2017-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -416,9 +416,91 @@ union FAttribute
   FCharAttribute bit;
 };
 
-static constexpr std::size_t UNICODE_MAX = 5;
+struct FUnicode
+{
+  wchar_t char1;  // First character
+  wchar_t char2;  // Second character
+  wchar_t char3;  // Third character
+  wchar_t char4;  // Fourth character
+  wchar_t char5;  // Fifth character
 
-using FUnicode = std::array<wchar_t, UNICODE_MAX>;
+  // Using-declarations
+  using iterator        = wchar_t*;
+  using const_iterator  = const wchar_t*;
+  using pointer         = wchar_t*;
+  using const_pointer   = const wchar_t*;
+  using reference       = wchar_t&;
+  using const_reference = const wchar_t&;
+  using value_type      = wchar_t;
+
+  // Overloaded operators
+  inline auto operator [] (std::size_t index) noexcept -> reference
+  {
+    return *(&char1 + index);
+  }
+
+  inline auto operator [] (std::size_t index) const noexcept -> const_reference
+  {
+    return *(&char1 + index);
+  }
+
+  // Methods
+  inline auto begin() noexcept -> iterator
+  {
+    return &char1;
+  }
+
+  inline auto end() noexcept -> iterator
+  {
+    return &char5 + 1;
+  }
+
+  inline auto begin() const noexcept -> const_iterator
+  {
+    return &char1;
+  }
+
+  inline auto end() const noexcept -> const_iterator
+  {
+    return &char5 + 1;
+  }
+
+  inline auto cbegin() const noexcept -> const_iterator
+  {
+    return &char1;
+  }
+
+  inline auto cend() const noexcept -> const_iterator
+  {
+    return &char5 + 1;
+  }
+
+  inline auto data() noexcept -> pointer
+  {
+    return &char1;
+  }
+
+  inline auto data() const noexcept -> const_pointer
+  {
+    return &char1;
+  }
+
+  friend constexpr auto operator == (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool
+  {
+    return lhs.char1 == rhs.char1
+        && lhs.char2 == rhs.char2
+        && lhs.char3 == rhs.char3
+        && lhs.char4 == rhs.char4
+        && lhs.char5 == rhs.char5;
+  }
+
+  friend constexpr auto operator != (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool
+  {
+    return ! ( lhs == rhs );
+  }
+};
+
+static constexpr std::size_t UNICODE_MAX = sizeof(FUnicode) / sizeof(wchar_t);
 
 enum class FColor : uInt16;  // forward declaration
 
@@ -440,18 +522,13 @@ union FCellColor
 constexpr auto isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool
 {
   // Perform a byte-wise comparison
-#if __cplusplus >= 201703L
-  return std::memcmp(lhs.cbegin(), rhs.cbegin(), lhs.size() * sizeof(wchar_t)) == 0;
-#else
-  return std::memcmp(&lhs[0], &rhs[0], lhs.size() * sizeof(wchar_t)) == 0;
-#endif
+  return std::memcmp(&lhs.char1, &rhs.char1, sizeof(FUnicode)) == 0;
 }
 #else
 inline auto isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool
 {
-  static_assert ( sizeof(lhs) == sizeof(rhs) , "Both sides are different sizes.");
   // Perform a byte-wise comparison
-  return std::wmemcmp(lhs.data(), rhs.data(), lhs.size()) == 0;
+  return std::wmemcmp(&lhs.char1, &rhs.char1, UNICODE_MAX) == 0;
 }
 #endif
 

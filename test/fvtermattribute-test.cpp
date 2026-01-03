@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021-2024 Markus Gans                                      *
+* Copyright 2021-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -78,7 +78,7 @@ void FVTermAttributeTest::noArgumentTest()
   const finalcut::FVTermAttribute attribute{};
   CPPUNIT_ASSERT ( attribute.getTermForegroundColor() == finalcut::FColor(0) );
   CPPUNIT_ASSERT ( attribute.getTermBackgroundColor() == finalcut::FColor(0) );
-  finalcut::FUnicode empty{{L'\0', L'\0', L'\0', L'\0', L'\0'}};
+  finalcut::FUnicode empty{L'\0', L'\0', L'\0', L'\0', L'\0'};
   CPPUNIT_ASSERT ( attribute.getAttribute().ch == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().encoded_char == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.pair.fg == finalcut::FColor(0) );
@@ -95,7 +95,7 @@ void FVTermAttributeTest::afterInitTest()
   finalcut::FVTermAttribute attribute{};
   attribute.getAttribute().color.pair.fg = finalcut::FColor(3);
   attribute.getAttribute().color.pair.bg = finalcut::FColor(200);
-  attribute.getAttribute().ch = {{L'🗑', L'\0', L'\0', L'\0', L'\0'}};
+  attribute.getAttribute().ch = {L'🗑', L'\0', L'\0', L'\0', L'\0'};
   attribute.getAttribute().attr.byte[0] = uInt8(0xff);
   attribute.getAttribute().attr.byte[1] = uInt8(0xff);
   attribute.getAttribute().attr.byte[2] = uInt8(0xff);
@@ -103,7 +103,7 @@ void FVTermAttributeTest::afterInitTest()
   attribute.initAttribute();
   CPPUNIT_ASSERT ( attribute.getTermForegroundColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getTermBackgroundColor() == finalcut::FColor::Default );
-  finalcut::FUnicode empty{{L'\0', L'\0', L'\0', L'\0', L'\0'}};
+  finalcut::FUnicode empty{L'\0', L'\0', L'\0', L'\0', L'\0'};
   CPPUNIT_ASSERT ( attribute.getAttribute().ch == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().encoded_char == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.pair.fg == finalcut::FColor::Default );
@@ -123,7 +123,7 @@ void FVTermAttributeTest::setAttributeTest()
   attribute.setColor(finalcut::FColor::Red, finalcut::FColor::White );
   CPPUNIT_ASSERT ( attribute.getTermForegroundColor() == finalcut::FColor::Red );
   CPPUNIT_ASSERT ( attribute.getTermBackgroundColor() == finalcut::FColor::White );
-  finalcut::FUnicode empty{{L'\0', L'\0', L'\0', L'\0', L'\0'}};
+  finalcut::FUnicode empty{L'\0', L'\0', L'\0', L'\0', L'\0'};
   CPPUNIT_ASSERT ( attribute.getAttribute().ch == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().encoded_char == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.pair.fg == finalcut::FColor::Red );
@@ -492,7 +492,7 @@ void FVTermAttributeTest::printTest()
   attribute.print(c1);
   CPPUNIT_ASSERT ( attribute.getTermForegroundColor() == finalcut::FColor::Yellow );
   CPPUNIT_ASSERT ( attribute.getTermBackgroundColor() == finalcut::FColor::Blue );
-  finalcut::FUnicode empty{{L'\0', L'\0', L'\0', L'\0', L'\0'}};
+  finalcut::FUnicode empty{L'\0', L'\0', L'\0', L'\0', L'\0'};
   CPPUNIT_ASSERT ( attribute.getAttribute().ch == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().encoded_char == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.pair.fg == finalcut::FColor::Yellow );

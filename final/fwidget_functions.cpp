@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2025 Markus Gans                                      *
+* Copyright 2019-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -401,14 +401,14 @@ void drawTransparentShadow (FWidget* w)
     uInt(area.shadow.width),
     uInt(area.shadow.height),
     {
-      { { L'\0',  L'\0', L'\0', L'\0', L'\0' } },
-      { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
+      { L'\0',  L'\0', L'\0', L'\0', L'\0' },
+      { L'\0', L'\0', L'\0', L'\0', L'\0' },
       { { FColor::Default, FColor::Default } },
       { { 0x00, 0x20, 0x00, 0x00} }  // byte 0..3 (byte 1 = 0x32 = transparent)
     },
     {
-      { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
-      { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
+      { L'\0', L'\0', L'\0', L'\0', L'\0' },
+      { L'\0', L'\0', L'\0', L'\0', L'\0' },
       { { wc_shadow.fg, wc_shadow.bg } },
       { { 0x00, 0x40, 0x00, 0x00} }  // byte 0..3 (byte 1 = 0x64 = color_overlay)
     },
@@ -477,26 +477,26 @@ void drawBlockShadow (FWidget* w)
   std::array<FChar, 4> shadow_char
   {{
     {
-      { { wchar_t(UniChar::LowerHalfBlock),  L'\0', L'\0', L'\0', L'\0' } },  // ▄
-      { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
+      { wchar_t(UniChar::LowerHalfBlock),  L'\0', L'\0', L'\0', L'\0' },  // ▄
+      { L'\0', L'\0', L'\0', L'\0', L'\0' },
       { { wc_shadow.bg, FColor::Default } },
       { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3 (byte 2 = 0x08 = char_width 1)
     },
     {
-      { { wchar_t(UniChar::FullBlock),  L'\0', L'\0', L'\0', L'\0' } },  // █
-      { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
+      { wchar_t(UniChar::FullBlock),  L'\0', L'\0', L'\0', L'\0' },  // █
+      { L'\0', L'\0', L'\0', L'\0', L'\0' },
       { { wc_shadow.bg, FColor::Default } },
       { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3 (byte 2 = 0x08 = char_width 1)
     },
     {
-      { { L' ',  L'\0', L'\0', L'\0', L'\0' } },  // ' '
-      { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
+      { L' ',  L'\0', L'\0', L'\0', L'\0' },  // ' '
+      { L'\0', L'\0', L'\0', L'\0', L'\0' },
       { { FColor::Default, FColor::Default } },
       { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3 (byte 2 = 0x08 = char_width 1)
     },
     {
-      { { wchar_t(UniChar::UpperHalfBlock),  L'\0', L'\0', L'\0', L'\0' } },  // ▄
-      { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
+      { wchar_t(UniChar::UpperHalfBlock),  L'\0', L'\0', L'\0', L'\0' },  // ▄
+      { L'\0', L'\0', L'\0', L'\0', L'\0' },
       { { wc_shadow.bg, FColor::Default } },
       { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3 (byte 2 = 0x08 = char_width 1)
     }
@@ -528,8 +528,8 @@ void clearBlockShadow (FWidget* w)
 
   FChar spacer_char
   {
-    { { L' ',  L'\0', L'\0', L'\0', L'\0' } },  // ' '
-    { { L'\0', L'\0', L'\0', L'\0', L'\0' } },
+    { L' ',  L'\0', L'\0', L'\0', L'\0' },  // ' '
+    { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { { FColor::Default, FColor::Default } },
     { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3 (byte 2 = 0x08 = char_width 1)
   };

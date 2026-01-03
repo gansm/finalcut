@@ -700,7 +700,7 @@ void addColumnWidth (FChar& term_char, std::size_t char_width)
   if ( char_width == 2
     && fterm_data.getTerminalEncoding() != Encoding::UTF8 )
   {
-    term_char.ch[0] = '.';
+    term_char.ch.char1 = '.';
     term_char.attr.bit.char_width = 1;
   }
   else

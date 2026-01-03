@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2022-2024 Markus Gans                                      *
+* Copyright 2022-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -76,17 +76,17 @@ void showFCharData (const finalcut::FChar& fchar)
 {
   std::wcout << L"FChar data\n" << std::boolalpha;
   std::wcout << L"                         ch: '" <<  fchar.ch.data();
-  std::wcout << L"' {" << uInt32(fchar.ch[0]) << L", " <<
-                          uInt32(fchar.ch[1]) << L", " <<
-                          uInt32(fchar.ch[2]) << L", " <<
-                          uInt32(fchar.ch[3]) << L", " <<
-                          uInt32(fchar.ch[4]) << L"}\n";
+  std::wcout << L"' {" << uInt32(fchar.ch.char1) << L", " <<
+                          uInt32(fchar.ch.char2) << L", " <<
+                          uInt32(fchar.ch.char3) << L", " <<
+                          uInt32(fchar.ch.char4) << L", " <<
+                          uInt32(fchar.ch.char5) << L"}\n";
   std::wcout << L"               encoded_char: '" <<  fchar.encoded_char.data();
-  std::wcout << L"' {" << uInt32(fchar.encoded_char[0]) << L", " <<
-                          uInt32(fchar.encoded_char[1]) << L", " <<
-                          uInt32(fchar.encoded_char[2]) << L", " <<
-                          uInt32(fchar.encoded_char[3]) << L", " <<
-                          uInt32(fchar.encoded_char[4]) << L"}\n";
+  std::wcout << L"' {" << uInt32(fchar.encoded_char.char1) << L", " <<
+                          uInt32(fchar.encoded_char.char2) << L", " <<
+                          uInt32(fchar.encoded_char.char3) << L", " <<
+                          uInt32(fchar.encoded_char.char4) << L", " <<
+                          uInt32(fchar.encoded_char.char5) << L"}\n";
   std::wcout << L"              color.pair.fg: " << int(fchar.color.pair.fg) << L'\n';
   std::wcout << L"              color.pair.bg: " << int(fchar.color.pair.bg) << L'\n';
   std::wcout << L"                    attr[0]: " << int(fchar.attr.byte[0]) << L'\n';
