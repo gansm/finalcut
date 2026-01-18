@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021-2025 Markus Gans                                      *
+* Copyright 2021-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -180,7 +180,7 @@ class FTermOutput final : public FOutput
     };
 
     // Enumerations
-    enum class PrintState
+    enum class PrintState : uInt8
     {
       NothingPrinted,
       RepeatCharacterPrinted,
@@ -188,14 +188,14 @@ class FTermOutput final : public FOutput
       LineCompletelyPrinted
     };
 
-    enum class Repetition
+    enum class Repetition : uInt8
     {
       ASCII,
       UTF8,
       NotOptimized
     };
 
-    enum class CursorMoved { No, Yes };
+    enum class CursorMoved : bool { No, Yes };
 
     // Constants
     //   Upper and lower flush limit

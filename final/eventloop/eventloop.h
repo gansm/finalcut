@@ -50,7 +50,13 @@ class EventLoop
 {
   public:
     // Enumeration
-    enum class PollResult : uInt8 { Success, Timeout, Error, Interrupted };
+    enum class PollResult : uInt8
+    {
+      Success,
+      Timeout,
+      Error,
+      Interrupted
+    };
 
     // Constructor
     EventLoop() = default;

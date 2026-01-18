@@ -73,13 +73,13 @@ class FLineEdit : public FWidget
     using FWidget::unsetVisibleCursor;
 
     // Enumerations
-    enum class LabelOrientation
+    enum class LabelOrientation : uInt8
     {
       Above = 0,
       Left  = 1
     };
 
-    enum class InputType
+    enum class InputType : uInt8
     {
       Textfield = 0,
       Password  = 1

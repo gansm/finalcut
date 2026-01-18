@@ -74,7 +74,7 @@ class FScrollbar : public FWidget
     using FWidget::setGeometry;
 
     // Enumeration
-    enum class ScrollType
+    enum class ScrollType : uInt8
     {
       None         = 0,
       Jump         = 1,

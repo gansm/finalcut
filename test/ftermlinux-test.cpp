@@ -103,13 +103,13 @@ class FSystemTest : public finalcut::FSystem
       RGB color[16];
     };
 
-    enum class AccessMode
+    enum class AccessMode : uInt8
     {
       index,
       data
     };
 
-    enum class Codeset
+    enum class Codeset : uInt8
     {
       cp437,
       lat15

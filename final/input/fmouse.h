@@ -136,7 +136,7 @@ class FMouseData
 
   protected:
     // Enumerations
-    enum class State : uChar
+    enum class State : uInt8
     {
       Undefined   = 0,
       Pressed     = 1,
@@ -181,7 +181,7 @@ class FMouse : public FMouseData
 {
   public:
     // Enumeration
-    enum class MouseType
+    enum class MouseType : uInt8
     {
       None  = 0,
       Gpm   = 1,
@@ -289,7 +289,7 @@ class FMouseGPM final : public FMouse
 
   private:
     // Enumeration
-    enum class gpmEventType
+    enum class gpmEventType : uInt8
     {
       None     = 0,
       Keyboard = 1,
@@ -348,7 +348,7 @@ class FMouseX11 final : public FMouse
 
   private:
     // Enumeration
-    enum btn_states
+    enum btn_states : uInt8
     {
       key_shift            = 0x04,
       key_meta             = 0x08,
@@ -419,9 +419,9 @@ class FMouseSGR final : public FMouse
     };
 
     // Enumerations
-    enum class ParseError { No, Yes };
+    enum class ParseError : bool { No, Yes };
 
-    enum x11_ext_btn_states
+    enum x11_ext_btn_states : uInt8
     {
       key_shift       = 0x04,
       key_meta        = 0x08,
@@ -496,9 +496,9 @@ class FMouseUrxvt final : public FMouse
     };
 
     // Enumerations
-    enum class ParseError { No, Yes };
+    enum class ParseError : bool { No, Yes };
 
-    enum urxvt_btn_states
+    enum urxvt_btn_states : uInt8
     {
       key_shift            = 0x04,
       key_meta             = 0x08,

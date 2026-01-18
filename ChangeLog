@@ -1,3 +1,6 @@
+2026-01-18  Markus Gans  <guru.mail@muenster.de>
+	* Split the first steps document into several subchapters
+
 2026-01-03  Markus Gans  <guru.mail@muenster.de>
 	* Replace the FUnicode data structure from an std::array to a flatter struct
 

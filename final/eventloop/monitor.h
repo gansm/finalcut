@@ -83,7 +83,12 @@ class Monitor
 {
   public:
     // Enumeration
-    enum class State : uInt8 { Inactive, Active, Suspended };
+    enum class State : uInt8
+    {
+      Inactive,
+      Active,
+      Suspended
+    };
 
     // Constructor
     explicit Monitor (EventLoop*);

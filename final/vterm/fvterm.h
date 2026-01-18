@@ -109,7 +109,7 @@ class FVTerm : public FVTermAttribute
     using FTermAreaList = std::vector<const FTermArea*>;
 
     // Enumeration
-    enum class TerminalUpdate
+    enum class TerminalUpdate : uInt8
     {
       Stop,      // No terminal refresh
       Continue,  // Resuming terminal refresh

@@ -64,12 +64,12 @@ class FLog : public std::stringbuf
     using IOManip = decltype(std::endl<char, std::char_traits<char>>);
 
     // Enumerations
-    enum class LogLevel
+    enum class LogLevel : uInt8
     {
       Info, Warn, Error, Debug
     };
 
-    enum class LineEnding
+    enum class LineEnding : uInt8
     {
       LF, CR, CRLF
     };

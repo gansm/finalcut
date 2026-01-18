@@ -51,7 +51,7 @@ constexpr char fc_release[] = F_VERSION;
 //----------------------------------------------------------------------
 
 // Event types
-enum class Event
+enum class Event : uInt8
 {
   None,              // Invalid event
   KeyPress,          // Key pressed
@@ -83,7 +83,7 @@ enum class Event
 };
 
 // Internal character encoding
-enum class Encoding
+enum class Encoding : uInt8
 {
   UTF8,
   VT100,
@@ -1279,7 +1279,7 @@ constexpr auto operator ^= (Style& a, const Style& b) noexcept -> Style&
 
 
 // Mouse/keyboard state values
-enum class MouseButton : uInt
+enum class MouseButton : uInt8
 {
   None    = 0x00,
   Left    = 0x01,
@@ -1292,7 +1292,7 @@ enum class MouseButton : uInt
 
 constexpr auto operator | (const MouseButton& b1, const MouseButton& b2) noexcept -> MouseButton
 {
-  return MouseButton(uInt(b1) | uInt(b2));
+  return MouseButton(uInt8(b1) | uInt8(b2));
 }
 
 constexpr auto operator |= (MouseButton& b1, const MouseButton& b2) noexcept -> MouseButton&
@@ -1303,7 +1303,7 @@ constexpr auto operator |= (MouseButton& b1, const MouseButton& b2) noexcept -> 
 
 constexpr auto operator & (const MouseButton& b1, const MouseButton& b2) noexcept -> MouseButton
 {
-  return MouseButton(uInt(b1) & uInt(b2));
+  return MouseButton(uInt8(b1) & uInt8(b2));
 }
 
 constexpr auto operator &= (MouseButton& b1, const MouseButton& b2) noexcept -> MouseButton&
@@ -1314,7 +1314,7 @@ constexpr auto operator &= (MouseButton& b1, const MouseButton& b2) noexcept -> 
 
 
 // Mouse wheel state values
-enum class MouseWheel
+enum class MouseWheel : uInt8
 {
   None  = 0x00,
   Up    = 0x01,
@@ -1368,7 +1368,7 @@ constexpr auto operator | (const FTermType& t1, FTermTypeT t2) noexcept -> FTerm
 }
 
 // Type of focus
-enum class FocusTypes
+enum class FocusTypes : uInt8
 {
   NextWidget     = 0x00,
   PreviousWidget = 0x01,
@@ -1376,7 +1376,7 @@ enum class FocusTypes
 };
 
 // Mouse drag scrolling mode
-enum class DragScrollMode
+enum class DragScrollMode : uInt8
 {
   None            = 0,
   Upward          = 1,
@@ -1395,7 +1395,7 @@ constexpr auto isDragging (const DragScrollMode& drag_scroll) noexcept -> bool
 }
 
 // Scroll bar visibility mode
-enum class ScrollBarMode
+enum class ScrollBarMode : uInt8
 {
   Auto   = 0,  // Shows a scroll bar when area is larger than viewport
   Hidden = 1,  // Never shows a scroll bar
@@ -1403,14 +1403,14 @@ enum class ScrollBarMode
 };
 
 // Cursor mode
-enum class CursorMode
+enum class CursorMode : uInt8
 {
   Insert,
   Overwrite
 };
 
 // Xterm cursor style
-enum class XTermCursorStyle
+enum class XTermCursorStyle : sInt8
 {
   UnknownCursorStyle   = -1,
   BlinkingBlock        = 0,
@@ -1423,7 +1423,7 @@ enum class XTermCursorStyle
 };
 
 // Linux console and framebuffer cursor style
-enum class LinuxConsoleCursorStyle
+enum class LinuxConsoleCursorStyle : uInt8
 {
   Default    = 0,
   Invisible  = 1,
@@ -1435,7 +1435,7 @@ enum class LinuxConsoleCursorStyle
 };
 
 // BSD console cursor style
-enum class FreeBSDConsoleCursorStyle
+enum class FreeBSDConsoleCursorStyle : uInt8
 {
   Normal      = 0,
   Blink       = 1,
@@ -1443,27 +1443,27 @@ enum class FreeBSDConsoleCursorStyle
 };
 
 // KDE konsole cursor style
-enum class KdeKonsoleCursorShape
+enum class KdeKonsoleCursorShape : uInt8
 {
   Block     = 0,
   IBeam     = 1,
   Underline = 2
 };
 
-enum class Align
+enum class Align : uInt8
 {
   Left   = 1,
   Center = 2,
   Right  = 3
 };
 
-enum class Orientation
+enum class Orientation : uInt8
 {
   Vertical   = 0,
   Horizontal = 1
 };
 
-enum class Side
+enum class Side : uInt8
 {
   Top    = 0,
   Right  = 1,
@@ -1471,7 +1471,7 @@ enum class Side
   Left   = 3
 };
 
-enum class SortType
+enum class SortType : uInt8
 {
   Name,
   Number,
@@ -1479,14 +1479,14 @@ enum class SortType
   Unknown
 };
 
-enum class SortOrder
+enum class SortOrder : uInt8
 {
   Ascending,
   Descending,
   Unsorted
 };
 
-enum class BracketType
+enum class BracketType : uInt8
 {
   None        = 0,
   Brackets    = 1,  // [ ]
@@ -1495,7 +1495,7 @@ enum class BracketType
   Chevrons    = 4   // < >
 };
 
-enum class Termcap
+enum class Termcap : uInt8
 {
   t_bell,
   t_flash_screen,

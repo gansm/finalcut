@@ -80,7 +80,7 @@ class FMessageBox : public FDialog
 {
   public:
     // Enumeration
-    enum class ButtonType : std::size_t
+    enum class ButtonType : uInt8
     {
       Reject = 0,
       Ok     = 1,

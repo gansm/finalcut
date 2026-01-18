@@ -120,7 +120,7 @@ class Calc final : public finalcut::FDialog
     // Typedef and Enumeration
     using keyFunction = std::function<void(lDouble&)>;  // Member function
 
-    enum class ButtonName
+    enum class ButtonName : uInt8
     {
       Sine,
       Cosine,

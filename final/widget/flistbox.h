@@ -333,7 +333,7 @@ class FListBox : public FWidget
     };
 
     // Enumeration
-    enum class ConvertType
+    enum class ConvertType : uInt8
     {
       None   = 0,
       Direct = 1,

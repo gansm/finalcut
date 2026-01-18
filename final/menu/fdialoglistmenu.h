@@ -82,7 +82,7 @@ class FDialogListMenu : public FMenu
 
   private:
     // Enumeration
-    enum class Enable { No, Yes };
+    enum class Enable : bool { No, Yes };
 
     // Method
     void init();

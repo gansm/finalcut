@@ -37,7 +37,7 @@ class Transparent final : public finalcut::FDialog
 {
   public:
     // Enumeration
-    enum class Type
+    enum class Type : uInt8
     {
       Transparent       = 0,
       Shadow            = 1,

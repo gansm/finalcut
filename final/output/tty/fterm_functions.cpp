@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2023 Markus Gans                                      *
+* Copyright 2019-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -50,14 +50,14 @@ using CharMap = std::array<wchar_t, 2>;
 using CharWidthCache = std::unordered_map<wchar_t, std::size_t>;
 
 // Enumeration
-enum class FullWidthSupport
+enum class FullWidthSupport : sInt8
 {
   Unknown = -1,
   No = 0,
   Yes = 1
 };
 
-enum class IsDetermined { No, Yes };
+enum class IsDetermined : bool { No, Yes };
 
 // Constant
 constexpr std::size_t NOT_FOUND = static_cast<std::size_t>(-1);

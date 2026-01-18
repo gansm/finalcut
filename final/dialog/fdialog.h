@@ -74,7 +74,7 @@ class FDialog : public FWindow
     using FWindow::setMinimizable;
 
     // Enumeration
-    enum class ResultCode : int
+    enum class ResultCode : uInt8
     {
       Reject = 0,
       Accept = 1

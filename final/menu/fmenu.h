@@ -143,7 +143,7 @@ class FMenu : public FWindow
     using KeyMap = std::unordered_map<FKey, std::function<void(FKeyEvent*)>, EnumHash<FKey>>;
 
     // Enumeration
-    enum class SelectItem { No, Yes };
+    enum class SelectItem : bool { No, Yes };
 
     struct MouseStates
     {

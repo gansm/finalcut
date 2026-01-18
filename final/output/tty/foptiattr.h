@@ -198,7 +198,7 @@ class FOptiAttr final
     using NoColorVideoHandlerTable = std::array<NoColorVideoHandler, 18>;
 
     // Enumerations
-    enum init_reset_tests
+    enum init_reset_tests : uInt8
     {
       no_test         = 0x00,
       test_ansi_reset = 0x01,  // ANSI X3.64 terminal

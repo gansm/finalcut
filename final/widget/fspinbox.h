@@ -119,7 +119,7 @@ class FSpinBox : public FWidget
     using KeyMap = std::unordered_map<FKey, std::function<void(FKeyEvent*)>, EnumHash<FKey>>;
 
     // Enumeration
-    enum class SpiningState
+    enum class SpiningState : uInt8
     {
       None = 0,
       Up   = 1,

@@ -52,7 +52,7 @@ class ConEmu
 {
   public:
     // Enumeration
-    enum class console : std::size_t
+    enum class console : uInt8
     {
       ansi,
       xterm,

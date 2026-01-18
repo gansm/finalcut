@@ -91,7 +91,7 @@ class PipeData final
 
   private:
     // Enumeration
-    enum class Array
+    enum class Array : unsigned char
     {
       Read  = 0,  // Read end of pipe
       Write = 1,  // Write end of pipe
