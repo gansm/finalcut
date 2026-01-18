@@ -256,7 +256,7 @@ cmake ..
 
 Build the executable application using the following command:
 ```bash
-mak	e
+make
 ```
 The executable application *my-dialog* is now generated.
 

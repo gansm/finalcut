@@ -9,7 +9,7 @@ Table of Contents
 - [Default signals](#the-final-cut-widgets-emit-the-following-default-signals)
 - [Callback function](#example-of-a-callback-function)
 - [Callback lambda expression](#example-of-an-lambda-expression-callback)
-- [Callback method](#example-of-a-callback-function)
+- [Callback method](#example-of-a-callback-method)
 - [Custom signals](#send-custom-signals)
 <!-- /TOC -->
 
