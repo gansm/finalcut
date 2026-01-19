@@ -1073,14 +1073,20 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y, FChar& print_char
 inline auto FTermOutput::countRepetitions ( const FChar* print_char
                                           , uInt from, uInt to ) const noexcept -> uInt
 {
-  const FChar first = *print_char;
-  const FChar* p = print_char + 1;
-  const FChar* end = print_char + (to - from) + 1;
+  if ( to < from )
+    return 0;
 
-  while ( p < end && *p == first )
-    ++p;
+  const FChar first = print_char[0];
+  const uInt end = (to - from) + 1;
+  uInt index = 1;
 
-  return static_cast<uInt>(p - print_char);
+  for (; index < end; ++index)
+  {
+    if ( print_char[index] != first )
+      break;
+  }
+
+  return index;
 }
 
 //----------------------------------------------------------------------

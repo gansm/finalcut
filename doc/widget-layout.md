@@ -1,4 +1,4 @@
-Widget layout
+Widget Layout
 =============
 
 Table of Contents

@@ -131,7 +131,7 @@ auto main (int argc, char* argv[]) -> int
 
 > [!IMPORTANT]
 > Before continuing, ensure that FINAL CUT, all required 
-> [dependencies](doc/faq.md#what-do-i-need-to-build-this-library), 
+> [dependencies](faq.md#what-do-i-need-to-build-this-library), 
 > and a C++ compiler are installed.
 
 To compile a FINAL CUT application, specify the locations of the header
