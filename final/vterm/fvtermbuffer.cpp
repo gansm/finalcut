@@ -112,9 +112,9 @@ auto FVTermBuffer::print (const FString& string) -> int
 auto FVTermBuffer::print (wchar_t ch) -> int
 {
   getNextCharacterAttribute();
-  nc.ch.char1 = ch;
-  nc.ch.char2 = L'\0';
-  const auto column_width = getColumnWidth(nc.ch.char1);
+  nc.ch.unicode_data[0] = ch;
+  nc.ch.unicode_data[1] = L'\0';
+  const auto column_width = getColumnWidth(nc.ch.unicode_data[0]);
   addColumnWidth(nc, column_width);  // add column width
   data.emplace_back(nc);
   return 1;
@@ -157,8 +157,8 @@ void FVTermBuffer::add (UnicodeBoundary& ucb)
   if ( ucb.char_width == 2
     && fterm_data.getTerminalEncoding() != Encoding::UTF8 )
   {
-    nc.ch.char1 = L'.';
-    nc.ch.char2 = L'\0';
+    nc.ch.unicode_data[0] = L'.';
+    nc.ch.unicode_data[1] = L'\0';
     nc.attr.bit.char_width = 1;
   }
   else

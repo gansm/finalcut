@@ -649,7 +649,7 @@ auto FTermOutput::canClearToEOL (uInt xmin, uInt y) const -> bool
   const auto& ce = TCAP(t_clr_eol);
   const auto* min_char = &vterm->getFChar(int(xmin), int(y));
 
-  if ( ! ce || min_char->ch.char1 != L' ' )
+  if ( ! ce || min_char->ch.unicode_data[0] != L' ' )
     return false;
 
   uInt beginning_whitespace = 1;
@@ -681,7 +681,7 @@ auto FTermOutput::canClearLeadingWS (uInt& xmin, uInt y) const -> bool
   const auto& cb = TCAP(t_clr_bol);
   const auto* first_char = &vterm->getFChar(0, int(y));
 
-  if ( ! cb || first_char->ch.char1 != L' ' )
+  if ( ! cb || first_char->ch.unicode_data[0] != L' ' )
     return false;
 
   uInt leading_whitespace = 1;
@@ -718,7 +718,7 @@ auto FTermOutput::canClearTrailingWS (uInt& xmax, uInt y) const -> bool
   const auto& ce = TCAP(t_clr_eol);
   const auto* last_char = &vterm->getFChar(vterm->size.width - 1, int(y));
 
-  if ( ! ce || last_char->ch.char1 != L' ' )
+  if ( ! ce || last_char->ch.unicode_data[0] != L' ' )
     return false;
 
   uInt trailing_whitespace = 1;
@@ -810,7 +810,7 @@ void FTermOutput::printRange (uInt xmin, uInt xmax, uInt y)
       continue;
 
     // Erase character
-    if ( ec && print_char->ch.char1 == L' ' )
+    if ( ec && print_char->ch.unicode_data[0] == L' ' )
     {
       if ( eraseCharacters(x, xmax, y, *print_char) \
            == PrintState::LineCompletelyPrinted )
@@ -839,14 +839,14 @@ inline void FTermOutput::replaceNonPrintableFullwidth ( uInt x, uInt vterm_width
 
   if ( x == 0 && isFullWidthPaddingChar(print_char) )
   {
-    print_char.ch.char1 = wchar_t(UniChar::SingleLeftAngleQuotationMark);  // ‹
-    print_char.ch.char2 = L'\0';
+    print_char.ch.unicode_data[0] = wchar_t(UniChar::SingleLeftAngleQuotationMark);  // ‹
+    print_char.ch.unicode_data[1] = L'\0';
     print_char.attr.bit.fullwidth_padding = false;
   }
   else if ( x == vterm_width && isFullWidthChar(print_char) )
   {
-    print_char.ch.char1 = wchar_t(UniChar::SingleRightAngleQuotationMark);  // ›
-    print_char.ch.char2 = L'\0';
+    print_char.ch.unicode_data[0] = wchar_t(UniChar::SingleRightAngleQuotationMark);  // ›
+    print_char.ch.unicode_data[1] = L'\0';
     print_char.attr.bit.char_width = 1;
   }
 }
@@ -990,7 +990,7 @@ auto FTermOutput::eraseCharacters (uInt& x, uInt xmax, uInt y, FChar& print_char
 
   const auto& ec = TCAP(t_erase_chars);
 
-  if ( ! (ec && print_char.ch.char1 == L' ') )
+  if ( ! (ec && print_char.ch.unicode_data[0] == L' ') )
     return PrintState::NothingPrinted;
 
   const auto whitespace = countRepetitions(&print_char, x, xmax);
@@ -1051,7 +1051,7 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y, FChar& print_char
     newFontChanges (print_char);
     charsetChanges (print_char);
     appendAttributes (print_char);
-    appendOutputBuffer (FTermControl{FTermcap::encodeParameter(rp, print_char.ch.char1, repetitions)});
+    appendOutputBuffer (FTermControl{FTermcap::encodeParameter(rp, print_char.ch.unicode_data[0], repetitions)});
     term_pos->x_ref() += static_cast<int>(repetitions);
   }
   else if ( lr && repetition_type == Repetition::UTF8 )
@@ -1106,8 +1106,8 @@ inline auto FTermOutput::canUseCharacterRepetitions ( const FChar& print_char
                                                     , uInt repetitions ) const noexcept -> bool
 {
   return repetitions > repeat_char_length
-      && print_char.ch.char1 != L'\0'
-      && print_char.ch.char2 == L'\0';
+      && print_char.ch.unicode_data[0] != L'\0'
+      && print_char.ch.unicode_data[1] == L'\0';
 }
 
 //----------------------------------------------------------------------
@@ -1116,10 +1116,10 @@ inline auto FTermOutput::getRepetitionType ( const FChar& print_char
 {
   if ( canUseCharacterRepetitions(print_char, repetitions) )
   {
-    if ( is7bit(print_char.ch.char1) )
+    if ( is7bit(print_char.ch.unicode_data[0]) )
       return Repetition::ASCII;
 
-    if ( isPrintable(print_char.ch.char1) )
+    if ( isPrintable(print_char.ch.unicode_data[0]) )
       return Repetition::UTF8;
   }
 
@@ -1325,12 +1325,12 @@ inline void FTermOutput::newFontChanges (FChar& next_char) const
   if ( ! FTerm::isNewFont() )
     return;
 
-  if ( next_char.ch.char1 == UniChar::LowerHalfBlock )
+  if ( next_char.ch.unicode_data[0] == UniChar::LowerHalfBlock )
   {
-    next_char.ch.char1 = wchar_t(UniChar::UpperHalfBlock);
+    next_char.ch.unicode_data[0] = wchar_t(UniChar::UpperHalfBlock);
     next_char.attr.bit.reverse = true;
   }
-  else if ( isReverseNewFontchar(next_char.ch.char1) )
+  else if ( isReverseNewFontchar(next_char.ch.unicode_data[0]) )
     next_char.attr.bit.reverse = true;  // Show in reverse video
 }
 
@@ -1353,13 +1353,13 @@ inline void FTermOutput::charsetChanges (FChar& next_char) const
   if ( terminal_encoding == Encoding::UTF8 )
     return;
 
-  const auto& ch = next_char.ch.char1;
+  const auto& ch = next_char.ch.unicode_data[0];
   const auto& ch_enc = FTerm::charEncode(ch);
 
   if ( ch_enc == ch )
     return;
 
-  auto& first_enc_char = next_char.encoded_char.char1;
+  auto& first_enc_char = next_char.encoded_char.unicode_data[0];
 
   if ( ch_enc == 0 )
   {
@@ -1520,7 +1520,7 @@ inline void FTermOutput::characterFilter (FChar& next_char)
   if ( sub_map.isEmpty() )
     return;
 
-  auto& first_enc_char = next_char.encoded_char.char1;
+  auto& first_enc_char = next_char.encoded_char.unicode_data[0];
   const auto& entry = sub_map.getMappedChar(first_enc_char);
 
   if ( entry )

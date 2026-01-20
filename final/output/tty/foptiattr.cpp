@@ -458,7 +458,7 @@ auto FOptiAttr::changeAttribute (FChar& term, FChar& next) -> std::string
 
   // Simulate invisible characters
   if ( ! F_secure.on.cap && next.attr.bit.invisible )
-    next.encoded_char.char1 = ' ';
+    next.encoded_char.unicode_data[0] = ' ';
 
   // Look for no changes
   if ( ! (switchOn() || switchOff() || hasColorChanged(term, next)) )

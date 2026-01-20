@@ -416,13 +416,11 @@ union FAttribute
   FCharAttribute bit;
 };
 
+static constexpr std::size_t UNICODE_MAX = 5;
+
 struct FUnicode
 {
-  wchar_t char1;  // First character
-  wchar_t char2;  // Second character
-  wchar_t char3;  // Third character
-  wchar_t char4;  // Fourth character
-  wchar_t char5;  // Fifth character
+  wchar_t unicode_data[UNICODE_MAX]{L'\0', L'\0', L'\0', L'\0', L'\0'};
 
   // Using-declarations
   using iterator        = wchar_t*;
@@ -436,62 +434,67 @@ struct FUnicode
   // Overloaded operators
   inline auto operator [] (std::size_t index) noexcept -> reference
   {
-    return *(&char1 + index);
+    return unicode_data[index];
   }
 
   inline auto operator [] (std::size_t index) const noexcept -> const_reference
   {
-    return *(&char1 + index);
+    return unicode_data[index];
   }
 
   // Methods
   inline auto begin() noexcept -> iterator
   {
-    return &char1;
+    return &unicode_data[0];
   }
 
   inline auto end() noexcept -> iterator
   {
-    return &char5 + 1;
+    return &unicode_data[0] + 5;
   }
 
   inline auto begin() const noexcept -> const_iterator
   {
-    return &char1;
+    return &unicode_data[0];
   }
 
   inline auto end() const noexcept -> const_iterator
   {
-    return &char5 + 1;
+    return &unicode_data[0] + 5;
   }
 
   inline auto cbegin() const noexcept -> const_iterator
   {
-    return &char1;
+    return &unicode_data[0];
   }
 
   inline auto cend() const noexcept -> const_iterator
   {
-    return &char5 + 1;
+    return &unicode_data[0] + 5;
   }
 
   inline auto data() noexcept -> pointer
   {
-    return &char1;
+    return &unicode_data[0];
   }
 
   inline auto data() const noexcept -> const_pointer
   {
-    return &char1;
+    return &unicode_data[0];
   }
 
   friend constexpr auto operator == (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool
   {
-    return lhs.char1 == rhs.char1
-        && lhs.char2 == rhs.char2
-        && lhs.char3 == rhs.char3
-        && lhs.char4 == rhs.char4
-        && lhs.char5 == rhs.char5;
+    for (std::size_t i = 0; i < 5; ++i)
+    {
+      if ( lhs.unicode_data[i] != rhs.unicode_data[i] )
+        return false;
+
+      if ( lhs.unicode_data[i] == '\0' )
+        return true;
+    }
+
+    return true;
   }
 
   friend constexpr auto operator != (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool
@@ -500,7 +503,7 @@ struct FUnicode
   }
 };
 
-static constexpr std::size_t UNICODE_MAX = sizeof(FUnicode) / sizeof(wchar_t);
+static_assert( sizeof(FUnicode) == UNICODE_MAX * sizeof(wchar_t), "Unexpected alignment or padding in FUnicode" );
 
 enum class FColor : uInt16;  // forward declaration
 
@@ -574,10 +577,7 @@ struct alignas(std::max_align_t) FChar
     static const auto mask = getCompareBitMask();
 #endif
 
-    if ( (lhs.attr.data & mask) != (rhs.attr.data & mask) )
-      return false;
-
-    return true;
+    return (lhs.attr.data & mask) == (rhs.attr.data & mask);
   }
 
 #if HAVE_BUILTIN(__builtin_bit_cast)

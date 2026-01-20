@@ -1770,7 +1770,7 @@ constexpr auto FVTerm::isFCharTransparent (const FChar& fchar) noexcept -> bool
 inline auto FVTerm::isTransparentInvisible (const FChar& fchar) const noexcept -> bool
 {
   static const auto& trans_inv_chars = getTransparentInvisibleLookupMap();
-  const auto& fist_char = fchar.ch.char1;
+  const auto& fist_char = fchar.ch.unicode_data[0];
   return trans_inv_chars.find(fist_char) != trans_inv_chars.end();
 }
 
@@ -2270,7 +2270,7 @@ inline auto FVTerm::interpretControlCodes ( FTermArea* area
                                           , FChar*& ac
                                           , const FChar& term_char ) const noexcept -> bool
 {
-  switch ( term_char.ch.char1 )
+  switch ( term_char.ch.unicode_data[0] )
   {
     case L'\n':
       area->cursor.y++;
