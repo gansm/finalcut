@@ -37,12 +37,12 @@ The design of FINAL CUT's C++ class structure was inspired by the Qt framework. 
 Before installing FINAL CUT, check if your computer meets the requirements. You can find these in the FAQ section under "[What do I need to build this library?](doc/faq.md#what-do-i-need-to-build-this-library)".
 
 ```bash
-> git clone https://github.com/gansm/finalcut.git
-> cd finalcut
-> autoreconf --install --force
-> ./configure --prefix=/usr
-> make
-> su -c "make install"
+git clone https://github.com/gansm/finalcut.git
+cd finalcut
+autoreconf --install --force
+./configure --prefix=/usr
+make
+su -c "make install"
 ```
 
 ## Supported Platforms
