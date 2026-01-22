@@ -42,7 +42,7 @@ cd finalcut
 autoreconf --install --force
 ./configure --prefix=/usr
 make -j$(( $(nproc) + 1))
-su -c "make install"
+sudo make install
 ```
 
 ## Supported Platforms
