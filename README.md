@@ -41,7 +41,7 @@ git clone https://github.com/gansm/finalcut.git
 cd finalcut
 autoreconf --install --force
 ./configure --prefix=/usr
-make
+make -j$(( $(nproc) + 1))
 su -c "make install"
 ```
 
