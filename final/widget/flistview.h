@@ -185,7 +185,7 @@ template <typename DT>
 inline void FListViewItem::setData (DT&& data)
 {
   const auto data_obj = makeFData(std::forward<DT>(data));
-  data_pointer = data_obj;
+  data_pointer.reset(data_obj);
 }
 
 //----------------------------------------------------------------------
@@ -839,7 +839,10 @@ inline auto FListView::getColumnCount() const -> std::size_t
 
 //----------------------------------------------------------------------
 inline void FListView::toggleItemCheckState (FListViewItem* item) const
-{ item->setChecked(! item->isChecked()); }
+{
+  item->setChecked(! item->isChecked());
+  processChanged();
+}
 
 //----------------------------------------------------------------------
 inline void FListView::scrollTo (const FPoint& pos)
