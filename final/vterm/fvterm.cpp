@@ -2330,7 +2330,10 @@ inline auto FVTerm::printCharacter ( FTermArea* area
     area->cursor.y++;
   }
   else if ( char_width == 2 )
+  {
     printPaddingCharacter (area, term_char);
+    ++ac;
+  }
 
   // Prevent up scrolling
   if ( area->cursor.y > getFullAreaHeight(area) )
