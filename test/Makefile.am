@@ -17,6 +17,7 @@ noinst_PROGRAMS = \
 	fdata_test \
 	fevent_test \
 	fkeyboard_test \
+	flistview_test \
 	flogger_test \
 	fmouse_test \
 	fobject_test \
@@ -49,6 +50,7 @@ fcolorpair_test_SOURCES = fcolorpair-test.cpp
 fdata_test_SOURCES = fdata-test.cpp
 fevent_test_SOURCES = fevent-test.cpp
 fkeyboard_test_SOURCES = fkeyboard-test.cpp
+flistview_test_SOURCES = flistview-test.cpp
 flogger_test_SOURCES = flogger-test.cpp
 fmouse_test_SOURCES = fmouse-test.cpp
 fobject_test_SOURCES = fobject-test.cpp
@@ -85,6 +87,7 @@ TESTS = \
 	fdata_test \
 	fevent_test \
 	fkeyboard_test \
+	flistview_test \
 	flogger_test \
 	fmouse_test \
 	fobject_test \
