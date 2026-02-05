@@ -1,3 +1,8 @@
+2026-02-05  Markus Gans  <guru.mail@muenster.de>
+	* The configure script now supports compiling unit tests and examples 
+	  in a single build when you use the --with-unit-test and 
+	  --enable-compile-all arguments together
+
 2026-01-20  Markus Gans  <guru.mail@muenster.de>
 	* Convert the FUnicode data structure back to an array to avoid access 
 	  problems on some architectures

@@ -5,6 +5,28 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_INIT([finalcut], [0.9.2])
+
+# Check for autoconf-archive
+m4_ifndef([AX_PREFIX_CONFIG_H], [
+  m4_fatal([
+-------------------------------------------------------------------------
+Error: autoconf-archive is not installed. Please install the package 
+and run this command again.
+-------------------------------------------------------------------------])
+])
+
+m4_pattern_forbid([^AX_])
+
+# Check for pkg-config
+AC_PATH_PROG([PKG_CONFIG], [pkg-config])
+if test -z "$PKG_CONFIG"
+then
+  AC_MSG_ERROR([
+-------------------------------------------------------------------------
+Error: pkg-config is not installed. Please install 'pkg-config'.
+-------------------------------------------------------------------------])
+fi
+
 AC_CONFIG_HEADERS([config.h])
 AX_PREFIX_CONFIG_H([final/fconfig.h], [F])
 AC_CONFIG_SRCDIR([final/fobject.cpp])
@@ -107,9 +129,9 @@ m4_ifdef([AX_CXX_COMPILE_STDCXX_14],
          [AX_CXX_COMPILE_STDCXX_14([noext],[mandatory])],
          [AC_MSG_ERROR([Macro AX_CXX_COMPILE_STDCXX_14 not found. Please install GNU autoconf-archive])])
 
-# use GPM (General Purpose Mouse)
+# Use GPM (General Purpose Mouse)
 AC_ARG_WITH([gpm],
-            [AS_HELP_STRING([--without-gpm], [Disable GPM mouse support])],
+            [AS_HELP_STRING([--without-gpm], [disable GPM mouse support])],
             [],
             [with_gpm=yes])
 if test "x$with_gpm" != "xno"
@@ -136,7 +158,7 @@ fi
 
 AC_SUBST([CMAKEMODULESDIR])
 
-# profiling
+# Profiling
 AC_ARG_WITH([profiler],
             [AS_HELP_STRING([--with-profiler], [build extra google profiler binaries])],
             [],
@@ -148,7 +170,13 @@ then
                [FINAL_LIBS="$FINAL_LIBS -lprofiler"])
 fi
 
-# unit test
+# Compile everything
+AC_ARG_ENABLE([compile-all],
+              [AS_HELP_STRING([--enable-compile-all], [compiles the entire code])],
+              [compile_all=$enableval],
+              [compile_all=no])
+
+# Unit test
 AC_ARG_WITH([unit-test],
             [AS_HELP_STRING([--with-unit-test], [build unit tests])],
             [],
@@ -163,7 +191,7 @@ else
   AM_CONDITIONAL(CPPUNIT_TEST, [test "1" = "0"])
 fi
 
-# code coverage
+# Code coverage
 AC_ARG_WITH([gcov],
             [AS_HELP_STRING([--with-gcov], [build for code coverage testing])],
             [],
@@ -176,5 +204,7 @@ then
   AM_CXXFLAGS="-fprofile-arcs -ftest-coverage $AM_CXXFLAGS"
   AC_SUBST([AM_CXXFLAGS])
 fi
+
+AM_CONDITIONAL([COMPILE_EXAMPLES], [test "x$with_unit_test" = xno || test "x$compile_all" = xyes])
 
 AC_OUTPUT

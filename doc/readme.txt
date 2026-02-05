@@ -3,11 +3,12 @@
 ----------------------------------------------------------------------
 
 FINAL CUT is a C++ class library and widget toolkit that enables
-developers to create text-based user interfaces. It offers full mouse
-support, UTF-8 character encoding, support for full-width characters,
-and the capability to display combined Unicode characters. The library
-helps the programmer to create an application for the text console. It
-allows it to handle multiple text windows on the screen.
+developers to create text-based user interfaces (TUI). It offers full
+mouse support, UTF-8 character encoding, support for full-width
+characters, and the capability to display combined Unicode characters.
+The library allows developers to create user-friendly text console
+applications that manage multiple text windows on the screen using
+their own windowing system.
 
 The design of FINAL CUT's C++ class structure was inspired by the Qt
 framework. It offers a variety of general controls, including dialog

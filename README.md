@@ -2,9 +2,9 @@
 
 # Library for creating terminal applications with text-based widgets
 
-FINAL CUT is a powerful and lightweight C++ library for creating [terminal-based applications](https://en.wikipedia.org/wiki/Text-based_user_interface) with numerous text-based widgets. FINAL CUT is designed for simplicity and does not require the functionality of external libraries (such as [ncurses](https://invisible-island.net/ncurses/ncurses.html) or [termbox](https://code.google.com/archive/p/termbox/)) but still offers full [mouse](doc/mouse-control.md#title-bar-actions-on-mouse-clicks) support, Unicode compatibility, and versatile widget functions.
+FINAL CUT is a powerful and lightweight C++ library for creating [terminal-based applications (TUI)](https://en.wikipedia.org/wiki/Text-based_user_interface) with numerous text-based widgets. FINAL CUT is designed for simplicity and does not require the functionality of external libraries (such as [ncurses](https://invisible-island.net/ncurses/ncurses.html) or [termbox](https://code.google.com/archive/p/termbox/)) but still offers full [mouse](doc/mouse-control.md#title-bar-actions-on-mouse-clicks) support, Unicode compatibility, and versatile widget functions.
 
-It provides [UTF-8](https://en.wikipedia.org/wiki/UTF-8) character encoding, [full-width character](https://en.wikipedia.org/wiki/Halfwidth_and_fullwidth_forms) support, and the ability to display [combined Unicode characters](https://en.wikipedia.org/wiki/Combining_character). The library helps the developer to create an easy-to-use text console application and allows handling multiple text windows on the screen.
+It provides [UTF-8](https://en.wikipedia.org/wiki/UTF-8) character encoding, [full-width character](https://en.wikipedia.org/wiki/Halfwidth_and_fullwidth_forms) support, and the ability to display [combined Unicode characters](https://en.wikipedia.org/wiki/Combining_character). The library allows developers to create user-friendly text console applications that manage multiple text windows on the screen using their own windowing system.
 
 The design of FINAL CUT's C++ class structure was inspired by the Qt framework. It provides a variety of common controls, including dialog boxes, push buttons, check boxes, radio buttons, input lines, list boxes, and status bars.
 
@@ -45,6 +45,10 @@ make
 su -c "make install"
 ```
 
+> [!NOTE]
+> To simplify the build process, use the shell script `build.sh` located in the project root directory. Execute `./build.sh release` to initiate configuration and building. For a list of available options, enter `./build.sh help`.
+
+
 ## Supported Platforms
 
 FINAL CUT currently works on the following platforms:
@@ -70,7 +74,7 @@ Check out the FINAL CUT [FAQ](doc/faq.md#frequently-asked-questions) for common 
 
 ## Screenshots
 
-Explore the power of FINAL CUT with these examples:
+Explore FINAL CUT's text-ui with these examples:
 
 ![FFileDialog](doc/fileopen-dialog.png)
 <br />*FFileDialog widget with incremental search*<br /><br />

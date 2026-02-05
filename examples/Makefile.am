@@ -4,7 +4,7 @@
 
 LIBS = -lfinal
 
-if ! CPPUNIT_TEST
+if COMPILE_EXAMPLES
 
 AM_LDFLAGS = -L$(top_builddir)/final/.libs
 AM_CPPFLAGS = -I$(top_srcdir)/final -Wall -Werror -std=c++14

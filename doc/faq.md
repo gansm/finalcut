@@ -75,17 +75,24 @@ You need three things:
 
 1. C++ compiler like GCC (g++) or Clang (clang++).
 
+   > *In a Debian-based distribution it would be
+   > the following packages:*
+   >
+   > * g++<br />*or*
+   > * clang
+
 2. The GNU building tools
 
-    *For example, in a Debian-based distribution it would be 
-    the following packages:*
-
-    * autotools-dev
-    * automake
-    * autoconf
-    * autoconf-archive
-    * libtool
-    * pkg-config
+   > *In a Debian-based distribution it would be 
+   > the following packages:*
+   >
+   > * autoconf
+   > * autoconf-archive
+   > * automake
+   > * autotools-dev
+   > * libtool
+   > * make
+   > * pkg-config
 
 3. Development packages for the following libraries:
 
@@ -93,16 +100,14 @@ You need three things:
     * C++ standard library
     * Termcap library *(mostly part of the curses library)*
     * General Purpose Mouse library *(optional, only if you need 
-      mouse support on the Linux console)*
+      mouse support on the Linux console)*<br /><br />
 
-    *For example, in a Debian-based distribution it would be the following 
-    packages:*
-
-    * libglib2.0-dev
-    * libstdc++-6-dev
-    * libtinfo-dev
-    * libncurses5-dev
-    * libgpm-dev
+    > *In a Debian-based distribution it would be
+    > the following packages:*
+    > 
+    > * libglib2.0-dev
+    > * libgpm-dev
+    > * libncurses-dev
 
 
 How to compile FINAL CUT without GPM support?

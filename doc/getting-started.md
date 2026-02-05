@@ -277,6 +277,27 @@ the application main event loop. It receives keyboard and mouse events
 and sends them to the target widgets. You have to create an application
 object before you can create a widgets object.
 
+> [!NOTE]
+> **Command line arguments**
+> 
+> All FINAL CUT applications support the predefined command-line arguments.
+> 
+> | Option                     | Description               |
+> | :------------------------- | :------------------------ |
+> | -h, --help                 | Display the help options  |
+> | --encoding=*&lt;MODE&gt;*  | Sets the character encoding mode.<br />*&lt;MODE&gt;* can be one of *utf8*, *vt100*, *pc* or *ascii* |
+> | --log-file=*&lt;FILE&gt;*  | Writes log output to the file *&lt;FILE&gt;*.<br /> `std::clog << "A debug message\n";` creates a log line in this file. To view the output in another terminal, run `tail -f <FILE>`.|
+> | --no-mouse                 | Disable mouse support |
+> | --no-optimized-cursor      | Disable cursor optimization |
+> | --no-terminal-detection    | Disable terminal detection |
+> | --no-terminal-data-request | Do not determine terminal font and title |
+> | --no-terminal-focus-events | Do not send focus-in and focus-out events |
+> | --no-color-change          | Do not redefine the color palette |
+> | --no-sgr-optimizer         | Do not optimize SGR sequences |
+> | --vgafont                  | Set the standard vga 8x16 font |
+> | --newfont                  | Enables the graphical font |
+> | --dark-theme               | Enables the dark theme |
+
 The next line
 ```cpp
 finalcut::FDialog dialog(&app);
@@ -320,6 +341,11 @@ if available) visible.
 return app.exec();
 ```
 The last line calls `exec()` to start the application and to return
-the result to the operating system. The started application enters
-the main event loop. This loop does not end until the window is
-closed.
+the result to the operating system. The return value can be
+EXIT_SUCCESS (0), EXIT_FAILURE (1), or any other value specified by
+`FApplication::exit(int retcode)`. The application then enters its
+[main event loop](event-processing.md#event-processing), processing all
+events, including user interactions with the TUI, until the window closes.
+
+> [!NOTE]
+> Each FINAL CUT application has exactly one main event loop.
