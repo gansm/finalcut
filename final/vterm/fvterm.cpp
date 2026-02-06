@@ -308,9 +308,9 @@ void FVTerm::putVTerm() const
 
   auto xmax = uInt(vterm->size.width - 1);
   auto ymax = uInt(vterm->size.height - 1);
-  auto vterm_changes = &vterm->changes_in_line[unsigned(0)];
+  auto vterm_changes = vterm->changes_in_line.begin();
   std::for_each ( vterm_changes
-                , vterm_changes + unsigned(vterm->size.height)
+                , vterm_changes + vterm->size.height
                 , [&xmax] (auto& vterm_changes_line) noexcept
                   {
                     vterm_changes_line.xmin = 0;
@@ -348,23 +348,23 @@ void FVTerm::reduceTerminalLineUpdates (uInt y)
   if ( xmin > xmax )  // No changes
     return;
 
-  const auto* first = &vterm->getFChar(int(xmin), int(y));
-  const auto* first_old = &vterm_old->getFChar(int(xmin), int(y));
-  auto* last = &vterm->getFChar(int(xmax), int(y));
-  const auto* last_old = &vterm_old->getFChar(int(xmax), int(y));
+  auto first = vterm->getFCharIterator(int(xmin), int(y));
+  auto first_old = vterm_old->getFCharIterator(int(xmin), int(y));
+  auto last = vterm->getFCharIterator(int(xmax), int(y));
+  auto last_old = vterm_old->getFCharIterator(int(xmax), int(y));
 
   while ( xmin < xmax && *first == *first_old )
   {
     xmin++;
-    first++;
-    first_old++;
+    ++first;
+    ++first_old;
   }
 
   while ( last >= first && *last == *last_old )
   {
     xmax--;
-    last--;
-    last_old--;
+    --last;
+    --last_old;
   }
 
   while ( last > first )
@@ -372,8 +372,8 @@ void FVTerm::reduceTerminalLineUpdates (uInt y)
     if ( *last == *last_old )
       last->attr.bit.no_changes = true;
 
-    last--;
-    last_old--;
+    --last;
+    --last_old;
   }
 }
 
@@ -489,8 +489,8 @@ auto FVTerm::print (FTermArea* area, const FVTermBuffer& buffer) const noexcept 
   if ( ! area || buffer.isEmpty() )
     return -1;
 
-  auto* ac = &area->getFChar( area->cursor.x - 1
-                            , area->cursor.y - 1 );  // area character
+  auto ac = area->getFCharIterator( area->cursor.x - 1
+                                  , area->cursor.y - 1 );  // area character iterator
 
   for (const auto& fchar : buffer)
   {
@@ -540,8 +540,8 @@ auto FVTerm::print (FTermArea* area, const FChar& term_char) const noexcept -> i
   if ( ! area )
     return -1;  // No area
 
-  auto* ac = &area->getFChar( area->cursor.x - 1
-                            , area->cursor.y - 1 );  // area character
+  auto ac = area->getFCharIterator( area->cursor.x - 1
+                                  , area->cursor.y - 1 );  // area character iterator
   return printCharacter(area, ac, term_char);
 }
 
@@ -2238,7 +2238,7 @@ void FVTerm::clearAreaWithShadow (FTermArea* area, const FChar& fillchar) const 
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::printWrap (FTermArea* area, FChar*& ac) const -> bool
+inline auto FVTerm::printWrap (FTermArea* area, FChar_iterator& ac) const -> bool
 {
   bool end_of_area{false};
   const int& width  = area->size.width;
@@ -2251,14 +2251,14 @@ inline auto FVTerm::printWrap (FTermArea* area, FChar*& ac) const -> bool
   {
     area->cursor.x = 1;
     area->cursor.y++;
-    ac = &area->getFChar(area->cursor.x - 1, area->cursor.y - 1);
+    ac = area->getFCharIterator(area->cursor.x - 1, area->cursor.y - 1);
   }
 
   // Prevent up scrolling
   if ( area->cursor.y > height + bsh )
   {
     area->cursor.y--;
-    ac = &area->getFChar(area->cursor.x - 1, area->cursor.y - 1);
+    ac = area->getFCharIterator(area->cursor.x - 1, area->cursor.y - 1);
     end_of_area = true;
   }
 
@@ -2267,7 +2267,7 @@ inline auto FVTerm::printWrap (FTermArea* area, FChar*& ac) const -> bool
 
 //----------------------------------------------------------------------
 inline auto FVTerm::interpretControlCodes ( FTermArea* area
-                                          , FChar*& ac
+                                          , FChar_iterator& ac
                                           , const FChar& term_char ) const noexcept -> bool
 {
   switch ( term_char.ch.unicode_data[0] )
@@ -2295,13 +2295,13 @@ inline auto FVTerm::interpretControlCodes ( FTermArea* area
       return false;
   }
 
-  ac = &area->getFChar(area->cursor.x - 1, area->cursor.y - 1);
+  ac = area->getFCharIterator(area->cursor.x - 1, area->cursor.y - 1);
   return true;
 }
 
 //----------------------------------------------------------------------
 inline auto FVTerm::printCharacter ( FTermArea* area
-                                   , FChar*& ac
+                                   , FChar_iterator& ac
                                    , const FChar& term_char ) const noexcept -> int
 {
   if ( ! area )
@@ -2344,7 +2344,7 @@ inline auto FVTerm::printCharacter ( FTermArea* area
 
 //----------------------------------------------------------------------
 inline auto FVTerm::printCharacterOnCoordinate ( FTermArea* area
-                                               , FChar*& ac
+                                               , FChar_iterator& ac
                                                , const FChar& ch ) const noexcept -> std::size_t
 {
   const auto ax = unsigned(area->cursor.x - 1);

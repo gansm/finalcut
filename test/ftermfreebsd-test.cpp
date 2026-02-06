@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2025 Markus Gans                                      *
+* Copyright 2019-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -920,9 +920,9 @@ auto ftermfreebsdTest::charEncode (wchar_t c) -> wchar_t
 
   for (auto&& entry : finalcut::FCharMap::getInstance().getCharEncodeMap())
   {
-    if ( entry.unicode == c )
+    if ( entry.encoding.unicode == c )
     {
-      ch_enc = entry.pc;
+      ch_enc = entry.encoding.pc;
       break;
     }
   }

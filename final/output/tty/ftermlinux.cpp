@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2025 Markus Gans                                      *
+* Copyright 2018-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -213,12 +213,12 @@ void FTermLinux::initCharMap() const
   {
     for (auto&& entry : FCharMap::getCharEncodeMap())
     {
-      const auto ucs = entry.unicode;
+      const auto ucs = entry.encoding.unicode;
       const sInt16 fontpos = getFontPos(ucs);
 
       // Fix for a non-cp437 Linux console with PC charset encoding
       if ( fontpos > 255 || fontpos == NOT_FOUND )
-        entry.pc = entry.ascii;
+        entry.encoding.pc = entry.encoding.ascii;
 
       // Character substitutions for missing characters
       if ( fontpos == NOT_FOUND )
@@ -627,9 +627,11 @@ auto FTermLinux::setScreenFont ( const uChar fontdata[], uInt count
     font.data = font_data.data();
 
     for (std::size_t i{0}; i < count; i++)
-      std::memcpy ( font.data + bytes_per_line * 32 * i
-                  , &fontdata[i * font.height]
-                  , font.height );
+    {
+      const auto* src = std::next(fontdata, long(i * font.height));
+      auto* dest = std::next(font.data, long(bytes_per_line * 32 * i));
+      std::memcpy (dest, src, font.height);
+    }
   }
 
   // Font operation
@@ -1121,10 +1123,10 @@ inline void FTermLinux::initSpecialCharacter() const
 auto FTermLinux::getFontPos (wchar_t ucs) const -> sInt16
 {
   static constexpr sInt16 NOT_FOUND = -1;
-  auto& count = screen_unicode_map.entry_ct;
-  const auto& begin = &screen_unicode_map.entries[0];
-  const auto& end = &screen_unicode_map.entries[count];
-  const auto& iter = std::find_if ( begin, end,
+  auto count = screen_unicode_map.entry_ct;
+  const auto* begin = screen_unicode_map.entries;
+  const auto* end = std::next(begin, long(count));
+  const auto* iter = std::find_if ( begin, end,
                                     [&ucs] (const auto& entry)
                                     {
                                       return ucs == wchar_t(entry.unicode);

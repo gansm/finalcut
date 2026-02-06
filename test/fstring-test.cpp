@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2025 Markus Gans                                      *
+* Copyright 2018-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -1741,16 +1741,16 @@ void FStringTest::convertToNumberTest()
   str = "65535";
   CPPUNIT_ASSERT ( str.toUInt() == 65535U );
 
-  str = "-2147483647";
+  str = "\f\n\r\t\v -2147483647";
   CPPUNIT_ASSERT ( str.toLong() == -2147483647 );
 
-  str = "+987654321";
+  str = "+987654321 \f\n\r\t\v";
   CPPUNIT_ASSERT ( str.toLong() == 987654321 );
 
-  str = "4294967295";
+  str = "\f\n\r\t\v 4294967295";
   CPPUNIT_ASSERT ( str.toULong() == 4294967295U );
 
-  str = "+1234567890";
+  str = "+1234567890 \f\n\r\t\v";
   CPPUNIT_ASSERT ( str.toULong() == 1234567890U );
 
   str = "3.14159";

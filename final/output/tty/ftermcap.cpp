@@ -205,18 +205,18 @@ auto FTermcap::paddingPrint (const char* string, uInt32 len, int affcnt) -> Stat
 
   bool has_delay = hasDelay(string);
   auto iter = string;
-  auto end = string + len;
+  auto end = std::next(string, len);
 
   while ( iter != end )
   {
     if ( *iter != '$' )
     {
       outc (int(*iter));
-      ++iter;
+      iter = std::next(iter);
       continue;
     }
 
-    ++iter;
+    iter = std::next(iter);
 
     if ( iter == end || *iter != '<' )
     {
@@ -227,7 +227,7 @@ auto FTermcap::paddingPrint (const char* string, uInt32 len, int affcnt) -> Stat
       else
         break;
 
-      ++iter;
+      iter = std::next(iter);
       continue;
     }
 
@@ -243,7 +243,7 @@ auto FTermcap::paddingPrint (const char* string, uInt32 len, int affcnt) -> Stat
     if ( has_delay && number > 0 )
       delayOutput(number / 10);
 
-    ++iter;
+    iter = std::next(iter);
   }
 
   return Status::OK;
@@ -516,7 +516,7 @@ inline auto FTermcap::hasDelay (const std::string& string) noexcept -> bool
 inline auto FTermcap::readNumber ( const char*& iter, int affcnt
                                  , bool& has_delay) noexcept -> int
 {
-  ++iter;
+  iter = std::next(iter);
   const auto first_digit = iter;
 
   if ( ! std::isdigit(uChar(*iter)) && *iter != '.' )
@@ -544,7 +544,7 @@ inline void FTermcap::readDigits (const char*& iter, int& number) noexcept
   while ( (digit = uChar(*iter - '0')) < 10 && number < 1000 )
   {
     number = number * 10 + digit;
-    ++iter;
+    iter = std::next(iter);
   }
 
   number *= 10;  // Centisecond
@@ -556,16 +556,16 @@ inline void FTermcap::decimalPoint (const char*& iter, int& number) noexcept
   if ( *iter != '.' )
     return;
 
-  ++iter;
+  iter = std::next(iter);
 
   if ( std::isdigit(uChar(*iter)) )
   {
     number += (*iter - '0');  // Position after decimal point
-    ++iter;
+    iter = std::next(iter);
   }
 
   while ( std::isdigit(uChar(*iter)) )
-    ++iter;
+    iter = std::next(iter);
 }
 
 //----------------------------------------------------------------------
@@ -578,13 +578,13 @@ inline void FTermcap::asteriskSlash ( const char*& iter
     {
       // Padding is proportional to the number of affected lines (suffix '*')
       number *= affcnt;
-      ++iter;
+      iter = std::next(iter);
     }
     else
     {
       // Padding is mandatory (suffix '/')
       has_delay = true;
-      ++iter;
+      iter = std::next(iter);
     }
   }
 }

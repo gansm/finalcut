@@ -1,4 +1,5 @@
 2026-02-05  Markus Gans  <guru.mail@muenster.de>
+	* Reduce pointer arithmetic and use safe iterators more often
 	* Bugfix: Full-width characters will display correctly again. 
 	  This was a defect since December 31
 	* The configure script now supports compiling unit tests and examples 

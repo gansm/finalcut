@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021-2025 Markus Gans                                      *
+* Copyright 2021-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -41,6 +41,38 @@
 
 namespace finalcut
 {
+
+namespace internal
+{
+
+constexpr auto getAttrResetMask() noexcept -> uInt32
+{
+  FCharAttribute mask{};
+  mask.bold = true;
+  mask.dim = true;
+  mask.italic = true;
+  mask.underline = true;
+  mask.blink = true;
+  mask.reverse = true;
+  mask.standout = true;
+  mask.invisible = true;
+  mask.protect = true;
+  mask.crossed_out = true;
+  mask.dbl_underline = true;
+  mask.alt_charset = true;
+  mask.pc_charset = true;
+  mask.transparent = true;
+  mask.color_overlay = true;
+  mask.inherit_background = true;
+  return 0xffffffff & ~(FCharAttribute_to_uInt32(mask));
+}
+
+struct attr_var
+{
+  static constexpr auto reset_mask = getAttrResetMask();
+};
+
+}  // namespace internal
 
 // class forward declaration
 class FColorPair;
@@ -164,8 +196,7 @@ inline auto FVTermAttribute::getAttribute() noexcept -> FChar&
 inline void FVTermAttribute::setColor (FColor fg, FColor bg) noexcept
 {
   // Changes colors
-  next_attribute.color.pair.fg = fg;
-  next_attribute.color.pair.bg = bg;
+  next_attribute.color.pair = {fg, bg};
 }
 
 //----------------------------------------------------------------------
@@ -178,11 +209,10 @@ inline void FVTermAttribute::setColor (const FColorPair& pair) noexcept
 inline void FVTermAttribute::setNormal() noexcept
 {
   // Reset all character attributes
-  next_attribute.attr.byte[0] = 0;
-  next_attribute.attr.byte[1] = 0;
+  next_attribute.attr.data = next_attribute.attr.data
+                           & internal::attr_var::reset_mask;
   next_attribute.attr.bit.no_changes = false;
-  next_attribute.color.pair.fg = FColor::Default;
-  next_attribute.color.pair.bg = FColor::Default;
+  next_attribute.color.pair = {FColor::Default, FColor::Default};
 }
 
 //----------------------------------------------------------------------

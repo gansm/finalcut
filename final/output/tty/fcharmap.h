@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2022 Markus Gans                                      *
+* Copyright 2015-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -42,10 +42,19 @@ class FCharMap final
     // Unicode fallback table for VT100, PC, and ASCII
     struct CharEncodeMap
     {
-      wchar_t unicode;
-      wchar_t vt100;
-      wchar_t pc;
-      wchar_t ascii;
+      struct TermEncodings
+      {
+        wchar_t unicode;
+        wchar_t vt100;
+        wchar_t pc;
+        wchar_t ascii;
+      };
+
+      union
+      {
+        TermEncodings encoding{};
+        wchar_t array[std::size_t(Encoding::NUM_OF_ENCODINGS)];
+      };
     };
 
     // vt100 <-> utf-8

@@ -212,6 +212,10 @@ class FVTerm : public FVTermAttribute
     void  flush() const;
 
   protected:
+    // Using-declaration
+    using FChar_iterator = std::vector<FChar>::iterator;
+    using FChar_const_iterator = std::vector<FChar>::const_iterator;
+
     struct FShadowBox
     {
       FRect box{};
@@ -383,11 +387,11 @@ class FVTerm : public FVTermAttribute
     void  addTransparentAreaChar (const FChar&, FChar&) const;
     auto  clearFullArea (FTermArea*, FChar&) const -> bool;
     void  clearAreaWithShadow (FTermArea*, const FChar&) const noexcept;
-    auto  printWrap (FTermArea*, FChar*&) const -> bool;
-    auto  interpretControlCodes (FTermArea*, FChar*&, const FChar&) const noexcept -> bool;
-    auto  printCharacter (FTermArea*, FChar*&, const FChar&) const noexcept -> int;
+    auto  printWrap (FTermArea*, FChar_iterator&) const -> bool;
+    auto  interpretControlCodes (FTermArea*, FChar_iterator&, const FChar&) const noexcept -> bool;
+    auto  printCharacter (FTermArea*, FChar_iterator&, const FChar&) const noexcept -> int;
     auto  printCharacterOnCoordinate ( FTermArea*
-                                     , FChar*&
+                                     , FChar_iterator&
                                      , const FChar&) const noexcept -> std::size_t;
     void  printPaddingCharacter (FTermArea*, const FChar&) const;
     void  putNonTransparent (const FChar*, FChar*&, std::size_t&) const;
@@ -448,9 +452,13 @@ struct FVTerm::FTermArea  // Define virtual terminal character properties
   };
 
   // Using-declaration
-  using FDataAccessPtr  = std::shared_ptr<FDataAccess>;
-  using FLineChangesVec = std::vector<FLineChanges>;
-  using FCharVec        = std::vector<FChar>;
+  using FDataAccessPtr        = std::shared_ptr<FDataAccess>;
+  using FLineChangesVec       = std::vector<FLineChanges>;
+  using FCharVec              = std::vector<FChar>;
+  using FChar_reference       = FCharVec::reference;
+  using FChar_const_reference = FCharVec::const_reference;
+  using FChar_iterator        = FCharVec::iterator;
+  using FChar_const_iterator  = FCharVec::const_iterator;
 
   // Constructor
   FTermArea() = default;
@@ -493,24 +501,36 @@ struct FVTerm::FTermArea  // Define virtual terminal character properties
   constexpr auto isPrintPositionInsideArea() const noexcept -> bool;
   auto reprint (const FRect&, const FSize&) noexcept -> bool;
 
-  inline auto getFChar (int x, int y) const noexcept -> const FChar&
+
+
+  inline auto getFChar (int x, int y) const noexcept -> FChar_const_reference
   {
     return data[unsigned(y) * unsigned(size.width + shadow.width) + unsigned(x)];
   }
 
-  inline auto getFChar (int x, int y) noexcept -> FChar&
+  inline auto getFChar (int x, int y) noexcept -> FChar_reference
   {
     return data[unsigned(y) * unsigned(size.width + shadow.width) + unsigned(x)];
   }
 
-  inline auto getFChar (const FPoint& pos) const noexcept -> const FChar&
+  inline auto getFChar (const FPoint& pos) const noexcept -> FChar_const_reference
   {
     return getFChar(pos.getX(), pos.getY());
   }
 
-  inline auto getFChar (const FPoint& pos) noexcept -> FChar&
+  inline auto getFChar (const FPoint& pos) noexcept -> FChar_reference
   {
     return getFChar(pos.getX(), pos.getY());
+  }
+
+  inline auto getFCharIterator (int x, int y) const noexcept -> FChar_const_iterator
+  {
+    return data.cbegin() + (unsigned(y) * unsigned(size.width + shadow.width) + unsigned(x));
+  }
+
+  inline auto getFCharIterator (int x, int y) noexcept -> FChar_iterator
+  {
+    return data.begin() + (unsigned(y) * unsigned(size.width + shadow.width) + unsigned(x));
   }
 
   constexpr void setCursorPos (int x, int y) noexcept

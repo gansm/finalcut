@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2025 Markus Gans                                      *
+* Copyright 2015-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -587,7 +587,7 @@ auto FOptiMove::capDuration (const char cap[], int affcnt) const noexcept -> int
           num *= float(affcnt);
         else if ( *p == '.' )
         {
-          ++p;
+          p = std::next(p);
 
           if ( *p != '>' && *p >= '0' && *p <= '9' )
             num += float((*p - '0') / 10.0);
@@ -597,15 +597,15 @@ auto FOptiMove::capDuration (const char cap[], int affcnt) const noexcept -> int
   while ( *p )
   {
     // check for delay with padding character
-    if ( p[0] == '$' && p[1] == '<' && std::strchr(p, '>') )
+    if ( p[0] == '$' && *(p + 1) && p[1] == '<' && std::strchr(p, '>') )
     {
       float num{0};
-      p += 2;
+      p = std::next(p, 2);
 
       while ( *p != '>' )
       {
         parse_digit(num);
-        ++p;
+        p = std::next(p);
       }
 
       ms += num * 10;
@@ -613,7 +613,7 @@ auto FOptiMove::capDuration (const char cap[], int affcnt) const noexcept -> int
     else
       ms += float(char_duration);
 
-    ++p;
+    p = std::next(p);
   }
 
   return int(ms);

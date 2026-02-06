@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2025 Markus Gans                                      *
+* Copyright 2018-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -162,18 +162,18 @@ auto FTermDetection::getTTYtype() -> bool
   {
     const char* type{nullptr};  // nullptr == not found
     const char* name{nullptr};
-    char* p = str.data();
+    auto iter = str.begin();
 
-    while ( *p )
+    while ( *iter )
     {
-      if ( std::isspace(uChar(*p)) )
-        *p = '\0';
+      if ( std::isspace(uChar(*iter)) )
+        *iter = '\0';
       else if ( type == nullptr )
-        type = p;
-      else if ( name == nullptr && p != str.data() && p[-1] == '\0' )
-        name = p;
+        type = iter;
+      else if ( name == nullptr && iter != str.begin() && iter[-1] == '\0' )
+        name = iter;
 
-      p++;
+      ++iter;
     }
 
     if ( type != nullptr && name != nullptr && term_basename == name )

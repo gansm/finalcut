@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2025 Markus Gans                                      *
+* Copyright 2015-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -1082,7 +1082,7 @@ void FWidget::move (const FPoint& pos)
 //----------------------------------------------------------------------
 void FWidget::quit()
 {
-  FApplication::exit(0);
+  FApplication::exit(EXIT_SUCCESS);
 }
 
 
@@ -2108,10 +2108,7 @@ void FWidget::drawWindows() const
   // Redraw windows
   FChar default_char{};
   default_char.ch[0] = L' ';
-  default_char.color.pair.fg = FColor::Default;
-  default_char.color.pair.bg = FColor::Default;
-  default_char.attr.byte[0] = 0;
-  default_char.attr.byte[1] = 0;
+  default_char.color.pair = {FColor::Default, FColor::Default};
   const auto* vterm_win_list = getWindowList();
 
   if ( ! vterm_win_list || vterm_win_list->empty() )

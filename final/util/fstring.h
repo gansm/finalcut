@@ -576,13 +576,14 @@ class FString
     void internal_assign (std::wstring) noexcept;
     auto internal_toCharString (const std::wstring&) const -> std::string;
     auto internal_toWideString (const char[]) const -> std::wstring;
-    void internal_skipLeadingWs (const wchar_t*&, const wchar_t*) const noexcept;
-    void internal_skipTrailingWs (const wchar_t*, const wchar_t*&) const noexcept;
-    auto internal_parseSign (const wchar_t*&) const noexcept -> Sign;
-    auto internal_parseDigits (const wchar_t*&, const wchar_t*, Sign) const -> long;
-    auto internal_parseDigits (const wchar_t*&, const wchar_t*) const -> uLong;
+    void internal_skipLeadingWs (const_iterator&, const_iterator) const noexcept;
+    auto internal_parseSign (const_iterator&) const noexcept -> Sign;
+    auto internal_parseDigits (const_iterator&, const_iterator, Sign) const -> long;
+    auto internal_parseDigits (const_iterator&, const_iterator) const -> uLong;
     auto internal_isOverflowed (Sign, long, long) const noexcept -> bool;
     auto internal_isOverflowed (uLong, uLong) const noexcept -> bool;
+    template <typename NumT>
+    auto internal_setFormatedNumber (NumT, FString) -> FString&;
 
     // Data members
     std::wstring         string{};

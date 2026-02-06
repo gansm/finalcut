@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2024 Markus Gans                                      *
+* Copyright 2018-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -45,23 +45,24 @@ namespace finalcut
 {
 
 // Function prototypes
-template <typename NumT, typename UnaryPredicate>
+template <typename IterT, typename NumT, typename UnaryPredicate>
 auto parseNumberIf (const char*&, NumT&, UnaryPredicate) -> bool;
 
 // non-member functions
 //----------------------------------------------------------------------
-template <typename NumT, typename UnaryPredicate>
-inline auto parseNumberIf ( const char*& p
+template <typename IterT, typename NumT, typename UnaryPredicate>
+inline auto parseNumberIf ( IterT& iter
+                          , IterT end
                           , NumT& number
                           , UnaryPredicate up ) -> bool
 {
-  while ( *p && up(*p) )
+  while ( iter != end && *iter && up(*iter) )
   {
-    if ( ! std::isdigit(*p) )
+    if ( ! std::isdigit(static_cast<unsigned char>(*iter)) )
       return false;
 
-    number = 10 * number + (*p - '0');
-    p++;
+    number = 10 * number + (*iter - '0');
+    iter = std::next(iter);
   }
 
   return true;
@@ -527,7 +528,16 @@ auto FMouseGPM::getGpmKeyPressed (bool is_pending) -> bool
 void FMouseGPM::drawPointer() const
 {
   if ( isGpmMouseEnabled() && gpm_ev.x != -1 )
+  {
+#if defined(__clang__)
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
     GPM_DRAWPOINTER(&gpm_ev);
+#if defined(__clang__)
+  #pragma clang diagnostic pop
+#endif
+  }
 }
 
 // private methods of FMouseGPM
@@ -535,7 +545,14 @@ void FMouseGPM::drawPointer() const
 inline void FMouseGPM::handleMouseEvent()
 {
   Gpm_FitEvent(&gpm_ev);
+#if defined(__clang__)
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
   GPM_DRAWPOINTER(&gpm_ev);
+#if defined(__clang__)
+  #pragma clang diagnostic pop
+#endif
 }
 
 //----------------------------------------------------------------------
@@ -590,6 +607,10 @@ inline void FMouseGPM::updateMousePosition()
 //----------------------------------------------------------------------
 auto FMouseGPM::gpmEvent (bool clear) const -> gpmEventType
 {
+#if defined(__clang__)
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
   const int max = std::max(gpm_fd, stdin_no);
   fd_set ifds{};
   struct timeval tv{};
@@ -616,6 +637,9 @@ auto FMouseGPM::gpmEvent (bool clear) const -> gpmEventType
     return gpmEventType::Mouse;
 
   return gpmEventType::None;
+#if defined(__clang__)
+  #pragma clang diagnostic pop
+#endif
 }
 #endif  // F_HAVE_LIBGPM
 
@@ -928,12 +952,12 @@ void FMouseSGR::processEvent (const TimeValue& time)
   setKeyState (token.btn);
   setMoveState (mouse_position, token.btn);
 
-  if ( *token.p == pressed )
+  if ( *token.iter == pressed )
     setPressedButtonState (token.btn & button_mask, time);
   else  // *token.p == released
     setReleasedButtonState (token.btn & button_mask);
 
-  if ( noChanges(mouse_position, uChar(((*token.p & 0x20) << 2) + token.btn)) )
+  if ( noChanges(mouse_position, uChar(((*token.iter & 0x20) << 2) + token.btn)) )
   {
     clearEvent();
     sgr_mouse[0] = '\0';  // Delete already interpreted data
@@ -943,7 +967,7 @@ void FMouseSGR::processEvent (const TimeValue& time)
   setEvent();
   useNewPos();
   // Get the button state from string
-  sgr_button_state = uChar(((*token.p & 0x20) << 2) + token.btn);
+  sgr_button_state = uChar(((*token.iter & 0x20) << 2) + token.btn);
   // Delete already interpreted data
   sgr_mouse[0] = '\0';
 }
@@ -992,24 +1016,25 @@ inline auto FMouseSGR::isMouseWheelButton (const int btn) const noexcept -> bool
 inline auto FMouseSGR::parseSGRMouseString (FMouseSGR::Tokens& token) const noexcept -> ParseError
 {
   // Parse the SGR mouse string
-  token.p = sgr_mouse.data();
+  token.iter = sgr_mouse.cbegin();
+  const auto end = sgr_mouse.cend();
 
   // Parse button
-  if ( ! parseNumberIf (token.p, token.btn, [] (char ch) { return ch != ';'; }) )
+  if ( ! parseNumberIf (token.iter, end, token.btn, [] (char ch) { return ch != ';'; }) )
     return ParseError::Yes;
 
-  if ( *token.p )
-    token.p++;  // ship one character after the number
+  if ( *token.iter )
+    token.iter = std::next(token.iter);  // ship one character after the number
 
   // Parse x-value
-  if ( ! parseNumberIf (token.p, token.x, [] (char ch) { return ch != ';'; }) )
+  if ( ! parseNumberIf (token.iter, end, token.x, [] (char ch) { return ch != ';'; }) )
     return ParseError::Yes;
 
-  if ( *token.p )
-    token.p++;  // ship one character after the number
+  if ( *token.iter )
+    token.iter = std::next(token.iter);  // ship one character after the number
 
   // Parse y-value
-  if ( ! parseNumberIf (token.p, token.y, [] (char ch) { return ch != 'M' && ch != 'm'; }) )
+  if ( ! parseNumberIf (token.iter, end, token.y, [] (char ch) { return ch != 'M' && ch != 'm'; }) )
     return ParseError::Yes;
 
   return ParseError::No;
@@ -1275,30 +1300,31 @@ inline auto FMouseUrxvt::isMouseWheelButton (const int btn) const noexcept -> bo
 inline auto FMouseUrxvt::parseUrxvtMouseString (FMouseUrxvt::Tokens& token) const noexcept -> ParseError
 {
   // Parse the Urxvt mouse string
-  token.p = urxvt_mouse.data();
+  token.iter = urxvt_mouse.cbegin();
+  auto end = urxvt_mouse.cend();
 
   // Parse button
-  if ( ! parseNumberIf (token.p, token.btn, [] (char ch) { return ch != ';'; }) )
+  if ( ! parseNumberIf (token.iter, end, token.btn, [] (char ch) { return ch != ';'; }) )
     return ParseError::Yes;
 
-  if ( *++token.p == '-' )
+  if ( *(token.iter = std::next(token.iter)) == '-' )
   {
-    token.p++;
+    token.iter = std::next(token.iter);
     token.x_neg = true;
   }
 
   // Parse x-value
-  if ( ! parseNumberIf (token.p, token.x, [] (char ch) { return ch != ';'; }) )
+  if ( ! parseNumberIf (token.iter, end, token.x, [] (char ch) { return ch != ';'; }) )
     return ParseError::Yes;
 
-  if ( *++token.p == '-' )
+  if ( *(token.iter = std::next(token.iter)) == '-' )
   {
-    token.p++;
+    token.iter = std::next(token.iter);
     token.y_neg = true;
   }
 
   // Parse y-value
-  if ( ! parseNumberIf (token.p, token.y, [] (char ch) { return ch != 'M'; }) )
+  if ( ! parseNumberIf (token.iter, end, token.y, [] (char ch) { return ch != 'M'; }) )
     return ParseError::Yes;
 
   return ParseError::No;

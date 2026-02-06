@@ -410,12 +410,15 @@ class FMouseSGR final : public FMouse
     void processEvent (const TimeValue&) override;
 
   private:
+    // Constant
+    static constexpr std::size_t MOUSE_BUF_SIZE = 13;
+
     struct Tokens
     {
       sInt16  x{0};
       sInt16  y{0};
       int     btn{0};
-      const char* p{nullptr};  // Current read position
+      std::array<char, MOUSE_BUF_SIZE>::const_iterator iter{};  // Current read position
     };
 
     // Enumerations
@@ -441,9 +444,6 @@ class FMouseSGR final : public FMouse
       pressed         = 'M',
       released        = 'm'
     };
-
-    // Constant
-    static constexpr std::size_t MOUSE_BUF_SIZE = 13;
 
     // Methods
     void setKeyState (int) noexcept;
@@ -485,6 +485,9 @@ class FMouseUrxvt final : public FMouse
     void processEvent (const TimeValue&) override;
 
   private:
+    // Constant
+    static constexpr std::size_t MOUSE_BUF_SIZE = 14;
+
     struct Tokens
     {
       sInt16      x{0};
@@ -492,7 +495,7 @@ class FMouseUrxvt final : public FMouse
       int         btn{0};
       bool        x_neg{false};
       bool        y_neg{false};
-      const char* p{nullptr};  // Current read position
+      std::array<char, MOUSE_BUF_SIZE>::const_iterator iter{};  // Current read position
     };
 
     // Enumerations
@@ -517,9 +520,6 @@ class FMouseUrxvt final : public FMouse
       button_left          = 0x62,  // Mouse wheel left tilt
       button_right         = 0x63   // Mouse wheel right tilt
     };
-
-    // Constant
-    static constexpr std::size_t MOUSE_BUF_SIZE = 14;
 
     // Methods
     void setKeyState (int) noexcept;

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2025 Markus Gans                                      *
+* Copyright 2015-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -90,14 +90,14 @@ constexpr auto hash_function (IterT iter, const IterT end) -> std::size_t
       : 16777619UL;
 
   std::size_t hash = FNV_OFFSET_BASIS;
-
-  while ( iter != end )
-  {
-    hash ^= static_cast<std::size_t>(*iter);
-    hash *= FNV_PRIME;
-    ++iter;
-  }
-
+  std::for_each ( iter
+                , end
+                , [&hash] (auto item) noexcept
+                  {
+                    hash ^= static_cast<std::size_t>(item);
+                    hash *= FNV_PRIME;
+                  }
+                );
   return hash & (Const::getMaxHashSize() - 1);
 }
 
@@ -115,13 +115,13 @@ struct KeySequenceHash
   auto operator () (const KeySequence<BufferT>& key) const noexcept -> std::size_t
   {
     if ( key.string && ! key.buffer )
-      return hash_function (key.string, key.string + key.length);
+      return hash_function (key.string, std::next(key.string, key.length));
 
     if ( key.buffer )
       return hash_function (*key.buffer);
 
     static constexpr char unknown_key[] = "unknown";
-    return hash_function(unknown_key, unknown_key + sizeof(unknown_key) - 1);
+    return hash_function(unknown_key, std::next(unknown_key, sizeof(unknown_key) - 1));
   }
 };
 
@@ -184,16 +184,15 @@ template <typename BufferT, typename IterT>
 auto createKeyCapMap (IterT begin, IterT end) -> HashMap<BufferT>
 {
   HashMap<BufferT> fkey_cap_map;
-  fkey_cap_map.reserve(std::size_t(end - begin));
-  auto iter = begin;
+  fkey_cap_map.reserve(std::size_t(std::distance(begin, end)));
 
-  while ( iter != end )
-  {
-    if ( iter->string && iter->length != 0 )
-      fkey_cap_map[{iter->string, iter->length}] = iter->num;
-
-    ++iter;
-  }
+  std::for_each ( begin
+                , end
+                , [&fkey_cap_map] (const auto& item)
+                  {
+                    if ( item.string && item.length != 0 )
+                      fkey_cap_map[{item.string, item.length}] = item.num;
+                  } );
 
   return fkey_cap_map;
 }

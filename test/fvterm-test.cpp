@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021-2025 Markus Gans                                      *
+* Copyright 2021-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -3127,7 +3127,10 @@ void FVTermTest::FVTermReduceUpdatesTest()
   for (auto y{0}; y < vterm->size.height; y++)
   {
     for (auto x{0}; x < vterm->size.width; x++)
+    {
       CPPUNIT_ASSERT ( vterm->getFChar(x, y).attr.bit.no_changes == false );
+      CPPUNIT_ASSERT ( vterm->getFCharIterator(x, y)->attr.bit.no_changes == false );
+    }
   }
 
   vterm->changes_in_row.ymin = 24;
@@ -3159,7 +3162,10 @@ void FVTermTest::FVTermReduceUpdatesTest()
   for (auto y{0}; y < vterm->size.height; y++)
   {
     for (auto x{0}; x < vterm->size.width; x++)
+    {
       CPPUNIT_ASSERT ( vterm->getFChar(x, y).attr.bit.no_changes == false );
+      CPPUNIT_ASSERT ( vterm->getFCharIterator(x, y)->attr.bit.no_changes == false );
+    }
   }
 
   for (auto i{0}; i < 6; i++)
@@ -3388,6 +3394,7 @@ void FVTermTest::getFVTermAreaTest()
   CPPUNIT_ASSERT ( &fchar_pos4 == &vwin_area->data[5 * 6 + 5] );  // 6 = width of area
   CPPUNIT_ASSERT ( &fchar_pos4 == &vwin_area->data[6 * 6 - 1] );  // 6 = width of area
   CPPUNIT_ASSERT ( &vwin_area->getFChar(10, 0) == &vwin_area->getFChar(4, 1) );
+  CPPUNIT_ASSERT ( vwin_area->getFCharIterator(10, 0) == vwin_area->getFCharIterator(4, 1) );
 
   finalcut::FChar one_char = new_bg_char;
   one_char.ch[0] = L'1';

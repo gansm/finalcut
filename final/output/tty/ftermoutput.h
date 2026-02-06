@@ -205,6 +205,8 @@ class FTermOutput final : public FOutput
 
     // Using-declaration
     using clock = std::chrono::steady_clock;
+    using FChar_iterator = FVTerm::FTermArea::FCharVec::iterator;
+    using FChar_const_iterator = FVTerm::FTermArea::FCharVec::const_iterator;
 
     // Accessors
     auto getFSetPaletteRef() const & -> const FSetPalette& override;
@@ -220,18 +222,18 @@ class FTermOutput final : public FOutput
     auto canClearToEOL (uInt, uInt) const -> bool;
     auto canClearLeadingWS (uInt&, uInt) const -> bool;
     auto canClearTrailingWS (uInt&, uInt) const -> bool;
-    auto skipUnchangedCharacters (uInt&, uInt, uInt, const FChar*) -> bool;
+    auto skipUnchangedCharacters (uInt&, uInt, uInt, FChar_iterator) -> bool;
     void printRange (uInt, uInt, uInt);
     void replaceNonPrintableFullwidth (uInt, uInt, FChar&) const noexcept;
-    void printCharacter (uInt&, uInt, bool, FChar&);
-    void printFullWidthCharacter (uInt&, uInt, FChar&);
-    void printFullWidthPaddingCharacter (uInt&, uInt, FChar&);
-    void printHalfCovertFullWidthCharacter (uInt, uInt, FChar&);
+    void printCharacter (uInt&, uInt, bool, FChar_iterator&);
+    void printFullWidthCharacter (uInt&, uInt, FChar_iterator&);
+    void printFullWidthPaddingCharacter (uInt&, uInt, FChar_iterator&);
+    void printHalfCovertFullWidthCharacter (uInt, uInt, FChar_iterator&);
     void printEllipsis (uInt, uInt, FChar&);
     void skipPaddingCharacter (uInt&, uInt, const FChar&) const noexcept;
-    auto eraseCharacters (uInt&, uInt, uInt, FChar&) -> PrintState;
-    auto repeatCharacter (uInt&, uInt, uInt, FChar&) -> PrintState;
-    auto countRepetitions (const FChar*, uInt, uInt) const noexcept -> uInt;
+    auto eraseCharacters (uInt&, uInt, uInt, FChar_iterator&) -> PrintState;
+    auto repeatCharacter (uInt&, uInt, uInt, FChar_iterator&) -> PrintState;
+    auto countRepetitions (FChar_const_iterator, uInt, uInt) const noexcept -> uInt;
     auto canUseEraseCharacters (const FChar&, uInt) const noexcept -> bool;
     auto canUseCharacterRepetitions (const FChar&, uInt) const noexcept -> bool;
     auto getRepetitionType (const FChar&, uInt) const noexcept -> Repetition;
@@ -246,11 +248,11 @@ class FTermOutput final : public FOutput
     void markAsPrinted (uInt, uInt, uInt) const noexcept;
     void newFontChanges (FChar&) const;
     void charsetChanges (FChar&) const;
-    void appendCharacter (FChar&);
-    void appendCharacter_n (FChar&, uInt);
+    void appendCharacter (FChar_iterator&);
+    void appendCharacter_n (FChar_iterator&, uInt);
     void appendChar (FChar&);
     void appendAttributes (FChar&);
-    void appendLowerRight (FChar&);
+    void appendLowerRight (FChar_iterator&);
     void characterFilter (FChar&);
     auto moveCursorLeft() -> CursorMoved;
     void checkFreeBufferSize();

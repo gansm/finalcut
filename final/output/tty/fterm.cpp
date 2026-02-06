@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2025 Markus Gans                                      *
+* Copyright 2012-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -814,7 +814,7 @@ auto FTerm::charEncode (const wchar_t& c, const Encoding& enc) -> wchar_t
       std::find_if ( character.cbegin(), cend
                    , [&c] (const auto& entry)
                      {
-                       return entry.unicode == c;
+                       return entry.encoding.unicode == c;
                      } );
 
   if ( found == cend )
@@ -986,14 +986,16 @@ void FTerm::init_alt_charset()
   std::unordered_map<uChar, uChar> vt100_alt_char;
   auto& character = FCharMap::getCharEncodeMap();
 
-  if ( TCAP(t_acs_chars) )
+  if ( const char* acs_ptr = TCAP(t_acs_chars) )
   {
-    for (std::size_t n{0}; TCAP(t_acs_chars)[n]; n += 2)
+    std::string acs(acs_ptr);
+
+    for (std::size_t n{0}; n + 1 < acs.size(); n += 2)
     {
       // insert the VT100 key/value pairs into a map
-      const auto& p1 = uChar(TCAP(t_acs_chars)[n]);
-      const auto& p2 = uChar(TCAP(t_acs_chars)[n + 1]);
-      vt100_alt_char[p1] = p2;
+      const auto from_char = uChar(acs[n]);
+      const auto to_char   = uChar(acs[n + 1]);
+      vt100_alt_char[from_char] = to_char;
     }
   }
 
@@ -1006,7 +1008,7 @@ void FTerm::init_alt_charset()
     const auto& p = std::find_if ( character.cbegin()
                                  , character.cend()
                                  , [&utf8char] (const auto& entry)
-                                   { return entry.unicode == utf8char; } );
+                                   { return entry.encoding.unicode == utf8char; } );
     if ( p != character.cend() )  // found in character
     {
       const auto item = std::size_t(std::distance(character.cbegin(), p));
@@ -1114,14 +1116,14 @@ void FTerm::updatePCEncodingForCygwin()
 
   for (auto&& entry : FCharMap::getCharEncodeMap())
   {
-    switch ( UniChar(entry.unicode) )
+    switch ( UniChar(entry.encoding.unicode) )
     {
       case UniChar::BlackUpPointingTriangle:    // ▲
-        entry.pc = 0x18;
+        entry.encoding.pc = 0x18;
         break;
 
       case UniChar::BlackDownPointingTriangle:  // ▼
-        entry.pc = 0x19;
+        entry.encoding.pc = 0x19;
         break;
 
       case UniChar::InverseBullet:              // ◘
@@ -1133,7 +1135,7 @@ void FTerm::updatePCEncodingForCygwin()
       case UniChar::RightwardsArrow:            // →
       case UniChar::Section:                    // §
       case UniChar::SquareRoot:                 // SquareRoot √
-        entry.pc = entry.ascii;
+        entry.encoding.pc = entry.encoding.ascii;
         break;
 
       default:
@@ -1185,8 +1187,8 @@ void FTerm::init_teraterm_charmap()
     return;
 
   for (auto&& entry : FCharMap::getCharEncodeMap())
-    if ( entry.pc < 0x20 )
-      entry.pc = entry.ascii;
+    if ( entry.encoding.pc < 0x20 )
+      entry.encoding.pc = entry.encoding.ascii;
 }
 
 //----------------------------------------------------------------------

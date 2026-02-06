@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2025 Markus Gans                                      *
+* Copyright 2014-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -100,7 +100,7 @@ auto FTextView::getSelectedText() const -> FString
                                    : selection_end.column;
   const auto first = &getLine(start_row);
   const auto last = &getLine(end_row);
-  const auto end = last + 1;
+  const auto end = std::next(last);
   auto iter = first;
   FString selected_text{};
   std::wstring line{};
@@ -111,7 +111,7 @@ auto FTextView::getSelectedText() const -> FString
     {
       if ( start_col >= iter->text.getLength() )
       {
-        ++iter;
+        iter = std::next(iter);
         continue;
       }
 
@@ -124,7 +124,7 @@ auto FTextView::getSelectedText() const -> FString
       line.resize(end_col + 1);
 
     selected_text += FString(line) + L'\n';  // Add newline character
-    ++iter;
+    iter = std::next(iter);
   }
 
   return selected_text;
@@ -774,8 +774,7 @@ inline void FTextView::addHighlighting ( FVTermBuffer& line_buffer
         break;
 
       auto& fchar = line_buffer[index];
-      fchar.color.pair.fg = hgl.attributes.color.pair.fg;
-      fchar.color.pair.bg = hgl.attributes.color.pair.bg;
+      fchar.color.pair = hgl.attributes.color.pair;
       fchar.attr = hgl.attributes.attr;
     }
   }
@@ -815,8 +814,7 @@ inline void FTextView::addSelection (FVTermBuffer& line_buffer, std::size_t n) c
 
   auto select = [&selected_fg, &selected_bg] (auto& fchar)
   {
-    fchar.color.pair.fg = selected_fg;
-    fchar.color.pair.bg = selected_bg;
+    fchar.color.pair = {selected_fg, selected_bg};
   };
 
   std::for_each (&line_buffer[start_index], &line_buffer[end_index], select);

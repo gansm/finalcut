@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2023 Markus Gans                                      *
+* Copyright 2017-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -34,20 +34,12 @@ using finalcut::FSize;
 
 
 // Function prototypes
-auto getTempStr() -> std::weak_ptr<FString>&;
 void doubleToItem ( FListBoxItem&
                   , FDataAccess* container
                   , std::size_t index);
-auto doubleToString (std::list<double>::const_iterator iter) -> FString&;
+auto doubleToString (std::list<double>::const_iterator iter) -> FString;
 auto mapToString ( std::map<FString
-                 , FString>::const_iterator iter ) -> FString&;
-
-// Encapsulate global application object
-auto getTempStr() -> std::weak_ptr<FString>&
-{
-  static std::weak_ptr<FString> temp_str;
-  return temp_str;
-}
+                 , FString>::const_iterator iter ) -> FString;
 
 // Lazy conversion insert function
 void doubleToItem ( FListBoxItem& item
@@ -63,17 +55,16 @@ void doubleToItem ( FListBoxItem& item
 }
 
 // Insert converter functions
-auto doubleToString (std::list<double>::const_iterator iter) -> FString&
+auto doubleToString (std::list<double>::const_iterator iter) -> FString
 {
-  auto temp = getTempStr().lock();
-  return temp->setNumber(*iter);
+  FString s;
+  s.setNumber(*iter);
+  return s;
 }
 
-auto mapToString ( std::map<FString
-                 , FString>::const_iterator iter ) -> FString&
+auto mapToString (std::map<FString, FString>::const_iterator iter) -> FString
 {
-  auto temp = getTempStr().lock();
-  return *temp = iter->first + ": " + iter->second;
+  return iter->first + ": " + iter->second;
 }
 
 
@@ -106,9 +97,6 @@ class Listbox final : public FDialog
 Listbox::Listbox (FWidget* parent)
   : FDialog{parent}
 {
-  auto temp = std::make_shared<FString>();
-  getTempStr() = temp;
-
   // listbox 1
   //----------
   list1.setText ("FListBoxItem");

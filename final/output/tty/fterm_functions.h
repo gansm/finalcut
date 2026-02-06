@@ -131,6 +131,10 @@ auto captureTerminalInput ( std::array<char, size>& data
                           , uInt64 timeout_us
                           , UnaryPredicate p ) -> std::size_t
 {
+#if defined(__clang__)
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
   const int stdin_no{0};
   fd_set ifds{};
   struct timeval tv{};
@@ -157,6 +161,9 @@ auto captureTerminalInput ( std::array<char, size>& data
   while ( pos < data.size() && p(data) );
 
   return pos;
+#if defined(__clang__)
+  #pragma clang diagnostic pop
+#endif
 }
 
 //----------------------------------------------------------------------

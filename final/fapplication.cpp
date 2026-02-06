@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2013-2025 Markus Gans                                      *
+* Copyright 2013-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -225,7 +225,7 @@ void FApplication::exit (int retcode)
 //----------------------------------------------------------------------
 void FApplication::quit() const
 {
-  FApplication::exit(0);
+  FApplication::exit(EXIT_SUCCESS);
 }
 
 //----------------------------------------------------------------------

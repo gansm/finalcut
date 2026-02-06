@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2023 Markus Gans                                      *
+* Copyright 2015-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -41,16 +41,29 @@ auto FCharMap::getInstance() -> FCharMap&
 auto FCharMap::getCharacter ( const CharEncodeMap& char_enc
                             , const Encoding& enc ) -> const wchar_t&
 {
-  const auto array = reinterpret_cast<const wchar_t*>(&char_enc);
-  return array[std::size_t(enc)];
+#if defined(__clang__)
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
+  return char_enc.array[std::size_t(enc)];
+#if defined(__clang__)
+  #pragma clang diagnostic pop
+#endif
+
 }
 
 //----------------------------------------------------------------------
 auto FCharMap::setCharacter ( CharEncodeMap& char_enc
                             , const Encoding& enc ) -> wchar_t&
 {
-  auto* array = reinterpret_cast<wchar_t*>(&char_enc);
-  return array[std::size_t(enc)];
+#if defined(__clang__)
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
+  return char_enc.array[std::size_t(enc)];
+#if defined(__clang__)
+  #pragma clang diagnostic pop
+#endif
 }
 
 //----------------------------------------------------------------------
@@ -85,121 +98,121 @@ FCharMap::CharEncodeType FCharMap::character =
   //  |     |     .--------- PC (IBM-437)
   //  |     |     |    .---- ASCII (7-Bit)
   //  |     |     |    |
-  {0x20ac,   0, 0xee, 'E'},  // €  -  Euro
-  {0x00a3, '}', 0x9c, 'P'},  // £  -  Pound
-  {0x00a7, '$', 0x15, '$'},  // §  -  Section
-  {0x25d8, '*', 0x08, '*'},  // ◘  -  InverseBullet
-  {0x25d9, '*', 0x0a, '*'},  // ◙  -  InverseWhiteCircle
-  {0x203c, '!', 0x13, '!'},  // ‼  -  DoubleExclamationMark
-  {0x2195, 'I', 0x12, 'I'},  // ↕  -  UpDownArrow
-  {0x2194, '-', 0x1d, '-'},  // ↔  -  LeftRightArrow
-  {0x25ac, '_', 0x16, '_'},  // ▬  -  BlackRectangle
-  {0x2191, '^', 0x18, '^'},  // ↑  -  UpwardsArrow
-  {0x2193, 'v', 0x19, 'v'},  // ↓  -  DownwardsArrow
-  {0x2192, '>', 0x1a, '>'},  // →  -  RightwardsArrow
-  {0x2190, '<', 0x1b, '<'},  // ←  -  LeftwardsArrow
-  {0x203a, '>', 0xaf, '>'},  // ›  -  SingleRightAngleQuotationMark
-  {0x2039, '<', 0xae, '<'},  // ‹  -  SingleLeftAngleQuotationMark
-  {0x2026, '.',  '.', '.'},  // …  -  HorizontalEllipsis
-  {0x03c0, '{', 0xe3, 'n'},  // π  -  Pi
-  {0x207F, 'I', 0xfc, ' '},  // ⁿ  -  SuperscriptLatinSmallLetterN
-  {0x2265, 'z', 0xf2, '>'},  // ≥  -  GreaterThanOrEqualTo
-  {0x2264, 'y', 0xf3, '<'},  // ≤  -  LessThanOrEqualTo
-  {0x2260,   0, 0xd8, '#'},  // ≠  -  NotEqualTo
-  {0x00b1, 'g', 0xf1, '#'},  // ±  -  PlusMinus
-  {0x00f7, '/', 0xf6, '/'},  // ÷  -  Division sign
-  {0x00d7,   0,  'x', 'x'},  // ×  -  Multiplication sign
-  {0x02e3, '~', 0xfc, '`'},  // ˣ  -  Modifier letter small x
-  {0x00b0, 'f', 0xb0, 'o'},  // °  -  Degree
-  {0x2022, '`', 0x04, '*'},  // •  -  Bullet
-  {0x00b7, '`', 0xfa, '.'},  // ·  -  small Bullet
-  {0x25cf, '`', 0x04, '*'},  // ●  -  BlackCircle
-  {0x2666, '`', 0x04, '*'},  // ◆  -  BlackDiamondSuit
-  {0x2424, 'h',  ' ', ' '},  // ␤  -  SymbolForNewline (1)
-  {0x240b, 'i',  ' ', ' '},  // ␋  -  SymbolForVerticalTab (1)
-  {0x2409, 'b',  ' ', ' '},  // ␉  -  SymbolForHorizontalTab (1)
-  {0x240c, 'c',  ' ', ' '},  // ␌  -  SymbolForFormFeed (1)
-  {0x240d, 'd',  ' ', ' '},  // ␍  -  SymbolForCarriageReturn (1)
-  {0x240a, 'e',  ' ', ' '},  // ␊  -  SymbolForLineFeed (1)
-  {0x2592, 'a', 0xb0, '#'},  // ▒  -  MediumShade
-  {0x2588, '0', 0xdb, '#'},  // █  -  FullBlock
-  {0x25ae, '_', 0xfe, '#'},  // ▮  -  BlackVerticalRectangle (1)
-  {0x258c,   0, 0xdd, ' '},  // ▌  -  LeftHalfBlock
-  {0x2590,   0, 0xde, ' '},  // ▐  -  RightHalfBlock
-  {0x2584,   0, 0xdc, ' '},  // ▄  -  LowerHalfBlock
-  {0x2580,   0, 0xdf, ' '},  // ▀  -  UpperHalfBlock
-  {0x2500, 'q', 0xc4, '-'},  // ─  -  BoxDrawingsHorizontal
-  {0x2502, 'x', 0xb3, '|'},  // │  -  BoxDrawingsVertical
-  {0x250c, 'l', 0xda, '.'},  // ┌  -  BoxDrawingsDownAndRight
-  {0x2510, 'k', 0xbf, '.'},  // ┐  -  BoxDrawingsDownAndLeft
-  {0x2514, 'm', 0xc0, '`'},  // └  -  BoxDrawingsUpAndRight
-  {0x2518, 'j', 0xd9, '\''}, // ┘  -  BoxDrawingsUpAndLeft
-  {0x253c, 'n', 0xc5, '+'},  // ┼  -  BoxDrawingsCross
-  {0x252c, 'w', 0xc2, '+'},  // ┬  -  BoxDrawingsDownAndHorizontal
-  {0x2524, 'u', 0xb4, '+'},  // ┤  -  BoxDrawingsVerticalAndLeft
-  {0x251c, 't', 0xc3, '+'},  // ├  -  BoxDrawingsVerticalAndRight
-  {0x2534, 'v', 0xc1, '+'},  // ┴  -  BoxDrawingsUpAndHorizontal
-  {0x23ba, 'o',  '~', '~'},  // ⎺  -  HorizontalScanLine1 (1)
-  {0x23bb, 'p', 0xc4, '-'},  // ⎻  -  HorizontalScanLine3 (1)
-  {0x23bc, 'r', 0xc4, '-'},  // ⎼  -  HorizontalScanLine7 (1)
-  {0x23bd, 's',  '_', '_'},  // ⎽  -  HorizontalScanLine9 (1)
-  {0x25b2, '-', 0x1e, '^'},  // ▲  -  BlackUpPointingTriangle
-  {0x25bc, '.', 0x1f, 'v'},  // ▼  -  BlackDownPointingTriangle
-  {0x25b6, '+', 0x10, '>'},  // ▶  -  BlackRightPointingTriangle
-  {0x25c0, ',', 0x11, '<'},  // ◀  -  BlackLeftPointingTriangle (1)
-  {0x25ba, '+', 0x10, '>'},  // ►  -  BlackRightPointingPointer (1)
-  {0x25c4, ',', 0x11, '<'},  // ◄  -  BlackLeftPointingPointer
-  {0xe1b3, 'x', 0xb3, '|'},  // │  -  NF_border_line_vertical (2)
-  {0xe1b4,   0, 0xb4,   0},  // ⊐  -  NF_rev_left_arrow2 (2)
-  {0xe1b5,   0, 0xb5,   0},  // ►  -  NF_rev_right_arrow2 (2)
-  {0xe1b6,   0, 0xb6,   0},  // ╵  -  NF_border_line_left_up (2)
-  {0xe1b7,   0, 0xb7,   0},  // )  -  NF_radio_button3 (2)
-  {0xe1b8,   0, 0xb8,   0},  // ⎤  -  NF_rev_border_corner_upper_right (2)
-  {0xe1b9,   0, 0xb9,   0},  // ⎹    -  NF_rev_border_line_right (2)
-  {0xe1ba,   0, 0xba,   0},  // ┤  -  NF_rev_border_line_vertical_left (2)
-  {0xe1bb,   0, 0xbb,   0},  // ⎦  -  NF_rev_border_corner_lower_right (2)
-  {0xe1bc,   0, 0xbc,   0},  // ⎸    -  NF_border_line_left (2)
-  {0xe1bd,   0, 0xbd,   0},  //⎹◣ -  NF_rev_up_arrow2 (2)
-  {0xe1be,   0, 0xbe,   0},  //⎹◤ -  NF_rev_down_arrow2 (2)
-  {0xe1bf,   0, 0xbf,   0},  // ╷  -  NF_border_line_left_down (2)
-  {0xe1c0,   0, 0xc0,   0},  // └  -  NF_border_corner_middle_lower_left (2)
-  {0xe1c1,   0, 0xc1,   0},  // ◢⎸ -  NF_rev_up_arrow1 (2)
-  {0xe1c2,   0, 0xc2,   0},  // ◥⎸ -  NF_rev_down_arrow1 (2)
-  {0xe1c3,   0, 0xc3,   0},  // ├  -  NF_border_line_vertical_right (2)
-  {0xe1c4, 'q', 0xc4, '-'},  // ─  -  NF_border_line_horizontal (2)
-  {0xe1c5,   0, 0xc5,   0},  // =  -  NF_border_line_up_and_down (2)
-  {0xe1c6,   0, 0xc6,   0},  // =  -  NF_shadow_box_middle (2)
-  {0xe1c7,   0, 0xc7,   0},  // =  -  NF_shadow_box_hdd (2)
-  {0xe1c8,   0, 0xc8,   0},  // ◄  -  NF_rev_left_arrow1 (2)
-  {0xe1c9,   0, 0xc9,   0},  // ⊏  -  NF_rev_right_arrow1 (2)
-  {0xe1ca,   0, 0xca,   0},  // [  -  NF_rev_menu_button1 (2)
-  {0xe1cb,   0, 0xcb,   0},  // -  -  NF_rev_menu_button2 (2)
-  {0xe1cc,   0, 0xcc,   0},  // ┌  -  NF_border_corner_middle_upper_left (2)
-  {0xe1cd,   0, 0xcd,   0},  // =  -  NF_shadow_box_cd (2)
-  {0xe1ce,   0, 0xce,   0},  // [  -  NF_shadow_box_left (2)
-  {0xe1cf,   0, 0xcf,   0},  // ┌  -  NF_border_line_middle_left_down (2)
-  {0xe1d0,   0, 0xd0,   0},  // └  -  NF_border_line_middle_right_up (2)
-  {0xe1d1,   0, 0xd1,   0},  // =  -  NF_shadow_box_net (2)
-  {0xe1d2,   0, 0xd2,   0},  // ◢  -  NF_rev_up_pointing_triangle1 (2)
-  {0xe1d3,   0, 0xd3,   0},  // ⎣  -  NF_border_corner_lower_left (2)
-  {0xe1d4,   0, 0xd4,   0},  // _  -  NF_border_line_bottom (2)
-  {0xe1d5,   0, 0xd5,   0},  // O  -  NF_radio_button2 (2)
-  {0xe1d6,   0, 0xd6,   0},  // ●  -  NF_radio_button2_checked (2)
-  {0xe1d7,   0, 0xd7,   0},  // ◥  -  NF_rev_down_pointing_triangle1 (2)
-  {0xe1d8,   0, 0xd8,   0},  // ¯  -  NF_border_line_upper (2)
-  {0xe1d9,   0, 0xd9,   0},  // (  -  NF_radio_button1 (2)
-  {0xe1da,   0, 0xda,   0},  // ⎡  -  NF_border_corner_upper_left (2)
-  {0xe1dc,   0, 0xdc,   0},  // ✓  -  NF_shadow_box_checked (2)
-  {0xe1e7,   0, 0xe7,   0},  // ║  -  NF_rev_border_line_right_and_left (2)
-  {0xe1e8,   0, 0xe8,   0},  // ◣  -  NF_rev_up_pointing_triangle2 (2)
-  {0xe1e9,   0, 0xe9,   0},  // ◤  -  NF_rev_down_pointing_triangle2 (2)
-  {0xe1ea,   0, 0xea,   0},  // ┘  -  NF_border_corner_middle_lower_right (2)
-  {0xe1eb,   0, 0xeb,   0},  // ┐  -  NF_border_corner_middle_upper_right (2)
-  {0xe1f4,   0, 0xf4,   0},  // ]  -  NF_rev_menu_button3 (2)
-  {0xe1f5,   0, 0xf5,   0},  // ]  -  NF_shadow_box_right (2)
-  {0xe1fb,   0, 0xfb,   0},  // ✓  -  NF_check_mark (2)
-  {0xe1fc, '~', 0xfc, '`'},  // ˣ  -  NF_xsuperior (2)
-  {0x221a,   0, 0xfb, 'x'}   // √  -  square root
+  { {{0x20ac,   0, 0xee, 'E'}} },  // €  -  Euro
+  { {{0x00a3, '}', 0x9c, 'P'}} },  // £  -  Pound
+  { {{0x00a7, '$', 0x15, '$'}} },  // §  -  Section
+  { {{0x25d8, '*', 0x08, '*'}} },  // ◘  -  InverseBullet
+  { {{0x25d9, '*', 0x0a, '*'}} },  // ◙  -  InverseWhiteCircle
+  { {{0x203c, '!', 0x13, '!'}} },  // ‼  -  DoubleExclamationMark
+  { {{0x2195, 'I', 0x12, 'I'}} },  // ↕  -  UpDownArrow
+  { {{0x2194, '-', 0x1d, '-'}} },  // ↔  -  LeftRightArrow
+  { {{0x25ac, '_', 0x16, '_'}} },  // ▬  -  BlackRectangle
+  { {{0x2191, '^', 0x18, '^'}} },  // ↑  -  UpwardsArrow
+  { {{0x2193, 'v', 0x19, 'v'}} },  // ↓  -  DownwardsArrow
+  { {{0x2192, '>', 0x1a, '>'}} },  // →  -  RightwardsArrow
+  { {{0x2190, '<', 0x1b, '<'}} },  // ←  -  LeftwardsArrow
+  { {{0x203a, '>', 0xaf, '>'}} },  // ›  -  SingleRightAngleQuotationMark
+  { {{0x2039, '<', 0xae, '<'}} },  // ‹  -  SingleLeftAngleQuotationMark
+  { {{0x2026, '.',  '.', '.'}} },  // …  -  HorizontalEllipsis
+  { {{0x03c0, '{', 0xe3, 'n'}} },  // π  -  Pi
+  { {{0x207F, 'I', 0xfc, ' '}} },  // ⁿ  -  SuperscriptLatinSmallLetterN
+  { {{0x2265, 'z', 0xf2, '>'}} },  // ≥  -  GreaterThanOrEqualTo
+  { {{0x2264, 'y', 0xf3, '<'}} },  // ≤  -  LessThanOrEqualTo
+  { {{0x2260,   0, 0xd8, '#'}} },  // ≠  -  NotEqualTo
+  { {{0x00b1, 'g', 0xf1, '#'}} },  // ±  -  PlusMinus
+  { {{0x00f7, '/', 0xf6, '/'}} },  // ÷  -  Division sign
+  { {{0x00d7,   0,  'x', 'x'}} },  // ×  -  Multiplication sign
+  { {{0x02e3, '~', 0xfc, '`'}} },  // ˣ  -  Modifier letter small x
+  { {{0x00b0, 'f', 0xb0, 'o'}} },  // °  -  Degree
+  { {{0x2022, '`', 0x04, '*'}} },  // •  -  Bullet
+  { {{0x00b7, '`', 0xfa, '.'}} },  // ·  -  small Bullet
+  { {{0x25cf, '`', 0x04, '*'}} },  // ●  -  BlackCircle
+  { {{0x2666, '`', 0x04, '*'}} },  // ◆  -  BlackDiamondSuit
+  { {{0x2424, 'h',  ' ', ' '}} },  // ␤  -  SymbolForNewline (1)
+  { {{0x240b, 'i',  ' ', ' '}} },  // ␋  -  SymbolForVerticalTab (1)
+  { {{0x2409, 'b',  ' ', ' '}} },  // ␉  -  SymbolForHorizontalTab (1)
+  { {{0x240c, 'c',  ' ', ' '}} },  // ␌  -  SymbolForFormFeed (1)
+  { {{0x240d, 'd',  ' ', ' '}} },  // ␍  -  SymbolForCarriageReturn (1)
+  { {{0x240a, 'e',  ' ', ' '}} },  // ␊  -  SymbolForLineFeed (1)
+  { {{0x2592, 'a', 0xb0, '#'}} },  // ▒  -  MediumShade
+  { {{0x2588, '0', 0xdb, '#'}} },  // █  -  FullBlock
+  { {{0x25ae, '_', 0xfe, '#'}} },  // ▮  -  BlackVerticalRectangle (1)
+  { {{0x258c,   0, 0xdd, ' '}} },  // ▌  -  LeftHalfBlock
+  { {{0x2590,   0, 0xde, ' '}} },  // ▐  -  RightHalfBlock
+  { {{0x2584,   0, 0xdc, ' '}} },  // ▄  -  LowerHalfBlock
+  { {{0x2580,   0, 0xdf, ' '}} },  // ▀  -  UpperHalfBlock
+  { {{0x2500, 'q', 0xc4, '-'}} },  // ─  -  BoxDrawingsHorizontal
+  { {{0x2502, 'x', 0xb3, '|'}} },  // │  -  BoxDrawingsVertical
+  { {{0x250c, 'l', 0xda, '.'}} },  // ┌  -  BoxDrawingsDownAndRight
+  { {{0x2510, 'k', 0xbf, '.'}} },  // ┐  -  BoxDrawingsDownAndLeft
+  { {{0x2514, 'm', 0xc0, '`'}} },  // └  -  BoxDrawingsUpAndRight
+  { {{0x2518, 'j', 0xd9, '\''}} }, // ┘  -  BoxDrawingsUpAndLeft
+  { {{0x253c, 'n', 0xc5, '+'}} },  // ┼  -  BoxDrawingsCross
+  { {{0x252c, 'w', 0xc2, '+'}} },  // ┬  -  BoxDrawingsDownAndHorizontal
+  { {{0x2524, 'u', 0xb4, '+'}} },  // ┤  -  BoxDrawingsVerticalAndLeft
+  { {{0x251c, 't', 0xc3, '+'}} },  // ├  -  BoxDrawingsVerticalAndRight
+  { {{0x2534, 'v', 0xc1, '+'}} },  // ┴  -  BoxDrawingsUpAndHorizontal
+  { {{0x23ba, 'o',  '~', '~'}} },  // ⎺  -  HorizontalScanLine1 (1)
+  { {{0x23bb, 'p', 0xc4, '-'}} },  // ⎻  -  HorizontalScanLine3 (1)
+  { {{0x23bc, 'r', 0xc4, '-'}} },  // ⎼  -  HorizontalScanLine7 (1)
+  { {{0x23bd, 's',  '_', '_'}} },  // ⎽  -  HorizontalScanLine9 (1)
+  { {{0x25b2, '-', 0x1e, '^'}} },  // ▲  -  BlackUpPointingTriangle
+  { {{0x25bc, '.', 0x1f, 'v'}} },  // ▼  -  BlackDownPointingTriangle
+  { {{0x25b6, '+', 0x10, '>'}} },  // ▶  -  BlackRightPointingTriangle
+  { {{0x25c0, ',', 0x11, '<'}} },  // ◀  -  BlackLeftPointingTriangle (1)
+  { {{0x25ba, '+', 0x10, '>'}} },  // ►  -  BlackRightPointingPointer (1)
+  { {{0x25c4, ',', 0x11, '<'}} },  // ◄  -  BlackLeftPointingPointer
+  { {{0xe1b3, 'x', 0xb3, '|'}} },  // │  -  NF_border_line_vertical (2)
+  { {{0xe1b4,   0, 0xb4,   0}} },  // ⊐  -  NF_rev_left_arrow2 (2)
+  { {{0xe1b5,   0, 0xb5,   0}} },  // ►  -  NF_rev_right_arrow2 (2)
+  { {{0xe1b6,   0, 0xb6,   0}} },  // ╵  -  NF_border_line_left_up (2)
+  { {{0xe1b7,   0, 0xb7,   0}} },  // )  -  NF_radio_button3 (2)
+  { {{0xe1b8,   0, 0xb8,   0}} },  // ⎤  -  NF_rev_border_corner_upper_right (2)
+  { {{0xe1b9,   0, 0xb9,   0}} },  // ⎹    -  NF_rev_border_line_right (2)
+  { {{0xe1ba,   0, 0xba,   0}} },  // ┤  -  NF_rev_border_line_vertical_left (2)
+  { {{0xe1bb,   0, 0xbb,   0}} },  // ⎦  -  NF_rev_border_corner_lower_right (2)
+  { {{0xe1bc,   0, 0xbc,   0}} },  // ⎸    -  NF_border_line_left (2)
+  { {{0xe1bd,   0, 0xbd,   0}} },  //⎹◣ -  NF_rev_up_arrow2 (2)
+  { {{0xe1be,   0, 0xbe,   0}} },  //⎹◤ -  NF_rev_down_arrow2 (2)
+  { {{0xe1bf,   0, 0xbf,   0}} },  // ╷  -  NF_border_line_left_down (2)
+  { {{0xe1c0,   0, 0xc0,   0}} },  // └  -  NF_border_corner_middle_lower_left (2)
+  { {{0xe1c1,   0, 0xc1,   0}} },  // ◢⎸ -  NF_rev_up_arrow1 (2)
+  { {{0xe1c2,   0, 0xc2,   0}} },  // ◥⎸ -  NF_rev_down_arrow1 (2)
+  { {{0xe1c3,   0, 0xc3,   0}} },  // ├  -  NF_border_line_vertical_right (2)
+  { {{0xe1c4, 'q', 0xc4, '-'}} },  // ─  -  NF_border_line_horizontal (2)
+  { {{0xe1c5,   0, 0xc5,   0}} },  // =  -  NF_border_line_up_and_down (2)
+  { {{0xe1c6,   0, 0xc6,   0}} },  // =  -  NF_shadow_box_middle (2)
+  { {{0xe1c7,   0, 0xc7,   0}} },  // =  -  NF_shadow_box_hdd (2)
+  { {{0xe1c8,   0, 0xc8,   0}} },  // ◄  -  NF_rev_left_arrow1 (2)
+  { {{0xe1c9,   0, 0xc9,   0}} },  // ⊏  -  NF_rev_right_arrow1 (2)
+  { {{0xe1ca,   0, 0xca,   0}} },  // [  -  NF_rev_menu_button1 (2)
+  { {{0xe1cb,   0, 0xcb,   0}} },  // -  -  NF_rev_menu_button2 (2)
+  { {{0xe1cc,   0, 0xcc,   0}} },  // ┌  -  NF_border_corner_middle_upper_left (2)
+  { {{0xe1cd,   0, 0xcd,   0}} },  // =  -  NF_shadow_box_cd (2)
+  { {{0xe1ce,   0, 0xce,   0}} },  // [  -  NF_shadow_box_left (2)
+  { {{0xe1cf,   0, 0xcf,   0}} },  // ┌  -  NF_border_line_middle_left_down (2)
+  { {{0xe1d0,   0, 0xd0,   0}} },  // └  -  NF_border_line_middle_right_up (2)
+  { {{0xe1d1,   0, 0xd1,   0}} },  // =  -  NF_shadow_box_net (2)
+  { {{0xe1d2,   0, 0xd2,   0}} },  // ◢  -  NF_rev_up_pointing_triangle1 (2)
+  { {{0xe1d3,   0, 0xd3,   0}} },  // ⎣  -  NF_border_corner_lower_left (2)
+  { {{0xe1d4,   0, 0xd4,   0}} },  // _  -  NF_border_line_bottom (2)
+  { {{0xe1d5,   0, 0xd5,   0}} },  // O  -  NF_radio_button2 (2)
+  { {{0xe1d6,   0, 0xd6,   0}} },  // ●  -  NF_radio_button2_checked (2)
+  { {{0xe1d7,   0, 0xd7,   0}} },  // ◥  -  NF_rev_down_pointing_triangle1 (2)
+  { {{0xe1d8,   0, 0xd8,   0}} },  // ¯  -  NF_border_line_upper (2)
+  { {{0xe1d9,   0, 0xd9,   0}} },  // (  -  NF_radio_button1 (2)
+  { {{0xe1da,   0, 0xda,   0}} },  // ⎡  -  NF_border_corner_upper_left (2)
+  { {{0xe1dc,   0, 0xdc,   0}} },  // ✓  -  NF_shadow_box_checked (2)
+  { {{0xe1e7,   0, 0xe7,   0}} },  // ║  -  NF_rev_border_line_right_and_left (2)
+  { {{0xe1e8,   0, 0xe8,   0}} },  // ◣  -  NF_rev_up_pointing_triangle2 (2)
+  { {{0xe1e9,   0, 0xe9,   0}} },  // ◤  -  NF_rev_down_pointing_triangle2 (2)
+  { {{0xe1ea,   0, 0xea,   0}} },  // ┘  -  NF_border_corner_middle_lower_right (2)
+  { {{0xe1eb,   0, 0xeb,   0}} },  // ┐  -  NF_border_corner_middle_upper_right (2)
+  { {{0xe1f4,   0, 0xf4,   0}} },  // ]  -  NF_rev_menu_button3 (2)
+  { {{0xe1f5,   0, 0xf5,   0}} },  // ]  -  NF_shadow_box_right (2)
+  { {{0xe1fb,   0, 0xfb,   0}} },  // ✓  -  NF_check_mark (2)
+  { {{0xe1fc, '~', 0xfc, '`'}} },  // ˣ  -  NF_xsuperior (2)
+  { {{0x221a,   0, 0xfb, 'x'}} }   // √  -  square root
 }};
 
 /*

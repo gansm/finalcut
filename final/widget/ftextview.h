@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2024 Markus Gans                                      *
+* Copyright 2014-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -100,8 +100,7 @@ class FTextView : public FWidget
         , length{l}
       {
         auto wc_dialog = getColorTheme()->dialog;
-        attributes.color.pair.fg = wc_dialog.fg;
-        attributes.color.pair.bg = wc_dialog.bg;
+        attributes.color.pair = {wc_dialog.fg, wc_dialog.bg};
         attributes.attr = s.toFAttribute();
       }
 
@@ -113,8 +112,7 @@ class FTextView : public FWidget
         : index{i}
         , length{l}
       {
-        attributes.color.pair.fg = c;
-        attributes.color.pair.bg = getColorTheme()->dialog.bg;
+        attributes.color.pair = {c, getColorTheme()->dialog.bg};
         attributes.attr = s.toFAttribute();
       }
 
@@ -126,8 +124,8 @@ class FTextView : public FWidget
         : index{i}
         , length{l}
       {
-        attributes.color.pair.fg = cpair.getForegroundColor();
-        attributes.color.pair.bg = cpair.getBackgroundColor();
+        attributes.color.pair = \
+            {cpair.getForegroundColor(), cpair.getBackgroundColor()};
         attributes.attr = s.toFAttribute();
       }
 

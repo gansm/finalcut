@@ -825,8 +825,7 @@ inline auto FOptiAttr::unsetTermPCcharset (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 auto FOptiAttr::setTermDefaultColor (FChar& term) -> bool
 {
-  term.color.pair.fg = FColor::Default;
-  term.color.pair.bg = FColor::Default;
+  term.color.pair = {FColor::Default, FColor::Default};
 
   if ( append_sequence(F_color.orig_pair.cap)
     || append_sequence(F_color.orig_colors.cap) )
@@ -960,8 +959,7 @@ inline auto FOptiAttr::hasColorChanged ( const FChar& term
 //----------------------------------------------------------------------
 inline void FOptiAttr::resetColor (FChar& attr) const noexcept
 {
-  attr.color.pair.fg = FColor::Default;
-  attr.color.pair.bg = FColor::Default;
+  attr.color.pair = {FColor::Default, FColor::Default};
 }
 
 //----------------------------------------------------------------------
@@ -1068,8 +1066,7 @@ void FOptiAttr::change_color (FChar& term, FChar& next)
 {
   if ( F_color.monochron )
   {
-    next.color.pair.fg = FColor::Default;
-    next.color.pair.bg = FColor::Default;
+    next.color.pair = {FColor::Default, FColor::Default};
     return;
   }
 

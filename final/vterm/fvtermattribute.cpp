@@ -29,6 +29,11 @@
 namespace finalcut
 {
 
+namespace internal
+{
+constexpr uInt32 attr_var::reset_mask;
+}
+
 // static class attributes
 FChar FVTermAttribute::next_attribute{};
 
@@ -85,8 +90,7 @@ void FVTermAttribute::initAttribute() noexcept
 {
   // next_attribute contains the state of the next printed character
   next_attribute.ch = {L'\0', L'\0', L'\0', L'\0', L'\0'};
-  next_attribute.color.pair.fg = FColor::Default;
-  next_attribute.color.pair.bg = FColor::Default;
+  next_attribute.color.pair = {FColor::Default, FColor::Default};
   next_attribute.attr.data = 0;
 }
 

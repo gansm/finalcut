@@ -328,7 +328,6 @@ struct FCharAttribute
   uInt8                    : 8;  // padding byte
 };
 
-
 constexpr auto FCharAttribute_to_uInt32 (const finalcut::FCharAttribute& fchar_attr) noexcept -> uInt32
 {
   return uInt32(fchar_attr.bold)               << 0U
@@ -411,7 +410,7 @@ inline auto DataToFAttribute (uInt32 data) noexcept -> FCharAttribute
 
 union FAttribute
 {
-  uInt8 byte[4];
+  std::array<uInt8, 4> byte;
   uInt32 data;
   FCharAttribute bit;
 };
@@ -432,69 +431,107 @@ struct FUnicode
   using value_type      = wchar_t;
 
   // Overloaded operators
-  inline auto operator [] (std::size_t index) noexcept -> reference
+  constexpr auto operator [] (std::size_t index) noexcept -> reference
   {
+#if defined(__clang__)
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
     return unicode_data[index];
+#if defined(__clang__)
+  #pragma clang diagnostic pop
+#endif
   }
 
-  inline auto operator [] (std::size_t index) const noexcept -> const_reference
+  constexpr auto operator [] (std::size_t index) const noexcept -> const_reference
   {
+#if defined(__clang__)
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
     return unicode_data[index];
+#if defined(__clang__)
+  #pragma clang diagnostic pop
+#endif
   }
 
   // Methods
-  inline auto begin() noexcept -> iterator
+  constexpr auto begin() noexcept -> iterator
   {
     return &unicode_data[0];
   }
 
-  inline auto end() noexcept -> iterator
+  constexpr auto end() noexcept -> iterator
   {
-    return &unicode_data[0] + 5;
+#if defined(__clang__)
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
+    return &unicode_data[UNICODE_MAX];
+#if defined(__clang__)
+  #pragma clang diagnostic pop
+#endif
   }
 
-  inline auto begin() const noexcept -> const_iterator
-  {
-    return &unicode_data[0];
-  }
-
-  inline auto end() const noexcept -> const_iterator
-  {
-    return &unicode_data[0] + 5;
-  }
-
-  inline auto cbegin() const noexcept -> const_iterator
+  constexpr auto begin() const noexcept -> const_iterator
   {
     return &unicode_data[0];
   }
 
-  inline auto cend() const noexcept -> const_iterator
+  constexpr auto end() const noexcept -> const_iterator
   {
-    return &unicode_data[0] + 5;
+#if defined(__clang__)
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
+    return &unicode_data[UNICODE_MAX];
+#if defined(__clang__)
+  #pragma clang diagnostic pop
+#endif
   }
 
-  inline auto data() noexcept -> pointer
+  constexpr auto cbegin() const noexcept -> const_iterator
   {
     return &unicode_data[0];
   }
 
-  inline auto data() const noexcept -> const_pointer
+  constexpr auto cend() const noexcept -> const_iterator
+  {
+#if defined(__clang__)
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
+    return &unicode_data[UNICODE_MAX];
+#if defined(__clang__)
+  #pragma clang diagnostic pop
+#endif
+  }
+
+  constexpr auto data() noexcept -> pointer
+  {
+    return &unicode_data[0];
+  }
+
+  constexpr auto data() const noexcept -> const_pointer
   {
     return &unicode_data[0];
   }
 
   friend constexpr auto operator == (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool
   {
-    for (std::size_t i = 0; i < 5; ++i)
+#if HAVE_BUILTIN(__builtin_memcmp)
+    return __builtin_memcmp ( lhs.unicode_data
+                            , rhs.unicode_data
+                            , UNICODE_MAX * sizeof(wchar_t) ) == 0;
+#else
+    for (std::size_t i{0}; i < UNICODE_MAX; ++i)
     {
       if ( lhs.unicode_data[i] != rhs.unicode_data[i] )
         return false;
-
-      if ( lhs.unicode_data[i] == '\0' )
-        return true;
     }
 
     return true;
+#endif
   }
 
   friend constexpr auto operator != (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool
@@ -567,8 +604,7 @@ struct alignas(std::max_align_t) FChar
 #endif
   auto operator == (const FChar& lhs, const FChar& rhs) noexcept -> bool
   {
-    if ( ! isFUnicodeEqual(lhs.ch, rhs.ch)
-      || lhs.color.data != rhs.color.data )
+    if ( lhs.color.data != rhs.color.data )
       return false;
 
 #if HAVE_BUILTIN(__builtin_bit_cast)
@@ -577,7 +613,10 @@ struct alignas(std::max_align_t) FChar
     static const auto mask = getCompareBitMask();
 #endif
 
-    return (lhs.attr.data & mask) == (rhs.attr.data & mask);
+    if ( (lhs.attr.data & mask) != (rhs.attr.data & mask) )
+      return false;
+
+    return isFUnicodeEqual(lhs.ch, rhs.ch);
   }
 
 #if HAVE_BUILTIN(__builtin_bit_cast)

@@ -168,7 +168,6 @@ template <typename... Args>
 auto FTermcap::encodeParameter (const std::string& cap, Args&&... args) -> std::string
 {
   std::array<int, 9> attr {{static_cast<int>(args)...}};
-  std::fill(attr.begin() + sizeof...(args), attr.end(), 0);
   return encodeParams(cap, attr);
 }
 

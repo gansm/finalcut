@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2025 Markus Gans                                      *
+* Copyright 2018-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -150,6 +150,10 @@ auto FKeyboard::hasUnprocessedInput() const noexcept -> bool
 //----------------------------------------------------------------------
 auto FKeyboard::isKeyPressed (uInt64 blocking_time) -> bool
 {
+#if defined(__clang__)
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
   if ( has_pending_input )
     return false;
 
@@ -159,6 +163,7 @@ auto FKeyboard::isKeyPressed (uInt64 blocking_time) -> bool
 
   FD_ZERO(&ifds);
   FD_SET(stdin_no, &ifds);
+
   tv.tv_sec = tv.tv_usec = 0;  // Non-blocking input
 
   if ( blocking_time > 0
@@ -182,6 +187,9 @@ auto FKeyboard::isKeyPressed (uInt64 blocking_time) -> bool
   }
 
   return has_pending_input;
+#if defined(__clang__)
+  #pragma clang diagnostic pop
+#endif
 }
 
 //----------------------------------------------------------------------

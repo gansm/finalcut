@@ -4,7 +4,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2025 Markus Gans                                      *
+* Copyright 2017-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -727,11 +727,11 @@ void FScrollView::copy2area()
   for (int y{0}; y < y_end; y++)  // line loop
   {
     // Direct access to viewport and area characters
-    const auto* vc = &viewport->getFChar(dx, dy + y);  // Viewport character
-    auto* ac = &printarea->getFChar(ax, ay + y);       // Area character
+    const auto vc = viewport->getFCharIterator(dx, dy + y);  // Viewport character
+    auto ac = printarea->getFCharIterator(ax, ay + y);       // Area character
 
     // Copy a line of characters in one operation
-    std::memcpy (ac, vc, sizeof(FChar) * unsigned(x_end));
+    std::memcpy (&ac[0], &vc[0], sizeof(FChar) * unsigned(x_end));
 
     // Update line changes
     auto& line_changes = printarea->changes_in_line[unsigned(ay + y)];

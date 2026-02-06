@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2025 Markus Gans                                      *
+* Copyright 2018-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -158,8 +158,8 @@ void FTermFreeBSD::initCharMap()
     return;
 
   for (auto&& entry : FCharMap::getCharEncodeMap())
-    if ( entry.pc < 0x1c )
-      entry.pc = entry.ascii;
+    if ( entry.encoding.pc < 0x1c )
+      entry.encoding.pc = entry.encoding.ascii;
 }
 
 //----------------------------------------------------------------------

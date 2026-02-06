@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2024 Markus Gans                                      *
+* Copyright 2014-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -723,15 +723,19 @@ inline void FListBox::drawListLine ( int y
 //----------------------------------------------------------------------
 inline void FListBox::printLeftBracket (BracketType bracket_type)
 {
+  static constexpr std::array<char, 5> brackets {{ '\0', '[', '(', '{', '<' }};
+
   if ( bracket_type != BracketType::None )
-    print ("\0[({<"[std::size_t(bracket_type)]);
+    print (brackets[std::size_t(bracket_type)]);
 }
 
 //----------------------------------------------------------------------
 inline void FListBox::printRightBracket (BracketType bracket_type)
 {
+  static constexpr std::array<char, 5> brackets {{ '\0', ']', ')', '}', '>' }};
+
   if ( bracket_type != BracketType::None )
-    print ("\0])}>"[std::size_t(bracket_type)]);
+    print (brackets[std::size_t(bracket_type)]);
 }
 
 //----------------------------------------------------------------------

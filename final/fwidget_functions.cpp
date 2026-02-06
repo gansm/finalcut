@@ -602,24 +602,24 @@ void drawGenericBlockShadow ( FWidget* w
     return;
 
   // Draw the top-right shadow
-  auto* area_ptr = &bsd.area.getFChar(int(bsd.shadow_x), int(bsd.y_offset));
-  *area_ptr = bsd.shadow_char[0];  // ▄ (top-right corner)
+  auto area_iter = bsd.area.getFCharIterator(int(bsd.shadow_x), int(bsd.y_offset));
+  *area_iter = bsd.shadow_char[0];  // ▄ (top-right corner)
   bsd.updateChanges(bsd.y_offset, bsd.shadow_x, bsd.shadow_x);
 
   // Draw the right-side shadow
   for (uInt y = bsd.y_offset + 1; y < bsd.shadow_y; y++)
   {
-    area_ptr = &bsd.area.getFChar(int(bsd.shadow_x), int(y));
-    *area_ptr = bsd.shadow_char[1];  // █
+    area_iter = bsd.area.getFCharIterator(int(bsd.shadow_x), int(y));
+    *area_iter = bsd.shadow_char[1];  // █
     bsd.updateChanges(y, bsd.shadow_x, bsd.shadow_x);
   }
 
   // Draw the bottom shadow
-  area_ptr = &bsd.area.getFChar(int(bsd.x_offset), int(bsd.shadow_y));
-  *area_ptr = bsd.shadow_char[2];  // ' ' (bottom-left corner)
-  ++area_ptr;
+  area_iter = bsd.area.getFCharIterator(int(bsd.x_offset), int(bsd.shadow_y));
+  *area_iter = bsd.shadow_char[2];  // ' ' (bottom-left corner)
+  ++area_iter;
   // Fill the horizontal shadow
-  std::fill (area_ptr, area_ptr + bsd.width, bsd.shadow_char[3]);  // ▀
+  std::fill (area_iter, area_iter + bsd.width, bsd.shadow_char[3]);  // ▀
   bsd.updateChanges(bsd.shadow_y, bsd.x_offset, bsd.shadow_x, bsd.width);
   // Update row changes
   auto& changes_in_row = bsd.area.changes_in_row;
@@ -951,16 +951,16 @@ inline void drawBoxTopLine (GenericBoxData& bd)
 {
   // Draw the horizontal top line of the box
 
-  auto* area_ptr = &bd.area.getFChar(bd.x1, bd.y1);
+  auto area_iter = bd.area.getFCharIterator(bd.x1, bd.y1);
 
   bd.fchar.ch[0] = bd.box_char[0];  // Upper left corner
-  *area_ptr = bd.fchar;
+  *area_iter = bd.fchar;
 
   bd.fchar.ch[0] = bd.box_char[1];  // Upper line
-  area_ptr = std::fill_n(area_ptr + 1, bd.line_length, bd.fchar);
+  area_iter = std::fill_n(area_iter + 1, bd.line_length, bd.fchar);
 
   bd.fchar.ch[0] = bd.box_char[2];  // Upper right corner
-  *area_ptr = bd.fchar;
+  *area_iter = bd.fchar;
 
   // Update area_changes for the top line
   bd.updateChanges(uInt(bd.y1), uInt(bd.x1), uInt(bd.x2));
@@ -973,14 +973,14 @@ inline void drawBoxSides (GenericBoxData& bd)
 
   for (auto y = bd.y1 + 1; y < bd.y2; y++)
   {
-    auto* left = &bd.area.getFChar(bd.x1, y);
-    auto* right = left + bd.width - 1;
+    auto left_iter = bd.area.getFCharIterator(bd.x1, y);
+    auto right_iter = left_iter + bd.width - 1;
 
     bd.fchar.ch[0] = bd.box_char[3];  // Left line
-    *left = bd.fchar;
+    *left_iter = bd.fchar;
 
     bd.fchar.ch[0] = bd.box_char[4];  // Right line
-    *right = bd.fchar;
+    *right_iter = bd.fchar;
 
     // Update area_changes for the sides
     bd.updateChanges(uInt(y), uInt(bd.x1), uInt(bd.x2));
@@ -992,16 +992,16 @@ inline void drawBoxBottomLine (GenericBoxData& bd)
 {
   // Draw the horizontal bottom line of the box
 
-  auto* area_ptr = &bd.area.getFChar(bd.x1, bd.y2);
+  auto area_iter = bd.area.getFCharIterator(bd.x1, bd.y2);
 
   bd.fchar.ch[0] = bd.box_char[5];  // Upper left corner
-  *area_ptr = bd.fchar;
+  *area_iter = bd.fchar;
 
   bd.fchar.ch[0] = bd.box_char[6];  // Bottom line
-  area_ptr = std::fill_n(area_ptr + 1, bd.line_length, bd.fchar);
+  area_iter = std::fill_n(area_iter + 1, bd.line_length, bd.fchar);
 
   bd.fchar.ch[0] = bd.box_char[7];  // Bottom left corner
-  *area_ptr = bd.fchar;
+  *area_iter = bd.fchar;
 
   // Update area_changes for the bottom line
   bd.updateChanges(uInt(bd.y2), uInt(bd.x1), uInt(bd.x2));

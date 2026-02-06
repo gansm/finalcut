@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2022-2025 Markus Gans                                      *
+* Copyright 2022-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -143,7 +143,14 @@ class FRingBuffer
 
         inline auto operator * () const noexcept -> reference
         {
+#if defined(__clang__)
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
           return ptr[ring_index<>::add(offset, index)];
+#if defined(__clang__)
+  #pragma clang diagnostic pop
+#endif
         }
 
         inline auto operator -> () const noexcept -> pointer
@@ -406,6 +413,10 @@ class CharRingBuffer final : public FRingBuffer<char, Capacity>
     auto strncmp_front ( const char* string
                        , std::size_t length ) const noexcept -> bool
     {
+#if defined(__clang__)
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
       if ( length == 0 )
         return true;
 
@@ -424,7 +435,11 @@ class CharRingBuffer final : public FRingBuffer<char, Capacity>
 
       const auto l2 = length - l1;
       return l2 == 0 || std::memcmp(string + l1, buf, l2) == 0;
+#if defined(__clang__)
+  #pragma clang diagnostic pop
+#endif
     }
+
 };
 
 }  // namespace finalcut

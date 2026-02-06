@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2023 Markus Gans                                      *
+* Copyright 2018-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -152,28 +152,46 @@ void FTermios::unsetHardwareEcho()
 //----------------------------------------------------------------------
 void FTermios::setCaptureSendCharacters()
 {
+#if defined(__clang__)
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
   struct termios t{};
   tcgetattr (stdin_no, &t);
   t.c_lflag &= uInt(~(ICANON | ECHO));
   t.c_cc[VTIME] = 10;  // Timeout in deciseconds
   t.c_cc[VMIN]  = 0;  // Minimum number of characters
   tcsetattr (stdin_no, TCSANOW, &t);
+#if defined(__clang__)
+  #pragma clang diagnostic pop
+#endif
 }
 
 //----------------------------------------------------------------------
 void FTermios::unsetCaptureSendCharacters()
 {
+#if defined(__clang__)
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
   struct termios t{};
   tcgetattr (stdin_no, &t);
   t.c_lflag |= uInt(ICANON | ECHO);
   t.c_cc[VTIME] = 0;  // Timeout in deciseconds
   t.c_cc[VMIN]  = 1;  // Minimum number of characters
   setTTY (t);
+#if defined(__clang__)
+  #pragma clang diagnostic pop
+#endif
 }
 
 //----------------------------------------------------------------------
 void FTermios::setRawMode (bool enable)
 {
+#if defined(__clang__)
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
   // set + unset flags for raw mode
   if ( raw_mode == enable )
     return;
@@ -215,6 +233,9 @@ void FTermios::setRawMode (bool enable)
     setTTY (t);
     raw_mode = false;
   }
+#if defined(__clang__)
+  #pragma clang diagnostic pop
+#endif
 }
 
 //----------------------------------------------------------------------
