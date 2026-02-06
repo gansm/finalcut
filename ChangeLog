@@ -1,3 +1,6 @@
+2026-02-06  Markus Gans  <guru.mail@muenster.de>
+	* Add additional subchapters to the documentation
+
 2026-02-05  Markus Gans  <guru.mail@muenster.de>
 	* Reduce pointer arithmetic and use safe iterators more often
 	* Bugfix: Full-width characters will display correctly again. 
