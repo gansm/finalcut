@@ -12,6 +12,9 @@ Table of Contents
 - [FStatusBar](#fstatusbar)
 <!-- /TOC -->
 
+Container widgets are meta-structure components used to group, 
+organize, and position other widgets within a layout.
+
 
 FButtonGroup
 ------------
