@@ -409,9 +409,9 @@ void FTermcapQuirks::screen()
     if ( FTermData::getInstance().isTermType(FTermType::tmux) )
     {
       setTCapString ( TCAP(t_initialize_color),
-          ESC "Ptmux;" ESC OSC "4;%p1%d;rgb:"
-          "%p2%{255}%*%{1000}%/%2.2X/"
-          "%p3%{255}%*%{1000}%/%2.2X/"
+          ESC "P" ESC OSC "4;%p1%d;#"
+          "%p2%{255}%*%{1000}%/%2.2X"
+          "%p3%{255}%*%{1000}%/%2.2X"
           "%p4%{255}%*%{1000}%/%2.2X" BEL ESC "\\" );
     }
     else

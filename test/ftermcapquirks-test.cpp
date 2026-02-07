@@ -833,9 +833,9 @@ void FTermcapQuirksTest::screenTest()
 
   CPPUNIT_ASSERT ( finalcut::FTermcap::can_change_color_palette );
   CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_initialize_color)].string
-                         , ESC "Ptmux;" ESC OSC "4;%p1%d;rgb:"
-                           "%p2%{255}%*%{1000}%/%2.2X/"
-                           "%p3%{255}%*%{1000}%/%2.2X/"
+                         , ESC "P" ESC OSC "4;%p1%d;#"
+                           "%p2%{255}%*%{1000}%/%2.2X"
+                           "%p3%{255}%*%{1000}%/%2.2X"
                            "%p4%{255}%*%{1000}%/%2.2X" BEL ESC "\\" );
 
   data.unsetTermType (finalcut::FTermType::tmux);

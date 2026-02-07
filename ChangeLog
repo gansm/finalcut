@@ -1,3 +1,6 @@
+2026-02-07  Markus Gans  <guru.mail@muenster.de>
+	* Fix the termcap quirks to support OSC 4 on newer versions of tmux
+
 2026-02-06  Markus Gans  <guru.mail@muenster.de>
 	* Add additional subchapters to the documentation
 
