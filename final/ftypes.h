@@ -417,7 +417,7 @@ union FAttribute
 
 static constexpr std::size_t UNICODE_MAX = 5;
 
-struct alignas(16) FUnicode
+struct FUnicode
 {
   wchar_t unicode_data[UNICODE_MAX]{L'\0', L'\0', L'\0', L'\0', L'\0'};
 
