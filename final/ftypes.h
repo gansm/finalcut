@@ -417,7 +417,7 @@ union FAttribute
 
 static constexpr std::size_t UNICODE_MAX = 5;
 
-struct FUnicode
+struct alignas(16) FUnicode
 {
   wchar_t unicode_data[UNICODE_MAX]{L'\0', L'\0', L'\0', L'\0', L'\0'};
 
@@ -520,8 +520,8 @@ struct FUnicode
   friend constexpr auto operator == (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool
   {
 #if HAVE_BUILTIN(__builtin_memcmp)
-    return __builtin_memcmp ( lhs.unicode_data
-                            , rhs.unicode_data
+    return __builtin_memcmp ( std::begin(lhs.unicode_data)
+                            , std::begin(rhs.unicode_data)
                             , UNICODE_MAX * sizeof(wchar_t) ) == 0;
 #else
     for (std::size_t i{0}; i < UNICODE_MAX; ++i)
@@ -540,7 +540,6 @@ struct FUnicode
   }
 };
 
-static_assert( sizeof(FUnicode) == UNICODE_MAX * sizeof(wchar_t), "Unexpected alignment or padding in FUnicode" );
 
 enum class FColor : uInt16;  // forward declaration
 
@@ -568,7 +567,9 @@ constexpr auto isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexce
 inline auto isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool
 {
   // Perform a byte-wise comparison
-  return std::wmemcmp(&lhs.char1, &rhs.char1, UNICODE_MAX) == 0;
+  return std::equal ( std::begin(lhs.unicode_data)
+                    , std::end(lhs.unicode_data)
+                    , std::begin(rhs.unicode_data) );
 }
 #endif
 
