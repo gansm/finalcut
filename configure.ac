@@ -31,7 +31,7 @@ AC_CONFIG_HEADERS([config.h])
 AX_PREFIX_CONFIG_H([final/fconfig.h], [F])
 AC_CONFIG_SRCDIR([final/fobject.cpp])
 AC_USE_SYSTEM_EXTENSIONS
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([-Wall -Werror foreign dist-zip])
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 AC_PROG_CC
 
@@ -143,9 +143,14 @@ then
 fi
 
 # Check for the cmake executable
+AC_ARG_ENABLE([install-cmake-modules],
+    AS_HELP_STRING([--disable-install-cmake-modules],
+	[disables installing CMake modules (default is yes)]),
+	[install_cmake_modules=${enableval}],
+	[install_cmake_modules=yes])
 AC_PATH_PROG([CMAKE],
              [cmake])
-AM_CONDITIONAL([INSTALL_CMAKE_MODULES], [test -n "$CMAKE"])
+AM_CONDITIONAL([INSTALL_CMAKE_MODULES], [test -n "$CMAKE" && test "x$install_cmake_modules" != "xno"])
 
 if test -n "$CMAKE"
 then
