@@ -6,7 +6,7 @@ AUTOMAKE_OPTIONS = foreign
 
 ACLOCAL_AMFLAGS = -I m4
 
-EXTRA_DIST = finalcut.pc \
+EXTRA_DIST = \
 	.codacy.yml \
 	.codedocs \
 	.editorconfig \
@@ -35,8 +35,7 @@ EXTRA_DIST = finalcut.pc \
 	autogen.sh \
 	build.sh \
 	codecov.yml \
-	sigrid.yaml \
-	sonar-project.properties \
+	finalcut.pc \
 	misc/icon/16x16/finalcut.png \
 	misc/icon/24x24/finalcut.png \
 	misc/icon/256x256/finalcut.png \
@@ -57,7 +56,9 @@ EXTRA_DIST = finalcut.pc \
 	scripts/showconsolefont.sh \
 	scripts/syscall_statistic.sh \
 	scripts/valgrind.sh \
-	scripts/xterm-latin1.sh
+	scripts/xterm-latin1.sh \
+	sigrid.yaml \
+	sonar-project.properties
 
 if INSTALL_CMAKE_MODULES
   cmakemodulesdir = @CMAKEMODULESDIR@

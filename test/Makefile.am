@@ -4,7 +4,8 @@
 
 LIBS = -lfinal $(CPPUNIT_LIBS)
 
-EXTRA_DIST = Makefile.clang \
+EXTRA_DIST = \
+	Makefile.clang \
 	Makefile.gcc \
 	conemu.h \
 	fvterm_check.h \

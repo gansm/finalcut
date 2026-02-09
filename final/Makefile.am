@@ -16,7 +16,7 @@ EXTRA_DIST = \
 	font/40-finalcut-newfont.conf \
 	font/newfont.txt
 
-DISTCLEANFILES=fconfig.h
+DISTCLEANFILES = fconfig.h
 
 lib_LTLIBRARIES = libfinal.la
 

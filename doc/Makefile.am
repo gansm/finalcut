@@ -5,9 +5,11 @@
 docdir = ${datadir}/doc/${PACKAGE}
 
 EXTRA_DIST = \
+	FDialog.svg \
 	Mandelbrot.png \
 	TODO \
 	benchmark.md \
+	build_alpine_linux.txt \
 	build_openbsd.txt \
 	build_solaris.txt \
 	calculator.png \
@@ -47,6 +49,7 @@ EXTRA_DIST = \
 	running-timer.cpp.png \
 	running-user-event.cpp.png \
 	signals-and-callbacks.md \
+	subsystem-architecture.svg \
 	terminfo-capabilities.sh \
 	terminfo-manual.sh \
 	textview.png \
@@ -65,11 +68,8 @@ EXTRA_DIST = \
 	widget-layout.md \
 	widget-lengths.svg \
 	xgraphics \
-	xterm.txt \
-	FDialog.svg \
-	build_alpine_linux.txt \
-	subsystem-architecture.svg \
-	xpmview.png
+	xpmview.png \
+	xterm.txt
 
 doc_DATA = \
 	Mandelbrot.png \
