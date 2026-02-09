@@ -53,7 +53,7 @@ class FCharMap final
       union
       {
         TermEncodings encoding{};
-        wchar_t array[std::size_t(Encoding::NUM_OF_ENCODINGS)];
+        std::array<wchar_t, std::size_t(Encoding::NUM_OF_ENCODINGS)> array;
       };
     };
 

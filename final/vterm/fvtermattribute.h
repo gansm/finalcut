@@ -64,6 +64,7 @@ constexpr auto getAttrResetMask() noexcept -> uInt32
   mask.transparent = true;
   mask.color_overlay = true;
   mask.inherit_background = true;
+  mask.no_changes = true;
   return 0xffffffff & ~(FCharAttribute_to_uInt32(mask));
 }
 
@@ -211,7 +212,6 @@ inline void FVTermAttribute::setNormal() noexcept
   // Reset all character attributes
   next_attribute.attr.data = next_attribute.attr.data
                            & internal::attr_var::reset_mask;
-  next_attribute.attr.bit.no_changes = false;
   next_attribute.color.pair = {FColor::Default, FColor::Default};
 }
 

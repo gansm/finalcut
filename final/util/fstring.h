@@ -527,8 +527,8 @@ class FString
 
     template <typename NumT>
     auto setFormatedNumber (NumT, FString&& = nl_langinfo(THOUSEP)) -> FString&;
-    auto setFormatedNumber (sInt64, FString = nl_langinfo(THOUSEP)) -> FString&;
-    auto setFormatedNumber (uInt64, FString = nl_langinfo(THOUSEP)) -> FString&;
+    auto setFormatedNumber (sInt64, FString&& = nl_langinfo(THOUSEP)) -> FString&;
+    auto setFormatedNumber (uInt64, FString&& = nl_langinfo(THOUSEP)) -> FString&;
 
     // String modification
     auto insert (const FString&, int) -> const FString&;

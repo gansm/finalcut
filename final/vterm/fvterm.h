@@ -284,10 +284,10 @@ class FVTerm : public FVTermAttribute
 
     struct AreaLine
     {
-      const FChar* data;       // Source drawing area line
-      unsigned     offset;     // Source data offset
-      std::size_t  start_idx;  // Start index
-      std::size_t  end_idx;    // End index
+      const FChar*   data;       // Source drawing area line
+      std::ptrdiff_t offset;     // Source data offset
+      std::size_t    start_idx;  // Start index
+      std::size_t    end_idx;    // End index
     };
 
     enum class NoTrans : sInt8
@@ -391,7 +391,7 @@ class FVTerm : public FVTermAttribute
     auto  interpretControlCodes (FTermArea*, FChar_iterator&, const FChar&) const noexcept -> bool;
     auto  printCharacter (FTermArea*, FChar_iterator&, const FChar&) const noexcept -> int;
     auto  printCharacterOnCoordinate ( FTermArea*
-                                     , FChar_iterator&
+                                     , const FChar_iterator&
                                      , const FChar&) const noexcept -> std::size_t;
     void  printPaddingCharacter (FTermArea*, const FChar&) const;
     void  putNonTransparent (const FChar*, FChar*&, std::size_t&) const;
@@ -692,8 +692,8 @@ inline auto FVTerm::FTermArea::reprint (const FRect& box, const FSize& term_size
 
   auto first_row = unsigned(y_start);
   auto last_row  = unsigned(std::max(0, y_end));
-  auto* line_changes = &changes_in_line[first_row];
-  const auto* const line_changes_end = &changes_in_line[last_row];
+  auto line_changes = changes_in_line.begin() + first_row;
+  const auto line_changes_end = changes_in_line.cbegin() + last_row;
 
   while  ( line_changes <= line_changes_end )  // Line loop
   {

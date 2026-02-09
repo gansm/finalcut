@@ -45,37 +45,37 @@ namespace finalcut
 namespace internal
 {
 
-constexpr auto getByte1TransparentMask() noexcept -> uInt8
+constexpr auto getTransparentMask() noexcept -> uInt32
 {
   FCharAttribute mask{};
   mask.transparent = true;
   mask.color_overlay = true;
   mask.inherit_background = true;
-  return getFAttributeByte(mask, 1);
+  return FCharAttribute_to_uInt32(mask);
 }
 
-constexpr auto getByte1Transparent() noexcept -> uInt8
+constexpr auto getTransparent() noexcept -> uInt32
 {
   FCharAttribute mask{};
   mask.transparent = true;
-  return getFAttributeByte(mask, 1);
+  return FCharAttribute_to_uInt32(mask);
 }
 
-constexpr auto getByte1ColorOverlay() noexcept -> uInt8
+constexpr auto getColorOverlay() noexcept -> uInt32
 {
   FCharAttribute mask{};
   mask.color_overlay = true;
-  return getFAttributeByte(mask, 1);
+  return FCharAttribute_to_uInt32(mask);
 }
 
-constexpr auto getByte1InheritBackground() noexcept -> uInt8
+constexpr auto getInheritBackground() noexcept -> uInt32
 {
   FCharAttribute mask{};
   mask.inherit_background = true;
-  return getFAttributeByte(mask, 1);
+  return FCharAttribute_to_uInt32(mask);
 }
 
-constexpr auto getByte1PrintTransparentMask() noexcept -> uInt8
+constexpr auto getPrintTransparentMask() noexcept -> uInt32
 {
   FCharAttribute mask{};
   mask.transparent = true;
@@ -83,7 +83,7 @@ constexpr auto getByte1PrintTransparentMask() noexcept -> uInt8
   mask.inherit_background = true;
   mask.no_changes = true;
   mask.printed = true;
-  return getFAttributeByte(mask, 1);
+  return FCharAttribute_to_uInt32(mask);
 }
 
 constexpr auto getResetMask() noexcept -> uInt32
@@ -108,19 +108,21 @@ constexpr auto getColorOverlayMask() noexcept -> uInt32
 struct var
 {
   static bool fvterm_initialized;  // Global init state
-  static constexpr auto b1_transparent_mask = getByte1TransparentMask();
-  static constexpr auto b1_transparent = getByte1Transparent();
-  static constexpr auto b1_color_overlay = getByte1ColorOverlay();
-  static constexpr auto b1_inherit_background = getByte1InheritBackground();
-  static constexpr auto b1_print_transparent_mask = getByte1PrintTransparentMask();
+  static constexpr auto transparent_mask = getTransparentMask();
+  static constexpr auto transparent = getTransparent();
+  static constexpr auto color_overlay = getColorOverlay();
+  static constexpr auto inherit_background = getInheritBackground();
+  static constexpr auto print_transparent_mask = getPrintTransparentMask();
   static constexpr auto print_reset_mask = getResetMask();
   static constexpr auto color_overlay_mask = getColorOverlayMask();
 };
 
 bool             var::fvterm_initialized{false};
-constexpr uInt8  var::b1_transparent_mask;
-constexpr uInt8  var::b1_transparent;
-constexpr uInt8  var::b1_print_transparent_mask;
+constexpr uInt32 var::transparent_mask;
+constexpr uInt32 var::transparent;
+constexpr uInt32 var::color_overlay;
+constexpr uInt32 var::inherit_background;
+constexpr uInt32 var::print_transparent_mask;
 constexpr uInt32 var::print_reset_mask;
 constexpr uInt32 var::color_overlay_mask;
 
@@ -730,11 +732,11 @@ void FVTerm::getArea (const FPoint& pos, FTermArea* area) const noexcept
 
   const int y_end  = std::min(vterm->size.height - ay, area->size.height);
   const int length = std::min(vterm->size.width - ax, area->size.width);
-  const auto area_width = unsigned(getFullAreaWidth(area));
-  const auto vterm_width = unsigned(getFullAreaWidth(vterm.get()));
-  auto line_changes = &area->changes_in_line[0];
-  auto* ac = &area->data[0];  // area character
-  const auto* tc = &vterm->data[ay * vterm_width];  // terminal character
+  const auto area_width = getFullAreaWidth(area);
+  const auto vterm_width = getFullAreaWidth(vterm.get());
+  auto line_changes = area->changes_in_line.begin();
+  auto ac = area->data.begin();  // area character
+  auto tc = vterm->data.cbegin() + (ay * vterm_width);  // terminal character
 
   for (auto y{0}; y < y_end; y++)  // line loop
   {
@@ -773,15 +775,15 @@ void FVTerm::getArea (const FRect& box, FTermArea* area) const noexcept
   if ( dy < 0 ) { h += dy; y -= dy; dy = 0; }
   const int y_end = std::min(vterm->size.height - y, h);
   const int length = std::min(vterm->size.width - x, w);
-  const auto area_width = unsigned(getFullAreaWidth(area));
-  const auto vterm_width = unsigned(getFullAreaWidth(vterm.get()));
-  auto* ac = &area->data[dy * area_width];  // area character
-  const auto* tc = &vterm->data[y * vterm_width];  // terminal character
+  const auto area_width = getFullAreaWidth(area);
+  const auto vterm_width = getFullAreaWidth(vterm.get());
+  auto ac = area->data.begin() + (dy * area_width);  // area character
+  auto tc = vterm->data.cbegin() + (y * vterm_width);  // terminal character
 
   if ( length < 1 )
     return;
 
-  auto* line_changes = &area->changes_in_line[unsigned(dy)];
+  auto line_changes = area->changes_in_line.begin() + dy;
 
   for (auto line{0}; line < y_end; line++)  // line loop
   {
@@ -866,10 +868,10 @@ void FVTerm::copyArea (FTermArea* dst, const FPoint& pos, FTermArea* src) const 
   if ( length < 1 || y_end < 1 )
     return;
 
-  const auto* src_changes = &src->changes_in_line[0];
-  auto* dst_changes = &dst->changes_in_line[unsigned(ay)];
-  const auto* sc = &src->data[src_width * ot +  ol];  // src character ptr
-  auto* dc = &dst->data[dst_width * ay + ax];  // dst character ptr
+  auto src_changes = src->changes_in_line.cbegin();
+  auto dst_changes = dst->changes_in_line.begin() + ay;
+  auto sc = src->data.cbegin() + (src_width * ot) + ol;  // src character ptr
+  auto dc = dst->data.begin() + (dst_width * ay) + ax;  // dst character ptr
 
   if ( skip_one_vterm_update )  // dst is the virtual terminal
     determineCoveredAreas(src);
@@ -879,12 +881,12 @@ void FVTerm::copyArea (FTermArea* dst, const FPoint& pos, FTermArea* src) const 
     if ( skip_one_vterm_update && src_changes->trans_count > 0 )
     {
       // Line with hidden and transparent characters
-      putAreaLineWithTransparency (sc, dc, length, {ax, ay + y}, src_changes->covered);
+      putAreaLineWithTransparency (&sc[0], &dc[0], length, {ax, ay + y}, src_changes->covered);
     }
     else
     {
       // Line has only covered characters
-      putAreaLine (*sc, *dc, unsigned(length));
+      putAreaLine (sc[0], *dc, unsigned(length));
     }
 
     dst_changes->xmin = std::min(dst_changes->xmin, uInt(ax));
@@ -931,10 +933,10 @@ void FVTerm::scrollAreaForward (FTermArea* area)
 
   const int y_max = area->size.height - 1;
   const int x_max = area->size.width - 1;
-  auto line_changes = &area->changes_in_line[0];
-  const auto area_width = unsigned(getFullAreaWidth(area));
-  const auto* sc = &area->data[area_width];  // source character
-  auto* dc = &area->data[0];  // destination character
+  auto line_changes = area->changes_in_line.begin();
+  const auto area_width = getFullAreaWidth(area);
+  auto sc = area->data.cbegin() + area_width;  // source character
+  auto dc = area->data.begin();  // destination character
 
   for (auto y{0}; y < y_max; y++)
   {
@@ -952,11 +954,11 @@ void FVTerm::scrollAreaForward (FTermArea* area)
   nc.attr = lc.attr;
   nc.ch[0] = L' ';
   nc.ch[1] = L'\0';
-  dc = &area->data[area_width * unsigned(y_max)];  // destination character
+  dc = area->data.begin() + (area_width * y_max);  // destination character
   std::fill (dc, dc + area->size.width, nc);
-  auto& new_line_changes = area->changes_in_line[unsigned(y_max)];
-  new_line_changes.xmin = 0;
-  new_line_changes.xmax = uInt(x_max);
+  auto new_line_changes = area->changes_in_line.begin() + y_max;
+  new_line_changes->xmin = 0;
+  new_line_changes->xmax = uInt(x_max);
   area->changes_in_row = {0, uInt(y_max)};
   area->has_changes = true;
 
@@ -974,10 +976,10 @@ void FVTerm::scrollAreaReverse (FTermArea* area)
 
   const int y_max = area->size.height - 1;
   const int x_max = area->size.width - 1;
-  auto line_changes = &area->changes_in_line[unsigned(y_max)];
-  const auto area_width = unsigned(getFullAreaWidth(area));
-  const auto* sc = &area->data[area_width * unsigned(y_max - 1)];  // source character
-  auto* dc = &area->data[area_width * unsigned(y_max)];  // destination character
+  auto line_changes = area->changes_in_line.begin() + y_max;
+  const auto area_width = getFullAreaWidth(area);
+  auto sc = area->data.cbegin() + (area_width * (y_max - 1));  // source character
+  auto dc = area->data.begin() + (area_width * y_max);  // destination character
 
   for (auto y = y_max; y > 0; y--)
   {
@@ -995,11 +997,11 @@ void FVTerm::scrollAreaReverse (FTermArea* area)
   nc.attr = lc.attr;
   nc.ch[0] = L' ';
   nc.ch[1] = L'\0';
-  dc = &area->data[0];  // destination character
+  dc = area->data.begin();  // destination character
   std::fill (dc, dc + area->size.width, nc);
-  auto& new_line_changes = area->changes_in_line[unsigned(y_max)];
-  new_line_changes.xmin = 0;
-  new_line_changes.xmax = uInt(x_max);
+  auto new_line_changes = area->changes_in_line.begin() + y_max;
+  new_line_changes->xmin = 0;
+  new_line_changes->xmax = uInt(x_max);
   area->changes_in_row = {0, uInt(y_max)};
   area->has_changes = true;
 
@@ -1035,7 +1037,7 @@ void FVTerm::clearArea (FTermArea* area, wchar_t fillchar) noexcept
   else
     clearAreaWithShadow(area, nc);
 
-  auto line_changes = &area->changes_in_line[0];
+  auto line_changes = area->changes_in_line.begin();
 
   for (auto i{0}; i < area->size.height; i++)
   {
@@ -1054,7 +1056,7 @@ void FVTerm::clearArea (FTermArea* area, wchar_t fillchar) noexcept
     ++line_changes;
   }
 
-  line_changes = &area->changes_in_line[unsigned(area->size.height)];
+  line_changes = area->changes_in_line.begin() + area->size.height;
 
   for (auto i{0}; i < area->shadow.height; i++)
   {
@@ -1763,7 +1765,7 @@ inline auto FVTerm::isInsideTerminal (const FPoint& pos) const noexcept -> bool
 //----------------------------------------------------------------------
 constexpr auto FVTerm::isFCharTransparent (const FChar& fchar) noexcept -> bool
 {
-  return (fchar.attr.byte[1] & internal::var::b1_transparent_mask) != 0;
+  return (fchar.attr.data & internal::var::transparent_mask) != 0;
 }
 
 //----------------------------------------------------------------------
@@ -1884,8 +1886,8 @@ inline void FVTerm::putMultiLayerAreaLine ( FChar* dst_char
       continue;
 
     // Precalculate array indexing values for getFChar
-    const auto x = term_x - win->position.x;
-    const auto y = term_y - win->position.y;
+    const auto x = term_x - x_min;
+    const auto y = term_y - y_min;
     const auto width = getFullAreaWidth(win);
     const auto index = unsigned(y) * unsigned(width) + unsigned(x);
 
@@ -1913,10 +1915,10 @@ inline void FVTerm::putMultiLayerAreaLine ( FChar* dst_char
       if ( char_search == SearchState::ready )
         continue;
 
-      const auto transparency = win_char->attr.byte[1]
-                              & internal::var::b1_transparent_mask;
+      const auto transparency = win_char->attr.data
+                              & internal::var::transparent_mask;
 
-      if ( transparency  == internal::var::b1_transparent )  // Transparent
+      if ( transparency  == internal::var::transparent )  // Transparent
       {
         if ( char_search == SearchState::start )
           char_search = SearchState::printable;
@@ -1924,7 +1926,7 @@ inline void FVTerm::putMultiLayerAreaLine ( FChar* dst_char
         continue;
       }
 
-      if ( transparency == internal::var::b1_color_overlay )  // Color overlay
+      if ( transparency == internal::var::color_overlay )  // Color overlay
       {
         if ( char_search == SearchState::background )
         {
@@ -1940,7 +1942,7 @@ inline void FVTerm::putMultiLayerAreaLine ( FChar* dst_char
         continue;
       }
 
-      if ( transparency == internal::var::b1_inherit_background )  // Inherit background color
+      if ( transparency == internal::var::inherit_background )  // Inherit background color
       {
         if ( char_search == SearchState::overlay )
         {
@@ -2344,7 +2346,7 @@ inline auto FVTerm::printCharacter ( FTermArea* area
 
 //----------------------------------------------------------------------
 inline auto FVTerm::printCharacterOnCoordinate ( FTermArea* area
-                                               , FChar_iterator& ac
+                                               , const FChar_iterator& ac
                                                , const FChar& ch ) const noexcept -> std::size_t
 {
   const auto ax = unsigned(area->cursor.x - 1);
@@ -2354,9 +2356,9 @@ inline auto FVTerm::printCharacterOnCoordinate ( FTermArea* area
     return ac->attr.bit.char_width;
 
   const bool trans_old =
-      (ac->attr.byte[1] & internal::var::b1_print_transparent_mask) != 0;
+      (ac->attr.data & internal::var::print_transparent_mask) != 0;
   const bool trans_new =
-      (ch.attr.byte[1] & internal::var::b1_print_transparent_mask) != 0;
+      (ch.attr.data & internal::var::print_transparent_mask) != 0;
   const auto trans_changed = int(trans_new) - int(trans_old);
 
   if ( trans_changed != 0 )

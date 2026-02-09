@@ -61,23 +61,26 @@ const wchar_t FString::const_null_char{L'\0'};
 FString::FString (int len)
 {
   if ( len > 0 )
-    string = std::wstring(size_type(len), L'\0');
+    string.assign(size_type(len), L'\0');
 }
 
 //----------------------------------------------------------------------
 FString::FString (size_type len)
-  : string{std::wstring(len, L'\0')}
-{ }
+{
+  string.assign(len, L'\0');
+}
 
 //----------------------------------------------------------------------
 FString::FString (size_type len, wchar_t c)
-  : string{std::wstring(len, c)}
-{ }
+{
+  string.assign(len, c);
+}
 
 //----------------------------------------------------------------------
 FString::FString (size_type len, const UniChar& c)
-  : FString(len, wchar_t(c))
-{ }
+{
+  string.assign(len, wchar_t(c));
+}
 
 //----------------------------------------------------------------------
 FString::FString (const FString& s)  // copy constructor
@@ -92,7 +95,7 @@ FString::FString (FString&& s) noexcept  // move constructor
 //----------------------------------------------------------------------
 FString::FString (const std::wstring& s)
 {
-  internal_assign(std::wstring{s});
+  string.assign(s);
 }
 
 //----------------------------------------------------------------------
@@ -100,7 +103,7 @@ FString::FString (const std::wstring& s)
 FString::FString (const std::wstring_view& s)
 {
   if ( ! s.empty() )
-    internal_assign(std::wstring{s});
+    string.assign(s);
 }
 #endif
 
@@ -113,14 +116,14 @@ FString::FString (std::wstring&& s)
 FString::FString (const wchar_t s[])
 {
   if ( s )
-    internal_assign(std::wstring{s});
+    string.assign(s);
 }
 
 //----------------------------------------------------------------------
 FString::FString (const std::string& s)
 {
   if ( ! s.empty() )
-    internal_assign(internal_toWideString(s.c_str()));
+    string.assign(internal_toWideString(s.c_str()));
 }
 
 //----------------------------------------------------------------------
@@ -128,7 +131,7 @@ FString::FString (const std::string& s)
 FString::FString (const std::string_view& s)
 {
   if ( ! s.empty() )
-    internal_assign(internal_toWideString(s.data()));
+    string.assign(internal_toWideString(s.data()));
 }
 #endif
 
@@ -136,27 +139,27 @@ FString::FString (const std::string_view& s)
 FString::FString (const char s[])
 {
   if ( s )
-    internal_assign(internal_toWideString(s));
+    string.assign(internal_toWideString(s));
 }
 
 //----------------------------------------------------------------------
 FString::FString (const UniChar& c)
 {
-  internal_assign(std::wstring{static_cast<wchar_t>(c)});
+  string.assign(1, static_cast<wchar_t>(c));
 }
 
 //----------------------------------------------------------------------
 FString::FString (const wchar_t c)
 {
   if ( c )
-    internal_assign(std::wstring{c});
+    string.assign(1, static_cast<wchar_t>(c));
 }
 
 //----------------------------------------------------------------------
 FString::FString (const char c)
 {
   if ( c )
-    internal_assign(std::wstring{wchar_t(uChar(c))});
+    string.assign(1, static_cast<wchar_t>(uChar(c)));
 }
 
 //----------------------------------------------------------------------
@@ -168,7 +171,7 @@ FString::~FString() noexcept = default;  // destructor
 auto FString::operator = (const FString& s) -> FString&
 {
   if ( &s != this )
-    internal_assign(std::wstring{s.string});
+    string.assign(s.string);
 
   return *this;
 }
@@ -177,7 +180,7 @@ auto FString::operator = (const FString& s) -> FString&
 auto FString::operator = (FString&& s) noexcept -> FString&
 {
   if ( &s != this )
-    string = s.string;
+    string.assign(s.string);
 
   return *this;
 }
@@ -657,35 +660,35 @@ auto FString::split (const FString& delimiter) const -> FStringList
 //----------------------------------------------------------------------
 auto FString::setString (const FString& s) -> FString&
 {
-  std::wstring str{s.string};
-  internal_assign (std::move(str));
+  string.assign(s.string);
   return *this;
 }
 
 //----------------------------------------------------------------------
 auto FString::setNumber (sInt64 value) -> FString&
 {
-  std::array<wchar_t, NUMBER_BUFFER_SIZE> buf{};
-  std::size_t pos = NUMBER_BUFFER_SIZE - 1;  // Last character pos
-  const auto is_negative{ bool( value < 0 ) };
+  const auto is_negative = isNegative(value);
   auto abs_value = is_negative ? ~static_cast<uInt64>(value) + 1
                                : static_cast<uInt64>(value);
-  buf[pos] = L'\0';
+
+  std::array<wchar_t, NUMBER_BUFFER_SIZE> buf{};
+  std::size_t pos = NUMBER_BUFFER_SIZE;  // End position
 
   do
   {
-    buf[--pos] = L'0' + wchar_t(abs_value % 10);
+    --pos;
+    buf[pos] = L'0' + wchar_t(abs_value % 10);
     abs_value /= 10;
   }
-  while ( abs_value );
+  while ( abs_value > 0 );
 
   if ( is_negative )
   {
-    buf[--pos] = L'-';
+    --pos;
+    buf[pos] = L'-';
   }
 
-  std::wstring str{&buf[pos]};
-  internal_assign (std::move(str));
+  string.assign(&buf[pos], NUMBER_BUFFER_SIZE - pos);
   return *this;
 }
 
@@ -693,18 +696,17 @@ auto FString::setNumber (sInt64 value) -> FString&
 auto FString::setNumber (uInt64 value) -> FString&
 {
   std::array<wchar_t, NUMBER_BUFFER_SIZE> buf{};
-  std::size_t pos = NUMBER_BUFFER_SIZE - 1;  // Last character pos
-  buf[pos] = L'\0';
+  std::size_t pos = NUMBER_BUFFER_SIZE;  // End position
 
   do
   {
-    buf[--pos] = L'0' + wchar_t(value % 10);
+    --pos;
+    buf[pos] = L'0' + wchar_t(value % 10);
     value /= 10;
   }
-  while ( value );
+  while ( value > 0 );
 
-  std::wstring str{&buf[pos]};
-  internal_assign (std::move(str));
+  string.assign(&buf[pos], NUMBER_BUFFER_SIZE - pos);
   return *this;
 }
 
@@ -716,38 +718,45 @@ auto FString::setNumber (lDouble f_value, int precision) -> FString&
 
   std::array<wchar_t, 8> format{};  // = "%.<precision>Lg"
   std::size_t pos{0};
-  format[pos++] = L'%';
-  format[pos++] = L'.';
+  format[pos] = L'%';
+  pos++;
+  format[pos] = L'.';
+  pos++;
 
   if ( precision >= 10 )
   {
     // The precision value is 2 digits long
-    format[pos++] = precision / 10 + L'0';
-    format[pos++] = precision % 10 + L'0';
+    format[pos] = precision / 10 + L'0';
+    pos++;
+    format[pos] = precision % 10 + L'0';
+    pos++;
   }
   else
   {
     // The precision value has only 1 digit
-    format[pos++] = precision + L'0';
+    format[pos] = precision + L'0';
+    pos++;
   }
 
-  format[pos++] = L'L';
-  format[pos++] = L'g';
+  format[pos] = L'L';
+  pos++;
+  format[pos] = L'g';
+  pos++;
   format[pos]   = L'\0';
 
   return sprintf(format.data(), f_value);
 }
 
 //----------------------------------------------------------------------
-auto FString::setFormatedNumber (sInt64 value, FString separator) -> FString&
+auto FString::setFormatedNumber (sInt64 value, FString&& separator) -> FString&
 {
-  return internal_setFormatedNumber (value, separator);
+  return internal_setFormatedNumber (value, std::move(separator));
 }
 
 //----------------------------------------------------------------------
-auto FString::setFormatedNumber (uInt64 value, FString separator) -> FString&
+auto FString::setFormatedNumber (uInt64 value, FString&& separator) -> FString&
 {
-  return internal_setFormatedNumber (value, separator);
+  return internal_setFormatedNumber (value, std::move(separator));
 }
 
 // FString operators
@@ -1150,32 +1159,40 @@ inline auto FString::internal_isOverflowed ( uLong value
 template <typename NumT>
 inline auto FString::internal_setFormatedNumber (NumT value, FString separator) -> FString&
 {
+  const auto is_negative = isNegative(value);
+  using SignedT = typename std::make_signed<NumT>::type;
+  auto abs_value = is_negative
+                 ? uInt64(-(static_cast<SignedT>(value + 1))) + 1ULL
+                 : uInt64(value);
+
   std::array<wchar_t, NUMBER_BUFFER_SIZE> buf{};
-  std::size_t pos{buf.size() - 1};  // Last character position
-  int n{0};
+  std::size_t pos{NUMBER_BUFFER_SIZE};  // End position
+  int digits{0};
 
-  const auto is_negative = bool( value < 0 );
-  auto abs_value = is_negative ? uInt64(-(value + 1)) + 1 : uInt64(value);
   const wchar_t sep_char = ( separator[0] == 0 ) ? L' ' : separator[0];
-
-  buf[pos] = L'\0';  // Null termination at the last index
 
   do
   {
-    buf[--pos] = L'0' + static_cast<wchar_t>(abs_value % 10);
-    abs_value /= 10;
-    n++;
+    if ( digits > 0 && digits % 3 == 0 )  // Insert separators if digits follow
+    {
+      --pos;
+      buf[pos] = sep_char;
+    }
 
-    if ( abs_value && n % 3 == 0 )
-      buf[--pos] = sep_char;
+    --pos;
+    buf[pos] = L'0' + static_cast<wchar_t>(abs_value % 10);
+    abs_value /= 10;
+    digits++;
   }
-  while ( abs_value );
+  while ( abs_value > 0 );
 
   if ( is_negative )
-    buf[--pos] = L'-';
+  {
+    --pos;
+    buf[pos] = L'-';
+  }
 
-  std::wstring str{&buf[pos]};
-  internal_assign(std::move(str));
+  string.assign(&buf[pos], NUMBER_BUFFER_SIZE - pos);
   return *this;
 }
 

@@ -40,7 +40,7 @@ namespace finalcut
 namespace internal
 {
 
-constexpr auto initByte1PrintTransMask() noexcept -> uInt8
+constexpr auto getPrintTransMask() noexcept -> uInt32
 {
   FCharAttribute mask{};
   mask.transparent = true;
@@ -48,15 +48,15 @@ constexpr auto initByte1PrintTransMask() noexcept -> uInt8
   mask.inherit_background = true;
   mask.no_changes = true;
   mask.printed = true;
-  return getFAttributeByte(mask, 1);
+  return FCharAttribute_to_uInt32(mask);
 }
 
 struct var
 {
-  static constexpr auto b1_print_trans_mask = initByte1PrintTransMask();
+  static constexpr auto print_trans_mask = getPrintTransMask();
 };
 
-constexpr uInt8 var::b1_print_trans_mask;
+constexpr uInt32 var::print_trans_mask;
 
 }  // namespace internal
 
@@ -913,7 +913,7 @@ struct GenericBoxData
     , max_width{uInt(area.size.width + area.shadow.width - 1)}
     , width{uInt(r.getWidth())}
     , line_length{width - 2}
-    , is_transparent{(fchar.attr.byte[1] & internal::var::b1_print_trans_mask) != 0}
+    , is_transparent{(fchar.attr.byte[1] & internal::var::print_trans_mask) != 0}
     , trans_count_increment{uInt(is_transparent) * width}
   {
     // Prepare the first character to draw the box

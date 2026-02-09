@@ -39,60 +39,59 @@ namespace finalcut
 namespace internal
 {
 
-constexpr auto getByte0ReverseMask() noexcept -> uInt8
+constexpr auto getReverseMask() noexcept -> uInt32
 {
   FCharAttribute mask{};
   mask.reverse = true;
   mask.standout = true;
-  return getFAttributeByte(mask, 0);
+  return FCharAttribute_to_uInt32(mask);
 }
 
-constexpr auto getByte1Mask() noexcept -> uInt8
+constexpr auto getAttributeMask() noexcept -> uInt32
 {
   FCharAttribute mask{};
+  mask.bold = true;
+  mask.dim = true;
+  mask.italic = true;
+  mask.underline = true;
+  mask.blink = true;
+  mask.reverse = true;
+  mask.standout = true;
+  mask.invisible = true;
   mask.protect = true;
   mask.crossed_out = true;
   mask.dbl_underline = true;
   mask.alt_charset = true;
   mask.pc_charset = true;
-  return getFAttributeByte(mask, 1);
+  return FCharAttribute_to_uInt32(mask);
 }
 
-constexpr auto getByte1ResetMask() noexcept -> uInt8
+constexpr auto getResetMask() noexcept -> uInt32
 {
   // Set bits that must not be reset
   FCharAttribute mask{};
   mask.transparent = true;
   mask.color_overlay = true;
   mask.inherit_background = true;
-  return getFAttributeByte(mask, 1);
-}
-
-constexpr auto getByte2ResetMask() noexcept -> uInt8
-{
-  // Set bits that must not be reset
-  FCharAttribute mask{};
   mask.no_changes = true;
   mask.printed = true;
-  return getFAttributeByte(mask, 2);
+  return FCharAttribute_to_uInt32(mask);
 }
 
 struct var
 {
-  static constexpr auto b0_reverse_mask = getByte0ReverseMask();
-  static constexpr auto b1_mask         = getByte1Mask();
-  static constexpr auto b1_reset_mask   = getByte1ResetMask();
-  static constexpr auto b2_reset_mask   = getByte2ResetMask();
-  static constexpr char sgr_39[]        = {CSI "39m"};
-  static constexpr char sgr_39_49[]     = {CSI "39;49m"};
+  static constexpr auto reverse_mask   = getReverseMask();
+  static constexpr auto attribute_mask = getAttributeMask();
+  static constexpr auto reset_mask     = getResetMask();
+  static constexpr char sgr_39[]       = {CSI "39m"};
+  static constexpr char sgr_39_49[]    = {CSI "39;49m"};
 };
 
-constexpr uInt8 var::b0_reverse_mask;
-constexpr uInt8 var::b1_mask;
-constexpr uInt8 var::b1_reset_mask;
-constexpr uInt8 var::b2_reset_mask;
-constexpr char  var::sgr_39[];
-constexpr char  var::sgr_39_49[];
+constexpr uInt32 var::reverse_mask;
+constexpr uInt32 var::attribute_mask;
+constexpr uInt32 var::reset_mask;
+constexpr char   var::sgr_39[];
+constexpr char   var::sgr_39_49[];
 
 }  // namespace internal
 
@@ -383,7 +382,7 @@ void FOptiAttr::set_orig_colors (const char cap[]) noexcept
 //----------------------------------------------------------------------
 auto FOptiAttr::isNormal (const FChar& ch) noexcept -> bool
 {
-  return hasNoAttribute(ch) && ! hasColor(ch);
+  return ! hasAttribute(ch) && ! hasColor(ch);
 }
 
 //----------------------------------------------------------------------
@@ -890,8 +889,7 @@ auto FOptiAttr::hasColor (const FChar& attr) noexcept -> bool
 //----------------------------------------------------------------------
 auto FOptiAttr::hasAttribute (const FChar& attr) noexcept -> bool
 {
-  return attr.attr.byte[0]
-      || (attr.attr.byte[1] & internal::var::b1_mask);
+  return attr.attr.data & internal::var::attribute_mask;
 }
 
 //----------------------------------------------------------------------
@@ -948,9 +946,9 @@ inline auto FOptiAttr::isPCcharsetUsable ( FChar& term
 inline auto FOptiAttr::hasColorChanged ( const FChar& term
                                        , const FChar& next ) const noexcept -> bool
 {
-  const auto& b0_reverse_mask = internal::var::b0_reverse_mask;
-  const bool frev ( ( (changes.on.attr.byte[0] & b0_reverse_mask)
-                   || (changes.off.attr.byte[0] & b0_reverse_mask) ) && fake_reverse );
+  const auto& reverse_mask = internal::var::reverse_mask;
+  const bool frev ( ( (changes.on.attr.data & reverse_mask)
+                   || (changes.off.attr.data & reverse_mask) ) && fake_reverse );
   return frev
       || term.color.pair.fg != next.color.pair.fg
       || term.color.pair.bg != next.color.pair.bg;
@@ -1201,9 +1199,7 @@ inline void FOptiAttr::change_current_color ( const FChar& term
 //----------------------------------------------------------------------
 inline void FOptiAttr::resetAttribute (FChar& attr) const noexcept
 {
-  attr.attr.byte[0]  = 0;
-  attr.attr.byte[1] &= internal::var::b1_reset_mask;
-  attr.attr.byte[2] &= internal::var::b2_reset_mask;
+  attr.attr.data &= internal::var::reset_mask;
 }
 
 //----------------------------------------------------------------------
@@ -1244,9 +1240,9 @@ void FOptiAttr::init_reset_attribute (Capability& off, uChar test) const noexcep
 //----------------------------------------------------------------------
 inline auto FOptiAttr::fake_reverse_color_change (const FChar& term) const noexcept -> bool
 {
-  const auto& b0_reverse_mask = internal::var::b0_reverse_mask;
-  return ( (changes.off.attr.byte[0] & b0_reverse_mask)
-        || (term.attr.byte[0] & b0_reverse_mask) ) && fake_reverse;
+  const auto& reverse_mask = internal::var::reverse_mask;
+  return ( (changes.off.attr.data & reverse_mask)
+        || (term.attr.data & reverse_mask) ) && fake_reverse;
 }
 
 //----------------------------------------------------------------------
@@ -1352,9 +1348,8 @@ inline void FOptiAttr::detectSwitchOn (const FChar& term, const FChar& next) noe
   // Detect switched on attributes on transition from "term" to "next"
   // and store the result in "on"
 
-  const auto& mask = internal::var::b1_mask;
-  changes.on.attr.byte[0] = ~(term.attr.byte[0]) & next.attr.byte[0];
-  changes.on.attr.byte[1] = ~(term.attr.byte[1]) & next.attr.byte[1] & mask;
+  const auto& mask = internal::var::attribute_mask;
+  changes.on.attr.data = ~(term.attr.data) & next.attr.data & mask;
 }
 
 //----------------------------------------------------------------------
@@ -1363,9 +1358,8 @@ inline void FOptiAttr::detectSwitchOff (const FChar& term, const FChar& next) no
   // Detect switched off attributes on transition from "term" to "next"
   // and store the result in "on"
 
-  const auto& mask = internal::var::b1_mask;
-  changes.off.attr.byte[0] = term.attr.byte[0] & ~(next.attr.byte[0]);
-  changes.off.attr.byte[1] = term.attr.byte[1] & ~(next.attr.byte[1]) & mask;
+  const auto& mask = internal::var::attribute_mask;
+  changes.off.attr.data = term.attr.data & ~(next.attr.data) & mask;
 }
 
 //----------------------------------------------------------------------

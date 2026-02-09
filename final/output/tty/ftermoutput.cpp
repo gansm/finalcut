@@ -753,7 +753,7 @@ auto FTermOutput::canClearTrailingWS (uInt& xmax, uInt y) const -> bool
                                      return *last_char != ch;
                                    } );
 
-  const uInt trailing_whitespace = uInt(std::distance(r_begin, first_diff));
+  const auto trailing_whitespace = uInt(std::distance(r_begin, first_diff));
   const auto normal = FOptiAttr::isNormal(*last_char);
   const auto ut = FTermcap::background_color_erase;
 
@@ -934,7 +934,7 @@ void FTermOutput::printFullWidthCharacter ( uInt& x, uInt y
 
 //----------------------------------------------------------------------
 void FTermOutput::printFullWidthPaddingCharacter ( uInt& x, uInt y
-                                                 , FChar_iterator& iter)
+                                                 , const FChar_iterator& iter)
 {
   auto prev_char_iter = vterm->getFCharIterator(int(x - 1), int(y));
 
@@ -1477,7 +1477,7 @@ inline void FTermOutput::appendAttributes (FChar& next_attr)
 }
 
 //----------------------------------------------------------------------
-void FTermOutput::appendLowerRight (FChar_iterator& last_char_iter)
+void FTermOutput::appendLowerRight (const FChar_iterator& last_char_iter)
 {
   const auto& SA = TCAP(t_enter_am_mode);
   const auto& RA = TCAP(t_exit_am_mode);

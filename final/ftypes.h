@@ -598,15 +598,24 @@ struct alignas(std::max_align_t) FChar
   FCellColor color{};         // Foreground and background color
   FAttribute attr{};          // Attributes
 
-#if HAVE_BUILTIN(__builtin_bit_cast)
+#if HAVE_BUILTIN(__builtin_memcmp)
   friend constexpr
 #else
   friend inline
 #endif
   auto operator == (const FChar& lhs, const FChar& rhs) noexcept -> bool
   {
-    if ( lhs.color.data != rhs.color.data )
+#if HAVE_BUILTIN(__builtin_memcmp)
+    if ( __builtin_memcmp ( &lhs.color
+                          , &rhs.color
+                          , sizeof(uInt32) ) != 0 )
       return false;
+#else
+    if ( std::memcmp( &lhs.color
+                    , &rhs.color
+                    , sizeof(uInt32) ) != 0 )
+      return false;
+#endif
 
 #if HAVE_BUILTIN(__builtin_bit_cast)
     constexpr auto mask = getCompareBitMask();
