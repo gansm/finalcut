@@ -65,7 +65,11 @@ EXTRA_DIST = \
 	widget-layout.md \
 	widget-lengths.svg \
 	xgraphics \
-	xterm.txt
+	xterm.txt \
+	FDialog.svg \
+	build_alpine_linux.txt \
+	subsystem-architecture.svg \
+	xpmview.png
 
 doc_DATA = \
 	Mandelbrot.png \

@@ -4,6 +4,14 @@
 
 LIBS = -lfinal $(CPPUNIT_LIBS)
 
+EXTRA_DIST = Makefile.clang \
+	Makefile.gcc \
+	conemu.h \
+	fvterm_check.h \
+	main-test.inc \
+	test \
+	test.sh
+
 if CPPUNIT_TEST
 
 AM_LDFLAGS = -L$(top_builddir)/final/.libs

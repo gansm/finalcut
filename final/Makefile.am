@@ -9,6 +9,15 @@ AUTOMAKE_OPTIONS = subdir-objects
 
 SUBDIRS = . font
 
+EXTRA_DIST = \
+	Makefile.clang \
+	Makefile.gcc \
+	eventloop/eventloop-class-diagram.txt \
+	font/40-finalcut-newfont.conf \
+	font/newfont.txt
+
+DISTCLEANFILES=fconfig.h
+
 lib_LTLIBRARIES = libfinal.la
 
 libfinal_la_SOURCES = \
@@ -237,4 +246,3 @@ uninstall-hook:
 	if test -d ${finalcutvtermincludedir}; then rmdir ${finalcutvtermincludedir}; fi
 	if test -d ${finalcutwidgetincludedir}; then rmdir ${finalcutwidgetincludedir}; fi
 	if test -d ${finalcutincludedir}; then rmdir ${finalcutincludedir}; fi
-
