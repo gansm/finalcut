@@ -9,6 +9,14 @@ if COMPILE_EXAMPLES
 AM_LDFLAGS = -L$(top_builddir)/final/.libs
 AM_CPPFLAGS = -I$(top_srcdir)/final -Wall -Werror -std=c++14
 
+EXTRA_DIST = \
+	Makefile.clang \
+	Makefile.gcc \
+	pixmaps/colored-pencils.xpm \
+	pixmaps/cpu.xpm \
+	pixmaps/xconq.xpm \
+	xpmimage.h
+
 noinst_PROGRAMS = \
 	7segment \
 	background-color \
