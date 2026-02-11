@@ -1889,7 +1889,7 @@ inline void FVTerm::putMultiLayerAreaLine ( FChar* dst_char
     const auto x = term_x - x_min;
     const auto y = term_y - y_min;
     const auto width = getFullAreaWidth(win);
-    const auto index = unsigned(y) * unsigned(width) + unsigned(x);
+    const auto index = y * width + x;
 
     // Calculate the intersection of the line with the window
     const auto start_idx = std::size_t(std::max(0, x_min - term_x));
@@ -1898,7 +1898,7 @@ inline void FVTerm::putMultiLayerAreaLine ( FChar* dst_char
     // Store pre-calculated area line data
     overlay_line_buffer.push_back
     (
-      { win->data.data(), unsigned(index), start_idx, end_idx }
+      { win->data.data(), index, start_idx, end_idx }
     );
   }
 

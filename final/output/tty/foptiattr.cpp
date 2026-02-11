@@ -39,56 +39,76 @@ namespace finalcut
 namespace internal
 {
 
-constexpr auto getReverseMask() noexcept -> uInt32
+template<typename F>
+constexpr auto createMask(F setter) noexcept -> uInt32
 {
   FCharAttribute mask{};
-  mask.reverse = true;
-  mask.standout = true;
+  setter(mask);
   return FCharAttribute_to_uInt32(mask);
 }
 
-constexpr auto getAttributeMask() noexcept -> uInt32
+constexpr void setReverseMask (FCharAttribute& attr) noexcept
 {
-  FCharAttribute mask{};
-  mask.bold = true;
-  mask.dim = true;
-  mask.italic = true;
-  mask.underline = true;
-  mask.blink = true;
-  mask.reverse = true;
-  mask.standout = true;
-  mask.invisible = true;
-  mask.protect = true;
-  mask.crossed_out = true;
-  mask.dbl_underline = true;
-  mask.alt_charset = true;
-  mask.pc_charset = true;
-  return FCharAttribute_to_uInt32(mask);
+  attr.reverse = true;
+  attr.standout = true;
 }
 
-constexpr auto getResetMask() noexcept -> uInt32
+constexpr void setAltCharsetMask (FCharAttribute& attr) noexcept
+{
+  attr.alt_charset = true;
+}
+
+constexpr void setPcCharsetMask (FCharAttribute& attr) noexcept
+{
+  attr.pc_charset = true;
+}
+
+constexpr void setAttributeMask (FCharAttribute& attr) noexcept
+{
+  attr.bold = true;
+  attr.dim = true;
+  attr.italic = true;
+  attr.underline = true;
+  attr.blink = true;
+  attr.reverse = true;
+  attr.standout = true;
+  attr.invisible = true;
+  attr.protect = true;
+  attr.crossed_out = true;
+  attr.dbl_underline = true;
+  attr.alt_charset = true;
+  attr.pc_charset = true;
+}
+
+constexpr void setResetMask (FCharAttribute& attr) noexcept
 {
   // Set bits that must not be reset
-  FCharAttribute mask{};
-  mask.transparent = true;
-  mask.color_overlay = true;
-  mask.inherit_background = true;
-  mask.no_changes = true;
-  mask.printed = true;
-  return FCharAttribute_to_uInt32(mask);
+  attr.transparent = true;
+  attr.color_overlay = true;
+  attr.inherit_background = true;
+  attr.no_changes = true;
+  attr.printed = true;
 }
 
 struct var
 {
-  static constexpr auto reverse_mask   = getReverseMask();
-  static constexpr auto attribute_mask = getAttributeMask();
-  static constexpr auto reset_mask     = getResetMask();
-  static constexpr char sgr_39[]       = {CSI "39m"};
-  static constexpr char sgr_39_49[]    = {CSI "39;49m"};
+  static constexpr auto reverse_mask           = createMask(setReverseMask);
+  static constexpr auto alt_charset_mask       = createMask(setAltCharsetMask);
+  static constexpr auto pc_charset_mask        = createMask(setPcCharsetMask);
+  static constexpr auto attribute_mask         = createMask(setAttributeMask);
+  static constexpr auto alt_charset_reset_mask = ~alt_charset_mask;
+  static constexpr auto pc_charset_reset_mask  = ~pc_charset_mask;
+  static constexpr auto reset_mask             = createMask(setResetMask);
+  static constexpr char sgr_39[]               = {CSI "39m"};
+  static constexpr char sgr_39_49[]            = {CSI "39;49m"};
 };
 
 constexpr uInt32 var::reverse_mask;
+constexpr uInt32 var::alt_charset_mask;
+constexpr uInt32 var::pc_charset_mask;
 constexpr uInt32 var::attribute_mask;
+constexpr uInt32 var::alt_charset_reset_mask;
+constexpr uInt32 var::pc_charset_reset_mask;
 constexpr uInt32 var::reset_mask;
 constexpr char   var::sgr_39[];
 constexpr char   var::sgr_39_49[];
@@ -468,7 +488,7 @@ auto FOptiAttr::changeAttribute (FChar& term, FChar& next) -> std::string
     deactivateAttributes (term, next);
   }
   else if ( F_attributes.on.cap
-         && (! term.attr.bit.pc_charset || alt_equal_pc_charset) )
+         && (! (term.attr.data & internal::var::pc_charset_mask) || alt_equal_pc_charset) )
   {
     changeAttributeSGR (term, next);
   }
@@ -780,9 +800,10 @@ inline auto FOptiAttr::unsetTermAttributes (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermAltCharset (FChar& term) noexcept -> bool
 {
-  term.attr.bit.alt_charset = true;
+  term.attr.data |= internal::var::alt_charset_mask;
 
-  if ( alt_equal_pc_charset && term.attr.bit.pc_charset )
+  if ( alt_equal_pc_charset
+    && term.attr.data & internal::var::pc_charset_mask )
     return false;
 
   return append_sequence(F_alt_charset.on.cap);
@@ -791,9 +812,10 @@ inline auto FOptiAttr::setTermAltCharset (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FOptiAttr::unsetTermAltCharset (FChar& term) noexcept -> bool
 {
-  term.attr.bit.alt_charset = false;
+  term.attr.data &= internal::var::alt_charset_reset_mask;
 
-  if ( alt_equal_pc_charset && term.attr.bit.pc_charset )
+  if ( alt_equal_pc_charset
+    && term.attr.data & internal::var::pc_charset_mask )
     return false;
 
   return append_sequence(F_alt_charset.off.cap);
@@ -802,9 +824,10 @@ inline auto FOptiAttr::unsetTermAltCharset (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermPCcharset (FChar& term) noexcept -> bool
 {
-  term.attr.bit.pc_charset = true;
+  term.attr.data |= internal::var::pc_charset_mask;
 
-  if ( alt_equal_pc_charset && term.attr.bit.alt_charset )
+  if ( alt_equal_pc_charset
+    && term.attr.data & internal::var::alt_charset_mask )
     return false;
 
   return append_sequence(F_pc_charset.on.cap);
@@ -813,9 +836,10 @@ inline auto FOptiAttr::setTermPCcharset (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FOptiAttr::unsetTermPCcharset (FChar& term) noexcept -> bool
 {
-  term.attr.bit.pc_charset = false;
+  term.attr.data &= internal::var::pc_charset_reset_mask;
 
-  if ( alt_equal_pc_charset && term.attr.bit.alt_charset )
+  if ( alt_equal_pc_charset
+    && term.attr.data & internal::var::alt_charset_mask )
     return false;
 
   return append_sequence(F_pc_charset.off.cap);
@@ -923,7 +947,8 @@ inline auto FOptiAttr::isDoubleUnderlineUsed ( const FChar& term
 inline auto FOptiAttr::isPCcharsetUsed ( const FChar& term
                                        , const FChar& next ) const noexcept -> bool
 {
-  return ! term.attr.bit.pc_charset && next.attr.bit.pc_charset;
+  return ! (term.attr.data & internal::var::pc_charset_mask)
+      && next.attr.data & internal::var::pc_charset_mask;
 }
 
 //----------------------------------------------------------------------
@@ -932,10 +957,10 @@ inline auto FOptiAttr::isPCcharsetUsable ( FChar& term
 {
   if ( alt_equal_pc_charset
     && F_pc_charset.on.cap
-    && next.attr.bit.alt_charset )
+    && next.attr.data & internal::var::alt_charset_mask )
   {
     term.attr.bit.pc_charset = next.attr.bit.pc_charset;
-    changes.off.attr.bit.pc_charset = false;
+    changes.off.attr.data &= internal::var::pc_charset_reset_mask;
     return false;
   }
 
@@ -995,12 +1020,12 @@ inline void FOptiAttr::deactivateAttributes (FChar& term, FChar& next)
   {
     if ( F_attributes.off.cap )
     {
-      if ( changes.off.attr.bit.alt_charset )  // Required for rxvt terminals
+      if ( changes.off.attr.data & internal::var::alt_charset_mask )  // Required for rxvt terminals
         unsetTermAltCharset(term);
 
       unsetTermAttributes(term);
 
-      if ( changes.off.attr.bit.pc_charset )
+      if ( changes.off.attr.data & internal::var::pc_charset_mask )
         unsetTermPCcharset(term);
     }
     else
@@ -1028,7 +1053,7 @@ inline void FOptiAttr::changeAttributeSGR (FChar& term, FChar& next)
 
   const auto pc_charset_usable = isPCcharsetUsable(term, next);
 
-  if ( changes.off.attr.bit.pc_charset )
+  if ( changes.off.attr.data & internal::var::pc_charset_mask )
     unsetTermPCcharset(term);
 
   if ( isItalicsUsed(term, next) )

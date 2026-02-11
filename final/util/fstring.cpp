@@ -152,7 +152,7 @@ FString::FString (const UniChar& c)
 FString::FString (const wchar_t c)
 {
   if ( c )
-    string.assign(1, static_cast<wchar_t>(c));
+    string.assign(1, c);
 }
 
 //----------------------------------------------------------------------
@@ -1160,7 +1160,7 @@ template <typename NumT>
 inline auto FString::internal_setFormatedNumber (NumT value, FString separator) -> FString&
 {
   const auto is_negative = isNegative(value);
-  using SignedT = typename std::make_signed<NumT>::type;
+  using SignedT = typename std::make_signed_t<NumT>;
   auto abs_value = is_negative
                  ? uInt64(-(static_cast<SignedT>(value + 1))) + 1ULL
                  : uInt64(value);

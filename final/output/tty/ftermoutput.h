@@ -248,7 +248,7 @@ class FTermOutput final : public FOutput
     void markAsPrinted (uInt, uInt, uInt) const noexcept;
     void newFontChanges (FChar&) const;
     void charsetChanges (FChar&) const;
-    void appendCharacter (FChar_iterator&);
+    void appendCharacter (const FChar_iterator&);
     void appendCharacter_n (FChar_iterator&, uInt);
     void appendChar (FChar&);
     void appendAttributes (FChar&);

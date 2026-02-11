@@ -1414,7 +1414,7 @@ inline void FTermOutput::charsetChanges (FChar& next_char) const
 }
 
 //----------------------------------------------------------------------
-inline void FTermOutput::appendCharacter (FChar_iterator& next_char_iter)
+inline void FTermOutput::appendCharacter (const FChar_iterator& next_char_iter)
 {
   const int term_width = vterm->size.width - 1;
   const int term_height = vterm->size.height - 1;
