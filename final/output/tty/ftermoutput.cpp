@@ -903,7 +903,7 @@ void FTermOutput::printCharacter ( uInt& x, uInt y, bool min_and_not_max
 
 //----------------------------------------------------------------------
 void FTermOutput::printFullWidthCharacter ( uInt& x, uInt y
-                                          , FChar_iterator& iter )
+                                          , const FChar_iterator& iter )
 {
   auto& next_char = vterm->getFChar(int(x + 1), int(y));
 
@@ -966,7 +966,7 @@ void FTermOutput::printFullWidthPaddingCharacter ( uInt& x, uInt y
 
 //----------------------------------------------------------------------
 void FTermOutput::printHalfCovertFullWidthCharacter ( uInt x, uInt y
-                                                    , FChar_iterator& iter )
+                                                    , const FChar_iterator& iter )
 {
   auto& prev_char = vterm->getFChar(int(x - 1), int(y));
 
@@ -1429,7 +1429,7 @@ inline void FTermOutput::appendCharacter (const FChar_iterator& next_char_iter)
 }
 
 //----------------------------------------------------------------------
-inline void FTermOutput::appendCharacter_n (FChar_iterator& next_char_iter, uInt number)
+inline void FTermOutput::appendCharacter_n (const FChar_iterator& next_char_iter, uInt number)
 {
   for (uInt n{0}; n < number; n++)
     appendCharacter (next_char_iter);

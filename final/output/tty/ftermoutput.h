@@ -226,9 +226,9 @@ class FTermOutput final : public FOutput
     void printRange (uInt, uInt, uInt);
     void replaceNonPrintableFullwidth (uInt, uInt, FChar&) const noexcept;
     void printCharacter (uInt&, uInt, bool, FChar_iterator&);
-    void printFullWidthCharacter (uInt&, uInt, FChar_iterator&);
+    void printFullWidthCharacter (uInt&, uInt, const FChar_iterator&);
     void printFullWidthPaddingCharacter (uInt&, uInt, const FChar_iterator&);
-    void printHalfCovertFullWidthCharacter (uInt, uInt, FChar_iterator&);
+    void printHalfCovertFullWidthCharacter (uInt, uInt, const FChar_iterator&);
     void printEllipsis (uInt, uInt, FChar&);
     void skipPaddingCharacter (uInt&, uInt, const FChar&) const noexcept;
     auto eraseCharacters (uInt&, uInt, uInt, FChar_iterator&) -> PrintState;
@@ -249,7 +249,7 @@ class FTermOutput final : public FOutput
     void newFontChanges (FChar&) const;
     void charsetChanges (FChar&) const;
     void appendCharacter (const FChar_iterator&);
-    void appendCharacter_n (FChar_iterator&, uInt);
+    void appendCharacter_n (const FChar_iterator&, uInt);
     void appendChar (FChar&);
     void appendAttributes (FChar&);
     void appendLowerRight (const FChar_iterator&);

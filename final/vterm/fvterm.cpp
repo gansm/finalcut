@@ -1649,9 +1649,9 @@ inline void FVTerm::scrollTerminalForward() const
     return;
 
   // Avoid update lines from 0 to (height - 2)
-  auto* vdesktop_changes = &vdesktop->changes_in_line[0];
-  const auto* vdesktop_changes_end = vdesktop_changes
-                                   + unsigned(vdesktop->size.height - 1);
+  auto vdesktop_changes = vdesktop->changes_in_line.begin();
+  const auto vdesktop_changes_end = vdesktop_changes
+                                  + vdesktop->size.height - 1;
 
   while ( vdesktop_changes < vdesktop_changes_end )
   {
@@ -1677,9 +1677,9 @@ inline void FVTerm::scrollTerminalReverse() const
     return;
 
   // avoid update lines from 1 to (height - 1)
-  auto* vdesktop_changes = &vdesktop->changes_in_line[1];
-  const auto* vdesktop_changes_end = vdesktop_changes
-                                   + unsigned(vdesktop->size.height);
+  auto vdesktop_changes = vdesktop->changes_in_line.begin() + 1;
+  const auto vdesktop_changes_end = vdesktop_changes
+                                  + vdesktop->size.height;
 
   while ( vdesktop_changes < vdesktop_changes_end )
   {
@@ -2215,9 +2215,9 @@ void FVTerm::clearAreaWithShadow (FTermArea* area, const FChar& fillchar) const 
   t_char.ch[0] = L'\0';
   t_char.attr.bit.transparent = true;
   t_char.attr.bit.char_width = 0;
-  const auto total_width = unsigned(getFullAreaWidth(area));
-  auto* area_pos = &area->data[0];
-  auto* shadow_begin = &area->data[area->size.width];
+  const auto total_width = getFullAreaWidth(area);
+  auto area_pos = area->data.begin();
+  auto shadow_begin = area->data.begin() + area->size.width;
 
   for (auto y{0}; y < area->size.height; y++)
   {
@@ -2230,7 +2230,7 @@ void FVTerm::clearAreaWithShadow (FTermArea* area, const FChar& fillchar) const 
   }
 
   // Make bottom shadow transparent
-  area_pos = &area->data[total_width * area->size.height];
+  area_pos = area->data.begin() + (total_width * area->size.height);
 
   for (auto y{0}; y < area->shadow.height; y++)
   {

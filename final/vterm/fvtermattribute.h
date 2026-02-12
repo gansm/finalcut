@@ -212,7 +212,7 @@ inline void FVTermAttribute::setNormal() noexcept
   // Reset all character attributes
   next_attribute.attr.data = next_attribute.attr.data
                            & internal::attr_var::reset_mask;
-  next_attribute.color.pair = {FColor::Default, FColor::Default};
+  next_attribute.color.data = uInt32(FColor::Default << 16) | uInt32(FColor::Default);
 }
 
 //----------------------------------------------------------------------
