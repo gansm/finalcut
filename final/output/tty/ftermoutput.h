@@ -232,7 +232,7 @@ class FTermOutput final : public FOutput
     void printEllipsis (uInt, uInt, FChar&);
     void skipPaddingCharacter (uInt&, uInt, const FChar&) const noexcept;
     auto eraseCharacters (uInt&, uInt, uInt, const FChar_iterator&) -> PrintState;
-    auto repeatCharacter (uInt&, uInt, uInt, FChar_iterator&) -> PrintState;
+    auto repeatCharacter (uInt&, uInt, uInt, const FChar_iterator&) -> PrintState;
     auto countRepetitions (FChar_const_iterator, uInt, uInt) const noexcept -> uInt;
     auto canUseEraseCharacters (const FChar&, uInt) const noexcept -> bool;
     auto canUseCharacterRepetitions (const FChar&, uInt) const noexcept -> bool;

@@ -1251,8 +1251,8 @@ inline void FOptiAttr::change_to_default_color ( FChar& term, FChar& next
 {
   if ( F_color.ansi_default_color )
   {
-    const auto set_default_fg = fg == FColor::Default && term.color.pair.fg != FColor::Default;
-    const auto set_default_bg = bg == FColor::Default && term.color.pair.bg != FColor::Default;
+    const auto set_default_fg = fg == FColor::Default && (term.color.data & 0xffff) != uInt32(FColor::Default);
+    const auto set_default_bg = bg == FColor::Default && (term.color.data >> 16) != uInt32(FColor::Default);
 
     if ( set_default_fg && set_default_bg )
       setTermDefaultColor(term);
@@ -1273,7 +1273,7 @@ inline void FOptiAttr::change_to_default_color ( FChar& term, FChar& next
 inline void FOptiAttr::setDefaultForeground (FChar& term)
 {
   append_sequence (internal::var::sgr_39);
-  term.color.pair.fg = FColor::Default;
+  term.color.data |= uInt32(FColor::Default);
 }
 
 //----------------------------------------------------------------------

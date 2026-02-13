@@ -1046,7 +1046,7 @@ auto FTermOutput::eraseCharacters (uInt& x, uInt xmax, uInt y, const FChar_itera
 }
 
 //----------------------------------------------------------------------
-auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y, FChar_iterator& iter) -> PrintState
+auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y, const FChar_iterator& iter) -> PrintState
 {
   // Repeat one character n-fold
 
