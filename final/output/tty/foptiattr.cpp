@@ -39,8 +39,8 @@ namespace finalcut
 namespace internal
 {
 
-template<typename F>
-constexpr auto createMask(F setter) noexcept -> uInt32
+template<typename T>
+constexpr auto createMask (T setter) noexcept -> uInt32
 {
   FCharAttribute mask{};
   setter(mask);
@@ -145,6 +145,19 @@ constexpr void setResetMask (FCharAttribute& attr) noexcept
   attr.printed = true;
 }
 
+template<typename T>
+constexpr auto createColorPair (T setter) noexcept -> uInt32
+{
+  FCellColor fcellcolor{};
+  setter(fcellcolor);
+  return FCellColor_to_uInt32(fcellcolor);
+}
+
+constexpr void setDefaultColorPair (FCellColor& fcellcolor) noexcept
+{
+  fcellcolor.pair = {FColor::Default, FColor::Default};
+}
+
 struct var
 {
   static constexpr auto bold_mask                = createMask(setBoldMask);
@@ -176,6 +189,7 @@ struct var
   static constexpr auto alt_charset_reset_mask   = ~alt_charset_mask;
   static constexpr auto pc_charset_reset_mask    = ~pc_charset_mask;
   static constexpr auto reset_mask               = createMask(setResetMask);
+  static constexpr auto default_color_pair       = createColorPair(setDefaultColorPair);
   static constexpr char sgr_39[]                 = {CSI "39m"};
   static constexpr char sgr_39_49[]              = {CSI "39;49m"};
 };
@@ -209,6 +223,7 @@ constexpr uInt32 var::dbl_underline_reset_mask;
 constexpr uInt32 var::alt_charset_reset_mask;
 constexpr uInt32 var::pc_charset_reset_mask;
 constexpr uInt32 var::reset_mask;
+constexpr uInt32 var::default_color_pair;
 constexpr char   var::sgr_39[];
 constexpr char   var::sgr_39_49[];
 
@@ -946,7 +961,7 @@ inline auto FOptiAttr::unsetTermPCcharset (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 auto FOptiAttr::setTermDefaultColor (FChar& term) -> bool
 {
-  term.color.pair = {FColor::Default, FColor::Default};
+  term.color.data = internal::var::default_color_pair;
 
   if ( append_sequence(F_color.orig_pair.cap)
     || append_sequence(F_color.orig_colors.cap) )
@@ -1082,7 +1097,7 @@ inline auto FOptiAttr::hasColorChanged ( const FChar& term
 //----------------------------------------------------------------------
 inline void FOptiAttr::resetColor (FChar& attr) const noexcept
 {
-  attr.color.pair = {FColor::Default, FColor::Default};
+  attr.color.data = internal::var::default_color_pair;
 }
 
 //----------------------------------------------------------------------
@@ -1189,7 +1204,7 @@ void FOptiAttr::change_color (FChar& term, FChar& next)
 {
   if ( F_color.monochron )
   {
-    next.color.pair = {FColor::Default, FColor::Default};
+    next.color.data = internal::var::default_color_pair;
     return;
   }
 

@@ -73,6 +73,24 @@ struct attr_var
   static constexpr auto reset_mask = getAttrResetMask();
 };
 
+template<typename T>
+constexpr auto createColorPair (T setter) noexcept -> uInt32
+{
+  FCellColor fcellcolor{};
+  setter(fcellcolor);
+  return FCellColor_to_uInt32(fcellcolor);
+}
+
+constexpr void setDefaultColorPair (FCellColor& fcellcolor) noexcept
+{
+  fcellcolor.pair = {FColor::Default, FColor::Default};
+}
+
+struct color_var
+{
+  static constexpr auto default_color_pair = createColorPair(setDefaultColorPair);
+};
+
 }  // namespace internal
 
 // class forward declaration
@@ -212,7 +230,7 @@ inline void FVTermAttribute::setNormal() noexcept
   // Reset all character attributes
   next_attribute.attr.data = next_attribute.attr.data
                            & internal::attr_var::reset_mask;
-  next_attribute.color.data = uInt32(FColor::Default << 16) | uInt32(FColor::Default);
+  next_attribute.color.data = internal::color_var::default_color_pair;
 }
 
 //----------------------------------------------------------------------

@@ -225,13 +225,13 @@ class FTermOutput final : public FOutput
     auto skipUnchangedCharacters (uInt&, uInt, uInt, FChar_iterator) -> bool;
     void printRange (uInt, uInt, uInt);
     void replaceNonPrintableFullwidth (uInt, uInt, FChar&) const noexcept;
-    void printCharacter (uInt&, uInt, bool, FChar_iterator&);
+    void printCharacter (uInt&, uInt, bool, const FChar_iterator&);
     void printFullWidthCharacter (uInt&, uInt, const FChar_iterator&);
     void printFullWidthPaddingCharacter (uInt&, uInt, const FChar_iterator&);
     void printHalfCovertFullWidthCharacter (uInt, uInt, const FChar_iterator&);
     void printEllipsis (uInt, uInt, FChar&);
     void skipPaddingCharacter (uInt&, uInt, const FChar&) const noexcept;
-    auto eraseCharacters (uInt&, uInt, uInt, FChar_iterator&) -> PrintState;
+    auto eraseCharacters (uInt&, uInt, uInt, const FChar_iterator&) -> PrintState;
     auto repeatCharacter (uInt&, uInt, uInt, FChar_iterator&) -> PrintState;
     auto countRepetitions (FChar_const_iterator, uInt, uInt) const noexcept -> uInt;
     auto canUseEraseCharacters (const FChar&, uInt) const noexcept -> bool;

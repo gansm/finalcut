@@ -427,7 +427,7 @@ void FTermOutput::clearTerminalState()
 {
   // term_attribute stores the current state of the terminal
   term_attribute.ch = {L'\0', L'\0', L'\0', L'\0', L'\0'};
-  term_attribute.color.pair = {FColor::Undefined, FColor::Undefined};
+  term_attribute.color.data = internal::color_var::default_color_pair;
   term_attribute.attr.data = 0;
 }
 
@@ -876,7 +876,7 @@ inline void FTermOutput::replaceNonPrintableFullwidth ( uInt x, uInt vterm_width
 
 //----------------------------------------------------------------------
 void FTermOutput::printCharacter ( uInt& x, uInt y, bool min_and_not_max
-                                 , FChar_iterator& iter)
+                                 , const FChar_iterator& iter)
 {
   // General character output on terminal
 
@@ -1007,7 +1007,7 @@ inline void FTermOutput::skipPaddingCharacter ( uInt& x, uInt y
 }
 
 //----------------------------------------------------------------------
-auto FTermOutput::eraseCharacters (uInt& x, uInt xmax, uInt y, FChar_iterator& iter) -> PrintState
+auto FTermOutput::eraseCharacters (uInt& x, uInt xmax, uInt y, const FChar_iterator& iter) -> PrintState
 {
   // Erase a number of characters to draw simple whitespaces
 

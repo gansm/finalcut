@@ -256,6 +256,8 @@ using enable_if_arithmetic_without_char_t =
                  && ! std::is_same<char, NumT>::value
                  , std::nullptr_t>;
 
+// UTF8_Char
+//----------------------------------------------------------------------
 struct FourByteData
 {
   char byte1;  // First character
@@ -284,6 +286,8 @@ struct UTF8_Char
   }
 };
 
+// TCapAttributes
+//----------------------------------------------------------------------
 struct TCapAttributes
 {
   uInt8 p1 : 1;  // Standout
@@ -298,6 +302,8 @@ struct TCapAttributes
   uInt8    : 7;  // padding bits
 };
 
+// FCharAttribute + FAttribute
+//----------------------------------------------------------------------
 struct FCharAttribute
 {
   // Attribute byte #0
@@ -415,6 +421,8 @@ union FAttribute
   FCharAttribute bit;
 };
 
+// FUnicode
+//----------------------------------------------------------------------
 static constexpr std::size_t UNICODE_MAX = 5;
 
 struct FUnicode
@@ -540,21 +548,6 @@ struct FUnicode
   }
 };
 
-
-enum class FColor : uInt16;  // forward declaration
-
-struct FColors
-{
-  FColor fg{};  // Foreground color
-  FColor bg{};  // Background color
-};
-
-union FCellColor
-{
-  FColors pair;  // Foreground and background color
-  uInt32  data;  // Color data
-};
-
 // FChar operator functions
 //----------------------------------------------------------------------
 #if HAVE_BUILTIN(__builtin_bit_cast)
@@ -573,6 +566,29 @@ inline auto isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexcept 
 }
 #endif
 
+// FCellColor
+//----------------------------------------------------------------------
+enum class FColor : uInt16;  // forward declaration
+
+struct FColors
+{
+  FColor fg{};  // Foreground color
+  FColor bg{};  // Background color
+};
+
+union FCellColor
+{
+  FColors pair;  // Foreground and background color
+  uInt32  data;  // Color data
+};
+
+constexpr auto FCellColor_to_uInt32 (const FCellColor& fcellcolor) noexcept -> uInt32
+{
+  return ( static_cast<uInt32>(fcellcolor.pair.bg) << 16)
+         | static_cast<uInt32>(fcellcolor.pair.fg );
+}
+
+// FChar
 //----------------------------------------------------------------------
 #if HAVE_BUILTIN(__builtin_bit_cast)
 constexpr auto getCompareBitMask() noexcept -> uInt32
@@ -590,7 +606,6 @@ inline auto getCompareBitMask() noexcept -> uInt32
 }
 #endif
 
-//----------------------------------------------------------------------
 struct alignas(std::max_align_t) FChar
 {
   FUnicode   ch{};            // Character code

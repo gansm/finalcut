@@ -2108,7 +2108,7 @@ void FWidget::drawWindows() const
   // Redraw windows
   FChar default_char{};
   default_char.ch[0] = L' ';
-  default_char.color.pair = {FColor::Default, FColor::Default};
+  default_char.color.data = internal::color_var::default_color_pair;
   const auto* vterm_win_list = getWindowList();
 
   if ( ! vterm_win_list || vterm_win_list->empty() )
