@@ -27,7 +27,6 @@ jobs:
           pkg list -af entire
           pkg list -af gcc-7
           pkg list -af gcc-11
-          pkg install -v --accept developer/gcc-7@7.3.0-11.4.0.0.1.14.0
           pkgutil -y -u
           pkgutil -y -i automake autoconf autoconf_archive libtool pkgconfig libcppunit1_12_1 libcppunit_dev gsed ggrep
         mem: 6144
@@ -38,6 +37,7 @@ jobs:
           cat /etc/release
           PATH=/opt/csw/bin:$PATH
           export PATH
+          c++ --version || true
           autoreconf -v --install --force
           ./configure --prefix=/usr
           gmake V=1 -j$(nproc)

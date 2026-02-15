@@ -36,6 +36,46 @@
 
 namespace finalcut
 {
+namespace internal
+{
+
+template<typename T>
+constexpr auto createMask (T setter) noexcept -> uInt32
+{
+  FCharAttribute mask{};
+  setter(mask);
+  return FCharAttribute_to_uInt32(mask);
+}
+
+constexpr void setAttributeMask (FCharAttribute& attr) noexcept
+{
+  attr.bold = true;
+  attr.dim = true;
+  attr.italic = true;
+  attr.underline = true;
+  attr.blink = true;
+  attr.reverse = true;
+  attr.standout = true;
+  attr.invisible = true;
+  attr.protect = true;
+  attr.crossed_out = true;
+  attr.dbl_underline = true;
+  attr.alt_charset = true;
+  attr.pc_charset = true;
+  attr.transparent = true;
+  attr.color_overlay = true;
+  attr.inherit_background = true;
+}
+
+struct var
+{
+  static constexpr auto attr_mask = createMask(setAttributeMask);
+};
+
+constexpr uInt32 var::attr_mask;
+
+}  // namespace internal
+
 
 //----------------------------------------------------------------------
 // class FVTermBuffer
@@ -74,7 +114,6 @@ auto FVTermBuffer::toString() const -> FString
 auto FVTermBuffer::print (const FString& string) -> int
 {
   checkCapacity(data, data.size() + string.getLength());
-  getNextCharacterAttribute();
   UnicodeBoundary ucb{string.cbegin(), string.cend(), string.cbegin(), 0};
 
   for (const auto& ch : string)
@@ -111,12 +150,20 @@ auto FVTermBuffer::print (const FString& string) -> int
 //----------------------------------------------------------------------
 auto FVTermBuffer::print (wchar_t ch) -> int
 {
-  getNextCharacterAttribute();
+  data.emplace_back();
+  auto& nc = data.back();  // next character
+  setAttribute(nc);
   nc.ch.unicode_data[0] = ch;
+#if defined(__clang__)
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
   nc.ch.unicode_data[1] = L'\0';
+#if defined(__clang__)
+  #pragma clang diagnostic pop
+#endif
   const auto column_width = getColumnWidth(nc.ch.unicode_data[0]);
   addColumnWidth(nc, column_width);  // add column width
-  data.emplace_back(nc);
   return 1;
 }
 
@@ -136,14 +183,11 @@ void FVTermBuffer::print (const FColorPair& pair) const noexcept
 
 // private methods of FVTermBuffer
 //----------------------------------------------------------------------
-inline void FVTermBuffer::getNextCharacterAttribute() noexcept
+inline void FVTermBuffer::setAttribute (FChar& fchar) noexcept
 {
   static const auto& next_attribute = FVTermAttribute::getAttribute();
-  nc.color.data   = next_attribute.color.data;
-  nc.attr.byte[0] = next_attribute.attr.byte[0];
-  nc.attr.byte[1] = next_attribute.attr.byte[1];
-  nc.attr.byte[2] = 0;
-  nc.attr.byte[3] = 0;
+  fchar.color.data = next_attribute.color.data;
+  fchar.attr.data = next_attribute.attr.data & internal::var::attr_mask;
 }
 
 //----------------------------------------------------------------------
@@ -154,11 +198,22 @@ void FVTermBuffer::add (UnicodeBoundary& ucb)
   if ( ucb.cbegin == ucb.iter )
     return;
 
+  data.emplace_back();
+  auto& nc = data.back();  // next character
+  setAttribute(nc);
+
   if ( ucb.char_width == 2
     && fterm_data.getTerminalEncoding() != Encoding::UTF8 )
   {
     nc.ch.unicode_data[0] = L'.';
+#if defined(__clang__)
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
     nc.ch.unicode_data[1] = L'\0';
+#if defined(__clang__)
+  #pragma clang diagnostic pop
+#endif
     nc.attr.bit.char_width = 1;
   }
   else
@@ -172,7 +227,6 @@ void FVTermBuffer::add (UnicodeBoundary& ucb)
       nc.ch[idx] = L'\0';
   }
 
-  data.emplace_back(nc);
   ucb.cbegin = ucb.iter;
   ucb.char_width = 0;  // reset char width
 }

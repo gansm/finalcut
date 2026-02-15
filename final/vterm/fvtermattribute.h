@@ -228,9 +228,8 @@ inline void FVTermAttribute::setColor (const FColorPair& pair) noexcept
 inline void FVTermAttribute::setNormal() noexcept
 {
   // Reset all character attributes
-  next_attribute.attr.data = next_attribute.attr.data
-                           & internal::attr_var::reset_mask;
   next_attribute.color.data = internal::color_var::default_color_pair;
+  next_attribute.attr.data &= internal::attr_var::reset_mask;
 }
 
 //----------------------------------------------------------------------

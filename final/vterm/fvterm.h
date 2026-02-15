@@ -271,12 +271,12 @@ class FVTerm : public FVTermAttribute
     {
       int area_x;
       int area_y;
-      int ol;                  // Outside-left
-      unsigned vterm_width;
-      unsigned vterm_height;
-      unsigned ax;             // Clipped area x (>=0)
-      int width;               // Full area width
-      int height;              // Effective area height (minimized or full)
+      int ol;            // Outside-left
+      int vterm_width;
+      int vterm_height;
+      int ax;            // Clipped area x (>=0)
+      int width;         // Full area width
+      int height;        // Effective area height (minimized or full)
       int xmax_inside_vterm;
       int y_start;
       int y_end;
@@ -284,10 +284,10 @@ class FVTerm : public FVTermAttribute
 
     struct AreaLine
     {
-      const FChar*   data;       // Source drawing area line
-      std::ptrdiff_t offset;     // Source data offset
-      std::size_t    start_idx;  // Start index
-      std::size_t    end_idx;    // End index
+      FChar_const_iterator iter;       // Source drawing area line
+      std::ptrdiff_t       offset;     // Source data offset
+      std::ptrdiff_t       start_idx;  // Start index
+      std::ptrdiff_t       end_idx;    // End index
     };
 
     enum class NoTrans : sInt8
@@ -377,13 +377,13 @@ class FVTerm : public FVTermAttribute
     void  initSettings();
     void  finish() const;
     void  saveCurrentVTerm() const noexcept;
-    void  putAreaLine (const FChar&, FChar&, const std::size_t) const noexcept;
+    void  putAreaLine (const FChar&, FChar&, const int) const noexcept;
     void  applyColorOverlay (const FChar&, FChar&) const;
     void  inheritBackground (const FChar&, FChar&) const;
-    void  putMultiLayerAreaLine (FChar*, const std::size_t, const FPoint&) const noexcept;
-    void  putAreaLineWithTransparency (const FChar*, FChar*, const int, FPoint, bool) const;
-    void  addAreaLineWithTransparency (const FChar*, FChar*, const std::size_t) const;
-    void  addTransparentAreaLine (const FChar&, FChar&, const std::size_t) const;
+    void  putMultiLayerAreaLine (FChar_iterator, const int, const FPoint&) const noexcept;
+    void  putAreaLineWithTransparency (FChar_const_iterator, FChar_iterator, const int, FPoint, bool) const;
+    void  addAreaLineWithTransparency (FChar_const_iterator, FChar_iterator, const int) const;
+    void  addTransparentAreaLine (FChar_const_iterator&, FChar_iterator&, const int) const;
     void  addTransparentAreaChar (const FChar&, FChar&) const;
     auto  clearFullArea (FTermArea*, FChar&) const -> bool;
     void  clearAreaWithShadow (FTermArea*, const FChar&) const noexcept;
@@ -394,8 +394,8 @@ class FVTerm : public FVTermAttribute
                                      , const FChar_iterator&
                                      , const FChar&) const noexcept -> std::size_t;
     void  printPaddingCharacter (FTermArea*, const FChar&) const;
-    void  putNonTransparent (const FChar*, FChar*&, std::size_t&) const;
-    void  addTransparent (const FChar*, FChar*&, std::size_t&) const;
+    void  putNonTransparent (FChar_const_iterator, FChar_iterator&, int&) const;
+    void  addTransparent (FChar_const_iterator, FChar_iterator&, int&) const;
     void  addVDesktopToListIfExists (FTermAreaList&) const;
     void  determineCoveredAreas (FTermArea*) const;
     void  resetLineCoveredState (FTermArea*) const;
@@ -500,8 +500,6 @@ struct FVTerm::FTermArea  // Define virtual terminal character properties
   constexpr auto isOverlapped (const FTermArea*) const noexcept -> bool;
   constexpr auto isPrintPositionInsideArea() const noexcept -> bool;
   auto reprint (const FRect&, const FSize&) noexcept -> bool;
-
-
 
   inline auto getFChar (int x, int y) const noexcept -> FChar_const_reference
   {

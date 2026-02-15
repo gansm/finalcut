@@ -1367,8 +1367,8 @@ inline void FTermOutput::charsetChanges (FChar& next_char) const
   while ( iter_ch < end_ch && *iter_ch != L'\0' )
   {
     *iter_enc_ch = *iter_ch;
-    ++iter_ch;
-    ++iter_enc_ch;
+    iter_ch = std::next(iter_ch);
+    iter_enc_ch = std::next(iter_enc_ch);
   }
 
   const auto terminal_encoding = internal::var::terminal_encoding;

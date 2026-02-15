@@ -429,38 +429,63 @@ void drawTransparentShadow (FWidget* w)
 //----------------------------------------------------------------------
 inline void drawRightShadow (TransparentShadowData& d)
 {
-  if ( d.shadow_width > 0 )  // Draw right shadow
+  if ( d.shadow_width == 0 )
+    return;
+
+  // Draw right shadow
+  const auto s_width = d.shadow_width;
+  const auto width = d.width;
+  const auto height = d.height;
+  auto* ptr = d.area_ptr;
+  auto changes_in_line = d.area.changes_in_line;
+  auto& changes_in_1st_line = changes_in_line[0];
+
+  std::fill (ptr, std::next(ptr, s_width), d.transparent_char);
+  changes_in_1st_line.xmin = std::min(changes_in_1st_line.xmin, width);
+  changes_in_1st_line.xmax = width + s_width - 1;
+  changes_in_1st_line.trans_count += s_width;
+  const auto total_width = width + s_width;
+
+  for (std::size_t y{1}; y < height; y++)
   {
-    std::fill (d.area_ptr, d.area_ptr + d.shadow_width, d.transparent_char);
-    d.area.changes_in_line[0].xmin = std::min(d.area.changes_in_line[0].xmin, d.width);
-    d.area.changes_in_line[0].xmax = d.width + d.shadow_width - 1;
-    d.area.changes_in_line[0].trans_count += d.shadow_width;
-
-    for (std::size_t y{1}; y < d.height; y++)
-    {
-      d.area_ptr += d.shadow_width + d.width;
-      d.area.changes_in_line[y].xmin = std::min(d.area.changes_in_line[y].xmin, d.width);
-      d.area.changes_in_line[y].xmax = d.width + d.shadow_width - 1;
-      d.area.changes_in_line[y].trans_count += d.shadow_width;
-      std::fill (d.area_ptr, d.area_ptr + d.shadow_width, d.color_overlay_char);
-    }
-
-    d.area_ptr += d.shadow_width;
+    ptr = std::next(ptr, total_width);
+    auto& changes = changes_in_line[y];
+    changes.xmin = std::min(d.area.changes_in_line[y].xmin, width);
+    changes.xmax = width + s_width - 1;
+    changes.trans_count += s_width;
+    std::fill (ptr, std::next(ptr, s_width), d.color_overlay_char);
   }
+
+  d.area_ptr = std::next(ptr, s_width);
 }
 
 //----------------------------------------------------------------------
 inline void drawBottomShadow (TransparentShadowData& d)
 {
-  for (std::size_t y{d.height}; y < d.height + d.shadow_height; y++)  // Draw bottom shadow
+  if ( d.shadow_height == 0 )
+    return;
+
+  // Draw bottom shadow
+  const auto s_width = d.shadow_width;
+  const auto width = d.width;
+  const auto total_width = width + s_width;
+  const auto xmax = total_width - 1;
+  const auto s_height = d.shadow_height;
+  const auto start_y = d.height;
+  auto changes_in_line = d.area.changes_in_line;
+  auto* ptr = d.area_ptr;
+
+  for (std::size_t i{0}; i < s_height; i++)
   {
-    d.area.changes_in_line[y].xmin = 0;
-    d.area.changes_in_line[y].xmax = d.width + d.shadow_width - 1;
-    d.area.changes_in_line[y].trans_count += d.width + d.shadow_width;
-    std::fill (d.area_ptr, d.area_ptr + d.shadow_width, d.transparent_char);
-    d.area_ptr += d.shadow_width;
-    std::fill (d.area_ptr, d.area_ptr + d.width, d.color_overlay_char);
-    d.area_ptr += d.width;
+    const auto y = start_y + i;
+    auto& changes = changes_in_line[y];
+    changes.xmin = 0;
+    changes.xmax = xmax;
+    changes.trans_count += total_width;
+    std::fill (ptr, std::next(ptr, s_width), d.transparent_char);
+    ptr = std::next(ptr, s_width);
+    std::fill (ptr, std::next(ptr, width), d.color_overlay_char);
+    ptr = std::next(ptr, width);
   }
 }
 

@@ -164,16 +164,16 @@ auto FTermDetection::getTTYtype() -> bool
     const char* name{nullptr};
     auto iter = str.begin();
 
-    while ( *iter )
+    while ( *iter && iter < str.end() )
     {
       if ( std::isspace(uChar(*iter)) )
         *iter = '\0';
       else if ( type == nullptr )
         type = iter;
-      else if ( name == nullptr && iter != str.begin() && iter[-1] == '\0' )
+      else if ( name == nullptr && iter != str.begin() && std::prev(iter)[0] == '\0' )
         name = iter;
 
-      ++iter;
+      iter = std::next(iter);
     }
 
     if ( type != nullptr && name != nullptr && term_basename == name )

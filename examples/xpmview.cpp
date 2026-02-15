@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2022-2023 Markus Gans                                      *
+* Copyright 2022-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -330,8 +330,10 @@ void MainWidget::cb_fileOpen()
 
 auto main (int argc, char* argv[]) -> int
 {
-  if ( argv[1] && ( strcmp(argv[1], "--help") == 0
-                 || strcmp(argv[1], "-h") == 0 ) )
+  using Args = std::vector<std::string>;
+  Args args(argv, std::next(argv, argc));
+
+  if ( (args.size() > 1) && ((args[1] == "--help") || (args[1] == "-h")) )
   {
     std::cout << "XPM viewer\n"
               << "Usage: " << basename(argv[0]) << " [FILE]...\n\n";
@@ -347,8 +349,8 @@ auto main (int argc, char* argv[]) -> int
   // Show the main widget
   xpmviewer.show();
 
-  for (int i{1}; i < argc; i++)
-    xpmviewer.open(argv[i]);
+  for (std::size_t i{1}; i < args.size(); i++)
+    xpmviewer.open(args[i]);
 
   return app.exec();
 }

@@ -597,7 +597,7 @@ auto FOptiMove::capDuration (const char cap[], int affcnt) const noexcept -> int
   while ( *p )
   {
     // check for delay with padding character
-    if ( p[0] == '$' && *(p + 1) && p[1] == '<' && std::strchr(p, '>') )
+    if ( p[0] == '$' && *std::next(p) == '<' && std::strchr(p, '>') )
     {
       float num{0};
       p = std::next(p, 2);

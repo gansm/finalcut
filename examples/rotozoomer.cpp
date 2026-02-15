@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2025 Markus Gans                                      *
+* Copyright 2020-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -226,8 +226,8 @@ inline void RotoZoomer::rotozoomer (float cx, float cy, float r)
 
     for (auto x{0}; x < cols; ++x)
     {
-      const unsigned index = unsigned((Cy >> 14) & 0xF)
-                           + unsigned((Cx >> 10) & 0xF0);
+      const unsigned index = unsigned((Cy >> 14) & 0x0f)
+                           | unsigned(((Cx >> 14) & 0x0f) << 4);
       const auto ch = data[index];
 
       if ( ch == L'+' )
@@ -362,21 +362,24 @@ auto main (int argc, char* argv[]) -> int
   bool benchmark{false};
   finalcut::FString report{};
   int quit_code{0};
+  using Args = std::vector<std::string>;
+  Args args(argv, std::next(argv, argc));
 
-  if ( argv[1] && ( strcmp(argv[1], "--help") == 0
-                 || strcmp(argv[1], "-h") == 0 ) )
+  if ( args.size() > 1 )
   {
-    std::cout << "RotoZoomer options:\n"
-              << "  -b, --benchmark               "
-              << "Starting a benchmark run\n\n";
-  }
-  else if ( argv[1] && ( strcmp(argv[1], "--benchmark") == 0
-                      || strcmp(argv[1], "-b") == 0 ) )
-  {
-    benchmark = true;
-    // Disable terminal data requests
-    auto& start_options = finalcut::FStartOptions::getInstance();
-    start_options.terminal_data_request = false;
+    if ( (args[1] == "--help") || (args[1] == "-h") )
+    {
+      std::cout << "RotoZoomer options:\n"
+                << "  -b, --benchmark               "
+                << "Starting a benchmark run\n\n";
+    }
+    else if ( args[1] == "--benchmark" || args[1] == "-b" )
+    {
+      benchmark = true;
+      // Disable terminal data requests
+      auto& start_options = finalcut::FStartOptions::getInstance();
+      start_options.terminal_data_request = false;
+    }
   }
 
   {  // Create the application object in this scope

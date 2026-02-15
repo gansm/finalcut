@@ -590,21 +590,28 @@ constexpr auto FCellColor_to_uInt32 (const FCellColor& fcellcolor) noexcept -> u
 
 // FChar
 //----------------------------------------------------------------------
-#if HAVE_BUILTIN(__builtin_bit_cast)
 constexpr auto getCompareBitMask() noexcept -> uInt32
 {
-  constexpr const FAttribute mask {{ 0xff, 0xff, 0x04, 0x00 }};
-  return __builtin_bit_cast(uInt32, mask.byte);
+  FCharAttribute mask{};
+  mask.bold = true;
+  mask.dim = true;
+  mask.italic = true;
+  mask.underline = true;
+  mask.blink = true;
+  mask.reverse = true;
+  mask.standout = true;
+  mask.invisible = true;
+  mask.protect = true;
+  mask.crossed_out = true;
+  mask.dbl_underline = true;
+  mask.alt_charset = true;
+  mask.pc_charset = true;
+  mask.transparent = true;
+  mask.color_overlay = true;
+  mask.inherit_background = true;
+  mask.fullwidth_padding = true;
+  return FCharAttribute_to_uInt32(mask);
 }
-#else
-inline auto getCompareBitMask() noexcept -> uInt32
-{
-  static const FAttribute mask {{ 0xff, 0xff, 0x04, 0x00 }};
-  uInt32 data{};
-  std::memcpy(&data, &mask, sizeof(data));
-  return data;
-}
-#endif
 
 struct alignas(std::max_align_t) FChar
 {
@@ -632,11 +639,7 @@ struct alignas(std::max_align_t) FChar
       return false;
 #endif
 
-#if HAVE_BUILTIN(__builtin_bit_cast)
     constexpr auto mask = getCompareBitMask();
-#else
-    static const auto mask = getCompareBitMask();
-#endif
 
     if ( (lhs.attr.data & mask) != (rhs.attr.data & mask) )
       return false;
