@@ -427,7 +427,7 @@ void FTermOutput::clearTerminalState()
 {
   // term_attribute stores the current state of the terminal
   term_attribute.ch = {L'\0', L'\0', L'\0', L'\0', L'\0'};
-  term_attribute.color.data = internal::color_var::default_color_pair;
+  term_attribute.color = internal::color_var::default_color_pair;
   term_attribute.attr.data = 0;
 }
 

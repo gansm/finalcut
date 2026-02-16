@@ -326,8 +326,8 @@ inline void FTermOutputTest::initTerminal (finalcut::FVTerm::FTermArea* virtual_
 
   // term_attribute stores the current state of the terminal
   term_attribute.ch = {{ L'\0' }};
-  term_attribute.color.pair.fg = finalcut::FColor::Default;
-  term_attribute.color.pair.bg = finalcut::FColor::Default;
+  term_attribute.color.setFgColor(finalcut::FColor::Default);
+  term_attribute.color.setBgColor(finalcut::FColor::Default);
   term_attribute.attr.data = 0;
 }
 
@@ -852,15 +852,15 @@ void FVTermTest::noArgumentTest()
 void FVTermTest::OwnFunctionsTest()
 {
   finalcut::FChar shadow_char;
-  shadow_char.ch            = { L'\0', L'\0', L'\0', L'\0', L'\0' };
-  shadow_char.encoded_char  = { L'\0', L'\0', L'\0', L'\0', L'\0' };
-  shadow_char.color.pair.fg = finalcut::FColor::Default;
-  shadow_char.color.pair.bg = finalcut::FColor::Default;
-  shadow_char.attr.byte[0]  = 0;
-  shadow_char.attr.byte[1]  = 0;
+  shadow_char.ch = { L'\0', L'\0', L'\0', L'\0', L'\0' };
+  shadow_char.encoded_char = { L'\0', L'\0', L'\0', L'\0', L'\0' };
+  shadow_char.color.setFgColor(finalcut::FColor::Default);
+  shadow_char.color.setBgColor(finalcut::FColor::Default);
+  shadow_char.attr.byte[0] = 0;
+  shadow_char.attr.byte[1] = 0;
   shadow_char.attr.bit.transparent = true;
-  shadow_char.attr.byte[2]  = 0;
-  shadow_char.attr.byte[3]  = 0;
+  shadow_char.attr.byte[2] = 0;
+  shadow_char.attr.byte[3] = 0;
 
   // FChar struct
   finalcut::FChar test_char =
@@ -1005,8 +1005,8 @@ void FVTermTest::FVTermBasesTest()
   finalcut::FChar default_char;
   default_char.ch           = { L' ', L'\0', L'\0', L'\0', L'\0' };
   default_char.encoded_char = { L'\0', L'\0', L'\0', L'\0', L'\0' };
-  default_char.color.pair.fg = finalcut::FColor::Default;
-  default_char.color.pair.bg = finalcut::FColor::Default;
+  default_char.color.setFgColor(finalcut::FColor::Default);
+  default_char.color.setBgColor(finalcut::FColor::Default);
   default_char.attr.byte[0] = 0;
   default_char.attr.byte[1] = 0;
   default_char.attr.byte[2] = 8;  // char_width = 1
@@ -1940,8 +1940,8 @@ void FVTermTest::FVTermPrintTest()
     fchar.ch[0] = L'-';
     fchar.ch[1] = L'\0';
     fchar.attr.byte[0] = 0;
-    fchar.color.pair.fg = finalcut::FColor::Default;
-    fchar.color.pair.bg = finalcut::FColor::Default;
+    fchar.color.setFgColor(finalcut::FColor::Default);
+    fchar.color.setBgColor(finalcut::FColor::Default);
     finalcut::FVTerm::FCharVector dash{2, fchar};
     p_fvterm.print() << dash;  // FCharVector
     CPPUNIT_ASSERT ( vwin->cursor.x == 6 );
@@ -1970,8 +1970,8 @@ void FVTermTest::FVTermPrintTest()
     CPPUNIT_ASSERT ( vwin->cursor.x == 8 );
     CPPUNIT_ASSERT ( vwin->cursor.y == 5 );
     test_vwin_area->data[70].ch[0] = L'C';
-    test_vwin_area->data[70].color.pair.fg = finalcut::FColor::Blue;
-    test_vwin_area->data[70].color.pair.bg = finalcut::FColor::White;
+    test_vwin_area->data[70].color.setFgColor(finalcut::FColor::Blue);
+    test_vwin_area->data[70].color.setBgColor(finalcut::FColor::White);
     test_vwin_area->data[70].attr.bit.italic = true;
     test_vwin_area->data[70].attr.bit.dbl_underline = true;
     CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
@@ -2574,7 +2574,7 @@ void FVTermTest::FVTermOverlappingWindowsTest()
 
   bg_char.attr.bit.printed = false;
   auto vwin_1_2_char = vwin_2_char;
-  vwin_1_2_char.color.pair.bg = finalcut::FColor::White;
+  vwin_1_2_char.color.setBgColor(finalcut::FColor::White);
   vwin_3_char.attr.bit.no_changes = false;
   auto vwin_2_4_char = vwin_4_char;
   test::printOnArea (test_area, { {  2, { {4, bg_char}, {6, vwin_1_char}, {70, bg_char} } },
@@ -3368,8 +3368,8 @@ void FVTermTest::getFVTermAreaTest()
   test::printArea (vwin_area);
 
   finalcut::FChar new_bg_char = bg_char;
-  new_bg_char.color.pair.fg = finalcut::FColor::Black;
-  new_bg_char.color.pair.bg = finalcut::FColor::White;
+  new_bg_char.color.setFgColor(finalcut::FColor::Black);
+  new_bg_char.color.setBgColor(finalcut::FColor::White);
   finalcut::FChar forward_slash_char = new_bg_char;
   forward_slash_char.ch[0] = L'/';
   finalcut::FChar back_slash_char = new_bg_char;

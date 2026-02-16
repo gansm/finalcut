@@ -383,7 +383,7 @@ class FVTerm : public FVTermAttribute
     void  putMultiLayerAreaLine (FChar_iterator, const int, const FPoint&) const noexcept;
     void  putAreaLineWithTransparency (FChar_const_iterator, FChar_iterator, const int, FPoint, bool) const;
     void  addAreaLineWithTransparency (FChar_const_iterator, FChar_iterator, const int) const;
-    void  addTransparentAreaLine (FChar_const_iterator&, FChar_iterator&, const int) const;
+    void  addTransparentAreaLine (const FChar_const_iterator&, const FChar_iterator&, const int) const;
     void  addTransparentAreaChar (const FChar&, FChar&) const;
     auto  clearFullArea (FTermArea*, FChar&) const -> bool;
     void  clearAreaWithShadow (FTermArea*, const FChar&) const noexcept;

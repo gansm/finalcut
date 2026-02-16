@@ -183,7 +183,7 @@ void FVTermBuffer::print (const FColorPair& pair) const noexcept
 
 // private methods of FVTermBuffer
 //----------------------------------------------------------------------
-inline void FVTermBuffer::setAttribute (FChar& fchar) noexcept
+inline void FVTermBuffer::setAttribute (FChar& fchar) const noexcept
 {
   static const auto& next_attribute = FVTermAttribute::getAttribute();
   fchar.color.data = next_attribute.color.data;

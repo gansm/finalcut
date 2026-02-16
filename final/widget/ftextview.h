@@ -100,7 +100,7 @@ class FTextView : public FWidget
         , length{l}
       {
         auto wc_dialog = getColorTheme()->dialog;
-        attributes.color.pair = {wc_dialog.fg, wc_dialog.bg};
+        attributes.color = {wc_dialog.fg, wc_dialog.bg};
         attributes.attr = s.toFAttribute();
       }
 
@@ -112,7 +112,7 @@ class FTextView : public FWidget
         : index{i}
         , length{l}
       {
-        attributes.color.pair = {c, getColorTheme()->dialog.bg};
+        attributes.color = {c, getColorTheme()->dialog.bg};
         attributes.attr = s.toFAttribute();
       }
 
@@ -124,7 +124,7 @@ class FTextView : public FWidget
         : index{i}
         , length{l}
       {
-        attributes.color.pair = \
+        attributes.color = \
             {cpair.getForegroundColor(), cpair.getBackgroundColor()};
         attributes.attr = s.toFAttribute();
       }

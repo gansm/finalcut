@@ -235,7 +235,7 @@ class FOptiAttr final
     auto        unsetTermCrossedOut (FChar&) noexcept -> bool;
     auto        setTermDoubleUnderline (FChar&) noexcept -> bool;
     auto        unsetTermDoubleUnderline (FChar&) noexcept -> bool;
-    auto        setTermAttributes (FChar&, const TCapAttributes&) -> bool;
+    auto        setTermAttributes (FChar&, const FChar&) -> bool;
     auto        unsetTermAttributes (FChar&) noexcept -> bool;
     auto        setTermAltCharset (FChar&) noexcept -> bool;
     auto        unsetTermAltCharset (FChar&) noexcept -> bool;
@@ -264,7 +264,7 @@ class FOptiAttr final
     void        changeAttributeSGR (FChar&, FChar&);
     void        changeAttributeSeparately (FChar&, FChar&);
     void        change_color (FChar&, FChar&);
-    void        normalizeColor (FColor&) const noexcept;
+    auto        normalizeColor (FCellColor&) const noexcept -> FColors;
     void        handleDefaultColors (FChar&, FChar&, FColor&, FColor&);
     void        change_to_default_color (FChar&, FChar&, FColor&, FColor&);
     void        setDefaultForeground (FChar&);

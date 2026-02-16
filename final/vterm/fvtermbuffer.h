@@ -131,7 +131,7 @@ class FVTermBuffer
       std::size_t char_width{0};
     };
 
-    void setAttribute (FChar&) noexcept;
+    void setAttribute (FChar&) const noexcept;
     void add (UnicodeBoundary&);
 
     // Data member

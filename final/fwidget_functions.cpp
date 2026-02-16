@@ -536,10 +536,11 @@ void drawBlockShadow (FWidget* w)
   }
   else if ( auto p = w->getParentWidget() )
   {
-    shadow_char[0].color.pair.bg = p->getBackgroundColor();
-    shadow_char[1].color.pair.bg = p->getBackgroundColor();
-    shadow_char[2].color.pair.bg = p->getBackgroundColor();
-    shadow_char[3].color.pair.bg = p->getBackgroundColor();
+    auto bg = p->getBackgroundColor();
+    shadow_char[0].color.setBgColor(bg);
+    shadow_char[1].color.setBgColor(bg);
+    shadow_char[2].color.setBgColor(bg);
+    shadow_char[3].color.setBgColor(bg);
   }
 
   drawGenericBlockShadow (w, shadow_char);
@@ -562,7 +563,7 @@ void clearBlockShadow (FWidget* w)
   if ( w->isWindowWidget() )
     spacer_char.attr.bit.transparent = true;
   else if ( auto p = w->getParentWidget() )
-    spacer_char.color.pair.bg = p->getBackgroundColor();
+    spacer_char.color.setBgColor(p->getBackgroundColor());
 
   const std::array<FChar, 4> shadow_char
   {
@@ -938,7 +939,7 @@ struct GenericBoxData
     , max_width{uInt(area.size.width + area.shadow.width - 1)}
     , width{uInt(r.getWidth())}
     , line_length{width - 2}
-    , is_transparent{(fchar.attr.byte[1] & internal::var::print_trans_mask) != 0}
+    , is_transparent{(fchar.attr.data & internal::var::print_trans_mask) != 0}
     , trans_count_increment{uInt(is_transparent) * width}
   {
     // Prepare the first character to draw the box

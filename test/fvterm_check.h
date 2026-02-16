@@ -87,8 +87,8 @@ void showFCharData (const finalcut::FChar& fchar)
                           uInt32(fchar.encoded_char.unicode_data[2]) << L", " <<
                           uInt32(fchar.encoded_char.unicode_data[3]) << L", " <<
                           uInt32(fchar.encoded_char.unicode_data[4]) << L"}\n";
-  std::wcout << L"              color.pair.fg: " << int(fchar.color.pair.fg) << L'\n';
-  std::wcout << L"              color.pair.bg: " << int(fchar.color.pair.bg) << L'\n';
+  std::wcout << L"              color.pair.fg: " << int(fchar.color.getFgColor()) << L'\n';
+  std::wcout << L"              color.pair.bg: " << int(fchar.color.getBgColor()) << L'\n';
   std::wcout << L"                    attr[0]: " << int(fchar.attr.byte[0]) << L'\n';
   std::wcout << L"              attr.bit.bold: " << bool(fchar.attr.bit.bold) << L'\n';
   std::wcout << L"               attr.bit.dim: " << bool(fchar.attr.bit.dim) << L'\n';

@@ -286,22 +286,6 @@ struct UTF8_Char
   }
 };
 
-// TCapAttributes
-//----------------------------------------------------------------------
-struct TCapAttributes
-{
-  uInt8 p1 : 1;  // Standout
-  uInt8 p2 : 1;  // Underline
-  uInt8 p3 : 1;  // Reverse
-  uInt8 p4 : 1;  // Blink
-  uInt8 p5 : 1;  // Dim
-  uInt8 p6 : 1;  // Bold
-  uInt8 p7 : 1;  // Invisible
-  uInt8 p8 : 1;  // Protected
-  uInt8 p9 : 1;  // Alternate charset
-  uInt8    : 7;  // padding bits
-};
-
 // FCharAttribute + FAttribute
 //----------------------------------------------------------------------
 struct FCharAttribute
@@ -576,17 +560,95 @@ struct FColors
   FColor bg{};  // Background color
 };
 
-union FCellColor
+struct FCellColor
 {
-  FColors pair;  // Foreground and background color
   uInt32  data;  // Color data
+
+  FCellColor() = default;
+
+  constexpr FCellColor (uInt32 value) noexcept
+    : data{value}
+  { }
+
+  constexpr FCellColor (FColor fg, FColor bg) noexcept
+    : data{(uInt32(bg) << 16) | uInt32(fg)}
+  { }
+
+  constexpr FCellColor (FColors color) noexcept
+    : data{(uInt32(color.bg) << 16) | uInt32(color.fg)}
+  { }
+
+  constexpr auto getPair() const noexcept -> FColors
+  {
+    FColors pair;  // Foreground and background color
+#if HAVE_BUILTIN(__builtin_bit_cast)
+    pair = __builtin_bit_cast(FColors, data);
+#else
+    std::memcpy(&pair, &data, sizeof(uInt32));
+#endif
+    return pair;
+  }
+
+  constexpr auto getFgColor() const noexcept -> FColor
+  {
+    return FColor(data & 0x0000ffffU);
+  }
+
+  constexpr auto getBgColor() const noexcept -> FColor
+  {
+    return FColor(data >> 16);
+  }
+
+  constexpr void setPair (const FColors& pair) noexcept
+  {
+#if HAVE_BUILTIN(__builtin_bit_cast)
+    data = __builtin_bit_cast(uInt32, pair);
+#else
+    std::memcpy(&data, &pair, sizeof(uInt32));
+#endif
+  }
+
+  constexpr void setFgColor (const FColor& fg) noexcept
+  {
+    data = (data & 0xffff0000U) | uInt32(fg);
+  }
+
+  constexpr void setBgColor (const FColor& bg) noexcept
+  {
+    data = (data & 0x0000ffffU) | (uInt32(bg) << 16);
+  }
+
+  constexpr auto operator = (std::initializer_list<FColor> list) noexcept -> FCellColor&
+  {
+    if (list.size() == 2)
+    {
+      auto iter = list.begin();
+      FColor fg = *iter;
+      ++iter;
+      FColor bg = *iter;
+      data = (uInt32(bg) << 16) | uInt32(fg);
+    }
+    return *this;
+  }
+
+  friend constexpr void copyBgColor (const FCellColor& from, FCellColor& to) noexcept
+  {
+    to.data = (from.data & 0xffff0000U) | (to.data & 0x0000ffffU);
+  }
+
+  friend constexpr void copyFgColor (const FCellColor& from, FCellColor& to) noexcept
+  {
+    to.data = (from.data & 0x0000ffffU) | (to.data & 0xffff0000U);
+  }
 };
 
-constexpr auto FCellColor_to_uInt32 (const FCellColor& fcellcolor) noexcept -> uInt32
+constexpr auto FColors_to_FCellColor (const FColors& fcolors) noexcept -> FCellColor
 {
-  return ( static_cast<uInt32>(fcellcolor.pair.bg) << 16)
-         | static_cast<uInt32>(fcellcolor.pair.fg );
+  FCellColor fcellcolor{};
+  fcellcolor.setPair(fcolors);
+  return fcellcolor;
 }
+
 
 // FChar
 //----------------------------------------------------------------------

@@ -774,7 +774,7 @@ inline void FTextView::addHighlighting ( FVTermBuffer& line_buffer
         break;
 
       auto& fchar = line_buffer[index];
-      fchar.color.pair = hgl.attributes.color.pair;
+      fchar.color = hgl.attributes.color;
       fchar.attr = hgl.attributes.attr;
     }
   }
@@ -814,7 +814,7 @@ inline void FTextView::addSelection (FVTermBuffer& line_buffer, std::size_t n) c
 
   auto select = [&selected_fg, &selected_bg] (auto& fchar)
   {
-    fchar.color.pair = {selected_fg, selected_bg};
+    fchar.color = {selected_fg, selected_bg};
   };
 
   std::for_each (&line_buffer[start_index], &line_buffer[end_index], select);

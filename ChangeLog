@@ -1,3 +1,6 @@
+2026-02-16  Markus Gans  <guru.mail@muenster.de>
+	* FCellColor has been reimplemented
+
 2026-02-08  Frank Dean  <frank@fdsd.co.uk>
 	* Update autotools configuration to include all distribution files
 

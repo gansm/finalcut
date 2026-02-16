@@ -118,6 +118,19 @@ constexpr void setFakeReverseMask (FCharAttribute& attr) noexcept
   attr.standout = true;
 }
 
+constexpr void setSGRMask (FCharAttribute& attr) noexcept
+{
+  attr.bold = true;         // p6
+  attr.dim = true;          // p5
+  attr.underline = true;    // p2
+  attr.blink = true;        // p4
+  attr.reverse = true;      // p3
+  attr.standout = true;     // p1
+  attr.invisible = true;    // p7
+  attr.protect = true;      // p8
+  attr.alt_charset = true;  // p9
+}
+
 constexpr void setAttributeMask (FCharAttribute& attr) noexcept
 {
   attr.bold = true;
@@ -146,16 +159,16 @@ constexpr void setResetMask (FCharAttribute& attr) noexcept
 }
 
 template<typename T>
-constexpr auto createColorPair (T setter) noexcept -> uInt32
+constexpr auto createFCellColor (T setter) noexcept -> FCellColor
 {
-  FCellColor fcellcolor{};
-  setter(fcellcolor);
-  return FCellColor_to_uInt32(fcellcolor);
+  FColors fcolors{};
+  setter(fcolors);
+  return FColors_to_FCellColor(fcolors);
 }
 
-constexpr void setDefaultColorPair (FCellColor& fcellcolor) noexcept
+constexpr void setDefaultColorPair (FColors& fcolors) noexcept
 {
-  fcellcolor.pair = {FColor::Default, FColor::Default};
+  fcolors = {FColor::Default, FColor::Default};
 }
 
 struct var
@@ -174,6 +187,7 @@ struct var
   static constexpr auto alt_charset_mask         = createMask(setAltCharsetMask);
   static constexpr auto pc_charset_mask          = createMask(setPcCharsetMask);
   static constexpr auto fake_reverse_mask        = createMask(setFakeReverseMask);
+  static constexpr auto sgr_mask                 = createMask(setSGRMask);
   static constexpr auto attribute_mask           = createMask(setAttributeMask);
   static constexpr auto bold_reset_mask          = ~bold_mask;
   static constexpr auto dim_reset_mask           = ~dim_mask;
@@ -189,43 +203,44 @@ struct var
   static constexpr auto alt_charset_reset_mask   = ~alt_charset_mask;
   static constexpr auto pc_charset_reset_mask    = ~pc_charset_mask;
   static constexpr auto reset_mask               = createMask(setResetMask);
-  static constexpr auto default_color_pair       = createColorPair(setDefaultColorPair);
+  static constexpr auto default_color_pair       = createFCellColor(setDefaultColorPair);
   static constexpr char sgr_39[]                 = {CSI "39m"};
   static constexpr char sgr_39_49[]              = {CSI "39;49m"};
 };
 
-constexpr uInt32 var::bold_mask;
-constexpr uInt32 var::dim_mask;
-constexpr uInt32 var::italic_mask;
-constexpr uInt32 var::underline_mask;
-constexpr uInt32 var::blink_mask;
-constexpr uInt32 var::reverse_mask;
-constexpr uInt32 var::standout_mask;
-constexpr uInt32 var::invisible_mask;
-constexpr uInt32 var::protect_mask;
-constexpr uInt32 var::crossed_out_mask;
-constexpr uInt32 var::dbl_underline_mask;
-constexpr uInt32 var::alt_charset_mask;
-constexpr uInt32 var::pc_charset_mask;
-constexpr uInt32 var::fake_reverse_mask;
-constexpr uInt32 var::attribute_mask;
-constexpr uInt32 var::bold_reset_mask;
-constexpr uInt32 var::dim_reset_mask;
-constexpr uInt32 var::italic_reset_mask;
-constexpr uInt32 var::underline_reset_mask;
-constexpr uInt32 var::blink_reset_mask;
-constexpr uInt32 var::reverse_reset_mask;
-constexpr uInt32 var::standout_reset_mask;
-constexpr uInt32 var::invisible_reset_mask;
-constexpr uInt32 var::protect_reset_mask;
-constexpr uInt32 var::crossed_out_reset_mask;
-constexpr uInt32 var::dbl_underline_reset_mask;
-constexpr uInt32 var::alt_charset_reset_mask;
-constexpr uInt32 var::pc_charset_reset_mask;
-constexpr uInt32 var::reset_mask;
-constexpr uInt32 var::default_color_pair;
-constexpr char   var::sgr_39[];
-constexpr char   var::sgr_39_49[];
+constexpr uInt32     var::bold_mask;
+constexpr uInt32     var::dim_mask;
+constexpr uInt32     var::italic_mask;
+constexpr uInt32     var::underline_mask;
+constexpr uInt32     var::blink_mask;
+constexpr uInt32     var::reverse_mask;
+constexpr uInt32     var::standout_mask;
+constexpr uInt32     var::invisible_mask;
+constexpr uInt32     var::protect_mask;
+constexpr uInt32     var::crossed_out_mask;
+constexpr uInt32     var::dbl_underline_mask;
+constexpr uInt32     var::alt_charset_mask;
+constexpr uInt32     var::pc_charset_mask;
+constexpr uInt32     var::fake_reverse_mask;
+constexpr uInt32     var::sgr_mask;
+constexpr uInt32     var::attribute_mask;
+constexpr uInt32     var::bold_reset_mask;
+constexpr uInt32     var::dim_reset_mask;
+constexpr uInt32     var::italic_reset_mask;
+constexpr uInt32     var::underline_reset_mask;
+constexpr uInt32     var::blink_reset_mask;
+constexpr uInt32     var::reverse_reset_mask;
+constexpr uInt32     var::standout_reset_mask;
+constexpr uInt32     var::invisible_reset_mask;
+constexpr uInt32     var::protect_reset_mask;
+constexpr uInt32     var::crossed_out_reset_mask;
+constexpr uInt32     var::dbl_underline_reset_mask;
+constexpr uInt32     var::alt_charset_reset_mask;
+constexpr uInt32     var::pc_charset_reset_mask;
+constexpr uInt32     var::reset_mask;
+constexpr FCellColor var::default_color_pair;
+constexpr char       var::sgr_39[];
+constexpr char       var::sgr_39_49[];
 
 }  // namespace internal
 
@@ -868,35 +883,24 @@ inline auto FOptiAttr::unsetTermDoubleUnderline (FChar& term) noexcept -> bool
 }
 
 //----------------------------------------------------------------------
-auto FOptiAttr::setTermAttributes (FChar& term, const TCapAttributes& attr) -> bool
+inline auto FOptiAttr::setTermAttributes (FChar& term, const FChar& next) -> bool
 {
   if ( F_attributes.on.cap )
   {
-    const auto sgr = FTermcap::encodeParameter ( F_attributes.on.cap
-                                               , attr.p1 && ! fake_reverse
-                                               , attr.p2
-                                               , attr.p3 && ! fake_reverse
-                                               , attr.p4
-                                               , attr.p5
-                                               , attr.p6
-                                               , attr.p7
-                                               , attr.p8
-                                               , attr.p9 );
+    const auto sgr = FTermcap::encodeParameter \
+        ( F_attributes.on.cap
+        , (next.attr.data & internal::var::standout_mask) != 0 && ! fake_reverse  // p1
+        , (next.attr.data & internal::var::underline_mask) != 0                   // p2
+        , (next.attr.data & internal::var::reverse_mask) != 0 && ! fake_reverse   // p3
+        , (next.attr.data & internal::var::blink_mask) != 0                       // p4
+        , (next.attr.data & internal::var::dim_mask) != 0                         // p5
+        , (next.attr.data & internal::var::bold_mask) != 0                        // p6
+        , (next.attr.data & internal::var::invisible_mask) != 0                   // p7
+        , (next.attr.data & internal::var::protect_mask) != 0                     // p8
+        , (next.attr.data & internal::var::alt_charset_mask) != 0 );              // p9
     append_sequence (sgr);
     resetColor(term);
-    term.attr.bit.standout      = attr.p1;
-    term.attr.bit.underline     = attr.p2;
-    term.attr.bit.reverse       = attr.p3;
-    term.attr.bit.blink         = attr.p4;
-    term.attr.bit.dim           = attr.p5;
-    term.attr.bit.bold          = attr.p6;
-    term.attr.bit.invisible     = attr.p7;
-    term.attr.bit.protect       = attr.p8;
-    term.attr.bit.alt_charset   = attr.p9;
-    term.attr.bit.pc_charset    = false;
-    term.attr.bit.italic        = false;
-    term.attr.bit.crossed_out   = false;
-    term.attr.bit.dbl_underline = false;
+    term.attr.data = next.attr.data & internal::var::sgr_mask;
     return true;
   }
 
@@ -961,7 +965,7 @@ inline auto FOptiAttr::unsetTermPCcharset (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 auto FOptiAttr::setTermDefaultColor (FChar& term) -> bool
 {
-  term.color.data = internal::var::default_color_pair;
+  term.color = internal::var::default_color_pair;
 
   if ( append_sequence(F_color.orig_pair.cap)
     || append_sequence(F_color.orig_colors.cap) )
@@ -1019,8 +1023,8 @@ void FOptiAttr::setAttributes ( FAttribute attribute
 //----------------------------------------------------------------------
 auto FOptiAttr::hasColor (const FChar& attr) noexcept -> bool
 {
-  return ( attr.color.pair.fg != FColor::Default
-        || attr.color.pair.bg != FColor::Default );
+  return ( attr.color.getPair().fg != FColor::Default
+        || attr.color.getPair().bg != FColor::Default );
 }
 
 //----------------------------------------------------------------------
@@ -1097,7 +1101,7 @@ inline auto FOptiAttr::hasColorChanged ( const FChar& term
 //----------------------------------------------------------------------
 inline void FOptiAttr::resetColor (FChar& attr) const noexcept
 {
-  attr.color.data = internal::var::default_color_pair;
+  attr.color = internal::var::default_color_pair;
 }
 
 //----------------------------------------------------------------------
@@ -1155,16 +1159,7 @@ inline void FOptiAttr::deactivateAttributes (FChar& term, FChar& next)
 inline void FOptiAttr::changeAttributeSGR (FChar& term, FChar& next)
 {
   if ( switchOn() || switchOff() )
-    setTermAttributes ( term
-                      , { next.attr.bit.standout
-                        , next.attr.bit.underline
-                        , next.attr.bit.reverse
-                        , next.attr.bit.blink
-                        , next.attr.bit.dim
-                        , next.attr.bit.bold
-                        , next.attr.bit.invisible
-                        , next.attr.bit.protect
-                        , next.attr.bit.alt_charset } );
+    setTermAttributes (term, next);
 
   const auto pc_charset_usable = isPCcharsetUsable(term, next);
 
@@ -1204,14 +1199,13 @@ void FOptiAttr::change_color (FChar& term, FChar& next)
 {
   if ( F_color.monochron )
   {
-    next.color.data = internal::var::default_color_pair;
+    next.color = internal::var::default_color_pair;
     return;
   }
 
-  normalizeColor (next.color.pair.fg);
-  normalizeColor (next.color.pair.bg);
-  auto fg = next.color.pair.fg;
-  auto bg = next.color.pair.bg;
+  auto colors = normalizeColor (next.color);
+  auto fg = colors.fg;
+  auto bg = colors.bg;
   handleDefaultColors (term, next, fg, bg);
 
   if ( fake_reverse )
@@ -1231,10 +1225,20 @@ void FOptiAttr::change_color (FChar& term, FChar& next)
 }
 
 //----------------------------------------------------------------------
-inline void FOptiAttr::normalizeColor (FColor& color) const noexcept
+inline auto FOptiAttr::normalizeColor (FCellColor& cellcolor) const noexcept -> FColors
 {
-  if ( color != FColor::Default )
-    color %= uInt16(F_color.max_color);
+  const auto max_color = uInt16(F_color.max_color);
+  auto fg = FColor(cellcolor.data & 0xffff);
+  auto bg = FColor(cellcolor.data >> 16);
+
+  if ( fg != FColor::Default )  // Normalize foreground color
+    fg %= max_color;
+
+  if ( bg != FColor::Default )  // Normalize Background color
+    bg %= max_color;
+
+  cellcolor.data = (uInt32(bg) << 16) | uInt32(fg);
+  return {fg, bg};
 }
 
 //----------------------------------------------------------------------
@@ -1264,8 +1268,9 @@ inline void FOptiAttr::change_to_default_color ( FChar& term, FChar& next
   else if ( ! setTermDefaultColor(term) )
   {
     // Fallback to gray on black
-    fg = next.color.pair.fg = FColor::LightGray;
-    bg = next.color.pair.bg = FColor::Black;
+    fg = FColor::LightGray;
+    bg = FColor::Black;
+    next.color.setPair({fg, bg});
   }
 }
 
@@ -1288,7 +1293,7 @@ inline void FOptiAttr::setDefaultBackground (FChar& term)
     sgr_49 = CSI "49m";
 
   append_sequence (sgr_49);
-  term.color.pair.bg = FColor::Default;
+  term.color.setBgColor(FColor::Default);
 }
 
 //----------------------------------------------------------------------
@@ -1530,13 +1535,13 @@ inline auto FOptiAttr::append_sequence (const std::string& seq) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto has_foreground_changes (const FChar& term, FColor fg, bool frev) noexcept -> bool
 {
-  return term.color.pair.fg != fg || frev;
+  return term.color.getFgColor() != fg || frev;
 }
 
 //----------------------------------------------------------------------
 inline auto has_background_changes (const FChar& term, FColor bg, bool frev) noexcept -> bool
 {
-  return term.color.pair.bg != bg || frev;
+  return term.color.getBgColor() != bg || frev;
 }
 
 }  // namespace finalcut

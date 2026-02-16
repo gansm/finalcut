@@ -74,21 +74,21 @@ struct attr_var
 };
 
 template<typename T>
-constexpr auto createColorPair (T setter) noexcept -> uInt32
+constexpr auto createFCellColor (T setter) noexcept -> FCellColor
 {
-  FCellColor fcellcolor{};
-  setter(fcellcolor);
-  return FCellColor_to_uInt32(fcellcolor);
+  FColors fcolors{};
+  setter(fcolors);
+  return FColors_to_FCellColor(fcolors);
 }
 
-constexpr void setDefaultColorPair (FCellColor& fcellcolor) noexcept
+constexpr void setDefaultColorPair (FColors& fcolors) noexcept
 {
-  fcellcolor.pair = {FColor::Default, FColor::Default};
+  fcolors = {FColor::Default, FColor::Default};
 }
 
 struct color_var
 {
-  static constexpr auto default_color_pair = createColorPair(setDefaultColorPair);
+  static constexpr auto default_color_pair = createFCellColor(setDefaultColorPair);
 };
 
 }  // namespace internal
@@ -201,11 +201,11 @@ inline auto FVTermAttribute::getClassName() const -> FString
 
 //----------------------------------------------------------------------
 inline auto FVTermAttribute::getTermForegroundColor() noexcept -> FColor
-{ return next_attribute.color.pair.fg; }
+{ return next_attribute.color.getPair().fg; }
 
 //----------------------------------------------------------------------
 inline auto FVTermAttribute::getTermBackgroundColor() noexcept -> FColor
-{ return next_attribute.color.pair.bg; }
+{ return next_attribute.color.getPair().bg; }
 
 //----------------------------------------------------------------------
 inline auto FVTermAttribute::getAttribute() noexcept -> FChar&
@@ -215,7 +215,7 @@ inline auto FVTermAttribute::getAttribute() noexcept -> FChar&
 inline void FVTermAttribute::setColor (FColor fg, FColor bg) noexcept
 {
   // Changes colors
-  next_attribute.color.pair = {fg, bg};
+  next_attribute.color.setPair({fg, bg});
 }
 
 //----------------------------------------------------------------------
@@ -228,7 +228,7 @@ inline void FVTermAttribute::setColor (const FColorPair& pair) noexcept
 inline void FVTermAttribute::setNormal() noexcept
 {
   // Reset all character attributes
-  next_attribute.color.data = internal::color_var::default_color_pair;
+  next_attribute.color = internal::color_var::default_color_pair;
   next_attribute.attr.data &= internal::attr_var::reset_mask;
 }
 

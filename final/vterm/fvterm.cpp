@@ -1510,7 +1510,7 @@ inline auto FVTerm::computeLayerGeometry (const FTermArea* area) const noexcept 
 //----------------------------------------------------------------------
 inline auto FVTerm::isLayerOutsideVTerm (const LayerGeometry& geo) const noexcept -> bool
 {
-  if ( geo.area_y >= static_cast<int>(geo.vterm_height) )
+  if ( geo.area_y >= geo.vterm_height )
     return false;
 
   if ( geo.ax >= geo.vterm_width )
@@ -1694,7 +1694,7 @@ inline void FVTerm::scrollTerminalReverse() const
   forceTerminalUpdate();
 }
 
-//----------------------------------------------------------------------
+//--------------------------------------------------------------------setTermAttributes--
 void FVTerm::callPreprocessingHandler (const FTermArea* area) const
 {
   // Call preprocessing handler
@@ -1847,7 +1847,7 @@ inline void FVTerm::applyColorOverlay (const FChar& src_char, FChar& dst_char) c
 inline void FVTerm::inheritBackground (const FChar& src_char, FChar& dst_char) const
 {
   // Add the covered background to this character
-  dst_char.color.pair.bg = src_char.color.pair.bg;
+  copyBgColor(src_char.color, dst_char.color);
 }
 
 //----------------------------------------------------------------------
@@ -2124,8 +2124,8 @@ inline void FVTerm::addAreaLineWithTransparency ( FChar_const_iterator src_char
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::addTransparentAreaLine ( FChar_const_iterator& src_char
-                                           , FChar_iterator& dst_char
+inline void FVTerm::addTransparentAreaLine ( const FChar_const_iterator& src_char
+                                           , const FChar_iterator& dst_char
                                            , const int length ) const
 {
   auto src = src_char;
@@ -2161,9 +2161,9 @@ inline void FVTerm::addTransparentAreaChar (const FChar& src_char, FChar& dst_ch
   if ( src_char.attr.bit.inherit_background )
   {
     // Add the covered background to this character
-    auto bg_color = dst_char.color.pair.bg;
+    auto bg_color = dst_char.color.getBgColor();
     dst_char = src_char;
-    dst_char.color.pair.bg = bg_color;
+    dst_char.color.setBgColor(bg_color);
     dst_char.attr.data &= ~internal::var::print_reset_mask;
     return;
   }
