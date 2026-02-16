@@ -1172,7 +1172,7 @@ inline void FVTerm::resetTextAreaToDefault ( FTermArea* area
   {
     { L' ',  L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
-    { { FColor::Default, FColor::Default } },
+    { FColor::Default, FColor::Default },
     { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3 (byte 2 = 0x08 = char_width 1)
   };
   std::fill (area->data.begin(), area->data.end(), default_char);

@@ -152,7 +152,6 @@ auto FVTermBuffer::print (wchar_t ch) -> int
 {
   data.emplace_back();
   auto& nc = data.back();  // next character
-  setAttribute(nc);
   nc.ch.unicode_data[0] = ch;
 #if defined(__clang__)
   #pragma clang diagnostic push
@@ -162,6 +161,7 @@ auto FVTermBuffer::print (wchar_t ch) -> int
 #if defined(__clang__)
   #pragma clang diagnostic pop
 #endif
+  setAttribute(nc);
   const auto column_width = getColumnWidth(nc.ch.unicode_data[0]);
   addColumnWidth(nc, column_width);  // add column width
   return 1;

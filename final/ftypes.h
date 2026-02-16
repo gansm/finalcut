@@ -566,7 +566,7 @@ struct FCellColor
 
   FCellColor() = default;
 
-  constexpr FCellColor (uInt32 value) noexcept
+  explicit constexpr FCellColor (uInt32 value) noexcept
     : data{value}
   { }
 
@@ -574,7 +574,7 @@ struct FCellColor
     : data{(uInt32(bg) << 16) | uInt32(fg)}
   { }
 
-  constexpr FCellColor (FColors color) noexcept
+  explicit constexpr FCellColor (FColors color) noexcept
     : data{(uInt32(color.bg) << 16) | uInt32(color.fg)}
   { }
 
@@ -620,14 +620,14 @@ struct FCellColor
 
   constexpr auto operator = (std::initializer_list<FColor> list) noexcept -> FCellColor&
   {
-    if (list.size() == 2)
+    if ( list.size() == 2 )
     {
       auto iter = list.begin();
-      FColor fg = *iter;
+      data = uInt32(*iter);           // Foreground color
       ++iter;
-      FColor bg = *iter;
-      data = (uInt32(bg) << 16) | uInt32(fg);
+      data |= (uInt32(*iter) << 16);  // Background color
     }
+
     return *this;
   }
 
