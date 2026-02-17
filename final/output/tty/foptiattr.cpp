@@ -163,7 +163,7 @@ constexpr auto createFCellColor (T setter) noexcept -> FCellColor
 {
   FColors fcolors{};
   setter(fcolors);
-  return FColors_to_FCellColor(fcolors);
+  return FCellColor(fcolors);
 }
 
 constexpr void setDefaultColorPair (FColors& fcolors) noexcept

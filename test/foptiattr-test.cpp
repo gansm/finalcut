@@ -63,6 +63,7 @@ class FOptiAttrTest : public CPPUNIT_NS::TestFixture
   protected:
     void classNameTest();
     void noArgumentTest();
+    void FCellColorTest();
     void vga2ansiTest();
     void sgrOptimizerTest();
     void fakeReverseTest();
@@ -86,6 +87,7 @@ class FOptiAttrTest : public CPPUNIT_NS::TestFixture
     // Add a methods to the test suite
     CPPUNIT_TEST (classNameTest);
     CPPUNIT_TEST (noArgumentTest);
+    CPPUNIT_TEST (FCellColorTest);
     CPPUNIT_TEST (vga2ansiTest);
     CPPUNIT_TEST (sgrOptimizerTest);
     CPPUNIT_TEST (fakeReverseTest);
@@ -126,6 +128,50 @@ void FOptiAttrTest::noArgumentTest()
   CPPUNIT_ASSERT ( ! oa.isNormal(ch) );
   ch.color.setBgColor(finalcut::FColor::Default);
   CPPUNIT_ASSERT ( oa.isNormal(ch) );
+
+  finalcut::FCellColor cellcolor1 = {finalcut::FColor::Default, finalcut::FColor::Default};
+  CPPUNIT_ASSERT ( ch.color == cellcolor1 );
+  finalcut::FCellColor cellcolor2 = {finalcut::FColor::Red, finalcut::FColor::Blue};
+  CPPUNIT_ASSERT ( ch.color != cellcolor2 );
+  CPPUNIT_ASSERT ( cellcolor1 != cellcolor2 );
+  copyBgColor(cellcolor2, cellcolor1);
+  CPPUNIT_ASSERT ( cellcolor1.getBgColor() != finalcut::FColor::Default );
+  CPPUNIT_ASSERT ( cellcolor1.getBgColor() == finalcut::FColor::Blue );
+  copyFgColor(cellcolor2, cellcolor1);
+  CPPUNIT_ASSERT ( cellcolor1.getFgColor() != finalcut::FColor::Default );
+  CPPUNIT_ASSERT ( cellcolor1.getFgColor() == finalcut::FColor::Red );
+  CPPUNIT_ASSERT ( cellcolor1 == cellcolor2 );
+  cellcolor1 = {finalcut::FColor::Yellow, finalcut::FColor::NavyBlue};
+  CPPUNIT_ASSERT ( cellcolor1.getFgColor() == finalcut::FColor::Yellow );
+  CPPUNIT_ASSERT ( cellcolor1.getBgColor() == finalcut::FColor::NavyBlue );
+}
+
+//----------------------------------------------------------------------
+void FOptiAttrTest::FCellColorTest()
+{
+  finalcut::FChar ch{};
+  ch.color.setFgColor(finalcut::FColor::Default);
+  ch.color.setBgColor(finalcut::FColor::Default);
+  finalcut::FCellColor cellcolor1 = {finalcut::FColor::Default, finalcut::FColor::Default};
+  CPPUNIT_ASSERT ( ch.color == cellcolor1 );
+  finalcut::FCellColor cellcolor2 = {finalcut::FColor::Red, finalcut::FColor::Blue};
+  CPPUNIT_ASSERT ( ch.color != cellcolor2 );
+  CPPUNIT_ASSERT ( cellcolor1 != cellcolor2 );
+  copyBgColor(cellcolor2, cellcolor1);
+  CPPUNIT_ASSERT ( cellcolor1.getBgColor() != finalcut::FColor::Default );
+  CPPUNIT_ASSERT ( cellcolor1.getBgColor() == finalcut::FColor::Blue );
+  copyFgColor(cellcolor2, cellcolor1);
+  CPPUNIT_ASSERT ( cellcolor1.getFgColor() != finalcut::FColor::Default );
+  CPPUNIT_ASSERT ( cellcolor1.getFgColor() == finalcut::FColor::Red );
+  CPPUNIT_ASSERT ( cellcolor1 == cellcolor2 );
+  cellcolor1 = {finalcut::FColor::Yellow, finalcut::FColor::NavyBlue};
+  CPPUNIT_ASSERT ( cellcolor1.getFgColor() == finalcut::FColor::Yellow );
+  CPPUNIT_ASSERT ( cellcolor1.getBgColor() == finalcut::FColor::NavyBlue );
+  CPPUNIT_ASSERT ( cellcolor1 == finalcut::FCellColor( finalcut::FColor::Yellow
+                                                     , finalcut::FColor::NavyBlue ) );
+  finalcut::FColors pair{finalcut::FColor::Yellow, finalcut::FColor::NavyBlue};
+  CPPUNIT_ASSERT ( cellcolor1 == finalcut::FCellColor(pair) );
+  CPPUNIT_ASSERT ( cellcolor1 == finalcut::FCellColor(0x0011000eU) );
 }
 
 //----------------------------------------------------------------------
@@ -398,8 +444,7 @@ void FOptiAttrTest::fakeReverseTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Gray text on blue background
-  to.color.setFgColor(finalcut::FColor::LightGray);
-  to.color.setBgColor(finalcut::FColor::Blue);
+  to.color = {finalcut::FColor::LightGray, finalcut::FColor::Blue};
   CPPUNIT_ASSERT ( from != to );
   CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                         , CSI "37m" CSI "44m" );

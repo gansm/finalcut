@@ -562,7 +562,7 @@ struct FColors
 
 struct FCellColor
 {
-  uInt32  data;  // Color data
+  uInt32  data{0};  // Color data
 
   FCellColor() = default;
 
@@ -631,23 +631,26 @@ struct FCellColor
     return *this;
   }
 
+  friend constexpr auto operator == (const FCellColor& lhs, const FCellColor& rhs) noexcept -> bool
+  {
+    return lhs.data == rhs.data;
+  }
+
+  friend constexpr auto operator != (const FCellColor& lhs, const FCellColor& rhs) noexcept -> bool
+  {
+    return ! ( lhs == rhs );
+  }
+
   friend constexpr void copyBgColor (const FCellColor& from, FCellColor& to) noexcept
   {
-    to.data = (from.data & 0xffff0000U) | (to.data & 0x0000ffffU);
+    to.data = (to.data & 0x0000ffffU) | (from.data & 0xffff0000U);
   }
 
   friend constexpr void copyFgColor (const FCellColor& from, FCellColor& to) noexcept
   {
-    to.data = (from.data & 0x0000ffffU) | (to.data & 0xffff0000U);
+    to.data = (to.data & 0xffff0000U) | (from.data & 0x0000ffffU);
   }
 };
-
-constexpr auto FColors_to_FCellColor (const FColors& fcolors) noexcept -> FCellColor
-{
-  FCellColor fcellcolor{};
-  fcellcolor.setPair(fcolors);
-  return fcellcolor;
-}
 
 
 // FChar
