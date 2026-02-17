@@ -35,7 +35,7 @@ AM_INIT_AUTOMAKE([-Wall -Werror foreign dist-zip])
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 AC_PROG_CC
 
-if test -z $CXXFLAGS
+if test -z "$CXXFLAGS"
 then
   CXXFLAGS="-O3"
 fi
