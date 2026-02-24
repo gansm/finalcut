@@ -89,30 +89,30 @@ void showFCharData (const finalcut::FChar& fchar)
                           uInt32(fchar.encoded_char.unicode_data[4]) << L"}\n";
   std::wcout << L"              color.pair.fg: " << int(fchar.color.getFgColor()) << L'\n';
   std::wcout << L"              color.pair.bg: " << int(fchar.color.getBgColor()) << L'\n';
-  std::wcout << L"                    attr[0]: " << int(fchar.attr.byte[0]) << L'\n';
-  std::wcout << L"              attr.bit.bold: " << bool(fchar.attr.bit.bold) << L'\n';
-  std::wcout << L"               attr.bit.dim: " << bool(fchar.attr.bit.dim) << L'\n';
-  std::wcout << L"            attr.bit.italic: " << bool(fchar.attr.bit.italic) << L'\n';
-  std::wcout << L"         attr.bit.underline: " << bool(fchar.attr.bit.underline) << L'\n';
-  std::wcout << L"             attr.bit.blink: " << bool(fchar.attr.bit.blink) << L'\n';
-  std::wcout << L"           attr.bit.reverse: " << bool(fchar.attr.bit.reverse) << L'\n';
-  std::wcout << L"          attr.bit.standout: " << bool(fchar.attr.bit.standout) << L'\n';
-  std::wcout << L"         attr.bit.invisible: " << bool(fchar.attr.bit.invisible) << L'\n';
-  std::wcout << L"                    attr[1]: " << int(fchar.attr.byte[1]) << L'\n';
-  std::wcout << L"           attr.bit.protect: " << bool(fchar.attr.bit.protect) << L'\n';
-  std::wcout << L"       attr.bit.crossed_out: " << bool(fchar.attr.bit.crossed_out) << L'\n';
-  std::wcout << L"     attr.bit.dbl_underline: " << bool(fchar.attr.bit.dbl_underline) << L'\n';
-  std::wcout << L"       attr.bit.alt_charset: " << bool(fchar.attr.bit.alt_charset) << L'\n';
-  std::wcout << L"        attr.bit.pc_charset: " << bool(fchar.attr.bit.pc_charset) << L'\n';
-  std::wcout << L"       attr.bit.transparent: " << bool(fchar.attr.bit.transparent) << L'\n';
-  std::wcout << L"     attr.bit.color_overlay: " << bool(fchar.attr.bit.color_overlay) << L'\n';
-  std::wcout << L"attr.bit.inherit_background: " << bool(fchar.attr.bit.inherit_background) << L'\n';
-  std::wcout << L"                    attr[2]: " << int(fchar.attr.byte[2]) << L'\n';
-  std::wcout << L"        attr.bit.no_changes: " << bool(fchar.attr.bit.no_changes) << L'\n';
-  std::wcout << L"           attr.bit.printed: " << bool(fchar.attr.bit.printed) << L'\n';
-  std::wcout << L" attr.bit.fullwidth_padding: " << bool(fchar.attr.bit.fullwidth_padding) << L'\n';
-  std::wcout << L"        attr.bit.char_width: " << int(fchar.attr.bit.char_width) << L'\n';
-  std::wcout << L"                    attr[3]: " << int(fchar.attr.byte[3]) << L'\n'
+  std::wcout << L"                    attr[0]: " << int(fchar.attr.byte()->at(0)) << L'\n';
+  std::wcout << L"              attr.bit.bold: " << bool(fchar.attr.bit()->bold) << L'\n';
+  std::wcout << L"               attr.bit.dim: " << bool(fchar.attr.bit()->dim) << L'\n';
+  std::wcout << L"            attr.bit.italic: " << bool(fchar.attr.bit()->italic) << L'\n';
+  std::wcout << L"         attr.bit.underline: " << bool(fchar.attr.bit()->underline) << L'\n';
+  std::wcout << L"             attr.bit.blink: " << bool(fchar.attr.bit()->blink) << L'\n';
+  std::wcout << L"           attr.bit.reverse: " << bool(fchar.attr.bit()->reverse) << L'\n';
+  std::wcout << L"          attr.bit.standout: " << bool(fchar.attr.bit()->standout) << L'\n';
+  std::wcout << L"         attr.bit.invisible: " << bool(fchar.attr.bit()->invisible) << L'\n';
+  std::wcout << L"                    attr[1]: " << int(fchar.attr.byte()->at(1)) << L'\n';
+  std::wcout << L"           attr.bit.protect: " << bool(fchar.attr.bit()->protect) << L'\n';
+  std::wcout << L"       attr.bit.crossed_out: " << bool(fchar.attr.bit()->crossed_out) << L'\n';
+  std::wcout << L"     attr.bit.dbl_underline: " << bool(fchar.attr.bit()->dbl_underline) << L'\n';
+  std::wcout << L"       attr.bit.alt_charset: " << bool(fchar.attr.bit()->alt_charset) << L'\n';
+  std::wcout << L"        attr.bit.pc_charset: " << bool(fchar.attr.bit()->pc_charset) << L'\n';
+  std::wcout << L"       attr.bit.transparent: " << bool(fchar.attr.bit()->transparent) << L'\n';
+  std::wcout << L"     attr.bit.color_overlay: " << bool(fchar.attr.bit()->color_overlay) << L'\n';
+  std::wcout << L"attr.bit.inherit_background: " << bool(fchar.attr.bit()->inherit_background) << L'\n';
+  std::wcout << L"                    attr[2]: " << int(fchar.attr.byte()->at(2)) << L'\n';
+  std::wcout << L"        attr.bit.no_changes: " << bool(fchar.attr.bit()->no_changes) << L'\n';
+  std::wcout << L"           attr.bit.printed: " << bool(fchar.attr.bit()->printed) << L'\n';
+  std::wcout << L" attr.bit.fullwidth_padding: " << bool(fchar.attr.bit()->fullwidth_padding) << L'\n';
+  std::wcout << L"        attr.bit.char_width: " << int(fchar.attr.bit()->char_width) << L'\n';
+  std::wcout << L"                    attr[3]: " << int(fchar.attr.byte()->at(3)) << L'\n'
              << std::noboolalpha;
 }
 
@@ -163,16 +163,16 @@ auto isFCharEqual ( const finalcut::FChar& lhs
                   , const finalcut::FChar& rhs ) -> bool
 {
   finalcut::FAttribute attr{};
-  attr.bit.no_changes = true;
-  attr.bit.printed = true;
+  attr.bit()->no_changes = true;
+  attr.bit()->printed = true;
 
   return finalcut::isFUnicodeEqual(lhs.ch, rhs.ch)
       && finalcut::isFUnicodeEqual(lhs.encoded_char, rhs.encoded_char)
       && lhs.color.data   == rhs.color.data
-      && lhs.attr.byte[0] == rhs.attr.byte[0]
-      && lhs.attr.byte[1] == rhs.attr.byte[1]
-      && (~ attr.byte[2] & lhs.attr.byte[2]) == (~ attr.byte[2] & rhs.attr.byte[2])
-      && lhs.attr.byte[3] == rhs.attr.byte[3];
+      && lhs.attr.byte()->at(0) == rhs.attr.byte()->at(0)
+      && lhs.attr.byte()->at(1) == rhs.attr.byte()->at(1)
+      && (~ attr.byte()->at(2) & lhs.attr.byte()->at(2)) == (~ attr.byte()->at(2) & rhs.attr.byte()->at(2))
+      && lhs.attr.byte()->at(3) == rhs.attr.byte()->at(3);
 }
 
 //----------------------------------------------------------------------
@@ -261,7 +261,7 @@ void printArea ( finalcut::FVTerm::FTermArea* area )
 
   for (std::size_t i{0U}; i < size; i++)
   {
-    if ( area->data[i].attr.bit.fullwidth_padding )
+    if ( area->data[i].attr.bit()->fullwidth_padding )
       continue;
 
     auto col = (i + 1) % width ;

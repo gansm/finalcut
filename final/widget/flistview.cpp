@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2024 Markus Gans                                      *
+* Copyright 2017-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -1968,7 +1968,7 @@ inline auto FListView::findHeaderEndPos ( FVTermBuffer::iterator first
 
   for (const auto& tc : FVTermBuffer(first, last))
   {
-    const uInt8 char_width = tc.attr.bit.char_width;
+    const auto char_width = tc.getCharWidth();
 
     if ( column_width + char_width > getClientWidth() )
     {

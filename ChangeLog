@@ -1,3 +1,6 @@
+2026-02-24  Markus Gans  <guru.mail@muenster.de>
+	* FAttribute has been reimplemented
+
 2026-02-16  Markus Gans  <guru.mail@muenster.de>
 	* FCellColor has been reimplemented
 

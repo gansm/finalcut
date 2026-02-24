@@ -67,30 +67,12 @@ constexpr auto adjustValue (T current, T reference, T delta, T minLimit) -> T
     return minLimit;  // Avoid underflow
 }
 
-constexpr auto getNoChangesMask() -> uInt32
-{
-  FCharAttribute mask{};
-  mask.no_changes = true;
-  return FCharAttribute_to_uInt32(mask);
-}
-
-constexpr auto getPrintedMask() -> uInt32
-{
-  FCharAttribute mask{};
-  mask.printed = true;
-  return FCharAttribute_to_uInt32(mask);
-}
-
 struct var
 {
   static Encoding terminal_encoding;
-  static constexpr auto no_changes_mask = getNoChangesMask();
-  static constexpr auto printed_mask = getPrintedMask();
 };
 
 Encoding var::terminal_encoding{Encoding::Unknown};
-constexpr uInt32 var::no_changes_mask;
-constexpr uInt32 var::printed_mask;
 
 }  // namespace internal
 
@@ -773,9 +755,9 @@ auto FTermOutput::skipUnchangedCharacters ( uInt& x, uInt xmax, uInt y
 {
   // Skip characters without changes if it is faster than redrawing
 
-  constexpr auto mask = internal::var::no_changes_mask;
+  constexpr auto mask = internal::attr::no_changes();
 
-  if ( ! (iter->attr.data & mask) )
+  if ( ! iter->isBitSet(mask) )
     return false;
 
   auto ch = iter + 1;  // Skip first unchanged character
@@ -783,14 +765,14 @@ auto FTermOutput::skipUnchangedCharacters ( uInt& x, uInt xmax, uInt y
 
   // Unroll the loop for better performance
   while ( ch + 4 <= end
-       && ch[0].attr.data & mask && ch[1].attr.data & mask
-       && ch[2].attr.data & mask && ch[3].attr.data & mask )
+       && ch[0].isBitSet(mask) && ch[1].isBitSet(mask)
+       && ch[2].isBitSet(mask) && ch[3].isBitSet(mask) )
   {
     ch += 4;
   }
 
   // Handle the remaining elements
-  while ( ch < end && ch->attr.data & mask )
+  while ( ch < end && ch->isBitSet(mask) )
   {
     ++ch;
   }
@@ -822,7 +804,7 @@ void FTermOutput::printRange (uInt xmin, uInt xmax, uInt y)
   {
     // Update pointer and mark character as printed
     iter += (x - x_last);
-    iter->attr.bit.printed = true;
+    iter->setBit(internal::attr::printed());
     x_last = x;
 
     // Handle non-printable full-width characters on terminal margins
@@ -864,13 +846,13 @@ inline void FTermOutput::replaceNonPrintableFullwidth ( uInt x, uInt vterm_width
   {
     print_char.ch[0] = wchar_t(UniChar::SingleLeftAngleQuotationMark);  // ‹
     print_char.ch[1] = L'\0';
-    print_char.attr.bit.fullwidth_padding = false;
+    print_char.unsetBit(internal::attr::fullwidth_padding());
   }
   else if ( x == vterm_width && isFullWidthChar(print_char) )
   {
     print_char.ch[0] = wchar_t(UniChar::SingleRightAngleQuotationMark);  // ›
     print_char.ch[1] = L'\0';
-    print_char.attr.bit.char_width = 1;
+    print_char.setCharWidth(1);
   }
 }
 
@@ -906,9 +888,9 @@ void FTermOutput::printFullWidthCharacter ( uInt& x, uInt y
                                           , const FChar_iterator& iter )
 {
   auto& next_char = vterm->getFChar(int(x + 1), int(y));
+  static constexpr auto mask = 0x0000ffffU;
 
-  if ( iter->attr.byte[0] == next_char.attr.byte[0]
-    && iter->attr.byte[1] == next_char.attr.byte[1]
+  if ( (iter->attr.data & mask) == (next_char.attr.data & mask)
     && iter->color.data == next_char.color.data
     && isFullWidthChar(*iter)
     && isFullWidthPaddingChar(next_char) )
@@ -937,9 +919,9 @@ void FTermOutput::printFullWidthPaddingCharacter ( uInt& x, uInt y
                                                  , const FChar_iterator& iter)
 {
   auto prev_char_iter = vterm->getFCharIterator(int(x - 1), int(y));
+  static constexpr auto mask = 0x0000ffffU;
 
-  if ( iter->attr.byte[0] == prev_char_iter->attr.byte[0]
-    && iter->attr.byte[1] == prev_char_iter->attr.byte[1]
+  if ( (iter->attr.data & mask) == (prev_char_iter->attr.data & mask)
     && iter->color.data == prev_char_iter->color.data
     && isFullWidthChar(*prev_char_iter)
     && isFullWidthPaddingChar(*iter) )
@@ -1152,13 +1134,13 @@ inline auto FTermOutput::getRepetitionType ( const FChar& print_char
 //----------------------------------------------------------------------
 inline auto FTermOutput::isFullWidthChar (const FChar& ch) const noexcept -> bool
 {
-  return ch.attr.bit.char_width == 2;
+  return ch.getCharWidth() == 2;
 }
 
 //----------------------------------------------------------------------
 inline auto FTermOutput::isFullWidthPaddingChar (const FChar& ch) const noexcept -> bool
 {
-  return ch.attr.bit.fullwidth_padding;
+  return ch.isBitSet(internal::attr::fullwidth_padding());
 }
 
 //----------------------------------------------------------------------
@@ -1312,7 +1294,7 @@ inline void FTermOutput::markAsPrinted (uInt x, uInt y) const noexcept
 {
   // Marks a character as printed
 
-  vterm->getFChar(int(x), int(y)).attr.data |= internal::var::printed_mask;
+  vterm->getFChar(int(x), int(y)).setBit(internal::attr::printed());
 }
 
 //----------------------------------------------------------------------
@@ -1326,17 +1308,17 @@ inline void FTermOutput::markAsPrinted (uInt from, uInt to, uInt y) const noexce
   // Unroll the loop for better performance
   while ( iter + 4 <= end )
   {
-    iter[0].attr.data |= internal::var::printed_mask;
-    iter[1].attr.data |= internal::var::printed_mask;
-    iter[2].attr.data |= internal::var::printed_mask;
-    iter[3].attr.data |= internal::var::printed_mask;
+    iter[0].setBit(internal::attr::printed());
+    iter[1].setBit(internal::attr::printed());
+    iter[2].setBit(internal::attr::printed());
+    iter[3].setBit(internal::attr::printed());
     iter += 4;
   }
 
   // Handle the remaining elements
   while ( iter < end )
   {
-    iter->attr.data |= internal::var::printed_mask;
+    iter->setBit(internal::attr::printed());
     ++iter;
   }
 }
@@ -1351,10 +1333,10 @@ inline void FTermOutput::newFontChanges (FChar& next_char) const
   if ( next_char.ch.unicode_data[0] == UniChar::LowerHalfBlock )
   {
     next_char.ch.unicode_data[0] = wchar_t(UniChar::UpperHalfBlock);
-    next_char.attr.bit.reverse = true;
+    next_char.setBit(internal::attr::reverse());
   }
   else if ( isReverseNewFontchar(next_char.ch.unicode_data[0]) )
-    next_char.attr.bit.reverse = true;  // Show in reverse video
+    next_char.setBit(internal::attr::reverse());  // Show in reverse video
 }
 
 //----------------------------------------------------------------------
@@ -1393,10 +1375,10 @@ inline void FTermOutput::charsetChanges (FChar& next_char) const
   first_enc_char = ch_enc;
 
   if ( terminal_encoding == Encoding::VT100 )
-    next_char.attr.bit.alt_charset = true;
+    next_char.setBit(internal::attr::alt_charset());
   else if ( terminal_encoding == Encoding::PC )
   {
-    next_char.attr.bit.pc_charset = true;
+    next_char.setBit(internal::attr::pc_charset());
     const auto is_putty = fterm_data->isTermType(FTermType::putty);
     const auto is_xterm = fterm_data->isTermType(FTermType::xterm);
 
@@ -1407,7 +1389,7 @@ inline void FTermOutput::charsetChanges (FChar& next_char) const
       else
       {
         first_enc_char += 0x5f;
-        next_char.attr.bit.alt_charset = true;
+        next_char.setBit(internal::attr::alt_charset());
       }
     }
   }
@@ -1464,7 +1446,7 @@ inline void FTermOutput::appendAttributes (FChar& next_attr)
   // generate attribute string for the next character
 
   if ( term_attribute.color.data == next_attr.color.data
-    && (term_attribute.attr.data & 0xffff) == (next_attr.attr.data & 0xffff) )
+    && (term_attribute.attr.data & 0x0000ffffU) == (next_attr.attr.data & 0x0000ffffU) )
     return;  // No changes
 
   static auto& opti_attr = FOptiAttr::getInstance();

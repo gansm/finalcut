@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2025 Markus Gans                                      *
+* Copyright 2020-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -90,9 +90,8 @@ class FStyle
 
     auto toFAttribute() const noexcept -> FAttribute
     {
-      FCharAttribute fchar_attr{toFCharAttribute()};
       FAttribute fattr{};
-      std::memcpy(&fattr, &fchar_attr, sizeof(fattr));
+      fattr.setFCharAttribute(toFCharAttribute());
       return fattr;
     }
 

@@ -36,16 +36,9 @@
 
 namespace finalcut
 {
+
 namespace internal
 {
-
-template<typename T>
-constexpr auto createMask (T setter) noexcept -> uInt32
-{
-  FCharAttribute mask{};
-  setter(mask);
-  return FCharAttribute_to_uInt32(mask);
-}
 
 constexpr void setAttributeMask (FCharAttribute& attr) noexcept
 {
@@ -214,13 +207,13 @@ void FVTermBuffer::add (UnicodeBoundary& ucb)
 #if defined(__clang__)
   #pragma clang diagnostic pop
 #endif
-    nc.attr.bit.char_width = 1;
+    nc.setCharWidth(1);
   }
   else
   {
     const auto end = std::min(ucb.iter, ucb.cbegin + UNICODE_MAX);
     std::copy(ucb.cbegin, end, nc.ch.begin());
-    nc.attr.bit.char_width = uInt8(ucb.char_width) & 0x03;
+    nc.setCharWidth(ucb.char_width);
     const auto idx = std::size_t(end - ucb.cbegin);
 
     if ( idx < UNICODE_MAX )

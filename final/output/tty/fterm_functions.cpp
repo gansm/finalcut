@@ -674,7 +674,7 @@ auto getColumnWidthImpl (const wchar_t wchar) -> std::size_t
 //----------------------------------------------------------------------
 auto getColumnWidth (const FChar& term_char) noexcept -> std::size_t
 {
-  return std::size_t(term_char.attr.bit.char_width);
+  return std::size_t(term_char.getCharWidth());
 }
 
 //----------------------------------------------------------------------
@@ -684,10 +684,10 @@ auto getColumnWidth (const FVTermBuffer& vtbuf) -> std::size_t
          ? 0
          : std::accumulate ( std::next(vtbuf.begin())
                            , vtbuf.end()
-                           , vtbuf.front().attr.bit.char_width
+                           , vtbuf.front().getCharWidth()
                            , [] (std::size_t s, const FChar& c)
                              {
-                               return s + c.attr.bit.char_width;
+                               return s + c.getCharWidth();
                              }
                            );
 }
@@ -701,10 +701,10 @@ void addColumnWidth (FChar& term_char, std::size_t char_width)
     && fterm_data.getTerminalEncoding() != Encoding::UTF8 )
   {
     term_char.ch.unicode_data[0] = '.';
-    term_char.attr.bit.char_width = 1;
+    term_char.setCharWidth(1);
   }
   else
-    term_char.attr.bit.char_width = char_width & 0x03;
+    term_char.setCharWidth(char_width);
 }
 
 //----------------------------------------------------------------------

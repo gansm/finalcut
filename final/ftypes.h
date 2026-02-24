@@ -342,6 +342,322 @@ constexpr auto FCharAttribute_to_uInt32 (const finalcut::FCharAttribute& fchar_a
        | uInt32(fchar_attr.char_width)         << 19U;
 }
 
+namespace internal
+{
+
+template<typename T>
+constexpr auto createMask (T setter) noexcept -> uInt32
+{
+  FCharAttribute mask{};
+  setter(mask);
+  return FCharAttribute_to_uInt32(mask);
+}
+
+constexpr void setBoldMask (FCharAttribute& attr) noexcept
+{
+  attr.bold = true;
+}
+
+constexpr void setDimMask (FCharAttribute& attr) noexcept
+{
+  attr.dim = true;
+}
+
+constexpr void setItalicMask (FCharAttribute& attr) noexcept
+{
+  attr.italic = true;
+}
+
+constexpr void setUnderlineMask (FCharAttribute& attr) noexcept
+{
+  attr.underline = true;
+}
+
+constexpr void setBlinkMask (FCharAttribute& attr) noexcept
+{
+  attr.blink = true;
+}
+
+constexpr void setReverseMask (FCharAttribute& attr) noexcept
+{
+  attr.reverse = true;
+}
+
+constexpr void setStandoutMask (FCharAttribute& attr) noexcept
+{
+  attr.standout = true;
+}
+
+constexpr void setInvisibleMask (FCharAttribute& attr) noexcept
+{
+  attr.invisible = true;
+}
+
+constexpr void setProtectMask (FCharAttribute& attr) noexcept
+{
+  attr.protect = true;
+}
+
+constexpr void setCrossedOutMask (FCharAttribute& attr) noexcept
+{
+  attr.crossed_out = true;
+}
+
+constexpr void setDblUnderlineMask (FCharAttribute& attr) noexcept
+{
+  attr.dbl_underline = true;
+}
+
+constexpr void setAltCharsetMask (FCharAttribute& attr) noexcept
+{
+  attr.alt_charset = true;
+}
+
+constexpr void setPcCharsetMask (FCharAttribute& attr) noexcept
+{
+  attr.pc_charset = true;
+}
+
+constexpr void setTransparent (FCharAttribute& attr) noexcept
+{
+  attr.transparent = true;
+}
+
+constexpr void setColorOverlay (FCharAttribute& attr) noexcept
+{
+  attr.color_overlay = true;
+}
+
+constexpr void setInheritBackground (FCharAttribute& attr) noexcept
+{
+  attr.inherit_background = true;
+}
+
+constexpr void setNoChanges (FCharAttribute& attr) noexcept
+{
+  attr.no_changes = true;
+}
+
+constexpr void setPrinted (FCharAttribute& attr) noexcept
+{
+  attr.printed = true;
+}
+
+constexpr void setFullwidthPadding (FCharAttribute& attr) noexcept
+{
+  attr.fullwidth_padding = true;
+}
+
+constexpr void setCharWidth (FCharAttribute& attr) noexcept
+{
+  attr.char_width = 0x03;
+}
+
+struct attr
+{
+  static constexpr auto bold() noexcept
+  {
+    return createMask(setBoldMask);
+  }
+
+  static constexpr auto dim() noexcept
+  {
+    return createMask(setDimMask);
+  }
+
+  static constexpr auto italic() noexcept
+  {
+    return createMask(setItalicMask);
+  }
+
+  static constexpr auto underline() noexcept
+  {
+    return createMask(setUnderlineMask);
+  }
+
+  static constexpr auto blink() noexcept
+  {
+    return createMask(setBlinkMask);
+  }
+
+  static constexpr auto reverse() noexcept
+  {
+    return createMask(setReverseMask);
+  }
+
+  static constexpr auto standout() noexcept
+  {
+    return createMask(setStandoutMask);
+  }
+
+  static constexpr auto invisible() noexcept
+  {
+    return createMask(setInvisibleMask);
+  }
+
+  static constexpr auto protect() noexcept
+  {
+    return createMask(setProtectMask);
+  }
+
+  static constexpr auto crossed_out() noexcept
+  {
+    return createMask(setCrossedOutMask);
+  }
+
+  static constexpr auto dbl_underline() noexcept
+  {
+    return createMask(setDblUnderlineMask);
+  }
+
+  static constexpr auto alt_charset() noexcept
+  {
+    return createMask(setAltCharsetMask);
+  }
+
+  static constexpr auto pc_charset() noexcept
+  {
+    return createMask(setPcCharsetMask);
+  }
+
+  static constexpr auto transparent() noexcept
+  {
+    return createMask(setTransparent);
+  }
+
+  static constexpr auto color_overlay() noexcept
+  {
+    return createMask(setColorOverlay);
+  }
+
+  static constexpr auto inherit_background() noexcept
+  {
+    return createMask(setInheritBackground);
+  }
+
+  static constexpr auto no_changes() noexcept
+  {
+    return createMask(setNoChanges);
+  }
+
+  static constexpr auto printed() noexcept
+  {
+    return createMask(setPrinted);
+  }
+
+  static constexpr auto fullwidth_padding() noexcept
+  {
+    return createMask(setFullwidthPadding);
+  }
+
+  static constexpr auto char_width() noexcept
+  {
+    return createMask(setCharWidth);
+  }
+
+  static constexpr auto bold_reset() noexcept
+  {
+    return ~bold();
+  }
+
+  static constexpr auto dim_reset() noexcept
+  {
+    return ~dim();
+  }
+
+  static constexpr auto italic_reset() noexcept
+  {
+    return ~italic();
+  }
+
+  static constexpr auto underline_reset() noexcept
+  {
+    return ~underline();
+  }
+
+  static constexpr auto blink_reset() noexcept
+  {
+    return ~blink();
+  }
+
+  static constexpr auto reverse_reset() noexcept
+  {
+    return ~reverse();
+  }
+
+  static constexpr auto standout_reset() noexcept
+  {
+    return ~standout();
+  }
+
+  static constexpr auto invisible_reset() noexcept
+  {
+    return ~invisible();
+  }
+
+  static constexpr auto protect_reset() noexcept
+  {
+    return ~protect();
+  }
+
+  static constexpr auto crossed_out_reset() noexcept
+  {
+    return ~crossed_out();
+  }
+
+  static constexpr auto dbl_underline_reset() noexcept
+  {
+    return ~dbl_underline();
+  }
+
+  static constexpr auto alt_charset_reset() noexcept
+  {
+    return ~alt_charset();
+  }
+
+  static constexpr auto pc_charset_reset() noexcept
+  {
+    return ~pc_charset();
+  }
+
+  static constexpr auto transparent_reset() noexcept
+  {
+    return ~transparent();
+  }
+
+  static constexpr auto color_overlay_reset() noexcept
+  {
+    return ~color_overlay();
+  }
+
+  static constexpr auto inherit_background_reset() noexcept
+  {
+    return ~inherit_background();
+  }
+
+  static constexpr auto no_changes_reset() noexcept
+  {
+    return ~no_changes();
+  }
+
+  static constexpr auto printed_reset() noexcept
+  {
+    return ~printed();
+  }
+
+  static constexpr auto fullwidth_padding_reset() noexcept
+  {
+    return ~fullwidth_padding();
+  }
+
+  static constexpr auto char_width_reset() noexcept
+  {
+    return ~char_width();
+  }
+};
+
+}  // namespace internal
+
 constexpr auto getFAttributeByte ( const FCharAttribute& fchar_attr
                                  , std::size_t index ) noexcept -> uInt8
 {
@@ -398,11 +714,132 @@ inline auto DataToFAttribute (uInt32 data) noexcept -> FCharAttribute
 }
 #endif
 
-union FAttribute
+struct FAttribute
 {
-  std::array<uInt8, 4> byte;
-  uInt32 data;
-  FCharAttribute bit;
+  uInt32 data{0};
+
+  auto getFCharAttribute() const noexcept -> FCharAttribute
+  {
+    FCharAttribute bit;
+#if HAVE_BUILTIN(__builtin_bit_cast)
+    bit = __builtin_bit_cast(FCharAttribute, data);
+#else
+    std::memcpy(&bit, &data, sizeof(uInt32));
+#endif
+    return bit;
+  }
+
+  void setFCharAttribute (const FCharAttribute& bit) noexcept
+  {
+#if HAVE_BUILTIN(__builtin_bit_cast)
+    data = __builtin_bit_cast(uInt32, bit);
+#else
+    std::memcpy(&data, &bit, sizeof(uInt32));
+#endif
+  }
+
+#if defined(UNIT_TEST)
+  struct BitProxy
+  {
+    FAttribute& parent;
+    FCharAttribute bits;
+
+    BitProxy (FAttribute& p)
+      : parent(p)
+    {
+      // Loads data during creation
+      std::memcpy(&bits, &parent.data, sizeof(uInt32));
+    }
+
+    ~BitProxy()
+    {
+      // Writes data back when destroying (end of statement)
+      std::memcpy(&parent.data, &bits, sizeof(uInt32));
+    }
+
+    auto operator -> () -> FCharAttribute*
+    {
+      // Allows access to bit fields via ->
+      return &bits;
+    }
+  };
+
+  struct ConstBitProxy
+  {
+    FCharAttribute bits;
+
+    ConstBitProxy (const FAttribute& p)
+    {
+      // Loads data during creation
+      std::memcpy(&bits, &p.data, sizeof(uInt32));
+    }
+
+    auto operator -> () const -> const FCharAttribute*
+    {
+      return &bits;
+    }
+  };
+
+  BitProxy bit()
+  {
+    return BitProxy(*this);
+  }
+
+  ConstBitProxy bit() const
+  {
+    return ConstBitProxy(*this);
+  }
+
+  struct ByteProxy
+  {
+    FAttribute& parent;
+    std::array<uInt8, 4> byte;
+
+    ByteProxy (FAttribute& p)
+      : parent(p)
+    {
+      // Loads data during creation
+      std::memcpy(&byte, &parent.data, sizeof(uInt32));
+    }
+
+    ~ByteProxy()
+    {
+      // Writes data back when destroying (end of statement)
+      std::memcpy(&parent.data, &byte, sizeof(uInt32));
+    }
+
+    auto operator -> () -> std::array<uInt8, 4>*
+    {
+      // Allows access to bit fields via ->
+      return &byte;
+    }
+  };
+
+  struct ConstByteProxy
+  {
+    std::array<uInt8, 4> byte;
+
+    ConstByteProxy (const FAttribute& p)
+    {
+      std::memcpy(&byte, &p.data, sizeof(uInt32));
+    }
+
+    auto operator -> () const -> const std::array<uInt8, 4>*
+    {
+      return &byte;
+    }
+  };
+
+  ByteProxy byte()
+  {
+    return ByteProxy(*this);
+  }
+
+  ConstByteProxy byte() const
+  {
+    return ConstByteProxy(*this);
+  }
+#endif  // defined(UNIT_TEST)
 };
 
 // FUnicode
@@ -685,6 +1122,41 @@ struct alignas(std::max_align_t) FChar
   FCellColor color{};         // Foreground and background color
   FAttribute attr{};          // Attributes
 
+  // Accessors
+  constexpr auto getCharWidth() const noexcept -> uInt32
+  {
+    return (attr.data & internal::attr::char_width()) >> 19U;
+  }
+
+  // Mutators
+  constexpr void setCharWidth (uInt32 width) noexcept
+  {
+    attr.data = (attr.data & internal::attr::char_width_reset()) \
+              | ((width << 19U) & internal::attr::char_width());
+  }
+
+  constexpr void setBit (uInt32 mask, bool enable) noexcept
+  {
+    attr.data ^= (-(uInt32(enable)) ^ attr.data) & mask;
+  }
+
+  constexpr void setBit (uInt32 mask) noexcept
+  {
+    attr.data |= mask;
+  }
+
+  constexpr void unsetBit (uInt32 mask) noexcept
+  {
+    attr.data &= mask;
+  }
+
+  // Inquiries
+  constexpr auto isBitSet (uInt32 mask) const noexcept -> bool
+  {
+    return attr.data & mask;
+  }
+
+  // Friend operator functions
 #if HAVE_BUILTIN(__builtin_memcmp)
   friend constexpr
 #else

@@ -39,79 +39,6 @@ namespace finalcut
 namespace internal
 {
 
-template<typename T>
-constexpr auto createMask (T setter) noexcept -> uInt32
-{
-  FCharAttribute mask{};
-  setter(mask);
-  return FCharAttribute_to_uInt32(mask);
-}
-
-constexpr void setBoldMask (FCharAttribute& attr) noexcept
-{
-  attr.bold = true;
-}
-
-constexpr void setDimMask (FCharAttribute& attr) noexcept
-{
-  attr.dim = true;
-}
-
-constexpr void setItalicMask (FCharAttribute& attr) noexcept
-{
-  attr.italic = true;
-}
-
-constexpr void setUnderlineMask (FCharAttribute& attr) noexcept
-{
-  attr.underline = true;
-}
-
-constexpr void setBlinkMask (FCharAttribute& attr) noexcept
-{
-  attr.blink = true;
-}
-
-constexpr void setReverseMask (FCharAttribute& attr) noexcept
-{
-  attr.reverse = true;
-}
-
-constexpr void setStandoutMask (FCharAttribute& attr) noexcept
-{
-  attr.standout = true;
-}
-
-constexpr void setInvisibleMask (FCharAttribute& attr) noexcept
-{
-  attr.invisible = true;
-}
-
-constexpr void setProtectMask (FCharAttribute& attr) noexcept
-{
-  attr.protect = true;
-}
-
-constexpr void setCrossedOutMask (FCharAttribute& attr) noexcept
-{
-  attr.crossed_out = true;
-}
-
-constexpr void setDblUnderlineMask (FCharAttribute& attr) noexcept
-{
-  attr.dbl_underline = true;
-}
-
-constexpr void setAltCharsetMask (FCharAttribute& attr) noexcept
-{
-  attr.alt_charset = true;
-}
-
-constexpr void setPcCharsetMask (FCharAttribute& attr) noexcept
-{
-  attr.pc_charset = true;
-}
-
 constexpr void setFakeReverseMask (FCharAttribute& attr) noexcept
 {
   attr.reverse = true;
@@ -173,70 +100,18 @@ constexpr void setDefaultColorPair (FColors& fcolors) noexcept
 
 struct var
 {
-  static constexpr auto bold_mask                = createMask(setBoldMask);
-  static constexpr auto dim_mask                 = createMask(setDimMask);
-  static constexpr auto italic_mask              = createMask(setItalicMask);
-  static constexpr auto underline_mask           = createMask(setUnderlineMask);
-  static constexpr auto blink_mask               = createMask(setBlinkMask);
-  static constexpr auto reverse_mask             = createMask(setReverseMask);
-  static constexpr auto standout_mask            = createMask(setStandoutMask);
-  static constexpr auto invisible_mask           = createMask(setInvisibleMask);
-  static constexpr auto protect_mask             = createMask(setProtectMask);
-  static constexpr auto crossed_out_mask         = createMask(setCrossedOutMask);
-  static constexpr auto dbl_underline_mask       = createMask(setDblUnderlineMask);
-  static constexpr auto alt_charset_mask         = createMask(setAltCharsetMask);
-  static constexpr auto pc_charset_mask          = createMask(setPcCharsetMask);
   static constexpr auto fake_reverse_mask        = createMask(setFakeReverseMask);
   static constexpr auto sgr_mask                 = createMask(setSGRMask);
   static constexpr auto attribute_mask           = createMask(setAttributeMask);
-  static constexpr auto bold_reset_mask          = ~bold_mask;
-  static constexpr auto dim_reset_mask           = ~dim_mask;
-  static constexpr auto italic_reset_mask        = ~italic_mask;
-  static constexpr auto underline_reset_mask     = ~underline_mask;
-  static constexpr auto blink_reset_mask         = ~blink_mask;
-  static constexpr auto reverse_reset_mask       = ~reverse_mask;
-  static constexpr auto standout_reset_mask      = ~standout_mask;
-  static constexpr auto invisible_reset_mask     = ~invisible_mask;
-  static constexpr auto protect_reset_mask       = ~protect_mask;
-  static constexpr auto crossed_out_reset_mask   = ~crossed_out_mask;
-  static constexpr auto dbl_underline_reset_mask = ~dbl_underline_mask;
-  static constexpr auto alt_charset_reset_mask   = ~alt_charset_mask;
-  static constexpr auto pc_charset_reset_mask    = ~pc_charset_mask;
   static constexpr auto reset_mask               = createMask(setResetMask);
   static constexpr auto default_color_pair       = createFCellColor(setDefaultColorPair);
   static constexpr char sgr_39[]                 = {CSI "39m"};
   static constexpr char sgr_39_49[]              = {CSI "39;49m"};
 };
 
-constexpr uInt32     var::bold_mask;
-constexpr uInt32     var::dim_mask;
-constexpr uInt32     var::italic_mask;
-constexpr uInt32     var::underline_mask;
-constexpr uInt32     var::blink_mask;
-constexpr uInt32     var::reverse_mask;
-constexpr uInt32     var::standout_mask;
-constexpr uInt32     var::invisible_mask;
-constexpr uInt32     var::protect_mask;
-constexpr uInt32     var::crossed_out_mask;
-constexpr uInt32     var::dbl_underline_mask;
-constexpr uInt32     var::alt_charset_mask;
-constexpr uInt32     var::pc_charset_mask;
 constexpr uInt32     var::fake_reverse_mask;
 constexpr uInt32     var::sgr_mask;
 constexpr uInt32     var::attribute_mask;
-constexpr uInt32     var::bold_reset_mask;
-constexpr uInt32     var::dim_reset_mask;
-constexpr uInt32     var::italic_reset_mask;
-constexpr uInt32     var::underline_reset_mask;
-constexpr uInt32     var::blink_reset_mask;
-constexpr uInt32     var::reverse_reset_mask;
-constexpr uInt32     var::standout_reset_mask;
-constexpr uInt32     var::invisible_reset_mask;
-constexpr uInt32     var::protect_reset_mask;
-constexpr uInt32     var::crossed_out_reset_mask;
-constexpr uInt32     var::dbl_underline_reset_mask;
-constexpr uInt32     var::alt_charset_reset_mask;
-constexpr uInt32     var::pc_charset_reset_mask;
 constexpr uInt32     var::reset_mask;
 constexpr FCellColor var::default_color_pair;
 constexpr char       var::sgr_39[];
@@ -605,7 +480,7 @@ auto FOptiAttr::changeAttribute (FChar& term, FChar& next) -> std::string
   detectSwitchOff (term, next);
 
   // Simulate invisible characters
-  if ( ! F_secure.on.cap && next.attr.data & internal::var::invisible_mask )
+  if ( ! F_secure.on.cap && next.isBitSet(internal::attr::invisible()) )
     next.encoded_char.unicode_data[0] = ' ';
 
   // Look for no changes
@@ -617,7 +492,7 @@ auto FOptiAttr::changeAttribute (FChar& term, FChar& next) -> std::string
     deactivateAttributes (term, next);
   }
   else if ( F_attributes.on.cap
-         && (! (term.attr.data & internal::var::pc_charset_mask) || alt_equal_pc_charset) )
+         && (! term.isBitSet(internal::attr::pc_charset()) || alt_equal_pc_charset) )
   {
     changeAttributeSGR (term, next);
   }
@@ -667,7 +542,7 @@ inline void FOptiAttr::set_mode_off ( TextStyle& style
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermBold (FChar& term) noexcept -> bool
 {
-  term.attr.data |= internal::var::bold_mask;
+  term.setBit(internal::attr::bold());
   return append_sequence(F_bold.on.cap);
 }
 
@@ -680,8 +555,8 @@ inline auto FOptiAttr::unsetTermBold (FChar& term) noexcept -> bool
     reset(term);
   else
   {
-    term.attr.data &= internal::var::bold_reset_mask;
-    term.attr.data &= internal::var::dim_reset_mask;
+    term.unsetBit(internal::attr::bold_reset());
+    term.unsetBit(internal::attr::dim_reset());
   }
 
   return append_sequence(F_bold.off.cap);
@@ -690,7 +565,7 @@ inline auto FOptiAttr::unsetTermBold (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermDim (FChar& term) noexcept -> bool
 {
-  term.attr.data |= internal::var::dim_mask;
+  term.setBit(internal::attr::dim());
   return append_sequence(F_dim.on.cap);
 }
 
@@ -703,8 +578,8 @@ inline auto FOptiAttr::unsetTermDim (FChar& term) noexcept -> bool
     reset(term);
   else
   {
-    term.attr.data &= internal::var::bold_reset_mask;
-    term.attr.data &= internal::var::dim_reset_mask;
+    term.unsetBit(internal::attr::bold_reset());
+    term.unsetBit(internal::attr::dim_reset());
   }
 
   return append_sequence(F_dim.off.cap);
@@ -713,7 +588,7 @@ inline auto FOptiAttr::unsetTermDim (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermItalic (FChar& term) noexcept -> bool
 {
-  term.attr.data |= internal::var::italic_mask;
+  term.setBit(internal::attr::italic());
   return append_sequence(F_italics.on.cap);
 }
 
@@ -723,7 +598,7 @@ inline auto FOptiAttr::unsetTermItalic (FChar& term) noexcept -> bool
   if ( F_italics.off.caused_reset )
     reset(term);
   else
-    term.attr.data &= internal::var::italic_reset_mask;
+    term.unsetBit(internal::attr::italic_reset());
 
   return append_sequence(F_italics.off.cap);
 }
@@ -731,7 +606,7 @@ inline auto FOptiAttr::unsetTermItalic (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermUnderline (FChar& term) noexcept -> bool
 {
-  term.attr.data |= internal::var::underline_mask;
+  term.setBit(internal::attr::underline());
   return append_sequence(F_underline.on.cap);
 }
 
@@ -744,8 +619,8 @@ inline auto FOptiAttr::unsetTermUnderline (FChar& term) noexcept -> bool
     reset(term);
   else
   {
-    term.attr.data &= internal::var::underline_reset_mask;
-    term.attr.data &= internal::var::dbl_underline_reset_mask;
+    term.unsetBit(internal::attr::underline_reset());
+    term.unsetBit(internal::attr::dbl_underline_reset());
   }
 
   return append_sequence(F_underline.off.cap);
@@ -754,7 +629,7 @@ inline auto FOptiAttr::unsetTermUnderline (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermBlink (FChar& term) noexcept -> bool
 {
-  term.attr.data |= internal::var::blink_mask;
+  term.setBit(internal::attr::blink());
   return append_sequence(F_blink.on.cap);
 }
 
@@ -764,7 +639,7 @@ inline auto FOptiAttr::unsetTermBlink (FChar& term) noexcept -> bool
   if ( F_blink.off.caused_reset )
     reset(term);
   else
-    term.attr.data &= internal::var::blink_reset_mask;
+    term.unsetBit(internal::attr::blink_reset());
 
   return append_sequence(F_blink.off.cap);
 }
@@ -772,7 +647,7 @@ inline auto FOptiAttr::unsetTermBlink (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermReverse (FChar& term) noexcept -> bool
 {
-  term.attr.data |= internal::var::reverse_mask;
+  term.setBit(internal::attr::reverse());
   return ( ! fake_reverse && append_sequence(F_reverse.on.cap) );
 }
 
@@ -782,7 +657,7 @@ inline auto FOptiAttr::unsetTermReverse (FChar& term) noexcept -> bool
   if ( F_reverse.off.caused_reset )
     reset(term);
   else
-    term.attr.data &= internal::var::reverse_reset_mask;
+    term.unsetBit(internal::attr::reverse_reset());
 
   return ( ! fake_reverse && append_sequence(F_reverse.off.cap) );
 }
@@ -790,7 +665,7 @@ inline auto FOptiAttr::unsetTermReverse (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermStandout (FChar& term) noexcept -> bool
 {
-  term.attr.data |= internal::var::standout_mask;
+  term.setBit(internal::attr::standout());
   return ( ! fake_reverse && append_sequence(F_standout.on.cap) );
 }
 
@@ -800,7 +675,7 @@ inline auto FOptiAttr::unsetTermStandout (FChar& term) noexcept -> bool
   if ( F_standout.off.caused_reset )
     reset(term);
   else
-    term.attr.data &= internal::var::standout_reset_mask;
+    term.unsetBit(internal::attr::standout_reset());
 
   return ( ! fake_reverse && append_sequence(F_standout.off.cap) );
 }
@@ -808,7 +683,7 @@ inline auto FOptiAttr::unsetTermStandout (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermInvisible (FChar& term) noexcept -> bool
 {
-  term.attr.data |= internal::var::invisible_mask;
+  term.setBit(internal::attr::invisible());
   return append_sequence(F_secure.on.cap);
 }
 
@@ -818,7 +693,7 @@ inline auto FOptiAttr::unsetTermInvisible (FChar& term) noexcept -> bool
   if ( F_secure.off.caused_reset )
     reset(term);
   else
-    term.attr.data &= internal::var::invisible_reset_mask;
+    term.unsetBit(internal::attr::invisible_reset());
 
   return append_sequence(F_secure.off.cap);
 }
@@ -826,7 +701,7 @@ inline auto FOptiAttr::unsetTermInvisible (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermProtected (FChar& term) noexcept -> bool
 {
-  term.attr.data |= internal::var::protect_mask;
+  term.setBit(internal::attr::protect());
   return append_sequence(F_protected.on.cap);
 }
 
@@ -836,7 +711,7 @@ inline auto FOptiAttr::unsetTermProtected (FChar& term) noexcept -> bool
   if ( F_protected.off.caused_reset )
     reset(term);
   else
-    term.attr.data &= internal::var::protect_reset_mask;
+    term.unsetBit(internal::attr::protect_reset());
 
   return append_sequence(F_protected.off.cap);
 }
@@ -844,7 +719,7 @@ inline auto FOptiAttr::unsetTermProtected (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermCrossedOut (FChar& term) noexcept -> bool
 {
-  term.attr.data |= internal::var::crossed_out_mask;
+  term.setBit(internal::attr::crossed_out());
   return append_sequence(F_crossed_out.on.cap);
 }
 
@@ -854,7 +729,7 @@ inline auto FOptiAttr::unsetTermCrossedOut (FChar& term) noexcept -> bool
   if ( F_crossed_out.off.caused_reset )
     reset(term);
   else
-    term.attr.data &= internal::var::crossed_out_reset_mask;
+    term.unsetBit(internal::attr::crossed_out_reset());
 
   return append_sequence(F_crossed_out.off.cap);
 }
@@ -862,7 +737,7 @@ inline auto FOptiAttr::unsetTermCrossedOut (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermDoubleUnderline (FChar& term) noexcept -> bool
 {
-  term.attr.data |= internal::var::dbl_underline_mask;
+  term.setBit(internal::attr::dbl_underline());
   return append_sequence(F_dbl_underline.on.cap);
 }
 
@@ -875,8 +750,8 @@ inline auto FOptiAttr::unsetTermDoubleUnderline (FChar& term) noexcept -> bool
     reset(term);
   else
   {
-    term.attr.data &= internal::var::underline_reset_mask;
-    term.attr.data &= internal::var::dbl_underline_reset_mask;
+    term.unsetBit(internal::attr::underline_reset());
+    term.unsetBit(internal::attr::dbl_underline_reset());
   }
 
   return append_sequence(F_dbl_underline.off.cap);
@@ -889,15 +764,15 @@ inline auto FOptiAttr::setTermAttributes (FChar& term, const FChar& next) -> boo
   {
     const auto sgr = FTermcap::encodeParameter \
         ( F_attributes.on.cap
-        , (next.attr.data & internal::var::standout_mask) != 0 && ! fake_reverse  // p1
-        , (next.attr.data & internal::var::underline_mask) != 0                   // p2
-        , (next.attr.data & internal::var::reverse_mask) != 0 && ! fake_reverse   // p3
-        , (next.attr.data & internal::var::blink_mask) != 0                       // p4
-        , (next.attr.data & internal::var::dim_mask) != 0                         // p5
-        , (next.attr.data & internal::var::bold_mask) != 0                        // p6
-        , (next.attr.data & internal::var::invisible_mask) != 0                   // p7
-        , (next.attr.data & internal::var::protect_mask) != 0                     // p8
-        , (next.attr.data & internal::var::alt_charset_mask) != 0 );              // p9
+        , next.isBitSet(internal::attr::standout()) && ! fake_reverse  // p1
+        , next.isBitSet(internal::attr::underline())                   // p2
+        , next.isBitSet(internal::attr::reverse()) && ! fake_reverse   // p3
+        , next.isBitSet(internal::attr::blink())                       // p4
+        , next.isBitSet(internal::attr::dim())                         // p5
+        , next.isBitSet(internal::attr::bold())                        // p6
+        , next.isBitSet(internal::attr::invisible())                   // p7
+        , next.isBitSet(internal::attr::protect())                     // p8
+        , next.isBitSet(internal::attr::alt_charset()) );              // p9
     append_sequence (sgr);
     resetColor(term);
     term.attr.data = next.attr.data & internal::var::sgr_mask;
@@ -917,10 +792,10 @@ inline auto FOptiAttr::unsetTermAttributes (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermAltCharset (FChar& term) noexcept -> bool
 {
-  term.attr.data |= internal::var::alt_charset_mask;
+  term.setBit(internal::attr::alt_charset());
 
   if ( alt_equal_pc_charset
-    && term.attr.data & internal::var::pc_charset_mask )
+    && term.isBitSet(internal::attr::pc_charset()) )
     return false;
 
   return append_sequence(F_alt_charset.on.cap);
@@ -929,10 +804,10 @@ inline auto FOptiAttr::setTermAltCharset (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FOptiAttr::unsetTermAltCharset (FChar& term) noexcept -> bool
 {
-  term.attr.data &= internal::var::alt_charset_reset_mask;
+  term.unsetBit(internal::attr::alt_charset_reset());
 
   if ( alt_equal_pc_charset
-    && term.attr.data & internal::var::pc_charset_mask )
+    && term.isBitSet(internal::attr::pc_charset()) )
     return false;
 
   return append_sequence(F_alt_charset.off.cap);
@@ -941,10 +816,10 @@ inline auto FOptiAttr::unsetTermAltCharset (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermPCcharset (FChar& term) noexcept -> bool
 {
-  term.attr.data |= internal::var::pc_charset_mask;
+  term.setBit(internal::attr::pc_charset());
 
   if ( alt_equal_pc_charset
-    && term.attr.data & internal::var::alt_charset_mask )
+    && term.isBitSet(internal::attr::alt_charset()) )
     return false;
 
   return append_sequence(F_pc_charset.on.cap);
@@ -953,10 +828,10 @@ inline auto FOptiAttr::setTermPCcharset (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FOptiAttr::unsetTermPCcharset (FChar& term) noexcept -> bool
 {
-  term.attr.data &= internal::var::pc_charset_reset_mask;
+  term.unsetBit(internal::attr::pc_charset_reset());
 
   if ( alt_equal_pc_charset
-    && term.attr.data & internal::var::alt_charset_mask )
+    && term.isBitSet(internal::attr::alt_charset()) )
     return false;
 
   return append_sequence(F_pc_charset.off.cap);
@@ -984,39 +859,41 @@ auto FOptiAttr::setTermDefaultColor (FChar& term) -> bool
 void FOptiAttr::setAttributesOn (FChar& term)
 {
   static const auto& attribute_on_handlers = getAttributeOnHandlers();
-  setAttributes (changes.on.attr, attribute_on_handlers, term);
+  setAttributes ( changes.on.attr.data & internal::var::attribute_mask
+                , attribute_on_handlers
+                , term );
 }
 
 //----------------------------------------------------------------------
 void FOptiAttr::setAttributesOff (FChar& term)
 {
   static const auto& attribute_off_handlers = getAttributeOffHandlers();
-  setAttributes (changes.off.attr, attribute_off_handlers, term);
+  setAttributes ( changes.off.attr.data & internal::var::attribute_mask
+                , attribute_off_handlers
+                , term );
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::setAttributes ( FAttribute attribute
+void FOptiAttr::setAttributes ( uInt32 attribute
                               , const AttributeHandlers& attribute_handlers
                               , FChar& term )
 {
-  if ( ! attribute.data )
-    return;
+  auto iter = attribute_handlers.cbegin();
+  const auto end = attribute_handlers.cend();
 
-  for (const auto& handler : attribute_handlers)
+  while ( attribute && iter != end )
   {
-    const auto& mask = handler.mask;
+    const auto mask = iter->mask;
 
-    for (std::size_t b{0}; b < 2; b++)
+    if ( ! (attribute & mask) )
     {
-      if ( ! (attribute.byte[b] & mask.byte[b]) )
-        continue;
-
-      handler.function(this, term);  // Call function
-      attribute.byte[b] ^= mask.byte[b];  // Clear found bit
+      ++iter;
+      continue;
     }
 
-    if ( ! attribute.data )
-      break;
+    iter->function(this, term);  // Call function
+    attribute &= ~mask;  // Clear found bit
+    ++iter;
   }
 }
 
@@ -1030,7 +907,7 @@ auto FOptiAttr::hasColor (const FChar& attr) noexcept -> bool
 //----------------------------------------------------------------------
 auto FOptiAttr::hasAttribute (const FChar& attr) noexcept -> bool
 {
-  return attr.attr.data & internal::var::attribute_mask;
+  return attr.isBitSet(internal::var::attribute_mask);
 }
 
 //----------------------------------------------------------------------
@@ -1043,32 +920,32 @@ auto FOptiAttr::hasNoAttribute (const FChar& attr) noexcept -> bool
 inline auto FOptiAttr::isItalicsUsed ( const FChar& term
                                      , const FChar& next ) const noexcept -> bool
 {
-  return ! (term.attr.data & internal::var::italic_mask)
-      && next.attr.data & internal::var::italic_mask;
+  return ! term.isBitSet(internal::attr::italic())
+      && next.isBitSet(internal::attr::italic());
 }
 
 //----------------------------------------------------------------------
 inline auto FOptiAttr::isCrossedOutUsed ( const FChar& term
                                         , const FChar& next ) const noexcept -> bool
 {
-  return ! (term.attr.data & internal::var::crossed_out_mask)
-      && (next.attr.data & internal::var::crossed_out_mask);
+  return ! term.isBitSet(internal::attr::crossed_out())
+      && next.isBitSet(internal::attr::crossed_out());
 }
 
 //----------------------------------------------------------------------
 inline auto FOptiAttr::isDoubleUnderlineUsed ( const FChar& term
                                              , const FChar& next ) const noexcept -> bool
 {
-  return ! (term.attr.data & internal::var::dbl_underline_mask)
-       && (next.attr.data & internal::var::dbl_underline_mask);
+  return ! term.isBitSet(internal::attr::dbl_underline())
+       && next.isBitSet(internal::attr::dbl_underline());
 }
 
 //----------------------------------------------------------------------
 inline auto FOptiAttr::isPCcharsetUsed ( const FChar& term
                                        , const FChar& next ) const noexcept -> bool
 {
-  return ! (term.attr.data & internal::var::pc_charset_mask)
-      && next.attr.data & internal::var::pc_charset_mask;
+  return ! term.isBitSet(internal::attr::pc_charset())
+      && next.isBitSet(internal::attr::pc_charset());
 }
 
 //----------------------------------------------------------------------
@@ -1077,10 +954,12 @@ inline auto FOptiAttr::isPCcharsetUsable ( FChar& term
 {
   if ( alt_equal_pc_charset
     && F_pc_charset.on.cap
-    && next.attr.data & internal::var::alt_charset_mask )
+    && next.isBitSet(internal::attr::alt_charset()) )
   {
-    term.attr.bit.pc_charset = next.attr.bit.pc_charset;
-    changes.off.attr.data &= internal::var::pc_charset_reset_mask;
+    // Copy the bit value of pc_charset from next to term
+    term.attr.data ^= (term.attr.data ^ next.attr.data)
+                    & internal::attr::pc_charset();
+    changes.off.unsetBit(internal::attr::pc_charset_reset());
     return false;
   }
 
@@ -1094,8 +973,8 @@ inline auto FOptiAttr::hasColorChanged ( const FChar& term
   const auto& fake_reverse_mask = internal::var::fake_reverse_mask;
   return term.color.data != next.color.data
       || ( fake_reverse
-        && ( (changes.on.attr.data & fake_reverse_mask)
-          || (changes.off.attr.data & fake_reverse_mask) ) );
+        && ( changes.on.isBitSet(fake_reverse_mask)
+          || changes.off.isBitSet(fake_reverse_mask) ) );
 }
 
 //----------------------------------------------------------------------
@@ -1139,12 +1018,12 @@ inline void FOptiAttr::deactivateAttributes (FChar& term, FChar& next)
   {
     if ( F_attributes.off.cap )
     {
-      if ( changes.off.attr.data & internal::var::alt_charset_mask )  // Required for rxvt terminals
+      if ( changes.off.isBitSet(internal::attr::alt_charset()) )  // Required for rxvt terminals
         unsetTermAltCharset(term);
 
       unsetTermAttributes(term);
 
-      if ( changes.off.attr.data & internal::var::pc_charset_mask )
+      if ( changes.off.isBitSet(internal::attr::pc_charset()) )
         unsetTermPCcharset(term);
     }
     else
@@ -1163,7 +1042,7 @@ inline void FOptiAttr::changeAttributeSGR (FChar& term, FChar& next)
 
   const auto pc_charset_usable = isPCcharsetUsable(term, next);
 
-  if ( changes.off.attr.data & internal::var::pc_charset_mask )
+  if ( changes.off.isBitSet(internal::attr::pc_charset()) )
     unsetTermPCcharset(term);
 
   if ( isItalicsUsed(term, next) )
@@ -1213,7 +1092,7 @@ void FOptiAttr::change_color (FChar& term, FChar& next)
     if ( fg == FColor::Default && bg == FColor::Default )
       return;
 
-    if ( next.attr.data & internal::var::fake_reverse_mask )
+    if ( next.isBitSet(internal::var::fake_reverse_mask) )
     {
       std::swap (fg, bg);
       handleDefaultColors (term, next, fg, bg);
@@ -1344,7 +1223,7 @@ inline void FOptiAttr::change_current_color ( const FChar& term
 //----------------------------------------------------------------------
 inline void FOptiAttr::resetAttribute (FChar& attr) const noexcept
 {
-  attr.attr.data &= internal::var::reset_mask;
+  attr.unsetBit(internal::var::reset_mask);
 }
 
 //----------------------------------------------------------------------
@@ -1387,8 +1266,8 @@ inline auto FOptiAttr::fake_reverse_color_change (const FChar& term) const noexc
 {
   const auto& fake_reverse_mask = internal::var::fake_reverse_mask;
   return fake_reverse
-      && ( (changes.off.attr.data & fake_reverse_mask)
-        || (term.attr.data & fake_reverse_mask) );
+      && ( changes.off.isBitSet(fake_reverse_mask)
+        || term.isBitSet(fake_reverse_mask) );
 }
 
 //----------------------------------------------------------------------
@@ -1412,24 +1291,34 @@ auto FOptiAttr::getNoColorVideoHandlerTable() -> const NoColorVideoHandlerTable&
   (
     NoColorVideoHandlerTable
     {{
-      nullptr,                                                                      // No bit set (0)
-      [] (const FOptiAttr*, FChar& fchar) { fchar.attr.bit.standout = false; },     // Standout mode (1)
-      [] (const FOptiAttr*, FChar& fchar) { fchar.attr.bit.underline = false; },    // Underline mode (2)
-      [] (FOptiAttr* obj, const FChar&)   { obj->fake_reverse = true; },            // Reverse mode (4)
-      [] (const FOptiAttr*, FChar& fchar) { fchar.attr.bit.blink = false; },        // Blink mode (8)
-      [] (const FOptiAttr*, FChar& fchar) { fchar.attr.bit.dim = false; },          // Dim mode (16)
-      [] (const FOptiAttr*, FChar& fchar) { fchar.attr.bit.bold = false; },         // Bold mode (32)
-      [] (const FOptiAttr*, FChar& fchar) { fchar.attr.bit.invisible = false; },    // Invisible mode (64)
-      [] (const FOptiAttr*, FChar& fchar) { fchar.attr.bit.protect = false; },      // Protected mode (128)
-      [] (const FOptiAttr*, FChar& fchar) { fchar.attr.bit.alt_charset = false; },  // Alt_charset mode (256)
-      nullptr,                                                                      // Horizontal mode (512)
-      nullptr,                                                                      // Left mode (1024)
-      nullptr,                                                                      // Low mode (2048)
-      nullptr,                                                                      // Right mode (4096)
-      nullptr,                                                                      // Top mode (8192)
-      nullptr,                                                                      // Vertical mode (1638)
-      [] (const FOptiAttr*, FChar& fchar) { fchar.attr.bit.italic = false; },       // Italic mode (32768)
-      nullptr                                                                       // No mode (65536)
+      nullptr,                                                   // No bit set (0)
+      [] (const FOptiAttr*, FChar& fchar)
+      { fchar.unsetBit(internal::attr::standout_reset()); },     // Standout mode (1)
+      [] (const FOptiAttr*, FChar& fchar)
+      { fchar.unsetBit(internal::attr::underline_reset()); },    // Underline mode (2)
+      [] (FOptiAttr* obj, const FChar&)
+      { obj->fake_reverse = true; },                             // Reverse mode (4)
+      [] (const FOptiAttr*, FChar& fchar)
+      { fchar.unsetBit(internal::attr::blink_reset()); },        // Blink mode (8)
+      [] (const FOptiAttr*, FChar& fchar)
+      { fchar.unsetBit(internal::attr::dim_reset()); },          // Dim mode (16)
+      [] (const FOptiAttr*, FChar& fchar)
+      { fchar.unsetBit(internal::attr::bold_reset()); },         // Bold mode (32)
+      [] (const FOptiAttr*, FChar& fchar)
+      { fchar.unsetBit(internal::attr::invisible_reset()); },    // Invisible mode (64)
+      [] (const FOptiAttr*, FChar& fchar)
+      { fchar.unsetBit(internal::attr::protect_reset()); },      // Protected mode (128)
+      [] (const FOptiAttr*, FChar& fchar)
+      { fchar.unsetBit(internal::attr::alt_charset_reset()); },  // Alt_charset mode (256)
+      nullptr,                                                   // Horizontal mode (512)
+      nullptr,                                                   // Left mode (1024)
+      nullptr,                                                   // Low mode (2048)
+      nullptr,                                                   // Right mode (4096)
+      nullptr,                                                   // Top mode (8192)
+      nullptr,                                                   // Vertical mode (1638)
+      [] (const FOptiAttr*, FChar& fchar)
+      { fchar.unsetBit(internal::attr::italic_reset()); },       // Italic mode (32768)
+      nullptr                                                    // No mode (65536)
     }}
   );
 
@@ -1439,53 +1328,47 @@ auto FOptiAttr::getNoColorVideoHandlerTable() -> const NoColorVideoHandlerTable&
 //----------------------------------------------------------------------
 auto FOptiAttr::getAttributeOnHandlers() -> const AttributeHandlers&
 {
-  static const auto& attribute_on_handlers = std::make_unique<AttributeHandlers>
-  (
-    AttributeHandlers
-    {{
-      { {{0x00, 0x08, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermAltCharset(fchar); } },
-      { {{0x00, 0x10, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermPCcharset(fchar); } },
-      { {{0x01, 0x00, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermBold(fchar); } },
-      { {{0x02, 0x00, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermDim(fchar); } },
-      { {{0x04, 0x00, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermItalic(fchar); } },
-      { {{0x08, 0x00, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermUnderline(fchar); } },
-      { {{0x10, 0x00, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermBlink(fchar); } },
-      { {{0x20, 0x00, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermReverse(fchar); } },
-      { {{0x40, 0x00, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermStandout(fchar); } },
-      { {{0x80, 0x00, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermInvisible(fchar); } },
-      { {{0x00, 0x01, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermProtected(fchar); } },
-      { {{0x00, 0x02, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermCrossedOut(fchar); } },
-      { {{0x00, 0x04, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermDoubleUnderline(fchar); } }
-    }}
-  );
+  static const AttributeHandlers attribute_on_handlers
+  {{
+    { internal::attr::alt_charset()  , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermAltCharset(fchar); } },
+    { internal::attr::pc_charset()   , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermPCcharset(fchar); } },
+    { internal::attr::bold()         , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermBold(fchar); } },
+    { internal::attr::dim()          , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermDim(fchar); } },
+    { internal::attr::italic()       , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermItalic(fchar); } },
+    { internal::attr::underline()    , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermUnderline(fchar); } },
+    { internal::attr::blink()        , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermBlink(fchar); } },
+    { internal::attr::reverse()      , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermReverse(fchar); } },
+    { internal::attr::standout()     , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermStandout(fchar); } },
+    { internal::attr::invisible()    , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermInvisible(fchar); } },
+    { internal::attr::protect()      , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermProtected(fchar); } },
+    { internal::attr::crossed_out()  , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermCrossedOut(fchar); } },
+    { internal::attr::dbl_underline(), [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermDoubleUnderline(fchar); } }
+  }};
 
-  return *attribute_on_handlers;
+  return attribute_on_handlers;
 }
 
 //----------------------------------------------------------------------
 auto FOptiAttr::getAttributeOffHandlers() -> const AttributeHandlers&
 {
-  static const auto& attribute_off_handlers = std::make_unique<AttributeHandlers>
-  (
-    AttributeHandlers
-    {{
-      { {{0x00, 0x10, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermPCcharset(fchar); } },
-      { {{0x00, 0x08, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermAltCharset(fchar); } },
-      { {{0x01, 0x00, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermBold(fchar); } },
-      { {{0x02, 0x00, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermDim(fchar); } },
-      { {{0x04, 0x00, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermItalic(fchar); } },
-      { {{0x08, 0x00, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermUnderline(fchar); } },
-      { {{0x10, 0x00, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermBlink(fchar); } },
-      { {{0x20, 0x00, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermReverse(fchar); } },
-      { {{0x40, 0x00, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermStandout(fchar); } },
-      { {{0x80, 0x00, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermInvisible(fchar); } },
-      { {{0x00, 0x01, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermProtected(fchar); } },
-      { {{0x00, 0x02, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermCrossedOut(fchar); } },
-      { {{0x00, 0x04, 0x00, 0x00}}, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermDoubleUnderline(fchar); } }
-    }}
-  );
+  static const AttributeHandlers attribute_off_handlers
+  {{
+    { internal::attr::alt_charset()  , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermAltCharset(fchar); } },
+    { internal::attr::pc_charset()   , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermPCcharset(fchar); } },
+    { internal::attr::bold()         , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermBold(fchar); } },
+    { internal::attr::dim()          , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermDim(fchar); } },
+    { internal::attr::italic()       , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermItalic(fchar); } },
+    { internal::attr::underline()    , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermUnderline(fchar); } },
+    { internal::attr::blink()        , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermBlink(fchar); } },
+    { internal::attr::reverse()      , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermReverse(fchar); } },
+    { internal::attr::standout()     , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermStandout(fchar); } },
+    { internal::attr::invisible()    , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermInvisible(fchar); } },
+    { internal::attr::protect()      , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermProtected(fchar); } },
+    { internal::attr::crossed_out()  , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermCrossedOut(fchar); } },
+    { internal::attr::dbl_underline(), [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermDoubleUnderline(fchar); } }
+  }};
 
-  return *attribute_off_handlers;
+  return attribute_off_handlers;
 }
 
 //----------------------------------------------------------------------

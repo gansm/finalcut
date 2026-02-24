@@ -404,13 +404,13 @@ void drawTransparentShadow (FWidget* w)
       { L'\0',  L'\0', L'\0', L'\0', L'\0' },
       { L'\0', L'\0', L'\0', L'\0', L'\0' },
       { FColor::Default, FColor::Default },
-      { { 0x00, 0x20, 0x00, 0x00} }  // byte 0..3 (byte 1 = 0x32 = transparent)
+      { 0x00002000U }  // transparent
     },
     {
       { L'\0', L'\0', L'\0', L'\0', L'\0' },
       { L'\0', L'\0', L'\0', L'\0', L'\0' },
       { wc_shadow.fg, wc_shadow.bg },
-      { { 0x00, 0x40, 0x00, 0x00} }  // byte 0..3 (byte 1 = 0x64 = color_overlay)
+      { 0x00004000U }  // color_overlay
     },
     &area.getFChar(area.size.width, 0)
   };
@@ -505,34 +505,34 @@ void drawBlockShadow (FWidget* w)
       { wchar_t(UniChar::LowerHalfBlock),  L'\0', L'\0', L'\0', L'\0' },  // ▄
       { L'\0', L'\0', L'\0', L'\0', L'\0' },
       { wc_shadow.bg, FColor::Default },
-      { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3 (byte 2 = 0x08 = char_width 1)
+      { 0x00080000U }  // char_width = 1
     },
     {
       { wchar_t(UniChar::FullBlock),  L'\0', L'\0', L'\0', L'\0' },  // █
       { L'\0', L'\0', L'\0', L'\0', L'\0' },
       { wc_shadow.bg, FColor::Default },
-      { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3 (byte 2 = 0x08 = char_width 1)
+      { 0x00080000U }  // char_width = 1
     },
     {
       { L' ',  L'\0', L'\0', L'\0', L'\0' },  // ' '
       { L'\0', L'\0', L'\0', L'\0', L'\0' },
       { FColor::Default, FColor::Default },
-      { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3 (byte 2 = 0x08 = char_width 1)
+      { 0x00080000U }  // char_width = 1
     },
     {
       { wchar_t(UniChar::UpperHalfBlock),  L'\0', L'\0', L'\0', L'\0' },  // ▄
       { L'\0', L'\0', L'\0', L'\0', L'\0' },
       { wc_shadow.bg, FColor::Default },
-      { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3 (byte 2 = 0x08 = char_width 1)
+      { 0x00080000U }  // char_width = 1
     }
   }};
 
   if ( w->isWindowWidget() )
   {
-    shadow_char[0].attr.bit.inherit_background = true;
-    shadow_char[1].attr.bit.inherit_background = true;
-    shadow_char[2].attr.bit.transparent = true;
-    shadow_char[3].attr.bit.inherit_background = true;
+    shadow_char[0].setBit(internal::attr::inherit_background());
+    shadow_char[1].setBit(internal::attr::inherit_background());
+    shadow_char[2].setBit(internal::attr::transparent());
+    shadow_char[3].setBit(internal::attr::inherit_background());
   }
   else if ( auto p = w->getParentWidget() )
   {
@@ -557,11 +557,11 @@ void clearBlockShadow (FWidget* w)
     { L' ',  L'\0', L'\0', L'\0', L'\0' },  // ' '
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { FColor::Default, FColor::Default },
-    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3 (byte 2 = 0x08 = char_width 1)
+    { 0x00080000U }  // char_width = 1
   };
 
   if ( w->isWindowWidget() )
-    spacer_char.attr.bit.transparent = true;
+    spacer_char.setBit(internal::attr::transparent());
   else if ( auto p = w->getParentWidget() )
     spacer_char.color.setBgColor(p->getBackgroundColor());
 
@@ -939,11 +939,11 @@ struct GenericBoxData
     , max_width{uInt(area.size.width + area.shadow.width - 1)}
     , width{uInt(r.getWidth())}
     , line_length{width - 2}
-    , is_transparent{(fchar.attr.data & internal::var::print_trans_mask) != 0}
+    , is_transparent{fchar.isBitSet(internal::var::print_trans_mask)}
     , trans_count_increment{uInt(is_transparent) * width}
   {
     // Prepare the first character to draw the box
-    fchar.attr.bit.char_width = 1;
+    fchar.setCharWidth(1);
     fchar.ch[1] = L'\0';
   }
 

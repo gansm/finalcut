@@ -189,7 +189,7 @@ class FOptiAttr final
 
     struct AttributeHandlerEntry
     {
-      FAttribute mask;
+      uInt32 mask;
       SetFunctionCall function;
     };
 
@@ -244,7 +244,7 @@ class FOptiAttr final
     auto        setTermDefaultColor (FChar&) -> bool;
     void        setAttributesOn (FChar&);
     void        setAttributesOff (FChar&);
-    void        setAttributes (FAttribute, const AttributeHandlers&, FChar&);
+    void        setAttributes (uInt32, const AttributeHandlers&, FChar&);
 
     // Inquiries
     static auto hasColor (const FChar&) noexcept -> bool;

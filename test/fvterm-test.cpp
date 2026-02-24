@@ -856,11 +856,11 @@ void FVTermTest::OwnFunctionsTest()
   shadow_char.encoded_char = { L'\0', L'\0', L'\0', L'\0', L'\0' };
   shadow_char.color.setFgColor(finalcut::FColor::Default);
   shadow_char.color.setBgColor(finalcut::FColor::Default);
-  shadow_char.attr.byte[0] = 0;
-  shadow_char.attr.byte[1] = 0;
-  shadow_char.attr.bit.transparent = true;
-  shadow_char.attr.byte[2] = 0;
-  shadow_char.attr.byte[3] = 0;
+  shadow_char.attr.byte()->at(0) = 0;
+  shadow_char.attr.byte()->at(1) = 0;
+  shadow_char.attr.bit()->transparent = true;
+  shadow_char.attr.byte()->at(2) = 0;
+  shadow_char.attr.byte()->at(3) = 0;
 
   // FChar struct
   finalcut::FChar test_char =
@@ -868,14 +868,14 @@ void FVTermTest::OwnFunctionsTest()
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::Default, finalcut::FColor::Default },
-    { { 0x00, 0x00, 0x00, 0x00} }  // byte 0..3
+    { 0x00000000U }
   };
 
   test::RepeatFChar rep_fchar {80, test_char};
   test::RepeatFCharLine rep_fchar_line {25, {rep_fchar} };
 
   CPPUNIT_ASSERT( rep_fchar_line.data[0].data != shadow_char );
-  test_char.attr.bit.transparent = true;
+  test_char.attr.bit()->transparent = true;
   CPPUNIT_ASSERT( test_char == shadow_char );
 }
 
@@ -1007,10 +1007,10 @@ void FVTermTest::FVTermBasesTest()
   default_char.encoded_char = { L'\0', L'\0', L'\0', L'\0', L'\0' };
   default_char.color.setFgColor(finalcut::FColor::Default);
   default_char.color.setBgColor(finalcut::FColor::Default);
-  default_char.attr.byte[0] = 0;
-  default_char.attr.byte[1] = 0;
-  default_char.attr.byte[2] = 8;  // char_width = 1
-  default_char.attr.byte[3] = 0;
+  default_char.attr.byte()->at(0) = 0;
+  default_char.attr.byte()->at(1) = 0;
+  default_char.attr.byte()->at(2) = 8;  // char_width = 1
+  default_char.attr.byte()->at(3) = 0;
 
   for (std::size_t pos = 0; pos < test::getAreaSize(vwin); pos++)
     CPPUNIT_ASSERT ( test::isFCharEqual(vwin->data[pos], default_char) );
@@ -1173,7 +1173,7 @@ void FVTermTest::FVTermBasesTest()
     { L'▒', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::Default, finalcut::FColor::Default },
-    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+    { 0x00080000U }  // char_width = 1
   };
 
   const auto full_width = std::size_t(vwin->size.width)
@@ -1194,9 +1194,9 @@ void FVTermTest::FVTermBasesTest()
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::Default, finalcut::FColor::Default },
-    { { 0x00, 0x00, 0x00, 0x00} }  // byte 0..3
+    { 0x00000000U }  // char_width = 1
   };
-  shadow_char.attr.bit.transparent = true;
+  shadow_char.attr.bit()->transparent = true;
 
   test::showFCharData(vwin->data[width]);
   test::showFCharData(shadow_char);
@@ -1525,7 +1525,7 @@ void FVTermTest::FVTermPrintTest()
       { L' ', L'\0', L'\0', L'\0', L'\0' },
       { L'\0', L'\0', L'\0', L'\0', L'\0' },
       { finalcut::FColor::Default, finalcut::FColor::Default },
-      { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+      { 0x00080000U }  // char_width = 1
     };
 
     // printf test
@@ -1702,7 +1702,7 @@ void FVTermTest::FVTermPrintTest()
       { L'\0', L'\0', L'\0', L'\0', L'\0' },
       { L'\0', L'\0', L'\0', L'\0', L'\0' },
       { finalcut::FColor::Red, finalcut::FColor::White },
-      { { 0x01, 0x00, 0x00, 0x00} }  // byte 0..3
+      { 0x00000001U }
     };
 
     std::vector<finalcut::FChar> term_string(7, fchar);
@@ -1720,7 +1720,7 @@ void FVTermTest::FVTermPrintTest()
     for (std::size_t i{48}; i < 54; i++)
     {
       test_vwin_area->data[i] = fchar;
-      test_vwin_area->data[i].attr.bit.char_width = 1 & 0x03;
+      test_vwin_area->data[i].attr.bit()->char_width = 1 & 0x03;
     }
 
     test_vwin_area->data[48].ch[0] = 'V';
@@ -1743,7 +1743,7 @@ void FVTermTest::FVTermPrintTest()
     // Full-Width Characters
     term_string.assign(1, fchar);
     term_string[0].ch[0] = L'🏠';
-    term_string[0].attr.bit.char_width = 2 & 0x03;
+    term_string[0].attr.bit()->char_width = 2 & 0x03;
     p_fvterm.print(vwin, term_string);
     CPPUNIT_ASSERT ( p_fvterm.print(nullptr, L'⌚') == -1 );
     p_fvterm.print(fchar);
@@ -1756,19 +1756,19 @@ void FVTermTest::FVTermPrintTest()
     {
       test_vwin_area->data[64] = fchar;
       test_vwin_area->data[64].ch[0] = L'🏠';
-      test_vwin_area->data[64].attr.bit.char_width = 2 & 0x03;
+      test_vwin_area->data[64].attr.bit()->char_width = 2 & 0x03;
       test_vwin_area->data[65] = fchar;
       test_vwin_area->data[65].ch[0] = L'.';
-      test_vwin_area->data[65].attr.bit.char_width = 1 & 0x03;
+      test_vwin_area->data[65].attr.bit()->char_width = 1 & 0x03;
       test_vwin_area->data[66] = fchar;
     }
     else if ( enc == finalcut::Encoding::UTF8 )
     {
       test_vwin_area->data[64] = fchar;
       test_vwin_area->data[64].ch[0] = L'🏠';
-      test_vwin_area->data[64].attr.bit.char_width = 2 & 0x03;
+      test_vwin_area->data[64].attr.bit()->char_width = 2 & 0x03;
       test_vwin_area->data[65] = fchar;
-      test_vwin_area->data[65].attr.bit.fullwidth_padding = true;
+      test_vwin_area->data[65].attr.bit()->fullwidth_padding = true;
       test_vwin_area->data[66] = fchar;
     }
 
@@ -1928,18 +1928,18 @@ void FVTermTest::FVTermPrintTest()
     fchar.ch[0] = L'y';
     fchar.ch[1] = L'\U00000304';
     fchar.ch[2] = L'\0';
-    fchar.attr.bit.char_width = 1 & 0x03;
+    fchar.attr.bit()->char_width = 1 & 0x03;
     p_fvterm.print() << fchar;  // FChar
     CPPUNIT_ASSERT ( vwin->cursor.x == 4 );
     CPPUNIT_ASSERT ( vwin->cursor.y == 5 );
     test_vwin_area->data[66].ch[0] = L'y';
     test_vwin_area->data[66].ch[1] = L'\U00000304';
-    test_vwin_area->data[66].attr.bit.char_width = 1 & 0x03;
+    test_vwin_area->data[66].attr.bit()->char_width = 1 & 0x03;
     CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
 
     fchar.ch[0] = L'-';
     fchar.ch[1] = L'\0';
-    fchar.attr.byte[0] = 0;
+    fchar.attr.byte()->at(0) = 0;
     fchar.color.setFgColor(finalcut::FColor::Default);
     fchar.color.setBgColor(finalcut::FColor::Default);
     finalcut::FVTerm::FCharVector dash{2, fchar};
@@ -1958,8 +1958,8 @@ void FVTermTest::FVTermPrintTest()
     CPPUNIT_ASSERT ( vwin->cursor.x == 7 );
     CPPUNIT_ASSERT ( vwin->cursor.y == 5 );
     test_vwin_area->data[69].ch[0] = L'F';
-    test_vwin_area->data[69].attr.bit.italic = true;
-    test_vwin_area->data[69].attr.bit.dbl_underline = true;
+    test_vwin_area->data[69].attr.bit()->italic = true;
+    test_vwin_area->data[69].attr.bit()->dbl_underline = true;
     CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
 
     finalcut::FColorPair cpair{finalcut::FColor::Blue, finalcut::FColor::White};
@@ -1972,8 +1972,8 @@ void FVTermTest::FVTermPrintTest()
     test_vwin_area->data[70].ch[0] = L'C';
     test_vwin_area->data[70].color.setFgColor(finalcut::FColor::Blue);
     test_vwin_area->data[70].color.setBgColor(finalcut::FColor::White);
-    test_vwin_area->data[70].attr.bit.italic = true;
-    test_vwin_area->data[70].attr.bit.dbl_underline = true;
+    test_vwin_area->data[70].attr.bit()->italic = true;
+    test_vwin_area->data[70].attr.bit()->dbl_underline = true;
     CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
 
     fvtermbuffer.print("++");
@@ -2117,7 +2117,7 @@ void FVTermTest::FVTermChildAreaPrintTest()
     { L' ', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::Default, finalcut::FColor::Default },
-    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+    { 0x00080000U }  // char_width = 1
   };
 
   finalcut::FChar space_char_2 =
@@ -2125,7 +2125,7 @@ void FVTermTest::FVTermChildAreaPrintTest()
     { L' ', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::Red, finalcut::FColor::White },
-    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+    { 0x00080000U }  // char_width = 1
   };
 
   finalcut::FChar equal_sign_char =
@@ -2133,7 +2133,7 @@ void FVTermTest::FVTermChildAreaPrintTest()
     { L'=', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::Red, finalcut::FColor::White },
-    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+    { 0x00080000U }  // char_width = 1
   };
 
   // Create a vterm comparison area
@@ -2185,7 +2185,7 @@ void FVTermTest::FVTermScrollTest()
     { L'1', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::Default, finalcut::FColor::Default },
-    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+    { 0x00080000U }  // char_width = 1
   };
 
   finalcut::FChar two_char = one_char;
@@ -2507,20 +2507,20 @@ void FVTermTest::FVTermOverlappingWindowsTest()
     { L'.', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::DarkGray, finalcut::FColor::LightBlue },
-    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+    { 0x00080000U }  // char_width = 1
   };
 
   test::printOnArea (test_area, { 24, { {80, bg_char} } } );
   CPPUNIT_ASSERT ( test::isAreaEqual(test_area, vdesktop) );
 
-  bg_char.attr.byte[2] = 10;
+  bg_char.attr.byte()->at(2) = 10;
 
   finalcut::FChar vwin_1_char =  // with color overlay
   {
     { L'.', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::Black, finalcut::FColor::White },
-    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+    { 0x00080000U }  // byte 0..3
   };
 
   finalcut::FChar vwin_2_char =  // with inherit background
@@ -2528,7 +2528,7 @@ void FVTermTest::FVTermOverlappingWindowsTest()
     { L'▒', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::Black, finalcut::FColor::LightBlue },
-    { { 0x00, 0x80, 0x08, 0x00} }  // byte 0..3
+    { 0x00088000U }  // byte 0..3
   };
 
   finalcut::FChar vwin_3_char =  // with transparency
@@ -2536,7 +2536,7 @@ void FVTermTest::FVTermOverlappingWindowsTest()
     { L'.', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::DarkGray, finalcut::FColor::LightBlue },
-    { { 0x00, 0x00, 0x09, 0x00} }  // byte 0..3
+    { 0x00090000U }  // byte 0..3
   };
 
   finalcut::FChar vwin_4_char =
@@ -2544,7 +2544,7 @@ void FVTermTest::FVTermOverlappingWindowsTest()
     { L'█', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::Black, finalcut::FColor::White },
-    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+    { 0x00080000U }  // byte 0..3
   };
 
   test::printOnArea (test_area, { {  3, { {6, vwin_1_char}, {2, bg_char}, {6, vwin_2_char}, {2, bg_char}, {6, vwin_3_char}, {2, bg_char}, {6, vwin_4_char}, {50, bg_char} } },
@@ -2572,10 +2572,10 @@ void FVTermTest::FVTermOverlappingWindowsTest()
   p_fvterm_1.p_processTerminalUpdate();
   test::printArea (vterm);
 
-  bg_char.attr.bit.printed = false;
+  bg_char.attr.bit()->printed = false;
   auto vwin_1_2_char = vwin_2_char;
   vwin_1_2_char.color.setBgColor(finalcut::FColor::White);
-  vwin_3_char.attr.bit.no_changes = false;
+  vwin_3_char.attr.bit()->no_changes = false;
   auto vwin_2_4_char = vwin_4_char;
   test::printOnArea (test_area, { {  2, { {4, bg_char}, {6, vwin_1_char}, {70, bg_char} } },
                                   {  1, { {4, vwin_2_char}, {2, vwin_1_2_char}, {2, vwin_1_char}, {2, vwin_1_char}, {4, vwin_3_char}, {66, bg_char} } },
@@ -2884,7 +2884,7 @@ void FVTermTest::FVTermTranparencyTest()
     { L' ', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::LightGray, finalcut::FColor::Black },
-    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+    { 0x00080000U }  // char_width = 1
   };
 
   test::printOnArea (test_area, { 24, { {80, bg_char} } } );
@@ -2895,7 +2895,7 @@ void FVTermTest::FVTermTranparencyTest()
     { L'*', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::LightRed, finalcut::FColor::Black },
-    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+    { 0x00080000U }  // char_width = 1
   };
 
   test::printOnArea (test_area, { {  1, { {9, vwin_1_char}, {71, bg_char} } },
@@ -2919,7 +2919,7 @@ void FVTermTest::FVTermTranparencyTest()
     { L'*', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::LightGreen, finalcut::FColor::Black },
-    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+    { 0x00080000U }  // char_width = 1
   };
 
   test::printOnArea (test_area, { {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {5, vwin_1_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
@@ -2946,7 +2946,7 @@ void FVTermTest::FVTermTranparencyTest()
     { L'*', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::LightBlue, finalcut::FColor::Black },
-    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+    { 0x00080000U }  // char_width = 1
   };
 
   test::printOnArea (test_area, { {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {1, vwin_3_char}, {3, vwin_1_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
@@ -2973,7 +2973,7 @@ void FVTermTest::FVTermTranparencyTest()
     { L'│', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::Yellow, finalcut::FColor::Black },
-    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+    { 0x00080000U }  // char_width = 1
   };
 
   finalcut::FChar horizontal_line_char =  // ─
@@ -2981,7 +2981,7 @@ void FVTermTest::FVTermTranparencyTest()
     { L'─', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::Yellow, finalcut::FColor::Black },
-    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+    { 0x00080000U }  // char_width = 1
   };
 
   finalcut::FChar plus_line_char =  // ┼
@@ -2989,7 +2989,7 @@ void FVTermTest::FVTermTranparencyTest()
     { L'┼', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::Yellow, finalcut::FColor::Black },
-    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+    { 0x00080000U }  // char_width = 1
   };
 
   test::printOnArea (test_area, { {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {1, vwin_3_char}, {1, vwin_1_char}, {1, vertical_line_char}, {1, vwin_1_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
@@ -3016,7 +3016,7 @@ void FVTermTest::FVTermTranparencyTest()
     { L'╲', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::White, finalcut::FColor::Black },
-    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+    { 0x00080000U }  // char_width = 1
   };
 
   finalcut::FChar diagonal_2_line_char =  // ╱
@@ -3024,7 +3024,7 @@ void FVTermTest::FVTermTranparencyTest()
     { L'╱', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::White, finalcut::FColor::Black },
-    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+    { 0x00080000U }  // char_width = 1
   };
 
   finalcut::FChar cross_line_char =  // ╳
@@ -3032,7 +3032,7 @@ void FVTermTest::FVTermTranparencyTest()
     { L'╳', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::White, finalcut::FColor::Black },
-    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+    { 0x00080000U }  // char_width = 1
   };
 
   test::printOnArea (test_area, { {  1, { {1, diagonal_1_line_char}, {1, vwin_2_char}, {1, vwin_3_char}, {1, vwin_1_char}, {1, vertical_line_char}, {1, vwin_1_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, diagonal_2_line_char}, {71, bg_char} } },
@@ -3118,7 +3118,7 @@ void FVTermTest::FVTermReduceUpdatesTest()
   for (auto y{0}; y < vterm->size.height; y++)
   {
     for (auto x{vterm->changes_in_line[y].xmin}; x < vterm->changes_in_line[y].xmax; x++)
-      vterm->getFChar(int(x), int(y)).attr.bit.printed = true;
+      vterm->getFChar(int(x), int(y)).attr.bit()->printed = true;
 
     vterm->changes_in_line[y].xmin = uInt(vterm->size.width);
     vterm->changes_in_line[y].xmax = 0;
@@ -3128,8 +3128,8 @@ void FVTermTest::FVTermReduceUpdatesTest()
   {
     for (auto x{0}; x < vterm->size.width; x++)
     {
-      CPPUNIT_ASSERT ( vterm->getFChar(x, y).attr.bit.no_changes == false );
-      CPPUNIT_ASSERT ( vterm->getFCharIterator(x, y)->attr.bit.no_changes == false );
+      CPPUNIT_ASSERT ( vterm->getFChar(x, y).attr.bit()->no_changes == false );
+      CPPUNIT_ASSERT ( vterm->getFCharIterator(x, y)->attr.bit()->no_changes == false );
     }
   }
 
@@ -3163,8 +3163,8 @@ void FVTermTest::FVTermReduceUpdatesTest()
   {
     for (auto x{0}; x < vterm->size.width; x++)
     {
-      CPPUNIT_ASSERT ( vterm->getFChar(x, y).attr.bit.no_changes == false );
-      CPPUNIT_ASSERT ( vterm->getFCharIterator(x, y)->attr.bit.no_changes == false );
+      CPPUNIT_ASSERT ( vterm->getFChar(x, y).attr.bit()->no_changes == false );
+      CPPUNIT_ASSERT ( vterm->getFCharIterator(x, y)->attr.bit()->no_changes == false );
     }
   }
 
@@ -3220,22 +3220,22 @@ void FVTermTest::FVTermReduceUpdatesTest()
   for (auto y{0}; y < 10; y++)
   {
     for (auto x{0}; x < vterm->size.width; x++)
-      CPPUNIT_ASSERT ( vterm->getFChar(x, y).attr.bit.no_changes == false );
+      CPPUNIT_ASSERT ( vterm->getFChar(x, y).attr.bit()->no_changes == false );
   }
 
   for (auto x{0}; x < 3; x++)
-    CPPUNIT_ASSERT ( vterm->getFChar(x, 10).attr.bit.no_changes == false );
+    CPPUNIT_ASSERT ( vterm->getFChar(x, 10).attr.bit()->no_changes == false );
 
   for (auto x{3}; x < 14; x++)
-    CPPUNIT_ASSERT ( vterm->getFChar(x, 10).attr.bit.no_changes == true );
+    CPPUNIT_ASSERT ( vterm->getFChar(x, 10).attr.bit()->no_changes == true );
 
   for (auto x{14}; x < vterm->size.width; x++)
-    CPPUNIT_ASSERT ( vterm->getFChar(x, 10).attr.bit.no_changes == false );
+    CPPUNIT_ASSERT ( vterm->getFChar(x, 10).attr.bit()->no_changes == false );
 
   for (auto y{11}; y < vterm->size.height; y++)
   {
     for (auto x{0}; x < vterm->size.width; x++)
-      CPPUNIT_ASSERT ( vterm->getFChar(x, y).attr.bit.no_changes == false );
+      CPPUNIT_ASSERT ( vterm->getFChar(x, y).attr.bit()->no_changes == false );
   }
 
   for (auto i{0}; i < 6; i++)
@@ -3344,7 +3344,7 @@ void FVTermTest::getFVTermAreaTest()
     { L' ', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::Default, finalcut::FColor::Default },
-    { { 0x00, 0x00, 0x08, 0x00} }  // byte 0..3
+    { 0x00080000U }  // char_width = 1
   };
 
   test::printArea (vwin_area);

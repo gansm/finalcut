@@ -39,8 +39,8 @@ constexpr uInt32 attr_var::reset_mask;
 FChar FVTermAttribute::next_attribute{};
 
 // Using-declaration
-using map_type = std::pair<const Style, std::function<void(bool)>>;
-using AttributeLookupMap = std::unordered_map<const Style, std::function<void(bool)>>;
+using map_type = std::pair<const Style, std::function<void()>>;
+using AttributeLookupMap = std::unordered_map<const Style, std::function<void()>>;
 
 //----------------------------------------------------------------------
 static auto getAttributeLookupMap() -> AttributeLookupMap&
@@ -50,20 +50,20 @@ static auto getAttributeLookupMap() -> AttributeLookupMap&
   (
     std::initializer_list<map_type>
     ({
-      { Style::Bold, &FVTermAttribute::setBold },
-      { Style::Dim, &FVTermAttribute::setDim },
-      { Style::Italic, &FVTermAttribute::setItalic },
-      { Style::Underline, &FVTermAttribute::setUnderline },
-      { Style::Blink, &FVTermAttribute::setBlink },
-      { Style::Reverse, &FVTermAttribute::setReverse },
-      { Style::Standout, &FVTermAttribute::setStandout },
-      { Style::Invisible, &FVTermAttribute::setInvisible },
-      { Style::Protected, &FVTermAttribute::setProtected },
-      { Style::CrossedOut, &FVTermAttribute::setCrossedOut },
-      { Style::DoubleUnderline, &FVTermAttribute::setDoubleUnderline },
-      { Style::Transparent, &FVTermAttribute::setTransparent },
-      { Style::ColorOverlay, &FVTermAttribute::setColorOverlay },
-      { Style::InheritBackground, &FVTermAttribute::setInheritBackground }
+      { Style::Bold,              [] () { FVTermAttribute::setBold(); } },
+      { Style::Dim,               [] () { FVTermAttribute::setDim(); } },
+      { Style::Italic,            [] () { FVTermAttribute::setItalic(); } },
+      { Style::Underline,         [] () { FVTermAttribute::setUnderline(); } },
+      { Style::Blink,             [] () { FVTermAttribute::setBlink(); } },
+      { Style::Reverse,           [] () { FVTermAttribute::setReverse(); } },
+      { Style::Standout,          [] () { FVTermAttribute::setStandout(); } },
+      { Style::Invisible,         [] () { FVTermAttribute::setInvisible(); } },
+      { Style::Protected,         [] () { FVTermAttribute::setProtected(); } },
+      { Style::CrossedOut,        [] () { FVTermAttribute::setCrossedOut(); } },
+      { Style::DoubleUnderline,   [] () { FVTermAttribute::setDoubleUnderline(); } },
+      { Style::Transparent,       [] () { FVTermAttribute::setTransparent(); } },
+      { Style::ColorOverlay,      [] () { FVTermAttribute::setColorOverlay(); } },
+      { Style::InheritBackground, [] () { FVTermAttribute::setInheritBackground(); } }
     })
   );
 
@@ -113,7 +113,7 @@ void FVTermAttribute::print (const FStyle& style)
     const auto iter = attribute_lookup.find(style_name);
 
     if ( iter != attribute_lookup.end() )
-      iter->second(true);  // Sets the found style
+      iter->second();  // Sets the found style
 
     attr ^= style_name;  // Clear the rightmost set bit
   }
