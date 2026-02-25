@@ -273,11 +273,17 @@ struct UTF8_Char
 
   friend constexpr auto operator == (const UTF8_Char& lhs, const UTF8_Char& rhs) noexcept -> bool
   {
-    return lhs.u8.byte1 == rhs.u8.byte1
-        && lhs.u8.byte2 == rhs.u8.byte2
-        && lhs.u8.byte3 == rhs.u8.byte3
-        && lhs.u8.byte4 == rhs.u8.byte4
-        && lhs.length   == rhs.length;
+    if ( lhs.length != rhs.length )
+      return false;
+
+#if HAVE_BUILTIN(__builtin_bit_cast)
+    return __builtin_bit_cast(uInt32, lhs.u8) == __builtin_bit_cast(uInt32, rhs.u8);
+#else
+    uInt32 lhs_bytes, rhs_bytes;
+    std::memcpy(&lhs_bytes, &lhs.u8, sizeof(uInt32));
+    std::memcpy(&rhs_bytes, &rhs.u8, sizeof(uInt32));
+    return lhs_bytes == rhs_bytes;
+#endif
   }
 
   friend constexpr auto operator != (const UTF8_Char& lhs, const UTF8_Char& rhs) noexcept -> bool
@@ -718,6 +724,26 @@ struct FAttribute
 {
   uInt32 data{0};
 
+  constexpr auto hasBit (uInt32 mask) const noexcept -> bool
+  {
+    return (data & mask) != 0;
+  }
+
+  constexpr void setBit (uInt32 mask) noexcept
+  {
+    data |= mask;
+  }
+
+  constexpr void clearBit (uInt32 mask) noexcept
+  {
+    data &= ~mask;
+  }
+
+  constexpr void toggleBit (uInt32 mask) noexcept
+  {
+    data ^= mask;
+  }
+
   auto getFCharAttribute() const noexcept -> FCharAttribute
   {
     FCharAttribute bit;
@@ -948,19 +974,11 @@ struct FUnicode
 
   friend constexpr auto operator == (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool
   {
-#if HAVE_BUILTIN(__builtin_memcmp)
-    return __builtin_memcmp ( std::begin(lhs.unicode_data)
-                            , std::begin(rhs.unicode_data)
-                            , UNICODE_MAX * sizeof(wchar_t) ) == 0;
-#else
-    for (std::size_t i{0}; i < UNICODE_MAX; ++i)
-    {
-      if ( lhs.unicode_data[i] != rhs.unicode_data[i] )
-        return false;
-    }
-
-    return true;
-#endif
+    return lhs.unicode_data[0] == rhs.unicode_data[0]
+        && lhs.unicode_data[1] == rhs.unicode_data[1]
+        && lhs.unicode_data[2] == rhs.unicode_data[2]
+        && lhs.unicode_data[3] == rhs.unicode_data[3]
+        && lhs.unicode_data[4] == rhs.unicode_data[4];
   }
 
   friend constexpr auto operator != (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool
@@ -969,23 +987,19 @@ struct FUnicode
   }
 };
 
+
 // FChar operator functions
 //----------------------------------------------------------------------
-#if HAVE_BUILTIN(__builtin_bit_cast)
 constexpr auto isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool
 {
   // Perform a byte-wise comparison
-  return lhs == rhs;
+  return lhs.unicode_data[0] == rhs.unicode_data[0]
+      && lhs.unicode_data[1] == rhs.unicode_data[1]
+      && lhs.unicode_data[2] == rhs.unicode_data[2]
+      && lhs.unicode_data[3] == rhs.unicode_data[3]
+      && lhs.unicode_data[4] == rhs.unicode_data[4];
 }
-#else
-inline auto isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool
-{
-  // Perform a byte-wise comparison
-  return std::equal ( std::begin(lhs.unicode_data)
-                    , std::end(lhs.unicode_data)
-                    , std::begin(rhs.unicode_data) );
-}
-#endif
+
 
 // FCellColor
 //----------------------------------------------------------------------
@@ -1115,7 +1129,7 @@ constexpr auto getCompareBitMask() noexcept -> uInt32
   return FCharAttribute_to_uInt32(mask);
 }
 
-struct alignas(std::max_align_t) FChar
+struct FChar
 {
   FUnicode   ch{};            // Character code
   FUnicode   encoded_char{};  // Encoded output character
@@ -1137,7 +1151,10 @@ struct alignas(std::max_align_t) FChar
 
   constexpr void setBit (uInt32 mask, bool enable) noexcept
   {
-    attr.data ^= (-(uInt32(enable)) ^ attr.data) & mask;
+    if ( enable )
+      attr.data |= mask;
+    else
+      attr.data &= ~mask;
   }
 
   constexpr void setBit (uInt32 mask) noexcept
@@ -1157,31 +1174,26 @@ struct alignas(std::max_align_t) FChar
   }
 
   // Friend operator functions
-#if HAVE_BUILTIN(__builtin_memcmp)
+#if HAVE_BUILTIN(__builtin_bit_cast)
   friend constexpr
 #else
   friend inline
 #endif
   auto operator == (const FChar& lhs, const FChar& rhs) noexcept -> bool
   {
-#if HAVE_BUILTIN(__builtin_memcmp)
-    if ( __builtin_memcmp ( &lhs.color
-                          , &rhs.color
-                          , sizeof(uInt32) ) != 0 )
+     if ( lhs.color.data != rhs.color.data )
       return false;
-#else
-    if ( std::memcmp( &lhs.color
-                    , &rhs.color
-                    , sizeof(uInt32) ) != 0 )
-      return false;
-#endif
 
     constexpr auto mask = getCompareBitMask();
 
     if ( (lhs.attr.data & mask) != (rhs.attr.data & mask) )
       return false;
 
-    return isFUnicodeEqual(lhs.ch, rhs.ch);
+    return lhs.ch.unicode_data[0] == rhs.ch.unicode_data[0]
+        && lhs.ch.unicode_data[1] == rhs.ch.unicode_data[1]
+        && lhs.ch.unicode_data[2] == rhs.ch.unicode_data[2]
+        && lhs.ch.unicode_data[3] == rhs.ch.unicode_data[3]
+        && lhs.ch.unicode_data[4] == rhs.ch.unicode_data[4];
   }
 
 #if HAVE_BUILTIN(__builtin_bit_cast)
