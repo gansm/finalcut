@@ -704,7 +704,7 @@ void addColumnWidth (FChar& term_char, std::size_t char_width)
     term_char.setCharWidth(1);
   }
   else
-    term_char.setCharWidth(char_width);
+    term_char.setCharWidth(uInt32(char_width));
 }
 
 //----------------------------------------------------------------------

@@ -184,8 +184,8 @@ inline auto FListViewItem::getData() const -> clean_fdata_t<DT>&
 template <typename DT>
 inline void FListViewItem::setData (DT&& data)
 {
-  const auto data_obj = makeFData(std::forward<DT>(data));
-  data_pointer.reset(data_obj);
+  auto data_obj = makeFData(std::forward<DT>(data));
+  data_pointer = std::move(data_obj);
 }
 
 //----------------------------------------------------------------------

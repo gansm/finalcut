@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2022-2024 Markus Gans                                      *
+* Copyright 2022-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -469,7 +469,7 @@ void FEventTest::fusereventTest()
   finalcut::FUserEvent event2 (finalcut::Event::User, 99);
   CPPUNIT_ASSERT ( event2.getUserId() == 99 );
   auto lambda = [] () { return 5; };
-  auto&& fdata = finalcut::makeFData(std::move(lambda));
+  auto&& fdata = finalcut::makeFData(std::move(lambda)).release();
   event2.setFDataObject<decltype(*fdata)>(*fdata);
   auto& lambda_from_event = event2.getData<decltype(lambda)>();
   CPPUNIT_ASSERT ( lambda_from_event() == 5 );

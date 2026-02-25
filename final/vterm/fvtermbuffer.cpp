@@ -213,7 +213,7 @@ void FVTermBuffer::add (UnicodeBoundary& ucb)
   {
     const auto end = std::min(ucb.iter, ucb.cbegin + UNICODE_MAX);
     std::copy(ucb.cbegin, end, nc.ch.begin());
-    nc.setCharWidth(ucb.char_width);
+    nc.setCharWidth(uInt32(ucb.char_width));
     const auto idx = std::size_t(end - ucb.cbegin);
 
     if ( idx < UNICODE_MAX )

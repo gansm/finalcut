@@ -60,7 +60,7 @@ readonly DEBUG_SWITCH="-DDEBUG"
 # Build commands
 case "$1" in
   "--release"|"release")
-    if ! ./configure --prefix="$PREFIX" CXXFLAGS="-O3"  # "-flto -g1 -gz -march=native -fno-rtti"
+    if ! ./configure --prefix="$PREFIX" CXXFLAGS="-O3 -DNDEBUG"  # "-flto -g1 -gz -march=native -fno-rtti"
     then
       echo "${RED}Configure failed!${NORMAL}" 1>&2
       exit 255

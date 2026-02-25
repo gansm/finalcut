@@ -481,7 +481,7 @@ struct FVTerm::FTermArea  // Define virtual terminal character properties
   template <typename T>
   inline void setOwner (T&& obj)
   {
-    owner.reset(makeFData(std::forward<T>(obj)));
+    owner = makeFData(std::forward<T>(obj));
   }
 
   inline auto hasOwner() const -> bool

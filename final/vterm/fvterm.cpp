@@ -990,7 +990,7 @@ void FVTerm::clearArea (FTermArea* area, wchar_t fillchar) noexcept
   nc.attr = next_attr.attr;
   nc.ch[0] = fillchar;  // Current attributes with the fill character
   nc.ch[1] = L'\0';
-  nc.setCharWidth(getColumnWidth(nc.ch[0]));
+  nc.setCharWidth(uInt32(getColumnWidth(nc.ch[0])));
 
   if ( ! area || area->data.empty() )
   {
@@ -2338,7 +2338,7 @@ inline auto FVTerm::printCharacterOnCoordinate ( FTermArea* area
   // copy character to area
   *ac = ch;
 
-  auto current_width = ac->getCharWidth();
+  auto current_width = uInt8(ac->getCharWidth());
 
   if ( current_width == 0 )
   {

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2025 Markus Gans                                      *
+* Copyright 2020-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -59,56 +59,27 @@ class FData;  // Class forward declaration
 namespace internal
 {
 
-// Enumerations
-enum class IsArray : bool { No, Yes };
-enum class IsFunction : bool { No, Yes };
-
 // Define the clean condition
-template <typename T
-        , IsArray is_array = std::is_array<T>::value
-                           ? IsArray::Yes
-                           : IsArray::No
-        , IsFunction is_function = std::is_function<T>::value
-                                 ? IsFunction::Yes
-                                 : IsFunction::No>
-struct cleanCondition;
-
-//----------------------------------------------------------------------
 template <typename T>
-struct cleanCondition<T, IsArray::No, IsFunction::No>
-{
-  // Leave the type untouched
-  using type = T;
-};
-
-//----------------------------------------------------------------------
-template <typename T>
-struct cleanCondition<T, IsArray::Yes, IsFunction::No>
-{
-  // Array to pointer
-  using type = std::remove_extent_t<T>*;
-};
-
-//----------------------------------------------------------------------
-template <typename T>
-struct cleanCondition<T, IsArray::No, IsFunction::Yes>
-{
-  // Add pointer to function
-  using type = std::add_pointer_t<T>;
-};
-
-//----------------------------------------------------------------------
-template<typename T>
-using cleanCondition_t = typename cleanCondition<T>::type;
+using cleanCondition_t = \
+    std::conditional_t<std::is_array<T>::value
+                     , std::remove_extent_t<T>*
+                     , std::conditional_t<std::is_function<T>::value
+                                        , std::add_pointer_t<T>
+                                        , T>>;
 
 // Type trait helpers for better error messages
 //----------------------------------------------------------------------
-template<typename T>
-struct is_reference_wrapper : std::false_type
+template <typename T>
+struct is_reference_wrapper_helper : std::false_type
 { };
 
-template<typename T>
-struct is_reference_wrapper<std::reference_wrapper<T>> : std::true_type
+template <typename T>
+struct is_reference_wrapper_helper<std::reference_wrapper<T>> : std::true_type
+{ };
+
+template <typename T>
+struct is_reference_wrapper : is_reference_wrapper_helper<std::decay_t<T>>
 { };
 
 template<typename T>
@@ -140,13 +111,13 @@ using clean_fdata_t = typename cleanFData<T>::type;
 
 //----------------------------------------------------------------------
 template <typename T>
-constexpr auto makeFData (T&& data) -> FData<clean_fdata_t<T>>*
+inline auto makeFData (T&& data) -> std::unique_ptr<FData<clean_fdata_t<T>>>
 {
   using CleanT = clean_fdata_t<T>;
   static_assert ( std::is_constructible<CleanT, T&&>::value
                 , "Cannot construct FData with the provided type" );
 
-  return new FData<clean_fdata_t<T>>(std::forward<T>(data));
+  return std::make_unique<FData<clean_fdata_t<T>>>(std::forward<T>(data));
 }
 
 
@@ -161,16 +132,16 @@ class FDataAccess
     FDataAccess() = default;
 
     // Destructor
-    virtual ~FDataAccess() noexcept;
+    ~FDataAccess() noexcept;
 
     // Accessors
-    virtual auto getClassName() const -> FString
+    auto getClassName() const -> FString
     {
       return "FDataAccess";
     }
 
     template<typename T>
-    constexpr auto get() -> clean_fdata_t<T>&
+    constexpr auto get() noexcept -> clean_fdata_t<T>&
     {
       static_assert ( ! std::is_void<T>::value
                     , "Cannot get void type from FDataAccess" );
@@ -179,7 +150,7 @@ class FDataAccess
     }
 
     template<typename T>
-    constexpr auto get() const -> const clean_fdata_t<T>&
+    constexpr auto get() const noexcept -> const clean_fdata_t<T>&
     {
       static_assert ( ! std::is_void<T>::value
                     , "Cannot get void type from FDataAccess" );
@@ -190,7 +161,7 @@ class FDataAccess
     // Mutator
     template <typename T
             , typename V>
-    constexpr void set (V&& data)
+    constexpr void set (V&& data) noexcept(noexcept(std::declval<FData<T>>().set(std::forward<V>(data))))
     {
       static_assert ( std::is_convertible<V&&, T>::value
                     , "Type V must be convertible to type T" );
@@ -205,7 +176,7 @@ class FDataAccess
 //----------------------------------------------------------------------
 
 template <typename T>
-class FData : public FDataAccess
+class FData final : public FDataAccess
 {
   public:
     // Using-declarations
@@ -214,6 +185,19 @@ class FData : public FDataAccess
     using const_reference = const value_type&;
     using T_nocv          = std::remove_cv_t<value_type>;
 
+    // Noexcept trait shortcuts
+    static constexpr bool nothrow_copy_ctor_v = \
+        std::is_nothrow_copy_constructible<value_type>::value;
+
+    static constexpr bool nothrow_move_ctor_v = \
+        std::is_nothrow_move_constructible<value_type>::value;
+
+    static constexpr bool nothrow_copy_asgn_v = \
+        std::is_nothrow_copy_assignable<value_type>::value;
+
+    static constexpr bool nothrow_move_asgn_v = \
+        std::is_nothrow_move_assignable<value_type>::value;
+
     // Static assertions for better error messages
     static_assert ( ! std::is_void<value_type>::value
                   , "FData cannot store void types") ;
@@ -221,29 +205,37 @@ class FData : public FDataAccess
                   , "FData cannot store reference types directly" );
 
     // Constructors
-    explicit FData (value_type& v)  // constructor
+    explicit FData (value_type& v) noexcept  // constructor
       : value_ref{v}
     { }
 
-    explicit FData (value_type&& v)  // constructor
+    template <typename V = value_type
+            , typename = std::enable_if_t<!std::is_const<V>::value>>
+    explicit FData (const value_type& v) noexcept
+      : value_ref{const_cast<value_type&>(v)}
+    { }
+
+    explicit FData (value_type&& v) noexcept(nothrow_move_ctor_v)  // constructor
       : value{std::move(v)}
       , value_ref{value}
     { }
 
-    ~FData() noexcept override = default;  // Destructor
+    ~FData() noexcept = default;  // Destructor
 
-    FData (const FData& d)  // Copy constructor
-      : value{d.value}
+    FData (const FData& d) noexcept(nothrow_copy_ctor_v)  // Copy constructor
+      : FDataAccess{d}
+      , value{d.value}
       , value_ref{d.isInitializedCopy() ? std::ref(value) : d.value_ref}
     { }
 
     FData (FData&& d) noexcept  // Move constructor
-      : value{std::move(d.value)}
-      , value_ref{d.isInitializedCopy() ? std::ref(value) : std::move(d.value_ref)}
+      : FDataAccess{std::move(d)}
+      , value{std::move(d.value)}
+      , value_ref{d.isInitializedCopy() ? std::ref(value) : d.value_ref}
     { }
 
     // Copy assignment operator (=)
-    auto operator = (const FData& d) -> FData&
+    auto operator = (const FData& d) noexcept(nothrow_copy_asgn_v) -> FData&
     {
       if ( &d != this )
       {
@@ -275,24 +267,24 @@ class FData : public FDataAccess
     }
 
     // Function call operator
-    constexpr auto operator () () const -> value_type
+    constexpr auto operator () () const noexcept(nothrow_copy_ctor_v) -> value_type
     {
       return value_ref;
     }
 
-    constexpr explicit operator value_type () const
+    constexpr explicit operator value_type () const noexcept(nothrow_copy_ctor_v)
     {
       return value_ref;
     }
 
-    constexpr auto operator << (const_reference v) -> FData&
+    constexpr auto operator << (const_reference v) noexcept(nothrow_copy_asgn_v) -> FData&
     {
       value_ref.get() = v;
       return *this;
     }
 
     // Accessors
-    auto getClassName() const -> FString override
+    auto getClassName() const -> FString
     {
       return "FData";
     }
@@ -308,25 +300,23 @@ class FData : public FDataAccess
     }
 
     // Mutator
-    constexpr void set (const value_type& v)
+    constexpr void set (const value_type& v) noexcept(nothrow_copy_asgn_v)
     {
       value_ref.get() = v;
     }
 
-    constexpr void set (value_type&& v)
+    constexpr void set (value_type&& v) noexcept(nothrow_move_asgn_v)
     {
       value_ref.get() = std::move(v);
     }
 
     // Inquiries
-    constexpr auto isInitializedCopy() const -> bool
+    constexpr auto isInitializedCopy() const noexcept -> bool
     {
-      const auto* v = reinterpret_cast<void*>(const_cast<T_nocv*>(&value));
-      const auto* r = reinterpret_cast<void*>(const_cast<T_nocv*>(&value_ref.get()));
-      return v == r;
+      return std::addressof(value) == std::addressof(value_ref.get());
     }
 
-    constexpr auto isInitializedReference() const -> bool
+    constexpr auto isInitializedReference() const noexcept -> bool
     {
       return ! isInitializedCopy();
     }

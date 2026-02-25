@@ -258,7 +258,7 @@ inline void Monitor::setHandler(const handler_t& hdl)
 //----------------------------------------------------------------------
 template <typename T>
 inline void Monitor::setUserContext (T&& uc) noexcept
-{ user_context.reset(makeFData(std::forward<T>(uc))); }
+{ user_context = makeFData(std::forward<T>(uc)); }
 
 //----------------------------------------------------------------------
 inline void Monitor::clearUserContext() noexcept

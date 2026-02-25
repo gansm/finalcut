@@ -143,8 +143,8 @@ inline void FListBoxItem::setText (const FString& txt)
 template <typename DT>
 inline void FListBoxItem::setData (DT&& data)
 {
-  const auto data_obj = makeFData(std::forward<DT>(data));
-  data_pointer.reset(data_obj);
+  auto data_obj = makeFData(std::forward<DT>(data));
+  data_pointer = std::move(data_obj);
 }
 
 //----------------------------------------------------------------------
@@ -632,7 +632,7 @@ template <typename Container
 void FListBox::insert (const Container& container, LazyConverter&& converter)
 {
   conv_type = ConvertType::Lazy;
-  data.source_container = makeFData(container);
+  data.source_container = makeFData(container).release();
   lazy_inserter = std::forward<LazyConverter>(converter);
   const std::size_t size = container.size();
 

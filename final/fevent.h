@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2025 Markus Gans                                      *
+* Copyright 2014-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -362,7 +362,7 @@ inline void FUserEvent::setFDataObject (T&& fdata) noexcept
 template <typename T>
 inline void FUserEvent::setData (T&& data) noexcept
 {
-  data_pointer.reset(makeFData(std::forward<T>(data)));
+  data_pointer = makeFData(std::forward<T>(data));
 }
 
 }  // namespace finalcut
