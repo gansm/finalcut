@@ -1230,6 +1230,27 @@ constexpr auto operator -- (FColor& c, int) noexcept -> FColor  // postfix
   return tmp;
 }
 
+namespace internal
+{
+
+template<typename T>
+constexpr auto createFCellColor (T setter) noexcept -> FCellColor
+{
+  FColors fcolors{};
+  setter(fcolors);
+  return FCellColor(fcolors);
+}
+
+constexpr void setDefaultColorPair (FColors& fcolors) noexcept
+{
+  fcolors = {FColor::Default, FColor::Default};
+}
+
+}
+
+static constexpr auto default_color_pair = \
+    internal::createFCellColor(internal::setDefaultColorPair);
+
 
 // Terminal attribute style names
 enum class Style : uInt16

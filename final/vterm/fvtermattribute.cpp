@@ -31,7 +31,6 @@ namespace finalcut
 
 namespace internal
 {
-constexpr FCellColor color_var::default_color_pair;
 constexpr uInt32 attr_var::reset_mask;
 }
 
@@ -91,7 +90,7 @@ void FVTermAttribute::initAttribute() noexcept
 {
   // next_attribute contains the state of the next printed character
   next_attribute.ch = {L'\0', L'\0', L'\0', L'\0', L'\0'};
-  next_attribute.color = internal::color_var::default_color_pair;
+  next_attribute.color = default_color_pair;
   next_attribute.attr.data = 0;
 }
 

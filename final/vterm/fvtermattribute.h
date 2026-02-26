@@ -73,24 +73,6 @@ struct attr_var
   static constexpr auto reset_mask = getAttrResetMask();
 };
 
-template<typename T>
-constexpr auto createFCellColor (T setter) noexcept -> FCellColor
-{
-  FColors fcolors{};
-  setter(fcolors);
-  return FCellColor(fcolors);
-}
-
-constexpr void setDefaultColorPair (FColors& fcolors) noexcept
-{
-  fcolors = {FColor::Default, FColor::Default};
-}
-
-struct color_var
-{
-  static constexpr auto default_color_pair = createFCellColor(setDefaultColorPair);
-};
-
 }  // namespace internal
 
 // class forward declaration
@@ -244,392 +226,392 @@ inline void FVTermAttribute::setColor (const FColorPair& pair) noexcept
 inline void FVTermAttribute::setNormal() noexcept
 {
   // Reset all character attributes
-  next_attribute.color = internal::color_var::default_color_pair;
+  next_attribute.color = default_color_pair;
   next_attribute.unsetBit(internal::attr_var::reset_mask);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::setBold (bool enable) noexcept
 {
-  next_attribute.setBit(internal::attr::bold(), enable);
+  next_attribute.setBit(FAttribute::set::bold, enable);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::setBold() noexcept
 {
-  next_attribute.setBit(internal::attr::bold());
+  next_attribute.setBit(FAttribute::set::bold);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::unsetBold() noexcept
 {
-  next_attribute.unsetBit(internal::attr::bold_reset());
+  next_attribute.unsetBit(FAttribute::unset::bold);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::setDim (bool enable) noexcept
 {
-  next_attribute.setBit(internal::attr::dim(), enable);
+  next_attribute.setBit(FAttribute::set::dim, enable);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::setDim() noexcept
 {
-  next_attribute.setBit(internal::attr::dim());
+  next_attribute.setBit(FAttribute::set::dim);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::unsetDim() noexcept
 {
-  next_attribute.unsetBit(internal::attr::dim_reset());
+  next_attribute.unsetBit(FAttribute::unset::dim);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::setItalic (bool enable) noexcept
 {
-  next_attribute.setBit(internal::attr::italic(), enable);
+  next_attribute.setBit(FAttribute::set::italic, enable);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::setItalic() noexcept
 {
-  next_attribute.setBit(internal::attr::italic());
+  next_attribute.setBit(FAttribute::set::italic);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::unsetItalic() noexcept
 {
-  next_attribute.unsetBit(internal::attr::italic_reset());
+  next_attribute.unsetBit(FAttribute::unset::italic);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::setUnderline (bool enable) noexcept
 {
-  next_attribute.setBit(internal::attr::underline(), enable);
+  next_attribute.setBit(FAttribute::set::underline, enable);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::setUnderline() noexcept
 {
-  next_attribute.setBit(internal::attr::underline());
+  next_attribute.setBit(FAttribute::set::underline);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::unsetUnderline() noexcept
 {
-  next_attribute.unsetBit(internal::attr::underline_reset());
+  next_attribute.unsetBit(FAttribute::unset::underline);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::setBlink (bool enable) noexcept
 {
-  next_attribute.setBit(internal::attr::blink(), enable);
+  next_attribute.setBit(FAttribute::set::blink, enable);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::setBlink() noexcept
 {
-  next_attribute.setBit(internal::attr::blink());
+  next_attribute.setBit(FAttribute::set::blink);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::unsetBlink() noexcept
 {
-  next_attribute.unsetBit(internal::attr::blink_reset());
+  next_attribute.unsetBit(FAttribute::unset::blink);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::setReverse (bool enable) noexcept
 {
-  next_attribute.setBit(internal::attr::reverse(), enable);
+  next_attribute.setBit(FAttribute::set::reverse, enable);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::setReverse() noexcept
 {
-  next_attribute.setBit(internal::attr::reverse());
+  next_attribute.setBit(FAttribute::set::reverse);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::unsetReverse() noexcept
 {
-  next_attribute.unsetBit(internal::attr::reverse_reset());
+  next_attribute.unsetBit(FAttribute::unset::reverse);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::setStandout (bool enable) noexcept
 {
-  next_attribute.setBit(internal::attr::standout(), enable);
+  next_attribute.setBit(FAttribute::set::standout, enable);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::setStandout() noexcept
 {
-  next_attribute.setBit(internal::attr::standout());
+  next_attribute.setBit(FAttribute::set::standout);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::unsetStandout() noexcept
 {
-  next_attribute.unsetBit(internal::attr::standout_reset());
+  next_attribute.unsetBit(FAttribute::unset::standout);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::setInvisible (bool enable) noexcept
 {
-  next_attribute.setBit(internal::attr::invisible(), enable);
+  next_attribute.setBit(FAttribute::set::invisible, enable);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::setInvisible() noexcept
 {
-  next_attribute.setBit(internal::attr::invisible());
+  next_attribute.setBit(FAttribute::set::invisible);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::unsetInvisible() noexcept
 {
-  next_attribute.unsetBit(internal::attr::invisible_reset());
+  next_attribute.unsetBit(FAttribute::unset::invisible);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::setProtected (bool enable) noexcept
 {
-  next_attribute.setBit(internal::attr::protect(), enable);
+  next_attribute.setBit(FAttribute::set::protect, enable);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::setProtected() noexcept
 {
-  next_attribute.setBit(internal::attr::protect());
+  next_attribute.setBit(FAttribute::set::protect);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::unsetProtected() noexcept
 {
-  next_attribute.unsetBit(internal::attr::protect_reset());
+  next_attribute.unsetBit(FAttribute::unset::protect);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::setCrossedOut (bool enable) noexcept
 {
-  next_attribute.setBit(internal::attr::crossed_out(), enable);
+  next_attribute.setBit(FAttribute::set::crossed_out, enable);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::setCrossedOut() noexcept
 {
-  next_attribute.setBit(internal::attr::crossed_out());
+  next_attribute.setBit(FAttribute::set::crossed_out);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::unsetCrossedOut() noexcept
 {
-  next_attribute.unsetBit(internal::attr::crossed_out_reset());
+  next_attribute.unsetBit(FAttribute::unset::crossed_out);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::setDoubleUnderline (bool enable) noexcept
 {
-  next_attribute.setBit(internal::attr::dbl_underline(), enable);
+  next_attribute.setBit(FAttribute::set::dbl_underline, enable);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::setDoubleUnderline() noexcept
 {
-  next_attribute.setBit(internal::attr::dbl_underline());
+  next_attribute.setBit(FAttribute::set::dbl_underline);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::unsetDoubleUnderline() noexcept
 {
-  next_attribute.unsetBit(internal::attr::dbl_underline_reset());
+  next_attribute.unsetBit(FAttribute::unset::dbl_underline);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::setAltCharset (bool enable) noexcept
 {
-  next_attribute.setBit(internal::attr::alt_charset(), enable);
+  next_attribute.setBit(FAttribute::set::alt_charset, enable);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::setAltCharset() noexcept
 {
-  next_attribute.setBit(internal::attr::alt_charset());
+  next_attribute.setBit(FAttribute::set::alt_charset);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::unsetAltCharset() noexcept
 {
-  next_attribute.unsetBit(internal::attr::alt_charset_reset());
+  next_attribute.unsetBit(FAttribute::unset::alt_charset);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::setPCcharset (bool enable) noexcept
 {
-  next_attribute.setBit(internal::attr::pc_charset(), enable);
+  next_attribute.setBit(FAttribute::set::pc_charset, enable);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::setPCcharset() noexcept
 {
-  next_attribute.setBit(internal::attr::pc_charset());
+  next_attribute.setBit(FAttribute::set::pc_charset);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::unsetPCcharset() noexcept
 {
-  next_attribute.unsetBit(internal::attr::pc_charset_reset());
+  next_attribute.unsetBit(FAttribute::unset::pc_charset);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::setTransparent (bool enable) noexcept
 {
-  next_attribute.setBit(internal::attr::transparent(), enable);
+  next_attribute.setBit(FAttribute::set::transparent, enable);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::setTransparent() noexcept
 {
-  next_attribute.setBit(internal::attr::transparent());
+  next_attribute.setBit(FAttribute::set::transparent);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::unsetTransparent() noexcept
 {
-  next_attribute.unsetBit(internal::attr::transparent_reset());
+  next_attribute.unsetBit(FAttribute::unset::transparent);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::setColorOverlay (bool enable) noexcept
 {
-  next_attribute.setBit(internal::attr::color_overlay(), enable);
+  next_attribute.setBit(FAttribute::set::color_overlay, enable);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::setColorOverlay() noexcept
 {
-  next_attribute.setBit(internal::attr::color_overlay());
+  next_attribute.setBit(FAttribute::set::color_overlay);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::unsetColorOverlay() noexcept
 {
-  next_attribute.unsetBit(internal::attr::color_overlay_reset());
+  next_attribute.unsetBit(FAttribute::unset::color_overlay);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::setInheritBackground (bool enable) noexcept
 {
-  next_attribute.setBit(internal::attr::inherit_background(), enable);
+  next_attribute.setBit(FAttribute::set::inherit_background, enable);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::setInheritBackground() noexcept
 {
-  next_attribute.setBit(internal::attr::inherit_background());
+  next_attribute.setBit(FAttribute::set::inherit_background);
 }
 
 //----------------------------------------------------------------------
 inline void FVTermAttribute::unsetInheritBackground() noexcept
 {
-  next_attribute.unsetBit(internal::attr::inherit_background_reset());
+  next_attribute.unsetBit(FAttribute::unset::inherit_background);
 }
 
 //----------------------------------------------------------------------
 inline auto FVTermAttribute::isBold() noexcept -> bool
 {
-  return next_attribute.isBitSet(internal::attr::bold());
+  return next_attribute.isBitSet(FAttribute::set::bold);
 }
 
 //----------------------------------------------------------------------
 inline auto FVTermAttribute::isDim() noexcept -> bool
 {
-  return next_attribute.isBitSet(internal::attr::dim());
+  return next_attribute.isBitSet(FAttribute::set::dim);
 }
 
 //----------------------------------------------------------------------
 inline auto FVTermAttribute::isItalic() noexcept -> bool
 {
-  return next_attribute.isBitSet(internal::attr::italic());
+  return next_attribute.isBitSet(FAttribute::set::italic);
 }
 
 //----------------------------------------------------------------------
 inline auto FVTermAttribute::isUnderline() noexcept -> bool
 {
-  return next_attribute.isBitSet(internal::attr::underline());
+  return next_attribute.isBitSet(FAttribute::set::underline);
 }
 
 //----------------------------------------------------------------------
 inline auto FVTermAttribute::isBlink() noexcept -> bool
 {
-  return next_attribute.isBitSet(internal::attr::blink());
+  return next_attribute.isBitSet(FAttribute::set::blink);
 }
 
 //----------------------------------------------------------------------
 inline auto FVTermAttribute::isReverse() noexcept -> bool
 {
-  return next_attribute.isBitSet(internal::attr::reverse());
+  return next_attribute.isBitSet(FAttribute::set::reverse);
 }
 
 //----------------------------------------------------------------------
 inline auto FVTermAttribute::isStandout() noexcept -> bool
 {
-  return next_attribute.isBitSet(internal::attr::standout());
+  return next_attribute.isBitSet(FAttribute::set::standout);
 }
 
 //----------------------------------------------------------------------
 inline auto FVTermAttribute::isInvisible() noexcept -> bool
 {
-  return next_attribute.isBitSet(internal::attr::invisible());
+  return next_attribute.isBitSet(FAttribute::set::invisible);
 }
 
 //----------------------------------------------------------------------
 inline auto FVTermAttribute::isProtected() noexcept -> bool
 {
-  return next_attribute.isBitSet(internal::attr::protect());
+  return next_attribute.isBitSet(FAttribute::set::protect);
 }
 
 //----------------------------------------------------------------------
 inline auto FVTermAttribute::isCrossedOut() noexcept -> bool
 {
-  return next_attribute.isBitSet(internal::attr::crossed_out());
+  return next_attribute.isBitSet(FAttribute::set::crossed_out);
 }
 
 //----------------------------------------------------------------------
 inline auto FVTermAttribute::isDoubleUnderline() noexcept -> bool
 {
-  return next_attribute.isBitSet(internal::attr::dbl_underline());
+  return next_attribute.isBitSet(FAttribute::set::dbl_underline);
 }
 
 //----------------------------------------------------------------------
 inline auto FVTermAttribute::isAltCharset() noexcept -> bool
 {
-  return next_attribute.isBitSet(internal::attr::alt_charset());
+  return next_attribute.isBitSet(FAttribute::set::alt_charset);
 }
 
 //----------------------------------------------------------------------
 inline auto FVTermAttribute::isPCcharset() noexcept -> bool
 {
-  return next_attribute.isBitSet(internal::attr::pc_charset());
+  return next_attribute.isBitSet(FAttribute::set::pc_charset);
 }
 
 //----------------------------------------------------------------------
 inline auto FVTermAttribute::isTransparent() noexcept -> bool
 {
-  return next_attribute.isBitSet(internal::attr::transparent());
+  return next_attribute.isBitSet(FAttribute::set::transparent);
 }
 
 //----------------------------------------------------------------------
 inline auto FVTermAttribute::isColorOverlay() noexcept -> bool
 {
-  return next_attribute.isBitSet(internal::attr::color_overlay());
+  return next_attribute.isBitSet(FAttribute::set::color_overlay);
 }
 
 //----------------------------------------------------------------------
 inline auto FVTermAttribute::isInheritBackground() noexcept -> bool
 {
-  return next_attribute.isBitSet(internal::attr::inherit_background());
+  return next_attribute.isBitSet(FAttribute::set::inherit_background);
 }
 
 }  // namespace finalcut

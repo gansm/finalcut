@@ -85,35 +85,20 @@ constexpr void setResetMask (FCharAttribute& attr) noexcept
   attr.printed = true;
 }
 
-template<typename T>
-constexpr auto createFCellColor (T setter) noexcept -> FCellColor
-{
-  FColors fcolors{};
-  setter(fcolors);
-  return FCellColor(fcolors);
-}
-
-constexpr void setDefaultColorPair (FColors& fcolors) noexcept
-{
-  fcolors = {FColor::Default, FColor::Default};
-}
-
 struct var
 {
-  static constexpr auto fake_reverse_mask        = createMask(setFakeReverseMask);
-  static constexpr auto sgr_mask                 = createMask(setSGRMask);
-  static constexpr auto attribute_mask           = createMask(setAttributeMask);
-  static constexpr auto reset_mask               = createMask(setResetMask);
-  static constexpr auto default_color_pair       = createFCellColor(setDefaultColorPair);
-  static constexpr char sgr_39[]                 = {CSI "39m"};
-  static constexpr char sgr_39_49[]              = {CSI "39;49m"};
+  static constexpr auto fake_reverse_mask  = createMask(setFakeReverseMask);
+  static constexpr auto sgr_mask           = createMask(setSGRMask);
+  static constexpr auto attribute_mask     = createMask(setAttributeMask);
+  static constexpr auto reset_mask         = createMask(setResetMask);
+  static constexpr char sgr_39[]           = {CSI "39m"};
+  static constexpr char sgr_39_49[]        = {CSI "39;49m"};
 };
 
 constexpr uInt32     var::fake_reverse_mask;
 constexpr uInt32     var::sgr_mask;
 constexpr uInt32     var::attribute_mask;
 constexpr uInt32     var::reset_mask;
-constexpr FCellColor var::default_color_pair;
 constexpr char       var::sgr_39[];
 constexpr char       var::sgr_39_49[];
 
@@ -480,7 +465,7 @@ auto FOptiAttr::changeAttribute (FChar& term, FChar& next) -> std::string
   detectSwitchOff (term, next);
 
   // Simulate invisible characters
-  if ( ! F_secure.on.cap && next.isBitSet(internal::attr::invisible()) )
+  if ( ! F_secure.on.cap && next.isBitSet(FAttribute::set::invisible) )
     next.encoded_char.unicode_data[0] = ' ';
 
   // Look for no changes
@@ -492,7 +477,7 @@ auto FOptiAttr::changeAttribute (FChar& term, FChar& next) -> std::string
     deactivateAttributes (term, next);
   }
   else if ( F_attributes.on.cap
-         && (! term.isBitSet(internal::attr::pc_charset()) || alt_equal_pc_charset) )
+         && (! term.isBitSet(FAttribute::set::pc_charset) || alt_equal_pc_charset) )
   {
     changeAttributeSGR (term, next);
   }
@@ -542,7 +527,7 @@ inline void FOptiAttr::set_mode_off ( TextStyle& style
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermBold (FChar& term) noexcept -> bool
 {
-  term.setBit(internal::attr::bold());
+  term.setBit(FAttribute::set::bold);
   return append_sequence(F_bold.on.cap);
 }
 
@@ -555,8 +540,8 @@ inline auto FOptiAttr::unsetTermBold (FChar& term) noexcept -> bool
     reset(term);
   else
   {
-    term.unsetBit(internal::attr::bold_reset());
-    term.unsetBit(internal::attr::dim_reset());
+    term.unsetBit(FAttribute::unset::bold);
+    term.unsetBit(FAttribute::unset::dim);
   }
 
   return append_sequence(F_bold.off.cap);
@@ -565,7 +550,7 @@ inline auto FOptiAttr::unsetTermBold (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermDim (FChar& term) noexcept -> bool
 {
-  term.setBit(internal::attr::dim());
+  term.setBit(FAttribute::set::dim);
   return append_sequence(F_dim.on.cap);
 }
 
@@ -578,8 +563,8 @@ inline auto FOptiAttr::unsetTermDim (FChar& term) noexcept -> bool
     reset(term);
   else
   {
-    term.unsetBit(internal::attr::bold_reset());
-    term.unsetBit(internal::attr::dim_reset());
+    term.unsetBit(FAttribute::unset::bold);
+    term.unsetBit(FAttribute::unset::dim);
   }
 
   return append_sequence(F_dim.off.cap);
@@ -588,7 +573,7 @@ inline auto FOptiAttr::unsetTermDim (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermItalic (FChar& term) noexcept -> bool
 {
-  term.setBit(internal::attr::italic());
+  term.setBit(FAttribute::set::italic);
   return append_sequence(F_italics.on.cap);
 }
 
@@ -598,7 +583,7 @@ inline auto FOptiAttr::unsetTermItalic (FChar& term) noexcept -> bool
   if ( F_italics.off.caused_reset )
     reset(term);
   else
-    term.unsetBit(internal::attr::italic_reset());
+    term.unsetBit(FAttribute::unset::italic);
 
   return append_sequence(F_italics.off.cap);
 }
@@ -606,7 +591,7 @@ inline auto FOptiAttr::unsetTermItalic (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermUnderline (FChar& term) noexcept -> bool
 {
-  term.setBit(internal::attr::underline());
+  term.setBit(FAttribute::set::underline);
   return append_sequence(F_underline.on.cap);
 }
 
@@ -619,8 +604,8 @@ inline auto FOptiAttr::unsetTermUnderline (FChar& term) noexcept -> bool
     reset(term);
   else
   {
-    term.unsetBit(internal::attr::underline_reset());
-    term.unsetBit(internal::attr::dbl_underline_reset());
+    term.unsetBit(FAttribute::unset::underline);
+    term.unsetBit(FAttribute::unset::dbl_underline);
   }
 
   return append_sequence(F_underline.off.cap);
@@ -629,7 +614,7 @@ inline auto FOptiAttr::unsetTermUnderline (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermBlink (FChar& term) noexcept -> bool
 {
-  term.setBit(internal::attr::blink());
+  term.setBit(FAttribute::set::blink);
   return append_sequence(F_blink.on.cap);
 }
 
@@ -639,7 +624,7 @@ inline auto FOptiAttr::unsetTermBlink (FChar& term) noexcept -> bool
   if ( F_blink.off.caused_reset )
     reset(term);
   else
-    term.unsetBit(internal::attr::blink_reset());
+    term.unsetBit(FAttribute::unset::blink);
 
   return append_sequence(F_blink.off.cap);
 }
@@ -647,7 +632,7 @@ inline auto FOptiAttr::unsetTermBlink (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermReverse (FChar& term) noexcept -> bool
 {
-  term.setBit(internal::attr::reverse());
+  term.setBit(FAttribute::set::reverse);
   return ( ! fake_reverse && append_sequence(F_reverse.on.cap) );
 }
 
@@ -657,7 +642,7 @@ inline auto FOptiAttr::unsetTermReverse (FChar& term) noexcept -> bool
   if ( F_reverse.off.caused_reset )
     reset(term);
   else
-    term.unsetBit(internal::attr::reverse_reset());
+    term.unsetBit(FAttribute::unset::reverse);
 
   return ( ! fake_reverse && append_sequence(F_reverse.off.cap) );
 }
@@ -665,7 +650,7 @@ inline auto FOptiAttr::unsetTermReverse (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermStandout (FChar& term) noexcept -> bool
 {
-  term.setBit(internal::attr::standout());
+  term.setBit(FAttribute::set::standout);
   return ( ! fake_reverse && append_sequence(F_standout.on.cap) );
 }
 
@@ -675,7 +660,7 @@ inline auto FOptiAttr::unsetTermStandout (FChar& term) noexcept -> bool
   if ( F_standout.off.caused_reset )
     reset(term);
   else
-    term.unsetBit(internal::attr::standout_reset());
+    term.unsetBit(FAttribute::unset::standout);
 
   return ( ! fake_reverse && append_sequence(F_standout.off.cap) );
 }
@@ -683,7 +668,7 @@ inline auto FOptiAttr::unsetTermStandout (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermInvisible (FChar& term) noexcept -> bool
 {
-  term.setBit(internal::attr::invisible());
+  term.setBit(FAttribute::set::invisible);
   return append_sequence(F_secure.on.cap);
 }
 
@@ -693,7 +678,7 @@ inline auto FOptiAttr::unsetTermInvisible (FChar& term) noexcept -> bool
   if ( F_secure.off.caused_reset )
     reset(term);
   else
-    term.unsetBit(internal::attr::invisible_reset());
+    term.unsetBit(FAttribute::unset::invisible);
 
   return append_sequence(F_secure.off.cap);
 }
@@ -701,7 +686,7 @@ inline auto FOptiAttr::unsetTermInvisible (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermProtected (FChar& term) noexcept -> bool
 {
-  term.setBit(internal::attr::protect());
+  term.setBit(FAttribute::set::protect);
   return append_sequence(F_protected.on.cap);
 }
 
@@ -711,7 +696,7 @@ inline auto FOptiAttr::unsetTermProtected (FChar& term) noexcept -> bool
   if ( F_protected.off.caused_reset )
     reset(term);
   else
-    term.unsetBit(internal::attr::protect_reset());
+    term.unsetBit(FAttribute::unset::protect);
 
   return append_sequence(F_protected.off.cap);
 }
@@ -719,7 +704,7 @@ inline auto FOptiAttr::unsetTermProtected (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermCrossedOut (FChar& term) noexcept -> bool
 {
-  term.setBit(internal::attr::crossed_out());
+  term.setBit(FAttribute::set::crossed_out);
   return append_sequence(F_crossed_out.on.cap);
 }
 
@@ -729,7 +714,7 @@ inline auto FOptiAttr::unsetTermCrossedOut (FChar& term) noexcept -> bool
   if ( F_crossed_out.off.caused_reset )
     reset(term);
   else
-    term.unsetBit(internal::attr::crossed_out_reset());
+    term.unsetBit(FAttribute::unset::crossed_out);
 
   return append_sequence(F_crossed_out.off.cap);
 }
@@ -737,7 +722,7 @@ inline auto FOptiAttr::unsetTermCrossedOut (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermDoubleUnderline (FChar& term) noexcept -> bool
 {
-  term.setBit(internal::attr::dbl_underline());
+  term.setBit(FAttribute::set::dbl_underline);
   return append_sequence(F_dbl_underline.on.cap);
 }
 
@@ -750,8 +735,8 @@ inline auto FOptiAttr::unsetTermDoubleUnderline (FChar& term) noexcept -> bool
     reset(term);
   else
   {
-    term.unsetBit(internal::attr::underline_reset());
-    term.unsetBit(internal::attr::dbl_underline_reset());
+    term.unsetBit(FAttribute::unset::underline);
+    term.unsetBit(FAttribute::unset::dbl_underline);
   }
 
   return append_sequence(F_dbl_underline.off.cap);
@@ -764,15 +749,15 @@ inline auto FOptiAttr::setTermAttributes (FChar& term, const FChar& next) -> boo
   {
     const auto sgr = FTermcap::encodeParameter \
         ( F_attributes.on.cap
-        , next.isBitSet(internal::attr::standout()) && ! fake_reverse  // p1
-        , next.isBitSet(internal::attr::underline())                   // p2
-        , next.isBitSet(internal::attr::reverse()) && ! fake_reverse   // p3
-        , next.isBitSet(internal::attr::blink())                       // p4
-        , next.isBitSet(internal::attr::dim())                         // p5
-        , next.isBitSet(internal::attr::bold())                        // p6
-        , next.isBitSet(internal::attr::invisible())                   // p7
-        , next.isBitSet(internal::attr::protect())                     // p8
-        , next.isBitSet(internal::attr::alt_charset()) );              // p9
+        , next.isBitSet(FAttribute::set::standout) && ! fake_reverse  // p1
+        , next.isBitSet(FAttribute::set::underline)                   // p2
+        , next.isBitSet(FAttribute::set::reverse) && ! fake_reverse   // p3
+        , next.isBitSet(FAttribute::set::blink)                       // p4
+        , next.isBitSet(FAttribute::set::dim)                         // p5
+        , next.isBitSet(FAttribute::set::bold)                        // p6
+        , next.isBitSet(FAttribute::set::invisible)                   // p7
+        , next.isBitSet(FAttribute::set::protect)                     // p8
+        , next.isBitSet(FAttribute::set::alt_charset) );              // p9
     append_sequence (sgr);
     resetColor(term);
     term.attr.data = next.attr.data & internal::var::sgr_mask;
@@ -792,10 +777,10 @@ inline auto FOptiAttr::unsetTermAttributes (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermAltCharset (FChar& term) noexcept -> bool
 {
-  term.setBit(internal::attr::alt_charset());
+  term.setBit(FAttribute::set::alt_charset);
 
   if ( alt_equal_pc_charset
-    && term.isBitSet(internal::attr::pc_charset()) )
+    && term.isBitSet(FAttribute::set::pc_charset) )
     return false;
 
   return append_sequence(F_alt_charset.on.cap);
@@ -804,10 +789,10 @@ inline auto FOptiAttr::setTermAltCharset (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FOptiAttr::unsetTermAltCharset (FChar& term) noexcept -> bool
 {
-  term.unsetBit(internal::attr::alt_charset_reset());
+  term.unsetBit(FAttribute::unset::alt_charset);
 
   if ( alt_equal_pc_charset
-    && term.isBitSet(internal::attr::pc_charset()) )
+    && term.isBitSet(FAttribute::set::pc_charset) )
     return false;
 
   return append_sequence(F_alt_charset.off.cap);
@@ -816,10 +801,10 @@ inline auto FOptiAttr::unsetTermAltCharset (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermPCcharset (FChar& term) noexcept -> bool
 {
-  term.setBit(internal::attr::pc_charset());
+  term.setBit(FAttribute::set::pc_charset);
 
   if ( alt_equal_pc_charset
-    && term.isBitSet(internal::attr::alt_charset()) )
+    && term.isBitSet(FAttribute::set::alt_charset) )
     return false;
 
   return append_sequence(F_pc_charset.on.cap);
@@ -828,10 +813,10 @@ inline auto FOptiAttr::setTermPCcharset (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FOptiAttr::unsetTermPCcharset (FChar& term) noexcept -> bool
 {
-  term.unsetBit(internal::attr::pc_charset_reset());
+  term.unsetBit(FAttribute::unset::pc_charset);
 
   if ( alt_equal_pc_charset
-    && term.isBitSet(internal::attr::alt_charset()) )
+    && term.isBitSet(FAttribute::set::alt_charset) )
     return false;
 
   return append_sequence(F_pc_charset.off.cap);
@@ -840,7 +825,7 @@ inline auto FOptiAttr::unsetTermPCcharset (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 auto FOptiAttr::setTermDefaultColor (FChar& term) -> bool
 {
-  term.color = internal::var::default_color_pair;
+  term.color = default_color_pair;
 
   if ( append_sequence(F_color.orig_pair.cap)
     || append_sequence(F_color.orig_colors.cap) )
@@ -920,32 +905,32 @@ auto FOptiAttr::hasNoAttribute (const FChar& attr) noexcept -> bool
 inline auto FOptiAttr::isItalicsUsed ( const FChar& term
                                      , const FChar& next ) const noexcept -> bool
 {
-  return ! term.isBitSet(internal::attr::italic())
-      && next.isBitSet(internal::attr::italic());
+  return ! term.isBitSet(FAttribute::set::italic)
+      && next.isBitSet(FAttribute::set::italic);
 }
 
 //----------------------------------------------------------------------
 inline auto FOptiAttr::isCrossedOutUsed ( const FChar& term
                                         , const FChar& next ) const noexcept -> bool
 {
-  return ! term.isBitSet(internal::attr::crossed_out())
-      && next.isBitSet(internal::attr::crossed_out());
+  return ! term.isBitSet(FAttribute::set::crossed_out)
+      && next.isBitSet(FAttribute::set::crossed_out);
 }
 
 //----------------------------------------------------------------------
 inline auto FOptiAttr::isDoubleUnderlineUsed ( const FChar& term
                                              , const FChar& next ) const noexcept -> bool
 {
-  return ! term.isBitSet(internal::attr::dbl_underline())
-       && next.isBitSet(internal::attr::dbl_underline());
+  return ! term.isBitSet(FAttribute::set::dbl_underline)
+       && next.isBitSet(FAttribute::set::dbl_underline);
 }
 
 //----------------------------------------------------------------------
 inline auto FOptiAttr::isPCcharsetUsed ( const FChar& term
                                        , const FChar& next ) const noexcept -> bool
 {
-  return ! term.isBitSet(internal::attr::pc_charset())
-      && next.isBitSet(internal::attr::pc_charset());
+  return ! term.isBitSet(FAttribute::set::pc_charset)
+      && next.isBitSet(FAttribute::set::pc_charset);
 }
 
 //----------------------------------------------------------------------
@@ -954,12 +939,12 @@ inline auto FOptiAttr::isPCcharsetUsable ( FChar& term
 {
   if ( alt_equal_pc_charset
     && F_pc_charset.on.cap
-    && next.isBitSet(internal::attr::alt_charset()) )
+    && next.isBitSet(FAttribute::set::alt_charset) )
   {
     // Copy the bit value of pc_charset from next to term
     term.attr.data ^= (term.attr.data ^ next.attr.data)
-                    & internal::attr::pc_charset();
-    changes.off.unsetBit(internal::attr::pc_charset_reset());
+                    & FAttribute::set::pc_charset;
+    changes.off.unsetBit(FAttribute::unset::pc_charset);
     return false;
   }
 
@@ -980,7 +965,7 @@ inline auto FOptiAttr::hasColorChanged ( const FChar& term
 //----------------------------------------------------------------------
 inline void FOptiAttr::resetColor (FChar& attr) const noexcept
 {
-  attr.color = internal::var::default_color_pair;
+  attr.color = default_color_pair;
 }
 
 //----------------------------------------------------------------------
@@ -1018,12 +1003,12 @@ inline void FOptiAttr::deactivateAttributes (FChar& term, FChar& next)
   {
     if ( F_attributes.off.cap )
     {
-      if ( changes.off.isBitSet(internal::attr::alt_charset()) )  // Required for rxvt terminals
+      if ( changes.off.isBitSet(FAttribute::set::alt_charset) )  // Required for rxvt terminals
         unsetTermAltCharset(term);
 
       unsetTermAttributes(term);
 
-      if ( changes.off.isBitSet(internal::attr::pc_charset()) )
+      if ( changes.off.isBitSet(FAttribute::set::pc_charset) )
         unsetTermPCcharset(term);
     }
     else
@@ -1042,7 +1027,7 @@ inline void FOptiAttr::changeAttributeSGR (FChar& term, FChar& next)
 
   const auto pc_charset_usable = isPCcharsetUsable(term, next);
 
-  if ( changes.off.isBitSet(internal::attr::pc_charset()) )
+  if ( changes.off.isBitSet(FAttribute::set::pc_charset) )
     unsetTermPCcharset(term);
 
   if ( isItalicsUsed(term, next) )
@@ -1078,7 +1063,7 @@ void FOptiAttr::change_color (FChar& term, FChar& next)
 {
   if ( F_color.monochron )
   {
-    next.color = internal::var::default_color_pair;
+    next.color = default_color_pair;
     return;
   }
 
@@ -1291,34 +1276,34 @@ auto FOptiAttr::getNoColorVideoHandlerTable() -> const NoColorVideoHandlerTable&
   (
     NoColorVideoHandlerTable
     {{
-      nullptr,                                                   // No bit set (0)
+      nullptr,                                              // No bit set (0)
       [] (const FOptiAttr*, FChar& fchar)
-      { fchar.unsetBit(internal::attr::standout_reset()); },     // Standout mode (1)
+      { fchar.unsetBit(FAttribute::unset::standout); },     // Standout mode (1)
       [] (const FOptiAttr*, FChar& fchar)
-      { fchar.unsetBit(internal::attr::underline_reset()); },    // Underline mode (2)
+      { fchar.unsetBit(FAttribute::unset::underline); },    // Underline mode (2)
       [] (FOptiAttr* obj, const FChar&)
-      { obj->fake_reverse = true; },                             // Reverse mode (4)
+      { obj->fake_reverse = true; },                        // Reverse mode (4)
       [] (const FOptiAttr*, FChar& fchar)
-      { fchar.unsetBit(internal::attr::blink_reset()); },        // Blink mode (8)
+      { fchar.unsetBit(FAttribute::unset::blink); },        // Blink mode (8)
       [] (const FOptiAttr*, FChar& fchar)
-      { fchar.unsetBit(internal::attr::dim_reset()); },          // Dim mode (16)
+      { fchar.unsetBit(FAttribute::unset::dim); },          // Dim mode (16)
       [] (const FOptiAttr*, FChar& fchar)
-      { fchar.unsetBit(internal::attr::bold_reset()); },         // Bold mode (32)
+      { fchar.unsetBit(FAttribute::unset::bold); },         // Bold mode (32)
       [] (const FOptiAttr*, FChar& fchar)
-      { fchar.unsetBit(internal::attr::invisible_reset()); },    // Invisible mode (64)
+      { fchar.unsetBit(FAttribute::unset::invisible); },    // Invisible mode (64)
       [] (const FOptiAttr*, FChar& fchar)
-      { fchar.unsetBit(internal::attr::protect_reset()); },      // Protected mode (128)
+      { fchar.unsetBit(FAttribute::unset::protect); },      // Protected mode (128)
       [] (const FOptiAttr*, FChar& fchar)
-      { fchar.unsetBit(internal::attr::alt_charset_reset()); },  // Alt_charset mode (256)
-      nullptr,                                                   // Horizontal mode (512)
-      nullptr,                                                   // Left mode (1024)
-      nullptr,                                                   // Low mode (2048)
-      nullptr,                                                   // Right mode (4096)
-      nullptr,                                                   // Top mode (8192)
-      nullptr,                                                   // Vertical mode (1638)
+      { fchar.unsetBit(FAttribute::unset::alt_charset); },  // Alt_charset mode (256)
+      nullptr,                                              // Horizontal mode (512)
+      nullptr,                                              // Left mode (1024)
+      nullptr,                                              // Low mode (2048)
+      nullptr,                                              // Right mode (4096)
+      nullptr,                                              // Top mode (8192)
+      nullptr,                                              // Vertical mode (1638)
       [] (const FOptiAttr*, FChar& fchar)
-      { fchar.unsetBit(internal::attr::italic_reset()); },       // Italic mode (32768)
-      nullptr                                                    // No mode (65536)
+      { fchar.unsetBit(FAttribute::unset::italic); },       // Italic mode (32768)
+      nullptr                                               // No mode (65536)
     }}
   );
 
@@ -1330,19 +1315,19 @@ auto FOptiAttr::getAttributeOnHandlers() -> const AttributeHandlers&
 {
   static const AttributeHandlers attribute_on_handlers
   {{
-    { internal::attr::alt_charset()  , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermAltCharset(fchar); } },
-    { internal::attr::pc_charset()   , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermPCcharset(fchar); } },
-    { internal::attr::bold()         , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermBold(fchar); } },
-    { internal::attr::dim()          , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermDim(fchar); } },
-    { internal::attr::italic()       , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermItalic(fchar); } },
-    { internal::attr::underline()    , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermUnderline(fchar); } },
-    { internal::attr::blink()        , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermBlink(fchar); } },
-    { internal::attr::reverse()      , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermReverse(fchar); } },
-    { internal::attr::standout()     , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermStandout(fchar); } },
-    { internal::attr::invisible()    , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermInvisible(fchar); } },
-    { internal::attr::protect()      , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermProtected(fchar); } },
-    { internal::attr::crossed_out()  , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermCrossedOut(fchar); } },
-    { internal::attr::dbl_underline(), [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermDoubleUnderline(fchar); } }
+    { FAttribute::set::alt_charset  , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermAltCharset(fchar); } },
+    { FAttribute::set::pc_charset   , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermPCcharset(fchar); } },
+    { FAttribute::set::bold         , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermBold(fchar); } },
+    { FAttribute::set::dim          , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermDim(fchar); } },
+    { FAttribute::set::italic       , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermItalic(fchar); } },
+    { FAttribute::set::underline    , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermUnderline(fchar); } },
+    { FAttribute::set::blink        , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermBlink(fchar); } },
+    { FAttribute::set::reverse      , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermReverse(fchar); } },
+    { FAttribute::set::standout     , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermStandout(fchar); } },
+    { FAttribute::set::invisible    , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermInvisible(fchar); } },
+    { FAttribute::set::protect      , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermProtected(fchar); } },
+    { FAttribute::set::crossed_out  , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermCrossedOut(fchar); } },
+    { FAttribute::set::dbl_underline, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermDoubleUnderline(fchar); } }
   }};
 
   return attribute_on_handlers;
@@ -1353,19 +1338,19 @@ auto FOptiAttr::getAttributeOffHandlers() -> const AttributeHandlers&
 {
   static const AttributeHandlers attribute_off_handlers
   {{
-    { internal::attr::alt_charset()  , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermAltCharset(fchar); } },
-    { internal::attr::pc_charset()   , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermPCcharset(fchar); } },
-    { internal::attr::bold()         , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermBold(fchar); } },
-    { internal::attr::dim()          , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermDim(fchar); } },
-    { internal::attr::italic()       , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermItalic(fchar); } },
-    { internal::attr::underline()    , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermUnderline(fchar); } },
-    { internal::attr::blink()        , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermBlink(fchar); } },
-    { internal::attr::reverse()      , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermReverse(fchar); } },
-    { internal::attr::standout()     , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermStandout(fchar); } },
-    { internal::attr::invisible()    , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermInvisible(fchar); } },
-    { internal::attr::protect()      , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermProtected(fchar); } },
-    { internal::attr::crossed_out()  , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermCrossedOut(fchar); } },
-    { internal::attr::dbl_underline(), [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermDoubleUnderline(fchar); } }
+    { FAttribute::set::alt_charset  , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermAltCharset(fchar); } },
+    { FAttribute::set::pc_charset   , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermPCcharset(fchar); } },
+    { FAttribute::set::bold         , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermBold(fchar); } },
+    { FAttribute::set::dim          , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermDim(fchar); } },
+    { FAttribute::set::italic       , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermItalic(fchar); } },
+    { FAttribute::set::underline    , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermUnderline(fchar); } },
+    { FAttribute::set::blink        , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermBlink(fchar); } },
+    { FAttribute::set::reverse      , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermReverse(fchar); } },
+    { FAttribute::set::standout     , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermStandout(fchar); } },
+    { FAttribute::set::invisible    , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermInvisible(fchar); } },
+    { FAttribute::set::protect      , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermProtected(fchar); } },
+    { FAttribute::set::crossed_out  , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermCrossedOut(fchar); } },
+    { FAttribute::set::dbl_underline, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermDoubleUnderline(fchar); } }
   }};
 
   return attribute_off_handlers;

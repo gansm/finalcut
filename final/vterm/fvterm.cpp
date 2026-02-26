@@ -345,7 +345,7 @@ void FVTerm::reduceTerminalLineUpdates (uInt y)
   while ( last > first )
   {
     if ( *last == *last_old )
-      last->setBit(internal::attr::no_changes());
+      last->setBit(FAttribute::set::no_changes);
 
     --last;
     --last_old;
@@ -1015,9 +1015,9 @@ void FVTerm::clearArea (FTermArea* area, wchar_t fillchar) noexcept
     line_changes->xmin = 0;
     line_changes->xmax = width - 1;
 
-    if ( nc.isBitSet(internal::attr::transparent())
-      || nc.isBitSet(internal::attr::color_overlay())
-      || nc.isBitSet(internal::attr::inherit_background()) )
+    if ( nc.isBitSet(FAttribute::set::transparent)
+      || nc.isBitSet(FAttribute::set::color_overlay)
+      || nc.isBitSet(FAttribute::set::inherit_background) )
       line_changes->trans_count = width;
     else if ( area->shadow.width != 0 )
       line_changes->trans_count = uInt(area->shadow.width);
@@ -1143,7 +1143,7 @@ inline void FVTerm::resetTextAreaToDefault ( FTermArea* area
   {
     { L' ',  L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
-    { FColor::Default, FColor::Default },
+    default_color_pair,
     { 0x00080000U }  // char_width = 1
   };
   std::fill (area->data.begin(), area->data.end(), default_char);
@@ -1227,10 +1227,10 @@ auto FVTerm::isCovered (const FPoint& pos, const FTermArea* area) const noexcept
     const auto index = unsigned(delta_y) * unsigned(width) + unsigned(delta_x);
     const auto& character = win->data[index];
 
-    if ( character.isBitSet(internal::attr::transparent()) )
+    if ( character.isBitSet(FAttribute::set::transparent) )
       continue;
 
-    if ( character.isBitSet(internal::attr::color_overlay()) )  // Color overlay = half covered
+    if ( character.isBitSet(FAttribute::set::color_overlay) )  // Color overlay = half covered
       is_covered = CoveredState::Half;  // Mark as partially covered
     else
       return CoveredState::Full;  // Fully covered
@@ -1890,7 +1890,7 @@ inline void FVTerm::putMultiLayerAreaLine ( FChar_iterator dst_char
       const auto transparency = win_char->attr.data
                               & internal::var::transparent_mask;
 
-      if ( transparency == internal::attr::transparent() )  // Transparent
+      if ( transparency == FAttribute::set::transparent )  // Transparent
       {
         if ( char_search == SearchState::start )
           char_search = SearchState::printable;
@@ -1898,7 +1898,7 @@ inline void FVTerm::putMultiLayerAreaLine ( FChar_iterator dst_char
         continue;
       }
 
-      if ( transparency == internal::attr::color_overlay() )  // Color overlay
+      if ( transparency == FAttribute::set::color_overlay )  // Color overlay
       {
         if ( char_search == SearchState::background )
         {
@@ -1914,7 +1914,7 @@ inline void FVTerm::putMultiLayerAreaLine ( FChar_iterator dst_char
         continue;
       }
 
-      if ( transparency == internal::attr::inherit_background() )  // Inherit background color
+      if ( transparency == FAttribute::set::inherit_background )  // Inherit background color
       {
         if ( char_search == SearchState::overlay )
         {
@@ -2114,10 +2114,10 @@ inline void FVTerm::addTransparentAreaLine ( const FChar_const_iterator& src_cha
 //----------------------------------------------------------------------
 inline void FVTerm::addTransparentAreaChar (const FChar& src_char, FChar& dst_char) const
 {
-  if ( src_char.isBitSet(internal::attr::transparent()) )  // Transparent
+  if ( src_char.isBitSet(FAttribute::set::transparent) )  // Transparent
     return;  // Leave character on vterm untouched
 
-  if ( src_char.isBitSet(internal::attr::color_overlay()) )  // Color overlay
+  if ( src_char.isBitSet(FAttribute::set::color_overlay) )  // Color overlay
   {
     // Get covered character + add the current color
     dst_char.color.data = src_char.color.data;
@@ -2129,7 +2129,7 @@ inline void FVTerm::addTransparentAreaChar (const FChar& src_char, FChar& dst_ch
     return;
   }
 
-  if ( src_char.isBitSet(internal::attr::inherit_background()) )
+  if ( src_char.isBitSet(FAttribute::set::inherit_background) )
   {
     // Add the covered background to this character
     auto bg_color = dst_char.color.getBgColor();
@@ -2155,7 +2155,7 @@ auto FVTerm::clearFullArea (FTermArea* area, FChar& fillchar) const -> bool
   // Try to clear the terminal rapidly with a control sequence
   if ( foutput->clearTerminal (fillchar.ch[0]) )
   {
-    fillchar.setBit(internal::attr::printed());
+    fillchar.setBit(FAttribute::set::printed);
     std::fill (vterm->data.begin(), vterm->data.end(), fillchar);
     saveCurrentVTerm();
   }
@@ -2185,7 +2185,7 @@ void FVTerm::clearAreaWithShadow (FTermArea* area, const FChar& fillchar) const 
 {
   FChar t_char = fillchar;
   t_char.ch[0] = L'\0';
-  t_char.setBit(internal::attr::transparent());
+  t_char.setBit(FAttribute::set::transparent);
   t_char.setCharWidth(0);
   const auto total_width = getFullAreaWidth(area);
   auto area_pos = area->data.begin();
@@ -2291,7 +2291,7 @@ inline auto FVTerm::printCharacter ( FTermArea* area
   auto char_width = printCharacterOnCoordinate (area, ac, term_char);
 
   if ( char_width == 0
-    && ! term_char.isBitSet(internal::attr::fullwidth_padding()) )
+    && ! term_char.isBitSet(FAttribute::set::fullwidth_padding) )
     return 0;
 
   area->cursor.x++;
@@ -2368,7 +2368,7 @@ inline void FVTerm::printPaddingCharacter ( FTermArea* area
   if ( area->encoding == Encoding::UTF8 )
   {
     pc.ch[0] = L'\0';
-    pc.setBit(internal::attr::fullwidth_padding());
+    pc.setBit(FAttribute::set::fullwidth_padding);
     pc.setCharWidth(0);
   }
   else

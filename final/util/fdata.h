@@ -132,7 +132,7 @@ class FDataAccess
     FDataAccess() = default;
 
     // Destructor
-    ~FDataAccess() noexcept;
+    virtual ~FDataAccess() noexcept;
 
     // Accessors
     auto getClassName() const -> FString

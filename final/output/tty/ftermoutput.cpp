@@ -409,7 +409,7 @@ void FTermOutput::clearTerminalState()
 {
   // term_attribute stores the current state of the terminal
   term_attribute.ch = {L'\0', L'\0', L'\0', L'\0', L'\0'};
-  term_attribute.color = internal::color_var::default_color_pair;
+  term_attribute.color = default_color_pair;
   term_attribute.attr.data = 0;
 }
 
@@ -755,7 +755,7 @@ auto FTermOutput::skipUnchangedCharacters ( uInt& x, uInt xmax, uInt y
 {
   // Skip characters without changes if it is faster than redrawing
 
-  constexpr auto mask = internal::attr::no_changes();
+  constexpr auto mask = FAttribute::set::no_changes;
 
   if ( ! iter->isBitSet(mask) )
     return false;
@@ -804,7 +804,7 @@ void FTermOutput::printRange (uInt xmin, uInt xmax, uInt y)
   {
     // Update pointer and mark character as printed
     iter += (x - x_last);
-    iter->setBit(internal::attr::printed());
+    iter->setBit(FAttribute::set::printed);
     x_last = x;
 
     // Handle non-printable full-width characters on terminal margins
@@ -846,7 +846,7 @@ inline void FTermOutput::replaceNonPrintableFullwidth ( uInt x, uInt vterm_width
   {
     print_char.ch[0] = wchar_t(UniChar::SingleLeftAngleQuotationMark);  // ‹
     print_char.ch[1] = L'\0';
-    print_char.unsetBit(internal::attr::fullwidth_padding());
+    print_char.unsetBit(FAttribute::set::fullwidth_padding);
   }
   else if ( x == vterm_width && isFullWidthChar(print_char) )
   {
@@ -1140,7 +1140,7 @@ inline auto FTermOutput::isFullWidthChar (const FChar& ch) const noexcept -> boo
 //----------------------------------------------------------------------
 inline auto FTermOutput::isFullWidthPaddingChar (const FChar& ch) const noexcept -> bool
 {
-  return ch.isBitSet(internal::attr::fullwidth_padding());
+  return ch.isBitSet(FAttribute::set::fullwidth_padding);
 }
 
 //----------------------------------------------------------------------
@@ -1294,7 +1294,7 @@ inline void FTermOutput::markAsPrinted (uInt x, uInt y) const noexcept
 {
   // Marks a character as printed
 
-  vterm->getFChar(int(x), int(y)).setBit(internal::attr::printed());
+  vterm->getFChar(int(x), int(y)).setBit(FAttribute::set::printed);
 }
 
 //----------------------------------------------------------------------
@@ -1308,17 +1308,17 @@ inline void FTermOutput::markAsPrinted (uInt from, uInt to, uInt y) const noexce
   // Unroll the loop for better performance
   while ( iter + 4 <= end )
   {
-    iter[0].setBit(internal::attr::printed());
-    iter[1].setBit(internal::attr::printed());
-    iter[2].setBit(internal::attr::printed());
-    iter[3].setBit(internal::attr::printed());
+    iter[0].setBit(FAttribute::set::printed);
+    iter[1].setBit(FAttribute::set::printed);
+    iter[2].setBit(FAttribute::set::printed);
+    iter[3].setBit(FAttribute::set::printed);
     iter += 4;
   }
 
   // Handle the remaining elements
   while ( iter < end )
   {
-    iter->setBit(internal::attr::printed());
+    iter->setBit(FAttribute::set::printed);
     ++iter;
   }
 }
@@ -1333,10 +1333,10 @@ inline void FTermOutput::newFontChanges (FChar& next_char) const
   if ( next_char.ch.unicode_data[0] == UniChar::LowerHalfBlock )
   {
     next_char.ch.unicode_data[0] = wchar_t(UniChar::UpperHalfBlock);
-    next_char.setBit(internal::attr::reverse());
+    next_char.setBit(FAttribute::set::reverse);
   }
   else if ( isReverseNewFontchar(next_char.ch.unicode_data[0]) )
-    next_char.setBit(internal::attr::reverse());  // Show in reverse video
+    next_char.setBit(FAttribute::set::reverse);  // Show in reverse video
 }
 
 //----------------------------------------------------------------------
@@ -1375,10 +1375,10 @@ inline void FTermOutput::charsetChanges (FChar& next_char) const
   first_enc_char = ch_enc;
 
   if ( terminal_encoding == Encoding::VT100 )
-    next_char.setBit(internal::attr::alt_charset());
+    next_char.setBit(FAttribute::set::alt_charset);
   else if ( terminal_encoding == Encoding::PC )
   {
-    next_char.setBit(internal::attr::pc_charset());
+    next_char.setBit(FAttribute::set::pc_charset);
     const auto is_putty = fterm_data->isTermType(FTermType::putty);
     const auto is_xterm = fterm_data->isTermType(FTermType::xterm);
 
@@ -1389,7 +1389,7 @@ inline void FTermOutput::charsetChanges (FChar& next_char) const
       else
       {
         first_enc_char += 0x5f;
-        next_char.setBit(internal::attr::alt_charset());
+        next_char.setBit(FAttribute::set::alt_charset);
       }
     }
   }

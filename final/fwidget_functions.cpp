@@ -403,7 +403,7 @@ void drawTransparentShadow (FWidget* w)
     {
       { L'\0',  L'\0', L'\0', L'\0', L'\0' },
       { L'\0', L'\0', L'\0', L'\0', L'\0' },
-      { FColor::Default, FColor::Default },
+      default_color_pair,
       { 0x00002000U }  // transparent
     },
     {
@@ -516,7 +516,7 @@ void drawBlockShadow (FWidget* w)
     {
       { L' ',  L'\0', L'\0', L'\0', L'\0' },  // ' '
       { L'\0', L'\0', L'\0', L'\0', L'\0' },
-      { FColor::Default, FColor::Default },
+      default_color_pair,
       { 0x00080000U }  // char_width = 1
     },
     {
@@ -529,10 +529,10 @@ void drawBlockShadow (FWidget* w)
 
   if ( w->isWindowWidget() )
   {
-    shadow_char[0].setBit(internal::attr::inherit_background());
-    shadow_char[1].setBit(internal::attr::inherit_background());
-    shadow_char[2].setBit(internal::attr::transparent());
-    shadow_char[3].setBit(internal::attr::inherit_background());
+    shadow_char[0].setBit(FAttribute::set::inherit_background);
+    shadow_char[1].setBit(FAttribute::set::inherit_background);
+    shadow_char[2].setBit(FAttribute::set::transparent);
+    shadow_char[3].setBit(FAttribute::set::inherit_background);
   }
   else if ( auto p = w->getParentWidget() )
   {
@@ -556,12 +556,12 @@ void clearBlockShadow (FWidget* w)
   {
     { L' ',  L'\0', L'\0', L'\0', L'\0' },  // ' '
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
-    { FColor::Default, FColor::Default },
+    default_color_pair,
     { 0x00080000U }  // char_width = 1
   };
 
   if ( w->isWindowWidget() )
-    spacer_char.setBit(internal::attr::transparent());
+    spacer_char.setBit(FAttribute::set::transparent);
   else if ( auto p = w->getParentWidget() )
     spacer_char.color.setBgColor(p->getBackgroundColor());
 

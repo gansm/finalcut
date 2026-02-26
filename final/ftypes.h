@@ -268,10 +268,13 @@ struct FourByteData
 
 struct UTF8_Char
 {
+  // Data member
   FourByteData u8;
   uInt32 length;
 
-  friend constexpr auto operator == (const UTF8_Char& lhs, const UTF8_Char& rhs) noexcept -> bool
+  // Friend Non-member operator functions
+  friend constexpr auto operator == ( const UTF8_Char& lhs
+                                    , const UTF8_Char& rhs ) noexcept -> bool
   {
     if ( lhs.length != rhs.length )
       return false;
@@ -286,7 +289,8 @@ struct UTF8_Char
 #endif
   }
 
-  friend constexpr auto operator != (const UTF8_Char& lhs, const UTF8_Char& rhs) noexcept -> bool
+  friend constexpr auto operator != ( const UTF8_Char& lhs
+                                    , const UTF8_Char& rhs ) noexcept -> bool
   {
     return ! ( lhs == rhs );
   }
@@ -459,209 +463,6 @@ constexpr void setCharWidth (FCharAttribute& attr) noexcept
   attr.char_width = 0x03;
 }
 
-struct attr
-{
-  static constexpr auto bold() noexcept
-  {
-    return createMask(setBoldMask);
-  }
-
-  static constexpr auto dim() noexcept
-  {
-    return createMask(setDimMask);
-  }
-
-  static constexpr auto italic() noexcept
-  {
-    return createMask(setItalicMask);
-  }
-
-  static constexpr auto underline() noexcept
-  {
-    return createMask(setUnderlineMask);
-  }
-
-  static constexpr auto blink() noexcept
-  {
-    return createMask(setBlinkMask);
-  }
-
-  static constexpr auto reverse() noexcept
-  {
-    return createMask(setReverseMask);
-  }
-
-  static constexpr auto standout() noexcept
-  {
-    return createMask(setStandoutMask);
-  }
-
-  static constexpr auto invisible() noexcept
-  {
-    return createMask(setInvisibleMask);
-  }
-
-  static constexpr auto protect() noexcept
-  {
-    return createMask(setProtectMask);
-  }
-
-  static constexpr auto crossed_out() noexcept
-  {
-    return createMask(setCrossedOutMask);
-  }
-
-  static constexpr auto dbl_underline() noexcept
-  {
-    return createMask(setDblUnderlineMask);
-  }
-
-  static constexpr auto alt_charset() noexcept
-  {
-    return createMask(setAltCharsetMask);
-  }
-
-  static constexpr auto pc_charset() noexcept
-  {
-    return createMask(setPcCharsetMask);
-  }
-
-  static constexpr auto transparent() noexcept
-  {
-    return createMask(setTransparent);
-  }
-
-  static constexpr auto color_overlay() noexcept
-  {
-    return createMask(setColorOverlay);
-  }
-
-  static constexpr auto inherit_background() noexcept
-  {
-    return createMask(setInheritBackground);
-  }
-
-  static constexpr auto no_changes() noexcept
-  {
-    return createMask(setNoChanges);
-  }
-
-  static constexpr auto printed() noexcept
-  {
-    return createMask(setPrinted);
-  }
-
-  static constexpr auto fullwidth_padding() noexcept
-  {
-    return createMask(setFullwidthPadding);
-  }
-
-  static constexpr auto char_width() noexcept
-  {
-    return createMask(setCharWidth);
-  }
-
-  static constexpr auto bold_reset() noexcept
-  {
-    return ~bold();
-  }
-
-  static constexpr auto dim_reset() noexcept
-  {
-    return ~dim();
-  }
-
-  static constexpr auto italic_reset() noexcept
-  {
-    return ~italic();
-  }
-
-  static constexpr auto underline_reset() noexcept
-  {
-    return ~underline();
-  }
-
-  static constexpr auto blink_reset() noexcept
-  {
-    return ~blink();
-  }
-
-  static constexpr auto reverse_reset() noexcept
-  {
-    return ~reverse();
-  }
-
-  static constexpr auto standout_reset() noexcept
-  {
-    return ~standout();
-  }
-
-  static constexpr auto invisible_reset() noexcept
-  {
-    return ~invisible();
-  }
-
-  static constexpr auto protect_reset() noexcept
-  {
-    return ~protect();
-  }
-
-  static constexpr auto crossed_out_reset() noexcept
-  {
-    return ~crossed_out();
-  }
-
-  static constexpr auto dbl_underline_reset() noexcept
-  {
-    return ~dbl_underline();
-  }
-
-  static constexpr auto alt_charset_reset() noexcept
-  {
-    return ~alt_charset();
-  }
-
-  static constexpr auto pc_charset_reset() noexcept
-  {
-    return ~pc_charset();
-  }
-
-  static constexpr auto transparent_reset() noexcept
-  {
-    return ~transparent();
-  }
-
-  static constexpr auto color_overlay_reset() noexcept
-  {
-    return ~color_overlay();
-  }
-
-  static constexpr auto inherit_background_reset() noexcept
-  {
-    return ~inherit_background();
-  }
-
-  static constexpr auto no_changes_reset() noexcept
-  {
-    return ~no_changes();
-  }
-
-  static constexpr auto printed_reset() noexcept
-  {
-    return ~printed();
-  }
-
-  static constexpr auto fullwidth_padding_reset() noexcept
-  {
-    return ~fullwidth_padding();
-  }
-
-  static constexpr auto char_width_reset() noexcept
-  {
-    return ~char_width();
-  }
-};
-
 }  // namespace internal
 
 constexpr auto getFAttributeByte ( const FCharAttribute& fchar_attr
@@ -722,7 +523,53 @@ inline auto DataToFAttribute (uInt32 data) noexcept -> FCharAttribute
 
 struct FAttribute
 {
-  uInt32 data{0};
+  struct set
+  {
+    static constexpr auto bold               = internal::createMask(internal::setBoldMask);
+    static constexpr auto dim                = internal::createMask(internal::setDimMask);
+    static constexpr auto italic             = internal::createMask(internal::setItalicMask);
+    static constexpr auto underline          = internal::createMask(internal::setUnderlineMask);
+    static constexpr auto blink              = internal::createMask(internal::setBlinkMask);
+    static constexpr auto reverse            = internal::createMask(internal::setReverseMask);
+    static constexpr auto standout           = internal::createMask(internal::setStandoutMask);
+    static constexpr auto invisible          = internal::createMask(internal::setInvisibleMask);
+    static constexpr auto protect            = internal::createMask(internal::setProtectMask);
+    static constexpr auto crossed_out        = internal::createMask(internal::setCrossedOutMask);
+    static constexpr auto dbl_underline      = internal::createMask(internal::setDblUnderlineMask);
+    static constexpr auto alt_charset        = internal::createMask(internal::setAltCharsetMask);
+    static constexpr auto pc_charset         = internal::createMask(internal::setPcCharsetMask);
+    static constexpr auto transparent        = internal::createMask(internal::setTransparent);
+    static constexpr auto color_overlay      = internal::createMask(internal::setColorOverlay);
+    static constexpr auto inherit_background = internal::createMask(internal::setInheritBackground);
+    static constexpr auto no_changes         = internal::createMask(internal::setNoChanges);
+    static constexpr auto printed            = internal::createMask(internal::setPrinted);
+    static constexpr auto fullwidth_padding  = internal::createMask(internal::setFullwidthPadding);
+    static constexpr auto char_width         = internal::createMask(internal::setCharWidth);
+  };
+
+  struct unset
+  {
+    static constexpr auto bold               = ~set::bold;
+    static constexpr auto dim                = ~set::dim;
+    static constexpr auto italic             = ~set::italic;
+    static constexpr auto underline          = ~set::underline;
+    static constexpr auto blink              = ~set::blink;
+    static constexpr auto reverse            = ~set::reverse;
+    static constexpr auto standout           = ~set::standout;
+    static constexpr auto invisible          = ~set::invisible;
+    static constexpr auto protect            = ~set::protect;
+    static constexpr auto crossed_out        = ~set::crossed_out;
+    static constexpr auto dbl_underline      = ~set::dbl_underline;
+    static constexpr auto alt_charset        = ~set::alt_charset;
+    static constexpr auto pc_charset         = ~set::pc_charset;
+    static constexpr auto transparent        = ~set::transparent;
+    static constexpr auto color_overlay      = ~set::color_overlay;
+    static constexpr auto inherit_background = ~set::inherit_background;
+    static constexpr auto no_changes         = ~set::no_changes;
+    static constexpr auto printed            = ~set::printed;
+    static constexpr auto fullwidth_padding  = ~set::fullwidth_padding;
+    static constexpr auto char_width         = ~set::char_width;
+  };
 
   constexpr auto hasBit (uInt32 mask) const noexcept -> bool
   {
@@ -866,6 +713,9 @@ struct FAttribute
     return ConstByteProxy(*this);
   }
 #endif  // defined(UNIT_TEST)
+
+  // Data member
+  uInt32 data{0};
 };
 
 // FUnicode
@@ -874,8 +724,6 @@ static constexpr std::size_t UNICODE_MAX = 5;
 
 struct FUnicode
 {
-  wchar_t unicode_data[UNICODE_MAX]{L'\0', L'\0', L'\0', L'\0', L'\0'};
-
   // Using-declarations
   using iterator        = wchar_t*;
   using const_iterator  = const wchar_t*;
@@ -972,6 +820,10 @@ struct FUnicode
     return &unicode_data[0];
   }
 
+  // Data member
+  wchar_t unicode_data[UNICODE_MAX]{L'\0', L'\0', L'\0', L'\0', L'\0'};
+
+  // Friend Non-member operator functions
   friend constexpr auto operator == (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool
   {
     return lhs.unicode_data[0] == rhs.unicode_data[0]
@@ -1004,6 +856,7 @@ constexpr auto isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexce
 // FCellColor
 //----------------------------------------------------------------------
 enum class FColor : uInt16;  // forward declaration
+struct FCellColor;  // forward declaration
 
 struct FColors
 {
@@ -1013,8 +866,7 @@ struct FColors
 
 struct FCellColor
 {
-  uInt32  data{0};  // Color data
-
+  // Constructor
   FCellColor() = default;
 
   explicit constexpr FCellColor (uInt32 value) noexcept
@@ -1029,6 +881,7 @@ struct FCellColor
     : data{(uInt32(color.bg) << 16) | uInt32(color.fg)}
   { }
 
+  // Accessors
   constexpr auto getPair() const noexcept -> FColors
   {
     FColors pair;  // Foreground and background color
@@ -1050,6 +903,7 @@ struct FCellColor
     return FColor(data >> 16);
   }
 
+  // Mutators
   constexpr void setPair (const FColors& pair) noexcept
   {
 #if HAVE_BUILTIN(__builtin_bit_cast)
@@ -1069,6 +923,7 @@ struct FCellColor
     data = (data & 0x0000ffffU) | (uInt32(bg) << 16);
   }
 
+  // Overloaded operator
   constexpr auto operator = (std::initializer_list<FColor> list) noexcept -> FCellColor&
   {
     if ( list.size() == 2 )
@@ -1082,6 +937,10 @@ struct FCellColor
     return *this;
   }
 
+  // Data member
+  uInt32  data{0};  // Color data
+
+  // Friend Non-member operator functions
   friend constexpr auto operator == (const FCellColor& lhs, const FCellColor& rhs) noexcept -> bool
   {
     return lhs.data == rhs.data;
@@ -1131,22 +990,17 @@ constexpr auto getCompareBitMask() noexcept -> uInt32
 
 struct FChar
 {
-  FUnicode   ch{};            // Character code
-  FUnicode   encoded_char{};  // Encoded output character
-  FCellColor color{};         // Foreground and background color
-  FAttribute attr{};          // Attributes
-
   // Accessors
   constexpr auto getCharWidth() const noexcept -> uInt32
   {
-    return (attr.data & internal::attr::char_width()) >> 19U;
+    return (attr.data & FAttribute::set::char_width) >> 19U;
   }
 
   // Mutators
   constexpr void setCharWidth (uInt32 width) noexcept
   {
-    attr.data = (attr.data & internal::attr::char_width_reset()) \
-              | ((width << 19U) & internal::attr::char_width());
+    attr.data = (attr.data & FAttribute::unset::char_width) \
+              | ((width << 19U) & FAttribute::set::char_width);
   }
 
   constexpr void setBit (uInt32 mask, bool enable) noexcept
@@ -1167,11 +1021,17 @@ struct FChar
     attr.data &= mask;
   }
 
-  // Inquiries
+  // Inquiry
   constexpr auto isBitSet (uInt32 mask) const noexcept -> bool
   {
     return attr.data & mask;
   }
+
+  // Data member
+  FUnicode   ch{};            // Character code
+  FUnicode   encoded_char{};  // Encoded output character
+  FCellColor color{};         // Foreground and background color
+  FAttribute attr{};          // Attributes
 
   // Friend operator functions
 #if HAVE_BUILTIN(__builtin_bit_cast)
