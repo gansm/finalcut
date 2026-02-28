@@ -437,7 +437,7 @@ inline void drawRightShadow (TransparentShadowData& d)
   const auto width = d.width;
   const auto height = d.height;
   auto* ptr = d.area_ptr;
-  auto changes_in_line = d.area.changes_in_line;
+  auto& changes_in_line = d.area.changes_in_line;
   auto& changes_in_1st_line = changes_in_line[0];
 
   std::fill (ptr, std::next(ptr, s_width), d.transparent_char);
@@ -472,7 +472,7 @@ inline void drawBottomShadow (TransparentShadowData& d)
   const auto xmax = total_width - 1;
   const auto s_height = d.shadow_height;
   const auto start_y = d.height;
-  auto changes_in_line = d.area.changes_in_line;
+  auto& changes_in_line = d.area.changes_in_line;
   auto* ptr = d.area_ptr;
 
   for (std::size_t i{0}; i < s_height; i++)

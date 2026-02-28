@@ -872,13 +872,13 @@ void FOptiAttr::setAttributes ( uInt32 attribute
 
     if ( ! (attribute & mask) )
     {
-      ++iter;
+      iter = std::next(iter);
       continue;
     }
 
     iter->function(this, term);  // Call function
     attribute &= ~mask;  // Clear found bit
-    ++iter;
+    iter = std::next(iter);
   }
 }
 
@@ -1313,46 +1313,54 @@ auto FOptiAttr::getNoColorVideoHandlerTable() -> const NoColorVideoHandlerTable&
 //----------------------------------------------------------------------
 auto FOptiAttr::getAttributeOnHandlers() -> const AttributeHandlers&
 {
-  static const AttributeHandlers attribute_on_handlers
-  {{
-    { FAttribute::set::alt_charset  , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermAltCharset(fchar); } },
-    { FAttribute::set::pc_charset   , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermPCcharset(fchar); } },
-    { FAttribute::set::bold         , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermBold(fchar); } },
-    { FAttribute::set::dim          , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermDim(fchar); } },
-    { FAttribute::set::italic       , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermItalic(fchar); } },
-    { FAttribute::set::underline    , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermUnderline(fchar); } },
-    { FAttribute::set::blink        , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermBlink(fchar); } },
-    { FAttribute::set::reverse      , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermReverse(fchar); } },
-    { FAttribute::set::standout     , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermStandout(fchar); } },
-    { FAttribute::set::invisible    , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermInvisible(fchar); } },
-    { FAttribute::set::protect      , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermProtected(fchar); } },
-    { FAttribute::set::crossed_out  , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermCrossedOut(fchar); } },
-    { FAttribute::set::dbl_underline, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermDoubleUnderline(fchar); } }
-  }};
+  static const auto& attribute_on_handlers_ptr = std::make_unique<AttributeHandlers>
+  (
+    AttributeHandlers
+    {{
+      { FAttribute::set::alt_charset  , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermAltCharset(fchar); } },
+      { FAttribute::set::pc_charset   , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermPCcharset(fchar); } },
+      { FAttribute::set::bold         , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermBold(fchar); } },
+      { FAttribute::set::dim          , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermDim(fchar); } },
+      { FAttribute::set::italic       , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermItalic(fchar); } },
+      { FAttribute::set::underline    , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermUnderline(fchar); } },
+      { FAttribute::set::blink        , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermBlink(fchar); } },
+      { FAttribute::set::reverse      , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermReverse(fchar); } },
+      { FAttribute::set::standout     , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermStandout(fchar); } },
+      { FAttribute::set::invisible    , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermInvisible(fchar); } },
+      { FAttribute::set::protect      , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermProtected(fchar); } },
+      { FAttribute::set::crossed_out  , [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermCrossedOut(fchar); } },
+      { FAttribute::set::dbl_underline, [] (FOptiAttr* obj, FChar& fchar) { return obj->setTermDoubleUnderline(fchar); } }
+    }}
+  );
 
+  static const auto& attribute_on_handlers = *attribute_on_handlers_ptr;
   return attribute_on_handlers;
 }
 
 //----------------------------------------------------------------------
 auto FOptiAttr::getAttributeOffHandlers() -> const AttributeHandlers&
 {
-  static const AttributeHandlers attribute_off_handlers
-  {{
-    { FAttribute::set::alt_charset  , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermAltCharset(fchar); } },
-    { FAttribute::set::pc_charset   , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermPCcharset(fchar); } },
-    { FAttribute::set::bold         , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermBold(fchar); } },
-    { FAttribute::set::dim          , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermDim(fchar); } },
-    { FAttribute::set::italic       , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermItalic(fchar); } },
-    { FAttribute::set::underline    , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermUnderline(fchar); } },
-    { FAttribute::set::blink        , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermBlink(fchar); } },
-    { FAttribute::set::reverse      , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermReverse(fchar); } },
-    { FAttribute::set::standout     , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermStandout(fchar); } },
-    { FAttribute::set::invisible    , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermInvisible(fchar); } },
-    { FAttribute::set::protect      , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermProtected(fchar); } },
-    { FAttribute::set::crossed_out  , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermCrossedOut(fchar); } },
-    { FAttribute::set::dbl_underline, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermDoubleUnderline(fchar); } }
-  }};
+  static const auto& attribute_off_handlers_ptr = std::make_unique<AttributeHandlers>
+  (
+    AttributeHandlers
+    {{
+      { FAttribute::set::alt_charset  , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermAltCharset(fchar); } },
+      { FAttribute::set::pc_charset   , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermPCcharset(fchar); } },
+      { FAttribute::set::bold         , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermBold(fchar); } },
+      { FAttribute::set::dim          , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermDim(fchar); } },
+      { FAttribute::set::italic       , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermItalic(fchar); } },
+      { FAttribute::set::underline    , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermUnderline(fchar); } },
+      { FAttribute::set::blink        , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermBlink(fchar); } },
+      { FAttribute::set::reverse      , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermReverse(fchar); } },
+      { FAttribute::set::standout     , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermStandout(fchar); } },
+      { FAttribute::set::invisible    , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermInvisible(fchar); } },
+      { FAttribute::set::protect      , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermProtected(fchar); } },
+      { FAttribute::set::crossed_out  , [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermCrossedOut(fchar); } },
+      { FAttribute::set::dbl_underline, [] (FOptiAttr* obj, FChar& fchar) { return obj->unsetTermDoubleUnderline(fchar); } }
+    }}
+  );
 
+  static const auto& attribute_off_handlers = *attribute_off_handlers_ptr;
   return attribute_off_handlers;
 }
 

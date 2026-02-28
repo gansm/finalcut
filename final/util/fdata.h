@@ -135,7 +135,7 @@ class FDataAccess
     virtual ~FDataAccess() noexcept;
 
     // Accessors
-    auto getClassName() const -> FString
+    virtual auto getClassName() const -> FString
     {
       return "FDataAccess";
     }
@@ -209,18 +209,12 @@ class FData final : public FDataAccess
       : value_ref{v}
     { }
 
-    template <typename V = value_type
-            , typename = std::enable_if_t<!std::is_const<V>::value>>
-    explicit FData (const value_type& v) noexcept
-      : value_ref{const_cast<value_type&>(v)}
-    { }
-
     explicit FData (value_type&& v) noexcept(nothrow_move_ctor_v)  // constructor
       : value{std::move(v)}
       , value_ref{value}
     { }
 
-    ~FData() noexcept = default;  // Destructor
+    ~FData() noexcept final = default;  // Destructor
 
     FData (const FData& d) noexcept(nothrow_copy_ctor_v)  // Copy constructor
       : FDataAccess{d}
@@ -284,7 +278,7 @@ class FData final : public FDataAccess
     }
 
     // Accessors
-    auto getClassName() const -> FString
+    auto getClassName() const -> FString final
     {
       return "FData";
     }

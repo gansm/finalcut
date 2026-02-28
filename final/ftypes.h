@@ -282,7 +282,8 @@ struct UTF8_Char
 #if HAVE_BUILTIN(__builtin_bit_cast)
     return __builtin_bit_cast(uInt32, lhs.u8) == __builtin_bit_cast(uInt32, rhs.u8);
 #else
-    uInt32 lhs_bytes, rhs_bytes;
+    uInt32 lhs_bytes{};
+    uInt32 rhs_bytes{};
     std::memcpy(&lhs_bytes, &lhs.u8, sizeof(uInt32));
     std::memcpy(&rhs_bytes, &rhs.u8, sizeof(uInt32));
     return lhs_bytes == rhs_bytes;
@@ -826,11 +827,18 @@ struct FUnicode
   // Friend Non-member operator functions
   friend constexpr auto operator == (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool
   {
+#if defined(__clang__)
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
     return lhs.unicode_data[0] == rhs.unicode_data[0]
         && lhs.unicode_data[1] == rhs.unicode_data[1]
         && lhs.unicode_data[2] == rhs.unicode_data[2]
         && lhs.unicode_data[3] == rhs.unicode_data[3]
         && lhs.unicode_data[4] == rhs.unicode_data[4];
+#if defined(__clang__)
+  #pragma clang diagnostic pop
+#endif
   }
 
   friend constexpr auto operator != (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool
@@ -844,12 +852,19 @@ struct FUnicode
 //----------------------------------------------------------------------
 constexpr auto isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool
 {
+#if defined(__clang__)
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
   // Perform a byte-wise comparison
   return lhs.unicode_data[0] == rhs.unicode_data[0]
       && lhs.unicode_data[1] == rhs.unicode_data[1]
       && lhs.unicode_data[2] == rhs.unicode_data[2]
       && lhs.unicode_data[3] == rhs.unicode_data[3]
       && lhs.unicode_data[4] == rhs.unicode_data[4];
+#if defined(__clang__)
+  #pragma clang diagnostic pop
+#endif
 }
 
 
@@ -888,7 +903,9 @@ struct FCellColor
 #if HAVE_BUILTIN(__builtin_bit_cast)
     pair = __builtin_bit_cast(FColors, data);
 #else
-    std::memcpy(&pair, &data, sizeof(uInt32));
+    std::memcpy( static_cast<void*>(&pair)
+               , static_cast<const void*>(&data)
+               , sizeof(uInt32));
 #endif
     return pair;
   }
@@ -929,16 +946,15 @@ struct FCellColor
     if ( list.size() == 2 )
     {
       auto iter = list.begin();
-      data = uInt32(*iter);           // Foreground color
-      ++iter;
-      data |= (uInt32(*iter) << 16);  // Background color
+      data = uInt32(*iter);                     // Foreground color
+      data |= (uInt32(*std::next(iter)) << 16); // Background color
     }
 
     return *this;
   }
 
   // Data member
-  uInt32  data{0};  // Color data
+  uInt32 data{0};  // Color data
 
   // Friend Non-member operator functions
   friend constexpr auto operator == (const FCellColor& lhs, const FCellColor& rhs) noexcept -> bool
@@ -1049,11 +1065,18 @@ struct FChar
     if ( (lhs.attr.data & mask) != (rhs.attr.data & mask) )
       return false;
 
+#if defined(__clang__)
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
     return lhs.ch.unicode_data[0] == rhs.ch.unicode_data[0]
         && lhs.ch.unicode_data[1] == rhs.ch.unicode_data[1]
         && lhs.ch.unicode_data[2] == rhs.ch.unicode_data[2]
         && lhs.ch.unicode_data[3] == rhs.ch.unicode_data[3]
         && lhs.ch.unicode_data[4] == rhs.ch.unicode_data[4];
+#if defined(__clang__)
+  #pragma clang diagnostic pop
+#endif
   }
 
 #if HAVE_BUILTIN(__builtin_bit_cast)
