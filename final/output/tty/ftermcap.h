@@ -105,6 +105,7 @@ class FTermcap final
     static void  setPutStringFunction (const PutString&) noexcept;
     static void  setDefaultPutStringFunction();
     static void  setBaudrate (int) noexcept;
+    static void  clearMotionCache();
 
     // Methods
     static void  init();

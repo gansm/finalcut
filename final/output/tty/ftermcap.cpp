@@ -74,6 +74,12 @@ static auto getStringBuffer() noexcept -> char*
   return string_buf.data();
 }
 
+static auto getMoveCache() noexcept -> std::unordered_map<std::uint32_t, std::string>&
+{
+  static std::unordered_map<std::uint32_t, std::string> move_cache{};
+  return move_cache;
+}
+
 }  // namespace internal
 
 // Function prototypes
@@ -193,8 +199,20 @@ auto FTermcap::getString (const std::string& cap) -> char*
 //----------------------------------------------------------------------
 auto FTermcap::encodeMotionParameter (const std::string& cap, int col, int row) -> std::string
 {
-  const auto str = ::tgoto(C_STR(cap.data()), col, row);
-  return str ? str : std::string();
+  const std::uint32_t key = (std::uint32_t(col) << 16) | std::uint16_t(row);
+
+  // Cache search
+  static auto& move_cache = internal::getMoveCache();
+  auto iter = move_cache.find(key);
+
+  if ( iter != move_cache.end() )
+    return iter->second;
+
+  // Cache-Miss: call tgoto
+  if ( const char* res = ::tgoto(C_STR(cap.data()), col, row) )
+    return move_cache[key] = std::string(res);
+
+  return std::string();
 }
 
 //----------------------------------------------------------------------
@@ -286,6 +304,13 @@ void FTermcap::setDefaultPutStringFunction()
         return fsys->putstring(string, len);
       };
   outs = put_string;
+}
+
+//----------------------------------------------------------------------
+void FTermcap::clearMotionCache()
+{
+  static auto& move_cache = internal::getMoveCache();
+  move_cache.clear();
 }
 
 

@@ -81,6 +81,13 @@ using FStringList = std::vector<FString>;
 class FString
 {
   public:
+    // Exception handling
+    class formatting_error : public std::runtime_error
+    {
+      public:
+        using std::runtime_error::runtime_error;
+    };
+
     // Using-declarations - type aliases
     using size_type              = std::wstring::size_type;
     using difference_type        = std::wstring::difference_type;
@@ -827,7 +834,7 @@ inline auto FString::sprintf (const FString& format, Args&&... args) -> FString&
                                      , std::forward<Args>(args)... );
 
   if ( written < 0 || size_type(written) >= buf.size() )
-    throw std::runtime_error("FString::sprintf buffer overflow or encoding error");
+    throw formatting_error("FString::sprintf buffer overflow or encoding error");
 
   return setString(buf.data());
 }

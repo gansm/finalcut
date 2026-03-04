@@ -214,7 +214,7 @@ class FData final : public FDataAccess
       , value_ref{value}
     { }
 
-    ~FData() noexcept final = default;  // Destructor
+    ~FData() noexcept override = default;  // Destructor
 
     FData (const FData& d) noexcept(nothrow_copy_ctor_v)  // Copy constructor
       : FDataAccess{d}
@@ -278,7 +278,7 @@ class FData final : public FDataAccess
     }
 
     // Accessors
-    auto getClassName() const -> FString final
+    auto getClassName() const -> FString override
     {
       return "FData";
     }

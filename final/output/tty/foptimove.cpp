@@ -48,6 +48,8 @@ FOptiMove::FOptiMove (int baud)
 
   // ANSI set cursor address preset for undefined terminals
   set_cursor_address (CSI "%i%p1%d;%p2%dH");
+  // Clearing the motion cache for non-ANSI terminals
+  FTermcap::clearMotionCache();
   // Set carriage return preset
   set_carriage_return ("\r");
   // Set cursor down preset

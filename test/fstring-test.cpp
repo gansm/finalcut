@@ -2961,7 +2961,10 @@ void FStringTest::controlCodesTest()
   finalcut::FString c0(0x1f);
 
   for (auto i = 0; i < 0x1f; i++)
+  {
     c0[i] = i + 1;
+    CPPUNIT_ASSERT ( ! finalcut::isPrintable(char(c0[i])) );
+  }
 
   CPPUNIT_ASSERT ( c0.getLength() == 31 );
   CPPUNIT_ASSERT ( c0.replaceControlCodes()

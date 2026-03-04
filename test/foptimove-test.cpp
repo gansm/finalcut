@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2025 Markus Gans                                      *
+* Copyright 2018-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -185,6 +185,7 @@ void FOptiMoveTest::classNameTest()
 //----------------------------------------------------------------------
 void FOptiMoveTest::noArgumentTest()
 {
+  finalcut::FTermcap::clearMotionCache();
   finalcut::FOptiMove om;
   CPPUNIT_ASSERT_STRING (om.moveCursor (1, 1, 5, 5), CSI "6;6H");
   CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 9, 9), CSI "10;10H");
@@ -213,6 +214,7 @@ void FOptiMoveTest::noArgumentTest()
 //----------------------------------------------------------------------
 void FOptiMoveTest::homeTest()
 {
+  finalcut::FTermcap::clearMotionCache();
   int baud = 4800;
   finalcut::FOptiMove om(baud);
   om.setTermSize (80, 24);
@@ -237,6 +239,7 @@ void FOptiMoveTest::homeTest()
 //----------------------------------------------------------------------
 void FOptiMoveTest::fromLeftToRightTest()
 {
+  finalcut::FTermcap::clearMotionCache();
   int baud = 38400;
   finalcut::FOptiMove om(baud);
   om.setTermSize (80, 24);
@@ -263,6 +266,7 @@ void FOptiMoveTest::fromLeftToRightTest()
 //----------------------------------------------------------------------
 void FOptiMoveTest::ansiTest()
 {
+  finalcut::FTermcap::clearMotionCache();
   finalcut::FOptiMove om;
   om.setTermSize (80, 25);
   om.setBaudRate (19200);
@@ -326,6 +330,7 @@ void FOptiMoveTest::ansiTest()
 //----------------------------------------------------------------------
 void FOptiMoveTest::vt100Test()
 {
+  finalcut::FTermcap::clearMotionCache();
   finalcut::FOptiMove om;
   om.setTermSize (80, 24);
   om.setBaudRate (1200);
@@ -390,6 +395,7 @@ void FOptiMoveTest::vt100Test()
 //----------------------------------------------------------------------
 void FOptiMoveTest::xtermTest()
 {
+  finalcut::FTermcap::clearMotionCache();
   finalcut::FOptiMove om;
   om.setTermSize (80, 25);
   om.setBaudRate (38400);
@@ -454,6 +460,7 @@ void FOptiMoveTest::xtermTest()
 //----------------------------------------------------------------------
 void FOptiMoveTest::rxvtTest()
 {
+  finalcut::FTermcap::clearMotionCache();
   finalcut::FOptiMove om;
   om.setTermSize (80, 25);
   om.setBaudRate (38400);
@@ -518,6 +525,7 @@ void FOptiMoveTest::rxvtTest()
 //----------------------------------------------------------------------
 void FOptiMoveTest::linuxTest()
 {
+  finalcut::FTermcap::clearMotionCache();
   finalcut::FOptiMove om;
   om.setTermSize (80, 25);
   om.setBaudRate (38400);
@@ -582,6 +590,7 @@ void FOptiMoveTest::linuxTest()
 //----------------------------------------------------------------------
 void FOptiMoveTest::cygwinTest()
 {
+  finalcut::FTermcap::clearMotionCache();
   finalcut::FOptiMove om;
   om.setTermSize (80, 25);
   om.setBaudRate (38400);
@@ -647,6 +656,7 @@ void FOptiMoveTest::cygwinTest()
 //----------------------------------------------------------------------
 void FOptiMoveTest::puttyTest()
 {
+  finalcut::FTermcap::clearMotionCache();
   finalcut::FOptiMove om;
   om.setTermSize (80, 25);
   om.setBaudRate (38400);
@@ -712,6 +722,7 @@ void FOptiMoveTest::puttyTest()
 //----------------------------------------------------------------------
 void FOptiMoveTest::teratermTest()
 {
+  finalcut::FTermcap::clearMotionCache();
   finalcut::FOptiMove om;
   om.setTermSize (80, 25);
   om.setBaudRate (38400);
@@ -795,6 +806,7 @@ void FOptiMoveTest::teratermTest()
 //----------------------------------------------------------------------
 void FOptiMoveTest::wyse50Test()
 {
+  finalcut::FTermcap::clearMotionCache();
   finalcut::FOptiMove om;
   om.setTermSize (80, 25);
   om.setBaudRate (38400);
@@ -828,6 +840,7 @@ void FOptiMoveTest::wyse50Test()
   CPPUNIT_ASSERT_STRING (om.moveCursor (10, 4, 9, 4), "\b");
   CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 11, 4), "\f\f");
   CPPUNIT_ASSERT_STRING (om.moveCursor (11, 4, 9, 4), "\b\b");
+
   CPPUNIT_ASSERT_STRING (om.moveCursor (1, 0, 8, 0), ESC "= (");
   CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 1), "\n");
   CPPUNIT_ASSERT_STRING (om.moveCursor (16, 1, 16, 0), "\v");

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2022 Markus Gans                                      *
+* Copyright 2020-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -58,10 +58,10 @@ struct FCallbackData
 
   template <typename FuncPtr>
   FCallbackData (FString&& s, FWidget* i, FuncPtr m, FCall&& c)
-    : cb_signal(std::move(s))
-    , cb_instance(i)
+    : cb_function(std::move(c))
     , cb_function_ptr(m)
-    , cb_function(std::move(c))
+    , cb_instance(i)
+    , cb_signal(std::move(s))
   { }
 
   FCallbackData (const FCallbackData&) = default;
@@ -71,10 +71,10 @@ struct FCallbackData
   auto operator = (FCallbackData&&) noexcept -> FCallbackData& = default;
 
   // Data members
-  FString   cb_signal{};
-  FWidget*  cb_instance{};
-  void*     cb_function_ptr{};
   FCall     cb_function{};
+  void*     cb_function_ptr{};
+  FWidget*  cb_instance{};
+  FString   cb_signal{};
 };
 
 

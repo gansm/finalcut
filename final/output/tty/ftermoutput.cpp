@@ -70,9 +70,13 @@ constexpr auto adjustValue (T current, T reference, T delta, T minLimit) -> T
 struct var
 {
   static Encoding terminal_encoding;
+  static bool is_new_font;
+  static bool has_sub_map;
 };
 
 Encoding var::terminal_encoding{Encoding::Unknown};
+bool var::is_new_font{false};
+bool var::has_sub_map{false};
 
 }  // namespace internal
 
@@ -296,6 +300,8 @@ void FTermOutput::initTerminal (FVTerm::FTermArea* virtual_terminal)
 {
   getFTerm().initTerminal();
   internal::var::terminal_encoding = fterm_data->getTerminalEncoding();
+  internal::var::is_new_font = FTerm::isNewFont();
+  internal::var::has_sub_map = ! getFTerm().getCharSubstitutionMap().isEmpty();
 
   // Redefine the color palette
   redefineColorPalette();
@@ -867,7 +873,7 @@ void FTermOutput::printCharacter ( uInt& x, uInt y, bool min_and_not_max
     printFullWidthCharacter (x, y, iter);
   }
   else if ( x > 0 && x < uInt(vterm->size.width - 1)
-         && isFullWidthPaddingChar(*iter)  )
+         && isFullWidthPaddingChar(*iter) )
   {
     printFullWidthPaddingCharacter (x, y, iter);
   }
@@ -1327,7 +1333,7 @@ inline void FTermOutput::markAsPrinted (uInt from, uInt to, uInt y) const noexce
 inline void FTermOutput::newFontChanges (FChar& next_char) const
 {
   // NewFont special cases
-  if ( ! FTerm::isNewFont() )
+  if ( ! internal::var::is_new_font )
     return;
 
   if ( next_char.ch.unicode_data[0] == UniChar::LowerHalfBlock )
@@ -1353,9 +1359,7 @@ inline void FTermOutput::charsetChanges (FChar& next_char) const
     iter_enc_ch = std::next(iter_enc_ch);
   }
 
-  const auto terminal_encoding = internal::var::terminal_encoding;
-
-  if ( terminal_encoding == Encoding::UTF8 )
+  if ( internal::var::terminal_encoding == Encoding::UTF8 )
     return;
 
   const auto& ch = next_char.ch.unicode_data[0];
@@ -1374,15 +1378,19 @@ inline void FTermOutput::charsetChanges (FChar& next_char) const
 
   first_enc_char = ch_enc;
 
-  if ( terminal_encoding == Encoding::VT100 )
+  if ( internal::var::terminal_encoding == Encoding::VT100 )
     next_char.setBit(FAttribute::set::alt_charset);
-  else if ( terminal_encoding == Encoding::PC )
+  else if ( internal::var::terminal_encoding == Encoding::PC )
   {
+    if ( ch_enc >= 0x20 )
+      return;
+
+    // Character 0x00..0x1f
     next_char.setBit(FAttribute::set::pc_charset);
     const auto is_putty = fterm_data->isTermType(FTermType::putty);
     const auto is_xterm = fterm_data->isTermType(FTermType::xterm);
 
-    if ( ! is_putty && is_xterm && ch_enc < 0x20 )  // Character 0x00..0x1f
+    if ( ! is_putty && is_xterm )
     {
       if ( FTerm::hasUTF8() )
         first_enc_char = int(FTerm::charEncode(ch, Encoding::ASCII));
@@ -1425,18 +1433,22 @@ inline void FTermOutput::appendChar (FChar& next_char)
   appendAttributes (next_char);
   characterFilter (next_char);
 
-  for (const auto& ch : next_char.encoded_char)
+  if ( internal::var::terminal_encoding == Encoding::UTF8 )
   {
-    if ( ch != L'\0')
+    for (const auto& ch : next_char.encoded_char)
     {
-      if ( internal::var::terminal_encoding == Encoding::UTF8 )
+      if ( ch != L'\0')
         appendOutputBuffer (unicode_to_utf8(ch));
-      else
-        appendOutputBuffer (UTF8_Char({{char(uChar(ch)), '\0', '\0','\0'}, 1}));
-    }
 
-    if ( ! combined_char_support )
-      return;
+      if ( ! combined_char_support )
+        return;
+    }
+  }
+  else  // ASCII, VT100, or PC encoding
+  {
+    appendOutputBuffer ( FOutputBuffer::OutputType::String
+                       , reinterpret_cast<char*>(&next_char.encoded_char.unicode_data[0])
+                       , 1 );
   }
 }
 
@@ -1520,11 +1532,10 @@ void FTermOutput::appendLowerRight (const FChar_iterator& last_char_iter)
 //----------------------------------------------------------------------
 inline void FTermOutput::characterFilter (FChar& next_char)
 {
-  static const auto& sub_map = getFTerm().getCharSubstitutionMap();
-
-  if ( sub_map.isEmpty() )
+  if ( ! internal::var::has_sub_map )
     return;
 
+  static const auto& sub_map = getFTerm().getCharSubstitutionMap();
   auto& first_enc_char = next_char.encoded_char.unicode_data[0];
   const auto& entry = sub_map.getMappedChar(first_enc_char);
 

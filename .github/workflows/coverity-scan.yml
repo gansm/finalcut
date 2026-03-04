@@ -34,7 +34,7 @@ jobs:
 
     - name: Download coverity scan build tool
       run: |
-        wget -q https://scan.coverity.com/download/cxx/linux64 \
+        wget --secure-protocol=TLSv1_2 --max-redirect=0 -q https://scan.coverity.com/download/cxx/linux64 \
           --post-data "token=$COVERITY_SCAN_TOKEN&project=gansm%2Ffinalcut" \
           -O cov-analysis-linux64.tar.gz
         mkdir cov-analysis-linux64
