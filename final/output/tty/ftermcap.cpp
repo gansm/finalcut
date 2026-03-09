@@ -210,7 +210,7 @@ auto FTermcap::encodeMotionParameter (const std::string& cap, int col, int row) 
 
   // Cache-Miss: call tgoto
   if ( const char* res = ::tgoto(C_STR(cap.data()), col, row) )
-    return move_cache[key] = {res};
+    return move_cache[key] = res;
 
   return {};
 }

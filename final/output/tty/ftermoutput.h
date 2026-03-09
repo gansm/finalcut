@@ -64,7 +64,7 @@ class FRingBuffer;
 class FCharBuffer
 {
   public:
-    FCharBuffer (std::size_t initial_cap = 4096)
+    explicit FCharBuffer (std::size_t initial_cap = 4096)
     {
       buffer.reserve(initial_cap);
     }
