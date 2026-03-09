@@ -166,8 +166,8 @@ auto isFCharEqual ( const finalcut::FChar& lhs
   attr.bit()->no_changes = true;
   attr.bit()->printed = true;
 
-  return finalcut::isFUnicodeEqual(lhs.ch, rhs.ch)
-      && finalcut::isFUnicodeEqual(lhs.encoded_char, rhs.encoded_char)
+  return lhs.ch == rhs.ch
+      && lhs.encoded_char == rhs.encoded_char
       && lhs.color.data   == rhs.color.data
       && lhs.attr.byte()->at(0) == rhs.attr.byte()->at(0)
       && lhs.attr.byte()->at(1) == rhs.attr.byte()->at(1)

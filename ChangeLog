@@ -1,3 +1,6 @@
+2026-03-09  Markus Gans  <guru.mail@muenster.de>
+	* Improved FOutputBuffer access
+
 2026-03-04  Markus Gans  <guru.mail@muenster.de>
 	* Add a motion cache to quickly access escape sequences for frequently 
 	  used cursor positions

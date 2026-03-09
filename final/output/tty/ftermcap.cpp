@@ -70,13 +70,13 @@ static constexpr std::size_t BUF_SIZE{2048};
 // Function
 static auto getStringBuffer() noexcept -> char*
 {
-  static std::array<char, BUF_SIZE> string_buf{};
+  static auto string_buf = std::array<char, BUF_SIZE>{};
   return string_buf.data();
 }
 
 static auto getMoveCache() noexcept -> std::unordered_map<std::uint32_t, std::string>&
 {
-  static std::unordered_map<std::uint32_t, std::string> move_cache{};
+  static auto move_cache = std::unordered_map<std::uint32_t, std::string>{};
   return move_cache;
 }
 
@@ -210,9 +210,9 @@ auto FTermcap::encodeMotionParameter (const std::string& cap, int col, int row) 
 
   // Cache-Miss: call tgoto
   if ( const char* res = ::tgoto(C_STR(cap.data()), col, row) )
-    return move_cache[key] = std::string(res);
+    return move_cache[key] = {res};
 
-  return std::string();
+  return {};
 }
 
 //----------------------------------------------------------------------

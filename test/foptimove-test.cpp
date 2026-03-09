@@ -840,7 +840,6 @@ void FOptiMoveTest::wyse50Test()
   CPPUNIT_ASSERT_STRING (om.moveCursor (10, 4, 9, 4), "\b");
   CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 11, 4), "\f\f");
   CPPUNIT_ASSERT_STRING (om.moveCursor (11, 4, 9, 4), "\b\b");
-
   CPPUNIT_ASSERT_STRING (om.moveCursor (1, 0, 8, 0), ESC "= (");
   CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 1), "\n");
   CPPUNIT_ASSERT_STRING (om.moveCursor (16, 1, 16, 0), "\v");

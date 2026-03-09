@@ -848,26 +848,6 @@ struct FUnicode
 };
 
 
-// FChar operator functions
-//----------------------------------------------------------------------
-constexpr auto isFUnicodeEqual (const FUnicode& lhs, const FUnicode& rhs) noexcept -> bool
-{
-#if defined(__clang__)
-  #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
-#endif
-  // Perform a byte-wise comparison
-  return lhs.unicode_data[0] == rhs.unicode_data[0]
-      && lhs.unicode_data[1] == rhs.unicode_data[1]
-      && lhs.unicode_data[2] == rhs.unicode_data[2]
-      && lhs.unicode_data[3] == rhs.unicode_data[3]
-      && lhs.unicode_data[4] == rhs.unicode_data[4];
-#if defined(__clang__)
-  #pragma clang diagnostic pop
-#endif
-}
-
-
 // FCellColor
 //----------------------------------------------------------------------
 enum class FColor : uInt16;  // forward declaration

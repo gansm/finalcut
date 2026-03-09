@@ -478,7 +478,7 @@ void FTermOutput::flush()
     || ! (isFlushTimeout() || getFVTerm().isTerminalUpdateForced()) )
     return;
 
-  const auto& data_ref = output_buffer->data;
+  const auto* data_ptr = output_buffer->data.data();
   std::size_t offset = 0;  // The read position in the string
 
   while ( ! output_buffer->isEmpty() )
@@ -488,9 +488,9 @@ void FTermOutput::flush()
     const auto& length = first.length;
 
     if ( type == FOutputBuffer::OutputType::String )
-      FTerm::stringPrint (&data_ref[offset], length);
+      FTerm::stringPrint (data_ptr + offset, length);
     else if ( type == FOutputBuffer::OutputType::Control )
-      FTerm::paddingPrint (&data_ref[offset], length);
+      FTerm::paddingPrint (data_ptr + offset, length);
 
     offset += length;
     output_buffer->slices.pop();
@@ -1348,19 +1348,12 @@ inline void FTermOutput::newFontChanges (FChar& next_char) const
 //----------------------------------------------------------------------
 inline void FTermOutput::charsetChanges (FChar& next_char) const
 {
-  auto iter_enc_ch = next_char.encoded_char.begin();
-  auto iter_ch = next_char.ch.cbegin();
-  auto end_ch = next_char.ch.cend();
-
-  while ( iter_ch < end_ch && *iter_ch != L'\0' )
-  {
-    *iter_enc_ch = *iter_ch;
-    iter_ch = std::next(iter_ch);
-    iter_enc_ch = std::next(iter_enc_ch);
-  }
-
   if ( internal::var::terminal_encoding == Encoding::UTF8 )
     return;
+
+  std::memcpy( next_char.encoded_char.data(),
+               next_char.ch.data(),
+               sizeof(wchar_t) * UNICODE_MAX );
 
   const auto& ch = next_char.ch.unicode_data[0];
   const auto& ch_enc = FTerm::charEncode(ch);
@@ -1379,26 +1372,27 @@ inline void FTermOutput::charsetChanges (FChar& next_char) const
   first_enc_char = ch_enc;
 
   if ( internal::var::terminal_encoding == Encoding::VT100 )
-    next_char.setBit(FAttribute::set::alt_charset);
+    next_char.attr.data |= FAttribute::set::alt_charset;  // Set alt charset
   else if ( internal::var::terminal_encoding == Encoding::PC )
   {
     if ( ch_enc >= 0x20 )
       return;
 
     // Character 0x00..0x1f
-    next_char.setBit(FAttribute::set::pc_charset);
+    next_char.attr.data |= FAttribute::set::pc_charset;  // Set pc charset
+
     const auto is_putty = fterm_data->isTermType(FTermType::putty);
     const auto is_xterm = fterm_data->isTermType(FTermType::xterm);
 
-    if ( ! is_putty && is_xterm )
+    if ( is_putty || ! is_xterm )
+      return;
+
+    if ( FTerm::hasUTF8() )
+      first_enc_char = int(FTerm::charEncode(ch, Encoding::ASCII));
+    else
     {
-      if ( FTerm::hasUTF8() )
-        first_enc_char = int(FTerm::charEncode(ch, Encoding::ASCII));
-      else
-      {
-        first_enc_char += 0x5f;
-        next_char.setBit(FAttribute::set::alt_charset);
-      }
+      first_enc_char += 0x5f;
+      next_char.attr.data |= FAttribute::set::alt_charset;  // Set alt charset
     }
   }
 }
@@ -1435,10 +1429,12 @@ inline void FTermOutput::appendChar (FChar& next_char)
 
   if ( internal::var::terminal_encoding == Encoding::UTF8 )
   {
-    for (const auto& ch : next_char.encoded_char)
+    for (const auto& ch : next_char.ch)
     {
-      if ( ch != L'\0')
-        appendOutputBuffer (unicode_to_utf8(ch));
+      if ( ch == L'\0')
+        break;
+
+      appendOutputBuffer (ch);
 
       if ( ! combined_char_support )
         return;
@@ -1576,17 +1572,28 @@ inline void FTermOutput::appendOutputBuffer (const FTermControl& ctrl)
 }
 
 //----------------------------------------------------------------------
-inline void FTermOutput::appendOutputBuffer (const UniChar& ch)
+inline void FTermOutput::appendOutputBuffer (wchar_t ucs)
 {
-  appendOutputBuffer(unicode_to_utf8(wchar_t(ch)));
+  static constexpr auto type = FOutputBuffer::OutputType::String;
+  auto& slices = output_buffer->slices;
+  auto& last = slices.back();
+
+  if ( ! slices.isEmpty() && last.type == type )
+  {
+    last.length += output_buffer->data.appendUnicode(ucs);
+  }
+  else
+  {
+    const auto length = output_buffer->data.appendUnicode(ucs);
+    slices.emplace(type, length);
+    checkFreeBufferSize();
+  }
 }
 
 //----------------------------------------------------------------------
-inline void FTermOutput::appendOutputBuffer (const UTF8_Char& utf8_char)
+inline void FTermOutput::appendOutputBuffer (const UniChar& ch)
 {
-  appendOutputBuffer ( FOutputBuffer::OutputType::String
-                     , &utf8_char.u8.byte1
-                     , utf8_char.length );
+  appendOutputBuffer(wchar_t(ch));
 }
 
 //----------------------------------------------------------------------
