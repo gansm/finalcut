@@ -41,7 +41,9 @@
 #include <limits>
 #include <memory>
 #include <string>
+#include <type_traits>
 #include <utility>
+#include <vector>
 
 #include "final/eventloop/pipedata.h"
 
@@ -256,46 +258,124 @@ using enable_if_arithmetic_without_char_t =
                  && ! std::is_same<char, NumT>::value
                  , std::nullptr_t>;
 
-// UTF8_Char
-//----------------------------------------------------------------------
-struct FourByteData
+// UTF-8 encoding
+namespace UTF8
 {
-  char byte1;  // First character
-  char byte2;  // Second character
-  char byte3;  // Third character
-  char byte4;  // Fourth character
-};
 
-struct UTF8_Char
+inline void expand (std::vector<char>& buffer, std::size_t addend)
 {
-  // Data member
-  FourByteData u8;
-  uInt32 length;
+  buffer.resize(buffer.size() + addend);
+}
 
-  // Friend Non-member operator functions
-  friend constexpr auto operator == ( const UTF8_Char& lhs
-                                    , const UTF8_Char& rhs ) noexcept -> bool
+inline void expand (std::array<char, 4>&, std::size_t)
+{ }
+
+template <typename T>
+using DecayedT = typename std::decay<T>::type;
+
+template <typename CharBufferT>
+using uInt32_if_vector_or_array = std::enable_if_t<
+       std::is_same<DecayedT<CharBufferT>, std::vector<char>>::value
+    || std::is_same<DecayedT<CharBufferT>, std::array<char, 4>>::value
+     , uInt32>;
+
+#if defined(__CYGWIN__)
+
+template <typename CharBufferT>
+inline auto encode (wchar_t ucs, CharBufferT& buffer) -> uInt32_if_vector_or_array<CharBufferT>
+{
+  // Writes UTF-8 bytes to the target array and returns the length
+  const auto index = std::is_same<CharBufferT, std::vector<char>>::value
+                   ? buffer.size()
+                   : 0;
+
+  // 1 Byte (7-bit): 0xxxxxxx
+  if ( ucs < 0x80 )
   {
-    if ( lhs.length != rhs.length )
-      return false;
+    expand(buffer, 1);
+    const auto dest = &buffer[index];
+    dest[0] = char(ucs);
+    return 1;
+  }
 
-#if HAVE_BUILTIN(__builtin_bit_cast)
-    return __builtin_bit_cast(uInt32, lhs.u8) == __builtin_bit_cast(uInt32, rhs.u8);
+  // 2 byte (11-bit): 110xxxxx 10xxxxxx
+  if ( ucs < 0x800 )
+  {
+    expand(buffer, 2);
+    const auto dest = &buffer[index];
+    dest[0] = char(0xc0 | uChar(ucs >> 6u));
+    dest[1] = char(0x80 | uChar(ucs & 0x3f));
+    return 2;
+  }
+
+  // 3 byte (16-bit): 1110xxxx 10xxxxxx 10xxxxxx
+  expand(buffer, 3);
+  const auto dest = &buffer[index];
+  dest[0] = char(0xe0 | uChar(ucs >> 12u));
+  dest[1] = char(0x80 | uChar((ucs >> 6u) & 0x3f));
+  dest[2] = char(0x80 | uChar(ucs & 0x3f));
+  return 3;
+}
+
 #else
-    uInt32 lhs_bytes{};
-    uInt32 rhs_bytes{};
-    std::memcpy(&lhs_bytes, &lhs.u8, sizeof(uInt32));
-    std::memcpy(&rhs_bytes, &rhs.u8, sizeof(uInt32));
-    return lhs_bytes == rhs_bytes;
-#endif
+
+template <typename CharBufferT>
+inline auto encode (wchar_t ucs, CharBufferT& buffer) -> uInt32_if_vector_or_array<CharBufferT>
+{
+  // Writes UTF-8 bytes to the target array and returns the length
+  const auto index = std::is_same<CharBufferT, std::vector<char>>::value
+                   ? buffer.size()
+                   : 0;
+
+  // 1 Byte (7-bit): 0xxxxxxx
+  if ( ucs < 0x80 )
+  {
+    expand(buffer, 1);
+    const auto dest = &buffer[index];
+    dest[0] = char(ucs);
+    return 1;
   }
 
-  friend constexpr auto operator != ( const UTF8_Char& lhs
-                                    , const UTF8_Char& rhs ) noexcept -> bool
+  // 2 byte (11-bit): 110xxxxx 10xxxxxx
+  if ( ucs < 0x800 )
   {
-    return ! ( lhs == rhs );
+    expand(buffer, 2);
+    const auto dest = &buffer[index];
+    dest[0] = char(0xc0 | uChar(ucs >> 6u));
+    dest[1] = char(0x80 | uChar(ucs & 0x3f));
+    return 2;
   }
+
+  // 3 byte (16-bit): 1110xxxx 10xxxxxx 10xxxxxx
+  if ( ucs < 0x10000 )
+  {
+    expand(buffer, 3);
+    const auto dest = &buffer[index];
+    dest[0] = char(0xe0 | uChar(ucs >> 12u));
+    dest[1] = char(0x80 | uChar((ucs >> 6u) & 0x3f));
+    dest[2] = char(0x80 | uChar(ucs & 0x3f));
+    return 3;
+  }
+
+  // 4 byte (21-bit): 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+  if ( ucs < 0x200000 )
+  {
+    expand(buffer, 4);
+    const auto dest = &buffer[index];
+    dest[0] = char(0xf0 | uChar(ucs >> 18u));
+    dest[1] = char(0x80 | uChar((ucs >> 12u) & 0x3f));
+    dest[2] = char(0x80 | uChar((ucs >> 6u) & 0x3f));
+    dest[3] = char(0x80 | uChar(ucs & 0x3f));
+    return 4;
+  }
+
+  return encode(L'�', buffer);  // Invalid character
+}
+
+#endif
+
 };
+
 
 // FCharAttribute + FAttribute
 //----------------------------------------------------------------------

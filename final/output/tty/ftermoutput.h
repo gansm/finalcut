@@ -74,7 +74,10 @@ class FCharBuffer
       buffer.insert(buffer.end(), data, data + len);
     }
 
-    auto appendUnicode (wchar_t) -> uInt32;
+    inline auto appendUnicode (wchar_t ucs) -> uInt32
+    {
+      return UTF8::encode(ucs, buffer);
+    }
 
     inline const char* data() const noexcept
     {
@@ -100,82 +103,6 @@ class FCharBuffer
     std::vector<char> buffer;
 };
 
-#if defined(__CYGWIN__)
-inline auto FCharBuffer::appendUnicode (wchar_t ucs) -> uInt32
-{
-  const auto dest = buffer.end();
-
-  // 1 Byte (7-bit): 0xxxxxxx
-  if ( ucs < 0x80 )
-  {
-    expand(1);
-    dest[0] = char(ucs);
-    return 1;
-  }
-
-  // 2 byte (11-bit): 110xxxxx 10xxxxxx
-  if ( ucs < 0x800 )
-  {
-    expand(2);
-    dest[0] = char(0xc0 | uChar(ucs >> 6u));
-    dest[1] = char(0x80 | uChar(ucs & 0x3f));
-    return 2;
-  }
-
-  // 3 byte (16-bit): 1110xxxx 10xxxxxx 10xxxxxx
-  expand(3);
-  dest[0] = char(0xe0 | uChar(ucs >> 12u));
-  dest[1] = char(0x80 | uChar((ucs >> 6u) & 0x3f));
-  dest[2] = char(0x80 | uChar(ucs & 0x3f));
-  return 3;
-}
-
-#else
-inline auto FCharBuffer::appendUnicode (wchar_t ucs) -> uInt32
-{
-  const auto dest = buffer.end();
-
-  // 1 Byte (7-bit): 0xxxxxxx
-  if ( ucs < 0x80 )
-  {
-    expand(1);
-    dest[0] = char(ucs);
-    return 1;
-  }
-
-  // 2 byte (11-bit): 110xxxxx 10xxxxxx
-  if ( ucs < 0x800 )
-  {
-    expand(2);
-    dest[0] = char(0xc0 | uChar(ucs >> 6u));
-    dest[1] = char(0x80 | uChar(ucs & 0x3f));
-    return 2;
-  }
-
-  // 3 byte (16-bit): 1110xxxx 10xxxxxx 10xxxxxx
-  if ( ucs < 0x10000 )
-  {
-    expand(3);
-    dest[0] = char(0xe0 | uChar(ucs >> 12u));
-    dest[1] = char(0x80 | uChar((ucs >> 6u) & 0x3f));
-    dest[2] = char(0x80 | uChar(ucs & 0x3f));
-    return 3;
-  }
-
-  // 4 byte (21-bit): 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-  if ( ucs < 0x200000 )
-  {
-    expand(4);
-    dest[0] = char(0xf0 | uChar(ucs >> 18u));
-    dest[1] = char(0x80 | uChar((ucs >> 12u) & 0x3f));
-    dest[2] = char(0x80 | uChar((ucs >> 6u) & 0x3f));
-    dest[3] = char(0x80 | uChar(ucs & 0x3f));
-    return 4;
-  }
-
-  return appendUnicode(L'�');  // Invalid character
-}
-#endif
 
 //----------------------------------------------------------------------
 // struct FOutputBuffer
@@ -289,7 +216,8 @@ class FTermOutput final : public FOutput
     // Constants
     struct FTermControl
     {
-      std::string string;
+      const char* data;
+      uInt32 length{};
     };
 
     // Enumerations

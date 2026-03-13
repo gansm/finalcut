@@ -297,7 +297,7 @@ void showString()
   {
     const auto& name = entry.name;
     const auto cap = std::size_t(entry.cap);
-    tcapString (name, tcap_strings[cap].string);
+    tcapString (name, tcap_strings[cap].string.data);
   }
 }
 

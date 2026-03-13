@@ -47,7 +47,7 @@
 #include "final/util/fstring.h"
 
 // FTermcap string macro
-#define TCAP(...)  FTermcap::strings[int(Termcap::__VA_ARGS__)].string
+#define TCAP(...)  FTermcap::strings[int(Termcap::__VA_ARGS__)].string.data
 
 namespace finalcut
 {
@@ -69,9 +69,15 @@ class FTermcap final
     static constexpr std::size_t tname_min_size = 4u;
     static constexpr std::size_t tname_size = std::max(alignof(void*), tname_min_size);
 
+    struct TermcapString
+    {
+      const char* data;
+      uInt32 length{};
+    };
+
     struct TCapMap
     {
-      const char* string;
+      TermcapString string;
       std::array<char, tname_size> tname;
     };
 

@@ -475,7 +475,12 @@ void FTermcap::termcapStrings()
   // Read termcap output strings
 
   for (auto&& entry : strings)
-    entry.string = getString(entry.tname.data());
+  {
+    entry.string.data = getString(entry.tname.data());
+    entry.string.length = entry.string.data
+                        ? uInt32(finalcut::stringLength(entry.string.data))
+                        : 0;
+  }
 
   const auto& ho = TCAP(t_cursor_home);
 
@@ -623,94 +628,94 @@ FTermcap::TCapMapType FTermcap::strings =
 //  |          .-------- Tcap-code
 //  |          |        // variable name          -> description
 //------------------------------------------------------------------------------
-  { nullptr, {"bl"} },  // bell                   -> audible signal (bell) (P)
-  { nullptr, {"vb"} },  // flash_screen           -> visible bell (may not move cursor)
-  { nullptr, {"ec"} },  // erase_chars            -> erase #1 characters (P)
-  { nullptr, {"cl"} },  // clear_screen           -> clear screen and home cursor (P*)
-  { nullptr, {"cd"} },  // clr_eos                -> clear to end of screen (P*)
-  { nullptr, {"ce"} },  // clr_eol                -> clear to end of line (P)
-  { nullptr, {"cb"} },  // clr_bol                -> Clear to beginning of line
-  { nullptr, {"ho"} },  // cursor_home            -> home cursor (if no cup)
-  { nullptr, {"ll"} },  // cursor_to_ll           -> last line, first column (if no cup)
-  { nullptr, {"cr"} },  // carriage_return        -> carriage return (P*)
-  { nullptr, {"ta"} },  // tab                    -> tab to next 8-space hardware tab stop
-  { nullptr, {"bt"} },  // back_tab               -> back tab (P)
-  { nullptr, {"pc"} },  // pad_char               -> padding char (instead of null)
-  { nullptr, {"ip"} },  // insert_padding         -> insert padding after inserted character
-  { nullptr, {"ic"} },  // insert_character       -> insert character (P)
-  { nullptr, {"IC"} },  // parm_ich               -> insert #1 characters (P*)
-  { nullptr, {"rp"} },  // repeat_char            -> repeat char #1 #2 times (P*)
-  { nullptr, {"lr"} },  // repeat_last_char       -> repeat last char #1 times (P*)
-  { nullptr, {"Ic"} },  // initialize_color       -> initialize color #1 to (#2,#3,#4)
-  { nullptr, {"Ip"} },  // initialize_pair        -> Initialize color pair #1 to
-                        //                           fg=(#2,#3,#4), bg=(#5,#6,#7)
-  { nullptr, {"AF"} },  // set_a_foreground       -> Set ANSI background color to #1
-  { nullptr, {"AB"} },  // set_a_background       -> Set ANSI background color to #1
-  { nullptr, {"Sf"} },  // set_foreground         -> Set foreground color #1
-  { nullptr, {"Sb"} },  // set_background         -> Set background color #1
-  { nullptr, {"sp"} },  // set_color_pair         -> Set current color pair to #1
-  { nullptr, {"op"} },  // orig_pair              -> Set default pair to original value
-  { nullptr, {"oc"} },  // orig_colors            -> Set all color pairs to the original
-  { nullptr, {"NC"} },  // no_color_video         -> video attributes that cannot be used
-                        //                           with colors
-  { nullptr, {"cm"} },  // cursor_address         -> move to row #1 columns #2
-  { nullptr, {"ch"} },  // column_address         -> horizontal position #1, absolute (P)
-  { nullptr, {"cv"} },  // row_address            -> vertical position #1 absolute (P)
-  { nullptr, {"vs"} },  // cursor_visible         -> make cursor very visible
-  { nullptr, {"vi"} },  // cursor_invisible       -> make cursor invisible
-  { nullptr, {"ve"} },  // cursor_normal          -> make cursor appear normal (undo vi/vs)
-  { nullptr, {"up"} },  // cursor_up              -> up one line
-  { nullptr, {"do"} },  // cursor_down            -> down one line
-  { nullptr, {"le"} },  // cursor_left            -> move left one space
-  { nullptr, {"nd"} },  // cursor_right           -> non-destructive space (move right)
-  { nullptr, {"UP"} },  // parm_up_cursor         -> up #1 lines (P*)
-  { nullptr, {"DO"} },  // parm_down_cursor       -> down #1 lines (P*)
-  { nullptr, {"LE"} },  // parm_left_cursor       -> move #1 characters to the left (P)
-  { nullptr, {"RI"} },  // parm_right_cursor      -> move #1 characters to the right (P*)
-  { nullptr, {"sc"} },  // save_cursor            -> save current cursor position (P)
-  { nullptr, {"rc"} },  // restore_cursor         -> restore cursor to save_cursor
-  { nullptr, {"Ss"} },  // set cursor style       -> Select the DECSCUSR cursor style
-  { nullptr, {"sf"} },  // scroll_forward         -> scroll text up (P)
-  { nullptr, {"sr"} },  // scroll_reverse         -> scroll text down (P)
-  { nullptr, {"ti"} },  // enter_ca_mode          -> string to start programs using cup
-  { nullptr, {"te"} },  // exit_ca_mode           -> strings to end programs using cup
-  { nullptr, {"eA"} },  // enable_acs             -> enable alternate char set
-  { nullptr, {"md"} },  // enter_bold_mode        -> turn on bold (double-bright) mode
-  { nullptr, {"me"} },  // exit_bold_mode         -> turn off bold mode
-  { nullptr, {"mh"} },  // enter_dim_mode         -> turn on half-bright
-  { nullptr, {"me"} },  // exit_dim_mode          -> turn off half-bright
-  { nullptr, {"ZH"} },  // enter_italics_mode     -> Enter italic mode
-  { nullptr, {"ZR"} },  // exit_italics_mode      -> End italic mode
-  { nullptr, {"us"} },  // enter_underline_mode   -> begin underline mode
-  { nullptr, {"ue"} },  // exit_underline_mode    -> exit underline mode
-  { nullptr, {"mb"} },  // enter_blink_mode       -> turn on blinking
-  { nullptr, {"me"} },  // exit_blink_mode        -> turn off blinking
-  { nullptr, {"mr"} },  // enter_reverse_mode     -> turn on reverse video mode
-  { nullptr, {"me"} },  // exit_reverse_mode      -> turn off reverse video mode
-  { nullptr, {"so"} },  // enter_standout_mode    -> begin standout mode
-  { nullptr, {"se"} },  // exit_standout_mode     -> exit standout mode
-  { nullptr, {"mk"} },  // enter_secure_mode      -> turn on blank mode (characters invisible)
-  { nullptr, {"me"} },  // exit_secure_mode       -> turn off blank mode (characters visible)
-  { nullptr, {"mp"} },  // enter_protected_mode   -> turn on protected mode
-  { nullptr, {"me"} },  // exit_protected_mode    -> turn off protected mode
-  { nullptr, {"XX"} },  // enter_crossed_out_mode -> turn on mark character as deleted
-  { nullptr, {"me"} },  // exit_crossed_out_mode  -> turn off mark character as deleted
-  { nullptr, {"Us"} },  // enter_dbl_underline_mode -> begin double underline mode
-  { nullptr, {"Ue"} },  // exit_dbl_underline_mode  -> exit double underline mode
-  { nullptr, {"sa"} },  // set_attributes         -> define videoattributes #1-#9 (PG9)
-  { nullptr, {"me"} },  // exit_attribute_mode    -> turn off all attributes
-  { nullptr, {"as"} },  // enter_alt_charset_mode -> start alternate character set (P)
-  { nullptr, {"ae"} },  // exit_alt_charset_mode  -> end alternate character set (P)
-  { nullptr, {"S2"} },  // enter_pc_charset_mode  -> Enter PC character display mode
-  { nullptr, {"S3"} },  // exit_pc_charset_mode   -> Exit PC character display mode
-  { nullptr, {"im"} },  // enter_insert_mode      -> enter insert mode
-  { nullptr, {"ei"} },  // exit_insert_mode       -> exit insert mode
-  { nullptr, {"SA"} },  // enter_am_mode          -> turn on automatic margins
-  { nullptr, {"RA"} },  // exit_am_mode           -> turn off automatic margins
-  { nullptr, {"ac"} },  // acs_chars              -> graphics charset pairs (vt100)
-  { nullptr, {"ks"} },  // keypad_xmit            -> enter 'key-board_transmit' mode
-  { nullptr, {"ke"} },  // keypad_local           -> leave 'key-board_transmit' mode
-  { nullptr, {"Km"} }   // key_mouse              -> Mouse event has occurred
+  { {nullptr, 0}, {"bl"} },  // bell                   -> audible signal (bell) (P)
+  { {nullptr, 0}, {"vb"} },  // flash_screen           -> visible bell (may not move cursor)
+  { {nullptr, 0}, {"ec"} },  // erase_chars            -> erase #1 characters (P)
+  { {nullptr, 0}, {"cl"} },  // clear_screen           -> clear screen and home cursor (P*)
+  { {nullptr, 0}, {"cd"} },  // clr_eos                -> clear to end of screen (P*)
+  { {nullptr, 0}, {"ce"} },  // clr_eol                -> clear to end of line (P)
+  { {nullptr, 0}, {"cb"} },  // clr_bol                -> Clear to beginning of line
+  { {nullptr, 0}, {"ho"} },  // cursor_home            -> home cursor (if no cup)
+  { {nullptr, 0}, {"ll"} },  // cursor_to_ll           -> last line, first column (if no cup)
+  { {nullptr, 0}, {"cr"} },  // carriage_return        -> carriage return (P*)
+  { {nullptr, 0}, {"ta"} },  // tab                    -> tab to next 8-space hardware tab stop
+  { {nullptr, 0}, {"bt"} },  // back_tab               -> back tab (P)
+  { {nullptr, 0}, {"pc"} },  // pad_char               -> padding char (instead of null)
+  { {nullptr, 0}, {"ip"} },  // insert_padding         -> insert padding after inserted character
+  { {nullptr, 0}, {"ic"} },  // insert_character       -> insert character (P)
+  { {nullptr, 0}, {"IC"} },  // parm_ich               -> insert #1 characters (P*)
+  { {nullptr, 0}, {"rp"} },  // repeat_char            -> repeat char #1 #2 times (P*)
+  { {nullptr, 0}, {"lr"} },  // repeat_last_char       -> repeat last char #1 times (P*)
+  { {nullptr, 0}, {"Ic"} },  // initialize_color       -> initialize color #1 to (#2,#3,#4)
+  { {nullptr, 0}, {"Ip"} },  // initialize_pair        -> Initialize color pair #1 to
+                             //                           fg=(#2,#3,#4), bg=(#5,#6,#7)
+  { {nullptr, 0}, {"AF"} },  // set_a_foreground       -> Set ANSI background color to #1
+  { {nullptr, 0}, {"AB"} },  // set_a_background       -> Set ANSI background color to #1
+  { {nullptr, 0}, {"Sf"} },  // set_foreground         -> Set foreground color #1
+  { {nullptr, 0}, {"Sb"} },  // set_background         -> Set background color #1
+  { {nullptr, 0}, {"sp"} },  // set_color_pair         -> Set current color pair to #1
+  { {nullptr, 0}, {"op"} },  // orig_pair              -> Set default pair to original value
+  { {nullptr, 0}, {"oc"} },  // orig_colors            -> Set all color pairs to the original
+  { {nullptr, 0}, {"NC"} },  // no_color_video         -> video attributes that cannot be used
+                             //                           with colors
+  { {nullptr, 0}, {"cm"} },  // cursor_address         -> move to row #1 columns #2
+  { {nullptr, 0}, {"ch"} },  // column_address         -> horizontal position #1, absolute (P)
+  { {nullptr, 0}, {"cv"} },  // row_address            -> vertical position #1 absolute (P)
+  { {nullptr, 0}, {"vs"} },  // cursor_visible         -> make cursor very visible
+  { {nullptr, 0}, {"vi"} },  // cursor_invisible       -> make cursor invisible
+  { {nullptr, 0}, {"ve"} },  // cursor_normal          -> make cursor appear normal (undo vi/vs)
+  { {nullptr, 0}, {"up"} },  // cursor_up              -> up one line
+  { {nullptr, 0}, {"do"} },  // cursor_down            -> down one line
+  { {nullptr, 0}, {"le"} },  // cursor_left            -> move left one space
+  { {nullptr, 0}, {"nd"} },  // cursor_right           -> non-destructive space (move right)
+  { {nullptr, 0}, {"UP"} },  // parm_up_cursor         -> up #1 lines (P*)
+  { {nullptr, 0}, {"DO"} },  // parm_down_cursor       -> down #1 lines (P*)
+  { {nullptr, 0}, {"LE"} },  // parm_left_cursor       -> move #1 characters to the left (P)
+  { {nullptr, 0}, {"RI"} },  // parm_right_cursor      -> move #1 characters to the right (P*)
+  { {nullptr, 0}, {"sc"} },  // save_cursor            -> save current cursor position (P)
+  { {nullptr, 0}, {"rc"} },  // restore_cursor         -> restore cursor to save_cursor
+  { {nullptr, 0}, {"Ss"} },  // set cursor style       -> Select the DECSCUSR cursor style
+  { {nullptr, 0}, {"sf"} },  // scroll_forward         -> scroll text up (P)
+  { {nullptr, 0}, {"sr"} },  // scroll_reverse         -> scroll text down (P)
+  { {nullptr, 0}, {"ti"} },  // enter_ca_mode          -> string to start programs using cup
+  { {nullptr, 0}, {"te"} },  // exit_ca_mode           -> strings to end programs using cup
+  { {nullptr, 0}, {"eA"} },  // enable_acs             -> enable alternate char set
+  { {nullptr, 0}, {"md"} },  // enter_bold_mode        -> turn on bold (double-bright) mode
+  { {nullptr, 0}, {"me"} },  // exit_bold_mode         -> turn off bold mode
+  { {nullptr, 0}, {"mh"} },  // enter_dim_mode         -> turn on half-bright
+  { {nullptr, 0}, {"me"} },  // exit_dim_mode          -> turn off half-bright
+  { {nullptr, 0}, {"ZH"} },  // enter_italics_mode     -> Enter italic mode
+  { {nullptr, 0}, {"ZR"} },  // exit_italics_mode      -> End italic mode
+  { {nullptr, 0}, {"us"} },  // enter_underline_mode   -> begin underline mode
+  { {nullptr, 0}, {"ue"} },  // exit_underline_mode    -> exit underline mode
+  { {nullptr, 0}, {"mb"} },  // enter_blink_mode       -> turn on blinking
+  { {nullptr, 0}, {"me"} },  // exit_blink_mode        -> turn off blinking
+  { {nullptr, 0}, {"mr"} },  // enter_reverse_mode     -> turn on reverse video mode
+  { {nullptr, 0}, {"me"} },  // exit_reverse_mode      -> turn off reverse video mode
+  { {nullptr, 0}, {"so"} },  // enter_standout_mode    -> begin standout mode
+  { {nullptr, 0}, {"se"} },  // exit_standout_mode     -> exit standout mode
+  { {nullptr, 0}, {"mk"} },  // enter_secure_mode      -> turn on blank mode (characters invisible)
+  { {nullptr, 0}, {"me"} },  // exit_secure_mode       -> turn off blank mode (characters visible)
+  { {nullptr, 0}, {"mp"} },  // enter_protected_mode   -> turn on protected mode
+  { {nullptr, 0}, {"me"} },  // exit_protected_mode    -> turn off protected mode
+  { {nullptr, 0}, {"XX"} },  // enter_crossed_out_mode -> turn on mark character as deleted
+  { {nullptr, 0}, {"me"} },  // exit_crossed_out_mode  -> turn off mark character as deleted
+  { {nullptr, 0}, {"Us"} },  // enter_dbl_underline_mode -> begin double underline mode
+  { {nullptr, 0}, {"Ue"} },  // exit_dbl_underline_mode  -> exit double underline mode
+  { {nullptr, 0}, {"sa"} },  // set_attributes         -> define videoattributes #1-#9 (PG9)
+  { {nullptr, 0}, {"me"} },  // exit_attribute_mode    -> turn off all attributes
+  { {nullptr, 0}, {"as"} },  // enter_alt_charset_mode -> start alternate character set (P)
+  { {nullptr, 0}, {"ae"} },  // exit_alt_charset_mode  -> end alternate character set (P)
+  { {nullptr, 0}, {"S2"} },  // enter_pc_charset_mode  -> Enter PC character display mode
+  { {nullptr, 0}, {"S3"} },  // exit_pc_charset_mode   -> Exit PC character display mode
+  { {nullptr, 0}, {"im"} },  // enter_insert_mode      -> enter insert mode
+  { {nullptr, 0}, {"ei"} },  // exit_insert_mode       -> exit insert mode
+  { {nullptr, 0}, {"SA"} },  // enter_am_mode          -> turn on automatic margins
+  { {nullptr, 0}, {"RA"} },  // exit_am_mode           -> turn off automatic margins
+  { {nullptr, 0}, {"ac"} },  // acs_chars              -> graphics charset pairs (vt100)
+  { {nullptr, 0}, {"ks"} },  // keypad_xmit            -> enter 'key-board_transmit' mode
+  { {nullptr, 0}, {"ke"} },  // keypad_local           -> leave 'key-board_transmit' mode
+  { {nullptr, 0}, {"Km"} }   // key_mouse              -> Mouse event has occurred
 }};
 
 /*

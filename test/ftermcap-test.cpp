@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021-2025 Markus Gans                                      *
+* Copyright 2021-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -37,7 +37,7 @@
 #ifdef TCAP
   #undef TCAP
 #endif
-#define TCAP(...)  finalcut::FTermcap::strings[int(finalcut::Termcap::__VA_ARGS__)].string
+#define TCAP(...)  finalcut::FTermcap::strings[int(finalcut::Termcap::__VA_ARGS__)].string.data
 
 using std::chrono::duration_cast;
 using std::chrono::milliseconds;

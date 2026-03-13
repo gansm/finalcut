@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2025 Markus Gans                                      *
+* Copyright 2012-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -356,7 +356,11 @@ inline auto operator << (std::ostream& os, finalcut::UniChar c) -> std::ostream&
   static const auto& data = finalcut::FTermData::getInstance();
 
   if ( data.getTerminalEncoding() == finalcut::Encoding::UTF8 )
-    return os << finalcut::unicode_to_utf8_string(wchar_t(c));
+  {
+    std::array<char, 4> buf{};
+    const uInt32 len = finalcut::UTF8::encode(wchar_t(c), buf);
+    return os.write(&buf[0], len);
+  }
 
   return os << static_cast<char>(uChar(c));
 }

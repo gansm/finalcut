@@ -53,99 +53,105 @@ void check_c_string ( const char* s1
 namespace test
 {
 
+struct TermcapString
+{
+  const char* data;
+  uInt32 length{};
+};
+
 struct tcap_map
 {
-  const char* string;
-  char  tname[alignof(char*)];
+  TermcapString string;
+  char tname[alignof(char*)];
 };
 
 static tcap_map tcap[] =
 {
-  { nullptr, "bl" },  // bell
-  { nullptr, "ec" },  // erase_chars
-  { nullptr, "cl" },  // clear_screen
-  { nullptr, "cd" },  // clr_eos
-  { nullptr, "ce" },  // clr_eol
-  { nullptr, "cb" },  // clr_bol
-  { nullptr, "ho" },  // cursor_home
-  { nullptr, "ll" },  // cursor_to_ll
-  { nullptr, "cr" },  // carriage_return
-  { nullptr, "ta" },  // tab
-  { nullptr, "bt" },  // back_tab
-  { nullptr, "ip" },  // insert_padding
-  { nullptr, "ic" },  // insert_character
-  { nullptr, "IC" },  // parm_ich
-  { nullptr, "rp" },  // repeat_char
-  { nullptr, "lr" },  // repeat_last_char
-  { nullptr, "Ic" },  // initialize_color
-  { nullptr, "Ip" },  // initialize_pair
-  { nullptr, "AF" },  // set_a_foreground
-  { nullptr, "AB" },  // set_a_background
-  { nullptr, "Sf" },  // set_foreground
-  { nullptr, "Sb" },  // set_background
-  { nullptr, "sp" },  // set_color_pair
-  { nullptr, "op" },  // orig_pair
-  { nullptr, "oc" },  // orig_colors
-  { nullptr, "NC" },  // no_color_video
-  { nullptr, "cm" },  // cursor_address
-  { nullptr, "ch" },  // column_address
-  { nullptr, "cv" },  // row_address
-  { nullptr, "vs" },  // cursor_visible
-  { nullptr, "vi" },  // cursor_invisible
-  { nullptr, "ve" },  // cursor_normal
-  { nullptr, "up" },  // cursor_up
-  { nullptr, "do" },  // cursor_down
-  { nullptr, "le" },  // cursor_left
-  { nullptr, "nd" },  // cursor_right
-  { nullptr, "UP" },  // parm_up_cursor
-  { nullptr, "DO" },  // parm_down_cursor
-  { nullptr, "LE" },  // parm_left_cursor
-  { nullptr, "RI" },  // parm_right_cursor
-  { nullptr, "sc" },  // save_cursor
-  { nullptr, "rc" },  // restore_cursor
-  { nullptr, "Ss" },  // set cursor style
-  { nullptr, "sf" },  // scroll_forward
-  { nullptr, "sr" },  // scroll_reverse
-  { nullptr, "ti" },  // enter_ca_mode
-  { nullptr, "te" },  // exit_ca_mode
-  { nullptr, "eA" },  // enable_acs
-  { nullptr, "md" },  // enter_bold_mode
-  { nullptr, "me" },  // exit_bold_mode
-  { nullptr, "mh" },  // enter_dim_mode
-  { nullptr, "me" },  // exit_dim_mode
-  { nullptr, "ZH" },  // enter_italics_mode
-  { nullptr, "ZR" },  // exit_italics_mode
-  { nullptr, "us" },  // enter_underline_mode
-  { nullptr, "ue" },  // exit_underline_mode
-  { nullptr, "mb" },  // enter_blink_mode
-  { nullptr, "me" },  // exit_blink_mode
-  { nullptr, "mr" },  // enter_reverse_mode
-  { nullptr, "me" },  // exit_reverse_mode
-  { nullptr, "so" },  // enter_standout_mode
-  { nullptr, "se" },  // exit_standout_mode
-  { nullptr, "mk" },  // enter_secure_mode
-  { nullptr, "me" },  // exit_secure_mode
-  { nullptr, "mp" },  // enter_protected_mode
-  { nullptr, "me" },  // exit_protected_mode
-  { nullptr, "XX" },  // enter_crossed_out_mode
-  { nullptr, "me" },  // exit_crossed_out_mode
-  { nullptr, "Us" },  // enter_dbl_underline_mode
-  { nullptr, "Ue" },  // exit_dbl_underline_mode
-  { nullptr, "sa" },  // set_attributes
-  { nullptr, "me" },  // exit_attribute_mode
-  { nullptr, "as" },  // enter_alt_charset_mode
-  { nullptr, "ae" },  // exit_alt_charset_mode
-  { nullptr, "S2" },  // enter_pc_charset_mode
-  { nullptr, "S3" },  // exit_pc_charset_mode
-  { nullptr, "im" },  // enter_insert_mode
-  { nullptr, "ei" },  // exit_insert_mode
-  { nullptr, "SA" },  // enter_am_mode
-  { nullptr, "RA" },  // exit_am_mode
-  { nullptr, "ac" },  // acs_chars
-  { nullptr, "ks" },  // keypad_xmit
-  { nullptr, "ke" },  // keypad_local
-  { nullptr, "Km" },  // key_mouse
-  { nullptr, "\0" }
+  { {nullptr, 0}, {"bl"} },  // bell
+  { {nullptr, 0}, {"ec"} },  // erase_chars
+  { {nullptr, 0}, {"cl"} },  // clear_screen
+  { {nullptr, 0}, {"cd"} },  // clr_eos
+  { {nullptr, 0}, {"ce"} },  // clr_eol
+  { {nullptr, 0}, {"cb"} },  // clr_bol
+  { {nullptr, 0}, {"ho"} },  // cursor_home
+  { {nullptr, 0}, {"ll"} },  // cursor_to_ll
+  { {nullptr, 0}, {"cr"} },  // carriage_return
+  { {nullptr, 0}, {"ta"} },  // tab
+  { {nullptr, 0}, {"bt"} },  // back_tab
+  { {nullptr, 0}, {"ip"} },  // insert_padding
+  { {nullptr, 0}, {"ic"} },  // insert_character
+  { {nullptr, 0}, {"IC"} },  // parm_ich
+  { {nullptr, 0}, {"rp"} },  // repeat_char
+  { {nullptr, 0}, {"lr"} },  // repeat_last_char
+  { {nullptr, 0}, {"Ic"} },  // initialize_color
+  { {nullptr, 0}, {"Ip"} },  // initialize_pair
+  { {nullptr, 0}, {"AF"} },  // set_a_foreground
+  { {nullptr, 0}, {"AB"} },  // set_a_background
+  { {nullptr, 0}, {"Sf"} },  // set_foreground
+  { {nullptr, 0}, {"Sb"} },  // set_background
+  { {nullptr, 0}, {"sp"} },  // set_color_pair
+  { {nullptr, 0}, {"op"} },  // orig_pair
+  { {nullptr, 0}, {"oc"} },  // orig_colors
+  { {nullptr, 0}, {"NC"} },  // no_color_video
+  { {nullptr, 0}, {"cm"} },  // cursor_address
+  { {nullptr, 0}, {"ch"} },  // column_address
+  { {nullptr, 0}, {"cv"} },  // row_address
+  { {nullptr, 0}, {"vs"} },  // cursor_visible
+  { {nullptr, 0}, {"vi"} },  // cursor_invisible
+  { {nullptr, 0}, {"ve"} },  // cursor_normal
+  { {nullptr, 0}, {"up"} },  // cursor_up
+  { {nullptr, 0}, {"do"} },  // cursor_down
+  { {nullptr, 0}, {"le"} },  // cursor_left
+  { {nullptr, 0}, {"nd"} },  // cursor_right
+  { {nullptr, 0}, {"UP"} },  // parm_up_cursor
+  { {nullptr, 0}, {"DO"} },  // parm_down_cursor
+  { {nullptr, 0}, {"LE"} },  // parm_left_cursor
+  { {nullptr, 0}, {"RI"} },  // parm_right_cursor
+  { {nullptr, 0}, {"sc"} },  // save_cursor
+  { {nullptr, 0}, {"rc"} },  // restore_cursor
+  { {nullptr, 0}, {"Ss"} },  // set cursor style
+  { {nullptr, 0}, {"sf"} },  // scroll_forward
+  { {nullptr, 0}, {"sr"} },  // scroll_reverse
+  { {nullptr, 0}, {"ti"} },  // enter_ca_mode
+  { {nullptr, 0}, {"te"} },  // exit_ca_mode
+  { {nullptr, 0}, {"eA"} },  // enable_acs
+  { {nullptr, 0}, {"md"} },  // enter_bold_mode
+  { {nullptr, 0}, {"me"} },  // exit_bold_mode
+  { {nullptr, 0}, {"mh"} },  // enter_dim_mode
+  { {nullptr, 0}, {"me"} },  // exit_dim_mode
+  { {nullptr, 0}, {"ZH"} },  // enter_italics_mode
+  { {nullptr, 0}, {"ZR"} },  // exit_italics_mode
+  { {nullptr, 0}, {"us"} },  // enter_underline_mode
+  { {nullptr, 0}, {"ue"} },  // exit_underline_mode
+  { {nullptr, 0}, {"mb"} },  // enter_blink_mode
+  { {nullptr, 0}, {"me"} },  // exit_blink_mode
+  { {nullptr, 0}, {"mr"} },  // enter_reverse_mode
+  { {nullptr, 0}, {"me"} },  // exit_reverse_mode
+  { {nullptr, 0}, {"so"} },  // enter_standout_mode
+  { {nullptr, 0}, {"se"} },  // exit_standout_mode
+  { {nullptr, 0}, {"mk"} },  // enter_secure_mode
+  { {nullptr, 0}, {"me"} },  // exit_secure_mode
+  { {nullptr, 0}, {"mp"} },  // enter_protected_mode
+  { {nullptr, 0}, {"me"} },  // exit_protected_mode
+  { {nullptr, 0}, {"XX"} },  // enter_crossed_out_mode
+  { {nullptr, 0}, {"me"} },  // exit_crossed_out_mode
+  { {nullptr, 0}, {"Us"} },  // enter_dbl_underline_mode
+  { {nullptr, 0}, {"Ue"} },  // exit_dbl_underline_mode
+  { {nullptr, 0}, {"sa"} },  // set_attributes
+  { {nullptr, 0}, {"me"} },  // exit_attribute_mode
+  { {nullptr, 0}, {"as"} },  // enter_alt_charset_mode
+  { {nullptr, 0}, {"ae"} },  // exit_alt_charset_mode
+  { {nullptr, 0}, {"S2"} },  // enter_pc_charset_mode
+  { {nullptr, 0}, {"S3"} },  // exit_pc_charset_mode
+  { {nullptr, 0}, {"im"} },  // enter_insert_mode
+  { {nullptr, 0}, {"ei"} },  // exit_insert_mode
+  { {nullptr, 0}, {"SA"} },  // enter_am_mode
+  { {nullptr, 0}, {"RA"} },  // exit_am_mode
+  { {nullptr, 0}, {"ac"} },  // acs_chars
+  { {nullptr, 0}, {"ks"} },  // keypad_xmit
+  { {nullptr, 0}, {"ke"} },  // keypad_local
+  { {nullptr, 0}, {"Km"} },  // key_mouse
+  { {nullptr, 0}, {"\0"} }
 };
 
 }  // namespace test
@@ -222,7 +228,14 @@ void FTermcapQuirksTest::generalTest()
                                  / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
-    memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
+  {
+    caps[i].string.data   = test::tcap[i].string.data;
+    caps[i].string.length = test::tcap[i].string.length;
+
+    std::copy ( std::begin(test::tcap[i].tname)
+              , std::end(test::tcap[i].tname)
+              , caps[i].tname.begin() );
+  }
 
   finalcut::FTermcap::tabstop = -1;
   finalcut::FTermcap::attr_without_color = -1;
@@ -233,48 +246,49 @@ void FTermcapQuirksTest::generalTest()
   CPPUNIT_ASSERT ( finalcut::FTermcap::tabstop == 8 );
   CPPUNIT_ASSERT ( finalcut::FTermcap::attr_without_color == 0 );
   CPPUNIT_ASSERT ( finalcut::FTermcap::can_change_color_palette );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_foreground)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_foreground)].string.data
                          , CSI "3%p1%dm" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_background)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_background)].string.data
                          , CSI "4%p1%dm" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_initialize_color)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_initialize_color)].string.data
                          , OSC "P%p1%x"
                                "%p2%{255}%*%{1000}%/%02x"
                                "%p3%{255}%*%{1000}%/%02x"
                                "%p4%{255}%*%{1000}%/%02x" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_ca_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_ca_mode)].string.data
                          , ESC "7" CSI "?47h"  );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_ca_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_ca_mode)].string.data
                          , CSI "?47l" ESC "8" CSI "m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_cursor_address)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_cursor_address)].string.data
                          , CSI "%i%p1%d;%p2%dH" );
   // Non standard ECMA-48 (ANSI X3.64) terminal
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_dbl_underline_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_dbl_underline_mode)].string.data
                          , nullptr );
-  caps[int(finalcut::Termcap::t_exit_underline_mode)].string = CSI "24m";
+  caps[int(finalcut::Termcap::t_exit_underline_mode)].string.data = CSI "24m";
+  caps[int(finalcut::Termcap::t_exit_underline_mode)].string.length = 5;
   quirks.terminalFixup();
   // Standard ECMA-48 (ANSI X3.64) terminal
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_dbl_underline_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_dbl_underline_mode)].string.data
                          , CSI "21m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_dbl_underline_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_dbl_underline_mode)].string.data
                          , CSI "24m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_bold_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_bold_mode)].string.data
                          , CSI "22m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_dim_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_dim_mode)].string.data
                          , CSI "22m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_underline_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_underline_mode)].string.data
                          , CSI "24m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_blink_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_blink_mode)].string.data
                          , CSI "25m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_reverse_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_reverse_mode)].string.data
                          , CSI "27m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_secure_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_secure_mode)].string.data
                          , CSI "28m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_crossed_out_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_crossed_out_mode)].string.data
                          , CSI "9m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_crossed_out_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_crossed_out_mode)].string.data
                          , CSI "29m" );
-  CPPUNIT_ASSERT_CSTRING ( printSequence(caps[int(finalcut::Termcap::t_enter_ca_mode)].string).c_str()
+  CPPUNIT_ASSERT_CSTRING ( printSequence(std::string(caps[int(finalcut::Termcap::t_enter_ca_mode)].string.data)).c_str()
                          , "Esc 7 Esc [ ? 4 7 h " );
 }
 
@@ -282,18 +296,26 @@ void FTermcapQuirksTest::generalTest()
 void FTermcapQuirksTest::repeatLastChar()
 {
   auto& caps = finalcut::FTermcap::strings;
-  finalcut::FTermcapQuirks quirks;
   static constexpr int last_item = int(sizeof(test::tcap)
                                  / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
-    memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
+  {
+    caps[i].string.data   = test::tcap[i].string.data;
+    caps[i].string.length = test::tcap[i].string.length;
 
-  caps[int(finalcut::Termcap::t_repeat_char)].string = "%p1%c\033[%p2%{1}%-%db";
-  CPPUNIT_ASSERT ( ! caps[int(finalcut::Termcap::t_repeat_last_char)].string );
+    std::copy ( std::begin(test::tcap[i].tname)
+              , std::end(test::tcap[i].tname)
+              , caps[i].tname.begin() );
+  }
+
+  finalcut::FTermcapQuirks quirks;
+  caps[int(finalcut::Termcap::t_repeat_char)].string.data = "%p1%c\033[%p2%{1}%-%db";
+  caps[int(finalcut::Termcap::t_repeat_char)].string.length = 19;
+  CPPUNIT_ASSERT ( ! caps[int(finalcut::Termcap::t_repeat_last_char)].string.data );
   quirks.terminalFixup();
-  CPPUNIT_ASSERT ( caps[int(finalcut::Termcap::t_repeat_last_char)].string );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_repeat_last_char)].string
+  CPPUNIT_ASSERT ( caps[int(finalcut::Termcap::t_repeat_last_char)].string.data );
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_repeat_last_char)].string.data
                          , "\033[%p1%{1}%-%db" );
 }
 
@@ -305,7 +327,14 @@ void FTermcapQuirksTest::xtermTest()
                                  / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
-    memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
+  {
+    caps[i].string.data   = test::tcap[i].string.data;
+    caps[i].string.length = test::tcap[i].string.length;
+
+    std::copy ( std::begin(test::tcap[i].tname)
+              , std::end(test::tcap[i].tname)
+              , caps[i].tname.begin() );
+  }
 
   auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermcapQuirks quirks;
@@ -315,14 +344,14 @@ void FTermcapQuirksTest::xtermTest()
   quirks.terminalFixup();
 
   CPPUNIT_ASSERT ( finalcut::FTermcap::can_change_color_palette );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_initialize_color)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_initialize_color)].string.data
                          , OSC "4;%p1%d;rgb:"
                                "%p2%{255}%*%{1000}%/%2.2X/"
                                "%p3%{255}%*%{1000}%/%2.2X/"
                                "%p4%{255}%*%{1000}%/%2.2X" ESC "\\");
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_cursor_invisible)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_cursor_invisible)].string.data
                          , CSI "?25l" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_cursor_normal)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_cursor_normal)].string.data
                          , CSI "?12l" CSI "?25h" );
   data.unsetTermType (finalcut::FTermType::xterm);
 }
@@ -336,7 +365,14 @@ void FTermcapQuirksTest::freebsdTest()
                                  / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
-    memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
+  {
+    caps[i].string.data   = test::tcap[i].string.data;
+    caps[i].string.length = test::tcap[i].string.length;
+
+    std::copy ( std::begin(test::tcap[i].tname)
+              , std::end(test::tcap[i].tname)
+              , caps[i].tname.begin() );
+  }
 
   auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermcap::attr_without_color = -1;
@@ -348,7 +384,7 @@ void FTermcapQuirksTest::freebsdTest()
   quirks.terminalFixup();
 
   CPPUNIT_ASSERT ( finalcut::FTermcap::attr_without_color == 18 );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_acs_chars)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_acs_chars)].string.data
                          , "-\036.\0370\333"
                            "a\260f\370g\361"
                            "h\261j\331k\277"
@@ -356,7 +392,7 @@ void FTermcapQuirksTest::freebsdTest()
                            "q\304t\303u\264"
                            "v\301w\302x\263"
                            "y\363z\362~\371" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_attributes)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_attributes)].string.data
                          , CSI "0"
                                "%?%p1%p6%|%t;1%;"
                                "%?%p2%t;4%;"
@@ -375,7 +411,14 @@ void FTermcapQuirksTest::cygwinTest()
                                  / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
-    memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
+  {
+    caps[i].string.data   = test::tcap[i].string.data;
+    caps[i].string.length = test::tcap[i].string.length;
+
+    std::copy ( std::begin(test::tcap[i].tname)
+              , std::end(test::tcap[i].tname)
+              , caps[i].tname.begin() );
+  }
 
   auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermcap::background_color_erase = false;
@@ -385,9 +428,9 @@ void FTermcapQuirksTest::cygwinTest()
   quirks.terminalFixup();
 
   CPPUNIT_ASSERT ( finalcut::FTermcap::background_color_erase == true );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_cursor_invisible)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_cursor_invisible)].string.data
                          , CSI "?25l" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_cursor_visible)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_cursor_visible)].string.data
                          , CSI "?25h" );
   data.unsetTermType (finalcut::FTermType::cygwin);
 }
@@ -400,7 +443,14 @@ void FTermcapQuirksTest::linuxTest()
                                  / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
-    memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
+  {
+    caps[i].string.data   = test::tcap[i].string.data;
+    caps[i].string.length = test::tcap[i].string.length;
+
+    std::copy ( std::begin(test::tcap[i].tname)
+              , std::end(test::tcap[i].tname)
+              , caps[i].tname.begin() );
+  }
 
   auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermcap::max_color = 8;
@@ -411,9 +461,9 @@ void FTermcapQuirksTest::linuxTest()
   quirks.terminalFixup();
 
   // 8 colors
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_foreground)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_foreground)].string.data
                          , CSI "3%p1%dm" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_background)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_background)].string.data
                          , CSI "4%p1%dm" );
   CPPUNIT_ASSERT ( finalcut::FTermcap::attr_without_color == 18 );
 
@@ -421,45 +471,45 @@ void FTermcapQuirksTest::linuxTest()
   finalcut::FTermcap::max_color = 16;
   quirks.terminalFixup();
 
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_foreground)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_foreground)].string.data
                          , CSI "3%p1%{8}%m%d%?%p1%{7}%>%t;1%e;22%;m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_background)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_background)].string.data
                          , CSI "4%p1%{8}%m%d%?%p1%{7}%>%t;5%e;25%;m" );
   CPPUNIT_ASSERT ( finalcut::FTermcap::attr_without_color == 30 );
 
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_attributes)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_attributes)].string.data
                          , CSI "0"
                                "%?%p6%t;1%;"
                                "%?%p1%p3%|%t;7%;"
                                "%?%p4%t;5%;m"
                                "%?%p9%t\016%e\017%;" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_alt_charset_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_alt_charset_mode)].string.data
                          , "\016" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_alt_charset_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_alt_charset_mode)].string.data
                          , "\017" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_attribute_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_attribute_mode)].string.data
                          , CSI "0m\017" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_bold_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_bold_mode)].string.data
                          , CSI "22m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_blink_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_blink_mode)].string.data
                          , CSI "25m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_reverse_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_reverse_mode)].string.data
                          , CSI "27m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_secure_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_secure_mode)].string.data
                          , nullptr );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_protected_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_protected_mode)].string.data
                          , nullptr );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_crossed_out_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_crossed_out_mode)].string.data
                          , nullptr );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_orig_pair)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_orig_pair)].string.data
                          , CSI "39;49;25m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_dim_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_dim_mode)].string.data
                          , nullptr );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_dim_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_dim_mode)].string.data
                          , nullptr );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_underline_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_underline_mode)].string.data
                          , nullptr );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_underline_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_underline_mode)].string.data
                          , nullptr );
   data.unsetTermType (finalcut::FTermType::linux_con);
 }
@@ -472,7 +522,14 @@ void FTermcapQuirksTest::rxvtTest()
                                  / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
-    memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
+  {
+    caps[i].string.data   = test::tcap[i].string.data;
+    caps[i].string.length = test::tcap[i].string.length;
+
+    std::copy ( std::begin(test::tcap[i].tname)
+              , std::end(test::tcap[i].tname)
+              , caps[i].tname.begin() );
+  }
 
   auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermcapQuirks quirks;
@@ -481,24 +538,24 @@ void FTermcapQuirksTest::rxvtTest()
   quirks.terminalFixup();
 
   // rxvt
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_alt_charset_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_alt_charset_mode)].string.data
                          , nullptr );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_alt_charset_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_alt_charset_mode)].string.data
                          , nullptr );
   // rxvt-16color
   data.setTermType ("rxvt-16color");
   quirks.terminalFixup();
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_alt_charset_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_alt_charset_mode)].string.data
                          , ESC "(0" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_alt_charset_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_alt_charset_mode)].string.data
                          , ESC "(B" );
 
   // urxvt
   data.setTermType (finalcut::FTermType::urxvt);
   quirks.terminalFixup();
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_foreground)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_foreground)].string.data
                          , CSI "%?%p1%{8}%<%t%p1%{30}%+%e%p1%'R'%+%;%dm" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_background)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_background)].string.data
                          , CSI "%?%p1%{8}%<%t%p1%'('%+%e%p1%{92}%+%;%dm" );
 
   data.unsetTermType (finalcut::FTermType::urxvt);
@@ -513,7 +570,14 @@ void FTermcapQuirksTest::vteTest()
                                  / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
-    memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
+  {
+    caps[i].string.data   = test::tcap[i].string.data;
+    caps[i].string.length = test::tcap[i].string.length;
+
+    std::copy ( std::begin(test::tcap[i].tname)
+              , std::end(test::tcap[i].tname)
+              , caps[i].tname.begin() );
+  }
 
   auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermcap::attr_without_color = -1;
@@ -523,7 +587,7 @@ void FTermcapQuirksTest::vteTest()
   quirks.terminalFixup();
 
   CPPUNIT_ASSERT ( finalcut::FTermcap::attr_without_color == 0 );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_underline_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_underline_mode)].string.data
                          , CSI "24m" );
 
   data.unsetTermType (finalcut::FTermType::gnome_terminal);
@@ -537,19 +601,26 @@ void FTermcapQuirksTest::kittyTest()
                                  / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
-    memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
+  {
+    caps[i].string.data   = test::tcap[i].string.data;
+    caps[i].string.length = test::tcap[i].string.length;
 
-  caps[int(finalcut::Termcap::t_enter_ca_mode)].string = CSI "?1049h";
-  caps[int(finalcut::Termcap::t_exit_ca_mode)].string = CSI "?1049l";
+    std::copy ( std::begin(test::tcap[i].tname)
+              , std::end(test::tcap[i].tname)
+              , caps[i].tname.begin() );
+  }
+
+  caps[int(finalcut::Termcap::t_enter_ca_mode)].string.data = CSI "?1049h";
+  caps[int(finalcut::Termcap::t_exit_ca_mode)].string.data = CSI "?1049l";
   auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermcapQuirks quirks;
   data.setTermType (finalcut::FTermType::kitty);
   data.setTermType ("xterm-kitty");
   quirks.terminalFixup();
 
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_ca_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_ca_mode)].string.data
                          , CSI "?1049h" CSI "22;0;0t" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_ca_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_ca_mode)].string.data
                          , CSI "?1049l" CSI "23;0;0t" );
 
   data.unsetTermType (finalcut::FTermType::kitty);
@@ -563,7 +634,14 @@ void FTermcapQuirksTest::puttyTest()
                                  / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
-    memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
+  {
+    caps[i].string.data   = test::tcap[i].string.data;
+    caps[i].string.length = test::tcap[i].string.length;
+
+    std::copy ( std::begin(test::tcap[i].tname)
+              , std::end(test::tcap[i].tname)
+              , caps[i].tname.begin() );
+  }
 
   auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermcap::background_color_erase = false;
@@ -579,24 +657,24 @@ void FTermcapQuirksTest::puttyTest()
   CPPUNIT_ASSERT ( finalcut::FTermcap::osc_support == true );
   CPPUNIT_ASSERT ( finalcut::FTermcap::attr_without_color == 0 );
   CPPUNIT_ASSERT ( finalcut::FTermcap::can_change_color_palette );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_initialize_color)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_initialize_color)].string.data
                          , OSC "P%p1%x"
                                "%p2%{255}%*%{1000}%/%02x"
                                "%p3%{255}%*%{1000}%/%02x"
                                "%p4%{255}%*%{1000}%/%02x" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_foreground)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_foreground)].string.data
                          , CSI "%?%p1%{8}%<"
                                "%t3%p1%d"
                                "%e%p1%{16}%<"
                                "%t9%p1%{8}%-%d"
                                "%e38;5;%p1%d%;m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_background)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_background)].string.data
                          , CSI "%?%p1%{8}%<"
                                "%t4%p1%d"
                                "%e%p1%{16}%<"
                                "%t10%p1%{8}%-%d"
                                "%e48;5;%p1%d%;m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_attributes)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_attributes)].string.data
                          , CSI "0"
                                "%?%p1%p6%|%t;1%;"
                                "%?%p5%t;2%;"
@@ -604,42 +682,42 @@ void FTermcapQuirksTest::puttyTest()
                                "%?%p1%p3%|%t;7%;"
                                "%?%p4%t;5%;m"
                                "%?%p9%t\016%e\017%;" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_dim_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_dim_mode)].string.data
                          , CSI "2m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_dim_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_dim_mode)].string.data
                          , CSI "22m" );
 
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_clr_bol)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_clr_bol)].string.data
                          , CSI "1K" );
 
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_orig_pair)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_orig_pair)].string.data
                          , CSI "39;49m" );
 
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_orig_colors)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_orig_colors)].string.data
                          , OSC "R" );
 
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_column_address)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_column_address)].string.data
                          , CSI "%i%p1%dG" );
 
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_row_address)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_row_address)].string.data
                          , CSI "%i%p1%dd" );
 
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enable_acs)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enable_acs)].string.data
                          , ESC "(B" ESC ")0" );
 
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_am_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_am_mode)].string.data
                          , CSI "?7h" );
 
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_am_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_am_mode)].string.data
                          , CSI "?7l" );
 
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_pc_charset_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_pc_charset_mode)].string.data
                          , CSI "11m" );
 
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_pc_charset_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_pc_charset_mode)].string.data
                          , CSI "10m" );
 
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_key_mouse)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_key_mouse)].string.data
                         , CSI "M" );
 
   data.unsetTermType (finalcut::FTermType::putty);
@@ -653,7 +731,14 @@ void FTermcapQuirksTest::teratermTest()
                                  / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
-    memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
+  {
+    caps[i].string.data   = test::tcap[i].string.data;
+    caps[i].string.length = test::tcap[i].string.length;
+
+    std::copy ( std::begin(test::tcap[i].tname)
+              , std::end(test::tcap[i].tname)
+              , caps[i].tname.begin() );
+  }
 
   auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermcap::eat_nl_glitch = false;
@@ -663,13 +748,13 @@ void FTermcapQuirksTest::teratermTest()
   quirks.terminalFixup();
 
   CPPUNIT_ASSERT ( finalcut::FTermcap::eat_nl_glitch == true );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_foreground)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_foreground)].string.data
                          , CSI "38;5;%p1%dm" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_background)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_background)].string.data
                          , CSI "48;5;%p1%dm" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_attribute_mode)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_attribute_mode)].string.data
                          , CSI "0m" SI );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_orig_pair)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_orig_pair)].string.data
                          , CSI "39;49m" );
 
   data.unsetTermType (finalcut::FTermType::tera_term);
@@ -683,7 +768,14 @@ void FTermcapQuirksTest::sunTest()
                                  / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
-    memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
+  {
+    caps[i].string.data   = test::tcap[i].string.data;
+    caps[i].string.length = test::tcap[i].string.length;
+
+    std::copy ( std::begin(test::tcap[i].tname)
+              , std::end(test::tcap[i].tname)
+              , caps[i].tname.begin() );
+  }
 
   auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermcap::eat_nl_glitch = false;
@@ -695,13 +787,13 @@ void FTermcapQuirksTest::sunTest()
 
   CPPUNIT_ASSERT ( finalcut::FTermcap::eat_nl_glitch == true );
   CPPUNIT_ASSERT ( finalcut::FTermcap::tabstop == 8 );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_parm_up_cursor)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_parm_up_cursor)].string.data
                          , CSI "%p1%dA" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_parm_down_cursor)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_parm_down_cursor)].string.data
                          , CSI "%p1%dB" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_parm_right_cursor)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_parm_right_cursor)].string.data
                          , CSI "%p1%dC" );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_parm_left_cursor)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_parm_left_cursor)].string.data
                          , CSI "%p1%dD" );
   auto& fkey_cap_table = finalcut::FKeyMap::getInstance().getKeyCapMap();
 
@@ -808,7 +900,14 @@ void FTermcapQuirksTest::screenTest()
                                  / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
-    memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
+  {
+    caps[i].string.data   = test::tcap[i].string.data;
+    caps[i].string.length = test::tcap[i].string.length;
+
+    std::copy ( std::begin(test::tcap[i].tname)
+              , std::end(test::tcap[i].tname)
+              , caps[i].tname.begin() );
+  }
 
   auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermcapQuirks quirks;
@@ -818,7 +917,7 @@ void FTermcapQuirksTest::screenTest()
   quirks.terminalFixup();
 
   CPPUNIT_ASSERT ( finalcut::FTermcap::can_change_color_palette );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_initialize_color)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_initialize_color)].string.data
                          , ESC "P" OSC "4;%p1%d;rgb:"
                            "%p2%{255}%*%{1000}%/%2.2X/"
                            "%p3%{255}%*%{1000}%/%2.2X/"
@@ -827,12 +926,12 @@ void FTermcapQuirksTest::screenTest()
 
   data.setTermType (finalcut::FTermType::tmux);
 
-  caps[int(finalcut::Termcap::t_initialize_color)].string = nullptr;
+  caps[int(finalcut::Termcap::t_initialize_color)].string.data = nullptr;
   finalcut::FTermcap::can_change_color_palette = false;
   quirks.terminalFixup();
 
   CPPUNIT_ASSERT ( finalcut::FTermcap::can_change_color_palette );
-  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_initialize_color)].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_initialize_color)].string.data
                          , ESC "P" ESC OSC "4;%p1%d;#"
                            "%p2%{255}%*%{1000}%/%2.2X"
                            "%p3%{255}%*%{1000}%/%2.2X"

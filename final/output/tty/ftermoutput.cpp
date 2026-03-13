@@ -223,7 +223,7 @@ void FTermOutput::setCursor (FPoint p)
   const auto& move_str = FTerm::moveCursorString (term_x, term_y, x, y);
 
   if ( ! move_str.empty() )
-    appendOutputBuffer (FTermControl{move_str});
+    appendOutputBuffer (FTermControl{move_str.data(), uInt32(move_str.length())});
 
   term_pos->setPoint(x, y);
 }
@@ -252,7 +252,7 @@ void FTermOutput::hideCursor (bool enable)
   if ( visibility_str.empty() )  // Exit the function if the string is empty
     return;
 
-  appendOutputBuffer (FTermControl{std::move(visibility_str)});
+  appendOutputBuffer (FTermControl{visibility_str.data(), uInt32(visibility_str.length())});
   flush();
 }
 
@@ -441,13 +441,13 @@ auto FTermOutput::clearTerminal (wchar_t fillchar) -> bool
 
   if ( cl )  // Clear screen
   {
-    appendOutputBuffer (FTermControl{cl});
+    appendOutputBuffer (FTermControl{cl, uInt32(finalcut::stringLength(cl))});
     term_pos->setPoint(0, 0);
   }
   else if ( cd )  // Clear to end of screen
   {
     setCursor (FPoint{0, 0});
-    appendOutputBuffer (FTermControl{cd});
+    appendOutputBuffer (FTermControl{cd, uInt32(finalcut::stringLength(cd))});
     term_pos->setPoint(-1, -1);
   }
   else if ( cb )  // Clear to end of line
@@ -457,7 +457,7 @@ auto FTermOutput::clearTerminal (wchar_t fillchar) -> bool
     for (auto i{0}; i < int(getLineNumber()); i++)
     {
       setCursor (FPoint{0, i});
-      appendOutputBuffer (FTermControl{cb});
+      appendOutputBuffer (FTermControl{cb, uInt32(finalcut::stringLength(cb))});
     }
 
     setCursor (FPoint{0, 0});
@@ -1018,7 +1018,8 @@ auto FTermOutput::eraseCharacters (uInt& x, uInt xmax, uInt y, const FChar_itera
   if ( canUseEraseCharacters(*iter, whitespace) )
   {
     appendAttributes (*iter);
-    appendOutputBuffer (FTermControl{FTermcap::encodeParameter(ec, whitespace)});
+    auto ctrl_str = FTermcap::encodeParameter(ec, whitespace);
+    appendOutputBuffer (FTermControl{ctrl_str.data(), uInt32(ctrl_str.length())});
 
     if ( end_pos <= xmax )
       setCursor (FPoint{static_cast<int>(x + whitespace), static_cast<int>(y)});
@@ -1062,13 +1063,15 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y, const FChar_itera
     newFontChanges (*iter);
     charsetChanges (*iter);
     appendAttributes (*iter);
-    appendOutputBuffer (FTermControl{FTermcap::encodeParameter(rp, iter->ch.unicode_data[0], repetitions)});
+    auto ctrl_str = FTermcap::encodeParameter(rp, iter->ch.unicode_data[0], repetitions);
+    appendOutputBuffer (FTermControl{ctrl_str.data(), uInt32(ctrl_str.length())});
     term_pos->x_ref() += static_cast<int>(repetitions);
   }
   else if ( lr && repetition_type == Repetition::UTF8 )
   {
     appendChar (*iter);
-    appendOutputBuffer (FTermControl{FTermcap::encodeParameter(lr, repetitions)});
+    auto ctrl_str = FTermcap::encodeParameter(lr, repetitions);
+    appendOutputBuffer (FTermControl{ctrl_str.data(), uInt32(ctrl_str.length())});
     term_pos->x_ref() += static_cast<int>(repetitions);
   }
   else
@@ -1218,7 +1221,8 @@ inline auto FTermOutput::updateTerminalLine (uInt y) -> bool
     setCursor (FPoint{int(xmin), int(y)});
     auto& min_char = vterm->getFChar(int(xmin), int(y));
     appendAttributes (min_char);
-    appendOutputBuffer (FTermControl{TCAP(t_clr_eol)});
+    auto* ctrl_str = TCAP(t_clr_eol);
+    appendOutputBuffer (FTermControl{ctrl_str, uInt32(finalcut::stringLength(ctrl_str))});
     markAsPrinted (xmin, uInt(vterm->size.width - 1), y);
   }
   else
@@ -1231,7 +1235,8 @@ inline auto FTermOutput::updateTerminalLine (uInt y) -> bool
     {
       auto& first_char = vterm->getFChar(int(0), int(y));
       appendAttributes (first_char);
-      appendOutputBuffer (FTermControl{TCAP(t_clr_bol)});
+      auto* ctrl_str = TCAP(t_clr_bol);
+      appendOutputBuffer (FTermControl{ctrl_str, uInt32(finalcut::stringLength(ctrl_str))});
       markAsPrinted (0, xmin, y);
     }
 
@@ -1241,7 +1246,8 @@ inline auto FTermOutput::updateTerminalLine (uInt y) -> bool
     {
       auto& last_char = vterm->getFChar(vterm->size.width - 1, int(y));
       appendAttributes (last_char);
-      appendOutputBuffer (FTermControl{TCAP(t_clr_eol)});
+      auto* ctrl_str = TCAP(t_clr_eol);
+      appendOutputBuffer (FTermControl{ctrl_str, uInt32(finalcut::stringLength(ctrl_str))});
       markAsPrinted (xmax + 1, uInt(vterm->size.width - 1), y);
     }
   }
@@ -1463,7 +1469,7 @@ inline void FTermOutput::appendAttributes (FChar& next_attr)
   if ( attr_str.empty() )
     return;
 
-  appendOutputBuffer (FTermControl{attr_str});
+  appendOutputBuffer (FTermControl{attr_str.data(), uInt32(attr_str.length())});
 }
 
 //----------------------------------------------------------------------
@@ -1478,9 +1484,9 @@ void FTermOutput::appendLowerRight (const FChar_iterator& last_char_iter)
   }
   else if ( SA && RA )
   {
-    appendOutputBuffer (FTermControl{RA});
+    appendOutputBuffer (FTermControl{RA, uInt32(finalcut::stringLength(RA))});
     appendChar (*last_char_iter);
-    appendOutputBuffer (FTermControl{SA});
+    appendOutputBuffer (FTermControl{SA, uInt32(finalcut::stringLength(SA))});
   }
   else
   {
@@ -1501,26 +1507,27 @@ void FTermOutput::appendLowerRight (const FChar_iterator& last_char_iter)
 
     if ( IC )
     {
-      appendOutputBuffer (FTermControl{FTermcap::encodeParameter(IC, 1)});
+      auto ctrl_str = FTermcap::encodeParameter(IC, 1);
+      appendOutputBuffer (FTermControl{ctrl_str.data(), uInt32(ctrl_str.length())});
       appendChar (*second_last);
     }
     else if ( im && ei )
     {
-      appendOutputBuffer (FTermControl{im});
+      appendOutputBuffer (FTermControl{im, uInt32(finalcut::stringLength(im))});
       appendChar (*second_last);
 
       if ( ip )
-        appendOutputBuffer (FTermControl{ip});
+        appendOutputBuffer (FTermControl{ip, uInt32(finalcut::stringLength(ip))});
 
-      appendOutputBuffer (FTermControl{ei});
+      appendOutputBuffer (FTermControl{ei, uInt32(finalcut::stringLength(ei))});
     }
     else if ( ic )
     {
-      appendOutputBuffer (FTermControl{ic});
+      appendOutputBuffer (FTermControl{ic, uInt32(finalcut::stringLength(ic))});
       appendChar (*second_last);
 
       if ( ip )
-        appendOutputBuffer (FTermControl{ip});
+        appendOutputBuffer (FTermControl{ip, uInt32(finalcut::stringLength(ip))});
     }
   }
 }
@@ -1547,9 +1554,12 @@ inline auto FTermOutput::moveCursorLeft() -> CursorMoved
   const auto& LE = TCAP(t_parm_left_cursor);
 
   if ( le )
-    appendOutputBuffer (FTermControl{le});
+    appendOutputBuffer (FTermControl{le, uInt32(finalcut::stringLength(le))});
   else if ( LE )
-    appendOutputBuffer (FTermControl{FTermcap::encodeParameter(LE, 1)});
+  {
+    auto ctrl_str = FTermcap::encodeParameter(LE, 1);
+    appendOutputBuffer (FTermControl{ctrl_str.data(), uInt32(ctrl_str.length())});
+  }
   else
     return CursorMoved::No;  // Cursor could not be moved
 
@@ -1567,8 +1577,7 @@ inline void FTermOutput::checkFreeBufferSize()
 inline void FTermOutput::appendOutputBuffer (const FTermControl& ctrl)
 {
   appendOutputBuffer ( FOutputBuffer::OutputType::Control
-                     , ctrl.string.c_str()
-                     , uInt32(ctrl.string.length()) );
+                     , ctrl.data, ctrl.length );
 }
 
 //----------------------------------------------------------------------

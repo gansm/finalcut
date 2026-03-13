@@ -1,3 +1,6 @@
+2026-03-13  Markus Gans  <guru.mail@muenster.de>
+	* New UTF-8 encoding infrastructure under UTF8::encode
+
 2026-03-09  Markus Gans  <guru.mail@muenster.de>
 	* Improved FOutputBuffer access
 

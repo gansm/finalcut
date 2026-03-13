@@ -378,13 +378,6 @@ auto unicode_to_cp437 (wchar_t ucs) -> uChar
 }
 
 //----------------------------------------------------------------------
-auto unicode_to_utf8_string (wchar_t ucs) -> std::string
-{
-  UTF8_Char ch = unicode_to_utf8(ucs);
-  return std::string(&ch.u8.byte1, ch.length);
-}
-
-//----------------------------------------------------------------------
 auto getFullWidth (const FString& str) -> FString
 {
   // Converts half-width to full-width characters
