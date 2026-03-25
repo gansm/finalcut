@@ -268,10 +268,12 @@ inline void expand (std::vector<char>& buffer, std::size_t addend)
 }
 
 inline void expand (std::array<char, 4>&, std::size_t)
-{ }
+{
+  // A std::array<char, 4> cannot be expanded
+}
 
 template <typename T>
-using DecayedT = typename std::decay<T>::type;
+using DecayedT = typename std::decay_t<T>;
 
 template <typename CharBufferT>
 using uInt32_if_vector_or_array = std::enable_if_t<

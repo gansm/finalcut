@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2024 Markus Gans                                      *
+* Copyright 2015-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -93,6 +93,8 @@ class FWindow : public FWidget
     template<typename WidgetT>
     static auto  getWindowWidget (WidgetT*) -> FWindow*;
     template<typename WidgetT>
+    static auto  getWindowWidget (WidgetT*, const FWidgetFlags&) -> FWindow*;
+    template<typename WidgetT>
     static auto  getWindowLayer (WidgetT*) -> int;
     auto         getWindowFocusWidget() const -> FWidget*;
 
@@ -175,6 +177,7 @@ class FWindow : public FWidget
     static void  deleteFromAlwaysOnTopList (const FWidget*);
     static void  processAlwaysOnTop();
     static auto  getWindowWidgetImpl (FWidget*) -> FWindow*;
+    static auto  getWindowWidgetImpl (FWidget*, const FWidgetFlags&) -> FWindow*;
     static auto  getWindowLayerImpl (FWidget*) -> int;
     static void  activateTopWindow (const FWindow*);
     static auto  isWindowActivatable (const FWindow*, const FWindow*) -> bool;
@@ -202,11 +205,17 @@ inline auto FWindow::getClassName() const -> FString
 { return "FWindow"; }
 
 //----------------------------------------------------------------------
-
 template<typename WidgetT>
 inline auto FWindow::getWindowWidget (WidgetT* obj) -> FWindow*
 {
   return getWindowWidgetImpl (static_cast<FWidget*>(obj));
+}
+
+//----------------------------------------------------------------------
+template<typename WidgetT>
+inline auto FWindow::getWindowWidget (WidgetT* obj, const FWidgetFlags& search_flags) -> FWindow*
+{
+  return getWindowWidgetImpl (static_cast<FWidget*>(obj), search_flags);
 }
 
 //----------------------------------------------------------------------

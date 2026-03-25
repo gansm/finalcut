@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2022-2023 Markus Gans                                      *
+* Copyright 2022-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -88,6 +88,62 @@ struct FWidgetFlags
   FWidgetShadow      shadow;
   FWidgetType        type;
 };
+
+inline bool containsFWidgetFlags ( const FWidgetFlags& subset
+                                 , const FWidgetFlags& superset )
+{
+  auto check_feature = [] (const FWidgetFeature& a, const FWidgetFeature& b)
+  {
+    if ( a.active         && ! b.active         ) return false;
+    if ( a.scrollable     && ! b.scrollable     ) return false;
+    if ( a.resizeable     && ! b.resizeable     ) return false;
+    if ( a.minimizable    && ! b.minimizable    ) return false;
+    if ( a.flat           && ! b.flat           ) return false;
+    if ( a.no_border      && ! b.no_border      ) return false;
+    if ( a.no_underline   && ! b.no_underline   ) return false;
+    if ( a.ignore_padding && ! b.ignore_padding ) return false;
+    return true;
+  };
+
+  auto check_visibility = [] (const FWidgetVisibility& a, const FWidgetVisibility& b)
+  {
+    if ( a.visible        && ! b.visible        ) return false;
+    if ( a.hidden         && ! b.hidden         ) return false;
+    if ( a.shown          && ! b.shown          ) return false;
+    if ( a.modal          && ! b.modal          ) return false;
+    if ( a.always_on_top  && ! b.always_on_top  ) return false;
+    if ( a.visible_cursor && ! b.visible_cursor ) return false;
+    return true;
+  };
+
+  auto check_focus = [] (const FWidgetFocus& a, const FWidgetFocus& b)
+  {
+    if ( a.focus     && ! b.focus     ) return false;
+    if ( a.focusable && ! b.focusable ) return false;
+    return true;
+  };
+
+  auto check_shadow = [] (const FWidgetShadow& a, const FWidgetShadow& b)
+  {
+    if ( a.shadow       && ! b.shadow       ) return false;
+    if ( a.trans_shadow && ! b.trans_shadow ) return false;
+    return true;
+  };
+
+  auto check_type = [] (const FWidgetType& a, const FWidgetType& b)
+  {
+    if ( a.window_widget && ! b.window_widget ) return false;
+    if ( a.dialog_widget && ! b.dialog_widget ) return false;
+    if ( a.menu_widget   && ! b.menu_widget   ) return false;
+    return true;
+  };
+
+  return check_feature (subset.feature, superset.feature)
+      && check_visibility (subset.visibility, superset.visibility)
+      && check_focus (subset.focus, superset.focus)
+      && check_shadow (subset.shadow, superset.shadow)
+      && check_type (subset.type, superset.type);
+}
 
 }  // namespace finalcut
 

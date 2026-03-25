@@ -50,6 +50,13 @@ namespace finalcut
 namespace internal
 {
 
+auto hasModalWindowAsParent (FWidget* widget) -> bool
+{
+  FWidgetFlags search_flags{};
+  search_flags.visibility.modal = true;
+  return FWindow::getWindowWidget(widget, search_flags);
+}
+
 struct var
 {
   static FApplication* app_object;  // Global application object
@@ -1436,13 +1443,12 @@ auto FApplication::isEventProcessable ( FObject* receiver
 
   if ( getModalDialogCounter() > 0 )
   {
-    const FWidget* window = widget->isWindowWidget()
-                          ? widget
-                          : FWindow::getWindowWidget(widget);
+    const FWidget* window = FWindow::getWindowWidget(widget);
 
-    // block events for widgets in non modal windows
+    // Block events for widgets in non modal windows
     if ( window
       && ! window->getFlags().visibility.modal
+      && ! internal::hasModalWindowAsParent(widget)
       && ! window->isMenuWidget() )
     {
       static constexpr std::array<const Event, 13> blocked_events

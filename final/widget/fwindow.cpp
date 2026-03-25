@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2025 Markus Gans                                      *
+* Copyright 2015-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -911,6 +911,30 @@ auto FWindow::getWindowWidgetImpl (FWidget* obj) -> FWindow*
   }
 
   if ( obj->isWindowWidget() )
+    return static_cast<FWindow*>(obj);
+
+  return nullptr;
+}
+
+//----------------------------------------------------------------------
+auto FWindow::getWindowWidgetImpl ( FWidget* obj
+                                  , const FWidgetFlags& search_flags ) -> FWindow*
+{
+  // Returns the window object to the given widget obj
+  auto p_obj = obj->getParentWidget();
+  auto is_window_with_flags = [&search_flags] (const FWidget* obj)
+  {
+    return obj->isWindowWidget()
+        && containsFWidgetFlags(search_flags, obj->getFlags());
+  };
+
+  while ( ! is_window_with_flags(obj) && p_obj )
+  {
+    obj = p_obj;
+    p_obj = p_obj->getParentWidget();
+  }
+
+  if ( is_window_with_flags(obj) )
     return static_cast<FWindow*>(obj);
 
   return nullptr;
