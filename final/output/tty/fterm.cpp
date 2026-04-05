@@ -1633,7 +1633,12 @@ auto FTerm::enableCursor() -> FTermcap::TermcapString
 
   static const auto& vs = TCAP(t_cursor_visible);
   static const auto& ve = TCAP(t_cursor_normal);
-  static const auto* const ctrl = ve.data ? &ve : (vs.data ? &vs : nullptr);
+  static const auto* const ctrl = [] () -> const FTermcap::TermcapString*
+  {
+    if (ve.data) return &ve;
+    if (vs.data) return &vs;
+    return nullptr;
+  }();
   static std::array<char, 32> buf{};
   uInt32 length{0};
 

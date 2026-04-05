@@ -77,7 +77,7 @@ auto FTermLinux::getCursorStyleCtrl() const -> FTermcap::TermcapString
 {
   // Gets the current cursor style string of the Linux console
 
-  static constexpr std::array<const char[6], 7> lookup_table
+  static constexpr std::array<const char*, 7> lookup_table
   {{
     CSI "?0c", CSI "?1c",
     CSI "?2c", CSI "?3c",

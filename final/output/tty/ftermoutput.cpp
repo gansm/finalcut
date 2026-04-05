@@ -1018,7 +1018,7 @@ auto FTermOutput::eraseCharacters (uInt& x, uInt xmax, uInt y, const FChar_itera
   if ( canUseEraseCharacters(*iter, whitespace) )
   {
     appendAttributes (*iter);
-    const auto& term_ctrl = FTermcap::encodeParameter(ec, whitespace);
+    const auto term_ctrl = FTermcap::encodeParameter(ec, whitespace);
     appendOutputBuffer (FTermControl{term_ctrl});
 
     if ( end_pos <= xmax )
@@ -1063,14 +1063,14 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y, const FChar_itera
     newFontChanges (*iter);
     charsetChanges (*iter);
     appendAttributes (*iter);
-    const auto& term_ctrl = FTermcap::encodeParameter(rp, iter->ch.unicode_data[0], repetitions);
+    const auto term_ctrl = FTermcap::encodeParameter(rp, iter->ch.unicode_data[0], repetitions);
     appendOutputBuffer (FTermControl{term_ctrl});
     term_pos->x_ref() += static_cast<int>(repetitions);
   }
   else if ( lr.data && repetition_type == Repetition::UTF8 )
   {
     appendChar (*iter);
-    const auto& term_ctrl = FTermcap::encodeParameter(lr, repetitions);
+    const auto term_ctrl = FTermcap::encodeParameter(lr, repetitions);
     appendOutputBuffer (FTermControl{term_ctrl});
     term_pos->x_ref() += static_cast<int>(repetitions);
   }
@@ -1504,7 +1504,7 @@ void FTermOutput::appendLowerRight (const FChar_iterator& last_char_iter)
 
     if ( IC.data )
     {
-      const auto& term_ctrl = FTermcap::encodeParameter(IC, 1);
+      const auto term_ctrl = FTermcap::encodeParameter(IC, 1);
       appendOutputBuffer (FTermControl{term_ctrl});
       appendChar (*second_last);
     }
@@ -1554,7 +1554,7 @@ inline auto FTermOutput::moveCursorLeft() -> CursorMoved
     appendOutputBuffer (FTermControl{le});
   else if ( LE.data )
   {
-    const auto& term_ctrl = FTermcap::encodeParameter(LE, 1);
+    const auto term_ctrl = FTermcap::encodeParameter(LE, 1);
     appendOutputBuffer (FTermControl{term_ctrl});
   }
   else
