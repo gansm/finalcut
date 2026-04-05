@@ -216,8 +216,7 @@ class FTermOutput final : public FOutput
     // Constants
     struct FTermControl
     {
-      const char* data;
-      uInt32 length{};
+      FTermcap::TermcapString termcap;
     };
 
     // Enumerations

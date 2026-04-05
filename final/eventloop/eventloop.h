@@ -123,15 +123,15 @@ inline auto EventLoop::getClassName() const -> FString
 
 //----------------------------------------------------------------------
 inline void EventLoop::leave() noexcept
-{ running.store(false, std::memory_order_relaxed); }
+{ running.store(false); }
 
 //----------------------------------------------------------------------
 inline auto EventLoop::isRunning() const noexcept -> bool
-{ return running.load(std::memory_order_relaxed); }
+{ return running.load(); }
 
 //----------------------------------------------------------------------
 inline auto EventLoop::isChanged() const noexcept -> bool
-{ return monitors_changed.load(std::memory_order_acquire); }
+{ return monitors_changed.load(); }
 
 //----------------------------------------------------------------------
 inline void EventLoop::reserveInitialCapacity()

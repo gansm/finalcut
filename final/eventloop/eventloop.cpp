@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2023-2025 Andreas Noe                                      *
+* Copyright 2023-2026 Andreas Noe                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -40,7 +40,7 @@ namespace finalcut
 auto EventLoop::run() -> int
 {
   reserveInitialCapacity();
-  running.store(true, std::memory_order_relaxed);
+  running.store(true);
 
   try
   {
@@ -54,7 +54,7 @@ auto EventLoop::run() -> int
   {
     std::clog << "Exception on starting event loop: " << ex.what();
 
-    running.store(false, std::memory_order_relaxed);
+    running.store(false);
     return -1;
   }
 
@@ -109,7 +109,7 @@ inline auto EventLoop::processNextEvents() -> bool
   if ( isChanged() )
   {
     rebuildPollStructures();
-    monitors_changed.store(false, std::memory_order_release);
+    monitors_changed.store(false);
   }
 
   if ( cached_fds.empty() )
@@ -200,7 +200,7 @@ void EventLoop::addMonitor (Monitor* monitor)
     throw monitor_error{"The monitor is already part of the event loop."};
 
   monitors.push_back(monitor);
-  monitors_changed.store(true, std::memory_order_release);
+  monitors_changed.store(true);
 }
 
 //----------------------------------------------------------------------
@@ -214,7 +214,7 @@ void EventLoop::removeMonitor (Monitor* monitor)
   if ( iter != monitors.end() )
   {
     monitors.erase(iter, monitors.end());
-    monitors_changed.store(true, std::memory_order_release);
+    monitors_changed.store(true);
   }
 }
 

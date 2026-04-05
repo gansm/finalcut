@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2023 Markus Gans                                      *
+* Copyright 2017-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -98,7 +98,7 @@ void move (int xold, int yold, int xnew, int ynew)
   term_boundaries(xnew, ynew);
 
   // Get the move string
-  buffer = finalcut::FTerm::moveCursorString (xold, yold, xnew, ynew);
+  buffer = finalcut::FTerm::moveCursor(xold, yold, xnew, ynew).data;
 
   for (const auto& ch : buffer)
   {

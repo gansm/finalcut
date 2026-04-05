@@ -80,15 +80,23 @@ inline auto getSunConsoleKeys() -> SunConsoleKeysMap&
 template <typename CapabilityT, typename StringT>
 constexpr void setTCapString (CapabilityT& cap, StringT&& string)
 {
-  cap = std::forward<StringT>(string);
+  cap.data = std::forward<StringT>(string);
+
+  if ( cap.data )
+    cap.length = uInt32(finalcut::stringLength(cap.data));
 }
 
 //----------------------------------------------------------------------
 template <typename CapabilityT, typename StringT>
 constexpr void setTCapStringIfNotSet (CapabilityT& cap, StringT&& string)
 {
-  if ( ! cap )
-    cap = std::forward<StringT>(string);
+  if ( cap.data )
+    return;
+
+  cap.data = std::forward<StringT>(string);
+
+  if ( cap.data )
+    cap.length = uInt32(finalcut::stringLength(cap.data));
 }
 
 //----------------------------------------------------------------------
@@ -239,7 +247,7 @@ void FTermcapQuirks::linux()
 void FTermcapQuirks::xterm()
 {
   // Fallback if "Ic" is not found
-  if ( ! TCAP(t_initialize_color) )
+  if ( ! TCAP(t_initialize_color).data )
   {
     FTermcap::can_change_color_palette = true;
     setTCapString ( TCAP(t_initialize_color),
@@ -402,7 +410,7 @@ void FTermcapQuirks::sunConsole()
 void FTermcapQuirks::screen()
 {
   // Fallback if "Ic" is not found
-  if ( ! TCAP(t_initialize_color) )
+  if ( ! TCAP(t_initialize_color).data )
   {
     FTermcap::can_change_color_palette = true;
 
@@ -443,7 +451,7 @@ void FTermcapQuirks::general()
   setTCapStringIfNotSet (TCAP(t_set_a_background), CSI "4%p1%dm");
 
   // Fallback if "Ic" is not found
-  if ( ! TCAP(t_initialize_color) )
+  if ( ! TCAP(t_initialize_color).data )
   {
     FTermcap::can_change_color_palette = true;
     setTCapString ( TCAP(t_initialize_color),
@@ -466,16 +474,16 @@ void FTermcapQuirks::general()
 //----------------------------------------------------------------------
 inline void FTermcapQuirks::caModeExtension()
 {
-  if ( TCAP(t_enter_ca_mode)
-    && ! std::strstr(TCAP(t_enter_ca_mode), "\033[22;0;0t") )
+  if ( TCAP(t_enter_ca_mode).data
+    && ! std::strstr(TCAP(t_enter_ca_mode).data, "\033[22;0;0t") )
   {
     // Save the cursor position, enter alternate screen buffer
     // and save xterm icon and window title on stack
     setTCapString (TCAP(t_enter_ca_mode), CSI "?1049h" CSI "22;0;0t");
   }
 
-  if ( TCAP(t_exit_ca_mode)
-    && ! std::strstr(TCAP(t_exit_ca_mode), "\033[23;0;0t") )
+  if ( TCAP(t_exit_ca_mode).data
+    && ! std::strstr(TCAP(t_exit_ca_mode).data, "\033[23;0;0t") )
   {
     // Use normal screen buffer, restore the cursor position
     // and restore xterm icon and window title from stack
@@ -489,8 +497,8 @@ void FTermcapQuirks::repeatLastChar()
   // UTF-8 characters can be repeated with repeat_last_char, unlike
   // repeat_char which can only repeat 7-bit ASCII characters
 
-  if ( ! TCAP(t_repeat_char)
-    || std::memcmp(TCAP(t_repeat_char), "%p1%c\033[%p2%{1}%-%db", 19) != 0 )
+  if ( ! TCAP(t_repeat_char).data
+    || std::memcmp(TCAP(t_repeat_char).data, "%p1%c\033[%p2%{1}%-%db", 19) != 0 )
     return;
 
   setTCapString (TCAP(t_repeat_last_char), "\033[%p1%{1}%-%db");
@@ -500,8 +508,8 @@ void FTermcapQuirks::repeatLastChar()
 void FTermcapQuirks::ecma48()
 {
   // Test for standard ECMA-48 (ANSI X3.64) terminal
-  if ( ! TCAP(t_exit_underline_mode)
-    || std::memcmp(TCAP(t_exit_underline_mode), CSI "24m", 5) != 0 )
+  if ( ! TCAP(t_exit_underline_mode).data
+    || std::memcmp(TCAP(t_exit_underline_mode).data, CSI "24m", 5) != 0 )
     return;
 
   // Seems to be a ECMA-48 (ANSI X3.64) compatible terminal

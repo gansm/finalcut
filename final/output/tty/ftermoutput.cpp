@@ -220,10 +220,10 @@ void FTermOutput::setCursor (FPoint p)
   const auto term_y = term_pos->getY();
   const auto x = p.getX();
   const auto y = p.getY();
-  const auto& move_str = FTerm::moveCursorString (term_x, term_y, x, y);
+  const auto& move_cursor = FTerm::moveCursor (term_x, term_y, x, y);
 
-  if ( ! move_str.empty() )
-    appendOutputBuffer (FTermControl{move_str.data(), uInt32(move_str.length())});
+  if ( move_cursor.data )
+    appendOutputBuffer (FTermControl{move_cursor});
 
   term_pos->setPoint(x, y);
 }
@@ -247,12 +247,12 @@ void FTermOutput::hideCursor (bool enable)
   if ( ! isCursorHideable() )
     return;
 
-  auto visibility_str = FTerm::cursorsVisibilityString (enable);
+  const auto& visibility = FTerm::cursorsVisibility(enable);
 
-  if ( visibility_str.empty() )  // Exit the function if the string is empty
+  if ( ! visibility.data )  // Exit the function if the string is empty
     return;
 
-  appendOutputBuffer (FTermControl{visibility_str.data(), uInt32(visibility_str.length())});
+  appendOutputBuffer (FTermControl{visibility});
   flush();
 }
 
@@ -387,7 +387,7 @@ void FTermOutput::initScreenSettings()
 //----------------------------------------------------------------------
 auto FTermOutput::scrollTerminalForward() -> bool
 {
-  if ( ! TCAP(t_scroll_forward) )
+  if ( ! TCAP(t_scroll_forward).data )
     return false;
 
   FTerm::scrollTermForward();
@@ -397,7 +397,7 @@ auto FTermOutput::scrollTerminalForward() -> bool
 //----------------------------------------------------------------------
 auto FTermOutput::scrollTerminalReverse() -> bool
 {
-  if ( ! TCAP(t_scroll_reverse) )
+  if ( ! TCAP(t_scroll_reverse).data )
     return false;
 
   FTerm::scrollTermReverse();
@@ -432,32 +432,32 @@ auto FTermOutput::clearTerminal (wchar_t fillchar) -> bool
   const auto& normal = FOptiAttr::isNormal(next_attribute);
   appendAttributes (next_attribute);
 
-  if ( ! ( (cl || cd || cb) && (normal || ut) )
+  if ( ! ( (cl.data || cd.data || cb.data) && (normal || ut) )
     || fillchar != L' '
     || ! FVTerm::isDrawingFinished() )
   {
     return false;
   }
 
-  if ( cl )  // Clear screen
+  if ( cl.data )  // Clear screen
   {
-    appendOutputBuffer (FTermControl{cl, uInt32(finalcut::stringLength(cl))});
+    appendOutputBuffer (FTermControl{cl});
     term_pos->setPoint(0, 0);
   }
-  else if ( cd )  // Clear to end of screen
+  else if ( cd.data )  // Clear to end of screen
   {
     setCursor (FPoint{0, 0});
-    appendOutputBuffer (FTermControl{cd, uInt32(finalcut::stringLength(cd))});
+    appendOutputBuffer (FTermControl{cd});
     term_pos->setPoint(-1, -1);
   }
-  else if ( cb )  // Clear to end of line
+  else if ( cb.data )  // Clear to end of line
   {
     term_pos->setPoint(-1, -1);
 
     for (auto i{0}; i < int(getLineNumber()); i++)
     {
       setCursor (FPoint{0, i});
-      appendOutputBuffer (FTermControl{cb, uInt32(finalcut::stringLength(cb))});
+      appendOutputBuffer (FTermControl{cb});
     }
 
     setCursor (FPoint{0, 0});
@@ -645,7 +645,7 @@ auto FTermOutput::canClearToEOL (uInt xmin, uInt y) const -> bool
 
   const auto& ce = TCAP(t_clr_eol);
 
-  if ( ! ce )
+  if ( ! ce.data )
     return false;
 
   const auto width = uInt(vterm->size.width);
@@ -680,7 +680,7 @@ auto FTermOutput::canClearLeadingWS (uInt& xmin, uInt y) const -> bool
 
   const auto& cb = TCAP(t_clr_bol);
 
-  if ( ! cb )
+  if ( ! cb.data )
     return false;
 
   const auto width = uInt(vterm->size.width);
@@ -720,7 +720,7 @@ auto FTermOutput::canClearTrailingWS (uInt& xmax, uInt y) const -> bool
 
   const auto& ce = TCAP(t_clr_eol);
 
-  if ( ! ce )
+  if ( ! ce.data )
     return false;
 
   const int width = vterm->size.width;
@@ -821,13 +821,13 @@ void FTermOutput::printRange (uInt xmin, uInt xmax, uInt y)
       continue;
 
     // Erase character
-    if ( ec && iter->ch.unicode_data[0] == L' ' )
+    if ( ec.data && iter->ch.unicode_data[0] == L' ' )
     {
       if ( eraseCharacters(x, xmax, y, iter) \
            == PrintState::LineCompletelyPrinted )
         break;
     }
-    else if ( rp || lr )  // Repeat one character n-fold
+    else if ( rp.data || lr.data )  // Repeat one character n-fold
     {
       repeatCharacter(x, xmax, y, iter);
     }
@@ -1001,7 +1001,7 @@ auto FTermOutput::eraseCharacters (uInt& x, uInt xmax, uInt y, const FChar_itera
 
   const auto& ec = TCAP(t_erase_chars);
 
-  if ( ! (ec && iter->ch.unicode_data[0] == L' ') )
+  if ( ! (ec.data && iter->ch.unicode_data[0] == L' ') )
     return PrintState::NothingPrinted;
 
   const auto whitespace = countRepetitions(iter, x, xmax);
@@ -1018,8 +1018,8 @@ auto FTermOutput::eraseCharacters (uInt& x, uInt xmax, uInt y, const FChar_itera
   if ( canUseEraseCharacters(*iter, whitespace) )
   {
     appendAttributes (*iter);
-    auto ctrl_str = FTermcap::encodeParameter(ec, whitespace);
-    appendOutputBuffer (FTermControl{ctrl_str.data(), uInt32(ctrl_str.length())});
+    const auto& term_ctrl = FTermcap::encodeParameter(ec, whitespace);
+    appendOutputBuffer (FTermControl{term_ctrl});
 
     if ( end_pos <= xmax )
       setCursor (FPoint{static_cast<int>(x + whitespace), static_cast<int>(y)});
@@ -1042,7 +1042,7 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y, const FChar_itera
   const auto& rp = TCAP(t_repeat_char);
   const auto& lr = TCAP(t_repeat_last_char);
 
-  if ( ! (rp || lr) )
+  if ( ! (rp.data || lr.data) )
     return PrintState::NothingPrinted;
 
   const auto repetitions = countRepetitions(iter, x, xmax);
@@ -1058,20 +1058,20 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y, const FChar_itera
   // cannot repeat in their byte sequence
   const auto repetition_type = getRepetitionType(*iter, repetitions);
 
-  if ( rp && repetition_type == Repetition::ASCII )
+  if ( rp.data && repetition_type == Repetition::ASCII )
   {
     newFontChanges (*iter);
     charsetChanges (*iter);
     appendAttributes (*iter);
-    auto ctrl_str = FTermcap::encodeParameter(rp, iter->ch.unicode_data[0], repetitions);
-    appendOutputBuffer (FTermControl{ctrl_str.data(), uInt32(ctrl_str.length())});
+    const auto& term_ctrl = FTermcap::encodeParameter(rp, iter->ch.unicode_data[0], repetitions);
+    appendOutputBuffer (FTermControl{term_ctrl});
     term_pos->x_ref() += static_cast<int>(repetitions);
   }
-  else if ( lr && repetition_type == Repetition::UTF8 )
+  else if ( lr.data && repetition_type == Repetition::UTF8 )
   {
     appendChar (*iter);
-    auto ctrl_str = FTermcap::encodeParameter(lr, repetitions);
-    appendOutputBuffer (FTermControl{ctrl_str.data(), uInt32(ctrl_str.length())});
+    const auto& term_ctrl = FTermcap::encodeParameter(lr, repetitions);
+    appendOutputBuffer (FTermControl{term_ctrl});
     term_pos->x_ref() += static_cast<int>(repetitions);
   }
   else
@@ -1221,8 +1221,7 @@ inline auto FTermOutput::updateTerminalLine (uInt y) -> bool
     setCursor (FPoint{int(xmin), int(y)});
     auto& min_char = vterm->getFChar(int(xmin), int(y));
     appendAttributes (min_char);
-    auto* ctrl_str = TCAP(t_clr_eol);
-    appendOutputBuffer (FTermControl{ctrl_str, uInt32(finalcut::stringLength(ctrl_str))});
+    appendOutputBuffer (FTermControl{TCAP(t_clr_eol)});
     markAsPrinted (xmin, uInt(vterm->size.width - 1), y);
   }
   else
@@ -1235,8 +1234,7 @@ inline auto FTermOutput::updateTerminalLine (uInt y) -> bool
     {
       auto& first_char = vterm->getFChar(int(0), int(y));
       appendAttributes (first_char);
-      auto* ctrl_str = TCAP(t_clr_bol);
-      appendOutputBuffer (FTermControl{ctrl_str, uInt32(finalcut::stringLength(ctrl_str))});
+      appendOutputBuffer (FTermControl{TCAP(t_clr_bol)});
       markAsPrinted (0, xmin, y);
     }
 
@@ -1246,8 +1244,7 @@ inline auto FTermOutput::updateTerminalLine (uInt y) -> bool
     {
       auto& last_char = vterm->getFChar(vterm->size.width - 1, int(y));
       appendAttributes (last_char);
-      auto* ctrl_str = TCAP(t_clr_eol);
-      appendOutputBuffer (FTermControl{ctrl_str, uInt32(finalcut::stringLength(ctrl_str))});
+      appendOutputBuffer (FTermControl{TCAP(t_clr_eol)});
       markAsPrinted (xmax + 1, uInt(vterm->size.width - 1), y);
     }
   }
@@ -1464,12 +1461,12 @@ inline void FTermOutput::appendAttributes (FChar& next_attr)
     return;  // No changes
 
   static auto& opti_attr = FOptiAttr::getInstance();
-  const auto attr_str = opti_attr.changeAttribute (term_attribute, next_attr);
+  const auto change_attribute = opti_attr.changeAttribute (term_attribute, next_attr);
 
-  if ( attr_str.empty() )
+  if ( ! change_attribute.data )
     return;
 
-  appendOutputBuffer (FTermControl{attr_str.data(), uInt32(attr_str.length())});
+  appendOutputBuffer (FTermControl{change_attribute});
 }
 
 //----------------------------------------------------------------------
@@ -1482,11 +1479,11 @@ void FTermOutput::appendLowerRight (const FChar_iterator& last_char_iter)
   {
     appendChar (*last_char_iter);
   }
-  else if ( SA && RA )
+  else if ( SA.data && RA.data )
   {
-    appendOutputBuffer (FTermControl{RA, uInt32(finalcut::stringLength(RA))});
+    appendOutputBuffer (FTermControl{RA});
     appendChar (*last_char_iter);
-    appendOutputBuffer (FTermControl{SA, uInt32(finalcut::stringLength(SA))});
+    appendOutputBuffer (FTermControl{SA});
   }
   else
   {
@@ -1505,29 +1502,29 @@ void FTermOutput::appendLowerRight (const FChar_iterator& last_char_iter)
     setCursor (FPoint{x, y});
     auto second_last = last_char_iter - 1;
 
-    if ( IC )
+    if ( IC.data )
     {
-      auto ctrl_str = FTermcap::encodeParameter(IC, 1);
-      appendOutputBuffer (FTermControl{ctrl_str.data(), uInt32(ctrl_str.length())});
+      const auto& term_ctrl = FTermcap::encodeParameter(IC, 1);
+      appendOutputBuffer (FTermControl{term_ctrl});
       appendChar (*second_last);
     }
-    else if ( im && ei )
+    else if ( im.data && ei.data )
     {
-      appendOutputBuffer (FTermControl{im, uInt32(finalcut::stringLength(im))});
+      appendOutputBuffer (FTermControl{im});
       appendChar (*second_last);
 
-      if ( ip )
-        appendOutputBuffer (FTermControl{ip, uInt32(finalcut::stringLength(ip))});
+      if ( ip.data )
+        appendOutputBuffer (FTermControl{ip});
 
-      appendOutputBuffer (FTermControl{ei, uInt32(finalcut::stringLength(ei))});
+      appendOutputBuffer (FTermControl{ei});
     }
-    else if ( ic )
+    else if ( ic.data )
     {
-      appendOutputBuffer (FTermControl{ic, uInt32(finalcut::stringLength(ic))});
+      appendOutputBuffer (FTermControl{ic});
       appendChar (*second_last);
 
-      if ( ip )
-        appendOutputBuffer (FTermControl{ip, uInt32(finalcut::stringLength(ip))});
+      if ( ip.data )
+        appendOutputBuffer (FTermControl{ip});
     }
   }
 }
@@ -1553,12 +1550,12 @@ inline auto FTermOutput::moveCursorLeft() -> CursorMoved
   const auto& le = TCAP(t_cursor_left);
   const auto& LE = TCAP(t_parm_left_cursor);
 
-  if ( le )
-    appendOutputBuffer (FTermControl{le, uInt32(finalcut::stringLength(le))});
-  else if ( LE )
+  if ( le.data )
+    appendOutputBuffer (FTermControl{le});
+  else if ( LE.data )
   {
-    auto ctrl_str = FTermcap::encodeParameter(LE, 1);
-    appendOutputBuffer (FTermControl{ctrl_str.data(), uInt32(ctrl_str.length())});
+    const auto& term_ctrl = FTermcap::encodeParameter(LE, 1);
+    appendOutputBuffer (FTermControl{term_ctrl});
   }
   else
     return CursorMoved::No;  // Cursor could not be moved
@@ -1577,7 +1574,7 @@ inline void FTermOutput::checkFreeBufferSize()
 inline void FTermOutput::appendOutputBuffer (const FTermControl& ctrl)
 {
   appendOutputBuffer ( FOutputBuffer::OutputType::Control
-                     , ctrl.data, ctrl.length );
+                     , ctrl.termcap.data, ctrl.termcap.length );
 }
 
 //----------------------------------------------------------------------

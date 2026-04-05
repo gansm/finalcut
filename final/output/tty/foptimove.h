@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2025 Markus Gans                                      *
+* Copyright 2015-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -46,6 +46,7 @@
 #include <iostream>
 #include <string>
 
+#include "final/output/tty/ftermcap.h"
 #include "final/util/fstring.h"
 
 namespace finalcut
@@ -60,35 +61,35 @@ class FOptiMove final
   public:
     struct TermEnvCursor
     {
-      const char* t_cursor_up;
-      const char* t_cursor_down;
-      const char* t_cursor_left;
-      const char* t_cursor_right;
-      const char* t_cursor_home;
-      const char* t_cursor_to_ll;
-      const char* t_carriage_return;
-      const char* t_tab;
-      const char* t_back_tab;
+      const FTermcap::TermcapString& t_cursor_up;
+      const FTermcap::TermcapString& t_cursor_down;
+      const FTermcap::TermcapString& t_cursor_left;
+      const FTermcap::TermcapString& t_cursor_right;
+      const FTermcap::TermcapString& t_cursor_home;
+      const FTermcap::TermcapString& t_cursor_to_ll;
+      const FTermcap::TermcapString& t_carriage_return;
+      const FTermcap::TermcapString& t_tab;
+      const FTermcap::TermcapString& t_back_tab;
     };
 
     struct TermEnvParamCursor
     {
-      const char* t_parm_up_cursor;
-      const char* t_parm_down_cursor;
-      const char* t_parm_left_cursor;
-      const char* t_parm_right_cursor;
-      const char* t_cursor_address;
-      const char* t_column_address;
-      const char* t_row_address;
+      const FTermcap::TermcapString& t_parm_up_cursor;
+      const FTermcap::TermcapString& t_parm_down_cursor;
+      const FTermcap::TermcapString& t_parm_left_cursor;
+      const FTermcap::TermcapString& t_parm_right_cursor;
+      const FTermcap::TermcapString& t_cursor_address;
+      const FTermcap::TermcapString& t_column_address;
+      const FTermcap::TermcapString& t_row_address;
     };
 
     struct TermEnvEdit
     {
-      const char* t_erase_chars;
-      const char* t_repeat_char;
-      const char* t_repeat_last_char;
-      const char* t_clr_bol;
-      const char* t_clr_eol;
+      const FTermcap::TermcapString& t_erase_chars;
+      const FTermcap::TermcapString& t_repeat_char;
+      const FTermcap::TermcapString& t_repeat_last_char;
+      const FTermcap::TermcapString& t_clr_bol;
+      const FTermcap::TermcapString& t_clr_eol;
     };
 
     struct TermEnv
@@ -133,38 +134,38 @@ class FOptiMove final
     void  setTabStop (int);
     void  setTermSize (std::size_t, std::size_t);
     void  setTermEnvironment (const TermEnv&);
-    void  set_cursor_home (const char[]);
-    void  set_cursor_to_ll (const char[]);
-    void  set_carriage_return (const char[]);
-    void  set_tabular (const char[]);
-    void  set_back_tab (const char[]);
-    void  set_cursor_up (const char[]);
-    void  set_cursor_down (const char[]);
-    void  set_cursor_left (const char[]);
-    void  set_cursor_right (const char[]);
-    void  set_cursor_address (const char[]);
-    void  set_column_address (const char[]);
-    void  set_row_address (const char[]);
-    void  set_parm_up_cursor (const char[]);
-    void  set_parm_down_cursor (const char[]);
-    void  set_parm_left_cursor (const char[]);
-    void  set_parm_right_cursor (const char[]);
-    void  set_erase_chars (const char[]);
-    void  set_repeat_char (const char[]);
-    void  set_repeat_last_char (const char[]);
-    void  set_clr_bol (const char[]);
-    void  set_clr_eol (const char[]);
+    void  set_cursor_home (const FTermcap::TermcapString&);
+    void  set_cursor_to_ll (const FTermcap::TermcapString&);
+    void  set_carriage_return (const FTermcap::TermcapString&);
+    void  set_tabular (const FTermcap::TermcapString&);
+    void  set_back_tab (const FTermcap::TermcapString&);
+    void  set_cursor_up (const FTermcap::TermcapString&);
+    void  set_cursor_down (const FTermcap::TermcapString&);
+    void  set_cursor_left (const FTermcap::TermcapString&);
+    void  set_cursor_right (const FTermcap::TermcapString&);
+    void  set_cursor_address (const FTermcap::TermcapString&);
+    void  set_column_address (const FTermcap::TermcapString&);
+    void  set_row_address (const FTermcap::TermcapString&);
+    void  set_parm_up_cursor (const FTermcap::TermcapString&);
+    void  set_parm_down_cursor (const FTermcap::TermcapString&);
+    void  set_parm_left_cursor (const FTermcap::TermcapString&);
+    void  set_parm_right_cursor (const FTermcap::TermcapString&);
+    void  set_erase_chars (const FTermcap::TermcapString&);
+    void  set_repeat_char (const FTermcap::TermcapString&);
+    void  set_repeat_last_char (const FTermcap::TermcapString&);
+    void  set_clr_bol (const FTermcap::TermcapString&);
+    void  set_clr_eol (const FTermcap::TermcapString&);
     void  set_auto_left_margin (bool = true) noexcept;
     void  set_eat_newline_glitch (bool = true) noexcept;
 
     // Methods
     void  check_boundaries (int&, int&, int&, int&) const noexcept;
-    auto  moveCursor (int, int, int, int) -> std::string;
+    auto  moveCursor (int, int, int, int) -> FTermcap::TermcapString;
 
   private:
     struct Capability
     {
-      const char* cap;
+      FTermcap::TermcapString cap;
       int duration;
       int length;
     };
@@ -219,7 +220,7 @@ class FOptiMove final
 
     // Methods
     void  calculateCharDuration() noexcept;
-    auto  capDuration (const char[], int) const noexcept -> int;
+    auto  capDuration (const FTermcap::TermcapString&, int) const noexcept -> int;
     auto  capDurationToLength (int) const noexcept -> int;
     auto  repeatedAppend (std::string&, const Capability&, int) const -> int;
     auto  relativeMove (std::string&, int, int, int, int) const -> int;

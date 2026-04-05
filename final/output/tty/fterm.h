@@ -119,6 +119,7 @@
 
 #include "final/fc.h"
 #include "final/output/fcolorpalette.h"
+#include "final/output/tty/ftermcap.h"
 #include "final/output/tty/ftermdata.h"
 #include "final/output/tty/fterm_functions.h"
 #include "final/util/fstring.h"
@@ -207,8 +208,8 @@ class FTerm final
     static auto resetFont() -> bool;
     static auto openConsole() -> int;
     static auto closeConsole() -> int;
-    static auto moveCursorString (int, int, int, int) -> std::string;
-    static auto cursorsVisibilityString (bool = true) -> std::string;
+    static auto moveCursor (int, int, int, int) -> FTermcap::TermcapString;
+    static auto cursorsVisibility (bool = true) -> FTermcap::TermcapString;
     static void detectTermSize();
     static void setTermSize (const FSize&);
     static void setTermTitle (const FString&);
@@ -231,6 +232,7 @@ class FTerm final
 
     template <typename... Args>
     static void paddingPrintf (Args&&...);
+    static void paddingPrint (const FTermcap::TermcapString&, int = 1);
     static void paddingPrint (const char*, uInt32, int = 1);
     static void paddingPrint (const char*, int = 1);
     static void stringPrint (const char*, uInt32);
@@ -278,8 +280,8 @@ class FTerm final
     static auto canSetTerminalFont() -> bool;
     static void setInsertCursorStyle();
     static void setOverwriteCursorStyle();
-    static auto enableCursorString() -> std::string;
-    static auto disableCursorString() -> std::string;
+    static auto enableCursor() -> FTermcap::TermcapString;
+    static auto disableCursor() -> FTermcap::TermcapString;
     static void enableMouse();
     static void disableMouse();
     static void enableApplicationEscKey();

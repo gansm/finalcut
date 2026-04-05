@@ -33,16 +33,18 @@
 
 #include <final/final.h>
 
-// FTermcap string macro
-#ifdef TCAP
-  #undef TCAP
-#endif
-#define TCAP(...)  finalcut::FTermcap::strings[int(finalcut::Termcap::__VA_ARGS__)].string.data
-
 using std::chrono::duration_cast;
 using std::chrono::milliseconds;
 using std::chrono::high_resolution_clock;
 
+// FTermcap string macro
+#ifdef TCAP
+  #undef TCAP
+#endif
+
+#define TCAP(...)  finalcut::FTermcap::strings[int(finalcut::Termcap::__VA_ARGS__)].string
+
+#define TCS(tc) toTermcapString(tc)
 
 #define CPPUNIT_ASSERT_CSTRING(expected, actual) \
             check_c_string (expected, actual, CPPUNIT_SOURCELINE())
@@ -59,6 +61,21 @@ void check_c_string ( const char* s1
       return;
 
   ::CppUnit::Asserter::fail ("Strings are not equal", sourceLine);
+}
+
+//----------------------------------------------------------------------
+auto toTermcapString (const char* string) -> finalcut::FTermcap::TermcapString
+{
+  // Type conversion function
+  auto length = uInt32(finalcut::stringLength(string));
+  return {string, length};
+}
+
+//----------------------------------------------------------------------
+bool operator == ( const finalcut::FTermcap::TermcapString& lhs
+                 , const char* rhs )  // Operator overloading
+{
+  return std::string(lhs.data, lhs.length) == rhs;
 }
 
 
@@ -229,7 +246,7 @@ void FTermcapTest::encodeMotionParameterTest()
   tcap.setPutStringFunction (FTermcapTest::putstring_test);
   CPPUNIT_ASSERT ( tcap.isInitialized() );
   CPPUNIT_ASSERT ( fterm_data.getTermType() == "ansi" );
-  const auto& cursor_address = tcap.getString("cm");
+  const auto& cursor_address = TCS(tcap.getString("cm"));
   CPPUNIT_ASSERT ( tcap.encodeMotionParameter(cursor_address, 10, 15) == CSI "16;11H" );
   CPPUNIT_ASSERT ( tcap.encodeMotionParameter(cursor_address, 25, 1) == CSI "2;26H" );
   CPPUNIT_ASSERT ( tcap.encodeMotionParameter(cursor_address, 0, 0) == CSI "1;1H" );
@@ -247,17 +264,17 @@ void FTermcapTest::encodeParameterTest()
   tcap.setPutStringFunction (FTermcapTest::putstring_test);
   CPPUNIT_ASSERT ( tcap.isInitialized() );
   CPPUNIT_ASSERT ( fterm_data.getTermType() == "ansi" );
-  const auto& parm_insert_line = tcap.getString("AL");
+  const auto& parm_insert_line = TCS(tcap.getString("AL"));
   CPPUNIT_ASSERT ( tcap.encodeParameter(parm_insert_line, 7) == CSI "7L" );
-  const auto& parm_left_cursor = tcap.getString("LE");
+  const auto& parm_left_cursor = TCS(tcap.getString("LE"));
   CPPUNIT_ASSERT ( tcap.encodeParameter(parm_left_cursor, 3) == CSI "3D" );
-  const auto& parm_right_cursor = tcap.getString("RI");
+  const auto& parm_right_cursor = TCS(tcap.getString("RI"));
   CPPUNIT_ASSERT ( tcap.encodeParameter(parm_right_cursor, 4) == CSI "4C" );
-  const auto& parm_down_cursor = tcap.getString("DO");
+  const auto& parm_down_cursor = TCS(tcap.getString("DO"));
   CPPUNIT_ASSERT ( tcap.encodeParameter(parm_down_cursor, 12) == CSI "12B" );
-  const auto& parm_up_cursor = tcap.getString("UP");
+  const auto& parm_up_cursor = TCS(tcap.getString("UP"));
   CPPUNIT_ASSERT ( tcap.encodeParameter(parm_up_cursor, 5) == CSI "5A" );
-  const auto& parm_delete_line = tcap.getString("DL");
+  const auto& parm_delete_line = TCS(tcap.getString("DL"));
   CPPUNIT_ASSERT ( tcap.encodeParameter(parm_delete_line, 9) == CSI "9M" );
 }
 
@@ -350,10 +367,11 @@ void FTermcapTest::paddingPrintTest()
 
   // Beep has delayed output and flush
   output.clear();
-  status = tcap.paddingPrint (TCAP(t_bell), 1, 1);
+  const auto bell_signal = TCAP(t_bell);
+  status = tcap.paddingPrint (bell_signal.data, bell_signal.length, 1);
   CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
   CPPUNIT_ASSERT ( ! output.empty() );
-  CPPUNIT_ASSERT ( output == std::string(TCAP(t_bell)) );
+  CPPUNIT_ASSERT ( output == std::string(TCAP(t_bell).data) );
 
   // Flash screen has delayed output and flush
   output.clear();

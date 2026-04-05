@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2024 Markus Gans                                      *
+* Copyright 2018-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -347,7 +347,7 @@ inline auto FTermXTerminal::canSetXTermCursorStyle() const -> bool
   if ( fterm_data.isTermType(FTermType::kde_konsole) )
     return false;
 
-  return TCAP(t_cursor_style)
+  return TCAP(t_cursor_style).data
       || term_detection.hasSetCursorStyleSupport()
       || fterm_data.isTermType ( FTermType::xterm
                                | FTermType::cygwin

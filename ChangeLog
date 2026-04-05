@@ -1,4 +1,7 @@
-2026-03-25  Markus Gans  <guru.mail@muenster.de>
+2026-04-04  Markus Gans  <guru.mail@muenster.de>
+	* Avoid using the std::string class unnecessarily
+
+2026-03-13  Markus Gans  <guru.mail@muenster.de>
 	* Do not block events in windows that are child widgets 
 	  of a modal dialog box
 

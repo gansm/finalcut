@@ -47,7 +47,7 @@
 #include "final/util/fstring.h"
 
 // FTermcap string macro
-#define TCAP(...)  FTermcap::strings[int(Termcap::__VA_ARGS__)].string.data
+#define TCAP(...)  FTermcap::strings[int(Termcap::__VA_ARGS__)].string
 
 namespace finalcut
 {
@@ -94,9 +94,9 @@ class FTermcap final
     static auto  getFlag (const std::string&) -> bool;
     static auto  getNumber (const std::string&) -> int;
     static auto  getString (const std::string&) -> char*;
-    static auto  encodeMotionParameter (const std::string&, int, int) -> std::string;
+    static auto  encodeMotionParameter (const TermcapString&, int, int) -> TermcapString;
     template <typename... Args>
-    static auto  encodeParameter (const std::string&, Args&&...) -> std::string;
+    static auto  encodeParameter (const TermcapString&, Args&&...) -> TermcapString;
     static auto  paddingPrint (const char*, uInt32, int) -> Status;
     static auto  stringPrint (const char*, uInt32) -> Status;
 
@@ -146,8 +146,8 @@ class FTermcap final
     static void  termcapNumerics();
     static void  termcapStrings();
     static void  termcapKeys();
-    static auto  encodeParams ( const std::string&
-                              , const std::array<int, 9>& ) -> std::string;
+    static auto  encodeParams ( const TermcapString&
+                              , const std::array<int, 9>& ) -> TermcapString;
     static auto  hasDelay (const std::string&) noexcept -> bool;
     static void  delayOutput (int) noexcept;
     static auto  readNumber (const char*&, int, bool&) noexcept -> int;
@@ -172,7 +172,7 @@ inline auto FTermcap::getClassName() const -> FString
 
 //----------------------------------------------------------------------
 template <typename... Args>
-auto FTermcap::encodeParameter (const std::string& cap, Args&&... args) -> std::string
+auto FTermcap::encodeParameter (const TermcapString& cap, Args&&... args) -> TermcapString
 {
   std::array<int, 9> attr {{static_cast<int>(args)...}};
   return encodeParams(cap, attr);

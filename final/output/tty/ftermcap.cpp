@@ -197,7 +197,7 @@ auto FTermcap::getString (const std::string& cap) -> char*
 }
 
 //----------------------------------------------------------------------
-auto FTermcap::encodeMotionParameter (const std::string& cap, int col, int row) -> std::string
+auto FTermcap::encodeMotionParameter (const TermcapString& cap, int col, int row) -> TermcapString
 {
   const std::uint32_t key = (std::uint32_t(col) << 16) | std::uint16_t(row);
 
@@ -206,11 +206,14 @@ auto FTermcap::encodeMotionParameter (const std::string& cap, int col, int row) 
   auto iter = move_cache.find(key);
 
   if ( iter != move_cache.end() )
-    return iter->second;
+    return {iter->second.data(), uInt32(iter->second.size())};
 
   // Cache-Miss: call tgoto
-  if ( const char* res = ::tgoto(C_STR(cap.data()), col, row) )
-    return move_cache[key] = res;
+  if ( const char* res = ::tgoto(C_STR(cap.data), col, row) )
+  {
+    auto& termcap_str = move_cache[key] = res;
+    return {termcap_str.data(), uInt32(termcap_str.size())};
+  }
 
   return {};
 }
@@ -484,13 +487,13 @@ void FTermcap::termcapStrings()
 
   const auto& ho = TCAP(t_cursor_home);
 
-  if ( ho && std::memcmp(ho, "\033[H", 3) == 0 )
+  if ( ho.data && std::memcmp(ho.data, "\033[H", 3) == 0 )
     has_ansi_escape_sequences = true;
 
   const auto& pc = TCAP(t_pad_char);
 
-  if ( pc )
-    PC = pc[0];
+  if ( pc.data )
+    PC = pc.data[0];
 }
 
 //----------------------------------------------------------------------
@@ -524,20 +527,20 @@ void FTermcap::termcapKeys()
 }
 
 //----------------------------------------------------------------------
-auto FTermcap::encodeParams ( const std::string& cap
-                            , const std::array<int, 9>& params ) -> std::string
+auto FTermcap::encodeParams ( const TermcapString& cap
+                            , const std::array<int, 9>& params ) -> TermcapString
 {
-  const auto str = ::tparm ( C_STR(cap.data()), params[0], params[1]
+  const auto str = ::tparm ( C_STR(cap.data), params[0], params[1]
                            , params[2], params[3], params[4], params[5]
                            , params[6], params[7], params[8] );
-  return str ? str : std::string();
+  return {str, uInt32(finalcut::stringLength(str))};
 }
 
 //----------------------------------------------------------------------
 inline auto FTermcap::hasDelay (const std::string& string) noexcept -> bool
 {
-  return (TCAP(t_bell) && string == std::string(TCAP(t_bell)))
-      || (TCAP(t_flash_screen) && string == std::string(TCAP(t_flash_screen)))
+  return (TCAP(t_bell).data && string == std::string(TCAP(t_bell).data))
+      || (TCAP(t_flash_screen).data && string == std::string(TCAP(t_flash_screen).data))
       || ( ! xon_xoff_flow_control && padding_baudrate
         && (baudrate >= padding_baudrate) );
 }

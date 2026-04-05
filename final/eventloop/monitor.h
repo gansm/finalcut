@@ -178,11 +178,11 @@ inline auto Monitor::getClassName() const -> FString
 
 //----------------------------------------------------------------------
 inline auto Monitor::getEvents() const noexcept -> short
-{ return events.load(std::memory_order_relaxed); }
+{ return events.load(); }
 
 //----------------------------------------------------------------------
 inline auto Monitor::getFileDescriptor() const noexcept -> int
-{ return fd.load(std::memory_order_relaxed); }
+{ return fd.load(); }
 
 //----------------------------------------------------------------------
 template <typename T>
@@ -204,7 +204,7 @@ inline auto Monitor::isSuspended() const noexcept -> bool
 
 //----------------------------------------------------------------------
 inline auto Monitor::hasValidFileDescriptor() const noexcept -> bool
-{ return fd.load(std::memory_order_relaxed) != NO_FILE_DESCRIPTOR; }
+{ return fd.load() != NO_FILE_DESCRIPTOR; }
 
 //----------------------------------------------------------------------
 inline auto Monitor::hasHandler() const noexcept -> bool
@@ -241,11 +241,11 @@ inline void Monitor::trigger (short return_events)
 
 //----------------------------------------------------------------------
 inline void Monitor::setFileDescriptor (int file_descriptor) noexcept
-{ fd.store(file_descriptor, std::memory_order_relaxed); }
+{ fd.store(file_descriptor); }
 
 //----------------------------------------------------------------------
 inline void Monitor::setEvents (short ev) noexcept
-{ events.store(ev, std::memory_order_relaxed); }
+{ events.store(ev); }
 
 //----------------------------------------------------------------------
 inline void Monitor::setHandler (handler_t&& hdl) noexcept
@@ -266,19 +266,19 @@ inline void Monitor::clearUserContext() noexcept
 
 //----------------------------------------------------------------------
 inline void Monitor::setInitialized() noexcept
-{ monitor_initialized.store(true, std::memory_order_relaxed); }
+{ monitor_initialized.store(true); }
 
 //----------------------------------------------------------------------
 inline auto Monitor::isInitialized() const -> bool
-{ return monitor_initialized.load(std::memory_order_relaxed); }
+{ return monitor_initialized.load(); }
 
 //----------------------------------------------------------------------
 inline auto Monitor::getState() const noexcept -> State
-{ return state.load(std::memory_order_relaxed); }
+{ return state.load(); }
 
 //----------------------------------------------------------------------
 inline void Monitor::setState (State new_state) noexcept
-{ state.store(new_state, std::memory_order_relaxed); }
+{ state.store(new_state); }
 
 }  // namespace finalcut
 

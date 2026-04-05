@@ -73,14 +73,20 @@ auto FTermLinux::getCursorStyle() const -> CursorStyle
 }
 
 //----------------------------------------------------------------------
-auto FTermLinux::getCursorStyleString() -> char*
+auto FTermLinux::getCursorStyleCtrl() const -> FTermcap::TermcapString
 {
   // Gets the current cursor style string of the Linux console
 
-  static std::array<char, 16> buf{};
-  std::fill (std::begin(buf), std::end(buf), '\0');
-  std::snprintf (buf.data(), buf.size(), CSI "?%dc", int(getCursorStyle()));
-  return buf.data();
+  static constexpr std::array<const char[6], 7> lookup_table
+  {{
+    CSI "?0c", CSI "?1c",
+    CSI "?2c", CSI "?3c",
+    CSI "?4c", CSI "?5c",
+    CSI "?6c"
+  }};
+
+  const auto style = uInt8(getCursorStyle());
+  return {lookup_table[style], 5};
 }
 
 //----------------------------------------------------------------------

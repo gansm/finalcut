@@ -187,28 +187,28 @@ void FOptiMoveTest::noArgumentTest()
 {
   finalcut::FTermcap::clearMotionCache();
   finalcut::FOptiMove om;
-  CPPUNIT_ASSERT_STRING (om.moveCursor (1, 1, 5, 5), CSI "6;6H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 9, 9), CSI "10;10H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (1, 1, 5, 5).data, CSI "6;6H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 9, 9).data, CSI "10;10H");
 
   // Delete all presets
-  om.set_tabular (nullptr);
-  om.set_back_tab (nullptr);
-  om.set_cursor_home (nullptr);
-  om.set_cursor_to_ll (nullptr);
-  om.set_carriage_return (nullptr);
-  om.set_cursor_up (nullptr);
-  om.set_cursor_down (nullptr);
-  om.set_cursor_right (nullptr);
-  om.set_cursor_left (nullptr);
-  om.set_cursor_address (nullptr);
-  om.set_column_address (nullptr);
-  om.set_row_address (nullptr);
-  om.set_parm_up_cursor (nullptr);
-  om.set_parm_down_cursor (nullptr);
-  om.set_parm_right_cursor (nullptr);
-  om.set_parm_left_cursor (nullptr);
+  om.set_tabular ({nullptr, 0});
+  om.set_back_tab ({nullptr, 0});
+  om.set_cursor_home ({nullptr, 0});
+  om.set_cursor_to_ll ({nullptr, 0});
+  om.set_carriage_return ({nullptr, 0});
+  om.set_cursor_up ({nullptr, 0});
+  om.set_cursor_down ({nullptr, 0});
+  om.set_cursor_right ({nullptr, 0});
+  om.set_cursor_left ({nullptr, 0});
+  om.set_cursor_address ({nullptr, 0});
+  om.set_column_address ({nullptr, 0});
+  om.set_row_address ({nullptr, 0});
+  om.set_parm_up_cursor ({nullptr, 0});
+  om.set_parm_down_cursor ({nullptr, 0});
+  om.set_parm_right_cursor ({nullptr, 0});
+  om.set_parm_left_cursor ({nullptr, 0});
 
-  CPPUNIT_ASSERT (om.moveCursor (1, 1, 5, 5).empty());
+  CPPUNIT_ASSERT (! om.moveCursor (1, 1, 5, 5).data);
 }
 
 //----------------------------------------------------------------------
@@ -218,22 +218,22 @@ void FOptiMoveTest::homeTest()
   int baud = 4800;
   finalcut::FOptiMove om(baud);
   om.setTermSize (80, 24);
-  om.set_cursor_home (CSI "H");
-  om.set_cursor_to_ll (CSI "X");
-  om.set_carriage_return ("\r");
-  om.set_cursor_up (CSI "A");
-  om.set_cursor_down (CSI "B");
-  om.set_cursor_right (CSI "C");
-  om.set_cursor_left (CSI "D");
-  om.set_parm_up_cursor (CSI "%p1%dA");
-  om.set_parm_down_cursor (CSI "%p1%dB");
-  om.set_parm_right_cursor (CSI "%p1%dC");
-  om.set_parm_left_cursor (CSI "%p1%dD");
+  om.set_cursor_home ({CSI "H", 3});
+  om.set_cursor_to_ll ({CSI "X", 3});
+  om.set_carriage_return ({"\r", 1});
+  om.set_cursor_up ({CSI "A", 3});
+  om.set_cursor_down ({CSI "B", 3});
+  om.set_cursor_right ({CSI "C", 3});
+  om.set_cursor_left ({CSI "D", 3});
+  om.set_parm_up_cursor ({CSI "%p1%dA", 8});
+  om.set_parm_down_cursor ({CSI "%p1%dB", 8});
+  om.set_parm_right_cursor ({CSI "%p1%dC", 8});
+  om.set_parm_left_cursor ({CSI "%p1%dD", 8});
 
   // Upper home (first line, first column)
-  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 10, 0, 0), CSI "H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 10, 0, 0).data, CSI "H");
   // Lower home (last line, first column)
-  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 10, 0, 23), CSI "X");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 10, 0, 23).data, CSI "X");
 }
 
 //----------------------------------------------------------------------
@@ -246,21 +246,21 @@ void FOptiMoveTest::fromLeftToRightTest()
   om.setTabStop (8);
   om.set_auto_left_margin (true);
   om.set_eat_newline_glitch (false);
-  om.set_carriage_return ("\r");
-  om.set_cursor_up (ESC "M");
-  om.set_cursor_down (ESC "D");
-  om.set_cursor_right (CSI "C");
-  om.set_cursor_left ("\b");
-  om.set_cursor_address (CSI "%i%p1%d;%p2%dH");
-  om.set_column_address (CSI "%i%p1%dG");
-  om.set_row_address (CSI "%i%p1%dd");
-  om.set_parm_up_cursor (CSI "%p1%dA");
-  om.set_parm_down_cursor (CSI "%p1%dB");
-  om.set_parm_right_cursor (CSI "%p1%dC");
-  om.set_parm_left_cursor (CSI "%p1%dD");
+  om.set_carriage_return ({"\r", 1});
+  om.set_cursor_up ({ESC "M", 2});
+  om.set_cursor_down ({ESC "D", 2});
+  om.set_cursor_right ({CSI "C", 3});
+  om.set_cursor_left ({"\b", 1});
+  om.set_cursor_address ({CSI "%i%p1%d;%p2%dH", 16});
+  om.set_column_address ({CSI "%i%p1%dG", 10});
+  om.set_row_address ({CSI "%i%p1%dd", 10});
+  om.set_parm_up_cursor ({CSI "%p1%dA", 8});
+  om.set_parm_down_cursor ({CSI "%p1%dB", 8});
+  om.set_parm_right_cursor ({CSI "%p1%dC", 8});
+  om.set_parm_left_cursor ({CSI "%p1%dD", 8});
 
-  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 2, 79, 1), "\r\b");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 2, 79, 2), "\r\b" ESC "D");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 2, 79, 1).data, "\r\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 2, 79, 2).data, "\r\b" ESC "D");
 }
 
 //----------------------------------------------------------------------
@@ -271,56 +271,56 @@ void FOptiMoveTest::ansiTest()
   om.setTermSize (80, 25);
   om.setBaudRate (19200);
   om.setTabStop (8);
-  om.set_tabular ("\t");
-  om.set_back_tab (CSI "Z");
-  om.set_cursor_home (CSI "H");
-  om.set_cursor_to_ll (nullptr);
-  om.set_carriage_return ("\r");
-  om.set_cursor_up (CSI "A");
-  om.set_cursor_down (CSI "B");
-  om.set_cursor_right (CSI "C");
-  om.set_cursor_left (CSI "D");
-  om.set_cursor_address (CSI "%i%p1%d;%p2%dH");
-  om.set_column_address (CSI "%i%p1%dG");
-  om.set_row_address (CSI "%i%p1%dd");
-  om.set_parm_up_cursor (CSI "%p1%dA");
-  om.set_parm_down_cursor (CSI "%p1%dB");
-  om.set_parm_right_cursor (CSI "%p1%dC");
-  om.set_parm_left_cursor (CSI "%p1%dD");
+  om.set_tabular ({"\t", 1});
+  om.set_back_tab ({CSI "Z", 3});
+  om.set_cursor_home ({CSI "H", 3});
+  om.set_cursor_to_ll ({nullptr, 0});
+  om.set_carriage_return ({"\r", 1});
+  om.set_cursor_up ({CSI "A", 3});
+  om.set_cursor_down ({CSI "B", 3});
+  om.set_cursor_right ({CSI "C", 3});
+  om.set_cursor_left ({CSI "D", 3});
+  om.set_cursor_address ({CSI "%i%p1%d;%p2%dH", 16});
+  om.set_column_address ({CSI "%i%p1%dG", 10});
+  om.set_row_address ({CSI "%i%p1%dd", 10});
+  om.set_parm_up_cursor ({CSI "%p1%dA", 8});
+  om.set_parm_down_cursor ({CSI "%p1%dB", 8});
+  om.set_parm_right_cursor ({CSI "%p1%dC", 8});
+  om.set_parm_left_cursor ({CSI "%p1%dD", 8});
 
-  CPPUNIT_ASSERT_STRING (om.moveCursor (0, 0, 5, 5), CSI "6;6H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 0, 0), CSI "H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 1), "\r");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 2), "\r" CSI "B");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 10, 4), CSI "C");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 4, 9, 4), CSI "D");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 11, 4), CSI "12G");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (11, 4, 9, 4), CSI "10G");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (1, 0, 8, 0), "\t");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 1), CSI "B");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 1, 16, 0), CSI "A");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 2), CSI "3d");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 2, 16, 0), CSI "1d");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 2, 79, 2), CSI "80G");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 75, 20), CSI "21;76H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (39, 0, 32, 0), CSI "Z");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 0, 8, 0), "\r\t");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (0, 0, 5, 5).data, CSI "6;6H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 0, 0).data, CSI "H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 1).data, "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 2).data, "\r" CSI "B");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 10, 4).data, CSI "C");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 4, 9, 4).data, CSI "D");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 11, 4).data, CSI "12G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (11, 4, 9, 4).data, CSI "10G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (1, 0, 8, 0).data, "\t");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 1).data, CSI "B");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 1, 16, 0).data, CSI "A");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 2).data, CSI "3d");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 2, 16, 0).data, CSI "1d");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 2, 79, 2).data, CSI "80G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 75, 20).data, CSI "21;76H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (39, 0, 32, 0).data, CSI "Z");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 0, 8, 0).data, "\r\t");
 
   // xold is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (99, 10, 79, 10), CSI "11;80H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (-3, 33, 50, 10), CSI "11;51H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (99, 10, 79, 10).data, CSI "11;80H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (-3, 33, 50, 10).data, CSI "11;51H");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (23, 33, 23, 10), CSI "11;24H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (23, -3, 12, 10), CSI "11;13H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, 33, 23, 10).data, CSI "11;24H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, -3, 12, 10).data, CSI "11;13H");
 
   // xnew is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 100, 22), CSI "80G");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 22, -5, 22), "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 100, 22).data, CSI "80G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 22, -5, 22).data, "\r");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 53, 40), CSI "25d");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3), CSI "1d");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 53, 40).data, CSI "25d");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3).data, CSI "1d");
 
   finalcut::FApplication::setLog(std::make_shared<DirectLogger>());
   std::clog << std::endl;
@@ -336,56 +336,56 @@ void FOptiMoveTest::vt100Test()
   om.setBaudRate (1200);
   om.setTabStop (8);
   om.set_eat_newline_glitch (true);
-  om.set_tabular ("\t");
-  om.set_back_tab (nullptr);
-  om.set_cursor_home (CSI "H");
-  om.set_cursor_to_ll (nullptr);
-  om.set_carriage_return ("\r");
-  om.set_cursor_up (CSI "A$<2>");
-  om.set_cursor_down ("\n");
-  om.set_cursor_right (CSI "C$<2>");
-  om.set_cursor_left ("\b");
-  om.set_cursor_address (CSI "%i%p1%d;%p2%dH$<5>");
-  om.set_column_address (nullptr);
-  om.set_row_address (nullptr);
-  om.set_parm_up_cursor (CSI "%p1%dA");
-  om.set_parm_down_cursor (CSI "%p1%dB");
-  om.set_parm_right_cursor (CSI "%p1%dC");
-  om.set_parm_left_cursor (CSI "%p1%dD");
+  om.set_tabular ({"\t", 1});
+  om.set_back_tab ({nullptr, 0});
+  om.set_cursor_home ({CSI "H", 3});
+  om.set_cursor_to_ll ({nullptr, 0});
+  om.set_carriage_return ({"\r", 1});
+  om.set_cursor_up ({CSI "A$<2>", 7});
+  om.set_cursor_down ({"\n", 1});
+  om.set_cursor_right ({CSI "C$<2>", 7});
+  om.set_cursor_left ({"\b", 1});
+  om.set_cursor_address ({CSI "%i%p1%d;%p2%dH$<5>", 20});
+  om.set_column_address ({nullptr, 0});
+  om.set_row_address ({nullptr, 0});
+  om.set_parm_up_cursor ({CSI "%p1%dA", 8});
+  om.set_parm_down_cursor ({CSI "%p1%dB", 8});
+  om.set_parm_right_cursor ({CSI "%p1%dC", 8});
+  om.set_parm_left_cursor ({CSI "%p1%dD", 8});
 
-  CPPUNIT_ASSERT_STRING (om.moveCursor (0, 0, 5, 5), CSI "6;6H$<5>");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 0, 0), CSI "H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 1), "\r");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 2), "\r\n");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 10, 4), CSI "C$<2>");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 4, 9, 4), "\b");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 11, 4), CSI "2C");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (11, 4, 9, 4), "\b\b");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (1, 0, 8, 0), "\t");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 1), "\n");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 1, 16, 0), CSI "A$<2>");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 2), "\n\n");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 2, 16, 0), CSI "2A");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 2, 79, 2), CSI "76C");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 75, 20), CSI "21;76H$<5>");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (39, 0, 32, 0), CSI "7D");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 0, 8, 0), "\b\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (0, 0, 5, 5).data, CSI "6;6H$<5>");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 0, 0).data, CSI "H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 1).data, "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 2).data, "\r\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 10, 4).data, CSI "C$<2>");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 4, 9, 4).data, "\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 11, 4).data, CSI "2C");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (11, 4, 9, 4).data, "\b\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (1, 0, 8, 0).data, "\t");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 1).data, "\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 1, 16, 0).data, CSI "A$<2>");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 2).data, "\n\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 2, 16, 0).data, CSI "2A");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 2, 79, 2).data, CSI "76C");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 75, 20).data, CSI "21;76H$<5>");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (39, 0, 32, 0).data, CSI "7D");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 0, 8, 0).data, "\b\b");
 
   // xold is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (99, 10, 79, 10), CSI "11;80H$<5>");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (-3, 33, 50, 10), CSI "11;51H$<5>");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (99, 10, 79, 10).data, CSI "11;80H$<5>");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (-3, 33, 50, 10).data, CSI "11;51H$<5>");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (23, 33, 23, 10), CSI "11;24H$<5>");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (23, -3, 12, 10), CSI "11;13H$<5>");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, 33, 23, 10).data, CSI "11;24H$<5>");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, -3, 12, 10).data, CSI "11;13H$<5>");
 
   // xnew is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 100, 22), CSI "26C");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 22, -5, 22), "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 100, 22).data, CSI "26C");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 22, -5, 22).data, "\r");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 53, 40), "\n");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3), CSI "2A");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 53, 40).data, "\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3).data, CSI "2A");
 
   finalcut::FApplication::setLog(std::make_shared<DirectLogger>());
   std::clog << std::endl;
@@ -401,56 +401,56 @@ void FOptiMoveTest::xtermTest()
   om.setBaudRate (38400);
   om.setTabStop (8);
   om.set_eat_newline_glitch (true);
-  om.set_tabular ("\t");
-  om.set_back_tab (CSI "Z");
-  om.set_cursor_home (CSI "H");
-  om.set_cursor_to_ll (nullptr);
-  om.set_carriage_return ("\r");
-  om.set_cursor_up (CSI "A");
-  om.set_cursor_down ("\n");
-  om.set_cursor_right (CSI "C");
-  om.set_cursor_left ("\b");
-  om.set_cursor_address (CSI "%i%p1%d;%p2%dH");
-  om.set_column_address (CSI "%i%p1%dG");
-  om.set_row_address (CSI "%i%p1%dd");
-  om.set_parm_up_cursor (CSI "%p1%dA");
-  om.set_parm_down_cursor (CSI "%p1%dB");
-  om.set_parm_right_cursor (CSI "%p1%dC");
-  om.set_parm_left_cursor (CSI "%p1%dD");
+  om.set_tabular ({"\t", 1});
+  om.set_back_tab ({CSI "Z", 3});
+  om.set_cursor_home ({CSI "H", 3});
+  om.set_cursor_to_ll ({nullptr, 0});
+  om.set_carriage_return ({"\r", 1});
+  om.set_cursor_up ({CSI "A", 3});
+  om.set_cursor_down ({"\n", 1});
+  om.set_cursor_right ({CSI "C", 3});
+  om.set_cursor_left ({"\b", 1});
+  om.set_cursor_address ({CSI "%i%p1%d;%p2%dH", 16});
+  om.set_column_address ({CSI "%i%p1%dG", 10});
+  om.set_row_address ({CSI "%i%p1%dd", 10});
+  om.set_parm_up_cursor ({CSI "%p1%dA", 8});
+  om.set_parm_down_cursor ({CSI "%p1%dB", 8});
+  om.set_parm_right_cursor ({CSI "%p1%dC", 8});
+  om.set_parm_left_cursor ({CSI "%p1%dD", 8});
 
-  CPPUNIT_ASSERT_STRING (om.moveCursor (0, 0, 5, 5), CSI "6;6H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 0, 0), CSI "H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 1), "\r");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 2), "\r\n");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 10, 4), CSI "C");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 4, 9, 4), "\b");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 11, 4), CSI "12G");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (11, 4, 9, 4), "\b\b");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (1, 0, 8, 0), "\t");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 1), "\n");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 1, 16, 0), CSI "A");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 2), "\n\n");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 2, 16, 0), CSI "1d");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 2, 79, 2), CSI "80G");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 75, 20), CSI "21;76H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (39, 0, 32, 0), CSI "Z");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 0, 8, 0), "\r\t");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (0, 0, 5, 5).data, CSI "6;6H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 0, 0).data, CSI "H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 1).data, "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 2).data, "\r\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 10, 4).data, CSI "C");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 4, 9, 4).data, "\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 11, 4).data, CSI "12G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (11, 4, 9, 4).data, "\b\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (1, 0, 8, 0).data, "\t");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 1).data, "\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 1, 16, 0).data, CSI "A");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 2).data, "\n\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 2, 16, 0).data, CSI "1d");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 2, 79, 2).data, CSI "80G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 75, 20).data, CSI "21;76H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (39, 0, 32, 0).data, CSI "Z");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 0, 8, 0).data, "\r\t");
 
   // xold is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (99, 10, 79, 10), CSI "11;80H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (-3, 33, 50, 10), CSI "11;51H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (99, 10, 79, 10).data, CSI "11;80H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (-3, 33, 50, 10).data, CSI "11;51H");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (23, 33, 23, 10), CSI "11;24H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (23, -3, 12, 10), CSI "11;13H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, 33, 23, 10).data, CSI "11;24H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, -3, 12, 10).data, CSI "11;13H");
 
   // xnew is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 100, 22), CSI "80G");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 22, -5, 22), "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 100, 22).data, CSI "80G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 22, -5, 22).data, "\r");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 23, 53, 40), "\n");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3), CSI "1d");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 23, 53, 40).data, "\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3).data, CSI "1d");
 
   finalcut::FApplication::setLog(std::make_shared<DirectLogger>());
   std::clog << std::endl;
@@ -466,56 +466,56 @@ void FOptiMoveTest::rxvtTest()
   om.setBaudRate (38400);
   om.setTabStop (8);
   om.set_eat_newline_glitch (true);
-  om.set_tabular ("\t");
-  om.set_back_tab (nullptr);
-  om.set_cursor_home (CSI "H");
-  om.set_cursor_to_ll (nullptr);
-  om.set_carriage_return ("\r");
-  om.set_cursor_up (CSI "A");
-  om.set_cursor_down ("\n");
-  om.set_cursor_right (CSI "C");
-  om.set_cursor_left ("\b");
-  om.set_cursor_address (CSI "%i%p1%d;%p2%dH");
-  om.set_column_address (CSI "%i%p1%dG");
-  om.set_row_address (CSI "%i%p1%dd");
-  om.set_parm_up_cursor (CSI "%p1%dA");
-  om.set_parm_down_cursor (CSI "%p1%dB");
-  om.set_parm_right_cursor (CSI "%p1%dC");
-  om.set_parm_left_cursor (CSI "%p1%dD");
+  om.set_tabular ({"\t", 1});
+  om.set_back_tab ({nullptr, 0});
+  om.set_cursor_home ({CSI "H", 3});
+  om.set_cursor_to_ll ({nullptr, 0});
+  om.set_carriage_return ({"\r", 1});
+  om.set_cursor_up ({CSI "A", 3});
+  om.set_cursor_down ({"\n", 1});
+  om.set_cursor_right ({CSI "C", 3});
+  om.set_cursor_left ({"\b", 1});
+  om.set_cursor_address ({CSI "%i%p1%d;%p2%dH", 16});
+  om.set_column_address ({CSI "%i%p1%dG", 10});
+  om.set_row_address ({CSI "%i%p1%dd", 10});
+  om.set_parm_up_cursor ({CSI "%p1%dA", 8});
+  om.set_parm_down_cursor ({CSI "%p1%dB", 8});
+  om.set_parm_right_cursor ({CSI "%p1%dC", 8});
+  om.set_parm_left_cursor ({CSI "%p1%dD", 8});
 
-  CPPUNIT_ASSERT_STRING (om.moveCursor (0, 0, 5, 5), CSI "6;6H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 0, 0), CSI "H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 1), "\r");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 2), "\r\n");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 10, 4), CSI "C");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 4, 9, 4), "\b");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 11, 4), CSI "12G");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (11, 4, 9, 4), "\b\b");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (1, 0, 8, 0), "\t");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 1), "\n");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 1, 16, 0), CSI "A");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 2), "\n\n");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 2, 16, 0), CSI "1d");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 2, 79, 2), CSI "80G");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 75, 20), CSI "21;76H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (39, 0, 32, 0), CSI "33G");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 0, 8, 0), "\b\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (0, 0, 5, 5).data, CSI "6;6H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 0, 0).data, CSI "H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 1).data, "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 2).data, "\r\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 10, 4).data, CSI "C");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 4, 9, 4).data, "\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 11, 4).data, CSI "12G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (11, 4, 9, 4).data, "\b\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (1, 0, 8, 0).data, "\t");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 1).data, "\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 1, 16, 0).data, CSI "A");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 2).data, "\n\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 2, 16, 0).data, CSI "1d");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 2, 79, 2).data, CSI "80G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 75, 20).data, CSI "21;76H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (39, 0, 32, 0).data, CSI "33G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 0, 8, 0).data, "\b\b");
 
   // xold is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (99, 10, 79, 10), CSI "11;80H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (-3, 33, 50, 10), CSI "11;51H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (99, 10, 79, 10).data, CSI "11;80H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (-3, 33, 50, 10).data, CSI "11;51H");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (23, 33, 23, 10), CSI "11;24H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (23, -3, 12, 10), CSI "11;13H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, 33, 23, 10).data, CSI "11;24H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, -3, 12, 10).data, CSI "11;13H");
 
   // xnew is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 100, 22), CSI "80G");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 22, -5, 22), "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 100, 22).data, CSI "80G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 22, -5, 22).data, "\r");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 23, 53, 40), "\n");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3), CSI "1d");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 23, 53, 40).data, "\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3).data, CSI "1d");
 
   finalcut::FApplication::setLog(std::make_shared<DirectLogger>());
   std::clog << std::endl;
@@ -531,56 +531,56 @@ void FOptiMoveTest::linuxTest()
   om.setBaudRate (38400);
   om.setTabStop (8);
   om.set_eat_newline_glitch (true);
-  om.set_tabular ("\t");
-  om.set_back_tab (CSI "Z");
-  om.set_cursor_home (CSI "H");
-  om.set_cursor_to_ll (nullptr);
-  om.set_carriage_return ("\r");
-  om.set_cursor_up (CSI "A");
-  om.set_cursor_down ("\n");
-  om.set_cursor_right (CSI "C");
-  om.set_cursor_left ("\b");
-  om.set_cursor_address (CSI "%i%p1%d;%p2%dH");
-  om.set_column_address (CSI "%i%p1%dG");
-  om.set_row_address (CSI "%i%p1%dd");
-  om.set_parm_up_cursor (CSI "%p1%dA");
-  om.set_parm_down_cursor (CSI "%p1%dB");
-  om.set_parm_right_cursor (CSI "%p1%dC");
-  om.set_parm_left_cursor (CSI "%p1%dD");
+  om.set_tabular ({"\t", 1});
+  om.set_back_tab ({CSI "Z", 3});
+  om.set_cursor_home ({CSI "H", 3});
+  om.set_cursor_to_ll ({nullptr, 0});
+  om.set_carriage_return ({"\r", 1});
+  om.set_cursor_up ({CSI "A", 3});
+  om.set_cursor_down ({"\n", 1});
+  om.set_cursor_right ({CSI "C", 3});
+  om.set_cursor_left ({"\b", 1});
+  om.set_cursor_address ({CSI "%i%p1%d;%p2%dH", 16});
+  om.set_column_address ({CSI "%i%p1%dG", 10});
+  om.set_row_address ({CSI "%i%p1%dd", 10});
+  om.set_parm_up_cursor ({CSI "%p1%dA", 8});
+  om.set_parm_down_cursor ({CSI "%p1%dB", 8});
+  om.set_parm_right_cursor ({CSI "%p1%dC", 8});
+  om.set_parm_left_cursor ({CSI "%p1%dD", 8});
 
-  CPPUNIT_ASSERT_STRING (om.moveCursor (0, 0, 5, 5), CSI "6;6H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 0, 0), CSI "H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 1), "\r");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 2), "\r\n");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 10, 4), CSI "C");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 4, 9, 4), "\b");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 11, 4), CSI "12G");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (11, 4, 9, 4), "\b\b");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (1, 0, 8, 0), "\t");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 1), "\n");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 1, 16, 0), CSI "A");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 2), "\n\n");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 2, 16, 0), CSI "1d");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 2, 79, 2), CSI "80G");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 75, 20), CSI "21;76H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (39, 0, 32, 0), CSI "Z");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 0, 8, 0), "\r\t");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (0, 0, 5, 5).data, CSI "6;6H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 0, 0).data, CSI "H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 1).data, "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 2).data, "\r\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 10, 4).data, CSI "C");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 4, 9, 4).data, "\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 11, 4).data, CSI "12G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (11, 4, 9, 4).data, "\b\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (1, 0, 8, 0).data, "\t");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 1).data, "\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 1, 16, 0).data, CSI "A");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 2).data, "\n\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 2, 16, 0).data, CSI "1d");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 2, 79, 2).data, CSI "80G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 75, 20).data, CSI "21;76H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (39, 0, 32, 0).data, CSI "Z");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 0, 8, 0).data, "\r\t");
 
   // xold is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (99, 10, 79, 10), CSI "11;80H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (-3, 33, 50, 10), CSI "11;51H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (99, 10, 79, 10).data, CSI "11;80H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (-3, 33, 50, 10).data, CSI "11;51H");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (23, 33, 23, 10), CSI "11;24H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (23, -3, 12, 10), CSI "11;13H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, 33, 23, 10).data, CSI "11;24H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, -3, 12, 10).data, CSI "11;13H");
 
   // xnew is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 100, 22), CSI "80G");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 22, -5, 22), "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 100, 22).data, CSI "80G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 22, -5, 22).data, "\r");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 23, 53, 40), "\n");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3), CSI "1d");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 23, 53, 40).data, "\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3).data, CSI "1d");
 
   finalcut::FApplication::setLog(std::make_shared<DirectLogger>());
   std::clog << std::endl;
@@ -595,58 +595,58 @@ void FOptiMoveTest::cygwinTest()
   om.setTermSize (80, 25);
   om.setBaudRate (38400);
   om.setTabStop (8);
-  om.set_tabular ("\t");
-  om.set_back_tab (CSI "Z");
-  om.set_cursor_home (CSI "H");
-  om.set_cursor_to_ll (nullptr);
-  om.set_carriage_return ("\r");
-  om.set_cursor_up (CSI "A");
-  om.set_cursor_down (CSI "B");
-  om.set_cursor_right (CSI "C");
-  om.set_cursor_left ("\b");
-  om.set_cursor_address (CSI "%i%p1%d;%p2%dH");
-  om.set_column_address (CSI "%i%p1%dG");
-  om.set_row_address (CSI "%i%p1%dd");
-  om.set_parm_up_cursor (CSI "%p1%dA");
-  om.set_parm_down_cursor (CSI "%p1%dB");
-  om.set_parm_right_cursor (CSI "%p1%dC");
-  om.set_parm_left_cursor (CSI "%p1%dD");
+  om.set_tabular ({"\t", 1});
+  om.set_back_tab ({CSI "Z", 3});
+  om.set_cursor_home ({CSI "H", 3});
+  om.set_cursor_to_ll ({nullptr, 0});
+  om.set_carriage_return ({"\r", 1});
+  om.set_cursor_up ({CSI "A", 3});
+  om.set_cursor_down ({CSI "B", 3});
+  om.set_cursor_right ({CSI "C", 3});
+  om.set_cursor_left ({"\b", 1});
+  om.set_cursor_address ({CSI "%i%p1%d;%p2%dH", 16});
+  om.set_column_address ({CSI "%i%p1%dG", 10});
+  om.set_row_address ({CSI "%i%p1%dd", 10});
+  om.set_parm_up_cursor ({CSI "%p1%dA", 8});
+  om.set_parm_down_cursor ({CSI "%p1%dB", 8});
+  om.set_parm_right_cursor ({CSI "%p1%dC", 8});
+  om.set_parm_left_cursor ({CSI "%p1%dD", 8});
 
-  CPPUNIT_ASSERT_STRING ( printSequence(om.moveCursor (1, 2, 3, 4))
+  CPPUNIT_ASSERT_STRING ( printSequence(om.moveCursor (1, 2, 3, 4).data)
                          , "Esc [ 5 ; 4 H " );
-  CPPUNIT_ASSERT_STRING (om.moveCursor (0, 0, 5, 5), CSI "6;6H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 0, 0), CSI "H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 1), "\r");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 2), "\r" CSI "B");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 10, 4), CSI "C");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 4, 9, 4), "\b");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 11, 4), CSI "12G");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (11, 4, 9, 4), "\b\b");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (1, 0, 8, 0), "\t");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 1), CSI "B");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 1, 16, 0), CSI "A");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 2), CSI "3d");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 2, 16, 0), CSI "1d");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 2, 79, 2), CSI "80G");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 75, 20), CSI "21;76H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (39, 0, 32, 0), CSI "Z");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 0, 8, 0), "\r\t");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (0, 0, 5, 5).data, CSI "6;6H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 0, 0).data, CSI "H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 1).data, "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 2).data, "\r" CSI "B");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 10, 4).data, CSI "C");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 4, 9, 4).data, "\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 11, 4).data, CSI "12G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (11, 4, 9, 4).data, "\b\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (1, 0, 8, 0).data, "\t");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 1).data, CSI "B");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 1, 16, 0).data, CSI "A");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 2).data, CSI "3d");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 2, 16, 0).data, CSI "1d");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 2, 79, 2).data, CSI "80G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 75, 20).data, CSI "21;76H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (39, 0, 32, 0).data, CSI "Z");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 0, 8, 0).data, "\r\t");
 
   // xold is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (99, 10, 79, 10), CSI "11;80H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (-3, 33, 50, 10), CSI "11;51H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (99, 10, 79, 10).data, CSI "11;80H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (-3, 33, 50, 10).data, CSI "11;51H");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (23, 33, 23, 10), CSI "11;24H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (23, -3, 12, 10), CSI "11;13H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, 33, 23, 10).data, CSI "11;24H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, -3, 12, 10).data, CSI "11;13H");
 
   // xnew is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 100, 22), CSI "80G");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 22, -5, 22), "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 100, 22).data, CSI "80G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 22, -5, 22).data, "\r");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 23, 53, 40), CSI "B");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3), CSI "1d");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 23, 53, 40).data, CSI "B");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3).data, CSI "1d");
 
   finalcut::FApplication::setLog(std::make_shared<DirectLogger>());
   std::clog << std::endl;
@@ -663,56 +663,56 @@ void FOptiMoveTest::puttyTest()
   om.setTabStop (8);
   om.set_auto_left_margin (true);
   om.set_eat_newline_glitch (true);
-  om.set_tabular ("\t");
-  om.set_back_tab (CSI "Z");
-  om.set_cursor_home (CSI "H");
-  om.set_cursor_to_ll (nullptr);
-  om.set_carriage_return ("\r");
-  om.set_cursor_up (ESC "M");
-  om.set_cursor_down (ESC "D");
-  om.set_cursor_right (CSI "C");
-  om.set_cursor_left ("\b");
-  om.set_cursor_address (CSI "%i%p1%d;%p2%dH");
-  om.set_column_address (CSI "%i%p1%dG");
-  om.set_row_address (CSI "%i%p1%dd");
-  om.set_parm_up_cursor (CSI "%p1%dA");
-  om.set_parm_down_cursor (CSI "%p1%dB");
-  om.set_parm_right_cursor (CSI "%p1%dC");
-  om.set_parm_left_cursor (CSI "%p1%dD");
+  om.set_tabular ({"\t", 1});
+  om.set_back_tab ({CSI "Z", 3});
+  om.set_cursor_home ({CSI "H", 3});
+  om.set_cursor_to_ll ({nullptr, 0});
+  om.set_carriage_return ({"\r", 1});
+  om.set_cursor_up ({ESC "M", 2});
+  om.set_cursor_down ({ESC "D", 2});
+  om.set_cursor_right ({CSI "C", 3});
+  om.set_cursor_left ({"\b", 1});
+  om.set_cursor_address ({CSI "%i%p1%d;%p2%dH", 16});
+  om.set_column_address ({CSI "%i%p1%dG", 10});
+  om.set_row_address ({CSI "%i%p1%dd", 10});
+  om.set_parm_up_cursor ({CSI "%p1%dA", 8});
+  om.set_parm_down_cursor ({CSI "%p1%dB", 8});
+  om.set_parm_right_cursor ({CSI "%p1%dC", 8});
+  om.set_parm_left_cursor ({CSI "%p1%dD", 8});
 
-  CPPUNIT_ASSERT_STRING (om.moveCursor (0, 0, 5, 5), CSI "6;6H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 0, 0), CSI "H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 1), "\r");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 2), "\r" ESC "D");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 10, 4), CSI "C");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 4, 9, 4), "\b");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 11, 4), CSI "12G");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (11, 4, 9, 4), "\b\b");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (1, 0, 8, 0), "\t");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 1), ESC "D");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 1, 16, 0), ESC "M");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 2), ESC "D" ESC "D");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 2, 16, 0), ESC "M" ESC "M");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 2, 79, 2), CSI "80G");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 75, 20), CSI "21;76H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (39, 0, 32, 0), CSI "Z");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 0, 8, 0), "\r\t");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (0, 0, 5, 5).data, CSI "6;6H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 0, 0).data, CSI "H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 1).data, "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 2).data, "\r" ESC "D");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 10, 4).data, CSI "C");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 4, 9, 4).data, "\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 11, 4).data, CSI "12G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (11, 4, 9, 4).data, "\b\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (1, 0, 8, 0).data, "\t");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 1).data, ESC "D");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 1, 16, 0).data, ESC "M");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 2).data, ESC "D" ESC "D");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 2, 16, 0).data, ESC "M" ESC "M");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 2, 79, 2).data, CSI "80G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 75, 20).data, CSI "21;76H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (39, 0, 32, 0).data, CSI "Z");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 0, 8, 0).data, "\r\t");
 
   // xold is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (99, 10, 79, 10), CSI "11;80H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (-3, 33, 50, 10), CSI "11;51H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (99, 10, 79, 10).data, CSI "11;80H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (-3, 33, 50, 10).data, CSI "11;51H");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (23, 33, 23, 10), CSI "11;24H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (23, -3, 12, 10), CSI "11;13H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, 33, 23, 10).data, CSI "11;24H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, -3, 12, 10).data, CSI "11;13H");
 
   // xnew is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 100, 22), CSI "80G");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 22, -5, 22), "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 100, 22).data, CSI "80G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 22, -5, 22).data, "\r");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 23, 53, 40), ESC "D");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3), ESC "M" ESC "M");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 23, 53, 40).data, ESC "D");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3).data, ESC "M" ESC "M");
 
   finalcut::FApplication::setLog(std::make_shared<DirectLogger>());
   std::clog << std::endl;
@@ -730,72 +730,72 @@ void FOptiMoveTest::teratermTest()
   finalcut::FOptiMove::TermEnv optimove_env =
   {
     {
-      CSI "A",               // Cursor up
-      "\n",                  // Cursor down
-      "\b",                  // Cursor left
-      CSI "C",               // Cursor right
-      CSI "H",               // Cursor home
-      nullptr,               // Cursor to ll
-      "\r",                  // Carriage return
-      "\t",                  // Tabular
-      nullptr                // Back tabular
+      {CSI "A", 3},                // Cursor up
+      {"\n", 1},                   // Cursor down
+      {"\b", 1},                   // Cursor left
+      {CSI "C", 3},                // Cursor right
+      {CSI "H", 3},                // Cursor home
+      {nullptr, 0},                // Cursor to ll
+      {"\r", 1},                   // Carriage return
+      {"\t", 1},                   // Tabular
+      {nullptr, 0}                 // Back tabular
     },
     {
-      CSI "%p1%dA",          // Parm up cursor
-      CSI "%p1%dB",          // Parm down cursor
-      CSI "%p1%dD",          // Parm left cursor
-      CSI "%p1%dC",          // Parm right cursor
-      CSI "%i%p1%d;%p2%dH",  // Cursor address
-      CSI "%i%p1%dG",        // Column address
-      CSI "%i%p1%dd"         // Row address
+      {CSI "%p1%dA", 8},           // Parm up cursor
+      {CSI "%p1%dB", 8},           // Parm down cursor
+      {CSI "%p1%dD", 8},           // Parm left cursor
+      {CSI "%p1%dC", 8},           // Parm right cursor
+      {CSI "%i%p1%d;%p2%dH", 16},  // Cursor address
+      {CSI "%i%p1%dG", 10},        // Column address
+      {CSI "%i%p1%dd", 10}         // Row address
     },
     {
-      CSI "%p1%dX",          // Erase characters
-      nullptr,               // Repeat character
-      nullptr,               // Repeat character
-      CSI "1K",              // Clear to beginning of line
-      CSI "K"                // Clear to end of line
+      {CSI "%p1%dX", 8},           // Erase characters
+      {nullptr, 0},                // Repeat character
+      {nullptr, 0},                // Repeat character
+      {CSI "1K", 4},               // Clear to beginning of line
+      {CSI "K", 3}                 // Clear to end of line
     },
-    8,                       // Tab stop
-    false,                   // Automatic left margin
-    true                     // Eat newline glitch
+    8,                             // Tab stop
+    false,                         // Automatic left margin
+    true                           // Eat newline glitch
   };
 
   om.setTermEnvironment(optimove_env);
 
-  CPPUNIT_ASSERT_STRING (om.moveCursor (0, 0, 5, 5), CSI "6;6H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 0, 0), CSI "H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 1), "\r");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 2), "\r\n");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 10, 4), CSI "C");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 4, 9, 4), "\b");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 11, 4), CSI "12G");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (11, 4, 9, 4), "\b\b");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (1, 0, 8, 0), "\t");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 1), "\n");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 1, 16, 0), CSI "A");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 2), "\n\n");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 2, 16, 0), CSI "1d");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 2, 79, 2), CSI "80G");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 75, 20), CSI "21;76H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (39, 0, 32, 0), CSI "33G");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 0, 8, 0), "\b\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (0, 0, 5, 5).data, CSI "6;6H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 0, 0).data, CSI "H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 1).data, "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 2).data, "\r\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 10, 4).data, CSI "C");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 4, 9, 4).data, "\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 11, 4).data, CSI "12G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (11, 4, 9, 4).data, "\b\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (1, 0, 8, 0).data, "\t");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 1).data, "\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 1, 16, 0).data, CSI "A");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 2).data, "\n\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 2, 16, 0).data, CSI "1d");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 2, 79, 2).data, CSI "80G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 75, 20).data, CSI "21;76H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (39, 0, 32, 0).data, CSI "33G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 0, 8, 0).data, "\b\b");
 
   // xold is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (99, 10, 79, 10), CSI "11;80H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (-3, 33, 50, 10), CSI "11;51H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (99, 10, 79, 10).data, CSI "11;80H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (-3, 33, 50, 10).data, CSI "11;51H");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (23, 33, 23, 10), CSI "11;24H");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (23, -3, 12, 10), CSI "11;13H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, 33, 23, 10).data, CSI "11;24H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, -3, 12, 10).data, CSI "11;13H");
 
   // xnew is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 100, 22), CSI "80G");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 22, -5, 22), "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 100, 22).data, CSI "80G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 22, -5, 22).data, "\r");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 23, 53, 40), "\n");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3), CSI "1d");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 23, 53, 40).data, "\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3).data, CSI "1d");
 
   finalcut::FApplication::setLog(std::make_shared<DirectLogger>());
   std::clog << std::endl;
@@ -811,60 +811,60 @@ void FOptiMoveTest::wyse50Test()
   om.setTermSize (80, 25);
   om.setBaudRate (38400);
   om.set_auto_left_margin (true);
-  om.set_tabular ("\t");
-  om.set_back_tab (ESC "I");
-  om.set_cursor_home ("\036");
-  om.set_cursor_to_ll ("\036\v");
-  om.set_carriage_return ("\r");
-  om.set_cursor_up ("\v");
-  om.set_cursor_down ("\n");
-  om.set_cursor_right ("\f");
-  om.set_cursor_left ("\b");
-  om.set_cursor_address (ESC "=%p1%' '%+%c%p2%' '%+%c");
-  om.set_column_address (nullptr);
-  om.set_row_address (nullptr);
-  om.set_parm_up_cursor (nullptr);
-  om.set_parm_down_cursor (nullptr);
-  om.set_parm_right_cursor (nullptr);
-  om.set_parm_left_cursor (nullptr);
+  om.set_tabular ({"\t", 1});
+  om.set_back_tab ({ESC "I", 2});
+  om.set_cursor_home ({"\036", 1});
+  om.set_cursor_to_ll ({"\036\v", 2});
+  om.set_carriage_return ({"\r", 1});
+  om.set_cursor_up ({"\v", 1});
+  om.set_cursor_down ({"\n", 1});
+  om.set_cursor_right ({"\f", 1});
+  om.set_cursor_left ({"\b", 1});
+  om.set_cursor_address ({ESC "=%p1%' '%+%c%p2%' '%+%c", 24});
+  om.set_column_address ({nullptr, 0});
+  om.set_row_address ({nullptr, 0});
+  om.set_parm_up_cursor ({nullptr, 0});
+  om.set_parm_down_cursor ({nullptr, 0});
+  om.set_parm_right_cursor ({nullptr, 0});
+  om.set_parm_left_cursor ({nullptr, 0});
 
   //std::cout << "\nSequence: "
   //          << printSequence(om.moveCursor (1, 2, 3, 4))
   //          << "\n";
 
-  CPPUNIT_ASSERT_STRING (om.moveCursor (0, 0, 5, 5), ESC "=%%");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 0, 0), "\036");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 1), "\r");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 2), "\r\n");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 10, 4), "\f");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 4, 9, 4), "\b");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 11, 4), "\f\f");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (11, 4, 9, 4), "\b\b");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (1, 0, 8, 0), ESC "= (");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 1), "\n");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 1, 16, 0), "\v");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 2), "\n\n");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 2, 16, 0), "\v\v");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 2, 79, 2), "\r\b\n");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 75, 20), ESC "=4k");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (39, 0, 32, 0), ESC "= @");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 0, 8, 0), "\b\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (0, 0, 5, 5).data, ESC "=%%");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 0, 0).data, "\036");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 1).data, "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 2).data, "\r\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 10, 4).data, "\f");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 4, 9, 4).data, "\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 11, 4).data, "\f\f");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (11, 4, 9, 4).data, "\b\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (1, 0, 8, 0).data, ESC "= (");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 1).data, "\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 1, 16, 0).data, "\v");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 2).data, "\n\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 2, 16, 0).data, "\v\v");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 2, 79, 2).data, "\r\b\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 75, 20).data, ESC "=4k");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (39, 0, 32, 0).data, ESC "= @");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 0, 8, 0).data, "\b\b");
 
   // xold is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (99, 10, 79, 10), ESC "=*o");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (-3, 33, 50, 10), ESC "=*R");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (99, 10, 79, 10).data, ESC "=*o");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (-3, 33, 50, 10).data, ESC "=*R");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (23, 33, 23, 10), ESC "=*7");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (23, -3, 12, 10), ESC "=*,");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, 33, 23, 10).data, ESC "=*7");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, -3, 12, 10).data, ESC "=*,");
 
   // xnew is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 100, 22), "\r\b\n");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 22, -5, 22), "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 100, 22).data, "\r\b\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 22, -5, 22).data, "\r");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 23, 53, 40), "\n");
-  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3), "\v\v");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 23, 53, 40).data, "\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3).data, "\v\v");
 
   finalcut::FApplication::setLog(std::make_shared<DirectLogger>());
   std::clog << std::endl;

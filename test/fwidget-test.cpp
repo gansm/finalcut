@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2022-2025 Markus Gans                                      *
+* Copyright 2022-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -383,6 +383,7 @@ class FWidgetTest : public CPPUNIT_NS::TestFixture
   protected:
     void classNameTest();
     void noArgumentTest();
+    void containsFWidgetFlagsTest();
     void colorThemeTest();
     void resetColorsTest();
     void acceleratorTest();
@@ -401,6 +402,7 @@ class FWidgetTest : public CPPUNIT_NS::TestFixture
     // Add a methods to the test suite
     CPPUNIT_TEST (classNameTest);
     CPPUNIT_TEST (noArgumentTest);
+    CPPUNIT_TEST (containsFWidgetFlagsTest);
     CPPUNIT_TEST (colorThemeTest);
     CPPUNIT_TEST (resetColorsTest);
     CPPUNIT_TEST (acceleratorTest);
@@ -869,6 +871,227 @@ void FWidgetTest::noArgumentTest()
   wdgt.ignorePadding();
   CPPUNIT_ASSERT ( wdgt.getFlags().feature.ignore_padding == true );
   CPPUNIT_ASSERT ( wdgt.isPaddingIgnored() );
+}
+
+//----------------------------------------------------------------------
+void FWidgetTest::containsFWidgetFlagsTest()
+{
+  finalcut::FWidgetFlags a{};
+
+  finalcut::FWidgetFlags b{};
+  b.feature.active = true;
+  b.feature.scrollable = true;
+  b.feature.resizeable = true;
+  b.feature.minimizable = true;
+  b.feature.flat = true;
+  b.feature.no_border = true;
+  b.feature.no_underline = true;
+  b.feature.ignore_padding = true;
+  b.visibility.visible = true;
+  b.visibility.hidden = true;
+  b.visibility.shown = true;
+  b.visibility.modal = true;
+  b.visibility.always_on_top = true;
+  b.visibility.visible_cursor = true;
+  b.focus.focus = true;
+  b.focus.focusable = true;
+  b.shadow.shadow = true;
+  b.shadow.trans_shadow = true;
+  b.type.window_widget = true;
+  b.type.dialog_widget = true;
+  b.type.menu_widget = true;
+
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.feature.active = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.feature.scrollable = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.feature.resizeable = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.feature.minimizable = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.feature.flat = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.feature.no_border = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.feature.no_underline = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.feature.ignore_padding = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.visibility.visible = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.visibility.hidden = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.visibility.shown = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.visibility.modal = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.visibility.always_on_top = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.visibility.visible_cursor = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.focus.focus = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.focus.focusable = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.shadow.shadow = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.shadow.trans_shadow = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.type.window_widget = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.type.dialog_widget = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.type.menu_widget = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+
+  b.feature.active = false;
+  CPPUNIT_ASSERT ( ! finalcut::containsFWidgetFlags(a, b) );
+  b.feature.scrollable = false;
+  CPPUNIT_ASSERT ( ! finalcut::containsFWidgetFlags(a, b) );
+  b.feature.resizeable = false;
+  CPPUNIT_ASSERT ( ! finalcut::containsFWidgetFlags(a, b) );
+  b.feature.minimizable = false;
+  CPPUNIT_ASSERT ( ! finalcut::containsFWidgetFlags(a, b) );
+  b.feature.flat = false;
+  CPPUNIT_ASSERT ( ! finalcut::containsFWidgetFlags(a, b) );
+  b.feature.no_border = false;
+  CPPUNIT_ASSERT ( ! finalcut::containsFWidgetFlags(a, b) );
+  b.feature.no_underline = false;
+  CPPUNIT_ASSERT ( ! finalcut::containsFWidgetFlags(a, b) );
+  b.feature.ignore_padding = false;
+  CPPUNIT_ASSERT ( ! finalcut::containsFWidgetFlags(a, b) );
+  b.visibility.visible = false;
+  CPPUNIT_ASSERT ( ! finalcut::containsFWidgetFlags(a, b) );
+  b.visibility.hidden = false;
+  CPPUNIT_ASSERT ( ! finalcut::containsFWidgetFlags(a, b) );
+  b.visibility.shown = false;
+  CPPUNIT_ASSERT ( ! finalcut::containsFWidgetFlags(a, b) );
+  b.visibility.modal = false;
+  CPPUNIT_ASSERT ( ! finalcut::containsFWidgetFlags(a, b) );
+  b.visibility.always_on_top = false;
+  CPPUNIT_ASSERT ( ! finalcut::containsFWidgetFlags(a, b) );
+  b.visibility.visible_cursor = false;
+  CPPUNIT_ASSERT ( ! finalcut::containsFWidgetFlags(a, b) );
+  b.focus.focus = false;
+  CPPUNIT_ASSERT ( ! finalcut::containsFWidgetFlags(a, b) );
+  b.focus.focusable = false;
+  CPPUNIT_ASSERT ( ! finalcut::containsFWidgetFlags(a, b) );
+  b.shadow.shadow = false;
+  CPPUNIT_ASSERT ( ! finalcut::containsFWidgetFlags(a, b) );
+  b.shadow.trans_shadow = false;
+  CPPUNIT_ASSERT ( ! finalcut::containsFWidgetFlags(a, b) );
+  b.type.window_widget = false;
+  CPPUNIT_ASSERT ( ! finalcut::containsFWidgetFlags(a, b) );
+  b.type.dialog_widget = false;
+  CPPUNIT_ASSERT ( ! finalcut::containsFWidgetFlags(a, b) );
+  b.type.menu_widget = false;
+  CPPUNIT_ASSERT ( ! finalcut::containsFWidgetFlags(a, b) );
+
+  b.feature.active = true;
+  b.feature.scrollable = true;
+  b.feature.resizeable = true;
+  b.feature.minimizable = true;
+  b.feature.flat = true;
+  b.feature.no_border = true;
+  b.feature.no_underline = true;
+  b.feature.ignore_padding = true;
+  b.visibility.visible = true;
+  b.visibility.hidden = true;
+  b.visibility.shown = true;
+  b.visibility.modal = true;
+  b.visibility.always_on_top = true;
+  b.visibility.visible_cursor = true;
+  b.focus.focus = true;
+  b.focus.focusable = true;
+  b.shadow.shadow = true;
+  b.shadow.trans_shadow = true;
+  b.type.window_widget = true;
+  b.type.dialog_widget = true;
+  b.type.menu_widget = true;
+
+  a.feature.active = true;
+  a.feature.scrollable = false;
+  a.feature.resizeable = false;
+  a.feature.minimizable = false;
+  a.feature.flat = false;
+  a.feature.no_border = false;
+  a.feature.no_underline = false;
+  a.feature.ignore_padding = false;
+  a.visibility.visible = false;
+  a.visibility.hidden = false;
+  a.visibility.shown = false;
+  a.visibility.modal = false;
+  a.visibility.always_on_top = false;
+  a.visibility.visible_cursor = false;
+  a.focus.focus = false;
+  a.focus.focusable = false;
+  a.shadow.shadow = false;
+  a.shadow.trans_shadow = false;
+  a.type.window_widget = false;
+  a.type.dialog_widget = false;
+  a.type.menu_widget = false;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.feature.active = false;
+  a.feature.scrollable = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.feature.scrollable = false;
+  a.feature.resizeable = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.feature.resizeable = false;
+  a.feature.minimizable = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.feature.minimizable = false;
+  a.feature.flat = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.feature.flat = false;
+  a.feature.no_border = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.feature.no_border = false;
+  a.feature.no_underline = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.feature.no_underline = false;
+  a.feature.ignore_padding = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.feature.ignore_padding = false;
+  a.visibility.visible = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.visibility.visible = false;
+  a.visibility.hidden = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.visibility.hidden = false;
+  a.visibility.shown = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.visibility.shown = false;
+  a.visibility.modal = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.visibility.modal = false;
+  a.visibility.always_on_top = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.visibility.always_on_top = false;
+  a.visibility.visible_cursor = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.visibility.visible_cursor = false;
+  a.focus.focus = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.focus.focus = false;
+  a.focus.focusable = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.focus.focusable = false;
+  a.shadow.shadow = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.shadow.shadow = false;
+  a.shadow.trans_shadow = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.shadow.trans_shadow = false;
+  a.type.window_widget = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.type.window_widget = false;
+  a.type.dialog_widget = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.type.dialog_widget = false;
+  a.type.menu_widget = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
 }
 
 //----------------------------------------------------------------------

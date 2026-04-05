@@ -47,13 +47,13 @@ FOptiMove::FOptiMove (int baud)
   calculateCharDuration();
 
   // ANSI set cursor address preset for undefined terminals
-  set_cursor_address (CSI "%i%p1%d;%p2%dH");
+  set_cursor_address ({CSI "%i%p1%d;%p2%dH", 16});
   // Clearing the motion cache for non-ANSI terminals
   FTermcap::clearMotionCache();
   // Set carriage return preset
-  set_carriage_return ("\r");
+  set_carriage_return ({"\r", 1});
   // Set cursor down preset
-  set_cursor_down ("\n");
+  set_cursor_down ({"\n", 1});
 }
 
 
@@ -121,9 +121,9 @@ void FOptiMove::setTermEnvironment (const TermEnv& term_env)
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_cursor_home (const char cap[])
+void FOptiMove::set_cursor_home (const FTermcap::TermcapString& cap)
 {
-  if ( cap )
+  if ( cap.data )
   {
     cursor.home.cap = cap;
     cursor.home.duration = capDuration (cap, 0);
@@ -131,16 +131,16 @@ void FOptiMove::set_cursor_home (const char cap[])
   }
   else
   {
-    cursor.home.cap = nullptr;
+    cursor.home.cap = {nullptr, 0};
     cursor.home.duration = \
     cursor.home.length   = LONG_DURATION;
   }
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_cursor_to_ll (const char cap[])
+void FOptiMove::set_cursor_to_ll (const FTermcap::TermcapString& cap)
 {
-  if ( cap )
+  if ( cap.data )
   {
     cursor.to_ll.cap = cap;
     cursor.to_ll.duration = capDuration (cap, 0);
@@ -148,16 +148,16 @@ void FOptiMove::set_cursor_to_ll (const char cap[])
   }
   else
   {
-    cursor.to_ll.cap = nullptr;
+    cursor.to_ll.cap = {nullptr, 0};
     cursor.to_ll.duration = \
     cursor.to_ll.length   = LONG_DURATION;
   }
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_carriage_return (const char cap[])
+void FOptiMove::set_carriage_return (const FTermcap::TermcapString& cap)
 {
-  if ( cap )
+  if ( cap.data )
   {
     cursor.carriage_return.cap = cap;
     cursor.carriage_return.duration = capDuration (cap, 0);
@@ -165,16 +165,16 @@ void FOptiMove::set_carriage_return (const char cap[])
   }
   else
   {
-    cursor.carriage_return.cap = nullptr;
+    cursor.carriage_return.cap = {nullptr, 0};
     cursor.carriage_return.duration = \
     cursor.carriage_return.length   = LONG_DURATION;
   }
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_tabular (const char cap[])
+void FOptiMove::set_tabular (const FTermcap::TermcapString& cap)
 {
-  if ( cap )
+  if ( cap.data )
   {
     cursor.tab.cap = cap;
     cursor.tab.duration = capDuration (cap, 0);
@@ -182,16 +182,16 @@ void FOptiMove::set_tabular (const char cap[])
   }
   else
   {
-    cursor.tab.cap = nullptr;
+    cursor.tab.cap = {nullptr, 0};
     cursor.tab.duration = \
     cursor.tab.length   = LONG_DURATION;
   }
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_back_tab (const char cap[])
+void FOptiMove::set_back_tab (const FTermcap::TermcapString& cap)
 {
-  if ( cap )
+  if ( cap.data )
   {
     cursor.back_tab.cap = cap;
     cursor.back_tab.duration = capDuration (cap, 0);
@@ -199,16 +199,16 @@ void FOptiMove::set_back_tab (const char cap[])
   }
   else
   {
-    cursor.back_tab.cap = nullptr;
+    cursor.back_tab.cap = {nullptr, 0};
     cursor.back_tab.duration = \
     cursor.back_tab.length   = LONG_DURATION;
   }
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_cursor_up (const char cap[])
+void FOptiMove::set_cursor_up (const FTermcap::TermcapString& cap)
 {
-  if ( cap )
+  if ( cap.data )
   {
     cursor.up.cap = cap;
     cursor.up.duration = capDuration (cap, 0);
@@ -216,16 +216,16 @@ void FOptiMove::set_cursor_up (const char cap[])
   }
   else
   {
-    cursor.up.cap = nullptr;
+    cursor.up.cap = {nullptr, 0};
     cursor.up.duration = \
     cursor.up.length   = LONG_DURATION;
   }
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_cursor_down (const char cap[])
+void FOptiMove::set_cursor_down (const FTermcap::TermcapString& cap)
 {
-  if ( cap )
+  if ( cap.data )
   {
     cursor.down.cap = cap;
     cursor.down.duration = capDuration (cap, 0);
@@ -233,16 +233,16 @@ void FOptiMove::set_cursor_down (const char cap[])
   }
   else
   {
-    cursor.down.cap = nullptr;
+    cursor.down.cap = {nullptr, 0};
     cursor.down.duration = \
     cursor.down.length   = LONG_DURATION;
   }
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_cursor_left (const char cap[])
+void FOptiMove::set_cursor_left (const FTermcap::TermcapString& cap)
 {
-  if ( cap )
+  if ( cap.data )
   {
     cursor.left.cap = cap;
     cursor.left.duration = capDuration (cap, 0);
@@ -250,16 +250,16 @@ void FOptiMove::set_cursor_left (const char cap[])
   }
   else
   {
-    cursor.left.cap = nullptr;
+    cursor.left.cap = {nullptr, 0};
     cursor.left.duration = \
     cursor.left.length   = LONG_DURATION;
   }
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_cursor_right (const char cap[])
+void FOptiMove::set_cursor_right (const FTermcap::TermcapString& cap)
 {
-  if ( cap )
+  if ( cap.data )
   {
     cursor.right.cap = cap;
     cursor.right.duration = capDuration (cap, 0);
@@ -267,196 +267,196 @@ void FOptiMove::set_cursor_right (const char cap[])
   }
   else
   {
-    cursor.right.cap = nullptr;
+    cursor.right.cap = {nullptr, 0};
     cursor.right.duration = \
     cursor.right.length   = LONG_DURATION;
   }
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_cursor_address (const char cap[])
+void FOptiMove::set_cursor_address (const FTermcap::TermcapString& cap)
 {
-  if ( cap && FTermcap::isInitialized() )
+  if ( cap.data && FTermcap::isInitialized() )
   {
     const auto temp = FTermcap::encodeMotionParameter(cap, 23, 23);
     parm_cursor.address.cap = cap;
-    parm_cursor.address.duration = capDuration (temp.data(), 1);
+    parm_cursor.address.duration = capDuration (temp, 1);
     parm_cursor.address.length = capDurationToLength (parm_cursor.address.duration);
   }
   else
   {
-    parm_cursor.address.cap = nullptr;
+    parm_cursor.address.cap = {nullptr, 0};
     parm_cursor.address.duration = \
     parm_cursor.address.length   = LONG_DURATION;
   }
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_column_address (const char cap[])
+void FOptiMove::set_column_address (const FTermcap::TermcapString& cap)
 {
-  if ( cap && FTermcap::isInitialized() )
+  if ( cap.data && FTermcap::isInitialized() )
   {
     const auto temp = FTermcap::encodeParameter(cap, 23);
     parm_cursor.column_address.cap = cap;
-    parm_cursor.column_address.duration = capDuration (temp.data(), 1);
+    parm_cursor.column_address.duration = capDuration (temp, 1);
     parm_cursor.column_address.length = capDurationToLength (parm_cursor.column_address.duration);
   }
   else
   {
-    parm_cursor.column_address.cap = nullptr;
+    parm_cursor.column_address.cap = {nullptr, 0};
     parm_cursor.column_address.duration = \
     parm_cursor.column_address.length   = LONG_DURATION;
   }
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_row_address (const char cap[])
+void FOptiMove::set_row_address (const FTermcap::TermcapString& cap)
 {
-  if ( cap && FTermcap::isInitialized() )
+  if ( cap.data && FTermcap::isInitialized() )
   {
     const auto temp = FTermcap::encodeParameter(cap, 23);
     parm_cursor.row_address.cap = cap;
-    parm_cursor.row_address.duration = capDuration (temp.data(), 1);
+    parm_cursor.row_address.duration = capDuration (temp, 1);
     parm_cursor.row_address.length = capDurationToLength (parm_cursor.row_address.duration);
   }
   else
   {
-    parm_cursor.row_address.cap = nullptr;
+    parm_cursor.row_address.cap = {nullptr, 0};
     parm_cursor.row_address.duration = \
     parm_cursor.row_address.length   = LONG_DURATION;
   }
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_parm_up_cursor (const char cap[])
+void FOptiMove::set_parm_up_cursor (const FTermcap::TermcapString& cap)
 {
-  if ( cap && FTermcap::isInitialized() )
+  if ( cap.data && FTermcap::isInitialized() )
   {
     const auto temp = FTermcap::encodeParameter(cap, 23);
     parm_cursor.up.cap = cap;
-    parm_cursor.up.duration = capDuration (temp.data(), 1);
+    parm_cursor.up.duration = capDuration (temp, 1);
     parm_cursor.up.length = capDurationToLength (parm_cursor.up.duration);
   }
   else
   {
-    parm_cursor.up.cap = nullptr;
+    parm_cursor.up.cap = {nullptr, 0};
     parm_cursor.up.duration = \
     parm_cursor.up.length   = LONG_DURATION;
   }
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_parm_down_cursor (const char cap[])
+void FOptiMove::set_parm_down_cursor (const FTermcap::TermcapString& cap)
 {
-  if ( cap && FTermcap::isInitialized() )
+  if ( cap.data && FTermcap::isInitialized() )
   {
     const auto temp = FTermcap::encodeParameter(cap, 23);
     parm_cursor.down.cap = cap;
-    parm_cursor.down.duration = capDuration (temp.data(), 1);
+    parm_cursor.down.duration = capDuration (temp, 1);
     parm_cursor.down.length = capDurationToLength (parm_cursor.down.duration);
   }
   else
   {
-    parm_cursor.down.cap = nullptr;
+    parm_cursor.down.cap = {nullptr, 0};
     parm_cursor.down.duration = \
     parm_cursor.down.length   = LONG_DURATION;
   }
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_parm_left_cursor (const char cap[])
+void FOptiMove::set_parm_left_cursor (const FTermcap::TermcapString& cap)
 {
-  if ( cap && FTermcap::isInitialized() )
+  if ( cap.data && FTermcap::isInitialized() )
   {
     const auto temp = FTermcap::encodeParameter(cap, 23);
     parm_cursor.left.cap = cap;
-    parm_cursor.left.duration = capDuration (temp.data(), 1);
+    parm_cursor.left.duration = capDuration (temp, 1);
     parm_cursor.left.length = capDurationToLength (parm_cursor.left.duration);
   }
   else
   {
-    parm_cursor.left.cap = nullptr;
+    parm_cursor.left.cap = {nullptr, 0};
     parm_cursor.left.duration = \
     parm_cursor.left.length   = LONG_DURATION;
   }
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_parm_right_cursor (const char cap[])
+void FOptiMove::set_parm_right_cursor (const FTermcap::TermcapString& cap)
 {
-  if ( cap && FTermcap::isInitialized() )
+  if ( cap.data && FTermcap::isInitialized() )
   {
     const auto temp = FTermcap::encodeParameter(cap, 23);
     parm_cursor.right.cap = cap;
-    parm_cursor.right.duration = capDuration (temp.data(), 1);
+    parm_cursor.right.duration = capDuration (temp, 1);
     parm_cursor.right.length = capDurationToLength (parm_cursor.right.duration);
   }
   else
   {
-    parm_cursor.right.cap = nullptr;
+    parm_cursor.right.cap = {nullptr, 0};
     parm_cursor.right.duration = \
     parm_cursor.right.length   = LONG_DURATION;
   }
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_erase_chars (const char cap[])
+void FOptiMove::set_erase_chars (const FTermcap::TermcapString& cap)
 {
-  if ( cap && FTermcap::isInitialized() )
+  if ( cap.data && FTermcap::isInitialized() )
   {
     const auto temp = FTermcap::encodeParameter(cap, 23);
     edit.erase_chars.cap = cap;
-    edit.erase_chars.duration = capDuration (temp.data(), 1);
+    edit.erase_chars.duration = capDuration (temp, 1);
     edit.erase_chars.length = capDurationToLength (edit.erase_chars.duration);
   }
   else
   {
-    edit.erase_chars.cap = nullptr;
+    edit.erase_chars.cap = {nullptr, 0};
     edit.erase_chars.duration = \
     edit.erase_chars.length   = LONG_DURATION;
   }
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_repeat_char (const char cap[])
+void FOptiMove::set_repeat_char (const FTermcap::TermcapString& cap)
 {
-  if ( cap && FTermcap::isInitialized() )
+  if ( cap.data && FTermcap::isInitialized() )
   {
     const auto temp = FTermcap::encodeParameter(cap, ' ', 23);
     edit.repeat_char.cap = cap;
-    edit.repeat_char.duration = capDuration (temp.data(), 1);
+    edit.repeat_char.duration = capDuration (temp, 1);
     edit.repeat_char.length = capDurationToLength (edit.repeat_char.duration);
   }
   else
   {
-    edit.repeat_char.cap = nullptr;
+    edit.repeat_char.cap = {nullptr, 0};
     edit.repeat_char.duration = \
     edit.repeat_char.length   = LONG_DURATION;
   }
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_repeat_last_char (const char cap[])
+void FOptiMove::set_repeat_last_char (const FTermcap::TermcapString& cap)
 {
-  if ( cap && FTermcap::isInitialized() )
+  if ( cap.data && FTermcap::isInitialized() )
   {
     const auto temp = FTermcap::encodeParameter(cap, 23);
     edit.repeat_last_char.cap = cap;
-    edit.repeat_last_char.duration = capDuration (temp.data(), 1);
+    edit.repeat_last_char.duration = capDuration (temp, 1);
     edit.repeat_last_char.length = capDurationToLength (edit.repeat_last_char.duration);
   }
   else
   {
-    edit.repeat_last_char.cap = nullptr;
+    edit.repeat_last_char.cap = {nullptr, 0};
     edit.repeat_last_char.duration = \
     edit.repeat_last_char.length   = LONG_DURATION;
   }
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_clr_bol (const char cap[])
+void FOptiMove::set_clr_bol (const FTermcap::TermcapString& cap)
 {
-  if ( cap )
+  if ( cap.data )
   {
     edit.clr_bol.cap = cap;
     edit.clr_bol.duration = capDuration (cap, 0);
@@ -464,16 +464,16 @@ void FOptiMove::set_clr_bol (const char cap[])
   }
   else
   {
-    edit.clr_bol.cap = nullptr;
+    edit.clr_bol.cap = {nullptr, 0};
     edit.clr_bol.duration = \
     edit.clr_bol.length   = LONG_DURATION;
   }
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_clr_eol (const char cap[])
+void FOptiMove::set_clr_eol (const FTermcap::TermcapString& cap)
 {
-  if ( cap )
+  if ( cap.data )
   {
     edit.clr_eol.cap = cap;
     edit.clr_eol.duration = capDuration (cap, 0);
@@ -481,7 +481,7 @@ void FOptiMove::set_clr_eol (const char cap[])
   }
   else
   {
-    edit.clr_eol.cap = nullptr;
+    edit.clr_eol.cap = {nullptr, 0};
     edit.clr_eol.duration = \
     edit.clr_eol.length   = LONG_DURATION;
   }
@@ -504,7 +504,7 @@ void FOptiMove::check_boundaries ( int& xold, int& yold
 }
 
 //----------------------------------------------------------------------
-auto FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew) -> std::string
+auto FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew) -> FTermcap::TermcapString
 {
   int method{0};
   int move_time{LONG_DURATION};
@@ -517,7 +517,9 @@ auto FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew) -> std::stri
       || yold < 0
       || isWideMove (xold, yold, xnew, ynew) ) )
   {
-    return ( move_time < LONG_DURATION ) ? move_buf : std::string{};
+    return ( move_time < LONG_DURATION )
+         ? FTermcap::TermcapString{move_buf.data(), uInt32(move_buf.size())}
+         : FTermcap::TermcapString{};
   }
 
   // Method 1: local movement
@@ -544,7 +546,7 @@ auto FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew) -> std::stri
   moveByMethod (method, xold, yold, xnew, ynew);
 
   if ( move_time < LONG_DURATION )
-    return move_buf;
+    return {move_buf.data(), uInt32(move_buf.size())};
 
   return {};
 }
@@ -568,17 +570,17 @@ void FOptiMove::calculateCharDuration() noexcept
 }
 
 //----------------------------------------------------------------------
-auto FOptiMove::capDuration (const char cap[], int affcnt) const noexcept -> int
+auto FOptiMove::capDuration (const FTermcap::TermcapString& cap, int affcnt) const noexcept -> int
 {
   // calculate the duration in milliseconds of a given operation
   // cap    - the term capability
   // affcnt - the number of lines affected
 
-  if ( ! cap )
+  if ( ! cap.data )
     return LONG_DURATION;
 
   float ms{0};
-  const char* p = cap;
+  const char* p = cap.data;
 
   const auto parse_digit = \
       [&p, affcnt] (float& num) noexcept
@@ -635,7 +637,7 @@ auto FOptiMove::repeatedAppend ( std::string& dst
                                , const Capability& o
                                , int count ) const -> int
 {
-  const auto src_len = stringLength(o.cap);
+  const auto src_len = o.cap.length;
   const auto dst_len = dst.length();
   int total{0};
 
@@ -646,7 +648,7 @@ auto FOptiMove::repeatedAppend ( std::string& dst
     while ( count > 0 )
     {
       --count;
-      dst.append(o.cap);
+      dst.append(o.cap.data);
     }
   }
   else
@@ -696,10 +698,10 @@ inline auto FOptiMove::verticalMove (std::string& move, int from_y, int to_y) co
 {
   int vtime{LONG_DURATION};
 
-  if ( parm_cursor.row_address.cap )
+  if ( parm_cursor.row_address.cap.data )
   {
     // Move to fixed row position
-    move = FTermcap::encodeParameter(parm_cursor.row_address.cap, to_y);
+    move = FTermcap::encodeParameter(parm_cursor.row_address.cap, to_y).data;
     vtime = parm_cursor.row_address.duration;
   }
 
@@ -717,13 +719,13 @@ inline void FOptiMove::downMove ( std::string& move, int& vtime
 {
   const int num = to_y - from_y;
 
-  if ( parm_cursor.down.cap && parm_cursor.down.duration < vtime )
+  if ( parm_cursor.down.cap.data && parm_cursor.down.duration < vtime )
   {
-    move = FTermcap::encodeParameter(parm_cursor.down.cap, num);
+    move = FTermcap::encodeParameter(parm_cursor.down.cap, num).data;
     vtime = parm_cursor.down.duration;
   }
 
-  if ( cursor.down.cap && (num * cursor.down.duration < vtime) )
+  if ( cursor.down.cap.data && (num * cursor.down.duration < vtime) )
   {
     if ( ! move.empty() )
       move.clear();
@@ -738,13 +740,13 @@ inline void FOptiMove::upMove ( std::string& move, int& vtime
 {
   const int num = from_y - to_y;
 
-  if ( parm_cursor.up.cap && parm_cursor.up.duration < vtime )
+  if ( parm_cursor.up.cap.data && parm_cursor.up.duration < vtime )
   {
-    move = FTermcap::encodeParameter(parm_cursor.up.cap, num);
+    move = FTermcap::encodeParameter(parm_cursor.up.cap, num).data;
     vtime = parm_cursor.up.duration;
   }
 
-  if ( cursor.up.cap && (num * cursor.up.duration < vtime) )
+  if ( cursor.up.cap.data && (num * cursor.up.duration < vtime) )
   {
     if ( ! move.empty() )
       move.clear();
@@ -758,10 +760,10 @@ inline auto FOptiMove::horizontalMove (std::string& hmove, int from_x, int to_x)
 {
   int htime{LONG_DURATION};
 
-  if ( parm_cursor.column_address.cap )
+  if ( parm_cursor.column_address.cap.data )
   {
     // Move to fixed column position
-    hmove = FTermcap::encodeParameter(parm_cursor.column_address.cap, to_x);
+    hmove = FTermcap::encodeParameter(parm_cursor.column_address.cap, to_x).data;
     htime = parm_cursor.column_address.duration;
   }
 
@@ -778,7 +780,7 @@ inline void FOptiMove::moveWithParmRightCursor ( std::string& hmove
                                                , int& htime, int num ) const
 {
   // Use parameterized cursor right capability
-  hmove = FTermcap::encodeParameter(parm_cursor.right.cap, num);
+  hmove = FTermcap::encodeParameter(parm_cursor.right.cap, num).data;
   htime = parm_cursor.right.duration;
 }
 
@@ -790,7 +792,7 @@ inline void FOptiMove::moveWithRightCursor ( std::string& hmove, int& htime
   int htime_r{0};
 
   // try to use tab
-  if ( tabstop > 0 && cursor.tab.cap )
+  if ( tabstop > 0 && cursor.tab.cap.data )
   {
     int pos = from_x;
 
@@ -828,10 +830,10 @@ inline void FOptiMove::rightMove ( std::string& hmove, int& htime
   if ( num == 0 )
     return;
 
-  if ( parm_cursor.right.cap && parm_cursor.right.duration < htime )
+  if ( parm_cursor.right.cap.data && parm_cursor.right.duration < htime )
     moveWithParmRightCursor (hmove, htime, num);
 
-  if ( cursor.right.cap )
+  if ( cursor.right.cap.data )
     moveWithRightCursor (hmove, htime, num, from_x, to_x);
 }
 
@@ -840,7 +842,7 @@ inline void FOptiMove::moveWithParmLeftCursor ( std::string& hmove
                                               , int& htime, int num ) const
 {
   // Use parameterized cursor right capability
-  hmove = FTermcap::encodeParameter(parm_cursor.left.cap, num);
+  hmove = FTermcap::encodeParameter(parm_cursor.left.cap, num).data;
   htime = parm_cursor.left.duration;
 }
 
@@ -852,7 +854,7 @@ inline void FOptiMove::moveWithLeftCursor ( std::string& hmove, int& htime
   int htime_l{0};
 
   // try to use backward tab
-  if ( tabstop > 0 && cursor.back_tab.cap )
+  if ( tabstop > 0 && cursor.back_tab.cap.data )
   {
     int pos = from_x;
 
@@ -890,10 +892,10 @@ inline void FOptiMove::leftMove ( std::string& hmove, int& htime
   if ( num == 0 )
     return;
 
-  if ( parm_cursor.left.cap && parm_cursor.left.duration < htime )
+  if ( parm_cursor.left.cap.data && parm_cursor.left.duration < htime )
     moveWithParmLeftCursor (hmove, htime, num);
 
-  if ( cursor.left.cap )
+  if ( cursor.left.cap.data )
     moveWithLeftCursor (hmove, htime, num, from_x, to_x);
 }
 
@@ -912,15 +914,15 @@ inline auto FOptiMove::isMethod0Faster ( int& move_time
 {
   // Test method 0: direct cursor addressing
 
-  if ( ! parm_cursor.address.cap )
+  if ( ! parm_cursor.address.cap.data )
     return false;
 
   const auto move_xy = \
     FTermcap::encodeMotionParameter(parm_cursor.address.cap, xnew, ynew);
 
-  if ( ! move_xy.empty() )
+  if ( move_xy.data )
   {
-    move_buf = move_xy;
+    move_buf = std::string(move_xy.data, move_xy.length);
     move_time = parm_cursor.address.duration;
     return true;
   }
@@ -956,7 +958,7 @@ inline auto FOptiMove::isMethod2Faster ( int& move_time
 {
   // Test method 2: carriage-return + local movement
 
-  if ( yold >= 0 && cursor.carriage_return.cap )
+  if ( yold >= 0 && cursor.carriage_return.cap.data )
   {
     const int new_time = relativeMove (temp_result, 0, yold, xnew, ynew);
 
@@ -977,7 +979,7 @@ inline auto FOptiMove::isMethod3Faster ( int& move_time
 {
   // Test method 3: home-cursor + local movement
 
-  if ( cursor.home.cap )
+  if ( cursor.home.cap.data )
   {
     const int new_time = relativeMove (temp_result, 0, 0, xnew, ynew);
 
@@ -997,7 +999,7 @@ inline auto FOptiMove::isMethod4Faster ( int& move_time
                                        , int xnew, int ynew ) -> bool
 {
   // Test method 4: home-down + local movement
-  if ( cursor.to_ll.cap )
+  if ( cursor.to_ll.cap.data )
   {
     const int down = int(screen.height) - 1;
     const int new_time = relativeMove (temp_result, 0, down, xnew, ynew);
@@ -1022,14 +1024,14 @@ inline auto FOptiMove::isMethod5Faster ( int& move_time
   if ( automatic_left_margin
     && ! eat_nl_glitch
     && yold > 0
-    && cursor.left.cap )
+    && cursor.left.cap.data )
   {
     const int x = int(screen.width) - 1;
     const int y = yold - 1;
     const int new_time = relativeMove (temp_result, x, y, xnew, ynew);
 
     if ( new_time < LONG_DURATION
-      && cursor.carriage_return.cap
+      && cursor.carriage_return.cap.data
       && cursor.carriage_return.duration
        + cursor.left.duration + new_time < move_time )
     {
@@ -1080,10 +1082,10 @@ void FOptiMove::moveByMethod ( int method
 //----------------------------------------------------------------------
 inline void FOptiMove::moveWithCarriageReturn (int yold, int xnew, int ynew)
 {
-  if ( ! cursor.carriage_return.cap )
+  if ( ! cursor.carriage_return.cap.data )
     return;
 
-  move_buf = cursor.carriage_return.cap;
+  move_buf = cursor.carriage_return.cap.data;
   relativeMove (temp_result, 0, yold, xnew, ynew);
   move_buf.append(temp_result);
 }
@@ -1091,7 +1093,7 @@ inline void FOptiMove::moveWithCarriageReturn (int yold, int xnew, int ynew)
 //----------------------------------------------------------------------
 inline void FOptiMove::moveWithHome (int xnew, int ynew)
 {
-  move_buf = cursor.home.cap;
+  move_buf = cursor.home.cap.data;
   relativeMove (temp_result, 0, 0, xnew, ynew);
   move_buf.append(temp_result);
 }
@@ -1099,7 +1101,7 @@ inline void FOptiMove::moveWithHome (int xnew, int ynew)
 //----------------------------------------------------------------------
 inline void FOptiMove::moveWithToLL (int xnew, int ynew)
 {
-  move_buf = cursor.to_ll.cap;
+  move_buf = cursor.to_ll.cap.data;
   const int down = int(screen.height) - 1;
   relativeMove (temp_result, 0, down, xnew, ynew);
   move_buf.append(temp_result);
@@ -1110,11 +1112,11 @@ inline void FOptiMove::moveWithCRAndWrapToLeft ( int xold, int yold
                                                , int xnew, int ynew )
 {
   if ( xold >= 0 )
-    move_buf = cursor.carriage_return.cap;
+    move_buf = cursor.carriage_return.cap.data;
   else
     move_buf.clear();
 
-  move_buf.append(cursor.left.cap);
+  move_buf.append(cursor.left.cap.data);
   const int x = int(screen.width) - 1;
   const int y = yold - 1;
   relativeMove (temp_result, x, y, xnew, ynew);

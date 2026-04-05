@@ -41,8 +41,10 @@
 #include <string>
 
 #include "final/ftypes.h"
+#include "final/output/tty/ftermcap.h"
 #include "final/output/tty/sgr_optimizer.h"
 #include "final/util/fstring.h"
+
 
 namespace finalcut
 {
@@ -56,19 +58,19 @@ class FOptiAttr final
   public:
     struct TermEnvTextStyle
     {
-      const char* on;
-      const char* off;
+      const FTermcap::TermcapString& on;
+      const FTermcap::TermcapString& off;
     };
 
     struct TermEnvColorStyle
     {
-      const char* a_foreground;
-      const char* a_background;
-      const char* foreground;
-      const char* background;
-      const char* color_pair;
-      const char* orig_pair;
-      const char* orig_colors;
+      const FTermcap::TermcapString& a_foreground;
+      const FTermcap::TermcapString& a_background;
+      const FTermcap::TermcapString& foreground;
+      const FTermcap::TermcapString& background;
+      const FTermcap::TermcapString& color_pair;
+      const FTermcap::TermcapString& orig_pair;
+      const FTermcap::TermcapString& orig_colors;
       int         max_color;
       int         attr_without_color;
       bool        ansi_default_color;
@@ -106,41 +108,41 @@ class FOptiAttr final
     void        setNoColorVideo (int) noexcept;
     void        setDefaultColorSupport() noexcept;
     void        unsetDefaultColorSupport() noexcept;
-    void        set_enter_bold_mode (const char[]) noexcept;
-    void        set_exit_bold_mode (const char[]) noexcept;
-    void        set_enter_dim_mode (const char[]) noexcept;
-    void        set_exit_dim_mode (const char[]) noexcept;
-    void        set_enter_italics_mode (const char[]) noexcept;
-    void        set_exit_italics_mode (const char[]) noexcept;
-    void        set_enter_underline_mode (const char[]) noexcept;
-    void        set_exit_underline_mode (const char[]) noexcept;
-    void        set_enter_blink_mode (const char[]) noexcept;
-    void        set_exit_blink_mode (const char[]) noexcept;
-    void        set_enter_reverse_mode (const char[]) noexcept;
-    void        set_exit_reverse_mode (const char[]) noexcept;
-    void        set_enter_secure_mode (const char[]) noexcept;
-    void        set_exit_secure_mode (const char[]) noexcept;
-    void        set_enter_protected_mode (const char[]) noexcept;
-    void        set_exit_protected_mode (const char[]) noexcept;
-    void        set_enter_crossed_out_mode (const char[]) noexcept;
-    void        set_exit_crossed_out_mode (const char[]) noexcept;
-    void        set_enter_dbl_underline_mode (const char[]) noexcept;
-    void        set_exit_dbl_underline_mode (const char[]) noexcept;
-    void        set_enter_standout_mode (const char[]) noexcept;
-    void        set_exit_standout_mode (const char[]) noexcept;
-    void        set_set_attributes (const char[]) noexcept;
-    void        set_exit_attribute_mode (const char[]) noexcept;
-    void        set_enter_alt_charset_mode (const char[]) noexcept;
-    void        set_exit_alt_charset_mode (const char[]) noexcept;
-    void        set_enter_pc_charset_mode (const char[]) noexcept;
-    void        set_exit_pc_charset_mode (const char[]) noexcept;
-    void        set_a_foreground_color (const char[]) noexcept;
-    void        set_a_background_color (const char[]) noexcept;
-    void        set_foreground_color (const char[]) noexcept;
-    void        set_background_color (const char[]) noexcept;
-    void        set_term_color_pair (const char[]) noexcept;
-    void        set_orig_pair (const char[]) noexcept;
-    void        set_orig_colors (const char[]) noexcept;
+    void        set_enter_bold_mode (const FTermcap::TermcapString&) noexcept;
+    void        set_exit_bold_mode (const FTermcap::TermcapString&) noexcept;
+    void        set_enter_dim_mode (const FTermcap::TermcapString&) noexcept;
+    void        set_exit_dim_mode (const FTermcap::TermcapString&) noexcept;
+    void        set_enter_italics_mode (const FTermcap::TermcapString&) noexcept;
+    void        set_exit_italics_mode (const FTermcap::TermcapString&) noexcept;
+    void        set_enter_underline_mode (const FTermcap::TermcapString&) noexcept;
+    void        set_exit_underline_mode (const FTermcap::TermcapString&) noexcept;
+    void        set_enter_blink_mode (const FTermcap::TermcapString&) noexcept;
+    void        set_exit_blink_mode (const FTermcap::TermcapString&) noexcept;
+    void        set_enter_reverse_mode (const FTermcap::TermcapString&) noexcept;
+    void        set_exit_reverse_mode (const FTermcap::TermcapString&) noexcept;
+    void        set_enter_secure_mode (const FTermcap::TermcapString&) noexcept;
+    void        set_exit_secure_mode (const FTermcap::TermcapString&) noexcept;
+    void        set_enter_protected_mode (const FTermcap::TermcapString&) noexcept;
+    void        set_exit_protected_mode (const FTermcap::TermcapString&) noexcept;
+    void        set_enter_crossed_out_mode (const FTermcap::TermcapString&) noexcept;
+    void        set_exit_crossed_out_mode (const FTermcap::TermcapString&) noexcept;
+    void        set_enter_dbl_underline_mode (const FTermcap::TermcapString&) noexcept;
+    void        set_exit_dbl_underline_mode (const FTermcap::TermcapString&) noexcept;
+    void        set_enter_standout_mode (const FTermcap::TermcapString&) noexcept;
+    void        set_exit_standout_mode (const FTermcap::TermcapString&) noexcept;
+    void        set_set_attributes (const FTermcap::TermcapString&) noexcept;
+    void        set_exit_attribute_mode (const FTermcap::TermcapString&) noexcept;
+    void        set_enter_alt_charset_mode (const FTermcap::TermcapString&) noexcept;
+    void        set_exit_alt_charset_mode (const FTermcap::TermcapString&) noexcept;
+    void        set_enter_pc_charset_mode (const FTermcap::TermcapString&) noexcept;
+    void        set_exit_pc_charset_mode (const FTermcap::TermcapString&) noexcept;
+    void        set_a_foreground_color (const FTermcap::TermcapString&) noexcept;
+    void        set_a_background_color (const FTermcap::TermcapString&) noexcept;
+    void        set_foreground_color (const FTermcap::TermcapString&) noexcept;
+    void        set_background_color (const FTermcap::TermcapString&) noexcept;
+    void        set_term_color_pair (const FTermcap::TermcapString&) noexcept;
+    void        set_orig_pair (const FTermcap::TermcapString&) noexcept;
+    void        set_orig_colors (const FTermcap::TermcapString&) noexcept;
 
     // Inquiry
     static auto isNormal (const FChar&) noexcept -> bool;
@@ -148,12 +150,12 @@ class FOptiAttr final
     // Methods
     void        initialize();
     static auto vga2ansi (FColor) noexcept -> FColor;
-    auto        changeAttribute (FChar&, FChar&) -> std::string;
+    auto        changeAttribute (FChar&, FChar&) -> FTermcap::TermcapString;
 
   private:
     struct Capability
     {
-      const char* cap{};
+      FTermcap::TermcapString cap{};
       bool  caused_reset{};
     };
 
@@ -210,9 +212,9 @@ class FOptiAttr final
     };
 
     // Mutators
-    void        set_mode (Capability&, const char[], bool) const noexcept;
-    void        set_mode_on (TextStyle&, const char[], bool) const noexcept;
-    void        set_mode_off (TextStyle&, const char[], bool) const noexcept;
+    void        set_mode (Capability&, const FTermcap::TermcapString&, bool) const noexcept;
+    void        set_mode_on (TextStyle&, const FTermcap::TermcapString&, bool) const noexcept;
+    void        set_mode_off (TextStyle&, const FTermcap::TermcapString&, bool) const noexcept;
     auto        setTermBold (FChar&) noexcept -> bool;
     auto        unsetTermBold (FChar&) noexcept -> bool;
     auto        setTermDim (FChar&) noexcept -> bool;
@@ -272,7 +274,7 @@ class FOptiAttr final
     void        change_current_color (const FChar&, const FColor, const FColor);
     void        resetAttribute (FChar&) const noexcept;
     void        reset (FChar&) const noexcept;
-    auto        caused_reset_attributes (const char[], uChar = all_tests) const noexcept -> bool;
+    auto        caused_reset_attributes (const FTermcap::TermcapString&, uChar = all_tests) const noexcept -> bool;
     void        init_reset_attribute (Capability&, uChar = all_tests) const noexcept;
     auto        fake_reverse_color_change (const FChar& term) const noexcept -> bool;
     auto        hasCharsetEquivalence() const noexcept -> bool;
@@ -289,6 +291,7 @@ class FOptiAttr final
     template <typename CharT
             , enable_if_char_array_t<CharT> = nullptr>
     auto        append_sequence (CharT) noexcept -> bool;
+    auto        append_sequence (const FTermcap::TermcapString&) noexcept -> bool;
     auto        append_sequence (const std::string&) noexcept -> bool;
 
     // Data members

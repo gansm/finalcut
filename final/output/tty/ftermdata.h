@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2025 Markus Gans                                      *
+* Copyright 2018-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -414,7 +414,7 @@ inline auto FTermData::isMonochron() const noexcept -> bool
 inline auto FTermData::hasTermResized() -> bool
 {
   std::lock_guard<std::mutex> resize_lock_guard(synchronization_state.resize_mutex);
-  return synchronization_state.resize_count.load(std::memory_order_acquire) > 0;
+  return synchronization_state.resize_count.load() > 0;
 }
 
 //----------------------------------------------------------------------

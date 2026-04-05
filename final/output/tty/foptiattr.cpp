@@ -95,12 +95,12 @@ struct var
   static constexpr char sgr_39_49[]        = {CSI "39;49m"};
 };
 
-constexpr uInt32     var::fake_reverse_mask;
-constexpr uInt32     var::sgr_mask;
-constexpr uInt32     var::attribute_mask;
-constexpr uInt32     var::reset_mask;
-constexpr char       var::sgr_39[];
-constexpr char       var::sgr_39_49[];
+constexpr uInt32  var::fake_reverse_mask;
+constexpr uInt32  var::sgr_mask;
+constexpr uInt32  var::attribute_mask;
+constexpr uInt32  var::reset_mask;
+constexpr char    var::sgr_39[];
+constexpr char    var::sgr_39_49[];
 
 }  // namespace internal
 
@@ -179,211 +179,211 @@ void FOptiAttr::setTermEnvironment (const TermEnv& term_env)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_bold_mode (const char cap[]) noexcept
+void FOptiAttr::set_enter_bold_mode (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode_on (F_bold, cap, false);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_bold_mode (const char cap[]) noexcept
+void FOptiAttr::set_exit_bold_mode (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode_off (F_bold, cap, false);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_dim_mode (const char cap[]) noexcept
+void FOptiAttr::set_enter_dim_mode (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode_on (F_dim, cap, false);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_dim_mode (const char cap[]) noexcept
+void FOptiAttr::set_exit_dim_mode (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode_off (F_dim, cap, false);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_italics_mode (const char cap[]) noexcept
+void FOptiAttr::set_enter_italics_mode (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode_on (F_italics, cap, false);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_italics_mode (const char cap[]) noexcept
+void FOptiAttr::set_exit_italics_mode (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode_off (F_italics, cap, false);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_underline_mode (const char cap[]) noexcept
+void FOptiAttr::set_enter_underline_mode (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode_on (F_underline, cap, false);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_underline_mode (const char cap[]) noexcept
+void FOptiAttr::set_exit_underline_mode (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode_off (F_underline, cap, false);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_blink_mode (const char cap[]) noexcept
+void FOptiAttr::set_enter_blink_mode (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode_on (F_blink, cap, false);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_blink_mode (const char cap[]) noexcept
+void FOptiAttr::set_exit_blink_mode (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode_off (F_blink, cap, false);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_reverse_mode (const char cap[]) noexcept
+void FOptiAttr::set_enter_reverse_mode (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode_on (F_reverse, cap, false);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_reverse_mode (const char cap[]) noexcept
+void FOptiAttr::set_exit_reverse_mode (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode_off (F_reverse, cap, false);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_secure_mode (const char cap[]) noexcept
+void FOptiAttr::set_enter_secure_mode (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode_on (F_secure, cap, false);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_secure_mode (const char cap[]) noexcept
+void FOptiAttr::set_exit_secure_mode (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode_off (F_secure, cap, false);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_protected_mode (const char cap[]) noexcept
+void FOptiAttr::set_enter_protected_mode (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode_on (F_protected, cap, false);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_protected_mode (const char cap[]) noexcept
+void FOptiAttr::set_exit_protected_mode (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode_off (F_protected, cap, false);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_crossed_out_mode (const char cap[]) noexcept
+void FOptiAttr::set_enter_crossed_out_mode (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode_on (F_crossed_out, cap, false);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_crossed_out_mode (const char cap[]) noexcept
+void FOptiAttr::set_exit_crossed_out_mode (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode_off (F_crossed_out, cap, false);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_dbl_underline_mode (const char cap[]) noexcept
+void FOptiAttr::set_enter_dbl_underline_mode (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode_on (F_dbl_underline, cap, false);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_dbl_underline_mode (const char cap[]) noexcept
+void FOptiAttr::set_exit_dbl_underline_mode (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode_off (F_dbl_underline, cap, false);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_standout_mode (const char cap[]) noexcept
+void FOptiAttr::set_enter_standout_mode (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode_on (F_standout, cap, false);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_standout_mode (const char cap[]) noexcept
+void FOptiAttr::set_exit_standout_mode (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode_off (F_standout, cap, false);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_set_attributes (const char cap[]) noexcept
+void FOptiAttr::set_set_attributes (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode_on (F_attributes, cap, true);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_attribute_mode (const char cap[]) noexcept
+void FOptiAttr::set_exit_attribute_mode (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode_off (F_attributes, cap, true);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_alt_charset_mode (const char cap[]) noexcept
+void FOptiAttr::set_enter_alt_charset_mode (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode_on (F_alt_charset, cap, false);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_alt_charset_mode (const char cap[]) noexcept
+void FOptiAttr::set_exit_alt_charset_mode (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode_off (F_alt_charset, cap, false);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_pc_charset_mode (const char cap[]) noexcept
+void FOptiAttr::set_enter_pc_charset_mode (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode_on (F_pc_charset, cap, false);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_pc_charset_mode (const char cap[]) noexcept
+void FOptiAttr::set_exit_pc_charset_mode (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode_off (F_pc_charset, cap, false);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_a_foreground_color (const char cap[]) noexcept
+void FOptiAttr::set_a_foreground_color (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode (F_color.a_foreground, cap, false);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_a_background_color (const char cap[]) noexcept
+void FOptiAttr::set_a_background_color (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode (F_color.a_background, cap, false);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_foreground_color (const char cap[]) noexcept
+void FOptiAttr::set_foreground_color (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode (F_color.foreground, cap, false);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_background_color (const char cap[]) noexcept
+void FOptiAttr::set_background_color (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode (F_color.background, cap, false);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_term_color_pair (const char cap[]) noexcept
+void FOptiAttr::set_term_color_pair (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode (F_color.color_pair, cap, false);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_orig_pair (const char cap[]) noexcept
+void FOptiAttr::set_orig_pair (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode (F_color.orig_pair, cap, false);
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_orig_colors (const char cap[]) noexcept
+void FOptiAttr::set_orig_colors (const FTermcap::TermcapString& cap) noexcept
 {
   set_mode (F_color.orig_colors, cap, false);
 }
@@ -454,7 +454,7 @@ auto FOptiAttr::vga2ansi (FColor color) noexcept -> FColor
 }
 
 //----------------------------------------------------------------------
-auto FOptiAttr::changeAttribute (FChar& term, FChar& next) -> std::string
+auto FOptiAttr::changeAttribute (FChar& term, FChar& next) -> FTermcap::TermcapString
 {
   const bool next_has_color = hasColor(next);
   fake_reverse = false;
@@ -465,18 +465,18 @@ auto FOptiAttr::changeAttribute (FChar& term, FChar& next) -> std::string
   detectSwitchOff (term, next);
 
   // Simulate invisible characters
-  if ( ! F_secure.on.cap && next.isBitSet(FAttribute::set::invisible) )
+  if ( ! F_secure.on.cap.data && next.isBitSet(FAttribute::set::invisible) )
     next.encoded_char.unicode_data[0] = ' ';
 
   // Look for no changes
   if ( ! (switchOn() || switchOff() || hasColorChanged(term, next)) )
-    return {};
+    return {nullptr, 0};
 
   if ( hasNoAttribute(next) )
   {
     deactivateAttributes (term, next);
   }
-  else if ( F_attributes.on.cap
+  else if ( F_attributes.on.cap.data
          && (! term.isBitSet(FAttribute::set::pc_charset) || alt_equal_pc_charset) )
   {
     changeAttributeSGR (term, next);
@@ -491,17 +491,17 @@ auto FOptiAttr::changeAttribute (FChar& term, FChar& next) -> std::string
   if ( start_options.sgr_optimizer )
     sgr_optimizer.optimize();
 
-  return attr_buf;
+  return {attr_buf.data(), uInt32(attr_buf.length())};
 }
 
 
 // private methods of FOptiAttr
 //----------------------------------------------------------------------
 inline void FOptiAttr::set_mode ( Capability& capability
-                                , const char cap[]
+                                , const FTermcap::TermcapString& cap
                                 , bool caused_reset ) const noexcept
 {
-  if ( cap )
+  if ( cap.data )
   {
     capability.cap = cap;
     capability.caused_reset = caused_reset;
@@ -510,7 +510,7 @@ inline void FOptiAttr::set_mode ( Capability& capability
 
 //----------------------------------------------------------------------
 inline void FOptiAttr::set_mode_on ( TextStyle& style
-                                   , const char cap[]
+                                   , const FTermcap::TermcapString& cap
                                    , bool caused_reset ) const noexcept
 {
   set_mode (style.on, cap, caused_reset);
@@ -518,7 +518,7 @@ inline void FOptiAttr::set_mode_on ( TextStyle& style
 
 //----------------------------------------------------------------------
 inline void FOptiAttr::set_mode_off ( TextStyle& style
-                                    , const char cap[]
+                                    , const FTermcap::TermcapString& cap
                                     , bool caused_reset ) const noexcept
 {
   set_mode (style.off, cap, caused_reset);
@@ -745,7 +745,7 @@ inline auto FOptiAttr::unsetTermDoubleUnderline (FChar& term) noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FOptiAttr::setTermAttributes (FChar& term, const FChar& next) -> bool
 {
-  if ( F_attributes.on.cap )
+  if ( F_attributes.on.cap.data )
   {
     const auto sgr = FTermcap::encodeParameter \
         ( F_attributes.on.cap
@@ -938,7 +938,7 @@ inline auto FOptiAttr::isPCcharsetUsable ( FChar& term
                                          , const FChar& next ) noexcept -> bool
 {
   if ( alt_equal_pc_charset
-    && F_pc_charset.on.cap
+    && F_pc_charset.on.cap.data
     && next.isBitSet(FAttribute::set::alt_charset) )
   {
     // Copy the bit value of pc_charset from next to term
@@ -1001,7 +1001,7 @@ inline void FOptiAttr::deactivateAttributes (FChar& term, FChar& next)
 {
   if ( hasAttribute(term) )
   {
-    if ( F_attributes.off.cap )
+    if ( F_attributes.off.cap.data )
     {
       if ( changes.off.isBitSet(FAttribute::set::alt_charset) )  // Required for rxvt terminals
         unsetTermAltCharset(term);
@@ -1151,7 +1151,7 @@ inline void FOptiAttr::setDefaultBackground (FChar& term)
   const char* sgr_49;
   const auto& op = F_color.orig_pair.cap;
 
-  if ( op && std::memcmp (op, CSI "39;49;25m", 11) == 0 )
+  if ( op.data && std::memcmp (op.data, CSI "39;49;25m", 11) == 0 )
     sgr_49 = CSI "49;25m";
   else
     sgr_49 = CSI "49m";
@@ -1173,11 +1173,11 @@ inline void FOptiAttr::change_current_color ( const FChar& term
   static constexpr auto ANSI = 0;
   static constexpr auto VGA = 1;
 
-  auto apply_color_change = [this, &term, fg, bg, frev] ( const char* fg_cap
-                                                        , const char* bg_cap
+  auto apply_color_change = [this, &term, fg, bg, frev] ( const FTermcap::TermcapString fg_cap
+                                                        , const FTermcap::TermcapString bg_cap
                                                         , int cm ) noexcept
   {
-    if ( ! fg_cap || ! bg_cap )
+    if ( ! fg_cap.data || ! bg_cap.data )
       return false;
 
     if ( has_foreground_changes(term, fg, frev) )
@@ -1197,7 +1197,7 @@ inline void FOptiAttr::change_current_color ( const FChar& term
 
   if ( ! apply_color_change(AF, AB, VGA)
     && ! apply_color_change(Sf, Sb, ANSI)
-    && sp )
+    && sp.data )
   {
     const auto fg_value = uInt16(vga2ansi(fg));
     const auto bg_value = uInt16(vga2ansi(bg));
@@ -1219,24 +1219,24 @@ inline void FOptiAttr::reset (FChar& attr) const noexcept
 }
 
 //----------------------------------------------------------------------
-auto FOptiAttr::caused_reset_attributes (const char cap[], uChar test) const noexcept -> bool
+auto FOptiAttr::caused_reset_attributes (const FTermcap::TermcapString& cap, uChar test) const noexcept -> bool
 {
   // test if "cap" reset all attributes
 
-  if ( ! cap )
+  if ( ! cap.data )
     return false;
 
   const auto& ue = F_underline.off.cap;
   const auto& se = F_standout.off.cap;
   const auto& me = F_attributes.off.cap;
 
-  return ( (test & test_ansi_reset) && std::memcmp (cap, CSI "m", 3) == 0 )
-      || ( (test & test_adm3_reset) && std::memcmp (cap, ESC "G0", 3) == 0 )
-      || ( (test & same_like_ue) && ue && std::strcmp (cap, ue) == 0
-                                 && std::memcmp (cap, CSI "24m", 5) != 0 )
-      || ( (test & same_like_se) && se && std::strcmp (cap, se) == 0
-                                 && std::memcmp (cap, CSI "27m", 5) != 0 )
-      || ( (test & same_like_me) && me && std::strcmp (cap, me) == 0 );
+  return ( (test & test_ansi_reset) && std::memcmp (cap.data, CSI "m", 3) == 0 )
+      || ( (test & test_adm3_reset) && std::memcmp (cap.data, ESC "G0", 3) == 0 )
+      || ( (test & same_like_ue) && ue.data && std::strcmp (cap.data, ue.data) == 0
+                                 && std::memcmp (cap.data, CSI "24m", 5) != 0 )
+      || ( (test & same_like_se) && se.data && std::strcmp (cap.data, se.data) == 0
+                                 && std::memcmp (cap.data, CSI "27m", 5) != 0 )
+      || ( (test & same_like_me) && me.data && std::strcmp (cap.data, me.data) == 0 );
 }
 
 //----------------------------------------------------------------------
@@ -1265,8 +1265,8 @@ inline auto FOptiAttr::hasCharsetEquivalence() const noexcept -> bool
   const auto& pc_on   = F_pc_charset.on.cap;
   const auto& pc_off  = F_pc_charset.off.cap;
 
-  return ( alt_on && pc_on && std::strcmp (alt_on, pc_on) == 0 )
-      || ( alt_off && pc_off && std::strcmp (alt_off, pc_off) == 0 );
+  return ( alt_on.data && pc_on.data && std::strcmp (alt_on.data, pc_on.data) == 0 )
+      || ( alt_off.data && pc_off.data && std::strcmp (alt_off.data, pc_off.data) == 0 );
 }
 
 //----------------------------------------------------------------------
@@ -1394,6 +1394,16 @@ inline auto FOptiAttr::switchOn() const noexcept -> bool
 inline auto FOptiAttr::switchOff() const noexcept -> bool
 {
   return hasAttribute(changes.off);
+}
+
+//----------------------------------------------------------------------
+inline auto FOptiAttr::append_sequence (const FTermcap::TermcapString& seq) noexcept -> bool
+{
+  if ( ! seq.data )
+    return false;
+
+  attr_buf.append(seq.data);
+  return true;
 }
 
 //----------------------------------------------------------------------
