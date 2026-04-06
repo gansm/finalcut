@@ -52,6 +52,13 @@ constexpr auto isExactlyEqual (T rhs, T lhs) noexcept -> bool
 wchar_t       FString::null_char{L'\0'};
 const wchar_t FString::const_null_char{L'\0'};
 
+
+//----------------------------------------------------------------------
+// class formatting_error
+//----------------------------------------------------------------------
+FString::formatting_error::~formatting_error() noexcept = default;
+
+
 //----------------------------------------------------------------------
 // class FString
 //----------------------------------------------------------------------

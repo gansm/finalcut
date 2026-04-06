@@ -154,7 +154,9 @@ void FTermios::setCaptureSendCharacters()
 {
 #if defined(__clang__)
   #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #if __has_warning("-Wunsafe-buffer-usage")
+    #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #endif
 #endif
   struct termios t{};
   tcgetattr (stdin_no, &t);
@@ -172,7 +174,9 @@ void FTermios::unsetCaptureSendCharacters()
 {
 #if defined(__clang__)
   #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #if __has_warning("-Wunsafe-buffer-usage")
+    #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #endif
 #endif
   struct termios t{};
   tcgetattr (stdin_no, &t);
@@ -190,7 +194,9 @@ void FTermios::setRawMode (bool enable)
 {
 #if defined(__clang__)
   #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #if __has_warning("-Wunsafe-buffer-usage")
+    #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #endif
 #endif
   // set + unset flags for raw mode
   if ( raw_mode == enable )

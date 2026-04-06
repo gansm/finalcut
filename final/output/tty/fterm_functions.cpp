@@ -621,8 +621,8 @@ auto getColumnWidth (const wchar_t wchar) -> std::size_t
   static auto& char_width_cache = getCharWidthCacheInstance();
   static const auto& fterm_data = FTermData::getInstance();
 
-  if ( ( fterm_data.getTerminalEncoding() != Encoding::UTF8 && wchar != L'\0' )
-    || (wchar >= L' ' && wchar <= L'~') )
+  if ( (wchar >= L' ' && wchar <= L'~')
+    || (wchar != L'\0' && fterm_data.getTerminalEncoding() != Encoding::UTF8) )
     return 1U;
 
   const auto iter = char_width_cache.find(wchar);

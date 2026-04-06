@@ -1,3 +1,6 @@
+2026-04-06  Markus Gans  <guru.mail@muenster.de>
+	* A slight improvement in character output speed
+
 2026-04-04  Markus Gans  <guru.mail@muenster.de>
 	* Avoid using the std::string class unnecessarily
 

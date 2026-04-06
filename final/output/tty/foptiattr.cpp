@@ -391,7 +391,8 @@ void FOptiAttr::set_orig_colors (const FTermcap::TermcapString& cap) noexcept
 //----------------------------------------------------------------------
 auto FOptiAttr::isNormal (const FChar& ch) noexcept -> bool
 {
-  return ! hasAttribute(ch) && ! hasColor(ch);
+  return ch.color == default_color_pair
+      && ! (ch.attr.data & internal::var::attribute_mask);
 }
 
 //----------------------------------------------------------------------
@@ -883,22 +884,21 @@ void FOptiAttr::setAttributes ( uInt32 attribute
 }
 
 //----------------------------------------------------------------------
-auto FOptiAttr::hasColor (const FChar& attr) noexcept -> bool
+auto FOptiAttr::hasColor (const FChar& ch) noexcept -> bool
 {
-  return ( attr.color.getPair().fg != FColor::Default
-        || attr.color.getPair().bg != FColor::Default );
+  return ch.color != default_color_pair;
 }
 
 //----------------------------------------------------------------------
-auto FOptiAttr::hasAttribute (const FChar& attr) noexcept -> bool
+auto FOptiAttr::hasAttribute (const FChar& ch) noexcept -> bool
 {
-  return attr.isBitSet(internal::var::attribute_mask);
+  return ch.attr.data & internal::var::attribute_mask;
 }
 
 //----------------------------------------------------------------------
-auto FOptiAttr::hasNoAttribute (const FChar& attr) noexcept -> bool
+auto FOptiAttr::hasNoAttribute (const FChar& ch) noexcept -> bool
 {
-  return ! hasAttribute(attr);
+  return ! hasAttribute(ch);
 }
 
 //----------------------------------------------------------------------
@@ -963,9 +963,9 @@ inline auto FOptiAttr::hasColorChanged ( const FChar& term
 }
 
 //----------------------------------------------------------------------
-inline void FOptiAttr::resetColor (FChar& attr) const noexcept
+inline void FOptiAttr::resetColor (FChar& ch) const noexcept
 {
-  attr.color = default_color_pair;
+  ch.color = default_color_pair;
 }
 
 //----------------------------------------------------------------------

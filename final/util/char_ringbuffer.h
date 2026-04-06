@@ -145,7 +145,9 @@ class FRingBuffer
         {
 #if defined(__clang__)
   #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #if __has_warning("-Wunsafe-buffer-usage")
+    #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #endif
 #endif
           return ptr[ring_index<>::add(offset, index)];
 #if defined(__clang__)
@@ -415,7 +417,9 @@ class CharRingBuffer final : public FRingBuffer<char, Capacity>
     {
 #if defined(__clang__)
   #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #if __has_warning("-Wunsafe-buffer-usage")
+    #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #endif
 #endif
       if ( length == 0 )
         return true;

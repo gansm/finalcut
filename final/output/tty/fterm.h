@@ -314,6 +314,35 @@ inline auto FTerm::getClassName() -> FString
 { return "FTerm"; }
 
 //----------------------------------------------------------------------
+inline auto FTerm::getTabstop() -> int
+{ return FTermcap::tabstop; }
+
+//----------------------------------------------------------------------
+inline auto FTerm::getMaxColor() -> int
+{  return FTermcap::max_color; }
+
+//----------------------------------------------------------------------
+inline auto FTerm::hasUTF8() -> bool
+{
+  static const auto& fterm_data = FTermData::getInstance();
+  return fterm_data.hasUTF8Console();
+}
+
+//----------------------------------------------------------------------
+inline auto FTerm::isMonochron() -> bool
+{
+  static const auto& fterm_data = FTermData::getInstance();
+  return fterm_data.isMonochron();
+}
+
+//----------------------------------------------------------------------
+inline auto FTerm::isNewFont() -> bool
+{
+  static const auto& fterm_data = FTermData::getInstance();
+  return fterm_data.isNewFont();
+}
+
+//----------------------------------------------------------------------
 inline void FTerm::setFSystem (std::unique_ptr<FSystem>& fsystem)
 {
   FSystem::getInstance().swap(fsystem);

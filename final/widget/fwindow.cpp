@@ -922,10 +922,10 @@ auto FWindow::getWindowWidgetImpl ( FWidget* obj
 {
   // Returns the window object to the given widget obj
   auto p_obj = obj->getParentWidget();
-  auto is_window_with_flags = [&search_flags] (const FWidget* obj)
+  auto is_window_with_flags = [&search_flags] (const FWidget* w)
   {
-    return obj->isWindowWidget()
-        && containsFWidgetFlags(search_flags, obj->getFlags());
+    return w->isWindowWidget()
+        && containsFWidgetFlags(search_flags, w->getFlags());
   };
 
   while ( ! is_window_with_flags(obj) && p_obj )

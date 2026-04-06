@@ -76,8 +76,9 @@ static auto getStringBuffer() noexcept -> char*
 
 static auto getMoveCache() noexcept -> std::unordered_map<std::uint32_t, std::string>&
 {
-  static auto move_cache = std::unordered_map<std::uint32_t, std::string>{};
-  return move_cache;
+  using move_cache_type = std::unordered_map<std::uint32_t, std::string>;
+  static const auto& move_cache = std::make_unique<move_cache_type>();
+  return *move_cache;
 }
 
 }  // namespace internal

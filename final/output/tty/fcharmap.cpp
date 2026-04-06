@@ -43,7 +43,9 @@ auto FCharMap::getCharacter ( const CharEncodeMap& char_enc
 {
 #if defined(__clang__)
   #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #if __has_warning("-Wunsafe-buffer-usage")
+    #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #endif
 #endif
   return char_enc.array[std::size_t(enc)];
 #if defined(__clang__)
@@ -58,7 +60,9 @@ auto FCharMap::setCharacter ( CharEncodeMap& char_enc
 {
 #if defined(__clang__)
   #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #if __has_warning("-Wunsafe-buffer-usage")
+    #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #endif
 #endif
   return char_enc.array[std::size_t(enc)];
 #if defined(__clang__)

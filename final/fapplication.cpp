@@ -50,7 +50,7 @@ namespace finalcut
 namespace internal
 {
 
-auto hasModalWindowAsParent (FWidget* widget) -> bool
+static auto hasModalWindowAsParent (FWidget* widget) -> bool
 {
   FWidgetFlags search_flags{};
   search_flags.visibility.modal = true;

@@ -148,7 +148,9 @@ auto FVTermBuffer::print (wchar_t ch) -> int
   nc.ch.unicode_data[0] = ch;
 #if defined(__clang__)
   #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #if __has_warning("-Wunsafe-buffer-usage")
+    #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #endif
 #endif
   nc.ch.unicode_data[1] = L'\0';
 #if defined(__clang__)
@@ -201,7 +203,9 @@ void FVTermBuffer::add (UnicodeBoundary& ucb)
     nc.ch.unicode_data[0] = L'.';
 #if defined(__clang__)
   #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #if __has_warning("-Wunsafe-buffer-usage")
+    #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #endif
 #endif
     nc.ch.unicode_data[1] = L'\0';
 #if defined(__clang__)

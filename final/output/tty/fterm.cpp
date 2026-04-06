@@ -168,39 +168,6 @@ auto FTerm::getTermFileName() -> std::string
 }
 
 //----------------------------------------------------------------------
-auto FTerm::getTabstop() -> int
-{
-  return FTermcap::tabstop;
-}
-
-//----------------------------------------------------------------------
-auto FTerm::getMaxColor() -> int
-{
-  return FTermcap::max_color;
-}
-
-//----------------------------------------------------------------------
-auto FTerm::hasUTF8() -> bool
-{
-  static const auto& fterm_data = FTermData::getInstance();
-  return fterm_data.hasUTF8Console();
-}
-
-//----------------------------------------------------------------------
-auto FTerm::isMonochron() -> bool
-{
-  static const auto& fterm_data = FTermData::getInstance();
-  return fterm_data.isMonochron();
-}
-
-//----------------------------------------------------------------------
-auto FTerm::isNewFont() -> bool
-{
-  static const auto& fterm_data = FTermData::getInstance();
-  return fterm_data.isNewFont();
-}
-
-//----------------------------------------------------------------------
 auto FTerm::isInitialized() -> bool
 {
   return internal::var::term_initialized;

@@ -152,7 +152,9 @@ auto FKeyboard::isKeyPressed (uInt64 blocking_time) -> bool
 {
 #if defined(__clang__)
   #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #if __has_warning("-Wunsafe-buffer-usage")
+    #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #endif
 #endif
   if ( has_pending_input )
     return false;

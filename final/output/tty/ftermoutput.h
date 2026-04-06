@@ -52,6 +52,16 @@
 namespace finalcut
 {
 
+namespace internal
+{
+
+struct terminal
+{
+  static Encoding encoding;
+};
+
+}  // namespace internal
+
 // class forward declaration
 class FStartOptions;
 class FTermData;
@@ -331,12 +341,103 @@ inline auto FTermOutput::getFTerm() noexcept -> FTerm&
 { return fterm; }
 
 //----------------------------------------------------------------------
+inline auto FTermOutput::getColumnNumber() const -> std::size_t
+{ return FTerm::getColumnNumber(); }
+
+//----------------------------------------------------------------------
+inline auto FTermOutput::getLineNumber() const -> std::size_t
+{ return FTerm::getLineNumber(); }
+
+//----------------------------------------------------------------------
+inline auto FTermOutput::getTabstop() const -> int
+{ return FTerm::getTabstop(); }
+
+//----------------------------------------------------------------------
+inline auto FTermOutput::getMaxColor() const -> int
+{ return FTerm::getMaxColor(); }
+
+//----------------------------------------------------------------------
+inline auto FTermOutput::getEncoding() const -> Encoding
+{ return internal::terminal::encoding; }
+
+//----------------------------------------------------------------------
+inline auto FTermOutput::getKeyName (FKey keynum) const -> FString
+{ return FTerm::getKeyName(keynum); }
+
+//----------------------------------------------------------------------
 inline void FTermOutput::showCursor() noexcept
 { return hideCursor(false); }
 
 //----------------------------------------------------------------------
+inline void FTermOutput::setTerminalSize (FSize size)
+{ FTerm::setTermSize(size); }
+
+//----------------------------------------------------------------------
+inline auto FTermOutput::setVGAFont() -> bool
+{ return FTerm::setVGAFont(); }
+
+//----------------------------------------------------------------------
+inline auto FTermOutput::setNewFont() -> bool
+{ return FTerm::setNewFont(); }
+
+//----------------------------------------------------------------------
 inline auto FTermOutput::isCursorHideable() const noexcept -> bool
 { return cursor_hideable; }
+//----------------------------------------------------------------------
+inline auto FTermOutput::isMonochron() const -> bool
+{ return FTerm::isMonochron(); }
+
+//----------------------------------------------------------------------
+inline auto FTermOutput::isNewFont() const -> bool
+{ return FTerm::isNewFont(); }
+
+//----------------------------------------------------------------------
+inline auto FTermOutput::isEncodable (const wchar_t& wide_char) const -> bool
+{ return FTerm::isEncodable(wide_char); }
+
+//----------------------------------------------------------------------
+inline auto FTermOutput::hasTerminalResized() const -> bool
+{ return FTerm::hasChangedTermSize(); }
+
+//----------------------------------------------------------------------
+inline auto FTermOutput::allowsTerminalSizeManipulation() const -> bool
+{ return fterm_data->isTermType(FTermType::xterm); }
+
+//----------------------------------------------------------------------
+inline auto FTermOutput::canChangeColorPalette() const -> bool
+{ return FTerm::canChangeColorPalette(); }
+
+//----------------------------------------------------------------------
+inline auto FTermOutput::hasHalfBlockCharacter() const -> bool
+{ return FTerm::hasHalfBlockCharacter(); }
+
+//----------------------------------------------------------------------
+inline auto FTermOutput::hasShadowCharacter() const -> bool
+{ return FTerm::hasShadowCharacter(); }
+
+//----------------------------------------------------------------------
+inline auto FTermOutput::areMetaAndArrowKeysSupported() const -> bool
+{ return ! fterm_data->isTermType(FTermType::linux_con); }
+
+//----------------------------------------------------------------------
+inline void FTermOutput::detectTerminalSize()
+{ FTerm::detectTermSize(); }
+
+//----------------------------------------------------------------------
+inline void FTermOutput::commitTerminalResize()
+{ FTerm::changeTermSizeFinished(); }
+
+//----------------------------------------------------------------------
+inline void FTermOutput::initScreenSettings()
+{ FTerm::initScreenSettings(); }
+
+//----------------------------------------------------------------------
+inline void FTermOutput::clearTerminalAttributes()
+{ FTerm::clearTerminalAttributes(); }
+
+//----------------------------------------------------------------------
+inline void FTermOutput::beep() const
+{ return FTerm::beep(); }
 
 //----------------------------------------------------------------------
 inline auto FTermOutput::getFSetPaletteRef() const & -> const FSetPalette&

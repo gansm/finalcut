@@ -69,12 +69,11 @@ constexpr auto adjustValue (T current, T reference, T delta, T minLimit) -> T
 
 struct var
 {
-  static Encoding terminal_encoding;
   static bool is_new_font;
   static bool has_sub_map;
 };
 
-Encoding var::terminal_encoding{Encoding::Unknown};
+Encoding terminal::encoding{Encoding::Unknown};
 bool var::is_new_font{false};
 bool var::has_sub_map{false};
 
@@ -106,60 +105,6 @@ FTermOutput::~FTermOutput() noexcept = default;  // destructor
 
 // public methods of FTermOutput
 //----------------------------------------------------------------------
-auto FTermOutput::getColumnNumber() const -> std::size_t
-{
-  return FTerm::getColumnNumber();
-}
-
-//----------------------------------------------------------------------
-auto FTermOutput::getLineNumber() const -> std::size_t
-{
-  return FTerm::getLineNumber();
-}
-
-//----------------------------------------------------------------------
-auto FTermOutput::getTabstop() const -> int
-{
-  return FTerm::getTabstop();
-}
-
-//----------------------------------------------------------------------
-auto FTermOutput::getMaxColor() const -> int
-{
-  return FTerm::getMaxColor();
-}
-
-//----------------------------------------------------------------------
-auto FTermOutput::getEncoding() const -> Encoding
-{
-  return internal::var::terminal_encoding;
-}
-
-//----------------------------------------------------------------------
-auto FTermOutput::getKeyName (FKey keynum) const -> FString
-{
-  return FTerm::getKeyName(keynum);
-}
-
-//----------------------------------------------------------------------
-auto FTermOutput::isMonochron() const -> bool
-{
-  return FTerm::isMonochron();
-}
-
-//----------------------------------------------------------------------
-auto FTermOutput::isNewFont() const -> bool
-{
-  return FTerm::isNewFont();
-}
-
-//----------------------------------------------------------------------
-auto FTermOutput::isEncodable (const wchar_t& wide_char) const -> bool
-{
-  return FTerm::isEncodable(wide_char);
-}
-
-//----------------------------------------------------------------------
 auto FTermOutput::isFlushTimeout() const noexcept -> bool
 {
   const auto now_us = uInt64(duration_cast<microseconds>( clock::now()
@@ -169,42 +114,6 @@ auto FTermOutput::isFlushTimeout() const noexcept -> bool
 
   const auto diff_us = now_us - time_last_flush_us;
   return diff_us > flush_wait;
-}
-
-//----------------------------------------------------------------------
-auto FTermOutput::hasTerminalResized() const -> bool
-{
-  return FTerm::hasChangedTermSize();
-}
-
-//----------------------------------------------------------------------
-auto FTermOutput::allowsTerminalSizeManipulation() const -> bool
-{
-  return fterm_data->isTermType(FTermType::xterm);
-}
-
-//----------------------------------------------------------------------
-auto FTermOutput::canChangeColorPalette() const -> bool
-{
-  return FTerm::canChangeColorPalette();
-}
-
-//----------------------------------------------------------------------
-auto FTermOutput::hasHalfBlockCharacter() const -> bool
-{
-  return FTerm::hasHalfBlockCharacter();
-}
-
-//----------------------------------------------------------------------
-auto FTermOutput::hasShadowCharacter() const -> bool
-{
-  return FTerm::hasShadowCharacter();
-}
-
-//----------------------------------------------------------------------
-auto FTermOutput::areMetaAndArrowKeysSupported() const -> bool
-{
-  return ! fterm_data->isTermType(FTermType::linux_con);
 }
 
 //----------------------------------------------------------------------
@@ -257,24 +166,6 @@ void FTermOutput::hideCursor (bool enable)
 }
 
 //----------------------------------------------------------------------
-void FTermOutput::setTerminalSize (FSize size)
-{
-  FTerm::setTermSize(size);
-}
-
-//----------------------------------------------------------------------
-auto FTermOutput::setVGAFont() -> bool
-{
-  return FTerm::setVGAFont();
-}
-
-//----------------------------------------------------------------------
-auto FTermOutput::setNewFont() -> bool
-{
-  return FTerm::setNewFont();
-}
-
-//----------------------------------------------------------------------
 void FTermOutput::setNonBlockingRead (bool enable)
 {
 #if defined(__CYGWIN__)
@@ -299,7 +190,7 @@ void FTermOutput::setNonBlockingRead (bool enable)
 void FTermOutput::initTerminal (FVTerm::FTermArea* virtual_terminal)
 {
   getFTerm().initTerminal();
-  internal::var::terminal_encoding = fterm_data->getTerminalEncoding();
+  internal::terminal::encoding = fterm_data->getTerminalEncoding();
   internal::var::is_new_font = FTerm::isNewFont();
   internal::var::has_sub_map = ! getFTerm().getCharSubstitutionMap().isEmpty();
 
@@ -367,24 +258,6 @@ auto FTermOutput::updateTerminal() -> bool
 }
 
 //----------------------------------------------------------------------
-void FTermOutput::detectTerminalSize()
-{
-  FTerm::detectTermSize();
-}
-
-//----------------------------------------------------------------------
-void FTermOutput::commitTerminalResize()
-{
-  FTerm::changeTermSizeFinished();
-}
-
-//----------------------------------------------------------------------
-void FTermOutput::initScreenSettings()
-{
-  FTerm::initScreenSettings();
-}
-
-//----------------------------------------------------------------------
 auto FTermOutput::scrollTerminalForward() -> bool
 {
   if ( ! TCAP(t_scroll_forward).data )
@@ -402,12 +275,6 @@ auto FTermOutput::scrollTerminalReverse() -> bool
 
   FTerm::scrollTermReverse();
   return true;
-}
-
-//----------------------------------------------------------------------
-void FTermOutput::clearTerminalAttributes()
-{
-  FTerm::clearTerminalAttributes();
 }
 
 //----------------------------------------------------------------------
@@ -502,12 +369,6 @@ void FTermOutput::flush()
   mouse.drawPointer();
   time_last_flush_us = uInt64(duration_cast<microseconds>( clock::now()
                                                           .time_since_epoch()).count() );
-}
-
-//----------------------------------------------------------------------
-void FTermOutput::beep() const
-{
-  return FTerm::beep();
 }
 
 
@@ -624,7 +485,7 @@ void FTermOutput::init_combined_character()
     return;
 #endif
 
-  if ( internal::var::terminal_encoding != Encoding::UTF8
+  if ( internal::terminal::encoding != Encoding::UTF8
     || fterm_data->isTermType(FTermType::cygwin) )
     return;
 
@@ -1351,7 +1212,7 @@ inline void FTermOutput::newFontChanges (FChar& next_char) const
 //----------------------------------------------------------------------
 inline void FTermOutput::charsetChanges (FChar& next_char) const
 {
-  if ( internal::var::terminal_encoding == Encoding::UTF8 )
+  if ( internal::terminal::encoding == Encoding::UTF8 )
     return;
 
   std::memcpy( next_char.encoded_char.data(),
@@ -1374,9 +1235,9 @@ inline void FTermOutput::charsetChanges (FChar& next_char) const
 
   first_enc_char = ch_enc;
 
-  if ( internal::var::terminal_encoding == Encoding::VT100 )
+  if ( internal::terminal::encoding == Encoding::VT100 )
     next_char.attr.data |= FAttribute::set::alt_charset;  // Set alt charset
-  else if ( internal::var::terminal_encoding == Encoding::PC )
+  else if ( internal::terminal::encoding == Encoding::PC )
   {
     if ( ch_enc >= 0x20 )
       return;
@@ -1430,7 +1291,7 @@ inline void FTermOutput::appendChar (FChar& next_char)
   appendAttributes (next_char);
   characterFilter (next_char);
 
-  if ( internal::var::terminal_encoding == Encoding::UTF8 )
+  if ( internal::terminal::encoding == Encoding::UTF8 )
   {
     for (const auto& ch : next_char.ch)
     {

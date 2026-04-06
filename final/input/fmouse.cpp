@@ -531,7 +531,9 @@ void FMouseGPM::drawPointer() const
   {
 #if defined(__clang__)
   #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #if __has_warning("-Wunsafe-buffer-usage")
+    #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #endif
 #endif
     GPM_DRAWPOINTER(&gpm_ev);
 #if defined(__clang__)
@@ -547,7 +549,9 @@ inline void FMouseGPM::handleMouseEvent()
   Gpm_FitEvent(&gpm_ev);
 #if defined(__clang__)
   #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #if __has_warning("-Wunsafe-buffer-usage")
+    #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #endif
 #endif
   GPM_DRAWPOINTER(&gpm_ev);
 #if defined(__clang__)
@@ -609,7 +613,9 @@ auto FMouseGPM::gpmEvent (bool clear) const -> gpmEventType
 {
 #if defined(__clang__)
   #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #if __has_warning("-Wunsafe-buffer-usage")
+    #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #endif
 #endif
   const int max = std::max(gpm_fd, stdin_no);
   fd_set ifds{};

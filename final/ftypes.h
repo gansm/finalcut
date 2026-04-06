@@ -821,7 +821,9 @@ struct FUnicode
   {
 #if defined(__clang__)
   #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #if __has_warning("-Wunsafe-buffer-usage")
+    #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #endif
 #endif
     return unicode_data[index];
 #if defined(__clang__)
@@ -833,7 +835,9 @@ struct FUnicode
   {
 #if defined(__clang__)
   #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #if __has_warning("-Wunsafe-buffer-usage")
+    #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #endif
 #endif
     return unicode_data[index];
 #if defined(__clang__)
@@ -851,7 +855,9 @@ struct FUnicode
   {
 #if defined(__clang__)
   #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #if __has_warning("-Wunsafe-buffer-usage")
+    #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #endif
 #endif
     return &unicode_data[UNICODE_MAX];
 #if defined(__clang__)
@@ -868,7 +874,9 @@ struct FUnicode
   {
 #if defined(__clang__)
   #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #if __has_warning("-Wunsafe-buffer-usage")
+    #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #endif
 #endif
     return &unicode_data[UNICODE_MAX];
 #if defined(__clang__)
@@ -885,7 +893,9 @@ struct FUnicode
   {
 #if defined(__clang__)
   #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #if __has_warning("-Wunsafe-buffer-usage")
+    #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #endif
 #endif
     return &unicode_data[UNICODE_MAX];
 #if defined(__clang__)
@@ -911,7 +921,9 @@ struct FUnicode
   {
 #if defined(__clang__)
   #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #if __has_warning("-Wunsafe-buffer-usage")
+    #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #endif
 #endif
     return lhs.unicode_data[0] == rhs.unicode_data[0]
         && lhs.unicode_data[1] == rhs.unicode_data[1]
@@ -1129,7 +1141,9 @@ struct FChar
 
 #if defined(__clang__)
   #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #if __has_warning("-Wunsafe-buffer-usage")
+    #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #endif
 #endif
     return lhs.ch.unicode_data[0] == rhs.ch.unicode_data[0]
         && lhs.ch.unicode_data[1] == rhs.ch.unicode_data[1]

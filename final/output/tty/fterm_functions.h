@@ -80,7 +80,9 @@ auto captureTerminalInput ( std::array<char, size>& data
 {
 #if defined(__clang__)
   #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #if __has_warning("-Wunsafe-buffer-usage")
+    #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+  #endif
 #endif
   const int stdin_no{0};
   fd_set ifds{};
