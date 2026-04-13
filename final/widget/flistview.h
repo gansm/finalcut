@@ -128,6 +128,7 @@ class FListViewItem : public FObject
     template <typename Compare>
     void sort (Compare);
     auto appendItem (FListViewItem*) -> iterator;
+    auto getFListViewOwner() const -> FListView*;
     void replaceControlCodes();
     auto getVisibleLines() -> std::size_t;
     void resetVisibleLineCounter();
@@ -298,6 +299,12 @@ class FListViewIterator
     }
 
   private:
+    // Inquiry
+    bool isRootLevel() const noexcept
+    {
+      return iter_path.empty();
+    }
+
     // Methods
     void nextElement (Iterator&);
     void prevElement (Iterator&);
@@ -393,6 +400,12 @@ class FListView : public FWidget
     virtual auto removeColumn (int) -> int;
     void removeAllColumns();
     void hide() override;
+    void firstPos();
+    void lastPos();
+    void stepForward();
+    void stepBackward();
+    void stepForward (int);
+    void stepBackward (int);
     auto insert (FListViewItem*) -> iterator;
     auto insert (FListViewItem*, iterator) -> iterator;
     template <typename DT = std::nullptr_t>
@@ -496,7 +509,7 @@ class FListView : public FWidget
     static constexpr int USE_MAX_SIZE = -1;
 
     // Accessors
-    static auto getNullIterator() -> iterator&;
+    auto getNullIterator() -> iterator;
 
     // Mutators
     static void setNullIterator (const iterator&);
@@ -506,6 +519,7 @@ class FListView : public FWidget
     auto isVerticallyScrollable() const -> bool;
     auto canSkipListDrawing() const -> bool;
     auto canSkipDragScrolling() -> bool;
+    auto isLayoutInitialized() const -> bool;
 
     // Methods
     void init();
@@ -583,15 +597,15 @@ class FListView : public FWidget
     void collapseAndScrollLeft();
     void jumpToParentElement (const FListViewItem*);
     void expandAndScrollRight();
-    void firstPos();
-    void lastPos();
+    void firstPos_impl();
+    void lastPos_impl();
     auto expandSubtree() -> bool;
     auto collapseSubtree() -> bool;
     void setRelativePosition (int);
-    void stepForward();
-    void stepBackward();
-    void stepForward (int);
-    void stepBackward (int);
+    void stepForward_impl();
+    void stepBackward_impl();
+    void stepForward_impl (int);
+    void stepBackward_impl (int);
     void scrollToX (int);
     void scrollToY (int);
     void scrollTo (const FPoint&);
@@ -629,6 +643,7 @@ class FListView : public FWidget
 
     // Friend class
     friend class FListViewItem;
+    friend class FListViewIterator;
 };
 
 
@@ -832,6 +847,10 @@ inline auto FListView::isVerticallyScrollable() const -> bool
 //----------------------------------------------------------------------
 inline auto FListView::canSkipListDrawing() const -> bool
 { return isItemListEmpty() || getHeight() <= 2 || getWidth() <= 4; }
+
+//----------------------------------------------------------------------
+inline auto FListView::isLayoutInitialized() const -> bool
+{ return getFlags().visibility.initialize_layout; }
 
 //----------------------------------------------------------------------
 inline auto FListView::getColumnCount() const -> std::size_t

@@ -66,13 +66,14 @@ struct FWidgetFeature
 
 struct FWidgetVisibility
 {
-  uInt16 visible        : 1;
-  uInt16 hidden         : 1;
-  uInt16 shown          : 1;
-  uInt16 modal          : 1;
-  uInt16 always_on_top  : 1;
-  uInt16 visible_cursor : 1;
-  uInt16                : 10;  // padding bits
+  uInt16 visible            : 1;
+  uInt16 hidden             : 1;
+  uInt16 shown              : 1;
+  uInt16 modal              : 1;
+  uInt16 always_on_top      : 1;
+  uInt16 visible_cursor     : 1;
+  uInt16 initialize_layout  : 1;
+  uInt16                    : 9;  // padding bits
 };
 
 struct FWidgetFocus

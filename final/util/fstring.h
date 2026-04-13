@@ -87,7 +87,7 @@ class FString
       public:
         using std::runtime_error::runtime_error;
         formatting_error (const formatting_error&) = default;
-        virtual ~formatting_error() noexcept override;
+        ~formatting_error() noexcept override;
     };
 
     // Using-declarations - type aliases

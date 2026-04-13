@@ -343,7 +343,7 @@ class FListBox : public FWidget
     // Accessors
     static auto getString (FListBoxItems::iterator) -> FString;
 
-    // Inquiry
+    // Inquiries
     auto isHorizontallyScrollable() const -> bool;
     auto isVerticallyScrollable() const -> bool;
     auto isCurrentLine (int) const -> bool;

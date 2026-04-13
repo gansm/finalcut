@@ -1719,6 +1719,8 @@ void FWidget::initWidgetLayout()
       widget->initWidgetLayout();
     }
   }
+
+  flags.visibility.initialize_layout = true;
 }
 
 //----------------------------------------------------------------------

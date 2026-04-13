@@ -302,7 +302,10 @@ auto FListViewItem::insert (FListViewItem* child) -> FObject::iterator
 {
   // Add a FListViewItem as child element
   if ( ! child )
-    return FListView::getNullIterator();
+  {
+    auto listview_obj = getFListViewOwner();
+    return listview_obj ? listview_obj->getNullIterator() : FObject::iterator{};
+  }
 
   return appendItem(child);
 }
@@ -311,8 +314,13 @@ auto FListViewItem::insert (FListViewItem* child) -> FObject::iterator
 auto FListViewItem::insert ( FListViewItem* child
                            , iterator parent_iter ) const -> FObject::iterator
 {
-  if ( parent_iter == FListView::getNullIterator() )
-    return FListView::getNullIterator();
+  auto listview_obj = getFListViewOwner();
+
+  if ( listview_obj )
+  {
+    if ( parent_iter == listview_obj->getNullIterator() )
+      return listview_obj->getNullIterator();
+  }
 
   if ( *parent_iter )
   {
@@ -331,13 +339,16 @@ auto FListViewItem::insert ( FListViewItem* child
     }
   }
 
-  return FListView::getNullIterator();
+  return listview_obj ? listview_obj->getNullIterator() : FObject::iterator{};
 }
 
 //----------------------------------------------------------------------
 void FListViewItem::remove (FListViewItem* item) const
 {
-  if ( item == nullptr || item == *FListView::getNullIterator() )
+  auto listview_obj = getFListViewOwner();
+
+  if ( item == nullptr
+    || (listview_obj && item == *listview_obj->getNullIterator()) )
     return;
 
   auto parent = item->getParent();
@@ -419,6 +430,22 @@ auto FListViewItem::appendItem (FListViewItem* child) -> FObject::iterator
   addChild (child);
   // Return iterator to child/last element
   return --FObject::end();
+}
+
+//----------------------------------------------------------------------
+auto FListViewItem::getFListViewOwner() const -> FListView*
+{
+  auto obj = getParent();
+
+  while ( obj )
+  {
+    if ( obj->isInstanceOf("FListView") )
+      return static_cast<FListView*>(obj);
+
+    obj = obj->getParent();
+  }
+
+  return nullptr;
 }
 
 //----------------------------------------------------------------------
@@ -578,7 +605,7 @@ void FListViewIterator::nextElement (Iterator& iter)
     forward = false;  // Reset forward
     ++iter;
 
-    if ( iter_path.empty() )
+    if ( isRootLevel() )
       continue;
 
     const auto& parent_iter = iter_path.top();
@@ -598,7 +625,7 @@ void FListViewIterator::prevElement (Iterator& iter)
 {
   auto start_iter = iter;
 
-  if ( ! iter_path.empty() )
+  if ( ! isRootLevel() )
   {
     const auto& parent_iter = iter_path.top();
 
@@ -631,7 +658,7 @@ void FListViewIterator::prevElement (Iterator& iter)
 //----------------------------------------------------------------------
 void FListViewIterator::parentElement()
 {
-  if ( iter_path.empty() )
+  if ( isRootLevel() )
     return;
 
   const auto& parent_iter = iter_path.top();
@@ -908,6 +935,60 @@ void FListView::hide()
 {
   FWidget::hide();
   hideArea (getSize());
+}
+
+//----------------------------------------------------------------------
+void FListView::firstPos()
+{
+  if ( ! isLayoutInitialized() )
+    return;
+
+  firstPos_impl();
+}
+
+//----------------------------------------------------------------------
+void FListView::lastPos()
+{
+  if ( ! isLayoutInitialized() )
+    return;
+
+  lastPos_impl();
+}
+
+//----------------------------------------------------------------------
+void FListView::stepForward()
+{
+  if ( ! isLayoutInitialized() )
+    return;
+
+  stepForward_impl();
+}
+
+//----------------------------------------------------------------------
+void FListView::stepBackward()
+{
+  if ( ! isLayoutInitialized() )
+    return;
+
+  stepBackward_impl();
+}
+
+//----------------------------------------------------------------------
+void FListView::stepForward (int distance)
+{
+  if ( ! isLayoutInitialized() )
+    return;
+
+  stepForward_impl (distance);
+}
+
+//----------------------------------------------------------------------
+void FListView::stepBackward (int distance)
+{
+  if ( ! isLayoutInitialized() )
+    return;
+
+  stepBackward_impl (distance);
 }
 
 //----------------------------------------------------------------------
@@ -1315,17 +1396,11 @@ void FListView::adjustSize()
 
 // private methods of FListView
 //----------------------------------------------------------------------
-auto FListView::getNullIterator() -> FObject::iterator&
+auto FListView::getNullIterator() -> FObject::iterator
 {
-  static iterator null_iter;  // Saves the global null iterator
-  return null_iter;
+  return data.selflist.end();
 }
 
-//----------------------------------------------------------------------
-void FListView::setNullIterator (const iterator& null_iter)
-{
-  getNullIterator() = null_iter;
-}
 
 //----------------------------------------------------------------------
 inline auto FListView::canSkipDragScrolling() -> bool
@@ -1346,7 +1421,6 @@ void FListView::init()
   initScrollbar (scroll.hbar, Orientation::Horizontal, this, &FListView::cb_hbarChange);
   data.selflist.push_back(this);
   data.root = data.selflist.begin();
-  getNullIterator() = data.selflist.end();
   FListView::setGeometry (FPoint{1, 1}, FSize{5, 4}, false);  // initialize geometry values
   mapKeyFunctions();
 }
@@ -1359,14 +1433,14 @@ inline void FListView::mapKeyFunctions()
     { FKey::Return    , [this] { processClick(); } },
     { FKey::Enter     , [this] { processClick(); } },
     { FKey::Space     , [this] { toggleCheckbox(); } },
-    { FKey::Up        , [this] { stepBackward(); } },
-    { FKey::Down      , [this] { stepForward(); } },
+    { FKey::Up        , [this] { stepBackward_impl(); } },
+    { FKey::Down      , [this] { stepForward_impl(); } },
     { FKey::Left      , [this] { collapseAndScrollLeft(); } },
     { FKey::Right     , [this] { expandAndScrollRight(); } },
-    { FKey::Page_up   , [this] { stepBackward(int(getClientHeight()) - 1); } },
-    { FKey::Page_down , [this] { stepForward(int(getClientHeight()) - 1); } },
-    { FKey::Home      , [this] { firstPos(); } },
-    { FKey::End       , [this] { lastPos(); } }
+    { FKey::Page_up   , [this] { stepBackward_impl(int(getClientHeight()) - 1); } },
+    { FKey::Page_down , [this] { stepForward_impl(int(getClientHeight()) - 1); } },
+    { FKey::Home      , [this] { firstPos_impl(); } },
+    { FKey::End       , [this] { lastPos_impl(); } }
   };
 
   data.key_map_result =
@@ -2134,8 +2208,8 @@ inline void FListView::beforeInsertion (FListViewItem* item)
 //----------------------------------------------------------------------
 inline void FListView::afterInsertion()
 {
-  if ( data.itemlist.size() == 1 )  // Select first item on insert
-    selection.current_iter = data.itemlist.begin();
+  // Select first item
+  selection.current_iter = data.itemlist.begin();
 
   // The visible area of the list begins with the first element
   scroll.first_visible_line = data.itemlist.begin();
@@ -2145,6 +2219,7 @@ inline void FListView::afterInsertion()
 
   const std::size_t element_count = getCount();
   recalculateVerticalBar (element_count);
+  adjustViewport (int(element_count));
   processChanged();
 }
 
@@ -2162,11 +2237,11 @@ void FListView::adjustListBeforeRemoval (const FListViewItem* item)
   if ( is_current_line )
   {
     if ( is_last_line || current_item == data.itemlist.back() )
-      stepBackward();
+      stepBackward_impl();
     else
     {
       collapseSubtree();
-      stepForward();
+      stepForward_impl();
     }
   }
 
@@ -2415,9 +2490,9 @@ void FListView::wheelDown (int pagesize)
     // Save relative position from the first line
     const int ry = selection.current_iter.getPosition() - scroll.first_visible_line.getPosition();
     // Save difference from bottom
-    const int differenz = element_count - scroll.last_visible_line.getPosition() - 1;
-    scroll.first_visible_line += differenz;
-    scroll.last_visible_line += differenz;
+    const int difference = element_count - scroll.last_visible_line.getPosition() - 1;
+    scroll.first_visible_line += difference;
+    scroll.last_visible_line += difference;
     setRelativePosition(ry);
   }
 }
@@ -2455,7 +2530,7 @@ auto FListView::dragScrollUp (int position_before) -> bool
     return false;
   }
 
-  stepBackward(scroll.distance);
+  stepBackward_impl(scroll.distance);
   return true;
 }
 
@@ -2470,7 +2545,7 @@ auto FListView::dragScrollDown (int position_before) -> bool
     return false;
   }
 
-  stepForward(scroll.distance);
+  stepForward_impl(scroll.distance);
   return true;
 }
 
@@ -2771,7 +2846,7 @@ inline void FListView::expandAndScrollRight()
 }
 
 //----------------------------------------------------------------------
-inline void FListView::firstPos()
+inline void FListView::firstPos_impl()
 {
   if ( isItemListEmpty() )
     return;
@@ -2783,7 +2858,7 @@ inline void FListView::firstPos()
 }
 
 //----------------------------------------------------------------------
-inline void FListView::lastPos()
+inline void FListView::lastPos_impl()
 {
   if ( isItemListEmpty() )
     return;
@@ -2838,11 +2913,12 @@ void FListView::setRelativePosition (int ry)
 }
 
 //----------------------------------------------------------------------
-void FListView::stepForward()
+void FListView::stepForward_impl()
 {
   if ( isItemListEmpty() )
     return;
 
+  // Scroll logic
   if ( selection.current_iter == scroll.last_visible_line )
   {
     ++scroll.last_visible_line;
@@ -2853,6 +2929,7 @@ void FListView::stepForward()
       ++scroll.first_visible_line;
   }
 
+  // Iterator logic
   ++selection.current_iter;
 
   if ( selection.current_iter == data.itemlist.end() )
@@ -2860,11 +2937,12 @@ void FListView::stepForward()
 }
 
 //----------------------------------------------------------------------
-void FListView::stepBackward()
+void FListView::stepBackward_impl()
 {
   if ( isItemListEmpty() )
     return;
 
+  // Scroll logic
   if ( selection.current_iter == scroll.first_visible_line
     && selection.current_iter != data.itemlist.begin() )
   {
@@ -2872,74 +2950,57 @@ void FListView::stepBackward()
     --scroll.last_visible_line;
   }
 
+  // Iterator logic
   if ( selection.current_iter != data.itemlist.begin() )
     --selection.current_iter;
 }
 
 //----------------------------------------------------------------------
-void FListView::stepForward (int distance)
+void FListView::stepForward_impl (int distance)
 {
   if ( isItemListEmpty() )
     return;
 
+  // Iterator logic
   const auto element_count = int(getCount());
+  const int current_pos = selection.current_iter.getPosition();
 
-  if ( selection.current_iter.getPosition() + 1 == element_count )
+  if ( current_pos + 1 >= element_count )
     return;
 
-  if ( selection.current_iter.getPosition() + distance < element_count )
-  {
-    selection.current_iter += distance;
-  }
-  else
-  {
-    selection.current_iter += element_count - selection.current_iter.getPosition() - 1;
-  }
+  distance = std::min(distance, element_count - current_pos - 1);
+  selection.current_iter += distance;
 
-  if ( selection.current_iter.getPosition() > scroll.last_visible_line.getPosition() )
+  // Scroll logic
+  const auto last_visible_line_pos = scroll.last_visible_line.getPosition();
+
+  if ( selection.current_iter.getPosition() > last_visible_line_pos )
   {
-    if ( scroll.last_visible_line.getPosition() + distance < element_count )
-    {
-      scroll.first_visible_line += distance;
-      scroll.last_visible_line += distance;
-    }
-    else
-    {
-      const int differenz = element_count - scroll.last_visible_line.getPosition() - 1;
-      scroll.first_visible_line += differenz;
-      scroll.last_visible_line += differenz;
-    }
+    const int difference = std::min(distance, element_count - last_visible_line_pos - 1);
+    scroll.first_visible_line += difference;
+    scroll.last_visible_line += difference;
   }
 }
 
 //----------------------------------------------------------------------
-void FListView::stepBackward (int distance)
+void FListView::stepBackward_impl (int distance)
 {
   if ( isItemListEmpty() || selection.current_iter.getPosition() == 0 )
     return;
 
-  if ( selection.current_iter.getPosition() - distance >= 0 )
-  {
-    selection.current_iter -= distance;
-  }
-  else
-  {
-    selection.current_iter -= selection.current_iter.getPosition();
-  }
+  // Iterator logic
+  const int current_pos = selection.current_iter.getPosition();
+  distance = std::min(distance, current_pos);
+  selection.current_iter -= distance;
 
-  if ( selection.current_iter.getPosition() < scroll.first_visible_line.getPosition() )
+  // Scroll logic
+  const auto first_visible_line_pos = scroll.first_visible_line.getPosition();
+
+  if ( selection.current_iter.getPosition() < first_visible_line_pos )
   {
-    if ( scroll.first_visible_line.getPosition() - distance >= 0 )
-    {
-      scroll.first_visible_line -= distance;
-      scroll.last_visible_line -= distance;
-    }
-    else
-    {
-      const int difference = scroll.first_visible_line.getPosition();
-      scroll.first_visible_line -= difference;
-      scroll.last_visible_line -= difference;
-    }
+    const int difference = std::min(distance, first_visible_line_pos);
+    scroll.first_visible_line -= difference;
+    scroll.last_visible_line -= difference;
   }
 }
 
@@ -2974,10 +3035,10 @@ void FListView::scrollToY (int y)
   }
   else
   {
-    const int differenz = element_count - scroll.last_visible_line.getPosition() - 1;
-    selection.current_iter += differenz;
-    scroll.first_visible_line += differenz;
-    scroll.last_visible_line += differenz;
+    const int difference = element_count - scroll.last_visible_line.getPosition() - 1;
+    selection.current_iter += difference;
+    scroll.first_visible_line += difference;
+    scroll.last_visible_line += difference;
   }
 }
 
@@ -2994,10 +3055,10 @@ void FListView::scrollBy (int dx, int dy)
   scrollToX(scroll.xoffset + dx);
 
   if ( dy > 0 )
-    stepForward(dy);
+    stepForward_impl(dy);
 
   if ( dy < 0 )
-    stepBackward(-dy);
+    stepBackward_impl(-dy);
 }
 
 //----------------------------------------------------------------------
@@ -3093,12 +3154,12 @@ void FListView::cb_vbarChange (const FWidget*)
   {
     case FScrollbar::ScrollType::PageBackward:
     case FScrollbar::ScrollType::StepBackward:
-      stepBackward(distance);
+      stepBackward_impl(distance);
       break;
 
     case FScrollbar::ScrollType::PageForward:
     case FScrollbar::ScrollType::StepForward:
-      stepForward(distance);
+      stepForward_impl(distance);
       break;
 
     case FScrollbar::ScrollType::Jump:

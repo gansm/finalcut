@@ -1,3 +1,7 @@
+2026-04-13  Markus Gans  <guru.mail@muenster.de>
+	* The FListView widget now has public methods that allow you to modify 
+	  the currently selected item
+
 2026-04-06  Markus Gans  <guru.mail@muenster.de>
 	* A slight improvement in character output speed
 

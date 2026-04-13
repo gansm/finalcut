@@ -893,6 +893,7 @@ void FWidgetTest::containsFWidgetFlagsTest()
   b.visibility.modal = true;
   b.visibility.always_on_top = true;
   b.visibility.visible_cursor = true;
+  b.visibility.initialize_layout = true;
   b.focus.focus = true;
   b.focus.focusable = true;
   b.shadow.shadow = true;
@@ -929,6 +930,8 @@ void FWidgetTest::containsFWidgetFlagsTest()
   a.visibility.always_on_top = true;
   CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
   a.visibility.visible_cursor = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.visibility.initialize_layout = true;
   CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
   a.focus.focus = true;
   CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
@@ -973,6 +976,8 @@ void FWidgetTest::containsFWidgetFlagsTest()
   CPPUNIT_ASSERT ( ! finalcut::containsFWidgetFlags(a, b) );
   b.visibility.visible_cursor = false;
   CPPUNIT_ASSERT ( ! finalcut::containsFWidgetFlags(a, b) );
+  b.visibility.initialize_layout = false;
+  CPPUNIT_ASSERT ( ! finalcut::containsFWidgetFlags(a, b) );
   b.focus.focus = false;
   CPPUNIT_ASSERT ( ! finalcut::containsFWidgetFlags(a, b) );
   b.focus.focusable = false;
@@ -1002,6 +1007,7 @@ void FWidgetTest::containsFWidgetFlagsTest()
   b.visibility.modal = true;
   b.visibility.always_on_top = true;
   b.visibility.visible_cursor = true;
+  b.visibility.initialize_layout = true;
   b.focus.focus = true;
   b.focus.focusable = true;
   b.shadow.shadow = true;
@@ -1024,6 +1030,7 @@ void FWidgetTest::containsFWidgetFlagsTest()
   a.visibility.modal = false;
   a.visibility.always_on_top = false;
   a.visibility.visible_cursor = false;
+  a.visibility.initialize_layout = false;
   a.focus.focus = false;
   a.focus.focusable = false;
   a.shadow.shadow = false;
@@ -1069,9 +1076,13 @@ void FWidgetTest::containsFWidgetFlagsTest()
   a.visibility.always_on_top = true;
   CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
   a.visibility.always_on_top = false;
+
   a.visibility.visible_cursor = true;
   CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
   a.visibility.visible_cursor = false;
+  a.visibility.initialize_layout = true;
+  CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
+  a.visibility.initialize_layout = false;
   a.focus.focus = true;
   CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
   a.focus.focus = false;
