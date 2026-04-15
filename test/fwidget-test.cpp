@@ -1076,7 +1076,6 @@ void FWidgetTest::containsFWidgetFlagsTest()
   a.visibility.always_on_top = true;
   CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
   a.visibility.always_on_top = false;
-
   a.visibility.visible_cursor = true;
   CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
   a.visibility.visible_cursor = false;

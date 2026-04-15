@@ -66,7 +66,7 @@ If your platform is not listed here, it may still be compatible with FINAL CUT. 
 
 ## Documentation
 
-Read the documentation on the [first steps](doc/first-steps.md#first-steps-with-the-final-cut-widget-toolkit) in FINAL CUT to find out how to use the library.
+Refer to the [FINAL CUT introduction](doc/introduction.md) to learn how to use the library.
 
 ## Frequently Asked Questions
 
@@ -106,11 +106,11 @@ This project contains [NewFont](final/font/), a graphical text font for X11 and 
 
 ## Benchmark
 
-Measure the [terminal character output speed](doc/benchmark.md#benchmark) with the Rotozoomer example.
+Use the Rotozoomer example to check the [terminal's output speed](doc/benchmark.md#benchmark).
 
 ## Virtual Terminal
 
-FINAL CUT uses a virtual terminal to print character via an update method on the screen. It provides (as an overlying layer) virtual windows for the realization of window movements. The update methods only transfer differences to the virtual terminal or physical screen.
+FINAL CUT uses a virtual terminal to draw characters via an update method to the screen. It features an overlay of virtual windows to handle movement, while the update methods only transfer changes to the virtual terminal or physical screen.
 
 <pre style="line-height: 1 !important;">
  print(...)

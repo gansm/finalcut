@@ -26,7 +26,7 @@ EXTRA_DIST = \
 	fileopen-dialog.png \
 	final-cut-application-structure.svg \
 	final-cut-widget-tree.svg \
-	first-steps.md \
+	introduction.md \
 	framebuffer.txt \
 	getting-started.md \
 	memory-management.md \
@@ -91,7 +91,7 @@ doc_DATA = \
 	fileopen-dialog.png \
 	final-cut-application-structure.svg \
 	final-cut-widget-tree.svg \
-	first-steps.md \
+	introduction.md \
 	framebuffer.txt \
 	getting-started.md \
 	memory-management.md \

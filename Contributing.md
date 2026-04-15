@@ -3,16 +3,15 @@
 Thank you for your interest in FINAL CUT!
 
 We welcome contributions of all kinds, including patches to code and 
-documentation, bug reports, or just neat feedback. If you ever think that 
+documentation, bug reports, or just kind feedback. If you ever think that 
 something could be better or different, please give us feedback on it. Do 
 you have problems with FINAL CUT, or are you looking for support in using 
-the library in your project? Feel free to open a new issue if there is not 
-already one on your topic. If you have problems with an application that 
-uses FINAL CUT and have no idea of the cause, please contact the author 
-first.
+the library in your project? Feel free to open a new issue if you don't 
+see one. If you have problems with an application that uses FINAL CUT 
+and you are unsure of the cause, please contact the author first.
 
-Github hosts the source code of FINAL CUT. You can make a local copy from 
-the repository using git clone:
+The FINAL CUT source code is hosted on GitHub; you can clone the repository 
+to create a local copy:
 
 ```bash
 > git clone https://github.com/gansm/finalcut.git
@@ -23,7 +22,7 @@ the repository using git clone:
 
 The FINAL CUT project accepts both 
 [GitHub pull requests](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request) 
-and patches that reach me via other channels. GitHub pull requests are 
+and patches that are sent via via other channels. GitHub pull requests are 
 preferred. Please follow our [coding style](doc/coding-style.txt) standard.
 
 
@@ -32,15 +31,16 @@ preferred. Please follow our [coding style](doc/coding-style.txt) standard.
 When submitting a patch, you should include a description of the problem 
 you are trying to solve, how you solved it, and why you chose the solution 
 you implemented. When you submit a bug fix, it is often helpful to include 
-a reproducible description for the problem in your explanation. Important 
-would be instructions on how to test the error and verify its elimination.
+a reproducible description of the problem in your explanation. It would 
+also be helpful to include instructions on how to verify that the issue 
+has been resolved.
 
 
 ### Test your code
 
 Run the FINAL CUT unit tests if you have installed 
 [CppUnit](https://freedesktop.org/wiki/Software/cppunit/). 
-Proceed as follows:
+Follow these steps:
 
 The easy way
 
@@ -57,8 +57,7 @@ or
 > make test
 ```
 
-If you have created uncovered code, I would be very grateful for 
-complementary test code in the existing unit tests.
+If your changes aren't fully covered, I’d appreciate any additional test cases.
 
 
 ## Issue Tracking
@@ -84,17 +83,17 @@ user base also means a better and more stable codebase.
 Fix typos or grammar mistakes. Revise sections that need improvement or 
 add missing sections.
 * **Translations into other languages:** <br />
-For many people, reading the documentary in their native language will 
+For many people, reading the documentation in their native language will 
 certainly make getting started with FINAL CUT much easier and more 
 attractive.
 * **Better tests:** <br />
-High code coverage gives us a stable base that prevents breaking code due 
-to a small patch.
-* **Publication in repositories:** <br />
+High code coverage provides a stable base that prevents code from breaking 
+due to minor changes.
+* **Adding to repositories:** <br />
 Advocate for the inclusion of FINAL CUT in your preferred distribution.
 * **Support for other platforms:** <br />
-There are still platforms on which FINAL CUT is not yet executable.
-* **Do you like to help other people?** <br />
+There are still platforms that are not yet supported
+* **Would you like to help other people?** <br />
 Answer questions in open issues or help moderate discussion forums or 
 other communication channels.
 

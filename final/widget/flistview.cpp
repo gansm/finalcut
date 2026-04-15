@@ -316,11 +316,8 @@ auto FListViewItem::insert ( FListViewItem* child
 {
   auto listview_obj = getFListViewOwner();
 
-  if ( listview_obj )
-  {
-    if ( parent_iter == listview_obj->getNullIterator() )
-      return listview_obj->getNullIterator();
-  }
+  if ( listview_obj && parent_iter == listview_obj->getNullIterator() )
+    return listview_obj->getNullIterator();
 
   if ( *parent_iter )
   {
@@ -339,7 +336,9 @@ auto FListViewItem::insert ( FListViewItem* child
     }
   }
 
-  return listview_obj ? listview_obj->getNullIterator() : FObject::iterator{};
+  return listview_obj
+       ? listview_obj->getNullIterator()
+       : FObject::iterator{};
 }
 
 //----------------------------------------------------------------------

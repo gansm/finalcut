@@ -2,9 +2,9 @@ Benchmark
 =========
 
 The [Rotozoomer example](../examples/rotozoomer.cpp) can perform a 
-benchmark run with the parameter "-b" to determine the FINAL CUT 
+benchmark run with the parameter "-b" to evaluate the FINAL CUT 
 character speed in the terminal. The measured time and frame rate 
-is strongly dependent on the hardware used.
+are highly dependent on the hardware used.
 
 
 See the Rotozoomer benchmark in action:

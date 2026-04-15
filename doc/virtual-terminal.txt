@@ -1,11 +1,10 @@
                         The virtual terminal (vterm)
                         ----------------------------
 
-FINAL CUT uses a virtual terminal to print character via an update method
-on the screen. It provides (as an overlying layer) virtual windows for
-the realization of window movements. The update methods only transfer
-differences to the virtual terminal or physical screen.
-
+FINAL CUT uses a virtual terminal to draw characters via an update method
+to the screen. It features an overlay of virtual windows to handle movement,
+while the update methods only transfer changes to the virtual terminal or
+physical screen.
 
 
  print(...)

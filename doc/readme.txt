@@ -43,7 +43,7 @@ Supported platforms
 Documentation
 -------------
 
-See the first-steps.md documentation for information on how to use
+See the introduction.md documentation for information on how to use
 the library.
 
 

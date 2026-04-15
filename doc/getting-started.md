@@ -34,7 +34,7 @@ The object-oriented design allows the creation of fast and lean programs.
 FINAL CUT is a [widget toolkit](http://en.wikipedia.org/wiki/Widget_toolkit).
 A user interface usually consists of several
 [widgets](https://en.wikipedia.org/wiki/Software_widget). FINAL CUT
-draws widgets on virtual windows and then mapped them on a virtual
+draws widgets on virtual windows and then maps them to a virtual
 terminal. It uses the terminal capabilities from the
 [Termcap library](https://en.wikipedia.org/wiki/Termcap) to display
 the character matrix of the virtual terminal on the screen or a terminal
@@ -52,18 +52,18 @@ Widgets
 
 FINAL CUT has many widgets. It offers buttons, input fields, menus, and 
 dialog boxes that cover the most common use cases. Widgets are visual 
-elements that are combined to create user interfaces. Own widgets can be 
-easily created by creating a derived class of `FWidget` or other existing 
+elements that are combined to create user interfaces. You can easily create 
+your custom widgets by creating a derived class of `FWidget` or other existing 
 widgets. All widgets are instances of 
 [FWidget](https://codedocs.xyz/gansm/finalcut/classfinalcut_1_1FWidget.html) 
 or its subclasses.
 
 A widget can contain any number of child widgets. Child widgets are displayed 
 in the display area of the parent widget. Window widgets based on `FWindow` 
-have their own virtual display area and are independent of the parent widget.
+have their own virtual display area and are independent from the parent widget.
 
 When a parent widget is disabled, hidden, or deleted, the same operation is 
-used recursively to all its child widgets. The base class `FObject` implements 
+used recursively on all its child widgets. The base class `FObject` implements 
 the self-organized object tree behavior. For example, `addChild()` removes 
 the child ownership from an existing parent object before assigning it to 
 the new target. When a child becomes deleted, the parent-child relationship 
@@ -165,12 +165,12 @@ Run the application using the following command:
 #### Use pkg-config to compile the application
 
 The following command demonstrates compilation of the source file using
-GCC and [pkg-config](https://de.wikipedia.org/wiki/Pkg-config). Ensure
+GCC and [pkg-config](https://en.wikipedia.org/wiki/Pkg-config). Ensure
 the current directory contains the source code file.
 ```bash
 g++ dialog.cpp -o my-dialog `pkg-config --libs finalcut`
 ```
-The executable application *my-dialog* is now generated.
+The application *my-dialog* is now generated.
 
 
 #### Use the GNU Autotools to compile the application
@@ -217,7 +217,7 @@ Build the executable application using the following command:
 ```bash
 make
 ```
-The executable application *my-dialog* is now generated.
+The application *my-dialog* is now generated.
 						
 
 #### Use CMake to compile the application
@@ -254,11 +254,11 @@ Run cmake with the source directory as an argument:
 cmake ..
 ```
 
-Build the executable application using the following command:
+Build the application using the following command:
 ```bash
 make
 ```
-The executable application *my-dialog* is now generated.
+The application *my-dialog* is now generated.
 
 
 ### How it works
@@ -266,16 +266,16 @@ The executable application *my-dialog* is now generated.
 ```cpp
 #include <final/final.h>
 ```
-All final cut programs have to include the *final.h* header.
+All FINAL CUT programs require the header *final.h*.
 
 ```cpp
 finalcut::FApplication app(argc, argv);
 ```
 This line creates the `finalcut::FApplication` object `app` with
 the command line arguments `argc` and `argv`. This object manages
-the application main event loop. It receives keyboard and mouse events
+the main event loop  of the application. It receives keyboard and mouse events
 and sends them to the target widgets. You have to create an application
-object before you can create a widgets object.
+object before you can create a widget object.
 
 > [!NOTE]
 > **Command line arguments**
@@ -317,8 +317,8 @@ finalcut::FSize size{30, 10};
 dialog.setGeometry (position, size);
 ```
 The dialog window gets a width of 30 and a height of 10 characters.
-The position of the window in the terminal is at x=25 and
-y=5.
+The position of the window in the terminal is at x = 25 and
+y = 5.
 
 > [!NOTE]
 > x=1 and y=1 represents the upper left corner.
@@ -334,7 +334,7 @@ When you close the main widget, the entire application quits.
 dialog.show();
 ```
 A window or widget is not visible directly after its creation.
-Only the call of `show()` makes it (and its child objects,
+Calling `show()` makes it (and its child objects,
 if available) visible.
 
 ```cpp
