@@ -116,7 +116,7 @@ class Monitor
     template <typename T>
     auto getUserContext() const -> clean_fdata_t<T>&;
 
-    // Inquiry
+    // Predicate
     auto isActive() const noexcept -> bool;
     auto isSuspended() const noexcept -> bool;
     auto hasValidFileDescriptor() const noexcept -> bool;
@@ -141,7 +141,7 @@ class Monitor
     void         clearUserContext() noexcept;
     void         setInitialized() noexcept;
 
-    // Inquiry
+    // Predicate
     auto         isInitialized() const -> bool;
 
     // Methods

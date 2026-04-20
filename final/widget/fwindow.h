@@ -117,7 +117,7 @@ class FWindow : public FWidget
     void         setAlwaysOnTop (bool = true);
     void         unsetAlwaysOnTop();
 
-    // Inquiries
+    // Predicates
     auto         isZoomed() const noexcept -> bool;
     auto         isMinimized() const -> bool;
     auto         isWindowActive() const noexcept -> bool;

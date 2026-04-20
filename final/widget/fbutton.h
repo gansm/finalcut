@@ -101,7 +101,7 @@ class FButton : public FWidget
     void unsetClickAnimation();
     void setText (const FString&);
 
-    // Inquiries
+    // Predicates
     auto isFlat() const -> bool;
     auto isDown() const noexcept -> bool;
     auto hasShadow() const -> bool;

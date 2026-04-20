@@ -120,7 +120,7 @@ class FRect
     constexpr void setCoordinates ( coordinate_type, coordinate_type
                                   , coordinate_type, coordinate_type ) noexcept;
 
-    // Inquiry
+    // Predicate
     constexpr auto isEmpty() const -> bool;
 
     // Coordinate references

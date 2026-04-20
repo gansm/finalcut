@@ -159,7 +159,7 @@ printf(...)
                                                ▀▀▀▀▀▀▀▀▀
 </pre>
 
-## Class Digramm
+## Class Digram
 
 <pre style="line-height: 1 !important;">
     ┌────────────┐1
@@ -238,7 +238,7 @@ printf(...)
 └────┬────┘      ┌──────┴────────┐  ├────┤ FProgressbar │   └──┤ FSwitch │
      ▼           │ FWidgetColors │  │    └──────────────┘      └─────────┘
  ┌───┴────┐      └───────────────┘  │    ┌────────────┐
- │ FTimer │                         ├────┤ FScrollbar │
+ │ FTimer │                         ├────┤ FScrollBar │
  └────────┘                         │    └────────────┘
                                     │    ┌───────────┐
                                     ├────┤ FTextView │

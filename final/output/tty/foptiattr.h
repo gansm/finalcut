@@ -144,7 +144,7 @@ class FOptiAttr final
     void        set_orig_pair (const FTermcap::TermcapString&) noexcept;
     void        set_orig_colors (const FTermcap::TermcapString&) noexcept;
 
-    // Inquiry
+    // Predicate
     static auto isNormal (const FChar&) noexcept -> bool;
 
     // Methods
@@ -248,7 +248,7 @@ class FOptiAttr final
     void        setAttributesOff (FChar&);
     void        setAttributes (uInt32, const AttributeHandlers&, FChar&);
 
-    // Inquiries
+    // Predicates
     static auto hasColor (const FChar&) noexcept -> bool;
     static auto hasAttribute (const FChar&) noexcept -> bool;
     static auto hasNoAttribute (const FChar&) noexcept -> bool;

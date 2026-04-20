@@ -126,7 +126,7 @@ class FScrollView : public FWidget
     void setHorizontalScrollBarMode (ScrollBarMode);
     void setVerticalScrollBarMode (ScrollBarMode);
 
-    // Inquiries
+    // Predicates
     auto hasBorder() const -> bool;
     auto isViewportPrint() const -> bool;
 
@@ -198,13 +198,13 @@ class FScrollView : public FWidget
     void changeY (const std::size_t, const int);
     void calculateScrollbarPos() const;
     template <typename Callback>
-    void initScrollbar (FScrollbarPtr&, Orientation, Callback);
+    void initScrollbar (FScrollBarPtr&, Orientation, Callback);
     void setHorizontalScrollBarVisibility() const;
     void setVerticalScrollBarVisibility() const;
     void setViewportCursor();
-    auto shouldUpdateScrollbar (FScrollbar::ScrollType) const -> bool;
-    auto getVerticalScrollDistance (const FScrollbar::ScrollType) const -> int;
-    auto getHorizontalScrollDistance (const FScrollbar::ScrollType) const -> int;
+    auto shouldUpdateScrollbar (FScrollBar::ScrollType) const -> bool;
+    auto getVerticalScrollDistance (const FScrollBar::ScrollType) const -> int;
+    auto getHorizontalScrollDistance (const FScrollBar::ScrollType) const -> int;
 
     // Callback methods
     void cb_vbarChange (const FWidget*);
@@ -215,8 +215,8 @@ class FScrollView : public FWidget
     FRect                      viewport_geometry{};
     std::unique_ptr<FTermArea> viewport{};  // virtual scroll content
     FString                    text{};
-    FScrollbarPtr              vbar{nullptr};
-    FScrollbarPtr              hbar{nullptr};
+    FScrollBarPtr              vbar{nullptr};
+    FScrollBarPtr              hbar{nullptr};
     KeyMap                     key_map{};
     uInt8                      nf_offset{0};
     bool                       use_own_print_area{false};
@@ -314,7 +314,7 @@ inline void FScrollView::print (const FPoint& pos)
 
 //----------------------------------------------------------------------
 template <typename Callback>
-inline void FScrollView::initScrollbar ( FScrollbarPtr& bar
+inline void FScrollView::initScrollbar ( FScrollBarPtr& bar
                                        , Orientation o
                                        , Callback cb_handler )
 {

@@ -79,7 +79,7 @@ class FProgressbar : public FWidget
     void setShadow (bool = true) ;
     void unsetShadow();
 
-    // Inquiries
+    // Predicate
     auto hasShadow() const -> bool;
 
     // Methods

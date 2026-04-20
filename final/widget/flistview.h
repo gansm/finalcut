@@ -65,7 +65,7 @@ namespace finalcut
 
 // class forward declaration
 class FListView;
-class FScrollbar;
+class FScrollBar;
 class FString;
 
 //----------------------------------------------------------------------
@@ -105,7 +105,7 @@ class FListViewItem : public FObject
     void setCheckable (bool = true);
     void setChecked (bool = true);
 
-    // Inquiry
+    // Predicate
     auto isChecked() const -> bool;
     auto isExpand() const -> bool;
 
@@ -120,7 +120,7 @@ class FListViewItem : public FObject
     // Using-declaration
     using FDataAccessPtr = std::shared_ptr<FDataAccess>;
 
-    // Inquiry
+    // Predicate
     auto isExpandable() const -> bool;
     auto isCheckable() const -> bool;
 
@@ -299,7 +299,7 @@ class FListViewIterator
     }
 
   private:
-    // Inquiry
+    // Predicate
     bool isRootLevel() const noexcept
     {
       return iter_path.empty();
@@ -392,7 +392,7 @@ class FListView : public FWidget
     void setTreeView (bool = true);
     void unsetTreeView();
 
-    // Inquiries
+    // Predicate
     auto isColumnHidden (int) const -> bool;
 
     // Methods
@@ -491,8 +491,8 @@ class FListView : public FWidget
 
     struct ScrollingState
     {
-      FScrollbarPtr      vbar{nullptr};
-      FScrollbarPtr      hbar{nullptr};
+      FScrollBarPtr      vbar{nullptr};
+      FScrollBarPtr      hbar{nullptr};
       FListViewIterator  first_visible_line{};
       FListViewIterator  last_visible_line{};
       int                first_line_position_before{-1};
@@ -514,7 +514,7 @@ class FListView : public FWidget
     // Mutators
     static void setNullIterator (const iterator&);
 
-    // Inquiry
+    // Predicate
     auto isHorizontallyScrollable() const -> bool;
     auto isVerticallyScrollable() const -> bool;
     auto canSkipListDrawing() const -> bool;
@@ -617,10 +617,10 @@ class FListView : public FWidget
     auto hasCheckableItems() const -> bool;
     auto getScrollBarMaxHorizontal() const noexcept -> int;
     auto getScrollBarMaxVertical (const std::size_t) const noexcept -> int;
-    void updateViewAfterVBarChange (const FScrollbar::ScrollType);
-    void updateViewAfterHBarChange (const FScrollbar::ScrollType, const int);
-    auto getVerticalScrollDistance (const FScrollbar::ScrollType) const -> int;
-    auto getHorizontalScrollDistance (const FScrollbar::ScrollType) const -> int;
+    void updateViewAfterVBarChange (const FScrollBar::ScrollType);
+    void updateViewAfterHBarChange (const FScrollBar::ScrollType, const int);
+    auto getVerticalScrollDistance (const FScrollBar::ScrollType) const -> int;
+    auto getHorizontalScrollDistance (const FScrollBar::ScrollType) const -> int;
 
     // Callback methods
     void cb_vbarChange (const FWidget*);

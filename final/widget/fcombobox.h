@@ -83,7 +83,8 @@ class FDropDownListBox : public FWindow
 
     // Mutators
     void setGeometry (const FPoint&, const FSize&, bool = true ) override;
-    // Inquiries
+
+    // Predicate
     auto isEmpty() const -> bool;
 
     // Methods
@@ -159,7 +160,7 @@ class FComboBox : public FWidget
     void setLabelText (const FString&);
     void setLabelOrientation (const LabelOrientation);
 
-    // Inquiries
+    // Predicate
     auto hasShadow() const -> bool;
 
     // Methods
@@ -186,7 +187,7 @@ class FComboBox : public FWidget
     void onFailAtChildFocus (FFocusEvent*) override;
 
   private:
-    // Inquiries
+    // Predicate
     auto isMouseOverListWindow (const FPoint&) -> bool;
 
     // Methods

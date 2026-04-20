@@ -90,7 +90,7 @@ class FTimer
       return system_clock::now();  // Get the current time
     }
 
-    // Inquiries
+    // Predicates
     auto  isTimeout (const TimeValue&, uInt64) const noexcept -> bool;
 
     // Methods
@@ -332,7 +332,7 @@ class FObjectTimer
       return timer->getCurrentTime();
     }
 
-    // Inquiries
+    // Predicates
     static auto isTimeout (const TimeValue& time, uInt64 timeout) noexcept -> bool
     {
       return timer->isTimeout(time, timeout);

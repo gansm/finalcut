@@ -40,9 +40,9 @@ FScrollView
 -----------
 
 The scroll view of the `FScrollView` class allows users to view content 
-that is larger than the visible area. The `FScrollView` widget displays 
-the horizontal and vertical scroll bar by default, only if the content size 
-requires it. You can controll this behavior by the two methods 
+that is larger than the visible area. The `FScrollView` widget displays
+horizontal and/or vertical scroll bars, depending on the size of the
+content. You can control this behavior using the following two methods:
 `setHorizontalScrollBarMode()` and `setVerticalScrollBarMode()`.
 
 ```cpp
@@ -154,7 +154,7 @@ auto main (int argc, char* argv[]) -> int
 ```
 <figure class="image">
   <img src="running-scrollview.cpp.png" alt="scrollview.cpp">
-  <figcaption>Figure 15.  Dialog with a scrolling viewport</figcaption>
+  <figcaption>Figure 1:  Dialog with a scrolling viewport</figcaption>
 </figure>
 <br /><br />
 

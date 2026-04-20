@@ -175,7 +175,7 @@ class FVTerm : public FVTermAttribute
     static void  setNonBlockingRead (bool = true);
     static void  unsetNonBlockingRead();
 
-    // Inquiries
+    // Predicates
     static auto  isDrawingFinished() noexcept -> bool;
     static auto  isTerminalUpdateForced() noexcept -> bool;
     static auto  areTerminalUpdatesPaused() noexcept -> bool;
@@ -234,7 +234,7 @@ class FVTerm : public FVTermAttribute
     void  setChildPrintArea (FTermArea*) noexcept;
     void  setActiveArea (FTermArea*) const noexcept;
 
-    // Inquiries
+    // Predicates
     auto  isActive (const FTermArea*) const noexcept -> bool;
     auto  hasPrintArea() const noexcept -> bool;
     auto  hasChildPrintArea() const noexcept -> bool;

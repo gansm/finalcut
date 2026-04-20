@@ -1,43 +1,41 @@
-# The FINAL CUT newfont
-## *A graphical text font for X11 and the Linux console*
+# FINAL CUT newfont
+## *A graphical font for X11 and the Linux console*
 
 
-### How can I use the new graphical font under the Linux text console?
+### How can I use the graphical font on the Linux text console?
 
-Simply start your program with the parameter `--newfont`.
+Simply launch your program using the `--newfont` argument.
 
 * [newfont-9x16](../../doc/newfont-9x16.txt)
 * [newfont-8x16](../../doc/newfont-8x16.txt)
 
 
-### How can I use the new graphical font under X11?
+### How can I use the graphical font in X11?
 
-The use of the new graphical font under X11 is only possible with
-the terminal emulators
+The graphical font requires a terminal emulator capable of changing 
+fonts via escape sequences, such as 
 [xterm](http://invisible-island.net/xterm/xterm.html)
 or
-[urxvt](http://software.schmorp.de/pkg/rxvt-unicode.html),
-because only these terminal emulators can change the font by
-using an escape sequence.  For an xterm, the "[Allow Font Ops](../../doc/xterm.txt)"
-option must be set.
+[urxvt](http://software.schmorp.de/pkg/rxvt-unicode.html).
+If you are using xterm, ensure the "[Allow Font Ops](../../doc/xterm.txt)" 
+option is enabled.
 
 
-#### Install the gzip compressed X11 pcf bitmap font 8x16graph.pcf.gz on your xserver:
+#### Install the pcf bitmap font (8x16graph.pcf.gz) on your X server:
 
-1. Create as user root the font directory<br />
+1. Create the font directory (requires root privileges)<br />
 `mkdir /usr/share/fonts/X11/misc/finalcut/`
 
-2. Copy the files 8x16graph.pcf.gz, fonts.dir and fonts.alias
-into the just created directory<br />
+2. Copy the font files, including fonts.dir and fonts.alias, into the new directory<br />
 `cp 8x16graph.pcf.gz fonts.dir fonts.alias /usr/share/fonts/X11/misc/finalcut/`
 
-3. Add the new dir to X font path<br />
+3. Add the directory to your X font path<br />
 `xset fp+ /usr/share/fonts/X11/misc/finalcut/`<br />
-*(You can insert this command into the ~/.xinitrc to make the font path permanently usable)*
+*(To make this change persistent, add this command to your ~/.xinitrc file)*
 
-4. Check if the font is available to the xserver<br />
+4. Verify that the font is available<br />
 `xlsfonts | grep 8x16graph`
 
-5. Start your program with the parameter `--newfont`<br />
+5. Run your program with the `--newfont` argument<br />
 `ui --newfont`
 

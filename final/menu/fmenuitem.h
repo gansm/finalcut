@@ -115,7 +115,7 @@ class FMenuItem : public FWidget
     void setMenu (FMenu*);
     void setText (const FString&);
 
-    // Inquiries
+    // Predicates
     auto isSelected() const -> bool;
     auto isSeparator() const -> bool;
     auto isCheckable() const -> bool;
@@ -146,7 +146,7 @@ class FMenuItem : public FWidget
     // Mutator
     void setSuperMenu (FWidget*);
 
-    // Inquiries
+    // Predicates
     auto isDialog (const FWidget*) const -> bool;
     auto isMenuBar (const FWidget*) const -> bool;
     auto isMenu (const FWidget*) const -> bool;

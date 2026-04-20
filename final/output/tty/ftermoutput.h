@@ -194,7 +194,7 @@ class FTermOutput final : public FOutput
     auto setNewFont() -> bool override;
     void setNonBlockingRead (bool = true) override;
 
-    // Inquiries
+    // Predicates
     auto isCursorHideable() const noexcept -> bool override;
     auto isMonochron() const -> bool override;
     auto isNewFont() const -> bool override;

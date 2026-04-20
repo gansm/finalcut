@@ -1,7 +1,7 @@
 Recommended settings for the xterm terminal emulator
 ----------------------------------------------------
 
-The final cut can only support all xterm features if the following
+FINAL CUT can only support all xterm features if the following
 settings in the ~/.Xresources (or ~/.Xdefaults) resource file
 are defined:
 

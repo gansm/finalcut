@@ -67,7 +67,7 @@ auto main (int argc, char* argv[]) -> int
 ```
 <figure class="image">
   <img src="running-memory.cpp.png" alt="memory.cpp">
-  <figcaption>Figure 4.  FObject manages its child objects</figcaption>
+  <figcaption>Figure 1:  FObject manages its child objects</figcaption>
 </figure>
 <br /><br />
 

@@ -100,7 +100,7 @@ class FTermcap final
     static auto  paddingPrint (const char*, uInt32, int) -> Status;
     static auto  stringPrint (const char*, uInt32) -> Status;
 
-    // Inquiry
+    // Predicate
     static auto  isInitialized() noexcept -> bool;
 
     // Mutator

@@ -80,7 +80,7 @@ class FBusyIndicator : public FToolTip
     // Accessors
     auto getClassName() const -> FString override;
 
-    // Inquiries
+    // Predicate
     auto isRunning() const noexcept -> bool;
 
     // Methods

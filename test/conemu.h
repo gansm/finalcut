@@ -139,7 +139,7 @@ class ConEmu
     // Mutators
     void  enableConEmuDebug (bool) noexcept;
 
-    // Inquiries
+    // Predicate
     auto  isConEmuChildProcess (pid_t) const noexcept -> bool;
 
     // Methods

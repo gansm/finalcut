@@ -461,7 +461,7 @@ class FString
     auto length() const noexcept -> size_type;    // STL Compatibility
     auto max_size() const noexcept -> size_type;  // STL Compatibility
 
-    // Inquiry
+    // Predicate
     auto isEmpty() const noexcept -> bool;
 
     // Iterators

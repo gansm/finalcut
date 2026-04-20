@@ -69,7 +69,7 @@ class FTermDetection final
     auto  getTermType_SecDA() const & -> const FString&;
 #endif
 
-    // Inquiries
+    // Predicates
     auto  canDisplay256Colors() const noexcept -> bool;
     auto  hasTerminalDetection() const noexcept -> bool;
     auto  hasSetCursorStyleSupport() const noexcept -> bool;

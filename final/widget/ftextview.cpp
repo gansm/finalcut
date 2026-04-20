@@ -1176,16 +1176,16 @@ void FTextView::changeOnResize() const
 }
 
 //----------------------------------------------------------------------
-inline auto FTextView::shouldUpdateScrollbar (FScrollbar::ScrollType scroll_type) const -> bool
+inline auto FTextView::shouldUpdateScrollbar (FScrollBar::ScrollType scroll_type) const -> bool
 {
-  return scroll_type >= FScrollbar::ScrollType::StepBackward;
+  return scroll_type >= FScrollBar::ScrollType::StepBackward;
 }
 
 //----------------------------------------------------------------------
-inline auto FTextView::getVerticalScrollDistance (const FScrollbar::ScrollType scroll_type) const -> int
+inline auto FTextView::getVerticalScrollDistance (const FScrollBar::ScrollType scroll_type) const -> int
 {
-  if ( scroll_type == FScrollbar::ScrollType::PageBackward
-    || scroll_type == FScrollbar::ScrollType::PageForward )
+  if ( scroll_type == FScrollBar::ScrollType::PageBackward
+    || scroll_type == FScrollBar::ScrollType::PageForward )
   {
     return int(getClientHeight());
   }
@@ -1194,10 +1194,10 @@ inline auto FTextView::getVerticalScrollDistance (const FScrollbar::ScrollType s
 }
 
 //----------------------------------------------------------------------
-inline auto FTextView::getHorizontalScrollDistance (const FScrollbar::ScrollType scroll_type) const -> int
+inline auto FTextView::getHorizontalScrollDistance (const FScrollBar::ScrollType scroll_type) const -> int
 {
-  if ( scroll_type == FScrollbar::ScrollType::PageBackward
-    || scroll_type == FScrollbar::ScrollType::PageForward )
+  if ( scroll_type == FScrollBar::ScrollType::PageBackward
+    || scroll_type == FScrollBar::ScrollType::PageForward )
   {
     return int(getClientWidth());
   }
@@ -1215,27 +1215,27 @@ void FTextView::cb_vbarChange (const FWidget*)
 
   switch ( scroll_type )
   {
-    case FScrollbar::ScrollType::PageBackward:
-    case FScrollbar::ScrollType::StepBackward:
+    case FScrollBar::ScrollType::PageBackward:
+    case FScrollBar::ScrollType::StepBackward:
       scrollBy (0, -distance);
       break;
 
-    case FScrollbar::ScrollType::PageForward:
-    case FScrollbar::ScrollType::StepForward:
+    case FScrollBar::ScrollType::PageForward:
+    case FScrollBar::ScrollType::StepForward:
       scrollBy (0, distance);
       break;
 
-    case FScrollbar::ScrollType::Jump:
+    case FScrollBar::ScrollType::Jump:
       scrollToY (vbar->getValue());
       break;
 
-    case FScrollbar::ScrollType::WheelUp:
-    case FScrollbar::ScrollType::WheelLeft:
+    case FScrollBar::ScrollType::WheelUp:
+    case FScrollBar::ScrollType::WheelLeft:
       scrollBy (0, -wheel_distance);
       break;
 
-    case FScrollbar::ScrollType::WheelDown:
-    case FScrollbar::ScrollType::WheelRight:
+    case FScrollBar::ScrollType::WheelDown:
+    case FScrollBar::ScrollType::WheelRight:
       scrollBy (0, wheel_distance);
       break;
 
@@ -1256,27 +1256,27 @@ void FTextView::cb_hbarChange (const FWidget*)
 
   switch ( scroll_type )
   {
-    case FScrollbar::ScrollType::PageBackward:
-    case FScrollbar::ScrollType::StepBackward:
+    case FScrollBar::ScrollType::PageBackward:
+    case FScrollBar::ScrollType::StepBackward:
       scrollBy (-distance, 0);
       break;
 
-    case FScrollbar::ScrollType::PageForward:
-    case FScrollbar::ScrollType::StepForward:
+    case FScrollBar::ScrollType::PageForward:
+    case FScrollBar::ScrollType::StepForward:
       scrollBy (distance, 0);
       break;
 
-    case FScrollbar::ScrollType::Jump:
+    case FScrollBar::ScrollType::Jump:
       scrollToX (hbar->getValue());
       break;
 
-    case FScrollbar::ScrollType::WheelUp:
-    case FScrollbar::ScrollType::WheelLeft:
+    case FScrollBar::ScrollType::WheelUp:
+    case FScrollBar::ScrollType::WheelLeft:
       scrollBy (-wheel_distance, 0);
       break;
 
-    case FScrollbar::ScrollType::WheelDown:
-    case FScrollbar::ScrollType::WheelRight:
+    case FScrollBar::ScrollType::WheelDown:
+    case FScrollBar::ScrollType::WheelRight:
       scrollBy (wheel_distance, 0);
       break;
 

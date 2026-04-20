@@ -71,7 +71,7 @@ class FClassName
 
     // Mutators
 
-    // Inquiries
+    // Predicates
 
     // Methods
 
@@ -88,7 +88,7 @@ class FClassName
 
     // Accessors
 
-    // Inquiries
+    // Predicates
 
     // Methods
 
@@ -105,7 +105,7 @@ class FClassName
 
     // Accessors
 
-    // Inquiries
+    // Predicates
 
     // Methods
 

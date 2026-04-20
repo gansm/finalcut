@@ -129,7 +129,7 @@ class FApplication : public FWidget
     // Mutator
     static void  setLog (const FLogPtr&);
 
-    // Inquiry
+    // Predicate
     static auto  isQuit() -> bool;
 
     // Methods

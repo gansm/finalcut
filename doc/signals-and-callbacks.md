@@ -207,7 +207,7 @@ The FINAL CUT widgets emit the following default signals
   <dt>FRadioMenuItem</dt>
   <dd>"clicked"<br />"toggled"</dd>
 
-  <dt>FScrollbar</dt>
+  <dt>FScrollBar</dt>
   <dd>"change-value"</dd>
 
   <dt>FSpinBox</dt>
@@ -275,7 +275,7 @@ auto main (int argc, char* argv[]) -> int
 ```
 <figure class="image">
   <img src="running-callback-function.cpp.png" alt="callback-function.cpp">
-  <figcaption>Figure 7.  Button with a callback function</figcaption>
+  <figcaption>Figure 1:  Button with a callback function</figcaption>
 </figure>
 <br /><br />
 
@@ -340,7 +340,7 @@ auto main (int argc, char* argv[]) -> int
 ```
 <figure class="image">
   <img src="running-callback-lambda.cpp.png" alt="callback-lambda.cpp">
-  <figcaption>Figure 8.  Button with lambda expression callback.</figcaption>
+  <figcaption>Figure 2:  Button with lambda expression callback.</figcaption>
 </figure>
 <br /><br />
 
@@ -405,7 +405,7 @@ auto main (int argc, char* argv[]) -> int
 ```
 <figure class="image">
   <img src="running-callback-method.cpp.png" alt="callback-method.cpp">
-  <figcaption>Figure 9.  Button with a callback method</figcaption>
+  <figcaption>Figure 3:  Button with a callback method</figcaption>
 </figure>
 <br /><br />
 
@@ -533,7 +533,7 @@ auto main (int argc, char* argv[]) -> int
 ```
 <figure class="image">
   <img src="running-emit-signal.cpp.png" alt="emit-signal.cpp">
-  <figcaption>Figure 10.  Callbacks with custom signals</figcaption>
+  <figcaption>Figure 4:  Callbacks with custom signals</figcaption>
 </figure>
 <br /><br />
 

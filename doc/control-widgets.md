@@ -7,11 +7,11 @@ Table of Contents
 <!-- TOC -->
 - [FButton](#fbutton)
 - [FLineEdit](#flineedit)
-- [FScrollbar](#fscrollbar)
+- [FScrollBar](#fscrollbar)
 - [FSpinBox](#fspinbox)
 - [FToggleButton](#ftogglebutton-based-widgets)
   - [FCheckBox](#fcheckbox)
-  - [FRadionButton](#FRadionButton)
+  - [FRadioButton](#FRadioButton)
   - [FSwitch](#FSwitch)
 <!-- /TOC -->
 
@@ -33,7 +33,7 @@ FLineEdit
 ...
 
 
-FScrollbar
+FScrollBar
 ----------
 
 ...
@@ -53,7 +53,7 @@ FToggleButton based widgets
 ...
 
 
-#### FRadionButton
+#### FRadioButton
 
 ...
 

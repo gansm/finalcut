@@ -139,7 +139,7 @@ class FObject : public FObjectTimer
     // Mutator
     void  setMaxChildren (std::size_t) noexcept;
 
-    // Inquiries
+    // Predicates
     auto  hasParent() const noexcept -> bool;
     auto  hasChildren() const noexcept -> bool;
     auto  isChild (const FObject*) const -> bool;

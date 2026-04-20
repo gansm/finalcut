@@ -257,7 +257,7 @@ class FWidget : public FVTerm
     void  setDoubleFlatLine (Side, int, bool = true);
     void  unsetDoubleFlatLine (Side, int);
 
-    // Inquiries
+    // Predicates
     auto  isRootWidget() const -> bool;
     auto  isWindowWidget() const -> bool;
     auto  isDialogWidget() const -> bool;
@@ -311,7 +311,7 @@ class FWidget : public FVTerm
                                   , FPreprocessingFunction&& ) override;
     void  delPreprocessingHandler (const FVTerm*) override;
 
-    // Inquiry
+    // Predicate
     auto  isChildPrintArea() const -> bool;
 
     // Mutators

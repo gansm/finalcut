@@ -16,11 +16,11 @@ Table of Contents
 How events are processed
 ------------------------
 
-Calling `FApplication::exec()` starts the FINAL CUT main event loop. 
-While the event loop is running, the system checks all the time whether 
-an event has occurred and sends it to the application's currently focused 
-object. The events of the terminal, such as keystrokes, mouse actions, or 
-terminal size changing, are translated into `FEvent` objects, and are sent to 
+Calling `FApplication::exec()` starts the FINAL CUT main event loop.
+While the event loop is running, the system continuously monitors 
+for events and dispatches them to the currently focused object. 
+The events of the terminal, such as keystrokes, mouse actions, or 
+terminal size changes, are translated into `FEvent` objects, and are sent to 
 the active `FObject`. It is also possible to use `FApplication::sendEvent()` 
 or `FApplication::queueEvent()` to send a specific event to an object.
 
@@ -42,13 +42,13 @@ For example, the method `FEvent::type()` returns the type
 `Event::MouseDown` when you press down a mouse button. 
 
 Some event types have data that cannot be stored in an `FEvent` object. 
-For example, a click event of the mouse requires to store which button was 
+For example, a click event of the mouse requires storing which button was 
 triggered and the position of the mouse pointer at that time. In classes
 derived  from `FEvent`, such as `FMouseEvent()`, we store this data.
 
 Widgets get their events from the `event()` method inherited from `FObject`. 
 The implementation of `event()` in `FWidget` forwards the most common event 
-types to specific event handlers such as `FMouseEvent()`, `FKeyEvent()` or 
+types to specific event handlers such as `FMouseEvent()`, `FKeyEvent()`, or 
 `FResizeEvent()`. There are many other event types. You can create your own
 event types and send them to other objects and widgets.
 
@@ -84,7 +84,7 @@ enum class Event
   Show,              // widget is shown
   Hide,              // widget is hidden
   Close,             // widget close
-  Timer,             // timer event occur
+  Timer,             // timer event occurs
   User               // user defined event
 };
 ```
@@ -150,7 +150,7 @@ auto main (int argc, char* argv[]) -> int
 ```
 <figure class="image">
   <img src="running-timer.cpp.png" alt="timer.cpp">
-  <figcaption>Figure 5.  FObject::onTimer event handler</figcaption>
+  <figcaption>Figure 1:  FObject::onTimer event handler</figcaption>
 </figure>
 <br /><br />
 
@@ -169,15 +169,15 @@ g++ timer.cpp -o timer -O2 -lfinal -std=c++14
 Using a user event
 ------------------
 
-You can use the `FUserEvent()` to create a individual event and send it to a 
+You can use the `FUserEvent()` to create an individual event and send it to a 
 specific object. If you want to create more than one user event, you can 
-specify an identification number (0 in the example below) to identify the 
-different events. Afterwards this number can be retrieved with `getUserId()`.
+specify an identification number (ID; 0 in the example below) to identify the 
+different events. This number can be retrieved with `getUserId()`.
 
 User events should be generated in the main event loop. For this purpose, 
 the class `FApplication` provides the virtual method 
-`processExternalUserEvent()`. This method can be overwritten in a derived 
-class and filled with user code.
+`processExternalUserEvent()`. This method can be overridden in a derived 
+class to implement custom logic.
 
 The following example reads the average system load and creates a user event 
 when a value changes. This event sends the current values to an `FLabel` 
@@ -268,7 +268,7 @@ auto main (int argc, char* argv[]) -> int
 ```
 <figure class="image">
   <img src="running-user-event.cpp.png" alt="user-event.cpp">
-  <figcaption>Figure 6.  User event generation</figcaption>
+  <figcaption>Figure 2:  User event generation</figcaption>
 </figure>
 <br /><br />
 

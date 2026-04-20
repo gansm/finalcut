@@ -85,7 +85,7 @@ class FToolTip : public FWindow
     void setBorder (bool = true);
     void unsetBorder();
 
-    // Inquiries
+    // Predicate
     auto hasBorder() const -> bool;
 
     // Methods

@@ -98,7 +98,7 @@ class FVTermBuffer
     auto getLength() const noexcept -> std::size_t;
     auto getBuffer() const noexcept -> const FCharVector&;
 
-    // Inquiry
+    // Predicate
     auto isEmpty() const noexcept -> bool;
 
     // Methods

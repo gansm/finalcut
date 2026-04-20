@@ -12,10 +12,10 @@ Table of Contents
 - [Using the library](#how-to-use-the-library)
   - [Example code](#example-code)
   - [Compiling](#how-to-compile-this-example)
-    - [Manually compile](#manually-compile-the-application)
-    - [compile with pkg-config](#use-pkg-config-to-compile-the-application)
-    - [compile with GNU Autotools](#use-the-gnu-Autotools-to-compile-the-application)
-    - [compile with CMake](#use-cmake-to-compile-the-application)
+    - [Building manually](#building-the-application-manually)
+    - [Compiling with pkg-config](#use-pkg-config-to-compile-the-application)
+    - [Compiling with GNU Autotools](#use-gnu-Autotools-to-compile-the-application)
+    - [Compiling with CMake](#use-cmake-to-compile-the-application)
   - [How it works](#how-it-works)
 <!-- /TOC -->
 
@@ -24,12 +24,12 @@ Basic functions
 ---------------
 
 FINAL CUT is a library for creating text-based terminal applications.
-It runs on several Unix-like platforms. The release of FINAL CUT is
-licensed under the terms of the GNU Lesser General Public License v3.0
+It runs on several Unix-like platforms. FINAL CUT is released under 
+the terms of the GNU Lesser General Public License v3.0
 ([GNU LGPL v3](https://www.gnu.org/licenses/lgpl-3.0-standalone.html)),
 which allows flexible licensing of applications. FINAL CUT was written
 in the programming language [C++](https://en.wikipedia.org/wiki/C%2B%2B).
-The object-oriented design allows the creation of fast and lean programs.
+Its object-oriented design makes it easy to build fast, lean applications.
 
 FINAL CUT is a [widget toolkit](http://en.wikipedia.org/wiki/Widget_toolkit).
 A user interface usually consists of several
@@ -42,7 +42,7 @@ emulator. It uses various optimization methods to improve the drawing speed.
 
 <figure class="image">
   <img src="final-cut-application-structure.svg" alt="application structure">
-  <figcaption>Figure 1.  Structure of a FINAL CUT application</figcaption>
+  <figcaption>Figure 1:  Structure of a FINAL CUT application</figcaption>
 </figure>
 <br /><br />
 
@@ -50,8 +50,8 @@ emulator. It uses various optimization methods to improve the drawing speed.
 Widgets
 -------
 
-FINAL CUT has many widgets. It offers buttons, input fields, menus, and 
-dialog boxes that cover the most common use cases. Widgets are visual 
+FINAL CUT has many widgets. It offers buttons, input fields, menus, and
+various window types and panels for different use cases. Widgets are visual 
 elements that are combined to create user interfaces. You can easily create 
 your custom widgets by creating a derived class of `FWidget` or other existing 
 widgets. All widgets are instances of 
@@ -59,35 +59,35 @@ widgets. All widgets are instances of
 or its subclasses.
 
 A widget can contain any number of child widgets. Child widgets are displayed 
-in the display area of the parent widget. Window widgets based on `FWindow` 
-have their own virtual display area and are independent from the parent widget.
+in the display area of the parent widget. However, `FWindow`-based window
+widgets have their own virtual display area and operate independently of
+the parent widget.
 
-When a parent widget is disabled, hidden, or deleted, the same operation is 
-used recursively on all its child widgets. The base class `FObject` implements 
-the self-organized object tree behavior. For example, `addChild()` removes 
-the child ownership from an existing parent object before assigning it to 
-the new target. When a child becomes deleted, the parent-child relationship 
-causes its reference in the parent object to be removed. An explicit 
-`delChild()` is no longer required here.
+Disabling, hiding, or deleting a parent widget automatically affects all 
+child widgets. This hierarchical behavior is handled by the `FObject` base 
+class. For example, `addChild()` removes the child ownership from an existing 
+parent object before assigning it to the new target. When a child is deleted, 
+the parent-child relationship causes its reference in the parent object to be 
+removed. An explicit `delChild()` is no longer required here.
 
 
 Widget tree
 -----------
 
-An `FApplication` widget is the top-level widget of an application. It is 
-unique and can not have a parent widget. The class `FApplication` manages 
+The `FApplication` widget is the root of the application. A root object cannot
+have parent widgets. The class `FApplication` manages 
 all settings and assigns keyboard and mouse input to the different widgets.
 
 <figure class="image">
   <img src="final-cut-widget-tree.svg" alt="widget tree">
-  <figcaption>Figure 2.  Widget tree of a FINAL CUT application</figcaption>
+  <figcaption>Figure 2:  Widget tree of a FINAL CUT application</figcaption>
 </figure>
 <br /><br />
 
-The main widget of a FINAL CUT application is the only object that 
-`FApplication` can have as a child. This main widget is usually a window 
-object that contains all sub-widgets of the application. A sub-widget can 
-also be another window.
+Only one main widget can be assigned as a child to the `FApplication`
+instance. This main widget is usually a window object that contains all
+child widgets of the application. A child widget can also be another
+window.
 
 
 How to use the library
@@ -119,7 +119,7 @@ auto main (int argc, char* argv[]) -> int
 ```
 <figure class="image">
   <img src="running-dialog.cpp.png" alt="dialog.cpp">
-  <figcaption>Figure 3.  A blank dialog</figcaption>
+  <figcaption>Figure 3:  A blank dialog</figcaption>
 </figure>
 <br /><br />
 > [!NOTE]
@@ -142,38 +142,39 @@ configuration. These requirements also apply when integrating FINAL CUT
 into your own projects.
 
 
-#### Manually compile the application
+#### Building the application manually
 
-Step 1: Verify that FINAL CUT is installed. The header files should be 
-located in the standard include directory, and the library should be 
-located in one of the library search paths on your system.
+1. Check dependencies:<br />
+   Make sure FINAL CUT is installed. You'll need the header files in your 
+   standard include directory and the library file in your system's library 
+   path.
 
-Step 2: Save the source code file as *dialog.cpp* to continue with the
-compilation.
+2. Save the source:<br />
+   Save the code as *dialog.cpp* to get started.
 
-Step 3: Use the following command to compile the code with the GNU
-Compiler Collection (GCC):
-```bash
-g++ dialog.cpp -o my-dialog -O2 -lfinal
-```
-Run the application using the following command:
-```bash
-./my-dialog
-```
+3. Compile and run:<br />
+   Use g++ to build the executable:<br />
+   ```bash
+   g++ dialog.cpp -o my-dialog -O2 -lfinal
+   ```
+   After building, run it with:
+   ```bash
+   ./my-dialog
+   ```
 
 
 #### Use pkg-config to compile the application
 
-The following command demonstrates compilation of the source file using
-GCC and [pkg-config](https://en.wikipedia.org/wiki/Pkg-config). Ensure
-the current directory contains the source code file.
+Compile the source file using GCC and
+[pkg-config](https://en.wikipedia.org/wiki/Pkg-config) with this
+command. Ensure the current directory contains the source code file.
 ```bash
 g++ dialog.cpp -o my-dialog `pkg-config --libs finalcut`
 ```
-The application *my-dialog* is now generated.
+You can now run the *my-dialog* executable.
 
 
-#### Use the GNU Autotools to compile the application
+#### Use GNU Autotools to compile the application
 
 Follow the GNU Automake instructions as outlined below.
 
@@ -203,7 +204,7 @@ AC_CHECK_LIB([final],
              [AC_MSG_ERROR([libfinal not found!])])
 ```
 
-Initiate the build system with the following command:
+Initialize the build system with:
 ```bash
 autoreconf --install
 ```
@@ -217,12 +218,12 @@ Build the executable application using the following command:
 ```bash
 make
 ```
-The application *my-dialog* is now generated.
+The executable (*my-dialog*) is created.
 						
 
 #### Use CMake to compile the application
 
-Follow the CMake instruction file as outlined below.
+Follow the CMake build script as outlined below.
 
 **File:** *CMakeLists.txt*
 ```cmake
@@ -258,7 +259,7 @@ Build the application using the following command:
 ```bash
 make
 ```
-The application *my-dialog* is now generated.
+The executable (*my-dialog*) is created.
 
 
 ### How it works
@@ -271,11 +272,11 @@ All FINAL CUT programs require the header *final.h*.
 ```cpp
 finalcut::FApplication app(argc, argv);
 ```
-This line creates the `finalcut::FApplication` object `app` with
-the command line arguments `argc` and `argv`. This object manages
-the main event loop  of the application. It receives keyboard and mouse events
-and sends them to the target widgets. You have to create an application
-object before you can create a widget object.
+Initialize the `finalcut::FApplication` object `app` by passing 
+the command line arguments `argc` and `argv`. This object manages 
+the main event loop  of the application. It receives keyboard and mouse 
+events and sends them to the target widgets. You must create an application
+object before you can create a widget.
 
 > [!NOTE]
 > **Command line arguments**
@@ -294,29 +295,29 @@ object before you can create a widget object.
 > | --no-terminal-focus-events | Do not send focus-in and focus-out events |
 > | --no-color-change          | Do not redefine the color palette |
 > | --no-sgr-optimizer         | Do not optimize SGR sequences |
-> | --vgafont                  | Set the standard vga 8x16 font |
-> | --newfont                  | Enables the graphical font |
-> | --dark-theme               | Enables the dark theme |
+> | --vgafont                  | Set standard vga 8x16 font |
+> | --newfont                  | Enables graphical font |
+> | --dark-theme               | Enables dark theme |
 
-The next line
+This line
 ```cpp
 finalcut::FDialog dialog(&app);
 ```
-creates the `finalcut::FDialog` object `dialog` with the object `app`
-as parent object. The `finalcut::FDialog` class is the base class for
+creates the `finalcut::FDialog` object `dialog` using the `app`
+object as the parent. The `finalcut::FDialog` class is the base class for
 creating dialog windows.
 
 ```cpp
 dialog.setText ("A dialog");
 ```
-The title bar of the dialog box gets the text "A dialog".
+This sets the dialog box title to "A dialog".
 
 ```cpp
 finalcut::FPoint position{25, 5};
 finalcut::FSize size{30, 10};
 dialog.setGeometry (position, size);
 ```
-The dialog window gets a width of 30 and a height of 10 characters.
+This sets the dialog to a width of 30 characters and a height of 10.
 The position of the window in the terminal is at x = 25 and
 y = 5.
 
@@ -326,21 +327,21 @@ y = 5.
 ```cpp
 finalcut::FWidget::setMainWidget(&dialog);
 ```
-The `dialog` object was now selected as the main widget for the application.
-When you close the main widget, the entire application quits.
+Set the `dialog` as the application's main widget. When you close
+the main widget, the entire application quits.
 
 
 ```cpp
 dialog.show();
 ```
-A window or widget is not visible directly after its creation.
-Calling `show()` makes it (and its child objects,
+Widgets are not visible by default when created.
+Calling `show()` makes it (and its child objects
 if available) visible.
 
 ```cpp
 return app.exec();
 ```
-The last line calls `exec()` to start the application and to return
+The last line calls `exec()` to start the application and return
 the result to the operating system. The return value can be
 EXIT_SUCCESS (0), EXIT_FAILURE (1), or any other value specified by
 `FApplication::exit(int retcode)`. The application then enters its

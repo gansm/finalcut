@@ -84,7 +84,7 @@ class FTermXTerminal final
     auto  getMouseBackground() const -> FString;
     auto  getHighlightBackground() const -> FString;
 
-    // Inquiries
+    // Predicates
     auto  hasFont() const -> bool;
     auto  hasTitle() const -> bool;
 

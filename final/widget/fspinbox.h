@@ -99,7 +99,7 @@ class FSpinBox : public FWidget
     void setLabelText (const FString&);
     void setLabelOrientation (const LabelOrientation);
 
-    // Inquiries
+    // Predicate
     auto hasShadow() const -> bool;
 
     // Methods

@@ -83,7 +83,7 @@ class FButtonGroup : public FScrollView
     void unsetEnable() override;
     void setDisable() override;
 
-    // Inquiries
+    // Predicates
     auto isChecked (int) const -> bool;
     auto hasFocusedButton() const -> bool;
     auto hasCheckedButton() const -> bool;
@@ -109,7 +109,7 @@ class FButtonGroup : public FScrollView
     // Constants
     static constexpr auto NOT_SET = static_cast<std::size_t>(-1);
 
-    // Inquiries
+    // Predicate
     auto isRadioButton (const FToggleButton*) const -> bool;
 
     // Methods

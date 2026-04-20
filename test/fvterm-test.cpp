@@ -88,7 +88,7 @@ class FTermOutputTest : public finalcut::FOutput
     void setNonBlockingRead (bool = true) override;
     static void setNoForce (bool = true);
 
-    // Inquiries
+    // Predicates
     auto isCursorHideable() const -> bool override;
     auto isMonochron() const -> bool override;
     auto isNewFont() const -> bool override;
@@ -464,7 +464,7 @@ class FVTerm_protected : public finalcut::FVTerm
     void p_setChildPrintArea (FTermArea*);
     void p_setActiveArea (FTermArea*) const;
 
-    // Inquiries
+    // Predicates
     auto p_isActive (const FTermArea*) const -> bool;
     auto p_hasPrintArea() const -> bool;
     auto p_hasChildPrintArea() const -> bool;

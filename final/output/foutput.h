@@ -94,7 +94,7 @@ class FOutput : public std::enable_shared_from_this<FOutput>
     template <typename ClassT>
     void         setColorPaletteTheme (const FSetPalette&) const;
 
-    // Inquiries
+    // Predicates
     virtual auto isCursorHideable() const -> bool = 0;
     virtual auto isMonochron() const -> bool = 0;
     virtual auto isNewFont() const -> bool = 0;

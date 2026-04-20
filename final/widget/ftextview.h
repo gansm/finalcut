@@ -68,10 +68,10 @@ namespace finalcut
 {
 
 // class forward declaration
-class FScrollbar;
+class FScrollBar;
 
 // Global using-declaration
-using FScrollbarPtr = std::shared_ptr<FScrollbar>;
+using FScrollBarPtr = std::shared_ptr<FScrollBar>;
 
 //----------------------------------------------------------------------
 // class FTextView
@@ -209,7 +209,7 @@ class FTextView : public FWidget
     void scrollToEnd();
     void scrollBy (int, int);
 
-    // Inquiry
+    // Predicate
     auto hasSelectedText() const -> bool;
     auto isSelectable() const -> bool;
 
@@ -240,7 +240,7 @@ class FTextView : public FWidget
     void initLayout() override;
     void adjustSize() override;
 
-    // Inquiry
+    // Predicate
     auto isHorizontallyScrollable() const -> bool;
     auto isVerticallyScrollable() const -> bool;
 
@@ -256,7 +256,7 @@ class FTextView : public FWidget
     // Using-declaration
     using KeyMap = std::unordered_map<FKey, std::function<void()>, EnumHash<FKey>>;
 
-    // Inquiry
+    // Predicate
     auto isWithinTextBounds (const FPoint&) const -> bool;
     auto isLowerRightResizeCorner (const FPoint&) const -> bool;
     auto hasWrongSelectionOrder() const -> bool;
@@ -299,9 +299,9 @@ class FTextView : public FWidget
     void stopDragScroll();
     void processChanged() const;
     void changeOnResize() const;
-    auto shouldUpdateScrollbar (FScrollbar::ScrollType) const -> bool;
-    auto getVerticalScrollDistance (const FScrollbar::ScrollType) const -> int;
-    auto getHorizontalScrollDistance (const FScrollbar::ScrollType) const -> int;
+    auto shouldUpdateScrollbar (FScrollBar::ScrollType) const -> bool;
+    auto getVerticalScrollDistance (const FScrollBar::ScrollType) const -> int;
+    auto getHorizontalScrollDistance (const FScrollBar::ScrollType) const -> int;
 
     // Callback methods
     void cb_vbarChange (const FWidget*);
@@ -309,8 +309,8 @@ class FTextView : public FWidget
 
     // Data members
     FTextViewList   data{};
-    FScrollbarPtr   vbar{nullptr};
-    FScrollbarPtr   hbar{nullptr};
+    FScrollBarPtr   vbar{nullptr};
+    FScrollBarPtr   hbar{nullptr};
     FTextPosition   selection_start{};
     FTextPosition   selection_end{};
     FPoint          select_click_pos{-1, -1};

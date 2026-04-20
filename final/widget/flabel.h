@@ -120,7 +120,7 @@ class FLabel : public FWidget
     void setNumber (lDouble, int = LDBL_DIG);
     void setText (const FString&);
 
-    // Inquiries
+    // Predicates
     auto hasEmphasis() const noexcept -> bool;
     auto hasReverseMode() const noexcept -> bool;
 

@@ -304,7 +304,7 @@ class FData final : public FDataAccess
       value_ref.get() = std::move(v);
     }
 
-    // Inquiries
+    // Predicates
     constexpr auto isInitializedCopy() const noexcept -> bool
     {
       return std::addressof(value) == std::addressof(value_ref.get());

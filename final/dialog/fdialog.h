@@ -117,7 +117,7 @@ class FDialog : public FWindow
     void resetColors() override;
     virtual void setText (const FString&);
 
-    // Inquiries
+    // Predicates
     auto isModal() const -> bool;
     auto hasBorder() const -> bool;
 

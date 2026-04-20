@@ -61,7 +61,7 @@ class FTermios final
     static auto  getStdOut() noexcept -> int;
     static auto  getStdErr() noexcept -> int;
 
-    // Inquiries
+    // Predicates
     static auto  isRaw() noexcept -> bool;
 
     // Methods

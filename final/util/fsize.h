@@ -99,7 +99,7 @@ class FSize
     constexpr void setSize (const FSize&) noexcept;
     constexpr void setSize (size_type, size_type) noexcept;
 
-    // Inquiry
+    // Predicate
     constexpr auto isEmpty() const noexcept -> bool;
 
     // Side references

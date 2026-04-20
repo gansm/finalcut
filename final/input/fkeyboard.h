@@ -138,7 +138,7 @@ class FKeyboard final
     void  setEscPressedCommand (const FKeyboardCommand&);
     void  setMouseTrackingCommand (const FKeyboardCommand&);
 
-    // Inquiry
+    // Predicate
     auto  hasPendingInput() const noexcept -> bool;
     auto  hasDataInQueue() const -> bool;
 
@@ -167,7 +167,7 @@ class FKeyboard final
     auto  getKnownKey() -> FKey;
     auto  getSingleKey() -> FKey;
 
-    // Inquiry
+    // Predicate
     static auto isKeypressTimeout() -> bool;
     static auto isIntervalTimeout() -> bool;
 

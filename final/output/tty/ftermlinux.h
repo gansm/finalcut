@@ -113,7 +113,7 @@ class FTermLinux final
     auto  setPalette (FColor, int, int, int) -> bool;
     void  setUTF8 (bool = true) const;
 
-    // Inquiries
+    // Predicates
     static auto isLinuxConsole() -> bool;
     auto isVGAFontUsed() const noexcept -> bool;
     auto isNewFontUsed() const noexcept -> bool;
@@ -202,7 +202,7 @@ class FTermLinux final
     auto  getUnicodeMap () -> bool;
     auto  getModifierKey() & -> ModifierKey&;
 
-    // Inquiries
+    // Predicates
     auto  isLinuxTerm() const -> bool;
 
     // Mutators

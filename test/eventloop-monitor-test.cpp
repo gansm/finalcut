@@ -70,7 +70,7 @@ class Monitor_protected : public finalcut::Monitor
     void p_setUserContext (T&&);
     void p_setInitialized();
 
-    // Inquiry
+    // Predicate
     auto p_isInitialized() const -> bool;
 
     // Methods

@@ -117,7 +117,7 @@ class FMenu : public FWindow
     void setText (const FString&);
     void resetColors() override;
 
-    // Inquiries
+    // Predicates
     auto isSelected() const -> bool;
     auto hasHotkey() const -> bool;
     auto hasMenu() const -> bool;
@@ -172,7 +172,7 @@ class FMenu : public FWindow
     // Mutators
     void setSuperMenu (FWidget*);
 
-    // Inquiries
+    // Predicates
     auto isDialog (const FWidget*) const -> bool;
     auto isMenuBar (const FWidget*) const -> bool;
     auto isMenu (const FWidget*) const -> bool;

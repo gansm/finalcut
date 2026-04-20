@@ -1,3 +1,6 @@
+2026-04-17  Markus Gans  <guru.mail@muenster.de>
+	* Change the name of class FScrollbar to FScrollBar
+
 2026-04-13  Markus Gans  <guru.mail@muenster.de>
 	* The FListView widget now has public methods that allow you to modify 
 	  the currently selected item

@@ -101,7 +101,7 @@ class FToggleButton : public FWidget
     void unsetChecked();
     virtual void setText (const FString&);
 
-    // Inquiries
+    // Predicates
     auto isChecked() const noexcept -> bool;
     auto hasRadiobuttonFocus() const noexcept -> bool;
 
@@ -126,7 +126,7 @@ class FToggleButton : public FWidget
     void setButtonWidth (std::size_t) noexcept;
     void setLabelOffsetPos (std::size_t) noexcept;
 
-    // Inquiries
+    // Predicates
     auto isRadioButton() const -> bool;
     auto isCheckboxButton() const -> bool;
     auto hasGroup() const -> bool;

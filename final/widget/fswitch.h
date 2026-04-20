@@ -83,7 +83,7 @@ class FSwitch : public FToggleButton
     void onMouseUp (FMouseEvent*) override;
 
   private:
-    // Inquiries
+    // Predicate
     auto isMonoFocus() const -> bool;
 
     // Methods

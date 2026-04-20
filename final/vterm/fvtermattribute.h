@@ -163,7 +163,7 @@ class FVTermAttribute
     static void  setInheritBackground() noexcept;
     static void  unsetInheritBackground() noexcept;
 
-    // Inquiries
+    // Predicates
     static auto  isBold() noexcept -> bool;
     static auto  isDim() noexcept -> bool;
     static auto  isItalic() noexcept -> bool;

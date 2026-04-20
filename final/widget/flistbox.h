@@ -61,7 +61,7 @@ namespace finalcut
 {
 
 // class forward declaration
-class FScrollbar;
+class FScrollBar;
 class FString;
 
 //----------------------------------------------------------------------
@@ -86,7 +86,7 @@ class FListBoxItem
     template <typename DT>
     void setData (DT&&);
 
-    // Inquiries
+    // Predicate
     auto isSelected() const -> bool;
 
     // Methods
@@ -230,7 +230,7 @@ class FListBox : public FWidget
     void setDisable() override;
     void setText (const FString&);
 
-    // Inquiries
+    // Predicates
     auto isSelected (std::size_t) const -> bool;
     auto isSelected (FListBoxItems::iterator) const -> bool;
     auto isMultiSelection() const -> bool;
@@ -312,8 +312,8 @@ class FListBox : public FWidget
 
     struct ScrollingState
     {
-      FScrollbarPtr  vbar{nullptr};
-      FScrollbarPtr  hbar{nullptr};
+      FScrollBarPtr  vbar{nullptr};
+      FScrollBarPtr  hbar{nullptr};
       int            xoffset{0};
       int            yoffset{0};
       int            last_yoffset{-1};
@@ -343,7 +343,7 @@ class FListBox : public FWidget
     // Accessors
     static auto getString (FListBoxItems::iterator) -> FString;
 
-    // Inquiries
+    // Predicates
     auto isHorizontallyScrollable() const -> bool;
     auto isVerticallyScrollable() const -> bool;
     auto isCurrentLine (int) const -> bool;
@@ -438,10 +438,10 @@ class FListBox : public FWidget
     auto index2iterator (std::size_t index) const -> FListBoxItems::const_iterator;
     void handleSelectionChange (const std::size_t);
     void handleXOffsetChange (const int);
-    void handleVerticalScrollBarUpdate (const FScrollbar::ScrollType, const int) const;
-    void handleHorizontalScrollBarUpdate (const FScrollbar::ScrollType, const int) const;
-    auto getVerticalScrollDistance (const FScrollbar::ScrollType) const -> int;
-    auto getHorizontalScrollDistance (const FScrollbar::ScrollType) const -> int;
+    void handleVerticalScrollBarUpdate (const FScrollBar::ScrollType, const int) const;
+    void handleHorizontalScrollBarUpdate (const FScrollBar::ScrollType, const int) const;
+    auto getVerticalScrollDistance (const FScrollBar::ScrollType) const -> int;
+    auto getHorizontalScrollDistance (const FScrollBar::ScrollType) const -> int;
 
     // Callback methods
     void cb_vbarChange (const FWidget*);

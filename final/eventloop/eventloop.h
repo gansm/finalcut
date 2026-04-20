@@ -89,7 +89,7 @@ class EventLoop
     static constexpr auto WAIT_INDEFINITELY{-1};
     static constexpr int POLL_WAIT_MS{1};
 
-    // Inquiry
+    // Predicate
     auto isRunning() const noexcept -> bool;
     auto isChanged() const noexcept -> bool;
 

@@ -4,44 +4,42 @@ Coding style
 
 Formatting
 ----------
-* A new line should begin after 72 (max. 80) characters
-* Use 2 spaces indent. Do not use tabs!
-* Leave a space after the keywords if, switch, while, do, for, and return
-* Conditions are placed in parentheses with spaces -> if ( a > 5 )
-* Use one blank line before and after a for, if, switch, 
-  while, do..while code block
-* In parameter lists, leave a space after each comma
-* Starting curly brace "{" in a new line
+* Wrap lines at 72 characters (80 chars max)
+* Use 2-space indentation. Do not use tabs.
+* Place a space after keywords: if, switch, while, do, for, and return.
+* Put spaces inside parentheses for conditions: if ( a > 5 ).
+* Use a blank line before and after for, if, switch, and while/do-while
+  blocks.
+* Add a space after each comma in parameter lists.
+* Place the opening curly brace "{" on a new line.
 
-Naming
-------
-* class name: UpperCamelCase
+Naming Conventions
+------------------
+* Class name: UpperCamelCase
 * Function: lowerCamelCase
-* Callback function: cb_lowerCamelCase (beginning with "cb_" as prefix)
-* Variable: lower_case_underscored
+* Callback function: cb_lowerCamelCase (prefixed with cb_)
+* Variable: lower_snake_case
 
-Class declaration order
+Class Declaration Order
 -----------------------
-The declaration section order is:
+Organize class members by access level:
 
   * public:
   * protected:
   * private:
 
-Each declaration section should be in the following order:
+Within each section, group members in the following order:
 
-  * Using-declarations (using std::string;)
-  * Typedefs and Enumerations
+  * Using-declarations (e.g., using std::string;)
+  * Typedefs and Enums
   * Constants (static const data members)
   * Constructors
   * Destructor
-  * Overloaded operators (=, +, -, +=. ...)
-  * Accessors (getXY)
-  * Mutators  (setXY)
-  * Inquiries (isXY)
-  * Methods, including static methods
-  * Event handler methods
-  * Callback methods
-  * Data Members (except static const data members)
-
-
+  * Overloaded operators (=, +, -, +=, etc.)
+  * Accessors/Getters (getXY)
+  * Mutators/Setters (setXY)
+  * Predicates/Booleans (isXY)
+  * General methods (including static methods)
+  * Event handlers
+  * Callbacks
+  * Data members (excluding static constants)

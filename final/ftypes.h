@@ -1111,7 +1111,7 @@ struct FChar
     attr.data &= mask;
   }
 
-  // Inquiry
+  // Predicate
   constexpr auto isBitSet (uInt32 mask) const noexcept -> bool
   {
     return attr.data & mask;

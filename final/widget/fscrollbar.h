@@ -1,5 +1,5 @@
 /***********************************************************************
-* fscrollbar.h - Widget FScrollbar                                     *
+* fscrollbar.h - Widget FScrollBar                                     *
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
@@ -36,7 +36,7 @@
  *            ▲
  *            │
  *      ▕▔▔▔▔▔▔▔▔▔▔▔▔▏
- *      ▕ FScrollbar ▏
+ *      ▕ FScrollBar ▏
  *      ▕▁▁▁▁▁▁▁▁▁▁▁▁▏
  */
 
@@ -58,16 +58,19 @@ namespace finalcut
 {
 
 // class forward declaration
-class FScrollbar;
+class FScrollBar;
+
+// Legacy code compatibility
+using FScrollbar = FScrollBar;
 
 // Global using-declaration
-using FScrollbarPtr = std::shared_ptr<FScrollbar>;
+using FScrollBarPtr = std::shared_ptr<FScrollBar>;
 
 //----------------------------------------------------------------------
-// class FScrollbar
+// class FScrollBar
 //----------------------------------------------------------------------
 
-class FScrollbar : public FWidget
+class FScrollBar : public FWidget
 {
   public:
     // Using-declaration
@@ -89,11 +92,11 @@ class FScrollbar : public FWidget
     };
 
     // Constructors
-    explicit FScrollbar (FWidget* = nullptr);
-    explicit FScrollbar (Orientation = Orientation::Vertical, FWidget* = nullptr);
+    explicit FScrollBar (FWidget* = nullptr);
+    explicit FScrollBar (Orientation = Orientation::Vertical, FWidget* = nullptr);
 
     // Destructor
-    ~FScrollbar() override;
+    ~FScrollBar() override;
 
     // Accessors
     auto getClassName() const -> FString override;
@@ -179,12 +182,12 @@ class FScrollbar : public FWidget
 //----------------------------------------------------------------------
 template <typename Instance
         , typename Callback>
-void initScrollbar ( FScrollbarPtr& bar
+void initScrollbar ( FScrollBarPtr& bar
                    , Orientation o
                    , Instance cb_instance
                    , const Callback& cb_handler )
 {
-  bar = std::make_shared<FScrollbar>(o, cb_instance);
+  bar = std::make_shared<FScrollBar>(o, cb_instance);
   bar->setMinimum(0);
   bar->setValue(0);
   bar->hide();
@@ -196,17 +199,17 @@ void initScrollbar ( FScrollbarPtr& bar
 }
 
 
-// FScrollbar inline functions
+// FScrollBar inline functions
 //----------------------------------------------------------------------
-inline auto FScrollbar::getClassName() const -> FString
-{ return "FScrollbar"; }
+inline auto FScrollBar::getClassName() const -> FString
+{ return "FScrollBar"; }
 
 //----------------------------------------------------------------------
-inline auto FScrollbar::getValue() const noexcept -> int
+inline auto FScrollBar::getValue() const noexcept -> int
 { return val; }
 
 //----------------------------------------------------------------------
-inline auto FScrollbar::getScrollType() const -> ScrollType
+inline auto FScrollBar::getScrollType() const -> ScrollType
 { return scroll_type; }
 
 }  // namespace finalcut

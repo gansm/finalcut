@@ -92,7 +92,7 @@ class FMenuList
     void setSelectedItem (FMenuItem*);
     void unsetSelectedItem();
 
-    // Inquiries
+    // Predicates
     auto isSelected (int) const -> bool;
     auto hasSelectedItem() const -> bool;
 

@@ -87,7 +87,7 @@ class FTermFreeBSD final
     static auto getInstance() -> FTermFreeBSD&;
     static auto getCursorStyle() -> CursorStyle;
 
-    // Inquiry
+    // Predicate
     static auto isFreeBSDConsole() -> bool;
 
     // Mutators

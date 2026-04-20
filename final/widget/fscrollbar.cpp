@@ -1,5 +1,5 @@
 /***********************************************************************
-* fscrollbar.cpp - Widget FScrollbar                                   *
+* fscrollbar.cpp - Widget FScrollBar                                   *
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
@@ -32,21 +32,21 @@ namespace finalcut
 {
 
 //----------------------------------------------------------------------
-// class FScrollbar
+// class FScrollBar
 //----------------------------------------------------------------------
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FScrollbar::FScrollbar(FWidget* parent)
+FScrollBar::FScrollBar(FWidget* parent)
   : FWidget{parent}
 {
   // The default scrollbar orientation is vertical
-  FScrollbar::setGeometry(FPoint{1, 1}, FSize{1, length}, false);
+  FScrollBar::setGeometry(FPoint{1, 1}, FSize{1, length}, false);
   init();
 }
 
 //----------------------------------------------------------------------
-FScrollbar::FScrollbar(Orientation o, FWidget* parent)
+FScrollBar::FScrollBar(Orientation o, FWidget* parent)
   : FWidget{parent}
 {
   setOrientation (o);
@@ -54,29 +54,29 @@ FScrollbar::FScrollbar(Orientation o, FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FScrollbar::~FScrollbar()  // destructor
+FScrollBar::~FScrollBar()  // destructor
 {
   delOwnTimers();
 }
 
 
-// public methods of FScrollbar
+// public methods of FScrollBar
 //----------------------------------------------------------------------
-void FScrollbar::setMinimum (int minimum)
+void FScrollBar::setMinimum (int minimum)
 {
   min = minimum;
   calculateSliderValues();
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::setMaximum (int maximum)
+void FScrollBar::setMaximum (int maximum)
 {
   max = maximum;
   calculateSliderValues();
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::setRange (int minimum, int maximum)
+void FScrollBar::setRange (int minimum, int maximum)
 {
   min = minimum;
   max = maximum;
@@ -84,14 +84,14 @@ void FScrollbar::setRange (int minimum, int maximum)
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::setValue (int value)
+void FScrollBar::setValue (int value)
 {
   val = std::max(min, std::min(value, max));
   calculateSliderValues();
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::setSteps (double st)
+void FScrollBar::setSteps (double st)
 {
   steps = (st <= 0.0) ? 1.0 : st;
 
@@ -100,7 +100,7 @@ void FScrollbar::setSteps (double st)
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::setPageSize (int document_size, int page_size)
+void FScrollBar::setPageSize (int document_size, int page_size)
 {
   if ( page_size == 0 )
   {
@@ -119,7 +119,7 @@ void FScrollbar::setPageSize (int document_size, int page_size)
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::setOrientation (Orientation o)
+void FScrollBar::setOrientation (Orientation o)
 {
   length = ( o == Orientation::Vertical ) ? getHeight() : getWidth();
 
@@ -139,7 +139,7 @@ void FScrollbar::setOrientation (Orientation o)
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::setSize (const FSize& size, bool adjust)
+void FScrollBar::setSize (const FSize& size, bool adjust)
 {
   // Set the scrollbar size
 
@@ -148,7 +148,7 @@ void FScrollbar::setSize (const FSize& size, bool adjust)
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::setGeometry ( const FPoint& pos, const FSize& size
+void FScrollBar::setGeometry ( const FPoint& pos, const FSize& size
                              , bool adjust )
 {
   // Set the scrollbar geometry
@@ -158,7 +158,7 @@ void FScrollbar::setGeometry ( const FPoint& pos, const FSize& size
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::resize()
+void FScrollBar::resize()
 {
   FWidget::resize();
   setOrientation (bar_orientation);
@@ -167,14 +167,14 @@ void FScrollbar::resize()
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::redraw()
+void FScrollBar::redraw()
 {
   if ( isShown() )
     draw();
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::calculateSliderValues()
+void FScrollBar::calculateSliderValues()
 {
   if ( FVTerm::getFOutput()->isNewFont()
     && bar_orientation == Orientation::Horizontal )
@@ -211,7 +211,7 @@ void FScrollbar::calculateSliderValues()
 
 
 //----------------------------------------------------------------------
-void FScrollbar::drawBar()
+void FScrollBar::drawBar()
 {
   if ( ! isShown() )
     return;
@@ -228,7 +228,7 @@ void FScrollbar::drawBar()
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::onMouseDown (FMouseEvent* ev)
+void FScrollBar::onMouseDown (FMouseEvent* ev)
 {
   if ( ev->getButton() != MouseButton::Left
     && ev->getButton() != MouseButton::Middle )
@@ -255,7 +255,7 @@ void FScrollbar::onMouseDown (FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::onMouseUp (FMouseEvent* ev)
+void FScrollBar::onMouseUp (FMouseEvent* ev)
 {
   if ( ev->getButton() != MouseButton::Left
     && ev->getButton() != MouseButton::Middle )
@@ -271,7 +271,7 @@ void FScrollbar::onMouseUp (FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::onMouseMove (FMouseEvent* ev)
+void FScrollBar::onMouseMove (FMouseEvent* ev)
 {
   if ( ev->getButton() != MouseButton::Left
     && ev->getButton() != MouseButton::Middle )
@@ -303,7 +303,7 @@ void FScrollbar::onMouseMove (FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::onWheel (FWheelEvent* ev)
+void FScrollBar::onWheel (FWheelEvent* ev)
 {
   const MouseWheel wheel = ev->getWheel();
 
@@ -326,7 +326,7 @@ void FScrollbar::onWheel (FWheelEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::onTimer (FTimerEvent*)
+void FScrollBar::onTimer (FTimerEvent*)
 {
   if ( scroll_type == ScrollType::None )
     return;
@@ -348,17 +348,17 @@ void FScrollbar::onTimer (FTimerEvent*)
 }
 
 
-// private methods of FScrollbar
+// private methods of FScrollBar
 //----------------------------------------------------------------------
-void FScrollbar::init()
+void FScrollBar::init()
 {
   unsetFocusable();
   ignorePadding();
-  FScrollbar::setGeometry(FPoint{1, 1}, FSize{getWidth(), getHeight()});
+  FScrollBar::setGeometry(FPoint{1, 1}, FSize{getWidth(), getHeight()});
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::draw()
+void FScrollBar::draw()
 {
   if ( length < 2 )
     return;
@@ -372,7 +372,7 @@ void FScrollbar::draw()
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::drawVerticalBar()
+void FScrollBar::drawVerticalBar()
 {
   const auto& wc_scrollbar = getColorTheme()->scrollbar;
   setColor (wc_scrollbar.fg, wc_scrollbar.bg);
@@ -414,7 +414,7 @@ void FScrollbar::drawVerticalBar()
 }
 
 //----------------------------------------------------------------------
-inline void FScrollbar::drawVerticalBackgroundLine()
+inline void FScrollBar::drawVerticalBackgroundLine()
 {
   if ( FVTerm::getFOutput()->isNewFont() )
   {
@@ -433,7 +433,7 @@ inline void FScrollbar::drawVerticalBackgroundLine()
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::drawHorizontalBar()
+void FScrollBar::drawHorizontalBar()
 {
   const auto& wc_scrollbar = getColorTheme()->scrollbar;
   setColor (wc_scrollbar.fg, wc_scrollbar.bg);
@@ -468,7 +468,7 @@ void FScrollbar::drawHorizontalBar()
 }
 
 //----------------------------------------------------------------------
-inline void FScrollbar::drawHorizontalBackgroundColumn()
+inline void FScrollBar::drawHorizontalBackgroundColumn()
 {
   if ( FVTerm::getFOutput()->isNewFont() && max_color > 8 )
     print (UniChar::NF_border_line_up_and_down);  // ニ
@@ -479,7 +479,7 @@ inline void FScrollbar::drawHorizontalBackgroundColumn()
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::drawButtons()
+void FScrollBar::drawButtons()
 {
   const auto& wc_scrollbar = getColorTheme()->scrollbar;
   setColor (wc_scrollbar.button_fg, wc_scrollbar.button_bg);
@@ -492,7 +492,7 @@ void FScrollbar::drawButtons()
 }
 
 //----------------------------------------------------------------------
-inline void FScrollbar::drawNewFontButtons()
+inline void FScrollBar::drawNewFontButtons()
 {
   if ( bar_orientation == Orientation::Vertical )
   {
@@ -509,7 +509,7 @@ inline void FScrollbar::drawNewFontButtons()
 }
 
 //----------------------------------------------------------------------
-inline void FScrollbar::drawDefaultButtons()
+inline void FScrollBar::drawDefaultButtons()
 {
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
@@ -532,7 +532,7 @@ inline void FScrollbar::drawDefaultButtons()
 }
 
 //----------------------------------------------------------------------
-auto FScrollbar::getClickedScrollType (int x, int y) const -> ScrollType
+auto FScrollBar::getClickedScrollType (int x, int y) const -> ScrollType
 {
   if ( bar_orientation == Orientation::Vertical )
     return getVerticalClickedScrollType(y);
@@ -541,7 +541,7 @@ auto FScrollbar::getClickedScrollType (int x, int y) const -> ScrollType
 }
 
 //----------------------------------------------------------------------
-auto FScrollbar::getVerticalClickedScrollType (int y) const -> ScrollType
+auto FScrollBar::getVerticalClickedScrollType (int y) const -> ScrollType
 {
   if ( y == 1 )
     return ScrollType::StepBackward;  // decrement button
@@ -559,7 +559,7 @@ auto FScrollbar::getVerticalClickedScrollType (int y) const -> ScrollType
 }
 
 //----------------------------------------------------------------------
-auto FScrollbar::getHorizontalClickedScrollType (int x) const -> ScrollType
+auto FScrollBar::getHorizontalClickedScrollType (int x) const -> ScrollType
 {
   return FVTerm::getFOutput()->isNewFont()
        ? getNewFontHorizontalScrollType (x)
@@ -567,7 +567,7 @@ auto FScrollbar::getHorizontalClickedScrollType (int x) const -> ScrollType
 }
 
 //----------------------------------------------------------------------
-auto FScrollbar::getNewFontHorizontalScrollType (int x) const -> ScrollType
+auto FScrollBar::getNewFontHorizontalScrollType (int x) const -> ScrollType
 {
   if ( x == 1 || x == 2 )
     return ScrollType::StepBackward;  // decrement button
@@ -585,7 +585,7 @@ auto FScrollbar::getNewFontHorizontalScrollType (int x) const -> ScrollType
 }
 
 //----------------------------------------------------------------------
-auto FScrollbar::getHorizontalScrollType (int x) const -> ScrollType
+auto FScrollBar::getHorizontalScrollType (int x) const -> ScrollType
 {
   if ( x == 1 )
     return ScrollType::StepBackward;  // decrement button
@@ -603,7 +603,7 @@ auto FScrollbar::getHorizontalScrollType (int x) const -> ScrollType
 }
 
 //----------------------------------------------------------------------
-auto FScrollbar::getSliderClickPos (int mouse_x, int mouse_y) const -> int
+auto FScrollBar::getSliderClickPos (int mouse_x, int mouse_y) const -> int
 {
   // Get the clicked position on the slider
 
@@ -633,7 +633,7 @@ auto FScrollbar::getSliderClickPos (int mouse_x, int mouse_y) const -> int
 }
 
 //----------------------------------------------------------------------
-inline auto FScrollbar::isMouseOutsideScrollbar ( int mouse_x
+inline auto FScrollBar::isMouseOutsideScrollbar ( int mouse_x
                                                 , int mouse_y ) const -> bool
 {
   return mouse_x < 1
@@ -643,7 +643,7 @@ inline auto FScrollbar::isMouseOutsideScrollbar ( int mouse_x
 }
 
 //----------------------------------------------------------------------
-inline auto FScrollbar::shouldStopTimer() const -> bool
+inline auto FScrollBar::shouldStopTimer() const -> bool
 {
   return ( scroll_type == ScrollType::PageBackward
         && slider_pos == slider_click_stop_pos )
@@ -652,7 +652,7 @@ inline auto FScrollbar::shouldStopTimer() const -> bool
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::jumpToClickPos (int x, int y)
+void FScrollBar::jumpToClickPos (int x, int y)
 {
   int new_val{};
 
@@ -689,7 +689,7 @@ void FScrollbar::jumpToClickPos (int x, int y)
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::jumpToClickPos (int pos)
+void FScrollBar::jumpToClickPos (int pos)
 {
   if ( bar_orientation == Orientation::Vertical )
     jumpToClickPos (0, pos + 2);
@@ -703,7 +703,7 @@ void FScrollbar::jumpToClickPos (int pos)
 }
 
 //----------------------------------------------------------------------
-inline void FScrollbar::handleJumpScroll (int mouse_x, int mouse_y)
+inline void FScrollBar::handleJumpScroll (int mouse_x, int mouse_y)
 {
   int new_val{};
 
@@ -731,7 +731,7 @@ inline void FScrollbar::handleJumpScroll (int mouse_x, int mouse_y)
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::stopTimer()
+void FScrollBar::stopTimer()
 {
   const auto max_slider_pos = int(bar_length - slider_length);
 
@@ -752,7 +752,7 @@ void FScrollbar::stopTimer()
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::avoidScrollOvershoot()
+void FScrollBar::avoidScrollOvershoot()
 {
   // Avoid overshoot
   if ( ( scroll_type == ScrollType::PageBackward
@@ -766,7 +766,7 @@ void FScrollbar::avoidScrollOvershoot()
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::processScroll()
+void FScrollBar::processScroll()
 {
   startDrawing();  // Avoid printing an overshoot on the emit callback
   emitCallback("change-value");
@@ -775,7 +775,7 @@ void FScrollbar::processScroll()
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::changeOnResize()
+void FScrollBar::changeOnResize()
 {
   const FSize& size = getSize();
   const std::size_t w = size.getWidth();
@@ -797,7 +797,7 @@ void FScrollbar::changeOnResize()
 }
 
 //----------------------------------------------------------------------
-inline void FScrollbar::handleWidgetFocus() const
+inline void FScrollBar::handleWidgetFocus() const
 {
   const auto& parent_widget = getParentWidget();
 
@@ -806,7 +806,7 @@ inline void FScrollbar::handleWidgetFocus() const
 }
 
 //----------------------------------------------------------------------
-inline void FScrollbar::handleSliderClick (int mouse_x, int mouse_y)
+inline void FScrollBar::handleSliderClick (int mouse_x, int mouse_y)
 {
   if ( scroll_type != ScrollType::None )
     return;
@@ -818,7 +818,7 @@ inline void FScrollbar::handleSliderClick (int mouse_x, int mouse_y)
 }
 
 //----------------------------------------------------------------------
-inline void FScrollbar::handleTrackClick (int mouse_x, int mouse_y)
+inline void FScrollBar::handleTrackClick (int mouse_x, int mouse_y)
 {
   if ( scroll_type == ScrollType::PageBackward
     || scroll_type == ScrollType::PageForward )

@@ -3079,13 +3079,13 @@ inline auto FListView::getScrollBarMaxVertical (const std::size_t element_count)
 }
 
 //----------------------------------------------------------------------
-inline void FListView::updateViewAfterVBarChange (const FScrollbar::ScrollType scroll_type)
+inline void FListView::updateViewAfterVBarChange (const FScrollBar::ScrollType scroll_type)
 {
   if ( isShown() )
     drawList();
 
-  if ( scroll_type >= FScrollbar::ScrollType::StepBackward
-    && scroll_type <= FScrollbar::ScrollType::PageForward )
+  if ( scroll_type >= FScrollBar::ScrollType::StepBackward
+    && scroll_type <= FScrollBar::ScrollType::PageForward )
   {
     scroll.vbar->setValue (scroll.first_visible_line.getPosition());
 
@@ -3097,7 +3097,7 @@ inline void FListView::updateViewAfterVBarChange (const FScrollbar::ScrollType s
 }
 
 //----------------------------------------------------------------------
-inline void FListView::updateViewAfterHBarChange ( const FScrollbar::ScrollType scroll_type
+inline void FListView::updateViewAfterHBarChange ( const FScrollBar::ScrollType scroll_type
                                                  , const int xoffset_before )
 {
   if ( isShown() )
@@ -3106,7 +3106,7 @@ inline void FListView::updateViewAfterHBarChange ( const FScrollbar::ScrollType 
     drawList();
   }
 
-  if ( scroll_type >= FScrollbar::ScrollType::StepBackward )
+  if ( scroll_type >= FScrollBar::ScrollType::StepBackward )
   {
     scroll.hbar->setValue (scroll.xoffset);
 
@@ -3118,10 +3118,10 @@ inline void FListView::updateViewAfterHBarChange ( const FScrollbar::ScrollType 
 }
 
 //----------------------------------------------------------------------
-inline auto FListView::getVerticalScrollDistance (const FScrollbar::ScrollType scroll_type) const -> int
+inline auto FListView::getVerticalScrollDistance (const FScrollBar::ScrollType scroll_type) const -> int
 {
-  if ( scroll_type == FScrollbar::ScrollType::PageBackward
-    || scroll_type == FScrollbar::ScrollType::PageForward )
+  if ( scroll_type == FScrollBar::ScrollType::PageBackward
+    || scroll_type == FScrollBar::ScrollType::PageForward )
   {
     return int(getClientHeight());
   }
@@ -3130,10 +3130,10 @@ inline auto FListView::getVerticalScrollDistance (const FScrollbar::ScrollType s
 }
 
 //----------------------------------------------------------------------
-inline auto FListView::getHorizontalScrollDistance (const FScrollbar::ScrollType scroll_type) const -> int
+inline auto FListView::getHorizontalScrollDistance (const FScrollBar::ScrollType scroll_type) const -> int
 {
-  if ( scroll_type == FScrollbar::ScrollType::PageBackward
-    || scroll_type == FScrollbar::ScrollType::PageForward )
+  if ( scroll_type == FScrollBar::ScrollType::PageBackward
+    || scroll_type == FScrollBar::ScrollType::PageForward )
   {
     return int(getClientWidth());
   }
@@ -3144,34 +3144,34 @@ inline auto FListView::getHorizontalScrollDistance (const FScrollbar::ScrollType
 //----------------------------------------------------------------------
 void FListView::cb_vbarChange (const FWidget*)
 {
-  const FScrollbar::ScrollType scroll_type = scroll.vbar->getScrollType();
+  const FScrollBar::ScrollType scroll_type = scroll.vbar->getScrollType();
   static constexpr int wheel_distance = 4;
   scroll.first_line_position_before = scroll.first_visible_line.getPosition();
   int distance = getVerticalScrollDistance(scroll_type);
 
   switch ( scroll_type )
   {
-    case FScrollbar::ScrollType::PageBackward:
-    case FScrollbar::ScrollType::StepBackward:
+    case FScrollBar::ScrollType::PageBackward:
+    case FScrollBar::ScrollType::StepBackward:
       stepBackward_impl(distance);
       break;
 
-    case FScrollbar::ScrollType::PageForward:
-    case FScrollbar::ScrollType::StepForward:
+    case FScrollBar::ScrollType::PageForward:
+    case FScrollBar::ScrollType::StepForward:
       stepForward_impl(distance);
       break;
 
-    case FScrollbar::ScrollType::Jump:
+    case FScrollBar::ScrollType::Jump:
       scrollToY (scroll.vbar->getValue());
       break;
 
-    case FScrollbar::ScrollType::WheelUp:
-    case FScrollbar::ScrollType::WheelLeft:
+    case FScrollBar::ScrollType::WheelUp:
+    case FScrollBar::ScrollType::WheelLeft:
       wheelUp (wheel_distance);
       break;
 
-    case FScrollbar::ScrollType::WheelDown:
-    case FScrollbar::ScrollType::WheelRight:
+    case FScrollBar::ScrollType::WheelDown:
+    case FScrollBar::ScrollType::WheelRight:
       wheelDown (wheel_distance);
       break;
 
@@ -3185,34 +3185,34 @@ void FListView::cb_vbarChange (const FWidget*)
 //----------------------------------------------------------------------
 void FListView::cb_hbarChange (const FWidget*)
 {
-  const FScrollbar::ScrollType scroll_type = scroll.hbar->getScrollType();
+  const FScrollBar::ScrollType scroll_type = scroll.hbar->getScrollType();
   static constexpr int wheel_distance = 4;
   const int xoffset_before = scroll.xoffset;
   int distance = getHorizontalScrollDistance(scroll_type);
 
   switch ( scroll_type )
   {
-    case FScrollbar::ScrollType::PageBackward:
-    case FScrollbar::ScrollType::StepBackward:
+    case FScrollBar::ScrollType::PageBackward:
+    case FScrollBar::ScrollType::StepBackward:
       scrollBy (-distance, 0);
       break;
 
-    case FScrollbar::ScrollType::PageForward:
-    case FScrollbar::ScrollType::StepForward:
+    case FScrollBar::ScrollType::PageForward:
+    case FScrollBar::ScrollType::StepForward:
       scrollBy (distance, 0);
       break;
 
-    case FScrollbar::ScrollType::Jump:
+    case FScrollBar::ScrollType::Jump:
       scrollToX (scroll.hbar->getValue());
       break;
 
-    case FScrollbar::ScrollType::WheelUp:
-    case FScrollbar::ScrollType::WheelLeft:
+    case FScrollBar::ScrollType::WheelUp:
+    case FScrollBar::ScrollType::WheelLeft:
       scrollBy (-wheel_distance, 0);
       break;
 
-    case FScrollbar::ScrollType::WheelDown:
-    case FScrollbar::ScrollType::WheelRight:
+    case FScrollBar::ScrollType::WheelDown:
+    case FScrollBar::ScrollType::WheelRight:
       scrollBy (wheel_distance, 0);
       break;
 

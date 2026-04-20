@@ -177,7 +177,7 @@ class FTerm final
     static auto getTabstop() -> int;
     static auto getMaxColor() -> int;
 
-    // Inquiries
+    // Predicates
     static auto isRaw() -> bool;
     static auto hasUTF8() -> bool;
     static auto isMonochron() -> bool;

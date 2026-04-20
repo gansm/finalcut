@@ -156,7 +156,7 @@ class FLineEdit : public FWidget
     void setReadOnly (bool = true);
     void unsetReadOnly();
 
-    // Inquiry
+    // Predicate
     auto hasShadow() const -> bool;
     auto isReadOnly() const noexcept -> bool;
 

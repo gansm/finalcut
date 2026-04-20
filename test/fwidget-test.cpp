@@ -81,7 +81,7 @@ class FWidget_protected : public finalcut::FWidget
                                   , FPreprocessingFunction&& ) override;
     void  delPreprocessingHandler (const finalcut::FVTerm*) override;
 
-    // Inquiry
+    // Predicate
     auto  p_isChildPrintArea() const -> bool;
 
     // Mutators

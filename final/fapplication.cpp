@@ -644,11 +644,11 @@ void FApplication::showParameterUsage()
     << "  --no-sgr-optimizer        "
     << "    Do not optimize SGR sequences\n"
     << "  --vgafont                 "
-    << "    Set the standard vga 8x16 font\n"
+    << "    Set standard vga 8x16 font\n"
     << "  --newfont                 "
-    << "    Enables the graphical font\n"
+    << "    Enables graphical font\n"
     << "  --dark-theme              "
-    << "    Enables the dark theme\n"
+    << "    Enables dark theme\n"
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
     << "\n"

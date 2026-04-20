@@ -296,7 +296,7 @@ class FRingBuffer
       elements = 0U;
     }
 
-    // Inquiries
+    // Predicates
     constexpr auto isEmpty() const noexcept -> bool
     {
       return elements == 0;

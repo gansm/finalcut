@@ -114,7 +114,7 @@ class FMouseData
     virtual auto getClassName() const -> FString;
     auto getPos() const & noexcept -> const FPoint&;
 
-    // Inquiries
+    // Predicates
     auto isLeftButtonPressed() const noexcept -> bool;
     auto isLeftButtonReleased() const noexcept -> bool;
     auto isLeftButtonDoubleClick() const noexcept -> bool;
@@ -203,7 +203,7 @@ class FMouse : public FMouseData
     void setMaxHeight (uInt16) noexcept;
     void setDblclickInterval (const uInt64) noexcept;
 
-    // Inquiries
+    // Predicates
     virtual auto hasData() -> bool = 0;
     auto hasEvent() const noexcept -> bool;
     auto hasUnprocessedInput() const noexcept -> bool;
@@ -231,7 +231,7 @@ class FMouse : public FMouseData
     void setMousePressedTime (const TimeValue&) noexcept;
     void resetMousePressedTime() noexcept;
 
-    // Inquiry
+    // Predicate
     auto isDblclickTimeout (const TimeValue&) const -> bool;
 
   private:
@@ -271,7 +271,7 @@ class FMouseGPM final : public FMouse
     // Mutators
     void setStdinNo(int) noexcept;
 
-    // Inquiry
+    // Predicate
     auto hasData() noexcept -> bool override;
     auto isGpmMouseEnabled() const noexcept -> bool;
 
@@ -339,7 +339,7 @@ class FMouseX11 final : public FMouse
     // Accessors
     auto getClassName() const -> FString override;
 
-    // Inquiry
+    // Predicate
     auto hasData() noexcept -> bool override;
 
     // Methods
@@ -402,7 +402,7 @@ class FMouseSGR final : public FMouse
     // Accessors
     auto getClassName() const -> FString override;
 
-    // Inquiry
+    // Predicate
     auto hasData() noexcept -> bool override;
 
     // Methods
@@ -477,7 +477,7 @@ class FMouseUrxvt final : public FMouse
     // Accessors
     auto getClassName() const -> FString override;
 
-    // Inquiry
+    // Predicate
     auto hasData() noexcept -> bool override;
 
     // Methods
@@ -611,7 +611,7 @@ class FMouseControl
     void  useGpmMouse (bool = true);
     void  useXtermMouse (bool = true);
 
-    // Inquiries
+    // Predicates
     auto  hasData() -> bool;
     auto  hasEvent() -> bool;
     auto  isLeftButtonPressed() -> bool;

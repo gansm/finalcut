@@ -172,7 +172,7 @@ class FTermData final
     auto getFramebufferBpp() const noexcept -> int;
 #endif
 
-    // Inquiries
+    // Predicates
     auto hasShadowCharacter() const noexcept -> bool;
     auto hasHalfBlockCharacter() const noexcept -> bool;
     auto hasCursorOptimisation() const noexcept -> bool;

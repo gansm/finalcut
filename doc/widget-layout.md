@@ -36,7 +36,7 @@ If you want to ignore padding spaces, you have to force this with the
 
 <figure class="image">
   <img src="widget-coordinates.svg" alt="widget coordinates">
-  <figcaption>Figure 11.  Widget coordinates</figcaption>
+  <figcaption>Figure 1:  Widget coordinates</figcaption>
 </figure>
 <br /><br />
 
@@ -87,7 +87,7 @@ methods.
 
 <figure class="image">
   <img src="widget-lengths.svg" alt="widget lengths">
-  <figcaption>Figure 12.  Width and height of a widget</figcaption>
+  <figcaption>Figure 2:  Width and height of a widget</figcaption>
 </figure>
 <br /><br />
 
@@ -141,7 +141,7 @@ absolute geometry values as a `FRect` object, you can call the method
 
 <figure class="image">
   <img src="widget-geometry.svg" alt="widget geometry">
-  <figcaption>Figure 13.  Geometry of widgets</figcaption>
+  <figcaption>Figure 3:  Geometry of widgets</figcaption>
 </figure>
 <br /><br />
 
@@ -273,7 +273,7 @@ auto main (int argc, char* argv[]) -> int
 ```
 <figure class="image">
   <img src="running-size-adjustment.cpp.png" alt="size-adjustment.cpp">
-  <figcaption>Figure 14.  Dynamic layout</figcaption>
+  <figcaption>Figure 4:  Dynamic layout</figcaption>
 </figure>
 <br /><br />
 

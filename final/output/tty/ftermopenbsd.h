@@ -79,7 +79,7 @@ class FTermOpenBSD final
     auto        getClassName() const -> FString;
     static auto getInstance() -> FTermOpenBSD&;
 
-    // Inquiries
+    // Predicates
     static auto isBSDConsole() -> bool;
 
     // Mutators

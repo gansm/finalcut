@@ -108,7 +108,7 @@ class FStatusKey : public FWidget
     void setMouseFocus (bool = true);
     void unsetMouseFocus();
 
-    // Inquiry
+    // Predicate
     auto isActivated() const noexcept -> bool;
     auto hasMouseFocus() const noexcept -> bool;
 
@@ -208,7 +208,7 @@ class FStatusBar : public FWindow
     void setMessage (const FString&);
     void resetColors() override;
 
-    // Inquiries
+    // Predicates
     auto isActivated (int) const -> bool;
     auto hasActivatedKey() const -> bool;
 

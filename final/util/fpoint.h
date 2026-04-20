@@ -88,7 +88,7 @@ class FPoint
     constexpr void setPoint (const FPoint&) noexcept;
     constexpr void setPoint (coordinate_type, coordinate_type) noexcept;
 
-    // Inquiry
+    // Predicate
     constexpr auto isOrigin() const noexcept -> bool;
 
     // Point references
