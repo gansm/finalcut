@@ -69,7 +69,7 @@ class FColorPalette
 
   protected:
     void setPalette (FColor, int, int, int) const;
-    void setVGAdefaultPalette() const;
+    void setDefaultVGAPalette() const;
 
   private:
     // Data members

@@ -909,11 +909,11 @@ auto FListView::removeColumn (int column) -> int
 
   selection.current_iter = data.itemlist.begin();
   scroll.first_visible_line = data.itemlist.begin();
-  adjustScrollbars(getCount());
+  adjustScrollBars(getCount());
   drawList();
   drawBorder();
   drawHeadlines();
-  drawScrollbars();
+  drawScrollBars();
   processChanged();
   return int(data.header.size());
 }
@@ -924,7 +924,7 @@ void FListView::removeAllColumns()
   // Deletes all columns and clears the list
 
   max_line_width = 0;
-  adjustScrollbars(0);
+  adjustScrollBars(0);
   data.header.clear();
   clear();
 }
@@ -1235,7 +1235,7 @@ void FListView::onMouseDoubleClick (FMouseEvent* ev)
     if ( isTreeView() && item->isExpandable() )
     {
       toggleItemExpandState(item);
-      adjustScrollbars (getCount());  // after expand or collapse
+      adjustScrollBars (getCount());  // after expand or collapse
 
       if ( isShown() )
         draw();
@@ -1356,7 +1356,7 @@ void FListView::adjustViewport (const int element_count)
 }
 
 //----------------------------------------------------------------------
-void FListView::adjustScrollbars (const std::size_t element_count) const
+void FListView::adjustScrollBars (const std::size_t element_count) const
 {
   const std::size_t width = getClientWidth();
   const std::size_t height = getClientHeight();
@@ -1389,7 +1389,7 @@ void FListView::adjustSize()
   FWidget::adjustSize();
   const std::size_t element_count = getCount();
   adjustViewport (int(element_count));
-  adjustScrollbars (element_count);
+  adjustScrollBars (element_count);
 }
 
 
@@ -1416,8 +1416,8 @@ inline auto FListView::canSkipDragScrolling() -> bool
 //----------------------------------------------------------------------
 void FListView::init()
 {
-  initScrollbar (scroll.vbar, Orientation::Vertical, this, &FListView::cb_vbarChange);
-  initScrollbar (scroll.hbar, Orientation::Horizontal, this, &FListView::cb_hbarChange);
+  initScrollBar (scroll.vbar, Orientation::Vertical, this, &FListView::cb_vbarChange);
+  initScrollBar (scroll.hbar, Orientation::Horizontal, this, &FListView::cb_hbarChange);
   data.selflist.push_back(this);
   data.root = data.selflist.begin();
   FListView::setGeometry (FPoint{1, 1}, FSize{5, 4}, false);  // initialize geometry values
@@ -1542,7 +1542,7 @@ void FListView::draw()
     for (auto y{2}; y < int(getHeight()); y++)
     {
       print() << FPoint{int(getWidth()) - 1, y}
-              << ' ';  // clear right side of the scrollbar
+              << ' ';  // clear right side of the scroll bar
     }
   }
 
@@ -1551,9 +1551,9 @@ void FListView::draw()
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
 
-  drawScrollbars();
+  drawScrollBars();
   drawList();
-  updateStatusbar (this);
+  updateStatusBar (this);
 }
 
 //----------------------------------------------------------------------
@@ -1564,7 +1564,7 @@ void FListView::drawBorder()
 }
 
 //----------------------------------------------------------------------
-void FListView::drawScrollbars() const
+void FListView::drawScrollBars() const
 {
   if ( ! scroll.hbar->isShown() && isHorizontallyScrollable() )
     scroll.hbar->show();
@@ -1805,7 +1805,7 @@ void FListView::clearList()
     print() << FPoint{2, 2 + y} << FString{size, L' '};
   }
 
-  drawScrollbars();
+  drawScrollBars();
 }
 
 //----------------------------------------------------------------------
@@ -2131,11 +2131,11 @@ void FListView::updateLayout()
                     recalculateHorizontalBar (line_width);
                   }
                 );
-  adjustScrollbars(getCount());
+  adjustScrollBars(getCount());
   drawList();
   drawBorder();
   drawHeadlines();
-  drawScrollbars();
+  drawScrollBars();
 }
 
 //----------------------------------------------------------------------
@@ -2295,7 +2295,7 @@ void FListView::updateListAfterRemoval()
     drawList();
     drawBorder();
     drawHeadlines();
-    drawScrollbars();
+    drawScrollBars();
   }
 }
 
@@ -2419,7 +2419,7 @@ void FListView::handleTreeExpanderClick (const FMouseEvent* ev)
     return;
 
   toggleItemExpandState(item);
-  adjustScrollbars (getCount());
+  adjustScrollBars (getCount());
 
   if ( isShown() )
     draw();
@@ -2674,7 +2674,7 @@ void FListView::handleListEvent (const FMouseEvent* ev)
   handleTreeViewEvents(ev, item);
   handleCheckableItemsEvents(ev, item);
 
-  // Redraw the list and update the vertical scrollbar
+  // Redraw the list and update the vertical scroll bar
   if ( isShown() )
     drawList();
 
@@ -2782,7 +2782,7 @@ inline void FListView::collapseAndScrollLeft()
     item->collapse();
     adjustSize();
     scroll.vbar->calculateSliderValues();
-    // Force vertical scrollbar redraw
+    // Force vertical scroll bar redraw
     scroll.first_line_position_before = -1;
     return;
   }
@@ -2829,8 +2829,8 @@ inline void FListView::expandAndScrollRight()
   {
     // Expand element
     item->expand();
-    adjustScrollbars (getCount());
-    // Force vertical scrollbar redraw
+    adjustScrollBars (getCount());
+    // Force vertical scroll bar redraw
     scroll.first_line_position_before = -1;
   }
   else
@@ -2880,7 +2880,7 @@ inline auto FListView::expandSubtree() -> bool
   if ( isTreeView() && item->isExpandable() && ! item->isExpand() )
   {
     item->expand();
-    adjustScrollbars (getCount());
+    adjustScrollBars (getCount());
     return true;
   }
 
@@ -2898,7 +2898,7 @@ inline auto FListView::collapseSubtree() -> bool
   if ( isTreeView() && item->isExpandable() && item->isExpand() )
   {
     item->collapse();
-    adjustScrollbars (getCount());
+    adjustScrollBars (getCount());
     return true;
   }
 

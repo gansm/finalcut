@@ -119,8 +119,8 @@ class FStatusKey : public FWidget
     // Methods
     void init();
     void processActivate() const;
-    auto getConnectedStatusbar() const -> FStatusBar*;
-    void setConnectedStatusbar (FStatusBar*);
+    auto getConnectedStatusBar() const -> FStatusBar*;
+    void setConnectedStatusBar (FStatusBar*);
 
     // Data members
     FString      text{};
@@ -172,11 +172,11 @@ inline auto FStatusKey::hasMouseFocus() const noexcept -> bool
 { return mouse_focus; }
 
 //----------------------------------------------------------------------
-inline auto FStatusKey::getConnectedStatusbar() const -> FStatusBar*
+inline auto FStatusKey::getConnectedStatusBar() const -> FStatusBar*
 { return bar; }
 
 //----------------------------------------------------------------------
-inline void FStatusKey::setConnectedStatusbar (FStatusBar* sb)
+inline void FStatusKey::setConnectedStatusBar (FStatusBar* sb)
 { bar = sb; }
 
 

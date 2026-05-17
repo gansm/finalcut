@@ -1,5 +1,5 @@
 /***********************************************************************
-* fprogressbar.cpp - Widget FProgressbar                               *
+* fprogressbar.cpp - Widget FProgressBar                               *
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
@@ -30,24 +30,24 @@ namespace finalcut
 {
 
 //----------------------------------------------------------------------
-// class FProgressbar
+// class FProgressBar
 //----------------------------------------------------------------------
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FProgressbar::FProgressbar(FWidget* parent)
+FProgressBar::FProgressBar(FWidget* parent)
   : FWidget{parent}
 {
   init();
 }
 
 //----------------------------------------------------------------------
-FProgressbar::~FProgressbar() noexcept = default;  // destructor
+FProgressBar::~FProgressBar() noexcept = default;  // destructor
 
 
-// public methods of FProgressbar
+// public methods of FProgressBar
 //----------------------------------------------------------------------
-void FProgressbar::setPercentage (std::size_t percentage_value)
+void FProgressBar::setPercentage (std::size_t percentage_value)
 {
   if ( percentage_value <= percentage && percentage != NOT_SET )
     return;
@@ -62,7 +62,7 @@ void FProgressbar::setPercentage (std::size_t percentage_value)
 }
 
 //----------------------------------------------------------------------
-void FProgressbar::setSize (const FSize& size, bool adjust)
+void FProgressBar::setSize (const FSize& size, bool adjust)
 {
   // Sets the progress bar size
 
@@ -71,7 +71,7 @@ void FProgressbar::setSize (const FSize& size, bool adjust)
 }
 
 //----------------------------------------------------------------------
-void FProgressbar::setGeometry ( const FPoint& pos, const FSize& size
+void FProgressBar::setGeometry ( const FPoint& pos, const FSize& size
                                , bool adjust )
 {
   // Sets the progress bar geometry
@@ -81,13 +81,13 @@ void FProgressbar::setGeometry ( const FPoint& pos, const FSize& size
 }
 
 //----------------------------------------------------------------------
-void FProgressbar::setShadow (bool enable)
+void FProgressBar::setShadow (bool enable)
 {
   setWidgetShadow(this, enable);
 }
 
 //----------------------------------------------------------------------
-void FProgressbar::hide()
+void FProgressBar::hide()
 {
   FWidget::hide();
   const auto& shadow = hasShadow() ? FSize(1, 1) : FSize(0, 0);
@@ -97,7 +97,7 @@ void FProgressbar::hide()
 }
 
 //----------------------------------------------------------------------
-void FProgressbar::reset()
+void FProgressBar::reset()
 {
   percentage = NOT_SET;
 
@@ -109,16 +109,16 @@ void FProgressbar::reset()
 }
 
 
-// private methods of FProgressbar
+// private methods of FProgressBar
 //----------------------------------------------------------------------
-void FProgressbar::init()
+void FProgressBar::init()
 {
   unsetFocusable();
   setShadow();
 }
 
 //----------------------------------------------------------------------
-void FProgressbar::draw()
+void FProgressBar::draw()
 {
   drawProgressLabel();
   drawProgressBar();
@@ -130,7 +130,7 @@ void FProgressbar::draw()
 }
 
 //----------------------------------------------------------------------
-void FProgressbar::drawProgressLabel()
+void FProgressBar::drawProgressLabel()
 {
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
@@ -148,7 +148,7 @@ void FProgressbar::drawProgressLabel()
 }
 
 //----------------------------------------------------------------------
-void FProgressbar::drawProgressBar()
+void FProgressBar::drawProgressBar()
 {
   std::size_t len{0};
   print() << FPoint{1, 1};
@@ -163,17 +163,17 @@ void FProgressbar::drawProgressBar()
 }
 
 //----------------------------------------------------------------------
-auto FProgressbar::drawProgressIndicator() -> std::size_t
+auto FProgressBar::drawProgressIndicator() -> std::size_t
 {
   // Draw the progress indicator
 
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
-  const auto& wc_progressbar = getColorTheme()->progressbar;
+  const auto& wc_progress_bar = getColorTheme()->progress_bar;
   const double length = double(bar_length * percentage) / 100;
   auto len = std::size_t(trunc(length));
-  print() << FColorPair {wc_progressbar.fg, wc_progressbar.fg}
+  print() << FColorPair {wc_progress_bar.fg, wc_progress_bar.fg}
           << FString {len, UniChar::FullBlock};  // █
 
   if ( len >= bar_length )
@@ -191,7 +191,7 @@ auto FProgressbar::drawProgressIndicator() -> std::size_t
   }
   else
   {
-    print() << FColorPair{wc_progressbar.fg, wc_progressbar.bg}
+    print() << FColorPair{wc_progress_bar.fg, wc_progress_bar.bg}
             << UniChar::LeftHalfBlock;  // ▌
   }
 
@@ -200,13 +200,13 @@ auto FProgressbar::drawProgressIndicator() -> std::size_t
 }
 
 //----------------------------------------------------------------------
-void FProgressbar::drawProgressBackground (std::size_t len)
+void FProgressBar::drawProgressBackground (std::size_t len)
 {
   // Draw the progress background
 
   const std::size_t bg_len = bar_length - len;
-  const auto& wc_progressbar = getColorTheme()->progressbar;
-  setColor (wc_progressbar.fg, wc_progressbar.bg);
+  const auto& wc_progress_bar = getColorTheme()->progress_bar;
+  setColor (wc_progress_bar.fg, wc_progress_bar.bg);
 
   if ( FVTerm::getFOutput()->getMaxColor() < 16 )
     print() << FString {bg_len, UniChar::MediumShade};  // ▒

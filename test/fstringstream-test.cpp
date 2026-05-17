@@ -186,15 +186,15 @@ void FStringStreamTest::rdbufTest()
 //----------------------------------------------------------------------
 void FStringStreamTest::fileTest()
 {
-  std::string filename = "test.log";
+  std::string file_name = "test.log";
   finalcut::FStringStream ss{};
 
   {
-    std::ofstream file_stream(filename, std::ofstream::out);
+    std::ofstream file_stream(file_name, std::ofstream::out);
 
     if ( ! file_stream.is_open() )
     {
-      throw std::iostream::failure("Failed to open \"" + filename + "\"");
+      throw std::iostream::failure("Failed to open \"" + file_name + "\"");
     }
 
     ss << "FStringStream file test\n";
@@ -204,7 +204,7 @@ void FStringStreamTest::fileTest()
       file_stream.close();
   }
 
-  std::ifstream file_stream{filename};
+  std::ifstream file_stream{file_name};
   std::string line{};
 
   if ( std::getline(file_stream, line) )
@@ -215,11 +215,11 @@ void FStringStreamTest::fileTest()
   if ( file_stream.is_open() )
     file_stream.close();
 
-  int ret = remove(filename.c_str());  // Delete file
+  int ret = remove(file_name.c_str());  // Delete file
 
   if ( ret == -1 )
   {
-    std::cerr << "Cannot delete the " << filename << " file";
+    std::cerr << "Cannot delete the " << file_name << " file";
   }
 }
 

@@ -85,21 +85,21 @@ auto FTermDetection::getSecDAString() const & -> const FString&
 #endif
 
 //----------------------------------------------------------------------
-void FTermDetection::setTtyTypeFileName (const FString& ttytype_filename)
+void FTermDetection::setTtyTypeFileName (const FString& tty_type_file_name)
 {
-  if ( ! ttytype_filename )
+  if ( ! tty_type_file_name )
     return;
 
-  ttytypename = ttytype_filename;
+  tty_type_name = tty_type_file_name;
 }
 
 //----------------------------------------------------------------------
 void FTermDetection::detect()
 {
-  // Set the variable 'termtype' to the predefined type of the terminal
+  // Set the variable 'term_type' to the predefined type of the terminal
   getSystemTermType();
 
-  // Analysis the termtype
+  // Analysis the term type
   termtypeAnalysis();
 
   // Terminal detection
@@ -113,16 +113,16 @@ void FTermDetection::getSystemTermType()
 {
   // Import the untrusted environment variable TERM
   const auto& term_env = std::getenv("TERM");
-  const auto& termfilename = FTermData::getInstance().getTermFileName();
+  const auto& term_file_name = FTermData::getInstance().getTermFileName();
 
   if ( term_env )
   {
-    // Save name in termtype
-    termtype = term_env;
+    // Save name in term type
+    term_type = term_env;
     return;
   }
 
-  if ( ! termfilename.empty() )  // 1st fallback: use the teminal file name
+  if ( ! term_file_name.empty() )  // 1st fallback: use the teminal file name
   {
     if ( getTTYtype() )  // Look into /etc/ttytype
       return;
@@ -134,7 +134,7 @@ void FTermDetection::getSystemTermType()
   }
 
   // 2nd fallback: use vt100 if not found
-  termtype = "vt100";
+  term_type = "vt100";
 }
 
 //----------------------------------------------------------------------
@@ -154,7 +154,7 @@ auto FTermDetection::getTTYtype() -> bool
   std::array<char, BUFSIZ> str{};
   static const auto& fsystem = FSystem::getInstance();
 
-  if ( (file_ptr = fsystem->fopen(ttytypename.c_str(), "r")) == nullptr )
+  if ( (file_ptr = fsystem->fopen(tty_type_name.c_str(), "r")) == nullptr )
     return false;
 
   // Read and parse the file
@@ -178,8 +178,8 @@ auto FTermDetection::getTTYtype() -> bool
 
     if ( type != nullptr && name != nullptr && term_basename == name )
     {
-      // Save name in termtype
-      termtype = type;
+      // Save name in term type
+      term_type = type;
       fsystem->fclose(file_ptr);
       return true;
     }
@@ -205,8 +205,8 @@ auto FTermDetection::getTTYSFileEntry() -> bool
 
     if ( type != nullptr )
     {
-      // Save name in termtype
-      termtype = type;
+      // Save name in term type
+      term_type = type;
       endttyent();
       return true;
     }
@@ -221,13 +221,13 @@ auto FTermDetection::getTTYSFileEntry() -> bool
 auto FTermDetection::getTermBasename() const -> std::string
 {
   // Get the terminal basename
-  const auto& termfilename = FTermData::getInstance().getTermFileName();
-  const auto found = termfilename.rfind('/');
+  const auto& term_file_name = FTermData::getInstance().getTermFileName();
+  const auto found = term_file_name.rfind('/');
 
   if ( found != std::string::npos )
-    return {termfilename, found + 1};
+    return {term_file_name, found + 1};
 
-  return termfilename;
+  return term_file_name;
 }
 
 //----------------------------------------------------------------------
@@ -324,7 +324,7 @@ void FTermDetection::detectTerminal()
 {
   // Terminal detection
 
-  FString new_termtype{};
+  FString new_term_type{};
 
   if ( terminal_detection )
   {
@@ -333,23 +333,23 @@ void FTermDetection::detectTerminal()
     keyboard.setNonBlockingInput();
 
     // Initialize 256 colors terminals
-    new_termtype = init_256colorTerminal();
+    new_term_type = init_256colorTerminal();
 
     // Identify the terminal via the answerback-message
-    new_termtype = parseAnswerbackMsg (new_termtype);
+    new_term_type = parseAnswerbackMsg (new_term_type);
 
     // Identify the terminal via the secondary device attributes (SEC_DA)
-    new_termtype = parseSecDA (new_termtype);
+    new_term_type = parseSecDA (new_term_type);
 
     // Determines the maximum number of colors
-    new_termtype = determineMaxColor(new_termtype);
+    new_term_type = determineMaxColor(new_term_type);
 
     keyboard.unsetNonBlockingInput();
     FTermios::unsetCaptureSendCharacters();
   }
 
   //
-  // Additional termtype analysis
+  // Additional term type analysis
   //
   static auto& fterm_data = FTermData::getInstance();
 
@@ -359,24 +359,24 @@ void FTermDetection::detectTerminal()
     fterm_data.setTermType (FTermType::xterm);
 
     // Each xterm should be able to use at least 16 colors
-    if ( ! new_termtype && termtype.getLength() == 5 )
-      new_termtype = "xterm-16color";
+    if ( ! new_term_type && term_type.getLength() == 5 )
+      new_term_type = "xterm-16color";
   }
   else if ( startsWithTermType(L"ansi") )  // ANSI detection
     fterm_data.setTermType (FTermType::ansi);
 
   // set the new environment variable TERM
-  if ( new_termtype )
+  if ( new_term_type )
   {
-    setenv("TERM", new_termtype.c_str(), 1);
-    termtype = std::move(new_termtype);
+    setenv("TERM", new_term_type.c_str(), 1);
+    term_type = std::move(new_term_type);
   }
 
 #if defined(__CYGWIN__)
-  const auto& termfilename = fterm_data.getTermFileName();
+  const auto& term_file_name = fterm_data.getTermFileName();
 
   // Fixes problem with mouse input
-  if ( termfilename.substr(0, 9) == "/dev/cons" )
+  if ( term_file_name.substr(0, 9) == "/dev/cons" )
     FKeyboard::setNonBlockingInputSupport(false);
 #endif
 }
@@ -385,15 +385,15 @@ void FTermDetection::detectTerminal()
 auto FTermDetection::init_256colorTerminal() -> FString
 {
   color256 = \
-      bool( get256colorEnvString() || termtype.includes("256color") );
-  FString new_termtype = termtype_256color_quirks();
+      bool( get256colorEnvString() || term_type.includes("256color") );
+  FString new_term_type = termtype_256color_quirks();
 
 #if DEBUG
-  if ( ! new_termtype.isEmpty() )
-    termtype_256color = new_termtype;
+  if ( ! new_term_type.isEmpty() )
+    term_type_256color = new_term_type;
 #endif  // DEBUG
 
-  return new_termtype;
+  return new_term_type;
 }
 
 //----------------------------------------------------------------------
@@ -421,7 +421,7 @@ auto FTermDetection::get256colorEnvString() -> bool
 //----------------------------------------------------------------------
 auto FTermDetection::termtype_256color_quirks() -> FString
 {
-  FString new_termtype{};
+  FString new_term_type{};
   static auto& fterm_data = FTermData::getInstance();
 
   if ( ! color_env.string2.isEmpty()
@@ -433,30 +433,30 @@ auto FTermDetection::termtype_256color_quirks() -> FString
 
     if ( ! fterm_data.isTermType(FTermType::screen) )
     {
-      new_termtype = "gnome-256color";
-      return new_termtype;
+      new_term_type = "gnome-256color";
+      return new_term_type;
     }
   }
 
   if ( ! color256 )
-    return new_termtype;
+    return new_term_type;
 
   if ( startsWithTermType(L"xterm") )
-    new_termtype = "xterm-256color";
+    new_term_type = "xterm-256color";
 
   if ( startsWithTermType(L"screen") )
-    new_termtype = "screen-256color";
+    new_term_type = "screen-256color";
 
   if ( startsWithTermType(L"Eterm") )
-    new_termtype = "Eterm-256color";
+    new_term_type = "Eterm-256color";
 
   if ( startsWithTermType(L"mlterm") )
-    new_termtype = "mlterm-256color";
+    new_term_type = "mlterm-256color";
 
   if ( startsWithTermType(L"rxvt")
     && color_env.string1.left(8) == "rxvt-xpm" )
   {
-    new_termtype = "rxvt-256color";
+    new_term_type = "rxvt-256color";
     fterm_data.setTermType (FTermType::rxvt);
   }
 
@@ -464,21 +464,21 @@ auto FTermDetection::termtype_256color_quirks() -> FString
     || ! color_env.string6.isEmpty() )
   {
     fterm_data.setTermType (FTermType::kde_konsole);
-    new_termtype = "konsole-256color";
+    new_term_type = "konsole-256color";
   }
 
   if ( ! color_env.string3.isEmpty() )
     decscusr_support = true;
 
-  return new_termtype;
+  return new_term_type;
 }
 
 //----------------------------------------------------------------------
-auto FTermDetection::determineMaxColor (const FString& current_termtype) -> FString
+auto FTermDetection::determineMaxColor (const FString& current_term_type) -> FString
 {
   // Determine xterm maximum number of colors via OSC 4
 
-  FString new_termtype{current_termtype};
+  FString new_term_type{current_term_type};
   static const auto& fterm_data = FTermData::getInstance();
   static auto& keyboard = FKeyboard::getInstance();
   keyboard.setNonBlockingInput();
@@ -495,22 +495,22 @@ auto FTermDetection::determineMaxColor (const FString& current_termtype) -> FStr
       color256 = true;
 
       if ( fterm_data.isTermType(FTermType::putty) )
-        new_termtype = "putty-256color";
+        new_term_type = "putty-256color";
       else
-        new_termtype = "xterm-256color";
+        new_term_type = "xterm-256color";
     }
     else if ( ! getXTermColorName(FColor(87)).isEmpty() )
     {
-      new_termtype = "xterm-88color";
+      new_term_type = "xterm-88color";
     }
     else if ( ! getXTermColorName(FColor(15)).isEmpty() )
     {
-      new_termtype = "xterm-16color";
+      new_term_type = "xterm-16color";
     }
   }
 
   keyboard.unsetNonBlockingInput();
-  return new_termtype;
+  return new_term_type;
 }
 
 //----------------------------------------------------------------------
@@ -544,9 +544,9 @@ auto FTermDetection::getXTermColorName (FColor color) const -> FString
 }
 
 //----------------------------------------------------------------------
-auto FTermDetection::parseAnswerbackMsg (const FString& current_termtype) -> FString
+auto FTermDetection::parseAnswerbackMsg (const FString& current_term_type) -> FString
 {
-  FString new_termtype{current_termtype};
+  FString new_term_type{current_term_type};
   static auto& keyboard = FKeyboard::getInstance();
   keyboard.setNonBlockingInput();
   // send ENQ and read the answerback message
@@ -559,9 +559,9 @@ auto FTermDetection::parseAnswerbackMsg (const FString& current_termtype) -> FSt
     fterm_data.setTermType (FTermType::putty);
 
     if ( color256 )
-      new_termtype = "putty-256color";
+      new_term_type = "putty-256color";
     else
-      new_termtype = "putty";
+      new_term_type = "putty";
   }
 
 #if !defined(UNIT_TEST)
@@ -572,11 +572,11 @@ auto FTermDetection::parseAnswerbackMsg (const FString& current_termtype) -> FSt
 #endif  // !defined(UNIT_TEST)
 
 #if DEBUG
-  if ( ! new_termtype.isEmpty() )
-    termtype_Answerback = new_termtype;
+  if ( ! new_term_type.isEmpty() )
+    term_type_Answerback = new_term_type;
 #endif  // DEBUG
 
-  return new_termtype;
+  return new_term_type;
 }
 
 //----------------------------------------------------------------------
@@ -595,20 +595,20 @@ auto FTermDetection::getAnswerbackMsg() const -> FString
 }
 
 //----------------------------------------------------------------------
-auto FTermDetection::parseSecDA (const FString& current_termtype) -> FString
+auto FTermDetection::parseSecDA (const FString& current_term_type) -> FString
 {
   // The Linux console and older cygwin terminals knows no Sec_DA
 
   const auto& fterm_data = FTermData::getInstance();
 
   if ( fterm_data.isTermType(FTermType::linux_con | FTermType::cygwin) )
-    return current_termtype;
+    return current_term_type;
 
   // Secondary device attributes (SEC_DA) <- decTerminalID string
   sec_da = getSecDA();
 
   if ( sec_da.getLength() < 6 )
-    return current_termtype;
+    return current_term_type;
 
   // remove the first 3 bytes ("\033[>")
   FString temp(sec_da.right(sec_da.getLength() - 3));
@@ -621,10 +621,10 @@ auto FTermDetection::parseSecDA (const FString& current_termtype) -> FString
   // The second device attribute (SEC_DA) always has 3 parameters,
   // otherwise it usually has a copy of the device attribute (primary DA)
   if ( num_components < 3 )
-    return current_termtype;
+    return current_term_type;
 
   if ( sec_da_components[0].isEmpty() )
-    return current_termtype;
+    return current_term_type;
 
   // Read the terminal type
   secondary_da.terminal_id_type = str2int(sec_da_components[0]);
@@ -635,14 +635,14 @@ auto FTermDetection::parseSecDA (const FString& current_termtype) -> FString
   // Read the terminal hardware option
   secondary_da.terminal_id_hardware = str2int(sec_da_components[2]);
 
-  const auto& new_termtype = secDA_Analysis(current_termtype);
+  const auto& new_term_type = secDA_Analysis(current_term_type);
 
 #if DEBUG
-  if ( ! new_termtype.isEmpty() )
-    termtype_SecDA = new_termtype;
+  if ( ! new_term_type.isEmpty() )
+    term_type_SecDA = new_term_type;
 #endif  // DEBUG
 
-  return new_termtype;
+  return new_term_type;
 }
 
 //----------------------------------------------------------------------
@@ -702,9 +702,9 @@ auto FTermDetection::getSecDA() const -> FString
 }
 
 //----------------------------------------------------------------------
-auto FTermDetection::secDA_Analysis (const FString& current_termtype) -> FString
+auto FTermDetection::secDA_Analysis (const FString& current_term_type) -> FString
 {
-  FString new_termtype{current_termtype};
+  FString new_term_type{current_term_type};
   int terminal_id_type = secondary_da.terminal_id_type;
 
   // Define a map that associates terminal ID types with functions
@@ -748,18 +748,18 @@ auto FTermDetection::secDA_Analysis (const FString& current_termtype) -> FString
 
   // Check if the terminal ID type is in the map
   if ( analysis_functions.find(terminal_id_type) != analysis_functions.end() )
-    new_termtype = analysis_functions[terminal_id_type](current_termtype);
+    new_term_type = analysis_functions[terminal_id_type](current_term_type);
 
   correctFalseAssumptions(terminal_id_type);
-  return new_termtype;
+  return new_term_type;
 }
 
 //----------------------------------------------------------------------
-inline auto FTermDetection::secDA_Analysis_0 (const FString& current_termtype) const -> FString
+inline auto FTermDetection::secDA_Analysis_0 (const FString& current_term_type) const -> FString
 {
   // Terminal ID 0 - DEC VT100
 
-  FString new_termtype{current_termtype};
+  FString new_term_type{current_term_type};
   auto& fterm_data = FTermData::getInstance();
 
   if ( secondary_da.terminal_id_version == 10
@@ -775,31 +775,31 @@ inline auto FTermDetection::secDA_Analysis_0 (const FString& current_termtype) c
     fterm_data.setTermType (FTermType::freebsd_con);
 #endif
 
-  return new_termtype;
+  return new_term_type;
 }
 
 //----------------------------------------------------------------------
-inline auto FTermDetection::secDA_Analysis_1 (const FString& current_termtype) -> FString
+inline auto FTermDetection::secDA_Analysis_1 (const FString& current_term_type) -> FString
 {
   // Terminal ID 1 - DEC VT220
 
-  FString new_termtype{current_termtype};
+  FString new_term_type{current_term_type};
   const auto& fterm_data = FTermData::getInstance();
 
   if ( fterm_data.isTermType(FTermType::kitty) )
-    new_termtype = secDA_Analysis_kitty(new_termtype);
+    new_term_type = secDA_Analysis_kitty(new_term_type);
   else
-    new_termtype = secDA_Analysis_vte(new_termtype);
+    new_term_type = secDA_Analysis_vte(new_term_type);
 
-  return new_termtype;
+  return new_term_type;
 }
 
 //----------------------------------------------------------------------
-inline auto FTermDetection::secDA_Analysis_24 (const FString& current_termtype) -> FString
+inline auto FTermDetection::secDA_Analysis_24 (const FString& current_term_type) -> FString
 {
   // Terminal ID 24 - DEC VT320
 
-  FString new_termtype{current_termtype};
+  FString new_term_type{current_term_type};
 
 #if defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
 
@@ -814,13 +814,13 @@ inline auto FTermDetection::secDA_Analysis_24 (const FString& current_termtype) 
     else if ( startsWithTermType(L"vt220") )
     {
       fterm_data.setTermType (FTermType::openbsd_con);
-      new_termtype = "pccon";
+      new_term_type = "pccon";
     }
   }
 
 #endif  // defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
 
-  return new_termtype;
+  return new_term_type;
 }
 
 //----------------------------------------------------------------------
@@ -834,11 +834,11 @@ inline auto FTermDetection::secDA_Analysis_32() const -> FString
 }
 
 //----------------------------------------------------------------------
-inline auto FTermDetection::secDA_Analysis_65 (const FString& current_termtype) -> FString
+inline auto FTermDetection::secDA_Analysis_65 (const FString& current_term_type) -> FString
 {
   // Terminal ID 65 - DEC VT525 and VTE >= 0.53.0
 
-  return secDA_Analysis_1 (current_termtype);
+  return secDA_Analysis_1 (current_term_type);
 }
 
 //----------------------------------------------------------------------
@@ -872,31 +872,31 @@ inline auto FTermDetection::secDA_Analysis_82() const -> FString
   auto& fterm_data = FTermData::getInstance();
   fterm_data.setTermType (FTermType::rxvt);
 
-  if ( termtype == "rxvt-cygwin-native" )
+  if ( term_type == "rxvt-cygwin-native" )
     return "rxvt-16color";
 
   return "rxvt";
 }
 
 //----------------------------------------------------------------------
-inline auto FTermDetection::secDA_Analysis_83 (const FString& current_termtype) const -> FString
+inline auto FTermDetection::secDA_Analysis_83 (const FString& current_term_type) const -> FString
 {
   // Terminal ID 83 - screen
 
   auto& fterm_data = FTermData::getInstance();
   fterm_data.setTermType (FTermType::screen);
-  return current_termtype;
+  return current_term_type;
 }
 
 //----------------------------------------------------------------------
-inline auto FTermDetection::secDA_Analysis_84 (const FString& current_termtype) const -> FString
+inline auto FTermDetection::secDA_Analysis_84 (const FString& current_term_type) const -> FString
 {
   // Terminal ID 84 - tmux
 
   auto& fterm_data = FTermData::getInstance();
   fterm_data.setTermType (FTermType::screen);
   fterm_data.setTermType (FTermType::tmux);
-  return current_termtype;
+  return current_term_type;
 }
 
 //----------------------------------------------------------------------
@@ -909,7 +909,7 @@ inline auto FTermDetection::secDA_Analysis_85() const -> FString
   fterm_data.setTermType (FTermType::urxvt);
 
   if ( ! startsWithTermType(L"rxvt-") )
-    return termtype;
+    return term_type;
 
   if ( color256 )
     return "rxvt-256color";
@@ -918,12 +918,12 @@ inline auto FTermDetection::secDA_Analysis_85() const -> FString
 }
 
 //----------------------------------------------------------------------
-inline auto FTermDetection::secDA_Analysis_vte (const FString& current_termtype) -> FString
+inline auto FTermDetection::secDA_Analysis_vte (const FString& current_term_type) -> FString
 {
   // VTE terminal library
   // (Since VTE 0.53.0 the terminal ID has changed from 1 to 65)
 
-  FString new_termtype{current_termtype};
+  FString new_term_type{current_term_type};
 
   if ( secondary_da.terminal_id_version > 1000 )
   {
@@ -931,7 +931,7 @@ inline auto FTermDetection::secDA_Analysis_vte (const FString& current_termtype)
     fterm_data.setTermType (FTermType::gnome_terminal);
     // Each gnome-terminal should be able to use 256 colors
     color256 = true;
-    new_termtype = "gnome-256color";
+    new_term_type = "gnome-256color";
     const auto& id = secondary_da.terminal_id_version;
     fterm_data.setGnomeTerminalID(id);
 
@@ -940,28 +940,28 @@ inline auto FTermDetection::secDA_Analysis_vte (const FString& current_termtype)
       decscusr_support = true;
   }
 
-  return new_termtype;
+  return new_term_type;
 }
 
 //----------------------------------------------------------------------
-inline auto FTermDetection::secDA_Analysis_kitty (const FString& current_termtype) -> FString
+inline auto FTermDetection::secDA_Analysis_kitty (const FString& current_term_type) -> FString
 {
   // kitty
 
-  FString new_termtype{current_termtype};
+  FString new_term_type{current_term_type};
 
   if ( secondary_da.terminal_id_version > 3999 )
   {
     // All kitty terminals can use 256 colors
     color256 = true;
-    new_termtype = "xterm-kitty";
+    new_term_type = "xterm-kitty";
     const auto& n1 = secondary_da.terminal_id_version - 4000;
     const auto& n2 = secondary_da.terminal_id_hardware;
     FTermData::kittyVersion kitty_version { n1, n2 };
     FTermData::getInstance().setKittyVersion(kitty_version);
   }
 
-  return new_termtype;
+  return new_term_type;
 }
 
 //----------------------------------------------------------------------

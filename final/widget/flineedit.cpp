@@ -616,7 +616,7 @@ void FLineEdit::draw()
     adjustTextOffset();
 
   drawInputField();
-  updateStatusbar (this);
+  updateStatusBar (this);
 }
 
 //----------------------------------------------------------------------

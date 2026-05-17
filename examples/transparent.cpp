@@ -70,10 +70,10 @@ Transparent::Transparent ( finalcut::FWidget* parent
 //----------------------------------------------------------------------
 void Transparent::initLayout()
 {
-  // Set statusbar text for this window
+  // Set status bar text for this window
   // Avoids calling a virtual function from the constructor
   // (CERT, OOP50-CPP)
-  FWidget::setStatusbarMessage("Press Q to quit");
+  FWidget::setStatusBarMessage("Press Q to quit");
   FDialog::initLayout();
 }
 
@@ -211,8 +211,8 @@ MainWindow::MainWindow (finalcut::FWidget* parent)
   ibg->setGeometry (FPoint{42, 3}, FSize{29, 7});
   ibg->unsetTransparentShadow();
 
-  // Set statusbar text for this window
-  FDialog::setStatusbarMessage("Press Q to quit");
+  // Set status bar text for this window
+  FDialog::setStatusBarMessage("Press Q to quit");
 
   unsetTransparentShadow();
   activateDialog();

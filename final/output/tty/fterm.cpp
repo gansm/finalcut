@@ -415,9 +415,9 @@ auto FTerm::openConsole() -> int
 {
   static auto& data = FTermData::getInstance();
   int fd = data.getTTYFileDescriptor();
-  const auto& termfilename = data.getTermFileName();
+  const auto& term_file_name = data.getTermFileName();
 
-  if ( termfilename.empty() )
+  if ( term_file_name.empty() )
     return 0;
 
   if ( fd >= 0 )  // console is already opened
@@ -916,13 +916,13 @@ void FTerm::init_global_values()
 //----------------------------------------------------------------------
 void FTerm::init_terminal_device_path()
 {
-  std::array<char, 256> termfilename{};
+  std::array<char, 256> term_file_name{};
   const auto& stdout_no = FTermios::getStdOut();
 
-  if ( ttyname_r(stdout_no, termfilename.data(), termfilename.size()) )
-    termfilename[0] = '\0';
+  if ( ttyname_r(stdout_no, term_file_name.data(), term_file_name.size()) )
+    term_file_name[0] = '\0';
 
-  FTermData::getInstance().setTermFileName(termfilename.data());
+  FTermData::getInstance().setTermFileName(term_file_name.data());
 }
 
 //----------------------------------------------------------------------

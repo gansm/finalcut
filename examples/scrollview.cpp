@@ -222,7 +222,7 @@ Scrollviewdemo::Scrollviewdemo (finalcut::FWidget* parent)
   // Text label
   label.setGeometry(FPoint{2, 1}, FSize{46, 1});
   label.setEmphasis();
-  label << L"Use scrollbars to change the viewport position";
+  label << L"Use scroll bars to change viewport position";
 }
 
 //----------------------------------------------------------------------

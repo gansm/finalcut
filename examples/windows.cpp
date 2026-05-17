@@ -231,10 +231,10 @@ class Window final : public finalcut::FDialog
     // Data members
     std::vector<WinData>      windows{};
     finalcut::FString         drop_down_symbol{finalcut::UniChar::BlackDownPointingTriangle};
-    finalcut::FMenuBar        Menubar{this};
-    finalcut::FMenu           File{"&File", &Menubar};
-    finalcut::FDialogListMenu DglList{std::move(drop_down_symbol), &Menubar};
-    finalcut::FStatusBar      Statusbar{this};
+    finalcut::FMenuBar        menu_bar{this};
+    finalcut::FMenu           File{"&File", &menu_bar};
+    finalcut::FDialogListMenu dgl_list{std::move(drop_down_symbol), &menu_bar};
+    finalcut::FStatusBar      status_bar{this};
     finalcut::FMenuItem       New{"&New", &File};
     finalcut::FMenuItem       Close{"&Close", &File};
     finalcut::FMenuItem       Line1{&File};
@@ -255,10 +255,10 @@ Window::Window (finalcut::FWidget* parent)
   FDialog::setSize ({40, 6});
 
   // Menu bar item
-  File.setStatusbarMessage ("File management commands");
+  File.setStatusBarMessage ("File management commands");
 
   // Dialog list menu item
-  DglList.setStatusbarMessage ("List of all the active dialogs");
+  dgl_list.setStatusBarMessage ("List of all the active dialogs");
 
   // File menu items
   configureFileMenuItems();
@@ -266,8 +266,8 @@ Window::Window (finalcut::FWidget* parent)
   // Dialog buttons
   configureDialogButtons();
 
-  // Statusbar at the bottom
-  Statusbar.setMessage("Status bar message");
+  // Status bar at the bottom
+  status_bar.setMessage("Status bar message");
 
   // Generate data vector for the windows
   for (uInt n{1}; n < 7; n++)
@@ -299,16 +299,16 @@ Window::~Window()
 void Window::configureFileMenuItems()
 {
   // "File" menu item setting
-  New.setStatusbarMessage ("Create the windows");
-  Close.setStatusbarMessage ("Close the windows");
+  New.setStatusBarMessage ("Create the windows");
+  Close.setStatusBarMessage ("Close the windows");
   Line1.setSeparator();
   Next.addAccelerator (finalcut::FKey::Meta_page_down);  // Meta/Alt + PgDn
-  Next.setStatusbarMessage ("Switch to the next window");
+  Next.setStatusBarMessage ("Switch to the next window");
   Previous.addAccelerator (finalcut::FKey::Meta_page_up);  // Meta/Alt + PgUp
-  Previous.setStatusbarMessage ("Switch to the previous window");
+  Previous.setStatusBarMessage ("Switch to the previous window");
   Line2.setSeparator();
   Quit.addAccelerator (finalcut::FKey::Meta_x);  // Meta/Alt + X
-  Quit.setStatusbarMessage ("Exit the program");
+  Quit.setStatusBarMessage ("Exit the program");
 
   // Add menu item callback
   addClickedCallback (&New, this, &Window::cb_createWindows);

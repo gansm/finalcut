@@ -289,7 +289,7 @@ void FToggleButton::draw()
   if ( ! isVisible() )
     return;
 
-  updateStatusbar (this);
+  updateStatusBar (this);
 
   // set the cursor to the button
   if ( isRadioButton() || isCheckboxButton() )

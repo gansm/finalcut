@@ -4,13 +4,13 @@ Container widgets
 Table of Contents
 -----------------
 
-<!-- TOC -->
+<!-- toc -->
 - [FButtonGroup](#fbuttongroup)
 - [FMenuBar](#fmenubar)
 - [FMenu](#fmenu)
 - [FScrollView](#fscrollview)
 - [FStatusBar](#fstatusbar)
-<!-- /TOC -->
+<!-- endtoc -->
 
 Container widgets are meta-structure components used to group, 
 organize, and position other widgets within a layout.
@@ -78,10 +78,10 @@ in the frame than the height allows.
 
 using namespace finalcut;
 
-class dialogWidget : public FDialog
+class DialogWidget : public FDialog
 {
   public:
-    explicit dialogWidget (FWidget* parent = nullptr)
+    explicit DialogWidget (FWidget* parent = nullptr)
       : FDialog{parent}
     {
       scrollview.setGeometry(FPoint{1, 1}, FSize{22, 11});
@@ -119,7 +119,7 @@ class dialogWidget : public FDialog
         btn->addCallback
         (
           "clicked",
-          this, &dialogWidget::cb_button, std::get<2>(b)
+          this, &DialogWidget::cb_button, std::get<2>(b)
         );
       }
     }
@@ -146,7 +146,7 @@ auto main (int argc, char* argv[]) -> int
 {
   FApplication app(argc, argv);
   app.initTerminal();  // Terminal initialization
-  dialogWidget dialog(&app);
+  DialogWidget dialog(&app);
   FWidget::setMainWidget(&dialog);
   dialog.show();
   return app.exec();
@@ -159,7 +159,7 @@ auto main (int argc, char* argv[]) -> int
 <br /><br />
 
 > [!NOTE]
-> You can close the dialog with the mouse, 
+> To close the dialog, use the mouse or press 
 > <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>
 
 

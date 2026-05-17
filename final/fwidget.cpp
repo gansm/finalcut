@@ -51,8 +51,8 @@ FWidget* var::root_widget{nullptr};
 }  // namespace internal
 
 // static class attributes
-FStatusBar*           FWidget::statusbar{nullptr};
-FMenuBar*             FWidget::menubar{nullptr};
+FStatusBar*           FWidget::status_bar{nullptr};
+FMenuBar*             FWidget::menu_bar{nullptr};
 FWidget*              FWidget::first_shown_widget{nullptr};
 FWidget*              FWidget::redraw_root_widget{nullptr};
 FWidget::FWidgetList* FWidget::dialog_list{nullptr};
@@ -265,7 +265,7 @@ auto FWidget::setFocus (bool enable, FocusTypes ft) -> bool
     flags.focus.focus = false;
 
   // Set status bar text for widget focus
-  setStatusbarText (enable);
+  setStatusBarText (enable);
   return enable;
 }
 
@@ -774,7 +774,7 @@ void FWidget::addAccelerator (FKey key, FWidget* obj) &
   auto widget = static_cast<FWidget*>(FWindow::getWindowWidget(obj));
   FAccelerator accel = { key, obj };
 
-  if ( ! widget || widget == statusbar || widget == menubar )
+  if ( ! widget || widget == status_bar || widget == menu_bar )
     widget = getRootWidget();
 
   if ( widget )
@@ -788,7 +788,7 @@ void FWidget::delAccelerator (FWidget* obj) &
 
   auto widget = static_cast<FWidget*>(FWindow::getWindowWidget(this));
 
-  if ( ! widget || widget == statusbar || widget == menubar )
+  if ( ! widget || widget == status_bar || widget == menu_bar )
     widget = getRootWidget();
 
   if ( ! widget || widget->accelerator_list.empty() )
@@ -1151,21 +1151,21 @@ auto FWidget::isChildPrintArea() const -> bool
 //----------------------------------------------------------------------
 void FWidget::setStatusBar (FStatusBar* sbar)
 {
-  if ( ! sbar || statusbar == sbar )
+  if ( ! sbar || status_bar == sbar )
     return;
 
-  delete statusbar;
-  statusbar = sbar;
+  delete status_bar;
+  status_bar = sbar;
 }
 
 //----------------------------------------------------------------------
 void FWidget::setMenuBar (FMenuBar* mbar)
 {
-  if ( ! mbar || menubar == mbar )
+  if ( ! mbar || menu_bar == mbar )
     return;
 
-  delete menubar;
-  menubar = mbar;
+  delete menu_bar;
+  menu_bar = mbar;
 }
 
 //----------------------------------------------------------------------
@@ -1697,7 +1697,7 @@ void FWidget::initRootWidget()
   first_shown_widget = nullptr;
   redraw_root_widget = nullptr;
   modal_dialog_counter = 0;
-  statusbar = nullptr;
+  status_bar = nullptr;
 
   // Determine width and height of the terminal
   determineDesktopSize();
@@ -2298,14 +2298,14 @@ void FWidget::removeQueuedEvent() const
 }
 
 //----------------------------------------------------------------------
-void FWidget::setStatusbarText (bool enable) const
+void FWidget::setStatusBarText (bool enable) const
 {
   if ( ! isEnabled() || ! getStatusBar() )
     return;
 
   if ( enable )
   {
-    const auto& msg = getStatusbarMessage();
+    const auto& msg = getStatusBarMessage();
     const auto& curMsg = getStatusBar()->getMessage();
 
     if ( curMsg != msg )

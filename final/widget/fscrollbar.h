@@ -144,7 +144,7 @@ class FScrollBar : public FWidget
     auto getNewFontHorizontalScrollType (int) const -> ScrollType;
     auto getHorizontalScrollType (int) const -> ScrollType;
     auto getSliderClickPos (int, int) const -> int;
-    auto isMouseOutsideScrollbar (int, int) const -> bool;
+    auto isMouseOutsideScrollBar (int, int) const -> bool;
     auto shouldStopTimer() const -> bool;
     void jumpToClickPos (int, int);
     void jumpToClickPos (int);
@@ -182,7 +182,7 @@ class FScrollBar : public FWidget
 //----------------------------------------------------------------------
 template <typename Instance
         , typename Callback>
-void initScrollbar ( FScrollBarPtr& bar
+void initScrollBar ( FScrollBarPtr& bar
                    , Orientation o
                    , Instance cb_instance
                    , const Callback& cb_handler )

@@ -659,13 +659,13 @@ void FWidgetTest::noArgumentTest()
   CPPUNIT_ASSERT ( root_wdgt.getMainWidget() == &wdgt );
 
   // Test the status bar message
-  CPPUNIT_ASSERT ( wdgt.getStatusbarMessage().isEmpty() );
-  wdgt.setStatusbarMessage("message");
-  CPPUNIT_ASSERT ( ! wdgt.getStatusbarMessage().isEmpty() );
-  CPPUNIT_ASSERT ( wdgt.getStatusbarMessage() == "message" );
-  wdgt.clearStatusbarMessage();
-  CPPUNIT_ASSERT ( wdgt.getStatusbarMessage().isEmpty() );
-  CPPUNIT_ASSERT ( wdgt.getStatusbarMessage().isEmpty() );
+  CPPUNIT_ASSERT ( wdgt.getStatusBarMessage().isEmpty() );
+  wdgt.setStatusBarMessage("message");
+  CPPUNIT_ASSERT ( ! wdgt.getStatusBarMessage().isEmpty() );
+  CPPUNIT_ASSERT ( wdgt.getStatusBarMessage() == "message" );
+  wdgt.clearStatusBarMessage();
+  CPPUNIT_ASSERT ( wdgt.getStatusBarMessage().isEmpty() );
+  CPPUNIT_ASSERT ( wdgt.getStatusBarMessage().isEmpty() );
 
   // Test the primary widget colors
   CPPUNIT_ASSERT ( wdgt.getForegroundColor() == finalcut::FColor::Default );

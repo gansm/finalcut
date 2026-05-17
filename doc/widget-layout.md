@@ -4,12 +4,12 @@ Widget Layout
 Table of Contents
 -----------------
 
-<!-- TOC -->
+<!-- toc -->
 - [Coordinates](#coordinates)
 - [Lengths](#lengths)
 - [Areas](#areas)
 - [Dynamic layout](#dynamic-layout)
-<!-- /TOC -->
+<!-- endtoc -->
 
 
 Coordinates
@@ -191,10 +191,10 @@ the client widgets.
 
 using namespace finalcut;
 
-class dialogWidget : public FDialog
+class DialogWidget : public FDialog
 {
   public:
-    explicit dialogWidget (FWidget* parent = nullptr)
+    explicit DialogWidget (FWidget* parent = nullptr)
       : FDialog{parent}
     { }
 
@@ -265,7 +265,7 @@ class dialogWidget : public FDialog
 auto main (int argc, char* argv[]) -> int
 {
   FApplication app(argc, argv);
-  dialogWidget dialog(&app);
+  DialogWidget dialog(&app);
   FWidget::setMainWidget(&dialog);
   dialog.show();
   return app.exec();
@@ -278,7 +278,7 @@ auto main (int argc, char* argv[]) -> int
 <br /><br />
 
 > [!NOTE]
-> You can close the dialog with the mouse, 
+> To close the dialog, use the mouse or press 
 > <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>
 
 

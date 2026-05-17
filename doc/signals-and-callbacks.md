@@ -4,46 +4,46 @@ Signals and Callbacks
 Table of Contents
 -----------------
 
-<!-- TOC -->
+<!-- toc -->
 - [Callbacks](#dynamic-object-binding-via-callbacks)
-- [Default signals](#the-final-cut-widgets-emit-the-following-default-signals)
-- [Callback function](#example-of-a-callback-function)
-- [Callback lambda expression](#example-of-an-lambda-expression-callback)
-- [Callback method](#example-of-a-callback-method)
-- [Custom signals](#send-custom-signals)
-<!-- /TOC -->
+- [Default Signals](#default-signals-emitted-by-final-cut-widgets)
+- [Callback Function](#function-example)
+- [Callback Lambda Expression](#lambda-expression-example)
+- [Callback Method](#method-example)
+- [Custom Signals](#sending-custom-signals)
+<!-- endtoc -->
 
 
-Dynamic object binding via callbacks
-------------------------------------
+Dynamically binding objects using callbacks
+-------------------------------------------
 
 The callback mechanism is essential for developing applications with 
-FINAL CUT. Callback routines allow the programmer to connect different 
-objects (which do not need to know each other). Connected objects notify 
-each other when an action occurs in a widget. To uniquely identify a widget 
-action, it uses signal strings. For example, if an `FButton` object gets 
-clicked by a keyboard or mouse, it sends the string "clicked". A signal 
-handler explicitly provided by Widget, in the form of a callback function 
-or a callback method, can react to such a signal.
+FINAL CUT. Callback routines allow the programmer to connect different
+objects without them needing to know each other. Connected objects
+inform each other when an action occurs on a widget. The framework uses
+signal strings to uniquely identify widget actions. For example, when
+an `FButton` is clicked using a mouse or a keyboard, it emits the string 
+"clicked". A dedicated callback function or method processes this signal.
 
-A callback function has no return value and can have various arguments:
+A callback function does not return a value and can have various
+arguments:
 
 ```cpp
 void cb_function (FWidget* w, int* i, double* d, ...)
 {...}
 ```
 
-The structure of a callback method is the same:
+A callback method has the same signature:
 
 ```cpp
-void classname::cb_methode (FWidget* w, int* i, double* d, ...)
+void ClassName::cb_method (FWidget* w, int* i, double* d, ...)
 {...}
 ```
 
-We use the `addCallback()` method of the `FWidget` class to connect 
-to other widget objects.
+We use the `addCallback()` method of the `FWidget` class to bind widgets 
+together.
 
-1. For calling functions or static methods via a pointer:
+1. To call functions or static methods using a pointer:
 
 ```cpp
 template< typename Function
@@ -55,7 +55,7 @@ void FWidget::addCallback ( const FString& cb_signal
 {...}
 ```
 
-2. For calling functions or static methods via a reference:
+2. To call functions or static methods via a reference:
 
 ```cpp
 template< typename Function
@@ -67,7 +67,7 @@ void FWidget::addCallback ( const FString& cb_signal
 {...}
 ```
 
-3. For calling a member method of a specific instance:
+3. To call a member method of a specific instance:
 
 ```cpp
 template< typename Object
@@ -82,7 +82,7 @@ void FWidget::addCallback ( const FString& cb_signal
 {...}
 ```
 
-4. For calling a std::bind call wrapper or a lambda expression:
+4. To call a std::bind wrapper or a lambda expression:
 ```cpp
 template< typename Function
         , typename ClassObject<Function>::type = nullptr
@@ -93,7 +93,7 @@ void FWidget::addCallback ( const FString& cb_signal
 {...}
 ```
 
-5. For calling a std::bind call wrapper to a specific instance:
+5. To call a std::bind wrapper on a specific instance:
 
 ```cpp
 template< typename Object
@@ -108,8 +108,7 @@ void FWidget::addCallback ( const FString& cb_signal
 {...}
 ```
 
-6. For calling a lambda function that has been stored in a variable
-with the keyword auto:
+6. To call a lambda expression assigned to a variable:
 
 ```cpp
 template< typename Function
@@ -121,11 +120,11 @@ void FWidget::addCallback ( const FString& cb_signal
 {...}
 ```
 
-With `delCallback(...)` you can remove a connection to a signal handler
-or a widget instance. Alternatively, you can use `delCallbacks()` to
-remove all existing callbacks from an object.
+You can remove a connection to a signal handler or a widget instance 
+with `delCallback(...)`. Alternatively, you can use `delCallbacks()` 
+to remove all existing callbacks from an object.
 
-1. To delete functions or static methods callbacks via a pointer:
+1. To delete callbacks of functions or static methods via a pointer:
 
 ```cpp
 template< typename FunctionPtr
@@ -134,7 +133,7 @@ void FWidget::delCallback (FunctionPtr&& cb_func_ptr)
 {...}
 ```
 
-2. To delete functions or static methods callbacks via a reference:
+2. To delete callbacks of functions or static methods via a reference:
 
 ```cpp
 template< typename Function
@@ -176,8 +175,8 @@ void delCallback()
 ```
 
 
-The FINAL CUT widgets emit the following default signals
---------------------------------------------------------
+Default signals emitted by FINAL CUT widgets
+--------------------------------------------
 
 <dl>
   <dt>FApplication</dt>
@@ -228,8 +227,8 @@ The FINAL CUT widgets emit the following default signals
 
 &nbsp;
 
-Example of a callback function:
--------------------------------
+Function Example
+----------------
 
 **File:** *callback-function.cpp*
 
@@ -255,11 +254,12 @@ auto main (int argc, char* argv[]) -> int
   label = "The button has never been pressed before";
   label.setGeometry (FPoint{2, 2}, FSize{41, 1});
   FButton button (&dialog);
-  // Character follows '&' will be used as the accelerator key
+  // The '&' prefix defines the accelerator key
+  // (here the shortcut is Meta-C)
   button = "&Click me";
   button.setGeometry (FPoint{15, 5}, FSize{14, 1});
 
-  // Connect the button signal "clicked" with the callback function
+  // Connect the button signal "clicked" to the callback function
   button.addCallback
   (
     "clicked",          // Callback signal
@@ -280,19 +280,19 @@ auto main (int argc, char* argv[]) -> int
 <br /><br />
 
 > [!NOTE]
-> You can close the dialog with the mouse, 
+> To close the dialog, use the mouse or press 
 > <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>
 
 
-After entering the source code in *callback-function.cpp* you can compile
-the above program with gcc:
+Save the code as *callback-function.cpp* and compile it using the
+following GCC command:
 ```bash
 g++ callback-function.cpp -o callback-function -O2 -lfinal
 ```
 &nbsp;
 
-Example of an lambda expression callback:
------------------------------------------
+Lambda Expression Example
+-------------------------
 
 **File:** *callback-lambda.cpp*
 
@@ -310,7 +310,7 @@ auto main (int argc, char* argv[]) -> int
   FButton button ("&bottom", &dialog);
   button.setGeometry (FPoint{15, 5}, FSize{14, 1});
 
-  // Connect the button signal "clicked" with the lambda expression
+  // Connect the button signal "clicked" to the lambda expression
   button.addCallback
   (
     "clicked",                          // Callback signal
@@ -345,19 +345,19 @@ auto main (int argc, char* argv[]) -> int
 <br /><br />
 
 > [!NOTE]
-> You can close the dialog with the mouse, 
+> To close the dialog, use the mouse or press 
 > <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>
 
 
-After entering the source code in *callback-lambda.cpp* you can compile
-the above program with gcc:
+Save the code as *callback-lambda.cpp* and compile it using the
+following GCC command:
 ```bash
 g++ callback-lambda.cpp -o callback-lambda -O2 -lfinal -std=c++14
 ```
 &nbsp;
 
-Example of a callback method:
------------------------------
+Method Example
+--------------
 
 **File:** *callback-method.cpp*
 
@@ -366,13 +366,13 @@ Example of a callback method:
 
 using namespace finalcut;
 
-class dialogWidget : public FDialog
+class DialogWidget : public FDialog
 {
   public:
-    explicit dialogWidget (FWidget* parent = nullptr)
+    explicit DialogWidget (FWidget* parent = nullptr)
       : FDialog{parent}
     {
-      // Connect the button signal "clicked" with the callback method
+      // Connect the button signal "clicked" to the callback method
       button.addCallback
       (
         "clicked",                            // Callback signal
@@ -397,7 +397,7 @@ class dialogWidget : public FDialog
 auto main (int argc, char* argv[]) -> int
 {
   FApplication app(argc, argv);
-  dialogWidget dialog(&app);
+  DialogWidget dialog(&app);
   FWidget::setMainWidget(&dialog);
   dialog.show();
   return app.exec();
@@ -410,24 +410,24 @@ auto main (int argc, char* argv[]) -> int
 <br /><br />
 
 > [!NOTE]
-> You can close the dialog with the mouse, 
+> To close the dialog, use the mouse or press 
 > <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>
 
 
-After entering the source code in *callback-method.cpp* you can compile
-the above program with gcc:
+Save the code as *callback-method.cpp* and compile it using the
+following GCC command:
 ```bash
 g++ callback-method.cpp -o callback-method -O2 -lfinal -std=c++14
 ```
 &nbsp;
 
 
-Send custom signals
--------------------
+Sending Custom Signals
+----------------------
 
-You can use the `emitCallback()` method to generate a user-defined signal. 
-You can connect this signal later with the method `addCallback()` to a 
-self-defined routine.
+You can use the `emitCallback()` method to generate a user-defined
+signal. You can later connect this signal to a user-defined handler
+with the `addCallback()` method.
 
 **File:** *emit-signal.cpp*
 ```cpp
@@ -435,10 +435,10 @@ self-defined routine.
 
 using namespace finalcut;
 
-class dialogWidget : public FDialog
+class DialogWidget : public FDialog
 {
   public:
-    explicit dialogWidget (FWidget* parent = nullptr)
+    explicit DialogWidget (FWidget* parent = nullptr)
       : FDialog{parent}
     {
       label.setAlignment (Align::Right);
@@ -446,14 +446,14 @@ class dialogWidget : public FDialog
       plus.setNoUnderline();
       minus.setNoUnderline();
 
-      // Connect the button signal "clicked" with the callback method
-      plus.addCallback ("clicked", this, &dialogWidget::cb_plus);
-      minus.addCallback ("clicked", this, &dialogWidget::cb_minus);
+      // Connect the button signal "clicked" to the callback method
+      plus.addCallback ("clicked", this, &DialogWidget::cb_plus);
+      minus.addCallback ("clicked", this, &DialogWidget::cb_minus);
 
-      // Connect own signals
-      addCallback ("hot", this, &dialogWidget::cb_set_red);
-      addCallback ("regular", this, &dialogWidget::cb_set_black);
-      addCallback ("cold", this, &dialogWidget::cb_set_blue);
+      // Connect our own signals
+      addCallback ("hot", this, &DialogWidget::cb_set_red);
+      addCallback ("normal", this, &DialogWidget::cb_set_black);
+      addCallback ("cold", this, &DialogWidget::cb_set_blue);
     }
 
   private:
@@ -476,7 +476,7 @@ class dialogWidget : public FDialog
       if ( t == 30 )
         emitCallback("hot");
       else if ( t == 1 )
-        emitCallback("regular");
+        emitCallback("normal");
 
       setTemperature();
     }
@@ -489,7 +489,7 @@ class dialogWidget : public FDialog
       if ( t == 0 )
         emitCallback("cold");
       else if ( t == 29 )
-        emitCallback("regular");
+        emitCallback("normal");
 
       setTemperature();
     }
@@ -525,7 +525,7 @@ class dialogWidget : public FDialog
 auto main (int argc, char* argv[]) -> int
 {
   FApplication app(argc, argv);
-  dialogWidget dialog(&app);
+  DialogWidget dialog(&app);
   FWidget::setMainWidget(&dialog);
   dialog.show();
   return app.exec();
@@ -538,12 +538,12 @@ auto main (int argc, char* argv[]) -> int
 <br /><br />
 
 > [!NOTE]
-> You can close the dialog with the mouse, 
+> To close the dialog, use the mouse or press 
 > <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>
 
 
-After entering the source code in *emit-signal.cpp* you can compile
-the above program with gcc:
+Save the code as *emit-signal.cpp* and compile it using the
+following GCC command:
 ```bash
 g++ emit-signal.cpp -o emit-signal -O2 -lfinal -std=c++14
 ```

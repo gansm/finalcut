@@ -162,7 +162,7 @@ class FWidget : public FVTerm
     static auto  getStatusBar() -> FStatusBar*;
     static auto  getColorTheme() -> std::shared_ptr<FWidgetColors>&;
     auto  getAcceleratorList() const & -> const FAcceleratorList&;
-    auto  getStatusbarMessage() const -> FString;
+    auto  getStatusBarMessage() const -> FString;
     auto  getForegroundColor() const noexcept -> FColor;  // get the primary
     auto  getBackgroundColor() const noexcept -> FColor;  // widget colors
     auto  doubleFlatLine_ref (Side) -> std::vector<bool>&;
@@ -206,7 +206,7 @@ class FWidget : public FVTerm
     template <typename ClassT>
     static void  setColorTheme();
     auto  setAcceleratorList() & -> FAcceleratorList&;
-    virtual void setStatusbarMessage (const FString&);
+    virtual void setStatusBarMessage (const FString&);
     void  setVisible (bool = true);
     void  unsetVisible();
     virtual void setEnable (bool = true);
@@ -275,7 +275,7 @@ class FWidget : public FVTerm
     auto  childWidgetAt (const FPoint&) & -> FWidget*;
     auto  numOfFocusableChildren() & -> int;
     virtual auto close() -> bool;
-    void  clearStatusbarMessage();
+    void  clearStatusBarMessage();
     template <typename... Args>
     void  addCallback (FString&&, Args&&...) & noexcept;
     template <typename... Args>
@@ -473,7 +473,7 @@ class FWidget : public FVTerm
     static auto  isDefaultTheme() -> bool;
     static void  initColorTheme();
     void  removeQueuedEvent() const;
-    void  setStatusbarText (bool = true) const;
+    void  setStatusBarText (bool = true) const;
 
     // Data members
     struct FWidgetFlags  flags{};
@@ -498,13 +498,13 @@ class FWidget : public FVTerm
     // default widget foreground and background color
     FColor               foreground_color{FColor::Default};
     FColor               background_color{FColor::Default};
-    FString              statusbar_message{};
+    FString              status_bar_message{};
     FAcceleratorList     accelerator_list{};
     EventMap             event_map{};
     FCallback            callback_impl{};
 
-    static FStatusBar*   statusbar;
-    static FMenuBar*     menubar;
+    static FStatusBar*   status_bar;
+    static FMenuBar*     menu_bar;
     static FWidget*      main_widget;
     static FWidget*      active_window;
     static FWidget*      focus_widget;
@@ -567,11 +567,11 @@ inline auto FWidget::getMoveResizeWidget() -> FWidget*&
 
 //----------------------------------------------------------------------
 inline auto FWidget::getMenuBar() -> FMenuBar*
-{ return menubar; }
+{ return menu_bar; }
 
 //----------------------------------------------------------------------
 inline auto FWidget::getStatusBar() -> FStatusBar*
-{ return statusbar; }
+{ return status_bar; }
 
 //----------------------------------------------------------------------
 inline auto FWidget::getAcceleratorList() const & -> const FAcceleratorList&
@@ -582,8 +582,8 @@ inline auto FWidget::setAcceleratorList() & -> FAcceleratorList&
 { return accelerator_list; }
 
 //----------------------------------------------------------------------
-inline auto FWidget::getStatusbarMessage() const -> FString
-{ return statusbar_message; }
+inline auto FWidget::getStatusBarMessage() const -> FString
+{ return status_bar_message; }
 
 //----------------------------------------------------------------------
 inline auto FWidget::getForegroundColor() const noexcept -> FColor
@@ -768,8 +768,8 @@ inline void FWidget::setMoveSizeWidget (FWidget* obj)
 { move_resize_widget = obj; }
 
 //----------------------------------------------------------------------
-inline void FWidget::setStatusbarMessage (const FString& msg)
-{ statusbar_message = msg; }
+inline void FWidget::setStatusBarMessage (const FString& msg)
+{ status_bar_message = msg; }
 
 //----------------------------------------------------------------------
 inline void FWidget::unsetVisible()
@@ -947,8 +947,8 @@ inline auto FWidget::isPaddingIgnored() const -> bool
 { return flags.feature.ignore_padding; }
 
 //----------------------------------------------------------------------
-inline void FWidget::clearStatusbarMessage()
-{ statusbar_message.clear(); }
+inline void FWidget::clearStatusBarMessage()
+{ status_bar_message.clear(); }
 
 //----------------------------------------------------------------------
 template <typename... Args>

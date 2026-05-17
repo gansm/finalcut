@@ -79,8 +79,8 @@ Explore FINAL CUT's text-ui with these examples:
 ![FFileDialog](doc/fileopen-dialog.png)
 <br />*FFileDialog widget with incremental search*<br /><br />
 
-![FProgressbar](doc/progress-bar.png)
-<br />*FProgressbar widget*<br /><br />
+![FProgressBar](doc/progress-bar.png)
+<br />*FProgressBar widget*<br /><br />
 
 ![XPM Viewer](doc/xpmview.png)
 <br />*X PixMap (XPM) viewer example*<br /><br />
@@ -235,7 +235,7 @@ printf(...)
               ├────┤ FWidget │◄─────┼────┤ FToggleButton │◄─┼──┤ FCheckBox │
 ┌─────────┐   │    └────┬────┘      │    └───────────────┘  │  └───────────┘
 │ FObject │◄──┘         :1          │    ┌──────────────┐   │  ┌─────────┐
-└────┬────┘      ┌──────┴────────┐  ├────┤ FProgressbar │   └──┤ FSwitch │
+└────┬────┘      ┌──────┴────────┐  ├────┤ FProgressBar │   └──┤ FSwitch │
      ▼           │ FWidgetColors │  │    └──────────────┘      └─────────┘
  ┌───┴────┐      └───────────────┘  │    ┌────────────┐
  │ FTimer │                         ├────┤ FScrollBar │

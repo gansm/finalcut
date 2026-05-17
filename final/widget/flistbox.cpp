@@ -471,8 +471,8 @@ inline auto FListBox::canSkipDragScrolling() -> bool
 //----------------------------------------------------------------------
 void FListBox::init()
 {
-  initScrollbar (scroll.vbar, Orientation::Vertical, this, &FListBox::cb_vbarChange);
-  initScrollbar (scroll.hbar, Orientation::Horizontal, this, &FListBox::cb_hbarChange);
+  initScrollBar (scroll.vbar, Orientation::Vertical, this, &FListBox::cb_vbarChange);
+  initScrollBar (scroll.hbar, Orientation::Horizontal, this, &FListBox::cb_hbarChange);
   FListBox::setGeometry (FPoint{1, 1}, FSize{5, 4}, false);  // initialize geometry values
   mapKeyFunctions();
 }
@@ -552,7 +552,7 @@ void FListBox::draw()
     for (auto y{2}; y < int(getHeight()); y++)
     {
       print() << FPoint{int(getWidth()) - 1, y}
-              << ' ';  // clear right side of the scrollbar
+              << ' ';  // clear right side of the scroll bar
     }
   }
 
@@ -561,9 +561,9 @@ void FListBox::draw()
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
 
-  drawScrollbars();
+  drawScrollBars();
   drawList();
-  updateStatusbar (this);
+  updateStatusBar (this);
 }
 
 //----------------------------------------------------------------------
@@ -574,7 +574,7 @@ void FListBox::drawBorder()
 }
 
 //----------------------------------------------------------------------
-void FListBox::drawScrollbars() const
+void FListBox::drawScrollBars() const
 {
   if ( ! scroll.hbar->isShown() && isHorizontallyScrollable() )
     scroll.hbar->show();

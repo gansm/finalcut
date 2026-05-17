@@ -450,7 +450,7 @@ class FListView : public FWidget
     // Methods
     void initLayout() override;
     void adjustViewport (const int);
-    void adjustScrollbars (const std::size_t) const;
+    void adjustScrollBars (const std::size_t) const;
     void adjustSize() override;
 
   private:
@@ -533,7 +533,7 @@ class FListView : public FWidget
     auto getListEnd (const FListViewItem*) -> iterator;
     void draw() override;
     void drawBorder() override;
-    void drawScrollbars() const;
+    void drawScrollBars() const;
     void drawHeadlines();
     void drawList();
     void setInputCursor (const FListViewItem*, int, bool);

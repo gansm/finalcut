@@ -204,7 +204,7 @@ void FScrollView::setWidth (std::size_t w, bool adjust)
 
   FWidget::setWidth (w, adjust);
   viewport_geometry.setWidth(w - vertical_border_spacing - nf_offset);
-  calculateScrollbarPos();
+  calculateScrollBarPos();
 
   if ( getScrollWidth() < getViewportWidth() )
     setScrollWidth (getViewportWidth());
@@ -226,7 +226,7 @@ void FScrollView::setHeight (std::size_t h, bool adjust)
 
   FWidget::setHeight (h, adjust);
   viewport_geometry.setHeight(h - horizontal_border_spacing);
-  calculateScrollbarPos();
+  calculateScrollBarPos();
 
   if ( getScrollHeight() < getViewportHeight() )
     setScrollHeight (getViewportHeight());
@@ -647,7 +647,7 @@ void FScrollView::initLayout()
   setLeftPadding (1 - getScrollX());
   setBottomPadding (1 - (yoffset_end - getScrollY()));
   setRightPadding (1 - (xoffset_end - getScrollX()) + nf_offset);
-  calculateScrollbarPos();
+  calculateScrollBarPos();
 }
 
 //----------------------------------------------------------------------
@@ -776,8 +776,8 @@ void FScrollView::init()
   assert ( ! parent->isInstanceOf("FScrollView") );
 #endif
 
-  initScrollbar (vbar, Orientation::Vertical, &FScrollView::cb_vbarChange);
-  initScrollbar (hbar, Orientation::Horizontal, &FScrollView::cb_hbarChange);
+  initScrollBar (vbar, Orientation::Vertical, &FScrollView::cb_vbarChange);
+  initScrollBar (hbar, Orientation::Horizontal, &FScrollView::cb_hbarChange);
   mapKeyFunctions();
   FScrollView::resetColors();
   FScrollView::setGeometry (FPoint{1, 1}, FSize{4, 4});
@@ -936,7 +936,7 @@ void FScrollView::changeSize (const FSize& size, bool adjust)
   const std::size_t h = size.getHeight();
   viewport_geometry.setSize ( w - vertical_border_spacing - nf_offset
                             , h - horizontal_border_spacing );
-  calculateScrollbarPos();
+  calculateScrollBarPos();
 
   if ( getScrollWidth() < getViewportWidth()
     || getScrollHeight() < getViewportHeight() )
@@ -1000,7 +1000,7 @@ inline void FScrollView::changeX (const std::size_t width, const int xoffset_end
   setLeftPadding (1 - xoffset);
   setRightPadding (1 - (xoffset_end - xoffset) + int(nf_offset));
 
-  if ( ! update_scrollbar )
+  if ( ! update_scroll_bar )
     return;
 
   hbar->setValue (xoffset);
@@ -1015,7 +1015,7 @@ inline void FScrollView::changeY (const std::size_t height, const int yoffset_en
   setTopPadding (1 - yoffset);
   setBottomPadding (1 - (yoffset_end - yoffset));
 
-  if ( ! update_scrollbar )
+  if ( ! update_scroll_bar )
     return;
 
   vbar->setValue (yoffset);
@@ -1023,7 +1023,7 @@ inline void FScrollView::changeY (const std::size_t height, const int yoffset_en
 }
 
 //----------------------------------------------------------------------
-void FScrollView::calculateScrollbarPos() const
+void FScrollView::calculateScrollBarPos() const
 {
   const std::size_t width  = std::max(std::size_t(3), getWidth());
   const std::size_t height = std::max(std::size_t(3), getHeight());
@@ -1104,7 +1104,7 @@ void FScrollView::setViewportCursor()
 }
 
 //----------------------------------------------------------------------
-inline auto FScrollView::shouldUpdateScrollbar (FScrollBar::ScrollType scroll_type) const -> bool
+inline auto FScrollView::shouldUpdateScrollBar (FScrollBar::ScrollType scroll_type) const -> bool
 {
   return scroll_type >= FScrollBar::ScrollType::StepBackward;
 }
@@ -1137,7 +1137,7 @@ inline auto FScrollView::getHorizontalScrollDistance (const FScrollBar::ScrollTy
 void FScrollView::cb_vbarChange (const FWidget*)
 {
   auto scroll_type = vbar->getScrollType();
-  update_scrollbar = shouldUpdateScrollbar(scroll_type);
+  update_scroll_bar = shouldUpdateScrollBar(scroll_type);
   static constexpr int wheel_distance = 4;
   int distance = getVerticalScrollDistance(scroll_type);
 
@@ -1171,14 +1171,14 @@ void FScrollView::cb_vbarChange (const FWidget*)
       throw std::invalid_argument{"Invalid scroll type"};
   }
 
-  update_scrollbar = true;
+  update_scroll_bar = true;
 }
 
 //----------------------------------------------------------------------
 void FScrollView::cb_hbarChange (const FWidget*)
 {
   auto scroll_type = hbar->getScrollType();
-  update_scrollbar = shouldUpdateScrollbar(scroll_type);
+  update_scroll_bar = shouldUpdateScrollBar(scroll_type);
   static constexpr int wheel_distance = 4;
   int distance = getHorizontalScrollDistance(scroll_type);
 
@@ -1212,7 +1212,7 @@ void FScrollView::cb_hbarChange (const FWidget*)
       throw std::invalid_argument{"Invalid scroll type"};
   }
 
-  update_scrollbar = true;
+  update_scroll_bar = true;
 }
 
 // FVTerm friend function definition

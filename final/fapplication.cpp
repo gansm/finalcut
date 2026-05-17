@@ -357,10 +357,10 @@ void FApplication::setDarkTheme()
 }
 
 //----------------------------------------------------------------------
-void FApplication::setLogFile (const FString& filename)
+void FApplication::setLogFile (const FString& file_name)
 {
   auto& log_stream = getStartOptions().logfile_stream;
-  log_stream.open(filename.toString(), std::ofstream::out);
+  log_stream.open(file_name.toString(), std::ofstream::out);
 
   if ( log_stream.is_open() )
   {
@@ -376,7 +376,7 @@ void FApplication::setLogFile (const FString& filename)
   }
   else
   {
-    setExitMessage ("Could not open log file \"" + filename + "\"");
+    setExitMessage ("Could not open log file \"" + file_name + "\"");
     exit(EXIT_FAILURE);
   }
 }

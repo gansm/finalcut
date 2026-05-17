@@ -54,8 +54,8 @@ FStatusKey::FStatusKey (FKey k, FString&& txt, FWidget* parent)
 //----------------------------------------------------------------------
 FStatusKey::~FStatusKey()  // destructor
 {
-  if ( getConnectedStatusbar() )
-    getConnectedStatusbar()->remove(this);
+  if ( getConnectedStatusBar() )
+    getConnectedStatusBar()->remove(this);
 
   FStatusKey::delAccelerator(this);
 }
@@ -70,15 +70,15 @@ void FStatusKey::onAccel (FAccelEvent* ev)
 
   setActive();
 
-  if ( getConnectedStatusbar() )
-    getConnectedStatusbar()->redraw();
+  if ( getConnectedStatusBar() )
+    getConnectedStatusBar()->redraw();
 
   ev->accept();
   // unset after get back from callback
   unsetActive();
 
-  if ( getConnectedStatusbar() )
-    getConnectedStatusbar()->redraw();
+  if ( getConnectedStatusBar() )
+    getConnectedStatusBar()->redraw();
 }
 
 //----------------------------------------------------------------------
@@ -107,10 +107,10 @@ void FStatusKey::init()
 
   if ( parent && parent->isInstanceOf("FStatusBar") )
   {
-    setConnectedStatusbar (static_cast<FStatusBar*>(parent));
+    setConnectedStatusBar (static_cast<FStatusBar*>(parent));
 
-    if ( getConnectedStatusbar() )
-      getConnectedStatusbar()->insert(this);
+    if ( getConnectedStatusBar() )
+      getConnectedStatusBar()->insert(this);
   }
 }
 
@@ -143,7 +143,7 @@ FStatusBar::~FStatusBar()  // destructor
 
     while ( iter != key_list.cend() )
     {
-      (*iter)->setConnectedStatusbar(nullptr);
+      (*iter)->setConnectedStatusBar(nullptr);
       FStatusBar::delAccelerator (*iter);
       iter = key_list.erase(iter);
     }
@@ -263,7 +263,7 @@ void FStatusBar::remove (FStatusKey* skey)
     if ( (*iter) == skey )
     {
       iter = key_list.erase(iter);
-      skey->setConnectedStatusbar(nullptr);
+      skey->setConnectedStatusBar(nullptr);
       break;
     }
 
@@ -501,9 +501,9 @@ void FStatusBar::drawKey (FKeyList::const_iterator iter)
 {
   // Draw not active key
 
-  const auto& wc_statusbar = getColorTheme()->statusbar;
-  const FColorPair key_color{wc_statusbar.fg, wc_statusbar.bg};
-  setColor (wc_statusbar.hotkey_fg, wc_statusbar.hotkey_bg);  // Hotkey color
+  const auto& wc_status_bar = getColorTheme()->status_bar;
+  const FColorPair key_color{wc_status_bar.fg, wc_status_bar.bg};
+  setColor (wc_status_bar.hotkey_fg, wc_status_bar.hotkey_bg);  // Hotkey color
   drawHotKeyName(iter, key_color);
   const auto& item = *iter;
   const auto column_width = getColumnWidth (item->getText());
@@ -525,7 +525,7 @@ void FStatusBar::drawKey (FKeyList::const_iterator iter)
 //----------------------------------------------------------------------
 void FStatusBar::drawKeySeparator (FKeyList::const_iterator iter)
 {
-  const auto& wc_statusbar = getColorTheme()->statusbar;
+  const auto& wc_status_bar = getColorTheme()->status_bar;
 
   if ( canPrintLeftActiveKeySeparator(iter) )
   {
@@ -535,7 +535,7 @@ void FStatusBar::drawKeySeparator (FKeyList::const_iterator iter)
 
     if ( FVTerm::getFOutput()->hasHalfBlockCharacter() )
     {
-      setColor (wc_statusbar.bg, wc_statusbar.focus_hotkey_bg);
+      setColor (wc_status_bar.bg, wc_status_bar.focus_hotkey_bg);
       print (UniChar::LeftHalfBlock);  // ▐
     }
     else
@@ -549,7 +549,7 @@ void FStatusBar::drawKeySeparator (FKeyList::const_iterator iter)
   else if ( canPrintKeySeparator(iter) )
   {
     // Not the last element
-    setColor (wc_statusbar.separator_fg, wc_statusbar.bg);
+    setColor (wc_status_bar.separator_fg, wc_status_bar.bg);
     x++;
     print (UniChar::BoxDrawingsVertical);  // │
   }
@@ -563,9 +563,9 @@ void FStatusBar::drawActiveKey (FKeyList::const_iterator iter)
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
 
-  const auto& wc_statusbar = getColorTheme()->statusbar;
-  const FColorPair active_key_color (wc_statusbar.focus_fg, wc_statusbar.focus_bg);
-  setColor (wc_statusbar.focus_hotkey_fg, wc_statusbar.focus_hotkey_bg);  // Hotkey color
+  const auto& wc_status_bar = getColorTheme()->status_bar;
+  const FColorPair active_key_color (wc_status_bar.focus_fg, wc_status_bar.focus_bg);
+  setColor (wc_status_bar.focus_hotkey_fg, wc_status_bar.focus_hotkey_bg);  // Hotkey color
   drawHotKeyName(iter, active_key_color);
   const auto& item = *iter;
   const auto column_width = getColumnWidth (item->getText());
@@ -579,7 +579,7 @@ void FStatusBar::drawActiveKey (FKeyList::const_iterator iter)
     if ( FVTerm::getFOutput()->hasHalfBlockCharacter() )
     {
       // Print right active key separator
-      setColor (wc_statusbar.bg, wc_statusbar.focus_hotkey_bg);
+      setColor (wc_status_bar.bg, wc_status_bar.focus_hotkey_bg);
       print (UniChar::RightHalfBlock);  // ▌
     }
     else
@@ -662,8 +662,8 @@ inline auto FStatusBar::isClickInsideRange ( const FMouseEvent* ev
 //----------------------------------------------------------------------
 void FStatusBar::setStatusBarColor() const
 {
-  const auto& wc_statusbar = getColorTheme()->statusbar;
-  setColor (wc_statusbar.fg, wc_statusbar.bg);
+  const auto& wc_status_bar = getColorTheme()->status_bar;
+  setColor (wc_status_bar.fg, wc_status_bar.bg);
 }
 
 //----------------------------------------------------------------------

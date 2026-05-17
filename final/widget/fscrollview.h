@@ -196,13 +196,13 @@ class FScrollView : public FWidget
     auto isChangeYPosition (const int) const -> bool;
     void changeX (const std::size_t, const int);
     void changeY (const std::size_t, const int);
-    void calculateScrollbarPos() const;
+    void calculateScrollBarPos() const;
     template <typename Callback>
-    void initScrollbar (FScrollBarPtr&, Orientation, Callback);
+    void initScrollBar (FScrollBarPtr&, Orientation, Callback);
     void setHorizontalScrollBarVisibility() const;
     void setVerticalScrollBarVisibility() const;
     void setViewportCursor();
-    auto shouldUpdateScrollbar (FScrollBar::ScrollType) const -> bool;
+    auto shouldUpdateScrollBar (FScrollBar::ScrollType) const -> bool;
     auto getVerticalScrollDistance (const FScrollBar::ScrollType) const -> int;
     auto getHorizontalScrollDistance (const FScrollBar::ScrollType) const -> int;
 
@@ -220,7 +220,7 @@ class FScrollView : public FWidget
     KeyMap                     key_map{};
     uInt8                      nf_offset{0};
     bool                       use_own_print_area{false};
-    bool                       update_scrollbar{true};
+    bool                       update_scroll_bar{true};
     ScrollBarMode              v_mode{ScrollBarMode::Auto};  // fc:Auto, fc::Hidden or fc::Scroll
     ScrollBarMode              h_mode{ScrollBarMode::Auto};
 };
@@ -314,11 +314,11 @@ inline void FScrollView::print (const FPoint& pos)
 
 //----------------------------------------------------------------------
 template <typename Callback>
-inline void FScrollView::initScrollbar ( FScrollBarPtr& bar
+inline void FScrollView::initScrollBar ( FScrollBarPtr& bar
                                        , Orientation o
                                        , Callback cb_handler )
 {
-  finalcut::initScrollbar (bar, o, this, cb_handler);
+  finalcut::initScrollBar (bar, o, this, cb_handler);
   FTermArea* area = FScrollView::getPrintArea();
   finalcut::setPrintArea (*bar, area);
 }

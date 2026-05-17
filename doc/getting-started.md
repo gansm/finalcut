@@ -5,7 +5,7 @@ Getting Started with the FINAL CUT Widget Toolkit
 Table of Contents
 -----------------
 
-<!-- TOC -->
+<!-- toc -->
 - [Basic functions](#basic-functions)
 - [Widgets](#widgets)
 - [Widget tree](#widget-tree)
@@ -17,7 +17,7 @@ Table of Contents
     - [Compiling with GNU Autotools](#use-gnu-Autotools-to-compile-the-application)
     - [Compiling with CMake](#use-cmake-to-compile-the-application)
   - [How it works](#how-it-works)
-<!-- /TOC -->
+<!-- endtoc -->
 
 
 Basic functions
@@ -123,7 +123,7 @@ auto main (int argc, char* argv[]) -> int
 </figure>
 <br /><br />
 > [!NOTE]
-> You can close the dialog with the mouse, 
+> To close the dialog, use the mouse or press 
 > <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>
 
 

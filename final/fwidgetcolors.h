@@ -153,7 +153,7 @@ class FWidgetColors
       FColor hotkey_fg{FColor::Default};
     };
 
-    struct TitlebarColors
+    struct TitleBarColors
     {
       FColor fg{FColor::Default};
       FColor bg{FColor::Default};
@@ -177,7 +177,7 @@ class FWidgetColors
       FColor hotkey_bg{FColor::Default};
     };
 
-    struct StatusbarColors
+    struct StatusBarColors
     {
       FColor fg{FColor::Default};
       FColor bg{FColor::Default};
@@ -190,7 +190,7 @@ class FWidgetColors
       FColor focus_hotkey_bg{FColor::Default};
     };
 
-    struct ScrollbarColors
+    struct ScrollBarColors
     {
       FColor fg{FColor::Default};
       FColor bg{FColor::Default};
@@ -213,11 +213,11 @@ class FWidgetColors
     InputFieldColors     input_field{};
     ToggleButtonColors   toggle_button{};
     ButtonColors         button{};
-    TitlebarColors       titlebar{};
+    TitleBarColors       title_bar{};
     MenuColors           menu{};
-    StatusbarColors      statusbar{};
-    ScrollbarColors      scrollbar{};
-    NonContextualColors  progressbar{};
+    StatusBarColors      status_bar{};
+    ScrollBarColors      scroll_bar{};
+    NonContextualColors  progress_bar{};
 };
 
 // FWidgetColors inline functions
@@ -269,11 +269,11 @@ class default8ColorTheme final : public FWidgetColors
     void setInputFieldColors();
     void setToggleButtonColors();
     void setButtonColors();
-    void setTitlebarColors();
+    void setTitleBarColors();
     void setMenuColors();
-    void setStatusbarColors();
-    void setScrollbarColors();
-    void setProgressbarColors();
+    void setStatusBarColors();
+    void setScrollBarColors();
+    void setProgressBarColors();
 };
 
 // default8ColorTheme inline functions
@@ -325,11 +325,11 @@ class default16ColorTheme final : public FWidgetColors
     void setInputFieldColors();
     void setToggleButtonColors();
     void setButtonColors();
-    void setTitlebarColors();
+    void setTitleBarColors();
     void setMenuColors();
-    void setStatusbarColors();
-    void setScrollbarColors();
-    void setProgressbarColors();
+    void setStatusBarColors();
+    void setScrollBarColors();
+    void setProgressBarColors();
 };
 
 // default16ColorTheme inline functions
@@ -381,11 +381,11 @@ class default8ColorDarkTheme final : public FWidgetColors
     void setInputFieldColors();
     void setToggleButtonColors();
     void setButtonColors();
-    void setTitlebarColors();
+    void setTitleBarColors();
     void setMenuColors();
-    void setStatusbarColors();
-    void setScrollbarColors();
-    void setProgressbarColors();
+    void setStatusBarColors();
+    void setScrollBarColors();
+    void setProgressBarColors();
 };
 
 // default8ColorDarkTheme inline functions
@@ -437,11 +437,11 @@ class default16ColorDarkTheme final : public FWidgetColors
     void setInputFieldColors();
     void setToggleButtonColors();
     void setButtonColors();
-    void setTitlebarColors();
+    void setTitleBarColors();
     void setMenuColors();
-    void setStatusbarColors();
-    void setScrollbarColors();
-    void setProgressbarColors();
+    void setStatusBarColors();
+    void setScrollBarColors();
+    void setProgressBarColors();
 };
 
 // default16ColorDarkTheme inline functions

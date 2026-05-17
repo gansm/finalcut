@@ -1,19 +1,19 @@
 User Themes
 ===========
 
-FINAL CUT supports color themes. That makes it possible to change the color 
-of all elements of a widget in the program. Also, you can adjust the color 
-palette to your preferences. If you want to switch back to the default 
-themes, you can always call the method `FApplication::setDefaultTheme()` 
-or `FApplication::setDarkTheme()` for the dark theme.
+FINAL CUT supports color themes. This allows you to change the color of
+all widget elements. You can also customize the color palette to your
+preferences. If you want to switch back to the default theme, you can
+always call the method `FApplication::setDefaultTheme()` or
+`FApplication::setDarkTheme()` to select the dark theme.
 
 
 Widget Color Theme
 ------------------
 
-FINAL CUT uses a default color scheme that the user can override in a 
-derived class of `FWidgetColors`. All widget colors are redefined in the 
-constructor by the method `setColorTheme()`.
+FINAL CUT uses a default color scheme that developers can override in a 
+derived class of `FWidgetColors`. The `setColorTheme()` method redefines
+all widget colors in the constructor.
 
 ```cpp
 class myWidgetColors final : public finalcut::FWidgetColors
@@ -32,25 +32,24 @@ class myWidgetColors final : public finalcut::FWidgetColors
       return "myWidgetColors";
     }
 
-    void myWidgetColors() override
+    void setColorTheme() override
     {
       ...  // Color definitions
     }
 };
 ```
 
-For setting the widget colors, it is recommended to call the method 
-`FWidget::setColorTheme()` via the `FApplication` object to create a 
-new instance of the theme and assign it to the application.
+To set the widget colors, you should call the `FWidget::setColorTheme()`
+method via the `FApplication` object. This creates a new theme instance
+and assigns it to the application.
 
 ```cpp
 finalcut::FApplication app(argc, argv);
 app.setColorTheme<myWidgetColors>();
 ```
 
-In the following example, we will create the `BeeColorTheme`. For this 
-purpose, we will first create an include file that can be easily included 
-later in your application.
+The following example creates the `BeeColorTheme`. Start by creating a
+reusable include file for your application.
 
 **File:** *widget-color-theme.h*
 ```cpp
@@ -182,7 +181,7 @@ class BeeColorTheme final : public finalcut::FWidgetColors
         finalcut::FColor::Red         // Hotkey foreground
       };
 
-      titlebar =
+      title_bar =
       {
         finalcut::FColor::White,      // Foreground
         finalcut::FColor::Blue,       // Background
@@ -206,7 +205,7 @@ class BeeColorTheme final : public finalcut::FWidgetColors
         finalcut::FColor::Yellow      // Hotkey background
       };
 
-      statusbar =
+      status_bar =
       {
         finalcut::FColor::White,      // Foreground
         finalcut::FColor::DarkGray,   // Background
@@ -219,7 +218,7 @@ class BeeColorTheme final : public finalcut::FWidgetColors
         finalcut::FColor::Green       // Focused hotkey background
       };
 
-      scrollbar =
+      scroll_bar =
       {
         finalcut::FColor::Black,      // Foreground
         finalcut::FColor::Green,      // Background
@@ -229,7 +228,7 @@ class BeeColorTheme final : public finalcut::FWidgetColors
         finalcut::FColor::LightGray   // Inactive button background
       };
 
-      progressbar =
+      progress_bar =
       {
         finalcut::FColor::Green,      // Foreground
         finalcut::FColor::DarkGray    // Background
@@ -244,9 +243,9 @@ class BeeColorTheme final : public finalcut::FWidgetColors
 Color Palette Theme
 -------------------
 
-FINAL CUT has four color tables for the 16 standard colors in the terminal. 
-These are a redefinition of the 16 ANSI colors. You can address the colors 
-via indexes values from 0 to 15. They correspond to the following colors:
+FINAL CUT includes four distinct color tables to manage the 16 standard 
+terminal colors. These tables redefine the traditional 16 ANSI colors, 
+which you can reference using index values from 0 to 15:
 
 | Index  | Color name                     |
 |:------:|:-------------------------------|
@@ -267,16 +266,16 @@ via indexes values from 0 to 15. They correspond to the following colors:
 |   14   | finalcut::FColor::Yellow       |
 |   15   | finalcut::FColor::White        |
 
-You can define your color as an 8-bit value based on its red, green, and 
-blue components. To create a color palette, create a derived class of 
-`FColorPalette`. The constructor gets as argument the function to set 
-a palette color. This function must have the following structure:
+You can define custom colors as 8-bit values using their RGB components. 
+To create a custom palette, derive a new class from `FColorPalette`. 
+The constructor requires a function to assign the colors, which must 
+use the following signature:
 
 ```cpp
 setPalette(finalcut::FColor index, int red, int green, int blue);
 ```
 
-A possible implementation could look as follows:
+Here is an example implementation:
 
 ```cpp
 class myColorPalette final : public finalcut::FColorPalette
@@ -296,38 +295,37 @@ class myColorPalette final : public finalcut::FColorPalette
 
     void setColorPalette() override
     {
-      ...  // Palette definitions
+      ...  // Color palette definition
     }
 
     void resetColorPalette() override
     {
-      setVGAdefaultPalette();
+      setDefaultVGAPalette();
     }
 };
 ```
-To set the colors of a palette theme, you should use the method 
-`FOutput::setColorPaletteTheme()`. This method creates a new instance and 
-saves it in the `FOutput` object.
+Use the `FOutput::setColorPaletteTheme()` method to apply your new 
+palette theme. This method creates a new instance and stores it in the 
+`FOutput` object.
 
 ```cpp
 finalcut::FVTerm::getFOutput()->setColorPaletteTheme<myColorPalette>();
 ```
 The standard VGA palette is part of the `FColorPalette` class. To set it, 
-use the method `setVGAdefaultPalette()`. You can use it to reset the color 
-palette of terminals that cannot reset to default values with escape 
-sequences.
+use the method `setDefaultVGAPalette()`. This is useful for resetting
+terminal color palettes when escape sequences don't work.
 <figure class="image">
   <img src="user-theme-vga-palette.svg" alt="VGA palette">
-  <figcaption>Figure 1.  VGA palette</figcaption>
+  <figcaption>Figure 1:  VGA palette</figcaption>
 </figure>
 <br /><br />
 
 The FINAL CUT eight-color palette `default8ColorPalette` is optimized for 
-the eight-color widget theme `default8ColorTheme`. It is for terminals 
-that cannot display more than eight colors.
+the eight-color widget theme `default8ColorTheme`. It is intended for
+terminals that cannot display more than eight colors.
 <figure class="image">
   <img src="user-theme-fc8-palette.svg" alt="FINAL CUT 8-color palette">
-  <figcaption>Figure 2.  FINAL CUT 8-color palette</figcaption>
+  <figcaption>Figure 2:  FINAL CUT 8-color palette</figcaption>
 </figure>
 <br /><br />
 
@@ -335,25 +333,24 @@ The FINAL CUT palette `default16ColorPalette` is the default 16-color
 palette. It is optimized for the widget color theme `default16ColorTheme`.
 <figure class="image">
   <img src="user-theme-fc16-palette.svg" alt="FINAL CUT 16-color palette">
-  <figcaption>Figure 3.  FINAL CUT 16-color palette</figcaption>
+  <figcaption>Figure 3:  FINAL CUT 16-color palette</figcaption>
 </figure>
 <br /><br />
 
-The second 16-color palette in FINAL CUT is for the dark theme. It was 
-adjusted for the widget color themes `default8ColorDarkTheme` and 
-`default16ColorDarkTheme`.
+The second 16-color palette in FINAL CUT is designed for the dark theme.
+This is defined in the `default16ColorDarkTheme` widget color theme,
+while the 8-color version is accessible via `default8ColorDarkTheme`.
 <figure class="image">
   <img src="user-theme-fc16-dark-palette.svg" alt="FINAL CUT 16-color dark palette">
-  <figcaption>Figure 4.  FINAL CUT 16-color dark palette</figcaption>
+  <figcaption>Figure 4:  FINAL CUT 16-color dark palette</figcaption>
 </figure>
 <br /><br />
 
-In the following example, we want to create the palette them 
-`BeeColorPalette`. For this purpose, we generate an include file again, 
-in which we implement the new palette class.
+To create the `BeeColorPalette` theme, define the new palette class in
+a new header file.
 <figure class="image">
   <img src="user-theme-bee-palette.svg" alt="Bee palette">
-  <figcaption>Figure 6.  Bee palette</figcaption>
+  <figcaption>Figure 5:  Bee palette</figcaption>
 </figure>
 <br /><br />
 
@@ -399,7 +396,7 @@ class BeeColorPalette final : public finalcut::FColorPalette
 
     void resetColorPalette() override
     {
-      setVGAdefaultPalette();
+      setDefaultVGAPalette();
     }
 };
 
@@ -407,15 +404,15 @@ class BeeColorPalette final : public finalcut::FColorPalette
 ```
 
 
-Use of Themes
--------------
+Using Themes
+------------
 
-If you include the two include files above in your application, you can use 
-the widget color theme and the color palette theme. In the main function of 
-your application, the object instances of both classes are created and set.
+If you include the two header files above in your application, you can use 
+the widget color and color palette themes. Instances of both classes
+are created and initialized in your application's main function.
 <figure class="image">
   <img src="user-theme.png" alt="User theme example">
-  <figcaption>Figure 7.  User theme example</figcaption>
+  <figcaption>Figure 6:  User theme example</figcaption>
 </figure>
 <br /><br />
 
@@ -428,22 +425,22 @@ your application, the object instances of both classes are created and set.
 
 using namespace finalcut;
 
-class dialogWidget final : public FDialog
+class DialogWidget final : public FDialog
 {
   public:
-    explicit dialogWidget (FWidget* parent = nullptr)
+    explicit DialogWidget (FWidget* parent = nullptr)
       : FDialog{"Theming test application", parent}
     {
       Input.setLabelText("File name:");
       Input.setLabelOrientation(FLineEdit::LabelOrientation::Above);
-      Input.setStatusbarMessage("Enter a file name");
+      Input.setStatusBarMessage("Enter a file name");
       Browse.addCallback
       (
         "clicked",
-        this, &dialogWidget::cb_FileBrowse
+        this, &DialogWidget::cb_FileBrowse
       );
-      Apply.setStatusbarMessage("Apply settings");
-      Quit.setStatusbarMessage("Exit the program");
+      Apply.setStatusBarMessage("Apply settings");
+      Quit.setStatusBarMessage("Exit the program");
       Quit.addCallback
       (
         "clicked",
@@ -454,7 +451,7 @@ class dialogWidget final : public FDialog
       Open.addCallback
       (
         "clicked",
-        this, &dialogWidget::cb_FileBrowse
+        this, &DialogWidget::cb_FileBrowse
       );
     }
 
@@ -471,24 +468,24 @@ class dialogWidget final : public FDialog
 
     void cb_FileBrowse()
     {
-      auto filename = FFileDialog::fileOpenChooser(this);
+      auto file_name = FFileDialog::fileOpenChooser(this);
 
-      if ( ! filename.isEmpty() )
+      if ( ! file_name.isEmpty() )
       {
-        Input.setText(filename);
+        Input.setText(file_name);
         Input.redraw();
       }
     }
 
-    FMenuBar        Menubar{this};
-    FMenu           File{"&File", &Menubar};
+    FMenuBar        MenuBar{this};
+    FMenu           File{"&File", &MenuBar};
     FMenuItem       New{"&New", &File};
     FMenuItem       Open{"&Open...", &File};
-    FMenu           Edit{"&Edit", &Menubar};
+    FMenu           Edit{"&Edit", &MenuBar};
     FMenuItem       Undo{"&Undo", &Edit};
-    FMenu           Help{"&Help", &Menubar};
+    FMenu           Help{"&Help", &MenuBar};
     FMenuItem       About{"&About", &Help};
-    FStatusBar      Statusbar{this};
+    FStatusBar      StatusBar{this};
     FLineEdit       Input{"input...", this};
     FButton         Browse{"..", this};
     FButton         Apply{"&Apply", this};
@@ -505,7 +502,7 @@ auto main (int argc, char* argv[]) -> int
   // Set the color palette theme
   FVTerm::getFOutput()->setColorPaletteTheme<BeeColorPalette>();
 
-  dialogWidget dialog(&app);
+  DialogWidget dialog(&app);
   FWidget::setMainWidget(&dialog);
   dialog.show();
   return app.exec();
@@ -513,8 +510,8 @@ auto main (int argc, char* argv[]) -> int
 ```
 
 
-After entering the source code in *theme.cpp* you can compile
-the above program with gcc:
+Save the code as *theme.cpp* and compile it using the following GCC
+command:
 ```bash
 g++ theme.cpp -o theme -O2 -lfinal -std=c++14
 ```

@@ -57,9 +57,9 @@ XpmPicture::XpmPicture (finalcut::FWidget* parent)
 { }
 
 //----------------------------------------------------------------------
-void XpmPicture::open (const finalcut::FString& filename)
+void XpmPicture::open (const finalcut::FString& file_name)
 {
-  auto&& data = xmp_image.xpmFileToVector (filename.toString());
+  auto&& data = xmp_image.xpmFileToVector (file_name.toString());
   xmp_image.parseXPM3(data);
 }
 
@@ -129,11 +129,11 @@ class XpmWindow final : public finalcut::FDialog
 
 
 //----------------------------------------------------------------------
-XpmWindow::XpmWindow ( const finalcut::FString& filename
+XpmWindow::XpmWindow ( const finalcut::FString& file_name
                      , finalcut::FWidget* parent )
   : finalcut::FDialog{parent}
 {
-  open(filename);
+  open(file_name);
 }
 
 //----------------------------------------------------------------------
@@ -183,10 +183,10 @@ void XpmWindow::adjustSize()
 }
 
 //----------------------------------------------------------------------
-void XpmWindow::open (const finalcut::FString& filename)
+void XpmWindow::open (const finalcut::FString& file_name)
 {
-  xpm.open(filename);
-  auto c_string = const_cast<char*>(filename.c_str());
+  xpm.open(file_name);
+  auto c_string = const_cast<char*>(file_name.c_str());
   const auto base_name = finalcut::FString(basename(c_string));
   FDialog::setText(base_name);
   const auto size = xpm.getImageSize();
@@ -206,7 +206,7 @@ void XpmWindow::open (const finalcut::FString& filename)
            + L" pixels, "
            + std::to_string(xpm.getImageColors())
            + L" colors";
-  setStatusbarMessage(msg);
+  setStatusBarMessage(msg);
 
   if ( getStatusBar() )
   {
@@ -254,13 +254,13 @@ class MainWidget final : public finalcut::FWidget
     // Callback method
     void cb_fileOpen();
 
-    finalcut::FMenuBar        Menubar{this};
-    finalcut::FMenu           File{"&File", &Menubar};
-    finalcut::FDialogListMenu Windowlist{"&Window", &Menubar};
+    finalcut::FMenuBar        Menu_bar{this};
+    finalcut::FMenu           File{"&File", &Menu_bar};
+    finalcut::FDialogListMenu Windowlist{"&Window", &Menu_bar};
     finalcut::FMenuItem       Open{"&Open", &File};
     finalcut::FMenuItem       Line{&File};
     finalcut::FMenuItem       Quit{"&Quit", &File};
-    finalcut::FStatusBar      Statusbar{this};
+    finalcut::FStatusBar      Status_bar{this};
     finalcut::FString         directory{L"."};
 };
 
@@ -268,10 +268,10 @@ class MainWidget final : public finalcut::FWidget
 MainWidget::MainWidget (finalcut::FWidget* parent)
   : finalcut::FWidget{parent}
 {
-  File.setStatusbarMessage ("File management commands");
-  Windowlist.setStatusbarMessage ("List of all windows");
-  Open.setStatusbarMessage ("Locate and open a text file");
-  Quit.setStatusbarMessage("Exit the program");
+  File.setStatusBarMessage ("File management commands");
+  Windowlist.setStatusBarMessage ("List of all windows");
+  Open.setStatusBarMessage ("Locate and open a text file");
+  Quit.setStatusBarMessage("Exit the program");
   Open.addAccelerator (finalcut::FKey::Ctrl_o);  // Ctrl + O
   Quit.addAccelerator (finalcut::FKey::Ctrl_q);  // Ctrl + Q
   addAccelerator (finalcut::FKey('q'));  // Q
@@ -288,9 +288,9 @@ MainWidget::MainWidget (finalcut::FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-void MainWidget::open (const finalcut::FString& filename)
+void MainWidget::open (const finalcut::FString& file_name)
 {
-  const auto& xpm_window = new XpmWindow(filename, this);
+  const auto& xpm_window = new XpmWindow(file_name, this);
   xpm_window->show();
 }
 
@@ -310,17 +310,17 @@ void MainWidget::onClose (finalcut::FCloseEvent* ev)
 //----------------------------------------------------------------------
 void MainWidget::cb_fileOpen()
 {
-  finalcut::FString filename = [this] ()
+  finalcut::FString file_name = [this] ()
   {
     finalcut::FString filter("*.xpm");
     return finalcut::FFileDialog::fileOpenChooser(this, directory, filter);
   }();
 
-  if ( filename.isEmpty() )
+  if ( file_name.isEmpty() )
     return;
 
-  directory = dirname(filename.c_str());
-  open(filename);
+  directory = dirname(file_name.c_str());
+  open(file_name);
 }
 
 

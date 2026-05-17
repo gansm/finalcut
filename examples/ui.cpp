@@ -61,7 +61,7 @@ class ProgressDialog final : public finalcut::FDialog
     void cb_exit_bar();
 
     // Data members
-    finalcut::FProgressbar progressbar{this};
+    finalcut::FProgressBar progress_bar{this};
     finalcut::FButton      reset{this};
     finalcut::FButton      more{this};
     finalcut::FButton      quit{this};
@@ -73,17 +73,17 @@ ProgressDialog::ProgressDialog (finalcut::FWidget* parent)
 {
   //setModal();
   reset.setText("&Reset");
-  reset.setStatusbarMessage ("Reset the progress bar");
+  reset.setStatusBarMessage ("Reset the progress bar");
   reset.setDisable();
 
   more.setText("&More");
-  more.setStatusbarMessage ("Increases the progress bar position");
+  more.setStatusBarMessage ("Increases the progress bar position");
   more.setDisable();
 
   quit.setText("E&xit");
   quit.setDisable();
 
-  //progressbar.setPercentage(78);
+  //progress_bar.setPercentage(78);
 
   reset.addCallback
   (
@@ -122,7 +122,7 @@ void ProgressDialog::initLayout()
   reset.setGeometry(FPoint{2, 6}, FSize{8, 1}, false);
   more.setGeometry(FPoint{15, 6}, FSize{8, 1}, false);
   quit.setGeometry(FPoint{28, 6}, FSize{8, 1}, false);
-  progressbar.setGeometry(FPoint{2, 3}, FSize{34, 1}, false);
+  progress_bar.setGeometry(FPoint{2, 3}, FSize{34, 1}, false);
   FDialog::initLayout();
 }
 
@@ -135,9 +135,9 @@ void ProgressDialog::onShow (finalcut::FShowEvent*)
 //----------------------------------------------------------------------
 void ProgressDialog::onTimer (finalcut::FTimerEvent*)
 {
-  auto p = progressbar.getPercentage();
+  auto p = progress_bar.getPercentage();
   p++;
-  progressbar.setPercentage(p);
+  progress_bar.setPercentage(p);
   flush();
 
   if ( p != 100 )
@@ -157,15 +157,15 @@ void ProgressDialog::onTimer (finalcut::FTimerEvent*)
 //----------------------------------------------------------------------
 void ProgressDialog::cb_reset_bar()
 {
-  progressbar.reset();
+  progress_bar.reset();
 }
 
 //----------------------------------------------------------------------
 void ProgressDialog::cb_more_bar()
 {
-  auto p = progressbar.getPercentage();
+  auto p = progress_bar.getPercentage();
   p++;
-  progressbar.setPercentage(p);
+  progress_bar.setPercentage(p);
 }
 
 //----------------------------------------------------------------------
@@ -298,14 +298,14 @@ class MyDialog final : public finalcut::FDialog
     struct StatusBarItems
     {
       explicit StatusBarItems (finalcut::FStatusBar& sbar)
-        : statusbar{sbar}
+        : status_bar{sbar}
       { }
 
-      // Statusbar items
-      finalcut::FStatusBar& statusbar;
-      finalcut::FStatusKey key_F1{FKey::F1, "About", &statusbar};
-      finalcut::FStatusKey key_F2{FKey::F2, "View", &statusbar};
-      finalcut::FStatusKey key_F3{FKey::F3, "Quit", &statusbar};
+      // Status bar items
+      finalcut::FStatusBar& status_bar;
+      finalcut::FStatusKey key_F1{FKey::F1, "About", &status_bar};
+      finalcut::FStatusKey key_F2{FKey::F2, "View", &status_bar};
+      finalcut::FStatusKey key_F3{FKey::F3, "Quit", &status_bar};
     };
 
     struct DialogWidgets
@@ -369,7 +369,7 @@ class MyDialog final : public finalcut::FDialog
     void cb_switchTheme (const finalcut::FCheckMenuItem*) const;
     void cb_input2buttonText ( finalcut::FButton&
                              , const finalcut::FLineEdit& ) const;
-    void cb_setTitlebar (const finalcut::FLineEdit&);
+    void cb_setTitleBar (const finalcut::FLineEdit&);
     void cb_showProgressBar();
     void cb_updateNumber();
     void cb_activateButton ( const finalcut::FRadioButton&
@@ -391,9 +391,9 @@ class MyDialog final : public finalcut::FDialog
     FileMenuItems             file_menu{File};
     EditMenuItems             edit_menu{Edit};
     ViewMenuItems             view_menu{View};
-    // Statusbar
-    finalcut::FStatusBar      Statusbar{this};
-    StatusBarItems            statusbar_items{Statusbar};
+    // Status bar
+    finalcut::FStatusBar      status_bar{this};
+    StatusBarItems            status_bar_items{status_bar};
     // Dialog widgets
     DialogWidgets             dialog_widgets{*this};
     finalcut::FString         clipboard{};
@@ -421,35 +421,35 @@ void MyDialog::init()
 void MyDialog::initMenu()
 {
   // Menu bar items
-  File.setStatusbarMessage ("File management commands");
-  Edit.setStatusbarMessage ("Cut-and-paste editing commands");
-  View.setStatusbarMessage ("Show internal informations");
-  Options.setStatusbarMessage ("Set program defaults");
+  File.setStatusBarMessage ("File management commands");
+  Edit.setStatusBarMessage ("Cut-and-paste editing commands");
+  View.setStatusBarMessage ("Show internal informations");
+  Options.setStatusBarMessage ("Set program defaults");
   Options.setDisable();
-  Window.setStatusbarMessage ("List of all the active dialogs");
-  Help.setStatusbarMessage ("Show version and copyright information");
+  Window.setStatusBarMessage ("List of all the active dialogs");
+  Help.setStatusBarMessage ("Show version and copyright information");
 
   // "File" menu items
   file_menu.Open.addAccelerator (FKey::Ctrl_o);  // Ctrl + O
-  file_menu.Open.setStatusbarMessage ("Locate and open a text file");
-  file_menu.Recent.setStatusbarMessage ("View text file");
+  file_menu.Open.setStatusBarMessage ("Locate and open a text file");
+  file_menu.Recent.setStatusBarMessage ("View text file");
   file_menu.Line1.setSeparator();
   file_menu.Quit.addAccelerator (FKey::Meta_x);  // Meta/Alt + X
-  file_menu.Quit.setStatusbarMessage ("Exit the program");
+  file_menu.Quit.setStatusBarMessage ("Exit the program");
 
   // "Edit" menu items
   edit_menu.Undo.setDisable();
   edit_menu.Redo.setDisable();
   edit_menu.Line2.setSeparator();
-  edit_menu.Cut.setStatusbarMessage ( "Remove the input text"
+  edit_menu.Cut.setStatusBarMessage ( "Remove the input text"
                                       " and put it in the clipboard" );
-  edit_menu.Copy.setStatusbarMessage ("Copy the input text into the clipboad");
-  edit_menu.Paste.setStatusbarMessage ("Insert text form clipboard");
-  edit_menu.Clear.setStatusbarMessage ("Delete input text");
+  edit_menu.Copy.setStatusBarMessage ("Copy the input text into the clipboad");
+  edit_menu.Paste.setStatusBarMessage ("Insert text form clipboard");
+  edit_menu.Clear.setStatusBarMessage ("Delete input text");
 
   // "View" menu items
-  view_menu.Env.setStatusbarMessage ("Informations about this terminal");
-  view_menu.Drive.setStatusbarMessage ("Show drive symbols");
+  view_menu.Env.setStatusBarMessage ("Informations about this terminal");
+  view_menu.Drive.setStatusBarMessage ("Show drive symbols");
   view_menu.Line3.setSeparator();
 
   if ( finalcut::FStartOptions::getInstance().dark_theme )
@@ -574,22 +574,22 @@ void MyDialog::initHelpMenuCallback()
 //----------------------------------------------------------------------
 void MyDialog::initStatusBarCallbacks()
 {
-  // Add statusbar function callbacks
+  // Add status bar function callbacks
 
-  statusbar_items.key_F1.addCallback
+  status_bar_items.key_F1.addCallback
   (
     "activate",
     this, &MyDialog::cb_about
   );
 
-  statusbar_items.key_F2.addCallback
+  status_bar_items.key_F2.addCallback
   (
     "activate",
     this, &MyDialog::cb_view,
     nullptr
   );
 
-  statusbar_items.key_F3.addCallback
+  status_bar_items.key_F3.addCallback
   (
     "activate",
     finalcut::getFApplication(),
@@ -609,7 +609,7 @@ void MyDialog::initWidgets()
 
   // A text input field
   dialog_widgets.myLineEdit.setLabelText (L"&Input");
-  dialog_widgets.myLineEdit.setStatusbarMessage ("Press Enter to set the title");
+  dialog_widgets.myLineEdit.setStatusBarMessage ("Press Enter to set the title");
   dialog_widgets.myLineEdit << finalcut::FString{"EnTry"}.toLower();
 
   // Buttons
@@ -618,7 +618,7 @@ void MyDialog::initWidgets()
   // A multiple selection listbox
 
   dialog_widgets.myList.setText ("Items");
-  dialog_widgets.myList.setStatusbarMessage ("99 items in a list");
+  dialog_widgets.myList.setStatusBarMessage ("99 items in a list");
   dialog_widgets.myList.setMultiSelection();
   dialog_widgets.myList.reserve(100);
 
@@ -634,17 +634,17 @@ void MyDialog::initFlatButtons()
 {
   // Flat buttons
   dialog_widgets.MyButton1.setText (L"&SIN");
-  dialog_widgets.MyButton1.setStatusbarMessage ("Sine function");
+  dialog_widgets.MyButton1.setStatusBarMessage ("Sine function");
   dialog_widgets.MyButton1.setNoUnderline();
   dialog_widgets.MyButton1.setFlat();
 
   dialog_widgets.MyButton2.setText (L"&COS");
-  dialog_widgets.MyButton2.setStatusbarMessage ("Cosine function");
+  dialog_widgets.MyButton2.setStatusBarMessage ("Cosine function");
   dialog_widgets.MyButton2.setNoUnderline();
   dialog_widgets.MyButton2.setFlat();
 
   dialog_widgets.MyButton3.setText (L"&=");
-  dialog_widgets.MyButton3.setStatusbarMessage ("Equal");
+  dialog_widgets.MyButton3.setStatusBarMessage ("Equal");
   dialog_widgets.MyButton3.setNoUnderline();
   dialog_widgets.MyButton3.setFlat();
 
@@ -677,9 +677,9 @@ void MyDialog::initToggleButtons()
   // Radio buttons in a group
 
   //dialog_widgets.radioButtonGroup->unsetBorder();
-  dialog_widgets.radio1.setStatusbarMessage ("Enable button Test");
+  dialog_widgets.radio1.setStatusBarMessage ("Enable button Test");
   dialog_widgets.radio2.setText ("&Disable");
-  dialog_widgets.radio2.setStatusbarMessage ("Disable button Test");
+  dialog_widgets.radio2.setStatusBarMessage ("Disable button Test");
   dialog_widgets.radio2.setChecked();
   //dialog_widgets.radio2.setDisable();
 
@@ -695,15 +695,15 @@ void MyDialog::initButtons()
   // Buttons
 
   dialog_widgets.MyButton4.setText (L"&Get input");
-  dialog_widgets.MyButton4.setStatusbarMessage ("Take text from input field");
+  dialog_widgets.MyButton4.setStatusBarMessage ("Take text from input field");
   dialog_widgets.MyButton4.setFocus();
 
   dialog_widgets.MyButton5.setText (L"&Test");
-  dialog_widgets.MyButton5.setStatusbarMessage ("Progressbar testing dialog");
+  dialog_widgets.MyButton5.setStatusBarMessage ("Progress bar testing dialog");
   dialog_widgets.MyButton5.setDisable();
 
   dialog_widgets.MyButton6.setText (L"&Quit");
-  dialog_widgets.MyButton6.setStatusbarMessage ("Exit the program");
+  dialog_widgets.MyButton6.setStatusBarMessage ("Exit the program");
   dialog_widgets.MyButton6.addAccelerator(FKey('x'));
 
   // Add button callback functions
@@ -751,7 +751,7 @@ void MyDialog::initWidgetsCallbacks()
   dialog_widgets.myLineEdit.addCallback
   (
     "activate",  // e.g. on <Enter>
-    this, &MyDialog::cb_setTitlebar,
+    this, &MyDialog::cb_setTitleBar,
     std::ref(dialog_widgets.myLineEdit)
   );
 
@@ -988,7 +988,7 @@ void MyDialog::cb_input2buttonText ( finalcut::FButton& button
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_setTitlebar (const finalcut::FLineEdit& lineedit)
+void MyDialog::cb_setTitleBar (const finalcut::FLineEdit& lineedit)
 {
   finalcut::FString title{};
   lineedit >> title;
@@ -1054,8 +1054,8 @@ void MyDialog::cb_view (const finalcut::FMenuItem* item)
   const auto& view = new TextWindow(this);
   std::vector<char> buffer(path.begin(), path.end());
   buffer.push_back('\0'); // Ensure null-termination
-  finalcut::FString filename(basename(buffer.data()));
-  view->setText ("Viewer: " + filename);
+  finalcut::FString file_name(basename(buffer.data()));
+  view->setText ("Viewer: " + file_name);
   view->setGeometry ( FPoint { 1 + int((getRootWidget()->getWidth() - 60) / 2)
                              , int(getRootWidget()->getHeight() / 6) }
                     , FSize{60, getRootWidget()->getHeight() * 3 / 4} );

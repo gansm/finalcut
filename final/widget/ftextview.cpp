@@ -214,13 +214,13 @@ void FTextView::scrollTo (int x, int y)
   xoffset = std::max(0, std::min(x, xoffset_end));
   yoffset = std::max(0, std::min(y, yoffset_end));
 
-  if ( update_scrollbar && changeX && isHorizontallyScrollable() )
+  if ( update_scroll_bar && changeX && isHorizontallyScrollable() )
   {
     hbar->setValue(xoffset);
     hbar->drawBar();
   }
 
-  if ( update_scrollbar && changeY && isVerticallyScrollable() )
+  if ( update_scroll_bar && changeY && isVerticallyScrollable() )
   {
     vbar->setValue(yoffset);
     vbar->drawBar();
@@ -519,7 +519,7 @@ void FTextView::onTimer (FTimerEvent*)
 
   if ( isShown() )
   {
-    drawScrollbars();
+    drawScrollBars();
     drawText();
     forceTerminalUpdate();
   }
@@ -637,8 +637,8 @@ inline auto FTextView::hasWrongSelectionOrder() const -> bool
 //----------------------------------------------------------------------
 void FTextView::init()
 {
-  initScrollbar (vbar, Orientation::Vertical, this, &FTextView::cb_vbarChange);
-  initScrollbar (hbar, Orientation::Horizontal, this, &FTextView::cb_hbarChange);
+  initScrollBar (vbar, Orientation::Vertical, this, &FTextView::cb_vbarChange);
+  initScrollBar (hbar, Orientation::Horizontal, this, &FTextView::cb_hbarChange);
   setMinimumSize (FSize{3, 3});
   FTextView::resetColors();
   mapKeyFunctions();
@@ -665,9 +665,9 @@ void FTextView::draw()
 {
   setColor();
   drawBorder();
-  drawScrollbars();
+  drawScrollBars();
   drawText();
-  updateStatusbar(this);
+  updateStatusBar(this);
   setCursorPos ({int(getWidth()), int(getHeight())});
 }
 
@@ -688,7 +688,7 @@ void FTextView::drawBorder()
 }
 
 //----------------------------------------------------------------------
-void FTextView::drawScrollbars() const
+void FTextView::drawScrollBars() const
 {
   if ( ! hbar->isShown() && isHorizontallyScrollable() )
     hbar->show();
@@ -1176,7 +1176,7 @@ void FTextView::changeOnResize() const
 }
 
 //----------------------------------------------------------------------
-inline auto FTextView::shouldUpdateScrollbar (FScrollBar::ScrollType scroll_type) const -> bool
+inline auto FTextView::shouldUpdateScrollBar (FScrollBar::ScrollType scroll_type) const -> bool
 {
   return scroll_type >= FScrollBar::ScrollType::StepBackward;
 }
@@ -1209,7 +1209,7 @@ inline auto FTextView::getHorizontalScrollDistance (const FScrollBar::ScrollType
 void FTextView::cb_vbarChange (const FWidget*)
 {
   const auto scroll_type = vbar->getScrollType();
-  update_scrollbar = shouldUpdateScrollbar(scroll_type);
+  update_scroll_bar = shouldUpdateScrollBar(scroll_type);
   static constexpr int wheel_distance = 4;
   int distance = getVerticalScrollDistance(scroll_type);
 
@@ -1243,14 +1243,14 @@ void FTextView::cb_vbarChange (const FWidget*)
       throw std::invalid_argument{"Invalid scroll type"};
   }
 
-  update_scrollbar = true;
+  update_scroll_bar = true;
 }
 
 //----------------------------------------------------------------------
 void FTextView::cb_hbarChange (const FWidget*)
 {
   const auto scroll_type = hbar->getScrollType();
-  update_scrollbar = shouldUpdateScrollbar(scroll_type);
+  update_scroll_bar = shouldUpdateScrollBar(scroll_type);
   static constexpr int wheel_distance = 4;
   int distance = getHorizontalScrollDistance(scroll_type);
 
@@ -1284,7 +1284,7 @@ void FTextView::cb_hbarChange (const FWidget*)
       throw std::invalid_argument{"Invalid scroll type"};
   }
 
-  update_scrollbar = true;
+  update_scroll_bar = true;
 }
 
 }  // namespace finalcut

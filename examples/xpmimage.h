@@ -1158,9 +1158,9 @@ void XpmImage::parseXPM3 (const std::vector<std::string>& xpm)
 }
 
 //----------------------------------------------------------------------
-auto XpmImage::xpmFileToVector (const std::string& filename) const -> std::vector<std::string>
+auto XpmImage::xpmFileToVector (const std::string& file_name) const -> std::vector<std::string>
 {
-  std::ifstream infile(filename, std::ios::in | std::ios::binary);
+  std::ifstream infile(file_name, std::ios::in | std::ios::binary);
 
   if ( ! infile )
     return {};

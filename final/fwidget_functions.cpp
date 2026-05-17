@@ -1053,14 +1053,14 @@ void drawGenericBox ( FWidget* w, const FRect& r
 }
 
 //----------------------------------------------------------------------
-void updateStatusbar (const FWidget* w, bool need_focus)
+void updateStatusBar (const FWidget* w, bool need_focus)
 {
   if ( w->hasFocus() != need_focus )
     return;
 
   if ( auto sbar = w->getStatusBar() )
   {
-    const auto& msg = w->getStatusbarMessage();
+    const auto& msg = w->getStatusBarMessage();
     const auto& curMsg = sbar->getMessage();
 
     if ( curMsg != msg )

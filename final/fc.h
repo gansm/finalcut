@@ -78,7 +78,7 @@ enum class Event : uInt8
   Show,              // Widget is shown
   Hide,              // Widget is hidden
   Close,             // Widget close
-  Timer,             // Timer event occur
+  Timer,             // Timer event occurred
   User               // User defined event
 };
 

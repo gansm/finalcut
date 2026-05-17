@@ -501,16 +501,16 @@ void FComboBox::initCallbacks()
 //----------------------------------------------------------------------
 void FComboBox::draw()
 {
-  const auto& wc_scrollbar = getColorTheme()->scrollbar;
+  const auto& wc_scroll_bar = getColorTheme()->scroll_bar;
 
-  const FColorPair button_color = [this, &wc_scrollbar] ()
+  const FColorPair button_color = [this, &wc_scroll_bar] ()
   {
     if ( list_window.isEmpty() )
-      return FColorPair { wc_scrollbar.button_inactive_fg
-                        , wc_scrollbar.button_inactive_bg };
+      return FColorPair { wc_scroll_bar.button_inactive_fg
+                        , wc_scroll_bar.button_inactive_bg };
 
-    return FColorPair { wc_scrollbar.button_fg
-                      , wc_scrollbar.button_bg };
+    return FColorPair { wc_scroll_bar.button_fg
+                      , wc_scroll_bar.button_bg };
   }();
 
   print() << FPoint{int(getWidth()) - nf, 1}
