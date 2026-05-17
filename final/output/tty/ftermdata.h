@@ -253,7 +253,7 @@ class FTermData final
 #endif
       uInt          baudrate{0};
       std::string   termtype{};
-      std::string   termfilename{};
+      std::string   term_file_name{};
     };
 
     // Synchronization and state
@@ -334,7 +334,7 @@ inline auto FTermData::getTermType() const & -> const std::string&
 
 //----------------------------------------------------------------------
 inline auto FTermData::getTermFileName() const & -> const std::string&
-{ return terminal_settings.termfilename; }
+{ return terminal_settings.term_file_name; }
 
 //----------------------------------------------------------------------
 inline auto FTermData::getGnomeTerminalID() const noexcept -> int
@@ -519,7 +519,7 @@ inline void FTermData::unsetTermType (FTermType type)
 inline void FTermData::setTermFileName (const std::string& file_name)
 {
   if ( ! file_name.empty() )
-    terminal_settings.termfilename = file_name;
+    terminal_settings.term_file_name = file_name;
 }
 
 //----------------------------------------------------------------------

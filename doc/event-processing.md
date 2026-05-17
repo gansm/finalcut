@@ -4,88 +4,89 @@ Event Processing
 Table of Contents
 -----------------
 
-<!-- TOC -->
+<!-- toc -->
 - [Event handling](#how-events-are-processed)
 - [Event handler reimplementation](#event-handler-reimplementation)
 - [Event types](#available-event-types)
 - [Timer event](#using-a-timer-event)
 - [User event](#using-a-user-event)
-<!-- /TOC -->
+<!-- endtoc -->
 
 
 How events are processed
 ------------------------
 
-Calling `FApplication::exec()` starts the FINAL CUT main event loop.
+The main event loop is initiated by calling `FApplication::exec()`.
 While the event loop is running, the system continuously monitors 
-for events and dispatches them to the currently focused object. 
-The events of the terminal, such as keystrokes, mouse actions, or 
-terminal size changes, are translated into `FEvent` objects, and are sent to 
-the active `FObject`. It is also possible to use `FApplication::sendEvent()` 
-or `FApplication::queueEvent()` to send a specific event to an object.
+for events and sends them to the currently focused object. 
+Terminal events, such as keystrokes, mouse actions, or resizing the terminal, 
+are translated into `FEvent` objects, and are sent to the active `FObject`. 
+You can also use the `FApplication::sendEvent()` or `FApplication::queueEvent()`
+methods to send a specific event to an object.
 
-`FObject`-derived objects process incoming events by reimplementing the 
-virtual method `event()`. The `FObject` itself can only call its own events 
-`onTimer()` and `onUserEvent()` and ignores all other events. The 
-`FObject`-derived class `FWidget` also reimplements the `event()` method 
-to handle further events. `FWidget` calls the `FWidget::onKeyPress` method
-when you press a key, or the `FWidget::onMouseDown` method when you click 
-a mouse button.
+Objects derived from the class `FObject` process incoming events by 
+overriding the virtual method `event()`. The `FObject` itself can only 
+call its own events, `onTimer()` and `onUserEvent()`, and discards all others. 
+The `FObject`-derived class `FWidget` also reimplements the `event()` method 
+to handle further events. `FWidget` calls the `FWidget::onKeyPress` method 
+when a key is pressed, or the `FWidget::onMouseDown` method when a mouse
+button is clicked.
 
 
-Event handler reimplementation
-------------------------------
+Reimplementing Event Handlers
+-----------------------------
 
 An event in FINAL CUT is an object that inherits from the base class 
-`FEvent`. There are several event types, represented by an enum value. 
+`FEvent`. There are several types of events, represented by an enum value. 
 For example, the method `FEvent::type()` returns the type 
 `Event::MouseDown` when you press down a mouse button. 
 
-Some event types have data that cannot be stored in an `FEvent` object. 
-For example, a click event of the mouse requires storing which button was 
-triggered and the position of the mouse pointer at that time. In classes
-derived  from `FEvent`, such as `FMouseEvent()`, we store this data.
+Some events contain data that doesn't fit in a standard FEvent object. 
+Some types of events have data that cannot be stored in an `FEvent` object. 
+For example, a mouse click event from the mouse requires storing which 
+button was triggered and the position of the mouse pointer at that time. Classes 
+derived from `FEvent`, such as `FMouseEvent`, store this data.
 
-Widgets get their events from the `event()` method inherited from `FObject`. 
-The implementation of `event()` in `FWidget` forwards the most common event 
-types to specific event handlers such as `FMouseEvent()`, `FKeyEvent()`, or 
-`FResizeEvent()`. There are many other event types. You can create your own
-event types and send them to other objects and widgets.
+Widgets get their events from the `event()` method inherited from `FObject`.
+In `FWidget`, the implementation of `event()` forwards the most common event
+types to specific event handlers, such as `FMouseEvent()`, `FKeyEvent()`,
+or `FResizeEvent()`. There are many other available events. You can create 
+your own types of events and send them to other objects and widgets.
 
 
 Available event types
 ---------------------
 
 ```cpp
-enum class Event
+enum class Event : uInt8
 {
-  None,              // invalid event
-  KeyPress,          // key pressed
-  KeyUp,             // key released
-  KeyDown,           // key pressed
-  MouseDown,         // mouse button pressed
-  MouseUp,           // mouse button released
-  MouseDoubleClick,  // mouse button double click
-  MouseWheel,        // mouse wheel rolled
-  MouseMove,         // mouse move
-  FocusIn,           // focus in
-  FocusOut,          // focus out
-  ChildFocusIn,      // child focus in
-  ChildFocusOut,     // child focus out
+  None,              // Invalid event
+  KeyPress,          // Key pressed
+  KeyUp,             // Key released
+  KeyDown,           // Key pressed
+  MouseDown,         // Mouse button pressed
+  MouseUp,           // Mouse button released
+  MouseDoubleClick,  // Mouse button double click
+  MouseWheel,        // Mouse wheel rolled
+  MouseMove,         // Mouse move
+  FocusIn,           // Focus in
+  FocusOut,          // Focus out
+  ChildFocusIn,      // Child focus in
+  ChildFocusOut,     // Child focus out
   FailAtChildFocus,  // No further focusable child widgets
-  TerminalFocusIn,   // terminal focus in
-  TerminalFocusOut,  // terminal focus out
-  WindowActive,      // activate window
-  WindowInactive,    // deactivate window
-  WindowRaised,      // raise window
-  WindowLowered,     // lower window
-  Accelerator,       // keyboard accelerator
-  Resize,            // terminal resize
-  Show,              // widget is shown
-  Hide,              // widget is hidden
-  Close,             // widget close
-  Timer,             // timer event occurs
-  User               // user defined event
+  TerminalFocusIn,   // Terminal focus in
+  TerminalFocusOut,  // Terminal focus out
+  WindowActive,      // Activate window
+  WindowInactive,    // Deactivate window
+  WindowRaised,      // Raise window
+  WindowLowered,     // Lower window
+  Accelerator,       // Keyboard accelerator
+  Resize,            // Terminal resize
+  Show,              // Widget is shown
+  Hide,              // Widget is hidden
+  Close,             // Widget close
+  Timer,             // Timer event occurred
+  User               // User defined event
 };
 ```
 
@@ -93,9 +94,9 @@ enum class Event
 Using a timer event
 -------------------
 
-The following example starts a periodic timer that triggers an `FTimerEvent()` 
-every 100 ms. The virtual method `onTimer()` is then called each time in the 
-same dialog object.
+The following example starts a periodic timer that triggers an `FTimerEvent()`
+every 100 milliseconds. Then, the virtual method `onTimer()` is repeatedly
+called within the same dialog.
 
 **File:** *timer.cpp*
 ```cpp
@@ -103,10 +104,10 @@ same dialog object.
 
 using namespace finalcut;
 
-class dialogWidget : public FDialog
+class DialogWidget : public FDialog
 {
   public:
-    explicit dialogWidget (FWidget* parent = nullptr)
+    explicit DialogWidget (FWidget* parent = nullptr)
       : FDialog{parent}
     {
       label.setAlignment (Align::Right);
@@ -142,7 +143,7 @@ class dialogWidget : public FDialog
 auto main (int argc, char* argv[]) -> int
 {
   FApplication app(argc, argv);
-  dialogWidget dialog(&app);
+  DialogWidget dialog(&app);
   FWidget::setMainWidget(&dialog);
   dialog.show();
   return app.exec();
@@ -155,24 +156,25 @@ auto main (int argc, char* argv[]) -> int
 <br /><br />
 
 > [!NOTE]
-> You can close the dialog with the mouse, 
+> To close the dialog, use the mouse or press 
 > <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>
 
 
-After entering the source code in *timer.cpp* you can compile
-the above program with gcc:
+Save the code as *timer.cpp* and compile it using the following 
+command:
 ```bash
-g++ timer.cpp -o timer -O2 -lfinal -std=c++14
+c++ timer.cpp -o timer -O2 -lfinal -std=c++14
 ```
 
 
 Using a user event
 ------------------
 
-You can use the `FUserEvent()` to create an individual event and send it to a 
-specific object. If you want to create more than one user event, you can 
-specify an identification number (ID; 0 in the example below) to identify the 
-different events. This number can be retrieved with `getUserId()`.
+Use the `FUserEvent()` method to create and send a custom event to 
+a specific object. If you want to create more than one user event, you can 
+specify an identification number (ID) to differentiate between them. In the 
+example below, the ID is 0. This number can be retrieved using the 
+`getUserId()` method.
 
 User events should be generated in the main event loop. For this purpose, 
 the class `FApplication` provides the virtual method 
@@ -194,10 +196,10 @@ widget and displays them in the terminal.
 using LoadAvg = double[3];
 using namespace finalcut;
 
-class extendedApplication : public FApplication
+class ExtendedApplication : public FApplication
 {
   public:
-    extendedApplication (const int& argc, char* argv[])
+    ExtendedApplication (const int& argc, char* argv[])
       : FApplication(argc, argv)
     { }
 
@@ -228,10 +230,10 @@ class extendedApplication : public FApplication
 };
 
 
-class dialogWidget final : public FDialog
+class DialogWidget final : public FDialog
 {
   public:
-    explicit dialogWidget (FWidget* parent = nullptr)
+    explicit DialogWidget (FWidget* parent = nullptr)
       : FDialog{"User event", parent}
     { }
 
@@ -259,8 +261,8 @@ class dialogWidget final : public FDialog
 
 auto main (int argc, char* argv[]) -> int
 {
-  extendedApplication app(argc, argv);
-  dialogWidget dialog(&app);
+  ExtendedApplication app(argc, argv);
+  DialogWidget dialog(&app);
   FWidget::setMainWidget(&dialog);
   dialog.show();
   return app.exec();
@@ -273,12 +275,12 @@ auto main (int argc, char* argv[]) -> int
 <br /><br />
 
 > [!NOTE]
-> You can close the dialog with the mouse, 
+> To close the dialog, use the mouse or press 
 > <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>
 
 
 After entering the source code in *user-event.cpp* you can compile
-the above program with gcc:
+the above program with:
 ```bash
-g++ user-event.cpp -o user-event -O2 -lfinal -std=c++14
+c++ user-event.cpp -o user-event -O2 -lfinal -std=c++14
 ```

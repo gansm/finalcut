@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2022-2025 Markus Gans                                      *
+* Copyright 2022-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -68,7 +68,7 @@ class XpmImage
 
   private:
     // Using-declaration
-    using FTermArea = finalcut::FVTerm::FTermArea;
+    using FTermRegion = finalcut::FVTerm::FTermRegion;
 
     // Methods
     void getValues (const std::string&);
@@ -1158,9 +1158,9 @@ void XpmImage::parseXPM3 (const std::vector<std::string>& xpm)
 }
 
 //----------------------------------------------------------------------
-auto XpmImage::xpmFileToVector (const std::string& filename) const -> std::vector<std::string>
+auto XpmImage::xpmFileToVector (const std::string& file_name) const -> std::vector<std::string>
 {
-  std::ifstream infile(filename, std::ios::in | std::ios::binary);
+  std::ifstream infile(file_name, std::ios::in | std::ios::binary);
 
   if ( ! infile )
     return {};

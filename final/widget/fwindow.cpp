@@ -168,7 +168,7 @@ auto FWindow::activateWindow (bool enable) -> bool
   if ( enable )
   {
     FWidget::setActiveWindow (this);
-    setActiveArea (getVWin());
+    setActiveRegion (getVWin());
   }
 
   return (window_active = enable);
@@ -182,9 +182,9 @@ void FWindow::unsetActiveWindow() const
 }
 
 //----------------------------------------------------------------------
-void FWindow::setResizeable (bool enable)
+void FWindow::setResizable (bool enable)
 {
-  setFlags().feature.resizeable = enable;
+  setFlags().feature.resizable = enable;
 }
 
 //----------------------------------------------------------------------
@@ -371,7 +371,7 @@ void FWindow::setWidth (std::size_t w, bool adjust)
   {
     FRect geometry {getTermGeometry()};
     geometry.move(-1, -1);
-    resizeArea ({geometry, getShadow()}, getVWin());
+    resizeRegion ({geometry, getShadow()}, getVWin());
   }
 }
 
@@ -385,7 +385,7 @@ void FWindow::setHeight (std::size_t h, bool adjust)
   {
     FRect geometry {getTermGeometry()};
     geometry.move(-1, -1);
-    resizeArea ({geometry, getShadow()}, getVWin());
+    resizeRegion ({geometry, getShadow()}, getVWin());
   }
 }
 
@@ -399,7 +399,7 @@ void FWindow::setSize (const FSize& size, bool adjust)
   {
     FRect geometry {getTermGeometry()};
     geometry.move(-1, -1);
-    resizeArea ({geometry, getShadow()}, getVWin());
+    resizeRegion ({geometry, getShadow()}, getVWin());
   }
 }
 
@@ -422,7 +422,7 @@ void FWindow::setGeometry ( const FPoint& p, const FSize& size, bool adjust)
   {
     FRect geometry {getTermGeometry()};
     geometry.move(-1, -1);
-    resizeArea ({geometry, getShadow()}, getVWin());
+    resizeRegion ({geometry, getShadow()}, getVWin());
   }
   else
   {
@@ -739,7 +739,7 @@ void FWindow::setShadowSize (const FSize& size)
   {
     auto geometry = getTermGeometry();
     geometry.move(-1, -1);
-    resizeArea ({geometry, getShadow()}, getVWin());
+    resizeRegion ({geometry, getShadow()}, getVWin());
   }
 }
 
@@ -833,7 +833,7 @@ inline void FWindow::createVWin() noexcept
 
   FRect geometry {getTermGeometry()};
   geometry.move(-1, -1);
-  setVWin(createArea({geometry, getShadow()}));
+  setVWin(createRegion({geometry, getShadow()}));
 }
 
 //----------------------------------------------------------------------

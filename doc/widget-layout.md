@@ -4,34 +4,32 @@ Widget Layout
 Table of Contents
 -----------------
 
-<!-- TOC -->
+<!-- toc -->
 - [Coordinates](#coordinates)
 - [Lengths](#lengths)
-- [Areas](#areas)
+- [Regions](#regions)
 - [Dynamic layout](#dynamic-layout)
-<!-- /TOC -->
+<!-- endtoc -->
 
 
 Coordinates
 -----------
 
-The positioning of a widget in the terminal works via a coordinate 
-system. It consists of _x_ characters in the horizontal and _y_ 
-characters in the vertical. The upper left corner has the coordinates 
-(1, 1). With the commands `getDesktopWidth()` and `getDesktopHeight()`, 
-the width and height of the terminal get retrieved. These two values 
-result in the position of the lower right terminal corner. The position 
-of a widget is retrievable with `getX()`, `getY()`, and `getPos()` or 
-is definable with `setX()`, `setY()`, and `setPos()`. The data type for 
-each coordinate is an `int`. All positions represent an `FPoint` 
-object. The positioning of the widget is always relative to its parent 
-widget. The top parent widget in a chain of children contains the 
-terminal desktop. There the absolute terminal positions are still 
-identical to the relative positions (`getPos()` = `getTermPos()`). In 
-the case of a child widget, the positioning is corresponding to the 
-upper left corner of the parent widget plus a possible padding space 
-(can be determined with `getLeftPadding()` and `getTopPadding()`). 
-If you want to ignore padding spaces, you have to force this with the 
+Widgets are positioned in the terminal using a coordinate system. 
+It spans _x_ characters horizontally and _y_ characters vertically. 
+The top-left corner is at coordinates (1, 1). The `getDesktopWidth()` 
+and `getDesktopHeight()` commands return the terminal's width and 
+height. These two values define the position of the lower-right corner 
+of the terminal. You can retrieve the position of a widget using 
+`getX()`, `getY()`, and `getPos()`, or set it using `setX()`, 
+`setY()`, and `setPos()`. Each coordinate is an `int`, and positions 
+are represented by `FPoint` objects. Widgets are always 
+positioned relative to their parent. The top parent widget in a 
+parent-child chain contains the terminal desktop, where absolute and 
+relative positions are identical (`getPos()` == `getTermPos()`). 
+Child widget positions are relative to the parent's top-left corner, 
+plus optional padding (`getLeftPadding()` and `getTopPadding()`). 
+If you want to ignore padding spaces, you can do so using the 
 `ignorePadding()` method.
 
 <figure class="image">
@@ -52,38 +50,39 @@ virtual void     setY (int y, bool adjust = true);
 virtual void     setPos (const FPoint& p, bool adjust = true);
 ```
 
-If you set the value of `adjust` to `false` when calling `setX()`, 
-`setY()`, or `setPos()`, this will prevent the explicit call of 
-`adjustSize()` afterward.  This is important to avoid `adjustSize()` 
-loops or to block the `adjustSize()` call from being repeated 
-unnecessarily often.
+Set `adjust` to `false` when calling `setX()`, `setY()`, or `setPos()`
+to prevent an explicit call to `adjustSize()`. This avoids loops and 
+redundant execution.
 
 
-Lengths
--------
+Dimensions
+----------
 
-The dimensions of a widget can be retrieved and defined separately in 
-width and height. The methods `getWidth()` and `getHeight()` 
-respectively `setWidth()` and `setHeight()` are used for this. Because 
-a length cannot be negative, all lengths are of type `std::size_t`. 
-The maximum size of a child widget automatically results from the size 
-of the parent widget, which is retrievable with `getClientWidth()` and 
-`getClientHeight()`. Some widgets have a border, a title bar, or both, 
-which can reduce the maximum size of the child widget.
+A widget's width and height can be retrieved and set independently.
+The `getWidth()` and `getHeight()` methods—as well as their 
+corresponding `setWidth()` and `setHeight()` methods—are used for 
+this. All Dimensions are of type `std::size_t` because a Dimension 
+cannot be negative. The parent widget's size automatically limits 
+the maximum size of a child widget. Retrieve it using 
+`getClientWidth()` and `getClientHeight()`. Some widgets have a 
+border, a title bar, or both, thereby reducing the maximum size of 
+the child widget.
 
-&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;widget width ≥ client widget width<br />
-&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;widget height ≥ client widget height
+<blockquote>
+widget_width ≥ client_widget_width<br />
+widget_height ≥ client_widget_height
+</blockquote>
 
-Corresponding padding space ensures the correct distance here. The 
-padding space can be retrieved separately for all four sides with 
-the widget methods `getTopPadding()`, `getLeftPadding()`, 
-`getBottomPadding()`, and `getRightPadding()`. You can set the 
-required padding space for the widget using the `setTopPadding()`, 
-`setLeftPadding()`, `setBottomPadding()` and `setRightPadding()` 
-methods.
+Padding provides the required spacing. Use `getTopPadding()`, 
+`getLeftPadding()`, `getBottomPadding()`, and `getRightPadding()` to 
+retrieve the padding for each of the four sides individually. 
+You can set the padding in the same way by calling `setTopPadding()`, 
+`setLeftPadding()`, `setBottomPadding()`, or `setRightPadding()`.
 
-&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;widget width = left padding + client width + right padding<br />
-&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;widget height = top padding + client height + bottom padding
+<blockquote>
+widget_width = left_padding + client_width + right_padding<br />
+widget_height = top_padding + client_height + bottom_padding
+</blockquote>
 
 <figure class="image">
   <img src="widget-lengths.svg" alt="widget lengths">
@@ -109,35 +108,27 @@ void           setBottomPadding (int bottom, bool adjust = true);
 void           setRightPadding (int right, bool adjust = true);
 ```
 
-If the value of `adjust` is set to `false` for `setWidth()`, 
+If the `adjust` argument is set to `false` when calling `setWidth()`, 
 `setHeight()`, `setTopPadding()`, `setLeftPadding()`, 
-`setBottomPadding()` or `setRightPadding()`, then `adjustSize()` is 
-not explicitly called afterward. This is important to prevent 
-`adjustSize()` loops or to avoid that `adjustSize()` is called 
-unnecessarily often.
+`setBottomPadding()`, or `setRightPadding()`, `adjustSize()` is not 
+called. This prevents `adjustSize()` loops and avoids redundant calls.
 
 
-Areas
------
+Regions
+-------
 
-The terminal area in which a widget appears determines its geometry. 
-The geometry of a widget is composed of its position and its size. 
-A widget position is always of object type `FPoint` and a widget 
-size of type `FSize`. The widget geometry can be retrieved as `FRect`
-object via the widget method `getGeometry()` and set with the method 
-`setGeometry()`. The `getTermGeometry()` method gets the total values 
-of the terminal geometry.
-If you are only interested in the size of a widget, you can also use 
-the method `getSize()`. To set the widget size, you can use the method 
-`setSize()`.
-The position of a shadow is outside the widget. The shadow size itself 
-as `FSize` object is retrievable via the `getShadow()` method. You 
-can set the widget shadow size with the `setShadowSize()` method. If 
-you want to get the geometry values of a widget, including its shadow, 
-you can use the method `getGeometryWithShadow()` from the FWidget 
-class. If you want to have the entire geometry with shadow for the 
-absolute geometry values as a `FRect` object, you can call the method 
-`getTermGeometryWithShadow()`.
+A widget's geometry specifies the region where it is displayed on the 
+terminal. A widget's geometry comprises an `FPoint` position and an 
+`FSize` size. You can manage this geometry as an `FRect` object with 
+`getGeometry()` and `setGeometry()`. To get the global terminal 
+geometry, use `getTermGeometry()`. Use `getSize()` and `setSize()` 
+to retrieve and set the widget's size alone.
+
+Shadows are rendered outside the widget. Retrieve the shadow size as 
+an `FSize` object using `getShadow()`, and update it with 
+`setShadowSize()`. Use the FWidget method `getGeometryWithShadow()` 
+to get a widget's geometry, including its shadow. To retrieve the 
+absolutely positioned geometry, use `getTermGeometryWithShadow()`.
 
 <figure class="image">
   <img src="widget-geometry.svg" alt="widget geometry">
@@ -159,31 +150,40 @@ virtual void   setGeometry (const FPoint& p, const FSize& s, bool adjust = true)
 virtual void   setShadowSize (const FSize& size);
 ```
 
-If you explicitly set the value of `adjust` to `false` when 
-using the `setSize()`, `setGeometry()` or `setShadowSize()` 
-mutators, the `adjustSize()` method is no longer called automatically. 
-This can be used to prevent recursive `adjustSize()` calls or to 
-avoid unnecessary `adjustSize()` calls.
+Setting the `adjust` argument to `false` in `setSize()`, 
+`setGeometry()`, or `setShadowSize()` prevents `adjustSize()` from 
+being called automatically. This can be used to avoid recursive 
+`adjustSize()` calls or to avoid redundant `adjustSize()` calls.
 
 
 Dynamic layout
 --------------
 
-A modern terminal emulation like xterm has no fixed resolution. 
-They offer the possibility to change the height and width of the 
-terminal at any time. That triggers a resize-event that calls 
-the `adjustSize()` method. This method allows adapting the widget 
-to a changed terminal size. You can override the `adjustSize()` 
-method to adjust the size and position of the widget. The method 
-`adjustSize()` will also be called indirectly via calling methods 
-`setGeometry()`, `setX()`, `setY()`, `setPos()`, `setWidth()`, 
-`setHeight()`, `setSize()`, `setTopPadding()`, `setLeftPadding()`, 
-`setBottomPadding()`, `setRightPadding()`, or `setDoubleFlatLine()`.
+A modern terminal emulator like xterm has no fixed resolution. 
+You can change the terminal's height and width at any time. This
+triggers a resize event that calls the `adjustSize()` method, which
+automatically adapts the widget to the new terminal size. You 
+can override the `adjustSize()` method to adjust the size and position 
+of the widget.
 
-Scalable dialogs derived from FDialog can change the dialog size by 
-clicking on the lower right corner of the window.  You can intercept 
-a scaling action by overriding the `setSize()` method and adjusting 
-the client widgets.
+The following geometry-setting methods also trigger `adjustSize()` 
+indirectly:
+
+| Position and Size | Padding                | Merging Borders       |
+|-------------------|------------------------|-----------------------|
+| `setGeometry()`   | `setTopPadding()`      | `setMergingBorder()`  |
+| `setX()`          | `setLeftPadding()`     |                       |
+| `setY()`          | `setBottomPadding()`   |                       |
+| `setPos()`        | `setRightPadding()`    |                       |
+| `setWidth()`      |                        |                       |
+| `setHeight()`     |                        |                       |
+| `setSize()`       |                        |                       |
+
+
+For scalable windows derived from `FDialog`, users can resize the 
+dialog by clicking on the bottom-right corner of the window. You can 
+intercept a scaling action by overriding the `setSize()` method and 
+adjusting the client widgets.
 
 **File:** *size-adjustment.cpp*
 ```cpp
@@ -191,10 +191,10 @@ the client widgets.
 
 using namespace finalcut;
 
-class dialogWidget : public FDialog
+class DialogWidget : public FDialog
 {
   public:
-    explicit dialogWidget (FWidget* parent = nullptr)
+    explicit DialogWidget (FWidget* parent = nullptr)
       : FDialog{parent}
     { }
 
@@ -202,10 +202,10 @@ class dialogWidget : public FDialog
     void initLayout()
     {
       setText ("Dialog");
-      setResizeable();
+      setResizable();
       button.setGeometry (FPoint{1, 1}, FSize{12, 1}, false);
       input.setGeometry (FPoint{2, 3}, FSize{12, 1}, false);
-      // Set dialog geometry and calling adjustSize()
+      // Set dialog geometry and call adjustSize()
       setGeometry (FPoint{25, 5}, FSize{40, 12});
       setMinimumSize (FSize{25, 9});
       FDialog::initLayout();
@@ -265,7 +265,7 @@ class dialogWidget : public FDialog
 auto main (int argc, char* argv[]) -> int
 {
   FApplication app(argc, argv);
-  dialogWidget dialog(&app);
+  DialogWidget dialog(&app);
   FWidget::setMainWidget(&dialog);
   dialog.show();
   return app.exec();
@@ -278,12 +278,12 @@ auto main (int argc, char* argv[]) -> int
 <br /><br />
 
 > [!NOTE]
-> You can close the dialog with the mouse, 
+> To close the dialog, use the mouse or press 
 > <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>
 
 
-After entering the source code in *size-adjustment.cpp* you can compile
-the above program with gcc:
+Save the code as *size-adjustment.cpp* and compile it using the 
+following command:
 ```bash
-g++ size-adjustment.cpp -o size-adjustment -O2 -lfinal -std=c++14
+c++ size-adjustment.cpp -o size-adjustment -O2 -lfinal -std=c++14
 ```

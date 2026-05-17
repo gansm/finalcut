@@ -351,7 +351,7 @@ class MouseDraw final : public finalcut::FDialog
     void cb_colorChanged();
 
     // Data members
-    std::shared_ptr<FTermArea> canvas{};
+    std::shared_ptr<FTermRegion> canvas{};
     ColorChooser c_chooser{this};
     Brushes      brush{this};
 };
@@ -387,12 +387,12 @@ void MouseDraw::setGeometry ( const FPoint& p, const FSize& s, bool adjust)
   const FSize no_shadow{0, 0};
   const int old_w = canvas->size.width;
   const int old_h = canvas->size.height;
-  resizeArea ({scroll_geometry, no_shadow}, canvas.get());
+  resizeRegion ({scroll_geometry, no_shadow}, canvas.get());
 
   if ( old_w != canvas->size.width || old_h != canvas->size.height )
   {
     setColor(getForegroundColor(), getBackgroundColor());
-    clearArea (canvas.get(), ' ');
+    clearRegion (canvas.get(), ' ');
   }
 }
 
@@ -479,19 +479,19 @@ void MouseDraw::drawBrush (int x, int y, bool swap_color)
 //----------------------------------------------------------------------
 void MouseDraw::drawCanvas()
 {
-  if ( ! hasPrintArea() )
-    finalcut::FVTerm::getPrintArea();
+  if ( ! hasPrintRegion() )
+    finalcut::FVTerm::getPrintRegion();
 
   // Create canvas after initializing the desktop and color theme
   if ( ! canvas )
     createCanvas();
 
-  if ( ! (hasPrintArea() && canvas) )
+  if ( ! (hasPrintRegion() && canvas) )
     return;
 
-  auto printarea = getCurrentPrintArea();
-  const int ax = 9 + getTermX() - printarea->position.x;
-  const int ay = 1 + getTermY() - printarea->position.y;
+  auto print_region = getCurrentPrintRegion();
+  const int ax = 9 + getTermX() - print_region->position.x;
+  const int ay = 1 + getTermY() - print_region->position.y;
   const int y_end = canvas->size.height;
   const int x_end = canvas->size.width;
 
@@ -500,11 +500,11 @@ void MouseDraw::drawCanvas()
     // canvas character
     const auto canvaschar = canvas->getFCharIterator(0, y);
     // window character
-    auto winchar = printarea->getFCharIterator(ax, ay + y);
+    auto winchar = print_region->getFCharIterator(ax, ay + y);
     std::memcpy ( &winchar[0]
                 , &canvaschar[0]
                 , sizeof(finalcut::FChar) * unsigned(x_end) );
-    auto& line_changes = printarea->changes_in_line[unsigned(ay + y)];
+    auto& line_changes = print_region->changes_in_line[unsigned(ay + y)];
 
     if ( int(line_changes.xmin) > ax )
       line_changes.xmin = uInt(ax);
@@ -513,8 +513,8 @@ void MouseDraw::drawCanvas()
       line_changes.xmax = uInt(ax + x_end - 1);
   }
 
-  printarea->changes_in_row = {0, uInt(y_end - 1)};
-  printarea->has_changes = true;
+  print_region->changes_in_row = {0, uInt(y_end - 1)};
+  print_region->has_changes = true;
   forceTerminalUpdate();
 }
 
@@ -522,7 +522,7 @@ void MouseDraw::drawCanvas()
 void MouseDraw::createCanvas()
 {
   finalcut::FRect scroll_geometry{0, 0, 1, 1};
-  canvas = createArea(scroll_geometry);
+  canvas = createRegion(scroll_geometry);
   adjustSize();
 }
 

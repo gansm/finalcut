@@ -53,7 +53,7 @@ FMessageBox::FMessageBox (FWidget* parent)
   : FDialog{parent}
   , button_digit{{ButtonType::Ok, ButtonType::Reject, ButtonType::Reject}}
 {
-  setTitlebarText("Message for you");
+  setTitleBarText("Message for you");
   init();
 }
 
@@ -68,7 +68,7 @@ FMessageBox::FMessageBox ( const FString& caption
   , text{std::move(message)}
   , button_digit{{button0, button1, button2}}
 {
-  setTitlebarText(caption);
+  setTitleBarText(caption);
   init();
 }
 

@@ -112,7 +112,7 @@ class FMenu : public FWindow
     void unsetSelected();
     void setMenuWidget (bool = true);
     void unsetMenuWidget();
-    void setStatusbarMessage (const FString&) override;
+    void setStatusBarMessage (const FString&) override;
     void setMenu (FMenu*);
     void setText (const FString&);
     void resetColors() override;

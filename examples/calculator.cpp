@@ -889,7 +889,7 @@ void Calc::draw()
 {
   setBold();
   setColor (FColor::LightBlue, FColor::Cyan);
-  clearArea (getVirtualDesktop(), wchar_t(finalcut::UniChar::MediumShade));
+  clearRegion (getVirtualDesktop(), wchar_t(finalcut::UniChar::MediumShade));
   unsetBold();
   finalcut::FDialog::draw();
   drawDispay();
@@ -1087,8 +1087,8 @@ void Calc::initLayout()
       btn->setGeometry(FPoint{x, y}, FSize{5, 1});
     }
 
-    btn->setDoubleFlatLine(finalcut::Side::Top);
-    btn->setDoubleFlatLine(finalcut::Side::Bottom);
+    btn->setMergingBorder(finalcut::Side::Top);
+    btn->setMergingBorder(finalcut::Side::Bottom);
   }
 
   FDialog::initLayout();

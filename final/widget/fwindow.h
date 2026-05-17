@@ -106,8 +106,8 @@ class FWindow : public FWidget
     auto         activateWindow (bool = true) -> bool;
     void         unsetActiveWindow() const;
     auto         deactivateWindow() -> bool;
-    virtual void setResizeable (bool = true);
-    void         unsetResizeable();
+    virtual void setResizable (bool = true);
+    void         unsetResizable();
     virtual void setMinimizable (bool = true);
     void         unsetMinimizable();
     void         setTransparentShadow (bool = true);
@@ -122,7 +122,7 @@ class FWindow : public FWidget
     auto         isMinimized() const -> bool;
     auto         isWindowActive() const noexcept -> bool;
     auto         isWindowHidden() const -> bool;
-    auto         isResizeable() const -> bool;
+    auto         isResizable() const -> bool;
     auto         isMinimizable() const -> bool;
     auto         isAlwaysOnTop() const -> bool;
     auto         hasTransparentShadow() const -> bool;
@@ -234,8 +234,8 @@ inline auto FWindow::deactivateWindow() -> bool
 { return activateWindow(false); }
 
 //----------------------------------------------------------------------
-inline void FWindow::unsetResizeable()
-{ setResizeable(false); }
+inline void FWindow::unsetResizable()
+{ setResizable(false); }
 
 //----------------------------------------------------------------------
 inline void FWindow::unsetMinimizable()
@@ -262,8 +262,8 @@ inline auto FWindow::isWindowActive() const noexcept -> bool
 { return window_active; }
 
 //----------------------------------------------------------------------
-inline auto FWindow::isResizeable() const -> bool
-{ return getFlags().feature.resizeable; }
+inline auto FWindow::isResizable() const -> bool
+{ return getFlags().feature.resizable; }
 
 //----------------------------------------------------------------------
 inline auto FWindow::isMinimizable() const -> bool

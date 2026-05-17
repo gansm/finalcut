@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2022 Markus Gans                                      *
+* Copyright 2020-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -304,7 +304,7 @@ void EventLog::initLayout()
   auto lightning = "\u26a1";
   FDialog::setText ("Event log "s + lightning);
   FDialog::setGeometry (FPoint{4, 16}, FSize{75, 8});
-  FDialog::setResizeable();
+  FDialog::setResizable();
   scrolltext.setGeometry (FPoint{1, 2}, FSize{getWidth(), getHeight() - 1});
   FDialog::initLayout();
 }

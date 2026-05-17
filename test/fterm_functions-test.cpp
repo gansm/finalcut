@@ -915,7 +915,7 @@ void FTermFunctionsTest::utf8Test()
   CPPUNIT_ASSERT ( unicode_to_utf8_string(wchar_t(finalcut::UniChar::Euro))
                    == std::string({char(0xe2), char(0x82), char(0xac)}) );
 
-  // Private Use Area
+  // Private Use Area (PUA)
   auto newfont_char_e1b3 = finalcut::UniChar::NF_border_line_vertical;
 
   CPPUNIT_ASSERT ( unicode_to_utf8(wchar_t(newfont_char_e1b3))

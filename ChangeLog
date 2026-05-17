@@ -1,3 +1,14 @@
+2026-06-14  Markus Gans  <guru.mail@muenster.de>
+	* Rename the setDoubleFlatLine() method to setMergingBorder().
+
+2026-05-28  Markus Gans  <guru.mail@muenster.de>
+	* Change the name of class FTermArea to FTermRegion
+
+2026-05-17  Markus Gans  <guru.mail@muenster.de>
+	* Change the name of class FProgressbar to FProgressBar
+	* Rename the FColorPalette method setVGAdefaultPalette() to 
+	  setDefaultVGAPalette()
+
 2026-04-17  Markus Gans  <guru.mail@muenster.de>
 	* Change the name of class FScrollbar to FScrollBar
 

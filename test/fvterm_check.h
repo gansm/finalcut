@@ -56,18 +56,18 @@ using enable_if_FChar_t =
 // Function prototypes
 //----------------------------------------------------------------------
 void showFCharData (const finalcut::FChar&);
-auto getAreaSize (finalcut::FVTerm::FTermArea*) -> std::size_t;
-auto isAreaEqual (finalcut::FVTerm::FTermArea*, finalcut::FVTerm::FTermArea*) -> bool;
+auto getRegionSize (finalcut::FVTerm::FTermRegion*) -> std::size_t;
+auto isRegionEqual (finalcut::FVTerm::FTermRegion*, finalcut::FVTerm::FTermRegion*) -> bool;
 auto isFCharEqual (const finalcut::FChar&, const finalcut::FChar&) -> bool;
 template < typename FCharT
          , enable_if_FChar_t<FCharT> = nullptr >
-void printOnArea (finalcut::FVTerm::FTermArea*, const FCharT&);
-void printOnArea (finalcut::FVTerm::FTermArea*, const RepeatFChar&);
-void printOnArea (finalcut::FVTerm::FTermArea*, const RepeatFCharVector&);
-void printOnArea (finalcut::FVTerm::FTermArea*, const RepeatFCharLine&);
-void printOnArea (finalcut::FVTerm::FTermArea*, const RepeatFCharLineVector&);
-void printArea (finalcut::FVTerm::FTermArea*);
-void moveArea (finalcut::FVTerm::FTermArea*, const finalcut::FPoint&);
+void printOnRegion (finalcut::FVTerm::FTermRegion*, const FCharT&);
+void printOnRegion (finalcut::FVTerm::FTermRegion*, const RepeatFChar&);
+void printOnRegion (finalcut::FVTerm::FTermRegion*, const RepeatFCharVector&);
+void printOnRegion (finalcut::FVTerm::FTermRegion*, const RepeatFCharLine&);
+void printOnRegion (finalcut::FVTerm::FTermRegion*, const RepeatFCharLineVector&);
+void printRegion (finalcut::FVTerm::FTermRegion*);
+void moveRegion (finalcut::FVTerm::FTermRegion*, const finalcut::FPoint&);
 
 
 // Functions
@@ -117,40 +117,40 @@ void showFCharData (const finalcut::FChar& fchar)
 }
 
 //----------------------------------------------------------------------
-auto getAreaSize (finalcut::FVTerm::FTermArea* area) -> std::size_t
+auto getRegionSize (finalcut::FVTerm::FTermRegion* region) -> std::size_t
 {
-  if ( ! area )
+  if ( ! region )
     return 0;
 
-  const auto full_width = std::size_t(area->size.width) + std::size_t(area->shadow.width);
-  const auto full_height = std::size_t(area->size.height) + std::size_t(area->shadow.height);
+  const auto full_width = std::size_t(region->size.width) + std::size_t(region->shadow.width);
+  const auto full_height = std::size_t(region->size.height) + std::size_t(region->shadow.height);
   return full_width * full_height;
 }
 
 //----------------------------------------------------------------------
-auto isAreaEqual ( finalcut::FVTerm::FTermArea* area1
-                 , finalcut::FVTerm::FTermArea* area2 ) -> bool
+auto isRegionEqual ( finalcut::FVTerm::FTermRegion* region1
+                   , finalcut::FVTerm::FTermRegion* region2 ) -> bool
 {
-  if ( ! area1 || ! area2 )
+  if ( ! region1 || ! region2 )
     return false;
 
-  auto size1 = getAreaSize(area1);
-  auto size2 = getAreaSize(area2);
+  auto size1 = getRegionSize(region1);
+  auto size2 = getRegionSize(region2);
 
   if ( size1 != size2
-    || area1->size.width != area2->size.width
-    || area1->shadow.width != area2->shadow.width
-    || area1->size.height != area2->size.height
-    || area1->shadow.height != area2->shadow.height )
+    || region1->size.width != region2->size.width
+    || region1->shadow.width != region2->shadow.width
+    || region1->size.height != region2->size.height
+    || region1->shadow.height != region2->shadow.height )
     return false;
 
   for (std::size_t i{0U}; i < size1; i++)
   {
-    if ( ! isFCharEqual (area1->data[i], area2->data[i]) )
+    if ( ! isFCharEqual (region1->data[i], region2->data[i]) )
     {
       std::wcout << L"differ: char " << i << L" '"
-                 << area1->data[i].ch[0] << L"' != '"
-                 << area2->data[i].ch[0] << L"'\n";
+                 << region1->data[i].ch[0] << L"' != '"
+                 << region2->data[i].ch[0] << L"'\n";
       return false;
     }
   }
@@ -178,19 +178,19 @@ auto isFCharEqual ( const finalcut::FChar& lhs
 //----------------------------------------------------------------------
 template < typename FCharT
          , enable_if_FChar_t<FCharT> >
-void printOnArea ( finalcut::FVTerm::FTermArea* area
-                 , const FCharT& fchar )
+void printOnRegion ( finalcut::FVTerm::FTermRegion* region
+                   , const FCharT& fchar )
 {
-  if ( area->cursor.x < 1 )
-    area->cursor.x = 1;
+  if ( region->cursor.x < 1 )
+    region->cursor.x = 1;
 
-  if ( area->cursor.y < 1 )
-    area->cursor.y = 1;
+  if ( region->cursor.y < 1 )
+    region->cursor.y = 1;
 
-  int ax = area->cursor.x - 1;
-  int ay = area->cursor.y - 1;
-  const int line_length = area->size.width + area->shadow.width;
-  const int line_height = area->size.height + area->shadow.height;
+  int ax = region->cursor.x - 1;
+  int ay = region->cursor.y - 1;
+  const int line_length = region->size.width + region->shadow.width;
+  const int line_height = region->size.height + region->shadow.height;
   const int size = line_length * line_height;
 
   if ( ay * line_length + ax > size )
@@ -198,70 +198,70 @@ void printOnArea ( finalcut::FVTerm::FTermArea* area
     auto tmp = ay * line_length + ax % size;
     ax = tmp % line_length;
     ay = tmp / line_height;
-    area->cursor.x = ax + 1;
-    area->cursor.y = ay + 1;
+    region->cursor.x = ax + 1;
+    region->cursor.y = ay + 1;
   }
 
-  auto& ac = area->data[ay * line_length + ax];  // area character
-  std::memcpy (&ac, &fchar, sizeof(ac));  // copy character to area
-  area->cursor.x = ((ax + 1) % line_length) + 1;
-  area->cursor.y = ((ax + 1) / line_length) + area->cursor.y;
+  auto& ac = region->data[ay * line_length + ax];  // region character
+  std::memcpy (&ac, &fchar, sizeof(ac));  // copy character to region
+  region->cursor.x = ((ax + 1) % line_length) + 1;
+  region->cursor.y = ((ax + 1) / line_length) + region->cursor.y;
 
-  if ( area->cursor.y > line_height )
-    area->cursor.y = ((area->cursor.y - 1) % line_height) + 1;
+  if ( region->cursor.y > line_height )
+    region->cursor.y = ((region->cursor.y - 1) % line_height) + 1;
 }
 
 //----------------------------------------------------------------------
-void printOnArea ( finalcut::FVTerm::FTermArea* area
-                 , const RepeatFChar& rep_fchar )
+void printOnRegion ( finalcut::FVTerm::FTermRegion* region
+                   , const RepeatFChar& rep_fchar )
 {
   for (std::size_t i{0U}; i < rep_fchar.repeat; i++)
   {
-    printOnArea (area, rep_fchar.data);
+    printOnRegion (region, rep_fchar.data);
   }
 }
 
 //----------------------------------------------------------------------
-void printOnArea ( finalcut::FVTerm::FTermArea* area
-                 , const RepeatFCharVector& rep_fchar_vec )
+void printOnRegion ( finalcut::FVTerm::FTermRegion* region
+                   , const RepeatFCharVector& rep_fchar_vec )
 {
   for (const auto& rep_fchar : rep_fchar_vec)
   {
-    printOnArea (area, rep_fchar);
+    printOnRegion (region, rep_fchar);
   }
 }
 
 //----------------------------------------------------------------------
-void printOnArea ( finalcut::FVTerm::FTermArea* area
-                 , const RepeatFCharLine& rep_fchar_line )
+void printOnRegion ( finalcut::FVTerm::FTermRegion* region
+                   , const RepeatFCharLine& rep_fchar_line )
 {
   for (std::size_t i{0U}; i < rep_fchar_line.repeat; i++)
   {
-    printOnArea (area, rep_fchar_line.data);
+    printOnRegion (region, rep_fchar_line.data);
   }
 }
 
 //----------------------------------------------------------------------
-void printOnArea ( finalcut::FVTerm::FTermArea* area
-                 , const RepeatFCharLineVector& rep_fchar_line_vec )
+void printOnRegion ( finalcut::FVTerm::FTermRegion* region
+                   , const RepeatFCharLineVector& rep_fchar_line_vec )
 {
   for (const auto& rep_fchar_line : rep_fchar_line_vec)
   {
-    printOnArea (area, rep_fchar_line);
+    printOnRegion (region, rep_fchar_line);
   }
 }
 
 //----------------------------------------------------------------------
-void printArea ( finalcut::FVTerm::FTermArea* area )
+void printRegion ( finalcut::FVTerm::FTermRegion* region )
 {
-  auto width = area->size.width + area->shadow.width;
-  auto height = area->size.height + area->shadow.height;
-  auto size = getAreaSize(area);
+  auto width = region->size.width + region->shadow.width;
+  auto height = region->size.height + region->shadow.height;
+  auto size = getRegionSize(region);
   std::wcout << L'┌' << std::wstring(width, L'─') << L"┐\n";
 
   for (std::size_t i{0U}; i < size; i++)
   {
-    if ( area->data[i].attr.bit()->fullwidth_padding )
+    if ( region->data[i].attr.bit()->fullwidth_padding )
       continue;
 
     auto col = (i + 1) % width ;
@@ -270,7 +270,7 @@ void printArea ( finalcut::FVTerm::FTermArea* area )
     if ( col == 1 && line < std::size_t(height) )
       std::wcout << L"│";
 
-    auto ch = area->data[i].ch;
+    auto ch = region->data[i].ch;
 
     if ( ch[0] == L'\0' )
       ch[0] = L' ';
@@ -298,14 +298,14 @@ void printArea ( finalcut::FVTerm::FTermArea* area )
 }
 
 //----------------------------------------------------------------------
-void moveArea ( finalcut::FVTerm::FTermArea* area
-              , const finalcut::FPoint& pos )
+void moveRegion ( finalcut::FVTerm::FTermRegion* region
+                , const finalcut::FPoint& pos )
 {
-  if ( ! area )
+  if ( ! region )
     return;
 
-  area->position.x = pos.getX();
-  area->position.y = pos.getY();
+  region->position.x = pos.getX();
+  region->position.y = pos.getY();
 }
 
 }  // namespace test

@@ -1,5 +1,5 @@
 /***********************************************************************
-* fprogressbar.h - Widget FProgressbar                                 *
+* fprogressbar.h - Widget FProgressBar                                 *
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
@@ -36,7 +36,7 @@
  *            ▲
  *            │
  *     ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
- *     ▕ FProgressbar ▏
+ *     ▕ FProgressBar ▏
  *     ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
  */
 
@@ -52,21 +52,27 @@
 namespace finalcut
 {
 
+// class forward declaration
+class FProgressBar;
+
+// Legacy code compatibility
+using FProgressbar = FProgressBar;
+
 //----------------------------------------------------------------------
-// class FProgressbar
+// class FProgressBar
 //----------------------------------------------------------------------
 
-class FProgressbar : public FWidget
+class FProgressBar : public FWidget
 {
   public:
     // Using-declarations
     using FWidget::setGeometry;
 
     // Constructor
-    explicit FProgressbar(FWidget* = nullptr);
+    explicit FProgressBar(FWidget* = nullptr);
 
     // Destructor
-    ~FProgressbar() noexcept override;
+    ~FProgressBar() noexcept override;
 
     // Accessors
     auto getClassName() const -> FString override;
@@ -104,21 +110,21 @@ class FProgressbar : public FWidget
 };
 
 
-// FProgressbar inline functions
+// FProgressBar inline functions
 //----------------------------------------------------------------------
-inline auto FProgressbar::getClassName() const -> FString
-{ return "FProgressbar"; }
+inline auto FProgressBar::getClassName() const -> FString
+{ return "FProgressBar"; }
 
 //----------------------------------------------------------------------
-inline auto FProgressbar::getPercentage() const noexcept -> std::size_t
+inline auto FProgressBar::getPercentage() const noexcept -> std::size_t
 { return percentage; }
 
 //----------------------------------------------------------------------
-inline void FProgressbar::unsetShadow()
+inline void FProgressBar::unsetShadow()
 { setShadow(false); }
 
 //----------------------------------------------------------------------
-inline auto FProgressbar::hasShadow() const -> bool
+inline auto FProgressBar::hasShadow() const -> bool
 { return getFlags().shadow.shadow; }
 
 }  // namespace finalcut

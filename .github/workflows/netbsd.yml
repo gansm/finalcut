@@ -14,13 +14,13 @@ jobs:
 
     steps:
     - name: Repository checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v6
 
-    - name: Test on NetBSD 9.3
-      uses: cross-platform-actions/action@v0.32.0  # see https://github.com/cross-platform-actions/action
+    - name: Test on NetBSD 10.1
+      uses: cross-platform-actions/action@v1.2.0  # see https://github.com/cross-platform-actions/action
       with:
         operating_system: netbsd
-        version: '9.3'
+        version: '10.1'
         shell: bash
         run: |
           uname -a

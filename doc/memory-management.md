@@ -1,18 +1,18 @@
 Memory Management
 =================
 
-To create a hierarchy of FObjects (or derived classes/widgets), 
-a new FObject has to be initialized with its parent object.
+To create a hierarchy of FObjects (or derived classes and widgets),
+initialize each new FObject with its parent object.
 
 ```cpp
 FObject* parent = new FObject();
 FObject* child  = new FObject(parent);
 ```
 
-When the used memory of a parent FObject gets deallocated, the allocated
-memory of its child objects will also be deallocated automatically.
+When a parent FObject is deleted, its child objects are automatically
+deallocated.
 
-An object can also be assigned to another object later via `addChild()`.
+You can also assign a child to another object later using `addChild()`.
 
 ```cpp
 FObject* parent = new FObject();
@@ -20,8 +20,7 @@ FObject* child = new FObject();
 parent->addChild(child);
 ```
 
-The child object assignment can be removed at any time with 
-`delChild()`.
+To remove a child object from its parent at any time, use `delChild()`.
 
 ```cpp
 FObject* parent = new FObject();
@@ -29,10 +28,10 @@ FObject* child  = new FObject(parent);
 parent->delChild(child);
 ```
 
-If an FObject with a parent gets removed from the hierarchy, 
-the destructor automatically deletes the object assignment from 
-its parent object. If a class object doesn't derive from FObject, 
-you have to implement storage deallocation yourself.
+If an FObject with a parent is removed from the hierarchy, its 
+destructor automatically updates the parent object. If a class 
+does not derive from FObject, you must manage its memory allocation 
+manually.
 
 **File:** *memory.cpp*
 ```cpp
@@ -44,17 +43,17 @@ auto main (int argc, char* argv[]) -> int
 {
   FApplication app(argc, argv);
 
-  // The object dialog is managed by app
+  // The dialog object is managed by the app object
   FDialog* dialog = new FDialog(&app);
   dialog->setText ("Window Title");
   dialog->setGeometry (FPoint{25, 5}, FSize{40, 8});
 
-  // The object input is managed by dialog
+  // The input object is managed by the dialog object
   FLineEdit* input = new FLineEdit("predefined text", dialog);
   input->setGeometry(FPoint{8, 2}, FSize{29, 1});
   input->setLabelText (L"&Input");
 
-  // The object label is managed by dialog
+  // The label object is managed by the dialog object
   FLabel* label = new FLabel ( "Lorem ipsum dolor sit amet, consectetur "
                                "adipiscing elit, sed do eiusmod tempor "
                                "incididunt ut labore et dolore magna aliqua."
@@ -72,12 +71,11 @@ auto main (int argc, char* argv[]) -> int
 <br /><br />
 
 > [!NOTE]
-> You can close the dialog with the mouse, 
+> To close the dialog, use the mouse or press 
 > <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>
 
-
-After entering the source code in *memory.cpp* you can compile
-the above program with gcc:
+Save the code as *memory.cpp* and compile it using the following 
+command:
 ```bash
-g++ memory.cpp -o memory -O2 -lfinal
+c++ memory.cpp -o memory -O2 -lfinal
 ```

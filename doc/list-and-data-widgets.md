@@ -4,15 +4,16 @@ List and Data Widgets
 Table of Contents
 -----------------
 
-<!-- TOC -->
+<!-- toc -->
 - [FComboBox](#fcombobox)
 - [FListBox](#flistbox)
 - [FListView](#flistview)
 - [FTextView](#ftextview)
-<!-- /TOC -->
+<!-- endtoc -->
 
-List and data widgets display collections of information and allow you 
-to sort, filter, and select records.
+
+These widgets display data and text and allow users to sort, filter, 
+and manage items or records.
 
 
 FComboBox

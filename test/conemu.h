@@ -872,7 +872,7 @@ inline auto ConEmu::openSlavePTY() -> bool
 {
   closeSlavePTY();
 
-  // Get PTY filename
+  // Get PTY file name
   const char* pty_name = ptsname(fd_master);
 
   if ( ! pty_name )

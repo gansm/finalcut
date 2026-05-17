@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2024 Markus Gans                                      *
+* Copyright 2019-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -141,7 +141,7 @@ void FSpinBox::hide()
   input_field.hide();
   FWidget::hide();
   const auto& shadow = hasShadow() ? FSize{1, 1} : FSize{0, 0};
-  hideArea (getSize() + shadow);
+  hideRegion (getSize() + shadow);
 }
 
 //----------------------------------------------------------------------
@@ -332,26 +332,26 @@ inline void FSpinBox::mapKeyFunctions()
 //----------------------------------------------------------------------
 void FSpinBox::draw()
 {
-  const auto& wc_scrollbar = getColorTheme()->scrollbar;
+  const auto& wc_scroll_bar = getColorTheme()->scroll_bar;
 
-  const FColorPair inc_button_color = [this, &wc_scrollbar] ()
+  const FColorPair inc_button_color = [this, &wc_scroll_bar] ()
   {
     if ( value == max )
-      return FColorPair { wc_scrollbar.button_inactive_fg
-                        , wc_scrollbar.button_inactive_bg };
+      return FColorPair { wc_scroll_bar.button_inactive_fg
+                        , wc_scroll_bar.button_inactive_bg };
 
-    return FColorPair { wc_scrollbar.button_fg
-                      , wc_scrollbar.button_bg };
+    return FColorPair { wc_scroll_bar.button_fg
+                      , wc_scroll_bar.button_bg };
   }();
 
-  const FColorPair dec_button_color = [this, &wc_scrollbar] ()
+  const FColorPair dec_button_color = [this, &wc_scroll_bar] ()
   {
     if ( value == min )
-      return FColorPair { wc_scrollbar.button_inactive_fg
-                        , wc_scrollbar.button_inactive_bg };
+      return FColorPair { wc_scroll_bar.button_inactive_fg
+                        , wc_scroll_bar.button_inactive_bg };
 
-    return FColorPair { wc_scrollbar.button_fg
-                      , wc_scrollbar.button_bg };
+    return FColorPair { wc_scroll_bar.button_fg
+                      , wc_scroll_bar.button_bg };
   }();
 
   print() << FPoint{int(getWidth()) - 1, 1}

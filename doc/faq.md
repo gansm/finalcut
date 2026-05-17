@@ -28,7 +28,7 @@ It dates back to a text-based file manager I developed for
 [DOS](https://en.wikipedia.org/wiki/DOS) between 1991 and 1996. Built
 with [Borland Pascal](https://en.wikipedia.org/wiki/Turbo_Pascal),
 "The Final Cut" was designed to outshine any other interface available
-at the time—it even included the calculator example still found in the
+at the time; it even included the calculator example still found in the
 library today.
 
 When I started learning 

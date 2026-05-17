@@ -16,16 +16,16 @@ printf(...)
   │          ║                                                         ║
   │          ║                                   │ restoreVTerm(box) │ ║
   │  ┌───────╨────[ vwin ]────────────┐                                ║
-  │  │createArea(size)                │          └ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘ ║
+  │  │createRegion(size)              │          └ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘ ║
   │  │                                │                                ║
   │  │                                │                                ║
-  └──┼────────►                putArea(pos,area) ────►                 ║
+  └──┼────────►                putRegion(pos,region) ────►             ║
      │                                │                                ║
-     │                   ◄──── getArea(pos,area)                       ║
+     │                   ◄──── getRegion(pos,region)                   ║
      │                                │                                ║
      │                                │                                ║
      │                                │                                ║
-     │          resizeArea(size, area)│                                ║
+     │       resizeRegion(size,region)│                                ║
      └───────╥────────────────────────┘                                ║
              ║                                                         ║
              ║       │                                resizeVTerm(size)║

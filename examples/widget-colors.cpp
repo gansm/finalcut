@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2024-2025 Markus Gans                                      *
+* Copyright 2024-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -61,11 +61,11 @@ class TextWindow final : public finalcut::FDialog
     void addInputFieldColors (const finalcut::FWidgetColors&);
     void addToggleButtonColors (const finalcut::FWidgetColors&);
     void addButtonColors (const finalcut::FWidgetColors&);
-    void addTitlebarColors (const finalcut::FWidgetColors&);
+    void addTitleBarColors (const finalcut::FWidgetColors&);
     void addMenuColors (const finalcut::FWidgetColors&);
-    void addStatusbarColors (const finalcut::FWidgetColors&);
-    void addScrollbarColors (const finalcut::FWidgetColors&);
-    void addProgressbarColors (const finalcut::FWidgetColors&);
+    void addStatusBarColors (const finalcut::FWidgetColors&);
+    void addScrollBarColors (const finalcut::FWidgetColors&);
+    void addProgressBarColors (const finalcut::FWidgetColors&);
     void appendBlankLine();
     void appendGroupName (const finalcut::FString&);
     void appendColorEntry (finalcut::FColor, const finalcut::FString&);
@@ -84,7 +84,7 @@ class TextWindow final : public finalcut::FDialog
 TextWindow::TextWindow (finalcut::FWidget* parent)
   : finalcut::FDialog{parent}
 {
-  setResizeable();
+  setResizable();
   scrolltext.ignorePadding();
   scrolltext.setFocus();
   addContent();
@@ -127,7 +127,7 @@ void TextWindow::adjustSize()
     }
 
     // Centering the window when it is no longer
-    // in the visible area of the terminal
+    // in the visible region of the terminal
     if ( ! screen.contains(getPos()) || center )
     {
       int x = 1 + int((getDesktopWidth() - getWidth()) / 2);
@@ -155,11 +155,11 @@ void TextWindow::addContent()
   addInputFieldColors (*widget_colors);
   addToggleButtonColors (*widget_colors);
   addButtonColors (*widget_colors);
-  addTitlebarColors (*widget_colors);
+  addTitleBarColors (*widget_colors);
   addMenuColors (*widget_colors);
-  addStatusbarColors (*widget_colors);
-  addScrollbarColors (*widget_colors);
-  addProgressbarColors (*widget_colors);
+  addStatusBarColors (*widget_colors);
+  addScrollBarColors (*widget_colors);
+  addProgressBarColors (*widget_colors);
 }
 
 //----------------------------------------------------------------------
@@ -544,43 +544,43 @@ void TextWindow::addButtonColors (const finalcut::FWidgetColors& widget_colors)
 }
 
 //----------------------------------------------------------------------
-void TextWindow::addTitlebarColors (const finalcut::FWidgetColors& widget_colors)
+void TextWindow::addTitleBarColors (const finalcut::FWidgetColors& widget_colors)
 {
   appendBlankLine();
-  appendGroupName (L"Titlebar");
+  appendGroupName (L"Title bar");
   appendBlankLine();
-  appendColorEntry (widget_colors.titlebar.fg, L"titlebar.fg");
-  appendColorEntry (widget_colors.titlebar.bg, L"titlebar.bg");
-  appendColorEntry (widget_colors.titlebar.inactive_fg, L"titlebar.inactive_fg");
-  appendColorEntry (widget_colors.titlebar.inactive_bg, L"titlebar.inactive_bg");
-  appendColorEntry (widget_colors.titlebar.button_fg, L"titlebar.button_fg");
-  appendColorEntry (widget_colors.titlebar.button_bg, L"titlebar.button_bg");
-  appendColorEntry (widget_colors.titlebar.button_focus_fg, L"titlebar.button_focus_fg");
-  appendColorEntry (widget_colors.titlebar.button_focus_bg, L"titlebar.button_focus_bg");
+  appendColorEntry (widget_colors.title_bar.fg, L"title_bar.fg");
+  appendColorEntry (widget_colors.title_bar.bg, L"title_bar.bg");
+  appendColorEntry (widget_colors.title_bar.inactive_fg, L"title_bar.inactive_fg");
+  appendColorEntry (widget_colors.title_bar.inactive_bg, L"title_bar.inactive_bg");
+  appendColorEntry (widget_colors.title_bar.button_fg, L"title_bar.button_fg");
+  appendColorEntry (widget_colors.title_bar.button_bg, L"title_bar.button_bg");
+  appendColorEntry (widget_colors.title_bar.button_focus_fg, L"title_bar.button_focus_fg");
+  appendColorEntry (widget_colors.title_bar.button_focus_bg, L"title_bar.button_focus_bg");
   appendBlankLine();
 
-  auto titlebar_color = FColorPair{widget_colors.titlebar.fg, widget_colors.titlebar.bg};
-  auto titlebar_button_color = FColorPair{widget_colors.titlebar.button_fg, widget_colors.titlebar.button_bg};
-  auto focus_titlebar_button_color = FColorPair{widget_colors.titlebar.button_focus_fg, widget_colors.titlebar.button_focus_bg};
-  auto inactive_titlebar_color = FColorPair{widget_colors.titlebar.inactive_fg, widget_colors.titlebar.inactive_bg};
+  auto title_bar_color = FColorPair{widget_colors.title_bar.fg, widget_colors.title_bar.bg};
+  auto title_bar_button_color = FColorPair{widget_colors.title_bar.button_fg, widget_colors.title_bar.button_bg};
+  auto focus_title_bar_button_color = FColorPair{widget_colors.title_bar.button_focus_fg, widget_colors.title_bar.button_focus_bg};
+  auto inactive_title_bar_color = FColorPair{widget_colors.title_bar.inactive_fg, widget_colors.title_bar.inactive_bg};
 
   appendColorLine("  -      Active      ▼  ▲ "
-                 , FTextHighlight{1, 3, titlebar_button_color}
-                 , FTextHighlight{4, 16, titlebar_color}
-                 , FTextHighlight{20, 6, titlebar_button_color}
+                 , FTextHighlight{1, 3, title_bar_button_color}
+                 , FTextHighlight{4, 16, title_bar_color}
+                 , FTextHighlight{20, 6, title_bar_button_color}
                  );
   appendBlankLine();
   appendColorLine("  -     Inactive     ▼  ▲ "
-                 , FTextHighlight{1, 3, titlebar_button_color}
-                 , FTextHighlight{4, 16, inactive_titlebar_color}
-                 , FTextHighlight{20, 6, titlebar_button_color}
+                 , FTextHighlight{1, 3, title_bar_button_color}
+                 , FTextHighlight{4, 16, inactive_title_bar_color}
+                 , FTextHighlight{20, 6, title_bar_button_color}
                  );
   appendBlankLine();
   appendColorLine("  -  Focused button  ▼  ▲ "
-                 , FTextHighlight{1, 3, titlebar_button_color}
-                 , FTextHighlight{4, 16, inactive_titlebar_color}
-                 , FTextHighlight{20, 3, focus_titlebar_button_color}
-                 , FTextHighlight{23, 3, titlebar_button_color}
+                 , FTextHighlight{1, 3, title_bar_button_color}
+                 , FTextHighlight{4, 16, inactive_title_bar_color}
+                 , FTextHighlight{20, 3, focus_title_bar_button_color}
+                 , FTextHighlight{23, 3, title_bar_button_color}
                  );
   appendBlankLine();
 }
@@ -633,96 +633,96 @@ void TextWindow::addMenuColors (const finalcut::FWidgetColors& widget_colors)
 }
 
 //----------------------------------------------------------------------
-void TextWindow::addStatusbarColors (const finalcut::FWidgetColors& widget_colors)
+void TextWindow::addStatusBarColors (const finalcut::FWidgetColors& widget_colors)
 {
   appendBlankLine();
-  appendGroupName (L"Statusbar");
+  appendGroupName (L"Status bar");
   appendBlankLine();
-  appendColorEntry (widget_colors.statusbar.fg, L"statusbar.fg");
-  appendColorEntry (widget_colors.statusbar.bg, L"statusbar.bg");
-  appendColorEntry (widget_colors.statusbar.focus_fg, L"statusbar.focus_fg");
-  appendColorEntry (widget_colors.statusbar.focus_bg, L"statusbar.focus_bg");
-  appendColorEntry (widget_colors.statusbar.separator_fg, L"statusbar.separator_fg");
-  appendColorEntry (widget_colors.statusbar.hotkey_fg, L"statusbar.hotkey_fg");
-  appendColorEntry (widget_colors.statusbar.hotkey_bg, L"statusbar.hotkey_bg");
-  appendColorEntry (widget_colors.statusbar.focus_hotkey_fg, L"statusbar.focus_hotkey_fg");
-  appendColorEntry (widget_colors.statusbar.focus_hotkey_bg, L"statusbar.focus_hotkey_bg");
+  appendColorEntry (widget_colors.status_bar.fg, L"status_bar.fg");
+  appendColorEntry (widget_colors.status_bar.bg, L"status_bar.bg");
+  appendColorEntry (widget_colors.status_bar.focus_fg, L"status_bar.focus_fg");
+  appendColorEntry (widget_colors.status_bar.focus_bg, L"status_bar.focus_bg");
+  appendColorEntry (widget_colors.status_bar.separator_fg, L"status_bar.separator_fg");
+  appendColorEntry (widget_colors.status_bar.hotkey_fg, L"status_bar.hotkey_fg");
+  appendColorEntry (widget_colors.status_bar.hotkey_bg, L"status_bar.hotkey_bg");
+  appendColorEntry (widget_colors.status_bar.focus_hotkey_fg, L"status_bar.focus_hotkey_fg");
+  appendColorEntry (widget_colors.status_bar.focus_hotkey_bg, L"status_bar.focus_hotkey_bg");
   appendBlankLine();
 
-  auto statusbar_color = FColorPair{widget_colors.statusbar.fg, widget_colors.statusbar.bg};
-  auto hotkey_statusbar_color = FColorPair{widget_colors.statusbar.hotkey_fg, widget_colors.statusbar.hotkey_bg};
-  auto hotkey_focus_statusbar_color = FColorPair{widget_colors.statusbar.focus_hotkey_fg, widget_colors.statusbar.focus_hotkey_bg};
-  auto focus_statusbar_color = FColorPair{widget_colors.statusbar.focus_fg, widget_colors.statusbar.focus_bg};
-  auto separator_statusbar_color = FColorPair{widget_colors.statusbar.separator_fg, widget_colors.statusbar.bg};
+  auto status_bar_color = FColorPair{widget_colors.status_bar.fg, widget_colors.status_bar.bg};
+  auto hotkey_status_bar_color = FColorPair{widget_colors.status_bar.hotkey_fg, widget_colors.status_bar.hotkey_bg};
+  auto hotkey_focus_status_bar_color = FColorPair{widget_colors.status_bar.focus_hotkey_fg, widget_colors.status_bar.focus_hotkey_bg};
+  auto focus_status_bar_color = FColorPair{widget_colors.status_bar.focus_fg, widget_colors.status_bar.focus_bg};
+  auto separator_status_bar_color = FColorPair{widget_colors.status_bar.separator_fg, widget_colors.status_bar.bg};
 
   appendColorLine("  F1-Help▌ F2-Cut▐ F3-Copy│ F4-Paste "
-                 , FTextHighlight{1, 1, statusbar_color}
-                 , FTextHighlight{2, 2, hotkey_statusbar_color}
-                 , FTextHighlight{4, 6, statusbar_color}
-                 , FTextHighlight{9, 2, focus_statusbar_color}
-                 , FTextHighlight{11, 2, hotkey_focus_statusbar_color}
-                 , FTextHighlight{13, 5, focus_statusbar_color}
-                 , FTextHighlight{18, 1, statusbar_color}
-                 , FTextHighlight{19, 2, hotkey_statusbar_color}
-                 , FTextHighlight{21, 5, statusbar_color}
-                 , FTextHighlight{26, 1, separator_statusbar_color}
-                 , FTextHighlight{27, 1, statusbar_color}
-                 , FTextHighlight{28, 2, hotkey_statusbar_color}
-                 , FTextHighlight{30, 7, statusbar_color}
+                 , FTextHighlight{1, 1, status_bar_color}
+                 , FTextHighlight{2, 2, hotkey_status_bar_color}
+                 , FTextHighlight{4, 6, status_bar_color}
+                 , FTextHighlight{9, 2, focus_status_bar_color}
+                 , FTextHighlight{11, 2, hotkey_focus_status_bar_color}
+                 , FTextHighlight{13, 5, focus_status_bar_color}
+                 , FTextHighlight{18, 1, status_bar_color}
+                 , FTextHighlight{19, 2, hotkey_status_bar_color}
+                 , FTextHighlight{21, 5, status_bar_color}
+                 , FTextHighlight{26, 1, separator_status_bar_color}
+                 , FTextHighlight{27, 1, status_bar_color}
+                 , FTextHighlight{28, 2, hotkey_status_bar_color}
+                 , FTextHighlight{30, 7, status_bar_color}
                  );
   appendBlankLine();
 }
 
 //----------------------------------------------------------------------
-void TextWindow::addScrollbarColors (const finalcut::FWidgetColors& widget_colors)
+void TextWindow::addScrollBarColors (const finalcut::FWidgetColors& widget_colors)
 {
   appendBlankLine();
-  appendGroupName (L"Scrollbar");
+  appendGroupName (L"Scroll bar");
   appendBlankLine();
-  appendColorEntry (widget_colors.scrollbar.fg, L"scrollbar.fg");
-  appendColorEntry (widget_colors.scrollbar.bg, L"scrollbar.bg");
-  appendColorEntry (widget_colors.scrollbar.button_fg, L"scrollbar.button_fg");
-  appendColorEntry (widget_colors.scrollbar.button_bg, L"scrollbar.button_bg");
-  appendColorEntry (widget_colors.scrollbar.button_inactive_fg, L"scrollbar.button_inactive_fg");
-  appendColorEntry (widget_colors.scrollbar.button_inactive_bg, L"scrollbar.button_inactive_bg");
+  appendColorEntry (widget_colors.scroll_bar.fg, L"scroll_bar.fg");
+  appendColorEntry (widget_colors.scroll_bar.bg, L"scroll_bar.bg");
+  appendColorEntry (widget_colors.scroll_bar.button_fg, L"scroll_bar.button_fg");
+  appendColorEntry (widget_colors.scroll_bar.button_bg, L"scroll_bar.button_bg");
+  appendColorEntry (widget_colors.scroll_bar.button_inactive_fg, L"scroll_bar.button_inactive_fg");
+  appendColorEntry (widget_colors.scroll_bar.button_inactive_bg, L"scroll_bar.button_inactive_bg");
   appendBlankLine();
 
-  auto scrollbar_color = FColorPair{widget_colors.scrollbar.bg, widget_colors.scrollbar.bg};
-  auto slider_scrollbar_color = FColorPair{widget_colors.scrollbar.fg, widget_colors.scrollbar.fg};
-  auto button_scrollbar_color = FColorPair{widget_colors.scrollbar.button_fg, widget_colors.scrollbar.button_bg};
-  auto inactive_button_scrollbar_color = FColorPair{widget_colors.scrollbar.button_inactive_fg, widget_colors.scrollbar.button_inactive_bg};
+  auto scroll_bar_color = FColorPair{widget_colors.scroll_bar.bg, widget_colors.scroll_bar.bg};
+  auto slider_scroll_bar_color = FColorPair{widget_colors.scroll_bar.fg, widget_colors.scroll_bar.fg};
+  auto button_scroll_bar_color = FColorPair{widget_colors.scroll_bar.button_fg, widget_colors.scroll_bar.button_bg};
+  auto inactive_button_scroll_bar_color = FColorPair{widget_colors.scroll_bar.button_inactive_fg, widget_colors.scroll_bar.button_inactive_bg};
 
   appendColorLine(" ◄            ►  ▲"
-                 , FTextHighlight{1, 1, button_scrollbar_color}
-                 , FTextHighlight{2, 7, slider_scrollbar_color}
-                 , FTextHighlight{8, 6, scrollbar_color}
-                 , FTextHighlight{14, 1, button_scrollbar_color}
-                 , FTextHighlight{17, 1, button_scrollbar_color}
+                 , FTextHighlight{1, 1, button_scroll_bar_color}
+                 , FTextHighlight{2, 7, slider_scroll_bar_color}
+                 , FTextHighlight{8, 6, scroll_bar_color}
+                 , FTextHighlight{14, 1, button_scroll_bar_color}
+                 , FTextHighlight{17, 1, button_scroll_bar_color}
                  );
   appendColorLine("                 █"
-                 , FTextHighlight{17, 1, slider_scrollbar_color}
+                 , FTextHighlight{17, 1, slider_scroll_bar_color}
                  );
   appendColorLine(" ◄            ►  ▼"
-                 , FTextHighlight{1, 1, inactive_button_scrollbar_color}
-                 , FTextHighlight{2, 12, slider_scrollbar_color}
-                 , FTextHighlight{14, 1, inactive_button_scrollbar_color}
-                 , FTextHighlight{17, 1, button_scrollbar_color}
+                 , FTextHighlight{1, 1, inactive_button_scroll_bar_color}
+                 , FTextHighlight{2, 12, slider_scroll_bar_color}
+                 , FTextHighlight{14, 1, inactive_button_scroll_bar_color}
+                 , FTextHighlight{17, 1, button_scroll_bar_color}
                  );
   appendBlankLine();
 }
 
 //----------------------------------------------------------------------
-void TextWindow::addProgressbarColors (const finalcut::FWidgetColors& widget_colors)
+void TextWindow::addProgressBarColors (const finalcut::FWidgetColors& widget_colors)
 {
   appendBlankLine();
-  appendGroupName (L"Progressbar");
+  appendGroupName (L"Progress bar");
   appendBlankLine();
-  appendColorEntry (widget_colors.progressbar.fg, L"progressbar.fg");
-  appendColorEntry (widget_colors.progressbar.bg, L"progressbar.bg");
+  appendColorEntry (widget_colors.progress_bar.fg, L"progress_bar.fg");
+  appendColorEntry (widget_colors.progress_bar.bg, L"progress_bar.bg");
   appendBlankLine();
 
-  auto Progressbar_color = FColorPair{widget_colors.progressbar.fg, widget_colors.progressbar.bg};
-  appendColorLine(" ███████████       64%", FTextHighlight{1, 17, Progressbar_color});
+  auto Progress_bar_color = FColorPair{widget_colors.progress_bar.fg, widget_colors.progress_bar.bg};
+  appendColorLine(" ███████████       64%", FTextHighlight{1, 17, Progress_bar_color});
   appendBlankLine();
 }
 

@@ -266,7 +266,7 @@ class FTextView : public FWidget
     void mapKeyFunctions();
     void draw() override;
     void drawBorder() override;
-    void drawScrollbars() const;
+    void drawScrollBars() const;
     void drawText();
     auto canSkipDrawing() const -> bool;
     void printLine (std::size_t);
@@ -299,7 +299,7 @@ class FTextView : public FWidget
     void stopDragScroll();
     void processChanged() const;
     void changeOnResize() const;
-    auto shouldUpdateScrollbar (FScrollBar::ScrollType) const -> bool;
+    auto shouldUpdateScrollBar (FScrollBar::ScrollType) const -> bool;
     auto getVerticalScrollDistance (const FScrollBar::ScrollType) const -> int;
     auto getHorizontalScrollDistance (const FScrollBar::ScrollType) const -> int;
 
@@ -316,7 +316,7 @@ class FTextView : public FWidget
     FPoint          select_click_pos{-1, -1};
     KeyMap          key_map{};
     DragScrollMode  drag_scroll{DragScrollMode::None};
-    bool            update_scrollbar{true};
+    bool            update_scroll_bar{true};
     bool            pass_to_dialog{false};
     bool            selectable{false};
     int             scroll_repeat{100};

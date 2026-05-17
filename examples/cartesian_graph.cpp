@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2024-2025 Yusuf Bülbül                                     *
+* Copyright 2024-2026 Yusuf Bülbül                                     *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -306,7 +306,7 @@ auto main (int argc, char* argv[]) -> int
                                 , FVTerm::getFOutput()->getLineNumber() - 1 };
   graph.setGeometry (FPoint{1, 1}, graph_size);
   graph.setMinimumSize (FSize{30, 15});
-  graph.setResizeable();
+  graph.setResizable();
   graph.setMinimizable();
   finalcut::FWidget::setMainWidget (&graph);
   graph.show();

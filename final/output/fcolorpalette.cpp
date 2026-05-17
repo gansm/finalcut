@@ -56,7 +56,7 @@ void FColorPalette::setPalette (FColor index, int r, int g, int b) const
 }
 
 //----------------------------------------------------------------------
-void FColorPalette::setVGAdefaultPalette() const
+void FColorPalette::setDefaultVGAPalette() const
 {
   setPalette (FColor::Black, 0x00, 0x00, 0x00);
   setPalette (FColor::Blue, 0x00, 0x00, 0xaa);
@@ -116,7 +116,7 @@ void default8ColorPalette::setColorPalette()
 //----------------------------------------------------------------------
 void default8ColorPalette::resetColorPalette()
 {
-  setVGAdefaultPalette();
+  setDefaultVGAPalette();
 }
 
 
@@ -159,7 +159,7 @@ void default16ColorPalette::setColorPalette()
 //----------------------------------------------------------------------
 void default16ColorPalette::resetColorPalette()
 {
-  setVGAdefaultPalette();
+  setDefaultVGAPalette();
 }
 
 
@@ -202,7 +202,7 @@ void default16DarkColorPalette::setColorPalette()
 //----------------------------------------------------------------------
 void default16DarkColorPalette::resetColorPalette()
 {
-  setVGAdefaultPalette();
+  setDefaultVGAPalette();
 }
 
 }  // namespace finalcut

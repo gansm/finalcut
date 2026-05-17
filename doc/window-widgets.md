@@ -4,16 +4,17 @@ Window Widgets
 Table of Contents
 -----------------
 
-<!-- TOC -->
+<!-- toc -->
 - [FDialog](#fdialog)
 - [FFileDialog](#ffiledialog)
 - [FMessageBox](#fmessagebox)
 - [FWindow](#fwindow)
-<!-- /TOC -->
+<!-- endtoc -->
 
-Window widgets are independent rectangular windows based on 
-an `FVTerm::FTermArea` object that can be moved freely on the terminal.
-Other widgets can be placed inside.
+
+Window widgets are independent, rectangular windows derived from an 
+`FVTerm::FTermRegion` object. They can be moved freely across the terminal 
+and contain other widgets.
 
 
 FDialog

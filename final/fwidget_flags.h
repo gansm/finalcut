@@ -55,7 +55,7 @@ struct FWidgetFeature
 {
   uInt16 active         : 1;
   uInt16 scrollable     : 1;
-  uInt16 resizeable     : 1;
+  uInt16 resizable      : 1;
   uInt16 minimizable    : 1;
   uInt16 flat           : 1;
   uInt16 no_border      : 1;

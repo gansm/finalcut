@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2023 Markus Gans                                      *
+* Copyright 2014-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -63,7 +63,7 @@ void Timer::draw()
           << "---------------\n"
           << "Press Q to quit\n"
           << "---------------";
-  setAreaCursor ({1, 4}, true, getVirtualDesktop());
+  setRegionCursor ({1, 4}, true, getVirtualDesktop());
 }
 
 //----------------------------------------------------------------------
@@ -77,7 +77,7 @@ void Timer::onTimer (finalcut::FTimerEvent* ev)
 
   if ( is_last_line )
   {
-    scrollAreaForward (getVirtualDesktop());
+    scrollRegionForward (getVirtualDesktop());
     print() << '\r';
   }
   else
@@ -85,7 +85,7 @@ void Timer::onTimer (finalcut::FTimerEvent* ev)
 
   print() << finalcut::FColorPair {finalcut::FColor(1 + timer_id)}
           << "Timer event, id " << timer_id;
-  setAreaCursor (getPrintPos(), true, getVirtualDesktop());
+  setRegionCursor (getPrintPos(), true, getVirtualDesktop());
   forceTerminalUpdate();
 }
 

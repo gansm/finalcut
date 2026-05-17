@@ -14,13 +14,13 @@ jobs:
 
     steps:
     - name: Repository checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v6
 
     - name: Test on FreeBSD 13.1
-      uses: cross-platform-actions/action@v0.32.0  # see https://github.com/cross-platform-actions/action
+      uses: cross-platform-actions/action@v1.2.0  # see https://github.com/cross-platform-actions/action
       with:
         operating_system: freebsd
-        version: '13.1'
+        version: '15.0'
         shell: bash
         run: |
           uname -a

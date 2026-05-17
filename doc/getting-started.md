@@ -5,7 +5,7 @@ Getting Started with the FINAL CUT Widget Toolkit
 Table of Contents
 -----------------
 
-<!-- TOC -->
+<!-- toc -->
 - [Basic functions](#basic-functions)
 - [Widgets](#widgets)
 - [Widget tree](#widget-tree)
@@ -17,7 +17,7 @@ Table of Contents
     - [Compiling with GNU Autotools](#use-gnu-Autotools-to-compile-the-application)
     - [Compiling with CMake](#use-cmake-to-compile-the-application)
   - [How it works](#how-it-works)
-<!-- /TOC -->
+<!-- endtoc -->
 
 
 Basic functions
@@ -123,7 +123,7 @@ auto main (int argc, char* argv[]) -> int
 </figure>
 <br /><br />
 > [!NOTE]
-> You can close the dialog with the mouse, 
+> To close the dialog, use the mouse or press 
 > <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>
 
 
@@ -153,9 +153,9 @@ into your own projects.
    Save the code as *dialog.cpp* to get started.
 
 3. Compile and run:<br />
-   Use g++ to build the executable:<br />
+   Use c++ to build the executable:<br />
    ```bash
-   g++ dialog.cpp -o my-dialog -O2 -lfinal
+   c++ dialog.cpp -o my-dialog -O2 -lfinal
    ```
    After building, run it with:
    ```bash
@@ -169,7 +169,7 @@ Compile the source file using GCC and
 [pkg-config](https://en.wikipedia.org/wiki/Pkg-config) with this
 command. Ensure the current directory contains the source code file.
 ```bash
-g++ dialog.cpp -o my-dialog `pkg-config --libs finalcut`
+c++ dialog.cpp -o my-dialog `pkg-config --libs finalcut`
 ```
 You can now run the *my-dialog* executable.
 

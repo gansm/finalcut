@@ -264,11 +264,11 @@ void FLoggerTest::timestampTest()
 //----------------------------------------------------------------------
 void FLoggerTest::fileTest()
 {
-  std::string filename = "test.log";
+  std::string file_name = "test.log";
 
   {
     finalcut::FLogger log{};
-    std::ofstream file_stream(filename, std::ofstream::out);
+    std::ofstream file_stream(file_name, std::ofstream::out);
     log.setLineEnding (finalcut::FLog::LineEnding::LF);
     log.setOutputStream(file_stream);
 
@@ -300,7 +300,7 @@ void FLoggerTest::fileTest()
   };
 
   std::string line{};
-  std::ifstream file_stream{filename};
+  std::ifstream file_stream{file_name};
   std::size_t i{0};
 
   while ( std::getline(file_stream, line) )
@@ -312,7 +312,7 @@ void FLoggerTest::fileTest()
   if ( file_stream.is_open() )
     file_stream.close();
 
-  int ret = remove(filename.c_str());  // Delete file
+  int ret = remove(file_name.c_str());  // Delete file
 
   if ( ret == -1 )
   {

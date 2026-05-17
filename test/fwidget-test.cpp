@@ -72,7 +72,7 @@ class FWidget_protected : public finalcut::FWidget
     explicit FWidget_protected (finalcut::FWidget* = nullptr);
 
     // Accessor
-    auto  getPrintArea() -> finalcut::FWidget::FTermArea* override;
+    auto  getPrintRegion() -> finalcut::FWidget::FTermRegion* override;
     static auto p_getModalDialogCounter() -> uInt;
     static auto p_getDialogList() -> FWidgetList*&;
     static auto p_getAlwaysOnTopList() -> FWidgetList*&;
@@ -82,7 +82,7 @@ class FWidget_protected : public finalcut::FWidget
     void  delPreprocessingHandler (const finalcut::FVTerm*) override;
 
     // Predicate
-    auto  p_isChildPrintArea() const -> bool;
+    auto  p_isChildPrintRegion() const -> bool;
 
     // Mutators
     void setStatusBar (finalcut::FStatusBar*) override;
@@ -98,7 +98,7 @@ class FWidget_protected : public finalcut::FWidget
     void  initLayout() override;
     void  adjustSize() override;
     void  p_adjustSizeGlobal();
-    void  p_hideArea (const finalcut::FSize&);
+    void  p_hideRegion (const finalcut::FSize&);
 
     // Event handlers
     auto event (finalcut::FEvent*) -> bool override;
@@ -131,9 +131,9 @@ inline FWidget_protected::FWidget_protected (finalcut::FWidget* parent)
 { }
 
 //----------------------------------------------------------------------
-inline auto FWidget_protected::getPrintArea() -> finalcut::FWidget::FTermArea*
+inline auto FWidget_protected::getPrintRegion() -> finalcut::FWidget::FTermRegion*
 {
-  return finalcut::FWidget::getPrintArea();
+  return finalcut::FWidget::getPrintRegion();
 }
 
 //----------------------------------------------------------------------
@@ -174,9 +174,9 @@ inline void FWidget_protected::delPreprocessingHandler (const finalcut::FVTerm* 
 }
 
 //----------------------------------------------------------------------
-inline auto FWidget_protected::p_isChildPrintArea() const -> bool
+inline auto FWidget_protected::p_isChildPrintRegion() const -> bool
 {
-  return finalcut::FWidget::isChildPrintArea();
+  return finalcut::FWidget::isChildPrintRegion();
 }
 
 //----------------------------------------------------------------------
@@ -246,9 +246,9 @@ inline void FWidget_protected::p_adjustSizeGlobal()
 }
 
 //----------------------------------------------------------------------
-inline void FWidget_protected::p_hideArea (const finalcut::FSize& size)
+inline void FWidget_protected::p_hideRegion (const finalcut::FSize& size)
 {
-  finalcut::FWidget::hideArea (size);
+  finalcut::FWidget::hideRegion (size);
 }
 
 //----------------------------------------------------------------------
@@ -659,13 +659,13 @@ void FWidgetTest::noArgumentTest()
   CPPUNIT_ASSERT ( root_wdgt.getMainWidget() == &wdgt );
 
   // Test the status bar message
-  CPPUNIT_ASSERT ( wdgt.getStatusbarMessage().isEmpty() );
-  wdgt.setStatusbarMessage("message");
-  CPPUNIT_ASSERT ( ! wdgt.getStatusbarMessage().isEmpty() );
-  CPPUNIT_ASSERT ( wdgt.getStatusbarMessage() == "message" );
-  wdgt.clearStatusbarMessage();
-  CPPUNIT_ASSERT ( wdgt.getStatusbarMessage().isEmpty() );
-  CPPUNIT_ASSERT ( wdgt.getStatusbarMessage().isEmpty() );
+  CPPUNIT_ASSERT ( wdgt.getStatusBarMessage().isEmpty() );
+  wdgt.setStatusBarMessage("message");
+  CPPUNIT_ASSERT ( ! wdgt.getStatusBarMessage().isEmpty() );
+  CPPUNIT_ASSERT ( wdgt.getStatusBarMessage() == "message" );
+  wdgt.clearStatusBarMessage();
+  CPPUNIT_ASSERT ( wdgt.getStatusBarMessage().isEmpty() );
+  CPPUNIT_ASSERT ( wdgt.getStatusBarMessage().isEmpty() );
 
   // Test the primary widget colors
   CPPUNIT_ASSERT ( wdgt.getForegroundColor() == finalcut::FColor::Default );
@@ -716,13 +716,13 @@ void FWidgetTest::noArgumentTest()
   CPPUNIT_ASSERT ( right[0] == false );
   CPPUNIT_ASSERT ( bottom[0] == false );
   CPPUNIT_ASSERT ( left[0] == false );
-  wdgt.setDoubleFlatLine(finalcut::Side::Top);
+  wdgt.setMergingBorder(finalcut::Side::Top);
   CPPUNIT_ASSERT ( top[0] == true );
-  wdgt.setDoubleFlatLine(finalcut::Side::Right);
+  wdgt.setMergingBorder(finalcut::Side::Right);
   CPPUNIT_ASSERT ( right[0] == true );
-  wdgt.setDoubleFlatLine(finalcut::Side::Bottom);
+  wdgt.setMergingBorder(finalcut::Side::Bottom);
   CPPUNIT_ASSERT ( bottom[0] == true );
-  wdgt.setDoubleFlatLine(finalcut::Side::Left);
+  wdgt.setMergingBorder(finalcut::Side::Left);
   CPPUNIT_ASSERT ( left[0] == true );
   top[0] = false;
   right[0] = false;
@@ -732,7 +732,7 @@ void FWidgetTest::noArgumentTest()
   CPPUNIT_ASSERT ( right[0] == false );
   CPPUNIT_ASSERT ( bottom[0] == false );
   CPPUNIT_ASSERT ( left[0] == false );
-  CPPUNIT_ASSERT_THROW ( wdgt.setDoubleFlatLine(static_cast<finalcut::Side>(99))
+  CPPUNIT_ASSERT_THROW ( wdgt.setMergingBorder(static_cast<finalcut::Side>(99))
                        , std::invalid_argument );
   CPPUNIT_ASSERT ( top[0] == false );
   CPPUNIT_ASSERT ( right[0] == false );
@@ -1797,24 +1797,24 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( root_wdgt.childWidgetAt({31, 21}) == nullptr );
 
   // Double flat line
-  wdgt.setDoubleFlatLine (finalcut::Side::Top, -6, true);  // ignore
-  wdgt.setDoubleFlatLine (finalcut::Side::Top, -2, true);  // ignore
-  wdgt.setDoubleFlatLine (finalcut::Side::Top, 0, true);  // ignore
-  wdgt.setDoubleFlatLine (finalcut::Side::Top, 2, true);
-  wdgt.setDoubleFlatLine (finalcut::Side::Top, 3, true);
-  wdgt.setDoubleFlatLine (finalcut::Side::Top, 5, true);
-  wdgt.setDoubleFlatLine (finalcut::Side::Top, 7, true);
-  wdgt.setDoubleFlatLine (finalcut::Side::Top, 11, true);
-  wdgt.setDoubleFlatLine (finalcut::Side::Top, 13, true);
-  wdgt.setDoubleFlatLine (finalcut::Side::Top, 17, true);
-  wdgt.setDoubleFlatLine (finalcut::Side::Top, 19, true);
-  wdgt.setDoubleFlatLine (finalcut::Side::Top, 23, true);
-  wdgt.setDoubleFlatLine (finalcut::Side::Top, 29, true);
-  wdgt.setDoubleFlatLine (finalcut::Side::Right, 12, true);
-  wdgt.setDoubleFlatLine (finalcut::Side::Bottom, 5, true);
-  wdgt.setDoubleFlatLine (finalcut::Side::Bottom, 15, true);
-  wdgt.setDoubleFlatLine (finalcut::Side::Left, 12, true);
-  CPPUNIT_ASSERT_THROW ( wdgt.setDoubleFlatLine (static_cast<finalcut::Side>(99), 1, true)
+  wdgt.setMergingBorder (finalcut::Side::Top, -6, true);  // ignore
+  wdgt.setMergingBorder (finalcut::Side::Top, -2, true);  // ignore
+  wdgt.setMergingBorder (finalcut::Side::Top, 0, true);  // ignore
+  wdgt.setMergingBorder (finalcut::Side::Top, 2, true);
+  wdgt.setMergingBorder (finalcut::Side::Top, 3, true);
+  wdgt.setMergingBorder (finalcut::Side::Top, 5, true);
+  wdgt.setMergingBorder (finalcut::Side::Top, 7, true);
+  wdgt.setMergingBorder (finalcut::Side::Top, 11, true);
+  wdgt.setMergingBorder (finalcut::Side::Top, 13, true);
+  wdgt.setMergingBorder (finalcut::Side::Top, 17, true);
+  wdgt.setMergingBorder (finalcut::Side::Top, 19, true);
+  wdgt.setMergingBorder (finalcut::Side::Top, 23, true);
+  wdgt.setMergingBorder (finalcut::Side::Top, 29, true);
+  wdgt.setMergingBorder (finalcut::Side::Right, 12, true);
+  wdgt.setMergingBorder (finalcut::Side::Bottom, 5, true);
+  wdgt.setMergingBorder (finalcut::Side::Bottom, 15, true);
+  wdgt.setMergingBorder (finalcut::Side::Left, 12, true);
+  CPPUNIT_ASSERT_THROW ( wdgt.setMergingBorder (static_cast<finalcut::Side>(99), 1, true)
                        , std::invalid_argument );
   CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[0] == false );
   CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[1] == true );

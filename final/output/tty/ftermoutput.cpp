@@ -80,10 +80,10 @@ bool var::has_sub_map{false};
 }  // namespace internal
 
 // static class attributes
-FVTerm::FTermArea* FTermOutput::vterm{nullptr};
-FTermData*         FTermOutput::fterm_data{nullptr};
-constexpr uInt64   FTermOutput::MIN_FLUSH_WAIT;
-constexpr uInt64   FTermOutput::MAX_FLUSH_WAIT;
+FVTerm::FTermRegion* FTermOutput::vterm{nullptr};
+FTermData*           FTermOutput::fterm_data{nullptr};
+constexpr uInt64     FTermOutput::MIN_FLUSH_WAIT;
+constexpr uInt64     FTermOutput::MAX_FLUSH_WAIT;
 
 //----------------------------------------------------------------------
 // class FTermOutput
@@ -170,12 +170,12 @@ void FTermOutput::setNonBlockingRead (bool enable)
 {
 #if defined(__CYGWIN__)
   // Fixes problem with mouse input
-  char termfilename[256]{};
+  char term_file_name[256]{};
 
-  if ( ttyname_r(1, termfilename, sizeof(termfilename)) )
-    termfilename[0] = '\0';
+  if ( ttyname_r(1, term_file_name, sizeof(term_file_name)) )
+    term_file_name[0] = '\0';
 
-  if ( std::memcmp(termfilename, "/dev/cons", 9) == 0 )
+  if ( std::memcmp(term_file_name, "/dev/cons", 9) == 0 )
   {
     FKeyboard::setNonBlockingInputSupport(false);
     return;
@@ -187,7 +187,7 @@ void FTermOutput::setNonBlockingRead (bool enable)
 }
 
 //----------------------------------------------------------------------
-void FTermOutput::initTerminal (FVTerm::FTermArea* virtual_terminal)
+void FTermOutput::initTerminal (FVTerm::FTermRegion* virtual_terminal)
 {
   getFTerm().initTerminal();
   internal::terminal::encoding = fterm_data->getTerminalEncoding();
@@ -510,7 +510,7 @@ auto FTermOutput::canClearToEOL (uInt xmin, uInt y) const -> bool
     return false;
 
   const auto width = uInt(vterm->size.width);
-  const auto* row_begin = &vterm->data[y * width];
+  const auto* row_begin = &vterm->data[std::size_t(y) * width];
   const auto* row_end = std::next(row_begin, width);
   const auto* min_char = std::next(row_begin, xmin);
 
@@ -545,7 +545,7 @@ auto FTermOutput::canClearLeadingWS (uInt& xmin, uInt y) const -> bool
     return false;
 
   const auto width = uInt(vterm->size.width);
-  const auto* row_begin = &vterm->data[y * width];
+  const auto* row_begin = &vterm->data[std::size_t(y) * width];
   const auto* row_end = std::next(row_begin, width);
   const auto& first_char = *row_begin;
 
@@ -585,7 +585,7 @@ auto FTermOutput::canClearTrailingWS (uInt& xmax, uInt y) const -> bool
     return false;
 
   const int width = vterm->size.width;
-  const auto* row_begin = &vterm->data[y * unsigned(width)];
+  const auto* row_begin = &vterm->data[std::size_t(y) * unsigned(width)];
   const auto* row_end = std::next(row_begin, width);
   const auto* last_char = std::prev(row_end);
 

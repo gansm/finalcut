@@ -146,12 +146,12 @@ class FTermDetection final
 
     // Data members
 #if DEBUG
-    FString      termtype_256color{};
-    FString      termtype_Answerback{};
-    FString      termtype_SecDA{};
+    FString      term_type_256color{};
+    FString      term_type_Answerback{};
+    FString      term_type_SecDA{};
 #endif
-    FString      termtype{};
-    FString      ttytypename{"/etc/ttytype"};  // Default ttytype file
+    FString      term_type{};
+    FString      tty_type_name{"/etc/ttytype"};  // Default ttytype file
     bool         decscusr_support{false};      // Preset to false
     bool         terminal_detection{true};     // Preset to true
     bool         color256{};
@@ -169,20 +169,20 @@ inline auto FTermDetection::getClassName() const -> FString
 
 //----------------------------------------------------------------------
 inline auto FTermDetection::getTermType() const & -> const FString&
-{ return termtype; }
+{ return term_type; }
 
 #if DEBUG
 //----------------------------------------------------------------------
 inline auto FTermDetection::getTermType_256color() const & -> const FString&
-{ return termtype_256color; }
+{ return term_type_256color; }
 
 //----------------------------------------------------------------------
 inline auto FTermDetection::getTermType_Answerback() const & -> const FString&
-{ return termtype_Answerback; }
+{ return term_type_Answerback; }
 
 //----------------------------------------------------------------------
 inline auto FTermDetection::getTermType_SecDA() const & -> const FString&
-{ return termtype_SecDA; }
+{ return term_type_SecDA; }
 #endif
 
 //----------------------------------------------------------------------
@@ -205,7 +205,7 @@ inline void FTermDetection::setTerminalDetection (bool enable) noexcept
 template<typename StringT>
 inline auto FTermDetection::startsWithTermType (StringT&& prefix) const -> bool
 {
-  return termtype.toWString().find(std::forward<StringT>(prefix)) == 0;
+  return term_type.toWString().find(std::forward<StringT>(prefix)) == 0;
 }
 
 }  // namespace finalcut

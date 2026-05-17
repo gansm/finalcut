@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2022-2025 Markus Gans                                      *
+* Copyright 2022-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -243,7 +243,7 @@ class TextWindow final : public finalcut::FDialog
 TextWindow::TextWindow (finalcut::FWidget* parent)
   : finalcut::FDialog{parent}
 {
-  setResizeable();
+  setResizable();
   scrolltext.ignorePadding();
   scrolltext.setFocus();
   scrolltext.append(lgpl3);
@@ -287,7 +287,7 @@ void TextWindow::adjustSize()
     }
 
     // Centering the window when it is no longer
-    // in the visible area of the terminal
+    // in the visible region of the terminal
     if ( ! screen.contains(getPos()) || center )
     {
       int x = 1 + int((getDesktopWidth() - getWidth()) / 2);

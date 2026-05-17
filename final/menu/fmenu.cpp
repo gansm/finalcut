@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2024 Markus Gans                                      *
+* Copyright 2015-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -77,10 +77,10 @@ void FMenu::setMenuWidget (bool enable)
 }
 
 //----------------------------------------------------------------------
-void FMenu::setStatusbarMessage (const FString& msg)
+void FMenu::setStatusBarMessage (const FString& msg)
 {
-  FWidget::setStatusbarMessage(msg);
-  menuitem.setStatusbarMessage(msg);
+  FWidget::setStatusBarMessage(msg);
+  menuitem.setStatusBarMessage(msg);
 }
 
 //----------------------------------------------------------------------
@@ -879,7 +879,7 @@ void FMenu::mouseMoveOverBorder (MouseStates& ms) const
 {
   // Mouse is moved over border or separator line
 
-  updateStatusbar (this, false);
+  updateStatusBar (this, false);
   ms.hide_sub_menu = bool(opened_sub_menu);
 }
 
@@ -1086,7 +1086,7 @@ void FMenu::draw()
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
-  clearArea();
+  clearRegion();
   drawBorder();
   drawItems();
   drawShadow(this);

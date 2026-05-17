@@ -356,7 +356,7 @@ class FListBox : public FWidget
     void processKeyAction (FKeyEvent*);
     void draw() override;
     void drawBorder() override;
-    void drawScrollbars() const;
+    void drawScrollBars() const;
     void drawHeadline();
     auto canSkipDrawing() const -> bool;
     auto calculateNumberItemsToDraw() const -> std::size_t;

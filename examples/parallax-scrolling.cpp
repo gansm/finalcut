@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021-2025 Markus Gans                                      *
+* Copyright 2021-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -177,7 +177,7 @@ TextWindow::TextWindow (fc::FColor fg, fc::FColor bg, fc::FWidget* parent)
 void TextWindow::setPos (const fc::FPoint& pos, bool)
 {
   fc::FWindow::setPos (pos, false);
-  putArea (getTermPos(), getVWin());
+  putRegion (getTermPos(), getVWin());
 }
 
 //----------------------------------------------------------------------
@@ -185,7 +185,7 @@ void TextWindow::draw()
 {
   setColor();
   setTransparent();
-  clearArea();
+  clearRegion();
   unsetTransparent();
   print() << fc::FPoint(1, 1) << "┌┬┐┬ ┬┌─┐  ┌─┐┌─┐┌─┐┌─┐┌─┐"
           << fc::FPoint(1, 2) << " │ ├─┤├─   └─┐├─┘├─┤│  ├─ "
@@ -242,7 +242,7 @@ SpaceWindow::SpaceWindow (fc::FColor fg, fc::FColor bg, fc::FWidget* parent)
 void SpaceWindow::setPos (const fc::FPoint& pos, bool)
 {
   fc::FWindow::setPos (pos, false);
-  putArea (getTermPos(), getVWin());
+  putRegion (getTermPos(), getVWin());
 }
 
 //----------------------------------------------------------------------
@@ -250,7 +250,7 @@ void SpaceWindow::draw()
 {
   setColor();
   setTransparent();
-  clearArea();
+  clearRegion();
   unsetTransparent();
   drawNightSky();
 }
@@ -319,7 +319,7 @@ PictureSpaceWindow::PictureSpaceWindow (fc::FWidget* parent)
 void PictureSpaceWindow::setPos (const fc::FPoint& pos, bool)
 {
   fc::FWindow::setPos (pos, false);
-  putArea (getTermPos(), getVWin());
+  putRegion (getTermPos(), getVWin());
 }
 
 //----------------------------------------------------------------------
@@ -327,7 +327,7 @@ void PictureSpaceWindow::draw()
 {
   setColor();
   setTransparent();
-  clearArea();
+  clearRegion();
   unsetTransparent();
 
   if ( fc::FVTerm::getFOutput()->getMaxColor() < 16 )
@@ -340,12 +340,12 @@ void PictureSpaceWindow::draw()
   auto pict_size = xmp_image.getSize();
   pict_size.setHeight(pict_size.getHeight() / 2);
   finalcut::FRect planet_geometry(fc::FPoint(0, 0), pict_size);
-  std::shared_ptr<FTermArea> planet(createArea (planet_geometry));
+  std::shared_ptr<FTermRegion> planet(createRegion (planet_geometry));
   setColor(fc::FColor::Black, fc::FColor::Black);
-  clearArea(planet.get());
+  clearRegion(planet.get());
   planet->setCursorPos (1, 1);
   planet->print(xmp_image.getTermBuffer());
-  copyArea (getVWin(), fc::FPoint(10, 10), planet.get());
+  copyRegion (getVWin(), fc::FPoint(10, 10), planet.get());
 }
 
 //----------------------------------------------------------------------
@@ -418,7 +418,7 @@ ParallaxScrolling::ParallaxScrolling (fc::FWidget* parent)
 void ParallaxScrolling::draw()
 {
   setColor();
-  clearArea();
+  clearRegion();
 }
 
 //----------------------------------------------------------------------

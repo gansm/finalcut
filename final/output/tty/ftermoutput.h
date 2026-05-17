@@ -208,7 +208,7 @@ class FTermOutput final : public FOutput
     auto areMetaAndArrowKeysSupported() const -> bool override;
 
     // Methods
-    void initTerminal (FVTerm::FTermArea*) override;
+    void initTerminal (FVTerm::FTermRegion*) override;
     void finishTerminal() override;
     auto updateTerminal() -> bool override;
     void detectTerminalSize() override;
@@ -255,8 +255,8 @@ class FTermOutput final : public FOutput
 
     // Using-declaration
     using clock = std::chrono::steady_clock;
-    using FChar_iterator = FVTerm::FTermArea::FCharVec::iterator;
-    using FChar_const_iterator = FVTerm::FTermArea::FCharVec::const_iterator;
+    using FChar_iterator = FVTerm::FTermRegion::FCharVec::iterator;
+    using FChar_const_iterator = FVTerm::FTermRegion::FCharVec::const_iterator;
 
     // Accessors
     auto getFSetPaletteRef() const & -> const FSetPalette& override;
@@ -313,7 +313,7 @@ class FTermOutput final : public FOutput
 
     // Data members
     FTerm                          fterm{};
-    static FVTerm::FTermArea*      vterm;
+    static FVTerm::FTermRegion*    vterm;
     static FTermData*              fterm_data;
     std::shared_ptr<FOutputBuffer> output_buffer{};
     std::shared_ptr<FPoint>        term_pos{};  // terminal cursor position

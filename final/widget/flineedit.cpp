@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2025 Markus Gans                                      *
+* Copyright 2012-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -329,7 +329,7 @@ void FLineEdit::hide()
 
   FWidget::hide();
   const auto& shadow = hasShadow() ? FSize{1, 1} : FSize{0, 0};
-  hideArea (getSize() + shadow);
+  hideRegion (getSize() + shadow);
 }
 
 //----------------------------------------------------------------------
@@ -616,7 +616,7 @@ void FLineEdit::draw()
     adjustTextOffset();
 
   drawInputField();
-  updateStatusbar (this);
+  updateStatusBar (this);
 }
 
 //----------------------------------------------------------------------

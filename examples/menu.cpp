@@ -158,19 +158,19 @@ class Menu final : public finalcut::FDialog
     void cb_message (const finalcut::FMenuItem*);
 
     // Data members
-    finalcut::FMenuBar    Menubar{this};
-    FileMenu              file_menu{Menubar};
-    EditMenu              edit_menu{Menubar};
-    ChoiceMenu            choice_menu{Menubar};
+    finalcut::FMenuBar    menu_bar{this};
+    FileMenu              file_menu{menu_bar};
+    EditMenu              edit_menu{menu_bar};
+    ChoiceMenu            choice_menu{menu_bar};
     ColorMenu             color_menu{choice_menu.Color};
     StyleMenu             style_menu{choice_menu.Style};
     BorderMenu            border_menu{choice_menu.Border};
-    finalcut::FMenuItem   Window{"&Window", &Menubar};
-    finalcut::FMenuItem   Help{"&Help", &Menubar};
-    finalcut::FStatusBar  Statusbar{this};
-    finalcut::FLabel      Headline1{this};
-    finalcut::FLabel      Headline2{this};
-    finalcut::FLabel      Info{this};
+    finalcut::FMenuItem   window{"&Window", &menu_bar};
+    finalcut::FMenuItem   help{"&Help", &menu_bar};
+    finalcut::FStatusBar  status_bar{this};
+    finalcut::FLabel      headline1{this};
+    finalcut::FLabel      headline2{this};
+    finalcut::FLabel      info{this};
 };
 
 //----------------------------------------------------------------------
@@ -178,11 +178,11 @@ Menu::Menu (finalcut::FWidget* parent)
   : finalcut::FDialog{parent}
 {
   // Menu bar itms
-  file_menu.File.setStatusbarMessage ("File management commands");
-  edit_menu.Edit.setStatusbarMessage ("Cut-and-paste editing commands");
-  choice_menu.Choice.setStatusbarMessage ("Choice menu");
-  Window.setDisable();
-  Help.setStatusbarMessage ("Show version and copyright information");
+  file_menu.File.setStatusBarMessage ("File management commands");
+  edit_menu.Edit.setStatusBarMessage ("Cut-and-paste editing commands");
+  choice_menu.Choice.setStatusBarMessage ("Choice menu");
+  window.setDisable();
+  help.setStatusBarMessage ("Show version and copyright information");
 
   // Menu items
   configureFileMenuItems();
@@ -190,22 +190,22 @@ Menu::Menu (finalcut::FWidget* parent)
   configureChoiceMenuItems();
 
   // Add default menu item callback
-  defaultCallback (&Menubar);
+  defaultCallback (&menu_bar);
 
-  // Statusbar at the bottom
-  Statusbar.setMessage("Status bar message");
+  // Status bar at the bottom
+  status_bar.setMessage("Status bar message");
 
   // Headline labels
-  Headline1 << " Key ";
-  Headline1.ignorePadding();
-  Headline1.setEmphasis();
+  headline1 << " Key ";
+  headline1.ignorePadding();
+  headline1.setEmphasis();
 
-  Headline2 << " Function ";
-  Headline2.ignorePadding();
-  Headline2.setEmphasis();
+  headline2 << " Function ";
+  headline2.ignorePadding();
+  headline2.setEmphasis();
 
   // Info label
-  Info << "<F10>            Activate menu bar\n"
+  info << "<F10>            Activate menu bar\n"
        << "<Ctrl>+<Space>   Activate menu bar\n"
        << "<Menu>           Activate menu bar\n"
        << "<Shift>+<Menu>   Open dialog menu\n"
@@ -217,20 +217,20 @@ void Menu::configureFileMenuItems()
 {
   // "File" menu items
   file_menu.New.addAccelerator (FKey::Ctrl_n);  // Ctrl + N
-  file_menu.New.setStatusbarMessage ("Create a new file");
+  file_menu.New.setStatusBarMessage ("Create a new file");
   file_menu.Open.addAccelerator (FKey::Ctrl_o);  // Ctrl + O
-  file_menu.Open.setStatusbarMessage ("Locate and open a text file");
+  file_menu.Open.setStatusBarMessage ("Locate and open a text file");
   file_menu.Save.addAccelerator (FKey::Ctrl_s);  // Ctrl + S
-  file_menu.Save.setStatusbarMessage ("Save the file");
-  file_menu.SaveAs.setStatusbarMessage ("Save the current file under a different name");
+  file_menu.Save.setStatusBarMessage ("Save the file");
+  file_menu.SaveAs.setStatusBarMessage ("Save the current file under a different name");
   file_menu.Close.addAccelerator (FKey::Ctrl_w);  // Ctrl + W
-  file_menu.Close.setStatusbarMessage ("Close the current file");
+  file_menu.Close.setStatusBarMessage ("Close the current file");
   file_menu.Line1.setSeparator();
   file_menu.Print.addAccelerator (FKey::Ctrl_p);  // Ctrl + P
-  file_menu.Print.setStatusbarMessage ("Print the current file");
+  file_menu.Print.setStatusBarMessage ("Print the current file");
   file_menu.Line2.setSeparator();
   file_menu.Quit.addAccelerator (FKey::Meta_x);  // Meta/Alt + X
-  file_menu.Quit.setStatusbarMessage ("Exit the program");
+  file_menu.Quit.setStatusBarMessage ("Exit the program");
 
   // Add quit menu item callback
   file_menu.Quit.addCallback
@@ -246,27 +246,27 @@ void Menu::configureFileMenuItems()
 void Menu::configureEditMenuItems()
 {
   // "Edit" menu items
-  edit_menu.Undo.setStatusbarMessage ("Undo the previous operation");
+  edit_menu.Undo.setStatusBarMessage ("Undo the previous operation");
   edit_menu.Redo.setDisable();
   edit_menu.Line3.setSeparator();
-  edit_menu.Cut.setStatusbarMessage ("Remove the input text "
+  edit_menu.Cut.setStatusBarMessage ("Remove the input text "
                                      "and put it in the clipboard");
-  edit_menu.Copy.setStatusbarMessage ("Copy the input text into the clipboad");
-  edit_menu.Paste.setStatusbarMessage ("Insert text form clipboard");
+  edit_menu.Copy.setStatusBarMessage ("Copy the input text into the clipboad");
+  edit_menu.Paste.setStatusBarMessage ("Insert text form clipboard");
   edit_menu.Line4.setSeparator();
-  edit_menu.Search.setStatusbarMessage ("Search for text");
-  edit_menu.Next.setStatusbarMessage ("Repeat the last search command");
+  edit_menu.Search.setStatusBarMessage ("Search for text");
+  edit_menu.Next.setStatusBarMessage ("Repeat the last search command");
   edit_menu.Line5.setSeparator();
-  edit_menu.SelectAll.setStatusbarMessage ("Select the whole text");
+  edit_menu.SelectAll.setStatusBarMessage ("Select the whole text");
 }
 
 //----------------------------------------------------------------------
 void Menu::configureChoiceMenuItems()
 {
   // "Choice" menu items
-  choice_menu.Color.setStatusbarMessage ("Choose a color");
-  choice_menu.Style.setStatusbarMessage ("Choose a Style");
-  choice_menu.Border.setStatusbarMessage ("Choose Border");
+  choice_menu.Color.setStatusBarMessage ("Choose a color");
+  choice_menu.Style.setStatusBarMessage ("Choose a Style");
+  choice_menu.Border.setStatusBarMessage ("Choose Border");
 
   configureColorMenuItems();
   configureStyleMenuItems();
@@ -277,11 +277,11 @@ void Menu::configureChoiceMenuItems()
 void Menu::configureColorMenuItems()
 {
   // "Color" menu items
-  color_menu.Color1.setStatusbarMessage ("Set text red");
-  color_menu.Color2.setStatusbarMessage ("Set text green");
-  color_menu.Color3.setStatusbarMessage ("Set text yellow");
-  color_menu.Color4.setStatusbarMessage ("Set text brue");
-  color_menu.Color5.setStatusbarMessage ("Set text black");
+  color_menu.Color1.setStatusBarMessage ("Set text red");
+  color_menu.Color2.setStatusBarMessage ("Set text green");
+  color_menu.Color3.setStatusBarMessage ("Set text yellow");
+  color_menu.Color4.setStatusBarMessage ("Set text brue");
+  color_menu.Color5.setStatusBarMessage ("Set text black");
   color_menu.Color5.setChecked();
 }
 
@@ -289,27 +289,27 @@ void Menu::configureColorMenuItems()
 void Menu::configureStyleMenuItems()
 {
   // "Style" menu items
-  style_menu.Bold.setStatusbarMessage ("Set text bold");
-  style_menu.Italic.setStatusbarMessage ("Set text italic");
+  style_menu.Bold.setStatusBarMessage ("Set text bold");
+  style_menu.Italic.setStatusBarMessage ("Set text italic");
 }
 
 //----------------------------------------------------------------------
 void Menu::configureBorderMenuItems()
 {
   // "Border" menu items
-  border_menu.BColor.setStatusbarMessage ("Choose the border color");
-  border_menu.BStyle.setStatusbarMessage ("Choose the border Style");
+  border_menu.BColor.setStatusBarMessage ("Choose the border color");
+  border_menu.BStyle.setStatusBarMessage ("Choose the border Style");
 
   // "BColor" menu items
-  border_menu.BColor1.setStatusbarMessage ("Set red border");
-  border_menu.BColor2.setStatusbarMessage ("Set blue border");
+  border_menu.BColor1.setStatusBarMessage ("Set red border");
+  border_menu.BColor2.setStatusBarMessage ("Set blue border");
 
   // "BStyle" menu items
   border_menu.BStyle1.setChecked();
-  border_menu.BStyle1.setStatusbarMessage ("Set border 1");
-  border_menu.BStyle2.setStatusbarMessage ("Set border 2");
-  border_menu.BStyle3.setStatusbarMessage ("Set border 3");
-  border_menu.BStyle4.setStatusbarMessage ("Set border 4");
+  border_menu.BStyle1.setStatusBarMessage ("Set border 1");
+  border_menu.BStyle2.setStatusBarMessage ("Set border 2");
+  border_menu.BStyle3.setStatusBarMessage ("Set border 3");
+  border_menu.BStyle4.setStatusBarMessage ("Set border 4");
 }
 
 //----------------------------------------------------------------------
@@ -344,9 +344,9 @@ void Menu::defaultCallback (const finalcut::FMenuList* mb)
 //----------------------------------------------------------------------
 void Menu::initLayout()
 {
-  Headline1.setGeometry (FPoint{3, 2}, FSize{5, 1});
-  Headline2.setGeometry (FPoint{19, 2}, FSize{10, 1});
-  Info.setGeometry(FPoint{2, 1}, FSize{36, 5});
+  headline1.setGeometry (FPoint{3, 2}, FSize{5, 1});
+  headline2.setGeometry (FPoint{19, 2}, FSize{10, 1});
+  info.setGeometry(FPoint{2, 1}, FSize{36, 5});
   FDialog::initLayout();
 }
 

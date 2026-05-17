@@ -40,7 +40,7 @@ namespace finalcut
 FScrollBar::FScrollBar(FWidget* parent)
   : FWidget{parent}
 {
-  // The default scrollbar orientation is vertical
+  // The default scroll bar orientation is vertical
   FScrollBar::setGeometry(FPoint{1, 1}, FSize{1, length}, false);
   init();
 }
@@ -141,7 +141,7 @@ void FScrollBar::setOrientation (Orientation o)
 //----------------------------------------------------------------------
 void FScrollBar::setSize (const FSize& size, bool adjust)
 {
-  // Set the scrollbar size
+  // Set the scroll bar size
 
   FWidget::setSize (size, adjust);
   changeOnResize();
@@ -151,7 +151,7 @@ void FScrollBar::setSize (const FSize& size, bool adjust)
 void FScrollBar::setGeometry ( const FPoint& pos, const FSize& size
                              , bool adjust )
 {
-  // Set the scrollbar geometry
+  // Set the scroll bar geometry
 
   FWidget::setGeometry (pos, size, adjust);
   changeOnResize();
@@ -293,7 +293,7 @@ void FScrollBar::onMouseMove (FMouseEvent* ev)
   if ( scroll_type == ScrollType::Jump )
     handleJumpScroll(mouse_x, mouse_y);
 
-  if ( isMouseOutsideScrollbar(mouse_x, mouse_y) )
+  if ( isMouseOutsideScrollBar(mouse_x, mouse_y) )
     delOwnTimers();
   else if ( scroll_type != ScrollType::Jump )
     addTimer(repeat_time);
@@ -374,8 +374,8 @@ void FScrollBar::draw()
 //----------------------------------------------------------------------
 void FScrollBar::drawVerticalBar()
 {
-  const auto& wc_scrollbar = getColorTheme()->scrollbar;
-  setColor (wc_scrollbar.fg, wc_scrollbar.bg);
+  const auto& wc_scroll_bar = getColorTheme()->scroll_bar;
+  setColor (wc_scroll_bar.fg, wc_scroll_bar.bg);
 
   for (auto z{1}; z <= slider_pos; z++)
   {
@@ -383,7 +383,7 @@ void FScrollBar::drawVerticalBar()
     drawVerticalBackgroundLine();
   }
 
-  setColor (wc_scrollbar.bg, wc_scrollbar.fg);
+  setColor (wc_scroll_bar.bg, wc_scroll_bar.fg);
 
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
@@ -401,7 +401,7 @@ void FScrollBar::drawVerticalBar()
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
-  setColor (wc_scrollbar.fg, wc_scrollbar.bg);
+  setColor (wc_scroll_bar.fg, wc_scroll_bar.bg);
 
   for (auto z = slider_pos + int(slider_length) + 1; z <= int(bar_length); z++)
   {
@@ -435,8 +435,8 @@ inline void FScrollBar::drawVerticalBackgroundLine()
 //----------------------------------------------------------------------
 void FScrollBar::drawHorizontalBar()
 {
-  const auto& wc_scrollbar = getColorTheme()->scrollbar;
-  setColor (wc_scrollbar.fg, wc_scrollbar.bg);
+  const auto& wc_scroll_bar = getColorTheme()->scroll_bar;
+  setColor (wc_scroll_bar.fg, wc_scroll_bar.bg);
 
   if ( FVTerm::getFOutput()->isNewFont() )
     print() << FPoint{3, 1};
@@ -446,7 +446,7 @@ void FScrollBar::drawHorizontalBar()
   for (auto z{0}; z < slider_pos; z++)
     drawHorizontalBackgroundColumn();
 
-  setColor (wc_scrollbar.bg, wc_scrollbar.fg);
+  setColor (wc_scroll_bar.bg, wc_scroll_bar.fg);
 
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
@@ -457,7 +457,7 @@ void FScrollBar::drawHorizontalBar()
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
-  setColor (wc_scrollbar.fg, wc_scrollbar.bg);
+  setColor (wc_scroll_bar.fg, wc_scroll_bar.bg);
   int z = slider_pos + int(slider_length) + 1;
 
   for (; z <= int(bar_length); z++)
@@ -481,8 +481,8 @@ inline void FScrollBar::drawHorizontalBackgroundColumn()
 //----------------------------------------------------------------------
 void FScrollBar::drawButtons()
 {
-  const auto& wc_scrollbar = getColorTheme()->scrollbar;
-  setColor (wc_scrollbar.button_fg, wc_scrollbar.button_bg);
+  const auto& wc_scroll_bar = getColorTheme()->scroll_bar;
+  setColor (wc_scroll_bar.button_fg, wc_scroll_bar.button_bg);
   print() << FPoint{1, 1};  // Set cursor position for printing
 
   if ( FVTerm::getFOutput()->isNewFont() )
@@ -633,7 +633,7 @@ auto FScrollBar::getSliderClickPos (int mouse_x, int mouse_y) const -> int
 }
 
 //----------------------------------------------------------------------
-inline auto FScrollBar::isMouseOutsideScrollbar ( int mouse_x
+inline auto FScrollBar::isMouseOutsideScrollBar ( int mouse_x
                                                 , int mouse_y ) const -> bool
 {
   return mouse_x < 1

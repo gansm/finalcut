@@ -180,7 +180,7 @@ class FFileDialog : public FDialog
     auto openDirectory() -> DIR*;
     auto closeDirectory (DIR*) -> CloseDir;
     void readDirEntries (DIR*);
-    auto getSelectedFilename() const -> std::string;
+    auto getSelectedFileName() const -> std::string;
     auto isCurrentDirectory (const std::string&) const -> bool;
     auto isParentDirectory (const std::string&) const -> bool;
     auto isHiddenEntry (const std::string&) const -> bool;
@@ -210,8 +210,8 @@ class FFileDialog : public FDialog
     DirEntries  dir_entries{};
     FString     directory{};
     FString     filter_pattern{};
-    FLineEdit   filename{this};
-    FListBox    filebrowser{this};
+    FLineEdit   file_name{this};
+    FListBox    file_browser{this};
     FCheckBox   hidden_check{this};
     FButton     cancel_btn{this};
     FButton     open_btn{this};

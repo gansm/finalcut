@@ -51,8 +51,8 @@ FWidget* var::root_widget{nullptr};
 }  // namespace internal
 
 // static class attributes
-FStatusBar*           FWidget::statusbar{nullptr};
-FMenuBar*             FWidget::menubar{nullptr};
+FStatusBar*           FWidget::status_bar{nullptr};
+FMenuBar*             FWidget::menu_bar{nullptr};
 FWidget*              FWidget::first_shown_widget{nullptr};
 FWidget*              FWidget::redraw_root_widget{nullptr};
 FWidget::FWidgetList* FWidget::dialog_list{nullptr};
@@ -104,7 +104,7 @@ FWidget::FWidget (FWidget* parent)
 
   mapEventFunctions();
   flags.visibility.visible_cursor = false;
-  double_flatline_mask.setSize (getWidth(), getHeight());
+  merging_border_mask.setSize (getWidth(), getHeight());
 }
 
 //----------------------------------------------------------------------
@@ -187,7 +187,7 @@ auto FWidget::getColorTheme() -> std::shared_ptr<FWidgetColors>&
 //----------------------------------------------------------------------
 auto FWidget::doubleFlatLine_ref (Side side) -> std::vector<bool>&
 {
-  auto& mask = double_flatline_mask;
+  auto& mask = merging_border_mask;
 
   switch ( side )
   {
@@ -265,7 +265,7 @@ auto FWidget::setFocus (bool enable, FocusTypes ft) -> bool
     flags.focus.focus = false;
 
   // Set status bar text for widget focus
-  setStatusbarText (enable);
+  setStatusBarText (enable);
   return enable;
 }
 
@@ -355,7 +355,7 @@ void FWidget::setPos (const FPoint& p, bool adjust)
     return;
   }
 
-  if ( ! isWindowWidget() )  // A widgets must be inside the client area
+  if ( ! isWindowWidget() )  // A widgets must be inside the client region
   {
     pos.setX(std::max(pos.getX(), 1));
     pos.setY(std::max(pos.getY(), 1));
@@ -386,7 +386,7 @@ void FWidget::setWidth (std::size_t width, bool adjust)
   if ( adjust )
     adjustSize();
 
-  double_flatline_mask.setWidth (getWidth());
+  merging_border_mask.setWidth (getWidth());
 }
 
 //----------------------------------------------------------------------
@@ -407,7 +407,7 @@ void FWidget::setHeight (std::size_t height, bool adjust)
   if ( adjust )
     adjustSize();
 
-  double_flatline_mask.setHeight (getHeight());
+  merging_border_mask.setHeight (getHeight());
 }
 
 //----------------------------------------------------------------------
@@ -426,7 +426,7 @@ void FWidget::setSize (const FSize& size, bool adjust)
   wsize.setSize ( std::max(width, std::size_t(1))
                 , std::max(height, std::size_t(1)) );
   adjust_wsize = wsize;
-  double_flatline_mask.setSize (getWidth(), getHeight());
+  merging_border_mask.setSize (getWidth(), getHeight());
 
   if ( adjust )
     adjustSize();
@@ -560,7 +560,7 @@ void FWidget::setGeometry (const FPoint& p, const FSize& s, bool adjust)
     wsize.setX(x);
     wsize.setY(y);
   }
-  else  // A normal widget must be inside the client area
+  else  // A normal widget must be inside the client region
   {
     wsize.setX(std::max(x, 1));
     wsize.setY(std::max(y, 1));
@@ -578,7 +578,7 @@ void FWidget::setGeometry (const FPoint& p, const FSize& s, bool adjust)
                                 , term_x - 2 + int(getWidth()) - padding.right
                                 , term_y - 2 + int(getHeight()) - padding.bottom );
 
-  double_flatline_mask.setSize (getWidth(), getHeight());
+  merging_border_mask.setSize (getWidth(), getHeight());
 
   if ( adjust )
     adjustSize();
@@ -597,27 +597,27 @@ auto FWidget::setCursorPos (const FPoint& pos) -> bool
     || ! FWindow::getWindowWidget(this) )
     return false;
 
-  const auto& area = getPrintArea();
+  const auto& region = getPrintRegion();
 
-  if ( ! area->hasOwner() )
+  if ( ! region->hasOwner() )
     return false;
 
-  const auto& area_owner = area->getOwner<FVTerm*>();
-  const auto& area_widget = static_cast<FWidget*>(area_owner);
-  int woffsetX = getTermX() - area_widget->getTermX();
-  int woffsetY = getTermY() - area_widget->getTermY();
+  const auto& region_owner = region->getOwner<FVTerm*>();
+  const auto& region_widget = static_cast<FWidget*>(region_owner);
+  int woffsetX = getTermX() - region_widget->getTermX();
+  int woffsetY = getTermY() - region_widget->getTermY();
 
-  if ( isChildPrintArea() )
+  if ( isChildPrintRegion() )
   {
-    woffsetX += (1 - area_widget->getLeftPadding());
-    woffsetY += (1 - area_widget->getTopPadding());
+    woffsetX += (1 - region_widget->getLeftPadding());
+    woffsetY += (1 - region_widget->getTopPadding());
   }
 
   bool visible = ! isCursorHideable() || flags.visibility.visible_cursor;
-  setAreaCursor ( { woffsetX + pos.getX()
-                  , woffsetY + pos.getY() }
-                , visible
-                , area );
+  setRegionCursor ( { woffsetX + pos.getX()
+                    , woffsetY + pos.getY() }
+                  , visible
+                  , region );
   return true;
 }
 
@@ -630,9 +630,9 @@ void FWidget::setPrintPos (const FPoint& pos)
 }
 
 //----------------------------------------------------------------------
-void FWidget::setDoubleFlatLine (Side side, bool bit)
+void FWidget::setMergingBorder (Side side, bool bit)
 {
-  auto& mask = double_flatline_mask;
+  auto& mask = merging_border_mask;
 
   switch ( side )
   {
@@ -658,13 +658,13 @@ void FWidget::setDoubleFlatLine (Side side, bool bit)
 }
 
 //----------------------------------------------------------------------
-void FWidget::setDoubleFlatLine (Side side, int pos, bool bit)
+void FWidget::setMergingBorder (Side side, int pos, bool bit)
 {
   if ( pos < 1 )
     return;
 
   const auto index = uLong(pos - 1);
-  auto& mask = double_flatline_mask;
+  auto& mask = merging_border_mask;
 
   auto& side_line = [&mask, side] () -> std::vector<bool>&
   {
@@ -774,7 +774,7 @@ void FWidget::addAccelerator (FKey key, FWidget* obj) &
   auto widget = static_cast<FWidget*>(FWindow::getWindowWidget(obj));
   FAccelerator accel = { key, obj };
 
-  if ( ! widget || widget == statusbar || widget == menubar )
+  if ( ! widget || widget == status_bar || widget == menu_bar )
     widget = getRootWidget();
 
   if ( widget )
@@ -788,7 +788,7 @@ void FWidget::delAccelerator (FWidget* obj) &
 
   auto widget = static_cast<FWidget*>(FWindow::getWindowWidget(this));
 
-  if ( ! widget || widget == statusbar || widget == menubar )
+  if ( ! widget || widget == status_bar || widget == menu_bar )
     widget = getRootWidget();
 
   if ( ! widget || widget->accelerator_list.empty() )
@@ -826,7 +826,7 @@ void FWidget::redraw()
     // clean desktop
     auto color_theme_term = getColorTheme()->term;
     setColor (color_theme_term.fg, color_theme_term.bg);
-    clearArea (getVirtualDesktop());
+    clearRegion (getVirtualDesktop());
   }
   else if ( ! isShown() )
     return;
@@ -864,7 +864,7 @@ void FWidget::resize()
       return;
 
     resizeVTerm (term_geometry.getSize());
-    resizeArea ({term_geometry, getShadow()}, getVirtualDesktop());
+    resizeRegion ({term_geometry, getShadow()}, getVirtualDesktop());
     startDrawing();  // Avoid flickering - no update during adjustment
     adjustSizeGlobal();
     finishDrawing();
@@ -873,7 +873,7 @@ void FWidget::resize()
     adjustSize();
 
   // resize the four double-flatline-masks
-  double_flatline_mask.setSize (getWidth(), getHeight());
+  merging_border_mask.setSize (getWidth(), getHeight());
 }
 
 //----------------------------------------------------------------------
@@ -912,7 +912,7 @@ void FWidget::hide()
 
   if ( flags.visibility.visible_cursor && FWidget::getFocusWidget() == this )
   {
-    getPrintArea()->input_cursor_visible = false;
+    getPrintRegion()->input_cursor_visible = false;
   }
 
   if ( ! isDialogWidget()
@@ -1088,12 +1088,12 @@ void FWidget::quit()
 
 // protected methods of FWidget
 //----------------------------------------------------------------------
-auto FWidget::getPrintArea() -> FVTerm::FTermArea*
+auto FWidget::getPrintRegion() -> FVTerm::FTermRegion*
 {
-  // returns the print area of this object
+  // returns the print region of this object
 
-  if ( getCurrentPrintArea() )
-    return getCurrentPrintArea();
+  if ( getCurrentPrintRegion() )
+    return getCurrentPrintRegion();
 
   FWidget* obj{};
   FWidget* p_obj = this;
@@ -1103,18 +1103,18 @@ auto FWidget::getPrintArea() -> FVTerm::FTermArea*
     obj = p_obj;
     p_obj = static_cast<FWidget*>(obj->getParent());
   }
-  while ( ! obj->getVWin() && ! obj->getChildPrintArea() && p_obj );
+  while ( ! obj->getVWin() && ! obj->getChildPrintRegion() && p_obj );
 
   if ( obj->getVWin() )
   {
-    setPrintArea (obj->getVWin());
-    return getCurrentPrintArea();
+    setPrintRegion (obj->getVWin());
+    return getCurrentPrintRegion();
   }
 
-  if ( obj->getChildPrintArea() )
+  if ( obj->getChildPrintRegion() )
   {
-    setPrintArea (obj->getChildPrintArea());
-    return getCurrentPrintArea();
+    setPrintRegion (obj->getChildPrintRegion());
+    return getCurrentPrintRegion();
   }
 
   return getVirtualDesktop();
@@ -1124,8 +1124,8 @@ auto FWidget::getPrintArea() -> FVTerm::FTermArea*
 void FWidget::addPreprocessingHandler ( const FVTerm* instance
                                       , FPreprocessingFunction&& function )
 {
-  if ( ! getCurrentPrintArea() )
-    FWidget::getPrintArea();
+  if ( ! getCurrentPrintRegion() )
+    FWidget::getPrintRegion();
 
   FVTerm::addPreprocessingHandler (instance, std::move(function));
 }
@@ -1133,39 +1133,39 @@ void FWidget::addPreprocessingHandler ( const FVTerm* instance
 //----------------------------------------------------------------------
 void FWidget::delPreprocessingHandler (const FVTerm* instance)
 {
-  if ( ! getCurrentPrintArea() )
-    FWidget::getPrintArea();
+  if ( ! getCurrentPrintRegion() )
+    FWidget::getPrintRegion();
 
   FVTerm::delPreprocessingHandler (instance);
 }
 
 //----------------------------------------------------------------------
-auto FWidget::isChildPrintArea() const -> bool
+auto FWidget::isChildPrintRegion() const -> bool
 {
   const auto& p_obj = static_cast<FWidget*>(getParent());
   return ( p_obj
-        && p_obj->getChildPrintArea()
-        && p_obj->getChildPrintArea() == getCurrentPrintArea() );
+        && p_obj->getChildPrintRegion()
+        && p_obj->getChildPrintRegion() == getCurrentPrintRegion() );
 }
 
 //----------------------------------------------------------------------
 void FWidget::setStatusBar (FStatusBar* sbar)
 {
-  if ( ! sbar || statusbar == sbar )
+  if ( ! sbar || status_bar == sbar )
     return;
 
-  delete statusbar;
-  statusbar = sbar;
+  delete status_bar;
+  status_bar = sbar;
 }
 
 //----------------------------------------------------------------------
 void FWidget::setMenuBar (FMenuBar* mbar)
 {
-  if ( ! mbar || menubar == mbar )
+  if ( ! mbar || menu_bar == mbar )
     return;
 
-  delete menubar;
-  menubar = mbar;
+  delete menu_bar;
+  menu_bar = mbar;
 }
 
 //----------------------------------------------------------------------
@@ -1236,7 +1236,7 @@ void FWidget::initDesktop()
   // Initializing vdesktop
   const auto& r = getRootWidget();
   setColor(r->getForegroundColor(), r->getBackgroundColor());
-  clearArea (getVirtualDesktop());
+  clearRegion (getVirtualDesktop());
 
   // Destop is now initialized
   init_desktop = true;
@@ -1254,13 +1254,13 @@ void FWidget::adjustSize()
 {
   // Adjust widget size and position
   adjustWidget();
-  adjustSizeWithinArea(adjust_wsize);
+  adjustSizeWithinRegion(adjust_wsize);
 
   // Move and shrink in case of lack of space
-  if ( ! hasChildPrintArea() )
+  if ( ! hasChildPrintRegion() )
     insufficientSpaceAdjust();
 
-  // Set the size of the client area
+  // Set the size of the client region
   setClientOffset();
 
   // Recursively adjusts child widget sizes
@@ -1287,7 +1287,7 @@ void FWidget::adjustSizeGlobal()
 }
 
 //----------------------------------------------------------------------
-void FWidget::hideArea (const FSize& size)
+void FWidget::hideRegion (const FSize& size)
 {
   if ( size.isEmpty() )
     return;
@@ -1697,7 +1697,7 @@ void FWidget::initRootWidget()
   first_shown_widget = nullptr;
   redraw_root_widget = nullptr;
   modal_dialog_counter = 0;
-  statusbar = nullptr;
+  status_bar = nullptr;
 
   // Determine width and height of the terminal
   determineDesktopSize();
@@ -2165,7 +2165,7 @@ inline void FWidget::adjustWidget()
 }
 
 //----------------------------------------------------------------------
-inline void FWidget::adjustSizeWithinArea (FRect& box) const
+inline void FWidget::adjustSizeWithinRegion (FRect& box) const
 {
   const FRect uninitialized(FPoint{0, 0}, FPoint{-1, -1});
 
@@ -2236,7 +2236,7 @@ inline void FWidget::setWidgetOffset (const FWidget* parent)
 //----------------------------------------------------------------------
 inline void FWidget::setClientOffset()
 {
-  // Set the offset of the widget client area
+  // Set the offset of the widget client region
 
   wclient_offset.setCoordinates
   (
@@ -2298,14 +2298,14 @@ void FWidget::removeQueuedEvent() const
 }
 
 //----------------------------------------------------------------------
-void FWidget::setStatusbarText (bool enable) const
+void FWidget::setStatusBarText (bool enable) const
 {
   if ( ! isEnabled() || ! getStatusBar() )
     return;
 
   if ( enable )
   {
-    const auto& msg = getStatusbarMessage();
+    const auto& msg = getStatusBarMessage();
     const auto& curMsg = getStatusBar()->getMessage();
 
     if ( curMsg != msg )

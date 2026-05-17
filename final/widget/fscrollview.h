@@ -4,7 +4,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2024 Markus Gans                                      *
+* Copyright 2017-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -58,7 +58,7 @@ namespace finalcut
 {
 
 // FVTerm friend function forward declaration
-void setPrintArea (FWidget&, FVTerm::FTermArea*);
+void setPrintRegion (FWidget&, FVTerm::FTermRegion*);
 
 //----------------------------------------------------------------------
 // class FScrollView
@@ -131,7 +131,7 @@ class FScrollView : public FWidget
     auto isViewportPrint() const -> bool;
 
     // Methods
-    void clearArea (wchar_t = L' ') override;
+    void clearArea (wchar_t = L' ');
     void scrollToX (int);
     void scrollToY (int);
     void scrollTo (const FPoint&);
@@ -155,17 +155,14 @@ class FScrollView : public FWidget
     void onFailAtChildFocus (FFocusEvent*) override;
 
   protected:
-    // Using-declaration
-    using FVTerm::clearArea;
-
     // Accessor
-    auto getPrintArea() -> FTermArea* override;
+    auto getPrintRegion() -> FTermRegion* override;
 
     // Methods
     void setHotkeyAccelerator();
     void initLayout() override;
     void adjustSize() override;
-    void copy2area();
+    void copyToRegion();
 
   private:
     // Using-declaration
@@ -196,13 +193,13 @@ class FScrollView : public FWidget
     auto isChangeYPosition (const int) const -> bool;
     void changeX (const std::size_t, const int);
     void changeY (const std::size_t, const int);
-    void calculateScrollbarPos() const;
+    void calculateScrollBarPos() const;
     template <typename Callback>
-    void initScrollbar (FScrollBarPtr&, Orientation, Callback);
+    void initScrollBar (FScrollBarPtr&, Orientation, Callback);
     void setHorizontalScrollBarVisibility() const;
     void setVerticalScrollBarVisibility() const;
     void setViewportCursor();
-    auto shouldUpdateScrollbar (FScrollBar::ScrollType) const -> bool;
+    auto shouldUpdateScrollBar (FScrollBar::ScrollType) const -> bool;
     auto getVerticalScrollDistance (const FScrollBar::ScrollType) const -> int;
     auto getHorizontalScrollDistance (const FScrollBar::ScrollType) const -> int;
 
@@ -211,18 +208,18 @@ class FScrollView : public FWidget
     void cb_hbarChange (const FWidget*);
 
     // Data members
-    FRect                      scroll_geometry{1, 1, 1, 1};
-    FRect                      viewport_geometry{};
-    std::unique_ptr<FTermArea> viewport{};  // virtual scroll content
-    FString                    text{};
-    FScrollBarPtr              vbar{nullptr};
-    FScrollBarPtr              hbar{nullptr};
-    KeyMap                     key_map{};
-    uInt8                      nf_offset{0};
-    bool                       use_own_print_area{false};
-    bool                       update_scrollbar{true};
-    ScrollBarMode              v_mode{ScrollBarMode::Auto};  // fc:Auto, fc::Hidden or fc::Scroll
-    ScrollBarMode              h_mode{ScrollBarMode::Auto};
+    FRect                        scroll_geometry{1, 1, 1, 1};
+    FRect                        viewport_geometry{};
+    std::unique_ptr<FTermRegion> viewport{};  // virtual scroll content
+    FString                      text{};
+    FScrollBarPtr                vbar{nullptr};
+    FScrollBarPtr                hbar{nullptr};
+    KeyMap                       key_map{};
+    uInt8                        nf_offset{0};
+    bool                         use_own_print_region{false};
+    bool                         update_scroll_bar{true};
+    ScrollBarMode                v_mode{ScrollBarMode::Auto};  // fc:Auto, fc::Hidden or fc::Scroll
+    ScrollBarMode                h_mode{ScrollBarMode::Auto};
 };
 
 // FScrollView inline functions
@@ -297,7 +294,7 @@ inline auto FScrollView::hasBorder() const -> bool
 
 //----------------------------------------------------------------------
 inline auto FScrollView::isViewportPrint() const -> bool
-{ return ! use_own_print_area; }
+{ return ! use_own_print_region; }
 
 //----------------------------------------------------------------------
 inline void FScrollView::scrollTo (const FPoint& pos)
@@ -306,7 +303,7 @@ inline void FScrollView::scrollTo (const FPoint& pos)
 //----------------------------------------------------------------------
 inline void FScrollView::print (const FPoint& pos)
 {
-  if ( use_own_print_area )
+  if ( use_own_print_region )
     FWidget::setPrintPos(pos);
   else
     setPrintPos(pos);
@@ -314,13 +311,13 @@ inline void FScrollView::print (const FPoint& pos)
 
 //----------------------------------------------------------------------
 template <typename Callback>
-inline void FScrollView::initScrollbar ( FScrollBarPtr& bar
+inline void FScrollView::initScrollBar ( FScrollBarPtr& bar
                                        , Orientation o
                                        , Callback cb_handler )
 {
-  finalcut::initScrollbar (bar, o, this, cb_handler);
-  FTermArea* area = FScrollView::getPrintArea();
-  finalcut::setPrintArea (*bar, area);
+  finalcut::initScrollBar (bar, o, this, cb_handler);
+  FTermRegion* region = FScrollView::getPrintRegion();
+  finalcut::setPrintRegion (*bar, region);
 }
 
 }  // namespace finalcut

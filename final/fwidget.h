@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2025 Markus Gans                                      *
+* Copyright 2015-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -162,7 +162,7 @@ class FWidget : public FVTerm
     static auto  getStatusBar() -> FStatusBar*;
     static auto  getColorTheme() -> std::shared_ptr<FWidgetColors>&;
     auto  getAcceleratorList() const & -> const FAcceleratorList&;
-    auto  getStatusbarMessage() const -> FString;
+    auto  getStatusBarMessage() const -> FString;
     auto  getForegroundColor() const noexcept -> FColor;  // get the primary
     auto  getBackgroundColor() const noexcept -> FColor;  // widget colors
     auto  doubleFlatLine_ref (Side) -> std::vector<bool>&;
@@ -206,7 +206,7 @@ class FWidget : public FVTerm
     template <typename ClassT>
     static void  setColorTheme();
     auto  setAcceleratorList() & -> FAcceleratorList&;
-    virtual void setStatusbarMessage (const FString&);
+    virtual void setStatusBarMessage (const FString&);
     void  setVisible (bool = true);
     void  unsetVisible();
     virtual void setEnable (bool = true);
@@ -252,10 +252,10 @@ class FWidget : public FVTerm
     virtual auto setCursorPos (const FPoint&) -> bool;
     void  unsetCursorPos();
     virtual void setPrintPos (const FPoint&);
-    void  setDoubleFlatLine (Side, bool = true);
-    void  unsetDoubleFlatLine (Side);
-    void  setDoubleFlatLine (Side, int, bool = true);
-    void  unsetDoubleFlatLine (Side, int);
+    void  setMergingBorder (Side, bool = true);
+    void  unsetMergingBorder (Side);
+    void  setMergingBorder (Side, int, bool = true);
+    void  unsetMergingBorder (Side, int);
 
     // Predicates
     auto  isRootWidget() const -> bool;
@@ -275,7 +275,7 @@ class FWidget : public FVTerm
     auto  childWidgetAt (const FPoint&) & -> FWidget*;
     auto  numOfFocusableChildren() & -> int;
     virtual auto close() -> bool;
-    void  clearStatusbarMessage();
+    void  clearStatusBarMessage();
     template <typename... Args>
     void  addCallback (FString&&, Args&&...) & noexcept;
     template <typename... Args>
@@ -302,7 +302,7 @@ class FWidget : public FVTerm
 
   protected:
     // Accessor
-    auto  getPrintArea() -> FTermArea* override;
+    auto  getPrintRegion() -> FTermRegion* override;
     static auto getModalDialogCounter() -> uInt;
     static auto getDialogList() -> FWidgetList*&;
     static auto getAlwaysOnTopList() -> FWidgetList*&;
@@ -312,7 +312,7 @@ class FWidget : public FVTerm
     void  delPreprocessingHandler (const FVTerm*) override;
 
     // Predicate
-    auto  isChildPrintArea() const -> bool;
+    auto  isChildPrintRegion() const -> bool;
 
     // Mutators
     virtual void setStatusBar (FStatusBar*);
@@ -328,7 +328,7 @@ class FWidget : public FVTerm
     virtual void initLayout();
     virtual void adjustSize();
     void  adjustSizeGlobal();
-    void  hideArea (const FSize&);
+    void  hideRegion (const FSize&);
 
     // Event handlers
     auto  event (FEvent*) -> bool override;
@@ -381,10 +381,10 @@ class FWidget : public FVTerm
       std::size_t max_height{INT_MAX};
     };
 
-    struct DoubleLineMask
+    struct MergingBorderMask
     {
-      DoubleLineMask() = default;
-      ~DoubleLineMask() = default;
+      MergingBorderMask() = default;
+      ~MergingBorderMask() = default;
 
       inline void setWidth (std::size_t width)
       {
@@ -465,7 +465,7 @@ class FWidget : public FVTerm
     void  drawWindows() const;
     void  drawChildren();
     void  adjustWidget();
-    void  adjustSizeWithinArea (FRect&) const;
+    void  adjustSizeWithinRegion (FRect&) const;
     void  adjustChildWidgetSizes();
     void  setWindowOffset();
     void  setWidgetOffset (const FWidget*);
@@ -473,13 +473,13 @@ class FWidget : public FVTerm
     static auto  isDefaultTheme() -> bool;
     static void  initColorTheme();
     void  removeQueuedEvent() const;
-    void  setStatusbarText (bool = true) const;
+    void  setStatusBarText (bool = true) const;
 
     // Data members
     struct FWidgetFlags  flags{};
     FPoint               widget_cursor_position{-1, -1};
     WidgetSizeHints      size_hints{};
-    DoubleLineMask       double_flatline_mask{};
+    MergingBorderMask    merging_border_mask{};
     WidgetPadding        padding{};
 
     // widget size
@@ -490,7 +490,7 @@ class FWidget : public FVTerm
     FRect                adjust_wsize_term_shadow{};
     // widget offset
     FRect                woffset{};
-    // offset of the widget client area
+    // offset of the widget client region
     FRect                wclient_offset{};
     // widget shadow size (on the right and bottom side)
     FSize                wshadow{0, 0};
@@ -498,13 +498,13 @@ class FWidget : public FVTerm
     // default widget foreground and background color
     FColor               foreground_color{FColor::Default};
     FColor               background_color{FColor::Default};
-    FString              statusbar_message{};
+    FString              status_bar_message{};
     FAcceleratorList     accelerator_list{};
     EventMap             event_map{};
     FCallback            callback_impl{};
 
-    static FStatusBar*   statusbar;
-    static FMenuBar*     menubar;
+    static FStatusBar*   status_bar;
+    static FMenuBar*     menu_bar;
     static FWidget*      main_widget;
     static FWidget*      active_window;
     static FWidget*      focus_widget;
@@ -567,11 +567,11 @@ inline auto FWidget::getMoveResizeWidget() -> FWidget*&
 
 //----------------------------------------------------------------------
 inline auto FWidget::getMenuBar() -> FMenuBar*
-{ return menubar; }
+{ return menu_bar; }
 
 //----------------------------------------------------------------------
 inline auto FWidget::getStatusBar() -> FStatusBar*
-{ return statusbar; }
+{ return status_bar; }
 
 //----------------------------------------------------------------------
 inline auto FWidget::getAcceleratorList() const & -> const FAcceleratorList&
@@ -582,8 +582,8 @@ inline auto FWidget::setAcceleratorList() & -> FAcceleratorList&
 { return accelerator_list; }
 
 //----------------------------------------------------------------------
-inline auto FWidget::getStatusbarMessage() const -> FString
-{ return statusbar_message; }
+inline auto FWidget::getStatusBarMessage() const -> FString
+{ return status_bar_message; }
 
 //----------------------------------------------------------------------
 inline auto FWidget::getForegroundColor() const noexcept -> FColor
@@ -768,8 +768,8 @@ inline void FWidget::setMoveSizeWidget (FWidget* obj)
 { move_resize_widget = obj; }
 
 //----------------------------------------------------------------------
-inline void FWidget::setStatusbarMessage (const FString& msg)
-{ statusbar_message = msg; }
+inline void FWidget::setStatusBarMessage (const FString& msg)
+{ status_bar_message = msg; }
 
 //----------------------------------------------------------------------
 inline void FWidget::unsetVisible()
@@ -891,12 +891,12 @@ inline void FWidget::unsetCursorPos()
 { setCursorPos ({-1, -1}); }
 
 //----------------------------------------------------------------------
-inline void FWidget::unsetDoubleFlatLine (Side side)
-{ setDoubleFlatLine(side, false); }
+inline void FWidget::unsetMergingBorder (Side side)
+{ setMergingBorder(side, false); }
 
 //----------------------------------------------------------------------
-inline void FWidget::unsetDoubleFlatLine (Side side, int pos)
-{ setDoubleFlatLine(side, pos, false); }
+inline void FWidget::unsetMergingBorder (Side side, int pos)
+{ setMergingBorder(side, pos, false); }
 
 //----------------------------------------------------------------------
 inline auto FWidget::isRootWidget() const -> bool
@@ -947,8 +947,8 @@ inline auto FWidget::isPaddingIgnored() const -> bool
 { return flags.feature.ignore_padding; }
 
 //----------------------------------------------------------------------
-inline void FWidget::clearStatusbarMessage()
-{ statusbar_message.clear(); }
+inline void FWidget::clearStatusBarMessage()
+{ status_bar_message.clear(); }
 
 //----------------------------------------------------------------------
 template <typename... Args>

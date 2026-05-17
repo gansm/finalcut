@@ -69,11 +69,11 @@ void default8ColorTheme::setColorTheme()
   setInputFieldColors();
   setToggleButtonColors();
   setButtonColors();
-  setTitlebarColors();
+  setTitleBarColors();
   setMenuColors();
-  setStatusbarColors();
-  setScrollbarColors();
-  setProgressbarColors();
+  setStatusBarColors();
+  setScrollBarColors();
+  setProgressBarColors();
 }
 
 // private methods of default8ColorTheme
@@ -221,9 +221,9 @@ inline void default8ColorTheme::setButtonColors()
   };
 }
 
-inline void default8ColorTheme::setTitlebarColors()
+inline void default8ColorTheme::setTitleBarColors()
 {
-  titlebar =
+  title_bar =
   {
     FColor::LightGray,  // Foreground
     FColor::Red,        // Background
@@ -251,9 +251,9 @@ inline void default8ColorTheme::setMenuColors()
   };
 }
 
-inline void default8ColorTheme::setStatusbarColors()
+inline void default8ColorTheme::setStatusBarColors()
 {
-  statusbar =
+  status_bar =
   {
     FColor::Black,      // Foreground
     FColor::LightGray,  // Background
@@ -267,9 +267,9 @@ inline void default8ColorTheme::setStatusbarColors()
   };
 }
 
-inline void default8ColorTheme::setScrollbarColors()
+inline void default8ColorTheme::setScrollBarColors()
 {
-  scrollbar =
+  scroll_bar =
   {
     FColor::Black,      // Foreground
     FColor::LightGray,  // Background
@@ -280,9 +280,9 @@ inline void default8ColorTheme::setScrollbarColors()
   };
 }
 
-inline void default8ColorTheme::setProgressbarColors()
+inline void default8ColorTheme::setProgressBarColors()
 {
-  progressbar =
+  progress_bar =
   {
     FColor::Blue,       // Foreground
     FColor::LightGray   // Background
@@ -321,11 +321,11 @@ void default16ColorTheme::setColorTheme()
   setInputFieldColors();
   setToggleButtonColors();
   setButtonColors();
-  setTitlebarColors();
+  setTitleBarColors();
   setMenuColors();
-  setStatusbarColors();
-  setScrollbarColors();
-  setProgressbarColors();
+  setStatusBarColors();
+  setScrollBarColors();
+  setProgressBarColors();
 
   if ( ! FVTerm::getFOutput()->canChangeColorPalette()
     && FVTerm::getFOutput()->getMaxColor() > 16 )
@@ -477,9 +477,9 @@ inline void default16ColorTheme::setButtonColors()
   };
 }
 
-inline void default16ColorTheme::setTitlebarColors()
+inline void default16ColorTheme::setTitleBarColors()
 {
-  titlebar =
+  title_bar =
   {
     FColor::White,      // Foreground
     FColor::Blue,       // Background
@@ -507,9 +507,9 @@ inline void default16ColorTheme::setMenuColors()
   };
 }
 
-inline void default16ColorTheme::setStatusbarColors()
+inline void default16ColorTheme::setStatusBarColors()
 {
-  statusbar =
+  status_bar =
   {
     FColor::White,      // Foreground
     FColor::Blue,       // Background
@@ -523,9 +523,9 @@ inline void default16ColorTheme::setStatusbarColors()
   };
 }
 
-inline void default16ColorTheme::setScrollbarColors()
+inline void default16ColorTheme::setScrollBarColors()
 {
-  scrollbar =
+  scroll_bar =
   {
     FColor::DarkGray,   // Foreground
     FColor::LightBlue,  // Background
@@ -536,9 +536,9 @@ inline void default16ColorTheme::setScrollbarColors()
   };
 }
 
-inline void default16ColorTheme::setProgressbarColors()
+inline void default16ColorTheme::setProgressBarColors()
 {
-  progressbar =
+  progress_bar =
   {
     FColor::DarkGray,   // Foreground
     FColor::LightBlue   // Background
@@ -577,11 +577,11 @@ void default8ColorDarkTheme::setColorTheme()
   setInputFieldColors();
   setToggleButtonColors();
   setButtonColors();
-  setTitlebarColors();
+  setTitleBarColors();
   setMenuColors();
-  setStatusbarColors();
-  setScrollbarColors();
-  setProgressbarColors();
+  setStatusBarColors();
+  setScrollBarColors();
+  setProgressBarColors();
 }
 
 // private methods of default8ColorDarkTheme
@@ -729,9 +729,9 @@ inline void default8ColorDarkTheme::setButtonColors()
   };
 }
 
-inline void default8ColorDarkTheme::setTitlebarColors()
+inline void default8ColorDarkTheme::setTitleBarColors()
 {
-  titlebar =
+  title_bar =
   {
     FColor::LightGray,  // Foreground
     FColor::Black,      // Background
@@ -759,9 +759,9 @@ inline void default8ColorDarkTheme::setMenuColors()
   };
 }
 
-inline void default8ColorDarkTheme::setStatusbarColors()
+inline void default8ColorDarkTheme::setStatusBarColors()
 {
-  statusbar =
+  status_bar =
   {
     FColor::LightGray,  // Foreground
     FColor::Black,      // Background
@@ -775,9 +775,9 @@ inline void default8ColorDarkTheme::setStatusbarColors()
   };
 }
 
-inline void default8ColorDarkTheme::setScrollbarColors()
+inline void default8ColorDarkTheme::setScrollBarColors()
 {
-  scrollbar =
+  scroll_bar =
   {
     FColor::Cyan,       // Foreground
     FColor::LightGray,  // Background
@@ -788,9 +788,9 @@ inline void default8ColorDarkTheme::setScrollbarColors()
   };
 }
 
-inline void default8ColorDarkTheme::setProgressbarColors()
+inline void default8ColorDarkTheme::setProgressBarColors()
 {
-  progressbar =
+  progress_bar =
   {
     FColor::Cyan,       // Foreground
     FColor::LightGray   // Background
@@ -829,11 +829,11 @@ void default16ColorDarkTheme::setColorTheme()
   setInputFieldColors();
   setToggleButtonColors();
   setButtonColors();
-  setTitlebarColors();
+  setTitleBarColors();
   setMenuColors();
-  setStatusbarColors();
-  setScrollbarColors();
-  setProgressbarColors();
+  setStatusBarColors();
+  setScrollBarColors();
+  setProgressBarColors();
 }
 
 // private methods of default16ColorDarkTheme
@@ -981,9 +981,9 @@ inline void default16ColorDarkTheme::setButtonColors()
   };
 }
 
-inline void default16ColorDarkTheme::setTitlebarColors()
+inline void default16ColorDarkTheme::setTitleBarColors()
 {
-  titlebar =
+  title_bar =
   {
     FColor::White,      // Foreground
     FColor::DarkGray,   // Background
@@ -1011,9 +1011,9 @@ inline void default16ColorDarkTheme::setMenuColors()
   };
 }
 
-inline void default16ColorDarkTheme::setStatusbarColors()
+inline void default16ColorDarkTheme::setStatusBarColors()
 {
-  statusbar =
+  status_bar =
   {
     FColor::White,      // Foreground
     FColor::DarkGray,   // Background
@@ -1027,9 +1027,9 @@ inline void default16ColorDarkTheme::setStatusbarColors()
   };
 }
 
-inline void default16ColorDarkTheme::setScrollbarColors()
+inline void default16ColorDarkTheme::setScrollBarColors()
 {
-  scrollbar =
+  scroll_bar =
   {
     FColor::DarkGray,   // Foreground
     FColor::LightBlue,  // Background
@@ -1040,9 +1040,9 @@ inline void default16ColorDarkTheme::setScrollbarColors()
   };
 }
 
-inline void default16ColorDarkTheme::setProgressbarColors()
+inline void default16ColorDarkTheme::setProgressBarColors()
 {
-  progressbar =
+  progress_bar =
   {
     FColor::DarkGray,   // Foreground
     FColor::LightBlue   // Background

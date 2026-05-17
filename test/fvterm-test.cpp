@@ -102,7 +102,7 @@ class FTermOutputTest : public finalcut::FOutput
     auto areMetaAndArrowKeysSupported() const -> bool override;
 
     // Methods
-    void initTerminal (finalcut::FVTerm::FTermArea*) override;
+    void initTerminal (finalcut::FVTerm::FTermRegion*) override;
     void finishTerminal() override;
     auto updateTerminal() -> bool override;
     void detectTerminalSize() override;
@@ -130,21 +130,21 @@ class FTermOutputTest : public finalcut::FOutput
     void restoreColorPalette() override;
 
     // Data member
-    bool                                 bell{false};
-    static bool                          no_force;
-    finalcut::FTerm                      fterm{};
-    static finalcut::FVTerm::FTermArea*  vterm;
-    static finalcut::FTermData*          fterm_data;
-    std::shared_ptr<OutputBuffer>        output_buffer{};
-    std::shared_ptr<finalcut::FPoint>    term_pos{};
-    finalcut::FChar                      term_attribute{};
-    const FSetPalette                    set_palette_function{&finalcut::FTerm::setPalette};
+    bool                                   bell{false};
+    static bool                            no_force;
+    finalcut::FTerm                        fterm{};
+    static finalcut::FVTerm::FTermRegion*  vterm;
+    static finalcut::FTermData*            fterm_data;
+    std::shared_ptr<OutputBuffer>          output_buffer{};
+    std::shared_ptr<finalcut::FPoint>      term_pos{};
+    finalcut::FChar                        term_attribute{};
+    const FSetPalette                      set_palette_function{&finalcut::FTerm::setPalette};
 };
 
 // static class attributes
-bool                         FTermOutputTest::no_force{false};
-finalcut::FVTerm::FTermArea* FTermOutputTest::vterm{nullptr};
-finalcut::FTermData*         FTermOutputTest::fterm_data{nullptr};
+bool                           FTermOutputTest::no_force{false};
+finalcut::FVTerm::FTermRegion* FTermOutputTest::vterm{nullptr};
+finalcut::FTermData*           FTermOutputTest::fterm_data{nullptr};
 
 
 // constructors and destructor
@@ -316,7 +316,7 @@ inline void FTermOutputTest::setNoForce (bool state)
 }
 
 //----------------------------------------------------------------------
-inline void FTermOutputTest::initTerminal (finalcut::FVTerm::FTermArea* virtual_terminal)
+inline void FTermOutputTest::initTerminal (finalcut::FVTerm::FTermRegion* virtual_terminal)
 {
   vterm         = virtual_terminal;
   output_buffer = std::make_shared<OutputBuffer>();
@@ -446,49 +446,49 @@ class FVTerm_protected : public finalcut::FVTerm
     // Disable move assignment operator (=)
     auto operator = (FVTerm_protected&&) noexcept -> FVTerm_protected& = delete;
 
-    void clearArea (wchar_t = L' ') override;
+    void clearRegion (wchar_t = L' ') override;
     void addPreprocessingHandler (const finalcut::FVTerm*, finalcut::FVTerm::FPreprocessingFunction&&) override;
     void delPreprocessingHandler (const finalcut::FVTerm*) override;
     void print (const finalcut::FPoint&) override;
-    auto getPrintArea() -> FTermArea* override;
+    auto getPrintRegion() -> FTermRegion* override;
     void initTerminal() override;
 
-    auto p_getPrintArea() -> FTermArea*;
-    auto p_getChildPrintArea() const -> FTermArea*;
-    auto p_getCurrentPrintArea() const -> FTermArea*;
-    auto p_getVirtualDesktop() const -> FTermArea*;
-    auto p_getVirtualTerminal() const -> FTermArea*;
+    auto p_getPrintRegion() -> FTermRegion*;
+    auto p_getChildPrintRegion() const -> FTermRegion*;
+    auto p_getCurrentPrintRegion() const -> FTermRegion*;
+    auto p_getVirtualDesktop() const -> FTermRegion*;
+    auto p_getVirtualTerminal() const -> FTermRegion*;
 
     // Mutators
-    void p_setPrintArea (FTermArea*);
-    void p_setChildPrintArea (FTermArea*);
-    void p_setActiveArea (FTermArea*) const;
+    void p_setPrintRegion (FTermRegion*);
+    void p_setChildPrintRegion (FTermRegion*);
+    void p_setActiveRegion (FTermRegion*) const;
 
     // Predicates
-    auto p_isActive (const FTermArea*) const -> bool;
-    auto p_hasPrintArea() const -> bool;
-    auto p_hasChildPrintArea() const -> bool;
+    auto p_isActive (const FTermRegion*) const -> bool;
+    auto p_hasPrintRegion() const -> bool;
+    auto p_hasChildPrintRegion() const -> bool;
     auto p_isVirtualWindow() const -> bool;
     auto p_isCursorHideable() const -> bool;
 
     // Methods
-    auto p_createArea (const finalcut::FVTerm::FShadowBox&) -> std::unique_ptr<finalcut::FVTerm::FTermArea>;
-    auto p_createArea (const finalcut::FRect&) -> std::unique_ptr<finalcut::FVTerm::FTermArea>;
-    void p_resizeArea (const finalcut::FVTerm::FShadowBox&, FTermArea*) const;
-    void p_resizeArea (const finalcut::FRect&, FTermArea*) const;
+    auto p_createRegion (const finalcut::FVTerm::FShadowBox&) -> std::unique_ptr<finalcut::FVTerm::FTermRegion>;
+    auto p_createRegion (const finalcut::FRect&) -> std::unique_ptr<finalcut::FVTerm::FTermRegion>;
+    void p_resizeRegion (const finalcut::FVTerm::FShadowBox&, FTermRegion*) const;
+    void p_resizeRegion (const finalcut::FRect&, FTermRegion*) const;
     void p_restoreVTerm (const finalcut::FRect&) const;
-    auto p_updateVTermCursor (const FTermArea*) const -> bool;
+    auto p_updateVTermCursor (const FTermRegion*) const -> bool;
     void p_hideVTermCursor() const;
-    void p_setAreaCursor (const finalcut::FPoint&, bool, FTermArea*);
-    void p_getArea (const finalcut::FPoint&, FTermArea*) const;
-    void p_getArea (const finalcut::FRect&, FTermArea*) const;
-    void p_addLayer (FTermArea*) const;
-    void p_putArea (const finalcut::FPoint&, FTermArea*) const;
+    void p_setRegionCursor (const finalcut::FPoint&, bool, FTermRegion*);
+    void p_getRegion (const finalcut::FPoint&, FTermRegion*) const;
+    void p_getRegion (const finalcut::FRect&, FTermRegion*) const;
+    void p_addLayer (FTermRegion*) const;
+    void p_putRegion (const finalcut::FPoint&, FTermRegion*) const;
     static auto p_getLayer (FVTerm&) -> int;
     static void p_determineWindowLayers();
-    void p_scrollAreaForward (FTermArea*);
-    void p_scrollAreaReverse (FTermArea*);
-    void p_clearArea (FTermArea*, wchar_t = L' ');
+    void p_scrollRegionForward (FTermRegion*);
+    void p_scrollRegionReverse (FTermRegion*);
+    void p_clearRegion (FTermRegion*, wchar_t = L' ');
     void p_forceTerminalUpdate() const;
     auto p_processTerminalUpdate() const -> bool;
     static void p_startDrawing();
@@ -517,9 +517,9 @@ FVTerm_protected::FVTerm_protected (finalcut::outputClass<FOutputType>)
 { }
 
 //----------------------------------------------------------------------
-inline void FVTerm_protected::clearArea (wchar_t fillchar)
+inline void FVTerm_protected::clearRegion (wchar_t fillchar)
 {
-  finalcut::FVTerm::clearArea(fillchar);
+  finalcut::FVTerm::clearRegion(fillchar);
 }
 
 //----------------------------------------------------------------------
@@ -541,9 +541,9 @@ inline void FVTerm_protected::print (const finalcut::FPoint& pos)
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm_protected::getPrintArea() -> FTermArea*
+inline auto FVTerm_protected::getPrintRegion() -> FTermRegion*
 {
-  return finalcut::FVTerm::getPrintArea();
+  return finalcut::FVTerm::getPrintRegion();
 }
 
 //----------------------------------------------------------------------
@@ -553,69 +553,69 @@ inline void FVTerm_protected::initTerminal()
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm_protected::p_getPrintArea() -> FTermArea*
+inline auto FVTerm_protected::p_getPrintRegion() -> FTermRegion*
 {
-  return finalcut::FVTerm::getPrintArea();
+  return finalcut::FVTerm::getPrintRegion();
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm_protected::p_getChildPrintArea() const -> FTermArea*
+inline auto FVTerm_protected::p_getChildPrintRegion() const -> FTermRegion*
 {
-  return finalcut::FVTerm::getChildPrintArea();
+  return finalcut::FVTerm::getChildPrintRegion();
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm_protected::p_getCurrentPrintArea() const -> FTermArea*
+inline auto FVTerm_protected::p_getCurrentPrintRegion() const -> FTermRegion*
 {
-  return finalcut::FVTerm::getCurrentPrintArea();
+  return finalcut::FVTerm::getCurrentPrintRegion();
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm_protected::p_getVirtualDesktop() const -> FTermArea*
+inline auto FVTerm_protected::p_getVirtualDesktop() const -> FTermRegion*
 {
   return finalcut::FVTerm::getVirtualDesktop();
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm_protected::p_getVirtualTerminal() const -> FTermArea*
+inline auto FVTerm_protected::p_getVirtualTerminal() const -> FTermRegion*
 {
   return finalcut::FVTerm::getVirtualTerminal();
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm_protected::p_setPrintArea (FTermArea* area)
+inline void FVTerm_protected::p_setPrintRegion (FTermRegion* region)
 {
-  finalcut::FVTerm::setPrintArea (area);
+  finalcut::FVTerm::setPrintRegion (region);
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm_protected::p_setChildPrintArea (FTermArea* area)
+inline void FVTerm_protected::p_setChildPrintRegion (FTermRegion* region)
 {
-  finalcut::FVTerm::setChildPrintArea (area);
+  finalcut::FVTerm::setChildPrintRegion (region);
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm_protected::p_setActiveArea (FTermArea* area) const
+inline void FVTerm_protected::p_setActiveRegion (FTermRegion* region) const
 {
-  finalcut::FVTerm::setActiveArea (area);
+  finalcut::FVTerm::setActiveRegion (region);
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm_protected::p_isActive (const FTermArea* area) const -> bool
+inline auto FVTerm_protected::p_isActive (const FTermRegion* region) const -> bool
 {
-  return finalcut::FVTerm::isActive(area);
+  return finalcut::FVTerm::isActive(region);
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm_protected::p_hasPrintArea() const -> bool
+inline auto FVTerm_protected::p_hasPrintRegion() const -> bool
 {
-  return finalcut::FVTerm::hasPrintArea();
+  return finalcut::FVTerm::hasPrintRegion();
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm_protected::p_hasChildPrintArea() const -> bool
+inline auto FVTerm_protected::p_hasChildPrintRegion() const -> bool
 {
-  return finalcut::FVTerm::hasChildPrintArea();
+  return finalcut::FVTerm::hasChildPrintRegion();
 }
 
 //----------------------------------------------------------------------
@@ -631,27 +631,27 @@ inline auto FVTerm_protected::p_isCursorHideable() const -> bool
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm_protected::p_createArea (const finalcut::FVTerm::FShadowBox& shadowbox) -> std::unique_ptr<finalcut::FVTerm::FTermArea>
+inline auto FVTerm_protected::p_createRegion (const finalcut::FVTerm::FShadowBox& shadowbox) -> std::unique_ptr<finalcut::FVTerm::FTermRegion>
 {
-  return finalcut::FVTerm::createArea ({shadowbox.box, shadowbox.shadow});
+  return finalcut::FVTerm::createRegion ({shadowbox.box, shadowbox.shadow});
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm_protected::p_createArea (const finalcut::FRect& box) -> std::unique_ptr<finalcut::FVTerm::FTermArea>
+inline auto FVTerm_protected::p_createRegion (const finalcut::FRect& box) -> std::unique_ptr<finalcut::FVTerm::FTermRegion>
 {
-  return finalcut::FVTerm::createArea (box);
+  return finalcut::FVTerm::createRegion (box);
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm_protected::p_resizeArea (const finalcut::FVTerm::FShadowBox& shadowbox, FTermArea* area) const
+inline void FVTerm_protected::p_resizeRegion (const finalcut::FVTerm::FShadowBox& shadowbox, FTermRegion* region) const
 {
-  finalcut::FVTerm::resizeArea ({shadowbox.box, shadowbox.shadow}, area);
+  finalcut::FVTerm::resizeRegion ({shadowbox.box, shadowbox.shadow}, region);
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm_protected::p_resizeArea (const finalcut::FRect& box, FTermArea* area) const
+inline void FVTerm_protected::p_resizeRegion (const finalcut::FRect& box, FTermRegion* region) const
 {
-  finalcut::FVTerm::resizeArea (box, area);
+  finalcut::FVTerm::resizeRegion (box, region);
 }
 
 //----------------------------------------------------------------------
@@ -661,9 +661,9 @@ inline void FVTerm_protected::p_restoreVTerm (const finalcut::FRect& box) const
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm_protected::p_updateVTermCursor (const FTermArea* area) const -> bool
+inline auto FVTerm_protected::p_updateVTermCursor (const FTermRegion* region) const -> bool
 {
-  return finalcut::FVTerm::updateVTermCursor (area);
+  return finalcut::FVTerm::updateVTermCursor (region);
 }
 
 //----------------------------------------------------------------------
@@ -673,33 +673,33 @@ inline void FVTerm_protected::p_hideVTermCursor() const
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm_protected::p_setAreaCursor (const finalcut::FPoint& pos, bool visible, FTermArea* area)
+inline void FVTerm_protected::p_setRegionCursor (const finalcut::FPoint& pos, bool visible, FTermRegion* region)
 {
-  finalcut::FVTerm::setAreaCursor (pos, visible, area);
+  finalcut::FVTerm::setRegionCursor (pos, visible, region);
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm_protected::p_getArea (const finalcut::FPoint& pos, FTermArea* area) const
+inline void FVTerm_protected::p_getRegion (const finalcut::FPoint& pos, FTermRegion* region) const
 {
-  finalcut::FVTerm::getArea (pos, area);
+  finalcut::FVTerm::getRegion (pos, region);
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm_protected::p_getArea (const finalcut::FRect& box, FTermArea* area) const
+inline void FVTerm_protected::p_getRegion (const finalcut::FRect& box, FTermRegion* region) const
 {
-  finalcut::FVTerm::getArea (box, area);
+  finalcut::FVTerm::getRegion (box, region);
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm_protected::p_addLayer (FTermArea* area) const
+inline void FVTerm_protected::p_addLayer (FTermRegion* region) const
 {
-  finalcut::FVTerm::addLayer (area);
+  finalcut::FVTerm::addLayer (region);
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm_protected::p_putArea (const finalcut::FPoint& pos, FTermArea* area) const
+inline void FVTerm_protected::p_putRegion (const finalcut::FPoint& pos, FTermRegion* region) const
 {
-  finalcut::FVTerm::putArea (pos, area);
+  finalcut::FVTerm::putRegion (pos, region);
 }
 
 //----------------------------------------------------------------------
@@ -715,21 +715,21 @@ inline void FVTerm_protected::p_determineWindowLayers()
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm_protected::p_scrollAreaForward (FTermArea* area)
+inline void FVTerm_protected::p_scrollRegionForward (FTermRegion* region)
 {
-  finalcut::FVTerm::scrollAreaForward (area);
+  finalcut::FVTerm::scrollRegionForward (region);
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm_protected::p_scrollAreaReverse (FTermArea* area)
+inline void FVTerm_protected::p_scrollRegionReverse (FTermRegion* region)
 {
-  finalcut::FVTerm::scrollAreaReverse (area);
+  finalcut::FVTerm::scrollRegionReverse (region);
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm_protected::p_clearArea (FTermArea* area, wchar_t fillchar)
+inline void FVTerm_protected::p_clearRegion (FTermRegion* region, wchar_t fillchar)
 {
-  finalcut::FVTerm::clearArea (area, fillchar);
+  finalcut::FVTerm::clearRegion (region, fillchar);
 }
 
 //----------------------------------------------------------------------
@@ -778,12 +778,12 @@ class FVTermTest : public CPPUNIT_NS::TestFixture
     void OwnFunctionsTest();
     void FVTermBasesTest();
     void FVTermPrintTest();
-    void FVTermChildAreaPrintTest();
+    void FVTermChildRegionPrintTest();
     void FVTermScrollTest();
     void FVTermOverlappingWindowsTest();
     void FVTermTranparencyTest();
     void FVTermReduceUpdatesTest();
-    void getFVTermAreaTest();
+    void getFVTermRegionTest();
 
   private:
     // Adds code needed to register the test suite
@@ -795,12 +795,12 @@ class FVTermTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (OwnFunctionsTest);
     CPPUNIT_TEST (FVTermBasesTest);
     CPPUNIT_TEST (FVTermPrintTest);
-    CPPUNIT_TEST (FVTermChildAreaPrintTest);
+    CPPUNIT_TEST (FVTermChildRegionPrintTest);
     CPPUNIT_TEST (FVTermScrollTest);
     CPPUNIT_TEST (FVTermOverlappingWindowsTest);
     CPPUNIT_TEST (FVTermTranparencyTest);
     CPPUNIT_TEST (FVTermReduceUpdatesTest);
-    CPPUNIT_TEST (getFVTermAreaTest);
+    CPPUNIT_TEST (getFVTermRegionTest);
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
@@ -904,7 +904,7 @@ void FVTermTest::FVTermBasesTest()
   // Create and check a virtual window for the p_fvterm object
   finalcut::FRect geometry {finalcut::FPoint{5, 5}, finalcut::FSize{20, 20}};
   finalcut::FSize Shadow(2, 1);
-  auto vwin_ptr = p_fvterm.p_createArea ({geometry, Shadow});
+  auto vwin_ptr = p_fvterm.p_createRegion ({geometry, Shadow});
   vwin = vwin_ptr.get();
   p_fvterm.setVWin(std::move(vwin_ptr));
 
@@ -934,9 +934,9 @@ void FVTermTest::FVTermBasesTest()
   vwin->setInputCursorPos (12, 4);
   CPPUNIT_ASSERT ( vwin->input_cursor.x == 12 );
   CPPUNIT_ASSERT ( vwin->input_cursor.y == 4 );
-  p_fvterm.p_setAreaCursor ({3, 5}, true, vwin);
+  p_fvterm.p_setRegionCursor ({3, 5}, true, vwin);
   CPPUNIT_ASSERT ( vwin->input_cursor_visible );
-  p_fvterm.p_setAreaCursor ({12, 4}, false, vwin);
+  p_fvterm.p_setRegionCursor ({12, 4}, false, vwin);
   CPPUNIT_ASSERT ( vwin->layer == -1 );
   CPPUNIT_ASSERT ( ! vwin->input_cursor_visible );
   CPPUNIT_ASSERT ( ! vwin->has_changes );
@@ -958,7 +958,7 @@ void FVTermTest::FVTermBasesTest()
 
   CPPUNIT_ASSERT ( ! vwin->data.empty() );
   CPPUNIT_ASSERT ( ! p_fvterm.p_isActive(vwin) );
-  CPPUNIT_ASSERT ( test::getAreaSize(vwin) == 462 );
+  CPPUNIT_ASSERT ( test::getRegionSize(vwin) == 462 );
   CPPUNIT_ASSERT ( vwin->contains({5, 5}) );
   CPPUNIT_ASSERT ( vwin->contains(5, 5) );
   CPPUNIT_ASSERT ( ! vwin->contains({4, 5}) );
@@ -985,21 +985,21 @@ void FVTermTest::FVTermBasesTest()
   CPPUNIT_ASSERT ( ! vwin->contains({26, 6}) );
   CPPUNIT_ASSERT ( ! vwin->contains({27, 6}) );
   vwin->minimized = false;
-  CPPUNIT_ASSERT ( ! vwin->isPrintPositionInsideArea() );
+  CPPUNIT_ASSERT ( ! vwin->isPrintPositionInsideRegion() );
   vwin->setCursorPos(0, 1);
-  CPPUNIT_ASSERT ( ! vwin->isPrintPositionInsideArea() );
+  CPPUNIT_ASSERT ( ! vwin->isPrintPositionInsideRegion() );
   vwin->setCursorPos(1, 0);
-  CPPUNIT_ASSERT ( ! vwin->isPrintPositionInsideArea() );
+  CPPUNIT_ASSERT ( ! vwin->isPrintPositionInsideRegion() );
   vwin->setCursorPos(1, 1);
-  CPPUNIT_ASSERT ( vwin->isPrintPositionInsideArea() );
+  CPPUNIT_ASSERT ( vwin->isPrintPositionInsideRegion() );
   vwin->setCursorPos(22, 21);  // {20 + 2 = 22, 20 + 1 = 21}
-  CPPUNIT_ASSERT ( vwin->isPrintPositionInsideArea() );
+  CPPUNIT_ASSERT ( vwin->isPrintPositionInsideRegion() );
   vwin->setCursorPos(23, 21);
-  CPPUNIT_ASSERT ( ! vwin->isPrintPositionInsideArea() );
+  CPPUNIT_ASSERT ( ! vwin->isPrintPositionInsideRegion() );
   vwin->setCursorPos(22, 22);
-  CPPUNIT_ASSERT ( ! vwin->isPrintPositionInsideArea() );
+  CPPUNIT_ASSERT ( ! vwin->isPrintPositionInsideRegion() );
   vwin->setCursorPos(23, 22);
-  CPPUNIT_ASSERT ( ! vwin->isPrintPositionInsideArea() );
+  CPPUNIT_ASSERT ( ! vwin->isPrintPositionInsideRegion() );
   vwin->setCursorPos(0, 0);
 
   finalcut::FChar default_char;
@@ -1012,7 +1012,7 @@ void FVTermTest::FVTermBasesTest()
   default_char.attr.byte()->at(2) = 8;  // char_width = 1
   default_char.attr.byte()->at(3) = 0;
 
-  for (std::size_t pos = 0; pos < test::getAreaSize(vwin); pos++)
+  for (std::size_t pos = 0; pos < test::getRegionSize(vwin); pos++)
     CPPUNIT_ASSERT ( test::isFCharEqual(vwin->data[pos], default_char) );
 
   CPPUNIT_ASSERT ( p_fvterm.getPrintCursor() == finalcut::FPoint(5, 5) );
@@ -1078,15 +1078,15 @@ void FVTermTest::FVTermBasesTest()
   CPPUNIT_ASSERT ( vdesktop->changes_in_row.ymin == 24 );
   CPPUNIT_ASSERT ( vdesktop->changes_in_row.ymax == 0 );
   CPPUNIT_ASSERT ( ! vdesktop->data.empty() );
-  CPPUNIT_ASSERT ( test::getAreaSize(vdesktop) == 1920 );
+  CPPUNIT_ASSERT ( test::getRegionSize(vdesktop) == 1920 );
   CPPUNIT_ASSERT ( p_fvterm.p_isActive(vdesktop) );
-  p_fvterm.p_setActiveArea(vwin);
+  p_fvterm.p_setActiveRegion(vwin);
   CPPUNIT_ASSERT ( ! p_fvterm.p_isActive(vdesktop) );
   CPPUNIT_ASSERT ( p_fvterm.p_isActive(vwin) );
-  p_fvterm.p_setActiveArea(vdesktop);
+  p_fvterm.p_setActiveRegion(vdesktop);
   CPPUNIT_ASSERT ( p_fvterm.p_isActive(vdesktop) );
 
-  for (std::size_t pos = 0; pos < test::getAreaSize(vdesktop); pos++)
+  for (std::size_t pos = 0; pos < test::getRegionSize(vdesktop); pos++)
     CPPUNIT_ASSERT ( test::isFCharEqual(vdesktop->data[pos], default_char) );
 
   // Check the virtual terminal
@@ -1122,18 +1122,18 @@ void FVTermTest::FVTermBasesTest()
   CPPUNIT_ASSERT ( vdesktop->changes_in_row.ymin == 24 );
   CPPUNIT_ASSERT ( vdesktop->changes_in_row.ymax == 0 );
   CPPUNIT_ASSERT ( ! vterm->data.empty() );
-  CPPUNIT_ASSERT ( test::getAreaSize(vterm) == 1920 );
+  CPPUNIT_ASSERT ( test::getRegionSize(vterm) == 1920 );
 
-  for (std::size_t pos = 0; pos < test::getAreaSize(vterm); pos++)
+  for (std::size_t pos = 0; pos < test::getRegionSize(vterm); pos++)
     CPPUNIT_ASSERT ( test::isFCharEqual(vterm->data[pos], default_char) );
 
-  // Create a vterm comparison area
-  finalcut::FVTerm::FTermArea* test_vterm_area{};
+  // Create a vterm comparison region
+  finalcut::FVTerm::FTermRegion* test_vterm_region{};
   auto vterm_geometry = finalcut::FRect(finalcut::FPoint{1, 1}, finalcut::FSize{80, 24});
-  auto test_vterm_area_ptr = p_fvterm.p_createArea (vterm_geometry);
-  test_vterm_area = test_vterm_area_ptr.get();
-  test::printOnArea (test_vterm_area, {test::getAreaSize(test_vterm_area), default_char});
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vterm_area, vterm) );
+  auto test_vterm_region_ptr = p_fvterm.p_createRegion (vterm_geometry);
+  test_vterm_region = test_vterm_region_ptr.get();
+  test::printOnRegion (test_vterm_region, {test::getRegionSize(test_vterm_region), default_char});
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vterm_region, vterm) );
 
   for (auto i{0}; i < vwin->size.height; i++)
   {
@@ -1146,7 +1146,7 @@ void FVTermTest::FVTermBasesTest()
   CPPUNIT_ASSERT ( vwin->changes_in_row.ymax == 0 );
 
   // Virtual windows fill test
-  p_fvterm.clearArea(L'▒');  // Fill with '▒'
+  p_fvterm.clearRegion(L'▒');  // Fill with '▒'
   CPPUNIT_ASSERT ( vwin->has_changes );
 
   for (auto i{0}; i < vwin->size.height; i++)
@@ -1167,7 +1167,7 @@ void FVTermTest::FVTermBasesTest()
     CPPUNIT_ASSERT ( vwin->changes_in_line[i].trans_count == 22 );
   }
 
-  // Check area
+  // Check region
   finalcut::FChar bg_char =
   {
     { L'▒', L'\0', L'\0', L'\0', L'\0' },
@@ -1215,32 +1215,32 @@ void FVTermTest::FVTermBasesTest()
     CPPUNIT_ASSERT ( test::isFCharEqual(vwin->data[y * full_width + x], shadow_char) );
   }
 
-  // Create a vwin comparison area
-  finalcut::FVTerm::FTermArea* test_vwin_area{};
-  auto test_vwin_area_ptr = p_fvterm.p_createArea ({geometry, Shadow});
-  test_vwin_area = test_vwin_area_ptr.get();
+  // Create a vwin comparison region
+  finalcut::FVTerm::FTermRegion* test_vwin_region{};
+  auto test_vwin_region_ptr = p_fvterm.p_createRegion ({geometry, Shadow});
+  test_vwin_region = test_vwin_region_ptr.get();
 
-  //                             .-------------------------- 20 line repetitions
-  //                             |      .------------------- 20 column repetitions
-  //                             |      |             .----- 2 column repetitions
-  //                             |      |             |
-  test::printOnArea (test_vwin_area, {20, { {20, bg_char}, {2, shadow_char} } });
+  //                             .---------------------------- 20 line repetitions
+  //                             |        .------------------- 20 column repetitions
+  //                             |        |             .----- 2 column repetitions
+  //                             |        |             |
+  test::printOnRegion (test_vwin_region, {20, { {20, bg_char}, {2, shadow_char} } });
 
   //                        .-------------------------- 22 column repetitions
   //                        |
-  test::printOnArea (test_vwin_area, {22, shadow_char});
-  test::printArea (vwin);
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+  test::printOnRegion (test_vwin_region, {22, shadow_char});
+  test::printRegion (vwin);
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
 
   p_fvterm.p_processTerminalUpdate();
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vterm_area, vterm) );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vterm_region, vterm) );
 
   // Makes the virtual window visible and thus displayable
   // on the virtual terminal
   vwin->visible = true;
   CPPUNIT_ASSERT ( p_fvterm.p_isCursorHideable() );
   vwin->input_cursor_visible = true;
-  p_fvterm.p_setActiveArea(vwin);
+  p_fvterm.p_setActiveRegion(vwin);
 
   vwin->setInputCursorPos(4, 2);
   test::showFCharData(vwin->data[full_width + 1]);
@@ -1253,147 +1253,147 @@ void FVTermTest::FVTermBasesTest()
   CPPUNIT_ASSERT ( vterm->input_cursor.y == 7 );
   CPPUNIT_ASSERT ( vterm->input_cursor_visible );
   CPPUNIT_ASSERT ( ! vwin->has_changes );
-  CPPUNIT_ASSERT ( ! test::isAreaEqual(test_vterm_area, vterm) );
-  test::printOnArea (test_vterm_area, {5, { {80, default_char} } });
-  test::printOnArea (test_vterm_area, {19, { {5, default_char}, {20, bg_char}, {55, default_char} } });
-  test::printArea (vterm);
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vterm_area, vterm) );
+  CPPUNIT_ASSERT ( ! test::isRegionEqual(test_vterm_region, vterm) );
+  test::printOnRegion (test_vterm_region, {5, { {80, default_char} } });
+  test::printOnRegion (test_vterm_region, {19, { {5, default_char}, {20, bg_char}, {55, default_char} } });
+  test::printRegion (vterm);
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vterm_region, vterm) );
 
   // Move
   vwin->position.x = 0;
   vwin->position.y = 0;
-  p_fvterm.p_putArea ({1, 1}, nullptr);
+  p_fvterm.p_putRegion ({1, 1}, nullptr);
   p_fvterm.p_processTerminalUpdate();
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vterm_area, vterm) );
-  p_fvterm.p_putArea ({1, 1}, vwin);
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vterm_region, vterm) );
+  p_fvterm.p_putRegion ({1, 1}, vwin);
   p_fvterm.p_processTerminalUpdate();
-  test::printArea (vterm);
-  test::printOnArea (test_vterm_area, {5, { {20, bg_char}, {60, default_char} } });
-  test::printOnArea (test_vterm_area, {15, { {20, bg_char}, {2, default_char}, {3, bg_char}, {55, default_char} } });
-  test::printOnArea (test_vterm_area, {1, { {22, default_char}, {3, bg_char}, {55, default_char} } });
-  test::printOnArea (test_vterm_area, {3, { {5, default_char}, {20, bg_char}, {55, default_char} } });
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vterm_area, vterm) );
+  test::printRegion (vterm);
+  test::printOnRegion (test_vterm_region, {5, { {20, bg_char}, {60, default_char} } });
+  test::printOnRegion (test_vterm_region, {15, { {20, bg_char}, {2, default_char}, {3, bg_char}, {55, default_char} } });
+  test::printOnRegion (test_vterm_region, {1, { {22, default_char}, {3, bg_char}, {55, default_char} } });
+  test::printOnRegion (test_vterm_region, {3, { {5, default_char}, {20, bg_char}, {55, default_char} } });
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vterm_region, vterm) );
   p_fvterm.p_restoreVTerm ({finalcut::FPoint{21, 5}, finalcut::FSize{5, 21}});
   p_fvterm.p_restoreVTerm ({finalcut::FPoint{5, 21}, finalcut::FSize{20, 4}});
-  test::printOnArea (test_vterm_area, {20, { {20, bg_char}, {60, default_char} } });
-  test::printOnArea (test_vterm_area, {4, { {80, default_char} } });
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vterm_area, vterm) );
-  test::printArea (vterm);
+  test::printOnRegion (test_vterm_region, {20, { {20, bg_char}, {60, default_char} } });
+  test::printOnRegion (test_vterm_region, {4, { {80, default_char} } });
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vterm_region, vterm) );
+  test::printRegion (vterm);
 
   vwin->position.x = -10;
   vwin->position.y = -10;
-  p_fvterm.p_putArea ({-9, -9}, vwin);
+  p_fvterm.p_putRegion ({-9, -9}, vwin);
   p_fvterm.p_processTerminalUpdate();
   p_fvterm.p_restoreVTerm ({finalcut::FPoint{1, 1}, finalcut::FSize{22, 21}});
-  test::printOnArea (test_vterm_area, {10, { {10, bg_char}, {70, default_char} } });
-  test::printOnArea (test_vterm_area, {14, { {80, default_char} } });
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vterm_area, vterm) );
-  test::printArea (vterm);
+  test::printOnRegion (test_vterm_region, {10, { {10, bg_char}, {70, default_char} } });
+  test::printOnRegion (test_vterm_region, {14, { {80, default_char} } });
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vterm_region, vterm) );
+  test::printRegion (vterm);
 
   vwin->position.x = 70;
   vwin->position.y = -10;
-  p_fvterm.p_putArea ({71, -9}, vwin);
+  p_fvterm.p_putRegion ({71, -9}, vwin);
   p_fvterm.p_processTerminalUpdate();
   p_fvterm.p_restoreVTerm ({finalcut::FPoint{1, 1}, finalcut::FSize{12, 11}});
-  test::printOnArea (test_vterm_area, {10, { {70, default_char}, {10, bg_char} } });
-  test::printOnArea (test_vterm_area, {14, { {80, default_char} } });
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vterm_area, vterm) );
-  test::printArea (vterm);
+  test::printOnRegion (test_vterm_region, {10, { {70, default_char}, {10, bg_char} } });
+  test::printOnRegion (test_vterm_region, {14, { {80, default_char} } });
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vterm_region, vterm) );
+  test::printRegion (vterm);
 
   vwin->position.x = -10;
   vwin->position.y = 14;
-  p_fvterm.p_putArea ({-9, 15}, vwin);
+  p_fvterm.p_putRegion ({-9, 15}, vwin);
   p_fvterm.p_processTerminalUpdate();
   p_fvterm.p_restoreVTerm ({finalcut::FPoint{71, 1}, finalcut::FSize{10, 11}});
-  test::printOnArea (test_vterm_area, {14, { {80, default_char} } });
-  test::printOnArea (test_vterm_area, {10, { {10, bg_char}, {70, default_char} } });
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vterm_area, vterm) );
-  test::printArea (vterm);
+  test::printOnRegion (test_vterm_region, {14, { {80, default_char} } });
+  test::printOnRegion (test_vterm_region, {10, { {10, bg_char}, {70, default_char} } });
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vterm_region, vterm) );
+  test::printRegion (vterm);
 
   vwin->position.x = 70;
   vwin->position.y = 14;
-  p_fvterm.p_putArea ({71, 15}, vwin);
+  p_fvterm.p_putRegion ({71, 15}, vwin);
   p_fvterm.p_processTerminalUpdate();
   p_fvterm.p_restoreVTerm ({finalcut::FPoint{1, 15}, finalcut::FSize{12, 10}});
-  test::printOnArea (test_vterm_area, {14, { {80, default_char} } });
-  test::printOnArea (test_vterm_area, {10, { {70, default_char}, {10, bg_char} } });
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vterm_area, vterm) );
-  test::printArea (vterm);
+  test::printOnRegion (test_vterm_region, {14, { {80, default_char} } });
+  test::printOnRegion (test_vterm_region, {10, { {70, default_char}, {10, bg_char} } });
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vterm_region, vterm) );
+  test::printRegion (vterm);
 
   // Move outside
   vwin->position.x = -20;
   vwin->position.y = -20;
-  p_fvterm.p_putArea ({-19, -19}, vwin);
+  p_fvterm.p_putRegion ({-19, -19}, vwin);
   p_fvterm.p_processTerminalUpdate();
   p_fvterm.p_restoreVTerm ({finalcut::FPoint{71, 15}, finalcut::FSize{10, 10}});
-  test::printOnArea (test_vterm_area, {24, { {80, default_char} } });
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vterm_area, vterm) );
-  test::printArea (vterm);
+  test::printOnRegion (test_vterm_region, {24, { {80, default_char} } });
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vterm_region, vterm) );
+  test::printRegion (vterm);
 
   vwin->position.x = 80;
   vwin->position.y = -20;
-  p_fvterm.p_putArea ({81, -19}, vwin);
+  p_fvterm.p_putRegion ({81, -19}, vwin);
   p_fvterm.p_processTerminalUpdate();
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vterm_area, vterm) );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vterm_region, vterm) );
 
   vwin->position.x = -20;
   vwin->position.y = 24;
-  p_fvterm.p_putArea ({-19, 25}, vwin);
+  p_fvterm.p_putRegion ({-19, 25}, vwin);
   p_fvterm.p_processTerminalUpdate();
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vterm_area, vterm) );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vterm_region, vterm) );
 
   vwin->position.x = 80;
   vwin->position.y = 24;
-  p_fvterm.p_putArea ({81, 25}, vwin);
+  p_fvterm.p_putRegion ({81, 25}, vwin);
   p_fvterm.p_processTerminalUpdate();
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vterm_area, vterm) );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vterm_region, vterm) );
 
   // Virtual window is larger than virtual terminal
   auto large_geometry = finalcut::FRect(finalcut::FPoint{1, 1}, finalcut::FSize{90, 34});
-  p_fvterm.p_resizeArea (large_geometry, vwin);
+  p_fvterm.p_resizeRegion (large_geometry, vwin);
   vwin->cursor.x = 1;
   vwin->cursor.y = 1;
 
   for (wchar_t i = 0; i < wchar_t(large_geometry.getHeight()); i++)
   {
     bg_char.ch[0] =  L'\\' + i;
-    test::printOnArea (vwin, {large_geometry.getWidth(), bg_char});
+    test::printOnRegion (vwin, {large_geometry.getWidth(), bg_char});
   }
 
   vwin->position.x = -5;
   vwin->position.y = -5;
-  p_fvterm.p_putArea ({-4, -4}, vwin);
+  p_fvterm.p_putRegion ({-4, -4}, vwin);
 
   for (wchar_t i = 0; i < wchar_t(vterm->size.height); i++)
   {
     bg_char.ch[0] =  L'a' + i;
-    test::printOnArea (test_vterm_area, {std::size_t(vterm->size.width), bg_char});
+    test::printOnRegion (test_vterm_region, {std::size_t(vterm->size.width), bg_char});
   }
 
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vterm_area, vterm) );
-  test::printArea (vterm);
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vterm_region, vterm) );
+  test::printRegion (vterm);
 
   // Rezeize virtual terminal
   auto new_term_size = finalcut::FSize{70, 18};
   p_fvterm.resizeVTerm (new_term_size);
   auto new_term_geometry = finalcut::FRect(finalcut::FPoint{1, 1}, new_term_size);
-  p_fvterm.p_resizeArea (new_term_geometry, test_vterm_area);
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vterm_area, vterm) );
+  p_fvterm.p_resizeRegion (new_term_geometry, test_vterm_region);
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vterm_region, vterm) );
   CPPUNIT_ASSERT ( vterm->size.width == 70);
   CPPUNIT_ASSERT ( vterm->size.height == 18 );
-  test::printArea (vterm);
-  p_fvterm.p_putArea ({-4, -4}, vwin);
+  test::printRegion (vterm);
+  p_fvterm.p_putRegion ({-4, -4}, vwin);
   CPPUNIT_ASSERT ( vterm->changes_in_row.ymin == 0 );
   CPPUNIT_ASSERT ( vterm->changes_in_row.ymax == 17 );
 
   for (wchar_t i = 0; i < wchar_t(vterm->size.height); i++)
   {
     bg_char.ch[0] =  L'a' + i;
-    test::printOnArea (test_vterm_area, {std::size_t(vterm->size.width), bg_char});
+    test::printOnRegion (test_vterm_region, {std::size_t(vterm->size.width), bg_char});
   }
 
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vterm_area, vterm) );
-  test::printArea (vterm);
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vterm_region, vterm) );
+  test::printRegion (vterm);
 
   // Reset line changes
   for (auto i{0}; i < vterm->size.height; i++)
@@ -1430,8 +1430,8 @@ void FVTermTest::FVTermBasesTest()
   new_term_size = finalcut::FSize{75, 18};
   p_fvterm.resizeVTerm (new_term_size);
   new_term_geometry = finalcut::FRect(finalcut::FPoint{1, 1}, new_term_size);
-  p_fvterm.p_resizeArea (new_term_geometry, test_vterm_area);
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vterm_area, vterm) );
+  p_fvterm.p_resizeRegion (new_term_geometry, test_vterm_region);
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vterm_region, vterm) );
   CPPUNIT_ASSERT ( vterm->size.width == 75);
   CPPUNIT_ASSERT ( vterm->size.height == 18 );
 
@@ -1439,19 +1439,19 @@ void FVTermTest::FVTermBasesTest()
   new_term_size = finalcut::FSize{75, 18};
   p_fvterm.resizeVTerm (new_term_size);
   new_term_geometry = finalcut::FRect(finalcut::FPoint{1, 1}, new_term_size);
-  p_fvterm.p_resizeArea (new_term_geometry, test_vterm_area);
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vterm_area, vterm) );
+  p_fvterm.p_resizeRegion (new_term_geometry, test_vterm_region);
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vterm_region, vterm) );
   CPPUNIT_ASSERT ( vterm->size.width == 75);
   CPPUNIT_ASSERT ( vterm->size.height == 18 );
 
-  // Deallocate area memory
-  CPPUNIT_ASSERT ( test_vwin_area_ptr.get() );
-  test_vwin_area_ptr.reset();
-  CPPUNIT_ASSERT ( ! test_vwin_area_ptr.get() );
+  // Deallocate region memory
+  CPPUNIT_ASSERT ( test_vwin_region_ptr.get() );
+  test_vwin_region_ptr.reset();
+  CPPUNIT_ASSERT ( ! test_vwin_region_ptr.get() );
 
-  CPPUNIT_ASSERT ( test_vterm_area_ptr.get() );
-  test_vterm_area_ptr.reset();
-  CPPUNIT_ASSERT ( ! test_vterm_area_ptr.get() );
+  CPPUNIT_ASSERT ( test_vterm_region_ptr.get() );
+  test_vterm_region_ptr.reset();
+  CPPUNIT_ASSERT ( ! test_vterm_region_ptr.get() );
 }
 
 //----------------------------------------------------------------------
@@ -1484,23 +1484,23 @@ void FVTermTest::FVTermPrintTest()
 
     FVTerm_protected p_fvterm(finalcut::outputClass<FTermOutputTest>{});
     p_fvterm.p_initTerminal();
-    auto child_print_area = p_fvterm.p_getChildPrintArea();
-    CPPUNIT_ASSERT ( child_print_area == nullptr );
+    auto child_print_region = p_fvterm.p_getChildPrintRegion();
+    CPPUNIT_ASSERT ( child_print_region == nullptr );
     CPPUNIT_ASSERT ( ! p_fvterm.p_isVirtualWindow() );
 
     finalcut::FRect geometry {finalcut::FPoint{0, 0}, finalcut::FSize{15, 10}};
     finalcut::FSize Shadow(1, 1);
-    auto vwin_ptr = p_fvterm.p_createArea ({geometry, Shadow});
+    auto vwin_ptr = p_fvterm.p_createRegion ({geometry, Shadow});
     auto vwin = vwin_ptr.get();
     p_fvterm.setVWin(std::move(vwin_ptr));
-    const finalcut::FVTerm::FTermArea* const_vwin = p_fvterm.getVWin();
+    const finalcut::FVTerm::FTermRegion* const_vwin = p_fvterm.getVWin();
     CPPUNIT_ASSERT ( p_fvterm.p_isVirtualWindow() );
     CPPUNIT_ASSERT ( static_cast<decltype(const_vwin)>(vwin) == const_vwin );
-    CPPUNIT_ASSERT ( ! p_fvterm.p_hasPrintArea() );
-    CPPUNIT_ASSERT ( p_fvterm.getPrintArea() == vwin );
-    CPPUNIT_ASSERT ( p_fvterm.p_hasPrintArea() );
-    auto print_area = p_fvterm.p_getCurrentPrintArea();
-    CPPUNIT_ASSERT ( print_area == vwin );
+    CPPUNIT_ASSERT ( ! p_fvterm.p_hasPrintRegion() );
+    CPPUNIT_ASSERT ( p_fvterm.getPrintRegion() == vwin );
+    CPPUNIT_ASSERT ( p_fvterm.p_hasPrintRegion() );
+    auto print_region = p_fvterm.p_getCurrentPrintRegion();
+    CPPUNIT_ASSERT ( print_region == vwin );
 
     if ( ! vwin )
     {
@@ -1515,7 +1515,7 @@ void FVTermTest::FVTermPrintTest()
 
     auto move_geometry = finalcut::FRect ( finalcut::FPoint{12, 37}
                                          , finalcut::FSize{15, 10} );
-    p_fvterm.p_resizeArea ({move_geometry, Shadow}, vwin);
+    p_fvterm.p_resizeRegion ({move_geometry, Shadow}, vwin);
     CPPUNIT_ASSERT ( vwin->position.x == 12 );
     CPPUNIT_ASSERT ( vwin->position.y == 37 );
 
@@ -1530,21 +1530,21 @@ void FVTermTest::FVTermPrintTest()
 
     // printf test
 
-    // Create a vwin comparison area
-    finalcut::FVTerm::FTermArea* test_vwin_area{};
-    auto test_vwin_area_ptr = p_fvterm.p_createArea ({geometry, Shadow});
-    test_vwin_area = test_vwin_area_ptr.get();
+    // Create a vwin comparison region
+    finalcut::FVTerm::FTermRegion* test_vwin_region{};
+    auto test_vwin_region_ptr = p_fvterm.p_createRegion ({geometry, Shadow});
+    test_vwin_region = test_vwin_region_ptr.get();
 
-    CPPUNIT_ASSERT ( p_fvterm.getPrintArea() == vwin );
-    p_fvterm.p_setPrintArea (test_vwin_area);
-    CPPUNIT_ASSERT ( p_fvterm.getPrintArea() == test_vwin_area );
-    p_fvterm.p_setPrintArea (vwin);
-    CPPUNIT_ASSERT ( p_fvterm.getPrintArea() == vwin );
+    CPPUNIT_ASSERT ( p_fvterm.getPrintRegion() == vwin );
+    p_fvterm.p_setPrintRegion (test_vwin_region);
+    CPPUNIT_ASSERT ( p_fvterm.getPrintRegion() == test_vwin_region );
+    p_fvterm.p_setPrintRegion (vwin);
+    CPPUNIT_ASSERT ( p_fvterm.getPrintRegion() == vwin );
 
-    test::printOnArea (test_vwin_area, {11, { {16, default_char} } });
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    test::printOnRegion (test_vwin_region, {11, { {16, default_char} } });
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
     p_fvterm.printf("%s/%d = %4.2f...", "1", 3, 1.0f/3.0f);
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
 
     p_fvterm.setCursor({1, 0});
     CPPUNIT_ASSERT ( vwin->cursor.x == -11 );
@@ -1555,13 +1555,13 @@ void FVTermTest::FVTermPrintTest()
     CPPUNIT_ASSERT ( vwin->cursor.x == 1 );  // First column is 1
     CPPUNIT_ASSERT ( vwin->cursor.y == 0 );  // First row is 1
     p_fvterm.printf("%s/%d = %4.2f...", "1", 3, 1.0f/3.0f);
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
 
     p_fvterm.setCursor({0, 1});
     CPPUNIT_ASSERT ( vwin->cursor.x == 0 );  // First column is 1
     CPPUNIT_ASSERT ( vwin->cursor.y == 1 );  // First row is 1
     p_fvterm.printf("%s/%d = %4.2f...", "1", 3, 1.0f/3.0f);
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
 
     p_fvterm.setCursor({1, 1});
     CPPUNIT_ASSERT ( vwin->cursor.x == 1 );  // First column is 1
@@ -1570,37 +1570,37 @@ void FVTermTest::FVTermPrintTest()
     p_fvterm.printf("%s/%d = %4.2f...", "1", 3, 1.0f/3.0f);
     CPPUNIT_ASSERT ( vwin->cursor.x == 14 );
     CPPUNIT_ASSERT ( vwin->cursor.y == 1 );
-    CPPUNIT_ASSERT ( ! test::isAreaEqual(test_vwin_area, vwin) );
-    test_vwin_area->data[0].ch[0] = '1';
-    test_vwin_area->data[1].ch[0] = '/';
-    test_vwin_area->data[2].ch[0] = '3';
-    test_vwin_area->data[3].ch[0] = ' ';
-    test_vwin_area->data[4].ch[0] = '=';
-    test_vwin_area->data[5].ch[0] = ' ';
-    test_vwin_area->data[6].ch[0] = '0';
-    test_vwin_area->data[7].ch[0] = '.';
-    test_vwin_area->data[8].ch[0] = '3';
-    test_vwin_area->data[9].ch[0] = '3';
-    test_vwin_area->data[10].ch[0] = '.';
-    test_vwin_area->data[11].ch[0] = '.';
-    test_vwin_area->data[12].ch[0] = '.';
+    CPPUNIT_ASSERT ( ! test::isRegionEqual(test_vwin_region, vwin) );
+    test_vwin_region->data[0].ch[0] = '1';
+    test_vwin_region->data[1].ch[0] = '/';
+    test_vwin_region->data[2].ch[0] = '3';
+    test_vwin_region->data[3].ch[0] = ' ';
+    test_vwin_region->data[4].ch[0] = '=';
+    test_vwin_region->data[5].ch[0] = ' ';
+    test_vwin_region->data[6].ch[0] = '0';
+    test_vwin_region->data[7].ch[0] = '.';
+    test_vwin_region->data[8].ch[0] = '3';
+    test_vwin_region->data[9].ch[0] = '3';
+    test_vwin_region->data[10].ch[0] = '.';
+    test_vwin_region->data[11].ch[0] = '.';
+    test_vwin_region->data[12].ch[0] = '.';
 
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
     CPPUNIT_ASSERT ( vwin->cursor.x == 14 );
     CPPUNIT_ASSERT ( vwin->cursor.y == 1 );
 
     finalcut::FString string{};  // Empty string
     p_fvterm.print(vwin, string);
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
     p_fvterm.print(string);
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
     finalcut::FVTermBuffer fvtermbuffer{}; // Empty FVTerm buffer
     p_fvterm.print(fvtermbuffer);
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
     p_fvterm.print(vwin, fvtermbuffer);
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
     p_fvterm.print(nullptr, fvtermbuffer);
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
 
     // Bell (BEL), Backspace (BS), Newline (LF) and Carriage Return (CR)
     string = "\nsetup\b\a\b  \rn";
@@ -1610,10 +1610,10 @@ void FVTermTest::FVTermPrintTest()
     setBellState(false);
     CPPUNIT_ASSERT ( ! getBellState() );
 
-    test_vwin_area->data[16].ch[0] = 'n';
-    test_vwin_area->data[17].ch[0] = 'e';
-    test_vwin_area->data[18].ch[0] = 't';
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    test_vwin_region->data[16].ch[0] = 'n';
+    test_vwin_region->data[17].ch[0] = 'e';
+    test_vwin_region->data[18].ch[0] = 't';
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
     CPPUNIT_ASSERT ( vwin->cursor.x == 2 );
     CPPUNIT_ASSERT ( vwin->cursor.y == 2 );
     p_fvterm.print(finalcut::FPoint{1, 3});
@@ -1622,77 +1622,77 @@ void FVTermTest::FVTermPrintTest()
 
     // Horizontal tabulation (HT)
     p_fvterm.print(L"1\t2");
-    test_vwin_area->data[32].ch[0] = '1';
-    test_vwin_area->data[40].ch[0] = '2';
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    test_vwin_region->data[32].ch[0] = '1';
+    test_vwin_region->data[40].ch[0] = '2';
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
     CPPUNIT_ASSERT ( vwin->cursor.x == 10 );
     CPPUNIT_ASSERT ( vwin->cursor.y == 3 );
 
     p_fvterm.print(L"\r          ");  // Carriage Return + spaces
     p_fvterm.print(finalcut::FPoint{1, 3});
     p_fvterm.print(L"12\t2");
-    test_vwin_area->data[33].ch[0] = '2';
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    test_vwin_region->data[33].ch[0] = '2';
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
     CPPUNIT_ASSERT ( vwin->cursor.x == 10 );
     CPPUNIT_ASSERT ( vwin->cursor.y == 3 );
 
     p_fvterm.print(L"\r          ");
     p_fvterm.print(finalcut::FPoint{1, 3});
     p_fvterm.print(L"123\t2");
-    test_vwin_area->data[34].ch[0] = '3';
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    test_vwin_region->data[34].ch[0] = '3';
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
     CPPUNIT_ASSERT ( vwin->cursor.x == 10 );
     CPPUNIT_ASSERT ( vwin->cursor.y == 3 );
 
     p_fvterm.print(L"\r          ");
     p_fvterm.print(finalcut::FPoint{1, 3});
     p_fvterm.print(L"1234\t2");
-    test_vwin_area->data[35].ch[0] = '4';
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    test_vwin_region->data[35].ch[0] = '4';
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
     CPPUNIT_ASSERT ( vwin->cursor.x == 10 );
     CPPUNIT_ASSERT ( vwin->cursor.y == 3 );
 
     p_fvterm.print(L"\r          ");
     p_fvterm.print(finalcut::FPoint{1, 3});
     p_fvterm.print(L"12345\t2");
-    test_vwin_area->data[36].ch[0] = '5';
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    test_vwin_region->data[36].ch[0] = '5';
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
     CPPUNIT_ASSERT ( vwin->cursor.x == 10 );
     CPPUNIT_ASSERT ( vwin->cursor.y == 3 );
 
     p_fvterm.print(L"\r          ");
     p_fvterm.print(finalcut::FPoint{1, 3});
     p_fvterm.print(L"123456\t2");
-    test_vwin_area->data[37].ch[0] = '6';
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    test_vwin_region->data[37].ch[0] = '6';
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
     CPPUNIT_ASSERT ( vwin->cursor.x == 10 );
     CPPUNIT_ASSERT ( vwin->cursor.y == 3 );
 
     p_fvterm.print(L"\r          ");
     p_fvterm.print(finalcut::FPoint{1, 3});
     p_fvterm.print(L"1234567\t2");
-    test_vwin_area->data[38].ch[0] = '7';
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    test_vwin_region->data[38].ch[0] = '7';
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
     CPPUNIT_ASSERT ( vwin->cursor.x == 10 );
     CPPUNIT_ASSERT ( vwin->cursor.y == 3 );
 
     p_fvterm.print(L"\r          \r12345678\t2");
-    test_vwin_area->data[39].ch[0] = '8';
-    test_vwin_area->data[40].ch[0] = ' ';
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    test_vwin_region->data[39].ch[0] = '8';
+    test_vwin_region->data[40].ch[0] = ' ';
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
     CPPUNIT_ASSERT ( vwin->cursor.x == 17 );
     CPPUNIT_ASSERT ( vwin->cursor.y == 3 );
 
     // Cursor is outside the window
     p_fvterm.print(L"invisible");
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
     CPPUNIT_ASSERT ( vwin->cursor.x == 17 );
     CPPUNIT_ASSERT ( vwin->cursor.y == 3 );
 
     p_fvterm.print('\b');  // Backspace
     p_fvterm.print(L'…');
-    test_vwin_area->data[47].ch[0] = L'…';
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    test_vwin_region->data[47].ch[0] = L'…';
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
     CPPUNIT_ASSERT ( vwin->cursor.x == 1 );
     CPPUNIT_ASSERT ( vwin->cursor.y == 4 );
 
@@ -1719,26 +1719,26 @@ void FVTermTest::FVTermPrintTest()
 
     for (std::size_t i{48}; i < 54; i++)
     {
-      test_vwin_area->data[i] = fchar;
-      test_vwin_area->data[i].attr.bit()->char_width = 1 & 0x03;
+      test_vwin_region->data[i] = fchar;
+      test_vwin_region->data[i].attr.bit()->char_width = 1 & 0x03;
     }
 
-    test_vwin_area->data[48].ch[0] = 'V';
-    test_vwin_area->data[49].ch[0] = 'e';
-    test_vwin_area->data[50].ch[0] = 'c';
-    test_vwin_area->data[51].ch[0] = 't';
-    test_vwin_area->data[52].ch[0] = 'o';
-    test_vwin_area->data[53].ch[0] = 'r';
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    test_vwin_region->data[48].ch[0] = 'V';
+    test_vwin_region->data[49].ch[0] = 'e';
+    test_vwin_region->data[50].ch[0] = 'c';
+    test_vwin_region->data[51].ch[0] = 't';
+    test_vwin_region->data[52].ch[0] = 'o';
+    test_vwin_region->data[53].ch[0] = 'r';
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
 
     CPPUNIT_ASSERT ( term_string.size() == 7 );
     term_string.clear();
     CPPUNIT_ASSERT ( term_string.size() == 0 );
     CPPUNIT_ASSERT ( term_string.empty() );
     p_fvterm.print(term_string);
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
     p_fvterm.print(vwin, term_string);
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
 
     // Full-Width Characters
     term_string.assign(1, fchar);
@@ -1754,27 +1754,27 @@ void FVTermTest::FVTermPrintTest()
 
     if ( enc == finalcut::Encoding::VT100 )
     {
-      test_vwin_area->data[64] = fchar;
-      test_vwin_area->data[64].ch[0] = L'🏠';
-      test_vwin_area->data[64].attr.bit()->char_width = 2 & 0x03;
-      test_vwin_area->data[65] = fchar;
-      test_vwin_area->data[65].ch[0] = L'.';
-      test_vwin_area->data[65].attr.bit()->char_width = 1 & 0x03;
-      test_vwin_area->data[66] = fchar;
+      test_vwin_region->data[64] = fchar;
+      test_vwin_region->data[64].ch[0] = L'🏠';
+      test_vwin_region->data[64].attr.bit()->char_width = 2 & 0x03;
+      test_vwin_region->data[65] = fchar;
+      test_vwin_region->data[65].ch[0] = L'.';
+      test_vwin_region->data[65].attr.bit()->char_width = 1 & 0x03;
+      test_vwin_region->data[66] = fchar;
     }
     else if ( enc == finalcut::Encoding::UTF8 )
     {
-      test_vwin_area->data[64] = fchar;
-      test_vwin_area->data[64].ch[0] = L'🏠';
-      test_vwin_area->data[64].attr.bit()->char_width = 2 & 0x03;
-      test_vwin_area->data[65] = fchar;
-      test_vwin_area->data[65].attr.bit()->fullwidth_padding = true;
-      test_vwin_area->data[66] = fchar;
+      test_vwin_region->data[64] = fchar;
+      test_vwin_region->data[64].ch[0] = L'🏠';
+      test_vwin_region->data[64].attr.bit()->char_width = 2 & 0x03;
+      test_vwin_region->data[65] = fchar;
+      test_vwin_region->data[65].attr.bit()->fullwidth_padding = true;
+      test_vwin_region->data[66] = fchar;
     }
 
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
     p_fvterm.print(nullptr, fchar);
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
 
     // Printing text in the bottom row
     int last_row = vwin->size.height + vwin->shadow.height;
@@ -1787,23 +1787,23 @@ void FVTermTest::FVTermPrintTest()
     CPPUNIT_ASSERT ( vwin->cursor.x == 1 );
     CPPUNIT_ASSERT ( vwin->cursor.y == last_row );  // Scrolling up was prevented
 
-    test_vwin_area->data[160].ch[0] = L'D';
-    test_vwin_area->data[161].ch[0] = L'i';
-    test_vwin_area->data[162].ch[0] = L's';
-    test_vwin_area->data[163].ch[0] = L'q';
-    test_vwin_area->data[164].ch[0] = L'u';
-    test_vwin_area->data[165].ch[0] = L'a';
-    test_vwin_area->data[166].ch[0] = L'l';
-    test_vwin_area->data[167].ch[0] = L'i';
-    test_vwin_area->data[168].ch[0] = L'f';
-    test_vwin_area->data[169].ch[0] = L'i';
-    test_vwin_area->data[170].ch[0] = L'c';
-    test_vwin_area->data[171].ch[0] = L'a';
-    test_vwin_area->data[172].ch[0] = L't';
-    test_vwin_area->data[173].ch[0] = L'i';
-    test_vwin_area->data[174].ch[0] = L'o';
-    test_vwin_area->data[175].ch[0] = L'n';
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    test_vwin_region->data[160].ch[0] = L'D';
+    test_vwin_region->data[161].ch[0] = L'i';
+    test_vwin_region->data[162].ch[0] = L's';
+    test_vwin_region->data[163].ch[0] = L'q';
+    test_vwin_region->data[164].ch[0] = L'u';
+    test_vwin_region->data[165].ch[0] = L'a';
+    test_vwin_region->data[166].ch[0] = L'l';
+    test_vwin_region->data[167].ch[0] = L'i';
+    test_vwin_region->data[168].ch[0] = L'f';
+    test_vwin_region->data[169].ch[0] = L'i';
+    test_vwin_region->data[170].ch[0] = L'c';
+    test_vwin_region->data[171].ch[0] = L'a';
+    test_vwin_region->data[172].ch[0] = L't';
+    test_vwin_region->data[173].ch[0] = L'i';
+    test_vwin_region->data[174].ch[0] = L'o';
+    test_vwin_region->data[175].ch[0] = L'n';
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
 
     p_fvterm.print(finalcut::FPoint{1, 6});
     CPPUNIT_ASSERT ( vwin->cursor.x == 1 );
@@ -1814,32 +1814,32 @@ void FVTermTest::FVTermPrintTest()
     {
       CPPUNIT_ASSERT ( p_fvterm.print(L"STARGΛ̊TE") == 9 );
       CPPUNIT_ASSERT ( vwin->cursor.x == 10 );
-      test_vwin_area->data[80].ch[0] = L'S';
-      test_vwin_area->data[81].ch[0] = L'T';
-      test_vwin_area->data[82].ch[0] = L'A';
-      test_vwin_area->data[83].ch[0] = L'R';
-      test_vwin_area->data[84].ch[0] = L'G';
-      test_vwin_area->data[85].ch[0] = L'Λ';
-      test_vwin_area->data[86].ch[0] = L'\U0000030a';
-      test_vwin_area->data[87].ch[0] = L'T';
-      test_vwin_area->data[88].ch[0] = L'E';
+      test_vwin_region->data[80].ch[0] = L'S';
+      test_vwin_region->data[81].ch[0] = L'T';
+      test_vwin_region->data[82].ch[0] = L'A';
+      test_vwin_region->data[83].ch[0] = L'R';
+      test_vwin_region->data[84].ch[0] = L'G';
+      test_vwin_region->data[85].ch[0] = L'Λ';
+      test_vwin_region->data[86].ch[0] = L'\U0000030a';
+      test_vwin_region->data[87].ch[0] = L'T';
+      test_vwin_region->data[88].ch[0] = L'E';
     }
     else if ( enc == finalcut::Encoding::UTF8 )
     {
       CPPUNIT_ASSERT ( p_fvterm.print(L"STARGΛ̊TE") == 8 );
       CPPUNIT_ASSERT ( vwin->cursor.x == 9 );
-      test_vwin_area->data[80].ch[0] = L'S';
-      test_vwin_area->data[81].ch[0] = L'T';
-      test_vwin_area->data[82].ch[0] = L'A';
-      test_vwin_area->data[83].ch[0] = L'R';
-      test_vwin_area->data[84].ch[0] = L'G';
-      test_vwin_area->data[85].ch[0] = L'Λ';
-      test_vwin_area->data[85].ch[1] = L'\U0000030a';
-      test_vwin_area->data[86].ch[0] = L'T';
-      test_vwin_area->data[87].ch[0] = L'E';
+      test_vwin_region->data[80].ch[0] = L'S';
+      test_vwin_region->data[81].ch[0] = L'T';
+      test_vwin_region->data[82].ch[0] = L'A';
+      test_vwin_region->data[83].ch[0] = L'R';
+      test_vwin_region->data[84].ch[0] = L'G';
+      test_vwin_region->data[85].ch[0] = L'Λ';
+      test_vwin_region->data[85].ch[1] = L'\U0000030a';
+      test_vwin_region->data[86].ch[0] = L'T';
+      test_vwin_region->data[87].ch[0] = L'E';
     }
 
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
 
     // Line break
     p_fvterm.print(finalcut::FPoint{11, 7});
@@ -1848,78 +1848,78 @@ void FVTermTest::FVTermPrintTest()
     CPPUNIT_ASSERT ( p_fvterm.print(L"FINAL CUT") == 9 );
     CPPUNIT_ASSERT ( vwin->cursor.x == 4 );
     CPPUNIT_ASSERT ( vwin->cursor.y == 8 );
-    test_vwin_area->data[106].ch[0] = L'F';
-    test_vwin_area->data[107].ch[0] = L'I';
-    test_vwin_area->data[108].ch[0] = L'N';
-    test_vwin_area->data[109].ch[0] = L'A';
-    test_vwin_area->data[110].ch[0] = L'L';
-    test_vwin_area->data[112].ch[0] = L'C';
-    test_vwin_area->data[113].ch[0] = L'U';
-    test_vwin_area->data[114].ch[0] = L'T';
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    test_vwin_region->data[106].ch[0] = L'F';
+    test_vwin_region->data[107].ch[0] = L'I';
+    test_vwin_region->data[108].ch[0] = L'N';
+    test_vwin_region->data[109].ch[0] = L'A';
+    test_vwin_region->data[110].ch[0] = L'L';
+    test_vwin_region->data[112].ch[0] = L'C';
+    test_vwin_region->data[113].ch[0] = L'U';
+    test_vwin_region->data[114].ch[0] = L'T';
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
 
     // Stream
     p_fvterm.print() << ' ';  // char
     CPPUNIT_ASSERT ( vwin->cursor.x == 5 );
     CPPUNIT_ASSERT ( vwin->cursor.y == 8 );
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
 
     p_fvterm.print() << 1.23;  // double
     CPPUNIT_ASSERT ( vwin->cursor.x == 13 );
     CPPUNIT_ASSERT ( vwin->cursor.y == 8 );
-    test_vwin_area->data[116].ch[0] = L'1';
-    test_vwin_area->data[117].ch[0] = L'.';
-    test_vwin_area->data[118].ch[0] = L'2';
-    test_vwin_area->data[119].ch[0] = L'3';
-    test_vwin_area->data[120].ch[0] = L'0';
-    test_vwin_area->data[121].ch[0] = L'0';
-    test_vwin_area->data[122].ch[0] = L'0';
-    test_vwin_area->data[123].ch[0] = L'0';
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    test_vwin_region->data[116].ch[0] = L'1';
+    test_vwin_region->data[117].ch[0] = L'.';
+    test_vwin_region->data[118].ch[0] = L'2';
+    test_vwin_region->data[119].ch[0] = L'3';
+    test_vwin_region->data[120].ch[0] = L'0';
+    test_vwin_region->data[121].ch[0] = L'0';
+    test_vwin_region->data[122].ch[0] = L'0';
+    test_vwin_region->data[123].ch[0] = L'0';
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
 
     p_fvterm.print() << L' ';  // wchar_t
     CPPUNIT_ASSERT ( vwin->cursor.x == 14 );
     CPPUNIT_ASSERT ( vwin->cursor.y == 8 );
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
 
     wchar_t kilohertz[] = L"kHz";  // wchar_t*
     p_fvterm.print() << kilohertz;
     CPPUNIT_ASSERT ( vwin->cursor.x == 1 );
     CPPUNIT_ASSERT ( vwin->cursor.y == 9 );
-    test_vwin_area->data[125].ch[0] = L'k';
-    test_vwin_area->data[126].ch[0] = L'H';
-    test_vwin_area->data[127].ch[0] = L'z';
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    test_vwin_region->data[125].ch[0] = L'k';
+    test_vwin_region->data[126].ch[0] = L'H';
+    test_vwin_region->data[127].ch[0] = L'z';
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
 
     p_fvterm.print() << finalcut::UniChar::BlackRightPointingPointer;  // UniChar
     CPPUNIT_ASSERT ( vwin->cursor.x == 2 );
     CPPUNIT_ASSERT ( vwin->cursor.y == 9 );
-    test_vwin_area->data[128].ch[0] = L'►';
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    test_vwin_region->data[128].ch[0] = L'►';
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
 
     p_fvterm.print() << std::string("fan");  // std::string
     CPPUNIT_ASSERT ( vwin->cursor.x == 5 );
     CPPUNIT_ASSERT ( vwin->cursor.y == 9 );
-    test_vwin_area->data[129].ch[0] = L'f';
-    test_vwin_area->data[130].ch[0] = L'a';
-    test_vwin_area->data[131].ch[0] = L'n';
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    test_vwin_region->data[129].ch[0] = L'f';
+    test_vwin_region->data[130].ch[0] = L'a';
+    test_vwin_region->data[131].ch[0] = L'n';
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
 
     p_fvterm.print() << std::wstring(L"tas");  // std::wstring
     CPPUNIT_ASSERT ( vwin->cursor.x == 8 );
     CPPUNIT_ASSERT ( vwin->cursor.y == 9 );
-    test_vwin_area->data[132].ch[0] = L't';
-    test_vwin_area->data[133].ch[0] = L'a';
-    test_vwin_area->data[134].ch[0] = L's';
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    test_vwin_region->data[132].ch[0] = L't';
+    test_vwin_region->data[133].ch[0] = L'a';
+    test_vwin_region->data[134].ch[0] = L's';
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
 
     p_fvterm.print() << finalcut::FString(L"tic");  // FString
     CPPUNIT_ASSERT ( vwin->cursor.x == 11 );
     CPPUNIT_ASSERT ( vwin->cursor.y == 9 );
-    test_vwin_area->data[135].ch[0] = L't';
-    test_vwin_area->data[136].ch[0] = L'i';
-    test_vwin_area->data[137].ch[0] = L'c';
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    test_vwin_region->data[135].ch[0] = L't';
+    test_vwin_region->data[136].ch[0] = L'i';
+    test_vwin_region->data[137].ch[0] = L'c';
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
 
     p_fvterm.print() << finalcut::FPoint(3, 5);  // FPoint
     CPPUNIT_ASSERT ( vwin->cursor.x == 3 );
@@ -1932,10 +1932,10 @@ void FVTermTest::FVTermPrintTest()
     p_fvterm.print() << fchar;  // FChar
     CPPUNIT_ASSERT ( vwin->cursor.x == 4 );
     CPPUNIT_ASSERT ( vwin->cursor.y == 5 );
-    test_vwin_area->data[66].ch[0] = L'y';
-    test_vwin_area->data[66].ch[1] = L'\U00000304';
-    test_vwin_area->data[66].attr.bit()->char_width = 1 & 0x03;
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    test_vwin_region->data[66].ch[0] = L'y';
+    test_vwin_region->data[66].ch[1] = L'\U00000304';
+    test_vwin_region->data[66].attr.bit()->char_width = 1 & 0x03;
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
 
     fchar.ch[0] = L'-';
     fchar.ch[1] = L'\0';
@@ -1946,9 +1946,9 @@ void FVTermTest::FVTermPrintTest()
     p_fvterm.print() << dash;  // FCharVector
     CPPUNIT_ASSERT ( vwin->cursor.x == 6 );
     CPPUNIT_ASSERT ( vwin->cursor.y == 5 );
-    test_vwin_area->data[67].ch[0] = L'-';
-    test_vwin_area->data[68].ch[0] = L'-';
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    test_vwin_region->data[67].ch[0] = L'-';
+    test_vwin_region->data[68].ch[0] = L'-';
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
 
     p_fvterm.print() << finalcut::FStyle ( finalcut::Style::Italic
                                          | finalcut::Style::DoubleUnderline );  // FStyle
@@ -1957,10 +1957,10 @@ void FVTermTest::FVTermPrintTest()
     p_fvterm.print() << "F";
     CPPUNIT_ASSERT ( vwin->cursor.x == 7 );
     CPPUNIT_ASSERT ( vwin->cursor.y == 5 );
-    test_vwin_area->data[69].ch[0] = L'F';
-    test_vwin_area->data[69].attr.bit()->italic = true;
-    test_vwin_area->data[69].attr.bit()->dbl_underline = true;
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    test_vwin_region->data[69].ch[0] = L'F';
+    test_vwin_region->data[69].attr.bit()->italic = true;
+    test_vwin_region->data[69].attr.bit()->dbl_underline = true;
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
 
     finalcut::FColorPair cpair{finalcut::FColor::Blue, finalcut::FColor::White};
     p_fvterm.print() << cpair;  // FColorPair
@@ -1969,27 +1969,27 @@ void FVTermTest::FVTermPrintTest()
     p_fvterm.print() << "C";
     CPPUNIT_ASSERT ( vwin->cursor.x == 8 );
     CPPUNIT_ASSERT ( vwin->cursor.y == 5 );
-    test_vwin_area->data[70].ch[0] = L'C';
-    test_vwin_area->data[70].color.setFgColor(finalcut::FColor::Blue);
-    test_vwin_area->data[70].color.setBgColor(finalcut::FColor::White);
-    test_vwin_area->data[70].attr.bit()->italic = true;
-    test_vwin_area->data[70].attr.bit()->dbl_underline = true;
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
+    test_vwin_region->data[70].ch[0] = L'C';
+    test_vwin_region->data[70].color.setFgColor(finalcut::FColor::Blue);
+    test_vwin_region->data[70].color.setBgColor(finalcut::FColor::White);
+    test_vwin_region->data[70].attr.bit()->italic = true;
+    test_vwin_region->data[70].attr.bit()->dbl_underline = true;
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
 
     fvtermbuffer.print("++");
     p_fvterm.print() << fvtermbuffer;  // FVTermBuffer
     CPPUNIT_ASSERT ( vwin->cursor.x == 10 );
     CPPUNIT_ASSERT ( vwin->cursor.y == 5 );
-    test_vwin_area->data[71] = test_vwin_area->data[70];
-    test_vwin_area->data[71].ch[0] = L'+';
-    test_vwin_area->data[72] = test_vwin_area->data[71];
-    CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
-    test::printArea (vwin);
+    test_vwin_region->data[71] = test_vwin_region->data[70];
+    test_vwin_region->data[71].ch[0] = L'+';
+    test_vwin_region->data[72] = test_vwin_region->data[71];
+    CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
+    test::printRegion (vwin);
   }  // Encoding loop
 }
 
 //----------------------------------------------------------------------
-void FVTermTest::FVTermChildAreaPrintTest()
+void FVTermTest::FVTermChildRegionPrintTest()
 {
   FVTerm_protected p_fvterm(finalcut::outputClass<FTermOutputTest>{});
 
@@ -2003,24 +2003,24 @@ void FVTermTest::FVTermChildAreaPrintTest()
 
   // Create the virtual window for the p_fvterm object
   finalcut::FRect geometry {finalcut::FPoint{34, 1}, finalcut::FSize{12, 12}};
-  auto vwin_ptr = p_fvterm.p_createArea (geometry);
+  auto vwin_ptr = p_fvterm.p_createRegion (geometry);
   vwin = vwin_ptr.get();
   p_fvterm.setVWin(std::move(vwin_ptr));
 
-  // Create a child print area
-  finalcut::FVTerm::FTermArea* child_print_area{nullptr};
+  // Create a child print region
+  finalcut::FVTerm::FTermRegion* child_print_region{nullptr};
   const std::size_t w = 5;
   const std::size_t h = 2;
   finalcut::FRect child_geometry{};
   child_geometry.setRect (0, 0, w, h);
-  auto child_print_area_ptr = p_fvterm.p_createArea (child_geometry);
-  child_print_area = child_print_area_ptr.get();
-  CPPUNIT_ASSERT ( ! p_fvterm.p_hasChildPrintArea() );
-  CPPUNIT_ASSERT ( p_fvterm.p_getChildPrintArea() == nullptr );
-  p_fvterm.p_setChildPrintArea (child_print_area);
-  CPPUNIT_ASSERT ( p_fvterm.p_hasChildPrintArea() );
-  CPPUNIT_ASSERT ( p_fvterm.p_getChildPrintArea() != nullptr );
-  CPPUNIT_ASSERT ( p_fvterm.p_getChildPrintArea() == child_print_area );
+  auto child_print_region_ptr = p_fvterm.p_createRegion (child_geometry);
+  child_print_region = child_print_region_ptr.get();
+  CPPUNIT_ASSERT ( ! p_fvterm.p_hasChildPrintRegion() );
+  CPPUNIT_ASSERT ( p_fvterm.p_getChildPrintRegion() == nullptr );
+  p_fvterm.p_setChildPrintRegion (child_print_region);
+  CPPUNIT_ASSERT ( p_fvterm.p_hasChildPrintRegion() );
+  CPPUNIT_ASSERT ( p_fvterm.p_getChildPrintRegion() != nullptr );
+  CPPUNIT_ASSERT ( p_fvterm.p_getChildPrintRegion() == child_print_region );
 
   CPPUNIT_ASSERT ( ! p_fvterm.hasPreprocessingHandler(&p_fvterm) );;
   CPPUNIT_ASSERT ( p_fvterm.value_ref() == 0 );
@@ -2075,7 +2075,7 @@ void FVTermTest::FVTermChildAreaPrintTest()
                    << finalcut::FPoint(36, 11) << L"==========";
 
   CPPUNIT_ASSERT ( vwin->has_changes );
-  test::printArea (vwin);
+  test::printRegion (vwin);
 
   p_fvterm.p_addLayer(vwin);
   CPPUNIT_ASSERT ( ! vterm->has_changes );
@@ -2136,27 +2136,27 @@ void FVTermTest::FVTermChildAreaPrintTest()
     { 0x00080000U }  // char_width = 1
   };
 
-  // Create a vterm comparison area
-  finalcut::FVTerm::FTermArea* test_vterm_area{};
+  // Create a vterm comparison region
+  finalcut::FVTerm::FTermRegion* test_vterm_region{};
   auto vterm_geometry = finalcut::FRect( finalcut::FPoint{0, 0}
                                        , finalcut::FSize{std::size_t(vterm->size.width), std::size_t(vterm->size.height)} );
-  auto test_vterm_area_ptr = p_fvterm.p_createArea (vterm_geometry);
-  test_vterm_area = test_vterm_area_ptr.get();
+  auto test_vterm_region_ptr = p_fvterm.p_createRegion (vterm_geometry);
+  test_vterm_region = test_vterm_region_ptr.get();
 
   // Check the virtual terminal
-  //                                      .--------------- line repetitions
-  //                                      |     .--------- column repetitions
-  //                                      |     |
-  test::printOnArea (test_vterm_area, { { 3, { {80, space_char_1} } },
-                                      { 1, { {35, space_char_1}, {10, equal_sign_char}, { 35, space_char_1} } },
-                                      { 6, { {35, space_char_1}, { 1, equal_sign_char}, {  8, space_char_2}, { 1, equal_sign_char}, { 35, space_char_1} } },
-                                      { 1, { {35, space_char_1}, {10, equal_sign_char}, { 35, space_char_1} } },
-                                      {13, { {80, space_char_1} } } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vterm_area, vterm) );
-  test::printArea (vterm);
+  //                                          .--------------- line repetitions
+  //                                          |     .--------- column repetitions
+  //                                          |     |
+  test::printOnRegion (test_vterm_region, { { 3, { {80, space_char_1} } },
+                                          { 1, { {35, space_char_1}, {10, equal_sign_char}, { 35, space_char_1} } },
+                                          { 6, { {35, space_char_1}, { 1, equal_sign_char}, {  8, space_char_2}, { 1, equal_sign_char}, { 35, space_char_1} } },
+                                          { 1, { {35, space_char_1}, {10, equal_sign_char}, { 35, space_char_1} } },
+                                          {13, { {80, space_char_1} } } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vterm_region, vterm) );
+  test::printRegion (vterm);
 
   p_fvterm.delPreprocessingHandler(&p_fvterm);
-  p_fvterm.p_setChildPrintArea (nullptr);
+  p_fvterm.p_setChildPrintRegion (nullptr);
 }
 
 //----------------------------------------------------------------------
@@ -2167,18 +2167,18 @@ void FVTermTest::FVTermScrollTest()
   // Create the virtual window for the p_fvterm object
   finalcut::FRect geometry {finalcut::FPoint{0, 0}, finalcut::FSize{5, 5}};
   // virtual window
-  auto vwin_ptr = p_fvterm.p_createArea (geometry);
+  auto vwin_ptr = p_fvterm.p_createRegion (geometry);
   auto vwin = vwin_ptr.get();
   p_fvterm.setVWin(std::move(vwin_ptr));
 
   p_fvterm.print() << finalcut::FPoint{1, 1}
                    << "1111122222333334444455555";
 
-  // Create a vwin comparison area
-  finalcut::FVTerm::FTermArea* test_vwin_area{};
+  // Create a vwin comparison region
+  finalcut::FVTerm::FTermRegion* test_vwin_region{};
   auto vwin_geometry = finalcut::FRect( finalcut::FPoint{0, 0}, finalcut::FSize{5, 5} );
-  auto test_vwin_area_ptr = p_fvterm.p_createArea (vwin_geometry);
-  test_vwin_area = test_vwin_area_ptr.get();
+  auto test_vwin_region_ptr = p_fvterm.p_createRegion (vwin_geometry);
+  test_vwin_region = test_vwin_region_ptr.get();
 
   finalcut::FChar one_char =
   {
@@ -2201,199 +2201,199 @@ void FVTermTest::FVTermScrollTest()
 
   // Scroll forward
 
-  test::printOnArea (test_vwin_area, { {5, one_char},
-                                       {5, two_char},
-                                       {5, three_char},
-                                       {5, four_char},
-                                       {5, five_char} } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
-  test::printArea (vwin);
+  test::printOnRegion (test_vwin_region, { {5, one_char},
+                                           {5, two_char},
+                                           {5, three_char},
+                                           {5, four_char},
+                                           {5, five_char} } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
+  test::printRegion (vwin);
 
-  p_fvterm.p_scrollAreaForward (vwin);
-  test::printOnArea (test_vwin_area, { {5, two_char},
-                                       {5, three_char},
-                                       {5, four_char},
-                                       {5, five_char},
-                                       {5, space_char} } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
-  test::printArea (vwin);
+  p_fvterm.p_scrollRegionForward (vwin);
+  test::printOnRegion (test_vwin_region, { {5, two_char},
+                                           {5, three_char},
+                                           {5, four_char},
+                                           {5, five_char},
+                                           {5, space_char} } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
+  test::printRegion (vwin);
 
-  p_fvterm.p_scrollAreaForward (vwin);
-  test::printOnArea (test_vwin_area, { {5, three_char},
-                                       {5, four_char},
-                                       {5, five_char},
-                                       {5, space_char},
-                                       {5, space_char} } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
-  test::printArea (vwin);
+  p_fvterm.p_scrollRegionForward (vwin);
+  test::printOnRegion (test_vwin_region, { {5, three_char},
+                                           {5, four_char},
+                                           {5, five_char},
+                                           {5, space_char},
+                                           {5, space_char} } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
+  test::printRegion (vwin);
 
-  p_fvterm.p_scrollAreaForward (vwin);
-  test::printOnArea (test_vwin_area, { {5, four_char},
-                                       {5, five_char},
-                                       {5, space_char},
-                                       {5, space_char},
-                                       {5, space_char} } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
-  test::printArea (vwin);
+  p_fvterm.p_scrollRegionForward (vwin);
+  test::printOnRegion (test_vwin_region, { {5, four_char},
+                                           {5, five_char},
+                                           {5, space_char},
+                                           {5, space_char},
+                                           {5, space_char} } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
+  test::printRegion (vwin);
 
-  p_fvterm.p_scrollAreaForward (vwin);
-  test::printOnArea (test_vwin_area, { {5, five_char},
-                                       {5, space_char},
-                                       {5, space_char},
-                                       {5, space_char},
-                                       {5, space_char} } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
-  test::printArea (vwin);
+  p_fvterm.p_scrollRegionForward (vwin);
+  test::printOnRegion (test_vwin_region, { {5, five_char},
+                                           {5, space_char},
+                                           {5, space_char},
+                                           {5, space_char},
+                                           {5, space_char} } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
+  test::printRegion (vwin);
 
-  p_fvterm.p_scrollAreaForward (vwin);
-  test::printOnArea (test_vwin_area, { {5, space_char},
-                                       {5, space_char},
-                                       {5, space_char},
-                                       {5, space_char},
-                                       {5, space_char} } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
-  test::printArea (vwin);
+  p_fvterm.p_scrollRegionForward (vwin);
+  test::printOnRegion (test_vwin_region, { {5, space_char},
+                                         {5, space_char},
+                                         {5, space_char},
+                                         {5, space_char},
+                                         {5, space_char} } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
+  test::printRegion (vwin);
 
   // Scroll reverse
 
   p_fvterm.print() << finalcut::FPoint{1, 1}
                    << "1111122222333334444455555";
-  test::printOnArea (test_vwin_area, { {5, one_char},
-                                       {5, two_char},
-                                       {5, three_char},
-                                       {5, four_char},
-                                       {5, five_char} } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
-  test::printArea (vwin);
+  test::printOnRegion (test_vwin_region, { {5, one_char},
+                                           {5, two_char},
+                                           {5, three_char},
+                                           {5, four_char},
+                                           {5, five_char} } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
+  test::printRegion (vwin);
 
-  p_fvterm.p_scrollAreaReverse (vwin);
-  test::printOnArea (test_vwin_area, { {5, space_char},
-                                       {5, one_char},
-                                       {5, two_char},
-                                       {5, three_char},
-                                       {5, four_char} } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
-  test::printArea (vwin);
+  p_fvterm.p_scrollRegionReverse (vwin);
+  test::printOnRegion (test_vwin_region, { {5, space_char},
+                                           {5, one_char},
+                                           {5, two_char},
+                                           {5, three_char},
+                                           {5, four_char} } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
+  test::printRegion (vwin);
 
-  p_fvterm.p_scrollAreaReverse (vwin);
-  test::printOnArea (test_vwin_area, { {5, space_char},
-                                       {5, space_char},
-                                       {5, one_char},
-                                       {5, two_char},
-                                       {5, three_char} } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
-  test::printArea (vwin);
+  p_fvterm.p_scrollRegionReverse (vwin);
+  test::printOnRegion (test_vwin_region, { {5, space_char},
+                                           {5, space_char},
+                                           {5, one_char},
+                                           {5, two_char},
+                                           {5, three_char} } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
+  test::printRegion (vwin);
 
-  p_fvterm.p_scrollAreaReverse (vwin);
-  test::printOnArea (test_vwin_area, { {5, space_char},
-                                       {5, space_char},
-                                       {5, space_char},
-                                       {5, one_char},
-                                       {5, two_char} } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
-  test::printArea (vwin);
+  p_fvterm.p_scrollRegionReverse (vwin);
+  test::printOnRegion (test_vwin_region, { {5, space_char},
+                                           {5, space_char},
+                                           {5, space_char},
+                                           {5, one_char},
+                                           {5, two_char} } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
+  test::printRegion (vwin);
 
-  p_fvterm.p_scrollAreaReverse (vwin);
-  test::printOnArea (test_vwin_area, { {5, space_char},
-                                       {5, space_char},
-                                       {5, space_char},
-                                       {5, space_char},
-                                       {5, one_char} } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
-  test::printArea (vwin);
+  p_fvterm.p_scrollRegionReverse (vwin);
+  test::printOnRegion (test_vwin_region, { {5, space_char},
+                                         {5, space_char},
+                                         {5, space_char},
+                                         {5, space_char},
+                                         {5, one_char} } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
+  test::printRegion (vwin);
 
-  p_fvterm.p_scrollAreaReverse (vwin);
-  test::printOnArea (test_vwin_area, { {5, space_char},
-                                       {5, space_char},
-                                       {5, space_char},
-                                       {5, space_char},
-                                       {5, space_char} } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin) );
-  test::printArea (vwin);
+  p_fvterm.p_scrollRegionReverse (vwin);
+  test::printOnRegion (test_vwin_region, { {5, space_char},
+                                           {5, space_char},
+                                           {5, space_char},
+                                           {5, space_char},
+                                           {5, space_char} } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin) );
+  test::printRegion (vwin);
 
   // vdesktop scrolling
 
   auto&& vdesktop = p_fvterm.p_getVirtualDesktop();
-  test::printOnArea (vdesktop, { { 5, { {80, space_char} } },
-                                 { 1, { {80, one_char} } },
-                                 { 5, { {80, space_char} } },
-                                 { 1, { {80, one_char} } },
-                                 { 5, { {80, space_char} } },
-                                 { 1, { {80, one_char} } },
-                                 { 6, { {80, space_char} } } } );
+  test::printOnRegion (vdesktop, { { 5, { {80, space_char} } },
+                                   { 1, { {80, one_char} } },
+                                   { 5, { {80, space_char} } },
+                                   { 1, { {80, one_char} } },
+                                   { 5, { {80, space_char} } },
+                                   { 1, { {80, one_char} } },
+                                   { 6, { {80, space_char} } } } );
 
-  // Create a vdesktop comparison area
-  finalcut::FVTerm::FTermArea* test_vdesktop{};
+  // Create a vdesktop comparison region
+  finalcut::FVTerm::FTermRegion* test_vdesktop{};
   auto vdesktop_geometry = finalcut::FRect( finalcut::FPoint{0, 0}, finalcut::FSize{80, 24} );
-  auto test_vdesktop_ptr = p_fvterm.p_createArea (vdesktop_geometry);
+  auto test_vdesktop_ptr = p_fvterm.p_createRegion (vdesktop_geometry);
   test_vdesktop = test_vdesktop_ptr.get();
 
-  test::printOnArea (test_vdesktop, { { 5, { {80, space_char} } },
-                                      { 1, { {80, one_char} } },
-                                      { 5, { {80, space_char} } },
-                                      { 1, { {80, one_char} } },
-                                      { 5, { {80, space_char} } },
-                                      { 1, { {80, one_char} } },
-                                      { 6, { {80, space_char} } } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vdesktop, vdesktop) );
-  test::printArea (vdesktop);
+  test::printOnRegion (test_vdesktop, { { 5, { {80, space_char} } },
+                                        { 1, { {80, one_char} } },
+                                        { 5, { {80, space_char} } },
+                                        { 1, { {80, one_char} } },
+                                        { 5, { {80, space_char} } },
+                                        { 1, { {80, one_char} } },
+                                        { 6, { {80, space_char} } } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vdesktop, vdesktop) );
+  test::printRegion (vdesktop);
 
   FTermOutputTest::setNoForce(true);
-  p_fvterm.p_scrollAreaForward (vdesktop);
+  p_fvterm.p_scrollRegionForward (vdesktop);
   FTermOutputTest::setNoForce(false);
-  test::printOnArea (test_vdesktop, { { 4, { {80, space_char} } },
-                                      { 1, { {80, one_char} } },
-                                      { 5, { {80, space_char} } },
-                                      { 1, { {80, one_char} } },
-                                      { 5, { {80, space_char} } },
-                                      { 1, { {80, one_char} } },
-                                      { 7, { {80, space_char} } } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vdesktop, vdesktop) );
-  test::printArea (vdesktop);
+  test::printOnRegion (test_vdesktop, { { 4, { {80, space_char} } },
+                                        { 1, { {80, one_char} } },
+                                        { 5, { {80, space_char} } },
+                                        { 1, { {80, one_char} } },
+                                        { 5, { {80, space_char} } },
+                                        { 1, { {80, one_char} } },
+                                        { 7, { {80, space_char} } } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vdesktop, vdesktop) );
+  test::printRegion (vdesktop);
 
   FTermOutputTest::setNoForce(true);
-  p_fvterm.p_scrollAreaForward (vdesktop);
-  p_fvterm.p_scrollAreaForward (vdesktop);
+  p_fvterm.p_scrollRegionForward (vdesktop);
+  p_fvterm.p_scrollRegionForward (vdesktop);
   FTermOutputTest::setNoForce(false);
-  test::printOnArea (test_vdesktop, { { 2, { {80, space_char} } },
-                                      { 1, { {80, one_char} } },
-                                      { 5, { {80, space_char} } },
-                                      { 1, { {80, one_char} } },
-                                      { 5, { {80, space_char} } },
-                                      { 1, { {80, one_char} } },
-                                      { 9, { {80, space_char} } } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vdesktop, vdesktop) );
-  test::printArea (vdesktop);
+  test::printOnRegion (test_vdesktop, { { 2, { {80, space_char} } },
+                                        { 1, { {80, one_char} } },
+                                        { 5, { {80, space_char} } },
+                                        { 1, { {80, one_char} } },
+                                        { 5, { {80, space_char} } },
+                                        { 1, { {80, one_char} } },
+                                        { 9, { {80, space_char} } } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vdesktop, vdesktop) );
+  test::printRegion (vdesktop);
 
   FTermOutputTest::setNoForce(true);
-  p_fvterm.p_scrollAreaReverse (vdesktop);
+  p_fvterm.p_scrollRegionReverse (vdesktop);
   FTermOutputTest::setNoForce(false);
-  test::printOnArea (test_vdesktop, { { 3, { {80, space_char} } },
-                                      { 1, { {80, one_char} } },
-                                      { 5, { {80, space_char} } },
-                                      { 1, { {80, one_char} } },
-                                      { 5, { {80, space_char} } },
-                                      { 1, { {80, one_char} } },
-                                      { 8, { {80, space_char} } } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vdesktop, vdesktop) );
-  test::printArea (vdesktop);
+  test::printOnRegion (test_vdesktop, { { 3, { {80, space_char} } },
+                                        { 1, { {80, one_char} } },
+                                        { 5, { {80, space_char} } },
+                                        { 1, { {80, one_char} } },
+                                        { 5, { {80, space_char} } },
+                                        { 1, { {80, one_char} } },
+                                        { 8, { {80, space_char} } } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vdesktop, vdesktop) );
+  test::printRegion (vdesktop);
 
   for (auto i{0}; i < 6; i++)
   {
     FTermOutputTest::setNoForce(true);
-    p_fvterm.p_scrollAreaReverse (vdesktop);
+    p_fvterm.p_scrollRegionReverse (vdesktop);
     FTermOutputTest::setNoForce(false);
   }
 
-  test::printOnArea (test_vdesktop, { { 9, { {80, space_char} } },
-                                      { 1, { {80, one_char} } },
-                                      { 5, { {80, space_char} } },
-                                      { 1, { {80, one_char} } },
-                                      { 5, { {80, space_char} } },
-                                      { 1, { {80, one_char} } },
-                                      { 2, { {80, space_char} } } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vdesktop, vdesktop) );
-  test::printArea (vdesktop);
+  test::printOnRegion (test_vdesktop, { { 9, { {80, space_char} } },
+                                        { 1, { {80, one_char} } },
+                                        { 5, { {80, space_char} } },
+                                        { 1, { {80, one_char} } },
+                                        { 5, { {80, space_char} } },
+                                        { 1, { {80, one_char} } },
+                                        { 2, { {80, space_char} } } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vdesktop, vdesktop) );
+  test::printRegion (vdesktop);
 }
 
 //----------------------------------------------------------------------
@@ -2423,10 +2423,10 @@ void FVTermTest::FVTermOverlappingWindowsTest()
   finalcut::FRect geometry_3 {finalcut::FPoint{16, 0}, finalcut::FSize{6, 3}};
   finalcut::FRect geometry_4 {finalcut::FPoint{24, 0}, finalcut::FSize{6, 3}};
   // virtual windows
-  auto vwin_1_ptr = p_fvterm_1.p_createArea (geometry_1);
-  auto vwin_2_ptr = p_fvterm_2.p_createArea (geometry_2);
-  auto vwin_3_ptr = p_fvterm_3.p_createArea (geometry_3);
-  auto vwin_4_ptr = p_fvterm_4.p_createArea (geometry_4);
+  auto vwin_1_ptr = p_fvterm_1.p_createRegion (geometry_1);
+  auto vwin_2_ptr = p_fvterm_2.p_createRegion (geometry_2);
+  auto vwin_3_ptr = p_fvterm_3.p_createRegion (geometry_3);
+  auto vwin_4_ptr = p_fvterm_4.p_createRegion (geometry_4);
   auto vwin_1 = vwin_1_ptr.get();
   auto vwin_2 = vwin_2_ptr.get();
   auto vwin_3 = vwin_3_ptr.get();
@@ -2466,10 +2466,10 @@ void FVTermTest::FVTermOverlappingWindowsTest()
   p_fvterm_4.print() << finalcut::FPoint{25, 1}
                      << finalcut::FColorPair {finalcut::FColor::Black, finalcut::FColor::White}
                      << "██████████████████";
-  test::printArea (vwin_1);
-  test::printArea (vwin_2);
-  test::printArea (vwin_3);
-  test::printArea (vwin_4);
+  test::printRegion (vwin_1);
+  test::printRegion (vwin_2);
+  test::printRegion (vwin_3);
+  test::printRegion (vwin_4);
   vwin_1->visible = true;
   vwin_2->visible = true;
   vwin_3->visible = true;
@@ -2490,17 +2490,17 @@ void FVTermTest::FVTermOverlappingWindowsTest()
   // virtual desktop
   auto&& vdesktop = p_fvterm_1.p_getVirtualDesktop();
   p_fvterm_1.setColor (finalcut::FColor::DarkGray, finalcut::FColor::LightBlue);
-  p_fvterm_1.p_clearArea (vdesktop, L'.');
+  p_fvterm_1.p_clearRegion (vdesktop, L'.');
 
   // Write changes to the virtual terminal
   p_fvterm_1.p_processTerminalUpdate();
-  test::printArea (vterm);
+  test::printRegion (vterm);
 
-  // Create a comparison area
-  finalcut::FVTerm::FTermArea* test_area{};
+  // Create a comparison region
+  finalcut::FVTerm::FTermRegion* test_region{};
   auto geometry = finalcut::FRect( finalcut::FPoint{0, 0}, finalcut::FSize{80, 24} );
-  auto test_area_ptr = p_fvterm_1.p_createArea (geometry);
-  test_area = test_area_ptr.get();
+  auto test_region_ptr = p_fvterm_1.p_createRegion (geometry);
+  test_region = test_region_ptr.get();
 
   finalcut::FChar bg_char =
   {
@@ -2510,8 +2510,8 @@ void FVTermTest::FVTermOverlappingWindowsTest()
     { 0x00080000U }  // char_width = 1
   };
 
-  test::printOnArea (test_area, { 24, { {80, bg_char} } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_area, vdesktop) );
+  test::printOnRegion (test_region, { 24, { {80, bg_char} } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_region, vdesktop) );
 
   bg_char.attr.byte()->at(2) = 10;
 
@@ -2547,9 +2547,9 @@ void FVTermTest::FVTermOverlappingWindowsTest()
     { 0x00080000U }  // byte 0..3
   };
 
-  test::printOnArea (test_area, { {  3, { {6, vwin_1_char}, {2, bg_char}, {6, vwin_2_char}, {2, bg_char}, {6, vwin_3_char}, {2, bg_char}, {6, vwin_4_char}, {50, bg_char} } },
-                                  { 21, { {80, bg_char} } } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_area, vterm) );
+  test::printOnRegion (test_region, { {  3, { {6, vwin_1_char}, {2, bg_char}, {6, vwin_2_char}, {2, bg_char}, {6, vwin_3_char}, {2, bg_char}, {6, vwin_4_char}, {50, bg_char} } },
+                                      { 21, { {80, bg_char} } } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_region, vterm) );
 
   //     ░░░░░░
   //     ░░░░░░              1
@@ -2564,26 +2564,26 @@ void FVTermTest::FVTermOverlappingWindowsTest()
   // 3 : transparency
   // 4 : normal
 
-  test::moveArea(vwin_1, finalcut::FPoint{4, 0});
-  test::moveArea(vwin_2, finalcut::FPoint{0, 2});
-  test::moveArea(vwin_3, finalcut::FPoint{8, 2});
-  test::moveArea(vwin_4, finalcut::FPoint{4, 4});
+  test::moveRegion(vwin_1, finalcut::FPoint{4, 0});
+  test::moveRegion(vwin_2, finalcut::FPoint{0, 2});
+  test::moveRegion(vwin_3, finalcut::FPoint{8, 2});
+  test::moveRegion(vwin_4, finalcut::FPoint{4, 4});
   p_fvterm_1.p_restoreVTerm(geometry);
   p_fvterm_1.p_processTerminalUpdate();
-  test::printArea (vterm);
+  test::printRegion (vterm);
 
   bg_char.attr.bit()->printed = false;
   auto vwin_1_2_char = vwin_2_char;
   vwin_1_2_char.color.setBgColor(finalcut::FColor::White);
   vwin_3_char.attr.bit()->no_changes = false;
   auto vwin_2_4_char = vwin_4_char;
-  test::printOnArea (test_area, { {  2, { {4, bg_char}, {6, vwin_1_char}, {70, bg_char} } },
-                                  {  1, { {4, vwin_2_char}, {2, vwin_1_2_char}, {2, vwin_1_char}, {2, vwin_1_char}, {4, vwin_3_char}, {66, bg_char} } },
-                                  {  1, { {6, vwin_2_char}, {2, bg_char}, {6, vwin_3_char}, {66, bg_char} } },
-                                  {  1, { {4, vwin_2_char}, {2, vwin_2_4_char}, {4, vwin_4_char}, {4, vwin_3_char}, {66, bg_char} } },
-                                  {  2, { {4, bg_char}, {6, vwin_4_char}, {70, bg_char} } },
-                                  { 17, { {80, bg_char} } } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_area, vterm) );
+  test::printOnRegion (test_region, { {  2, { {4, bg_char}, {6, vwin_1_char}, {70, bg_char} } },
+                                      {  1, { {4, vwin_2_char}, {2, vwin_1_2_char}, {2, vwin_1_char}, {2, vwin_1_char}, {4, vwin_3_char}, {66, bg_char} } },
+                                      {  1, { {6, vwin_2_char}, {2, bg_char}, {6, vwin_3_char}, {66, bg_char} } },
+                                      {  1, { {4, vwin_2_char}, {2, vwin_2_4_char}, {4, vwin_4_char}, {4, vwin_3_char}, {66, bg_char} } },
+                                      {  2, { {4, bg_char}, {6, vwin_4_char}, {70, bg_char} } },
+                                      { 17, { {80, bg_char} } } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_region, vterm) );
 
   //     ░░░░░░
   // ▒▒▒▒░░░░░░              1          4  top
@@ -2597,22 +2597,22 @@ void FVTermTest::FVTermOverlappingWindowsTest()
   // 3 : transparency
   // 4 : normal
 
-  test::moveArea(vwin_1, finalcut::FPoint{4, 0});
-  test::moveArea(vwin_2, finalcut::FPoint{0, 1});
-  test::moveArea(vwin_3, finalcut::FPoint{6, 2});
-  test::moveArea(vwin_4, finalcut::FPoint{3, 3});
+  test::moveRegion(vwin_1, finalcut::FPoint{4, 0});
+  test::moveRegion(vwin_2, finalcut::FPoint{0, 1});
+  test::moveRegion(vwin_3, finalcut::FPoint{6, 2});
+  test::moveRegion(vwin_4, finalcut::FPoint{3, 3});
   p_fvterm_1.p_restoreVTerm(geometry);
   p_fvterm_1.p_processTerminalUpdate();
-  test::printArea (vterm);
+  test::printRegion (vterm);
 
-  test::printOnArea (test_area, { {  1, { {4, bg_char}, {6, vwin_1_char}, {70, bg_char} } },
-                                  {  1, { {4, vwin_2_char}, {2, vwin_1_2_char}, {4, vwin_1_char}, {70, bg_char} } },
-                                  {  1, { {4, vwin_2_char}, {2, vwin_1_2_char}, {4, vwin_1_char}, {2, vwin_3_char}, {68, bg_char} } },
-                                  {  1, { {3, vwin_2_char}, {6, vwin_4_char}, {3, vwin_3_char}, {68, bg_char} } },
-                                  {  1, { {3, bg_char}, {6, vwin_4_char}, {3, vwin_3_char}, {68, bg_char} } },
-                                  {  1, { {3, bg_char}, {6, vwin_4_char}, {71, bg_char} } },
-                                  { 18, { {80, bg_char} } } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_area, vterm) );
+  test::printOnRegion (test_region, { {  1, { {4, bg_char}, {6, vwin_1_char}, {70, bg_char} } },
+                                      {  1, { {4, vwin_2_char}, {2, vwin_1_2_char}, {4, vwin_1_char}, {70, bg_char} } },
+                                      {  1, { {4, vwin_2_char}, {2, vwin_1_2_char}, {4, vwin_1_char}, {2, vwin_3_char}, {68, bg_char} } },
+                                      {  1, { {3, vwin_2_char}, {6, vwin_4_char}, {3, vwin_3_char}, {68, bg_char} } },
+                                      {  1, { {3, bg_char}, {6, vwin_4_char}, {3, vwin_3_char}, {68, bg_char} } },
+                                      {  1, { {3, bg_char}, {6, vwin_4_char}, {71, bg_char} } },
+                                      { 18, { {80, bg_char} } } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_region, vterm) );
 
   // ░░░░░▒▒▒▒▒▒                         4  top
   // ░░░░░▒▒▒▒▒▒          1     2        3
@@ -2625,19 +2625,19 @@ void FVTermTest::FVTermOverlappingWindowsTest()
   // 3 : transparency
   // 4 : normal
 
-  test::moveArea(vwin_1, finalcut::FPoint{0, 0});
-  test::moveArea(vwin_2, finalcut::FPoint{5, 0});
-  test::moveArea(vwin_3, finalcut::FPoint{5, 2});
-  test::moveArea(vwin_4, finalcut::FPoint{0, 2});
+  test::moveRegion(vwin_1, finalcut::FPoint{0, 0});
+  test::moveRegion(vwin_2, finalcut::FPoint{5, 0});
+  test::moveRegion(vwin_3, finalcut::FPoint{5, 2});
+  test::moveRegion(vwin_4, finalcut::FPoint{0, 2});
   p_fvterm_1.p_restoreVTerm(geometry);
   p_fvterm_1.p_processTerminalUpdate();
-  test::printArea (vterm);
+  test::printRegion (vterm);
 
-  test::printOnArea (test_area, { {  2, { {5, vwin_1_char}, {1, vwin_1_2_char}, {5, vwin_2_char}, {69, bg_char} } },
-                                  {  1, { {6, vwin_4_char}, {5, vwin_2_char}, {69, bg_char} } },
-                                  {  2, { {6, vwin_4_char}, {5, vwin_3_char}, {69, bg_char} } },
-                                  { 19, { {80, bg_char} } } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_area, vterm) );
+  test::printOnRegion (test_region, { {  2, { {5, vwin_1_char}, {1, vwin_1_2_char}, {5, vwin_2_char}, {69, bg_char} } },
+                                      {  1, { {6, vwin_4_char}, {5, vwin_2_char}, {69, bg_char} } },
+                                      {  2, { {6, vwin_4_char}, {5, vwin_3_char}, {69, bg_char} } },
+                                      { 19, { {80, bg_char} } } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_region, vterm) );
 
   // ░░░░░▒▒▒▒▒▒                         3  top
   // ░░░░░▒▒▒▒▒▒          1     2        4
@@ -2654,13 +2654,13 @@ void FVTermTest::FVTermOverlappingWindowsTest()
   p_fvterm_1.p_determineWindowLayers();
   p_fvterm_1.p_restoreVTerm(geometry);
   p_fvterm_1.p_processTerminalUpdate();
-  test::printArea (vterm);
+  test::printRegion (vterm);
 
-  test::printOnArea (test_area, { {  2, { {5, vwin_1_char}, {1, vwin_1_2_char}, {5, vwin_2_char}, {69, bg_char} } },
-                                  {  1, { {6, vwin_4_char}, {5, vwin_2_char}, {69, bg_char} } },
-                                  {  2, { {6, vwin_4_char}, {5, vwin_3_char}, {69, bg_char} } },
-                                  { 19, { {80, bg_char} } } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_area, vterm) );
+  test::printOnRegion (test_region, { {  2, { {5, vwin_1_char}, {1, vwin_1_2_char}, {5, vwin_2_char}, {69, bg_char} } },
+                                      {  1, { {6, vwin_4_char}, {5, vwin_2_char}, {69, bg_char} } },
+                                      {  2, { {6, vwin_4_char}, {5, vwin_3_char}, {69, bg_char} } },
+                                      { 19, { {80, bg_char} } } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_region, vterm) );
 
   // ░░░░░▒▒▒▒▒▒                         2  top
   // ░░░░░▒▒▒▒▒▒          1     2        3
@@ -2677,13 +2677,13 @@ void FVTermTest::FVTermOverlappingWindowsTest()
   p_fvterm_1.p_determineWindowLayers();
   p_fvterm_1.p_restoreVTerm(geometry);
   p_fvterm_1.p_processTerminalUpdate();
-  test::printArea (vterm);
+  test::printRegion (vterm);
 
-  test::printOnArea (test_area, { {  2, { {5, vwin_1_char}, {1, vwin_1_2_char}, {5, vwin_2_char}, {69, bg_char} } },
-                                  {  1, { {5, vwin_4_char}, {1, vwin_1_2_char}, {5, vwin_2_char}, {69, bg_char} } },
-                                  {  2, { {6, vwin_4_char}, {5, vwin_3_char}, {69, bg_char} } },
-                                  { 19, { {80, bg_char} } } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_area, vterm) );
+  test::printOnRegion (test_region, { {  2, { {5, vwin_1_char}, {1, vwin_1_2_char}, {5, vwin_2_char}, {69, bg_char} } },
+                                      {  1, { {5, vwin_4_char}, {1, vwin_1_2_char}, {5, vwin_2_char}, {69, bg_char} } },
+                                      {  2, { {6, vwin_4_char}, {5, vwin_3_char}, {69, bg_char} } },
+                                      { 19, { {80, bg_char} } } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_region, vterm) );
 
   // ░░░░░░▒▒▒▒▒                         1  top
   // ░░░░░░▒▒▒▒▒          1     2        2
@@ -2701,17 +2701,17 @@ void FVTermTest::FVTermOverlappingWindowsTest()
   p_fvterm_1.p_determineWindowLayers();
   p_fvterm_1.p_restoreVTerm(geometry);
   p_fvterm_1.p_processTerminalUpdate();
-  test::printArea (vterm);
+  test::printRegion (vterm);
 
   auto vwin_2_1_char = vwin_1_char;
   vwin_2_1_char.ch[0] = L' ';
   auto vwin_4_1_char = vwin_1_char;
   vwin_4_1_char.ch[0] = L' ';
-  test::printOnArea (test_area, { {  2, { {5, vwin_1_char}, {1, vwin_2_1_char}, {5, vwin_2_char}, {69, bg_char} } },
-                                  {  1, { {5, vwin_4_1_char}, {1, vwin_2_1_char}, {5, vwin_2_char}, {69, bg_char} } },
-                                  {  2, { {6, vwin_4_char}, {5, vwin_3_char}, {69, bg_char} } },
-                                  { 19, { {80, bg_char} } } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_area, vterm) );
+  test::printOnRegion (test_region, { {  2, { {5, vwin_1_char}, {1, vwin_2_1_char}, {5, vwin_2_char}, {69, bg_char} } },
+                                      {  1, { {5, vwin_4_1_char}, {1, vwin_2_1_char}, {5, vwin_2_char}, {69, bg_char} } },
+                                      {  2, { {6, vwin_4_char}, {5, vwin_3_char}, {69, bg_char} } },
+                                      { 19, { {80, bg_char} } } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_region, vterm) );
 }
 
 //----------------------------------------------------------------------
@@ -2744,11 +2744,11 @@ void FVTermTest::FVTermTranparencyTest()
   finalcut::FRect geometry_4 {finalcut::FPoint{0, 0}, finalcut::FSize{9, 9}};
   finalcut::FRect geometry_5 {finalcut::FPoint{0, 0}, finalcut::FSize{9, 9}};
   // virtual windows
-  auto vwin_1_ptr = p_fvterm_1.p_createArea (geometry_1);
-  auto vwin_2_ptr = p_fvterm_2.p_createArea (geometry_2);
-  auto vwin_3_ptr = p_fvterm_3.p_createArea (geometry_3);
-  auto vwin_4_ptr = p_fvterm_4.p_createArea (geometry_4);
-  auto vwin_5_ptr = p_fvterm_5.p_createArea (geometry_5);
+  auto vwin_1_ptr = p_fvterm_1.p_createRegion (geometry_1);
+  auto vwin_2_ptr = p_fvterm_2.p_createRegion (geometry_2);
+  auto vwin_3_ptr = p_fvterm_3.p_createRegion (geometry_3);
+  auto vwin_4_ptr = p_fvterm_4.p_createRegion (geometry_4);
+  auto vwin_5_ptr = p_fvterm_5.p_createRegion (geometry_5);
   auto vwin_1 = vwin_1_ptr.get();
   auto vwin_2 = vwin_2_ptr.get();
   auto vwin_3 = vwin_3_ptr.get();
@@ -2839,11 +2839,11 @@ void FVTermTest::FVTermTranparencyTest()
                      << reset << white_color << "╱" << transparent << "       " << reset << white_color << "╲"
                      << reset;
 
-  test::printArea (vwin_1);
-  test::printArea (vwin_2);
-  test::printArea (vwin_3);
-  test::printArea (vwin_4);
-  test::printArea (vwin_5);
+  test::printRegion (vwin_1);
+  test::printRegion (vwin_2);
+  test::printRegion (vwin_3);
+  test::printRegion (vwin_4);
+  test::printRegion (vwin_5);
   vwin_1->visible = true;
   vwin_2->visible = false;
   vwin_3->visible = false;
@@ -2867,17 +2867,17 @@ void FVTermTest::FVTermTranparencyTest()
   // virtual desktop
   auto&& vdesktop = p_fvterm_1.p_getVirtualDesktop();
   p_fvterm_1.setColor (finalcut::FColor::LightGray, finalcut::FColor::Black);
-  p_fvterm_1.p_clearArea (vdesktop);
+  p_fvterm_1.p_clearRegion (vdesktop);
 
   // Write changes to the virtual terminal
   p_fvterm_1.p_processTerminalUpdate();
-  test::printArea (vterm);
+  test::printRegion (vterm);
 
-  // Create a comparison area
-  finalcut::FVTerm::FTermArea* test_area{};
+  // Create a comparison region
+  finalcut::FVTerm::FTermRegion* test_region{};
   auto geometry = finalcut::FRect( finalcut::FPoint{0, 0}, finalcut::FSize{80, 24} );
-  auto test_area_ptr = p_fvterm_1.p_createArea (geometry);
-  test_area = test_area_ptr.get();
+  auto test_region_ptr = p_fvterm_1.p_createRegion (geometry);
+  test_region = test_region_ptr.get();
 
   finalcut::FChar bg_char =
   {
@@ -2887,8 +2887,8 @@ void FVTermTest::FVTermTranparencyTest()
     { 0x00080000U }  // char_width = 1
   };
 
-  test::printOnArea (test_area, { 24, { {80, bg_char} } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_area, vdesktop) );
+  test::printOnRegion (test_region, { 24, { {80, bg_char} } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_region, vdesktop) );
 
   finalcut::FChar vwin_1_char =
   {
@@ -2898,21 +2898,21 @@ void FVTermTest::FVTermTranparencyTest()
     { 0x00080000U }  // char_width = 1
   };
 
-  test::printOnArea (test_area, { {  1, { {9, vwin_1_char}, {71, bg_char} } },
-                                  {  2, { {1, vwin_1_char}, {7, bg_char}, {1, vwin_1_char}, {71, bg_char} } },
-                                  {  1, { {9, vwin_1_char}, {71, bg_char} } },
-                                  {  2, { {1, vwin_1_char}, {7, bg_char}, {1, vwin_1_char}, {71, bg_char} } },
-                                  {  1, { {9, vwin_1_char}, {71, bg_char} } },
-                                  {  2, { {1, vwin_1_char}, {7, bg_char}, {1, vwin_1_char}, {71, bg_char} } },
-                                  { 15, { {80, bg_char} } } } );
+  test::printOnRegion (test_region, { {  1, { {9, vwin_1_char}, {71, bg_char} } },
+                                      {  2, { {1, vwin_1_char}, {7, bg_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                      {  1, { {9, vwin_1_char}, {71, bg_char} } },
+                                      {  2, { {1, vwin_1_char}, {7, bg_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                      {  1, { {9, vwin_1_char}, {71, bg_char} } },
+                                      {  2, { {1, vwin_1_char}, {7, bg_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                      { 15, { {80, bg_char} } } } );
 
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_area, vterm) );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_region, vterm) );
 
   vwin_2->visible = true;
 
   // Write changes to the virtual terminal
   p_fvterm_1.p_processTerminalUpdate();
-  test::printArea (vterm);
+  test::printRegion (vterm);
 
   finalcut::FChar vwin_2_char =
   {
@@ -2922,24 +2922,24 @@ void FVTermTest::FVTermTranparencyTest()
     { 0x00080000U }  // char_width = 1
   };
 
-  test::printOnArea (test_area, { {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {5, vwin_1_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
-                                  {  1, { {9, vwin_2_char}, {71, bg_char} } },
-                                  {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {5, bg_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
-                                  {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {5, vwin_1_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
-                                  {  1, { {9, vwin_2_char}, {71, bg_char} } },
-                                  {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {5, bg_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
-                                  {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {5, vwin_1_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
-                                  {  1, { {9, vwin_2_char}, {71, bg_char} } },
-                                  {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {5, bg_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
-                                  { 15, { {80, bg_char} } } } );
+  test::printOnRegion (test_region, { {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {5, vwin_1_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                      {  1, { {9, vwin_2_char}, {71, bg_char} } },
+                                      {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {5, bg_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                      {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {5, vwin_1_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                      {  1, { {9, vwin_2_char}, {71, bg_char} } },
+                                      {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {5, bg_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                      {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {5, vwin_1_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                      {  1, { {9, vwin_2_char}, {71, bg_char} } },
+                                      {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {5, bg_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                      { 15, { {80, bg_char} } } } );
 
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_area, vterm) );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_region, vterm) );
 
   vwin_3->visible = true;
 
   // Write changes to the virtual terminal
   p_fvterm_1.p_processTerminalUpdate();
-  test::printArea (vterm);
+  test::printRegion (vterm);
 
   finalcut::FChar vwin_3_char =
   {
@@ -2949,24 +2949,24 @@ void FVTermTest::FVTermTranparencyTest()
     { 0x00080000U }  // char_width = 1
   };
 
-  test::printOnArea (test_area, { {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {1, vwin_3_char}, {3, vwin_1_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
-                                  {  1, { {2, vwin_2_char}, {1, vwin_3_char}, {3, vwin_2_char}, {1, vwin_3_char}, {2, vwin_2_char}, {71, bg_char} } },
-                                  {  1, { {9, vwin_3_char}, {71, bg_char} } },
-                                  {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {1, vwin_3_char}, {3, vwin_1_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
-                                  {  1, { {2, vwin_2_char}, {1, vwin_3_char}, {3, vwin_2_char}, {1, vwin_3_char}, {2, vwin_2_char}, {71, bg_char} } },
-                                  {  1, { {9, vwin_3_char}, {71, bg_char} } },
-                                  {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {1, vwin_3_char}, {3, vwin_1_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
-                                  {  1, { {2, vwin_2_char}, {1, vwin_3_char}, {3, vwin_2_char}, {1, vwin_3_char}, {2, vwin_2_char}, {71, bg_char} } },
-                                  {  1, { {9, vwin_3_char}, {71, bg_char} } },
-                                  { 15, { {80, bg_char} } } } );
+  test::printOnRegion (test_region, { {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {1, vwin_3_char}, {3, vwin_1_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                      {  1, { {2, vwin_2_char}, {1, vwin_3_char}, {3, vwin_2_char}, {1, vwin_3_char}, {2, vwin_2_char}, {71, bg_char} } },
+                                      {  1, { {9, vwin_3_char}, {71, bg_char} } },
+                                      {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {1, vwin_3_char}, {3, vwin_1_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                      {  1, { {2, vwin_2_char}, {1, vwin_3_char}, {3, vwin_2_char}, {1, vwin_3_char}, {2, vwin_2_char}, {71, bg_char} } },
+                                      {  1, { {9, vwin_3_char}, {71, bg_char} } },
+                                      {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {1, vwin_3_char}, {3, vwin_1_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                      {  1, { {2, vwin_2_char}, {1, vwin_3_char}, {3, vwin_2_char}, {1, vwin_3_char}, {2, vwin_2_char}, {71, bg_char} } },
+                                      {  1, { {9, vwin_3_char}, {71, bg_char} } },
+                                      { 15, { {80, bg_char} } } } );
 
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_area, vterm) );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_region, vterm) );
 
   vwin_4->visible = true;
 
   // Write changes to the virtual terminal
   p_fvterm_1.p_processTerminalUpdate();
-  test::printArea (vterm);
+  test::printRegion (vterm);
 
   finalcut::FChar vertical_line_char =  // │
   {
@@ -2992,24 +2992,24 @@ void FVTermTest::FVTermTranparencyTest()
     { 0x00080000U }  // char_width = 1
   };
 
-  test::printOnArea (test_area, { {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {1, vwin_3_char}, {1, vwin_1_char}, {1, vertical_line_char}, {1, vwin_1_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
-                                  {  1, { {2, vwin_2_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vertical_line_char}, {1, vwin_2_char}, {1, vwin_3_char}, {2, vwin_2_char}, {71, bg_char} } },
-                                  {  1, { {4, vwin_3_char}, {1, vertical_line_char}, {4, vwin_3_char}, {71, bg_char} } },
-                                  {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {1, vwin_3_char}, {1, vwin_1_char}, {1, vertical_line_char}, {1, vwin_1_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
-                                  {  1, { {4, horizontal_line_char}, {1, plus_line_char}, {4, horizontal_line_char},  {71, bg_char} } },
-                                  {  1, { {4, vwin_3_char}, {1, vertical_line_char}, {4, vwin_3_char}, {71, bg_char} } },
-                                  {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {1, vwin_3_char}, {1, vwin_1_char}, {1, vertical_line_char}, {1, vwin_1_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
-                                  {  1, { {2, vwin_2_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vertical_line_char}, {1, vwin_2_char}, {1, vwin_3_char}, {2, vwin_2_char}, {71, bg_char} } },
-                                  {  1, { {4, vwin_3_char}, {1, vertical_line_char}, {4, vwin_3_char}, {71, bg_char} } },
-                                  { 15, { {80, bg_char} } } } );
+  test::printOnRegion (test_region, { {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {1, vwin_3_char}, {1, vwin_1_char}, {1, vertical_line_char}, {1, vwin_1_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                      {  1, { {2, vwin_2_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vertical_line_char}, {1, vwin_2_char}, {1, vwin_3_char}, {2, vwin_2_char}, {71, bg_char} } },
+                                      {  1, { {4, vwin_3_char}, {1, vertical_line_char}, {4, vwin_3_char}, {71, bg_char} } },
+                                      {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {1, vwin_3_char}, {1, vwin_1_char}, {1, vertical_line_char}, {1, vwin_1_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                      {  1, { {4, horizontal_line_char}, {1, plus_line_char}, {4, horizontal_line_char},  {71, bg_char} } },
+                                      {  1, { {4, vwin_3_char}, {1, vertical_line_char}, {4, vwin_3_char}, {71, bg_char} } },
+                                      {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {1, vwin_3_char}, {1, vwin_1_char}, {1, vertical_line_char}, {1, vwin_1_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                      {  1, { {2, vwin_2_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vertical_line_char}, {1, vwin_2_char}, {1, vwin_3_char}, {2, vwin_2_char}, {71, bg_char} } },
+                                      {  1, { {4, vwin_3_char}, {1, vertical_line_char}, {4, vwin_3_char}, {71, bg_char} } },
+                                      { 15, { {80, bg_char} } } } );
 
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_area, vterm) );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_region, vterm) );
 
   vwin_5->visible = true;
 
   // Write changes to the virtual terminal
   p_fvterm_1.p_processTerminalUpdate();
-  test::printArea (vterm);
+  test::printRegion (vterm);
 
   finalcut::FChar diagonal_1_line_char =  // ╲
   {
@@ -3035,18 +3035,18 @@ void FVTermTest::FVTermTranparencyTest()
     { 0x00080000U }  // char_width = 1
   };
 
-  test::printOnArea (test_area, { {  1, { {1, diagonal_1_line_char}, {1, vwin_2_char}, {1, vwin_3_char}, {1, vwin_1_char}, {1, vertical_line_char}, {1, vwin_1_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, diagonal_2_line_char}, {71, bg_char} } },
-                                  {  1, { {1, vwin_2_char}, {1, diagonal_1_line_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vertical_line_char}, {1, vwin_2_char}, {1, vwin_3_char}, {1, diagonal_2_line_char}, {1, vwin_2_char}, {71, bg_char} } },
-                                  {  1, { {2, vwin_3_char}, {1, diagonal_1_line_char}, {1, vwin_3_char}, {1, vertical_line_char}, {1, vwin_3_char}, {1, diagonal_2_line_char}, {2, vwin_3_char}, {71, bg_char} } },
-                                  {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {1, vwin_3_char}, {1, diagonal_1_line_char}, {1, vertical_line_char}, {1, diagonal_2_line_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
-                                  {  1, { {4, horizontal_line_char}, {1, cross_line_char}, {4, horizontal_line_char},  {71, bg_char} } },
-                                  {  1, { {3, vwin_3_char}, {1, diagonal_2_line_char}, {1, vertical_line_char}, {1, diagonal_1_line_char}, {3, vwin_3_char}, {71, bg_char} } },
-                                  {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {1, diagonal_2_line_char}, {1, vwin_1_char}, {1, vertical_line_char}, {1, vwin_1_char}, {1, diagonal_1_line_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
-                                  {  1, { {1, vwin_2_char}, {1, diagonal_2_line_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vertical_line_char}, {1, vwin_2_char}, {1, vwin_3_char}, {1, diagonal_1_line_char}, {1, vwin_2_char}, {71, bg_char} } },
-                                  {  1, { {1, diagonal_2_line_char}, {3, vwin_3_char}, {1, vertical_line_char}, {3, vwin_3_char}, {1, diagonal_1_line_char}, {71, bg_char} } },
-                                  { 15, { {80, bg_char} } } } );
+  test::printOnRegion (test_region, { {  1, { {1, diagonal_1_line_char}, {1, vwin_2_char}, {1, vwin_3_char}, {1, vwin_1_char}, {1, vertical_line_char}, {1, vwin_1_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, diagonal_2_line_char}, {71, bg_char} } },
+                                      {  1, { {1, vwin_2_char}, {1, diagonal_1_line_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vertical_line_char}, {1, vwin_2_char}, {1, vwin_3_char}, {1, diagonal_2_line_char}, {1, vwin_2_char}, {71, bg_char} } },
+                                      {  1, { {2, vwin_3_char}, {1, diagonal_1_line_char}, {1, vwin_3_char}, {1, vertical_line_char}, {1, vwin_3_char}, {1, diagonal_2_line_char}, {2, vwin_3_char}, {71, bg_char} } },
+                                      {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {1, vwin_3_char}, {1, diagonal_1_line_char}, {1, vertical_line_char}, {1, diagonal_2_line_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                      {  1, { {4, horizontal_line_char}, {1, cross_line_char}, {4, horizontal_line_char},  {71, bg_char} } },
+                                      {  1, { {3, vwin_3_char}, {1, diagonal_2_line_char}, {1, vertical_line_char}, {1, diagonal_1_line_char}, {3, vwin_3_char}, {71, bg_char} } },
+                                      {  1, { {1, vwin_1_char}, {1, vwin_2_char}, {1, diagonal_2_line_char}, {1, vwin_1_char}, {1, vertical_line_char}, {1, vwin_1_char}, {1, diagonal_1_line_char}, {1, vwin_2_char}, {1, vwin_1_char}, {71, bg_char} } },
+                                      {  1, { {1, vwin_2_char}, {1, diagonal_2_line_char}, {1, vwin_3_char}, {1, vwin_2_char}, {1, vertical_line_char}, {1, vwin_2_char}, {1, vwin_3_char}, {1, diagonal_1_line_char}, {1, vwin_2_char}, {71, bg_char} } },
+                                      {  1, { {1, diagonal_2_line_char}, {3, vwin_3_char}, {1, vertical_line_char}, {3, vwin_3_char}, {1, diagonal_1_line_char}, {71, bg_char} } },
+                                      { 15, { {80, bg_char} } } } );
 
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_area, vterm) );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_region, vterm) );
 }
 
 //----------------------------------------------------------------------
@@ -3063,7 +3063,7 @@ void FVTermTest::FVTermReduceUpdatesTest()
   // Create the virtual windows for the p_fvterm objects
   finalcut::FRect geometry {finalcut::FPoint{0, 0}, finalcut::FSize{15, 15}};
   // virtual windows
-  auto vwin_ptr = p_fvterm.p_createArea (geometry);
+  auto vwin_ptr = p_fvterm.p_createRegion (geometry);
   auto vwin = vwin_ptr.get();
   p_fvterm.setVWin(std::move(vwin_ptr));
 
@@ -3090,7 +3090,7 @@ void FVTermTest::FVTermReduceUpdatesTest()
 
   // Write changes to the virtual terminal
   p_fvterm.p_processTerminalUpdate();
-  test::printArea (vterm);
+  test::printRegion (vterm);
 
   for (auto i{0}; i < 15; i++)
   {
@@ -3278,7 +3278,7 @@ void FVTermTest::FVTermReduceUpdatesTest()
 }
 
 //----------------------------------------------------------------------
-void FVTermTest::getFVTermAreaTest()
+void FVTermTest::getFVTermRegionTest()
 {
   FVTerm_protected p_fvterm(finalcut::outputClass<FTermOutputTest>{});
 
@@ -3288,7 +3288,7 @@ void FVTermTest::getFVTermAreaTest()
   // Create the virtual windows for the p_fvterm objects
   finalcut::FRect geometry {finalcut::FPoint{0, 0}, finalcut::FSize{80, 24}};
   // virtual windows
-  auto vwin_ptr = p_fvterm.p_createArea (geometry);
+  auto vwin_ptr = p_fvterm.p_createRegion (geometry);
   auto vwin = vwin_ptr.get();
   p_fvterm.setVWin(std::move(vwin_ptr));
 
@@ -3328,16 +3328,16 @@ void FVTermTest::getFVTermAreaTest()
 
   // Write changes to the virtual terminal
   p_fvterm.p_processTerminalUpdate();
-  test::printArea (vterm);
+  test::printRegion (vterm);
 
-  // Creates another virtual window area
-  finalcut::FVTerm::FTermArea* vwin_area{};
-  finalcut::FVTerm::FTermArea* test_vwin_area{};
+  // Creates another virtual window region
+  finalcut::FVTerm::FTermRegion* vwin_region{};
+  finalcut::FVTerm::FTermRegion* test_vwin_region{};
   auto vwin_geometry = finalcut::FRect( finalcut::FPoint{0, 0}, finalcut::FSize{6, 6} );
-  auto vwin_area_ptr = p_fvterm.p_createArea (vwin_geometry);
-  vwin_area = vwin_area_ptr.get();
-  auto test_vwin_area_ptr = p_fvterm.p_createArea (vwin_geometry);
-  test_vwin_area = test_vwin_area_ptr.get();
+  auto vwin_region_ptr = p_fvterm.p_createRegion (vwin_geometry);
+  vwin_region = vwin_region_ptr.get();
+  auto test_vwin_region_ptr = p_fvterm.p_createRegion (vwin_geometry);
+  test_vwin_region = test_vwin_region_ptr.get();
 
   finalcut::FChar bg_char =
   {
@@ -3347,25 +3347,25 @@ void FVTermTest::getFVTermAreaTest()
     { 0x00080000U }  // char_width = 1
   };
 
-  test::printArea (vwin_area);
-  test::printOnArea (test_vwin_area, { 6, { {6, bg_char} } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin_area) );
+  test::printRegion (vwin_region);
+  test::printOnRegion (test_vwin_region, { 6, { {6, bg_char} } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin_region) );
 
   // Get rectangle block from virtual terminal
 
   // Test with x or y is < 1
-  p_fvterm.p_getArea (finalcut::FRect(finalcut::FPoint{0, 0}, finalcut::FSize{4, 4}), vwin_area);
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin_area) );
+  p_fvterm.p_getRegion (finalcut::FRect(finalcut::FPoint{0, 0}, finalcut::FSize{4, 4}), vwin_region);
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin_region) );
 
-  p_fvterm.p_getArea (finalcut::FRect(finalcut::FPoint{0, 1}, finalcut::FSize{4, 4}), vwin_area);
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin_area) );
+  p_fvterm.p_getRegion (finalcut::FRect(finalcut::FPoint{0, 1}, finalcut::FSize{4, 4}), vwin_region);
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin_region) );
 
-  p_fvterm.p_getArea (finalcut::FRect(finalcut::FPoint{1, 0}, finalcut::FSize{4, 4}), vwin_area);
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin_area) );
+  p_fvterm.p_getRegion (finalcut::FRect(finalcut::FPoint{1, 0}, finalcut::FSize{4, 4}), vwin_region);
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin_region) );
 
   // Test with x and y is >= 1
-  p_fvterm.p_getArea (finalcut::FRect(finalcut::FPoint{1, 1}, finalcut::FSize{4, 4}), vwin_area);
-  test::printArea (vwin_area);
+  p_fvterm.p_getRegion (finalcut::FRect(finalcut::FPoint{1, 1}, finalcut::FSize{4, 4}), vwin_region);
+  test::printRegion (vwin_region);
 
   finalcut::FChar new_bg_char = bg_char;
   new_bg_char.color.setFgColor(finalcut::FColor::Black);
@@ -3376,175 +3376,175 @@ void FVTermTest::getFVTermAreaTest()
   back_slash_char.ch[0] = L'\\';
   finalcut::FChar zero_char = new_bg_char;
   zero_char.ch[0] = L'0';
-  test::printOnArea (test_vwin_area, { { 1, { {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char}, {2, bg_char} } },
-                                       { 1, { {1, forward_slash_char}, {2, zero_char}, {1, back_slash_char}, {2, bg_char} } },
-                                       { 1, { {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char}, {2, bg_char} } },
-                                       { 1, { {1, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char}, {2, bg_char} } },
-                                       { 2, { {6, bg_char} } } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin_area) );
-  p_fvterm.p_getArea (finalcut::FRect(finalcut::FPoint{3, 3}, finalcut::FSize{4, 4}), vwin_area);
-  test::printArea (vwin_area);
-  const auto& fchar_pos1 = vwin_area->getFChar(0, 0);
-  const auto& fchar_pos2 = vwin_area->getFChar(finalcut::FPoint{3, 3});
-  auto& fchar_pos3 = vwin_area->getFChar(3, 4);
-  auto& fchar_pos4 = vwin_area->getFChar(finalcut::FPoint{5, 5});
-  CPPUNIT_ASSERT ( &fchar_pos1 == &vwin_area->data[0] );
-  CPPUNIT_ASSERT ( &fchar_pos2 == &vwin_area->data[3 * 6 + 3] );  // 6 = width of area
-  CPPUNIT_ASSERT ( &fchar_pos3 == &vwin_area->data[4 * 6 + 3] );  // 6 = width of area
-  CPPUNIT_ASSERT ( &fchar_pos4 == &vwin_area->data[5 * 6 + 5] );  // 6 = width of area
-  CPPUNIT_ASSERT ( &fchar_pos4 == &vwin_area->data[6 * 6 - 1] );  // 6 = width of area
-  CPPUNIT_ASSERT ( &vwin_area->getFChar(10, 0) == &vwin_area->getFChar(4, 1) );
-  CPPUNIT_ASSERT ( vwin_area->getFCharIterator(10, 0) == vwin_area->getFCharIterator(4, 1) );
+  test::printOnRegion (test_vwin_region, { { 1, { {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char}, {2, bg_char} } },
+                                           { 1, { {1, forward_slash_char}, {2, zero_char}, {1, back_slash_char}, {2, bg_char} } },
+                                           { 1, { {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char}, {2, bg_char} } },
+                                           { 1, { {1, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char}, {2, bg_char} } },
+                                           { 2, { {6, bg_char} } } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin_region) );
+  p_fvterm.p_getRegion (finalcut::FRect(finalcut::FPoint{3, 3}, finalcut::FSize{4, 4}), vwin_region);
+  test::printRegion (vwin_region);
+  const auto& fchar_pos1 = vwin_region->getFChar(0, 0);
+  const auto& fchar_pos2 = vwin_region->getFChar(finalcut::FPoint{3, 3});
+  auto& fchar_pos3 = vwin_region->getFChar(3, 4);
+  auto& fchar_pos4 = vwin_region->getFChar(finalcut::FPoint{5, 5});
+  CPPUNIT_ASSERT ( &fchar_pos1 == &vwin_region->data[0] );
+  CPPUNIT_ASSERT ( &fchar_pos2 == &vwin_region->data[3 * 6 + 3] );  // 6 = width of region
+  CPPUNIT_ASSERT ( &fchar_pos3 == &vwin_region->data[4 * 6 + 3] );  // 6 = width of region
+  CPPUNIT_ASSERT ( &fchar_pos4 == &vwin_region->data[5 * 6 + 5] );  // 6 = width of region
+  CPPUNIT_ASSERT ( &fchar_pos4 == &vwin_region->data[6 * 6 - 1] );  // 6 = width of region
+  CPPUNIT_ASSERT ( &vwin_region->getFChar(10, 0) == &vwin_region->getFChar(4, 1) );
+  CPPUNIT_ASSERT ( vwin_region->getFCharIterator(10, 0) == vwin_region->getFCharIterator(4, 1) );
 
   finalcut::FChar one_char = new_bg_char;
   one_char.ch[0] = L'1';
   finalcut::FChar four_char = new_bg_char;
   four_char.ch[0] = L'4';
-  test::printOnArea (test_vwin_area, { { 1, { {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char}, {2, bg_char} } },
-                                       { 1, { {1, forward_slash_char}, {2, zero_char}, {1, back_slash_char}, {2, bg_char} } },
-                                       { 1, { {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char},  {1, back_slash_char}, {1, new_bg_char} } },
-                                       { 1, { {1, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {2, new_bg_char}, {1, back_slash_char} } },
-                                       { 1, { {2, bg_char}, {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char} } },
-                                       { 1, { {2, bg_char}, {1, four_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, one_char} } } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin_area) );
+  test::printOnRegion (test_vwin_region, { { 1, { {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char}, {2, bg_char} } },
+                                           { 1, { {1, forward_slash_char}, {2, zero_char}, {1, back_slash_char}, {2, bg_char} } },
+                                           { 1, { {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char},  {1, back_slash_char}, {1, new_bg_char} } },
+                                           { 1, { {1, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {2, new_bg_char}, {1, back_slash_char} } },
+                                           { 1, { {2, bg_char}, {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char} } },
+                                           { 1, { {2, bg_char}, {1, four_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, one_char} } } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin_region) );
 
-  test::printOnArea (vwin_area, { 6, { {6, bg_char} } } );
-  p_fvterm.p_getArea (finalcut::FRect(finalcut::FPoint{3, 3}, finalcut::FSize{4, 4}), vwin_area);
-  test::printOnArea (test_vwin_area, { { 2, { {6, bg_char} } },
-                                       { 1, { {2, bg_char}, {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char} } },
-                                       { 1, { {2, bg_char}, {1, forward_slash_char}, {2, new_bg_char}, {1, back_slash_char} } },
-                                       { 1, { {2, bg_char}, {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char} } },
-                                       { 1, { {2, bg_char}, {1, four_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, one_char} } } } );
-  test::printArea (vwin_area);
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin_area) );
-  test::printOnArea (vwin_area, { 6, { {6, bg_char} } } );
-  p_fvterm.p_getArea (finalcut::FRect(finalcut::FPoint{5, 5}, finalcut::FSize{4, 4}), vwin_area);
-  test::printOnArea (test_vwin_area, { { 4, { {6, bg_char} } },
-                                       { 1, { {4, bg_char}, {1, new_bg_char}, {1, forward_slash_char} } },
-                                       { 1, { {4, bg_char}, {1, forward_slash_char}, {1, one_char} } } } );
-  test::printArea (vwin_area);
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin_area) );
+  test::printOnRegion (vwin_region, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getRegion (finalcut::FRect(finalcut::FPoint{3, 3}, finalcut::FSize{4, 4}), vwin_region);
+  test::printOnRegion (test_vwin_region, { { 2, { {6, bg_char} } },
+                                           { 1, { {2, bg_char}, {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char} } },
+                                           { 1, { {2, bg_char}, {1, forward_slash_char}, {2, new_bg_char}, {1, back_slash_char} } },
+                                           { 1, { {2, bg_char}, {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char} } },
+                                           { 1, { {2, bg_char}, {1, four_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, one_char} } } } );
+  test::printRegion (vwin_region);
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin_region) );
+  test::printOnRegion (vwin_region, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getRegion (finalcut::FRect(finalcut::FPoint{5, 5}, finalcut::FSize{4, 4}), vwin_region);
+  test::printOnRegion (test_vwin_region, { { 4, { {6, bg_char} } },
+                                         { 1, { {4, bg_char}, {1, new_bg_char}, {1, forward_slash_char} } },
+                                         { 1, { {4, bg_char}, {1, forward_slash_char}, {1, one_char} } } } );
+  test::printRegion (vwin_region);
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin_region) );
 
-  // move area
-  vwin_area->position.x += 2;
-  vwin_area->position.y += 2;
-  test::printOnArea (vwin_area, { 6, { {6, bg_char} } } );
-  p_fvterm.p_getArea (finalcut::FRect(finalcut::FPoint{5, 5}, finalcut::FSize{4, 4}), vwin_area);
+  // move region
+  vwin_region->position.x += 2;
+  vwin_region->position.y += 2;
+  test::printOnRegion (vwin_region, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getRegion (finalcut::FRect(finalcut::FPoint{5, 5}, finalcut::FSize{4, 4}), vwin_region);
   finalcut::FChar five_char = new_bg_char;
   five_char.ch[0] = L'5';
-  test::printOnArea (test_vwin_area, { { 2, { {6, bg_char} } },
-                                       { 1, { {2, bg_char}, {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char} } },
-                                       { 1, { {2, bg_char}, {1, forward_slash_char}, {1, one_char}, {1, five_char}, {1, back_slash_char} } },
-                                       { 1, { {2, bg_char}, {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char} } },
-                                       { 1, { {2, bg_char}, {1, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char} } } } );
-  test::printArea (vwin_area);
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin_area) );
+  test::printOnRegion (test_vwin_region, { { 2, { {6, bg_char} } },
+                                           { 1, { {2, bg_char}, {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char} } },
+                                           { 1, { {2, bg_char}, {1, forward_slash_char}, {1, one_char}, {1, five_char}, {1, back_slash_char} } },
+                                           { 1, { {2, bg_char}, {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char} } },
+                                           { 1, { {2, bg_char}, {1, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char} } } } );
+  test::printRegion (vwin_region);
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin_region) );
 
-  vwin_area->position.x += 2;
-  vwin_area->position.y += 2;
-  test::printOnArea (vwin_area, { 6, { {6, bg_char} } } );
-  p_fvterm.p_getArea (finalcut::FRect(finalcut::FPoint{5, 5}, finalcut::FSize{4, 4}), vwin_area);
-  test::printArea (vwin_area);
-  test::printOnArea (test_vwin_area, { { 1, { {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char}, {2, bg_char} } },
-                                       { 1, { {1, forward_slash_char}, {1, one_char}, {1, five_char}, {1, back_slash_char}, {2, bg_char} } },
-                                       { 1, { {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char}, {2, bg_char} } },
-                                       { 1, { {1, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char}, {2, bg_char} } },
-                                       { 2, { {6, bg_char} } } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin_area) );
+  vwin_region->position.x += 2;
+  vwin_region->position.y += 2;
+  test::printOnRegion (vwin_region, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getRegion (finalcut::FRect(finalcut::FPoint{5, 5}, finalcut::FSize{4, 4}), vwin_region);
+  test::printRegion (vwin_region);
+  test::printOnRegion (test_vwin_region, { { 1, { {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char}, {2, bg_char} } },
+                                           { 1, { {1, forward_slash_char}, {1, one_char}, {1, five_char}, {1, back_slash_char}, {2, bg_char} } },
+                                           { 1, { {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char}, {2, bg_char} } },
+                                           { 1, { {1, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char}, {2, bg_char} } },
+                                           { 2, { {6, bg_char} } } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin_region) );
 
-  vwin_area->position.x += 1;
-  vwin_area->position.y += 1;
-  test::printOnArea (vwin_area, { 6, { {6, bg_char} } } );
-  p_fvterm.p_getArea (finalcut::FRect(finalcut::FPoint{5, 5}, finalcut::FSize{4, 4}), vwin_area);
-  test::printArea (vwin_area);
-  test::printOnArea (test_vwin_area, { { 1, { {1, one_char}, {1, five_char}, {1, back_slash_char}, {3, bg_char} } },
-                                       { 1, { {2, new_bg_char}, {1, forward_slash_char}, {3, bg_char} } },
-                                       { 1, { {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char}, {3, bg_char} } },
-                                       { 3, { {6, bg_char} } } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin_area) );
+  vwin_region->position.x += 1;
+  vwin_region->position.y += 1;
+  test::printOnRegion (vwin_region, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getRegion (finalcut::FRect(finalcut::FPoint{5, 5}, finalcut::FSize{4, 4}), vwin_region);
+  test::printRegion (vwin_region);
+  test::printOnRegion (test_vwin_region, { { 1, { {1, one_char}, {1, five_char}, {1, back_slash_char}, {3, bg_char} } },
+                                           { 1, { {2, new_bg_char}, {1, forward_slash_char}, {3, bg_char} } },
+                                           { 1, { {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char}, {3, bg_char} } },
+                                           { 3, { {6, bg_char} } } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin_region) );
 
-  vwin_area->position.x += 1;
-  vwin_area->position.y += 1;
-  test::printOnArea (vwin_area, { 6, { {6, bg_char} } } );
-  p_fvterm.p_getArea (finalcut::FRect(finalcut::FPoint{5, 5}, finalcut::FSize{4, 4}), vwin_area);
-  test::printArea (vwin_area);
-  test::printOnArea (test_vwin_area, { { 1, { {1, new_bg_char}, {1, forward_slash_char}, {4, bg_char} } },
-                                       { 1, { {1, forward_slash_char}, {1, new_bg_char}, {4, bg_char} } },
-                                       { 4, { {6, bg_char} } } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin_area) );
+  vwin_region->position.x += 1;
+  vwin_region->position.y += 1;
+  test::printOnRegion (vwin_region, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getRegion (finalcut::FRect(finalcut::FPoint{5, 5}, finalcut::FSize{4, 4}), vwin_region);
+  test::printRegion (vwin_region);
+  test::printOnRegion (test_vwin_region, { { 1, { {1, new_bg_char}, {1, forward_slash_char}, {4, bg_char} } },
+                                           { 1, { {1, forward_slash_char}, {1, new_bg_char}, {4, bg_char} } },
+                                           { 4, { {6, bg_char} } } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin_region) );
 
-  vwin_area->position.x += 1;
-  vwin_area->position.y += 1;
-  test::printOnArea (vwin_area, { 6, { {6, bg_char} } } );
-  p_fvterm.p_getArea (finalcut::FRect(finalcut::FPoint{5, 5}, finalcut::FSize{4, 4}), vwin_area);
-  test::printArea (vwin_area);
-  test::printOnArea (test_vwin_area, { { 1, { {1, new_bg_char}, {5, bg_char} } },
-                                 { 5, { {6, bg_char} } } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin_area) );
+  vwin_region->position.x += 1;
+  vwin_region->position.y += 1;
+  test::printOnRegion (vwin_region, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getRegion (finalcut::FRect(finalcut::FPoint{5, 5}, finalcut::FSize{4, 4}), vwin_region);
+  test::printRegion (vwin_region);
+  test::printOnRegion (test_vwin_region, { { 1, { {1, new_bg_char}, {5, bg_char} } },
+                                         { 5, { {6, bg_char} } } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin_region) );
 
-  test::printOnArea (vwin_area, { 6, { {6, bg_char} } } );
-  p_fvterm.p_getArea (finalcut::FRect(finalcut::FPoint{11, 9}, finalcut::FSize{4, 4}), vwin_area);
-  test::printArea (vwin_area);
+  test::printOnRegion (vwin_region, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getRegion (finalcut::FRect(finalcut::FPoint{11, 9}, finalcut::FSize{4, 4}), vwin_region);
+  test::printRegion (vwin_region);
   finalcut::FChar a_char = new_bg_char;
   a_char.ch[0] = L'a';
-  test::printOnArea (test_vwin_area, { { 1, { {6, bg_char} } },
-                                       { 1, { {3, bg_char}, {1, back_slash_char}, {2, new_bg_char} } },
-                                       { 1, { {3, bg_char}, {1, a_char}, {1, back_slash_char}, {1, forward_slash_char} } },
-                                       { 1, { {3, bg_char}, {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char} } },
-                                       { 1, { {3, bg_char}, {1, forward_slash_char}, {2, new_bg_char} } },
-                                       { 1, { {6, bg_char} } } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin_area) );
+  test::printOnRegion (test_vwin_region, { { 1, { {6, bg_char} } },
+                                           { 1, { {3, bg_char}, {1, back_slash_char}, {2, new_bg_char} } },
+                                           { 1, { {3, bg_char}, {1, a_char}, {1, back_slash_char}, {1, forward_slash_char} } },
+                                           { 1, { {3, bg_char}, {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char} } },
+                                           { 1, { {3, bg_char}, {1, forward_slash_char}, {2, new_bg_char} } },
+                                           { 1, { {6, bg_char} } } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin_region) );
 
   // Get a block from a specified position of the virtual terminal
 
-  test::printOnArea (vwin_area, { 6, { {6, bg_char} } } );
+  test::printOnRegion (vwin_region, { 6, { {6, bg_char} } } );
 
   // Test with x or y is < 1
-  p_fvterm.p_getArea (finalcut::FPoint{0, 0}, vwin_area);
-  test::printOnArea (test_vwin_area, { { 6, { {6, bg_char} } } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin_area) );
+  p_fvterm.p_getRegion (finalcut::FPoint{0, 0}, vwin_region);
+  test::printOnRegion (test_vwin_region, { { 6, { {6, bg_char} } } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin_region) );
 
-  p_fvterm.p_getArea (finalcut::FPoint{0, 1}, vwin_area);
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin_area) );
+  p_fvterm.p_getRegion (finalcut::FPoint{0, 1}, vwin_region);
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin_region) );
 
-  p_fvterm.p_getArea (finalcut::FPoint{1, 0}, vwin_area);
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin_area) );
+  p_fvterm.p_getRegion (finalcut::FPoint{1, 0}, vwin_region);
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin_region) );
 
   // Test with x and y is >= 1
-  p_fvterm.p_getArea (finalcut::FPoint{1, 1}, vwin_area);
-  CPPUNIT_ASSERT ( ! test::isAreaEqual(test_vwin_area, vwin_area) );
-  test::printArea (vwin_area);
-  test::printOnArea (test_vwin_area, { { 1, { {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char} } },
-                                       { 1, { {1, forward_slash_char}, {2, zero_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, zero_char} } },
-                                       { 1, { {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char} } },
-                                       { 1, { {1, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {2, new_bg_char}, {1, back_slash_char} } },
-                                       { 1, { {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char} } },
-                                       { 1, { {1, forward_slash_char}, {1, one_char}, {1, four_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, one_char} } } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin_area) );
+  p_fvterm.p_getRegion (finalcut::FPoint{1, 1}, vwin_region);
+  CPPUNIT_ASSERT ( ! test::isRegionEqual(test_vwin_region, vwin_region) );
+  test::printRegion (vwin_region);
+  test::printOnRegion (test_vwin_region, { { 1, { {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char} } },
+                                           { 1, { {1, forward_slash_char}, {2, zero_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, zero_char} } },
+                                           { 1, { {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char} } },
+                                           { 1, { {1, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {2, new_bg_char}, {1, back_slash_char} } },
+                                           { 1, { {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char} } },
+                                           { 1, { {1, forward_slash_char}, {1, one_char}, {1, four_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, one_char} } } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin_region) );
   // Position independent
-  vwin_area->position.x += 2;
-  vwin_area->position.y += 2;
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin_area) );
-  vwin_area->position.x = 512;
-  vwin_area->position.y = 512;
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin_area) );
-  vwin_area->position.x = -24;
-  vwin_area->position.y = -100;
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin_area) );
-  vwin_area->position.x = 0;
-  vwin_area->position.y = 0;
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin_area) );
+  vwin_region->position.x += 2;
+  vwin_region->position.y += 2;
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin_region) );
+  vwin_region->position.x = 512;
+  vwin_region->position.y = 512;
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin_region) );
+  vwin_region->position.x = -24;
+  vwin_region->position.y = -100;
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin_region) );
+  vwin_region->position.x = 0;
+  vwin_region->position.y = 0;
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin_region) );
 
   // Outside
-  test::printOnArea (vwin_area, { 6, { {6, bg_char} } } );
-  p_fvterm.p_getArea (finalcut::FPoint{500, 400}, vwin_area);
-  test::printOnArea (test_vwin_area, { { 6, { {6, bg_char} } } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin_area) );
+  test::printOnRegion (vwin_region, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getRegion (finalcut::FPoint{500, 400}, vwin_region);
+  test::printOnRegion (test_vwin_region, { { 6, { {6, bg_char} } } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin_region) );
 
   // Top right
-  test::printOnArea (vwin_area, { 6, { {6, bg_char} } } );
-  p_fvterm.p_getArea (finalcut::FPoint{75, 1}, vwin_area);
-  test::printArea (vwin_area);
+  test::printOnRegion (vwin_region, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getRegion (finalcut::FPoint{75, 1}, vwin_region);
+  test::printRegion (vwin_region);
   finalcut::FChar two_char = new_bg_char;
   two_char.ch[0] = L'2';
   finalcut::FChar three_char = new_bg_char;
@@ -3553,87 +3553,87 @@ void FVTermTest::getFVTermAreaTest()
   six_char.ch[0] = L'6';
   finalcut::FChar seven_char = new_bg_char;
   seven_char.ch[0] = L'7';
-  test::printOnArea (test_vwin_area, { { 1, { {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char} } },
-                                       { 1, { {1, two_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, one_char}, {1, three_char}, {1, back_slash_char} } },
-                                       { 1, { {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char} } },
-                                       { 1, { {1, forward_slash_char}, {2, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char} } },
-                                       { 1, { {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char} } },
-                                       { 1, { {1, six_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, two_char}, {1, seven_char}, {1, back_slash_char} } } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin_area) );
+  test::printOnRegion (test_vwin_region, { { 1, { {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char} } },
+                                           { 1, { {1, two_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, one_char}, {1, three_char}, {1, back_slash_char} } },
+                                           { 1, { {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char} } },
+                                           { 1, { {1, forward_slash_char}, {2, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char} } },
+                                           { 1, { {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char} } },
+                                           { 1, { {1, six_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, two_char}, {1, seven_char}, {1, back_slash_char} } } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin_region) );
 
-  test::printOnArea (vwin_area, { 6, { {6, bg_char} } } );
-  p_fvterm.p_getArea (finalcut::FPoint{76, 1}, vwin_area);
-  test::printArea (vwin_area);
-  test::printOnArea (test_vwin_area, { { 1, { {2, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char}, {1, bg_char} } },
-                                       { 1, { {1, back_slash_char}, {1, forward_slash_char}, {1, one_char}, {1, three_char}, {1, back_slash_char}, {1, bg_char} } },
-                                       { 1, { {1, forward_slash_char}, {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char}, {1, bg_char} } },
-                                       { 1, { {2, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char}, {1, bg_char} } },
-                                       { 1, { {2, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char}, {1, bg_char} } },
-                                       { 1, { {1, back_slash_char}, {1, forward_slash_char}, {1, two_char}, {1, seven_char}, {1, back_slash_char}, {1, bg_char} } } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin_area) );
+  test::printOnRegion (vwin_region, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getRegion (finalcut::FPoint{76, 1}, vwin_region);
+  test::printRegion (vwin_region);
+  test::printOnRegion (test_vwin_region, { { 1, { {2, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char}, {1, bg_char} } },
+                                           { 1, { {1, back_slash_char}, {1, forward_slash_char}, {1, one_char}, {1, three_char}, {1, back_slash_char}, {1, bg_char} } },
+                                           { 1, { {1, forward_slash_char}, {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char}, {1, bg_char} } },
+                                           { 1, { {2, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char}, {1, bg_char} } },
+                                           { 1, { {2, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char}, {1, bg_char} } },
+                                           { 1, { {1, back_slash_char}, {1, forward_slash_char}, {1, two_char}, {1, seven_char}, {1, back_slash_char}, {1, bg_char} } } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin_region) );
 
   // Bottom right
-  test::printOnArea (vwin_area, { 6, { {6, bg_char} } } );
-  p_fvterm.p_getArea (finalcut::FPoint{75, 19}, vwin_area);
-  test::printArea (vwin_area);
-  test::printOnArea (test_vwin_area, { { 1, { {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char} } },
-                                       { 1, { {1, forward_slash_char}, {2, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char} } },
-                                       { 1, { {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char} } },
-                                       { 1, { {1, six_char}, {1, back_slash_char}, {1, forward_slash_char}, {2, seven_char}, {1, back_slash_char} } },
-                                       { 1, { {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char} } },
-                                       { 1, { {1, forward_slash_char}, {2, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char} } } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin_area) );
+  test::printOnRegion (vwin_region, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getRegion (finalcut::FPoint{75, 19}, vwin_region);
+  test::printRegion (vwin_region);
+  test::printOnRegion (test_vwin_region, { { 1, { {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char} } },
+                                           { 1, { {1, forward_slash_char}, {2, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char} } },
+                                           { 1, { {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char} } },
+                                           { 1, { {1, six_char}, {1, back_slash_char}, {1, forward_slash_char}, {2, seven_char}, {1, back_slash_char} } },
+                                           { 1, { {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char} } },
+                                           { 1, { {1, forward_slash_char}, {2, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char} } } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin_region) );
 
-  test::printOnArea (vwin_area, { 6, { {6, bg_char} } } );
-  p_fvterm.p_getArea (finalcut::FPoint{76, 20}, vwin_area);
-  test::printArea (vwin_area);
-  test::printOnArea (test_vwin_area, { { 1, { {2, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char}, {1, bg_char} } },
-                                       { 1, { {2, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char}, {1, bg_char} } },
-                                       { 1, { {1, back_slash_char}, {1, forward_slash_char}, {2, seven_char}, {1, back_slash_char}, {1, bg_char} } },
-                                       { 1, { {1, forward_slash_char}, {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char}, {1, bg_char} } },
-                                       { 1, { {2, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char}, {1, bg_char} } },
-                                       { 1, { {6, bg_char} } } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin_area) );
+  test::printOnRegion (vwin_region, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getRegion (finalcut::FPoint{76, 20}, vwin_region);
+  test::printRegion (vwin_region);
+  test::printOnRegion (test_vwin_region, { { 1, { {2, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char}, {1, bg_char} } },
+                                           { 1, { {2, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char}, {1, bg_char} } },
+                                           { 1, { {1, back_slash_char}, {1, forward_slash_char}, {2, seven_char}, {1, back_slash_char}, {1, bg_char} } },
+                                           { 1, { {1, forward_slash_char}, {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char}, {1, bg_char} } },
+                                           { 1, { {2, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char}, {1, bg_char} } },
+                                           { 1, { {6, bg_char} } } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin_region) );
 
-  test::printOnArea (vwin_area, { 6, { {6, bg_char} } } );
-  p_fvterm.p_getArea (finalcut::FPoint{77, 21}, vwin_area);
-  test::printArea (vwin_area);
-  test::printOnArea (test_vwin_area, { { 1, { {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char}, {2, bg_char} } },
-                                       { 1, { {1, forward_slash_char}, {2, seven_char}, {1, back_slash_char}, {2, bg_char} } },
-                                       { 1, { {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char}, {2, bg_char} } },
-                                       { 1, { {1, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char}, {2, bg_char} } },
-                                       { 2, { {6, bg_char} } } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin_area) );
+  test::printOnRegion (vwin_region, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getRegion (finalcut::FPoint{77, 21}, vwin_region);
+  test::printRegion (vwin_region);
+  test::printOnRegion (test_vwin_region, { { 1, { {1, new_bg_char}, {1, forward_slash_char}, {1, back_slash_char}, {1, new_bg_char}, {2, bg_char} } },
+                                           { 1, { {1, forward_slash_char}, {2, seven_char}, {1, back_slash_char}, {2, bg_char} } },
+                                           { 1, { {1, back_slash_char}, {2, new_bg_char}, {1, forward_slash_char}, {2, bg_char} } },
+                                           { 1, { {1, new_bg_char}, {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char}, {2, bg_char} } },
+                                           { 2, { {6, bg_char} } } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin_region) );
 
-  test::printOnArea (vwin_area, { 6, { {6, bg_char} } } );
-  p_fvterm.p_getArea (finalcut::FPoint{78, 22}, vwin_area);
-  test::printArea (vwin_area);
-  test::printOnArea (test_vwin_area, { { 1, { {2, seven_char}, {1, back_slash_char}, {3, bg_char} } },
-                                       { 1, { {2, new_bg_char}, {1, forward_slash_char}, {3, bg_char} } },
-                                       { 1, { {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char}, {3, bg_char} } },
-                                       { 3, { {6, bg_char} } } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin_area) );
+  test::printOnRegion (vwin_region, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getRegion (finalcut::FPoint{78, 22}, vwin_region);
+  test::printRegion (vwin_region);
+  test::printOnRegion (test_vwin_region, { { 1, { {2, seven_char}, {1, back_slash_char}, {3, bg_char} } },
+                                           { 1, { {2, new_bg_char}, {1, forward_slash_char}, {3, bg_char} } },
+                                           { 1, { {1, back_slash_char}, {1, forward_slash_char}, {1, new_bg_char}, {3, bg_char} } },
+                                           { 3, { {6, bg_char} } } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin_region) );
 
-  test::printOnArea (vwin_area, { 6, { {6, bg_char} } } );
-  p_fvterm.p_getArea (finalcut::FPoint{79, 23}, vwin_area);
-  test::printArea (vwin_area);
-  test::printOnArea (test_vwin_area, { { 1, { {1, new_bg_char}, {1, forward_slash_char}, {4, bg_char} } },
-                                       { 1, { {1, forward_slash_char}, {1, new_bg_char}, {4, bg_char} } },
-                                       { 4, { {6, bg_char} } } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin_area) );
+  test::printOnRegion (vwin_region, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getRegion (finalcut::FPoint{79, 23}, vwin_region);
+  test::printRegion (vwin_region);
+  test::printOnRegion (test_vwin_region, { { 1, { {1, new_bg_char}, {1, forward_slash_char}, {4, bg_char} } },
+                                           { 1, { {1, forward_slash_char}, {1, new_bg_char}, {4, bg_char} } },
+                                           { 4, { {6, bg_char} } } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin_region) );
 
-  test::printOnArea (vwin_area, { 6, { {6, bg_char} } } );
-  p_fvterm.p_getArea (finalcut::FPoint{80, 24}, vwin_area);
-  test::printArea (vwin_area);
-  test::printOnArea (test_vwin_area, { { 1, { {1, new_bg_char}, {5, bg_char} } },
-                                       { 5, { {6, bg_char} } } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin_area) );
+  test::printOnRegion (vwin_region, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getRegion (finalcut::FPoint{80, 24}, vwin_region);
+  test::printRegion (vwin_region);
+  test::printOnRegion (test_vwin_region, { { 1, { {1, new_bg_char}, {5, bg_char} } },
+                                           { 5, { {6, bg_char} } } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin_region) );
 
-  test::printOnArea (vwin_area, { 6, { {6, bg_char} } } );
-  p_fvterm.p_getArea (finalcut::FPoint{81, 25}, vwin_area);
-  test::printArea (vwin_area);
-  test::printOnArea (test_vwin_area, { { 6, { {6, bg_char} } } } );
-  CPPUNIT_ASSERT ( test::isAreaEqual(test_vwin_area, vwin_area) );
+  test::printOnRegion (vwin_region, { 6, { {6, bg_char} } } );
+  p_fvterm.p_getRegion (finalcut::FPoint{81, 25}, vwin_region);
+  test::printRegion (vwin_region);
+  test::printOnRegion (test_vwin_region, { { 6, { {6, bg_char} } } } );
+  CPPUNIT_ASSERT ( test::isRegionEqual(test_vwin_region, vwin_region) );
 }
 
 // Put the test suite in the registry

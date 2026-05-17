@@ -104,12 +104,12 @@ class FMessageBox : public FDialog
 
     // Accessor
     auto getClassName() const -> FString override;
-    auto getTitlebarText() const -> FString;
+    auto getTitleBarText() const -> FString;
     auto getHeadline() const -> FString;
     auto getText() const -> FString override;
 
     // Mutator
-    void setTitlebarText (const FString&);
+    void setTitleBarText (const FString&);
     void setHeadline (const FString&);
     void setCenterText (bool = true);
     void unsetCenterText();
@@ -185,7 +185,7 @@ inline auto FMessageBox::getClassName() const -> FString
 { return "FMessageBox"; }
 
 //----------------------------------------------------------------------
-inline auto FMessageBox::getTitlebarText() const -> FString
+inline auto FMessageBox::getTitleBarText() const -> FString
 {
   const FString& title = FDialog::getText();  // initialize text
   return title;
@@ -200,7 +200,7 @@ inline auto FMessageBox::getText() const -> FString
 { return text; }
 
 //----------------------------------------------------------------------
-inline void FMessageBox::setTitlebarText (const FString& txt)
+inline void FMessageBox::setTitleBarText (const FString& txt)
 { return FDialog::setText(txt); }
 
 //----------------------------------------------------------------------

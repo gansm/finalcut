@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2021-2024 Markus Gans                                      *
+* Copyright 2021-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -108,7 +108,7 @@ class FOutput : public std::enable_shared_from_this<FOutput>
     virtual auto areMetaAndArrowKeysSupported() const -> bool = 0;
 
     // Methods
-    virtual void initTerminal (FVTerm::FTermArea*) = 0;
+    virtual void initTerminal (FVTerm::FTermRegion*) = 0;
     virtual void finishTerminal() = 0;
     virtual auto updateTerminal() -> bool = 0;
     virtual void detectTerminalSize() = 0;

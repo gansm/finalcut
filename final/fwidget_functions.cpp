@@ -64,17 +64,17 @@ constexpr uInt32 var::print_trans_mask;
 struct TransparentShadowData
 {
   // Using-declaration
-  using FTermArea = FVTerm::FTermArea;
+  using FTermRegion = FVTerm::FTermRegion;
 
   // Data members
-  FTermArea& area;
-  uInt       width{};
-  uInt       height{};
-  uInt       shadow_width{};
-  uInt       shadow_height{};
-  FChar      transparent_char{};
-  FChar      color_overlay_char{};
-  FChar*     area_ptr{};
+  FTermRegion& region;
+  uInt         width{};
+  uInt         height{};
+  uInt         shadow_width{};
+  uInt         shadow_height{};
+  FChar        transparent_char{};
+  FChar        color_overlay_char{};
+  FChar*       region_ptr{};
 };
 
 
@@ -351,7 +351,7 @@ void passResizeCornerEventToDialog (const FWidget* w, const FMouseEvent& ev)
 
   const auto& dialog = static_cast<FDialog*>(parent);
 
-  if ( ! dialog->isResizeable() || dialog->isZoomed() )
+  if ( ! dialog->isResizable() || dialog->isZoomed() )
     return;
 
   const auto& type = ev.getType();
@@ -387,19 +387,19 @@ void drawTransparentShadow (FWidget* w)
 {
   // transparent shadow
 
-  if ( ! w || ! w->getPrintArea() )
+  if ( ! w || ! w->getPrintRegion() )
     return;
 
-  auto& area = *w->getPrintArea();
+  auto& region = *w->getPrintRegion();
   const auto& wc_shadow = FWidget::getColorTheme()->shadow;
 
   TransparentShadowData data
   {
-    area,
-    uInt(area.size.width),
-    uInt(area.size.height),
-    uInt(area.shadow.width),
-    uInt(area.shadow.height),
+    region,
+    uInt(region.size.width),
+    uInt(region.size.height),
+    uInt(region.shadow.width),
+    uInt(region.shadow.height),
     {
       { L'\0',  L'\0', L'\0', L'\0', L'\0' },
       { L'\0', L'\0', L'\0', L'\0', L'\0' },
@@ -412,15 +412,15 @@ void drawTransparentShadow (FWidget* w)
       { wc_shadow.fg, wc_shadow.bg },
       { 0x00004000U }  // color_overlay
     },
-    &area.getFChar(area.size.width, 0)
+    &region.getFChar(region.size.width, 0)
   };
 
   drawRightShadow(data);
   drawBottomShadow(data);
-  area.has_changes = true;
+  region.has_changes = true;
   // Update row changes
   auto last_row = uInt(data.height + data.shadow_height - 1);
-  area.changes_in_row = {uInt(0), last_row};
+  region.changes_in_row = {uInt(0), last_row};
 
   if ( FVTerm::getFOutput()->isMonochron() )
     w->setReverse(false);
@@ -436,8 +436,8 @@ inline void drawRightShadow (TransparentShadowData& d)
   const auto s_width = d.shadow_width;
   const auto width = d.width;
   const auto height = d.height;
-  auto* ptr = d.area_ptr;
-  auto& changes_in_line = d.area.changes_in_line;
+  auto* ptr = d.region_ptr;
+  auto& changes_in_line = d.region.changes_in_line;
   auto& changes_in_1st_line = changes_in_line[0];
 
   std::fill (ptr, std::next(ptr, s_width), d.transparent_char);
@@ -450,13 +450,13 @@ inline void drawRightShadow (TransparentShadowData& d)
   {
     ptr = std::next(ptr, total_width);
     auto& changes = changes_in_line[y];
-    changes.xmin = std::min(d.area.changes_in_line[y].xmin, width);
+    changes.xmin = std::min(d.region.changes_in_line[y].xmin, width);
     changes.xmax = width + s_width - 1;
     changes.trans_count += s_width;
     std::fill (ptr, std::next(ptr, s_width), d.color_overlay_char);
   }
 
-  d.area_ptr = std::next(ptr, s_width);
+  d.region_ptr = std::next(ptr, s_width);
 }
 
 //----------------------------------------------------------------------
@@ -472,8 +472,8 @@ inline void drawBottomShadow (TransparentShadowData& d)
   const auto xmax = total_width - 1;
   const auto s_height = d.shadow_height;
   const auto start_y = d.height;
-  auto& changes_in_line = d.area.changes_in_line;
-  auto* ptr = d.area_ptr;
+  auto& changes_in_line = d.region.changes_in_line;
+  auto* ptr = d.region_ptr;
 
   for (std::size_t i{0}; i < s_height; i++)
   {
@@ -579,21 +579,21 @@ struct GenericBlockShadowData
   // Constructor
   GenericBlockShadowData (FWidget* w, const std::array<FChar, 4>& chars)
     : shadow_char{chars}
-    , area{*w->getPrintArea()}
+    , region{*w->getPrintRegion()}
     , is_window{w->isWindowWidget()}
-    , width{is_window ? uInt(area.size.width) : uInt(w->getWidth())}
-    , height{is_window ? uInt(area.size.height) : uInt(w->getHeight())}
-    , shadow_width{uInt(area.shadow.width)}
-    , shadow_height{uInt(area.shadow.height)}
-    , x_offset{uInt(w->woffset.getX1() + w->getX() - area.position.x - 1)}
-    , y_offset{uInt(w->woffset.getY1() + w->getY() - area.position.y - 1)}
+    , width{is_window ? uInt(region.size.width) : uInt(w->getWidth())}
+    , height{is_window ? uInt(region.size.height) : uInt(w->getHeight())}
+    , shadow_width{uInt(region.shadow.width)}
+    , shadow_height{uInt(region.shadow.height)}
+    , x_offset{uInt(w->woffset.getX1() + w->getX() - region.position.x - 1)}
+    , y_offset{uInt(w->woffset.getY1() + w->getY() - region.position.y - 1)}
     , shadow_x{x_offset + width}
     , shadow_y{y_offset + height}
   { }
 
   inline void updateChanges (uInt y, uInt xmin, uInt xmax, uInt tc = 0)
   {
-    auto& changes = area.changes_in_line[y];
+    auto& changes = region.changes_in_line[y];
     changes.xmin = std::min(changes.xmin, xmin);
     changes.xmax = std::max(changes.xmax, xmax);
     changes.trans_count += tc + 1;
@@ -601,7 +601,7 @@ struct GenericBlockShadowData
 
   // Data members
   const std::array<FChar, 4>& shadow_char{};
-  FVTerm::FTermArea& area;
+  FVTerm::FTermRegion& region;
   const bool is_window{false};
   const uInt width{0};
   const uInt height{0};
@@ -618,7 +618,7 @@ void drawGenericBlockShadow ( FWidget* w
                             , const std::array<FChar, 4>& shadow_char )
 {
   if ( ! w
-    || ! w->getPrintArea()
+    || ! w->getPrintRegion()
     || ! FVTerm::getFOutput()->hasShadowCharacter() )
     return;
 
@@ -628,27 +628,27 @@ void drawGenericBlockShadow ( FWidget* w
     return;
 
   // Draw the top-right shadow
-  auto area_iter = bsd.area.getFCharIterator(int(bsd.shadow_x), int(bsd.y_offset));
-  *area_iter = bsd.shadow_char[0];  // ▄ (top-right corner)
+  auto region_iter = bsd.region.getFCharIterator(int(bsd.shadow_x), int(bsd.y_offset));
+  *region_iter = bsd.shadow_char[0];  // ▄ (top-right corner)
   bsd.updateChanges(bsd.y_offset, bsd.shadow_x, bsd.shadow_x);
 
   // Draw the right-side shadow
   for (uInt y = bsd.y_offset + 1; y < bsd.shadow_y; y++)
   {
-    area_iter = bsd.area.getFCharIterator(int(bsd.shadow_x), int(y));
-    *area_iter = bsd.shadow_char[1];  // █
+    region_iter = bsd.region.getFCharIterator(int(bsd.shadow_x), int(y));
+    *region_iter = bsd.shadow_char[1];  // █
     bsd.updateChanges(y, bsd.shadow_x, bsd.shadow_x);
   }
 
   // Draw the bottom shadow
-  area_iter = bsd.area.getFCharIterator(int(bsd.x_offset), int(bsd.shadow_y));
-  *area_iter = bsd.shadow_char[2];  // ' ' (bottom-left corner)
-  ++area_iter;
+  region_iter = bsd.region.getFCharIterator(int(bsd.x_offset), int(bsd.shadow_y));
+  *region_iter = bsd.shadow_char[2];  // ' ' (bottom-left corner)
+  ++region_iter;
   // Fill the horizontal shadow
-  std::fill (area_iter, area_iter + bsd.width, bsd.shadow_char[3]);  // ▀
+  std::fill (region_iter, region_iter + bsd.width, bsd.shadow_char[3]);  // ▀
   bsd.updateChanges(bsd.shadow_y, bsd.x_offset, bsd.shadow_x, bsd.width);
   // Update row changes
-  auto& changes_in_row = bsd.area.changes_in_row;
+  auto& changes_in_row = bsd.region.changes_in_row;
   changes_in_row.ymin = std::min(changes_in_row.ymin, bsd.y_offset);
   changes_in_row.ymax = std::max(changes_in_row.ymax, bsd.shadow_y);
 }
@@ -674,7 +674,7 @@ inline void drawVerticalFlatBorder (FWidget* w)
   {
     w->print() << FPoint {0, int(y) + 1};
 
-    if ( w->double_flatline_mask.left[uLong(y)] )
+    if ( w->merging_border_mask.left[uLong(y)] )
       // left+right line (on left side)
       w->print (UniChar::NF_rev_border_line_right_and_left);
     else
@@ -683,7 +683,7 @@ inline void drawVerticalFlatBorder (FWidget* w)
 
     w->print() << FPoint {int(width) + 1, int(y) + 1};
 
-    if ( w->double_flatline_mask.right[y] )
+    if ( w->merging_border_mask.right[y] )
       // left+right line (on right side)
       w->print (UniChar::NF_rev_border_line_right_and_left);
     else
@@ -701,7 +701,7 @@ inline void drawHorizontalFlatBorder (FWidget* w)
 
   for (std::size_t x{0}; x < width; x++)
   {
-    if ( w->double_flatline_mask.top[x] )
+    if ( w->merging_border_mask.top[x] )
       // top+bottom line (at top)
       w->print (UniChar::NF_border_line_up_and_down);
     else
@@ -713,7 +713,7 @@ inline void drawHorizontalFlatBorder (FWidget* w)
 
   for (std::size_t x{0}; x < width; x++)
   {
-    if ( w->double_flatline_mask.bottom[x] )
+    if ( w->merging_border_mask.bottom[x] )
       // top+bottom line (at bottom)
       w->print (UniChar::NF_border_line_up_and_down);
     else
@@ -744,7 +744,7 @@ inline void clearVerticalFlatBorder (FWidget* w)
     // clear on left side
     w->print() << FPoint {0, int(y) + 1};
 
-    if ( w->double_flatline_mask.left[y] )
+    if ( w->merging_border_mask.left[y] )
       w->print (UniChar::NF_border_line_left);
     else
       w->print (' ');
@@ -752,7 +752,7 @@ inline void clearVerticalFlatBorder (FWidget* w)
     // clear on right side
     w->print() << FPoint {int(width) + 1, int(y) + 1};
 
-    if ( w->double_flatline_mask.right[y] )
+    if ( w->merging_border_mask.right[y] )
       w->print (UniChar::NF_rev_border_line_right);
     else
       w->print (' ');
@@ -765,23 +765,23 @@ inline void clearHorizontalFlatBorder (FWidget* w)
   const std::size_t width = w->getWidth();
   const std::size_t height = w->getHeight();
 
-  // clear at top
+  // Clear at top
   w->print() << FPoint {1, 0};
 
   for (std::size_t x{0}; x < width; x++)
   {
-    if ( w->double_flatline_mask.top[x] )
+    if ( w->merging_border_mask.top[x] )
       w->print (UniChar::NF_border_line_upper);
     else
       w->print (' ');
   }
 
-  // clear at bottom
+  // Clear at bottom
   w->print() << FPoint {1, int(height) + 1};
 
   for (std::size_t x{0}; x < width; x++)
   {
-    if ( w->double_flatline_mask.bottom[x] )
+    if ( w->merging_border_mask.bottom[x] )
       w->print (UniChar::NF_border_line_bottom);
     else
       w->print (' ');
@@ -929,14 +929,14 @@ struct GenericBoxData
   GenericBoxData ( FWidget* w, const FRect& r
                  , const std::array<wchar_t, 8>& chars )
     : box_char{chars}
-    , area{*w->getPrintArea()}
-    , x_offset{w->woffset.getX1() + w->getX() - area.position.x - 1}
-    , y_offset{w->woffset.getY1() + w->getY() - area.position.y - 1}
+    , region{*w->getPrintRegion()}
+    , x_offset{w->woffset.getX1() + w->getX() - region.position.x - 1}
+    , y_offset{w->woffset.getY1() + w->getY() - region.position.y - 1}
     , x1{int(x_offset) + r.getX1() - 1}
     , y1{int(y_offset) + r.getY1() - 1}
     , x2{int(x_offset) + r.getX2() - 1}
     , y2{int(y_offset) + r.getY2() - 1}
-    , max_width{uInt(area.size.width + area.shadow.width - 1)}
+    , max_width{uInt(region.size.width + region.shadow.width - 1)}
     , width{uInt(r.getWidth())}
     , line_length{width - 2}
     , is_transparent{fchar.isBitSet(internal::var::print_trans_mask)}
@@ -949,7 +949,7 @@ struct GenericBoxData
 
   inline void updateChanges (uInt y, uInt xmin, uInt xmax)
   {
-    auto& changes = area.changes_in_line[y];
+    auto& changes = region.changes_in_line[y];
     changes.xmin = std::min(changes.xmin, xmin);
     changes.xmax = std::min(max_width, std::max(changes.xmax, xmax));
     changes.trans_count += trans_count_increment;
@@ -958,7 +958,7 @@ struct GenericBoxData
   // Data members
   const std::array<wchar_t, 8>& box_char{};
   FChar& fchar{FVTermAttribute::getAttribute()};
-  FVTerm::FTermArea& area;
+  FVTerm::FTermRegion& region;
   const int  x_offset{0};
   const int  y_offset{0};
   const int  x1{0};
@@ -977,18 +977,18 @@ inline void drawBoxTopLine (GenericBoxData& bd)
 {
   // Draw the horizontal top line of the box
 
-  auto area_iter = bd.area.getFCharIterator(bd.x1, bd.y1);
+  auto region_iter = bd.region.getFCharIterator(bd.x1, bd.y1);
 
   bd.fchar.ch[0] = bd.box_char[0];  // Upper left corner
-  *area_iter = bd.fchar;
+  *region_iter = bd.fchar;
 
   bd.fchar.ch[0] = bd.box_char[1];  // Upper line
-  area_iter = std::fill_n(area_iter + 1, bd.line_length, bd.fchar);
+  region_iter = std::fill_n(region_iter + 1, bd.line_length, bd.fchar);
 
   bd.fchar.ch[0] = bd.box_char[2];  // Upper right corner
-  *area_iter = bd.fchar;
+  *region_iter = bd.fchar;
 
-  // Update area_changes for the top line
+  // Update region_changes for the top line
   bd.updateChanges(uInt(bd.y1), uInt(bd.x1), uInt(bd.x2));
 }
 
@@ -999,7 +999,7 @@ inline void drawBoxSides (GenericBoxData& bd)
 
   for (auto y = bd.y1 + 1; y < bd.y2; y++)
   {
-    auto left_iter = bd.area.getFCharIterator(bd.x1, y);
+    auto left_iter = bd.region.getFCharIterator(bd.x1, y);
     auto right_iter = left_iter + bd.width - 1;
 
     bd.fchar.ch[0] = bd.box_char[3];  // Left line
@@ -1008,7 +1008,7 @@ inline void drawBoxSides (GenericBoxData& bd)
     bd.fchar.ch[0] = bd.box_char[4];  // Right line
     *right_iter = bd.fchar;
 
-    // Update area_changes for the sides
+    // Update region_changes for the sides
     bd.updateChanges(uInt(y), uInt(bd.x1), uInt(bd.x2));
   }
 }
@@ -1018,18 +1018,18 @@ inline void drawBoxBottomLine (GenericBoxData& bd)
 {
   // Draw the horizontal bottom line of the box
 
-  auto area_iter = bd.area.getFCharIterator(bd.x1, bd.y2);
+  auto region_iter = bd.region.getFCharIterator(bd.x1, bd.y2);
 
   bd.fchar.ch[0] = bd.box_char[5];  // Upper left corner
-  *area_iter = bd.fchar;
+  *region_iter = bd.fchar;
 
   bd.fchar.ch[0] = bd.box_char[6];  // Bottom line
-  area_iter = std::fill_n(area_iter + 1, bd.line_length, bd.fchar);
+  region_iter = std::fill_n(region_iter + 1, bd.line_length, bd.fchar);
 
   bd.fchar.ch[0] = bd.box_char[7];  // Bottom left corner
-  *area_iter = bd.fchar;
+  *region_iter = bd.fchar;
 
-  // Update area_changes for the bottom line
+  // Update region_changes for the bottom line
   bd.updateChanges(uInt(bd.y2), uInt(bd.x1), uInt(bd.x2));
 }
 
@@ -1037,7 +1037,7 @@ inline void drawBoxBottomLine (GenericBoxData& bd)
 void drawGenericBox ( FWidget* w, const FRect& r
                     , const std::array<wchar_t, 8>& box_char )
 {
-  if ( ! w || ! w->getPrintArea() || r.getWidth() < 3 )
+  if ( ! w || ! w->getPrintRegion() || r.getWidth() < 3 )
     return;
 
   GenericBoxData box_data(w, r, box_char);
@@ -1045,22 +1045,22 @@ void drawGenericBox ( FWidget* w, const FRect& r
   drawBoxTopLine (box_data);
   drawBoxSides (box_data);
   drawBoxBottomLine (box_data);
-  box_data.area.has_changes = true;  // Mark area as having changes
+  box_data.region.has_changes = true;  // Mark region as having changes
   // Update row changes
-  auto& changes_in_row = box_data.area.changes_in_row;
+  auto& changes_in_row = box_data.region.changes_in_row;
   changes_in_row.ymin = std::min(changes_in_row.ymin, uInt(box_data.y1));
   changes_in_row.ymax = std::max(changes_in_row.ymax, uInt(box_data.y2));
 }
 
 //----------------------------------------------------------------------
-void updateStatusbar (const FWidget* w, bool need_focus)
+void updateStatusBar (const FWidget* w, bool need_focus)
 {
   if ( w->hasFocus() != need_focus )
     return;
 
   if ( auto sbar = w->getStatusBar() )
   {
-    const auto& msg = w->getStatusbarMessage();
+    const auto& msg = w->getStatusBarMessage();
     const auto& curMsg = sbar->getMessage();
 
     if ( curMsg != msg )

@@ -96,7 +96,7 @@ struct outputClass
 class FVTerm : public FVTermAttribute
 {
   public:
-    struct FTermArea;             // forward declaration
+    struct FTermRegion;           // forward declaration
     struct FVTermPreprocessing;   // forward declaration
 
     // Using-declarations
@@ -106,7 +106,7 @@ class FVTerm : public FVTermAttribute
     using FPreprocessingFunction = std::function<void()>;
     using FPreprocVector = std::vector<std::unique_ptr<FVTermPreprocessing>>;
     using FVTermList = std::vector<FVTerm*>;
-    using FTermAreaList = std::vector<const FTermArea*>;
+    using FTermRegionList = std::vector<const FTermRegion*>;
 
     // Enumeration
     enum class TerminalUpdate : uInt8
@@ -163,15 +163,15 @@ class FVTerm : public FVTermAttribute
     // Accessors
     auto  getClassName() const -> FString override;
     static auto  getFOutput() -> std::shared_ptr<FOutput>;
-    auto  getVWin() noexcept -> FTermArea*;
-    auto  getVWin() const noexcept -> const FTermArea*;
+    auto  getVWin() noexcept -> FTermRegion*;
+    auto  getVWin() const noexcept -> const FTermRegion*;
     auto  getPrintCursor() -> FPoint;
     static auto  getWindowList() noexcept -> FVTermList*;
 
     // Mutators
     void  setTerminalUpdates (TerminalUpdate) const;
     void  setCursor (const FPoint&) noexcept;
-    void  setVWin (std::unique_ptr<FTermArea>&&) noexcept;
+    void  setVWin (std::unique_ptr<FTermRegion>&&) noexcept;
     static void  setNonBlockingRead (bool = true);
     static void  unsetNonBlockingRead();
 
@@ -183,7 +183,7 @@ class FVTerm : public FVTermAttribute
     auto hasPreprocessingHandler (const FVTerm*) noexcept -> bool;
 
     // Methods
-    virtual void  clearArea (wchar_t = L' ');
+    virtual void  clearRegion (wchar_t = L' ');
     void  createVDesktop (const FSize& size) noexcept;
     void  createVTerm (const FSize&) noexcept;
     void  resizeVTerm (const FSize&) const noexcept;
@@ -196,17 +196,17 @@ class FVTerm : public FVTermAttribute
     template <typename... Args>
     auto  printf (const FString&, Args&&...) -> int;
     auto  print (const FString&) noexcept -> int;
-    auto  print (FTermArea*, const FString&) noexcept -> int;
+    auto  print (FTermRegion*, const FString&) noexcept -> int;
     auto  print (const std::vector<FChar>&) noexcept -> int;
-    auto  print (FTermArea*, const std::vector<FChar>&) noexcept -> int;
+    auto  print (FTermRegion*, const std::vector<FChar>&) noexcept -> int;
     auto  print (FVTermBuffer&) noexcept -> int;
     auto  print (const FVTermBuffer&) noexcept -> int;
-    auto  print (FTermArea*, FVTermBuffer&) const noexcept -> int;
-    auto  print (FTermArea*, const FVTermBuffer&) const noexcept -> int;
+    auto  print (FTermRegion*, FVTermBuffer&) const noexcept -> int;
+    auto  print (FTermRegion*, const FVTermBuffer&) const noexcept -> int;
     auto  print (wchar_t) noexcept -> int;
-    auto  print (FTermArea*, wchar_t) noexcept -> int;
+    auto  print (FTermRegion*, wchar_t) noexcept -> int;
     auto  print (const FChar&) noexcept -> int;
-    auto  print (FTermArea*, const FChar&) const noexcept -> int;
+    auto  print (FTermRegion*, const FChar&) const noexcept -> int;
     virtual void  print (const FPoint&);
     auto  print() noexcept -> FVTerm&;
     void  flush() const;
@@ -223,43 +223,43 @@ class FVTerm : public FVTermAttribute
     };
 
     // Accessor
-    virtual auto getPrintArea() -> FTermArea*;
-    auto  getChildPrintArea() const noexcept -> FTermArea*;
-    auto  getCurrentPrintArea() const noexcept -> FTermArea*;
-    auto  getVirtualDesktop() const noexcept -> FTermArea*;
-    auto  getVirtualTerminal() const noexcept -> FTermArea*;
+    virtual auto getPrintRegion() -> FTermRegion*;
+    auto  getChildPrintRegion() const noexcept -> FTermRegion*;
+    auto  getCurrentPrintRegion() const noexcept -> FTermRegion*;
+    auto  getVirtualDesktop() const noexcept -> FTermRegion*;
+    auto  getVirtualTerminal() const noexcept -> FTermRegion*;
 
     // Mutators
-    void  setPrintArea (FTermArea*) noexcept;
-    void  setChildPrintArea (FTermArea*) noexcept;
-    void  setActiveArea (FTermArea*) const noexcept;
+    void  setPrintRegion (FTermRegion*) noexcept;
+    void  setChildPrintRegion (FTermRegion*) noexcept;
+    void  setActiveRegion (FTermRegion*) const noexcept;
 
     // Predicates
-    auto  isActive (const FTermArea*) const noexcept -> bool;
-    auto  hasPrintArea() const noexcept -> bool;
-    auto  hasChildPrintArea() const noexcept -> bool;
+    auto  isActive (const FTermRegion*) const noexcept -> bool;
+    auto  hasPrintRegion() const noexcept -> bool;
+    auto  hasChildPrintRegion() const noexcept -> bool;
     auto  isVirtualWindow() const noexcept -> bool;
     auto  isCursorHideable() const noexcept -> bool;
 
     // Methods
-    auto  createArea (const FShadowBox&) -> std::unique_ptr<FTermArea>;
-    auto  createArea (const FRect&) -> std::unique_ptr<FTermArea>;
-    void  resizeArea (const FShadowBox&, FTermArea*) const;
-    void  resizeArea (const FRect&, FTermArea*) const;
+    auto  createRegion (const FShadowBox&) -> std::unique_ptr<FTermRegion>;
+    auto  createRegion (const FRect&) -> std::unique_ptr<FTermRegion>;
+    void  resizeRegion (const FShadowBox&, FTermRegion*) const;
+    void  resizeRegion (const FRect&, FTermRegion*) const;
     void  restoreVTerm (const FRect&) const noexcept;
-    auto  updateVTermCursor (const FTermArea*) const noexcept -> bool;
+    auto  updateVTermCursor (const FTermRegion*) const noexcept -> bool;
     void  hideVTermCursor() const noexcept;
-    void  setAreaCursor (const FPoint&, bool, FTermArea*) const noexcept;
-    void  getArea (const FPoint&, FTermArea*) const noexcept;
-    void  getArea (const FRect&, FTermArea*) const noexcept;
-    void  addLayer (FTermArea*) const noexcept;
-    void  putArea (const FPoint&, FTermArea*) const noexcept;
-    void  copyArea (FTermArea*, const FPoint&, FTermArea*)  const noexcept;
+    void  setRegionCursor (const FPoint&, bool, FTermRegion*) const noexcept;
+    void  getRegion (const FPoint&, FTermRegion*) const noexcept;
+    void  getRegion (const FRect&, FTermRegion*) const noexcept;
+    void  addLayer (FTermRegion*) const noexcept;
+    void  putRegion (const FPoint&, FTermRegion*) const noexcept;
+    void  copyRegion (FTermRegion*, const FPoint&, FTermRegion*)  const noexcept;
     static auto  getLayer (FVTerm&) noexcept -> int;
     static void  determineWindowLayers() noexcept;
-    void  scrollAreaForward (FTermArea*);
-    void  scrollAreaReverse (FTermArea*);
-    void  clearArea (FTermArea*, wchar_t = L' ') noexcept;
+    void  scrollRegionForward (FTermRegion*);
+    void  scrollRegionReverse (FTermRegion*);
+    void  clearRegion (FTermRegion*, wchar_t = L' ') noexcept;
     void  forceTerminalUpdate() const;
     auto  processTerminalUpdate() const -> bool;
     static void  startDrawing() noexcept;
@@ -269,22 +269,22 @@ class FVTerm : public FVTermAttribute
   private:
     struct LayerGeometry
     {
-      int area_x;
-      int area_y;
+      int region_x;
+      int region_y;
       int ol;            // Outside-left
       int vterm_width;
       int vterm_height;
-      int ax;            // Clipped area x (>=0)
-      int width;         // Full area width
-      int height;        // Effective area height (minimized or full)
+      int ax;            // Clipped region x (>=0)
+      int width;         // Full region width
+      int height;        // Effective region height (minimized or full)
       int xmax_inside_vterm;
       int y_start;
       int y_end;
     };
 
-    struct AreaLine
+    struct RegionLine
     {
-      FChar_const_iterator iter;       // Source drawing area line
+      FChar_const_iterator iter;       // Source drawing region line
       std::ptrdiff_t       offset;     // Source data offset
       std::ptrdiff_t       start_idx;  // Start index
       std::ptrdiff_t       end_idx;    // End index
@@ -328,46 +328,46 @@ class FVTerm : public FVTermAttribute
 
     // Using-declaration
     using FOverlaySearchBuffer = std::vector<SearchState>;
-    using FOverlayLineBuffer = std::vector<AreaLine>;
+    using FOverlayLineBuffer = std::vector<RegionLine>;
     using FLineChangesBatch = std::vector<LineChanges>;
 
     // Methods
     static void setGlobalFVTermInstance (FVTerm*) noexcept;
     static auto getGlobalFVTermInstance() noexcept -> FVTerm*&;
     static auto isInitialized() noexcept -> bool;
-    void  resetAreaEncoding() const;
-    void  resetTextAreaToDefault (FTermArea*, const FSize&) const noexcept;
-    auto  resizeTextArea (FTermArea*, std::size_t, std::size_t ) const -> bool;
-    auto  resizeTextArea (FTermArea*, std::size_t) const -> bool;
-    auto  isCovered (const FPoint&, const FTermArea*) const noexcept -> CoveredState;
-    auto  isAreaValid (const FShadowBox&) const noexcept -> bool;
-    auto  isSizeEqual (const FTermArea*, const FShadowBox&) const noexcept -> bool;
-    constexpr auto  needsHeightResize (const FTermArea*, const std::size_t) const noexcept -> bool;
-    constexpr auto  needsWidthResize (const FTermArea*, const std::size_t) const noexcept -> bool;
-    auto  tryResizeArea (FTermArea*, const std::size_t, const std::size_t) const -> bool;
-    void  updateAreaProperties (FTermArea*, const FShadowBox&) const noexcept;
-    constexpr auto  getFullAreaWidth (const FTermArea*) const noexcept -> int;
-    constexpr auto  getFullAreaHeight (const FTermArea*) const noexcept -> int;
-    void  passChangesToOverlap (const FTermArea*) const;
-    void  processOverlappingWindows (const FTermArea*, const FVTermList&) const;
-    void  passChangesToOverlappingWindow (FTermArea*, const FTermArea*) const noexcept;
-    void  passChangesToOverlappingWindowLine (FTermArea*, int, const FTermArea*) const noexcept;
+    void  resetRegionEncoding() const;
+    void  resetTextRegionToDefault (FTermRegion*, const FSize&) const noexcept;
+    auto  resizeTextRegion (FTermRegion*, std::size_t, std::size_t ) const -> bool;
+    auto  resizeTextRegion (FTermRegion*, std::size_t) const -> bool;
+    auto  isCovered (const FPoint&, const FTermRegion*) const noexcept -> CoveredState;
+    auto  isRegionValid (const FShadowBox&) const noexcept -> bool;
+    auto  isSizeEqual (const FTermRegion*, const FShadowBox&) const noexcept -> bool;
+    constexpr auto  needsHeightResize (const FTermRegion*, const std::size_t) const noexcept -> bool;
+    constexpr auto  needsWidthResize (const FTermRegion*, const std::size_t) const noexcept -> bool;
+    auto  tryResizeRegion (FTermRegion*, const std::size_t, const std::size_t) const -> bool;
+    void  updateRegionProperties (FTermRegion*, const FShadowBox&) const noexcept;
+    constexpr auto  getFullRegionWidth (const FTermRegion*) const noexcept -> int;
+    constexpr auto  getFullRegionHeight (const FTermRegion*) const noexcept -> int;
+    void  passChangesToOverlap (const FTermRegion*) const;
+    void  processOverlappingWindows (const FTermRegion*, const FVTermList&) const;
+    void  passChangesToOverlappingWindow (FTermRegion*, const FTermRegion*) const noexcept;
+    void  passChangesToOverlappingWindowLine (FTermRegion*, int, const FTermRegion*) const noexcept;
     auto  calculateStartCoordinate (int, int) const noexcept -> int;
     auto  calculateEndCoordinate (int, int, int, int) const noexcept -> int;
     void  updateVTerm() const;
     void  updateVTermDesktop() const;
-    void  updateVTermWindow (FTermArea*) const;
-    auto  computeLayerGeometry (const FTermArea*) const noexcept -> LayerGeometry;
+    void  updateVTermWindow (FTermRegion*) const;
+    auto  computeLayerGeometry (const FTermRegion*) const noexcept -> LayerGeometry;
     auto  isLayerOutsideVTerm (const LayerGeometry&) const noexcept -> bool;
-    void  buildLineChangeBatch (const FTermArea*, const LayerGeometry&) const noexcept;
-    void  applyLineBatch (FTermArea*, const LayerGeometry&) const noexcept;
+    void  buildLineChangeBatch (const FTermRegion*, const LayerGeometry&) const noexcept;
+    void  applyLineBatch (FTermRegion*, const LayerGeometry&) const noexcept;
     void  updateVTermChangesFromBatch (const LayerGeometry&) const noexcept;
     void  scrollTerminalForward() const;
     void  scrollTerminalReverse() const;
-    void  callPreprocessingHandler (const FTermArea*) const;
-    auto  hasChildAreaChanges (const FTermArea*) const -> bool;
-    void  clearChildAreaChanges (const FTermArea*) const;
-    static constexpr auto  isInsideArea (const FPoint&, const FTermArea*) noexcept -> bool;
+    void  callPreprocessingHandler (const FTermRegion*) const;
+    auto  hasChildRegionChanges (const FTermRegion*) const -> bool;
+    void  clearChildRegionChanges (const FTermRegion*) const;
+    static constexpr auto  isInsideRegion (const FPoint&, const FTermRegion*) noexcept -> bool;
     auto  isInsideTerminal (const FPoint&) const noexcept -> bool;
     static constexpr auto  isFCharTransparent (const FChar&) noexcept -> bool;
     auto  isTransparentInvisible (const FChar&) const noexcept -> bool;
@@ -377,65 +377,65 @@ class FVTerm : public FVTermAttribute
     void  initSettings();
     void  finish() const;
     void  saveCurrentVTerm() const noexcept;
-    void  putAreaLine (const FChar&, FChar&, const int) const noexcept;
+    void  putRegionLine (const FChar&, FChar&, const int) const noexcept;
     void  applyColorOverlay (const FChar&, FChar&) const;
     void  inheritBackground (const FChar&, FChar&) const;
-    void  putMultiLayerAreaLine (FChar_iterator, const int, const FPoint&) const noexcept;
-    void  putAreaLineWithTransparency (FChar_const_iterator, FChar_iterator, const int, FPoint, bool) const;
-    void  addAreaLineWithTransparency (FChar_const_iterator, FChar_iterator, const int) const;
-    void  addTransparentAreaLine (const FChar_const_iterator&, const FChar_iterator&, const int) const;
-    void  addTransparentAreaChar (const FChar&, FChar&) const;
-    auto  clearFullArea (FTermArea*, FChar&) const -> bool;
-    void  clearAreaWithShadow (FTermArea*, const FChar&) const noexcept;
-    auto  printWrap (FTermArea*, FChar_iterator&) const -> bool;
-    auto  interpretControlCodes (FTermArea*, FChar_iterator&, const FChar&) const noexcept -> bool;
-    auto  printCharacter (FTermArea*, FChar_iterator&, const FChar&) const noexcept -> int;
-    auto  printCharacterOnCoordinate ( FTermArea*
+    void  putMultiLayerRegionLine (FChar_iterator, const int, const FPoint&) const noexcept;
+    void  putRegionLineWithTransparency (FChar_const_iterator, FChar_iterator, const int, FPoint, bool) const;
+    void  addRegionLineWithTransparency (FChar_const_iterator, FChar_iterator, const int) const;
+    void  addTransparentRegionLine (const FChar_const_iterator&, const FChar_iterator&, const int) const;
+    void  addTransparentRegionChar (const FChar&, FChar&) const;
+    auto  clearFullRegion (FTermRegion*, FChar&) const -> bool;
+    void  clearRegionWithShadow (FTermRegion*, const FChar&) const noexcept;
+    auto  printWrap (FTermRegion*, FChar_iterator&) const -> bool;
+    auto  interpretControlCodes (FTermRegion*, FChar_iterator&, const FChar&) const noexcept -> bool;
+    auto  printCharacter (FTermRegion*, FChar_iterator&, const FChar&) const noexcept -> int;
+    auto  printCharacterOnCoordinate ( FTermRegion*
                                      , const FChar_iterator&
                                      , const FChar&) const noexcept -> std::size_t;
-    void  printPaddingCharacter (FTermArea*, const FChar&) const;
+    void  printPaddingCharacter (FTermRegion*, const FChar&) const;
     void  putNonTransparent (FChar_const_iterator, FChar_iterator&, int&) const;
     void  addTransparent (FChar_const_iterator, FChar_iterator&, int&) const;
-    void  addVDesktopToListIfExists (FTermAreaList&) const;
-    void  determineCoveredAreas (FTermArea*) const;
-    void  resetLineCoveredState (FTermArea*) const;
-    void  determineLineCoveredState (const FTermArea* const, FTermArea*) const noexcept;
+    void  addVDesktopToListIfExists (FTermRegionList&) const;
+    void  determineCoveredRegions (FTermRegion*) const;
+    void  resetLineCoveredState (FTermRegion*) const;
+    void  determineLineCoveredState (const FTermRegion* const, FTermRegion*) const noexcept;
     auto  canUpdateTerminalNow() const -> bool;
-    static auto hasPendingUpdates (const FTermArea*) noexcept -> bool;
+    static auto hasPendingUpdates (const FTermRegion*) noexcept -> bool;
 
     // Data members
-    FTermArea*                   print_area{nullptr};        // Print area for this object
-    FTermArea*                   child_print_area{nullptr};  // Print area for children
-    FVTermBuffer                 vterm_buffer{};             // Print buffer
-    mutable FLineChangesBatch    line_changes_batch{};       // All line changes to an area
-    mutable FOverlayLineBuffer   overlay_line_buffer{};      // Overlay area line buffer
-    mutable FOverlaySearchBuffer overlay_search_buffer{};    // Overlay search state buffer
-    mutable FTermAreaList        covered_areas_buffer{};     // Covered overlay areas buffer
-    FChar                        nc{};                       // Next character
-    std::unique_ptr<FTermArea>   vwin{};                     // Virtual window
-    std::shared_ptr<FOutput>     foutput{};                  // Terminal output class
-    std::shared_ptr<FVTermList>  vterm_window_list{};        // List of all window owner in z-order
-    std::shared_ptr<FTermArea>   vterm{};                    // Virtual terminal
-    std::shared_ptr<FTermArea>   vterm_old{};                // Last virtual terminal
-    std::shared_ptr<FTermArea>   vdesktop{};                 // Virtual desktop
-    static FTermArea*            active_area;                // Active area
-    static int                   tabstop;
-    static bool                  draw_completed;
-    static bool                  skip_one_vterm_update;
-    static bool                  no_terminal_updates;
-    static bool                  force_terminal_update;
+    FTermRegion*                  print_region{nullptr};        // Print region for this object
+    FTermRegion*                  child_print_region{nullptr};  // Print region for children
+    FVTermBuffer                  vterm_buffer{};               // Print buffer
+    mutable FLineChangesBatch     line_changes_batch{};         // All line changes to an region
+    mutable FOverlayLineBuffer    overlay_line_buffer{};        // Overlay region line buffer
+    mutable FOverlaySearchBuffer  overlay_search_buffer{};      // Overlay search state buffer
+    mutable FTermRegionList       covered_regions_buffer{};     // Covered overlay regions buffer
+    FChar                         nc{};                         // Next character
+    std::unique_ptr<FTermRegion>  vwin{};                       // Virtual window
+    std::shared_ptr<FOutput>      foutput{};                    // Terminal output class
+    std::shared_ptr<FVTermList>   vterm_window_list{};          // List of all window owner in z-order
+    std::shared_ptr<FTermRegion>  vterm{};                      // Virtual terminal
+    std::shared_ptr<FTermRegion>  vterm_old{};                  // Last virtual terminal
+    std::shared_ptr<FTermRegion>  vdesktop{};                   // Virtual desktop
+    static FTermRegion*           active_region;                // Active region
+    static int                    tabstop;
+    static bool                   draw_completed;
+    static bool                   skip_one_vterm_update;
+    static bool                   no_terminal_updates;
+    static bool                   force_terminal_update;
 
     // Friend function
-    friend void setPrintArea (FWidget&, FTermArea*);
+    friend void setPrintRegion (FWidget&, FTermRegion*);
     friend auto getColumnWidth (const wchar_t wchar) -> std::size_t;
 };
 
 
 //----------------------------------------------------------------------
-// struct FVTerm::FTermArea
+// struct FVTerm::FTermRegion
 //----------------------------------------------------------------------
 
-struct FVTerm::FTermArea  // Define virtual terminal character properties
+struct FVTerm::FTermRegion  // Define virtual terminal character properties
 {
   struct FLineChanges
   {
@@ -461,16 +461,16 @@ struct FVTerm::FTermArea  // Define virtual terminal character properties
   using FChar_const_iterator  = FCharVec::const_iterator;
 
   // Constructor
-  FTermArea() = default;
+  FTermRegion() = default;
 
   // Disable copy constructor
-  FTermArea (const FTermArea&) = delete;
+  FTermRegion (const FTermRegion&) = delete;
 
   // Destructor
-  ~FTermArea() = default;
+  ~FTermRegion() = default;
 
   // Disable copy assignment operator (=)
-  auto operator = (const FTermArea&) -> FTermArea& = delete;
+  auto operator = (const FTermRegion&) -> FTermRegion& = delete;
 
   template <typename T>
   inline auto getOwner() const -> clean_fdata_t<T>&
@@ -497,8 +497,8 @@ struct FVTerm::FTermArea  // Define virtual terminal character properties
   }
 
   constexpr auto isOverlapped (const FRect&) const noexcept -> bool;
-  constexpr auto isOverlapped (const FTermArea*) const noexcept -> bool;
-  constexpr auto isPrintPositionInsideArea() const noexcept -> bool;
+  constexpr auto isOverlapped (const FTermRegion*) const noexcept -> bool;
+  constexpr auto isPrintPositionInsideRegion() const noexcept -> bool;
   auto reprint (const FRect&, const FSize&) noexcept -> bool;
 
   inline auto getFChar (int x, int y) const noexcept -> FChar_const_reference
@@ -552,7 +552,7 @@ struct FVTerm::FTermArea  // Define virtual terminal character properties
     return -1;
   }
 
-  void updateAreaChanges (uInt, uInt, uInt8) noexcept;
+  void updateRegionChanges (uInt, uInt, uInt8) noexcept;
 
   // Data members
   struct Coordinate
@@ -579,17 +579,17 @@ struct FVTerm::FTermArea  // Define virtual terminal character properties
   bool            has_changes{false};
   bool            visible{false};
   bool            minimized{false};
-  FDataAccessPtr  owner{nullptr};        // Object that owns this FTermArea
+  FDataAccessPtr  owner{nullptr};        // Object that owns this FTermRegion
   FPreprocVector  preproc_list{};
   FRowChanges     changes_in_row{};
   FLineChangesVec changes_in_line{};
-  FCharVec        data{};                // FChar data of the drawing area
+  FCharVec        data{};                // FChar data of the drawing region
 };
 
 //----------------------------------------------------------------------
-constexpr auto FVTerm::FTermArea::contains (int x, int y) const noexcept -> bool
+constexpr auto FVTerm::FTermRegion::contains (int x, int y) const noexcept -> bool
 {
-  // Is the terminal position (pos) located on my area?
+  // Is the terminal position (pos) located on my region?
 
   const int current_height = minimized ? min_size.height
                                        : size.height + shadow.height;
@@ -604,7 +604,7 @@ constexpr auto FVTerm::FTermArea::contains (int x, int y) const noexcept -> bool
 }
 
 //----------------------------------------------------------------------
-constexpr auto FVTerm::FTermArea::isOverlapped (const FRect& box) const noexcept -> bool
+constexpr auto FVTerm::FTermRegion::isOverlapped (const FRect& box) const noexcept -> bool
 {
   const int x1 = position.x;
   const int x2 = x1 + size.width + shadow.width;
@@ -620,29 +620,29 @@ constexpr auto FVTerm::FTermArea::isOverlapped (const FRect& box) const noexcept
 }
 
 //----------------------------------------------------------------------
-constexpr auto FVTerm::FTermArea::isOverlapped (const FTermArea* area) const noexcept -> bool
+constexpr auto FVTerm::FTermRegion::isOverlapped (const FTermRegion* region) const noexcept -> bool
 {
-  const int area_x1 = area->position.x;
-  const int area_x2 = area_x1 + area->size.width + area->shadow.width;
+  const int region_x1 = region->position.x;
+  const int region_x2 = region_x1 + region->size.width + region->shadow.width;
   const int x1 = position.x;
   const int x2 = x1 + size.width + shadow.width;
 
-  if ( x2 <= area_x1 || x1 >= area_x2 )
+  if ( x2 <= region_x1 || x1 >= region_x2 )
     return false;
 
-  const int area_height = area->minimized ? area->min_size.height
-                                          : area->size.height + area->shadow.height;
-  const int area_y1 = area->position.y;
-  const int area_y2 = area_y1 + area_height;
+  const int region_height = region->minimized ? region->min_size.height
+                                              : region->size.height + region->shadow.height;
+  const int region_y1 = region->position.y;
+  const int region_y2 = region_y1 + region_height;
   const int height = minimized ? min_size.height
                                : size.height + shadow.height;
   const int y1 = position.y;
   const int y2 = y1 + height;
-  return ! ( y2 <= area_y1 || y1 >= area_y2 );
+  return ! ( y2 <= region_y1 || y1 >= region_y2 );
 }
 
 //----------------------------------------------------------------------
-constexpr auto FVTerm::FTermArea::isPrintPositionInsideArea() const noexcept -> bool
+constexpr auto FVTerm::FTermRegion::isPrintPositionInsideRegion() const noexcept -> bool
 {
   return cursor.x > 0
       && cursor.y > 0
@@ -651,7 +651,8 @@ constexpr auto FVTerm::FTermArea::isPrintPositionInsideArea() const noexcept -> 
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::FTermArea::reprint (const FRect& box, const FSize& term_size) noexcept -> bool
+inline auto FVTerm::FTermRegion::reprint ( const FRect& box
+                                         , const FSize& term_size ) noexcept -> bool
 {
   if ( ! isOverlapped(box) )
     return false;
@@ -706,8 +707,8 @@ inline auto FVTerm::FTermArea::reprint (const FRect& box, const FSize& term_size
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::FTermArea::updateAreaChanges ( uInt x, uInt y
-                                                 , uInt8 char_width ) noexcept
+inline void FVTerm::FTermRegion::updateRegionChanges ( uInt x, uInt y
+                                                     , uInt8 char_width ) noexcept
 {
   auto& line_changes = changes_in_line[y];
   const uInt x_end = x + uInt( char_width >> 1 );
@@ -865,11 +866,11 @@ inline auto FVTerm::getClassName() const -> FString
 { return "FVTerm"; }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::getVWin() noexcept -> FTermArea*
+inline auto FVTerm::getVWin() noexcept -> FTermRegion*
 { return vwin.get(); }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::getVWin() const noexcept -> const FTermArea*
+inline auto FVTerm::getVWin() const noexcept -> const FTermRegion*
 { return vwin.get(); }
 
 //----------------------------------------------------------------------
@@ -882,8 +883,8 @@ inline auto FVTerm::getWindowList() noexcept -> FVTermList*
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::setVWin (std::unique_ptr<FTermArea>&& area) noexcept
-{ vwin = std::move(area); }
+inline void FVTerm::setVWin (std::unique_ptr<FTermRegion>&& region) noexcept
+{ vwin = std::move(region); }
 
 //----------------------------------------------------------------------
 inline void FVTerm::unsetNonBlockingRead()
@@ -925,44 +926,44 @@ inline void FVTerm::print (const FPoint& p)
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::getChildPrintArea() const noexcept -> FTermArea*
-{ return child_print_area; }
+inline auto FVTerm::getChildPrintRegion() const noexcept -> FTermRegion*
+{ return child_print_region; }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::getCurrentPrintArea() const noexcept -> FTermArea*
-{ return print_area; }
+inline auto FVTerm::getCurrentPrintRegion() const noexcept -> FTermRegion*
+{ return print_region; }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::getVirtualDesktop() const noexcept -> FTermArea*
+inline auto FVTerm::getVirtualDesktop() const noexcept -> FTermRegion*
 { return vdesktop.get(); }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::getVirtualTerminal() const noexcept -> FTermArea*
+inline auto FVTerm::getVirtualTerminal() const noexcept -> FTermRegion*
 { return vterm.get(); }
 
 //----------------------------------------------------------------------
-inline void FVTerm::setPrintArea (FTermArea* area) noexcept
-{ print_area = area; }
+inline void FVTerm::setPrintRegion (FTermRegion* region) noexcept
+{ print_region = region; }
 
 //----------------------------------------------------------------------
-inline void FVTerm::setChildPrintArea (FTermArea* area) noexcept
-{ child_print_area = area; }
+inline void FVTerm::setChildPrintRegion (FTermRegion* region) noexcept
+{ child_print_region = region; }
 
 //----------------------------------------------------------------------
-inline void FVTerm::setActiveArea (FTermArea* area) const noexcept
-{ active_area = area; }
+inline void FVTerm::setActiveRegion (FTermRegion* region) const noexcept
+{ active_region = region; }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::isActive (const FTermArea* area) const noexcept -> bool
-{ return area == active_area; }
+inline auto FVTerm::isActive (const FTermRegion* region) const noexcept -> bool
+{ return region == active_region; }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::hasPrintArea() const noexcept -> bool
-{ return print_area; }
+inline auto FVTerm::hasPrintRegion() const noexcept -> bool
+{ return print_region; }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::hasChildPrintArea() const noexcept -> bool
-{ return child_print_area; }
+inline auto FVTerm::hasChildPrintRegion() const noexcept -> bool
+{ return child_print_region; }
 
 //----------------------------------------------------------------------
 inline auto FVTerm::isVirtualWindow() const noexcept -> bool
@@ -976,7 +977,7 @@ inline void FVTerm::hideVTermCursor() const noexcept
 inline auto FVTerm::getLayer (FVTerm& obj) noexcept -> int
 {
   // returns the layer from the FVTerm object
-  return obj.FVTerm::getPrintArea()->layer;
+  return obj.FVTerm::getPrintRegion()->layer;
 }
 
 //----------------------------------------------------------------------
@@ -1006,9 +1007,9 @@ inline void FVTerm::initFromGlobalInstance()
 
   foutput           = std::shared_ptr<FOutput>(init_object->foutput);
   vterm_window_list = std::shared_ptr<FVTermList>(init_object->vterm_window_list);
-  vterm             = std::shared_ptr<FTermArea>(init_object->vterm);
-  vterm_old         = std::shared_ptr<FTermArea>(init_object->vterm_old);
-  vdesktop          = std::shared_ptr<FTermArea>(init_object->vdesktop);
+  vterm             = std::shared_ptr<FTermRegion>(init_object->vterm);
+  vterm_old         = std::shared_ptr<FTermRegion>(init_object->vterm_old);
+  vdesktop          = std::shared_ptr<FTermRegion>(init_object->vdesktop);
 }
 
 }  // namespace finalcut

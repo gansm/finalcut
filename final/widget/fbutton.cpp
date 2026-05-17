@@ -668,7 +668,7 @@ void FButton::draw()
   drawShadow();
 
   finalizingDrawing();
-  updateStatusbar (this);
+  updateStatusBar (this);
 }
 
 //----------------------------------------------------------------------

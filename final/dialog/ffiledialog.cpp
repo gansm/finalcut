@@ -90,7 +90,7 @@ auto fileChooser ( FWidget* parent
 
   if ( fileopen.exec() == FDialog::ResultCode::Accept )
     chosen_file = fileopen.getPath().toString()
-                + fileopen.getSelectedFilename();
+                + fileopen.getSelectedFileName();
 
   if ( ! chosen_file.empty() && ! isRegularFile(chosen_file) )
   {
@@ -137,7 +137,7 @@ FFileDialog::~FFileDialog() noexcept = default;  // destructor
 //----------------------------------------------------------------------
 auto FFileDialog::getSelectedFile() const -> FString
 {
-  return {getSelectedFilename()};
+  return {getSelectedFileName()};
 }
 
 //----------------------------------------------------------------------
@@ -194,7 +194,7 @@ void FFileDialog::setShowHiddenFiles (bool enable)
 
   show_hidden = enable;
   readDir();
-  filebrowser.redraw();
+  file_browser.redraw();
 }
 
 //----------------------------------------------------------------------
@@ -205,7 +205,7 @@ void FFileDialog::onKeyPress (FKeyEvent* ev)
 
   FDialog::onKeyPress (ev);
 
-  if ( ! filebrowser.hasFocus() )
+  if ( ! file_browser.hasFocus() )
     return;
 
   const auto& key = ev->key();
@@ -249,7 +249,7 @@ void FFileDialog::adjustSize()
   const int X = 1 + int((max_width - getWidth()) / 2);
   const int Y = 1 + int((max_height - getHeight()) / 3);
   setPos(FPoint{X, Y}, false);
-  filebrowser.setHeight (h - 8, false);
+  file_browser.setHeight (h - 8, false);
   hidden_check.setY (int(h) - 4, false);
   cancel_btn.setY (int(h) - 4, false);
   open_btn.setY (int(h) - 4, false);
@@ -278,12 +278,12 @@ void FFileDialog::init()
 //----------------------------------------------------------------------
 inline void FFileDialog::widgetSettings (const FPoint& pos)
 {
-  filename.setLabelText ("File&name");
-  filename.setText (filter_pattern);
-  filename.setGeometry (FPoint{11, 1}, FSize{28, 1});
-  filename.setFocus();
+  file_name.setLabelText ("File&name");
+  file_name.setText (filter_pattern);
+  file_name.setGeometry (FPoint{11, 1}, FSize{28, 1});
+  file_name.setFocus();
 
-  filebrowser.setGeometry (FPoint{2, 3}, FSize{38, 6});
+  file_browser.setGeometry (FPoint{2, 3}, FSize{38, 6});
   printPath (directory);
 
   hidden_check.setText ("&hidden files");
@@ -304,19 +304,19 @@ inline void FFileDialog::widgetSettings (const FPoint& pos)
 //----------------------------------------------------------------------
 void FFileDialog::initCallbacks()
 {
-  filename.addCallback
+  file_name.addCallback
   (
     "activate",
     this, &FFileDialog::cb_processActivate
   );
 
-  filebrowser.addCallback
+  file_browser.addCallback
   (
     "row-changed",
     this, &FFileDialog::cb_processRowChanged
   );
 
-  filebrowser.addCallback
+  file_browser.addCallback
   (
     "clicked",
     this, &FFileDialog::cb_processClicked
@@ -546,9 +546,9 @@ void FFileDialog::readDirEntries (DIR* directory_stream)
 }
 
 //----------------------------------------------------------------------
-auto FFileDialog::getSelectedFilename() const -> std::string
+auto FFileDialog::getSelectedFileName() const -> std::string
 {
-  const auto n = uLong(filebrowser.currentItem() - 1);
+  const auto n = uLong(file_browser.currentItem() - 1);
 
   if ( dir_entries[n].directory )
     return {""};
@@ -594,7 +594,7 @@ void FFileDialog::dirEntriesToList()
 {
   // Fill list with directory entries
 
-  filebrowser.clear();
+  file_browser.clear();
 
   if ( dir_entries.empty() )
     return;
@@ -604,9 +604,9 @@ void FFileDialog::dirEntriesToList()
                 , [this] (const auto& entry)
                   {
                     if ( entry.directory )
-                      filebrowser.insert(FString{entry.name}, BracketType::Brackets);
+                      file_browser.insert(FString{entry.name}, BracketType::Brackets);
                     else
-                      filebrowser.insert(FString{entry.name});
+                      file_browser.insert(FString{entry.name});
                   }
                 );
 }
@@ -623,8 +623,8 @@ void FFileDialog::selectDirectoryEntry (const std::string& name)
   {
     if ( entry.name == name )
     {
-      filebrowser.setCurrentItem(i);
-      filename.setText(name + '/');
+      file_browser.setCurrentItem(i);
+      file_name.setText(name + '/');
       break;
     }
 
@@ -661,7 +661,7 @@ auto FFileDialog::changeDir (const FString& dirname) -> int
       if ( newdir == FString{".."} )
       {
         if ( lastdir == FString{'/'} )
-          filename.setText('/');
+          file_name.setText('/');
         else
         {
           auto baseName = std::string(basename(lastdir.c_str()));
@@ -673,14 +673,14 @@ auto FFileDialog::changeDir (const FString& dirname) -> int
         FString firstname{dir_entries[0].name};
 
         if ( dir_entries[0].directory )
-          filename.setText(firstname + '/');
+          file_name.setText(firstname + '/');
         else
-          filename.setText(firstname);
+          file_name.setText(firstname);
       }
 
       printPath(directory);
-      filename.redraw();
-      filebrowser.redraw();
+      file_name.redraw();
+      file_browser.redraw();
       // fall through
     default:
       return 0;
@@ -691,7 +691,7 @@ auto FFileDialog::changeDir (const FString& dirname) -> int
 void FFileDialog::printPath (const FString& txt)
 {
   const auto& path = txt;
-  const std::size_t max_width = filebrowser.getWidth() - 4;
+  const std::size_t max_width = file_browser.getWidth() - 4;
   const auto column_width = getColumnWidth(path);
 
   if ( column_width > max_width )
@@ -699,10 +699,10 @@ void FFileDialog::printPath (const FString& txt)
     const std::size_t width = max_width - 2;
     const std::size_t first = column_width + 1 - width;
     const FString sub_str{getColumnSubString (path, first, width)};
-    filebrowser.setText(".." + sub_str);
+    file_browser.setText(".." + sub_str);
   }
   else
-    filebrowser.setText(path);
+    file_browser.setText(path);
 }
 
 //----------------------------------------------------------------------
@@ -741,25 +741,25 @@ auto FFileDialog::getHomeDir() -> FString
 //----------------------------------------------------------------------
 inline auto FFileDialog::isFilterInput() const -> bool
 {
-  return filename.getText().includes('*')
-      || filename.getText().includes('?');
+  return file_name.getText().includes('*')
+      || file_name.getText().includes('?');
 }
 
 //----------------------------------------------------------------------
 inline auto FFileDialog::isDirectoryInput() const -> bool
 {
-  return filename.getText().trim() == FString{".."}
-      || filename.getText().includes('/')
-      || filename.getText().includes('~');
+  return file_name.getText().trim() == FString{".."}
+      || file_name.getText().includes('/')
+      || file_name.getText().includes('~');
 }
 
 //----------------------------------------------------------------------
 inline void FFileDialog::activateNewFilter()
 {
-  setFilter(filename.getText());
+  setFilter(file_name.getText());
   redraw();  // Show new filter in title bar
   readDir();
-  filebrowser.redraw();
+  file_browser.redraw();
 }
 
 //----------------------------------------------------------------------
@@ -768,17 +768,17 @@ inline void FFileDialog::activateDefaultFilter()
   setFilter("*");
   redraw();  // Delete filter from title bar
   readDir();
-  filebrowser.redraw();
+  file_browser.redraw();
 }
 
 //----------------------------------------------------------------------
 inline void FFileDialog::findItem (const FString& search_text)
 {
-  auto iter = filebrowser.findItem(search_text);
+  auto iter = file_browser.findItem(search_text);
 
-  if ( iter != filebrowser.getData().end() )
+  if ( iter != file_browser.getData().end() )
   {
-    filebrowser.setCurrentItem(iter);
+    file_browser.setCurrentItem(iter);
     done (ResultCode::Accept);
   }
   else
@@ -789,7 +789,7 @@ inline void FFileDialog::findItem (const FString& search_text)
 inline void FFileDialog::changeIntoSubDir()
 {
   bool found{false};
-  const auto& input = filename.getText().trim();
+  const auto& input = file_name.getText().trim();
 
   if ( dir_entries.empty() )
     done (ResultCode::Reject);
@@ -820,10 +820,10 @@ void FFileDialog::cb_processActivate()
 {
   if ( isFilterInput() )
     activateNewFilter();
-  else if ( filename.getText().isEmpty() )
+  else if ( file_name.getText().isEmpty() )
     activateDefaultFilter();
   else if ( isDirectoryInput() )
-    changeDir(filename.getText().trim());
+    changeDir(file_name.getText().trim());
   else
     changeIntoSubDir();
 }
@@ -831,7 +831,7 @@ void FFileDialog::cb_processActivate()
 //----------------------------------------------------------------------
 void FFileDialog::cb_processRowChanged()
 {
-  const std::size_t n = filebrowser.currentItem();
+  const std::size_t n = file_browser.currentItem();
 
   if ( n == 0 )
     return;
@@ -839,17 +839,17 @@ void FFileDialog::cb_processRowChanged()
   const auto& name = FString{dir_entries[n - 1].name};
 
   if ( dir_entries[n - 1].directory )
-    filename.setText(name + '/');
+    file_name.setText(name + '/');
   else
-    filename.setText(name);
+    file_name.setText(name);
 
-  filename.redraw();
+  file_name.redraw();
 }
 
 //----------------------------------------------------------------------
 void FFileDialog::cb_processClicked()
 {
-  const auto n = uLong(filebrowser.currentItem() - 1);
+  const auto n = uLong(file_browser.currentItem() - 1);
 
   if ( dir_entries[n].directory )
     changeDir(dir_entries[n].name);

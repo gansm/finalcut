@@ -66,7 +66,7 @@ EXTRA_DIST = \
 	widget-coordinates.svg \
 	widget-geometry.svg \
 	widget-layout.md \
-	widget-lengths.svg \
+	widget-dimensions.svg \
 	xgraphics \
 	xpmview.png \
 	xterm.txt
@@ -130,7 +130,7 @@ doc_DATA = \
 	widget-coordinates.svg \
 	widget-geometry.svg \
 	widget-layout.md \
-	widget-lengths.svg \
+	widget-dimensions.svg \
 	xgraphics \
 	xterm.txt
 

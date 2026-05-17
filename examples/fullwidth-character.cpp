@@ -48,13 +48,13 @@ auto main (int argc, char* argv[]) -> int
   finalcut::FLineEdit field1 {&dgl};
   field1.setLabelText (full("Input"));
   field1.setText (L"你好");  // Nǐ hǎo (chinese)
-  field1.setStatusbarMessage (full("Type your text here"));
+  field1.setStatusBarMessage (full("Type your text here"));
   field1.setGeometry (FPoint{15, 1}, FSize{19, 1});
 
   finalcut::FLineEdit field2 {&dgl};
   field2.setLabelText (L"Comment");
   field2.setText (full(L"Hello"));
-  field2.setStatusbarMessage (full("Post a comment"));
+  field2.setStatusBarMessage (full("Post a comment"));
   field2.setGeometry (FPoint{15, 3}, FSize{19, 1});
 
   // Create the button group
@@ -64,8 +64,8 @@ auto main (int argc, char* argv[]) -> int
   // Create radio buttons
   finalcut::FRadioButton left {"&" + full("Left"), &group};
   finalcut::FRadioButton right {"&" + full("Right"), &group};
-  left.setStatusbarMessage (full("Prefer the left side"));
-  right.setStatusbarMessage (full("Prefer the right side"));
+  left.setStatusBarMessage (full("Prefer the left side"));
+  right.setStatusBarMessage (full("Prefer the right side"));
   left.setGeometry (FPoint{1, 1}, FSize{8, 1});
   right.setGeometry (FPoint{15, 1}, FSize{10, 1});
 
@@ -75,12 +75,12 @@ auto main (int argc, char* argv[]) -> int
   finalcut::FString text_line{"FINAL CUT supports "
                               "full-width characters."};
   scroll_text << full(text_line);
-  scroll_text.setStatusbarMessage ("You can scroll right and "
+  scroll_text.setStatusBarMessage ("You can scroll right and "
                                    "left with the arrow keys");
 
   // Create a OK button
   finalcut::FButton btn {"&ＯＫ", &dgl};
-  btn.setStatusbarMessage (full("Press Enter to exit the dialog"));
+  btn.setStatusBarMessage (full("Press Enter to exit the dialog"));
   btn.setGeometry (FPoint{24, 12}, FSize{10, 1});
 
   // Create the status bar

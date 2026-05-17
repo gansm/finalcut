@@ -70,7 +70,7 @@ class FDialog : public FWindow
 {
   public:
     // Using-declaration
-    using FWindow::setResizeable;
+    using FWindow::setResizable;
     using FWindow::setMinimizable;
 
     // Enumeration
@@ -108,10 +108,10 @@ class FDialog : public FWindow
     void unsetDialogWidget();
     void setModal (bool = true);
     void unsetModal();
-    void setResizeable (bool = true) override;
+    void setResizable (bool = true) override;
     void setMinimizable (bool = true) override;
-    void setTitlebarButtonVisibility (bool = true);
-    void unsetTitlebarButtonVisibility();
+    void setTitleBarButtonVisibility (bool = true);
+    void unsetTitleBarButtonVisibility();
     void setBorder (bool = true);
     void unsetBorder();
     void resetColors() override;
@@ -194,7 +194,7 @@ class FDialog : public FWindow
 
     struct PositionData
     {
-      FPoint titlebar_click_pos{};
+      FPoint title_bar_click_pos{};
       FPoint resize_click_pos{};
       FPoint new_pos{};
     };
@@ -265,7 +265,7 @@ class FDialog : public FWindow
     auto isMouseOverMenuButton (const MouseStates&) const -> bool;
     auto isMouseOverZoomButton (const MouseStates&) const -> bool;
     auto isMouseOverMinimizeButton (const MouseStates&) const -> bool;
-    auto isMouseOverTitlebar (const MouseStates&) const -> bool;
+    auto isMouseOverTitleBar (const MouseStates&) const -> bool;
     void passEventToSubMenu ( const MouseStates&
                             , const FMouseEvent& );
     void handleLeftMouseDown (const MouseStates&);
@@ -297,7 +297,7 @@ class FDialog : public FWindow
     void cb_close();
 
     // Data members
-    TitleBarFlags titlebar{};
+    TitleBarFlags title_bar{};
     ErrorFlags    error_flags{false, false};
     PositionData  position_data{};
     SizeData      size_data{};
@@ -329,12 +329,12 @@ inline void FDialog::unsetModal()
 { setModal(false); }
 
 //----------------------------------------------------------------------
-inline void FDialog::setTitlebarButtonVisibility (bool enable)
-{  titlebar.buttons = enable; }
+inline void FDialog::setTitleBarButtonVisibility (bool enable)
+{  title_bar.buttons = enable; }
 
 //----------------------------------------------------------------------
-inline void FDialog::unsetTitlebarButtonVisibility()
-{ setTitlebarButtonVisibility(false); }
+inline void FDialog::unsetTitleBarButtonVisibility()
+{ setTitleBarButtonVisibility(false); }
 
 //----------------------------------------------------------------------
 inline void FDialog::unsetBorder()

@@ -641,7 +641,7 @@ auto FOptiMove::repeatedAppend ( std::string& dst
   const auto dst_len = dst.length();
   int total{0};
 
-  if ( (dst_len + uInt(count) * src_len) < BUF_SIZE - 1 )
+  if ( (dst_len + std::size_t(count) * src_len) < BUF_SIZE - 1 )
   {
     total += count * o.duration;
 

@@ -74,10 +74,10 @@ CheckList::CheckList (finalcut::FWidget* parent)
   listview.setColumnSortType (1, finalcut::SortType::Name);
   listview.setColumnSortType (2, finalcut::SortType::Name);
 
-  // Statusbar at the bottom
+  // Status bar at the bottom
   finalcut::FString separator{};
   separator << ' ' << finalcut::UniChar::BoxDrawingsVertical << ' ';
-  listview.setStatusbarMessage ( finalcut::FString{}
+  listview.setStatusBarMessage ( finalcut::FString{}
                                  << "<Q> exit" << separator
                                  << "<Space> select an item" << separator
                                  << "<Enter> see your pick list");

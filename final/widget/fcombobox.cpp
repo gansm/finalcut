@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2024 Markus Gans                                      *
+* Copyright 2019-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -132,7 +132,7 @@ void FDropDownListBox::draw()
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
-  clearArea();
+  clearRegion();
   drawShadow();
 
   if ( FVTerm::getFOutput()->isMonochron() )
@@ -501,16 +501,16 @@ void FComboBox::initCallbacks()
 //----------------------------------------------------------------------
 void FComboBox::draw()
 {
-  const auto& wc_scrollbar = getColorTheme()->scrollbar;
+  const auto& wc_scroll_bar = getColorTheme()->scroll_bar;
 
-  const FColorPair button_color = [this, &wc_scrollbar] ()
+  const FColorPair button_color = [this, &wc_scroll_bar] ()
   {
     if ( list_window.isEmpty() )
-      return FColorPair { wc_scrollbar.button_inactive_fg
-                        , wc_scrollbar.button_inactive_bg };
+      return FColorPair { wc_scroll_bar.button_inactive_fg
+                        , wc_scroll_bar.button_inactive_bg };
 
-    return FColorPair { wc_scrollbar.button_fg
-                      , wc_scrollbar.button_bg };
+    return FColorPair { wc_scroll_bar.button_fg
+                      , wc_scroll_bar.button_bg };
   }();
 
   print() << FPoint{int(getWidth()) - nf, 1}

@@ -4,7 +4,7 @@ Control Widgets
 Table of Contents
 -----------------
 
-<!-- TOC -->
+<!-- toc -->
 - [FButton](#fbutton)
 - [FLineEdit](#flineedit)
 - [FScrollBar](#fscrollbar)
@@ -13,7 +13,8 @@ Table of Contents
   - [FCheckBox](#fcheckbox)
   - [FRadioButton](#FRadioButton)
   - [FSwitch](#FSwitch)
-<!-- /TOC -->
+<!-- endtoc -->
+
 
 Control widgets are the basic building blocks used to create an 
 interactive user interface. A control widget allows users to adjust 
