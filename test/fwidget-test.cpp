@@ -788,7 +788,7 @@ void FWidgetTest::noArgumentTest()
   CPPUNIT_ASSERT ( wdgt.getFlags().focus.focusable == true );
   CPPUNIT_ASSERT ( wdgt.acceptFocus() );
   CPPUNIT_ASSERT ( wdgt.getFlags().feature.scrollable == false );
-  CPPUNIT_ASSERT ( wdgt.getFlags().feature.resizeable == false );
+  CPPUNIT_ASSERT ( wdgt.getFlags().feature.resizable == false );
   CPPUNIT_ASSERT ( wdgt.getFlags().feature.minimizable == false );
   CPPUNIT_ASSERT ( wdgt.getFlags().visibility.modal == false );
   CPPUNIT_ASSERT ( wdgt.getFlags().visibility.visible_cursor == false );
@@ -881,7 +881,7 @@ void FWidgetTest::containsFWidgetFlagsTest()
   finalcut::FWidgetFlags b{};
   b.feature.active = true;
   b.feature.scrollable = true;
-  b.feature.resizeable = true;
+  b.feature.resizable = true;
   b.feature.minimizable = true;
   b.feature.flat = true;
   b.feature.no_border = true;
@@ -907,7 +907,7 @@ void FWidgetTest::containsFWidgetFlagsTest()
   CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
   a.feature.scrollable = true;
   CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
-  a.feature.resizeable = true;
+  a.feature.resizable = true;
   CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
   a.feature.minimizable = true;
   CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
@@ -952,7 +952,7 @@ void FWidgetTest::containsFWidgetFlagsTest()
   CPPUNIT_ASSERT ( ! finalcut::containsFWidgetFlags(a, b) );
   b.feature.scrollable = false;
   CPPUNIT_ASSERT ( ! finalcut::containsFWidgetFlags(a, b) );
-  b.feature.resizeable = false;
+  b.feature.resizable = false;
   CPPUNIT_ASSERT ( ! finalcut::containsFWidgetFlags(a, b) );
   b.feature.minimizable = false;
   CPPUNIT_ASSERT ( ! finalcut::containsFWidgetFlags(a, b) );
@@ -995,7 +995,7 @@ void FWidgetTest::containsFWidgetFlagsTest()
 
   b.feature.active = true;
   b.feature.scrollable = true;
-  b.feature.resizeable = true;
+  b.feature.resizable = true;
   b.feature.minimizable = true;
   b.feature.flat = true;
   b.feature.no_border = true;
@@ -1018,7 +1018,7 @@ void FWidgetTest::containsFWidgetFlagsTest()
 
   a.feature.active = true;
   a.feature.scrollable = false;
-  a.feature.resizeable = false;
+  a.feature.resizable = false;
   a.feature.minimizable = false;
   a.feature.flat = false;
   a.feature.no_border = false;
@@ -1043,9 +1043,9 @@ void FWidgetTest::containsFWidgetFlagsTest()
   a.feature.scrollable = true;
   CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
   a.feature.scrollable = false;
-  a.feature.resizeable = true;
+  a.feature.resizable = true;
   CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
-  a.feature.resizeable = false;
+  a.feature.resizable = false;
   a.feature.minimizable = true;
   CPPUNIT_ASSERT ( finalcut::containsFWidgetFlags(a, b) );
   a.feature.minimizable = false;
