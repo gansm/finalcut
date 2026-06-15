@@ -27,7 +27,7 @@ jobs:
           whoami
           pwd
           # http://ftp.openbsd.org/pub/OpenBSD/7.9/packages/amd64/
-          sudo pkg_add gcc g++ automake autoconf autoconf-archive libtool pkgconf cppunit
+          sudo pkg_add gcc g++ automake autoconf autoconf-archive libtool cppunit
           export CXX=eg++
           export AUTOCONF_VERSION=2.71
           export AUTOMAKE_VERSION=1.16
