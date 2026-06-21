@@ -11,6 +11,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: cpa.sh {0}
 
     steps:
     - name: Repository checkout
@@ -21,7 +24,7 @@ jobs:
       with:
         operating_system: netbsd
         version: '10.1'
-        shell: cpa.sh {0}
+        shell: bash
         run: |
           uname -a
           whoami
