@@ -21,7 +21,7 @@ jobs:
       with:
         operating_system: netbsd
         version: '10.1'
-        shell: bash
+        shell: cpa.sh {0}
         run: |
           uname -a
           whoami

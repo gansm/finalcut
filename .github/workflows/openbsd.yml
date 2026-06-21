@@ -21,7 +21,7 @@ jobs:
       with:
         operating_system: openbsd
         version: '7.9'
-        shell: bash
+        shell: cpa.sh {0}
         run: |
           uname -a
           whoami
@@ -29,6 +29,8 @@ jobs:
           # http://ftp.openbsd.org/pub/OpenBSD/7.9/packages/amd64/
           sudo pkg_add gcc g++ automake autoconf autoconf-archive libtool cppunit
           export CXX=eg++
+          export AUTOCONF_VERSION=2.72
+          export AUTOMAKE_VERSION=1.18
           eg++ --version
           autoreconf -v --install --force
           ./configure --prefix=/usr

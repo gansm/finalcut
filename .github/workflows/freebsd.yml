@@ -21,7 +21,7 @@ jobs:
       with:
         operating_system: freebsd
         version: '15.0'
-        shell: bash
+        shell: cpa.sh {0}
         run: |
           uname -a
           freebsd-version
