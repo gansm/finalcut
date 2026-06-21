@@ -24,7 +24,6 @@ jobs:
       with:
         operating_system: netbsd
         version: '10.1'
-        shell: bash
         run: |
           uname -a
           whoami

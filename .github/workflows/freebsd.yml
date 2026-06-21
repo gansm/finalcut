@@ -24,7 +24,6 @@ jobs:
       with:
         operating_system: freebsd
         version: '15.0'
-        shell: bash
         run: |
           uname -a
           freebsd-version
