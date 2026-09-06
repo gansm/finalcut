@@ -78,8 +78,10 @@ Monitor::~Monitor()  // destructor
       {
         std::clog << "Exception on removing monitor: " << ex.what();
       }
-      catch (...)
-      { }
+      catch (const std::exception& ex_clog)
+      {
+        static_cast<void>(ex_clog);  // Ignore exceptions from std::clog
+      }
     }
 
     eventloop = nullptr;

@@ -1,4 +1,4 @@
 PROJECT_NAME = "FINAL CUT"
-EXCLUDE = doc, misc, m4, scripts, examples
+EXCLUDE = doc, misc, scripts, examples
 EXCLUDE_PATTERNS = */test/*
 

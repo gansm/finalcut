@@ -230,8 +230,10 @@ FListViewItem::~FListViewItem()  // destructor
       std::clog << FLog::LogLevel::Error
                 << "Exception on removing this element: " << ex.what();
     }
-    catch (...)
-    { }
+    catch (const std::exception& ex_clog)
+    {
+      static_cast<void>(ex_clog);  // Ignore exceptions from std::clog
+    }
   }
 }
 
