@@ -248,8 +248,9 @@ class FDialog : public FWindow
     void leaveMenu();
     void openMenu();
     void selectFirstMenuItem();
-    void setMinimizeItem();
+    void setMoveSizeItem();
     void setZoomItem();
+    void setMinimizeItem();
     auto getMenuButtonWidth() const -> std::size_t;
     auto getZoomButtonWidth() const -> std::size_t;
     auto getMinimizeButtonWidth() const -> std::size_t;

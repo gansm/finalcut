@@ -371,7 +371,7 @@ inline auto encode (wchar_t ucs, CharBufferT& buffer) -> uInt32_if_vector_or_arr
     return 4;
   }
 
-  return encode(L'�', buffer);  // Invalid character
+  return encode(L'\uFFFD', buffer);  // Invalid character
 }
 
 #endif

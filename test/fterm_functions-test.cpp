@@ -941,7 +941,7 @@ void FTermFunctionsTest::utf8Test()
                    == std::string({char(0xee), char(0x87), char(0xbc)}) );
 
   // Replacement character
-  CPPUNIT_ASSERT ( unicode_to_utf8(L'�')
+  CPPUNIT_ASSERT ( unicode_to_utf8(L'\uFFFD')
                    == UTF8_Char({{'\357', '\277', '\275', '\0'}, 3}) );
 
   CPPUNIT_ASSERT ( unicode_to_utf8_string(L'�')

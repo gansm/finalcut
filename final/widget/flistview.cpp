@@ -225,8 +225,13 @@ FListViewItem::~FListViewItem()  // destructor
   }
   catch (const std::exception& ex)
   {
-    std::clog << FLog::LogLevel::Error
-              << "Exception on removing this element: " << ex.what();
+    try
+    {
+      std::clog << FLog::LogLevel::Error
+                << "Exception on removing this element: " << ex.what();
+    }
+    catch (...)
+    { }
   }
 }
 

@@ -145,6 +145,7 @@ void FDialog::resetColors()
 void FDialog::setResizable (bool enable)
 {
   FWindow::setResizable (enable);
+  setMoveSizeItem();
 
   if ( enable )
     dialog_menu.zoom_item->setEnable();
@@ -834,8 +835,8 @@ void FDialog::initMoveSizeMenuItem (FMenu* menu)
     return;
   }
 
-  dialog_menu.move_size_item->setText ("&Move/Size");
-  dialog_menu.move_size_item->setStatusBarMessage ("Move or change the size of the window");
+  setMoveSizeItem();
+
   dialog_menu.move_size_item->addCallback
   (
     "clicked",
@@ -1356,21 +1357,18 @@ void FDialog::selectFirstMenuItem()
 }
 
 //----------------------------------------------------------------------
-void FDialog::setMinimizeItem()
+void FDialog::setMoveSizeItem()
 {
-  if ( isMinimized() )
+  if ( isResizable() )
   {
-    dialog_menu.minimize_item->setText ("&Unminimize");
-    dialog_menu.minimize_item->setStatusBarMessage ("Restore the original window size");
+    dialog_menu.move_size_item->setText ("&Move/Size");
+    dialog_menu.move_size_item->setStatusBarMessage ("Change the window position or size");
   }
   else
   {
-    dialog_menu.minimize_item->setText ("&Minimize");
-    dialog_menu.minimize_item->setStatusBarMessage ("Minimizes the window");
+    dialog_menu.move_size_item->setText ("&Move");
+    dialog_menu.move_size_item->setStatusBarMessage ("Change the window position");
   }
-
-  if ( getFlags().shadow.shadow )
-    drawDialogShadow();
 }
 
 //----------------------------------------------------------------------
@@ -1388,6 +1386,24 @@ void FDialog::setZoomItem()
     dialog_menu.zoom_item->setStatusBarMessage ("Enlarge the window to the entire desktop");
     dialog_menu.move_size_item->setEnable();
   }
+}
+
+//----------------------------------------------------------------------
+void FDialog::setMinimizeItem()
+{
+  if ( isMinimized() )
+  {
+    dialog_menu.minimize_item->setText ("&Unminimize");
+    dialog_menu.minimize_item->setStatusBarMessage ("Restore the original window size");
+  }
+  else
+  {
+    dialog_menu.minimize_item->setText ("&Minimize");
+    dialog_menu.minimize_item->setStatusBarMessage ("Minimizes the window");
+  }
+
+  if ( getFlags().shadow.shadow )
+    drawDialogShadow();
 }
 
 //----------------------------------------------------------------------

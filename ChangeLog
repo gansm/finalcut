@@ -1,5 +1,9 @@
+2026-09-06  Markus Gans  <guru.mail@muenster.de>
+	* Depending on the settings of the widget, FDialog now switches 
+	  dynamically between the "Move/Size" and "Move" menu items
+
 2026-06-14  Markus Gans  <guru.mail@muenster.de>
-	* Rename the setDoubleFlatLine() method to setMergingBorder().
+	* Rename the setDoubleFlatLine() method to setMergingBorder()
 
 2026-05-28  Markus Gans  <guru.mail@muenster.de>
 	* Change the name of class FTermArea to FTermRegion
@@ -133,7 +137,7 @@
 2025-02-09  Markus Gans  <guru.mail@muenster.de>
 	* Significant speed-up when using FVTerm::copyArea with multiple 
 	  overlapping and transparent layers. This reduces the CPU load 
-	  of the process by ⅔.
+	  of the process by ⅔
 
 2024-12-24  Markus Gans  <guru.mail@muenster.de>
 	* Better FChar color value direct access
@@ -590,7 +594,7 @@
 	  were extracted and moved to the new class FVTermOutput. 
 	  The class FVTermOutput is the implementation of the abstract 
 	  class FOutput. This abstraction layer can be the basis for 
-	  an alternative implementation.
+	  an alternative implementation
 
 2021-08-01  Markus Gans  <guru.mail@muenster.de>
 	* Fixed mutex deadlock in FObject
@@ -677,7 +681,7 @@
 	  the widget layouts automatically before the first drawing 
 	  on the terminal is done. Also texts in full-width characters, 
 	  whose character width is determined automatically, should be 
-	  calculated here.
+	  calculated here
 
 2021-03-15  Markus Gans  <guru.mail@muenster.de>
 	* Dynamic adjustment of the terminal refresh rate between 
@@ -791,7 +795,7 @@
 
 2020-09-22  Markus Gans  <guru.mail@muenster.de>
 	* Bugfix in FDialog::setSize(): Automatic size adjustment and 
-	  simultaneous widget movement are now possible.
+	  simultaneous widget movement are now possible
 
 2020-09-18  Markus Gans  <guru.mail@muenster.de>
 	* The generic data type FDataPtr is now deprecated and was 
@@ -811,11 +815,11 @@
 2020-08-15  Markus Gans  <guru.mail@muenster.de>
 	* The call of the function setNonBlockingRead() resulted in 
 	  a high CPU load in idle mode. 
-	  Thanks to Pavel Stehule for reporting this problem.
+	  Thanks to Pavel Stehule for reporting this problem
 
 2020-08-11  Markus Gans  <guru.mail@muenster.de>
 	* New callback backend was implemented. Callback functions with any 
-	  number of arguments are now possible.
+	  number of arguments are now possible
 
 2020-07-19  Markus Gans  <guru.mail@muenster.de>
 	* API: Some method name changes: 
@@ -835,21 +839,21 @@
 
 2020-06-07  Markus Gans  <guru.mail@muenster.de>
 	* The --log-file parameter stores log output to any file. The file 
-	  can be viewed directly on another terminal with "tail -f".
+	  can be viewed directly on another terminal with "tail -f"
 
 2020-06-06  Markus Gans  <guru.mail@muenster.de>
 	* Now, the terminal is not initialized before the method show() 
-	  is called. Or you force it explicitly via the FApplication object.
+	  is called. Or you force it explicitly via the FApplication object
 	* Simplification of FMouse::createMouseObject()
 
 2020-05-30  Markus Gans  <guru.mail@muenster.de>
 	* With the two new methods FApplication::setDarkTheme() and 
 	  FApplication::setDefaultTheme() you can now change the theme 
 	  within an application. An example can be found in examples/ui 
-	  via the menu items "View" -> "Dark mode".
+	  via the menu items "View" -> "Dark mode"
 
 2020-05-29  Markus Gans  <guru.mail@muenster.de>
-	* Adding a dark theme. Can be activated with the --dark-theme parameter.
+	* Adding a dark theme. Can be activated with the --dark-theme parameter
 
 2020-05-28  Markus Gans  <guru.mail@muenster.de>
 	* FColorPalette now also uses polymorphism, so you can now 
@@ -892,7 +896,7 @@
 	* Several small code improvements
 
 2020-04-09  Markus Gans  <guru.mail@muenster.de>
-	* A dialog can now be displayed without a framing border.
+	* A dialog can now be displayed without a framing border
 	  Many thanks to basedtho for this tip
 
 2020-03-22  Markus Gans  <guru.mail@muenster.de>
@@ -1302,7 +1306,7 @@
 2018-10-13  Markus Gans  <guru.mail@muenster.de>
 	* Avoid using dynamic_cast so that you can compile Final Cut 
 	  without Run-Time Type Information (RTTI). 
-	  Thanks to user1095108 for reporting that.
+	  Thanks to user1095108 for reporting that
 
 2018-10-11  Markus Gans  <guru.mail@muenster.de>
 	* FKeyboard now uses references for keyboard buffer passing
@@ -1334,7 +1338,7 @@
 
 2018-09-26  Markus Gans  <guru.mail@muenster.de>
 	* The FListViewItem class now has a getData() and a setData() method 
-	  similar to the FListBoxItem class.
+	  similar to the FListBoxItem class
 
 2018-09-24  Markus Gans  <guru.mail@muenster.de>
 	* Stricter use of the keyword virtual
@@ -1344,7 +1348,7 @@
 	* Added pkg-config file finalcut.pc
 	* The entire library source code is now encapsulated under 
 	  the namespace finalcut. All examples and tests have been 
-	  modified to fit the namespace.
+	  modified to fit the namespace
 
 2018-09-16  Markus Gans  <guru.mail@muenster.de>
 	* Implement a ttytype test for the FTermDetection unit test
@@ -1379,7 +1383,7 @@
 
 2018-07-27  Markus Gans  <guru.mail@muenster.de>
 	* The array for keyboard input of UTF-8 characters was 
-	  not long enough for 4 bytes of UTF-8 codes.
+	  not long enough for 4 bytes of UTF-8 codes
 	* More tests in FKeyboard unit test
 
 2018-07-22  Markus Gans  <guru.mail@muenster.de>
@@ -1836,7 +1840,7 @@
 2017-04-05  Markus Gans  <guru.mail@muenster.de>
 	* Replace non-printable characters for Tera Term and 
 	  Cygwin terminal directly at start-up. Special cases 
-	  in the code are no longer necessary.
+	  in the code are no longer necessary
 	* New method setInsertCursorStyle() to change the appearance 
 	  of a cursor
 
@@ -1875,7 +1879,7 @@
 	  auto-adjusting with on-demand scroll bars
 	* FRect can now combine two FRect objects
 	* The FButtonGroup got the possibility of index access 
-	  to a child button.
+	  to a child button
 	* Fixed bug in FString copy constructor
 
 2017-03-08  Markus Gans  <guru.mail@muenster.de>
@@ -1894,7 +1898,7 @@
 	* New FWidget methods setMinimumWidth(), setMinimumHeight(), 
 	  setMaximumWidth() and setMaximumHeight() 
 	* FButtonGroup now inherits from FScrollView. This supports 
-	  many buttons to be displayed in a smaller frame.
+	  many buttons to be displayed in a smaller frame
 
 2017-02-18  Markus Gans  <guru.mail@muenster.de>
 	* Allows a window to have more than one FScrollView widget
@@ -1915,7 +1919,7 @@
 
 2017-01-15  Markus Gans  <guru.mail@muenster.de>
 	* Virtual window gets a preprocessing handler. This allows 
-	  a preprocessing method to be called before the vterm is updated.
+	  a preprocessing method to be called before the vterm is updated
 
 2017-01-07  Markus Gans  <guru.mail@muenster.de>
 	* Add scrollTo and scrollBy methods to FScrollView
@@ -1957,7 +1961,7 @@
 
 2016-12-11  Markus Gans  <guru.mail@muenster.de>
 	* Accelerates text line drawing by clear with CSI sequences 
-	  to begin or to end of the current line.
+	  to begin or to end of the current line
 
 2016-11-29  Markus Gans  <guru.mail@muenster.de>
 	* Restore the xterm window title and font 
@@ -2040,7 +2044,7 @@
 
 2016-09-28  Markus Gans  <guru.mail@muenster.de>
 	* The size is now dynamically changeable with the mouse 
-	  in a resizable window.
+	  in a resizable window
 
 2016-09-26  Markus Gans  <guru.mail@muenster.de>
 	* FLabel now transmits the Click events to the parent widget
@@ -2119,11 +2123,11 @@
 	* Rename setUpdateVTerm to updateVTerm
 	* Rename clrscr to clearArea
 	* The widget clearing method updates now only non-covered 
-	  characters on the virtual terminal.
+	  characters on the virtual terminal
 
 2016-07-31  Markus Gans  <guru.mail@muenster.de>
 	* Resetting the local window widget focus at 
-	  the end of the lifetime of a widget.
+	  the end of the lifetime of a widget
 	* Fix method setPos in the class FRect
 	* Add the windows example to show the window behavior
 
@@ -2169,7 +2173,7 @@
 
 2016-07-08  Markus Gans  <guru.mail@muenster.de>
 	* Better code readability: control structures (if/else, while, switch) 
-	  are now separated by a blank line.
+	  are now separated by a blank line
 
 2016-07-06  Markus Gans  <guru.mail@muenster.de>
 	* Stop terminal updates during processCloseWidget() is working
@@ -2293,8 +2297,8 @@
 
 2015-12-08  Markus Gans  <guru.mail@muenster.de>
 	* Add "menu" example to demonstrate the behavior from FMenuBar, 
-	  FMenu, FMenuItem, FCheckMenuItem and FRadioMenuItem widgets.
-	* Show status bar messages, if no keys are available.
+	  FMenu, FMenuItem, FCheckMenuItem and FRadioMenuItem widgets
+	* Show status bar messages, if no keys are available
 
 2015-11-29  Markus Gans  <guru.mail@muenster.de>
 	* Better handling of empty strings in FLineEdit and FButton
@@ -2318,11 +2322,11 @@
 
 2015-11-12  Markus Gans  <guru.mail@muenster.de>
 	* Improve menu accelerator keys
-	* Shows accelerator keys on the right side of the FMenu.
+	* Shows accelerator keys on the right side of the FMenu
 
 2015-11-08  Markus Gans  <guru.mail@muenster.de>
 	* Activate the previous window in case if the menu is open and 
-	  the mouse click has activated no window.
+	  the mouse click has activated no window
 
 2015-11-07  Markus Gans  <guru.mail@muenster.de>
 	* Improved menu focus handling
@@ -2346,7 +2350,7 @@
 	* Color setting improvements
 
 2015-10-22  Markus Gans  <guru.mail@muenster.de>
-	* Make cursor visibility more standards compliant.
+	* Make cursor visibility more standards compliant
 
 2015-10-18  Markus Gans  <guru.mail@muenster.de>
 	* Hidden windows are now non-clickable
@@ -2354,7 +2358,7 @@
 2015-10-17  Markus Gans  <guru.mail@muenster.de>
 	* More faster header inline code
 	* Improve getXTermFont() and getXTermTitle()
-	* Newfont characters are now printable in FLabel, FMenuBar and FMenu.
+	* Newfont characters are now printable in FLabel, FMenuBar and FMenu
 
 2015-10-16  Markus Gans  <guru.mail@muenster.de>
 	* Fixed: calculator behavior for negative values 
@@ -2369,7 +2373,7 @@
 
 2015-10-10  Markus Gans  <guru.mail@muenster.de>
 	* Deactivate a key from the status bar automatically 
-	  after getting back from the callback.
+	  after getting back from the callback
 
 2015-10-09  Markus Gans  <guru.mail@muenster.de>
 	* Eliminate duplicate code
@@ -2384,7 +2388,7 @@
 2015-10-02  Markus Gans  <guru.mail@muenster.de>
 	* No terminal updates until input data is pending. 
 	  This speeds up the window moving with the mouse on terminals 
-	  with a high latency.
+	  with a high latency
 	* Use now the select command before read ENQ and SEC_DA
 
 2015-09-29  Markus Gans  <guru.mail@muenster.de>
@@ -2429,7 +2433,7 @@
 
 2015-07-06  Markus Gans  <guru.mail@muenster.de>
 	* Bug fix disable cursor on focus FSwitch
-	* Hold down the mouse button displays FSwitch in a different color.
+	* Hold down the mouse button displays FSwitch in a different color
 
 2015-07-04  Markus Gans  <guru.mail@muenster.de>
 	* New class FSwitch
