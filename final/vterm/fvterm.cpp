@@ -790,18 +790,18 @@ void FVTerm::addLayer (FTermRegion* region) const noexcept
   callPreprocessingHandler(region);
 
   // Create a stack by combining identical rows in sequence
-  std::lock_guard<std::mutex> lock(line_changes_batch_mutex);
+  std::lock_guard<std::mutex> line_changes_batch_lock(line_changes_batch_mutex);
   line_changes_batch.clear();  // Clear buffer
-  buildLineChangeBatch(region, geometry);
+  buildLineChangeBatch(region, geometry, line_changes_batch);
 
   if ( line_changes_batch.empty() )
     return;
 
   // Apply the batches to vterm data
-  applyLineBatch(region, geometry);
+  applyLineBatch(region, geometry, line_changes_batch);
 
   // Update the range of changed rows and the cursor on vterm
-  updateVTermChangesFromBatch(geometry);
+  updateVTermChangesFromBatch(geometry, line_changes_batch);
   updateVTermCursor(region);
 }
 
@@ -850,7 +850,7 @@ void FVTerm::copyRegion ( FTermRegion* dst, const FPoint& pos
   auto sc = src->data.cbegin() + (src_width * ot) + ol;  // src character ptr
   auto dc = dst->data.begin() + (dst_width * ay) + ax;  // dst character ptr
 
-  std::lock_guard<std::mutex> lock(buffer_mutex);
+  std::lock_guard<std::mutex> buffers_lock(buffer_mutex);
 
   if ( skip_one_vterm_update )  // dst is the virtual terminal
     determineCoveredRegions(src);
@@ -1509,7 +1509,8 @@ inline auto FVTerm::isLayerOutsideVTerm (const LayerGeometry& geo) const noexcep
 
 //----------------------------------------------------------------------
 inline void FVTerm::buildLineChangeBatch ( const FTermRegion* region
-                                         , const LayerGeometry& geo ) const noexcept
+                                         , const LayerGeometry& geo
+                                         , FLineChangesBatch& batch) const noexcept
 {
   int prev_xmin{-1};
   int prev_xmax{-1};
@@ -1550,11 +1551,11 @@ inline void FVTerm::buildLineChangeBatch ( const FTermRegion* region
       && prev_xmax == line_xmax
       && prev_has_no_trans == has_no_trans )
     {
-      line_changes_batch.back().count++;
+      batch.back().count++;
       continue;
     }
 
-    line_changes_batch.push_back({1, y, line_xmin, line_xmax, has_no_trans});
+    batch.push_back({1, y, line_xmin, line_xmax, has_no_trans});
     prev_xmin = line_xmin;
     prev_xmax = line_xmax;
     prev_has_no_trans = has_no_trans;
@@ -1563,9 +1564,10 @@ inline void FVTerm::buildLineChangeBatch ( const FTermRegion* region
 
 //----------------------------------------------------------------------
 inline void FVTerm::applyLineBatch ( FTermRegion* region
-                                   , const LayerGeometry& geo ) const noexcept
+                                   , const LayerGeometry& geo
+                                   , FLineChangesBatch& batch ) const noexcept
 {
-  for (const auto& line : line_changes_batch)
+  for (const auto& line : batch)
   {
     const auto line_xmin = line.xmin;
     const auto line_xmax = line.xmax;
@@ -1610,10 +1612,11 @@ inline void FVTerm::applyLineBatch ( FTermRegion* region
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::updateVTermChangesFromBatch (const LayerGeometry& geo) const noexcept
+inline void FVTerm::updateVTermChangesFromBatch ( const LayerGeometry& geo
+                                                , FLineChangesBatch& batch ) const noexcept
 {
-  const auto& first = line_changes_batch.front();
-  const auto& last  = line_changes_batch.back();
+  const auto& first = batch.front();
+  const auto& last  = batch.back();
   const auto begin = uInt(geo.region_y + first.ypos - geo.y_start);
   const auto end = uInt(geo.region_y + last.ypos + last.count - 1 - geo.y_start);
 
@@ -1779,11 +1782,11 @@ void FVTerm::initSettings()
   createVDesktop (term_size);
   active_region = vdesktop.get();
 
-  std::lock_guard<std::mutex> lock(buffer_mutex);
+  std::lock_guard<std::mutex> buffers_lock(buffer_mutex);
 
   // Reserving a typical number of changes
   {
-    std::lock_guard<std::mutex> lock(line_changes_batch_mutex);
+    std::lock_guard<std::mutex> line_changes_batch_lock(line_changes_batch_mutex);
     line_changes_batch.reserve(32);
   }
 

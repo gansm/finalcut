@@ -360,9 +360,14 @@ class FVTerm : public FVTermAttribute
     void  updateVTermWindow (FTermRegion*) const;
     auto  computeLayerGeometry (const FTermRegion*) const noexcept -> LayerGeometry;
     auto  isLayerOutsideVTerm (const LayerGeometry&) const noexcept -> bool;
-    void  buildLineChangeBatch (const FTermRegion*, const LayerGeometry&) const noexcept;
-    void  applyLineBatch (FTermRegion*, const LayerGeometry&) const noexcept;
-    void  updateVTermChangesFromBatch (const LayerGeometry&) const noexcept;
+    void  buildLineChangeBatch ( const FTermRegion*
+                               , const LayerGeometry&
+                               , FLineChangesBatch&) const noexcept;
+    void  applyLineBatch ( FTermRegion*
+                         , const LayerGeometry&
+                         , FLineChangesBatch&) const noexcept;
+    void  updateVTermChangesFromBatch ( const LayerGeometry&
+                                      , FLineChangesBatch& ) const noexcept;
     void  scrollTerminalForward() const;
     void  scrollTerminalReverse() const;
     void  callPreprocessingHandler (const FTermRegion*) const;
