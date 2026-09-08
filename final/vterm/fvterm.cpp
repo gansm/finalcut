@@ -850,6 +850,8 @@ void FVTerm::copyRegion ( FTermRegion* dst, const FPoint& pos
   auto sc = src->data.cbegin() + (src_width * ot) + ol;  // src character ptr
   auto dc = dst->data.begin() + (dst_width * ay) + ax;  // dst character ptr
 
+  // Protect: covered_regions_buffer, overlay_search_buffer,
+  //          and overlay_line_buffer
   std::lock_guard<std::mutex> buffers_lock(buffer_mutex);
 
   if ( skip_one_vterm_update )  // dst is the virtual terminal
@@ -1565,7 +1567,7 @@ inline void FVTerm::buildLineChangeBatch ( const FTermRegion* region
 //----------------------------------------------------------------------
 inline void FVTerm::applyLineBatch ( FTermRegion* region
                                    , const LayerGeometry& geo
-                                   , FLineChangesBatch& batch ) const noexcept
+                                   , const FLineChangesBatch& batch ) const noexcept
 {
   for (const auto& line : batch)
   {
@@ -1848,6 +1850,8 @@ inline void FVTerm::putMultiLayerRegionLine ( FChar_iterator dst_char
                                             , const int length
                                             , const FPoint& pos ) const noexcept
 {
+  // This function requires buffer_mutex. The caller must lock it
+
   if ( length == 0 )
     return;
 
@@ -1977,6 +1981,8 @@ inline void FVTerm::putRegionLineWithTransparency ( FChar_const_iterator src_cha
                                                   , FPoint pos
                                                   , bool line_covered) const
 {
+  // This function requires buffer_mutex. The caller must lock it
+
   if ( length < 1 )
     return;
 
@@ -2441,6 +2447,8 @@ inline void FVTerm::addVDesktopToListIfExists (FTermRegionList& list) const
 //----------------------------------------------------------------------
 inline void FVTerm::determineCoveredRegions (FTermRegion* src) const
 {
+  // This function requires buffer_mutex. The caller must lock it
+
   const auto* vterm_win_list = getWindowList();
   covered_regions_buffer.clear();
   resetLineCoveredState(src);

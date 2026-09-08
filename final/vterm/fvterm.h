@@ -365,7 +365,7 @@ class FVTerm : public FVTermAttribute
                                , FLineChangesBatch&) const noexcept;
     void  applyLineBatch ( FTermRegion*
                          , const LayerGeometry&
-                         , FLineChangesBatch&) const noexcept;
+                         , const FLineChangesBatch&) const noexcept;
     void  updateVTermChangesFromBatch ( const LayerGeometry&
                                       , FLineChangesBatch& ) const noexcept;
     void  scrollTerminalForward() const;
