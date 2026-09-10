@@ -84,7 +84,7 @@ void XpmPicture::draw()
 
   const auto& wc = getColorTheme();
   setColor (wc->label.inactive_fg, wc->dialog.bg);
-  clearRegion();
+  clearViewport();
   print() << FPoint{1, 1};
   const auto& term_buffer = xmp_image.getTermBuffer();
   print(term_buffer);

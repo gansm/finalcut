@@ -889,9 +889,9 @@ void MyDialog::cb_drives()
   finalcut::FMessageBox info2 \
   (
     "Drive symbols"
-    , "Generic:       \n\n"
-      "Network:       \n\n"
-      "     CD:"
+    , " Generic:        \n\n"
+      " Network:        \n\n"
+      "      CD:"
     , finalcut::FMessageBox::ButtonType::Ok
     , finalcut::FMessageBox::ButtonType::Reject
     , finalcut::FMessageBox::ButtonType::Reject
@@ -901,21 +901,21 @@ void MyDialog::cb_drives()
   if ( finalcut::FVTerm::getFOutput()->isNewFont() )
   {
     finalcut::FLabel drive {finalcut::NF_Drive, &info2};
-    drive.setGeometry (FPoint{11, 2}, FSize{4, 1});
+    drive.setGeometry (FPoint{12, 2}, FSize{4, 1});
     finalcut::FLabel net {finalcut::NF_Net_Drive, &info2};
-    net.setGeometry (FPoint{11, 4}, FSize{4, 1});
+    net.setGeometry (FPoint{12, 4}, FSize{4, 1});
     finalcut::FLabel cd {finalcut::NF_CD_ROM, &info2};
-    cd.setGeometry (FPoint{11, 6}, FSize{4, 1});
+    cd.setGeometry (FPoint{12, 6}, FSize{4, 1});
     info2.exec();
   }
   else
   {
     finalcut::FLabel drive {"  - ", &info2};
-    drive.setGeometry (FPoint{11, 2}, FSize{4, 1});
+    drive.setGeometry (FPoint{12, 2}, FSize{4, 1});
     finalcut::FLabel net {"  N ", &info2};
-    net.setGeometry (FPoint{11, 4}, FSize{4, 1});
+    net.setGeometry (FPoint{12, 4}, FSize{4, 1});
     finalcut::FLabel cd {" CD ", &info2};
-    cd.setGeometry (FPoint{11, 6}, FSize{4, 1});
+    cd.setGeometry (FPoint{12, 6}, FSize{4, 1});
 
     if ( finalcut::FVTerm::getFOutput()->isMonochron() )
     {

@@ -5,7 +5,7 @@ The FINAL CUT title bar of dialog windows has different behaviors on mouse click
 
 <br />
 
-![](FDialog.svg)
+![](FDialog-mouse-control.svg)
 
 
 Clicking on the title bar
@@ -25,6 +25,7 @@ Clicking the title bar buttons
 * Single-clicking on the minimize button minimizes the window.
 * Single-clicking on the zoom button maximizes the window size.
 * Single-clicking on the unzoom button restores the window size.
+* Single-clicking on the close button closes the window.
 
 
 Dialog resize corner

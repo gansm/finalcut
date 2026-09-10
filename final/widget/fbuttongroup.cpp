@@ -327,7 +327,7 @@ void FButtonGroup::draw()
     setReverse(true);
 
   useParentWidgetColor();
-  clearArea();
+  clearViewport();
 
   if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);

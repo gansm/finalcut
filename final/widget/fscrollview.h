@@ -131,7 +131,7 @@ class FScrollView : public FWidget
     auto isViewportPrint() const -> bool;
 
     // Methods
-    void clearArea (wchar_t = L' ');
+    void clearViewport (wchar_t = L' ');
     void scrollToX (int);
     void scrollToY (int);
     void scrollTo (const FPoint&);

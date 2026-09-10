@@ -1684,7 +1684,7 @@ inline void FVTerm::scrollTerminalReverse() const
   forceTerminalUpdate();
 }
 
-//--------------------------------------------------------------------setTermAttributes--
+//----------------------------------------------------------------------
 void FVTerm::callPreprocessingHandler (const FTermRegion* region) const
 {
   // Call preprocessing handler

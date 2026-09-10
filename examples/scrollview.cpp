@@ -126,7 +126,7 @@ void Scrollview::draw()
   const auto& wc = getColorTheme();
   setColor (wc->label.inactive_fg, wc->dialog.bg);
   setPrintPos (FPoint{1, 1});
-  clearArea();
+  clearViewport();
   const auto scroll_height = int(getScrollHeight());
   const auto scroll_width = int(getScrollWidth());
 

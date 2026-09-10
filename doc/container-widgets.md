@@ -90,7 +90,7 @@ class DialogWidget : public FDialog
       // Attention: getColorTheme() requires an initialized terminal
       const auto& wc = getColorTheme();
       setColor (wc->label.inactive_fg, wc->dialog.bg);
-      scrollview.clearArea();
+      scrollview.clearViewport();
       FColorPair red (FColor::LightRed, wc->dialog.bg);
       FColorPair black (FColor::Black, wc->dialog.bg);
       FColorPair cyan (FColor::Cyan, wc->dialog.bg);

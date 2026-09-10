@@ -495,6 +495,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
   const auto& ms = initMouseStates(*ev, false);
   deactivateMinimizeButton();
   deactivateZoomButton();
+  deactivateCloseButton();
 
   if ( ev->getButton() == MouseButton::Left )
   {
@@ -541,6 +542,8 @@ void FDialog::onMouseUp (FMouseEvent* ev)
       pressZoomButton(ms);
       // Minimize the window
       pressMinimizeButton(ms);
+      // Close the window
+      pressCloseButton(ms);
     }
 
     // Resize the dialog
@@ -549,6 +552,7 @@ void FDialog::onMouseUp (FMouseEvent* ev)
 
   deactivateMinimizeButton();
   deactivateZoomButton();
+  deactivateCloseButton();
 }
 
 //----------------------------------------------------------------------
@@ -574,6 +578,7 @@ void FDialog::onMouseMove (FMouseEvent* ev)
 
   leaveMinimizeButton(ms);  // Check minimize button pressed
   leaveZoomButton(ms);      // Check zoom button pressed
+  leaveCloseButton(ms);     // Check close button pressed
   resizeMouseUpMove(ms);    // Resize the dialog
 }
 
@@ -927,6 +932,7 @@ inline auto
            getMenuButtonWidth(),
            getMinimizeButtonWidth(),
            getZoomButtonWidth(),
+           getCloseButtonWidth(),
            mouse_over_menu
          };
 }
@@ -1039,6 +1045,7 @@ void FDialog::drawTitleBar()
     drawTextBar();         // Print the text bar
     drawMinimizeButton();  // Draw the minimize button
     drawZoomButton();      // Draw the zoom/unzoom button
+    drawCloseButton();     // Draw the window close button
   }
   else
     drawTextBar();         // Print the text bar
@@ -1135,6 +1142,24 @@ void FDialog::drawMinimizeButton()
 }
 
 //----------------------------------------------------------------------
+void FDialog::drawCloseButton()
+{
+  // Draw the window close button
+
+  if ( ! title_bar.show_close_button )
+    return;
+
+  const auto& wc_title_bar = getColorTheme()->title_bar;
+
+  if ( title_bar.close_button_pressed )
+    setColor (wc_title_bar.button_focus_fg, wc_title_bar.button_focus_bg);
+  else
+    setColor (wc_title_bar.button_fg, wc_title_bar.button_bg);
+
+  printCloseButton();
+}
+
+//----------------------------------------------------------------------
 inline void FDialog::printRestoreSizeButton()
 {
   if ( FVTerm::getFOutput()->isNewFont() )
@@ -1207,6 +1232,30 @@ inline void FDialog::printMinimizeButton()
 }
 
 //----------------------------------------------------------------------
+inline void FDialog::printCloseButton()
+{
+  if ( FVTerm::getFOutput()->isNewFont() )
+  {
+    print (finalcut::NF_button_close);
+  }
+  else
+  {
+    if ( FVTerm::getFOutput()->isMonochron() )
+    {
+      print ('[');
+      print (UniChar::Times);  // ×
+      print (']');
+    }
+    else
+    {
+      print (' ');
+      print (UniChar::Times);  // ×
+      print (' ');
+    }
+  }
+}
+
+//----------------------------------------------------------------------
 void FDialog::drawTextBar()
 {
   // Fill with spaces (left of the title)
@@ -1215,9 +1264,12 @@ void FDialog::drawTextBar()
   const auto menu_btn = getMenuButtonWidth();
   const auto zoom_btn = getZoomButtonWidth();
   const auto minimize_btn = getMinimizeButtonWidth();
-  const auto tb_width = width - menu_btn - minimize_btn - zoom_btn;
+  const auto close_btn = getCloseButtonWidth();
+  const auto tb_width = width - menu_btn - minimize_btn
+                      - zoom_btn - close_btn;
   auto text_width = getColumnWidth(tb_text);
-  const auto non_space_width = text_width + menu_btn + minimize_btn + zoom_btn;
+  const auto non_space_width = text_width + menu_btn + minimize_btn
+                             + zoom_btn + close_btn;
   const std::size_t leading_space = width > non_space_width
                                   ? (tb_width - text_width) / 2
                                   : 0;
@@ -1229,7 +1281,8 @@ void FDialog::drawTextBar()
   printSpace(leading_space);  // Print leading whitespace
   printTitleBarText (text_width, tb_width);  // Print title bar text
   const std::size_t trailing_space = width - leading_space - text_width
-                                   - menu_btn - minimize_btn - zoom_btn;
+                                   - menu_btn - minimize_btn - zoom_btn
+                                   - close_btn;
   printSpace(trailing_space);  // Print trailing whitespace
 
   if ( FVTerm::getFOutput()->getMaxColor() < 16 )
@@ -1431,6 +1484,15 @@ inline auto FDialog::getMinimizeButtonWidth() const -> std::size_t
 }
 
 //----------------------------------------------------------------------
+inline auto FDialog::getCloseButtonWidth() const -> std::size_t
+{
+  if ( title_bar.buttons && title_bar.show_close_button )
+    return FVTerm::getFOutput()->isNewFont() ? 2 : 3;
+
+  return 0;
+}
+
+//----------------------------------------------------------------------
 inline void FDialog::activateMinimizeButton (const MouseStates& ms)
 {
   if ( ! isMouseOverMinimizeButton(ms) )
@@ -1440,6 +1502,8 @@ inline void FDialog::activateMinimizeButton (const MouseStates& ms)
   title_bar.minimize_button_active = true;
   title_bar.zoom_button_pressed = false;
   title_bar.zoom_button_active = false;
+  title_bar.close_button_pressed = false;
+  title_bar.close_button_active = false;
   drawTitleBar();
 }
 
@@ -1489,6 +1553,8 @@ inline void FDialog::activateZoomButton (const MouseStates& ms)
   title_bar.minimize_button_active = false;
   title_bar.zoom_button_pressed = true;
   title_bar.zoom_button_active = true;
+  title_bar.close_button_pressed = false;
+  title_bar.close_button_active = false;
   drawTitleBar();
 }
 
@@ -1527,6 +1593,60 @@ void FDialog::pressZoomButton (const MouseStates& ms)
 }
 
 //----------------------------------------------------------------------
+inline void FDialog::activateCloseButton (const MouseStates& ms)
+{
+  if ( ! isMouseOverCloseButton(ms) )
+    return;
+
+  title_bar.minimize_button_pressed = false;
+  title_bar.minimize_button_active = false;
+  title_bar.zoom_button_pressed = false;
+  title_bar.zoom_button_active = false;
+  title_bar.close_button_pressed = true;
+  title_bar.close_button_active = true;
+  drawTitleBar();
+}
+
+//----------------------------------------------------------------------
+inline void FDialog::deactivateCloseButton()
+{
+  if ( ! title_bar.close_button_pressed && ! title_bar.close_button_active )
+    return;
+
+  title_bar.close_button_pressed = false;
+  title_bar.close_button_active = false;
+  drawTitleBar();
+}
+
+//----------------------------------------------------------------------
+inline void FDialog::leaveCloseButton (const MouseStates& ms)
+{
+  bool close_button_pressed_before = title_bar.close_button_pressed;
+  title_bar.close_button_pressed = isMouseOverCloseButton(ms)
+                                && title_bar.close_button_active;
+
+  if ( close_button_pressed_before != title_bar.close_button_pressed )
+    drawTitleBar();
+}
+
+//----------------------------------------------------------------------
+void FDialog::pressCloseButton (const MouseStates& ms)
+{
+  if ( ! isMouseOverCloseButton(ms) || ! title_bar.close_button_pressed )
+    return;
+
+  setClickedWidget(nullptr);
+  clearStatusBar();
+
+  if ( isModal() )
+    done (ResultCode::Reject);
+  else
+    close();
+
+  title_bar.close_button_active = false;
+}
+
+//----------------------------------------------------------------------
 inline auto FDialog::isMouseOverMenu (const FPoint& term_pos) const -> bool
 {
   auto menu_geometry = dialog_menu.menu->getTermGeometry();
@@ -1542,28 +1662,40 @@ inline auto FDialog::isMouseOverMenuButton (const MouseStates& ms) const -> bool
 }
 
 //----------------------------------------------------------------------
-inline auto FDialog::isMouseOverZoomButton (const MouseStates& ms) const -> bool
+inline auto FDialog::isMouseOverMinimizeButton (const MouseStates& ms)  const -> bool
 {
-  return ( isResizable()
-        && ms.mouse_x > int(getWidth() - ms.zoom_btn)
-        && ms.mouse_x <= int(getWidth())
+  return ( isMinimizable()
+        && ms.mouse_x > int(getWidth() - ms.minimize_btn - ms.zoom_btn - ms.close_btn)
+        && ms.mouse_x <= int(getWidth() - ms.zoom_btn - ms.close_btn)
         && ms.mouse_y == 1 );
 }
 
 //----------------------------------------------------------------------
-inline auto FDialog::isMouseOverMinimizeButton (const MouseStates& ms)  const -> bool
+inline auto FDialog::isMouseOverZoomButton (const MouseStates& ms) const -> bool
 {
-  return ( isMinimizable()
-        && ms.mouse_x > int(getWidth() - ms.minimize_btn - ms.zoom_btn)
-        && ms.mouse_x <= int(getWidth() - ms.zoom_btn)
+  return ( isResizable()
+        && ms.mouse_x > int(getWidth() - ms.zoom_btn - ms.close_btn)
+        && ms.mouse_x <= int(getWidth() - ms.close_btn)
+        && ms.mouse_y == 1 );
+}
+
+//----------------------------------------------------------------------
+inline auto FDialog::isMouseOverCloseButton (const MouseStates& ms)  const -> bool
+{
+  return ( title_bar.show_close_button
+        && ms.mouse_x > int(getWidth() - ms.close_btn)
+        && ms.mouse_x <= int(getWidth())
         && ms.mouse_y == 1 );
 }
 
 //----------------------------------------------------------------------
 inline auto FDialog::isMouseOverTitleBar (const MouseStates& ms) const -> bool
 {
+  const auto btn_width = int( getWidth() - ms.minimize_btn
+                            - ms.zoom_btn - ms.close_btn );
+
   return ( ms.mouse_x > int(ms.menu_btn)
-        && ms.mouse_x <= int(getWidth() - ms.minimize_btn - ms.zoom_btn)
+        && ms.mouse_x <= btn_width
         && ms.mouse_y == 1 );
 }
 
@@ -1603,8 +1735,9 @@ inline void FDialog::handleLeftMouseDown (const MouseStates& ms)
     openMenu();
   else
   {
-    activateZoomButton(ms);
     activateMinimizeButton(ms);
+    activateZoomButton(ms);
+    activateCloseButton(ms);
   }
 
   // Click on the lower right resize corner

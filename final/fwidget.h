@@ -1046,6 +1046,13 @@ constexpr wchar_t NF_button_down[]
   '\0'
 };
 
+constexpr wchar_t NF_button_close[]
+{
+  wchar_t(UniChar::NF_rev_menu_button1),
+  wchar_t(UniChar::NF_rev_menu_button3),
+  '\0'
+};
+
 constexpr wchar_t NF_button_arrow_up[]
 {
   wchar_t(UniChar::NF_rev_up_arrow1),

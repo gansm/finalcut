@@ -112,6 +112,8 @@ class FDialog : public FWindow
     void setMinimizable (bool = true) override;
     void setTitleBarButtonVisibility (bool = true);
     void unsetTitleBarButtonVisibility();
+    void setCloseButtonVisible (bool = true);
+    void unsetCloseButtonVisible();
     void setBorder (bool = true);
     void unsetBorder();
     void resetColors() override;
@@ -174,16 +176,20 @@ class FDialog : public FWindow
       std::size_t menu_btn;
       std::size_t minimize_btn;
       std::size_t zoom_btn;
+      std::size_t close_btn;
       bool        mouse_over_menu;
     };
 
     struct TitleBarFlags
     {
       bool buttons{true};
+      bool show_close_button{true};
       bool zoom_button_pressed{false};
       bool zoom_button_active{false};
       bool minimize_button_pressed{false};
       bool minimize_button_active{false};
+      bool close_button_pressed{false};
+      bool close_button_active{false};
     };
 
     struct ErrorFlags
@@ -236,9 +242,11 @@ class FDialog : public FWindow
     void drawBarButton();
     void drawZoomButton();
     void drawMinimizeButton();
+    void drawCloseButton();
     void printRestoreSizeButton();
     void printZoomedButton();
     void printMinimizeButton();
+    void printCloseButton();
     void drawTextBar();
     void setTextBarColors() const;
     void printSpace (std::size_t);
@@ -251,22 +259,34 @@ class FDialog : public FWindow
     void setMoveSizeItem();
     void setZoomItem();
     void setMinimizeItem();
+
     auto getMenuButtonWidth() const -> std::size_t;
     auto getZoomButtonWidth() const -> std::size_t;
     auto getMinimizeButtonWidth() const -> std::size_t;
+    auto getCloseButtonWidth() const -> std::size_t;
+
     void activateMinimizeButton (const MouseStates&);
     void deactivateMinimizeButton();
     void leaveMinimizeButton (const MouseStates&);
     void pressMinimizeButton (const MouseStates&);
+
     void activateZoomButton (const MouseStates&);
     void deactivateZoomButton();
     void leaveZoomButton (const MouseStates&);
     void pressZoomButton (const MouseStates&);
+
+    void activateCloseButton (const MouseStates&);
+    void deactivateCloseButton();
+    void leaveCloseButton (const MouseStates&);
+    void pressCloseButton (const MouseStates&);
+
     auto isMouseOverMenu (const FPoint&) const -> bool;
     auto isMouseOverMenuButton (const MouseStates&) const -> bool;
-    auto isMouseOverZoomButton (const MouseStates&) const -> bool;
     auto isMouseOverMinimizeButton (const MouseStates&) const -> bool;
+    auto isMouseOverZoomButton (const MouseStates&) const -> bool;
+    auto isMouseOverCloseButton (const MouseStates&) const -> bool;
     auto isMouseOverTitleBar (const MouseStates&) const -> bool;
+
     void passEventToSubMenu ( const MouseStates&
                             , const FMouseEvent& );
     void handleLeftMouseDown (const MouseStates&);
@@ -331,11 +351,19 @@ inline void FDialog::unsetModal()
 
 //----------------------------------------------------------------------
 inline void FDialog::setTitleBarButtonVisibility (bool enable)
-{  title_bar.buttons = enable; }
+{ title_bar.buttons = enable; }
 
 //----------------------------------------------------------------------
 inline void FDialog::unsetTitleBarButtonVisibility()
 { setTitleBarButtonVisibility(false); }
+
+//----------------------------------------------------------------------
+inline void FDialog::setCloseButtonVisible (bool enable)
+{ title_bar.show_close_button = enable; }
+
+//----------------------------------------------------------------------
+inline void FDialog::unsetCloseButtonVisible()
+{ setCloseButtonVisible(false); }
 
 //----------------------------------------------------------------------
 inline void FDialog::unsetBorder()

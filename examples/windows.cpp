@@ -52,6 +52,7 @@ class SmallWindow final : public finalcut::FDialog
     finalcut::FLabel left_arrow{this};
     finalcut::FLabel right_arrow_1{this};
     finalcut::FLabel right_arrow_2{this};
+    finalcut::FLabel right_arrow_3{this};
     finalcut::FLabel top_left_label{this};
     finalcut::FLabel top_right_label{this};
     finalcut::FLabel bottom_label{this};
@@ -81,11 +82,16 @@ SmallWindow::SmallWindow (finalcut::FWidget* parent)
   right_arrow_2.setEmphasis();
   right_arrow_2.ignorePadding();
 
+  right_arrow_3 = arrow_up;
+  right_arrow_3.setForegroundColor (wc_label.inactive_fg);
+  right_arrow_3.setEmphasis();
+  right_arrow_3.ignorePadding();
+
   top_left_label.setText("menu");
   top_left_label.setForegroundColor (wc_label.inactive_fg);
   top_left_label.setEmphasis();
 
-  top_right_label.setText("minimize/zoom");
+  top_right_label.setText("minimize/zoom/close");
   top_right_label.setAlignment (finalcut::Align::Right);
   top_right_label.setForegroundColor (wc_label.inactive_fg);
   top_right_label.setEmphasis();
@@ -103,10 +109,11 @@ SmallWindow::SmallWindow (finalcut::FWidget* parent)
 void SmallWindow::initLayout()
 {
   left_arrow.setGeometry (FPoint{2, 2}, FSize{1, 1});
-  right_arrow_1.setGeometry (FPoint{int(getWidth()) - 4, 2}, FSize{1, 1});
-  right_arrow_2.setGeometry (FPoint{int(getWidth()) - 1, 2}, FSize{1, 1});
+  right_arrow_1.setGeometry (FPoint{int(getWidth()) - 7, 2}, FSize{1, 1});
+  right_arrow_2.setGeometry (FPoint{int(getWidth()) - 4, 2}, FSize{1, 1});
+  right_arrow_3.setGeometry (FPoint{int(getWidth()) - 1, 2}, FSize{1, 1});
   top_left_label.setGeometry (FPoint{1, 1}, FSize{6, 1});
-  top_right_label.setGeometry (FPoint{int(getClientWidth()) - 16, 1}, FSize{17, 1});
+  top_right_label.setGeometry (FPoint{int(getClientWidth()) - 22, 1}, FSize{23, 1});
   bottom_label.setGeometry (FPoint{13, 3}, FSize{6, 3});
   FDialog::initLayout();
 }
@@ -118,22 +125,24 @@ void SmallWindow::adjustSize()
 
   if ( isZoomed() )
   {
-    top_right_label.setGeometry ( FPoint{int(getClientWidth()) - 14, 1}
-                                , FSize{15, 1} );
-    top_right_label = "minimize/unzoom";
+    top_right_label.setGeometry ( FPoint{int(getClientWidth()) - 20, 1}
+                                , FSize{21, 1} );
+    top_right_label = "minimize/unzoom/close";
     bottom_label.hide();
   }
   else
   {
-    top_right_label.setGeometry ( FPoint{int(getClientWidth()) - 12, 1}
-                                , FSize{13, 1} );
-    top_right_label = "minimize/zoom";
+    top_right_label.setGeometry ( FPoint{int(getClientWidth()) - 18, 1}
+                                , FSize{19, 1} );
+    top_right_label = "minimize/zoom/close";
     bottom_label.show();
   }
 
-  right_arrow_1.setGeometry ( FPoint{int(getWidth()) - 4, 2}
+  right_arrow_1.setGeometry ( FPoint{int(getWidth()) - 7, 2}
                             , FSize{1, 1} );
-  right_arrow_2.setGeometry ( FPoint{int(getWidth()) - 1, 2}
+  right_arrow_2.setGeometry ( FPoint{int(getWidth()) - 4, 2}
+                            , FSize{1, 1} );
+  right_arrow_3.setGeometry ( FPoint{int(getWidth()) - 1, 2}
                             , FSize{1, 1} );
   bottom_label.setGeometry ( FPoint{1, int(getClientHeight()) - 2}
                            , FSize{getClientWidth(), 3} );
@@ -154,6 +163,8 @@ void SmallWindow::onTimer (finalcut::FTimerEvent*)
   right_arrow_1.redraw();
   right_arrow_2.unsetEmphasis();
   right_arrow_2.redraw();
+  right_arrow_3.unsetEmphasis();
+  right_arrow_3.redraw();
   top_left_label.unsetEmphasis();
   top_left_label.redraw();
   top_right_label.unsetEmphasis();
@@ -270,7 +281,7 @@ Window::Window (finalcut::FWidget* parent)
   status_bar.setMessage("Status bar message");
 
   // Generate data vector for the windows
-  for (uInt n{1}; n < 7; n++)
+  for (uInt n{1}; n < 5; n++)
   {
     WinData win_dat;
     win_dat.title.sprintf("Window %1u", n);
@@ -384,8 +395,8 @@ void Window::adjustSize()
     if ( (*iter).is_open )
     {
       const auto n = int(std::distance(first, iter));
-      const int x = dx + 5 + (n % 3) * 25 + int(n / 3) * 3;
-      const int y = dy + 11 + int(n / 3) * 3;
+      const int x = dx + 8 + (n % 2) * 36 + int(n / 2) * 2;
+      const int y = dy + 10 + int(n / 2) * 3;
       (*iter).dgl->setPos (FPoint{x, y});
     }
 
@@ -482,10 +493,10 @@ void Window::cb_createWindows()
       win_dat.is_open = true;
       win->setText(win_dat.title);
       const auto n = int(std::distance(first, iter));
-      const int x = dx + 2 + (n % 3) * 26 + int(n / 3) * 3;
-      const int y = dy + 11 + int(n / 3) * 3;
-      win->setGeometry (FPoint{x, y}, FSize{21, 8});
-      win->setMinimumSize (FSize{20, 8});
+      const int x = dx + 8 + (n % 2) * 36 + int(n / 2) * 2;
+      const int y = dy + 10 + int(n / 2) * 3;
+      win->setGeometry (FPoint{x, y}, FSize{27, 8});
+      win->setMinimumSize (FSize{26, 8});
       win->setResizable();
       win->setMinimizable();
       win->show();

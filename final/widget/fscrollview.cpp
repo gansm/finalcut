@@ -68,7 +68,7 @@ void FScrollView::setScrollWidth (std::size_t width)
     scroll_geometry.setWidth (width);
     resizeRegion (scroll_geometry, viewport.get());
     setColor();
-    clearArea();
+    clearViewport();
     addLocalPreprocessingHandler();
     setChildPrintRegion (viewport.get());
   }
@@ -94,7 +94,7 @@ void FScrollView::setScrollHeight (std::size_t height)
     scroll_geometry.setHeight (height);
     resizeRegion (scroll_geometry, viewport.get());
     setColor();
-    clearArea();
+    clearViewport();
     addLocalPreprocessingHandler();
     setChildPrintRegion (viewport.get());
   }
@@ -121,7 +121,7 @@ void FScrollView::setScrollSize (const FSize& size)
     scroll_geometry.setSize (width, height);
     resizeRegion (scroll_geometry, viewport.get());
     setColor();
-    clearArea();
+    clearViewport();
     addLocalPreprocessingHandler();
     setChildPrintRegion (viewport.get());
   }
@@ -332,7 +332,7 @@ void FScrollView::setVerticalScrollBarMode (ScrollBarMode mode)
 }
 
 //----------------------------------------------------------------------
-void FScrollView::clearArea (wchar_t fillchar)
+void FScrollView::clearViewport (wchar_t fillchar)
 {
   if ( viewport )
     clearRegion (viewport.get(), fillchar);
@@ -729,7 +729,7 @@ void FScrollView::copyToRegion()
   {
     // Direct access to viewport and region characters
     const auto vc = viewport->getFCharIterator(dx, dy + y);  // Viewport character
-    auto ac = print_region->getFCharIterator(ax, ay + y);       // Region character
+    auto ac = print_region->getFCharIterator(ax, ay + y);    // Region character
 
     // Copy a line of characters in one operation
     std::memcpy (&ac[0], &vc[0], sizeof(FChar) * unsigned(x_end));
@@ -809,7 +809,7 @@ inline void FScrollView::createViewport (const FSize& size) noexcept
   scroll_geometry.setSize(size);
   viewport = createRegion(scroll_geometry);
   setColor();
-  clearArea();
+  clearViewport();
 }
 
 //----------------------------------------------------------------------

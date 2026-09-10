@@ -1,3 +1,6 @@
+2026-09-10  Markus Gans  <guru.mail@muenster.de>
+	* A close button was added to the right side of the title bar of FDialog
+
 2026-09-06  Markus Gans  <guru.mail@muenster.de>
 	* Depending on the settings of the widget, FDialog now switches 
 	  dynamically between the "Move/Size" and "Move" menu items
