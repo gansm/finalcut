@@ -85,7 +85,7 @@ widget_height = top_padding + client_height + bottom_padding
 </blockquote>
 
 <figure class="image">
-  <img src="widget-lengths.svg" alt="widget lengths">
+  <img src="widget-dimensions.svg" alt="widget dimensions">
   <figcaption>Figure 2:  Width and height of a widget</figcaption>
 </figure>
 <br /><br />

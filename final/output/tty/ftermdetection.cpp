@@ -696,7 +696,9 @@ auto FTermDetection::getSecDA() const -> FString
   int c{0};
 
   if ( pos > 3 && std::sscanf(temp.data(), parse, &a, &b, &c) == 3 )
-    sec_da_str.sprintf("\033[>%d;%d;%dc", a, b, c);
+    sec_da_str = L"\033[>" + std::to_wstring(a)
+               + L";"      + std::to_wstring(b)
+               + L";"      + std::to_wstring(c) + L"c";
 
   return sec_da_str;
 }
