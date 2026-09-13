@@ -128,7 +128,7 @@ How can I fix display problems?
 * Ensure the TERM environment variable is set to the correct terminal 
   name.
 
-* Run `msgcat --color=test` to verify that your terminal supports colors.
+* Run `scripts/color-test.sh` to verify that your terminal supports colors.
 
 * If characters appear misaligned, try disabling cursor optimization
   using the --no-optimized-cursor command line argument.

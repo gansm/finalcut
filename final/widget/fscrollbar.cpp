@@ -167,13 +167,6 @@ void FScrollBar::resize()
 }
 
 //----------------------------------------------------------------------
-void FScrollBar::redraw()
-{
-  if ( isShown() )
-    draw();
-}
-
-//----------------------------------------------------------------------
 void FScrollBar::calculateSliderValues()
 {
   if ( FVTerm::getFOutput()->isNewFont()

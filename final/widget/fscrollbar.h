@@ -116,7 +116,6 @@ class FScrollBar : public FWidget
 
     // Methods
     void resize() override;
-    void redraw() override;
     void calculateSliderValues();
     void drawBar();
 

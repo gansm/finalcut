@@ -818,18 +818,20 @@ void FWidget::redraw()
   // Redraw the widget immediately unless it is hidden.
 
   if ( ! redraw_root_widget )
+  {
     redraw_root_widget = this;
+    startDrawing();
+  }
 
   if ( isRootWidget() )
-  {
-    startDrawing();
-    // clean desktop
-    auto color_theme_term = getColorTheme()->term;
-    setColor (color_theme_term.fg, color_theme_term.bg);
-    clearRegion (getVirtualDesktop());
-  }
+    cleanDesktop();
   else if ( ! isShown() )
+  {
+    if ( redraw_root_widget == this )
+      redraw_root_widget = nullptr;
+
     return;
+  }
 
   draw();
 
@@ -838,11 +840,11 @@ void FWidget::redraw()
   else
     drawChildren();
 
-  if ( isRootWidget() )
-    finishDrawing();
-
   if ( redraw_root_widget == this )
+  {
     redraw_root_widget = nullptr;
+    finishDrawing();
+  }
 }
 
 //----------------------------------------------------------------------
@@ -1744,6 +1746,14 @@ void FWidget::finish()
   delete always_on_top_list;
   always_on_top_list = nullptr;
   internal::var::root_widget = nullptr;
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::cleanDesktop()
+{
+  auto color_theme_term = getColorTheme()->term;
+  setColor (color_theme_term.fg, color_theme_term.bg);
+  clearRegion (getVirtualDesktop());
 }
 
 //----------------------------------------------------------------------

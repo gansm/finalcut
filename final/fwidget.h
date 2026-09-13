@@ -286,7 +286,7 @@ class FWidget : public FVTerm
     void  delAccelerator () &;
     virtual void delAccelerator (FWidget*) &;
     virtual void flushChanges();
-    virtual void redraw();
+    void redraw();
     virtual void resize();
     virtual void show();
     virtual void hide();
@@ -438,6 +438,7 @@ class FWidget : public FVTerm
     void  initWidgetLayout();
     void  initDesktopOnShown() const;
     void  finish();
+    void  cleanDesktop();
     void  startShow();
     void  finalizeShow() const;
     void  showChildWidgets();
