@@ -376,7 +376,7 @@ inline auto encode (wchar_t ucs, CharBufferT& buffer) -> uInt32_if_vector_or_arr
 
 #endif
 
-};
+}
 
 
 // FCharAttribute + FAttribute

@@ -817,28 +817,17 @@ void FWidget::redraw()
 {
   // Redraw the widget immediately unless it is hidden.
 
+  if ( ! isShown() )
+    return;
+
   if ( ! redraw_root_widget )
   {
     redraw_root_widget = this;
     startDrawing();
   }
 
-  if ( isRootWidget() )
-    cleanDesktop();
-  else if ( ! isShown() )
-  {
-    if ( redraw_root_widget == this )
-      redraw_root_widget = nullptr;
-
-    return;
-  }
-
   draw();
-
-  if ( isRootWidget() )
-    drawWindows();
-  else
-    drawChildren();
+  drawChildren();
 
   if ( redraw_root_widget == this )
   {
@@ -1239,6 +1228,8 @@ void FWidget::initDesktop()
   const auto& r = getRootWidget();
   setColor(r->getForegroundColor(), r->getBackgroundColor());
   clearRegion (getVirtualDesktop());
+  flags.visibility.hidden = false;
+  flags.visibility.shown = true;
 
   // Destop is now initialized
   init_desktop = true;
@@ -2112,19 +2103,26 @@ void FWidget::draw()
 {
   // This method must be reimplemented in a subclass
   // for drawing the widget
+
+  if ( isRootWidget() )
+  {
+    cleanDesktop();
+    drawWindows();
+  }
 }
 
 //----------------------------------------------------------------------
 void FWidget::drawWindows() const
 {
   // Redraw windows
-  FChar default_char{};
-  default_char.ch[0] = L' ';
-  default_char.color = default_color_pair;
   const auto* vterm_win_list = getWindowList();
 
   if ( ! vterm_win_list || vterm_win_list->empty() )
     return;
+
+  FChar default_char{};
+  default_char.ch[0] = L' ';
+  default_char.color = default_color_pair;
 
   for (auto&& vterm_obj : *vterm_win_list)
   {

@@ -15,6 +15,8 @@ case "$1" in
     echo "                (e.g., TERM=wyse-325 ${0##*/})"
     exit 0
     ;;
+  *)
+    ;;
 esac
 
 COLORS=$(tput colors 2>/dev/null) || COLORS=2
@@ -26,7 +28,8 @@ RESET=$(tput sgr0 2>/dev/null)
 
 newline()
 {
-  printf "%s\n\n" "$RESET"
+  printf "%s\n" "$RESET"
+  return 0
 }
 
 echo "TERM=$TERM"
@@ -89,6 +92,10 @@ case "$COLORS" in
     GRAY_COUNT=8
     GRAY_LABEL=" (80..87)"
     ;;
+  *)
+    SIZE=""
+    GRAY_START=""
+    ;;
 esac
 
 if [ -n "$SIZE" ]
@@ -138,4 +145,6 @@ then
 
   printf "%s%s\n" "$RESET" "$GRAY_LABEL"
 fi
+
+exit 0
 

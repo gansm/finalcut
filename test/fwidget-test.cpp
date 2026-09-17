@@ -792,6 +792,7 @@ void FWidgetTest::noArgumentTest()
   CPPUNIT_ASSERT ( wdgt.getFlags().feature.minimizable == false );
   CPPUNIT_ASSERT ( wdgt.getFlags().visibility.modal == false );
   CPPUNIT_ASSERT ( wdgt.getFlags().visibility.visible_cursor == false );
+  CPPUNIT_ASSERT ( wdgt.getFlags().visibility.needs_redraw == false );
   CPPUNIT_ASSERT ( ! wdgt.hasVisibleCursor() );
   CPPUNIT_ASSERT ( wdgt.getFlags().type.window_widget == false );
   CPPUNIT_ASSERT ( ! wdgt.isWindowWidget() );
