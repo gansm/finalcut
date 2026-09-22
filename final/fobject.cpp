@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2025 Markus Gans                                      *
+* Copyright 2015-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -82,6 +82,24 @@ auto FObject::getChild (int index) const -> FObject*
   auto iter = children_list.cbegin();
   std::advance (iter, index - 1);
   return *iter;
+}
+
+//----------------------------------------------------------------------
+auto FObject::getDepth() const noexcept -> std::size_t
+{
+  // Get the FObject hierarchy depth of obj
+
+  const FObject* obj = this;
+
+  std::size_t depth{0};
+
+  while ( obj && obj->getParent() )
+  {
+    obj = obj->getParent();
+    depth++;
+  }
+
+  return depth; // 0 means it has no parent (root object)
 }
 
 //----------------------------------------------------------------------

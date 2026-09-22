@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2025 Markus Gans                                      *
+* Copyright 2015-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -119,6 +119,7 @@ class FObject : public FObjectTimer
     auto  getChildren() const noexcept -> const FObjectList&;
     auto  getMaxChildren() const noexcept -> std::size_t;
     auto  numOfChildren() const noexcept -> std::size_t;
+    auto  getDepth() const noexcept -> std::size_t;
     auto  begin() noexcept -> iterator;
     auto  end() noexcept -> iterator;
     auto  begin() const noexcept -> const_iterator;

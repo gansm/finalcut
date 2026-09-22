@@ -1,3 +1,7 @@
+2026-09-22  Markus Gans  <guru.mail@muenster.de>
+	* Added the getDepth() method to FObject. This method gets 
+	  the hierarchy depth of an object
+
 2026-09-10  Markus Gans  <guru.mail@muenster.de>
 	* A close button was added to the right side of the title bar of FDialog
 
