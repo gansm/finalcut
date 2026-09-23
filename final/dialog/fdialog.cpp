@@ -334,7 +334,7 @@ void FDialog::setSize (const FSize& size, bool adjust)
   if ( adjust )    // Adjust the size after restoreVTerm(),
     adjustSize();  // because adjustSize() can also change x and y
 
-  redraw();
+  redraw(RedrawMode::Synchronous);
 
   // Copy dialog to virtual terminal
   if ( isShown() )

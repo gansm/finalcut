@@ -825,7 +825,9 @@ void FVTerm::copyRegion ( FTermRegion* dst, const FPoint& pos
   if ( ! dst || ! src )
     return;
 
-  if ( dst == vterm.get() )
+  const auto dst_is_vterm = bool( dst == vterm.get() );
+
+  if ( dst_is_vterm )
     skip_one_vterm_update = true;
 
   const int src_width = getFullRegionWidth(src);
@@ -854,7 +856,7 @@ void FVTerm::copyRegion ( FTermRegion* dst, const FPoint& pos
   //          and overlay_line_buffer
   std::lock_guard<std::mutex> buffers_lock(buffer_mutex);
 
-  if ( skip_one_vterm_update )  // dst is the virtual terminal
+  if ( dst_is_vterm )  // dst is the virtual terminal
     determineCoveredRegions(src);
 
   const auto x_max = uInt(ax + length - 1);
@@ -862,7 +864,7 @@ void FVTerm::copyRegion ( FTermRegion* dst, const FPoint& pos
 
   for (int y{0}; y < y_end; y++)  // line loop
   {
-    if ( skip_one_vterm_update && src_changes->trans_count > 0 )
+    if ( dst_is_vterm && src_changes->trans_count > 0 )
     {
       // Line with hidden and transparent characters
       putRegionLineWithTransparency (sc, dc, length, {ax, ay + y}, src_changes->covered);
@@ -1162,7 +1164,7 @@ inline void FVTerm::resetTextRegionToDefault ( FTermRegion* region
   std::fill (region->data.begin(), region->data.end(), default_char);
 
   const FTermRegion::FLineChanges unchanged { uInt(size.getWidth())
-                                          , 0, 0, false };
+                                            , 0, 0, false };
   std::fill (region->changes_in_line.begin(), region->changes_in_line.end(), unchanged);
   region->changes_in_row = { uInt(size.getHeight()), 0};
 }

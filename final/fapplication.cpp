@@ -309,8 +309,16 @@ auto FApplication::removeQueuedEvent (const FObject* receiver) -> bool
 }
 
 //----------------------------------------------------------------------
+void FApplication::queueDraw (FWidget* widget)
+{
+  // Queue the widget for redrawing
+  draw_queue.push_back(widget);
+}
+
+//----------------------------------------------------------------------
 void FApplication::registerMouseHandler (const FMouseHandler& fn)
 {
+  // Restister mouse handler callbacks
   mouse_handler_list.push_back(fn);
 }
 
@@ -1357,6 +1365,39 @@ void FApplication::processDialogResizeMove() const
 }
 
 //----------------------------------------------------------------------
+void FApplication::processRedraw()
+{
+  if ( draw_queue.empty() )
+    return;
+
+  // Create a local vector and atomically swap the content
+  FDrawQueue processing_queue{};
+  processing_queue.swap(draw_queue);
+  // Now draw_queue is empty and ready for new redraw requests
+
+  // Sort the queue by hierarchy depth
+  std::sort ( processing_queue.begin()
+            , processing_queue.end()
+            , [] (FWidget* lhs, FWidget* rhs)
+              {
+                return lhs->getDepth() < rhs->getDepth();
+              } );
+
+  // Draw the queued widgets
+  FVTerm::startDrawing();
+
+  for (auto* widget : processing_queue)
+  {
+    if ( ! widget || ! widget->needsRedraw() || ! widget->isShown() )
+      continue;
+
+    widget->recursiveDraw();
+  }
+
+  FVTerm::finishDrawing();
+}
+
+//----------------------------------------------------------------------
 void FApplication::processCloseWidget()
 {
   if ( ! getWidgetCloseList() || getWidgetCloseList()->empty() )
@@ -1402,12 +1443,13 @@ auto FApplication::processNextEvent() -> bool
     num_events += processTimerEvent();
     processInput();
     processResizeEvent();  // when the terminal size has changed
-    processCloseWidget();
-    sendQueuedEvents();
     processDialogResizeMove();
+    sendQueuedEvents();
+    processRedraw();
     processTerminalUpdate();  // for changed regions on the terminal
     flush();  // Flush output buffer (via an instance of FOutput)
     processLogger();
+    processCloseWidget();
   }
   else if ( isKeyPressed(next_event_wait) )
   {

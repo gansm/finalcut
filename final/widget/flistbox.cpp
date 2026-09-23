@@ -980,8 +980,6 @@ inline void FListBox::updateDrawing (bool draw_vbar, bool draw_hbar)
 
   if ( draw_hbar )
     scroll.hbar->drawBar();
-
-  forceTerminalUpdate();
 }
 
 //----------------------------------------------------------------------

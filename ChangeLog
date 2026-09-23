@@ -1,4 +1,6 @@
 2026-09-23  Markus Gans  <guru.mail@muenster.de>
+	* Widget redraw() now runs asynchronously in the main event loop to 
+	  prevent blocking event processing
 	* Fix the click after the slider position in horizontal scroll bars
 
 2026-09-22  Markus Gans  <guru.mail@muenster.de>

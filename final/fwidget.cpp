@@ -54,7 +54,6 @@ FWidget* var::root_widget{nullptr};
 FStatusBar*           FWidget::status_bar{nullptr};
 FMenuBar*             FWidget::menu_bar{nullptr};
 FWidget*              FWidget::first_shown_widget{nullptr};
-FWidget*              FWidget::redraw_root_widget{nullptr};
 FWidget::FWidgetList* FWidget::dialog_list{nullptr};
 FWidget::FWidgetList* FWidget::always_on_top_list{nullptr};
 FWidget::FWidgetList* FWidget::close_widget_list{nullptr};
@@ -813,27 +812,23 @@ void FWidget::flushChanges()
 }
 
 //----------------------------------------------------------------------
-void FWidget::redraw()
+void FWidget::redraw (RedrawMode redraw_mode)
 {
-  // Redraw the widget immediately unless it is hidden.
-
   if ( ! isShown() )
     return;
 
-  if ( ! redraw_root_widget )
+  if ( redraw_mode == RedrawMode::Synchronous )
   {
-    redraw_root_widget = this;
-    startDrawing();
+    recursiveDraw();
+    flags.visibility.needs_redraw = false;
+    return;
   }
 
-  draw();
-  drawChildren();
+  if ( needsRedraw() )
+    return;
 
-  if ( redraw_root_widget == this )
-  {
-    redraw_root_widget = nullptr;
-    finishDrawing();
-  }
+  flags.visibility.needs_redraw = true;
+  FApplication::getApplicationObject()->queueDraw(this);
 }
 
 //----------------------------------------------------------------------
@@ -856,9 +851,9 @@ void FWidget::resize()
 
     resizeVTerm (term_geometry.getSize());
     resizeRegion ({term_geometry, getShadow()}, getVirtualDesktop());
-    startDrawing();  // Avoid flickering - no update during adjustment
+    FVTerm::startDrawing();  // Avoid flickering - no update during adjustment
     adjustSizeGlobal();
-    finishDrawing();
+    FVTerm::finishDrawing();
   }
   else
     adjustSize();
@@ -1688,7 +1683,6 @@ void FWidget::initRootWidget()
   // Root widget basic initialization
   internal::var::root_widget = this;
   first_shown_widget = nullptr;
-  redraw_root_widget = nullptr;
   modal_dialog_counter = 0;
   status_bar = nullptr;
 
@@ -1740,7 +1734,7 @@ void FWidget::finish()
 }
 
 //----------------------------------------------------------------------
-inline void FWidget::cleanDesktop()
+inline void FWidget::drawDesktop()
 {
   auto color_theme_term = getColorTheme()->term;
   setColor (color_theme_term.fg, color_theme_term.bg);
@@ -1753,7 +1747,7 @@ inline void FWidget::startShow()
   if ( first_shown_widget )
     return;
 
-  startDrawing();
+  FVTerm::startDrawing();
   first_shown_widget = this;
 }
 
@@ -1763,7 +1757,7 @@ inline void FWidget::finalizeShow() const
   if ( ! first_shown_widget || first_shown_widget != this )
     return ;
 
-  finishDrawing();
+  FVTerm::finishDrawing();
   forceTerminalUpdate();
   first_shown_widget = nullptr;
 }
@@ -2105,54 +2099,34 @@ void FWidget::draw()
   // for drawing the widget
 
   if ( isRootWidget() )
-  {
-    cleanDesktop();
-    drawWindows();
-  }
+    drawDesktop();
 }
 
 //----------------------------------------------------------------------
-void FWidget::drawWindows() const
+void FWidget::recursiveDraw()
 {
-  // Redraw windows
-  const auto* vterm_win_list = getWindowList();
+  // Redraw the widgets recursively unless they are hidden.
 
-  if ( ! vterm_win_list || vterm_win_list->empty() )
-    return;
-
-  FChar default_char{};
-  default_char.ch[0] = L' ';
-  default_char.color = default_color_pair;
-
-  for (auto&& vterm_obj : *vterm_win_list)
-  {
-    const auto win = static_cast<FWidget*>(vterm_obj);
-
-    if ( win->isShown() )
-    {
-      auto v_win = win->getVWin();
-      std::fill (v_win->data.begin(), v_win->data.end(), default_char);
-      win->redraw();
-    }
-  }
+  draw();
+  flags.visibility.needs_redraw = false;  // Reset flag
+  drawChildren();
 }
 
 //----------------------------------------------------------------------
-void FWidget::drawChildren()
+inline void FWidget::drawChildren()
 {
   // Draw child elements
+
   if ( ! hasChildren() )
     return;
 
   for (auto* child : getChildren())
   {
-    if ( child->isWidget() )
-    {
-      auto widget = static_cast<FWidget*>(child);
+    if ( ! child->isWidget() )
+      continue;
 
-      if ( widget->isShown() && ! widget->isWindowWidget() )
-        widget->redraw();
-    }
+    auto child_widget = static_cast<FWidget*>(child);
+    child_widget->recursiveDraw();
   }
 }
 

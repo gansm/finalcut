@@ -564,23 +564,23 @@ void TextWindow::addTitleBarColors (const finalcut::FWidgetColors& widget_colors
   auto focus_title_bar_button_color = FColorPair{widget_colors.title_bar.button_focus_fg, widget_colors.title_bar.button_focus_bg};
   auto inactive_title_bar_color = FColorPair{widget_colors.title_bar.inactive_fg, widget_colors.title_bar.inactive_bg};
 
-  appendColorLine("  -      Active      ▼  ▲ "
+  appendColorLine("  -        Active        ▼  ▲  × "
                  , FTextHighlight{1, 3, title_bar_button_color}
-                 , FTextHighlight{4, 16, title_bar_color}
-                 , FTextHighlight{20, 6, title_bar_button_color}
+                 , FTextHighlight{4, 20, title_bar_color}
+                 , FTextHighlight{24, 9, title_bar_button_color}
                  );
   appendBlankLine();
-  appendColorLine("  -     Inactive     ▼  ▲ "
+  appendColorLine("  -       Inactive       ▼  ▲  × "
                  , FTextHighlight{1, 3, title_bar_button_color}
-                 , FTextHighlight{4, 16, inactive_title_bar_color}
-                 , FTextHighlight{20, 6, title_bar_button_color}
+                 , FTextHighlight{4, 20, inactive_title_bar_color}
+                 , FTextHighlight{24, 9, title_bar_button_color}
                  );
   appendBlankLine();
-  appendColorLine("  -  Focused button  ▼  ▲ "
+  appendColorLine("  -    Focused button    ▼  ▲  × "
                  , FTextHighlight{1, 3, title_bar_button_color}
-                 , FTextHighlight{4, 16, inactive_title_bar_color}
-                 , FTextHighlight{20, 3, focus_title_bar_button_color}
-                 , FTextHighlight{23, 3, title_bar_button_color}
+                 , FTextHighlight{4, 20, inactive_title_bar_color}
+                 , FTextHighlight{24, 3, focus_title_bar_button_color}
+                 , FTextHighlight{27, 6, title_bar_button_color}
                  );
   appendBlankLine();
 }

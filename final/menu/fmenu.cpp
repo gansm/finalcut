@@ -1000,7 +1000,7 @@ void FMenu::selectItem_PostProcessing (FMenuItem* sel_item)
   sel_item->setFocus();
   drawStatusBarMessage();
   setSelectedItem(sel_item);
-  redraw();
+  redraw(RedrawMode::Synchronous);
   setTerminalUpdates (FVTerm::TerminalUpdate::Start);
   forceTerminalUpdate();
 }

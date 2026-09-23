@@ -142,6 +142,13 @@ class FWidget : public FVTerm
     using FWidgetList = std::vector<FWidget*>;
     using FAcceleratorList = std::vector<FAccelerator>;
 
+    // Enumeration
+    enum class RedrawMode : uInt8
+    {
+      Asynchronous = 0,
+      Synchronous = 1
+    };
+
     // Constructor
     explicit FWidget (FWidget* = nullptr);
 
@@ -265,6 +272,7 @@ class FWidget : public FVTerm
     auto  isVisible() const -> bool;
     auto  isShown() const -> bool;
     auto  isHidden() const -> bool;
+    auto  needsRedraw() const -> bool;
     auto  isEnabled() const -> bool;
     auto  hasVisibleCursor() const -> bool;
     auto  hasFocus() const -> bool;
@@ -286,7 +294,7 @@ class FWidget : public FVTerm
     void  delAccelerator () &;
     virtual void delAccelerator (FWidget*) &;
     virtual void flushChanges();
-    void redraw();
+    void redraw (RedrawMode = RedrawMode::Asynchronous);
     virtual void resize();
     virtual void show();
     virtual void hide();
@@ -438,7 +446,7 @@ class FWidget : public FVTerm
     void  initWidgetLayout();
     void  initDesktopOnShown() const;
     void  finish();
-    void  cleanDesktop();
+    void  drawDesktop();
     void  startShow();
     void  finalizeShow() const;
     void  showChildWidgets();
@@ -463,7 +471,9 @@ class FWidget : public FVTerm
     auto  sendFocusInEvent (FWidget*, FocusTypes) const -> bool;
     void  processDestroy() const;
     virtual void draw();
-    void  drawWindows() const;
+  public:
+    void  recursiveDraw();
+  private:
     void  drawChildren();
     void  adjustWidget();
     void  adjustSizeWithinRegion (FRect&) const;
@@ -513,7 +523,6 @@ class FWidget : public FVTerm
     static FWidget*      open_menu;
     static FWidget*      move_resize_widget;
     static FWidget*      first_shown_widget;
-    static FWidget*      redraw_root_widget;
     static FWidgetList*  dialog_list;
     static FWidgetList*  always_on_top_list;
     static FWidgetList*  close_widget_list;
@@ -914,6 +923,10 @@ inline auto FWidget::isShown() const -> bool
 //----------------------------------------------------------------------
 inline auto FWidget::isHidden() const -> bool
 { return flags.visibility.hidden; }
+
+//----------------------------------------------------------------------
+inline auto FWidget::needsRedraw() const -> bool
+{ return flags.visibility.needs_redraw; }
 
 //----------------------------------------------------------------------
 inline auto FWidget::isWindowWidget() const -> bool

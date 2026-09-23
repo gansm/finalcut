@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2022 Markus Gans                                      *
+* Copyright 2015-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -49,27 +49,34 @@ auto main (int argc, char* argv[]) -> int
   // Create a simple dialog box
   finalcut::FDialog dgl{&app};
   dgl.setText ("FDialog");
-  dgl.setGeometry (FPoint{4, 3}, FSize{41, 11});
+  dgl.setGeometry (FPoint{4, 3}, FSize{44, 12});
 
   // Create text labels
   finalcut::FLabel label_1{&dgl};
   finalcut::FLabel label_2{&dgl};
 
   label_1 << finalcut::UniChar::BlackUpPointingTriangle
+          << "                                        "
+          << finalcut::UniChar::BlackUpPointingTriangle
           << std::wstring{L"\n"}
           << finalcut::UniChar::BoxDrawingsUpAndRight
           << finalcut::FString{2, finalcut::UniChar::BoxDrawingsHorizontal}
-          << " Double click the title bar button,";
-  label_2 << "press Q on the keyboard,\n"
+          << " Double click the title bar button,   "
+          << finalcut::UniChar::BoxDrawingsVertical;
+  label_2 << "click the window close button, "
+          << finalcut::FString{6, finalcut::UniChar::BoxDrawingsHorizontal}
+          << finalcut::UniChar::BoxDrawingsUpAndLeft
+          << std::wstring{L"\n"}
+          << "press [Q] on the keyboard,\n"
           << "or push the button below to exit\n"
           << "the program.";
 
-  label_1.setGeometry (FPoint{1, 1}, FSize{38, 2});
-  label_2.setGeometry (FPoint{5, 3}, FSize{34, 3});
+  label_1.setGeometry (FPoint{1, 1}, FSize{42, 2});
+  label_2.setGeometry (FPoint{5, 3}, FSize{38, 4});
 
   // Create the quit button
   finalcut::FButton btn{"&Quit", &dgl};
-  btn.setGeometry (FPoint{16, 7}, FSize{9, 1});
+  btn.setGeometry (FPoint{16, 8}, FSize{9, 1});
 
   // Connect the button signal "clicked" with the callback function
   btn.addCallback

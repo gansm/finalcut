@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2013-2025 Markus Gans                                      *
+* Copyright 2013-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -146,6 +146,7 @@ class FApplication : public FWidget
     void         sendQueuedEvents();
     auto         eventInQueue() const -> bool;
     auto         removeQueuedEvent (const FObject*) -> bool;
+    void         queueDraw (FWidget*);
     void         registerMouseHandler (const FMouseHandler&);
     void         initTerminal() override;
     static void  setDefaultTheme();
@@ -165,6 +166,7 @@ class FApplication : public FWidget
     using CmdOption = struct option;
     using EventPair = std::pair<FObject*, FEvent*>;
     using FEventQueue = std::deque<EventPair>;
+    using FDrawQueue = std::vector<FWidget*>;
     using FMouseHandlerList = std::vector<FMouseHandler>;
     using CmdMap = std::unordered_map<int, std::function<void(char*)>>;
     using rdbuf = std::streambuf*;
@@ -231,6 +233,7 @@ class FApplication : public FWidget
     void         processResizeEvent();
     void         processCloseWidget();
     void         processDialogResizeMove() const;
+    void         processRedraw();
     void         processLogger() const;
     auto         processNextEvent() -> bool;
     void         performTimerAction (FObject*, FEvent*) override;
@@ -243,6 +246,7 @@ class FApplication : public FWidget
     uInt64            key_timeout{100'000};        // 100 ms
     uInt64            dblclick_interval{500'000};  // 500 ms
     FEventQueue       event_queue{};
+    FDrawQueue        draw_queue{};
     FMouseHandlerList mouse_handler_list{};
     bool              has_terminal_resized{false};
     static uInt64     next_event_wait;

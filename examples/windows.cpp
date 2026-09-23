@@ -340,6 +340,11 @@ void Window::configureDialogButtons()
   CloseButton.setText (L"C&lose");
   QuitButton.setText (L"&Quit");
 
+  // Status bar message
+  CreateButton.setStatusBarMessage ("Create the windows");
+  CloseButton.setStatusBarMessage ("Close the windows");
+  QuitButton.setStatusBarMessage ("Exit the program");
+
   // Add button callback
   addClickedCallback (&CreateButton, this, &Window::cb_createWindows);
   addClickedCallback (&CloseButton, this, &Window::cb_closeWindows);

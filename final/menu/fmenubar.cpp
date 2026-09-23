@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2024 Markus Gans                                      *
+* Copyright 2015-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -170,8 +170,7 @@ void FMenuBar::onAccel (FAccelEvent* ev)
   selectFirstItem();
   getSelectedItem()->setFocus();
   drawStatusBarMessage();
-  redraw();
-  forceTerminalUpdate();
+  redraw(RedrawMode::Synchronous);
   ev->accept();
 }
 
@@ -244,7 +243,7 @@ void FMenuBar::selectItem_PostProcessing (FMenuItem* sel_item)
 
   drawStatusBarMessage();
   setSelectedItem(sel_item);
-  redraw();
+  redraw(RedrawMode::Synchronous);
   setTerminalUpdates (FVTerm::TerminalUpdate::Start);
   forceTerminalUpdate();
 }
@@ -299,6 +298,7 @@ auto FMenuBar::hotkeyMenu (FKeyEvent*& ev) -> bool
 //----------------------------------------------------------------------
 void FMenuBar::draw()
 {
+  clearRegion();
   drawItems();
 }
 
@@ -835,7 +835,7 @@ void FMenuBar::handleFocusChange()
   if ( ! focus_changed )
     return;
 
-  redraw();
+  redraw(RedrawMode::Synchronous);
   forceTerminalUpdate();
 }
 
