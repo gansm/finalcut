@@ -590,9 +590,9 @@ auto FScrollBar::getHorizontalScrollType (int x) const -> ScrollType
     return ScrollType::PageBackward;  // before slider
 
   const auto slider_end = slider_pos + int(slider_length) + 1;
-  const auto scroll_height = int(getHeight());
+  const auto scroll_width = int(getWidth());
 
-  if ( x > slider_end && x < scroll_height )
+  if ( x > slider_end && x < scroll_width )
     return ScrollType::PageForward;  // after slider
 
   if ( x == int(getWidth()) )
@@ -767,10 +767,10 @@ void FScrollBar::avoidScrollOvershoot()
 //----------------------------------------------------------------------
 void FScrollBar::processScroll()
 {
-  startDrawing();  // Avoid printing an overshoot on the emit callback
+  FVTerm::startDrawing();  // Avoid printing an overshoot on the emit callback
   emitCallback("change-value");
   avoidScrollOvershoot();
-  finishDrawing();
+  FVTerm::finishDrawing();
 }
 
 //----------------------------------------------------------------------
