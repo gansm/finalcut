@@ -99,7 +99,7 @@ auto FObject::getDepth() const noexcept -> std::size_t
     depth++;
   }
 
-  return depth; // 0 means it has no parent (root object)
+  return depth;  // 0 means it has no parent (root object)
 }
 
 //----------------------------------------------------------------------

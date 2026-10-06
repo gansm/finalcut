@@ -82,6 +82,7 @@ enum class Event : uInt8
   WindowLowered,     // Lower window
   Accelerator,       // Keyboard accelerator
   Resize,            // Terminal resize
+  Draw,              // Widget redraw
   Show,              // Widget is shown
   Hide,              // Widget is hidden
   Close,             // Widget close

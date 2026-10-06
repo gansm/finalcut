@@ -484,6 +484,7 @@ class FWidget : public FVTerm
     static auto  isDefaultTheme() -> bool;
     static void  initColorTheme();
     void  removeQueuedEvent() const;
+    void  removeQueuedDraw() const;
     void  setStatusBarText (bool = true) const;
 
     // Data members

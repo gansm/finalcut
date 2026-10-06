@@ -142,11 +142,12 @@ class FApplication : public FWidget
     static void  exit (int = EXIT_SUCCESS);
     void         quit() const;
     static auto  sendEvent (FObject*, FEvent*) -> bool;
-    void         queueEvent (FObject*, FEvent*);
+    void         queueEvent (FObject*, std::unique_ptr<FEvent>&&);
     void         sendQueuedEvents();
     auto         eventInQueue() const -> bool;
     auto         removeQueuedEvent (const FObject*) -> bool;
     void         queueDraw (FWidget*);
+    auto         removeQueuedDraw (const FWidget*) -> bool;
     void         registerMouseHandler (const FMouseHandler&);
     void         initTerminal() override;
     static void  setDefaultTheme();
@@ -161,10 +162,14 @@ class FApplication : public FWidget
   protected:
     virtual void processExternalUserEvent();
 
+    // Event handlers
+    auto         event (FEvent*) -> bool override;
+    virtual void onDraw (FEvent*);
+
   private:
     // Using-declaration
     using CmdOption = struct option;
-    using EventPair = std::pair<FObject*, FEvent*>;
+    using EventPair = std::pair<FObject*, std::unique_ptr<FEvent>>;
     using FEventQueue = std::deque<EventPair>;
     using FDrawQueue = std::vector<FWidget*>;
     using FMouseHandlerList = std::vector<FMouseHandler>;
@@ -249,6 +254,7 @@ class FApplication : public FWidget
     FDrawQueue        draw_queue{};
     FMouseHandlerList mouse_handler_list{};
     bool              has_terminal_resized{false};
+    bool              need_widget_redraw{false};
     static uInt64     next_event_wait;
     static TimeValue  time_last_event;
     static rdbuf      default_clog_rdbuf;

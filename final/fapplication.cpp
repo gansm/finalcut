@@ -251,14 +251,14 @@ auto FApplication::sendEvent (FObject* receiver, FEvent* event ) -> bool
 }
 
 //----------------------------------------------------------------------
-void FApplication::queueEvent (FObject* receiver, FEvent* event)
+void FApplication::queueEvent (FObject* receiver, std::unique_ptr<FEvent>&& event)
 {
-  if ( ! (bool(receiver) && bool(event)) )
+  if ( ! (bool(receiver) && bool(event.get())) )
     return;
 
   // queue this event
   setQueued(*event);
-  event_queue.emplace_back (receiver, event);
+  event_queue.emplace_back (receiver, std::move(event));
 }
 
 //----------------------------------------------------------------------
@@ -268,7 +268,7 @@ void FApplication::sendQueuedEvents()
   {
     const auto& event_pair = event_queue.front();
     setQueued(*event_pair.second, false);
-    sendEvent(event_pair.first, event_pair.second);
+    sendEvent(event_pair.first, event_pair.second.get());
     event_queue.pop_front();
   }
 }
@@ -285,10 +285,7 @@ auto FApplication::eventInQueue() const -> bool
 //----------------------------------------------------------------------
 auto FApplication::removeQueuedEvent (const FObject* receiver) -> bool
 {
-  if ( ! eventInQueue() )
-    return false;
-
-  if ( ! receiver )
+  if ( ! receiver || ! eventInQueue() )
     return false;
 
   bool retval{false};
@@ -313,6 +310,31 @@ void FApplication::queueDraw (FWidget* widget)
 {
   // Queue the widget for redrawing
   draw_queue.push_back(widget);
+
+  // We only need one draw event to redraw all the widgets in the queue
+  if ( need_widget_redraw )
+    return;
+
+  need_widget_redraw = true;
+
+  auto ev = std::make_unique<FEvent>(Event::Draw);
+  FApplication::queueEvent(this, std::move(ev));
+}
+
+//----------------------------------------------------------------------
+auto FApplication::removeQueuedDraw (const FWidget* widget) -> bool
+{
+  if ( ! widget || draw_queue.empty() )
+    return false;
+
+  const auto queue_end = draw_queue.end();
+  const auto last = std::remove (draw_queue.begin(), queue_end, widget);
+  draw_queue.erase(last, queue_end);
+
+  if ( draw_queue.empty() )
+    need_widget_redraw = false;
+
+  return true;
 }
 
 //----------------------------------------------------------------------
@@ -423,6 +445,30 @@ void FApplication::closeConfirmationDialog (FWidget* w, FCloseEvent* ev)
 void FApplication::processExternalUserEvent()
 {
   // This method can be overloaded and replaced by own code
+}
+
+//----------------------------------------------------------------------
+auto FApplication::event (FEvent* ev) -> bool
+{
+  const auto event_type = ev->getType();
+
+  if ( event_type == Event::Draw )
+  {
+    onDraw (ev);
+    return true;
+  }
+
+  return FWidget::event(ev);
+}
+
+//----------------------------------------------------------------------
+void FApplication::onDraw (FEvent*)
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive draw events
+
+  processRedraw();
+  need_widget_redraw = false;
 }
 
 
@@ -1378,7 +1424,7 @@ void FApplication::processRedraw()
   // Sort the queue by hierarchy depth
   std::sort ( processing_queue.begin()
             , processing_queue.end()
-            , [] (FWidget* lhs, FWidget* rhs)
+            , [] (const FWidget* lhs, const FWidget* rhs)
               {
                 return lhs->getDepth() < rhs->getDepth();
               } );
@@ -1445,7 +1491,6 @@ auto FApplication::processNextEvent() -> bool
     processResizeEvent();  // when the terminal size has changed
     processDialogResizeMove();
     sendQueuedEvents();
-    processRedraw();
     processTerminalUpdate();  // for changed regions on the terminal
     flush();  // Flush output buffer (via an instance of FOutput)
     processLogger();

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2022 Markus Gans                                      *
+* Copyright 2017-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -132,8 +132,8 @@ auto main (int argc, char* argv[]) -> int
     preset(os);
 
     // Scroll to the focused child element
-    finalcut::FFocusEvent cfi (finalcut::Event::ChildFocusIn);
-    app.queueEvent(&checkButtonGroup, &cfi);
+    auto cfi = std::make_unique<finalcut::FFocusEvent>(finalcut::Event::ChildFocusIn);
+    app.queueEvent(&checkButtonGroup, std::move(cfi));
 
     // Create a OK button
     finalcut::FButton ok("&OK", &dgl);

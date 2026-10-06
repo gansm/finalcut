@@ -112,6 +112,7 @@ FWidget::~FWidget()  // destructor
   processDestroy();
   delCallback();
   removeQueuedEvent();
+  removeQueuedDraw();
 
   // unset clicked widget
   if ( this == getClickedWidget() )
@@ -1516,7 +1517,7 @@ inline void FWidget::mapKeyEvents()
     { Event::KeyDown,
       [this] (FEvent* ev)
       {
-        KeyDownEvent(static_cast<FKeyEvent*>(ev));
+        KeyDownEvent (static_cast<FKeyEvent*>(ev));
       }
     }
   } );
@@ -2277,6 +2278,15 @@ void FWidget::removeQueuedEvent() const
 
   if ( app_object )
     app_object->removeQueuedEvent(this);
+}
+
+//----------------------------------------------------------------------
+void FWidget::removeQueuedDraw() const
+{
+  auto app_object = FApplication::getApplicationObject();
+
+  if ( app_object )
+    app_object->removeQueuedDraw(this);
 }
 
 //----------------------------------------------------------------------
