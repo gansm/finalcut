@@ -76,7 +76,6 @@ class FWidget_protected : public finalcut::FWidget
     static auto p_getModalDialogCounter() -> uInt;
     static auto p_getDialogList() -> FWidgetList*&;
     static auto p_getAlwaysOnTopList() -> FWidgetList*&;
-    static auto p_getWidgetCloseList() -> FWidgetList*&;
     void  addPreprocessingHandler ( const finalcut::FVTerm*
                                   , FPreprocessingFunction&& ) override;
     void  delPreprocessingHandler (const finalcut::FVTerm*) override;
@@ -152,12 +151,6 @@ inline auto FWidget_protected::p_getDialogList() -> FWidgetList*&
 inline auto FWidget_protected::p_getAlwaysOnTopList() -> FWidgetList*&
 {
   return finalcut::FWidget::getAlwaysOnTopList();
-}
-
-//----------------------------------------------------------------------
-inline auto FWidget_protected::p_getWidgetCloseList() -> FWidgetList*&
-{
-  return finalcut::FWidget::getWidgetCloseList();
 }
 
 //----------------------------------------------------------------------
@@ -2801,7 +2794,7 @@ void FWidgetTest::focusableChildrenTest()
 //----------------------------------------------------------------------
 void FWidgetTest::closeWidgetTest()
 {
-  finalcut::FWidget root_wdgt{};  // Root widget
+  finalcut::FApplication root_wdgt(0, nullptr);  // Root widget
   finalcut::FWidget main_wdgt{&root_wdgt};  // Child / main widget
   finalcut::FWidget::setMainWidget(&main_wdgt);
   main_wdgt.setFlags().visibility.shown = true;
@@ -2834,11 +2827,6 @@ void FWidgetTest::closeWidgetTest()
         confirmed = state;
       }
 
-      auto p_getWidgetCloseList() -> finalcut::FWidget::FWidgetList*&
-      {
-        return finalcut::FWidget::getWidgetCloseList();
-      }
-
     private:
       bool confirmed{false};
   };
@@ -2851,36 +2839,36 @@ void FWidgetTest::closeWidgetTest()
 
   wdgt.setConfirmed();
   finalcut::FApplication::start();
-  CPPUNIT_ASSERT ( wdgt.p_getWidgetCloseList()->size() == 0 );
+  CPPUNIT_ASSERT ( finalcut::FApplication::getWidgetCloseList().size() == 0 );
   CPPUNIT_ASSERT ( wdgt.close() );
-  CPPUNIT_ASSERT ( wdgt.p_getWidgetCloseList()->size() == 1 );
+  CPPUNIT_ASSERT ( finalcut::FApplication::getWidgetCloseList().size() == 1 );
   CPPUNIT_ASSERT ( wdgt.getFlags().visibility.hidden );
   CPPUNIT_ASSERT ( ! wdgt.getFlags().visibility.shown );
 
   // wdgt is already in the widget close list
   wdgt.setFlags().visibility.hidden = false;
   wdgt.setFlags().visibility.shown = true;
-  CPPUNIT_ASSERT ( wdgt.p_getWidgetCloseList()->size() == 1 );
+  CPPUNIT_ASSERT ( finalcut::FApplication::getWidgetCloseList().size() == 1 );
   CPPUNIT_ASSERT ( wdgt.close() );
-  CPPUNIT_ASSERT ( wdgt.p_getWidgetCloseList()->size() == 1 );
+  CPPUNIT_ASSERT ( finalcut::FApplication::getWidgetCloseList().size() == 1 );
   CPPUNIT_ASSERT ( wdgt.getFlags().visibility.hidden );
   CPPUNIT_ASSERT ( ! wdgt.getFlags().visibility.shown );
-  wdgt.p_getWidgetCloseList()->clear();
+  finalcut::FApplication::getWidgetCloseList().clear();
 
   // wdgt is modal
   wdgt.setFlags().visibility.modal = true;
   wdgt.setFlags().visibility.hidden = false;
   wdgt.setFlags().visibility.shown = true;
-  CPPUNIT_ASSERT ( wdgt.p_getWidgetCloseList()->size() == 0 );
+  CPPUNIT_ASSERT ( finalcut::FApplication::getWidgetCloseList().size() == 0 );
   CPPUNIT_ASSERT ( wdgt.close() );
-  CPPUNIT_ASSERT ( wdgt.p_getWidgetCloseList()->size() == 0 );
+  CPPUNIT_ASSERT ( finalcut::FApplication::getWidgetCloseList().size() == 0 );
   CPPUNIT_ASSERT ( wdgt.getFlags().visibility.hidden );
   CPPUNIT_ASSERT ( ! wdgt.getFlags().visibility.shown );
 
   // Close the main widget
-  CPPUNIT_ASSERT ( wdgt.p_getWidgetCloseList()->size() == 0 );
+  CPPUNIT_ASSERT ( finalcut::FApplication::getWidgetCloseList().size() == 0 );
   CPPUNIT_ASSERT ( main_wdgt.close() );
-  CPPUNIT_ASSERT ( wdgt.p_getWidgetCloseList()->size() == 0 );
+  CPPUNIT_ASSERT ( finalcut::FApplication::getWidgetCloseList().size() == 0 );
   CPPUNIT_ASSERT ( ! main_wdgt.getFlags().visibility.hidden );
   CPPUNIT_ASSERT ( main_wdgt.getFlags().visibility.shown );
 }

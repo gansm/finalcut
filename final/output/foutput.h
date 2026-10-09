@@ -110,7 +110,7 @@ class FOutput : public std::enable_shared_from_this<FOutput>
     // Methods
     virtual void initTerminal (FVTerm::FTermRegion*) = 0;
     virtual void finishTerminal() = 0;
-    virtual auto updateTerminal() -> bool = 0;
+    virtual auto updateTerminalBuffer() -> bool = 0;
     virtual void detectTerminalSize() = 0;
     virtual void commitTerminalResize() = 0;
     virtual void initScreenSettings() = 0;

@@ -314,7 +314,6 @@ class FWidget : public FVTerm
     static auto getModalDialogCounter() -> uInt;
     static auto getDialogList() -> FWidgetList*&;
     static auto getAlwaysOnTopList() -> FWidgetList*&;
-    static auto getWidgetCloseList() -> FWidgetList*&;
     void  addPreprocessingHandler ( const FVTerm*
                                   , FPreprocessingFunction&& ) override;
     void  delPreprocessingHandler (const FVTerm*) override;
@@ -526,7 +525,6 @@ class FWidget : public FVTerm
     static FWidget*      first_shown_widget;
     static FWidgetList*  dialog_list;
     static FWidgetList*  always_on_top_list;
-    static FWidgetList*  close_widget_list;
     static uInt          modal_dialog_counter;
     static bool          dont_raise_window;
     static bool          init_terminal;
@@ -1023,10 +1021,6 @@ inline auto FWidget::getDialogList() -> FWidgetList*&
 //----------------------------------------------------------------------
 inline auto FWidget::getAlwaysOnTopList() -> FWidgetList*&
 { return always_on_top_list; }
-
-//----------------------------------------------------------------------
-inline auto FWidget::getWidgetCloseList() -> FWidgetList*&
-{ return close_widget_list; }
 
 //----------------------------------------------------------------------
 inline auto FWidget::setModalDialogCounter() -> uInt&

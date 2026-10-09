@@ -198,7 +198,7 @@ void FVTerm::setTerminalUpdates (TerminalUpdate refresh_state) const
   }
 
   if ( refresh_state == TerminalUpdate::Start )
-    updateTerminal();
+    updateTerminalBuffer();
 }
 
 //----------------------------------------------------------------------
@@ -292,16 +292,16 @@ void FVTerm::putVTerm() const
                     vterm_changes_line.xmax = xmax;
                   } );
   vterm->changes_in_row = {0, ymax};
-  updateTerminal();
+  updateTerminalBuffer();
 }
 
 //----------------------------------------------------------------------
-auto FVTerm::updateTerminal() const -> bool
+auto FVTerm::updateTerminalBuffer() const -> bool
 {
-  // Update terminal screen when modified
+  // Update terminal output buffer when modified
 
   auto terminal_updated = canUpdateTerminalNow()
-                        ? foutput->updateTerminal()
+                        ? foutput->updateTerminalBuffer()
                         : false;
 
   if ( terminal_updated )
@@ -1073,14 +1073,14 @@ auto FVTerm::processTerminalUpdate() const -> bool
   if ( foutput->hasTerminalResized() )
     return false;
 
-  // Update data on VTerm
+  // Update data on the virtual terminal (VTerm)
   if ( skip_one_vterm_update )
     skip_one_vterm_update = false;
   else
     updateVTerm();
 
-  // Update the visible terminal
-  return updateTerminal();
+  // Update the terminal output buffer
+  return updateTerminalBuffer();
 }
 
 //----------------------------------------------------------------------

@@ -76,7 +76,7 @@ class FCharBuffer
   public:
     explicit FCharBuffer (std::size_t initial_cap = 4096)
     {
-      buffer.reserve(initial_cap);
+      buffer.resize(initial_cap, '\0');
     }
 
     inline void append (const char* data, std::size_t len)
@@ -210,7 +210,7 @@ class FTermOutput final : public FOutput
     // Methods
     void initTerminal (FVTerm::FTermRegion*) override;
     void finishTerminal() override;
-    auto updateTerminal() -> bool override;
+    auto updateTerminalBuffer() -> bool override;
     void detectTerminalSize() override;
     void commitTerminalResize() override;
     void initScreenSettings() override;

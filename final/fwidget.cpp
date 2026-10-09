@@ -56,7 +56,6 @@ FMenuBar*             FWidget::menu_bar{nullptr};
 FWidget*              FWidget::first_shown_widget{nullptr};
 FWidget::FWidgetList* FWidget::dialog_list{nullptr};
 FWidget::FWidgetList* FWidget::always_on_top_list{nullptr};
-FWidget::FWidgetList* FWidget::close_widget_list{nullptr};
 bool                  FWidget::dont_raise_window{false};
 bool                  FWidget::init_terminal{false};
 bool                  FWidget::init_desktop{false};
@@ -758,9 +757,10 @@ auto FWidget::close() -> bool
   else
   {
     hide();
+    auto app_object = FApplication::getApplicationObject();
 
-    if ( ! flags.visibility.modal && ! isInFWidgetList(close_widget_list, this) )
-      close_widget_list->push_back(this);
+    if ( app_object && ! flags.visibility.modal )
+      app_object->addClose(this);
   }
 
   return true;
@@ -829,7 +829,10 @@ void FWidget::redraw (RedrawMode redraw_mode)
     return;
 
   flags.visibility.needs_redraw = true;
-  FApplication::getApplicationObject()->queueDraw(this);
+  auto app_object = FApplication::getApplicationObject();
+
+  if ( app_object )
+    app_object->queueDraw(this);
 }
 
 //----------------------------------------------------------------------
@@ -1669,7 +1672,6 @@ void FWidget::initRootWidget()
     // Initialize widget lists
     dialog_list        = new FWidgetList();
     always_on_top_list = new FWidgetList();
-    close_widget_list  = new FWidgetList();
   }
   catch (const std::bad_alloc&)
   {
@@ -1725,8 +1727,6 @@ inline void FWidget::initDesktopOnShown() const
 //----------------------------------------------------------------------
 void FWidget::finish()
 {
-  delete close_widget_list;
-  close_widget_list = nullptr;
   delete dialog_list;
   dialog_list = nullptr;
   delete always_on_top_list;

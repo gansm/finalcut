@@ -124,6 +124,7 @@ class FApplication : public FWidget
     auto         getArgs() const -> Args;
     static auto  getApplicationObject() -> FApplication*;
     static auto  getKeyboardWidget() -> FWidget*;
+    static auto  getWidgetCloseList() -> FWidgetList&;
     static auto  getLog() -> FLogPtr&;
 
     // Mutator
@@ -148,6 +149,7 @@ class FApplication : public FWidget
     auto         removeQueuedEvent (const FObject*) -> bool;
     void         queueDraw (FWidget*);
     auto         removeQueuedDraw (const FWidget*) -> bool;
+    void         addClose (FWidget*);
     void         registerMouseHandler (const FMouseHandler&);
     void         initTerminal() override;
     static void  setDefaultTheme();
@@ -165,13 +167,13 @@ class FApplication : public FWidget
     // Event handlers
     auto         event (FEvent*) -> bool override;
     virtual void onDraw (FEvent*);
+    virtual void onClose (FEvent*);
 
   private:
     // Using-declaration
     using CmdOption = struct option;
     using EventPair = std::pair<FObject*, std::unique_ptr<FEvent>>;
     using FEventQueue = std::deque<EventPair>;
-    using FDrawQueue = std::vector<FWidget*>;
     using FMouseHandlerList = std::vector<FMouseHandler>;
     using CmdMap = std::unordered_map<int, std::function<void(char*)>>;
     using rdbuf = std::streambuf*;
@@ -238,6 +240,7 @@ class FApplication : public FWidget
     void         processResizeEvent();
     void         processCloseWidget();
     void         processDialogResizeMove() const;
+    void         processTerminalScreenUpdate();
     void         processRedraw();
     void         processLogger() const;
     auto         processNextEvent() -> bool;
@@ -251,10 +254,12 @@ class FApplication : public FWidget
     uInt64            key_timeout{100'000};        // 100 ms
     uInt64            dblclick_interval{500'000};  // 500 ms
     FEventQueue       event_queue{};
-    FDrawQueue        draw_queue{};
+    FWidgetList       draw_list{};
+    FWidgetList       close_widget_list;
     FMouseHandlerList mouse_handler_list{};
     bool              has_terminal_resized{false};
     bool              need_widget_redraw{false};
+    bool              need_widget_close{false};
     static uInt64     next_event_wait;
     static TimeValue  time_last_event;
     static rdbuf      default_clog_rdbuf;
@@ -280,6 +285,20 @@ inline auto FApplication::getClassName() const -> FString
 //----------------------------------------------------------------------
 inline auto FApplication::getArgs() const -> Args
 { return app_args; }
+
+//----------------------------------------------------------------------
+inline auto FApplication::getWidgetCloseList() -> FWidgetList&
+{
+  auto* app_object = getApplicationObject();
+
+  if ( ! app_object )
+  {
+    static FWidget::FWidgetList empty_list;
+    return empty_list;
+  }
+
+  return app_object->close_widget_list;
+}
 
 //----------------------------------------------------------------------
 inline void FApplication::cb_exitApp (FWidget* w) const

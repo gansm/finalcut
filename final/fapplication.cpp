@@ -167,6 +167,9 @@ void FApplication::setLog (const FLogPtr& log)
   logger.reset();
   logger = log;
 
+  if ( ! logger )
+    return;
+
   // Set the logger as rdbuf of clog
   std::clog.rdbuf(logger.get());
 }
@@ -309,7 +312,7 @@ auto FApplication::removeQueuedEvent (const FObject* receiver) -> bool
 void FApplication::queueDraw (FWidget* widget)
 {
   // Queue the widget for redrawing
-  draw_queue.push_back(widget);
+  draw_list.push_back(widget);
 
   // We only need one draw event to redraw all the widgets in the queue
   if ( need_widget_redraw )
@@ -324,17 +327,37 @@ void FApplication::queueDraw (FWidget* widget)
 //----------------------------------------------------------------------
 auto FApplication::removeQueuedDraw (const FWidget* widget) -> bool
 {
-  if ( ! widget || draw_queue.empty() )
+  if ( ! widget || draw_list.empty() )
     return false;
 
-  const auto queue_end = draw_queue.end();
-  const auto last = std::remove (draw_queue.begin(), queue_end, widget);
-  draw_queue.erase(last, queue_end);
+  const auto list_end = draw_list.end();
+  const auto last = std::remove (draw_list.begin(), list_end, widget);
+  draw_list.erase(last, list_end);
 
-  if ( draw_queue.empty() )
+  if ( draw_list.empty() )
     need_widget_redraw = false;
 
   return true;
+}
+
+//----------------------------------------------------------------------
+void FApplication::addClose (FWidget* widget)
+{
+  // Add a widget to close
+
+  if ( isInFWidgetList(&close_widget_list, widget) )
+    return;
+
+  close_widget_list.push_back(widget);
+
+  // We only need one close event to close all the widgets in the list
+  if ( need_widget_close )
+    return;
+
+  need_widget_close = true;
+
+  auto ev = std::make_unique<FEvent>(Event::Close);
+  FApplication::queueEvent(this, std::move(ev));
 }
 
 //----------------------------------------------------------------------
@@ -395,14 +418,14 @@ void FApplication::setLogFile (const FString& file_name)
   if ( log_stream.is_open() )
   {
     // Get the global logger object
-    const auto& log = FApplication::getLog();
+    const auto& logger = FApplication::getLog();
 
-    if ( ! log )
+    if ( ! logger )
       return;
 
-    log->setOutputStream(log_stream);
-    log->enableTimestamp();
-    log->setLineEnding (FLog::LineEnding::LF);
+    logger->setOutputStream(log_stream);
+    logger->enableTimestamp();
+    logger->setLineEnding (FLog::LineEnding::LF);
   }
   else
   {
@@ -458,6 +481,12 @@ auto FApplication::event (FEvent* ev) -> bool
     return true;
   }
 
+  if ( event_type == Event::Close )
+  {
+    onClose (ev);
+    return true;
+  }
+
   return FWidget::event(ev);
 }
 
@@ -469,6 +498,16 @@ void FApplication::onDraw (FEvent*)
 
   processRedraw();
   need_widget_redraw = false;
+}
+
+//----------------------------------------------------------------------
+void FApplication::onClose (FEvent*)
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive close events
+
+  processCloseWidget();
+  need_widget_close = false;
 }
 
 
@@ -1411,15 +1450,29 @@ void FApplication::processDialogResizeMove() const
 }
 
 //----------------------------------------------------------------------
+void FApplication::processTerminalScreenUpdate()
+{
+  // Process pending changes to the size and position of dialog boxes
+  processDialogResizeMove();
+
+  // Processes pending virtual window changes and appends
+  // virtual terminal updates to the output buffer
+  processTerminalUpdate();
+
+  // Flush output buffer (via an instance of FOutput)
+  flush();
+}
+
+//----------------------------------------------------------------------
 void FApplication::processRedraw()
 {
-  if ( draw_queue.empty() )
+  if ( draw_list.empty() )
     return;
 
   // Create a local vector and atomically swap the content
-  FDrawQueue processing_queue{};
-  processing_queue.swap(draw_queue);
-  // Now draw_queue is empty and ready for new redraw requests
+  FWidgetList processing_queue{};
+  processing_queue.swap(draw_list);
+  // Now draw_list is empty and ready for new redraw requests
 
   // Sort the queue by hierarchy depth
   std::sort ( processing_queue.begin()
@@ -1446,19 +1499,19 @@ void FApplication::processRedraw()
 //----------------------------------------------------------------------
 void FApplication::processCloseWidget()
 {
-  if ( ! getWidgetCloseList() || getWidgetCloseList()->empty() )
+  if ( close_widget_list.empty() )
     return;
 
   setTerminalUpdates (FVTerm::TerminalUpdate::Stop);
-  auto iter = getWidgetCloseList()->cbegin();
+  auto iter = close_widget_list.cbegin();
 
-  while ( iter != getWidgetCloseList()->cend() && *iter )
+  while ( iter != close_widget_list.cend() && *iter )
   {
     delete *iter;
     ++iter;
   }
 
-  getWidgetCloseList()->clear();
+  close_widget_list.clear();
   setTerminalUpdates (FVTerm::TerminalUpdate::Start);
 }
 
@@ -1489,12 +1542,9 @@ auto FApplication::processNextEvent() -> bool
     num_events += processTimerEvent();
     processInput();
     processResizeEvent();  // when the terminal size has changed
-    processDialogResizeMove();
     sendQueuedEvents();
-    processTerminalUpdate();  // for changed regions on the terminal
-    flush();  // Flush output buffer (via an instance of FOutput)
+    processTerminalScreenUpdate();
     processLogger();
-    processCloseWidget();
   }
   else if ( isKeyPressed(next_event_wait) )
   {

@@ -104,7 +104,7 @@ class FTermOutputTest : public finalcut::FOutput
     // Methods
     void initTerminal (finalcut::FVTerm::FTermRegion*) override;
     void finishTerminal() override;
-    auto updateTerminal() -> bool override;
+    auto updateTerminalBuffer() -> bool override;
     void detectTerminalSize() override;
     void commitTerminalResize() override;
     void initScreenSettings() override;
@@ -336,7 +336,7 @@ inline void FTermOutputTest::finishTerminal()
 { }
 
 //----------------------------------------------------------------------
-inline auto FTermOutputTest::updateTerminal() -> bool
+inline auto FTermOutputTest::updateTerminalBuffer() -> bool
 {
   return true;
 }
@@ -3112,7 +3112,7 @@ void FVTermTest::FVTermReduceUpdatesTest()
   finalcut::FApplication::start();
   finalcut::FApplication fapp(0, nullptr);
   p_fvterm.p_finishDrawing();
-  p_fvterm.updateTerminal();
+  p_fvterm.updateTerminalBuffer();
 
   // Simulate printing
   for (auto y{0}; y < vterm->size.height; y++)

@@ -1,0 +1,28 @@
+{
+   wmemcmp_avx2_false_positive
+   Memcheck:Value32
+   fun:__wmemcmp_avx2_movbe
+   fun:_ZNSt11char_traitsIwE7compareEPKwS2_m
+}
+
+{
+   wmemcmp_avx2_invalid_read_false_positive
+   Memcheck:Addr32
+   fun:__wmemcmp_avx2_movbe
+   fun:_ZNSt11char_traitsIwE7compareEPKwS2_m
+}
+
+{
+   wmemcmp_avx2_find_false_positive
+   Memcheck:Value32
+   fun:__wmemcmp_avx2_movbe
+   fun:_ZNKSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEE4findEPKwmm
+}
+
+{
+   wmemcmp_avx2_find_addr_false_positive
+   Memcheck:Addr32
+   fun:__wmemcmp_avx2_movbe
+   fun:_ZNKSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEE4findEPKwmm
+}
+

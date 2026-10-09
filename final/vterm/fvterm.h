@@ -189,7 +189,7 @@ class FVTerm : public FVTermAttribute
     void  createVTerm (const FSize&) noexcept;
     void  resizeVTerm (const FSize&) const noexcept;
     void  putVTerm() const;
-    auto  updateTerminal() const -> bool;
+    auto  updateTerminalBuffer() const -> bool;
     static void reduceTerminalLineUpdates (uInt);
     virtual void addPreprocessingHandler ( const FVTerm*
                                          , FPreprocessingFunction&& );

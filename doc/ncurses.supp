@@ -203,3 +203,14 @@
    fun:save_number
    fun:tparam_internal
 }
+
+{
+   libtinfo_tparm_reachable
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:strdup
+   obj:*/libtinfo.so*
+   fun:tparm
+}
+

@@ -233,9 +233,9 @@ void FTermOutput::finishTerminal()
 }
 
 //----------------------------------------------------------------------
-auto FTermOutput::updateTerminal() -> bool
+auto FTermOutput::updateTerminalBuffer() -> bool
 {
-  // Updates pending changes to the terminal
+  // Appends pending changes to the output buffer
 
   int changedlines{0};
   const auto first_row = vterm->changes_in_row.ymin;

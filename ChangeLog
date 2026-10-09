@@ -1,3 +1,7 @@
+2026-10-09  Markus Gans  <guru.mail@muenster.de>
+	* An Event::Close now handles the asynchronous closing of the widgets 
+	  and calls the FApplication::onClose() method
+
 2026-10-06  Markus Gans  <guru.mail@muenster.de>
 	* The asynchronous widget redraw is now handled by an Event::Draw, 
 	  which calls FApplication::onDraw()
