@@ -167,7 +167,7 @@ class FApplication : public FWidget
     // Event handlers
     auto         event (FEvent*) -> bool override;
     virtual void onDraw (FEvent*);
-    virtual void onClose (FEvent*);
+    void         onClose (FCloseEvent*) override;
 
   private:
     // Using-declaration

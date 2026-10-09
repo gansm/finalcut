@@ -356,7 +356,7 @@ void FApplication::addClose (FWidget* widget)
 
   need_widget_close = true;
 
-  auto ev = std::make_unique<FEvent>(Event::Close);
+  auto ev = std::make_unique<FCloseEvent>(Event::Close);
   FApplication::queueEvent(this, std::move(ev));
 }
 
@@ -483,7 +483,7 @@ auto FApplication::event (FEvent* ev) -> bool
 
   if ( event_type == Event::Close )
   {
-    onClose (ev);
+    onClose (static_cast<FCloseEvent*>(ev));
     return true;
   }
 
@@ -501,7 +501,7 @@ void FApplication::onDraw (FEvent*)
 }
 
 //----------------------------------------------------------------------
-void FApplication::onClose (FEvent*)
+void FApplication::onClose (FCloseEvent*)
 {
   // This event handler can be reimplemented in a subclass
   // to receive close events
