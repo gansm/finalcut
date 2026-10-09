@@ -1450,7 +1450,7 @@ void FApplication::processDialogResizeMove() const
 }
 
 //----------------------------------------------------------------------
-void FApplication::processTerminalScreenUpdate()
+void FApplication::processTerminalScreenUpdate() const
 {
   // Process pending changes to the size and position of dialog boxes
   processDialogResizeMove();

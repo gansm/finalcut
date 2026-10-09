@@ -240,7 +240,7 @@ class FApplication : public FWidget
     void         processResizeEvent();
     void         processCloseWidget();
     void         processDialogResizeMove() const;
-    void         processTerminalScreenUpdate();
+    void         processTerminalScreenUpdate() const;
     void         processRedraw();
     void         processLogger() const;
     auto         processNextEvent() -> bool;

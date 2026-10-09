@@ -47,7 +47,7 @@ jobs:
 
     - name: Build with SonarCloud
       run: |
-        curl -fsSL -O "https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip" || exit 1
+        curl -fsSL --proto-redir -all,https -O "https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip"  || exit 1
         unzip -q "build-wrapper-linux-x86.zip" -d "/tmp" || echo
         LATEST_VERSION=$(curl -H "Accept: application/vnd.github.v3+json" \
                          https://api.github.com/repos/SonarSource/sonar-scanner-cli/releases/latest 2>/dev/null \
