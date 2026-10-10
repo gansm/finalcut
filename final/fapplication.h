@@ -167,6 +167,7 @@ class FApplication : public FWidget
     // Event handlers
     auto         event (FEvent*) -> bool override;
     virtual void onDraw (FEvent*);
+    virtual void onLog (FEvent*);
     void         onClose (FCloseEvent*) override;
 
   private:
@@ -242,6 +243,7 @@ class FApplication : public FWidget
     void         processDialogResizeMove() const;
     void         processTerminalScreenUpdate() const;
     void         processRedraw();
+    void         queueLog();
     void         processLogger() const;
     auto         processNextEvent() -> bool;
     void         performTimerAction (FObject*, FEvent*) override;
@@ -258,6 +260,7 @@ class FApplication : public FWidget
     FWidgetList       close_widget_list;
     FMouseHandlerList mouse_handler_list{};
     bool              has_terminal_resized{false};
+    bool              has_log_data{false};
     bool              need_widget_redraw{false};
     bool              need_widget_close{false};
     static uInt64     next_event_wait;

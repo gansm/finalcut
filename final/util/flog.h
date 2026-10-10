@@ -61,6 +61,7 @@ class FLog : public std::stringbuf
   public:
     // Using-declaration
     using FLogPrint = std::function<void(const std::string&)>;
+    using FLogCallback = std::function<void()>;
     using IOManip = decltype(std::endl<char, std::char_traits<char>>);
 
     // Enumerations
@@ -92,22 +93,28 @@ class FLog : public std::stringbuf
     virtual void debug (const std::string&) = 0;
     virtual void flush() = 0;
     virtual void setOutputStream (const std::ostream&) = 0;
+    virtual void setLogCallback (FLogCallback&&) = 0;
     virtual void setLineEnding (LineEnding) = 0;
     virtual void enableTimestamp() = 0;
     virtual void disableTimestamp() = 0;
 
   protected:
     auto sync() -> int override;
+    auto xsputn (const char*, std::streamsize) -> std::streamsize;
+    auto overflow (int = EOF) -> int override;
     auto getLevel() const -> const LogLevel&;
     auto setLevel() -> LogLevel&;
     auto getEnding() const -> const LineEnding&;
     auto setEnding() -> LineEnding&;
 
+    // Data member
+    FLogPrint    current_log{ [this] (const auto& s) { info(s); } };
+    FLogCallback log_callback{nullptr};
+
   private:
     // Data member
     LogLevel     level{LogLevel::Info};
     LineEnding   end_of_line{LineEnding::CRLF};
-    FLogPrint    current_log{ [this] (const auto& s) { info(s); } };
     std::mutex   current_log_mutex{};
     std::mutex   stream_mutex{};
     std::ostream stream{this};
@@ -127,6 +134,10 @@ inline auto FLog::operator << (const T& s) -> FLog&
 {
   std::lock_guard<std::mutex> lock_guard(stream_mutex);
   stream << s;
+
+  if ( log_callback )
+    log_callback();
+
   return *this;
 }
 

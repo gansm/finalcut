@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2023 Markus Gans                                      *
+* Copyright 2020-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -78,6 +78,7 @@ class FLogger : public FLog
     void debug (const std::string&) override;
     void flush() override;
     void setOutputStream (const std::ostream&) override;
+    void setLogCallback (FLogCallback&&) override;
     void setLineEnding (LineEnding) override;
     void enableTimestamp() override;
     void disableTimestamp() override;
@@ -159,6 +160,12 @@ inline void FLogger::setOutputStream (const std::ostream& os)
 {
   std::lock_guard<std::mutex> lock_guard(output_mutex);
   output.rdbuf(os.rdbuf());
+}
+
+//----------------------------------------------------------------------
+inline void FLogger::setLogCallback (FLogCallback&& callback)
+{
+  log_callback = std::move(callback);
 }
 
 //----------------------------------------------------------------------

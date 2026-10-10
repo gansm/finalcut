@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2024 Markus Gans                                      *
+* Copyright 2020-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -34,6 +34,11 @@ namespace finalcut
 FLog::~FLog()  // destructor
 {
   FLog::sync();
+
+  std::lock_guard<std::mutex> lock(current_log_mutex);
+  current_log = [] (const std::string&) {};
+
+  log_callback = nullptr;
 }
 
 
@@ -74,13 +79,40 @@ auto FLog::operator << (LogLevel log_level) -> FLog&
 //----------------------------------------------------------------------
 auto FLog::sync() -> int
 {
+  int result = std::stringbuf::sync();
+
   if ( ! str().empty() )
   {
     current_log (str());
     str("");
+
+    if ( log_callback )
+      log_callback();
   }
 
-  return 0;
+  return result;
+}
+
+//----------------------------------------------------------------------
+auto FLog::xsputn (const char* str, std::streamsize n) -> std::streamsize
+{
+  std::streamsize result = std::stringbuf::xsputn(str, n);
+
+  if ( result > 0 && log_callback )
+    log_callback();
+
+  return result;
+}
+
+//----------------------------------------------------------------------
+auto FLog::overflow (int c) -> int
+{
+  int result = std::stringbuf::overflow(c);
+
+  if ( result != EOF && log_callback )
+    log_callback();
+
+  return result;
 }
 
 

@@ -79,6 +79,7 @@ enum class Event : uInt8
   Show,              // Widget is shown
   Hide,              // Widget is hidden
   Close,             // Widget close
+  Log,               // Writes log changes
   Timer,             // Timer event occurred
   User               // User defined event
 };

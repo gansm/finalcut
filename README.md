@@ -139,7 +139,7 @@ printf(...)
                      │
                      │   putVTerm()
                      └──────────────────► updateTerminalLine(y)
-                       updateTerminal()            │
+                    updateTerminalBuffer()         │
                                                    ▼
                                            ┌───────────────┐
                                            │ output_buffer │

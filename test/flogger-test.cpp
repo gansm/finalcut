@@ -69,6 +69,9 @@ class myLogger : public finalcut::FLog
     void setOutputStream (const std::ostream& os) override
     { output.rdbuf(os.rdbuf()); }
 
+    void setLogCallback (FLogCallback&& callback) override
+    { log_callback = std::move(callback); }
+
     void setLineEnding (LineEnding) override
     {
       // An implementation is not required in this context
@@ -108,6 +111,7 @@ class FLoggerTest : public CPPUNIT_NS::TestFixture
     void defaultObjectTest();
     void lineEndingTest();
     void timestampTest();
+    void callbackTest();
     void fileTest();
     void applicationObjectTest();
 
@@ -120,6 +124,7 @@ class FLoggerTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (defaultObjectTest);
     CPPUNIT_TEST (lineEndingTest);
     CPPUNIT_TEST (timestampTest);
+    CPPUNIT_TEST (callbackTest);
     CPPUNIT_TEST (fileTest);
     CPPUNIT_TEST (applicationObjectTest);
 
@@ -259,6 +264,51 @@ void FLoggerTest::timestampTest()
   CPPUNIT_ASSERT ( buf.str() == "[INFO] Timestamp\r\n" );
   CPPUNIT_ASSERT ( length == 18 );
   buf.str("");  // Clear buffer
+}
+
+//----------------------------------------------------------------------
+void FLoggerTest::callbackTest()
+{
+  // Save the rdbuf of clog
+  auto* default_clog_rdbuf = std::clog.rdbuf();
+
+  finalcut::FLogger log;
+  std::ostringstream buf{};
+  int value{0};
+  log.setOutputStream(buf);
+  std::clog.rdbuf(&log);
+
+  auto callback = [&value] () { value++; };
+  log.setLogCallback(std::move(callback));
+
+  CPPUNIT_ASSERT ( value == 0 );
+  log << "Some informations...!";
+
+  CPPUNIT_ASSERT ( value == 4 );
+
+  log << std::flush;
+  CPPUNIT_ASSERT ( value == 5 );
+
+  log << std::endl;
+  CPPUNIT_ASSERT ( value == 6 );
+
+  log << "test string ";
+  CPPUNIT_ASSERT ( value == 8 );
+
+  log << 123;
+  CPPUNIT_ASSERT ( value == 10 );
+
+  log << std::flush;
+  CPPUNIT_ASSERT ( value == 11 );
+
+  std::clog << log.getClassName();
+  CPPUNIT_ASSERT ( value == 12 );
+
+  std::clog << std::flush;
+  CPPUNIT_ASSERT ( value == 13 );
+
+  // Reset to the default rdbuf of clog
+  std::clog.rdbuf(default_clog_rdbuf);
 }
 
 //----------------------------------------------------------------------

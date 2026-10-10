@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2024 Markus Gans                                      *
+* Copyright 2020-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -34,8 +34,14 @@ namespace finalcut
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FLogger::~FLogger() noexcept = default;  // destructor
+FLogger::~FLogger() noexcept  // destructor
+{
+  std::mutex current_log_mutex{};
+  std::lock_guard<std::mutex> lock(current_log_mutex);
+  current_log = [] (const std::string&) {};
 
+  FLogger::flush();
+}
 
 // private methods of FLogger
 //----------------------------------------------------------------------

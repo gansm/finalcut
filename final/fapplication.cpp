@@ -170,6 +170,13 @@ void FApplication::setLog (const FLogPtr& log)
   if ( ! logger )
     return;
 
+  // Register callback
+  logger->setLogCallback( [] ()
+                          {
+                            if ( internal::var::app_object )
+                              internal::var::app_object->queueLog();
+                          } );
+
   // Set the logger as rdbuf of clog
   std::clog.rdbuf(logger.get());
 }
@@ -426,6 +433,16 @@ void FApplication::setLogFile (const FString& file_name)
     logger->setOutputStream(log_stream);
     logger->enableTimestamp();
     logger->setLineEnding (FLog::LineEnding::LF);
+
+    // Register callback
+    logger->setLogCallback( [] ()
+                            {
+                              if ( internal::var::app_object )
+                                internal::var::app_object->queueLog();
+                            } );
+
+    // Set the logger as rdbuf of clog
+    std::clog.rdbuf(logger.get());
   }
   else
   {
@@ -481,6 +498,12 @@ auto FApplication::event (FEvent* ev) -> bool
     return true;
   }
 
+  if ( event_type == Event::Log )
+  {
+    onLog (ev);
+    return true;
+  }
+
   if ( event_type == Event::Close )
   {
     onClose (static_cast<FCloseEvent*>(ev));
@@ -498,6 +521,16 @@ void FApplication::onDraw (FEvent*)
 
   processRedraw();
   need_widget_redraw = false;
+}
+
+//----------------------------------------------------------------------
+void FApplication::onLog (FEvent*)
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive log events
+
+  processLogger();
+  has_log_data = false;
 }
 
 //----------------------------------------------------------------------
@@ -1516,6 +1549,20 @@ void FApplication::processCloseWidget()
 }
 
 //----------------------------------------------------------------------
+void FApplication::queueLog()
+{
+  // Only one log event is needed to flush the buffer log data
+
+  if ( has_log_data )
+    return;
+
+  has_log_data = true;
+
+  auto ev = std::make_unique<FEvent>(Event::Log);
+  FApplication::queueEvent(this, std::move(ev));
+}
+
+//----------------------------------------------------------------------
 void FApplication::processLogger() const
 {
   // Synchronizing the stream buffer with the logging output
@@ -1544,7 +1591,6 @@ auto FApplication::processNextEvent() -> bool
     processResizeEvent();  // when the terminal size has changed
     sendQueuedEvents();
     processTerminalScreenUpdate();
-    processLogger();
   }
   else if ( isKeyPressed(next_event_wait) )
   {
