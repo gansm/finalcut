@@ -226,7 +226,7 @@ auto FTermcap::paddingPrint (const char* string, uInt32 len, int affcnt) -> Stat
   if ( ! string || len == 0 || ! outc )
     return Status::Error;
 
-  bool has_delay = hasDelay(string);
+  bool has_delay = hasDelay(string, len);
   auto iter = string;
   auto end = std::next(string, len);
 
@@ -539,10 +539,21 @@ auto FTermcap::encodeParams ( const TermcapString& cap
 }
 
 //----------------------------------------------------------------------
-inline auto FTermcap::hasDelay (const std::string& string) noexcept -> bool
+inline auto FTermcap::hasDelay (const char* string, uInt32 len) noexcept -> bool
 {
-  return (TCAP(t_bell).data && string == std::string(TCAP(t_bell).data))
-      || (TCAP(t_flash_screen).data && string == std::string(TCAP(t_flash_screen).data))
+  auto equal = [&string, &len] (TermcapString& tcap) noexcept -> bool
+               {
+                 if ( ! tcap.data )
+                   return false;
+
+                 if ( tcap.length != len)
+                   return false;
+
+                 return std::memcmp(string, tcap.data, len) == 0;
+               };
+
+  return equal(TCAP(t_bell))
+      || equal(TCAP(t_flash_screen))
       || ( ! xon_xoff_flow_control && padding_baudrate
         && (baudrate >= padding_baudrate) );
 }

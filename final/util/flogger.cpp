@@ -36,11 +36,8 @@ namespace finalcut
 //----------------------------------------------------------------------
 FLogger::~FLogger() noexcept  // destructor
 {
-  std::mutex current_log_mutex{};
-  std::lock_guard<std::mutex> lock(current_log_mutex);
-  current_log = [] (const std::string&) {};
-
-  FLogger::flush();
+  current_log = nullptr;
+  flush();
 }
 
 // private methods of FLogger

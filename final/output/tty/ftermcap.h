@@ -148,7 +148,7 @@ class FTermcap final
     static void  termcapKeys();
     static auto  encodeParams ( const TermcapString&
                               , const std::array<int, 9>& ) -> TermcapString;
-    static auto  hasDelay (const std::string&) noexcept -> bool;
+    static auto  hasDelay (const char*, uInt32) noexcept -> bool;
     static void  delayOutput (int) noexcept;
     static auto  readNumber (const char*&, int, bool&) noexcept -> int;
     static void  readDigits (const char*&, int&) noexcept;

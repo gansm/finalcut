@@ -100,7 +100,7 @@ class FLog : public std::stringbuf
 
   protected:
     auto sync() -> int override;
-    auto xsputn (const char*, std::streamsize) -> std::streamsize;
+    auto xsputn (const char*, std::streamsize) -> std::streamsize override;
     auto overflow (int = EOF) -> int override;
     auto getLevel() const -> const LogLevel&;
     auto setLevel() -> LogLevel&;

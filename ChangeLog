@@ -1,3 +1,6 @@
+2026-10-11  Markus Gans  <guru.mail@muenster.de>
+	* Optimize the FTermcap::hasDelay method
+
 2026-10-10  Markus Gans  <guru.mail@muenster.de>
 	* FLogger changes are now written asynchronously to the data stream 
 	  by Event::Log

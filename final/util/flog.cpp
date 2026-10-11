@@ -36,8 +36,7 @@ FLog::~FLog()  // destructor
   FLog::sync();
 
   std::lock_guard<std::mutex> lock(current_log_mutex);
-  current_log = [] (const std::string&) {};
-
+  current_log = nullptr;
   log_callback = nullptr;
 }
 
@@ -81,7 +80,7 @@ auto FLog::sync() -> int
 {
   int result = std::stringbuf::sync();
 
-  if ( ! str().empty() )
+  if ( ! str().empty() && current_log )
   {
     current_log (str());
     str("");

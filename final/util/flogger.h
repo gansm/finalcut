@@ -152,7 +152,15 @@ inline void FLogger::debug (const std::string& msg)
 inline void FLogger::flush()
 {
   std::lock_guard<std::mutex> lock_guard(output_mutex);
-  output.flush();
+
+  try
+  {
+    output.flush();
+  }
+  catch (const std::ios_base::failure&)
+  {
+    std::cerr << "I/O error while flashing the FLogger stream.\n";
+  }
 }
 
 //----------------------------------------------------------------------

@@ -76,7 +76,7 @@ class FCharBuffer
   public:
     explicit FCharBuffer (std::size_t initial_cap = 4096)
     {
-      buffer.resize(initial_cap, '\0');
+      buffer.reserve(initial_cap);
     }
 
     inline void append (const char* data, std::size_t len)
