@@ -36,8 +36,8 @@ namespace finalcut
 //----------------------------------------------------------------------
 FLogger::~FLogger() noexcept  // destructor
 {
-  current_log = nullptr;
-  flush();
+  setCurrentLog(nullptr);
+  FLogger::flush();
 }
 
 // private methods of FLogger

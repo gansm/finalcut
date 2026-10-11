@@ -541,7 +541,7 @@ auto FTermcap::encodeParams ( const TermcapString& cap
 //----------------------------------------------------------------------
 inline auto FTermcap::hasDelay (const char* string, uInt32 len) noexcept -> bool
 {
-  auto equal = [&string, &len] (TermcapString& tcap) noexcept -> bool
+  auto equal = [string, len] (const TermcapString& tcap) noexcept
                {
                  if ( ! tcap.data )
                    return false;

@@ -106,15 +106,15 @@ class FLog : public std::stringbuf
     auto setLevel() -> LogLevel&;
     auto getEnding() const -> const LineEnding&;
     auto setEnding() -> LineEnding&;
-
-    // Data member
-    FLogPrint    current_log{ [this] (const auto& s) { info(s); } };
-    FLogCallback log_callback{nullptr};
+    void setCurrentLog (FLogPrint&&);
+    void setCallback (FLogCallback&&);
 
   private:
     // Data member
     LogLevel     level{LogLevel::Info};
     LineEnding   end_of_line{LineEnding::CRLF};
+    FLogPrint    current_log{ [this] (const auto& s) { info(s); } };
+    FLogCallback log_callback{nullptr};
     std::mutex   current_log_mutex{};
     std::mutex   stream_mutex{};
     std::ostream stream{this};
@@ -177,6 +177,18 @@ inline auto FLog::getEnding() const -> const LineEnding&
 inline auto FLog::setEnding() -> LineEnding&
 {
   return end_of_line;
+}
+
+//----------------------------------------------------------------------
+inline void FLog::setCurrentLog (FLogPrint&& log)
+{
+  current_log = std::move(log);
+}
+
+//----------------------------------------------------------------------
+inline void FLog::setCallback (FLogCallback&& callback)
+{
+  log_callback = std::move(callback);
 }
 
 }  // namespace finalcut

@@ -157,9 +157,9 @@ inline void FLogger::flush()
   {
     output.flush();
   }
-  catch (const std::ios_base::failure&)
+  catch (const std::ios_base::failure& ex)
   {
-    std::cerr << "I/O error while flashing the FLogger stream.\n";
+    static_cast<void>(ex);  // Ignore exceptions
   }
 }
 
@@ -173,7 +173,7 @@ inline void FLogger::setOutputStream (const std::ostream& os)
 //----------------------------------------------------------------------
 inline void FLogger::setLogCallback (FLogCallback&& callback)
 {
-  log_callback = std::move(callback);
+  setCallback(std::move(callback));
 }
 
 //----------------------------------------------------------------------

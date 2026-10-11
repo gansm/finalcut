@@ -67,10 +67,14 @@ class myLogger : public finalcut::FLog
     }
 
     void setOutputStream (const std::ostream& os) override
-    { output.rdbuf(os.rdbuf()); }
+    {
+      output.rdbuf(os.rdbuf());
+    }
 
     void setLogCallback (FLogCallback&& callback) override
-    { log_callback = std::move(callback); }
+    {
+      setCallback(std::move(callback));
+    }
 
     void setLineEnding (LineEnding) override
     {
