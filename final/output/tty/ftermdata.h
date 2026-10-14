@@ -149,6 +149,10 @@ class FTermData final
     // Using-declaration
     using EncodingMap = std::unordered_map<std::string, Encoding>;
 
+    // After switching to the new event loop implementation,
+    // this handler will no longer be necessary.
+    using ResizeHandler = std::function<void()>;
+
     // Constructors
     FTermData () = default;
 
@@ -208,6 +212,7 @@ class FTermData final
     void setVGAFont (bool = true) noexcept;
     void setMonochron (bool = true) noexcept;
     void setTermResized (bool = true);
+    void setResizeHandler (ResizeHandler&&);
     void setTermType (const std::string&);
     void setTermType (FTermType);
     void unsetTermType (FTermType);
@@ -221,6 +226,9 @@ class FTermData final
 #endif
 
   private:
+    // Method
+    void callResizeHandler();
+
     // Encoding-related fields
     struct EncodingInfo
     {
@@ -254,6 +262,10 @@ class FTermData final
       uInt          baudrate{0};
       std::string   termtype{};
       std::string   term_file_name{};
+
+      // After switching to the new event loop implementation,
+      // this handler will no longer be necessary.
+      ResizeHandler resize_handler;
     };
 
     // Synchronization and state
@@ -495,9 +507,20 @@ inline void FTermData::setTermResized (bool resize)
   std::lock_guard<std::mutex> resize_lock_guard(synchronization_state.resize_mutex);
 
   if ( resize )
+  {
     ++synchronization_state.resize_count;
+    callResizeHandler();
+  }
   else if ( synchronization_state.resize_count.load() > 0 )
     --synchronization_state.resize_count;
+}
+
+//----------------------------------------------------------------------
+inline void FTermData::setResizeHandler (ResizeHandler&& handler)
+{
+  // After switching to the new event loop implementation,
+  // this method will no longer be necessary.
+  terminal_settings.resize_handler = std::move(handler);
 }
 
 //----------------------------------------------------------------------
@@ -546,6 +569,15 @@ inline void FTermData::setXtermTitle (const FString& title)
 inline void FTermData::setFramebufferBpp (int bpp) noexcept
 { terminal_settings.framebuffer_bpp = bpp; }
 #endif
+
+//----------------------------------------------------------------------
+inline void FTermData::callResizeHandler()
+{
+  // After switching to the new event loop implementation,
+  // this method will no longer be necessary.
+  if ( terminal_settings.resize_handler )
+    terminal_settings.resize_handler();
+}
 
 }  // namespace finalcut
 

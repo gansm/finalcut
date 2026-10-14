@@ -184,7 +184,7 @@ auto FWidget::getColorTheme() -> std::shared_ptr<FWidgetColors>&
 }
 
 //----------------------------------------------------------------------
-auto FWidget::doubleFlatLine_ref (Side side) -> std::vector<bool>&
+auto FWidget::mergingBorder_ref (Side side) -> std::vector<bool>&
 {
   auto& mask = merging_border_mask;
 
@@ -838,31 +838,9 @@ void FWidget::redraw (RedrawMode redraw_mode)
 //----------------------------------------------------------------------
 void FWidget::resize()
 {
-  if ( isRootWidget() )
-  {
-    // The screen content is now unknown
-    auto foutput_ptr = FVTerm::getFOutput();
-    foutput_ptr->clearTerminalState();
-    foutput_ptr->clearTerminalAttributes();
-    // Determine the new terminal size
-    const FRect old_term_geometry {getTermGeometry()};
-    determineDesktopSize();
-    FRect term_geometry {getTermGeometry()};
-    term_geometry.move (-1, -1);
+  adjustSize();
 
-    if ( old_term_geometry.getSize() == term_geometry.getSize() )
-      return;
-
-    resizeVTerm (term_geometry.getSize());
-    resizeRegion ({term_geometry, getShadow()}, getVirtualDesktop());
-    FVTerm::startDrawing();  // Avoid flickering - no update during adjustment
-    adjustSizeGlobal();
-    FVTerm::finishDrawing();
-  }
-  else
-    adjustSize();
-
-  // resize the four double-flatline-masks
+  // Resize the four merging border masks
   merging_border_mask.setSize (getWidth(), getHeight());
 }
 
@@ -1190,6 +1168,16 @@ void FWidget::setTermOffsetWithPadding()
 }
 
 //----------------------------------------------------------------------
+void FWidget::setDesktopWidgetSize (std::size_t width, std::size_t height)
+{
+  wsize.setRect(1, 1, width, height);
+  adjust_wsize = wsize;
+  woffset.setRect(0, 0, width, height);
+  auto r = internal::var::root_widget;
+  wclient_offset.setRect(r->padding.left, r->padding.top, width, height);
+}
+
+//----------------------------------------------------------------------
 void FWidget::initTerminal()
 {
   if ( hasParent() || init_terminal )
@@ -1442,12 +1430,10 @@ void FWidget::onAccel (FAccelEvent*)
 }
 
 //----------------------------------------------------------------------
-void FWidget::onResize (FResizeEvent* ev)
+void FWidget::onResize (FResizeEvent*)
 {
-  // The terminal was resized
-  internal::var::root_widget->resize();
-  internal::var::root_widget->redraw();
-  ev->accept();
+  // This event handler can be reimplemented in a subclass
+  // to receive a resized event
 }
 
 //----------------------------------------------------------------------
@@ -1482,11 +1468,7 @@ void FWidget::determineDesktopSize()
   detectTerminalSize();
   auto width = getDesktopWidth();
   auto height = getDesktopHeight();
-  wsize.setRect(1, 1, width, height);
-  adjust_wsize = wsize;
-  woffset.setRect(0, 0, width, height);
-  auto r = internal::var::root_widget;
-  wclient_offset.setRect(r->padding.left, r->padding.top, width, height);
+  setDesktopWidgetSize(width, height);
 }
 
 //----------------------------------------------------------------------

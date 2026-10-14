@@ -103,7 +103,6 @@ constexpr uInt32 var::color_overlay_reset_mask;
 
 // static class attributes
 bool                 FVTerm::draw_completed{false};
-bool                 FVTerm::skip_one_vterm_update{false};
 bool                 FVTerm::no_terminal_updates{false};
 bool                 FVTerm::force_terminal_update{false};
 FVTerm::FTermRegion* FVTerm::active_region{nullptr};
@@ -826,10 +825,6 @@ void FVTerm::copyRegion ( FTermRegion* dst, const FPoint& pos
     return;
 
   const auto dst_is_vterm = bool( dst == vterm.get() );
-
-  if ( dst_is_vterm )
-    skip_one_vterm_update = true;
-
   const int src_width = getFullRegionWidth(src);
   const int dst_width = getFullRegionWidth(dst);
   const int src_height = src->minimized
@@ -1074,10 +1069,7 @@ auto FVTerm::processTerminalUpdate() const -> bool
     return false;
 
   // Update data on the virtual terminal (VTerm)
-  if ( skip_one_vterm_update )
-    skip_one_vterm_update = false;
-  else
-    updateVTerm();
+  updateVTerm();
 
   // Update the terminal output buffer
   return updateTerminalBuffer();

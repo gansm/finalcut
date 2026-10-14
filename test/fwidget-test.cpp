@@ -694,12 +694,12 @@ void FWidgetTest::noArgumentTest()
   CPPUNIT_ASSERT ( wdgt.getTermForegroundColor() == finalcut::FColor::Yellow );
   CPPUNIT_ASSERT ( wdgt.getTermBackgroundColor() == finalcut::FColor::DarkBlue );
 
-  // Get and set double flat line
-  auto& top = wdgt.doubleFlatLine_ref(finalcut::Side::Top);
-  auto& right = wdgt.doubleFlatLine_ref(finalcut::Side::Right);
-  auto& bottom = wdgt.doubleFlatLine_ref(finalcut::Side::Bottom);
-  auto& left = wdgt.doubleFlatLine_ref(finalcut::Side::Left);
-  CPPUNIT_ASSERT_THROW ( wdgt.doubleFlatLine_ref(static_cast<finalcut::Side>(99))
+  // Get and set merging border
+  auto& top = wdgt.mergingBorder_ref(finalcut::Side::Top);
+  auto& right = wdgt.mergingBorder_ref(finalcut::Side::Right);
+  auto& bottom = wdgt.mergingBorder_ref(finalcut::Side::Bottom);
+  auto& left = wdgt.mergingBorder_ref(finalcut::Side::Left);
+  CPPUNIT_ASSERT_THROW ( wdgt.mergingBorder_ref(static_cast<finalcut::Side>(99))
                        , std::invalid_argument );
   CPPUNIT_ASSERT ( top.size() == 1 );
   CPPUNIT_ASSERT ( right.size() == 1 );
@@ -1358,10 +1358,10 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( wdgt.getWidth() == 1 );
   CPPUNIT_ASSERT ( wdgt.getHeight() == 1 );
   CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(1, 1) );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top).size() == 1 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 1 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 1 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 1 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top).size() == 1 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Right).size() == 1 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Bottom).size() == 1 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Left).size() == 1 );
 
   wdgt.setWidth(1);
   wdgt.setHeight(1);
@@ -1374,10 +1374,10 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( wdgt.getWidth() == 1 );
   CPPUNIT_ASSERT ( wdgt.getHeight() == 1 );
   CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(1, 1) );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top).size() == 1 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 1 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 1 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 1 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top).size() == 1 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Right).size() == 1 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Bottom).size() == 1 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Left).size() == 1 );
 
   wdgt.setFlags().type.window_widget = true;
   wdgt.setWidth(0);
@@ -1391,10 +1391,10 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( wdgt.getWidth() == 1 );
   CPPUNIT_ASSERT ( wdgt.getHeight() == 1 );
   CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(1, 1) );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top).size() == 1 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 1 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 1 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 1 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top).size() == 1 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Right).size() == 1 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Bottom).size() == 1 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Left).size() == 1 );
 
   wdgt.setWidth(400);
   wdgt.setHeight(100);
@@ -1407,10 +1407,10 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( wdgt.getWidth() == 400 );
   CPPUNIT_ASSERT ( wdgt.getHeight() == 100 );
   CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(400, 100) );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top).size() == 400 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 100 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 400 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 100 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top).size() == 400 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Right).size() == 100 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Bottom).size() == 400 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Left).size() == 100 );
 
   wdgt.setSize(finalcut::FSize(400, 100));
   CPPUNIT_ASSERT ( wdgt.getX() == 1 );
@@ -1422,10 +1422,10 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( wdgt.getWidth() == 400 );
   CPPUNIT_ASSERT ( wdgt.getHeight() == 100 );
   CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(400, 100) );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top).size() == 400 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 100 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 400 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 100 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top).size() == 400 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Right).size() == 100 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Bottom).size() == 400 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Left).size() == 100 );
 
   wdgt.setSize(finalcut::FSize(0, 0));
   CPPUNIT_ASSERT ( wdgt.getX() == 1 );
@@ -1437,10 +1437,10 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( wdgt.getWidth() == 1 );
   CPPUNIT_ASSERT ( wdgt.getHeight() == 1 );
   CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(1, 1) );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top).size() == 1 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 1 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 1 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 1 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top).size() == 1 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Right).size() == 1 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Bottom).size() == 1 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Left).size() == 1 );
 
   wdgt.setSize(finalcut::FSize(64, 13));
   CPPUNIT_ASSERT ( wdgt.getX() == 1 );
@@ -1452,10 +1452,10 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( wdgt.getWidth() == 64 );
   CPPUNIT_ASSERT ( wdgt.getHeight() == 13 );
   CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(64, 13) );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top).size() == 64 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 13 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 64 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 13 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top).size() == 64 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Right).size() == 13 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Bottom).size() == 64 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Left).size() == 13 );
 
   // Tests with minimum and maximum
   wdgt.setMinimumWidth(40);
@@ -1472,10 +1472,10 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( wdgt.getWidth() == 80 );
   CPPUNIT_ASSERT ( wdgt.getHeight() == 24 );
   CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(80, 24) );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top).size() == 80 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 24 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 80 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 24 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top).size() == 80 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Right).size() == 24 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Bottom).size() == 80 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Left).size() == 24 );
 
   wdgt.setSize(finalcut::FSize(14, 7));
   CPPUNIT_ASSERT ( wdgt.getX() == 1 );
@@ -1487,10 +1487,10 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( wdgt.getWidth() == 40 );
   CPPUNIT_ASSERT ( wdgt.getHeight() == 10 );
   CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(40, 10) );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top).size() == 40 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 10 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 40 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 10 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top).size() == 40 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Right).size() == 10 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Bottom).size() == 40 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Left).size() == 10 );
 
   wdgt.setWidth(1000);
   CPPUNIT_ASSERT ( wdgt.getX() == 1 );
@@ -1502,10 +1502,10 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( wdgt.getWidth() == 80 );
   CPPUNIT_ASSERT ( wdgt.getHeight() == 10 );
   CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(80, 10) );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top).size() == 80 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 10 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 80 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 10 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top).size() == 80 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Right).size() == 10 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Bottom).size() == 80 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Left).size() == 10 );
 
   wdgt.setHeight(1000);
   CPPUNIT_ASSERT ( wdgt.getX() == 1 );
@@ -1517,10 +1517,10 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( wdgt.getWidth() == 80 );
   CPPUNIT_ASSERT ( wdgt.getHeight() == 24 );
   CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(80, 24) );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top).size() == 80 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 24 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 80 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 24 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top).size() == 80 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Right).size() == 24 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Bottom).size() == 80 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Left).size() == 24 );
 
   wdgt.setMinimumSize( finalcut::FSize(60, 20) );
   wdgt.setMaximumSize( finalcut::FSize(100, 40) );
@@ -1534,10 +1534,10 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( wdgt.getWidth() == 100 );
   CPPUNIT_ASSERT ( wdgt.getHeight() == 24 );
   CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(100, 24) );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top).size() == 100 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 24 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 100 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 24 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top).size() == 100 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Right).size() == 24 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Bottom).size() == 100 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Left).size() == 24 );
 
   wdgt.setWidth(59);
   CPPUNIT_ASSERT ( wdgt.getX() == 1 );
@@ -1549,10 +1549,10 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( wdgt.getWidth() == 60 );
   CPPUNIT_ASSERT ( wdgt.getHeight() == 24 );
   CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(60, 24) );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top).size() == 60 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 24 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 60 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 24 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top).size() == 60 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Right).size() == 24 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Bottom).size() == 60 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Left).size() == 24 );
 
   wdgt.setHeight(999);
   CPPUNIT_ASSERT ( wdgt.getX() == 1 );
@@ -1564,10 +1564,10 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( wdgt.getWidth() == 60 );
   CPPUNIT_ASSERT ( wdgt.getHeight() == 40 );
   CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(60, 40) );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top).size() == 60 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 40 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 60 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 40 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top).size() == 60 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Right).size() == 40 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Bottom).size() == 60 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Left).size() == 40 );
 
   wdgt.setHeight(19);
   CPPUNIT_ASSERT ( wdgt.getX() == 1 );
@@ -1579,10 +1579,10 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( wdgt.getWidth() == 60 );
   CPPUNIT_ASSERT ( wdgt.getHeight() == 20 );
   CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(60, 20) );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top).size() == 60 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 20 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 60 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 20 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top).size() == 60 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Right).size() == 20 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Bottom).size() == 60 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Left).size() == 20 );
 
   wdgt.setFixedSize( finalcut::FSize(45, 16) );
   CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(60, 20) );
@@ -1596,10 +1596,10 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( wdgt.getWidth() == 45 );
   CPPUNIT_ASSERT ( wdgt.getHeight() == 20 );
   CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(45, 20) );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top).size() == 45 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 20 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 45 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 20 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top).size() == 45 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Right).size() == 20 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Bottom).size() == 45 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Left).size() == 20 );
 
   wdgt.setFixedSize( finalcut::FSize(48, 16) );
   CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(45, 20) );
@@ -1613,10 +1613,10 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( wdgt.getWidth() == 48 );
   CPPUNIT_ASSERT ( wdgt.getHeight() == 20 );
   CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(48, 20) );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top).size() == 48 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 20 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 48 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 20 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top).size() == 48 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Right).size() == 20 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Bottom).size() == 48 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Left).size() == 20 );
 
   wdgt.setHeight(5);
   CPPUNIT_ASSERT ( wdgt.getX() == 1 );
@@ -1628,10 +1628,10 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( wdgt.getWidth() == 48 );
   CPPUNIT_ASSERT ( wdgt.getHeight() == 16 );
   CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(48, 16) );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top).size() == 48 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 16 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 48 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 16 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top).size() == 48 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Right).size() == 16 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Bottom).size() == 48 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Left).size() == 16 );
 
   wdgt.setFixedSize( finalcut::FSize(50, 20) );
   CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(48, 16) );
@@ -1645,10 +1645,10 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( wdgt.getWidth() == 48 );
   CPPUNIT_ASSERT ( wdgt.getHeight() == 20 );
   CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(48, 20) );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top).size() == 48 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 20 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 48 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 20 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top).size() == 48 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Right).size() == 20 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Bottom).size() == 48 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Left).size() == 20 );
 
   wdgt.setFixedSize( finalcut::FSize(30, 15) );
   CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(48, 20) );
@@ -1662,10 +1662,10 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( wdgt.getWidth() == 30 );
   CPPUNIT_ASSERT ( wdgt.getHeight() == 15 );
   CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(30, 15) );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top).size() == 30 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 15 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 30 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 15 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top).size() == 30 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Right).size() == 15 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Bottom).size() == 30 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Left).size() == 15 );
 
   wdgt.setFixedSize( finalcut::FSize(34, 12) );
   CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(30, 15) );
@@ -1679,10 +1679,10 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( wdgt.getWidth() == 34 );
   CPPUNIT_ASSERT ( wdgt.getHeight() == 12 );
   CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(34, 12) );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top).size() == 34 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 12 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 34 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 12 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top).size() == 34 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Right).size() == 12 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Bottom).size() == 34 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Left).size() == 12 );
 
   // Reset minimum and maximum
   wdgt.setMinimumSize(finalcut::FSize(0, 0));
@@ -1699,10 +1699,10 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( wdgt.getWidth() == 10 );
   CPPUNIT_ASSERT ( wdgt.getHeight() == 8 );
   CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(10, 8) );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top).size() == 10 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 8 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 10 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 8 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top).size() == 10 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Right).size() == 8 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Bottom).size() == 10 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Left).size() == 8 );
   CPPUNIT_ASSERT ( wdgt.termToWidgetPos(finalcut::FPoint(3, 3)) == finalcut::FPoint(-3, -3) );
   CPPUNIT_ASSERT ( wdgt.termToWidgetPos(finalcut::FPoint(2, 2)) == finalcut::FPoint(-4, -4) );
   CPPUNIT_ASSERT ( wdgt.termToWidgetPos(finalcut::FPoint(1, 1)) == finalcut::FPoint(-5, -5) );
@@ -1718,10 +1718,10 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( wdgt.getWidth() == 10 );
   CPPUNIT_ASSERT ( wdgt.getHeight() == 8 );
   CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(10, 8) );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top).size() == 10 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 8 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 10 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 8 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top).size() == 10 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Right).size() == 8 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Bottom).size() == 10 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Left).size() == 8 );
   CPPUNIT_ASSERT ( wdgt.termToWidgetPos(finalcut::FPoint(3, 3)) == finalcut::FPoint(-3, -3) );
   CPPUNIT_ASSERT ( wdgt.termToWidgetPos(finalcut::FPoint(2, 2)) == finalcut::FPoint(-4, -4) );
   CPPUNIT_ASSERT ( wdgt.termToWidgetPos(finalcut::FPoint(1, 1)) == finalcut::FPoint(-5, -5) );
@@ -1736,10 +1736,10 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( wdgt.getWidth() == 560 );
   CPPUNIT_ASSERT ( wdgt.getHeight() == 130 );
   CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(560, 130) );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top).size() == 560 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 130 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 560 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 130 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top).size() == 560 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Right).size() == 130 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Bottom).size() == 560 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Left).size() == 130 );
   CPPUNIT_ASSERT ( wdgt.termToWidgetPos(finalcut::FPoint(3, 3)) == finalcut::FPoint(-18, -29) );
   CPPUNIT_ASSERT ( wdgt.termToWidgetPos(finalcut::FPoint(2, 2)) == finalcut::FPoint(-19, -30) );
   CPPUNIT_ASSERT ( wdgt.termToWidgetPos(finalcut::FPoint(1, 1)) == finalcut::FPoint(-20, -31) );
@@ -1754,10 +1754,10 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( wdgt.getWidth() == 50 );
   CPPUNIT_ASSERT ( wdgt.getHeight() == 30 );
   CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(50, 30) );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top).size() == 50 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 30 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 50 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 30 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top).size() == 50 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Right).size() == 30 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Bottom).size() == 50 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Left).size() == 30 );
   CPPUNIT_ASSERT ( wdgt.termToWidgetPos(finalcut::FPoint(3, 3)) == finalcut::FPoint(9, 7) );
   CPPUNIT_ASSERT ( wdgt.termToWidgetPos(finalcut::FPoint(2, 2)) == finalcut::FPoint(8, 6) );
   CPPUNIT_ASSERT ( wdgt.termToWidgetPos(finalcut::FPoint(1, 1)) == finalcut::FPoint(7, 5) );
@@ -1774,10 +1774,10 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( wdgt.getWidth() == 30 );
   CPPUNIT_ASSERT ( wdgt.getHeight() == 20 );
   CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(30, 20) );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top).size() == 30 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 20 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 30 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 20 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top).size() == 30 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Right).size() == 20 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Bottom).size() == 30 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Left).size() == 20 );
   CPPUNIT_ASSERT ( wdgt.childWidgetAt({0, 0}) == nullptr );
   CPPUNIT_ASSERT ( wdgt.childWidgetAt({0, 1}) == nullptr );
   CPPUNIT_ASSERT ( wdgt.childWidgetAt({1, 0}) == nullptr );
@@ -1791,7 +1791,7 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( root_wdgt.childWidgetAt({31, 20}) == nullptr );
   CPPUNIT_ASSERT ( root_wdgt.childWidgetAt({31, 21}) == nullptr );
 
-  // Double flat line
+  // Merging border
   wdgt.setMergingBorder (finalcut::Side::Top, -6, true);  // ignore
   wdgt.setMergingBorder (finalcut::Side::Top, -2, true);  // ignore
   wdgt.setMergingBorder (finalcut::Side::Top, 0, true);  // ignore
@@ -1811,69 +1811,69 @@ void FWidgetTest::PosAndSizeTest()
   wdgt.setMergingBorder (finalcut::Side::Left, 12, true);
   CPPUNIT_ASSERT_THROW ( wdgt.setMergingBorder (static_cast<finalcut::Side>(99), 1, true)
                        , std::invalid_argument );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[0] == false );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[1] == true );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[2] == true );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[3] == false );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[4] == true );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[5] == false );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[6] == true );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[7] == false );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[8] == false );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[9] == false );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[10] == true );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[11] == false );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[12] == true );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[13] == false );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[14] == false );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[15] == false );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[16] == true );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[17] == false );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[18] == true );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[19] == false );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[20] == false );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[21] == false );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[22] == true );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[23] == false );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[24] == false );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[25] == false );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[26] == false );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[27] == false );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[28] == true );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top)[29] == false );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top)[0] == false );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top)[1] == true );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top)[2] == true );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top)[3] == false );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top)[4] == true );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top)[5] == false );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top)[6] == true );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top)[7] == false );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top)[8] == false );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top)[9] == false );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top)[10] == true );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top)[11] == false );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top)[12] == true );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top)[13] == false );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top)[14] == false );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top)[15] == false );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top)[16] == true );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top)[17] == false );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top)[18] == true );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top)[19] == false );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top)[20] == false );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top)[21] == false );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top)[22] == true );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top)[23] == false );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top)[24] == false );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top)[25] == false );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top)[26] == false );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top)[27] == false );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top)[28] == true );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top)[29] == false );
 
   for (int i{0}; i < 11; i++)
   {
-    CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right)[i] == false );
-    CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left)[i] == false );
+    CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Right)[i] == false );
+    CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Left)[i] == false );
   }
 
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right)[11] == true );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left)[11] == true );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Right)[11] == true );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Left)[11] == true );
 
   for (int i{12}; i < 20; i++)
   {
-    CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right)[i] == false );
-    CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left)[i] == false );
+    CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Right)[i] == false );
+    CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Left)[i] == false );
   }
 
   for (int i{0}; i < 4; i++)
   {
-    CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom)[i] == false );
+    CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Bottom)[i] == false );
   }
 
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom)[4] == true );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Bottom)[4] == true );
 
   for (int i{5}; i < 14; i++)
   {
-    CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom)[i] == false );
+    CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Bottom)[i] == false );
   }
 
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom)[14] == true );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Bottom)[14] == true );
 
   for (int i{15}; i < 30; i++)
   {
-    CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom)[i] == false );
+    CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Bottom)[i] == false );
   }
 
   // Test with shadow size
@@ -1888,10 +1888,10 @@ void FWidgetTest::PosAndSizeTest()
   CPPUNIT_ASSERT ( wdgt.getWidth() == 5 );
   CPPUNIT_ASSERT ( wdgt.getHeight() == 5 );
   CPPUNIT_ASSERT ( wdgt.getSize() == finalcut::FSize(5, 5) );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Top).size() == 5 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Right).size() == 5 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Bottom).size() == 5 );
-  CPPUNIT_ASSERT ( wdgt.doubleFlatLine_ref(finalcut::Side::Left).size() == 5 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Top).size() == 5 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Right).size() == 5 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Bottom).size() == 5 );
+  CPPUNIT_ASSERT ( wdgt.mergingBorder_ref(finalcut::Side::Left).size() == 5 );
   CPPUNIT_ASSERT ( wdgt.getShadow() == finalcut::FSize(2, 2) );
   CPPUNIT_ASSERT ( wdgt.getGeometryWithShadow() == finalcut::FRect(finalcut::FPoint(3, 3), finalcut::FSize(7, 7)) );
   CPPUNIT_ASSERT ( wdgt.getTermGeometryWithShadow() == finalcut::FRect(finalcut::FPoint(3, 3), finalcut::FSize(7, 7)) );

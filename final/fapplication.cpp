@@ -125,6 +125,9 @@ FApplication::~FApplication()  // destructor
   if ( eventInQueue() )
     event_queue.clear();
 
+  // Unset the resize handler
+  FTermData::getInstance().setResizeHandler(nullptr);
+
   resetLog();
 }
 
@@ -488,6 +491,39 @@ void FApplication::processExternalUserEvent()
 }
 
 //----------------------------------------------------------------------
+void FApplication::resize()
+{
+  auto foutput_ptr = FVTerm::getFOutput();
+  static auto& mouse = FMouseControl::getInstance();
+
+  // Detect and save the current terminal size
+  foutput_ptr->detectTerminalSize();
+  auto width = getDesktopWidth();
+  auto height = getDesktopHeight();
+  mouse.setMaxWidth (uInt16(width));
+  mouse.setMaxHeight (uInt16(height));
+
+  // The screen content is now unknown
+  foutput_ptr->clearTerminalState();
+  foutput_ptr->clearTerminalAttributes();
+
+  // Determine the new terminal size
+  const FRect old_term_geometry {getTermGeometry()};
+  setDesktopWidgetSize (width, height);
+  FRect term_geometry {getTermGeometry()};
+  term_geometry.move (-1, -1);
+
+  if ( old_term_geometry.getSize() == term_geometry.getSize() )
+    return;
+
+  resizeVTerm (term_geometry.getSize());
+  resizeRegion ({term_geometry, getShadow()}, getVirtualDesktop());
+  FVTerm::startDrawing();  // Avoid flickering - no update during adjustment
+  adjustSizeGlobal();
+  FVTerm::finishDrawing();
+}
+
+//----------------------------------------------------------------------
 auto FApplication::event (FEvent* ev) -> bool
 {
   const auto event_type = ev->getType();
@@ -531,6 +567,16 @@ void FApplication::onLog (FEvent*)
 
   processLogger();
   has_log_data = false;
+}
+
+//----------------------------------------------------------------------
+void FApplication::onResize (FResizeEvent* ev)
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive resize events
+
+  processResizeEvent();
+  ev->accept();
 }
 
 //----------------------------------------------------------------------
@@ -596,6 +642,9 @@ void FApplication::init()
   // Initialize logging
   if ( ! getStartOptions().logfile_stream.is_open() )
     getLog()->setLineEnding(FLog::LineEnding::CRLF);
+
+  // Set the resize handler
+  FTermData::getInstance().setResizeHandler( [this] () { queueResize(); } );
 }
 
 //----------------------------------------------------------------------
@@ -1459,20 +1508,13 @@ auto FApplication::processParameters (const Args& args) -> FWidget*
 //----------------------------------------------------------------------
 void FApplication::processResizeEvent()
 {
-  if ( ! has_terminal_resized )  // A SIGWINCH signal was received
-    return;
+  // This method will be called when the terminal size changes
 
-  auto foutput_ptr = FVTerm::getFOutput();
-  foutput_ptr->detectTerminalSize();  // Detect and save the current terminal size
-  static auto& mouse = FMouseControl::getInstance();
-  mouse.setMaxWidth (uInt16(getDesktopWidth()));
-  mouse.setMaxHeight (uInt16(getDesktopHeight()));
-  FResizeEvent r_ev(Event::Resize);
-  sendEvent(internal::var::app_object, &r_ev);
+  resize();
+  redraw();
+
   has_terminal_resized = false;
-
-  if ( r_ev.isAccepted() )
-    foutput_ptr->commitTerminalResize();
+  FVTerm::getFOutput()->commitTerminalResize();
 }
 
 //----------------------------------------------------------------------
@@ -1563,6 +1605,18 @@ void FApplication::queueLog()
 }
 
 //----------------------------------------------------------------------
+void FApplication::queueResize()
+{
+  if ( has_terminal_resized )  // A SIGWINCH signal was received
+    return;
+
+  has_terminal_resized = true;
+
+  auto ev = std::make_unique<FEvent>(Event::Resize);
+  FApplication::queueEvent(this, std::move(ev));
+}
+
+//----------------------------------------------------------------------
 void FApplication::processLogger() const
 {
   // Synchronizing the stream buffer with the logging output
@@ -1583,12 +1637,11 @@ auto FApplication::processNextEvent() -> bool
 {
   uInt num_events{0};
 
-  if ( hasDataInQueue() || hasTerminalResized() || isNextEventTimeout() )
+  if ( hasDataInQueue() || isNextEventTimeout() )
   {
     time_last_event = FObjectTimer::getCurrentTime();
     num_events += processTimerEvent();
     processInput();
-    processResizeEvent();  // when the terminal size has changed
     sendQueuedEvents();
     processTerminalScreenUpdate();
   }
@@ -1605,14 +1658,6 @@ auto FApplication::processNextEvent() -> bool
 void FApplication::performTimerAction (FObject* receiver, FEvent* event)
 {
   sendEvent (receiver, event);
-}
-
-//----------------------------------------------------------------------
-inline auto FApplication::hasTerminalResized() -> bool
-{
-  auto foutput_ptr = FVTerm::getFOutput();
-  has_terminal_resized = foutput_ptr->hasTerminalResized();
-  return has_terminal_resized;
 }
 
 //----------------------------------------------------------------------

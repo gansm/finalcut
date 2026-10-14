@@ -162,12 +162,15 @@ class FApplication : public FWidget
     void         cb_exitApp (FWidget*) const;
 
   protected:
+    // Methods
     virtual void processExternalUserEvent();
+    void         resize() override;
 
     // Event handlers
     auto         event (FEvent*) -> bool override;
     virtual void onDraw (FEvent*);
     virtual void onLog (FEvent*);
+    void         onResize (FResizeEvent*) override;
     void         onClose (FCloseEvent*) override;
 
   private:
@@ -244,10 +247,10 @@ class FApplication : public FWidget
     void         processTerminalScreenUpdate() const;
     void         processRedraw();
     void         queueLog();
+    void         queueResize();
     void         processLogger() const;
     auto         processNextEvent() -> bool;
     void         performTimerAction (FObject*, FEvent*) override;
-    auto         hasTerminalResized() -> bool;
     static auto  isEventProcessable (FObject*, const FEvent*) -> bool;
     static auto  isNextEventTimeout() -> bool;
 

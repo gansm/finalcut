@@ -1,3 +1,7 @@
+2026-10-14  Markus Gans  <guru.mail@muenster.de>
+	* The event queue now handles terminal resizing by calling 
+	  the FApplication::onResize() method
+
 2026-10-11  Markus Gans  <guru.mail@muenster.de>
 	* Optimize the FTermcap::hasDelay method
 

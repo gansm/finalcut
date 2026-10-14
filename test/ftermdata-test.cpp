@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2021 Markus Gans                                      *
+* Copyright 2018-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -263,14 +263,21 @@ void FTermDataTest::dataTest()
   data.setMonochron (true);
   CPPUNIT_ASSERT ( data.isMonochron() == true );
 
+  uInt8 value = 0xff;
+  data.setResizeHandler( [&value] () { --value; } );
+  CPPUNIT_ASSERT ( value == 0xff );
   CPPUNIT_ASSERT ( data.hasTermResized() == false );
   data.setTermResized (true);  // one signal
+  CPPUNIT_ASSERT ( value == 0xfe );
   CPPUNIT_ASSERT ( data.hasTermResized() == true );
   data.setTermResized (true);  // two signals
+  CPPUNIT_ASSERT ( value == 0xfd );
   CPPUNIT_ASSERT ( data.hasTermResized() == true );
   data.setTermResized (false);  // one signal
+  CPPUNIT_ASSERT ( value == 0xfd );
   CPPUNIT_ASSERT ( data.hasTermResized() == true );
   data.setTermResized (false);  // no signal
+  CPPUNIT_ASSERT ( value == 0xfd );
   CPPUNIT_ASSERT ( data.hasTermResized() == false );
 }
 

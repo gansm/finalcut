@@ -172,7 +172,7 @@ class FWidget : public FVTerm
     auto  getStatusBarMessage() const -> FString;
     auto  getForegroundColor() const noexcept -> FColor;  // get the primary
     auto  getBackgroundColor() const noexcept -> FColor;  // widget colors
-    auto  doubleFlatLine_ref (Side) -> std::vector<bool>&;
+    auto  mergingBorder_ref (Side) -> std::vector<bool>&;
     // Positioning and sizes accessors...
     auto  getX() const -> int;
     auto  getY() const -> int;
@@ -328,6 +328,7 @@ class FWidget : public FVTerm
     void  setParentOffset();
     void  setTermOffset();
     void  setTermOffsetWithPadding();
+    void  setDesktopWidgetSize (std::size_t, std::size_t);
 
     // Methods
     void  initTerminal() override;
@@ -470,9 +471,7 @@ class FWidget : public FVTerm
     auto  sendFocusInEvent (FWidget*, FocusTypes) const -> bool;
     void  processDestroy() const;
     virtual void draw();
-  public:
     void  recursiveDraw();
-  private:
     void  drawChildren();
     void  adjustWidget();
     void  adjustSizeWithinRegion (FRect&) const;
@@ -529,6 +528,9 @@ class FWidget : public FVTerm
     static bool          dont_raise_window;
     static bool          init_terminal;
     static bool          init_desktop;
+
+    // Friend class
+    friend class FApplication;
 
     // Friend functions
     friend struct GenericBoxData;

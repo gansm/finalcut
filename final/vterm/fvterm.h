@@ -429,7 +429,6 @@ class FVTerm : public FVTermAttribute
     static FTermRegion*           active_region;                // Active region
     static int                    tabstop;
     static bool                   draw_completed;
-    static bool                   skip_one_vterm_update;
     static bool                   no_terminal_updates;
     static bool                   force_terminal_update;
 
