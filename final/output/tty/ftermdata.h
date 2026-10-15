@@ -227,7 +227,7 @@ class FTermData final
 
   private:
     // Method
-    void callResizeHandler();
+    void callResizeHandler() const;
 
     // Encoding-related fields
     struct EncodingInfo
@@ -571,7 +571,7 @@ inline void FTermData::setFramebufferBpp (int bpp) noexcept
 #endif
 
 //----------------------------------------------------------------------
-inline void FTermData::callResizeHandler()
+inline void FTermData::callResizeHandler() const
 {
   // After switching to the new event loop implementation,
   // this method will no longer be necessary.

@@ -575,8 +575,8 @@ inline void FListBox::showNoBrackets (FListBoxItems::iterator iter) const
 { iter->brackets = BracketType::None; }
 
 //----------------------------------------------------------------------
-inline void FListBox::setMultiSelection (bool enable)
-{ selection.multi_select = enable; }
+inline void FListBox::setMultiSelection (bool state)
+{ selection.multi_select = state; }
 
 //----------------------------------------------------------------------
 inline void FListBox::unsetMultiSelection()

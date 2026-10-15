@@ -140,30 +140,30 @@ void FToggleButton::resetColors()
 }
 
 //----------------------------------------------------------------------
-void FToggleButton::setNoUnderline (bool enable)
+void FToggleButton::setNoUnderline (bool state)
 {
-  setFlags().feature.no_underline = enable;
+  setFlags().feature.no_underline = state;
 }
 
 //----------------------------------------------------------------------
-void FToggleButton::setEnable (bool enable)
+void FToggleButton::setEnable (bool state)
 {
-  FWidget::setEnable(enable);
+  FWidget::setEnable(state);
   resetColors();
 
-  if ( enable )
+  if ( state )
     setHotkeyAccelerator();
   else
     delAccelerator();
 }
 
 //----------------------------------------------------------------------
-void FToggleButton::setChecked (bool enable)
+void FToggleButton::setChecked (bool state)
 {
-  if ( checked == enable )
+  if ( checked == state )
     return;
 
-  checked = enable;
+  checked = state;
   processToggle();
 }
 

@@ -68,12 +68,12 @@ FMenu::~FMenu()  // destructor
 
 // public methods of FMenu
 //----------------------------------------------------------------------
-void FMenu::setMenuWidget (bool enable)
+void FMenu::setMenuWidget (bool state)
 {
-  if ( isMenuWidget() == enable )
+  if ( isMenuWidget() == state )
     return;
 
-  setFlags().type.menu_widget = enable;
+  setFlags().type.menu_widget = state;
 }
 
 //----------------------------------------------------------------------

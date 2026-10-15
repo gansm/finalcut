@@ -1,3 +1,7 @@
+2026-10-15  Markus Gans  <guru.mail@muenster.de>
+	* Use change tracking to implement an early exit in 
+	  the FVTerm::updateVTerm() method
+
 2026-10-14  Markus Gans  <guru.mail@muenster.de>
 	* The event queue now handles terminal resizing by calling 
 	  the FApplication::onResize() method

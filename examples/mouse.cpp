@@ -514,7 +514,7 @@ void MouseDraw::drawCanvas()
   }
 
   print_region->changes_in_row = {0, uInt(y_end - 1)};
-  print_region->has_changes = true;
+  setDirty(print_region);
   forceTerminalUpdate();
 }
 

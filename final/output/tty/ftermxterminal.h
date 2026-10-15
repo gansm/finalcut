@@ -67,7 +67,7 @@ class FTermXTerminal final
     void  setHighlightBackground (const FString&);
     void  setMouseSupport (bool = true);
     void  unsetMouseSupport();
-    void  setFocusSupport (bool enable = true);
+    void  setFocusSupport (bool = true);
     void  unsetFocusSupport();
     void  metaSendsESC (bool = true);
 
@@ -182,8 +182,8 @@ inline auto FTermXTerminal::getClassName() const -> FString
 { return "FTermXTerminal"; }
 
 //----------------------------------------------------------------------
-inline void FTermXTerminal::redefineDefaultColors (bool enable) noexcept
-{ xterm_default_colors = enable; }
+inline void FTermXTerminal::redefineDefaultColors (bool state) noexcept
+{ xterm_default_colors = state; }
 
 //----------------------------------------------------------------------
 inline auto FTermXTerminal::getCursorStyle() const noexcept -> XTermCursorStyle

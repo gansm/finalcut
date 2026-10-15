@@ -435,14 +435,14 @@ void FMouseGPM::processEvent (const TimeValue&)
 }
 
 //----------------------------------------------------------------------
-auto FMouseGPM::gpmMouse (bool enable) -> bool
+auto FMouseGPM::gpmMouse (bool state) -> bool
 {
   // activate/deactivate the gpm mouse support
 
   static constexpr int gpm_error = -1;
   static constexpr int gpm_xterm_is_in_use = -2;
 
-  if ( enable )
+  if ( state )
   {
     Gpm_Connect conn;
     conn.eventMask   = GPM_MOVE | GPM_DRAG | GPM_DOWN | GPM_UP;
@@ -459,8 +459,8 @@ auto FMouseGPM::gpmMouse (bool enable) -> bool
     Gpm_Close();
   }
 
-  gpm_mouse_enabled = enable;
-  return enable;
+  gpm_mouse_enabled = state;
+  return state;
 }
 
 //----------------------------------------------------------------------
@@ -1566,15 +1566,15 @@ void FMouseControl::setDblclickInterval (const uInt64 timeout) const
 }
 
 //----------------------------------------------------------------------
-void FMouseControl::useGpmMouse (bool enable)
+void FMouseControl::useGpmMouse (bool state)
 {
-  use_gpm_mouse = enable;
+  use_gpm_mouse = state;
 }
 
 //----------------------------------------------------------------------
-void FMouseControl::useXtermMouse (bool enable)
+void FMouseControl::useXtermMouse (bool state)
 {
-  use_xterm_mouse = enable;
+  use_xterm_mouse = state;
 }
 
 //----------------------------------------------------------------------
@@ -1899,14 +1899,14 @@ auto FMouseControl::findMouseWithEvent() const -> FMouseProtocol::const_iterator
 }
 
 //----------------------------------------------------------------------
-void FMouseControl::xtermMouse (bool enable) const
+void FMouseControl::xtermMouse (bool state) const
 {
   // activate/deactivate the xterm mouse support
 
   if ( ! use_xterm_mouse )
     return;
 
-  if ( enable )
+  if ( state )
     enable_xterm_mouse_cmd.execute();
   else
     disable_xterm_mouse_cmd.execute();

@@ -72,16 +72,16 @@ void FSpinBox::setGeometry ( const FPoint& pos, const FSize& size
 }
 
 //----------------------------------------------------------------------
-void FSpinBox::setEnable (bool enable)
+void FSpinBox::setEnable (bool state)
 {
-  FWidget::setEnable(enable);
-  input_field.setEnable(enable);
+  FWidget::setEnable(state);
+  input_field.setEnable(state);
 }
 
 //----------------------------------------------------------------------
-void FSpinBox::setShadow (bool enable)
+void FSpinBox::setShadow (bool state)
 {
-  setWidgetShadow(this, enable);
+  setWidgetShadow(this, state);
 }
 
 //----------------------------------------------------------------------

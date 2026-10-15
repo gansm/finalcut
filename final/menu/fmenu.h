@@ -295,8 +295,8 @@ inline auto FMenu::getItem() -> FMenuItem*
 { return &menuitem; }
 
 //----------------------------------------------------------------------
-inline void FMenu::setEnable (bool enable)
-{ menuitem.setEnable(enable); }
+inline void FMenu::setEnable (bool state)
+{ menuitem.setEnable(state); }
 
 //----------------------------------------------------------------------
 inline void FMenu::unsetEnable()

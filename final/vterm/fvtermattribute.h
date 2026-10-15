@@ -231,9 +231,9 @@ inline void FVTermAttribute::setNormal() noexcept
 }
 
 //----------------------------------------------------------------------
-inline void FVTermAttribute::setBold (bool enable) noexcept
+inline void FVTermAttribute::setBold (bool state) noexcept
 {
-  next_attribute.setBit(FAttribute::set::bold, enable);
+  next_attribute.setBit(FAttribute::set::bold, state);
 }
 
 //----------------------------------------------------------------------
@@ -249,9 +249,9 @@ inline void FVTermAttribute::unsetBold() noexcept
 }
 
 //----------------------------------------------------------------------
-inline void FVTermAttribute::setDim (bool enable) noexcept
+inline void FVTermAttribute::setDim (bool state) noexcept
 {
-  next_attribute.setBit(FAttribute::set::dim, enable);
+  next_attribute.setBit(FAttribute::set::dim, state);
 }
 
 //----------------------------------------------------------------------
@@ -267,9 +267,9 @@ inline void FVTermAttribute::unsetDim() noexcept
 }
 
 //----------------------------------------------------------------------
-inline void FVTermAttribute::setItalic (bool enable) noexcept
+inline void FVTermAttribute::setItalic (bool state) noexcept
 {
-  next_attribute.setBit(FAttribute::set::italic, enable);
+  next_attribute.setBit(FAttribute::set::italic, state);
 }
 
 //----------------------------------------------------------------------
@@ -285,9 +285,9 @@ inline void FVTermAttribute::unsetItalic() noexcept
 }
 
 //----------------------------------------------------------------------
-inline void FVTermAttribute::setUnderline (bool enable) noexcept
+inline void FVTermAttribute::setUnderline (bool state) noexcept
 {
-  next_attribute.setBit(FAttribute::set::underline, enable);
+  next_attribute.setBit(FAttribute::set::underline, state);
 }
 
 //----------------------------------------------------------------------
@@ -303,9 +303,9 @@ inline void FVTermAttribute::unsetUnderline() noexcept
 }
 
 //----------------------------------------------------------------------
-inline void FVTermAttribute::setBlink (bool enable) noexcept
+inline void FVTermAttribute::setBlink (bool state) noexcept
 {
-  next_attribute.setBit(FAttribute::set::blink, enable);
+  next_attribute.setBit(FAttribute::set::blink, state);
 }
 
 //----------------------------------------------------------------------
@@ -321,9 +321,9 @@ inline void FVTermAttribute::unsetBlink() noexcept
 }
 
 //----------------------------------------------------------------------
-inline void FVTermAttribute::setReverse (bool enable) noexcept
+inline void FVTermAttribute::setReverse (bool state) noexcept
 {
-  next_attribute.setBit(FAttribute::set::reverse, enable);
+  next_attribute.setBit(FAttribute::set::reverse, state);
 }
 
 //----------------------------------------------------------------------
@@ -339,9 +339,9 @@ inline void FVTermAttribute::unsetReverse() noexcept
 }
 
 //----------------------------------------------------------------------
-inline void FVTermAttribute::setStandout (bool enable) noexcept
+inline void FVTermAttribute::setStandout (bool state) noexcept
 {
-  next_attribute.setBit(FAttribute::set::standout, enable);
+  next_attribute.setBit(FAttribute::set::standout, state);
 }
 
 //----------------------------------------------------------------------
@@ -357,9 +357,9 @@ inline void FVTermAttribute::unsetStandout() noexcept
 }
 
 //----------------------------------------------------------------------
-inline void FVTermAttribute::setInvisible (bool enable) noexcept
+inline void FVTermAttribute::setInvisible (bool state) noexcept
 {
-  next_attribute.setBit(FAttribute::set::invisible, enable);
+  next_attribute.setBit(FAttribute::set::invisible, state);
 }
 
 //----------------------------------------------------------------------
@@ -375,9 +375,9 @@ inline void FVTermAttribute::unsetInvisible() noexcept
 }
 
 //----------------------------------------------------------------------
-inline void FVTermAttribute::setProtected (bool enable) noexcept
+inline void FVTermAttribute::setProtected (bool state) noexcept
 {
-  next_attribute.setBit(FAttribute::set::protect, enable);
+  next_attribute.setBit(FAttribute::set::protect, state);
 }
 
 //----------------------------------------------------------------------
@@ -393,9 +393,9 @@ inline void FVTermAttribute::unsetProtected() noexcept
 }
 
 //----------------------------------------------------------------------
-inline void FVTermAttribute::setCrossedOut (bool enable) noexcept
+inline void FVTermAttribute::setCrossedOut (bool state) noexcept
 {
-  next_attribute.setBit(FAttribute::set::crossed_out, enable);
+  next_attribute.setBit(FAttribute::set::crossed_out, state);
 }
 
 //----------------------------------------------------------------------
@@ -411,9 +411,9 @@ inline void FVTermAttribute::unsetCrossedOut() noexcept
 }
 
 //----------------------------------------------------------------------
-inline void FVTermAttribute::setDoubleUnderline (bool enable) noexcept
+inline void FVTermAttribute::setDoubleUnderline (bool state) noexcept
 {
-  next_attribute.setBit(FAttribute::set::dbl_underline, enable);
+  next_attribute.setBit(FAttribute::set::dbl_underline, state);
 }
 
 //----------------------------------------------------------------------
@@ -429,9 +429,9 @@ inline void FVTermAttribute::unsetDoubleUnderline() noexcept
 }
 
 //----------------------------------------------------------------------
-inline void FVTermAttribute::setAltCharset (bool enable) noexcept
+inline void FVTermAttribute::setAltCharset (bool state) noexcept
 {
-  next_attribute.setBit(FAttribute::set::alt_charset, enable);
+  next_attribute.setBit(FAttribute::set::alt_charset, state);
 }
 
 //----------------------------------------------------------------------
@@ -447,9 +447,9 @@ inline void FVTermAttribute::unsetAltCharset() noexcept
 }
 
 //----------------------------------------------------------------------
-inline void FVTermAttribute::setPCcharset (bool enable) noexcept
+inline void FVTermAttribute::setPCcharset (bool state) noexcept
 {
-  next_attribute.setBit(FAttribute::set::pc_charset, enable);
+  next_attribute.setBit(FAttribute::set::pc_charset, state);
 }
 
 //----------------------------------------------------------------------
@@ -465,9 +465,9 @@ inline void FVTermAttribute::unsetPCcharset() noexcept
 }
 
 //----------------------------------------------------------------------
-inline void FVTermAttribute::setTransparent (bool enable) noexcept
+inline void FVTermAttribute::setTransparent (bool state) noexcept
 {
-  next_attribute.setBit(FAttribute::set::transparent, enable);
+  next_attribute.setBit(FAttribute::set::transparent, state);
 }
 
 //----------------------------------------------------------------------
@@ -483,9 +483,9 @@ inline void FVTermAttribute::unsetTransparent() noexcept
 }
 
 //----------------------------------------------------------------------
-inline void FVTermAttribute::setColorOverlay (bool enable) noexcept
+inline void FVTermAttribute::setColorOverlay (bool state) noexcept
 {
-  next_attribute.setBit(FAttribute::set::color_overlay, enable);
+  next_attribute.setBit(FAttribute::set::color_overlay, state);
 }
 
 //----------------------------------------------------------------------
@@ -501,9 +501,9 @@ inline void FVTermAttribute::unsetColorOverlay() noexcept
 }
 
 //----------------------------------------------------------------------
-inline void FVTermAttribute::setInheritBackground (bool enable) noexcept
+inline void FVTermAttribute::setInheritBackground (bool state) noexcept
 {
-  next_attribute.setBit(FAttribute::set::inherit_background, enable);
+  next_attribute.setBit(FAttribute::set::inherit_background, state);
 }
 
 //----------------------------------------------------------------------

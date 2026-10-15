@@ -198,8 +198,8 @@ inline auto FTermDetection::hasTerminalDetection() const noexcept -> bool
 { return terminal_detection; }
 
 //----------------------------------------------------------------------
-inline void FTermDetection::setTerminalDetection (bool enable) noexcept
-{ terminal_detection = enable; }
+inline void FTermDetection::setTerminalDetection (bool state) noexcept
+{ terminal_detection = state; }
 
 //----------------------------------------------------------------------
 template<typename StringT>

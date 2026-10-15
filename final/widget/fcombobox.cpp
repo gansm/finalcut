@@ -201,32 +201,32 @@ void FComboBox::setGeometry ( const FPoint& pos, const FSize& size
 }
 
 //----------------------------------------------------------------------
-void FComboBox::setEnable (bool enable)
+void FComboBox::setEnable (bool state)
 {
-  FWidget::setEnable(enable);
-  input_field.setEnable(enable);
+  FWidget::setEnable(state);
+  input_field.setEnable(state);
 }
 
 //----------------------------------------------------------------------
-void FComboBox::setShadow (bool enable)
+void FComboBox::setShadow (bool state)
 {
-  setWidgetShadow(this, enable);
+  setWidgetShadow(this, state);
 }
 
 //----------------------------------------------------------------------
-void FComboBox::setEditable (bool enable)
+void FComboBox::setEditable (bool state)
 {
-  if ( is_editable == enable )
+  if ( is_editable == state )
     return;
 
-  is_editable = enable;
+  is_editable = state;
 
-  if ( enable )
+  if ( state )
     unsetVisibleCursor();
   else
     setVisibleCursor();
 
-  input_field.setReadOnly(! enable);
+  input_field.setReadOnly(! state);
 }
 
 //----------------------------------------------------------------------

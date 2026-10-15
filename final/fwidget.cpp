@@ -230,42 +230,42 @@ void FWidget::setMainWidget (FWidget* obj)
 }
 
 //----------------------------------------------------------------------
-void FWidget::setVisible (bool enable)
+void FWidget::setVisible (bool state)
 {
-  flags.visibility.visible = enable;
+  flags.visibility.visible = state;
 }
 
 //----------------------------------------------------------------------
-void FWidget::setEnable (bool enable)
+void FWidget::setEnable (bool state)
 {
-  if ( enable )
+  if ( state )
     emitCallback("enable");
   else
     emitCallback("disable");
 
-  flags.feature.active = enable;
+  flags.feature.active = state;
 }
 
 //----------------------------------------------------------------------
-auto FWidget::setFocus (bool enable, FocusTypes ft) -> bool
+auto FWidget::setFocus (bool state, FocusTypes ft) -> bool
 {
   // Check if the widget is inactive
   if ( ! isEnabled() )
     return false;
 
   // The widget already has the focus
-  if ( hasFocus() == enable )
+  if ( hasFocus() == state )
     return true;
 
   // Set widget focus
-  if ( enable && ! hasFocus() )
+  if ( state && ! hasFocus() )
     setFocusOnThisWidget(ft);
   else
     flags.focus.focus = false;
 
   // Set status bar text for widget focus
-  setStatusBarText (enable);
-  return enable;
+  setStatusBarText (state);
+  return state;
 }
 
 //----------------------------------------------------------------------
@@ -1888,11 +1888,11 @@ void FWidget::emitWheelCallback (const FWheelEvent* ev) const
 }
 
 //----------------------------------------------------------------------
-void FWidget::setWindowFocus (bool enable)
+void FWidget::setWindowFocus (bool state)
 {
   // Set the focus of the window that contains this FWidget object
 
-  if ( ! enable )
+  if ( ! state )
     return;
 
   // Get the FWindow object that contains this FWidget object
@@ -2272,12 +2272,12 @@ void FWidget::removeQueuedDraw() const
 }
 
 //----------------------------------------------------------------------
-void FWidget::setStatusBarText (bool enable) const
+void FWidget::setStatusBarText (bool state) const
 {
   if ( ! isEnabled() || ! getStatusBar() )
     return;
 
-  if ( enable )
+  if ( state )
   {
     const auto& msg = getStatusBarMessage();
     const auto& curMsg = getStatusBar()->getMessage();

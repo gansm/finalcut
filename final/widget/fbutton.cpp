@@ -144,17 +144,17 @@ void FButton::resetColors()
 }
 
 //----------------------------------------------------------------------
-void FButton::setNoUnderline (bool enable)
+void FButton::setNoUnderline (bool state)
 {
-  setFlags().feature.no_underline = enable;
+  setFlags().feature.no_underline = state;
 }
 
 //----------------------------------------------------------------------
-void FButton::setEnable (bool enable)
+void FButton::setEnable (bool state)
 {
-  FWidget::setEnable(enable);
+  FWidget::setEnable(state);
 
-  if ( enable )
+  if ( state )
     setHotkeyAccelerator();
   else
     delAccelerator();
@@ -163,24 +163,24 @@ void FButton::setEnable (bool enable)
 }
 
 //----------------------------------------------------------------------
-void FButton::setFlat (bool enable)
+void FButton::setFlat (bool state)
 {
-  setFlags().feature.flat = enable;
+  setFlags().feature.flat = state;
 }
 
 //----------------------------------------------------------------------
-void FButton::setShadow (bool enable)
+void FButton::setShadow (bool state)
 {
-  setWidgetShadow(this, enable);
+  setWidgetShadow(this, state);
 }
 
 //----------------------------------------------------------------------
-void FButton::setDown (bool enable)
+void FButton::setDown (bool state)
 {
-  if ( button_down == enable )
+  if ( button_down == state )
     return;
 
-  button_down = enable;
+  button_down = state;
   redraw();
 }
 

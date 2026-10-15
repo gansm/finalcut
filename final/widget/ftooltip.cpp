@@ -83,9 +83,9 @@ void FToolTip::resetColors()
 }
 
 //----------------------------------------------------------------------
-void FToolTip::setBorder (bool enable)
+void FToolTip::setBorder (bool state)
 {
-  setFlags().feature.no_border = ! enable;
+  setFlags().feature.no_border = ! state;
   calculateDimensions();
 }
 

@@ -795,8 +795,8 @@ inline void FWidget::setDisable()
 { setEnable(false); }
 
 //----------------------------------------------------------------------
-inline void FWidget::setVisibleCursor (bool enable)
-{ flags.visibility.visible_cursor = enable; }
+inline void FWidget::setVisibleCursor (bool state)
+{ flags.visibility.visible_cursor = state; }
 
 //----------------------------------------------------------------------
 inline void FWidget::unsetVisibleCursor()
@@ -807,16 +807,16 @@ inline auto FWidget::unsetFocus() -> bool
 { return setFocus(false, FocusTypes::DefiniteWidget); }
 
 //----------------------------------------------------------------------
-inline void FWidget::setFocusable (bool enable)
-{ flags.focus.focusable = enable; }
+inline void FWidget::setFocusable (bool state)
+{ flags.focus.focusable = state; }
 
 //----------------------------------------------------------------------
 inline void FWidget::unsetFocusable()
 { flags.focus.focusable = false; }
 
 //----------------------------------------------------------------------
-inline auto FWidget::ignorePadding (bool enable) -> bool
-{ return (flags.feature.ignore_padding = enable); }
+inline auto FWidget::ignorePadding (bool state) -> bool
+{ return (flags.feature.ignore_padding = state); }
 
 //----------------------------------------------------------------------
 inline auto FWidget::acceptPadding() -> bool

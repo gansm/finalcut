@@ -303,9 +303,9 @@ inline auto FTermOutputTest::setNewFont() -> bool
 }
 
 //----------------------------------------------------------------------
-inline void FTermOutputTest::setNonBlockingRead (bool enable)
+inline void FTermOutputTest::setNonBlockingRead (bool state)
 {
-  uInt64 blocking_time = enable ? 5000 : 100'000;  // 5 or 100 ms
+  uInt64 blocking_time = state ? 5000 : 100'000;  // 5 or 100 ms
   finalcut::FKeyboard::setReadBlockingTime (blocking_time);
 }
 
@@ -2082,7 +2082,8 @@ void FVTermTest::FVTermChildRegionPrintTest()
   CPPUNIT_ASSERT ( vterm->changes_in_row.ymin == 24 );
   CPPUNIT_ASSERT ( vterm->changes_in_row.ymax == 0 );
   vwin->visible = true;  // show()
-  vterm->has_changes = false;
+
+  finalcut::FVTerm::setDirty (vterm, false);
   p_fvterm.p_addLayer(vwin);
   CPPUNIT_ASSERT ( vterm->has_changes );
   CPPUNIT_ASSERT ( vterm->changes_in_row.ymin == 3 );

@@ -293,9 +293,9 @@ void FScrollView::setText (const FString& txt)
 }
 
 //----------------------------------------------------------------------
-void FScrollView::setViewportPrint (bool enable)
+void FScrollView::setViewportPrint (bool state)
 {
-  use_own_print_region = ! enable;
+  use_own_print_region = ! state;
 }
 
 //----------------------------------------------------------------------
@@ -308,9 +308,9 @@ void FScrollView::resetColors()
 }
 
 //----------------------------------------------------------------------
-void FScrollView::setBorder (bool enable)
+void FScrollView::setBorder (bool state)
 {
-  setFlags().feature.no_border = ! enable;
+  setFlags().feature.no_border = ! state;
 }
 
 //----------------------------------------------------------------------
@@ -378,7 +378,7 @@ void FScrollView::scrollTo (int x, int y)
   if ( change_y )
     changeY (save_height, yoffset_end);
 
-  viewport->has_changes = true;
+  setDirty(viewport.get());
   copyToRegion();
 }
 
@@ -742,8 +742,8 @@ void FScrollView::copyToRegion()
 
   print_region->changes_in_row = {0, uInt(y_end - 1)};
   setViewportCursor();
-  viewport->has_changes = false;
-  print_region->has_changes = true;
+  setDirty(viewport.get(), false);
+  FVTerm::setDirty(print_region);
 }
 
 

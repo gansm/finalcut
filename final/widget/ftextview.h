@@ -430,8 +430,8 @@ inline void FTextView::setLines (T&& list)
 }
 
 //----------------------------------------------------------------------
-inline void FTextView::setSelectable (bool enable)
-{ selectable = enable; }
+inline void FTextView::setSelectable (bool state)
+{ selectable = state; }
 
 //----------------------------------------------------------------------
 inline void FTextView::unsetSelectable()

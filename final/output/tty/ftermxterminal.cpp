@@ -149,33 +149,33 @@ void FTermXTerminal::setHighlightBackground (const FString& hbg)
 }
 
 //----------------------------------------------------------------------
-void FTermXTerminal::setMouseSupport (bool enable)
+void FTermXTerminal::setMouseSupport (bool state)
 {
   // activate/deactivate the xterm mouse support
 
-  if ( enable )
+  if ( state )
     enableXTermMouse();
   else
     disableXTermMouse();
 }
 
 //----------------------------------------------------------------------
-void FTermXTerminal::setFocusSupport (bool enable)
+void FTermXTerminal::setFocusSupport (bool state)
 {
   // activate/deactivate the terminal focus events
 
-  if ( enable )
+  if ( state )
     enableXTermFocus();
   else
     disableXTermFocus();
 }
 
 //----------------------------------------------------------------------
-void FTermXTerminal::metaSendsESC (bool enable)
+void FTermXTerminal::metaSendsESC (bool state)
 {
   // activate/deactivate the xterm meta key sends escape prefix
 
-  if ( enable )
+  if ( state )
     enableXTermMetaSendsESC();
   else
     disableXTermMetaSendsESC();

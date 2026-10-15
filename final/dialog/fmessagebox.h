@@ -204,8 +204,8 @@ inline void FMessageBox::setTitleBarText (const FString& txt)
 { return FDialog::setText(txt); }
 
 //----------------------------------------------------------------------
-inline void FMessageBox::setCenterText (bool enable)
-{ center_text = enable; }
+inline void FMessageBox::setCenterText (bool state)
+{ center_text = state; }
 
 //----------------------------------------------------------------------
 inline void FMessageBox::unsetCenterText()

@@ -210,8 +210,8 @@ inline void FButton::setUp()
 { setDown(false); }
 
 //----------------------------------------------------------------------
-inline void FButton::setClickAnimation(bool enable)
-{ click_animation = enable; }
+inline void FButton::setClickAnimation(bool state)
+{ click_animation = state; }
 
 //----------------------------------------------------------------------
 inline void FButton::unsetClickAnimation()

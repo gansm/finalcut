@@ -471,9 +471,9 @@ const std::array<const char*, ConEmu::COLOR_COUNT> ConEmu::colorname
 
 // protected methods of ConEmu
 //----------------------------------------------------------------------
-inline void ConEmu::enableConEmuDebug (bool enable) noexcept
+inline void ConEmu::enableConEmuDebug (bool state) noexcept
 {
-  debug = enable;
+  debug = state;
 }
 
 //----------------------------------------------------------------------

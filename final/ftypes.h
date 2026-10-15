@@ -1093,9 +1093,9 @@ struct FChar
               | ((width << 19U) & FAttribute::set::char_width);
   }
 
-  constexpr void setBit (uInt32 mask, bool enable) noexcept
+  constexpr void setBit (uInt32 mask, bool state) noexcept
   {
-    if ( enable )
+    if ( state )
       attr.data |= mask;
     else
       attr.data &= ~mask;

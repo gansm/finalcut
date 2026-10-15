@@ -149,14 +149,14 @@ void FTermOutput::setCursor (CursorMode mode)
 }
 
 //----------------------------------------------------------------------
-void FTermOutput::hideCursor (bool enable)
+void FTermOutput::hideCursor (bool state)
 {
   // Hides or shows the input cursor on the terminal
 
   if ( ! isCursorHideable() )
     return;
 
-  const auto& visibility = FTerm::cursorsVisibility(enable);
+  const auto& visibility = FTerm::cursorsVisibility(state);
 
   if ( ! visibility.data )  // Exit the function if the string is empty
     return;
@@ -166,7 +166,7 @@ void FTermOutput::hideCursor (bool enable)
 }
 
 //----------------------------------------------------------------------
-void FTermOutput::setNonBlockingRead (bool enable)
+void FTermOutput::setNonBlockingRead (bool state)
 {
 #if defined(__CYGWIN__)
   // Fixes problem with mouse input
@@ -182,7 +182,7 @@ void FTermOutput::setNonBlockingRead (bool enable)
   }
 #endif
 
-  uInt64 blocking_time = enable ? 5000 : 100'000;  // 5 or 100 ms
+  uInt64 blocking_time = state ? 5000 : 100'000;  // 5 or 100 ms
   FKeyboard::setReadBlockingTime (blocking_time);
 }
 
@@ -250,7 +250,7 @@ auto FTermOutput::updateTerminalBuffer() -> bool
   }
 
   vterm->changes_in_row = {uInt(vterm->size.height), 0};  // Reset row changes
-  vterm->has_changes = false;
+  FVTerm::setDirty (vterm, false);
 
   // sets the new input cursor position
   const auto& cursor_update = updateTerminalCursor();

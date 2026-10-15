@@ -146,6 +146,11 @@ FVTerm::~FVTerm()  // destructor
 {
   if ( getGlobalFVTermInstance() == this )
     finish();
+
+  auto init_object = getGlobalFVTermInstance();
+
+  if ( init_object && vwin && vwin->has_changes )
+    init_object->decrementChangeCount();
 }
 
 //----------------------------------------------------------------------
@@ -211,10 +216,25 @@ void FVTerm::setCursor (const FPoint& pos) noexcept
 }
 
 //----------------------------------------------------------------------
-void FVTerm::setNonBlockingRead (bool enable)
+void FVTerm::setDirty (FTermRegion* dst, bool state)
+{
+  if ( dst->has_changes == state )
+    return;
+
+  dst->has_changes = state;
+  static const auto& init_object = getGlobalFVTermInstance();
+
+  if ( state )
+    init_object->incrementChangeCount();
+  else
+    init_object->decrementChangeCount();
+}
+
+//----------------------------------------------------------------------
+void FVTerm::setNonBlockingRead (bool state)
 {
   static const auto& init_object = getGlobalFVTermInstance();
-  init_object->foutput->setNonBlockingRead (enable);
+  init_object->foutput->setNonBlockingRead(state);
 }
 
 //----------------------------------------------------------------------
@@ -659,7 +679,7 @@ auto FVTerm::updateVTermCursor (const FTermRegion* region) const noexcept -> boo
     {
       vterm->setInputCursorPos(x, y);
       vterm->input_cursor_visible = true;
-      vterm->has_changes = true;
+      setDirty(vterm.get());
       return true;
     }
   }
@@ -880,7 +900,7 @@ void FVTerm::copyRegion ( FTermRegion* dst, const FPoint& pos
 
   dst->changes_in_row.ymin = std::min(dst->changes_in_row.ymin, uInt(ay));
   dst->changes_in_row.ymax = std::max(dst->changes_in_row.ymax, y_max);
-  dst->has_changes = true;
+  setDirty(dst);
 }
 
 //----------------------------------------------------------------------
@@ -941,7 +961,7 @@ void FVTerm::scrollRegionForward (FTermRegion* region)
   new_line_changes->xmin = 0;
   new_line_changes->xmax = uInt(x_max);
   region->changes_in_row = {0, uInt(y_max)};
-  region->has_changes = true;
+  setDirty(region);
 
   if ( region == vdesktop.get() )
     scrollTerminalForward();  // Scrolls the terminal up one line
@@ -984,7 +1004,7 @@ void FVTerm::scrollRegionReverse (FTermRegion* region)
   new_line_changes->xmin = 0;
   new_line_changes->xmax = uInt(x_max);
   region->changes_in_row = {0, uInt(y_max)};
-  region->has_changes = true;
+  setDirty(region);
 
   if ( region == vdesktop.get() )
     scrollTerminalReverse();  // Scrolls the terminal down one line
@@ -1048,7 +1068,7 @@ void FVTerm::clearRegion (FTermRegion* region, wchar_t fillchar) noexcept
   }
 
   region->changes_in_row = {0, uInt(getFullRegionHeight(region) - 1)};
-  region->has_changes = true;
+  setDirty(region);
 }
 
 //----------------------------------------------------------------------
@@ -1303,7 +1323,7 @@ inline void FVTerm::updateRegionProperties ( FTermRegion* region
   region->min_size.height = DEFAULT_MINIMIZED_HEIGHT;
   region->shadow.width    = int(shadowbox.shadow.getWidth());
   region->shadow.height   = int(shadowbox.shadow.getHeight());
-  region->has_changes     = false;
+  setDirty(region, false);
 }
 
 //----------------------------------------------------------------------
@@ -1356,7 +1376,7 @@ inline void FVTerm::processOverlappingWindows ( const FTermRegion* region
 //----------------------------------------------------------------------
 inline void FVTerm::passChangesToOverlappingWindow (FTermRegion* win, const FTermRegion* region) const noexcept
 {
-  win->has_changes = true;
+  setDirty(win);
 
   // Boundaries
   const int win_y_min = win->position.y;
@@ -1418,6 +1438,11 @@ void FVTerm::updateVTerm() const
 {
   // Updates the character data from all regions to VTerm
 
+  static const auto& init_object = getGlobalFVTermInstance();
+
+  if ( init_object->active_changes_count == 0 )
+    return;
+
   updateVTermDesktop();
 
   if ( ! vterm_window_list || vterm_window_list->empty() )
@@ -1441,7 +1466,7 @@ inline void FVTerm::updateVTermDesktop() const
     return;
 
   addLayer(vdesktop.get());  // Add vdesktop changes to vterm
-  vdesktop->has_changes = false;
+  setDirty(vdesktop.get(), false);
 }
 
 //----------------------------------------------------------------------
@@ -1451,7 +1476,7 @@ inline void FVTerm::updateVTermWindow (FTermRegion* v_win) const
   {
     passChangesToOverlap(v_win);
     addLayer(v_win);  // Add v_win changes to vterm
-    v_win->has_changes = false;
+    setDirty(v_win, false);
   }
   else if ( hasChildRegionChanges(v_win) )
   {
@@ -1619,7 +1644,7 @@ inline void FVTerm::updateVTermChangesFromBatch ( const LayerGeometry& geo
   auto& changes_in_row = vterm->changes_in_row;
   changes_in_row.ymin = std::min(changes_in_row.ymin, begin);
   changes_in_row.ymax = std::max(changes_in_row.ymax, end);
-  vterm->has_changes = true;
+  setDirty(vterm.get());
 }
 
 //----------------------------------------------------------------------
@@ -1720,7 +1745,7 @@ void FVTerm::clearChildRegionChanges (const FTermRegion* region) const
   for (const auto& pcall : region->preproc_list)
   {
     if ( pcall->instance && pcall->instance->child_print_region )
-      pcall->instance->child_print_region->has_changes = false;
+      setDirty(pcall->instance->child_print_region, false);
   }
 }
 
@@ -2195,7 +2220,7 @@ auto FVTerm::clearFullRegion (FTermRegion* region, FChar& fillchar) const -> boo
     }
 
     vdesktop->changes_in_row = {0, uInt(vdesktop->size.height - 1)};
-    vdesktop->has_changes = true;
+    setDirty(vdesktop.get());
   }
 
   return true;
@@ -2317,7 +2342,7 @@ inline auto FVTerm::printCharacter ( FTermRegion* region
 
   region->cursor.x++;
   ++ac;
-  region->has_changes = true;
+  setDirty(region);
 
   // Line break at right margin
   if ( region->cursor.x > getFullRegionWidth(region) )

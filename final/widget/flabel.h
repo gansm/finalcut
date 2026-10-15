@@ -193,16 +193,16 @@ inline auto FLabel::getText() & -> FString&
 { return text; }
 
 //----------------------------------------------------------------------
-inline void FLabel::setEmphasis (bool enable) noexcept
-{ emphasis = enable; }
+inline void FLabel::setEmphasis (bool state) noexcept
+{ emphasis = state; }
 
 //----------------------------------------------------------------------
 inline void FLabel::unsetEmphasis() noexcept
 { setEmphasis(false); }
 
 //----------------------------------------------------------------------
-inline void FLabel::setReverseMode (bool enable) noexcept
-{ reverse_mode = enable; }
+inline void FLabel::setReverseMode (bool state) noexcept
+{ reverse_mode = state; }
 
 //----------------------------------------------------------------------
 inline void FLabel::unsetReverseMode() noexcept

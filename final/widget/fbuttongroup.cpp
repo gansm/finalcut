@@ -99,11 +99,11 @@ auto FButtonGroup::getCheckedButton() const -> FToggleButton*
 }
 
 //----------------------------------------------------------------------
-void FButtonGroup::setEnable (bool enable)
+void FButtonGroup::setEnable (bool state)
 {
-  FWidget::setEnable(enable);
+  FWidget::setEnable(state);
 
-  if ( enable )
+  if ( state )
     setHotkeyAccelerator();
   else
     delAccelerator();

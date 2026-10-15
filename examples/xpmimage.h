@@ -875,9 +875,9 @@ auto XpmImage::getColorCount() const -> std::size_t
 }
 
 //----------------------------------------------------------------------
-void XpmImage::setBackgroundTransparency (bool enable)
+void XpmImage::setBackgroundTransparency (bool state)
 {
-  background_transparency = enable;
+  background_transparency = state;
 }
 
 //----------------------------------------------------------------------

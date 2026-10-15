@@ -491,9 +491,9 @@ auto FListViewItem::getVisibleLines() -> std::size_t
 }
 
 //----------------------------------------------------------------------
-void FListViewItem::setCheckable (bool enable)
+void FListViewItem::setCheckable (bool state)
 {
-  checkable = enable;
+  checkable = state;
 
   if ( *root )
   {

@@ -266,8 +266,8 @@ inline void FKeyboard::setReadBlockingTime (const uInt64 blocking_time) noexcept
 { read_blocking_time = blocking_time; }
 
 //----------------------------------------------------------------------
-inline void FKeyboard::setNonBlockingInputSupport (bool enable) noexcept
-{ non_blocking_input_support = enable; }
+inline void FKeyboard::setNonBlockingInputSupport (bool state) noexcept
+{ non_blocking_input_support = state; }
 
 //----------------------------------------------------------------------
 inline void FKeyboard::unsetNonBlockingInput() noexcept

@@ -120,12 +120,12 @@ auto FKeyboard::getKeyName (const FKey keynum) const -> FString
 }
 
 //----------------------------------------------------------------------
-void FKeyboard::setNonBlockingInput (bool enable)
+void FKeyboard::setNonBlockingInput (bool state)
 {
-  if ( enable == non_blocking_stdin )
+  if ( state == non_blocking_stdin )
     return;
 
-  if ( enable )  // make stdin non-blocking
+  if ( state )  // Make stdin non-blocking
   {
     stdin_status_flags |= O_NONBLOCK;
 

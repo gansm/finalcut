@@ -116,11 +116,11 @@ void FLabel::resetColors()
 }
 
 //----------------------------------------------------------------------
-void FLabel::setEnable (bool enable)
+void FLabel::setEnable (bool state)
 {
-  FWidget::setEnable(enable);
+  FWidget::setEnable(state);
 
-  if ( enable )
+  if ( state )
     setHotkeyAccelerator();
   else
     delAccelerator();

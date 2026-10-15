@@ -82,28 +82,28 @@ FDialog::~FDialog()  // destructor
 
 // public methods of FDialog
 //----------------------------------------------------------------------
-void FDialog::setDialogWidget (bool enable)
+void FDialog::setDialogWidget (bool state)
 {
-  if ( isDialogWidget() == enable )
+  if ( isDialogWidget() == state )
     return;
 
-  setFlags().type.dialog_widget = enable;
+  setFlags().type.dialog_widget = state;
 
-  if ( enable )
+  if ( state )
     setTermOffsetWithPadding();
   else
     setParentOffset();
 }
 
 //----------------------------------------------------------------------
-void FDialog::setModal (bool enable)
+void FDialog::setModal (bool state)
 {
-  if ( isModal() == enable )
+  if ( isModal() == state )
     return;
 
-  setFlags().visibility.modal = enable;
+  setFlags().visibility.modal = state;
 
-  if ( enable )
+  if ( state )
   {
     setModalDialogCounter()++;
     FKeyboard::getInstance().clearKeyBuffer();
@@ -114,9 +114,9 @@ void FDialog::setModal (bool enable)
 }
 
 //----------------------------------------------------------------------
-void FDialog::setBorder (bool enable)
+void FDialog::setBorder (bool state)
 {
-  if ( enable )
+  if ( state )
   {
     setTopPadding(2);
     setLeftPadding(1);
@@ -142,23 +142,23 @@ void FDialog::resetColors()
 }
 
 //----------------------------------------------------------------------
-void FDialog::setResizable (bool enable)
+void FDialog::setResizable (bool state)
 {
-  FWindow::setResizable (enable);
+  FWindow::setResizable (state);
   setMoveSizeItem();
 
-  if ( enable )
+  if ( state )
     dialog_menu.zoom_item->setEnable();
   else
     dialog_menu.zoom_item->setDisable();
 }
 
 //----------------------------------------------------------------------
-void FDialog::setMinimizable (bool enable)
+void FDialog::setMinimizable (bool state)
 {
-  FWindow::setMinimizable (enable);
+  FWindow::setMinimizable (state);
 
-  if ( enable )
+  if ( state )
     dialog_menu.minimize_item->setEnable();
   else
     dialog_menu.minimize_item->setDisable();

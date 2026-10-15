@@ -50,6 +50,7 @@
 #include <sys/time.h>  // need for timeval (cygwin)
 
 #include <algorithm>
+#include <atomic>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -173,6 +174,7 @@ class FVTerm : public FVTermAttribute
     void  setTerminalUpdates (TerminalUpdate) const;
     void  setCursor (const FPoint&) noexcept;
     void  setVWin (std::unique_ptr<FTermRegion>&&) noexcept;
+    static void  setDirty (FTermRegion*, bool = true);
     static void  setNonBlockingRead (bool = true);
     static void  unsetNonBlockingRead();
 
@@ -355,6 +357,8 @@ class FVTerm : public FVTermAttribute
     void  passChangesToOverlappingWindowLine (FTermRegion*, int, const FTermRegion*) const noexcept;
     auto  calculateStartCoordinate (int, int) const noexcept -> int;
     auto  calculateEndCoordinate (int, int, int, int) const noexcept -> int;
+    void  incrementChangeCount();
+    void  decrementChangeCount();
     void  updateVTerm() const;
     void  updateVTermDesktop() const;
     void  updateVTermWindow (FTermRegion*) const;
@@ -413,6 +417,7 @@ class FVTerm : public FVTermAttribute
     FTermRegion*                  print_region{nullptr};        // Print region for this object
     FTermRegion*                  child_print_region{nullptr};  // Print region for children
     FVTermBuffer                  vterm_buffer{};               // Print buffer
+    std::atomic<int>              active_changes_count{0};      // Number of windows with changes
     mutable FLineChangesBatch     line_changes_batch{};         // All line changes to an region
     mutable FOverlayLineBuffer    overlay_line_buffer{};        // Overlay region line buffer
     mutable FOverlaySearchBuffer  overlay_search_buffer{};      // Overlay search state buffer
@@ -673,7 +678,7 @@ inline auto FVTerm::FTermRegion::reprint ( const FRect& box
   if ( box_x1 > box_x2 || box_y1 > box_y2 )
     return false;
 
-  has_changes = true;
+  setDirty(this);
 
   // Compute geometry
   const int term_w = int(term_size.getWidth()) - 1;
@@ -986,6 +991,19 @@ inline auto FVTerm::getLayer (FVTerm& obj) noexcept -> int
 {
   // returns the layer from the FVTerm object
   return obj.FVTerm::getPrintRegion()->layer;
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::incrementChangeCount()
+{
+  active_changes_count++;
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::decrementChangeCount()
+{
+  if ( active_changes_count > 0 )
+    active_changes_count--;
 }
 
 //----------------------------------------------------------------------

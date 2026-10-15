@@ -240,21 +240,21 @@ void FTerm::setTermType (const std::string& term_name)
 }
 
 //----------------------------------------------------------------------
-void FTerm::setInsertCursor (bool enable)
+void FTerm::setInsertCursor (bool state)
 {
-  if ( enable )
+  if ( state )
     setInsertCursorStyle();
   else
     setOverwriteCursorStyle();
 }
 
 //----------------------------------------------------------------------
-void FTerm::redefineDefaultColors (bool enable)
+void FTerm::redefineDefaultColors (bool state)
 {
   if ( isNewFont() )  // NewFont need the reverse-video attribute
     return;
 
-  FTermXTerminal::getInstance().redefineDefaultColors (enable);
+  FTermXTerminal::getInstance().redefineDefaultColors(state);
 }
 
 //----------------------------------------------------------------------
@@ -265,25 +265,25 @@ void FTerm::setDblclickInterval (const uInt64 timeout)
 }
 
 //----------------------------------------------------------------------
-void FTerm::useAlternateScreen (bool enable)
+void FTerm::useAlternateScreen (bool state)
 {
   // Sets alternate screen usage
 
-  FTermData::getInstance().useAlternateScreen(enable);
+  FTermData::getInstance().useAlternateScreen(state);
 }
 
 //----------------------------------------------------------------------
-void FTerm::setUTF8 (bool enable)  // UTF-8 (Unicode)
+void FTerm::setUTF8 (bool state)  // UTF-8 (Unicode)
 {
   static auto& data = FTermData::getInstance();
 
-  if ( data.isUTF8() == enable )
+  if ( data.isUTF8() == state )
     return;
 
-  data.setUTF8(enable);
+  data.setUTF8(state);
 
 #if defined(__linux__)
-  FTermLinux::getInstance().setUTF8 (enable);
+  FTermLinux::getInstance().setUTF8(state);
 #endif
 }
 
@@ -484,18 +484,18 @@ auto FTerm::moveCursor (int xold, int yold, int xnew, int ynew) -> FTermcap::Ter
 }
 
 //----------------------------------------------------------------------
-auto FTerm::cursorsVisibility (bool enable) -> FTermcap::TermcapString
+auto FTerm::cursorsVisibility (bool state) -> FTermcap::TermcapString
 {
   // Hides or shows the input cursor on the terminal
 
   static auto& data = FTermData::getInstance();
 
-  if ( data.isCursorHidden() == enable )
+  if ( data.isCursorHidden() == state )
     return {nullptr, 0};
 
   FTermcap::TermcapString visibility{};
 
-  if ( enable )
+  if ( state )
   {
     visibility = disableCursor();
 

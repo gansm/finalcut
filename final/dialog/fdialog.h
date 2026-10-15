@@ -350,16 +350,16 @@ inline void FDialog::unsetModal()
 { setModal(false); }
 
 //----------------------------------------------------------------------
-inline void FDialog::setTitleBarButtonVisibility (bool enable)
-{ title_bar.buttons = enable; }
+inline void FDialog::setTitleBarButtonVisibility (bool state)
+{ title_bar.buttons = state; }
 
 //----------------------------------------------------------------------
 inline void FDialog::unsetTitleBarButtonVisibility()
 { setTitleBarButtonVisibility(false); }
 
 //----------------------------------------------------------------------
-inline void FDialog::setCloseButtonVisible (bool enable)
-{ title_bar.show_close_button = enable; }
+inline void FDialog::setCloseButtonVisible (bool state)
+{ title_bar.show_close_button = state; }
 
 //----------------------------------------------------------------------
 inline void FDialog::unsetCloseButtonVisible()

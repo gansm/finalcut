@@ -107,14 +107,14 @@ auto FWindow::getWindowFocusWidget() const -> FWidget*
 }
 
 //----------------------------------------------------------------------
-void FWindow::setWindowWidget (bool enable)
+void FWindow::setWindowWidget (bool state)
 {
-  if ( isWindowWidget() == enable )
+  if ( isWindowWidget() == state )
     return;
 
-  setFlags().type.window_widget = enable;
+  setFlags().type.window_widget = state;
 
-  if ( enable )
+  if ( state )
     setTermOffset();
   else
     setParentOffset();
@@ -162,16 +162,16 @@ void FWindow::setWindowFocusWidget (FWidget* obj)
 }
 
 //----------------------------------------------------------------------
-auto FWindow::activateWindow (bool enable) -> bool
+auto FWindow::activateWindow (bool state) -> bool
 {
   // Activate/deactivate this window
-  if ( enable )
+  if ( state )
   {
     FWidget::setActiveWindow (this);
     setActiveRegion (getVWin());
   }
 
-  return (window_active = enable);
+  return (window_active = state);
 }
 
 //----------------------------------------------------------------------
@@ -182,36 +182,36 @@ void FWindow::unsetActiveWindow() const
 }
 
 //----------------------------------------------------------------------
-void FWindow::setResizable (bool enable)
+void FWindow::setResizable (bool state)
 {
-  setFlags().feature.resizable = enable;
+  setFlags().feature.resizable = state;
 }
 
 //----------------------------------------------------------------------
-void FWindow::setMinimizable (bool enable)
+void FWindow::setMinimizable (bool state)
 {
-  setFlags().feature.minimizable = enable;
+  setFlags().feature.minimizable = state;
 }
 
 //----------------------------------------------------------------------
-void FWindow::setTransparentShadow (bool enable)
+void FWindow::setTransparentShadow (bool state)
 {
-  setFlags().shadow.shadow = enable;
-  setFlags().shadow.trans_shadow = enable;
+  setFlags().shadow.shadow = state;
+  setFlags().shadow.trans_shadow = state;
 
-  if ( enable )
+  if ( state )
     setShadowSize (FSize{2, 1});
   else
     setShadowSize (FSize{0, 0});
 }
 
 //----------------------------------------------------------------------
-void FWindow::setShadow (bool enable)
+void FWindow::setShadow (bool state)
 {
   if ( FVTerm::getFOutput()->isMonochron() )
     return;
 
-  if ( enable )
+  if ( state )
   {
     setFlags().shadow.shadow = true;
     setFlags().shadow.trans_shadow = false;
@@ -226,14 +226,14 @@ void FWindow::setShadow (bool enable)
 }
 
 //----------------------------------------------------------------------
-void FWindow::setAlwaysOnTop (bool enable)
+void FWindow::setAlwaysOnTop (bool state)
 {
-  if ( isAlwaysOnTop() == enable )
+  if ( isAlwaysOnTop() == state )
     return;
 
-  setFlags().visibility.always_on_top = enable;
+  setFlags().visibility.always_on_top = state;
 
-  if ( enable )
+  if ( state )
   {
     if ( getAlwaysOnTopList() )
     {

@@ -190,7 +190,7 @@ void FTermios::unsetCaptureSendCharacters()
 }
 
 //----------------------------------------------------------------------
-void FTermios::setRawMode (bool enable)
+void FTermios::setRawMode (bool state)
 {
 #if defined(__clang__)
   #pragma clang diagnostic push
@@ -199,14 +199,14 @@ void FTermios::setRawMode (bool enable)
   #endif
 #endif
   // set + unset flags for raw mode
-  if ( raw_mode == enable )
+  if ( raw_mode == state )
     return;
 
   // Info under: man 3 termios
   struct termios t{};
   tcgetattr (stdin_no, &t);
 
-  if ( enable )
+  if ( state )
   {
     // local mode
 #if DEBUG

@@ -323,9 +323,9 @@ void setWidgetFocus (FWidget* widget)
 }
 
 //----------------------------------------------------------------------
-void setWidgetShadow (FWidget* w, bool enable)
+void setWidgetShadow (FWidget* w, bool state)
 {
-  if ( enable
+  if ( state
     && FVTerm::getFOutput()->getEncoding() != Encoding::VT100
     && FVTerm::getFOutput()->getEncoding() != Encoding::ASCII )
   {
@@ -417,7 +417,7 @@ void drawTransparentShadow (FWidget* w)
 
   drawRightShadow(data);
   drawBottomShadow(data);
-  region.has_changes = true;
+  FVTerm::setDirty(&region);
   // Update row changes
   auto last_row = uInt(data.height + data.shadow_height - 1);
   region.changes_in_row = {uInt(0), last_row};
@@ -1049,7 +1049,7 @@ void drawGenericBox ( FWidget* w, const FRect& r
   drawBoxTopLine (box_data);
   drawBoxSides (box_data);
   drawBoxBottomLine (box_data);
-  box_data.region.has_changes = true;  // Mark region as having changes
+  FVTerm::setDirty(&box_data.region);  // Mark region as having changes
   // Update row changes
   auto& changes_in_row = box_data.region.changes_in_row;
   changes_in_row.ymin = std::min(changes_in_row.ymin, uInt(box_data.y1));

@@ -108,12 +108,12 @@ auto FTermLinux::setCursorStyle (CursorStyle style) -> bool
 }
 
 //----------------------------------------------------------------------
-void FTermLinux::setUTF8 (bool enable) const
+void FTermLinux::setUTF8 (bool state) const
 {
   if ( ! isLinuxTerm() )
     return;
 
-  if ( enable )
+  if ( state )
     FTerm::paddingPrint (ESC "%G");
   else
     FTerm::paddingPrint (ESC "%@");
@@ -789,7 +789,7 @@ inline void FTermLinux::setAttributeMode (uChar data) const
 }
 
 //----------------------------------------------------------------------
-auto FTermLinux::setBlinkAsIntensity (bool enable) const -> int
+auto FTermLinux::setBlinkAsIntensity (bool state) const -> int
 {
   // Uses blink-bit as background intensity.
   // That permits 16 colors for background
@@ -812,7 +812,7 @@ auto FTermLinux::setBlinkAsIntensity (bool enable) const -> int
   if ( fsystem->ioctl(fd_tty, KDENABIO, 0) < 0 )
     return -1;  // error on KDENABIO
 
-  if ( enable )
+  if ( state )
     setAttributeMode (getAttributeMode() & uChar(0xF7));  // clear bit 3
   else
     setAttributeMode (getAttributeMode() | uChar(0x08));  // set bit 3

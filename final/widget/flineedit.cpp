@@ -95,27 +95,27 @@ auto FLineEdit::operator << (const wchar_t c) -> FLineEdit&
 
 // public methods of FLineEdit
 //----------------------------------------------------------------------
-void FLineEdit::setEnable (bool enable)
+void FLineEdit::setEnable (bool state)
 {
-  FWidget::setEnable(enable);
+  FWidget::setEnable(state);
   resetColors();
 }
 
 //----------------------------------------------------------------------
-void FLineEdit::setShadow (bool enable)
+void FLineEdit::setShadow (bool state)
 {
-  setWidgetShadow(this, enable);
+  setWidgetShadow(this, state);
 }
 
 //----------------------------------------------------------------------
-void FLineEdit::setReadOnly (bool enable)
+void FLineEdit::setReadOnly (bool state)
 {
-  if ( enable )
+  if ( state )
     unsetVisibleCursor();
   else
     setVisibleCursor();
 
-  read_only = enable;
+  read_only = state;
 }
 
 //----------------------------------------------------------------------
