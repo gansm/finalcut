@@ -182,7 +182,7 @@ auto FTerm::isCursorHideable() -> bool
 //----------------------------------------------------------------------
 auto FTerm::isEncodable (const wchar_t& c) -> bool
 {
-  const auto& ch = charEncode(c);
+  const auto ch = charEncode(c);
   return ch > 0 && ch != c;
 }
 
@@ -765,14 +765,14 @@ auto FTerm::getEncodingString() -> std::string
 }
 
 //----------------------------------------------------------------------
-auto FTerm::charEncode (const wchar_t& c) -> wchar_t
+auto FTerm::charEncode (const wchar_t& c) -> uChar
 {
   static const auto& data = FTermData::getInstance();
   return charEncode (c, data.getTerminalEncoding());
 }
 
 //----------------------------------------------------------------------
-auto FTerm::charEncode (const wchar_t& c, const Encoding& enc) -> wchar_t
+auto FTerm::charEncode (const wchar_t& c, const Encoding& enc) -> uChar
 {
   const auto& character = FCharMap::getCharEncodeMap();
   const auto& cend = character.cend();
@@ -784,7 +784,7 @@ auto FTerm::charEncode (const wchar_t& c, const Encoding& enc) -> wchar_t
                      } );
 
   if ( found == cend )
-    return c;
+    return uChar(c & 0xff);
 
   const auto& ch_enc = FCharMap::getCharacter(*found, enc);
 

@@ -81,12 +81,6 @@ void showFCharData (const finalcut::FChar& fchar)
                           uInt32(fchar.ch.unicode_data[2]) << L", " <<
                           uInt32(fchar.ch.unicode_data[3]) << L", " <<
                           uInt32(fchar.ch.unicode_data[4]) << L"}\n";
-  std::wcout << L"               encoded_char: '" <<  fchar.encoded_char.data();
-  std::wcout << L"' {" << uInt32(fchar.encoded_char.unicode_data[0]) << L", " <<
-                          uInt32(fchar.encoded_char.unicode_data[1]) << L", " <<
-                          uInt32(fchar.encoded_char.unicode_data[2]) << L", " <<
-                          uInt32(fchar.encoded_char.unicode_data[3]) << L", " <<
-                          uInt32(fchar.encoded_char.unicode_data[4]) << L"}\n";
   std::wcout << L"              color.pair.fg: " << int(fchar.color.getFgColor()) << L'\n';
   std::wcout << L"              color.pair.bg: " << int(fchar.color.getBgColor()) << L'\n';
   std::wcout << L"                    attr[0]: " << int(fchar.attr.byte()->at(0)) << L'\n';
@@ -167,7 +161,6 @@ auto isFCharEqual ( const finalcut::FChar& lhs
   attr.bit()->printed = true;
 
   return lhs.ch == rhs.ch
-      && lhs.encoded_char == rhs.encoded_char
       && lhs.color.data   == rhs.color.data
       && lhs.attr.byte()->at(0) == rhs.attr.byte()->at(0)
       && lhs.attr.byte()->at(1) == rhs.attr.byte()->at(1)

@@ -561,16 +561,21 @@ auto FWindow::raiseWindow (FWidget* obj) -> bool
 
   auto begin = vterm_win_list->rbegin();
   const auto end = vterm_win_list->crend();
-  auto* last = static_cast<FWidget*>(*begin);
+  FWidget* last = nullptr;
 
-  while ( begin != end && ( last->setFlags().visibility.always_on_top
-                         || ! last->setFlags().visibility.visible ) )
+  while ( begin != end )
   {
-    ++begin;
     last = static_cast<FWidget*>(*begin);
+
+    if ( last->setFlags().visibility.always_on_top
+      || ! last->setFlags().visibility.visible )
+      ++begin;
+    else
+      break;
   }
 
-  if ( last == obj || (last->getFlags().visibility.modal && ! obj->isMenuWidget()) )
+  if ( begin == end || ! last || last == obj
+    || (last->getFlags().visibility.modal && ! obj->isMenuWidget()) )
     return false;
 
   auto iter = vterm_win_list->cbegin();

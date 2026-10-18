@@ -1169,7 +1169,6 @@ inline void FVTerm::resetTextRegionToDefault ( FTermRegion* region
   static constexpr FChar default_char
   {
     { L' ',  L'\0', L'\0', L'\0', L'\0' },
-    { L'\0', L'\0', L'\0', L'\0', L'\0' },
     default_color_pair,
     { 0x00080000U }  // char_width = 1
   };

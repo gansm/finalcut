@@ -1147,7 +1147,6 @@ void FOptiAttrTest::vt100Test()
   CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to).data
                         , CSI "0m\017$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( to.encoded_char[0] == ' ' );
   CPPUNIT_ASSERT ( ! oa.changeAttribute(from, to).data );
 
   // Invisible off (with default colors)
@@ -2091,7 +2090,6 @@ void FOptiAttrTest::rxvtTest()
   CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to).data
                         , CSI "0m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( to.encoded_char[0] == ' ' );
   CPPUNIT_ASSERT ( ! oa.changeAttribute(from, to).data );
 
   // Invisible off (with default colors)
@@ -2562,7 +2560,6 @@ void FOptiAttrTest::linuxTest()
   CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to).data
                         , CSI "0m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( to.encoded_char[0] == ' ' );
   CPPUNIT_ASSERT ( ! oa.changeAttribute(from, to).data );
 
   // Invisible off (with default colors)
@@ -3038,7 +3035,6 @@ void FOptiAttrTest::puttyTest()
   CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to).data
                         , CSI "0m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( to.encoded_char[0] == ' ' );
   CPPUNIT_ASSERT ( ! oa.changeAttribute(from, to).data );
 
   // Invisible off (with default colors)
@@ -3509,7 +3505,6 @@ void FOptiAttrTest::teratermTest()
   CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to).data
                         , CSI "0m\017$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( to.encoded_char[0] == ' ' );
   CPPUNIT_ASSERT ( ! oa.changeAttribute(from, to).data );
 
   // Invisible off (with default colors)
@@ -3964,7 +3959,6 @@ void FOptiAttrTest::ibmColorTest()
   CPPUNIT_ASSERT ( from != to );
   CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to).data, "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( to.encoded_char[0] == ' ' );
   CPPUNIT_ASSERT ( ! oa.changeAttribute(from, to).data );
 
   // Invisible off (with default colors)

@@ -853,7 +853,6 @@ void FVTermTest::OwnFunctionsTest()
 {
   finalcut::FChar shadow_char;
   shadow_char.ch = { L'\0', L'\0', L'\0', L'\0', L'\0' };
-  shadow_char.encoded_char = { L'\0', L'\0', L'\0', L'\0', L'\0' };
   shadow_char.color.setFgColor(finalcut::FColor::Default);
   shadow_char.color.setBgColor(finalcut::FColor::Default);
   shadow_char.attr.byte()->at(0) = 0;
@@ -865,7 +864,6 @@ void FVTermTest::OwnFunctionsTest()
   // FChar struct
   finalcut::FChar test_char =
   {
-    { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::Default, finalcut::FColor::Default },
     { 0x00000000U }
@@ -1004,7 +1002,6 @@ void FVTermTest::FVTermBasesTest()
 
   finalcut::FChar default_char;
   default_char.ch           = { L' ', L'\0', L'\0', L'\0', L'\0' };
-  default_char.encoded_char = { L'\0', L'\0', L'\0', L'\0', L'\0' };
   default_char.color.setFgColor(finalcut::FColor::Default);
   default_char.color.setBgColor(finalcut::FColor::Default);
   default_char.attr.byte()->at(0) = 0;
@@ -1171,7 +1168,6 @@ void FVTermTest::FVTermBasesTest()
   finalcut::FChar bg_char =
   {
     { L'▒', L'\0', L'\0', L'\0', L'\0' },
-    { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::Default, finalcut::FColor::Default },
     { 0x00080000U }  // char_width = 1
   };
@@ -1191,7 +1187,6 @@ void FVTermTest::FVTermBasesTest()
   auto width = std::size_t(vwin->size.width);
   finalcut::FChar shadow_char =
   {
-    { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::Default, finalcut::FColor::Default },
     { 0x00000000U }  // char_width = 1
@@ -1523,7 +1518,6 @@ void FVTermTest::FVTermPrintTest()
     finalcut::FChar default_char =
     {
       { L' ', L'\0', L'\0', L'\0', L'\0' },
-      { L'\0', L'\0', L'\0', L'\0', L'\0' },
       { finalcut::FColor::Default, finalcut::FColor::Default },
       { 0x00080000U }  // char_width = 1
     };
@@ -1699,7 +1693,6 @@ void FVTermTest::FVTermPrintTest()
     // std::vector<FChar>
     finalcut::FChar fchar =
     {
-      { L'\0', L'\0', L'\0', L'\0', L'\0' },
       { L'\0', L'\0', L'\0', L'\0', L'\0' },
       { finalcut::FColor::Red, finalcut::FColor::White },
       { 0x00000001U }
@@ -2116,7 +2109,6 @@ void FVTermTest::FVTermChildRegionPrintTest()
   finalcut::FChar space_char_1 =
   {
     { L' ', L'\0', L'\0', L'\0', L'\0' },
-    { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::Default, finalcut::FColor::Default },
     { 0x00080000U }  // char_width = 1
   };
@@ -2124,7 +2116,6 @@ void FVTermTest::FVTermChildRegionPrintTest()
   finalcut::FChar space_char_2 =
   {
     { L' ', L'\0', L'\0', L'\0', L'\0' },
-    { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::Red, finalcut::FColor::White },
     { 0x00080000U }  // char_width = 1
   };
@@ -2132,7 +2123,6 @@ void FVTermTest::FVTermChildRegionPrintTest()
   finalcut::FChar equal_sign_char =
   {
     { L'=', L'\0', L'\0', L'\0', L'\0' },
-    { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::Red, finalcut::FColor::White },
     { 0x00080000U }  // char_width = 1
   };
@@ -2184,7 +2174,6 @@ void FVTermTest::FVTermScrollTest()
   finalcut::FChar one_char =
   {
     { L'1', L'\0', L'\0', L'\0', L'\0' },
-    { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::Default, finalcut::FColor::Default },
     { 0x00080000U }  // char_width = 1
   };
@@ -2506,7 +2495,6 @@ void FVTermTest::FVTermOverlappingWindowsTest()
   finalcut::FChar bg_char =
   {
     { L'.', L'\0', L'\0', L'\0', L'\0' },
-    { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::DarkGray, finalcut::FColor::LightBlue },
     { 0x00080000U }  // char_width = 1
   };
@@ -2519,7 +2507,6 @@ void FVTermTest::FVTermOverlappingWindowsTest()
   finalcut::FChar vwin_1_char =  // with color overlay
   {
     { L'.', L'\0', L'\0', L'\0', L'\0' },
-    { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::Black, finalcut::FColor::White },
     { 0x00080000U }  // byte 0..3
   };
@@ -2527,7 +2514,6 @@ void FVTermTest::FVTermOverlappingWindowsTest()
   finalcut::FChar vwin_2_char =  // with inherit background
   {
     { L'▒', L'\0', L'\0', L'\0', L'\0' },
-    { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::Black, finalcut::FColor::LightBlue },
     { 0x00088000U }  // byte 0..3
   };
@@ -2535,7 +2521,6 @@ void FVTermTest::FVTermOverlappingWindowsTest()
   finalcut::FChar vwin_3_char =  // with transparency
   {
     { L'.', L'\0', L'\0', L'\0', L'\0' },
-    { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::DarkGray, finalcut::FColor::LightBlue },
     { 0x00090000U }  // byte 0..3
   };
@@ -2543,7 +2528,6 @@ void FVTermTest::FVTermOverlappingWindowsTest()
   finalcut::FChar vwin_4_char =
   {
     { L'█', L'\0', L'\0', L'\0', L'\0' },
-    { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::Black, finalcut::FColor::White },
     { 0x00080000U }  // byte 0..3
   };
@@ -2883,7 +2867,6 @@ void FVTermTest::FVTermTranparencyTest()
   finalcut::FChar bg_char =
   {
     { L' ', L'\0', L'\0', L'\0', L'\0' },
-    { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::LightGray, finalcut::FColor::Black },
     { 0x00080000U }  // char_width = 1
   };
@@ -2894,7 +2877,6 @@ void FVTermTest::FVTermTranparencyTest()
   finalcut::FChar vwin_1_char =
   {
     { L'*', L'\0', L'\0', L'\0', L'\0' },
-    { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::LightRed, finalcut::FColor::Black },
     { 0x00080000U }  // char_width = 1
   };
@@ -2918,7 +2900,6 @@ void FVTermTest::FVTermTranparencyTest()
   finalcut::FChar vwin_2_char =
   {
     { L'*', L'\0', L'\0', L'\0', L'\0' },
-    { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::LightGreen, finalcut::FColor::Black },
     { 0x00080000U }  // char_width = 1
   };
@@ -2945,7 +2926,6 @@ void FVTermTest::FVTermTranparencyTest()
   finalcut::FChar vwin_3_char =
   {
     { L'*', L'\0', L'\0', L'\0', L'\0' },
-    { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::LightBlue, finalcut::FColor::Black },
     { 0x00080000U }  // char_width = 1
   };
@@ -2972,7 +2952,6 @@ void FVTermTest::FVTermTranparencyTest()
   finalcut::FChar vertical_line_char =  // │
   {
     { L'│', L'\0', L'\0', L'\0', L'\0' },
-    { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::Yellow, finalcut::FColor::Black },
     { 0x00080000U }  // char_width = 1
   };
@@ -2980,7 +2959,6 @@ void FVTermTest::FVTermTranparencyTest()
   finalcut::FChar horizontal_line_char =  // ─
   {
     { L'─', L'\0', L'\0', L'\0', L'\0' },
-    { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::Yellow, finalcut::FColor::Black },
     { 0x00080000U }  // char_width = 1
   };
@@ -2988,7 +2966,6 @@ void FVTermTest::FVTermTranparencyTest()
   finalcut::FChar plus_line_char =  // ┼
   {
     { L'┼', L'\0', L'\0', L'\0', L'\0' },
-    { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::Yellow, finalcut::FColor::Black },
     { 0x00080000U }  // char_width = 1
   };
@@ -3015,7 +2992,6 @@ void FVTermTest::FVTermTranparencyTest()
   finalcut::FChar diagonal_1_line_char =  // ╲
   {
     { L'╲', L'\0', L'\0', L'\0', L'\0' },
-    { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::White, finalcut::FColor::Black },
     { 0x00080000U }  // char_width = 1
   };
@@ -3023,7 +2999,6 @@ void FVTermTest::FVTermTranparencyTest()
   finalcut::FChar diagonal_2_line_char =  // ╱
   {
     { L'╱', L'\0', L'\0', L'\0', L'\0' },
-    { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::White, finalcut::FColor::Black },
     { 0x00080000U }  // char_width = 1
   };
@@ -3031,7 +3006,6 @@ void FVTermTest::FVTermTranparencyTest()
   finalcut::FChar cross_line_char =  // ╳
   {
     { L'╳', L'\0', L'\0', L'\0', L'\0' },
-    { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::White, finalcut::FColor::Black },
     { 0x00080000U }  // char_width = 1
   };
@@ -3343,7 +3317,6 @@ void FVTermTest::getFVTermRegionTest()
   finalcut::FChar bg_char =
   {
     { L' ', L'\0', L'\0', L'\0', L'\0' },
-    { L'\0', L'\0', L'\0', L'\0', L'\0' },
     { finalcut::FColor::Default, finalcut::FColor::Default },
     { 0x00080000U }  // char_width = 1
   };

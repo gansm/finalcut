@@ -465,10 +465,6 @@ auto FOptiAttr::changeAttribute (FChar& term, FChar& next) -> FTermcap::TermcapS
   detectSwitchOn (term, next);
   detectSwitchOff (term, next);
 
-  // Simulate invisible characters
-  if ( ! F_secure.on.cap.data && next.isBitSet(FAttribute::set::invisible) )
-    next.encoded_char.unicode_data[0] = ' ';
-
   // Look for no changes
   if ( ! (switchOn() || switchOff() || hasColorChanged(term, next)) )
     return {nullptr, 0};

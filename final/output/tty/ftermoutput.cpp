@@ -921,10 +921,10 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y, const FChar_itera
 
   if ( rp.data && repetition_type == Repetition::ASCII )
   {
-    newFontChanges (*iter);
-    charsetChanges (*iter);
+    newFontFilter (*iter);
+    auto ch_enc = charsetEncode (*iter);
     appendAttributes (*iter);
-    const auto term_ctrl = FTermcap::encodeParameter(rp, iter->ch.unicode_data[0], repetitions);
+    const auto term_ctrl = FTermcap::encodeParameter(rp, ch_enc, repetitions);
     appendOutputBuffer (FTermControl{term_ctrl});
     term_pos->x_ref() += static_cast<int>(repetitions);
   }
@@ -1194,53 +1194,51 @@ inline void FTermOutput::markAsPrinted (uInt from, uInt to, uInt y) const noexce
 }
 
 //----------------------------------------------------------------------
-inline void FTermOutput::newFontChanges (FChar& next_char) const
+inline void FTermOutput::newFontFilter (FChar& next_char) const noexcept
 {
   // NewFont special cases
   if ( ! internal::var::is_new_font )
     return;
 
-  if ( next_char.ch.unicode_data[0] == UniChar::LowerHalfBlock )
+  auto& first_char = next_char.ch.unicode_data[0];
+
+  if ( first_char == UniChar::LowerHalfBlock )
   {
-    next_char.ch.unicode_data[0] = wchar_t(UniChar::UpperHalfBlock);
+    first_char = wchar_t(UniChar::UpperHalfBlock);
     next_char.setBit(FAttribute::set::reverse);
+    return;
   }
-  else if ( isReverseNewFontchar(next_char.ch.unicode_data[0]) )
+
+  if ( isReverseNewFontchar(first_char) )
     next_char.setBit(FAttribute::set::reverse);  // Show in reverse video
 }
 
 //----------------------------------------------------------------------
-inline void FTermOutput::charsetChanges (FChar& next_char) const
+inline auto FTermOutput::charsetEncode (FChar& next_char) const noexcept -> uChar
 {
-  if ( internal::terminal::encoding == Encoding::UTF8 )
-    return;
-
-  std::memcpy( next_char.encoded_char.data(),
-               next_char.ch.data(),
-               sizeof(wchar_t) * UNICODE_MAX );
-
   const auto& ch = next_char.ch.unicode_data[0];
-  const auto& ch_enc = FTerm::charEncode(ch);
 
-  if ( ch_enc == ch )
-    return;
+  if ( internal::terminal::encoding == Encoding::UTF8 )
+    return uChar(ch & 0xff);
 
-  auto& first_enc_char = next_char.encoded_char.unicode_data[0];
+  const auto ch_enc = FTerm::charEncode(ch);
+
+  if ( uChar(ch_enc & 0xff) == ch )
+    return ch_enc;
 
   if ( ch_enc == 0 )
-  {
-    first_enc_char = wchar_t(FTerm::charEncode(ch, Encoding::ASCII));
-    return;
-  }
-
-  first_enc_char = ch_enc;
+    return FTerm::charEncode(ch, Encoding::ASCII);
 
   if ( internal::terminal::encoding == Encoding::VT100 )
+  {
     next_char.attr.data |= FAttribute::set::alt_charset;  // Set alt charset
-  else if ( internal::terminal::encoding == Encoding::PC )
+    return ch_enc;
+  }
+
+  if ( internal::terminal::encoding == Encoding::PC )
   {
     if ( ch_enc >= 0x20 )
-      return;
+      return ch_enc;
 
     // Character 0x00..0x1f
     next_char.attr.data |= FAttribute::set::pc_charset;  // Set pc charset
@@ -1249,16 +1247,18 @@ inline void FTermOutput::charsetChanges (FChar& next_char) const
     const auto is_xterm = fterm_data->isTermType(FTermType::xterm);
 
     if ( is_putty || ! is_xterm )
-      return;
+      return ch_enc;
 
     if ( FTerm::hasUTF8() )
-      first_enc_char = int(FTerm::charEncode(ch, Encoding::ASCII));
+      return FTerm::charEncode(ch, Encoding::ASCII);
     else
     {
-      first_enc_char += 0x5f;
       next_char.attr.data |= FAttribute::set::alt_charset;  // Set alt charset
+      return ch_enc + 0x5f;
     }
   }
+
+  return ch_enc;
 }
 
 //----------------------------------------------------------------------
@@ -1286,13 +1286,18 @@ inline void FTermOutput::appendCharacter_n (const FChar_iterator& next_char_iter
 //----------------------------------------------------------------------
 inline void FTermOutput::appendChar (FChar& next_char)
 {
-  newFontChanges (next_char);
-  charsetChanges (next_char);
-  appendAttributes (next_char);
-  characterFilter (next_char);
-
   if ( internal::terminal::encoding == Encoding::UTF8 )
   {
+    newFontFilter (next_char);
+    characterFilter (next_char.ch.unicode_data[0]);
+    appendAttributes (next_char);
+
+    if ( needsInvisibleSimulation(next_char) )
+    {
+      appendOutputBuffer (' ');  // Simulate invisible character
+      return;
+    }
+
     for (const auto& ch : next_char.ch)
     {
       if ( ch == L'\0')
@@ -1306,10 +1311,29 @@ inline void FTermOutput::appendChar (FChar& next_char)
   }
   else  // ASCII, VT100, or PC encoding
   {
-    appendOutputBuffer ( FOutputBuffer::OutputType::String
-                       , reinterpret_cast<char*>(&next_char.encoded_char.unicode_data[0])
-                       , 1 );
+    newFontFilter (next_char);
+    characterFilter (next_char.ch.unicode_data[0]);
+    auto ch_enc = char(charsetEncode (next_char));
+    appendAttributes (next_char);
+
+    if ( needsInvisibleSimulation(next_char) )
+    {
+      appendOutputBuffer (' ');  // Simulate invisible character
+      return;
+    }
+
+    appendOutputBuffer (ch_enc);
   }
+}
+
+//----------------------------------------------------------------------
+inline auto FTermOutput::needsInvisibleSimulation (const FChar& next_char) -> bool
+{
+  const auto& mk = TCAP(t_enter_secure_mode);
+  return ! mk.data && next_char.isBitSet(FAttribute::set::invisible);
+  // true = The next character is invisible, but this terminal does
+  //        not support that feature. Therefore, you must simulate
+  //        an invisible character.
 }
 
 //----------------------------------------------------------------------
@@ -1391,17 +1415,16 @@ void FTermOutput::appendLowerRight (const FChar_iterator& last_char_iter)
 }
 
 //----------------------------------------------------------------------
-inline void FTermOutput::characterFilter (FChar& next_char)
+inline void FTermOutput::characterFilter (wchar_t& w_char) noexcept
 {
   if ( ! internal::var::has_sub_map )
     return;
 
   static const auto& sub_map = getFTerm().getCharSubstitutionMap();
-  auto& first_enc_char = next_char.encoded_char.unicode_data[0];
-  const auto& entry = sub_map.getMappedChar(first_enc_char);
+  const auto found = sub_map.getMappedChar(w_char);
 
-  if ( entry )
-    first_enc_char = entry;
+  if ( found )
+    w_char = found;
 }
 
 //----------------------------------------------------------------------
@@ -1461,6 +1484,14 @@ inline void FTermOutput::appendOutputBuffer (wchar_t ucs)
 inline void FTermOutput::appendOutputBuffer (const UniChar& ch)
 {
   appendOutputBuffer(wchar_t(ch));
+}
+
+//----------------------------------------------------------------------
+inline void FTermOutput::appendOutputBuffer (char ch)
+{
+  appendOutputBuffer( FOutputBuffer::OutputType::String
+                    , reinterpret_cast<char*>(&ch)
+                    , 1 );
 }
 
 //----------------------------------------------------------------------

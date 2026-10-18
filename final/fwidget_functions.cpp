@@ -402,12 +402,10 @@ void drawTransparentShadow (FWidget* w)
     uInt(region.shadow.height),
     {
       { L'\0',  L'\0', L'\0', L'\0', L'\0' },
-      { L'\0', L'\0', L'\0', L'\0', L'\0' },
       default_color_pair,
       { 0x00002000U }  // transparent
     },
     {
-      { L'\0', L'\0', L'\0', L'\0', L'\0' },
       { L'\0', L'\0', L'\0', L'\0', L'\0' },
       { wc_shadow.fg, wc_shadow.bg },
       { 0x00004000U }  // color_overlay
@@ -503,25 +501,21 @@ void drawBlockShadow (FWidget* w)
   {{
     {
       { wchar_t(UniChar::LowerHalfBlock),  L'\0', L'\0', L'\0', L'\0' },  // ▄
-      { L'\0', L'\0', L'\0', L'\0', L'\0' },
       { wc_shadow.bg, FColor::Default },
       { 0x00080000U }  // char_width = 1
     },
     {
       { wchar_t(UniChar::FullBlock),  L'\0', L'\0', L'\0', L'\0' },  // █
-      { L'\0', L'\0', L'\0', L'\0', L'\0' },
       { wc_shadow.bg, FColor::Default },
       { 0x00080000U }  // char_width = 1
     },
     {
       { L' ',  L'\0', L'\0', L'\0', L'\0' },  // ' '
-      { L'\0', L'\0', L'\0', L'\0', L'\0' },
       default_color_pair,
       { 0x00080000U }  // char_width = 1
     },
     {
       { wchar_t(UniChar::UpperHalfBlock),  L'\0', L'\0', L'\0', L'\0' },  // ▄
-      { L'\0', L'\0', L'\0', L'\0', L'\0' },
       { wc_shadow.bg, FColor::Default },
       { 0x00080000U }  // char_width = 1
     }
@@ -555,7 +549,6 @@ void clearBlockShadow (FWidget* w)
   FChar spacer_char
   {
     { L' ',  L'\0', L'\0', L'\0', L'\0' },  // ' '
-    { L'\0', L'\0', L'\0', L'\0', L'\0' },
     default_color_pair,
     { 0x00080000U }  // char_width = 1
   };

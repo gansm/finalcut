@@ -1,3 +1,7 @@
+2026-10-18  Markus Gans  <guru.mail@muenster.de>
+	* The encoded output character will no longer be stored in an FChar 
+	  structure
+
 2026-10-15  Markus Gans  <guru.mail@muenster.de>
 	* Use change tracking to implement an early exit in 
 	  the FVTerm::updateVTerm() method

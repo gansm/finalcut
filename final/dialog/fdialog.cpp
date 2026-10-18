@@ -116,6 +116,8 @@ void FDialog::setModal (bool state)
 //----------------------------------------------------------------------
 void FDialog::setBorder (bool state)
 {
+  setFlags().feature.no_border = ! state;
+
   if ( state )
   {
     setTopPadding(2);

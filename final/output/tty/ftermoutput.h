@@ -296,19 +296,21 @@ class FTermOutput final : public FOutput
     void flushTimeAdjustment() noexcept;
     void markAsPrinted (uInt, uInt) const noexcept;
     void markAsPrinted (uInt, uInt, uInt) const noexcept;
-    void newFontChanges (FChar&) const;
-    void charsetChanges (FChar&) const;
+    void newFontFilter (FChar&) const noexcept;
+    auto charsetEncode (FChar&) const noexcept -> uChar;
     void appendCharacter (const FChar_iterator&);
     void appendCharacter_n (const FChar_iterator&, uInt);
     void appendChar (FChar&);
+    auto needsInvisibleSimulation (const FChar&) -> bool;
     void appendAttributes (FChar&);
     void appendLowerRight (const FChar_iterator&);
-    void characterFilter (FChar&);
+    void characterFilter (wchar_t&) noexcept;
     auto moveCursorLeft() -> CursorMoved;
     void checkFreeBufferSize();
     void appendOutputBuffer (const FTermControl&);
     void appendOutputBuffer (wchar_t);
     void appendOutputBuffer (const UniChar&);
+    void appendOutputBuffer (char);
     void appendOutputBuffer (FOutputBuffer::OutputType, const char*, uInt32);
 
     // Data members

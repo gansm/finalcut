@@ -224,8 +224,8 @@ class FTerm final
 
     static void setEncoding (Encoding);
     static auto getEncodingString() -> std::string;
-    static auto charEncode (const wchar_t&) -> wchar_t;
-    static auto charEncode (const wchar_t&, const Encoding&) -> wchar_t;
+    static auto charEncode (const wchar_t&) -> uChar;
+    static auto charEncode (const wchar_t&, const Encoding&) -> uChar;
 
     static auto scrollTermForward() -> bool;
     static auto scrollTermReverse() -> bool;

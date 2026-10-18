@@ -1119,7 +1119,6 @@ struct FChar
 
   // Data member
   FUnicode   ch{};            // Character code
-  FUnicode   encoded_char{};  // Encoded output character
   FCellColor color{};         // Foreground and background color
   FAttribute attr{};          // Attributes
 

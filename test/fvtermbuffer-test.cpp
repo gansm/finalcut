@@ -120,11 +120,6 @@ void FVTermBufferTest::writeTest()
   CPPUNIT_ASSERT ( vterm_buf.front().ch[2] == L'\0' );
   CPPUNIT_ASSERT ( vterm_buf.front().ch[3] == L'\0' );
   CPPUNIT_ASSERT ( vterm_buf.front().ch[4] == L'\0' );
-  CPPUNIT_ASSERT ( vterm_buf.front().encoded_char[0] == L'\0' );
-  CPPUNIT_ASSERT ( vterm_buf.front().encoded_char[1] == L'\0' );
-  CPPUNIT_ASSERT ( vterm_buf.front().encoded_char[2] == L'\0' );
-  CPPUNIT_ASSERT ( vterm_buf.front().encoded_char[3] == L'\0' );
-  CPPUNIT_ASSERT ( vterm_buf.front().encoded_char[4] == L'\0' );
   CPPUNIT_ASSERT ( vterm_buf.front().color.getFgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( vterm_buf.front().color.getBgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( vterm_buf.front().attr.byte()->at(0) == 0 );
@@ -156,11 +151,6 @@ void FVTermBufferTest::writeTest()
   CPPUNIT_ASSERT ( vterm_buf.front().ch[2] == L'\0' );
   CPPUNIT_ASSERT ( vterm_buf.front().ch[3] == L'\0' );
   CPPUNIT_ASSERT ( vterm_buf.front().ch[4] == L'\0' );
-  CPPUNIT_ASSERT ( vterm_buf.front().encoded_char[0] == L'\0' );
-  CPPUNIT_ASSERT ( vterm_buf.front().encoded_char[1] == L'\0' );
-  CPPUNIT_ASSERT ( vterm_buf.front().encoded_char[2] == L'\0' );
-  CPPUNIT_ASSERT ( vterm_buf.front().encoded_char[3] == L'\0' );
-  CPPUNIT_ASSERT ( vterm_buf.front().encoded_char[4] == L'\0' );
   CPPUNIT_ASSERT ( vterm_buf.front().color.getFgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( vterm_buf.front().color.getBgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( vterm_buf.front().attr.byte()->at(0) == 0 );
@@ -204,11 +194,6 @@ void FVTermBufferTest::writeTest()
     CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].ch.unicode_data[2] == L'\0' );
     CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].ch.unicode_data[3] == L'\0' );
     CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].ch.unicode_data[4] == L'\0' );
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char.unicode_data[0] == L'\0' );
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char.unicode_data[1] == L'\0' );
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char.unicode_data[2] == L'\0' );
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char.unicode_data[3] == L'\0' );
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char.unicode_data[4] == L'\0' );
     CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].color.getFgColor() == finalcut::FColor::Default );
     CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].color.getBgColor() == finalcut::FColor::Default );
     CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].attr.byte()->at(0) == 0 );
@@ -238,11 +223,6 @@ void FVTermBufferTest::writeTest()
     CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].ch[2] == L'\0' );
     CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].ch[3] == L'\0' );
     CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].ch[4] == L'\0' );
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char[0] == L'\0' );
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char[1] == L'\0' );
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char[2] == L'\0' );
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char[3] == L'\0' );
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char[4] == L'\0' );
     CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].color.getFgColor() == finalcut::FColor::Default );
     CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].color.getBgColor() == finalcut::FColor::Default );
     CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].attr.byte()->at(0) == 0 );
@@ -288,11 +268,6 @@ void FVTermBufferTest::writeTest()
     CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].ch[2] == L'\0' );
     CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].ch[3] == L'\0' );
     CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].ch[4] == L'\0' );
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char[0] == L'\0' );
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char[1] == L'\0' );
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char[2] == L'\0' );
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char[3] == L'\0' );
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char[4] == L'\0' );
     CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].attr.byte()->at(0) == 0 );
     CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].attr.byte()->at(1) == 0 );
     CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].attr.byte()->at(2) != 0 );
@@ -349,11 +324,6 @@ void FVTermBufferTest::writeTest()
     CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].ch[2] == L'\0' );
     CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].ch[3] == L'\0' );
     CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].ch[4] == L'\0' );
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char[0] == L'\0' );
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char[1] == L'\0' );
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char[2] == L'\0' );
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char[3] == L'\0' );
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char[4] == L'\0' );
     CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].attr.byte()->at(3) == 0 );
 
     if ( multi_color_emojis )
@@ -376,11 +346,6 @@ void FVTermBufferTest::writeTest()
   CPPUNIT_ASSERT ( vterm_buf.front().ch[2] == L'\0' );
   CPPUNIT_ASSERT ( vterm_buf.front().ch[3] == L'\0' );
   CPPUNIT_ASSERT ( vterm_buf.front().ch[4] == L'\0' );
-  CPPUNIT_ASSERT ( vterm_buf.front().encoded_char[0] == L'\0' );
-  CPPUNIT_ASSERT ( vterm_buf.front().encoded_char[1] == L'\0' );
-  CPPUNIT_ASSERT ( vterm_buf.front().encoded_char[2] == L'\0' );
-  CPPUNIT_ASSERT ( vterm_buf.front().encoded_char[3] == L'\0' );
-  CPPUNIT_ASSERT ( vterm_buf.front().encoded_char[4] == L'\0' );
   CPPUNIT_ASSERT ( vterm_buf.front().color.getFgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( vterm_buf.front().color.getBgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( vterm_buf.front().attr.byte()->at(0) == 0 );
@@ -487,11 +452,6 @@ void FVTermBufferTest::streamTest()
     CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].ch[2] == L'\0' );
     CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].ch[3] == L'\0' );
     CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].ch[4] == L'\0' );
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char[0] == L'\0' );
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char[1] == L'\0' );
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char[2] == L'\0' );
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char[3] == L'\0' );
-    CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].encoded_char[4] == L'\0' );
     CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].attr.byte()->at(2) != 0 );
     CPPUNIT_ASSERT ( vterm_buf.getBuffer()[i].attr.byte()->at(3) == 0 );
   }

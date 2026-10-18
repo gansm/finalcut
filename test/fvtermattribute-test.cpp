@@ -80,7 +80,6 @@ void FVTermAttributeTest::noArgumentTest()
   CPPUNIT_ASSERT ( attribute.getTermBackgroundColor() == finalcut::FColor(0) );
   finalcut::FUnicode empty{L'\0', L'\0', L'\0', L'\0', L'\0'};
   CPPUNIT_ASSERT ( attribute.getAttribute().ch == empty );
-  CPPUNIT_ASSERT ( attribute.getAttribute().encoded_char == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getFgColor() == finalcut::FColor(0) );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getBgColor() == finalcut::FColor(0) );
   CPPUNIT_ASSERT ( attribute.getAttribute().attr.byte()->at(0) == uInt8(0) );
@@ -105,7 +104,6 @@ void FVTermAttributeTest::afterInitTest()
   CPPUNIT_ASSERT ( attribute.getTermBackgroundColor() == finalcut::FColor::Default );
   finalcut::FUnicode empty{L'\0', L'\0', L'\0', L'\0', L'\0'};
   CPPUNIT_ASSERT ( attribute.getAttribute().ch == empty );
-  CPPUNIT_ASSERT ( attribute.getAttribute().encoded_char == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getFgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getBgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().attr.byte()->at(0) == uInt8(0) );
@@ -125,7 +123,6 @@ void FVTermAttributeTest::setAttributeTest()
   CPPUNIT_ASSERT ( attribute.getTermBackgroundColor() == finalcut::FColor::White );
   finalcut::FUnicode empty{L'\0', L'\0', L'\0', L'\0', L'\0'};
   CPPUNIT_ASSERT ( attribute.getAttribute().ch == empty );
-  CPPUNIT_ASSERT ( attribute.getAttribute().encoded_char == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getFgColor() == finalcut::FColor::Red );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getBgColor() == finalcut::FColor::White );
   CPPUNIT_ASSERT ( attribute.getAttribute().attr.byte()->at(0) == uInt8(0) );
@@ -147,7 +144,6 @@ void FVTermAttributeTest::setAttributeTest()
   CPPUNIT_ASSERT ( attribute.getTermForegroundColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getTermBackgroundColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().ch == empty );
-  CPPUNIT_ASSERT ( attribute.getAttribute().encoded_char == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getFgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getBgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().attr.byte()->at(0) == uInt8(0) );
@@ -168,7 +164,6 @@ void FVTermAttributeTest::setAttributeTest()
   attribute.setBold(true);
   CPPUNIT_ASSERT ( attribute.isBold() );
   CPPUNIT_ASSERT ( attribute.getAttribute().ch == empty );
-  CPPUNIT_ASSERT ( attribute.getAttribute().encoded_char == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getFgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getBgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().attr.byte()->at(0) != uInt8(0) );
@@ -188,7 +183,6 @@ void FVTermAttributeTest::setAttributeTest()
   attribute.setDim(true);
   CPPUNIT_ASSERT ( attribute.isDim() );
   CPPUNIT_ASSERT ( attribute.getAttribute().ch == empty );
-  CPPUNIT_ASSERT ( attribute.getAttribute().encoded_char == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getFgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getBgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().attr.byte()->at(0) != uInt8(0) );
@@ -208,7 +202,6 @@ void FVTermAttributeTest::setAttributeTest()
   attribute.setItalic(true);
   CPPUNIT_ASSERT ( attribute.isItalic() );
   CPPUNIT_ASSERT ( attribute.getAttribute().ch == empty );
-  CPPUNIT_ASSERT ( attribute.getAttribute().encoded_char == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getFgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getBgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().attr.byte()->at(0) != uInt8(0) );
@@ -228,7 +221,6 @@ void FVTermAttributeTest::setAttributeTest()
   attribute.setUnderline(true);
   CPPUNIT_ASSERT ( attribute.isUnderline() );
   CPPUNIT_ASSERT ( attribute.getAttribute().ch == empty );
-  CPPUNIT_ASSERT ( attribute.getAttribute().encoded_char == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getFgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getBgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().attr.byte()->at(0) != uInt8(0) );
@@ -248,7 +240,6 @@ void FVTermAttributeTest::setAttributeTest()
   attribute.setBlink(true);
   CPPUNIT_ASSERT ( attribute.isBlink() );
   CPPUNIT_ASSERT ( attribute.getAttribute().ch == empty );
-  CPPUNIT_ASSERT ( attribute.getAttribute().encoded_char == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getFgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getBgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().attr.byte()->at(0) != uInt8(0) );
@@ -268,7 +259,6 @@ void FVTermAttributeTest::setAttributeTest()
   attribute.setReverse(true);
   CPPUNIT_ASSERT ( attribute.isReverse() );
   CPPUNIT_ASSERT ( attribute.getAttribute().ch == empty );
-  CPPUNIT_ASSERT ( attribute.getAttribute().encoded_char == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getFgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getBgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().attr.byte()->at(0) != uInt8(0) );
@@ -288,7 +278,6 @@ void FVTermAttributeTest::setAttributeTest()
   attribute.setStandout(true);
   CPPUNIT_ASSERT ( attribute.isStandout() );
   CPPUNIT_ASSERT ( attribute.getAttribute().ch == empty );
-  CPPUNIT_ASSERT ( attribute.getAttribute().encoded_char == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getFgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getBgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().attr.byte()->at(0) != uInt8(0) );
@@ -308,7 +297,6 @@ void FVTermAttributeTest::setAttributeTest()
   attribute.setInvisible(true);
   CPPUNIT_ASSERT ( attribute.isInvisible() );
   CPPUNIT_ASSERT ( attribute.getAttribute().ch == empty );
-  CPPUNIT_ASSERT ( attribute.getAttribute().encoded_char == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getFgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getBgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().attr.byte()->at(0) != uInt8(0) );
@@ -328,7 +316,6 @@ void FVTermAttributeTest::setAttributeTest()
   attribute.setProtected(true);
   CPPUNIT_ASSERT ( attribute.isProtected() );
   CPPUNIT_ASSERT ( attribute.getAttribute().ch == empty );
-  CPPUNIT_ASSERT ( attribute.getAttribute().encoded_char == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getFgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getBgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().attr.byte()->at(0) == uInt8(0) );
@@ -348,7 +335,6 @@ void FVTermAttributeTest::setAttributeTest()
   attribute.setCrossedOut(true);
   CPPUNIT_ASSERT ( attribute.isCrossedOut() );
   CPPUNIT_ASSERT ( attribute.getAttribute().ch == empty );
-  CPPUNIT_ASSERT ( attribute.getAttribute().encoded_char == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getFgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getBgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().attr.byte()->at(0) == uInt8(0) );
@@ -368,7 +354,6 @@ void FVTermAttributeTest::setAttributeTest()
   attribute.setDoubleUnderline(true);
   CPPUNIT_ASSERT ( attribute.isDoubleUnderline() );
   CPPUNIT_ASSERT ( attribute.getAttribute().ch == empty );
-  CPPUNIT_ASSERT ( attribute.getAttribute().encoded_char == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getFgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getBgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().attr.byte()->at(0) == uInt8(0) );
@@ -388,7 +373,6 @@ void FVTermAttributeTest::setAttributeTest()
   attribute.setAltCharset(true);
   CPPUNIT_ASSERT ( attribute.isAltCharset() );
   CPPUNIT_ASSERT ( attribute.getAttribute().ch == empty );
-  CPPUNIT_ASSERT ( attribute.getAttribute().encoded_char == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getFgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getBgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().attr.byte()->at(0) == uInt8(0) );
@@ -408,7 +392,6 @@ void FVTermAttributeTest::setAttributeTest()
   attribute.setPCcharset(true);
   CPPUNIT_ASSERT ( attribute.isPCcharset() );
   CPPUNIT_ASSERT ( attribute.getAttribute().ch == empty );
-  CPPUNIT_ASSERT ( attribute.getAttribute().encoded_char == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getFgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getBgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().attr.byte()->at(0) == uInt8(0) );
@@ -428,7 +411,6 @@ void FVTermAttributeTest::setAttributeTest()
   attribute.setTransparent(true);
   CPPUNIT_ASSERT ( attribute.isTransparent() );
   CPPUNIT_ASSERT ( attribute.getAttribute().ch == empty );
-  CPPUNIT_ASSERT ( attribute.getAttribute().encoded_char == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getFgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getBgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().attr.byte()->at(0) == uInt8(0) );
@@ -448,7 +430,6 @@ void FVTermAttributeTest::setAttributeTest()
   attribute.setColorOverlay(true);
   CPPUNIT_ASSERT ( attribute.isColorOverlay() );
   CPPUNIT_ASSERT ( attribute.getAttribute().ch == empty );
-  CPPUNIT_ASSERT ( attribute.getAttribute().encoded_char == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getFgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getBgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().attr.byte()->at(0) == uInt8(0) );
@@ -468,7 +449,6 @@ void FVTermAttributeTest::setAttributeTest()
   attribute.setInheritBackground(true);
   CPPUNIT_ASSERT ( attribute.isInheritBackground() );
   CPPUNIT_ASSERT ( attribute.getAttribute().ch == empty );
-  CPPUNIT_ASSERT ( attribute.getAttribute().encoded_char == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getFgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getBgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().attr.byte()->at(0) == uInt8(0) );
@@ -494,7 +474,6 @@ void FVTermAttributeTest::printTest()
   CPPUNIT_ASSERT ( attribute.getTermBackgroundColor() == finalcut::FColor::Blue );
   finalcut::FUnicode empty{L'\0', L'\0', L'\0', L'\0', L'\0'};
   CPPUNIT_ASSERT ( attribute.getAttribute().ch == empty );
-  CPPUNIT_ASSERT ( attribute.getAttribute().encoded_char == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getFgColor() == finalcut::FColor::Yellow );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getBgColor() == finalcut::FColor::Blue );
   CPPUNIT_ASSERT ( attribute.getAttribute().attr.byte()->at(0) == uInt8(0) );
@@ -517,7 +496,6 @@ void FVTermAttributeTest::printTest()
   CPPUNIT_ASSERT ( attribute.getTermForegroundColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getTermBackgroundColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().ch == empty );
-  CPPUNIT_ASSERT ( attribute.getAttribute().encoded_char == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getFgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getBgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().attr.byte()->at(0) != uInt8(0) );
@@ -532,7 +510,6 @@ void FVTermAttributeTest::printTest()
   CPPUNIT_ASSERT ( attribute.getTermForegroundColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getTermBackgroundColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().ch == empty );
-  CPPUNIT_ASSERT ( attribute.getAttribute().encoded_char == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getFgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getBgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().attr.byte()->at(0) != uInt8(0) );
@@ -548,7 +525,6 @@ void FVTermAttributeTest::printTest()
   CPPUNIT_ASSERT ( attribute.getTermForegroundColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getTermBackgroundColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().ch == empty );
-  CPPUNIT_ASSERT ( attribute.getAttribute().encoded_char == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getFgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getBgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().attr.byte()->at(0) == uInt8(0) );
@@ -567,7 +543,6 @@ void FVTermAttributeTest::printTest()
   CPPUNIT_ASSERT ( attribute.getTermForegroundColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getTermBackgroundColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().ch == empty );
-  CPPUNIT_ASSERT ( attribute.getAttribute().encoded_char == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getFgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getBgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().attr.byte()->at(0) != uInt8(0) );
@@ -586,7 +561,6 @@ void FVTermAttributeTest::printTest()
   CPPUNIT_ASSERT ( attribute.getTermForegroundColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getTermBackgroundColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().ch == empty );
-  CPPUNIT_ASSERT ( attribute.getAttribute().encoded_char == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getFgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getBgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().attr.byte()->at(0) != uInt8(0) );
@@ -604,7 +578,6 @@ void FVTermAttributeTest::printTest()
   CPPUNIT_ASSERT ( attribute.getTermForegroundColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getTermBackgroundColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().ch == empty );
-  CPPUNIT_ASSERT ( attribute.getAttribute().encoded_char == empty );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getFgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().color.getBgColor() == finalcut::FColor::Default );
   CPPUNIT_ASSERT ( attribute.getAttribute().attr.byte()->at(0) == uInt8(0) );
