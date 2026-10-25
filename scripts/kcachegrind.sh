@@ -18,7 +18,7 @@ error_handling ()
 [[ -x "$PROG" ]] || error_handling
 file --brief "$PROG" | grep -q "ELF" || error_handling
 
-LD_LIBRARY_PATH=../final/.libs/ valgrind --tool=callgrind -v "$PROG" "$@" 2>/dev/null
+LD_LIBRARY_PATH=../final/.libs/ valgrind --tool=callgrind --cache-sim=yes -v "$PROG" "$@" 2>/dev/null
 kcachegrind
 rm -f callgrind.out.*
 

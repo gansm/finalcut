@@ -589,7 +589,15 @@ auto getColumnWidth (const FString& s, std::size_t end_pos) -> std::size_t
   {
     try
     {
-      column_width += getColumnWidth(s[i]);
+      const auto char_width = getColumnWidth(s[i]);
+      constexpr auto size_t_max = std::numeric_limits<std::size_t>::max();
+
+      if ( column_width > size_t_max - char_width )
+      {
+        return size_t_max;
+      }
+
+      column_width += char_width;
     }
     catch (const std::out_of_range& ex)
     {
@@ -615,15 +623,21 @@ auto getColumnWidth (const FString& s) -> std::size_t
 }
 
 //----------------------------------------------------------------------
+static inline auto isUTF8Terminal() -> bool
+{
+  static const auto& fterm_data = FTermData::getInstance();
+  return fterm_data.getTerminalEncoding() == Encoding::UTF8;
+}
+
+//----------------------------------------------------------------------
 auto getColumnWidth (const wchar_t wchar) -> std::size_t
 {
   // Implements the column width cache
 
   static auto& char_width_cache = getCharWidthCacheInstance();
-  static const auto& fterm_data = FTermData::getInstance();
 
   if ( (wchar >= L' ' && wchar <= L'~')
-    || (wchar != L'\0' && fterm_data.getTerminalEncoding() != Encoding::UTF8) )
+    || (wchar != L'\0' && ! isUTF8Terminal()) )
     return 1U;
 
   const auto iter = char_width_cache.find(wchar);
@@ -650,9 +664,8 @@ auto getColumnWidthImpl (const wchar_t wchar) -> std::size_t
 #endif
 
   column_width = wcwidth(wchar);
-  static const auto& fterm_data = FTermData::getInstance();
 
-  if ( (fterm_data.getTerminalEncoding() != Encoding::UTF8 && wchar != L'\0' )
+  if ( (! isUTF8Terminal() && wchar != L'\0' )
     || (wchar >= UniChar::NF_rev_left_arrow2 && wchar <= UniChar::NF_check_mark) )
   {
     column_width = 1;
@@ -689,10 +702,7 @@ auto getColumnWidth (const FVTermBuffer& vtbuf) -> std::size_t
 //----------------------------------------------------------------------
 void addColumnWidth (FChar& term_char, std::size_t char_width)
 {
-  static const auto& fterm_data = FTermData::getInstance();
-
-  if ( char_width == 2
-    && fterm_data.getTerminalEncoding() != Encoding::UTF8 )
+  if ( char_width == 2 && ! isUTF8Terminal() )
   {
     term_char.ch.unicode_data[0] = '.';
     term_char.setCharWidth(1);

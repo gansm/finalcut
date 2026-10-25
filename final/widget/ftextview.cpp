@@ -848,11 +848,18 @@ inline auto FTextView::useFDialogBorder() const -> bool
 }
 
 //----------------------------------------------------------------------
+static inline auto isUTF8Terminal() -> bool
+{
+  static const auto& foutput = FVTerm::getFOutput();
+  return foutput->getEncoding() == Encoding::UTF8;
+}
+
+//----------------------------------------------------------------------
 inline auto FTextView::isPrintable (wchar_t ch) const -> bool
 {
   // Check for printable characters
 
-  const bool utf8 = (FVTerm::getFOutput()->getEncoding() == Encoding::UTF8);
+  const bool utf8 = isUTF8Terminal();
   return ( (utf8 && finalcut::isPrintable(ch))
         || (! utf8 && finalcut::isPrintable(char(ch))) );
 }

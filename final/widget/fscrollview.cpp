@@ -729,10 +729,10 @@ void FScrollView::copyToRegion()
   {
     // Direct access to viewport and region characters
     const auto vc = viewport->getFCharIterator(dx, dy + y);  // Viewport character
-    auto ac = print_region->getFCharIterator(ax, ay + y);    // Region character
+    auto rc = print_region->getFCharIterator(ax, ay + y);    // Region character
 
     // Copy a line of characters in one operation
-    std::memcpy (&ac[0], &vc[0], sizeof(FChar) * unsigned(x_end));
+    std::memcpy (&rc[0], &vc[0], sizeof(FChar) * unsigned(x_end));
 
     // Update line changes
     auto& line_changes = print_region->changes_in_line[unsigned(ay + y)];

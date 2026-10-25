@@ -86,7 +86,16 @@ class FCharBuffer
 
     inline auto appendUnicode (wchar_t ucs) -> uInt32
     {
-      return UTF8::encode(ucs, buffer);
+      if ( is7bit(ucs) )  // ASCII fast path
+      {
+        buffer.push_back(char(ucs));
+        return 1;
+      }
+
+      std::array<char, 4> tmp;
+      const auto len = UTF8::encode(ucs, tmp);
+      buffer.insert(buffer.end(), tmp.data(), tmp.data() + len);
+      return len;
     }
 
     inline auto data() const noexcept -> const char*
@@ -274,6 +283,8 @@ class FTermOutput final : public FOutput
     auto canClearTrailingWS (uInt&, uInt) const -> bool;
     auto skipUnchangedCharacters (uInt&, uInt, uInt, FChar_iterator) -> bool;
     void printRange (uInt, uInt, uInt);
+    auto printPlain (uInt, uInt, uInt, FChar_iterator, bool, bool) -> uInt;
+    auto canStartRepeat (FChar_const_iterator, uInt, uInt) const noexcept -> bool;
     void replaceNonPrintableFullwidth (uInt, uInt, FChar&) const noexcept;
     void printCharacter (uInt&, uInt, bool, const FChar_iterator&);
     void printFullWidthCharacter (uInt&, uInt, const FChar_iterator&);
@@ -297,14 +308,15 @@ class FTermOutput final : public FOutput
     void markAsPrinted (uInt, uInt) const noexcept;
     void markAsPrinted (uInt, uInt, uInt) const noexcept;
     void newFontFilter (FChar&) const noexcept;
+    void characterFilter (FChar&) noexcept;
     auto charsetEncode (FChar&) const noexcept -> uChar;
     void appendCharacter (const FChar_iterator&);
     void appendCharacter_n (const FChar_iterator&, uInt);
     void appendChar (FChar&);
-    auto needsInvisibleSimulation (const FChar&) -> bool;
+    void appendCharImpl (FChar&);
+    auto needsInvisibleSimulation (const FChar&) const noexcept -> bool;
     void appendAttributes (FChar&);
     void appendLowerRight (const FChar_iterator&);
-    void characterFilter (wchar_t&) noexcept;
     auto moveCursorLeft() -> CursorMoved;
     void checkFreeBufferSize();
     void appendOutputBuffer (const FTermControl&);

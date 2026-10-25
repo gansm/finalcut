@@ -195,8 +195,8 @@ void printOnRegion ( finalcut::FVTerm::FTermRegion* region
     region->cursor.y = ay + 1;
   }
 
-  auto& ac = region->data[ay * line_length + ax];  // region character
-  std::memcpy (&ac, &fchar, sizeof(ac));  // copy character to region
+  auto& rc = region->data[ay * line_length + ax];  // region character
+  std::memcpy (&rc, &fchar, sizeof(rc));  // copy character to region
   region->cursor.x = ((ax + 1) % line_length) + 1;
   region->cursor.y = ((ax + 1) / line_length) + region->cursor.y;
 

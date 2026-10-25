@@ -39,36 +39,8 @@ namespace finalcut
 
 namespace internal
 {
-
-constexpr void setAttributeMask (FCharAttribute& attr) noexcept
-{
-  attr.bold = true;
-  attr.dim = true;
-  attr.italic = true;
-  attr.underline = true;
-  attr.blink = true;
-  attr.reverse = true;
-  attr.standout = true;
-  attr.invisible = true;
-  attr.protect = true;
-  attr.crossed_out = true;
-  attr.dbl_underline = true;
-  attr.alt_charset = true;
-  attr.pc_charset = true;
-  attr.transparent = true;
-  attr.color_overlay = true;
-  attr.inherit_background = true;
+constexpr uInt32 fvtermbuf_var::attr_mask;
 }
-
-struct var
-{
-  static constexpr auto attr_mask = createMask(setAttributeMask);
-};
-
-constexpr uInt32 var::attr_mask;
-
-}  // namespace internal
-
 
 //----------------------------------------------------------------------
 // class FVTermBuffer
@@ -108,9 +80,22 @@ auto FVTermBuffer::print (const FString& string) -> int
 {
   checkCapacity(data, data.size() + string.getLength());
   UnicodeBoundary ucb{string.cbegin(), string.cend(), string.cbegin(), 0};
+  const auto last = string.cend();
 
-  for (const auto& ch : string)
+  for (auto it = string.cbegin(); it != last; ++it)
   {
+    const auto ch = *it;
+
+    // Fast path: printable ASCII, nothing pending, next char can't combine with it
+    if ( ucb.cbegin == it && ucb.iter == it
+      && ch >= 0x20 && ch < 0x7f
+      && (it + 1 == last || *(it + 1) < 0x80) )
+    {
+      addPlainASCII(ch);
+      ucb.cbegin = ucb.iter = it + 1;
+      continue;
+    }
+
     auto width = getColumnWidth(ch);
     auto ctrl_char = std::iswcntrl(wint_t(ch));
 
@@ -135,7 +120,7 @@ auto FVTermBuffer::print (const FString& string) -> int
   }
 
   if ( ucb.iter == ucb.cend )
-    add(ucb);
+    add(ucb);  // returns immediately if nothing is pending
 
   return int(string.getLength());
 }
@@ -182,14 +167,29 @@ inline void FVTermBuffer::setAttribute (FChar& fchar) const noexcept
 {
   static const auto& next_attribute = FVTermAttribute::getAttribute();
   fchar.color.data = next_attribute.color.data;
-  fchar.attr.data = next_attribute.attr.data & internal::var::attr_mask;
+  fchar.attr.data = next_attribute.attr.data & internal::fvtermbuf_var::attr_mask;
+}
+
+//----------------------------------------------------------------------
+inline void FVTermBuffer::addPlainASCII (wchar_t ch)
+{
+  data.emplace_back();
+  auto& nc = data.back();
+  setAttribute(nc);
+  nc.ch.unicode_data[0] = ch;
+  nc.setCharWidth(1);
+}
+
+//----------------------------------------------------------------------
+static inline auto isUTF8Terminal() -> bool
+{
+  static const auto& fterm_data = FTermData::getInstance();
+  return fterm_data.getTerminalEncoding() == Encoding::UTF8;
 }
 
 //----------------------------------------------------------------------
 void FVTermBuffer::add (UnicodeBoundary& ucb)
 {
-  static const auto& fterm_data = FTermData::getInstance();
-
   if ( ucb.cbegin == ucb.iter )
     return;
 
@@ -197,8 +197,7 @@ void FVTermBuffer::add (UnicodeBoundary& ucb)
   auto& nc = data.back();  // next character
   setAttribute(nc);
 
-  if ( ucb.char_width == 2
-    && fterm_data.getTerminalEncoding() != Encoding::UTF8 )
+  if ( ucb.char_width == 2 && ! isUTF8Terminal() )
   {
     nc.ch.unicode_data[0] = L'.';
 #if defined(__clang__)
@@ -215,17 +214,16 @@ void FVTermBuffer::add (UnicodeBoundary& ucb)
   }
   else
   {
-    const auto end = std::min(ucb.iter, ucb.cbegin + UNICODE_MAX);
-    std::copy(ucb.cbegin, end, nc.ch.begin());
-    nc.setCharWidth(uInt32(ucb.char_width));
-    const auto idx = std::size_t(end - ucb.cbegin);  // Number of character
+    const auto n = std::min(std::size_t(ucb.iter - ucb.cbegin), UNICODE_MAX);
 
-    if ( idx < UNICODE_MAX )
-      nc.ch[idx] = L'\0';
+    for (std::size_t i{0}; i < n; ++i)
+      nc.ch[i] = ucb.cbegin[i];
+
+    nc.setCharWidth(uInt32(ucb.char_width));
   }
 
   ucb.cbegin = ucb.iter;
-  ucb.char_width = 0;  // reset char width
+  ucb.char_width = 0;
 }
 
 }  // namespace finalcut

@@ -247,10 +247,13 @@ void FTermcapQuirks::linux()
 void FTermcapQuirks::xterm()
 {
   // Fallback if "Ic" is not found
-  if ( ! TCAP(t_initialize_color).data )
+  auto& Ic = TCAP(t_initialize_color);
+  const bool has_Ic = Ic.data;
+
+  if ( ! has_Ic )
   {
     FTermcap::can_change_color_palette = true;
-    setTCapString ( TCAP(t_initialize_color),
+    setTCapString ( Ic,
         OSC "4;%p1%d;rgb:"
             "%p2%{255}%*%{1000}%/%2.2X/"
             "%p3%{255}%*%{1000}%/%2.2X/"
@@ -298,7 +301,14 @@ void FTermcapQuirks::vte()
   setTCapString (TCAP(t_exit_underline_mode), CSI "24m");
 
   if ( fterm_data.getGnomeTerminalID() >= 5300 )  // vte >= 0.53.0
+  {
     caModeExtension();
+    auto& rp = TCAP(t_repeat_char);
+    const bool has_rp = rp.data;
+
+    if ( ! has_rp )
+      setTCapString (rp, "%p1%c\033[%p2%{1}%-%db");
+  }
 }
 
 //----------------------------------------------------------------------
@@ -410,13 +420,16 @@ void FTermcapQuirks::sunConsole()
 void FTermcapQuirks::screen()
 {
   // Fallback if "Ic" is not found
-  if ( ! TCAP(t_initialize_color).data )
+  auto& Ic = TCAP(t_initialize_color);
+  const bool has_Ic = Ic.data;
+
+  if ( ! has_Ic )
   {
     FTermcap::can_change_color_palette = true;
 
     if ( FTermData::getInstance().isTermType(FTermType::tmux) )
     {
-      setTCapString ( TCAP(t_initialize_color),
+      setTCapString ( Ic,
           ESC "P" ESC OSC "4;%p1%d;#"
           "%p2%{255}%*%{1000}%/%2.2X"
           "%p3%{255}%*%{1000}%/%2.2X"
@@ -424,7 +437,7 @@ void FTermcapQuirks::screen()
     }
     else
     {
-      setTCapString ( TCAP(t_initialize_color),
+      setTCapString ( Ic,
           ESC "P" OSC "4;%p1%d;rgb:"
           "%p2%{255}%*%{1000}%/%2.2X/"
           "%p3%{255}%*%{1000}%/%2.2X/"
@@ -451,10 +464,13 @@ void FTermcapQuirks::general()
   setTCapStringIfNotSet (TCAP(t_set_a_background), CSI "4%p1%dm");
 
   // Fallback if "Ic" is not found
-  if ( ! TCAP(t_initialize_color).data )
+  auto& Ic = TCAP(t_initialize_color);
+  const bool has_Ic = Ic.data;
+
+  if ( ! has_Ic )
   {
     FTermcap::can_change_color_palette = true;
-    setTCapString ( TCAP(t_initialize_color),
+    setTCapString ( Ic,
         OSC "P%p1%x"
             "%p2%{255}%*%{1000}%/%02x"
             "%p3%{255}%*%{1000}%/%02x"
@@ -474,20 +490,24 @@ void FTermcapQuirks::general()
 //----------------------------------------------------------------------
 inline void FTermcapQuirks::caModeExtension()
 {
-  if ( TCAP(t_enter_ca_mode).data
-    && ! std::strstr(TCAP(t_enter_ca_mode).data, "\033[22;0;0t") )
+  auto& ti = TCAP(t_enter_ca_mode);
+  const bool has_ti = ti.data;
+
+  if ( has_ti && ! std::strstr(ti.data, "\033[22;0;0t") )
   {
     // Save the cursor position, enter alternate screen buffer
     // and save xterm icon and window title on stack
-    setTCapString (TCAP(t_enter_ca_mode), CSI "?1049h" CSI "22;0;0t");
+    setTCapString (ti, CSI "?1049h" CSI "22;0;0t");
   }
 
-  if ( TCAP(t_exit_ca_mode).data
-    && ! std::strstr(TCAP(t_exit_ca_mode).data, "\033[23;0;0t") )
+  auto& te = TCAP(t_exit_ca_mode);
+  const bool has_te = te.data;
+
+  if ( has_te && ! std::strstr(te.data, "\033[23;0;0t") )
   {
     // Use normal screen buffer, restore the cursor position
     // and restore xterm icon and window title from stack
-    setTCapString (TCAP(t_exit_ca_mode), CSI "?1049l" CSI "23;0;0t");
+    setTCapString (te, CSI "?1049l" CSI "23;0;0t");
   }
 }
 
@@ -497,8 +517,10 @@ void FTermcapQuirks::repeatLastChar()
   // UTF-8 characters can be repeated with repeat_last_char, unlike
   // repeat_char which can only repeat 7-bit ASCII characters
 
-  if ( ! TCAP(t_repeat_char).data
-    || std::memcmp(TCAP(t_repeat_char).data, "%p1%c\033[%p2%{1}%-%db", 19) != 0 )
+  const auto& rp = TCAP(t_repeat_char);
+  const bool has_rp = rp.data;
+
+  if ( ! has_rp || std::memcmp(rp.data, "%p1%c\033[%p2%{1}%-%db", 19) != 0 )
     return;
 
   setTCapString (TCAP(t_repeat_last_char), "\033[%p1%{1}%-%db");
@@ -508,8 +530,12 @@ void FTermcapQuirks::repeatLastChar()
 void FTermcapQuirks::ecma48()
 {
   // Test for standard ECMA-48 (ANSI X3.64) terminal
-  if ( ! TCAP(t_exit_underline_mode).data
-    || std::memcmp(TCAP(t_exit_underline_mode).data, CSI "24m", 5) != 0 )
+
+  const auto& ue = TCAP(t_exit_underline_mode);
+  const bool has_ue = ue.data;
+
+  if ( ! has_ue
+    || std::memcmp(ue.data, CSI "24m", 5) != 0 )
     return;
 
   // Seems to be a ECMA-48 (ANSI X3.64) compatible terminal

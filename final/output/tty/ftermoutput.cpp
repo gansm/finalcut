@@ -71,11 +71,21 @@ struct var
 {
   static bool is_new_font;
   static bool has_sub_map;
+  static bool plain_utf8_output;
 };
+
+void updatePlainUTF8OutputFlag()
+{
+  var::plain_utf8_output =
+     ! var::is_new_font
+  && ! var::has_sub_map
+  && terminal::encoding == Encoding::UTF8;
+}
 
 Encoding terminal::encoding{Encoding::Unknown};
 bool var::is_new_font{false};
 bool var::has_sub_map{false};
+bool var::plain_utf8_output{false};
 
 }  // namespace internal
 
@@ -193,6 +203,7 @@ void FTermOutput::initTerminal (FVTerm::FTermRegion* virtual_terminal)
   internal::terminal::encoding = fterm_data->getTerminalEncoding();
   internal::var::is_new_font = FTerm::isNewFont();
   internal::var::has_sub_map = ! getFTerm().getCharSubstitutionMap().isEmpty();
+  internal::updatePlainUTF8OutputFlag();
 
   // Redefine the color palette
   redefineColorPalette();
@@ -260,7 +271,9 @@ auto FTermOutput::updateTerminalBuffer() -> bool
 //----------------------------------------------------------------------
 auto FTermOutput::scrollTerminalForward() -> bool
 {
-  if ( ! TCAP(t_scroll_forward).data )
+  const bool has_sf = TCAP(t_scroll_forward).data;
+
+  if ( ! has_sf )
     return false;
 
   FTerm::scrollTermForward();
@@ -270,7 +283,9 @@ auto FTermOutput::scrollTerminalForward() -> bool
 //----------------------------------------------------------------------
 auto FTermOutput::scrollTerminalReverse() -> bool
 {
-  if ( ! TCAP(t_scroll_reverse).data )
+  const bool has_sr = TCAP(t_scroll_reverse).data;
+
+  if ( ! has_sr )
     return false;
 
   FTerm::scrollTermReverse();
@@ -292,32 +307,35 @@ auto FTermOutput::clearTerminal (wchar_t fillchar) -> bool
   // Clear the real terminal and put cursor at home
 
   const auto& cl = TCAP(t_clear_screen);
+  const bool has_cl = cl.data;
   const auto& cd = TCAP(t_clr_eos);
+  const bool has_cd = cd.data;
   const auto& cb = TCAP(t_clr_eol);
+  const bool has_cb = cb.data;
   const bool ut = FTermcap::background_color_erase;
   auto& next_attribute = FVTerm::getAttribute();
   const auto& normal = FOptiAttr::isNormal(next_attribute);
   appendAttributes (next_attribute);
 
-  if ( ! ( (cl.data || cd.data || cb.data) && (normal || ut) )
+  if ( ! ( (has_cl || has_cd || has_cb) && (normal || ut) )
     || fillchar != L' '
     || ! FVTerm::isDrawingFinished() )
   {
     return false;
   }
 
-  if ( cl.data )  // Clear screen
+  if ( has_cl )  // Clear screen
   {
     appendOutputBuffer (FTermControl{cl});
     term_pos->setPoint(0, 0);
   }
-  else if ( cd.data )  // Clear to end of screen
+  else if ( has_cd )  // Clear to end of screen
   {
     setCursor (FPoint{0, 0});
     appendOutputBuffer (FTermControl{cd});
     term_pos->setPoint(-1, -1);
   }
-  else if ( cb.data )  // Clear to end of line
+  else if ( has_cb )  // Clear to end of line
   {
     term_pos->setPoint(-1, -1);
 
@@ -478,6 +496,12 @@ void FTermOutput::init_characterLengths()
 }
 
 //----------------------------------------------------------------------
+static inline auto isUTF8Terminal() -> bool
+{
+  return internal::terminal::encoding == Encoding::UTF8;
+}
+
+//----------------------------------------------------------------------
 void FTermOutput::init_combined_character()
 {
 #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
@@ -485,8 +509,7 @@ void FTermOutput::init_combined_character()
     return;
 #endif
 
-  if ( internal::terminal::encoding != Encoding::UTF8
-    || fterm_data->isTermType(FTermType::cygwin) )
+  if ( ! isUTF8Terminal() || fterm_data->isTermType(FTermType::cygwin) )
     return;
 
   if ( fterm_data->isTermType ( FTermType::xterm
@@ -504,9 +527,9 @@ auto FTermOutput::canClearToEOL (uInt xmin, uInt y) const -> bool
   // Is the line from xmin to the end of the line blank?
   // => clear to end of line
 
-  const auto& ce = TCAP(t_clr_eol);
+  const bool has_ce = TCAP(t_clr_eol).data;
 
-  if ( ! ce.data )
+  if ( ! has_ce )
     return false;
 
   const auto width = uInt(vterm->size.width);
@@ -521,7 +544,7 @@ auto FTermOutput::canClearToEOL (uInt xmin, uInt y) const -> bool
                               , row_end
                               , [min_char] (const FChar& ch)
                                 {
-                                  return *min_char != ch;
+                                  return *min_char == ch;
                                 } );
   if ( ! all_same )
     return false;
@@ -539,9 +562,9 @@ auto FTermOutput::canClearLeadingWS (uInt& xmin, uInt y) const -> bool
   // Line has leading whitespace
   // => clear from xmin to beginning of line
 
-  const auto& cb = TCAP(t_clr_bol);
+  const bool has_cb = TCAP(t_clr_bol).data;
 
-  if ( ! cb.data )
+  if ( ! has_cb )
     return false;
 
   const auto width = uInt(vterm->size.width);
@@ -579,9 +602,9 @@ auto FTermOutput::canClearTrailingWS (uInt& xmax, uInt y) const -> bool
   // Line has trailing whitespace
   // => clear from xmax to end of line
 
-  const auto& ce = TCAP(t_clr_eol);
+  const bool has_ce = TCAP(t_clr_eol).data;
 
-  if ( ! ce.data )
+  if ( ! has_ce )
     return false;
 
   const int width = vterm->size.width;
@@ -659,10 +682,13 @@ auto FTermOutput::skipUnchangedCharacters ( uInt& x, uInt xmax, uInt y
 //----------------------------------------------------------------------
 void FTermOutput::printRange (uInt xmin, uInt xmax, uInt y)
 {
-  const auto& ec = TCAP(t_erase_chars);
-  const auto& rp = TCAP(t_repeat_char);
-  const auto& lr = TCAP(t_repeat_last_char);
+  const bool has_ec = TCAP(t_erase_chars).data;
+  const bool has_rp = TCAP(t_repeat_char).data;
+  const bool has_lr = TCAP(t_repeat_last_char).data;
+  const bool has_rep = has_rp || has_lr;
   const auto vterm_width = uInt(vterm->size.width - 1);
+  const auto last_row = vterm->size.height - 1;
+  const auto last = std::min(xmax, vterm_width - 1);  // keep x < vterm_width
   auto iter = vterm->getFCharIterator(int(xmin), int(y));
   uInt x = xmin;
   uInt x_last = xmin;
@@ -682,24 +708,118 @@ void FTermOutput::printRange (uInt xmin, uInt xmax, uInt y)
       continue;
 
     // Erase character
-    if ( ec.data && iter->ch.unicode_data[0] == L' ' )
+    if ( has_ec && iter->ch.unicode_data[0] == L' ' )
     {
       if ( eraseCharacters(x, xmax, y, iter) \
            == PrintState::LineCompletelyPrinted )
         break;
     }
-    else if ( rp.data || lr.data )  // Repeat one character n-fold
+    else
     {
-      repeatCharacter(x, xmax, y, iter);
-    }
-    else  // General character output
-    {
-      bool min_and_not_max{ x == xmin && xmin != xmax };
-      printCharacter (x, y, min_and_not_max, iter);
+      const bool plain = x < vterm_width
+                       && iter->getCharWidth() != 2
+                       && ! iter->isBitSet(FAttribute::set::fullwidth_padding)
+                       && ( x == 0 || (iter - 1)->getCharWidth() != 2 );
+
+      // Plain characters use fast path if no repetition starts here
+      if ( plain && ! (has_rep && canStartRepeat(iter, x, xmax)) )
+      {
+        if ( term_pos->getY() != last_row )
+          x = printPlain (x, last, xmax, iter, has_ec, has_rep);
+        else
+          appendCharacter (iter);  // last row: needs the lower-right handling
+                                   // The printed bit was set at the top
+      }
+      else if ( has_rep )  // Repeat one character n-fold
+      {
+        repeatCharacter (x, xmax, y, iter);
+      }
+      else  // The general character output
+      {
+        bool min_and_not_max{ x == xmin && xmin != xmax };
+        printCharacter (x, y, min_and_not_max, iter);
+      }
     }
 
     ++x;
   }
+}
+
+//----------------------------------------------------------------------
+inline auto FTermOutput::printPlain ( uInt x, uInt last, uInt xmax
+                                    , FChar_iterator iter
+                                    , bool has_ec, bool has_rep ) -> uInt
+{
+  constexpr auto stop_mask = FAttribute::set::no_changes
+                           | FAttribute::set::fullwidth_padding;
+  constexpr auto batch_stop_mask = stop_mask | FAttribute::set::invisible;
+  auto& term_x = term_pos->x_ref();
+
+  appendChar (*iter);  // first cell (already verified by the caller)
+  ++term_x;
+
+  while ( x < last )
+  {
+    auto& next = *(iter + 1);
+
+    if ( next.isBitSet(stop_mask)
+      || next.getCharWidth() == 2  // full-width
+      || (has_ec && next.ch.unicode_data[0] == L' ')  // A erase-chars candidate
+      || (has_rep && canStartRepeat(iter + 1, x + 1, xmax)) )  // Repetition can begin
+      break;
+
+    ++iter;
+    ++x;
+    iter->setBit(FAttribute::set::printed);
+    appendChar (*iter);
+    ++term_x;
+
+    // Batch the following cells that need no attribute change
+    auto& slices = output_buffer->slices;
+
+    if ( ! internal::var::plain_utf8_output || slices.isEmpty()
+      || slices.back().type != FOutputBuffer::OutputType::String )
+      continue;  // last slice is a control sequence, or a flush emptied the ring
+
+    auto& slice = slices.back();
+    auto& out = output_buffer->data;
+    uInt32 added{0};
+
+    while ( x < last )
+    {
+      auto& next = *(iter + 1);
+      const auto c = next.ch.unicode_data[0];
+
+      if ( next.isBitSet(batch_stop_mask)
+        || next.getCharWidth() == 2
+        || c == L'\0' || next.ch.unicode_data[1] != L'\0'
+        || (has_ec && c == L' ')
+        || (has_rep && canStartRepeat(iter + 1, x + 1, xmax))
+        || term_attribute.color.data != next.color.data
+        || (term_attribute.attr.data & 0x0000ffffU)
+           != (next.attr.data & 0x0000ffffU) )
+        break;
+
+      ++iter;
+      ++x;
+      iter->setBit(FAttribute::set::printed);
+      added += out.appendUnicode(c);
+      ++term_x;
+    }
+
+    slice.length += added;
+  }
+
+  return x;  // Position of the last processed cell
+}
+
+//----------------------------------------------------------------------
+inline auto FTermOutput::canStartRepeat ( FChar_const_iterator it
+                                        , uInt pos, uInt xmax ) const noexcept -> bool
+{
+  return pos < xmax
+      && it[1].ch.unicode_data[0] == it->ch.unicode_data[0]
+      && it[1] == *it;
 }
 
 //----------------------------------------------------------------------
@@ -744,9 +864,7 @@ void FTermOutput::printCharacter ( uInt& x, uInt y, bool min_and_not_max
   }
   else
   {
-    // Print a half-width character
-    appendCharacter (iter);
-    markAsPrinted (x, y);
+    appendCharacter (iter);  // Print a half-width character
   }
 }
 
@@ -861,8 +979,9 @@ auto FTermOutput::eraseCharacters (uInt& x, uInt xmax, uInt y, const FChar_itera
   // Erase a number of characters to draw simple whitespaces
 
   const auto& ec = TCAP(t_erase_chars);
+  const bool has_es = ec.data;
 
-  if ( ! (ec.data && iter->ch.unicode_data[0] == L' ') )
+  if ( ! (has_es && iter->ch.unicode_data[0] == L' ') )
     return PrintState::NothingPrinted;
 
   const auto whitespace = countRepetitions(iter, x, xmax);
@@ -901,9 +1020,11 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y, const FChar_itera
   // Repeat one character n-fold
 
   const auto& rp = TCAP(t_repeat_char);
+  const bool has_rp = rp.data;
   const auto& lr = TCAP(t_repeat_last_char);
+  const bool has_lr = lr.data;
 
-  if ( ! (rp.data || lr.data) )
+  if ( ! (has_rp || has_lr) )
     return PrintState::NothingPrinted;
 
   const auto repetitions = countRepetitions(iter, x, xmax);
@@ -919,7 +1040,7 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y, const FChar_itera
   // cannot repeat in their byte sequence
   const auto repetition_type = getRepetitionType(*iter, repetitions);
 
-  if ( rp.data && repetition_type == Repetition::ASCII )
+  if ( has_rp && repetition_type == Repetition::ASCII )
   {
     newFontFilter (*iter);
     auto ch_enc = charsetEncode (*iter);
@@ -928,7 +1049,7 @@ auto FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y, const FChar_itera
     appendOutputBuffer (FTermControl{term_ctrl});
     term_pos->x_ref() += static_cast<int>(repetitions);
   }
-  else if ( lr.data && repetition_type == Repetition::UTF8 )
+  else if ( has_lr && repetition_type == Repetition::UTF8 )
   {
     appendChar (*iter);
     const auto term_ctrl = FTermcap::encodeParameter(lr, repetitions);
@@ -951,13 +1072,15 @@ inline auto FTermOutput::countRepetitions ( FChar_const_iterator iter
   if ( to < from )
     return 0;
 
-  const FChar first = iter[0];
   const uInt end = (to - from) + 1;
   uInt index = 1;
 
   for (; index < end; ++index)
   {
-    if ( iter[index] != first )
+    const FChar& prev = iter[index - 1];
+    const FChar& cur  = iter[index];
+
+    if ( std::memcmp(&prev, &cur, sizeof(FChar)) != 0 && prev != cur )
       break;
   }
 
@@ -1214,11 +1337,25 @@ inline void FTermOutput::newFontFilter (FChar& next_char) const noexcept
 }
 
 //----------------------------------------------------------------------
+inline void FTermOutput::characterFilter (FChar& next_char) noexcept
+{
+  if ( ! internal::var::has_sub_map )
+    return;
+
+  static const auto& sub_map = getFTerm().getCharSubstitutionMap();
+  wchar_t& w_char = next_char.ch.unicode_data[0];
+  const auto found = sub_map.getMappedChar(w_char);
+
+  if ( found )
+    w_char = found;
+}
+
+//----------------------------------------------------------------------
 inline auto FTermOutput::charsetEncode (FChar& next_char) const noexcept -> uChar
 {
   const auto& ch = next_char.ch.unicode_data[0];
 
-  if ( internal::terminal::encoding == Encoding::UTF8 )
+  if ( isUTF8Terminal() )
     return uChar(ch & 0xff);
 
   const auto ch_enc = FTerm::charEncode(ch);
@@ -1286,15 +1423,39 @@ inline void FTermOutput::appendCharacter_n (const FChar_iterator& next_char_iter
 //----------------------------------------------------------------------
 inline void FTermOutput::appendChar (FChar& next_char)
 {
-  if ( internal::terminal::encoding == Encoding::UTF8 )
+  const auto c0 = next_char.ch.unicode_data[0];
+
+  if ( internal::var::plain_utf8_output
+    && c0 != L'\0'
+    && next_char.ch.unicode_data[1] == L'\0'
+    && ! next_char.isBitSet(FAttribute::set::invisible) )  // fast path
+  {
+    appendAttributes(next_char);
+    appendOutputBuffer(c0);
+    return;
+  }
+
+  appendCharImpl(next_char);  // slow path
+}
+
+//----------------------------------------------------------------------
+void FTermOutput::appendCharImpl (FChar& next_char)
+{
+  if ( isUTF8Terminal() )
   {
     newFontFilter (next_char);
-    characterFilter (next_char.ch.unicode_data[0]);
+    characterFilter (next_char);
     appendAttributes (next_char);
 
     if ( needsInvisibleSimulation(next_char) )
     {
       appendOutputBuffer (' ');  // Simulate invisible character
+      return;
+    }
+
+    if ( ! combined_char_support )
+    {
+      appendOutputBuffer (next_char.ch.unicode_data[0]);
       return;
     }
 
@@ -1304,33 +1465,31 @@ inline void FTermOutput::appendChar (FChar& next_char)
         break;
 
       appendOutputBuffer (ch);
-
-      if ( ! combined_char_support )
-        return;
     }
+
+    return;
   }
-  else  // ASCII, VT100, or PC encoding
+
+  // ASCII, VT100, or PC encoding
+  newFontFilter (next_char);
+  characterFilter (next_char);
+  auto ch_enc = char(charsetEncode(next_char));
+  appendAttributes (next_char);
+
+  if ( needsInvisibleSimulation(next_char) )
   {
-    newFontFilter (next_char);
-    characterFilter (next_char.ch.unicode_data[0]);
-    auto ch_enc = char(charsetEncode (next_char));
-    appendAttributes (next_char);
-
-    if ( needsInvisibleSimulation(next_char) )
-    {
-      appendOutputBuffer (' ');  // Simulate invisible character
-      return;
-    }
-
-    appendOutputBuffer (ch_enc);
+    appendOutputBuffer (' ');  // Simulate invisible character
+    return;
   }
+
+  appendOutputBuffer (ch_enc);
 }
 
 //----------------------------------------------------------------------
-inline auto FTermOutput::needsInvisibleSimulation (const FChar& next_char) -> bool
+inline auto FTermOutput::needsInvisibleSimulation (const FChar& next_char) const noexcept -> bool
 {
-  const auto& mk = TCAP(t_enter_secure_mode);
-  return ! mk.data && next_char.isBitSet(FAttribute::set::invisible);
+  return next_char.isBitSet(FAttribute::set::invisible)
+      && ! TCAP(t_enter_secure_mode).data;
   // true = The next character is invisible, but this terminal does
   //        not support that feature. Therefore, you must simulate
   //        an invisible character.
@@ -1358,13 +1517,15 @@ inline void FTermOutput::appendAttributes (FChar& next_attr)
 void FTermOutput::appendLowerRight (const FChar_iterator& last_char_iter)
 {
   const auto& SA = TCAP(t_enter_am_mode);
+  const bool has_SA = SA.data;
   const auto& RA = TCAP(t_exit_am_mode);
+  const bool has_RA = RA.data;
 
   if ( ! FTermcap::automatic_right_margin )
   {
     appendChar (*last_char_iter);
   }
-  else if ( SA.data && RA.data )
+  else if ( has_SA && has_RA )
   {
     appendOutputBuffer (FTermControl{RA});
     appendChar (*last_char_iter);
@@ -1373,10 +1534,14 @@ void FTermOutput::appendLowerRight (const FChar_iterator& last_char_iter)
   else
   {
     const auto& IC = TCAP(t_parm_ich);
+    const bool has_IC = IC.data;
     const auto& im = TCAP(t_enter_insert_mode);
     const auto& ei = TCAP(t_exit_insert_mode);
+    const bool has_im_and_ei = im.data && ei.data;
     const auto& ip = TCAP(t_insert_padding);
+    const bool has_ip = ip.data;
     const auto& ic = TCAP(t_insert_character);
+    const bool has_ic = ic.data;
 
     const int x = int(getColumnNumber()) - 2;
     const int y = int(getLineNumber()) - 1;
@@ -1387,44 +1552,31 @@ void FTermOutput::appendLowerRight (const FChar_iterator& last_char_iter)
     setCursor (FPoint{x, y});
     auto second_last = last_char_iter - 1;
 
-    if ( IC.data )
+    if ( has_IC )
     {
       const auto term_ctrl = FTermcap::encodeParameter(IC, 1);
       appendOutputBuffer (FTermControl{term_ctrl});
       appendChar (*second_last);
     }
-    else if ( im.data && ei.data )
+    else if ( has_im_and_ei )
     {
       appendOutputBuffer (FTermControl{im});
       appendChar (*second_last);
 
-      if ( ip.data )
+      if ( has_ip )
         appendOutputBuffer (FTermControl{ip});
 
       appendOutputBuffer (FTermControl{ei});
     }
-    else if ( ic.data )
+    else if ( has_ic )
     {
       appendOutputBuffer (FTermControl{ic});
       appendChar (*second_last);
 
-      if ( ip.data )
+      if ( has_ip )
         appendOutputBuffer (FTermControl{ip});
     }
   }
-}
-
-//----------------------------------------------------------------------
-inline void FTermOutput::characterFilter (wchar_t& w_char) noexcept
-{
-  if ( ! internal::var::has_sub_map )
-    return;
-
-  static const auto& sub_map = getFTerm().getCharSubstitutionMap();
-  const auto found = sub_map.getMappedChar(w_char);
-
-  if ( found )
-    w_char = found;
 }
 
 //----------------------------------------------------------------------
@@ -1432,11 +1584,13 @@ inline auto FTermOutput::moveCursorLeft() -> CursorMoved
 {
   // Move cursor one character to the left
   const auto& le = TCAP(t_cursor_left);
+  const bool has_le = le.data;
   const auto& LE = TCAP(t_parm_left_cursor);
+  const bool has_LE = LE.data;
 
-  if ( le.data )
+  if ( has_le )
     appendOutputBuffer (FTermControl{le});
-  else if ( LE.data )
+  else if ( has_LE )
   {
     const auto term_ctrl = FTermcap::encodeParameter(LE, 1);
     appendOutputBuffer (FTermControl{term_ctrl});
@@ -1466,18 +1620,16 @@ inline void FTermOutput::appendOutputBuffer (wchar_t ucs)
 {
   static constexpr auto type = FOutputBuffer::OutputType::String;
   auto& slices = output_buffer->slices;
-  auto& last = slices.back();
 
-  if ( ! slices.isEmpty() && last.type == type )
+  if ( ! slices.isEmpty() && slices.back().type == type )
   {
-    last.length += output_buffer->data.appendUnicode(ucs);
+    slices.back().length += output_buffer->data.appendUnicode(ucs);
+    return;
   }
-  else
-  {
-    const auto length = output_buffer->data.appendUnicode(ucs);
-    slices.emplace(type, length);
-    checkFreeBufferSize();
-  }
+
+  const auto length = output_buffer->data.appendUnicode(ucs);
+  slices.emplace(type, length);
+  checkFreeBufferSize();
 }
 
 //----------------------------------------------------------------------
@@ -1489,9 +1641,7 @@ inline void FTermOutput::appendOutputBuffer (const UniChar& ch)
 //----------------------------------------------------------------------
 inline void FTermOutput::appendOutputBuffer (char ch)
 {
-  appendOutputBuffer( FOutputBuffer::OutputType::String
-                    , reinterpret_cast<char*>(&ch)
-                    , 1 );
+  appendOutputBuffer(FOutputBuffer::OutputType::String, &ch, 1);
 }
 
 //----------------------------------------------------------------------
@@ -1500,19 +1650,17 @@ inline void FTermOutput::appendOutputBuffer ( FOutputBuffer::OutputType type
                                             , uInt32 length )
 {
   auto& slices = output_buffer->slices;
-  auto& last = slices.back();
 
-  if ( ! slices.isEmpty() && last.type == type )
+  if ( ! slices.isEmpty() && slices.back().type == type )
   {
     output_buffer->data.append(data, length);
-    last.length += length;
+    slices.back().length += length;
+    return;
   }
-  else
-  {
-    slices.emplace(type, uInt32(length));
-    output_buffer->data.append(data, length);
-    checkFreeBufferSize();
-  }
+
+  slices.emplace(type, uInt32(length));
+  output_buffer->data.append(data, length);
+  checkFreeBufferSize();
 }
 
 }  // namespace finalcut

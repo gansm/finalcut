@@ -595,9 +595,11 @@ void FTerm::saveColorMap()
 void FTerm::resetColorMap()
 {
   const auto& oc = TCAP(t_orig_colors);
+  const bool has_oc = oc.data;
   const auto& op = TCAP(t_orig_pair);
+  const bool has_op = op.data;
 
-  if ( oc.data )
+  if ( has_oc )
     paddingPrint (oc);
 
 #if defined(__linux__)
@@ -605,7 +607,7 @@ void FTerm::resetColorMap()
     FTermLinux::getInstance().resetColorMap();
 #endif
 
-  if ( op.data )
+  if ( has_op )
     paddingPrint (op);
 
   std::fflush(stdout);
@@ -614,17 +616,23 @@ void FTerm::resetColorMap()
 //----------------------------------------------------------------------
 void FTerm::clearTerminalAttributes()
 {
+  const auto& me = TCAP(t_exit_attribute_mode);
+  const bool has_me = me.data;
+
   // Turn off all attributes
-  if ( TCAP(t_exit_attribute_mode).data )
+  if ( has_me )
   {
-    paddingPrint (TCAP(t_exit_attribute_mode));
+    paddingPrint (me);
     std::fflush(stdout);
   }
 
+  const auto& S3 = TCAP(t_exit_pc_charset_mode);
+  const bool has_S3 = S3.data;
+
   // Turn off pc charset mode
-  if ( TCAP(t_exit_pc_charset_mode).data )
+  if ( has_S3 )
   {
-    paddingPrint (TCAP(t_exit_pc_charset_mode));
+    paddingPrint (S3);
     std::fflush(stdout);
   }
 }
@@ -635,24 +643,26 @@ void FTerm::setPalette (FColor index, int r, int g, int b)
   // Redefine RGB color value for a palette entry
 
   const auto& Ic = TCAP(t_initialize_color);
+  const bool has_Ic = Ic.data;
   const auto& Ip = TCAP(t_initialize_pair);
+  const bool has_Ip = Ip.data;
   bool state{false};
 
   index = FOptiAttr::vga2ansi(index);
 
-  if ( Ic.data || Ip.data )
+  if ( has_Ic || has_Ip )
   {
     const int rr = (r * 1001) / 256;
     const int gg = (g * 1001) / 256;
     const int bb = (b * 1001) / 256;
 
     const FTermcap::TermcapString& color_str = \
-        [&index, &rr, &gg, &bb, &Ic, &Ip] ()
+        [index, rr, gg, bb, has_Ic, has_Ip, &Ic, &Ip] ()
         {
-          if ( Ic.data )
+          if ( has_Ic )
             return FTermcap::encodeParameter(Ic, uInt16(index), rr, gg, bb);
 
-          if ( Ip.data )
+          if ( has_Ip )
             return FTermcap::encodeParameter(Ip, uInt16(index), 0, 0, 0, rr, gg, bb);
 
           return FTermcap::TermcapString{nullptr, 0};
@@ -715,9 +725,12 @@ void FTerm::resetBeep()
 //----------------------------------------------------------------------
 void FTerm::beep()
 {
-  if ( TCAP(t_bell).data )
+  const auto& bl = TCAP(t_bell);
+  const bool has_bl = bl.data;
+
+  if ( has_bl )
   {
-    paddingPrint (TCAP(t_bell));
+    paddingPrint (bl);
     std::fflush(stdout);
   }
 }
@@ -797,9 +810,12 @@ auto FTerm::charEncode (const wchar_t& c, const Encoding& enc) -> uChar
 //----------------------------------------------------------------------
 auto FTerm::scrollTermForward() -> bool
 {
-  if ( TCAP(t_scroll_forward).data )
+  const auto& sf = TCAP(t_scroll_forward);
+  const bool has_sf = sf.data;
+
+  if ( has_sf )
   {
-    paddingPrint (TCAP(t_scroll_forward));
+    paddingPrint (sf);
     std::fflush(stdout);
     return true;
   }
@@ -810,9 +826,12 @@ auto FTerm::scrollTermForward() -> bool
 //----------------------------------------------------------------------
 auto FTerm::scrollTermReverse() -> bool
 {
-  if ( TCAP(t_scroll_reverse).data )
+  const auto& sr = TCAP(t_scroll_reverse);
+  const bool has_sr = sr.data;
+
+  if ( has_sr )
   {
-    paddingPrint (TCAP(t_scroll_reverse));
+    paddingPrint (sr);
     std::fflush(stdout);
     return true;
   }
@@ -1024,7 +1043,11 @@ void FTerm::init_pc_charset()
 inline auto FTerm::configEnterPcCharsetMode() -> bool
 {
   // Fallback if tcap "S2" is not found
-  if ( TCAP(t_enter_pc_charset_mode).data )
+
+  auto& S2 = TCAP(t_enter_pc_charset_mode);
+  const bool has_S2 = S2.data;
+
+  if ( has_S2 )
     return false;
 
   static const auto& data = FTermData::getInstance();
@@ -1032,16 +1055,16 @@ inline auto FTerm::configEnterPcCharsetMode() -> bool
   if ( data.hasUTF8Console() )
   {
     // Select iso8859-1 + null mapping
-    TCAP(t_enter_pc_charset_mode) = {ESC "%@" ESC "(U", 6};
+    S2 = {ESC "%@" ESC "(U", 6};
   }
   else
   {
     // Select null mapping
-    TCAP(t_enter_pc_charset_mode) = {ESC "(U", 3};
+    S2 = {ESC "(U", 3};
   }
 
   static auto& opti_attr = FOptiAttr::getInstance();
-  opti_attr.set_enter_pc_charset_mode(TCAP(t_enter_pc_charset_mode));
+  opti_attr.set_enter_pc_charset_mode(S2);
   return true;
 }
 
@@ -1049,7 +1072,11 @@ inline auto FTerm::configEnterPcCharsetMode() -> bool
 inline auto FTerm::configExitPcCharsetMode() -> bool
 {
   // Fallback if tcap "S3" is not found
-  if ( TCAP(t_exit_pc_charset_mode).data )
+
+  auto& S3 = TCAP(t_exit_pc_charset_mode);
+  const bool has_S3 = S3.data;
+
+  if ( has_S3 )
     return false;
 
   static const auto& data = FTermData::getInstance();
@@ -1057,16 +1084,16 @@ inline auto FTerm::configExitPcCharsetMode() -> bool
   if ( data.hasUTF8Console() )
   {
     // Select ascii mapping + utf8
-    TCAP(t_exit_pc_charset_mode) = {ESC "(B" ESC "%G", 6};
+    S3 = {ESC "(B" ESC "%G", 6};
   }
   else
   {
     // Select ascii mapping
-    TCAP(t_enter_pc_charset_mode) = {ESC "(B", 3};
+    S3 = {ESC "(B", 3};
   }
 
   static auto& opti_attr = FOptiAttr::getInstance();
-  opti_attr.set_exit_pc_charset_mode(TCAP(t_exit_pc_charset_mode));
+  opti_attr.set_exit_pc_charset_mode(S3);
   return true;
 }
 
@@ -1602,8 +1629,8 @@ auto FTerm::enableCursor() -> FTermcap::TermcapString
   static const auto& ve = TCAP(t_cursor_normal);
   static const auto* const ctrl = [] () -> const FTermcap::TermcapString*
   {
-    if (ve.data) return &ve;
-    if (vs.data) return &vs;
+    if ( ve.data ) return &ve;
+    if ( vs.data ) return &vs;
     return nullptr;
   }();
   static std::array<char, 32> buf{};
@@ -1715,9 +1742,12 @@ inline void FTerm::enableKeypad()
 {
   // Enter 'keyboard_transmit' mode
 
-  if ( TCAP(t_keypad_xmit).data )
+  const auto& ks = TCAP(t_keypad_xmit);
+  const bool has_ks = ks.data;
+
+  if ( has_ks )
   {
-    paddingPrint (TCAP(t_keypad_xmit));
+    paddingPrint (ks);
     std::fflush(stdout);
   }
 }
@@ -1727,9 +1757,12 @@ inline void FTerm::disableKeypad()
 {
   // Leave 'keyboard_transmit' mode
 
-  if ( TCAP(t_keypad_local).data )
+  const auto& ke = TCAP(t_keypad_xmit);
+  const bool has_ke = ke.data;
+
+  if ( has_ke )
   {
-    paddingPrint (TCAP(t_keypad_local));
+    paddingPrint (ke);
     std::fflush(stdout);
   }
 }
@@ -1739,9 +1772,12 @@ inline void FTerm::enableAlternateCharset()
 {
   // Enable alternate charset
 
-  if ( TCAP(t_enable_acs).data )
+  const auto& eA = TCAP(t_enable_acs);
+  const bool has_eA = eA.data;
+
+  if ( has_eA )
   {
-    paddingPrint (TCAP(t_enable_acs));
+    paddingPrint (eA);
     std::fflush(stdout);
   }
 }
@@ -1773,17 +1809,24 @@ void FTerm::useAlternateScreenBuffer()
     return;
 
   // Save current cursor position
-  if ( TCAP(t_save_cursor).data )
+  const auto& sc = TCAP(t_save_cursor);
+  const bool has_sc = sc.data;
+
+  if ( has_sc )
   {
-    paddingPrint (TCAP(t_save_cursor));
+    paddingPrint (sc);
     std::fflush(stdout);
   }
 
   // Saves the screen and the cursor position
-  if ( TCAP(t_enter_ca_mode).data )
+  const auto& ti = TCAP(t_enter_ca_mode);
+  const auto& cl = TCAP(t_clear_screen);
+  const bool has_ti_and_cl = ti.data && cl.data;
+
+  if ( has_ti_and_cl )
   {
-    paddingPrint (TCAP(t_enter_ca_mode));  // Use alternate screen buffer
-    paddingPrint (TCAP(t_clear_screen));  // Ensure the display is cleared
+    paddingPrint (ti);  // Use alternate screen buffer
+    paddingPrint (cl);  // Ensure the display is cleared
     std::fflush(stdout);
     FTermData::getInstance().setAlternateScreenInUse(true);
   }
@@ -1798,17 +1841,23 @@ void FTerm::useNormalScreenBuffer()
     return;
 
   // restores the screen and the cursor position
-  if ( TCAP(t_exit_ca_mode).data )
+  const auto& te = TCAP(t_exit_ca_mode);
+  const bool has_te = te.data;
+
+  if ( has_te )
   {
-    paddingPrint (TCAP(t_exit_ca_mode));  // Use Normal Screen Buffer
+    paddingPrint (te);  // Use Normal Screen Buffer
     std::fflush(stdout);
     FTermData::getInstance().setAlternateScreenInUse(false);
   }
 
   // restore cursor to position of last save_cursor
-  if ( TCAP(t_restore_cursor).data )
+  const auto& rc = TCAP(t_restore_cursor);
+  const bool has_rc = rc.data;
+
+  if ( has_rc )
   {
-    paddingPrint (TCAP(t_restore_cursor));
+    paddingPrint (rc);
     std::fflush(stdout);
   }
 }
@@ -1914,6 +1963,12 @@ void FTerm::init()
 //----------------------------------------------------------------------
 auto FTerm::init_terminal() const -> bool
 {
+  std::fflush (stdout);  // Flush old buffer
+
+  // Optimizes standard output using an internal 64-KB buffer
+  static char stdout_buffer[64 * 1024];
+  std::setvbuf (stdout, stdout_buffer, _IOFBF, sizeof(stdout_buffer));
+
   // Initialize termios
   FTermios::init();
   static const auto& fsys = FSystem::getInstance();
@@ -1953,6 +2008,7 @@ auto FTerm::init_terminal() const -> bool
   term_detection.detect();
   const auto& termtype = term_detection.getTermType();
   setTermType(termtype.toString());
+
   return true;
 }
 

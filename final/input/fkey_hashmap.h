@@ -112,6 +112,8 @@ constexpr auto hash_function (const BufferT& buf) -> std::size_t
 template <typename BufferT>
 struct KeySequenceHash
 {
+  KeySequenceHash() = default;
+
   auto operator () (const KeySequence<BufferT>& key) const noexcept -> std::size_t
   {
     if ( key.string && ! key.buffer )
@@ -129,6 +131,8 @@ struct KeySequenceHash
 template <typename BufferT>
 struct KeySequenceEqual
 {
+  KeySequenceEqual() = default;
+
   auto operator () ( const KeySequence<BufferT>& lhs
                    , const KeySequence<BufferT>& rhs) const noexcept -> bool
   {
@@ -167,7 +171,9 @@ template <typename BufferT>
 auto createKeyCapMap() -> HashMap<BufferT>
 {
   const auto& fkey_cap_table = FKeyMap::getKeyCapMap();
-  HashMap<BufferT> fkey_cap_map;
+  HashMap<BufferT> fkey_cap_map{ 0
+                               , KeySequenceHash<BufferT>{}
+                               , KeySequenceEqual<BufferT>{} };
 
   // Reserve more space (1.25×) to avoid rehashing during construction
   fkey_cap_map.reserve((fkey_cap_table.size() * 5) / 4);  // ⁵⁄₄ = 1.25
@@ -183,7 +189,9 @@ auto createKeyCapMap() -> HashMap<BufferT>
 template <typename BufferT, typename IterT>
 auto createKeyCapMap (IterT begin, IterT end) -> HashMap<BufferT>
 {
-  HashMap<BufferT> fkey_cap_map;
+  HashMap<BufferT> fkey_cap_map{ 0
+                               , KeySequenceHash<BufferT>{}
+                               , KeySequenceEqual<BufferT>{} };
   fkey_cap_map.reserve(std::size_t(std::distance(begin, end)));
 
   std::for_each ( begin
@@ -202,7 +210,9 @@ template <typename BufferT>
 auto createKeyMap() -> HashMap<BufferT>
 {
   auto& fkey_table = FKeyMap::getKeyMap();
-  HashMap<BufferT> fkey_map;
+  HashMap<BufferT> fkey_map{ 0
+                           , KeySequenceHash<BufferT>{}
+                           , KeySequenceEqual<BufferT>{} };
 
   // Reserve more space (1.25×) to avoid rehashing during construction
   fkey_map.reserve((fkey_table.size() * 5) / 4);  // ⁵⁄₄ = 1.25

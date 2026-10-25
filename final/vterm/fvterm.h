@@ -386,7 +386,7 @@ class FVTerm : public FVTermAttribute
     void  initFromGlobalInstance();
     void  initSettings();
     void  finish() const;
-    void  saveCurrentVTerm() const noexcept;
+    void  saveCurrentVTerm (uInt, uInt) const noexcept;
     void  putRegionLine (const FChar&, FChar&, const int) const noexcept;
     void  applyColorOverlay (const FChar&, FChar&) const;
     void  inheritBackground (const FChar&, FChar&) const;
@@ -397,9 +397,16 @@ class FVTerm : public FVTermAttribute
     void  addTransparentRegionChar (const FChar&, FChar&) const;
     auto  clearFullRegion (FTermRegion*, FChar&) const -> bool;
     void  clearRegionWithShadow (FTermRegion*, const FChar&) const noexcept;
+    auto  printPlain (FTermRegion*, const FString&) const noexcept -> int;
     auto  printWrap (FTermRegion*, FChar_iterator&) const -> bool;
-    auto  interpretControlCodes (FTermRegion*, FChar_iterator&, const FChar&) const noexcept -> bool;
-    auto  printCharacter (FTermRegion*, FChar_iterator&, const FChar&) const noexcept -> int;
+    auto  interpretControlCodes ( FTermRegion*
+                                , FChar_iterator&
+                                , const FChar&) const noexcept -> bool;
+    auto  printRegionRange ( FTermRegion* region
+                           , FChar_iterator&
+                           , FVTermBuffer::const_iterator
+                           , FVTermBuffer::const_iterator ) const noexcept -> int;
+    auto  printComplexChar (FTermRegion*, FChar_iterator&, const FChar&) const noexcept -> int;
     auto  printCharacterOnCoordinate ( FTermRegion*
                                      , const FChar_iterator&
                                      , const FChar&) const noexcept -> std::size_t;

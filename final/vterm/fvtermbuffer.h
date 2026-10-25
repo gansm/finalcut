@@ -45,6 +45,36 @@
 namespace finalcut
 {
 
+namespace internal
+{
+
+constexpr void setAttributeMask (FCharAttribute& attr) noexcept
+{
+  attr.bold = true;
+  attr.dim = true;
+  attr.italic = true;
+  attr.underline = true;
+  attr.blink = true;
+  attr.reverse = true;
+  attr.standout = true;
+  attr.invisible = true;
+  attr.protect = true;
+  attr.crossed_out = true;
+  attr.dbl_underline = true;
+  attr.alt_charset = true;
+  attr.pc_charset = true;
+  attr.transparent = true;
+  attr.color_overlay = true;
+  attr.inherit_background = true;
+}
+
+struct fvtermbuf_var
+{
+  static constexpr auto attr_mask = createMask(setAttributeMask);
+};
+
+}  // namespace internal
+
 // class forward declaration
 class FStyle;
 class FColorPair;
@@ -132,6 +162,7 @@ class FVTermBuffer
     };
 
     void setAttribute (FChar&) const noexcept;
+    void addPlainASCII (wchar_t);
     void add (UnicodeBoundary&);
 
     // Data member

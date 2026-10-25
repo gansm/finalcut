@@ -319,14 +319,20 @@ auto FVTerm::updateTerminalBuffer() const -> bool
 {
   // Update terminal output buffer when modified
 
-  auto terminal_updated = canUpdateTerminalNow()
-                        ? foutput->updateTerminalBuffer()
-                        : false;
+  if ( ! canUpdateTerminalNow() )
+    return false;
 
-  if ( terminal_updated )
-    saveCurrentVTerm();
+  // Save the first and last rows before the output resets them
+  const auto first_row = vterm->changes_in_row.ymin;
+  const auto last_row  = vterm->changes_in_row.ymax;
 
-  return terminal_updated;
+  // Update the terminal buffer with the VTerm changes
+  auto updated = foutput->updateTerminalBuffer();
+
+  if ( updated )
+    saveCurrentVTerm(first_row, last_row);
+
+  return updated;
 }
 
 //----------------------------------------------------------------------
@@ -411,10 +417,23 @@ void FVTerm::delPreprocessingHandler (const FVTerm* instance)
 auto FVTerm::print (const FString& string) noexcept -> int
 {
   if ( string.isEmpty() )
-    return 0;
+    return -1;
+
+  auto* region = getPrintRegion();
+
+  if ( ! region )
+    return -1;
+
+  if ( vterm_buffer.isEmpty() )
+  {
+    const auto len = printPlain(region, string);
+
+    if ( len >= 0 )
+      return len;
+  }
 
   vterm_buffer.print(string);
-  return print (vterm_buffer);
+  return print (region, vterm_buffer);
 }
 
 //----------------------------------------------------------------------
@@ -422,6 +441,14 @@ auto FVTerm::print (FTermRegion* region, const FString& string) noexcept -> int
 {
   if ( ! region || string.isEmpty() )
     return -1;
+
+  if ( vterm_buffer.isEmpty() )
+  {
+    const auto len = printPlain(region, string);
+
+    if ( len >= 0 )
+      return len;
+  }
 
   vterm_buffer.print(string);
   return print (region, vterm_buffer);
@@ -478,20 +505,29 @@ auto FVTerm::print (FTermRegion* region, FVTermBuffer& buffer) const noexcept ->
 //----------------------------------------------------------------------
 auto FVTerm::print (FTermRegion* region, const FVTermBuffer& buffer) const noexcept -> int
 {
-  int len{0};
-
   if ( ! region || buffer.isEmpty() )
     return -1;
 
-  auto ac = region->getFCharIterator( region->cursor.x - 1
+  int len{0};
+  auto rc = region->getFCharIterator( region->cursor.x - 1
                                     , region->cursor.y - 1 );  // Region character iterator
+  auto iter = buffer.begin();
+  const auto last = buffer.end();
 
-  for (const auto& fchar : buffer)
+  while ( iter != last )
   {
-    if ( printCharacter(region, ac, fchar) == -1 )  // Print next character
+    const auto n = printRegionRange(region, rc, iter, last);  // fast path
+    len += n;
+    iter += FVTermBuffer::difference_type(n);
+
+    if ( iter == last )
+      break;
+
+    if ( printComplexChar(region, rc, *iter) == -1 )  // Print next character
       break;  // No region or end of region reached
 
-    len++;
+    ++len;
+    ++iter;
   }
 
   return len;
@@ -532,9 +568,9 @@ auto FVTerm::print (FTermRegion* region, const FChar& term_char) const noexcept 
   if ( ! region )
     return -1;  // No region
 
-  auto ac = region->getFCharIterator( region->cursor.x - 1
+  auto rc = region->getFCharIterator( region->cursor.x - 1
                                     , region->cursor.y - 1 );  // Region character iterator
-  return printCharacter(region, ac, term_char);
+  return printComplexChar(region, rc, term_char);
 }
 
 //----------------------------------------------------------------------
@@ -725,16 +761,16 @@ void FVTerm::getRegion (const FPoint& pos, FTermRegion* region) const noexcept
   const auto region_width = getFullRegionWidth(region);
   const auto vterm_width = getFullRegionWidth(vterm.get());
   auto line_changes = region->changes_in_line.begin();
-  auto ac = region->data.begin();  // Region character
+  auto rc = region->data.begin();  // Region character
   auto tc = vterm->data.cbegin() + (ay * vterm_width);  // Terminal character
 
   for (auto y{0}; y < y_end; y++)  // line loop
   {
-    putRegionLine (*(tc + unsigned(ax)), *ac, length);
+    putRegionLine (*(tc + unsigned(ax)), *rc, length);
     line_changes->xmin = 0;
     line_changes->xmax = uInt(length - 1);
     ++line_changes;
-    ac += region_width;
+    rc += region_width;
     tc += vterm_width;
   }
 
@@ -767,7 +803,7 @@ void FVTerm::getRegion (const FRect& box, FTermRegion* region) const noexcept
   const int length = std::min(vterm->size.width - x, w);
   const auto region_width = getFullRegionWidth(region);
   const auto vterm_width = getFullRegionWidth(vterm.get());
-  auto ac = region->data.begin() + (dy * region_width);  // Region character
+  auto rc = region->data.begin() + (dy * region_width);  // Region character
   auto tc = vterm->data.cbegin() + (y * vterm_width);  // Terminal character
 
   if ( length < 1 )
@@ -777,11 +813,11 @@ void FVTerm::getRegion (const FRect& box, FTermRegion* region) const noexcept
 
   for (auto line{0}; line < y_end; line++)  // line loop
   {
-    putRegionLine (*(tc + x), *(ac + dx), length);
+    putRegionLine (*(tc + x), *(rc + dx), length);
     line_changes->xmin = std::min(line_changes->xmin, uInt(dx));
     line_changes->xmax = std::max(line_changes->xmax, uInt(dx + length - 1));
     ++line_changes;
-    ac += region_width;
+    rc += region_width;
     tc += vterm_width;
   }
 
@@ -1603,18 +1639,18 @@ inline void FVTerm::applyLineBatch ( FTermRegion* region
       const auto ty = geo.region_y + y;  // Global terminal y-position
       const auto region_line_offset = y * geo.width + line_xmin;
       const auto vterm_line_offset = ty * geo.vterm_width + tx;
-      auto ac = region->data.begin() + region_line_offset;    // Region character
+      auto rc = region->data.begin() + region_line_offset;    // Region character
       auto tc = vterm->data.begin() + vterm_line_offset;  // Terminal character
 
       if ( has_no_trans )
       {
         // Line has only covered characters
-        putRegionLine (*ac, *tc, length);
+        putRegionLine (*rc, *tc, length);
       }
       else
       {
         // Line with hidden and transparent characters
-        addRegionLineWithTransparency (ac, tc, length);
+        addRegionLineWithTransparency (rc, tc, length);
       }
 
       auto vterm_changes = vterm->changes_in_line.begin() + ty;
@@ -1670,7 +1706,11 @@ inline void FVTerm::scrollTerminalForward() const
 
   vdesktop->changes_in_row = {0, uInt(vdesktop->size.height - 2)};
   putRegion (FPoint{1, 1}, vdesktop.get());
-  saveCurrentVTerm();  // Ensure that the current terminal is comparable
+  // Save the first and last rows before the output resets them
+  const auto first_row = vterm->changes_in_row.ymin;
+  const auto last_row  = vterm->changes_in_row.ymax;
+  // Ensure that the current terminal is comparable
+  saveCurrentVTerm(first_row, last_row);
   forceTerminalUpdate();
 }
 
@@ -1698,7 +1738,11 @@ inline void FVTerm::scrollTerminalReverse() const
 
   vdesktop->changes_in_row = {1, uInt(vdesktop->size.height - 1)};
   putRegion (FPoint{1, 1}, vdesktop.get());
-  saveCurrentVTerm();  // Ensure that the current terminal is comparable
+  // Save the first and last rows before the output resets them
+  const auto first_row = vterm->changes_in_row.ymin;
+  const auto last_row  = vterm->changes_in_row.ymax;
+  // Ensure that the current terminal is comparable
+  saveCurrentVTerm(first_row, last_row);
   forceTerminalUpdate();
 }
 
@@ -1830,10 +1874,28 @@ void FVTerm::finish() const
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::saveCurrentVTerm() const noexcept
+inline void FVTerm::saveCurrentVTerm (uInt first_row, uInt last_row) const noexcept
 {
   // Save the content of the virtual terminal
-  std::memcpy(vterm_old->data.data(), vterm->data.data(), vterm->data.size() * sizeof(FChar));
+  // (copy only the rows that were dirty)
+
+  const auto vterm_width = std::size_t(getFullRegionWidth(vterm.get()));
+
+  if ( vterm_width == 0 )
+    return;
+
+  const auto rows = vterm->data.size() / vterm_width;
+
+  if ( first_row > last_row || first_row >= rows )
+    return;  // cursor-only update: nothing dirty
+
+  last_row = std::min(last_row, uInt(rows - 1));
+  const auto offset = std::size_t(first_row) * vterm_width;
+  const auto count  = (std::size_t(last_row) - first_row + 1) * vterm_width;
+
+  std::memcpy ( vterm_old->data.data() + offset
+              , vterm->data.data() + offset
+              , count * sizeof(FChar) );
 }
 
 //----------------------------------------------------------------------
@@ -2202,7 +2264,10 @@ auto FVTerm::clearFullRegion (FTermRegion* region, FChar& fillchar) const -> boo
   {
     fillchar.setBit(FAttribute::set::printed);
     std::fill (vterm->data.begin(), vterm->data.end(), fillchar);
-    saveCurrentVTerm();
+    // Save the first and last rows before the output resets them
+    const auto first_row = vterm->changes_in_row.ymin;
+    const auto last_row  = vterm->changes_in_row.ymax;
+    saveCurrentVTerm(first_row, last_row);
   }
   else
   {
@@ -2257,7 +2322,99 @@ void FVTerm::clearRegionWithShadow (FTermRegion* region, const FChar& fillchar) 
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::printWrap (FTermRegion* region, FChar_iterator& ac) const -> bool
+auto FVTerm::printPlain (FTermRegion* region, const FString& string) const noexcept -> int
+{
+  if ( ! region )
+    return -1;
+
+  const int len = int(string.getLength());
+  const int region_width  = getFullRegionWidth(region);
+  const int region_height = getFullRegionHeight(region);
+  const int x = region->cursor.x;
+  const int y = region->cursor.y;
+  const int room = region_width - x + 1;  // Characters left in this row, including column x
+
+  if ( len <= 0 || x < 1 || y < 1 || y > region_height || len > room )
+    return -1;
+
+  static const auto& next_attribute = FVTermAttribute::getAttribute();
+  FChar fchar{};
+  fchar.color.data = next_attribute.color.data;
+  fchar.attr.data  = next_attribute.attr.data & internal::fvtermbuf_var::attr_mask;
+  fchar.setCharWidth(1);
+
+  const bool trans_new = fchar.isBitSet(internal::var::print_transparent_mask);
+  const auto ax = unsigned(x - 1);
+  const auto ay = unsigned(y - 1);
+  auto rc = region->getFCharIterator(x - 1, y - 1);
+  const auto src = string.cbegin();
+  uInt cmin{~0U};
+  uInt cmax{0};
+  uInt trans_added{0};
+  int  n{0};
+  bool ok{true};
+
+  for (; n < len; ++n, ++rc)
+  {
+    const auto c = src[n];
+
+    if ( c < 0x20 || c > 0x7e )  // Control, DEL or non-ASCII
+    {
+      ok = false;
+      break;
+    }
+
+    fchar.ch.unicode_data[0] = c;
+
+    if ( *rc == fchar )
+    {
+      if ( rc->getCharWidth() != 1 )
+      {
+        ok = false;
+        break;
+      }
+
+      continue;
+    }
+
+    const bool trans_old = rc->isBitSet(internal::var::print_transparent_mask);
+    trans_added += uInt(int(trans_new) - int(trans_old));
+    *rc = fchar;
+    cmin = std::min(cmin, ax + uInt(n));
+    cmax = ax + uInt(n);  // Columns increase, so the last write is the max
+  }
+
+  if ( n > 0 )
+  {
+    setDirty(region);
+    auto& line = region->changes_in_line[ay];
+    line.trans_count += trans_added;
+
+    if ( cmin != ~0U )  // At least one character changed
+    {
+      line.xmin = std::min(line.xmin, cmin);
+      line.xmax = std::max(line.xmax, cmax);
+      region->changes_in_row.ymin = std::min(region->changes_in_row.ymin, ay);
+      region->changes_in_row.ymax = std::max(region->changes_in_row.ymax, ay);
+    }
+  }
+
+  if ( ! ok )
+    return -1;
+
+  if ( x + len > region_width )  // Line break at right margin
+  {
+    region->cursor.x = 1;
+    region->cursor.y = ( y >= region_height ) ? y : y + 1;  // Prevent up scrolling
+  }
+  else
+    region->cursor.x = x + len;
+
+  return len;  // Number of printed characters, or -1 if the caller must use the general path
+}
+
+//----------------------------------------------------------------------
+inline auto FVTerm::printWrap (FTermRegion* region, FChar_iterator& rc) const -> bool
 {
   bool end_of_region{false};
   const int& width  = region->size.width;
@@ -2270,14 +2427,14 @@ inline auto FVTerm::printWrap (FTermRegion* region, FChar_iterator& ac) const ->
   {
     region->cursor.x = 1;
     region->cursor.y++;
-    ac = region->getFCharIterator(region->cursor.x - 1, region->cursor.y - 1);
+    rc = region->getFCharIterator(region->cursor.x - 1, region->cursor.y - 1);
   }
 
   // Prevent up scrolling
   if ( region->cursor.y > height + bsh )
   {
     region->cursor.y--;
-    ac = region->getFCharIterator(region->cursor.x - 1, region->cursor.y - 1);
+    rc = region->getFCharIterator(region->cursor.x - 1, region->cursor.y - 1);
     end_of_region = true;
   }
 
@@ -2286,7 +2443,7 @@ inline auto FVTerm::printWrap (FTermRegion* region, FChar_iterator& ac) const ->
 
 //----------------------------------------------------------------------
 inline auto FVTerm::interpretControlCodes ( FTermRegion* region
-                                          , FChar_iterator& ac
+                                          , FChar_iterator& rc
                                           , const FChar& term_char ) const noexcept -> bool
 {
   switch ( term_char.ch.unicode_data[0] )
@@ -2314,33 +2471,114 @@ inline auto FVTerm::interpretControlCodes ( FTermRegion* region
       return false;
   }
 
-  ac = region->getFCharIterator(region->cursor.x - 1, region->cursor.y - 1);
+  rc = region->getFCharIterator(region->cursor.x - 1, region->cursor.y - 1);
   return true;
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::printCharacter ( FTermRegion* region
-                                   , FChar_iterator& ac
-                                   , const FChar& term_char ) const noexcept -> int
+inline auto isComplexChar (const FChar& fchar) -> bool
+{
+  const auto ch0 = fchar.ch.unicode_data[0];
+  return fchar.getCharWidth() != 1
+      || fchar.isBitSet(FAttribute::set::fullwidth_padding)
+      || ch0 == L'\n' || ch0 == L'\r' || ch0 == L'\t'
+      || ch0 == L'\b' || ch0 == L'\a';
+}
+
+//----------------------------------------------------------------------
+#if defined(__GNUC__)
+__attribute__((noinline))
+#endif
+auto FVTerm::printRegionRange ( FTermRegion* region
+                              , FChar_iterator& rc
+                              , FVTermBuffer::const_iterator first
+                              , FVTermBuffer::const_iterator last ) const noexcept -> int
+{
+  const int region_width = getFullRegionWidth(region);
+  const int region_height = getFullRegionHeight(region);
+  const int x = region->cursor.x;
+  const int y = region->cursor.y;
+
+  // Fast path covers columns x .. region_width - 1; the last column (which wraps)
+  if ( x < 1 || y < 1 || x >= region_width || y > region_height )
+    return 0;
+
+  const auto max_n = std::min(region_width - x, int(last - first));
+  const auto ax = unsigned(x - 1);
+  const auto ay = unsigned(y - 1);
+  uInt cmin{~0U};  // first changed column
+  uInt cmax{0};    // last changed column
+  uInt trans_added{0};
+  int  n{0};
+
+  for (; n < max_n; ++n)
+  {
+    const FChar& ch = first[FVTermBuffer::difference_type(n)];
+
+    if ( isComplexChar(ch) )
+      break;  // Let printComplexChar() handle it
+
+    if ( *rc == ch )
+    {
+      if ( rc->getCharWidth() != 1 )
+        break;
+    }
+    else
+    {
+      const bool trans_old = rc->isBitSet(internal::var::print_transparent_mask);
+      const bool trans_new = ch.isBitSet(internal::var::print_transparent_mask);
+      trans_added += uInt(int(trans_new) - int(trans_old));
+      *rc = ch;
+      cmin = std::min(cmin, ax + uInt(n));
+      cmax = ax + uInt(n);   // Columns increase, so the last write is the max
+    }
+
+    ++rc;
+  }
+
+  if ( n == 0 )
+    return 0;
+
+  region->cursor.x = x + n;
+  setDirty(region);
+
+  auto& line = region->changes_in_line[ay];
+  line.trans_count += trans_added;
+
+  if ( cmin != ~0U )  // At least one cell actually changed
+  {
+    line.xmin = std::min(line.xmin, cmin);
+    line.xmax = std::max(line.xmax, cmax);
+    region->changes_in_row.ymin = std::min(region->changes_in_row.ymin, ay);
+    region->changes_in_row.ymax = std::max(region->changes_in_row.ymax, ay);
+  }
+
+  return n;
+}
+
+//----------------------------------------------------------------------
+inline auto FVTerm::printComplexChar ( FTermRegion* region
+                                     , FChar_iterator& rc
+                                     , const FChar& term_char ) const noexcept -> int
 {
   if ( ! region )
     return -1;  // No region
 
-  if ( interpretControlCodes(region, ac, term_char) )
+  if ( interpretControlCodes(region, rc, term_char) )
     return 0;  // No printable character
 
-  if ( ! region->isPrintPositionInsideRegion() || printWrap(region, ac) )
+  if ( ! region->isPrintPositionInsideRegion() || printWrap(region, rc) )
     return -1;  // Cursor position out of range or end of region reached
 
   // Printing term_char on region at the current cursor position
-  auto char_width = printCharacterOnCoordinate (region, ac, term_char);
+  auto char_width = printCharacterOnCoordinate (region, rc, term_char);
 
   if ( char_width == 0
     && ! term_char.isBitSet(FAttribute::set::fullwidth_padding) )
     return 0;
 
   region->cursor.x++;
-  ++ac;
+  ++rc;
   setDirty(region);
 
   // Line break at right margin
@@ -2352,7 +2590,7 @@ inline auto FVTerm::printCharacter ( FTermRegion* region
   else if ( char_width == 2 )
   {
     printPaddingCharacter (region, term_char);
-    ++ac;
+    ++rc;
   }
 
   // Prevent up scrolling
@@ -2364,16 +2602,16 @@ inline auto FVTerm::printCharacter ( FTermRegion* region
 
 //----------------------------------------------------------------------
 inline auto FVTerm::printCharacterOnCoordinate ( FTermRegion* region
-                                               , const FChar_iterator& ac
+                                               , const FChar_iterator& rc
                                                , const FChar& ch ) const noexcept -> std::size_t
 {
   const auto ax = unsigned(region->cursor.x - 1);
   const auto ay = unsigned(region->cursor.y - 1);
 
-  if ( *ac == ch )  // compare with an overloaded operator
-    return ac->getCharWidth();
+  if ( *rc == ch )  // compare with an overloaded operator
+    return rc->getCharWidth();
 
-  const bool trans_old = ac->isBitSet(internal::var::print_transparent_mask);
+  const bool trans_old = rc->isBitSet(internal::var::print_transparent_mask);
   const bool trans_new = ch.isBitSet(internal::var::print_transparent_mask);
   const auto trans_changed = int(trans_new) - int(trans_old);
 
@@ -2381,18 +2619,18 @@ inline auto FVTerm::printCharacterOnCoordinate ( FTermRegion* region
     region->changes_in_line[ay].trans_count += uInt(trans_changed);
 
   // copy character to region
-  *ac = ch;
+  *rc = ch;
 
-  auto current_width = uInt8(ac->getCharWidth());
+  auto current_width = uInt8(rc->getCharWidth());
 
   if ( current_width == 0 )
   {
-    const auto new_char_width = getColumnWidth(ac->ch[0]);
+    const auto new_char_width = getColumnWidth(rc->ch[0]);
 
     if ( new_char_width == 0 )
       return 0;
 
-    addColumnWidth(*ac, new_char_width);  // Add column width
+    addColumnWidth(*rc, new_char_width);  // Add column width
     current_width = uInt8(new_char_width);
   }
 

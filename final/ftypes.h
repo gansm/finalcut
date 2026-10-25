@@ -121,7 +121,7 @@ template<typename CharT>
 constexpr auto is7bit (CharT ch) noexcept -> bool
 {
   using char_type = std::make_unsigned_t<CharT>;
-  return static_cast<char_type>(ch) < 128;
+  return static_cast<char_type>(ch) < 0x80;
 }
 
 // Printable character verification
@@ -262,112 +262,71 @@ using enable_if_arithmetic_without_char_t =
 namespace UTF8
 {
 
-inline void expand (std::vector<char>& buffer, std::size_t addend)
-{
-  buffer.resize(buffer.size() + addend);
-}
-
-inline void expand (std::array<char, 4>&, std::size_t)
-{
-  // A std::array<char, 4> cannot be expanded
-}
-
-template <typename T>
-using DecayedT = typename std::decay_t<T>;
-
-template <typename CharBufferT>
-using uInt32_if_vector_or_array = std::enable_if_t<
-       std::is_same<DecayedT<CharBufferT>, std::vector<char>>::value
-    || std::is_same<DecayedT<CharBufferT>, std::array<char, 4>>::value
-     , uInt32>;
-
 #if defined(__CYGWIN__)
 
 template <typename CharBufferT>
-inline auto encode (wchar_t ucs, CharBufferT& buffer) -> uInt32_if_vector_or_array<CharBufferT>
+inline auto encode (wchar_t ucs, CharBufferT& buffer) -> uInt32
 {
-  // Writes UTF-8 bytes to the target array and returns the length
-  const auto index = std::is_same<CharBufferT, std::vector<char>>::value
-                   ? buffer.size()
-                   : 0;
-
   // 1 Byte (7-bit): 0xxxxxxx
   if ( ucs < 0x80 )
   {
-    expand(buffer, 1);
-    const auto dest = &buffer[index];
-    dest[0] = char(ucs);
+    buffer[0] = char(ucs);
     return 1;
   }
 
   // 2 byte (11-bit): 110xxxxx 10xxxxxx
   if ( ucs < 0x800 )
   {
-    expand(buffer, 2);
-    const auto dest = &buffer[index];
-    dest[0] = char(0xc0 | uChar(ucs >> 6u));
-    dest[1] = char(0x80 | uChar(ucs & 0x3f));
+    buffer[0] = char(0xc0 | uChar(ucs >> 6u));
+    buffer[1] = char(0x80 | uChar(ucs & 0x3f));
     return 2;
   }
 
   // 3 byte (16-bit): 1110xxxx 10xxxxxx 10xxxxxx
-  expand(buffer, 3);
-  const auto dest = &buffer[index];
-  dest[0] = char(0xe0 | uChar(ucs >> 12u));
-  dest[1] = char(0x80 | uChar((ucs >> 6u) & 0x3f));
-  dest[2] = char(0x80 | uChar(ucs & 0x3f));
+  buffer[0] = char(0xe0 | uChar(ucs >> 12u));
+  buffer[1] = char(0x80 | uChar((ucs >> 6u) & 0x3f));
+  buffer[2] = char(0x80 | uChar(ucs & 0x3f));
   return 3;
 }
 
 #else
 
 template <typename CharBufferT>
-inline auto encode (wchar_t ucs, CharBufferT& buffer) -> uInt32_if_vector_or_array<CharBufferT>
+inline auto encode (wchar_t ucs, CharBufferT& buffer) -> uInt32
 {
   // Writes UTF-8 bytes to the target array and returns the length
-  const auto index = std::is_same<CharBufferT, std::vector<char>>::value
-                   ? buffer.size()
-                   : 0;
 
   // 1 Byte (7-bit): 0xxxxxxx
   if ( ucs < 0x80 )
   {
-    expand(buffer, 1);
-    const auto dest = &buffer[index];
-    dest[0] = char(ucs);
+    buffer[0] = char(ucs);
     return 1;
   }
 
   // 2 byte (11-bit): 110xxxxx 10xxxxxx
   if ( ucs < 0x800 )
   {
-    expand(buffer, 2);
-    const auto dest = &buffer[index];
-    dest[0] = char(0xc0 | uChar(ucs >> 6u));
-    dest[1] = char(0x80 | uChar(ucs & 0x3f));
+    buffer[0] = char(0xc0 | uChar(ucs >> 6u));
+    buffer[1] = char(0x80 | uChar(ucs & 0x3f));
     return 2;
   }
 
   // 3 byte (16-bit): 1110xxxx 10xxxxxx 10xxxxxx
   if ( ucs < 0x10000 )
   {
-    expand(buffer, 3);
-    const auto dest = &buffer[index];
-    dest[0] = char(0xe0 | uChar(ucs >> 12u));
-    dest[1] = char(0x80 | uChar((ucs >> 6u) & 0x3f));
-    dest[2] = char(0x80 | uChar(ucs & 0x3f));
+    buffer[0] = char(0xe0 | uChar(ucs >> 12u));
+    buffer[1] = char(0x80 | uChar((ucs >> 6u) & 0x3f));
+    buffer[2] = char(0x80 | uChar(ucs & 0x3f));
     return 3;
   }
 
   // 4 byte (21-bit): 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
   if ( ucs < 0x200000 )
   {
-    expand(buffer, 4);
-    const auto dest = &buffer[index];
-    dest[0] = char(0xf0 | uChar(ucs >> 18u));
-    dest[1] = char(0x80 | uChar((ucs >> 12u) & 0x3f));
-    dest[2] = char(0x80 | uChar((ucs >> 6u) & 0x3f));
-    dest[3] = char(0x80 | uChar(ucs & 0x3f));
+    buffer[0] = char(0xf0 | uChar(ucs >> 18u));
+    buffer[1] = char(0x80 | uChar((ucs >> 12u) & 0x3f));
+    buffer[2] = char(0x80 | uChar((ucs >> 6u) & 0x3f));
+    buffer[3] = char(0x80 | uChar(ucs & 0x3f));
     return 4;
   }
 

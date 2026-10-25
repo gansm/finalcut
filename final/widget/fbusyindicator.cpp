@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2024 Markus Gans                                      *
+* Copyright 2020-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -71,11 +71,18 @@ void FBusyIndicator::init()
 }
 
 //----------------------------------------------------------------------
+static inline auto isUTF8Terminal() -> bool
+{
+  static const auto& foutput = FVTerm::getFOutput();
+  return foutput->getEncoding() == Encoding::UTF8;
+}
+
+//----------------------------------------------------------------------
 void FBusyIndicator::createIndicatorText()
 {
   std::array<FString, 4> line{};
 
-  if ( FVTerm::getFOutput()->getEncoding() == Encoding::UTF8 )
+  if ( isUTF8Terminal() )
   {
     const auto& p = uni_pattern;
     line[0] << "   " << p[7] << " " << p[0] << "   \n";
@@ -100,7 +107,7 @@ void FBusyIndicator::createIndicatorText()
 void FBusyIndicator::onTimer (finalcut::FTimerEvent*)
 {
   // Rotate pattern
-  if ( FVTerm::getFOutput()->getEncoding() == Encoding::UTF8 )
+  if ( isUTF8Terminal() )
   {
     const wchar_t last = uni_pattern[7];
     std::memmove(&uni_pattern[1], &uni_pattern[0], sizeof(wchar_t) * 7);

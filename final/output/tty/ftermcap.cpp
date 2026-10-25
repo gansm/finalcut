@@ -488,14 +488,15 @@ void FTermcap::termcapStrings()
   }
 
   const auto& ho = TCAP(t_cursor_home);
+  const bool has_ho = ho.data;
 
-  if ( ho.data && std::memcmp(ho.data, "\033[H", 3) == 0 )
+  if ( has_ho && std::memcmp(ho.data, "\033[H", 3) == 0 )
     has_ansi_escape_sequences = true;
 
-  const auto& pc = TCAP(t_pad_char);
+  const auto& pc_data = TCAP(t_pad_char).data;
 
-  if ( pc.data )
-    PC = pc.data[0];
+  if ( pc_data )
+    PC = pc_data[0];
 }
 
 //----------------------------------------------------------------------

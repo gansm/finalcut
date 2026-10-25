@@ -1,3 +1,7 @@
+2026-10-25  Markus Gans  <guru.mail@muenster.de>
+	* Multiple fast paths were established to speed up the terminal screen 
+	  output of plain UTF-8 characters
+
 2026-10-18  Markus Gans  <guru.mail@muenster.de>
 	* The encoded output character will no longer be stored in an FChar 
 	  structure
