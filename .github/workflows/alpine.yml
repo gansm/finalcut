@@ -13,14 +13,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Repository checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744  # v3
 
-    - name: Install latest Alpine Linux
-      uses: jirutka/setup-alpine@v1  # see https://github.com/jirutka/setup-alpine
+    - name: Install latest Alpine Linux - https://github.com/jirutka/setup-alpine
+      uses: jirutka/setup-alpine@0beccea740ebde8a36498414a82e7da498b21196  # v1
       with:
         arch: x86_64
         branch: latest-stable
-        apk-tools-url: https://gitlab.alpinelinux.org/api/v4/projects/5/packages/generic/v2.14.10/x86_64/apk.static#!sha256!34bb1a96f0258982377a289392d4ea9f3f4b767a4bb5806b1b87179b79ad8a1c
         packages: >
           gcc
           g++
