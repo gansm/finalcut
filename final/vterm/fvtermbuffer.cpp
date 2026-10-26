@@ -82,17 +82,18 @@ auto FVTermBuffer::print (const FString& string) -> int
   UnicodeBoundary ucb{string.cbegin(), string.cend(), string.cbegin(), 0};
   const auto last = string.cend();
 
-  for (auto it = string.cbegin(); it != last; ++it)
+  for (auto iter = string.cbegin(); iter != last; ++iter)
   {
-    const auto ch = *it;
+    const auto ch = *iter;
 
     // Fast path: printable ASCII, nothing pending, next char can't combine with it
-    if ( ucb.cbegin == it && ucb.iter == it
+    if ( ucb.cbegin == iter && ucb.iter == iter
       && ch >= 0x20 && ch < 0x7f
-      && (it + 1 == last || *(it + 1) < 0x80) )
+      && (iter + 1 == last || *(iter + 1) < 0x80) )
     {
       addPlainASCII(ch);
-      ucb.cbegin = ucb.iter = it + 1;
+      ucb.cbegin = iter + 1;
+      ucb.iter = ucb.cbegin;
       continue;
     }
 

@@ -69,6 +69,16 @@ namespace finalcut
 namespace internal
 {
 
+// Constant
+static constexpr std::size_t STDOUT_BUF_SIZE{64 * 1024};
+
+// Function
+static auto getStdOutBuffer() noexcept -> char*
+{
+  static auto stdout_buffer = std::array<char, STDOUT_BUF_SIZE>{};
+  return stdout_buffer.data();
+}
+
 struct var
 {
   static FTerm*      init_term_object;  // Global FTerm object
@@ -1966,8 +1976,8 @@ auto FTerm::init_terminal() const -> bool
   std::fflush (stdout);  // Flush old buffer
 
   // Optimizes standard output using an internal 64-KB buffer
-  static char stdout_buffer[64 * 1024];
-  std::setvbuf (stdout, stdout_buffer, _IOFBF, sizeof(stdout_buffer));
+  auto* stdout_buffer = internal::getStdOutBuffer();
+  std::setvbuf (stdout, stdout_buffer, _IOFBF, internal::STDOUT_BUF_SIZE);
 
   // Initialize termios
   FTermios::init();

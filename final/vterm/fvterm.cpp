@@ -516,14 +516,12 @@ auto FVTerm::print (FTermRegion* region, const FVTermBuffer& buffer) const noexc
 
   while ( iter != last )
   {
-    const auto n = printRegionRange(region, rc, iter, last);  // fast path
+    const auto n = printRegionRange(region, rc, iter, last);  // Fast path
     len += n;
     iter += FVTermBuffer::difference_type(n);
 
-    if ( iter == last )
-      break;
-
-    if ( printComplexChar(region, rc, *iter) == -1 )  // Print next character
+    if ( iter == last
+      || printComplexChar(region, rc, *iter) == -1 )  // Print next character
       break;  // No region or end of region reached
 
     ++len;
@@ -2327,7 +2325,7 @@ auto FVTerm::printPlain (FTermRegion* region, const FString& string) const noexc
   if ( ! region )
     return -1;
 
-  const int len = int(string.getLength());
+  const auto len = int(string.getLength());
   const int region_width  = getFullRegionWidth(region);
   const int region_height = getFullRegionHeight(region);
   const int x = region->cursor.x;
@@ -2348,20 +2346,21 @@ auto FVTerm::printPlain (FTermRegion* region, const FString& string) const noexc
   const auto ay = unsigned(y - 1);
   auto rc = region->getFCharIterator(x - 1, y - 1);
   const auto src = string.cbegin();
+
   uInt cmin{~0U};
   uInt cmax{0};
   uInt trans_added{0};
   int  n{0};
   bool ok{true};
 
-  for (; n < len; ++n, ++rc)
+  while ( ok && n < len )
   {
     const auto c = src[n];
 
     if ( c < 0x20 || c > 0x7e )  // Control, DEL or non-ASCII
     {
       ok = false;
-      break;
+      continue;
     }
 
     fchar.ch.unicode_data[0] = c;
@@ -2371,9 +2370,11 @@ auto FVTerm::printPlain (FTermRegion* region, const FString& string) const noexc
       if ( rc->getCharWidth() != 1 )
       {
         ok = false;
-        break;
+        continue;
       }
 
+      ++n;
+      ++rc;
       continue;
     }
 
@@ -2382,6 +2383,8 @@ auto FVTerm::printPlain (FTermRegion* region, const FString& string) const noexc
     *rc = fchar;
     cmin = std::min(cmin, ax + uInt(n));
     cmax = ax + uInt(n);  // Columns increase, so the last write is the max
+    ++n;
+    ++rc;
   }
 
   if ( n > 0 )
