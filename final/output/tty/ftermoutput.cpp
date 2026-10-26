@@ -689,6 +689,8 @@ void FTermOutput::printRange (uInt xmin, uInt xmax, uInt y)
   const auto vterm_width = uInt(vterm->size.width - 1);
   const auto last_row = vterm->size.height - 1;
   const auto last = std::min(xmax, vterm_width - 1);  // keep x < vterm_width
+  const TermRenderContext ctx
+      { xmin, xmax, last, last_row, vterm_width, has_ec, has_rep };
   auto iter = vterm->getFCharIterator(int(xmin), int(y));
   uInt x = xmin;
   uInt x_last = xmin;
@@ -716,32 +718,40 @@ void FTermOutput::printRange (uInt xmin, uInt xmax, uInt y)
     }
     else
     {
-      const bool plain = x < vterm_width
-                       && iter->getCharWidth() != 2
-                       && ! iter->isBitSet(FAttribute::set::fullwidth_padding)
-                       && ( x == 0 || (iter - 1)->getCharWidth() != 2 );
-
-      // Plain characters use fast path if no repetition starts here
-      if ( plain && ! (has_rep && canStartRepeat(iter, x, xmax)) )
-      {
-        if ( term_pos->getY() != last_row )
-          x = printPlain (x, last, xmax, iter, has_ec, has_rep);
-        else
-          appendCharacter (iter);  // last row: needs the lower-right handling
-                                   // The printed bit was set at the top
-      }
-      else if ( has_rep )  // Repeat one character n-fold
-      {
-        repeatCharacter (x, xmax, y, iter);
-      }
-      else  // The general character output
-      {
-        bool min_and_not_max{ x == xmin && xmin != xmax };
-        printCharacter (x, y, min_and_not_max, iter);
-      }
+      processCharacterOutput(x, ctx, iter);
     }
 
     ++x;
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FTermOutput::processCharacterOutput ( uInt& x
+                                                , const TermRenderContext& ctx
+                                                , FChar_iterator& iter )
+{
+  const bool plain = x < ctx.vterm_width
+                  && iter->getCharWidth() != 2
+                  && ! iter->isBitSet(FAttribute::set::fullwidth_padding)
+                  && (x == 0 || (iter - 1)->getCharWidth() != 2);
+
+  // Plain characters use fast path if no repetition starts here
+  if ( plain && !(ctx.has_rep && canStartRepeat(iter, x, ctx.xmax)) )
+  {
+    if ( term_pos->getY() != ctx.last_row )
+      x = printPlain(x, ctx.last, ctx.xmax, iter, ctx.has_ec, ctx.has_rep);
+    else
+      appendCharacter(iter);  // last row: needs the lower-right handling
+                              // The printed bit was set at the top
+  }
+  else if ( ctx.has_rep )  // Repeat one character n-fold
+  {
+    repeatCharacter(x, ctx.xmax, term_pos->getY(), iter);
+  }
+  else  // The general character output
+  {
+    bool min_and_not_max{x == ctx.xmin && ctx.xmin != ctx.xmax};
+    printCharacter(x, term_pos->getY(), min_and_not_max, iter);
   }
 }
 
@@ -760,11 +770,11 @@ inline auto FTermOutput::printPlain ( uInt x, uInt last, uInt xmax
 
   while ( x < last )
   {
-    auto& next = *(iter + 1);
+    const auto& next_iter = *(iter + 1);
 
-    if ( next.isBitSet(stop_mask)
-      || next.getCharWidth() == 2  // full-width
-      || (has_ec && next.ch.unicode_data[0] == L' ')  // A erase-chars candidate
+    if ( next_iter.isBitSet(stop_mask)
+      || next_iter.getCharWidth() == 2  // full-width
+      || (has_ec && next_iter.ch.unicode_data[0] == L' ')  // A erase-chars candidate
       || (has_rep && canStartRepeat(iter + 1, x + 1, xmax)) )  // Repetition can begin
       break;
 
@@ -787,17 +797,17 @@ inline auto FTermOutput::printPlain ( uInt x, uInt last, uInt xmax
 
     while ( x < last )
     {
-      auto& next = *(iter + 1);
-      const auto c = next.ch.unicode_data[0];
+      const auto& next_iter = *(iter + 1);
+      const auto c = next_iter.ch.unicode_data[0];
 
-      if ( next.isBitSet(batch_stop_mask)
-        || next.getCharWidth() == 2
-        || c == L'\0' || next.ch.unicode_data[1] != L'\0'
+      if ( next_iter.isBitSet(batch_stop_mask)
+        || next_iter.getCharWidth() == 2
+        || c == L'\0' || next_iter.ch.unicode_data[1] != L'\0'
         || (has_ec && c == L' ')
         || (has_rep && canStartRepeat(iter + 1, x + 1, xmax))
-        || term_attribute.color.data != next.color.data
+        || term_attribute.color.data != next_iter.color.data
         || (term_attribute.attr.data & 0x0000ffffU)
-           != (next.attr.data & 0x0000ffffU) )
+           != (next_iter.attr.data & 0x0000ffffU) )
         break;
 
       ++iter;

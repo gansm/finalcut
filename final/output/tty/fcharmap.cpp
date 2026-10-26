@@ -51,7 +51,6 @@ auto FCharMap::getCharacter ( const CharEncodeMap& char_enc
 #if defined(__clang__)
   #pragma clang diagnostic pop
 #endif
-
 }
 
 //----------------------------------------------------------------------

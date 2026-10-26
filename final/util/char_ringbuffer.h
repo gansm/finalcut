@@ -443,7 +443,6 @@ class CharRingBuffer final : public FRingBuffer<char, Capacity>
   #pragma clang diagnostic pop
 #endif
     }
-
 };
 
 }  // namespace finalcut
