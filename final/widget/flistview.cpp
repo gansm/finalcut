@@ -263,14 +263,14 @@ auto FListViewItem::getText (int column) const -> FString
 }
 
 //----------------------------------------------------------------------
-auto FListViewItem::getDepth() const -> uInt
+auto FListViewItem::getTreeDepth() const -> uInt
 {
   const auto& parent = getParent();
 
   if ( parent && parent->isInstanceOf("FListViewItem") )
   {
     const auto& parent_item = static_cast<FListViewItem*>(parent);
-    return parent_item->getDepth() + 1;
+    return parent_item->getTreeDepth() + 1;
   }
 
   return 0;
@@ -1660,7 +1660,7 @@ inline void FListView::setInputCursor ( const FListViewItem* item
   if ( ! (getFlags().focus.focus && is_current_line) )
     return;
 
-  const int tree_offset = isTreeView() ? int(item->getDepth() << 1u) + 1 : 0;
+  const int tree_offset = isTreeView() ? int(item->getTreeDepth() << 1u) + 1 : 0;
   const int checkbox_offset = item->isCheckable() ? 1 : 0;
   int xpos = 3 + tree_offset + checkbox_offset - scroll.xoffset;
 
@@ -1724,7 +1724,7 @@ auto FListView::createColumnsString (const FListViewItem* item) -> FString
     return {};
 
   // Get prefix
-  const std::size_t indent = item->getDepth() << 1u;  // indent = 2 * depth
+  const std::size_t indent = item->getTreeDepth() << 1u;  // indent = 2 * depth
   FString line{getLinePrefix (item, indent)};
 
   for (std::size_t col{0}; col < item->column_list.size(); )
@@ -2446,7 +2446,7 @@ void FListView::handleTreeExpanderClick (const FMouseEvent* ev)
 void FListView::handleCheckboxClick (const FMouseEvent* ev)
 {
   const auto& item = getCurrentItem();
-  int indent = isTreeView() ? int(item->getDepth() << 1u)  // indent = 2 * depth
+  int indent = isTreeView() ? int(item->getTreeDepth() << 1u)  // indent = 2 * depth
                             : 0;
 
   if ( ! ( hasCheckableItems()
@@ -2718,7 +2718,7 @@ void FListView::handleTreeViewEvents (const FMouseEvent* ev, const FListViewItem
   if ( ! isTreeView() )
     return;
 
-  const auto indent = int(item->getDepth() << 1u);  // indent = 2 * depth
+  const auto indent = int(item->getTreeDepth() << 1u);  // indent = 2 * depth
 
   if ( item->isExpandable() && ev->getX() - 2 == indent - scroll.xoffset )
     selection.clicked_expander_pos = ev->getPos();
@@ -2730,7 +2730,7 @@ void FListView::handleCheckableItemsEvents (const FMouseEvent* ev, const FListVi
   if ( ! hasCheckableItems() )
     return;
 
-  auto indent = int(item->getDepth() << 1u);  // indent = 2 * depth
+  auto indent = int(item->getTreeDepth() << 1u);  // indent = 2 * depth
 
   if ( isTreeView() )
     indent++;  // Plus one space

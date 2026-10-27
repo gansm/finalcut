@@ -23,10 +23,10 @@ jobs:
 
     steps:
     - name: Repository checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
-    - name: Test on ARM architecture
-      uses: uraimo/run-on-arch-action@v3  # see https://github.com/uraimo/run-on-arch-action
+    - name: Test on ARM architecture - https://github.com/uraimo/run-on-arch-action
+      uses: uraimo/run-on-arch-action@v3
       id: runcmd
       with:
         arch: ${{ matrix.arch }}

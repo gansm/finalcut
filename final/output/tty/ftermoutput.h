@@ -294,7 +294,7 @@ class FTermOutput final : public FOutput
     auto canClearTrailingWS (uInt&, uInt) const -> bool;
     auto skipUnchangedCharacters (uInt&, uInt, uInt, FChar_iterator) -> bool;
     void printRange (uInt, uInt, uInt);
-    void processCharacterOutput (uInt&, const TermRenderContext&, FChar_iterator&);
+    void processCharacterOutput (uInt&, const TermRenderContext&, const FChar_iterator&);
     auto printPlain (uInt, uInt, uInt, FChar_iterator, bool, bool) -> uInt;
     auto canStartRepeat (FChar_const_iterator, uInt, uInt) const noexcept -> bool;
     void replaceNonPrintableFullwidth (uInt, uInt, FChar&) const noexcept;

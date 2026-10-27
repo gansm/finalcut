@@ -728,7 +728,7 @@ void FTermOutput::printRange (uInt xmin, uInt xmax, uInt y)
 //----------------------------------------------------------------------
 inline void FTermOutput::processCharacterOutput ( uInt& x
                                                 , const TermRenderContext& ctx
-                                                , FChar_iterator& iter )
+                                                , const FChar_iterator& iter )
 {
   const bool plain = x < ctx.vterm_width
                   && iter->getCharWidth() != 2
@@ -797,17 +797,17 @@ inline auto FTermOutput::printPlain ( uInt x, uInt last, uInt xmax
 
     while ( x < last )
     {
-      const auto& next_iter = *(iter + 1);
-      const auto c = next_iter.ch.unicode_data[0];
+      const auto& batch_next_iter = *(iter + 1);
+      const auto c = batch_next_iter.ch.unicode_data[0];
 
-      if ( next_iter.isBitSet(batch_stop_mask)
-        || next_iter.getCharWidth() == 2
-        || c == L'\0' || next_iter.ch.unicode_data[1] != L'\0'
+      if ( batch_next_iter.isBitSet(batch_stop_mask)
+        || batch_next_iter.getCharWidth() == 2
+        || c == L'\0' || batch_next_iter.ch.unicode_data[1] != L'\0'
         || (has_ec && c == L' ')
         || (has_rep && canStartRepeat(iter + 1, x + 1, xmax))
-        || term_attribute.color.data != next_iter.color.data
+        || term_attribute.color.data != batch_next_iter.color.data
         || (term_attribute.attr.data & 0x0000ffffU)
-           != (next_iter.attr.data & 0x0000ffffU) )
+           != (batch_next_iter.attr.data & 0x0000ffffU) )
         break;
 
       ++iter;

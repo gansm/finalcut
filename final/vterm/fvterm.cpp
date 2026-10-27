@@ -2518,15 +2518,10 @@ auto FVTerm::printRegionRange ( FTermRegion* region
   {
     const FChar& ch = first[FVTermBuffer::difference_type(n)];
 
-    if ( isComplexChar(ch) )
+    if ( isComplexChar(ch) || (*rc == ch && rc->getCharWidth() != 1) )
       break;  // Let printComplexChar() handle it
 
-    if ( *rc == ch )
-    {
-      if ( rc->getCharWidth() != 1 )
-        break;
-    }
-    else
+    if ( *rc != ch )
     {
       const bool trans_old = rc->isBitSet(internal::var::print_transparent_mask);
       const bool trans_new = ch.isBitSet(internal::var::print_transparent_mask);

@@ -1767,7 +1767,7 @@ inline void FTerm::disableKeypad()
 {
   // Leave 'keyboard_transmit' mode
 
-  const auto& ke = TCAP(t_keypad_xmit);
+  const auto& ke = TCAP(t_keypad_local);
   const bool has_ke = ke.data;
 
   if ( has_ke )

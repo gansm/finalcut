@@ -19,8 +19,8 @@ jobs:
     - name: Repository checkout
       uses: actions/checkout@v6
 
-    - name: Test on OpenBSD 7.9
-      uses: cross-platform-actions/action@v1.2.0  # see https://github.com/cross-platform-actions/action
+    - name: Test on OpenBSD 7.9 - https://github.com/cross-platform-actions/action
+      uses: cross-platform-actions/action@v1.2.0
       with:
         operating_system: openbsd
         version: '7.9'

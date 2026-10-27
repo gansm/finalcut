@@ -96,7 +96,7 @@ class FListViewItem : public FObject
     auto getText (int) const -> FString;
     template <typename DT>
     auto getData() const -> clean_fdata_t<DT>&;
-    auto getDepth() const -> uInt;
+    auto getTreeDepth() const -> uInt;
 
     // Mutators
     void setText (int, const FString&);

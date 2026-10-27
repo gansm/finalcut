@@ -13,10 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Repository checkout
-      uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744  # v3
+      uses: actions/checkout@v6
 
     - name: Install latest Alpine Linux - https://github.com/jirutka/setup-alpine
-      uses: jirutka/setup-alpine@0beccea740ebde8a36498414a82e7da498b21196  # v1
+      uses: jirutka/setup-alpine@v1
       with:
         arch: x86_64
         branch: latest-stable

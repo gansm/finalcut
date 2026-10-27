@@ -19,8 +19,8 @@ jobs:
     - name: Repository checkout
       uses: actions/checkout@v6
 
-    - name: Test on FreeBSD 13.1
-      uses: cross-platform-actions/action@v1.2.0  # see https://github.com/cross-platform-actions/action
+    - name: Test on FreeBSD 13.1 - https://github.com/cross-platform-actions/action
+      uses: cross-platform-actions/action@v1.2.0
       with:
         operating_system: freebsd
         version: '15.0'
