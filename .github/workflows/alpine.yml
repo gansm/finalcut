@@ -16,7 +16,7 @@ jobs:
       uses: actions/checkout@v6
 
     - name: Install latest Alpine Linux - https://github.com/jirutka/setup-alpine
-      uses: jirutka/setup-alpine@v1
+      uses: jirutka/setup-alpine@ae3b3ddba35054804fc4a3507b519fa7e8152050  # v1.4.1
       with:
         arch: x86_64
         branch: latest-stable

@@ -19,8 +19,8 @@ jobs:
     - name: Repository checkout
       uses: actions/checkout@v6
 
-    - name: Test on NetBSD 10.1
-      uses: cross-platform-actions/action@v1.2.0  # see https://github.com/cross-platform-actions/action
+    - name: Test on NetBSD 10.1 - https://github.com/cross-platform-actions/action
+      uses: cross-platform-actions/action@82668f1fbd89d9c99487604f822cbf6716f124d3  # 1.7.9
       with:
         operating_system: netbsd
         version: '10.1'

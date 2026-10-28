@@ -16,8 +16,8 @@ jobs:
     - name: Repository checkout
       uses: actions/checkout@v6
 
-    - name: Test on Solaris 11.4
-      uses: vmactions/solaris-vm@v1  # see https://github.com/vmactions/solaris-vm
+    - name: Test on Solaris 11.4 - https://github.com/vmactions/solaris-vm
+      uses: vmactions/solaris-vm@1c166978f5a2c1f87f1c9d4d8dd85ae3d1eff6f7  # v1.4.2
       with:
         release: "11.4-gcc"
         prepare: |

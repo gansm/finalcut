@@ -916,7 +916,9 @@ void FVTerm::copyRegion ( FTermRegion* dst, const FPoint& pos
     if ( dst_is_vterm && src_changes->trans_count > 0 )
     {
       // Line with hidden and transparent characters
-      putRegionLineWithTransparency (sc, dc, length, {ax, ay + y}, src_changes->covered);
+      RegionRenderContext ctx{ sc, dc, 1, {ax, ay + y}, false
+                             , src_changes->covered };
+      putRegionLineWithTransparency(ctx, length);
     }
     else
     {
@@ -1938,8 +1940,10 @@ inline void FVTerm::putMultiLayerRegionLine ( FChar_iterator dst_char
 
   auto search_buffer = overlay_search_buffer.begin();
   std::fill_n(search_buffer, length, SearchState::start);
+
   const auto term_x = pos.getX();
   const auto term_y = pos.getY();
+
   overlay_line_buffer.clear();  // Clear buffer
 
   for (const auto* win : covered_regions_buffer)
@@ -1983,92 +1987,97 @@ inline void FVTerm::putMultiLayerRegionLine ( FChar_iterator dst_char
     auto dst = dst_char + line.start_idx;
 
     // Process only the intersecting part of the line
-    for (std::ptrdiff_t idx{line.start_idx}; idx < line.end_idx; ++idx, ++win_char, ++dst)
+    for ( std::ptrdiff_t idx{line.start_idx};
+          idx < line.end_idx;
+          ++idx, ++win_char, ++dst )
     {
-      auto& char_search = *(search_buffer + idx);
-
-      if ( char_search == SearchState::ready )
-        continue;
-
-      const auto transparency = win_char->attr.data
-                              & internal::var::transparent_mask;
-
-      if ( transparency == FAttribute::set::transparent )  // Transparent
-      {
-        if ( char_search == SearchState::start )
-          char_search = SearchState::printable;
-
-        continue;
-      }
-
-      if ( transparency == FAttribute::set::color_overlay )  // Color overlay
-      {
-        if ( char_search == SearchState::background )
-        {
-          inheritBackground(*win_char, *dst);
-          char_search = SearchState::ready;
-        }
-        else if ( char_search != SearchState::overlay )
-        {
-          std::memcpy (&dst[0], &win_char[0], sizeof(FChar));
-          char_search = SearchState::overlay;
-        }
-
-        continue;
-      }
-
-      if ( transparency == FAttribute::set::inherit_background )  // Inherit background color
-      {
-        if ( char_search == SearchState::overlay )
-        {
-          applyColorOverlay(*win_char, *dst);
-          char_search = SearchState::ready;
-        }
-        else if ( char_search != SearchState::background )
-        {
-          std::memcpy (&dst[0], &win_char[0], sizeof(FChar));
-          char_search = SearchState::background;
-        }
-
-        continue;
-      }
-
-      // transparency = 0
-      if ( char_search == SearchState::overlay )  // Color overlay
-      {
-        applyColorOverlay(*win_char, *dst);
-      }
-      else if ( char_search == SearchState::background )  // Inherit background color
-      {
-        inheritBackground(*win_char, *dst);
-      }
-      else  // Non-transparent
-      {
-        std::memcpy (&dst[0], &win_char[0], sizeof(FChar));
-      }
-
-      char_search = SearchState::ready;
+      processCharState (*(search_buffer + idx), *win_char, *dst);
     }
   }
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::putRegionLineWithTransparency ( FChar_const_iterator src_char
-                                                  , FChar_iterator dst_char
-                                                  , const int length
-                                                  , FPoint pos
-                                                  , bool line_covered) const
+inline void FVTerm::processCharState ( SearchState& char_search
+                                     , const FChar& win_char
+                                     , FChar& dst) const noexcept
+{
+  if ( char_search == SearchState::ready )
+    return;
+
+  const auto transparency = win_char.attr.data
+                          & internal::var::transparent_mask;
+
+  if ( transparency == FAttribute::set::transparent )  // Transparent
+  {
+    if ( char_search == SearchState::start )
+      char_search = SearchState::printable;
+
+    return;
+  }
+
+  if ( transparency == FAttribute::set::color_overlay )  // Color overlay
+  {
+    if ( char_search == SearchState::background )
+    {
+      inheritBackground(win_char, dst);
+      char_search = SearchState::ready;
+    }
+    else if ( char_search != SearchState::overlay )
+    {
+      std::memcpy (&dst, &win_char, sizeof(FChar));
+      char_search = SearchState::overlay;
+    }
+
+    return;
+  }
+
+  if ( transparency == FAttribute::set::inherit_background )  // Inherit background color
+  {
+    if ( char_search == SearchState::overlay )
+    {
+      applyColorOverlay(win_char, dst);
+      char_search = SearchState::ready;
+    }
+    else if ( char_search != SearchState::background )
+    {
+      std::memcpy (&dst, &win_char, sizeof(FChar));
+      char_search = SearchState::background;
+    }
+
+    return;
+  }
+
+  // transparency = 0
+  if ( char_search == SearchState::overlay )  // Color overlay
+  {
+    applyColorOverlay(win_char, dst);
+  }
+  else if ( char_search == SearchState::background )  // Inherit background color
+  {
+    inheritBackground(win_char, dst);
+  }
+  else  // Non-transparent
+  {
+    std::memcpy (&dst, &win_char, sizeof(FChar));
+  }
+
+  char_search = SearchState::ready;
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::putRegionLineWithTransparency ( RegionRenderContext& ctx
+                                                  , const int length ) const
 {
   // This function requires buffer_mutex. The caller must lock it
 
   if ( length < 1 )
     return;
 
-  bool is_region_transparent = isFCharTransparent(*src_char);
-  int region_count{1};
-  const auto end_char = src_char + length;
-  auto region_start = src_char;
-  auto current_char = src_char + 1;
+  ctx.is_region_transparent = isFCharTransparent(*ctx.region_start);
+  ctx.region_count = 1;
+
+  const auto end_char = ctx.region_start + length;
+  auto current_char = ctx.region_start + 1;
   const auto unroll_end = end_char - 3;
 
   while ( current_char < unroll_end )  // Main unrolled loop
@@ -2081,12 +2090,12 @@ inline void FVTerm::putRegionLineWithTransparency ( FChar_const_iterator src_cha
       isFCharTransparent(*(current_char + 3))
     }};
 
-    if ( trans_data[0] == is_region_transparent
-      && trans_data[1] == is_region_transparent
-      && trans_data[2] == is_region_transparent
-      && trans_data[3] == is_region_transparent )
+    if ( trans_data[0] == ctx.is_region_transparent
+      && trans_data[1] == ctx.is_region_transparent
+      && trans_data[2] == ctx.is_region_transparent
+      && trans_data[3] == ctx.is_region_transparent )
     {
-      region_count += 4;
+      ctx.region_count += 4;
       current_char += 4;
       continue;
     }
@@ -2095,25 +2104,13 @@ inline void FVTerm::putRegionLineWithTransparency ( FChar_const_iterator src_cha
     {
       const bool is_current_char_transparent = trans_data[i];
 
-      if ( is_current_char_transparent == is_region_transparent )
+      if ( is_current_char_transparent == ctx.is_region_transparent )
       {
-        ++region_count;
+        ++ctx.region_count;
       }
       else
       {
-        // Process completed region
-        if ( is_region_transparent || line_covered )
-          putMultiLayerRegionLine (dst_char, region_count, pos);
-        else
-          putRegionLine (*region_start, *dst_char, region_count);
-
-        pos.x_ref() += region_count;
-        dst_char += region_count;
-
-        // Reset for the next region
-        is_region_transparent = is_current_char_transparent;
-        region_start = current_char;
-        region_count = 1;
+        processAndFlushRegion(ctx, is_current_char_transparent, current_char);
       }
 
       ++current_char;
@@ -2124,35 +2121,47 @@ inline void FVTerm::putRegionLineWithTransparency ( FChar_const_iterator src_cha
   {
     const bool is_current_transparent = isFCharTransparent(*current_char);
 
-    if ( is_current_transparent == is_region_transparent )
+    if ( is_current_transparent == ctx.is_region_transparent )
     {
-      ++region_count;
+      ++ctx.region_count;
     }
     else
     {
-      // Process completed region
-      if ( is_region_transparent || line_covered )
-        putMultiLayerRegionLine (dst_char, region_count, pos);
-      else
-        putRegionLine (*region_start, *dst_char, region_count);
-
-      pos.x_ref() += region_count;
-      dst_char += region_count;
-
-      // Start new region
-      is_region_transparent = is_current_transparent;
-      region_start = current_char;
-      region_count = 1;
+      processAndFlushRegion(ctx, is_current_transparent, current_char);
     }
 
     ++current_char;
   }
 
   // Handle the final region
-  if ( is_region_transparent || line_covered )
-    putMultiLayerRegionLine (dst_char, region_count, pos);
+  if ( ctx.is_region_transparent || ctx.line_covered )
+    putMultiLayerRegionLine (ctx.dst_char, ctx.region_count, ctx.pos);
   else
-    putRegionLine (*region_start, *dst_char, region_count);
+    putRegionLine (*ctx.region_start, *ctx.dst_char, ctx.region_count);
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::processAndFlushRegion( RegionRenderContext& ctx,
+                                           bool next_char_transparent,
+                                           FChar_const_iterator current_char ) const
+{
+  // Process completed region
+  if ( ctx.is_region_transparent || ctx.line_covered )
+  {
+    putMultiLayerRegionLine(ctx.dst_char, ctx.region_count, ctx.pos);
+  }
+  else
+  {
+    putRegionLine(*ctx.region_start, *ctx.dst_char, ctx.region_count);
+  }
+
+  ctx.pos.x_ref() += ctx.region_count;
+  ctx.dst_char += ctx.region_count;
+
+  // Reset for the next region
+  ctx.is_region_transparent = next_char_transparent;
+  ctx.region_start = current_char;
+  ctx.region_count = 1;
 }
 
 //----------------------------------------------------------------------

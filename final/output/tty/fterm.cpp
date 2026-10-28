@@ -814,7 +814,7 @@ auto FTerm::charEncode (const wchar_t& c, const Encoding& enc) -> uChar
   if ( enc == Encoding::PC && ch_enc == c )
     return finalcut::unicode_to_cp437(c);
 
-  return ch_enc;
+  return uChar(ch_enc & 0xff);
 }
 
 //----------------------------------------------------------------------

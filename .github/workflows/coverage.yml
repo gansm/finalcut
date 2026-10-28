@@ -54,11 +54,11 @@ jobs:
     - name: Generate lcov.info and publish to coveralls.io
       run: |
         lcov --compat-libtool --directory . --capture \
-             --ignore-errors gcov \
-             --ignore-errors mismatch \
-             --ignore-errors inconsistent \
+             --ignore-errors gcov,mismatch,inconsistent \
              --output-file lcov-all.info
-        lcov --remove lcov-all.info '/usr/include/*' './include/*' --ignore-errors unused,unused --output-file lcov.info
+        lcov --remove lcov-all.info '/usr/include/*' './include/*' \
+             --ignore-errors unused,inconsistent \
+             --output-file lcov.info
         lcov --list lcov.info
         rm -f lcov-all.info
         coveralls-lcov --branch=${GITHUB_REF##*/} --repo-token "$COVERALLS_REPO_TOKEN" lcov.info

@@ -25,7 +25,7 @@ jobs:
       uses: actions/checkout@v6
 
     - name: Install Cygwin - https://github.com/cygwin/cygwin-install-action
-      uses: cygwin/cygwin-install-action@v3
+      uses: cygwin/cygwin-install-action@5a1b0cd107181fa6bb6bf3f90d500f4fb3132f18  # v7
       with:
         platform: ${{ matrix.platform }}
         install-dir: C:\cygwin

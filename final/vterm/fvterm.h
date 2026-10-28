@@ -285,6 +285,16 @@ class FVTerm : public FVTermAttribute
       int y_end;
     };
 
+    struct RegionRenderContext
+    {
+      FChar_const_iterator region_start;
+      FChar_iterator dst_char;
+      int region_count{1};
+      FPoint pos;
+      bool is_region_transparent;
+      bool line_covered;
+    };
+
     struct RegionLine
     {
       FChar_const_iterator iter;       // Source drawing region line
@@ -391,7 +401,9 @@ class FVTerm : public FVTermAttribute
     void  applyColorOverlay (const FChar&, FChar&) const;
     void  inheritBackground (const FChar&, FChar&) const;
     void  putMultiLayerRegionLine (FChar_iterator, const int, const FPoint&) const noexcept;
-    void  putRegionLineWithTransparency (FChar_const_iterator, FChar_iterator, const int, FPoint, bool) const;
+    void  processCharState (SearchState&, const FChar&, FChar&) const noexcept;
+    void  putRegionLineWithTransparency (RegionRenderContext&, const int) const;
+    void  processAndFlushRegion (RegionRenderContext&, bool, FChar_const_iterator) const;
     void  addRegionLineWithTransparency (FChar_const_iterator, FChar_iterator, const int) const;
     void  addTransparentRegionLine (const FChar_const_iterator&, const FChar_iterator&, const int) const;
     void  addTransparentRegionChar (const FChar&, FChar&) const;

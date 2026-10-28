@@ -593,7 +593,7 @@ auto getColumnWidth (const FString& s, std::size_t end_pos) -> std::size_t
     if ( width == 0 )
       continue;
 
-    if ( column_width > max - width )
+    if ( width > max - column_width )
     {
       return max; // Return upper bound
     }
