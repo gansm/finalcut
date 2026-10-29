@@ -205,6 +205,18 @@ class FDialog : public FWindow
       FPoint new_pos{};
     };
 
+    struct scaleGeometry
+    {
+      int x;
+      int y;
+      int dw;
+      int dh;
+      std::size_t old_width;
+      std::size_t old_height;
+      std::size_t new_width;
+      std::size_t new_height;
+    };
+
     struct SizeData
     {
       FSize new_size{};
@@ -252,6 +264,7 @@ class FDialog : public FWindow
     void printSpace (std::size_t);
     void printTitleBarText (std::size_t&, std::size_t);
     void clearStatusBar() const;
+    void restoreNonCoveredTerminalRegions (const scaleGeometry&);
     void setCursorToFocusWidget();
     void leaveMenu();
     void openMenu();
@@ -300,6 +313,8 @@ class FDialog : public FWindow
     auto isBottomOutside() const -> bool;
     auto isLowerRightResizeCorner (const MouseStates&) const -> bool;
     auto noVisibleDialog() const -> bool;
+    void handleTitleBarDrag (const MouseStates&, FMouseEvent*);
+    void handleTitleBarButtons (const MouseStates&);
     void resizeMouseDown (const MouseStates&);
     void resizeMouseUpMove (const MouseStates&, bool = false);
     auto calculateNewSize (const MouseStates&) const -> FSize;

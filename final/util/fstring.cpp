@@ -1027,7 +1027,7 @@ auto FString::internal_toCharString (const std::wstring& s) const -> std::string
 
   std::string dest{};
   dest.resize(size);
-  auto dest_data = const_cast<char*>(dest.data());
+  char* dest_data = &dest[0];
   const auto mblength = std::wcsrtombs (dest_data, &src, size + 1, &state);
 
   if ( mblength == MALFORMED_STRING && errno != EILSEQ )
@@ -1049,7 +1049,7 @@ auto FString::internal_toWideString (const char src[]) const -> std::wstring
     return {};
 
   std::wstring dest(size, L'\0');
-  auto dest_data = const_cast<wchar_t*>(dest.data());
+  wchar_t* dest_data = &dest[0];
   const auto wide_length = std::mbsrtowcs (dest_data, &src, size + 1, &state);
 
   if ( wide_length == MALFORMED_STRING )

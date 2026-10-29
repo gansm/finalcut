@@ -312,19 +312,19 @@ void FDialog::setSize (const FSize& size, bool adjust)
   }
 
   setTerminalUpdates (FVTerm::TerminalUpdate::Stop);
-  const int x = getTermX();
-  const int y = getTermY();
-  const int dw = int(getWidth()) - int(size.getWidth());
-  const int dh = int(getHeight()) - int(size.getHeight());
-  const auto& shadow = getShadow();
-  const std::size_t old_width = getWidth() + shadow.getWidth();
-  const std::size_t old_height = getHeight() + shadow.getHeight();
-  FWindow::setSize (size, false);
-  size_data.new_size.setSize (getSize());
 
-  // get adjust width and height with shadow
-  const std::size_t width = getWidth() + shadow.getWidth();
-  const std::size_t height = getHeight() + shadow.getHeight();
+  const auto& shadow = getShadow();
+  scaleGeometry geo
+  {
+    getTermX(),                                // x
+    getTermY(),                                // y
+    int(getWidth())  - int(size.getWidth()),   // dw
+    int(getHeight()) - int(size.getHeight()),  // dh
+    getWidth()  + shadow.getWidth(),           // old_width
+    getHeight() + shadow.getHeight(),          // old_height
+    0,                                         // new_width
+    0                                          // new_height
+  };
 
   // dw > 0 : scale down width
   // dw = 0 : scale only height
@@ -332,6 +332,9 @@ void FDialog::setSize (const FSize& size, bool adjust)
   // dh > 0 : scale down height
   // dh = 0 : scale only width
   // dh < 0 : scale up height
+
+  FWindow::setSize (size, false);
+  size_data.new_size.setSize (getSize());
 
   if ( adjust )    // Adjust the size after restoreVTerm(),
     adjustSize();  // because adjustSize() can also change x and y
@@ -342,12 +345,12 @@ void FDialog::setSize (const FSize& size, bool adjust)
   if ( isShown() )
     putRegion (getTermPos(), getVWin());
 
-  // Restoring the non-covered terminal regions
-  if ( dw > 0 )
-    restoreVTerm ({x + int(width), y, std::size_t(dw), old_height});  // restore right
+  // After resizing, get the new width and height with the shadow
+  geo.new_width  = getWidth()  + shadow.getWidth();
+  geo.new_height = getHeight() + shadow.getHeight();
 
-  if ( dh > 0 )
-    restoreVTerm ({x, y + int(height), old_width, std::size_t(dh)});  // restore bottom
+  // Restoring the non-covered terminal regions
+  restoreNonCoveredTerminalRegions(geo);
 
   // set the cursor to the focus widget
   setCursorToFocusWidget();
@@ -516,38 +519,10 @@ void FDialog::onMouseUp (FMouseEvent* ev)
 
   if ( ev->getButton() == MouseButton::Left )
   {
-    const int title_bar_x = position_data.title_bar_click_pos.getX();
-    const int title_bar_y = position_data.title_bar_click_pos.getY();
-
-    if ( ! position_data.title_bar_click_pos.isOrigin()
-      && title_bar_x > getTermX() + int(ms.menu_btn)
-      && title_bar_x < getTermX() + int(getWidth())
-      && title_bar_y == getTermY() )
-    {
-      const FPoint deltaPos{ms.term_pos - position_data.title_bar_click_pos};
-      move (deltaPos);
-      position_data.title_bar_click_pos = ms.term_pos;
-      ev->setPos(ev->getPos() - deltaPos);
-    }
-
-    // Click on title bar menu button
-    if ( title_bar.buttons && isMouseOverMenuButton(ms)
-      && dialog_menu.menu->isShown()
-      && ! dialog_menu.menu->hasSelectedItem() )
-    {
-      // Sets focus to the first item
-      selectFirstMenuItem();
-    }
-    else
-    {
-      // Zoom to maximum or restore the window size
-      pressZoomButton(ms);
-      // Minimize the window
-      pressMinimizeButton(ms);
-      // Close the window
-      pressCloseButton(ms);
-    }
-
+    // Handling after dragging the title bar
+    handleTitleBarDrag (ms, ev);
+    // Handling for the pressed title bar button
+    handleTitleBarButtons (ms);
     // Resize the dialog
     resizeMouseUpMove (ms, true);
   }
@@ -1339,6 +1314,24 @@ void FDialog::clearStatusBar() const
 }
 
 //----------------------------------------------------------------------
+inline void FDialog::restoreNonCoveredTerminalRegions (const scaleGeometry& geo)
+{
+  // Restore the right region
+  if ( geo.dw > 0 )
+    restoreVTerm ( { geo.x + int(geo.new_width)
+                   , geo.y
+                   , std::size_t(geo.dw)
+                   , geo.old_height } );
+
+  // Restore the bottom region
+  if ( geo.dh > 0 )
+    restoreVTerm ( { geo.x
+                   , geo.y + int(geo.new_height)
+                   , geo.old_width
+                   , std::size_t(geo.dh) } );
+}
+
+//----------------------------------------------------------------------
 void FDialog::setCursorToFocusWidget()
 {
   // Set the cursor to the focus widget
@@ -1857,6 +1850,46 @@ auto FDialog::noVisibleDialog() const -> bool
   }
 
   return true;
+}
+
+//----------------------------------------------------------------------
+void FDialog::handleTitleBarDrag (const MouseStates& ms, FMouseEvent* ev)
+{
+  const int title_bar_x = position_data.title_bar_click_pos.getX();
+  const int title_bar_y = position_data.title_bar_click_pos.getY();
+
+  if ( ! position_data.title_bar_click_pos.isOrigin()
+    && title_bar_x > getTermX() + int(ms.menu_btn)
+    && title_bar_x < getTermX() + int(getWidth())
+    && title_bar_y == getTermY() )
+  {
+    const FPoint deltaPos{ms.term_pos - position_data.title_bar_click_pos};
+    move (deltaPos);
+    position_data.title_bar_click_pos = ms.term_pos;
+    ev->setPos(ev->getPos() - deltaPos);
+  }
+}
+
+//----------------------------------------------------------------------
+void FDialog::handleTitleBarButtons (const MouseStates& ms)
+{
+  // Click on title bar menu button
+  if ( title_bar.buttons && isMouseOverMenuButton(ms)
+    && dialog_menu.menu->isShown()
+    && ! dialog_menu.menu->hasSelectedItem() )
+  {
+    // Sets focus to the first item
+    selectFirstMenuItem();
+  }
+  else
+  {
+    // Zoom to maximum or restore the window size
+    pressZoomButton(ms);
+    // Minimize the window
+    pressMinimizeButton(ms);
+    // Close the window
+    pressCloseButton(ms);
+  }
 }
 
 //----------------------------------------------------------------------

@@ -227,11 +227,7 @@ class FListViewIterator
     ~FListViewIterator () = default;
     explicit FListViewIterator (Iterator);
     FListViewIterator (const FListViewIterator&) = default;
-    FListViewIterator (FListViewIterator&& i) noexcept
-      : iter_path{std::move(i.iter_path)}
-      , node{i.node}
-      , position{i.position}
-    { }
+    FListViewIterator (FListViewIterator&&) noexcept = default;
 
     // Overloaded operators
     auto operator = (const FListViewIterator&) -> FListViewIterator& = default;

@@ -861,7 +861,7 @@ inline auto FString::data() const noexcept -> const wchar_t*
 
 //----------------------------------------------------------------------
 inline auto FString::data() noexcept -> wchar_t*
-{ return const_cast<wchar_t*>(string.data()); }
+{ return &string[0]; }
 
 //----------------------------------------------------------------------
 template <typename NumT>
