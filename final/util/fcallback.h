@@ -48,6 +48,36 @@ namespace finalcut
 class FWidget;
 
 //----------------------------------------------------------------------
+// struct CmpFuncPtr
+//----------------------------------------------------------------------
+
+struct CmpFuncPtr
+{
+  virtual ~CmpFuncPtr() = default;
+  virtual bool isEqual (const void*) const noexcept = 0;
+};
+
+//----------------------------------------------------------------------
+// struct CompareFunctionPointer
+//----------------------------------------------------------------------
+
+template <typename T>
+struct CompareFunctionPointer : CmpFuncPtr
+{
+  T function_ptr;
+
+  CompareFunctionPointer (T func)
+    : function_ptr(func)
+  { }
+
+  inline bool isEqual (const void* raw_ptr) const noexcept override
+  {
+    T other_ptr = *reinterpret_cast<const T*>(raw_ptr);
+    return function_ptr == other_ptr;
+  }
+};
+
+//----------------------------------------------------------------------
 // struct FCallbackData
 //----------------------------------------------------------------------
 
@@ -59,7 +89,7 @@ struct FCallbackData
   template <typename FuncPtr>
   FCallbackData (FString&& s, FWidget* i, FuncPtr m, FCall&& c)
     : cb_function(std::move(c))
-    , cb_function_ptr(m)
+    , cb_function_ptr(std::make_shared<CompareFunctionPointer<FuncPtr>>(m))
     , cb_instance(i)
     , cb_signal(std::move(s))
   { }
@@ -71,10 +101,10 @@ struct FCallbackData
   auto operator = (FCallbackData&&) noexcept -> FCallbackData& = default;
 
   // Data members
-  FCall     cb_function{};
-  void*     cb_function_ptr{};
-  FWidget*  cb_instance{};
-  FString   cb_signal{};
+  FCall                        cb_function{};
+  std::shared_ptr<CmpFuncPtr>  cb_function_ptr{};
+  FWidget*                     cb_instance{};
+  FString                      cb_signal{};
 };
 
 
@@ -258,7 +288,8 @@ inline void FCallback::addCallback ( FString&&  cb_signal
 {
   // Add a function object to an instance as callback
 
-  auto fn = std::bind (std::forward<Function>(cb_function), std::forward<Args>(args)...);
+  auto fn = std::bind ( std::forward<Function>(cb_function)
+                      , std::forward<Args>(args)... );
   callback_objects.emplace_back (std::move(cb_signal), cb_instance, nullptr, fn);
 }
 
@@ -301,9 +332,9 @@ inline void FCallback::addCallback ( FString&& cb_signal
 {
   // Add a function reference as callback
 
-  auto ptr = reinterpret_cast<void*>(&cb_function);
+  auto raw_ptr = reinterpret_cast<const void*>(&cb_function);
   auto fn = std::bind (cb_function, std::forward<Args>(args)...);
-  callback_objects.emplace_back (std::move(cb_signal), nullptr, ptr, fn);
+  callback_objects.emplace_back (std::move(cb_signal), nullptr, raw_ptr, fn);
 }
 
 //----------------------------------------------------------------------
@@ -316,10 +347,9 @@ inline void FCallback::addCallback ( FString&&  cb_signal
 {
   // Add a function pointer as callback
 
-  auto ptr = reinterpret_cast<void*>(cb_function);
   auto fn = std::bind ( std::forward<Function>(cb_function)
                       , std::forward<Args>(args)... );
-  callback_objects.emplace_back(std::move(cb_signal), nullptr, ptr, fn);
+  callback_objects.emplace_back(std::move(cb_signal), nullptr, cb_function, fn);
 }
 
 //----------------------------------------------------------------------
@@ -378,12 +408,13 @@ inline void FCallback::delCallback (FunctionPtr&& cb_func_ptr) noexcept
   if ( callback_objects.empty() )
     return;
 
-  auto ptr = reinterpret_cast<void*>(cb_func_ptr);
+  const auto raw_ptr = reinterpret_cast<const void*>(&cb_func_ptr);
   auto iter = callback_objects.cbegin();
 
   while ( iter != callback_objects.cend() )
   {
-    if ( iter->cb_function_ptr == ptr )
+    if ( iter->cb_function_ptr
+      && iter->cb_function_ptr->isEqual(raw_ptr) )
       iter = callback_objects.erase(iter);
     else
       ++iter;
@@ -401,12 +432,13 @@ inline void FCallback::delCallback (const Function& cb_function)
   if ( callback_objects.empty() )
     return;
 
-  auto ptr = reinterpret_cast<void*>(&cb_function);
+  const auto raw_ptr = reinterpret_cast<const void*>(&cb_function);
   auto iter = callback_objects.cbegin();
 
   while ( iter != callback_objects.cend() )
   {
-    if ( iter->cb_function_ptr == ptr )
+    if ( iter->cb_function_ptr
+      && iter->cb_function_ptr->isEqual(&raw_ptr) )
       iter = callback_objects.erase(iter);
     else
       ++iter;

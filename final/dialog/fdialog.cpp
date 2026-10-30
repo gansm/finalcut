@@ -1314,7 +1314,7 @@ void FDialog::clearStatusBar() const
 }
 
 //----------------------------------------------------------------------
-inline void FDialog::restoreNonCoveredTerminalRegions (const scaleGeometry& geo)
+inline void FDialog::restoreNonCoveredTerminalRegions (const scaleGeometry& geo) const
 {
   // Restore the right region
   if ( geo.dw > 0 )

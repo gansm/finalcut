@@ -264,7 +264,7 @@ class FDialog : public FWindow
     void printSpace (std::size_t);
     void printTitleBarText (std::size_t&, std::size_t);
     void clearStatusBar() const;
-    void restoreNonCoveredTerminalRegions (const scaleGeometry&);
+    void restoreNonCoveredTerminalRegions (const scaleGeometry&) const;
     void setCursorToFocusWidget();
     void leaveMenu();
     void openMenu();

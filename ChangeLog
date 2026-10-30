@@ -1,3 +1,6 @@
+2026-10-30  Markus Gans  <guru.mail@muenster.de>
+	* FCallbackData can now safely compare function pointers
+
 2026-10-25  Markus Gans  <guru.mail@muenster.de>
 	* Multiple fast paths were established to speed up the terminal screen 
 	  output of plain UTF-8 characters
