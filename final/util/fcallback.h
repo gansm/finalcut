@@ -54,7 +54,7 @@ class FWidget;
 struct CmpFuncPtr
 {
   virtual ~CmpFuncPtr() = default;
-  virtual bool isEqual (const void*) const noexcept = 0;
+  virtual bool isEqual (const CmpFuncPtr& func) const noexcept = 0;
 };
 
 //----------------------------------------------------------------------
@@ -64,16 +64,17 @@ struct CmpFuncPtr
 template <typename T>
 struct CompareFunctionPointer : CmpFuncPtr
 {
-  T function_ptr;
+  using Type = std::decay_t<T>;
+  Type function_ptr;
 
-  CompareFunctionPointer (T func)
+  explicit CompareFunctionPointer (T func)
     : function_ptr(func)
   { }
 
-  inline bool isEqual (const void* raw_ptr) const noexcept override
+  inline bool isEqual (const CmpFuncPtr& func) const noexcept override
   {
-    T other_ptr = *reinterpret_cast<const T*>(raw_ptr);
-    return function_ptr == other_ptr;
+    auto other = static_cast<const CompareFunctionPointer&>(func);
+    return function_ptr == other.function_ptr;
   }
 };
 
@@ -408,13 +409,13 @@ inline void FCallback::delCallback (FunctionPtr&& cb_func_ptr) noexcept
   if ( callback_objects.empty() )
     return;
 
-  const auto raw_ptr = reinterpret_cast<const void*>(&cb_func_ptr);
+  auto wrapper = CompareFunctionPointer<FunctionPtr>(cb_func_ptr);
   auto iter = callback_objects.cbegin();
 
   while ( iter != callback_objects.cend() )
   {
     if ( iter->cb_function_ptr
-      && iter->cb_function_ptr->isEqual(raw_ptr) )
+      && iter->cb_function_ptr->isEqual(wrapper) )
       iter = callback_objects.erase(iter);
     else
       ++iter;
@@ -432,13 +433,13 @@ inline void FCallback::delCallback (const Function& cb_function)
   if ( callback_objects.empty() )
     return;
 
-  const auto raw_ptr = reinterpret_cast<const void*>(&cb_function);
+  auto wrapper = CompareFunctionPointer<Function>(cb_function);
   auto iter = callback_objects.cbegin();
 
   while ( iter != callback_objects.cend() )
   {
     if ( iter->cb_function_ptr
-      && iter->cb_function_ptr->isEqual(&raw_ptr) )
+      && iter->cb_function_ptr->isEqual(wrapper) )
       iter = callback_objects.erase(iter);
     else
       ++iter;

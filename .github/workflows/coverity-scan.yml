@@ -54,7 +54,7 @@ jobs:
 
     - name: Build with cov-build
       run: |
-        export PATH=`pwd`/cov-analysis-linux64/bin:$PATH
+        export PATH=$(pwd)/cov-analysis-linux64/bin:$PATH
         cat cov-int/scm_log.txt || echo
         autoreconf -v --install --force
         ./configure --prefix=/usr \
