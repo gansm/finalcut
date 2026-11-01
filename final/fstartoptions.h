@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2025 Markus Gans                                      *
+* Copyright 2019-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -52,6 +52,32 @@ namespace finalcut
 class FStartOptions final
 {
   public:
+    struct Options
+    {
+      uInt8 cursor_optimisation   : 1;
+      uInt8 mouse_support         : 1;
+      uInt8 terminal_detection    : 1;
+      uInt8 terminal_data_request : 1;
+      uInt8 terminal_focus_events : 1;
+      uInt8 sgr_optimizer         : 1;
+      uInt8 vgafont               : 1;
+      uInt8 newfont               : 1;
+
+  #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
+      uInt8 meta_sends_escape     : 1;
+      uInt8 change_cursorstyle    : 1;
+      uInt8                       : 6;  // padding bits
+  #elif defined(__NetBSD__) || defined(__OpenBSD__)
+      uInt8 meta_sends_escape     : 1;
+      uInt8                       : 7;  // padding bits
+  #endif
+
+      uInt16 dark_theme           : 1;
+      uInt16 color_change         : 1;
+      uInt16 is_being_initialized : 1;
+      uInt16                      : 13;  // padding bits
+    };
+
     // Constructors
     FStartOptions();
 
@@ -63,31 +89,9 @@ class FStartOptions final
     void setDefault();
 
     // Data members
-    uInt8 cursor_optimisation   : 1;
-    uInt8 mouse_support         : 1;
-    uInt8 terminal_detection    : 1;
-    uInt8 terminal_data_request : 1;
-    uInt8 terminal_focus_events : 1;
-    uInt8 sgr_optimizer         : 1;
-    uInt8 vgafont               : 1;
-    uInt8 newfont               : 1;
-
-#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-    uInt8 meta_sends_escape     : 1;
-    uInt8 change_cursorstyle    : 1;
-    uInt8                       : 6;  // padding bits
-#elif defined(__NetBSD__) || defined(__OpenBSD__)
-    uInt8 meta_sends_escape     : 1;
-    uInt8                       : 7;  // padding bits
-#endif
-
-    uInt16 dark_theme           : 1;
-    uInt16 color_change         : 1;
-    uInt16 is_being_initialized : 1;
-    uInt16                      : 13;  // padding bits
-
-    Encoding      encoding{Encoding::Unknown};
-    std::ofstream logfile_stream{};
+    Options        bits{};
+    Encoding       encoding{Encoding::Unknown};
+    std::ofstream  logfile_stream{};
 };
 
 //----------------------------------------------------------------------

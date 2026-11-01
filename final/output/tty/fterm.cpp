@@ -936,7 +936,7 @@ void FTerm::init_global_values()
 
   FTermData::getInstance().setNewFont(false);  // Preset to false
 
-  if ( ! getStartOptions().terminal_detection )
+  if ( ! getStartOptions().bits.terminal_detection )
   {
     FTermDetection::getInstance().setTerminalDetection (false);
   }
@@ -1304,13 +1304,13 @@ void FTerm::init_optiAttr()
 //----------------------------------------------------------------------
 auto FTerm::init_font() -> bool
 {
-  if ( getStartOptions().vgafont && ! setVGAFont() )
+  if ( getStartOptions().bits.vgafont && ! setVGAFont() )
   {
     setExitMessage("VGAfont is not supported by this terminal");
     FApplication::exit(EXIT_FAILURE);
   }
 
-  if ( getStartOptions().newfont && ! setNewFont() )
+  if ( getStartOptions().bits.newfont && ! setNewFont() )
   {
     setExitMessage("Newfont is not supported by this terminal");
     FApplication::exit(EXIT_FAILURE);
@@ -1556,7 +1556,7 @@ void FTerm::init_captureFontAndTitle()
 {
   // Save the used xterm font and window title
 
-  if ( ! getStartOptions().terminal_data_request )
+  if ( ! getStartOptions().bits.terminal_data_request )
     return;
 
   static auto& data = FTermData::getInstance();
@@ -1704,7 +1704,7 @@ void FTerm::enableMouse()
 {
   // Enable the terminal mouse support
 
-  if ( ! getStartOptions().mouse_support )
+  if ( ! getStartOptions().bits.mouse_support )
     return;
 
   bool gpm_mouse{false};
@@ -1919,7 +1919,7 @@ void FTerm::init()
   {
     FTermXTerminal::getInstance().metaSendsESC(true);
 
-    if ( getStartOptions().terminal_focus_events )
+    if ( getStartOptions().bits.terminal_focus_events )
       FTermXTerminal::getInstance().setFocusSupport(true);
   }
 
@@ -1950,7 +1950,7 @@ void FTerm::init()
   // Set FTerm signal handler
   setSignalHandler();
 
-  if ( ! getStartOptions().cursor_optimisation )
+  if ( ! getStartOptions().bits.cursor_optimisation )
   {
     FTermData::getInstance().supportCursorOptimisation(false);
   }
@@ -2039,12 +2039,12 @@ void FTerm::initOSspecifics() const
 #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
   static auto& freebsd_console = FTermFreeBSD::getInstance();
 
-  if ( getStartOptions().meta_sends_escape )
+  if ( getStartOptions().bits.meta_sends_escape )
     freebsd_console.enableMetaSendsEscape();
   else
     freebsd_console.disableMetaSendsEscape();
 
-  if ( getStartOptions().change_cursorstyle )
+  if ( getStartOptions().bits.change_cursorstyle )
     freebsd_console.enableChangeCursorStyle();
   else
     freebsd_console.disableChangeCursorStyle();
@@ -2053,7 +2053,7 @@ void FTerm::initOSspecifics() const
 #elif defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
   static auto& openbsd_console = FTermOpenBSD::getInstance();
 
-  if ( getStartOptions().meta_sends_escape )
+  if ( getStartOptions().bits.meta_sends_escape )
     openbsd_console.enableMetaSendsEscape();
   else
     openbsd_console.disableMetaSendsEscape();
@@ -2128,13 +2128,13 @@ void FTerm::finish() const
   resetBeep();
 
   // Disable the terminal mouse support
-  if ( getStartOptions().mouse_support )
+  if ( getStartOptions().bits.mouse_support )
     disableMouse();
 
   // Deactivate terminal focus event + meta key sends escape
   if ( data.isTermType(FTermType::xterm) )
   {
-    if ( getStartOptions().terminal_focus_events )
+    if ( getStartOptions().bits.terminal_focus_events )
       xterm.setFocusSupport(false);
 
     xterm.metaSendsESC(false);

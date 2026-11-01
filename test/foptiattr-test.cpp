@@ -163,7 +163,7 @@ void FOptiAttrTest::sgrOptimizerTest()
 {
   // Test with FOptiAttr
   // -------------------
-  finalcut::FStartOptions::getInstance().sgr_optimizer = true;
+  finalcut::FStartOptions::getInstance().bits.sgr_optimizer = true;
   finalcut::FOptiAttr oa;
   oa.setDefaultColorSupport();  // ANSI default color
   oa.setMaxColor (8);
@@ -381,7 +381,7 @@ void FOptiAttrTest::vga2ansiTest()
 //----------------------------------------------------------------------
 void FOptiAttrTest::fakeReverseTest()
 {
-  finalcut::FStartOptions::getInstance().sgr_optimizer = false;
+  finalcut::FStartOptions::getInstance().bits.sgr_optimizer = false;
   finalcut::FOptiAttr oa;
   oa.setDefaultColorSupport();  // ANSI default color
   oa.setMaxColor (8);
@@ -466,7 +466,7 @@ void FOptiAttrTest::ansiTest()
 {
   // Simulate an ansi terminal
 
-  finalcut::FStartOptions::getInstance().sgr_optimizer = false;
+  finalcut::FStartOptions::getInstance().bits.sgr_optimizer = false;
   finalcut::FOptiAttr oa;
   oa.setDefaultColorSupport();  // ANSI default color
   oa.setMaxColor (8);
@@ -931,7 +931,7 @@ void FOptiAttrTest::vt100Test()
 {
   // Simulate a vt100 terminal
 
-  finalcut::FStartOptions::getInstance().sgr_optimizer = false;
+  finalcut::FStartOptions::getInstance().bits.sgr_optimizer = false;
   finalcut::FOptiAttr oa;
   oa.unsetDefaultColorSupport();  // No ANSI default color
   oa.setMaxColor (1);
@@ -1387,7 +1387,7 @@ void FOptiAttrTest::xtermTest()
 {
   // Simulate an xterm-256color terminal
 
-  finalcut::FStartOptions::getInstance().sgr_optimizer = false;
+  finalcut::FStartOptions::getInstance().bits.sgr_optimizer = false;
   finalcut::FOptiAttr oa;
   oa.setDefaultColorSupport();  // ANSI default color
   oa.setMaxColor (256);
@@ -1867,7 +1867,7 @@ void FOptiAttrTest::rxvtTest()
 {
   // Simulate an rxvt terminal
 
-  finalcut::FStartOptions::getInstance().sgr_optimizer = false;
+  finalcut::FStartOptions::getInstance().bits.sgr_optimizer = false;
   finalcut::FOptiAttr oa;
   oa.setDefaultColorSupport();  // ANSI default color
   oa.setMaxColor (8);
@@ -2336,7 +2336,7 @@ void FOptiAttrTest::linuxTest()
 {
   // Simulate a Linux terminal with 16 colors
 
-  finalcut::FStartOptions::getInstance().sgr_optimizer = false;
+  finalcut::FStartOptions::getInstance().bits.sgr_optimizer = false;
   finalcut::FOptiAttr oa;
   oa.setDefaultColorSupport();  // ANSI default color
   oa.setMaxColor (16);
@@ -2802,7 +2802,7 @@ void FOptiAttrTest::puttyTest()
 {
   // Simulate a putty-256color terminal
 
-  finalcut::FStartOptions::getInstance().sgr_optimizer = false;
+  finalcut::FStartOptions::getInstance().bits.sgr_optimizer = false;
   finalcut::FOptiAttr oa;
   oa.unsetDefaultColorSupport();  // No ANSI default color
   oa.setMaxColor (256);
@@ -3280,7 +3280,7 @@ void FOptiAttrTest::teratermTest()
 {
   // Simulate a Tera Term terminal
 
-  finalcut::FStartOptions::getInstance().sgr_optimizer = false;
+  finalcut::FStartOptions::getInstance().bits.sgr_optimizer = false;
   finalcut::FOptiAttr oa;
   oa.unsetDefaultColorSupport();  // No ANSI default color
   oa.setMaxColor (16);
@@ -3742,7 +3742,7 @@ void FOptiAttrTest::ibmColorTest()
 {
   // Simulate IBM color definitions
 
-  finalcut::FStartOptions::getInstance().sgr_optimizer = false;
+  finalcut::FStartOptions::getInstance().bits.sgr_optimizer = false;
   finalcut::FOptiAttr oa;
   oa.unsetDefaultColorSupport();  // No ANSI default color
   oa.setMaxColor (8);
@@ -4176,7 +4176,7 @@ void FOptiAttrTest::wyse50Test()
 {
   // Simulate an Wyse-50 terminal
 
-  finalcut::FStartOptions::getInstance().sgr_optimizer = false;
+  finalcut::FStartOptions::getInstance().bits.sgr_optimizer = false;
   finalcut::FOptiAttr oa;
   finalcut::FOptiAttr::TermEnv optiattr_env =
   {

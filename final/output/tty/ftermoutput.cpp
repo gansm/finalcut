@@ -430,7 +430,7 @@ void FTermOutput::redefineColorPalette()
 {
   // Redefine the color palette
 
-  if ( ! (canChangeColorPalette() && getStartOptions().color_change) )
+  if ( ! (canChangeColorPalette() && getStartOptions().bits.color_change) )
     return;
 
   FTerm::resetColorMap();
@@ -444,7 +444,7 @@ void FTermOutput::redefineColorPalette()
     return;
   }
 
-  if ( getStartOptions().dark_theme )
+  if ( getStartOptions().bits.dark_theme )
   {
     setColorPaletteTheme<default16DarkColorPalette>();
   }
@@ -460,7 +460,7 @@ void FTermOutput::redefineColorPalette()
 //----------------------------------------------------------------------
 void FTermOutput::restoreColorPalette()
 {
-  if ( ! (canChangeColorPalette() && getStartOptions().color_change) )
+  if ( ! (canChangeColorPalette() && getStartOptions().bits.color_change) )
     return;
 
   // Reset screen settings

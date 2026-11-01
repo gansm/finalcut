@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2025 Markus Gans                                      *
+* Copyright 2019-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -36,24 +36,25 @@ namespace finalcut
 // constructors and destructor
 //----------------------------------------------------------------------
 FStartOptions::FStartOptions()
-  : cursor_optimisation{true}
-  , mouse_support{true}
-  , terminal_detection{true}
-  , terminal_data_request{true}
-  , terminal_focus_events{true}
-  , sgr_optimizer{true}
-  , vgafont{false}
-  , newfont{false}
+{
+  bits.cursor_optimisation = true;
+  bits.mouse_support = true;
+  bits.terminal_detection = true;
+  bits.terminal_data_request = true;
+  bits.terminal_focus_events = true;
+  bits.sgr_optimizer = true;
+  bits.vgafont = false;
+  bits.newfont = false;
 #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-  , meta_sends_escape{true}
-  , change_cursorstyle{true}
+  bits.meta_sends_escape = true;
+  bits.change_cursorstyle = true;
 #elif defined(__NetBSD__) || defined(__OpenBSD__)
-  , meta_sends_escape{true}
+  bits.meta_sends_escape = true;
 #endif
-  , dark_theme{false}
-  , color_change{true}
-  , is_being_initialized{false}
-{ }
+  bits.dark_theme = false;
+  bits.color_change = true;
+  bits.is_being_initialized = false;
+}
 
 
 // public methods of FStartOptions
@@ -67,23 +68,24 @@ auto FStartOptions::getInstance() -> FStartOptions&
 //----------------------------------------------------------------------
 void FStartOptions::setDefault()
 {
-  cursor_optimisation = true;
-  mouse_support = true;
-  terminal_detection = true;
-  color_change = true;
-  vgafont = false;
-  newfont = false;
-  encoding = Encoding::Unknown;
-  dark_theme = false;
-  terminal_focus_events = true;
-  is_being_initialized = false;
+  bits.cursor_optimisation = true;
+  bits.mouse_support = true;
+  bits.terminal_detection = true;
+  bits.color_change = true;
+  bits.vgafont = false;
+  bits.newfont = false;
+  bits.dark_theme = false;
+  bits.terminal_focus_events = true;
+  bits.is_being_initialized = false;
 
 #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-  meta_sends_escape = true;
-  change_cursorstyle = true;
+  bits.meta_sends_escape = true;
+  bits.change_cursorstyle = true;
 #elif defined(__NetBSD__) || defined(__OpenBSD__)
-  meta_sends_escape = true;
+  bits.meta_sends_escape = true;
 #endif
+
+  encoding = Encoding::Unknown;
 }
 
 }  // namespace finalcut

@@ -311,8 +311,8 @@ auto main (int argc, char* argv[]) -> int
 
   // Disable color palette changes and terminal data requests
   auto& start_options = finalcut::FStartOptions::getInstance();
-  start_options.color_change = false;
-  start_options.terminal_data_request = false;
+  start_options.bits.color_change = false;
+  start_options.bits.terminal_data_request = false;
 
   // Create the application object as root widget
   finalcut::FApplication term_app {argc, argv};

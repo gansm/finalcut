@@ -485,7 +485,7 @@ auto FOptiAttr::changeAttribute (FChar& term, FChar& next) -> FTermcap::TermcapS
 
   static const auto& start_options = FStartOptions::getInstance();
 
-  if ( start_options.sgr_optimizer )
+  if ( start_options.bits.sgr_optimizer )
     sgr_optimizer.optimize();
 
   return {attr_buf.data(), uInt32(attr_buf.length())};

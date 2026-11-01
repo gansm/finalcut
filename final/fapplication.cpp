@@ -152,7 +152,7 @@ auto FApplication::getLog() -> FLogPtr&
   static const auto& logger = std::make_unique<FLogPtr>();
 
   if ( logger && *logger == nullptr
-    && ( ! isQuit() || getStartOptions().is_being_initialized) )
+    && ( ! isQuit() || getStartOptions().bits.is_being_initialized) )
   {
     *logger = std::make_shared<FLogger>();
 
@@ -391,14 +391,14 @@ void FApplication::setDefaultTheme()
 
   if ( foutput->getMaxColor() < 16 )  // for 8 color mode
   {
-    if ( getStartOptions().color_change )
+    if ( getStartOptions().bits.color_change )
       foutput->setColorPaletteTheme<default8ColorPalette>();
 
     setColorTheme<default8ColorTheme>();
   }
   else
   {
-    if ( getStartOptions().color_change )
+    if ( getStartOptions().bits.color_change )
       foutput->setColorPaletteTheme<default16ColorPalette>();
 
     setColorTheme<default16ColorTheme>();
@@ -410,7 +410,7 @@ void FApplication::setDarkTheme()
 {
   auto foutput = FVTerm::getFOutput();
 
-  if ( getStartOptions().color_change )
+  if ( getStartOptions().bits.color_change )
     foutput->setColorPaletteTheme<default16DarkColorPalette>();
 
   if ( foutput->getMaxColor() < 16 )  // for 8 color mode
@@ -713,33 +713,33 @@ inline void FApplication::setCmdOptionsMap (CmdMap& cmd_map)
   // --log-file
   cmd_map['l'] = [log] (const auto& arg) { log(FString(arg)); };
   // --no-mouse
-  cmd_map['m'] = [opt] (const auto&) { opt().mouse_support = false; };
+  cmd_map['m'] = [opt] (const auto&) { opt().bits.mouse_support = false; };
   // --no-optimized-cursor
-  cmd_map['o'] = [opt] (const auto&) { opt().cursor_optimisation = false; };
+  cmd_map['o'] = [opt] (const auto&) { opt().bits.cursor_optimisation = false; };
   // --no-terminal-detection
-  cmd_map['d'] = [opt] (const auto&) { opt().terminal_detection = false; };
+  cmd_map['d'] = [opt] (const auto&) { opt().bits.terminal_detection = false; };
   // --no-terminal-data-request
-  cmd_map['r'] = [opt] (const auto&) { opt().terminal_data_request = false; };
+  cmd_map['r'] = [opt] (const auto&) { opt().bits.terminal_data_request = false; };
   // --no-terminal-focus-events
-  cmd_map['f'] = [opt] (const auto&) { opt().terminal_focus_events = false; };
+  cmd_map['f'] = [opt] (const auto&) { opt().bits.terminal_focus_events = false; };
   // --no-color-change
-  cmd_map['c'] = [opt] (const auto&) { opt().color_change = false; };
+  cmd_map['c'] = [opt] (const auto&) { opt().bits.color_change = false; };
   // --no-sgr-optimizer
-  cmd_map['s'] = [opt] (const auto&) { opt().sgr_optimizer = false; };
+  cmd_map['s'] = [opt] (const auto&) { opt().bits.sgr_optimizer = false; };
   // --vgafont
-  cmd_map['v'] = [opt] (const auto&) { opt().vgafont = true; };
+  cmd_map['v'] = [opt] (const auto&) { opt().bits.vgafont = true; };
   // --newfont
-  cmd_map['n'] = [opt] (const auto&) { opt().newfont = true; };
+  cmd_map['n'] = [opt] (const auto&) { opt().bits.newfont = true; };
   // --dark-theme
-  cmd_map['t'] = [opt] (const auto&) { opt().dark_theme = true; };
+  cmd_map['t'] = [opt] (const auto&) { opt().bits.dark_theme = true; };
 #if defined(__FreeBSD__) || defined(__DragonFly__)
   // --no-esc-for-alt-meta
-  cmd_map['E'] = [opt] (const auto&) { opt().meta_sends_escape = false; };
+  cmd_map['E'] = [opt] (const auto&) { opt().bits.meta_sends_escape = false; };
   // --no-cursorstyle-change
-  cmd_map['C'] = [opt] (const auto&) { opt().change_cursorstyle = false; };
+  cmd_map['C'] = [opt] (const auto&) { opt().bits.change_cursorstyle = false; };
 #elif defined(__NetBSD__) || defined(__OpenBSD__)
   // --no-esc-for-alt-meta
-  cmd_map['E'] = [opt] (const auto&) { opt().meta_sends_escape = false; };
+  cmd_map['E'] = [opt] (const auto&) { opt().bits.meta_sends_escape = false; };
 #endif
 }
 
@@ -1499,9 +1499,9 @@ auto FApplication::processParameters (const Args& args) -> FWidget*
     FApplication::exit(EXIT_SUCCESS);
   }
 
-  getStartOptions().is_being_initialized = true;
+  getStartOptions().bits.is_being_initialized = true;
   cmdOptions (args);
-  getStartOptions().is_being_initialized = false;
+  getStartOptions().bits.is_being_initialized = false;
   return nullptr;
 }
 

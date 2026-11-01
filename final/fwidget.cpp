@@ -2237,7 +2237,7 @@ void FWidget::initColorTheme()
   if ( getColorTheme().use_count() > 0 && ! isDefaultTheme() )
     return;  // A user theme is in use
 
-  if ( FStartOptions::getInstance().dark_theme )
+  if ( FStartOptions::getInstance().bits.dark_theme )
   {
     if ( FVTerm::getFOutput()->getMaxColor() < 16 )  // for 8 color mode
       setColorTheme<default8ColorDarkTheme>();
